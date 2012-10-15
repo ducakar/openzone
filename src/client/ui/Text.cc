@@ -31,7 +31,7 @@
 #include <client/ui/Style.hh>
 #include <client/ui/Area.hh>
 
-#ifdef _WIN32
+#if defined( __ANDROID__ ) || defined(  _WIN32 )
 static char* strchrnul( const char* s, int c )
 {
   while( *s != c && *s != '\0' ) {

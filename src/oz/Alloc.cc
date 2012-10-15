@@ -42,6 +42,8 @@
 namespace oz
 {
 
+#ifndef OZ_ADDRESS_SANITIZER
+
 enum AllocMode
 {
   OBJECT,
@@ -202,19 +204,20 @@ backtraceFound:
   free( st );
 }
 
-#endif
+#endif // OZ_TRACK_ALLOCS
 
-static void* allocate( AllocMode mode, size_t size )
+static void* allocate( AllocMode mode, size_t size, bool isAligned )
 {
   static_cast<void>( mode );
 
   size += Alloc::alignUp( sizeof( size ) );
 
 #ifdef _WIN32
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  void* ptr = isAligned ? _aligned_malloc( size, Alloc::ALIGNMENT ) : malloc( size );
 #else
-  void* ptr = memalign( Alloc::ALIGNMENT, size );
+  void* ptr = isAligned ? memalign( Alloc::ALIGNMENT, size ) : malloc( size );
 #endif
+
   if( ptr == nullptr ) {
     OZ_ERROR( "Out of memory" );
   }
@@ -238,7 +241,7 @@ static void* allocate( AllocMode mode, size_t size )
   return ptr;
 }
 
-static void deallocate( AllocMode mode, void* ptr )
+static void deallocate( AllocMode mode, void* ptr, bool isAligned )
 {
   static_cast<void>( mode );
 
@@ -257,22 +260,25 @@ static void deallocate( AllocMode mode, void* ptr )
 #endif
 
 #ifdef _WIN32
-  _aligned_free( ptr );
+  isAligned ? _aligned_free( ptr ) : free( ptr );
 #else
+  static_cast<void>( isAligned );
   free( ptr );
 #endif
 }
+
+#endif // !OZ_ADDRESS_SANITIZER
 
 static_assert( Alloc::ALIGNMENT >= sizeof( void* ) &&
                ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                "Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
 
+const Alloc::Aligned Alloc::ALIGNED = {};
+
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;
-
 int    Alloc::sumCount  = 0;
 size_t Alloc::sumAmount = 0;
-
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
@@ -295,7 +301,7 @@ void Alloc::printSummary()
   Log::println( "}" );
 }
 
-#ifndef OZ_TRACK_ALLOCS
+#if defined( OZ_ADDRESS_SANITIZER ) || !defined( OZ_TRACK_ALLOCS )
 
 bool Alloc::printLeaks()
 {
@@ -341,14 +347,36 @@ bool Alloc::printLeaks()
 
 using namespace oz;
 
+#ifndef OZ_ADDRESS_SANITIZER
+
 void* operator new ( size_t size )
 {
-  return allocate( OBJECT, size );
+  return allocate( OBJECT, size, false );
 }
 
 void* operator new[] ( size_t size )
 {
-  return allocate( ARRAY, size );
+  return allocate( ARRAY, size, false );
+}
+
+void* operator new ( size_t size, const std::nothrow_t& ) noexcept
+{
+  return allocate( OBJECT, size, false );
+}
+
+void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
+{
+  return allocate( ARRAY, size, false );
+}
+
+void* operator new ( size_t size, const Alloc::Aligned& ) noexcept
+{
+  return allocate( OBJECT, size, true );
+}
+
+void* operator new[] ( size_t size, const Alloc::Aligned& ) noexcept
+{
+  return allocate( ARRAY, size, true );
 }
 
 void operator delete ( void* ptr ) noexcept
@@ -356,7 +384,7 @@ void operator delete ( void* ptr ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( OBJECT, ptr );
+  deallocate( OBJECT, ptr, false );
 }
 
 void operator delete[] ( void* ptr ) noexcept
@@ -364,17 +392,7 @@ void operator delete[] ( void* ptr ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( ARRAY, ptr );
-}
-
-void* operator new ( size_t size, const std::nothrow_t& ) noexcept
-{
-  return allocate( OBJECT, size );
-}
-
-void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
-{
-  return allocate( ARRAY, size );
+  deallocate( ARRAY, ptr, false );
 }
 
 void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
@@ -382,7 +400,7 @@ void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( OBJECT, ptr );
+  deallocate( OBJECT, ptr, false );
 }
 
 void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
@@ -390,5 +408,61 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( ARRAY, ptr );
+  deallocate( ARRAY, ptr, false );
 }
+
+void operator delete ( void* ptr, const Alloc::Aligned& ) noexcept
+{
+  if( ptr == nullptr ) {
+    return;
+  }
+  deallocate( OBJECT, ptr, true );
+}
+
+void operator delete[] ( void* ptr, const Alloc::Aligned& ) noexcept
+{
+  if( ptr == nullptr ) {
+    return;
+  }
+  deallocate( ARRAY, ptr, true );
+}
+
+#else // !OZ_ADDRESS_SANITIZER
+
+void* operator new ( size_t size, const Alloc::Aligned& ) noexcept
+{
+#ifdef _WIN32
+  return _aligned_malloc( size, Alloc::ALIGNMENT );
+#else
+  return memalign( Alloc::ALIGNMENT, size );
+#endif
+}
+
+void* operator new[] ( size_t size, const Alloc::Aligned& ) noexcept
+{
+#ifdef _WIN32
+  return _aligned_malloc( size, Alloc::ALIGNMENT );
+#else
+  return memalign( Alloc::ALIGNMENT, size );
+#endif
+}
+
+void operator delete ( void* ptr, const Alloc::Aligned& ) noexcept
+{
+#ifdef _WIN32
+  _aligned_free( ptr );
+#else
+  free( ptr );
+#endif
+}
+
+void operator delete[] ( void* ptr, const Alloc::Aligned& ) noexcept
+{
+#ifdef _WIN32
+  _aligned_free( ptr );
+#else
+  free( ptr );
+#endif
+}
+
+#endif // !OZ_ADDRESS_SANITIZER

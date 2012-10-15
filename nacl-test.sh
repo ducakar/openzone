@@ -1,9 +1,9 @@
 #!/bin/sh
 #
 # Create layout in build/NaCL-test directory for launching NaCl port and launch
-# Chromium browser. It assumes OpenZone client i(including game data) is already
-# built and a local web server (e.g. python -m http.server) is already running
-# at that directory.
+# Chromium browser. It assumes OpenZone client (including game data) is already
+# built. Local web server is estabilished (python -m http.server) to server web
+# page.
 # Pass "strip" as the first parameter to strip binaries.
 #
 
@@ -32,4 +32,11 @@ if [[ "$1" == "strip" ]]; then
      "$nacl64Root/bin/i686-nacl-strip" "build/NaCl-test/openzone.i686.nexe"
 fi
 
-chromium --user-data-dir="$HOME/.config/chromium-test" "http://localhost:8000/openzone.sl.html"
+cd build/NaCl-test
+python -m http.server &
+serverPID=$!
+
+sleep 3
+chromium --user-data-dir="$HOME/.config/chromium-test" "http://localhost:8000/openzone.sl.html" || true
+
+kill $serverPID

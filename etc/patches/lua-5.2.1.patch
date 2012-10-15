@@ -1,0 +1,12 @@
+diff -Naur lua-5.2.1/src/llex.c lua-5.2.1-android/src/llex.c
+--- lua-5.2.1/src/llex.c	2012-01-24 00:05:51.000000000 +0100
++++ lua-5.2.1-android/src/llex.c	2012-10-14 01:05:28.384042154 +0200
+@@ -211,7 +211,7 @@
+ */
+ static void trydecpoint (LexState *ls, SemInfo *seminfo) {
+   char old = ls->decpoint;
+-  ls->decpoint = getlocaledecpoint();
++  ls->decpoint = '.';
+   buffreplace(ls, old, ls->decpoint);  /* try new decimal separator */
+   if (!buff2d(ls->buff, &seminfo->r)) {
+     /* format error with correct decimal point: no more options */

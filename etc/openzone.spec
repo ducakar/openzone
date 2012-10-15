@@ -127,9 +127,8 @@ cd build
 
 make install DESTDIR="$RPM_BUILD_ROOT"
 
-sed -i 's|^libdir=.*|libdir='%{_libdir}'|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*.pc
-
 if [[ %{_libdir} != /usr/lib ]]; then
+  sed -i 's|^libdir=.*|libdir='%{_libdir}'|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*.pc
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
 

@@ -1,0 +1,34 @@
+diff -Naur libvorbis-1.3.3/config.sub libvorbis-1.3.3-nacl/config.sub
+--- libvorbis-1.3.3/config.sub	2006-08-10 17:17:12.000000000 +0200
++++ libvorbis-1.3.3-nacl/config.sub	2012-10-14 15:36:09.150078136 +0200
+@@ -426,6 +426,10 @@
+ 		basic_machine=m68k-unknown
+ 		os=-sysv4
+ 		;;
++	android)
++		basic_machine=i686-pc
++		os=-android
++		;;
+ 	apollo68)
+ 		basic_machine=m68k-apollo
+ 		os=-sysv
+@@ -714,6 +718,10 @@
+ 		basic_machine=i370-ibm
+ 		os=-mvs
+ 		;;
++	nacl)
++		basic_machine=i686-pc
++		os=-nacl
++		;;
+ 	ncr3000)
+ 		basic_machine=i486-ncr
+ 		os=-sysv4
+@@ -1214,7 +1222,7 @@
+ 	      | -os2* | -vos* | -palmos* | -uclinux* | -nucleus* \
+ 	      | -morphos* | -superux* | -rtmk* | -rtmk-nova* | -windiss* \
+ 	      | -powermax* | -dnix* | -nx6 | -nx7 | -sei* | -dragonfly* \
+-	      | -skyos* | -haiku* | -rdos* | -toppers*)
++	      | -skyos* | -haiku* | -rdos* | -toppers* | -nacl* | -android*)
+ 	# Remember, each alternative MUST END IN *, to match a version number.
+ 		;;
+ 	-qnx*)

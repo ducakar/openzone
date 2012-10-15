@@ -1,0 +1,1591 @@
+diff -Naur SDL-1.2.15/build-scripts/config.sub SDL-1.2.15-nacl/build-scripts/config.sub
+--- SDL-1.2.15/build-scripts/config.sub	2012-01-19 07:30:05.000000000 +0100
++++ SDL-1.2.15-nacl/build-scripts/config.sub	2012-10-14 18:13:58.911967099 +0200
+@@ -237,6 +237,14 @@
+ 		basic_machine=m68k-atari
+ 		os=-mint
+ 		;;
++	nacl64*)
++	  basic_machine=x86_64-pc
++	  os=-nacl
++	  ;;
++	nacl*)
++	  basic_machine=i686-pc
++	  os=-nacl
++	  ;;
+ esac
+ 
+ # Decode aliases for certain CPU-COMPANY combinations.
+@@ -1309,6 +1317,9 @@
+ 			;;
+ 		esac
+ 		;;
++	-nacl*)
++		os=-nacl
++		;;
+ 	-nto-qnx*)
+ 		;;
+ 	-nto*)
+diff -Naur SDL-1.2.15/configure.in SDL-1.2.15-nacl/configure.in
+--- SDL-1.2.15/configure.in	2012-01-19 07:30:05.000000000 +0100
++++ SDL-1.2.15-nacl/configure.in	2012-10-14 18:01:39.613301157 +0200
+@@ -910,6 +910,26 @@
+     fi
+ }
+ 
++dnl Check for Native Client stuff
++CheckNativeClient()
++{
++    AC_ARG_ENABLE(naclvideo,
++AC_HELP_STRING([--enable-naclvideo], [enable the nacl video driver [[default=yes]]]),
++                  , enable_naclvideo=yes)
++    if test x$enable_video = xyes -a x$enable_naclvideo = xyes; then
++        AC_DEFINE(SDL_VIDEO_DRIVER_NACL)
++        SOURCES="$SOURCES $srcdir/src/video/nacl/*.cc"
++    fi
++
++    AC_ARG_ENABLE(naclaudio,
++AC_HELP_STRING([--enable-naclaudio], [enable the nacl audio driver [[default=yes]]]),
++                  , enable_naclaudio=yes)
++    if test x$enable_audio = xyes -a x$enable_naclaudio = xyes; then
++        AC_DEFINE(SDL_AUDIO_DRIVER_NACL)
++        SOURCES="$SOURCES $srcdir/src/audio/nacl/*.cc"
++    fi
++}
++
+ 
+ dnl Do the iPod thing
+ CheckIPod()
+@@ -2325,6 +2345,20 @@
+             have_timers=yes
+         fi
+         ;;
++    *-nacl)
++        ARCH=nacl
++	CheckNativeClient
++        CheckDummyAudio
++        CheckDummyVideo
++        CheckInputEvents
++        # Set up files for the timer library
++        if test x$enable_timers = xyes; then
++            AC_DEFINE(SDL_TIMER_UNIX)
++            SOURCES="$SOURCES $srcdir/src/timer/unix/*.c"
++            have_timers=yes
++        fi
++        CheckPTHREAD
++        ;;
+     *-*-linux*|*-*-uclinux*|*-*-gnu*|*-*-k*bsd*-gnu|*-*-bsdi*|*-*-freebsd*|*-*-dragonfly*|*-*-netbsd*|*-*-openbsd*|*-*-sysv5*|*-*-solaris*|*-*-hpux*|*-*-irix*|*-*-aix*|*-*-osf*)
+         case "$host" in
+             *-*-linux*)         ARCH=linux ;;
+diff -Naur SDL-1.2.15/include/SDL_config.h.in SDL-1.2.15-nacl/include/SDL_config.h.in
+--- SDL-1.2.15/include/SDL_config.h.in	2012-01-19 07:30:05.000000000 +0100
++++ SDL-1.2.15-nacl/include/SDL_config.h.in	2012-10-14 18:01:39.613301157 +0200
+@@ -176,6 +176,7 @@
+ #undef SDL_AUDIO_DRIVER_ESD_DYNAMIC
+ #undef SDL_AUDIO_DRIVER_MINT
+ #undef SDL_AUDIO_DRIVER_MMEAUDIO
++#undef SDL_AUDIO_DRIVER_NACL
+ #undef SDL_AUDIO_DRIVER_NAS
+ #undef SDL_AUDIO_DRIVER_NAS_DYNAMIC
+ #undef SDL_AUDIO_DRIVER_OSS
+@@ -267,6 +268,7 @@
+ #undef SDL_VIDEO_DRIVER_GEM
+ #undef SDL_VIDEO_DRIVER_GGI
+ #undef SDL_VIDEO_DRIVER_IPOD
++#undef SDL_VIDEO_DRIVER_NACL
+ #undef SDL_VIDEO_DRIVER_NANOX
+ #undef SDL_VIDEO_DRIVER_OS2FS
+ #undef SDL_VIDEO_DRIVER_PHOTON
+diff -Naur SDL-1.2.15/include/SDL_nacl.h SDL-1.2.15-nacl/include/SDL_nacl.h
+--- SDL-1.2.15/include/SDL_nacl.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/include/SDL_nacl.h	2012-10-14 18:01:39.616634470 +0200
+@@ -0,0 +1,24 @@
++#ifndef _SDL_nacl_h
++#define _SDL_nacl_h
++
++#include "begin_code.h"
++#include <ppapi/cpp/input_event.h>
++
++/* Set up for C function definitions, even when using C++ */
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include <ppapi/c/ppp_instance.h>
++void SDL_NACL_SetInstance(PP_Instance instance, int width, int height);
++void SDL_NACL_PushEvent(const pp::InputEvent& ppevent);
++void SDL_NACL_SetHasFocus(bool has_focus);
++void SDL_NACL_SetPageVisible(bool is_visible);
++
++/* Ends C function definitions when using C++ */
++#ifdef __cplusplus
++}
++#endif
++#include "close_code.h"
++
++#endif /* _SDL_nacl_h */
+diff -Naur SDL-1.2.15/include/SDL_platform.h SDL-1.2.15-nacl/include/SDL_platform.h
+--- SDL-1.2.15/include/SDL_platform.h	2012-01-19 07:30:05.000000000 +0100
++++ SDL-1.2.15-nacl/include/SDL_platform.h	2012-10-14 18:01:39.616634470 +0200
+@@ -63,10 +63,14 @@
+ #undef __IRIX__
+ #define __IRIX__	1
+ #endif
+-#if defined(linux) || defined(__linux) || defined(__linux__)
++#if defined(linux) || defined(__linux) || defined(__linux__) && !defined(__native_client__)
+ #undef __LINUX__
+ #define __LINUX__	1
+ #endif
++#if defined(__native_client__)
++#undef __NACL__
++#define __NACL__ 1
++#endif
+ #if defined(__APPLE__)
+ #undef __MACOSX__
+ #define __MACOSX__	1
+diff -Naur SDL-1.2.15/include/SDL_stdinc.h SDL-1.2.15-nacl/include/SDL_stdinc.h
+--- SDL-1.2.15/include/SDL_stdinc.h	2012-01-19 07:30:05.000000000 +0100
++++ SDL-1.2.15-nacl/include/SDL_stdinc.h	2012-10-14 19:14:06.552589476 +0200
+@@ -103,9 +103,9 @@
+ typedef uint32_t	Uint32;
+ 
+ #ifdef SDL_HAS_64BIT_TYPE
+-typedef int64_t		Sint64;
++typedef long long		Sint64;
+ #ifndef SYMBIAN32_GCCE
+-typedef uint64_t	Uint64;
++typedef unsigned long long	Uint64;
+ #endif
+ #else
+ /* This is really just a hack to prevent the compiler from complaining */
+diff -Naur SDL-1.2.15/Makefile.in SDL-1.2.15-nacl/Makefile.in
+--- SDL-1.2.15/Makefile.in	2012-01-19 07:30:05.000000000 +0100
++++ SDL-1.2.15-nacl/Makefile.in	2012-10-14 18:01:39.616634470 +0200
+@@ -43,7 +43,7 @@
+ 
+ DIST = acinclude autogen.sh Borland.html Borland.zip BUGS build-scripts configure configure.in COPYING CREDITS CWprojects.sea.bin docs docs.html include INSTALL Makefile.dc Makefile.minimal Makefile.in MPWmake.sea.bin README* sdl-config.in sdl.m4 sdl.pc.in SDL.qpg.in SDL.spec SDL.spec.in src test TODO VisualCE VisualC.html VisualC Watcom-OS2.zip Watcom-Win32.zip symbian.zip WhatsNew Xcode
+ 
+-HDRS = SDL.h SDL_active.h SDL_audio.h SDL_byteorder.h SDL_cdrom.h SDL_cpuinfo.h SDL_endian.h SDL_error.h SDL_events.h SDL_getenv.h SDL_joystick.h SDL_keyboard.h SDL_keysym.h SDL_loadso.h SDL_main.h SDL_mouse.h SDL_mutex.h SDL_name.h SDL_opengl.h SDL_platform.h SDL_quit.h SDL_rwops.h SDL_stdinc.h SDL_syswm.h SDL_thread.h SDL_timer.h SDL_types.h SDL_version.h SDL_video.h begin_code.h close_code.h
++HDRS = SDL.h SDL_active.h SDL_audio.h SDL_byteorder.h SDL_cdrom.h SDL_cpuinfo.h SDL_endian.h SDL_error.h SDL_events.h SDL_getenv.h SDL_joystick.h SDL_keyboard.h SDL_keysym.h SDL_loadso.h SDL_main.h SDL_mouse.h SDL_mutex.h SDL_name.h SDL_nacl.h SDL_opengl.h SDL_platform.h SDL_quit.h SDL_rwops.h SDL_stdinc.h SDL_syswm.h SDL_thread.h SDL_timer.h SDL_types.h SDL_version.h SDL_video.h begin_code.h close_code.h
+ 
+ LT_AGE      = @LT_AGE@
+ LT_CURRENT  = @LT_CURRENT@
+diff -Naur SDL-1.2.15/src/audio/nacl/SDL_naclaudio.cc SDL-1.2.15-nacl/src/audio/nacl/SDL_naclaudio.cc
+--- SDL-1.2.15/src/audio/nacl/SDL_naclaudio.cc	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/audio/nacl/SDL_naclaudio.cc	2012-10-14 18:01:39.616634470 +0200
+@@ -0,0 +1,137 @@
++
++#include "SDL_config.h"
++#include "SDL_naclaudio.h"
++
++#include <assert.h>
++#include <ppapi/cpp/instance.h>
++
++extern pp::Instance* gNaclPPInstance;
++
++extern "C" {
++
++#include "SDL_rwops.h"
++#include "SDL_timer.h"
++#include "SDL_audio.h"
++#include "SDL_mutex.h"
++#include "../SDL_audiomem.h"
++#include "../SDL_audio_c.h"
++#include "../SDL_audiodev_c.h"
++
++  /* The tag name used by NACL audio */
++#define NACLAUD_DRIVER_NAME         "nacl"
++
++const uint32_t kSampleFrameCount = 4096u;
++
++/* Audio driver functions */
++static int NACLAUD_OpenAudio(_THIS, SDL_AudioSpec *spec);
++static void NACLAUD_CloseAudio(_THIS);
++
++static void AudioCallback(void* samples, uint32_t buffer_size, void* data);
++
++
++/* Audio driver bootstrap functions */
++static int NACLAUD_Available(void) {
++  return gNaclPPInstance != 0;
++}
++
++static void NACLAUD_DeleteDevice(SDL_AudioDevice *device) {
++  // We should stop playback here, but it can only be done on the main thread :(
++}
++
++static SDL_AudioDevice *NACLAUD_CreateDevice(int devindex) {
++  SDL_AudioDevice *_this;
++
++  /* Initialize all variables that we clean on shutdown */
++  _this = (SDL_AudioDevice *)SDL_malloc(sizeof(SDL_AudioDevice));
++  if ( _this ) {
++    SDL_memset(_this, 0, (sizeof *_this));
++    _this->hidden = (struct SDL_PrivateAudioData *)
++        SDL_malloc((sizeof *_this->hidden));
++  }
++  if ( (_this == NULL) || (_this->hidden == NULL) ) {
++    SDL_OutOfMemory();
++    if ( _this ) {
++      SDL_free(_this);
++    }
++    return(0);
++  }
++  SDL_memset(_this->hidden, 0, (sizeof *_this->hidden));
++
++  _this->hidden->mutex = SDL_CreateMutex();
++
++  _this->hidden->opened = false;
++
++  // TODO: Move audio device creation to NACLAUD_OpenAudio.
++  _this->hidden->sample_frame_count =
++      pp::AudioConfig::RecommendSampleFrameCount(
++#ifndef PPB_AUDIO_CONFIG_INTERFACE_1_0
++          gNaclPPInstance,
++#endif
++          PP_AUDIOSAMPLERATE_44100,
++          kSampleFrameCount);
++  _this->hidden->audio = pp::Audio(
++      gNaclPPInstance,
++      pp::AudioConfig(gNaclPPInstance,
++          PP_AUDIOSAMPLERATE_44100,
++          _this->hidden->sample_frame_count),
++      AudioCallback, _this);
++
++  // Start audio playback while we are still on the main thread.
++  _this->hidden->audio.StartPlayback();
++
++  /* Set the function pointers */
++  _this->OpenAudio = NACLAUD_OpenAudio;
++  _this->CloseAudio = NACLAUD_CloseAudio;
++
++  _this->free = NACLAUD_DeleteDevice;
++
++  return _this;
++}
++
++AudioBootStrap NACLAUD_bootstrap = {
++  NACLAUD_DRIVER_NAME, "SDL nacl audio driver",
++  NACLAUD_Available, NACLAUD_CreateDevice
++};
++
++
++static void NACLAUD_CloseAudio(_THIS) {
++  SDL_LockMutex(_this->hidden->mutex);
++  _this->hidden->opened = 0;
++  SDL_UnlockMutex(_this->hidden->mutex);
++}
++
++
++static void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
++  SDL_AudioDevice* _this = reinterpret_cast<SDL_AudioDevice*>(data);
++
++  SDL_LockMutex(_this->hidden->mutex);
++  if (_this->hidden->opened) {
++    SDL_memset(samples, _this->spec.silence, buffer_size);
++    SDL_LockMutex(_this->mixer_lock);
++    (*_this->spec.callback)(_this->spec.userdata,
++        (Uint8*)samples, buffer_size);
++    SDL_UnlockMutex(_this->mixer_lock);
++  } else {
++    SDL_memset(samples, 0, buffer_size);
++  }
++  SDL_UnlockMutex(_this->hidden->mutex);
++
++  return;
++}
++
++
++static int NACLAUD_OpenAudio(_THIS, SDL_AudioSpec *spec) {
++  // We don't care what the user wants.
++  spec->freq = 44100;
++  spec->format = AUDIO_S16LSB;
++  spec->channels = 2;
++  spec->samples = _this->hidden->sample_frame_count;
++
++  SDL_LockMutex(_this->hidden->mutex);
++  _this->hidden->opened = 1;
++  SDL_UnlockMutex(_this->hidden->mutex);
++
++  // Do not create an audio thread.
++  return 1;
++}
++} // extern "C"
+diff -Naur SDL-1.2.15/src/audio/nacl/SDL_naclaudio.h SDL-1.2.15-nacl/src/audio/nacl/SDL_naclaudio.h
+--- SDL-1.2.15/src/audio/nacl/SDL_naclaudio.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/audio/nacl/SDL_naclaudio.h	2012-10-14 18:01:39.616634470 +0200
+@@ -0,0 +1,30 @@
++#include "SDL_config.h"
++
++#ifndef _SDL_naclaudio_h
++#define _SDL_naclaudio_h
++
++extern "C" {
++#include "SDL_audio.h"
++#include "../SDL_sysaudio.h"
++#include "SDL_mutex.h"
++}
++
++#include <ppapi/cpp/audio.h>
++
++/* Hidden "this" pointer for the video functions */
++#define _THIS	SDL_AudioDevice *_this
++
++struct SDL_PrivateAudioData {
++
++  SDL_mutex* mutex;
++  // This flag is use to determine when the audio is opened and we can start
++  // serving audio data instead of silence. This is needed because current
++  // Pepper2 can only be used from the main thread; Therefore, we start the
++  // audio thread very early.
++  bool opened;
++
++  int sample_frame_count;
++  pp::Audio audio;
++};
++
++#endif /* _SDL_naclaudio_h */
+diff -Naur SDL-1.2.15/src/audio/SDL_audio.c SDL-1.2.15-nacl/src/audio/SDL_audio.c
+--- SDL-1.2.15/src/audio/SDL_audio.c	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/audio/SDL_audio.c	2012-10-14 18:03:50.932478620 +0200
+@@ -36,6 +36,9 @@
+ 
+ /* Available audio drivers */
+ static AudioBootStrap *bootstrap[] = {
++#if SDL_AUDIO_DRIVER_NACL
++	&NACLAUD_bootstrap,
++#endif
+ #if SDL_AUDIO_DRIVER_PULSE
+ 	&PULSE_bootstrap,
+ #endif
+diff -Naur SDL-1.2.15/src/audio/SDL_sysaudio.h SDL-1.2.15-nacl/src/audio/SDL_sysaudio.h
+--- SDL-1.2.15/src/audio/SDL_sysaudio.h	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/audio/SDL_sysaudio.h	2012-10-14 18:01:39.616634470 +0200
+@@ -158,6 +158,9 @@
+ extern AudioBootStrap MINTAUDIO_XBIOS_bootstrap;
+ extern AudioBootStrap MINTAUDIO_DMA8_bootstrap;
+ #endif
++#if SDL_AUDIO_DRIVER_NACL
++extern AudioBootStrap NACLAUD_bootstrap;
++#endif
+ #if SDL_AUDIO_DRIVER_DISK
+ extern AudioBootStrap DISKAUD_bootstrap;
+ #endif
+diff -Naur SDL-1.2.15/src/cpuinfo/SDL_cpuinfo.c SDL-1.2.15-nacl/src/cpuinfo/SDL_cpuinfo.c
+--- SDL-1.2.15/src/cpuinfo/SDL_cpuinfo.c	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/cpuinfo/SDL_cpuinfo.c	2012-10-14 18:01:39.616634470 +0200
+@@ -53,6 +53,8 @@
+ }
+ #endif /* HAVE_SETJMP */
+ 
++
++#if SDL_ASSEMBLY_ROUTINES
+ static __inline__ int CPU_haveCPUID(void)
+ {
+ 	int has_CPUID = 0;
+@@ -300,6 +302,15 @@
+ 	return features;
+ }
+ 
++#else // SDL_ASSEMBLY_ROUTINES
++
++static __inline__ int CPU_haveCPUID(void) { return 0; }
++static __inline__ int CPU_getCPUIDFeaturesExt(void) { return 0; }
++static __inline__ int CPU_getCPUIDFeatures(void) { return 0; }
++
++#endif // SDL_ASSEMBLY_ROUTINES
++
++
+ static __inline__ int CPU_haveRDTSC(void)
+ {
+ 	if ( CPU_haveCPUID() ) {
+diff -Naur SDL-1.2.15/src/SDL_fatal.c SDL-1.2.15-nacl/src/SDL_fatal.c
+--- SDL-1.2.15/src/SDL_fatal.c	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/SDL_fatal.c	2012-10-14 18:01:39.616634470 +0200
+@@ -39,7 +39,11 @@
+ {
+ 	signal(sig, SIG_DFL);
+ 	SDL_Quit();
++#ifdef __native_client__
++	exit(sig);
++#else
+ 	raise(sig);
++#endif
+ }
+ 
+ static int SDL_fatal_signals[] = {
+diff -Naur SDL-1.2.15/src/thread/pthread/SDL_systhread.c SDL-1.2.15-nacl/src/thread/pthread/SDL_systhread.c
+--- SDL-1.2.15/src/thread/pthread/SDL_systhread.c	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/thread/pthread/SDL_systhread.c	2012-10-14 18:01:39.616634470 +0200
+@@ -81,12 +81,15 @@
+ 	int i;
+ 	sigset_t mask;
+ 
++	// NativeClient does not yet support signals.
++#ifndef __NACL__
+ 	/* Mask asynchronous signals for this thread */
+ 	sigemptyset(&mask);
+ 	for ( i=0; sig_list[i]; ++i ) {
+ 		sigaddset(&mask, sig_list[i]);
+ 	}
+ 	pthread_sigmask(SIG_BLOCK, &mask, 0);
++#endif
+ 
+ #ifdef PTHREAD_CANCEL_ASYNCHRONOUS
+ 	/* Allow ourselves to be asynchronously cancelled */
+diff -Naur SDL-1.2.15/src/video/nacl/eventqueue.h SDL-1.2.15-nacl/src/video/nacl/eventqueue.h
+--- SDL-1.2.15/src/video/nacl/eventqueue.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/eventqueue.h	2012-10-14 18:01:39.616634470 +0200
+@@ -0,0 +1,40 @@
++#ifndef _SDL_nacl_eventqueue_h
++#define _SDL_nacl_eventqueue_h
++
++#include "SDL_mutex.h"
++
++#include <queue>
++
++class EventQueue {
++public:
++  EventQueue() {
++    mu_ = SDL_CreateMutex();
++  }
++
++  ~EventQueue() {
++    SDL_DestroyMutex(mu_);
++  }
++
++  SDL_Event* PopEvent() {
++    SDL_LockMutex(mu_);
++    SDL_Event* event = NULL;
++    if (!queue_.empty()) {
++      event = queue_.front();
++      queue_.pop();
++    }
++    SDL_UnlockMutex(mu_);
++    return event;
++  }
++
++   void PushEvent(SDL_Event* event) {
++    SDL_LockMutex(mu_);
++    queue_.push(event);
++    SDL_UnlockMutex(mu_);
++   } 
++
++private:
++  std::queue<SDL_Event*> queue_;
++  SDL_mutex* mu_;
++};
++
++#endif // _SDL_nacl_eventqueue_h
+diff -Naur SDL-1.2.15/src/video/nacl/MainThreadRunner.cc SDL-1.2.15-nacl/src/video/nacl/MainThreadRunner.cc
+--- SDL-1.2.15/src/video/nacl/MainThreadRunner.cc	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/MainThreadRunner.cc	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,227 @@
++/*
++ * Copyright (c) 2012 The Native Client Authors. All rights reserved.
++ * Use of this source code is governed by a BSD-style license that can be
++ * found in the LICENSE file.
++ */
++#include "MainThreadRunner.h"
++#include <alloca.h>
++#include <assert.h>
++#include <errno.h>
++
++// Only use pepper in nacl to allow unit testing.
++#ifdef __native_client__
++#  include <ppapi/c/pp_errors.h>
++#  include <ppapi/cpp/completion_callback.h>
++#  include <ppapi/cpp/module.h>
++#  define USE_PEPPER
++#endif
++
++// Stack space to allocate by default to the event handler
++// thread in the presence of an ancillary 'pseudo-thread'.
++// 640K of stack should be enough for anyone.
++static const int kDefaultPseudoThreadHeadroom = 640 * 1024;
++
++// If we're not using pepper, track main thread's id so
++// we can do something sensible.
++#ifndef USE_PEPPER
++static pthread_t main_thread_id_;
++#endif
++
++struct MainThreadRunner::JobEntry {
++  pp::Instance* pepper_instance;
++  MainThreadRunner* runner;
++  MainThreadJob* job;
++  pthread_mutex_t done_mutex;
++  pthread_cond_t done_cond;
++  bool is_done;
++  int32_t result;
++  bool pseudo_thread_job;
++};
++
++
++MainThreadRunner::MainThreadRunner(pp::Instance *instance) {
++#ifndef USE_PEPPER
++  // Record main thread if not using pepper.
++  main_thread_id_ = pthread_self();
++#endif
++
++  pepper_instance_ = instance;
++  pthread_mutex_init(&lock_, NULL);
++}
++
++MainThreadRunner::~MainThreadRunner() {
++  pthread_mutex_destroy(&lock_);
++}
++
++int32_t MainThreadRunner::RunJob(MainThreadJob* job) {
++  JobEntry entry;
++
++  // initialize the entry
++  entry.runner = this;
++  entry.pepper_instance = pepper_instance_;
++  entry.job = job;
++
++  bool in_main_thread = IsMainThread();
++  // Must be off main thread, or on a pseudothread.
++  assert(!in_main_thread || in_pseudo_thread_);
++
++  // Thread type specific initialization.
++  if (in_main_thread) {
++    entry.pseudo_thread_job = true;
++  } else {
++    entry.pseudo_thread_job = false;
++    // Init condition variable.
++    entry.is_done = false;
++    int ret = pthread_mutex_init(&entry.done_mutex, NULL);
++    assert(!ret);
++    ret = pthread_cond_init(&entry.done_cond, NULL);
++    assert(!ret);
++  }
++
++  // put the job on the queue
++  pthread_mutex_lock(&lock_);
++  job_queue_.push_back(&entry);
++  pthread_mutex_unlock(&lock_);
++
++#ifdef USE_PEPPER
++  // Schedule the job.
++  pp::Module::Get()->core()->CallOnMainThread(0,
++      pp::CompletionCallback(&DoWorkShim, this), PP_OK);
++#endif
++
++  // Block differntly on the main thread.
++  if (entry.pseudo_thread_job) {
++    // block pseudothread until job is done
++    PseudoThreadBlock();
++  } else {
++    // wait on condition until the job is done
++    pthread_mutex_lock(&entry.done_mutex);
++    while (!entry.is_done) {
++      pthread_cond_wait(&entry.done_cond, &entry.done_mutex);
++    }
++    pthread_mutex_unlock(&entry.done_mutex);
++    pthread_mutex_destroy(&entry.done_mutex);
++    pthread_cond_destroy(&entry.done_cond);
++  }
++
++  // Cleanup.
++  delete job;
++  return entry.result;
++}
++
++void MainThreadRunner::ResultCompletion(void *arg, int32_t result) {
++  JobEntry* entry = reinterpret_cast<JobEntry*>(arg);
++  entry->result = result;
++  // Signal differently depending on if the pseudothread is involved.
++  if (entry->pseudo_thread_job) {
++    PseudoThreadResume();
++  } else {
++    pthread_mutex_lock(&entry->done_mutex);
++    entry->is_done = true;
++    pthread_cond_signal(&entry->done_cond);
++    pthread_mutex_unlock(&entry->done_mutex);
++  }
++}
++
++void MainThreadRunner::DoWorkShim(void *p, int32_t unused) {
++  MainThreadRunner* mtr = static_cast<MainThreadRunner *>(p);
++  mtr->DoWork();
++}
++
++void MainThreadRunner::DoWork(void) {
++  pthread_mutex_lock(&lock_);
++  if (!job_queue_.empty()) {
++    JobEntry* entry = job_queue_.front();
++    job_queue_.pop_front();
++    // Release lock before doing work.
++    pthread_mutex_unlock(&lock_);
++    entry->job->Run(entry);
++    return;
++  }
++  pthread_mutex_unlock(&lock_);
++}
++
++pp::Instance *MainThreadRunner::ExtractPepperInstance(
++    MainThreadRunner::JobEntry *e) {
++  return e->pepper_instance;
++}
++
++void MainThreadRunner::PseudoThreadFork(void *(*func)(void *arg), void *arg) {
++  PseudoThreadHeadroomFork(kDefaultPseudoThreadHeadroom, func, arg);
++}
++
++void MainThreadRunner::PseudoThreadHeadroomFork(
++    int bytes_headroom, void *(*func)(void *arg), void *arg) {
++  // Must be run from the main thread.
++  assert(IsMainThread());
++  // Only one pseudothread can be forked.
++  assert(!forked_pseudo_thread_);
++  // Leave a gap of bytes_headroom on the stack between
++  alloca(bytes_headroom);
++  // Goto pseudothread, but remeber how to come back here.
++  if (!setjmp(main_thread_state_)) {
++    InnerPseudoThreadFork(func, arg);
++  }
++  in_pseudo_thread_ = false;
++}
++
++// Put things in another scope to keep above headroom,
++// even after thread ends.
++void MainThreadRunner::InnerPseudoThreadFork(
++    void *(func)(void *arg), void *arg) {
++  forked_pseudo_thread_ = true;
++  in_pseudo_thread_ = true;
++  func(arg);
++  forked_pseudo_thread_ = false;
++  in_pseudo_thread_ = false;
++  // Dead, keep kicking back to the main thread.
++  for (;;) {
++    longjmp(main_thread_state_, 1);
++  }
++}
++
++void MainThreadRunner::PseudoThreadBlock(void) {
++  // Must be run from the main thread.
++  assert(IsMainThread());
++  // Pseudothread must have been forked.
++  assert(forked_pseudo_thread_);
++  // Must be run only from the pseudothread.
++  assert(in_pseudo_thread_);
++  if (!setjmp(pseudo_thread_state_)) {
++    // Go back to the main thread after saving state.
++    longjmp(main_thread_state_, 1);
++  }
++  in_pseudo_thread_ = true;
++}
++
++void MainThreadRunner::PseudoThreadResume(void) {
++  // Must be run from the main thread.
++  assert(IsMainThread());
++  // Pseudothread must have been forked.
++  assert(forked_pseudo_thread_);
++  // Can only be run from the main thread.
++  assert(!in_pseudo_thread_);
++  if (!setjmp(main_thread_state_)) {
++    // Go back to the pseudo thread after saving state.
++    longjmp(pseudo_thread_state_, 1);
++  }
++  in_pseudo_thread_ = false;
++}
++
++bool MainThreadRunner::IsMainThread(void) {
++#ifdef USE_PEPPER
++  return pp::Module::Get()->core()->IsMainThread();
++#else
++  return pthread_equal(pthread_self(), main_thread_id_);
++#endif
++}
++
++bool MainThreadRunner::IsPseudoThread(void) {
++  return IsMainThread() && in_pseudo_thread_;
++}
++
++// Static variables in MainThreaadRunner.
++jmp_buf MainThreadRunner::main_thread_state_;
++jmp_buf MainThreadRunner::pseudo_thread_state_;
++bool MainThreadRunner::in_pseudo_thread_ = false;
++bool MainThreadRunner::forked_pseudo_thread_ = false;
+diff -Naur SDL-1.2.15/src/video/nacl/MainThreadRunner.h SDL-1.2.15-nacl/src/video/nacl/MainThreadRunner.h
+--- SDL-1.2.15/src/video/nacl/MainThreadRunner.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/MainThreadRunner.h	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,102 @@
++/*
++ * Copyright (c) 2012 The Native Client Authors. All rights reserved.
++ * Use of this source code is governed by a BSD-style license that can be
++ * found in the LICENSE file.
++ */
++#ifndef LIBRARIES_NACL_MOUNTS_BASE_MAINTHREADRUNNER_H_
++#define LIBRARIES_NACL_MOUNTS_BASE_MAINTHREADRUNNER_H_
++
++#include <pthread.h>
++#include <semaphore.h>
++#include <setjmp.h>
++#include <list>
++
++// Keep pepper specifics out so we can unit test.
++namespace pp {
++  class Instance;
++};
++
++// MainThreadJob is a class that provides a method for running
++// a MainThreadRunner::JobEntry.
++class MainThreadJob;
++
++// MainThreadRunner executes MainThreadJobs asynchronously
++// on the main thread.
++class MainThreadRunner {
++ public:
++  explicit MainThreadRunner(pp::Instance *instance);
++  ~MainThreadRunner();
++
++  // RunJob() creates an entry for the job and submits
++  // that job for execution.
++  int32_t RunJob(MainThreadJob *job);
++
++  // ResultCompletion() is a function for putting result into arg, which
++  // is reinterpreted as a JobEntry pointer.  ResultCompletion()
++  // is intended to be used with pp::CompletionCallback()
++  static void ResultCompletion(void *arg, int32_t result);
++
++  // The JobEntry struct provides all of the information for
++  // a particular job.  It acts as an opaque handle to the job to and
++  // is used by ResultCompletion().
++  struct JobEntry;
++
++  static pp::Instance *ExtractPepperInstance(MainThreadRunner::JobEntry *e);
++
++  // You can have one 'pseudothread' on top of the main thread.
++  // This coroutine (setjmp) based thread can block on Run.
++  // You will have to take some amount of re-entrancy into account.
++  // Assumes 640K of stack is enough for anyone for event handling in the
++  // main thread.
++  static void PseudoThreadFork(void *(*func)(void *arg), void *arg);
++  // Same as above with selectable bytes of headroom.
++  static void PseudoThreadHeadroomFork(
++      int bytes_headroom, void *(*func)(void *arg), void *arg);
++
++  // Returns:
++  //   true - main thread or pseudothread.
++  //   false - other pthreads.
++  static bool IsMainThread(void);
++
++  // Returns true if on the psuedothread.
++  static bool IsPseudoThread(void);
++
++  // Use these directly only if you are interacting with PPAPI
++  // such that you can guarantee you'll resume because of an
++  // asynchronous event you issued.
++  // Block pseudothread until main thread yields.
++  static void PseudoThreadBlock(void);
++  // Yield main thread to pseudothread.
++  static void PseudoThreadResume(void);
++
++  // Do at least one main thread job.
++  // DO NOT use this with pepper (which sets up an event
++  // cycle to call this automatically).
++  // Use directly only for testing.
++  void DoWork(void);
++
++ private:
++  static void DoWorkShim(void *p, int32_t unused);
++
++  // Used to keep things above the headroom.
++  static void InnerPseudoThreadFork(void *(func)(void *arg), void *arg);
++
++  pthread_mutex_t lock_;
++  std::list<JobEntry*> job_queue_;
++  pp::Instance *pepper_instance_;
++
++  static jmp_buf pseudo_thread_state_;
++  static jmp_buf main_thread_state_;
++  static bool in_pseudo_thread_;
++  static bool forked_pseudo_thread_;
++};
++
++class MainThreadJob {
++ public:
++  virtual ~MainThreadJob() {}
++  virtual void Run(MainThreadRunner::JobEntry *entry) = 0;
++};
++
++// MainThreadRunner executes MainThreadJobs asynchronously
++
++#endif  // LIBRARIES_NACL_MOUNTS_BASE_MAINTHREADRUNNER_H_
+diff -Naur SDL-1.2.15/src/video/nacl/SDL_naclevents.cc SDL-1.2.15-nacl/src/video/nacl/SDL_naclevents.cc
+--- SDL-1.2.15/src/video/nacl/SDL_naclevents.cc	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/SDL_naclevents.cc	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,307 @@
++#include "SDL_config.h"
++
++#include "SDL_nacl.h"
++
++extern "C" {
++#include "SDL.h"
++#include "../../events/SDL_sysevents.h"
++#include "../../events/SDL_events_c.h"
++}
++
++#include "SDL_naclevents_c.h"
++#include "eventqueue.h"
++#include <ppapi/cpp/input_event.h>
++#include <ppapi/cpp/point.h>
++#include <ppapi/cpp/var.h>
++
++#include <math.h>
++
++static EventQueue event_queue;
++
++static Uint8 translateButton(int32_t button) {
++  switch (button) {
++    case PP_INPUTEVENT_MOUSEBUTTON_LEFT:
++      return SDL_BUTTON_LEFT;
++    case PP_INPUTEVENT_MOUSEBUTTON_MIDDLE:
++      return SDL_BUTTON_MIDDLE;
++    case PP_INPUTEVENT_MOUSEBUTTON_RIGHT:
++      return SDL_BUTTON_RIGHT;
++    case PP_INPUTEVENT_MOUSEBUTTON_NONE:
++    default:
++      return 0;
++  }
++}
++
++// Translate ASCII code to browser keycode
++static uint8_t translateAscii(uint8_t ascii) {
++  if ('A' <= ascii && ascii <= 'Z') {
++    return ascii;
++  } else if ('a' <= ascii && ascii <= 'z') {
++    return toupper(ascii);
++  } else if ('0' <= ascii && ascii <= '9') {
++    return ascii;
++  } else if (' ' == ascii || '\r' == ascii || '\t' == ascii ||
++             '\x1b' == ascii || '\b' == ascii) {
++    return ascii;
++  } else {
++    switch (ascii) {
++      case '!': return '1';
++      case '@': return '2';
++      case '#': return '3';
++      case '$': return '4';
++      case '%': return '5';
++      case '^': return '6';
++      case '&': return '7';
++      case '*': return '8';
++      case '(': return '9';
++      case ')': return '0';
++      case ';': case ':': return 186;
++      case '=': case '+': return 187;
++      case ',': case '<': return 188;
++      case '-': case '_': return 189;
++      case '.': case '>': return 190;
++      case '/': case '?': return 191;
++      case '`': case '~': return 192;
++      case '[': case '{': return 219;
++      case '\\': case '|': return 220;
++      case ']': case '}': return 221;
++      case '\'': case '"': return 222;
++      default:
++        break;
++    }
++  }
++  return 0;
++}
++
++// Translate browser keycode to SDLKey
++static SDLKey translateKey(uint32_t code) {
++  if (code >= 'A' && code <= 'Z')
++    return (SDLKey)(code - 'A' + SDLK_a);
++  if (code >= SDLK_0 && code <= SDLK_9)
++    return (SDLKey)code;
++  const uint32_t f1_code = 112;
++  if (code >= f1_code && code < f1_code + 12)
++    return (SDLKey)(code - f1_code + SDLK_F1);
++  const uint32_t kp0_code = 96;
++  if (code >= kp0_code && code < kp0_code + 10)
++    return (SDLKey)(code - kp0_code + SDLK_KP0);
++  switch (code) {
++    case SDLK_BACKSPACE:
++      return SDLK_BACKSPACE;
++    case SDLK_TAB:
++      return SDLK_TAB;
++    case SDLK_RETURN:
++      return SDLK_RETURN;
++    case SDLK_PAUSE:
++      return SDLK_PAUSE;
++    case SDLK_ESCAPE:
++      return SDLK_ESCAPE;
++    case 16:
++      return SDLK_LSHIFT;
++    case 17:
++      return SDLK_LCTRL;
++    case 18:
++      return SDLK_LALT;
++    case 32:
++      return SDLK_SPACE;
++    case 37:
++      return SDLK_LEFT;
++    case 38:
++      return SDLK_UP;
++    case 39:
++      return SDLK_RIGHT;
++    case 40:
++      return SDLK_DOWN;
++    case 106:
++      return SDLK_KP_MULTIPLY;
++    case 107:
++      return SDLK_KP_PLUS;
++    case 109:
++      return SDLK_KP_MINUS;
++    case 110:
++      return SDLK_KP_PERIOD;
++    case 111:
++      return SDLK_KP_DIVIDE;
++    case 45:
++      return SDLK_INSERT;
++    case 46:
++      return SDLK_DELETE;
++    case 36:
++      return SDLK_HOME;
++    case 35:
++      return SDLK_END;
++    case 33:
++      return SDLK_PAGEUP;
++    case 34:
++      return SDLK_PAGEDOWN;
++    case 189:
++      return SDLK_MINUS;
++    case 187:
++      return SDLK_EQUALS;
++    case 219:
++      return SDLK_LEFTBRACKET;
++    case 221:
++      return SDLK_RIGHTBRACKET;
++    case 186:
++      return SDLK_SEMICOLON;
++    case 222:
++      return SDLK_QUOTE;
++    case 220:
++      return SDLK_BACKSLASH;
++    case 188:
++      return SDLK_COMMA;
++    case 190:
++      return SDLK_PERIOD;
++    case 191:
++      return SDLK_SLASH;
++    case 192:
++      return SDLK_BACKQUOTE;
++    default:
++      return SDLK_UNKNOWN;
++  }
++}
++
++static SDL_Event *copyEvent(SDL_Event *event) {
++  SDL_Event *event_copy = (SDL_Event*)malloc(sizeof(SDL_Event));
++  *event_copy = *event;
++  return event_copy;
++}
++
++void SDL_NACL_PushEvent(const pp::InputEvent& ppevent) {
++  static Uint8 last_scancode = 0;
++  SDL_keysym keysym;
++  static double wheel_clicks_x;
++  static double wheel_clicks_y;
++  SDL_Event event;
++  PP_InputEvent_Type type = ppevent.GetType();
++
++  pp::InputEvent *input_event = const_cast<pp::InputEvent*>(&ppevent);
++
++  if (type == PP_INPUTEVENT_TYPE_MOUSEDOWN ||
++      type == PP_INPUTEVENT_TYPE_MOUSEUP) {
++    pp::MouseInputEvent *mouse_event =
++      reinterpret_cast<pp::MouseInputEvent*>(input_event);
++    event.type = (type == PP_INPUTEVENT_TYPE_MOUSEUP) ? SDL_MOUSEBUTTONUP : SDL_MOUSEBUTTONDOWN;
++    event.button.button = translateButton(mouse_event->GetButton());
++    event.button.x = mouse_event->GetPosition().x();
++    event.button.y = mouse_event->GetPosition().y();
++    event_queue.PushEvent(copyEvent(&event));
++  } else if (type == PP_INPUTEVENT_TYPE_WHEEL) {
++    pp::WheelInputEvent *wheel_event =
++      reinterpret_cast<pp::WheelInputEvent*>(input_event);
++    wheel_clicks_x += wheel_event->GetTicks().x();
++    wheel_clicks_y += wheel_event->GetTicks().y();
++    int sdl_wheel_clicks_x = trunc(wheel_clicks_x);
++    int sdl_wheel_clicks_y = trunc(wheel_clicks_y);
++    event.button.x = event.button.y = 0;
++    event.button.button = (sdl_wheel_clicks_x > 0) ? SDL_BUTTON_X1 : SDL_BUTTON_X2;
++    for (int i = 0; i < abs(sdl_wheel_clicks_x); i++) {
++      event.type = SDL_MOUSEBUTTONDOWN;
++      event_queue.PushEvent(copyEvent(&event));
++      event.type = SDL_MOUSEBUTTONUP;
++      event_queue.PushEvent(copyEvent(&event));
++    }
++    event.button.button = (sdl_wheel_clicks_y > 0) ? SDL_BUTTON_WHEELUP : SDL_BUTTON_WHEELDOWN;
++    for (int i = 0; i < abs(sdl_wheel_clicks_y); i++) {
++      event.type = SDL_MOUSEBUTTONDOWN;
++      event_queue.PushEvent(copyEvent(&event));
++      event.type = SDL_MOUSEBUTTONUP;
++      event_queue.PushEvent(copyEvent(&event));
++    }
++    wheel_clicks_x -= sdl_wheel_clicks_x;
++    wheel_clicks_y -= sdl_wheel_clicks_y;
++  } else if (type == PP_INPUTEVENT_TYPE_MOUSEMOVE) {
++    pp::MouseInputEvent *mouse_event =
++      reinterpret_cast<pp::MouseInputEvent*>(input_event);
++    event.type = SDL_MOUSEMOTION;
++    event.motion.x = mouse_event->GetPosition().x();
++    event.motion.y = mouse_event->GetPosition().y();
++    event_queue.PushEvent(copyEvent(&event));
++  } else if (type == PP_INPUTEVENT_TYPE_KEYDOWN ||
++             type == PP_INPUTEVENT_TYPE_KEYUP ||
++             type == PP_INPUTEVENT_TYPE_CHAR) {
++    // PPAPI sends us separate events for KEYDOWN and CHAR; the first one
++    // contains only the keycode, the second one - only the unicode text.
++    // SDL wants both in SDL_PRESSED event :(
++    // For now, ignore the keydown event for printable ascii (32-126) as we
++    // know we'll get a char event and can set sym directly. For everything
++    // else, risk sending an extra SDL_PRESSED with unicode text and zero
++    // keycode for scancode / sym.
++    // It seems that SDL 1.3 is better in this regard.
++    pp::KeyboardInputEvent *keyboard_event =
++      reinterpret_cast<pp::KeyboardInputEvent*>(input_event);
++    keysym.scancode = keyboard_event->GetKeyCode();
++    keysym.unicode = keyboard_event->GetCharacterText().AsString()[0];
++    keysym.sym = translateKey(keysym.scancode);
++    if (type == PP_INPUTEVENT_TYPE_KEYDOWN) {
++      event.type = SDL_KEYDOWN;
++      last_scancode = keysym.scancode;
++      if (keysym.sym >= ' ' &&  keysym.sym <= 126) {
++        return;
++      }
++    } else if (type == PP_INPUTEVENT_TYPE_CHAR) {
++      event.type = SDL_KEYDOWN;
++      if (keysym.sym >= ' ' &&  keysym.sym <= 126) {
++        keysym.scancode = translateAscii(keysym.unicode);
++        keysym.sym = translateKey(keysym.scancode);
++      } else if (last_scancode) {
++        keysym.scancode = last_scancode;
++        keysym.sym = translateKey(keysym.scancode);
++      }
++    } else {  // event->type == PP_INPUTEVENT_TYPE_KEYUP
++      event.type = SDL_KEYUP;
++      last_scancode = 0;
++    }
++    keysym.mod = KMOD_NONE;
++    event.key.keysym = keysym;
++    event_queue.PushEvent(copyEvent(&event));
++  } else if (type == PP_INPUTEVENT_TYPE_MOUSEENTER ||
++             type == PP_INPUTEVENT_TYPE_MOUSELEAVE) {
++    event.type = SDL_ACTIVEEVENT;
++    event.active.gain = (type == PP_INPUTEVENT_TYPE_MOUSEENTER) ? 1 : 0;
++    event.active.state = SDL_APPMOUSEFOCUS;
++    event_queue.PushEvent(copyEvent(&event));
++  }
++}
++
++void SDL_NACL_SetHasFocus(bool has_focus) {
++  SDL_Event event;
++  event.type = SDL_ACTIVEEVENT;
++  event.active.gain = has_focus ? 1 : 0;
++  event.active.state = SDL_APPINPUTFOCUS;
++  event_queue.PushEvent(copyEvent(&event));
++}
++
++void SDL_NACL_SetPageVisible(bool is_visible) {
++  SDL_Event event;
++  event.type = SDL_ACTIVEEVENT;
++  event.active.gain = is_visible ? 1 : 0;
++  event.active.state = SDL_APPACTIVE;
++  event_queue.PushEvent(copyEvent(&event));
++}
++
++void NACL_PumpEvents(_THIS) {
++  SDL_Event* event;
++  while (event = event_queue.PopEvent()) {
++    if (event->type == SDL_MOUSEBUTTONDOWN) {
++      SDL_PrivateMouseButton(SDL_PRESSED, event->button.button,
++                             event->button.x, event->button.y);
++    } else if (event->type == SDL_MOUSEBUTTONUP) {
++      SDL_PrivateMouseButton(SDL_RELEASED, event->button.button,
++                             event->button.x, event->button.y);
++    } else if (event->type == SDL_MOUSEMOTION) {
++      SDL_PrivateMouseMotion(0, 0, event->motion.x, event->motion.y);
++    } else if (event->type == SDL_KEYDOWN) {
++      SDL_PrivateKeyboard(SDL_PRESSED, &event->key.keysym);
++    } else if (event->type == SDL_KEYUP) {
++      SDL_PrivateKeyboard(SDL_RELEASED, &event->key.keysym);
++    } else if (event->type == SDL_ACTIVEEVENT) {
++      SDL_PrivateAppActive(event->active.gain, event->active.state);
++    }
++    free(event);
++  }
++}
++
++void NACL_InitOSKeymap(_THIS) {
++  /* do nothing. */
++}
+diff -Naur SDL-1.2.15/src/video/nacl/SDL_naclevents_c.h SDL-1.2.15-nacl/src/video/nacl/SDL_naclevents_c.h
+--- SDL-1.2.15/src/video/nacl/SDL_naclevents_c.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/SDL_naclevents_c.h	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,7 @@
++#include "SDL_config.h"
++
++#include "SDL_naclvideo.h"
++#include "SDL_nacl.h"
++
++extern void NACL_InitOSKeymap(_THIS);
++extern void NACL_PumpEvents(_THIS);
+diff -Naur SDL-1.2.15/src/video/nacl/SDL_nacljob.cc SDL-1.2.15-nacl/src/video/nacl/SDL_nacljob.cc
+--- SDL-1.2.15/src/video/nacl/SDL_nacljob.cc	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/SDL_nacljob.cc	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,71 @@
++/*
++ * Copyright (c) 2011 The Native Client Authors. All rights reserved.
++ * Use of this source code is governed by a BSD-style license that can be
++ * found in the LICENSE file.
++ */
++#include <assert.h>
++#include <ppapi/cpp/instance.h>
++#include <ppapi/cpp/graphics_2d.h>
++#include <ppapi/cpp/completion_callback.h>
++#include <ppapi/cpp/image_data.h>
++#include <ppapi/cpp/rect.h>
++#include <ppapi/c/pp_errors.h>
++#include "SDL_nacljob.h"
++
++void SDLNaclJob::Run(MainThreadRunner::JobEntry *e) {
++  job_entry_ = e;
++  factory_ = new pp::CompletionCallbackFactory<SDLNaclJob>(this);
++  pp::CompletionCallback cc = factory_->NewCallback(&SDLNaclJob::Finish);
++  pp::Instance *instance = MainThreadRunner::ExtractPepperInstance(e);
++
++  int32_t rv;
++  switch (op_) {
++  case VIDEO_INIT:
++    cc.Run(PP_OK);
++    break;
++
++  case CREATE_GRAPHICS_CONTEXT:
++    if (device_->hidden->context2d)
++      delete device_->hidden->context2d;
++    device_->hidden->context2d =
++      new pp::Graphics2D(instance,
++			 pp::Size(device_->hidden->w, device_->hidden->h), false);
++    assert(device_->hidden->context2d != NULL);
++    
++    if (!instance->BindGraphics(*device_->hidden->context2d)) {
++      fprintf(stderr, "***** Couldn't bind the device context *****\n");
++    }
++    
++    if (device_->hidden->image_data)
++      delete device_->hidden->image_data;
++
++    device_->hidden->image_data =
++      new pp::ImageData(instance,
++			PP_IMAGEDATAFORMAT_BGRA_PREMUL,
++			device_->hidden->context2d->size(),
++			false);
++    assert(device_->hidden->image_data != NULL);
++    // TODO: report any errors
++    cc.Run(PP_OK);
++    break;
++
++  case VIDEO_FLUSH:
++    for (int i = 0; i < device_->hidden->numrects; ++i) {
++      SDL_Rect& r = device_->hidden->rects[i];
++      device_->hidden->context2d->PaintImageData(*device_->hidden->image_data, pp::Point(), pp::Rect(r.x, r.y, r.w, r.h));
++    }
++
++    device_->hidden->context2d->Flush(cc);
++    break;
++
++  case VIDEO_QUIT:
++    delete device_->hidden->context2d;
++    delete device_->hidden->image_data;
++    cc.Run(PP_OK);
++
++  }
++}
++
++void SDLNaclJob::Finish(int32_t result) {
++  MainThreadRunner::ResultCompletion(job_entry_, result);
++}
+diff -Naur SDL-1.2.15/src/video/nacl/SDL_nacljob.h SDL-1.2.15-nacl/src/video/nacl/SDL_nacljob.h
+--- SDL-1.2.15/src/video/nacl/SDL_nacljob.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/SDL_nacljob.h	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (c) 2011 The Native Client Authors. All rights reserved.
++ * Use of this source code is governed by a BSD-style license that can be
++ * found in the LICENSE file.
++ */
++#ifndef _SDL_nacljob_h
++#define _SDL_nacljob_h
++
++#include <ppapi/c/pp_errors.h>
++#include <ppapi/c/pp_file_info.h>
++#include <ppapi/cpp/completion_callback.h>
++#include <ppapi/cpp/file_io.h>
++#include <ppapi/cpp/file_ref.h>
++#include <ppapi/cpp/file_system.h>
++#include <ppapi/cpp/url_loader.h>
++#include <ppapi/cpp/url_request_info.h>
++#include <ppapi/cpp/url_response_info.h>
++/* TODO: include completion_callback_factory.h unconditionally one all sdk are updated */
++#include <ppapi/c/ppb_var.h>
++#ifdef PPB_VAR_INTERFACE_1_1 
++#include <ppapi/utility/completion_callback_factory.h>
++#endif
++#include <string>
++#include <vector>
++#include <set>
++#include "MainThreadRunner.h"
++
++#include "SDL_naclvideo.h"
++extern "C" {
++#include "../SDL_sysvideo.h"
++}
++
++typedef enum {
++  NO_OP = 0,
++  VIDEO_INIT,
++  CREATE_GRAPHICS_CONTEXT,
++  VIDEO_FLUSH,
++  VIDEO_QUIT
++} SDLNaclOperation;
++
++class SDLNaclJob : public MainThreadJob {
++ public:
++ SDLNaclJob(SDLNaclOperation op, SDL_VideoDevice* device) : op_(op), device_(device) {}
++  ~SDLNaclJob() {}
++
++  void Run(MainThreadRunner::JobEntry *e);
++  
++ private:
++
++  SDLNaclOperation op_;
++  SDL_VideoDevice *device_;
++
++  pp::CompletionCallbackFactory<SDLNaclJob> *factory_;
++
++  MainThreadRunner::JobEntry *job_entry_;
++
++  void Finish(int32_t result);
++};
++
++#endif
+diff -Naur SDL-1.2.15/src/video/nacl/SDL_naclvideo.cc SDL-1.2.15-nacl/src/video/nacl/SDL_naclvideo.cc
+--- SDL-1.2.15/src/video/nacl/SDL_naclvideo.cc	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/SDL_naclvideo.cc	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,243 @@
++#include "SDL_config.h"
++
++#include <assert.h>
++
++#include "SDL_naclvideo.h"
++#include "SDL_naclevents_c.h"
++#include "MainThreadRunner.h"
++#include "SDL_nacljob.h"
++
++#include <ppapi/cpp/instance.h>
++#include <ppapi/cpp/graphics_2d.h>
++#include <ppapi/cpp/completion_callback.h>
++#include <ppapi/cpp/image_data.h>
++#include <ppapi/cpp/rect.h>
++#include <ppapi/c/pp_errors.h>
++
++pp::Instance* gNaclPPInstance;
++static int gNaclVideoWidth;
++static int gNaclVideoHeight;
++static MainThreadRunner* gNaclMainThreadRunner;
++
++static int kNaClFlushDelayMs = 20;
++
++#include "SDL_nacl.h"
++
++extern "C" {
++
++#include "SDL_video.h"
++#include "SDL_mouse.h"
++#include "../SDL_sysvideo.h"
++#include "../SDL_pixels_c.h"
++#include "../../events/SDL_events_c.h"
++
++#define NACLVID_DRIVER_NAME "nacl"
++
++void SDL_NACL_SetInstance(PP_Instance instance, int width, int height) {
++  bool is_resize = gNaclPPInstance &&
++    (width != gNaclVideoWidth || height != gNaclVideoHeight);
++  if (!gNaclPPInstance) {
++    gNaclPPInstance = pp::Module::Get()->InstanceForPPInstance(instance);
++    gNaclMainThreadRunner = new MainThreadRunner(gNaclPPInstance);
++  }
++  gNaclVideoWidth = width;
++  gNaclVideoHeight = height;
++  if (is_resize && current_video) {
++    current_video->hidden->ow = width;
++    current_video->hidden->oh = height;
++    SDL_PrivateResize(width, height);
++  }
++}
++
++static void flush(void* data, int32_t unused);
++
++/* Initialization/Query functions */
++static int NACL_VideoInit(_THIS, SDL_PixelFormat *vformat);
++static SDL_Rect **NACL_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags);
++static SDL_Surface *NACL_SetVideoMode(_THIS, SDL_Surface *current, int width, int height, int bpp, Uint32 flags);
++static void NACL_VideoQuit(_THIS);
++static void NACL_UpdateRects(_THIS, int numrects, SDL_Rect *rects);
++
++/* The implementation dependent data for the window manager cursor */
++struct WMcursor {
++  // Fake cursor data to fool SDL into not using its broken (as it seems) software cursor emulation.
++};
++
++static void NACL_FreeWMCursor(_THIS, WMcursor *cursor);
++static WMcursor *NACL_CreateWMCursor(_THIS,
++                Uint8 *data, Uint8 *mask, int w, int h, int hot_x, int hot_y);
++static int NACL_ShowWMCursor(_THIS, WMcursor *cursor);
++static void NACL_WarpWMCursor(_THIS, Uint16 x, Uint16 y);
++
++
++static int NACL_Available(void) {
++  return gNaclPPInstance != 0;
++}
++
++static void NACL_DeleteDevice(SDL_VideoDevice *device) {
++  SDL_free(device->hidden);
++  SDL_free(device);
++}
++
++static SDL_VideoDevice *NACL_CreateDevice(int devindex) {
++  SDL_VideoDevice *device;
++
++  assert(gNaclPPInstance);
++
++  /* Initialize all variables that we clean on shutdown */
++  device = (SDL_VideoDevice *)SDL_malloc(sizeof(SDL_VideoDevice));
++  if ( device ) {
++    SDL_memset(device, 0, (sizeof *device));
++    device->hidden = (struct SDL_PrivateVideoData *)
++        SDL_malloc((sizeof *device->hidden));
++  }
++  if ( (device == NULL) || (device->hidden == NULL) ) {
++    SDL_OutOfMemory();
++    if ( device ) {
++      SDL_free(device);
++    }
++    return(0);
++  }
++  SDL_memset(device->hidden, 0, (sizeof *device->hidden));
++
++  device->hidden->ow = gNaclVideoWidth;
++  device->hidden->oh = gNaclVideoHeight;
++
++  // TODO: query the fullscreen size
++
++  /* Set the function pointers */
++  device->VideoInit = NACL_VideoInit;
++  device->ListModes = NACL_ListModes;
++  device->SetVideoMode = NACL_SetVideoMode;
++  device->UpdateRects = NACL_UpdateRects;
++  device->VideoQuit = NACL_VideoQuit;
++  device->InitOSKeymap = NACL_InitOSKeymap;
++  device->PumpEvents = NACL_PumpEvents;
++
++  device->FreeWMCursor = NACL_FreeWMCursor;
++  device->CreateWMCursor = NACL_CreateWMCursor;
++  device->ShowWMCursor = NACL_ShowWMCursor;
++  device->WarpWMCursor = NACL_WarpWMCursor;
++
++  device->free = NACL_DeleteDevice;
++
++  return device;
++}
++
++VideoBootStrap NACL_bootstrap = {
++  NACLVID_DRIVER_NAME, "SDL Native Client video driver",
++  NACL_Available, NACL_CreateDevice
++};
++
++
++int NACL_VideoInit(_THIS, SDL_PixelFormat *vformat) {
++  fprintf(stderr, "CONGRATULATIONS: You are using the SDL nacl video driver!\n");
++
++  /* Determine the screen depth (use default 8-bit depth) */
++  /* we change this during the SDL_SetVideoMode implementation... */
++  vformat->BitsPerPixel = 32;
++  vformat->BytesPerPixel = 4;
++
++  _this->info.current_w = gNaclVideoWidth;
++  _this->info.current_h = gNaclVideoHeight;
++
++  /* We're done! */
++  return(0);
++}
++
++SDL_Rect **NACL_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags) {
++  // TODO: list modes
++  return (SDL_Rect **) -1;
++}
++
++
++SDL_Surface *NACL_SetVideoMode(_THIS, SDL_Surface *current,
++    int width, int height, int bpp, Uint32 flags) {
++
++  fprintf(stderr, "setvideomode %d %d %d %u\n", width, height, bpp, flags);
++  fflush(stderr);
++
++  if (width > _this->hidden->ow || height > _this->hidden->oh)
++    return NULL;
++  _this->hidden->bpp = bpp = 32; // Let SDL handle pixel format conversion.
++  _this->hidden->w = width;
++  _this->hidden->h = height;
++
++  SDLNaclJob* job = new SDLNaclJob(CREATE_GRAPHICS_CONTEXT, _this);
++  int32_t rv = gNaclMainThreadRunner->RunJob(job);
++  if (rv != PP_OK)
++    return NULL;
++
++  /* Allocate the new pixel format for the screen */
++  if ( ! SDL_ReallocFormat(current, bpp, 0xFF0000, 0xFF00, 0xFF, 0) ) {
++    SDL_SetError("Couldn't allocate new pixel format for requested mode");
++    return(NULL);
++  }
++
++  /* Set up the new mode framebuffer */
++  current->flags = flags & SDL_FULLSCREEN;
++  _this->hidden->bpp = bpp;
++  _this->hidden->w = current->w = width;
++  _this->hidden->h = current->h = height;
++  current->pitch = current->w * (bpp / 8);
++  current->pixels = _this->hidden->image_data->data();
++
++  /* We're done */
++  return(current);
++}
++
++static void NACL_UpdateRects(_THIS, int numrects, SDL_Rect *rects) {
++  if (_this->hidden->bpp == 0) // not initialized yet
++    return;
++
++  assert(_this->hidden->image_data);
++  assert(_this->hidden->w > 0);
++  assert(_this->hidden->h > 0);
++
++  // Clear alpha channel in the ImageData.
++  unsigned char* start = (unsigned char*)_this->hidden->image_data->data();
++  unsigned char* end = start + (_this->hidden->w * _this->hidden->h * _this->hidden->bpp / 8);
++  for (unsigned char* p = start + 3; p < end; p +=4)
++    *p = 0xFF;
++
++  _this->hidden->numrects = numrects;
++  _this->hidden->rects = rects;
++
++  // Flush on the main thread.
++  SDLNaclJob* job = new SDLNaclJob(VIDEO_FLUSH, _this);
++  gNaclMainThreadRunner->RunJob(job);
++
++  _this->hidden->numrects = 0; // sanity
++  _this->hidden->rects = NULL;
++}
++
++static void NACL_FreeWMCursor(_THIS, WMcursor *cursor) {
++  delete cursor;
++}
++
++static WMcursor *NACL_CreateWMCursor(_THIS,
++    Uint8 *data, Uint8 *mask, int w, int h, int hot_x, int hot_y) {
++  return new WMcursor();
++}
++
++static int NACL_ShowWMCursor(_THIS, WMcursor *cursor) {
++  return 1; // Success!
++}
++
++static void NACL_WarpWMCursor(_THIS, Uint16 x, Uint16 y) {
++}
++
++/* Note:  If we are terminated, this could be called in the middle of
++   another SDL video routine -- notably UpdateRects.
++*/
++void NACL_VideoQuit(_THIS) {
++  if (_this->screen->pixels != NULL)
++  {
++    SDL_free(_this->screen->pixels);
++    _this->screen->pixels = NULL;
++  }
++
++  SDLNaclJob* job = new SDLNaclJob(VIDEO_QUIT, _this);
++  gNaclMainThreadRunner->RunJob(job);
++}
++} // extern "C"
+diff -Naur SDL-1.2.15/src/video/nacl/SDL_naclvideo.h SDL-1.2.15-nacl/src/video/nacl/SDL_naclvideo.h
+--- SDL-1.2.15/src/video/nacl/SDL_naclvideo.h	1970-01-01 01:00:00.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/nacl/SDL_naclvideo.h	2012-10-14 18:01:39.706633912 +0200
+@@ -0,0 +1,37 @@
++#include "SDL_config.h"
++
++#ifndef _SDL_naclvideo_h
++#define _SDL_naclvideo_h
++
++extern "C" {
++#include "../SDL_sysvideo.h"
++#include "SDL_mutex.h"
++}
++
++#include <ppapi/cpp/instance.h>
++#include <ppapi/cpp/graphics_2d.h>
++#include <vector>
++
++
++/* Hidden "this" pointer for the video functions */
++#define _THIS	SDL_VideoDevice *_this
++
++
++/* Private display data */
++
++struct SDL_PrivateVideoData {
++  int bpp;
++  int w, h;
++  void *buffer;
++
++  int ow, oh; // plugin output dimensions
++  int fsw, fsh; // fullscreen dimensions
++
++  pp::ImageData* image_data;
++  pp::Graphics2D* context2d;  // The PPAPI 2D drawing context.
++
++  int numrects;
++  SDL_Rect* rects;
++};
++
++#endif /* _SDL_naclvideo_h */
+diff -Naur SDL-1.2.15/src/video/SDL_sysvideo.h SDL-1.2.15-nacl/src/video/SDL_sysvideo.h
+--- SDL-1.2.15/src/video/SDL_sysvideo.h	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/SDL_sysvideo.h	2012-10-14 18:01:39.706633912 +0200
+@@ -317,6 +317,9 @@
+ 	SDL_VideoDevice *(*create)(int devindex);
+ } VideoBootStrap;
+ 
++#if SDL_VIDEO_DRIVER_NACL
++extern VideoBootStrap NACL_bootstrap;
++#endif
+ #if SDL_VIDEO_DRIVER_QUARTZ
+ extern VideoBootStrap QZ_bootstrap;
+ #endif
+diff -Naur SDL-1.2.15/src/video/SDL_video.c SDL-1.2.15-nacl/src/video/SDL_video.c
+--- SDL-1.2.15/src/video/SDL_video.c	2012-01-19 07:30:06.000000000 +0100
++++ SDL-1.2.15-nacl/src/video/SDL_video.c	2012-10-14 18:01:39.706633912 +0200
+@@ -33,6 +33,9 @@
+ 
+ /* Available video drivers */
+ static VideoBootStrap *bootstrap[] = {
++#if SDL_VIDEO_DRIVER_NACL
++	&NACL_bootstrap,
++#endif
+ #if SDL_VIDEO_DRIVER_QUARTZ
+ 	&QZ_bootstrap,
+ #endif

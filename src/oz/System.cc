@@ -64,13 +64,13 @@ using namespace oz;
 // referenced by SDL hence must be present if we link with it. Those fake implementations also spare
 // us several #ifdefs in this file.
 
-extern "C"
+extern "C" __attribute__(( weak ))
 void ( * signal( int, void ( * )( int ) ) )( int )
 {
   return nullptr;
 }
 
-extern "C"
+extern "C" __attribute__(( weak ))
 int raise( int )
 {
   return 0;

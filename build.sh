@@ -5,14 +5,12 @@ platforms=( \
   Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang \
   Windows-i686 \
   NaCl-x86_64 NaCl-i686 \
-#   Android9-i686 Android9-ARM Android9-MIPS \
+  Android14-i686 Android14-ARM # Android14-MIPS \
 )
 
 function clean()
 {
-  for platform in ${platforms[@]}; do
-    rm -rf build/$platform
-  done
+  rm -rf build
 }
 
 function build()
@@ -49,7 +47,7 @@ case "$1" in
   conf)
     build 1
     ;;
-  *)
+  build|*)
     build 0
     ;;
 esac

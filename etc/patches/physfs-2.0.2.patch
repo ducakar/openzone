@@ -1,6 +1,18 @@
+diff -Naur physfs-2.0.2/archivers/wad.c physfs-2.0.2-nacl/archivers/wad.c
+--- physfs-2.0.2/archivers/wad.c	2011-02-18 22:17:31.000000000 +0100
++++ physfs-2.0.2-nacl/archivers/wad.c	2012-10-14 19:47:41.145881417 +0200
+@@ -247,6 +247,8 @@
+     WADentry *entry;
+     char lastDirectory[9];
+ 
++    (void) lastDirectory; /* Fix a warning-related bug in GCC 4.6 from Android NDK */
++
+     lastDirectory[8] = 0; /* Make sure lastDirectory stays null-terminated. */
+ 
+     BAIL_IF_MACRO(!wad_open(name, forWriting, &fh, &fileCount,&directoryOffset), NULL, 0);
 diff -Naur physfs-2.0.2/CMakeLists.txt physfs-2.0.2-nacl/CMakeLists.txt
 --- physfs-2.0.2/CMakeLists.txt	2011-02-18 22:17:31.000000000 +0100
-+++ physfs-2.0.2-nacl/CMakeLists.txt	2012-10-12 02:20:40.229057170 +0200
++++ physfs-2.0.2-nacl/CMakeLists.txt	2012-10-14 19:47:41.145881417 +0200
 @@ -127,6 +127,7 @@
      platform/unix.c
      platform/macosx.c
@@ -9,10 +21,14 @@ diff -Naur physfs-2.0.2/CMakeLists.txt physfs-2.0.2-nacl/CMakeLists.txt
      archivers/dir.c
      archivers/grp.c
      archivers/hog.c
-@@ -146,6 +147,10 @@
+@@ -146,6 +147,14 @@
          SET(PHYSFS_HAVE_CDROM_SUPPORT TRUE)
          SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
          SET(HAVE_PTHREAD_H TRUE)
++    ELSEIF(ANDROID)
++        SET(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
++        SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
++        SET(HAVE_PTHREAD_H TRUE)
 +    ELSEIF(NACL)
 +        SET(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
 +        SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
@@ -22,22 +38,22 @@ diff -Naur physfs-2.0.2/CMakeLists.txt physfs-2.0.2-nacl/CMakeLists.txt
          #  AC_DEFINE([PHYSFS_HAVE_LLSEEK], 1, [define if we have llseek])
 diff -Naur physfs-2.0.2/lzma/C/Archive/7z/7zDecode.c physfs-2.0.2-nacl/lzma/C/Archive/7z/7zDecode.c
 --- physfs-2.0.2/lzma/C/Archive/7z/7zDecode.c	2011-02-18 22:17:31.000000000 +0100
-+++ physfs-2.0.2-nacl/lzma/C/Archive/7z/7zDecode.c	2012-10-12 02:52:55.442402593 +0200
++++ physfs-2.0.2-nacl/lzma/C/Archive/7z/7zDecode.c	2012-10-14 19:47:41.145881417 +0200
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
-
+ 
 -#include <memory.h>
 +#ifdef __native_client__
 +# include <string.h>
 +#else
 +# include <memory.h>
 +#endif
-
+ 
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
 diff -Naur physfs-2.0.2/physfs_platforms.h physfs-2.0.2-nacl/physfs_platforms.h
 --- physfs-2.0.2/physfs_platforms.h	2011-02-18 22:17:31.000000000 +0100
-+++ physfs-2.0.2-nacl/physfs_platforms.h	2012-10-12 02:29:37.290326505 +0200
++++ physfs-2.0.2-nacl/physfs_platforms.h	2012-10-14 19:47:41.145881417 +0200
 @@ -38,6 +38,8 @@
  #  endif
  #elif defined(macintosh)
@@ -49,8 +65,8 @@ diff -Naur physfs-2.0.2/physfs_platforms.h physfs-2.0.2-nacl/physfs_platforms.h
  #  define PHYSFS_PLATFORM_POSIX
 diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 --- physfs-2.0.2/platform/nacl.c	1970-01-01 01:00:00.000000000 +0100
-+++ physfs-2.0.2-nacl/platform/nacl.c	2012-10-12 02:50:58.514125468 +0200
-@@ -0,0 +1,720 @@
++++ physfs-2.0.2-nacl/platform/nacl.c	2012-10-14 20:37:15.712728328 +0200
+@@ -0,0 +1,889 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
@@ -58,11 +74,6 @@ diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 + *
 + *  This file written by Davorin Učakar.
 + */
-+
-+// KDevelop hack
-+#ifndef __LINE__
-+# define __native_client__
-+#endif
 +
 +#define __PHYSICSFS_INTERNAL__
 +#include "physfs_platforms.h"
@@ -242,6 +253,8 @@ diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 +    allocator.Free(handle);
 +} /* destroyHandleDesc */
 +
++
++const char *__PHYSFS_platformDirSeparator = "/";
 +
 +int __PHYSFS_platformInit(void)
 +{
@@ -640,7 +653,7 @@ diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 +} /* __PHYSFS_platformCalcBaseDir */
 +
 +
-+char *__PHYSFS_platformCalcUserDir(void)
++char *__PHYSFS_platformGetUserDir(void)
 +{
 +    char *retval = (char *) allocator.Malloc(2);
 +    BAIL_IF_MACRO(!retval, ERR_OUT_OF_MEMORY, NULL);
@@ -652,13 +665,12 @@ diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 +} /* __PHYSFS_platformCalcUserDir */
 +
 +
-+char *__PHYSFS_platformCalcPrefDir(const char* org, const char* app)
++char *__PHYSFS_platformGetUserName(void)
 +{
-+    char *retval = (char *) allocator.Malloc(2);
++    char *retval = (char *) allocator.Malloc(1);
 +    BAIL_IF_MACRO(!retval, ERR_OUT_OF_MEMORY, NULL);
 +
-+    retval[0] = '/';
-+    retval[1] = '\0';
++    retval[0] = '\0';
 +
 +    return retval;
 +} /* __PHYSFS_platformCalcPrefDir */
@@ -669,6 +681,168 @@ diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 +    return (size_t) pthread_self();
 +} /* __PHYSFS_platformGetThreadID */
 +
++
++DEF_CALLBACK(stat_result, {
++    if (_result != PP_OK) {
++        _file->error = ERR_IO_ERROR;
++    } /* if */
++
++    iFileIO->Close(_file->fileIO);
++    iCore->ReleaseResource(_file->fileRef);
++    iCore->ReleaseResource(_file->fileIO);
++
++    SEM_POST();
++}) /* DEF_CALLBACK */
++
++DEF_CALLBACK(stat_query, {
++    if (_result != PP_OK) {
++        _file->error = ERR_IO_ERROR;
++    }
++    else {
++        int ret = iFileIO->Query(_file->fileIO, &_file->fileInfo,
++                                 CALLBACK(stat_result, _file));
++
++        if (ret != PP_OK_COMPLETIONPENDING) {
++            _file->error = ERR_IO_ERROR;
++        }
++        else {
++            return;
++        } /* if */
++    } /* if */
++
++    iFileIO->Close(_file->fileIO);
++    iCore->ReleaseResource(_file->fileRef);
++    iCore->ReleaseResource(_file->fileIO);
++
++    SEM_POST();
++}) /* DEF_CALLBACK */
++
++DEF_CALLBACK(stat_open, {
++    _file->fileIO = iFileIO->Create(instance);
++    if (!_file->fileIO) {
++        _file->error = ERR_OS_ERROR;
++
++        SEM_POST();
++        return;
++    } /* if */
++    iCore->AddRefResource(_file->fileIO);
++
++    _file->fileRef = iFileRef->Create(fileSystem, _file->path);
++    if (!_file->fileRef) {
++      _file->error = ERR_OS_ERROR;
++
++      iCore->ReleaseResource(_file->fileIO);
++
++      SEM_POST();
++      return;
++    } /* if */
++    iCore->AddRefResource(_file->fileRef);
++
++    int retval = iFileIO->Open(_file->fileIO, _file->fileRef, 0,
++                               CALLBACK(stat_query, _file));
++
++    if (retval != PP_OK_COMPLETIONPENDING) {
++        _file->error = ERR_OPEN_FAILED;
++
++        iCore->ReleaseResource(_file->fileRef);
++        iCore->ReleaseResource(_file->fileIO);
++
++        SEM_POST();
++        return;
++    } /* if */
++} ) /* MAIN_CALL */
++
++
++int __PHYSFS_platformExists( const char *fname )
++{
++    /* Root must be handled as a special case as querying it always fails. */
++    if (fname[0] == '/' && fname[1] == '\0') {
++        return 1;
++    } /* if */
++
++    FileDesc *file = createFileDesc();
++    BAIL_IF_MACRO(!file, 0, 0);
++
++    strncpy( file->path, fname, 256 );
++    file->path[255] = '\0';
++
++    MAIN_CALL(stat_open);
++    SEM_WAIT();
++
++    int exists = file->error == 0;
++
++    destroyFileDesc(file);
++
++    return exists;
++}
++
++
++PHYSFS_sint64 __PHYSFS_platformGetLastModTime( const char *fname )
++{
++    /* Root must be handled as a special case as querying it always fails. */
++    if (fname[0] == '/' && fname[1] == '\0') {
++        return 0;
++    } /* if */
++
++    FileDesc *file = createFileDesc();
++    BAIL_IF_MACRO(!file, 0, 0);
++
++    strncpy( file->path, fname, 256 );
++    file->path[255] = '\0';
++
++    MAIN_CALL(stat_open);
++    SEM_WAIT();
++
++    PHYSFS_sint64 modtime = 0;
++
++    if (!file->error) {
++        modtime = file->fileInfo.last_modified_time;
++    } /* if */
++
++    destroyFileDesc(file);
++
++    return modtime;
++}
++
++
++int __PHYSFS_platformIsSymLink( const char *fname )
++{
++    return 0;
++}
++
++int __PHYSFS_platformIsDirectory( const char *fname )
++{
++    /* Root must be handled as a special case as querying it always fails. */
++    if (fname[0] == '/' && fname[1] == '\0') {
++        return 1;
++    } /* if */
++
++    FileDesc *file = createFileDesc();
++    BAIL_IF_MACRO(!file, 0, 0);
++
++    strncpy( file->path, fname, 256 );
++    file->path[255] = '\0';
++
++    MAIN_CALL(stat_open);
++    SEM_WAIT();
++
++    PHYSFS_sint64 isdir = 0;
++
++    if (!file->error) {
++        isdir = file->fileInfo.type == PP_FILETYPE_DIRECTORY;
++    } /* if */
++
++    destroyFileDesc(file);
++
++    return isdir;
++}
++
++char *__PHYSFS_platformCvtToDependent(const char *prepend,
++                                      const char *dirName,
++                                      const char *append)
++{
++    return __PHYSFS_convertToDependent(prepend, dirName, append);
++}
 +
 +void __PHYSFS_platformEnumerateFiles(const char *dirname,
 +                                     int omitSymLinks,
@@ -684,6 +858,17 @@ diff -Naur physfs-2.0.2/platform/nacl.c physfs-2.0.2-nacl/platform/nacl.c
 +{
 +    return 0;
 +} /* __PHYSFS_platformMkDir */
++
++
++char *__PHYSFS_platformRealPath(const char *path)
++{
++    size_t len = strlen(path);
++
++    char *retval = (char *) allocator.Malloc(len + 1);
++    BAIL_IF_MACRO(!retval, ERR_OUT_OF_MEMORY, NULL);
++
++    return memcpy(retval, path, len + 1);
++} /* __PHYSFS_platformRealPath */
 +
 +
 +int __PHYSFS_platformDelete(const char *path)

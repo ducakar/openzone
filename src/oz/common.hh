@@ -50,6 +50,14 @@
  */
 #define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+/**
+ * @def OZ_BIG_ENDIAN
+ * Defined on big endian platforms.
+ */
+# define OZ_BIG_ENDIAN
+#endif
+
 /**
  * @def OZ_HIDDEN
  * Compiler-specific attribute that prevents symbol exporting when building a shared library.

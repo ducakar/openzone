@@ -8,7 +8,7 @@ url="http://ducakar.github.com/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('alsa-lib' 'cmake' 'doxygen' 'faad2' 'freeimage' 'git' 'libmad' 'libpulse'
-	     'libvorbis' 'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf' 'texlive-core')
+             'libvorbis' 'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf' 'texlive-core')
 source=("https://github.com/downloads/ducakar/openzone/openzone-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/openzone-data-${pkgver}.tar.xz")
 sha1sums=()

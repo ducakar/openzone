@@ -86,7 +86,7 @@ class OBJ
     static char* skipSpaces( char* pos );
     static char* readWord( char* pos );
 
-    void readVertexData( char* pos );
+    void readVertexData( const char* pos );
     void readFace( char* pos, int part );
     void loadMaterials( const char* filePath );
 

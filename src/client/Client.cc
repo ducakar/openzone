@@ -109,10 +109,10 @@ int Client::init( int argc, char** argv )
         break;
       }
       case 't': {
-        std::istringstream strs( optarg );
-        strs >> benchmarkTime;
+        std::istringstream ss( optarg );
+        ss >> benchmarkTime;
 
-        if( !strs.eof() ) {
+        if( ss.fail() ) {
           printUsage( invocationName );
           return EXIT_FAILURE;
         }

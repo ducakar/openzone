@@ -23,6 +23,8 @@
 
 #include <oz/oz.hh>
 
+#include <limits.h>
+
 using namespace oz;
 
 class Foo
@@ -37,6 +39,12 @@ class Foo
       value( 0 )
     {
       Log() << "Foo()\n";
+    }
+
+    Foo( int value_ ) :
+      value( value_ )
+    {
+      Log() << "Foo( " << value_ << " )\n";
     }
 
     ~Foo()
@@ -56,12 +64,6 @@ class Foo
       Log() << "Foo( Foo&& )\n";
 
       f.value = 0;
-    }
-
-    Foo( int value_ ) :
-      value( value_ )
-    {
-      Log() << "Foo( " << value_ << " )\n";
     }
 
     Foo& operator = ( const Foo& f )

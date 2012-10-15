@@ -33,7 +33,12 @@
 #include "Log.hh"
 
 #include <cstdlib>
+#include <cstring>
 #include <sstream>
+
+#ifdef _WIN32
+# define strcasecmp _stricmp
+#endif
 
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
@@ -316,8 +321,8 @@ JSON JSON::Parser::parseValue()
       return JSON( new BooleanData( true ), BOOLEAN );
     }
     default: { // number
-      std::stringstream strs;
-      strs.put( ch );
+      std::stringstream ss;
+      ss.put( ch );
 
       while( pos.istream->isAvailable() ) {
         ch = pos.readChar();
@@ -326,14 +331,31 @@ JSON JSON::Parser::parseValue()
           pos.back();
           break;
         }
-        strs.put( ch );
+        ss.put( ch );
       }
 
-      double number;
-      strs >> number;
+      int nChars = int( ss.tellp() );
 
-      if( !strs.eof() ) {
-        OZ_PARSE_ERROR( -int( strs.tellp() ), "Unknown value type" );
+      float number;
+      ss >> number;
+
+      if( ss.fail() ) {
+        std::string s = ss.str();
+
+        if( strcasecmp( s.c_str(), "inf" ) == 0 || strcasecmp( s.c_str(), "+inf" ) == 0 ) {
+          number = Math::INF;
+        }
+        else if( strcasecmp( s.c_str(), "-inf" ) == 0 ) {
+          number = -Math::INF;
+        }
+        else if( strcasecmp( s.c_str(), "nan" ) == 0 || strcasecmp( s.c_str(), "+nan" ) == 0 ||
+                 strcasecmp( s.c_str(), "-nan" ) == 0 )
+        {
+          number = Math::NaN;
+        }
+        else {
+          OZ_PARSE_ERROR( -nChars, "Unknown value type" );
+        }
       }
 
       return JSON( new NumberData( number ), NUMBER );
@@ -524,11 +546,11 @@ void JSON::Formatter::writeValue( const JSON& value )
     case NUMBER: {
       const NumberData* numberData = static_cast<const NumberData*>( value.data );
 
-      std::stringstream strs;
-      strs << numberData->value;
+      std::stringstream ss;
+      ss << numberData->value;
 
-      int nChars = int( strs.tellp() );
-      strs.read( ostream->forward( nChars ), nChars );
+      int nChars = int( ss.tellp() );
+      ss.read( ostream->forward( nChars ), nChars );
       break;
     }
     case STRING: {
@@ -2426,13 +2448,13 @@ String JSON::toString() const
       return static_cast<const BooleanData*>( data )->value ? "true" : "false";
     }
     case NUMBER: {
-      std::stringstream strs;
-      strs << static_cast<const NumberData*>( data )->value;
+      std::stringstream ss;
+      ss << static_cast<const NumberData*>( data )->value;
 
-      int nChars = int( strs.tellp() );
+      int nChars = int( ss.tellp() );
       char* buffer;
       String r = String::create( nChars, &buffer );
-      strs.read( buffer, nChars );
+      ss.read( buffer, nChars );
 
       return r;
     }

@@ -30,6 +30,8 @@ using namespace oz;
 
 void test_Alloc()
 {
+#ifndef OZ_ADDRESS_SANITIZER
+
   Log() << "+ Alloc\n";
 
   static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
@@ -64,6 +66,8 @@ void test_Alloc()
   OZ_CHECK( Alloc::alignUp( 1 ) == Alloc::ALIGNMENT );
   OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT - 1 ) == Alloc::ALIGNMENT );
   OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
+
+#endif // !OZ_ADDRESS_SANITIZER
 
   char* zeroptr = nullptr;
   char* oneptr  = zeroptr + Alloc::ALIGNMENT;

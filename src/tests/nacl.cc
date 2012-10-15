@@ -77,6 +77,8 @@ int main( int, char** )
 
   File::free();
 
+  static_assert( sizeof( uint64_t ) == 8, "error" );
+
   Log() << "[" << Time::local().toString() << "] END\n";
   return 0;
 }

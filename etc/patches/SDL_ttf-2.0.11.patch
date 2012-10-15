@@ -1,0 +1,39 @@
+diff -Naur SDL_ttf-2.0.11/config.sub SDL_ttf-2.0.11-nacl/config.sub
+--- SDL_ttf-2.0.11/config.sub	2012-01-15 05:44:08.000000000 +0100
++++ SDL_ttf-2.0.11-nacl/config.sub	2012-10-14 17:55:58.585405568 +0200
+@@ -237,6 +237,14 @@
+ 		basic_machine=m68k-atari
+ 		os=-mint
+ 		;;
++	-android)
++		basic_machine=i686-pc
++		os=-android
++		;;
++	-nacl)
++		basic_machine=i686-pc
++		os=-nacl
++		;;
+ esac
+ 
+ # Decode aliases for certain CPU-COMPANY combinations.
+@@ -1297,7 +1305,8 @@
+ 	      | -os2* | -vos* | -palmos* | -uclinux* | -nucleus* \
+ 	      | -morphos* | -superux* | -rtmk* | -rtmk-nova* | -windiss* \
+ 	      | -powermax* | -dnix* | -nx6 | -nx7 | -sei* | -dragonfly* \
+-	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es*)
++	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es* \
++	      | -android* | -nacl*)
+ 	# Remember, each alternative MUST END IN *, to match a version number.
+ 		;;
+ 	-qnx*)
+diff -Naur SDL_ttf-2.0.11/Makefile.in SDL_ttf-2.0.11-nacl/Makefile.in
+--- SDL_ttf-2.0.11/Makefile.in	2012-01-15 05:44:08.000000000 +0100
++++ SDL_ttf-2.0.11-nacl/Makefile.in	2012-10-14 17:53:36.049610816 +0200
+@@ -37,7 +37,6 @@
+ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+-noinst_PROGRAMS = showfont$(EXEEXT) glfont$(EXEEXT)
+ subdir = .
+ DIST_COMMON = README $(am__configure_deps) \
+ 	$(libSDL_ttfinclude_HEADERS) $(srcdir)/Makefile.am \

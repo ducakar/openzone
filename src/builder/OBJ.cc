@@ -25,8 +25,9 @@
 #include <builder/OBJ.hh>
 
 #include <client/Context.hh>
-
 #include <builder/Compiler.hh>
+
+#include <sstream>
 
 namespace oz
 {
@@ -49,17 +50,21 @@ char* OBJ::readWord( char* pos )
   return pos;
 }
 
-void OBJ::readVertexData( char* pos )
+void OBJ::readVertexData( const char* pos )
 {
   // currently pos points to the char just after 'v'
+  const char* beginPos = pos;
 
   // vertex coords
   if( *pos == ' ' ) {
     ++pos;
 
+    std::istringstream ss( pos );
     float x, y, z;
-    if( sscanf( pos, "%17f %17f %17f", &x, &y, &z ) != 3 ) {
-      OZ_ERROR( "Invalid OBJ vertex position specification" );
+    ss >> x >> y >> z;
+
+    if( ss.fail() ) {
+      OZ_ERROR( "Invalid OBJ vertex position specification: %s", beginPos );
     }
 
     positions.add( Point( x, y, z ) );
@@ -68,9 +73,12 @@ void OBJ::readVertexData( char* pos )
   else if( *pos == 'n' ) {
     pos += 2;
 
+    std::istringstream ss( pos );
     float x, y, z;
-    if( sscanf( pos, "%17f %17f %17f", &x, &y, &z ) != 3 ) {
-      OZ_ERROR( "Invalid OBJ vertex normal specification" );
+    ss >> x >> y >> z;
+
+    if( ss.fail() ) {
+      OZ_ERROR( "Invalid OBJ vertex normal specification: %s", beginPos );
     }
 
     normals.add( Vec3( x, y, z ) );
@@ -80,14 +88,17 @@ void OBJ::readVertexData( char* pos )
     pos += 2;
 
     float u, v;
-    if( sscanf( pos, "%17f %17f", &u, &v ) != 2 ) {
-      OZ_ERROR( "Invalid OBJ vertex texture coordinate specification" );
+    std::istringstream ss( pos );
+    ss >> u >> v;
+
+    if( ss.fail() ) {
+      OZ_ERROR( "Invalid OBJ vertex texture coordinate specification: %s", beginPos );
     }
 
     texCoords.add( TexCoord( u, v ) );
   }
   else {
-    OZ_ERROR( "Invalid OBJ vertex specification" );
+    OZ_ERROR( "Invalid OBJ vertex specification: %s", beginPos );
   }
 }
 

@@ -25,7 +25,6 @@
 #include <builder/Terra.hh>
 
 #include <client/Terra.hh>
-
 #include <builder/Context.hh>
 
 #include <FreeImage.h>
@@ -76,17 +75,17 @@ void Terra::load()
     OZ_ERROR( "Failed to load heightmap '%s'", realPath.cstr() );
   }
 
-  width    = int( FreeImage_GetWidth( image ) );
-  height   = int( FreeImage_GetHeight( image ) );
-  int bpp  = int( FreeImage_GetBPP( image ) );
-  int type = int( FreeImage_GetImageType( image ) );
+  imageWidth  = int( FreeImage_GetWidth( image ) );
+  imageHeight = int( FreeImage_GetHeight( image ) );
+  int bpp     = int( FreeImage_GetBPP( image ) );
+  int type    = int( FreeImage_GetImageType( image ) );
 
-  if( type != FIT_RGB16 || bpp != 48 || width <= 0 || height <= 0 ||
-      width > matrix::Terra::VERTS || width > matrix::Terra::VERTS )
+  if( type != FIT_RGB16 || bpp != 48 || imageWidth <= 0 || imageHeight <= 0 ||
+      imageWidth > matrix::Terra::VERTS || imageHeight > matrix::Terra::VERTS )
   {
     OZ_ERROR( "Invalid terrain heightmap format %d x %d %d bpp, should be at most %d x %d and"
               " 48 bpp RGB (red channel is used as height, green and blue are ignored)",
-              width, height, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
+              imageWidth, imageHeight, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 
   Log::printEnd( " OK" );
@@ -102,13 +101,13 @@ void Terra::load()
     }
   }
 
-  int minVertX = ( matrix::Terra::VERTS - width ) / 2;
-  int minVertY = ( matrix::Terra::VERTS - height ) / 2;
+  int minVertX = ( matrix::Terra::VERTS - imageWidth ) / 2;
+  int minVertY = ( matrix::Terra::VERTS - imageHeight ) / 2;
 
-  for( int y = height - 1; y >= 0; --y ) {
+  for( int y = imageHeight - 1; y >= 0; --y ) {
     const ushort* pixel = reinterpret_cast<const ushort*>( FreeImage_GetScanLine( image, y ) );
 
-    for( int x = 0; x < width; ++x ) {
+    for( int x = 0; x < imageWidth; ++x ) {
       float value = float( *pixel ) / float( USHRT_MAX );
 
       quads[minVertX + x][minVertY + y].vertex.z = Math::mix( minHeight, maxHeight, value );
@@ -214,9 +213,6 @@ void Terra::saveClient()
   Bitset waterTiles( client::Terra::TILES * client::Terra::TILES );
   waterTiles.clearAll();
 
-  int minVertX = ( matrix::Terra::VERTS - width ) / 2;
-  int minVertY = ( matrix::Terra::VERTS - height ) / 2;
-
   for( int i = 0; i < client::Terra::TILES; ++i ) {
     for( int j = 0; j < client::Terra::TILES; ++j ) {
       // tile
@@ -243,9 +239,11 @@ void Terra::saveClient()
           }
           normal = ~normal;
 
-          if( minVertX <= x && x < minVertX + width && minVertY < y && y < minVertY + height &&
-              ( quads[x][y].vertex.z < 0.0f || quads[x + 1][y].vertex.z < 0.0f ||
-                quads[x][y + 1].vertex.z < 0.0f || quads[x + 1][y + 1].vertex.z < 0.0f ) )
+          if( ( quads[x][y].vertex.z < 0.0f ) ||
+              ( x + 1 < matrix::Terra::VERTS && quads[x + 1][y].vertex.z < 0.0f ) ||
+              ( y + 1 < matrix::Terra::VERTS && quads[x][y + 1].vertex.z < 0.0f ) ||
+              ( x + 1 < matrix::Terra::VERTS && y + 1 < matrix::Terra::VERTS &&
+                quads[x + 1][y + 1].vertex.z < 0.0f ) )
           {
             waterTiles.set( i * client::Terra::TILES + j );
           }
