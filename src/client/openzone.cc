@@ -31,12 +31,30 @@
 
 #include <jni.h>
 
+extern "C"
+void SDL_Android_Init( JNIEnv* env, jclass clazz );
+
+#elif defined( __native_client__ )
+
+#include <SDL/SDL_nacl.h>
+
+extern "C"
+void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
+
+#endif
+
 using namespace oz;
 
-extern "C" JNIEXPORT
-void JNICALL Java_OpenZone_main( JNIEnv* env, jclass, jobjectArray args )
+#if defined( __ANDROID__ )
+extern "C"
+void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
+#elif defined( __native_client__ )
+void oz::client::MainInstance::mainThreadMain( void* )
+#else
+int main( int argc, char** argv )
+#endif
 {
-  System::init( System::EXCEPTIONS_BIT );
+  System::init();
 
   int exitCode = EXIT_FAILURE;
 
@@ -46,20 +64,19 @@ void JNICALL Java_OpenZone_main( JNIEnv* env, jclass, jobjectArray args )
                  "This is free software, and you are welcome to redistribute it\n"
                  "under certain conditions; See COPYING file for details.\n\n" );
 
-  int   argc = min( env->GetArrayLength( args ), 255 );
-  char* argv[256];
+#if defined( __ANDROID__ )
+  SDL_Android_Init( env, clazz );
+#elif defined( __native_client__ )
+  NaCl::post( "init:" );
+#endif
 
-  argv[0] = const_cast<char*>( "OpenZone" );
+#if defined( __ANDROID__ ) || defined( __native_client__ )
+  int   argc    = 1;
+  char  argv0[] = "openzone";
+  char* argv[]  = { argv0, nullptr };
+#endif
 
-  for( int i = 0; i < argc; ++i ) {
-    jobject     obj = (jstring) env->GetObjectArrayElement( args, i );
-    const char* s   = env->GetStringUTFChars( static_cast<jstring>( obj ), nullptr );
-
-    argv[i + 1] = const_cast<char*>( s );
-
-  }
-
-  exitCode = client::client.init( 1 + argc, argv );
+  exitCode = client::client.init( argc, argv );
 
   if( exitCode == EXIT_SUCCESS ) {
     exitCode = client::client.main();
@@ -76,49 +93,22 @@ void JNICALL Java_OpenZone_main( JNIEnv* env, jclass, jobjectArray args )
       Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
     }
   }
+
+#if defined( __ANDROID__ )
+  static_cast<void>( exitCode );
+#elif defined( __native_client__ )
+  NaCl::post( "quit:" );
+#else
+  return exitCode;
+#endif
 }
 
-#elif defined( __native_client__ )
-
-#include <SDL/SDL_nacl.h>
-
-using namespace oz;
-
-extern "C"
-void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
+#ifdef __native_client__
 
 namespace oz
 {
 namespace client
 {
-
-void MainInstance::mainThreadMain( void* )
-{
-  int exitCode = EXIT_FAILURE;
-
-  Log::printRaw( "OpenZone " OZ_VERSION "\n"
-                 "Copyright © 2002-2012 Davorin Učakar\n"
-                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
-                 "This is free software, and you are welcome to redistribute it\n"
-                 "under certain conditions; See COPYING file for details.\n\n" );
-
-  NaCl::post( "init:" );
-
-  char  argv0[] = "openzone";
-  char* argv[]  = { argv0 };
-
-  exitCode = client::client.init( 1, argv );
-
-  if( exitCode == EXIT_SUCCESS ) {
-    exitCode = client::client.main();
-  }
-
-  client::client.shutdown();
-
-  Alloc::printLeaks();
-
-  NaCl::post( "quit:" );
-}
 
 MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
@@ -251,43 +241,6 @@ pp::Module* CreateModule()
   return new oz::client::MainModule();
 }
 
-}
-
-#else
-
-using namespace oz;
-
-int main( int argc, char** argv )
-{
-  System::init();
-
-  int exitCode = EXIT_FAILURE;
-
-  Log::printRaw( "OpenZone " OZ_VERSION "\n"
-                 "Copyright © 2002-2012 Davorin Učakar\n"
-                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
-                 "This is free software, and you are welcome to redistribute it\n"
-                 "under certain conditions; See COPYING file for details.\n\n" );
-
-  exitCode = client::client.init( argc, argv );
-
-  if( exitCode == EXIT_SUCCESS ) {
-    exitCode = client::client.main();
-  }
-
-  client::client.shutdown();
-
-  if( Alloc::count != 0 ) {
-    Log::verboseMode = true;
-    bool isOutput = Alloc::printLeaks();
-    Log::verboseMode = false;
-
-    if( isOutput ) {
-      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
-    }
-  }
-
-  return exitCode;
 }
 
 #endif

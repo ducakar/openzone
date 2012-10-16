@@ -66,8 +66,8 @@ check_cxx_compiler_flag( "-flto" hasLTO )
 #
 
 if( ANDROID )
+  include_directories( "${PLATFORM_PREFIX}/usr/include" ) # For KDevelop
   include_directories( "${PLATFORM_PORTS_PREFIX}/usr/include" )
-  link_directories( "${PLATFORM_PORTS_PREFIX}/usr/lib" )
 
   find_library( ANDROID_LOG_LIBRARY log )
   find_library( OPENSLES_LIBRARY OpenSLES )
@@ -86,8 +86,8 @@ if( ANDROID )
   find_library( VORBIS_LIBRARY vorbis )
   find_library( VORBISFILE_LIBRARY vorbisfile )
 elseif( NACL )
+  include_directories( "${PLATFORM_PREFIX}/include" ) # For KDevelop
   include_directories( "${PLATFORM_PORTS_PREFIX}/usr/include" )
-  link_directories( "${PLATFORM_PORTS_PREFIX}/usr/lib" )
 
   find_library( PTHREAD_LIBRARY pthread )
   find_library( PEPPER_LIBRARY ppapi )
@@ -294,7 +294,7 @@ if( ANDROID )
   add_custom_command( OUTPUT "../Android"
                       COMMAND "${CMAKE_COMMAND}" -E copy_directory
                               "${CMAKE_SOURCE_DIR}/etc/android-project" "../Android" )
-  add_custom_target( android ALL DEPENDS "../Android" )
+  add_custom_target( android_project ALL DEPENDS "../Android" )
 endif()
 
 #

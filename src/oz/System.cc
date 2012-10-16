@@ -34,8 +34,8 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
-
 #if defined( __ANDROID__ )
+# include <android/log.h>
 # include <ctime>
 #elif defined( __native_client__ )
 # include <ctime>
@@ -47,6 +47,7 @@
 # include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
+# define isatty( fd ) _isatty( fd )
 #else
 # include <alsa/asoundlib.h>
 # include <ctime>
@@ -152,8 +153,6 @@ static int           initFlags         = 0;
 OZ_NORETURN
 static void abort( bool doHalt );
 
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
-
 OZ_NORETURN
 static void signalHandler( int sigNum )
 {
@@ -161,6 +160,10 @@ static void signalHandler( int sigNum )
   Log::printSignal( sigNum );
   Log::printTrace( StackTrace::current( 0 ) );
   Log::println();
+
+#ifdef __ANDROID__
+  __android_log_print( ANDROID_LOG_ERROR, "oz", "Signal %d received\n", sigNum );
+#endif
 
   System::bell();
   abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
@@ -195,12 +198,15 @@ OZ_NORETURN
 static void terminate()
 {
   System::trap();
-  resetSignals();
 
   Log::verboseMode = false;
   Log::putsRaw( "\n\nException handling aborted\n" );
   Log::printTrace( StackTrace::current( 0 ) );
   Log::println();
+
+#ifdef __ANDROID__
+  __android_log_write( ANDROID_LOG_ERROR, "oz", "Exception handling aborted\n" );
+#endif
 
   System::bell();
   abort( initFlags & System::HALT_BIT );
@@ -210,18 +216,19 @@ OZ_NORETURN
 static void unexpected()
 {
   System::trap();
-  resetSignals();
 
   Log::verboseMode = false;
   Log::putsRaw( "\n\nException specification violation\n" );
   Log::printTrace( StackTrace::current( 0 ) );
   Log::println();
 
+#ifdef __ANDROID__
+  __android_log_write( ANDROID_LOG_ERROR, "oz", "Exception specification violation\n" );
+#endif
+
   System::bell();
   abort( initFlags & System::HALT_BIT );
 }
-
-#endif
 
 #if defined( __ANDROID__ )
 #elif defined( __native_client__ )
@@ -499,22 +506,34 @@ static void initBell()
 OZ_NORETURN
 static void abort( bool doHalt )
 {
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   resetSignals();
-#endif
 
-#if defined( __ANDROID__ ) || defined( __native_client__ )
+#if defined( __ANDROID__ )
   if( doHalt ) {
-#elif defined( _WIN32 )
-  if( doHalt && _isatty( STDIN_FILENO ) && _isatty( STDERR_FILENO ) ) {
+    __android_log_write( ANDROID_LOG_ERROR, "oz", "Halted. Attach a debugger  ...\n"  );
+
+    while( true ) {
+      nanosleep( &TIMESPEC_10MS, nullptr );
+    }
+  }
+#elif defined( __native_client__ )
+  if( doHalt ) {
+    fflush( stdout );
+    fputs( "Halted. Attach a debugger ... ", stderr );
+    fflush( stderr );
+
+    while( true ) {
+      nanosleep( &TIMESPEC_10MS, nullptr );
+    }
+  }
 #else
   if( doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
-#endif
     fflush( stdout );
     fputs( "Halted. Attach a debugger or press Enter to quit ... ", stderr );
     fflush( stderr );
     fgetc( stdin );
   }
+#endif
 
   waitBell();
   ::abort();
@@ -543,7 +562,8 @@ System::~System()
 
 void System::trap()
 {
-#ifdef _WIN32
+#if defined( __ANDROID__ ) || defined( __native_client__ )
+#elif defined( _WIN32 )
   if( IsDebuggerPresent() ) {
     DebugBreak();
   }
@@ -670,21 +690,15 @@ void System::error( const char* function, const char* file, int line, int nSkipp
 
 void System::threadInit()
 {
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   if( initFlags & SIGNALS_BIT ) {
     catchSignals();
   }
-#endif
 }
 
 void System::init( int flags )
 {
-#ifdef __native_client__
-  flags &= ~HALT_BIT;
-#endif
   initFlags = flags;
 
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   if( initFlags & SIGNALS_BIT ) {
     catchSignals();
   }
@@ -700,7 +714,6 @@ void System::init( int flags )
     std::set_unexpected( std::unexpected );
     std::set_terminate( std::terminate );
   }
-#endif
 
   if( initFlags & LOCALE_BIT ) {
     setlocale( LC_ALL, "" );
@@ -709,12 +722,10 @@ void System::init( int flags )
 
 void System::free()
 {
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   std::set_unexpected( std::unexpected );
   std::set_terminate( std::terminate );
 
   resetSignals();
-#endif
 
   initFlags = 0;
 }

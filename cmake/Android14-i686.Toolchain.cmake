@@ -1,6 +1,7 @@
 set( ANDROID ON )
 
 set( PLATFORM_TRIPLET           "i686-linux-android" )
+set( PLATFORM_PROC_PREFIX       "x86" )
 set( PLATFORM_PREFIX            "/opt/android-ndk/platforms/android-14/arch-x86" )
 set( PLATFORM_TOOL_PREFIX       "/opt/android-ndk/toolchains/x86-4.6/prebuilt/linux-x86/bin" )
 set( PLATFORM_SOURCE_PREFIX     "/opt/android-ndk/sources" )
@@ -17,7 +18,7 @@ set( CMAKE_CXX_COMPILER         "${PLATFORM_TOOL_PREFIX}/${PLATFORM_TRIPLET}-g++
 set( PLATFORM_FLAGS             "-fPIC --sysroot=${PLATFORM_PREFIX}" )
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -I${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/include" )
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -I${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/x86/include" )
-set( PLATFORM_STLLIB            "${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/x86/libgnustl_shared.so" )
+set( PLATFORM_STLLIB            "${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/x86/libgnustl_static.a" )
 
 set( CMAKE_C_FLAGS              "${PLATFORM_FLAGS} -msse3 -mfpmath=sse" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "${PLATFORM_FLAGS} -msse3 -mfpmath=sse" CACHE STRING "" )

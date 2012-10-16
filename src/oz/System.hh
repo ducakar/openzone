@@ -30,12 +30,11 @@
 
 #include "common.hh"
 
-// FIXME Add a space after ellipsis in variadic macros once KDevelop gets that bug fixed.
-
 /**
  * @def OZ_WARNING
  * Wrapper for `oz::System::warning()`, filling in the current function, file and line parameters.
  */
+// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
 #define OZ_WARNING( ...) \
   oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
@@ -43,6 +42,7 @@
  * @def OZ_ERROR
  * Wrapper for `oz::System::error()`, filling in the current function, file and line parameters.
  */
+// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
@@ -164,7 +164,11 @@ class System
      * Set-up locale and crash handlers depending on `flags`. If `HALT_BIT` is also given, crash
      * handlers wait for CTRL-C before exit.
      */
-#if !defined( NDEBUG )
+#if defined( __ANDROID__ )
+    static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT );
+#elif defined( __native_client__ )
+    static void init( int flags = EXCEPTIONS_BIT );
+#elif !defined( NDEBUG )
     static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT | HALT_BIT | LOCALE_BIT );
 #else
     static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT | LOCALE_BIT );

@@ -1,6 +1,6 @@
 diff -Naur SDL/include/SDL_config.h SDL-nacl/include/SDL_config.h
---- SDL/include/SDL_config.h	2012-10-15 01:40:56.717786080 +0200
-+++ SDL-nacl/include/SDL_config.h	2012-10-15 01:55:28.162223312 +0200
+--- SDL/include/SDL_config.h	2012-10-16 23:44:11.313134047 +0200
++++ SDL-nacl/include/SDL_config.h	2012-10-16 23:50:31.621439405 +0200
 @@ -1,6 +1,6 @@
  /*
    Simple DirectMedia Layer
@@ -9,7 +9,7 @@ diff -Naur SDL/include/SDL_config.h SDL-nacl/include/SDL_config.h
  
    This software is provided 'as-is', without any express or implied
    warranty.  In no event will the authors be held liable for any damages
-@@ -26,26 +26,110 @@
+@@ -26,26 +26,115 @@
  
  /**
   *  \file SDL_config.h
@@ -32,12 +32,9 @@ diff -Naur SDL/include/SDL_config.h SDL-nacl/include/SDL_config.h
 -/* This is a minimal configuration just to get SDL running on new platforms */
 -#include "SDL_config_minimal.h"
 -#endif /* platform config */
--
+ 
 -#ifdef USING_GENERATED_CONFIG_H
 -#error Wrong SDL_config.h, check your include path?
--#endif
- 
--#endif /* _SDL_config_h */
 +#include <stdarg.h>
 +
 +#define HAVE_ALLOCA_H		1
@@ -112,6 +109,12 @@ diff -Naur SDL/include/SDL_config.h SDL-nacl/include/SDL_config.h
 +
 +#define SIZEOF_VOIDP 4
 +
++/* Allow disabling of core subsystems */
++#ifdef __mips__
++#define SDL_ATOMIC_DISABLED	1
+ #endif
+ 
+-#endif /* _SDL_config_h */
 +/* Enable various audio drivers */
 +#define SDL_AUDIO_DRIVER_ANDROID	1
 +#define SDL_AUDIO_DRIVER_DUMMY	1

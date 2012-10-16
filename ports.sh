@@ -2,11 +2,13 @@
 
 platforms=( \
   NaCl-x86_64 NaCl-i686 \
-  Android14-i686 Android14-ARM Android14-MIPS \
+  Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS \
 )
 
 projectDir=`pwd`
 topDir="$projectDir/ports"
+
+naclPrefix="/home/davorin/Projects/nacl_sdk/pepper_22/toolchain/linux_x86_newlib"
 
 ndkX86Tools="/opt/android-ndk/toolchains/x86-4.6/prebuilt/linux-x86"
 ndkX86Platform="/opt/android-ndk/platforms/android-14/arch-x86"
@@ -16,8 +18,6 @@ ndkARMPlatform="/opt/android-ndk/platforms/android-14/arch-arm"
 
 ndkMIPSTools="/opt/android-ndk/toolchains/mipsel-linux-android-4.6/prebuilt/linux-x86"
 ndkMIPSPlatform="/opt/android-ndk/platforms/android-14/arch-mips"
-
-naclPrefix="/home/davorin/Projects/nacl_sdk/pepper_22/toolchain/linux_x86_newlib"
 
 function msg()
 {
@@ -30,79 +30,14 @@ function msg()
   echo -ne "\e[0m"
 }
 
-function setup_ndkX86()
-{
-  buildDir="$topDir/Android14-i686"
-  triplet="i686-linux-android"
-  sysroot="$ndkX86Platform"
-  toolsroot="$ndkX86Tools"
-  toolchain="$projectDir/cmake/Android14-i686.Toolchain.cmake"
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
-
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-fPIC -O3 -msse3 -mfpmath=sse"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
-}
-
-function setup_ndkARM()
-{
-  buildDir="$topDir/Android14-ARM"
-  triplet="arm-linux-androideabi"
-  sysroot="$ndkARMPlatform"
-  toolsroot="$ndkARMTools"
-  toolchain="$projectDir/cmake/Android14-ARM.Toolchain.cmake"
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
-
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-fPIC -Wno-psabi -O3 -march=armv7-a -mfloat-abi=softfp -mfpu=vfp"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
-}
-
-function setup_ndkMIPS()
-{
-  buildDir="$topDir/Android14-MIPS"
-  triplet="mipsel-linux-android"
-  sysroot="$ndkMIPSPlatform"
-  toolsroot="$ndkMIPSTools"
-  toolchain="$projectDir/cmake/Android14-MIPS.Toolchain.cmake"
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
-
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-fPIC -O3"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
-}
-
 function setup_nacl64()
 {
-  buildDir="$topDir/NaCl-x86_64"
+  platform="NaCl-x86_64"
+  buildDir="$topDir/$platform"
   triplet="x86_64-nacl"
   sysroot="$naclPrefix/x86_64-nacl"
   toolsroot="$naclPrefix"
-  toolchain="$projectDir/cmake/NaCl-x86_64.Toolchain.cmake"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -114,17 +49,18 @@ function setup_nacl64()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -msse3"
+  export CFLAGS="-O3 -ffast-math -msse3"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 }
 
 function setup_nacl32()
 {
-  buildDir="$topDir/NaCl-i686"
+  platform="NaCl-i686"
+  buildDir="$topDir/$platform"
   triplet="i686-nacl"
   sysroot="$naclPrefix/i686-nacl"
   toolsroot="$naclPrefix"
-  toolchain="$projectDir/cmake/NaCl-i686.Toolchain.cmake"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -136,8 +72,100 @@ function setup_nacl32()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -msse3 -mfpmath=sse"
+  export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+}
+
+function setup_ndkX86()
+{
+  platform="Android14-i686"
+  buildDir="$topDir/$platform"
+  triplet="i686-linux-android"
+  sysroot="$ndkX86Platform"
+  toolsroot="$ndkX86Tools"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+
+  export CPP="$toolsroot/bin/$triplet-cpp"
+  export CC="$toolsroot/bin/$triplet-gcc"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CFLAGS="-Ofast -fPIC -msse3 -mfpmath=sse"
+  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
+}
+
+function setup_ndkARM()
+{
+  platform="Android14-ARM"
+  buildDir="$topDir/$platform"
+  triplet="arm-linux-androideabi"
+  sysroot="$ndkARMPlatform"
+  toolsroot="$ndkARMTools"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+
+  export CPP="$toolsroot/bin/$triplet-cpp"
+  export CC="$toolsroot/bin/$triplet-gcc"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CFLAGS="-Wno-psabi -Ofast -fPIC"
+  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
+}
+
+function setup_ndkARM7()
+{
+  platform="Android14-ARMv7a"
+  buildDir="$topDir/$platform"
+  triplet="arm-linux-androideabi"
+  sysroot="$ndkARMPlatform"
+  toolsroot="$ndkARMTools"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+
+  export CPP="$toolsroot/bin/$triplet-cpp"
+  export CC="$toolsroot/bin/$triplet-gcc"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CFLAGS="-Wno-psabi -Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon"
+  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
+}
+
+function setup_ndkMIPS()
+{
+  platform="Android14-MIPS"
+  buildDir="$topDir/$platform"
+  triplet="mipsel-linux-android"
+  sysroot="$ndkMIPSPlatform"
+  toolsroot="$ndkMIPSTools"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+
+  export CPP="$toolsroot/bin/$triplet-cpp"
+  export CC="$toolsroot/bin/$triplet-gcc"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CFLAGS="-Ofast -fPIC"
+  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 }
 
 function clean()
@@ -201,7 +229,7 @@ function prepare()
 {
   [[ -d "$buildDir/$1" ]] && return 1
 
-  msg "$1 @ $triplet"
+  msg "$1 @ $platform"
 
   mkdir -p "$buildDir"
   tar xf "$topDir/archives/$2" -C "$buildDir"
@@ -292,7 +320,7 @@ function build_sdl2()
 {
   [[ -d "$buildDir/SDL" ]] && return
 
-  msg "SDL2 @ $triplet"
+  msg "SDL2 @ $platform"
 
   cp -R "$topDir/archives/SDL" "$buildDir"
   cp "$projectDir/etc/SDL2-CMakeLists-gen.sh" "$buildDir/SDL"
@@ -325,7 +353,7 @@ function build_sdl2_ttf()
 {
   [[ -d "$buildDir/SDL_ttf" ]] && return
 
-  msg "SDL2_ttf @ $triplet"
+  msg "SDL2_ttf @ $platform"
 
   cp -R "$topDir/archives/SDL_ttf" "$buildDir"
   cd "$buildDir/SDL_ttf"
@@ -365,68 +393,76 @@ function build_libvorbis()
 function build()
 {
   # zlib
-  setup_ndkX86  && build_zlib
-  setup_ndkARM  && build_zlib
-  # setup_ndkMIPS && build_zlib
   setup_nacl64  && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
   setup_nacl32  && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
+  setup_ndkX86  && build_zlib
+  setup_ndkARM  && build_zlib
+  setup_ndkARM7 && build_zlib
+  setup_ndkMIPS && build_zlib
 
   # physfs
-  setup_ndkX86  && build_physfs
-  setup_ndkARM  && build_physfs
-  # setup_ndkMIPS && build_physfs
   setup_nacl64  && build_physfs
   setup_nacl32  && build_physfs
+  setup_ndkX86  && build_physfs
+  setup_ndkARM  && build_physfs
+  setup_ndkARM7 && build_physfs
+  setup_ndkMIPS && build_physfs
 
   # lua
-  setup_ndkX86  && build_lua
-  setup_ndkARM  && build_lua
-  # setup_ndkMIPS && build_lua
   setup_nacl64  && build_lua
   setup_nacl32  && build_lua
+  setup_ndkX86  && build_lua
+  setup_ndkARM  && build_lua
+  setup_ndkARM7 && build_lua
+  setup_ndkMIPS && build_lua
 
   # SDL
-  setup_ndkX86  && build_sdl2
-  setup_ndkARM  && build_sdl2
-  # SDL spin lock implementation missing for MIPS.
-  # setup_ndkMIPS && build_sdl2
   setup_nacl64  && build_sdl
   setup_nacl32  && build_sdl
+  setup_ndkX86  && build_sdl2
+  setup_ndkARM  && build_sdl2
+  setup_ndkARM7 && build_sdl2
+  setup_ndkMIPS && build_sdl2
 
   # freetype
-  setup_ndkX86  && build_freetype
-  setup_ndkARM  && build_freetype
-  # setup_ndkMIPS && build_freetype
   setup_nacl64  && build_freetype
   setup_nacl32  && build_freetype
+  setup_ndkX86  && build_freetype
+  setup_ndkARM  && build_freetype
+  setup_ndkARM7 && build_freetype
+  setup_ndkMIPS && build_freetype
 
   # SDL_ttf
-  setup_ndkX86  && build_sdl2_ttf
-  setup_ndkARM  && build_sdl2_ttf
-  # setup_ndkMIPS && build_sdl2_ttf
   setup_nacl64  && build_sdl_ttf
   setup_nacl32  && build_sdl_ttf
+  setup_ndkX86  && build_sdl2_ttf
+  setup_ndkARM  && build_sdl2_ttf
+  setup_ndkARM7 && build_sdl2_ttf
+  setup_ndkMIPS && build_sdl2_ttf
 
   # openal
-  setup_ndkX86  && build_openal
-  setup_ndkARM  && build_openal
-  # setup_ndkMIPS && build_openal
   setup_nacl64  && build_openal
   setup_nacl32  && build_openal
+  setup_ndkX86  && build_openal
+  setup_ndkARM  && build_openal
+  setup_ndkARM7 && build_openal
+  setup_ndkMIPS && build_openal
 
   # libogg
-  setup_ndkX86  && build_libogg
-  setup_ndkARM  && build_libogg
-  # setup_ndkMIPS && build_libogg
   setup_nacl64  && build_libogg
   setup_nacl32  && build_libogg
+  setup_ndkX86  && build_libogg
+  setup_ndkARM  && build_libogg
+  setup_ndkARM7 && build_libogg
+  setup_ndkMIPS && build_libogg
 
   # libvorbis
-  setup_ndkX86  && build_libvorbis
-  setup_ndkARM  && build_libvorbis
-  # setup_ndkMIPS && build_libvorbis
   setup_nacl64  && build_libvorbis
   setup_nacl32  && build_libvorbis
+  setup_ndkX86  && build_libvorbis
+  setup_ndkARM  && build_libvorbis
+  setup_ndkARM7 && build_libvorbis
+  setup_ndkMIPS && build_libvorbis
 }
 
 case "$1" in

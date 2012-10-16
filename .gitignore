@@ -10,7 +10,6 @@
 /libs
 /ports
 /build
-/core
 
 /data/*/*
 !/data/netradiant/*

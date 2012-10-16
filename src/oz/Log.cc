@@ -105,7 +105,6 @@ void Log::putsRaw( const char* s )
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( s, stdout );
   }
-
   if( file != nullptr ) {
     fputs( s, file );
     fflush( file );
@@ -121,7 +120,6 @@ void Log::vprintRaw( const char* s, va_list ap )
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
-
   if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
@@ -140,7 +138,6 @@ void Log::printRaw( const char* s, ... )
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
-
   if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
@@ -162,7 +159,6 @@ void Log::print( const char* s, ... )
     }
     fputs( buffer, stdout );
   }
-
   if( file != nullptr ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", file );
@@ -185,7 +181,6 @@ void Log::printEnd( const char* s, ... )
     fputs( buffer, stdout );
     fputc( '\n', stdout );
   }
-
   if( file != nullptr ) {
     fputs( buffer, file );
     fputc( '\n', file );
@@ -198,7 +193,6 @@ void Log::printEnd()
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputc( '\n', stdout );
   }
-
   if( file != nullptr ) {
     fputc( '\n', file );
     fflush( file );
@@ -221,7 +215,6 @@ void Log::println( const char* s, ... )
     fputs( buffer, stdout );
     fputc( '\n', stdout );
   }
-
   if( file != nullptr ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", file );
@@ -237,7 +230,6 @@ void Log::println()
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputc( '\n', stdout );
   }
-
   if( file != nullptr ) {
     fputc( '\n', file );
     fflush( file );
@@ -246,25 +238,27 @@ void Log::println()
 
 void Log::printTrace( const StackTrace& st )
 {
+  if( !verboseMode || showVerbose || file == nullptr ) {
+    fputs( "  thread: ", stdout );
+    fputs( st.threadName, stdout );
+    fputs( "\n  stack trace:\n", stdout );
+  }
+  if( file != nullptr ) {
+    fputs( "  thread: ", file );
+    fputs( st.threadName, file );
+    fputs( "\n  stack trace:\n", file );
+  }
+
   if( st.nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == nullptr ) {
-      fprintf( stdout, "  thread: %s\n  stack trace:\n    [no stack trace]\n", st.threadName );
+      fputs( "    [no stack trace]\n", stdout );
     }
-
     if( file != nullptr ) {
-      fprintf( file, "  thread: %s\n  stack trace:\n    [no stack trace]\n", st.threadName );
+      fputs( "    [no stack trace]\n", file );
     }
   }
   else {
     char** entries = st.symbols();
-
-    if( !verboseMode || showVerbose || file == nullptr ) {
-      fprintf( stdout, "  thread: %s\n  stack trace:\n", st.threadName );
-    }
-
-    if( file != nullptr ) {
-      fprintf( file, "  thread: %s\n  stack trace:\n", st.threadName );
-    }
 
     for( int i = 0; i < st.nFrames; ++i ) {
       if( !verboseMode || showVerbose || file == nullptr ) {
@@ -272,7 +266,6 @@ void Log::printTrace( const StackTrace& st )
         fputs( entries[i], stdout );
         fputc( '\n', stdout );
       }
-
       if( file != nullptr ) {
         fputs( "    ", file );
         fputs( entries[i], file );
@@ -300,7 +293,6 @@ void Log::printSignal( int sigNum )
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
-
   if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
@@ -311,7 +303,21 @@ bool Log::init( const char* filePath_, bool clearFile )
 {
   tabs = 0;
 
-#ifdef __native_client__
+#if defined( __ANDROID__ )
+
+  static_cast<void>( clearFile );
+
+  if( filePath_ == nullptr ) {
+    filePath[0] = '\0';
+  }
+  else {
+    strncpy( filePath, filePath_, 256 );
+    filePath[255] = '\0';
+  }
+
+  return true;
+
+#elif defined( __native_client__ )
 
   static_cast<void>( filePath_ );
   static_cast<void>( clearFile );
@@ -343,10 +349,16 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 void Log::free()
 {
+#if defined( __ANDROID__ )
+#elif defined( __native_client__ )
+#else
+
   if( file != nullptr ) {
     fclose( file );
     file = nullptr;
   }
+
+#endif
 }
 
 const Log& Log::operator << ( bool b ) const

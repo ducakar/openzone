@@ -1,0 +1,2 @@
+# Dummy CMakeCache.txt file so that KDevelop thinks this is a build directory
+# and doesn't index (source) files in it (it can really slow it down).

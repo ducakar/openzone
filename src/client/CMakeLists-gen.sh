@@ -6,7 +6,13 @@ add_library( client STATIC
 use_pch( client pch )
 
 if( ANDROID )
+  set( jniLibPath "\${CMAKE_BINARY_DIR}/../Android/libs/\${PLATFORM_PROC_PREFIX}/libopenzone.so" )
+
   add_library( openzone SHARED openzone.cc )
+
+  add_custom_command( OUTPUT "\${jniLibPath}" DEPENDS openzone
+                      COMMAND "\${CMAKE_COMMAND}" -E copy "libopenzone.so" "\${jniLibPath}" )
+  add_custom_target( openzone_android ALL DEPENDS android_project "\${jniLibPath}" )
 else()
   add_executable( openzone openzone.cc )
 endif()

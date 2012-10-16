@@ -134,7 +134,7 @@ Generate some `CMakeLists.txt` files and update OpenZone version in several file
 of OpenZone have many source files and keeping all `CMakeLists.txt` files up-to-date by hand
 wouldn't be easy.
 
-### `build.sh` ###
+### `build.sh` [clean | conf | build] ###
 
 Configures and/or builds for all supported platforms (see `platforms` array is the scrips) in the
 `build` directory.
@@ -196,7 +196,7 @@ go to `build/NaCl-test` and run "`python -m http.server`").
 Pack source tree into `openzone-src-<version>.tar.xz` and pack compiled game data archives from
 `share/*.zip` into `openzone-data-<version>.tar.xz`.
 
-### `ports.sh` ###
+### `ports.sh` [clean | fetch | build] ###
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
 zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.

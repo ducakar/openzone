@@ -14,10 +14,10 @@
 - ozdyn
     * rigid body physics
     * collision
-      + primitives: Box (OBB), Capsule, Dot (point) and Mesh (arbitrary triangle mesh)
-      + all but Dot-Dot and Mesh-Mesh collisions supported
+        + primitives: Box (OBB), Capsule, Dot (point) and Mesh (arbitrary triangle mesh)
+        + all but Dot-Dot and Mesh-Mesh collisions supported
     * physics
-      + only contact joints supported
+        + only contact joints supported
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
 - client
@@ -25,6 +25,8 @@
     * SMM models can be rendered at BSP entities
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
+- general
+    * ported to Android (i686 and ARM)
 
 0.3.1
 
