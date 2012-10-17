@@ -19,16 +19,16 @@ done
 
 # Fix version numbers.
 echo "Updating version in CMakeLists.txt"
-sed 's/^\(set( OZ_VERSION "\)[^"]*\(".*\)$/\1'"$version"'\2/' -i CMakeLists.txt
+sed 's|^\(set( OZ_VERSION "\)[^"]*\(".*\)$|\1'"$version"'\2|' -i CMakeLists.txt
 
 echo "Updating version in doc/Doxyfiles.{liboz,libozdyn} and doc/Doxyfile"
-sed 's/^\(PROJECT_NUMBER *= \).*$/\1"'"$version"'"/' -i doc/Doxyfile.{liboz,libozdyn} doc/Doxyfile
+sed 's|^\(PROJECT_NUMBER *= \).*$|\1"'"$version"'"|' -i doc/Doxyfile.{liboz,libozdyn} doc/Doxyfile
 
 echo "Updating HTML READMEs doc/*.html"
-sed 's/<!--OZ_VERSION-->[^<"]*\([<"]\)/<!--OZ_VERSION-->'"$version"'\1/' -i doc/*.html
+sed 's|<!--OZ_VERSION-->[^<"]*\([<"]\)|<!--OZ_VERSION-->'"$version"'\1|' -i doc/*.html
 
 echo "Updating version in etc/PKGBUILD"
-sed 's/^\(pkgver=\).*$/\1'"$version"'/' -i etc/PKGBUILD
+sed 's|^\(pkgver=\).*$|\1'"$version"'|' -i etc/PKGBUILD
 
 echo "Updating version in etc/openzone.spec"
-sed 's/^\(Version: *\).*$/\1'"$version"'/' -i etc/openzone.spec
+sed 's|^\(Version: *\).*$|\1'"$version"'|' -i etc/openzone.spec

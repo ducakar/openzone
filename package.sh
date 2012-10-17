@@ -1,27 +1,19 @@
 #!/bin/sh
 
 eval `grep '^version=' ./autogen.sh`
-rel_files=`git ls-files | grep -v '^data/'`
-topdir=`pwd`
-topdir_name=`basename $topdir`
 
-cd "$topdir/.."
-for file in $rel_files; do
-  files="$files $topdir_name/$file"
-done
+files=`git ls-files | grep -v '^data/'`
+files="$files share/applications share/pixmaps"
 
-files="$files $topdir_name/share/applications"
-files="$files $topdir_name/share/pixmaps"
-
-if [[ "$1" != "data" ]]; then
+if [[ $1 != data ]]; then
   echo "Packing openzone-src-$version.tar.xz"
-  tar Jcf "$topdir/openzone-src-$version.tar.xz" $files
+  tar Jcf "openzone-src-$version.tar.xz" --xform "s|^|openzone-$version/|" $files
 fi
 
-if [[ "$1" != "src" ]]; then
+if [[ $1 != src ]]; then
   echo "Packing openzone-data-$version.tar.xz"
-  tar Jcf "$topdir/openzone-data-$version.tar.xz" openzone/share/openzone/*.zip
+  tar Jcf "openzone-data-$version.tar.xz" --xform "s|^|openzone-$version/|" share/openzone/*.zip
 
   echo "Packing openzone-data-src-$version.tar.xz"
-  tar Jcf "$topdir/openzone-data-src-$version.tar.xz" --exclude=DISABLED openzone/data
+  tar Jcf "openzone-data-src-$version.tar.xz" --xform "s|^|openzone-$version/|" --exclude=DISABLED data
 fi

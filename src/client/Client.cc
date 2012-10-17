@@ -141,8 +141,7 @@ int Client::init( int argc, char** argv )
 
   String configDir = "/config/openzone";
   String localDir = "/local/share/openzone";
-//   String musicDir = "/music";
-  String musicDir = "";
+  String musicDir = "/music";
 
   File::mkdir( "/config" );
   File::mkdir( "/local" );
@@ -152,7 +151,7 @@ int Client::init( int argc, char** argv )
 
   char configRoot[MAX_PATH];
   char localRoot[MAX_PATH];
-//   char musicRoot[MAX_PATH];
+  char musicRoot[MAX_PATH];
 
   if( !SHGetSpecialFolderPath( nullptr, configRoot, CSIDL_APPDATA, false ) ) {
     OZ_ERROR( "Failed to obtain APPDATA directory" );
@@ -160,21 +159,20 @@ int Client::init( int argc, char** argv )
   if( !SHGetSpecialFolderPath( nullptr, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
     OZ_ERROR( "Failed to obtain LOCAL_APPDATA directory" );
   }
-//   if( !SHGetSpecialFolderPath( nullptr, musicRoot, CSIDL_MYMUSIC, false ) ) {
-//     OZ_ERROR( "Failed to obtain MYMUSIC directory" );
-//   }
+  if( !SHGetSpecialFolderPath( nullptr, musicRoot, CSIDL_MYMUSIC, false ) ) {
+    OZ_ERROR( "Failed to obtain MYMUSIC directory" );
+  }
 
   String configDir = String::str( "%s\\openzone", configRoot );
   String localDir  = String::str( "%s\\openzone", localRoot );
-//   String musicDir  = musicRoot;
-  String musicDir = "";
+  String musicDir  = musicRoot;
 
 #else
 
   const char* home       = SDL_getenv( "HOME" );
   const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
   const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
-//   const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
+  const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
 
   if( home == nullptr ) {
     OZ_ERROR( "Cannot determine user home directory from environment" );
@@ -188,8 +186,7 @@ int Client::init( int argc, char** argv )
                     String::str( "%s/.local/share/openzone", home ) :
                     String::str( "%s/openzone", localRoot );
 
-//   String musicDir = musicRoot == nullptr ? String::str( "%s/Music", home ) : String( musicRoot );
-  String musicDir = "";
+  String musicDir = musicRoot == nullptr ? String::str( "%s/Music", home ) : String( musicRoot );
 
 #endif
 

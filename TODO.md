@@ -1,3 +1,9 @@
+CURRENT
+
+- finish GUI layout settings
+- finish auto next track MusicPlayer, Sound
+- fix random splash event bug
+
 0.4
 
 - new löök

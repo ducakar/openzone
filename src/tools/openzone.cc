@@ -52,7 +52,7 @@ void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
 extern "C"
 void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
-void oz::client::MainInstance::mainThreadMain( void* )
+void MainInstance::mainThreadMain( void* )
 #else
 int main( int argc, char** argv )
 #endif
@@ -107,11 +107,6 @@ int main( int argc, char** argv )
 }
 
 #ifdef __native_client__
-
-namespace oz
-{
-namespace client
-{
 
 MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
@@ -231,9 +226,6 @@ void MainInstance::onMouseLocked( void*, int result )
 pp::Instance* MainModule::CreateInstance( PP_Instance instance )
 {
   return new MainInstance( instance );
-}
-
-}
 }
 
 namespace pp

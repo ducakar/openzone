@@ -57,5 +57,6 @@ endmacro()
 
 macro( use_pch _target _pchTarget )
   add_dependencies( ${_target} ${_pchTarget} )
-  set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include ${${_pchTarget}_outputPCH}" )
+  set_target_properties( ${_target} PROPERTIES
+    COMPILE_FLAGS "-include '${${_pchTarget}_outputPCH}'" )
 endmacro()

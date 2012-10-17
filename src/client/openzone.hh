@@ -36,13 +36,6 @@
 #include <ppapi/cpp/fullscreen.h>
 #include <ppapi/cpp/mouse_lock.h>
 
-int ozMain( int argc, char** argv );
-
-namespace oz
-{
-namespace client
-{
-
 class MainInstance : public pp::Instance, public pp::MouseLock
 {
   private:
@@ -76,9 +69,6 @@ class MainModule : public pp::Module
     pp::Instance* CreateInstance( PP_Instance instance ) override;
 
 };
-
-}
-}
 
 namespace pp
 {

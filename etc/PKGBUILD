@@ -15,8 +15,9 @@ sha1sums=()
 
 build()
 {
-  mkdir -p "${srcdir}/build" && cd "${srcdir}/build"
+  cd "${srcdir}"
 
+  mkdir -p build && cd build
   cmake \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="/usr" \
@@ -96,8 +97,11 @@ package_openzone()
   pkgdesc='Simple cross-platform FPS/RTS game engine'
   depends=('freeimage' 'libgl' 'liboz' 'libvorbis' 'lua' 'openal' 'sdl_ttf')
   optdepends=('openzone-data: game data'
-              'zip: for building ZIP game data archives'
-              'p7zip: for building 7zip game data archives')
+              'espeak: speech synthesis'
+              'libmad: MP3 playing'
+              'faad2: AAC playing'
+              'zip: building ZIP game data archives'
+              'p7zip: building 7zip game data archives')
 
   cd "${srcdir}/build"
 

@@ -35,4 +35,6 @@ DISABLED
 /*.patch
 /*.trace
 /stats
+/*.tar.gz
+/*.tar.bz2
 /*.tar.xz

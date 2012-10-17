@@ -136,9 +136,8 @@ wouldn't be easy.
 
 ### `build.sh` [clean | conf | build] ###
 
-Configures and/or builds for all supported platforms (see `platforms` array is the scrips) in the
-`build` directory.
-One of the following parameters must be given (`build` is assumed if run without parameters):
+Configures and/or builds for all supported platforms (see `platforms` array is the scrip) in the
+`build` directory. The following parameters may be given (`build` is assumed if none):
 
     * `clean`: delete all builds
     * `conf`: delete all builds and configure (but not build) them anew
@@ -184,6 +183,11 @@ This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-
 MinGW (`mingw32-*`) versions of all dependent libraries installed. Many of those packages must be
 built from AUR.
 
+The following parameters may be given (`build` is assumed if none):
+
+    * `clean`: Delete directories for all platforms
+    * `build`: Copy libraries for selected platforms into corresponding directories.
+
 ### `nacl-test.sh` ###
 
 Prepare directory `build/NaCl-test` (creating symlinks to binaries, compiled data archives, HTML
@@ -200,7 +204,7 @@ Pack source tree into `openzone-src-<version>.tar.xz` and pack compiled game dat
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
 zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.
-One of the following parameters must be given (`build` is assumed if run without parameters):
+The following parameters may be given (`build` is assumed if none):
 
     * `clean`: Delete all built libraries for all platforms in `ports` directory. Downloaded sources
       are left intact.

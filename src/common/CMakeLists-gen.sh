@@ -2,6 +2,6 @@
 
 cat << EOF > CMakeLists.txt
 add_library( common STATIC
-  `echo *.{hh,cc} | sed 's/ /\n  /g'` )
+  `echo *.{hh,cc} | sed 's| |\n  |g'` )
 use_pch( common pch )
 EOF

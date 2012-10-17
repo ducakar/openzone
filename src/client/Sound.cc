@@ -857,6 +857,7 @@ void Sound::free()
     soundDevice = nullptr;
   }
 
+#ifndef __native_client__
   if( libFaad != nullptr ) {
     SDL_UnloadObject( libFaad );
   }
@@ -866,21 +867,23 @@ void Sound::free()
   if( libeSpeak != nullptr ) {
     SDL_UnloadObject( libeSpeak );
   }
+#endif
 
   Log::printEnd( " OK" );
 }
 
 void Sound::initLibs()
 {
-  #ifdef _WIN32
+#ifndef __native_client__
+# ifdef _WIN32
   const char* libeSpeakName = "libespeak.dll";
   const char* libMadName    = "libmad.dll";
   const char* libFaadName   = "libfaad2.dll";
-#else
+# else
   const char* libeSpeakName = "libespeak.so.1";
   const char* libMadName    = "libmad.so.0";
   const char* libFaadName   = "libfaad.so.2";
-#endif
+# endif
 
   Log::print( "Linking eSpeak library '%s' ...", libeSpeakName );
 
@@ -943,6 +946,7 @@ void Sound::initLibs()
 
     Log::printEnd( " OK, AAC supported" );
   }
+#endif
 }
 
 Sound sound;

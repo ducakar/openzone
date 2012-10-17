@@ -1,11 +1,8 @@
 configure_file( configuration.hh.in configuration.hh )
 configure_file( BuildInfo.cc.in BuildInfo.cc )
 
-# Required to include configuration headers when we use a separate build directory. The second entry
-# must be included before '.', so directory with precompiled header is before directory with only
-# source header in the search path.
-include_directories( "${CMAKE_BINARY_DIR}/src/oz" )
-include_directories( "${CMAKE_BINARY_DIR}/src" )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/oz )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( . )
 
 add_subdirectory( oz )
@@ -28,4 +25,4 @@ endif()
 
 add_subdirectory( tests )
 
-add_library( build_info STATIC BuildInfo.hh "${CMAKE_BINARY_DIR}/src/BuildInfo.cc" )
+add_library( build_info STATIC BuildInfo.hh ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )

@@ -20,12 +20,11 @@ add_library( ozdyn
   collision/Capsule.cc
   collision/Collider.cc
   collision/Compound.cc )
-
 set_target_properties( ozdyn PROPERTIES
-  PUBLIC_HEADER "${headers}"
-  RESOURCE "${CMAKE_CURRENT_BINARY_DIR}/libozdyn.pc"
-  VERSION "${OZ_VERSION}"
-  SOVERSION "0" )
+                       PUBLIC_HEADER "${headers}"
+                       RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/libozdyn.pc
+                       VERSION ${OZ_VERSION}
+                       SOVERSION 0 )
 target_link_libraries( ozdyn oz )
 
 install( TARGETS ozdyn

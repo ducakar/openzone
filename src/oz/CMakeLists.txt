@@ -1,8 +1,10 @@
 configure_file( liboz.pc.in liboz.pc )
 configure_file( ozconfig.hh.in ozconfig.hh )
 
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+
 set( headers
-  "${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh"
+  ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh
   AABB.hh
   Alloc.hh
   Array.hh
@@ -120,10 +122,10 @@ add_library( oz
   Vec3.cc
   Vec4.cc )
 set_target_properties( oz PROPERTIES
-  PUBLIC_HEADER "${headers}"
-  RESOURCE "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc"
-  VERSION "${OZ_VERSION}"
-  SOVERSION "0" )
+                       PUBLIC_HEADER "${headers}"
+                       RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/liboz.pc
+                       VERSION ${OZ_VERSION}
+                       SOVERSION 0 )
 target_link_libraries( oz ${libs_oz} )
 
 install( TARGETS oz

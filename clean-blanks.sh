@@ -11,11 +11,11 @@ files=`git ls-files | \
        grep -v 'header\.glsl'`
 
 for file in $files; do
+  # Remove trailing blanks at the end of line.
+  sed 's|[ \t]*$||' -i $file
+
   # Remove duplicated empty lines.
   printf '\n\n' >> $file
   sed '/./,/^$/ !d' -i $file
   sed '$,$ d' -i $file
-
-  # Remove trailing blanks at the end of line.
-  sed 's/[ \t]*$//' -i $file
 done

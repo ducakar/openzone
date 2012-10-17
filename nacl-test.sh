@@ -9,10 +9,10 @@
 
 # Extract path to NaCl SDK from CMake toolchain files.
 nacl64Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-x86_64.Toolchain.cmake | \
-            sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
+            sed 's|^set( PLATFORM_PREFIX *"\(.*\)\" )|\1|'`
 nacl32Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-i686.Toolchain.cmake | \
-            sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
-prefix=`pwd`
+            sed 's|^set( PLATFORM_PREFIX *"\(.*\)\" )|\1|'`
+refix=`pwd`
 
 mkdir -p build/NaCl-test
 
@@ -25,7 +25,7 @@ do
 done
 
 # Strip binaries if "strip" parameter given.
-if [[ "$1" == "strip" ]]; then
+if [[ $1 == strip ]]; then
   [[ -e "build/NaCl-test/openzone.x86_64.nexe" ]] && \
      "$nacl64Root/bin/x86_64-nacl-strip" "build/NaCl-test/openzone.x86_64.nexe"
   [[ -e "build/NaCl-test/openzone.i686.nexe" ]] && \

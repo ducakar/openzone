@@ -1,6 +1,6 @@
 #!/bin/sh
 
-buildType=Debug
+buildType=Release
 platforms=( \
   Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang \
   Windows-i686 \
@@ -13,7 +13,7 @@ function clean()
   for platform in ${platforms[@]}; do
     rm -rf build/$platform
   done
-  rm -rf build/Android
+  rm -rf build/{NaCl-test,Android}
 }
 
 function build()

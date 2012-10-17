@@ -28,8 +28,7 @@
 
 #include <cstdlib>
 
-namespace oz
-{
+using namespace oz;
 
 enum LuaSyntaxState
 {
@@ -333,7 +332,7 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
   }
 }
 
-static int main( int argc, char** argv )
+int main( int argc, char** argv )
 {
   System::init();
 
@@ -441,11 +440,4 @@ static int main( int argc, char** argv )
   }
 
   return EXIT_SUCCESS;
-}
-
-}
-
-int main( int argc, char** argv )
-{
-  return oz::main( argc, argv );
 }
