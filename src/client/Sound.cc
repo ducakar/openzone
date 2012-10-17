@@ -307,8 +307,8 @@ int Sound::musicDecode()
       return bytesRead;
     }
     case MP3: {
-      short* musicOutput    = reinterpret_cast<short*>( musicBuffer );
-      short* musicOutputEnd = reinterpret_cast<short*>( musicBuffer + MUSIC_BUFFER_SIZE );
+      char* musicOutput    = musicBuffer;
+      char* musicOutputEnd = musicBuffer + MUSIC_BUFFER_SIZE;
 
       do {
         for( ; madWrittenSamples < madFrameSamples; ++madWrittenSamples ) {
@@ -318,12 +318,28 @@ int Sound::musicDecode()
             return MUSIC_BUFFER_SIZE;
           }
 
-          *musicOutput = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
-          ++musicOutput;
+          short value = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
+
+#ifdef OZ_BIG_ENDIAN
+          musicOutput[0] = char( value >> 8 );
+          musicOutput[1] = char( value );
+#else
+          musicOutput[0] = char( value );
+          musicOutput[1] = char( value >> 8 );
+#endif
+          musicOutput += 2;
 
           if( musicChannels == 2 ) {
-            *musicOutput = madFixedToShort( madSynth.pcm.samples[1][madWrittenSamples] );
-            ++musicOutput;
+            value = madFixedToShort( madSynth.pcm.samples[1][madWrittenSamples] );
+
+#ifdef OZ_BIG_ENDIAN
+            musicOutput[0] = char( value >> 8 );
+            musicOutput[1] = char( value );
+#else
+            musicOutput[0] = char( value );
+            musicOutput[1] = char( value >> 8 );
+#endif
+            musicOutput += 2;
           }
         }
 

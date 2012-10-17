@@ -253,8 +253,8 @@ class HashSet
     HashSet( HashSet&& hs ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( hs.pool ) )
     {
-      aCopy<Elem*>( data, hs.data, SIZE );
-      aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
+      __builtin_memcpy( data, hs.data, size_t( SIZE ) * sizeof( Elem* ) );
+      __builtin_memset( hs.data, 0, size_t( SIZE ) * sizeof( Elem* ) );
     }
 
     /**
@@ -284,10 +284,10 @@ class HashSet
 
       clear();
 
-      aCopy<Elem*>( data, hs.data, SIZE );
+      __builtin_memcpy( data, hs.data, size_t( SIZE ) * sizeof( Elem* ) );
+      __builtin_memset( hs.data, 0, size_t( SIZE ) * sizeof( Elem* ) );
       pool = static_cast< Pool<Elem, SIZE>&& >( hs.pool );
 
-      aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
       return *this;
     }
 

@@ -50,7 +50,7 @@
  */
 #define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#if defined( __BIG_ENDIAN__ ) || ( defined( __BYTE_ORDER__ ) && __BYTE_ORDER__ == 4321 )
 /**
  * @def OZ_BIG_ENDIAN
  * Defined on big endian platforms.

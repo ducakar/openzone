@@ -255,8 +255,8 @@ class HashMap
     HashMap( HashMap&& hm ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( hm.pool ) )
     {
-      aCopy<Elem*>( data, hm.data, SIZE );
-      aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
+      __builtin_memcpy( data, hm.data, size_t( SIZE ) * sizeof( Elem* ) );
+      __builtin_memset( hm.data, 0, size_t( SIZE ) * sizeof( Elem* ) );
     }
 
     /**
@@ -286,10 +286,10 @@ class HashMap
 
       clear();
 
-      aCopy<Elem*>( data, hm.data, SIZE );
+      __builtin_memcpy( data, hm.data, size_t( SIZE ) * sizeof( Elem* ) );
+      __builtin_memset( hm.data, 0, size_t( SIZE ) * sizeof( Elem* ) );
       pool = static_cast< Pool<Elem, SIZE>&& >( hm.pool );
 
-      aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
       return *this;
     }
 

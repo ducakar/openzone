@@ -24,7 +24,7 @@ if( NACL )
 endif()
 
 if( OZ_STANDALONE )
-  install( TARGETS openzone RUNTIME DESTINATION bin/\${OZ_SYSTEM_NAME} LIBRARY )
+  install( TARGETS openzone RUNTIME DESTINATION bin/\${OZ_PLATFORM_NAME} LIBRARY )
 else()
   install( TARGETS openzone RUNTIME DESTINATION bin LIBRARY DESTINATION lib )
 endif()

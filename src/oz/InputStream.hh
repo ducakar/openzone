@@ -207,8 +207,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     bool readBool()
     {
-      const bool* data = reinterpret_cast<const bool*>( forward( sizeof( bool ) ) );
-      return *data;
+      const char* data = forward( sizeof( bool ) );
+      return bool( *data );
     }
 
     /**
@@ -217,8 +217,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     char readChar()
     {
-      const char* data = reinterpret_cast<const char*>( forward( sizeof( char ) ) );
-      return *data;
+      const char* data = forward( sizeof( char ) );
+      return char( *data );
     }
 
     /**
@@ -227,8 +227,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     void readChars( char* array, int count )
     {
-      const char* data = reinterpret_cast<const char*>( forward( count * int( sizeof( char ) ) ) );
-      aCopy<char>( array, data, count );
+      const char* data = forward( count * int( sizeof( char ) ) );
+      __builtin_memcpy( array, data, size_t( count ) );
     }
 
     /**
@@ -237,8 +237,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     byte readByte()
     {
-      const byte* data = reinterpret_cast<const byte*>( forward( sizeof( byte ) ) );
-      return *data;
+      const char* data = forward( sizeof( byte ) );
+      return byte( *data );
     }
 
     /**
@@ -247,8 +247,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     ubyte readUByte()
     {
-      const ubyte* data = reinterpret_cast<const ubyte*>( forward( sizeof( ubyte ) ) );
-      return *data;
+      const char* data = forward( sizeof( ubyte ) );
+      return ubyte( *data );
     }
 
     /**
@@ -257,13 +257,17 @@ class InputStream
     OZ_ALWAYS_INLINE
     short readShort()
     {
-      const short* data = reinterpret_cast<const short*>( forward( sizeof( short ) ) );
+      const char* data = forward( sizeof( short ) );
 
       if( order == Endian::NATIVE ) {
-        return *data;
+        Endian::BitsToShort value = { { data[0], data[1] } };
+
+        return value.value;
       }
       else {
-        return Endian::bswap16( *data );
+        Endian::BitsToShort value = { { data[1], data[0] } };
+
+        return value.value;
       }
     }
 
@@ -273,13 +277,17 @@ class InputStream
     OZ_ALWAYS_INLINE
     ushort readUShort()
     {
-      const ushort* data = reinterpret_cast<const ushort*>( forward( sizeof( ushort ) ) );
+      const char* data = forward( sizeof( ushort ) );
 
       if( order == Endian::NATIVE ) {
-        return *data;
+        Endian::BitsToUShort value = { { data[0], data[1] } };
+
+        return value.value;
       }
       else {
-        return Endian::bswap16( *data );
+        Endian::BitsToUShort value = { { data[1], data[0] } };
+
+        return value.value;
       }
     }
 
@@ -289,13 +297,17 @@ class InputStream
     OZ_ALWAYS_INLINE
     int readInt()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( int ) ) );
+      const char* data = forward( sizeof( int ) );
 
       if( order == Endian::NATIVE ) {
-        return *data;
+        Endian::BitsToInt value = { { data[0], data[1], data[2], data[3] } };
+
+        return value.value;
       }
       else {
-        return Endian::bswap32( *data );
+        Endian::BitsToInt value = { { data[3], data[2], data[1], data[0] } };
+
+        return value.value;
       }
     }
 
@@ -305,13 +317,17 @@ class InputStream
     OZ_ALWAYS_INLINE
     uint readUInt()
     {
-      const uint* data = reinterpret_cast<const uint*>( forward( sizeof( uint ) ) );
+      const char* data = forward( sizeof( uint ) );
 
       if( order == Endian::NATIVE ) {
-        return *data;
+        Endian::BitsToUInt value = { { data[0], data[1], data[2], data[3] } };
+
+        return value.value;
       }
       else {
-        return Endian::bswap32( *data );
+        Endian::BitsToUInt value = { { data[3], data[2], data[1], data[0] } };
+
+        return value.value;
       }
     }
 
@@ -321,13 +337,21 @@ class InputStream
     OZ_ALWAYS_INLINE
     long64 readLong64()
     {
-      const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
+      const char* data = forward( sizeof( long64 ) );
 
       if( order == Endian::NATIVE ) {
-        return *data;
+        Endian::BitsToLong64 value = {
+          { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+        };
+
+        return value.value;
       }
       else {
-        return Endian::bswap64( *data );
+        Endian::BitsToLong64 value = {
+          { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+        };
+
+        return value.value;
       }
     }
 
@@ -337,13 +361,21 @@ class InputStream
     OZ_ALWAYS_INLINE
     ulong64 readULong64()
     {
-      const ulong64* data = reinterpret_cast<const ulong64*>( forward( sizeof( ulong64 ) ) );
+      const char* data = forward( sizeof( ulong64 ) );
 
       if( order == Endian::NATIVE ) {
-        return *data;
+        Endian::BitsToULong64 value = {
+          { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+        };
+
+        return value.value;
       }
       else {
-        return Endian::bswap64( *data );
+        Endian::BitsToULong64 value = {
+          { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+        };
+
+        return value.value;
       }
     }
 
@@ -353,13 +385,17 @@ class InputStream
     OZ_ALWAYS_INLINE
     float readFloat()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( int ) ) );
+      const char* data = forward( sizeof( float ) );
 
       if( order == Endian::NATIVE ) {
-        return Math::fromBits( *data );
+        Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+        return value.value;
       }
       else {
-        return Math::fromBits( Endian::bswap32( *data ) );
+        Endian::BitsToFloat value = { { data[3], data[2], data[1], data[0] } };
+
+        return value.value;
       }
     }
 
@@ -369,21 +405,21 @@ class InputStream
     OZ_ALWAYS_INLINE
     double readDouble()
     {
-      union BitsToDouble
-      {
-        long64 b;
-        double d;
-      };
-
-      const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
+      const char* data = forward( sizeof( double ) );
 
       if( order == Endian::NATIVE ) {
-        BitsToDouble bd = { *data };
-        return bd.d;
+        Endian::BitsToDouble value = {
+          { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+        };
+
+        return value.value;
       }
       else {
-        BitsToDouble bd = { Endian::bswap64( *data ) };
-        return bd.d;
+        Endian::BitsToDouble value = {
+          { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+        };
+
+        return value.value;
       }
     }
 
@@ -411,17 +447,21 @@ class InputStream
     OZ_ALWAYS_INLINE
     Vec3 readVec3()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
+      const char* data = forward( sizeof( float[3] ) );
 
       if( order == Endian::NATIVE ) {
-        return Vec3( Math::fromBits( data[0] ),
-                     Math::fromBits( data[1] ),
-                     Math::fromBits( data[2] ) );
+        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+
+        return Vec3( x.value, y.value, z.value );
       }
       else {
-        return Vec3( Math::fromBits( Endian::bswap32( data[0] ) ),
-                     Math::fromBits( Endian::bswap32( data[1] ) ),
-                     Math::fromBits( Endian::bswap32( data[2] ) ) );
+        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+
+        return Vec3( x.value, y.value, z.value );
       }
     }
 
@@ -431,19 +471,23 @@ class InputStream
     OZ_ALWAYS_INLINE
     Vec4 readVec4()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
+      const char* data = forward( sizeof( float[4] ) );
 
       if( order == Endian::NATIVE ) {
-        return Vec4( Math::fromBits( data[0] ),
-                     Math::fromBits( data[1] ),
-                     Math::fromBits( data[2] ),
-                     Math::fromBits( data[3] ) );
+        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BitsToFloat w = { { data[12], data[13], data[14], data[15] } };
+
+        return Vec4( x.value, y.value, z.value, w.value );
       }
       else {
-        return Vec4( Math::fromBits( Endian::bswap32( data[0] ) ),
-                     Math::fromBits( Endian::bswap32( data[1] ) ),
-                     Math::fromBits( Endian::bswap32( data[2] ) ),
-                     Math::fromBits( Endian::bswap32( data[3] ) ) );
+        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BitsToFloat w = { { data[15], data[14], data[13], data[12] } };
+
+        return Vec4( x.value, y.value, z.value, w.value );
       }
     }
 
@@ -453,17 +497,21 @@ class InputStream
     OZ_ALWAYS_INLINE
     Point readPoint()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
+      const char* data = forward( sizeof( float[3] ) );
 
       if( order == Endian::NATIVE ) {
-        return Point( Math::fromBits( data[0] ),
-                      Math::fromBits( data[1] ),
-                      Math::fromBits( data[2] ) );
+        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+
+        return Point( x.value, y.value, z.value );
       }
       else {
-        return Point( Math::fromBits( Endian::bswap32( data[0] ) ),
-                      Math::fromBits( Endian::bswap32( data[1] ) ),
-                      Math::fromBits( Endian::bswap32( data[2] ) ) );
+        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+
+        return Point( x.value, y.value, z.value );
       }
     }
 
@@ -473,19 +521,23 @@ class InputStream
     OZ_ALWAYS_INLINE
     Plane readPlane()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
+      const char* data = forward( sizeof( float[4] ) );
 
       if( order == Endian::NATIVE ) {
-        return Plane( Math::fromBits( data[0] ),
-                      Math::fromBits( data[1] ),
-                      Math::fromBits( data[2] ),
-                      Math::fromBits( data[3] ) );
+        Endian::BitsToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BitsToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BitsToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BitsToFloat d  = { { data[12], data[13], data[14], data[15] } };
+
+        return Plane( nx.value, ny.value, nz.value, d.value );
       }
       else {
-        return Plane( Math::fromBits( Endian::bswap32( data[0] ) ),
-                      Math::fromBits( Endian::bswap32( data[1] ) ),
-                      Math::fromBits( Endian::bswap32( data[2] ) ),
-                      Math::fromBits( Endian::bswap32( data[3] ) ) );
+        Endian::BitsToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BitsToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BitsToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BitsToFloat d  = { { data[15], data[14], data[13], data[12] } };
+
+        return Plane( nx.value, ny.value, nz.value, d.value );
       }
     }
 
@@ -495,19 +547,23 @@ class InputStream
     OZ_ALWAYS_INLINE
     Quat readQuat()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
+      const char* data = forward( sizeof( float[4] ) );
 
       if( order == Endian::NATIVE ) {
-        return Quat( Math::fromBits( data[0] ),
-                     Math::fromBits( data[1] ),
-                     Math::fromBits( data[2] ),
-                     Math::fromBits( data[3] ) );
+        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BitsToFloat w = { { data[12], data[13], data[14], data[15] } };
+
+        return Quat( x.value, y.value, z.value, w.value );
       }
       else {
-        return Quat( Math::fromBits( Endian::bswap32( data[0] ) ),
-                     Math::fromBits( Endian::bswap32( data[1] ) ),
-                     Math::fromBits( Endian::bswap32( data[2] ) ),
-                     Math::fromBits( Endian::bswap32( data[3] ) ) );
+        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BitsToFloat w = { { data[15], data[14], data[13], data[12] } };
+
+        return Quat( x.value, y.value, z.value, w.value );
       }
     }
 
@@ -517,30 +573,27 @@ class InputStream
     OZ_ALWAYS_INLINE
     Mat33 readMat33()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[9] ) ) );
+      const char* data = forward( sizeof( float[9] ) );
+
+      Mat33 m;
+      float* values = m;
 
       if( order == Endian::NATIVE ) {
-        return Mat33( Math::fromBits( data[0] ),
-                      Math::fromBits( data[1] ),
-                      Math::fromBits( data[2] ),
-                      Math::fromBits( data[3] ),
-                      Math::fromBits( data[4] ),
-                      Math::fromBits( data[5] ),
-                      Math::fromBits( data[6] ),
-                      Math::fromBits( data[7] ),
-                      Math::fromBits( data[8] ) );
+        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
+          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+          *values = value.value;
+        }
       }
       else {
-        return Mat33( Math::fromBits( Endian::bswap32( data[0] ) ),
-                      Math::fromBits( Endian::bswap32( data[1] ) ),
-                      Math::fromBits( Endian::bswap32( data[2] ) ),
-                      Math::fromBits( Endian::bswap32( data[3] ) ),
-                      Math::fromBits( Endian::bswap32( data[4] ) ),
-                      Math::fromBits( Endian::bswap32( data[5] ) ),
-                      Math::fromBits( Endian::bswap32( data[6] ) ),
-                      Math::fromBits( Endian::bswap32( data[7] ) ),
-                      Math::fromBits( Endian::bswap32( data[8] ) ) );
+        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
+          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+          *values = value.value;
+        }
       }
+
+      return m;
     }
 
     /**
@@ -549,44 +602,27 @@ class InputStream
     OZ_ALWAYS_INLINE
     Mat44 readMat44()
     {
-      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[16] ) ) );
+      const char* data = forward( sizeof( float[16] ) );
+
+      Mat44 m;
+      float* values = m;
 
       if( order == Endian::NATIVE ) {
-        return Mat44( Math::fromBits( data[ 0] ),
-                      Math::fromBits( data[ 1] ),
-                      Math::fromBits( data[ 2] ),
-                      Math::fromBits( data[ 3] ),
-                      Math::fromBits( data[ 4] ),
-                      Math::fromBits( data[ 5] ),
-                      Math::fromBits( data[ 6] ),
-                      Math::fromBits( data[ 7] ),
-                      Math::fromBits( data[ 8] ),
-                      Math::fromBits( data[ 9] ),
-                      Math::fromBits( data[10] ),
-                      Math::fromBits( data[11] ),
-                      Math::fromBits( data[12] ),
-                      Math::fromBits( data[13] ),
-                      Math::fromBits( data[14] ),
-                      Math::fromBits( data[15] ) );
+        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
+          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+          *values = value.value;
+        }
       }
       else {
-        return Mat44( Math::fromBits( Endian::bswap32( data[ 0] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 1] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 2] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 3] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 4] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 5] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 6] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 7] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 8] ) ),
-                      Math::fromBits( Endian::bswap32( data[ 9] ) ),
-                      Math::fromBits( Endian::bswap32( data[10] ) ),
-                      Math::fromBits( Endian::bswap32( data[11] ) ),
-                      Math::fromBits( Endian::bswap32( data[12] ) ),
-                      Math::fromBits( Endian::bswap32( data[13] ) ),
-                      Math::fromBits( Endian::bswap32( data[14] ) ),
-                      Math::fromBits( Endian::bswap32( data[15] ) ) );
+        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
+          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+          *values = value.value;
+        }
       }
+
+      return m;
     }
 
     /**

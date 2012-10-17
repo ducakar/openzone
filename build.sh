@@ -28,9 +28,10 @@ function build()
     (( $1 )) && rm -rf build/$platform
     if [[ ! -d build/$platform ]]; then
       mkdir -p build/$platform
-      ( cd build/$platform && cmake ../.. \
-        -DCMAKE_BUILD_TYPE=$buildType \
-        -DCMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake )
+      ( cd build/$platform && cmake -Wdev --warn-uninitialized \
+        -D CMAKE_BUILD_TYPE=$buildType \
+        -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
+	../.. )
     fi
     (( $1 )) || ( cd build/$platform && time make -j4 )
 

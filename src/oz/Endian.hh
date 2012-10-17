@@ -54,6 +54,150 @@ class Endian
 #endif
     };
 
+    /**
+     * Union for serialisation of `short` type.
+     */
+    union ShortToBits
+    {
+      short value;   ///< `short` value.
+      char  data[2]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `short` type.
+     */
+    union BitsToShort
+    {
+      char  data[2]; ///< Bytes.
+      short value;   ///< `short` value.
+    };
+
+    /**
+     * Union for serialisation of `ushort` type.
+     */
+    union UShortToBits
+    {
+      ushort value;   ///< `ushort` value.
+      char   data[2]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `ushort` type.
+     */
+    union BitsToUShort
+    {
+      char   data[2]; ///< Bytes.
+      ushort value;   ///< `ushort` value.
+    };
+
+    /**
+     * Union for serialisation of `int` type.
+     */
+    union IntToBits
+    {
+      int  value;   ///< `int` value.
+      char data[4]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `int` type.
+     */
+    union BitsToInt
+    {
+      char data[4]; ///< Bytes.
+      int  value;   ///< `int` value.
+    };
+
+    /**
+     * Union for serialisation of `uint` type.
+     */
+    union UIntToBits
+    {
+      uint value;   ///< `uint` value.
+      char data[4]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `uint` type.
+     */
+    union BitsToUInt
+    {
+      char data[4]; ///< Bytes.
+      uint value;   ///< `uint` value.
+    };
+
+    /**
+     * Union for serialisation of `long64` type.
+     */
+    union Long64ToBits
+    {
+      long64 value;   ///< `long64` value.
+      char   data[8]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `long64` type.
+     */
+    union BitsToLong64
+    {
+      char   data[8]; ///< Bytes.
+      long64 value;   ///< `long64` value.
+    };
+
+    /**
+     * Union for serialisation of `ulong64` type.
+     */
+    union ULong64ToBits
+    {
+      ulong64 value;   ///< `ulong64` value.
+      char    data[8]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `ulong64` type.
+     */
+    union BitsToULong64
+    {
+      char    data[8]; ///< Bytes.
+      ulong64 value;   ///< `ulong64` value.
+    };
+
+    /**
+     * Union for serialisation of `float` type.
+     */
+    union FloatToBits
+    {
+      float value;   ///< `float` value.
+      char  data[4]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `float` type.
+     */
+    union BitsToFloat
+    {
+      char  data[4]; ///< Bytes.
+      float value;   ///< `float` value.
+    };
+
+    /**
+     * Union for serialisation of `double` type.
+     */
+    union DoubleToBits
+    {
+      double value;   ///< `double` value.
+      char   data[8]; ///< Bytes.
+    };
+
+    /**
+     * Union for deserialisation of `double` type.
+     */
+    union BitsToDouble
+    {
+      char   data[8]; ///< Bytes.
+      double value;   ///< `double` value.
+    };
+
   public:
 
     /**

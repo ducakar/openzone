@@ -23,8 +23,6 @@
 
 #include <oz/oz.hh>
 
-#include <limits.h>
-
 using namespace oz;
 
 class Foo
@@ -110,8 +108,10 @@ class Foo
 
 };
 
-int main()
+#undef main
+int main( int, char** )
 {
+
   System::init();
   return 0;
 }

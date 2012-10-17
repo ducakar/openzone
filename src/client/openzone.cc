@@ -47,6 +47,9 @@ using namespace oz;
 
 #if defined( __ANDROID__ )
 extern "C"
+void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
+
+extern "C"
 void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
 void oz::client::MainInstance::mainThreadMain( void* )
