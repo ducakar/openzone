@@ -49,7 +49,7 @@ class Timer
     static const uint TICK_MILLIS = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
     /// Length of one tick in seconds.
-    static const float TICK_TIME;
+    static constexpr float TICK_TIME = 1.0f / 60.0f;
 
     ulong64 runMicros;   ///< Run time (game time plus dropped time).
 

@@ -29,8 +29,6 @@ namespace oz
 namespace common
 {
 
-const float Timer::TICK_TIME = 1.0f / float( TICKS_PER_SEC );
-
 Timer::Timer()
 {
   reset();

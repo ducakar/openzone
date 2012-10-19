@@ -44,23 +44,24 @@ function build()
 
     if [[ $platform == Windows-i686 ]]; then
       outDir="libs/Windows-i686"
-      prefix="/usr/i486-mingw32/bin"
+      prefix="/usr/i486-mingw32"
 
       rm -rf "$outDir"
       mkdir -p "$outDir"
 
-      cp "$prefix/libgcc_s_sjlj-1.dll" \
-        "$prefix/libstdc++-6.dll" \
-        "$prefix/zlib1.dll" \
-        "$prefix/libphysfs.dll" \
-        "$prefix/SDL.dll" \
-        "$prefix/SDL_ttf.dll" \
-        "$prefix/lua52.dll" \
-        "$prefix/libfreetype-6.dll" \
-        "$prefix/libogg-0.dll" \
-        "$prefix/libvorbis-0.dll" \
-        "$prefix/libvorbisfile-3.dll" \
-        "$prefix/FreeImage.dll" \
+      cp "$prefix/bin/libgcc_s_sjlj-1.dll" \
+        "$prefix/bin/libstdc++-6.dll" \
+        "$prefix/lib/pthreadGC2.dll" \
+        "$prefix/bin/zlib1.dll" \
+        "$prefix/bin/libphysfs.dll" \
+        "$prefix/bin/SDL.dll" \
+        "$prefix/bin/SDL_ttf.dll" \
+        "$prefix/bin/lua52.dll" \
+        "$prefix/bin/libfreetype-6.dll" \
+        "$prefix/bin/libogg-0.dll" \
+        "$prefix/bin/libvorbis-0.dll" \
+        "$prefix/bin/libvorbisfile-3.dll" \
+        "$prefix/bin/FreeImage.dll" \
         "$outDir"
 
       chmod +x "$outDir/"*

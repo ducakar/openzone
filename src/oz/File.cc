@@ -157,7 +157,7 @@ File::File( const File& file ) :
 
 File::File( File&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  fileSize( file.fileSize ), data( file.data )
+  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
 {
 #ifdef __native_client__
   descriptor = new Descriptor( this );

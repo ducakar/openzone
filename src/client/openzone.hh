@@ -42,7 +42,7 @@ class MainInstance : public pp::Instance, public pp::MouseLock
 
     pp::Fullscreen fullscreen;
     bool           isContextBound;
-    Thread         mainThread;
+    oz::Thread      mainThread;
 
     static void mainThreadMain( void* );
 

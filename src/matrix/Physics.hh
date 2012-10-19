@@ -89,11 +89,11 @@ class Physics
 
     bool handleObjFriction();
     void handleObjHit();
-    void handleObjMove();
+    Vec3 handleObjMove();
 
   public:
 
-    void updateFrag( Frag* frag );
+    void  updateFrag( Frag* frag );
     void updateObj( Dynamic* dyn );
 
 };

@@ -29,25 +29,10 @@
 #include "System.hh"
 
 #include <cstdlib>
-
-#ifdef _WIN32
-# include <windows.h>
-#else
-# include <pthread.h>
-#endif
+#include <pthread.h>
 
 namespace oz
 {
-
-#ifdef _WIN32
-
-struct Semaphore::Descriptor
-{
-  HANDLE        semaphore;
-  volatile long counter;
-};
-
-#else
 
 struct Semaphore::Descriptor
 {
@@ -55,8 +40,6 @@ struct Semaphore::Descriptor
   pthread_cond_t  cond;
   volatile int    counter;
 };
-
-#endif
 
 int Semaphore::counter() const
 {
@@ -69,31 +52,15 @@ void Semaphore::post() const
 {
   hard_assert( descriptor != nullptr );
 
-#ifdef _WIN32
-
-  InterlockedIncrement( &descriptor->counter );
-  ReleaseSemaphore( descriptor->semaphore, 1, nullptr );
-
-#else
-
   pthread_mutex_lock( &descriptor->mutex );
   ++descriptor->counter;
   pthread_mutex_unlock( &descriptor->mutex );
   pthread_cond_signal( &descriptor->cond );
-
-#endif
 }
 
 void Semaphore::wait() const
 {
   hard_assert( descriptor != nullptr );
-
-#ifdef _WIN32
-
-  WaitForSingleObject( descriptor->semaphore, INFINITE );
-  InterlockedDecrement( &descriptor->counter );
-
-#else
 
   pthread_mutex_lock( &descriptor->mutex );
   while( descriptor->counter == 0 ) {
@@ -101,25 +68,11 @@ void Semaphore::wait() const
   }
   --descriptor->counter;
   pthread_mutex_unlock( &descriptor->mutex );
-
-#endif
 }
 
 bool Semaphore::tryWait() const
 {
   hard_assert( descriptor != nullptr );
-
-#ifdef _WIN32
-
-  int ret = WaitForSingleObject( descriptor->semaphore, 0 );
-  if( ret == WAIT_TIMEOUT ) {
-    return false;
-  }
-
-  InterlockedDecrement( &descriptor->counter );
-  return true;
-
-#else
 
   bool hasSucceeded = false;
 
@@ -131,8 +84,6 @@ bool Semaphore::tryWait() const
   pthread_mutex_unlock( &descriptor->mutex );
 
   return hasSucceeded;
-
-#endif
 }
 
 void Semaphore::init( int counter )
@@ -146,35 +97,20 @@ void Semaphore::init( int counter )
 
   descriptor->counter = counter;
 
-#ifdef _WIN32
-
-  descriptor->semaphore = CreateSemaphore( nullptr, counter, 0x7fffffff, nullptr );
-  if( descriptor->semaphore == nullptr ) {
-    OZ_ERROR( "Semaphore semaphore creation failed" );
-  }
-
-#else
-
   if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
     OZ_ERROR( "Semaphore mutex creation failed" );
   }
   if( pthread_cond_init( &descriptor->cond, nullptr ) != 0 ) {
     OZ_ERROR( "Semaphore condition variable creation failed" );
   }
-
-#endif
 }
 
 void Semaphore::destroy()
 {
   hard_assert( descriptor != nullptr );
 
-#ifdef _WIN32
-  CloseHandle( &descriptor->semaphore );
-#else
   pthread_cond_destroy( &descriptor->cond );
   pthread_mutex_destroy( &descriptor->mutex );
-#endif
 
   free( descriptor );
   descriptor = nullptr;

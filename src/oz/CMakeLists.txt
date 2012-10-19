@@ -45,6 +45,7 @@ set( headers
   Set.hh
   simd.hh
   SList.hh
+  SpinLock.hh
   StackTrace.hh
   String.hh
   System.hh
@@ -93,6 +94,7 @@ add_library( oz
   Set.hh
   simd.hh
   SList.hh
+  SpinLock.hh
   StackTrace.hh
   String.hh
   System.hh

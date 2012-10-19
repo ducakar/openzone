@@ -84,20 +84,6 @@ class System
     static pp::Instance* instance; ///< NaCl instance.
     static pp::Core*     core;     ///< NaCl `pp::Core` interface.
 
-  private:
-
-    static System system; ///< Private instance, takes care for static (de)initialisation.
-
-    /**
-     * Initialise bell.
-     */
-    explicit System();
-
-    /**
-     * Delay normal process termination until the bell finishes playing.
-     */
-    ~System();
-
   public:
 
     /**

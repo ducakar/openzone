@@ -41,13 +41,17 @@ class Alloc
   public:
 
     /// An dummy type used as a parameter for aligned `new` operator.
-    struct Aligned {};
+    struct Aligned
+    {};
 
     /// Constant to be passed to `new` operator to allocate aligned storage.
     static const Aligned ALIGNED;
 
     /// Alignment of allocated storage returned by aligned version of `new` operator.
     static const size_t ALIGNMENT = 16;
+
+    /// Whether liboz was compiled in a way that disabled its `new` and `delete` operator overloads.
+    static const bool OVERLOADS_NEW_AND_DELETE;
 
     static int    count;     ///< Current number of allocated memory chunks.
     static size_t amount;    ///< Amount of currently allocated memory.

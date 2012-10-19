@@ -111,7 +111,6 @@ class Foo
 #undef main
 int main( int, char** )
 {
-
   System::init();
   return 0;
 }

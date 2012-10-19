@@ -225,7 +225,7 @@ class HashSet
      */
     explicit HashSet()
     {
-      aFill<Elem*, Elem*>( data, nullptr, SIZE );
+      __builtin_memset( data, 0, sizeof( data ) );
     }
 
     /**
@@ -253,8 +253,8 @@ class HashSet
     HashSet( HashSet&& hs ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( hs.pool ) )
     {
-      __builtin_memcpy( data, hs.data, size_t( SIZE ) * sizeof( Elem* ) );
-      __builtin_memset( hs.data, 0, size_t( SIZE ) * sizeof( Elem* ) );
+      __builtin_memcpy( data, hs.data, sizeof( hs.data ) );
+      __builtin_memset( hs.data, 0, sizeof( data ) );
     }
 
     /**
@@ -284,8 +284,8 @@ class HashSet
 
       clear();
 
-      __builtin_memcpy( data, hs.data, size_t( SIZE ) * sizeof( Elem* ) );
-      __builtin_memset( hs.data, 0, size_t( SIZE ) * sizeof( Elem* ) );
+      __builtin_memcpy( data, hs.data, sizeof( hs.data ) );
+      __builtin_memset( hs.data, 0, sizeof( data ) );
       pool = static_cast< Pool<Elem, SIZE>&& >( hs.pool );
 
       return *this;

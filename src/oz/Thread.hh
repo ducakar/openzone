@@ -47,8 +47,7 @@ class Thread
 
     struct Descriptor;
 
-    /// %Thread descriptor.
-    Descriptor* descriptor;
+    Descriptor* descriptor; ///< %Thread descriptor.
 
   public:
 

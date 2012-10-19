@@ -34,6 +34,7 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <pthread.h>
 #if defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
@@ -42,7 +43,6 @@
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
-# include <pthread.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <io.h>
@@ -52,7 +52,6 @@
 # include <alsa/asoundlib.h>
 # include <ctime>
 # include <dlfcn.h>
-# include <pthread.h>
 # include <pulse/simple.h>
 # include <unistd.h>
 #endif
@@ -103,8 +102,6 @@ struct SampleInfo
   int        offset;
 };
 
-static pthread_mutex_t bellLock;
-
 #elif defined( _WIN32 )
 
 static const int BELL_WAVE_RATE = 44100;
@@ -129,8 +126,6 @@ struct Wave
   short samples[ int( BELL_TIME * BELL_WAVE_RATE ) ];
 };
 
-static CRITICAL_SECTION bellLock;
-
 #else
 
 static const int                      BELL_ALSA_RATE  = 48000;
@@ -138,17 +133,15 @@ static const pa_sample_spec           BELL_PA_SPEC    = { PA_SAMPLE_S16NE, 44100
 static const timespec                 TIMESPEC_10MS   = { 0, 10 * 1000000 };
 static const timespec                 TIMESPEC_BELL   = { 0, long( BELL_TIME * 1e9f ) };
 
-static pthread_spinlock_t             bellLock;
-
 static decltype( ::pa_simple_new   )* pa_simple_new   = nullptr;
 static decltype( ::pa_simple_free  )* pa_simple_free  = nullptr;
 static decltype( ::pa_simple_write )* pa_simple_write = nullptr;
 
 #endif
 
-static volatile bool isBellPlaying     = false;
-static bool          isBellInitialised = false;
-static int           initFlags         = 0;
+static pthread_once_t     bellOnce      = PTHREAD_ONCE_INIT;
+static volatile bool      isBellPlaying = false;
+static int                initFlags     = 0;
 
 OZ_NORETURN
 static void abort( bool doHalt );
@@ -158,7 +151,7 @@ static void signalHandler( int sigNum )
 {
   Log::verboseMode = false;
   Log::printSignal( sigNum );
-  Log::printTrace( StackTrace::current( 0 ) );
+  Log::printTrace( StackTrace::current( 2 ) );
   Log::println();
 
 #ifdef __ANDROID__
@@ -231,6 +224,13 @@ static void unexpected()
 }
 
 #if defined( __ANDROID__ )
+
+static void* bellMain( void* )
+{
+  // TODO Implement bell with OpenSL ES.
+  return nullptr;
+}
+
 #elif defined( __native_client__ )
 
 static void stopBellCallback( void* info_, int )
@@ -315,7 +315,7 @@ static void* bellMain( void* )
 
 #elif defined( _WIN32 )
 
-static DWORD WINAPI bellMain( LPVOID )
+static void* bellMain( void* )
 {
   size_t nSamples = int( BELL_TIME * BELL_WAVE_RATE );
   Wave*  wave     = static_cast<Wave*>( malloc( sizeof( Wave ) ) );
@@ -360,7 +360,7 @@ static DWORD WINAPI bellMain( LPVOID )
   free( wave );
 
   isBellPlaying = false;
-  return 0;
+  return nullptr;
 }
 
 #else
@@ -445,41 +445,9 @@ static void* bellMain( void* )
 
 #endif
 
-static void waitBell()
-{
-#if defined( __native_client__ )
-  if( System::core == nullptr || System::core->IsMainThread() ) {
-    return;
-  }
-#endif
-
-  while( isBellPlaying ) {
-#ifdef _WIN32
-    Sleep( 10 );
-#else
-    nanosleep( &TIMESPEC_10MS, nullptr );
-#endif
-  }
-}
-
 static void initBell()
 {
-#if defined( __ANDROID__ )
-#elif defined( __native_client__ )
-
-  if( pthread_mutex_init( &bellLock, nullptr ) != 0 ) {
-    OZ_ERROR( "Bell mutex creation failed" );
-  }
-
-#elif defined( _WIN32 )
-
-  InitializeCriticalSection( &bellLock );
-
-#else
-
-  if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
-    OZ_ERROR( "Bell spin lock creation failed" );
-  }
+#if !defined( __ANDROID__) && !defined( __native_client__ ) && !defined( _WIN32 )
 
   // Link PulseAudio client library.
   void* libPulse = dlopen( "libpulse-simple.so.0", RTLD_NOW );
@@ -499,9 +467,35 @@ static void initBell()
   }
 
 #endif
-
-  isBellInitialised = true;
 }
+
+static void waitBell()
+{
+#if defined( __native_client__ )
+  if( System::core == nullptr || System::core->IsMainThread() ) {
+    return;
+  }
+#endif
+
+  while( isBellPlaying ) {
+#ifdef _WIN32
+    Sleep( 10 );
+#else
+    nanosleep( &TIMESPEC_10MS, nullptr );
+#endif
+  }
+}
+
+// Wait bell to finish playing on (normal) process termination.
+static struct BellBlockade
+{
+  OZ_HIDDEN
+  ~BellBlockade()
+  {
+    waitBell();
+  }
+}
+bellBlockade;
 
 OZ_NORETURN
 static void abort( bool doHalt )
@@ -543,23 +537,6 @@ pp::Module*   System::module   = nullptr;
 pp::Instance* System::instance = nullptr;
 pp::Core*     System::core     = nullptr;
 
-OZ_HIDDEN
-System System::system;
-
-OZ_HIDDEN
-System::System()
-{
-  if( !isBellInitialised ) {
-    initBell();
-  }
-}
-
-OZ_HIDDEN
-System::~System()
-{
-  waitBell();
-}
-
 void System::trap()
 {
 #if defined( __ANDROID__ ) || defined( __native_client__ )
@@ -574,70 +551,23 @@ void System::trap()
 
 void System::bell()
 {
-  if( !isBellInitialised ) {
-    initBell();
-  }
+  pthread_once( &bellOnce, &initBell );
 
-#if defined( __ANDROID__ )
-#elif defined( __native_client__ )
-
-  if( instance == nullptr || core == nullptr || pthread_mutex_trylock( &bellLock ) != 0 ) {
+#ifdef __native_client__
+  if( instance == nullptr || core == nullptr ) {
     return;
   }
-
-  if( isBellPlaying ) {
-    pthread_mutex_unlock( &bellLock );
-  }
-  else {
-    isBellPlaying = true;
-    pthread_mutex_unlock( &bellLock );
-
-    pthread_t bellThread;
-    if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
-      OZ_ERROR( "Bell thread creation failed" );
-    }
-    pthread_detach( bellThread );
-  }
-
-#elif defined( _WIN32 )
-
-  EnterCriticalSection( &bellLock );
-
-  if( isBellPlaying ) {
-    LeaveCriticalSection( &bellLock );
-  }
-  else {
-    isBellPlaying = true;
-    LeaveCriticalSection( &bellLock );
-
-    HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
-    if( bellThread == nullptr ) {
-      OZ_ERROR( "Bell thread creation failed" );
-    }
-    CloseHandle( bellThread );
-  }
-
-#else
-
-  if( pthread_spin_trylock( &bellLock ) != 0 ) {
-    return;
-  }
-
-  if( isBellPlaying ) {
-    pthread_spin_unlock( &bellLock );
-  }
-  else {
-    isBellPlaying = true;
-    pthread_spin_unlock( &bellLock );
-
-    pthread_t bellThread;
-    if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
-      OZ_ERROR( "Bell thread creation failed" );
-    }
-    pthread_detach( bellThread );
-  }
-
 #endif
+
+  if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
+    __sync_synchronize();
+
+    pthread_t bellThread;
+    if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
+      OZ_ERROR( "Bell thread creation failed" );
+    }
+    pthread_detach( bellThread );
+  }
 }
 
 void System::warning( const char* function, const char* file, int line, int nSkippedFrames,

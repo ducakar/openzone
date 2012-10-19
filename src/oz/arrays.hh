@@ -46,7 +46,7 @@ class ArrayIterator : public IteratorBase<Elem>
     using IteratorBase<Elem>::elem;
 
     /// Successor of the last element, used to determine when the iterator becomes invalid.
-    Elem* past;
+    const Elem* past;
 
   public:
 
@@ -399,7 +399,7 @@ template <typename Elem>
 inline void aReverse( Elem* aDest, int count )
 {
   int bottom = 0;
-  int top = count - 1;
+  int top    = count - 1;
 
   while( bottom < top ) {
     swap<Elem>( aDest[bottom], aDest[top] );

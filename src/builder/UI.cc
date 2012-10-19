@@ -83,7 +83,6 @@ void UI::buildCursors()
 
     int nMatches = fscanf( fs, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgPath );
     if( nMatches != 4 ) {
-      fclose( fs );
       OZ_ERROR( "Invalid xcursor line" );
     }
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-buildType=Release
+buildType=Debug
 platforms=( \
   Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang \
   Windows-i686 \

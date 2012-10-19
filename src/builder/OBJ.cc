@@ -330,7 +330,6 @@ void OBJ::load()
             currentMaterial = *value;
           }
           else {
-            fclose( fs );
             OZ_ERROR( "Invalid OBJ material requested: %s", &buffer[0] );
           }
         }

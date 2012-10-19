@@ -41,15 +41,15 @@
  * Compiler and platform-specific macros
  */
 
-#if defined( _MSC_VER )
-# error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
-# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
-# define OZ_MSVC _MSC_VER
-#elif defined( __OPENCC__ )
-# error Open64 cannot compile OpenZone due to lack of C++11 support.
-# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
-# define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
-#elif defined( __clang__ )
+// #if defined( _MSC_VER )
+// # error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
+// # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+// # define OZ_MSVC _MSC_VER
+// #elif defined( __OPENCC__ )
+// # error Open64 cannot compile OpenZone due to lack of C++11 support.
+// # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+// # define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
+#if defined( __clang__ )
 # if __clang_major__ < 3
 #  error Only LLVM/Clang >= 3.0 is supported.
 # endif
@@ -81,11 +81,11 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 #endif
 
 // Check for AddressSanitizer (currently only supported by LLVM/Clang 3.1+).
-#ifdef __has_feature
-# if __has_feature( address_sanitizer )
-#  define OZ_ADDRESS_SANITIZER
-# endif
-#endif
+// #ifdef __has_feature
+// # if __has_feature( address_sanitizer )
+// #  define OZ_ADDRESS_SANITIZER
+// # endif
+// #endif
 
 // For now, SSE3 is mandatory for OZ_SIMD_MATH.
 #if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )
@@ -103,39 +103,4 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 # define WIN32_LEAN_AND_MEAN
 // Don't define min and max macros as they interfere with oz::min and oz::max.
 # define NOMINMAX
-#endif
-
-// Define OZ_ECLIPSE macro in project configurations when using Eclipse CDT.
-#ifdef OZ_ECLIPSE
-
-// One should have same colour for highlighting macros and reserved words and those identifiers
-// should look as reserved words.
-# define byte     byte
-# define ubyte    ubyte
-# define ushort   ushort
-# define uint     uint
-# define ulong    ulong
-# define long64   long64
-# define ulong64  ulong64
-
-# define noexcept throw()
-# define override
-# define final
-
-unsigned int __builtin_bswap32( unsigned int );
-unsigned long long __builtin_bswap64( unsigned long long );
-
-float __builtin_fminf( float, float );
-float __builtin_fmaxf( float, float );
-float __builtin_roundf( float );
-float __builtin_truncf( float );
-float __builtin_powf( float, float );
-float __builtin_isnormal( float );
-float __builtin_ia32_vec_ext_v4sf( float, int );
-float __builtin_ia32_shufps( float, float, int );
-float __builtin_ia32_haddps( float, float );
-float __builtin_ia32_hsubps( float, float );
-
-namespace std { typedef decltype( nullptr ) nullptr_t; }
-
 #endif

@@ -22,12 +22,16 @@ target_link_libraries( openzone client modules nirvana matrix common build_info 
 
 install( TARGETS openzone RUNTIME DESTINATION bin${suffix} LIBRARY DESTINATION lib${suffix} )
 
-add_executable( ozGettext ozGettext.cc )
-target_link_libraries( ozGettext oz )
+if( NOT ANDROID AND NOT NACL )
 
-install( TARGETS ozGettext RUNTIME DESTINATION bin${suffix} )
+  add_executable( ozGettext ozGettext.cc )
+  target_link_libraries( ozGettext oz )
 
-add_executable( ozManifest ozManifest.cc )
-target_link_libraries( ozManifest oz )
+  install( TARGETS ozGettext RUNTIME DESTINATION bin${suffix} )
 
-install( TARGETS ozManifest RUNTIME DESTINATION bin${suffix} )
+  add_executable( ozManifest ozManifest.cc )
+  target_link_libraries( ozManifest oz )
+
+  install( TARGETS ozManifest RUNTIME DESTINATION bin${suffix} )
+
+endif()

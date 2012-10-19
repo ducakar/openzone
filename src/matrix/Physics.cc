@@ -51,7 +51,7 @@ const float Physics::SLIDE_DAMAGE_COEF       = -2.5f;
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.003f;
 const float Physics::FLOATING_STICK_VELOCITY =  0.0005f;
-const float Physics::WATER_FRICTION          =  0.09f;
+const float Physics::WATER_FRICTION          =  0.10f;
 const float Physics::LADDER_FRICTION         =  0.15f;
 const float Physics::FLOOR_FRICTION_COEF     =  0.30f;
 const float Physics::SLICK_FRICTION_COEF     =  0.03f;
@@ -216,7 +216,7 @@ bool Physics::handleObjFriction()
       }
     }
 
-    // on floor or on a still object
+    // On floor or on a still object.
     if( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower >= 0  ) {
       float deltaVel2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
       float friction  = FLOOR_FRICTION_COEF;
@@ -255,7 +255,7 @@ bool Physics::handleObjFriction()
         }
       }
     }
-    // in air or swimming
+    // In air or swimming.
     else {
       dyn->momentum.z += systemMom;
 
@@ -402,13 +402,17 @@ void Physics::handleObjHit()
   }
 }
 
-void Physics::handleObjMove()
+Vec3 Physics::handleObjMove()
 {
+  // It's much more accurate to sum partial moves than calculate it from a position difference;
+  // floating and sliding may never come to a halt at large world coordinates in the latter case.
+  Vec3 completeMove = Vec3::ZERO;
+
   move = dyn->momentum * Timer::TICK_TIME;
 
-  float moveLen = !move;
+  float moveLen = move.fastN();
   if( moveLen == 0.0f ) {
-    return;
+    return completeMove;
   }
 
   Vec3  originalDir = move / moveLen;
@@ -417,8 +421,12 @@ void Physics::handleObjMove()
   int traceSplits = 0;
   do {
     collider.translate( dyn, move );
-    dyn->p += collider.hit.ratio * move;
-    leftRatio -= leftRatio * collider.hit.ratio;
+
+    Vec3 partialMove = collider.hit.ratio * move;
+
+    completeMove += partialMove;
+    dyn->p       += partialMove;
+    leftRatio    -= leftRatio * collider.hit.ratio;
 
     if( collider.hit.ratio == 1.0f ) {
       break;
@@ -489,6 +497,8 @@ void Physics::handleObjMove()
   while( true );
 
   orbis.reposition( dyn );
+
+  return completeMove;
 }
 
 //***********************************
@@ -550,14 +560,13 @@ void Physics::updateObj( Dynamic* dyn_ )
   // handle physics
   if( !( dyn->flags & Object::DISABLED_BIT ) ) {
     if( handleObjFriction() ) {
-      Point oldPos   = dyn->p;
-      int   oldFlags = dyn->flags;
+      int oldFlags = dyn->flags;
 
       dyn->flags &= ~( Object::MOVE_CLEAR_MASK | Object::ENABLE_BIT );
       dyn->lower  = -1;
 
       collider.mask = dyn->flags & Object::SOLID_BIT;
-      handleObjMove();
+      Vec3 move = handleObjMove();
       collider.mask = Object::SOLID_BIT;
 
       if( collider.hit.medium & Medium::LADDER_BIT ) {
@@ -586,7 +595,7 @@ void Physics::updateObj( Dynamic* dyn_ )
         }
       }
 
-      dyn->velocity = ( dyn->p - oldPos ) / Timer::TICK_TIME;
+      dyn->velocity = move / Timer::TICK_TIME;
       dyn->momentum = dyn->velocity;
       dyn->depth    = min( collider.hit.depth, 2.0f * dyn->dim.z );
     }

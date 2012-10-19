@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Mutex.hh
+ * @file oz/SpinLock.hh
  *
- * Mutex class.
+ * SpinLock class.
  */
 
 #pragma once
@@ -34,86 +34,80 @@ namespace oz
 {
 
 /**
- * %Mutex.
+ * Spin lock.
  */
-class Mutex
+class SpinLock
 {
   private:
 
-    struct Descriptor;
-
-    Descriptor* descriptor; ///< %Mutex descriptor.
+    volatile bool locked; ///< True iff locked.
 
   public:
 
     /**
-     * Create uninitialised instance.
+     * Create new instance.
      */
-    explicit Mutex() :
-      descriptor( nullptr )
+    OZ_ALWAYS_INLINE
+    explicit SpinLock() :
+      locked( false )
     {}
 
     /**
-     * Destructor, destroys mutex if initialised.
+     * Destructor.
      */
-    ~Mutex()
+    OZ_ALWAYS_INLINE
+    ~SpinLock()
     {
-      if( descriptor != nullptr ) {
-        destroy();
+      hard_assert( !locked );
+    }
+
+    /**
+     * Copying is not possible.
+     */
+    SpinLock( const SpinLock& ) = delete;
+
+    /**
+     * Copying is not possible.
+     */
+    SpinLock& operator = ( const SpinLock& ) = delete;
+
+    /**
+     * True iff locked.
+     */
+    OZ_ALWAYS_INLINE
+    bool isLocked() const
+    {
+      return locked;
+    }
+
+    /**
+     * Lock.
+     */
+    OZ_ALWAYS_INLINE
+    void lock()
+    {
+      while( __sync_lock_test_and_set( &locked, true ) ) {
+        while( locked );
       }
     }
 
     /**
-     * Move constructor, transfers ownership.
+     * Try to lock.
      */
-    Mutex( Mutex&& m ) :
-      descriptor( m.descriptor )
+    OZ_ALWAYS_INLINE
+    bool tryLock()
     {
-      m.descriptor = nullptr;
+      return !__sync_lock_test_and_set( &locked, true );
     }
 
     /**
-     * Move operator, transfers ownership.
+     * Unlock.
      */
-    Mutex& operator = ( Mutex&& m )
+    OZ_ALWAYS_INLINE
+    void unlock()
     {
-      descriptor   = m.descriptor;
-      m.descriptor = nullptr;
-      return *this;
+      __sync_lock_release( &locked );
     }
-
-    /**
-     * True iff initialised.
-     */
-    bool isValid() const
-    {
-      return descriptor != nullptr;
-    }
-
-    /**
-     * Lock mutex.
-     */
-    void lock() const;
-
-    /**
-     * Try to lock mutex.
-     */
-    bool tryLock() const;
-
-    /**
-     * Unlock mutex.
-     */
-    void unlock() const;
-
-    /**
-     * Initialise mutex.
-     */
-    void init();
-
-    /**
-     * Destroy mutex and release resources.
-     */
-    void destroy();
 
 };
 

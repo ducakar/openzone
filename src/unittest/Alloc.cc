@@ -30,44 +30,42 @@ using namespace oz;
 
 void test_Alloc()
 {
-#ifndef OZ_ADDRESS_SANITIZER
-
   Log() << "+ Alloc\n";
 
-  static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
+  if( Alloc::OVERLOADS_NEW_AND_DELETE ) {
+    static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
 
-  int oCount    = Alloc::count;
-  int oSumCount = Alloc::sumCount;
+    int oCount    = Alloc::count;
+    int oSumCount = Alloc::sumCount;
 
-  Foo* array = new Foo[10];
-  OZ_CHECK( Alloc::amount >= 10 * sizeof( Foo ) + STAT_META_SIZE );
-  OZ_CHECK( Alloc::sumAmount >= 10 * sizeof( Foo ) + STAT_META_SIZE );
-  OZ_CHECK( Alloc::count == oCount + 1 );
-  OZ_CHECK( Alloc::sumCount == oSumCount + 1 );
+    Foo* array = new Foo[10];
+    OZ_CHECK( Alloc::amount >= 10 * sizeof( Foo ) + STAT_META_SIZE );
+    OZ_CHECK( Alloc::sumAmount >= 10 * sizeof( Foo ) + STAT_META_SIZE );
+    OZ_CHECK( Alloc::count == oCount + 1 );
+    OZ_CHECK( Alloc::sumCount == oSumCount + 1 );
 
-  array = aReallocate( array, 5, 8 );
-  OZ_CHECK( Alloc::amount >= 8 * sizeof( Foo ) + STAT_META_SIZE );
-  OZ_CHECK( Alloc::sumAmount >= 18 * sizeof( Foo ) + 2 * STAT_META_SIZE );
-  OZ_CHECK( Alloc::count == oCount + 1 );
-  OZ_CHECK( Alloc::sumCount == oSumCount + 2 );
+    array = aReallocate( array, 5, 8 );
+    OZ_CHECK( Alloc::amount >= 8 * sizeof( Foo ) + STAT_META_SIZE );
+    OZ_CHECK( Alloc::sumAmount >= 18 * sizeof( Foo ) + 2 * STAT_META_SIZE );
+    OZ_CHECK( Alloc::count == oCount + 1 );
+    OZ_CHECK( Alloc::sumCount == oSumCount + 2 );
 
-  delete[] array;
-  OZ_CHECK( Alloc::amount == 0 );
-  OZ_CHECK( Alloc::sumAmount >= 18 * sizeof( Foo ) + 2 * STAT_META_SIZE );
-  OZ_CHECK( Alloc::count == oCount + 0 );
-  OZ_CHECK( Alloc::sumCount == oSumCount + 2 );
+    delete[] array;
+    OZ_CHECK( Alloc::amount == 0 );
+    OZ_CHECK( Alloc::sumAmount >= 18 * sizeof( Foo ) + 2 * STAT_META_SIZE );
+    OZ_CHECK( Alloc::count == oCount + 0 );
+    OZ_CHECK( Alloc::sumCount == oSumCount + 2 );
 
-  OZ_CHECK( Alloc::alignDown( 0 ) == 0 );
-  OZ_CHECK( Alloc::alignDown( 1 ) == 0 );
-  OZ_CHECK( Alloc::alignDown( Alloc::ALIGNMENT - 1 ) == 0 );
-  OZ_CHECK( Alloc::alignDown( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
+    OZ_CHECK( Alloc::alignDown( 0 ) == 0 );
+    OZ_CHECK( Alloc::alignDown( 1 ) == 0 );
+    OZ_CHECK( Alloc::alignDown( Alloc::ALIGNMENT - 1 ) == 0 );
+    OZ_CHECK( Alloc::alignDown( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
 
-  OZ_CHECK( Alloc::alignUp( 0 ) == 0 );
-  OZ_CHECK( Alloc::alignUp( 1 ) == Alloc::ALIGNMENT );
-  OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT - 1 ) == Alloc::ALIGNMENT );
-  OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
-
-#endif // !OZ_ADDRESS_SANITIZER
+    OZ_CHECK( Alloc::alignUp( 0 ) == 0 );
+    OZ_CHECK( Alloc::alignUp( 1 ) == Alloc::ALIGNMENT );
+    OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT - 1 ) == Alloc::ALIGNMENT );
+    OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
+  }
 
   char* zeroptr = nullptr;
   char* oneptr  = zeroptr + Alloc::ALIGNMENT;

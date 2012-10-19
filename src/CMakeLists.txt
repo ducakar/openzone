@@ -16,10 +16,10 @@ add_subdirectory( matrix )
 add_subdirectory( nirvana )
 add_subdirectory( modules )
 add_subdirectory( client )
+add_subdirectory( tools )
 
 if( NOT ANDROID AND NOT NACL )
   add_subdirectory( builder )
-  add_subdirectory( tools )
   add_subdirectory( txc_dxtn )
 endif()
 

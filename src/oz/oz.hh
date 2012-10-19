@@ -91,18 +91,19 @@
 #include "Bounds.hh"
 
 /*
+ * Threading.
+ */
+#include "SpinLock.hh"
+#include "Mutex.hh"
+#include "Semaphore.hh"
+#include "Thread.hh"
+
+/*
  * System.
  */
 #include "Time.hh"
 #include "StackTrace.hh"
 #include "System.hh"
-
-/*
- * Threading.
- */
-#include "Thread.hh"
-#include "Mutex.hh"
-#include "Semaphore.hh"
 
 /*
  * I/O.

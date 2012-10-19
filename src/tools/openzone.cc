@@ -44,6 +44,7 @@ void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
 #endif
 
 using namespace oz;
+using namespace oz::client;
 
 #if defined( __ANDROID__ )
 extern "C"
@@ -233,7 +234,7 @@ namespace pp
 
 pp::Module* CreateModule()
 {
-  return new oz::client::MainModule();
+  return new MainModule();
 }
 
 }

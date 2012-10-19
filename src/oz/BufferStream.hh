@@ -1254,7 +1254,7 @@ class BufferStream
       }
       else {
         for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+          Endian::BitsToFloat value = { { data[3], data[2], data[1], data[0] } };
 
           *values = value.value;
         }
@@ -1314,7 +1314,7 @@ class BufferStream
       }
       else {
         for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+          Endian::BitsToFloat value = { { data[3], data[2], data[1], data[0] } };
 
           *values = value.value;
         }

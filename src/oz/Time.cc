@@ -41,7 +41,7 @@ namespace oz
 #ifdef _WIN32
 
 // Ensure that multimedia timer is set to 1 ms resolution during static initialisation.
-static struct MediaTimerInitialiser
+struct MediaTimerInitialiser
 {
   OZ_HIDDEN
   explicit MediaTimerInitialiser()

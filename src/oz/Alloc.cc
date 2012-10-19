@@ -33,10 +33,10 @@
 #include <cstring>
 #include <malloc.h>
 
-#ifdef _WIN32
-# include <windows.h>
-#else
-# include <pthread.h>
+#ifdef __has_feature
+# if __has_feature( address_sanitizer )
+#  define OZ_ADDRESS_SANITIZER
+# endif
 #endif
 
 namespace oz
@@ -64,38 +64,8 @@ struct TraceEntry
   StackTrace  stackTrace;
 };
 
-static TraceEntry* volatile firstTraceEntry[2]     = { nullptr, nullptr };
-# if defined( __native_client__ )
-static pthread_mutex_t      traceLock;
-# elif defined( _WIN32 )
-static CRITICAL_SECTION     traceLock;
-# else
-static pthread_spinlock_t   traceLock;
-# endif
-static bool                 isTraceLockInitialised = false;
-
-static void initTraceLock()
-{
-#if defined( __native_client__ )
-  pthread_mutex_init( &traceLock, nullptr );
-#elif defined( _WIN32 )
-  InitializeCriticalSection( &traceLock );
-#else
-  pthread_spin_init( &traceLock, PTHREAD_PROCESS_PRIVATE );
-#endif
-  isTraceLockInitialised = true;
-}
-
-// Ensure that initTraceLock is invoked during static initialisation.
-static struct TraceLockInitialiser
-{
-  OZ_HIDDEN
-  explicit TraceLockInitialiser()
-  {
-    initTraceLock();
-  }
-}
-traceLockInitialiser;
+static TraceEntry* volatile firstTraceEntry[2] = { nullptr, nullptr };
+static volatile bool        traceLock          = false;
 
 static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 {
@@ -108,43 +78,21 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
   st->size       = size;
   st->stackTrace = StackTrace::current( 1 );
 
-  if( !isTraceLockInitialised ) {
-    initTraceLock();
+  while( __sync_lock_test_and_set( &traceLock, true ) ) {
+    while( traceLock );
   }
-
-# if defined( __native_client__ )
-  pthread_mutex_lock( &traceLock );
-# elif defined( _WIN32 )
-  EnterCriticalSection( &traceLock );
-# else
-  pthread_spin_lock( &traceLock );
-# endif
 
   st->next = firstTraceEntry[mode];
   firstTraceEntry[mode] = st;
 
-# if defined( __native_client__ )
-  pthread_mutex_unlock( &traceLock );
-# elif defined( _WIN32 )
-  LeaveCriticalSection( &traceLock );
-# else
-  pthread_spin_unlock( &traceLock );
-# endif
+  __sync_lock_release( &traceLock );
 }
 
 static void eraseTraceEntry( AllocMode mode, void* ptr )
 {
-  if( !isTraceLockInitialised ) {
-    initTraceLock();
+  while( __sync_lock_test_and_set( &traceLock, true ) ) {
+    while( traceLock );
   }
-
-# if defined( __native_client__ )
-  pthread_mutex_lock( &traceLock );
-# elif defined( _WIN32 )
-  EnterCriticalSection( &traceLock );
-# else
-  pthread_spin_lock( &traceLock );
-# endif
 
   TraceEntry* st   = firstTraceEntry[mode];
   TraceEntry* prev = nullptr;
@@ -158,13 +106,7 @@ static void eraseTraceEntry( AllocMode mode, void* ptr )
         prev->next = st->next;
       }
 
-# if defined( __native_client__ )
-      pthread_mutex_unlock( &traceLock );
-# elif defined( _WIN32 )
-      LeaveCriticalSection( &traceLock );
-# else
-      pthread_spin_unlock( &traceLock );
-# endif
+      __sync_lock_release( &traceLock );
 
       goto backtraceFound;
     }
@@ -172,13 +114,7 @@ static void eraseTraceEntry( AllocMode mode, void* ptr )
     st = st->next;
   }
 
-# if defined( __native_client__ )
-  pthread_mutex_unlock( &traceLock );
-# elif defined( _WIN32 )
-  LeaveCriticalSection( &traceLock );
-# else
-  pthread_spin_unlock( &traceLock );
-# endif
+  __sync_lock_release( &traceLock );
 
   // Check if allocated as a different kind (object/array)
   st = firstTraceEntry[!mode];
@@ -274,6 +210,12 @@ static_assert( Alloc::ALIGNMENT >= sizeof( void* ) &&
                "Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
 
 const Alloc::Aligned Alloc::ALIGNED = {};
+
+#ifdef OZ_ADDRESS_SANITIZER
+const bool Alloc::OVERLOADS_NEW_AND_DELETE = false;
+#else
+const bool Alloc::OVERLOADS_NEW_AND_DELETE = true;
+#endif
 
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;

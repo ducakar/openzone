@@ -34,6 +34,7 @@ DISABLED
 
 /*.patch
 /*.trace
+/cppcheck.log
 /stats
 /*.tar.gz
 /*.tar.bz2

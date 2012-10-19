@@ -45,8 +45,7 @@ class Semaphore
 
     struct Descriptor;
 
-    /// %Semaphore descriptor.
-    Descriptor* descriptor;
+    Descriptor* descriptor; ///< %Semaphore descriptor.
 
   public:
 

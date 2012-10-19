@@ -371,43 +371,20 @@ class Math
     }
 
     /**
-     * Get per-bit float representation in an integer.
-     */
-    OZ_ALWAYS_INLINE
-    static int toBits( float x )
-    {
-      union FloatToBits
-      {
-        float f;
-        int   b;
-      };
-      FloatToBits fb = { x };
-      return fb.b;
-    }
-
-    /**
-     * Get a float from its per-bit representation.
-     */
-    OZ_ALWAYS_INLINE
-    static float fromBits( int i )
-    {
-      union BitsToFloat
-      {
-        int   b;
-        float f;
-      };
-      BitsToFloat bf = { i };
-      return bf.f;
-    }
-
-    /**
      * Fast square root (calculated via fast square root from Quake).
      */
     OZ_ALWAYS_INLINE
     static float fastSqrt( float x )
     {
-      float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
-      return x * y * ( 1.5f - 0.5f * x * y*y );
+      union FloatBits
+      {
+        float value;
+        int   bits;
+      }
+      fb = { x };
+
+      fb.bits = 0x5f3759df - ( fb.bits >> 1 );
+      return x * fb.value * ( 1.5f - 0.5f * x * fb.value*fb.value );
     }
 
     /**
@@ -418,8 +395,15 @@ class Math
     {
       hard_assert( x != 0.0f );
 
-      float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
-      return y * ( 1.5f - 0.5f * x * y*y );
+      union FloatBits
+      {
+        float value;
+        int   bits;
+      }
+      fb = { x };
+
+      fb.bits = 0x5f3759df - ( fb.bits >> 1 );
+      return fb.value * ( 1.5f - 0.5f * x * fb.value*fb.value );
     }
 
     /**
