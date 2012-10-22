@@ -26,7 +26,7 @@
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
 - general
-    * ported to Android (i686 and ARM)
+    * ported to Android (i686, ARM, ARMv7a, MIPS)
 
 0.3.1
 

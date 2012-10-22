@@ -91,17 +91,27 @@ class Mutex
     }
 
     /**
-     * Lock mutex.
+     * Wait until lock is obtained.
+     *
+     * @note Locking a mutex that is already locked by the current thread results in undefined
+     * behaviour.
      */
     void lock() const;
 
     /**
-     * Try to lock mutex.
+     * Lock if not already locked.
+     *
+     * @note Locking a mutex that is already locked by the current thread results in undefined
+     * behaviour.
+     *
+     * @return True on success.
      */
     bool tryLock() const;
 
     /**
-     * Unlock mutex.
+     * Unlock.
+     *
+     * @note Unlocking an unlocked mutex results in undefined behaviour.
      */
     void unlock() const;
 

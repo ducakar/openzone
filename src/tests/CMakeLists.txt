@@ -24,6 +24,5 @@ else()
 
   add_executable( test test.cc )
   target_link_libraries( test oz )
-  use_pch( test pch )
 
 endif()

@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozdyn/collision/Compound.hh
+ * @file ozdyn/collision/Object.hh
  */
 
 #pragma once
@@ -31,31 +31,32 @@
 namespace oz
 {
 
-class Compound : public Shape
+/**
+ * Collision object.
+ */
+class Object
 {
   public:
 
-    struct Child
-    {
-      Shape* shape;
-      Vec3   off;
-      Mat44  rot;
-    };
+    static Pool<Object> pool;
+
+    Object* prev[3]; ///< Previous objects in linked lists used in spatial structures.
+    Object* next[3]; ///< Next objects in linked lists used in spatial structures.
+
+    Point   pos;     ///< Position.
+    Quat    rot;     ///< Rotation.
+    Mat33   rotMat;  ///< Cached rotation matrix.
+
+    Shape*  shape;   ///< Collision shape.
 
   public:
 
-    static Pool<Compound> pool;
-
-    Child c[16];
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Compound() :
-      Shape( Shape::COMPOUND )
-    {
-      c[0].shape = nullptr;
-    }
+    /**
+     * Create uninitialised instance.
+     */
+    explicit Object() :
+      shape( nullptr )
+    {}
 
   OZ_STATIC_POOL_ALLOC( pool )
 

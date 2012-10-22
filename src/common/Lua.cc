@@ -31,7 +31,7 @@ namespace oz
 namespace common
 {
 
-int  Lua::randomSeed       = 0;
+int Lua::randomSeed        = 0;
 bool Lua::isRandomSeedTime = true;
 
 Lua::Lua() :
@@ -156,7 +156,7 @@ void Lua::initCommon( const char* componentName )
   }
 
   int seed = isRandomSeedTime ? int( Time::time() ) : randomSeed;
-  l_dostring( String::str( "math.random( %d )", seed ) );
+  l_dostring( String::str( "math.random( %u )", seed ) );
 
   IGNORE_FUNC( ozError );
   IGNORE_FUNC( ozPrintln );

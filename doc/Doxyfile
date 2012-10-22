@@ -108,6 +108,9 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = src/oz \
+                         src/ozdyn \
+                         src/ozdyn/collision \
+                         src/ozdyn/physics \
                          src/common \
                          src/tools
 INPUT_ENCODING         = UTF-8

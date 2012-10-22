@@ -81,7 +81,7 @@ class SpinLock
     }
 
     /**
-     * Lock.
+     * Loop performing a lock operation until it switches from unlocked to locked state.
      */
     OZ_ALWAYS_INLINE
     void lock()
@@ -92,7 +92,9 @@ class SpinLock
     }
 
     /**
-     * Try to lock.
+     * Atomically lock and check if it has already been locked.
+     *
+     * @return True iff it was unlocked.
      */
     OZ_ALWAYS_INLINE
     bool tryLock()

@@ -38,6 +38,8 @@
 namespace oz
 {
 
+const int StackTrace::MAX_FRAMES;
+
 #if !defined( __GLIBC__ ) && !defined( _LIBCPP_VERSION )
 
 StackTrace StackTrace::current( int )
@@ -64,7 +66,7 @@ StackTrace StackTrace::current( int nSkippedFrames )
 
   StackTrace st;
   st.threadName = Thread::name();
-  st.nFrames    = min<int>( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
+  st.nFrames    = min<int>( nFrames - 1 - nSkippedFrames, MAX_FRAMES );
 
   memcpy( st.frames, framesBuffer + 1 + nSkippedFrames, size_t( st.nFrames ) * sizeof( void* ) );
   return st;

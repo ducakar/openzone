@@ -1,6 +1,6 @@
-diff -r 990c1cf58bfa CMakeLists.txt
---- a/CMakeLists.txt	Mon Jun 25 15:50:20 2012 -0400
-+++ b/CMakeLists.txt	Fri Oct 12 02:56:56 2012 +0200
+diff -Naur physfs/CMakeLists.txt physfs-nacl/CMakeLists.txt
+--- physfs/CMakeLists.txt	2012-10-19 22:21:46.307991071 +0200
++++ physfs-nacl/CMakeLists.txt	2012-10-19 22:21:57.484610552 +0200
 @@ -125,6 +125,7 @@
      src/platform_unix.c
      src/platform_macosx.c
@@ -9,10 +9,14 @@ diff -r 990c1cf58bfa CMakeLists.txt
      src/archiver_dir.c
      src/archiver_unpacked.c
      src/archiver_grp.c
-@@ -146,6 +147,10 @@
+@@ -146,6 +147,14 @@
          SET(PHYSFS_HAVE_CDROM_SUPPORT TRUE)
          SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
          SET(HAVE_PTHREAD_H TRUE)
++    ELSEIF(ANDROID)
++        SET(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
++        SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
++        SET(HAVE_PTHREAD_H TRUE)
 +    ELSEIF(NACL)
 +        SET(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
 +        SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
@@ -20,24 +24,36 @@ diff -r 990c1cf58bfa CMakeLists.txt
      ELSE(BEOS)
          CHECK_INCLUDE_FILE(sys/ucred.h HAVE_UCRED_H)
          IF(HAVE_UCRED_H)
-diff -r 990c1cf58bfa src/lzma/C/Archive/7z/7zDecode.c
---- a/src/lzma/C/Archive/7z/7zDecode.c	Mon Jun 25 15:50:20 2012 -0400
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Fri Oct 12 02:56:56 2012 +0200
+diff -Naur physfs/src/lzma/C/Archive/7z/7zDecode.c physfs-nacl/src/lzma/C/Archive/7z/7zDecode.c
+--- physfs/src/lzma/C/Archive/7z/7zDecode.c	2012-10-19 22:21:46.387990742 +0200
++++ physfs-nacl/src/lzma/C/Archive/7z/7zDecode.c	2012-10-19 22:21:57.484610552 +0200
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
-
+ 
 -#include <memory.h>
 +#ifdef __native_client__
 +# include <string.h>
 +#else
 +# include <memory.h>
 +#endif
-
+ 
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
-diff -r 990c1cf58bfa src/physfs_platforms.h
---- a/src/physfs_platforms.h	Mon Jun 25 15:50:20 2012 -0400
-+++ b/src/physfs_platforms.h	Fri Oct 12 02:56:56 2012 +0200
+diff -Naur physfs/src/physfs.h physfs-nacl/src/physfs.h
+--- physfs/src/physfs.h	2012-10-19 22:21:46.404657340 +0200
++++ physfs-nacl/src/physfs.h	2012-10-19 22:22:21.481174298 +0200
+@@ -233,7 +233,7 @@
+ #define PHYSFS_DECL __declspec(dllexport)
+ #elif (defined __SUNPRO_C)
+ #define PHYSFS_DECL __global
+-#elif ((__GNUC__ >= 3) && (!__EMX__) && (!sun))
++#elif ((__GNUC__ >= 3) && (!defined __EMX__) && (!defined sun))
+ #define PHYSFS_DECL __attribute__((visibility("default")))
+ #else
+ #define PHYSFS_DECL
+diff -Naur physfs/src/physfs_platforms.h physfs-nacl/src/physfs_platforms.h
+--- physfs/src/physfs_platforms.h	2012-10-19 22:21:46.404657340 +0200
++++ physfs-nacl/src/physfs_platforms.h	2012-10-19 22:21:57.484610552 +0200
 @@ -35,6 +35,8 @@
  #  define PHYSFS_PLATFORM_POSIX 1
  #elif defined(macintosh)
@@ -47,9 +63,9 @@ diff -r 990c1cf58bfa src/physfs_platforms.h
  #elif defined(__linux)
  #  define PHYSFS_PLATFORM_LINUX 1
  #  define PHYSFS_PLATFORM_UNIX 1
-diff -r 990c1cf58bfa src/platform_nacl.c
---- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Fri Oct 12 02:56:56 2012 +0200
+diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
+--- physfs/src/platform_nacl.c	1970-01-01 01:00:00.000000000 +0100
++++ physfs-nacl/src/platform_nacl.c	2012-10-19 22:21:57.487943871 +0200
 @@ -0,0 +1,828 @@
 +/*
 + * Native Client support routines for PhysicsFS.

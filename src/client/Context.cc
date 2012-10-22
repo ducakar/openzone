@@ -634,11 +634,13 @@ void Context::updateLoad()
 void Context::load()
 {
   speakSource.owner = -1;
+#ifndef OZ_ADDRESS_SANITIZER
   alGenBuffers( 2, speakSource.bufferIds );
   alGenSources( 1, &speakSource.id );
   if( alGetError() != AL_NO_ERROR ) {
     OZ_ERROR( "Failed to create speak source" );
   }
+#endif
 
   maxImagines           = 0;
   maxAudios             = 0;
@@ -687,6 +689,7 @@ void Context::unload()
   Log::unindent();
   Log::println( "}" );
 
+#ifndef OZ_ADDRESS_SANITIZER
   // Speak source must be destroyed before anything else using OpenAL since it calls OpenAL
   // functions from its own thread.
   if( speakSource.thread.isValid() ) {
@@ -696,6 +699,7 @@ void Context::unload()
 
   alDeleteSources( 1, &speakSource.id );
   alDeleteBuffers( 2, speakSource.bufferIds );
+#endif
 
   imagines.free();
   imagines.deallocate();

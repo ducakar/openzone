@@ -92,7 +92,7 @@ class ArrayIterator : public IteratorBase<Elem>
 
 };
 
-#if defined( OZ_ECLIPSE ) || ( defined( OZ_GCC ) && OZ_GCC < 407 )
+#if defined( OZ_GCC ) && OZ_GCC < 407
 
 template <typename Elem>
 class CIterator : public ArrayIterator<const Elem>
@@ -469,7 +469,7 @@ static void quicksort( Elem* first, Elem* last )
 }
 
 /**
- * Sort array (uses quicksort algorithm).
+ * Sort array using quicksort algorithm.
  */
 template <typename Elem>
 inline void aSort( Elem* aSrc, int count )

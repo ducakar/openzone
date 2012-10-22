@@ -33,12 +33,6 @@
 #include <cstring>
 #include <malloc.h>
 
-#ifdef __has_feature
-# if __has_feature( address_sanitizer )
-#  define OZ_ADDRESS_SANITIZER
-# endif
-#endif
-
 namespace oz
 {
 
@@ -209,12 +203,12 @@ static_assert( Alloc::ALIGNMENT >= sizeof( void* ) &&
                ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                "Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
 
-const Alloc::Aligned Alloc::ALIGNED = {};
-
+const Alloc::Aligned Alloc::ALIGNED                  = {};
+const size_t         Alloc::ALIGNMENT;
 #ifdef OZ_ADDRESS_SANITIZER
-const bool Alloc::OVERLOADS_NEW_AND_DELETE = false;
+const bool           Alloc::OVERLOADS_NEW_AND_DELETE = false;
 #else
-const bool Alloc::OVERLOADS_NEW_AND_DELETE = true;
+const bool           Alloc::OVERLOADS_NEW_AND_DELETE = true;
 #endif
 
 int    Alloc::count     = 0;

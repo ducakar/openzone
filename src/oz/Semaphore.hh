@@ -109,7 +109,9 @@ class Semaphore
     void wait() const;
 
     /**
-     * If counter is positive decrement it and return true, otherwise resume and return false.
+     * Atomically check if counter is positive and decrement if it is.
+     *
+     * @return True iff counter was decremented.
      */
     bool tryWait() const;
 

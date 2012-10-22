@@ -2,7 +2,7 @@
 
 buildType=Debug
 platforms=( \
-  Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang \
+  Linux-x86_64 Linux-x86_64-Clang Linux-i686 #Linux-i686-Clang \
   Windows-i686 \
   NaCl-x86_64 NaCl-i686 \
   Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS \

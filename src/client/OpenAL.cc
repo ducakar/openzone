@@ -33,6 +33,11 @@ namespace client
 
 void alCheckError( const char* function, const char* file, int line )
 {
+#ifdef OZ_ADDRESS_SANITIZER
+  static_cast<void>( function );
+  static_cast<void>( file );
+  static_cast<void>( line );
+#else
   const char* message;
   ALenum result = alGetError();
 
@@ -67,6 +72,7 @@ void alCheckError( const char* function, const char* file, int line )
   }
 
   System::error( function, file, line, 1, "AL error '%s'", message );
+#endif
 }
 
 #endif

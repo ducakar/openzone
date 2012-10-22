@@ -47,11 +47,11 @@ function onCreate()
 
 --   ozOrbisAddStr( OZ_FORCE, "testCastle", 2000, -2000, 100, OZ_NORTH )
 
-  init_sample()
+--  init_sample()
 
   ozFloraSeed()
 
---  init_stressTest()
+  init_stressTest()
 end
 
 function init_sample()
@@ -149,7 +149,7 @@ function init_stressTest()
     end
   end
 
-  for i = 1, 1000 do
+  for i = 1, 2500 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )
@@ -159,7 +159,7 @@ function init_stressTest()
     end
   end
 
-  for i = 1, 1000 do
+  for i = 1, 2500 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )

@@ -40,7 +40,7 @@ class Alloc
 {
   public:
 
-    /// An dummy type used as a parameter for aligned `new` operator.
+    /// A dummy type used as a parameter for aligned `new` operator.
     struct Aligned
     {};
 

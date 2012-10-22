@@ -30,21 +30,43 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <pthread.h>
+
+#ifdef _WIN32
+# include <windows.h>
+#else
+# include <pthread.h>
+#endif
 
 namespace oz
 {
 
 static const int NAME_LENGTH = 15;
 
+#ifdef _WIN32
+static DWORD          nameKey;
+static volatile bool  nameOnce          = false;
+static volatile bool  isNameInitialised = false;
+#else
 static pthread_key_t  nameKey;
 static pthread_once_t nameOnce = PTHREAD_ONCE_INIT;
+#endif
 
 static void initName()
 {
+#ifdef _WIN32
+
+  nameKey = TlsAlloc();
+  if( nameKey == TLS_OUT_OF_INDEXES ) {
+    OZ_ERROR( "Thread name key creation failed" );
+  }
+
+#else
+
   if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
     OZ_ERROR( "Thread name key creation failed" );
   }
+
+#endif
 }
 
 // Set main thread name to "main" during static initialisation.
@@ -53,28 +75,83 @@ static struct MainThreadNameInitialiser
   OZ_HIDDEN
   explicit MainThreadNameInitialiser()
   {
-    pthread_once( &nameOnce, &initName );
+#ifdef _WIN32
+
+    if( !isNameInitialised ) {
+      if( __sync_lock_test_and_set( &nameOnce, true ) ) {
+        while( !isNameInitialised );
+      }
+      else {
+        __sync_synchronize();
+
+        initName();
+        isNameInitialised = true;
+      }
+    }
+    TlsSetValue( nameKey, const_cast<char*>( "main" ) );
+
+#else
+
+    pthread_once( &nameOnce, initName );
     pthread_setspecific( nameKey, "main" );
+
+#endif
   }
 }
 mainThreadNameInitialiser;
 
 struct Thread::Descriptor
 {
+#ifdef _WIN32
+  HANDLE        thread;
+#else
   pthread_t     thread;
+#endif
   Thread::Main* main;
   void*         data;
   char          name[NAME_LENGTH + 1];
 
+#ifdef _WIN32
+  static DWORD WINAPI threadMain( void* data );
+#else
   static void* threadMain( void* data );
+#endif
 };
+
+#ifdef _WIN32
+
+OZ_HIDDEN
+DWORD WINAPI Thread::Descriptor::threadMain( void* data )
+{
+  Descriptor* descriptor = static_cast<Descriptor*>( data );
+
+  if( !isNameInitialised ) {
+    if( __sync_lock_test_and_set( &nameOnce, true ) ) {
+      while( !isNameInitialised );
+    }
+    else {
+      __sync_synchronize();
+
+      initName();
+      isNameInitialised = true;
+    }
+  }
+  TlsSetValue( nameKey, descriptor->name );
+
+  System::threadInit();
+
+  descriptor->main( descriptor->data );
+  return 0;
+}
+
+#else
 
 OZ_HIDDEN
 void* Thread::Descriptor::threadMain( void* data )
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  pthread_once( &nameOnce, &initName );
+  pthread_once( &nameOnce, initName );
   pthread_setspecific( nameKey, descriptor->name );
 
   System::threadInit();
@@ -83,9 +160,15 @@ void* Thread::Descriptor::threadMain( void* data )
   return nullptr;
 }
 
+#endif
+
 const char* Thread::name()
 {
+#ifdef _WIN32
+  void* data = TlsGetValue( nameKey );
+#else
   void* data = pthread_getspecific( nameKey );
+#endif
   return static_cast<const char*>( data );
 }
 
@@ -104,18 +187,33 @@ void Thread::start( const char* name, Main* main, void* data )
   strncpy( descriptor->name, name, NAME_LENGTH );
   descriptor->name[NAME_LENGTH] = '\0';
 
+#ifdef _WIN32
+
+  descriptor->thread = CreateThread( nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr );
+  if( descriptor->thread == nullptr ) {
+    OZ_ERROR( "Thread creation failed" );
+  }
+
+#else
+
   if( pthread_create( &descriptor->thread, nullptr, Descriptor::threadMain, descriptor ) != 0 ) {
     OZ_ERROR( "Thread creation failed" );
   }
+
+#endif
 }
 
 void Thread::detach()
 {
   hard_assert( descriptor != nullptr );
 
+#ifdef _WIN32
+  CloseHandle( descriptor->thread );
+#else
   if( pthread_detach( descriptor->thread ) != 0 ) {
     OZ_ERROR( "Thread detach failed" );
   }
+#endif
 
   free( descriptor );
   descriptor = nullptr;
@@ -125,9 +223,14 @@ void Thread::join()
 {
   hard_assert( descriptor != nullptr );
 
+#ifdef _WIN32
+  WaitForSingleObject( descriptor->thread, INFINITE );
+  CloseHandle( descriptor->thread );
+#else
   if( pthread_join( descriptor->thread, nullptr ) != 0 ) {
     OZ_ERROR( "Thread join failed" );
   }
+#endif
 
   free( descriptor );
   descriptor = nullptr;

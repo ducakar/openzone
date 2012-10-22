@@ -21,6 +21,7 @@
  * @file tests/simd.cc
  */
 
+// #define OZ_SIMD_MATH
 #include <oz/oz.hh>
 
 #include <cstdio>
@@ -29,97 +30,12 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
 
 using namespace oz;
 
-#if 0
-struct __attribute__(( aligned( 16 ) )) VecX
-{
-  union {
-    float4 f4;
-    struct {
-      float x, y, z, w;
-    };
-  };
-
-  VecX() {}
-  VecX( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ ) {}
-  VecX( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ ) {}
-
-  VecX operator + ( const VecX& v ) const
-  {
-    return VecX( x + v.x, y + v.y, z + v.z, w + v.w );
-//     return VecX( x + v.x, y + v.y, z + v.z );
-  }
-
-  VecX& operator += ( const VecX& v )
-  {
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    w += v.w;
-    return *this;
-  }
-
-  VecX operator - ( const VecX& v ) const
-  {
-    return VecX( x - v.x, y - v.y, z - v.z, w - v.w );
-//     return VecX( x - v.x, y - v.y, z - v.z );
-  }
-
-  VecX operator * ( float k ) const
-  {
-    return VecX( x * k, y * k, z * k, w * k );
-//     return VecX( x * k, y * k, z * k );
-  }
-
-  float operator * ( const VecX& v ) const
-  {
-//     return x*v.x + y*v.y + z*v.z + w*v.w;
-    return x*v.x + y*v.y + z*v.z;
-  }
-};
-#elif 0
-struct __attribute__(( aligned( 16 ) )) VecX
-{
-  union {
-    float4 f4;
-    struct {
-      float x, y, z, w;
-    };
-  };
-
-  VecX() {}
-  VecX( float x_, float y_, float z_ ) : f4( (float4) { x_, y_, z_, 0.0f } ) {}
-  VecX( float4 f4_ ) : f4( f4_ ) {}
-
-  VecX operator + ( const VecX& v ) const
-  {
-    return VecX( f4 + v.f4 );
-  }
-
-  VecX& operator += ( const VecX& v )
-  {
-    f4 += v.f4;
-    return *this;
-  }
-
-  VecX operator - ( const VecX& v ) const
-  {
-    return VecX( f4 - v.f4 );
-  }
-
-  VecX operator * ( float k ) const
-  {
-    return VecX( f4 * (float4) { k, k, k, k } );
-  }
-
-  float operator * ( const VecX& v ) const
-  {
-//     VecX u = f4 * v.f4;
-//     return u.x + u.y + u.z;
-    return x*v.x + y*v.y + z*v.z;
-  }
-};
-#else
+#if 1
 # define VecX Vec3
+# define CreateVecX( x, y, z, w ) Vec3( x, y, z )
+#else
+# define VecX Vec4
+# define CreateVecX( x, y, z, w ) Vec4( x, y, z, w )
 #endif
 
 static const int MAX = 10000;
@@ -130,25 +46,55 @@ VecX c[MAX];
 VecX d[MAX];
 VecX e[MAX];
 
+Mat44 ma[MAX];
+Mat44 mb[MAX];
+Mat44 mc[MAX];
+
 int main()
 {
   for( int i = 0; i < MAX; ++i ) {
-    a[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
-    b[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
-    c[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
-    d[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
+    a[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+    b[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+    c[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+    d[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
   }
+
+  for( int i = 0; i < MAX; ++i ) {
+    ma[i] = Mat44( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                   Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+    mb[i] = Mat44( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                   Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+  }
+
   long64 t0 = Time::clock();
+
   for( int k = 0; k < 10000; ++k ) {
     for( int i = 0; i < MAX; ++i ) {
       d[i] += c[i] * ( a[i] * b[i] );
-      e[i] = d[i] + c[i] - ( a[i] + b[i] );
+      e[i]  = d[i] + c[i] - ( a[i] + b[i] ).abs();
+
+      a[i]   += CreateVecX( 0.1f, 0, 0, 0 );
+      b[i].y  = a[i].y;
+      b[i].z  = a[i].z + c[i].x;
     }
   }
-  Quat q = Quat::ZERO;
-  q *= 10;
-  printf( "%g\n", float( Time::clock() - t0 ) / 1000.0f );
 
-  Alloc::printLeaks();
+  Log() << "Vectors: " << float( Time::clock() - t0 ) / 1000.0f << "\n";
+
+  t0 = Time::clock();
+
+  for( int k = 0; k < 10000; ++k ) {
+    for( int i = 0; i < MAX; ++i ) {
+      ma[i] -= mb[i];
+      mc[i]  = ma[i] * mb[i];
+      mc[i] *= 10.0f;
+    }
+  }
+
+  Log() << "Matrices: " << float( Time::clock() - t0 ) / 1000.0f << "\n";
   return 0;
 }

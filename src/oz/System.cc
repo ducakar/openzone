@@ -34,15 +34,16 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
-#include <pthread.h>
 #if defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
+# include <pthread.h>
 #elif defined( __native_client__ )
 # include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
+# include <pthread.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <io.h>
@@ -52,6 +53,7 @@
 # include <alsa/asoundlib.h>
 # include <ctime>
 # include <dlfcn.h>
+# include <pthread.h>
 # include <pulse/simple.h>
 # include <unistd.h>
 #endif
@@ -137,11 +139,12 @@ static decltype( ::pa_simple_new   )* pa_simple_new   = nullptr;
 static decltype( ::pa_simple_free  )* pa_simple_free  = nullptr;
 static decltype( ::pa_simple_write )* pa_simple_write = nullptr;
 
+static pthread_once_t                 bellOnce        = PTHREAD_ONCE_INIT;
+
 #endif
 
-static pthread_once_t     bellOnce      = PTHREAD_ONCE_INIT;
-static volatile bool      isBellPlaying = false;
-static int                initFlags     = 0;
+static volatile bool isBellPlaying = false;
+static int           initFlags     = 0;
 
 OZ_NORETURN
 static void abort( bool doHalt );
@@ -227,7 +230,7 @@ static void unexpected()
 
 static void* bellMain( void* )
 {
-  // TODO Implement bell with OpenSL ES.
+  // TODO Implement bell for OpenSL ES.
   return nullptr;
 }
 
@@ -315,7 +318,7 @@ static void* bellMain( void* )
 
 #elif defined( _WIN32 )
 
-static void* bellMain( void* )
+static DWORD WINAPI bellMain( void* )
 {
   size_t nSamples = int( BELL_TIME * BELL_WAVE_RATE );
   Wave*  wave     = static_cast<Wave*>( malloc( sizeof( Wave ) ) );
@@ -360,7 +363,7 @@ static void* bellMain( void* )
   free( wave );
 
   isBellPlaying = false;
-  return nullptr;
+  return 0;
 }
 
 #else
@@ -443,13 +446,10 @@ static void* bellMain( void* )
   return nullptr;
 }
 
-#endif
-
 static void initBell()
 {
-#if !defined( __ANDROID__) && !defined( __native_client__ ) && !defined( _WIN32 )
 
-  // Link PulseAudio client library.
+  // Link to PulseAudio client library if available.
   void* libPulse = dlopen( "libpulse-simple.so.0", RTLD_NOW );
 
   if( libPulse != nullptr ) {
@@ -465,9 +465,9 @@ static void initBell()
       dlclose( libPulse );
     }
   }
+}
 
 #endif
-}
 
 static void waitBell()
 {
@@ -533,6 +533,11 @@ static void abort( bool doHalt )
   ::abort();
 }
 
+const int     System::SIGNALS_BIT;
+const int     System::EXCEPTIONS_BIT;
+const int     System::HALT_BIT;
+const int     System::LOCALE_BIT;
+
 pp::Module*   System::module   = nullptr;
 pp::Instance* System::instance = nullptr;
 pp::Core*     System::core     = nullptr;
@@ -551,8 +556,9 @@ void System::trap()
 
 void System::bell()
 {
-  pthread_once( &bellOnce, &initBell );
-
+#if !defined( __ANDROID__ ) && !defined( __native_client__ ) && !defined( _WIN32 )
+  pthread_once( &bellOnce, initBell );
+#endif
 #ifdef __native_client__
   if( instance == nullptr || core == nullptr ) {
     return;
@@ -562,11 +568,23 @@ void System::bell()
   if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
     __sync_synchronize();
 
+#ifdef _WIN32
+
+    HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
+    if( bellThread == nullptr ) {
+      OZ_ERROR( "Bell thread creation failed" );
+    }
+    CloseHandle( bellThread );
+
+#else
+
     pthread_t bellThread;
     if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
     pthread_detach( bellThread );
+
+#endif
   }
 }
 

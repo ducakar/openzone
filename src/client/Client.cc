@@ -222,7 +222,7 @@ int Client::init( int argc, char** argv )
   Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
   Log::println( "Compiler:        %s", BuildInfo::COMPILER );
   Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  Log::println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
+  Log::println( "Linker flags:    %s", BuildInfo::LINKER_FLAGS );
   Log::unindent();
   Log::println( "}" );
   Log::verboseMode = false;
@@ -315,7 +315,8 @@ int Client::init( int argc, char** argv )
       Log::println( "%s", pkgFile.path().cstr() );
     }
     else {
-      OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", pkgFile.path().cstr() );
+      OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
+                pkgFile.path().cstr(), PHYSFS_getLastError() );
     }
   }
 
@@ -337,7 +338,8 @@ int Client::init( int argc, char** argv )
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
         if( !PFile::mount( file->path(), nullptr, true ) ) {
-          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
+          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
+                    file->path().cstr(), PHYSFS_getLastError() );
         }
         Log::println( "%s", file->path().cstr() );
       }

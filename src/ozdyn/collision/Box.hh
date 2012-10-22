@@ -32,11 +32,13 @@ namespace oz
 {
 
 /**
- * (Oriented) box.
+ * Box.
  */
 class Box : public Shape
 {
   public:
+
+    static Pool<Box> pool;
 
     Vec3 ext; ///< Extents.
 
@@ -51,6 +53,8 @@ class Box : public Shape
     explicit Box( const Vec3& ext_ ) :
       Shape( Shape::BOX ), ext( ext_ )
     {}
+
+  OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

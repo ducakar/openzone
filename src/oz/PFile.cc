@@ -425,15 +425,10 @@ bool PFile::mountLocal( const char* path )
 
 void PFile::init( File::FilesystemType type, int size )
 {
-  static_cast<void>( type );
-  static_cast<void>( size );
-
-  const char* arg0;
-
-#if defined( __native_client__ )
+#ifdef __native_client__
 
   if( System::instance == nullptr ) {
-    OZ_ERROR( "System::instance must be set to initialise PhysicsFS" );
+    OZ_ERROR( "System::instance must be set prior to PhysicsFS initialisation" );
   }
 
   struct InstanceInfo
@@ -451,11 +446,14 @@ void PFile::init( File::FilesystemType type, int size )
     size
   };
 
-  arg0 = reinterpret_cast<const char*>( &instanceInfo );
+  const char* arg0 = reinterpret_cast<const char*>( &instanceInfo );
 
 #else
 
-  arg0 = nullptr;
+  static_cast<void>( type );
+  static_cast<void>( size );
+
+  const char* arg0 = nullptr;
 
 #endif
 

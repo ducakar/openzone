@@ -43,7 +43,7 @@ class StackTrace
     /// Maximum number of stack frames.
     static const int MAX_FRAMES = 32;
 
-    const char* threadName;         ///< Current thread name (if started via Thread::start()).
+    const char* threadName;         ///< Current thread name (if started via `Thread::start()`).
     int         nFrames;            ///< Number of stack frames.
     void*       frames[MAX_FRAMES]; ///< Pointers to stack frames.
 
@@ -61,8 +61,7 @@ class StackTrace
      * Return string table for stack frames.
      *
      * Beginning of the returned table contains pointers to string entries in stack trace, same as
-     * with `backtrace_symbols()` call from glibc. The table must be freed by caller with
-     * `std::free()`.
+     * with `backtrace_symbols()` call from glibc. The table must be freed by caller with `free()`.
      */
     char** symbols() const;
 

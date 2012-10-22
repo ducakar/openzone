@@ -47,7 +47,7 @@ class Lua
      */
     typedef int APIFunc( lua_State* );
 
-    static int  randomSeed;       ///< Random seed for %Lua environments.
+    static int randomSeed;        ///< Random seed for %Lua environments.
     static bool isRandomSeedTime; ///< True iff current time (`Time::time()`) should be seed.
 
   protected:

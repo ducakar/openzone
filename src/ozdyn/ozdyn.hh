@@ -26,6 +26,11 @@
 
 #pragma once
 
+#include "collision/Shape.hh"
+#include "collision/Box.hh"
+#include "collision/Capsule.hh"
+#include "collision/Compound.hh"
+#include "collision/Object.hh"
 #include "collision/Collider.hh"
 
 #include "physics/Body.hh"

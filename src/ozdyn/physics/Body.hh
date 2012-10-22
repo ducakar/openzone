@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "../collision/Shape.hh"
+#include "../collision/Object.hh"
 
 namespace oz
 {
@@ -34,9 +34,15 @@ namespace oz
 /**
  * Rigid body.
  */
-class Body
+class Body : public Object
 {
+  public:
 
+    static Pool<Body> pool;
+
+  public:
+
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

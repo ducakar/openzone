@@ -21,43 +21,23 @@
  */
 
 /**
- * @file ozdyn/collision/Compound.hh
+ * @file ozdyn/collision/Space.hh
  */
 
 #pragma once
 
-#include "Shape.hh"
+#include "Object.hh"
 
 namespace oz
 {
 
-class Compound : public Shape
+class Space
 {
   public:
 
-    struct Child
-    {
-      Shape* shape;
-      Vec3   off;
-      Mat44  rot;
-    };
+    static const int MAX_OBJECTS = 1 << 16;
 
-  public:
-
-    static Pool<Compound> pool;
-
-    Child c[16];
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Compound() :
-      Shape( Shape::COMPOUND )
-    {
-      c[0].shape = nullptr;
-    }
-
-  OZ_STATIC_POOL_ALLOC( pool )
+    Object* objs[MAX_OBJECTS];
 
 };
 

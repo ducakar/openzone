@@ -36,7 +36,7 @@ namespace oz
 /**
  * %Time structure.
  *
- * Keep in mind that epoch may differ between platforms (1970-01-01 0:00:00 on POSIX systems and
+ * Keep in mind that epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux and
  * 1601-01-01 0:00:00 on Windows).
  */
 class Time

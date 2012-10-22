@@ -26,12 +26,10 @@
 
 #pragma once
 
-#include "Shape.hh"
+#include "Space.hh"
 
 namespace oz
 {
-
-class Box;
 
 class Collider
 {

@@ -22,6 +22,7 @@
  */
 
 #include <oz/oz.hh>
+#include <ozdyn/ozdyn.hh>
 
 using namespace oz;
 
@@ -108,8 +109,7 @@ class Foo
 
 };
 
-#undef main
-int main( int, char** )
+int main()
 {
   System::init();
   return 0;

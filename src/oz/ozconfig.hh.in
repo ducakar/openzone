@@ -42,37 +42,37 @@
  */
 
 // #if defined( _MSC_VER )
+// # define OZ_MSVC _MSC_VER
 // # error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
 // # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
-// # define OZ_MSVC _MSC_VER
 // #elif defined( __OPENCC__ )
+// # define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
 // # error Open64 cannot compile OpenZone due to lack of C++11 support.
 // # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
-// # define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
 #if defined( __clang__ )
-# if __clang_major__ < 3
+# define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
+# if OZ_CLANG < 300
 #  error Only LLVM/Clang >= 3.0 is supported.
 # endif
-# define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
 #elif defined( __GNUC__ )
-# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 4 )
+# define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
+# if OZ_GCC < 404
 #  error Only GCC >= 4.4 is supported.
 # endif
-# define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
 #else
 # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
 // C++11 workarounds for older GCC versions.
-#if defined( OZ_GCC ) && OZ_GCC < 406
-# define constexpr const
-# define noexcept  throw()
-# define nullptr   __null
-namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
-#endif
 #if defined( OZ_GCC ) && OZ_GCC < 407
 # define override
 # define final
+# if OZ_GCC < 406
+#  define constexpr const
+#  define noexcept  throw()
+#  define nullptr   __null
+namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
+# endif
 #endif
 
 // Workaround for a development snapshot of LLVM/Clang 3.2.
@@ -81,11 +81,11 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 #endif
 
 // Check for AddressSanitizer (currently only supported by LLVM/Clang 3.1+).
-// #ifdef __has_feature
-// # if __has_feature( address_sanitizer )
-// #  define OZ_ADDRESS_SANITIZER
-// # endif
-// #endif
+#ifdef __has_feature
+# if __has_feature( address_sanitizer )
+#  define OZ_ADDRESS_SANITIZER
+# endif
+#endif
 
 // For now, SSE3 is mandatory for OZ_SIMD_MATH.
 #if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )

@@ -189,6 +189,13 @@ function fetch()
   # physfs
   download 'http://icculus.org/physfs/downloads/physfs-2.0.2.tar.gz'
 
+  # physfs 2.1
+  cd "$topDir/archives"
+  if [[ -d "physfs" ]]
+    then cd "physfs" && hg pull -u
+    else hg clone 'http://hg.icculus.org/icculus/physfs/'
+  fi
+
   # lua
   download 'http://www.lua.org/ftp/lua-5.2.1.tar.gz'
 
@@ -290,6 +297,19 @@ function build_physfs()
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
 }
 
+function build_physfs21()
+{
+  [[ -d "$buildDir/physfs" ]] && return
+
+  msg "physfs-2.1-hg @ $platform"
+
+  cp -R "$topDir/archives/physfs" "$buildDir"
+  cd "$buildDir/physfs"
+  applyPatches "physfs-2.1.patch"
+
+  cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
+}
+
 function build_lua()
 {
   prepare "lua-5.2.1" "lua-5.2.1.tar.gz" || return
@@ -320,7 +340,7 @@ function build_sdl2()
 {
   [[ -d "$buildDir/SDL" ]] && return
 
-  msg "SDL2 @ $platform"
+  msg "SDL-2.0-hg @ $platform"
 
   cp -R "$topDir/archives/SDL" "$buildDir"
   cp "$projectDir/etc/SDL2-CMakeLists-gen.sh" "$buildDir/SDL"
@@ -401,12 +421,12 @@ function build()
   setup_ndkMIPS && build_zlib
 
   # physfs
-  setup_nacl64  && build_physfs
-  setup_nacl32  && build_physfs
-  setup_ndkX86  && build_physfs
-  setup_ndkARM  && build_physfs
-  setup_ndkARM7 && build_physfs
-  setup_ndkMIPS && build_physfs
+  setup_nacl64  && build_physfs21
+  setup_nacl32  && build_physfs21
+  setup_ndkX86  && build_physfs21
+  setup_ndkARM  && build_physfs21
+  setup_ndkARM7 && build_physfs21
+  setup_ndkMIPS && build_physfs21
 
   # lua
   setup_nacl64  && build_lua

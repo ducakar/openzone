@@ -81,7 +81,7 @@ inline float vFirst( float4 a )
 
 /**
  * @def vShuffle
- * Compiler-dependent built-in function for SIMD vector shuffle.
+ * Compiler- and platform-dependent built-in function for SIMD vector shuffle.
  */
 #if defined( OZ_CLANG )
 # define vShuffle( a, b, i, j, k, l ) \
@@ -90,18 +90,6 @@ inline float vFirst( float4 a )
 # define vShuffle( a, b, i, j, k, l ) \
   __builtin_ia32_shufps( a, b, i | ( j << 2 ) | ( k << 4 ) | ( l << 6 ) );
 #endif
-
-OZ_ALWAYS_INLINE
-inline float4 vHAdd( float4 a, float4 b )
-{
-  return __builtin_ia32_haddps( a, b );
-}
-
-OZ_ALWAYS_INLINE
-inline float4 vHSub( float4 a, float4 b )
-{
-  return __builtin_ia32_hsubps( a, b );
-}
 
 /**
  * Absolute value of a float SIMD vector.
@@ -119,8 +107,8 @@ OZ_ALWAYS_INLINE
 inline float4 vDot( float4 a, float4 b )
 {
   float4 p = a * b;
-  float4 s = vHAdd( p, p );
-  return vHAdd( s, s );
+  float4 s = __builtin_ia32_haddps( p, p );
+  return __builtin_ia32_haddps( s, s );
 }
 
 #endif // OZ_SIMD_MATH

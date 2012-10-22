@@ -560,6 +560,7 @@ void Sound::soundRun()
   soundAuxSemaphore.wait();
 
   while( isSoundAlive ) {
+#ifndef OZ_ADDRESS_SANITIZER
     float orientation[] = {
       camera.at.x, camera.at.y, camera.at.z,
       camera.up.x, camera.up.y, camera.up.z
@@ -571,6 +572,7 @@ void Sound::soundRun()
     alListenerfv( AL_ORIENTATION, orientation );
     alListenerfv( AL_POSITION, camera.p );
     alListenerfv( AL_VELOCITY, camera.velocity );
+#endif
 
     if( playedStructs.length() < orbis.structs.length() ) {
       playedStructs.deallocate();
@@ -586,7 +588,9 @@ void Sound::soundRun()
       }
     }
 
+#ifndef OZ_ADDRESS_SANITIZER
     updateMusic();
+#endif
 
     soundMainSemaphore.post();
     soundAuxSemaphore.wait();
@@ -596,12 +600,20 @@ void Sound::soundRun()
 void Sound::setVolume( float volume_ )
 {
   volume = volume_;
+#ifdef OZ_ADDRESS_SANITIZER
+  static_cast<void>( volume_ );
+#else
   alListenerf( AL_GAIN, volume_ );
+#endif
 }
 
 void Sound::setMusicVolume( float volume ) const
 {
+#ifdef OZ_ADDRESS_SANITIZER
+  static_cast<void>( volume );
+#else
   alSourcef( musicSource, AL_GAIN, 0.5f * volume );
+#endif
 }
 
 bool Sound::isMusicPlaying() const
@@ -629,14 +641,18 @@ void Sound::stopMusic()
 
 void Sound::resume() const
 {
+#ifndef OZ_ADDRESS_SANITIZER
   alcProcessContext( soundContext );
   alListenerf( AL_GAIN, volume );
+#endif
 }
 
 void Sound::suspend() const
 {
+#ifndef OZ_ADDRESS_SANITIZER
   alListenerf( AL_GAIN, 0.0f );
   alcSuspendContext( soundContext );
+#endif
 }
 
 void Sound::play()
@@ -659,6 +675,10 @@ void Sound::init()
 
   Log::println( "Initialising Sound {" );
   Log::indent();
+
+#ifdef OZ_ADDRESS_SANITIZER
+  config["sound.device"];
+#else
 
   const char* deviceSpec = alcGetString( nullptr, ALC_DEVICE_SPECIFIER );
 
@@ -772,16 +792,20 @@ void Sound::init()
   Log::println( "}" );
   Log::verboseMode = false;
 
+#endif // !OZ_ADDRESS_SANITIZER
+
   selectedTrack = -1;
   currentTrack  = -1;
   streamedTrack = -1;
 
+#ifndef OZ_ADDRESS_SANITIZER
   alGenBuffers( 2, musicBufferIds );
   alGenSources( 1, &musicSource );
 
   musicBuffersQueued = 0;
 
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
+#endif
 
   setVolume( config.include( "sound.volume", 1.0f ).asFloat() );
   setMusicVolume( 0.5f );
@@ -841,9 +865,10 @@ void Sound::free()
   musicAuxSemaphore.destroy();
   musicMainSemaphore.destroy();
 
-  if( soundContext != nullptr ) {
-    playedStructs.deallocate();
+  playedStructs.deallocate();
 
+  if( soundContext != nullptr ) {
+#ifndef OZ_ADDRESS_SANITIZER
     alSourceStop( musicSource );
     alDeleteSources( 1, &musicSource );
     alDeleteBuffers( 2, musicBufferIds );
@@ -855,6 +880,7 @@ void Sound::free()
 
     alcCloseDevice( soundDevice );
     soundDevice = nullptr;
+#endif
   }
 
 #ifndef __native_client__

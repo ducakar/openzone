@@ -38,6 +38,8 @@ class Capsule : public Shape
 {
   public:
 
+    static Pool<Capsule> pool;
+
     float ext;    ///< Line segment length.
     float radius; ///< Distance from line segment representing capsule surface.
 
@@ -52,6 +54,8 @@ class Capsule : public Shape
     explicit Capsule( float ext_, float radius_ ) :
       Shape( Shape::CAPSULE ), ext( ext_ ), radius( radius_ )
     {}
+
+  OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

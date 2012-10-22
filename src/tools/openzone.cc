@@ -34,6 +34,9 @@
 extern "C"
 void SDL_Android_Init( JNIEnv* env, jclass clazz );
 
+extern "C"
+void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
+
 #elif defined( __native_client__ )
 
 #include <SDL/SDL_nacl.h>
@@ -47,9 +50,6 @@ using namespace oz;
 using namespace oz::client;
 
 #if defined( __ANDROID__ )
-extern "C"
-void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
-
 extern "C"
 void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )

@@ -1,4 +1,4 @@
-add_executable( ozBuild
+add_library( builder STATIC
   BSP.hh
   Builder.hh
   Caelum.hh
@@ -25,14 +25,6 @@ add_executable( ozBuild
   MD2.cc
   MD3.cc
   OBJ.cc
-  ozBuild.cc
   Terra.cc
   UI.cc )
-use_pch( ozBuild pch )
-target_link_libraries( ozBuild client modules nirvana matrix common build_info oz ${libs_tools} )
-
-if( OZ_STANDALONE )
-  install( TARGETS ozBuild RUNTIME DESTINATION bin/${OZ_PLATFORM_NAME} )
-else()
-  install( TARGETS ozBuild RUNTIME DESTINATION bin )
-endif()
+use_pch( builder pch )
