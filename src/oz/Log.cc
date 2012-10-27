@@ -303,21 +303,7 @@ bool Log::init( const char* filePath_, bool clearFile )
 {
   tabs = 0;
 
-#if defined( __ANDROID__ )
-
-  static_cast<void>( clearFile );
-
-  if( filePath_ == nullptr ) {
-    filePath[0] = '\0';
-  }
-  else {
-    strncpy( filePath, filePath_, 256 );
-    filePath[255] = '\0';
-  }
-
-  return true;
-
-#elif defined( __native_client__ )
+#if defined( __ANDROID__ ) || defined( __native_client__ )
 
   static_cast<void>( filePath_ );
   static_cast<void>( clearFile );
@@ -349,9 +335,7 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 void Log::free()
 {
-#if defined( __ANDROID__ )
-#elif defined( __native_client__ )
-#else
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
 
   if( file != nullptr ) {
     fclose( file );

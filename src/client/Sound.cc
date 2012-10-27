@@ -28,6 +28,14 @@
 #include <client/eSpeak.hh>
 #include <client/NaCl.hh>
 
+#ifdef __native_client__
+# include <ppapi/cpp/instance.h>
+# include <ppapi/cpp/module.h>
+
+extern "C"
+void alSetPpapiInfo( PP_Instance instance, PPB_GetInterface getInterface );
+#endif
+
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
 #endif
@@ -679,6 +687,10 @@ void Sound::init()
 #ifdef OZ_ADDRESS_SANITIZER
   config["sound.device"];
 #else
+
+#ifdef __native_client__
+  alSetPpapiInfo( System::instance->pp_instance(), System::module->get_browser_interface() );
+#endif
 
   const char* deviceSpec = alcGetString( nullptr, ALC_DEVICE_SPECIFIER );
 

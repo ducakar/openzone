@@ -41,9 +41,6 @@ void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
 
 #include <SDL/SDL_nacl.h>
 
-extern "C"
-void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
-
 #endif
 
 using namespace oz;
@@ -151,7 +148,6 @@ void MainInstance::DidChangeView( const pp::View& view )
 
   if( !mainThread.isValid() ) {
     SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
-    alSetPpapiInfo( pp_instance(), System::module->get_browser_interface() );
 
     mainThread.start( "main", mainThreadMain, this );
   }

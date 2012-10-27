@@ -146,9 +146,7 @@ class Bounds
      */
     Point p() const
     {
-      return Point( ( mins.x + maxs.x ) * 0.5f,
-                    ( mins.y + maxs.y ) * 0.5f,
-                    ( mins.z + maxs.z ) * 0.5f );
+      return Math::mix<Point>( mins, maxs, 0.5f );
     }
 
     /**
@@ -156,9 +154,7 @@ class Bounds
      */
     Vec3 dim( float eps = 0.0f ) const
     {
-      return Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
-                   ( maxs.y - mins.y ) * 0.5f + eps,
-                   ( maxs.z - mins.z ) * 0.5f + eps );
+      return 0.5f * ( maxs - mins ) + Vec3( eps, eps, eps );
     }
 
     /**

@@ -15,7 +15,7 @@ set( CMAKE_CXX_COMPILER         "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-g++"
 set( CMAKE_C_FLAGS              "-msse3 -mfpmath=sse" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "-msse3 -mfpmath=sse" CACHE STRING "" )
 
-# CMake commands find_library & find_package only check lib/ but not lib32/.
+# find_library() & find_package() macros only check lib/ but not lib32/.
 set( PEPPER_LIBRARY             "${PLATFORM_PREFIX}/x86_64-nacl/lib32/libppapi.a" CACHE PATH "" )
 set( PEPPER_CXX_LIBRARY         "${PLATFORM_PREFIX}/x86_64-nacl/lib32/libppapi_cpp.a" CACHE PATH "" )
 set( PEPPER_GLES2_LIBRARY       "${PLATFORM_PREFIX}/x86_64-nacl/lib32/libppapi_gles2.a" CACHE PATH "" )

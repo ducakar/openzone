@@ -40,11 +40,9 @@ void MusicPlayer::prevTrack( Button* sender )
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
   int nTracks = liber.musicTracks.length();
 
-  if( nTracks > 1 ) {
-    musicPlayer->currentTrack = ( nTracks + musicPlayer->currentTrack - 1 ) % nTracks;
+  if( nTracks != 0 ) {
+    musicPlayer->currentTrack = ( musicPlayer->currentTrack + nTracks - 1 ) % nTracks;
 
-    sound.stopMusic();
-    sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
     sound.playMusic( musicPlayer->currentTrack, true );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
@@ -58,11 +56,9 @@ void MusicPlayer::nextTrack( Button* sender )
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
   int nTracks = liber.musicTracks.length();
 
-  if( nTracks > 1 ) {
+  if( nTracks != 0 ) {
     musicPlayer->currentTrack = ( musicPlayer->currentTrack + 1 ) % nTracks;
 
-    sound.stopMusic();
-    sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
     sound.playMusic( musicPlayer->currentTrack, true );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
@@ -77,8 +73,6 @@ void MusicPlayer::playTrack( Button* sender )
   int nTracks = liber.musicTracks.length();
 
   if( nTracks != 0 ) {
-    sound.stopMusic();
-    sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
     sound.playMusic( musicPlayer->currentTrack, true );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
@@ -90,14 +84,11 @@ void MusicPlayer::playTrack( Button* sender )
 void MusicPlayer::stopTrack( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
-  int nTracks = liber.musicTracks.length();
 
-  if( nTracks != 0 ) {
-    sound.stopMusic();
+  sound.stopMusic();
 
-    musicPlayer->title.set( " " );
-    musicPlayer->isPlaying = false;
-  }
+  musicPlayer->title.set( " " );
+  musicPlayer->isPlaying = false;
 }
 
 void MusicPlayer::volumeDown( Button* sender )
@@ -106,6 +97,7 @@ void MusicPlayer::volumeDown( Button* sender )
 
   musicPlayer->volume = max( musicPlayer->volume - 1, 0 );
   musicPlayer->volumeLabel.set( "%.1f", float( musicPlayer->volume ) / 10.0f );
+
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
 
@@ -115,6 +107,7 @@ void MusicPlayer::volumeUp( Button* sender )
 
   musicPlayer->volume = min( musicPlayer->volume + 1, 10 );
   musicPlayer->volumeLabel.set( "%.1f", float( musicPlayer->volume ) / 10.0f );
+
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
 

@@ -47,6 +47,7 @@ class Object
     Quat    rot;     ///< Rotation.
     Mat33   rotMat;  ///< Cached rotation matrix.
 
+    int     mask;    ///< Collision bitmask.
     Shape*  shape;   ///< Collision shape.
 
   public:
@@ -55,7 +56,7 @@ class Object
      * Create uninitialised instance.
      */
     explicit Object() :
-      shape( nullptr )
+      mask( ~0 ), shape( nullptr )
     {}
 
   OZ_STATIC_POOL_ALLOC( pool )

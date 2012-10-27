@@ -30,7 +30,7 @@ function onUpdate()
 end
 
 function onCreate()
---   ozOrbisSetGravity( -6.0 )
+  --ozOrbisSetGravity( -6.0 )
 
   ozTerraLoad( "terra" )
 
@@ -38,16 +38,14 @@ function onCreate()
   ozCaelumSetHeading( math.pi / 8 )
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 0 )
---   ozCaelumSetRealTime()
+  --ozCaelumSetRealTime()
 
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
---   local me = ozOrbisAddPlayer( OZ_FORCE, 2000, -2002, 100, OZ_SOUTH )
+  --local me = ozOrbisAddPlayer( OZ_FORCE, 2000, 2002, 100, OZ_SOUTH )
   ozCameraAddSwitchableUnit( me )
   ozCameraSwitchTo( me )
 
---   ozOrbisAddStr( OZ_FORCE, "testCastle", 2000, -2000, 100, OZ_NORTH )
-
---  init_sample()
+  init_sample()
 
   ozFloraSeed()
 
@@ -55,87 +53,89 @@ function onCreate()
 end
 
 function init_sample()
-  local lord = ozOrbisAddObj( OZ_FORCE, "bauul", 138, -11, 73, OZ_EAST )
+  local cX, cY, cZ = 143, 0, 79
+  --local cX, cY, cZ = 2000, 2000, 100
 
-  local memo = ozOrbisAddObj( OZ_FORCE, "datacube", 134, -6, 73 )
+  local lord   = ozOrbisAddObj( OZ_FORCE, "bauul",       cX - 5, cY - 11, cZ - 6, OZ_EAST )
+  local memo   = ozOrbisAddObj( OZ_FORCE, "datacube",    cX - 9, cY - 6,  cZ - 6 )
+  local droid  = ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", cX - 3, cY - 11, cZ - 6, OZ_WEST )
+  local cyborg = ozOrbisAddObj( OZ_FORCE, "cyborg",      cX - 3, cY - 13, cZ - 6, OZ_WEST )
+  ozBotSetMind( "" )
+
   ozNirvanaAddMemo( memo, "Simulations are like miniskirts, they show a lot but hide the " ..
                           "essentials.\n\n        -- Hubert Kirrman" )
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
-  local droid  = ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", 140, -11, 73, OZ_WEST )
-  local cyborg = ozOrbisAddObj( OZ_FORCE, "cyborg", 140, -13, 73, OZ_WEST )
-  ozBotSetMind( "" )
-
   ozCameraAddSwitchableUnit( cyborg )
   ozCameraAddSwitchableUnit( droid )
 
---   ozOrbisAddObj( "reaper", 145, -15, 73 )
+  --ozOrbisAddObj( "reaper", 145, -15, 73 )
 
-  ozOrbisAddObj( OZ_FORCE, "musicPlayer", 135, -4, 73 )
-  ozOrbisAddObj( OZ_FORCE, "galileo", 136, -4, 73 )
-  ozOrbisAddObj( OZ_FORCE, "nvGoggles", 137, -4, 73 )
-  ozOrbisAddObj( OZ_FORCE, "cvicek", 135, -2, 73 )
-  ozOrbisAddObj( OZ_FORCE, "firstAid", 136, -2, 73 )
-  ozOrbisAddObj( OZ_FORCE, "binoculars", 137, -2, 73 )
-  ozOrbisAddObj( OZ_FORCE, "droid_weapon.hyperblaster", 135, -3, 73 )
-  ozOrbisAddObj( OZ_FORCE, "droid_weapon.chaingun", 136, -3, 73 )
-  ozOrbisAddObj( OZ_FORCE, "droid_weapon.grenadeLauncher", 137, -3, 73 )
+  ozOrbisAddObj( OZ_FORCE, "musicPlayer",                  cX - 8, cY - 4, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "galileo",                      cX - 7, cY - 4, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "nvGoggles",                    cX - 6, cY - 4, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "cvicek",                       cX - 8, cY - 2, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "firstAid",                     cX - 7, cY - 2, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "binoculars",                   cX - 6, cY - 2, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "droid_weapon.hyperblaster",    cX - 8, cY - 3, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "droid_weapon.chaingun",        cX - 7, cY - 3, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "droid_weapon.grenadeLauncher", cX - 6, cY - 3, cZ - 6 )
 
-  ozOrbisAddObj( OZ_FORCE, "key", 160, 3, 73 )
+  ozOrbisAddObj( OZ_FORCE, "key", cX + 17, cY + 3, cZ - 6 )
 
-  ozOrbisAddObj( OZ_FORCE, "raptor", 155, -30, 71 )
-  ozOrbisAddObj( OZ_FORCE, "hoverTank", 145, -30, 71 )
+  ozOrbisAddObj( OZ_FORCE, "raptor",    cX + 12, cY - 30, cZ - 8 )
+  ozOrbisAddObj( OZ_FORCE, "hoverTank", cX + 2,  cY - 30, cZ - 8 )
 
-  ozOrbisAddObj( OZ_FORCE, "metalBarrel", 147, -11, 72 )
-  ozOrbisAddObj( OZ_FORCE, "metalBarrel", 147, -11, 74 )
-  ozOrbisAddObj( OZ_FORCE, "metalBarrel", 147, -11, 76 )
+  ozOrbisAddObj( OZ_FORCE, "metalBarrel", cX + 4, cY - 11, cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "metalBarrel", cX + 4, cY - 11, cZ - 5 )
+  ozOrbisAddObj( OZ_FORCE, "metalBarrel", cX + 4, cY - 11, cZ - 3 )
 
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 11, 72 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 11, 73 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 11, 74 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 11, 75 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 11, 76 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 11, cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 11, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 11, cZ - 5 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 11, cZ - 4 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 11, cZ - 3 )
 
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 12, 72 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 12, 73 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 12, 74 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 12, 75 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 147, 12, 76 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 12, cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 12, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 12, cZ - 5 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 12, cZ - 4 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 4, cY + 12, cZ - 3 )
 
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 11, 72 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 11, 73 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 11, 74 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 11, 75 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 11, 76 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 11, cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 11, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 11, cZ - 5 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 11, cZ - 4 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 11, cZ - 3 )
 
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 12, 72 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 12, 73 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 12, 74 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 12, 75 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 148, 12, 76 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 12, cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 12, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 12, cZ - 5 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 12, cZ - 4 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX + 5, cY + 12, cZ - 3 )
 
-  ozOrbisGenFrags( "ruins", 100, 146, 10, 79, 149, 13, 79, 0, 0, 2 )
+  ozOrbisGenFrags( "ruins", 100, cX + 3, cY + 10, cZ, cX + 6, cY + 13, cZ, 0, 0, 2 )
 
-  ozOrbisAddObj( OZ_FORCE, "box", 140, -2, 72 )
-  ozOrbisAddObj( OZ_FORCE, "bigCrate", 140, -7, 72 )
-  ozOrbisAddObj( OZ_FORCE, "metalCrate", 140, -4, 72 )
-  ozOrbisAddObj( OZ_FORCE, "metalBarrel", 140, -5.5, 72 )
+  ozOrbisAddObj( OZ_FORCE, "box",         cX - 3, cY - 2,   cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "bigCrate",    cX - 3, cY - 7,   cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "metalCrate",  cX - 3, cY - 4,   cZ - 7 )
+  ozOrbisAddObj( OZ_FORCE, "metalBarrel", cX - 3, cY - 5.5, cZ - 7 )
 
-  ozOrbisAddStr( OZ_FORCE, "testCastle", 143, 0, 79, OZ_NORTH )
-  ozOrbisAddStr( OZ_FORCE, "pool", 112, -7, 70 )
-  ozOrbisAddStr( OZ_FORCE, "tower", 106, -7, 75, OZ_WEST )
-  ozOrbisAddStr( OZ_FORCE, "atlantis", -160, 220, -5 )
-  ozOrbisAddStr( OZ_FORCE, "house", 126, -30, 70.5 )
+  ozOrbisAddStr( OZ_FORCE, "testCastle", cX,       cY,       cZ,      OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "pool",       cX - 31,  cY - 7,   cZ - 9 )
+  ozOrbisAddStr( OZ_FORCE, "tower",      cX - 37,  cY - 7,   cZ - 4,  OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "atlantis",   cX - 303, cY + 220, cZ - 84 )
+  ozOrbisAddStr( OZ_FORCE, "house",      cX - 17,  cY - 30,  cZ - 8.5 )
 
-  ozOrbisAddObj( OZ_FORCE, "serviceStation", 110, -25, 69.6, OZ_WEST )
-  ozOrbisAddObj( OZ_FORCE, "console", 107, -24, 68.0, OZ_EAST )
+  ozOrbisAddObj( OZ_FORCE, "serviceStation", cX - 33, cY - 25, cZ - 9.4, OZ_WEST )
+  ozOrbisAddObj( OZ_FORCE, "console",        cX - 36, cY - 24, cZ - 11,  OZ_EAST )
 
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 108, -6, 81 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 108, -6, 82 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 108, -6, 83 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 108, -8, 81 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 108, -8, 82 )
-  ozOrbisAddObj( OZ_FORCE, "smallCrate", 108, -8, 83 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 6, cZ + 2 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 6, cZ + 3 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 6, cZ + 4 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 8, cZ + 2 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 8, cZ + 3 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 8, cZ + 4 )
 end
 
 function init_stressTest()
@@ -149,7 +149,7 @@ function init_stressTest()
     end
   end
 
-  for i = 1, 2500 do
+  for i = 1, 1000 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )
@@ -159,7 +159,7 @@ function init_stressTest()
     end
   end
 
-  for i = 1, 2500 do
+  for i = 1, 1000 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )

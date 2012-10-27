@@ -35,6 +35,9 @@
 # include <ppapi/cpp/file_system.h>
 # include <ppapi/cpp/instance.h>
 # include <ppapi/cpp/module.h>
+
+extern "C"
+int PHYSFS_NACL_init(PP_Instance, PPB_GetInterface, PP_FileSystemType, PHYSFS_sint64);
 #endif
 
 #if PHYSFS_VER_MAJOR < 2
@@ -425,39 +428,27 @@ bool PFile::mountLocal( const char* path )
 
 void PFile::init( File::FilesystemType type, int size )
 {
+  static_cast<void>( type );
+  static_cast<void>( size );
+
 #ifdef __native_client__
 
   if( System::instance == nullptr ) {
     OZ_ERROR( "System::instance must be set prior to PhysicsFS initialisation" );
   }
 
-  struct InstanceInfo
-  {
-    PPB_GetInterface  getInterface;
-    PP_Instance       instance;
-    PP_FileSystemType filesystemType;
-    size_t            size;
-  };
+  if( System::core->IsMainThread() ) {
+    OZ_ERROR( "PhysicsFS cannot be initialisation in the main thread" );
+  }
 
-  InstanceInfo instanceInfo = {
-    pp::Module::Get()->get_browser_interface(),
-    System::instance->pp_instance(),
-    type == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT : PP_FILESYSTEMTYPE_LOCALTEMPORARY,
-    size
-  };
-
-  const char* arg0 = reinterpret_cast<const char*>( &instanceInfo );
-
-#else
-
-  static_cast<void>( type );
-  static_cast<void>( size );
-
-  const char* arg0 = nullptr;
+  PHYSFS_NACL_init( System::instance->pp_instance(), pp::Module::Get()->get_browser_interface(),
+                    type == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                               PP_FILESYSTEMTYPE_LOCALTEMPORARY,
+                    size );
 
 #endif
 
-  if( PHYSFS_init( arg0 ) == 0 ) {
+  if( PHYSFS_init( nullptr ) == 0 ) {
     OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
   }
 }

@@ -84,7 +84,7 @@ namespace oz
 {
 
 static const float BELL_TIME      = 0.30f;
-static const float BELL_FREQUENCY = 800.0f;
+static const float BELL_FREQUENCY = 1000.0f;
 
 #if defined( __ANDROID__ )
 
@@ -99,14 +99,15 @@ struct SampleInfo
   pp::Audio* audio;
   int        nFrameSamples;
   int        nSamples;
-  float      quotient;
+  int        rate;
   int        end;
   int        offset;
 };
 
 #elif defined( _WIN32 )
 
-static const int BELL_WAVE_RATE = 44100;
+static const int BELL_WAVE_RATE    = 44100;
+static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_WAVE_RATE );
 
 struct Wave
 {
@@ -125,19 +126,19 @@ struct Wave
 
   char  subchunk2Id[4];
   int   subchunk2Size;
-  short samples[ int( BELL_TIME * BELL_WAVE_RATE ) ];
+  short samples[BELL_WAVE_SAMPLES * 2];
 };
 
 #else
 
 static const int                      BELL_ALSA_RATE  = 48000;
-static const pa_sample_spec           BELL_PA_SPEC    = { PA_SAMPLE_S16NE, 44100, 1 };
+static const pa_sample_spec           BELL_PA_SPEC    = { PA_SAMPLE_S16NE, 44100, 2 };
 static const timespec                 TIMESPEC_10MS   = { 0, 10 * 1000000 };
-static const timespec                 TIMESPEC_BELL   = { 0, long( BELL_TIME * 1e9f ) };
 
 static decltype( ::pa_simple_new   )* pa_simple_new   = nullptr;
 static decltype( ::pa_simple_free  )* pa_simple_free  = nullptr;
 static decltype( ::pa_simple_write )* pa_simple_write = nullptr;
+static decltype( ::pa_simple_drain )* pa_simple_drain = nullptr;
 
 static pthread_once_t                 bellOnce        = PTHREAD_ONCE_INIT;
 
@@ -226,6 +227,25 @@ static void unexpected()
   abort( initFlags & System::HALT_BIT );
 }
 
+static void genBellSamples( short* samples, int nSamples_, int rate, int begin, int end )
+{
+  float nSamples = float( nSamples_ );
+  float quotient = BELL_FREQUENCY / float( rate ) * Math::TAU;
+
+  for( ; begin < end; ++begin ) {
+    float i = float( begin );
+
+    float amplitude = 0.5f * Math::fastSqrt( max( ( nSamples - i ) / nSamples, 0.0f ) );
+    float theta     = i * quotient;
+    float value     = amplitude * Math::sin( theta );
+    short sample    = short( SHRT_MAX * value + 0.5f );
+
+    samples[0] = sample;
+    samples[1] = sample;
+    samples   += 2;
+  }
+}
+
 #if defined( __ANDROID__ )
 
 static void* bellMain( void* )
@@ -260,20 +280,9 @@ static void bellPlayCallback( void* buffer, uint size, void* info_ )
     System::core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
   }
 
-  int begin = info->offset;
+  genBellSamples( samples, info->nSamples, info->rate, info->offset,
+                  info->offset + info->nFrameSamples );
   info->offset += info->nFrameSamples;
-
-  for( int i = begin; i < info->offset; ++i ) {
-    float position  = float( info->nSamples - i ) / float( info->nSamples );
-    float amplitude = Math::fastSqrt( max( position, 0.0f ) );
-    float theta     = float( i ) * info->quotient;
-    float value     = amplitude * Math::sin( theta );
-    short sample    = short( SHRT_MAX * value + 0.5f );
-
-    samples[0] = sample;
-    samples[1] = sample;
-    samples   += 2;
-  }
 }
 
 static void bellInitCallback( void* info_, int )
@@ -287,7 +296,7 @@ static void bellInitCallback( void* info_, int )
 
   info->nFrameSamples = int( nFrameSamples );
   info->nSamples      = int( BELL_TIME * float( rate ) + 0.5f );
-  info->quotient      = BELL_FREQUENCY * Math::TAU / float( rate );
+  info->rate          = rate;
   info->end           = info->nSamples + int( BELL_TIME * float( rate ) + 0.5f );
   info->offset        = 0;
 
@@ -320,8 +329,7 @@ static void* bellMain( void* )
 
 static DWORD WINAPI bellMain( void* )
 {
-  size_t nSamples = int( BELL_TIME * BELL_WAVE_RATE );
-  Wave*  wave     = static_cast<Wave*>( malloc( sizeof( Wave ) ) );
+  Wave* wave = static_cast<Wave*>( malloc( sizeof( Wave ) ) );
 
   wave->chunkId[0]     = 'R';
   wave->chunkId[1]     = 'I';
@@ -339,10 +347,10 @@ static DWORD WINAPI bellMain( void* )
   wave->subchunk1Id[3] = ' ';
   wave->subchunk1Size  = 16;
   wave->audioFormat    = 1;
-  wave->nChannels      = 1;
+  wave->nChannels      = 2;
   wave->sampleRate     = BELL_WAVE_RATE;
-  wave->byteRate       = BELL_WAVE_RATE * sizeof( short );
-  wave->blockAlign     = sizeof( short );
+  wave->byteRate       = BELL_WAVE_RATE * 2 * sizeof( short );
+  wave->blockAlign     = 2 * sizeof( short );
   wave->bitsPerSample  = sizeof( short ) * 8;
 
   wave->subchunk2Id[0] = 'd';
@@ -351,13 +359,7 @@ static DWORD WINAPI bellMain( void* )
   wave->subchunk2Id[3] = 'a';
   wave->subchunk2Size  = sizeof( wave->samples );
 
-  for( size_t i = 0; i < nSamples; ++i ) {
-    float amplitude = Math::fastSqrt( float( nSamples - i ) / float( nSamples ) );
-    float theta     = float( i ) / float( BELL_WAVE_RATE ) * BELL_FREQUENCY * Math::TAU;
-    float value     = amplitude * Math::sin( theta );
-
-    wave->samples[i] = short( SHRT_MAX * value + 0.5f );
-  }
+  genBellSamples( wave->samples, BELL_WAVE_SAMPLES, BELL_WAVE_RATE, 0, BELL_WAVE_SAMPLES );
 
   PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
   free( wave );
@@ -375,22 +377,14 @@ static void* bellMain( void* )
                                    &BELL_PA_SPEC, nullptr, nullptr, nullptr );
 
     if( pa != nullptr ) {
-      size_t nSamples = size_t( BELL_TIME * float( BELL_PA_SPEC.rate ) );
-      short* samples  = static_cast<short*>( malloc( nSamples * sizeof( short ) ) );
+      int    nSamples = int( BELL_TIME * float( BELL_PA_SPEC.rate ) );
+      size_t size     = size_t( nSamples ) * 2 * sizeof( short );
+      short* samples  = static_cast<short*>( malloc( size ) );
 
-      for( size_t i = 0; i < nSamples; ++i ) {
-        float amplitude = Math::fastSqrt( float( nSamples - i ) / float( nSamples ) );
-        float theta     = float( i ) / float( BELL_PA_SPEC.rate ) * BELL_FREQUENCY * Math::TAU;
-        float value     = amplitude * Math::sin( theta );
+      genBellSamples( samples, nSamples, int( BELL_PA_SPEC.rate ), 0, nSamples );
 
-        samples[i] = short( SHRT_MAX * value + 0.5f );
-      }
-
-      pa_simple_write( pa, samples, size_t( nSamples ) * sizeof( short ), nullptr );
-
-      // `pa_simple_drain` blocks for ~2 s longer than a sound sample lasts, so `nanosleep` is a
-      // better solution.
-      nanosleep( &TIMESPEC_BELL, nullptr );
+      pa_simple_write( pa, samples, size, nullptr );
+      pa_simple_drain( pa, nullptr );
       pa_simple_free( pa );
 
       free( samples );
@@ -417,23 +411,18 @@ static void* bellMain( void* )
   snd_pcm_hw_params_any( alsa, params );
   snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED );
   snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 );
-  snd_pcm_hw_params_set_channels( alsa, params, 1 );
+  snd_pcm_hw_params_set_channels( alsa, params, 2 );
   snd_pcm_hw_params_set_rate( alsa, params, BELL_ALSA_RATE, 0 );
   snd_pcm_hw_params( alsa, params );
 
   if( snd_pcm_prepare( alsa ) >= 0 ) {
-    size_t nSamples = size_t( BELL_TIME * float( BELL_ALSA_RATE ) );
-    short* samples  = static_cast<short*>( malloc( nSamples * sizeof( short ) ) );
+    int    nSamples = int( BELL_TIME * float( BELL_ALSA_RATE ) );
+    size_t size     = size_t( nSamples ) * 2 * sizeof( short );
+    short* samples  = static_cast<short*>( malloc( size ) );
 
-    for( size_t i = 0; i < nSamples; ++i ) {
-      float amplitude = Math::fastSqrt( float( nSamples - i ) / float( nSamples ) );
-      float theta     = float( i ) / float( BELL_ALSA_RATE ) * BELL_FREQUENCY * Math::TAU;
-      float value     = amplitude * Math::sin( theta );
+    genBellSamples( samples, nSamples, BELL_ALSA_RATE, 0, nSamples );
 
-      samples[i] = short( SHRT_MAX * value + 0.5f );
-    }
-
-    snd_pcm_writei( alsa, samples, nSamples );
+    snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
     snd_pcm_drain( alsa );
 
     free( samples );
@@ -448,7 +437,6 @@ static void* bellMain( void* )
 
 static void initBell()
 {
-
   // Link to PulseAudio client library if available.
   void* libPulse = dlopen( "libpulse-simple.so.0", RTLD_NOW );
 
@@ -456,11 +444,15 @@ static void initBell()
     *( void** ) &pa_simple_new   = dlsym( libPulse, "pa_simple_new" );
     *( void** ) &pa_simple_free  = dlsym( libPulse, "pa_simple_free" );
     *( void** ) &pa_simple_write = dlsym( libPulse, "pa_simple_write" );
+    *( void** ) &pa_simple_drain = dlsym( libPulse, "pa_simple_drain" );
 
-    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
+    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ||
+        pa_simple_drain == nullptr )
+    {
       pa_simple_new   = nullptr;
       pa_simple_free  = nullptr;
       pa_simple_write = nullptr;
+      pa_simple_drain = nullptr;
 
       dlclose( libPulse );
     }

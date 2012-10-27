@@ -20,5 +20,5 @@ set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -I${PLATFORM_SOURCE_PREFIX}/c
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -I${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/armeabi/include" )
 set( PLATFORM_STLLIB            "${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/armeabi/libgnustl_static.a" )
 
-set( CMAKE_C_FLAGS              "${PLATFORM_FLAGS} -march=armv7-a -mfloat-abi=softfp" CACHE STRING "" )
-set( CMAKE_CXX_FLAGS            "${PLATFORM_FLAGS} -march=armv7-a -mfloat-abi=softfp" CACHE STRING "" )
+set( CMAKE_C_FLAGS              "${PLATFORM_FLAGS}" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS            "${PLATFORM_FLAGS}" CACHE STRING "" )

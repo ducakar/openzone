@@ -124,7 +124,6 @@ add_library( oz
   Vec3.cc
   Vec4.cc )
 set_target_properties( oz PROPERTIES
-                       PUBLIC_HEADER "${headers}"
                        RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/liboz.pc
                        VERSION ${OZ_VERSION}
                        SOVERSION 0 )

@@ -1,6 +1,6 @@
-diff -Naur physfs/CMakeLists.txt physfs-nacl/CMakeLists.txt
---- physfs/CMakeLists.txt	2012-10-19 22:21:46.307991071 +0200
-+++ physfs-nacl/CMakeLists.txt	2012-10-19 22:21:57.484610552 +0200
+diff -r e7dad5b51954 CMakeLists.txt
+--- a/CMakeLists.txt	Tue Sep 04 23:25:37 2012 -0700
++++ b/CMakeLists.txt	Sat Oct 27 23:38:11 2012 +0200
 @@ -125,6 +125,7 @@
      src/platform_unix.c
      src/platform_macosx.c
@@ -24,9 +24,9 @@ diff -Naur physfs/CMakeLists.txt physfs-nacl/CMakeLists.txt
      ELSE(BEOS)
          CHECK_INCLUDE_FILE(sys/ucred.h HAVE_UCRED_H)
          IF(HAVE_UCRED_H)
-diff -Naur physfs/src/lzma/C/Archive/7z/7zDecode.c physfs-nacl/src/lzma/C/Archive/7z/7zDecode.c
---- physfs/src/lzma/C/Archive/7z/7zDecode.c	2012-10-19 22:21:46.387990742 +0200
-+++ physfs-nacl/src/lzma/C/Archive/7z/7zDecode.c	2012-10-19 22:21:57.484610552 +0200
+diff -r e7dad5b51954 src/lzma/C/Archive/7z/7zDecode.c
+--- a/src/lzma/C/Archive/7z/7zDecode.c	Tue Sep 04 23:25:37 2012 -0700
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat Oct 27 23:38:11 2012 +0200
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
  
@@ -39,9 +39,9 @@ diff -Naur physfs/src/lzma/C/Archive/7z/7zDecode.c physfs-nacl/src/lzma/C/Archiv
  
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
-diff -Naur physfs/src/physfs.h physfs-nacl/src/physfs.h
---- physfs/src/physfs.h	2012-10-19 22:21:46.404657340 +0200
-+++ physfs-nacl/src/physfs.h	2012-10-19 22:22:21.481174298 +0200
+diff -r e7dad5b51954 src/physfs.h
+--- a/src/physfs.h	Tue Sep 04 23:25:37 2012 -0700
++++ b/src/physfs.h	Sat Oct 27 23:38:11 2012 +0200
 @@ -233,7 +233,7 @@
  #define PHYSFS_DECL __declspec(dllexport)
  #elif (defined __SUNPRO_C)
@@ -51,9 +51,9 @@ diff -Naur physfs/src/physfs.h physfs-nacl/src/physfs.h
  #define PHYSFS_DECL __attribute__((visibility("default")))
  #else
  #define PHYSFS_DECL
-diff -Naur physfs/src/physfs_platforms.h physfs-nacl/src/physfs_platforms.h
---- physfs/src/physfs_platforms.h	2012-10-19 22:21:46.404657340 +0200
-+++ physfs-nacl/src/physfs_platforms.h	2012-10-19 22:21:57.484610552 +0200
+diff -r e7dad5b51954 src/physfs_platforms.h
+--- a/src/physfs_platforms.h	Tue Sep 04 23:25:37 2012 -0700
++++ b/src/physfs_platforms.h	Sat Oct 27 23:38:11 2012 +0200
 @@ -35,6 +35,8 @@
  #  define PHYSFS_PLATFORM_POSIX 1
  #elif defined(macintosh)
@@ -63,16 +63,16 @@ diff -Naur physfs/src/physfs_platforms.h physfs-nacl/src/physfs_platforms.h
  #elif defined(__linux)
  #  define PHYSFS_PLATFORM_LINUX 1
  #  define PHYSFS_PLATFORM_UNIX 1
-diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
---- physfs/src/platform_nacl.c	1970-01-01 01:00:00.000000000 +0100
-+++ physfs-nacl/src/platform_nacl.c	2012-10-19 22:21:57.487943871 +0200
-@@ -0,0 +1,828 @@
+diff -r e7dad5b51954 src/platform_nacl.c
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/src/platform_nacl.c	Sat Oct 27 23:38:11 2012 +0200
+@@ -0,0 +1,842 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
 + * Please see the file LICENSE.txt in the source's root directory.
 + *
-+ *  This file written by Davorin Učakar.
++ *  This file is written by Davorin Učakar.
 + */
 +
 +#define __PHYSICSFS_INTERNAL__
@@ -126,14 +126,6 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +
 +typedef struct
 +{
-+    PPB_GetInterface  getInterface;
-+    PP_Instance       instance;
-+    PP_FileSystemType fileSystemType;
-+} InstanceInfo;
-+
-+
-+typedef struct
-+{
 +    pthread_mutex_t mutex;
 +    pthread_cond_t  cond;
 +    volatile int    counter;
@@ -173,6 +165,7 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +static PPB_GetInterface  getInterface;
 +static PP_Instance       instance;
 +static PP_FileSystemType fileSystemType;
++static PHYSFS_sint64     fileSystemSize;
 +static PP_Resource       fileSystem;
 +
 +
@@ -190,7 +183,7 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +   To solve this, once a file is opened read-only, it stays cached in RAM until
 +   PhysicsFS is uninitialised. */
 +
-+static FileDesc *fileList = NULL;
++static FileDesc       *fileList      = NULL;
 +static pthread_mutex_t fileListMutex = PTHREAD_MUTEX_INITIALIZER;
 +
 +
@@ -199,12 +192,14 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    FileDesc *file = (FileDesc *) allocator.Malloc(sizeof (FileDesc));
 +    BAIL_IF_MACRO(!file, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
 +
-+    if (pthread_mutex_init(&file->sem.mutex, NULL)) {
++    if (pthread_mutex_init(&file->sem.mutex, NULL))
++    {
 +        allocator.Free(file);
 +        BAIL_MACRO(PHYSFS_ERR_OS_ERROR, 0);
 +    } /* if */
 +
-+    if (pthread_cond_init(&file->sem.cond, NULL)) {
++    if (pthread_cond_init(&file->sem.cond, NULL))
++    {
 +        pthread_mutex_destroy(&file->sem.mutex);
 +        allocator.Free(file);
 +        BAIL_MACRO(PHYSFS_ERR_OS_ERROR, 0);
@@ -236,9 +231,9 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +} /* destroyFileDesc */
 +
 +
-+static HandleDesc *createHandleDesc(FileDesc* file)
++static HandleDesc *createHandleDesc(FileDesc *file)
 +{
-+    HandleDesc *handle = (HandleDesc* ) allocator.Malloc(sizeof (HandleDesc));
++    HandleDesc *handle = (HandleDesc *) allocator.Malloc(sizeof (HandleDesc));
 +    BAIL_IF_MACRO(!handle, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
 +
 +    handle->file   = file;
@@ -248,19 +243,93 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +} /* createHandleDesc */
 +
 +
-+static void destroyHandleDesc(HandleDesc* handle)
++static void destroyHandleDesc(HandleDesc *handle)
 +{
 +    allocator.Free(handle);
 +} /* destroyHandleDesc */
 +
 +
++int PHYSFS_NACL_init(PP_Instance instance_, PPB_GetInterface getInterface_,
++                     PP_FileSystemType type, PHYSFS_sint64 size)
++{
++    BAIL_IF_MACRO(!instance_, PHYSFS_ERR_ARGV0_IS_NULL, 0);
++    BAIL_IF_MACRO(!getInterface_, PHYSFS_ERR_ARGV0_IS_NULL, 0);
++
++    getInterface = getInterface_;
++    instance = instance_;
++    fileSystemType = type;
++    fileSystemSize = size;
++
++    return 1;
++} /* PHYSFS_NACL_init */
++
++
++DEF_CALLBACK(init_wait, {
++    SEM_POST();
++}) /* init_wait */
++
++DEF_CALLBACK(init_init, {
++    iFileSystem = (PPB_FileSystem *) getInterface(PPB_FILESYSTEM_INTERFACE);
++    iFileRef = (PPB_FileRef *) getInterface(PPB_FILEREF_INTERFACE);
++    iFileIO = (PPB_FileIO *) getInterface(PPB_FILEIO_INTERFACE);
++    fileSystem = 0;
++
++    if (!iFileSystem || !iFileRef || !iFileIO)
++    {
++        _file->error = PHYSFS_ERR_OS_ERROR;
++
++        SEM_POST();
++        return;
++    } /* if */
++
++    fileSystem = iFileSystem->Create(instance, fileSystemType);
++    if (!fileSystem)
++    {
++        _file->error = PHYSFS_ERR_OS_ERROR;
++
++        SEM_POST();
++        return;
++    } /* if */
++    iCore->AddRefResource(fileSystem);
++
++    int retval = iFileSystem->Open(fileSystem, fileSystemSize,
++                                   CALLBACK(init_wait, _file));
++    if (retval != PP_OK_COMPLETIONPENDING)
++    {
++        _file->error = PHYSFS_ERR_OS_ERROR;
++
++        iCore->ReleaseResource(fileSystem);
++        fileSystem = 0;
++
++        SEM_POST();
++        return;
++    } /* if */
++}) /* init_init */
++
 +int __PHYSFS_platformInit(void)
 +{
++    iCore = (PPB_Core *) getInterface(PPB_CORE_INTERFACE);
++    BAIL_IF_MACRO(!iCore || iCore->IsMainThread(), PHYSFS_ERR_OS_ERROR, 0);
++
++    /* We need this just for semaphore, for MAIN_CALL macro. */
++    FileDesc *file = createFileDesc();
++    BAIL_IF_MACRO(!file, 0, 0);
++
++    MAIN_CALL(init_init);
++    SEM_WAIT();
++
++    int error = file->error;
++
++    destroyFileDesc(file);
++    BAIL_IF_MACRO(error, error, 0);
++
 +    fileList = NULL;
-+    if (pthread_mutex_init(&fileListMutex, NULL)) {
++    if (pthread_mutex_init(&fileListMutex, NULL))
++    {
 +        BAIL_MACRO(PHYSFS_ERR_OS_ERROR, 0);
 +    } /* if */
-+    return 1;  /* always succeed. */
++
++    return 1;
 +} /* __PHYSFS_platformInit */
 +
 +
@@ -269,11 +338,12 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    fileSystem = 0;
 +
 +    SEM_POST();
-+}) /* _callback_deinit */
++}) /* deinit */
 +
 +int __PHYSFS_platformDeinit(void)
 +{
-+    if (!fileSystem) {
++    if (!fileSystem)
++    {
 +        return 1;
 +    } /* if */
 +
@@ -288,7 +358,8 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    pthread_mutex_destroy(&fileListMutex);
 +
 +    file = fileList;
-+    while (file) {
++    while (file)
++    {
 +        FileDesc *nextFile = file->next;
 +
 +        destroyFileDesc(file);
@@ -301,111 +372,117 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +
 +
 +DEF_CALLBACK(openFileRead_read, {
-+    if (_result <= 0) {
++    if (_result <= 0)
++    {
 +        _file->error = PHYSFS_ERR_IO;
 +    }
-+    else {
++    else
++    {
 +        _file->offset += _result;
 +
-+        if (_file->offset != _file->buflen) {
++        if (_file->offset != _file->buflen)
++        {
 +            int ret = iFileIO->Read(_file->fileIO, _file->offset,
 +                                    &_file->buffer[_file->offset],
 +                                    _file->buflen - _file->offset,
 +                                    CALLBACK(openFileRead_read, _file));
 +
-+            if (ret != PP_OK_COMPLETIONPENDING) {
++            if (ret != PP_OK_COMPLETIONPENDING)
 +                _file->error = PHYSFS_ERR_IO;
-+            }
-+            else {
++            else
 +                return;
-+            }
-+        }
-+    }
++        } /* if */
++    } /* if */
 +
 +    iCore->ReleaseResource(_file->fileIO);
 +    iCore->ReleaseResource(_file->fileRef);
 +
 +    SEM_POST();
-+})
++}) /* openFileRead_read */
 +
 +DEF_CALLBACK(openFileRead_beginRead, {
-+    if (_result != PP_OK) {
++    if (_result != PP_OK)
++    {
 +        _file->error = PHYSFS_ERR_OPEN_FOR_READING;
 +    }
-+    else {
++    else
++    {
 +        _file->buflen = _file->fileInfo.size;
 +        _file->buffer = (char *) allocator.Malloc(_file->buflen);
-+        if (!_file->buffer) {
++        if (!_file->buffer)
++        {
 +            _file->error = PHYSFS_ERR_OUT_OF_MEMORY;
 +        }
-+        else {
++        else
++        {
 +            int ret = iFileIO->Read(_file->fileIO, 0, _file->buffer,
 +                                    _file->buflen,
 +                                    CALLBACK(openFileRead_read, _file));
 +
-+            if (ret != PP_OK_COMPLETIONPENDING) {
++            if (ret != PP_OK_COMPLETIONPENDING)
 +                _file->error = PHYSFS_ERR_IO;
-+            }
-+            else {
++            else
 +                return;
-+            }
-+        }
-+    }
++        } /* if */
++    } /* if */
 +
 +    iCore->ReleaseResource(_file->fileIO);
 +    iCore->ReleaseResource(_file->fileRef);
 +
 +    SEM_POST();
-+})
++}) /* openFileRead_beginRead */
 +
 +DEF_CALLBACK(openFileRead_query, {
-+    if (_result != PP_OK) {
++    if (_result != PP_OK)
++    {
 +        _file->error = PHYSFS_ERR_OPEN_FOR_READING;
 +    }
-+    else {
++    else
++    {
 +        int ret = iFileIO->Query(_file->fileIO, &_file->fileInfo,
 +                                 CALLBACK(openFileRead_beginRead, _file));
 +
-+        if (ret != PP_OK_COMPLETIONPENDING) {
++        if (ret != PP_OK_COMPLETIONPENDING)
 +            _file->error = PHYSFS_ERR_IO;
-+        }
-+        else {
++        else
 +            return;
-+        }
-+    }
++    } /* if */
 +
 +    iCore->ReleaseResource(_file->fileIO);
 +    iCore->ReleaseResource(_file->fileRef);
 +
 +    SEM_POST();
-+})
++}) /* openFileRead_query */
 +
 +DEF_CALLBACK(openFileRead_open, {
 +    _file->fileIO = iFileIO->Create(instance);
-+    if (!_file->fileIO) {
++    if (!_file->fileIO)
++    {
 +        _file->error = PHYSFS_ERR_OS_ERROR;
 +
 +        SEM_POST();
 +        return;
-+    }
++    } /* if */
 +    iCore->AddRefResource(_file->fileIO);
 +
 +    _file->fileRef = iFileRef->Create(fileSystem, _file->path);
-+    if (!_file->fileRef) {
++    if (!_file->fileRef)
++    {
 +        _file->error = PHYSFS_ERR_OS_ERROR;
 +
 +        iCore->ReleaseResource(_file->fileIO);
 +
 +        SEM_POST();
 +        return;
-+    }
++    } /* if */
 +    iCore->AddRefResource(_file->fileRef);
 +
 +    int retval = iFileIO->Open(_file->fileIO, _file->fileRef,
 +                               PP_FILEOPENFLAG_READ,
 +                               CALLBACK(openFileRead_query, _file));
 +
-+    if (retval != PP_OK_COMPLETIONPENDING) {
++    if (retval != PP_OK_COMPLETIONPENDING)
++    {
 +        _file->error = PHYSFS_ERR_OS_ERROR;
 +
 +        iCore->ReleaseResource(_file->fileRef);
@@ -413,8 +490,8 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +
 +        SEM_POST();
 +        return;
-+    }
-+})
++    } /* if */
++}) /* openFileRead_open */
 +
 +void *__PHYSFS_platformOpenRead(const char *filename)
 +{
@@ -422,17 +499,18 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    pthread_mutex_lock(&fileListMutex);
 +
 +    FileDesc *file = fileList;
-+    while( file != NULL ) {
-+      if( strcmp( file->path, filename ) == 0 ) {
-+        break;
-+      }
-+      file = file->next;
-+    }
++    while( file != NULL )
++    {
++        if( strcmp( file->path, filename ) == 0 )
++            break;
++        file = file->next;
++    } /* while */
 +
-+    if( file != NULL ) {
-+      pthread_mutex_unlock(&fileListMutex);
-+      return createHandleDesc(file);
-+    }
++    if( file != NULL )
++    {
++        pthread_mutex_unlock(&fileListMutex);
++        return createHandleDesc(file);
++    } /* if */
 +
 +    file = createFileDesc();
 +    BAIL_IF_MACRO(!file, 0, NULL);
@@ -445,14 +523,12 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    MAIN_CALL(openFileRead_open);
 +    SEM_WAIT();
 +
-+    if (file->error) {
++    if (file->error)
++    {
 +        int error = file->error;
 +        destroyFileDesc(file);
 +        BAIL_MACRO(error, NULL);
-+    }
-+
-+    /* Set cursors EOF cursor. */
-+//     file->bufend = file->buffer + file->buflen;
++    } /* if */
 +
 +    file->next = fileList;
 +    fileList = file;
@@ -481,9 +557,8 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    HandleDesc *handle = (HandleDesc *) opaque;
 +
 +    PHYSFS_uint64 bytesLeft = handle->file->buflen - handle->bufpos;
-+    if (len > bytesLeft) {
++    if (len > bytesLeft)
 +        len = bytesLeft;
-+    } /* if */
 +
 +    memcpy(buffer, handle->file->buffer + handle->bufpos, len);
 +    handle->bufpos += len;
@@ -495,25 +570,22 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +PHYSFS_sint64 __PHYSFS_platformWrite(void *opaque, const void *buffer,
 +                                     PHYSFS_uint64 len)
 +{
-+//     FileDesc *file = (FileDesc *) opaque;
-+//
-+//     PHYSFS_uint64 bytesLeft = file->buflen - (file->bufcur - file->buffer);
-+//     if (len > bytesLeft) {
-+//         file->buflen += len - bytesLeft + 4096;
-+//
-+//         void *newBuf = allocator.Malloc(file->buflen);
-+//         memcpy(newBuf, file->buffer, file->bufend - file->buffer);
-+//         allocator.Free(file->buffer);
-+//
-+//         file->bufcur = newBuf + (file->bufcur - file->buffer);
-+//         file->bufend = newBuf + (file->bufend - file->buffer);
-+//         file->buffer = newBuf;
-+//     } /* if */
-+//
-+//     file->bufcur += len;
-+//     file->bufend = file->bufcur > file->bufend ? file->bufcur : file->bufend;
-+//     return len;
-+    return 0;
++    HandleDesc *handle = (HandleDesc *) opaque;
++
++    PHYSFS_uint64 bytesLeft = handle->file->buflen - handle->bufpos;
++    if (len > bytesLeft) {
++        PHYSFS_uint64 newlen = len - bytesLeft + 4096;
++
++        void *newbuf = allocator.Malloc(newlen);
++        memcpy(newbuf, handle->file->buffer, handle->file->buflen);
++        allocator.Free(handle->file->buffer);
++
++        handle->file->buffer = newbuf;
++        handle->file->buflen = newlen;
++    } /* if */
++
++    handle->bufpos += len;
++    return len;
 +} /* __PHYSFS_platformWrite */
 +
 +
@@ -553,20 +625,24 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    iCore->ReleaseResource(_file->fileIO);
 +
 +    SEM_POST();
-+}) /* DEF_CALLBACK */
++}) /* stat_result */
 +
 +DEF_CALLBACK(stat_query, {
-+    if (_result != PP_OK) {
++    if (_result != PP_OK)
++    {
 +        _file->error = PHYSFS_ERR_IO;
 +    }
-+    else {
++    else
++    {
 +        int ret = iFileIO->Query(_file->fileIO, &_file->fileInfo,
 +                                 CALLBACK(stat_result, _file));
 +
-+        if (ret != PP_OK_COMPLETIONPENDING) {
++        if (ret != PP_OK_COMPLETIONPENDING)
++        {
 +            _file->error = PHYSFS_ERR_IO;
 +        }
-+        else {
++        else
++        {
 +            return;
 +        } /* if */
 +    } /* if */
@@ -576,11 +652,12 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    iCore->ReleaseResource(_file->fileIO);
 +
 +    SEM_POST();
-+}) /* DEF_CALLBACK */
++}) /* stat_query */
 +
 +DEF_CALLBACK(stat_open, {
 +    _file->fileIO = iFileIO->Create(instance);
-+    if (!_file->fileIO) {
++    if (!_file->fileIO)
++    {
 +        _file->error = PHYSFS_ERR_OS_ERROR;
 +
 +        SEM_POST();
@@ -589,7 +666,8 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    iCore->AddRefResource(_file->fileIO);
 +
 +    _file->fileRef = iFileRef->Create(fileSystem, _file->path);
-+    if (!_file->fileRef) {
++    if (!_file->fileRef)
++    {
 +      _file->error = PHYSFS_ERR_OS_ERROR;
 +
 +      iCore->ReleaseResource(_file->fileIO);
@@ -602,7 +680,8 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +    int retval = iFileIO->Open(_file->fileIO, _file->fileRef, 0,
 +                               CALLBACK(stat_query, _file));
 +
-+    if (retval != PP_OK_COMPLETIONPENDING) {
++    if (retval != PP_OK_COMPLETIONPENDING)
++    {
 +        _file->error = PHYSFS_ERR_OPEN_FOR_READING;
 +
 +        iCore->ReleaseResource(_file->fileRef);
@@ -611,12 +690,13 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +        SEM_POST();
 +        return;
 +    } /* if */
-+} ) /* MAIN_CALL */
++} ) /* stat_open */
 +
 +int __PHYSFS_platformStat(const char *filename, int *exists, PHYSFS_Stat *st)
 +{
 +    /* Root must be handled as a special case as querying it always fails. */
-+    if (filename[0] == '/' && filename[1] == '\0') {
++    if (filename[0] == '/' && filename[1] == '\0')
++    {
 +        *exists = 1;
 +
 +        st->createtime = 0;
@@ -640,14 +720,16 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +
 +    *exists = file->error == 0;
 +
-+    if (!file->error) {
++    if (!file->error)
++    {
 +        st->createtime = file->fileInfo.creation_time;
 +        st->modtime    = file->fileInfo.last_modified_time;
 +        st->accesstime = file->fileInfo.last_access_time;
 +        st->readonly   = 0;
 +        st->filesize   = file->fileInfo.size;
 +
-+        switch (file->fileInfo.type) {
++        switch (file->fileInfo.type)
++        {
 +            case PP_FILETYPE_REGULAR:
 +                st->filetype = PHYSFS_FILETYPE_REGULAR;
 +                break;
@@ -684,76 +766,8 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +} /* __PHYSFS_platformDetectAvailableCDs */
 +
 +
-+DEF_CALLBACK(init_wait, {
-+    SEM_POST();
-+}) /* DEF_CALLBACK */
-+
-+DEF_CALLBACK(init_init, {
-+    iFileSystem = (PPB_FileSystem *) getInterface(PPB_FILESYSTEM_INTERFACE);
-+    iFileRef = (PPB_FileRef *) getInterface(PPB_FILEREF_INTERFACE);
-+    iFileIO = (PPB_FileIO *) getInterface(PPB_FILEIO_INTERFACE);
-+    fileSystem = 0;
-+
-+    if (!iFileSystem || !iFileRef || !iFileIO) {
-+        _file->error = PHYSFS_ERR_OS_ERROR;
-+
-+        SEM_POST();
-+        return;
-+    } /* if */
-+
-+    fileSystem = iFileSystem->Create(instance, fileSystemType);
-+    if (!fileSystem) {
-+        _file->error = PHYSFS_ERR_OS_ERROR;
-+
-+        SEM_POST();
-+        return;
-+    } /* if */
-+    iCore->AddRefResource(fileSystem);
-+
-+    int retval = iFileSystem->Open(fileSystem, 32*1024*1024,
-+                                   CALLBACK(init_wait, _file));
-+    if (retval != PP_OK_COMPLETIONPENDING) {
-+        _file->error = PHYSFS_ERR_OS_ERROR;
-+
-+        iCore->ReleaseResource(fileSystem);
-+        fileSystem = 0;
-+
-+        SEM_POST();
-+        return;
-+    } /* if */
-+}) /* MAIN_CALL */
-+
-+/* This is actually a hack. We cannot initialise anything in NaCl without
-+   instance id or get_browser_interface() pointer. Since __PHYSFS_platformInit()
-+   takes no arguments, we move initialisation here. */
 +char *__PHYSFS_platformCalcBaseDir(const char *argv0)
 +{
-+    /* Create interfaces. We abuse argv0 to pass in instance and PPB_GetInterface pointers. */
-+    InstanceInfo *instanceInfo = (InstanceInfo *) argv0;
-+    BAIL_IF_MACRO(!instanceInfo, PHYSFS_ERR_ARGV0_IS_NULL, NULL);
-+
-+    instance = instanceInfo->instance;
-+    getInterface = instanceInfo->getInterface;
-+    fileSystemType = instanceInfo->fileSystemType;
-+    BAIL_IF_MACRO(!instanceInfo->instance, PHYSFS_ERR_ARGV0_IS_NULL, NULL);
-+    BAIL_IF_MACRO(!instanceInfo->getInterface, PHYSFS_ERR_ARGV0_IS_NULL, NULL);
-+
-+    iCore = (PPB_Core *) getInterface(PPB_CORE_INTERFACE);
-+    BAIL_IF_MACRO(!iCore, PHYSFS_ERR_OS_ERROR, NULL);
-+
-+    /* We need this just for semaphore, for MAIN_CALL macro. */
-+    FileDesc *file = createFileDesc();
-+    BAIL_IF_MACRO(!file, 0, NULL);
-+
-+    MAIN_CALL(init_init);
-+    SEM_WAIT();
-+
-+    int error = file->error;
-+
-+    destroyFileDesc(file);
-+
-+    BAIL_IF_MACRO(error, error, NULL);
-+
 +    char *retval = (char *) allocator.Malloc(2);
 +    BAIL_IF_MACRO(!retval, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
 +
@@ -776,7 +790,7 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +} /* __PHYSFS_platformCalcUserDir */
 +
 +
-+char *__PHYSFS_platformCalcPrefDir(const char* org, const char* app)
++char *__PHYSFS_platformCalcPrefDir(const char *org, const char *app)
 +{
 +    char *retval = (char *) allocator.Malloc(2);
 +    BAIL_IF_MACRO(!retval, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
@@ -794,13 +808,13 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +} /* __PHYSFS_platformGetThreadID */
 +
 +
++/* Directory listing is not supported on NaCl. */
 +void __PHYSFS_platformEnumerateFiles(const char *dirname,
 +                                     int omitSymLinks,
 +                                     PHYSFS_EnumFilesCallback callback,
 +                                     const char *origdir,
 +                                     void *callbackdata)
 +{
-+    /* Directory listing is not supported on NaCl. */
 +} /* __PHYSFS_platformEnumerateFiles */
 +
 +
@@ -893,5 +907,5 @@ diff -Naur physfs/src/platform_nacl.c physfs-nacl/src/platform_nacl.c
 +
 +#endif  /* PHYSFS_PLATFORM_POSIX */
 +
-+/* end of posix.c ... */
++/* end of platorm_nacl.c ... */
 +
