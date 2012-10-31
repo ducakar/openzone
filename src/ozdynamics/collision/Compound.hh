@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,7 +21,9 @@
  */
 
 /**
- * @file ozdyn/collision/Capsule.hh
+ * @file ozdynamics/collision/Compound.hh
+ *
+ * Compound class.
  */
 
 #pragma once
@@ -31,31 +33,37 @@
 namespace oz
 {
 
-/**
- * Capsule, represents a radius-region around a line segment.
- */
-class Capsule : public Shape
+class Compound : public Shape
 {
   public:
 
-    static Pool<Capsule> pool;
+    struct Child
+    {
+      Shape* shape;
+      Vec3   off;
+      Mat33  rot;
+    };
 
-    float ext;    ///< Line segment length.
-    float radius; ///< Distance from line segment representing capsule surface.
+  public:
+
+    static Pool<Compound> pool; ///< Memory pool.
+
+    Child c[16];                ///< Children.
 
   public:
 
     OZ_ALWAYS_INLINE
-    explicit Capsule() :
-      Shape( Shape::CAPSULE )
-    {}
+    explicit Compound() :
+      Shape( Shape::COMPOUND )
+    {
+      c[0].shape = nullptr;
+    }
 
-    OZ_ALWAYS_INLINE
-    explicit Capsule( float ext_, float radius_ ) :
-      Shape( Shape::CAPSULE ), ext( ext_ ), radius( radius_ )
-    {}
+    ~Compound() override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

@@ -32,7 +32,6 @@
 #include "System.hh"
 #include "Log.hh"
 
-#include <cstdlib>
 #include <cstring>
 #include <sstream>
 
@@ -888,7 +887,7 @@ Point JSON::asPoint() const
 Plane JSON::asPlane() const
 {
   Plane p;
-  asArray( p, 4 );
+  asArray( p.n, 4 );
   return p;
 }
 
@@ -1224,7 +1223,7 @@ Point JSON::get( const Point& defaultValue ) const
 Plane JSON::get( const Plane& defaultValue ) const
 {
   Plane p;
-  return get( p, 4 ) ? p : defaultValue;
+  return get( p.n, 4 ) ? p : defaultValue;
 }
 
 Quat JSON::get( const Quat& defaultValue ) const
@@ -1606,8 +1605,9 @@ void JSON::set( const Plane& p )
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( p[i] ), NUMBER ) );
+    list.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
   }
+  list.add( JSON( new NumberData( p.d ), NUMBER ) );
 }
 
 void JSON::set( const Quat& q )
@@ -1791,8 +1791,9 @@ JSON& JSON::add( const Plane& p )
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
 
   for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( p[i] ), NUMBER ) );
+    elemList.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
   }
+  elemList.add( JSON( new NumberData( p.d ), NUMBER ) );
   return elem;
 }
 
@@ -1987,9 +1988,10 @@ JSON& JSON::add( const char* key, const Plane& p )
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
 
-  for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( p[i] ), NUMBER ) );
+  for( int i = 0; i < 3; ++i ) {
+    elemList.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
   }
+  elemList.add( JSON( new NumberData( p.d ), NUMBER ) );
   return elem;
 }
 
@@ -2244,9 +2246,10 @@ JSON& JSON::include( const char* key, const Plane& p )
 
     List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
 
-    for( int i = 0; i < 4; ++i ) {
-      list.add( JSON( new NumberData( p[i] ), NUMBER ) );
+    for( int i = 0; i < 3; ++i ) {
+      list.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
     }
+    list.add( JSON( new NumberData( p.d ), NUMBER ) );
   }
   return *entry;
 }

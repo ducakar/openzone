@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,23 +21,50 @@
  */
 
 /**
- * @file ozdyn/collision/Space.hh
+ * @file ozdynamics/collision/Object.hh
+ *
+ * Object class.
  */
 
 #pragma once
 
-#include "Object.hh"
+#include "Shape.hh"
 
 namespace oz
 {
 
-class Space
+/**
+ * Collision object.
+ */
+class Object
 {
   public:
 
-    static const int MAX_OBJECTS = 1 << 16;
+    static Pool<Object> pool; ///< Memory pool.
 
-    Object* objs[MAX_OBJECTS];
+    Object* prev[3];          ///< Previous objects in linked lists used in spatial structures.
+    Object* next[3];          ///< Next objects in linked lists used in spatial structures.
+
+    Bounds  bb;               ///< Cached axis-aligned bounding box in absolute coordinates.
+
+    Point   pos;              ///< Position.
+    Quat    rot;              ///< Rotation.
+    Mat33   rotMat;           ///< Cached rotation matrix.
+
+    int     flags;            ///< Flags.
+    int     mask;             ///< Collision bitmask.
+    Shape*  shape;            ///< Collision shape.
+
+  public:
+
+    /**
+     * Create uninitialised instance.
+     */
+    explicit Object() :
+      mask( ~0 ), shape( nullptr )
+    {}
+
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

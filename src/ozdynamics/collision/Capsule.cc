@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,12 +21,28 @@
  */
 
 /**
- * @file ozdyn/collision/Box.cc
+ * @file ozdynamics/collision/Capsule.cc
  */
 
-#include "Box.hh"
+#include "Capsule.hh"
 
 namespace oz
 {
+
+Pool<Capsule> Capsule::pool;
+
+Capsule::~Capsule()
+{}
+
+Bounds Capsule::getBounds( const Point& pos, const Mat33& rot ) const
+{
+  // Capsule is a convex hull of two spheres so minimum and maximum coordinates are always reached
+  // on (at least) one of the spheres.
+  float rm      = radius + MARGIN;
+  Vec3  radius3 = Vec3( rm, rm, rm );
+  Vec3  dim     = ext*abs( rot.z ) + radius3;
+
+  return Bounds( pos - dim, pos + dim );
+}
 
 }

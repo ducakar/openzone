@@ -59,9 +59,7 @@ class File
       PERSISTENT
     };
 
-#ifdef __native_client__
     struct Descriptor;
-#endif
 
   private:
 
@@ -216,9 +214,19 @@ class File
     bool write( const Buffer* buffer );
 
     /**
+     * Generate a list of files in directory.
+     *
+     * Hidden files (in Unix means, so everything starting with '.') are skipped.
+     * On error, empty array is returned.
+     *
+     * Directory listing is not supported on NaCl, so this function always returns an empty list.
+     */
+    DArray<File> ls();
+
+    /**
      * Return current directory.
      *
-     * On NaCl, current directory is always root and this function returns an empty string.
+     * Empty string is returned on failure (this is always the case on NaCl).
      */
     static String cwd();
 
@@ -228,16 +236,6 @@ class File
      * Always fails on NaCl.
      */
     static bool chdir( const char* path );
-
-    /**
-     * Generate a list of files in directory.
-     *
-     * Hidden files (in Unix means, so everything starting with '.') are skipped.
-     * On error, empty array is returned.
-     *
-     * Directory listing is not supported on NaCl, so this function always returns an empty list.
-     */
-    DArray<File> ls();
 
     /**
      * Make a new directory.
@@ -256,7 +254,7 @@ class File
     /**
      * Initialise filesystem.
      *
-     * This method makes effect on NaCl platform only. Persistent filesystem must be initialised
+     * This method only makes effect on NaCl platform. Persistent filesystem must be initialised
      * from JavaScript before NaCl module is loaded.
      *
      * @param type local filesystem type, either `TEMPORARY` or `PERSISTENT`.

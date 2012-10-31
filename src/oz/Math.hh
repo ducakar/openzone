@@ -68,7 +68,7 @@ inline float clamp( float c, float a, float b )
 {
   hard_assert( !( b < a ) );
 
-  return __builtin_fmaxf( a, __builtin_fminf( b, c ) );
+  return __builtin_fminf( b, __builtin_fmaxf( a, c ) );
 }
 
 /**

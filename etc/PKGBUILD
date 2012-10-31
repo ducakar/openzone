@@ -1,7 +1,8 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'liboz-doc' 'libozdyn' 'libozdyn-doc' 'openzone' 'openzone-data' 'openzone-doc')
+pkgname=('liboz' 'liboz-doc' 'libozdynamics' 'libozdynamics-doc' 'openzone' 'openzone-data'
+         'openzone-doc')
 pkgver=0.3.80
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
@@ -9,13 +10,13 @@ license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('alsa-lib' 'cmake' 'doxygen' 'faad2' 'freeimage' 'git' 'libmad' 'libpulse'
              'libvorbis' 'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf' 'texlive-core')
-source=("https://github.com/downloads/ducakar/openzone/openzone-src-${pkgver}.tar.xz"
-        "https://github.com/downloads/ducakar/openzone/openzone-data-${pkgver}.tar.xz")
+source=("https://github.com/downloads/ducakar/openzone/openzone-src-$pkgver.tar.xz"
+        "https://github.com/downloads/ducakar/openzone/openzone-data-$pkgver.tar.xz")
 sha1sums=()
 
 build()
 {
-  cd "${srcdir}"
+  cd "$srcdir/$pkgbase-$pkgver"
 
   mkdir -p build && cd build
   cmake \
@@ -24,7 +25,7 @@ build()
     -D CMAKE_CXX_FLAGS="$CXXFLAGS -msse3 -mfpmath=sse" \
     -D OZ_SHARED_LIBS="1" \
     -D OZ_NONFREE="1" \
-    ../openzone
+    ..
 
   make doc
   make
@@ -36,16 +37,15 @@ package_liboz()
   license=('ZLIB')
   depends=('alsa-lib' 'gcc-libs' 'physfs')
 
-  cd "${srcdir}/build"
+  cd "$srcdir/$pkgbase-$pkgver"
 
-  make install DESTDIR="${pkgdir}"
+  ( cd build && make install DESTDIR="$pkgdir" )
 
-  rm -rf "${pkgdir}/usr/"{bin,share}
-  rm -rf "${pkgdir}/usr/include/ozdyn"
-  rm -rf "${pkgdir}/usr/lib/libozdyn.so"*
-  rm -rf "${pkgdir}/usr/lib/pkgconfig/libozdyn.pc"
+  rm -rf "$pkgdir/usr/"{bin,share}
+  rm -rf "$pkgdir/usr/include/ozdynamics"
+  rm -rf "$pkgdir/usr/lib/libozdynamics.so"*
 
-  install -Dm644 "../openzone/src/oz/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+  install -Dm644 "src/oz/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
 }
 
 package_liboz-doc()
@@ -55,41 +55,40 @@ package_liboz-doc()
   arch=('any')
   depends=('liboz')
 
-  cd "${srcdir}/openzone"
+  cd "$srcdir/$pkgbase-$pkgver"
 
-  mkdir -p "${pkgdir}/usr/share/doc/liboz"
-  cp -r "doc/doxygen.liboz/html" "${pkgdir}/usr/share/doc/liboz/doxygen"
+  mkdir -p "$pkgdir/usr/share/doc/liboz"
+  cp -r "doc/doxygen.liboz/html" "$pkgdir/usr/share/doc/liboz/doxygen"
 }
 
-package_libozdyn()
+package_libozdynamics()
 {
   pkgdesc='OpenZone Dynamics Library'
   license=('ZLIB')
   depends=('liboz')
 
-  cd "${srcdir}/build"
+  cd "$srcdir/$pkgbase-$pkgver"
 
-  make install DESTDIR="${pkgdir}"
+  ( cd build && make install DESTDIR="$pkgdir" )
 
-  rm -rf "${pkgdir}/usr/"{bin,share}
-  rm -rf "${pkgdir}/usr/include/oz"
-  rm -rf "${pkgdir}/usr/lib/liboz.so"*
-  rm -rf "${pkgdir}/usr/lib/pkgconfig/liboz.pc"
+  rm -rf "$pkgdir/usr/"{bin,share}
+  rm -rf "$pkgdir/usr/include/oz"
+  rm -rf "$pkgdir/usr/lib/liboz.so"*
 
-  install -Dm644 "../openzone/src/ozdyn/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+  install -Dm644 "src/ozdynamics/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
 }
 
-package_libozdyn-doc()
+package_libozdynamics-doc()
 {
   pkgdesc='OpenZone Dynamics Library documentation'
   license=('ZLIB')
   arch=('any')
-  depends=('libozdyn')
+  depends=('libozdynamics')
 
-  cd "${srcdir}/openzone"
+  cd "$srcdir/$pkgbase-$pkgver"
 
-  mkdir -p "${pkgdir}/usr/share/doc/libozdyn"
-  cp -r "doc/doxygen.libozdyn/html" "${pkgdir}/usr/share/doc/libozdyn/doxygen"
+  mkdir -p "$pkgdir/usr/share/doc/libozdynamics"
+  cp -r "doc/doxygen.libozdynamics/html" "$pkgdir/usr/share/doc/libozdynamics/doxygen"
 }
 
 package_openzone()
@@ -103,16 +102,14 @@ package_openzone()
               'zip: building ZIP game data archives'
               'p7zip: building 7zip game data archives')
 
-  cd "${srcdir}/build"
+  cd "$srcdir/$pkgbase-$pkgver"
 
-  make install DESTDIR="${pkgdir}"
+  ( cd build && make install DESTDIR="$pkgdir" )
 
-  rm -rf "${pkgdir}/usr/"{include,lib}
+  rm -rf "$pkgdir/usr/"{include,lib}
 
-  cd "${srcdir}/openzone"
-
-  install -dm755 "${pkgdir}/usr/share/doc/openzone"
-  install -m644 AUTHORS README.md ChangeLog.md doc/*.html "${pkgdir}/usr/share/doc/openzone"
+  install -dm755 "$pkgdir/usr/share/doc/openzone"
+  install -m644 AUTHORS README.md ChangeLog.md doc/*.html "$pkgdir/usr/share/doc/openzone"
 }
 
 package_openzone-data()
@@ -121,8 +118,10 @@ package_openzone-data()
   license=('custom')
   arch=('any')
 
-  install -dm755 "${pkgdir}/usr/share/openzone"
-  install -m644 "${srcdir}/openzone/share/openzone/"*.zip "${pkgdir}/usr/share/openzone"
+  cd "$srcdir/$pkgbase-$pkgver"
+
+  install -dm755 "$pkgdir/usr/share/openzone"
+  install -m644 "share/openzone/"*.zip "$pkgdir/usr/share/openzone"
 }
 
 package_openzone-doc()
@@ -131,6 +130,8 @@ package_openzone-doc()
   arch=('any')
   depends=('openzone')
 
-  install -dm755 "${pkgdir}/usr/share/doc/openzone"
-  cp -r "${srcdir}/openzone/doc/doxygen/html" "${pkgdir}/usr/share/doc/openzone/doxygen"
+  cd "$srcdir/$pkgbase-$pkgver"
+
+  install -dm755 "$pkgdir/usr/share/doc/openzone"
+  cp -r "doc/doxygen/html" "$pkgdir/usr/share/doc/openzone/doxygen"
 }

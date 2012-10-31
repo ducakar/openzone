@@ -4,7 +4,7 @@ add_executable( unittest
   common.cc
   iterables.cc
   unittest.cc )
-target_link_libraries( unittest oz ${libs_oz} )
+target_link_libraries( unittest oz )
 
 if( NACL )
   add_custom_command( OUTPUT unittest.nmf unittest.html

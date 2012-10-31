@@ -3,7 +3,7 @@
 cat << EOF > CMakeLists.txt
 add_executable( unittest
   `echo *.cc | sed 's| |\n  |g'` )
-target_link_libraries( unittest oz \${libs_oz} )
+target_link_libraries( unittest oz )
 
 if( NACL )
   add_custom_command( OUTPUT unittest.nmf unittest.html

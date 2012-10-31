@@ -24,13 +24,13 @@ License:        zlib
 Group:          Development/Libraries
 Requires:       liboz = %{version}
 
-%package -n libozdyn
+%package -n libozdynamics
 Summary:        OpenZone Dynamics Engine
 License:        zlib
 Group:          System Environment/Libraries
 Requires:       liboz = %{version}
 
-%package -n libozdyn-devel
+%package -n libozdynamics-devel
 Summary:        Headers and documentation for OpenZone dynamics engine
 License:        zlib
 Group:          Development/Libraries
@@ -73,10 +73,10 @@ Library is primarily intended for use in OpenZone game engine.
 This package contains doxygen-generated documentation, header files and
 pkg-config configuration needed for development using liboz.
 
-%description -n libozdyn
+%description -n libozdynamics
 OpenZone Dynamics Engine.
 
-%description -n libozdyn-devel
+%description -n libozdynamics-devel
 This package contains doxygen-generated documentation, header files and
 pkg-config configuration needed for development using OpenZone Dynamics Engine.
 
@@ -101,10 +101,10 @@ Doxygen-generated documentation for OpenZone engine and PDF articles describing
 concepts and algorithms used in the engine.
 
 %prep
-%setup -q -b 1 -n openzone
+%setup -q -b 1
 
 %build
-mkdir -p build && cd build
+rm -rf build && mkdir build && cd build
 
 cmake \
   -D CMAKE_BUILD_TYPE="Release" \
@@ -128,7 +128,6 @@ cd build
 make install DESTDIR="$RPM_BUILD_ROOT"
 
 if [[ %{_libdir} != /usr/lib ]]; then
-  sed -i 's|^libdir=.*|libdir='%{_libdir}'|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*.pc
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
 
@@ -143,19 +142,17 @@ fi
 %files -n liboz-devel
 %defattr(-, root, root)
 %{_includedir}/oz
-%{_libdir}/pkgconfig/liboz.pc
 %doc AUTHORS src/oz/COPYING doc/doxygen.liboz/html
 
-%files -n libozdyn
+%files -n libozdynamics
 %defattr(-, root, root)
-%{_libdir}/libozdyn.so*
-%doc AUTHORS src/ozdyn/COPYING
+%{_libdir}/libozdynamics.so*
+%doc AUTHORS src/ozdynamics/COPYING
 
-%files -n libozdyn-devel
+%files -n libozdynamics-devel
 %defattr(-, root, root)
-%{_includedir}/ozdyn
-%{_libdir}/pkgconfig/libozdyn.pc
-%doc AUTHORS src/ozdyn/COPYING doc/doxygen.libozdyn/html
+%{_includedir}/ozdynamics
+%doc AUTHORS src/ozdynamics/COPYING doc/doxygen.libozdynamics/html
 
 %files client
 %defattr(-, root, root)

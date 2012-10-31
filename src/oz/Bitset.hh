@@ -375,39 +375,6 @@ class Bitset
     }
 
     /**
-     * AND of two same-length bitsets.
-     */
-    Bitset& operator &= ( const Bitset& b )
-    {
-      for( int i = 0; i < size; ++i ) {
-        data[i] &= b.data[i];
-      }
-      return *this;
-    }
-
-    /**
-     * OR of two same-length bitsets.
-     */
-    Bitset& operator |= ( const Bitset& b )
-    {
-      for( int i = 0; i < size; ++i ) {
-        data[i] |= b.data[i];
-      }
-      return *this;
-    }
-
-    /**
-     * XOR of two same-length bitsets.
-     */
-    Bitset& operator ^= ( const Bitset& b )
-    {
-      for( int i = 0; i < size; ++i ) {
-        data[i] ^= b.data[i];
-      }
-      return *this;
-    }
-
-    /**
      * Return AND of two same-length bitsets.
      */
     Bitset operator & ( const Bitset& b ) const
@@ -450,6 +417,39 @@ class Bitset
         r.data[i] = data[i] ^ b.data[i];
       }
       return r;
+    }
+
+    /**
+     * AND of two same-length bitsets.
+     */
+    Bitset& operator &= ( const Bitset& b )
+    {
+      for( int i = 0; i < size; ++i ) {
+        data[i] &= b.data[i];
+      }
+      return *this;
+    }
+
+    /**
+     * OR of two same-length bitsets.
+     */
+    Bitset& operator |= ( const Bitset& b )
+    {
+      for( int i = 0; i < size; ++i ) {
+        data[i] |= b.data[i];
+      }
+      return *this;
+    }
+
+    /**
+     * XOR of two same-length bitsets.
+     */
+    Bitset& operator ^= ( const Bitset& b )
+    {
+      for( int i = 0; i < size; ++i ) {
+        data[i] ^= b.data[i];
+      }
+      return *this;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,42 +21,22 @@
  */
 
 /**
- * @file ozdyn/collision/Shape.hh
+ * @file ozdynamics/collision/Mesh.cc
  */
 
-#pragma once
-
-#include <oz/oz.hh>
+#include "Mesh.hh"
 
 namespace oz
 {
 
-class Shape
+Pool<Mesh> Mesh::pool;
+
+Mesh::~Mesh()
+{}
+
+Bounds Mesh::getBounds( const Point&, const Mat33& ) const
 {
-  public:
-
-    /**
-     * Shape types.
-     */
-    enum Type
-    {
-      COMPOUND,
-      BOX,
-      CAPSULE,
-      MAX
-    };
-
-  public:
-
-    Type type; ///< Shape type.
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Shape( Type type_ ) :
-      type( type_ )
-    {}
-
-};
+  return Bounds();
+}
 
 }

@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,10 +21,19 @@
  */
 
 /**
- * @file ozdyn/collision/Capsule.cc
+ * @file ozdynamics/ozdynamics.hh
+ *
+ * Main header for OpenZone Dynamics Library.
  */
 
-#include "Capsule.hh"
+#pragma once
 
-namespace oz
-{}
+#include "collision/Shape.hh"
+#include "collision/Compound.hh"
+#include "collision/Box.hh"
+#include "collision/Capsule.hh"
+#include "collision/Mesh.hh"
+#include "collision/Object.hh"
+#include "collision/Collider.hh"
+
+#include "physics/Body.hh"

@@ -157,19 +157,6 @@ class Quat : public VectorBase4
     }
 
     /**
-     * Quaternion with absolute components.
-     */
-    OZ_ALWAYS_INLINE
-    Quat abs() const
-    {
-#ifdef OZ_SIMD_MATH
-      return Quat( vAbs( u4 ) );
-#else
-      return Quat( oz::abs( x ), oz::abs( y ), oz::abs( z ), oz::abs( w ) );
-#endif
-    }
-
-    /**
      * Conjugated quaternion.
      */
     OZ_ALWAYS_INLINE
@@ -657,5 +644,58 @@ class Quat : public VectorBase4
     }
 
 };
+
+/**
+ * Per-component absolute values of a quaternion.
+ */
+OZ_ALWAYS_INLINE
+inline Quat abs( const Quat& a )
+{
+#ifdef OZ_SIMD_MATH
+  return Quat( vAbs( a.u4 ) );
+#else
+  return Quat( abs( a.x ), abs( a.y ), abs( a.z ), abs( a.w ) );
+#endif
+}
+
+/**
+ * Per-component minimums of two quaternions.
+ */
+OZ_ALWAYS_INLINE
+inline Quat min( const Quat& a, const Quat& b )
+{
+#ifdef OZ_SIMD_MATH
+  return Quat( vMin( a.f4, b.f4 ) );
+#else
+  return Quat( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ), min( a.w, b.w ) );
+#endif
+}
+
+/**
+ * Per-component maximums of two quaternions.
+ */
+OZ_ALWAYS_INLINE
+inline Quat max( const Quat& a, const Quat& b )
+{
+#ifdef OZ_SIMD_MATH
+  return Quat( vMax( a.f4, b.f4 ) );
+#else
+  return Quat( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ), max( a.w, b.w ) );
+#endif
+}
+
+/**
+ * Per-component clamped values of quaternions.
+ */
+OZ_ALWAYS_INLINE
+inline Quat clamp( const Quat& c, const Quat& a, const Quat& b )
+{
+#ifdef OZ_SIMD_MATH
+  return Quat( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
+#else
+  return Quat( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ),
+               clamp( c.w, a.w, b.w ) );
+#endif
+}
 
 }

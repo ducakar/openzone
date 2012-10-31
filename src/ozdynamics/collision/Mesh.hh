@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,7 +21,9 @@
  */
 
 /**
- * @file ozdyn/collision/Box.hh
+ * @file ozdynamics/collision/Mesh.hh
+ *
+ * Mesh class.
  */
 
 #pragma once
@@ -32,29 +34,26 @@ namespace oz
 {
 
 /**
- * Box.
+ * Triangle mesh.
  */
-class Box : public Shape
+class Mesh : public Shape
 {
   public:
 
-    static Pool<Box> pool;
-
-    Vec3 ext; ///< Extents.
+    static Pool<Mesh> pool;
 
   public:
 
     OZ_ALWAYS_INLINE
-    explicit Box() :
-      Shape( Shape::BOX )
+    explicit Mesh() :
+      Shape( Shape::MESH )
     {}
 
-    OZ_ALWAYS_INLINE
-    explicit Box( const Vec3& ext_ ) :
-      Shape( Shape::BOX ), ext( ext_ )
-    {}
+    ~Mesh() override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

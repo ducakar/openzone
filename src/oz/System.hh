@@ -32,7 +32,7 @@
 
 /**
  * @def OZ_WARNING
- * Wrapper for `oz::System::warning()`, filling in the current function, file and line parameters.
+ * Wrapper for `System::warning()`, filling in the current function, file and line parameters.
  */
 // FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
 #define OZ_WARNING( ...) \
@@ -40,7 +40,7 @@
 
 /**
  * @def OZ_ERROR
- * Wrapper for `oz::System::error()`, filling in the current function, file and line parameters.
+ * Wrapper for `System::error()`, filling in the current function, file and line parameters.
  */
 // FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
 #define OZ_ERROR( ...) \

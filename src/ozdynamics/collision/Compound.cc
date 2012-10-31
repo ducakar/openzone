@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,39 +21,29 @@
  */
 
 /**
- * @file ozdyn/collision/Collider.hh
+ * @file ozdynamics/collision/Compound.cc
  */
 
-#pragma once
-
-#include "Space.hh"
+#include "Compound.hh"
 
 namespace oz
 {
 
-class Collider
+Pool<Compound> Compound::pool;
+
+Compound::~Compound()
+{}
+
+Bounds Compound::getBounds( const Point& pos, const Mat33& rot ) const
 {
-  public:
+  hard_assert( c[0].shape != nullptr );
 
-    struct Result
-    {
-      Vec3  axis;
-      float depth;
-    };
+  Bounds b = c[0].shape->getBounds( pos + c[0].off, rot * c[0].rot );
 
-  private:
-
-    typedef bool ( OverlapFunc )( const Mat44& tf0, const Shape* shape0,
-                                  const Mat44& tf1, const Shape* shape2 );
-
-  private:
-
-    static OverlapFunc* const dispatcher[Shape::MAX][Shape::MAX];
-
-    static bool overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
-                                const Vec3& ext1, const Mat33& rot1,
-                                const Vec3& relPos, Result* result );
-
-};
+  for( int i = 1; c[i].shape != nullptr; ++i ) {
+    b |= c[i].shape->getBounds( pos + c[i].off, rot * c[i].rot );
+  }
+  return b;
+}
 
 }

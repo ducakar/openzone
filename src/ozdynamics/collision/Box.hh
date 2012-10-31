@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,10 +21,47 @@
  */
 
 /**
- * @file ozdyn/collision/Compound.cc
+ * @file ozdynamics/collision/Box.hh
+ *
+ * Box class.
  */
 
-#include "Compound.hh"
+#pragma once
+
+#include "Shape.hh"
 
 namespace oz
-{}
+{
+
+/**
+ * Box.
+ */
+class Box : public Shape
+{
+  public:
+
+    static Pool<Box> pool;
+
+    Vec3 ext; ///< Extents.
+
+  public:
+
+    OZ_ALWAYS_INLINE
+    explicit Box() :
+      Shape( Shape::BOX )
+    {}
+
+    OZ_ALWAYS_INLINE
+    explicit Box( const Vec3& ext_ ) :
+      Shape( Shape::BOX ), ext( ext_ )
+    {}
+
+    ~Box() override;
+
+    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+
+    OZ_STATIC_POOL_ALLOC( pool )
+
+};
+
+}

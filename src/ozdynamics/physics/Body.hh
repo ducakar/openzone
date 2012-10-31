@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,43 +21,30 @@
  */
 
 /**
- * @file ozdyn/collision/Compound.hh
+ * @file ozdynamics/physics/Body.hh
+ *
+ * Body class.
  */
 
 #pragma once
 
-#include "Shape.hh"
+#include "../collision/Object.hh"
 
 namespace oz
 {
 
-class Compound : public Shape
+/**
+ * Rigid body.
+ */
+class Body : public Object
 {
   public:
 
-    struct Child
-    {
-      Shape* shape;
-      Vec3   off;
-      Mat44  rot;
-    };
+    static Pool<Body> pool;
 
   public:
 
-    static Pool<Compound> pool;
-
-    Child c[16];
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Compound() :
-      Shape( Shape::COMPOUND )
-    {
-      c[0].shape = nullptr;
-    }
-
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

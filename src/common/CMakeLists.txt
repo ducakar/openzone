@@ -10,3 +10,4 @@ add_library( common STATIC
   Lua.cc
   Timer.cc )
 use_pch( common pch )
+target_link_libraries( common ${LUA_LIBRARY} ${SDL_LIBRARY} oz )

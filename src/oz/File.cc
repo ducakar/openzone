@@ -796,46 +796,6 @@ bool File::write( const Buffer* buffer )
   return write( buffer->begin(), buffer->length() );
 }
 
-String File::cwd()
-{
-#if defined( __native_client__ )
-
-  return "";
-
-#elif defined( _WIN32 )
-
-  char buffer[256];
-  bool hasFailed = GetCurrentDirectory( 256, buffer ) == 0;
-  return hasFailed ? "." : buffer;
-
-#else
-
-  char buffer[256];
-  bool hasFailed = getcwd( buffer, 256 ) == nullptr;
-  return hasFailed ? "." : buffer;
-
-#endif
-}
-
-bool File::chdir( const char* path )
-{
-#if defined( __native_client__ )
-
-  static_cast<void>( path );
-
-  return false;
-
-#elif defined( _WIN32 )
-
-  return SetCurrentDirectory( path ) != 0;
-
-#else
-
-  return ::chdir( path ) == 0;
-
-#endif
-}
-
 DArray<File> File::ls()
 {
   DArray<File> array;
@@ -952,6 +912,46 @@ DArray<File> File::ls()
   return array;
 }
 
+String File::cwd()
+{
+#if defined( __native_client__ )
+
+  return "";
+
+#elif defined( _WIN32 )
+
+  char buffer[256];
+  bool hasFailed = GetCurrentDirectory( 256, buffer ) == 0;
+  return hasFailed ? "" : buffer;
+
+#else
+
+  char buffer[256];
+  bool hasFailed = getcwd( buffer, 256 ) == nullptr;
+  return hasFailed ? "" : buffer;
+
+#endif
+}
+
+bool File::chdir( const char* path )
+{
+#if defined( __native_client__ )
+
+  static_cast<void>( path );
+
+  return false;
+
+#elif defined( _WIN32 )
+
+  return SetCurrentDirectory( path ) != 0;
+
+#else
+
+  return ::chdir( path ) == 0;
+
+#endif
+}
+
 bool File::mkdir( const char* path )
 {
 #if defined( __native_client__ )
@@ -1047,10 +1047,10 @@ bool File::rm( const char* path )
 #else
 
   if( File( path ).fileType == DIRECTORY ) {
-    return ::rmdir( path ) == 0;
+    return rmdir( path ) == 0;
   }
   else {
-    return ::unlink( path ) == 0;
+    return unlink( path ) == 0;
   }
 
 #endif

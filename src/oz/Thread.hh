@@ -66,7 +66,7 @@ class Thread
     {}
 
     /**
-     * Destructor, thread must be either uninitialised, joined or detached.
+     * Destructor, all started threads must be detached or joined.
      */
     ~Thread()
     {
@@ -101,21 +101,25 @@ class Thread
     }
 
     /**
-     * Create a new thread and run it. Thread must be in uninitialised state.
+     * Create a new thread and run it.
+     *
+     * When a new thread is started it is attached to the Thread object that started it. `detach()`
+     * or `join()` must be called afterwards, before the Thread object destruction or starting
+     * another thread.
      *
      * @param name thread name (string is copied to an internal buffer).
-     * @param main pointer to thread's main function.
-     * @param data pointer to user data, passed to thread's main function.
+     * @param main pointer to the thread's main function.
+     * @param data pointer to user data, passed to the thread's main function.
      */
     void start( const char* name, Main* main, void* data );
 
     /**
-     * Detach a started thread and return Thread object into uninitialised state.
+     * Detach a started thread.
      */
     void detach();
 
     /**
-     * Wait for a thread to finish execution and return Thread object into uninitialised state.
+     * Wait for the started thread to finish execution.
      */
     void join();
 

@@ -81,7 +81,7 @@ bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset = localDim * plane.abs();
+    float offset = localDim * abs( plane.n );
     float dist   = startPos * plane - offset;
 
     result &= dist <= EPSILON;
@@ -130,7 +130,7 @@ bool Collider::overlapsAABBNode( int nodeIndex )
     const BSP::Node& node  = bsp->nodes[nodeIndex];
     const Plane&     plane = bsp->planes[node.plane];
 
-    float offset = localDim * plane.abs() + 2.0f * EPSILON;
+    float offset = localDim * abs( plane.n ) + 2.0f * EPSILON;
     float dist   = startPos * plane;
 
     if( dist > offset ) {
@@ -414,7 +414,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset    = localDim * plane.abs();
+    float offset    = localDim * abs( plane.n );
     float startDist = startPos * plane - offset;
     float endDist   = endPos   * plane - offset;
 
@@ -453,7 +453,7 @@ void Collider::trimAABBLiquid( const BSP::Brush* brush )
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset = localDim * plane.abs();
+    float offset = localDim * abs( plane.n );
     float dist   = startPos * plane - offset;
 
     if( dist >= 0.0f ) {
@@ -484,7 +484,7 @@ void Collider::trimAABBArea( const BSP::Brush* brush )
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset = localDim * plane.abs();
+    float offset = localDim * abs( plane.n );
     float dist   = startPos * plane - offset;
 
     if( dist > 0.0f ) {
@@ -522,7 +522,7 @@ void Collider::trimAABBNode( int nodeIndex )
     const BSP::Node& node  = bsp->nodes[nodeIndex];
     const Plane&     plane = bsp->planes[node.plane];
 
-    float offset    = localDim * plane.abs() + 2.0f * EPSILON;
+    float offset    = localDim * abs( plane.n ) + 2.0f * EPSILON;
     float startDist = startPos * plane;
     float endDist   = endPos   * plane;
 

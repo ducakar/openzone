@@ -94,51 +94,6 @@ class Plane
     }
 
     /**
-     * Constant float pointer to the members.
-     */
-    OZ_ALWAYS_INLINE
-    operator const float* () const
-    {
-      return &n.x;
-    }
-
-    /**
-     * Float pointer to the members.
-     */
-    OZ_ALWAYS_INLINE
-    operator float* ()
-    {
-      return &n.x;
-    }
-
-    /**
-     * Constant reference to the `i`-th member.
-     */
-    OZ_ALWAYS_INLINE
-    const float& operator [] ( int i ) const
-    {
-      return ( &n.x )[i];
-    }
-
-    /**
-     * Reference to the `i`-th member.
-     */
-    OZ_ALWAYS_INLINE
-    float& operator [] ( int i )
-    {
-      return ( &n.x )[i];
-    }
-
-    /**
-     * %Plane with the same distance but normal that has absolute components.
-     */
-    OZ_ALWAYS_INLINE
-    Plane abs() const
-    {
-      return Plane( n.abs(), d );
-    }
-
-    /**
      * Projection of a vector to the plane's normal.
      */
     OZ_ALWAYS_INLINE

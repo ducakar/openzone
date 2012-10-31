@@ -28,19 +28,18 @@ namespace oz
 static const String COMPILER_STRING = "MSVC " + String::str( "%g", float( OZ_MSVC ) / 100.0f );
 #endif
 
-const char* const   BuildInfo::TIME         = __DATE__ " " __TIME__;
-const char* const   BuildInfo::HOST         = "@OZ_HOSTNAME@ @CMAKE_HOST_SYSTEM@";
-const char* const   BuildInfo::HOST_ARCH    = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@";
-const char* const   BuildInfo::TARGET_ARCH  = "@CMAKE_SYSTEM_NAME@-@CMAKE_SYSTEM_PROCESSOR@";
-const char* const   BuildInfo::BUILD_TYPE   = "@CMAKE_BUILD_TYPE@";
+const char* const   BuildInfo::TIME        = __DATE__ " " __TIME__;
+const char* const   BuildInfo::HOST        = "@OZ_HOSTNAME@ @CMAKE_HOST_SYSTEM@";
+const char* const   BuildInfo::HOST_ARCH   = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@";
+const char* const   BuildInfo::TARGET_ARCH = "@CMAKE_SYSTEM_NAME@-@CMAKE_SYSTEM_PROCESSOR@";
+const char* const   BuildInfo::BUILD_TYPE  = "@CMAKE_BUILD_TYPE@";
 #if defined( OZ_MSVC )
-const char* const   BuildInfo::COMPILER     = COMPILER_STRING;
+const char* const   BuildInfo::COMPILER    = COMPILER_STRING;
 #elif defined( OZ_CLANG )
-const char* const   BuildInfo::COMPILER     = "LLVM/Clang " __clang_version__;
+const char* const   BuildInfo::COMPILER    = "LLVM/Clang " __clang_version__;
 #else
-const char* const   BuildInfo::COMPILER     = "GCC " __VERSION__;
+const char* const   BuildInfo::COMPILER    = "GCC " __VERSION__;
 #endif
-const char* const   BuildInfo::CXX_FLAGS    = "@OZ_CXX_FLAGS@";
-const char* const   BuildInfo::LINKER_FLAGS = "@OZ_EXE_LINKER_FLAGS@";
+const char* const   BuildInfo::CXX_FLAGS   = "@OZ_CXX_FLAGS@";
 
 }

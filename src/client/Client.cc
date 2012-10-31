@@ -137,7 +137,7 @@ int Client::init( int argc, char** argv )
 
 #if defined( __native_client__ )
 
-  File::init( File::TEMPORARY, 10*1024*1024 );
+  File::init( File::TEMPORARY, 64*1024*1024 );
 
   String configDir = "/config/openzone";
   String localDir = "/local/share/openzone";
@@ -222,7 +222,6 @@ int Client::init( int argc, char** argv )
   Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
   Log::println( "Compiler:        %s", BuildInfo::COMPILER );
   Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  Log::println( "Linker flags:    %s", BuildInfo::LINKER_FLAGS );
   Log::unindent();
   Log::println( "}" );
   Log::verboseMode = false;

@@ -1,4 +1,3 @@
-configure_file( liboz.pc.in liboz.pc )
 configure_file( ozconfig.hh.in ozconfig.hh )
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
@@ -124,14 +123,34 @@ add_library( oz
   Vec3.cc
   Vec4.cc )
 set_target_properties( oz PROPERTIES
-                       RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/liboz.pc
+                       PUBLIC_HEADER "${headers}"
                        VERSION ${OZ_VERSION}
                        SOVERSION 0 )
-target_link_libraries( oz ${libs_oz} )
+
+if( ANDROID )
+  target_link_libraries( oz ${PLATFORM_STL_LIBRARY}
+                            ${ANDROID_LOG_LIBRARY}
+                            ${OPENSLES_LIBRARY}
+                            ${PHYSFS_LIBRARY}
+                            ${ZLIB_LIBRARY} )
+elseif( NACL )
+  target_link_libraries( oz ${PTHREAD_LIBRARY}
+                            ${PHYSFS_LIBRARY}
+                            ${ZLIB_LIBRARY}
+                            ${PEPPER_CXX_LIBRARY}
+                            ${PEPPER_LIBRARY} )
+elseif( WIN32 )
+  target_link_libraries( oz ${WINMM_LIBRARY}
+                            ${PHYSFS_LIBRARY} )
+else()
+  target_link_libraries( oz ${PTHREAD_LIBRARY}
+                            ${RT_LIBRARY}
+                            ${DL_LIBRARY}
+                            ${ALSA_LIBRARY}
+                            ${PHYSFS_LIBRARY} )
+endif()
 
 install( TARGETS oz
          RUNTIME DESTINATION bin
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib
-         PUBLIC_HEADER DESTINATION include/oz
-         RESOURCE DESTINATION lib/pkgconfig )
+         LIBRARY ARCHIVE DESTINATION lib
+         PUBLIC_HEADER DESTINATION include/oz )

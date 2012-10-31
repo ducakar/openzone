@@ -92,12 +92,30 @@ inline float vFirst( float4 a )
 #endif
 
 /**
- * Absolute value of a float SIMD vector.
+ * Component-wise absolute value of a SIMD vector.
  */
 OZ_ALWAYS_INLINE
 inline uint4 vAbs( uint4 a )
 {
   return a & vFill( 0x7fffffffu );
+}
+
+/**
+ * Component-wise minimum of float SIMD vectors.
+ */
+OZ_ALWAYS_INLINE
+inline float4 vMin( float4 a, float4 b )
+{
+  return __builtin_ia32_minps( a, b );
+}
+
+/**
+ * Component-wise maximum of float SIMD vectors.
+ */
+OZ_ALWAYS_INLINE
+inline float4 vMax( float4 a, float4 b )
+{
+  return __builtin_ia32_maxps( a, b );
 }
 
 /**
@@ -311,15 +329,6 @@ class scalar
     operator float () const
     {
       return vFirst( f4 );
-    }
-
-    /**
-     * Absolute value.
-     */
-    OZ_ALWAYS_INLINE
-    scalar abs() const
-    {
-      return vAbs( u4 );
     }
 
     /**

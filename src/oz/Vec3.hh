@@ -146,19 +146,6 @@ class Vec3 : public VectorBase3
     }
 
     /**
-     * Vector with absolute components.
-     */
-    OZ_ALWAYS_INLINE
-    Vec3 abs() const
-    {
-#ifdef OZ_SIMD_MATH
-      return Vec3( vAbs( u4 ) );
-#else
-      return Vec3( oz::abs( x ), oz::abs( y ), oz::abs( z ) );
-#endif
-    }
-
-    /**
      * Norm.
      */
     OZ_ALWAYS_INLINE
@@ -446,5 +433,57 @@ class Vec3 : public VectorBase3
     }
 
 };
+
+/**
+ * Per-component absolute values of a vector.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 abs( const Vec3& a )
+{
+#ifdef OZ_SIMD_MATH
+  return Vec3( vAbs( a.u4 ) );
+#else
+  return Vec3( abs( a.x ), abs( a.y ), abs( a.z ) );
+#endif
+}
+
+/**
+ * Per-component minimums of two vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 min( const Vec3& a, const Vec3& b )
+{
+#ifdef OZ_SIMD_MATH
+  return Vec3( vMin( a.f4, b.f4 ) );
+#else
+  return Vec3( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+#endif
+}
+
+/**
+ * Per-component maximums of two vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 max( const Vec3& a, const Vec3& b )
+{
+#ifdef OZ_SIMD_MATH
+  return Vec3( vMax( a.f4, b.f4 ) );
+#else
+  return Vec3( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+#endif
+}
+
+/**
+ * Per-component clamped values of vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 clamp( const Vec3& c, const Vec3& a, const Vec3& b )
+{
+#ifdef OZ_SIMD_MATH
+  return Vec3( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
+#else
+  return Vec3( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+#endif
+}
 
 }

@@ -114,7 +114,7 @@ class AABB
     OZ_ALWAYS_INLINE
     bool includes( const Point& point, float eps = 0.0f ) const
     {
-      Vec3 relPos = ( point - p ).abs();
+      Vec3 relPos = abs( point - p );
       Vec3 sumDim = dim + Vec3( eps, eps, eps );
 
       return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
@@ -129,8 +129,8 @@ class AABB
     OZ_ALWAYS_INLINE
     bool includes( const AABB& a, float eps = 0.0f ) const
     {
-      Vec3 relPos = ( a.p - p ).abs();
-      Vec3 sumDim = ( dim - a.dim ).abs() + Vec3( eps, eps, eps );
+      Vec3 relPos = abs( a.p - p );
+      Vec3 sumDim = abs( dim - a.dim ) + Vec3( eps, eps, eps );
 
       return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
     }
@@ -144,7 +144,7 @@ class AABB
     OZ_ALWAYS_INLINE
     bool overlaps( const AABB& a, float eps = 0.0f ) const
     {
-      Vec3 relPos = ( a.p - p ).abs();
+      Vec3 relPos = abs( a.p - p );
       Vec3 sumDim = dim + a.dim + Vec3( eps, eps, eps );
 
       return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;

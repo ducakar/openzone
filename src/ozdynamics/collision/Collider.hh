@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,28 +21,41 @@
  */
 
 /**
- * @file ozdyn/physics/Body.hh
+ * @file ozdynamics/collision/Collider.hh
+ *
+ * Collider class.
  */
 
 #pragma once
 
-#include "../collision/Object.hh"
+#include "Space.hh"
 
 namespace oz
 {
 
-/**
- * Rigid body.
- */
-class Body : public Object
+class Collider
 {
   public:
 
-    static Pool<Body> pool;
+    struct Result
+    {
+      Vec3  axis;
+      float depth;
+    };
 
-  public:
+  private:
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    typedef bool ( OverlapFunc )( const Mat44& tf0, const Shape* shape0,
+                                  const Mat44& tf1, const Shape* shape2 );
+
+  private:
+
+    static OverlapFunc* const dispatcher[Shape::MAX][Shape::MAX];
+
+    static bool overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
+                                const Vec3& ext1, const Mat33& rot1,
+                                const Vec3& relPos, Result* result );
+
 };
 
 }

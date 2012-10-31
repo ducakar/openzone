@@ -22,7 +22,9 @@
  */
 
 #include <oz/oz.hh>
-#include <ozdyn/ozdyn.hh>
+#include <ozdynamics/ozdynamics.hh>
+
+#include <physfs.h>
 
 using namespace oz;
 
@@ -112,5 +114,18 @@ class Foo
 int main()
 {
   System::init();
+  PFile::init();
+
+  PHYSFS_setSaneConfig( "OpenZone", "OpenZone", "zip", false, false );
+
+  DArray<PFile> ls = PFile( "" ).ls();
+
+  foreach( file, ls.citer() ) {
+    Log() << file->path() << "\n";
+  }
+
+  PFile( "drek" ).write( "Davorin", 7 );
+
+  PFile::free();
   return 0;
 }

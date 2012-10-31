@@ -6,7 +6,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( . )
 
 add_subdirectory( oz )
-add_subdirectory( ozdyn )
+add_subdirectory( ozdynamics )
 add_subdirectory( unittest )
 
 add_pch( pch stable.hh stable.cc )

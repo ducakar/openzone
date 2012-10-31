@@ -23,7 +23,7 @@
 /**
  * @file oz/oz.hh
  *
- * Common include file for liboz.
+ * Main header for OpenZone Core Libray.
  */
 
 #pragma once
@@ -91,7 +91,7 @@
 #include "Bounds.hh"
 
 /*
- * Threading.
+ * Threads.
  */
 #include "SpinLock.hh"
 #include "Mutex.hh"

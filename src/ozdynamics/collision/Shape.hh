@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,45 +21,54 @@
  */
 
 /**
- * @file ozdyn/collision/Object.hh
+ * @file ozdynamics/collision/Shape.hh
+ *
+ * Shape class.
  */
 
 #pragma once
 
-#include "Shape.hh"
+#include <oz/oz.hh>
 
 namespace oz
 {
 
-/**
- * Collision object.
- */
-class Object
+class Shape
 {
   public:
 
-    static Pool<Object> pool;
+    /// Margin used for calculation of axis-aligned bounding boxes.
+    static constexpr float MARGIN = 0.01f;
 
-    Object* prev[3]; ///< Previous objects in linked lists used in spatial structures.
-    Object* next[3]; ///< Next objects in linked lists used in spatial structures.
-
-    Point   pos;     ///< Position.
-    Quat    rot;     ///< Rotation.
-    Mat33   rotMat;  ///< Cached rotation matrix.
-
-    int     mask;    ///< Collision bitmask.
-    Shape*  shape;   ///< Collision shape.
+    /**
+     * Shape types.
+     */
+    enum Type
+    {
+      COMPOUND,
+      BOX,
+      CAPSULE,
+      MESH,
+      MAX
+    };
 
   public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    explicit Object() :
-      mask( ~0 ), shape( nullptr )
+    Type type; ///< Shape type.
+
+  public:
+
+    OZ_ALWAYS_INLINE
+    explicit Shape( Type type_ ) :
+      type( type_ )
     {}
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    virtual ~Shape();
+
+    /**
+     * Calculate axis-aligned bounding box for the shape in absolute coordinates.
+     */
+    virtual Bounds getBounds( const Point& pos, const Mat33& rot ) const = 0;
 
 };
 

@@ -282,39 +282,6 @@ class SBitset
     }
 
     /**
-     * AND of two bitsets.
-     */
-    SBitset& operator &= ( const SBitset& b )
-    {
-      for( int i = 0; i < SIZE; ++i ) {
-        data[i] &= b.data[i];
-      }
-      return *this;
-    }
-
-    /**
-     * OR of two bitsets.
-     */
-    SBitset& operator |= ( const SBitset& b )
-    {
-      for( int i = 0; i < SIZE; ++i ) {
-        data[i] |= b.data[i];
-      }
-      return *this;
-    }
-
-    /**
-     * XOR of two bitsets.
-     */
-    SBitset& operator ^= ( const SBitset& b )
-    {
-      for( int i = 0; i < SIZE; ++i ) {
-        data[i] ^= b.data[i];
-      }
-      return *this;
-    }
-
-    /**
      * Return AND of two bitsets.
      */
     SBitset operator & ( const SBitset& b ) const
@@ -351,6 +318,39 @@ class SBitset
         r.data[i] = data[i] ^ b.data[i];
       }
       return r;
+    }
+
+    /**
+     * AND of two bitsets.
+     */
+    SBitset& operator &= ( const SBitset& b )
+    {
+      for( int i = 0; i < SIZE; ++i ) {
+        data[i] &= b.data[i];
+      }
+      return *this;
+    }
+
+    /**
+     * OR of two bitsets.
+     */
+    SBitset& operator |= ( const SBitset& b )
+    {
+      for( int i = 0; i < SIZE; ++i ) {
+        data[i] |= b.data[i];
+      }
+      return *this;
+    }
+
+    /**
+     * XOR of two bitsets.
+     */
+    SBitset& operator ^= ( const SBitset& b )
+    {
+      for( int i = 0; i < SIZE; ++i ) {
+        data[i] ^= b.data[i];
+      }
+      return *this;
     }
 
 };

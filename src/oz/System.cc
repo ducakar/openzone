@@ -251,6 +251,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
 static void* bellMain( void* )
 {
   // TODO Implement bell for OpenSL ES.
+  static_cast<void>( genBellSamples );
   return nullptr;
 }
 

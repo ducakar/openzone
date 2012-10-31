@@ -243,6 +243,9 @@ class PFile
      * Initialise PhysicsFS.
      *
      * On NaCl `System::instance` must be set prior to initialisation of PhysicsFS.
+     *
+     * @param type user (writeable) filesystem type for NaCl, ignored for other platforms.
+     * @param size user (writeable) filesystem size for NaCl, ignored for other platforms.
      */
     static void init( File::FilesystemType type = File::TEMPORARY, int size = 0 );
 

@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozdyn/collision/Collider.cc
+ * @file ozdynamics/collision/Collider.cc
  */
 
 #include "Collider.hh"
@@ -35,8 +35,8 @@ bool Collider::overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
                                const Vec3& ext1, const Mat33& rot1,
                                const Vec3& relPos, Result* result )
 {
-  Mat33 c = ~rot0 * rot1;                             // rot1 = rot0 * c
-  Mat33 d = Mat33( c.x.abs(), c.y.abs(), c.z.abs() ); // d = abs( c )
+  Mat33 c = ~rot0 * rot1;                                // rot1 = rot0 * c
+  Mat33 d = Mat33( abs( c.x ), abs( c.y ), abs( c.z ) ); // d = abs( c )
 
   // Separating axes for faces of `box0`.
   for( int j = 0; j < 3; ++j ) {

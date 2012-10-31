@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * libozdynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,16 +21,15 @@
  */
 
 /**
- * @file ozdyn/ozdyn.hh
+ * @file ozdynamics/collision/Shape.hh
  */
 
-#pragma once
+#include "Shape.hh"
 
-#include "collision/Shape.hh"
-#include "collision/Box.hh"
-#include "collision/Capsule.hh"
-#include "collision/Compound.hh"
-#include "collision/Object.hh"
-#include "collision/Collider.hh"
+namespace oz
+{
 
-#include "physics/Body.hh"
+Shape::~Shape()
+{}
+
+}

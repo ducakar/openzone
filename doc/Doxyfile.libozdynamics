@@ -4,11 +4,11 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "libozdyn"
+PROJECT_NAME           = "libozdynamics"
 PROJECT_NUMBER         = "0.3.80"
 PROJECT_BRIEF          = "OpenZone Dynamics Library"
 PROJECT_LOGO           =
-OUTPUT_DIRECTORY       = doc/doxygen.libozdyn
+OUTPUT_DIRECTORY       = doc/doxygen.libozdynamics
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -108,9 +108,9 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = src/oz \
-                         src/ozdyn \
-                         src/ozdyn/collision \
-                         src/ozdyn/physics
+                         src/ozdynamics \
+                         src/ozdynamics/collision \
+                         src/ozdynamics/physics
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.hh \
                          *.dox

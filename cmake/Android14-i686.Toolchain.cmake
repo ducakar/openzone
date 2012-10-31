@@ -18,7 +18,7 @@ set( CMAKE_CXX_COMPILER         "${PLATFORM_TOOL_PREFIX}/${PLATFORM_TRIPLET}-g++
 set( PLATFORM_FLAGS             "-fPIC --sysroot=${PLATFORM_PREFIX}" )
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -I${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/include" )
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -I${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/x86/include" )
-set( PLATFORM_STLLIB            "${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/x86/libgnustl_static.a" )
+set( PLATFORM_STL_LIBRARY       "${PLATFORM_SOURCE_PREFIX}/cxx-stl/gnu-libstdc++/4.6/libs/x86/libgnustl_static.a" )
 
 set( CMAKE_C_FLAGS              "${PLATFORM_FLAGS} -msse3 -mfpmath=sse" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "${PLATFORM_FLAGS} -msse3 -mfpmath=sse" CACHE STRING "" )

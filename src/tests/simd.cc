@@ -75,7 +75,7 @@ int main()
   for( int k = 0; k < 10000; ++k ) {
     for( int i = 0; i < MAX; ++i ) {
       d[i] += c[i] * ( a[i] * b[i] );
-      e[i]  = d[i] + c[i] - ( a[i] + b[i] ).abs();
+      e[i]  = d[i] + c[i] - abs( a[i] + b[i] );
 
       a[i]   += CreateVecX( 0.1f, 0, 0, 0 );
       b[i].y  = a[i].y;

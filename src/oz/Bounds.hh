@@ -185,6 +185,15 @@ class Bounds
     }
 
     /**
+     * `Bounds` that covers union of two `Bounds`.
+     */
+    OZ_ALWAYS_INLINE
+    Bounds operator | ( const Bounds& b ) const
+    {
+      return Bounds( min( mins, b.mins ), max( maxs, b.maxs ) );
+    }
+
+    /**
      * Translate `Bounds`.
      */
     OZ_ALWAYS_INLINE
@@ -203,6 +212,17 @@ class Bounds
     {
       mins -= v;
       maxs -= v;
+      return *this;
+    }
+
+    /**
+     * Extend `Bounds` to cover union of both `Bounds`.
+     */
+    OZ_ALWAYS_INLINE
+    Bounds& operator |= ( const Bounds& b )
+    {
+      mins = min( mins, b.mins );
+      maxs = max( maxs, b.maxs );
       return *this;
     }
 

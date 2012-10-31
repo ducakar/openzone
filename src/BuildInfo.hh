@@ -53,9 +53,6 @@ class BuildInfo
     /// Compiler flags.
     static const char* const CXX_FLAGS;
 
-    /// Linker flags.
-    static const char* const LINKER_FLAGS;
-
 };
 
 }

@@ -1,21 +1,21 @@
-configure_file( libozdyn.pc.in libozdyn.pc )
-
 set( headers
-  ozdyn.hh
+  ozdynamics.hh
   collision/Box.hh
   collision/Capsule.hh
   collision/Collider.hh
   collision/Compound.hh
+  collision/Mesh.hh
   collision/Object.hh
   collision/Shape.hh
   collision/Space.hh
   physics/Body.hh )
-add_library( ozdyn
-  ozdyn.hh
+add_library( ozdynamics
+  ozdynamics.hh
   collision/Box.hh
   collision/Capsule.hh
   collision/Collider.hh
   collision/Compound.hh
+  collision/Mesh.hh
   collision/Object.hh
   collision/Shape.hh
   collision/Space.hh
@@ -23,17 +23,16 @@ add_library( ozdyn
   collision/Box.cc
   collision/Capsule.cc
   collision/Collider.cc
-  collision/Compound.cc )
-set_target_properties( ozdyn PROPERTIES
+  collision/Compound.cc
+  collision/Mesh.cc
+  collision/Shape.cc )
+set_target_properties( ozdynamics PROPERTIES
                        PUBLIC_HEADER "${headers}"
-                       RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/libozdyn.pc
                        VERSION ${OZ_VERSION}
                        SOVERSION 0 )
-target_link_libraries( ozdyn oz )
+target_link_libraries( ozdynamics oz )
 
-install( TARGETS ozdyn
+install( TARGETS ozdynamics
          RUNTIME DESTINATION bin
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib
-         PUBLIC_HEADER DESTINATION include/ozdyn
-         RESOURCE DESTINATION lib/pkgconfig )
+         LIBRARY ARCHIVE DESTINATION lib
+         PUBLIC_HEADER DESTINATION include/ozdynamics )

@@ -65,20 +65,20 @@ int main( int, char** )
 {
   System::init();
   Log() << "[" << Time::local().toString() << "] START\n";
+  PFile::init( File::TEMPORARY, 1024 );
 
-  File::init( File::PERSISTENT, 1024 );
+  PHYSFS_setWriteDir( "/" );
+  PHYSFS_mount( "/", nullptr, false );
 
-//   char content[] = "Drek na palci";
+  PFile file( "/drek" );
 
-//   File( "/drek.txt" ).write( content, sizeof( content ) );
-  Buffer b = File( "/drek.txt" ).read();
+  Log() << "stat:  " << file.stat() << "\n";
+  Log() << "mkdir: " << PFile::mkdir( file.path() ) << "\n";
+  Log() << "stat:  " << file.stat() << "\n";
+  Log() << "rm:    " << PFile::rm( file.path() ) << "\n";
+  Log() << "stat:  " << file.stat() << "\n";
 
-  Log::println( "%s", b.begin() );
-
-  File::free();
-
-  static_assert( sizeof( uint64_t ) == 8, "error" );
-
+  PFile::free();
   Log() << "[" << Time::local().toString() << "] END\n";
   return 0;
 }
