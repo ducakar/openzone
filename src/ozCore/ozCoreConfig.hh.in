@@ -1,0 +1,106 @@
+/*
+ * ozCore - OpenZone Core Library.
+ *
+ * Copyright © 2002-2012 Davorin Učakar
+ *
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software in
+ *    a product, an acknowledgement in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ */
+
+#pragma once
+
+/*
+ * Configuration variables
+ */
+
+// Enable tracking of allocated memory chunks in liboz. Stack trace for every memory allocation
+// performed via new operator is saved for later diagnostics. It detects new/delete mismatches and
+// one can check for currently allocated memory chunks (and hence memory leaks).
+#cmakedefine OZ_TRACK_ALLOCS
+
+// Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point, Plane, Quat,
+// Mat44). Currently it yields ~15% worse performance than generic implementations since Vec3 and
+// Point classes are a bit larger (4 floats v. 3 floats) and there are lots of accesses to vector
+// components in OpenZone code.
+#cmakedefine OZ_SIMD_MATH
+
+/*
+ * Compiler and platform-specific macros
+ */
+
+// #if defined( _MSC_VER )
+// # define OZ_MSVC _MSC_VER
+// # error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
+// # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+// #elif defined( __OPENCC__ )
+// # define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
+// # error Open64 cannot compile OpenZone due to lack of C++11 support.
+// # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+#if defined( __clang__ )
+# define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
+# if OZ_CLANG < 300
+#  error Only LLVM/Clang >= 3.0 is supported.
+# endif
+#elif defined( __GNUC__ )
+# define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
+# if OZ_GCC < 404
+#  error Only GCC >= 4.4 is supported.
+# endif
+#else
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+#endif
+
+// C++11 workarounds for older GCC versions.
+#if defined( OZ_GCC ) && OZ_GCC < 407
+# define override
+# define final
+# if OZ_GCC < 406
+#  define constexpr const
+#  define noexcept  throw()
+#  define nullptr   __null
+namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
+# endif
+#endif
+
+// Workaround for a development snapshot of LLVM/Clang 3.2.
+#if defined( OZ_CLANG ) && OZ_CLANG == 302
+# define __extern_always_inline extern __always_inline __attribute__(( __gnu_inline__ ))
+#endif
+
+// Check for AddressSanitizer (currently only supported by LLVM/Clang 3.1+).
+#ifdef __has_feature
+# if __has_feature( address_sanitizer )
+#  define OZ_ADDRESS_SANITIZER
+# endif
+#endif
+
+// For now, SSE3 is mandatory for OZ_SIMD_MATH.
+#if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )
+# error SSE3 must be enabled for OZ_SIMD_MATH. Compile with -msse3.
+#endif
+
+#ifdef _WIN32
+// At least Visual Studio 2005 run-time libraries required.
+# define __MSVCRT_VERSION__ 0x0800
+// At least Windows XP/2003 required.
+# define WINVER 0x0501
+// At least Internet Explorer 6.0 libraries required.
+# define _WIN32_IE 0x0600
+// Don't import all crap from Windows headers.
+# define WIN32_LEAN_AND_MEAN
+// Don't define min and max macros as they interfere with oz::min() and oz::max().
+# define NOMINMAX
+#endif

@@ -27,7 +27,7 @@
 
 #ifdef __native_client__
 
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/module.h>

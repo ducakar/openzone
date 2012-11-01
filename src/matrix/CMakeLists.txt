@@ -1,4 +1,5 @@
 add_library( matrix STATIC
+#BEGIN SOURCES
   BotClass.hh
   Bot.hh
   BSP.hh
@@ -49,5 +50,7 @@ add_library( matrix STATIC
   Vehicle.cc
   VehicleClass.cc
   Weapon.cc
-  WeaponClass.cc )
+  WeaponClass.cc
+#END SOURCES
+)
 use_pch( matrix pch )

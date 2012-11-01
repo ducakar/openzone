@@ -24,7 +24,7 @@
  * @file unittest/unittest.cc
  */
 
-#include <unittest/unittest.hh>
+#include "unittest.hh"
 
 #include <cstdlib>
 

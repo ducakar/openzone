@@ -1,10 +1,14 @@
 add_executable( unittest
+#BEGIN SOURCES
+  unittest.hh
   Alloc.cc
   arrays.cc
   common.cc
   iterables.cc
-  unittest.cc )
-target_link_libraries( unittest oz )
+  unittest.cc
+#END SOURCES
+)
+target_link_libraries( unittest ozCore )
 
 if( NACL )
   add_custom_command( OUTPUT unittest.nmf unittest.html

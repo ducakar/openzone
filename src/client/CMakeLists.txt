@@ -1,4 +1,5 @@
 add_library( client STATIC
+#BEGIN SOURCES
   Audio.hh
   BasicAudio.hh
   BotAudio.hh
@@ -149,8 +150,11 @@ add_library( client STATIC
   ui/SettingsFrame.cc
   ui/Style.cc
   ui/Text.cc
-  ui/UI.cc )
+  ui/UI.cc
+#END SOURCES
+)
 use_pch( client pch )
+
 if( ANDROID )
   target_link_libraries( client ${SDLTTF_LIBRARY}
                                 ${FREETYPE_LIBRARY}

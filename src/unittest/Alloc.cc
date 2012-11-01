@@ -24,7 +24,7 @@
  * @file unittest/Alloc.cc
  */
 
-#include <unittest/unittest.hh>
+#include "unittest.hh"
 
 using namespace oz;
 

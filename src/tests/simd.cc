@@ -22,7 +22,7 @@
  */
 
 // #define OZ_SIMD_MATH
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 
 #include <cstdio>
 

@@ -1,8 +1,6 @@
 #!/bin/sh
 
-cat << EOF > CMakeLists.txt
-add_library( common STATIC
-  `echo *.{hh,cc} | sed 's| |\n  |g'` )
-use_pch( common pch )
-target_link_libraries( common \${LUA_LIBRARY} \${SDL_LIBRARY} ozdynamics oz )
-EOF
+sed \
+'/#BEGIN SOURCES/,/#END SOURCES/ c\#BEGIN SOURCES\n'"\
+  `echo *.{hh,cc} | sed 's| |\\\\n  |g'`\
+"'\n#END SOURCES' -i CMakeLists.txt

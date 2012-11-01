@@ -14,27 +14,15 @@ Requires:       %{name}-client = %{version}
 Requires:       %{name}-data = %{version}
 
 %package -n liboz
-Summary:        OpenZone Core Library
+Summary:        OpenZone Core and Dynamics libraries
 License:        zlib
 Group:          System Environment/Libraries
 
 %package -n liboz-devel
-Summary:        Headers and documentation for OpenZone core library
+Summary:        Headers and documentation for OpenZone Core and Dynamics libraries
 License:        zlib
 Group:          Development/Libraries
-Requires:       liboz = %{version}
-
-%package -n libozdynamics
-Summary:        OpenZone Dynamics Engine
-License:        zlib
-Group:          System Environment/Libraries
-Requires:       liboz = %{version}
-
-%package -n libozdynamics-devel
-Summary:        Headers and documentation for OpenZone dynamics engine
-License:        zlib
-Group:          Development/Libraries
-Requires:       libozde = %{version}, liboz-devel = %{version}
+Requires:       liboz-core = %{version}
 
 %package client
 Summary:        Simple cross-platform FPS/RTS game engine
@@ -58,23 +46,17 @@ simulated world.
 This is a meta package that installs engine and game data.
 
 %description -n liboz
-Library provides facilities like container templates, array utilities,
-string class, memory manager with memory leak tracing, crash handlers,
-I/O buffers and classes for filesystem access with PhysicsFS support,
-log writer, configuration file manipulation class, math functions and
-linear algebra classes.
-Library is primarily intended for use in OpenZone game engine.
+OpenZone Core Library provides facilities like container templates, array
+utilities, string class, memory manager with memory leak tracing, crash
+handlers, I/O buffers and classes for filesystem access with PhysicsFS support,
+log writer, JSON file manipulation class, math functions and linear algebra
+classes.
+OpenZone Dynamics Library is a simple rigid body physics engine used in OpenZone
+game.
 
 %description -n liboz-devel
-This package contains doxygen-generated documentation, header files and
-pkg-config configuration needed for development using liboz.
-
-%description -n libozdynamics
-OpenZone Dynamics Engine.
-
-%description -n libozdynamics-devel
-This package contains doxygen-generated documentation, header files and
-pkg-config configuration needed for development using OpenZone Dynamics Engine.
+This package contains header files and doxygen-generated documentation for
+OpenZone Core and Dynamics libraries.
 
 %description client
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -96,7 +78,7 @@ concepts and algorithms used in the engine.
 %setup -q -b 1
 
 %build
-rm -rf build && mkdir build && cd build
+cd build
 
 cmake \
   -D CMAKE_BUILD_TYPE="Release" \
@@ -129,30 +111,22 @@ fi
 
 %files -n liboz
 %defattr(-, root, root)
-%{_libdir}/liboz.so*
-%doc src/oz/COPYING
+%{_libdir}/libozCore.so*
+%{_libdir}/libozDynamics.so*
+%doc src/ozCore/COPYING
 
 %files -n liboz-devel
 %defattr(-, root, root)
-%{_includedir}/oz
-%doc src/oz/COPYING doc/doxygen.liboz/html
-
-%files -n libozdynamics
-%defattr(-, root, root)
-%{_libdir}/libozdynamics.so*
-%doc src/ozdynamics/COPYING
-
-%files -n libozdynamics-devel
-%defattr(-, root, root)
-%{_includedir}/ozdynamics
-%doc src/ozdynamics/COPYING doc/doxygen.libozdynamics/html
+%{_includedir}/ozCore
+%{_includedir}/ozDynamics
+%doc src/ozCore/COPYING doc/doxygen.liboz/html
 
 %files client
 %defattr(-, root, root)
 %{_bindir}/*
 %{_datadir}/applications
 %{_datadir}/pixmaps
-%doc AUTHORS COPYING README.md ChangeLog.md doc/*.html
+%doc AUTHORS COPYING README.md ChangeLog.md doc/*.html doc/licences
 
 %files data
 %defattr(-, root, root)

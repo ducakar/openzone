@@ -1,4 +1,5 @@
 add_library( nirvana STATIC
+#BEGIN SOURCES
   common.hh
   Device.hh
   luaapi.hh
@@ -13,5 +14,7 @@ add_library( nirvana STATIC
   Memo.cc
   Mind.cc
   Nirvana.cc
-  Task.cc )
+  Task.cc
+#END SOURCES
+)
 use_pch( nirvana pch )

@@ -23,7 +23,7 @@
  * Generate packages.ozManifest required by NaCl port.
  */
 
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 
 #include <cstdlib>
 

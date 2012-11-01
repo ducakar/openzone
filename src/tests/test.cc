@@ -21,8 +21,8 @@
  * @file tests/test.cc
  */
 
-#include <oz/oz.hh>
-#include <ozdynamics/ozdynamics.hh>
+#include <ozCore/ozCore.hh>
+#include <ozDynamics/ozDynamics.hh>
 
 #include <physfs.h>
 

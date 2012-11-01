@@ -21,7 +21,7 @@
  * @file tests/foreach.cc
  */
 
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 
 #include <cstdio>
 

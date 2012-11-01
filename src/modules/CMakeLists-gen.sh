@@ -1,7 +1,6 @@
 #!/bin/sh
 
-cat << EOF > CMakeLists.txt
-add_library( modules STATIC
-  `echo *.{hh,cc} */*.{hh,cc} | sed 's| |\n  |g'` )
-use_pch( modules pch )
-EOF
+sed \
+'/#BEGIN SOURCES/,/#END SOURCES/ c\#BEGIN SOURCES\n'"\
+  `echo *.{hh,cc} */*.{hh,cc} | sed 's| |\\\\n  |g'`\
+"'\n#END SOURCES' -i CMakeLists.txt

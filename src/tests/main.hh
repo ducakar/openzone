@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 
 #ifdef __native_client__
 

@@ -19,7 +19,7 @@
 
 #include "BuildInfo.hh"
 
-#include "oz/oz.hh"
+#include "ozCore/ozCore.hh"
 
 namespace oz
 {

@@ -1,4 +1,5 @@
 add_library( builder STATIC
+#BEGIN SOURCES
   BSP.hh
   Builder.hh
   Caelum.hh
@@ -26,9 +27,12 @@ add_library( builder STATIC
   MD3.cc
   OBJ.cc
   Terra.cc
-  UI.cc )
+  UI.cc
+#END SOURCES
+)
 use_pch( builder pch )
 target_link_libraries( builder ${FREEIMAGE_LIBRARY} )
+
 if( OZ_NONFREE )
   target_link_libraries( builder ${SQUISH_LIBRARY} )
 endif()

@@ -21,7 +21,7 @@
  * @file tests/nacl.cc
  */
 
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 #include "main.hh"
 
 #include <ppapi/cpp/fullscreen.h>

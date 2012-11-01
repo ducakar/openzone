@@ -28,31 +28,31 @@ else()
   use_pch( openzone pch )
   target_link_libraries( openzone client modules nirvana matrix common build_info )
 
-  install( TARGETS openzone RUNTIME DESTINATION bin${suffix} COMPONENT client )
+  install( TARGETS openzone RUNTIME DESTINATION bin${suffix} )
 
   add_executable( ozBuild ozBuild.cc )
   use_pch( ozBuild pch )
   target_link_libraries( ozBuild builder client modules nirvana matrix common )
 
-  install( TARGETS ozBuild RUNTIME DESTINATION bin${suffix} COMPONENT client )
+  install( TARGETS ozBuild RUNTIME DESTINATION bin${suffix} )
 
   add_executable( ozGettext ozGettext.cc )
-  target_link_libraries( ozGettext oz )
+  target_link_libraries( ozGettext ozCore )
 
-  install( TARGETS ozGettext RUNTIME DESTINATION bin${suffix} COMPONENT client )
+  install( TARGETS ozGettext RUNTIME DESTINATION bin${suffix} )
 
   add_executable( ozManifest ozManifest.cc )
-  target_link_libraries( ozManifest oz )
+  target_link_libraries( ozManifest ozCore )
 
-  install( TARGETS ozManifest RUNTIME DESTINATION bin${suffix} COMPONENT client )
+  install( TARGETS ozManifest RUNTIME DESTINATION bin${suffix} )
 
   install( DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications
                      ${CMAKE_SOURCE_DIR}/share/pixmaps
-           DESTINATION share COMPONENT client )
+           DESTINATION share )
 
   install( FILES ${CMAKE_SOURCE_DIR}/AUTHORS
                  ${CMAKE_SOURCE_DIR}/COPYING
                  ${CMAKE_SOURCE_DIR}/README.md
-           DESTINATION share/doc/openzone-${OZ_VERSION} COMPONENT client )
+           DESTINATION share/doc/openzone-${OZ_VERSION} )
 
 endif()

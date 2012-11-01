@@ -24,7 +24,7 @@
  * @file unittest/unittest.hh
  */
 
-#include <oz/oz.hh>
+#include <ozCore/ozCore.hh>
 
 #ifdef __native_client__
 # include <ppapi/cpp/module.h>

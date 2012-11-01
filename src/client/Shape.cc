@@ -28,7 +28,7 @@
 #include <client/Context.hh>
 #include <client/OpenGL.hh>
 
-#include <ozdynamics/ozdynamics.hh>
+#include <ozDynamics/ozDynamics.hh>
 
 namespace oz
 {

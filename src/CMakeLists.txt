@@ -1,12 +1,11 @@
-configure_file( configuration.hh.in configuration.hh )
+configure_file( config.hh.in config.hh )
 configure_file( BuildInfo.cc.in BuildInfo.cc )
 
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/oz )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( . )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_subdirectory( oz )
-add_subdirectory( ozdynamics )
+add_subdirectory( ozCore )
+add_subdirectory( ozDynamics )
 add_subdirectory( unittest )
 
 add_pch( pch stable.hh stable.cc )

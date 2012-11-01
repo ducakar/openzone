@@ -25,8 +25,9 @@
 
 #pragma once
 
-#include <oz/oz.hh>
-#include <configuration.hh>
+#include <ozCore/ozCore.hh>
+#include <ozDynamics/collision/Bounds.hh>
+#include <config.hh>
 
 #ifdef _WIN32
 # include <windows.h>

@@ -724,7 +724,7 @@ Render render;
  * ozDynamics test
  */
 
-#include <ozdynamics/ozdynamics.hh>
+#include <ozDynamics/ozDynamics.hh>
 
 namespace oz
 {
