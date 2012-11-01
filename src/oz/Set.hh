@@ -72,25 +72,17 @@ class Set
     int   size;  ///< Capacity, number of elements in storage.
 
     /**
-     * Double capacity if there is not enough space to add another element.
-     */
-    void ensureCapacity()
-    {
-      if( size == count ) {
-        size = size == 0 ? GRANULARITY : 2 * size;
-        data = aReallocate<Elem>( data, count, size );
-      }
-    }
-
-    /**
-     * Enlarge capacity to the smallest multiple of `GRANULARITY` able to hold the requested number
-     * of elements.
+     * Increase capacity to be able to hold the requested number of elements.
+     *
+     * Capacity is doubled, if it doesn't suffice, it is set to the least multiple of `GRANULARITY`
+     * able to hold the requested number of elements.
      */
     void ensureCapacity( int desiredSize )
     {
       if( size < desiredSize ) {
-        size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-        data = aReallocate<Elem>( data, count, size );
+        size *= 2;
+        size  = size < desiredSize ? ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY : size;
+        data  = aReallocate<Elem>( data, count, size );
       }
     }
 
@@ -409,7 +401,7 @@ class Set
     {
       hard_assert( uint( i ) <= uint( count ) );
 
-      ensureCapacity();
+      ensureCapacity( count + 1 );
 
       aMoveBackward<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( elem );
@@ -455,7 +447,7 @@ class Set
     }
 
     /**
-     * Resize the set.
+     * Resize the set to the specified number of elements.
      */
     void resize( int newCount )
     {

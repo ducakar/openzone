@@ -2,56 +2,6 @@ configure_file( ozconfig.hh.in ozconfig.hh )
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-set( headers
-  ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh
-  AABB.hh
-  Alloc.hh
-  Array.hh
-  arrays.hh
-  Bitset.hh
-  Bounds.hh
-  Buffer.hh
-  BufferStream.hh
-  Chain.hh
-  clearmacros.hh
-  common.hh
-  DArray.hh
-  DChain.hh
-  Endian.hh
-  File.hh
-  HashMap.hh
-  HashSet.hh
-  InputStream.hh
-  iterables.hh
-  JSON.hh
-  List.hh
-  Log.hh
-  Map.hh
-  Mat33.hh
-  Mat44.hh
-  Math.hh
-  Mutex.hh
-  OutputStream.hh
-  oz.hh
-  Pair.hh
-  PFile.hh
-  Plane.hh
-  Point.hh
-  Pool.hh
-  Quat.hh
-  SBitset.hh
-  Semaphore.hh
-  Set.hh
-  simd.hh
-  SList.hh
-  SpinLock.hh
-  StackTrace.hh
-  String.hh
-  System.hh
-  Thread.hh
-  Time.hh
-  Vec3.hh
-  Vec4.hh )
 add_library( oz
   AABB.hh
   Alloc.hh
@@ -122,10 +72,7 @@ add_library( oz
   Time.cc
   Vec3.cc
   Vec4.cc )
-set_target_properties( oz PROPERTIES
-                       PUBLIC_HEADER "${headers}"
-                       VERSION ${OZ_VERSION}
-                       SOVERSION 0 )
+set_target_properties( oz PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
 if( ANDROID )
   target_link_libraries( oz ${PLATFORM_STL_LIBRARY}
@@ -151,6 +98,10 @@ else()
 endif()
 
 install( TARGETS oz
-         RUNTIME DESTINATION bin
-         LIBRARY ARCHIVE DESTINATION lib
-         PUBLIC_HEADER DESTINATION include/oz )
+         RUNTIME DESTINATION bin COMPONENT liboz
+         LIBRARY DESTINATION lib COMPONENT liboz
+         ARCHIVE DESTINATION lib COMPONENT liboz )
+install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include COMPONENT liboz
+         FILES_MATCHING PATTERN *.hh )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh DESTINATION include/oz COMPONENT liboz )
+install( FILES COPYING DESTINATION share/doc/liboz-${OZ_VERSION} COMPONENT liboz )

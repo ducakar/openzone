@@ -21,51 +21,17 @@
  */
 
 /**
- * @file ozdynamics/collision/Object.hh
- *
- * Object class.
+ * @file ozdynamics/collision/Body.hh
  */
 
-#pragma once
-
-#include "Shape.hh"
+#include "Body.hh"
 
 namespace oz
 {
 
-/**
- * Collision object.
- */
-class Object
-{
-  public:
+Pool<Body> Body::pool;
 
-    static Pool<Object> pool; ///< Memory pool.
-
-    Object* prev[3];          ///< Previous objects in linked lists used in spatial structures.
-    Object* next[3];          ///< Next objects in linked lists used in spatial structures.
-
-    Bounds  bb;               ///< Cached axis-aligned bounding box in absolute coordinates.
-
-    Point   pos;              ///< Position.
-    Quat    rot;              ///< Rotation.
-    Mat33   rotMat;           ///< Cached rotation matrix.
-
-    int     flags;            ///< Flags.
-    int     mask;             ///< Collision bitmask.
-    Shape*  shape;            ///< Collision shape.
-
-  public:
-
-    /**
-     * Create uninitialised instance.
-     */
-    explicit Object() :
-      mask( ~0 ), shape( nullptr )
-    {}
-
-    OZ_STATIC_POOL_ALLOC( pool )
-
-};
+Body::~Body()
+{}
 
 }

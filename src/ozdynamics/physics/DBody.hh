@@ -21,55 +21,37 @@
  */
 
 /**
- * @file ozdynamics/collision/Shape.hh
+ * @file ozdynamics/physics/Body.hh
  *
- * Shape class.
+ * Body class.
  */
 
 #pragma once
 
-#include <oz/oz.hh>
+#include "../collision/Body.hh"
 
 namespace oz
 {
 
-class Shape
+/**
+ * Dynamic body.
+ */
+class DBody : public Body
 {
   public:
 
-    /// Margin used for calculation of axis-aligned bounding boxes.
-    static constexpr float MARGIN = 0.01f;
+    static Pool<DBody> pool; ///< Memory pool.
 
-    /**
-     * Shape types.
-     */
-    enum Type
-    {
-      COMPOUND,
-      BOX,
-      CAPSULE,
-      MESH,
-      MAX
-    };
+    Vec3  mass;              ///< Mass.
+    Vec3  lift;              ///< Lift.
+    Mat33 inertia;           ///< Inertia.
+
+    Vec3  velocity;          ///< Velocity.
+    Vec3  rotVelocity;       ///< Rotational velocity.
 
   public:
 
-    Type type;   ///< Shape type.
-    int  nUsers; ///< Reference counter.
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Shape( Type type_ ) :
-      type( type_ ), nUsers( 0 )
-    {}
-
-    virtual ~Shape();
-
-    /**
-     * Calculate axis-aligned bounding box for the shape in absolute coordinates.
-     */
-    virtual Bounds getBounds( const Point& pos, const Mat33& rot ) const = 0;
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

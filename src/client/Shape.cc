@@ -28,6 +28,8 @@
 #include <client/Context.hh>
 #include <client/OpenGL.hh>
 
+#include <ozdynamics/ozdynamics.hh>
+
 namespace oz
 {
 namespace client
@@ -292,6 +294,46 @@ void Shape::wireBox( const AABB& bb )
   tf.apply();
 
   glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+}
+
+void Shape::object( const Point& pos, const Mat33& rot, const void* shape_ )
+{
+  const oz::Shape* shape = static_cast<const oz::Shape*>( shape_ );
+
+  if( shape->type == oz::Shape::BOX ) {
+    const Box* box = static_cast<const Box*>( shape );
+
+    tf.model = Mat44::translation( pos - Point::ORIGIN );
+    tf.model = tf.model * Mat44( rot );
+    tf.model.scale( box->ext );
+    tf.apply();
+
+    colour( 0.5f, 0.5f, 0.5f, 1.0f );
+    glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 0 );
+    colour( 1.0f, 0.0f, 0.0f, 1.0f );
+    glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+  }
+  else if( shape->type == oz::Shape::CAPSULE ) {
+    const Capsule* capsule = static_cast<const Capsule*>( shape );
+
+    tf.model = Mat44::translation( pos - Point::ORIGIN );
+    tf.model = tf.model * Mat44( rot );
+    tf.model.scale( Vec3( capsule->radius, capsule->radius, capsule->ext + capsule->radius ) );
+    tf.apply();
+
+    colour( 0.5f, 0.5f, 0.5f, 1.0f );
+    glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 0 );
+    colour( 1.0f, 0.0f, 0.0f, 1.0f );
+    glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+
+  }
+  else if( shape->type == oz::Shape::COMPOUND ) {
+    const Compound* compound = static_cast<const Compound*>( shape );
+
+    foreach( child, compound->citer() ) {
+      object( pos + rot * child->off, rot * child->rot, child->shape );
+    }
+  }
 }
 
 void Shape::init()

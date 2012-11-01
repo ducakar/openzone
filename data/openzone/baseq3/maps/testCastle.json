@@ -22,9 +22,10 @@
     {
       "title":          "crusher",
       "type":           "CRUSHING_BLOCK",
+      "target":         0,
       "move":           [ 0, 7.68, 0 ],
       "slideTime":      2.0,
-      "timeout":        3.0,
+      "// timeout":        3.0,
       "openSound":      "free/rumble",
       "closeSound":     "free/rumble",
       "frictSound":     "kaiser_fx/hum6"
@@ -34,7 +35,7 @@
       "type":           "IGNORING_BLOCK",
       "move":           [ 0, 7.68, 0 ],
       "slideTime":      2.0,
-      "timeout":        4.0,
+      "// timeout":        4.0,
       "openSound":      "free/rumble",
       "closeSound":     "free/rumble",
       "frictSound":     "kaiser_fx/hum6",
@@ -48,34 +49,34 @@
     {
       "title":          "auto door",
       "type":           "AUTO_DOOR",
+      "target":         2,
       "move":           [ 2.55, 0, 0 ],
       "slideTime":      2.0,
       "timeout":        2.0,
       "openSound":      "free/itemback",
       "closeSound":     "free/itemback",
-      "frictSound":     "",
-      "target":         2
+      "frictSound":     ""
     },
     {
       "title":          "manual door",
       "type":           "MANUAL_DOOR",
+      "target":         3,
+      "key":            1,
       "move":           [ 5, 0, 0 ],
       "slideTime":      2.0,
       "openSound":      "free/itemback",
       "closeSound":     "free/itemback",
-      "frictSound":     "",
-      "target":         3,
-      "key":            1
+      "frictSound":     ""
     },
     {
       "title":          "elevator",
       "type":           "ELEVATOR",
+      "target":         4,
       "move":           [ 0, 0, 3 ],
       "slideTime":      2.5,
       "openSound":      "",
       "closeSound":     "",
-      "frictSound":     "kaiser_fx/hum6",
-      "target":         4
+      "frictSound":     "kaiser_fx/hum6"
     },
     {
       "title":          "switch",

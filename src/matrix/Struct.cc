@@ -143,8 +143,8 @@ void Entity::manualDoorHandler()
       offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
-        state = OPENED;
-        time = 0.0f;
+        state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -160,11 +160,11 @@ void Entity::manualDoorHandler()
 
         if( ratio == 1.0f ) {
           state = OPENED;
-          time = 0.0f;
+          time  = 0.0f;
         }
         else {
-          state = OPENING;
-          time = 0.0f;
+          state    = OPENING;
+          time     = 0.0f;
           velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
@@ -174,8 +174,8 @@ void Entity::manualDoorHandler()
       offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
-        state = CLOSED;
-        time = 0.0f;
+        state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -194,8 +194,8 @@ void Entity::autoDoorHandler()
       }
 
       if( collider.overlaps( this, clazz->margin ) ) {
-        state = OPENING;
-        time = 0.0f;
+        state    = OPENING;
+        time     = 0.0f;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
@@ -205,20 +205,19 @@ void Entity::autoDoorHandler()
       offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
-        state = OPENED;
-        time = 0.0f;
+        state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      if( time >= clazz->timeout ) {
-        time = 0.0f;
-
+      if( time > clazz->timeout ) {
         offset = Vec3::ZERO;
+        time   = 0.0f;
 
         if( !collider.overlaps( this, clazz->margin ) ) {
-          state = CLOSING;
+          state    = CLOSING;
           velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
 
@@ -234,11 +233,11 @@ void Entity::autoDoorHandler()
 
         if( ratio == 1.0f ) {
           state = OPENED;
-          time = 0.0f;
+          time  = 0.0f;
         }
         else {
-          state = OPENING;
-          time = 0.0f;
+          state    = OPENING;
+          time     = 0.0f;
           velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
@@ -248,8 +247,8 @@ void Entity::autoDoorHandler()
       offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
-        state = CLOSED;
-        time = 0.0f;
+        state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -263,9 +262,9 @@ void Entity::ignoringBlockHandler()
 
   switch( state ) {
     case CLOSED: {
-      if( time >= clazz->timeout ) {
-        state = OPENING;
-        time = 0.0f;
+      if( time > clazz->timeout ) {
+        state    = OPENING;
+        time     = 0.0f;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
@@ -275,16 +274,16 @@ void Entity::ignoringBlockHandler()
       offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
-        state = OPENED;
-        time = 0.0f;
+        state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      if( time >= clazz->timeout ) {
-        state = CLOSING;
-        time = 0.0f;
+      if( time > clazz->timeout ) {
+        state    = CLOSING;
+        time     = 0.0f;
         velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
@@ -294,8 +293,8 @@ void Entity::ignoringBlockHandler()
       offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
-        state = CLOSED;
-        time = 0.0f;
+        state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -309,9 +308,9 @@ void Entity::crushingBlockHandler()
 
   switch( state ) {
     case CLOSED: {
-      if( time >= clazz->timeout ) {
-        state = OPENING;
-        time = 0.0f;
+      if( time > clazz->timeout ) {
+        state    = OPENING;
+        time     = 0.0f;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
@@ -355,16 +354,16 @@ void Entity::crushingBlockHandler()
       }
 
       if( ratio == 1.0f ) {
-        state = OPENED;
-        time = 0.0f;
+        state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      if( time >= clazz->timeout ) {
-        state = CLOSING;
-        time = 0.0f;
+      if( time > clazz->timeout ) {
+        state    = CLOSING;
+        time     = 0.0f;
         velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
@@ -408,8 +407,8 @@ void Entity::crushingBlockHandler()
       }
 
       if( ratio == 0.0f ) {
-        state = CLOSED;
-        time = 0.0f;
+        state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -465,8 +464,8 @@ void Entity::elevatorHandler()
       }
 
       if( ratio == 1.0f ) {
-        state = OPENED;
-        time = 0.0f;
+        state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -514,8 +513,8 @@ void Entity::elevatorHandler()
       }
 
       if( ratio == 0.0f ) {
-        state = CLOSED;
-        time = 0.0f;
+        state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;

@@ -21,31 +21,35 @@
  */
 
 /**
- * @file ozdynamics/physics/Body.hh
- *
- * Body class.
+ * @file ozdynamics/collision/Space.hh
  */
 
-#pragma once
-
-#include "../collision/Object.hh"
+#include "Space.hh"
 
 namespace oz
 {
 
-/**
- * Rigid body.
- */
-class Body : public Object
+void Space::clear()
 {
-  public:
+  foreach( i, bodies.citer() ) {
+    Body* body = *i;
 
-    static Pool<Body> pool;
+    delete body->shape();
+    delete body;
+  }
 
-  public:
+  bodies.clear();
+}
 
-    OZ_STATIC_POOL_ALLOC( pool )
+void Space::deallocate()
+{
+  Compound::pool.free();
+  Box::pool.free();
+  Capsule::pool.free();
+  Mesh::pool.free();
+  Body::pool.free();
+}
 
-};
+Space space;
 
 }

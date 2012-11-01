@@ -247,11 +247,6 @@ add_subdirectory( doc )
 # Data files
 #
 
-# icons
-if( NOT OZ_STANDALONE )
-  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
-endif()
-
 # READMEs, launchers and libraries for standalone packages
 if( OZ_STANDALONE )
   file( GLOB readmes doc/*.html )
@@ -294,9 +289,9 @@ set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
 set( CPACK_TOPLEVEL_TAG "openzone" )
 set( CPACK_SYSTEM_NAME ${OZ_PLATFORM_NAME} )
 set( CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/COPYING )
-set( CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/doc/README.html )
+set( CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
-set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
+set( CPACK_STRIP_FILES ON )
 set( CPACK_PACKAGE_INSTALL_DIRECTORY "openzone" )
 set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "openzone" )
 
@@ -307,5 +302,3 @@ set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};"
      "ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
 set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
      "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
-
-include( CPack )

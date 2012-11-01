@@ -68,6 +68,7 @@ class Shape
     static void quad( float dimX, float dimY );
     static void box( const AABB& bb );
     static void wireBox( const AABB& bb );
+    static void object( const Point& pos, const Mat33& rot, const void* shape );
 
     void init();
     void free();

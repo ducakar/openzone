@@ -44,22 +44,48 @@ class Compound : public Shape
       Mat33  rot;
     };
 
+  private:
+
+    SList<Child, 16> children;  ///< Children.
+
   public:
 
     static Pool<Compound> pool; ///< Memory pool.
-
-    Child c[16];                ///< Children.
 
   public:
 
     OZ_ALWAYS_INLINE
     explicit Compound() :
       Shape( Shape::COMPOUND )
-    {
-      c[0].shape = nullptr;
-    }
+    {}
 
     ~Compound() override;
+
+    OZ_ALWAYS_INLINE
+    SList<Child, 16>::CIterator citer() const
+    {
+      return children.citer();
+    }
+
+    OZ_ALWAYS_INLINE
+    const Child* begin() const
+    {
+      return children.begin();
+    }
+
+    OZ_ALWAYS_INLINE
+    const Child* end() const
+    {
+      return children.end();
+    }
+
+    void add( Shape* shape, const Vec3& off, const Mat33& rot )
+    {
+      Child child = { shape, off, rot };
+
+      children.add( child );
+      ++shape->nUsers;
+    }
 
     Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
 

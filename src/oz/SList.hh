@@ -482,7 +482,7 @@ class SList
     }
 
     /**
-     * Resize the list.
+     * Resize the list to the specified number of elements.
      */
     void resize( int newCount )
     {

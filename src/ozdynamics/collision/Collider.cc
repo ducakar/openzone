@@ -31,12 +31,21 @@
 namespace oz
 {
 
-bool Collider::overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
-                               const Vec3& ext1, const Mat33& rot1,
-                               const Vec3& relPos, Result* result )
+Collider::OverlapFunc* const Collider::dispatchMatrix[Shape::MAX][Shape::MAX] = {
+  { Collider::boxBox, Collider::boxCapsule,     Collider::boxMesh,     Collider::boxCompound      },
+  { nullptr,          Collider::capsuleCapsule, Collider::capsuleMesh, Collider::capsuleCompound  },
+  { nullptr,          nullptr,                  Collider::meshMesh,    Collider::meshCompound     },
+  { nullptr,          nullptr,                  nullptr,               Collider::compoundCompound }
+};
+
+bool Collider::boxBox( const Mat33& rot0, const Shape* box0,
+                       const Mat33& rot1, const Shape* box1,
+                       const Vec3& relPos, Result* result )
 {
-  Mat33 c = ~rot0 * rot1;                                // rot1 = rot0 * c
-  Mat33 d = Mat33( abs( c.x ), abs( c.y ), abs( c.z ) ); // d = abs( c )
+  Vec3  ext0 = static_cast<const Box*>( box0 )->ext;
+  Vec3  ext1 = static_cast<const Box*>( box1 )->ext;
+  Mat33 c    = ~rot0 * rot1;                                // rot1 = rot0 * c
+  Mat33 d    = Mat33( abs( c.x ), abs( c.y ), abs( c.z ) ); // d = abs( c )
 
   // Separating axes for faces of `box0`.
   for( int j = 0; j < 3; ++j ) {
@@ -46,7 +55,7 @@ bool Collider::overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
     float depth = r0 + r1 - dist;
 
     if( depth >= 0.0f ) {
-      if( result != nullptr ) {
+      if( result != nullptr && result->depth < depth ) {
         result->axis  = rot0[j];
         result->depth = depth;
       }
@@ -62,7 +71,7 @@ bool Collider::overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
     float depth = r0 + r1 - dist;
 
     if( depth >= 0.0f ) {
-      if( result != nullptr ) {
+      if( result != nullptr && result->depth < depth ) {
         result->axis  = rot1[j];
         result->depth = depth;
       }
@@ -92,7 +101,7 @@ bool Collider::overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
       float depth = r0 + r1 - dist;
 
       if( depth >= 0.0f ) {
-        if( result != nullptr ) {
+        if( result != nullptr && result->depth < depth ) {
           result->axis  = rot0[i] ^ rot1[j];
           result->depth = depth;
         }
@@ -102,6 +111,25 @@ bool Collider::overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
   }
 
   return false;
+}
+
+bool Collider::overlaps( const Mat33& rot0, const Shape* shape0,
+                         const Mat33& rot1, const Shape* shape1,
+                         const Vec3& relPos, Result* result )
+{
+  Shape::Type type0 = shape0->type;
+  Shape::Type type1 = shape1->type;
+
+  if( result != nullptr ) {
+    result->depth = 0.0f;
+  }
+
+  if( type0 <= type1 ) {
+    return dispatchMatrix[type0][type1]( rot0, shape0, rot1, shape1, relPos, result );
+  }
+  else {
+    return dispatchMatrix[type1][type0]( rot1, shape1, rot0, shape0, relPos, result );
+  }
 }
 
 }

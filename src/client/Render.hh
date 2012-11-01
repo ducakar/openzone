@@ -102,6 +102,10 @@ class Render
 
   private:
 
+    void drawDyn();
+    void loadDyn();
+    void unloadDyn();
+
     void scheduleCell( int cellX, int cellY );
     void prepareDraw();
     void drawGeometry();

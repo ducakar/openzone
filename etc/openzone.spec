@@ -39,10 +39,6 @@ Requires:       libozde = %{version}, liboz-devel = %{version}
 %package client
 Summary:        Simple cross-platform FPS/RTS game engine
 
-%package tools
-Summary:        Tools for building game data for OpenZone engine
-Group:          Development/Tools
-
 %package data
 Summary:        OpenZone game data
 License:        Custom
@@ -89,10 +85,6 @@ simulated world.
 This package only includes engine. Game data packages must be installed
 separately.
 
-%description tools
-ozBase tool for building game data packages for OpenZone engine and some other
-miscellaneous tools.
-
 %description data
 Game data for OpenZone. Includes tutorial, testing world and cviček missions.
 
@@ -126,6 +118,7 @@ install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
 cd build
 
 make install DESTDIR="$RPM_BUILD_ROOT"
+rm -rf "$RPM_BUILD_ROOT"%{_defaultdocdir}
 
 if [[ %{_libdir} != /usr/lib ]]; then
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
@@ -137,36 +130,29 @@ fi
 %files -n liboz
 %defattr(-, root, root)
 %{_libdir}/liboz.so*
-%doc AUTHORS src/oz/COPYING
+%doc src/oz/COPYING
 
 %files -n liboz-devel
 %defattr(-, root, root)
 %{_includedir}/oz
-%doc AUTHORS src/oz/COPYING doc/doxygen.liboz/html
+%doc src/oz/COPYING doc/doxygen.liboz/html
 
 %files -n libozdynamics
 %defattr(-, root, root)
 %{_libdir}/libozdynamics.so*
-%doc AUTHORS src/ozdynamics/COPYING
+%doc src/ozdynamics/COPYING
 
 %files -n libozdynamics-devel
 %defattr(-, root, root)
 %{_includedir}/ozdynamics
-%doc AUTHORS src/ozdynamics/COPYING doc/doxygen.libozdynamics/html
+%doc src/ozdynamics/COPYING doc/doxygen.libozdynamics/html
 
 %files client
 %defattr(-, root, root)
-%{_bindir}/openzone
+%{_bindir}/*
 %{_datadir}/applications
 %{_datadir}/pixmaps
 %doc AUTHORS COPYING README.md ChangeLog.md doc/*.html
-
-%files tools
-%defattr(-, root, root)
-%{_bindir}/ozBuild
-%{_bindir}/ozGettext
-%{_bindir}/ozManifest
-%doc AUTHORS COPYING README.md ChangeLog.md
 
 %files data
 %defattr(-, root, root)

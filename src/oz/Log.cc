@@ -238,14 +238,16 @@ void Log::println()
 
 void Log::printTrace( const StackTrace& st )
 {
+  const char* threadName = st.threadName == nullptr ? "?" : st.threadName;
+
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( "  thread: ", stdout );
-    fputs( st.threadName, stdout );
+    fputs( threadName, stdout );
     fputs( "\n  stack trace:\n", stdout );
   }
   if( file != nullptr ) {
     fputs( "  thread: ", file );
-    fputs( st.threadName, file );
+    fputs( threadName, file );
     fputs( "\n  stack trace:\n", file );
   }
 

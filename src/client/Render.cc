@@ -337,6 +337,8 @@ void Render::drawGeometry()
     }
   }
 
+  drawDyn();
+
   shape.unbind();
 
   glDisable( GL_DEPTH_TEST );
@@ -520,6 +522,8 @@ void Render::load()
   uiMicros          = 0;
   swapMicros        = 0;
 
+  loadDyn();
+
   Log::printEnd( " OK" );
 }
 
@@ -530,6 +534,8 @@ void Render::unload()
 #endif
 
   Log::print( "Unloading Render ..." );
+
+  unloadDyn();
 
   glFinish();
 
@@ -710,6 +716,54 @@ void Render::free()
 }
 
 Render render;
+
+}
+}
+
+/*
+ * ozDynamics test
+ */
+
+#include <ozdynamics/ozdynamics.hh>
+
+namespace oz
+{
+namespace client
+{
+
+void Render::drawDyn()
+{
+  foreach( i, space.bodies.citer() ) {
+    Body* body = *i;
+
+    body->rot   *= Quat::rotationAxis( Vec3( 1, 1, 1 ), 0.005f );
+    body->rot    = ~body->rot;
+    body->rotMat = Mat33::rotation( body->rot );
+
+    shape.colour( 0.0f, 0.0f, 1.0f, 1.0f );
+    shape.wireBox( body->getBounds().toAABB() );
+    shape.object( body->pos, body->rotMat, body->shape() );
+  }
+}
+
+void Render::loadDyn()
+{
+  Compound* c = new Compound();
+  c->add( new Box( Vec3( 1, 1, 2 ) ), Vec3( 1, 0, 0 ), Mat33::ID );
+  c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
+
+  Body* body = new Body();
+  body->pos = Point( 140, 0, 80 );
+  body->rot = Quat::ID;
+  body->setShape( c );
+  space.bodies.add( body );
+}
+
+void Render::unloadDyn()
+{
+  space.clear();
+  Space::deallocate();
+}
 
 }
 }

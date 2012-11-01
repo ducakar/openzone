@@ -348,7 +348,7 @@ class DArray
     }
 
     /**
-     * Resize the array.
+     * Resize the array to the specified number of elements.
      */
     void resize( int newCount )
     {

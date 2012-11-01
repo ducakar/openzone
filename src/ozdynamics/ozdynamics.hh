@@ -29,11 +29,12 @@
 #pragma once
 
 #include "collision/Shape.hh"
-#include "collision/Compound.hh"
 #include "collision/Box.hh"
 #include "collision/Capsule.hh"
 #include "collision/Mesh.hh"
-#include "collision/Object.hh"
+#include "collision/Compound.hh"
+#include "collision/Body.hh"
+#include "collision/Space.hh"
 #include "collision/Collider.hh"
 
-#include "physics/Body.hh"
+#include "physics/DBody.hh"

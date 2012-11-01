@@ -32,16 +32,18 @@ namespace oz
 Pool<Compound> Compound::pool;
 
 Compound::~Compound()
-{}
+{
+  foreach( child, children.citer() ) {
+    delete child->shape;
+  }
+}
 
 Bounds Compound::getBounds( const Point& pos, const Mat33& rot ) const
 {
-  hard_assert( c[0].shape != nullptr );
+  Bounds b = children[0].shape->getBounds( pos + rot * children[0].off, rot * children[0].rot );
 
-  Bounds b = c[0].shape->getBounds( pos + c[0].off, rot * c[0].rot );
-
-  for( int i = 1; c[i].shape != nullptr; ++i ) {
-    b |= c[i].shape->getBounds( pos + c[i].off, rot * c[i].rot );
+  foreach( child, children.citer() ) {
+    b |= child->shape->getBounds( pos + rot * child->off, rot * child->rot );
   }
   return b;
 }

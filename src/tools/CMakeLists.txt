@@ -1,9 +1,3 @@
-if( OZ_STANDALONE )
-  set( suffix "/${OZ_PLATFORM_NAME}" )
-else()
-  set( suffix "" )
-endif()
-
 if( ANDROID )
 
   add_library( openzone SHARED openzone.cc )
@@ -22,30 +16,43 @@ elseif( NACL )
   target_link_libraries( openzone client modules nirvana matrix common build_info )
   set_target_properties( openzone PROPERTIES OUTPUT_NAME openzone.${CMAKE_SYSTEM_PROCESSOR}.nexe )
 
-  install( TARGETS openzone RUNTIME DESTINATION bin${suffix} )
-
 else()
+
+  if( OZ_STANDALONE )
+    set( suffix "/${OZ_PLATFORM_NAME}" )
+  else()
+    set( suffix "" )
+  endif()
 
   add_executable( openzone openzone.cc )
   use_pch( openzone pch )
   target_link_libraries( openzone client modules nirvana matrix common build_info )
 
-  install( TARGETS openzone RUNTIME DESTINATION bin${suffix} )
+  install( TARGETS openzone RUNTIME DESTINATION bin${suffix} COMPONENT client )
 
   add_executable( ozBuild ozBuild.cc )
   use_pch( ozBuild pch )
   target_link_libraries( ozBuild builder client modules nirvana matrix common )
 
-  install( TARGETS ozBuild RUNTIME DESTINATION bin${suffix} )
+  install( TARGETS ozBuild RUNTIME DESTINATION bin${suffix} COMPONENT client )
 
   add_executable( ozGettext ozGettext.cc )
   target_link_libraries( ozGettext oz )
 
-  install( TARGETS ozGettext RUNTIME DESTINATION bin${suffix} )
+  install( TARGETS ozGettext RUNTIME DESTINATION bin${suffix} COMPONENT client )
 
   add_executable( ozManifest ozManifest.cc )
   target_link_libraries( ozManifest oz )
 
-  install( TARGETS ozManifest RUNTIME DESTINATION bin${suffix} )
+  install( TARGETS ozManifest RUNTIME DESTINATION bin${suffix} COMPONENT client )
+
+  install( DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications
+                     ${CMAKE_SOURCE_DIR}/share/pixmaps
+           DESTINATION share COMPONENT client )
+
+  install( FILES ${CMAKE_SOURCE_DIR}/AUTHORS
+                 ${CMAKE_SOURCE_DIR}/COPYING
+                 ${CMAKE_SOURCE_DIR}/README.md
+           DESTINATION share/doc/openzone-${OZ_VERSION} COMPONENT client )
 
 endif()

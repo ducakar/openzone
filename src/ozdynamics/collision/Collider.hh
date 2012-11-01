@@ -45,16 +45,59 @@ class Collider
 
   private:
 
-    typedef bool ( OverlapFunc )( const Mat44& tf0, const Shape* shape0,
-                                  const Mat44& tf1, const Shape* shape2 );
+    typedef bool OverlapFunc( const Mat33& rot0, const Shape* shape0,
+                              const Mat33& rot1, const Shape* shape1,
+                              const Vec3& relPos, Result* result );
+
+    static OverlapFunc* const dispatchMatrix[Shape::MAX][Shape::MAX];
 
   private:
 
-    static OverlapFunc* const dispatcher[Shape::MAX][Shape::MAX];
+    static bool boxBox( const Mat33& rot0, const Shape* box0,
+                        const Mat33& rot1, const Shape* box1,
+                        const Vec3& relPos, Result* result );
 
-    static bool overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
-                                const Vec3& ext1, const Mat33& rot1,
+    static bool boxCapsule( const Mat33& rot0, const Shape* box,
+                            const Mat33& rot1, const Shape* capsule,
+                            const Vec3& relPos, Result* result );
+
+    static bool boxMesh( const Mat33& rot0, const Shape* box,
+                         const Mat33& rot1, const Shape* mesh,
+                         const Vec3& relPos, Result* result );
+
+    static bool boxCompound( const Mat33& rot0, const Shape* box,
+                             const Mat33& rot1, const Shape* compound,
+                             const Vec3& relPos, Result* result );
+
+    static bool capsuleCapsule( const Mat33& rot0, const Shape* capsule0,
+                                const Mat33& rot1, const Shape* capsule1,
                                 const Vec3& relPos, Result* result );
+
+    static bool capsuleMesh( const Mat33& rot0, const Shape* capsule,
+                             const Mat33& rot1, const Shape* mesh,
+                             const Vec3& relPos, Result* result );
+
+    static bool capsuleCompound( const Mat33& rot0, const Shape* capsule,
+                                 const Mat33& rot1, const Shape* compound,
+                                 const Vec3& relPos, Result* result );
+
+    static bool meshMesh( const Mat33& rot0, const Shape* mesh0,
+                          const Mat33& rot1, const Shape* mesh1,
+                          const Vec3& relPos, Result* result );
+
+    static bool meshCompound( const Mat33& rot0, const Shape* mesh,
+                              const Mat33& rot1, const Shape* compound,
+                              const Vec3& relPos, Result* result );
+
+    static bool compoundCompound( const Mat33& rot0, const Shape* compound0,
+                                  const Mat33& rot1, const Shape* compound1,
+                                  const Vec3& relPos, Result* result );
+
+  public:
+
+    static bool overlaps( const Mat33& rot0, const Shape* shape0,
+                          const Mat33& rot1, const Shape* shape1,
+                          const Vec3& relPos, Result* result = nullptr );
 
 };
 

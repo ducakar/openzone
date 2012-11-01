@@ -5,15 +5,9 @@ configure_file( ozconfig.hh.in ozconfig.hh )
 
 include_directories( \${CMAKE_CURRENT_BINARY_DIR} )
 
-set( headers
-  \${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh
-  `echo *.hh | sed 's| |\n  |g'` )
 add_library( oz
   `echo *.{hh,cc} | sed 's| |\n  |g'` )
-set_target_properties( oz PROPERTIES
-                       PUBLIC_HEADER "\${headers}"
-                       VERSION \${OZ_VERSION}
-                       SOVERSION 0 )
+set_target_properties( oz PROPERTIES VERSION \${OZ_VERSION} SOVERSION 0 )
 
 if( ANDROID )
   target_link_libraries( oz \${PLATFORM_STL_LIBRARY}
@@ -39,7 +33,11 @@ else()
 endif()
 
 install( TARGETS oz
-         RUNTIME DESTINATION bin
-         LIBRARY ARCHIVE DESTINATION lib
-         PUBLIC_HEADER DESTINATION include/oz )
+         RUNTIME DESTINATION bin COMPONENT liboz
+         LIBRARY DESTINATION lib COMPONENT liboz
+         ARCHIVE DESTINATION lib COMPONENT liboz )
+install( DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include COMPONENT liboz
+         FILES_MATCHING PATTERN *.hh )
+install( FILES \${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh DESTINATION include/oz COMPONENT liboz )
+install( FILES COPYING DESTINATION share/doc/liboz-\${OZ_VERSION} COMPONENT liboz )
 EOF

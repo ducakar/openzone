@@ -273,7 +273,7 @@ void BSP::load()
       }
 
       models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );
-      models[i].timeout    = entityConfig["timeout"].get( 6.0f );
+      models[i].timeout    = entityConfig["timeout"].get( Math::INF );
       models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get( 1.0f );
 
       models[i].target     = entityConfig["target"].get( -1 );

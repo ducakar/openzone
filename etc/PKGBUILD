@@ -106,7 +106,7 @@ package_openzone()
 
   ( cd build && make install DESTDIR="$pkgdir" )
 
-  rm -rf "$pkgdir/usr/"{include,lib}
+  rm -rf "$pkgdir/usr/"{lib,include,share/doc}
 
   install -dm755 "$pkgdir/usr/share/doc/openzone"
   install -m644 AUTHORS README.md ChangeLog.md doc/*.html "$pkgdir/usr/share/doc/openzone"

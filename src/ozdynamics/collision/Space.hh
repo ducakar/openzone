@@ -28,7 +28,11 @@
 
 #pragma once
 
-#include "Object.hh"
+#include "Box.hh"
+#include "Capsule.hh"
+#include "Mesh.hh"
+#include "Compound.hh"
+#include "Body.hh"
 
 namespace oz
 {
@@ -37,10 +41,18 @@ class Space
 {
   public:
 
-    static const int MAX_OBJECTS = 1 << 16;
+    static const int MAX_SHAPES = 1 << 8;
+    static const int MAX_BODIES = 1 << 16;
 
-    Object* objs[MAX_OBJECTS];
+    SList<Body*, MAX_BODIES> bodies;
+
+  public:
+
+    void clear();
+    static void deallocate();
 
 };
+
+extern Space space;
 
 }
