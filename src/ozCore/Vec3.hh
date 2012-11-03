@@ -435,7 +435,7 @@ class Vec3 : public VectorBase3
 };
 
 /**
- * Per-component absolute values of a vector.
+ * Per-component absolute value of a vector.
  */
 OZ_ALWAYS_INLINE
 inline Vec3 abs( const Vec3& a )
@@ -448,7 +448,7 @@ inline Vec3 abs( const Vec3& a )
 }
 
 /**
- * Per-component minimums of two vectors.
+ * Per-component minimum of two vectors.
  */
 OZ_ALWAYS_INLINE
 inline Vec3 min( const Vec3& a, const Vec3& b )
@@ -461,7 +461,7 @@ inline Vec3 min( const Vec3& a, const Vec3& b )
 }
 
 /**
- * Per-component maximums of two vectors.
+ * Per-component maximum of two vectors.
  */
 OZ_ALWAYS_INLINE
 inline Vec3 max( const Vec3& a, const Vec3& b )
@@ -474,7 +474,7 @@ inline Vec3 max( const Vec3& a, const Vec3& b )
 }
 
 /**
- * Per-component clamped values of vectors.
+ * Per-component clamped value of vectors.
  */
 OZ_ALWAYS_INLINE
 inline Vec3 clamp( const Vec3& c, const Vec3& a, const Vec3& b )

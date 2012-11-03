@@ -31,7 +31,7 @@ build()
 
 package_liboz()
 {
-  pkgdesc='OpenZone Core Library'
+  pkgdesc='OpenZone Core and Dynamics libraries'
   license=('ZLIB')
   depends=('alsa-lib' 'gcc-libs' 'physfs')
 
@@ -46,7 +46,7 @@ package_liboz()
 
 package_liboz-doc()
 {
-  pkgdesc='OpenZone Core Library documentation'
+  pkgdesc='Documentation for OpenZone Core and Dynamics libraries'
   license=('ZLIB')
   arch=('any')
   depends=('liboz')

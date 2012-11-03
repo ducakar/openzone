@@ -40,7 +40,7 @@ class Mesh : public Shape
 {
   public:
 
-    static Pool<Mesh> pool;
+    static Pool<Mesh> pool; ///< Memory pool.
 
   public:
 

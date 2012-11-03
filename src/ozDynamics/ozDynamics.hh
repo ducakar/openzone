@@ -29,6 +29,11 @@
 #pragma once
 
 /*
+ * OpenZone Core Library.
+ */
+#include <ozCore/ozCore.hh>
+
+/*
  * Bounding volumes.
  */
 #include "collision/AABB.hh"

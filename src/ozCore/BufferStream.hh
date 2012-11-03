@@ -79,7 +79,7 @@ class BufferStream
       streamBegin = size == 0 ? nullptr : new char[size];
       streamEnd   = streamBegin + size;
       streamPos   = streamBegin + length;
-      order = s.order;
+      order       = s.order;
 
       __builtin_memcpy( streamBegin, s.streamBegin, size_t( size ) );
     }
@@ -88,12 +88,13 @@ class BufferStream
      * Move constructor, moves buffer.
      */
     BufferStream( BufferStream&& s ) :
-      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ), order( s.order )
+      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ),
+      order( s.order )
     {
       s.streamPos   = nullptr;
       s.streamBegin = nullptr;
       s.streamEnd   = nullptr;
-      s.order = Endian::NATIVE;
+      s.order       = Endian::NATIVE;
     }
 
     /**
@@ -118,7 +119,8 @@ class BufferStream
       }
 
       streamPos = streamBegin + length;
-      order = s.order;
+      order     = s.order;
+
       __builtin_memcpy( streamBegin, s.streamBegin, size_t( size ) );
 
       return *this;
@@ -138,12 +140,12 @@ class BufferStream
       streamPos   = s.streamPos;
       streamBegin = s.streamBegin;
       streamEnd   = s.streamEnd;
-      order = s.order;
+      order       = s.order;
 
       s.streamPos   = nullptr;
       s.streamBegin = nullptr;
       s.streamEnd   = nullptr;
-      s.order = Endian::NATIVE;
+      s.order       = Endian::NATIVE;
 
       return *this;
     }

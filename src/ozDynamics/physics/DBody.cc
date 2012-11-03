@@ -21,47 +21,14 @@
  */
 
 /**
- * @file ozDynamics/collision/Box.hh
- *
- * Box class.
+ * @file ozDynamics/physics/DBody.hh
  */
 
-#pragma once
-
-#include "Shape.hh"
+#include "DBody.hh"
 
 namespace oz
 {
 
-/**
- * Box.
- */
-class Box : public Shape
-{
-  public:
-
-    static Pool<Box> pool; ///< Memory pool.
-
-    Vec3 ext;              ///< Extents.
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Box() :
-      Shape( Shape::BOX )
-    {}
-
-    OZ_ALWAYS_INLINE
-    explicit Box( const Vec3& ext_ ) :
-      Shape( Shape::BOX ), ext( ext_ )
-    {}
-
-    ~Box() override;
-
-    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
-
-    OZ_STATIC_POOL_ALLOC( pool )
-
-};
+Pool<DBody> DBody::pool;
 
 }

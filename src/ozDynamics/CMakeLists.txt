@@ -20,6 +20,7 @@ add_library( ozDynamics
   collision/Mesh.cc
   collision/Shape.cc
   collision/Space.cc
+  physics/DBody.cc
 #END SOURCES
 )
 

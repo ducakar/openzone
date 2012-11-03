@@ -725,6 +725,7 @@ Render render;
  */
 
 #include <ozDynamics/ozDynamics.hh>
+#include "Input.hh"
 
 namespace oz
 {
@@ -733,14 +734,26 @@ namespace client
 
 void Render::drawDyn()
 {
-  foreach( i, space.bodies.citer() ) {
-    Body* body = *i;
+  Vec4 colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
 
-    body->rot   *= Quat::rotationAxis( Vec3( 1, 1, 1 ), 0.005f );
+  if( oz::Collider::overlaps( space.bodies[0], space.bodies[1] ) ) {
+    colour = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  }
+
+  for( int i = 0; i < space.bodies.length(); ++i ) {
+    Body* body = space.bodies[i];
+
+    if( i == 2 ) {
+      body->rot   *= Quat::rotationZXZ( input.mouseX * 0.01f, input.mouseY * 0.01f, 0.0f );
+    }
+    else {
+      body->rot   *= Quat::rotationAxis( ~Vec3( 1, i, 1 ), 0.002f );
+    }
+
     body->rot    = ~body->rot;
     body->rotMat = Mat33::rotation( body->rot );
 
-    shape.colour( 0.0f, 0.0f, 1.0f, 1.0f );
+    shape.colour( colour );
     shape.wireBox( body->getBounds().toAABB() );
     shape.object( body->pos, body->rotMat, body->shape() );
   }
@@ -748,12 +761,22 @@ void Render::drawDyn()
 
 void Render::loadDyn()
 {
-  Compound* c = new Compound();
-  c->add( new Box( Vec3( 1, 1, 2 ) ), Vec3( 1, 0, 0 ), Mat33::ID );
-  c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
+//   Compound* c = new Compound();
+//   c->add( new Box( Vec3( 1, 1, 2 ) ), Vec3( 1, 0, 0 ), Mat33::ID );
+//   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
+
+  Box* c = new Box( Vec3( 1, 1, 2 ) );
 
   Body* body = new Body();
   body->pos = Point( 140, 0, 80 );
+  body->rot = Quat::ID;
+  body->setShape( c );
+  space.bodies.add( body );
+
+  c = new Box( Vec3( 1, 1, 2 ) );
+
+  body = new Body();
+  body->pos = Point( 143, 0, 80 );
   body->rot = Quat::ID;
   body->setShape( c );
   space.bodies.add( body );

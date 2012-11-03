@@ -155,7 +155,7 @@ static void signalHandler( int sigNum )
 {
   Log::verboseMode = false;
   Log::printSignal( sigNum );
-  Log::printTrace( StackTrace::current( 2 ) );
+  Log::printTrace( StackTrace::current( 1 ) );
   Log::println();
 
 #ifdef __ANDROID__
@@ -198,7 +198,7 @@ static void terminate()
 
   Log::verboseMode = false;
   Log::putsRaw( "\n\nException handling aborted\n" );
-  Log::printTrace( StackTrace::current( 0 ) );
+  Log::printTrace( StackTrace::current( 1 ) );
   Log::println();
 
 #ifdef __ANDROID__
@@ -216,7 +216,7 @@ static void unexpected()
 
   Log::verboseMode = false;
   Log::putsRaw( "\n\nException specification violation\n" );
-  Log::printTrace( StackTrace::current( 0 ) );
+  Log::printTrace( StackTrace::current( 1 ) );
   Log::println();
 
 #ifdef __ANDROID__

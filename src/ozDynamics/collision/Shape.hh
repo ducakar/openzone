@@ -45,10 +45,10 @@ class Shape
      */
     enum Type
     {
-      COMPOUND,
       BOX,
       CAPSULE,
       MESH,
+      COMPOUND,
       MAX
     };
 

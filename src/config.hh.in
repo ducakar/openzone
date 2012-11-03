@@ -29,11 +29,6 @@
 // Default data directory.
 #define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 
-// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
-// operations. However, due to larger size and if code is not written with SIMD in mind, those may
-// yield worse performance than generic linear algebra structures.
-#cmakedefine OZ_SIMD_MATH
-
 // Enable compatibility with GLES2 and Mesa < 8.0.
 #cmakedefine OZ_GL_ES
 

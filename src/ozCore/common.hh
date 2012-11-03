@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include <ozCore/ozCoreConfig.hh>
+#include <ozCore/config.hh>
 
 #include <cstddef>
 #include <cstdarg>

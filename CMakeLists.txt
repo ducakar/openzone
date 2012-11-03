@@ -8,10 +8,10 @@ project( openzone C CXX )
 
 set( OZ_VERSION "0.3.80" )
 
-option( OZ_SHARED_LIBS "Build liboz and libozdyn as shared libraries." OFF )
+option( OZ_SHARED_LIBS "Build libozCore and libozDynamics as shared libraries." OFF )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
-
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
+
 option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 

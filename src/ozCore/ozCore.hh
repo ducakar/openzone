@@ -23,7 +23,7 @@
 /**
  * @file ozCore/ozCore.hh
  *
- * Main header for OpenZone Core Libray.
+ * Main header for OpenZone Core Library.
  */
 
 #pragma once

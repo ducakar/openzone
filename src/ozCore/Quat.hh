@@ -646,7 +646,7 @@ class Quat : public VectorBase4
 };
 
 /**
- * Per-component absolute values of a quaternion.
+ * Per-component absolute value of a quaternion.
  */
 OZ_ALWAYS_INLINE
 inline Quat abs( const Quat& a )
@@ -659,7 +659,7 @@ inline Quat abs( const Quat& a )
 }
 
 /**
- * Per-component minimums of two quaternions.
+ * Per-component minimum of two quaternions.
  */
 OZ_ALWAYS_INLINE
 inline Quat min( const Quat& a, const Quat& b )
@@ -672,7 +672,7 @@ inline Quat min( const Quat& a, const Quat& b )
 }
 
 /**
- * Per-component maximums of two quaternions.
+ * Per-component maximum of two quaternions.
  */
 OZ_ALWAYS_INLINE
 inline Quat max( const Quat& a, const Quat& b )
@@ -685,7 +685,7 @@ inline Quat max( const Quat& a, const Quat& b )
 }
 
 /**
- * Per-component clamped values of quaternions.
+ * Per-component clamped value of quaternions.
  */
 OZ_ALWAYS_INLINE
 inline Quat clamp( const Quat& c, const Quat& a, const Quat& b )

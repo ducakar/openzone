@@ -694,4 +694,41 @@ class Mat44
 
 };
 
+/**
+ * Per-component absolute value of a matrix.
+ */
+OZ_ALWAYS_INLINE
+inline Mat44 abs( const Mat44& a )
+{
+  return Mat44( abs( a.x ), abs( a.y ), abs( a.z ), abs( a.w ) );
+}
+
+/**
+ * Per-component minimum of two matrices.
+ */
+OZ_ALWAYS_INLINE
+inline Mat44 min( const Mat44& a, const Mat44& b )
+{
+  return Mat44( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ), min( a.w, b.w ) );
+}
+
+/**
+ * Per-component maximum of two matrices.
+ */
+OZ_ALWAYS_INLINE
+inline Mat44 max( const Mat44& a, const Mat44& b )
+{
+  return Mat44( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ), max( a.w, b.w ) );
+}
+
+/**
+ * Per-component clamped value of matrices.
+ */
+OZ_ALWAYS_INLINE
+inline Mat44 clamp( const Mat44& c, const Mat44& a, const Mat44& b )
+{
+  return Mat44( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ),
+                clamp( c.w, a.w, b.w ) );
+}
+
 }

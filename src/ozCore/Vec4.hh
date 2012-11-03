@@ -449,7 +449,7 @@ class Vec4 : public VectorBase4
 };
 
 /**
- * Per-component absolute values of a vector.
+ * Per-component absolute value of a vector.
  */
 OZ_ALWAYS_INLINE
 inline Vec4 abs( const Vec4& a )
@@ -462,7 +462,7 @@ inline Vec4 abs( const Vec4& a )
 }
 
 /**
- * Per-component minimums of two vectors.
+ * Per-component minimum of two vectors.
  */
 OZ_ALWAYS_INLINE
 inline Vec4 min( const Vec4& a, const Vec4& b )
@@ -475,7 +475,7 @@ inline Vec4 min( const Vec4& a, const Vec4& b )
 }
 
 /**
- * Per-component maximums of two vectors.
+ * Per-component maximum of two vectors.
  */
 OZ_ALWAYS_INLINE
 inline Vec4 max( const Vec4& a, const Vec4& b )
@@ -488,7 +488,7 @@ inline Vec4 max( const Vec4& a, const Vec4& b )
 }
 
 /**
- * Per-component clamped values of vectors.
+ * Per-component clamped value of vectors.
  */
 OZ_ALWAYS_INLINE
 inline Vec4 clamp( const Vec4& c, const Vec4& a, const Vec4& b )

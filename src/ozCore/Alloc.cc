@@ -70,7 +70,7 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 
   st->address    = ptr;
   st->size       = size;
-  st->stackTrace = StackTrace::current( 1 );
+  st->stackTrace = StackTrace::current( 2 );
 
   while( __sync_lock_test_and_set( &traceLock, true ) ) {
     while( traceLock );

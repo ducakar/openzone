@@ -1,6 +1,6 @@
 0.3.80
 
-- oz
+- ozCore
     * null replaced by nullptr keyword
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
@@ -13,10 +13,9 @@
     * new SpinLock class
     * ALSA support for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
-- ozdynamics
-    * rigid body physics
+- ozDynamics
     * collision
-        + primitives: Box (OBB), Capsule, Mesh (arbitrary triangle mesh)
+        + primitives: Box, Capsule, Mesh, Compound
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
 - client

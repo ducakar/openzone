@@ -537,4 +537,40 @@ class Mat33
 
 };
 
+/**
+ * Per-component absolute value of a matrix.
+ */
+OZ_ALWAYS_INLINE
+inline Mat33 abs( const Mat33& a )
+{
+  return Mat33( abs( a.x ), abs( a.y ), abs( a.z ) );
+}
+
+/**
+ * Per-component minimum of two matrices.
+ */
+OZ_ALWAYS_INLINE
+inline Mat33 min( const Mat33& a, const Mat33& b )
+{
+  return Mat33( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+}
+
+/**
+ * Per-component maximum of two matrices.
+ */
+OZ_ALWAYS_INLINE
+inline Mat33 max( const Mat33& a, const Mat33& b )
+{
+  return Mat33( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+}
+
+/**
+ * Per-component clamped value of matrices.
+ */
+OZ_ALWAYS_INLINE
+inline Mat33 clamp( const Mat33& c, const Mat33& a, const Mat33& b )
+{
+  return Mat33( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+}
+
 }

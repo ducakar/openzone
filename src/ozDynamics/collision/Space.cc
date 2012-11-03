@@ -32,9 +32,13 @@ namespace oz
 void Space::clear()
 {
   foreach( i, bodies.citer() ) {
-    Body* body = *i;
+    Body*  body  = *i;
+    Shape* shape = body->shape();
 
-    delete body->shape();
+    body->setShape( nullptr );
+    if( shape->nUsers == 0 ) {
+      delete shape;
+    }
     delete body;
   }
 

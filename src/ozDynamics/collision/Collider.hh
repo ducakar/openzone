@@ -95,9 +95,7 @@ class Collider
 
   public:
 
-    static bool overlaps( const Mat33& rot0, const Shape* shape0,
-                          const Mat33& rot1, const Shape* shape1,
-                          const Vec3& relPos, Result* result = nullptr );
+    static bool overlaps( const Body* body0, const Body* body1, Result* result = nullptr );
 
 };
 
