@@ -30,7 +30,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
 namespace oz
 {
@@ -83,7 +82,7 @@ String::String( const char* s, int count_ ) :
 {
   if( count != 0 ) {
     ensureCapacity();
-    memcpy( buffer, s, size_t( count ) );
+    mCopy( buffer, s, size_t( count ) );
   }
   buffer[count] = '\0';
 }
@@ -98,7 +97,7 @@ String::String( const char* s )
   else {
     count = length( s );
     ensureCapacity();
-    memcpy( buffer, s, size_t( count + 1 ) );
+    mCopy( buffer, s, size_t( count + 1 ) );
   }
 }
 
@@ -113,7 +112,7 @@ String::String( const String& s ) :
   count( s.count )
 {
   ensureCapacity();
-  memcpy( buffer, s.buffer, size_t( count + 1 ) );
+  mCopy( buffer, s.buffer, size_t( count + 1 ) );
 }
 
 String::String( String&& s ) :
@@ -125,7 +124,7 @@ String::String( String&& s ) :
   }
   else {
     buffer = baseBuffer;
-    memcpy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
+    mCopy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
   }
 
   s.count         = 0;
@@ -144,7 +143,7 @@ String& String::operator = ( const String& s )
 
   count = s.count;
   ensureCapacity();
-  memcpy( buffer, s.buffer, size_t( count + 1 ) );
+  mCopy( buffer, s.buffer, size_t( count + 1 ) );
 
   return *this;
 }
@@ -167,7 +166,7 @@ String& String::operator = ( String&& s )
   }
   else {
     buffer = baseBuffer;
-    memcpy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
+    mCopy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
   }
 
   s.count         = 0;
@@ -194,7 +193,7 @@ String& String::operator = ( const char* s )
   else {
     count = length( s );
     ensureCapacity();
-    memcpy( buffer, s, size_t( count + 1 ) );
+    mCopy( buffer, s, size_t( count + 1 ) );
   }
 
   return *this;
@@ -213,7 +212,7 @@ String String::str( const char* s, ... )
   va_end( ap );
 
   r.ensureCapacity();
-  memcpy( r.buffer, localBuffer, size_t( r.count + 1 ) );
+  mCopy( r.buffer, localBuffer, size_t( r.count + 1 ) );
 
   return r;
 }
@@ -262,8 +261,8 @@ String String::operator + ( const String& s ) const
   int    rCount = count + s.count;
   String r      = String( rCount );
 
-  memcpy( r.buffer, buffer, size_t( count ) );
-  memcpy( r.buffer + count, s.buffer, size_t( s.count + 1 ) );
+  mCopy( r.buffer, buffer, size_t( count ) );
+  mCopy( r.buffer + count, s.buffer, size_t( s.count + 1 ) );
 
   return r;
 }
@@ -274,8 +273,8 @@ String String::operator + ( const char* s ) const
   int    rCount  = count + sLength;
   String r       = String( rCount );
 
-  memcpy( r.buffer, buffer, size_t( count ) );
-  memcpy( r.buffer + count, s, size_t( sLength + 1 ) );
+  mCopy( r.buffer, buffer, size_t( count ) );
+  mCopy( r.buffer + count, s, size_t( sLength + 1 ) );
 
   return r;
 }
@@ -286,8 +285,8 @@ String operator + ( const char* s, const String& t )
   int    rCount  = t.count + sLength;
   String r       = String( rCount );
 
-  memcpy( r.buffer, s, size_t( sLength ) );
-  memcpy( r.buffer + sLength, t.buffer, size_t( t.count + 1 ) );
+  mCopy( r.buffer, s, size_t( sLength ) );
+  mCopy( r.buffer + sLength, t.buffer, size_t( t.count + 1 ) );
 
   return r;
 }
@@ -301,13 +300,13 @@ String& String::operator += ( const String& s )
   ensureCapacity();
 
   if( buffer != oBuffer ) {
-    memcpy( buffer, oBuffer, size_t( oCount ) );
+    mCopy( buffer, oBuffer, size_t( oCount ) );
 
     if( oBuffer != baseBuffer ) {
       free( oBuffer );
     }
   }
-  memcpy( buffer + oCount, s, size_t( s.count + 1 ) );
+  mCopy( buffer + oCount, s, size_t( s.count + 1 ) );
 
   return *this;
 }
@@ -322,13 +321,13 @@ String& String::operator += ( const char* s )
   ensureCapacity();
 
   if( buffer != oBuffer ) {
-    memcpy( buffer, oBuffer, size_t( oCount ) );
+    mCopy( buffer, oBuffer, size_t( oCount ) );
 
     if( oBuffer != baseBuffer ) {
       free( oBuffer );
     }
   }
-  memcpy( buffer + oCount, s, size_t( sLength + 1 ) );
+  mCopy( buffer + oCount, s, size_t( sLength + 1 ) );
 
   return *this;
 }
@@ -340,7 +339,7 @@ String String::substring( int start ) const
   int    rCount = count - start;
   String r      = String( rCount );
 
-  memcpy( r.buffer, buffer + start, size_t( rCount + 1 ) );
+  mCopy( r.buffer, buffer + start, size_t( rCount + 1 ) );
 
   return r;
 }
@@ -352,7 +351,7 @@ String String::substring( int start, int end ) const
   int    rCount = end - start;
   String r      = String( rCount );
 
-  memcpy( r.buffer, buffer + start, size_t( rCount ) );
+  mCopy( r.buffer, buffer + start, size_t( rCount ) );
   r.buffer[rCount] = '\0';
 
   return r;

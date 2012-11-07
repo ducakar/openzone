@@ -6,16 +6,16 @@
 #
 
 files=`git ls-files | \
-       grep -v '^include/\|^doc/licences\|\.patch$\|\.po$' | \
-       grep -v 'README' | \
-       grep -v 'header\.glsl'`
+       egrep -v '^include/|^doc/licences|\.patch$|\.po$' | \
+       egrep -v 'README' | \
+       egrep -v 'header\.glsl'`
 
 for file in $files; do
   # Remove trailing blanks at the end of line.
-  sed 's|[ \t]*$||' -i $file
+  sed -r 's|[ \t]*$||' -i $file
 
   # Remove duplicated empty lines.
   printf '\n\n' >> $file
-  sed '/./,/^$/ !d' -i $file
-  sed '$,$ d' -i $file
+  sed -r '/./,/^$/ !d' -i $file
+  sed -r '$,$ d' -i $file
 done

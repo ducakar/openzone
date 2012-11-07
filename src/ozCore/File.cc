@@ -26,8 +26,6 @@
 
 #include "File.hh"
 
-#include <cstring>
-
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>
 # include <ppapi/c/ppb_file_io.h>
@@ -570,7 +568,7 @@ Buffer File::read()
 
   if( data != nullptr ) {
     buffer.allocate( fileSize );
-    memcpy( buffer.begin(), data, size_t( fileSize ) );
+    mCopy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
 

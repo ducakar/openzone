@@ -34,6 +34,7 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+
 #if defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
@@ -52,9 +53,7 @@
 #else
 # include <alsa/asoundlib.h>
 # include <ctime>
-# include <dlfcn.h>
 # include <pthread.h>
-# include <pulse/simple.h>
 # include <unistd.h>
 #endif
 
@@ -86,25 +85,7 @@ namespace oz
 static const float BELL_TIME      = 0.30f;
 static const float BELL_FREQUENCY = 1000.0f;
 
-#if defined( __ANDROID__ )
-
-static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
-
-#elif defined( __native_client__ )
-
-static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
-
-struct SampleInfo
-{
-  pp::Audio* audio;
-  int        nFrameSamples;
-  int        nSamples;
-  int        rate;
-  int        end;
-  int        offset;
-};
-
-#elif defined( _WIN32 )
+#ifdef _WIN32
 
 static const int BELL_WAVE_RATE    = 44100;
 static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_WAVE_RATE );
@@ -131,17 +112,19 @@ struct Wave
 
 #else
 
-static const int                      BELL_ALSA_RATE  = 48000;
-static const pa_sample_spec           BELL_PA_SPEC    = { PA_SAMPLE_S16NE, 44100, 2 };
-static const timespec                 TIMESPEC_10MS   = { 0, 10 * 1000000 };
+static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
 
-static decltype( ::pa_simple_new   )* pa_simple_new   = nullptr;
-static decltype( ::pa_simple_free  )* pa_simple_free  = nullptr;
-static decltype( ::pa_simple_write )* pa_simple_write = nullptr;
-static decltype( ::pa_simple_drain )* pa_simple_drain = nullptr;
-
-static pthread_once_t                 bellOnce        = PTHREAD_ONCE_INIT;
-
+# ifdef __native_client__
+struct SampleInfo
+{
+  pp::Audio* audio;
+  int        nFrameSamples;
+  int        nSamples;
+  int        rate;
+  int        end;
+  int        offset;
+};
+# endif
 #endif
 
 static volatile bool isBellPlaying = false;
@@ -373,55 +356,49 @@ static DWORD WINAPI bellMain( void* )
 
 static void* bellMain( void* )
 {
-  if( pa_simple_new != nullptr ) {
-    pa_simple* pa = pa_simple_new( nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
-                                   &BELL_PA_SPEC, nullptr, nullptr, nullptr );
-
-    if( pa != nullptr ) {
-      int    nSamples = int( BELL_TIME * float( BELL_PA_SPEC.rate ) );
-      size_t size     = size_t( nSamples ) * 2 * sizeof( short );
-      short* samples  = static_cast<short*>( malloc( size ) );
-
-      genBellSamples( samples, nSamples, int( BELL_PA_SPEC.rate ), 0, nSamples );
-
-      pa_simple_write( pa, samples, size, nullptr );
-      pa_simple_drain( pa, nullptr );
-      pa_simple_free( pa );
-
-      free( samples );
-
-      isBellPlaying = false;
-      return nullptr;
-    }
+  snd_pcm_t* alsa;
+  if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
   }
 
   snd_pcm_hw_params_t* params;
-  if( snd_pcm_hw_params_malloc( &params ) < 0 ) {
-    isBellPlaying = false;
-    return nullptr;
-  }
-
-  snd_pcm_t* alsa;
-  if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) < 0 ) {
-    snd_pcm_hw_params_free( params );
-
-    isBellPlaying = false;
-    return nullptr;
-  }
-
+  snd_pcm_hw_params_alloca( &params );
   snd_pcm_hw_params_any( alsa, params );
-  snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED );
-  snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 );
-  snd_pcm_hw_params_set_channels( alsa, params, 2 );
-  snd_pcm_hw_params_set_rate( alsa, params, BELL_ALSA_RATE, 0 );
-  snd_pcm_hw_params( alsa, params );
+
+  uint rate = 44100;
+
+  if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
+  if( snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
+  if( snd_pcm_hw_params_set_channels( alsa, params, 2 ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
+  if( snd_pcm_hw_params_set_rate_resample( alsa, params, 0 ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
+  if( snd_pcm_hw_params_set_rate_near( alsa, params, &rate, nullptr ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
+  if( snd_pcm_hw_params( alsa, params ) != 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
 
   if( snd_pcm_prepare( alsa ) >= 0 ) {
-    int    nSamples = int( BELL_TIME * float( BELL_ALSA_RATE ) );
+    int    nSamples = int( BELL_TIME * float( rate ) );
     size_t size     = size_t( nSamples ) * 2 * sizeof( short );
     short* samples  = static_cast<short*>( malloc( size ) );
 
-    genBellSamples( samples, nSamples, BELL_ALSA_RATE, 0, nSamples );
+    genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
 
     snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
     snd_pcm_drain( alsa );
@@ -430,34 +407,9 @@ static void* bellMain( void* )
   }
 
   snd_pcm_close( alsa );
-  snd_pcm_hw_params_free( params );
 
   isBellPlaying = false;
   return nullptr;
-}
-
-static void initBell()
-{
-  // Link to PulseAudio client library if available.
-  void* libPulse = dlopen( "libpulse-simple.so.0", RTLD_NOW );
-
-  if( libPulse != nullptr ) {
-    *( void** ) &pa_simple_new   = dlsym( libPulse, "pa_simple_new" );
-    *( void** ) &pa_simple_free  = dlsym( libPulse, "pa_simple_free" );
-    *( void** ) &pa_simple_write = dlsym( libPulse, "pa_simple_write" );
-    *( void** ) &pa_simple_drain = dlsym( libPulse, "pa_simple_drain" );
-
-    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ||
-        pa_simple_drain == nullptr )
-    {
-      pa_simple_new   = nullptr;
-      pa_simple_free  = nullptr;
-      pa_simple_write = nullptr;
-      pa_simple_drain = nullptr;
-
-      dlclose( libPulse );
-    }
-  }
 }
 
 #endif
@@ -549,9 +501,6 @@ void System::trap()
 
 void System::bell()
 {
-#if !defined( __ANDROID__ ) && !defined( __native_client__ ) && !defined( _WIN32 )
-  pthread_once( &bellOnce, initBell );
-#endif
 #ifdef __native_client__
   if( instance == nullptr || core == nullptr ) {
     return;

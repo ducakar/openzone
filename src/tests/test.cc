@@ -111,21 +111,15 @@ class Foo
 
 };
 
+template <typename... T>
+static Foo foo( T&&... args )
+{
+  return Foo( static_cast<T&&>( args )... );
+}
+
 int main()
 {
-  System::init();
-  PFile::init();
-
-  PHYSFS_setSaneConfig( "OpenZone", "OpenZone", "zip", false, false );
-
-  DArray<PFile> ls = PFile( "" ).ls();
-
-  foreach( file, ls.citer() ) {
-    Log() << file->path() << "\n";
-  }
-
-  PFile( "drek" ).write( "Davorin", 7 );
-
-  PFile::free();
+  System::bell();
+  foo( Foo() );
   return 0;
 }

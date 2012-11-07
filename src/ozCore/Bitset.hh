@@ -83,7 +83,7 @@ class Bitset
     Bitset( const Bitset& b ) :
       data( b.size == 0 ? nullptr : new ulong[b.size] ), size( b.size )
     {
-      __builtin_memcpy( data, b.data, size_t( b.size ) * sizeof( ulong ) );
+      mCopy( data, b.data, size_t( b.size ) * sizeof( ulong ) );
     }
 
     /**
@@ -114,7 +114,7 @@ class Bitset
         size = b.size;
       }
 
-      __builtin_memcpy( data, b.data, size_t( b.size ) * sizeof( ulong ) );
+      mCopy( data, b.data, size_t( b.size ) * sizeof( ulong ) );
 
       return *this;
     }

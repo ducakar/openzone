@@ -30,7 +30,6 @@
 #include "Log.hh"
 
 #include <cstdlib>
-#include <cstring>
 #include <malloc.h>
 
 namespace oz
@@ -186,7 +185,7 @@ static void deallocate( AllocMode mode, void* ptr, bool isAligned )
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  memset( ptr, 0xee, size );
+  mSet( ptr, 0xee, size );
 #endif
 
 #ifdef _WIN32

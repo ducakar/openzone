@@ -85,11 +85,6 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 # endif
 #endif
 
-// For now, SSE3 is mandatory for OZ_SIMD_MATH.
-#if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )
-# error SSE3 must be enabled for OZ_SIMD_MATH. Compile with -msse3.
-#endif
-
 #ifdef _WIN32
 // At least Visual Studio 2005 run-time libraries required.
 # define __MSVCRT_VERSION__ 0x0800

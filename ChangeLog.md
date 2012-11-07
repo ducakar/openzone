@@ -11,7 +11,7 @@
     * new Mat33 class
     * SIMD support in linear algebra classes
     * new SpinLock class
-    * ALSA support for System::bell()
+    * PulseAudio replaced with ALSA for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
 - ozDynamics
     * collision

@@ -17,7 +17,6 @@ For generic Linux builds, make sure you have all the dependencies installed. You
 development packages for the following libraries:
 
 * ALSA
-* PulseAudio client library (libpulse)
 * PhysicsFS 2.0 or 2.1
 * Lua 5.1 or 5.2
 * SDL 1.2 or 2.0

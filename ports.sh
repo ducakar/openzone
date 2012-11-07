@@ -8,7 +8,7 @@ platforms=( \
 projectDir=`pwd`
 topDir="$projectDir/ports"
 
-naclPrefix="/home/davorin/Projects/nacl_sdk/pepper_22/toolchain/linux_x86_newlib"
+naclPrefix="/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_newlib"
 
 ndkX86Tools="/opt/android-ndk/toolchains/x86-4.6/prebuilt/linux-x86"
 ndkX86Platform="/opt/android-ndk/platforms/android-14/arch-x86"

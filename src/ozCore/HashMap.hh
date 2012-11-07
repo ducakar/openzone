@@ -227,7 +227,7 @@ class HashMap
      */
     explicit HashMap()
     {
-      __builtin_memset( data, 0, sizeof( data ) );
+      mSet( data, 0, sizeof( data ) );
     }
 
     /**
@@ -255,8 +255,8 @@ class HashMap
     HashMap( HashMap&& hm ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( hm.pool ) )
     {
-      __builtin_memcpy( data, hm.data, sizeof( hm.data ) );
-      __builtin_memset( hm.data, 0, sizeof( data ) );
+      mCopy( data, hm.data, sizeof( hm.data ) );
+      mSet( hm.data, 0, sizeof( data ) );
     }
 
     /**
@@ -286,8 +286,8 @@ class HashMap
 
       clear();
 
-      __builtin_memcpy( data, hm.data, sizeof( hm.data ) );
-      __builtin_memset( hm.data, 0, sizeof( data ) );
+      mCopy( data, hm.data, sizeof( hm.data ) );
+      mSet( hm.data, 0, sizeof( data ) );
       pool = static_cast< Pool<Elem, SIZE>&& >( hm.pool );
 
       return *this;

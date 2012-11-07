@@ -162,14 +162,32 @@ bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0,
                                const Mat33& rot1, const Shape* capsule1,
                                const Vec3& relPos, Result* result )
 {
-  static_cast<void>( rot0 );
-  static_cast<void>( rot1 );
-  static_cast<void>( capsule0 );
-  static_cast<void>( capsule1 );
-  static_cast<void>( relPos );
-  static_cast<void>( result );
+  float ext0    = static_cast<const Capsule*>( capsule0 )->ext;
+  float ext1    = static_cast<const Capsule*>( capsule1 )->ext;
+  float radius0 = static_cast<const Capsule*>( capsule0 )->radius;
+  float radius1 = static_cast<const Capsule*>( capsule1 )->radius;
 
-  OZ_ERROR( "Not implemented" );
+  float dot     = rot0.z * rot1.z;
+  float denom   = 1.0f / ( 1.0f - dot*dot );
+  float t0      = relPos * ( dot*rot1.z - rot0.z ) * denom;
+  float t1      = relPos * ( dot*rot0.z - rot1.z ) * denom;
+
+  t0 = clamp( t0, -ext0, +ext0 );
+  t1 = clamp( t1, -ext1, +ext1 );
+
+  Vec3  axis  = relPos + t1*rot1.z - t0*rot0.z;
+  float dist2 = axis.sqN();
+  float r     = radius0 + radius1;
+
+  if( dist2 < r*r ) {
+    if( result != nullptr ) {
+      result->axis  = axis;
+      result->depth = r - Math::fastSqrt( dist2 );
+    }
+    return true;
+  }
+
+  return false;
 }
 
 bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule,

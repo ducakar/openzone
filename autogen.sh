@@ -16,28 +16,28 @@ for component in $components; do
 
   cd src/$component
   # sed statements remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
-  sources=`echo *.{hh,cc} */*.{hh,cc} | sed 's| \*\...||g' | sed 's| \*/\*\...||g'`
+  sources=`echo *.{hh,cc} */*.{hh,cc} | sed -r 's| (\*/)?\*\...||g'`
 
   # Insert newline-separated & '  '-indented source files between `#BEGIN SOURCES` and
   # `#END SOURCES` tags in CMakeLists.txt files.
-  sed '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n'"\
-  `echo $sources | sed 's| |\\\\n  |g'`"'\n#END SOURCES' -i CMakeLists.txt
+  sed -r '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n'"\
+  `echo $sources | sed -r 's| |\\\\n  |g'`"'\n#END SOURCES' -i CMakeLists.txt
 
   cd ../..
 done
 
 # Fix version numbers.
 echo "Updating version in CMakeLists.txt"
-sed 's|^\(set( OZ_VERSION "\)[^"]*\(".*\)$|\1'"$version"'\2|' -i CMakeLists.txt
+sed -r 's|^(set\( OZ_VERSION ")[^"]*(".*)$|\1'"$version"'\2|' -i CMakeLists.txt
 
 echo "Updating version in doc/Doxyfile*"
-sed 's|^\(PROJECT_NUMBER *= \).*$|\1"'"$version"'"|' -i doc/Doxyfile*
+sed -r 's|^(PROJECT_NUMBER *= ).*$|\1"'"$version"'"|' -i doc/Doxyfile*
 
 echo "Updating HTML READMEs doc/*.html"
-sed 's|<!--OZ_VERSION-->[^<"]*\([<"]\)|<!--OZ_VERSION-->'"$version"'\1|' -i doc/*.html
+sed -r 's|<!--OZ_VERSION-->[^<"]*([<"])|<!--OZ_VERSION-->'"$version"'\1|' -i doc/*.html
 
 echo "Updating version in etc/PKGBUILD"
-sed 's|^\(pkgver=\).*$|\1'"$version"'|' -i etc/PKGBUILD
+sed -r 's|^(pkgver=).*$|\1'"$version"'|' -i etc/PKGBUILD
 
 echo "Updating version in etc/openzone.spec"
-sed 's|^\(Version: *\).*$|\1'"$version"'|' -i etc/openzone.spec
+sed -r 's|^(Version: *).*$|\1'"$version"'|' -i etc/openzone.spec

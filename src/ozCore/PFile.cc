@@ -27,7 +27,6 @@
 #include "PFile.hh"
 
 #include <cerrno>
-#include <cstring>
 #include <physfs.h>
 
 #ifdef __native_client__
@@ -298,7 +297,7 @@ Buffer PFile::read()
 
   if( data != nullptr ) {
     buffer.allocate( fileSize );
-    memcpy( buffer.begin(), data, size_t( fileSize ) );
+    mCopy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
 

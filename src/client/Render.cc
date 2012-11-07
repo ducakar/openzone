@@ -765,7 +765,8 @@ void Render::loadDyn()
 //   c->add( new Box( Vec3( 1, 1, 2 ) ), Vec3( 1, 0, 0 ), Mat33::ID );
 //   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
 
-  Box* c = new Box( Vec3( 1, 1, 2 ) );
+//   Box* c = new Box( Vec3( 1, 1, 2 ) );
+  Capsule* c = new Capsule( 1, 1 );
 
   Body* body = new Body();
   body->pos = Point( 140, 0, 80 );
@@ -773,7 +774,8 @@ void Render::loadDyn()
   body->setShape( c );
   space.bodies.add( body );
 
-  c = new Box( Vec3( 1, 1, 2 ) );
+//   c = new Box( Vec3( 1, 1, 2 ) );
+  c = new Capsule( 1, 1 );
 
   body = new Body();
   body->pos = Point( 143, 0, 80 );

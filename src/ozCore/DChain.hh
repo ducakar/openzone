@@ -56,7 +56,7 @@ namespace oz
  * chain2.add( c );
  * @endcode
  * That way an objects can be in two separate chains at once;
- * `prev[0]` and `next[0]` point to previous and next element respectively in `chain1` and
+ * `prev[0]` and `next[0]` point to previous and next element respectively in `chain1` while
  * `prev[1]` and `next[1]` point to previous and next element respectively in `chain2`.
  *
  * @note

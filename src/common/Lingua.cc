@@ -24,7 +24,11 @@
 #include <stable.hh>
 #include <common/Lingua.hh>
 
-#include <SDL.h>
+#if defined( __ANDROID__ )
+# include <SDL2/SDL.h>
+#else
+# include <SDL/SDL.h>
+#endif
 
 namespace oz
 {

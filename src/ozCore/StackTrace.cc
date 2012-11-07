@@ -26,6 +26,7 @@
 
 #include "StackTrace.hh"
 
+#include "arrays.hh"
 #include "Thread.hh"
 
 #if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
@@ -68,7 +69,7 @@ StackTrace StackTrace::current( int nSkippedFrames )
   st.threadName = Thread::name();
   st.nFrames    = min<int>( nFrames - 1 - nSkippedFrames, MAX_FRAMES );
 
-  memcpy( st.frames, framesBuffer + 1 + nSkippedFrames, size_t( st.nFrames ) * sizeof( void* ) );
+  mCopy( st.frames, framesBuffer + 1 + nSkippedFrames, size_t( st.nFrames ) * sizeof( void* ) );
   return st;
 }
 
@@ -110,7 +111,7 @@ char** StackTrace::symbols() const
       break;
     }
 
-    memcpy( out, file, fileLen );
+    mCopy( out, file, fileLen );
     out += fileLen;
 
     *out++ = ':';
@@ -130,7 +131,7 @@ char** StackTrace::symbols() const
       size_t funcLen = strlen( func );
 
       if( funcLen != 0 && out + funcLen + 1 <= outEnd ) {
-        memcpy( out, func, funcLen );
+        mCopy( out, func, funcLen );
         out += funcLen;
       }
       else {
@@ -160,7 +161,7 @@ char** StackTrace::symbols() const
     return nullptr;
   }
 
-  memcpy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
+  mCopy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
 
   char* entry = reinterpret_cast<char*>( &niceSymbols[nWrittenFrames] );
   for( i = 0; i < nWrittenFrames; ++i ) {

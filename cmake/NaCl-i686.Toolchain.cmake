@@ -1,7 +1,7 @@
 set( NACL ON )
 
 set( PLATFORM_TRIPLET           "i686-nacl" )
-set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_22/toolchain/linux_x86_newlib" )
+set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_newlib" )
 if( NOT PLATFORM_PORTS_PREFIX )
   set( PLATFORM_PORTS_PREFIX    "${CMAKE_SOURCE_DIR}/ports/NaCl-i686" )
 endif()

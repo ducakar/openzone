@@ -28,7 +28,11 @@
 #include <client/Shape.hh>
 #include <client/OpenGL.hh>
 
-#include <SDL_ttf.h>
+#if defined( __ANDROID__ )
+# include <SDL2/SDL_ttf.h>
+#else
+# include <SDL/SDL_ttf.h>
+#endif
 
 namespace oz
 {

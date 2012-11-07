@@ -181,6 +181,33 @@ inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
 }
 
 /**
+ * Equivalent to `memcpy()`.
+ */
+OZ_ALWAYS_INLINE
+inline void* mCopy( void* dest, const void* src, size_t size )
+{
+  return __builtin_memcpy( dest, src, size );
+}
+
+/**
+ * Equivalent to `memmove()`.
+ */
+OZ_ALWAYS_INLINE
+inline void* mMove( void* dest, const void* src, size_t size )
+{
+  return __builtin_memmove( dest, src, size );
+}
+
+/**
+ * Equivalent to `memset()`.
+ */
+OZ_ALWAYS_INLINE
+inline void* mSet( void* dest, int value, size_t size )
+{
+  return __builtin_memset( dest, value, size );
+}
+
+/**
  * Length of a static array.
  */
 template <typename Elem, int COUNT>

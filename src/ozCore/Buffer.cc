@@ -26,8 +26,6 @@
 
 #include "Buffer.hh"
 
-#include <cstring>
-
 namespace oz
 {
 
@@ -45,7 +43,7 @@ Buffer::Buffer( const Buffer& b ) :
 {
   if( b.size != 0 ) {
     data = new char[size];
-    memcpy( data, b.data, size_t( size ) );
+    mCopy( data, b.data, size_t( size ) );
   }
 }
 
@@ -67,7 +65,7 @@ Buffer& Buffer::operator = ( const Buffer& b )
     allocate( b.size );
   }
 
-  memcpy( data, b.data, size_t( b.size ) );
+  mCopy( data, b.data, size_t( b.size ) );
   return *this;
 }
 

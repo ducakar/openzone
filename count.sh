@@ -3,13 +3,9 @@
 # Generate SLOC statistics with sloccount and cloc.
 #
 
-files=`git ls-files | grep -v '^include'`
-
-which sloccount &> /dev/null && LANG=C sloccount src/* *.sh
+which sloccount &> /dev/null && LANG=C sloccount src
 
 echo
 echo
 
-which cloc &> /dev/null &&
-  cloc --quiet --force-lang=C++,hh --force-lang=C++,h \
-       --exclude-lang='ASP.Net','HTML','Java','Teamcenter def','XML' $files
+which cloc &> /dev/null && cloc --force-lang=C++,hh src cmake *.txt *.sh

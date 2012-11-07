@@ -40,15 +40,15 @@ using namespace oz;
 
 static const int MAX = 10000;
 
-VecX a[MAX];
-VecX b[MAX];
-VecX c[MAX];
-VecX d[MAX];
-VecX e[MAX];
+static VecX a[MAX];
+static VecX b[MAX];
+static VecX c[MAX];
+static VecX d[MAX];
+static VecX e[MAX];
 
-Mat44 ma[MAX];
-Mat44 mb[MAX];
-Mat44 mc[MAX];
+static Mat44 ma[MAX];
+static Mat44 mb[MAX];
+static Mat44 mc[MAX];
 
 int main()
 {

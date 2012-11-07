@@ -286,7 +286,7 @@ class OutputStream
     void readChars( char* array, int count )
     {
       const char* data = forward( count * int( sizeof( char ) ) );
-      __builtin_memcpy( array, data, size_t( count ) );
+      mCopy( array, data, size_t( count ) );
     }
 
     /**
@@ -296,7 +296,7 @@ class OutputStream
     void writeChars( const char* array, int count )
     {
       char* data = forward( count * int( sizeof( char ) ) );
-      __builtin_memcpy( data, array, size_t( count ) );
+      mCopy( data, array, size_t( count ) );
     }
 
     /**
@@ -745,7 +745,7 @@ class OutputStream
       int   size = s.length() + 1;
       char* data = forward( size );
 
-      __builtin_memcpy( data, s.cstr(), size_t( size ) );
+      mCopy( data, s.cstr(), size_t( size ) );
     }
 
     /**
@@ -756,7 +756,7 @@ class OutputStream
       int   size = String::length( s ) + 1;
       char* data = forward( size );
 
-      __builtin_memcpy( data, s, size_t( size ) );
+      mCopy( data, s, size_t( size ) );
     }
 
     /**
@@ -1273,7 +1273,7 @@ class OutputStream
       int   length = s.length();
       char* data   = forward( length + 1 );
 
-      __builtin_memcpy( data, s, size_t( length ) );
+      mCopy( data, s, size_t( length ) );
       data[length] = '\n';
     }
 
@@ -1288,7 +1288,7 @@ class OutputStream
       int   length = String::length( s );
       char* data   = forward( length + 1 );
 
-      __builtin_memcpy( data, s, size_t( length ) );
+      mCopy( data, s, size_t( length ) );
       data[length] = '\n';
     }
 

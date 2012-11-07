@@ -39,14 +39,18 @@
 #endif
 
 // We want to use C++ wrapped C headers, not pure C ones that are included via SDL.
-#include <cctype>
 #include <climits>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#include <SDL.h>
+#if defined( __ANDROID__ )
+# include <SDL2/SDL.h>
+#else
+# include <SDL/SDL.h>
+#endif
 
 namespace oz
 {

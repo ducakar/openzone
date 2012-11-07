@@ -228,7 +228,7 @@ class InputStream
     void readChars( char* array, int count )
     {
       const char* data = forward( count * int( sizeof( char ) ) );
-      __builtin_memcpy( array, data, size_t( count ) );
+      mCopy( array, data, size_t( count ) );
     }
 
     /**

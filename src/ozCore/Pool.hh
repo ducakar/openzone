@@ -202,7 +202,7 @@ class Pool
       Slot* slot = static_cast<Slot*>( ptr );
 
 #ifndef NDEBUG
-      __builtin_memset( slot, 0xee, sizeof( Slot ) );
+      mSet( slot, 0xee, sizeof( Slot ) );
 #endif
 
       slot->nextSlot = freeSlot;

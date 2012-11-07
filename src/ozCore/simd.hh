@@ -30,6 +30,10 @@
 
 #include "common.hh"
 
+#if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )
+# error OZ_SIMD_MATH is only implemented for SSE3.
+#endif
+
 namespace oz
 {
 
@@ -72,8 +76,10 @@ inline uint4 vFill( uint x )
 OZ_ALWAYS_INLINE
 inline float vFirst( float4 a )
 {
-#ifdef OZ_CLANG
+#if defined( OZ_CLANG )
   return a[0];
+#elif defined( __ARM_NEON__ )
+  return __builtin_neon_vget_lanev4sf( a, 0, 3 );
 #else
   return __builtin_ia32_vec_ext_v4sf( a, 0 );
 #endif
@@ -86,6 +92,7 @@ inline float vFirst( float4 a )
 #if defined( OZ_CLANG )
 # define vShuffle( a, b, i, j, k, l ) \
   __builtin_shufflevector( a, b, i, j, k, l )
+#elif defined( __ARM_NEON__ )
 #else
 # define vShuffle( a, b, i, j, k, l ) \
   __builtin_ia32_shufps( a, b, i | ( j << 2 ) | ( k << 4 ) | ( l << 6 ) );
@@ -97,7 +104,11 @@ inline float vFirst( float4 a )
 OZ_ALWAYS_INLINE
 inline uint4 vAbs( uint4 a )
 {
+#if defined( __ARM_NEON__ )
+  return __builtin_neon_vabsv4sf( a, 3 );
+#else
   return a & vFill( 0x7fffffffu );
+#endif
 }
 
 /**
@@ -106,7 +117,11 @@ inline uint4 vAbs( uint4 a )
 OZ_ALWAYS_INLINE
 inline float4 vMin( float4 a, float4 b )
 {
+#if defined( __ARM_NEON__ )
+  return __builtin_neon_vminv4sf( a, b, 3 );
+#else
   return __builtin_ia32_minps( a, b );
+#endif
 }
 
 /**
@@ -115,7 +130,11 @@ inline float4 vMin( float4 a, float4 b )
 OZ_ALWAYS_INLINE
 inline float4 vMax( float4 a, float4 b )
 {
+#if defined( __ARM_NEON__ )
+  return __builtin_neon_vmaxv4sf( a, b, 3 );
+#else
   return __builtin_ia32_maxps( a, b );
+#endif
 }
 
 /**
@@ -125,8 +144,11 @@ OZ_ALWAYS_INLINE
 inline float4 vDot( float4 a, float4 b )
 {
   float4 p = a * b;
+#if defined( __ARM_NEON__ )
+#else
   float4 s = __builtin_ia32_haddps( p, p );
   return __builtin_ia32_haddps( s, s );
+#endif
 }
 
 #endif // OZ_SIMD_MATH
@@ -582,7 +604,7 @@ class scalar
 #else
 
 /**
- * Alias for float unless OZ_SIMD_MATH is enabled.
+ * Alias for float unless `OZ_SIMD_MATH` is enabled.
  */
 typedef float scalar;
 

@@ -82,12 +82,11 @@ static struct MainThreadNameInitialiser
         while( !isNameInitialised );
       }
       else {
-        __sync_synchronize();
-
         initName();
         isNameInitialised = true;
       }
     }
+
     TlsSetValue( nameKey, const_cast<char*>( "main" ) );
 
 #else

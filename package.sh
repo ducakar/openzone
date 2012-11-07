@@ -1,8 +1,8 @@
 #!/bin/sh
 
-eval `grep '^version=' ./autogen.sh`
+eval `egrep '^version=' ./autogen.sh`
 
-files=`git ls-files | grep -v '^data/'`
+files=`git ls-files | egrep -v '^data/'`
 files="$files share/applications share/pixmaps"
 
 if [[ $1 != data ]]; then

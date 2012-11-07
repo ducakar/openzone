@@ -14,6 +14,6 @@ xgettext --omit-header -C -s -kOZ_GETTEXT -o "$outFile" \
 cat << EOF >> "$outFile"
 
 msgid ""
-`cat data/ozbase/credits/ozbase.txt | sed 's/^\(.*\)$/"\1\\\\n"/'`
+`cat data/ozbase/credits/ozbase.txt | sed -r 's|^(.*)$|"\1\\\\n"|'`
 msgstr ""
 EOF

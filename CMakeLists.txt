@@ -122,7 +122,6 @@ elseif( WIN32 )
 else()
   find_library( PTHREAD_LIBRARY pthread )
   find_library( RT_LIBRARY rt )
-  find_library( DL_LIBRARY dl )
   find_package( ALSA )
   find_package( PhysFS REQUIRED )
 
@@ -139,7 +138,6 @@ endif()
 
 mark_as_advanced( PTHREAD_LIBRARY )
 mark_as_advanced( RT_LIBRARY )
-mark_as_advanced( DL_LIBRARY )
 mark_as_advanced( MINGW32_LIBRARY )
 mark_as_advanced( WINMM_LIBRARY )
 mark_as_advanced( PEPPER_LIBRARY )
@@ -165,7 +163,6 @@ mark_as_advanced( VORBISFILE_LIBRARY )
 mark_as_advanced( FREEIMAGE_LIBRARY )
 mark_as_advanced( SQUISH_LIBRARY )
 
-include_directories( ${SDL_INCLUDE_DIR} )
 if( ANDROID OR NACL OR WIN32 )
   include_directories( ./include )
 endif()
@@ -176,11 +173,6 @@ endif()
 
 if( isClang )
   set( flags "-std=c++11 -pedantic" )
-  # GNU C++ library
-  # set( flags "${flags} -stdlib=libstdc++" )
-  # LLVM C++ library
-  # set( flags "${flags} -stdlib=libc++" )
-  # set( libs_oz "c++abi;${libs_oz}" )
   # AddressSanitizer memory checker
   # set( flags "${flags} -faddress-sanitizer" )
 elseif( isLegacyGCC )
@@ -228,7 +220,7 @@ mark_as_advanced( OZ_HOSTNAME )
 if( ANDROID )
   add_custom_command( OUTPUT ../Android
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/etc/android-project ../Android )
-  add_custom_target( android_project ALL DEPENDS ../Android )
+  add_custom_target( android_project ALL DEPENDS ${CMAKE_BINARY_DIR}/../Android )
 endif()
 
 #
