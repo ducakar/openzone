@@ -371,7 +371,7 @@ class Math
     }
 
     /**
-     * Fast square root (calculated via fast square root from Quake).
+     * Fast square root (using algorithm form Quake).
      */
     OZ_ALWAYS_INLINE
     static float fastSqrt( float x )
@@ -388,7 +388,7 @@ class Math
     }
 
     /**
-     * Fast inverse square root, the one used in Quake.
+     * Fast inverse square root (using algorithm form Quake).
      */
     OZ_ALWAYS_INLINE
     static float fastInvSqrt( float x )

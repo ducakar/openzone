@@ -106,7 +106,7 @@ void BSP::load()
   size  = Alloc::alignUp( size );
   size += size_t( nBoundObjects ) * sizeof( boundObjects[0] );
 
-  char* data = new( Alloc::ALIGNED ) char[size];
+  char* data = new char[size];
 
   hard_assert( data == Alloc::alignUp( data ) );
 

@@ -48,12 +48,12 @@ class Box : public Shape
 
     OZ_ALWAYS_INLINE
     explicit Box() :
-      Shape( Shape::BOX )
+      Shape( BOX )
     {}
 
     OZ_ALWAYS_INLINE
     explicit Box( const Vec3& ext_ ) :
-      Shape( Shape::BOX ), ext( ext_ )
+      Shape( BOX ), ext( ext_ )
     {}
 
     ~Box() override;

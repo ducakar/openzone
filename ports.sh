@@ -1,7 +1,7 @@
 #!/bin/sh
 
 platforms=( \
-  NaCl-x86_64 NaCl-i686 \
+  NaCl-x86_64 NaCl-i686 PNaCl \
   Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS \
 )
 
@@ -9,6 +9,7 @@ projectDir=`pwd`
 topDir="$projectDir/ports"
 
 naclPrefix="/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_newlib"
+pnaclPrefix="/home/davorin/Projects/nacl_sdk/pepper_canary/toolchain/linux_x86_pnacl/newlib"
 
 ndkX86Tools="/opt/android-ndk/toolchains/x86-4.6/prebuilt/linux-x86"
 ndkX86Platform="/opt/android-ndk/platforms/android-14/arch-x86"
@@ -74,6 +75,29 @@ function setup_nacl32()
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+}
+
+function setup_pnacl()
+{
+  platform="PNaCl"
+  buildDir="$topDir/$platform"
+  triplet="pnacl"
+  sysroot="$pnaclPrefix/usr"
+  toolsroot="$pnaclPrefix"
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+
+  export CPP=""
+  export CC="$toolsroot/bin/$triplet-clang"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS=""
+  export CFLAGS=""
+  export LDFLAGS=""
 }
 
 function setup_ndkX86()
@@ -415,6 +439,7 @@ function build()
   # zlib
   setup_nacl64  && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
   setup_nacl32  && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
+#   setup_pnacl   && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
   setup_ndkX86  && build_zlib
   setup_ndkARM  && build_zlib
   setup_ndkARM7 && build_zlib
@@ -423,6 +448,7 @@ function build()
   # physfs
   setup_nacl64  && build_physfs21
   setup_nacl32  && build_physfs21
+#   setup_pnacl   && build_physfs21
   setup_ndkX86  && build_physfs21
   setup_ndkARM  && build_physfs21
   setup_ndkARM7 && build_physfs21
@@ -431,6 +457,7 @@ function build()
   # lua
   setup_nacl64  && build_lua
   setup_nacl32  && build_lua
+#   setup_pnacl   && build_lua
   setup_ndkX86  && build_lua
   setup_ndkARM  && build_lua
   setup_ndkARM7 && build_lua
@@ -439,6 +466,7 @@ function build()
   # SDL
   setup_nacl64  && build_sdl
   setup_nacl32  && build_sdl
+#   setup_pnacl   && build_sdl
   setup_ndkX86  && build_sdl2
   setup_ndkARM  && build_sdl2
   setup_ndkARM7 && build_sdl2
@@ -447,6 +475,7 @@ function build()
   # freetype
   setup_nacl64  && build_freetype
   setup_nacl32  && build_freetype
+#   setup_pnacl   && build_freetype
   setup_ndkX86  && build_freetype
   setup_ndkARM  && build_freetype
   setup_ndkARM7 && build_freetype
@@ -455,6 +484,7 @@ function build()
   # SDL_ttf
   setup_nacl64  && build_sdl_ttf
   setup_nacl32  && build_sdl_ttf
+#   setup_pnacl   && build_sdl_ttf
   setup_ndkX86  && build_sdl2_ttf
   setup_ndkARM  && build_sdl2_ttf
   setup_ndkARM7 && build_sdl2_ttf
@@ -463,6 +493,7 @@ function build()
   # openal
   setup_nacl64  && build_openal
   setup_nacl32  && build_openal
+#   setup_pnacl   && build_openal
   setup_ndkX86  && build_openal
   setup_ndkARM  && build_openal
   setup_ndkARM7 && build_openal
@@ -471,6 +502,7 @@ function build()
   # libogg
   setup_nacl64  && build_libogg
   setup_nacl32  && build_libogg
+#   setup_pnacl   && build_libogg
   setup_ndkX86  && build_libogg
   setup_ndkARM  && build_libogg
   setup_ndkARM7 && build_libogg
@@ -479,6 +511,7 @@ function build()
   # libvorbis
   setup_nacl64  && build_libvorbis
   setup_nacl32  && build_libvorbis
+#   setup_pnacl   && build_libvorbis
   setup_ndkX86  && build_libvorbis
   setup_ndkARM  && build_libvorbis
   setup_ndkARM7 && build_libvorbis

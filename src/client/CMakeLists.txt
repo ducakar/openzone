@@ -1,10 +1,14 @@
+configure_file( BuildInfo.cc.in BuildInfo.cc )
+
 add_library( client STATIC
+  ${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.cc
 #BEGIN SOURCES
   Audio.hh
   BasicAudio.hh
   BotAudio.hh
   BSPAudio.hh
   BSP.hh
+  BuildInfo.hh
   Caelum.hh
   Camera.hh
   CinematicProxy.hh
@@ -156,26 +160,14 @@ add_library( client STATIC
 use_pch( client pch )
 
 if( ANDROID )
-  target_link_libraries( client ${SDLTTF_LIBRARY}
-                                ${FREETYPE_LIBRARY}
-                                ${ANDROID_GLES2_LIBRARY}
-                                ${OPENAL_LIBRARY}
-                                ${VORBISFILE_LIBRARY}
-                                ${VORBIS_LIBRARY}
+  target_link_libraries( client ${SDLTTF_LIBRARY} ${FREETYPE_LIBRARY} ${ANDROID_GLES2_LIBRARY}
+                                ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY}
                                 ${OGG_LIBRARY} )
 elseif( NACL )
-  target_link_libraries( client ${SDLTTF_LIBRARY}
-                                ${FREETYPE_LIBRARY}
-                                ${PEPPER_GLES2_LIBRARY}
-                                ${OPENAL_LIBRARY}
-                                ${VORBISFILE_LIBRARY}
-                                ${VORBIS_LIBRARY}
-                                ${OGG_LIBRARY}
-                                ${PEPPER_CXX_LIBRARY}
-                                ${PEPPER_LIBRARY} )
+  target_link_libraries( client ${SDLTTF_LIBRARY} ${FREETYPE_LIBRARY} ${PEPPER_GLES2_LIBRARY}
+                                ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY}
+                                ${OGG_LIBRARY} ${PEPPER_CXX_LIBRARY} ${PEPPER_LIBRARY} )
 else()
-  target_link_libraries( client ${SDLTTF_LIBRARY}
-                                ${OPENGL_gl_LIBRARY}
-                                ${OPENAL_LIBRARY}
+  target_link_libraries( client ${SDLTTF_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENAL_LIBRARY}
                                 ${VORBISFILE_LIBRARY} )
 endif()

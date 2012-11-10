@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "BuildInfo.hh"
-
-#include "ozCore/ozCore.hh"
+#include <stable.hh>
+#include <client/BuildInfo.hh>
 
 namespace oz
 {

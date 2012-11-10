@@ -1,5 +1,4 @@
 configure_file( config.hh.in config.hh )
-configure_file( BuildInfo.cc.in BuildInfo.cc )
 
 include_directories( . )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
@@ -23,5 +22,3 @@ if( NOT ANDROID AND NOT NACL )
 endif()
 
 add_subdirectory( tests )
-
-add_library( build_info STATIC BuildInfo.hh ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )

@@ -36,12 +36,15 @@ Collider::OverlapFunc* const Collider::dispatchMatrix[Shape::MAX][Shape::MAX] = 
   { nullptr, nullptr,        nullptr,     compoundCompound }
 };
 
-bool Collider::boxBox( const Mat33& rot0, const Shape* box0,
-                       const Mat33& rot1, const Shape* box1,
+bool Collider::boxBox( const Mat33& rot0, const Shape* box0_,
+                       const Mat33& rot1, const Shape* box1_,
                        const Vec3& relPos, Result* result )
 {
-  Vec3  ext0      = static_cast<const Box*>( box0 )->ext;
-  Vec3  ext1      = static_cast<const Box*>( box1 )->ext;
+  const Box* box0 = static_cast<const Box*>( box0_ );
+  const Box* box1 = static_cast<const Box*>( box1_ );
+
+  Vec3  ext0      = box0->ext;
+  Vec3  ext1      = box1->ext;
   Mat33 c         = ~rot0 * rot1;
   Mat33 d         = abs( c );
 
@@ -116,10 +119,13 @@ bool Collider::boxBox( const Mat33& rot0, const Shape* box0,
   return true;
 }
 
-bool Collider::boxCapsule( const Mat33& rot0, const Shape* box,
-                           const Mat33& rot1, const Shape* capsule,
+bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
+                           const Mat33& rot1, const Shape* capsule_,
                            const Vec3& relPos, Result* result )
 {
+  const Box*     box     = static_cast<const Box*>( box_ );
+  const Capsule* capsule = static_cast<const Capsule*>( capsule_ );
+
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
@@ -130,10 +136,13 @@ bool Collider::boxCapsule( const Mat33& rot0, const Shape* box,
   OZ_ERROR( "Not implemented" );
 }
 
-bool Collider::boxMesh( const Mat33& rot0, const Shape* box,
-                        const Mat33& rot1, const Shape* mesh,
+bool Collider::boxMesh( const Mat33& rot0, const Shape* box_,
+                        const Mat33& rot1, const Shape* mesh_,
                         const Vec3& relPos, Result* result )
 {
+  const Box*  box  = static_cast<const Box*>( box_ );
+  const Mesh* mesh = static_cast<const Mesh*>( mesh_ );
+
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
@@ -144,28 +153,36 @@ bool Collider::boxMesh( const Mat33& rot0, const Shape* box,
   OZ_ERROR( "Not implemented" );
 }
 
-bool Collider::boxCompound( const Mat33& rot0, const Shape* box,
-                            const Mat33& rot1, const Shape* compound,
+bool Collider::boxCompound( const Mat33& rot0, const Shape* box_,
+                            const Mat33& rot1, const Shape* compound_,
                             const Vec3& relPos, Result* result )
 {
-  static_cast<void>( rot0 );
-  static_cast<void>( rot1 );
-  static_cast<void>( box );
-  static_cast<void>( compound );
-  static_cast<void>( relPos );
-  static_cast<void>( result );
+  const Box*      box      = static_cast<const Box*>( box_ );
+  const Compound* compound = static_cast<const Compound*>( compound_ );
 
-  OZ_ERROR( "Not implemented" );
+  bool overlaps = false;
+
+  foreach( i, compound->citer() ) {
+    Mat33 rot2 = rot1 * i->rot;
+
+    OverlapFunc* func = dispatchMatrix[Shape::BOX][i->shape->type];
+    overlaps |= func( rot0, box, rot2, i->shape, relPos + rot2 * i->off, result );
+  }
+
+  return overlaps;
 }
 
-bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0,
-                               const Mat33& rot1, const Shape* capsule1,
+bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
+                               const Mat33& rot1, const Shape* capsule1_,
                                const Vec3& relPos, Result* result )
 {
-  float ext0    = static_cast<const Capsule*>( capsule0 )->ext;
-  float ext1    = static_cast<const Capsule*>( capsule1 )->ext;
-  float radius0 = static_cast<const Capsule*>( capsule0 )->radius;
-  float radius1 = static_cast<const Capsule*>( capsule1 )->radius;
+  const Capsule* capsule0 = static_cast<const Capsule*>( capsule0_ );
+  const Capsule* capsule1 = static_cast<const Capsule*>( capsule1_ );
+
+  float ext0    = capsule0->ext;
+  float ext1    = capsule1->ext;
+  float radius0 = capsule0->radius;
+  float radius1 = capsule1->radius;
 
   float dot     = rot0.z * rot1.z;
   float denom   = 1.0f / ( 1.0f - dot*dot );
@@ -190,10 +207,13 @@ bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0,
   return false;
 }
 
-bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule,
-                            const Mat33& rot1, const Shape* mesh,
+bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule_,
+                            const Mat33& rot1, const Shape* mesh_,
                             const Vec3& relPos, Result* result )
 {
+  const Capsule* capsule = static_cast<const Capsule*>( capsule_ );
+  const Mesh*    mesh    = static_cast<const Mesh*>( mesh_ );
+
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( capsule );
@@ -204,24 +224,39 @@ bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule,
   OZ_ERROR( "Not implemented" );
 }
 
-bool Collider::capsuleCompound( const Mat33& rot0, const Shape* capsule,
-                                const Mat33& rot1, const Shape* compound,
+bool Collider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
+                                const Mat33& rot1, const Shape* compound_,
                                 const Vec3& relPos, Result* result )
 {
-  static_cast<void>( rot0 );
-  static_cast<void>( rot1 );
-  static_cast<void>( capsule );
-  static_cast<void>( compound );
-  static_cast<void>( relPos );
-  static_cast<void>( result );
+  const Capsule*  capsule  = static_cast<const Capsule*>( capsule_ );
+  const Compound* compound = static_cast<const Compound*>( compound_ );
 
-  OZ_ERROR( "Not implemented" );
+  bool overlaps = false;
+
+  foreach( i, compound->citer() ) {
+    Shape::Type type = i->shape->type;
+    Mat33       rot2 = rot1 * i->rot;
+
+    if( Shape::CAPSULE <= type ) {
+      OverlapFunc* func = dispatchMatrix[Shape::CAPSULE][type];
+      overlaps |= func( rot0, capsule, rot2, i->shape, relPos + rot2 * i->off, result );
+    }
+    else {
+      OverlapFunc* func = dispatchMatrix[type][Shape::CAPSULE];
+      overlaps |= func( rot2, i->shape, rot0, capsule, -relPos - rot2 * i->off, result );
+    }
+  }
+
+  return overlaps;
 }
 
-bool Collider::meshMesh( const Mat33& rot0, const Shape* mesh0,
-                         const Mat33& rot1, const Shape* mesh1,
+bool Collider::meshMesh( const Mat33& rot0, const Shape* mesh0_,
+                         const Mat33& rot1, const Shape* mesh1_,
                          const Vec3& relPos, Result* result )
 {
+  const Mesh* mesh0 = static_cast<const Mesh*>( mesh0_ );
+  const Mesh* mesh1 = static_cast<const Mesh*>( mesh1_ );
+
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( mesh0 );
@@ -232,38 +267,73 @@ bool Collider::meshMesh( const Mat33& rot0, const Shape* mesh0,
   OZ_ERROR( "Not implemented" );
 }
 
-bool Collider::meshCompound( const Mat33& rot0, const Shape* mesh,
-                             const Mat33& rot1, const Shape* compound,
+bool Collider::meshCompound( const Mat33& rot0, const Shape* mesh_,
+                             const Mat33& rot1, const Shape* compound_,
                              const Vec3& relPos, Result* result )
 {
-  static_cast<void>( rot0 );
-  static_cast<void>( rot1 );
-  static_cast<void>( mesh );
-  static_cast<void>( compound );
-  static_cast<void>( relPos );
-  static_cast<void>( result );
+  const Mesh*     mesh     = static_cast<const Mesh*>( mesh_ );
+  const Compound* compound = static_cast<const Compound*>( compound_ );
 
-  OZ_ERROR( "Not implemented" );
+  bool overlaps = false;
+
+  foreach( i, compound->citer() ) {
+    Shape::Type type = i->shape->type;
+    Mat33       rot2 = rot1 * i->rot;
+
+    if( Shape::MESH <= type ) {
+      OverlapFunc* func = dispatchMatrix[Shape::MESH][type];
+      overlaps |= func( rot0, mesh, rot2, i->shape, relPos + rot2 * i->off, result );
+    }
+    else {
+      OverlapFunc* func = dispatchMatrix[type][Shape::MESH];
+      overlaps |= func( rot2, i->shape, rot0, mesh, -relPos - rot2 * i->off, result );
+    }
+  }
+
+  return overlaps;
 }
 
-bool Collider::compoundCompound( const Mat33& rot0, const Shape* compound0,
-                                 const Mat33& rot1, const Shape* compound1,
+bool Collider::compoundCompound( const Mat33& rot0, const Shape* compound0_,
+                                 const Mat33& rot1, const Shape* compound1_,
                                  const Vec3& relPos, Result* result )
 {
-  static_cast<void>( rot0 );
-  static_cast<void>( rot1 );
-  static_cast<void>( compound0 );
-  static_cast<void>( compound1 );
-  static_cast<void>( relPos );
-  static_cast<void>( result );
+  const Compound* compound0 = static_cast<const Compound*>( compound0_ );
+  const Compound* compound1 = static_cast<const Compound*>( compound1_ );
 
-  OZ_ERROR( "Not implemented" );
+  Mat33 rot3[16];
+  bool  overlaps = false;
+
+  auto j = compound1->citer();
+  for( int k = 0; j.isValid(); ++k, ++j ) {
+    rot3[k] = rot1 * j->rot;
+  }
+
+  foreach( i, compound0->citer() ) {
+    Shape::Type type0 = i->shape->type;
+    Mat33       rot2  = rot0 * i->rot;
+
+    auto j = compound1->citer();
+    for( int k = 0; j.isValid(); ++k, ++j ) {
+      Shape::Type type1 = i->shape->type;
+
+      if( type0 <= type1 ) {
+        OverlapFunc* func = dispatchMatrix[type0][type1];
+        overlaps |= func( rot2, i->shape, rot3[k], j->shape,
+                          relPos + rot3[k] * j->off - rot2 * i->off, result );
+      }
+      else {
+        OverlapFunc* func = dispatchMatrix[type1][type0];
+        overlaps |= func( rot3[k], j->shape, rot2, i->shape,
+                          rot2 * i->off - rot3[k] * j->off - relPos, result );
+      }
+    }
+  }
+
+  return overlaps;
 }
 
 bool Collider::overlaps( const Body* body0, const Body* body1, Result* result )
 {
-  Vec3 relPos = body1->pos - body0->pos;
-
   Shape* shape0 = body0->shape();
   Shape* shape1 = body1->shape();
 
@@ -275,12 +345,12 @@ bool Collider::overlaps( const Body* body0, const Body* body1, Result* result )
   }
 
   if( type0 <= type1 ) {
-    return dispatchMatrix[type0][type1]( body0->rotMat, shape0, body1->rotMat, shape1, relPos,
-                                         result );
+    OverlapFunc* func = dispatchMatrix[type0][type1];
+    return func( body0->rotMat, shape0, body1->rotMat, shape1, body1->pos - body0->pos, result );
   }
   else {
-    return dispatchMatrix[type1][type0]( body1->rotMat, shape1, body0->rotMat, shape0, relPos,
-                                         result );
+    OverlapFunc* func = dispatchMatrix[type1][type0];
+    return func( body1->rotMat, shape1, body0->rotMat, shape0, body0->pos - body1->pos, result );
   }
 }
 

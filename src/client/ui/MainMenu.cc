@@ -24,13 +24,12 @@
 #include <stable.hh>
 #include <client/ui/MainMenu.hh>
 
-#include <BuildInfo.hh>
-
 #include <client/Camera.hh>
 #include <client/Shape.hh>
 #include <client/GameStage.hh>
 #include <client/MenuStage.hh>
 #include <client/OpenGL.hh>
+#include <client/BuildInfo.hh>
 
 #include <client/ui/Style.hh>
 #include <client/ui/MissionMenu.hh>

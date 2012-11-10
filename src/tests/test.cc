@@ -120,6 +120,5 @@ static Foo foo( T&&... args )
 int main()
 {
   System::bell();
-  foo( Foo() );
   return 0;
 }

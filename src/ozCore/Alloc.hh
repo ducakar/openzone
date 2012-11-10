@@ -40,17 +40,14 @@ class Alloc
 {
   public:
 
-    /// A dummy type used as a parameter for aligned `new` operator.
-    struct Aligned
-    {};
+    /// Alignment of allocated storage returned by the `new` operator.
+#ifdef OZ_SIMD_MATH
+    static const size_t ALIGNMENT = sizeof( float[4] );
+#else
+    static const size_t ALIGNMENT = sizeof( void* );
+#endif
 
-    /// Constant to be passed to `new` operator to allocate aligned storage.
-    static const Aligned ALIGNED;
-
-    /// Alignment of allocated storage returned by aligned version of `new` operator.
-    static const size_t ALIGNMENT = 16;
-
-    /// Whether liboz was compiled in a way that disabled its `new` and `delete` operator overloads.
+    /// True iff `new` and `delete` operator overloads are enabled (AddressSanitizer disables them).
     static const bool OVERLOADS_NEW_AND_DELETE;
 
     static int    count;     ///< Current number of allocated memory chunks.
@@ -122,91 +119,105 @@ class Alloc
 }
 
 /**
- * Operator `new` overload with memory statistics and (optionally) memory leak checking.
+ * Enhanced operator `new` overload (nothrow version).
  *
- * Apart from standard new operator this one counts memory allocation and amount of memory allocated
- * (`Alloc::count`, `Alloc::amount` etc.). If compiled with `OZ_TRACK_ALLOCS` is also tracks all
- * allocated chunks, so it catches new/delete mismatches and `Alloc::printLeaks()` can be called at
- * any time to print currently allocated chunks.
+ * Apart from standard new operator this one counts memory allocations and amount of memory
+ * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
+ *
+ * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
+ *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
+ *     currently allocated chunks.
+ * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
  */
-extern void* operator new ( size_t size );
+void* operator new ( size_t size );
 
 /**
- * Operator `new[]` overload with memory statistics and (optionally) memory leak checking.
+ * Enhanced operator `new[]` overload.
  *
- * Apart from standard new operator this one counts memory allocation and amount of memory allocated
- * (`Alloc::count`, `Alloc::amount` etc.). If compiled with `OZ_TRACK_ALLOCS` is also tracks all
- * allocated chunks, so it catches new/delete mismatches and `Alloc::printLeaks()` can be called at
- * any time to print currently allocated chunks.
+ * Apart from standard new operator this one counts memory allocations and amount of memory
+ * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
+ *
+ * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
+ *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
+ *     currently allocated chunks.
+ * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
  */
-extern void* operator new[] ( size_t size );
+void* operator new[] ( size_t size );
 
 /**
- * Operator new overload with memory statistics and (optionally) memory leak checking.
+ * Operator `delete` overload.
  *
- * `nothrow` version.
- */
-extern void* operator new ( size_t size, const std::nothrow_t& ) noexcept;
-
-/**
- * Operator new[] overload with memory statistics and (optionally) memory leak checking.
+ * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
  *
- * `nothrow` version.
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
  */
-extern void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept;
-
-/**
- * Aligned operator `new` with memory statistics and (optionally) memory leak checking.
- *
- * Allocates storage aligned to a multiple of `Alloc::ALIGNMENT` bytes.
- */
-extern void* operator new ( size_t size , const oz::Alloc::Aligned& );
-
-/**
- * Aligned operator `new[]` with memory statistics and (optionally) memory leak checking.
- *
- * Allocates storage aligned to a multiple of `Alloc::ALIGNMENT` bytes.
- */
-extern void* operator new[] ( size_t size, const oz::Alloc::Aligned& );
-
-/**
- * Operator `delete` overload with memory statistics and (optionally) memory leak checking.
- *
- * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
- */
-extern void operator delete ( void* ptr ) noexcept;
+void operator delete ( void* ptr ) noexcept;
 
 /**
  * Operator `delete[]` overload with memory statistics and (optionally) memory leak checking.
  *
- * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
+ * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
  */
-extern void operator delete[] ( void* ptr ) noexcept;
+void operator delete[] ( void* ptr ) noexcept;
+
+/**
+ * Enhanced operator `new` overload (nothrow version).
+ *
+ * Apart from standard new operator this one counts memory allocations and amount of memory
+ * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
+ *
+ * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
+ *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
+ *     currently allocated chunks.
+ * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
+ */
+void* operator new ( size_t size, const std::nothrow_t& ) noexcept;
+
+/**
+ * Enhanced operator `new[]` overload (nothrow version).
+ *
+ * Apart from standard new operator this one counts memory allocations and amount of memory
+ * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
+ *
+ * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
+ *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
+ *     currently allocated chunks.
+ * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
+ */
+void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator `delete` overload with memory statistics and (optionally) memory leak checking.
  *
- * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
+ * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
  */
-extern void operator delete ( void* ptr, const std::nothrow_t& ) noexcept;
+void operator delete ( void* ptr, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator `delete[]` overload with memory statistics and (optionally) memory leak checking.
  *
- * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
- */
-extern void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept;
-
-/**
- * Aligned operator `delete` with memory statistics and (optionally) memory leak checking.
+ * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
  *
- * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
  */
-extern void operator delete ( void* ptr, const oz::Alloc::Aligned& ) noexcept;
-
-/**
- * Aligned operator `delete[]` with memory statistics and (optionally) memory leak checking.
- *
- * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
- */
-extern void operator delete[] ( void* ptr, const oz::Alloc::Aligned& ) noexcept;
+void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept;

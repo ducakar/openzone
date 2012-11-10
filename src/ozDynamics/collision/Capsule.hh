@@ -49,12 +49,12 @@ class Capsule : public Shape
 
     OZ_ALWAYS_INLINE
     explicit Capsule() :
-      Shape( Shape::CAPSULE )
+      Shape( CAPSULE )
     {}
 
     OZ_ALWAYS_INLINE
     explicit Capsule( float ext_, float radius_ ) :
-      Shape( Shape::CAPSULE ), ext( ext_ ), radius( radius_ )
+      Shape( CAPSULE ), ext( ext_ ), radius( radius_ )
     {}
 
     ~Capsule() override;

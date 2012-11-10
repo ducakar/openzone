@@ -148,37 +148,7 @@ long64 Time::time()
 
 Time Time::local()
 {
-#ifdef _WIN32
-
-  SYSTEMTIME     timeStruct;
-  FILETIME       fileTime;
-  ULARGE_INTEGER largeInteger;
-
-  GetLocalTime( &timeStruct );
-  SystemTimeToFileTime( &timeStruct, &fileTime );
-
-  largeInteger.LowPart  = fileTime.dwLowDateTime;
-  largeInteger.HighPart = fileTime.dwHighDateTime;
-
-  return {
-    long64( largeInteger.QuadPart / 10000 ),
-    int( timeStruct.wYear ), int( timeStruct.wMonth ), int( timeStruct.wDay ),
-    int( timeStruct.wHour ), int( timeStruct.wMinute ), int( timeStruct.wSecond )
-  };
-
-#else
-
-  time_t currentTime = ::time( nullptr );
-  struct tm timeStruct;
-  localtime_r( &currentTime, &timeStruct );
-
-  return {
-    long64( currentTime ),
-    int( 1900 + timeStruct.tm_year ), int( 1 + timeStruct.tm_mon ), int( timeStruct.tm_mday ),
-    int( timeStruct.tm_hour ), int( timeStruct.tm_min ), int( timeStruct.tm_sec )
-  };
-
-#endif
+  return local( time() );
 }
 
 Time Time::local( long64 epoch )

@@ -46,7 +46,7 @@ class Mesh : public Shape
 
     OZ_ALWAYS_INLINE
     explicit Mesh() :
-      Shape( Shape::MESH )
+      Shape( MESH )
     {}
 
     ~Mesh() override;

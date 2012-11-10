@@ -26,8 +26,6 @@
 #include <stable.hh>
 #include <client/Client.hh>
 
-#include <BuildInfo.hh>
-
 #include <common/Timer.hh>
 #include <common/Lua.hh>
 #include <client/Camera.hh>
@@ -41,6 +39,7 @@
 #include <client/Window.hh>
 #include <client/Input.hh>
 #include <client/Network.hh>
+#include <client/BuildInfo.hh>
 
 #include <clocale>
 #include <sstream>

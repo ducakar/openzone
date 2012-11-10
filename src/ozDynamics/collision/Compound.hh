@@ -56,7 +56,7 @@ class Compound : public Shape
 
     OZ_ALWAYS_INLINE
     explicit Compound() :
-      Shape( Shape::COMPOUND )
+      Shape( COMPOUND )
     {}
 
     ~Compound() override;
@@ -77,6 +77,18 @@ class Compound : public Shape
     const Child* end() const
     {
       return children.end();
+    }
+
+    OZ_ALWAYS_INLINE
+    const Child& operator [] ( int i ) const
+    {
+      return children[i];
+    }
+
+    OZ_ALWAYS_INLINE
+    int length() const
+    {
+      return children.length();
     }
 
     void add( Shape* shape, const Vec3& off, const Mat33& rot )

@@ -24,8 +24,6 @@
 #include <stable.hh>
 #include <builder/Builder.hh>
 
-#include <BuildInfo.hh>
-
 #include <builder/Lingua.hh>
 #include <builder/Context.hh>
 #include <builder/Compiler.hh>

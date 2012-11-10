@@ -744,10 +744,10 @@ void Render::drawDyn()
     Body* body = space.bodies[i];
 
     if( i == 2 ) {
-      body->rot   *= Quat::rotationZXZ( input.mouseX * 0.01f, input.mouseY * 0.01f, 0.0f );
+      body->rot *= Quat::rotationZXZ( input.mouseX * 0.01f, input.mouseY * 0.01f, 0.0f );
     }
     else {
-      body->rot   *= Quat::rotationAxis( ~Vec3( 1, i, 1 ), 0.002f );
+      body->rot *= Quat::rotationAxis( ~Vec3( 1.0f, float( i ), 1.0f ), 0.002f );
     }
 
     body->rot    = ~body->rot;
@@ -761,12 +761,12 @@ void Render::drawDyn()
 
 void Render::loadDyn()
 {
-//   Compound* c = new Compound();
-//   c->add( new Box( Vec3( 1, 1, 2 ) ), Vec3( 1, 0, 0 ), Mat33::ID );
+  Compound* c = new Compound();
+  c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat33::ID );
 //   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
 
 //   Box* c = new Box( Vec3( 1, 1, 2 ) );
-  Capsule* c = new Capsule( 1, 1 );
+//   Capsule* c = new Capsule( 1, 1 );
 
   Body* body = new Body();
   body->pos = Point( 140, 0, 80 );
@@ -774,13 +774,12 @@ void Render::loadDyn()
   body->setShape( c );
   space.bodies.add( body );
 
-//   c = new Box( Vec3( 1, 1, 2 ) );
-  c = new Capsule( 1, 1 );
+  Box* b = new Box( Vec3( 1, 1, 2 ) );
 
   body = new Body();
   body->pos = Point( 143, 0, 80 );
   body->rot = Quat::ID;
-  body->setShape( c );
+  body->setShape( b );
   space.bodies.add( body );
 }
 
