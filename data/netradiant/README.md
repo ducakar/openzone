@@ -8,6 +8,7 @@ switches etc., while collision works, including for invisible parts.)
 One should use some older NetRadiant version or manually invoke BSP compiler from GtkRadiant.
 
 Compiler invocation:
-  q3map2 -fs_basepath <srcdata> -meta <srcdata>/baseq3/maps/<map>.map
 
-where <srcdata> is directory containing source data of a game package.
+    q3map2 -fs_basepath <srcdata> -meta <srcdata>/baseq3/maps/<map>.map
+
+where `<srcdata>` is directory containing source data of a game package.

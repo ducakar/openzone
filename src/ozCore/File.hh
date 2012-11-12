@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * Class for basic file and directory operations.
+ *
+ * @sa `oz::PFile`
  */
 class File
 {

@@ -20,8 +20,8 @@ for component in $components; do
 
   # Insert newline-separated & '  '-indented source files between `#BEGIN SOURCES` and
   # `#END SOURCES` tags in CMakeLists.txt files.
-  sed -r '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n'"\
-  `echo $sources | sed -r 's| |\\\\n  |g'`"'\n#END SOURCES' -i CMakeLists.txt
+  sed -r '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n  '"`echo $sources \
+      | sed -r 's| |\\\\n  |g'`"'\n#END SOURCES' -i CMakeLists.txt
 
   cd ../..
 done

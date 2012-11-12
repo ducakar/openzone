@@ -69,7 +69,7 @@ StackTrace StackTrace::current( int nSkippedFrames )
   st.threadName = Thread::name();
   st.nFrames    = min<int>( nFrames - 1 - nSkippedFrames, MAX_FRAMES );
 
-  mCopy( st.frames, framesBuffer + 1 + nSkippedFrames, size_t( st.nFrames ) * sizeof( void* ) );
+  aCopy<void*>( st.frames, framesBuffer + 1 + nSkippedFrames, st.nFrames );
   return st;
 }
 

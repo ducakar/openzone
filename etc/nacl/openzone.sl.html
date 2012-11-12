@@ -81,6 +81,9 @@
       else if( type == "lang:" ) {
         module.postMessage( "lang:" + navigator.language );
       }
+      else if( type == "navi:" ) {
+        window.open( text, "_blank" );
+      }
     }
 
     function updateLoadProgress()

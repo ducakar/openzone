@@ -409,9 +409,9 @@ void Input::reset()
   oldButtons  = 0;
   currButtons = 0;
 
-  memset( sdlKeys, 0, sizeof( sdlKeys ) );
-  memset( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
-  memset( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
+  mSet( sdlKeys, 0, sizeof( sdlKeys ) );
+  mSet( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
+  mSet( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
 }
 
 void Input::prepare()
@@ -424,8 +424,8 @@ void Input::prepare()
   oldButtons = buttons;
   buttons    = currButtons;
 
-  memcpy( sdlOldKeys, sdlKeys, sizeof( sdlKeys ) );
-  memcpy( sdlKeys, sdlCurrKeys, sizeof( sdlKeys ) );
+  mCopy( sdlOldKeys, sdlKeys, sizeof( sdlKeys ) );
+  mCopy( sdlKeys, sdlCurrKeys, sizeof( sdlKeys ) );
 }
 
 void Input::update()
@@ -483,8 +483,8 @@ void Input::update()
 
   window.warpMouse();
 
-  memcpy( oldKeys, keys, sizeof( keys ) );
-  memset( keys, 0, sizeof( keys ) );
+  mCopy( oldKeys, keys, sizeof( keys ) );
+  mSet( keys, 0, sizeof( keys ) );
 
   int mod = sdlKeys[modifier0] | sdlKeys[modifier1] ? int( MOD_ON_BIT ) : int( MOD_OFF_BIT );
 
@@ -521,11 +521,11 @@ void Input::init()
   const JSON& keyboardConfig = inputConfig["keyboard"];
   const JSON& keyMapConfig   = inputConfig["bindings"];
 
-  memset( sdlKeys, 0, sizeof( sdlKeys ) );
-  memset( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
-  memset( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
+  mSet( sdlKeys, 0, sizeof( sdlKeys ) );
+  mSet( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
+  mSet( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
 
-  memset( keyMap, 0, sizeof( keyMap ) );
+  mSet( keyMap, 0, sizeof( keyMap ) );
 
   if( configExists ) {
     loadKeyMap( keyMapConfig );
@@ -551,8 +551,8 @@ void Input::init()
   wheelUp     = false;
   wheelDown   = false;
 
-  memset( keys, 0, sizeof( keys ) );
-  memset( oldKeys, 0, sizeof( oldKeys ) );
+  mSet( keys, 0, sizeof( keys ) );
+  mSet( oldKeys, 0, sizeof( oldKeys ) );
 
   mouseSensH          = mouseConfig["sensitivity.h"].get( 0.004f );
   mouseSensV          = mouseConfig["sensitivity.v"].get( 0.004f );

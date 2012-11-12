@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * Generic four-component vector.
+ *
+ * @sa `oz::Vec3`
  */
 class Vec4 : public VectorBase4
 {

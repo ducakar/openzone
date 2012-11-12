@@ -358,11 +358,15 @@ void Render::drawOrbis()
 
     glViewport( 0, 0, frameWidth, frameHeight );
 
+#ifdef GL_ES_VERSION_2_0
     glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
+#else
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+#endif
 
-#ifndef OZ_GL_ES
-    uint dbos[] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers( 1, dbos );
+#ifndef GL_ES_VERSION_2_0
+//     uint dbos[] = { GL_COLOR_ATTACHMENT0_EXT };
+//     glDrawBuffers( 1, dbos );
 #endif
   }
   else {
@@ -377,7 +381,11 @@ void Render::drawOrbis()
   if( isOffscreen ) {
     glViewport( 0, 0, windowWidth, windowHeight );
 
+#ifdef GL_ES_VERSION_2_0
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+#else
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+#endif
 
     tf.ortho( windowWidth, windowHeight );
     tf.camera = Mat44::ID;
@@ -386,16 +394,9 @@ void Render::drawOrbis()
     tf.applyCamera();
     shape.colour( 1.0f, 1.0f, 1.0f );
 
-#ifdef OZ_GL_ES
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
     shape.fill( 0, 0, windowWidth, windowHeight );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-#else
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, mainFrame );
-    glBlitFramebuffer( 0, 0, frameWidth, frameHeight, 0, 0, windowWidth, windowHeight,
-                       GL_COLOR_BUFFER_BIT, GLenum( scaleFilter ) );
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-#endif
   }
 
   postprocessMicros += Time::uclock() - beginMicros;
@@ -461,19 +462,32 @@ void Render::resize()
   frameHeight = int( float( window.height ) * scale + 0.5f );
 
   if( mainFrame != 0 ) {
+#ifdef GL_ES_VERSION_2_0
     glDeleteFramebuffers( 1, &mainFrame );
     glDeleteTextures( 1, &colourBuffer );
     glDeleteRenderbuffers( 1, &depthBuffer );
+#else
+    glDeleteFramebuffersEXT( 1, &mainFrame );
+    glDeleteTextures( 1, &colourBuffer );
+    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+#endif
   }
+
+#ifdef GL_ES_VERSION_2_0
 
   glGenRenderbuffers( 1, &depthBuffer );
   glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-#ifdef OZ_GL_ES
   glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
-#else
-  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
-#endif
   glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+#else
+
+  glGenRenderbuffersEXT( 1, &depthBuffer );
+  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
+  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
+  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
+
+#endif
 
   glGenTextures( 1, &colourBuffer );
   glBindTexture( GL_TEXTURE_2D, colourBuffer );
@@ -488,6 +502,8 @@ void Render::resize()
 
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
+#ifdef GL_ES_VERSION_2_0
+
   glGenFramebuffers( 1, &mainFrame );
   glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
 
@@ -499,6 +515,24 @@ void Render::resize()
   }
 
   glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+#else
+
+  glGenFramebuffersEXT( 1, &mainFrame );
+  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+
+  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+                                depthBuffer );
+  glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+                             colourBuffer, 0 );
+
+  if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
+    OZ_ERROR( "Main framebuffer creation failed" );
+  }
+
+  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+
+#endif
 }
 
 void Render::load()
@@ -590,7 +624,7 @@ void Render::init()
   Log::println( "OpenGL extensions {" );
   Log::indent();
 
-#ifdef OZ_GL_ES
+#ifdef GL_ES_VERSION_2_0
   hasFBO = true;
 #endif
 
@@ -698,9 +732,15 @@ void Render::free()
   Log::indent();
 
   if( mainFrame != 0 ) {
+#ifdef GL_ES_VERSION_2_0
     glDeleteFramebuffers( 1, &mainFrame );
     glDeleteTextures( 1, &colourBuffer );
     glDeleteRenderbuffers( 1, &depthBuffer );
+#else
+    glDeleteFramebuffersEXT( 1, &mainFrame );
+    glDeleteTextures( 1, &colourBuffer );
+    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+#endif
 
     mainFrame = 0;
   }
@@ -744,7 +784,8 @@ void Render::drawDyn()
     Body* body = space.bodies[i];
 
     if( i == 2 ) {
-      body->rot *= Quat::rotationZXZ( input.mouseX * 0.01f, input.mouseY * 0.01f, 0.0f );
+      body->rot *= Quat::rotationZXZ( float( input.mouseX ) * 0.01f, float( input.mouseY ) * 0.01f,
+                                      0.0f );
     }
     else {
       body->rot *= Quat::rotationAxis( ~Vec3( 1.0f, float( i ), 1.0f ), 0.002f );

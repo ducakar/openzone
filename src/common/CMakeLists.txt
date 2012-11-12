@@ -13,4 +13,8 @@ add_library( common STATIC
 #END SOURCES
 )
 use_pch( common pch )
-target_link_libraries( common ${LUA_LIBRARY} ${SDL_LIBRARY} ozDynamics ozCore )
+target_link_libraries( common ${LUA_LIBRARY} ozDynamics ozCore )
+
+if( OZ_SDL2 )
+  target_link_libraries( common ${SDL2_LIBRARY} )
+endif()

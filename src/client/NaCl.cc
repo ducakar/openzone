@@ -37,7 +37,7 @@ namespace oz
 namespace client
 {
 
-static Mutex          messageMutex;
+static SpinLock       messageLock;
 static List<String>   messageQueue;
 static pp::Graphics3D context;
 
@@ -75,23 +75,22 @@ void NaCl::post( const char* message )
 
 String NaCl::poll()
 {
-  messageMutex.lock();
+  messageLock.lock();
   String s = messageQueue.isEmpty() ? String() : messageQueue.popFirst();
-  messageMutex.unlock();
+  messageLock.unlock();
 
   return s;
 }
 
 void NaCl::push( const char* message )
 {
-  messageMutex.lock();
+  messageLock.lock();
   messageQueue.pushLast( message );
-  messageMutex.unlock();
+  messageLock.unlock();
 }
 
 void NaCl::init()
 {
-  messageMutex.init();
   mainCallSemaphore.init();
 }
 
@@ -101,7 +100,6 @@ void NaCl::free()
   messageQueue.deallocate();
 
   mainCallSemaphore.destroy();
-  messageMutex.destroy();
 }
 
 }

@@ -37,6 +37,10 @@
 #include <client/ui/CreditsMenu.hh>
 #include <client/ui/UI.hh>
 
+#ifdef _WIN32
+# include <shellapi.h>
+#endif
+
 namespace oz
 {
 namespace client
@@ -88,6 +92,19 @@ static void openCredits( Button* sender )
   } )
 }
 
+static void openWeb( Button* )
+{
+#if defined( __ANDROID__ )
+#elif defined( __native_client__ )
+  NaCl::post( "navi:http://ducakar.github.com/openzone/" );
+#elif defined( _WIN32 )
+  ShellExecute( nullptr, "open", "http://ducakar.github.com/openzone/", nullptr, nullptr,
+                SW_SHOWNORMAL );
+#else
+  system( "xdg-open http://ducakar.github.com/openzone/ &" );
+#endif
+}
+
 static void quit( Button* )
 {
   menuStage.doExit = true;
@@ -118,14 +135,14 @@ void MainMenu::onUpdate()
   if( autosaveFile.stat() ) {
     OZ_MAIN_CALL( this, {
       Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
-      _this->add( continueButton, -20, 320 );
+      _this->add( continueButton, -20, 360 );
     } )
   }
 
   if( quicksaveFile.stat() ) {
     OZ_MAIN_CALL( this, {
       Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
-      _this->add( quickLoadButton, -20, 280 );
+      _this->add( quickLoadButton, -20, 320 );
     } )
   }
 
@@ -161,11 +178,13 @@ MainMenu::MainMenu() :
   Button* missionsButton  = new Button( OZ_GETTEXT( "Missions" ),  openMissions,       200, 30 );
   Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  openSettings,       200, 30 );
   Button* creditsButton   = new Button( OZ_GETTEXT( "Credits" ),   openCredits,        200, 30 );
+  Button* webButton       = new Button( OZ_GETTEXT( "Web" ),       openWeb,            200, 30 );
   Button* quitButton      = new Button( OZ_GETTEXT( "Exit" ),      quit,               200, 30 );
 
-  add( missionsButton,  -20, 220 );
-  add( settingsButton,  -20, 160 );
-  add( creditsButton,   -20, 120 );
+  add( missionsButton,  -20, 260 );
+  add( settingsButton,  -20, 200 );
+  add( creditsButton,   -20, 160 );
+  add( webButton,       -20, 120 );
   add( quitButton,      -20,  60 );
 }
 

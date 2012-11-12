@@ -202,22 +202,6 @@ void Thread::start( const char* name, Main* main, void* data )
 #endif
 }
 
-void Thread::detach()
-{
-  hard_assert( descriptor != nullptr );
-
-#ifdef _WIN32
-  CloseHandle( descriptor->thread );
-#else
-  if( pthread_detach( descriptor->thread ) != 0 ) {
-    OZ_ERROR( "Thread detach failed" );
-  }
-#endif
-
-  free( descriptor );
-  descriptor = nullptr;
-}
-
 void Thread::join()
 {
   hard_assert( descriptor != nullptr );

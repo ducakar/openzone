@@ -16,19 +16,21 @@ ports. Android port in still under development.
 For generic Linux builds, make sure you have all the dependencies installed. You need to install
 development packages for the following libraries:
 
-* ALSA
-* PhysicsFS 2.0 or 2.1
-* Lua 5.1 or 5.2
-* SDL 1.2 or 2.0
-* SDL_ttf
-* OpenGL 2.1+ (Mesa headers) or OpenGL ES 2.0
-* OpenAL 1.1
-* libvorbis
-* libmad (optional)
-* faad (optional)
-* eSpeak (optional)
-* FreeImage
-* libsquish (optional)
+- ALSA
+- PhysicsFS 2.0 or 2.1
+- Lua 5.1 or 5.2
+- SDL 1.2 or 2.0
+- SDL_ttf
+- OpenGL 2.1+ or OpenGL ES 2.0
+- OpenAL 1.1
+- libvorbis
+- FreeImage
+- libsquish (optional)
+
+If you don't have libmad, faad and eSpeak on your system, you can use headers located in `include`
+subdirectory. Those are automatically used on Android, NaCl and Windows, overriding any of those
+headers found on the system. On Linux one may add "`-I./include`" to `CMAKE_CXXFLAGS` for the same
+effect.
 
 You can then use generic steps for building CMake projects:
 
@@ -36,6 +38,8 @@ You can then use generic steps for building CMake projects:
     cd build
     cmake ..
     make
+
+For a user-friendly GUI where you can configure build options, use `cmake-gui` instead of `cmake`.
 
 For building all supported configurations you can use `ports.sh` and `build.sh` scripts. `ports.sh`
 (see Tools section) downloads and builds all required libraries for NaCl and Android platforms
@@ -50,30 +54,40 @@ MinGW32 is searched in `/usr/i486-mingw32` by default. You may change that in
 
 You may also want to set several options when configuring CMake build system:
 
-* `OZ_SHARED_LIBS`: Build liboz (OpenZone Core Library) and libozdyn (OpenZone Dynamics Library) as
-  shared libraries. This is useful if one wants to put liboz and libozdyn into separate Linux
-  packages so other programs can use them too.
+- `OZ_SHARED_LIBS`: Build liboz (OpenZone Core Library plus OpenZone Dynamics Library) as a shared
+  library. This is useful if one wants to put liboz into a separate Linux package so other programs
+  can use it too.
+  `OFF` by default, forced to `OFF` on Android and NaCl.
 
-* `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
+- `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
   memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
   mismatches and one can check for currently allocated memory chunks (and hence memory leaks).
+  `OFF` by default.
 
-* `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
+- `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
   Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementations since
   Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of accesses to
   vector components in OpenZone code.
+  `OFF` by default.
 
-* `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled in NaCl platform, on other platforms it will
-  merely use GL ES headers and functions set, it will still initialise OpenGL.
+- `OZ_SDL2`: Use upcoming SDL 2.0 instead of stable SDL 1.2.
+  `OFF` by default, forced to `ON` on Android, forced to `OFF` on NaCl.
 
-* `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
+- `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled on Android and NaCl. Enabling this on Linux or
+  Windows while using SDL 1.2 leads to a strange situation when SDL initialises OpenGL but rendering
+  is done entirely through OpenGL ES. However, it seems to work on Linux at least.
+  `OFF` by default, forced to `ON` on Android and NaCl.
+
+- `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
   texture compression. Requires libmad, faad and libsquish libraries.
+  `OFF` by default.
 
-* `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
+- `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
   from support directory, game data archives found in `share/openzone`, info files etc. This is
   intended if one wants to create all-in-one ZIP (or whatever) archive that can be unpacked and run
-  on any Linux distro or Windows without installation. Always on for Windows build, otherwise off by
-  default.
+  on any Linux distro or Windows without installation. Always enabled for Windows build, always
+  disabled on Andorid and NaCl, disabled by default on Linux.
+  `OFF` by default, forced to `ON` on Windows, forced to `OFF` on Android and NaCl.
 
 
 Tools
@@ -144,9 +158,9 @@ manually is not easy.
 Configures and/or builds for all supported platforms (see `platforms` array is the scrip) in the
 `build` directory. The following parameters may be given (`build` is assumed if none):
 
-    * `clean`: delete all builds
-    * `conf`: delete all builds and configure (but not build) them anew
-    * `build`: configure (if necessary) and build all builds.
+- `clean`: delete all builds
+- `conf`: delete all builds and configure (but not build) them anew
+- `build`: configure (if necessary) and build all builds.
 
 ### `capture.sh` ###
 
@@ -190,8 +204,8 @@ built from AUR.
 
 The following parameters may be given (`build` is assumed if none):
 
-    * `clean`: Delete directories for all platforms
-    * `build`: Copy libraries for selected platforms into corresponding directories.
+- `clean`: Delete directories for all platforms
+- `build`: Copy libraries for selected platforms into corresponding directories.
 
 ### `nacl-test.sh` ###
 
@@ -211,10 +225,10 @@ This script is used to build libraries required by OpenZone for some platforms. 
 zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.
 The following parameters may be given (`build` is assumed if none):
 
-    * `clean`: Delete all built libraries for all platforms in `ports` directory. Downloaded sources
-      are left intact.
-    * `fetch`: Download sources into `ports/archives` directory.
-    * `build`: Builds all libraries for all platforms.
+- `clean`: Delete all built libraries for all platforms in `ports` directory. Downloaded sources
+  are left intact.
+- `fetch`: Download sources into `ports/archives` directory.
+- `build`: Builds all libraries for all platforms.
 
 ### `q3map2.sh <map_file>` ###
 

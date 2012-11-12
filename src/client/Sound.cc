@@ -228,7 +228,7 @@ void Sound::musicOpen( const char* path )
         OZ_ERROR( "Corrupted AAC header in '%s'", path );
       }
 
-      memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
+      mMove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
 
       readSize = size_t( PHYSFS_readBytes( musicFile,
                                            musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
@@ -361,7 +361,7 @@ int Sound::musicDecode()
             else {
               bytesLeft = size_t( madStream.bufend - madStream.next_frame );
 
-              memmove( musicInputBuffer, madStream.next_frame, bytesLeft );
+              mMove( musicInputBuffer, madStream.next_frame, bytesLeft );
             }
 
             size_t bytesRead = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer + bytesLeft,
@@ -371,7 +371,7 @@ int Sound::musicDecode()
               return int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
             }
             else if( bytesRead < MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) {
-              memset( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
+              mSet( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
             }
 
             mad_stream_buffer( &madStream, musicInputBuffer, bytesLeft + bytesRead );
@@ -399,13 +399,13 @@ int Sound::musicDecode()
           int space  = int( musicOutputEnd - musicOutput );
 
           if( length >= space ) {
-            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( space ) );
+            mCopy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( space ) );
             aacWrittenBytes += space;
 
             return MUSIC_BUFFER_SIZE;
           }
           else {
-            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( length ) );
+            mCopy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( length ) );
             aacWrittenBytes += length;
             musicOutput += length;
           }
@@ -424,7 +424,7 @@ int Sound::musicDecode()
         aacBufferBytes = int( frameInfo.samples * frameInfo.channels );
         aacWrittenBytes = 0;
 
-        memmove( musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes );
+        mMove( musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes );
 
         size_t bytesRead = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer + aacInputBytes,
                                                      ulong64( MUSIC_INPUT_BUFFER_SIZE - aacInputBytes ) ) );

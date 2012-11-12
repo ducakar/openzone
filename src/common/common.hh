@@ -46,7 +46,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#if defined( __ANDROID__ )
+#ifdef OZ_SDL2
 # include <SDL2/SDL.h>
 #else
 # include <SDL/SDL.h>

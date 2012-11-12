@@ -37,6 +37,8 @@ namespace oz
  * Buffered read/write stream.
  *
  * Stream uses an underlying buffer that is dynamically growing.
+ *
+ * @sa `oz::InputStream`, `oz::OutputStream`
  */
 class BufferStream
 {

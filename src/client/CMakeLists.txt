@@ -158,16 +158,20 @@ add_library( client STATIC
 #END SOURCES
 )
 use_pch( client pch )
+target_link_libraries( client ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} )
 
-if( ANDROID )
-  target_link_libraries( client ${SDLTTF_LIBRARY} ${FREETYPE_LIBRARY} ${ANDROID_GLES2_LIBRARY}
-                                ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY}
-                                ${OGG_LIBRARY} )
-elseif( NACL )
-  target_link_libraries( client ${SDLTTF_LIBRARY} ${FREETYPE_LIBRARY} ${PEPPER_GLES2_LIBRARY}
-                                ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY}
-                                ${OGG_LIBRARY} ${PEPPER_CXX_LIBRARY} ${PEPPER_LIBRARY} )
+if( OZ_SDL2 )
+  target_link_libraries( client ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} )
 else()
-  target_link_libraries( client ${SDLTTF_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENAL_LIBRARY}
-                                ${VORBISFILE_LIBRARY} )
+  target_link_libraries( client ${SDL_LIBRARY} ${SDL_TTF_LIBRARY} )
+endif()
+
+if( OZ_GL_ES )
+  target_link_libraries( client ${GLES2_LIBRARY} )
+else()
+  target_link_libraries( client ${OPENGL_gl_LIBRARY} )
+endif()
+
+if( ANDROID OR NACL )
+  target_link_libraries( client ${FREETYPE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY} )
 endif()

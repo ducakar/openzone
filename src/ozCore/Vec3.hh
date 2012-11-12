@@ -36,6 +36,8 @@ namespace oz
 
 /**
  * 3D vector.
+ *
+ * @sa `oz::Vec4`, `oz::Point`
  */
 class Vec3 : public VectorBase3
 {

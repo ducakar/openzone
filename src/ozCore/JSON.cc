@@ -35,10 +35,6 @@
 #include <cstring>
 #include <sstream>
 
-#ifdef _WIN32
-# define strcasecmp _stricmp
-#endif
-
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
 
@@ -339,18 +335,23 @@ JSON JSON::Parser::parseValue()
       ss >> number;
 
       if( ss.fail() ) {
-        std::string s = ss.str();
+        std::string str  = ss.str();
+        const char* s    = str.c_str();
+        float       sign = 1.0f;
 
-        if( strcasecmp( s.c_str(), "inf" ) == 0 || strcasecmp( s.c_str(), "+inf" ) == 0 ) {
-          number = Math::INF;
+        if( s[0] == '-' ) {
+          sign = -1.0f;
+          ++s;
         }
-        else if( strcasecmp( s.c_str(), "-inf" ) == 0 ) {
-          number = -Math::INF;
+        else if( s[0] == '+' ) {
+          ++s;
         }
-        else if( strcasecmp( s.c_str(), "nan" ) == 0 || strcasecmp( s.c_str(), "+nan" ) == 0 ||
-                 strcasecmp( s.c_str(), "-nan" ) == 0 )
-        {
-          number = Math::NaN;
+
+        if( strcmp( s, "INF" ) == 0 ) {
+          number = sign * Math::INF;
+        }
+        else if( strcmp( s, "NaN" ) == 0 ) {
+          number = sign * Math::NaN;
         }
         else {
           OZ_PARSE_ERROR( -nChars, "Unknown value type" );

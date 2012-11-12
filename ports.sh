@@ -210,9 +210,6 @@ function fetch()
   # zlib
   download 'http://zlib.net/zlib-1.2.7.tar.bz2'
 
-  # physfs
-  download 'http://icculus.org/physfs/downloads/physfs-2.0.2.tar.gz'
-
   # physfs 2.1
   cd "$topDir/archives"
   if [[ -d "physfs" ]]
@@ -351,7 +348,7 @@ function build_sdl()
   ./autogen.sh
   case $triplet in
     *-nacl)
-      # assembly causes validity check to fail
+      # Assembly causes NaCl validity check to fail when NEXE is loading.
       autotoolsBuild --disable-shared --disable-pthread-sem --disable-assembly
       ;;
     *)

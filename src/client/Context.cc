@@ -73,8 +73,8 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
       Log::printRaw( "AL: Speak buffer overrun\n" );
     }
 
-    memcpy( speakSource.samples + speakSource.nSamples, samples,
-            size_t( nSamples ) * sizeof( short ) );
+    mCopy( speakSource.samples + speakSource.nSamples, samples,
+           size_t( nSamples ) * sizeof( short ) );
     speakSource.nSamples += nSamples;
 
     if( speakSource.nQueuedBuffers != 2 ) {

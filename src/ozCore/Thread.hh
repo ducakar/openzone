@@ -35,12 +35,14 @@ namespace oz
 
 /**
  * %Thread.
+ *
+ * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`
  */
 class Thread
 {
   public:
 
-    /// %Thread's main function.
+    /// %Thread's main method type.
     typedef void Main( void* data );
 
   private:
@@ -54,7 +56,8 @@ class Thread
     /**
      * Get current thread's name.
      *
-     * If thread was not started via start() method, `nullptr` is returned.
+     * If the thread hasn't been started through this class nor it is the main thread, `nullptr` is
+     * returned. For main thread, "main" is returned.
      */
     static const char* name();
 
@@ -66,11 +69,13 @@ class Thread
     {}
 
     /**
-     * Destructor, all started threads must be detached or joined.
+     * Destructor, joins a started but not-yet-joined thread.
      */
     ~Thread()
     {
-      hard_assert( descriptor == nullptr );
+      if( descriptor != nullptr ) {
+        join();
+      }
     }
 
     /**
@@ -103,23 +108,18 @@ class Thread
     /**
      * Create a new thread and run it.
      *
-     * When a new thread is started it is attached to the Thread object that started it. `detach()`
-     * or `join()` must be called afterwards, before the Thread object destruction or starting
+     * When a new thread is started it is attached to the Thread object that started it. `join()`
+     * should be called to ensure thread's exit before Thread object's destruction or starting
      * another thread.
      *
-     * @param name thread name (string is copied to an internal buffer).
-     * @param main pointer to the thread's main function.
-     * @param data pointer to user data, passed to the thread's main function.
+     * @param name thread name (copied to an internal buffer).
+     * @param main pointer to the thread's main method.
+     * @param data pointer to user data, passed to the thread's main method.
      */
-    void start( const char* name, Main* main, void* data );
+    void start( const char* name, Main* main, void* data = nullptr );
 
     /**
-     * Detach a started thread.
-     */
-    void detach();
-
-    /**
-     * Wait for the started thread to finish execution.
+     * Wait for a started thread to finish execution.
      */
     void join();
 

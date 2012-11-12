@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * Fixed-size read/write stream.
+ *
+ * @sa `oz::InputStream`, `oz::BufferStream`
  */
 class OutputStream
 {

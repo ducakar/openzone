@@ -401,8 +401,8 @@ void Builder::buildClasses( const String& pkgName )
     int bodySize   = os.length();
 
     os.forward( headerSize );
-    memmove( os.begin() + headerSize, os.begin(), size_t( bodySize ) );
-    memcpy( os.begin(), headerStream.begin(), size_t( headerSize ) );
+    mMove( os.begin() + headerSize, os.begin(), size_t( bodySize ) );
+    mCopy( os.begin(), headerStream.begin(), size_t( headerSize ) );
 
     headerStream.deallocate();
 

@@ -9,7 +9,7 @@
   "dim":                [ 0.15, 0.15, 0.15 ],
 
   "life":               1,
-  "resistance":         inf,
+  "resistance":         INF,
 
   "imagoType":          "SMM",
   "imagoModel":         "datacube"

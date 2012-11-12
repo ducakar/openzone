@@ -38,6 +38,8 @@ namespace oz
  *
  * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
  * `sizeof( ulong ) * 8`.
+ *
+ * @sa `oz::SBitset`
  */
 class Bitset
 {
@@ -83,7 +85,7 @@ class Bitset
     Bitset( const Bitset& b ) :
       data( b.size == 0 ? nullptr : new ulong[b.size] ), size( b.size )
     {
-      mCopy( data, b.data, size_t( b.size ) * sizeof( ulong ) );
+      aCopy<ulong>( data, b.data, b.size );
     }
 
     /**
@@ -114,7 +116,7 @@ class Bitset
         size = b.size;
       }
 
-      mCopy( data, b.data, size_t( b.size ) * sizeof( ulong ) );
+      aCopy<ulong>( data, b.data, b.size );
 
       return *this;
     }

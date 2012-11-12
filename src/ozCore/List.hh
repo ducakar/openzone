@@ -41,6 +41,8 @@ namespace oz
  * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
+ *
+ * @sa `oz::Slist`, `oz::DArray`, `oz::Set`, `oz::Map`
  */
 template <typename Elem>
 class List

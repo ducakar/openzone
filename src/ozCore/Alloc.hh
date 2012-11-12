@@ -23,7 +23,22 @@
 /**
  * @file ozCore/Alloc.hh
  *
- * Alloc class and new/delete operator overloads.
+ * Alloc class and `new`/`delete` operator overloads.
+ *
+ * Apart form Alloc class, enhanced `new`/`delete` operators are defined in this module, overriding
+ * ones provided by standard C++ library, including `std::nothrow` versions. Those operators count
+ * number of allocations and amount of memory allocated at any given time (reported through
+ * `Alloc::count`, `Alloc::amount` etc.).
+ *
+ * Several other features may also be configured:
+ * @li Unless compiled with `NDEBUG` all freed memory is overwritten by 0xEE bytes.
+ * @li If compiled with `OZ_TRACK_ALLOCS` `new`/`delete` also tracks allocated chunks to catch
+ *     memory leaks and `new`/`delete` mismatches. `Alloc::printLeaks()` can be called at any time
+ *     to print currently allocated chunks.
+ * @li If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to size of 4 floats.
+ *
+ * @note
+ * Enabling AddressSanitizer during compilation of liboz disables `new`/`delete` overloads.
  */
 
 #pragma once
@@ -34,7 +49,9 @@ namespace oz
 {
 
 /**
- * Memory allocator auxiliary class.
+ * Auxiliary class for overloaded `new`/`delete` operators.
+ *
+ * @sa ozCore/Alloc.hh
  */
 class Alloc
 {
@@ -117,107 +134,3 @@ class Alloc
 };
 
 }
-
-/**
- * Enhanced operator `new` overload (nothrow version).
- *
- * Apart from standard new operator this one counts memory allocations and amount of memory
- * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
- *
- * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
- *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
- *     currently allocated chunks.
- * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void* operator new ( size_t size );
-
-/**
- * Enhanced operator `new[]` overload.
- *
- * Apart from standard new operator this one counts memory allocations and amount of memory
- * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
- *
- * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
- *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
- *     currently allocated chunks.
- * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void* operator new[] ( size_t size );
-
-/**
- * Operator `delete` overload.
- *
- * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void operator delete ( void* ptr ) noexcept;
-
-/**
- * Operator `delete[]` overload with memory statistics and (optionally) memory leak checking.
- *
- * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void operator delete[] ( void* ptr ) noexcept;
-
-/**
- * Enhanced operator `new` overload (nothrow version).
- *
- * Apart from standard new operator this one counts memory allocations and amount of memory
- * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
- *
- * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
- *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
- *     currently allocated chunks.
- * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void* operator new ( size_t size, const std::nothrow_t& ) noexcept;
-
-/**
- * Enhanced operator `new[]` overload (nothrow version).
- *
- * Apart from standard new operator this one counts memory allocations and amount of memory
- * allocated (reported via `Alloc::count`, `Alloc::amount` etc.).
- *
- * @li If compiled with `OZ_TRACK_ALLOCS` is also tracks all allocated chunks, so it catches
- *     `new`/`delete` mismatches and `Alloc::printLeaks()` can be called at any time to print
- *     currently allocated chunks.
- * @li If compiled with `OZ_SIMD_MATH` allocated memory is aligned to size of 4 floats.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept;
-
-/**
- * Operator `delete` overload with memory statistics and (optionally) memory leak checking.
- *
- * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void operator delete ( void* ptr, const std::nothrow_t& ) noexcept;
-
-/**
- * Operator `delete[]` overload with memory statistics and (optionally) memory leak checking.
- *
- * Unless compiled with `NDEBUG` it overwrites deallocated chunk of memory with 0xee bytes.
- *
- * @note
- * Enabling AddressSanitizer during compilation of liboz disables all `new`/`delete` overloads.
- */
-void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept;

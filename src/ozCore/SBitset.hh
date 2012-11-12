@@ -38,6 +38,8 @@ namespace oz
  *
  * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
  * `sizeof( ulong ) * 8`.
+ *
+ * @sa `oz::Bitset`
  */
 template <int BITSIZE>
 class SBitset

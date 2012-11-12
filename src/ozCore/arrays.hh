@@ -24,6 +24,8 @@
  * @file ozCore/arrays.hh
  *
  * Iterators and utility functions for arrays and array-like containers.
+ *
+ * @sa ozCore/iterables.hh
  */
 
 #pragma once

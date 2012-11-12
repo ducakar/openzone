@@ -321,7 +321,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
         normals[i] = istream->readVec3();
       }
 
-      memcpy( vertices, vertexBuffer, size_t( nFrameVertices ) * sizeof( Vertex ) );
+      mCopy( vertices, vertexBuffer, size_t( nFrameVertices ) * sizeof( Vertex ) );
 
       if( nFrameVertices > vertexAnimBufferLength ) {
         delete[] vertexAnimBuffer;

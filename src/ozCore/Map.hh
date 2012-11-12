@@ -44,6 +44,8 @@ namespace oz
  * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
+ *
+ * @sa `oz::Set`, `oz::HashMap`, `oz::List`
  */
 template <typename Key, typename Value>
 class Map

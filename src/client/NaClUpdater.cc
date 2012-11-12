@@ -175,8 +175,7 @@ void NaClUpdater::downloadUpdates()
         NaCl::post( String::str( "upd1:%d/%d", packageNum, nRemotePackages ) );
       }
       else {
-        NaCl::post( String::str( "upd1:%d/%d: %.0f %%",
-                                 packageNum, nRemotePackages, progress ) );
+        NaCl::post( String::str( "upd1:%d/%d: %.0f %%", packageNum, nRemotePackages, progress ) );
       }
     }
     while( !downloader.isComplete() );

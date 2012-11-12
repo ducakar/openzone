@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * Column-major 4x4 matrix.
+ *
+ * @sa `oz::Mat33`
  */
 class Mat44
 {

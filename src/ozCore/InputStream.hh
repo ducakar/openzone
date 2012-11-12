@@ -38,6 +38,8 @@ namespace oz
 
 /**
  * Fixed-size read-only stream.
+ *
+ * @sa `oz::OutputStream`, `oz::BufferStream`
  */
 class InputStream
 {

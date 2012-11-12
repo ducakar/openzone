@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * PhysicsFS wrapper, similar to `File` class.
+ *
+ * @sa `oz::File`
  */
 class PFile
 {

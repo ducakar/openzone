@@ -37,6 +37,8 @@ namespace oz
  * Static array.
  *
  * The advantage over C++ arrays is it that is has bounds checking and iterator.
+ *
+ * @sa `oz::DArray`, `oz::SList`
  */
 template <typename Elem, int COUNT>
 class Array

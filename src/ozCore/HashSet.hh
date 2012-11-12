@@ -29,7 +29,6 @@
 #pragma once
 
 #include "Pool.hh"
-#include "arrays.hh"
 
 namespace oz
 {
@@ -38,6 +37,8 @@ namespace oz
  * Chaining hashtable implementation, containing only keys without values.
  *
  * Memory is allocated when the first element is added.
+ *
+ * @sa `oz::HashMap`, `oz::Set`
  */
 template <typename Key, int SIZE = 256>
 class HashSet
@@ -225,7 +226,7 @@ class HashSet
      */
     explicit HashSet()
     {
-      mSet( data, 0, sizeof( data ) );
+      aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }
 
     /**
@@ -253,8 +254,8 @@ class HashSet
     HashSet( HashSet&& hs ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( hs.pool ) )
     {
-      mCopy( data, hs.data, sizeof( hs.data ) );
-      mSet( hs.data, 0, sizeof( data ) );
+      aCopy<Elem*>( data, hs.data, SIZE );
+      aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
     }
 
     /**
@@ -284,8 +285,8 @@ class HashSet
 
       clear();
 
-      mCopy( data, hs.data, sizeof( hs.data ) );
-      mSet( hs.data, 0, sizeof( data ) );
+      aCopy<Elem*>( data, hs.data, SIZE );
+      aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
       pool = static_cast< Pool<Elem, SIZE>&& >( hs.pool );
 
       return *this;

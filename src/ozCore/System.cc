@@ -39,6 +39,9 @@
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
+# include <unistd.h>
+
+# define _Exit( code ) _exit( code )
 #elif defined( __native_client__ )
 # include <ctime>
 # include <ppapi/cpp/audio.h>
@@ -49,6 +52,7 @@
 # include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
+
 # define isatty( fd ) _isatty( fd )
 #else
 # include <alsa/asoundlib.h>
@@ -475,7 +479,7 @@ static void abort( bool doHalt )
 #endif
 
   waitBell();
-  ::abort();
+  _Exit( EXIT_FAILURE );
 }
 
 const int     System::SIGNALS_BIT;

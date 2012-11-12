@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * 3D point.
+ *
+ * @sa `oz::Vec3`
  */
 class Point : public VectorBase3
 {

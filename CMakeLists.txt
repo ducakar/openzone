@@ -12,7 +12,8 @@ option( OZ_SHARED_LIBS "Build libozCore and libozDynamics as shared libraries." 
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 
-option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
+option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )
+option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1+." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
@@ -28,11 +29,14 @@ include( CheckLibraryExists )
 
 if( ANDROID )
   set( CMAKE_SYSTEM_NAME "Android" )
+  set( OZ_SHARED_LIBS OFF )
+  set( OZ_SDL2 ON )
   set( OZ_GL_ES ON )
   set( OZ_STANDALONE OFF )
 elseif( NACL )
   set( CMAKE_SYSTEM_NAME "NaCl" )
   set( OZ_SHARED_LIBS OFF )
+  set( OZ_SDL2 OFF )
   set( OZ_GL_ES ON )
   set( OZ_STANDALONE OFF )
 elseif( WIN32 )
@@ -45,30 +49,24 @@ if( OZ_STANDALONE )
   set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
 endif()
 
-check_cxx_source_compiles( "
-#ifdef __clang__
-int main( int, char** ) { return 0; }
-#else
-# error Not LLVM/Clang
-#endif
-" isClang )
-
-check_cxx_source_compiles( "
-#if !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
-int main( int, char** ) { return 0; }
-#else
-# error GCC >= 4.5
-#endif
-" isLegacyGCC )
-
-check_cxx_compiler_flag( "-flto" hasLTO )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
+  if( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "4.4" )
+    message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers." )
+  endif()
+elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
+  if( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "3.0" )
+    message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers." )
+  endif()
+else()
+  message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers." )
+endif()
 
 #
 # Libraries
 #
 
 if( ANDROID )
-  include_directories( ${PLATFORM_PREFIX}/usr/include ) # For KDevelop
+  include_directories( ${PLATFORM_PREFIX}/usr/include ) # For KDevelop.
   include_directories( ${PLATFORM_PORTS_PREFIX}/usr/include )
 
   find_library( ANDROID_LOG_LIBRARY log )
@@ -77,18 +75,16 @@ if( ANDROID )
   find_package( PhysFS REQUIRED )
 
   find_package( Lua51 REQUIRED )
-  set( SDL_INCLUDE_DIR ${PLATFORM_PORTS_PREFIX}/usr/include/SDL2 )
-  set( SDL_LIBRARY ${PLATFORM_PORTS_PREFIX}/usr/lib/libSDL2.a )
-  set( SDLTTF_INCLUDE_DIR ${PLATFORM_PORTS_PREFIX}/usr/include/SDL2 )
-  set( SDLTTF_LIBRARY ${PLATFORM_PORTS_PREFIX}/usr/lib/libSDL2_ttf.a )
+  find_library( SDL2_LIBRARY SDL2 )
+  find_library( SDL2_TTF_LIBRARY SDL2_ttf )
   find_package( Freetype REQUIRED )
-  find_library( ANDROID_GLES2_LIBRARY GLESv2 )
+  find_library( GLES2_LIBRARY GLESv2 )
   find_package( OpenAL REQUIRED )
   find_library( OGG_LIBRARY ogg )
   find_library( VORBIS_LIBRARY vorbis )
   find_library( VORBISFILE_LIBRARY vorbisfile )
 elseif( NACL )
-  include_directories( ${PLATFORM_PREFIX}/include ) # For KDevelop
+  include_directories( ${PLATFORM_PREFIX}/include ) # For KDevelop.
   include_directories( ${PLATFORM_PORTS_PREFIX}/usr/include )
 
   find_library( PTHREAD_LIBRARY pthread )
@@ -101,7 +97,7 @@ elseif( NACL )
   find_package( SDL REQUIRED )
   find_package( SDL_ttf REQUIRED )
   find_package( Freetype REQUIRED )
-  find_library( PEPPER_GLES2_LIBRARY ppapi_gles2 )
+  find_library( GLES2_LIBRARY ppapi_gles2 )
   find_package( OpenAL REQUIRED )
   find_library( OGG_LIBRARY ogg )
   find_library( VORBIS_LIBRARY vorbis )
@@ -111,8 +107,14 @@ elseif( WIN32 )
   find_package( PhysFS REQUIRED )
 
   find_package( Lua51 REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( SDL_ttf REQUIRED )
+  if( OZ_SDL2 )
+    find_library( SDL2_LIBRARY SDL2 )
+    find_library( SDL2_TTF_LIBRARY SDL2_ttf )
+  else()
+    find_package( SDL REQUIRED )
+    find_package( SDL_ttf REQUIRED )
+  endif()
+  find_library( GLES2_LIBRARY GLESv2 )
   find_package( OpenGL REQUIRED )
   find_package( OpenAL REQUIRED )
   find_library( VORBISFILE_LIBRARY vorbisfile )
@@ -126,8 +128,14 @@ else()
   find_package( PhysFS REQUIRED )
 
   find_package( Lua51 REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( SDL_ttf REQUIRED )
+  if( OZ_SDL2 )
+    find_library( SDL2_LIBRARY SDL2 )
+    find_library( SDL2_TTF_LIBRARY SDL2_ttf )
+  else()
+    find_package( SDL REQUIRED )
+    find_package( SDL_ttf REQUIRED )
+  endif()
+  find_library( GLES2_LIBRARY GLESv2 )
   find_package( OpenGL REQUIRED )
   find_package( OpenAL REQUIRED )
   find_library( VORBISFILE_LIBRARY vorbisfile )
@@ -147,15 +155,12 @@ mark_as_advanced( OPENSLES_LIBRARY )
 mark_as_advanced( PHYSFS_INCLUDE_DIR )
 mark_as_advanced( PHYSFS_LIBRARY )
 
+mark_as_advanced( SDLMAIN_LIBRARY )
 mark_as_advanced( SDL_INCLUDE_DIR )
 mark_as_advanced( SDL_LIBRARY )
-mark_as_advanced( SDLMAIN_LIBRARY )
-mark_as_advanced( SDLNET_INCLUDE_DIR )
-mark_as_advanced( SDLNET_LIBRARY )
-mark_as_advanced( SDLTTF_INCLUDE_DIR )
-mark_as_advanced( SDLTTF_LIBRARY )
-mark_as_advanced( PEPPER_GLES2_LIBRARY )
-mark_as_advanced( ANDROID_GLES2_LIBRARY )
+mark_as_advanced( SDL2_LIBRARY )
+mark_as_advanced( SDL2_TTF_LIBRARY )
+mark_as_advanced( GLES2_LIBRARY )
 mark_as_advanced( OGG_LIBRARY )
 mark_as_advanced( VORBIS_LIBRARY )
 mark_as_advanced( VORBISFILE_LIBRARY )
@@ -163,48 +168,46 @@ mark_as_advanced( VORBISFILE_LIBRARY )
 mark_as_advanced( FREEIMAGE_LIBRARY )
 mark_as_advanced( SQUISH_LIBRARY )
 
-if( ANDROID OR NACL OR WIN32 )
-  include_directories( ./include )
-endif()
+# Local libmad, faad and eSpeak headers.
+include_directories( ./include )
 
 #
 # Compiler flags
 #
 
-if( isClang )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )
   # AddressSanitizer memory checker
   # set( flags "${flags} -faddress-sanitizer" )
-elseif( isLegacyGCC )
+elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
   set( flags "-pipe -std=gnu++0x" )
-elseif( ANDROID OR WIN32 )
-  set( flags "-pipe -std=gnu++0x -fstrict-enums" )
+elseif( ANDROID )
+  set( flags "-pipe -std=gnu++0x -pedantic -fstrict-enums" )
 else()
   set( flags "-pipe -std=c++0x -pedantic -fstrict-enums" )
 endif()
 
 set( flags "${flags} -fno-exceptions -fno-rtti -fvisibility-inlines-hidden -ffast-math" )
-set( warnings "-Wall -Wextra -Wconversion" )
 
 # Additional warnings.
-if( isClang )
-  set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-gnu" )
-  set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-float-equal -Wno-padded" )
-  set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-shadow" )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
+  set( flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-gnu" )
+  set( flags "${flags} -Wno-disabled-macro-expansion -Wno-shadow -Wno-padded -Wno-float-equal" )
+  set( flags "${flags} -Wno-global-constructors -Wno-exit-time-destructors" )
 else()
-  set( warnings "${warnings} -Winvalid-pch -Wmissing-declarations -Wmissing-format-attribute" )
-  set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
-  set( warnings "${warnings} -Winit-self -Wformat=2 -Wlogical-op" )
-  # GCC >= 4.7
-  # set( warnings "${warnings} -Wsuggest-attribute=noreturn -Wzero-as-null-pointer-constant" )
+  set( flags "${flags} -Wall -Wextra -Wconversion -Wcast-align -Winit-self -Wlogical-op -Wundef" )
+  set( flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual" )
+  set( flags "${flags} -Wformat=2 -Wmissing-format-attribute -Winvalid-pch" )
+
+  if( NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.6 )
+    # set( flags "${flags} -Wsuggest-attribute=noreturn" )
+  endif()
+  if( NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.7 )
+    # set( flags "${flags} -Wzero-as-null-pointer-constant" )
+  endif()
 endif()
 
-set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
-
-if( hasLTO AND NOT WIN32 )
-  # On Win32+LTO glCompileShaders() sets shaderFiles.data to null in loop at Shader.cc:394. WTF???
-  # set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
-endif()
+set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )
 
 # Strings for BuildInfo class.
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
@@ -247,7 +250,6 @@ if( OZ_STANDALONE )
   install( DIRECTORY doc/licences DESTINATION . )
 
   file( GLOB dataFiles share/openzone/*.zip )
-
   install( FILES ${dataFiles} DESTINATION share/openzone )
 
   if( WIN32 )
@@ -261,7 +263,6 @@ if( OZ_STANDALONE )
 
   if( WIN32 )
     file( GLOB launchers etc/launchers/*.bat )
-
     install( PROGRAMS ${launchers} DESTINATION . )
   else()
     install( PROGRAMS etc/launchers/openzone.sh DESTINATION . )

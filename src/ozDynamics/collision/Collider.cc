@@ -126,6 +126,7 @@ bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
   const Box*     box     = static_cast<const Box*>( box_ );
   const Capsule* capsule = static_cast<const Capsule*>( capsule_ );
 
+  // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
@@ -133,7 +134,7 @@ bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
   static_cast<void>( relPos );
   static_cast<void>( result );
 
-  OZ_ERROR( "Not implemented" );
+  return false;
 }
 
 bool Collider::boxMesh( const Mat33& rot0, const Shape* box_,
@@ -143,6 +144,7 @@ bool Collider::boxMesh( const Mat33& rot0, const Shape* box_,
   const Box*  box  = static_cast<const Box*>( box_ );
   const Mesh* mesh = static_cast<const Mesh*>( mesh_ );
 
+  // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
@@ -150,7 +152,7 @@ bool Collider::boxMesh( const Mat33& rot0, const Shape* box_,
   static_cast<void>( relPos );
   static_cast<void>( result );
 
-  OZ_ERROR( "Not implemented" );
+  return false;
 }
 
 bool Collider::boxCompound( const Mat33& rot0, const Shape* box_,
@@ -214,6 +216,7 @@ bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule_,
   const Capsule* capsule = static_cast<const Capsule*>( capsule_ );
   const Mesh*    mesh    = static_cast<const Mesh*>( mesh_ );
 
+  // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( capsule );
@@ -221,7 +224,7 @@ bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule_,
   static_cast<void>( relPos );
   static_cast<void>( result );
 
-  OZ_ERROR( "Not implemented" );
+  return false;
 }
 
 bool Collider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
@@ -257,6 +260,7 @@ bool Collider::meshMesh( const Mat33& rot0, const Shape* mesh0_,
   const Mesh* mesh0 = static_cast<const Mesh*>( mesh0_ );
   const Mesh* mesh1 = static_cast<const Mesh*>( mesh1_ );
 
+  // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( mesh0 );
@@ -264,7 +268,7 @@ bool Collider::meshMesh( const Mat33& rot0, const Shape* mesh0_,
   static_cast<void>( relPos );
   static_cast<void>( result );
 
-  OZ_ERROR( "Not implemented" );
+  return false;
 }
 
 bool Collider::meshCompound( const Mat33& rot0, const Shape* mesh_,

@@ -50,12 +50,12 @@
 #if defined( __clang__ )
 # define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
 # if OZ_CLANG < 300
-#  error Only LLVM/Clang >= 3.0 is supported.
+#  error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 # endif
 #elif defined( __GNUC__ )
 # define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
 # if OZ_GCC < 404
-#  error Only GCC >= 4.4 is supported.
+#  error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 # endif
 #else
 # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.

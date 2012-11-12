@@ -38,6 +38,8 @@ namespace oz
  *
  * It is implemented as a wrapper for condition variable if a platform supports it since it should
  * yield a better performance.
+ *
+ * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Thread`
  */
 class Semaphore
 {

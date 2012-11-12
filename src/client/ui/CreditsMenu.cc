@@ -175,6 +175,25 @@ CreditsMenu::CreditsMenu() :
       lines.popLast();
     }
   }
+
+  lines.add( "" );
+  lines.add( "" );
+  lines.add( "" );
+  lines.add( "" );
+
+  lines.add( "The following libraries may be distributed with/linked into the engine" );
+  lines.add( "" );
+  lines.add( "FreeImage" );
+  lines.add( "FreeType" );
+  lines.add( "libogg" );
+  lines.add( "libsquish" );
+  lines.add( "libvorbis" );
+  lines.add( "Lua" );
+  lines.add( "OpenAL Soft" );
+  lines.add( "PhysicsFS" );
+  lines.add( "SDL" );
+  lines.add( "SDL_ttf" );
+  lines.add( "zlib" );
 }
 
 }

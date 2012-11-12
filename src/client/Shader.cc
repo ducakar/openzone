@@ -360,7 +360,7 @@ void Shader::init()
   const char* sources[3];
   int         lengths[3];
 
-#ifdef OZ_GL_ES
+#ifdef GL_ES_VERSION_2_0
   defines = "#version 100\n";
 #else
   defines = "#version 120\n";

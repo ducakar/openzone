@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * Spin lock.
+ *
+ * @sa `oz::Mutex`, `oz::Semaphore`, `oz::Thread`
  */
 class SpinLock
 {

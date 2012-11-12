@@ -42,7 +42,6 @@ int main( int argc, char** argv )
 
   exitCode = builder::builder.main( argc, argv );
 
-//   Alloc::printLeaks();
-
+  Alloc::printLeaks();
   return exitCode;
 }

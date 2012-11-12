@@ -168,7 +168,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
           level.data   = new ubyte[level.size];
 
           for( int y = 0; y < height; ++y ) {
-            memcpy( level.data + y*width, FreeImage_GetScanLine( levelDib, y ), size_t( width ) );
+            mCopy( level.data + y*width, FreeImage_GetScanLine( levelDib, y ), size_t( width ) );
           }
         }
         break;

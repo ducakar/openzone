@@ -64,6 +64,8 @@ namespace oz
  *     them from the chain.
  * @li `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
  *     point to elements in the chain or to invalid locations.
+ *
+ * @sa `oz::DChain`
  */
 template <class Elem, int INDEX = 0>
 class Chain

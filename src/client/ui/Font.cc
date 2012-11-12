@@ -70,13 +70,6 @@ void Font::draw( const char* s, uint texId_, int* width, int* height ) const
   SDL_FreeSurface( textSurface );
 }
 
-void Font::free()
-{
-  if( handle != nullptr ) {
-    TTF_CloseFont( static_cast<TTF_Font*>( handle ) );
-  }
-}
-
 void Font::init( const char* name, int height_ )
 {
   height = height_;
@@ -92,6 +85,14 @@ void Font::init( const char* name, int height_ )
   if( handle == nullptr ) {
     OZ_ERROR( "%s", TTF_GetError() );
   }
+}
+
+void Font::free()
+{
+  if( handle != nullptr ) {
+    TTF_CloseFont( static_cast<TTF_Font*>( handle ) );
+  }
+  file.unmap();
 }
 
 }
