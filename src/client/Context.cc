@@ -39,6 +39,8 @@
 #include <client/OpenAL.hh>
 #include <client/eSpeak.hh>
 
+#include <SDL.h>
+
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
     int id = liber.imagoIndex( #name ); \
@@ -404,8 +406,8 @@ uint Context::requestSound( int id )
 
   SDL_AudioSpec audioSpec;
 
-  audioSpec.freq     = DEFAULT_AUDIO_FREQ;
-  audioSpec.format   = DEFAULT_AUDIO_FORMAT;
+  audioSpec.freq     = 44100;
+  audioSpec.format   = AUDIO_S16LSB;
   audioSpec.channels = 1;
   audioSpec.samples  = 0;
 

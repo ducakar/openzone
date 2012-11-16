@@ -31,6 +31,7 @@ add_library( builder STATIC
 #END SOURCES
 )
 use_pch( builder pch )
+
 target_link_libraries( builder ${FREEIMAGE_LIBRARY} )
 
 if( OZ_NONFREE )

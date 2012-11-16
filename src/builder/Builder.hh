@@ -25,6 +25,8 @@
 
 #include <builder/common.hh>
 
+#include <SDL.h>
+
 namespace oz
 {
 namespace builder

@@ -53,9 +53,7 @@ class Context
   private:
 
     // default audio format
-    static const int  DEFAULT_AUDIO_FREQ   = 44100;
-    static const int  DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
-    static const uint INVALID_SOURCE       = ~0u;
+    static const uint INVALID_SOURCE = ~0u;
 
     template <typename Type>
     struct Resource

@@ -8,12 +8,12 @@
 #   ./clean-data.sh <datasrc_dir>
 #
 
-if [[ -z "$1" ]]; then
+if [[ -z $1 ]]; then
   echo "Usage: $0 <datasrc_dir>"
   exit
 fi
 
-dir="$1"
+dir=$1
 
 echo "rm -vf $dir/lingua/*/*.mo $dir/mission/*/lingua/*.mo"
 rm -vf "$dir"/lingua/*/*.mo "$dir"/mission/*/lingua/*.mo

@@ -27,6 +27,26 @@
 #include <nirvana/common.hh>
 #include <modules/common.hh>
 
+#include <client/config.hh>
+
+#define OZ_DL_DECLARE( func ) \
+  decltype( ::func )* func
+
+#define OZ_DL_DEFINE( func ) \
+  decltype( ::func )* func = nullptr
+
+#define OZ_DL_LOAD( l, func ) \
+  *( void** )( &func ) = SDL_LoadFunction( l, #func ); \
+  if( func == nullptr ) { \
+    OZ_ERROR( "Failed to link function: " #func ); \
+  }
+
+#define OZ_DL_GLLOAD( func ) \
+  *( void** )( &func ) = SDL_GL_GetProcAddress( #func ); \
+  if( func == nullptr ) { \
+    OZ_ERROR( "Failed to link OpenGL function: " #func ); \
+  }
+
 namespace oz
 {
 namespace client

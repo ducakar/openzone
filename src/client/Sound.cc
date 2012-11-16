@@ -25,8 +25,11 @@
 #include <client/Sound.hh>
 
 #include <client/Camera.hh>
+
 #include <client/eSpeak.hh>
 #include <client/NaCl.hh>
+
+#include <SDL.h>
 
 #ifdef __native_client__
 # include <ppapi/cpp/instance.h>
@@ -40,30 +43,24 @@ void alSetPpapiInfo( PP_Instance instance, PPB_GetInterface getInterface );
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
 #endif
 
-#define OZ_DLLOAD( l, name ) \
-  *( void** )( &name ) = SDL_LoadFunction( l, #name ); \
-  if( name == nullptr ) { \
-    OZ_ERROR( "Failed loading " #name " from library" ); \
-  }
-
 namespace oz
 {
 namespace client
 {
 
-static decltype( ::mad_stream_init   )* mad_stream_init   = nullptr;
-static decltype( ::mad_stream_finish )* mad_stream_finish = nullptr;
-static decltype( ::mad_stream_buffer )* mad_stream_buffer = nullptr;
-static decltype( ::mad_frame_init    )* mad_frame_init    = nullptr;
-static decltype( ::mad_frame_finish  )* mad_frame_finish  = nullptr;
-static decltype( ::mad_frame_decode  )* mad_frame_decode  = nullptr;
-static decltype( ::mad_synth_init    )* mad_synth_init    = nullptr;
-static decltype( ::mad_synth_frame   )* mad_synth_frame   = nullptr;
+static OZ_DL_DEFINE( mad_stream_init   );
+static OZ_DL_DEFINE( mad_stream_finish );
+static OZ_DL_DEFINE( mad_stream_buffer );
+static OZ_DL_DEFINE( mad_frame_init    );
+static OZ_DL_DEFINE( mad_frame_finish  );
+static OZ_DL_DEFINE( mad_frame_decode  );
+static OZ_DL_DEFINE( mad_synth_init    );
+static OZ_DL_DEFINE( mad_synth_frame   );
 
-static decltype( ::NeAACDecInit      )* NeAACDecInit      = nullptr;
-static decltype( ::NeAACDecOpen      )* NeAACDecOpen      = nullptr;
-static decltype( ::NeAACDecClose     )* NeAACDecClose     = nullptr;
-static decltype( ::NeAACDecDecode    )* NeAACDecDecode    = nullptr;
+static OZ_DL_DEFINE( NeAACDecInit      );
+static OZ_DL_DEFINE( NeAACDecOpen      );
+static OZ_DL_DEFINE( NeAACDecClose     );
+static OZ_DL_DEFINE( NeAACDecDecode    );
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, nullptr, nullptr, nullptr };
@@ -931,12 +928,12 @@ void Sound::initLibs()
     Log::printEnd( " Not found, speech synthesis not supported" );
   }
   else {
-    OZ_DLLOAD( libeSpeak, espeak_Initialize );
-    OZ_DLLOAD( libeSpeak, espeak_Terminate );
-    OZ_DLLOAD( libeSpeak, espeak_SetParameter );
-    OZ_DLLOAD( libeSpeak, espeak_SetVoiceByName );
-    OZ_DLLOAD( libeSpeak, espeak_SetSynthCallback );
-    OZ_DLLOAD( libeSpeak, espeak_Synth );
+    OZ_DL_LOAD( libeSpeak, espeak_Initialize );
+    OZ_DL_LOAD( libeSpeak, espeak_Terminate );
+    OZ_DL_LOAD( libeSpeak, espeak_SetParameter );
+    OZ_DL_LOAD( libeSpeak, espeak_SetVoiceByName );
+    OZ_DL_LOAD( libeSpeak, espeak_SetSynthCallback );
+    OZ_DL_LOAD( libeSpeak, espeak_Synth );
 
     Log::printEnd( " OK, speech synthesis supported" );
   }
@@ -951,14 +948,14 @@ void Sound::initLibs()
     Log::printEnd( " Not found, MP3 not supported" );
   }
   else {
-    OZ_DLLOAD( libMad, mad_stream_init   );
-    OZ_DLLOAD( libMad, mad_stream_finish );
-    OZ_DLLOAD( libMad, mad_stream_buffer );
-    OZ_DLLOAD( libMad, mad_frame_init    );
-    OZ_DLLOAD( libMad, mad_frame_finish  );
-    OZ_DLLOAD( libMad, mad_frame_decode  );
-    OZ_DLLOAD( libMad, mad_synth_init    );
-    OZ_DLLOAD( libMad, mad_synth_frame   );
+    OZ_DL_LOAD( libMad, mad_stream_init   );
+    OZ_DL_LOAD( libMad, mad_stream_finish );
+    OZ_DL_LOAD( libMad, mad_stream_buffer );
+    OZ_DL_LOAD( libMad, mad_frame_init    );
+    OZ_DL_LOAD( libMad, mad_frame_finish  );
+    OZ_DL_LOAD( libMad, mad_frame_decode  );
+    OZ_DL_LOAD( libMad, mad_synth_init    );
+    OZ_DL_LOAD( libMad, mad_synth_frame   );
 
     liber.mapMP3s = true;
 
@@ -975,10 +972,10 @@ void Sound::initLibs()
     Log::printEnd( " Not found, AAC not supported" );
   }
   else {
-    OZ_DLLOAD( libFaad, NeAACDecInit   );
-    OZ_DLLOAD( libFaad, NeAACDecOpen   );
-    OZ_DLLOAD( libFaad, NeAACDecClose  );
-    OZ_DLLOAD( libFaad, NeAACDecDecode );
+    OZ_DL_LOAD( libFaad, NeAACDecInit   );
+    OZ_DL_LOAD( libFaad, NeAACDecOpen   );
+    OZ_DL_LOAD( libFaad, NeAACDecClose  );
+    OZ_DL_LOAD( libFaad, NeAACDecDecode );
 
     liber.mapAACs = true;
 

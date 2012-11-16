@@ -44,7 +44,7 @@ function build()
   done
 }
 
-case "$1" in
+case $1 in
   clean)
     clean
     ;;

@@ -15,5 +15,6 @@ set( CMAKE_C_FLAGS              "-march=i686 -m32 -msse3 -mfpmath=sse" CACHE STR
 set( CMAKE_CXX_FLAGS            "-march=i686 -m32 -msse3 -mfpmath=sse" CACHE STRING "" )
 
 # CMake doesn't detect those correctly.
+set( SDL_INCLUDE_DIR            "${CMAKE_FIND_ROOT_PATH}/include/SDL" CACHE PATH "" )
 set( SQUISH_LIBRARY             "${CMAKE_FIND_ROOT_PATH}/lib/libsquish.a" CACHE PATH "" )
 set( FREEIMAGE_LIBRARY          "${CMAKE_FIND_ROOT_PATH}/lib/FreeImage.lib" CACHE PATH "" )

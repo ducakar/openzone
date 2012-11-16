@@ -27,6 +27,8 @@
 
 #include <client/Stage.hh>
 
+#include <SDL.h>
+
 namespace oz
 {
 namespace client

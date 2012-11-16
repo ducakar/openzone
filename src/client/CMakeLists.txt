@@ -1,3 +1,4 @@
+configure_file( config.hh.in config.hh )
 configure_file( BuildInfo.cc.in BuildInfo.cc )
 
 add_library( client STATIC
@@ -158,6 +159,7 @@ add_library( client STATIC
 #END SOURCES
 )
 use_pch( client pch )
+
 target_link_libraries( client ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} )
 
 if( OZ_SDL2 )

@@ -29,9 +29,6 @@
 // Default data directory.
 #define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 
-// Use SDL 2.0.
-#cmakedefine                    OZ_SDL2
-
 // Use OpenGL ES 2.0.
 #cmakedefine                    OZ_GL_ES
 

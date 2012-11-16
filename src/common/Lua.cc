@@ -31,7 +31,7 @@ namespace oz
 namespace common
 {
 
-int Lua::randomSeed        = 0;
+int  Lua::randomSeed       = 0;
 bool Lua::isRandomSeedTime = true;
 
 Lua::Lua() :

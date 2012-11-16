@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [[ -z "$1" ]]; then
+if [[ -z $1 ]]; then
   echo "Usage: $0 <map_file>"
   exit
 fi

@@ -25,7 +25,7 @@
 #include <client/Network.hh>
 
 #if 0
-# include <SDL_net.h>
+#include <SDL_net.h>
 #endif
 
 namespace oz

@@ -45,7 +45,7 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  *
- * @sa `oz::Map`, `oz::HashSet`, `oz::List`
+ * @sa `oz::Map`, `oz::HashSet`
  */
 template <typename Elem>
 class Set

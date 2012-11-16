@@ -1,5 +1,3 @@
-configure_file( config.hh.in config.hh )
-
 include_directories( . )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 

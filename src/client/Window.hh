@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/common.hh>
+#include <SDL.h>
 
 #ifdef __native_client__
 namespace pp { class Graphics3D; }

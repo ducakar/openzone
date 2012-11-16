@@ -24,12 +24,6 @@
 #include <stable.hh>
 #include <common/Lingua.hh>
 
-#if defined( __ANDROID__ )
-# include <SDL2/SDL.h>
-#else
-# include <SDL/SDL.h>
-#endif
-
 namespace oz
 {
 namespace common
@@ -57,13 +51,13 @@ String Lingua::detectLanguage( const char* language_ )
     return lang;
   }
 
-  lang = SDL_getenv( "LANGUAGE" );
+  lang = getenv( "LANGUAGE" );
 
   if( !lang.isEmpty() && PFile( "lingua/" + lang ).stat() ) {
     return lang;
   }
 
-  lang = SDL_getenv( "LC_MESSAGES" );
+  lang = getenv( "LC_MESSAGES" );
 
   int underscore = lang.index( '_' );
   if( underscore >= 2 ) {
@@ -74,7 +68,7 @@ String Lingua::detectLanguage( const char* language_ )
     }
   }
 
-  lang = SDL_getenv( "LANG" );
+  lang = getenv( "LANG" );
 
   underscore = lang.index( '_' );
   if( underscore >= 2 ) {

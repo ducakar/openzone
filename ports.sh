@@ -212,8 +212,8 @@ function fetch()
 
   # physfs 2.1
   cd "$topDir/archives"
-  if [[ -d "physfs" ]]
-    then cd "physfs" && hg pull -u
+  if [[ -d physfs ]]
+    then cd physfs && hg pull -u
     else hg clone 'http://hg.icculus.org/icculus/physfs/'
   fi
 
@@ -225,8 +225,8 @@ function fetch()
 
   # SDL2
   cd "$topDir/archives"
-  if [[ -d "SDL" ]]
-    then cd "SDL" && hg pull -u
+  if [[ -d SDL ]]
+    then cd SDL && hg pull -u
     else hg clone 'http://hg.libsdl.org/SDL'
   fi
 
@@ -235,8 +235,8 @@ function fetch()
 
   # SDL2_ttf
   cd "$topDir/archives"
-  if [[ -d "SDL_ttf" ]]
-    then cd "SDL_ttf" && hg pull -u
+  if [[ -d SDL_ttf ]]
+    then cd SDL_ttf && hg pull -u
     else hg clone 'http://hg.libsdl.org/SDL_ttf'
   fi
 
@@ -299,7 +299,7 @@ function autotoolsBuild()
 
 function build_zlib()
 {
-  prepare "zlib-1.2.7" "zlib-1.2.7.tar.bz2" || return
+  prepare zlib-1.2.7 zlib-1.2.7.tar.bz2 || return
 
   export CFLAGS="$CPPFLAGS $CFLAGS"
   ./configure --prefix=/usr --static
@@ -312,8 +312,8 @@ function build_zlib()
 
 function build_physfs()
 {
-  prepare "physfs-2.0.2" "physfs-2.0.2.tar.gz" || return
-  applyPatches "physfs-2.0.2.patch"
+  prepare physfs-2.0.2 physfs-2.0.2.tar.gz || return
+  applyPatches physfs-2.0.2.patch
 
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
 }
@@ -326,15 +326,15 @@ function build_physfs21()
 
   cp -R "$topDir/archives/physfs" "$buildDir"
   cd "$buildDir/physfs"
-  applyPatches "physfs-2.1.patch"
+  applyPatches physfs-2.1.patch
 
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
 }
 
 function build_lua()
 {
-  prepare "lua-5.2.1" "lua-5.2.1.tar.gz" || return
-  applyPatches "lua-5.2.1.patch"
+  prepare lua-5.2.1 lua-5.2.1.tar.gz || return
+  applyPatches lua-5.2.1.patch
 
   make -j4 CC="$CC" CFLAGS="$CPPFLAGS $CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
   make INSTALL_TOP="$buildDir/usr" install
@@ -342,8 +342,8 @@ function build_lua()
 
 function build_sdl()
 {
-  prepare "SDL-1.2.15" "SDL-1.2.15.tar.gz" || return
-  applyPatches "SDL-1.2.15.patch"
+  prepare SDL-1.2.15 SDL-1.2.15.tar.gz || return
+  applyPatches SDL-1.2.15.patch
 
   ./autogen.sh
   case $triplet in
@@ -366,7 +366,7 @@ function build_sdl2()
   cp -R "$topDir/archives/SDL" "$buildDir"
   cp "$projectDir/etc/SDL2-CMakeLists-gen.sh" "$buildDir/SDL"
   cd "$buildDir/SDL"
-  applyPatches "SDL-hg.patch"
+  applyPatches SDL-hg.patch
 
   ./SDL2-CMakeLists-gen.sh
   cmakeBuild
@@ -374,15 +374,15 @@ function build_sdl2()
 
 function build_freetype()
 {
-  prepare "freetype-2.4.10" "freetype-2.4.10.tar.bz2" || return
+  prepare freetype-2.4.10 freetype-2.4.10.tar.bz2 || return
 
   autotoolsBuild --disable-shared --without-bzip2
 }
 
 function build_sdl_ttf()
 {
-  prepare "SDL_ttf-2.0.11" "SDL_ttf-2.0.11.tar.gz" || return
-  applyPatches "SDL_ttf-2.0.11.patch"
+  prepare SDL_ttf-2.0.11 SDL_ttf-2.0.11.tar.gz || return
+  applyPatches SDL_ttf-2.0.11.patch
 
   autotoolsBuild \
     --with-freetype-prefix="$buildDir/usr" \
@@ -409,24 +409,24 @@ function build_sdl2_ttf()
 
 function build_openal()
 {
-  prepare "openal-soft-1.14" "openal-soft-1.14.tar.bz2" || return
-  applyPatches "openal-soft-1.14.patch"
+  prepare openal-soft-1.14 openal-soft-1.14.tar.bz2 || return
+  applyPatches openal-soft-1.14.patch
 
   cmakeBuild -D UTILS=0 -D EXAMPLES=0 -D LIBTYPE=STATIC
 }
 
 function build_libogg()
 {
-  prepare "libogg-1.3.0" "libogg-1.3.0.tar.xz" || return
-  applyPatches "libogg-1.3.0.patch"
+  prepare libogg-1.3.0 libogg-1.3.0.tar.xz || return
+  applyPatches libogg-1.3.0.patch
 
   autotoolsBuild
 }
 
 function build_libvorbis()
 {
-  prepare "libvorbis-1.3.3" "libvorbis-1.3.3.tar.xz" || return
-  applyPatches "libvorbis-1.3.3.patch"
+  prepare libvorbis-1.3.3 libvorbis-1.3.3.tar.xz || return
+  applyPatches libvorbis-1.3.3.patch
 
   autotoolsBuild
 }
@@ -515,7 +515,7 @@ function build()
   setup_ndkMIPS && build_libvorbis
 }
 
-case "$1" in
+case $1 in
   clean)
     clean
     ;;

@@ -41,8 +41,8 @@ namespace oz
 /**
  * Base class for iterators.
  *
- * It should only be used as a base class. Following functions need to be implemented:
- * @li `bool isValid() const` (if necessary) and
+ * It should only be used as a base class. The following functions have to be implemented:
+ * @li Default constructor that should create an invalid iterator and
  * @li `Iterator& operator ++ ()`.
  */
 template <typename Elem>
@@ -270,7 +270,6 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline Iterator iFindLast( Iterator iSrc, const Value& value )
 {
-  // Default constructor creates an invalid, passed iterator.
   Iterator lastOccurence;
 
   while( iSrc.isValid() ) {

@@ -52,11 +52,10 @@ macro( add_pch _pchTarget _inputHeader _inputModule )
   add_custom_target( ${_pchTarget} DEPENDS "${_inputHeader}.gch" )
 
   # Cache header location for later `use_pch()` macros.
-  set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
+  set( ${_pchTarget}_output "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
 endmacro()
 
 macro( use_pch _target _pchTarget )
   add_dependencies( ${_target} ${_pchTarget} )
-  set_target_properties( ${_target} PROPERTIES
-    COMPILE_FLAGS "-include '${${_pchTarget}_outputPCH}'" )
+  set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include '${${_pchTarget}_output}'" )
 endmacro()

@@ -35,6 +35,8 @@
 #include <client/OpenGL.hh>
 #include <client/OpenAL.hh>
 
+#include <SDL.h>
+
 namespace oz
 {
 namespace client

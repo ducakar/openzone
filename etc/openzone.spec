@@ -81,11 +81,12 @@ concepts and algorithms used in the engine.
 cd build
 
 cmake \
-  -D CMAKE_BUILD_TYPE="Release" \
-  -D CMAKE_INSTALL_PREFIX="/usr" \
+  -D CMAKE_BUILD_TYPE=Release \
+  -D CMAKE_INSTALL_PREFIX=/usr \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
-  -D OZ_SHARED_LIBS="1" \
-  -D OZ_NONFREE="1" \
+  -D OZ_SHARED_LIBS=1 \
+  -D OZ_LUAJIT=1 \
+  -D OZ_NONFREE=1 \
   ..
 
 make %{?_smp_mflags} doc

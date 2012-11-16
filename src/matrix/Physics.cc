@@ -133,7 +133,7 @@ void Physics::handleFragMove()
     if( collider.hit.ratio == 1.0f ) {
       break;
     }
-    // collision response
+    // Collision response.
     handleFragHit();
 
     // We must check lifeTime <= 0.0f to prevent an already destroyed fragment to bounce off a
@@ -431,7 +431,7 @@ Vec3 Physics::handleObjMove()
     if( collider.hit.ratio == 1.0f ) {
       break;
     }
-    // collision response
+    // Collision response.
     handleObjHit();
 
     if( traceSplits >= 3 || dyn->life <= 0.0f ) {
@@ -546,7 +546,7 @@ void Physics::updateObj( Dynamic* dyn_ )
     else {
       const Object* sObj = orbis.objects[dyn->lower];
 
-      // clear the lower object if it doesn't exist any more
+      // Clear the lower object if it doesn't exist any more.
       if( sObj == nullptr || sObj->cell == nullptr ) {
         dyn->flags &= ~Object::DISABLED_BIT;
         dyn->lower  = -1;
@@ -557,7 +557,7 @@ void Physics::updateObj( Dynamic* dyn_ )
     }
   }
 
-  // handle physics
+  // Handle physics.
   if( !( dyn->flags & Object::DISABLED_BIT ) ) {
     if( handleObjFriction() ) {
       int oldFlags = dyn->flags;

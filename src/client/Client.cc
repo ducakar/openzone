@@ -41,15 +41,11 @@
 #include <client/Network.hh>
 #include <client/BuildInfo.hh>
 
+#include <SDL_ttf.h>
+
 #include <clocale>
 #include <sstream>
 #include <unistd.h>
-
-#if defined( __ANDROID__ )
-# include <SDL2/SDL_ttf.h>
-#else
-# include <SDL/SDL_ttf.h>
-#endif
 
 #if defined( __native_client__ )
 # include <ppapi/cpp/completion_callback.h>

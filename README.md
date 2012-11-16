@@ -18,7 +18,7 @@ development packages for the following libraries:
 
 - ALSA
 - PhysicsFS 2.0 or 2.1
-- Lua 5.1 or 5.2
+- Lua 5.1 or 5.2 or LuaJIT 2.0
 - SDL 1.2 or 2.0
 - SDL_ttf
 - OpenGL 2.1+ or OpenGL ES 2.0
@@ -70,23 +70,25 @@ You may also want to set several options when configuring CMake build system:
   vector components in OpenZone code.
   `OFF` by default.
 
+- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster.
+  `OFF` by default.
+
 - `OZ_SDL2`: Use upcoming SDL 2.0 instead of stable SDL 1.2.
   `OFF` by default, forced to `ON` on Android, forced to `OFF` on NaCl.
 
-- `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled on Android and NaCl. Enabling this on Linux or
-  Windows while using SDL 1.2 leads to a strange situation when SDL initialises OpenGL but rendering
-  is done entirely through OpenGL ES. However, it seems to work on Linux at least.
+- `OZ_GL_ES`: Use OpenGL ES 2.0 API. Enabling this on Linux or Windows while using SDL 1.2 leads to
+  a strange situation when SDL initialises OpenGL but rendering is done entirely through OpenGL ES.
+  However, it seems to work on Linux at least.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
 - `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
-  texture compression. Requires libmad, faad and libsquish libraries.
+  texture compression. Requires libmad, faad and libsquish libraries respectively.
   `OFF` by default.
 
 - `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
   from support directory, game data archives found in `share/openzone`, info files etc. This is
   intended if one wants to create all-in-one ZIP (or whatever) archive that can be unpacked and run
-  on any Linux distro or Windows without installation. Always enabled for Windows build, always
-  disabled on Andorid and NaCl, disabled by default on Linux.
+  on any Linux distro or Windows without installation.
   `OFF` by default, forced to `ON` on Windows, forced to `OFF` on Android and NaCl.
 
 

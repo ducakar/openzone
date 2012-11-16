@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/common.hh>
+#include <SDL.h>
 
 namespace oz
 {

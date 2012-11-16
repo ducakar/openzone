@@ -25,6 +25,7 @@
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
 - general
     * ported to Android (i686, ARM, ARMv7a, MIPS)
+    * LuaJIT can be optionally used instead of official Lua
 
 0.3.1
 

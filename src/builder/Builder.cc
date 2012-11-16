@@ -38,8 +38,6 @@
 #include <builder/MD3.hh>
 
 #include <unistd.h>
-
-#include <SDL/SDL_main.h>
 #include <FreeImage.h>
 
 namespace oz

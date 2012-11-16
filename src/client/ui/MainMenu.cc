@@ -37,8 +37,11 @@
 #include <client/ui/CreditsMenu.hh>
 #include <client/ui/UI.hh>
 
-#ifdef _WIN32
+#if defined( __ANDROID__ ) || defined( __native_client__ )
+#elif defined( _WIN32 )
 # include <shellapi.h>
+#else
+# include <unistd.h>
 #endif
 
 namespace oz
@@ -101,7 +104,10 @@ static void openWeb( Button* )
   ShellExecute( nullptr, "open", "http://ducakar.github.com/openzone/", nullptr, nullptr,
                 SW_SHOWNORMAL );
 #else
-  system( "xdg-open http://ducakar.github.com/openzone/ &" );
+  if( fork() == 0 ) {
+    execl( "/bin/sh", "sh", "xdg-open", "http://ducakar.github.com/openzone/", nullptr );
+    _Exit( 0 );
+  }
 #endif
 }
 

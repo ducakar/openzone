@@ -13,14 +13,14 @@ function build()
 {
   for platform in ${platforms[@]}; do
     if [[ $platform == Linux-x86_64 || $platform == Linux-i686 ]]; then
-      outDir="libs/$platform"
-      prefix="/usr/lib"
+      outDir=libs/$platform
+      prefix=/usr/lib
 
-      [[ $platform == Linux-x86_64 && ! -d "/usr/lib32" ]] && prefix="/usr/lib64"
-      [[ $platform == Linux-i686   &&   -d "/usr/lib32" ]] && prefix="/usr/lib32"
+      [[ $platform == Linux-x86_64 && ! -d /usr/lib32 ]] && prefix=/usr/lib64
+      [[ $platform == Linux-i686   &&   -d /usr/lib32 ]] && prefix=/usr/lib32
 
-      rm -rf "$outDir"
-      mkdir -p "$outDir"
+      rm -rf $outDir
+      mkdir -p $outDir
 
       cp "$prefix/libz.so.1" \
          "$prefix/libphysfs.so.1" \
@@ -36,16 +36,16 @@ function build()
          "build/$platform/src/txc_dxtn/libtxc_dxtn.so" \
          "$outDir"
 
-      chmod +x "$outDir/"*
-      strip "$outDir"/*
+      chmod +x $outDir/*
+      strip $outDir/*
     fi
 
     if [[ $platform == Windows-i686 ]]; then
-      outDir="libs/Windows-i686"
-      prefix="/usr/i486-mingw32/bin"
+      outDir=libs/Windows-i686
+      prefix=/usr/i486-mingw32/bin
 
-      rm -rf "$outDir"
-      mkdir -p "$outDir"
+      rm -rf $outDir
+      mkdir -p $outDir
 
       cp "$prefix/libgcc_s_sjlj-1.dll" \
          "$prefix/libstdc++-6.dll" \
@@ -61,13 +61,13 @@ function build()
          "$prefix/FreeImage.dll" \
          "$outDir"
 
-      chmod +x "$outDir/"*
-      i486-mingw32-strip "$outDir"/*
+      chmod +x $outDir/*
+      i486-mingw32-strip $outDir/*
     fi
   done
 }
 
-case "$1" in
+case $1 in
   clean)
     clean
     ;;

@@ -23,20 +23,16 @@
 
 #pragma once
 
-#include <client/common.hh>
-
-#ifndef _WIN32
-# define GL_GLEXT_PROTOTYPES
-#endif
-
 #include <client/NaCl.hh>
 
 #ifdef OZ_GL_ES
 # include <GLES2/gl2.h>
 #else
-# include <SDL/SDL_opengl.h>
+# define GL_GLEXT_PROTOTYPES
+# include <SDL_opengl.h>
 #endif
 
+// Floating-point texture formats.
 #ifndef GL_VERSION_3_0
 # define GL_RGBA32F                        0x8814
 # define GL_RGB32F                         0x8815
@@ -44,6 +40,7 @@
 # define GL_RGB16F                         0x881B
 #endif
 
+// S3 texture compression formats.
 #ifndef GL_EXT_texture_compression_s3tc
 # define GL_EXT_texture_compression_s3tc
 # define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
@@ -58,69 +55,71 @@ namespace client
 {
 
 #ifdef _WIN32
-extern PFNGLUNIFORM1IPROC                  glUniform1i;
-extern PFNGLUNIFORM2IPROC                  glUniform2i;
-extern PFNGLUNIFORM3IPROC                  glUniform3i;
-extern PFNGLUNIFORM4IPROC                  glUniform4i;
-extern PFNGLUNIFORM1IVPROC                 glUniform1iv;
-extern PFNGLUNIFORM2IVPROC                 glUniform2iv;
-extern PFNGLUNIFORM3IVPROC                 glUniform3iv;
-extern PFNGLUNIFORM4IVPROC                 glUniform4iv;
-extern PFNGLUNIFORM1FPROC                  glUniform1f;
-extern PFNGLUNIFORM2FPROC                  glUniform2f;
-extern PFNGLUNIFORM3FPROC                  glUniform3f;
-extern PFNGLUNIFORM4FPROC                  glUniform4f;
-extern PFNGLUNIFORM1FVPROC                 glUniform1fv;
-extern PFNGLUNIFORM2FVPROC                 glUniform2fv;
-extern PFNGLUNIFORM3FVPROC                 glUniform3fv;
-extern PFNGLUNIFORM4FVPROC                 glUniform4fv;
-extern PFNGLUNIFORMMATRIX2FVPROC           glUniformMatrix2fv;
-extern PFNGLUNIFORMMATRIX3FVPROC           glUniformMatrix3fv;
-extern PFNGLUNIFORMMATRIX4FVPROC           glUniformMatrix4fv;
 
-extern PFNGLENABLEVERTEXATTRIBARRAYPROC    glEnableVertexAttribArray;
-extern PFNGLVERTEXATTRIBPOINTERPROC        glVertexAttribPointer;
-extern PFNGLDRAWRANGEELEMENTSPROC          glDrawRangeElements;
+extern OZ_DL_DECLARE( glUniform1i                  );
+extern OZ_DL_DECLARE( glUniform2i                  );
+extern OZ_DL_DECLARE( glUniform3i                  );
+extern OZ_DL_DECLARE( glUniform4i                  );
+extern OZ_DL_DECLARE( glUniform1iv                 );
+extern OZ_DL_DECLARE( glUniform2iv                 );
+extern OZ_DL_DECLARE( glUniform3iv                 );
+extern OZ_DL_DECLARE( glUniform4iv                 );
+extern OZ_DL_DECLARE( glUniform1f                  );
+extern OZ_DL_DECLARE( glUniform2f                  );
+extern OZ_DL_DECLARE( glUniform3f                  );
+extern OZ_DL_DECLARE( glUniform4f                  );
+extern OZ_DL_DECLARE( glUniform1fv                 );
+extern OZ_DL_DECLARE( glUniform2fv                 );
+extern OZ_DL_DECLARE( glUniform3fv                 );
+extern OZ_DL_DECLARE( glUniform4fv                 );
+extern OZ_DL_DECLARE( glUniformMatrix2fv           );
+extern OZ_DL_DECLARE( glUniformMatrix3fv           );
+extern OZ_DL_DECLARE( glUniformMatrix4fv           );
 
-extern PFNGLGENBUFFERSPROC                 glGenBuffers;
-extern PFNGLDELETEBUFFERSPROC              glDeleteBuffers;
-extern PFNGLBINDBUFFERPROC                 glBindBuffer;
-extern PFNGLBUFFERDATAPROC                 glBufferData;
-extern PFNGLMAPBUFFERPROC                  glMapBuffer;
-extern PFNGLUNMAPBUFFERPROC                glUnmapBuffer;
+extern OZ_DL_DECLARE( glEnableVertexAttribArray    );
+extern OZ_DL_DECLARE( glVertexAttribPointer        );
+extern OZ_DL_DECLARE( glDrawRangeElements          );
 
-extern PFNGLCREATESHADERPROC               glCreateShader;
-extern PFNGLDELETESHADERPROC               glDeleteShader;
-extern PFNGLSHADERSOURCEPROC               glShaderSource;
-extern PFNGLCOMPILESHADERPROC              glCompileShader;
-extern PFNGLGETSHADERIVPROC                glGetShaderiv;
-extern PFNGLGETSHADERINFOLOGPROC           glGetShaderInfoLog;
-extern PFNGLCREATEPROGRAMPROC              glCreateProgram;
-extern PFNGLDELETEPROGRAMPROC              glDeleteProgram;
-extern PFNGLATTACHSHADERPROC               glAttachShader;
-extern PFNGLDETACHSHADERPROC               glDetachShader;
-extern PFNGLLINKPROGRAMPROC                glLinkProgram;
-extern PFNGLGETPROGRAMIVPROC               glGetProgramiv;
-extern PFNGLGETPROGRAMINFOLOGPROC          glGetProgramInfoLog;
-extern PFNGLGETUNIFORMLOCATIONPROC         glGetUniformLocation;
-extern PFNGLBINDATTRIBLOCATIONPROC         glBindAttribLocation;
-extern PFNGLUSEPROGRAMPROC                 glUseProgram;
+extern OZ_DL_DECLARE( glGenBuffers                 );
+extern OZ_DL_DECLARE( glDeleteBuffers              );
+extern OZ_DL_DECLARE( glBindBuffer                 );
+extern OZ_DL_DECLARE( glBufferData                 );
+extern OZ_DL_DECLARE( glMapBuffer                  );
+extern OZ_DL_DECLARE( glUnmapBuffer                );
 
-extern PFNGLACTIVETEXTUREPROC              glActiveTexture;
-extern PFNGLCOMPRESSEDTEXIMAGE2DPROC       glCompressedTexImage2D;
-extern PFNGLGETCOMPRESSEDTEXIMAGEPROC      glGetCompressedTexImage;
+extern OZ_DL_DECLARE( glCreateShader               );
+extern OZ_DL_DECLARE( glDeleteShader               );
+extern OZ_DL_DECLARE( glShaderSource               );
+extern OZ_DL_DECLARE( glCompileShader              );
+extern OZ_DL_DECLARE( glGetShaderiv                );
+extern OZ_DL_DECLARE( glGetShaderInfoLog           );
+extern OZ_DL_DECLARE( glCreateProgram              );
+extern OZ_DL_DECLARE( glDeleteProgram              );
+extern OZ_DL_DECLARE( glAttachShader               );
+extern OZ_DL_DECLARE( glDetachShader               );
+extern OZ_DL_DECLARE( glLinkProgram                );
+extern OZ_DL_DECLARE( glGetProgramiv               );
+extern OZ_DL_DECLARE( glGetProgramInfoLog          );
+extern OZ_DL_DECLARE( glGetUniformLocation         );
+extern OZ_DL_DECLARE( glBindAttribLocation         );
+extern OZ_DL_DECLARE( glUseProgram                 );
 
-extern PFNGLGENERATEMIPMAPEXTPROC          glGenerateMipmapEXT;
-extern PFNGLGENRENDERBUFFERSEXTPROC        glGenRenderbuffersEXT;
-extern PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffersEXT;
-extern PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbufferEXT;
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC     glRenderbufferStorageEXT;
-extern PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
-extern PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
+extern OZ_DL_DECLARE( glActiveTexture              );
+extern OZ_DL_DECLARE( glCompressedTexImage2D       );
+extern OZ_DL_DECLARE( glGetCompressedTexImage      );
+
+extern OZ_DL_DECLARE( glGenerateMipmapEXT          );
+extern OZ_DL_DECLARE( glGenRenderbuffersEXT        );
+extern OZ_DL_DECLARE( glDeleteRenderbuffersEXT     );
+extern OZ_DL_DECLARE( glBindRenderbufferEXT        );
+extern OZ_DL_DECLARE( glRenderbufferStorageEXT     );
+extern OZ_DL_DECLARE( glGenFramebuffersEXT         );
+extern OZ_DL_DECLARE( glDeleteFramebuffersEXT      );
+extern OZ_DL_DECLARE( glBindFramebufferEXT         );
+extern OZ_DL_DECLARE( glFramebufferRenderbufferEXT );
+extern OZ_DL_DECLARE( glFramebufferTexture2DEXT    );
+extern OZ_DL_DECLARE( glCheckFramebufferStatusEXT  );
+
 #endif
 
 #ifdef NDEBUG

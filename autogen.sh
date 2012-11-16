@@ -7,11 +7,11 @@
 # Additionally this scripts also updates version numbers in various files.
 #
 
-version="0.3.80"
-components="ozCore ozDynamics common matrix nirvana modules client builder unittest"
+version=0.3.80
+components=( ozCore ozDynamics common matrix nirvana modules client builder unittest )
 
 # Generate CMakeLists.txt files.
-for component in $components; do
+for component in ${components[@]}; do
   echo "Generating src/$component/CMakeLists.txt"
 
   cd src/$component

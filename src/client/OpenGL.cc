@@ -24,13 +24,7 @@
 #include <stable.hh>
 #include <client/OpenGL.hh>
 
-#ifdef _WIN32
-# define OZ_REGISTER_GLFUNC( func ) \
-  *( void** )( &func ) = SDL_GL_GetProcAddress( #func ); \
-  if( func == nullptr ) { \
-    OZ_ERROR( "Failed to link OpenGL function '" #func "'" ); \
-  }
-#endif
+#include <SDL.h>
 
 namespace oz
 {
@@ -38,69 +32,71 @@ namespace client
 {
 
 #ifdef _WIN32
-PFNGLUNIFORM1IPROC                  glUniform1i;
-PFNGLUNIFORM2IPROC                  glUniform2i;
-PFNGLUNIFORM3IPROC                  glUniform3i;
-PFNGLUNIFORM4IPROC                  glUniform4i;
-PFNGLUNIFORM1IVPROC                 glUniform1iv;
-PFNGLUNIFORM2IVPROC                 glUniform2iv;
-PFNGLUNIFORM3IVPROC                 glUniform3iv;
-PFNGLUNIFORM4IVPROC                 glUniform4iv;
-PFNGLUNIFORM1FPROC                  glUniform1f;
-PFNGLUNIFORM2FPROC                  glUniform2f;
-PFNGLUNIFORM3FPROC                  glUniform3f;
-PFNGLUNIFORM4FPROC                  glUniform4f;
-PFNGLUNIFORM1FVPROC                 glUniform1fv;
-PFNGLUNIFORM2FVPROC                 glUniform2fv;
-PFNGLUNIFORM3FVPROC                 glUniform3fv;
-PFNGLUNIFORM4FVPROC                 glUniform4fv;
-PFNGLUNIFORMMATRIX2FVPROC           glUniformMatrix2fv;
-PFNGLUNIFORMMATRIX3FVPROC           glUniformMatrix3fv;
-PFNGLUNIFORMMATRIX4FVPROC           glUniformMatrix4fv;
 
-PFNGLENABLEVERTEXATTRIBARRAYPROC    glEnableVertexAttribArray;
-PFNGLVERTEXATTRIBPOINTERPROC        glVertexAttribPointer;
-PFNGLDRAWRANGEELEMENTSPROC          glDrawRangeElements;
+OZ_DL_DEFINE( glUniform1i                  );
+OZ_DL_DEFINE( glUniform2i                  );
+OZ_DL_DEFINE( glUniform3i                  );
+OZ_DL_DEFINE( glUniform4i                  );
+OZ_DL_DEFINE( glUniform1iv                 );
+OZ_DL_DEFINE( glUniform2iv                 );
+OZ_DL_DEFINE( glUniform3iv                 );
+OZ_DL_DEFINE( glUniform4iv                 );
+OZ_DL_DEFINE( glUniform1f                  );
+OZ_DL_DEFINE( glUniform2f                  );
+OZ_DL_DEFINE( glUniform3f                  );
+OZ_DL_DEFINE( glUniform4f                  );
+OZ_DL_DEFINE( glUniform1fv                 );
+OZ_DL_DEFINE( glUniform2fv                 );
+OZ_DL_DEFINE( glUniform3fv                 );
+OZ_DL_DEFINE( glUniform4fv                 );
+OZ_DL_DEFINE( glUniformMatrix2fv           );
+OZ_DL_DEFINE( glUniformMatrix3fv           );
+OZ_DL_DEFINE( glUniformMatrix4fv           );
 
-PFNGLGENBUFFERSPROC                 glGenBuffers;
-PFNGLDELETEBUFFERSPROC              glDeleteBuffers;
-PFNGLBINDBUFFERPROC                 glBindBuffer;
-PFNGLBUFFERDATAPROC                 glBufferData;
-PFNGLMAPBUFFERPROC                  glMapBuffer;
-PFNGLUNMAPBUFFERPROC                glUnmapBuffer;
+OZ_DL_DEFINE( glEnableVertexAttribArray    );
+OZ_DL_DEFINE( glVertexAttribPointer        );
+OZ_DL_DEFINE( glDrawRangeElements          );
 
-PFNGLCREATESHADERPROC               glCreateShader;
-PFNGLDELETESHADERPROC               glDeleteShader;
-PFNGLSHADERSOURCEPROC               glShaderSource;
-PFNGLCOMPILESHADERPROC              glCompileShader;
-PFNGLGETSHADERIVPROC                glGetShaderiv;
-PFNGLGETSHADERINFOLOGPROC           glGetShaderInfoLog;
-PFNGLCREATEPROGRAMPROC              glCreateProgram;
-PFNGLDELETEPROGRAMPROC              glDeleteProgram;
-PFNGLATTACHSHADERPROC               glAttachShader;
-PFNGLDETACHSHADERPROC               glDetachShader;
-PFNGLLINKPROGRAMPROC                glLinkProgram;
-PFNGLGETPROGRAMIVPROC               glGetProgramiv;
-PFNGLGETPROGRAMINFOLOGPROC          glGetProgramInfoLog;
-PFNGLGETUNIFORMLOCATIONPROC         glGetUniformLocation;
-PFNGLBINDATTRIBLOCATIONPROC         glBindAttribLocation;
-PFNGLUSEPROGRAMPROC                 glUseProgram;
+OZ_DL_DEFINE( glGenBuffers                 );
+OZ_DL_DEFINE( glDeleteBuffers              );
+OZ_DL_DEFINE( glBindBuffer                 );
+OZ_DL_DEFINE( glBufferData                 );
+OZ_DL_DEFINE( glMapBuffer                  );
+OZ_DL_DEFINE( glUnmapBuffer                );
 
-PFNGLACTIVETEXTUREPROC              glActiveTexture;
-PFNGLCOMPRESSEDTEXIMAGE2DPROC       glCompressedTexImage2D;
-PFNGLGETCOMPRESSEDTEXIMAGEPROC      glGetCompressedTexImage;
+OZ_DL_DEFINE( glCreateShader               );
+OZ_DL_DEFINE( glDeleteShader               );
+OZ_DL_DEFINE( glShaderSource               );
+OZ_DL_DEFINE( glCompileShader              );
+OZ_DL_DEFINE( glGetShaderiv                );
+OZ_DL_DEFINE( glGetShaderInfoLog           );
+OZ_DL_DEFINE( glCreateProgram              );
+OZ_DL_DEFINE( glDeleteProgram              );
+OZ_DL_DEFINE( glAttachShader               );
+OZ_DL_DEFINE( glDetachShader               );
+OZ_DL_DEFINE( glLinkProgram                );
+OZ_DL_DEFINE( glGetProgramiv               );
+OZ_DL_DEFINE( glGetProgramInfoLog          );
+OZ_DL_DEFINE( glGetUniformLocation         );
+OZ_DL_DEFINE( glBindAttribLocation         );
+OZ_DL_DEFINE( glUseProgram                 );
 
-PFNGLGENERATEMIPMAPEXTPROC          glGenerateMipmapEXT;
-PFNGLGENRENDERBUFFERSEXTPROC        glGenRenderbuffersEXT;
-PFNGLDELETERENDERBUFFERSEXTPROC     glDeleteRenderbuffersEXT;
-PFNGLBINDRENDERBUFFEREXTPROC        glBindRenderbufferEXT;
-PFNGLRENDERBUFFERSTORAGEEXTPROC     glRenderbufferStorageEXT;
-PFNGLGENFRAMEBUFFERSEXTPROC         glGenFramebuffersEXT;
-PFNGLDELETEFRAMEBUFFERSEXTPROC      glDeleteFramebuffersEXT;
-PFNGLBINDFRAMEBUFFEREXTPROC         glBindFramebufferEXT;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    glFramebufferTexture2DEXT;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  glCheckFramebufferStatusEXT;
+OZ_DL_DEFINE( glActiveTexture              );
+OZ_DL_DEFINE( glCompressedTexImage2D       );
+OZ_DL_DEFINE( glGetCompressedTexImage      );
+
+OZ_DL_DEFINE( glGenerateMipmapEXT          );
+OZ_DL_DEFINE( glGenRenderbuffersEXT        );
+OZ_DL_DEFINE( glDeleteRenderbuffersEXT     );
+OZ_DL_DEFINE( glBindRenderbufferEXT        );
+OZ_DL_DEFINE( glRenderbufferStorageEXT     );
+OZ_DL_DEFINE( glGenFramebuffersEXT         );
+OZ_DL_DEFINE( glDeleteFramebuffersEXT      );
+OZ_DL_DEFINE( glBindFramebufferEXT         );
+OZ_DL_DEFINE( glFramebufferRenderbufferEXT );
+OZ_DL_DEFINE( glFramebufferTexture2DEXT    );
+OZ_DL_DEFINE( glCheckFramebufferStatusEXT  );
+
 #endif
 
 #ifndef NDEBUG
@@ -162,69 +158,71 @@ void glCheckError( const char* function, const char* file, int line )
 void glInit()
 {
 #ifdef _WIN32
-  OZ_REGISTER_GLFUNC( glUniform1i                  );
-  OZ_REGISTER_GLFUNC( glUniform2i                  );
-  OZ_REGISTER_GLFUNC( glUniform3i                  );
-  OZ_REGISTER_GLFUNC( glUniform4i                  );
-  OZ_REGISTER_GLFUNC( glUniform1iv                 );
-  OZ_REGISTER_GLFUNC( glUniform2iv                 );
-  OZ_REGISTER_GLFUNC( glUniform3iv                 );
-  OZ_REGISTER_GLFUNC( glUniform4iv                 );
-  OZ_REGISTER_GLFUNC( glUniform1f                  );
-  OZ_REGISTER_GLFUNC( glUniform2f                  );
-  OZ_REGISTER_GLFUNC( glUniform3f                  );
-  OZ_REGISTER_GLFUNC( glUniform4f                  );
-  OZ_REGISTER_GLFUNC( glUniform1fv                 );
-  OZ_REGISTER_GLFUNC( glUniform2fv                 );
-  OZ_REGISTER_GLFUNC( glUniform3fv                 );
-  OZ_REGISTER_GLFUNC( glUniform4fv                 );
-  OZ_REGISTER_GLFUNC( glUniformMatrix2fv           );
-  OZ_REGISTER_GLFUNC( glUniformMatrix3fv           );
-  OZ_REGISTER_GLFUNC( glUniformMatrix4fv           );
 
-  OZ_REGISTER_GLFUNC( glEnableVertexAttribArray    );
-  OZ_REGISTER_GLFUNC( glVertexAttribPointer        );
-  OZ_REGISTER_GLFUNC( glDrawRangeElements          );
+  OZ_DL_GLLOAD( glUniform1i                  );
+  OZ_DL_GLLOAD( glUniform2i                  );
+  OZ_DL_GLLOAD( glUniform3i                  );
+  OZ_DL_GLLOAD( glUniform4i                  );
+  OZ_DL_GLLOAD( glUniform1iv                 );
+  OZ_DL_GLLOAD( glUniform2iv                 );
+  OZ_DL_GLLOAD( glUniform3iv                 );
+  OZ_DL_GLLOAD( glUniform4iv                 );
+  OZ_DL_GLLOAD( glUniform1f                  );
+  OZ_DL_GLLOAD( glUniform2f                  );
+  OZ_DL_GLLOAD( glUniform3f                  );
+  OZ_DL_GLLOAD( glUniform4f                  );
+  OZ_DL_GLLOAD( glUniform1fv                 );
+  OZ_DL_GLLOAD( glUniform2fv                 );
+  OZ_DL_GLLOAD( glUniform3fv                 );
+  OZ_DL_GLLOAD( glUniform4fv                 );
+  OZ_DL_GLLOAD( glUniformMatrix2fv           );
+  OZ_DL_GLLOAD( glUniformMatrix3fv           );
+  OZ_DL_GLLOAD( glUniformMatrix4fv           );
 
-  OZ_REGISTER_GLFUNC( glGenBuffers                 );
-  OZ_REGISTER_GLFUNC( glDeleteBuffers              );
-  OZ_REGISTER_GLFUNC( glBindBuffer                 );
-  OZ_REGISTER_GLFUNC( glBufferData                 );
-  OZ_REGISTER_GLFUNC( glMapBuffer                  );
-  OZ_REGISTER_GLFUNC( glUnmapBuffer                );
+  OZ_DL_GLLOAD( glEnableVertexAttribArray    );
+  OZ_DL_GLLOAD( glVertexAttribPointer        );
+  OZ_DL_GLLOAD( glDrawRangeElements          );
 
-  OZ_REGISTER_GLFUNC( glCreateShader               );
-  OZ_REGISTER_GLFUNC( glDeleteShader               );
-  OZ_REGISTER_GLFUNC( glShaderSource               );
-  OZ_REGISTER_GLFUNC( glCompileShader              );
-  OZ_REGISTER_GLFUNC( glGetShaderiv                );
-  OZ_REGISTER_GLFUNC( glGetShaderInfoLog           );
-  OZ_REGISTER_GLFUNC( glCreateProgram              );
-  OZ_REGISTER_GLFUNC( glDeleteProgram              );
-  OZ_REGISTER_GLFUNC( glAttachShader               );
-  OZ_REGISTER_GLFUNC( glDetachShader               );
-  OZ_REGISTER_GLFUNC( glLinkProgram                );
-  OZ_REGISTER_GLFUNC( glGetProgramiv               );
-  OZ_REGISTER_GLFUNC( glGetProgramInfoLog          );
-  OZ_REGISTER_GLFUNC( glGetUniformLocation         );
-  OZ_REGISTER_GLFUNC( glBindAttribLocation         );
-  OZ_REGISTER_GLFUNC( glUseProgram                 );
+  OZ_DL_GLLOAD( glGenBuffers                 );
+  OZ_DL_GLLOAD( glDeleteBuffers              );
+  OZ_DL_GLLOAD( glBindBuffer                 );
+  OZ_DL_GLLOAD( glBufferData                 );
+  OZ_DL_GLLOAD( glMapBuffer                  );
+  OZ_DL_GLLOAD( glUnmapBuffer                );
 
-  OZ_REGISTER_GLFUNC( glActiveTexture              );
-  OZ_REGISTER_GLFUNC( glCompressedTexImage2D       );
-  OZ_REGISTER_GLFUNC( glGetCompressedTexImage      );
+  OZ_DL_GLLOAD( glCreateShader               );
+  OZ_DL_GLLOAD( glDeleteShader               );
+  OZ_DL_GLLOAD( glShaderSource               );
+  OZ_DL_GLLOAD( glCompileShader              );
+  OZ_DL_GLLOAD( glGetShaderiv                );
+  OZ_DL_GLLOAD( glGetShaderInfoLog           );
+  OZ_DL_GLLOAD( glCreateProgram              );
+  OZ_DL_GLLOAD( glDeleteProgram              );
+  OZ_DL_GLLOAD( glAttachShader               );
+  OZ_DL_GLLOAD( glDetachShader               );
+  OZ_DL_GLLOAD( glLinkProgram                );
+  OZ_DL_GLLOAD( glGetProgramiv               );
+  OZ_DL_GLLOAD( glGetProgramInfoLog          );
+  OZ_DL_GLLOAD( glGetUniformLocation         );
+  OZ_DL_GLLOAD( glBindAttribLocation         );
+  OZ_DL_GLLOAD( glUseProgram                 );
 
-  OZ_REGISTER_GLFUNC( glGenerateMipmapEXT          );
-  OZ_REGISTER_GLFUNC( glGenRenderbuffersEXT        );
-  OZ_REGISTER_GLFUNC( glDeleteRenderbuffersEXT     );
-  OZ_REGISTER_GLFUNC( glBindRenderbufferEXT        );
-  OZ_REGISTER_GLFUNC( glRenderbufferStorageEXT     );
-  OZ_REGISTER_GLFUNC( glGenFramebuffersEXT         );
-  OZ_REGISTER_GLFUNC( glDeleteFramebuffersEXT      );
-  OZ_REGISTER_GLFUNC( glBindFramebufferEXT         );
-  OZ_REGISTER_GLFUNC( glFramebufferRenderbufferEXT );
-  OZ_REGISTER_GLFUNC( glFramebufferTexture2DEXT    );
-  OZ_REGISTER_GLFUNC( glCheckFramebufferStatusEXT  );
+  OZ_DL_GLLOAD( glActiveTexture              );
+  OZ_DL_GLLOAD( glCompressedTexImage2D       );
+  OZ_DL_GLLOAD( glGetCompressedTexImage      );
+
+  OZ_DL_GLLOAD( glGenerateMipmapEXT          );
+  OZ_DL_GLLOAD( glGenRenderbuffersEXT        );
+  OZ_DL_GLLOAD( glDeleteRenderbuffersEXT     );
+  OZ_DL_GLLOAD( glBindRenderbufferEXT        );
+  OZ_DL_GLLOAD( glRenderbufferStorageEXT     );
+  OZ_DL_GLLOAD( glGenFramebuffersEXT         );
+  OZ_DL_GLLOAD( glDeleteFramebuffersEXT      );
+  OZ_DL_GLLOAD( glBindFramebufferEXT         );
+  OZ_DL_GLLOAD( glFramebufferRenderbufferEXT );
+  OZ_DL_GLLOAD( glFramebufferTexture2DEXT    );
+  OZ_DL_GLLOAD( glCheckFramebufferStatusEXT  );
+
 #endif
 }
 

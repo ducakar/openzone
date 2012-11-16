@@ -13,8 +13,11 @@ add_library( common STATIC
 #END SOURCES
 )
 use_pch( common pch )
-target_link_libraries( common ${LUA_LIBRARY} ozDynamics ozCore )
 
-if( OZ_SDL2 )
-  target_link_libraries( common ${SDL2_LIBRARY} )
+target_link_libraries( common ozDynamics ozCore )
+
+if( OZ_LUAJIT )
+  target_link_libraries( common ${LUAJIT_LIBRARY} )
+else()
+  target_link_libraries( common ${LUA_LIBRARY} )
 endif()

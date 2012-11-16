@@ -39,7 +39,7 @@ void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
 
 #elif defined( __native_client__ )
 
-#include <SDL/SDL_nacl.h>
+#include <SDL_nacl.h>
 
 #endif
 

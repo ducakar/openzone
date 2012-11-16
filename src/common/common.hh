@@ -27,7 +27,6 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozDynamics/collision/Bounds.hh>
-#include <config.hh>
 
 #ifdef _WIN32
 # include <windows.h>
@@ -45,12 +44,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
-#ifdef OZ_SDL2
-# include <SDL2/SDL.h>
-#else
-# include <SDL/SDL.h>
-#endif
 
 namespace oz
 {
