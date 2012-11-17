@@ -76,15 +76,13 @@ add_library( ozCore
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
 if( ANDROID )
-  target_link_libraries( ozCore ${PLATFORM_STL_LIBRARY} ${ANDROID_LOG_LIBRARY} ${OPENSLES_LIBRARY}
-                                ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -llog ${PLATFORM_STL_LIBRARY} )
 elseif( NACL )
-  target_link_libraries( ozCore ${PTHREAD_LIBRARY} ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY}
-                                ${PEPPER_CXX_LIBRARY} ${PEPPER_LIBRARY} )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )
-  target_link_libraries( ozCore ${WINMM_LIBRARY} ${PHYSFS_LIBRARY} )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lwinmm )
 else()
-  target_link_libraries( ozCore ${PTHREAD_LIBRARY} ${RT_LIBRARY} ${ALSA_LIBRARY} ${PHYSFS_LIBRARY} )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
 endif()
 
 install( TARGETS ozCore RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )

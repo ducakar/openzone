@@ -149,7 +149,7 @@ void MainInstance::DidChangeView( const pp::View& view )
   if( !mainThread.isValid() ) {
     SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
 
-    mainThread.start( "main", mainThreadMain, this );
+    mainThread.start( "main", Thread::JOINABLE, mainThreadMain, this );
   }
 }
 

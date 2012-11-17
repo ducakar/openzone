@@ -66,19 +66,14 @@ class System
 {
   public:
 
-    /// Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which print
-    /// diagnostics and abort the program (similar to `error()` call).
-    static const int SIGNALS_BIT = 0x01;
+    /// Install signal and exception handlers.
+    static const int HANDLERS_BIT = 0x01;
 
-    /// Override handlers for exception violations (`std::terminate()` and `std::unexpected()`) with
-    /// handlers that print diagnostics and abort the program via `error()` call.
-    static const int EXCEPTIONS_BIT = 0x02;
+    /// If running from a terminal, the handlers wait for Enter before termination.
+    static const int HALT_BIT = 0x02;
 
-    /// If running from a terminal, halt in `abort()`, so one has time to attach a debugger.
-    static const int HALT_BIT = 0x04;
-
-    /// Set system locale for the application (`setlocale( LC_ALL, "" )`).
-    static const int LOCALE_BIT = 0x08;
+    /// %Set system locale.
+    static const int LOCALE_BIT = 0x04;
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
@@ -110,9 +105,9 @@ class System
     /**
      * Print warning message.
      *
-     * This function first triggers breakpoint with `trap()`, prints error message, file location
-     * and stack trace (skipping `nSkippedFrames` stack frames relative to the caller) to log and
-     * plays a bell.
+     * This function first triggers breakpoint with `System::trap()`, prints error message, file
+     * location and stack trace (skipping `nSkippedFrames` stack frames relative to the caller) to
+     * log and plays a bell.
      *
      * You will probably want to use `OZ_WARNING` macro instead to fill in the current function,
      * file and line for you.
@@ -125,8 +120,8 @@ class System
      * Print error message and halt the program.
      *
      * Same as `System::warning()` but also aborts the program. If running from a terminal and
-     * `HALT_BIT` was passed to `init()` initialisation, it halts before aborting so one can attach
-     * a debugger.
+     * `HALT_BIT` was passed to `System::init()` initialisation, it halts before aborting so one can
+     * attach a debugger.
      *
      * You will probably want to use `OZ_ERROR` macro instead to fill in the current function, file
      * and line for you.
@@ -137,36 +132,33 @@ class System
                        const char* msg, ... );
 
     /**
-     * Initialise current thread's signal handlers according to `flags` passed to `init()`.
+     * Initialise current thread's signal handlers according to `flags` passed to `System::init()`.
      *
-     * Signal handlers must be set-up for each thread in a process separately. `init()` method sets
-     * them up for the caller thread only, for other threads this method should be used unless
-     * created with `Thread::start()`, which implicitly calls this method.
+     * Signal handlers must be set-up for each thread in a process separately. `System::init()`
+     * method sets them up for the caller thread only, for other threads this method should be used
+     * unless created with `Thread::start()`, which calls this method implicitly.
      */
     static void threadInit();
 
     /**
      * Initialise `System` features.
      *
-     * Set-up locale and crash handlers depending on `flags`. If `HALT_BIT` is also given, crash
-     * handlers wait for CTRL-C before exit.
+     * Flags:
+     * @li `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
+     *     which print diagnostics and abort the program (similar to `System::error()` method).
+     *     Additionally, install handlers for exception violations (`std::terminate()` and
+     *     `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
+     * @li `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter
+     *     before terminating process via `System::abort()`, so one have time to attach a debugger.
+     * @li `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`)
      */
-#if defined( __ANDROID__ )
-    static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT );
-#elif defined( __native_client__ )
-    static void init( int flags = EXCEPTIONS_BIT );
+#if defined( __ANDROID__ ) || defined( __native_client__ )
+    static void init( int flags = HANDLERS_BIT );
 #elif !defined( NDEBUG )
-    static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT | HALT_BIT | LOCALE_BIT );
+    static void init( int flags = HANDLERS_BIT | HALT_BIT | LOCALE_BIT );
 #else
-    static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT | LOCALE_BIT );
+    static void init( int flags = HANDLERS_BIT | LOCALE_BIT );
 #endif
-
-    /**
-     * Deinitialise `System`.
-     *
-     * It resets signal handlers, `std::terminate()` and `std::unexpected()` to defaults.
-     */
-    static void free();
 
 };
 

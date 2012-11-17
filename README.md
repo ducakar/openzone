@@ -16,6 +16,7 @@ ports. Android port in still under development.
 For generic Linux builds, make sure you have all the dependencies installed. You need to install
 development packages for the following libraries:
 
+- libpulse
 - ALSA
 - PhysicsFS 2.0 or 2.1
 - Lua 5.1 or 5.2 or LuaJIT 2.0

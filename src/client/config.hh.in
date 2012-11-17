@@ -31,6 +31,3 @@
 
 // Use OpenGL ES 2.0.
 #cmakedefine                    OZ_GL_ES
-
-// Enable squish S3TC library.
-#cmakedefine                    OZ_NONFREE

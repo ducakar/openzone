@@ -17,5 +17,5 @@ for file in $files; do
   # Remove duplicated empty lines.
   printf '\n\n' >> $file
   sed -r '/./,/^$/ !d' -i $file
-  sed -r '$,$ d' -i $file
+  sed -r '$ d' -i $file
 done

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-platforms=( \
-  NaCl-x86_64 NaCl-i686 PNaCl \
-  Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS \
+platforms=(
+  NaCl-x86_64 NaCl-i686 PNaCl
+  #Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
 )
 
 projectDir=`pwd`
@@ -260,7 +260,11 @@ function prepare()
   msg "$1 @ $platform"
 
   mkdir -p "$buildDir"
-  tar xf "$topDir/archives/$2" -C "$buildDir"
+  if [[ -d "$topDir/archives/$2" ]]; then
+    cp -R "$topDir/archives/$2" "$buildDir"
+  else
+    tar xf "$topDir/archives/$2" -C "$buildDir"
+  fi
 
   cd "$buildDir/$1"
 }
@@ -300,8 +304,7 @@ function autotoolsBuild()
 function build_zlib()
 {
   prepare zlib-1.2.7 zlib-1.2.7.tar.bz2 || return
-
-  export CFLAGS="$CPPFLAGS $CFLAGS"
+  export CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts"
   ./configure --prefix=/usr --static
 
   make -j4 || return 1
@@ -312,20 +315,7 @@ function build_zlib()
 
 function build_physfs()
 {
-  prepare physfs-2.0.2 physfs-2.0.2.tar.gz || return
-  applyPatches physfs-2.0.2.patch
-
-  cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
-}
-
-function build_physfs21()
-{
-  [[ -d "$buildDir/physfs" ]] && return
-
-  msg "physfs-2.1-hg @ $platform"
-
-  cp -R "$topDir/archives/physfs" "$buildDir"
-  cd "$buildDir/physfs"
+  prepare physfs physfs || return
   applyPatches physfs-2.1.patch
 
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
@@ -359,15 +349,10 @@ function build_sdl()
 
 function build_sdl2()
 {
-  [[ -d "$buildDir/SDL" ]] && return
-
-  msg "SDL-2.0-hg @ $platform"
-
-  cp -R "$topDir/archives/SDL" "$buildDir"
-  cp "$projectDir/etc/SDL2-CMakeLists-gen.sh" "$buildDir/SDL"
-  cd "$buildDir/SDL"
+  prepare SDL SDL
   applyPatches SDL-hg.patch
 
+  cp "$projectDir/etc/SDL2-CMakeLists-gen.sh" "$buildDir/SDL"
   ./SDL2-CMakeLists-gen.sh
   cmakeBuild
 }
@@ -392,12 +377,7 @@ function build_sdl_ttf()
 
 function build_sdl2_ttf()
 {
-  [[ -d "$buildDir/SDL_ttf" ]] && return
-
-  msg "SDL2_ttf @ $platform"
-
-  cp -R "$topDir/archives/SDL_ttf" "$buildDir"
-  cd "$buildDir/SDL_ttf"
+  prepare SDL_ttf SDL_ttf
   applyPatches "SDL_ttf-hg.patch"
 
   export CFLAGS="$CFLAGS -I$buildDir/usr/include/SDL2"
@@ -434,85 +414,81 @@ function build_libvorbis()
 function build()
 {
   # zlib
-  setup_nacl64  && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
-  setup_nacl32  && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
-#   setup_pnacl   && CFLAGS="$CFLAGS -Dunlink=puts" build_zlib
-  setup_ndkX86  && build_zlib
-  setup_ndkARM  && build_zlib
-  setup_ndkARM7 && build_zlib
-  setup_ndkMIPS && build_zlib
+  setup_nacl64  && build_zlib
+  setup_nacl32  && build_zlib
+#   setup_pnacl   && build_zlib
 
   # physfs
-  setup_nacl64  && build_physfs21
-  setup_nacl32  && build_physfs21
-#   setup_pnacl   && build_physfs21
-  setup_ndkX86  && build_physfs21
-  setup_ndkARM  && build_physfs21
-  setup_ndkARM7 && build_physfs21
-  setup_ndkMIPS && build_physfs21
+  setup_nacl64  && build_physfs
+  setup_nacl32  && build_physfs
+#   setup_pnacl   && build_physfs
+#   setup_ndkX86  && build_physfs
+#   setup_ndkARM  && build_physfs
+#   setup_ndkARM7 && build_physfs
+#   setup_ndkMIPS && build_physfs
 
   # lua
   setup_nacl64  && build_lua
   setup_nacl32  && build_lua
 #   setup_pnacl   && build_lua
-  setup_ndkX86  && build_lua
-  setup_ndkARM  && build_lua
-  setup_ndkARM7 && build_lua
-  setup_ndkMIPS && build_lua
+#   setup_ndkX86  && build_lua
+#   setup_ndkARM  && build_lua
+#   setup_ndkARM7 && build_lua
+#   setup_ndkMIPS && build_lua
 
   # SDL
   setup_nacl64  && build_sdl
   setup_nacl32  && build_sdl
 #   setup_pnacl   && build_sdl
-  setup_ndkX86  && build_sdl2
-  setup_ndkARM  && build_sdl2
-  setup_ndkARM7 && build_sdl2
-  setup_ndkMIPS && build_sdl2
+#   setup_ndkX86  && build_sdl2
+#   setup_ndkARM  && build_sdl2
+#   setup_ndkARM7 && build_sdl2
+#   setup_ndkMIPS && build_sdl2
 
   # freetype
   setup_nacl64  && build_freetype
   setup_nacl32  && build_freetype
 #   setup_pnacl   && build_freetype
-  setup_ndkX86  && build_freetype
-  setup_ndkARM  && build_freetype
-  setup_ndkARM7 && build_freetype
-  setup_ndkMIPS && build_freetype
+#   setup_ndkX86  && build_freetype
+#   setup_ndkARM  && build_freetype
+#   setup_ndkARM7 && build_freetype
+#   setup_ndkMIPS && build_freetype
 
   # SDL_ttf
   setup_nacl64  && build_sdl_ttf
   setup_nacl32  && build_sdl_ttf
 #   setup_pnacl   && build_sdl_ttf
-  setup_ndkX86  && build_sdl2_ttf
-  setup_ndkARM  && build_sdl2_ttf
-  setup_ndkARM7 && build_sdl2_ttf
-  setup_ndkMIPS && build_sdl2_ttf
+#   setup_ndkX86  && build_sdl2_ttf
+#   setup_ndkARM  && build_sdl2_ttf
+#   setup_ndkARM7 && build_sdl2_ttf
+#   setup_ndkMIPS && build_sdl2_ttf
 
   # openal
   setup_nacl64  && build_openal
   setup_nacl32  && build_openal
 #   setup_pnacl   && build_openal
-  setup_ndkX86  && build_openal
-  setup_ndkARM  && build_openal
-  setup_ndkARM7 && build_openal
-  setup_ndkMIPS && build_openal
+#   setup_ndkX86  && build_openal
+#   setup_ndkARM  && build_openal
+#   setup_ndkARM7 && build_openal
+#   setup_ndkMIPS && build_openal
 
   # libogg
   setup_nacl64  && build_libogg
   setup_nacl32  && build_libogg
 #   setup_pnacl   && build_libogg
-  setup_ndkX86  && build_libogg
-  setup_ndkARM  && build_libogg
-  setup_ndkARM7 && build_libogg
-  setup_ndkMIPS && build_libogg
+#   setup_ndkX86  && build_libogg
+#   setup_ndkARM  && build_libogg
+#   setup_ndkARM7 && build_libogg
+#   setup_ndkMIPS && build_libogg
 
   # libvorbis
   setup_nacl64  && build_libvorbis
   setup_nacl32  && build_libvorbis
 #   setup_pnacl   && build_libvorbis
-  setup_ndkX86  && build_libvorbis
-  setup_ndkARM  && build_libvorbis
-  setup_ndkARM7 && build_libvorbis
-  setup_ndkMIPS && build_libvorbis
+#   setup_ndkX86  && build_libvorbis
+#   setup_ndkARM  && build_libvorbis
+#   setup_ndkARM7 && build_libvorbis
+#   setup_ndkMIPS && build_libvorbis
 }
 
 case $1 in

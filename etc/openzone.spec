@@ -19,7 +19,7 @@ License:        zlib
 Group:          System Environment/Libraries
 
 %package -n liboz-devel
-Summary:        Headers and documentation for OpenZone Core and Dynamics libraries
+Summary:        Headers for OpenZone Core and Dynamics libraries
 License:        zlib
 Group:          Development/Libraries
 Requires:       liboz-core = %{version}
@@ -32,10 +32,6 @@ Summary:        OpenZone game data
 License:        Custom
 Group:          Amusements/Games
 Requires:       %{name}-client = %{version}
-
-%package doc
-Summary:        OpenZone engine documentation
-Group:          Documentation
 
 %description
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -55,8 +51,7 @@ OpenZone Dynamics Library is a simple rigid body physics engine used in OpenZone
 game.
 
 %description -n liboz-devel
-This package contains header files and doxygen-generated documentation for
-OpenZone Core and Dynamics libraries.
+This package contains header files OpenZone Core and Dynamics libraries.
 
 %description client
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -69,10 +64,6 @@ separately.
 
 %description data
 Game data for OpenZone. Includes tutorial, testing world and cviček missions.
-
-%description doc
-Doxygen-generated documentation for OpenZone engine and PDF articles describing
-concepts and algorithms used in the engine.
 
 %prep
 %setup -q -b 1
@@ -89,7 +80,6 @@ cmake \
   -D OZ_NONFREE=1 \
   ..
 
-make %{?_smp_mflags} doc
 make %{?_smp_mflags}
 
 %install
@@ -120,7 +110,7 @@ fi
 %defattr(-, root, root)
 %{_includedir}/ozCore
 %{_includedir}/ozDynamics
-%doc src/ozCore/COPYING doc/doxygen.liboz/html
+%doc src/ozCore/COPYING
 
 %files client
 %defattr(-, root, root)
@@ -132,7 +122,3 @@ fi
 %files data
 %defattr(-, root, root)
 %{_datadir}/openzone
-
-%files doc
-%defattr(-, root, root)
-%doc doc/doxygen/html

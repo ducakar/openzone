@@ -40,8 +40,6 @@
 # include <ctime>
 # include <pthread.h>
 # include <unistd.h>
-
-# define _Exit( code ) _exit( code )
 #elif defined( __native_client__ )
 # include <ctime>
 # include <ppapi/cpp/audio.h>
@@ -52,12 +50,13 @@
 # include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
-
+# define _exit( code ) _Exit( code )
 # define isatty( fd ) _isatty( fd )
 #else
 # include <alsa/asoundlib.h>
 # include <ctime>
 # include <pthread.h>
+# include <pulse/simple.h>
 # include <unistd.h>
 #endif
 
@@ -86,13 +85,13 @@ int raise( int )
 namespace oz
 {
 
-static const float BELL_TIME      = 0.30f;
-static const float BELL_FREQUENCY = 1000.0f;
+static const float BELL_TIME           = 0.30f;
+static const float BELL_FREQUENCY      = 1000.0f;
+static const int   BELL_PREFERRED_RATE = 44100;
 
 #ifdef _WIN32
 
-static const int BELL_WAVE_RATE    = 44100;
-static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_WAVE_RATE );
+static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_PREFERRED_RATE );
 
 struct Wave
 {
@@ -173,7 +172,7 @@ static void catchSignals()
   signal( SIGSEGV, signalHandler );
 #ifndef _WIN32
   signal( SIGQUIT, signalHandler );
-  // Disable default handler for SIGTRAP that terminates a process.
+  // Disable default handler for SIGTRAP that terminates the process.
   signal( SIGTRAP, SIG_IGN );
 #endif
 }
@@ -222,7 +221,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   for( ; begin < end; ++begin ) {
     float i = float( begin );
 
-    float amplitude = 0.5f * Math::fastSqrt( max( ( nSamples - i ) / nSamples, 0.0f ) );
+    float amplitude = 0.8f * Math::fastSqrt( max( ( nSamples - i ) / nSamples, 0.0f ) );
     float theta     = i * quotient;
     float value     = amplitude * Math::sin( theta );
     short sample    = short( SHRT_MAX * value + 0.5f );
@@ -336,8 +335,8 @@ static DWORD WINAPI bellMain( void* )
   wave->subchunk1Size  = 16;
   wave->audioFormat    = 1;
   wave->nChannels      = 2;
-  wave->sampleRate     = BELL_WAVE_RATE;
-  wave->byteRate       = BELL_WAVE_RATE * 2 * sizeof( short );
+  wave->sampleRate     = BELL_PREFERRED_RATE;
+  wave->byteRate       = BELL_PREFERRED_RATE * 2 * sizeof( short );
   wave->blockAlign     = 2 * sizeof( short );
   wave->bitsPerSample  = sizeof( short ) * 8;
 
@@ -347,7 +346,7 @@ static DWORD WINAPI bellMain( void* )
   wave->subchunk2Id[3] = 'a';
   wave->subchunk2Size  = sizeof( wave->samples );
 
-  genBellSamples( wave->samples, BELL_WAVE_SAMPLES, BELL_WAVE_RATE, 0, BELL_WAVE_SAMPLES );
+  genBellSamples( wave->samples, BELL_WAVE_SAMPLES, BELL_PREFERRED_RATE, 0, BELL_WAVE_SAMPLES );
 
   PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
   free( wave );
@@ -360,6 +359,28 @@ static DWORD WINAPI bellMain( void* )
 
 static void* bellMain( void* )
 {
+  const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
+
+  pa_simple* pa = pa_simple_new( nullptr, "oz", PA_STREAM_PLAYBACK, nullptr, "bell",
+                                 &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
+
+  if( pa != nullptr ) {
+    int    nSamples = int( BELL_TIME * float( BELL_PREFERRED_RATE ) );
+    size_t size     = size_t( nSamples ) * 2 * sizeof( short );
+    short* samples  = static_cast<short*>( malloc( size ) );
+
+    genBellSamples( samples, nSamples, BELL_PREFERRED_RATE, 0, nSamples );
+
+    pa_simple_write( pa, samples, size, nullptr );
+    pa_simple_drain( pa, nullptr );
+    pa_simple_free( pa );
+
+    free( samples );
+
+    isBellPlaying = false;
+    return nullptr;
+  }
+
   snd_pcm_t* alsa;
   if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
     isBellPlaying = false;
@@ -370,7 +391,7 @@ static void* bellMain( void* )
   snd_pcm_hw_params_alloca( &params );
   snd_pcm_hw_params_any( alsa, params );
 
-  uint rate = 44100;
+  uint rate = BELL_PREFERRED_RATE;
 
   if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ) {
     isBellPlaying = false;
@@ -482,8 +503,7 @@ static void abort( bool doHalt )
   _Exit( EXIT_FAILURE );
 }
 
-const int     System::SIGNALS_BIT;
-const int     System::EXCEPTIONS_BIT;
+const int     System::HANDLERS_BIT;
 const int     System::HALT_BIT;
 const int     System::LOCALE_BIT;
 
@@ -524,11 +544,16 @@ void System::bell()
 
 #else
 
-    pthread_t bellThread;
-    if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
+    pthread_t      bellThread;
+    pthread_attr_t bellThreadAttr;
+
+    pthread_attr_init( &bellThreadAttr );
+    pthread_attr_setdetachstate( &bellThreadAttr, PTHREAD_CREATE_DETACHED );
+
+    if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) != 0 ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
-    pthread_detach( bellThread );
+    pthread_attr_destroy( &bellThreadAttr );
 
 #endif
   }
@@ -584,7 +609,7 @@ void System::error( const char* function, const char* file, int line, int nSkipp
 
 void System::threadInit()
 {
-  if( initFlags & SIGNALS_BIT ) {
+  if( initFlags & HANDLERS_BIT ) {
     catchSignals();
   }
 }
@@ -593,35 +618,16 @@ void System::init( int flags )
 {
   initFlags = flags;
 
-  if( initFlags & SIGNALS_BIT ) {
+  if( initFlags & HANDLERS_BIT ) {
     catchSignals();
-  }
-  else {
-    resetSignals();
-  }
 
-  if( initFlags & EXCEPTIONS_BIT ) {
     std::set_terminate( terminate );
     std::set_unexpected( unexpected );
-  }
-  else {
-    std::set_unexpected( std::unexpected );
-    std::set_terminate( std::terminate );
   }
 
   if( initFlags & LOCALE_BIT ) {
     setlocale( LC_ALL, "" );
   }
-}
-
-void System::free()
-{
-  std::set_unexpected( std::unexpected );
-  std::set_terminate( std::terminate );
-
-  resetSignals();
-
-  initFlags = 0;
 }
 
 }

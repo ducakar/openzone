@@ -252,7 +252,7 @@ uint Context::requestSpeakSource( const char* text, int owner )
   speakSource.isAlive        = true;
   speakSource.text           = text;
 
-  speakSource.thread.start( "speak", speakMain, nullptr );
+  speakSource.thread.start( "speak", Thread::JOINABLE, speakMain, nullptr );
   return speakSource.id;
 }
 

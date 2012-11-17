@@ -14,10 +14,10 @@ add_library( common STATIC
 )
 use_pch( common pch )
 
-target_link_libraries( common ozDynamics ozCore )
-
 if( OZ_LUAJIT )
   target_link_libraries( common ${LUAJIT_LIBRARY} )
 else()
   target_link_libraries( common ${LUA_LIBRARY} )
 endif()
+
+target_link_libraries( common ozDynamics ozCore )

@@ -119,6 +119,7 @@ static Foo foo( T&&... args )
 
 int main()
 {
+  System::init();
   System::bell();
   return 0;
 }

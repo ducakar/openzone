@@ -108,6 +108,7 @@ struct Thread::Descriptor
 #endif
   Thread::Main* main;
   void*         data;
+  bool          isDetached;
   char          name[NAME_LENGTH + 1];
 
 #ifdef _WIN32
@@ -140,6 +141,10 @@ DWORD WINAPI Thread::Descriptor::threadMain( void* data )
   System::threadInit();
 
   descriptor->main( descriptor->data );
+
+  if( descriptor->isDetached ) {
+    CloseHandle( descriptor->thread );
+  }
   return 0;
 }
 
@@ -156,6 +161,10 @@ void* Thread::Descriptor::threadMain( void* data )
   System::threadInit();
 
   descriptor->main( descriptor->data );
+
+  if( descriptor->isDetached ) {
+    free( descriptor );
+  }
   return nullptr;
 }
 
@@ -171,7 +180,7 @@ const char* Thread::name()
   return static_cast<const char*>( data );
 }
 
-void Thread::start( const char* name, Main* main, void* data )
+void Thread::start( const char* name, Type type, Main* main, void* data )
 {
   hard_assert( descriptor == nullptr );
 
@@ -180,8 +189,9 @@ void Thread::start( const char* name, Main* main, void* data )
     OZ_ERROR( "Thread resource allocation failed" );
   }
 
-  descriptor->main = main;
-  descriptor->data = data;
+  descriptor->main       = main;
+  descriptor->data       = data;
+  descriptor->isDetached = type != JOINABLE;
 
   strncpy( descriptor->name, name, NAME_LENGTH );
   descriptor->name[NAME_LENGTH] = '\0';
@@ -193,10 +203,28 @@ void Thread::start( const char* name, Main* main, void* data )
     OZ_ERROR( "Thread creation failed" );
   }
 
+  if( type != JOINABLE ) {
+    CloseHandle( descriptor->thread );
+  }
+
 #else
 
-  if( pthread_create( &descriptor->thread, nullptr, Descriptor::threadMain, descriptor ) != 0 ) {
-    OZ_ERROR( "Thread creation failed" );
+  if( type == JOINABLE ) {
+    if( pthread_create( &descriptor->thread, nullptr, Descriptor::threadMain, descriptor ) != 0 ) {
+      OZ_ERROR( "Thread creation failed" );
+    }
+  }
+  else {
+    pthread_attr_t  attrib;
+
+    pthread_attr_init( &attrib );
+    pthread_attr_setdetachstate( &attrib, PTHREAD_CREATE_DETACHED );
+
+    if( pthread_create( &descriptor->thread, &attrib, Descriptor::threadMain, descriptor ) != 0 ) {
+      OZ_ERROR( "Thread creation failed" );
+    }
+
+    pthread_attr_destroy( &attrib );
   }
 
 #endif

@@ -29,6 +29,7 @@
 #include <matrix/BotClass.hh>
 #include <matrix/WeaponClass.hh>
 
+#include <cwchar>
 #include <cwctype>
 
 namespace oz
@@ -56,13 +57,20 @@ void Profile::init()
       name = OZ_GETTEXT( "Player" );
     }
     else {
+      mbstate_t mbState;
+      mSet( &mbState, 0, sizeof( mbState ) );
+
+      const char* userNamePtr = userName;
       wchar_t wcUserName[64];
-      mbstowcs( wcUserName, userName, 64 );
+      mbsrtowcs( wcUserName, &userNamePtr, 64, &mbState );
 
       wcUserName[0] = wchar_t( towupper( wint_t( wcUserName[0] ) ) );
 
+      mSet( &mbState, 0, sizeof( mbState ) );
+
+      const wchar_t* wcUserNamePtr = wcUserName;
       char mbUserName[64];
-      wcstombs( mbUserName, wcUserName, 64 );
+      wcsrtombs( mbUserName, &wcUserNamePtr, 64, &mbState );
 
       name = mbUserName;
       configExists = false;

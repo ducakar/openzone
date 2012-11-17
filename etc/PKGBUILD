@@ -1,14 +1,13 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'liboz-doc' 'openzone' 'openzone-doc' 'openzone-data')
+pkgname=('liboz' 'openzone' 'openzone-data')
 pkgver=0.3.80
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('alsa-lib' 'cmake' 'doxygen' 'faad2' 'freeimage' 'git' 'libmad' 'libpulse' 'libvorbis'
-             'luajit' 'mesa' 'openal' 'physfs' 'sdl_ttf' 'texlive-core')
+makedepends=('cmake' 'freeimage' 'git' 'libpulse' 'luajit' 'mesa' 'openal' 'physfs' 'sdl_ttf')
 source=("https://github.com/downloads/ducakar/openzone/openzone-src-$pkgver.tar.xz"
         "https://github.com/downloads/ducakar/openzone/openzone-data-$pkgver.tar.xz")
 sha1sums=()
@@ -26,7 +25,6 @@ build()
     -D OZ_NONFREE=1 \
     ..
 
-  make doc
   make
 }
 
@@ -34,7 +32,7 @@ package_liboz()
 {
   pkgdesc='OpenZone Core and Dynamics libraries'
   license=('ZLIB')
-  depends=('alsa-lib' 'gcc-libs' 'physfs')
+  depends=('libpulse' 'physfs')
 
   cd "$srcdir/$pkgbase-$pkgver"
 
@@ -45,23 +43,10 @@ package_liboz()
   install -Dm644 "src/ozCore/COPYING" "$pkgdir/usr/share/licenses/liboz/COPYING"
 }
 
-package_liboz-doc()
-{
-  pkgdesc='Documentation for OpenZone Core and Dynamics libraries'
-  license=('ZLIB')
-  arch=('any')
-  depends=('liboz')
-
-  cd "$srcdir/$pkgbase-$pkgver"
-
-  install -dm755 "$pkgdir/usr/share/doc/liboz"
-  cp -r "doc/doxygen.liboz/html" "$pkgdir/usr/share/doc/liboz/doxygen"
-}
-
 package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game engine'
-  depends=('freeimage' 'libgl' 'liboz' 'libvorbis' 'luajit' 'openal' 'sdl_ttf')
+  depends=('freeimage' 'libgl' 'liboz' 'luajit' 'openal' 'sdl_ttf')
   optdepends=('openzone-data: game data'
               'espeak: speech synthesis'
               'libmad: MP3 playing'
@@ -78,18 +63,6 @@ package_openzone()
   install -dm755 "$pkgdir/usr/share/doc/openzone/licences"
   install -m644 AUTHORS README.md ChangeLog.md doc/*.html "$pkgdir/usr/share/doc/openzone"
   install -m644 doc/licences/* "$pkgdir/usr/share/doc/openzone/licences"
-}
-
-package_openzone-doc()
-{
-  pkgdesc='OpenZone engine documentation'
-  arch=('any')
-  depends=('openzone')
-
-  cd "$srcdir/$pkgbase-$pkgver"
-
-  install -dm755 "$pkgdir/usr/share/doc/openzone"
-  cp -r "doc/doxygen/html" "$pkgdir/usr/share/doc/openzone/doxygen"
 }
 
 package_openzone-data()

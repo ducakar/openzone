@@ -42,6 +42,15 @@ class Thread
 {
   public:
 
+    /**
+     * %Thread type.
+     */
+    enum Type
+    {
+      JOINABLE, ///< %Thread must be joined.
+      DETACHED  ///< %Thread is detached on start and automatically releases resources at exit.
+    };
+
     /// %Thread's main method type.
     typedef void Main( void* data );
 
@@ -108,18 +117,21 @@ class Thread
     /**
      * Create a new thread and run it.
      *
-     * When a new thread is started it is attached to the Thread object that started it. `join()`
-     * should be called to ensure thread's exit before Thread object's destruction or starting
-     * another thread.
+     * When a new joinable thread is started it is attached to the Thread object that started it.
+     * `join()` should be called later to ensure thread's termination and to release its resources.
+     *
+     * Detached thread is not attached to the Thread object so it can be immediately used to start
+     * another thread. %Thread's resources are released automatically when it finishes.
      *
      * @param name thread name (copied to an internal buffer).
+     * @param type `JOINABLE` or `DETACHED`.
      * @param main pointer to the thread's main method.
      * @param data pointer to user data, passed to the thread's main method.
      */
-    void start( const char* name, Main* main, void* data = nullptr );
+    void start( const char* name, Type type, Main* main, void* data = nullptr );
 
     /**
-     * Wait for a started thread to finish execution.
+     * Wait for a joinable thread to finish execution and release its resources.
      */
     void join();
 

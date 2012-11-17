@@ -17,28 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/common.hh
- */
-
 #pragma once
 
-#include <client/common.hh>
+/*
+ * Configuration variables
+ */
 
-#include <builder/config.hh>
-
-namespace oz
-{
-namespace builder
-{
-
-using namespace common;
-using namespace matrix;
-using namespace nirvana;
-using namespace modules;
-using namespace client;
-
-extern JSON config;
-
-}
-}
+// Enable squish S3TC library.
+#cmakedefine                    OZ_NONFREE

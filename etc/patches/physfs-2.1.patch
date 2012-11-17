@@ -1,7 +1,7 @@
-diff -r e7dad5b51954 CMakeLists.txt
---- a/CMakeLists.txt	Tue Sep 04 23:25:37 2012 -0700
-+++ b/CMakeLists.txt	Sat Oct 27 23:38:11 2012 +0200
-@@ -125,6 +125,7 @@
+diff -r c686e4f84ab5 CMakeLists.txt
+--- a/CMakeLists.txt	Mon Nov 12 23:40:29 2012 +0200
++++ b/CMakeLists.txt	Sat Nov 17 01:07:29 2012 +0100
+@@ -124,6 +124,7 @@
      src/platform_unix.c
      src/platform_macosx.c
      src/platform_windows.c
@@ -9,24 +9,26 @@ diff -r e7dad5b51954 CMakeLists.txt
      src/archiver_dir.c
      src/archiver_unpacked.c
      src/archiver_grp.c
-@@ -146,6 +147,14 @@
-         SET(PHYSFS_HAVE_CDROM_SUPPORT TRUE)
-         SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
-         SET(HAVE_PTHREAD_H TRUE)
-+    ELSEIF(ANDROID)
-+        SET(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
-+        SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
-+        SET(HAVE_PTHREAD_H TRUE)
-+    ELSEIF(NACL)
-+        SET(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
-+        SET(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
-+        SET(HAVE_PTHREAD_H TRUE)
-     ELSE(BEOS)
-         CHECK_INCLUDE_FILE(sys/ucred.h HAVE_UCRED_H)
-         IF(HAVE_UCRED_H)
-diff -r e7dad5b51954 src/lzma/C/Archive/7z/7zDecode.c
---- a/src/lzma/C/Archive/7z/7zDecode.c	Tue Sep 04 23:25:37 2012 -0700
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat Oct 27 23:38:11 2012 +0200
+@@ -142,7 +143,15 @@
+ # platform layers ...
+ 
+ if(UNIX)
+-    if(BEOS)
++    if(ANDROID)
++        set(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
++        set(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
++        set(HAVE_PTHREAD_H TRUE)
++    elseif(NACL)
++        set(PHYSFS_HAVE_CDROM_SUPPORT FALSE)
++        set(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
++        set(HAVE_PTHREAD_H TRUE)
++    elseif(BEOS)
+         set(PHYSFS_HAVE_CDROM_SUPPORT TRUE)
+         set(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
+         set(HAVE_PTHREAD_H TRUE)
+diff -r c686e4f84ab5 src/lzma/C/Archive/7z/7zDecode.c
+--- a/src/lzma/C/Archive/7z/7zDecode.c	Mon Nov 12 23:40:29 2012 +0200
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat Nov 17 01:07:29 2012 +0100
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
  
@@ -39,9 +41,9 @@ diff -r e7dad5b51954 src/lzma/C/Archive/7z/7zDecode.c
  
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
-diff -r e7dad5b51954 src/physfs.h
---- a/src/physfs.h	Tue Sep 04 23:25:37 2012 -0700
-+++ b/src/physfs.h	Sat Oct 27 23:38:11 2012 +0200
+diff -r c686e4f84ab5 src/physfs.h
+--- a/src/physfs.h	Mon Nov 12 23:40:29 2012 +0200
++++ b/src/physfs.h	Sat Nov 17 01:07:29 2012 +0100
 @@ -233,7 +233,7 @@
  #define PHYSFS_DECL __declspec(dllexport)
  #elif (defined __SUNPRO_C)
@@ -51,21 +53,21 @@ diff -r e7dad5b51954 src/physfs.h
  #define PHYSFS_DECL __attribute__((visibility("default")))
  #else
  #define PHYSFS_DECL
-diff -r e7dad5b51954 src/physfs_platforms.h
---- a/src/physfs_platforms.h	Tue Sep 04 23:25:37 2012 -0700
-+++ b/src/physfs_platforms.h	Sat Oct 27 23:38:11 2012 +0200
-@@ -35,6 +35,8 @@
+diff -r c686e4f84ab5 src/physfs_platforms.h
+--- a/src/physfs_platforms.h	Mon Nov 12 23:40:29 2012 +0200
++++ b/src/physfs_platforms.h	Sat Nov 17 01:07:29 2012 +0100
+@@ -40,6 +40,8 @@
+ #  define PHYSFS_PLATFORM_UNIX 1
  #  define PHYSFS_PLATFORM_POSIX 1
- #elif defined(macintosh)
- #  error Classic Mac OS support was dropped from PhysicsFS 2.0. Move to OS X.
+ #  define PHYSFS_NO_CDROM_SUPPORT 1
 +#elif defined(__native_client__)
 +#  define PHYSFS_PLATFORM_NACL 1
  #elif defined(__linux)
  #  define PHYSFS_PLATFORM_LINUX 1
  #  define PHYSFS_PLATFORM_UNIX 1
-diff -r e7dad5b51954 src/platform_nacl.c
+diff -r c686e4f84ab5 src/platform_nacl.c
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Sat Oct 27 23:38:11 2012 +0200
++++ b/src/platform_nacl.c	Sat Nov 17 01:07:29 2012 +0100
 @@ -0,0 +1,842 @@
 +/*
 + * Native Client support routines for PhysicsFS.

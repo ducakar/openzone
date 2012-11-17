@@ -32,33 +32,48 @@
 
 /**
  * @def OZ_STATIC_POOL_ALLOC
- * Define overloaded `new` and `delete` for a class that use the given pool.
+ * Define normal and `std::nothrow` non-array versions of `new` and `delete` for a class that use
+ * the given pool and disable other `new`/`delete` operators.
  *
  * As `new`/`delete` are static functions so has to be the given pool. The derived classes also need
  * to have overloaded `new`/`delete` defined the same way otherwise the ones from the base class
  * will be used, which will not end good.
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
-  void* operator new ( size_t ) { return pool.allocate(); } \
-  void  operator delete ( void* ptr ) noexcept { if( ptr != nullptr ) pool.deallocate( ptr ); } \
-  void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
-  void  operator delete ( void*, std::nothrow_t& ) noexcept = delete;
+  void* operator new ( size_t ) \
+    { return pool.allocate(); } \
+  void* operator new[] ( size_t ) = delete; \
+  void  operator delete ( void* ptr ) noexcept \
+    { if( ptr != nullptr ) pool.deallocate( ptr ); } \
+  void  operator delete[] ( void* ) noexcept = delete; \
+  void* operator new ( size_t, const std::nothrow_t& ) noexcept \
+    { return pool.allocate(); } \
+  void* operator new[] ( size_t, const std::nothrow_t& ) noexcept = delete; \
+  void  operator delete ( void* ptr, std::nothrow_t& ) noexcept \
+    { if( ptr != nullptr ) pool.deallocate( ptr ); } \
+  void  operator delete[] ( void*, std::nothrow_t& ) noexcept = delete;
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC
- * Define placement `new` for allocation from a pool and disable non-placement `new` and `delete`
- * for the class.
+ * Define non-array operator `new` for allocation from a pool and disable other `new` and `delete`
+ * operators.
  *
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
  * object should be manually destructed and deallocated via `pool.deallocate( object )`.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
   void* operator new ( size_t ) = delete; \
+  void* operator new[] ( size_t ) = delete; \
   void  operator delete ( void* ) noexcept = delete; \
+  void  operator delete[] ( void* ) noexcept = delete; \
   void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
+  void* operator new[] ( size_t, const std::nothrow_t& ) noexcept = delete; \
   void  operator delete ( void*, const std::nothrow_t& ) noexcept = delete; \
-  void* operator new ( size_t, oz::Pool<Type, SIZE>& p ) { return p.allocate(); } \
-  void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& p ) noexcept { p.deallocate( ptr ); }
+  void  operator delete[] ( void*, const std::nothrow_t& ) noexcept = delete; \
+  void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) \
+    { return pool.allocate(); } \
+  void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) noexcept \
+    { pool.deallocate( ptr ); }
 
 namespace oz
 {
