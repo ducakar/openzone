@@ -206,7 +206,7 @@ class Context
     void unload();
 
     void init();
-    void free();
+    void destroy();
 
 };
 

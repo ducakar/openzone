@@ -511,7 +511,7 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
 void Compiler::init()
 {}
 
-void Compiler::free()
+void Compiler::destroy()
 {
   parts.clear();
   parts.deallocate();

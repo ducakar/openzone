@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: ozCore
+Description: OpenZone Core Library
+Version: @OZ_VERSION@
+Libs: -L${libdir} -lozCore
+Cflags: -I${includedir} -std=c++11

@@ -102,7 +102,7 @@ void MenuStage::init()
   doExit = false;
 }
 
-void MenuStage::free()
+void MenuStage::destroy()
 {}
 
 MenuStage menuStage;

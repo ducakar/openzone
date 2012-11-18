@@ -1,5 +1,5 @@
-configure_file( config.hh.in config.hh )
-configure_file( BuildInfo.cc.in BuildInfo.cc )
+configure_file( config.hh.in config.hh @ONLY )
+configure_file( BuildInfo.cc.in BuildInfo.cc @ONLY )
 
 add_library( client STATIC
   ${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.cc
@@ -160,20 +160,26 @@ add_library( client STATIC
 )
 use_pch( client pch )
 
-target_link_libraries( client ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARY} )
-
 if( OZ_SDL2 )
-  target_link_libraries( client ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} )
+  target_link_libraries( client ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} )
 else()
   target_link_libraries( client ${SDL_LIBRARY} ${SDL_TTF_LIBRARY} )
 endif()
 
-if( ANDROID )
-  target_link_libraries( client ${FREETYPE_LIBRARY} -lGLESv2 ${VORBIS_LIBRARY} ${OGG_LIBRARY} )
-elseif( NACL )
-  target_link_libraries( client ${FREETYPE_LIBRARY} -lppapi_gles2 ${VORBIS_LIBRARY} ${OGG_LIBRARY} )
-elseif( OZ_GL_ES )
-  target_link_libraries( client ${GLES2_LIBRARY} )
+if( OZ_GL_ES )
+  if( ANDROID )
+    target_link_libraries( client -lGLESv2 )
+  elseif( NACL )
+    target_link_libraries( client -lppapi_gles2 )
+  else()
+    target_link_libraries( client ${GLES2_LIBRARIES} )
+  endif()
 else()
   target_link_libraries( client ${OPENGL_gl_LIBRARY} )
+endif()
+
+target_link_libraries( client ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARIES} )
+
+if( PLATFORM_EMBEDDED )
+  target_link_libraries( client ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
 endif()

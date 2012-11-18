@@ -1,5 +1,5 @@
 /*
- * ozDynamics - OpenZone Dynamics Library.
+ * ozCore - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -20,46 +20,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozDynamics/physics/DBody.hh
- *
- * Body class.
- */
-
 #pragma once
 
-#include "../collision/Body.hh"
-
-namespace oz
-{
-
-/**
- * Dynamic body.
+/*
+ * Configuration variables
  */
-class DBody : public Body
-{
-  public:
 
-    static Pool<DBody> pool; ///< Memory pool.
-
-    Vec3    mass;            ///< Mass.
-    Vec3    lift;            ///< Lift.
-    Mat33   inertia;         ///< Inertia.
-
-    Vec3    velocity;        ///< Velocity.
-    Vec3    rotVelocity;     ///< Rotational velocity.
-
-  public:
-
-    explicit DBody() : Body()
-    {
-      flags = DYNAMIC_BIT;
-    }
-
-    ~DBody() override;
-
-    OZ_STATIC_POOL_ALLOC( pool )
-
-};
-
-}
+// Compile complete ozDynamics library (requires Open Dynamics Engine).
+#cmakedefine OZ_ODE

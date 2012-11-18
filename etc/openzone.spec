@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.3.80
+Version:        0.3.81
 Release:        1
 Summary:        Simple cross-platform FPS/RTS game engine (meta package)
 URL:            http://ducakar.github.com/openzone/
@@ -75,9 +75,6 @@ cmake \
   -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_INSTALL_PREFIX=/usr \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
-  -D OZ_SHARED_LIBS=1 \
-  -D OZ_LUAJIT=1 \
-  -D OZ_NONFREE=1 \
   ..
 
 make %{?_smp_mflags}
@@ -94,6 +91,7 @@ make install DESTDIR="$RPM_BUILD_ROOT"
 rm -rf "$RPM_BUILD_ROOT"%{_defaultdocdir}
 
 if [[ %{_libdir} != /usr/lib ]]; then
+  sed -ri 's|libdir=.*|libdir=%{_libdir}|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
 
@@ -108,6 +106,8 @@ fi
 
 %files -n liboz-devel
 %defattr(-, root, root)
+%{_libdir}/pkgconfig/ozCore.pc
+%{_libdir}/pkgconfig/ozDynamics.pc
 %{_includedir}/ozCore
 %{_includedir}/ozDynamics
 %doc src/ozCore/COPYING

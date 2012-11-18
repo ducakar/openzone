@@ -91,7 +91,7 @@ class NaCl
      * General
      */
     static void init();
-    static void free();
+    static void destroy();
 
 };
 

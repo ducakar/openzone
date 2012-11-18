@@ -6,18 +6,18 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION 0.3.80 )
+set( OZ_VERSION 0.3.81 )
 
-option( OZ_SHARED_LIBS "Build libozCore and libozDynamics as shared libraries." OFF )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
+option( OZ_ODE "Build complete ozDynamics library (requires Open Dynamics Engine)." OFF )
 
 option( OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF )
 option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )
 option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1+." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
-option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
+option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
 
 #
 # Internal configuration
@@ -26,29 +26,32 @@ option( OZ_STANDALONE "Install layout appropriate for launching from its own fol
 include( cmake/PCH.cmake )
 include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
-include( CheckLibraryExists )
+include( FindPkgConfig )
+
+if( PLATFORM_EMBEDDED )
+  set( BUILD_SHARED_LIBS OFF )
+  set( OZ_GL_ES ON )
+  set( OZ_STANDALONE OFF )
+else()
+  set( BUILD_SHARED_LIBS ON )
+endif()
 
 if( ANDROID )
   set( CMAKE_SYSTEM_NAME "Android" )
-  set( OZ_SHARED_LIBS OFF )
   set( OZ_SDL2 ON )
-  set( OZ_GL_ES ON )
-  set( OZ_STANDALONE OFF )
 elseif( NACL )
   set( CMAKE_SYSTEM_NAME "NaCl" )
-  set( OZ_SHARED_LIBS OFF )
   set( OZ_SDL2 OFF )
-  set( OZ_GL_ES ON )
-  set( OZ_STANDALONE OFF )
 elseif( WIN32 )
   set( OZ_STANDALONE ON )
 endif()
 
-set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
-set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBS} )
 if( OZ_STANDALONE )
   set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
+  set( BUILD_SHARED_LIBS OFF )
 endif()
+
+set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
   if( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.4 )
@@ -66,112 +69,95 @@ endif()
 # Libraries
 #
 
+# Set-up include and library directories for different toolchains.
 if( ANDROID )
-  include_directories( ${PLATFORM_PREFIX}/usr/include ) # For KDevelop.
-  include_directories( ${PLATFORM_PORTS_PREFIX}/usr/include )
+  include_directories( SYSTEM ${PLATFORM_PREFIX}/usr/include ) # For KDevelop.
+  include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
 
-  find_package( ZLIB REQUIRED )
-  find_package( PhysFS REQUIRED )
-
-  find_package( Lua51 )
-  find_path( LUAJIT_INCLUDE_DIR luajit.h PATH_SUFFIXES include/luajit-2.0 )
-  find_library( LUAJIT_LIBRARY luajit-5.1 )
-
-  find_path( SDL2_INCLUDE_DIR SDL.h PATH_SUFFIXES include/SDL2 )
-  find_library( SDL2_LIBRARY SDL2 )
-  find_library( SDL2_TTF_LIBRARY SDL2_ttf )
-  find_package( Freetype REQUIRED )
-  find_package( OpenAL REQUIRED )
-  find_library( OGG_LIBRARY ogg )
-  find_library( VORBIS_LIBRARY vorbis )
-  find_library( VORBISFILE_LIBRARY vorbisfile )
+  link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
 elseif( NACL )
-  include_directories( ${PLATFORM_PREFIX}/include ) # For KDevelop.
-  include_directories( ${PLATFORM_PORTS_PREFIX}/usr/include )
+  include_directories( SYSTEM ${PLATFORM_PREFIX}/include ) # For KDevelop.
+  include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
 
-  find_package( ZLIB REQUIRED )
-  find_package( PhysFS REQUIRED )
-
-  find_package( Lua51 )
-  find_path( LUAJIT_INCLUDE_DIR luajit.h PATH_SUFFIXES include/luajit-2.0 )
-  find_library( LUAJIT_LIBRARY luajit-5.1 )
-
-  find_package( SDL REQUIRED )
-  find_package( SDL_ttf REQUIRED )
-  find_package( Freetype REQUIRED )
-  find_package( OpenAL REQUIRED )
-  find_library( OGG_LIBRARY ogg )
-  find_library( VORBIS_LIBRARY vorbis )
-  find_library( VORBISFILE_LIBRARY vorbisfile )
-elseif( WIN32 )
-  find_package( PhysFS REQUIRED )
-
-  find_package( Lua51 )
-  find_path( LUAJIT_INCLUDE_DIR luajit.h PATH_SUFFIXES include/luajit-2.0 )
-  find_library( LUAJIT_LIBRARY luajit-5.1 )
-
-  find_package( SDL )
-  find_package( SDL_ttf )
-  find_path( SDL2_INCLUDE_DIR SDL.h PATH_SUFFIXES include/SDL2 )
-  find_library( SDL2_LIBRARY SDL2 )
-  find_library( SDL2_TTF_LIBRARY SDL2_ttf )
-  find_package( OpenGL REQUIRED )
-  find_package( OpenAL REQUIRED )
-  find_library( VORBISFILE_LIBRARY vorbisfile )
-
-  find_library( FREEIMAGE_LIBRARY freeimage )
-  find_library( SQUISH_LIBRARY squish )
-else()
-  find_package( PhysFS REQUIRED )
-
-  find_package( Lua51 )
-  find_path( LUAJIT_INCLUDE_DIR luajit.h PATH_SUFFIXES include/luajit-2.0 )
-  find_library( LUAJIT_LIBRARY luajit-5.1 )
-
-  find_package( SDL )
-  find_package( SDL_ttf )
-  find_path( SDL2_INCLUDE_DIR SDL.h PATH_SUFFIXES include/SDL2 )
-  find_library( SDL2_LIBRARY SDL2 )
-  find_library( SDL2_TTF_LIBRARY SDL2_ttf )
-  find_package( OpenGL REQUIRED )
-  find_package( OpenAL REQUIRED )
-  find_library( VORBISFILE_LIBRARY vorbisfile )
-
-  find_library( FREEIMAGE_LIBRARY freeimage )
-  find_library( SQUISH_LIBRARY squish )
-endif()
-
-mark_as_advanced( MINGW32_LIBRARY )
-mark_as_advanced( PHYSFS_INCLUDE_DIR )
-mark_as_advanced( PHYSFS_LIBRARY )
-
-mark_as_advanced( LUAJIT_INCLUDE_DIR )
-mark_as_advanced( LUAJIT_LIBRARY )
-mark_as_advanced( SDLMAIN_LIBRARY )
-mark_as_advanced( SDL_INCLUDE_DIR )
-mark_as_advanced( SDL_LIBRARY )
-mark_as_advanced( SDL2_INCLUDE_DIR )
-mark_as_advanced( SDL2_LIBRARY )
-mark_as_advanced( SDL2_TTF_LIBRARY )
-mark_as_advanced( GLES2_LIBRARY )
-mark_as_advanced( OGG_LIBRARY )
-mark_as_advanced( VORBIS_LIBRARY )
-mark_as_advanced( VORBISFILE_LIBRARY )
-
-mark_as_advanced( FREEIMAGE_LIBRARY )
-mark_as_advanced( SQUISH_LIBRARY )
-
-if( OZ_LUAJIT )
-  include_directories( SYSTEM ${LUAJIT_INCLUDE_DIR} )
-endif()
-if( OZ_SDL2 )
-  include_directories( SYSTEM ${SDL2_INCLUDE_DIR} )
-else()
-  include_directories( SYSTEM ${SDL_INCLUDE_DIR} )
+  link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
 endif()
 
 # Local libmad, faad and eSpeak headers.
 include_directories( SYSTEM ./include )
+
+find_package( PhysFS REQUIRED )
+mark_as_advanced( PHYSFS_INCLUDE_DIR )
+mark_as_advanced( PHYSFS_LIBRARY )
+
+if( OZ_ODE )
+  pkg_check_modules( ODE REQUIRED ode )
+endif()
+
+if( OZ_LUAJIT )
+  pkg_check_modules( LUAJIT REQUIRED luajit )
+
+  include_directories( SYSTEM ${LUAJIT_INCLUDE_DIR} )
+else()
+  find_package( Lua51 REQUIRED )
+endif()
+
+if( OZ_SDL2 )
+  pkg_check_modules( SDL2 REQUIRED sdl2 )
+  pkg_check_modules( SDL2_TTF REQUIRED SDL2_ttf )
+
+  include_directories( SYSTEM ${SDL2_INCLUDE_DIR} )
+else()
+  find_package( SDL REQUIRED )
+  find_package( SDL_ttf REQUIRED )
+
+  mark_as_advanced( SDLMAIN_LIBRARY )
+  mark_as_advanced( SDL_INCLUDE_DIR )
+  mark_as_advanced( SDL_LIBRARY )
+
+  include_directories( SYSTEM ${SDL_INCLUDE_DIR} )
+endif()
+
+if( OZ_GL_ES )
+  # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
+  # platform directory, no need to explicitly check existence or detect library names.
+  if( NOT PLATFORM_EMBEDDED )
+    pkg_check_modules( GLES2 REQUIRED gles2 )
+  endif()
+else()
+  find_package( OpenGL REQUIRED )
+endif()
+
+find_package( OpenAL REQUIRED )
+pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
+
+# On embedded platforms everything is linked statically, libraries are mostly compiled as static,
+# so dependencies for all libraries must be linked too.
+if( PLATFORM_EMBEDDED )
+  pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
+  pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
+  find_package( Freetype REQUIRED )           # required by SDL_ttf
+  find_package( ZLIB )                        # required by PhysicsFS & FreeType
+endif()
+
+if( NOT PLATFORM_EMBEDDED )
+  find_library( FREEIMAGE_LIBRARY freeimage )
+  mark_as_advanced( FREEIMAGE_LIBRARY )
+
+  if( NOT FREEIMAGE_LIBRARY )
+    message( FATAL_ERROR "FreeImage library missing" )
+  endif()
+
+  if( OZ_NONFREE )
+    find_library( SQUISH_LIBRARY squish )
+    mark_as_advanced( SQUISH_LIBRARY )
+
+    if( NOT SQUISH_LIBRARY )
+      message( FATAL_ERROR "libsquish missing (required by OZ_NONFREE)" )
+    endif()
+  endif()
+endif()
+
+mark_as_advanced( MINGW32_LIBRARY )
 
 #
 # Compiler flags

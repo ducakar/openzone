@@ -337,7 +337,9 @@ void Render::drawGeometry()
     }
   }
 
+#ifdef OZ_ODE
   drawDyn();
+#endif
 
   shape.unbind();
 
@@ -556,7 +558,9 @@ void Render::load()
   uiMicros          = 0;
   swapMicros        = 0;
 
+#ifdef OZ_ODE
   loadDyn();
+#endif
 
   Log::printEnd( " OK" );
 }
@@ -569,7 +573,9 @@ void Render::unload()
 
   Log::print( "Unloading Render ..." );
 
+#ifdef OZ_ODE
   unloadDyn();
+#endif
 
   glFinish();
 
@@ -722,13 +728,13 @@ void Render::init()
   Log::println( "}" );
 }
 
-void Render::free()
+void Render::destroy()
 {
 #ifdef __native_client__
   hard_assert( NaCl::isMainThread() );
 #endif
 
-  Log::println( "Freeing Render {" );
+  Log::println( "Destroying Render {" );
   Log::indent();
 
   if( mainFrame != 0 ) {
@@ -745,9 +751,9 @@ void Render::free()
     mainFrame = 0;
   }
 
-  ui::ui.free();
-  shape.free();
-  shader.free();
+  ui::ui.destroy();
+  shape.destroy();
+  shader.destroy();
 
   OZ_GL_CHECK_ERROR();
 
@@ -760,6 +766,8 @@ Render render;
 }
 }
 
+#ifdef OZ_ODE
+
 /*
  * ozDynamics test
  */
@@ -771,6 +779,10 @@ namespace oz
 {
 namespace client
 {
+
+static oz::Space    space;
+static oz::Collider pcollider;
+static oz::Physics  physics;
 
 void Render::drawDyn()
 {
@@ -802,6 +814,8 @@ void Render::drawDyn()
 
 void Render::loadDyn()
 {
+  physics.init( &space, &pcollider );
+
   Compound* c = new Compound();
   c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat33::ID );
 //   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
@@ -828,7 +842,10 @@ void Render::unloadDyn()
 {
   space.clear();
   Space::deallocate();
+  physics.destroy();
 }
 
 }
 }
+
+#endif

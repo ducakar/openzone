@@ -608,13 +608,13 @@ void Lua::init()
   Log::printEnd( " OK" );
 }
 
-void Lua::free()
+void Lua::destroy()
 {
   if( l == nullptr ) {
     return;
   }
 
-  Log::print( "Freeing Client Lua ..." );
+  Log::print( "Destroying Client Lua ..." );
 
   ms.structs.clear();
   ms.structs.deallocate();
@@ -623,7 +623,7 @@ void Lua::free()
   ms.objects.deallocate();
 
   cs.mission = "";
-  cs.missionLingua.free();
+  cs.missionLingua.destroy();
 
   freeCommon();
 

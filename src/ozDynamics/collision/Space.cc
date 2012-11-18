@@ -54,6 +54,4 @@ void Space::deallocate()
   Body::pool.free();
 }
 
-Space space;
-
 }

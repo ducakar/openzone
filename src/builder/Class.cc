@@ -793,7 +793,7 @@ void Class::build( BufferStream* os, const char* className )
   config.clear( true );
 }
 
-void Class::free()
+void Class::destroy()
 {
   name        = "";
   title       = "";

@@ -140,7 +140,7 @@ class Log
     /**
      * Close log file.
      */
-    static void free();
+    static void destroy();
 
     /**
      * Same as `putsRaw( b ? "true" : "false" )`.

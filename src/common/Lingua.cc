@@ -37,7 +37,7 @@ Lingua::Lingua() :
 
 Lingua::~Lingua()
 {
-  free();
+  destroy();
 }
 
 String Lingua::detectLanguage( const char* language_ )
@@ -206,7 +206,7 @@ bool Lingua::init( const char* language_ )
   return true;
 }
 
-void Lingua::free()
+void Lingua::destroy()
 {
   for( int i = 0; i < nMessages; ++i ) {
     Message* chain = messages[i];

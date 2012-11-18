@@ -233,14 +233,14 @@ void Matrix::init()
   Log::println( "}" );
 }
 
-void Matrix::free()
+void Matrix::destroy()
 {
-  Log::println( "Freeing Matrix {" );
+  Log::println( "Destroying Matrix {" );
   Log::indent();
 
-  orbis.free();
-  namePool.free();
-  lua.free();
+  orbis.destroy();
+  namePool.destroy();
+  lua.destroy();
 
   Log::unindent();
   Log::println( "}" );

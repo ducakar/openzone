@@ -118,10 +118,10 @@ void Style::init()
   Log::printEnd( " OK" );
 }
 
-void Style::free()
+void Style::destroy()
 {
   for( int i = 0; i < Font::MAX; ++i ) {
-    fonts[i].free();
+    fonts[i].destroy();
   }
 }
 

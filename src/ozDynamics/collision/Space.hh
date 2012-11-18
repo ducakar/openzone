@@ -41,7 +41,6 @@ class Space
 {
   public:
 
-    static const int MAX_SHAPES = 1 << 8;
     static const int MAX_BODIES = 1 << 16;
 
     SList<Body*, MAX_BODIES> bodies;
@@ -52,7 +51,5 @@ class Space
     static void deallocate();
 
 };
-
-extern Space space;
 
 }

@@ -148,7 +148,7 @@ class Sound
     void sync();
 
     void init();
-    void free();
+    void destroy();
 
     void initLibs();
 

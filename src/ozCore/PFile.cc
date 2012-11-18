@@ -452,7 +452,7 @@ void PFile::init( File::FilesystemType type, int size )
   }
 }
 
-void PFile::free()
+void PFile::destroy()
 {
   PHYSFS_deinit();
 }

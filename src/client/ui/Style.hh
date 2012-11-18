@@ -95,7 +95,7 @@ class Style
   public:
 
     void init();
-    void free();
+    void destroy();
 
 };
 

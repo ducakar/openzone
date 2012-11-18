@@ -1,4 +1,5 @@
-configure_file( config.hh.in config.hh )
+configure_file( config.hh.in config.hh @ONLY )
+configure_file( ozCore.pc.in ozCore.pc @ONLY )
 
 add_library( ozCore
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
@@ -88,4 +89,5 @@ endif()
 install( TARGETS ozCore RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozCore )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib/pkgconfig )
 install( FILES COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )

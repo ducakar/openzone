@@ -48,7 +48,7 @@ class Lua : public common::Lua
     void write( BufferStream* ostream );
 
     void init();
-    void free();
+    void destroy();
 
 };
 

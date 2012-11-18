@@ -576,7 +576,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
 void Context::init()
 {}
 
-void Context::free()
+void Context::destroy()
 {
   usedTextures.clear();
   usedTextures.deallocate();

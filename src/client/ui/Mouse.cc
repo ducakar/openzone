@@ -116,9 +116,9 @@ void Mouse::init()
   Log::printEnd( " OK" );
 }
 
-void Mouse::free()
+void Mouse::destroy()
 {
-  Log::print( "Freeing Mouse ..." );
+  Log::print( "Destroying Mouse ..." );
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     glDeleteTextures( 1, &cursors[i].texId );

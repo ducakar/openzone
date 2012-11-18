@@ -85,10 +85,10 @@ void Modules::init()
   }
 }
 
-void Modules::free()
+void Modules::destroy()
 {
   for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->free();
+    modules[i]->destroy();
   }
 
   modules.clear();

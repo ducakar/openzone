@@ -44,7 +44,7 @@ class Module
     virtual void registerLua() const;
 
     virtual void init();
-    virtual void free();
+    virtual void destroy();
 
     virtual void read( InputStream* );
     virtual void write( BufferStream* ) const;

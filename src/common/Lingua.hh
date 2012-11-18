@@ -129,9 +129,9 @@ class Lingua
     bool init( const char* language );
 
     /**
-     * Free allocated resources.
+     * Destroy global instance.
      */
-    void free();
+    void destroy();
 
 };
 

@@ -202,7 +202,7 @@ class Shader
     void updateLights();
 
     void init();
-    void free();
+    void destroy();
 
 };
 

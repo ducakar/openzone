@@ -275,7 +275,7 @@ void Log::printTrace( const StackTrace& st )
       }
     }
 
-    ::free( entries );
+    free( entries );
   }
 
   if( file != nullptr ) {
@@ -335,7 +335,7 @@ bool Log::init( const char* filePath_, bool clearFile )
 #endif
 }
 
-void Log::free()
+void Log::destroy()
 {
 #if !defined( __ANDROID__ ) && !defined( __native_client__ )
 

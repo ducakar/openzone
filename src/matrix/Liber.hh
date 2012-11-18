@@ -126,7 +126,7 @@ class Liber
   public:
 
     void init( const char* userMusicPath );
-    void free();
+    void destroy();
 
 };
 

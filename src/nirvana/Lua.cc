@@ -500,13 +500,13 @@ void Lua::init()
   Log::printEnd( " OK" );
 }
 
-void Lua::free()
+void Lua::destroy()
 {
   if( l == nullptr ) {
     return;
   }
 
-  Log::print( "Freeing Nirvana Lua ..." );
+  Log::print( "Destroying Nirvana Lua ..." );
 
   ms.structs.clear();
   ms.structs.deallocate();

@@ -212,7 +212,7 @@ class Class
   public:
 
     void build( BufferStream* os, const char* className );
-    void free();
+    void destroy();
 
 };
 

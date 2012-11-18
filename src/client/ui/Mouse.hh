@@ -77,7 +77,7 @@ class Mouse
     void draw() const;
 
     void init();
-    void free();
+    void destroy();
 
 };
 

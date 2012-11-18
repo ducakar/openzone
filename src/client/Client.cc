@@ -486,36 +486,36 @@ int Client::init( int argc, char** argv )
 void Client::shutdown()
 {
   if( initFlags & INIT_STAGE_INIT ) {
-    gameStage.free();
-    menuStage.free();
+    gameStage.destroy();
+    menuStage.destroy();
   }
   if( initFlags & INIT_AUDIO ) {
     OZ_MAIN_CALL( this, {
-      sound.free();
+      sound.destroy();
     } )
   }
   if( initFlags & INIT_RENDER ) {
     OZ_MAIN_CALL( this, {
-      render.free();
+      render.destroy();
     } )
   }
   if( initFlags & INIT_CONTEXT ) {
-    context.free();
+    context.destroy();
   }
   if( initFlags & INIT_LIBRARY ) {
-    liber.free();
+    liber.destroy();
   }
   if( initFlags & INIT_LINGUA ) {
-    lingua.free();
+    lingua.destroy();
   }
   if( initFlags & INIT_NETWORK ) {
-    network.free();
+    network.destroy();
   }
   if( initFlags & INIT_INPUT ) {
-    input.free();
+    input.destroy();
   }
   if( initFlags & INIT_WINDOW ) {
-    window.free();
+    window.destroy();
   }
 
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
@@ -542,7 +542,7 @@ void Client::shutdown()
   }
 #endif
   if( initFlags & INIT_PHYSFS ) {
-    PFile::free();
+    PFile::destroy();
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {

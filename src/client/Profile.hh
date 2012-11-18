@@ -42,7 +42,7 @@ class Profile
     int                       weaponItem;
 
     void init();
-    void free();
+    void destroy();
 
 };
 

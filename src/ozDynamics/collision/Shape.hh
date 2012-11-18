@@ -48,8 +48,7 @@ class Shape
       BOX,
       CAPSULE,
       MESH,
-      COMPOUND,
-      MAX
+      COMPOUND
     };
 
   public:

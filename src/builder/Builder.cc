@@ -416,7 +416,7 @@ void Builder::buildClasses( const String& pkgName )
     Log::printEnd( " OK" );
   }
 
-  clazz.free();
+  clazz.destroy();
 
   Log::unindent();
   Log::println( "}" );
@@ -460,7 +460,7 @@ void Builder::buildFragPools( const String& pkgName )
     Log::printEnd( " OK" );
   }
 
-  clazz.free();
+  clazz.destroy();
 
   Log::unindent();
   Log::println( "}" );
@@ -1005,12 +1005,12 @@ int Builder::main( int argc, char** argv )
   uint endTime = Time::clock();
   Log::println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
-  compiler.free();
-  context.free();
+  compiler.destroy();
+  context.destroy();
   config.clear();
 
   FreeImage_DeInitialise();
-  PFile::free();
+  PFile::destroy();
   SDL_Quit();
 
   return EXIT_SUCCESS;

@@ -604,9 +604,9 @@ void Orbis::init()
   Log::printEnd( " OK" );
 }
 
-void Orbis::free()
+void Orbis::destroy()
 {
-  Log::println( "Freeing Orbis ... OK" );
+  Log::println( "Destroying Orbis ... OK" );
 }
 
 Orbis orbis;

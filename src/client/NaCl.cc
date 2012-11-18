@@ -94,7 +94,7 @@ void NaCl::init()
   mainCallSemaphore.init();
 }
 
-void NaCl::free()
+void NaCl::destroy()
 {
   messageQueue.clear();
   messageQueue.deallocate();

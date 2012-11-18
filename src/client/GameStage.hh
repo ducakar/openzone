@@ -90,7 +90,7 @@ class GameStage : public Stage
     void unload() override;
 
     void init() override;
-    void free() override;
+    void destroy() override;
 
 };
 

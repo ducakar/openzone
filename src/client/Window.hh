@@ -88,7 +88,7 @@ class Window
     void setFullscreen( bool fullscreen );
 
     void init();
-    void free();
+    void destroy();
 
 };
 

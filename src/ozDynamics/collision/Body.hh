@@ -30,6 +30,9 @@
 
 #include "Shape.hh"
 
+// Forward declaration for ODE.
+struct dxBody;
+
 namespace oz
 {
 
@@ -40,23 +43,30 @@ class Body
 {
   public:
 
+    /// Body is of `DBody` class.
+    static const int DYNAMIC_BIT = 0x01;
+
+  public:
+
     static Pool<Body> pool;  ///< Memory pool.
 
-    Body*  prev[3];          ///< Previous bodies in linked lists used in spatial structures.
-    Body*  next[3];          ///< Next bodies in linked lists used in spatial structures.
+    Body*   prev[3];         ///< Previous bodies in linked lists used in spatial structures.
+    Body*   next[3];         ///< Next bodies in linked lists used in spatial structures.
 
-    Bounds bb;               ///< Cached axis-aligned bounding box in absolute coordinates.
+    Bounds  bb;              ///< Cached axis-aligned bounding box in absolute coordinates.
 
-    Point  pos;              ///< Position.
-    Quat   rot;              ///< Rotation.
-    Mat33  rotMat;           ///< Cached rotation matrix.
+    Point   pos;             ///< Position.
+    Quat    rot;             ///< Rotation.
+    Mat33   rotMat;          ///< Cached rotation matrix.
 
-    int    flags;            ///< Flags.
-    int    mask;             ///< Collision bitmask.
+    int     flags;           ///< Flags.
+    int     mask;            ///< Collision bitmask.
+
+    dxBody* odeId;           ///< ODE dBodyID.
 
   private:
 
-    Shape* bodyShape;        ///< Collision shape.
+    Shape*  bodyShape;       ///< Collision shape.
 
   public:
 
@@ -64,7 +74,7 @@ class Body
      * Create uninitialised instance.
      */
     explicit Body() :
-      mask( ~0 ), bodyShape( nullptr )
+      flags( 0 ), mask( ~0 ), bodyShape( nullptr )
     {}
 
     virtual ~Body();

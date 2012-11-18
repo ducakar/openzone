@@ -45,7 +45,7 @@ class Network
     void update();
 
     void init();
-    void free();
+    void destroy();
 
 };
 

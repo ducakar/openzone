@@ -351,7 +351,7 @@ void Window::init()
 #endif
 }
 
-void Window::free()
+void Window::destroy()
 {
 #if defined( __native_client__ )
 

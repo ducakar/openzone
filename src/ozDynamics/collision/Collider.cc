@@ -29,7 +29,7 @@
 namespace oz
 {
 
-Collider::OverlapFunc* const Collider::dispatchMatrix[Shape::MAX][Shape::MAX] = {
+Collider::OverlapFunc* const Collider::dispatchMatrix[Shape::COMPOUND + 1][Shape::COMPOUND + 1] = {
   { boxBox,  boxCapsule,     boxMesh,     boxCompound      },
   { nullptr, capsuleCapsule, capsuleMesh, capsuleCompound  },
   { nullptr, nullptr,        meshMesh,    meshCompound     },

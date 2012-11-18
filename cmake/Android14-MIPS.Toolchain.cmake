@@ -1,5 +1,6 @@
 set( ANDROID ON )
 
+set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "mipsel-linux-android" )
 set( PLATFORM_PROC_PREFIX       "mips" )
 set( PLATFORM_PREFIX            "/opt/android-ndk/platforms/android-14/arch-mips" )

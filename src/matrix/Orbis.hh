@@ -152,7 +152,7 @@ class Orbis : public Bounds
     void unload();
 
     void init();
-    void free();
+    void destroy();
 
 };
 

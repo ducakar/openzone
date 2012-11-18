@@ -83,7 +83,7 @@ void Font::init( const char* name, int height_ )
   }
 }
 
-void Font::free()
+void Font::destroy()
 {
   if( handle != nullptr ) {
     TTF_CloseFont( static_cast<TTF_Font*>( handle ) );

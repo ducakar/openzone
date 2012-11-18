@@ -22,16 +22,16 @@
  *
  * Dummy txc_dxtn library.
  *
- * We don't need full S3TC support, only ability to upload compressed textures. However, Mesa on
- * Linux disables all S3TC-related stuff without txc_dxtn, even those that could work without
- * that library.
+ * We don't need full S3TC support, only ability to upload compressed textures. However, when Mesa
+ * doesn't find libtxc_dxtn library, if disables all S3TC-related stuff, including those things that
+ * could work without libtxc_dxtn.
  *
  * This dummy txc_dxtn library should be put into `LD_LIBRARY_PATH` when starting OpenZone on a
  * Linux system with open-source (Mesa) OpenGL implementation when there's no txc_dxtn library
  * present. It should fool Mesa not to disable S3TC functionality that could work without txc_dxtn.
  *
- * If the program tries to use any S3TC-related functionality that would require txc_dxtn, any of
- * these functions will crash the program with `abort()`.
+ * If the program tries to use any S3TC-related functionality that requires txc_dxtn, any of these
+ * functions will crash the program with `abort()`.
  */
 
 #pragma once

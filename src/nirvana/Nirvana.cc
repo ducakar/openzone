@@ -175,12 +175,12 @@ void Nirvana::init()
   Log::println( "}" );
 }
 
-void Nirvana::free()
+void Nirvana::destroy()
 {
-  Log::println( "Freeing Nirvana {" );
+  Log::println( "Destroy Nirvana {" );
   Log::indent();
 
-  lua.free();
+  lua.destroy();
 
   deviceClasses.clear();
   deviceClasses.deallocate();

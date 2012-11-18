@@ -46,7 +46,7 @@ class Stage
     virtual void unload()               = 0;
 
     virtual void init()                 = 0;
-    virtual void free()                 = 0;
+    virtual void destroy()              = 0;
 
 };
 

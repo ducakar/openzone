@@ -71,7 +71,7 @@ class Shape
     static void object( const Point& pos, const Mat33& rot, const void* shape );
 
     void init();
-    void free();
+    void destroy();
 
 };
 

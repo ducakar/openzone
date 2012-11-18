@@ -24,4 +24,4 @@
  */
 
 // Enable squish S3TC library.
-#cmakedefine                    OZ_NONFREE
+#cmakedefine OZ_NONFREE

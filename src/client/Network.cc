@@ -84,7 +84,7 @@ void Network::init()
   port = ushort( config.include( "net.port", 6666 ).asInt() );
 }
 
-void Network::free()
+void Network::destroy()
 {}
 
 Network network;

@@ -1063,7 +1063,7 @@ void File::init( FilesystemType type, int size )
               " filesystem" );
   }
 
-  free();
+  destroy();
 
   // We abuse staticDesc.size and staticDesc.offset variables to pass filesystem type and size to
   // callback.
@@ -1108,7 +1108,7 @@ void File::init( FilesystemType type, int size )
 #endif
 }
 
-void File::free()
+void File::destroy()
 {
 #ifdef __native_client__
 

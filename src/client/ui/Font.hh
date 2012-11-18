@@ -59,7 +59,7 @@ class Font
     void draw( const char* s, uint texId, int* width, int* height ) const;
 
     void init( const char* name, int height );
-    void free();
+    void destroy();
 
 };
 

@@ -763,7 +763,7 @@ void Liber::init( const char* userMusicPath )
   Log::println( "}" );
 }
 
-void Liber::free()
+void Liber::destroy()
 {
   shaders.clear();
   textures.clear();

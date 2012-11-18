@@ -349,7 +349,7 @@ void Shape::init()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
-void Shape::free()
+void Shape::destroy()
 {
   if( vbo != 0 ) {
     glDeleteBuffers( 1, &ibo );

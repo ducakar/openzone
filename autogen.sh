@@ -7,7 +7,7 @@
 # Additionally this scripts also updates version numbers in various files.
 #
 
-version=0.3.80
+version=0.3.81
 components=( ozCore ozDynamics common matrix nirvana modules client builder unittest )
 
 # Generate CMakeLists.txt files.
@@ -28,13 +28,13 @@ done
 
 # Fix version numbers.
 echo "Updating version in CMakeLists.txt"
-sed -r 's|^(set\( OZ_VERSION ")[^"]*(".*)$|\1'"$version"'\2|' -i CMakeLists.txt
+sed -r 's|^(set\( OZ_VERSION ).*$|\1'"$version"' )|' -i CMakeLists.txt
 
 echo "Updating version in doc/Doxyfile*"
-sed -r 's|^(PROJECT_NUMBER *= ).*$|\1"'"$version"'"|' -i doc/Doxyfile*
+sed -r 's|^(PROJECT_NUMBER *= *).*$|\1"'"$version"'"|' -i doc/Doxyfile*
 
 echo "Updating HTML READMEs doc/*.html"
-sed -r 's|<!--OZ_VERSION-->[^<"]*([<"])|<!--OZ_VERSION-->'"$version"'\1|' -i doc/*.html
+sed -r 's|(<!--OZ_VERSION-->)[^<"]*|\1'"$version"'|' -i doc/*.html
 
 echo "Updating version in etc/PKGBUILD"
 sed -r 's|^(pkgver=).*$|\1'"$version"'|' -i etc/PKGBUILD

@@ -48,7 +48,7 @@ void Vertex::setFormat()
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 }
 
-void Texture::free()
+void Texture::destroy()
 {
   if( diffuse != 0 ) {
     glDeleteTextures( 1, &diffuse );

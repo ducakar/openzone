@@ -445,13 +445,13 @@ void Lua::init()
   Log::printEnd( " OK" );
 }
 
-void Lua::free()
+void Lua::destroy()
 {
   if( l == nullptr ) {
     return;
   }
 
-  Log::print( "Freeing Matrix Lua ..." );
+  Log::print( "Destroying Matrix Lua ..." );
 
   ms.structs.clear();
   ms.structs.deallocate();

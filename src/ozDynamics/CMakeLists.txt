@@ -1,4 +1,8 @@
+configure_file( config.hh.in config.hh @ONLY )
+configure_file( ozDynamics.pc.in ozDynamics.pc @ONLY )
+
 add_library( ozDynamics
+  ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   ozDynamics.hh
   collision/AABB.hh
@@ -12,6 +16,7 @@ add_library( ozDynamics
   collision/Shape.hh
   collision/Space.hh
   physics/DBody.hh
+  physics/Physics.hh
   collision/Body.cc
   collision/Box.cc
   collision/Capsule.cc
@@ -21,15 +26,24 @@ add_library( ozDynamics
   collision/Shape.cc
   collision/Space.cc
   physics/DBody.cc
+  physics/Physics.cc
 #END SOURCES
 )
 
 set_target_properties( ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
-target_link_libraries( ozDynamics ozCore )
+
+# Hack.
+if( ODE_LIBRARIES )
+  target_link_libraries( ozDynamics ${ODE_LIBRARIES} ozCore )
+else()
+  target_link_libraries( ozDynamics ozCore )
+endif()
 
 install( TARGETS ozDynamics
          RUNTIME DESTINATION bin
          LIBRARY DESTINATION lib
          ARCHIVE DESTINATION lib )
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozDynamics )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozDynamics.pc DESTINATION lib/pkgconfig )
 install( FILES COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )

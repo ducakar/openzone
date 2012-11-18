@@ -146,7 +146,7 @@ void GameStage::reload()
 
   questList.unload();
 
-  lua.free();
+  lua.destroy();
 
   nirvana.unload();
   matrix.unload();
@@ -496,7 +496,7 @@ void GameStage::unload()
 
   questList.unload();
 
-  lua.free();
+  lua.destroy();
 
   nirvana.unload();
   matrix.unload();
@@ -576,16 +576,16 @@ void GameStage::init()
   Log::println( "}" );
 }
 
-void GameStage::free()
+void GameStage::destroy()
 {
-  Log::println( "Freeing GameStage {" );
+  Log::println( "Destroying GameStage {" );
   Log::indent();
 
-  modules.free();
-  profile.free();
-  loader.free();
-  nirvana.free();
-  matrix.free();
+  modules.destroy();
+  profile.destroy();
+  loader.destroy();
+  nirvana.destroy();
+  matrix.destroy();
 
   stateFile      = "";
   mission        = "";

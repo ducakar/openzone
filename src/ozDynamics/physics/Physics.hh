@@ -21,44 +21,35 @@
  */
 
 /**
- * @file ozDynamics/physics/DBody.hh
+ * @file ozDynamics/physics/Physics.hh
  *
- * Body class.
+ * Physics class.
  */
 
 #pragma once
 
-#include "../collision/Body.hh"
+#include "../collision/Collider.hh"
+#include "DBody.hh"
 
 namespace oz
 {
 
-/**
- * Dynamic body.
- */
-class DBody : public Body
+class Physics
 {
-  public:
+  private:
 
-    static Pool<DBody> pool; ///< Memory pool.
-
-    Vec3    mass;            ///< Mass.
-    Vec3    lift;            ///< Lift.
-    Mat33   inertia;         ///< Inertia.
-
-    Vec3    velocity;        ///< Velocity.
-    Vec3    rotVelocity;     ///< Rotational velocity.
+    Space*    space;
+    Collider* collider;
 
   public:
 
-    explicit DBody() : Body()
-    {
-      flags = DYNAMIC_BIT;
-    }
+    void add( DBody* body );
+    void erase( DBody* body );
 
-    ~DBody() override;
+    void update();
 
-    OZ_STATIC_POOL_ALLOC( pool )
+    void init( Space* space, Collider* collider );
+    void destroy();
 
 };
 

@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: ozDynamics
+Description: OpenZone Dynamics Library
+Version: @OZ_VERSION@
+Requires: ozCore
+Libs: -L${libdir} -lozDynamics
+Cflags: -I${includedir} -std=c++11

@@ -577,7 +577,7 @@ void Input::init()
   Log::printEnd( " OK" );
 }
 
-void Input::free()
+void Input::destroy()
 {
   if( configExists ) {
     return;

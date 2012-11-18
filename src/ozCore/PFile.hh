@@ -258,7 +258,7 @@ class PFile
     /**
      * Deinitialise PhysicsFS.
      */
-    static void free();
+    static void destroy();
 
 };
 

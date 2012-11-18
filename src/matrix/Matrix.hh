@@ -56,7 +56,7 @@ class Matrix
     void unload();
 
     void init();
-    void free();
+    void destroy();
 
 };
 

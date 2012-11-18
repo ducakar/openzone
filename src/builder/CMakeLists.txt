@@ -1,4 +1,4 @@
-configure_file( config.hh.in config.hh )
+configure_file( config.hh.in config.hh @ONLY )
 
 add_library( builder STATIC
 #BEGIN SOURCES

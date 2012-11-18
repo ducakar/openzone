@@ -178,7 +178,7 @@ class Input
     void update();
 
     void init();
-    void free();
+    void destroy();
 
 };
 

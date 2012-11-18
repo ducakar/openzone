@@ -222,7 +222,7 @@ void UI::init()
   root->add( loadingScreen, 0, 0 );
 }
 
-void UI::free()
+void UI::destroy()
 {
   delete fpsLabel;
   delete root;
@@ -230,8 +230,8 @@ void UI::free()
   root     = nullptr;
   fpsLabel = nullptr;
 
-  mouse.free();
-  style.free();
+  mouse.destroy();
+  style.destroy();
 }
 
 UI ui;

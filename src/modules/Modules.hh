@@ -49,7 +49,7 @@ class Modules
     void registerLua() const;
 
     void init();
-    void free();
+    void destroy();
 
 };
 

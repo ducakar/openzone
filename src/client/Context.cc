@@ -372,7 +372,7 @@ void Context::releaseTexture( int id )
 
   if( resource.nUsers == 0 ) {
     resource.nUsers = -1;
-    resource.id.free();
+    resource.id.destroy();
 
     OZ_GL_CHECK_ERROR();
   }
@@ -850,9 +850,9 @@ void Context::init()
   Log::printEnd( " OK" );
 }
 
-void Context::free()
+void Context::destroy()
 {
-  Log::print( "Freeing Context ..." );
+  Log::print( "Destroying Context ..." );
 
   speakSource.mutex.destroy();
 

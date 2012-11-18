@@ -53,7 +53,7 @@ class MenuStage : public Stage
     void unload() override;
 
     void init() override;
-    void free() override;
+    void destroy() override;
 
 };
 

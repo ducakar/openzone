@@ -845,13 +845,13 @@ void Sound::init()
   OZ_AL_CHECK_ERROR();
 }
 
-void Sound::free()
+void Sound::destroy()
 {
 #ifdef __native_client__
   hard_assert( NaCl::isMainThread() );
 #endif
 
-  Log::print( "Freeing Sound ..." );
+  Log::print( "Destroying Sound ..." );
 
   if( espeak_Terminate != nullptr ) {
     espeak_Terminate();

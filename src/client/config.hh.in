@@ -24,10 +24,10 @@
  */
 
 // Version.
-#define OZ_VERSION              "@OZ_VERSION@"
+#define OZ_VERSION "@OZ_VERSION@"
 
 // Default data directory.
-#define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
+#define OZ_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 
 // Use OpenGL ES 2.0.
-#cmakedefine                    OZ_GL_ES
+#cmakedefine OZ_GL_ES

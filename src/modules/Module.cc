@@ -47,7 +47,7 @@ void Module::registerLua() const
 void Module::init()
 {}
 
-void Module::free()
+void Module::destroy()
 {}
 
 void Module::read( InputStream* )

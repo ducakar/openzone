@@ -49,7 +49,7 @@ class Collider
                               const Mat33& rot1, const Shape* shape1,
                               const Vec3& relPos, Result* result );
 
-    static OverlapFunc* const dispatchMatrix[Shape::MAX][Shape::MAX];
+    static OverlapFunc* const dispatchMatrix[Shape::COMPOUND + 1][Shape::COMPOUND + 1];
 
   private:
 

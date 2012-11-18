@@ -46,7 +46,7 @@ class NamePool
     const String& genName( int list ) const;
 
     void init();
-    void free();
+    void destroy();
 
 };
 

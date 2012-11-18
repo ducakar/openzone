@@ -107,7 +107,7 @@ class Context
                        int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
 
     void init();
-    void free();
+    void destroy();
 
 };
 

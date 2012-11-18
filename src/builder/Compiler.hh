@@ -140,7 +140,7 @@ class Compiler
     void writeMesh( BufferStream* os, bool embedTextures = true );
 
     void init();
-    void free();
+    void destroy();
 
 };
 

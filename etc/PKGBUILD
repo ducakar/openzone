@@ -2,7 +2,7 @@
 
 pkgbase=openzone
 pkgname=('liboz' 'openzone' 'openzone-data')
-pkgver=0.3.80
+pkgver=0.3.81
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
@@ -20,7 +20,6 @@ build()
     -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_INSTALL_PREFIX=/usr \
     -D CMAKE_CXX_FLAGS="$CXXFLAGS -msse3 -mfpmath=sse" \
-    -D OZ_SHARED_LIBS=1 \
     -D OZ_LUAJIT=1 \
     -D OZ_NONFREE=1 \
     ..
@@ -32,7 +31,7 @@ package_liboz()
 {
   pkgdesc='OpenZone Core and Dynamics libraries'
   license=('ZLIB')
-  depends=('libpulse' 'physfs')
+  depends=('libpulse' 'physfs' 'ode-sp')
 
   cd "$srcdir/$pkgbase-$pkgver"
 

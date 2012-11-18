@@ -273,7 +273,7 @@ class File
      *
      * This method makes effect on NaCl platform only.
      */
-    static void free();
+    static void destroy();
 
 };
 

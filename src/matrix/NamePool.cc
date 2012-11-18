@@ -89,9 +89,9 @@ void NamePool::init()
   Log::printEnd( " OK" );
 }
 
-void NamePool::free()
+void NamePool::destroy()
 {
-  Log::print( "Freeing NamePool ..." );
+  Log::print( "Destroying NamePool ..." );
 
   names.clear();
   names.deallocate();

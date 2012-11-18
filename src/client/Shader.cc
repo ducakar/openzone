@@ -409,9 +409,9 @@ void Shader::init()
   Log::printEnd( " OK" );
 }
 
-void Shader::free()
+void Shader::destroy()
 {
-  Log::print( "Freeing Shader ..." );
+  Log::print( "Destroying Shader ..." );
 
   for( int i = 0; i < liber.shaders.length(); ++i ) {
     if( programs[i].program != 0 ) {

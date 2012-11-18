@@ -45,7 +45,7 @@ struct Texture
   uint masks;
   uint normals;
 
-  void free();
+  void destroy();
 };
 
 class Mesh

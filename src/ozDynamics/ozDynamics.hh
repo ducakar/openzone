@@ -54,3 +54,4 @@
  * Physics.
  */
 #include "physics/DBody.hh"
+#include "physics/Physics.hh"

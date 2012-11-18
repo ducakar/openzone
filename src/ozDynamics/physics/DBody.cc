@@ -31,4 +31,7 @@ namespace oz
 
 Pool<DBody> DBody::pool;
 
+DBody::~DBody()
+{}
+
 }

@@ -208,7 +208,7 @@ MissionMenu::MissionMenu() :
     MissionInfo mission = { missionName, title, description, imageId };
     missions.add( mission );
 
-    lingua.free();
+    lingua.destroy();
   }
 
   scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );

@@ -142,7 +142,7 @@ void Profile::init()
   profileConfig.clear( true );
 }
 
-void Profile::free()
+void Profile::destroy()
 {
   items.clear();
   items.deallocate();

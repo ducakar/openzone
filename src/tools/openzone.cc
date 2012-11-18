@@ -126,7 +126,7 @@ MainInstance::~MainInstance()
     mainThread.join();
   }
 
-  NaCl::free();
+  NaCl::destroy();
 }
 
 bool MainInstance::Init( uint32_t, const char**, const char** )
