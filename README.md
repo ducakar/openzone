@@ -10,15 +10,16 @@ This README file is intended for developers only. See `doc/README.html` if you a
 Building
 --------
 
-Building is currently supported under Linux. You can build Linux, Windows (MinGW) and Native Client
-ports. Android port in still under development.
+Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
+Client ports. Android port in still under development.
 
 For generic Linux builds, make sure you have all the dependencies installed. You need to install
 development packages for the following libraries:
 
-- libpulse
-- ALSA
+- ALSA (Linux only)
+- libpulse (Linux/Unix only)
 - PhysicsFS 2.0 or 2.1
+- ODE (optional)
 - Lua 5.1 or 5.2 or LuaJIT 2.0
 - SDL 1.2 or 2.0
 - SDL_ttf
@@ -27,11 +28,6 @@ development packages for the following libraries:
 - libvorbis
 - FreeImage
 - libsquish (optional)
-
-If you don't have libmad, faad and eSpeak on your system, you can use headers located in `include`
-subdirectory. Those are automatically used on Android, NaCl and Windows, overriding any of those
-headers found on the system. On Linux one may add "`-I./include`" to `CMAKE_CXXFLAGS` for the same
-effect.
 
 You can then use generic steps for building CMake projects:
 
@@ -55,11 +51,6 @@ MinGW32 is searched in `/usr/i486-mingw32` by default. You may change that in
 
 You may also want to set several options when configuring CMake build system:
 
-- `OZ_SHARED_LIBS`: Build liboz (OpenZone Core Library plus OpenZone Dynamics Library) as a shared
-  library. This is useful if one wants to put liboz into a separate Linux package so other programs
-  can use it too.
-  `OFF` by default, forced to `OFF` on Android and NaCl.
-
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
   memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
   mismatches and one can check for currently allocated memory chunks (and hence memory leaks).
@@ -69,6 +60,10 @@ You may also want to set several options when configuring CMake build system:
   Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementations since
   Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of accesses to
   vector components in OpenZone code.
+  `OFF` by default.
+
+- `OZ_ODE`: Compile with Open Dynamics Engine. Without this option ozDynamics builds only partially,
+  without physics support.
   `OFF` by default.
 
 - `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster.

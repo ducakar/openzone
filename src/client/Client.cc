@@ -165,7 +165,7 @@ int Client::init( int argc, char** argv )
 
   String configDir = String::str( "%s\\openzone", configRoot );
   String localDir  = String::str( "%s\\openzone", localRoot );
-  String musicDir  = musicRoot;
+  String musicDir  = String::str( "%s\\OpenZone", musicRoot );
 
 #else
 
@@ -186,7 +186,8 @@ int Client::init( int argc, char** argv )
                     String::str( "%s/.local/share/openzone", home ) :
                     String::str( "%s/openzone", localRoot );
 
-  String musicDir = musicRoot == nullptr ? String::str( "%s/Music", home ) : String( musicRoot );
+  String musicDir = musicRoot == nullptr ? String::str( "%s/Music/OpenZone", home ) :
+                                           String( musicRoot );
 
 #endif
 

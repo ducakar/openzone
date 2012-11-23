@@ -46,7 +46,7 @@ class Physics
     void add( DBody* body );
     void erase( DBody* body );
 
-    void update();
+    void update( float time );
 
     void init( Space* space, Collider* collider );
     void destroy();

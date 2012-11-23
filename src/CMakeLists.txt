@@ -16,7 +16,10 @@ add_subdirectory( tools )
 
 if( NOT ANDROID AND NOT NACL )
   add_subdirectory( builder )
-  add_subdirectory( txc_dxtn )
+
+  if( UNIX )
+    add_subdirectory( txc_dxtn )
+  endif()
 endif()
 
 add_subdirectory( tests )

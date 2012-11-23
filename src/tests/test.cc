@@ -24,8 +24,6 @@
 #include <ozCore/ozCore.hh>
 #include <ozDynamics/ozDynamics.hh>
 
-#include <physfs.h>
-
 using namespace oz;
 
 class Foo

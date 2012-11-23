@@ -7,4 +7,4 @@ Name: ozCore
 Description: OpenZone Core Library
 Version: @OZ_VERSION@
 Libs: -L${libdir} -lozCore
-Cflags: -I${includedir} -std=c++11
+Cflags: -std=c++11 -I${includedir}

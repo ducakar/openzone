@@ -30,7 +30,7 @@
 
 #ifdef OZ_ODE
 
-// If ODE is not compiled with single precision, this won't end good.
+// If ODE is not compiled with single precision, bad things are going to happen.
 #define dSINGLE
 #include <ode/ode.h>
 
@@ -80,7 +80,7 @@ void Physics::erase( DBody* body )
   body->odeId = nullptr;
 }
 
-void Physics::update()
+void Physics::update( float time )
 {
   for( int i = 0; i < space->bodies.length(); ++i ) {
     const DBody* body0 = static_cast<const DBody*>( space->bodies[i] );
@@ -96,19 +96,20 @@ void Physics::update()
       if( collider->overlaps( body0, body1, &result ) ) {
         Point p = Math::mix( body0->pos, body1->pos, 0.5f );
 
+        Log() << result.depth << ", " << result.axis << "\n";
+
         dContact contact;
-        contact.surface.mode       = dContactBounce | dContactSoftCFM;
+        contact.surface.mode       = dContactBounce;
         contact.surface.mu         = dInfinity;
         contact.surface.bounce     = 0.8f;
-        contact.surface.bounce_vel = 0.1f;
-        contact.surface.soft_cfm   = 0.001f;
+        contact.surface.bounce_vel = 0.5f;
         contact.geom.normal[0]     = result.axis[0];
         contact.geom.normal[1]     = result.axis[1];
         contact.geom.normal[2]     = result.axis[2];
         contact.geom.pos[0]        = p.x;
         contact.geom.pos[1]        = p.y;
         contact.geom.pos[2]        = p.z;
-        contact.geom.depth         = result.depth;
+        contact.geom.depth         = -result.depth;
 
         dJointID joint = dJointCreateContact( world, contactGroup, &contact );
         dJointAttach( joint, body0->odeId, body1->odeId );
@@ -116,14 +117,17 @@ void Physics::update()
     }
   }
 
-  dWorldQuickStep( world, 0.02f );
+  dWorldQuickStep( world, time );
+  dJointGroupEmpty( contactGroup );
 
   foreach( i, space->bodies.citer() ) {
     DBody* body = static_cast<DBody*>( *i );
 
-    body->pos    = Point( dBodyGetPosition( body->odeId ) );
-    body->rot    = Quat( dBodyGetQuaternion( body->odeId ) );
-    body->rotMat = Mat33( dBodyGetRotation( body->odeId ) );
+    if( body->odeId != nullptr ) {
+      body->pos    = Point( dBodyGetPosition( body->odeId ) );
+      body->rot    = Quat( dBodyGetQuaternion( body->odeId ) );
+      body->rotMat = Mat33::rotation( body->rot );
+    }
   }
 }
 
@@ -135,13 +139,21 @@ void Physics::init( Space* space_, Collider* collider_ )
   dInitODE();
 
   world = dWorldCreate();
-  dWorldSetGravity( world, 0.0f, 0.0f, -1.0f );
+  dWorldSetGravity( world, 0.0f, 0.0f, -9.81f );
 
   contactGroup = dJointGroupCreate( 0 );
 }
 
 void Physics::destroy()
 {
+  foreach( i, space->bodies.iter() ) {
+    DBody* body = static_cast<DBody*>( *i );
+
+    if( body->odeId != nullptr ) {
+      erase( body );
+    }
+  }
+
   dWorldDestroy( world );
   dJointGroupDestroy( contactGroup );
 

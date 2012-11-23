@@ -39,15 +39,15 @@
  * Compiler and platform-specific macros
  */
 
-// #if defined( _MSC_VER )
-// # define OZ_MSVC _MSC_VER
-// # error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
-// # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
-// #elif defined( __OPENCC__ )
-// # define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
-// # error Open64 cannot compile OpenZone due to lack of C++11 support.
-// # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
-#if defined( __clang__ )
+#if defined( _MSC_VER )
+# define OZ_MSVC _MSC_VER
+# error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+#elif defined( __OPENCC__ )
+# define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
+# error Open64 cannot compile OpenZone due to lack of C++11 support.
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+#elif defined( __clang__ )
 # define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
 # if OZ_CLANG < 300
 #  error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
@@ -73,8 +73,8 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 # endif
 #endif
 
-// Workaround for a development snapshot of LLVM/Clang 3.2.
-#if defined( OZ_CLANG ) && OZ_CLANG == 302
+// Workaround for LLVM/Clang 3.2+ using glibc headers.
+#if defined( OZ_CLANG ) && OZ_CLANG >= 302
 # define __extern_always_inline extern __always_inline __attribute__(( __gnu_inline__ ))
 #endif
 

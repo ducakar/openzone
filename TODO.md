@@ -41,7 +41,3 @@ CURRENT
 - unittest
     * write missing tests
 - documentation
-
-2.0
-
-- ozdynamics

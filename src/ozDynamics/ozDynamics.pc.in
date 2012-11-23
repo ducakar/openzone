@@ -8,4 +8,4 @@ Description: OpenZone Dynamics Library
 Version: @OZ_VERSION@
 Requires: ozCore
 Libs: -L${libdir} -lozDynamics
-Cflags: -I${includedir} -std=c++11
+Cflags: -std=c++11 -I${includedir}

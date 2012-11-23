@@ -34,7 +34,7 @@ void main()
   vec3  normal      = normalize( exNormal );
 
 #ifdef OZ_LOW_DETAIL
-  float dist        = gl_FragCoord.w / gl_FragCoord.z;
+  float dist        = 1.0 / gl_FragCoord.w;
 #else
   vec3  toCamera    = oz_CameraPosition - exPosition;
   float dist        = length( toCamera );

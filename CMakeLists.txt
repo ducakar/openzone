@@ -82,9 +82,6 @@ elseif( NACL )
   link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
 endif()
 
-# Local libmad, faad and eSpeak headers.
-include_directories( SYSTEM ./include )
-
 find_package( PhysFS REQUIRED )
 mark_as_advanced( PHYSFS_INCLUDE_DIR )
 mark_as_advanced( PHYSFS_LIBRARY )
@@ -96,7 +93,7 @@ endif()
 if( OZ_LUAJIT )
   pkg_check_modules( LUAJIT REQUIRED luajit )
 
-  include_directories( SYSTEM ${LUAJIT_INCLUDE_DIR} )
+  include_directories( SYSTEM ${LUAJIT_INCLUDE_DIRS} )
 else()
   find_package( Lua51 REQUIRED )
 endif()
@@ -105,7 +102,7 @@ if( OZ_SDL2 )
   pkg_check_modules( SDL2 REQUIRED sdl2 )
   pkg_check_modules( SDL2_TTF REQUIRED SDL2_ttf )
 
-  include_directories( SYSTEM ${SDL2_INCLUDE_DIR} )
+  include_directories( SYSTEM ${SDL2_INCLUDE_DIRS} )
 else()
   find_package( SDL REQUIRED )
   find_package( SDL_ttf REQUIRED )
@@ -119,7 +116,7 @@ endif()
 
 if( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
-  # platform directory, no need to explicitly check existence or detect library names.
+  # platform directory, no need to explicitly check existence or to detect library names.
   if( NOT PLATFORM_EMBEDDED )
     pkg_check_modules( GLES2 REQUIRED gles2 )
   endif()
@@ -136,7 +133,7 @@ if( PLATFORM_EMBEDDED )
   pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
   pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
   find_package( Freetype REQUIRED )           # required by SDL_ttf
-  find_package( ZLIB )                        # required by PhysicsFS & FreeType
+  find_package( ZLIB REQUIRED )               # required by PhysicsFS & FreeType
 endif()
 
 if( NOT PLATFORM_EMBEDDED )
@@ -163,9 +160,14 @@ mark_as_advanced( MINGW32_LIBRARY )
 # Compiler flags
 #
 
+# Local libmad, faad and eSpeak headers.
+include_directories( SYSTEM ./include )
+
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )
 
+  # Use libc++ instead of libstdc++.
+  # set( flags "${flags} -stdlib=libc++" )
   # AddressSanitizer memory checker
   # set( flags "${flags} -faddress-sanitizer" )
 elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )

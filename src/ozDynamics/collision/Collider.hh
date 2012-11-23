@@ -41,6 +41,15 @@ class Collider
     {
       Vec3  axis;
       float depth;
+
+      explicit Result() :
+        depth( Math::INF )
+      {}
+
+      void reset()
+      {
+        depth = Math::INF;
+      }
     };
 
   private:

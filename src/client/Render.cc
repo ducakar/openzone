@@ -774,6 +774,7 @@ Render render;
 
 #include <ozDynamics/ozDynamics.hh>
 #include "Input.hh"
+#include <common/Timer.hh>
 
 namespace oz
 {
@@ -786,21 +787,20 @@ static oz::Physics  physics;
 
 void Render::drawDyn()
 {
-  Vec4 colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
-
-  if( oz::Collider::overlaps( space.bodies[0], space.bodies[1] ) ) {
-    colour = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  if( timer.frameTime > 0.0f ) {
+    physics.update( timer.frameTime );
   }
+
+  Vec4 colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
 
   for( int i = 0; i < space.bodies.length(); ++i ) {
     Body* body = space.bodies[i];
 
-    if( i == 2 ) {
-      body->rot *= Quat::rotationZXZ( float( input.mouseX ) * 0.01f, float( input.mouseY ) * 0.01f,
-                                      0.0f );
+    if( i < 2 && pcollider.overlaps( body, space.bodies[2] ) ) {
+      colour = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
     }
     else {
-      body->rot *= Quat::rotationAxis( ~Vec3( 1.0f, float( i ), 1.0f ), 0.002f );
+      colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
     }
 
     body->rot    = ~body->rot;
@@ -816,33 +816,50 @@ void Render::loadDyn()
 {
   physics.init( &space, &pcollider );
 
-  Compound* c = new Compound();
-  c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat33::ID );
+  DBody* body;
+
+//   Compound* c = new Compound();
+//   c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat33::ID );
 //   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
 
-//   Box* c = new Box( Vec3( 1, 1, 2 ) );
+  Box* c = new Box( Vec3( 1, 1, 2 ) );
 //   Capsule* c = new Capsule( 1, 1 );
 
-  Body* body = new Body();
+  body = new DBody();
   body->pos = Point( 140, 0, 80 );
   body->rot = Quat::ID;
+  body->rotMat = Mat33::rotation( body->rot );
   body->setShape( c );
   space.bodies.add( body );
 
+  physics.add( body );
+
   Box* b = new Box( Vec3( 1, 1, 2 ) );
 
-  body = new Body();
+  body = new DBody();
   body->pos = Point( 143, 0, 80 );
   body->rot = Quat::ID;
+  body->rotMat = Mat33::rotation( body->rot );
   body->setShape( b );
+  space.bodies.add( body );
+
+  physics.add( body );
+
+  Box* p = new Box( Vec3( 10, 10, 1 ) );
+
+  body = new DBody();
+  body->pos = Point( 142, 0, 75 );
+  body->rot = Quat::ID;
+  body->rotMat = Mat33::rotation( body->rot );
+  body->setShape( p );
   space.bodies.add( body );
 }
 
 void Render::unloadDyn()
 {
+  physics.destroy();
   space.clear();
   Space::deallocate();
-  physics.destroy();
 }
 
 }

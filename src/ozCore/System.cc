@@ -53,11 +53,17 @@
 # define _exit( code ) _Exit( code )
 # define isatty( fd ) _isatty( fd )
 #else
-# include <alsa/asoundlib.h>
 # include <ctime>
 # include <pthread.h>
-# include <pulse/simple.h>
 # include <unistd.h>
+# include <pulse/simple.h>
+# ifdef __linux__
+#  include <alsa/asoundlib.h>
+# else
+#  include <sys/fcntl.h>
+#  include <sys/ioctl.h>
+#  include <sys/soundcard.h>
+# endif
 #endif
 
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
@@ -363,23 +369,23 @@ static void* bellMain( void* )
 
   pa_simple* pa = pa_simple_new( nullptr, "oz", PA_STREAM_PLAYBACK, nullptr, "bell",
                                  &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
-
   if( pa != nullptr ) {
     int    nSamples = int( BELL_TIME * float( BELL_PREFERRED_RATE ) );
-    size_t size     = size_t( nSamples ) * 2 * sizeof( short );
+    size_t size     = size_t( nSamples * 2 ) * sizeof( short );
     short* samples  = static_cast<short*>( malloc( size ) );
 
     genBellSamples( samples, nSamples, BELL_PREFERRED_RATE, 0, nSamples );
-
     pa_simple_write( pa, samples, size, nullptr );
+    free( samples );
+
     pa_simple_drain( pa, nullptr );
     pa_simple_free( pa );
-
-    free( samples );
 
     isBellPlaying = false;
     return nullptr;
   }
+
+#ifdef __linux__
 
   snd_pcm_t* alsa;
   if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
@@ -393,45 +399,71 @@ static void* bellMain( void* )
 
   uint rate = BELL_PREFERRED_RATE;
 
-  if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ) {
-    isBellPlaying = false;
-    return nullptr;
-  }
-  if( snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 ) != 0 ) {
-    isBellPlaying = false;
-    return nullptr;
-  }
-  if( snd_pcm_hw_params_set_channels( alsa, params, 2 ) != 0 ) {
-    isBellPlaying = false;
-    return nullptr;
-  }
-  if( snd_pcm_hw_params_set_rate_resample( alsa, params, 0 ) != 0 ) {
-    isBellPlaying = false;
-    return nullptr;
-  }
-  if( snd_pcm_hw_params_set_rate_near( alsa, params, &rate, nullptr ) != 0 ) {
-    isBellPlaying = false;
-    return nullptr;
-  }
-  if( snd_pcm_hw_params( alsa, params ) != 0 ) {
+  if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ||
+      snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 ) != 0 ||
+      snd_pcm_hw_params_set_channels( alsa, params, 2 ) != 0 ||
+      snd_pcm_hw_params_set_rate_resample( alsa, params, 0 ) != 0 ||
+      snd_pcm_hw_params_set_rate_near( alsa, params, &rate, nullptr ) != 0 ||
+      snd_pcm_hw_params( alsa, params ) != 0 ||
+      snd_pcm_prepare( alsa ) != 0 )
+  {
+    snd_pcm_close( alsa );
+
     isBellPlaying = false;
     return nullptr;
   }
 
-  if( snd_pcm_prepare( alsa ) >= 0 ) {
-    int    nSamples = int( BELL_TIME * float( rate ) );
-    size_t size     = size_t( nSamples ) * 2 * sizeof( short );
-    short* samples  = static_cast<short*>( malloc( size ) );
+  int    nSamples = int( BELL_TIME * float( rate ) );
+  size_t size     = size_t( nSamples * 2 ) * sizeof( short );
+  short* samples  = static_cast<short*>( malloc( size ) );
 
-    genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
+  genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
+  snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
+  free( samples );
 
-    snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
-    snd_pcm_drain( alsa );
-
-    free( samples );
-  }
-
+  snd_pcm_drain( alsa );
   snd_pcm_close( alsa );
+
+#else
+
+  int fd;
+  if( ( fd = open( "/dev/dsp", O_WRONLY, 0 ) ) < 0 &&
+      ( fd = open( "/dev/dsp0", O_WRONLY, 0 ) ) < 0 &&
+      ( fd = open( "/dev/dsp1", O_WRONLY, 0 ) ) < 0 )
+  {
+    isBellPlaying = false;
+    return nullptr;
+  }
+
+# ifdef OZ_BIG_ENDIAN
+  int format   = AFMT_S16_BE;
+# else
+  int format   = AFMT_S16_LE;
+# endif
+  int channels = 2;
+  int rate     = BELL_PREFERRED_RATE;
+
+  if( ioctl( fd, SNDCTL_DSP_SETFMT, &format ) < 0 ||
+      ioctl( fd, SNDCTL_DSP_CHANNELS, &channels ) < 0 ||
+      ioctl( fd, SNDCTL_DSP_SPEED, &rate ) < 0 )
+  {
+    close( fd );
+
+    isBellPlaying = false;
+    return nullptr;
+  }
+
+  int    nSamples = int( BELL_TIME * float( rate ) );
+  size_t size     = size_t( nSamples * channels ) * sizeof( short );
+  short* samples  = static_cast<short*>( malloc( size ) );
+
+  genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
+  write( fd, samples, size );
+  free( samples );
+
+  close( fd );
+
+#endif
 
   isBellPlaying = false;
   return nullptr;

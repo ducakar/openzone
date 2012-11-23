@@ -91,14 +91,11 @@ class System
     /**
      * Play a sound alert.
      *
-     * Sine wave from `oz/bellSample.inc` is played asynchronously through platform's native sound
-     * system (PulseAudio and ALSA on Linux, `PlaySound` system call on Windows).
+     * Sine wave with decreasing volume lasting ~0.3 s is played asynchronously through platform's
+     * native sound system (PulseAudio and ALSA/OSS as fallback on Linux/Unix, `PlaySound` system
+     * call on Windows, Pepper API on NaCl).
      *
-     * Bell depends upon several statically initialised structures. If it is called inside static
-     * initialisation/deinitialisation before/after those are initialised/deinitialised, it won't
-     * play.
-     *
-     * On NaCl, `System::instance` and `System::core` must be set properly for bell to work.
+     * On NaCl, `System::instance` and `System::core` must be set for bell to work.
      */
     static void bell();
 
@@ -132,11 +129,13 @@ class System
                        const char* msg, ... );
 
     /**
-     * Initialise current thread's signal handlers according to `flags` passed to `System::init()`.
+     * Initialise thread's signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
      *
      * Signal handlers must be set-up for each thread in a process separately. `System::init()`
      * method sets them up for the caller thread only, for other threads this method should be used
      * unless created with `Thread::start()`, which calls this method implicitly.
+     *
+     * If `HANDLERS_BIT` hasn't been passed to `System::init()` this method is a no-op.
      */
     static void threadInit();
 
