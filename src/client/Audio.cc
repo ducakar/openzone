@@ -41,11 +41,6 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( sound );
-  static_cast<void>( volume );
-  static_cast<void>( parent );
-#else
   const Dynamic* dynParent = static_cast<const Dynamic*>( parent );
 
   uint srcId = context.addSource( sound );
@@ -80,18 +75,12 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
   alSourcePlay( srcId );
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 void Audio::playContSound( int sound, float volume, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( sound );
-  static_cast<void>( volume );
-  static_cast<void>( parent );
-#else
   int key = obj->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.contSources.find( key );
@@ -128,16 +117,10 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
   }
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 bool Audio::playSpeak( const char* text, float volume, const Object* parent ) const
 {
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( text );
-  static_cast<void>( volume );
-  static_cast<void>( parent );
-#else
   const Dynamic* dynParent = static_cast<const Dynamic*>( parent );
 
   if( context.speakSource.owner < 0 ) {
@@ -169,7 +152,6 @@ bool Audio::playSpeak( const char* text, float volume, const Object* parent ) co
   }
 
   OZ_AL_CHECK_ERROR();
-#endif
 
   return true;
 }
@@ -179,11 +161,6 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
   hard_assert( obj->flags & Object::VEHICLE_BIT );
 
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( sound );
-  static_cast<void>( volume );
-  static_cast<void>( pitch );
-#else
   const Vehicle* veh = static_cast<const Vehicle*>( obj );
 
   if( !camera.isExternal && veh->pilot >= 0 && veh->pilot == camera.bot ) {
@@ -224,13 +201,11 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
   }
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 Audio::Audio( const Object* obj_ ) :
   obj( obj_ ), clazz( obj_->clazz ), flags( 0 )
 {
-#ifndef OZ_ADDRESS_SANITIZER
   const int* sounds = clazz->audioSounds;
 
   Log::verboseMode = true;
@@ -244,12 +219,10 @@ Audio::Audio( const Object* obj_ ) :
   Log::verboseMode = false;
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 Audio::~Audio()
 {
-#ifndef OZ_ADDRESS_SANITIZER
   const int* sounds = clazz->audioSounds;
 
   Log::verboseMode = true;
@@ -263,7 +236,6 @@ Audio::~Audio()
   Log::verboseMode = false;
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 }

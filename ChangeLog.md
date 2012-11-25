@@ -2,9 +2,10 @@
 
 - ozCore
     * null replaced by nullptr keyword
+    * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
-        + STL-like begin() and end() members for containers
+        + STL-like begin() and end() members on containers
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of key-only elements instead of key-value pairs

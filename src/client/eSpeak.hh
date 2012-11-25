@@ -32,12 +32,12 @@ namespace oz
 namespace client
 {
 
-extern decltype( ::espeak_Initialize       )* espeak_Initialize;
-extern decltype( ::espeak_Terminate        )* espeak_Terminate;
-extern decltype( ::espeak_SetParameter     )* espeak_SetParameter;
-extern decltype( ::espeak_SetVoiceByName   )* espeak_SetVoiceByName;
-extern decltype( ::espeak_SetSynthCallback )* espeak_SetSynthCallback;
-extern decltype( ::espeak_Synth            )* espeak_Synth;
+extern OZ_DL_DECLARE( espeak_Initialize       );
+extern OZ_DL_DECLARE( espeak_Terminate        );
+extern OZ_DL_DECLARE( espeak_SetParameter     );
+extern OZ_DL_DECLARE( espeak_SetVoiceByName   );
+extern OZ_DL_DECLARE( espeak_SetSynthCallback );
+extern OZ_DL_DECLARE( espeak_Synth            );
 
 }
 }

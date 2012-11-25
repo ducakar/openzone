@@ -46,7 +46,7 @@ Audio* BasicAudio::create( const Object* obj )
 
 void BasicAudio::play( const Audio* parent )
 {
-  const int ( & sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
+  const auto& sounds = obj->clazz->audioSounds;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     recent[i] = max( recent[i] - 1, 0 );

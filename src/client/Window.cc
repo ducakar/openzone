@@ -87,9 +87,11 @@ void Window::warpMouse()
   NaCl::moveZ = 0;
   NaCl::moveW = 0;
 #elif SDL_MAJOR_VERSION < 2
-  SDL_WarpMouse( ushort( width / 2 ), ushort( height / 2 ) );
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState( nullptr, nullptr );
+  if( !isFull ) {
+    SDL_WarpMouse( ushort( width / 2 ), ushort( height / 2 ) );
+    SDL_PumpEvents();
+    SDL_GetRelativeMouseState( nullptr, nullptr );
+  }
 #else
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
 #endif

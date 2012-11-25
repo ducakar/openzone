@@ -52,14 +52,7 @@ class Style
       Vec4 background;
 
       Vec4 barBorder;
-      Vec4 healthMin;
-      Vec4 healthMax;
-      Vec4 staminaMin;
-      Vec4 staminaMax;
-      Vec4 hullMin;
-      Vec4 hullMax;
-      Vec4 fuelMin;
-      Vec4 fuelMax;
+      Vec4 barBackground;
 
       Vec4 galileoNormal;
       Vec4 galileoMaximised;
@@ -67,7 +60,7 @@ class Style
       Vec4 menuStrip;
     };
 
-    struct Bar
+    struct Area
     {
       int x;
       int y;
@@ -75,22 +68,24 @@ class Style
       int h;
     };
 
-    struct Layout
+    struct Bar : Area
     {
-      int iconSize;
-
-      Bar botHealth;
-      Bar botStamina;
-      Bar botWeapon;
-
-      Bar vehicleHull;
-      Bar vehicleFuel;
-      Bar vehicleWeapon[4];
+      Vec4 minColour;
+      Vec4 maxColour;
     };
+
+  public:
 
     Font    fonts[Font::MAX];
     Colours colours;
-    Layout  layout;
+    int     iconSize;
+
+    Bar     botHealth;
+    Bar     botStamina;
+    Bar     botWeapon;
+    Bar     vehicleHull;
+    Bar     vehicleFuel;
+    Bar     vehicleWeapon[4];
 
   public:
 

@@ -47,6 +47,10 @@ void VehicleAudio::play( const Audio* parent )
   const VehicleClass* clazz   = static_cast<const VehicleClass*>( this->clazz );
   const auto&         sounds  = obj->clazz->audioSounds;
 
+  for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
+    recent[i] = max( recent[i] - 1, 0 );
+  }
+
   // engine sound
   if( ( vehicle->pilot >= 0 ) && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
     float pitch = clazz->enginePitchBias +

@@ -29,6 +29,9 @@
 
 namespace oz
 {
+/**
+ * Matrix layer.
+ */
 namespace matrix
 {
 

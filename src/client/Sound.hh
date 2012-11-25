@@ -97,11 +97,6 @@ class Sound
 
     // Music track id to switch to, -1 to do nothing, -2 stop playing.
     int            selectedTrack;
-    // Automatically advance to the next track when one finishes.
-    bool           advanceTrack;
-    // Music track id, -1 for not playing.
-    volatile int   currentTrack;
-
     int            streamedTrack;
     volatile int   streamedBytes;
 
@@ -138,7 +133,7 @@ class Sound
     bool isMusicPlaying() const;
     int  getCurrentTrack() const;
 
-    void playMusic( int track, bool advanceTrack );
+    void playMusic( int track );
     void stopMusic();
 
     void resume() const;

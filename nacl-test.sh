@@ -20,7 +20,7 @@ for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
          build/NaCl-*/src/tools/openzone.*.nexe etc/nacl/openzone.nmf \
          etc/nacl/openzone.??.html doc
 do
-  [[ -e $i ]] && ln -sf $i build/NaCl-test
+  [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
 done
 
 # Strip binaries if "strip" parameter given.

@@ -109,15 +109,8 @@ class Foo
 
 };
 
-template <typename... T>
-static Foo foo( T&&... args )
-{
-  return Foo( static_cast<T&&>( args )... );
-}
-
 int main()
 {
   System::init();
-  System::bell();
   return 0;
 }

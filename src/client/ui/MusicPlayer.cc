@@ -43,7 +43,7 @@ void MusicPlayer::prevTrack( Button* sender )
   if( nTracks != 0 ) {
     musicPlayer->currentTrack = ( musicPlayer->currentTrack + nTracks - 1 ) % nTracks;
 
-    sound.playMusic( musicPlayer->currentTrack, true );
+    sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
     musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
@@ -59,7 +59,7 @@ void MusicPlayer::nextTrack( Button* sender )
   if( nTracks != 0 ) {
     musicPlayer->currentTrack = ( musicPlayer->currentTrack + 1 ) % nTracks;
 
-    sound.playMusic( musicPlayer->currentTrack, true );
+    sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
     musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
@@ -73,7 +73,7 @@ void MusicPlayer::playTrack( Button* sender )
   int nTracks = liber.musicTracks.length();
 
   if( nTracks != 0 ) {
-    sound.playMusic( musicPlayer->currentTrack, true );
+    sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
     musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
@@ -135,23 +135,17 @@ void MusicPlayer::onUpdate()
   int soundTrack = sound.getCurrentTrack();
   if( isPlaying && soundTrack != currentTrack ) {
     if( soundTrack == -1 ) {
-      // Go to next track.
+      // Go to the next track.
       int nTracks = liber.musicTracks.length();
 
       if( nTracks > 0 ) {
         currentTrack = ( currentTrack + 1 ) % nTracks;
 
-        sound.stopMusic();
-        sound.playMusic( currentTrack, true );
+        sound.playMusic( currentTrack );
 
         title.set( "%s", liber.musicTracks[currentTrack].name.cstr() );
         trackLabel.set( "%d", currentTrack + 1 );
       }
-    }
-    else {
-      // Probably a cinematic sequence scheduled a new track.
-      isPlaying = false;
-      title.set( " " );
     }
   }
 }

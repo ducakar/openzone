@@ -29,12 +29,12 @@ namespace oz
 namespace client
 {
 
-decltype( ::espeak_Initialize       )* espeak_Initialize       = nullptr;
-decltype( ::espeak_Terminate        )* espeak_Terminate        = nullptr;
-decltype( ::espeak_SetParameter     )* espeak_SetParameter     = nullptr;
-decltype( ::espeak_SetVoiceByName   )* espeak_SetVoiceByName   = nullptr;
-decltype( ::espeak_SetSynthCallback )* espeak_SetSynthCallback = nullptr;
-decltype( ::espeak_Synth            )* espeak_Synth            = nullptr;
+OZ_DL_DEFINE( espeak_Initialize       );
+OZ_DL_DEFINE( espeak_Terminate        );
+OZ_DL_DEFINE( espeak_SetParameter     );
+OZ_DL_DEFINE( espeak_SetVoiceByName   );
+OZ_DL_DEFINE( espeak_SetSynthCallback );
+OZ_DL_DEFINE( espeak_Synth            );
 
 }
 }

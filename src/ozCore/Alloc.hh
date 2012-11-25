@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Alloc.hh
  *
- * Alloc class and `new`/`delete` operator overloads.
+ * Alloc class and `new`/`delete` operator overrides.
  *
  * Apart form Alloc class, enhanced `new`/`delete` operators are defined in this module, overriding
  * ones provided by standard C++ library, including `std::nothrow` versions. Those operators count
@@ -38,7 +38,7 @@
  * @li If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to size of 4 floats.
  *
  * @note
- * Enabling AddressSanitizer during compilation of liboz disables `new`/`delete` overloads.
+ * Enabling AddressSanitizer during compilation of liboz custom `new`/`delete` implementations.
  */
 
 #pragma once
@@ -49,7 +49,7 @@ namespace oz
 {
 
 /**
- * Auxiliary class for overloaded `new`/`delete` operators.
+ * Auxiliary class for custom `new`/`delete` operators.
  *
  * @sa ozCore/Alloc.hh
  */
@@ -64,7 +64,7 @@ class Alloc
     static const size_t ALIGNMENT = sizeof( void* );
 #endif
 
-    /// True iff `new` and `delete` operator overloads are enabled (AddressSanitizer disables them).
+    /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
     static const bool OVERLOADS_NEW_AND_DELETE;
 
     static int    count;     ///< Current number of allocated memory chunks.

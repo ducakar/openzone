@@ -118,7 +118,7 @@ if( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
   # platform directory, no need to explicitly check existence or to detect library names.
   if( NOT PLATFORM_EMBEDDED )
-    pkg_check_modules( GLES2 REQUIRED gles2 )
+    pkg_check_modules( GLES2 REQUIRED glesv2 )
   endif()
 else()
   find_package( OpenGL REQUIRED )
@@ -169,7 +169,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   # Use libc++ instead of libstdc++.
   # set( flags "${flags} -stdlib=libc++" )
   # AddressSanitizer memory checker
-  # set( flags "${flags} -faddress-sanitizer" )
+  # set( flags "${flags} -fsanitize=address" )
 elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
   set( flags "-pipe -std=gnu++0x" )
 elseif( ANDROID )

@@ -41,11 +41,10 @@
 #include <client/Network.hh>
 #include <client/BuildInfo.hh>
 
-#include <SDL_ttf.h>
-
 #include <clocale>
 #include <sstream>
 #include <unistd.h>
+#include <SDL_ttf.h>
 
 #if defined( __native_client__ )
 # include <ppapi/cpp/completion_callback.h>
@@ -62,22 +61,22 @@ namespace client
 
 void Client::printUsage( const char* invocationName )
 {
+
   Log::printRaw(
     "Usage:\n"
     "  %s [-v] [-l | -i <mission>] [-t <num>] [-L <lang>] [-p <prefix>]\n"
     "\n"
-    "  -v            More verbose log output.\n"
-    "  -l            Skip main menu and load the last autosaved state.\n"
+    "  -v            Print verbose log messages to terminal.\n"
+    "  -l            Skip main menu and load the last autosaved game.\n"
     "  -i <mission>  Skip main menu and start mission <mission>.\n"
     "  -t <num>      Exit after <num> seconds (can be a floating-point number) and\n"
     "                use 42 as the random seed. Useful for benchmarking.\n"
-    "  -L <lang>     Use language <lang>. Should match a subdirectory of 'lingua/'\n"
-    "                directory in game data.\n"
+    "  -L <lang>     Use language <lang>. Should match a subdirectory name in\n"
+    "                'lingua/' directory inside game data archives.\n"
     "  -p <prefix>   Sets data directory to '<prefix>/share/openzone'.\n"
     "                Defaults to '%s'.\n"
     "\n",
-    invocationName,
-    OZ_INSTALL_PREFIX );
+    invocationName, OZ_INSTALL_PREFIX );
 }
 
 int Client::init( int argc, char** argv )

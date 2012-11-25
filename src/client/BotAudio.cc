@@ -112,7 +112,7 @@ void BotAudio::play( const Audio* parent )
     prevStep = 0;
   }
 
-//   if( bot->clazz->name.equals( "bauul" ) ) {
+  if( bot->clazz->name.equals( "bauul" ) ) {
 //     playSpeak( "Gil-galad was an Elven-king.\n"
 //                "Of him the harpers sadly sing:\n"
 //                "the last whose realm was fair and free\n"
@@ -128,8 +128,8 @@ void BotAudio::play( const Audio* parent )
 //                "for into darkness fell his star\n"
 //                "in Mordor where the shadows are.\n",
 //                1.0f, bot );
-//     playSpeak( "Booa-ha-ha-ha-ha!", 1.0f, bot );
-//   }
+    playSpeak( "Joj prejoj, kako sem žejen!", 1.0f, bot );
+  }
 }
 
 }

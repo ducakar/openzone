@@ -69,10 +69,10 @@ Game data for OpenZone. Includes tutorial, test world and cviček mission.
 cd build
 
 cmake \
-  -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_INSTALL_PREFIX=/usr \
-  -D CMAKE_C_FLAGS="-msse3 -mfpmath=sse" \
+  -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
+  -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
   ..
 
 make %{?_smp_mflags}

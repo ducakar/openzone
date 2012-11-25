@@ -17,9 +17,10 @@ build()
   cd "${srcdir}/${pkgbase}-${pkgver}/build"
 
   cmake \
-    -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_INSTALL_PREFIX=/usr \
-    -D CMAKE_CXX_FLAGS="$CXXFLAGS -msse3 -mfpmath=sse" \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_CXX_FLAGS="${CXXFLAGS/-O2} -msse3 -mfpmath=sse" \
+    -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
     -D OZ_LUAJIT=1 \
     -D OZ_NONFREE=1 \
     ..

@@ -36,10 +36,6 @@ void BSPAudio::playDemolish( const Struct* str, int sound ) const
 {
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( str );
-  static_cast<void>( sound );
-#else
   uint srcId = context.addSource( sound );
   if( srcId == Context::INVALID_SOURCE ) {
     return;
@@ -53,17 +49,12 @@ void BSPAudio::playDemolish( const Struct* str, int sound ) const
   alSourcePlay( srcId );
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 void BSPAudio::playSound( const Entity* entity, int sound ) const
 {
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( entity );
-  static_cast<void>( sound );
-#else
   const Struct* str      = entity->str;
   Point         p        = str->toAbsoluteCS( entity->clazz->p() + entity->offset );
   Vec3          velocity = str->toAbsoluteCS( entity->velocity );
@@ -82,17 +73,12 @@ void BSPAudio::playSound( const Entity* entity, int sound ) const
   alSourcePlay( srcId );
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 void BSPAudio::playContSound( const Entity* entity, int sound ) const
 {
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( entity );
-  static_cast<void>( sound );
-#else
   const Struct* str      = entity->str;
   int           key      = str->index * Struct::MAX_ENTITIES +
                            int( entity - str->entities.begin() );
@@ -122,26 +108,21 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
   }
 
   OZ_AL_CHECK_ERROR();
-#endif
 }
 
 BSPAudio::BSPAudio( const matrix::BSP* bsp_ ) :
   bsp( bsp_ )
 {
-#ifndef OZ_ADDRESS_SANITIZER
   foreach( i, bsp->sounds.citer() ) {
     context.requestSound( *i );
   }
-#endif
 }
 
 BSPAudio::~BSPAudio()
 {
-#ifndef OZ_ADDRESS_SANITIZER
   foreach( i, bsp->sounds.citer() ) {
     context.releaseSound( *i );
   }
-#endif
 }
 
 void BSPAudio::play( const Struct* str ) const

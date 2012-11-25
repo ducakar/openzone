@@ -38,21 +38,21 @@ class Client
 {
   private:
 
-    static const int INIT_PHYSFS     = 0x00000001;
-    static const int INIT_SDL        = 0x00000002;
-    static const int INIT_SDL_TTF    = 0x00000004;
-    static const int INIT_CONFIG     = 0x00000010;
-    static const int INIT_WINDOW     = 0x00000020;
-    static const int INIT_INPUT      = 0x00000040;
-    static const int INIT_NETWORK    = 0x00000080;
-    static const int INIT_LINGUA     = 0x00000100;
-    static const int INIT_LIBRARY    = 0x00000200;
-    static const int INIT_CONTEXT    = 0x00001000;
-    static const int INIT_RENDER     = 0x00002000;
-    static const int INIT_AUDIO      = 0x00004000;
-    static const int INIT_STAGE_INIT = 0x00010000;
-    static const int INIT_STAGE_LOAD = 0x00020000;
-    static const int INIT_MAIN_LOOP  = 0x00040000;
+    static const int INIT_PHYSFS     = 0x0001;
+    static const int INIT_SDL        = 0x0002;
+    static const int INIT_SDL_TTF    = 0x0004;
+    static const int INIT_CONFIG     = 0x0008;
+    static const int INIT_WINDOW     = 0x0010;
+    static const int INIT_INPUT      = 0x0020;
+    static const int INIT_NETWORK    = 0x0040;
+    static const int INIT_LINGUA     = 0x0080;
+    static const int INIT_LIBRARY    = 0x0100;
+    static const int INIT_CONTEXT    = 0x0200;
+    static const int INIT_RENDER     = 0x0400;
+    static const int INIT_AUDIO      = 0x0800;
+    static const int INIT_STAGE_INIT = 0x1000;
+    static const int INIT_STAGE_LOAD = 0x2000;
+    static const int INIT_MAIN_LOOP  = 0x4000;
 
     Stage* stage;
     int    initFlags;

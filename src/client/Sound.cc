@@ -25,7 +25,6 @@
 #include <client/Sound.hh>
 
 #include <client/Camera.hh>
-
 #include <client/eSpeak.hh>
 #include <client/NaCl.hh>
 
@@ -441,12 +440,13 @@ void Sound::musicRun()
     musicMainSemaphore.post();
     musicAuxSemaphore.wait();
 
-    if( currentTrack != streamedTrack ) {
+    if( selectedTrack != -1 ) {
       if( streamedTrack >= 0 ) {
         musicClear();
       }
 
-      streamedTrack = currentTrack;
+      streamedTrack = selectedTrack == -2 ? -1 : selectedTrack;
+      selectedTrack = -1;
 
       if( streamedTrack >= 0 ) {
         musicOpen( liber.musicTracks[streamedTrack].path );
@@ -491,10 +491,7 @@ void Sound::updateMusic()
     return;
   }
 
-  if( selectedTrack != -1 && selectedTrack != currentTrack ) {
-    currentTrack = selectedTrack == -2 ? -1 : selectedTrack;
-    selectedTrack = -1;
-
+  if( selectedTrack != -1 ) {
     musicBuffersQueued = 0;
 
     alSourceStop( musicSource );
@@ -509,13 +506,8 @@ void Sound::updateMusic()
 
     musicAuxSemaphore.post();
   }
-  else if( currentTrack < 0 ) {
+  else if( streamedTrack < 0 ) {
     musicMainSemaphore.post();
-  }
-  else if( streamedBytes == 0 ) {
-    currentTrack = -1;
-
-    musicAuxSemaphore.post();
   }
   else {
     bool hasLoaded = false;
@@ -524,14 +516,24 @@ void Sound::updateMusic()
     alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
 
     if( nProcessed != 0 ) {
-      hasLoaded = true;
+      if( streamedBytes == 0 ) {
+        --musicBuffersQueued;
 
-      uint buffer;
-      alSourceUnqueueBuffers( musicSource, 1, &buffer );
-      alBufferData( buffer, musicFormat, musicBuffer, streamedBytes, musicRate );
-      alSourceQueueBuffers( musicSource, 1, &buffer );
+        if( musicBuffersQueued == 0 ) {
+          streamedTrack = -1;
+        }
+      }
+      else {
+        hasLoaded = true;
+
+        uint buffer;
+        alSourceUnqueueBuffers( musicSource, 1, &buffer );
+        alBufferData( buffer, musicFormat, musicBuffer, streamedBytes, musicRate );
+        alSourceQueueBuffers( musicSource, 1, &buffer );
+      }
     }
-    else if( musicBuffersQueued != 2 ) {
+    // If beginning a track.
+    else if( musicBuffersQueued != 2 && streamedBytes != 0 ) {
       hasLoaded = true;
 
       int i = musicBuffersQueued;
@@ -542,11 +544,13 @@ void Sound::updateMusic()
       alSourcePlay( musicSource );
     }
 
-    ALint value;
-    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
+    if( musicBuffersQueued != 0 ) {
+      ALint value;
+      alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
 
-    if( value == AL_STOPPED ) {
-      alSourcePlay( musicSource );
+      if( value == AL_STOPPED ) {
+        alSourcePlay( musicSource );
+      }
     }
 
     if( hasLoaded ) {
@@ -565,7 +569,6 @@ void Sound::soundRun()
   soundAuxSemaphore.wait();
 
   while( isSoundAlive ) {
-#ifndef OZ_ADDRESS_SANITIZER
     float orientation[] = {
       camera.at.x, camera.at.y, camera.at.z,
       camera.up.x, camera.up.y, camera.up.z
@@ -577,7 +580,6 @@ void Sound::soundRun()
     alListenerfv( AL_ORIENTATION, orientation );
     alListenerfv( AL_POSITION, camera.p );
     alListenerfv( AL_VELOCITY, camera.velocity );
-#endif
 
     if( playedStructs.length() < orbis.structs.length() ) {
       playedStructs.deallocate();
@@ -593,9 +595,7 @@ void Sound::soundRun()
       }
     }
 
-#ifndef OZ_ADDRESS_SANITIZER
     updateMusic();
-#endif
 
     soundMainSemaphore.post();
     soundAuxSemaphore.wait();
@@ -605,38 +605,29 @@ void Sound::soundRun()
 void Sound::setVolume( float volume_ )
 {
   volume = volume_;
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( volume_ );
-#else
   alListenerf( AL_GAIN, volume_ );
-#endif
 }
 
 void Sound::setMusicVolume( float volume ) const
 {
-#ifdef OZ_ADDRESS_SANITIZER
-  static_cast<void>( volume );
-#else
   alSourcef( musicSource, AL_GAIN, 0.5f * volume );
-#endif
 }
 
 bool Sound::isMusicPlaying() const
 {
-  return currentTrack >= 0 || selectedTrack >= 0;
+  return streamedTrack >= 0;
 }
 
 int Sound::getCurrentTrack() const
 {
-  return currentTrack;
+  return streamedTrack;
 }
 
-void Sound::playMusic( int track, bool advanceTrack_ )
+void Sound::playMusic( int track )
 {
   hard_assert( track >= 0 );
 
   selectedTrack = track;
-  advanceTrack  = advanceTrack_;
 }
 
 void Sound::stopMusic()
@@ -646,18 +637,12 @@ void Sound::stopMusic()
 
 void Sound::resume() const
 {
-#ifndef OZ_ADDRESS_SANITIZER
   alcProcessContext( soundContext );
-  alListenerf( AL_GAIN, volume );
-#endif
 }
 
 void Sound::suspend() const
 {
-#ifndef OZ_ADDRESS_SANITIZER
-  alListenerf( AL_GAIN, 0.0f );
   alcSuspendContext( soundContext );
-#endif
 }
 
 void Sound::play()
@@ -680,10 +665,6 @@ void Sound::init()
 
   Log::println( "Initialising Sound {" );
   Log::indent();
-
-#ifdef OZ_ADDRESS_SANITIZER
-  config["sound.device"];
-#else
 
 #ifdef __native_client__
   alSetPpapiInfo( System::instance->pp_instance(), System::module->get_browser_interface() );
@@ -801,20 +782,15 @@ void Sound::init()
   Log::println( "}" );
   Log::verboseMode = false;
 
-#endif // !OZ_ADDRESS_SANITIZER
-
   selectedTrack = -1;
-  currentTrack  = -1;
   streamedTrack = -1;
 
-#ifndef OZ_ADDRESS_SANITIZER
   alGenBuffers( 2, musicBufferIds );
   alGenSources( 1, &musicSource );
 
   musicBuffersQueued = 0;
 
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
-#endif
 
   setVolume( config.include( "sound.volume", 1.0f ).asFloat() );
   setMusicVolume( 0.5f );
@@ -858,7 +834,6 @@ void Sound::destroy()
   }
 
   selectedTrack = -1;
-  currentTrack  = -1;
   streamedTrack = -1;
 
   isSoundAlive = false;
@@ -877,7 +852,6 @@ void Sound::destroy()
   playedStructs.deallocate();
 
   if( soundContext != nullptr ) {
-#ifndef OZ_ADDRESS_SANITIZER
     alSourceStop( musicSource );
     alDeleteSources( 1, &musicSource );
     alDeleteBuffers( 2, musicBufferIds );
@@ -889,7 +863,6 @@ void Sound::destroy()
 
     alcCloseDevice( soundDevice );
     soundDevice = nullptr;
-#endif
   }
 
 #ifndef __native_client__

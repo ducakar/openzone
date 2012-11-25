@@ -53,6 +53,7 @@
 # define _exit( code ) _Exit( code )
 # define isatty( fd ) _isatty( fd )
 #else
+# include <cerrno>
 # include <ctime>
 # include <pthread.h>
 # include <unistd.h>
@@ -256,18 +257,15 @@ static void stopBellCallback( void* info_, int )
   info->audio->StopPlayback();
   info->audio->~Audio();
   free( info->audio );
+  free( info );
 
-  isBellPlaying = false;
+  __sync_lock_release( &isBellPlaying );
 }
 
-static void bellPlayCallback( void* buffer, uint size, void* info_ )
+static void bellPlayCallback( void* buffer, uint, void* info_ )
 {
-  static_cast<void>( size );
-
   SampleInfo* info    = static_cast<SampleInfo*>( info_ );
   short*      samples = static_cast<short*>( buffer );
-
-  hard_assert( size / uint( sizeof( short[2] ) ) >= uint( info->nFrameSamples ) );
 
   if( info->offset >= info->end ) {
     System::core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
@@ -278,9 +276,12 @@ static void bellPlayCallback( void* buffer, uint size, void* info_ )
   info->offset += info->nFrameSamples;
 }
 
-static void bellInitCallback( void* info_, int )
+static void bellInitCallback( void*, int )
 {
-  SampleInfo* info = static_cast<SampleInfo*>( info_ );
+  SampleInfo* info = static_cast<SampleInfo*>( malloc( sizeof( SampleInfo ) ) );
+  if( info == nullptr ) {
+    return;
+  }
 
   PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( System::instance );
   uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
@@ -295,26 +296,24 @@ static void bellInitCallback( void* info_, int )
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );
   if( audioPtr == nullptr ) {
-    OZ_ERROR( "pp::Audio object allocation failed" );
+    free( info );
+    return;
   }
 
   info->audio = new( audioPtr ) pp::Audio( System::instance, config, bellPlayCallback, info );
   if( info->audio->StartPlayback() == PP_FALSE ) {
     info->audio->~Audio();
     free( info->audio );
+    free( info );
 
-    isBellPlaying = false;
+    __sync_lock_release( &isBellPlaying );
+    return;
   }
 }
 
 static void* bellMain( void* )
 {
-  SampleInfo info;
-  System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, &info ) );
-
-  while( isBellPlaying ) {
-    nanosleep( &TIMESPEC_10MS, nullptr );
-  }
+  System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, nullptr ) );
   return nullptr;
 }
 
@@ -357,7 +356,7 @@ static DWORD WINAPI bellMain( void* )
   PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
   free( wave );
 
-  isBellPlaying = false;
+  __sync_lock_release( &isBellPlaying );
   return 0;
 }
 
@@ -367,8 +366,8 @@ static void* bellMain( void* )
 {
   const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
 
-  pa_simple* pa = pa_simple_new( nullptr, "oz", PA_STREAM_PLAYBACK, nullptr, "bell",
-                                 &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
+  pa_simple* pa = pa_simple_new( nullptr, program_invocation_short_name, PA_STREAM_PLAYBACK,
+                                 nullptr, "bell", &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
   if( pa != nullptr ) {
     int    nSamples = int( BELL_TIME * float( BELL_PREFERRED_RATE ) );
     size_t size     = size_t( nSamples * 2 ) * sizeof( short );
@@ -381,7 +380,7 @@ static void* bellMain( void* )
     pa_simple_drain( pa, nullptr );
     pa_simple_free( pa );
 
-    isBellPlaying = false;
+    __sync_lock_release( &isBellPlaying );
     return nullptr;
   }
 
@@ -389,7 +388,7 @@ static void* bellMain( void* )
 
   snd_pcm_t* alsa;
   if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
-    isBellPlaying = false;
+    __sync_lock_release( &isBellPlaying );
     return nullptr;
   }
 
@@ -409,7 +408,7 @@ static void* bellMain( void* )
   {
     snd_pcm_close( alsa );
 
-    isBellPlaying = false;
+    __sync_lock_release( &isBellPlaying );
     return nullptr;
   }
 
@@ -431,7 +430,7 @@ static void* bellMain( void* )
       ( fd = open( "/dev/dsp0", O_WRONLY, 0 ) ) < 0 &&
       ( fd = open( "/dev/dsp1", O_WRONLY, 0 ) ) < 0 )
   {
-    isBellPlaying = false;
+    __sync_lock_release( &isBellPlaying );
     return nullptr;
   }
 
@@ -449,7 +448,7 @@ static void* bellMain( void* )
   {
     close( fd );
 
-    isBellPlaying = false;
+    __sync_lock_release( &isBellPlaying );
     return nullptr;
   }
 
@@ -465,7 +464,7 @@ static void* bellMain( void* )
 
 #endif
 
-  isBellPlaying = false;
+  __sync_lock_release( &isBellPlaying );
   return nullptr;
 }
 
@@ -564,8 +563,6 @@ void System::bell()
 #endif
 
   if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
-    __sync_synchronize();
-
 #ifdef _WIN32
 
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );

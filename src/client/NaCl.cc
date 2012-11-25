@@ -30,16 +30,14 @@
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/core.h>
 #include <ppapi/cpp/graphics_3d.h>
-#include <ppapi/gles2/gl2ext_ppapi.h>
 
 namespace oz
 {
 namespace client
 {
 
-static SpinLock       messageLock;
-static List<String>   messageQueue;
-static pp::Graphics3D context;
+static SpinLock     messageLock;
+static List<String> messageQueue;
 
 Semaphore NaCl::mainCallSemaphore;
 

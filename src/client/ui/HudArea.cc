@@ -25,13 +25,10 @@
 #include <client/ui/HudArea.hh>
 
 #include <matrix/Physics.hh>
-
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/OpenGL.hh>
-
-#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -42,6 +39,25 @@ namespace ui
 
 const float HudArea::VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
 const float HudArea::CROSS_FADE_COEFF = 8.0f;
+
+void HudArea::drawBar( const Style::Bar* barStyle, float ratio ) const
+{
+  int x = barStyle->x == CENTRE ? ( width - barStyle->w ) / 2 :
+          barStyle->x < 0 ? width - barStyle->w + barStyle->x : barStyle->x;
+  int y = barStyle->y == CENTRE ? ( width - barStyle->h ) / 2 :
+          barStyle->y < 0 ? height - barStyle->h + barStyle->y : barStyle->y;
+
+  int width = int( float( barStyle->w - 2 ) * ratio + 0.5f );
+
+  shape.colour( style.colours.barBorder );
+  shape.rect( x, y, barStyle->w, barStyle->h );
+
+  shape.colour( Math::mix( barStyle->minColour, barStyle->maxColour, ratio ) );
+  shape.fill( x + 1, y + 1, width, barStyle->h - 2 );
+
+  shape.colour( style.colours.barBackground );
+  shape.fill( x + 1 + width, y + 1, barStyle->w - 2 - width, barStyle->h - 2 );
+}
 
 void HudArea::drawBotCrosshair()
 {
@@ -199,36 +215,23 @@ void HudArea::drawBotStatus()
   const Bot*      bot      = camera.botObj;
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float life         = 2.0f * bot->life / botClazz->life - 1.0f;
-  float stamina      = bot->stamina / botClazz->stamina;
-  int   lifeWidth    = max( int( life * float( style.layout.botHealth.w - 2 ) ), 0 );
-  int   staminaWidth = max( int( stamina * float( style.layout.botStamina.w - 2 ) ), 0 );
+  float stamina = max( bot->stamina / botClazz->stamina, 0.0f );
+  float life    = max( 2.0f * bot->life / botClazz->life - 1.0f, 0.0f );
 
-  shape.colour( 1.0f - life, life, 0.0f, 0.5f );
-  shape.fill( style.layout.botHealth.x + 1, style.layout.botHealth.y + 1,
-              lifeWidth, style.layout.botHealth.h - 2 );
-  shape.colour( 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.5f );
-  shape.fill( style.layout.botStamina.x + 1, style.layout.botStamina.y + 1,
-              staminaWidth, style.layout.botStamina.h - 2 );
-
-  shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
-  shape.fill( style.layout.botHealth.x + 1 + lifeWidth, style.layout.botHealth.y + 1,
-              style.layout.botHealth.w - 2 - lifeWidth, style.layout.botHealth.h - 2 );
-  shape.fill( style.layout.botHealth.x + 1 + staminaWidth, style.layout.botHealth.x + 1,
-              style.layout.botHealth.w - 2 - staminaWidth, style.layout.botHealth.h - 2 );
-
-  shape.colour( style.colours.barBorder );
-  shape.rect( style.layout.botHealth.x, style.layout.botHealth.y,
-              style.layout.botHealth.w, style.layout.botHealth.h );
-  shape.rect( style.layout.botStamina.x, style.layout.botStamina.y,
-              style.layout.botStamina.w, style.layout.botStamina.h );
+  drawBar( &style.botHealth, life );
+  drawBar( &style.botStamina, stamina );
 
   if( bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
+    Pair<int> pos = align( style.botWeapon.x, style.botWeapon.y,
+                           style.botWeapon.w, style.botWeapon.h );
+
     shape.colour( style.colours.frame );
-    shape.fill( style.layout.botWeapon.x, style.layout.botWeapon.y,
-                style.layout.botWeapon.w, style.layout.botWeapon.h );
+    shape.fill( pos.x, pos.y, style.botWeapon.w, style.botWeapon.h );
+
+    weaponName.set( pos.x + 4, pos.y + 2 );
+    weaponRounds.set( pos.x + style.botWeapon.w - 4, pos.y + 2 );
 
     if( lastWeaponId != bot->weapon ) {
       lastWeaponId = bot->weapon;
@@ -280,61 +283,47 @@ void HudArea::drawVehicleStatus()
   shape.bind();
   shader.program( shader.plain );
 
-  float life      = vehicle->life / vehClazz->life;
-  int   lifeWidth = max( int( life * 198.0f ), 0 );
-  float fuel      = vehicle->fuel / vehClazz->fuel;
-  int   fuelWidth = int( fuel * 198.0f );
+  float fuel = max( vehicle->fuel / vehClazz->fuel, 0.0f );
+  float hull = max( vehicle->life / vehClazz->life, 0.0f );
 
-  shape.colour( 1.0f - life, life, 0.0f, 0.5f );
-  shape.fill( width - 207, 31, lifeWidth, 12 );
-  shape.colour( 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.5f );
-  shape.fill( width - 207, 9, fuelWidth, 12 );
-
-  shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
-  shape.fill( width - 207 + lifeWidth, 31, 198 - lifeWidth, 12 );
-  shape.fill( width - 207 + fuelWidth, 9, 198 - fuelWidth, 12 );
-
-  shape.colour( style.colours.barBorder );
-  shape.rect( style.layout.vehicleFuel.x, style.layout.vehicleFuel.y,
-              style.layout.vehicleFuel.w, style.layout.vehicleFuel.h );
-  shape.rect( style.layout.vehicleFuel.x, style.layout.vehicleFuel.y,
-              style.layout.vehicleFuel.w, style.layout.vehicleFuel.h );
-
-  if( lastVehicleId != bot->parent ) {
-    lastVehicleId = bot->parent;
-
-    for( int i = 0; i < vehClazz->nWeapons; ++i ) {
-      int labelIndex = vehClazz->nWeapons - i - 1;
-
-      vehicleWeaponNames[labelIndex].set( "%s", vehClazz->weaponTitles[i].cstr() );
-    }
-  }
+  drawBar( &style.vehicleFuel, fuel );
+  drawBar( &style.vehicleHull, hull );
 
   for( int i = 0; i < vehClazz->nWeapons; ++i ) {
-    if( i == vehicle->weapon ) {
-      int step = style.fonts[Font::LARGE].height + 8;
+    int    labelIndex  = vehClazz->nWeapons - i - 1;
+    Label& nameLabel   = vehicleWeaponNames[labelIndex];
+    Label& roundsLabel = vehicleWeaponRounds[labelIndex];
+    const Style::Area& areaStyle = style.vehicleWeapon[labelIndex];
 
+    Pair<int> pos = align( areaStyle.x, areaStyle.y, areaStyle.w, areaStyle.h );
+
+    if( i == vehicle->weapon ) {
       shape.colour( style.colours.frame );
-      shape.fill( width - 208, 52 + ( vehClazz->nWeapons - 1 - i ) * step,
-                  200, style.fonts[Font::LARGE].height + 8 );
+      shape.fill( pos.x, pos.y, areaStyle.w, areaStyle.h );
     }
 
-    int labelIndex = vehClazz->nWeapons - i - 1;
+    nameLabel.set( pos.x + 2, pos.y + 2 );
+    roundsLabel.set( pos.x + areaStyle.w - 4, pos.y + 2 );
 
+    if( lastVehicleId != bot->parent ) {
+      nameLabel.set( "%s", vehClazz->weaponTitles[i].cstr() );
+    }
     if( lastVehicleWeaponRounds[labelIndex] != vehicle->nRounds[i] ) {
       lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
 
       if( vehicle->nRounds[i] < 0 ) {
-        vehicleWeaponRounds[labelIndex].set( "∞" );
+        roundsLabel.set( "∞" );
       }
       else {
-        vehicleWeaponRounds[labelIndex].set( "%d", vehicle->nRounds[i] );
+        roundsLabel.set( "%d", vehicle->nRounds[i] );
       }
     }
 
-    vehicleWeaponNames[labelIndex].draw( this, false );
-    vehicleWeaponRounds[labelIndex].draw( this, true );
+    nameLabel.draw( this, false );
+    roundsLabel.draw( this, true );
   }
+
+  lastVehicleId = bot->parent;
 }
 
 void HudArea::onReposition()
@@ -408,8 +397,8 @@ void HudArea::onDraw()
 
 HudArea::HudArea() :
   Area( camera.width, camera.height ),
-  weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " " ),
-  weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
+  weaponName( 0, 0, ALIGN_LEFT, Font::LARGE, " " ),
+  weaponRounds( 0, 0, ALIGN_RIGHT, Font::LARGE, "0" ),
   lastObjectId( -1 ),
   lastEntityId( -1 ),
   lastWeaponId( -1 ),
@@ -418,12 +407,11 @@ HudArea::HudArea() :
 {
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 
-  int step = style.fonts[Font::LARGE].height + 8;
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;
 
-    vehicleWeaponNames[i].set( -200, 54 + i * step, ALIGN_LEFT, Font::LARGE, " " );
-    vehicleWeaponRounds[i].set( -16, 54 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
+    vehicleWeaponNames[i].set( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
+    vehicleWeaponRounds[i].set( 0, 0, ALIGN_RIGHT, Font::LARGE, "0" );
   }
 
   Log::verboseMode = true;

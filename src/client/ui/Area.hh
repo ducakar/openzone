@@ -107,6 +107,11 @@ class Area
     void show( bool doShow );
     void enable( bool doEnable );
 
+    /**
+     * Calculate global (x, y) for given relative rectangle coordinates/dimension.
+     */
+    Pair<int> align( int localX, int localY, int width, int height ) const;
+
     void add( Area* area, int localX, int localY );
     void remove( Area* area );
     void raise();

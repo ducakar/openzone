@@ -179,6 +179,16 @@ void Area::enable( bool doEnable )
   onVisibilityChange( doShow );
 }
 
+Pair<int> Area::align( int localX, int localY, int width, int height ) const
+{
+  return {
+    localX == CENTRE ? this->x + ( this->width - width ) / 2 :
+    localX < 0 ? this->x + this->width - width + localX : this->x + localX,
+    localY == CENTRE ? this->y + ( this->height - height ) / 2 :
+    localY < 0 ? this->y + this->height - height + localY : this->y + localY
+  };
+}
+
 void Area::add( Area* area, int localX, int localY )
 {
   area->width  = clamp( area->width,  1, width  );

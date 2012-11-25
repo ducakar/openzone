@@ -133,8 +133,8 @@ void QuestFrame::onDraw()
 
 QuestFrame::QuestFrame() :
   Frame( 500, 2, OZ_GETTEXT( "No quest" ) ),
-  description( 6, 4, 488, 10, Font::SANS, Area::ALIGN_NONE ),
-  contentHeight( 8 + 10 * style.fonts[Font::SANS].height ),
+  description( 6, 4, 488, 16, Font::SANS, Area::ALIGN_NONE ),
+  contentHeight( 8 + 16 * style.fonts[Font::SANS].height ),
   isOpened( false ), lastQuest( -1 ), lastState( Quest::NONE )
 {
   flags |= UPDATE_BIT;

@@ -32,6 +32,13 @@
 #include <cstdlib>
 #include <malloc.h>
 
+#ifdef __has_feature
+# if __has_feature( address_sanitizer )
+// AddressSanitizer already overrides new/delete, implementations in this file must be disabled.
+#  define OZ_ADDRESS_SANITIZER
+# endif
+#endif
+
 namespace oz
 {
 

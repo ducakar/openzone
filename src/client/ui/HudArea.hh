@@ -24,9 +24,9 @@
 #pragma once
 
 #include <matrix/Vehicle.hh>
-
 #include <client/ui/Area.hh>
 #include <client/ui/Label.hh>
+#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -85,6 +85,7 @@ class HudArea : public Area
     int   bottomIconX;
     int   bottomIconY;
 
+    void drawBar( const Style::Bar* barStype, float ratio ) const;
     void drawBotCrosshair();
     void drawBotStatus();
     void drawVehicleStatus();

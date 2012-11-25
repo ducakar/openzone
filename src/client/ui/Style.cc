@@ -27,13 +27,24 @@
 #define OZ_READ_COLOUR( var, r, g, b, a ) \
   colours.var = coloursConfig[#var].get( Vec4( r, g, b, a ) )
 
-#define OZ_READ_BAR( var, x_, y_, w_, h_ ) \
+#define OZ_READ_AREA( area, x_, y_, w_, h_ ) \
   ( \
-    layout.var.x = x_, \
-    layout.var.y = y_, \
-    layout.var.w = w_, \
-    layout.var.h = h_, \
-    layoutConfig[#var].get( &layout.var.x, 4 ) \
+    area.x = x_, \
+    area.y = y_, \
+    area.w = w_, \
+    area.h = h_, \
+    config[#area].get( &area.x, 4 ) \
+  )
+
+#define OZ_READ_BAR( bar, x_, y_, w_, h_, minColour_, maxColour_ ) \
+  ( \
+    bar.x         = x_, \
+    bar.y         = y_, \
+    bar.w         = w_, \
+    bar.h         = h_, \
+    bar.minColour = minColour_, \
+    bar.maxColour = maxColour_, \
+    config[#bar].get( &bar.x, 16 ) \
   )
 
 namespace oz
@@ -94,24 +105,37 @@ void Style::init()
   OZ_READ_COLOUR( background,       0.05f, 0.05f, 0.05f, 1.00f );
 
   OZ_READ_COLOUR( barBorder,        1.00f, 1.00f, 1.00f, 0.50f );
+  OZ_READ_COLOUR( barBackground,    0.00f, 0.00f, 0.00f, 0.10f );
 
   OZ_READ_COLOUR( galileoNormal,    1.00f, 1.00f, 1.00f, 0.60f );
   OZ_READ_COLOUR( galileoMaximised, 1.00f, 1.00f, 1.00f, 0.80f );
 
   OZ_READ_COLOUR( menuStrip,        0.00f, 0.00f, 0.00f, 1.00f );
 
-  const JSON& layoutConfig = config["layout"];
+  int weaponBarHeight = fonts[Font::LARGE].height + 8;
 
-  OZ_READ_BAR( botStamina,        8,  8, 200, 14 );
-  OZ_READ_BAR( botHealth,         8, 30, 200, 14 );
-  OZ_READ_BAR( botWeapon,         8, 52, 200, fonts[Font::LARGE].height + 8 );
+  OZ_READ_BAR( botStamina,          8,  8, 200, 14,
+                                    Vec4( 0.70f, 0.30f, 0.40f, 0.50f ),
+                                    Vec4( 0.00f, 0.30f, 1.00f, 0.50f ) );
 
-  OZ_READ_BAR( vehicleFuel,      -8,  8, 200, 14 );
-  OZ_READ_BAR( vehicleHull,      -8, 30, 200, 14 );
-  OZ_READ_BAR( vehicleWeapon[0], -8, 52, 200, fonts[Font::LARGE].height + 8 );
-  OZ_READ_BAR( vehicleWeapon[1], -8, 52, 200, fonts[Font::LARGE].height + 8 );
-  OZ_READ_BAR( vehicleWeapon[2], -8, 52, 200, fonts[Font::LARGE].height + 8 );
-  OZ_READ_BAR( vehicleWeapon[3], -8, 52, 200, fonts[Font::LARGE].height + 8 );
+  OZ_READ_BAR( botHealth,           8, 30, 200, 14,
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.50f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.50f ) );
+
+  OZ_READ_AREA( botWeapon,          8, 52, 200, weaponBarHeight );
+
+  OZ_READ_BAR( vehicleFuel,         -8,  8, 200, 14,
+                                    Vec4( 0.70f, 0.30f, 0.40f, 0.50f ),
+                                    Vec4( 0.00f, 0.30f, 1.00f, 0.50f ) );
+
+  OZ_READ_BAR( vehicleHull,         -8, 30, 200, 14,
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.50f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.50f ) );
+
+  OZ_READ_AREA( vehicleWeapon[0],   -8, 52 + 0 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
+  OZ_READ_AREA( vehicleWeapon[1],   -8, 52 + 1 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
+  OZ_READ_AREA( vehicleWeapon[2],   -8, 52 + 2 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
+  OZ_READ_AREA( vehicleWeapon[3],   -8, 52 + 3 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
 
   config.clear( true );
 
