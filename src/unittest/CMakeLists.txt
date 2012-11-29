@@ -20,3 +20,5 @@ if( NACL )
   add_dependencies( unittest unittest_files )
   set_target_properties( unittest PROPERTIES OUTPUT_NAME unittest.${CMAKE_SYSTEM_PROCESSOR}.nexe )
 endif()
+
+add_test( unittest unittest )

@@ -80,6 +80,10 @@ class Input
       KEY_EXIT,
       KEY_EJECT,
       KEY_SUICIDE,
+      KEY_ACTIVATE,
+      KEY_GRAB,
+      KEY_THROW,
+      KEY_PICK_UP,
       KEY_FIRE,
       KEY_NEXT_WEAPON,
 
@@ -152,16 +156,18 @@ class Input
     bool   keys[KEY_MAX];
     bool   oldKeys[KEY_MAX];
 
-    float  mouseSensH;
-    float  mouseSensV;
+    float  mouseSensX;
+    float  mouseSensY;
+    float  mouseSensZ;
+    float  mouseSensW;
     float  mouseAccelThreshold;
     float  mouseMaxAccel;
     float  mouseAccelC0;
     float  mouseAccelC1;
     float  mouseAccelC2;
 
-    float  keySensH;
-    float  keySensV;
+    float  keySensX;
+    float  keySensY;
 
   private:
 

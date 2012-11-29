@@ -77,8 +77,8 @@ You may also want to set several options when configuring CMake build system:
   However, it seems to work on Linux at least.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
-- `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
-  texture compression. Requires libmad, faad and libsquish libraries respectively.
+- `OZ_NONFREE`: Enable support for building textures using S3 texture compression.
+  Requires libsquish library.
   `OFF` by default.
 
 - `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
@@ -127,9 +127,9 @@ if run with `-A` parameter. See "`ozBuild --help`" for all options.
 
 Note that temporary directory `share/openzone/<pkgName>` is not cleared after build, so if you
 remove any files from source data and rebuild package, removed files will still be cached in
-temporary directory and put into newly build package. So, it is advisable to remove all temporary
-directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data or before
-doing final builds.
+temporary directory and put into newly built package. So, it is highly recommended to remove all
+temporary directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data
+or before doing the final build.
 
 ### `ozManifest` ###
 

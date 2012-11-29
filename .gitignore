@@ -13,6 +13,10 @@
 
 /data/*/*
 !/data/netradiant/*
+!/data/*/ui
+/data/*/ui/cur
+/data/*/ui/font
+/data/*/ui/icon
 !/data/gtkradiant/*
 !/data/*/baseq3
 /data/*/baseq3/*

@@ -185,12 +185,12 @@ void HudArea::drawBotCrosshair()
       }
 
       if( me->cargo < 0 && me->weapon < 0 &&
-        ( obj->flags & Object::DYNAMIC_BIT ) &&
-          abs( dyn->mass * physics.gravity ) <= myClazz->grabWeight &&
-          // not swimming or on ladder
-          !( me->state & ( Bot::SWIMMING_BIT | Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) &&
-          // if it is not a bot that is holding something
-          ( !( obj->flags & Object::BOT_BIT ) || bot->cargo < 0 ) )
+          ( obj->flags & Object::DYNAMIC_BIT ) &&
+            abs( dyn->mass * physics.gravity ) <= myClazz->grabWeight &&
+            // not climbing or on a ladder
+            !( me->state & ( Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) &&
+            // if it is not a bot that is holding something
+            ( !( obj->flags & Object::BOT_BIT ) || bot->cargo < 0 ) )
       {
         float dimX = bot->dim.x + dyn->dim.x;
         float dimY = bot->dim.y + dyn->dim.y;
@@ -398,7 +398,7 @@ void HudArea::onDraw()
 HudArea::HudArea() :
   Area( camera.width, camera.height ),
   weaponName( 0, 0, ALIGN_LEFT, Font::LARGE, " " ),
-  weaponRounds( 0, 0, ALIGN_RIGHT, Font::LARGE, "0" ),
+  weaponRounds( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" ),
   lastObjectId( -1 ),
   lastEntityId( -1 ),
   lastWeaponId( -1 ),
@@ -411,7 +411,7 @@ HudArea::HudArea() :
     lastVehicleWeaponRounds[i] = -1;
 
     vehicleWeaponNames[i].set( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
-    vehicleWeaponRounds[i].set( 0, 0, ALIGN_RIGHT, Font::LARGE, "0" );
+    vehicleWeaponRounds[i].set( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
   Log::verboseMode = true;

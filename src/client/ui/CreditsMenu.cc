@@ -29,7 +29,7 @@
 #include <client/Context.hh>
 #include <client/Input.hh>
 #include <client/OpenGL.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>

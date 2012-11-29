@@ -1,7 +1,5 @@
 CURRENT
 
-- finish GUI layout settings
-- finish auto next track MusicPlayer, Sound
 - fix random splash event bug
 
 0.4
@@ -13,13 +11,16 @@ CURRENT
     * smooth/limited Vehicle rotation
 - nirvana
     * AI tasks
+    * conversations
 - ui
-    * settings for icon sizes, bar colours, bar line widths
+    * settings for icon sizes, bar colours, elements layout
+    * keyboard control
     * options menu
     * tutorial tips
     * advanced HUD for mechanic units and vehicles
     * RTS interface
     * more advanced build menu for editor
+    * conversations
 - client
     * editor
     * layout files

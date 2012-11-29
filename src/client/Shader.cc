@@ -31,8 +31,8 @@
 #include <client/Camera.hh>
 #include <client/OpenGL.hh>
 
-#define OZ_REGISTER_PARAMETER( paramVar, uniformName ) \
-  programs[id].param.paramVar = glGetUniformLocation( programs[id].program, uniformName )
+#define OZ_REGISTER_UNIFORM( uniformVar, uniformName ) \
+  programs[id].uniform.uniformVar = glGetUniformLocation( programs[id].program, uniformName )
 
 #define OZ_REGISTER_ATTRIBUTE( location, name ) \
   glBindAttribLocation( programs[id].program, location, name )
@@ -42,7 +42,7 @@ namespace oz
 namespace client
 {
 
-Param param;
+Uniform uniform;
 
 void Transform::ortho( int width, int height )
 {
@@ -77,18 +77,18 @@ void Transform::applyCamera()
 {
   projCamera = proj * camera;
 
-  glUniform3fv( param.oz_CameraPosition, 1, client::camera.p );
+  glUniform3fv( uniform.cameraPosition, 1, client::camera.p );
 }
 
 void Transform::applyModel() const
 {
-  glUniformMatrix4fv( param.oz_ModelTransform, 1, GL_FALSE, model );
+  glUniformMatrix4fv( uniform.modelTransform, 1, GL_FALSE, model );
 }
 
 void Transform::apply() const
 {
-  glUniformMatrix4fv( param.oz_ProjModelTransform, 1, GL_FALSE, projCamera * model );
-  glUniformMatrix4fv( param.oz_ModelTransform, 1, GL_FALSE, model );
+  glUniformMatrix4fv( uniform.projModelTransform, 1, GL_FALSE, projCamera * model );
+  glUniformMatrix4fv( uniform.modelTransform, 1, GL_FALSE, model );
 }
 
 void Transform::applyColour() const
@@ -98,7 +98,7 @@ void Transform::applyColour() const
 
 void Transform::setColour( const Mat44& colour_ ) const
 {
-  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colour_ );
+  glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, colour_ );
 }
 
 void Transform::setColour( const Vec4& colour_ ) const
@@ -222,30 +222,30 @@ void Shader::loadProgram( int id )
 
   glUseProgram( programs[id].program );
 
-  OZ_REGISTER_PARAMETER( oz_ProjModelTransform,  "oz_ProjModelTransform"  );
-  OZ_REGISTER_PARAMETER( oz_ModelTransform,      "oz_ModelTransform"      );
-  OZ_REGISTER_PARAMETER( oz_BoneTransforms,      "oz_BoneTransforms"      );
-  OZ_REGISTER_PARAMETER( oz_MeshAnimation,       "oz_MeshAnimation"       );
+  OZ_REGISTER_UNIFORM( projModelTransform,  "oz_ProjModelTransform"  );
+  OZ_REGISTER_UNIFORM( modelTransform,      "oz_ModelTransform"      );
+  OZ_REGISTER_UNIFORM( boneTransforms,      "oz_BoneTransforms"      );
+  OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
 
-  OZ_REGISTER_PARAMETER( oz_ColourTransform,     "oz_ColourTransform"     );
-  OZ_REGISTER_PARAMETER( oz_Textures,            "oz_Textures"            );
+  OZ_REGISTER_UNIFORM( colourTransform,     "oz_ColourTransform"     );
+  OZ_REGISTER_UNIFORM( textures,            "oz_Textures"            );
 
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,     "oz_CaelumLight.dir"     );
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse, "oz_CaelumLight.diffuse" );
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient, "oz_CaelumLight.ambient" );
-  OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition"      );
+  OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
+  OZ_REGISTER_UNIFORM( caelumLight_diffuse, "oz_CaelumLight.diffuse" );
+  OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
+  OZ_REGISTER_UNIFORM( cameraPosition,      "oz_CameraPosition"      );
 
-  OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist"            );
-  OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour"          );
+  OZ_REGISTER_UNIFORM( fog_dist,            "oz_Fog.dist"            );
+  OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
 
-  OZ_REGISTER_PARAMETER( oz_StarsColour,         "oz_StarsColour"         );
-  OZ_REGISTER_PARAMETER( oz_WaveBias,            "oz_WaveBias"            );
-  OZ_REGISTER_PARAMETER( oz_Wind,                "oz_Wind"                );
+  OZ_REGISTER_UNIFORM( starsColour,         "oz_StarsColour"         );
+  OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
+  OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
 
-  param = programs[id].param;
+  uniform = programs[id].uniform;
 
   if( setSamplerMap ) {
-    glUniform1iv( param.oz_Textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
+    glUniform1iv( uniform.textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
   }
 
   Mat44 bones[] = {
@@ -255,7 +255,7 @@ void Shader::loadProgram( int id )
     Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID
   };
 
-  glUniformMatrix4fv( param.oz_BoneTransforms, 16, GL_FALSE, bones[0] );
+  glUniformMatrix4fv( uniform.boneTransforms, 16, GL_FALSE, bones[0] );
 
   OZ_GL_CHECK_ERROR();
 }
@@ -273,7 +273,7 @@ void Shader::program( int id )
   activeProgram = id;
 
   glUseProgram( programs[id].program );
-  param = programs[id].param;
+  uniform = programs[id].uniform;
 
   OZ_GL_CHECK_ERROR();
 }
@@ -296,9 +296,9 @@ void Shader::setCaelumLight( const Vec3& dir, const Vec4& colour )
 
 void Shader::updateLights()
 {
-  glUniform3fv( param.oz_CaelumLight_dir,     1, caelumLight.dir );
-  glUniform4fv( param.oz_CaelumLight_diffuse, 1, caelumLight.diffuse );
-  glUniform4fv( param.oz_CaelumLight_ambient, 1, caelumLight.ambient );
+  glUniform3fv( uniform.caelumLight_dir,     1, caelumLight.dir );
+  glUniform4fv( uniform.caelumLight_diffuse, 1, caelumLight.diffuse );
+  glUniform4fv( uniform.caelumLight_ambient, 1, caelumLight.ambient );
 }
 
 void Shader::init()

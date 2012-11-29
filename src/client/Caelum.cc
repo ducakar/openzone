@@ -105,8 +105,8 @@ void Caelum::draw()
     tf.apply();
     tf.applyColour();
 
-    glUniform4fv( param.oz_Fog_colour, 1, caelumColour );
-    glUniform4fv( param.oz_StarsColour, 1, starsColour );
+    glUniform4fv( uniform.fog_colour, 1, caelumColour );
+    glUniform4fv( uniform.starsColour, 1, starsColour );
 
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );

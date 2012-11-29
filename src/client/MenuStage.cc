@@ -29,7 +29,7 @@
 #include <client/Sound.hh>
 #include <client/GameStage.hh>
 #include <client/Input.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 namespace oz
 {

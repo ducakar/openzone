@@ -253,10 +253,10 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( param.oz_Fog_dist, visibility );
-    glUniform4fv( param.oz_Fog_colour, 1, shader.fogColour );
+    glUniform1f( uniform.fog_dist, visibility );
+    glUniform4fv( uniform.fog_colour, 1, shader.fogColour );
 
-    glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
+    glUniform4f( uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
   currentMicros = Time::uclock();
@@ -418,7 +418,7 @@ void Render::drawUI()
 void Render::draw( int flags_ )
 {
 #ifdef __native_client__
-  hard_assert( !NaCl::isMainThread() );
+  hard_assert( !NaClPlatform::isMainThread() );
 #endif
 
   flags = flags_;
@@ -441,7 +441,7 @@ void Render::draw( int flags_ )
 void Render::swap()
 {
 #ifdef __native_client__
-  hard_assert( !NaCl::isMainThread() );
+  hard_assert( !NaClPlatform::isMainThread() );
 #endif
 
   uint beginMicros = Time::uclock();
@@ -540,7 +540,7 @@ void Render::resize()
 void Render::load()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::print( "Loading Render ..." );
@@ -568,7 +568,7 @@ void Render::load()
 void Render::unload()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::print( "Unloading Render ..." );
@@ -598,7 +598,7 @@ void Render::unload()
 void Render::init()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::println( "Initialising Render {" );
@@ -731,7 +731,7 @@ void Render::init()
 void Render::destroy()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::println( "Destroying Render {" );

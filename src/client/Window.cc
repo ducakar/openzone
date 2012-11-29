@@ -25,7 +25,7 @@
 #include <client/Window.hh>
 #include <client/Input.hh>
 #include <client/OpenGL.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>
@@ -82,17 +82,11 @@ void Window::warpMouse()
   }
 
 #ifdef __native_client__
-  NaCl::moveX = 0;
-  NaCl::moveY = 0;
-  NaCl::moveZ = 0;
-  NaCl::moveW = 0;
-#elif SDL_MAJOR_VERSION < 2
-  if( !isFull ) {
-    SDL_WarpMouse( ushort( width / 2 ), ushort( height / 2 ) );
-    SDL_PumpEvents();
-    SDL_GetRelativeMouseState( nullptr, nullptr );
-  }
-#else
+  NaClPlatform::moveX = 0;
+  NaClPlatform::moveY = 0;
+  NaClPlatform::moveZ = 0;
+  NaClPlatform::moveW = 0;
+#elif SDL_MAJOR_VERSION >= 2
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
 #endif
 }
@@ -131,8 +125,8 @@ void Window::resize()
 {
 #ifdef __native_client__
 
-  width  = NaCl::width;
-  height = NaCl::height;
+  width  = NaClPlatform::width;
+  height = NaClPlatform::height;
 
   OZ_MAIN_CALL( this, {
     glSetCurrentContextPPAPI( 0 );
@@ -182,7 +176,7 @@ void Window::setFullscreen( bool fullscreen )
     if( isFull ) {
       width   = desiredWidth;
       height  = desiredHeight;
-      flags  &= uint( ~SDL_WINDOW_FULLSCREEN );
+      flags  ^= SDL_WINDOW_FULLSCREEN;
       isFull  = false;
 
       SDL_SetWindowFullscreen( descriptor, SDL_FALSE );
@@ -191,14 +185,12 @@ void Window::setFullscreen( bool fullscreen )
     else {
       width   = screenWidth;
       height  = screenHeight;
-      flags  |= SDL_WINDOW_FULLSCREEN;
+      flags  ^= SDL_WINDOW_FULLSCREEN;
       isFull  = true;
 
       SDL_SetWindowSize( descriptor, width, height );
       SDL_SetWindowFullscreen( descriptor, SDL_TRUE );
     }
-
-    SDL_ShowCursor( false );
 
 #endif
 }
@@ -212,8 +204,8 @@ void Window::init()
 
   flushSemaphore.init();
 
-  width  = NaCl::width;
-  height = NaCl::height;
+  width  = NaClPlatform::width;
+  height = NaClPlatform::height;
   flags  = 0;
   isFull = false;
 

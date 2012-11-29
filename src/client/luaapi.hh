@@ -30,7 +30,7 @@
 #include <client/QuestList.hh>
 #include <client/Camera.hh>
 #include <client/Profile.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #include <client/ui/BuildMenu.hh>
 #include <client/ui/UI.hh>

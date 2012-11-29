@@ -34,7 +34,7 @@
 #include <client/Sound.hh>
 #include <client/Render.hh>
 #include <client/Loader.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 #include <client/NaClUpdater.hh>
 #include <client/Window.hh>
 #include <client/Input.hh>
@@ -367,9 +367,9 @@ int Client::init( int argc, char** argv )
 
 #ifdef __native_client__
 
-  NaCl::post( "lang:" );
+  NaClPlatform::post( "lang:" );
 
-  for( String message = NaCl::poll(); ; message = NaCl::poll() ) {
+  for( String message = NaClPlatform::poll(); ; message = NaClPlatform::poll() ) {
     if( message.isEmpty() ) {
       Time::sleep( 10 );
     }
@@ -378,7 +378,7 @@ int Client::init( int argc, char** argv )
       break;
     }
     else {
-      NaCl::push( message );
+      NaClPlatform::push( message );
     }
   }
 
@@ -459,7 +459,7 @@ int Client::init( int argc, char** argv )
   gameStage.init();
 
 #ifdef __native_client__
-  NaCl::post( "none:" );
+  NaClPlatform::post( "none:" );
 #endif
 
   Stage::nextStage = nullptr;
@@ -697,14 +697,15 @@ int Client::main()
 
 #ifdef __native_client__
 
-    if( NaCl::width != window.width || NaCl::height != window.height ) {
+    if( NaClPlatform::width != window.width || NaClPlatform::height != window.height ) {
       window.resize();
     }
-    if( window.hasFocus != NaCl::hasFocus ) {
-      window.hasFocus = NaCl::hasFocus;
+    if( window.hasFocus != NaClPlatform::hasFocus ) {
+      window.hasFocus = NaClPlatform::hasFocus;
       input.reset();
     }
-    for( String message = NaCl::poll(); !message.isEmpty(); message = NaCl::poll() ) {
+    for( String message = NaClPlatform::poll(); !message.isEmpty(); message = NaClPlatform::poll() )
+    {
       if( message.equals( "quit:" ) ) {
         isAlive = false;
       }

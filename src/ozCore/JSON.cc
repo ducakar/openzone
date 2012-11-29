@@ -2459,6 +2459,7 @@ String JSON::toString() const
       char* buffer;
       String r = String::create( nChars, &buffer );
       ss.read( buffer, nChars );
+      buffer[nChars] = '\0';
 
       return r;
     }

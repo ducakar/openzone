@@ -126,6 +126,9 @@
         + asynchronous streaming of tracks
         + support for music in MP3 and AAC formats
         + a user-specified directory can be searched for music
+    * new Input class
+        + key-to-action mappings, key/mouse sensitivity etc.
+        + input.json configuration file
     * resizable main window
     * new main menu, mission selection menu
 - builder

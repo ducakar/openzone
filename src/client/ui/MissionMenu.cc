@@ -30,7 +30,7 @@
 #include <client/GameStage.hh>
 #include <client/Input.hh>
 #include <client/OpenGL.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #include <client/ui/Style.hh>
 

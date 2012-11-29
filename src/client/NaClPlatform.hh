@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/NaCl.hh
+ * @file client/NaClPlatform.hh
  */
 
 #pragma once
@@ -28,7 +28,7 @@
 #ifdef __native_client__
 
 #define OZ_MAIN_CALL( t, code ) \
-  if( oz::client::NaCl::isMainThread() ) { \
+  if( oz::client::NaClPlatform::isMainThread() ) { \
     decltype( t ) _this = ( t ); \
     static_cast<void>( _this ); \
     { code } \
@@ -42,10 +42,10 @@
         _This _this = static_cast<_This>( data ); \
         static_cast<void>( _this ); \
         { code } \
-        oz::client::NaCl::mainCallSemaphore.post(); \
+        oz::client::NaClPlatform::mainCallSemaphore.post(); \
       } \
     }; \
-    oz::client::NaCl::call( _Callback::_main, ( t ) ); \
+    oz::client::NaClPlatform::call( _Callback::_main, ( t ) ); \
   }
 
 namespace oz
@@ -53,7 +53,7 @@ namespace oz
 namespace client
 {
 
-class NaCl
+class NaClPlatform
 {
   public:
 
@@ -71,8 +71,7 @@ class NaCl
 
     static bool      hasFocus; ///< True iff fullscreen and mouse captured.
 
-    explicit NaCl() = delete;
-    NaCl( const NaCl& ) = delete;
+    explicit NaClPlatform() = delete;
 
     /*
      * Main thread call.

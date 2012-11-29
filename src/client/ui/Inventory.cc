@@ -61,7 +61,7 @@ void Inventory::handleComponent( int height, const Object* container, int* tagge
 
   // scroll
   if( ( container == owner && mouse.y < y + SINGLE_HEIGHT ) ||
-    ( container == other && mouse.y >= y + SINGLE_HEIGHT ) )
+      ( container == other && mouse.y >= y + SINGLE_HEIGHT ) )
   {
     if( input.wheelDown ) {
       int nScrollRows = max( 0, container->clazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;

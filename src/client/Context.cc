@@ -668,7 +668,7 @@ void Context::load()
 void Context::unload()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::println( "Unloading Context {" );

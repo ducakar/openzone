@@ -197,6 +197,8 @@ class Bot : public Dynamic
     bool invDrop( const Dynamic* item );
     bool invGrab( const Dynamic* item );
 
+    void grabCargo( Dynamic* dyn );
+    void releaseCargo();
     void heal();
     void rearm();
     void kill();

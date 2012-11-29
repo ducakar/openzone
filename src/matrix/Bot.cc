@@ -185,7 +185,6 @@ bool Bot::grab( const Dynamic* dynamic )
     actions   |= ACTION_GRAB;
     instrument = dynamic == nullptr ? -1 : dynamic->index;
     container  = -1;
-    cargo      = -1;
 
     return true;
   }
@@ -293,11 +292,30 @@ bool Bot::invGrab( const Dynamic* item )
     actions   |= ACTION_INV_GRAB;
     instrument = item->index;
     container  = -1;
-    cargo      = -1;
 
     return true;
   }
   return false;
+}
+
+void Bot::grabCargo( Dynamic* dyn )
+{
+  hard_assert( cargo == -1 && dyn != nullptr );
+
+  flags &= ~DISABLED_BIT;
+  cargo  = dyn->index;
+  lift   = ( mass * lift + dyn->mass * dyn->lift ) / ( mass + dyn->mass );
+}
+
+void Bot::releaseCargo()
+{
+  if( cargo >= 0 ) {
+    const DynamicClass* clazz = static_cast<const DynamicClass*>( this->clazz );
+
+    flags &= ~DISABLED_BIT;
+    cargo  = -1;
+    lift   = clazz->lift;
+  }
 }
 
 void Bot::heal()
@@ -339,11 +357,12 @@ void Bot::kill()
   container  = -1;
 
   state     |= DEAD_BIT;
-  cargo      = -1;
 
   if( clazz->nItems != 0 ) {
     flags |= BROWSABLE_BIT;
   }
+
+  releaseCargo();
 
   addEvent( EVENT_DEATH, 1.0f );
 }
@@ -365,7 +384,8 @@ void Bot::enter( int vehicle_ )
   camZ       = clazz->camZ;
   state     &= ~CROUCHING_BIT;
   step       = 0.0f;
-  cargo      = -1;
+
+  releaseCargo();
 
   synapse.cut( this );
 }
@@ -397,16 +417,25 @@ void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Dynamic* cargoObj  = cargo  < 0 ? nullptr : static_cast<Dynamic*>( orbis.objects[cargo] );
-  Weapon*  weaponObj = weapon < 0 ? nullptr : static_cast<Weapon*>( orbis.objects[weapon] );
+  Dynamic* cargoObj  = nullptr;
+  Weapon*  weaponObj = nullptr;
 
-  if( weaponObj == nullptr ) {
-    weapon = -1;
+  if( cargo >= 0 ) {
+    cargoObj = static_cast<Dynamic*>( orbis.objects[cargo] );
+
+    if( cargoObj == nullptr ) {
+      releaseCargo();
+    }
   }
-  if( cargoObj == nullptr ) {
-    cargo = -1;
+  if( weapon >= 0 ) {
+    weaponObj = static_cast<Weapon*>( orbis.objects[weapon] );
+
+    if( weaponObj == nullptr ) {
+      weapon = -1;
+    }
   }
 
+  // Sanity checks.
   hard_assert( cargoObj  != static_cast<const Dynamic*>( this ) );
   hard_assert( weaponObj != static_cast<const Dynamic*>( this ) );
 
@@ -657,7 +686,7 @@ void Bot::onUpdate()
 
           float maxRaise = collider.hit.ratio * clazz->climbMax;
 
-          // for each height check if we can move forwards for desiredMove
+          // For each height check if we can move forwards for desiredMove.
           for( float raise = clazz->stairMax; raise <= maxRaise; raise += clazz->climbInc ) {
             p.z += clazz->climbInc;
 
@@ -668,12 +697,11 @@ void Bot::onUpdate()
             float endDist      = startDist + testMove * normal;
 
             if( endDist < 0.0f ) {
-              // check if ledge has normal.z >= FLOOR_NORMAL_Z
+              // Check if ledge has normal.z >= FLOOR_NORMAL_Z.
               Point raisedPos = p;
+
               p += possibleMove;
-
               collider.translate( this, Vec3( 0.0f, 0.0f, -raise ) );
-
               p = raisedPos;
 
               if( collider.hit.ratio != 1.0f && collider.hit.normal.z >= Physics::FLOOR_NORMAL_Z ) {
@@ -681,11 +709,11 @@ void Bot::onUpdate()
                 momentum.y *= 1.0f - Physics::LADDER_FRICTION;
                 momentum.z  = max( momentum.z, clazz->climbMomentum );
 
-                cargo       = -1;
                 state      |= LEDGE_BIT;
                 state      &= ~JUMP_SCHED_BIT;
                 stamina    -= clazz->staminaClimbDrain;
 
+                releaseCargo();
                 break;
               }
             }
@@ -855,11 +883,10 @@ stepSucceeded:
       const Bot* cargoBot = static_cast<const Bot*>( cargoObj );
 
       if( cargoObj == nullptr || cargoObj->cell == nullptr || ( cargoObj->flags & BELOW_BIT ) ||
-          ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
-          ( ( cargoBot->flags & BOT_BIT ) &&
+          ( actions & ACTION_JUMP ) || ( ( cargoBot->flags & BOT_BIT ) &&
             ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo >= 0 ) ) ) )
       {
-        cargo    = -1;
+        releaseCargo();
         cargoObj = nullptr;
       }
       else {
@@ -871,7 +898,7 @@ stepSucceeded:
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - cargoObj->p;
 
         if( string.sqN() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
-          cargo    = -1;
+          releaseCargo();
           cargoObj = nullptr;
         }
         else {
@@ -984,7 +1011,7 @@ stepSucceeded:
         if( item != nullptr && items.length() != clazz->nItems && canReach( item ) ) {
           hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
-          cargo = -1;
+          releaseCargo();
 
           item->parent = index;
           items.add( item->index );
@@ -1021,19 +1048,19 @@ stepSucceeded:
           stamina -= clazz->staminaThrowDrain;
           cargoObj->momentum = handle * clazz->throwMomentum;
 
-          cargo = -1;
+          releaseCargo();
         }
       }
       else if( actions & ~oldActions & ACTION_GRAB ) {
-        if( instrument < 0 || weapon >= 0 || ( state & ( LADDER_BIT | LEDGE_BIT | SWIMMING_BIT ) ) )
-        {
-          cargo = -1;
+        if( instrument < 0 || weapon >= 0 || ( state & ( LADDER_BIT | LEDGE_BIT ) ) ) {
+          releaseCargo();
         }
         else {
-          Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
+          Dynamic*   dyn      = static_cast<Dynamic*>( orbis.objects[instrument] );
+          const Bot* dynBot   = static_cast<const Bot*>( dyn );
 
           if( dyn != nullptr && abs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
-              !( ( dyn->flags & BOT_BIT ) && dyn->cargo >= 0 ) && canReach( dyn ) )
+              !( ( dyn->flags & BOT_BIT ) && dynBot->cargo >= 0 ) && canReach( dyn ) )
           {
             hard_assert( dyn->flags & DYNAMIC_BIT );
 
@@ -1042,9 +1069,9 @@ stepSucceeded:
             float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
             if( dist <= clazz->reachDist ) {
-              cargo = instrument;
-              grabHandle = dist;
+              grabCargo( dyn );
 
+              grabHandle  = dist;
               dyn->flags &= ~BELOW_BIT;
             }
           }
@@ -1087,9 +1114,9 @@ stepSucceeded:
             if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
                 !( state & ( LADDER_BIT | LEDGE_BIT | SWIMMING_BIT ) ) && weapon < 0 )
             {
-              cargo      = instrument;
-              grabHandle = dist;
+              grabCargo( item );
 
+              grabHandle   = dist;
               item->flags &= ~BELOW_BIT;
             }
           }

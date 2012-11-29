@@ -25,7 +25,7 @@
 #include <client/openzone.hh>
 
 #include <client/Client.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #if defined( __ANDROID__ )
 
@@ -68,7 +68,7 @@ int main( int argc, char** argv )
 #if defined( __ANDROID__ )
   SDL_Android_Init( env, clazz );
 #elif defined( __native_client__ )
-  NaCl::post( "init:" );
+  NaClPlatform::post( "init:" );
 #endif
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
@@ -98,7 +98,7 @@ int main( int argc, char** argv )
 #if defined( __ANDROID__ )
   static_cast<void>( exitCode );
 #elif defined( __native_client__ )
-  NaCl::post( "quit:" );
+  NaClPlatform::post( "quit:" );
 #else
   return exitCode;
 #endif
@@ -114,7 +114,7 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
   System::core     = pp::Module::Get()->core();
   System::init();
 
-  NaCl::init();
+  NaClPlatform::init();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |
                       PP_INPUTEVENT_CLASS_WHEEL );
@@ -126,7 +126,7 @@ MainInstance::~MainInstance()
     mainThread.join();
   }
 
-  NaCl::destroy();
+  NaClPlatform::destroy();
 }
 
 bool MainInstance::Init( uint32_t, const char**, const char** )
@@ -139,15 +139,15 @@ void MainInstance::DidChangeView( const pp::View& view )
   int width  = view.GetRect().width();
   int height = view.GetRect().height();
 
-  if( width == NaCl::width && height == NaCl::height ) {
+  if( width == NaClPlatform::width && height == NaClPlatform::height ) {
     return;
   }
 
-  NaCl::width  = width;
-  NaCl::height = height;
+  NaClPlatform::width  = width;
+  NaClPlatform::height = height;
 
   if( !mainThread.isValid() ) {
-    SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
+    SDL_NACL_SetInstance( pp_instance(), NaClPlatform::width, NaClPlatform::height );
 
     mainThread.start( "main", Thread::JOINABLE, mainThreadMain, this );
   }
@@ -160,7 +160,7 @@ void MainInstance::DidChangeView( const pp::Rect&, const pp::Rect& )
 
 void MainInstance::HandleMessage( const pp::Var& message )
 {
-  NaCl::push( message.AsString().c_str() );
+  NaClPlatform::push( message.AsString().c_str() );
 }
 
 bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
@@ -170,20 +170,20 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       pp::MouseInputEvent mouseEvent( event );
       pp::Point move = mouseEvent.GetMovement();
 
-      NaCl::moveX += move.x();
-      NaCl::moveY += move.y();
+      NaClPlatform::moveX += move.x();
+      NaClPlatform::moveY += move.y();
       break;
     }
     case PP_INPUTEVENT_TYPE_WHEEL: {
       pp::WheelInputEvent wheelEvent( event );
       pp::FloatPoint move = wheelEvent.GetDelta();
 
-      NaCl::moveZ += int( Math::round( move.x() ) );
-      NaCl::moveW += int( Math::round( move.y() ) );
+      NaClPlatform::moveZ += int( Math::round( move.x() ) );
+      NaClPlatform::moveW += int( Math::round( move.y() ) );
       break;
     }
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-      if( !NaCl::hasFocus ) {
+      if( !NaClPlatform::hasFocus ) {
         LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
         return true;
       }
@@ -211,13 +211,13 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 
 void MainInstance::MouseLockLost()
 {
-  NaCl::hasFocus = false;
+  NaClPlatform::hasFocus = false;
   fullscreen.SetFullscreen( false );
 }
 
 void MainInstance::onMouseLocked( void*, int result )
 {
-  NaCl::hasFocus = result == PP_OK;
+  NaClPlatform::hasFocus = result == PP_OK;
 }
 
 pp::Instance* MainModule::CreateInstance( PP_Instance instance )

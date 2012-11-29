@@ -72,7 +72,7 @@ void Camera::updateReferences()
     int strIndex = entity / Struct::MAX_ENTITIES;
     int entIndex = entity % Struct::MAX_ENTITIES;
 
-    const Struct* str = orbis.structs[strIndex];
+    Struct* str = orbis.structs[strIndex];
 
     if( str == nullptr ) {
       entity    = -1;
@@ -143,23 +143,23 @@ void Camera::prepare()
 
   ui::mouse.update();
 
-  relH = float( -ui::mouse.overEdgeX ) * input.mouseSensH * mag;
-  relV = float( +ui::mouse.overEdgeY ) * input.mouseSensV * mag;
+  relH = float( -ui::mouse.overEdgeX ) * input.mouseSensX * mag;
+  relV = float( +ui::mouse.overEdgeY ) * input.mouseSensY * mag;
 
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
 
   if( input.keys[Input::KEY_DIR_1] | input.keys[Input::KEY_DIR_4] | input.keys[Input::KEY_DIR_7] ) {
-    relH += input.keySensH;
+    relH += input.keySensX;
   }
   if( input.keys[Input::KEY_DIR_3] | input.keys[Input::KEY_DIR_6] | input.keys[Input::KEY_DIR_9] ) {
-    relH -= input.keySensH;
+    relH -= input.keySensX;
   }
   if( input.keys[Input::KEY_DIR_1] | input.keys[Input::KEY_DIR_2] | input.keys[Input::KEY_DIR_3] ) {
-    relV -= input.keySensV;
+    relV -= input.keySensY;
   }
   if( input.keys[Input::KEY_DIR_7] | input.keys[Input::KEY_DIR_8] | input.keys[Input::KEY_DIR_9] ) {
-    relV += input.keySensV;
+    relV += input.keySensY;
   }
 
   if( newState != state ) {

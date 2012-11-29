@@ -80,6 +80,12 @@ elseif( NACL )
   include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
 
   link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
+elseif( WIN32 )
+else()
+  if( CMAKE_SYSTEM_NAME STREQUAL Linux )
+    find_package( ALSA REQUIRED )
+  endif()
+  pkg_check_modules( PULSE_SIMPLE libpulse-simple REQUIRED )
 endif()
 
 find_package( PhysFS REQUIRED )

@@ -38,7 +38,7 @@
 #include <client/QuestList.hh>
 #include <client/MenuStage.hh>
 #include <client/Input.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 #include <client/ui/LoadingArea.hh>
 
 namespace oz

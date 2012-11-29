@@ -96,7 +96,7 @@ void MusicPlayer::volumeDown( Button* sender )
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
   musicPlayer->volume = max( musicPlayer->volume - 1, 0 );
-  musicPlayer->volumeLabel.set( "%.1f", float( musicPlayer->volume ) / 10.0f );
+  musicPlayer->volumeLabel.set( "%d", musicPlayer->volume );
 
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
@@ -106,7 +106,7 @@ void MusicPlayer::volumeUp( Button* sender )
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
   musicPlayer->volume = min( musicPlayer->volume + 1, 10 );
-  musicPlayer->volumeLabel.set( "%.1f", float( musicPlayer->volume ) / 10.0f );
+  musicPlayer->volumeLabel.set( "%d", musicPlayer->volume );
 
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
@@ -163,7 +163,7 @@ MusicPlayer::MusicPlayer() :
   Frame( 240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
   title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
   trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
-  volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
+  volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "5" ),
   currentTrack( 0 ), volume( 5 ), isPlaying( false )
 {
   flags = UPDATE_BIT;
@@ -171,7 +171,7 @@ MusicPlayer::MusicPlayer() :
   if( liber.musicTracks.length() > 0 ) {
     trackLabel.set( "1" );
   }
-  volumeLabel.set( "%.1f", float( volume ) / 10.0f );
+  sound.setMusicVolume( 0.5f );
 
   add( new Button( "-", volumeDown, 20, 20 ), 4, 4 );
   add( new Button( "<<", prevTrack, 30, 20 ), 54, 4 );

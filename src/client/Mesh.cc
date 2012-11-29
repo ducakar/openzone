@@ -76,7 +76,7 @@ void Mesh::animate( const Instance* instance )
     glActiveTexture( GL_TEXTURE4 );
     glBindTexture( GL_TEXTURE_2D, normalsTexId );
 
-    glUniform3f( param.oz_MeshAnimation,
+    glUniform3f( uniform.meshAnimation,
                  float( instance->firstFrame ) / float( nFrames ),
                  float( instance->secondFrame ) / float( nFrames ),
                  instance->interpolation );
@@ -246,7 +246,7 @@ void Mesh::draw( int mask ) const
       glActiveTexture( GL_TEXTURE2 );
       glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, tf.colour );
+      glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, tf.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( nullptr ) + part.firstIndex );

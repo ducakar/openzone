@@ -156,10 +156,10 @@ void UnitProxy::prepare()
   }
 
   if( input.keys[Input::KEY_TURN_LEFT] ) {
-    bot->h += input.keySensH;
+    bot->h += input.keySensX;
   }
   if( input.keys[Input::KEY_TURN_RIGHT] ) {
-    bot->h -= input.keySensV;
+    bot->h -= input.keySensY;
   }
 
   bot->h = angleWrap( bot->h );
@@ -198,7 +198,7 @@ void UnitProxy::prepare()
         bot->lock( camera.entityObj );
       }
       else if( camera.object >= 0 ) {
-        Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
+        Dynamic* dyn = static_cast<Dynamic*>( camera.objectObj );
 
         if( dyn->flags & Object::DYNAMIC_BIT ) {
           bot->grab( dyn );
@@ -211,7 +211,7 @@ void UnitProxy::prepare()
           ui::mouse.doShow = true;
         }
         else {
-          Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
+          Dynamic* dyn = static_cast<Dynamic*>( camera.objectObj );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {
             bot->take( dyn );

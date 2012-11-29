@@ -27,7 +27,7 @@
 #include <common/Timer.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 #include <client/ui/GalileoFrame.hh>
 #include <client/ui/MusicPlayer.hh>
 #include <client/ui/UI.hh>

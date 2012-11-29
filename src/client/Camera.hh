@@ -57,85 +57,85 @@ class Camera
     static UnitProxy      unit;
     static CinematicProxy cinematic;
 
-    Proxy*        proxy;
+    Proxy*    proxy;
 
   public:
 
     // Rotation, magnification, position and velocity.
-    Quat          rot;
-    float         mag;
-    Point         p;
-    Vec3          velocity;
+    Quat      rot;
+    float     mag;
+    Point     p;
+    Vec3      velocity;
 
     // Current rotation, magnification and position are smoothly changed to match desired ones.
-    Quat          desiredRot;
-    float         desiredMag;
-    Point         desiredPos;
-    Point         oldPos;
+    Quat      desiredRot;
+    float     desiredMag;
+    Point     desiredPos;
+    Point     oldPos;
 
     // Camera rotation change (from input).
-    float         relH;
-    float         relV;
+    float     relH;
+    float     relV;
 
     // Global rotation quaternion, matrix and it's inverse.
-    Mat44         rotMat;
-    Mat44         rotTMat;
+    Mat44     rotMat;
+    Mat44     rotTMat;
 
     // Global colour transformation.
-    Mat44         colour;
+    Mat44     colour;
 
-    Mat44         baseColour;
-    Mat44         nvColour;
+    Mat44     baseColour;
+    Mat44     nvColour;
 
-    Vec3          right;
-    Vec3          up;
-    Vec3          at;
+    Vec3      right;
+    Vec3      up;
+    Vec3      at;
 
-    int           width;
-    int           height;
-    int           centreX;
-    int           centreY;
+    int       width;
+    int       height;
+    int       centreX;
+    int       centreY;
 
-    float         coeff;
-    float         aspect;
-    float         vertPlane;
-    float         horizPlane;
-    float         maxDist;
+    float     coeff;
+    float     aspect;
+    float     vertPlane;
+    float     horizPlane;
+    float     maxDist;
 
-    int           object;
-    const Object* objectObj;
+    int       object;
+    Object*   objectObj;
 
-    int           entity;
-    const Entity* entityObj;
+    int       entity;
+    Entity*   entityObj;
 
-    int           bot;
-    Bot*          botObj;
+    int       bot;
+    Bot*      botObj;
 
-    int           vehicle;
-    Vehicle*      vehicleObj;
+    int       vehicle;
+    Vehicle*  vehicleObj;
 
-    List<int>     switchableUnits;
+    List<int> switchableUnits;
 
-    bool          isFixedAspect;
-    bool          allowReincarnation;
-    bool          nightVision;
-    bool          isExternal;
+    bool      isFixedAspect;
+    bool      allowReincarnation;
+    bool      nightVision;
+    bool      isExternal;
 
-    State         state;
-    State         newState;
+    State     state;
+    State     newState;
 
     void setState( State state_ )
     {
       newState = state_;
     }
 
-    void setTaggedObj( const Object* obj )
+    void setTaggedObj( Object* obj )
     {
       object    = obj == nullptr ? -1 : obj->index;
       objectObj = obj;
     }
 
-    void setTaggedEnt( const Entity* ent )
+    void setTaggedEnt( Entity* ent )
     {
       entityObj = ent;
 

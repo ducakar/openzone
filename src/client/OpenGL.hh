@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #ifdef OZ_GL_ES
 # include <GLES2/gl2.h>

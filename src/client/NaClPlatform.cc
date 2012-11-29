@@ -18,13 +18,13 @@
  */
 
 /**
- * @file client/NaCl.cc
+ * @file client/NaClPlatform.cc
  */
 
 #ifdef __native_client__
 
 #include <stable.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>
@@ -39,30 +39,30 @@ namespace client
 static SpinLock     messageLock;
 static List<String> messageQueue;
 
-Semaphore NaCl::mainCallSemaphore;
+Semaphore NaClPlatform::mainCallSemaphore;
 
-int       NaCl::width    = 0;
-int       NaCl::height   = 0;
+int       NaClPlatform::width    = 0;
+int       NaClPlatform::height   = 0;
 
-int       NaCl::moveX    = 0;
-int       NaCl::moveY    = 0;
-int       NaCl::moveZ    = 0;
-int       NaCl::moveW    = 0;
+int       NaClPlatform::moveX    = 0;
+int       NaClPlatform::moveY    = 0;
+int       NaClPlatform::moveZ    = 0;
+int       NaClPlatform::moveW    = 0;
 
-bool      NaCl::hasFocus = false;
+bool      NaClPlatform::hasFocus = false;
 
-bool NaCl::isMainThread()
+bool NaClPlatform::isMainThread()
 {
   return System::core->IsMainThread();
 }
 
-void NaCl::call( Callback* callback, void* caller )
+void NaClPlatform::call( Callback* callback, void* caller )
 {
   System::core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
   mainCallSemaphore.wait();
 }
 
-void NaCl::post( const char* message )
+void NaClPlatform::post( const char* message )
 {
   OZ_MAIN_CALL( const_cast<char*>( message ), {
     const char* message = reinterpret_cast<const char*>( _this );
@@ -71,7 +71,7 @@ void NaCl::post( const char* message )
   } )
 }
 
-String NaCl::poll()
+String NaClPlatform::poll()
 {
   messageLock.lock();
   String s = messageQueue.isEmpty() ? String() : messageQueue.popFirst();
@@ -80,19 +80,19 @@ String NaCl::poll()
   return s;
 }
 
-void NaCl::push( const char* message )
+void NaClPlatform::push( const char* message )
 {
   messageLock.lock();
   messageQueue.pushLast( message );
   messageLock.unlock();
 }
 
-void NaCl::init()
+void NaClPlatform::init()
 {
   mainCallSemaphore.init();
 }
 
-void NaCl::destroy()
+void NaClPlatform::destroy()
 {
   messageQueue.clear();
   messageQueue.deallocate();

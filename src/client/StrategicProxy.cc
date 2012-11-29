@@ -195,12 +195,12 @@ void StrategicProxy::update()
       desiredPos -= camera.right * speed;
     }
     if( input.wheelUp ) {
-      float wheelFactor = float( input.mouseW ) * 10.0f;
+      float wheelFactor = float( input.mouseW ) * input.mouseSensW;
 
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
     }
     if( input.wheelDown ) {
-      float wheelFactor = float( input.mouseW ) * 10.0f;
+      float wheelFactor = float( input.mouseW ) * input.mouseSensW;
 
       height = max( MIN_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
     }

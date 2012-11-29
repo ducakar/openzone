@@ -25,7 +25,7 @@
 #include <client/Input.hh>
 
 #include <client/Window.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 namespace oz
 {
@@ -69,8 +69,12 @@ const char* const Input::KEY_NAMES[] = {
   "Exit vehicle",
   "Eject",
   "Commit suicide",
+  "Activate",
+  "Grab",
+  "Throw",
+  "Pick up",
   "Fire weapon",
-  "Next weapon",
+  "Next vehicle weapon",
 
   "'Point' gesture",
   "'Fall back' gesture",
@@ -133,8 +137,6 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDLK_RETURN;
   keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDLK_KP_MULTIPLY;
 
-  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDLK_q;
-  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDLK_e;
   keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDLK_d;
   keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDLK_a;
   keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDLK_w;
@@ -151,11 +153,16 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDLK_x;
   keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | SDLK_k;
 
-  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDLK_f;
-  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDLK_g;
-  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDLK_h;
-  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDLK_j;
-  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDLK_k;
+  keyMap[KEY_ACTIVATE][0]           = MOD_ON_BIT  | SDLK_e;
+  keyMap[KEY_GRAB][0]               = MOD_ON_BIT  | SDLK_f;
+  keyMap[KEY_THROW][0]              = MOD_ON_BIT  | SDLK_r;
+  keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | SDLK_q;
+
+  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDLK_g;
+  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDLK_h;
+  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDLK_j;
+  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDLK_k;
+  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDLK_l;
 
   keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDLK_i;
   keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDLK_y;
@@ -203,8 +210,6 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_RETURN;
   keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDL_SCANCODE_KP_MULTIPLY;
 
-  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_Q;
-  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_E;
   keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_D;
   keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_A;
   keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDL_SCANCODE_W;
@@ -221,11 +226,16 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDL_SCANCODE_X;
   keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | SDL_SCANCODE_K;
 
-  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDL_SCANCODE_F;
-  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDL_SCANCODE_G;
-  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDL_SCANCODE_H;
-  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDL_SCANCODE_J;
-  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDL_SCANCODE_K;
+  keyMap[KEY_ACTIVATE][0]           = MOD_ON_BIT  | SDL_SCANCODE_E;
+  keyMap[KEY_GRAB][0]               = MOD_ON_BIT  | SDL_SCANCODE_F;
+  keyMap[KEY_THROW][0]              = MOD_ON_BIT  | SDL_SCANCODE_R;
+  keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | SDL_SCANCODE_Q;
+
+  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDL_SCANCODE_G;
+  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDL_SCANCODE_H;
+  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDL_SCANCODE_J;
+  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDL_SCANCODE_K;
+  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDL_SCANCODE_L;
 
   keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDL_SCANCODE_I;
   keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDL_SCANCODE_Y;
@@ -436,8 +446,8 @@ void Input::update()
 
 #if defined( __native_client__ )
 
-  mouseX = +NaCl::moveX;
-  mouseY = -NaCl::moveY;
+  mouseX = +NaClPlatform::moveX;
+  mouseY = -NaClPlatform::moveY;
 
 #elif defined( _WIN32 )
 
@@ -459,16 +469,16 @@ void Input::update()
 
 # if SDL_MAJOR_VERSION < 2
   if( window.isFull ) {
-    mouseX = +int( float( mouseX ) * factor );
-    mouseY = -int( float( mouseY ) * factor );
+    mouseX = +int( Math::round( float( mouseX ) * factor ) );
+    mouseY = -int( Math::round( float( mouseY ) * factor ) );
   }
   else {
     mouseX = +mouseX;
     mouseY = -mouseY;
   }
 # else
-  mouseX = +int( float( mouseX ) * factor );
-  mouseY = -int( float( mouseY ) * factor );
+  mouseX = +int( Math::round( float( mouseX ) * factor ) );
+  mouseY = -int( Math::round( float( mouseY ) * factor ) );
 # endif
 
 #endif
@@ -554,8 +564,10 @@ void Input::init()
   mSet( keys, 0, sizeof( keys ) );
   mSet( oldKeys, 0, sizeof( oldKeys ) );
 
-  mouseSensH          = mouseConfig["sensitivity.h"].get( 0.004f );
-  mouseSensV          = mouseConfig["sensitivity.v"].get( 0.004f );
+  mouseSensX          = mouseConfig["sensitivity.x"].get( 0.004f );
+  mouseSensY          = mouseConfig["sensitivity.y"].get( 0.004f );
+  mouseSensZ          = mouseConfig["sensitivity.z"].get( 2.0f );
+  mouseSensW          = mouseConfig["sensitivity.w"].get( 2.0f );
 
   mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
   mouseMaxAccel       = mouseConfig["acceleration.max"].get( 2.0f );
@@ -563,8 +575,8 @@ void Input::init()
   mouseAccelC1        = mouseConfig["acceleration.c1"].get( 0.0f );
   mouseAccelC2        = mouseConfig["acceleration.c2"].get( 0.0004f );
 
-  keySensH            = keyboardConfig["sensitivity.h"].get( 0.04f );
-  keySensV            = keyboardConfig["sensitivity.v"].get( 0.04f );
+  keySensX            = keyboardConfig["sensitivity.x"].get( 0.04f );
+  keySensY            = keyboardConfig["sensitivity.y"].get( 0.04f );
 
 #if SDL_MAJOR_VERSION < 2
   SDL_ShowCursor( false );
@@ -597,16 +609,18 @@ void Input::destroy()
   JSON& keyboardConfig = inputConfig.addObject( "keyboard" );
   JSON& keyMapConfig   = inputConfig.addObject( "bindings" );
 
-  mouseConfig.add( "sensitivity.h",          mouseSensH );
-  mouseConfig.add( "sensitivity.v",          mouseSensV );
+  mouseConfig.add( "sensitivity.x",          mouseSensX );
+  mouseConfig.add( "sensitivity.y",          mouseSensY );
+  mouseConfig.add( "sensitivity.z",          mouseSensZ );
+  mouseConfig.add( "sensitivity.w",          mouseSensW );
   mouseConfig.add( "acceleration.threshold", mouseAccelThreshold );
   mouseConfig.add( "acceleration.max",       mouseMaxAccel );
   mouseConfig.add( "acceleration.c0",        mouseAccelC0 );
   mouseConfig.add( "acceleration.c1",        mouseAccelC1 );
   mouseConfig.add( "acceleration.c2",        mouseAccelC2 );
 
-  keyboardConfig.add( "sensitivity.h", keySensH );
-  keyboardConfig.add( "sensitivity.v", keySensV );
+  keyboardConfig.add( "sensitivity.x",       keySensX );
+  keyboardConfig.add( "sensitivity.y",       keySensY );
   keyMapConfig = keyMapToJSON();
 
   if( !inputConfig.save( &configFile ) ) {

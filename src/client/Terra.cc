@@ -119,7 +119,7 @@ void Terra::drawWater()
   tf.apply();
   tf.applyColour();
 
-  glUniform1f( param.oz_WaveBias, waveBias );
+  glUniform1f( uniform.waveBias, waveBias );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, waterTexId );

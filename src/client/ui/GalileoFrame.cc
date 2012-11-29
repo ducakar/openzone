@@ -55,7 +55,7 @@ uint GalileoFrame::loadTexture( const char* path ) const
 
 void GalileoFrame::onReposition()
 {
-  int maxSize = camera.height < camera.width ? camera.height - 64 : camera.width - 64;
+  int maxSize     = camera.height < camera.width ? camera.height - 64 : camera.width - 64;
 
   normalX         = defaultX < 0 ? parent->x + parent->width - normalWidth + defaultX :
                                    parent->x + defaultX;

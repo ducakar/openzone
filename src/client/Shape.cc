@@ -190,12 +190,12 @@ void Shape::unbind() const
 
 void Shape::colour( const Vec4& c )
 {
-  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, Mat44::scaling( c ) );
+  glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, Mat44::scaling( c ) );
 }
 
 void Shape::colour( float r, float g, float b, float a )
 {
-  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE,
+  glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE,
                       Mat44(    r, 0.0f, 0.0f, 0.0f,
                              0.0f,    g, 0.0f, 0.0f,
                              0.0f, 0.0f,    b, 0.0f,

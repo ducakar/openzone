@@ -99,7 +99,7 @@ static void openWeb( Button* )
 {
 #if defined( __ANDROID__ )
 #elif defined( __native_client__ )
-  NaCl::post( "navi:http://ducakar.github.com/openzone/" );
+  NaClPlatform::post( "navi:http://ducakar.github.com/openzone/" );
 #elif defined( _WIN32 )
   ShellExecute( nullptr, "open", "http://ducakar.github.com/openzone/", nullptr, nullptr,
                 SW_SHOWNORMAL );

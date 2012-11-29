@@ -32,30 +32,30 @@ namespace oz
 namespace client
 {
 
-struct Param
+struct Uniform
 {
-  int oz_ProjModelTransform;
-  int oz_ModelTransform;
-  int oz_BoneTransforms;
-  int oz_MeshAnimation;
+  int projModelTransform;
+  int modelTransform;
+  int boneTransforms;
+  int meshAnimation;
 
-  int oz_ColourTransform;
-  int oz_Textures;
+  int colourTransform;
+  int textures;
 
-  int oz_CaelumLight_dir;
-  int oz_CaelumLight_diffuse;
-  int oz_CaelumLight_ambient;
-  int oz_CameraPosition;
+  int caelumLight_dir;
+  int caelumLight_diffuse;
+  int caelumLight_ambient;
+  int cameraPosition;
 
-  int oz_Fog_dist;
-  int oz_Fog_colour;
+  int fog_dist;
+  int fog_colour;
 
-  int oz_StarsColour;
-  int oz_WaveBias;
-  int oz_Wind;
+  int starsColour;
+  int waveBias;
+  int wind;
 };
 
-extern Param param;
+extern Uniform uniform;
 
 class Transform
 {
@@ -128,10 +128,10 @@ class Shader
 
     struct Program
     {
-      uint  vertShader;
-      uint  fragShader;
-      uint  program;
-      Param param;
+      uint    vertShader;
+      uint    fragShader;
+      uint    program;
+      Uniform uniform;
     };
 
     struct CaelumLight

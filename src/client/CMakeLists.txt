@@ -34,7 +34,7 @@ add_library( client STATIC
   MenuStage.hh
   Mesh.hh
   NaClDownloader.hh
-  NaCl.hh
+  NaClPlatform.hh
   NaClUpdater.hh
   Network.hh
   OpenAL.hh
@@ -85,8 +85,8 @@ add_library( client STATIC
   MD3Imago.cc
   MenuStage.cc
   Mesh.cc
-  NaCl.cc
   NaClDownloader.cc
+  NaClPlatform.cc
   NaClUpdater.cc
   Network.cc
   OpenAL.cc
@@ -130,6 +130,7 @@ add_library( client STATIC
   ui/SelectionArea.hh
   ui/SettingsFrame.hh
   ui/Style.hh
+  ui/TalkFrame.hh
   ui/Text.hh
   ui/UI.hh
   ui/Area.cc
@@ -154,6 +155,7 @@ add_library( client STATIC
   ui/SelectionArea.cc
   ui/SettingsFrame.cc
   ui/Style.cc
+  ui/TalkFrame.cc
   ui/Text.cc
   ui/UI.cc
 #END SOURCES

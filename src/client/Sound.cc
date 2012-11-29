@@ -26,7 +26,7 @@
 
 #include <client/Camera.hh>
 #include <client/eSpeak.hh>
-#include <client/NaCl.hh>
+#include <client/NaClPlatform.hh>
 
 #include <SDL.h>
 
@@ -610,7 +610,7 @@ void Sound::setVolume( float volume_ )
 
 void Sound::setMusicVolume( float volume ) const
 {
-  alSourcef( musicSource, AL_GAIN, 0.5f * volume );
+  alSourcef( musicSource, AL_GAIN, volume );
 }
 
 bool Sound::isMusicPlaying() const
@@ -638,10 +638,12 @@ void Sound::stopMusic()
 void Sound::resume() const
 {
   alcProcessContext( soundContext );
+  alListenerf( AL_GAIN, volume );
 }
 
 void Sound::suspend() const
 {
+  alListenerf( AL_GAIN, 0.0f );
   alcSuspendContext( soundContext );
 }
 
@@ -660,7 +662,7 @@ void Sound::sync()
 void Sound::init()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::println( "Initialising Sound {" );
@@ -824,7 +826,7 @@ void Sound::init()
 void Sound::destroy()
 {
 #ifdef __native_client__
-  hard_assert( NaCl::isMainThread() );
+  hard_assert( NaClPlatform::isMainThread() );
 #endif
 
   Log::print( "Destroying Sound ..." );
