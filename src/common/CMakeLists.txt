@@ -20,4 +20,4 @@ else()
   target_link_libraries( common ${LUA_LIBRARY} )
 endif()
 
-target_link_libraries( common ozDynamics ozCore )
+target_link_libraries( common ozDynamics )

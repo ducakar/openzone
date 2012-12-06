@@ -1,4 +1,14 @@
 #!/bin/sh
+#
+# build.sh [clean | conf | build]
+#
+# This script configures and/or builds OpenZone for all supported platforms in the `build`
+# directory. The following commands may be given (`build` is assumed if none):
+#
+# - `clean`: Delete all builds.
+# - `conf`: Delete all builds and configure (but not build) them anew.
+# - `build`: Configure (if necessary) and build all builds.
+#
 
 buildType=Debug
 platforms=(
@@ -13,7 +23,7 @@ function clean()
   for platform in ${platforms[@]}; do
     rm -rf build/$platform
   done
-  rm -rf build/{NaCl-test,Android}
+  rm -rf build/{OpenZone-*,NaCl-test,Android}
 }
 
 function build()

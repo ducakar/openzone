@@ -1,11 +1,28 @@
 #!/bin/sh
+#
+# lib.sh [clean | build]
+#
+# Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64,
+# Linux-i686 and Windows-i686). Those are required to create standalone build (see OZ_STANDALONE
+# cmake option) that can be distributed in a ZIP archive (i.e. no installation required, all
+# dependencies included).
+#
+# This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-bit (`lib32-*`)
+# and MinGW (`mingw32-*`) versions of all dependent libraries installed. Many of those packages must
+# be built from AUR.
+#
+# The following commands may be given (`build` is assumed if none):
+#
+# - `clean`: Delete directories for all platforms,
+# - `build`: Copy libraries for selected platforms into corresponding directories.
+#
 
 platforms=( Linux-x86_64 Linux-i686 Windows-i686 )
 
 function clean()
 {
   for platform in ${platforms[@]}; do
-    rm -rf libs/$platform
+    rm -rf lib/$platform
   done
 }
 
@@ -13,7 +30,7 @@ function build()
 {
   for platform in ${platforms[@]}; do
     if [[ $platform == Linux-x86_64 || $platform == Linux-i686 ]]; then
-      outDir=libs/$platform
+      outDir=lib/$platform
       prefix=/usr/lib
 
       [[ $platform == Linux-x86_64 && ! -d /usr/lib32 ]] && prefix=/usr/lib64
@@ -33,7 +50,6 @@ function build()
          "$prefix/libvorbis.so.0" \
          "$prefix/libvorbisfile.so.3" \
          "$prefix/libfreeimage.so.3" \
-         "build/$platform/src/txc_dxtn/libtxc_dxtn.so" \
          "$outDir"
 
       chmod +x $outDir/*
@@ -41,7 +57,7 @@ function build()
     fi
 
     if [[ $platform == Windows-i686 ]]; then
-      outDir=libs/Windows-i686
+      outDir=lib/$platform
       prefix=/usr/i486-mingw32/bin
 
       rm -rf $outDir

@@ -40,10 +40,9 @@ else()
 endif()
 
 install( TARGETS ozDynamics
-         RUNTIME DESTINATION bin
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib )
+         RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
+         LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
+         ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR} )
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozDynamics )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozDynamics.pc DESTINATION lib/pkgconfig )
-install( FILES COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )

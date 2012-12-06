@@ -46,6 +46,13 @@
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
+// Forward declarations for JNI.
+struct JNIEnv_;
+struct JavaVM_;
+
+typedef JNIEnv_ JNIEnv;
+typedef JavaVM_ JavaVM;
+
 // Forward declarations for NaCl.
 namespace pp
 {
@@ -74,6 +81,9 @@ class System
 
     /// %Set system locale.
     static const int LOCALE_BIT = 0x04;
+
+    static JNIEnv*       jniEnv;   ///< JNI environment pointer.
+    static JavaVM*       javaVM;   ///< Java VM descriptor.
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.

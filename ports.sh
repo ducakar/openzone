@@ -1,4 +1,16 @@
 #!/bin/sh
+#
+# ports.sh [clean | fetch | build]
+#
+# This script is used to build libraries required by OpenZone for some platforms. Currently it
+# builds zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.
+# The following commands may be given (`build` is assumed if none):
+#
+# - `clean`: Delete all built libraries for all platforms in `ports` directory. Downloaded sources
+#   are left intact.
+# - `fetch`: Download sources into `ports/archives` directory.
+# - `build`: Builds all libraries for all platforms.
+#
 
 platforms=(
   NaCl-x86_64 NaCl-i686 PNaCl

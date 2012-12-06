@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "InputStream.hh"
 #include "OutputStream.hh"
 
 namespace oz

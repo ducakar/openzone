@@ -35,7 +35,7 @@ extern "C"
 void SDL_Android_Init( JNIEnv* env, jclass clazz );
 
 extern "C"
-void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
+void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
 
 #elif defined( __native_client__ )
 
@@ -48,13 +48,21 @@ using namespace oz::client;
 
 #if defined( __ANDROID__ )
 extern "C"
-void Java_org_libsdl_app_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
+void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
-void MainInstance::mainThreadMain( void* )
+void MainInstance::mainThreadMain( void* instance )
 #else
 int main( int argc, char** argv )
 #endif
 {
+#if defined( __ANDROID__ )
+  System::jniEnv = env;
+  System::jniEnv->GetJavaVM( &System::javaVM );
+#elif defined( __native_client__ )
+  System::instance = static_cast<pp::Instance*>( instance );
+  System::module   = pp::Module::Get();
+  System::core     = pp::Module::Get()->core();
+#endif
   System::init();
 
   int exitCode = EXIT_FAILURE;
@@ -109,11 +117,6 @@ int main( int argc, char** argv )
 MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
 {
-  System::module   = pp::Module::Get();
-  System::instance = this;
-  System::core     = pp::Module::Get()->core();
-  System::init();
-
   NaClPlatform::init();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |

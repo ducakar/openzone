@@ -123,6 +123,9 @@ class Thread
      * Detached thread is not attached to the Thread object so it can be immediately used to start
      * another thread. %Thread's resources are released automatically when it finishes.
      *
+     * @note
+     * On Android `System::javaVM` must be set prior to invoking this method.
+     *
      * @param name thread name (copied to an internal buffer).
      * @param type `JOINABLE` or `DETACHED`.
      * @param main pointer to the thread's main method.

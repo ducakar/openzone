@@ -1,11 +1,8 @@
 #!/bin/sh
 #
-# Clean-up package source directory.
-# This removes temporary, intermediate and backup files that are created by some programs while
-# editing game data.
+# data-cleanup.sh <datasrc_dir>
 #
-# Usage:
-#   ./clean-data.sh <datasrc_dir>
+# Cleans up temporary, intermediate and backup files from a source game data directory.
 #
 
 if [[ -z $1 ]]; then

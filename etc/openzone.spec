@@ -16,8 +16,8 @@ BuildRequires:  alsa-lib-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  physfs-devel
 BuildRequires:  lua-devel
-BuildRequires:  SDL
-BuildRequires:  SDL_ttf
+BuildRequires:  SDL-devel
+BuildRequires:  SDL_ttf-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  openal-soft-devel
 BuildRequires:  libvorbis-devel
@@ -60,7 +60,7 @@ BuildArch:      noarch
 Requires:       %{name} = %{version}
 
 %description data
-Game data for OpenZone. Includes tutorial, test world and cviček mission.
+Game data for OpenZone. Includes tutorial, test world and Cviček mission.
 
 %prep
 %setup -q -b 1
@@ -80,18 +80,15 @@ make %{?_smp_mflags}
 %install
 rm -rf "$RPM_BUILD_ROOT"
 
-install -dm755 "$RPM_BUILD_ROOT"%{_datadir}/openzone
-install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
-
-cd build
-
-make install DESTDIR="$RPM_BUILD_ROOT"
-rm -rf "$RPM_BUILD_ROOT"%{_defaultdocdir}
+( cd build && make install DESTDIR="$RPM_BUILD_ROOT" )
 
 if [[ %{_libdir} != /usr/lib ]]; then
   sed -ri 's|libdir=.*|libdir=%{_libdir}|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
+
+install -dm755 "$RPM_BUILD_ROOT"%{_datadir}/openzone
+install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
 
 %files
 %defattr(-, root, root, -)

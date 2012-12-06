@@ -31,7 +31,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+# include <jni.h>
+# include <pthread.h>
+#elif defined( _WIN32 )
 # include <windows.h>
 #else
 # include <pthread.h>
@@ -158,7 +161,16 @@ void* Thread::Descriptor::threadMain( void* data )
   pthread_once( &nameOnce, initName );
   pthread_setspecific( nameKey, descriptor->name );
 
+#ifdef __ANDROID__
+  void* jniEnv;
+  System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
+#endif
+
   System::threadInit();
+
+#ifdef __ANDROID__
+  System::javaVM->DetachCurrentThread();
+#endif
 
   descriptor->main( descriptor->data );
 

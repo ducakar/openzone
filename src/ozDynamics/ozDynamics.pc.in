@@ -1,6 +1,6 @@
-prefix=/usr
+prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
+libdir=${exec_prefix}/lib@OZ_BINARY_SUBDIR@
 includedir=${prefix}/include
 
 Name: ozDynamics

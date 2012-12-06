@@ -364,6 +364,9 @@ static DWORD WINAPI bellMain( void* )
 
 static void* bellMain( void* )
 {
+#ifndef _GNU_SOURCE
+  const char* program_invocation_short_name = "liboz";
+#endif
   const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
 
   pa_simple* pa = pa_simple_new( nullptr, program_invocation_short_name, PA_STREAM_PLAYBACK,
@@ -384,46 +387,7 @@ static void* bellMain( void* )
     return nullptr;
   }
 
-#ifdef __linux__
-
-  snd_pcm_t* alsa;
-  if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
-    __sync_lock_release( &isBellPlaying );
-    return nullptr;
-  }
-
-  snd_pcm_hw_params_t* params;
-  snd_pcm_hw_params_alloca( &params );
-  snd_pcm_hw_params_any( alsa, params );
-
-  uint rate = BELL_PREFERRED_RATE;
-
-  if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ||
-      snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 ) != 0 ||
-      snd_pcm_hw_params_set_channels( alsa, params, 2 ) != 0 ||
-      snd_pcm_hw_params_set_rate_resample( alsa, params, 0 ) != 0 ||
-      snd_pcm_hw_params_set_rate_near( alsa, params, &rate, nullptr ) != 0 ||
-      snd_pcm_hw_params( alsa, params ) != 0 ||
-      snd_pcm_prepare( alsa ) != 0 )
-  {
-    snd_pcm_close( alsa );
-
-    __sync_lock_release( &isBellPlaying );
-    return nullptr;
-  }
-
-  int    nSamples = int( BELL_TIME * float( rate ) );
-  size_t size     = size_t( nSamples * 2 ) * sizeof( short );
-  short* samples  = static_cast<short*>( malloc( size ) );
-
-  genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
-  snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
-  free( samples );
-
-  snd_pcm_drain( alsa );
-  snd_pcm_close( alsa );
-
-#else
+#ifndef __linux__
 
   int fd;
   if( ( fd = open( "/dev/dsp", O_WRONLY, 0 ) ) < 0 &&
@@ -461,6 +425,45 @@ static void* bellMain( void* )
   free( samples );
 
   close( fd );
+
+#else
+
+  snd_pcm_t* alsa;
+  if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
+    __sync_lock_release( &isBellPlaying );
+    return nullptr;
+  }
+
+  snd_pcm_hw_params_t* params;
+  snd_pcm_hw_params_alloca( &params );
+  snd_pcm_hw_params_any( alsa, params );
+
+  uint rate = BELL_PREFERRED_RATE;
+
+  if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ||
+      snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 ) != 0 ||
+      snd_pcm_hw_params_set_channels( alsa, params, 2 ) != 0 ||
+      snd_pcm_hw_params_set_rate_resample( alsa, params, 0 ) != 0 ||
+      snd_pcm_hw_params_set_rate_near( alsa, params, &rate, nullptr ) != 0 ||
+      snd_pcm_hw_params( alsa, params ) != 0 ||
+      snd_pcm_prepare( alsa ) != 0 )
+  {
+    snd_pcm_close( alsa );
+
+    __sync_lock_release( &isBellPlaying );
+    return nullptr;
+  }
+
+  int    nSamples = int( BELL_TIME * float( rate ) );
+  size_t size     = size_t( nSamples * 2 ) * sizeof( short );
+  short* samples  = static_cast<short*>( malloc( size ) );
+
+  genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
+  snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
+  free( samples );
+
+  snd_pcm_drain( alsa );
+  snd_pcm_close( alsa );
 
 #endif
 
@@ -537,6 +540,9 @@ static void abort( bool doHalt )
 const int     System::HANDLERS_BIT;
 const int     System::HALT_BIT;
 const int     System::LOCALE_BIT;
+
+JNIEnv*       System::jniEnv   = nullptr;
+JavaVM*       System::javaVM   = nullptr;
 
 pp::Module*   System::module   = nullptr;
 pp::Instance* System::instance = nullptr;

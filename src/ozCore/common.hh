@@ -231,6 +231,7 @@ inline const Value& clamp( const Value& c, const Value& a, const Value& b )
 /**
  * Hash function for integers, identity.
  */
+OZ_ALWAYS_INLINE
 inline int hash( int value )
 {
   return value;

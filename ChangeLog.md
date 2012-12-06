@@ -47,6 +47,9 @@
         + limited use of constexpr (float constants)
     * (D)List renamed to (D)Chain, (S)Vector renamed to (S)List
     * String class has more consistent members, parsing functions added
+    * Vec3, Vec4, Quat don't inherit from each other or Simd class
+    * AABB & Bounds moved to liboz from matrix
+    * Mutex, Semaphore and Thread classes for high-level thread management
     * new Time class
     * new StackTrace class (split from System class)
     * System::bell()
@@ -54,11 +57,9 @@
     * new BufferStream class (OutputStream with dynamic internal storage)
     * File class: file type and size setting changed, added support for NaCl local filesystems
     * new PFile class: version of File class to act as PhysicsFS wrapper
-    * Mutex, Semaphore and Thread classes for high-level thread management
+    * Log supports operator << for printing streams
     * new JSON class for manipulating JSON files
     * Config class removed
-    * Vec3, Vec4, Quat don't inherit from each other or Simd class
-    * AABB & Bounds moved to liboz from matrix
     * clearmacros.hh header to undefine liboz macros that might conflict other libraries
     * can be compiled as a shared library
     * additional Linux dependency: PhysicsFS, optional dependency for Linux: libpulse-simple

@@ -5,11 +5,10 @@ pkgver=0.3.81
 pkgrel=1
 pkgdesc='Simple cross-platform FPS/RTS game engine'
 url="http://ducakar.github.com/openzone/"
-license=('GPL3' 'ZLIB')
+license=('GPL3' 'CCPL:by-nc-nd')
 arch=('i686' 'x86_64')
 depends=('libpulse' 'physfs' 'freeimage' 'libgl' 'luajit' 'openal' 'sdl_ttf')
-optdepends=('openzone-data: game data'
-            'espeak: speech synthesis'
+optdepends=('espeak: speech synthesis'
             'libmad: MP3 playing'
             'faad2: AAC playing'
             'zip: building ZIP game data archives'
@@ -19,7 +18,7 @@ source=("https://github.com/downloads/ducakar/openzone/${pkgname}-src-${pkgver}.
         "https://github.com/downloads/ducakar/openzone/${pkgname}-data-${pkgver}.tar.xz")
 sha1sums=()
 
-build()
+function build()
 {
   cd "${srcdir}/${pkgbase}-${pkgver}/build"
 
@@ -34,7 +33,7 @@ build()
   make
 }
 
-package()
+function package()
 {
   cd "${srcdir}/${pkgbase}-${pkgver}"
 
@@ -43,7 +42,8 @@ package()
   install -Dm644 "src/ozCore/COPYING" "${pkgdir}/usr/share/licenses/openzone/COPYING.liboz"
 
   install -dm755 "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}/licences"
-  install -m644 doc/*.html "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}"
+  install -m644 AUTHORS ChangeLog.md README.md TODO.md doc/*.html \
+                "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}"
   install -m644 doc/licences/* "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}/licences"
 
   install -dm755 "${pkgdir}/usr/share/openzone"

@@ -43,3 +43,5 @@ install( TARGETS SDL2 ARCHIVE DESTINATION lib
                      LIBRARY DESTINATION lib
                      PUBLIC_HEADER DESTINATION include/SDL2 )
 EOF
+
+sed -r 's|Java_org_libsdl_app_|Java_com_openzone_|g' -i src/core/android/SDL_android.cpp

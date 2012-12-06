@@ -82,14 +82,16 @@ elseif( NACL )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lwinmm )
-elseif( CMAKE_SYSTEM_NAME STREQUAL Linux )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
-else()
+elseif( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lrt -lpthread )
+else()
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
 endif()
 
-install( TARGETS ozCore RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
+install( TARGETS ozCore
+         RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
+         LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
+         ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR} )
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozCore )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib/pkgconfig )
-install( FILES COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )

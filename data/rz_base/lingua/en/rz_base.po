@@ -2,19 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-29 15:20+0100\n"
+"PO-Revision-Date: 2012-12-06 03:09+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
-"Language: \n"
+"Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Country: UNITED KINGDOM\n"
 
-#: src/client/ui/CreditsMenu.cc:160
-#: src/client/ui/MissionMenu.cc:178
+#: src/client/ui/CreditsMenu.cc:137 src/client/ui/MissionMenu.cc:179
 msgid "Back"
 msgstr "Back"
 
@@ -22,40 +19,47 @@ msgstr "Back"
 msgid "Close"
 msgstr "Close"
 
-#: src/client/ui/MainMenu.cc:138
+#: src/client/ui/MainMenu.cc:143
 msgid "Continue"
 msgstr "Continue"
 
-#: src/client/ui/BuildMenu.cc:64
+#: src/client/ui/BuildMenu.cc:63
 msgid "Create"
 msgstr "Create"
 
-#: src/client/ui/MainMenu.cc:142
+#: src/client/ui/MainMenu.cc:186
 msgid "Credits"
 msgstr "Credits"
 
-#: src/client/ui/DebugFrame.cc:101
+#: src/client/ui/DebugFrame.cc:102
 msgid "Debug"
 msgstr "Debug"
 
-#: src/client/ui/MainMenu.cc:143
+#: src/client/ui/MainMenu.cc:188
 msgid "Exit"
 msgstr "Exit"
 
-#: src/client/ui/MainMenu.cc:104
-msgid "Licensed under GNU GPL 3.0. Game data archives and libraries distributed with OpenZone are work of various authors and use separate licences. For more details see doc/README.html and files named README.txt and COPYING.txt inside game data archives."
-msgstr "Licensed under GNU GPL 3.0. Game data archives and libraries distributed with OpenZone are work of various authors and use separate licences. For more details see doc/README.html and files named README.txt and COPYING.txt inside game data archives."
+#: src/client/ui/MainMenu.cc:126
+msgid ""
+"Licensed under GNU GPL 3.0. Game data archives and libraries distributed "
+"with OpenZone are work of various authors and use separate licences. For "
+"more details see doc/README.html and files named README.txt and COPYING.txt "
+"inside game data archives."
+msgstr ""
+"Licensed under GNU GPL 3.0. Game data archives and libraries distributed "
+"with OpenZone are work of various authors and use separate licences. For "
+"more details see doc/README.html and files named README.txt and COPYING.txt "
+"inside game data archives."
 
-#: src/client/GameStage.cc:141
-#: src/client/GameStage.cc:366
+#: src/client/GameStage.cc:128 src/client/GameStage.cc:357
 msgid "Loading ..."
 msgstr "Loading ..."
 
-#: src/client/ui/MainMenu.cc:140
+#: src/client/ui/MainMenu.cc:184
 msgid "Missions"
 msgstr "Missions"
 
-#: src/client/ui/MusicPlayer.cc:183
+#: src/client/ui/MusicPlayer.cc:163
 msgid "Music Player"
 msgstr "Music Player"
 
@@ -67,45 +71,47 @@ msgstr ""
 "NOT IMPLEMENTED.\n"
 "You can change your settings by manually editing the following files:"
 
-#: src/client/ui/QuestFrame.cc:40
-#: src/client/ui/QuestFrame.cc:134
+#: src/client/ui/QuestFrame.cc:41 src/client/ui/QuestFrame.cc:135
 msgid "No quest"
 msgstr "No quest"
 
-#: src/client/Profile.cc:58
+#: src/client/Profile.cc:57
 msgid "Player"
 msgstr "Me"
 
-#: src/client/ui/MainMenu.cc:139
+#: src/client/ui/MainMenu.cc:150
 msgid "Quickload"
 msgstr "Quickload"
 
-#: src/client/ui/MainMenu.cc:141
-#: src/client/ui/SettingsFrame.cc:60
+#: src/client/ui/MainMenu.cc:185 src/client/ui/SettingsFrame.cc:60
 msgid "Settings"
 msgstr "Settings"
 
-#: src/client/GameStage.cc:464
+#: src/client/GameStage.cc:453
 msgid "Shutting down ..."
 msgstr "Shutting down ..."
 
-#: src/client/ui/CreditsMenu.cc:168
+#: src/client/ui/MainMenu.cc:187
+msgid "Web"
+msgstr "Splet"
+
+#: src/client/ui/CreditsMenu.cc:145
 msgid "engine developer"
 msgstr "engine developer"
 
-#: src/client/ui/QuestFrame.cc:62
+#: src/client/ui/QuestFrame.cc:63
 msgid "failed"
 msgstr "failed"
 
-#: src/client/ui/QuestFrame.cc:56
+#: src/client/ui/QuestFrame.cc:57
 msgid "in progress"
 msgstr "in progress"
 
-#: src/client/ui/CreditsMenu.cc:181
+#: src/client/ui/CreditsMenu.cc:158
 msgid "package"
 msgstr "package"
 
-#: src/client/ui/QuestFrame.cc:59
+#: src/client/ui/QuestFrame.cc:60
 msgid "successful"
 msgstr "successful"
 
@@ -133,4 +139,3 @@ msgstr ""
 "\n"
 "UI icons\n"
 "Davorin Učakar\n"
-

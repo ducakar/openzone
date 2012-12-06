@@ -128,7 +128,6 @@ void BotAudio::play( const Audio* parent )
 //                "for into darkness fell his star\n"
 //                "in Mordor where the shadows are.\n",
 //                1.0f, bot );
-    playSpeak( "Joj prejoj, kako sem žejen!", 1.0f, bot );
   }
 }
 

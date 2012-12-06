@@ -1,24 +1,24 @@
 #!/usr/bin/lua
 
-SIZE      = 8192
-DIM       = 8
-TERRA_DIM = 8
+SIZE        = 8192
+DIM         = 8
+TERRA_DIM   = 8
 
-MAX_STRS  = 16384
-MAX_OBJS  = 65536
-MAX_FRAGS = 32768
+MAX_STRS    = 16384
+MAX_OBJS    = 65536
+MAX_FRAGS   = 32768
 
-PTR_SIZE = 8
-VEC_SIZE = 12
+PTR_SIZE    = 8
+VEC_SIZE    = 12
 
-CELL_SIZE = 2 * PTR_SIZE + 6 * 2 + 4
-QUAD_SIZE = 3 * VEC_SIZE
-VECTORS   = ( MAX_STRS + MAX_OBJS + MAX_FRAGS ) * PTR_SIZE + 4 + 4
+CELL_SIZE   = 2 * PTR_SIZE + 6 * 2 + 4
+QUAD_SIZE   = 3 * VEC_SIZE
+VECTORS     = ( MAX_STRS + MAX_OBJS + MAX_FRAGS ) * PTR_SIZE + 4 + 4
 
-nCells1 = ( math.floor( ( SIZE - 1 ) / DIM ) + 1 )
-nQuads1 = ( math.floor( ( SIZE - 1 ) / TERRA_DIM ) + 2 )
-nCells2 = nCells1*nCells1
-nQuads2 = nQuads1*nQuads1
+nCells1     = ( math.floor( ( SIZE - 1 ) / DIM ) + 1 )
+nQuads1     = ( math.floor( ( SIZE - 1 ) / TERRA_DIM ) + 2 )
+nCells2     = nCells1*nCells1
+nQuads2     = nQuads1*nQuads1
 
 -- size
 cellsSize   = nCells2 * CELL_SIZE / ( 1024.0*1024.0 )

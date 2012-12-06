@@ -1,4 +1,4 @@
-package org.libsdl.app;
+package com.openzone;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;

@@ -37,21 +37,23 @@ else()
 endif()
 
 if( ANDROID )
-  set( CMAKE_SYSTEM_NAME "Android" )
+  set( CMAKE_SYSTEM_NAME Android )
   set( OZ_SDL2 ON )
 elseif( NACL )
-  set( CMAKE_SYSTEM_NAME "NaCl" )
+  set( CMAKE_SYSTEM_NAME NaCl )
   set( OZ_SDL2 OFF )
 elseif( WIN32 )
   set( OZ_STANDALONE ON )
 endif()
 
+set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
+
 if( OZ_STANDALONE )
   set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
-  set( BUILD_SHARED_LIBS OFF )
+  set( OZ_BINARY_SUBDIR "/${OZ_PLATFORM_NAME}" )
+else()
+  set( OZ_BINARY_SUBDIR "" )
 endif()
-
-set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
   if( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.4 )
@@ -133,8 +135,8 @@ endif()
 find_package( OpenAL REQUIRED )
 pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 
-# On embedded platforms everything is linked statically, libraries are mostly compiled as static,
-# so dependencies for all libraries must be linked too.
+# On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
+# too.
 if( PLATFORM_EMBEDDED )
   pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
   pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
@@ -176,6 +178,8 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   # set( flags "${flags} -stdlib=libc++" )
   # AddressSanitizer memory checker
   # set( flags "${flags} -fsanitize=address" )
+  # Analyse only.
+  # set( flags "${flags} --analyze -Qunused-arguments" )
 elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
   set( flags "-pipe -std=gnu++0x" )
 elseif( ANDROID )
@@ -242,27 +246,21 @@ add_subdirectory( doc )
 # READMEs, launchers and libraries for standalone packages
 if( OZ_STANDALONE )
   file( GLOB readmes doc/*.html )
+  file( GLOB dataFiles share/openzone/*.zip )
 
+  install( FILES AUTHORS COPYING README.md ChangeLog.md TODO.md DESTINATION doc )
+  install( FILES ${dataFiles} DESTINATION share/openzone )
   install( FILES ${readmes} DESTINATION . )
   install( DIRECTORY doc/licences DESTINATION . )
 
-  file( GLOB dataFiles share/openzone/*.zip )
-  install( FILES ${dataFiles} DESTINATION share/openzone )
-
   if( WIN32 )
-    install( DIRECTORY libs/${OZ_PLATFORM_NAME}/ DESTINATION bin/${OZ_PLATFORM_NAME}
-             USE_SOURCE_PERMISSIONS )
-    install( PROGRAMS libs/oalinst.exe DESTINATION . )
-  else()
-    install( DIRECTORY libs/${OZ_PLATFORM_NAME}/ DESTINATION lib/${OZ_PLATFORM_NAME}
-             USE_SOURCE_PERMISSIONS )
-  endif()
+    file( GLOB winLaunchers etc/launchers/*.bat )
 
-  if( WIN32 )
-    file( GLOB launchers etc/launchers/*.bat )
-    install( PROGRAMS ${launchers} DESTINATION . )
+    install( PROGRAMS ${winLaunchers} DESTINATION . )
+    install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION bin USE_SOURCE_PERMISSIONS )
   else()
     install( PROGRAMS etc/launchers/openzone.sh DESTINATION . )
+    install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION lib USE_SOURCE_PERMISSIONS )
   endif()
 endif()
 

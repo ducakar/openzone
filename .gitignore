@@ -7,7 +7,7 @@
 
 /doc/doxygen*
 /share
-/libs
+/lib
 /ports
 /build
 
