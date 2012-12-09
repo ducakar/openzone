@@ -82,10 +82,10 @@ void Window::warpMouse()
   }
 
 #ifdef __native_client__
-  NaClPlatform::moveX = 0;
-  NaClPlatform::moveY = 0;
-  NaClPlatform::moveZ = 0;
-  NaClPlatform::moveW = 0;
+  NaClPlatform::moveX = 0.0f;
+  NaClPlatform::moveY = 0.0f;
+  NaClPlatform::moveZ = 0.0f;
+  NaClPlatform::moveW = 0.0f;
 #elif SDL_MAJOR_VERSION >= 2
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
 #endif

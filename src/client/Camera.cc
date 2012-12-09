@@ -143,24 +143,8 @@ void Camera::prepare()
 
   ui::mouse.update();
 
-  relH = float( -ui::mouse.overEdgeX ) * input.mouseSensX * mag;
-  relV = float( +ui::mouse.overEdgeY ) * input.mouseSensY * mag;
-
-  relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
-  relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
-
-  if( input.keys[Input::KEY_DIR_1] | input.keys[Input::KEY_DIR_4] | input.keys[Input::KEY_DIR_7] ) {
-    relH += input.keySensX;
-  }
-  if( input.keys[Input::KEY_DIR_3] | input.keys[Input::KEY_DIR_6] | input.keys[Input::KEY_DIR_9] ) {
-    relH -= input.keySensX;
-  }
-  if( input.keys[Input::KEY_DIR_1] | input.keys[Input::KEY_DIR_2] | input.keys[Input::KEY_DIR_3] ) {
-    relV -= input.keySensY;
-  }
-  if( input.keys[Input::KEY_DIR_7] | input.keys[Input::KEY_DIR_8] | input.keys[Input::KEY_DIR_9] ) {
-    relV += input.keySensY;
-  }
+  relH = clamp( input.lookX * mag, -ROT_LIMIT, +ROT_LIMIT );
+  relV = clamp( input.lookY * mag, -ROT_LIMIT, +ROT_LIMIT );
 
   if( newState != state ) {
     if( proxy != nullptr ) {
@@ -237,9 +221,9 @@ void Camera::reset()
   rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotTMat;
 
-  colour        = Mat44::ID;
-  baseColour    = Mat44::ID;
-  nvColour      = NV_COLOUR;
+  colour     = Mat44::ID;
+  baseColour = Mat44::ID;
+  nvColour   = NV_COLOUR;
 
   right      = rotMat.x.vec3();
   up         = rotMat.y.vec3();

@@ -81,10 +81,10 @@ bool SelectionArea::projectBounds( Span* span, const AABB& bb ) const
     return false;
   }
 
-  span->minX = camera.centreX + int( minX + 0.5f );
-  span->minY = camera.centreY + int( minY + 0.5f );
-  span->maxX = camera.centreX + int( maxX + 0.5f );
-  span->maxY = camera.centreY + int( maxY + 0.5f );
+  span->minX = camera.centreX + Math::lround( minX );
+  span->minY = camera.centreY + Math::lround( minY );
+  span->maxX = camera.centreX + Math::lround( maxX );
+  span->maxY = camera.centreY + Math::lround( maxY );
 
   return true;
 }

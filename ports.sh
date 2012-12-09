@@ -256,7 +256,7 @@ function fetch()
   download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.10/freetype-2.4.10.tar.bz2'
 
   # openal
-  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.14.tar.bz2'
+  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.tar.bz2'
 
   # libogg
   download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.xz'
@@ -401,8 +401,8 @@ function build_sdl2_ttf()
 
 function build_openal()
 {
-  prepare openal-soft-1.14 openal-soft-1.14.tar.bz2 || return
-  applyPatches openal-soft-1.14.patch
+  prepare openal-soft-1.15 openal-soft-1.15.tar.bz2 || return
+  applyPatches openal-soft-1.15.patch
 
   cmakeBuild -D UTILS=0 -D EXAMPLES=0 -D LIBTYPE=STATIC
 }

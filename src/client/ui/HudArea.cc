@@ -47,7 +47,7 @@ void HudArea::drawBar( const Style::Bar* barStyle, float ratio ) const
   int y = barStyle->y == CENTRE ? ( width - barStyle->h ) / 2 :
           barStyle->y < 0 ? height - barStyle->h + barStyle->y : barStyle->y;
 
-  int width = int( float( barStyle->w - 2 ) * ratio + 0.5f );
+  int width = Math::lround( float( barStyle->w - 2 ) * ratio );
 
   shape.colour( style.colours.barBorder );
   shape.rect( x, y, barStyle->w, barStyle->h );

@@ -460,8 +460,8 @@ void Render::resize()
     return;
   }
 
-  frameWidth  = int( float( window.width  ) * scale + 0.5f );
-  frameHeight = int( float( window.height ) * scale + 0.5f );
+  frameWidth  = Math::lround( float( window.width  ) * scale );
+  frameHeight = Math::lround( float( window.height ) * scale );
 
   if( mainFrame != 0 ) {
 #ifdef GL_ES_VERSION_2_0

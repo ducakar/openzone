@@ -87,7 +87,7 @@ void Mesh::animate( const Instance* instance )
 
     if( instance->interpolation == 0.0f ) {
       for( int i = 0; i < nFrameVertices; ++i ) {
-        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
+        int j = Math::lround( vertices[i].pos[0] * float( nFramePositions - 1 ) );
 
         Point pos    = currFramePositions[j];
         Vec3  normal = currFrameNormals[j];
@@ -109,7 +109,7 @@ void Mesh::animate( const Instance* instance )
       const Vec3*  nextFrameNormals   = &normals[instance->secondFrame * nFramePositions];
 
       for( int i = 0; i < nFrameVertices; ++i ) {
-        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
+        int j = Math::lround( vertices[i].pos[0] * float( nFramePositions - 1 ) );
 
         Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], instance->interpolation );
         Vec3  normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   instance->interpolation );

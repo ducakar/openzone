@@ -64,10 +64,10 @@ class NaClPlatform
     static int       width;    ///< Module area width.
     static int       height;   ///< Module area height.
 
-    static int       moveX;    ///< Mouse X axis.
-    static int       moveY;    ///< Mouse Y axis.
-    static int       moveZ;    ///< Mouse wheel (horizontal scroll).
-    static int       moveW;    ///< Mouse wheel (vertical scroll).
+    static float     moveX;    ///< Mouse X axis.
+    static float     moveY;    ///< Mouse Y axis.
+    static float     moveZ;    ///< Mouse wheel (horizontal scroll).
+    static float     moveW;    ///< Mouse wheel (vertical scroll).
 
     static bool      hasFocus; ///< True iff fullscreen and mouse captured.
 

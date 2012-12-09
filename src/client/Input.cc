@@ -373,8 +373,8 @@ void Input::readEvent( SDL_Event* event )
     }
 #if SDL_MAJOR_VERSION >= 2
     case SDL_MOUSEWHEEL: {
-      mouseZ += event->wheel.x;
-      mouseW += event->wheel.y;
+      mouseZ += float( event->wheel.x );
+      mouseW += float( event->wheel.y );
       break;
     }
 #endif
@@ -410,14 +410,19 @@ void Input::reset()
   SDL_PumpEvents();
   SDL_GetRelativeMouseState( nullptr, nullptr );
 
-  mouseX      = 0;
-  mouseY      = 0;
-  mouseZ      = 0;
-  mouseW      = 0;
+  mouseX      = 0.0f;
+  mouseY      = 0.0f;
+  mouseZ      = 0.0f;
+  mouseW      = 0.0f;
 
   buttons     = 0;
   oldButtons  = 0;
   currButtons = 0;
+
+  lookX       = 0.0f;
+  lookY       = 0.0f;
+  moveX       = 0.0f;
+  moveY       = 0.0f;
 
   mSet( sdlKeys, 0, sizeof( sdlKeys ) );
   mSet( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
@@ -426,13 +431,18 @@ void Input::reset()
 
 void Input::prepare()
 {
-  mouseX     = 0;
-  mouseY     = 0;
-  mouseZ     = 0;
-  mouseW     = 0;
+  mouseX     = 0.0f;
+  mouseY     = 0.0f;
+  mouseZ     = 0.0f;
+  mouseW     = 0.0f;
 
   oldButtons = buttons;
   buttons    = currButtons;
+
+  lookX      = 0.0f;
+  lookY      = 0.0f;
+  moveX      = 0.0f;
+  moveY      = 0.0f;
 
   mCopy( sdlOldKeys, sdlKeys, sizeof( sdlKeys ) );
   mCopy( sdlKeys, sdlCurrKeys, sizeof( sdlKeys ) );
@@ -449,38 +459,27 @@ void Input::update()
   mouseX = +NaClPlatform::moveX;
   mouseY = -NaClPlatform::moveY;
 
-#elif defined( _WIN32 )
-
-  SDL_GetRelativeMouseState( &mouseX, &mouseY );
-
-  mouseX = +mouseX;
-  mouseY = -mouseY;
-
 #else
 
-  SDL_GetRelativeMouseState( &mouseX, &mouseY );
+  int dx, dy;
+  SDL_GetRelativeMouseState( &dx, &dy );
 
-  // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
-  // code is not based on actual code from X.Org, but experimentally tuned to match default X server
-  // mouse acceleration as closely as possible.
-  float move2  = max( float( mouseX*mouseX + mouseY*mouseY ) - mouseAccelThreshold, 0.0f );
-  float move   = Math::fastSqrt( move2 );
-  float factor = min( mouseAccelC0 + mouseAccelC1 * move + mouseAccelC2 * move2, mouseMaxAccel );
+  mouseX = +float( dx );
+  mouseY = -float( dy );
 
-# if SDL_MAJOR_VERSION < 2
+# if SDL_MAJOR_VERSION < 2 && !defined( _WIN32 )
   if( window.isFull ) {
-    mouseX = +int( Math::round( float( mouseX ) * factor ) );
-    mouseY = -int( Math::round( float( mouseY ) * factor ) );
-  }
-  else {
-    mouseX = +mouseX;
-    mouseY = -mouseY;
-  }
-# else
-  mouseX = +int( Math::round( float( mouseX ) * factor ) );
-  mouseY = -int( Math::round( float( mouseY ) * factor ) );
-# endif
+    // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
+    // code is not based on actual code from X.Org, but experimentally tuned to match default X
+    // server mouse acceleration as closely as possible.
+    float move2  = max( mouseX*mouseX + mouseY*mouseY - mouseAccelThreshold, 0.0f );
+    float move   = Math::fastSqrt( move2 );
+    float factor = min( mouseAccelC0 + mouseAccelC1 * move + mouseAccelC2 * move2, mouseMaxAccel );
 
+    mouseX *= factor;
+    mouseY *= factor;
+  }
+# endif
 #endif
 
   int clickedButtons = input.buttons & ~input.oldButtons;
@@ -505,6 +504,37 @@ void Input::update()
     if( keyMap[i][1] & mod ) {
       keys[i] |= sdlKeys[ keyMap[i][1] & ~MOD_MASK ];
     }
+  }
+
+  lookX = -mouseX * input.mouseSensX;
+  lookY = +mouseY * input.mouseSensY;
+  moveX = 0.0f;
+  moveY = 0.0f;
+
+  if( keys[Input::KEY_DIR_1] | keys[Input::KEY_DIR_4] | keys[Input::KEY_DIR_7] ) {
+    lookX += keySensX;
+  }
+  if( keys[Input::KEY_DIR_3] | keys[Input::KEY_DIR_6] | keys[Input::KEY_DIR_9] ) {
+    lookX -= keySensX;
+  }
+  if( keys[Input::KEY_DIR_1] | keys[Input::KEY_DIR_2] | keys[Input::KEY_DIR_3] ) {
+    lookY -= keySensY;
+  }
+  if( keys[Input::KEY_DIR_7] | keys[Input::KEY_DIR_8] | keys[Input::KEY_DIR_9] ) {
+    lookY += keySensY;
+  }
+
+  if( input.keys[Input::KEY_MOVE_FORWARD] ) {
+    moveY += 1.0f;
+  }
+  if( input.keys[Input::KEY_MOVE_BACKWARD] ) {
+    moveY -= 1.0f;
+  }
+  if( input.keys[Input::KEY_MOVE_RIGHT] ) {
+    moveX += 1.0f;
+  }
+  if( input.keys[Input::KEY_MOVE_LEFT] ) {
+    moveX -= 1.0f;
   }
 }
 
@@ -546,10 +576,10 @@ void Input::init()
     loadDefaultKeyMap();
   }
 
-  mouseX      = 0;
-  mouseY      = 0;
-  mouseZ      = 0;
-  mouseW      = 0;
+  mouseX      = 0.0f;
+  mouseY      = 0.0f;
+  mouseZ      = 0.0f;
+  mouseW      = 0.0f;
 
   buttons     = 0;
   oldButtons  = 0;
@@ -560,6 +590,11 @@ void Input::init()
   rightClick  = false;
   wheelUp     = false;
   wheelDown   = false;
+
+  lookX       = 0.0f;
+  lookY       = 0.0f;
+  moveX       = 0.0f;
+  moveY       = 0.0f;
 
   mSet( keys, 0, sizeof( keys ) );
   mSet( oldKeys, 0, sizeof( oldKeys ) );

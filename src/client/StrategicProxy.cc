@@ -149,18 +149,9 @@ void StrategicProxy::update()
 
     float speed = ( isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED ) * Timer::TICK_TIME;
 
-    if( input.keys[Input::KEY_MOVE_FORWARD] ) {
-      desiredPos += camera.at * speed;
-    }
-    if( input.keys[Input::KEY_MOVE_BACKWARD] ) {
-      desiredPos -= camera.at * speed;
-    }
-    if( input.keys[Input::KEY_MOVE_RIGHT] ) {
-      desiredPos += camera.right * speed;
-    }
-    if( input.keys[Input::KEY_MOVE_LEFT] ) {
-      desiredPos -= camera.right * speed;
-    }
+    desiredPos += input.moveY * camera.at * speed;
+    desiredPos += input.moveX * camera.right * speed;
+
     if( input.keys[Input::KEY_MOVE_UP] ) {
       desiredPos.z += speed;
     }
@@ -182,25 +173,16 @@ void StrategicProxy::update()
     float logHeight = Math::log( height );
     float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * Timer::TICK_TIME * logHeight;
 
-    if( input.keys[Input::KEY_MOVE_FORWARD] ) {
-      desiredPos += up * speed;
-    }
-    if( input.keys[Input::KEY_MOVE_BACKWARD] ) {
-      desiredPos -= up * speed;
-    }
-    if( input.keys[Input::KEY_MOVE_RIGHT] ) {
-      desiredPos += camera.right * speed;
-    }
-    if( input.keys[Input::KEY_MOVE_LEFT] ) {
-      desiredPos -= camera.right * speed;
-    }
+    desiredPos += input.moveY * up * speed;
+    desiredPos += input.moveX * camera.right * speed;
+
     if( input.wheelUp ) {
-      float wheelFactor = float( input.mouseW ) * input.mouseSensW;
+      float wheelFactor = float( input.mouseW );
 
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
     }
     if( input.wheelDown ) {
-      float wheelFactor = float( input.mouseW ) * input.mouseSensW;
+      float wheelFactor = float( input.mouseW );
 
       height = max( MIN_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
     }

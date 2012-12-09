@@ -231,7 +231,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
     float amplitude = 0.8f * Math::fastSqrt( max( ( nSamples - i ) / nSamples, 0.0f ) );
     float theta     = i * quotient;
     float value     = amplitude * Math::sin( theta );
-    short sample    = short( SHRT_MAX * value + 0.5f );
+    short sample    = short( Math::lround( value * SHRT_MAX ) );
 
     samples[0] = sample;
     samples[1] = sample;
@@ -289,9 +289,9 @@ static void bellInitCallback( void*, int )
   pp::AudioConfig config( System::instance, rate, nFrameSamples );
 
   info->nFrameSamples = int( nFrameSamples );
-  info->nSamples      = int( BELL_TIME * float( rate ) + 0.5f );
+  info->nSamples      = Math::lround( BELL_TIME * float( rate ) );
   info->rate          = rate;
-  info->end           = info->nSamples + int( BELL_TIME * float( rate ) + 0.5f );
+  info->end           = info->nSamples + 2*nFrameSamples;
   info->offset        = 0;
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );

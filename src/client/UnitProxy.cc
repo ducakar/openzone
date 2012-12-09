@@ -230,16 +230,16 @@ void UnitProxy::prepare()
    * Movement
    */
 
-  if( input.keys[Input::KEY_MOVE_FORWARD] ) {
+  if( input.moveY > 0.0f ) {
     bot->actions |= Bot::ACTION_FORWARD;
   }
-  if( input.keys[Input::KEY_MOVE_BACKWARD] ) {
+  if( input.moveY < 0.0f ) {
     bot->actions |= Bot::ACTION_BACKWARD;
   }
-  if( input.keys[Input::KEY_MOVE_RIGHT] ) {
+  if( input.moveX > 0.0f ) {
     bot->actions |= Bot::ACTION_RIGHT;
   }
-  if( input.keys[Input::KEY_MOVE_LEFT] ) {
+  if( input.moveX < 0.0f ) {
     bot->actions |= Bot::ACTION_LEFT;
   }
 

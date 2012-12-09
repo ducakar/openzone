@@ -44,10 +44,10 @@ Semaphore NaClPlatform::mainCallSemaphore;
 int       NaClPlatform::width    = 0;
 int       NaClPlatform::height   = 0;
 
-int       NaClPlatform::moveX    = 0;
-int       NaClPlatform::moveY    = 0;
-int       NaClPlatform::moveZ    = 0;
-int       NaClPlatform::moveW    = 0;
+float     NaClPlatform::moveX    = 0.0f;
+float     NaClPlatform::moveY    = 0.0f;
+float     NaClPlatform::moveZ    = 0.0f;
+float     NaClPlatform::moveW    = 0.0f;
 
 bool      NaClPlatform::hasFocus = false;
 

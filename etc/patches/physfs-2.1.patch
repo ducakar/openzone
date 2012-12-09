@@ -1,6 +1,15 @@
-diff -r c686e4f84ab5 CMakeLists.txt
---- a/CMakeLists.txt	Mon Nov 12 23:40:29 2012 +0200
-+++ b/CMakeLists.txt	Sat Nov 17 01:07:29 2012 +0100
+diff -r e0dbcd5e50b9 CMakeLists.txt
+--- a/CMakeLists.txt	Fri Nov 30 14:37:37 2012 -0500
++++ b/CMakeLists.txt	Sat Dec 08 15:30:52 2012 +0100
+@@ -50,7 +50,7 @@
+ # Add some gcc-specific command lines.
+ if(CMAKE_COMPILER_IS_GNUCC)
+     # Always build with debug symbols...you can strip it later.
+-    add_definitions(-g -pipe -Werror -fsigned-char)
++    add_definitions(-g -pipe -fsigned-char)
+ 
+     # Stupid BeOS generates warnings in the system headers.
+     if(NOT BEOS)
 @@ -124,6 +124,7 @@
      src/platform_unix.c
      src/platform_macosx.c
@@ -26,9 +35,9 @@ diff -r c686e4f84ab5 CMakeLists.txt
          set(PHYSFS_HAVE_CDROM_SUPPORT TRUE)
          set(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
          set(HAVE_PTHREAD_H TRUE)
-diff -r c686e4f84ab5 src/lzma/C/Archive/7z/7zDecode.c
---- a/src/lzma/C/Archive/7z/7zDecode.c	Mon Nov 12 23:40:29 2012 +0200
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat Nov 17 01:07:29 2012 +0100
+diff -r e0dbcd5e50b9 src/lzma/C/Archive/7z/7zDecode.c
+--- a/src/lzma/C/Archive/7z/7zDecode.c	Fri Nov 30 14:37:37 2012 -0500
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat Dec 08 15:30:52 2012 +0100
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
  
@@ -41,10 +50,10 @@ diff -r c686e4f84ab5 src/lzma/C/Archive/7z/7zDecode.c
  
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
-diff -r c686e4f84ab5 src/physfs.h
---- a/src/physfs.h	Mon Nov 12 23:40:29 2012 +0200
-+++ b/src/physfs.h	Sat Nov 17 01:07:29 2012 +0100
-@@ -233,7 +233,7 @@
+diff -r e0dbcd5e50b9 src/physfs.h
+--- a/src/physfs.h	Fri Nov 30 14:37:37 2012 -0500
++++ b/src/physfs.h	Sat Dec 08 15:30:52 2012 +0100
+@@ -229,7 +229,7 @@
  #define PHYSFS_DECL __declspec(dllexport)
  #elif (defined __SUNPRO_C)
  #define PHYSFS_DECL __global
@@ -53,9 +62,9 @@ diff -r c686e4f84ab5 src/physfs.h
  #define PHYSFS_DECL __attribute__((visibility("default")))
  #else
  #define PHYSFS_DECL
-diff -r c686e4f84ab5 src/physfs_platforms.h
---- a/src/physfs_platforms.h	Mon Nov 12 23:40:29 2012 +0200
-+++ b/src/physfs_platforms.h	Sat Nov 17 01:07:29 2012 +0100
+diff -r e0dbcd5e50b9 src/physfs_platforms.h
+--- a/src/physfs_platforms.h	Fri Nov 30 14:37:37 2012 -0500
++++ b/src/physfs_platforms.h	Sat Dec 08 15:30:52 2012 +0100
 @@ -40,6 +40,8 @@
  #  define PHYSFS_PLATFORM_UNIX 1
  #  define PHYSFS_PLATFORM_POSIX 1
@@ -65,10 +74,10 @@ diff -r c686e4f84ab5 src/physfs_platforms.h
  #elif defined(__linux)
  #  define PHYSFS_PLATFORM_LINUX 1
  #  define PHYSFS_PLATFORM_UNIX 1
-diff -r c686e4f84ab5 src/platform_nacl.c
+diff -r e0dbcd5e50b9 src/platform_nacl.c
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Sat Nov 17 01:07:29 2012 +0100
-@@ -0,0 +1,842 @@
++++ b/src/platform_nacl.c	Sat Dec 08 15:30:52 2012 +0100
+@@ -0,0 +1,843 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
@@ -694,12 +703,14 @@ diff -r c686e4f84ab5 src/platform_nacl.c
 +    } /* if */
 +} ) /* stat_open */
 +
-+int __PHYSFS_platformStat(const char *filename, int *exists, PHYSFS_Stat *st)
++int __PHYSFS_platformStat(const char *filename, PHYSFS_Stat *st)
 +{
++    int exists = 0;
++
 +    /* Root must be handled as a special case as querying it always fails. */
 +    if (filename[0] == '/' && filename[1] == '\0')
 +    {
-+        *exists = 1;
++        exists = 1;
 +
 +        st->createtime = 0;
 +        st->modtime = 0;
@@ -720,7 +731,7 @@ diff -r c686e4f84ab5 src/platform_nacl.c
 +    MAIN_CALL(stat_open);
 +    SEM_WAIT();
 +
-+    *exists = file->error == 0;
++    exists = file->error == 0;
 +
 +    if (!file->error)
 +    {
@@ -745,7 +756,7 @@ diff -r c686e4f84ab5 src/platform_nacl.c
 +    } /* if */
 +
 +    destroyFileDesc(file);
-+    return 1;
++    return exists;
 +} /* __PHYSFS_platformStat */
 +
 +
@@ -812,7 +823,6 @@ diff -r c686e4f84ab5 src/platform_nacl.c
 +
 +/* Directory listing is not supported on NaCl. */
 +void __PHYSFS_platformEnumerateFiles(const char *dirname,
-+                                     int omitSymLinks,
 +                                     PHYSFS_EnumFilesCallback callback,
 +                                     const char *origdir,
 +                                     void *callbackdata)

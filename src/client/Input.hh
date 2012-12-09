@@ -138,10 +138,10 @@ class Input
 
   public:
 
-    int    mouseX;
-    int    mouseY;
-    int    mouseZ;
-    int    mouseW;
+    float  mouseX;
+    float  mouseY;
+    float  mouseZ;
+    float  mouseW;
 
     char   buttons;
     char   oldButtons;
@@ -152,6 +152,11 @@ class Input
     bool   middleClick;
     bool   wheelUp;
     bool   wheelDown;
+
+    float  lookX;
+    float  lookY;
+    float  moveX;
+    float  moveY;
 
     bool   keys[KEY_MAX];
     bool   oldKeys[KEY_MAX];

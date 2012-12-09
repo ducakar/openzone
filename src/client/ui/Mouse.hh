@@ -65,9 +65,8 @@ class Mouse
 
     int  x;
     int  y;
-
-    int  overEdgeX;
-    int  overEdgeY;
+    int  dx;
+    int  dy;
 
     Icon icon;
     bool doShow;

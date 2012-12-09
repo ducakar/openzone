@@ -173,16 +173,16 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       pp::MouseInputEvent mouseEvent( event );
       pp::Point move = mouseEvent.GetMovement();
 
-      NaClPlatform::moveX += move.x();
-      NaClPlatform::moveY += move.y();
+      NaClPlatform::moveX += float( move.x() );
+      NaClPlatform::moveY += float( move.y() );
       break;
     }
     case PP_INPUTEVENT_TYPE_WHEEL: {
       pp::WheelInputEvent wheelEvent( event );
       pp::FloatPoint move = wheelEvent.GetDelta();
 
-      NaClPlatform::moveZ += int( Math::round( move.x() ) );
-      NaClPlatform::moveW += int( Math::round( move.y() ) );
+      NaClPlatform::moveZ += move.x();
+      NaClPlatform::moveW += move.y();
       break;
     }
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {

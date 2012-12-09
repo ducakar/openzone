@@ -51,24 +51,36 @@ const char* const Mouse::NAMES[] = {
 
 void Mouse::update()
 {
+  icon = ARROW;
+
   if( doShow ) {
-    icon = ARROW;
+    int newX = x + Math::lround( input.mouseX );
+    int newY = y + Math::lround( input.mouseY );
 
-    int desiredX = x + input.mouseX;
-    int desiredY = y + input.mouseY;
+    if( 0 <= newX && newX < camera.width ) {
+      input.lookX = 0.0f;
+    }
+    else {
+      newX = clamp( newX, 0, camera.width - 1 );
+    }
 
-    x = clamp( desiredX, 0, camera.width  - 1 );
-    y = clamp( desiredY, 0, camera.height - 1 );
+    if( 0 < newY && newY < camera.height ) {
+      input.lookY = 0.0f;
+    }
+    else {
+      newY = clamp( newY, 0, camera.height - 1 );
+    }
 
-    overEdgeX = x != desiredX ? desiredX - x : 0;
-    overEdgeY = y != desiredY ? desiredY - y : 0;
+    dx = newX - x;
+    dy = newY - y;
+    x  = newX;
+    y  = newY;
   }
   else {
-    x = camera.centreX;
-    y = camera.centreY;
-
-    overEdgeX = input.mouseX;
-    overEdgeY = input.mouseY;
+    dx = 0;
+    dy = 0;
+    x  = camera.centreX;
+    y  = camera.centreY;
   }
 }
 
@@ -88,11 +100,10 @@ void Mouse::init()
 {
   Log::print( "Initialising Mouse ..." );
 
-  x = camera.centreX;
-  y = camera.centreY;
-
-  overEdgeX = 0;
-  overEdgeY = 0;
+  x      = camera.centreX;
+  y      = camera.centreY;
+  dx     = 0;
+  dy     = 0;
 
   icon   = ARROW;
   doShow = false;

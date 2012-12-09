@@ -113,7 +113,7 @@ class Math
     explicit Math() = delete;
 
     /**
-     * Round to the closest integer towards negative infinity.
+     * Round to the nearest integer towards negative infinity.
      */
     OZ_ALWAYS_INLINE
     static float floor( float x )
@@ -122,7 +122,7 @@ class Math
     }
 
     /**
-     * Round to the closest integer towards positive infinity.
+     * Round to the nearest integer towards positive infinity.
      */
     OZ_ALWAYS_INLINE
     static float ceil( float x )
@@ -131,12 +131,21 @@ class Math
     }
 
     /**
-     * Round to the closest integer.
+     * Round to the nearest integer away from zero.
      */
     OZ_ALWAYS_INLINE
     static float round( float x )
     {
       return __builtin_roundf( x );
+    }
+
+    /**
+     * Round to the nearest integer away from zero (return integer).
+     */
+    OZ_ALWAYS_INLINE
+    static int lround( float x )
+    {
+      return int( __builtin_lroundf( x ) );
     }
 
     /**

@@ -52,7 +52,7 @@ bool Frame::onMouseEvent()
       }
       if( flags & GRAB_BIT ) {
         mouse.icon = Mouse::CLOSEDHAND;
-        move( input.mouseX, input.mouseY );
+        move( mouse.dx, mouse.dy );
       }
     }
     else {
