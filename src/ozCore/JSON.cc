@@ -168,13 +168,7 @@ void JSON::Parser::setAccessed( JSON* value )
   value->wasAccessed = true;
 
   switch( value->valueType ) {
-#ifdef OZ_GCC
-    default: // HACK Make GCC happy.
-#endif
-    case NIL:
-    case BOOLEAN:
-    case NUMBER:
-    case STRING: {
+    default: {
       break;
     }
     case ARRAY: {
@@ -720,13 +714,7 @@ JSON& JSON::operator = ( JSON&& v )
 int JSON::length() const
 {
   switch( valueType ) {
-#ifdef OZ_GCC
-    default: // HACK Make GCC happy.
-#endif
-    case NIL:
-    case BOOLEAN:
-    case NUMBER:
-    case STRING: {
+    default: {
       return -1;
     }
     case ARRAY: {
@@ -741,13 +729,7 @@ int JSON::length() const
 int JSON::isEmpty() const
 {
   switch( valueType ) {
-#ifdef OZ_GCC
-    default: // HACK Make GCC happy.
-#endif
-    case NIL:
-    case BOOLEAN:
-    case NUMBER:
-    case STRING: {
+    default: {
       return true;
     }
     case ARRAY: {
@@ -2442,10 +2424,7 @@ void JSON::clear( bool unusedWarnings )
 String JSON::toString() const
 {
   switch( valueType ) {
-#ifdef OZ_GCC
-    default: // HACK Make GCC happy.
-#endif
-    case NIL: {
+    default: {
       return "null";
     }
     case BOOLEAN: {

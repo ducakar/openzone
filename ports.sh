@@ -6,8 +6,9 @@
 # builds zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.
 # The following commands may be given (`build` is assumed if none):
 #
-# - `clean`: Delete all built libraries for all platforms in `ports` directory. Downloaded sources
-#   are left intact.
+# - `clean`: Delete everything in `ports` directory except downloaded sources.
+# - `buildclean`: Delete build directories. Downloaded sources and installed libraries are left
+#   intact.
 # - `fetch`: Download sources into `ports/archives` directory.
 # - `build`: Builds all libraries for all platforms.
 #
@@ -45,12 +46,13 @@ function msg()
 
 function setup_nacl64()
 {
-  platform="NaCl-x86_64"
-  buildDir="$topDir/$platform"
-  triplet="x86_64-nacl"
-  sysroot="$naclPrefix/x86_64-nacl"
-  toolsroot="$naclPrefix"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="NaCl-x86_64"                                  # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="x86_64-nacl"                                   # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$naclPrefix/x86_64-nacl"                       # SDK sysroot.
+  toolsroot="$naclPrefix"                                 # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -68,12 +70,13 @@ function setup_nacl64()
 
 function setup_nacl32()
 {
-  platform="NaCl-i686"
-  buildDir="$topDir/$platform"
-  triplet="i686-nacl"
-  sysroot="$naclPrefix/i686-nacl"
-  toolsroot="$naclPrefix"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="NaCl-i686"                                    # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="i686-nacl"                                     # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$naclPrefix/i686-nacl"                         # SDK sysroot.
+  toolsroot="$naclPrefix"                                 # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -91,14 +94,16 @@ function setup_nacl32()
 
 function setup_pnacl()
 {
-  platform="PNaCl"
-  buildDir="$topDir/$platform"
-  triplet="pnacl"
-  sysroot="$pnaclPrefix/usr"
-  toolsroot="$pnaclPrefix"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="PNaCl"                                        # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="pnacl"                                         # Platform triplet (tools prefix).
+  hostTriplet="i686-nacl"                                 # Host triplet for autotools configure.
+  sysroot="$pnaclPrefix/usr"                              # SDK sysroot.
+  toolsroot="$pnaclPrefix"                                # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
-  export CPP=""
+  #export CPP="$toolsroot/bin/$triplet-cpp"
+  export -n CPP
   export CC="$toolsroot/bin/$triplet-clang"
   export AR="$toolsroot/bin/$triplet-ar"
   export RANLIB="$toolsroot/bin/$triplet-ranlib"
@@ -107,19 +112,20 @@ function setup_pnacl()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$PATH"
 
-  export CPPFLAGS=""
-  export CFLAGS=""
-  export LDFLAGS=""
+  export CPPFLAGS="-I$buildDir/usr/include"
+  export CFLAGS="-O3 -ffast-math"
+  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 }
 
 function setup_ndkX86()
 {
-  platform="Android14-i686"
-  buildDir="$topDir/$platform"
-  triplet="i686-linux-android"
-  sysroot="$ndkX86Platform"
-  toolsroot="$ndkX86Tools"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="Android14-i686"                               # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="i686-linux-android"                            # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$ndkX86Platform"                               # SDK sysroot.
+  toolsroot="$ndkX86Tools"                                # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -137,12 +143,13 @@ function setup_ndkX86()
 
 function setup_ndkARM()
 {
-  platform="Android14-ARM"
-  buildDir="$topDir/$platform"
-  triplet="arm-linux-androideabi"
-  sysroot="$ndkARMPlatform"
-  toolsroot="$ndkARMTools"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="Android14-ARM"                                # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$ndkARMPlatform"                               # SDK sysroot.
+  toolsroot="$ndkARMTools"                                # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -160,12 +167,13 @@ function setup_ndkARM()
 
 function setup_ndkARM7()
 {
-  platform="Android14-ARMv7a"
-  buildDir="$topDir/$platform"
-  triplet="arm-linux-androideabi"
-  sysroot="$ndkARMPlatform"
-  toolsroot="$ndkARMTools"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="Android14-ARMv7a"                             # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$ndkARMPlatform"                               # SDK sysroot.
+  toolsroot="$ndkARMTools"                                # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -183,12 +191,13 @@ function setup_ndkARM7()
 
 function setup_ndkMIPS()
 {
-  platform="Android14-MIPS"
-  buildDir="$topDir/$platform"
-  triplet="mipsel-linux-android"
-  sysroot="$ndkMIPSPlatform"
-  toolsroot="$ndkMIPSTools"
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake"
+  platform="Android14-MIPS"                               # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="mipsel-linux-android"                          # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$ndkMIPSPlatform"                              # SDK sysroot.
+  toolsroot="$ndkMIPSTools"                               # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -208,6 +217,15 @@ function clean()
 {
   for platform in ${platforms[@]}; do
     rm -rf "$topDir/$platform"
+  done
+}
+
+function buildclean()
+{
+  for platform in ${platforms[@]}; do
+    for subDir in `echo "$topDir/$platform/*"`; do
+      [[ $subDir == */usr ]] || rm -rf "$subDir"
+    done
   done
 }
 
@@ -307,7 +325,7 @@ function cmakeBuild()
 function autotoolsBuild()
 {
   mkdir -p build && cd build
-  ../configure --host=$triplet --prefix=/usr $@ || exit 1
+  ../configure --host=$hostTriplet --prefix=/usr $@ || exit 1
 
   make -j4 || exit 1
   make install DESTDIR="$buildDir"
@@ -338,7 +356,7 @@ function build_lua()
   prepare lua-5.2.1 lua-5.2.1.tar.gz || return
   applyPatches lua-5.2.1.patch
 
-  make -j4 CC="$CC" CFLAGS="$CPPFLAGS $CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
+  make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
   make INSTALL_TOP="$buildDir/usr" install
 }
 
@@ -349,7 +367,7 @@ function build_sdl()
 
   ./autogen.sh
   case $triplet in
-    *-nacl)
+    *nacl)
       # Assembly causes NaCl validity check to fail when NEXE is loading.
       autotoolsBuild --disable-shared --disable-pthread-sem --disable-assembly
       ;;
@@ -428,12 +446,12 @@ function build()
   # zlib
   setup_nacl64  && build_zlib
   setup_nacl32  && build_zlib
-#   setup_pnacl   && build_zlib
+  setup_pnacl   && build_zlib
 
   # physfs
   setup_nacl64  && build_physfs
   setup_nacl32  && build_physfs
-#   setup_pnacl   && build_physfs
+  setup_pnacl   && build_physfs
 #   setup_ndkX86  && build_physfs
 #   setup_ndkARM  && build_physfs
 #   setup_ndkARM7 && build_physfs
@@ -442,7 +460,7 @@ function build()
   # lua
   setup_nacl64  && build_lua
   setup_nacl32  && build_lua
-#   setup_pnacl   && build_lua
+  setup_pnacl   && build_lua
 #   setup_ndkX86  && build_lua
 #   setup_ndkARM  && build_lua
 #   setup_ndkARM7 && build_lua
@@ -451,7 +469,7 @@ function build()
   # SDL
   setup_nacl64  && build_sdl
   setup_nacl32  && build_sdl
-#   setup_pnacl   && build_sdl
+  setup_pnacl   && build_sdl
 #   setup_ndkX86  && build_sdl2
 #   setup_ndkARM  && build_sdl2
 #   setup_ndkARM7 && build_sdl2
@@ -460,7 +478,7 @@ function build()
   # freetype
   setup_nacl64  && build_freetype
   setup_nacl32  && build_freetype
-#   setup_pnacl   && build_freetype
+  setup_pnacl   && build_freetype
 #   setup_ndkX86  && build_freetype
 #   setup_ndkARM  && build_freetype
 #   setup_ndkARM7 && build_freetype
@@ -469,7 +487,7 @@ function build()
   # SDL_ttf
   setup_nacl64  && build_sdl_ttf
   setup_nacl32  && build_sdl_ttf
-#   setup_pnacl   && build_sdl_ttf
+  setup_pnacl   && build_sdl_ttf
 #   setup_ndkX86  && build_sdl2_ttf
 #   setup_ndkARM  && build_sdl2_ttf
 #   setup_ndkARM7 && build_sdl2_ttf
@@ -478,7 +496,7 @@ function build()
   # openal
   setup_nacl64  && build_openal
   setup_nacl32  && build_openal
-#   setup_pnacl   && build_openal
+  setup_pnacl   && build_openal
 #   setup_ndkX86  && build_openal
 #   setup_ndkARM  && build_openal
 #   setup_ndkARM7 && build_openal
@@ -487,7 +505,7 @@ function build()
   # libogg
   setup_nacl64  && build_libogg
   setup_nacl32  && build_libogg
-#   setup_pnacl   && build_libogg
+  setup_pnacl   && build_libogg
 #   setup_ndkX86  && build_libogg
 #   setup_ndkARM  && build_libogg
 #   setup_ndkARM7 && build_libogg
@@ -496,7 +514,7 @@ function build()
   # libvorbis
   setup_nacl64  && build_libvorbis
   setup_nacl32  && build_libvorbis
-#   setup_pnacl   && build_libvorbis
+  setup_pnacl   && build_libvorbis
 #   setup_ndkX86  && build_libvorbis
 #   setup_ndkARM  && build_libvorbis
 #   setup_ndkARM7 && build_libvorbis
@@ -506,6 +524,9 @@ function build()
 case $1 in
   clean)
     clean
+    ;;
+  buildclean)
+    buildclean
     ;;
   fetch)
     fetch

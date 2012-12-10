@@ -169,6 +169,13 @@ void MainInstance::HandleMessage( const pp::Var& message )
 bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 {
   switch( event.GetType() ) {
+    case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
+      if( !NaClPlatform::hasFocus ) {
+        LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
+        return true;
+      }
+      break;
+    }
     case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
       pp::MouseInputEvent mouseEvent( event );
       pp::Point move = mouseEvent.GetMovement();
@@ -183,13 +190,6 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 
       NaClPlatform::moveZ += move.x();
       NaClPlatform::moveW += move.y();
-      break;
-    }
-    case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-      if( !NaClPlatform::hasFocus ) {
-        LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
-        return true;
-      }
       break;
     }
     case PP_INPUTEVENT_TYPE_KEYDOWN: {

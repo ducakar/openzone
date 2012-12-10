@@ -88,6 +88,8 @@ void Window::warpMouse()
   NaClPlatform::moveW = 0.0f;
 #elif SDL_MAJOR_VERSION >= 2
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
+  SDL_PumpEvents();
+  SDL_GetRelativeMouseState( nullptr, nullptr );
 #endif
 }
 

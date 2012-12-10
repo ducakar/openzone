@@ -18,6 +18,16 @@
 #          those are overridden by `use_pch()` macro. Otherwise PCH would be unusable for
 #          such targets anyway as PCH must be compiled with exactly the same flags as the target.
 
+if( PCH_DISABLE )
+
+macro( add_pch )
+endmacro( add_pch )
+
+macro( use_pch )
+endmacro( use_pch )
+
+else( PCH_DISABLE )
+
 macro( add_pch _pchTarget _inputHeader _inputModule )
   # Extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for the current configuration XXX.
   string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _buildTypeFlagsVar )
@@ -53,9 +63,12 @@ macro( add_pch _pchTarget _inputHeader _inputModule )
 
   # Cache header location for later `use_pch()` macros.
   set( ${_pchTarget}_output "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
-endmacro()
+endmacro( add_pch )
 
 macro( use_pch _target _pchTarget )
   add_dependencies( ${_target} ${_pchTarget} )
-  set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include '${${_pchTarget}_output}'" )
-endmacro()
+
+  set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include ${${_pchTarget}_output}" )
+endmacro( use_pch )
+
+endif( PCH_DISABLE )

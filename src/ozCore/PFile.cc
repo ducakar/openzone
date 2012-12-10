@@ -36,7 +36,8 @@
 # include <ppapi/cpp/module.h>
 
 extern "C"
-int PHYSFS_NACL_init(PP_Instance, PPB_GetInterface, PP_FileSystemType, PHYSFS_sint64);
+int PHYSFS_NACL_init( PP_Instance instance, PPB_GetInterface getInterface,
+                      PP_FileSystemType filesystemType, PHYSFS_sint64 size );
 #endif
 
 #if PHYSFS_VER_MAJOR < 2

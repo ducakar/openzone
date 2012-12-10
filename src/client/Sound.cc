@@ -884,7 +884,11 @@ void Sound::destroy()
 
 void Sound::initLibs()
 {
-#ifndef __native_client__
+#ifdef __native_client__
+  static_cast<void>( libeSpeak );
+  static_cast<void>( libMad );
+  static_cast<void>( libFaad );
+#else
 # ifdef _WIN32
   const char* libeSpeakName = "libespeak.dll";
   const char* libMadName    = "libmad.dll";

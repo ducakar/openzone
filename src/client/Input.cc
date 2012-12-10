@@ -407,9 +407,6 @@ void Input::reset()
 {
   window.warpMouse();
 
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState( nullptr, nullptr );
-
   mouseX      = 0.0f;
   mouseY      = 0.0f;
   mouseZ      = 0.0f;

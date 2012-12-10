@@ -291,7 +291,7 @@ static void bellInitCallback( void*, int )
   info->nFrameSamples = int( nFrameSamples );
   info->nSamples      = Math::lround( BELL_TIME * float( rate ) );
   info->rate          = rate;
-  info->end           = info->nSamples + 2*nFrameSamples;
+  info->end           = info->nSamples + 2*int( nFrameSamples );
   info->offset        = 0;
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );

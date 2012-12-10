@@ -18,7 +18,7 @@ if( NACL )
   add_custom_target( unittest_files DEPENDS unittest.nmf unittest.html )
 
   add_dependencies( unittest unittest_files )
-  set_target_properties( unittest PROPERTIES OUTPUT_NAME unittest.${CMAKE_SYSTEM_PROCESSOR}.nexe )
+  set_target_properties( unittest PROPERTIES OUTPUT_NAME unittest${PLATFORM_EXE_SUFFIX} )
 endif()
 
 add_test( unittest unittest )

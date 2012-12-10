@@ -21,6 +21,8 @@ function run_nacl()
               sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
   nacl32Root=`egrep '^set\( PLATFORM_PREFIX' cmake/NaCl-i686.Toolchain.cmake | \
               sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
+  pnaclRoot=`egrep '^set\( PLATFORM_PREFIX' cmake/PNaCl.Toolchain.cmake | \
+            sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
 
   mkdir -p build/NaCl-test
 
@@ -32,13 +34,24 @@ function run_nacl()
     [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
   done
 
+  if [[ $cmd == pnacl ]]; then
+    rm -f build/NaCl-test/openzone.*.nexe
+
+    for i in build/PNaCl/src/tools/openzone.*.nexe; do
+      ln -sf ../../$i build/NaCl-test
+    done
+  fi
+
   # Strip binaries if `strip` option is given.
-  if [[ $2 == strip ]]; then
+  if [[ $arg == strip ]]; then
     if [[ -e build/NaCl-test/openzone.x86_64.nexe ]]; then
       "$nacl64Root/bin/x86_64-nacl-strip" build/NaCl-test/openzone.x86_64.nexe
     fi
     if [[ -e build/NaCl-test/openzone.i686.nexe ]]; then
       "$nacl64Root/bin/i686-nacl-strip" build/NaCl-test/openzone.i686.nexe
+    fi
+    if [[ -e build/NaCl-test/openzone.arm.nexe ]]; then
+      "$pnaclRoot/bin64/pnacl-strip" build/NaCl-test/openzone.arm.nexe
     fi
   fi
 
@@ -53,6 +66,9 @@ function run_nacl()
   kill $serverPID
 }
 
+cmd=$1
+arg=$2
+
 case $1 in
   wine)
     cd build
@@ -63,7 +79,7 @@ case $1 in
     shift
     exec wine bin/Windows-i686/openzone.exe -p . $@
     ;;
-  nacl)
+  nacl|pnacl)
     run_nacl
     ;;
   *)

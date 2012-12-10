@@ -1,10 +1,18 @@
 {
   "program": {
+    "portable": {
+      "pnacl-translate": {
+        "url": "unittest.pexe"
+      }
+    },
     "x86-64": {
       "url": "unittest.x86_64.nexe"
     },
     "x86-32": {
       "url": "unittest.i686.nexe"
+    },
+    "arm": {
+      "url": "unittest.arm.nexe"
     }
   }
 }

@@ -14,7 +14,7 @@ elseif( NACL )
   add_executable( openzone openzone.cc )
   use_pch( openzone pch )
   target_link_libraries( openzone client modules nirvana matrix common )
-  set_target_properties( openzone PROPERTIES OUTPUT_NAME openzone.${CMAKE_SYSTEM_PROCESSOR}.nexe )
+  set_target_properties( openzone PROPERTIES OUTPUT_NAME openzone${PLATFORM_EXE_SUFFIX} )
 
 else()
 

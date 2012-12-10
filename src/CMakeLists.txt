@@ -14,12 +14,12 @@ add_subdirectory( modules )
 add_subdirectory( client )
 add_subdirectory( tools )
 
-if( NOT ANDROID AND NOT NACL )
+if( NOT PLATFORM_EMBEDDED )
   add_subdirectory( builder )
+endif()
 
-  if( UNIX )
-    add_subdirectory( txc_dxtn )
-  endif()
+if( NOT PLATFORM_EMBEDDED AND NOT WIN32 AND NOT APPLE )
+  add_subdirectory( txc_dxtn )
 endif()
 
 add_subdirectory( tests )

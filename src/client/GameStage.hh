@@ -46,21 +46,21 @@ class GameStage : public Stage
 
   private:
 
-    long64          sleepMicros;
-    long64          loadingMicros;
-    long64          uiMicros;
-    long64          loaderMicros;
-    long64          soundMicros;
-    long64          renderMicros;
-    long64          matrixMicros;
-    long64          nirvanaMicros;
+    long64        sleepMicros;
+    long64        loadingMicros;
+    long64        uiMicros;
+    long64        loaderMicros;
+    long64        soundMicros;
+    long64        renderMicros;
+    long64        matrixMicros;
+    long64        nirvanaMicros;
 
-    Thread          auxThread;
-    Semaphore       mainSemaphore;
-    Semaphore       auxSemaphore;
-    volatile bool   isAuxAlive;
+    Thread        auxThread;
+    Semaphore     mainSemaphore;
+    Semaphore     auxSemaphore;
+    volatile bool isAuxAlive;
 
-    bool            isLoaded;
+    bool          isLoaded;
 
   public:
 
