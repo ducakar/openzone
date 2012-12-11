@@ -8,6 +8,7 @@
 # - `clean`: Delete all builds.
 # - `conf`: Delete all builds and configure (but not build) them anew.
 # - `build`: Configure (if necessary) and build all builds.
+# - `pnacl`: Run `pnacl-translate` to convert client `.pexe` to platform-dependent `.nexe`s.
 #
 
 buildType=Debug
@@ -15,7 +16,7 @@ platforms=(
   Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang
   Windows-i686
   NaCl-x86_64 NaCl-i686 PNaCl
-  #Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
+  Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
 )
 
 # Extract path to PNaCl SDK from CMake toolchain file.

@@ -8,8 +8,8 @@ set( PLATFORM_TOOL_PREFIX       "/opt/android-ndk/toolchains/arm-linux-androidea
 set( PLATFORM_STL_PREFIX        "/opt/android-ndk/sources/cxx-stl/gnu-libstdc++/4.6" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/Android14-ARMv7a" )
 set( PLATFORM_FLAGS             "-fPIC -Wno-psabi --sysroot=${PLATFORM_PREFIX}" )
-set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isysroot ${PLATFORM_STL_PREFIX}/include" )
-set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isysroot ${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/include" )
+set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/include" )
+set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/include" )
 set( PLATFORM_STL_LIBRARY       "${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/libgnustl_shared.so" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )

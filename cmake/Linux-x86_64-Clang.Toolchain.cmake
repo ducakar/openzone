@@ -1,3 +1,5 @@
+set( PLATFORM_PREFIX            "" )
+
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
 set( CMAKE_SYSTEM_PROCESSOR     "x86_64" CACHE STRING "Target processor." )
 set( CMAKE_C_COMPILER           "/usr/bin/clang" )

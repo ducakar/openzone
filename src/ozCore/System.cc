@@ -534,15 +534,15 @@ static void abort( bool doHalt )
 #endif
 
   waitBell();
-  _Exit( EXIT_FAILURE );
+  _exit( EXIT_FAILURE );
 }
 
 const int     System::HANDLERS_BIT;
 const int     System::HALT_BIT;
 const int     System::LOCALE_BIT;
 
-JNIEnv*       System::jniEnv   = nullptr;
-JavaVM*       System::javaVM   = nullptr;
+void*         System::jniEnv   = nullptr;
+void*         System::javaVM   = nullptr;
 
 pp::Module*   System::module   = nullptr;
 pp::Instance* System::instance = nullptr;

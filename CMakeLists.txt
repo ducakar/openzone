@@ -73,16 +73,17 @@ endif()
 
 # Set-up include and library directories for different toolchains.
 if( ANDROID )
-  include_directories( SYSTEM ${PLATFORM_PREFIX}/usr/include ) # For KDevelop.
   include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
-
   link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
+
+  set( ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/usr/lib/pkgconfig )
 elseif( NACL )
-  include_directories( SYSTEM ${PLATFORM_PREFIX}/include ) # For KDevelop.
   include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
-
   link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
+
+  set( ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/usr/lib/pkgconfig )
 elseif( WIN32 )
+  set( ENV{PKG_CONFIG_PATH} ${PLATFORM_PREFIX}/lib/pkgconfig )
 else()
   if( CMAKE_SYSTEM_NAME STREQUAL Linux )
     find_package( ALSA REQUIRED )

@@ -56,13 +56,17 @@ int main( int argc, char** argv )
 #endif
 {
 #if defined( __ANDROID__ )
+  JavaVM* javaVM;
+  env->GetJavaVM( &javaVM );
+
   System::jniEnv = env;
-  System::jniEnv->GetJavaVM( &System::javaVM );
+  System::javaVM = javaVM;
 #elif defined( __native_client__ )
   System::instance = static_cast<pp::Instance*>( instance );
   System::module   = pp::Module::Get();
   System::core     = pp::Module::Get()->core();
 #endif
+
   System::init();
 
   int exitCode = EXIT_FAILURE;

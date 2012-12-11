@@ -8,8 +8,8 @@ set( PLATFORM_TOOL_PREFIX       "/opt/android-ndk/toolchains/x86-4.6/prebuilt/li
 set( PLATFORM_STL_PREFIX        "/opt/android-ndk/sources/cxx-stl/gnu-libstdc++/4.6" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/Android14-i686" )
 set( PLATFORM_FLAGS             "-fPIC --sysroot=${PLATFORM_PREFIX}" )
-set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isysroot ${PLATFORM_STL_PREFIX}/include" )
-set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isysroot ${PLATFORM_STL_PREFIX}/libs/x86/include" )
+set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/include" )
+set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/libs/x86/include" )
 set( PLATFORM_STL_LIBRARY       "${PLATFORM_STL_PREFIX}/libs/x86/libgnustl_shared.so" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )

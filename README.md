@@ -161,6 +161,7 @@ The following commands may be given (`build` is assumed if none):
 - `clean`: Delete all builds.
 - `conf`: Delete all builds and configure (but not build) them anew.
 - `build`: Configure (if necessary) and build all builds.
+- `pnacl`: Run `pnacl-translate` to convert client `.pexe` to platform-dependent `.nexe`s.
 
 ### `capture.sh` ###
 
@@ -245,6 +246,8 @@ The following alternative launches are available:
   archives, HTML pages ...), starts a simple python web server in that directory at port 8000
   (`python -m http.server`) and opens `localhost:8000` in chromium browser to test the web-based
   NaCl port. If `strip` is passed as the second option, binaries are stripped too.
+- `pnacl`: Same as `nacl` command but create links `.nexe`s that were created from a `.pexe`
+  (use `./build.sh pnacl`).
 
 Documentation
 -------------

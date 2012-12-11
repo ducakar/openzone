@@ -162,14 +162,16 @@ void* Thread::Descriptor::threadMain( void* data )
   pthread_setspecific( nameKey, descriptor->name );
 
 #ifdef __ANDROID__
-  void* jniEnv;
-  System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
+  JNIEnv* jniEnv = nullptr;
+  JavaVM* javaVM = static_cast<JavaVM*>( System::javaVM );
+
+  javaVM->AttachCurrentThread( &jniEnv, nullptr );
 #endif
 
   System::threadInit();
 
 #ifdef __ANDROID__
-  System::javaVM->DetachCurrentThread();
+  javaVM->DetachCurrentThread();
 #endif
 
   descriptor->main( descriptor->data );
