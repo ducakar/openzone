@@ -669,7 +669,7 @@ void Sound::init()
   Log::indent();
 
 #ifdef __native_client__
-  alSetPpapiInfo( System::instance->pp_instance(), System::module->get_browser_interface() );
+  alSetPpapiInfo( System::instance->pp_instance(), pp::Module::Get()->get_browser_interface() );
 #endif
 
   const char* deviceSpec = alcGetString( nullptr, ALC_DEVICE_SPECIFIER );

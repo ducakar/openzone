@@ -26,6 +26,8 @@
 
 using namespace oz;
 
+void bar();
+
 class Foo
 {
   public:
@@ -38,6 +40,7 @@ class Foo
       value( 0 )
     {
       Log() << "Foo()\n";
+      bar();
     }
 
     Foo( int value_ ) :
@@ -109,8 +112,15 @@ class Foo
 
 };
 
+void bar()
+{
+  StackTrace st = StackTrace::current( 0 );
+  Log::printTrace( st );
+}
+
 int main()
 {
   System::init();
+  Foo foo;
   return 0;
 }

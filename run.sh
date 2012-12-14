@@ -19,12 +19,9 @@ defaultPlatform=Linux-x86_64-Clang
 function run_nacl()
 {
   # Extract path to NaCl SDK from CMake toolchain files.
-  nacl64Root=`egrep '^set\( PLATFORM_PREFIX' cmake/NaCl-x86_64.Toolchain.cmake | \
-              sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
-  nacl32Root=`egrep '^set\( PLATFORM_PREFIX' cmake/NaCl-i686.Toolchain.cmake | \
-              sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
-  pnaclRoot=`egrep '^set\( PLATFORM_PREFIX' cmake/PNaCl.Toolchain.cmake | \
-            sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
+  naclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64.Toolchain.cmake`
+  naclGNUPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64-glibc.Toolchain.cmake`
+  pnaclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/PNaCl.Toolchain.cmake`
 
   mkdir -p build/NaCl-test
 
@@ -47,13 +44,13 @@ function run_nacl()
   # Strip binaries if `strip` option is given.
   if [[ $arg == strip ]]; then
     if [[ -e build/NaCl-test/openzone.x86_64.nexe ]]; then
-      "$nacl64Root/bin/x86_64-nacl-strip" build/NaCl-test/openzone.x86_64.nexe
+      "$naclPrefix/bin/x86_64-nacl-strip" build/NaCl-test/openzone.x86_64.nexe
     fi
     if [[ -e build/NaCl-test/openzone.i686.nexe ]]; then
-      "$nacl64Root/bin/i686-nacl-strip" build/NaCl-test/openzone.i686.nexe
+      "$naclPrefix/bin/i686-nacl-strip" build/NaCl-test/openzone.i686.nexe
     fi
     if [[ -e build/NaCl-test/openzone.arm.nexe ]]; then
-      "$pnaclRoot/bin64/pnacl-strip" build/NaCl-test/openzone.arm.nexe
+      "$pnaclPrefix/bin64/pnacl-strip" build/NaCl-test/openzone.arm.nexe
     fi
   fi
 

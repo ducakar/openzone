@@ -8,6 +8,7 @@ project( openzone C CXX )
 
 set( OZ_VERSION 0.3.81 )
 
+option( OZ_ADDRESS_SANITIZER "Enable AddressSanitizer memory checker." OFF )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 option( OZ_ODE "Build complete ozDynamics library (requires Open Dynamics Engine)." OFF )
@@ -88,7 +89,7 @@ else()
   if( CMAKE_SYSTEM_NAME STREQUAL Linux )
     find_package( ALSA REQUIRED )
   endif()
-  pkg_check_modules( PULSE_SIMPLE libpulse-simple REQUIRED )
+  pkg_check_modules( PULSE_SIMPLE REQUIRED libpulse-simple )
 endif()
 
 find_package( PhysFS REQUIRED )
@@ -104,7 +105,7 @@ if( OZ_LUAJIT )
 
   include_directories( SYSTEM ${LUAJIT_INCLUDE_DIRS} )
 else()
-  find_package( Lua51 REQUIRED )
+  pkg_check_modules( LUA REQUIRED lua )
 endif()
 
 if( OZ_SDL2 )
@@ -113,20 +114,22 @@ if( OZ_SDL2 )
 
   include_directories( SYSTEM ${SDL2_INCLUDE_DIRS} )
 else()
-  find_package( SDL REQUIRED )
-  find_package( SDL_ttf REQUIRED )
+  pkg_check_modules( SDL REQUIRED sdl )
+  pkg_check_modules( SDL_TTF REQUIRED SDL_ttf )
 
-  mark_as_advanced( SDLMAIN_LIBRARY )
-  mark_as_advanced( SDL_INCLUDE_DIR )
-  mark_as_advanced( SDL_LIBRARY )
-
-  include_directories( SYSTEM ${SDL_INCLUDE_DIR} )
+  include_directories( SYSTEM ${SDL_INCLUDE_DIRS} )
 endif()
 
 if( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
   # platform directory, no need to explicitly check existence or to detect library names.
-  if( NOT PLATFORM_EMBEDDED )
+  if( ANDROID )
+    find_library( GLES2_LIBRARIES GLESv2 )
+    mark_as_advanced( GLES2_LIBRARIES )
+  elseif( NACL )
+    find_library( GLES2_LIBRARIES ppapi_gles2 )
+    mark_as_advanced( GLES2_LIBRARIES )
+  else()
     pkg_check_modules( GLES2 REQUIRED glesv2 )
   endif()
 else()
@@ -139,10 +142,10 @@ pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.
 if( PLATFORM_EMBEDDED )
-  pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
-  pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
-  find_package( Freetype REQUIRED )           # required by SDL_ttf
   find_package( ZLIB REQUIRED )               # required by PhysicsFS & FreeType
+  find_package( Freetype REQUIRED )           # required by SDL_ttf
+  pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
+  pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
 endif()
 
 if( NOT PLATFORM_EMBEDDED )
@@ -170,15 +173,13 @@ mark_as_advanced( MINGW32_LIBRARY )
 #
 
 # Local libmad, faad and eSpeak headers.
-include_directories( SYSTEM ./include )
+include_directories( SYSTEM include )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )
 
   # Use libc++ instead of libstdc++.
   # set( flags "${flags} -stdlib=libc++" )
-  # AddressSanitizer memory checker
-  # set( flags "${flags} -fsanitize=address" )
   # Analyse only.
   # set( flags "${flags} --analyze -Qunused-arguments" )
 elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
@@ -188,8 +189,11 @@ elseif( ANDROID )
 else()
   set( flags "-pipe -std=c++0x -pedantic -fstrict-enums" )
 endif()
+if( OZ_ADDRESS_SANITIZER )
+  set( flags "${flags} -fsanitize=address" )
+endif()
 
-set( flags "${flags} -fno-exceptions -fno-rtti -fvisibility-inlines-hidden -ffast-math" )
+set( flags "${flags} -fvisibility-inlines-hidden -fno-exceptions -fno-rtti -ffast-math" )
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
@@ -201,12 +205,8 @@ else()
   set( flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual" )
   set( flags "${flags} -Wformat=2 -Wmissing-format-attribute -Winvalid-pch" )
 
-  if( NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.6 )
-    # set( flags "${flags} -Wsuggest-attribute=noreturn" )
-  endif()
-  if( NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.7 )
-    # set( flags "${flags} -Wzero-as-null-pointer-constant" )
-  endif()
+  # set( flags "${flags} -Wsuggest-attribute=noreturn" )
+  # set( flags "${flags} -Wzero-as-null-pointer-constant" )
 endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )
@@ -214,6 +214,16 @@ set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )
 # Strings for BuildInfo class.
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
 string( STRIP "${CMAKE_CXX_FLAGS} ${${OZ_CXX_FLAGS}}" OZ_CXX_FLAGS )
+
+get_directory_property( _includes INCLUDE_DIRECTORIES )
+foreach( _include ${_includes} )
+  set( OZ_CXX_FLAGS "${OZ_CXX_FLAGS} -I${_include}" )
+endforeach()
+
+get_directory_property( _defines COMPILE_DEFINITIONS )
+foreach( _define ${_defines} )
+  set( OZ_CXX_FLAGS "${OZ_CXX_FLAGS} -D${_define}" )
+endforeach()
 
 site_name( OZ_HOSTNAME )
 mark_as_advanced( OZ_HOSTNAME )

@@ -222,6 +222,7 @@ int Client::init( int argc, char** argv )
   Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
   Log::println( "Compiler:        %s", BuildInfo::COMPILER );
   Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+  Log::println( "Configuration:   %s", BuildInfo::CONFIG );
   Log::unindent();
   Log::println( "}" );
   Log::verboseMode = false;

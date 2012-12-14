@@ -1,5 +1,3 @@
-#!/usr/bin/lua
-
 SIZE        = 8192
 DIM         = 8
 TERRA_DIM   = 8

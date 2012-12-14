@@ -53,6 +53,9 @@ class BuildInfo
     /// Compiler flags.
     static const char* const CXX_FLAGS;
 
+    /// Configuration options.
+    static const char* const CONFIG;
+
 };
 
 }

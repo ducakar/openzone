@@ -75,17 +75,20 @@ add_library( ozCore
 )
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
+target_link_libraries( ozCore ${PHYSFS_LIBRARY} )
 
 if( ANDROID )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -llog ${PLATFORM_STL_LIBRARY} )
+  target_link_libraries( ozCore ${ZLIB_LIBRARY} -lOpenSLES -llog ${PLATFORM_STL_LIBRARY} )
+elseif( NACL_GLIBC )
+  target_link_libraries( ozCore ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lrt -lpthread )
 elseif( NACL )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
+  target_link_libraries( ozCore ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lwinmm )
+  target_link_libraries( ozCore -lwinmm )
 elseif( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lrt -lpthread )
+  target_link_libraries( ozCore -lpulse-simple -lrt -lpthread )
 else()
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
+  target_link_libraries( ozCore -lpulse-simple -lasound -lrt -lpthread )
 endif()
 
 install( TARGETS ozCore

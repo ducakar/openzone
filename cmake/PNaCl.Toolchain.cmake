@@ -1,4 +1,4 @@
-set( NACL ON )
+set( NACL                       ON )
 
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "pnacl" )

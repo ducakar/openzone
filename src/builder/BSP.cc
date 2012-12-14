@@ -203,102 +203,102 @@ void BSP::load()
     leafBrushes[i] = is.readInt();
   }
 
-  models.resize( lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1 );
-  modelFaces.resize( models.length() + 1 );
+  int nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) );
 
-  if( !models.isEmpty() ) {
-    is.reset();
-    is.forward( lumps[QBSPLump::MODELS].offset );
+  models.resize( nModels - 1 );
+  modelFaces.resize( nModels );
 
-    const JSON& modelsConfig = config["entities"];
+  is.reset();
+  is.forward( lumps[QBSPLump::MODELS].offset );
 
-    if( !modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY ) {
-      OZ_ERROR( "'models' entry in '%s' is not an array", configFile.path().cstr() );
+  const JSON& modelsConfig = config["entities"];
+
+  if( !modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY ) {
+    OZ_ERROR( "'models' entry in '%s' is not an array", configFile.path().cstr() );
+  }
+
+  // skip model 0 (whole BSP)
+  is.forward( int( sizeof( QBSPModel ) ) );
+
+  for( int i = 0; i < models.length(); ++i ) {
+    const JSON& entityConfig = modelsConfig[i];
+
+    models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
+    models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
+    models[i].mins.z = is.readFloat() * scale - 4.0f * EPSILON;
+
+    models[i].maxs.x = is.readFloat() * scale + 4.0f * EPSILON;
+    models[i].maxs.y = is.readFloat() * scale + 4.0f * EPSILON;
+    models[i].maxs.z = is.readFloat() * scale + 4.0f * EPSILON;
+
+    // int firstFace
+    is.readInt();
+    // int nFaces
+    is.readInt();
+
+    models[i].firstBrush = is.readInt();
+    models[i].nBrushes   = is.readInt();
+    models[i].title      = entityConfig["title"].get( "" );
+    models[i].move       = entityConfig["move"].get( Vec3::ZERO );
+
+    String sType = entityConfig["type"].get( "" );
+
+    if( sType.equals( "STATIC" ) ) {
+      models[i].type = EntityClass::STATIC;
+    }
+    else if( sType.equals( "MANUAL_DOOR" ) ) {
+      models[i].type = EntityClass::MANUAL_DOOR;
+    }
+    else if( sType.equals( "AUTO_DOOR" ) ) {
+      models[i].type = EntityClass::AUTO_DOOR;
+    }
+    else if( sType.equals( "IGNORING_BLOCK" ) ) {
+      models[i].type = EntityClass::IGNORING_BLOCK;
+    }
+    else if( sType.equals( "CRUSHING_BLOCK" ) ) {
+      models[i].type = EntityClass::CRUSHING_BLOCK;
+    }
+    else if( sType.equals( "ELEVATOR" ) ) {
+      models[i].type = EntityClass::ELEVATOR;
+    }
+    else {
+      OZ_ERROR( "Invalid BSP model type '%s', must be either STATIC, MANUAL_DOOR, AUTO_DOOR,"
+                " IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR.", sType.cstr() );
     }
 
-    // skip model 0 (whole BSP)
-    is.forward( int( sizeof( QBSPModel ) ) );
+    if( models[i].type == EntityClass::ELEVATOR &&
+        ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
+    {
+      OZ_ERROR( "Elevator can only move vertically, but model[%d].move = (%g %g %g)",
+                i, models[i].move.x, models[i].move.y, models[i].move.z );
+    }
 
-    for( int i = 0; i < models.length(); ++i ) {
-      const JSON& entityConfig = modelsConfig[i];
+    models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );
+    models[i].timeout    = entityConfig["timeout"].get( Math::INF );
+    models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get( 1.0f );
 
-      models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
-      models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
-      models[i].mins.z = is.readFloat() * scale - 4.0f * EPSILON;
+    models[i].target     = entityConfig["target"].get( -1 );
+    models[i].key        = entityConfig["key"].get( 0 );
 
-      models[i].maxs.x = is.readFloat() * scale + 4.0f * EPSILON;
-      models[i].maxs.y = is.readFloat() * scale + 4.0f * EPSILON;
-      models[i].maxs.z = is.readFloat() * scale + 4.0f * EPSILON;
+    models[i].openSound  = entityConfig["openSound"].get( "" );
+    models[i].closeSound = entityConfig["closeSound"].get( "" );
+    models[i].frictSound = entityConfig["frictSound"].get( "" );
 
-      // int firstFace
-      is.readInt();
-      // int nFaces
-      is.readInt();
+    const JSON& modelConfig = entityConfig["model"];
 
-      models[i].firstBrush = is.readInt();
-      models[i].nBrushes   = is.readInt();
-      models[i].title      = entityConfig["title"].get( "" );
-      models[i].move       = entityConfig["move"].get( Vec3::ZERO );
-
-      String sType = entityConfig["type"].get( "" );
-
-      if( sType.equals( "STATIC" ) ) {
-        models[i].type = EntityClass::STATIC;
-      }
-      else if( sType.equals( "MANUAL_DOOR" ) ) {
-        models[i].type = EntityClass::MANUAL_DOOR;
-      }
-      else if( sType.equals( "AUTO_DOOR" ) ) {
-        models[i].type = EntityClass::AUTO_DOOR;
-      }
-      else if( sType.equals( "IGNORING_BLOCK" ) ) {
-        models[i].type = EntityClass::IGNORING_BLOCK;
-      }
-      else if( sType.equals( "CRUSHING_BLOCK" ) ) {
-        models[i].type = EntityClass::CRUSHING_BLOCK;
-      }
-      else if( sType.equals( "ELEVATOR" ) ) {
-        models[i].type = EntityClass::ELEVATOR;
-      }
-      else {
-        OZ_ERROR( "Invalid BSP model type, must be either STATIC, MANUAL_DOOR, AUTO_DOOR,"
-                  " IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR." );
+    if( !modelConfig.isNull() ) {
+      models[i].modelName = modelConfig["name"].get( "" );
+      if( models[i].modelName.isEmpty() ) {
+        OZ_ERROR( "model[%d].name is empty", i );
       }
 
-      if( models[i].type == EntityClass::ELEVATOR &&
-          ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
-      {
-        OZ_ERROR( "Elevator can only move vertically, but model[%d].move = (%g %g %g)",
-                  i, models[i].move.x, models[i].move.y, models[i].move.z );
-      }
+      Vec3 translation = modelConfig["translation"].get( Vec3::ZERO );
+      Vec3 rotation    = modelConfig["rotation"].get( Vec3::ZERO );
 
-      models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );
-      models[i].timeout    = entityConfig["timeout"].get( Math::INF );
-      models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get( 1.0f );
-
-      models[i].target     = entityConfig["target"].get( -1 );
-      models[i].key        = entityConfig["key"].get( 0 );
-
-      models[i].openSound  = entityConfig["openSound"].get( "" );
-      models[i].closeSound = entityConfig["closeSound"].get( "" );
-      models[i].frictSound = entityConfig["frictSound"].get( "" );
-
-      const JSON& modelConfig = entityConfig["model"];
-
-      if( !modelConfig.isNull() ) {
-        models[i].modelName = modelConfig["name"].get( "" );
-        if( models[i].modelName.isEmpty() ) {
-          OZ_ERROR( "model[%d].name is empty", i );
-        }
-
-        Vec3 translation = modelConfig["translation"].get( Vec3::ZERO );
-        Vec3 rotation    = modelConfig["rotation"].get( Vec3::ZERO );
-
-        models[i].modelTransf = Mat44::translation( models[i].p() + translation - Point::ORIGIN );
-        models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
-        models[i].modelTransf.rotateX( Math::rad( rotation.x ) );
-        models[i].modelTransf.rotateZ( Math::rad( rotation.z ) );
-      }
+      models[i].modelTransf = Mat44::translation( models[i].p() + translation - Point::ORIGIN );
+      models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
+      models[i].modelTransf.rotateX( Math::rad( rotation.x ) );
+      models[i].modelTransf.rotateZ( Math::rad( rotation.z ) );
     }
   }
 

@@ -1,9 +1,10 @@
 set( NACL                       ON )
+set( NACL_GLIBC                 ON )
 
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "i686-nacl" )
-set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_newlib" )
-set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/NaCl-i686" )
+set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_glibc" )
+set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/NaCl-i686-glibc" )
 set( PLATFORM_EXE_SUFFIX        ".i686.nexe" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )

@@ -14,15 +14,17 @@
 #
 
 platforms=(
-  NaCl-x86_64 NaCl-i686 PNaCl
+  NaCl-x86_64 NaCl-x86_64-glibc NaCl-i686 NaCl-i686-glibc PNaCl
   Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
 )
 
 projectDir=`pwd`
 topDir="$projectDir/ports"
 
-naclPrefix="/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_newlib"
-pnaclPrefix="/home/davorin/Projects/nacl_sdk/pepper_canary/toolchain/linux_x86_pnacl/newlib"
+# Extract path to NaCl SDK from CMake toolchain files.
+naclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64.Toolchain.cmake`
+naclGNUPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64-glibc.Toolchain.cmake`
+pnaclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/PNaCl.Toolchain.cmake`
 
 ndkX86Tools="/opt/android-ndk/toolchains/x86-4.6/prebuilt/linux-x86"
 ndkX86Platform="/opt/android-ndk/platforms/android-14/arch-x86"
@@ -44,6 +46,7 @@ function msg()
   echo -ne "\e[0m"
 }
 
+
 function setup_nacl64()
 {
   platform="NaCl-x86_64"                                  # Platform name.
@@ -52,6 +55,30 @@ function setup_nacl64()
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
   sysroot="$naclPrefix/x86_64-nacl"                       # SDK sysroot.
   toolsroot="$naclPrefix"                                 # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+
+  export CPP="$toolsroot/bin/$triplet-cpp"
+  export CC="$toolsroot/bin/$triplet-gcc"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="-I$buildDir/usr/include"
+  export CFLAGS="-O3 -ffast-math -msse3"
+  export LDFLAGS="-L$buildDir/usr/lib"
+}
+
+function setup_nacl64GNU()
+{
+  platform="NaCl-x86_64-glibc"                            # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="x86_64-nacl"                                   # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$naclGNUPrefix/x86_64-nacl"                    # SDK sysroot.
+  toolsroot="$naclGNUPrefix"                              # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
@@ -90,6 +117,30 @@ function setup_nacl32()
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+}
+
+function setup_nacl32GNU()
+{
+  platform="NaCl-i686-glibc"                              # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="i686-nacl"                                     # Platform triplet (tools prefix).
+  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
+  sysroot="$naclGNUPrefix/i686-nacl"                      # SDK sysroot.
+  toolsroot="$naclGNUPrefix"                              # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+
+  export CPP="$toolsroot/bin/$triplet-cpp"
+  export CC="$toolsroot/bin/$triplet-gcc"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="-I$buildDir/usr/include"
+  export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
+  export LDFLAGS="-L$buildDir/usr/lib"
 }
 
 function setup_pnacl()
@@ -274,7 +325,7 @@ function fetch()
   download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.10/freetype-2.4.10.tar.bz2'
 
   # openal
-  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.tar.bz2'
+  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
 
   # libogg
   download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.xz'
@@ -344,9 +395,8 @@ function finish()
 function build_zlib()
 {
   prepare zlib-1.2.7 zlib-1.2.7.tar.bz2 || return
-  export CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts"
-  ./configure --prefix=/usr --static
 
+  CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts" ./configure --prefix=/usr --static
   make -j4 || return 1
   make install DESTDIR="$buildDir"
   rm -rf "$buildDir"/usr/lib/libz.so*
@@ -443,8 +493,8 @@ function build_sdl2_ttf()
 
 function build_openal()
 {
-  prepare openal-soft-1.15 openal-soft-1.15.tar.bz2 || return
-  applyPatches openal-soft-1.15.patch
+  prepare openal-soft-1.15.1 openal-soft-1.15.1.tar.bz2 || return
+  applyPatches openal-soft-1.15.1.patch
 
   cmakeBuild -D UTILS=0 -D EXAMPLES=0 -D LIBTYPE=STATIC
 
@@ -474,81 +524,99 @@ function build_libvorbis()
 function build()
 {
   # zlib
-  setup_nacl64  && build_zlib
-  setup_nacl32  && build_zlib
-  setup_pnacl   && build_zlib
+  setup_nacl64    && build_zlib
+  setup_nacl64GNU && build_zlib
+  setup_nacl32    && build_zlib
+  setup_nacl32GNU && build_zlib
+  setup_pnacl     && build_zlib
 
   # physfs
-  setup_nacl64  && build_physfs
-  setup_nacl32  && build_physfs
-  setup_pnacl   && build_physfs
-  setup_ndkX86  && build_physfs
-  setup_ndkARM  && build_physfs
-  setup_ndkARM7 && build_physfs
-  setup_ndkMIPS && build_physfs
+  setup_nacl64    && build_physfs
+  setup_nacl64GNU && build_physfs
+  setup_nacl32    && build_physfs
+  setup_nacl32GNU && build_physfs
+  setup_pnacl     && build_physfs
+  setup_ndkX86    && build_physfs
+  setup_ndkARM    && build_physfs
+  setup_ndkARM7   && build_physfs
+  setup_ndkMIPS   && build_physfs
 
   # lua
-  setup_nacl64  && build_lua
-  setup_nacl32  && build_lua
-  setup_pnacl   && build_lua
-  setup_ndkX86  && build_lua
-  setup_ndkARM  && build_lua
-  setup_ndkARM7 && build_lua
-  setup_ndkMIPS && build_lua
+  setup_nacl64    && build_lua
+  setup_nacl64GNU && build_lua
+  setup_nacl32    && build_lua
+  setup_nacl32GNU && build_lua
+  setup_pnacl     && build_lua
+  setup_ndkX86    && build_lua
+  setup_ndkARM    && build_lua
+  setup_ndkARM7   && build_lua
+  setup_ndkMIPS   && build_lua
 
   # SDL
-  setup_nacl64  && build_sdl
-  setup_nacl32  && build_sdl
-  setup_pnacl   && build_sdl
-  setup_ndkX86  && build_sdl2
-  setup_ndkARM  && build_sdl2
-  setup_ndkARM7 && build_sdl2
-  setup_ndkMIPS && build_sdl2
+  setup_nacl64    && build_sdl
+  setup_nacl64GNU && build_sdl
+  setup_nacl32    && build_sdl
+  setup_nacl32GNU && build_sdl
+  setup_pnacl     && build_sdl
+  setup_ndkX86    && build_sdl2
+  setup_ndkARM    && build_sdl2
+  setup_ndkARM7   && build_sdl2
+  setup_ndkMIPS   && build_sdl2
 
   # freetype
-  setup_nacl64  && build_freetype
-  setup_nacl32  && build_freetype
-  setup_pnacl   && build_freetype
-  setup_ndkX86  && build_freetype
-  setup_ndkARM  && build_freetype
-  setup_ndkARM7 && build_freetype
-  setup_ndkMIPS && build_freetype
+  setup_nacl64    && build_freetype
+  setup_nacl64GNU && build_freetype
+  setup_nacl32    && build_freetype
+  setup_nacl32GNU && build_freetype
+  setup_pnacl     && build_freetype
+  setup_ndkX86    && build_freetype
+  setup_ndkARM    && build_freetype
+  setup_ndkARM7   && build_freetype
+  setup_ndkMIPS   && build_freetype
 
   # SDL_ttf
-  setup_nacl64  && build_sdl_ttf
-  setup_nacl32  && build_sdl_ttf
-  setup_pnacl   && build_sdl_ttf
-  setup_ndkX86  && build_sdl2_ttf
-  setup_ndkARM  && build_sdl2_ttf
-  setup_ndkARM7 && build_sdl2_ttf
-  setup_ndkMIPS && build_sdl2_ttf
+  setup_nacl64    && build_sdl_ttf
+  setup_nacl64GNU && build_sdl_ttf
+  setup_nacl32    && build_sdl_ttf
+  setup_nacl32GNU && build_sdl_ttf
+  setup_pnacl     && build_sdl_ttf
+  setup_ndkX86    && build_sdl2_ttf
+  setup_ndkARM    && build_sdl2_ttf
+  setup_ndkARM7   && build_sdl2_ttf
+  setup_ndkMIPS   && build_sdl2_ttf
 
   # openal
-  setup_nacl64  && build_openal
-  setup_nacl32  && build_openal
-  setup_pnacl   && build_openal
-  setup_ndkX86  && build_openal
-  setup_ndkARM  && build_openal
-  setup_ndkARM7 && build_openal
-  setup_ndkMIPS && build_openal
+  setup_nacl64    && build_openal
+  setup_nacl64GNU && build_openal
+  setup_nacl32    && build_openal
+  setup_nacl32GNU && build_openal
+  setup_pnacl     && build_openal
+  setup_ndkX86    && build_openal
+  setup_ndkARM    && build_openal
+  setup_ndkARM7   && build_openal
+  setup_ndkMIPS   && build_openal
 
   # libogg
-  setup_nacl64  && build_libogg
-  setup_nacl32  && build_libogg
-  setup_pnacl   && build_libogg
-  setup_ndkX86  && build_libogg
-  setup_ndkARM  && build_libogg
-  setup_ndkARM7 && build_libogg
-  setup_ndkMIPS && build_libogg
+  setup_nacl64    && build_libogg
+  setup_nacl64GNU && build_libogg
+  setup_nacl32    && build_libogg
+  setup_nacl32GNU && build_libogg
+  setup_pnacl     && build_libogg
+  setup_ndkX86    && build_libogg
+  setup_ndkARM    && build_libogg
+  setup_ndkARM7   && build_libogg
+  setup_ndkMIPS   && build_libogg
 
   # libvorbis
-  setup_nacl64  && build_libvorbis
-  setup_nacl32  && build_libvorbis
-  setup_pnacl   && build_libvorbis
-  setup_ndkX86  && build_libvorbis
-  setup_ndkARM  && build_libvorbis
-  setup_ndkARM7 && build_libvorbis
-  setup_ndkMIPS && build_libvorbis
+  setup_nacl64    && build_libvorbis
+  setup_nacl64GNU && build_libvorbis
+  setup_nacl32    && build_libvorbis
+  setup_nacl32GNU && build_libvorbis
+  setup_pnacl     && build_libvorbis
+  setup_ndkX86    && build_libvorbis
+  setup_ndkARM    && build_libvorbis
+  setup_ndkARM7   && build_libvorbis
+  setup_ndkMIPS   && build_libvorbis
 }
 
 case $1 in

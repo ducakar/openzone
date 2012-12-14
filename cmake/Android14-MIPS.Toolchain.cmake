@@ -1,4 +1,4 @@
-set( ANDROID ON )
+set( ANDROID                    ON )
 
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "mipsel-linux-android" )

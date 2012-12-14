@@ -38,6 +38,7 @@ namespace client
 
 static SpinLock     messageLock;
 static List<String> messageQueue;
+static pp::Core*    core;
 
 Semaphore NaClPlatform::mainCallSemaphore;
 
@@ -53,12 +54,12 @@ bool      NaClPlatform::hasFocus = false;
 
 bool NaClPlatform::isMainThread()
 {
-  return System::core->IsMainThread();
+  return core->IsMainThread();
 }
 
 void NaClPlatform::call( Callback* callback, void* caller )
 {
-  System::core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
+  core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
   mainCallSemaphore.wait();
 }
 
@@ -90,6 +91,8 @@ void NaClPlatform::push( const char* message )
 void NaClPlatform::init()
 {
   mainCallSemaphore.init();
+
+  core = pp::Module::Get()->core();
 }
 
 void NaClPlatform::destroy()

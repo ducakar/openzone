@@ -1,6 +1,9 @@
 CURRENT
 
 - fix random splash event bug
+- keyboard control of UI
+- TalkFrame
+- per-game data subdirs
 
 0.4
 
@@ -42,3 +45,10 @@ CURRENT
 - unittest
     * write missing tests
 - documentation
+
+2.0
+
+- ozDynamics
+    * finish ozDynamics
+- matrix
+    * collision islands

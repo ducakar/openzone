@@ -15,13 +15,14 @@ buildType=Debug
 platforms=(
   Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang
   Windows-i686
-  NaCl-x86_64 NaCl-i686 PNaCl
+  NaCl-x86_64 NaCl-x86_64-glibc NaCl-i686 NaCl-i686-glibc PNaCl
   Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
 )
 
-# Extract path to PNaCl SDK from CMake toolchain file.
-pnaclRoot=`egrep '^set\( PLATFORM_PREFIX' cmake/PNaCl.Toolchain.cmake | \
-          sed -r 's|^set\( PLATFORM_PREFIX *"(.*)\" \)|\1|'`
+# Extract path to NaCl SDK from CMake toolchain files.
+naclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64.Toolchain.cmake`
+naclGNUPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64-glibc.Toolchain.cmake`
+pnaclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/PNaCl.Toolchain.cmake`
 
 function clean()
 {
@@ -63,8 +64,8 @@ function pnacl()
 {
   for arch in x86_64 i686 arm; do
     echo "Building openzone.$arch.nexe"
-    "$pnaclRoot/bin64/pnacl-translate" -arch $arch -o build/PNaCl/src/tools/openzone.$arch.nexe \
-                                       build/PNaCl/src/tools/openzone.pexe
+    "$pnaclPrefix/bin64/pnacl-translate" -arch $arch -o build/PNaCl/src/tools/openzone.$arch.nexe \
+                                         build/PNaCl/src/tools/openzone.pexe
   done
 }
 

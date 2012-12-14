@@ -60,7 +60,7 @@ static const int TRACE_BUFFER_SIZE = 4096;
 
 StackTrace StackTrace::current( int nSkippedFrames )
 {
-  hard_assert( nSkippedFrames >= -1 );
+  hard_assert( nSkippedFrames >= 0 );
 
   void* framesBuffer[StackTrace::MAX_FRAMES + 4];
   int nFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );

@@ -43,7 +43,7 @@ function build()
          "$prefix/libphysfs.so.1" \
          "$prefix/libSDL-1.2.so.0" \
          "$prefix/libSDL_ttf-2.0.so.0" \
-         "$prefix/liblua.so.5.1" \
+         "$prefix/liblua.so.5.2" \
          "$prefix/libbz2.so.1.0" \
          "$prefix/libfreetype.so.6" \
          "$prefix/libogg.so.0" \

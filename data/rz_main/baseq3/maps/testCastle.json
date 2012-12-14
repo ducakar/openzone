@@ -1,0 +1,88 @@
+{
+  "title":              "test castle",
+  "life":               20000,
+
+  "fragPool":           "ruins",
+  "nFrags":             100,
+
+  "demolishSound":      "free/explode",
+
+  "waterFogColour":     [ 0.15, 0.00, 0.15, 1.00 ],
+
+  "boundObjects":
+  [
+    {
+      "class":          "bauul",
+      "pos":            [ 0, 0, 10 ],
+      "heading":        "NORTH"
+    }
+  ],
+  "entities":
+  [
+    {
+      "title":          "crusher",
+      "type":           "CRUSHING_BLOCK",
+      "target":         0,
+      "move":           [ 0, 7.68, 0 ],
+      "slideTime":      2.0,
+      "// timeout":        3.0,
+      "openSound":      "free/rumble",
+      "closeSound":     "free/rumble",
+      "frictSound":     "kaiser_fx/hum6"
+    },
+    {
+      "title":          "ignorant",
+      "type":           "IGNORING_BLOCK",
+      "move":           [ 0, 7.68, 0 ],
+      "slideTime":      2.0,
+      "// timeout":        4.0,
+      "openSound":      "free/rumble",
+      "closeSound":     "free/rumble",
+      "frictSound":     "kaiser_fx/hum6",
+      "model":
+      {
+        "name":         "biotank",
+        "translation":  [ 0, -1, 0.5 ],
+        "rotation":     [ 0, 0, 90 ]
+      }
+    },
+    {
+      "title":          "auto door",
+      "type":           "AUTO_DOOR",
+      "target":         2,
+      "move":           [ 2.55, 0, 0 ],
+      "slideTime":      2.0,
+      "timeout":        2.0,
+      "openSound":      "free/itemback",
+      "closeSound":     "free/itemback",
+      "frictSound":     ""
+    },
+    {
+      "title":          "manual door",
+      "type":           "MANUAL_DOOR",
+      "target":         3,
+      "key":            1,
+      "move":           [ 5, 0, 0 ],
+      "slideTime":      2.0,
+      "openSound":      "free/itemback",
+      "closeSound":     "free/itemback",
+      "frictSound":     ""
+    },
+    {
+      "title":          "elevator",
+      "type":           "ELEVATOR",
+      "target":         4,
+      "move":           [ 0, 0, 3 ],
+      "slideTime":      2.5,
+      "openSound":      "",
+      "closeSound":     "",
+      "frictSound":     "kaiser_fx/hum6"
+    },
+    {
+      "title":          "switch",
+      "type":           "STATIC",
+      "target":         3,
+      "openSound":      "openarena/clack"
+    }
+  ]
+}

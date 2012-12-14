@@ -63,9 +63,7 @@ void MainInstance::mainThreadMain( void* )
 MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ )
 {
-  System::module   = pp::Module::Get();
   System::instance = this;
-  System::core     = pp::Module::Get()->core();
 }
 
 MainInstance::~MainInstance()

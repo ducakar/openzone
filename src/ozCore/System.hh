@@ -46,13 +46,11 @@
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
-// Forward declarations for NaCl.
+// Forward declaration for NaCl module instance.
 namespace pp
 {
 
-class Module;
 class Instance;
-class Core;
 
 }
 
@@ -75,12 +73,8 @@ class System
     /// %Set system locale.
     static const int LOCALE_BIT = 0x04;
 
-    static void*         jniEnv;   ///< JNI environment pointer.
     static void*         javaVM;   ///< Java VM descriptor.
-
-    static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
-    static pp::Core*     core;     ///< NaCl `pp::Core` interface.
 
   public:
 
@@ -152,14 +146,14 @@ class System
      *     `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
      * @li `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter
      *     before terminating process via `System::abort()`, so one have time to attach a debugger.
-     * @li `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`)
+     *     This option has no effect on Android and NaCl.
+     * @li `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
+     *     This option has no effect on Android and NaCl.
      */
-#if defined( __ANDROID__ ) || defined( __native_client__ )
-    static void init( int flags = HANDLERS_BIT );
-#elif !defined( NDEBUG )
-    static void init( int flags = HANDLERS_BIT | HALT_BIT | LOCALE_BIT );
-#else
+#ifndef NDEBUG
     static void init( int flags = HANDLERS_BIT | LOCALE_BIT );
+#else
+    static void init( int flags = HANDLERS_BIT | HALT_BIT | LOCALE_BIT );
 #endif
 
 };

@@ -32,13 +32,6 @@
 #include <cstdlib>
 #include <malloc.h>
 
-#ifdef __has_feature
-# if __has_feature( address_sanitizer )
-// AddressSanitizer already overrides new/delete, implementations in this file must be disabled.
-#  define OZ_ADDRESS_SANITIZER
-# endif
-#endif
-
 namespace oz
 {
 
@@ -144,8 +137,6 @@ backtraceFound:
 
 static void* allocate( AllocMode mode, size_t size )
 {
-  static_cast<void>( mode );
-
   size += Alloc::alignUp( sizeof( size ) );
 
 #if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
@@ -174,6 +165,8 @@ static void* allocate( AllocMode mode, size_t size )
 
 #ifdef OZ_TRACK_ALLOCS
   addTraceEntry( mode, ptr, size );
+#else
+  static_cast<void>( mode );
 #endif
 
   return ptr;
@@ -181,10 +174,10 @@ static void* allocate( AllocMode mode, size_t size )
 
 static void deallocate( AllocMode mode, void* ptr )
 {
-  static_cast<void>( mode );
-
 #ifdef OZ_TRACK_ALLOCS
   eraseTraceEntry( mode, ptr );
+#else
+  static_cast<void>( mode );
 #endif
 
   size_t size = static_cast<size_t*>( ptr )[-1];

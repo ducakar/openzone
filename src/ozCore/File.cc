@@ -86,7 +86,7 @@ struct Semaphore
   pp::CompletionCallback( _Callback##name::_main##name, arg )
 
 #define MAIN_CALL( name ) \
-  System::core->CallOnMainThread( 0, CALLBACK_OBJECT( name, descriptor ) )
+  core->CallOnMainThread( 0, CALLBACK_OBJECT( name, descriptor ) )
 
 struct File::Descriptor
 {
@@ -116,9 +116,10 @@ struct File::Descriptor
   }
 };
 
+static pp::Core*        core       = nullptr;
+static pp::FileSystem*  filesystem = nullptr;
 // Some Descriptor members are also useful for static functions.
 static File::Descriptor staticDesc( nullptr );
-static pp::FileSystem*  filesystem = nullptr;
 
 #endif // __native_client__
 
@@ -936,7 +937,6 @@ bool File::chdir( const char* path )
 #if defined( __native_client__ )
 
   static_cast<void>( path );
-
   return false;
 
 #elif defined( _WIN32 )
@@ -1057,6 +1057,8 @@ bool File::rm( const char* path )
 void File::init( FilesystemType type, int size )
 {
 #ifdef __native_client__
+
+  core = pp::Module::Get()->core();
 
   if( System::instance == nullptr ) {
     OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise NaCl"

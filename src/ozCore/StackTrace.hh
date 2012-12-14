@@ -50,10 +50,9 @@ class StackTrace
   public:
 
     /**
-     * Generates array of frame pointers and return it in `StackTrace` class.
+     * Generate `StackTrace` class containing data about the current stack and thread.
      *
-     * @param nSkippedFrames number of stack frames to skip beside the stack frame of this call.
-     * Must be >= -1 (if -1 stack frame of this call is also included).
+     * @param nSkippedFrames number of stack frames to skip (must be >= 0).
      */
     static StackTrace current( int nSkippedFrames );
 

@@ -42,7 +42,7 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  *
- * @sa `oz::Slist`, `oz::DArray`
+ * @sa `oz::SList`, `oz::DArray`
  */
 template <typename Elem>
 class List

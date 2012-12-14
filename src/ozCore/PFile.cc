@@ -428,23 +428,26 @@ bool PFile::mountLocal( const char* path )
 
 void PFile::init( File::FilesystemType type, int size )
 {
-  static_cast<void>( type );
-  static_cast<void>( size );
-
 #ifdef __native_client__
+
+  pp::Module* module = pp::Module::Get();
 
   if( System::instance == nullptr ) {
     OZ_ERROR( "System::instance must be set prior to PhysicsFS initialisation" );
   }
-
-  if( System::core->IsMainThread() ) {
+  if( module->core()->IsMainThread() ) {
     OZ_ERROR( "PhysicsFS cannot be initialisation in the main thread" );
   }
 
-  PHYSFS_NACL_init( System::instance->pp_instance(), pp::Module::Get()->get_browser_interface(),
+  PHYSFS_NACL_init( System::instance->pp_instance(), module->get_browser_interface(),
                     type == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
                                                PP_FILESYSTEMTYPE_LOCALTEMPORARY,
                     size );
+
+#else
+
+  static_cast<void>( type );
+  static_cast<void>( size );
 
 #endif
 

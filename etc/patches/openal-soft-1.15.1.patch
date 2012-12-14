@@ -1,6 +1,6 @@
-diff -Naur openal-soft-1.15.orig/Alc/ALc.c openal-soft-1.15/Alc/ALc.c
---- openal-soft-1.15.orig/Alc/ALc.c	2012-12-04 22:49:16.000000000 +0100
-+++ openal-soft-1.15/Alc/ALc.c	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/Alc/ALc.c openal-soft-1.15.1/Alc/ALc.c
+--- openal-soft-1.15.1.orig/Alc/ALc.c	2012-12-11 21:35:55.000000000 +0100
++++ openal-soft-1.15.1/Alc/ALc.c	2012-12-12 00:07:32.902242303 +0100
 @@ -23,7 +23,7 @@
  #include <math.h>
  #include <stdlib.h>
@@ -21,9 +21,9 @@ diff -Naur openal-soft-1.15.orig/Alc/ALc.c openal-soft-1.15/Alc/ALc.c
      { "null", alc_null_init, alc_null_deinit, alc_null_probe, EmptyFuncs },
  #ifdef HAVE_WAVE
      { "wave", alc_wave_init, alc_wave_deinit, alc_wave_probe, EmptyFuncs },
-diff -Naur openal-soft-1.15.orig/Alc/backends/opensl.c openal-soft-1.15/Alc/backends/opensl.c
---- openal-soft-1.15.orig/Alc/backends/opensl.c	2012-12-04 22:49:16.000000000 +0100
-+++ openal-soft-1.15/Alc/backends/opensl.c	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/Alc/backends/opensl.c openal-soft-1.15.1/Alc/backends/opensl.c
+--- openal-soft-1.15.1.orig/Alc/backends/opensl.c	2012-12-11 21:35:55.000000000 +0100
++++ openal-soft-1.15.1/Alc/backends/opensl.c	2012-12-12 00:07:32.902242303 +0100
 @@ -152,9 +152,11 @@
          case SL_RESULT_UNKNOWN_ERROR: return "Unknown error";
          case SL_RESULT_OPERATION_ABORTED: return "Operation aborted";
@@ -50,9 +50,9 @@ diff -Naur openal-soft-1.15.orig/Alc/backends/opensl.c openal-soft-1.15/Alc/back
  
      audioSrc.pLocator = &loc_bufq;
      audioSrc.pFormat = &format_pcm;
-diff -Naur openal-soft-1.15.orig/Alc/backends/ppapi.c openal-soft-1.15/Alc/backends/ppapi.c
---- openal-soft-1.15.orig/Alc/backends/ppapi.c	1970-01-01 01:00:00.000000000 +0100
-+++ openal-soft-1.15/Alc/backends/ppapi.c	2012-12-08 16:15:59.913668607 +0100
+diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/backends/ppapi.c
+--- openal-soft-1.15.1.orig/Alc/backends/ppapi.c	1970-01-01 01:00:00.000000000 +0100
++++ openal-soft-1.15.1/Alc/backends/ppapi.c	2012-12-12 00:07:32.902242303 +0100
 @@ -0,0 +1,319 @@
 +/**
 + * OpenAL cross platform audio library
@@ -373,9 +373,9 @@ diff -Naur openal-soft-1.15.orig/Alc/backends/ppapi.c openal-soft-1.15/Alc/backe
 +    if(type == ALL_DEVICE_PROBE)
 +        AppendAllDevicesList(ppapiDevice);
 +}
-diff -Naur openal-soft-1.15.orig/Alc/backends/wave.c openal-soft-1.15/Alc/backends/wave.c
---- openal-soft-1.15.orig/Alc/backends/wave.c	2012-12-04 22:49:16.000000000 +0100
-+++ openal-soft-1.15/Alc/backends/wave.c	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/Alc/backends/wave.c openal-soft-1.15.1/Alc/backends/wave.c
+--- openal-soft-1.15.1.orig/Alc/backends/wave.c	2012-12-11 21:35:55.000000000 +0100
++++ openal-soft-1.15.1/Alc/backends/wave.c	2012-12-12 00:07:32.902242303 +0100
 @@ -22,7 +22,7 @@
  
  #include <stdlib.h>
@@ -385,9 +385,9 @@ diff -Naur openal-soft-1.15.orig/Alc/backends/wave.c openal-soft-1.15/Alc/backen
  #ifdef HAVE_WINDOWS_H
  #include <windows.h>
  #endif
-diff -Naur openal-soft-1.15.orig/CMakeLists.txt openal-soft-1.15/CMakeLists.txt
---- openal-soft-1.15.orig/CMakeLists.txt	2012-12-04 22:49:16.000000000 +0100
-+++ openal-soft-1.15/CMakeLists.txt	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/CMakeLists.txt openal-soft-1.15.1/CMakeLists.txt
+--- openal-soft-1.15.1.orig/CMakeLists.txt	2012-12-11 21:35:55.000000000 +0100
++++ openal-soft-1.15.1/CMakeLists.txt	2012-12-12 00:07:32.902242303 +0100
 @@ -42,6 +42,7 @@
  OPTION(WINMM   "Check for Windows Multimedia backend"  ON)
  OPTION(PORTAUDIO  "Check for PortAudio backend"        ON)
@@ -396,7 +396,7 @@ diff -Naur openal-soft-1.15.orig/CMakeLists.txt openal-soft-1.15/CMakeLists.txt
  OPTION(COREAUDIO  "Check for CoreAudio backend"        ON)
  OPTION(OPENSL     "Check for OpenSL backend"           ON)
  OPTION(WAVE    "Enable Wave Writer backend"            ON)
-@@ -503,6 +504,7 @@
+@@ -504,6 +505,7 @@
  SET(HAVE_WINMM      0)
  SET(HAVE_PORTAUDIO  0)
  SET(HAVE_PULSEAUDIO 0)
@@ -404,7 +404,7 @@ diff -Naur openal-soft-1.15.orig/CMakeLists.txt openal-soft-1.15/CMakeLists.txt
  SET(HAVE_COREAUDIO  0)
  SET(HAVE_OPENSL     0)
  SET(HAVE_WAVE       0)
-@@ -710,6 +712,16 @@
+@@ -711,6 +713,16 @@
      MESSAGE(FATAL_ERROR "Failed to enabled required OpenSL backend")
  ENDIF()
  
@@ -421,9 +421,9 @@ diff -Naur openal-soft-1.15.orig/CMakeLists.txt openal-soft-1.15/CMakeLists.txt
  # Optionally enable the Wave Writer backend
  IF(WAVE)
      SET(HAVE_WAVE 1)
-diff -Naur openal-soft-1.15.orig/config.h.in openal-soft-1.15/config.h.in
---- openal-soft-1.15.orig/config.h.in	2012-12-04 22:49:16.000000000 +0100
-+++ openal-soft-1.15/config.h.in	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/config.h.in openal-soft-1.15.1/config.h.in
+--- openal-soft-1.15.1.orig/config.h.in	2012-12-11 21:35:55.000000000 +0100
++++ openal-soft-1.15.1/config.h.in	2012-12-12 00:07:32.902242303 +0100
 @@ -56,6 +56,9 @@
  /* Define if we have the PulseAudio backend */
  #cmakedefine HAVE_PULSEAUDIO
@@ -434,9 +434,9 @@ diff -Naur openal-soft-1.15.orig/config.h.in openal-soft-1.15/config.h.in
  /* Define if we have the CoreAudio backend */
  #cmakedefine HAVE_COREAUDIO
  
-diff -Naur openal-soft-1.15.orig/OpenAL32/Include/alMain.h openal-soft-1.15/OpenAL32/Include/alMain.h
---- openal-soft-1.15.orig/OpenAL32/Include/alMain.h	2012-12-04 22:49:16.000000000 +0100
-+++ openal-soft-1.15/OpenAL32/Include/alMain.h	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/OpenAL32/Include/alMain.h openal-soft-1.15.1/OpenAL32/Include/alMain.h
+--- openal-soft-1.15.1.orig/OpenAL32/Include/alMain.h	2012-12-11 21:35:55.000000000 +0100
++++ openal-soft-1.15.1/OpenAL32/Include/alMain.h	2012-12-12 00:07:32.902242303 +0100
 @@ -443,6 +443,9 @@
  ALCboolean alc_pulse_init(BackendFuncs *func_list);
  void alc_pulse_deinit(void);
@@ -459,9 +459,9 @@ diff -Naur openal-soft-1.15.orig/OpenAL32/Include/alMain.h openal-soft-1.15/Open
  };
  enum DevFmtChannels {
      DevFmtMono   = ALC_MONO_SOFT,
-diff -Naur openal-soft-1.15.orig/XCompile-nacl.txt openal-soft-1.15/XCompile-nacl.txt
---- openal-soft-1.15.orig/XCompile-nacl.txt	1970-01-01 01:00:00.000000000 +0100
-+++ openal-soft-1.15/XCompile-nacl.txt	2012-12-08 15:46:34.298491822 +0100
+diff -Naur openal-soft-1.15.1.orig/XCompile-nacl.txt openal-soft-1.15.1/XCompile-nacl.txt
+--- openal-soft-1.15.1.orig/XCompile-nacl.txt	1970-01-01 01:00:00.000000000 +0100
++++ openal-soft-1.15.1/XCompile-nacl.txt	2012-12-12 00:07:32.902242303 +0100
 @@ -0,0 +1,25 @@
 +# Cross-compiling requires CMake 2.6 or newer. To cross-compile, first modify
 +# this file to set the proper settings and paths. Then use it from build/ like:

@@ -212,7 +212,7 @@ void Window::init()
   isFull = false;
 
   OZ_MAIN_CALL( this, {
-    glInitializePPAPI( System::module->get_browser_interface() );
+    glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
     _this->createContext();
     glSetCurrentContextPPAPI( _this->context->pp_resource() );
 

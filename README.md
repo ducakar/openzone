@@ -51,6 +51,11 @@ MinGW32 is searched in `/usr/i486-mingw32` by default. You may change that in
 
 You may also want to set several options when configuring CMake build system:
 
+- `OZ_ADDRESS_SANITIZER`: Compile with AddressSanitizer support. AddressSanitizer is a memory
+  checker that detects stack and heap buffer overruns, malloc/free misuse and other memory errors.
+  GCC >= 4.8 or LLVM/Clang >= 3.2 is required.
+  `OFF` by default.
+
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
   memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
   mismatches and one can check for currently allocated memory chunks (and hence memory leaks).

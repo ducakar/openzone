@@ -10,10 +10,7 @@
 # each file, remove duplicated blank lines and then remove one blank line at the end of each file.
 #
 
-files=`git ls-files | \
-       egrep -v '^include/|^doc/licences|\.patch$|\.po$' | \
-       egrep -v 'README' | \
-       egrep -v 'header\.glsl'`
+files=`git ls-files | egrep -v '^README|^doc/licences/|\.patch$|^include/|\.po$|/header\.glsl$'`
 
 for file in $files; do
   # Remove trailing blanks at the end of line.

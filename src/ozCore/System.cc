@@ -96,7 +96,26 @@ static const float BELL_TIME           = 0.30f;
 static const float BELL_FREQUENCY      = 1000.0f;
 static const int   BELL_PREFERRED_RATE = 44100;
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+
+static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
+
+#elif defined( __native_client__ )
+
+struct SampleInfo
+{
+  pp::Audio* audio;
+  int        nFrameSamples;
+  int        nSamples;
+  int        rate;
+  int        end;
+  int        offset;
+};
+
+static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
+static pp::Core*      core          = nullptr;
+
+#elif defined( _WIN32 )
 
 static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_PREFERRED_RATE );
 
@@ -122,19 +141,9 @@ struct Wave
 
 #else
 
-static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
+static const timespec       TIMESPEC_10MS  = { 0, 10 * 1000000 };
+static const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
 
-# ifdef __native_client__
-struct SampleInfo
-{
-  pp::Audio* audio;
-  int        nFrameSamples;
-  int        nSamples;
-  int        rate;
-  int        end;
-  int        offset;
-};
-# endif
 #endif
 
 static volatile bool isBellPlaying = false;
@@ -152,7 +161,7 @@ static void signalHandler( int sigNum )
   Log::println();
 
 #ifdef __ANDROID__
-  __android_log_print( ANDROID_LOG_ERROR, "oz", "Signal %d received\n", sigNum );
+  __android_log_print( ANDROID_LOG_FATAL, "oz", "Signal %d\n", sigNum );
 #endif
 
   System::bell();
@@ -195,7 +204,7 @@ static void terminate()
   Log::println();
 
 #ifdef __ANDROID__
-  __android_log_write( ANDROID_LOG_ERROR, "oz", "Exception handling aborted\n" );
+  __android_log_write( ANDROID_LOG_FATAL, "oz", "Exception handling aborted\n" );
 #endif
 
   System::bell();
@@ -213,7 +222,7 @@ static void unexpected()
   Log::println();
 
 #ifdef __ANDROID__
-  __android_log_write( ANDROID_LOG_ERROR, "oz", "Exception specification violation\n" );
+  __android_log_write( ANDROID_LOG_FATAL, "oz", "Exception specification violation\n" );
 #endif
 
   System::bell();
@@ -241,12 +250,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
 
 #if defined( __ANDROID__ )
 
-static void* bellMain( void* )
-{
-  // TODO Implement bell for OpenSL ES.
-  static_cast<void>( genBellSamples );
-  return nullptr;
-}
+// TODO Implement bell for OpenSL ES.
 
 #elif defined( __native_client__ )
 
@@ -268,7 +272,7 @@ static void bellPlayCallback( void* buffer, uint, void* info_ )
   short*      samples = static_cast<short*>( buffer );
 
   if( info->offset >= info->end ) {
-    System::core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
+    core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
   }
 
   genBellSamples( samples, info->nSamples, info->rate, info->offset,
@@ -309,12 +313,6 @@ static void bellInitCallback( void*, int )
     __sync_lock_release( &isBellPlaying );
     return;
   }
-}
-
-static void* bellMain( void* )
-{
-  System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, nullptr ) );
-  return nullptr;
 }
 
 #elif defined( _WIN32 )
@@ -367,7 +365,6 @@ static void* bellMain( void* )
 #ifndef _GNU_SOURCE
   const char* program_invocation_short_name = "liboz";
 #endif
-  const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
 
   pa_simple* pa = pa_simple_new( nullptr, program_invocation_short_name, PA_STREAM_PLAYBACK,
                                  nullptr, "bell", &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
@@ -476,7 +473,7 @@ static void* bellMain( void* )
 static void waitBell()
 {
 #if defined( __native_client__ )
-  if( System::core == nullptr || System::core->IsMainThread() ) {
+  if( core == nullptr || core->IsMainThread() ) {
     return;
   }
 #endif
@@ -507,30 +504,27 @@ static void abort( bool doHalt )
   resetSignals();
 
 #if defined( __ANDROID__ )
-  if( doHalt ) {
-    __android_log_write( ANDROID_LOG_ERROR, "oz", "Halted. Attach a debugger  ...\n"  );
 
-    while( true ) {
-      nanosleep( &TIMESPEC_10MS, nullptr );
-    }
-  }
+  static_cast<void>( doHalt );
+  __android_log_write( ANDROID_LOG_FATAL, "oz", "ABORTED\n"  );
+
 #elif defined( __native_client__ )
-  if( doHalt ) {
-    fflush( stdout );
-    fputs( "Halted. Attach a debugger ... ", stderr );
-    fflush( stderr );
 
-    while( true ) {
-      nanosleep( &TIMESPEC_10MS, nullptr );
-    }
-  }
+  static_cast<void>( doHalt );
+
+  fflush( stdout );
+  fputs( "ABORTED", stderr );
+  fflush( stderr );
+
 #else
+
   if( doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
     fflush( stdout );
     fputs( "Halted. Attach a debugger or press Enter to quit ... ", stderr );
     fflush( stderr );
     fgetc( stdin );
   }
+
 #endif
 
   waitBell();
@@ -541,12 +535,8 @@ const int     System::HANDLERS_BIT;
 const int     System::HALT_BIT;
 const int     System::LOCALE_BIT;
 
-void*         System::jniEnv   = nullptr;
 void*         System::javaVM   = nullptr;
-
-pp::Module*   System::module   = nullptr;
 pp::Instance* System::instance = nullptr;
-pp::Core*     System::core     = nullptr;
 
 void System::trap()
 {
@@ -562,23 +552,32 @@ void System::trap()
 
 void System::bell()
 {
-#ifdef __native_client__
-  if( instance == nullptr || core == nullptr ) {
-    return;
+#if defined( __ANDROID__ )
+
+  static_cast<void>( genBellSamples );
+
+  __android_log_write( ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n" );
+
+#elif defined( __native_client__ )
+
+  if( instance != nullptr && !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
+    core = pp::Module::Get()->core();
+    core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, nullptr ) );
   }
-#endif
+
+#elif defined( _WIN32 )
 
   if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
-#ifdef _WIN32
-
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
     if( bellThread == nullptr ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
     CloseHandle( bellThread );
+  }
 
 #else
 
+  if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
     pthread_t      bellThread;
     pthread_attr_t bellThreadAttr;
 
@@ -589,9 +588,9 @@ void System::bell()
       OZ_ERROR( "Bell thread creation failed" );
     }
     pthread_attr_destroy( &bellThreadAttr );
+  }
 
 #endif
-  }
 }
 
 void System::warning( const char* function, const char* file, int line, int nSkippedFrames,
@@ -609,6 +608,11 @@ void System::warning( const char* function, const char* file, int line, int nSki
   Log::vprintRaw( msg, ap );
   Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
   Log::verboseMode = verboseMode;
+
+#ifdef __ANDROID__
+  __android_log_vprint( ANDROID_LOG_WARN, "oz", msg, ap );
+  __android_log_print( ANDROID_LOG_WARN, "oz", "  in %s\n  at %s:%d\n", function, file, line );
+#endif
 
   va_end( ap );
 
@@ -631,6 +635,11 @@ void System::error( const char* function, const char* file, int line, int nSkipp
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
   Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
+
+#ifdef __ANDROID__
+  __android_log_vprint( ANDROID_LOG_FATAL, "oz", msg, ap );
+  __android_log_print( ANDROID_LOG_FATAL, "oz", "  in %s\n  at %s:%d\n", function, file, line );
+#endif
 
   va_end( ap );
 
@@ -660,9 +669,11 @@ void System::init( int flags )
     std::set_unexpected( unexpected );
   }
 
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   if( initFlags & LOCALE_BIT ) {
     setlocale( LC_ALL, "" );
   }
+#endif
 }
 
 }
