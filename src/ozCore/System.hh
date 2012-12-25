@@ -73,6 +73,16 @@ class System
     /// %Set system locale.
     static const int LOCALE_BIT = 0x04;
 
+    /// Default set of bits.
+#ifdef NDEBUG
+    static const int DEFAULT_MASK = HANDLERS_BIT | LOCALE_BIT;
+#else
+    static const int DEFAULT_MASK = HANDLERS_BIT | HALT_BIT | LOCALE_BIT;
+#endif
+
+    /// Type for crash handler function passed to `System::init()`.
+    typedef void CrashHandler();
+
     static void*         javaVM;   ///< Java VM descriptor.
     static pp::Instance* instance; ///< NaCl instance.
 
@@ -113,7 +123,7 @@ class System
     /**
      * Print error message and halt the program.
      *
-     * Same as `System::warning()` but also aborts the program. If running from a terminal and
+     * Same as `System::warning()` but also aborts the application. If running from a terminal and
      * `HALT_BIT` was passed to `System::init()` initialisation, it halts before aborting so one can
      * attach a debugger.
      *
@@ -139,7 +149,7 @@ class System
     /**
      * Initialise `System` features.
      *
-     * Flags:
+     * @param flags is a bitwise OR of the following bits:
      * @li `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
      *     which print diagnostics and abort the program (similar to `System::error()` method).
      *     Additionally, install handlers for exception violations (`std::terminate()` and
@@ -149,12 +159,12 @@ class System
      *     This option has no effect on Android and NaCl.
      * @li `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
      *     This option has no effect on Android and NaCl.
+     *
+     * @param crashHandler user-provided method called when the application is aborted in a signal/
+     *        exception handler or in `System::error()`. If non-null, it is invoked after the stack
+     *        trace is printed and before halting/aborting the application.
      */
-#ifndef NDEBUG
-    static void init( int flags = HANDLERS_BIT | LOCALE_BIT );
-#else
-    static void init( int flags = HANDLERS_BIT | HALT_BIT | LOCALE_BIT );
-#endif
+    static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );
 
 };
 

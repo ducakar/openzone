@@ -32,6 +32,12 @@
 #include <cstdlib>
 #include <malloc.h>
 
+#ifdef has_feature
+# if has_feature( address_sanitizer )
+#  define OZ_ADDRESS_SANITIZER
+# endif
+#endif
+
 namespace oz
 {
 

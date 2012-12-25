@@ -12,7 +12,7 @@
       "url": "unittest.i686.nexe"
     },
     "arm": {
-      "url": "unittest.arm.nexe"
+      "url": "unittest.ARM.nexe"
     }
   }
 }

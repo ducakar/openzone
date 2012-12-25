@@ -14,8 +14,15 @@
 #
 
 platforms=(
-  NaCl-x86_64 NaCl-x86_64-glibc NaCl-i686 NaCl-i686-glibc PNaCl
-  Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
+  NaCl-x86_64
+#   NaCl-x86_64-glibc
+  NaCl-i686
+#   NaCl-i686-glibc
+  PNaCl
+  Android14-i686
+  Android14-ARM
+  Android14-ARMv7a
+  Android14-MIPS
 )
 
 projectDir=`pwd`
@@ -525,16 +532,16 @@ function build()
 {
   # zlib
   setup_nacl64    && build_zlib
-  setup_nacl64GNU && build_zlib
+#   setup_nacl64GNU && build_zlib
   setup_nacl32    && build_zlib
-  setup_nacl32GNU && build_zlib
+#   setup_nacl32GNU && build_zlib
   setup_pnacl     && build_zlib
 
   # physfs
   setup_nacl64    && build_physfs
-  setup_nacl64GNU && build_physfs
+#   setup_nacl64GNU && build_physfs
   setup_nacl32    && build_physfs
-  setup_nacl32GNU && build_physfs
+#   setup_nacl32GNU && build_physfs
   setup_pnacl     && build_physfs
   setup_ndkX86    && build_physfs
   setup_ndkARM    && build_physfs
@@ -543,9 +550,9 @@ function build()
 
   # lua
   setup_nacl64    && build_lua
-  setup_nacl64GNU && build_lua
+#   setup_nacl64GNU && build_lua
   setup_nacl32    && build_lua
-  setup_nacl32GNU && build_lua
+#   setup_nacl32GNU && build_lua
   setup_pnacl     && build_lua
   setup_ndkX86    && build_lua
   setup_ndkARM    && build_lua
@@ -554,9 +561,9 @@ function build()
 
   # SDL
   setup_nacl64    && build_sdl
-  setup_nacl64GNU && build_sdl
+#   setup_nacl64GNU && build_sdl
   setup_nacl32    && build_sdl
-  setup_nacl32GNU && build_sdl
+#   setup_nacl32GNU && build_sdl
   setup_pnacl     && build_sdl
   setup_ndkX86    && build_sdl2
   setup_ndkARM    && build_sdl2
@@ -565,9 +572,9 @@ function build()
 
   # freetype
   setup_nacl64    && build_freetype
-  setup_nacl64GNU && build_freetype
+#   setup_nacl64GNU && build_freetype
   setup_nacl32    && build_freetype
-  setup_nacl32GNU && build_freetype
+#   setup_nacl32GNU && build_freetype
   setup_pnacl     && build_freetype
   setup_ndkX86    && build_freetype
   setup_ndkARM    && build_freetype
@@ -576,9 +583,9 @@ function build()
 
   # SDL_ttf
   setup_nacl64    && build_sdl_ttf
-  setup_nacl64GNU && build_sdl_ttf
+#   setup_nacl64GNU && build_sdl_ttf
   setup_nacl32    && build_sdl_ttf
-  setup_nacl32GNU && build_sdl_ttf
+#   setup_nacl32GNU && build_sdl_ttf
   setup_pnacl     && build_sdl_ttf
   setup_ndkX86    && build_sdl2_ttf
   setup_ndkARM    && build_sdl2_ttf
@@ -587,9 +594,9 @@ function build()
 
   # openal
   setup_nacl64    && build_openal
-  setup_nacl64GNU && build_openal
+#   setup_nacl64GNU && build_openal
   setup_nacl32    && build_openal
-  setup_nacl32GNU && build_openal
+#   setup_nacl32GNU && build_openal
   setup_pnacl     && build_openal
   setup_ndkX86    && build_openal
   setup_ndkARM    && build_openal
@@ -598,9 +605,9 @@ function build()
 
   # libogg
   setup_nacl64    && build_libogg
-  setup_nacl64GNU && build_libogg
+#   setup_nacl64GNU && build_libogg
   setup_nacl32    && build_libogg
-  setup_nacl32GNU && build_libogg
+#   setup_nacl32GNU && build_libogg
   setup_pnacl     && build_libogg
   setup_ndkX86    && build_libogg
   setup_ndkARM    && build_libogg
@@ -609,9 +616,9 @@ function build()
 
   # libvorbis
   setup_nacl64    && build_libvorbis
-  setup_nacl64GNU && build_libvorbis
+#   setup_nacl64GNU && build_libvorbis
   setup_nacl32    && build_libvorbis
-  setup_nacl32GNU && build_libvorbis
+#   setup_nacl32GNU && build_libvorbis
   setup_pnacl     && build_libvorbis
   setup_ndkX86    && build_libvorbis
   setup_ndkARM    && build_libvorbis

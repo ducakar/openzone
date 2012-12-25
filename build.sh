@@ -13,10 +13,20 @@
 
 buildType=Debug
 platforms=(
-  Linux-x86_64 Linux-x86_64-Clang Linux-i686 Linux-i686-Clang
+  Linux-x86_64
+  Linux-x86_64-Clang
+  Linux-i686
+  Linux-i686-Clang
   Windows-i686
-  NaCl-x86_64 NaCl-x86_64-glibc NaCl-i686 NaCl-i686-glibc PNaCl
-  Android14-i686 Android14-ARM Android14-ARMv7a Android14-MIPS
+  NaCl-x86_64
+#   NaCl-x86_64-glibc
+  NaCl-i686
+#   NaCl-i686-glibc
+  PNaCl
+  Android14-i686
+  Android14-ARM
+  Android14-ARMv7a
+  Android14-MIPS
 )
 
 # Extract path to NaCl SDK from CMake toolchain files.

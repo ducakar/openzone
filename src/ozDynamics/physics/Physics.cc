@@ -28,8 +28,6 @@
 
 #include "DBody.hh"
 
-#ifdef OZ_ODE
-
 // If ODE is not compiled with single precision, bad things are going to happen.
 #define dSINGLE
 #include <ode/ode.h>
@@ -161,5 +159,3 @@ void Physics::destroy()
 }
 
 }
-
-#endif

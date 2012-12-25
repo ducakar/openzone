@@ -29,5 +29,8 @@
 // Default data directory.
 #define OZ_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 
+// Enable networking.
+#cmakedefine OZ_NET
+
 // Use OpenGL ES 2.0.
 #cmakedefine OZ_GL_ES

@@ -4,6 +4,7 @@ CURRENT
 - keyboard control of UI
 - TalkFrame
 - per-game data subdirs
+- 6-direction-layered meshes
 
 0.4
 

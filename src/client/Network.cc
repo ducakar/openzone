@@ -24,8 +24,8 @@
 #include <stable.hh>
 #include <client/Network.hh>
 
-#if 0
-#include <SDL_net.h>
+#ifdef OZ_NET
+# include <SDL_net.h>
 #endif
 
 namespace oz
@@ -33,7 +33,7 @@ namespace oz
 namespace client
 {
 
-#if 1
+#ifndef OZ_NET
 
 bool Network::connect()
 {

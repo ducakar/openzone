@@ -30,7 +30,8 @@ function build()
 
 function package_liboz()
 {
-  pkgdesc='OpenZone Core and Dynamics libraries'
+#   pkgdesc='OpenZone Core and Dynamics Libraries'
+  pkgdesc='OpenZone Core Library'
   license=('ZLIB')
   depends=('libpulse' 'physfs')
 

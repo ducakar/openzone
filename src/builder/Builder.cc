@@ -904,7 +904,6 @@ int Builder::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  SDL_Init( SDL_INIT_VIDEO );
   PFile::init();
   FreeImage_Initialise();
 
@@ -1011,7 +1010,6 @@ int Builder::main( int argc, char** argv )
 
   FreeImage_DeInitialise();
   PFile::destroy();
-  SDL_Quit();
 
   return EXIT_SUCCESS;
 }

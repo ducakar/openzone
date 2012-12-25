@@ -296,6 +296,8 @@ void Shape::wireBox( const AABB& bb )
   glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
 }
 
+#ifdef OZ_DYNAMICS
+
 void Shape::object( const Point& pos, const Mat33& rot, const void* shape_ )
 {
   const oz::Shape* shape = static_cast<const oz::Shape*>( shape_ );
@@ -335,6 +337,8 @@ void Shape::object( const Point& pos, const Mat33& rot, const void* shape_ )
     }
   }
 }
+
+#endif
 
 void Shape::init()
 {

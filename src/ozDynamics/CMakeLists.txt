@@ -1,6 +1,10 @@
 configure_file( config.hh.in config.hh @ONLY )
 configure_file( ozDynamics.pc.in ozDynamics.pc @ONLY )
 
+if( NOT OZ_DYNAMICS )
+  return()
+endif()
+
 add_library( ozDynamics
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES

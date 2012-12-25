@@ -63,7 +63,7 @@ int main( int argc, char** argv )
   System::instance = static_cast<pp::Instance*>( instance );
 #endif
 
-  System::init();
+  System::init( System::DEFAULT_MASK, SDL_Quit );
 
   int exitCode = EXIT_FAILURE;
 

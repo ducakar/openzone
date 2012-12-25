@@ -1,4 +1,4 @@
-0.3.80
+0.4.0
 
 - ozCore
     * null replaced by nullptr keyword

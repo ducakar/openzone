@@ -12,7 +12,7 @@
       "url": "openzone.i686.nexe"
     },
     "arm": {
-      "url": "openzone.arm.nexe"
+      "url": "openzone.ARM.nexe"
     }
   }
 }

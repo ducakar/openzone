@@ -337,7 +337,7 @@ void Render::drawGeometry()
     }
   }
 
-#ifdef OZ_ODE
+#ifdef OZ_DYNAMICS
   drawDyn();
 #endif
 
@@ -558,7 +558,7 @@ void Render::load()
   uiMicros          = 0;
   swapMicros        = 0;
 
-#ifdef OZ_ODE
+#ifdef OZ_DYNAMICS
   loadDyn();
 #endif
 
@@ -573,7 +573,7 @@ void Render::unload()
 
   Log::print( "Unloading Render ..." );
 
-#ifdef OZ_ODE
+#ifdef OZ_DYNAMICS
   unloadDyn();
 #endif
 
@@ -766,7 +766,7 @@ Render render;
 }
 }
 
-#ifdef OZ_ODE
+#ifdef OZ_DYNAMICS
 
 /*
  * ozDynamics test

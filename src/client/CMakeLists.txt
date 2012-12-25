@@ -163,9 +163,15 @@ add_library( client STATIC
 use_pch( client pch )
 
 if( OZ_SDL2 )
-  target_link_libraries( client ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} )
+  if( OZ_NET )
+    target_link_libraries( client ${SDL2_NET_LIBRARIES} )
+  endif()
+  target_link_libraries( client ${SDL2_TTF_LIBRARIES} ${SDL2_LIBRARIES} )
 else()
-  target_link_libraries( client ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES} )
+  if( OZ_NET )
+    target_link_libraries( client ${SDL_NET_LIBRARIES} )
+  endif()
+  target_link_libraries( client ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
 endif()
 
 if( OZ_GL_ES )

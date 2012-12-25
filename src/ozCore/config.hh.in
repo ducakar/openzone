@@ -26,10 +26,6 @@
  * Configuration variables
  */
 
-// Compiled with AddressSanitizer. AddressSanitizer (GCC >= 4.8, LLVM/Clang >= 3.1) detects memory
-// defects like buffer overruns, stack smashing, malloc/free misuse etc.
-#cmakedefine OZ_ADDRESS_SANITIZER
-
 // Enable tracking of allocated memory chunks. Stack trace for every memory allocation performed
 // via new operator is saved for later diagnostics. It detects new/delete mismatches and one can
 // check for currently allocated memory chunks (and hence memory leaks).

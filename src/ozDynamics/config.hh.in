@@ -1,5 +1,5 @@
 /*
- * ozCore - OpenZone Core Library.
+ * ozDynamics - OpenZone Dynamics Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -26,5 +26,5 @@
  * Configuration variables
  */
 
-// Compile complete ozDynamics library (requires Open Dynamics Engine).
-#cmakedefine OZ_ODE
+// Enable ozDynamics library.
+#cmakedefine OZ_DYNAMICS

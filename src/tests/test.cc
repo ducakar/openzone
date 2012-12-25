@@ -121,6 +121,5 @@ void bar()
 int main()
 {
   System::init();
-  Foo foo;
   return 0;
 }

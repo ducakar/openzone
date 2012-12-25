@@ -146,8 +146,9 @@ static const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_R
 
 #endif
 
-static volatile bool isBellPlaying = false;
-static int           initFlags     = 0;
+static volatile bool         isBellPlaying = false;
+static int                   initFlags     = 0;
+static System::CrashHandler* crashHandler  = nullptr;
 
 OZ_NORETURN
 static void abort( bool doHalt );
@@ -503,6 +504,10 @@ static void abort( bool doHalt )
 {
   resetSignals();
 
+  if( crashHandler != nullptr ) {
+    crashHandler();
+  }
+
 #if defined( __ANDROID__ )
 
   static_cast<void>( doHalt );
@@ -518,11 +523,14 @@ static void abort( bool doHalt )
 
 #else
 
-  if( doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
+  if( doHalt ) {
     fflush( stdout );
     fputs( "Halted. Attach a debugger or press Enter to quit ... ", stderr );
     fflush( stderr );
-    fgetc( stdin );
+
+    if( isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
+      fgetc( stdin );
+    }
   }
 
 #endif
@@ -658,9 +666,10 @@ void System::threadInit()
   }
 }
 
-void System::init( int flags )
+void System::init( int flags, CrashHandler* crashHandler_ )
 {
-  initFlags = flags;
+  initFlags    = flags;
+  crashHandler = crashHandler_;
 
   if( initFlags & HANDLERS_BIT ) {
     catchSignals();
