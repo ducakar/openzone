@@ -29,7 +29,7 @@
   "nItems":             8,
   "defaultItems":
   [
-                        "cyborg_weapon.chaingun",
+                        "cyborg$chaingun",
                         "galileo",
                         "musicPlayer"
   ],

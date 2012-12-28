@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,15 +121,6 @@ class BSP : public Bounds
       Heading            heading;
     };
 
-    int             nPlanes;
-    int             nNodes;
-    int             nLeaves;
-    int             nLeafBrushes;
-    int             nEntities;
-    int             nBrushes;
-    int             nBrushSides;
-    int             nBoundObjects;
-
     Plane*          planes;
     Node*           nodes;
     Leaf*           leaves;
@@ -138,6 +129,15 @@ class BSP : public Bounds
     Brush*          brushes;
     int*            brushSides;
     BoundObject*    boundObjects;
+
+    int             nPlanes;
+    int             nNodes;
+    int             nLeaves;
+    int             nLeafBrushes;
+    int             nEntities;
+    int             nBrushes;
+    int             nBrushSides;
+    int             nBoundObjects;
 
     String          name;          ///< Name.
     String          title;         ///< Title.
@@ -162,7 +162,7 @@ class BSP : public Bounds
     void load();
     void unload();
 
-    void init( const char* name, int id );
+    explicit BSP( const char* name, int id );
 
 };
 

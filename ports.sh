@@ -3,7 +3,7 @@
 # ports.sh [clean | fetch | build]
 #
 # This script is used to build libraries required by OpenZone for some platforms. Currently it
-# builds zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.
+# builds all required libraries for NaCl and Android configurations that are not provided by SDKs.
 # The following commands may be given (`build` is assumed if none):
 #
 # - `clean`: Delete everything in `ports` directory except downloaded sources.
@@ -28,19 +28,7 @@ platforms=(
 projectDir=`pwd`
 topDir="$projectDir/ports"
 
-# Extract path to NaCl SDK from CMake toolchain files.
-naclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64.Toolchain.cmake`
-naclGNUPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64-glibc.Toolchain.cmake`
-pnaclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/PNaCl.Toolchain.cmake`
-
-ndkX86Tools="/opt/android-ndk/toolchains/x86-4.6/prebuilt/linux-x86"
-ndkX86Platform="/opt/android-ndk/platforms/android-14/arch-x86"
-
-ndkARMTools="/opt/android-ndk/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86"
-ndkARMPlatform="/opt/android-ndk/platforms/android-14/arch-arm"
-
-ndkMIPSTools="/opt/android-ndk/toolchains/mipsel-linux-android-4.6/prebuilt/linux-x86"
-ndkMIPSPlatform="/opt/android-ndk/platforms/android-14/arch-mips"
+source ./sdkPaths
 
 function msg()
 {
@@ -52,7 +40,6 @@ function msg()
   echo ================================================================================
   echo -ne "\e[0m"
 }
-
 
 function setup_nacl64()
 {
@@ -75,7 +62,7 @@ function setup_nacl64()
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3"
-  export LDFLAGS="-L$buildDir/usr/lib"
+  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 }
 
 function setup_nacl64GNU()
@@ -99,7 +86,7 @@ function setup_nacl64GNU()
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3"
-  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+  export LDFLAGS="-L$buildDir/usr/lib"
 }
 
 function setup_nacl32()
@@ -298,15 +285,18 @@ function fetch()
   # zlib
   download 'http://zlib.net/zlib-1.2.7.tar.bz2'
 
-  # physfs 2.1
+  # PhysicsFS 2.1
   cd "$topDir/archives"
   if [[ -d physfs ]]
     then cd physfs && hg pull -u
     else hg clone 'http://hg.icculus.org/icculus/physfs/'
   fi
 
-  # lua
+  # Lua
   download 'http://www.lua.org/ftp/lua-5.2.1.tar.gz'
+
+  # LuaJIT
+  download 'http://luajit.org/download/LuaJIT-2.0.0.tar.gz'
 
   # SDL
   download 'http://www.libsdl.org/release/SDL-1.2.15.tar.gz'
@@ -328,10 +318,10 @@ function fetch()
     else hg clone 'http://hg.libsdl.org/SDL_ttf'
   fi
 
-  # freetype
+  # FreeType
   download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.10/freetype-2.4.10.tar.bz2'
 
-  # openal
+  # OpenAL Soft
   download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
 
   # libogg
@@ -428,6 +418,17 @@ function build_lua()
 
   make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
   make INSTALL_TOP="$buildDir/usr" install
+
+  finish
+}
+
+# TODO: LuaJIT cross-compiling doesn't work.
+function build_luajit()
+{
+  prepare LuaJIT-2.0.0 LuaJIT-2.0.0.tar.gz || return
+
+  make amalg PREFIX=/usr CC="$CC" BUILDMODE=static
+  make install DESTDIR="$buildDir" PREFIX=/usr
 
   finish
 }
@@ -537,7 +538,7 @@ function build()
 #   setup_nacl32GNU && build_zlib
   setup_pnacl     && build_zlib
 
-  # physfs
+  # PhysicsFS
   setup_nacl64    && build_physfs
 #   setup_nacl64GNU && build_physfs
   setup_nacl32    && build_physfs
@@ -548,7 +549,7 @@ function build()
   setup_ndkARM7   && build_physfs
   setup_ndkMIPS   && build_physfs
 
-  # lua
+  # Lua
   setup_nacl64    && build_lua
 #   setup_nacl64GNU && build_lua
   setup_nacl32    && build_lua
@@ -558,6 +559,17 @@ function build()
   setup_ndkARM    && build_lua
   setup_ndkARM7   && build_lua
   setup_ndkMIPS   && build_lua
+
+  # LuaJIT
+#   setup_nacl64    && build_luajit
+#   setup_nacl64GNU && build_luajit
+#   setup_nacl32    && build_luajit
+#   setup_nacl32GNU && build_luajit
+#   setup_pnacl     && build_luajit
+#   setup_ndkX86    && build_luajit
+#   setup_ndkARM    && build_luajit
+#   setup_ndkARM7   && build_luajit
+#   setup_ndkMIPS   && build_luajit
 
   # SDL
   setup_nacl64    && build_sdl
@@ -570,7 +582,7 @@ function build()
   setup_ndkARM7   && build_sdl2
   setup_ndkMIPS   && build_sdl2
 
-  # freetype
+  # FreeType
   setup_nacl64    && build_freetype
 #   setup_nacl64GNU && build_freetype
   setup_nacl32    && build_freetype
@@ -592,7 +604,7 @@ function build()
   setup_ndkARM7   && build_sdl2_ttf
   setup_ndkMIPS   && build_sdl2_ttf
 
-  # openal
+  # OpenAL Soft
   setup_nacl64    && build_openal
 #   setup_nacl64GNU && build_openal
   setup_nacl32    && build_openal

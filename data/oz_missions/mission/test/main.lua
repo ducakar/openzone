@@ -78,9 +78,9 @@ function init_sample()
   ozOrbisAddObj( OZ_FORCE, "cvicek",                       cX - 8, cY - 2, cZ - 6 )
   ozOrbisAddObj( OZ_FORCE, "firstAid",                     cX - 7, cY - 2, cZ - 6 )
   ozOrbisAddObj( OZ_FORCE, "binoculars",                   cX - 6, cY - 2, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "droid_weapon.hyperblaster",    cX - 8, cY - 3, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "droid_weapon.chaingun",        cX - 7, cY - 3, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "droid_weapon.grenadeLauncher", cX - 6, cY - 3, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "droid$hyperblaster",    cX - 8, cY - 3, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "droid$chaingun",        cX - 7, cY - 3, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "droid$grenadeLauncher", cX - 6, cY - 3, cZ - 6 )
 
   ozOrbisAddObj( OZ_FORCE, "key", cX + 17, cY + 3, cZ - 6 )
 

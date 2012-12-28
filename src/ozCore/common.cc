@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from

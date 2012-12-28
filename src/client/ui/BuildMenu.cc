@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,10 +68,10 @@ BuildMenu::BuildMenu() :
   add( new BuildButton( "firstAid", createObject, 110, 18 ), 5, -100 );
   add( new BuildButton( "cvicek", createObject, 110, 18 ), 5, -120 );
   add( new BuildButton( "bomb", createObject, 110, 18 ), 5, -140 );
-  add( new BuildButton( "droid_weapon.blaster", createObject, 110, 18 ), 5, -160 );
-  add( new BuildButton( "droid_weapon.hyperblaster", createObject, 110, 18 ), 5, -180 );
-  add( new BuildButton( "droid_weapon.chaingun", createObject, 110, 18 ), 5, -200 );
-  add( new BuildButton( "droid_weapon.grenadeLauncher", createObject, 110, 18 ), 5, -220 );
+  add( new BuildButton( "droid$blaster", createObject, 110, 18 ), 5, -160 );
+  add( new BuildButton( "droid$hyperblaster", createObject, 110, 18 ), 5, -180 );
+  add( new BuildButton( "droid$chaingun", createObject, 110, 18 ), 5, -200 );
+  add( new BuildButton( "droid$grenadeLauncher", createObject, 110, 18 ), 5, -220 );
 
   add( new BuildButton( "goblin", createObject, 110, 18 ), -5, -40 );
   add( new BuildButton( "knight", createObject, 110, 18 ), -5, -60 );

@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include <clocale>
 #include <sstream>
 #include <unistd.h>
+#include <SDL.h>
 #include <SDL_ttf.h>
 
 #if defined( __native_client__ )
@@ -177,16 +178,14 @@ int Client::init( int argc, char** argv )
     OZ_ERROR( "Cannot determine user home directory from environment" );
   }
 
-  String configDir = configRoot == nullptr ?
-                     String::str( "%s/.config/openzone", home ) :
-                     String::str( "%s/openzone", configRoot );
+  String configDir = configRoot == nullptr ? String::str( "%s/.config/openzone", home ) :
+                                             String::str( "%s/openzone", configRoot );
 
-  String localDir = localRoot == nullptr ?
-                    String::str( "%s/.local/share/openzone", home ) :
-                    String::str( "%s/openzone", localRoot );
+  String localDir = localRoot == nullptr ? String::str( "%s/.local/share/openzone", home ) :
+                                           String::str( "%s/openzone", localRoot );
 
   String musicDir = musicRoot == nullptr ? String::str( "%s/Music/OpenZone", home ) :
-                                           String( musicRoot );
+                                           String::str( "%s/OpenZone", musicRoot );
 
 #endif
 

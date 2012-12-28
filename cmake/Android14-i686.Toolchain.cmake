@@ -1,5 +1,6 @@
 set( ANDROID                    ON )
 
+set( PLATFORM_NAME              "Android" )
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "i686-linux-android" )
 set( PLATFORM_PROC_PREFIX       "x86" )

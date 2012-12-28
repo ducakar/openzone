@@ -1,24 +1,23 @@
 {
   "base":               "Weapon",
 
-  "title":              "plasma gun",
+  "title":              "chaingun",
 
   "flag.onUpdate":      false,
   "flag.cylinder":      false,
 
-  "dim":                [ 0.17, 0.75, 0.08 ],
+  "dim":                [ 0.28, 0.60, 0.135 ],
 
   "life":               100,
-  "resistance":         40,
+  "resistance":         50,
 
   "mass":               5,
   "lift":               0.8,
 
-  "nRounds":            160,
+  "nRounds":            610,
   "shotInterval":       0.12,
 
-  "onUpdate":           "plasmagun_onUpdate",
-  "onShot":             "plasmagun_onShot",
+  "onShot":             "chaingun_onShot",
 
   "attrib.suicide":     true,
 
@@ -26,7 +25,7 @@
   "nFrags":             4,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "hobgoblin_weapon.plasmagun",
+  "imagoModel":         "ratamahatta$chaingun",
 
   "audioType":          "Basic",
   "audioSounds":

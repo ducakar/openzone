@@ -38,7 +38,7 @@
   "nItems":             4,
   "defaultItems":
   [
-                        "goblin_weapon.axe",
+                        "goblin$axe",
                         "cvicek"
   ],
   "weaponItem":         0,

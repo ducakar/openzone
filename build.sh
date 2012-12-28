@@ -17,6 +17,8 @@ platforms=(
   Linux-x86_64-Clang
   Linux-i686
   Linux-i686-Clang
+#   FreeBSD-x86_64-Clang
+#   FreeBSD-i686-Clang
   Windows-i686
   NaCl-x86_64
 #   NaCl-x86_64-glibc
@@ -29,10 +31,7 @@ platforms=(
   Android14-MIPS
 )
 
-# Extract path to NaCl SDK from CMake toolchain files.
-naclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64.Toolchain.cmake`
-naclGNUPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64-glibc.Toolchain.cmake`
-pnaclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/PNaCl.Toolchain.cmake`
+source ./sdkPaths
 
 function clean()
 {

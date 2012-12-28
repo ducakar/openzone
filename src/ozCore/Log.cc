@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -33,9 +33,11 @@
 namespace oz
 {
 
-static const int OUT_BUFFER_SIZE = 4096;
-
-static const char* const SIGNALS[][2] =
+static const int         OUT_BUFFER_SIZE      = 4096;
+static const int         INDENT_SPACES        = 2;
+static const char        INDENT_BUFFER[49]    = "                                                ";
+static const int         INDENT_BUFFER_LENGTH = sizeof( INDENT_BUFFER ) - 1;
+static const char* const SIGNALS[][2]         =
 {
   { "SIG???",    "[invalid signal number]"    },
   { "SIGHUP",    "Hangup"                     }, //  1
@@ -73,10 +75,18 @@ static const char* const SIGNALS[][2] =
 
 static char  filePath[256] = "";
 static FILE* file          = nullptr;
-static int   tabs          = 0;
+static int   indentLevel   = 0;
 
 bool Log::showVerbose      = false;
 bool Log::verboseMode      = false;
+
+static const char* getIndent()
+{
+  hard_assert( indentLevel >= 0 );
+
+  int bias = max<int>( INDENT_BUFFER_LENGTH - indentLevel * INDENT_SPACES, 0 );
+  return &INDENT_BUFFER[bias];
+}
 
 const char* Log::logFile()
 {
@@ -85,18 +95,18 @@ const char* Log::logFile()
 
 void Log::resetIndent()
 {
-  tabs = 0;
+  indentLevel = 0;
 }
 
 void Log::indent()
 {
-  ++tabs;
+  ++indentLevel;
 }
 
 void Log::unindent()
 {
-  if( tabs > 0 ) {
-    --tabs;
+  if( indentLevel > 0 ) {
+    --indentLevel;
   }
 }
 
@@ -153,16 +163,14 @@ void Log::print( const char* s, ... )
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
+  const char* indent = getIndent();
+
   if( !verboseMode || showVerbose || file == nullptr ) {
-    for( int i = 0; i < tabs; ++i ) {
-      fputs( "  ", stdout );
-    }
+    fputs( indent, stdout );
     fputs( buffer, stdout );
   }
   if( file != nullptr ) {
-    for( int i = 0; i < tabs; ++i ) {
-      fputs( "  ", file );
-    }
+    fputs( indent, file );
     fputs( buffer, file );
     fflush( file );
   }
@@ -208,17 +216,15 @@ void Log::println( const char* s, ... )
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
+  const char* indent = getIndent();
+
   if( !verboseMode || showVerbose || file == nullptr ) {
-    for( int i = 0; i < tabs; ++i ) {
-      fputs( "  ", stdout );
-    }
+    fputs( indent, stdout );
     fputs( buffer, stdout );
     fputc( '\n', stdout );
   }
   if( file != nullptr ) {
-    for( int i = 0; i < tabs; ++i ) {
-      fputs( "  ", file );
-    }
+    fputs( indent, file );
     fputs( buffer, file );
     fputc( '\n', file );
     fflush( file );
@@ -303,7 +309,7 @@ void Log::printSignal( int sigNum )
 
 bool Log::init( const char* filePath_, bool clearFile )
 {
-  tabs = 0;
+  indentLevel = 0;
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
 

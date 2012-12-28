@@ -24,7 +24,7 @@
   "nItems":             8,
   "defaultItems":
   [
-                        "droid_weapon.blaster"
+                        "droid$blaster"
   ],
   "weaponItem":         0,
 

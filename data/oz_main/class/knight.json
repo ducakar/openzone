@@ -19,7 +19,7 @@
   "nItems":             8,
   "defaultItems":
   [
-                        "knight_weapon.mace",
+                        "knight$mace",
                         "firstAid",
                         "cvicek",
                         "cvicek"

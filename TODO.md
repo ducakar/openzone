@@ -49,6 +49,8 @@ CURRENT
 
 2.0
 
+- ozCore
+    * optional double precision
 - ozDynamics
     * finish ozDynamics
 - matrix

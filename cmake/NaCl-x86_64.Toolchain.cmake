@@ -1,5 +1,6 @@
 set( NACL                       ON )
 
+set( PLATFORM_NAME              "NaCl" )
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "x86_64-nacl" )
 set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_23/toolchain/linux_x86_newlib" )

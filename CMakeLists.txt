@@ -38,17 +38,15 @@ else()
 endif()
 
 if( ANDROID )
-  set( CMAKE_SYSTEM_NAME Android )
   set( OZ_SDL2 ON )
 elseif( NACL )
-  set( CMAKE_SYSTEM_NAME NaCl )
   set( OZ_NET OFF )
   set( OZ_SDL2 OFF )
 elseif( WIN32 )
   set( OZ_STANDALONE ON )
 endif()
 
-set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
+set( OZ_PLATFORM_NAME "${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
 
 if( OZ_STANDALONE )
   set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
@@ -192,11 +190,11 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   # AddressSanitizer.
   # set( flags "${flags} -fsanitize=address" )
 elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
-  set( flags "-pipe -std=gnu++0x" )
+  set( flags "-std=gnu++0x" )
 elseif( ANDROID )
-  set( flags "-pipe -std=gnu++0x -pedantic -fstrict-enums" )
+  set( flags "-std=gnu++0x -pedantic -fstrict-enums" )
 else()
-  set( flags "-pipe -std=c++0x -pedantic -fstrict-enums" )
+  set( flags "-std=c++0x -pedantic -fstrict-enums" )
 endif()
 
 set( flags "${flags} -fvisibility-inlines-hidden -fno-exceptions -fno-rtti -ffast-math" )
@@ -216,6 +214,8 @@ else()
 endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )
+# set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fdata-sections -ffunction-sections" )
+# set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections" )
 
 # Strings for BuildInfo class.
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

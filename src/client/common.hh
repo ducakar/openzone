@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,11 @@
 #include <modules/common.hh>
 
 #include <client/config.hh>
+
+// Prevent inclusion of SDL_main.h; morons defining a macro named `main` in a popular library's
+// header should be shot on sight. It causes havoc in several places in OpenZone engine. SDL_main.h
+// should be explicitly included when needed.
+#define _SDL_main_h
 
 #define OZ_DL_DECLARE( func ) \
   decltype( ::func )* func

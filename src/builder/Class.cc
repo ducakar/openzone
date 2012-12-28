@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -331,12 +331,12 @@ void Class::fillWeapon( const char* className )
     context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT_EMPTY] );
   }
 
-  int underscore = name.index( '_' );
-  if( underscore < 0 ) {
-    OZ_ERROR( "%s: Weapon name should be of the form botName_weapon.weaponName", className );
+  int dollar = name.index( '$' );
+  if( dollar < 0 ) {
+    OZ_ERROR( "%s: Weapon name should be of the form botPrefix$weaponName", className );
   }
 
-  userBase     = name.substring( 0, underscore );
+  userBase     = name.substring( 0, dollar );
 
   nRounds      = config["nRounds"].get( -1 );
   shotInterval = config["shotInterval"].get( 0.5f );

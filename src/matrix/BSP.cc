@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -225,15 +225,6 @@ void BSP::unload()
 
     delete[] reinterpret_cast<char*>( planes );
 
-    nPlanes       = 0;
-    nNodes        = 0;
-    nLeaves       = 0;
-    nLeafBrushes  = 0;
-    nBrushes      = 0;
-    nBrushSides   = 0;
-    nEntities     = 0;
-    nBoundObjects = 0;
-
     planes        = nullptr;
     nodes         = nullptr;
     leaves        = nullptr;
@@ -243,11 +234,25 @@ void BSP::unload()
     entities      = nullptr;
     boundObjects  = nullptr;
 
+    nPlanes       = 0;
+    nNodes        = 0;
+    nLeaves       = 0;
+    nLeafBrushes  = 0;
+    nBrushes      = 0;
+    nBrushSides   = 0;
+    nEntities     = 0;
+    nBoundObjects = 0;
+
     Log::printEnd( " OK" );
   }
 }
 
-void BSP::init( const char* name_, int id_ )
+BSP::BSP( const char* name_, int id_ ) :
+  planes( nullptr ), nodes( nullptr ), leaves( nullptr ), leafBrushes( nullptr ),
+  entities( nullptr ), brushes( nullptr ), brushSides( nullptr ), boundObjects( nullptr ),
+  nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nEntities( 0 ), nBrushes( 0 ),
+  nBrushSides( 0 ), nBoundObjects( 0 ),
+  name( name_ ), id( id_ ), nUsers( 0 )
 {
   PFile file( String::str( "bsp/%s.ozBSP", name_ ) );
   if( !file.map() ) {
@@ -259,25 +264,6 @@ void BSP::init( const char* name_, int id_ )
   mins          = is.readPoint();
   maxs          = is.readPoint();
 
-  nPlanes       = 0;
-  nNodes        = 0;
-  nLeaves       = 0;
-  nLeafBrushes  = 0;
-  nBrushes      = 0;
-  nBrushSides   = 0;
-  nEntities     = 0;
-  nBoundObjects = 0;
-
-  planes        = nullptr;
-  nodes         = nullptr;
-  leaves        = nullptr;
-  leafBrushes   = nullptr;
-  brushes       = nullptr;
-  brushSides    = nullptr;
-  entities      = nullptr;
-  boundObjects  = nullptr;
-
-  name          = name_;
   title         = lingua.get( is.readString() );
   description   = lingua.get( is.readString() );
 
@@ -300,9 +286,6 @@ void BSP::init( const char* name_, int id_ )
 
   String sDemolishSound = is.readString();
   demolishSound = sDemolishSound.isEmpty() ? -1 : liber.soundIndex( sDemolishSound );
-
-  id     = id_;
-  nUsers = 0;
 
   file.unmap();
 }

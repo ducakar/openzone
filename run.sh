@@ -16,13 +16,10 @@
 
 defaultPlatform=Linux-x86_64-Clang
 
+source ./sdkPaths.sh
+
 function run_nacl()
 {
-  # Extract path to NaCl SDK from CMake toolchain files.
-  naclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64.Toolchain.cmake`
-  naclGNUPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/NaCl-x86_64-glibc.Toolchain.cmake`
-  pnaclPrefix=`sed -r '/ PLATFORM_PREFIX / !d; s|.*\"(.*)\".*|\1|' cmake/PNaCl.Toolchain.cmake`
-
   mkdir -p build/NaCl-test
 
   # Just create symlinks instead of copying.

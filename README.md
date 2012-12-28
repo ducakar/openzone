@@ -235,7 +235,7 @@ One of the following commands must be given:
 ### `ports.sh [clean | fetch | build]` ###
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
-zlib, physfs, SDL, SDL_ttf, OpenAL Soft, squish for NaCl-x86_64 and NaCl-i686.
+all required libraries for NaCl and Android configurations that are not provided by SDKs.
 The following commands may be given (`build` is assumed if none):
 
 - `clean`: Delete everything in `ports` directory except downloaded sources.

@@ -1,28 +1,27 @@
 {
   "base":               "Weapon",
 
-  "title":              "skull",
+  "title":              "mace",
 
   "flag.cylinder":      false,
 
-  "dim":                [ 0.15, 0.5, 0.12 ],
+  "dim":                [ 0.35, 0.6, 0.15 ],
 
   "life":               100,
-  "resistance":         40,
 
   "mass":               10,
-  "lift":               0.2,
+  "lift":               0.7,
 
   "nRounds":            -1,
   "shotInterval":       0.5,
 
-  "onShot":             "skull_onShot",
+  "onShot":             "mace_onShot",
 
   "fragPool":           "metal",
   "nFrags":             2,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "bauul_weapon.skull",
+  "imagoModel":         "pknight$mace",
 
   "audioType":          "Basic",
   "audioSounds":

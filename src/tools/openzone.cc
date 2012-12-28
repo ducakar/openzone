@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,30 +27,27 @@
 #include <client/Client.hh>
 #include <client/NaClPlatform.hh>
 
+#include <SDL.h>
+
 #if defined( __ANDROID__ )
-
-#include <jni.h>
-
-extern "C"
-void SDL_Android_Init( JNIEnv* env, jclass clazz );
-
-extern "C"
-void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
-
+# include <jni.h>
+extern "C" void SDL_Android_Init( JNIEnv* env, jclass clazz );
+extern "C" void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
 #elif defined( __native_client__ )
-
-#include <SDL_nacl.h>
-
+# include <SDL_nacl.h>
+#elif defined( _WIN32 )
+extern "C" int SDL_main( int argc, char **argv );
 #endif
 
 using namespace oz;
 using namespace oz::client;
 
 #if defined( __ANDROID__ )
-extern "C"
 void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
 void MainInstance::mainThreadMain( void* instance )
+#elif defined( _WIN32 )
+int SDL_main( int argc, char** argv )
 #else
 int main( int argc, char** argv )
 #endif
@@ -68,7 +65,7 @@ int main( int argc, char** argv )
   int exitCode = EXIT_FAILURE;
 
   Log::printRaw( "OpenZone " OZ_VERSION "\n"
-                 "Copyright © 2002-2012 Davorin Učakar\n"
+                 "Copyright © 2002-2013 Davorin Učakar\n"
                  "This program comes with ABSOLUTELY NO WARRANTY.\n"
                  "This is free software, and you are welcome to redistribute it\n"
                  "under certain conditions; See COPYING file for details.\n\n" );

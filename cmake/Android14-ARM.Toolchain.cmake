@@ -1,5 +1,6 @@
 set( ANDROID                    ON )
 
+set( PLATFORM_NAME              "Android" )
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "arm-linux-androideabi" )
 set( PLATFORM_PROC_PREFIX       "armeabi" )

@@ -1,22 +1,22 @@
 {
   "base":               "Weapon",
 
-  "title":              "chaingun",
+  "title":              "blaster",
 
   "flag.cylinder":      false,
 
-  "dim":                [ 0.15, 0.48, 0.07 ],
+  "dim":                [ 0.13, 0.27, 0.05 ],
 
   "life":               100,
-  "resistance":         40,
+  "resistance":         50,
 
-  "mass":               10,
+  "mass":               5,
   "lift":               0.8,
 
-  "nRounds":            800,
-  "shotInterval":       0.1,
+  "nRounds":            -1,
+  "shotInterval":       0.5,
 
-  "onShot":             "chaingun_onShot",
+  "onShot":             "blaster_onShot",
 
   "attrib.suicide":     true,
 
@@ -24,7 +24,7 @@
   "nFrags":             2,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "droid_weapon.chaingun",
+  "imagoModel":         "droid$blaster",
 
   "audioType":          "Basic",
   "audioSounds":

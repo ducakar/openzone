@@ -22,7 +22,7 @@
   "nItems":             8,
   "defaultItems":
   [
-                        "beast_weapon.plasmagun",
+                        "beast$plasmagun",
                         "musicPlayer",
                         "firstAid",
                         "cvicek"

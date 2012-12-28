@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -32,12 +32,14 @@
 
 /**
  * @def OZ_STATIC_POOL_ALLOC
- * Define normal and `std::nothrow` non-array versions of `new` and `delete` for a class that use
- * the given pool and disable other `new`/`delete` operators.
+ * Add this macro to your class definition to define standard non-array `new`/`delete` operators for
+ * a class.
  *
  * As `new`/`delete` are static functions so has to be the given pool. The derived classes also need
  * to have overloaded `new`/`delete` defined the same way otherwise the ones from the base class
  * will be used, which will not end good.
+ *
+ * Array versions of `new`/`delete` operator are disabled for the enclosing class.
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
   void* operator new ( size_t ) \
@@ -55,11 +57,12 @@
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC
- * Define non-array operator `new` for allocation from a pool and disable other `new` and `delete`
- * operators.
+ * Add this macro to your class definition to define a `new` overload that accepts a pool parameter.
  *
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
  * object should be manually destructed and deallocated via `pool.deallocate( object )`.
+ *
+ * All standard `new`/`delete` operators are disabled for the enclosing class.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
   void* operator new ( size_t ) = delete; \

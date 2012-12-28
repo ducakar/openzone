@@ -1,5 +1,6 @@
 set( MINGW32 ON )
 
+set( PLATFORM_NAME              "Windows" )
 set( PLATFORM_TRIPLET           "i486-mingw32" )
 set( PLATFORM_PREFIX            "/usr/${PLATFORM_TRIPLET}" )
 set( PLATFORM_TOOL_PREFIX       "${PLATFORM_PREFIX}" )

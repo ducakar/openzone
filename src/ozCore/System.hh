@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -136,7 +136,7 @@ class System
                        const char* msg, ... );
 
     /**
-     * Initialise thread's signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
+     * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
      *
      * Signal handlers must be set-up for each thread in a process separately. `System::init()`
      * method sets them up for the caller thread only, for other threads this method should be used

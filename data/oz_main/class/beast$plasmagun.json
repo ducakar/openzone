@@ -1,30 +1,32 @@
 {
   "base":               "Weapon",
 
-  "title":              "blaster",
+  "title":              "plasma gun",
 
+  "flag.onUpdate":      false,
   "flag.cylinder":      false,
 
-  "dim":                [ 0.13, 0.27, 0.05 ],
+  "dim":                [ 0.17, 0.75, 0.08 ],
 
   "life":               100,
-  "resistance":         40,
+  "resistance":         50,
 
-  "mass":               10,
+  "mass":               5,
   "lift":               0.8,
 
-  "nRounds":            -1,
-  "shotInterval":       0.5,
+  "nRounds":            160,
+  "shotInterval":       0.12,
 
-  "onShot":             "blaster_onShot",
+  "onUpdate":           "plasmagun_onUpdate",
+  "onShot":             "plasmagun_onShot",
 
   "attrib.suicide":     true,
 
   "fragPool":           "metal",
-  "nFrags":             2,
+  "nFrags":             4,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "droid_weapon.blaster",
+  "imagoModel":         "hobgoblin$plasmagun",
 
   "audioType":          "Basic",
   "audioSounds":

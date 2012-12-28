@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 # undef far
 #endif
 
-// We want to use C++ wrapped C headers, not pure C ones that are included via SDL.
+// Some standard C/C++ headers.
 #include <climits>
 #include <cctype>
 #include <cmath>

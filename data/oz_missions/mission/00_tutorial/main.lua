@@ -214,7 +214,7 @@ function onCreate()
     "Some objects like this bombs are dangerous. They will explode when destroyed or 5 s after " ..
     "activation (they can also be deactivated by right clicking them again)." ) )
 
-  ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", oX - 5, oY + 20, oZ - 2 )
+  ozOrbisAddObj( OZ_FORCE, "beast$plasmagun", oX - 5, oY + 20, oZ - 2 )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 10, oY + 30, oZ )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 8, oY + 30, oZ )
 

@@ -1,31 +1,30 @@
 {
   "base":               "Weapon",
 
-  "title":              "chaingun",
+  "title":              "grenade launcher",
 
-  "flag.onUpdate":      false,
   "flag.cylinder":      false,
 
-  "dim":                [ 0.28, 0.60, 0.135 ],
+  "dim":                [ 0.14, 0.32, 0.11 ],
 
   "life":               100,
-  "resistance":         40,
+  "resistance":         50,
 
-  "mass":               5,
+  "mass":               10,
   "lift":               0.8,
 
-  "nRounds":            610,
-  "shotInterval":       0.12,
+  "nRounds":            120,
+  "shotInterval":       0.5,
 
-  "onShot":             "chaingun_onShot",
+  "onShot":             "grenadeLauncher_onShot",
 
   "attrib.suicide":     true,
 
   "fragPool":           "metal",
-  "nFrags":             4,
+  "nFrags":             2,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "ratamahatta_weapon.chaingun",
+  "imagoModel":         "droid$grenadeLauncher",
 
   "audioType":          "Basic",
   "audioSounds":

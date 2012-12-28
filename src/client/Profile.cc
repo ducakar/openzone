@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2012 Davorin Učakar
+ * Copyright © 2002-2013 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ void Profile::init()
 
     JSON& itemsConfig = profileConfig.addArray( "items" );
 
-    itemsConfig.add( "beast_weapon.plasmagun" );
+    itemsConfig.add( "beast$plasmagun" );
     itemsConfig.add( "nvGoggles" );
     itemsConfig.add( "binoculars" );
     itemsConfig.add( "galileo" );

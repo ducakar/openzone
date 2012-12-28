@@ -1,5 +1,9 @@
 configure_file( config.hh.in config.hh @ONLY )
 
+if( PLATFORM_EMBEDDED )
+  return()
+endif()
+
 add_library( builder STATIC
 #BEGIN SOURCES
   BSP.hh

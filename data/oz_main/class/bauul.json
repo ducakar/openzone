@@ -37,7 +37,7 @@
   "nItems":             16,
   "defaultItems":
   [
-                        "bauul_weapon.skull"
+                        "bauul$skull"
   ],
   "weaponItem":         0,
 

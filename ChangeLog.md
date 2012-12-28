@@ -10,7 +10,7 @@
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of key-only elements instead of key-value pairs
     * new Mat33 class
-    * SIMD support in linear algebra classes
+    * SIMD support for linear algebra classes
     * new SpinLock class
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON

@@ -8,9 +8,8 @@
   "dim":                [ 0.18, 0.42, 0.04 ],
 
   "life":               100,
-  "resistance":         40,
 
-  "mass":               10,
+  "mass":               5,
   "lift":               0.7,
 
   "nRounds":            -1,
@@ -22,7 +21,7 @@
   "nFrags":             2,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "goblin_weapon.axe",
+  "imagoModel":         "goblin$axe",
 
   "audioType":          "Basic",
   "audioSounds":
