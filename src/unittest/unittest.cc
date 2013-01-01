@@ -42,12 +42,15 @@ int main()
   Log() << "Unittest began\n";
 
   System::init();
+  Math::seed( 42 );
 
   test_common();
   test_iterables();
   test_arrays();
 
   test_Alloc();
+
+  test_String();
 
   Log() << ( hasPassed ? "Unittest PASSED\n" : "Unittest FAILED\n" );
   return EXIT_SUCCESS;

@@ -189,7 +189,7 @@ class Math
     }
 
     /**
-     * Base-e exponent function.
+     * Exponent function (base e).
      */
     OZ_ALWAYS_INLINE
     static float exp( float x )
@@ -198,7 +198,25 @@ class Math
     }
 
     /**
-     * Logarithm.
+     * Exponent function (base 2).
+     */
+    OZ_ALWAYS_INLINE
+    static float exp2( float x )
+    {
+      return __builtin_exp2f( x );
+    }
+
+    /**
+     * Exponent function (base 10).
+     */
+    OZ_ALWAYS_INLINE
+    static float exp10( float x )
+    {
+      return __builtin_expf( __builtin_logf( 10.0f ) * x );
+    }
+
+    /**
+     * Logarithm (base e).
      */
     OZ_ALWAYS_INLINE
     static float log( float x )
@@ -206,6 +224,28 @@ class Math
       hard_assert( x > 0.0f );
 
       return __builtin_logf( x );
+    }
+
+    /**
+     * Logarithm (base 2).
+     */
+    OZ_ALWAYS_INLINE
+    static float log2( float x )
+    {
+      hard_assert( x > 0.0f );
+
+      return __builtin_log2f( x );
+    }
+
+    /**
+     * Logarithm (base 10).
+     */
+    OZ_ALWAYS_INLINE
+    static float log10( float x )
+    {
+      hard_assert( x > 0.0f );
+
+      return __builtin_log10f( x );
     }
 
     /**
@@ -302,33 +342,33 @@ class Math
      * True iff the number is not NaN or infinity.
      */
     OZ_ALWAYS_INLINE
-    static bool isfinite( float x )
+    static bool isFinite( float x )
     {
-      // GCC's isfinite() is broken with -ffast-math since it implies -ffinite-math-only.
-      // Furthermore, this expression is faster than isfinite().
-      return x + 1.0f != x;
+      // isfinite() is broken in GCC with -ffinite-math-only (implied by -ffast-math).
+      // Furthermore, this expression is faster.
+      return x + 1.0e38f != x && x == x;
     }
 
     /**
      * True iff the number (positive or negative) infinity.
      */
     OZ_ALWAYS_INLINE
-    static bool isinf( float x )
+    static bool isInf( float x )
     {
-      // GCC's isinf() is broken with -ffast-math since it implies -ffinite-math-only.
-      // Furthermore, this expression is faster than isinf().
-      return x + 1.0f == x && x * 0.0f != x;
+      // isinf() is broken in GCC with -ffinite-math-only (implied by -ffast-math).
+      // Furthermore, this expression is faster.
+      return x + 1.0e38f == x && x * 0.0f != x;
     }
 
     /**
      * True iff the number is NaN.
      */
     OZ_ALWAYS_INLINE
-    static bool isnan( float x )
+    static bool isNaN( float x )
     {
-      // GCC's isnan() is broken with -ffast-math since it implies -ffinite-math-only. Furthermore,
-      // this expression is faster than isnan().
-      return x + 1.0f == x && x * 0.0f == x;
+      // isnan() is broken in GCC with -ffinite-math-only (implied by -ffast-math).
+      // Furthermore, this expression is faster.
+      return ( x + 1.0e38f == x && x * 0.0f == x ) || x != x;
     }
 
     /**
@@ -380,6 +420,36 @@ class Math
     }
 
     /**
+     * Get floating-point value as a bit-field.
+     */
+    OZ_ALWAYS_INLINE
+    static uint toBits( float x )
+    {
+      union FloatToBits
+      {
+        float value;
+        uint  bits;
+      }
+      fb = { x };
+      return fb.bits;
+    }
+
+    /**
+     * Get floating-point value represented by a bit-field.
+     */
+    OZ_ALWAYS_INLINE
+    static float fromBits( uint b )
+    {
+      union BitsToFloat
+      {
+        uint  bits;
+        float value;
+      }
+      bf = { b };
+      return bf.value;
+    }
+
+    /**
      * Fast square root (using algorithm form Quake).
      */
     OZ_ALWAYS_INLINE
@@ -388,7 +458,7 @@ class Math
       union FloatBits
       {
         float value;
-        int   bits;
+        uint  bits;
       }
       fb = { x };
 
@@ -407,7 +477,7 @@ class Math
       union FloatBits
       {
         float value;
-        int   bits;
+        uint  bits;
       }
       fb = { x };
 

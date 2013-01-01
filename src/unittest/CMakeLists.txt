@@ -5,6 +5,7 @@ add_executable( unittest
   arrays.cc
   common.cc
   iterables.cc
+  String.cc
   unittest.cc
 #END SOURCES
 )

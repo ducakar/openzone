@@ -79,7 +79,7 @@ void BSP::load()
   mins = Point( -Math::INF, -Math::INF, -Math::INF );
   maxs = Point( +Math::INF, +Math::INF, +Math::INF );
 
-  if( Math::isnan( scale ) ) {
+  if( Math::isNaN( scale ) ) {
     OZ_ERROR( "Invalid BSP config" );
   }
 
@@ -964,7 +964,7 @@ void BSP::check() const
   }
 
   for( int i = 0; i < planes.length(); ++i ) {
-    if( !Math::isfinite( planes[i].d ) ) {
+    if( !Math::isFinite( planes[i].d ) ) {
       OZ_ERROR( "BSP has invalid plane %d", i );
     }
   }

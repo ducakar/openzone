@@ -9,7 +9,7 @@
   "dim":                [ 2.99, 2.99, 2.99 ],
 
   "life":               1,
-  "resistance":         INF,
+  "resistance":         inf,
 
   "onUpdate":           "bigExplosion_onUpdate",
 

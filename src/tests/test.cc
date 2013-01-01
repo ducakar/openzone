@@ -24,6 +24,9 @@
 #include <ozCore/ozCore.hh>
 #include <ozDynamics/ozDynamics.hh>
 
+#include <clocale>
+#include <climits>
+
 using namespace oz;
 
 void bar();
@@ -112,14 +115,60 @@ class Foo
 
 };
 
-void bar()
+static void testParseFloat()
 {
-  StackTrace st = StackTrace::current( 0 );
-  Log::printTrace( st );
+  for( int i = 0; i < 1000000; ++i ) {
+    float x = Math::rand() * 1.0e38f;
+
+    if( i == 0 ) {
+      x = 0.0f;
+    }
+    else if( i == 1 ) {
+      x = Math::INF;
+    }
+    else if( i == 2 ) {
+      x = -Math::INF;
+    }
+    else if( i == 3 ) {
+      x = Math::NaN;
+    }
+
+    String s = String( x, 9 );
+    float  y = String::parseFloat( s );
+    String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
+    float  z = String::parseFloat( t );
+
+    if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
+      continue;
+    }
+    if( x != y ) {
+      Log::println( "%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x );
+    }
+    if( x != z ) {
+      Log::println( "%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x );
+    }
+  }
+#if 0
+  for( int i = 0; i < 100; ++i ) {
+    float  x = Math::rand() * 3.4e38f;
+    String s = String( x, 9 );
+    float  y = String::parseFloat( s );
+    String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
+    float  z = String::parseFloat( t );
+
+    if( x != y ) {
+      Log::println( "%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x );
+    }
+    if( x != z ) {
+      Log::println( "%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x );
+    }
+  }
+#endif
 }
 
 int main()
 {
   System::init();
+  testParseFloat();
   return 0;
 }

@@ -56,7 +56,7 @@ class String
     /**
      * Only allocate storage, do not initialise string.
      */
-    explicit String( int count );
+    explicit String( int count, int );
 
     /**
      * If existing storage is too small, allocate a new one.
@@ -253,6 +253,41 @@ class String
     }
 
     /**
+     * Parse boolean value.
+     *
+     * @param s string to parse.
+     * @param end if not nullptr, it is set to the first character after the successfully parsed
+     * string. Thus, if parsing fails `end` value equals `s`.
+     * @return true if "true", false if "false" or anything else (parsing fails).
+     */
+    static bool parseBool( const char* s, const char** end = nullptr );
+
+    /**
+     * Parse int value.
+     *
+     * Signed integer string the should match regular expression `-?(0|[1-9][0-9]*)`.
+     *
+     * @param s string to parse.
+     * @param end if not nullptr, it is set to the first character after the successfully parsed
+     * string. Thus, if parsing fails `end` value equals `s`.
+     * @return parsed integer value, 0 if parsing fails.
+     */
+    static int parseInt( const char* s, const char** end = nullptr );
+
+    /**
+     * Parse float value.
+     *
+     * Single-precision floating-point value should match regular expression `-?inf|nan` or
+     * `-?(0|(1-9][0-9]*)(\\.[0-9]+)?((e|E)(-?[0-9]+))` (JSON number format).
+     *
+     * @param s string to parse.
+     * @param end if not nullptr, it is set to the first character after the successfully parsed
+     * string. Thus, if parsing fails `end` value equals `s`.
+     * @return parsed value, NaN if parsing fails.
+     */
+    static float parseFloat( const char* s, const char** end = nullptr );
+
+    /**
      * Cast signed byte string to C string.
      */
     OZ_ALWAYS_INLINE
@@ -313,6 +348,30 @@ class String
      * Create string form the given C string.
      */
     String( const char* s );
+
+    /**
+     * Create either "true" or "false" string.
+     */
+    explicit String( bool b );
+
+    /**
+     * Create a string representing the given int value.
+     */
+    explicit String( int i );
+
+    /**
+     * Create a string representing the given float value.
+     *
+     * Number is formatted the same as in JSON or %.9g in `printf()` (using C locale).
+     *
+     * Converting a 6-digit decimal representation to a float and back to decimal representation
+     * should be an identity. The same for converting a float to a 9-digit decimal representation
+     * and back to float.
+     *
+     * @param f number.
+     * @param nDigits number of digits to show.
+     */
+    explicit String( float f, int nDigits = 6 );
 
     /**
      * Destructor.
@@ -671,6 +730,33 @@ class String
      * True iff string ends with the given characters.
      */
     bool endsWith( const char* sub ) const;
+
+    /**
+     * Parse bool value, wraps `parseBool( const char* s, const char** end )`.
+     */
+    OZ_ALWAYS_INLINE
+    bool parseBool( const char** end = nullptr ) const
+    {
+      return parseBool( buffer, end );
+    }
+
+    /**
+     * Parse int value, wraps `parseInt( const char* s, const char** end )`.
+     */
+    OZ_ALWAYS_INLINE
+    int parseInt( const char** end = nullptr ) const
+    {
+      return parseInt( buffer, end );
+    }
+
+    /**
+     * Parse float value, wraps `parseFloat( const char* s, const char** end )`.
+     */
+    OZ_ALWAYS_INLINE
+    float parseFloat( const char** end = nullptr ) const
+    {
+      return parseFloat( buffer, end );
+    }
 
     /**
      * Create concatenated string.

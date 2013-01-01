@@ -34,6 +34,7 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 
 #if defined( __ANDROID__ )
 # include <android/log.h>
@@ -251,7 +252,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
 
 #if defined( __ANDROID__ )
 
-// TODO Implement bell for OpenSL ES.
+// TODO: Implement bell for OpenSL ES.
 
 #elif defined( __native_client__ )
 

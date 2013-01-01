@@ -5,7 +5,7 @@
   "crouchDimZ":         0.79,
 
   "life":               100,
-  "resistance":         INF,
+  "resistance":         inf,
 
   "mass":               100,
   "lift":               1.3,
@@ -27,7 +27,7 @@
   "regeneration":       0,
 
   "reachDist":          2,
-  "grabWeight":         INF,
+  "grabWeight":         inf,
   "throwMomentum":      10,
 
   "nameList":           "bogovi",

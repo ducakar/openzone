@@ -27,13 +27,13 @@
 #include "JSON.hh"
 
 #include "List.hh"
+#include "SList.hh"
 #include "Map.hh"
 #include "HashMap.hh"
 #include "System.hh"
 #include "Log.hh"
 
 #include <cstring>
-#include <sstream>
 
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
@@ -113,9 +113,11 @@ struct JSON::Parser
     const char*  path;
     int          line;
     int          column;
+    int          oldLine;
+    int          oldColumn;
 
     char readChar();
-    void back();
+    void backChar();
   };
 
   Position pos;
@@ -142,6 +144,9 @@ char JSON::Parser::Position::readChar()
     OZ_PARSE_ERROR( 0, "Unexpected end of file" );
   }
 
+  oldLine   = line;
+  oldColumn = column;
+
   char ch = istream->readChar();
 
   if( ch == '\n' ) {
@@ -155,11 +160,12 @@ char JSON::Parser::Position::readChar()
 }
 
 OZ_HIDDEN
-void JSON::Parser::Position::back()
+void JSON::Parser::Position::backChar()
 {
-  hard_assert( istream->length() > 0 );
-
   istream->setPos( istream->pos() - 1 );
+
+  line   = oldLine;
+  column = oldColumn;
 }
 
 OZ_HIDDEN
@@ -203,7 +209,7 @@ JSON JSON::Parser::parse( InputStream* istream, const char* path )
 
 OZ_HIDDEN
 JSON::Parser::Parser( InputStream* istream, const char* path ) :
-  pos( { istream, path, 1, 0 } )
+  pos( { istream, path, 1, 0, 1, 0 } )
 {}
 
 OZ_HIDDEN
@@ -309,47 +315,29 @@ JSON JSON::Parser::parseValue()
 
       return JSON( new BooleanData( true ), BOOLEAN );
     }
-    default: { // number
-      std::stringstream ss;
-      ss.put( ch );
+    default: { // Number.
+      SList<char, 32> chars;
+      chars.add( ch );
 
       while( pos.istream->isAvailable() ) {
         ch = pos.readChar();
 
         if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
-          pos.back();
+          pos.backChar();
           break;
         }
-        ss.put( ch );
+        if( chars.length() == 32 ) {
+          OZ_PARSE_ERROR( -chars.length(), "Too long " );
+        }
+        chars.add( ch );
       }
+      chars.add( '\0' );
 
-      int nChars = int( ss.tellp() );
+      const char* end;
+      float number = String::parseFloat( chars.begin(), &end );
 
-      float number;
-      ss >> number;
-
-      if( ss.fail() ) {
-        std::string str  = ss.str();
-        const char* s    = str.c_str();
-        float       sign = 1.0f;
-
-        if( s[0] == '-' ) {
-          sign = -1.0f;
-          ++s;
-        }
-        else if( s[0] == '+' ) {
-          ++s;
-        }
-
-        if( strcmp( s, "INF" ) == 0 ) {
-          number = sign * Math::INF;
-        }
-        else if( strcmp( s, "NaN" ) == 0 ) {
-          number = sign * Math::NaN;
-        }
-        else {
-          OZ_PARSE_ERROR( -nChars, "Unknown value type" );
-        }
+      if( end == chars.begin() ) {
+        OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
       }
 
       return JSON( new NumberData( number ), NUMBER );
@@ -374,7 +362,7 @@ JSON JSON::Parser::parseArray()
 
   char ch = skipBlanks();
   if( ch != ']' ) {
-    pos.back();
+    pos.backChar();
   }
 
   while( ch != ']' ) {
@@ -399,7 +387,7 @@ JSON JSON::Parser::parseObject()
 
   char ch = skipBlanks();
   if( ch != '}' ) {
-    pos.back();
+    pos.backChar();
   }
 
   while( ch != '}' ) {
@@ -447,7 +435,8 @@ void JSON::Parser::finish()
 
 struct JSON::Formatter
 {
-  static const int ALIGNMENT_COLUMN = 32;
+  static const int ALIGNMENT_COLUMN   = 32;
+  static const int SIGNIFICANT_DIGITS = 6;
 
   BufferStream* ostream;
   const char*   lineEnd;
@@ -540,11 +529,8 @@ void JSON::Formatter::writeValue( const JSON& value )
     case NUMBER: {
       const NumberData* numberData = static_cast<const NumberData*>( value.data );
 
-      std::stringstream ss;
-      ss << numberData->value;
-
-      int nChars = int( ss.tellp() );
-      ss.read( ostream->forward( nChars ), nChars );
+      String s = String( numberData->value, SIGNIFICANT_DIGITS );
+      ostream->writeChars( s, s.length() );
       break;
     }
     case STRING: {
@@ -2428,22 +2414,19 @@ String JSON::toString() const
       return "null";
     }
     case BOOLEAN: {
-      return static_cast<const BooleanData*>( data )->value ? "true" : "false";
+      const BooleanData* booleanData = static_cast<const BooleanData*>( data );
+
+      return booleanData->value ? "true" : "false";
     }
     case NUMBER: {
-      std::stringstream ss;
-      ss << static_cast<const NumberData*>( data )->value;
+      const NumberData* numberData = static_cast<const NumberData*>( data );
 
-      int nChars = int( ss.tellp() );
-      char* buffer;
-      String r = String::create( nChars, &buffer );
-      ss.read( buffer, nChars );
-      buffer[nChars] = '\0';
-
-      return r;
+      return String( numberData->value, Formatter::SIGNIFICANT_DIGITS );
     }
     case STRING: {
-      return "\"" + static_cast<const StringData*>( data )->value + "\"";
+      const StringData* stringData = static_cast<const StringData*>( data );
+
+      return "\"" + stringData->value + "\"";
     }
     case ARRAY: {
       const List<JSON>& list = static_cast<const ArrayData*>( data )->list;

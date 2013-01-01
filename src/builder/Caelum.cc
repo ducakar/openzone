@@ -52,7 +52,7 @@ void Caelum::build( const char* name )
       p = 10.0f * Vec3( Math::centralRand(), Math::centralRand(), Math::centralRand() );
       norm = p.sqN();
     }
-    while( Math::isnan( norm ) || norm < 25.0f || norm > 100.0f );
+    while( Math::isNaN( norm ) || norm < 25.0f || norm > 100.0f );
 
     Vec3 z = ~p;
     Vec3 x = ~Vec3( z.z, 0.0f, -z.x );

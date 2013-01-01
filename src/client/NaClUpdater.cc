@@ -171,7 +171,7 @@ void NaClUpdater::downloadUpdates()
 
       float progress = downloader.progress() * 100.0f;
 
-      if( Math::isnan( progress ) ) {
+      if( Math::isNaN( progress ) ) {
         NaClPlatform::post( String::str( "upd1:%d/%d", packageNum, nRemotePackages ) );
       }
       else {

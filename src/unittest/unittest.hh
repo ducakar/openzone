@@ -33,13 +33,10 @@
 
 #define OZ_CHECK( cond ) \
   if( !( cond ) ) { \
-    oz::Log::printRaw( "  Check '%s' failed\n    in %s\n    at %s:%d\n", \
-                       #cond, __PRETTY_FUNCTION__, __FILE__, __LINE__ ); \
-    oz::System::bell(); \
-    ::hasPassed = false; \
+    oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "  Check '%s' failed", #cond ); \
   }
 
-// FIXME Add a space after ellipsis once KDevelop gets that fixed.
+// FIXME: Add a space after ellipsis once KDevelop gets that fixed.
 #define OZ_CHECK_CONTENTS( container, ...) \
   { \
     auto i = citer( container ); \
@@ -164,6 +161,8 @@ void test_iterables();
 void test_arrays();
 
 void test_Alloc();
+
+void test_String();
 
 #ifdef __native_client__
 

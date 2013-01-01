@@ -107,7 +107,7 @@ void Class::fillObject( const char* className )
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
     OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
-              " set resistance to infinity (\"inf\" or \"INF\").", className );
+              " set resistance to infinity (\"inf\").", className );
   }
   if( resistance < 0.0f ) {
     OZ_ERROR( "%s: Invalid resistance. Should be >= 0.", className );

@@ -37,7 +37,9 @@ namespace oz
 /**
  * DOM class for reading JSON configuration files.
  *
- * Beside standard JSON format, `INF` and `NaN` (case sensitive) are also valid numbers.
+ * This implementation strictly follows JSON standard with the following exceptions:
+ * @li `inf` and `-inf` (case-sensitive) represent positive and negative infinity respectively,
+ * @li `nan` and `-nan` (case-sensitive) represent not-a-number.
  */
 class JSON
 {

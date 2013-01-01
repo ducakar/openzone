@@ -26,10 +26,17 @@
 
 #include "String.hh"
 
+#include "Math.hh"
 #include "System.hh"
 
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+
+#if defined( __ANDROID__ ) || defined( _WIN32 )
+# define exp10( x ) exp( log( 10.0 ) * ( x ) )
+#endif
 
 namespace oz
 {
@@ -37,7 +44,7 @@ namespace oz
 static const int LOCAL_BUFFER_SIZE = 4096;
 
 OZ_HIDDEN
-String::String( int count_ ) :
+String::String( int count_, int ) :
   count( count_ )
 {
   ensureCapacity();
@@ -77,6 +84,165 @@ bool String::endsWith( const char* s, const char* sub )
   return subEnd < sub;
 }
 
+bool String::parseBool( const char* s, const char** end )
+{
+  if( s[0] == 't' && s[1] == 'r' && s[2] == 'u' && s[3] == 'e' ) {
+    if( end != nullptr ) {
+      *end = s + 4;
+    }
+    return true;
+  }
+  else {
+    if( end != nullptr ) {
+      if( s[0] == 'f' && s[1] == 'a' && s[2] == 'l' && s[3] == 's' && s[4] == 'e' ) {
+        *end = s + 5;
+      }
+      else {
+        *end = s;
+      }
+    }
+    return false;
+  }
+}
+
+int String::parseInt( const char* s, const char** end )
+{
+  const char* p = s;
+
+  // Sign.
+  int sign = 1;
+  if( *p == '-' ) {
+    sign = -1;
+    ++p;
+  }
+
+  // Non-zero integer.
+  if( '1' <= *p && *p <= '9' ) {
+    int number = *p - '0';
+    ++p;
+
+    while( '0' <= *p && *p <= '9' ) {
+      number *= 10;
+      number += *p - '0';
+      ++p;
+    }
+
+    if( end != nullptr ) {
+      *end = p;
+    }
+    return sign * number;
+  }
+  // Zero or invalid.
+  else {
+    if( end != nullptr ) {
+      *end = *p == '0' ? p + 1 : s;
+    }
+    return 0;
+  }
+}
+
+float String::parseFloat( const char* s, const char** end )
+{
+  const char* p = s;
+  double number;
+
+  // Sign.
+  double sign = 1.0;
+  if( *p == '-' ) {
+    sign = -1.0;
+    ++p;
+  }
+
+  // Non-zero integer part.
+  if( '1' <= *p && *p <= '9' ) {
+    number = *p - '0';
+    ++p;
+
+    while( '0' <= *p && *p <= '9' ) {
+      number *= 10.0;
+      number += *p - '0';
+      ++p;
+    }
+  }
+  // Zero integer part.
+  else if( *p == '0' ) {
+    number = 0.0;
+    ++p;
+  }
+  // Infinity.
+  else if( p[0] == 'i' && p[1] == 'n' && p[2] == 'f' ) {
+    if( end != nullptr ) {
+      *end = p + 3;
+    }
+    return float( sign ) * Math::INF;
+  }
+  // Not-a-number.
+  else if( p[0] == 'n' && p[1] == 'a' && p[2] == 'n' ) {
+    if( end != nullptr ) {
+      *end = p + 3;
+    }
+    return float( sign ) * Math::NaN;
+  }
+  // Invalid.
+  else {
+invalidNumber:
+    if( end != nullptr ) {
+      *end = s;
+    }
+    return Math::NaN;
+  }
+
+  // Fractional part.
+  if( *p == '.' ) {
+    ++p;
+
+    if( *p < '0' || '9' < *p ) {
+      goto invalidNumber;
+    }
+
+    double fract = 1.0;
+    do {
+      fract  *= 0.1;
+      number += ( *p - '0' ) * fract;
+      ++p;
+    }
+    while( '0' <= *p && *p <= '9' );
+  }
+
+  // Exponent.
+  if( *p == 'e' || *p == 'E' ) {
+    ++p;
+
+    double expSign = 1.0;
+    if( *p == '-' ) {
+      expSign = -1.0;
+      ++p;
+    }
+    else if( *p == '+' ) {
+      ++p;
+    }
+
+    if( *p < '0' || '9' < *p ) {
+      goto invalidNumber;
+    }
+
+    double expNumber = 0.0;
+    do {
+      expNumber *= 10.0;
+      expNumber += *p - '0';
+      ++p;
+    }
+    while( '0' <= *p && *p <= '9' );
+
+    number *= exp10( expSign * expNumber );
+  }
+
+  if( end != nullptr ) {
+    *end = p;
+  }
+  return float( sign * number );
+}
+
 String::String( const char* s, int count_ ) :
   buffer( baseBuffer ), count( count_ )
 {
@@ -99,6 +265,175 @@ String::String( const char* s )
     ensureCapacity();
     mCopy( buffer, s, size_t( count + 1 ) );
   }
+}
+
+String::String( bool b ) :
+  buffer( baseBuffer )
+{
+  static_assert( BUFFER_SIZE >= 6, "Too small String::baseBuffer for bool representation." );
+
+  if( b ) {
+    strcpy( baseBuffer, "true" );
+    count = 4;
+  }
+  else {
+    strcpy( baseBuffer, "false" );
+    count = 5;
+  }
+}
+
+String::String( int i ) :
+  buffer( baseBuffer ), count( 0 )
+{
+  static_assert( BUFFER_SIZE >= 12, "Too small String::baseBuffer for int representation." );
+
+  // First, count the digits (at least one digit is always counted).
+  int n = i;
+  do {
+    n /= 10;
+    ++count;
+  }
+  while( n != 0 );
+
+  if( i < 0 ) {
+    if( i == int( 0x80000000 ) ) {
+      strcpy( baseBuffer, "-2147483648" );
+      return;
+    }
+    else {
+      i = -i;
+
+      baseBuffer[0] = '-';
+      ++count;
+    }
+  }
+
+  for( int j = count - 1; ; j-- ) {
+    baseBuffer[j] = char( '0' + ( i % 10 ) );
+    i /= 10;
+
+    if( i == 0 ) {
+      break;
+    }
+  }
+  baseBuffer[count] = '\0';
+}
+
+String::String( float f, int nDigits ) :
+  buffer( baseBuffer ), count( 0 )
+{
+  static_assert( BUFFER_SIZE >= 16, "Too small String::baseBuffer for float representation." );
+  hard_assert( 0 < nDigits && nDigits <= 9 );
+
+  double d = f;
+
+  union DoubleBits
+  {
+    double  value;
+    ulong64 bits;
+  }
+  db = { d };
+
+  // Sign.
+  if( db.bits & 1ull << ( sizeof( d ) * 8 - 1 ) ) {
+    baseBuffer[count++] = '-';
+    d = -d;
+  }
+
+  // Check for zero, infinity and NaN.
+  if( d == 0.0 ) {
+    baseBuffer[count++] = '0';
+    baseBuffer[count] = '\0';
+    return;
+  }
+  else if( d + 1e38 == d || d != d ) {
+    if( d * 0.0 == d || d != d ) {
+      strcpy( baseBuffer + count, "nan" );
+      count += 4;
+    }
+    else {
+      strcpy( baseBuffer + count, "inf" );
+      count += 4;
+    }
+    return;
+  }
+
+  // Check exponent.
+  int e = int( log10( d ) );
+
+  // Non-exponential form.
+  if( -4 < e && e < nDigits ) {
+    // Mantissa.
+    double eps = d * exp10( 1 - nDigits );
+    double n   = d;
+
+    for( int i = min( 0, e ); ; ++i ) {
+      double base = exp10( e - i );
+
+      if( i == e + 1 ) {
+        baseBuffer[count++] = '.';
+      }
+
+      baseBuffer[count++] = char( '0' + int( n / base ) );
+      n = fmod( n, base );
+
+      if( base - n < eps ) {
+        n = 0.0;
+        ++baseBuffer[count - 1];
+
+        if( e - i <= 0 ) {
+          break;
+        }
+      }
+      else if( n < eps && e - i <= 0 ) {
+        break;
+      }
+    }
+  }
+  // Exponential form.
+  else {
+    // Mantissa.
+    double eps = d * exp10( 1 - nDigits );
+    double n   = d;
+
+    if( d < 1.0 ) {
+      --e;
+    }
+
+    for( int i = 0; i < nDigits; ++i ) {
+      double base = exp10( e - i );
+
+      if( i == 1 ) {
+        baseBuffer[count++] = '.';
+      }
+
+      baseBuffer[count++] = char( '0' + int( n / base ) );
+      n = fmod( d, base );
+
+      if( n < eps ) {
+        break;
+      }
+      else if( base - n < eps ) {
+        ++baseBuffer[count - 1];
+        break;
+      }
+    }
+
+    // Exponent.
+    baseBuffer[count++] = 'e';
+
+    if( e < 0 ) {
+      baseBuffer[count++] = '-';
+      e = -e;
+    }
+    else {
+      baseBuffer[count++] = '+';
+    }
+
+    baseBuffer[count++] = char( '0' + e / 10 );
+    baseBuffer[count++] = char( '0' + e % 10 );
+  }
+  baseBuffer[count] = '\0';
 }
 
 String::~String()
@@ -219,7 +554,7 @@ String String::str( const char* s, ... )
 
 String String::create( int length, char** buffer_ )
 {
-  String r( length );
+  String r( length, 0 );
 
   *buffer_ = r.buffer;
   return r;
@@ -228,7 +563,7 @@ String String::create( int length, char** buffer_ )
 String String::replace( const char* s, char whatChar, char withChar )
 {
   int    count = length( s );
-  String r     = String( count );
+  String r     = String( count, 0 );
 
   for( int i = 0; i < count; ++i ) {
     r.buffer[i] = s[i] == whatChar ? withChar : s[i];
@@ -259,7 +594,7 @@ bool String::endsWith( const char* sub ) const
 String String::operator + ( const String& s ) const
 {
   int    rCount = count + s.count;
-  String r      = String( rCount );
+  String r      = String( rCount, 0 );
 
   mCopy( r.buffer, buffer, size_t( count ) );
   mCopy( r.buffer + count, s.buffer, size_t( s.count + 1 ) );
@@ -271,7 +606,7 @@ String String::operator + ( const char* s ) const
 {
   int    sLength = length( s );
   int    rCount  = count + sLength;
-  String r       = String( rCount );
+  String r       = String( rCount, 0 );
 
   mCopy( r.buffer, buffer, size_t( count ) );
   mCopy( r.buffer + count, s, size_t( sLength + 1 ) );
@@ -283,7 +618,7 @@ String operator + ( const char* s, const String& t )
 {
   int    sLength = String::length( s );
   int    rCount  = t.count + sLength;
-  String r       = String( rCount );
+  String r       = String( rCount, 0 );
 
   mCopy( r.buffer, s, size_t( sLength ) );
   mCopy( r.buffer + sLength, t.buffer, size_t( t.count + 1 ) );
@@ -337,7 +672,7 @@ String String::substring( int start ) const
   hard_assert( 0 <= start && start <= count );
 
   int    rCount = count - start;
-  String r      = String( rCount );
+  String r      = String( rCount, 0 );
 
   mCopy( r.buffer, buffer + start, size_t( rCount + 1 ) );
 
@@ -349,7 +684,7 @@ String String::substring( int start, int end ) const
   hard_assert( 0 <= start && start <= count && start <= end && end <= count );
 
   int    rCount = end - start;
-  String r      = String( rCount );
+  String r      = String( rCount, 0 );
 
   mCopy( r.buffer, buffer + start, size_t( rCount ) );
   r.buffer[rCount] = '\0';
@@ -388,7 +723,7 @@ String String::trim( const char* s )
 
 String String::replace( char whatChar, char withChar ) const
 {
-  String r = String( count );
+  String r = String( count, 0 );
 
   for( int i = 0; i < count; ++i ) {
     r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];
