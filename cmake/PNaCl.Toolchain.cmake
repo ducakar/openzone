@@ -3,7 +3,7 @@ set( NACL                       ON )
 set( PLATFORM_NAME              "PNaCl" )
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_TRIPLET           "pnacl" )
-set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_canary/toolchain/linux_x86_pnacl/newlib" )
+set( PLATFORM_PREFIX            "/home/davorin/Razvoj/nacl_sdk/pepper_canary/toolchain/linux_x86_pnacl/newlib" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/PNaCl" )
 set( PLATFORM_EXE_SUFFIX        ".pexe" )
 

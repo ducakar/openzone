@@ -36,7 +36,7 @@ namespace ui
 class Label;
 class Area;
 class LoadingArea;
-class SelectionArea;
+class StrategicArea;
 class HudArea;
 class QuestFrame;
 class GalileoFrame;
@@ -64,7 +64,7 @@ class UI
     Area*          root;
     LoadingArea*   loadingScreen;
     HudArea*       hudArea;
-    SelectionArea* selectionArea;
+    StrategicArea* strategicArea;
     QuestFrame*    questFrame;
     GalileoFrame*  galileoFrame;
     MusicPlayer*   musicPlayer;

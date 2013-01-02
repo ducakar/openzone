@@ -37,7 +37,11 @@ bool Foo::allowMove     = true;
 bool Foo::allowEqualsOp = true;
 bool Foo::allowLessOp   = true;
 
+#ifdef __native_client__
+static int nacl_main()
+#else
 int main()
+#endif
 {
   Log() << "Unittest began\n";
 
@@ -60,7 +64,7 @@ int main()
 
 void MainInstance::mainThreadMain( void* )
 {
-  main();
+  nacl_main();
 }
 
 MainInstance::MainInstance( PP_Instance instance_ ) :

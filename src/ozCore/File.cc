@@ -34,6 +34,7 @@
 # include <ppapi/cpp/file_io.h>
 # include <ppapi/cpp/file_ref.h>
 # include <ppapi/cpp/file_system.h>
+# include <pthread.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 #else

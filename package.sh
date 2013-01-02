@@ -13,7 +13,7 @@
 #   standalone builds and compiled game data packages found in `share/openzone`.
 #
 
-platforms=( Linux-x86_64 Linux-i686 Windows-i686 )
+platforms=( Linux-x86_64-GCC Linux-i686-GCC Windows-i686 )
 
 eval `egrep '^version=' ./autogen.sh`
 

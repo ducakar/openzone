@@ -3,7 +3,9 @@
 # build.sh [clean | conf | build]
 #
 # This script configures and/or builds OpenZone for all supported platforms in the `build`
-# directory. The following commands may be given (`build` is assumed if none):
+# directory. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+#
+# The following commands may be given (`build` is assumed if none):
 #
 # - `clean`: Delete all builds.
 # - `conf`: Delete all builds and configure (but not build) them anew.
@@ -13,25 +15,26 @@
 
 buildType=Debug
 platforms=(
-  Linux-x86_64
   Linux-x86_64-Clang
-  Linux-i686
+  Linux-x86_64-GCC
   Linux-i686-Clang
+  Linux-i686-GCC
 #   FreeBSD-x86_64-Clang
+#   FreeBSD-x86_64-GCC
 #   FreeBSD-i686-Clang
+#   FreeBSD-i686-GCC
   Windows-i686
   NaCl-x86_64
-#   NaCl-x86_64-glibc
   NaCl-i686
-#   NaCl-i686-glibc
-  PNaCl
+  NaCl-ARM
+#   PNaCl
   Android14-i686
-  Android14-ARM
-  Android14-ARMv7a
-  Android14-MIPS
+#   Android14-ARM
+#   Android14-ARMv7a
+#   Android14-MIPS
 )
 
-source ./sdkPaths
+pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
 
 function clean()
 {

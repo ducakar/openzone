@@ -47,6 +47,9 @@
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
+# if defined( OZ_GCC ) && OZ_GCC >= 407
+#  define _exit( code ) _Exit( code )
+# endif
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <io.h>

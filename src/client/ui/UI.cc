@@ -31,7 +31,7 @@
 #include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/LoadingArea.hh>
-#include <client/ui/SelectionArea.hh>
+#include <client/ui/StrategicArea.hh>
 #include <client/ui/HudArea.hh>
 #include <client/ui/QuestFrame.hh>
 #include <client/ui/GalileoFrame.hh>
@@ -50,7 +50,7 @@ namespace ui
 
 UI::UI() :
   fpsLabel( nullptr ), root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ),
-  selectionArea( nullptr ), questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ),
+  strategicArea( nullptr ), questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ),
   inventory( nullptr ), buildMenu( nullptr ), debugFrame( nullptr )
 {}
 
@@ -127,7 +127,7 @@ void UI::load()
   isFreelook = false;
 
   hudArea       = new HudArea();
-  selectionArea = new SelectionArea();
+  strategicArea = new StrategicArea();
   questFrame    = new QuestFrame();
   galileoFrame  = new GalileoFrame();
   musicPlayer   = new MusicPlayer();
@@ -137,7 +137,7 @@ void UI::load()
   debugFrame    = showDebug ? new DebugFrame() : nullptr;
 
   root->add( hudArea, 0, 0 );
-  root->add( selectionArea, 0, 0 );
+  root->add( strategicArea, 0, 0 );
   root->add( questFrame, Area::CENTRE, -8 );
   root->add( galileoFrame, 8, -8 );
   root->add( musicPlayer, 8, -16 - galileoFrame->height );
@@ -152,7 +152,7 @@ void UI::load()
   }
 
   hudArea->enable( false );
-  selectionArea->enable( false );
+  strategicArea->enable( false );
   inventory->enable( false );
   infoFrame->enable( false );
 
@@ -189,9 +189,9 @@ void UI::unload()
     root->remove( questFrame );
     questFrame = nullptr;
   }
-  if( selectionArea != nullptr ) {
-    root->remove( selectionArea );
-    selectionArea = nullptr;
+  if( strategicArea != nullptr ) {
+    root->remove( strategicArea );
+    strategicArea = nullptr;
   }
   if( hudArea != nullptr ) {
     root->remove( hudArea );

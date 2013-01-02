@@ -11,7 +11,8 @@ Building
 --------
 
 Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
-Client ports. Android port in still under development.
+Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
+supported platforms/toolchains.
 
 For generic Linux builds, make sure you have all the dependencies installed. You need to install
 development packages for the following libraries:
@@ -169,6 +170,8 @@ Additionally this scripts also updates version numbers in various files.
 ### `build.sh [clean | conf | build]` ###
 
 This script configures and/or builds OpenZone for all supported platforms in the `build` directory.
+`ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+
 The following commands may be given (`build` is assumed if none):
 
 - `clean`: Delete all builds.
@@ -236,6 +239,8 @@ One of the following commands must be given:
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
 all required libraries for NaCl and Android configurations that are not provided by SDKs.
+`ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+
 The following commands may be given (`build` is assumed if none):
 
 - `clean`: Delete everything in `ports` directory except downloaded sources.
@@ -252,6 +257,8 @@ compile a BSP structures for OpenZone.
 ### `run.sh [win | nacl] [<options>]` ###
 
 Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
+`NACL_SDK_ROOT` environment variable must be set to use this script.
+
 The following alternative launches are available:
 
 - `wine`: Installs the standalone Windows port into `build/Windows-test` and launches it via Wine.

@@ -4,6 +4,8 @@
 #
 # This script is used to build libraries required by OpenZone for some platforms. Currently it
 # builds all required libraries for NaCl and Android configurations that are not provided by SDKs.
+# `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+#
 # The following commands may be given (`build` is assumed if none):
 #
 # - `clean`: Delete everything in `ports` directory except downloaded sources.
@@ -15,20 +17,30 @@
 
 platforms=(
   NaCl-x86_64
-#   NaCl-x86_64-glibc
   NaCl-i686
-#   NaCl-i686-glibc
-  PNaCl
+  NaCl-ARM
+#   PNaCl
   Android14-i686
-  Android14-ARM
-  Android14-ARMv7a
-  Android14-MIPS
+#   Android14-ARM
+#   Android14-ARMv7a
+#   Android14-MIPS
 )
 
 projectDir=`pwd`
 topDir="$projectDir/ports"
 
-source ./sdkPaths
+nacl86Prefix="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
+naclARMPrefix="$NACL_SDK_ROOT/toolchain/linux_arm_newlib"
+pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
+
+ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.6/prebuilt/linux-x86"
+ndkX86Platform="$ANDROID_NDK/platforms/android-14/arch-x86"
+
+ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86"
+ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
+
+ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.6/prebuilt/linux-x86"
+ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
 
 function msg()
 {
@@ -41,14 +53,14 @@ function msg()
   echo -ne "\e[0m"
 }
 
-function setup_nacl64()
+function setup_nacl_x86_64()
 {
   platform="NaCl-x86_64"                                  # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="x86_64-nacl"                                   # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$naclPrefix/x86_64-nacl"                       # SDK sysroot.
-  toolsroot="$naclPrefix"                                 # SDK tool root.
+  sysroot="$nacl86Prefix/x86_64-nacl"                     # SDK sysroot.
+  toolsroot="$nacl86Prefix"                               # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
@@ -63,40 +75,22 @@ function setup_nacl64()
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
-function setup_nacl64GNU()
-{
-  platform="NaCl-x86_64-glibc"                            # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="x86_64-nacl"                                   # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$naclGNUPrefix/x86_64-nacl"                    # SDK sysroot.
-  toolsroot="$naclGNUPrefix"                              # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
-
-  export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math -msse3"
-  export LDFLAGS="-L$buildDir/usr/lib"
-}
-
-function setup_nacl32()
+function setup_nacl_i686()
 {
   platform="NaCl-i686"                                    # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="i686-nacl"                                     # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$naclPrefix/i686-nacl"                         # SDK sysroot.
-  toolsroot="$naclPrefix"                                 # SDK tool root.
+  sysroot="$nacl86Prefix/i686-nacl"                       # SDK sysroot.
+  toolsroot="$nacl86Prefix"                               # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
@@ -111,16 +105,22 @@ function setup_nacl32()
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
-function setup_nacl32GNU()
+function setup_nacl_ARM()
 {
-  platform="NaCl-i686-glibc"                              # Platform name.
+  platform="NaCl-ARM"                                     # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="i686-nacl"                                     # Platform triplet (tools prefix).
+  triplet="arm-nacl"                                      # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$naclGNUPrefix/i686-nacl"                      # SDK sysroot.
-  toolsroot="$naclGNUPrefix"                              # SDK tool root.
+  sysroot="$naclARMPrefix/arm-nacl"                       # SDK sysroot.
+  toolsroot="$naclARMPrefix"                              # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
@@ -133,8 +133,14 @@ function setup_nacl32GNU()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
-  export LDFLAGS="-L$buildDir/usr/lib"
+  export CFLAGS="-O3 -ffast-math"
+  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
 function setup_pnacl()
@@ -160,9 +166,15 @@ function setup_pnacl()
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
-function setup_ndkX86()
+function setup_ndk_i686()
 {
   platform="Android14-i686"                               # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
@@ -184,9 +196,15 @@ function setup_ndkX86()
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC -msse3 -mfpmath=sse"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
-function setup_ndkARM()
+function setup_ndk_ARM()
 {
   platform="Android14-ARM"                                # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
@@ -208,9 +226,15 @@ function setup_ndkARM()
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Wno-psabi -Ofast -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
-function setup_ndkARM7()
+function setup_ndk_ARMv7a()
 {
   platform="Android14-ARMv7a"                             # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
@@ -232,9 +256,15 @@ function setup_ndkARM7()
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Wno-psabi -Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
-function setup_ndkMIPS()
+function setup_ndk_MIPS()
 {
   platform="Android14-MIPS"                               # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
@@ -256,6 +286,12 @@ function setup_ndkMIPS()
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
 }
 
 function clean()
@@ -319,7 +355,7 @@ function fetch()
   fi
 
   # FreeType
-  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.10/freetype-2.4.10.tar.bz2'
+  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.11/freetype-2.4.11.tar.bz2'
 
   # OpenAL Soft
   download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
@@ -466,7 +502,7 @@ function build_sdl2()
 
 function build_freetype()
 {
-  prepare freetype-2.4.10 freetype-2.4.10.tar.bz2 || return
+  prepare freetype-2.4.11 freetype-2.4.11.tar.bz2 || return
 
   autotoolsBuild --disable-shared --without-bzip2
 
@@ -532,110 +568,100 @@ function build_libvorbis()
 function build()
 {
   # zlib
-  setup_nacl64    && build_zlib
-#   setup_nacl64GNU && build_zlib
-  setup_nacl32    && build_zlib
-#   setup_nacl32GNU && build_zlib
-  setup_pnacl     && build_zlib
+  setup_nacl_x86_64 && build_zlib
+  setup_nacl_i686   && build_zlib
+  setup_nacl_ARM    && build_zlib
+  setup_pnacl       && build_zlib
 
   # PhysicsFS
-  setup_nacl64    && build_physfs
-#   setup_nacl64GNU && build_physfs
-  setup_nacl32    && build_physfs
-#   setup_nacl32GNU && build_physfs
-  setup_pnacl     && build_physfs
-  setup_ndkX86    && build_physfs
-  setup_ndkARM    && build_physfs
-  setup_ndkARM7   && build_physfs
-  setup_ndkMIPS   && build_physfs
+  setup_nacl_x86_64 && build_physfs
+  setup_nacl_i686   && build_physfs
+  setup_nacl_ARM    && build_physfs
+  setup_pnacl       && build_physfs
+  setup_ndk_i686    && build_physfs
+  setup_ndk_ARM     && build_physfs
+  setup_ndk_ARMv7a  && build_physfs
+  setup_ndk_MIPS    && build_physfs
 
   # Lua
-  setup_nacl64    && build_lua
-#   setup_nacl64GNU && build_lua
-  setup_nacl32    && build_lua
-#   setup_nacl32GNU && build_lua
-  setup_pnacl     && build_lua
-  setup_ndkX86    && build_lua
-  setup_ndkARM    && build_lua
-  setup_ndkARM7   && build_lua
-  setup_ndkMIPS   && build_lua
+  setup_nacl_x86_64 && build_lua
+  setup_nacl_i686   && build_lua
+  setup_nacl_ARM    && build_lua
+  setup_pnacl       && build_lua
+  setup_ndk_i686    && build_lua
+  setup_ndk_ARM     && build_lua
+  setup_ndk_ARMv7a  && build_lua
+  setup_ndk_MIPS    && build_lua
 
-  # LuaJIT
-#   setup_nacl64    && build_luajit
-#   setup_nacl64GNU && build_luajit
-#   setup_nacl32    && build_luajit
-#   setup_nacl32GNU && build_luajit
-#   setup_pnacl     && build_luajit
-#   setup_ndkX86    && build_luajit
-#   setup_ndkARM    && build_luajit
-#   setup_ndkARM7   && build_luajit
-#   setup_ndkMIPS   && build_luajit
+# LuaJIT
+#   setup_nacl_x86_64 && build_luajit
+#   setup_nacl_i686   && build_luajit
+#   setup_nacl_ARM    && build_luajit
+#   setup_pnacl       && build_luajit
+#   setup_ndk_i686    && build_luajit
+#   setup_ndk_ARM     && build_luajit
+#   setup_ndk_ARMv7a  && build_luajit
+#   setup_ndk_MIPS    && build_luajit
 
   # SDL
-  setup_nacl64    && build_sdl
-#   setup_nacl64GNU && build_sdl
-  setup_nacl32    && build_sdl
-#   setup_nacl32GNU && build_sdl
-  setup_pnacl     && build_sdl
-  setup_ndkX86    && build_sdl2
-  setup_ndkARM    && build_sdl2
-  setup_ndkARM7   && build_sdl2
-  setup_ndkMIPS   && build_sdl2
+  setup_nacl_x86_64 && build_sdl
+  setup_nacl_i686   && build_sdl
+  setup_nacl_ARM    && build_sdl
+  setup_pnacl       && build_sdl
+  setup_ndk_i686    && build_sdl2
+  setup_ndk_ARM     && build_sdl2
+  setup_ndk_ARMv7a  && build_sdl2
+  setup_ndk_MIPS    && build_sdl2
 
   # FreeType
-  setup_nacl64    && build_freetype
-#   setup_nacl64GNU && build_freetype
-  setup_nacl32    && build_freetype
-#   setup_nacl32GNU && build_freetype
-  setup_pnacl     && build_freetype
-  setup_ndkX86    && build_freetype
-  setup_ndkARM    && build_freetype
-  setup_ndkARM7   && build_freetype
-  setup_ndkMIPS   && build_freetype
+  setup_nacl_x86_64 && build_freetype
+  setup_nacl_i686   && build_freetype
+  setup_nacl_ARM    && build_freetype
+  setup_pnacl       && build_freetype
+  setup_ndk_i686    && build_freetype
+  setup_ndk_ARM     && build_freetype
+  setup_ndk_ARMv7a  && build_freetype
+  setup_ndk_MIPS    && build_freetype
 
   # SDL_ttf
-  setup_nacl64    && build_sdl_ttf
-#   setup_nacl64GNU && build_sdl_ttf
-  setup_nacl32    && build_sdl_ttf
-#   setup_nacl32GNU && build_sdl_ttf
-  setup_pnacl     && build_sdl_ttf
-  setup_ndkX86    && build_sdl2_ttf
-  setup_ndkARM    && build_sdl2_ttf
-  setup_ndkARM7   && build_sdl2_ttf
-  setup_ndkMIPS   && build_sdl2_ttf
+  setup_nacl_x86_64 && build_sdl_ttf
+  setup_nacl_i686   && build_sdl_ttf
+  setup_nacl_ARM    && build_sdl_ttf
+  setup_pnacl       && build_sdl_ttf
+  setup_ndk_i686    && build_sdl2_ttf
+  setup_ndk_ARM     && build_sdl2_ttf
+  setup_ndk_ARMv7a  && build_sdl2_ttf
+  setup_ndk_MIPS    && build_sdl2_ttf
 
   # OpenAL Soft
-  setup_nacl64    && build_openal
-#   setup_nacl64GNU && build_openal
-  setup_nacl32    && build_openal
-#   setup_nacl32GNU && build_openal
-  setup_pnacl     && build_openal
-  setup_ndkX86    && build_openal
-  setup_ndkARM    && build_openal
-  setup_ndkARM7   && build_openal
-  setup_ndkMIPS   && build_openal
+  setup_nacl_x86_64 && build_openal
+  setup_nacl_i686   && build_openal
+  setup_nacl_ARM    && build_openal
+  setup_pnacl       && build_openal
+  setup_ndk_i686    && build_openal
+  setup_ndk_ARM     && build_openal
+  setup_ndk_ARMv7a  && build_openal
+  setup_ndk_MIPS    && build_openal
 
   # libogg
-  setup_nacl64    && build_libogg
-#   setup_nacl64GNU && build_libogg
-  setup_nacl32    && build_libogg
-#   setup_nacl32GNU && build_libogg
-  setup_pnacl     && build_libogg
-  setup_ndkX86    && build_libogg
-  setup_ndkARM    && build_libogg
-  setup_ndkARM7   && build_libogg
-  setup_ndkMIPS   && build_libogg
+  setup_nacl_x86_64 && build_libogg
+  setup_nacl_i686   && build_libogg
+  setup_nacl_ARM    && build_libogg
+  setup_pnacl       && build_libogg
+  setup_ndk_i686    && build_libogg
+  setup_ndk_ARM     && build_libogg
+  setup_ndk_ARMv7a  && build_libogg
+  setup_ndk_MIPS    && build_libogg
 
   # libvorbis
-  setup_nacl64    && build_libvorbis
-#   setup_nacl64GNU && build_libvorbis
-  setup_nacl32    && build_libvorbis
-#   setup_nacl32GNU && build_libvorbis
-  setup_pnacl     && build_libvorbis
-  setup_ndkX86    && build_libvorbis
-  setup_ndkARM    && build_libvorbis
-  setup_ndkARM7   && build_libvorbis
-  setup_ndkMIPS   && build_libvorbis
+  setup_nacl_x86_64 && build_libvorbis
+  setup_nacl_i686   && build_libvorbis
+  setup_nacl_ARM    && build_libvorbis
+  setup_pnacl       && build_libvorbis
+  setup_ndk_i686    && build_libvorbis
+  setup_ndk_ARM     && build_libvorbis
+  setup_ndk_ARMv7a  && build_libvorbis
+  setup_ndk_MIPS    && build_libvorbis
 }
 
 case $1 in

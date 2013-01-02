@@ -79,8 +79,6 @@ target_link_libraries( ozCore ${PHYSFS_LIBRARY} )
 
 if( ANDROID )
   target_link_libraries( ozCore ${ZLIB_LIBRARY} -lOpenSLES -llog ${PLATFORM_STL_LIBRARY} )
-elseif( NACL_GLIBC )
-  target_link_libraries( ozCore ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lrt -lpthread )
 elseif( NACL )
   target_link_libraries( ozCore ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )

@@ -75,6 +75,9 @@ static void test_String_parsing()
     else if( i == 3 ) {
       x = Math::NaN;
     }
+    else if( i == 4 ) {
+      x = -Math::NaN;
+    }
 
     String s = String( x, 9 );
     float  y = String::parseFloat( s );
@@ -110,6 +113,9 @@ static void test_String_parsing()
     else if( i == 3 ) {
       x = Math::NaN;
     }
+    else if( i == 4 ) {
+      x = -Math::NaN;
+    }
 
     String s = String( x, 9 );
     float  y = String::parseFloat( s );
@@ -130,7 +136,7 @@ static void test_String_parsing()
     }
     OZ_CHECK( x == z );
   }
-  for( int i = 0; i < 10000; ++i ) {
+  for( int i = 0; i < 100000; ++i ) {
     float x = Math::rand() * 3.4e-38f;
 
     if( i == 0 ) {
@@ -144,6 +150,9 @@ static void test_String_parsing()
     }
     else if( i == 3 ) {
       x = Math::NaN;
+    }
+    else if( i == 4 ) {
+      x = -Math::NaN;
     }
 
     String s = String( x, 9 );

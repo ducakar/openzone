@@ -3,6 +3,8 @@
 # run.sh [win | nacl] [<options>]
 #
 # Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
+# `NACL_SDK_ROOT` environment variable must be set to use this script.
+#
 # The following alternative launches are available:
 #
 # - `wine`: Installs the standalone Windows port into `build/Windows-test` and launches it via Wine.
@@ -16,7 +18,9 @@
 
 defaultPlatform=Linux-x86_64-Clang
 
-source ./sdkPaths.sh
+nacl86Prefix="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
+naclARMPrefix="$NACL_SDK_ROOT/toolchain/linux_arm_newlib"
+pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
 
 function run_nacl()
 {
@@ -24,8 +28,8 @@ function run_nacl()
 
   # Just create symlinks instead of copying.
   for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
-          build/NaCl-*/src/tools/openzone.*.nexe etc/nacl/openzone.nmf \
-          etc/nacl/openzone.??.html doc
+           build/NaCl-*/src/tools/openzone.*.nexe etc/nacl/openzone.nmf \
+           etc/nacl/openzone.??.html doc
   do
     [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
   done
@@ -41,13 +45,16 @@ function run_nacl()
   # Strip binaries if `strip` option is given.
   if [[ $arg == strip ]]; then
     if [[ -e build/NaCl-test/openzone.x86_64.nexe ]]; then
-      "$naclPrefix/bin/x86_64-nacl-strip" build/NaCl-test/openzone.x86_64.nexe
+      "$nacl86Prefix/bin/x86_64-nacl-strip" build/NaCl-test/openzone.x86_64.nexe
     fi
     if [[ -e build/NaCl-test/openzone.i686.nexe ]]; then
-      "$naclPrefix/bin/i686-nacl-strip" build/NaCl-test/openzone.i686.nexe
+      "$nacl86Prefix/bin/i686-nacl-strip" build/NaCl-test/openzone.i686.nexe
     fi
-    if [[ -e build/NaCl-test/openzone.arm.nexe ]]; then
-      "$pnaclPrefix/bin64/pnacl-strip" build/NaCl-test/openzone.arm.nexe
+    if [[ -e build/NaCl-test/openzone.ARM.nexe ]]; then
+      "$naclARMPrefix/bin/arm-nacl-strip" build/NaCl-test/openzone.ARM.nexe
+    fi
+    if [[ -e build/NaCl-test/openzone.pexe ]]; then
+      "$pnaclPrefix/bin64/pnacl-strip" build/NaCl-test/openzone.pexe
     fi
   fi
 
@@ -56,8 +63,8 @@ function run_nacl()
   serverPID=$!
 
   sleep 3
-  chromium --user-data-dir="$HOME/.config/chromium-test" http://localhost:8000/openzone.sl.html \
-    || true
+  chromium-browser --user-data-dir="$HOME/.config/chromium-test" \
+                   http://localhost:8000/openzone.sl.html || true
 
   kill $serverPID
 }

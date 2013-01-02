@@ -1,0 +1,16 @@
+set( NACL                       ON )
+
+set( PLATFORM_NAME              "NaCl" )
+set( PLATFORM_EMBEDDED          ON )
+set( PLATFORM_TRIPLET           "arm-nacl" )
+set( PLATFORM_PREFIX            "$ENV{NACL_SDK_ROOT}/toolchain/linux_arm_newlib" )
+set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/NaCl-ARM" )
+set( PLATFORM_EXE_SUFFIX        ".ARM.nexe" )
+
+set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
+set( CMAKE_SYSTEM_PROCESSOR     "ARM" CACHE STRING "Target processor." )
+set( CMAKE_FIND_ROOT_PATH       "${PLATFORM_PORTS_PREFIX};${PLATFORM_PREFIX}/arm-nacl" )
+set( CMAKE_C_COMPILER           "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-gcc" )
+set( CMAKE_CXX_COMPILER         "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-g++" )
+set( CMAKE_C_FLAGS              "-U__STRICT_ANSI__" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS            "-U__STRICT_ANSI__" CACHE STRING "" )

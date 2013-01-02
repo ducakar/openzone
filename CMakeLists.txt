@@ -30,10 +30,12 @@ include( CheckCXXCompilerFlag )
 include( FindPkgConfig )
 
 if( PLATFORM_EMBEDDED )
+  set( OZ_PLATFORM_NAME "${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
   set( BUILD_SHARED_LIBS OFF )
   set( OZ_GL_ES ON )
   set( OZ_STANDALONE OFF )
 else()
+  set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
   set( BUILD_SHARED_LIBS ON )
 endif()
 
@@ -45,8 +47,6 @@ elseif( NACL )
 elseif( WIN32 )
   set( OZ_STANDALONE ON )
 endif()
-
-set( OZ_PLATFORM_NAME "${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
 
 if( OZ_STANDALONE )
   set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )

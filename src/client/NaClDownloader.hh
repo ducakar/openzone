@@ -32,7 +32,7 @@ namespace pp
 
 class URLLoader;
 
-};
+}
 
 namespace oz
 {

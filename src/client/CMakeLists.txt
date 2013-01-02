@@ -127,8 +127,8 @@ add_library( client STATIC
   ui/Mouse.hh
   ui/MusicPlayer.hh
   ui/QuestFrame.hh
-  ui/SelectionArea.hh
   ui/SettingsFrame.hh
+  ui/StrategicArea.hh
   ui/Style.hh
   ui/TalkFrame.hh
   ui/Text.hh
@@ -152,8 +152,8 @@ add_library( client STATIC
   ui/Mouse.cc
   ui/MusicPlayer.cc
   ui/QuestFrame.cc
-  ui/SelectionArea.cc
   ui/SettingsFrame.cc
+  ui/StrategicArea.cc
   ui/Style.cc
   ui/TalkFrame.cc
   ui/Text.cc
@@ -184,7 +184,4 @@ target_link_libraries( client ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARIES} )
 
 if( PLATFORM_EMBEDDED )
   target_link_libraries( client ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
-endif()
-if( NACL_GLIBC )
-  target_link_libraries( client -ldl )
 endif()
