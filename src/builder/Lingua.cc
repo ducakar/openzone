@@ -29,7 +29,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
 {
   Log::print( "%s/%s ...", directory, catalogue );
 
-  File::mkdir( String::str( "%s", directory ) );
+  File::mkdir( directory );
 
   PFile srcFile( String::str( "%s/%s.po", directory, catalogue ) );
   File outFile( String::str( "%s/%s.ozCat", directory, catalogue ) );

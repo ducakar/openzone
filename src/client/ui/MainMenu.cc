@@ -160,6 +160,11 @@ bool MainMenu::onMouseEvent()
   return passMouseEvents();
 }
 
+bool MainMenu::onKeyEvent()
+{
+  return passKeyEvents();
+}
+
 void MainMenu::onDraw()
 {
   shape.colour( style.colours.background );

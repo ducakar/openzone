@@ -42,7 +42,6 @@
 #include <client/BuildInfo.hh>
 
 #include <clocale>
-#include <sstream>
 #include <unistd.h>
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -86,7 +85,7 @@ int Client::init( int argc, char** argv )
   isBenchmark   = false;
   benchmarkTime = 0.0f;
 
-  String invocationName = String( argv[0] ).fileBaseName();
+  String invocationName = String::fileBaseName( argv[0] );
   String prefix;
   String language;
   String mission;
@@ -109,10 +108,10 @@ int Client::init( int argc, char** argv )
         break;
       }
       case 't': {
-        std::istringstream ss( optarg );
-        ss >> benchmarkTime;
+        const char* end;
+        benchmarkTime = String::parseFloat( optarg, &end );
 
-        if( ss.fail() ) {
+        if( end == optarg ) {
           printUsage( invocationName );
           return EXIT_FAILURE;
         }
@@ -163,9 +162,9 @@ int Client::init( int argc, char** argv )
     OZ_ERROR( "Failed to obtain MYMUSIC directory" );
   }
 
-  String configDir = String::str( "%s\\openzone", configRoot );
-  String localDir  = String::str( "%s\\openzone", localRoot );
-  String musicDir  = String::str( "%s\\OpenZone", musicRoot );
+  String configDir = String( configRoot, "\\openzone" );
+  String localDir  = String( localRoot, "\\openzone" );
+  String musicDir  = String( musicRoot, "\\OpenZone" );
 
 #else
 
@@ -178,14 +177,14 @@ int Client::init( int argc, char** argv )
     OZ_ERROR( "Cannot determine user home directory from environment" );
   }
 
-  String configDir = configRoot == nullptr ? String::str( "%s/.config/openzone", home ) :
-                                             String::str( "%s/openzone", configRoot );
+  String configDir = configRoot == nullptr ? String( home, "/.config/openzone" ) :
+                                             String( configRoot, "/openzone" );
 
-  String localDir = localRoot == nullptr ? String::str( "%s/.local/share/openzone", home ) :
-                                           String::str( "%s/openzone", localRoot );
+  String localDir = localRoot == nullptr ? String( home, "/.local/share/openzone" ) :
+                                           String( localRoot, "/openzone" );
 
-  String musicDir = musicRoot == nullptr ? String::str( "%s/Music/OpenZone", home ) :
-                                           String::str( "%s/OpenZone", musicRoot );
+  String musicDir = musicRoot == nullptr ? String( home, "/Music/OpenZone" ) :
+                                           String( musicRoot, "/OpenZone" );
 
 #endif
 

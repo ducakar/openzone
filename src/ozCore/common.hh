@@ -81,10 +81,10 @@
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
 /**
- * @def OZ_THREAD_LOCAL
- * Compiler-specific attribute specifying thread-local storage.
+ * @def OZ_WEAK
+ * Compiler-specific attribute specifying a weak symbol.
  */
-#define OZ_THREAD_LOCAL __thread
+#define OZ_WEAK __attribute(( weak ))
 
 /**
  * Top-level OpenZone namespace.

@@ -112,6 +112,17 @@ bool CreditsMenu::onMouseEvent()
   return true;
 }
 
+bool CreditsMenu::onKeyEvent()
+{
+  if( input.keys[Input::KEY_QUIT] ) {
+    parent->remove( this );
+    return true;
+  }
+  else {
+    return passKeyEvents();
+  }
+}
+
 void CreditsMenu::onDraw()
 {
   shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );

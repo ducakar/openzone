@@ -84,6 +84,141 @@ bool String::endsWith( const char* s, const char* sub )
   return subEnd < sub;
 }
 
+String String::substring( const char* s, int start )
+{
+  hard_assert( 0 <= start && start <= length( s ) );
+
+  int    rCount = length( s ) - start;
+  String r      = String( rCount, 0 );
+
+  mCopy( r.buffer, s + start, size_t( rCount + 1 ) );
+
+  return r;
+}
+
+String String::substring( const char* s, int start, int end )
+{
+  hard_assert( 0 <= start && start <= end && end <= length( s ) );
+
+  int    rCount = end - start;
+  String r      = String( rCount, 0 );
+
+  mCopy( r.buffer, s + start, size_t( rCount ) );
+  r.buffer[rCount] = '\0';
+
+  return r;
+}
+
+String String::trim( const char* s )
+{
+  int count = length( s );
+  const char* start = s;
+  const char* end = s + count;
+
+  while( start < end && isBlank( *start ) ) {
+    ++start;
+  }
+  while( start < end && isBlank( *( end - 1 ) ) ) {
+    --end;
+  }
+  return String( start, int( end - start ) );
+}
+
+DArray<String> String::split( const char* s, char delimiter )
+{
+  int count       = length( s );
+  int nPartitions = 0;
+  int begin       = 0;
+  int end         = index( s, delimiter );
+
+  // Count substrings first.
+  while( end >= 0 ) {
+    if( begin != end ) {
+      ++nPartitions;
+    }
+
+    begin = end + 1;
+    end   = index( s, delimiter, begin );
+  }
+  if( begin != count ) {
+    ++nPartitions;
+  }
+
+  DArray<String> array( nPartitions );
+
+  begin = 0;
+  end   = index( s, delimiter );
+
+  for( int i = 0; end >= 0; ) {
+    if( begin != end ) {
+      array[i] = substring( s, begin, end );
+      ++i;
+    }
+
+    begin = end + 1;
+    end   = index( s, delimiter, begin );
+  }
+  if( begin != count ) {
+    array[nPartitions - 1] = substring( s, begin, count );
+  }
+
+  return array;
+}
+
+String String::fileName( const char* s )
+{
+  int slash = lastIndex( s, '/' );
+
+  return slash < 0 ? String( s ) : substring( s, slash + 1 );
+}
+
+String String::fileBaseName( const char* s )
+{
+  int slash = lastIndex( s, '/' );
+  int dot   = lastIndex( s, '.' );
+
+  if( slash < dot ) {
+    return substring( s, slash + 1, dot );
+  }
+  else {
+    return substring( s, slash + 1 );
+  }
+}
+
+String String::fileExtension( const char* s )
+{
+  int slash = lastIndex( s, '/' );
+  int dot   = lastIndex( s, '.' );
+
+  return slash < dot ? substring( s, dot + 1 ) : String();
+}
+
+bool String::hasFileExtension( const char* s, const char* ext )
+{
+  const char* slash = findLast( s, '/' );
+  const char* dot   = findLast( s, '.' );
+
+  if( slash < dot ) {
+    return compare( dot + 1, ext ) == 0;
+  }
+  else {
+    return isEmpty( ext );
+  }
+}
+
+String String::replace( const char* s, char whatChar, char withChar )
+{
+  int    count = length( s );
+  String r     = String( count, 0 );
+
+  for( int i = 0; i < count; ++i ) {
+    r.buffer[i] = s[i] == whatChar ? withChar : s[i];
+  }
+  r.buffer[count] = '\0';
+
+  return r;
+}
+
 bool String::parseBool( const char* s, const char** end )
 {
   if( s[0] == 't' && s[1] == 'r' && s[2] == 'u' && s[3] == 'e' ) {
@@ -265,6 +400,17 @@ String::String( const char* s )
     ensureCapacity();
     mCopy( buffer, s, size_t( count + 1 ) );
   }
+}
+
+String::String( const char* s, const char* t )
+{
+  int sCount = length( s );
+  int tCount = length( t );
+
+  count = sCount + tCount;
+  ensureCapacity();
+  mCopy( buffer, s, size_t( sCount ) );
+  mCopy( buffer + sCount, t, size_t( tCount + 1) );
 }
 
 String::String( bool b ) :
@@ -560,19 +706,6 @@ String String::create( int length, char** buffer_ )
   return r;
 }
 
-String String::replace( const char* s, char whatChar, char withChar )
-{
-  int    count = length( s );
-  String r     = String( count, 0 );
-
-  for( int i = 0; i < count; ++i ) {
-    r.buffer[i] = s[i] == whatChar ? withChar : s[i];
-  }
-  r.buffer[count] = '\0';
-
-  return r;
-}
-
 bool String::endsWith( const char* sub ) const
 {
   int subLen = length( sub );
@@ -706,21 +839,6 @@ String String::trim() const
   return String( start, int( end - start ) );
 }
 
-String String::trim( const char* s )
-{
-  int sCount = length( s );
-  const char* start = s;
-  const char* end = s + sCount;
-
-  while( start < end && isBlank( *start ) ) {
-    ++start;
-  }
-  while( start < end && isBlank( *( end - 1 ) ) ) {
-    --end;
-  }
-  return String( start, int( end - start ) );
-}
-
 String String::replace( char whatChar, char withChar ) const
 {
   String r = String( count, 0 );
@@ -735,31 +853,40 @@ String String::replace( char whatChar, char withChar ) const
 
 DArray<String> String::split( char delimiter ) const
 {
-  int firstDelimiter = index( delimiter );
-  int begin          = 0;
-  int end            = firstDelimiter;
-  int nPartitions    = 1;
+  int nPartitions = 0;
+  int begin       = 0;
+  int end         = index( buffer, delimiter );
 
   // Count substrings first.
   while( end >= 0 ) {
+    if( begin != end ) {
+      ++nPartitions;
+    }
+
     begin = end + 1;
     end   = index( delimiter, begin );
-
+  }
+  if( begin != count ) {
     ++nPartitions;
   }
 
   DArray<String> array( nPartitions );
 
   begin = 0;
-  end   = firstDelimiter;
+  end   = index( buffer, delimiter );
 
-  for( int i = 0; end >= 0; ++i ) {
-    array[i] = substring( begin, end );
+  for( int i = 0; end >= 0; ) {
+    if( begin != end ) {
+      array[i] = substring( begin, end );
+      ++i;
+    }
 
     begin = end + 1;
     end   = index( delimiter, begin );
   }
-  array[nPartitions - 1] = substring( begin );
+  if( begin != count ) {
+    array[nPartitions - 1] = substring( begin );
+  }
 
   return array;
 }
@@ -794,8 +921,6 @@ String String::fileExtension() const
 
 bool String::hasFileExtension( const char* ext ) const
 {
-  hard_assert( ext != nullptr );
-
   const char* slash = findLast( '/' );
   const char* dot   = findLast( '.' );
 

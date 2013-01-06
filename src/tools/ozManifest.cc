@@ -43,7 +43,7 @@ int main( int argc, char** argv )
 {
   System::init();
 
-  String invocationName = String( argv[0] ).fileBaseName();
+  String invocationName = String::fileBaseName( argv[0] );
 
   if( argc > 2 ) {
     printUsage( invocationName );

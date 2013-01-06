@@ -143,6 +143,17 @@ bool MissionMenu::onMouseEvent()
   return true;
 }
 
+bool MissionMenu::onKeyEvent()
+{
+  if( input.keys[Input::KEY_QUIT] ) {
+    parent->remove( this );
+    return true;
+  }
+  else {
+    return passKeyEvents();
+  }
+}
+
 void MissionMenu::onDraw()
 {
   shape.colour( style.colours.menuStrip );

@@ -161,6 +161,9 @@ class Input
     bool   keys[KEY_MAX];
     bool   oldKeys[KEY_MAX];
 
+    bool   isKeyPressed;
+    bool   isKeyReleased;
+
     float  mouseSensX;
     float  mouseSensY;
     float  mouseSensZ;

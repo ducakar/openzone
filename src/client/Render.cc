@@ -610,20 +610,20 @@ void Render::init()
   bool hasFloatTex = false;
   bool hasS3TC     = false;
 
-  String vendor      = String::cstr( glGetString( GL_VENDOR ) );
-  String renderer    = String::cstr( glGetString( GL_RENDERER ) );
-  String version     = String::cstr( glGetString( GL_VERSION ) );
-  String glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
-  String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
-  DArray<String> extensions = sExtensions.trim().split( ' ' );
+  const char* vendor       = String::cstr( glGetString( GL_VENDOR ) );
+  const char* renderer     = String::cstr( glGetString( GL_RENDERER ) );
+  const char* version      = String::cstr( glGetString( GL_VERSION ) );
+  const char* glslVersion  = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+  const char* sExtensions  = String::cstr( glGetString( GL_EXTENSIONS ) );
+  DArray<String> extensions = String::trim( sExtensions ).split( ' ' );
 
   // glGetString( GL_EXTENSIONS ) generates an error when using OpenGL 3.2+ Core Profile.
   glGetError();
 
-  Log::println( "OpenGL vendor: %s", vendor.cstr() );
-  Log::println( "OpenGL renderer: %s", renderer.cstr() );
-  Log::println( "OpenGL version: %s", version.cstr() );
-  Log::println( "GLSL version: %s", glslVersion.cstr() );
+  Log::println( "OpenGL vendor: %s", vendor );
+  Log::println( "OpenGL renderer: %s", renderer );
+  Log::println( "OpenGL version: %s", version );
+  Log::println( "GLSL version: %s", glslVersion );
 
   Log::verboseMode = true;
 

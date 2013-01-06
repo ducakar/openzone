@@ -288,18 +288,19 @@ bool Alloc::printLeaks()
 
 using namespace oz;
 
-#ifndef OZ_ADDRESS_SANITIZER
-
+OZ_WEAK
 void* operator new ( size_t size )
 {
   return allocate( OBJECT, size );
 }
 
+OZ_WEAK
 void* operator new[] ( size_t size )
 {
   return allocate( ARRAY, size );
 }
 
+OZ_WEAK
 void operator delete ( void* ptr ) noexcept
 {
   if( ptr == nullptr ) {
@@ -308,6 +309,7 @@ void operator delete ( void* ptr ) noexcept
   deallocate( OBJECT, ptr );
 }
 
+OZ_WEAK
 void operator delete[] ( void* ptr ) noexcept
 {
   if( ptr == nullptr ) {
@@ -316,16 +318,19 @@ void operator delete[] ( void* ptr ) noexcept
   deallocate( ARRAY, ptr );
 }
 
+OZ_WEAK
 void* operator new ( size_t size, const std::nothrow_t& ) noexcept
 {
   return allocate( OBJECT, size );
 }
 
+OZ_WEAK
 void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
 {
   return allocate( ARRAY, size );
 }
 
+OZ_WEAK
 void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
 {
   if( ptr == nullptr ) {
@@ -334,6 +339,7 @@ void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
   deallocate( OBJECT, ptr );
 }
 
+OZ_WEAK
 void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
 {
   if( ptr == nullptr ) {
@@ -341,5 +347,3 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   }
   deallocate( ARRAY, ptr );
 }
-
-#endif

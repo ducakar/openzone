@@ -1,6 +1,7 @@
 set( ANDROID                    ON )
 
 set( PLATFORM_EMBEDDED          ON )
+set( PLATFORM_NAME              "Android" )
 set( PLATFORM_TRIPLET           "arm-linux-androideabi" )
 set( PLATFORM_PROC_PREFIX       "armeabi" )
 set( PLATFORM_PREFIX            "$ENV{ANDROID_NDK}/platforms/android-14/arch-arm" )

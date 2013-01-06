@@ -92,6 +92,7 @@ class MissionMenu : public Area
 
     void onReposition() override;
     bool onMouseEvent() override;
+    bool onKeyEvent() override;
     void onDraw() override;
 
   public:

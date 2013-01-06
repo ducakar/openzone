@@ -41,20 +41,17 @@
 # include <ctime>
 # include <pthread.h>
 # include <unistd.h>
+# define _Exit( code ) _exit( code )
 #elif defined( __native_client__ )
 # include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
-# if defined( OZ_GCC ) && OZ_GCC >= 407
-#  define _exit( code ) _Exit( code )
-# endif
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
-# define _exit( code ) _Exit( code )
 # define isatty( fd ) _isatty( fd )
 #else
 # include <cerrno>
@@ -79,13 +76,13 @@ using namespace oz;
 // referenced by SDL hence must be present if we link with it. Those fake implementations also spare
 // us several #ifdefs in this file.
 
-extern "C" __attribute__(( weak ))
+extern "C" OZ_WEAK
 void ( * signal( int, void ( * )( int ) ) )( int )
 {
   return nullptr;
 }
 
-extern "C" __attribute__(( weak ))
+extern "C" OZ_WEAK
 int raise( int )
 {
   return 0;
@@ -540,7 +537,7 @@ static void abort( bool doHalt )
 #endif
 
   waitBell();
-  _exit( EXIT_FAILURE );
+  _Exit( EXIT_FAILURE );
 }
 
 const int     System::HANDLERS_BIT;

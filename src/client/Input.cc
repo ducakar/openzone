@@ -384,6 +384,7 @@ void Input::readEvent( SDL_Event* event )
 #else
       sdlCurrKeys[event->key.keysym.scancode] = false;
 #endif
+      isKeyReleased = true;
       break;
     }
     case SDL_KEYDOWN: {
@@ -394,6 +395,7 @@ void Input::readEvent( SDL_Event* event )
       sdlKeys[event->key.keysym.scancode]     = true;
       sdlCurrKeys[event->key.keysym.scancode] = true;
 #endif
+      isKeyPressed = true;
       break;
     }
     default: {
@@ -443,6 +445,9 @@ void Input::prepare()
 
   mCopy( sdlOldKeys, sdlKeys, sizeof( sdlKeys ) );
   mCopy( sdlKeys, sdlCurrKeys, sizeof( sdlKeys ) );
+
+  isKeyPressed  = false;
+  isKeyReleased = false;
 }
 
 void Input::update()
@@ -595,6 +600,9 @@ void Input::init()
 
   mSet( keys, 0, sizeof( keys ) );
   mSet( oldKeys, 0, sizeof( oldKeys ) );
+
+  isKeyPressed        = false;
+  isKeyReleased       = false;
 
   mouseSensX          = mouseConfig["sensitivity.x"].get( 0.004f );
   mouseSensY          = mouseConfig["sensitivity.y"].get( 0.004f );

@@ -53,7 +53,7 @@ class PFile
     /**
      * Create an instance for the given path.
      */
-    explicit PFile( const char* path = nullptr );
+    explicit PFile( const char* path = "" );
 
     /**
      * Destructor.

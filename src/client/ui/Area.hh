@@ -87,6 +87,7 @@ class Area
     void updateChildren();
     // return true if event has been caught
     bool passMouseEvents();
+    bool passKeyEvents();
     void drawChildren();
 
     virtual void onVisibilityChange( bool doShow );
@@ -94,6 +95,7 @@ class Area
     virtual void onUpdate();
     // return true if event has been caught
     virtual bool onMouseEvent();
+    virtual bool onKeyEvent();
     virtual void onDraw();
 
   public:

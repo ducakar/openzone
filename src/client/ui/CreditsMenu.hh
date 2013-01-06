@@ -49,6 +49,7 @@ class CreditsMenu : public Area
     void onReposition() override;
     void onUpdate() override;
     bool onMouseEvent() override;
+    bool onKeyEvent() override;
     void onDraw() override;
 
   public:

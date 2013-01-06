@@ -101,7 +101,10 @@ bool Area::passMouseEvents()
     }
   }
 
-  foreach( child, children.iter() ) {
+  for( auto i = children.iter(); i.isValid(); ) {
+    Area* child = i;
+    ++i;
+
     if( child->x <= mouse.x && mouse.x < child->x + child->width &&
         child->y <= mouse.y && mouse.y < child->y + child->height )
     {
@@ -114,6 +117,20 @@ bool Area::passMouseEvents()
   }
 
   return false;
+}
+
+bool Area::passKeyEvents()
+{
+  for( auto i = children.iter(); i.isValid(); ) {
+    Area* child = i;
+    ++i;
+
+    if( !( child->flags & ( IGNORE_BIT | DISABLED_BIT ) ) ) {
+      child->onKeyEvent();
+    }
+  }
+
+  return true;
 }
 
 void Area::drawChildren()
@@ -136,6 +153,11 @@ void Area::onUpdate()
 {}
 
 bool Area::onMouseEvent()
+{
+  return false;
+}
+
+bool Area::onKeyEvent()
 {
   return false;
 }

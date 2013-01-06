@@ -26,6 +26,7 @@
 
 #include <common/Timer.hh>
 #include <client/Camera.hh>
+#include <client/Input.hh>
 #include <client/Context.hh>
 #include <client/Shape.hh>
 #include <client/OpenGL.hh>
@@ -76,6 +77,10 @@ void UI::update()
 
   if( !isFreelook ) {
     root->passMouseEvents();
+
+    if( input.isKeyPressed || input.isKeyReleased ) {
+      root->passKeyEvents();
+    }
   }
 }
 

@@ -70,20 +70,10 @@ class String
      */
 
     /**
-     * Equality.
-     */
-    static bool equals( const char* a, const char* b )
-    {
-      return compare( a, b ) == 0;
-    }
-
-    /**
      * Compare two C strings per-byte (same as `strcmp()`).
      */
     static int compare( const char* a, const char* b )
     {
-      hard_assert( a != nullptr && b != nullptr );
-
       int diff;
 
       while( ( diff = *a - *b ) == 0 && *a != '\0' ) {
@@ -91,6 +81,14 @@ class String
         ++b;
       }
       return diff;
+    }
+
+    /**
+     * Equality.
+     */
+    static bool equals( const char* a, const char* b )
+    {
+      return compare( a, b ) == 0;
     }
 
     /**
@@ -112,8 +110,6 @@ class String
     OZ_ALWAYS_INLINE
     static bool isEmpty( const char* s )
     {
-      hard_assert( s != nullptr );
-
       return s[0] == '\0';
     }
 
@@ -215,6 +211,53 @@ class String
      * True iff string ends with the given characters.
      */
     static bool endsWith( const char* s, const char* sub );
+
+    /**
+     * Substring from `start` character (inclusively).
+     */
+    static String substring( const char* s, int start );
+
+    /**
+     * Substring between `start` (inclusively) and `end` (not inclusively) character.
+     */
+    static String substring( const char* s, int start, int end );
+
+    /**
+     * Create string with stripped leading and trailing blanks.
+     */
+    static String trim( const char* s );
+
+    /**
+     * Create a copy that has all instances of `whatChar` replaced by `withChar`.
+     */
+    static String replace( const char* s, char whatChar, char withChar );
+
+    /**
+     * Return array of non-empty substrings between occurrences of the given delimiter.
+     */
+    static DArray<String> split( const char* s, char delimiter );
+
+    /**
+     * Extract file name from a path (substring after the last `/`).
+     */
+    static String fileName( const char* s );
+
+    /**
+     * Extract base file name from a path (substring after the last `/` till the last following
+     * dot).
+     */
+    static String fileBaseName( const char* s );
+
+    /**
+     * Extract file extension from a path (substring after the last dot in file name extracted form
+     * the path).
+     */
+    static String fileExtension( const char* s );
+
+    /**
+     * True iff file name extracted from a path has the given extension.
+     */
+    static bool hasFileExtension( const char* s, const char* ext );
 
     /**
      * True iff character is an ASCII digit.
@@ -345,9 +388,14 @@ class String
     String( const char* s, int count );
 
     /**
-     * Create string form the given C string.
+     * Create string form the given C string (nullptr is permitted, equals "").
      */
     String( const char* s );
+
+    /**
+     * Create string by concatenating the given two C strings.
+     */
+    String( const char* s, const char* t );
 
     /**
      * Create either "true" or "false" string.
@@ -401,9 +449,7 @@ class String
     String& operator = ( String&& s );
 
     /**
-     * Replace current string with the giver C string.
-     *
-     * Reuse existing storage only if it the size matches.
+     * Replace current string with the given C string (nullptr is permitted, equals "").
      */
     String& operator = ( const char* s );
 
@@ -425,16 +471,11 @@ class String
     static String create( int length, char** buffer );
 
     /**
-     * Create a copy that has all instances of `whatChar` replaced by `withChar`.
-     */
-    static String replace( const char* s, char whatChar, char withChar );
-
-    /**
      * Equality.
      */
     bool operator == ( const String& s ) const
     {
-      return equals( buffer, s.buffer );
+      return compare( buffer, s.buffer ) == 0;
     }
 
     /**
@@ -582,14 +623,6 @@ class String
     }
 
     /**
-     * Equality.
-     */
-    bool equals( const char* s ) const
-    {
-      return compare( buffer, s ) == 0;
-    }
-
-    /**
      * Compare strings per-byte.
      */
     int compare( const String& s ) const
@@ -603,6 +636,14 @@ class String
     int compare( const char* s ) const
     {
       return compare( buffer, s );
+    }
+
+    /**
+     * Equality.
+     */
+    bool equals( const char* s ) const
+    {
+      return compare( buffer, s ) == 0;
     }
 
     /**
@@ -642,7 +683,7 @@ class String
     }
 
     /**
-     * Constant refernece to the `i`-th byte.
+     * Constant reference to the `i`-th byte.
      */
     OZ_ALWAYS_INLINE
     const char& operator [] ( int i ) const
@@ -799,17 +840,12 @@ class String
     String trim() const;
 
     /**
-     * Create string with stripped leading and trailing blanks.
-     */
-    String trim( const char* s );
-
-    /**
      * Create a copy that has all instances of `whatChar` replaced by `withChar`.
      */
     String replace( char whatChar, char withChar ) const;
 
     /**
-     * Returns array of substrings between occurrences of the given character delimiter.
+     * Return array of non-empty substrings between occurrences of the given delimiter.
      */
     DArray<String> split( char delimiter ) const;
 

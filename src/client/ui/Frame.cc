@@ -66,6 +66,11 @@ bool Frame::onMouseEvent()
   return true;
 }
 
+bool Frame::onKeyEvent()
+{
+  return passKeyEvents();
+}
+
 void Frame::onDraw()
 {
   shape.colour( style.colours.frame );

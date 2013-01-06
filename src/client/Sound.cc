@@ -769,8 +769,8 @@ void Sound::init()
   Log::println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
   Log::println( "OpenAL version: %s", alGetString( AL_VERSION ) );
 
-  String sExtensions = alGetString( AL_EXTENSIONS );
-  DArray<String> extensions = sExtensions.trim().split( ' ' );
+  const char* sExtensions = alGetString( AL_EXTENSIONS );
+  DArray<String> extensions = String::trim( sExtensions ).split( ' ' );
 
   Log::verboseMode = true;
   Log::println( "OpenAL extensions {" );

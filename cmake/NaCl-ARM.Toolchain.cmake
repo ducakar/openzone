@@ -1,7 +1,7 @@
 set( NACL                       ON )
 
-set( PLATFORM_NAME              "NaCl" )
 set( PLATFORM_EMBEDDED          ON )
+set( PLATFORM_NAME              "NaCl" )
 set( PLATFORM_TRIPLET           "arm-nacl" )
 set( PLATFORM_PREFIX            "$ENV{NACL_SDK_ROOT}/toolchain/linux_arm_newlib" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/NaCl-ARM" )

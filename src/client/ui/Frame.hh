@@ -46,6 +46,7 @@ class Frame : public Area
   protected:
 
     bool onMouseEvent() override;
+    bool onKeyEvent() override;
     void onDraw() override;
 
   public:

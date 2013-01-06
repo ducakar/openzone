@@ -79,7 +79,7 @@ class File
     /**
      * Create an instance for the given path.
      */
-    explicit File( const char* path = nullptr );
+    explicit File( const char* path = "" );
 
     /**
      * Destructor.

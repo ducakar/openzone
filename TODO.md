@@ -5,6 +5,7 @@ CURRENT
 - TalkFrame
 - per-game data subdirs
 - 6-direction-layered meshes
+- String: complete orthogonality for const char*
 
 0.4
 
