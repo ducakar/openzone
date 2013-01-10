@@ -18,7 +18,7 @@
 platforms=(
   NaCl-x86_64
   NaCl-i686
-  NaCl-ARM
+#   NaCl-ARM
 #   PNaCl
   Android14-i686
 #   Android14-ARM
@@ -477,7 +477,7 @@ function build_sdl()
   ./autogen.sh
   case $triplet in
     *nacl)
-      # Assembly causes NaCl validity check to fail when NEXE is loading.
+      # Assembly causes NaCl validity check to fail when .nexe is loading.
       autotoolsBuild --disable-shared --disable-pthread-sem --disable-assembly
       ;;
     *)

@@ -52,13 +52,9 @@ void ObjectClass::init( InputStream* is, const char* name_ )
   life        = is->readFloat();
   resistance  = is->readFloat();
 
-  const char* sFragPool = is->readString();
-
-  fragPool    = String::isEmpty( sFragPool ) ? nullptr : liber.fragPool( sFragPool );
-  nFrags      = is->readInt();
-
   attributes  = is->readInt();
   key         = is->readInt();
+  cost        = is->readInt();
 
   nItems      = is->readInt();
 
@@ -73,15 +69,19 @@ void ObjectClass::init( InputStream* is, const char* name_ )
     }
   }
 
+  nFrags = is->readInt();
+
+  const char* sFragPool   = is->readString();
   const char* sDeviceType = is->readString();
   const char* sImagoType  = is->readString();
   const char* sImagoModel = is->readString();
-  const char* sAudioType = is->readString();
+  const char* sAudioType  = is->readString();
 
-  deviceType = String::isEmpty( sDeviceType ) ? -1 : liber.deviceIndex( sDeviceType );
-  imagoType  = String::isEmpty( sImagoType )  ? -1 : liber.imagoIndex( sImagoType );
-  imagoModel = String::isEmpty( sImagoModel ) ? -1 : liber.modelIndex( sImagoModel );
-  audioType  = String::isEmpty( sAudioType )  ? -1 : liber.audioIndex( sAudioType );
+  fragPool   = String::isEmpty( sFragPool )   ? nullptr : liber.fragPool( sFragPool );
+  deviceType = String::isEmpty( sDeviceType ) ? -1      : liber.deviceIndex( sDeviceType );
+  imagoType  = String::isEmpty( sImagoType )  ? -1      : liber.imagoIndex( sImagoType );
+  imagoModel = String::isEmpty( sImagoModel ) ? -1      : liber.modelIndex( sImagoModel );
+  audioType  = String::isEmpty( sAudioType )  ? -1      : liber.audioIndex( sAudioType );
 
   for( int i = 0; i < MAX_SOUNDS; ++i ) {
     const char* sSound = is->readString();

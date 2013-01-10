@@ -75,19 +75,18 @@ add_library( ozCore
 )
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
-target_link_libraries( ozCore ${PHYSFS_LIBRARY} )
 
 if( ANDROID )
-  target_link_libraries( ozCore ${ZLIB_LIBRARY} -llog ${PLATFORM_STL_LIBRARY} )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -llog ${PLATFORM_STL_LIBRARY} )
 elseif( NACL )
-  target_link_libraries( ozCore ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )
-  target_link_libraries( ozCore -lwinmm )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lwinmm )
 elseif( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
-  target_link_libraries( ozCore -lpulse-simple -lrt -lpthread )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lrt -lpthread )
 else()
   # TODO: Remove -lrt once glibc 2.17 becomes minimum.
-  target_link_libraries( ozCore -lpulse-simple -lasound -lrt -lpthread )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
 endif()
 
 install( TARGETS ozCore

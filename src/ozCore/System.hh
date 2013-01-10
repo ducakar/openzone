@@ -96,6 +96,15 @@ class System
     static void trap();
 
     /**
+     * Report if a debugger was attached when `init()` was called.
+     *
+     * Currently this only works for gdb. The check is performed by comparing a dummy file
+     * descriptor number, so the check may return false positive if one opens a file before `init()`
+     * is called.
+     */
+    static bool isInstrumented();
+
+    /**
      * Play a sound alert.
      *
      * Sine wave with decreasing volume lasting ~0.3 s is played asynchronously through platform's

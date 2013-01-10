@@ -8,7 +8,7 @@
 # dependencies included).
 #
 # This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-bit (`lib32-*`)
-# and MinGW (`mingw32-*`) versions of all dependent libraries installed. Many of those packages must
+# and MinGW (`mingw32-*`) versions of all required libraries installed. Many of those packages must
 # be built from AUR.
 #
 # The following commands may be given (`build` is assumed if none):

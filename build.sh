@@ -26,7 +26,7 @@ platforms=(
   Windows-i686
   NaCl-x86_64
   NaCl-i686
-  NaCl-ARM
+#   NaCl-ARM
 #   PNaCl
   Android14-i686
 #   Android14-ARM
@@ -41,7 +41,7 @@ function clean()
   for platform in ${platforms[@]}; do
     rm -rf build/$platform
   done
-  rm -rf build/{OpenZone-*,NaCl-test,Android}
+  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android}
 }
 
 function build()

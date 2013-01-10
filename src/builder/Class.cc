@@ -114,13 +114,6 @@ void Class::fillObject( const char* className )
   }
 
   /*
-   * debris
-   */
-
-  nFrags   = config["nFrags"].get( 6 );
-  fragPool = config["fragPool"].get( "" );
-
-  /*
    * attributes
    */
 
@@ -137,6 +130,12 @@ void Class::fillObject( const char* className )
    */
 
   key = config["key"].get( 0 );
+
+  /*
+   * cost
+   */
+
+  cost = config["cost"].get( 0 );
 
   /*
    * inventory
@@ -175,6 +174,13 @@ void Class::fillObject( const char* className )
       OZ_ERROR( "%s: Too many items in the default inventory", className );
     }
   }
+
+  /*
+   * debris
+   */
+
+  nFrags   = config["nFrags"].get( 5 );
+  fragPool = config["fragPool"].get( "" );
 
   /*
    * device
@@ -609,17 +615,18 @@ void Class::writeObject( BufferStream* os )
   os->writeFloat( life );
   os->writeFloat( resistance );
 
-  os->writeString( fragPool );
-  os->writeInt( nFrags );
-
   os->writeInt( attributes );
   os->writeInt( key );
+  os->writeInt( cost );
 
   os->writeInt( nItems );
   os->writeInt( defaultItems.length() );
   foreach( i, defaultItems.citer() ) {
     os->writeString( *i );
   }
+
+  os->writeInt( nFrags );
+  os->writeString( fragPool );
 
   os->writeString( deviceType );
 

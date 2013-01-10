@@ -117,6 +117,7 @@ void Window::minimise()
 {
 #if defined( __native_client__ )
 #elif SDL_MAJOR_VERSION < 2
+  SDL_WM_GrabInput( SDL_GRAB_OFF );
   SDL_WM_IconifyWindow();
 #else
   SDL_MinimizeWindow( descriptor );
@@ -145,6 +146,7 @@ void Window::setGrab( bool grab )
 
 #if SDL_MAJOR_VERSION < 2
   SDL_ShowCursor( !hasGrab );
+  SDL_WM_GrabInput( SDL_GrabMode( hasGrab && !System::isInstrumented() ) );
 #else
   SDL_SetRelativeMouseMode( SDL_bool( hasGrab ) );
 #endif

@@ -53,14 +53,15 @@ class Class
     float              life;
     float              resistance;
 
-    String             fragPool;
-    int                nFrags;
-
     int                attributes;
     int                key;
+    int                cost;
 
     int                nItems;
     List<String>       defaultItems;
+
+    int                nFrags;
+    String             fragPool;
 
     String             deviceType;
 

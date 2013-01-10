@@ -470,7 +470,7 @@ void Input::update()
   mouseY = -float( dy );
 
 # if SDL_MAJOR_VERSION < 2 && !defined( _WIN32 )
-  if( window.isFull ) {
+  if( window.hasGrab ) {
     // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
     // code is not based on actual code from X.Org, but experimentally tuned to match default X
     // server mouse acceleration as closely as possible.

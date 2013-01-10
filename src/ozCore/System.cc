@@ -59,12 +59,12 @@
 # include <pthread.h>
 # include <unistd.h>
 # include <pulse/simple.h>
-# ifdef __linux__
-#  include <alsa/asoundlib.h>
-# else
-#  include <sys/fcntl.h>
+# include <sys/fcntl.h>
+# ifndef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/soundcard.h>
+# else
+#  include <alsa/asoundlib.h>
 # endif
 #endif
 
@@ -147,9 +147,10 @@ static const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_R
 
 #endif
 
-static volatile bool         isBellPlaying = false;
-static int                   initFlags     = 0;
-static System::CrashHandler* crashHandler  = nullptr;
+static volatile bool         isBellPlaying      = false;
+static bool                  isDebuggerAttached = false;
+static int                   initFlags          = 0;
+static System::CrashHandler* crashHandler       = nullptr;
 
 OZ_NORETURN
 static void abort( bool doHalt );
@@ -559,6 +560,11 @@ void System::trap()
 #endif
 }
 
+bool System::isInstrumented()
+{
+  return isDebuggerAttached;
+}
+
 void System::bell()
 {
 #if defined( __ANDROID__ )
@@ -671,6 +677,12 @@ void System::init( int flags, CrashHandler* crashHandler_ )
 {
   initFlags    = flags;
   crashHandler = crashHandler_;
+
+#if defined( __unix__ ) && !defined( __ANDROID__ ) && !defined( __native_client__ )
+  int fd = open( "/proc", O_RDONLY );
+  isDebuggerAttached = fd >= 5;
+  close( fd );
+#endif
 
   if( initFlags & HANDLERS_BIT ) {
     catchSignals();

@@ -477,6 +477,7 @@ int Client::init( int argc, char** argv )
 
   stage->load();
 
+  window.setGrab( true );
   input.reset();
 
   return EXIT_SUCCESS;
@@ -630,8 +631,7 @@ int Client::main()
           }
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
-              window.warpMouse();
-
+              window.setGrab( window.hasGrab );
               input.reset();
               sound.resume();
 
@@ -662,17 +662,16 @@ int Client::main()
               break;
             }
             case SDL_WINDOWEVENT_RESTORED: {
-              window.warpMouse();
               input.reset();
-
               sound.resume();
+
               isActive = true;
               break;
             }
             case SDL_WINDOWEVENT_MINIMIZED: {
               sound.suspend();
-
               input.reset();
+
               isActive = false;
               break;
             }

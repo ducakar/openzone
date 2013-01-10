@@ -518,10 +518,9 @@ void Physics::updateFrag( Frag* frag_ )
 
 void Physics::updateObj( Dynamic* dyn_ )
 {
-  dyn = dyn_;
+  hard_assert( dyn_->cell != nullptr );
 
-  hard_assert( dyn->cell != nullptr );
-
+  dyn         = dyn_;
   dyn->flags &= ~Object::TICK_CLEAR_MASK;
 
   if( dyn->lower >= 0 ) {

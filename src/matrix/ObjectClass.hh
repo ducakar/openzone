@@ -56,14 +56,15 @@ class ObjectClass
     float                    life;
     float                    resistance;
 
-    const FragPool*          fragPool;
-    int                      nFrags;
-
-    int                       attributes;
+    int                      attributes;
     int                      key;
+    int                      cost;
 
     int                      nItems;
     List<const ObjectClass*> defaultItems;
+
+    int                      nFrags;
+    const FragPool*          fragPool;
 
     int                      deviceType;
 
