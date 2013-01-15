@@ -252,7 +252,7 @@ class HashSet
      * Move constructor, moves storage.
      */
     HashSet( HashSet&& hs ) :
-      pool( static_cast< Pool<Elem, SIZE>&& >( hs.pool ) )
+      pool( static_cast<Pool<Elem, SIZE>&&>( hs.pool ) )
     {
       aCopy<Elem*>( data, hs.data, SIZE );
       aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
@@ -287,7 +287,7 @@ class HashSet
 
       aCopy<Elem*>( data, hs.data, SIZE );
       aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
-      pool = static_cast< Pool<Elem, SIZE>&& >( hs.pool );
+      pool = static_cast<Pool<Elem, SIZE>&&>( hs.pool );
 
       return *this;
     }
@@ -339,7 +339,7 @@ class HashSet
      * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
-    Iterator iter() const
+    Iterator iter()
     {
       return Iterator( data );
     }

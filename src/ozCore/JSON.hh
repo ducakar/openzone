@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "HashMap.hh"
 #include "BufferStream.hh"
 #include "PFile.hh"
 
@@ -69,10 +70,82 @@ class JSON
     struct Parser;
     struct Formatter;
 
+  public:
+
+    /**
+     * %Iterator for %JSON objects with constant access.
+     */
+    class CIterator : public IteratorBase<const HashMap<String, JSON>::Elem>
+    {
+      private:
+
+        /**
+         * HashMap iterator used internally.
+         */
+        HashMap<String, JSON>::CIterator objectIter;
+
+      public:
+
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        explicit CIterator() :
+          IteratorBase<const HashMap<String, JSON>::Elem>( nullptr )
+        {}
+
+        /**
+         * Create iterator for the given %JSON object's data.
+         */
+        explicit CIterator( const ObjectData* data );
+
+        /**
+         * Advance to the next element.
+         */
+        CIterator& operator ++ ();
+
+    };
+
+    /**
+     * %Iterator for %JSON objects with non-constant access.
+     */
+    class Iterator : public IteratorBase<HashMap<String, JSON>::Elem>
+    {
+      private:
+
+        /**
+         * HashMap iterator used internally.
+         */
+        HashMap<String, JSON>::Iterator objectIter;
+
+      public:
+
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        explicit Iterator() :
+          IteratorBase<HashMap<String, JSON>::Elem>( nullptr )
+        {}
+
+        /**
+         * Create iterator for the given %JSON object's data.
+         */
+        explicit Iterator( ObjectData* data );
+
+        /**
+         * Advance to the next element.
+         */
+        Iterator& operator ++ ();
+
+    };
+
+  private:
+
     /// A null value instance, required by `operator []`.
     static const JSON NIL_VALUE;
 
-    Data*        data;        ///< Pointer to internal data struct.
+    Data*        data;        ///< Pointer to internal data structure.
     Type         valueType;   ///< Value type, `JSON::Type`.
     mutable bool wasAccessed; ///< For warnings about unused variables.
 
@@ -87,6 +160,21 @@ class JSON
      * Create a null instance.
      */
     explicit JSON();
+
+    /**
+     * Create from a file contents.
+     */
+    explicit JSON( const char* path );
+
+    /**
+     * Create from a file contents.
+     */
+    explicit JSON( File* file );
+
+    /**
+     * Create from a file contents.
+     */
+    explicit JSON( PFile* file );
 
     /**
      * Destructor.
@@ -120,7 +208,7 @@ class JSON
     }
 
     /**
-     * Number of entries if value is an object or array, -1 otherwise.
+     * Number of entries if value is an array or an object, -1 otherwise.
      */
     int length() const;
 
@@ -151,6 +239,20 @@ class JSON
      * If value is not either an object or a null, `System::error()` is invoked.
      */
     const JSON& operator [] ( const char* key ) const;
+
+    /**
+     * %JSON object iterator with constant access.
+     *
+     * An invalid iterator is returned if the %JSON element is not an object.
+     */
+    CIterator objectCIter() const;
+
+    /**
+     * %JSON object iterator with non-constant access.
+     *
+     * An invalid iterator is returned if the %JSON element is not an object.
+     */
+    Iterator objectIter();
 
     /**
      * Get boolean value.
@@ -402,112 +504,112 @@ class JSON
     Mat44 get( const Mat44& defaultValue ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with boolean elements,
      * `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( bool* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with number elements,
      * `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( int* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with number elements,
      * `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( float* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with string elements,
      * `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( String* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 3 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Vec3* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 4 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Vec4* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 3 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Point* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 4 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Plane* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 4 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Quat* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 9 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Mat33* array, int count ) const;
 
     /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
      * If value is not either null or an array of the specified length with arrays of 16 numbers as
      * elements, `System::error()` is invoked.
      *
-     * @return true if destination array has been filled, false if %JSON array is null.
+     * @return true if destination array has been filled, false if %JSON element is null.
      */
     bool get( Mat44* array, int count ) const;
 
@@ -959,6 +1061,13 @@ class JSON
     String toString() const;
 
     /**
+     * Formatted String representation of a value.
+     *
+     * This function returns string written by `write()` method.
+     */
+    String toFormattedString(const char* lineEnd = "\n" ) const;
+
+    /**
      * Clear existing value and read new contents from a stream.
      *
      * @param istream input stream.
@@ -967,12 +1076,21 @@ class JSON
     void read( InputStream* istream, const char* path = "InputStream" );
 
     /**
-     * Write formatted JSON to a stream.
+     * Write formatted %JSON to a stream.
      */
-    void write( BufferStream* ostream, const char* lineEnd = "\n" );
+    void write( BufferStream* ostream, const char* lineEnd = "\n" ) const;
 
     /**
-     * Clear existing value and read new contents from a JSON file.
+     * Clear existing value and read new contents from a %JSON file (via `File` class).
+     *
+     * If file open fails, existing value is kept intact.
+     *
+     * @return true iff file is successfully read and parsed.
+     */
+    bool load( const char* path );
+
+    /**
+     * Clear existing value and read new contents from a %JSON file.
      *
      * If file open fails, existing value is kept intact.
      *
@@ -981,7 +1099,7 @@ class JSON
     bool load( File* file );
 
     /**
-     * Clear existing value and read new contents from a JSON file.
+     * Clear existing value and read new contents from a %JSON file.
      *
      * If file open fails, existing value is kept intact.
      *
@@ -990,14 +1108,19 @@ class JSON
     bool load( PFile* file );
 
     /**
-     * Write to a file.
+     * Write to a file (via `File` class).
      */
-    bool save( File* file, const char* lineEnd = "\n" );
+    bool save( const char* path, const char* lineEnd = "\n" ) const;
 
     /**
      * Write to a file.
      */
-    bool save( PFile* file, const char* lineEnd = "\n" );
+    bool save( File* file, const char* lineEnd = "\n" ) const;
+
+    /**
+     * Write to a file.
+     */
+    bool save( PFile* file, const char* lineEnd = "\n" ) const;
 
 };
 

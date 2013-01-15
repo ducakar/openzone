@@ -105,6 +105,32 @@ struct JSON::ObjectData : JSON::Data
   HashMap<String, JSON> table;
 };
 
+JSON::CIterator::CIterator( const ObjectData* data ) :
+  IteratorBase<const HashMap<String, JSON>::Elem>( nullptr ), objectIter( data->table.citer() )
+{
+  elem = objectIter;
+}
+
+JSON::CIterator& JSON::CIterator::operator ++ ()
+{
+  ++objectIter;
+  elem = objectIter;
+  return *this;
+}
+
+JSON::Iterator::Iterator( ObjectData* data ) :
+  IteratorBase<HashMap<String, JSON>::Elem>( nullptr ), objectIter( data->table.iter() )
+{
+  elem = objectIter;
+}
+
+JSON::Iterator& JSON::Iterator::operator ++ ()
+{
+  ++objectIter;
+  elem = objectIter;
+  return *this;
+}
+
 struct JSON::Parser
 {
   struct Position
@@ -178,7 +204,7 @@ void JSON::Parser::setAccessed( JSON* value )
       break;
     }
     case ARRAY: {
-      const List<JSON>& list = static_cast<const ArrayData*>( value->data )->list;
+      List<JSON>& list = static_cast<ArrayData*>( value->data )->list;
 
       foreach( i, list.iter() ) {
         setAccessed( i );
@@ -186,7 +212,7 @@ void JSON::Parser::setAccessed( JSON* value )
       break;
     }
     case OBJECT: {
-      const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value->data )->table;
+      HashMap<String, JSON>& table = static_cast<ObjectData*>( value->data )->table;
 
       foreach( i, table.iter() ) {
         setAccessed( &i->value );
@@ -669,6 +695,24 @@ JSON::JSON() :
   data( nullptr ), valueType( NIL ), wasAccessed( true )
 {}
 
+JSON::JSON( const char* path ) :
+  data( nullptr ), valueType( NIL ), wasAccessed( true )
+{
+  load( path );
+}
+
+JSON::JSON( File* file ) :
+  data( nullptr ), valueType( NIL ), wasAccessed( true )
+{
+  load( file );
+}
+
+JSON::JSON( PFile* file ) :
+  data( nullptr ), valueType( NIL ), wasAccessed( true )
+{
+  load( file );
+}
+
 JSON::~JSON()
 {
   clear();
@@ -790,6 +834,30 @@ const JSON& JSON::operator [] ( const char* key ) const
 
   value->wasAccessed = true;
   return *value;
+}
+
+JSON::CIterator JSON::objectCIter() const
+{
+  if( valueType == OBJECT ) {
+    const ObjectData* objectData = static_cast<const ObjectData*>( data );
+
+    return CIterator( objectData );
+  }
+  else {
+    return CIterator();
+  }
+}
+
+JSON::Iterator JSON::objectIter()
+{
+  if( valueType == OBJECT ) {
+    ObjectData* objectData = static_cast<ObjectData*>( data );
+
+    return Iterator( objectData );
+  }
+  else {
+    return Iterator();
+  }
 }
 
 bool JSON::asBool() const
@@ -2468,17 +2536,39 @@ String JSON::toString() const
   }
 }
 
+String JSON::toFormattedString( const char* lineEnd ) const
+{
+  BufferStream os;
+  write( &os, lineEnd );
+
+  return String( os.begin(), os.length() );
+}
+
 void JSON::read( InputStream* istream, const char* path )
 {
   *this = Parser::parse( istream, path );
 }
 
-void JSON::write( BufferStream* ostream, const char* lineEnd )
+void JSON::write( BufferStream* ostream, const char* lineEnd ) const
 {
   Formatter formatter = { ostream, lineEnd, String::length( lineEnd ), 0 };
 
   formatter.writeValue( *this );
   ostream->writeChars( lineEnd, formatter.lineEndLength );
+}
+
+bool JSON::load( const char* path )
+{
+  File file( path );
+  if( !file.map() ) {
+    return false;
+  }
+
+  InputStream is = file.inputStream();
+  read( &is, file.path() );
+
+  file.unmap();
+  return true;
 }
 
 bool JSON::load( File* file )
@@ -2488,7 +2578,6 @@ bool JSON::load( File* file )
   }
 
   InputStream is = file->inputStream();
-
   read( &is, file->path() );
 
   file->unmap();
@@ -2502,29 +2591,36 @@ bool JSON::load( PFile* file )
   }
 
   InputStream is = file->inputStream();
-
   read( &is, file->path() );
 
   file->unmap();
   return true;
 }
 
-bool JSON::save( File* file, const char* lineEnd )
+bool JSON::save( const char* path, const char* lineEnd ) const
 {
-  BufferStream ostream;
+  File file( path );
 
-  write( &ostream, lineEnd );
+  BufferStream os;
+  write( &os, lineEnd );
 
-  return file->write( ostream.begin(), ostream.length() );
+  return file.write( os.begin(), os.length() );
 }
 
-bool JSON::save( PFile* file, const char* lineEnd )
+bool JSON::save( File* file, const char* lineEnd ) const
 {
-  BufferStream ostream;
+  BufferStream os;
+  write( &os, lineEnd );
 
-  write( &ostream, lineEnd );
+  return file->write( os.begin(), os.length() );
+}
 
-  return file->write( ostream.begin(), ostream.length() );
+bool JSON::save( PFile* file, const char* lineEnd ) const
+{
+  BufferStream os;
+  write( &os, lineEnd );
+
+  return file->write( os.begin(), os.length() );
 }
 
 }

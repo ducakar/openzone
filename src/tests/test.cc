@@ -118,10 +118,8 @@ class Foo
 int main()
 {
   System::init();
-  const char* s = " 1   2 3  ";
-  DArray<String> tokens = String::split( s, ' ' );
-  for( const String& s : tokens ) {
-    Log() << s << ": " << s.parseFloat() << "\n";
-  }
+
+  JSON json( "/home/davorin/.config/chromium/Default/Bookmarks" );
+  Log() << json.toFormattedString();
   return 0;
 }

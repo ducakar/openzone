@@ -1245,9 +1245,9 @@ class OutputStream
     }
 
     /**
-     * Read line from a text file.
+     * Read a line.
      *
-     * Line delimiting character is not part of the returned string.
+     * Line delimiter is read but not included in the returned string.
      */
     String readLine()
     {
@@ -1265,9 +1265,7 @@ class OutputStream
     }
 
     /**
-     * Write line in a text file.
-     *
-     * This writes the given string but replaces terminating null character with a UNIX newline.
+     * Write a line replacing terminating null byte with UNIX newline.
      */
     OZ_ALWAYS_INLINE
     void writeLine( const String& s )
@@ -1280,9 +1278,7 @@ class OutputStream
     }
 
     /**
-     * Write line in a text file.
-     *
-     * This writes the given string but replaces terminating null character with a UNIX newline.
+     * Write a line replacing terminating null byte with UNIX newline.
      */
     OZ_ALWAYS_INLINE
     void writeLine( const char* s )

@@ -1,7 +1,7 @@
 set( NACL                       ON )
 
-set( PLATFORM_NAME              "NaCl" )
 set( PLATFORM_EMBEDDED          ON )
+set( PLATFORM_NAME              "NaCl" )
 set( PLATFORM_TRIPLET           "i686-nacl" )
 set( PLATFORM_PREFIX            "$ENV{NACL_SDK_ROOT}/toolchain/linux_x86_newlib" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/NaCl-i686" )
@@ -14,3 +14,8 @@ set( CMAKE_C_COMPILER           "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-gcc"
 set( CMAKE_CXX_COMPILER         "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-g++" )
 set( CMAKE_C_FLAGS              "-msse3 -mfpmath=sse" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "-msse3 -mfpmath=sse" CACHE STRING "" )
+
+set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
+set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
+set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
+set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )

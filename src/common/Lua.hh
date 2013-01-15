@@ -25,7 +25,7 @@
 
 #include <common/common.hh>
 
-// Forward declaration needed for Lua API declarations, to prevent pollution from Lua headers.
+// Forward declaration to prevent pollution from Lua headers.
 struct lua_State;
 
 namespace oz
@@ -55,11 +55,6 @@ class Lua
     lua_State* l;                 ///< %Lua state descriptor.
 
   protected:
-
-    /**
-     * Default constructor, clears `l` to `nullptr`.
-     */
-    explicit Lua();
 
     /**
      * Read serialised %Lua variable and push it on global stack (recursively for tables).

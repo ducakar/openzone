@@ -21,3 +21,8 @@ set( CMAKE_CXX_COMPILER         "${PLATFORM_TOOL_PREFIX}/bin/${PLATFORM_TRIPLET}
 set( CMAKE_C_FLAGS              "${PLATFORM_FLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=neon" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "${PLATFORM_FLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=neon" CACHE STRING "" )
 set( CMAKE_SHARED_LINKER_FLAGS  "-Wl,--fix-cortex-a8" CACHE STRING "" )
+
+set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
+set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
+set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
+set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )

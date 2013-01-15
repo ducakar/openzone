@@ -60,8 +60,8 @@ You may also want to set several options when configuring CMake build system:
   `OFF` by default.
 
 - `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
-  Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementations since
-  Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of accesses to
+  Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementation since
+  Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are plenty of accesses to
   vector components in OpenZone code.
   `OFF` by default.
 

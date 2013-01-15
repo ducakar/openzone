@@ -34,10 +34,6 @@ namespace common
 int  Lua::randomSeed       = 0;
 bool Lua::isRandomSeedTime = true;
 
-Lua::Lua() :
-  l( nullptr )
-{}
-
 bool Lua::readVariable( InputStream* istream )
 {
   char ch = istream->readChar();

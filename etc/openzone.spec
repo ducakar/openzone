@@ -76,6 +76,7 @@ cmake \
   -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
   -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
+  -D BUILD_SHARED_LIBS=1 \
   ..
 
 make %{?_smp_mflags}

@@ -36,7 +36,10 @@
 #include <cstdlib>
 #include <exception>
 
-#if defined( __ANDROID__ )
+#if defined( EMSCRIPTEN )
+# include <ctime>
+# include <pthread.h>
+#elif defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
@@ -97,7 +100,11 @@ static const float BELL_TIME           = 0.30f;
 static const float BELL_FREQUENCY      = 1000.0f;
 static const int   BELL_PREFERRED_RATE = 44100;
 
-#if defined( __ANDROID__ )
+#if defined( EMSCRIPTEN )
+
+static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
+
+#elif defined( __ANDROID__ )
 
 static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
 
@@ -251,9 +258,27 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   }
 }
 
-#if defined( __ANDROID__ )
+#if defined( EMSCRIPTEN )
 
-// TODO: Implement bell for OpenSL ES.
+static void* bellMain( void* )
+{
+  static_cast<void>( genBellSamples );
+
+  // TODO: Implement bell for Emscripten.
+  fprintf( stderr, "*** BELL ***\n" );
+  return nullptr;
+}
+
+#elif defined( __ANDROID__ )
+
+static void* bellMain( void* )
+{
+  static_cast<void>( genBellSamples );
+
+  // TODO: Implement bell for OpenSL ES.
+  __android_log_write( ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n" );
+  return nullptr;
+}
 
 #elif defined( __native_client__ )
 
@@ -567,13 +592,7 @@ bool System::isInstrumented()
 
 void System::bell()
 {
-#if defined( __ANDROID__ )
-
-  static_cast<void>( genBellSamples );
-
-  __android_log_write( ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n" );
-
-#elif defined( __native_client__ )
+#if defined( __native_client__ )
 
   if( instance != nullptr && !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
     core = pp::Module::Get()->core();
@@ -678,24 +697,23 @@ void System::init( int flags, CrashHandler* crashHandler_ )
   initFlags    = flags;
   crashHandler = crashHandler_;
 
-#if defined( __unix__ ) && !defined( __ANDROID__ ) && !defined( __native_client__ )
+#if !defined( EMSCRIPTEN ) && !defined( __ANDROID__ ) && !defined( __native_client__ ) && \
+    !defined( _WIN32 )
   int fd = open( "/proc", O_RDONLY );
   isDebuggerAttached = fd >= 5;
   close( fd );
-#endif
 
-  if( initFlags & HANDLERS_BIT ) {
-    catchSignals();
-
-    std::set_terminate( terminate );
-    std::set_unexpected( unexpected );
-  }
-
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   if( initFlags & LOCALE_BIT ) {
     setlocale( LC_ALL, "" );
   }
 #endif
+
+  if( initFlags & HANDLERS_BIT ) {
+    std::set_terminate( terminate );
+    std::set_unexpected( unexpected );
+  }
+
+  threadInit();
 }
 
 }

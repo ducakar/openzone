@@ -29,14 +29,12 @@ include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
 include( FindPkgConfig )
 
+set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
+
 if( PLATFORM_EMBEDDED )
   set( OZ_PLATFORM_NAME "${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
-  set( BUILD_SHARED_LIBS OFF )
   set( OZ_GL_ES ON )
   set( OZ_STANDALONE OFF )
-else()
-  set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
-  set( BUILD_SHARED_LIBS ON )
 endif()
 
 if( ANDROID )
@@ -55,29 +53,12 @@ else()
   set( OZ_BINARY_SUBDIR "" )
 endif()
 
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
-  if( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.4 )
-    message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers." )
-  endif()
-elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
-  if( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 3.0 )
-    message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers." )
-  endif()
-else()
-  message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers." )
-endif()
-
 #
 # Libraries
 #
 
 # Set-up include and library directories for different toolchains.
-if( ANDROID )
-  include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
-  link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
-
-  set( ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/usr/lib/pkgconfig )
-elseif( NACL )
+if( PLATFORM_EMBEDDED )
   include_directories( SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include )
   link_directories( ${PLATFORM_PORTS_PREFIX}/usr/lib )
 
@@ -85,9 +66,6 @@ elseif( NACL )
 elseif( WIN32 )
   set( ENV{PKG_CONFIG_PATH} ${PLATFORM_PREFIX}/lib/pkgconfig )
 else()
-  if( CMAKE_SYSTEM_NAME STREQUAL Linux )
-    find_package( ALSA REQUIRED )
-  endif()
   pkg_check_modules( PULSE_SIMPLE REQUIRED libpulse-simple )
 endif()
 
@@ -195,7 +173,7 @@ else()
   set( flags "-std=c++0x -pedantic -fstrict-enums" )
 endif()
 
-set( flags "${flags} -fvisibility-inlines-hidden -fno-exceptions -fno-rtti -ffast-math" )
+set( flags "${flags} -fno-exceptions -fno-rtti -ffast-math -fvisibility-inlines-hidden" )
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )

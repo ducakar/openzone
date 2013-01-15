@@ -16,14 +16,15 @@
 #
 
 platforms=(
-  NaCl-x86_64
-  NaCl-i686
+#   NaCl-x86_64
+#   NaCl-i686
 #   NaCl-ARM
 #   PNaCl
-  Android14-i686
+#   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a
 #   Android14-MIPS
+  Emscripten
 )
 
 projectDir=`pwd`
@@ -41,6 +42,8 @@ ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 
 ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.6/prebuilt/linux-x86"
 ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
+
+emscriptenPrefix="$EMSCRIPTEN"
 
 function msg()
 {
@@ -294,6 +297,37 @@ function setup_ndk_MIPS()
   (( $enabled )) || return 1
 }
 
+function setup_emscripten()
+{
+  platform="Emscripten"                                   # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="emscripten"                                    # Platform triplet (tools prefix).
+  hostTriplet="emscripten"                                # Host triplet for autotools configure.
+  sysroot="$emscriptenPrefix/system"                      # SDK sysroot.
+  toolsroot="$emscriptenPrefix"                           # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+
+  #export CPP="$toolsroot/bin/$triplet-cpp"
+  export -n CPP
+  export CC="$toolsroot/emcc"
+  export AR="$toolsroot/emar"
+  export RANLIB="$toolsroot/emranlib"
+  export STRIP="/bin/true"
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$toolsroot/bin:$PATH"
+
+  export CPPFLAGS="-I$buildDir/usr/include"
+  export CFLAGS="-O2 -U__STRICT_ANSI__"
+  export LDFLAGS="-L$buildDir/usr/lib"
+
+  enabled=0
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && enabled=1
+  done
+  (( $enabled )) || return 1
+}
+
 function clean()
 {
   for platform in ${platforms[@]}; do
@@ -503,6 +537,7 @@ function build_sdl2()
 function build_freetype()
 {
   prepare freetype-2.4.11 freetype-2.4.11.tar.bz2 || return
+  applyPatches freetype-2.4.11.patch
 
   autotoolsBuild --disable-shared --without-bzip2
 
@@ -572,6 +607,7 @@ function build()
   setup_nacl_i686   && build_zlib
   setup_nacl_ARM    && build_zlib
   setup_pnacl       && build_zlib
+  setup_emscripten  && build_zlib
 
   # PhysicsFS
   setup_nacl_x86_64 && build_physfs
@@ -582,6 +618,7 @@ function build()
   setup_ndk_ARM     && build_physfs
   setup_ndk_ARMv7a  && build_physfs
   setup_ndk_MIPS    && build_physfs
+  setup_emscripten  && build_physfs
 
   # Lua
   setup_nacl_x86_64 && build_lua
@@ -592,6 +629,7 @@ function build()
   setup_ndk_ARM     && build_lua
   setup_ndk_ARMv7a  && build_lua
   setup_ndk_MIPS    && build_lua
+  setup_emscripten  && build_lua
 
 # LuaJIT
 #   setup_nacl_x86_64 && build_luajit
@@ -622,6 +660,7 @@ function build()
   setup_ndk_ARM     && build_freetype
   setup_ndk_ARMv7a  && build_freetype
   setup_ndk_MIPS    && build_freetype
+  setup_emscripten  && build_freetype
 
   # SDL_ttf
   setup_nacl_x86_64 && build_sdl_ttf
@@ -642,6 +681,7 @@ function build()
   setup_ndk_ARM     && build_openal
   setup_ndk_ARMv7a  && build_openal
   setup_ndk_MIPS    && build_openal
+  setup_emscripten  && build_openal
 
   # libogg
   setup_nacl_x86_64 && build_libogg
@@ -652,6 +692,7 @@ function build()
   setup_ndk_ARM     && build_libogg
   setup_ndk_ARMv7a  && build_libogg
   setup_ndk_MIPS    && build_libogg
+  setup_emscripten  && build_libogg
 
   # libvorbis
   setup_nacl_x86_64 && build_libvorbis
@@ -662,6 +703,7 @@ function build()
   setup_ndk_ARM     && build_libvorbis
   setup_ndk_ARMv7a  && build_libvorbis
   setup_ndk_MIPS    && build_libvorbis
+  setup_emscripten  && build_libvorbis
 }
 
 case $1 in

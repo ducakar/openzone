@@ -200,7 +200,7 @@ class Set
      * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
-    Iterator iter() const
+    Iterator iter()
     {
       return Iterator( data, data + count );
     }

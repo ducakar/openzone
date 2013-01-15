@@ -254,7 +254,7 @@ class HashMap
      * Move constructor, moves storage.
      */
     HashMap( HashMap&& hm ) :
-      pool( static_cast< Pool<Elem, SIZE>&& >( hm.pool ) )
+      pool( static_cast<Pool<Elem, SIZE>&&>( hm.pool ) )
     {
       aCopy<Elem*>( data, hm.data, SIZE );
       aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
@@ -289,7 +289,7 @@ class HashMap
 
       aCopy<Elem*>( data, hm.data, SIZE );
       aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
-      pool = static_cast< Pool<Elem, SIZE>&& >( hm.pool );
+      pool = static_cast<Pool<Elem, SIZE>&&>( hm.pool );
 
       return *this;
     }
@@ -341,7 +341,7 @@ class HashMap
      * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
-    Iterator iter() const
+    Iterator iter()
     {
       return Iterator( data );
     }

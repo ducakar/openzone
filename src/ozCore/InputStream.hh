@@ -628,9 +628,9 @@ class InputStream
     }
 
     /**
-     * Read line from a text file.
+     * Read a line.
      *
-     * Line delimiting character is not part of the returned string.
+     * Line delimiter is read but not included in the returned string.
      */
     String readLine()
     {
