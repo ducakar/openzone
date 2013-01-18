@@ -55,7 +55,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
   JSON sequence;
   PFile file( path );
 
-  if( !sequence.load( &file ) ) {
+  if( !sequence.load( file ) ) {
     OZ_ERROR( "Failed to load sequence from '%s'", file.path().cstr() );
   }
 

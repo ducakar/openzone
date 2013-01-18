@@ -56,82 +56,12 @@ static bool operator < ( const PFile& a, const PFile& b )
 }
 
 PFile::PFile( const char* path ) :
-  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
-{}
-
-PFile::~PFile()
+  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 )
 {
-  delete[] data;
-}
-
-PFile::PFile( const PFile& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
-  fileTime( file.fileTime ), data( nullptr )
-{}
-
-PFile::PFile( PFile&& file ) :
-  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
-{
-  file.filePath = "";
-  file.fileType = File::DIRECTORY;
-  file.fileSize = -1;
-  file.fileTime = 0;
-  file.data     = nullptr;
-}
-
-PFile& PFile::operator = ( const PFile& file )
-{
-  if( &file == this ) {
-    return *this;
+  // Avoid stat'ing obviously non-existent files.
+  if( filePath.isEmpty() ) {
+    return;
   }
-
-  filePath = file.filePath;
-  fileType = file.fileType;
-  fileSize = file.fileSize;
-  fileTime = file.fileTime;
-  data     = nullptr;
-
-  return *this;
-}
-
-PFile& PFile::operator = ( PFile&& file )
-{
-  if( &file == this ) {
-    return *this;
-  }
-
-  delete[] data;
-
-  filePath = static_cast<String&&>( file.filePath );
-  fileType = file.fileType;
-  fileSize = file.fileSize;
-  fileTime = file.fileTime;
-  data     = file.data;
-
-  file.filePath = "";
-  file.fileType = File::MISSING;
-  file.fileSize = -1;
-  file.fileTime = 0;
-  file.data     = nullptr;
-
-  return *this;
-}
-
-void PFile::setPath( const char* path )
-{
-  delete[] data;
-
-  filePath = path;
-  fileType = File::MISSING;
-  fileSize = -1;
-  fileTime = 0;
-  data     = nullptr;
-}
-
-bool PFile::stat()
-{
-  unmap();
 
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 
@@ -188,28 +118,54 @@ bool PFile::stat()
   }
 
 #endif
-
-  return fileType != File::MISSING;
 }
 
-File::Type PFile::type() const
+PFile::PFile( const PFile& file ) :
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
+  fileTime( file.fileTime )
+{}
+
+PFile::PFile( PFile&& file ) :
+  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
+  fileSize( file.fileSize ), fileTime( file.fileTime )
 {
-  return fileType;
+  file.filePath = "";
+  file.fileType = File::DIRECTORY;
+  file.fileSize = -1;
+  file.fileTime = 0;
 }
 
-long64 PFile::time() const
+PFile& PFile::operator = ( const PFile& file )
 {
-  return fileTime;
+  if( &file == this ) {
+    return *this;
+  }
+
+  filePath = file.filePath;
+  fileType = file.fileType;
+  fileSize = file.fileSize;
+  fileTime = file.fileTime;
+
+  return *this;
 }
 
-int PFile::size() const
+PFile& PFile::operator = ( PFile&& file )
 {
-  return fileSize;
-}
+  if( &file == this ) {
+    return *this;
+  }
 
-const String& PFile::path() const
-{
-  return filePath;
+  filePath = static_cast<String&&>( file.filePath );
+  fileType = file.fileType;
+  fileSize = file.fileSize;
+  fileTime = file.fileTime;
+
+  file.filePath = "";
+  file.fileType = File::MISSING;
+  file.fileSize = -1;
+  file.fileTime = 0;
+
+  return *this;
 }
 
 String PFile::realDir() const
@@ -224,83 +180,9 @@ String PFile::mountPoint() const
   return mountPoint == nullptr ? "" : mountPoint;
 }
 
-String PFile::name() const
-{
-  return filePath.fileName();
-}
-
-String PFile::baseName() const
-{
-  return filePath.fileBaseName();
-}
-
-String PFile::extension() const
-{
-  return filePath.fileExtension();
-}
-
-bool PFile::hasExtension( const char* ext ) const
-{
-  return filePath.hasFileExtension( ext );
-}
-
-bool PFile::isMapped() const
-{
-  return data != nullptr;
-}
-
-bool PFile::map()
-{
-  if( data != nullptr ) {
-    return true;
-  }
-
-  PHYSFS_File* file = PHYSFS_openRead( filePath );
-  if( file == nullptr ) {
-    return false;
-  }
-
-  int size = int( PHYSFS_fileLength( file ) );
-  data = new char[size];
-
-  int result = int( PHYSFS_readBytes( file, data, ulong64( size ) ) );
-  PHYSFS_close( file );
-
-  if( result != size ) {
-    delete[] data;
-    data = nullptr;
-    return false;
-  }
-
-  fileType = File::REGULAR;
-  fileSize = size;
-  return true;
-}
-
-void PFile::unmap()
-{
-  if( data != nullptr ) {
-    delete[] data;
-    data = nullptr;
-  }
-}
-
-InputStream PFile::inputStream( Endian::Order order ) const
-{
-  hard_assert( data != nullptr );
-
-  return InputStream( data, data + fileSize, order );
-}
-
-Buffer PFile::read()
+Buffer PFile::read() const
 {
   Buffer buffer;
-
-  if( data != nullptr ) {
-    buffer.allocate( fileSize );
-    mCopy( buffer.begin(), data, size_t( fileSize ) );
-    return buffer;
-  }
 
   PHYSFS_File* file = PHYSFS_openRead( filePath );
   if( file == nullptr ) {
@@ -315,47 +197,34 @@ Buffer PFile::read()
 
   if( result != size ) {
     buffer.deallocate();
-    return buffer;
   }
-
-  fileType = File::REGULAR;
-  fileSize = size;
   return buffer;
 }
 
-bool PFile::write( const char* buffer, int size )
+bool PFile::write( const char* data, int size ) const
 {
-  if( data != nullptr ) {
+  PHYSFS_File* file = PHYSFS_openWrite( filePath );
+  if( file == nullptr ) {
     return false;
   }
 
-  PHYSFS_File* file = PHYSFS_openWrite( filePath );
-  if( file == nullptr ) {
-    return buffer;
-  }
-
-  int result = int( PHYSFS_writeBytes( file, buffer, ulong64( size ) ) );
+  int result = int( PHYSFS_writeBytes( file, data, ulong64( size ) ) );
   PHYSFS_close( file );
 
   if( result != size ) {
     return false;
   }
-
-  fileType = File::REGULAR;
-  fileSize = size;
   return true;
 }
 
-bool PFile::write( const Buffer* buffer )
+bool PFile::write( const Buffer& buffer ) const
 {
-  return write( buffer->begin(), buffer->length() );
+  return write( buffer.begin(), buffer.length() );
 }
 
-DArray<PFile> PFile::ls()
+DArray<PFile> PFile::ls() const
 {
   DArray<PFile> array;
-
-  stat();
 
   if( fileType != File::DIRECTORY ) {
     return array;
@@ -388,7 +257,7 @@ DArray<PFile> PFile::ls()
   entity = list;
   for( int i = 0; i < count; ++entity ) {
     if( ( *entity )[0] != '.' ) {
-      array[i].setPath( prefix + *entity );
+      array[i] = PFile( prefix + *entity );
       ++i;
     }
   }

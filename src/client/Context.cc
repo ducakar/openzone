@@ -318,11 +318,13 @@ uint Context::readTextureLayer( InputStream* istream )
 uint Context::loadTextureLayer( const char* path )
 {
   PFile file( path );
-  if( !file.map() ) {
-    OZ_ERROR( "Texture file '%s' mmap failed", path );
+  Buffer buffer = file.read();
+
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Texture file '%s' mmap failed", file.path().cstr() );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
   return readTextureLayer( &is );
 }
 
@@ -343,11 +345,13 @@ Texture Context::readTexture( InputStream* istream )
 Texture Context::loadTexture( const char* path )
 {
   PFile file( path );
-  if( !file.map() ) {
-    OZ_ERROR( "Texture file '%s' mmap failed", path );
+  Buffer buffer = file.read();
+
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Texture file '%s' read failed", path );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
   return readTexture( &is );
 }
 
@@ -399,11 +403,13 @@ uint Context::requestSound( int id )
   const String& path = liber.sounds[id].path;
 
   PFile file( path );
-  if( !file.map() ) {
-    OZ_ERROR( "Sound file '%s' mmap failed", path.cstr() );
+  Buffer buffer = file.read();
+
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Sound file '%s' read failed", path.cstr() );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   uint   length;
   ubyte* data;
@@ -432,7 +438,6 @@ uint Context::requestSound( int id )
   alBufferData( resource.id, format, data, int( length ), audioSpec.freq );
 
   SDL_FreeWAV( data );
-  file.unmap();
 
   OZ_AL_CHECK_ERROR();
 

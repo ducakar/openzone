@@ -87,10 +87,6 @@ int main( int argc, char** argv )
   foreach( pkg, packages.iter() ) {
     File& file = pkg->value;
 
-    if( !file.stat() ) {
-      OZ_ERROR( "Failed to stat '%s'", file.path().cstr() );
-    }
-
     String name = file.name().cstr();
     long64 time = file.time();
 

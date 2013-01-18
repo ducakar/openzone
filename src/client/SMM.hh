@@ -38,13 +38,14 @@ class SMM
 {
   private:
 
-    Mesh  mesh;
-    PFile file;
+    int    id;
+    Buffer buffer;
+    Mesh   mesh;
 
   public:
 
-    bool  isPreloaded;
-    bool  isLoaded;
+    bool   isPreloaded;
+    bool   isLoaded;
 
     explicit SMM( int id );
 

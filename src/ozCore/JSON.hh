@@ -164,17 +164,12 @@ class JSON
     /**
      * Create from a file contents.
      */
-    explicit JSON( const char* path );
+    explicit JSON( const File& file );
 
     /**
      * Create from a file contents.
      */
-    explicit JSON( File* file );
-
-    /**
-     * Create from a file contents.
-     */
-    explicit JSON( PFile* file );
+    explicit JSON( const PFile& file );
 
     /**
      * Destructor.
@@ -1065,7 +1060,7 @@ class JSON
      *
      * This function returns string written by `write()` method.
      */
-    String toFormattedString(const char* lineEnd = "\n" ) const;
+    String toFormattedString( const char* lineEnd = "\n" ) const;
 
     /**
      * Clear existing value and read new contents from a stream.
@@ -1081,13 +1076,13 @@ class JSON
     void write( BufferStream* ostream, const char* lineEnd = "\n" ) const;
 
     /**
-     * Clear existing value and read new contents from a %JSON file (via `File` class).
+     * Clear existing value and read new contents from a %JSON file.
      *
      * If file open fails, existing value is kept intact.
      *
      * @return true iff file is successfully read and parsed.
      */
-    bool load( const char* path );
+    bool load( const File& file );
 
     /**
      * Clear existing value and read new contents from a %JSON file.
@@ -1096,31 +1091,17 @@ class JSON
      *
      * @return true iff file is successfully read and parsed.
      */
-    bool load( File* file );
-
-    /**
-     * Clear existing value and read new contents from a %JSON file.
-     *
-     * If file open fails, existing value is kept intact.
-     *
-     * @return true iff file is successfully read and parsed.
-     */
-    bool load( PFile* file );
-
-    /**
-     * Write to a file (via `File` class).
-     */
-    bool save( const char* path, const char* lineEnd = "\n" ) const;
+    bool load( const PFile& file );
 
     /**
      * Write to a file.
      */
-    bool save( File* file, const char* lineEnd = "\n" ) const;
+    bool save( const File& file, const char* lineEnd = "\n" ) const;
 
     /**
      * Write to a file.
      */
-    bool save( PFile* file, const char* lineEnd = "\n" ) const;
+    bool save( const PFile& file, const char* lineEnd = "\n" ) const;
 
 };
 

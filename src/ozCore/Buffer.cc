@@ -109,7 +109,7 @@ InputStream Buffer::inputStream( Endian::Order order ) const
   return InputStream( data, data + size, order );
 }
 
-OutputStream Buffer::outputStream( Endian::Order order ) const
+OutputStream Buffer::outputStream( Endian::Order order )
 {
   hard_assert( data != nullptr );
 

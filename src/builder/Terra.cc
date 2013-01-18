@@ -40,7 +40,7 @@ void Terra::load()
   PFile imageFile( "terra/" + name + ".png" );
 
   JSON config;
-  if( !config.load( &configFile ) ) {
+  if( !config.load( configFile ) ) {
     OZ_ERROR( "Failed to loa terra configuration '%s'", configFile.path().cstr() );
   }
 

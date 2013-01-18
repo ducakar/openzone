@@ -85,21 +85,15 @@ void Lua::create( const char* mission_ )
   }
 
   foreach( file, files.iter() ) {
-    if( !file->hasExtension( "lua" ) ) {
+    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
       continue;
     }
 
-    if( !file->map() ) {
-      OZ_ERROR( "Failed to read mission script '%s'", file->path().cstr() );
-    }
+    Buffer buffer = file->read();
 
-    InputStream is = file->inputStream();
-
-    if( l_dobuffer( is.begin(), is.capacity(), file->path() ) != 0 ) {
+    if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
       OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
     }
-
-    file->unmap();
   }
 
   staticCall( "onCreate" );
@@ -135,21 +129,15 @@ void Lua::read( InputStream* istream )
   }
 
   foreach( file, files.iter() ) {
-    if( !file->hasExtension( "lua" ) ) {
+    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
       continue;
     }
 
-    if( !file->map() ) {
-      OZ_ERROR( "Failed to read mission script '%s'", file->path().cstr() );
-    }
+    Buffer buffer = file->read();
 
-    InputStream is = file->inputStream();
-
-    if( l_dobuffer( is.begin(), is.capacity(), file->path() ) != 0 ) {
+    if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
       OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
     }
-
-    file->unmap();
   }
 
   const char* name = istream->readString();

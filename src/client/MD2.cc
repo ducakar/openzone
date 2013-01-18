@@ -221,14 +221,17 @@ void MD2::AnimState::advance()
   hard_assert( 0.0f <= frameRatio && frameRatio < 1.0f );
 }
 
-MD2::MD2( int id ) :
-  file( liber.models[id].path ), isPreloaded( false ), isLoaded( false )
+MD2::MD2( int id_ ) :
+  id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
 void MD2::preload()
 {
-  if( !file.map() ) {
-    OZ_ERROR( "MD2 model file '%s' mmap failed", file.path().cstr() );
+  PFile file( liber.models[id].path );
+
+  buffer = file.read();
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "MD2 model file '%s' read failed", file.path().cstr() );
   }
 
   isPreloaded = true;
@@ -236,15 +239,14 @@ void MD2::preload()
 
 void MD2::load()
 {
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   weaponTransf = is.readMat44();
-
   mesh.load( &is, shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
 
   hard_assert( !is.isAvailable() );
 
-  file.setPath( "" );
+  buffer.deallocate();
 
   isLoaded = true;
 }

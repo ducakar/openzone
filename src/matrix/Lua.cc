@@ -425,18 +425,12 @@ void Lua::init()
   DArray<PFile> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.iter() ) {
-    if( file->hasExtension( "lua" ) ) {
-      if( !file->map() ) {
-        OZ_ERROR( "Failed to read Lua script '%s'", file->path().cstr() );
-      }
+    if( file->type() != File::REGULAR || file->hasExtension( "lua" ) ) {
+      Buffer buffer = file->read();
 
-      InputStream istream = file->inputStream();
-
-      if( l_dobuffer( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
+      if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
         OZ_ERROR( "Matrix Lua script error" );
       }
-
-      file->unmap();
     }
   }
 

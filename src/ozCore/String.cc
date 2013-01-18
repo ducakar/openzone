@@ -193,7 +193,7 @@ String String::fileExtension( const char* s )
   return slash < dot ? substring( s, dot + 1 ) : String();
 }
 
-bool String::hasFileExtension( const char* s, const char* ext )
+bool String::fileHasExtension( const char* s, const char* ext )
 {
   const char* slash = findLast( s, '/' );
   const char* dot   = findLast( s, '.' );
@@ -919,7 +919,7 @@ String String::fileExtension() const
   return slash < dot ? substring( dot + 1 ) : String();
 }
 
-bool String::hasFileExtension( const char* ext ) const
+bool String::fileHasExtension( const char* ext ) const
 {
   const char* slash = findLast( '/' );
   const char* dot   = findLast( '.' );

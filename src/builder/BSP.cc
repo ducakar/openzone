@@ -48,7 +48,7 @@ void BSP::load()
   PFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
 
   JSON config;
-  if( !config.load( &configFile ) ) {
+  if( !config.load( configFile ) ) {
     OZ_ERROR( "BSP config loading failed" );
   }
 
@@ -83,11 +83,12 @@ void BSP::load()
     OZ_ERROR( "Invalid BSP config" );
   }
 
-  if( !bspFile.map() ) {
+  if( bspFile.type() != File::REGULAR ) {
     OZ_ERROR( "BSP reading failed" );
   }
 
-  InputStream is = bspFile.inputStream( Endian::LITTLE );
+  Buffer buffer = bspFile.read();
+  InputStream is = buffer.inputStream( Endian::LITTLE );
 
   char id[4];
   id[0] = is.readChar();
@@ -499,7 +500,6 @@ void BSP::load()
     }
   }
 
-  bspFile.unmap();
   config.clear( true );
 }
 

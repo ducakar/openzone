@@ -222,8 +222,6 @@ void Liber::initTextures()
   DArray<PFile> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
-    subDir->stat();
-
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -262,8 +260,6 @@ void Liber::initSounds()
   DArray<PFile> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
-    subDir->stat();
-
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -388,8 +384,6 @@ void Liber::initModels()
   DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    file->stat();
-
     if( file->type() != File::DIRECTORY ) {
       continue;
     }
@@ -397,13 +391,13 @@ void Liber::initModels()
     String name = file->name();
     String path;
 
-    if( PFile( file->path() + "/data.ozcSMM" ).stat() ) {
+    if( PFile( file->path() + "/data.ozcSMM" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcSMM";
     }
-    else if( PFile( file->path() + "/data.ozcMD2" ).stat() ) {
+    else if( PFile( file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD2";
     }
-    else if( PFile( file->path() + "/data.ozcMD3" ).stat() ) {
+    else if( PFile( file->path() + "/data.ozcMD3" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD3";
     }
     else {
@@ -463,8 +457,6 @@ void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList 
   DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    file->stat();
-
     if( file->type() == File::DIRECTORY ) {
       initMusicRecurse( file->path(), musicTracksList );
     }
@@ -520,11 +512,12 @@ void Liber::initFragPools()
       continue;
     }
 
-    if( !file->map() ) {
-      OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
+    Buffer buffer = file->read();
+    if( buffer.isEmpty() ) {
+      OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = buffer.inputStream();
 
     while( is.isAvailable() ) {
       const char* name = is.readString();
@@ -533,8 +526,6 @@ void Liber::initFragPools()
 
       fragPools.add( name, FragPool( &is, name, fragPools.length() ) );
     }
-
-    file->unmap();
   }
 
   nFragPools = fragPools.length();
@@ -562,11 +553,12 @@ void Liber::initClasses()
       continue;
     }
 
-    if( !file->map() ) {
-      OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
+    Buffer buffer = file->read();
+    if( buffer.isEmpty() ) {
+      OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = buffer.inputStream();
 
     int nClasses  = is.readInt();
     int nDevices  = is.readInt();
@@ -619,8 +611,6 @@ void Liber::initClasses()
         audioIndices.include( sAudio, audioIndices.length() );
       }
     }
-
-    file->unmap();
   }
 
   nDeviceClasses = deviceIndices.length();
@@ -629,15 +619,12 @@ void Liber::initClasses()
 
   // Initialise all classes.
   foreach( file, dirList.iter() ) {
-    if( !file->hasExtension( "ozClasses" ) ) {
+    if( file->type() != File::REGULAR || !file->hasExtension( "ozClasses" ) ) {
       continue;
     }
 
-    if( !file->map() ) {
-      OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
-    }
-
-    InputStream is = file->inputStream();
+    Buffer buffer = file->read();
+    InputStream is = buffer.inputStream();
 
     int nClasses  = is.readInt();
     int nDevices  = is.readInt();
@@ -664,8 +651,6 @@ void Liber::initClasses()
 
       ( *clazz )->init( &is, name );
     }
-
-    file->unmap();
   }
 
   foreach( classIter, objClasses.citer() ) {

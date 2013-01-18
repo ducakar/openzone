@@ -36,7 +36,7 @@ class BSP
 
     const matrix::BSP* bsp;
     Mesh               mesh;
-    PFile              file;
+    Buffer             buffer;
 
   public:
 

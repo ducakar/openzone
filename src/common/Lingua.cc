@@ -45,7 +45,7 @@ String Lingua::detectLanguage( const char* language_ )
   String lang = language_;
 
   if( !lang.isEmpty() ) {
-    if( !PFile( "lingua/" + lang ).stat() ) {
+    if( PFile( "lingua/" + lang ).type() == File::MISSING ) {
       lang = "";
     }
     return lang;
@@ -53,7 +53,7 @@ String Lingua::detectLanguage( const char* language_ )
 
   lang = getenv( "LANGUAGE" );
 
-  if( !lang.isEmpty() && PFile( "lingua/" + lang ).stat() ) {
+  if( !lang.isEmpty() && PFile( "lingua/" + lang ).type() != File::MISSING ) {
     return lang;
   }
 
@@ -63,7 +63,7 @@ String Lingua::detectLanguage( const char* language_ )
   if( underscore >= 2 ) {
     lang = lang.substring( 0, underscore );
 
-    if( PFile( "lingua/" + lang ).stat() ) {
+    if( PFile( "lingua/" + lang ).type() != File::MISSING ) {
       return lang;
     }
   }
@@ -74,7 +74,7 @@ String Lingua::detectLanguage( const char* language_ )
   if( underscore >= 2 ) {
     lang = lang.substring( 0, underscore );
 
-    if( PFile( "lingua/" + lang ).stat() ) {
+    if( PFile( "lingua/" + lang ).type() != File::MISSING ) {
       return lang;
     }
   }
@@ -109,11 +109,12 @@ bool Lingua::initMission( const char* mission )
 
   PFile file( String::str( "mission/%s/lingua/%s.ozCat", mission, language.cstr() ) );
 
-  if( !file.map() ) {
+  Buffer buffer = file.read();
+  if( buffer.isEmpty() ) {
     return false;
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   int length = is.readInt();
 
@@ -133,8 +134,6 @@ bool Lingua::initMission( const char* mission )
     messages[index] = msg;
   }
 
-  file.unmap();
-
   return true;
 }
 
@@ -145,7 +144,7 @@ bool Lingua::init( const char* language_ )
   language = language_;
 
   PFile dir( "lingua/" + language );
-  if( !dir.stat() ) {
+  if( dir.type() == File::MISSING ) {
     OZ_ERROR( "Invalid locale '%s', does not match any subdirectory in lingua/", language.cstr() );
   }
 
@@ -156,15 +155,14 @@ bool Lingua::init( const char* language_ )
       continue;
     }
 
-    if( !file->map() ) {
+    Buffer buffer = file->read();
+    if( buffer.isEmpty() ) {
       OZ_ERROR( "Cannot read catalogue '%s'", file->path().cstr() );
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = buffer.inputStream();
 
     nMessages += is.readInt();
-
-    file->unmap();
   }
 
   if( nMessages == 0 ) {
@@ -180,11 +178,12 @@ bool Lingua::init( const char* language_ )
       continue;
     }
 
-    if( !file->map() ) {
+    Buffer buffer = file->read();
+    if( buffer.isEmpty() ) {
       OZ_ERROR( "Cannot read catalogue '%s'", file->path().cstr() );
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = buffer.inputStream();
 
     int length = is.readInt();
 
@@ -199,8 +198,6 @@ bool Lingua::init( const char* language_ )
 
       messages[index] = msg;
     }
-
-    file->unmap();
   }
 
   return true;

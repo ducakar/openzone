@@ -119,7 +119,7 @@ int main()
 {
   System::init();
 
-  JSON json( "/home/davorin/.config/chromium/Default/Bookmarks" );
+  JSON json( File( "/home/davorin/.config/chromium/Default/Bookmarks" ) );
   Log() << json.toFormattedString();
   return 0;
 }

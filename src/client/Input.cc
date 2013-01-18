@@ -469,7 +469,7 @@ void Input::update()
   mouseX = +float( dx );
   mouseY = -float( dy );
 
-# if SDL_MAJOR_VERSION < 2 && !defined( _WIN32 )
+# ifndef _WIN32
   if( window.hasGrab ) {
     // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
     // code is not based on actual code from X.Org, but experimentally tuned to match default X
@@ -547,7 +547,7 @@ void Input::init()
   Log::print( "Initialising Input from '%s' ...", configFile.path().cstr() );
 
   JSON inputConfig;
-  configExists = inputConfig.load( &configFile );
+  configExists = inputConfig.load( configFile );
 
   if( !String::equals( inputConfig["_version"].get( "" ), OZ_VERSION ) ) {
     configExists = false;
@@ -663,7 +663,7 @@ void Input::destroy()
   keyboardConfig.add( "sensitivity.y",       keySensY );
   keyMapConfig = keyMapToJSON();
 
-  if( !inputConfig.save( &configFile ) ) {
+  if( !inputConfig.save( configFile ) ) {
     OZ_ERROR( "Failed to write '%s'", configFile.path().cstr() );
   }
 

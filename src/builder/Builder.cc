@@ -106,8 +106,6 @@ void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ex
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
 
-    file->stat();
-
     if( file->type() == File::DIRECTORY ) {
       if( recurse ) {
         copyFiles( srcDir + ( "/" + file->name() ), destDir + ( "/" + file->name() ), ext, true );
@@ -118,18 +116,10 @@ void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ex
     {
       Log::print( "Copying '%s' ...", fileName.cstr() );
 
-      if( !file->map() ) {
-        OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
-      }
-
-      InputStream is = file->inputStream();
       File destFile( sDestDir + fileName );
-
-      if( !destFile.write( is.begin(), is.capacity() ) ) {
+      if( !destFile.write( file->read() ) ) {
         OZ_ERROR( "Failed to write '%s'", file->path().cstr() );
       }
-
-      file->unmap();
 
       Log::printEnd( " OK" );
       continue;
@@ -231,8 +221,6 @@ void Builder::buildBSPTextures()
   DArray<PFile> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
-    subDir->stat();
-
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -316,27 +304,23 @@ void Builder::buildBSPTextures()
     DArray<PFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
+      if( file->type() != File::REGULAR ) {
+        continue;
+      }
+
       String name = file->name();
       String path = file->path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        if( !file->map() ) {
-          OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
-        }
-
-        InputStream is = file->inputStream();
-        File destFile( String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
-
         File::mkdir( "tex" );
         File::mkdir( "tex/" + subDir.name() );
 
-        if( !destFile.write( is.begin(), is.capacity() ) ) {
+        File destFile( String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
+        if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
-
-        file->unmap();
 
         Log::printEnd( " OK" );
         continue;
@@ -488,34 +472,30 @@ void Builder::buildModels()
     DArray<PFile> fileList = dir->ls();
 
     foreach( file, fileList.iter() ) {
+      if( file->type() != File::REGULAR ) {
+        continue;
+      }
+
       String name = file->name();
       String path = file->path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        if( !file->map() ) {
-          OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
-        }
-
-        InputStream is = file->inputStream();
         File destFile( path );
-
-        if( !destFile.write( is.begin(), is.length() ) ) {
+        if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
-
-        file->unmap();
 
         Log::printEnd( " OK" );
         continue;
       }
     }
 
-    if( PFile( dir->path() + "/data.obj" ).stat() ) {
+    if( PFile( dir->path() + "/data.obj" ).type() != File::MISSING ) {
       obj.build( dir->path() );
     }
-    else if( PFile( dir->path() + "/tris.md2" ).stat() ) {
+    else if( PFile( dir->path() + "/tris.md2" ).type() != File::MISSING ) {
       md2.build( dir->path() );
     }
     else {
@@ -542,8 +522,6 @@ void Builder::copySounds()
   DArray<PFile> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
-    subDir->stat();
-
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -551,6 +529,10 @@ void Builder::copySounds()
     DArray<PFile> sndList = subDir->ls();
 
     foreach( file, sndList.iter() ) {
+      if( file->type() != File::REGULAR ) {
+        continue;
+      }
+
       String name = file->name();
       String path = file->path();
 
@@ -576,19 +558,10 @@ void Builder::copySounds()
       File::mkdir( "snd" );
       File::mkdir( "snd/" + subDir->name() );
 
-      if( !file->map() ) {
-        OZ_ERROR( "Failed to copy '%s'", file->path().cstr() );
-      }
-
-      InputStream is = file->inputStream();
-
       File destFile( file->path() );
-
-      if( !destFile.write( is.begin(), is.capacity() ) ) {
+      if( !destFile.write( file->read() ) ) {
         OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
-
-      file->unmap();
 
       Log::printEnd( " OK" );
     }
@@ -599,27 +572,23 @@ void Builder::copySounds()
     DArray<PFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
+      if( file->type() != File::REGULAR ) {
+        continue;
+      }
+
       String name = file->name();
       String path = file->path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        if( !file->map() ) {
-          OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
-        }
-
-        InputStream is = file->inputStream();
-        File destFile( path );
-
         File::mkdir( "snd" );
         File::mkdir( "snd/" + subDir.name() );
 
-        if( !destFile.write( is.begin(), is.capacity() ) ) {
+        File destFile( path );
+        if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
-
-        file->unmap();
 
         Log::printEnd( " OK" );
         continue;
@@ -683,7 +652,7 @@ void Builder::buildMissions()
     PFile srcFile( mission->path() + "/description.png" );
     File outFile( mission->path() + "/description.ozImage" );
 
-    if( !srcFile.stat() ) {
+    if( srcFile.type() == File::MISSING ) {
       continue;
     }
 
@@ -727,9 +696,7 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
     OZ_ERROR( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
   }
 
-  archive.stat();
   int size = archive.size();
-
   if( size >= 0 ) {
     Log::println();
     Log::println( "Archive size: %.2f MiB = %.2f MB",

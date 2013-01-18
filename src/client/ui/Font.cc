@@ -69,13 +69,15 @@ void Font::draw( const char* s, uint texId_, int* width, int* height ) const
 void Font::init( const char* name, int height_ )
 {
   height = height_;
-  file.setPath( String::str( "ui/font/%s.ttf", name ) );
 
-  if( !file.map() ) {
+  PFile file( String::str( "ui/font/%s.ttf", name ) );
+
+  buffer = file.read();
+  if( buffer.isEmpty() ) {
     OZ_ERROR( "Failed to read font file '%s'", file.path().cstr() );
   }
 
-  InputStream istream = file.inputStream();
+  InputStream istream = buffer.inputStream();
 
   handle = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true, height );
   if( handle == nullptr ) {
@@ -88,7 +90,8 @@ void Font::destroy()
   if( handle != nullptr ) {
     TTF_CloseFont( static_cast<TTF_Font*>( handle ) );
   }
-  file.unmap();
+
+  buffer.deallocate();
 }
 
 }

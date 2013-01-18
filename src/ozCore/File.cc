@@ -135,97 +135,10 @@ File::File( const char* path ) :
 #ifdef __native_client__
   descriptor = new Descriptor( this );
 #endif
-}
 
-File::~File()
-{
-  unmap();
-
-#ifdef __native_client__
-  delete descriptor;
-#endif
-}
-
-File::File( const File& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
-  fileTime( file.fileTime ), data( nullptr )
-{
-#ifdef __native_client__
-  descriptor = new Descriptor( this );
-#endif
-}
-
-File::File( File&& file ) :
-  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
-{
-#ifdef __native_client__
-  descriptor = new Descriptor( this );
-#endif
-
-  file.filePath = "";
-  file.fileType = MISSING;
-  file.fileSize = -1;
-  file.fileTime = 0;
-  file.data     = nullptr;
-}
-
-File& File::operator = ( const File& file )
-{
-  if( &file == this ) {
-    return *this;
-  }
-
-  unmap();
-
-  filePath = file.filePath;
-  fileType = file.fileType;
-  fileSize = file.fileSize;
-  fileTime = file.fileTime;
-  data     = nullptr;
-
-  return *this;
-}
-
-File& File::operator = ( File&& file )
-{
-  if( &file == this ) {
-    return *this;
-  }
-
-  unmap();
-
-  filePath = static_cast<String&&>( file.filePath );
-  fileType = file.fileType;
-  fileSize = file.fileSize;
-  fileTime = file.fileTime;
-  data     = file.data;
-
-  file.filePath = "";
-  file.fileType = MISSING;
-  file.fileSize = -1;
-  file.fileTime = 0;
-  file.data     = nullptr;
-
-  return *this;
-}
-
-void File::setPath( const char* path )
-{
-  unmap();
-
-  filePath = path;
-  fileType = MISSING;
-  fileSize = -1;
-  fileTime = 0;
-}
-
-bool File::stat()
-{
-  // If file is mapped it had to be successfuly stat'd before. Futhermore fileSize must not change
-  // while file is mapped as it is needed by read() function if mapped and unmap() on POSIX systems.
-  if( data != nullptr ) {
-    return true;
+  // Avoid stat'ing obviously non-existent files.
+  if( filePath.isEmpty() ) {
+    return;
   }
 
 #if defined( __native_client__ )
@@ -363,53 +276,78 @@ bool File::stat()
   }
 
 #endif
-
-  return fileType != MISSING;
 }
 
-File::Type File::type() const
+File::~File()
 {
-  return fileType;
+  unmap();
+
+#ifdef __native_client__
+  delete descriptor;
+#endif
 }
 
-long64 File::time() const
+File::File( const File& file ) :
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
+  fileTime( file.fileTime ), data( nullptr )
 {
-  return fileTime;
+#ifdef __native_client__
+  descriptor = new Descriptor( this );
+#endif
 }
 
-int File::size() const
+File::File( File&& file ) :
+  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
+  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
 {
-  return fileSize;
+#ifdef __native_client__
+  descriptor = new Descriptor( this );
+#endif
+
+  file.filePath = "";
+  file.fileType = MISSING;
+  file.fileSize = -1;
+  file.fileTime = 0;
+  file.data     = nullptr;
 }
 
-const String& File::path() const
+File& File::operator = ( const File& file )
 {
-  return filePath;
+  if( &file == this ) {
+    return *this;
+  }
+
+  unmap();
+
+  filePath = file.filePath;
+  fileType = file.fileType;
+  fileSize = file.fileSize;
+  fileTime = file.fileTime;
+
+  return *this;
 }
 
-String File::name() const
+File& File::operator = ( File&& file )
 {
-  return filePath.fileName();
-}
+  if( &file == this ) {
+    return *this;
+  }
 
-String File::baseName() const
-{
-  return filePath.fileBaseName();
-}
+  unmap();
 
-String File::extension() const
-{
-  return filePath.fileExtension();
-}
+  filePath = static_cast<String&&>( file.filePath );
+  fileType = file.fileType;
+  fileSize = file.fileSize;
+  fileTime = file.fileTime;
+  data     = file.data;
 
-bool File::hasExtension( const char* ext ) const
-{
-  return filePath.hasFileExtension( ext );
-}
+  file.filePath = "";
+  file.fileType = MISSING;
+  file.fileSize = -1;
+  file.fileTime = 0;
+  file.data     = nullptr;
 
-bool File::isMapped() const
-{
-  return data != nullptr;
+  return *this;
 }
 
 bool File::map()
@@ -564,7 +502,7 @@ InputStream File::inputStream( Endian::Order order ) const
   return InputStream( data, data + fileSize, order );
 }
 
-Buffer File::read()
+Buffer File::read() const
 {
   Buffer buffer;
 
@@ -689,12 +627,10 @@ Buffer File::read()
 
 #endif
 
-  fileType = REGULAR;
-  fileSize = size;
   return buffer;
 }
 
-bool File::write( const char* buffer, int size )
+bool File::write( const char* buffer, int size ) const
 {
   if( data != nullptr ) {
     return false;
@@ -786,23 +722,18 @@ bool File::write( const char* buffer, int size )
 
 #endif
 
-  fileType = REGULAR;
-  fileSize = size;
   return true;
 }
 
-bool File::write( const Buffer* buffer )
+bool File::write( const Buffer& buffer ) const
 {
-  return write( buffer->begin(), buffer->length() );
+  return write( buffer.begin(), buffer.length() );
 }
 
-DArray<File> File::ls()
+DArray<File> File::ls() const
 {
   DArray<File> array;
 
-  if( fileType == MISSING ) {
-    stat();
-  }
   if( fileType != DIRECTORY ) {
     return array;
   }

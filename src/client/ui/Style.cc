@@ -75,8 +75,7 @@ void Style::init()
 
   PFile configFile( "ui/style.json" );
 
-  JSON config;
-  config.load( &configFile );
+  JSON config( configFile );
 
   const JSON& fontsConfig = config["fonts"];
 

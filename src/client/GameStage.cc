@@ -264,7 +264,7 @@ bool GameStage::update()
   if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
     File quicksaveFile( QUICKSAVE_FILE );
 
-    if( quicksaveFile.stat() ) {
+    if( quicksaveFile.type() == File::REGULAR ) {
       stateFile = QUICKSAVE_FILE;
       reload();
     }
@@ -272,7 +272,7 @@ bool GameStage::update()
   if( input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD] ) {
     File autosaveFile( AUTOSAVE_FILE );
 
-    if( autosaveFile.stat() ) {
+    if( autosaveFile.type() == File::REGULAR ) {
       stateFile = AUTOSAVE_FILE;
       reload();
     }

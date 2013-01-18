@@ -36,13 +36,16 @@ namespace oz
 namespace client
 {
 
-SMM::SMM( int id ) :
-  file( liber.models[id].path ), isPreloaded( false ), isLoaded( false )
+SMM::SMM( int id_ ) :
+  id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
 void SMM::preload()
 {
-  if( !file.map() ) {
+  PFile file( liber.models[id].path );
+
+  buffer = file.read();
+  if( buffer.isEmpty() ) {
     OZ_ERROR( "SMM file '%s' mmap failed", file.path().cstr() );
   }
 
@@ -51,13 +54,12 @@ void SMM::preload()
 
 void SMM::load()
 {
-  InputStream is = file.inputStream();
-
+  InputStream is = buffer.inputStream();
   mesh.load( &is, GL_STATIC_DRAW );
 
   hard_assert( !is.isAvailable() );
 
-  file.setPath( "" );
+  buffer.deallocate();
 
   isLoaded = true;
 }

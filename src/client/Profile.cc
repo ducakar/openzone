@@ -42,7 +42,7 @@ void Profile::init()
   File profileFile( config["dir.config"].asString() + "/profile.json" );
 
   JSON profileConfig;
-  bool configExists = profileConfig.load( &profileFile );
+  bool configExists = profileConfig.load( profileFile );
 
   if( profileConfig.isNull() ) {
     profileConfig.setObject();
@@ -136,7 +136,7 @@ void Profile::init()
   }
 
   if( !configExists ) {
-    profileConfig.save( &profileFile );
+    profileConfig.save( profileFile );
   }
 
   profileConfig.clear( true );

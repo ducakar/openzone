@@ -66,7 +66,7 @@ class File
   private:
 
     String      filePath;   ///< %File path.
-    Type        fileType;   ///< %File type (initially `MISSING`).
+    Type        fileType;   ///< %File type.
     int         fileSize;   ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
     long64      fileTime;   ///< Modification or creation time, what is newer.
     char*       data;       ///< Mapped memory.
@@ -111,75 +111,83 @@ class File
     File& operator = ( File&& file );
 
     /**
-     * %Set a new file path.
-     */
-    void setPath( const char* path );
-
-    /**
-     * Access file to get its type and size.
-     *
-     * @return true iff stat succeeds, i.e. file exists.
-     */
-    bool stat();
-
-    /**
      * %File type.
-     *
-     * @note
-     * `stat()` function must be called first to fill type, time and size properties.
-     * Initial values are `MISSING`, 0 and -1 respectively.
      */
-    Type type() const;
+    OZ_ALWAYS_INLINE
+    Type type() const
+    {
+      return fileType;
+    }
 
     /**
      * Modification or creation (Unix) time, what is newer.
-     *
-     * @note
-     * `stat()` function must be called first to fill type, time and size properties.
-     * Initial values are `MISSING`, 0 and -1 respectively.
      */
-    long64 time() const;
+    OZ_ALWAYS_INLINE
+    long64 time() const
+    {
+      return fileTime;
+    }
 
     /**
      * %File size in bytes if regular file, -1 otherwise.
-     *
-     * @note
-     * `stat()` function must be called first to fill type, time and size properties.
-     * Initial values are `MISSING`, 0 and -1 respectively.
      */
-    int size() const;
+    OZ_ALWAYS_INLINE
+    int size() const
+    {
+      return fileSize;
+    }
 
     /**
      * %File path.
      */
-    const String& path() const;
+    OZ_ALWAYS_INLINE
+    const String& path() const
+    {
+      return filePath;
+    }
 
     /**
      * %File name.
      */
-    String name() const;
+    String name() const
+    {
+      return filePath.fileName();
+    }
 
     /**
      * Name without the extension (and the dot).
      */
-    String baseName() const;
+    String baseName() const
+    {
+      return filePath.fileBaseName();
+    }
 
     /**
      * Extension (part of base name after the last dot) or "" if no dot in base name.
      */
-    String extension() const;
+    String extension() const
+    {
+      return filePath.fileExtension();
+    }
 
     /**
      * True iff the extension (without dot) is equal to the given string.
      *
      * Empty string matches both no extension and files ending with dot.
      */
-    bool hasExtension( const char* ext ) const;
+    bool hasExtension( const char* ext ) const
+    {
+      return filePath.fileHasExtension( ext );
+    }
 
     /**
      * True iff file is mapped to memory.
      */
-    bool isMapped() const;
+    OZ_ALWAYS_INLINE
+    bool isMapped() const
+    {
+      return data != nullptr;
+    }
 
     /**
      * %Map file into memory for reading.
@@ -201,7 +209,7 @@ class File
     /**
      * Read file into a buffer.
      */
-    Buffer read();
+    Buffer read() const;
 
     /**
      * Write buffer contents to the file.
@@ -209,7 +217,7 @@ class File
      * It also sets file type on `REGULAR` and updates file size if it succeeds.
      * Write operation is not possible while file is mapped.
      */
-    bool write( const char* buffer, int size );
+    bool write( const char* data, int size ) const;
 
     /**
      * Write buffer contents into a file.
@@ -217,17 +225,17 @@ class File
      * It also sets file type on `REGULAR` and updates file size if it succeeds.
      * Write operation is not possible while file is mapped.
      */
-    bool write( const Buffer* buffer );
+    bool write( const Buffer& buffer ) const;
 
     /**
      * Generate a list of files in directory.
      *
      * Hidden files (in Unix means, so everything starting with '.') are skipped.
-     * On error, empty array is returned.
+     * On error, an empty array is returned.
      *
      * Directory listing is not supported on NaCl, so this function always returns an empty list.
      */
-    DArray<File> ls();
+    DArray<File> ls() const;
 
     /**
      * Return current directory.

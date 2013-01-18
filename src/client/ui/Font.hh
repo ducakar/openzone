@@ -50,8 +50,8 @@ class Font
 
   private:
 
-    PFile file;
-    void* handle;
+    Buffer buffer;
+    void*  handle;
 
   public:
 

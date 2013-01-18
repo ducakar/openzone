@@ -197,7 +197,7 @@ MissionMenu::MissionMenu() :
     PFile descriptionFile( missionDir->path() + "/description.json" );
 
     JSON descriptionConfig;
-    if( !descriptionConfig.load( &descriptionFile ) ) {
+    if( !descriptionConfig.load( descriptionFile ) ) {
       continue;
     }
 
@@ -212,7 +212,7 @@ MissionMenu::MissionMenu() :
     PFile image( missionDir->path() + "/description.ozImage" );
 
     uint imageId = 0;
-    if( image.stat() ) {
+    if( image.type() != File::MISSING ) {
       imageId = context.loadTextureLayer( image.path() );
     }
 

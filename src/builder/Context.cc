@@ -312,7 +312,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   PFile file( path );
   String realPath = file.realDir() + "/" + file.path();
 
-  if( !file.stat() ) {
+  if( file.type() == File::MISSING ) {
     OZ_ERROR( "File '%s' does not exits", realPath.cstr() );
   }
 
@@ -440,43 +440,43 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   PFile diffuse, masks, specular, emission, normals;
 
   for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( diffuse.path().isEmpty() || !diffuse.stat() ) {
-      diffuse.setPath( diffuseBasePath + IMAGE_EXTENSIONS[i] );
+    if( diffuse.path().isEmpty() || diffuse.type() == File::MISSING ) {
+      diffuse = PFile( diffuseBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !diffuse.stat() ) {
-      diffuse.setPath( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
-    }
-
-    if( masks.path().isEmpty() || !masks.stat() ) {
-      masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
+    if( diffuse.type() == File::MISSING ) {
+      diffuse = PFile( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
 
-    if( specular.path().isEmpty() || !specular.stat() ) {
-      specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( !specular.stat() ) {
-      specular.setPath( specular1BasePath + IMAGE_EXTENSIONS[i] );
+    if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
+      masks = PFile( masksBasePath + IMAGE_EXTENSIONS[i] );
     }
 
-    if( emission.path().isEmpty() || !emission.stat() ) {
-      emission.setPath( emissionBasePath + IMAGE_EXTENSIONS[i] );
+    if( specular.path().isEmpty() || specular.type() == File::MISSING ) {
+      specular = PFile( specularBasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( specular.type() == File::MISSING ) {
+      specular = PFile( specular1BasePath + IMAGE_EXTENSIONS[i] );
     }
 
-    if( normals.path().isEmpty() || !normals.stat() ) {
-      normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
+    if( emission.path().isEmpty() || emission.type() == File::MISSING ) {
+      emission = PFile( emissionBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals.stat() ) {
-      normals.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
+
+    if( normals.path().isEmpty() || normals.type() == File::MISSING ) {
+      normals = PFile( normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals.stat() ) {
-      normals.setPath( normals2BasePath + IMAGE_EXTENSIONS[i] );
+    if( normals.type() == File::MISSING ) {
+      normals = PFile( normals1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals.stat() ) {
-      normals.setPath( normals3BasePath + IMAGE_EXTENSIONS[i] );
+    if( normals.type() == File::MISSING ) {
+      normals = PFile( normals2BasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( normals.type() == File::MISSING ) {
+      normals = PFile( normals3BasePath + IMAGE_EXTENSIONS[i] );
     }
   }
 
-  if( diffuse.stat() ) {
+  if( diffuse.type() != File::MISSING ) {
     Image diffuseImage = loadImage( diffuse.path() );
 
     *diffuseTex = Texture( &diffuseImage, wrap, magFilter, minFilter );
@@ -486,7 +486,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
     OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
-  if( masks.stat() ) {
+  if( masks.type() != File::MISSING ) {
     Image masksImage = loadImage( masks.path(), GL_RGB );
 
     *masksTex = Texture( &masksImage, wrap, magFilter, minFilter );
@@ -497,10 +497,10 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
     specularImage.dib = nullptr;
     emissionImage.dib = nullptr;
 
-    if( specular.stat() ) {
+    if( specular.type() != File::MISSING ) {
       specularImage = loadImage( specular.path(), GL_RGB );
     }
-    if( emission.stat() ) {
+    if( emission.type() != File::MISSING ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
 
@@ -565,7 +565,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
     }
   }
 
-  if( bumpmap && normals.stat() ) {
+  if( bumpmap && normals.type() != File::MISSING ) {
     Image normalsImage = loadImage( normals.path() );
 
     *normalsTex = Texture( &normalsImage, wrap, magFilter, minFilter );

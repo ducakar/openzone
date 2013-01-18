@@ -167,12 +167,12 @@ void Caelum::load()
                            Math::sin( orbis.caelum.heading ),
                            0.0f );
 
-  PFile file( path );
-  if( !file.map() ) {
-    OZ_ERROR( "Caelum file '%s' mmap failed", path.cstr() );
+  Buffer buffer = PFile( path ).read();
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Caelum file '%s' read failed", path.cstr() );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   int vboSize = MAX_STARS * 4 * int( sizeof( float[3] ) );
   int iboSize = MAX_STARS * 6 * int( sizeof( ushort ) );
@@ -195,8 +195,6 @@ void Caelum::load()
 
   nightColour = Vec4( NIGHT_COLOUR );
   nightLuminance = ( nightColour.x + nightColour.y + nightColour.z ) / 3.0f;
-
-  file.unmap();
 
   OZ_GL_CHECK_ERROR();
 

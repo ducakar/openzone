@@ -37,14 +37,14 @@ void BSP::load()
 {
   Log::print( "Loading BSP structure '%s' ...", name.cstr() );
 
-  String sPath = "bsp/" + name + ".ozBSP";
+  PFile file( "bsp/" + name + ".ozBSP" );
+  Buffer buffer = file.read();
 
-  PFile file( sPath );
-  if( !file.map() ) {
-    OZ_ERROR( "BSP file mmap failed" );
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   // bounds
   is.readPoint();
@@ -213,8 +213,6 @@ void BSP::load()
 
   hard_assert( !is.isAvailable() );
 
-  file.unmap();
-
   Log::printEnd( " OK" );
 }
 
@@ -255,11 +253,13 @@ BSP::BSP( const char* name_, int id_ ) :
   name( name_ ), id( id_ ), nUsers( 0 )
 {
   PFile file( String::str( "bsp/%s.ozBSP", name_ ) );
-  if( !file.map() ) {
-    OZ_ERROR( "BSP file mmap failed" );
+
+  if( file.type() != File::REGULAR ) {
+    OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
   }
 
-  InputStream is = file.inputStream();
+  Buffer buffer = file.read();
+  InputStream is = buffer.inputStream();
 
   mins          = is.readPoint();
   maxs          = is.readPoint();
@@ -286,8 +286,6 @@ BSP::BSP( const char* name_, int id_ ) :
 
   String sDemolishSound = is.readString();
   demolishSound = sDemolishSound.isEmpty() ? -1 : liber.soundIndex( sDemolishSound );
-
-  file.unmap();
 }
 
 }

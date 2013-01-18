@@ -124,19 +124,19 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
   PFile file( path );
-  if( !file.map() ) {
-    OZ_ERROR( "Shader source '%s' mmap failed", path );
+
+  Buffer buffer = file.read();
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Shader source '%s' read failed", path );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   sources[2] = is.begin();
   lengths[2] = is.capacity();
 
   glShaderSource( id, 3, sources, lengths );
   glCompileShader( id );
-
-  file.unmap();
 
   int result;
   glGetShaderiv( id, GL_COMPILE_STATUS, &result );
@@ -168,7 +168,7 @@ void Shader::loadProgram( int id )
   PFile configFile( "glsl/" + name + ".json" );
   JSON programConfig;
 
-  if( !programConfig.load( &configFile ) ) {
+  if( !programConfig.load( configFile ) ) {
     OZ_ERROR( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
   }
 
@@ -376,9 +376,11 @@ void Shader::init()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  Buffer buffer = PFile( "glsl/header.glsl" ).read();
+  PFile file( "glsl/header.glsl" );
+  Buffer buffer = file.read();
+
   if( buffer.isEmpty() ) {
-    OZ_ERROR( "header.glsl reading failed" );
+    OZ_ERROR( "'%s' read failed", file.path().cstr() );
   }
 
   sources[1] = buffer.begin();

@@ -160,14 +160,15 @@ void Terra::load()
   id = orbis.terra.id;
 
   const String& name = liber.terrae[id].name;
-  String path = "terra/" + name + ".ozcTerra";
 
-  PFile file( path );
-  if( !file.map() ) {
-    OZ_ERROR( "Terra file mmap failed" );
+  PFile file( "terra/" + name + ".ozcTerra" );
+  Buffer buffer = file.read();
+
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Terra file '%s' read failed", file.path().cstr() );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
 
   waterTexId  = context.readTextureLayer( &is );
   detailTexId = context.readTextureLayer( &is );
@@ -228,8 +229,6 @@ void Terra::load()
   liquidFogColour = is.readVec4();
 
   hard_assert( !is.isAvailable() );
-
-  file.unmap();
 }
 
 void Terra::unload()

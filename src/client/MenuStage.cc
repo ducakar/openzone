@@ -66,10 +66,10 @@ void MenuStage::load()
   File autosaveFile( GameStage::AUTOSAVE_FILE );
   File quicksaveFile( GameStage::QUICKSAVE_FILE );
 
-  if( autosaveFile.stat() ) {
+  if( autosaveFile.type() == File::REGULAR ) {
     showAutosaved = true;
   }
-  if( quicksaveFile.stat() ) {
+  if( quicksaveFile.type() == File::REGULAR ) {
     showQuicksaved = true;
   }
 

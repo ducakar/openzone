@@ -52,60 +52,60 @@ static void printUsage( const char* invocationName )
     invocationName );
 }
 
-static void readBSP( File* file )
+static void readBSP( const File& file )
 {
   JSON config;
 
   if( !config.load( file ) ) {
-    OZ_ERROR( "Failed to load '%s'", file->path().cstr() );
+    OZ_ERROR( "Failed to load '%s'", file.path().cstr() );
   }
 
   const char* title = config["title"].get( "" );
 
   if( String::isEmpty( title ) ) {
-    titles.include( file->baseName(), file->path() );
+    titles.include( file.baseName(), file.path() );
   }
   else {
-    soft_assert( !file->baseName().equals( title ) );
+    soft_assert( !file.baseName().equals( title ) );
 
-    titles.include( title, file->path() );
+    titles.include( title, file.path() );
   }
 
   const JSON& models = config["models"];
   int nModels = models.length();
 
   if( !models.isNull() && models.type() != JSON::ARRAY ) {
-    OZ_ERROR( "'models' entry in '%s' is not an array", file->path().cstr() );
+    OZ_ERROR( "'models' entry in '%s' is not an array", file.path().cstr() );
   }
 
   for( int i = 0; i < nModels; ++i ) {
     const char* modelTitle = models[i]["title"].get( "" );
 
     if( !String::isEmpty( modelTitle ) ) {
-      titles.include( modelTitle, file->path() );
+      titles.include( modelTitle, file.path() );
     }
   }
 
   config.clear();
 }
 
-static void readClass( File* file )
+static void readClass( const File& file )
 {
   JSON config;
 
   if( !config.load( file ) ) {
-    OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
+    OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
   }
 
   const char* title = config["title"].get( "" );
 
   if( String::isEmpty( title ) ) {
-    titles.include( file->baseName(), file->path() );
+    titles.include( file.baseName(), file.path() );
   }
   else {
-    soft_assert( !file->baseName().equals( title ) );
+    soft_assert( !file.baseName().equals( title ) );
 
-    titles.include( title, file->path() );
+    titles.include( title, file.path() );
   }
 
   const JSON& weaponsConfig = config["weapons"];
@@ -114,20 +114,21 @@ static void readClass( File* file )
     const char* weaponTitle = weaponsConfig[i]["title"].get( "" );
 
     if( !String::isEmpty( weaponTitle ) ) {
-      titles.include( weaponTitle, file->path() );
+      titles.include( weaponTitle, file.path() );
     }
   }
 
   config.clear();
 }
 
-static void readLua( File* file )
+static void readLua( const File& file )
 {
-  if( !file->map() ) {
-    OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
+  if( file.type() != File::REGULAR ) {
+    OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
   }
 
-  InputStream is = file->inputStream();
+  Buffer buffer = file.read();
+  InputStream is = buffer.inputStream();
 
   LuaSyntaxState state          = NORMAL;
   int            lineNum        = 1;
@@ -157,7 +158,7 @@ static void readLua( File* file )
 
             lastString.add( '\0' );
 
-            String locationInfo = String::str( "%s:%d", file->path().cstr(), gettextLineNum );
+            String locationInfo = String::str( "%s:%d", file.path().cstr(), gettextLineNum );
             String message      = &lastString[0];
 
             messages.include( message, locationInfo );
@@ -225,52 +226,51 @@ static void readLua( File* file )
   }
 }
 
-static void readCredits( File* file )
+static void readCredits( const File& file )
 {
-  if( !file->map() ) {
-    OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
+  if( file.type() != File::REGULAR ) {
+    OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
   }
 
+  Buffer buffer = file.read();
+  InputStream is = buffer.inputStream();
   String contents;
-  InputStream is = file->inputStream();
 
   while( is.isAvailable() ) {
     contents += is.readLine() + "\n";
   }
 
-  titles.include( contents, file->path() );
+  titles.include( contents, file.path() );
 }
 
-static void readSequence( File* file )
+static void readSequence( const File& file )
 {
-  JSON sequence;
-  sequence.load( file );
+  JSON sequence( file );
 
   int nSteps = sequence.length();
   for( int i = 0; i < nSteps; ++i ) {
     const char* title = sequence[i]["title"].get( "" );
 
     if( !String::isEmpty( title ) ) {
-      String locationInfo = String::str( "%s:step #%d", file->path().cstr(), i + 1 );
+      String locationInfo = String::str( "%s:step #%d", file.path().cstr(), i + 1 );
 
       messages.include( title, locationInfo );
     }
   }
 }
 
-static void readDescription( File* file )
+static void readDescription( const File& file )
 {
-  JSON descriptionConfig;
-  descriptionConfig.load( file );
+  JSON descriptionConfig( file );
 
   const char* title       = descriptionConfig["title"].get( "" );
   const char* description = descriptionConfig["description"].get( "" );
 
   if( !String::isEmpty( title ) ) {
-    messages.include( title, file->path() );
+    messages.include( title, file.path() );
   }
   if( !String::isEmpty( description ) ) {
-    messages.include( description, file->path() );
+    messages.include( description, file.path() );
   }
 }
 
@@ -368,7 +368,7 @@ int main( int argc, char** argv )
       continue;
     }
 
-    readBSP( file );
+    readBSP( *file );
   }
 
   File classDir( pkgDir + "/class" );
@@ -379,11 +379,11 @@ int main( int argc, char** argv )
       continue;
     }
 
-    readClass( file );
+    readClass( *file );
   }
 
   File creditsFile( pkgDir + "/credits/" + pkgName + ".txt" );
-  readCredits( &creditsFile );
+  readCredits( creditsFile );
 
   if( !titles.isEmpty() ) {
     String mainPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr() );
@@ -403,8 +403,6 @@ int main( int argc, char** argv )
   DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.iter() ) {
-    mission->stat();
-
     if( mission->type() != File::DIRECTORY ) {
       continue;
     }
@@ -413,14 +411,14 @@ int main( int argc, char** argv )
 
     foreach( file, files.iter() ) {
       if( file->hasExtension( "lua" ) ) {
-        readLua( file );
+        readLua( *file );
       }
       else if( file->hasExtension( "json" ) ) {
         if( file->path().endsWith( ".sequence.json" ) ) {
-          readSequence( file );
+          readSequence( *file );
         }
         else {
-          readDescription( file );
+          readDescription( *file );
         }
       }
     }

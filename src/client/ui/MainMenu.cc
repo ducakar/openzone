@@ -138,14 +138,14 @@ void MainMenu::onUpdate()
   File autosaveFile( GameStage::AUTOSAVE_FILE );
   File quicksaveFile( GameStage::QUICKSAVE_FILE );
 
-  if( autosaveFile.stat() ) {
+  if( autosaveFile.type() == File::REGULAR ) {
     OZ_MAIN_CALL( this, {
       Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
       _this->add( continueButton, -20, 360 );
     } )
   }
 
-  if( quicksaveFile.stat() ) {
+  if( quicksaveFile.type() == File::REGULAR ) {
     OZ_MAIN_CALL( this, {
       Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
       _this->add( quickLoadButton, -20, 320 );

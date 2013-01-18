@@ -34,7 +34,7 @@ namespace client
 {
 
 BSP::BSP( const matrix::BSP* bsp_ ) :
-  bsp( bsp_ ), file( "bsp/" + bsp->name + ".ozcBSP" ), isPreloaded( false ), isLoaded( false )
+  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
 {
   foreach( model, bsp->models.citer() ) {
     context.requestSMM( *model );
@@ -54,8 +54,11 @@ BSP::~BSP()
 
 void BSP::preload()
 {
-  if( !file.map() ) {
-    OZ_ERROR( "BSP file '%s' mmap failed", file.path().cstr() );
+  PFile file( "bsp/" + bsp->name + ".ozcBSP" );
+
+  buffer = file.read();
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
   }
 
   isPreloaded = true;
@@ -63,7 +66,7 @@ void BSP::preload()
 
 void BSP::load()
 {
-  InputStream istream = file.inputStream();
+  InputStream istream = buffer.inputStream();
 
   waterFogColour = istream.readVec4();
   lavaFogColour = istream.readVec4();
@@ -72,7 +75,7 @@ void BSP::load()
 
   hard_assert( !istream.isAvailable() );
 
-  file.setPath( "" );
+  buffer.deallocate();
 
   isLoaded = true;
 }

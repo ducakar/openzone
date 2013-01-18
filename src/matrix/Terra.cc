@@ -56,11 +56,13 @@ void Terra::load( int id_ )
     Log::print( "Loading terrain '%s' ...", name.cstr() );
 
     PFile file( path );
-    if( !file.map() ) {
-      OZ_ERROR( "Cannot map terra file" );
+    Buffer buffer = file.read();
+
+    if( buffer.isEmpty() ) {
+      OZ_ERROR( "Cannot read terra file '%s'", file.path().cstr() );
     }
 
-    InputStream is = file.inputStream();
+    InputStream is = buffer.inputStream();
 
     int max = is.readInt();
     if( max != VERTS ) {
@@ -88,8 +90,6 @@ void Terra::load( int id_ )
     }
 
     liquid = is.readInt();
-
-    file.unmap();
 
     Log::printEnd( " OK" );
   }

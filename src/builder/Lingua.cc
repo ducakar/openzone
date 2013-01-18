@@ -34,11 +34,12 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
   PFile srcFile( String::str( "%s/%s.po", directory, catalogue ) );
   File outFile( String::str( "%s/%s.ozCat", directory, catalogue ) );
 
-  if( !srcFile.map() ) {
-    OZ_ERROR( "Cannot map catalogue source file '%s'", srcFile.path().cstr() );
+  if( srcFile.type() != File::REGULAR ) {
+    OZ_ERROR( "Cannot read catalogue source file '%s'", srcFile.path().cstr() );
   }
 
-  InputStream is = srcFile.inputStream();
+  Buffer buffer = srcFile.read();
+  InputStream is = buffer.inputStream();
 
   List<String> messages;
 
@@ -133,8 +134,6 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
     }
   }
 
-  srcFile.unmap();
-
   if( !lastOriginal.isEmpty() && !lastOriginal.equals( lastTranslation ) ) {
     messages.add( lastOriginal );
     messages.add( lastTranslation );
@@ -170,8 +169,6 @@ void Lingua::build()
   }
 
   foreach( langDir, languages.iter() ) {
-    langDir->stat();
-
     if( langDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -195,7 +192,7 @@ void Lingua::build()
   DArray<PFile> missions = missionsDir.ls();
 
   foreach( mission, missions.citer() ) {
-    linguaDir.setPath( mission->path() + "/lingua" );
+    linguaDir = PFile( mission->path() + "/lingua" );
     languages = linguaDir.ls();
 
     foreach( catalogue, languages.citer() ) {

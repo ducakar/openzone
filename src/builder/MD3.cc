@@ -58,11 +58,13 @@ void MD3::buildMesh( const char* name, int frame )
   Log::print( "Mesh '%s' ...", name );
 
   PFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
-  if( !file.map() ) {
-    OZ_ERROR( "Cannot mmap MD3 model part file '%s'", file.path().cstr() );
+
+  if( file.type() != File::REGULAR ) {
+    OZ_ERROR( "Cannot read MD3 model part file '%s'", file.path().cstr() );
   }
 
-  InputStream is = file.inputStream( Endian::LITTLE );
+  Buffer buffer = file.read();
+  InputStream is = buffer.inputStream( Endian::LITTLE );
 
   MD3Header header;
 
@@ -265,8 +267,6 @@ void MD3::buildMesh( const char* name, int frame )
     indexBase += surface.nVertices;
   }
 
-  file.unmap();
-
   Log::printEnd( " OK" );
 }
 
@@ -274,8 +274,7 @@ void MD3::load()
 {
   PFile configFile( sPath + "/config.json" );
 
-  JSON config;
-  config.load( &configFile );
+  JSON config( configFile );
 
   scale      = config["scale"].get( 0.04f );
   skin       = config["skin"].get( "" );

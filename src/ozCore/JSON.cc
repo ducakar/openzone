@@ -695,19 +695,13 @@ JSON::JSON() :
   data( nullptr ), valueType( NIL ), wasAccessed( true )
 {}
 
-JSON::JSON( const char* path ) :
-  data( nullptr ), valueType( NIL ), wasAccessed( true )
-{
-  load( path );
-}
-
-JSON::JSON( File* file ) :
+JSON::JSON( const File& file ) :
   data( nullptr ), valueType( NIL ), wasAccessed( true )
 {
   load( file );
 }
 
-JSON::JSON( PFile* file ) :
+JSON::JSON( const PFile& file ) :
   data( nullptr ), valueType( NIL ), wasAccessed( true )
 {
   load( file );
@@ -2557,70 +2551,44 @@ void JSON::write( BufferStream* ostream, const char* lineEnd ) const
   ostream->writeChars( lineEnd, formatter.lineEndLength );
 }
 
-bool JSON::load( const char* path )
+bool JSON::load( const File& file )
 {
-  File file( path );
-  if( !file.map() ) {
+  Buffer buffer = file.read();
+  if( buffer.isEmpty() ) {
     return false;
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = buffer.inputStream();
   read( &is, file.path() );
-
-  file.unmap();
   return true;
 }
 
-bool JSON::load( File* file )
+bool JSON::load( const PFile& file )
 {
-  if( !file->map() ) {
+  Buffer buffer = file.read();
+  if( buffer.isEmpty() ) {
     return false;
   }
 
-  InputStream is = file->inputStream();
-  read( &is, file->path() );
-
-  file->unmap();
+  InputStream is = buffer.inputStream();
+  read( &is, file.path() );
   return true;
 }
 
-bool JSON::load( PFile* file )
+bool JSON::save( const File& file, const char* lineEnd ) const
 {
-  if( !file->map() ) {
-    return false;
-  }
-
-  InputStream is = file->inputStream();
-  read( &is, file->path() );
-
-  file->unmap();
-  return true;
-}
-
-bool JSON::save( const char* path, const char* lineEnd ) const
-{
-  File file( path );
-
   BufferStream os;
   write( &os, lineEnd );
 
   return file.write( os.begin(), os.length() );
 }
 
-bool JSON::save( File* file, const char* lineEnd ) const
+bool JSON::save( const PFile& file, const char* lineEnd ) const
 {
   BufferStream os;
   write( &os, lineEnd );
 
-  return file->write( os.begin(), os.length() );
-}
-
-bool JSON::save( PFile* file, const char* lineEnd ) const
-{
-  BufferStream os;
-  write( &os, lineEnd );
-
-  return file->write( os.begin(), os.length() );
+  return file.write( os.begin(), os.length() );
 }
 
 }

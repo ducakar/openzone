@@ -42,14 +42,15 @@ namespace ui
 uint GalileoFrame::loadTexture( const char* path ) const
 {
   PFile file( path );
-  if( !file.map() ) {
+
+  Buffer buffer = file.read();
+  if( buffer.isEmpty() ) {
     OZ_ERROR( "Failed reading galileo texture '%s'", path );
   }
 
-  InputStream istream = file.inputStream();
+  InputStream istream = buffer.inputStream();
   uint texId = context.readTextureLayer( &istream );
 
-  file.unmap();
   return texId;
 }
 

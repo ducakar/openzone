@@ -246,7 +246,7 @@ int Client::init( int argc, char** argv )
   File::rm( configDir + "/client.rc" );
 
   File configFile( configDir + "/client.json" );
-  if( config.load( &configFile ) ) {
+  if( config.load( configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
     if( String::equals( config["_version"].get( "" ), OZ_VERSION ) ) {
@@ -526,7 +526,7 @@ void Client::shutdown()
 
     Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
 
-    config.save( &configFile );
+    config.save( configFile );
 
     Log::printEnd( " OK" );
   }

@@ -54,7 +54,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( !PFile( "ui/cur" ).stat() ) {
+  if( PFile( "ui/cur" ).type() == File::MISSING ) {
     return;
   }
 
@@ -109,7 +109,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( !PFile( "ui/icon" ).stat() ) {
+  if( PFile( "ui/icon" ).type() == File::MISSING ) {
     return;
   }
 
@@ -150,16 +150,13 @@ void UI::copyScheme()
   PFile srcFile( "ui/style.json" );
   File outFile( "ui/style.json" );
 
-  Buffer buffer = srcFile.read();
-  if( buffer.isEmpty() ) {
-    return;
+  if( srcFile.type() == File::REGULAR ) {
+    Log::print( "Copying UI colour scheme '%s' ...", srcFile.path().cstr() );
+
+    outFile.write( srcFile.read() );
+
+    Log::printEnd( " OK" );
   }
-
-  Log::print( "Copying UI colour scheme '%s' ...", srcFile.path().cstr() );
-
-  outFile.write( buffer.begin(), buffer.length() );
-
-  Log::printEnd( " OK" );
 }
 
 }

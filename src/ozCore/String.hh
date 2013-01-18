@@ -257,7 +257,7 @@ class String
     /**
      * True iff file name extracted from a path has the given extension.
      */
-    static bool hasFileExtension( const char* s, const char* ext );
+    static bool fileHasExtension( const char* s, const char* ext );
 
     /**
      * True iff character is an ASCII digit.
@@ -869,7 +869,7 @@ class String
     /**
      * True iff file name extracted from a path has the given extension.
      */
-    bool hasFileExtension( const char* ext ) const;
+    bool fileHasExtension( const char* ext ) const;
 
 };
 

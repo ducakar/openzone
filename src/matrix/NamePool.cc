@@ -56,11 +56,12 @@ void NamePool::init()
   for( int i = 0; i < liber.nameLists.length(); ++i ) {
     PFile file( liber.nameLists[i].path );
 
-    if( !file.map() ) {
+    if( file.type() != File::REGULAR ) {
       OZ_ERROR( "Reading '%s' failed", liber.nameLists[i].path.cstr() );
     }
 
-    InputStream is = file.inputStream();
+    Buffer buffer = file.read();
+    InputStream is = buffer.inputStream();
 
     const char* wordBegin = is.pos();
 
@@ -78,8 +79,6 @@ void NamePool::init()
         wordBegin = is.pos();
       }
     }
-
-    file.unmap();
 
     listPositions.add( names.length() );
   }

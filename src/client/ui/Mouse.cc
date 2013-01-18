@@ -110,18 +110,18 @@ void Mouse::init()
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     PFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
-    if( !file.map() ) {
+
+    Buffer buffer = file.read();
+    if( buffer.isEmpty() ) {
       OZ_ERROR( "Cursor loading failed" );
     }
 
-    InputStream is = file.inputStream();
+    InputStream is = buffer.inputStream();
 
     cursors[i].size     = is.readInt();
     cursors[i].hotspotX = is.readInt();
     cursors[i].hotspotY = is.readInt();
     cursors[i].texId    = context.readTextureLayer( &is );
-
-    file.unmap();
   }
 
   Log::printEnd( " OK" );

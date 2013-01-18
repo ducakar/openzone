@@ -211,14 +211,14 @@ void MD2::build( const char* path )
   Log::println( "Prebuilding MD2 model '%s' {", path );
   Log::indent();
 
-  JSON config;
-  config.load( &configFile );
+  JSON config( configFile );
 
-  if( !modelFile.map() ) {
-    OZ_ERROR( "MD2 reading failed" );
+  if( modelFile.type() != File::REGULAR ) {
+    OZ_ERROR( "MD2 file read failed" );
   }
 
-  InputStream is = modelFile.inputStream( Endian::LITTLE );
+  Buffer buffer = modelFile.read();
+  InputStream is = buffer.inputStream( Endian::LITTLE );
 
   MD2Header header;
 
@@ -338,8 +338,6 @@ void MD2::build( const char* path )
     triangles[i].texCoords[1] = is.readShort();
     triangles[i].texCoords[2] = is.readShort();
   }
-
-  modelFile.unmap();
 
   compiler.beginMesh();
   compiler.enable( Compiler::UNIQUE );

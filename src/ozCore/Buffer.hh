@@ -173,7 +173,7 @@ class Buffer
     /**
      * Create an `OutputStream` object for writing binary data into the buffer.
      */
-    OutputStream outputStream( Endian::Order order = Endian::NATIVE ) const;
+    OutputStream outputStream( Endian::Order order = Endian::NATIVE );
 
 };
 
