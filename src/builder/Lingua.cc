@@ -31,8 +31,8 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
 
   File::mkdir( directory );
 
-  PFile srcFile( String::str( "%s/%s.po", directory, catalogue ) );
-  File outFile( String::str( "%s/%s.ozCat", directory, catalogue ) );
+  File srcFile( File::VIRTUAL, String::str( "%s/%s.po", directory, catalogue ) );
+  File outFile( File::NATIVE, String::str( "%s/%s.ozCat", directory, catalogue ) );
 
   if( srcFile.type() != File::REGULAR ) {
     OZ_ERROR( "Cannot read catalogue source file '%s'", srcFile.path().cstr() );
@@ -161,8 +161,8 @@ void Lingua::build()
   Log::println( "Building package localisations {" );
   Log::indent();
 
-  PFile linguaDir( "lingua" );
-  DArray<PFile> languages = linguaDir.ls();
+  File linguaDir( File::VIRTUAL, "lingua" );
+  DArray<File> languages = linguaDir.ls();
 
   if( !languages.isEmpty() ) {
     File::mkdir( linguaDir.path() );
@@ -173,7 +173,7 @@ void Lingua::build()
       continue;
     }
 
-    DArray<PFile> catalogues = langDir->ls();
+    DArray<File> catalogues = langDir->ls();
 
     if( !catalogues.isEmpty() ) {
       File::mkdir( langDir->path() );
@@ -188,11 +188,11 @@ void Lingua::build()
     }
   }
 
-  PFile missionsDir( "mission" );
-  DArray<PFile> missions = missionsDir.ls();
+  File missionsDir( File::VIRTUAL, "mission" );
+  DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.citer() ) {
-    linguaDir = PFile( mission->path() + "/lingua" );
+    linguaDir = File( File::VIRTUAL, mission->path() + "/lingua" );
     languages = linguaDir.ls();
 
     foreach( catalogue, languages.citer() ) {
@@ -217,12 +217,12 @@ void Lingua::buildMissions()
   Log::println( "Building mission localisations {" );
   Log::indent();
 
-  PFile missionsDir( "mission" );
-  DArray<PFile> missions = missionsDir.ls();
+  File missionsDir( File::VIRTUAL, "mission" );
+  DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.citer() ) {
-    PFile linguaDir( mission->path() + "/lingua" );
-    DArray<PFile> languages = linguaDir.ls();
+    File linguaDir( File::VIRTUAL, mission->path() + "/lingua" );
+    DArray<File> languages = linguaDir.ls();
 
     foreach( catalogue, languages.citer() ) {
       if( !catalogue->hasExtension( "po" ) ) {

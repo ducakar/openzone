@@ -421,8 +421,8 @@ void Lua::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
-  PFile luaDir( "lua/matrix" );
-  DArray<PFile> luaFiles = luaDir.ls();
+  File luaDir( File::VIRTUAL, "lua/matrix" );
+  DArray<File> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.iter() ) {
     if( file->type() != File::REGULAR || file->hasExtension( "lua" ) ) {

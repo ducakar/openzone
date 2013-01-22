@@ -545,7 +545,7 @@ static void abort( bool doHalt )
   static_cast<void>( doHalt );
 
   fflush( stdout );
-  fputs( "ABORTED", stderr );
+  fputs( "ABORTED\n", stderr );
   fflush( stderr );
 
 #else

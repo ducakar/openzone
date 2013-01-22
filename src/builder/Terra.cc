@@ -36,8 +36,8 @@ namespace builder
 
 void Terra::load()
 {
-  PFile configFile( "terra/" + name + ".json" );
-  PFile imageFile( "terra/" + name + ".png" );
+  File configFile( File::VIRTUAL, "terra/" + name + ".json" );
+  File imageFile( File::VIRTUAL, "terra/" + name + ".png" );
 
   JSON config;
   if( !config.load( configFile ) ) {
@@ -152,7 +152,7 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
-  File destFile( "terra/" + name + ".ozTerra" );
+  File destFile( File::NATIVE, "terra/" + name + ".ozTerra" );
 
   Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
@@ -177,8 +177,8 @@ void Terra::saveMatrix()
 
 void Terra::saveClient()
 {
-  File destFile( "terra/" + name + ".ozcTerra" );
-  File minimapFile( "terra/" + name + ".ozcTex" );
+  File destFile( File::NATIVE, "terra/" + name + ".ozcTerra" );
+  File minimapFile( File::NATIVE, "terra/" + name + ".ozcTex" );
 
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();
@@ -276,7 +276,7 @@ void Terra::saveClient()
 
   Log::print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
 
-  os.reset();
+  os.rewind();
   mapTex.write( &os );
 
   if( !minimapFile.write( os.begin(), os.length() ) ) {

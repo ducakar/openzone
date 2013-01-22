@@ -37,7 +37,7 @@
 #undef foreach
 #undef vShuffle
 
-// May be defined for C++11 compatibility when using older GCC versions.
+// Might be defined in `config.hh` for C++11 compatibility when using older GCC versions.
 #undef constexpr
 #undef noexcept
 #undef nullptr

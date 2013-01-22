@@ -61,7 +61,6 @@ namespace client
 
 void Client::printUsage( const char* invocationName )
 {
-
   Log::printRaw(
     "Usage:\n"
     "  %s [-v] [-l | -i <mission>] [-t <num>] [-L <lang>] [-p <prefix>]\n"
@@ -136,7 +135,7 @@ int Client::init( int argc, char** argv )
 
 #if defined( __native_client__ )
 
-  File::init( File::TEMPORARY, 64*1024*1024 );
+  File::init( File::NATIVE, File::TEMPORARY, 64*1024*1024 );
 
   String configDir = "/config/openzone";
   String localDir = "/local/share/openzone";
@@ -225,7 +224,7 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
-  PFile::init( File::TEMPORARY, 32*1024*1024 );
+  File::init( File::VIRTUAL, File::TEMPORARY, 32*1024*1024 );
   initFlags |= INIT_PHYSFS;
 
   OZ_MAIN_CALL( this, {
@@ -245,7 +244,7 @@ int Client::init( int argc, char** argv )
   // Clean up after previous versions.
   File::rm( configDir + "/client.rc" );
 
-  File configFile( configDir + "/client.json" );
+  File configFile( File::NATIVE, configDir + "/client.json" );
   if( config.load( configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
@@ -307,9 +306,9 @@ int Client::init( int argc, char** argv )
 #ifdef __native_client__
 
   foreach( pkg, packages.citer() ) {
-    File pkgFile( localDir + "/" + *pkg );
+    File pkgFile( File::NATIVE, localDir + "/" + *pkg );
 
-    if( PFile::mount( pkgFile.path(), nullptr, true ) ) {
+    if( File::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
     }
     else {
@@ -324,18 +323,18 @@ int Client::init( int argc, char** argv )
 
   const char* userMusicPath = config.include( "dir.music", musicDir ).asString();
 
-  if( PFile::mount( userMusicPath, "/userMusic", true ) ) {
+  if( File::mount( userMusicPath, "/userMusic", true ) ) {
     Log::println( "%s [mounted on /userMusic]", userMusicPath );
   }
 
-  if( PFile::mount( localDir, nullptr, true ) ) {
+  if( File::mount( localDir, nullptr, true ) ) {
     Log::println( "%s", localDir.cstr() );
 
-    DArray<File> list = File( localDir ).ls();
+    DArray<File> list = File( File::NATIVE, localDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
-        if( !PFile::mount( file->path(), nullptr, true ) ) {
+        if( !File::mount( file->path(), nullptr, true ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
                     file->path().cstr(), PHYSFS_getLastError() );
         }
@@ -344,14 +343,14 @@ int Client::init( int argc, char** argv )
     }
   }
 
-  if( PFile::mount( dataDir, nullptr, true ) ) {
+  if( File::mount( dataDir, nullptr, true ) ) {
     Log::println( "%s", dataDir.cstr() );
 
-    DArray<File> list = File( dataDir ).ls();
+    DArray<File> list = File( File::NATIVE, dataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
-        if( !PFile::mount( file->path(), nullptr, true ) ) {
+        if( !File::mount( file->path(), nullptr, true ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
@@ -517,9 +516,8 @@ void Client::shutdown()
   if( initFlags & INIT_WINDOW ) {
     window.destroy();
   }
-
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    File configFile( config["dir.config"].asString() + "/client.json" );
+    File configFile( File::NATIVE, config["dir.config"].asString() + "/client.json" );
 
     config.exclude( "dir.config" );
     config.exclude( "dir.local" );
@@ -536,14 +534,21 @@ void Client::shutdown()
   if( initFlags & INIT_SDL_TTF ) {
     TTF_Quit();
   }
-#ifndef __native_client__
+
+#ifdef __native_client__
+
+  File::destroy( File::NATIVE );
+
+#else
+
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
   }
-#endif
   if( initFlags & INIT_PHYSFS ) {
-    PFile::destroy();
+    File::destroy( File::VIRTUAL );
   }
+
+#endif
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();

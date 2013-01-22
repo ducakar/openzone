@@ -53,7 +53,7 @@ void CinematicProxy::addTransform( const Quat& rot, const Point& p, const Mat44&
 void CinematicProxy::executeSequence( const char* path, const Lingua* missionLingua )
 {
   JSON sequence;
-  PFile file( path );
+  File file( File::VIRTUAL, path );
 
   if( !sequence.load( file ) ) {
     OZ_ERROR( "Failed to load sequence from '%s'", file.path().cstr() );

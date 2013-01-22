@@ -325,7 +325,7 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
     bs.writeLine( "msgstr \"\"" );
   }
 
-  File outFile( filePath );
+  File outFile( File::NATIVE, filePath );
 
   if( !outFile.write( bs.begin(), bs.length() ) ) {
     OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
@@ -360,7 +360,7 @@ int main( int argc, char** argv )
 
   BufferStream bs;
 
-  File bspDir( pkgDir + "/baseq3/maps" );
+  File bspDir( File::NATIVE, pkgDir + "/baseq3/maps" );
   DArray<File> files = bspDir.ls();
 
   foreach( file, files.iter() ) {
@@ -371,7 +371,7 @@ int main( int argc, char** argv )
     readBSP( *file );
   }
 
-  File classDir( pkgDir + "/class" );
+  File classDir( File::NATIVE, pkgDir + "/class" );
   files = classDir.ls();
 
   foreach( file, files.iter() ) {
@@ -382,7 +382,7 @@ int main( int argc, char** argv )
     readClass( *file );
   }
 
-  File creditsFile( pkgDir + "/credits/" + pkgName + ".txt" );
+  File creditsFile( File::NATIVE, pkgDir + "/credits/" + pkgName + ".txt" );
   readCredits( creditsFile );
 
   if( !titles.isEmpty() ) {
@@ -399,7 +399,7 @@ int main( int argc, char** argv )
     Log::printEnd( " OK" );
   }
 
-  File missionsDir( pkgDir + "/mission" );
+  File missionsDir( File::NATIVE, pkgDir + "/mission" );
   DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.iter() ) {

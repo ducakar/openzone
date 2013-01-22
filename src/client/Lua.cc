@@ -74,8 +74,8 @@ void Lua::create( const char* mission_ )
   Log::println( "Executing scripts for mission %s {", cs.mission.cstr() );
   Log::indent();
 
-  PFile missionDir( "mission/" + cs.mission );
-  DArray<PFile> files = missionDir.ls();
+  File missionDir( File::VIRTUAL, "mission/" + cs.mission );
+  DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
     OZ_ERROR( "Mission directory '%s' does not exist", missionDir.path().cstr() );
@@ -118,8 +118,8 @@ void Lua::read( InputStream* istream )
 
   Log::print( "Deserialising scripts for mission %s ...", cs.mission.cstr() );
 
-  PFile missionDir( "mission/" + cs.mission );
-  DArray<PFile> files = missionDir.ls();
+  File missionDir( File::VIRTUAL, "mission/" + cs.mission );
+  DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
     OZ_ERROR( "Mission directory '%s' does not exist", missionDir.path().cstr() );

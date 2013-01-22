@@ -167,7 +167,7 @@ void Caelum::load()
                            Math::sin( orbis.caelum.heading ),
                            0.0f );
 
-  Buffer buffer = PFile( path ).read();
+  Buffer buffer = File( File::VIRTUAL, path ).read();
   if( buffer.isEmpty() ) {
     OZ_ERROR( "Caelum file '%s' read failed", path.cstr() );
   }

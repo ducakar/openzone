@@ -63,8 +63,8 @@ function run_nacl()
   serverPID=$!
 
   sleep 3
-  chromium-browser --user-data-dir="$HOME/.config/chromium-test" \
-                   http://localhost:8000/openzone.sl.html || true
+  chromium --user-data-dir="$HOME/.config/chromium-test" \
+           http://localhost:8000/openzone.sl.html || true
 
   kill $serverPID
 }

@@ -135,8 +135,8 @@ void MainMenu::onReposition()
 
 void MainMenu::onUpdate()
 {
-  File autosaveFile( GameStage::AUTOSAVE_FILE );
-  File quicksaveFile( GameStage::QUICKSAVE_FILE );
+  File autosaveFile( File::NATIVE, GameStage::AUTOSAVE_FILE );
+  File quicksaveFile( File::NATIVE, GameStage::QUICKSAVE_FILE );
 
   if( autosaveFile.type() == File::REGULAR ) {
     OZ_MAIN_CALL( this, {

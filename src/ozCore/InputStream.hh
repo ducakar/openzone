@@ -140,7 +140,7 @@ class InputStream
      * %Set the curent position.
      */
     OZ_ALWAYS_INLINE
-    void setPos( const char* newPos )
+    void seek( const char* newPos )
     {
       hard_assert( streamBegin <= newPos && newPos <= streamEnd );
 
@@ -151,7 +151,7 @@ class InputStream
      * Rewind current position to the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
-    void reset()
+    void rewind()
     {
       streamPos = streamBegin;
     }

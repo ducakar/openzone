@@ -84,8 +84,8 @@ void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ex
 {
   String sSrcDir = srcDir;
   String sDestDir = destDir;
-  PFile dir( sSrcDir );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, sSrcDir );
+  DArray<File> dirList = dir.ls();
 
   if( dirList.isEmpty() ) {
     return;
@@ -116,7 +116,7 @@ void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ex
     {
       Log::print( "Copying '%s' ...", fileName.cstr() );
 
-      File destFile( sDestDir + fileName );
+      File destFile( File::NATIVE, sDestDir + fileName );
       if( !destFile.write( file->read() ) ) {
         OZ_ERROR( "Failed to write '%s'", file->path().cstr() );
       }
@@ -136,8 +136,8 @@ void Builder::buildCaela()
   Log::indent();
 
   String srcDir = "caelum";
-  PFile dir( srcDir );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, srcDir );
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -162,8 +162,8 @@ void Builder::buildTerrae()
   Log::indent();
 
   String srcDir = "terra";
-  PFile dir( srcDir );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, srcDir );
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -187,8 +187,8 @@ void Builder::buildBSPs()
 
   String srcDir = "baseq3/maps";
   String destDir = "bsp";
-  PFile dir( srcDir );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, srcDir );
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
   destDir = destDir + "/";
@@ -217,15 +217,15 @@ void Builder::buildBSPTextures()
 
   Set<String> usedDirs;
 
-  PFile dir( "baseq3/textures" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "baseq3/textures" );
+  DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<PFile> texList = subDir->ls();
+    DArray<File> texList = subDir->ls();
 
     foreach( file, texList.citer() ) {
       String name = file->name();
@@ -260,7 +260,7 @@ void Builder::buildBSPTextures()
       File::mkdir( "tex" );
       File::mkdir( "tex/" + subDir->name() );
 
-      File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
+      File destFile( File::NATIVE, String::str( "tex/%s.ozcTex", name.cstr() ) );
 
       Context::Texture diffuseTex, masksTex, normalsTex;
       context.loadTextures( &diffuseTex, &masksTex, &normalsTex, path );
@@ -299,9 +299,9 @@ void Builder::buildBSPTextures()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PFile subDir( *subDirPath );
+    File subDir( File::VIRTUAL, *subDirPath );
 
-    DArray<PFile> texList = subDir.ls();
+    DArray<File> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
       if( file->type() != File::REGULAR ) {
@@ -317,7 +317,7 @@ void Builder::buildBSPTextures()
         File::mkdir( "tex" );
         File::mkdir( "tex/" + subDir.name() );
 
-        File destFile( String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
+        File destFile( File::NATIVE, String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -338,8 +338,8 @@ void Builder::buildClasses( const String& pkgName )
   Log::indent();
 
   String dirName = "class";
-  PFile dir( dirName );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, dirName );
+  DArray<File> dirList = dir.ls();
 
   BufferStream os;
 
@@ -389,7 +389,7 @@ void Builder::buildClasses( const String& pkgName )
     headerStream.deallocate();
 
     File::mkdir( "class" );
-    File outFile( "class/" + pkgName + ".ozClasses" );
+    File outFile( File::NATIVE, "class/" + pkgName + ".ozClasses" );
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
@@ -412,8 +412,8 @@ void Builder::buildFragPools( const String& pkgName )
   Log::indent();
 
   String dirName = "frag";
-  PFile dir( dirName );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, dirName );
+  DArray<File> dirList = dir.ls();
 
   BufferStream os;
 
@@ -433,7 +433,7 @@ void Builder::buildFragPools( const String& pkgName )
 
   if( os.length() != 0 ) {
     File::mkdir( "frag" );
-    File outFile( "frag/" + pkgName + ".ozFragPools" );
+    File outFile( File::NATIVE, "frag/" + pkgName + ".ozFragPools" );
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
@@ -459,9 +459,9 @@ void Builder::buildModels()
   Log::println( "Building used models {" );
   Log::indent();
 
-  PFile mdlDir( "mdl" );
+  File mdlDir( File::VIRTUAL, "mdl" );
   File::mkdir( mdlDir.path() );
-  DArray<PFile> dirList = mdlDir.ls();
+  DArray<File> dirList = mdlDir.ls();
 
   foreach( dir, dirList.iter() ) {
     if( !context.usedModels.contains( dir->name() ) ) {
@@ -469,7 +469,7 @@ void Builder::buildModels()
     }
 
     File::mkdir( dir->path() );
-    DArray<PFile> fileList = dir->ls();
+    DArray<File> fileList = dir->ls();
 
     foreach( file, fileList.iter() ) {
       if( file->type() != File::REGULAR ) {
@@ -482,7 +482,7 @@ void Builder::buildModels()
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        File destFile( path );
+        File destFile( File::NATIVE, path );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -492,10 +492,10 @@ void Builder::buildModels()
       }
     }
 
-    if( PFile( dir->path() + "/data.obj" ).type() != File::MISSING ) {
+    if( File( File::VIRTUAL, dir->path() + "/data.obj" ).type() != File::MISSING ) {
       obj.build( dir->path() );
     }
-    else if( PFile( dir->path() + "/tris.md2" ).type() != File::MISSING ) {
+    else if( File( File::VIRTUAL, dir->path() + "/tris.md2" ).type() != File::MISSING ) {
       md2.build( dir->path() );
     }
     else {
@@ -518,15 +518,15 @@ void Builder::copySounds()
 
   Set<String> usedDirs;
 
-  PFile dir( "snd" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "snd" );
+  DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<PFile> sndList = subDir->ls();
+    DArray<File> sndList = subDir->ls();
 
     foreach( file, sndList.iter() ) {
       if( file->type() != File::REGULAR ) {
@@ -558,7 +558,7 @@ void Builder::copySounds()
       File::mkdir( "snd" );
       File::mkdir( "snd/" + subDir->name() );
 
-      File destFile( file->path() );
+      File destFile( File::NATIVE, file->path() );
       if( !destFile.write( file->read() ) ) {
         OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
@@ -568,8 +568,8 @@ void Builder::copySounds()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PFile subDir( *subDirPath );
-    DArray<PFile> texList = subDir.ls();
+    File subDir( File::VIRTUAL, *subDirPath );
+    DArray<File> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
       if( file->type() != File::REGULAR ) {
@@ -585,7 +585,7 @@ void Builder::copySounds()
         File::mkdir( "snd" );
         File::mkdir( "snd/" + subDir.name() );
 
-        File destFile( path );
+        File destFile( File::NATIVE, path );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -615,8 +615,8 @@ void Builder::checkLua( const char* path )
   Log::indent();
 
   String srcDir = String::str( "%s/", path );
-  PFile dir( path );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, path );
+  DArray<File> dirList = dir.ls();
 
   String sources;
 
@@ -642,15 +642,15 @@ void Builder::buildMissions()
   Log::println( "Building missions {" );
   Log::indent();
 
-  DArray<PFile> missions = PFile( "mission" ).ls();
+  DArray<File> missions = File( File::VIRTUAL, "mission" ).ls();
   foreach( mission, missions.citer() ) {
     checkLua( mission->path() );
 
     copyFiles( mission->path(), mission->path(), "lua", false );
     copyFiles( mission->path(), mission->path(), "json", false );
 
-    PFile srcFile( mission->path() + "/description.png" );
-    File outFile( mission->path() + "/description.ozImage" );
+    File srcFile( File::VIRTUAL, mission->path() + "/description.png" );
+    File outFile( File::NATIVE, mission->path() + "/description.ozImage" );
 
     if( srcFile.type() == File::MISSING ) {
       continue;
@@ -683,7 +683,7 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
   Log::println( "Packing archive {" );
   Log::indent();
 
-  File archive( String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
+  File archive( File::NATIVE, String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
 
   String cmdLine = use7zip ? String::str( "7z u -ms=off -mx=9 '%s' *", archive.path().cstr() ) :
                              String::str( "zip -ur %s '%s' *",
@@ -695,6 +695,9 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
   if( system( cmdLine ) != 0 ) {
     OZ_ERROR( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
   }
+
+  // Re-stat file since it changed on disk.
+  archive.stat();
 
   int size = archive.size();
   if( size >= 0 ) {
@@ -871,7 +874,7 @@ int Builder::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  PFile::init();
+  File::init( File::VIRTUAL );
   FreeImage_Initialise();
 
   File::mkdir( outDir );
@@ -882,7 +885,7 @@ int Builder::main( int argc, char** argv )
   }
 
   Log::println( "Adding source directory '%s' to search path", srcDir.cstr() );
-  if( !PFile::mount( srcDir, nullptr, true ) ) {
+  if( !File::mount( srcDir, nullptr, true ) ) {
     OZ_ERROR( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 
@@ -976,7 +979,7 @@ int Builder::main( int argc, char** argv )
   config.clear();
 
   FreeImage_DeInitialise();
-  PFile::destroy();
+  File::destroy( File::VIRTUAL );
 
   return EXIT_SUCCESS;
 }

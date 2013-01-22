@@ -30,7 +30,7 @@
 
 #include "HashMap.hh"
 #include "BufferStream.hh"
-#include "PFile.hh"
+#include "File.hh"
 
 namespace oz
 {
@@ -165,11 +165,6 @@ class JSON
      * Create from a file contents.
      */
     explicit JSON( const File& file );
-
-    /**
-     * Create from a file contents.
-     */
-    explicit JSON( const PFile& file );
 
     /**
      * Destructor.
@@ -1085,23 +1080,9 @@ class JSON
     bool load( const File& file );
 
     /**
-     * Clear existing value and read new contents from a %JSON file.
-     *
-     * If file open fails, existing value is kept intact.
-     *
-     * @return true iff file is successfully read and parsed.
-     */
-    bool load( const PFile& file );
-
-    /**
      * Write to a file.
      */
     bool save( const File& file, const char* lineEnd = "\n" ) const;
-
-    /**
-     * Write to a file.
-     */
-    bool save( const PFile& file, const char* lineEnd = "\n" ) const;
 
 };
 

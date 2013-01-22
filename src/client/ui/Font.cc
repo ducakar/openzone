@@ -70,7 +70,7 @@ void Font::init( const char* name, int height_ )
 {
   height = height_;
 
-  PFile file( String::str( "ui/font/%s.ttf", name ) );
+  File file( File::VIRTUAL, String::str( "ui/font/%s.ttf", name ) );
 
   buffer = file.read();
   if( buffer.isEmpty() ) {

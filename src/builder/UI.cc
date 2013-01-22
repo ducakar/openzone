@@ -54,7 +54,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( PFile( "ui/cur" ).type() == File::MISSING ) {
+  if( File( File::VIRTUAL, "ui/cur" ).type() == File::DIRECTORY ) {
     return;
   }
 
@@ -68,8 +68,8 @@ void UI::buildCursors()
   File::mkdir( "ui/cur" );
 
   for( int i = 0; i < ui::Mouse::CURSORS_MAX; ++i ) {
-    PFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
-    File destFile( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
+    File inFile( File::VIRTUAL, String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
+    File destFile( File::NATIVE, String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
 
     String realPath = inFile.realDir() + "/" + inFile.path();
 
@@ -109,7 +109,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( PFile( "ui/icon" ).type() == File::MISSING ) {
+  if( File( File::VIRTUAL, "ui/icon" ).type() == File::DIRECTORY ) {
     return;
   }
 
@@ -134,7 +134,7 @@ void UI::buildIcons()
     Log::println( "Compiling '%s'", destPath.cstr() );
     tex.write( &os );
 
-    if( !File( destPath ).write( os.begin(), os.length() ) ) {
+    if( !File( File::NATIVE, destPath ).write( os.begin(), os.length() ) ) {
       OZ_ERROR( "Texture writing failed" );
     }
   }
@@ -147,8 +147,8 @@ void UI::buildIcons()
 
 void UI::copyScheme()
 {
-  PFile srcFile( "ui/style.json" );
-  File outFile( "ui/style.json" );
+  File srcFile( File::VIRTUAL, "ui/style.json" );
+  File outFile( File::NATIVE, "ui/style.json" );
 
   if( srcFile.type() == File::REGULAR ) {
     Log::print( "Copying UI colour scheme '%s' ...", srcFile.path().cstr() );

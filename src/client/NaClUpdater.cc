@@ -80,7 +80,7 @@ void NaClUpdater::writeLocalManifest() const
     bs.writeLong64( pkg->time );
   }
 
-  File localManifest( LOCAL_MANIFEST );
+  File localManifest( File::NATIVE, LOCAL_MANIFEST );
 
   if( !localManifest.write( bs.begin(), bs.length() ) ) {
     OZ_ERROR( "Failed to write local manifest" );
@@ -96,7 +96,7 @@ bool NaClUpdater::checkUpdates()
   localPackages.clear();
   remotePackages.clear();
 
-  File localManifest( LOCAL_MANIFEST );
+  File localManifest( File::NATIVE, LOCAL_MANIFEST );
 
   if( localManifest.map() ) {
     InputStream is = localManifest.inputStream();
@@ -115,7 +115,7 @@ bool NaClUpdater::checkUpdates()
   BufferStream bs = downloader.take();
   InputStream  is = bs.inputStream();
 
-  is.reset();
+  is.rewind();
 
   remotePackages = readManifest( &is );
 
@@ -136,9 +136,9 @@ void NaClUpdater::downloadUpdates()
   int packageNum      = 1;
 
   foreach( pkg, remotePackages.citer() ) {
-    File pkgFile( "/local/share/openzone/" + pkg->name );
+    File pkgFile( File::NATIVE, "/local/share/openzone/" + pkg->name );
 
-    if( pkgFile.stat() ) {
+    if( pkgFile.type() == File::REGULAR ) {
       long64 localTime = 0;
 
       foreach( localPkg, localPackages.citer() ) {
@@ -212,7 +212,7 @@ void NaClUpdater::downloadUpdates()
     }
 
     if( isOrphan ) {
-      File pkgFile( "/local/share/openzone/" + localPkg->name );
+      File pkgFile( File::NATIVE, "/local/share/openzone/" + localPkg->name );
 
       Log::print( "Deleting obsolete package '%s' ...", pkgFile.path().cstr() );
       if( File::rm( pkgFile.path() ) ) {

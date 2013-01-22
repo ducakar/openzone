@@ -88,9 +88,9 @@ class Liber
     bool             mapMP3s;
     bool             mapAACs;
 
-    const BSP*         bsp( const char* name ) const;
-    const ObjectClass* objClass( const char* name ) const;
     const FragPool*    fragPool( const char* name ) const;
+    const ObjectClass* objClass( const char* name ) const;
+    const BSP*         bsp( const char* name ) const;
 
     int shaderIndex( const char* name ) const;
     int textureIndex( const char* name ) const;

@@ -40,12 +40,12 @@ Liber::Resource::Resource( const String& name_, const String& path_ ) :
   name( name_ ), path( path_ )
 {}
 
-const BSP* Liber::bsp( const char* name ) const
+const FragPool* Liber::fragPool( const char* name ) const
 {
-  const BSP* value = bsps.find( name );
+  const FragPool* value = fragPools.find( name );
 
   if( value == nullptr ) {
-    OZ_ERROR( "Invalid BSP requested '%s'", name );
+    OZ_ERROR( "Invalid fragment pool requested '%s'", name );
   }
   return value;
 }
@@ -60,12 +60,12 @@ const ObjectClass* Liber::objClass( const char* name ) const
   return *value;
 }
 
-const FragPool* Liber::fragPool( const char* name ) const
+const BSP* Liber::bsp( const char* name ) const
 {
-  const FragPool* value = fragPools.find( name );
+  const BSP* value = bsps.find( name );
 
   if( value == nullptr ) {
-    OZ_ERROR( "Invalid fragment pool requested '%s'", name );
+    OZ_ERROR( "Invalid BSP requested '%s'", name );
   }
   return value;
 }
@@ -100,22 +100,22 @@ int Liber::soundIndex( const char* name ) const
   return *value;
 }
 
-int Liber::terraIndex( const char* name ) const
-{
-  const int* value = terraIndices.find( name );
-
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid terra index requested '%s'", name );
-  }
-  return *value;
-}
-
 int Liber::caelumIndex( const char* name ) const
 {
   const int* value = caelumIndices.find( name );
 
   if( value == nullptr ) {
     OZ_ERROR( "Invalid caelum index requested '%s'", name );
+  }
+  return *value;
+}
+
+int Liber::terraIndex( const char* name ) const
+{
+  const int* value = terraIndices.find( name );
+
+  if( value == nullptr ) {
+    OZ_ERROR( "Invalid terra index requested '%s'", name );
   }
   return *value;
 }
@@ -188,8 +188,8 @@ void Liber::initShaders()
 
   List<Resource> shadersList;
 
-  PFile dir( "glsl" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "glsl" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {
@@ -218,15 +218,15 @@ void Liber::initTextures()
 
   List<Resource> texturesList;
 
-  PFile dir( "tex" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "tex" );
+  DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<PFile> subDirList = subDir->ls();
+    DArray<File> subDirList = subDir->ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "ozcTex" ) ) {
@@ -256,15 +256,15 @@ void Liber::initSounds()
 
   List<Resource> soundsList;
 
-  PFile dir( "snd" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "snd" );
+  DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<PFile> subDirList = subDir->ls();
+    DArray<File> subDirList = subDir->ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "wav" ) ) {
@@ -294,8 +294,8 @@ void Liber::initCaela()
 
   List<Resource> caelaList;
 
-  PFile dir( "caelum" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "caelum" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcCaelum" ) ) {
@@ -319,13 +319,13 @@ void Liber::initCaela()
 
 void Liber::initTerrae()
 {
-  Log::println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
+  Log::println( "Terrae (*.ozTerra, *.ozcTerra in 'terra') {" );
   Log::indent();
 
   List<Resource> terraeList;
 
-  PFile dir( "terra" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "terra" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozTerra" ) ) {
@@ -347,32 +347,6 @@ void Liber::initTerrae()
   Log::println( "}" );
 }
 
-void Liber::initBSPs()
-{
-  Log::println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
-  Log::indent();
-
-  PFile dir( "bsp" );
-  DArray<PFile> dirList = dir.ls();
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozBSP" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    Log::println( "%s", name.cstr() );
-
-    bsps.add( name, BSP( name, bsps.length() ) );
-  }
-
-  nBSPs = bsps.length();
-
-  Log::unindent();
-  Log::println( "}" );
-}
-
 void Liber::initModels()
 {
   Log::println( "Models (directories in 'mdl') {" );
@@ -380,8 +354,8 @@ void Liber::initModels()
 
   List<Resource> modelsList;
 
-  PFile dir( "mdl" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "mdl" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     if( file->type() != File::DIRECTORY ) {
@@ -391,13 +365,13 @@ void Liber::initModels()
     String name = file->name();
     String path;
 
-    if( PFile( file->path() + "/data.ozcSMM" ).type() == File::REGULAR ) {
+    if( File( File::VIRTUAL, file->path() + "/data.ozcSMM" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcSMM";
     }
-    else if( PFile( file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
+    else if( File( File::VIRTUAL, file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD2";
     }
-    else if( PFile( file->path() + "/data.ozcMD3" ).type() == File::REGULAR ) {
+    else if( File( File::VIRTUAL, file->path() + "/data.ozcMD3" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD3";
     }
     else {
@@ -428,8 +402,8 @@ void Liber::initNameLists()
 
   List<Resource> nameListsList;
 
-  PFile dir( "name" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "name" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
@@ -451,61 +425,13 @@ void Liber::initNameLists()
   Log::println( "}" );
 }
 
-void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
-{
-  PFile dir( path );
-  DArray<PFile> dirList = dir.ls();
-
-  foreach( file, dirList.iter() ) {
-    if( file->type() == File::DIRECTORY ) {
-      initMusicRecurse( file->path(), musicTracksList );
-    }
-    if( file->hasExtension( "oga" ) || file->hasExtension( "ogg" ) ||
-        ( mapMP3s && file->hasExtension( "mp3" ) ) || ( mapAACs && file->hasExtension( "aac" ) ) )
-    {
-      Log::println( "%s", file->path().cstr() );
-
-      musicTracksList->add( Resource( file->baseName(), file->path() ) );
-    }
-  }
-}
-
-void Liber::initMusic( const char* userMusicPath )
-{
-  if( userMusicPath == nullptr || String::isEmpty( userMusicPath ) ) {
-    Log::println( "Music (*.oga, *.ogg%s%s in 'music') {",
-                  mapMP3s ? ", *.mp3" : "", mapAACs ? "*.aac" : "" );
-  }
-  else {
-    Log::println( "Music (*.oga, *.ogg%s%s in 'music' and '%s') {",
-                  mapMP3s ? ", *.mp3" : "", mapAACs ? ", *.aac" : "", userMusicPath );
-  }
-  Log::indent();
-
-  List<Resource> musicTracksList;
-
-  initMusicRecurse( "music", &musicTracksList );
-
-  for( int i = 0; i < musicTracksList.length(); ++i ) {
-    musicTrackIndices.add( musicTracksList[i].name, i );
-  }
-
-  initMusicRecurse( "userMusic", &musicTracksList );
-
-  musicTracks.resize( musicTracksList.length() );
-  aMove<Resource>( musicTracks.begin(), musicTracksList.begin(), musicTracksList.length() );
-
-  Log::unindent();
-  Log::println( "}" );
-}
-
 void Liber::initFragPools()
 {
   Log::println( "Fragment pools (*.ozFragPools in 'frag') {" );
   Log::indent();
 
-  PFile dir( "frag" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "frag" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "ozFragPools" ) ) {
@@ -545,8 +471,8 @@ void Liber::initClasses()
   Log::println( "Object classes (*.ozClasses in 'class') {" );
   Log::indent();
 
-  PFile dir( "class" );
-  DArray<PFile> dirList = dir.ls();
+  File dir( File::VIRTUAL, "class" );
+  DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "ozClasses" ) ) {
@@ -693,6 +619,80 @@ void Liber::initClasses()
       }
     }
   }
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Liber::initBSPs()
+{
+  Log::println( "BSP structures (*.ozBSP, *.ozcBSP in 'bsp') {" );
+  Log::indent();
+
+  File dir( File::VIRTUAL, "bsp" );
+  DArray<File> dirList = dir.ls();
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "ozBSP" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    Log::println( "%s", name.cstr() );
+
+    bsps.add( name, BSP( name, bsps.length() ) );
+  }
+
+  nBSPs = bsps.length();
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
+{
+  File dir( File::VIRTUAL, path );
+  DArray<File> dirList = dir.ls();
+
+  foreach( file, dirList.iter() ) {
+    if( file->type() == File::DIRECTORY ) {
+      initMusicRecurse( file->path(), musicTracksList );
+    }
+    if( file->hasExtension( "oga" ) || file->hasExtension( "ogg" ) ||
+        ( mapMP3s && file->hasExtension( "mp3" ) ) || ( mapAACs && file->hasExtension( "aac" ) ) )
+    {
+      Log::println( "%s", file->path().cstr() );
+
+      musicTracksList->add( Resource( file->baseName(), file->path() ) );
+    }
+  }
+}
+
+void Liber::initMusic( const char* userMusicPath )
+{
+  if( userMusicPath == nullptr || String::isEmpty( userMusicPath ) ) {
+    Log::println( "Music (*.oga, *.ogg%s%s in 'music') {",
+                  mapMP3s ? ", *.mp3" : "", mapAACs ? "*.aac" : "" );
+  }
+  else {
+    Log::println( "Music (*.oga, *.ogg%s%s in 'music' and '%s') {",
+                  mapMP3s ? ", *.mp3" : "", mapAACs ? ", *.aac" : "", userMusicPath );
+  }
+  Log::indent();
+
+  List<Resource> musicTracksList;
+
+  initMusicRecurse( "music", &musicTracksList );
+
+  for( int i = 0; i < musicTracksList.length(); ++i ) {
+    musicTrackIndices.add( musicTracksList[i].name, i );
+  }
+
+  initMusicRecurse( "userMusic", &musicTracksList );
+
+  musicTracks.resize( musicTracksList.length() );
+  aMove<Resource>( musicTracks.begin(), musicTracksList.begin(), musicTracksList.length() );
 
   Log::unindent();
   Log::println( "}" );

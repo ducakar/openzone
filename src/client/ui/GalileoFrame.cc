@@ -41,7 +41,7 @@ namespace ui
 
 uint GalileoFrame::loadTexture( const char* path ) const
 {
-  PFile file( path );
+  File file( File::VIRTUAL, path );
 
   Buffer buffer = file.read();
   if( buffer.isEmpty() ) {

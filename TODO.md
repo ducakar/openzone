@@ -1,11 +1,8 @@
 CURRENT
 
 - fix random splash event bug
-- keyboard control of UI
 - TalkFrame
-- per-game data subdirs
 - 6-direction-layered meshes
-- String: complete orthogonality for const char*
 
 0.4
 
@@ -41,6 +38,7 @@ CURRENT
 
 0.5
 
+- per-game data subdirs
 - client
     * networking
     * video to texture
@@ -51,7 +49,7 @@ CURRENT
 2.0
 
 - ozCore
-    * optional double precision
+    * optional double precision math
 - ozDynamics
     * finish ozDynamics
 - matrix

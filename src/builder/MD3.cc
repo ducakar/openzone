@@ -35,7 +35,7 @@ namespace builder
 
 void MD3::readAnimData()
 {
-  PFile animFile( sPath + "/animation.cfg" );
+  File animFile( File::VIRTUAL, sPath + "/animation.cfg" );
 
   String realPath = animFile.realDir() + "/" + animFile.path();
 
@@ -57,7 +57,7 @@ void MD3::buildMesh( const char* name, int frame )
 {
   Log::print( "Mesh '%s' ...", name );
 
-  PFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
+  File file( File::VIRTUAL, String::str( "%s/%s.md3", sPath.cstr(), name ) );
 
   if( file.type() != File::REGULAR ) {
     OZ_ERROR( "Cannot read MD3 model part file '%s'", file.path().cstr() );
@@ -103,7 +103,7 @@ void MD3::buildMesh( const char* name, int frame )
   }
 
   if( header.nTags != 0 ) {
-    is.reset();
+    is.rewind();
     is.forward( header.offTags );
 
     for( int i = 0; i < header.nTags; ++i ) {
@@ -151,7 +151,7 @@ void MD3::buildMesh( const char* name, int frame )
   // FIXME indexBase unused
   int indexBase = 0;
 
-  is.reset();
+  is.rewind();
   is.forward( header.offSurfaces );
 
   for( int i = 0; i < header.nSurfaces; ++i ) {
@@ -193,7 +193,7 @@ void MD3::buildMesh( const char* name, int frame )
     DArray<Vec3>        normals( surfaceVertices.length() );
     DArray<Point>       vertices( surfaceVertices.length() );
 
-    is.reset();
+    is.rewind();
     is.forward( surfaceStart + surface.offTriangles );
 
     for( int j = 0; j < surfaceTriangles.length(); ++j ) {
@@ -202,7 +202,7 @@ void MD3::buildMesh( const char* name, int frame )
       surfaceTriangles[j].vertices[2] = is.readInt();
     }
 
-    is.reset();
+    is.rewind();
     is.forward( surfaceStart + surface.offShaders );
 
     for( int i = 0; i < surfaceShaders.length(); ++i ) {
@@ -211,15 +211,15 @@ void MD3::buildMesh( const char* name, int frame )
     }
 
     if( skin.isEmpty() ) {
-      PFile skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ) );
+      File skinFile( File::VIRTUAL, String::replace( surfaceShaders[0].name, '\\', '/' ) );
       texture = skinFile.baseName();
     }
     else {
-      PFile skinFile( skin );
+      File skinFile( File::VIRTUAL, skin );
       texture = skinFile.baseName();
     }
 
-    is.reset();
+    is.rewind();
     is.forward( surfaceStart + surface.offTexCoords );
 
     for( int j = 0; j < surfaceTexCoords.length(); ++j ) {
@@ -227,7 +227,7 @@ void MD3::buildMesh( const char* name, int frame )
       surfaceTexCoords[j].v = 1.0f - is.readFloat();
     }
 
-    is.reset();
+    is.rewind();
     is.forward( surfaceStart + surface.offVertices );
 
     for( int j = 0; j < surfaceVertices.length(); ++j ) {
@@ -244,7 +244,7 @@ void MD3::buildMesh( const char* name, int frame )
       normals[j].z = +Math::cos( v );
     }
 
-    is.reset();
+    is.rewind();
     is.forward( surfaceStart + surface.offEnd );
 
     compiler.texture( sPath + "/" + texture );
@@ -272,7 +272,7 @@ void MD3::buildMesh( const char* name, int frame )
 
 void MD3::load()
 {
-  PFile configFile( sPath + "/config.json" );
+  File configFile( File::VIRTUAL, sPath + "/config.json" );
 
   JSON config( configFile );
 
@@ -363,7 +363,7 @@ void MD3::save()
   File::mkdir( sPath );
 
   if( frame < 0 ) {
-    File destFile( sPath + "/data.ozcMD3" );
+    File destFile( File::NATIVE, sPath + "/data.ozcMD3" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -374,7 +374,7 @@ void MD3::save()
     Log::printEnd( " OK" );
   }
   else {
-    File destFile( sPath + "/data.ozcSMM" );
+    File destFile( File::NATIVE, sPath + "/data.ozcSMM" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

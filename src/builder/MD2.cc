@@ -204,8 +204,8 @@ void MD2::build( const char* path )
 {
   String sPath = path;
 
-  PFile modelFile( sPath + "/tris.md2" );
-  PFile configFile( sPath + "/config.json" );
+  File modelFile( File::VIRTUAL, sPath + "/tris.md2" );
+  File configFile( File::VIRTUAL, sPath + "/config.json" );
   String skinPath = sPath + "/skin";
 
   Log::println( "Prebuilding MD2 model '%s' {", path );
@@ -289,7 +289,7 @@ void MD2::build( const char* path )
   DArray<Vec3>        normals( header.nFrames * header.nFramePositions );
   DArray<Point>       positions( header.nFrames * header.nFramePositions );
 
-  is.reset();
+  is.rewind();
   is.forward( header.offFrames );
 
   const char* frameData = is.forward( header.nFrames * header.frameSize );
@@ -319,7 +319,7 @@ void MD2::build( const char* path )
     }
   }
 
-  is.reset();
+  is.rewind();
   is.forward( header.offTexCoords );
 
   for( int i = 0; i < texCoords.length(); ++i ) {
@@ -327,7 +327,7 @@ void MD2::build( const char* path )
     texCoords[i].v = float( header.skinHeight - is.readShort() ) / float( header.skinHeight );
   }
 
-  is.reset();
+  is.rewind();
   is.forward( header.offTriangles );
 
   for( int i = 0; i < triangles.length(); ++i ) {
@@ -389,7 +389,7 @@ void MD2::build( const char* path )
   File::mkdir( sPath );
 
   if( header.nFrames != 1 ) {
-    File destFile( sPath + "/data.ozcMD2" );
+    File destFile( File::NATIVE, sPath + "/data.ozcMD2" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -400,7 +400,7 @@ void MD2::build( const char* path )
     Log::printEnd( " OK" );
   }
   else {
-    File destFile( sPath + "/data.ozcSMM" );
+    File destFile( File::NATIVE, sPath + "/data.ozcSMM" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

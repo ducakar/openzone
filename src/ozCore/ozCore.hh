@@ -108,7 +108,6 @@
 #include "BufferStream.hh"
 #include "Buffer.hh"
 #include "File.hh"
-#include "PFile.hh"
 
 /*
  * Utilities.

@@ -8,13 +8,14 @@
         + STL-like begin() and end() members on containers
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
-        + new HashSet template class: hashtable of key-only elements instead of key-value pairs
-    * String: constructing from numbers, number parsing functions
+        + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
+    * String: construction from numbers, number parsing functions
     * new Mat33 class
     * SIMD support for linear algebra classes
     * new SpinLock class
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
+    * PFile class merged into File class
 - ozDynamics
     * collision
         + primitives: Box, Capsule, Mesh, Compound

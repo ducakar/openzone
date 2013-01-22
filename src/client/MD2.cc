@@ -227,7 +227,7 @@ MD2::MD2( int id_ ) :
 
 void MD2::preload()
 {
-  PFile file( liber.models[id].path );
+  File file( File::VIRTUAL, liber.models[id].path );
 
   buffer = file.read();
   if( buffer.isEmpty() ) {

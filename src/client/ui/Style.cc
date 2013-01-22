@@ -73,8 +73,7 @@ void Style::init()
 {
   Log::print( "Initialising Style ..." );
 
-  PFile configFile( "ui/style.json" );
-
+  File configFile( File::VIRTUAL, "ui/style.json" );
   JSON config( configFile );
 
   const JSON& fontsConfig = config["fonts"];

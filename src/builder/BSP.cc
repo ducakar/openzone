@@ -44,8 +44,8 @@ const float BSP::GLASS_SPECULAR     = 2.00f;
 
 void BSP::load()
 {
-  PFile configFile( String::str( "baseq3/maps/%s.json", name.cstr() ) );
-  PFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
+  File configFile( File::VIRTUAL, String::str( "baseq3/maps/%s.json", name.cstr() ) );
+  File bspFile( File::VIRTUAL, String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
 
   JSON config;
   if( !config.load( configFile ) ) {
@@ -110,7 +110,7 @@ void BSP::load()
 
   textures.resize( lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::TEXTURES].offset );
 
   for( int i = 0; i < textures.length(); ++i ) {
@@ -140,7 +140,7 @@ void BSP::load()
 
   planes.resize( lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::PLANES].offset );
 
   for( int i = 0; i < planes.length(); ++i ) {
@@ -152,7 +152,7 @@ void BSP::load()
 
   nodes.resize( lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::NODES].offset );
 
   for( int i = 0; i < nodes.length(); ++i ) {
@@ -171,7 +171,7 @@ void BSP::load()
 
   leaves.resize( lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::LEAFS].offset );
 
   for( int i = 0; i < leaves.length(); ++i ) {
@@ -197,7 +197,7 @@ void BSP::load()
 
   leafBrushes.resize( lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::LEAFBRUSHES].offset );
 
   for( int i = 0; i < leafBrushes.length(); ++i ) {
@@ -209,7 +209,7 @@ void BSP::load()
   models.resize( nModels - 1 );
   modelFaces.resize( nModels );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::MODELS].offset );
 
   const JSON& modelsConfig = config["entities"];
@@ -303,7 +303,7 @@ void BSP::load()
     }
   }
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::MODELS].offset );
 
   for( int i = 0; i < models.length() + 1; ++i ) {
@@ -326,7 +326,7 @@ void BSP::load()
 
   brushSides.resize( lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::BRUSHSIDES].offset );
 
   for( int i = 0; i < brushSides.length(); ++i ) {
@@ -342,7 +342,7 @@ void BSP::load()
     OZ_ERROR( "Too many brushes %d, maximum is %d", brushes.length(), matrix::BSP::MAX_BRUSHES );
   }
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::BRUSHES].offset );
 
   for( int i = 0; i < brushes.length(); ++i ) {
@@ -380,7 +380,7 @@ void BSP::load()
 
   vertices.resize( lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::VERTICES].offset );
 
   for( int i = 0; i < vertices.length(); ++i ) {
@@ -408,7 +408,7 @@ void BSP::load()
 
   indices.resize( lumps[QBSPLump::INDICES].length / int( sizeof( int ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::INDICES].offset );
 
   for( int i = 0; i < indices.length(); ++i ) {
@@ -417,7 +417,7 @@ void BSP::load()
 
   faces.resize( lumps[QBSPLump::FACES].length / int( sizeof( QBSPFace ) ) );
 
-  is.reset();
+  is.rewind();
   is.forward( lumps[QBSPLump::FACES].offset );
 
   for( int i = 0; i < faces.length(); ++i ) {
@@ -987,7 +987,7 @@ void BSP::check() const
 
 void BSP::saveMatrix()
 {
-  File destFile( "bsp/" + name + ".ozBSP" );
+  File destFile( File::NATIVE, "bsp/" + name + ".ozBSP" );
 
   Log::print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
 
@@ -1127,7 +1127,7 @@ void BSP::saveMatrix()
 
 void BSP::saveClient()
 {
-  File destFile( "bsp/" + name + ".ozcBSP" );
+  File destFile( File::NATIVE, "bsp/" + name + ".ozcBSP" );
 
   compiler.beginMesh();
 

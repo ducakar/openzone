@@ -40,7 +40,7 @@ void Caelum::build( const char* name )
   Log::println( "Prebuilding Caelum '%s' {", name );
   Log::indent();
 
-  File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
+  File destFile( File::NATIVE, String::str( "caelum/%s.ozcCaelum", name ) );
 
   BufferStream os;
 

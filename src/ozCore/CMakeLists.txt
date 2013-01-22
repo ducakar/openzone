@@ -32,7 +32,6 @@ add_library( ozCore
   OutputStream.hh
   ozCore.hh
   Pair.hh
-  PFile.hh
   Plane.hh
   Point.hh
   Pool.hh
@@ -60,7 +59,6 @@ add_library( ozCore
   Mat44.cc
   Math.cc
   Mutex.cc
-  PFile.cc
   Point.cc
   Quat.cc
   Semaphore.cc

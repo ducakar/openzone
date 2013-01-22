@@ -62,7 +62,7 @@ bool GameStage::read( const char* path )
 {
   Log::print( "Loading state from '%s' ...", path );
 
-  File file( path );
+  File file( File::NATIVE, path );
   if( !file.map() ) {
     Log::printEnd( " Failed" );
     return false;
@@ -111,7 +111,7 @@ void GameStage::write( const char* path ) const
 
   Log::print( "Saving state to %s ...", path );
 
-  if( !File( path ).write( ostream.begin(), ostream.length() ) ) {
+  if( !File( File::NATIVE, path ).write( ostream.begin(), ostream.length() ) ) {
     Log::printEnd( " Failed" );
   }
   else {
@@ -262,7 +262,7 @@ bool GameStage::update()
     write( QUICKSAVE_FILE );
   }
   if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
-    File quicksaveFile( QUICKSAVE_FILE );
+    File quicksaveFile( File::NATIVE, QUICKSAVE_FILE );
 
     if( quicksaveFile.type() == File::REGULAR ) {
       stateFile = QUICKSAVE_FILE;
@@ -270,7 +270,7 @@ bool GameStage::update()
     }
   }
   if( input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD] ) {
-    File autosaveFile( AUTOSAVE_FILE );
+    File autosaveFile( File::NATIVE, AUTOSAVE_FILE );
 
     if( autosaveFile.type() == File::REGULAR ) {
       stateFile = AUTOSAVE_FILE;

@@ -274,8 +274,8 @@ void OBJ::load()
 {
   Log::print( "Loading OBJ model '%s' ...", path.cstr() );
 
-  PFile modelFile( path + "/data.obj" );
-  PFile configFile( path + "/config.json" );
+  File modelFile( File::VIRTUAL, path + "/data.obj" );
+  File configFile( File::VIRTUAL, path + "/config.json" );
 
   int currentMaterial = 0;
 
@@ -357,7 +357,7 @@ void OBJ::load()
 void OBJ::save()
 {
   File::mkdir( path );
-  File destFile( path + "/data.ozcSMM" );
+  File destFile( File::NATIVE, path + "/data.ozcSMM" );
 
   compiler.beginMesh();
   compiler.enable( Compiler::UNIQUE );

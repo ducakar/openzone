@@ -309,7 +309,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 {
   Log::print( "Loading image '%s' ...", path );
 
-  PFile file( path );
+  File file( File::VIRTUAL, path );
   String realPath = file.realDir() + "/" + file.path();
 
   if( file.type() == File::MISSING ) {
@@ -437,42 +437,42 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   String normals2BasePath  = basePath + "_normal";
   String normals3BasePath  = basePath + "_local";
 
-  PFile diffuse, masks, specular, emission, normals;
+  File diffuse, masks, specular, emission, normals;
 
   for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
     if( diffuse.path().isEmpty() || diffuse.type() == File::MISSING ) {
-      diffuse = PFile( diffuseBasePath + IMAGE_EXTENSIONS[i] );
+      diffuse = File( File::VIRTUAL, diffuseBasePath + IMAGE_EXTENSIONS[i] );
     }
     if( diffuse.type() == File::MISSING ) {
-      diffuse = PFile( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
+      diffuse = File( File::VIRTUAL, diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
-      masks = PFile( masksBasePath + IMAGE_EXTENSIONS[i] );
+      masks = File( File::VIRTUAL, masksBasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( specular.path().isEmpty() || specular.type() == File::MISSING ) {
-      specular = PFile( specularBasePath + IMAGE_EXTENSIONS[i] );
+      specular = File( File::VIRTUAL, specularBasePath + IMAGE_EXTENSIONS[i] );
     }
     if( specular.type() == File::MISSING ) {
-      specular = PFile( specular1BasePath + IMAGE_EXTENSIONS[i] );
+      specular = File( File::VIRTUAL, specular1BasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( emission.path().isEmpty() || emission.type() == File::MISSING ) {
-      emission = PFile( emissionBasePath + IMAGE_EXTENSIONS[i] );
+      emission = File( File::VIRTUAL, emissionBasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( normals.path().isEmpty() || normals.type() == File::MISSING ) {
-      normals = PFile( normalsBasePath + IMAGE_EXTENSIONS[i] );
+      normals = File( File::VIRTUAL, normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
     if( normals.type() == File::MISSING ) {
-      normals = PFile( normals1BasePath + IMAGE_EXTENSIONS[i] );
+      normals = File( File::VIRTUAL, normals1BasePath + IMAGE_EXTENSIONS[i] );
     }
     if( normals.type() == File::MISSING ) {
-      normals = PFile( normals2BasePath + IMAGE_EXTENSIONS[i] );
+      normals = File( File::VIRTUAL, normals2BasePath + IMAGE_EXTENSIONS[i] );
     }
     if( normals.type() == File::MISSING ) {
-      normals = PFile( normals3BasePath + IMAGE_EXTENSIONS[i] );
+      normals = File( File::VIRTUAL, normals3BasePath + IMAGE_EXTENSIONS[i] );
     }
   }
 

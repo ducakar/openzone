@@ -36,7 +36,8 @@ namespace oz
 /**
  * Class for basic file and directory operations.
  *
- * @sa `oz::PFile`
+ * This class provides two back-ends: the native filesystem back-end and virtual filesystem (VFS)
+ * back-end implemented via PhysicsFS.
  */
 class File
 {
@@ -53,20 +54,30 @@ class File
     };
 
     /**
+     * Filesystem type.
+     */
+    enum Filesystem
+    {
+      NATIVE,
+      VIRTUAL
+    };
+
+    /**
      * NaCl filesystem type.
      */
-    enum FilesystemType
+    enum NaClFilesystem
     {
       TEMPORARY,
       PERSISTENT
     };
 
-    struct Descriptor;
-
   private:
+
+    struct Descriptor;
 
     String      filePath;   ///< %File path.
     Type        fileType;   ///< %File type.
+    Filesystem  fileFS;     ///< %Filesystem type.
     int         fileSize;   ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
     long64      fileTime;   ///< Modification or creation time, what is newer.
     char*       data;       ///< Mapped memory.
@@ -77,9 +88,11 @@ class File
   public:
 
     /**
-     * Create an instance for the given path.
+     * Create an instance for the given filesystem and path.
+     *
+     * `stat()` is automatically called on construction unless path is an empty string.
      */
-    explicit File( const char* path = "" );
+    explicit File( Filesystem filesystem = NATIVE, const char* path = "" );
 
     /**
      * Destructor.
@@ -111,6 +124,13 @@ class File
     File& operator = ( File&& file );
 
     /**
+     * Access file to update its type, size and modification time.
+     *
+     * @return true iff call succeeds, i.e. file exists.
+     */
+    bool stat();
+
+    /**
      * %File type.
      */
     OZ_ALWAYS_INLINE
@@ -120,12 +140,12 @@ class File
     }
 
     /**
-     * Modification or creation (Unix) time, what is newer.
+     * %Filesystem type.
      */
     OZ_ALWAYS_INLINE
-    long64 time() const
+    Filesystem filesystem() const
     {
-      return fileTime;
+      return fileFS;
     }
 
     /**
@@ -135,6 +155,15 @@ class File
     int size() const
     {
       return fileSize;
+    }
+
+    /**
+     * Modification or creation (Unix) time, what is newer.
+     */
+    OZ_ALWAYS_INLINE
+    long64 time() const
+    {
+      return fileTime;
     }
 
     /**
@@ -181,7 +210,12 @@ class File
     }
 
     /**
-     * True iff file is mapped to memory.
+     * %Path to the archive or mountpoint of a VFS, "" for native files.
+     */
+    String realDir() const;
+
+    /**
+     * True iff file is mapped into memory.
      */
     OZ_ALWAYS_INLINE
     bool isMapped() const
@@ -190,9 +224,7 @@ class File
     }
 
     /**
-     * %Map file into memory for reading.
-     *
-     * It also sets file type on `REGULAR` and updates file size if map succeeds.
+     * %Map native file into memory for reading, always fails for VFS files.
      */
     bool map();
 
@@ -238,14 +270,14 @@ class File
     DArray<File> ls() const;
 
     /**
-     * Return current directory.
+     * Return the current directory in native filesystem.
      *
-     * Empty string is returned on failure (this is always the case on NaCl).
+     * Empty string is returned on failure. This function always fails on NaCl.
      */
     static String cwd();
 
     /**
-     * Change current directory.
+     * Change current directory in native filesystem.
      *
      * Always fails on NaCl.
      */
@@ -253,35 +285,51 @@ class File
 
     /**
      * Make a new directory.
-     *
-     * This function always fails on NaCl since directories are not supported.
      */
-    static bool mkdir( const char* path );
+    static bool mkdir( const char* path, Filesystem filesystem = NATIVE );
 
     /**
      * Delete a file or an empty directory.
-     *
-     * This function always fails on NaCl since file deletion is not supported.
      */
-    static bool rm( const char* path );
+    static bool rm( const char* path, Filesystem filesystem = NATIVE );
+
+    /**
+     * Mount read-only directory or archive into VFS.
+     *
+     * @param path archive or directory in real file system directory to mount.
+     * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
+     * @param append true to add to the end instead to the beginning of the search path.
+     */
+    static bool mount( const char* path, const char* mountPoint, bool append );
+
+    /**
+     * Mount read/write local resource directory to root of VFS.
+     *
+     * This function does not fork for NaCl.
+     *
+     * @param path path to directory in real file system.
+     */
+    static bool mountLocal( const char* path );
 
     /**
      * Initialise filesystem.
      *
-     * This method only makes effect on NaCl platform. Persistent filesystem must be initialised
-     * from JavaScript before NaCl module is loaded.
+     * @note
+     * On NaCl, `System::instance` must be set prior to initialising a filesystem (either `NATIVE`
+     * or `VFS`). Persistent NaCl filesystem must be initialised from JavaScript before NaCl module
+     * is loaded.
      *
-     * @param type local filesystem type, either `TEMPORARY` or `PERSISTENT`.
-     * @param size local filesystem size.
+     * @param filesystem filesystem type, either `NATIVE` or `VFS`.
+     * @param naclFilesystem NaCl filesystem type, either `TEMPORARY` or `PERSISTENT`.
+     * @param naclSize NaCl filesystem size.
      */
-    static void init( FilesystemType type, int size );
+    static void init( Filesystem filesystem = NATIVE, NaClFilesystem naclFilesystem = TEMPORARY,
+                      int naclSize = 0 );
 
     /**
      * Deinitialise filesystem.
-     *
-     * This method makes effect on NaCl platform only.
      */
-    static void destroy();
+    static void destroy( Filesystem filesystem = NATIVE );
 
 };
 

@@ -98,7 +98,7 @@ void Sound::soundMain( void* )
 
 void Sound::musicOpen( const char* path )
 {
-  PFile file( path );
+  File file( File::VIRTUAL, path );
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;

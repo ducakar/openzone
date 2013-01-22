@@ -42,7 +42,7 @@ SMM::SMM( int id_ ) :
 
 void SMM::preload()
 {
-  PFile file( liber.models[id].path );
+  File file( File::VIRTUAL, liber.models[id].path );
 
   buffer = file.read();
   if( buffer.isEmpty() ) {

@@ -167,7 +167,7 @@ class OutputStream
      * %Set the current position.
      */
     OZ_ALWAYS_INLINE
-    void setPos( char* newPos )
+    void seek( char* newPos )
     {
       hard_assert( streamBegin <= newPos && newPos <= streamEnd );
 
@@ -178,7 +178,7 @@ class OutputStream
      * Rewind current position to the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
-    void reset()
+    void rewind()
     {
       streamPos = streamBegin;
     }

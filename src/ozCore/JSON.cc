@@ -188,7 +188,7 @@ char JSON::Parser::Position::readChar()
 OZ_HIDDEN
 void JSON::Parser::Position::backChar()
 {
-  istream->setPos( istream->pos() - 1 );
+  istream->seek( istream->pos() - 1 );
 
   line   = oldLine;
   column = oldColumn;
@@ -696,12 +696,6 @@ JSON::JSON() :
 {}
 
 JSON::JSON( const File& file ) :
-  data( nullptr ), valueType( NIL ), wasAccessed( true )
-{
-  load( file );
-}
-
-JSON::JSON( const PFile& file ) :
   data( nullptr ), valueType( NIL ), wasAccessed( true )
 {
   load( file );
@@ -2563,27 +2557,7 @@ bool JSON::load( const File& file )
   return true;
 }
 
-bool JSON::load( const PFile& file )
-{
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
-    return false;
-  }
-
-  InputStream is = buffer.inputStream();
-  read( &is, file.path() );
-  return true;
-}
-
 bool JSON::save( const File& file, const char* lineEnd ) const
-{
-  BufferStream os;
-  write( &os, lineEnd );
-
-  return file.write( os.begin(), os.length() );
-}
-
-bool JSON::save( const PFile& file, const char* lineEnd ) const
 {
   BufferStream os;
   write( &os, lineEnd );
