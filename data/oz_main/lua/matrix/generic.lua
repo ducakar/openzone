@@ -25,7 +25,7 @@
  * Generic handlers.
 ]]--
 
-function healUser100( l )
+function healUser( l )
   ozBindUser()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
@@ -35,7 +35,7 @@ function healUser100( l )
   end
 end
 
-function healUser100_disposable( l )
+function healUser_disposable( l )
   ozBindUser()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
@@ -45,6 +45,21 @@ function healUser100_disposable( l )
 
     ozBindSelf()
     ozObjDestroy( true )
+  end
+end
+
+function meleeAttack( l )
+  ozBindUser()
+
+  local pX, pY, pZ = ozObjGetPos()
+  local vX, vY, vZ = ozBotGetDir()
+
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+
+  while ozBindNextObj() do
+    if not ( ozObjIsSelf() or ozObjIsUser() ) then
+      ozObjDamage( 100.0 + 50.0 * math.random() )
+    end
   end
 end
 

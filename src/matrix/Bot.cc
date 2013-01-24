@@ -26,6 +26,7 @@
 
 #include <common/Timer.hh>
 #include <matrix/Liber.hh>
+#include <matrix/Lua.hh>
 #include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
@@ -468,8 +469,9 @@ void Bot::onUpdate()
   hard_assert( 0.0f <= h && h < Math::TAU );
   hard_assert( 0.0f <= v && v <= Math::TAU / 2.0f );
 
-  life    = min( life + clazz->regeneration, clazz->life );
-  stamina = min( stamina + clazz->staminaGain, clazz->stamina );
+  life      = min( life + clazz->regeneration, clazz->life );
+  stamina   = min( stamina + clazz->staminaGain, clazz->stamina );
+  meleeTime = max( meleeTime - Timer::TICK_TIME, 0.0f );
 
   if( parent >= 0 ) {
     Object* vehicle = orbis.objects[parent];
@@ -833,6 +835,13 @@ stepSucceeded:
           state |= ATTACKING_BIT;
           weaponObj->trigger( this );
         }
+        else if( !clazz->onMelee.isEmpty() && meleeTime == 0.0f ) {
+          state    |= ATTACKING_BIT;
+          meleeTime = clazz->meleeInterval;
+
+          addEvent( EVENT_MELEE, 1.0f );
+          lua.objectCall( clazz->onMelee, this, this );
+        }
       }
       else if( !( state & CROUCHING_BIT ) ) {
         if( actions & ACTION_GESTURE_MASK ) {
@@ -1146,9 +1155,12 @@ Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) 
   stamina    = clazz_->stamina;
   step       = 0.0f;
   stairRate  = 0.0f;
+
   cargo      = -1;
   weapon     = -1;
   grabHandle = 0.0f;
+  meleeTime  = 0.0f;
+
   camZ       = clazz_->camZ;
 
   name       = namePool.genName( clazz_->nameList );
@@ -1172,9 +1184,12 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   stamina    = istream->readFloat();
   step       = istream->readFloat();
   stairRate  = istream->readFloat();
+
   cargo      = istream->readInt();
   weapon     = istream->readInt();
   grabHandle = istream->readFloat();
+  meleeTime  = istream->readFloat();
+
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
   name       = istream->readString();
@@ -1203,9 +1218,11 @@ void Bot::write( BufferStream* ostream ) const
   ostream->writeFloat( stamina );
   ostream->writeFloat( step );
   ostream->writeFloat( stairRate );
+
   ostream->writeInt( cargo );
   ostream->writeInt( weapon );
   ostream->writeFloat( grabHandle );
+  ostream->writeFloat( meleeTime );
 
   ostream->writeString( name );
   ostream->writeString( mindFunc );

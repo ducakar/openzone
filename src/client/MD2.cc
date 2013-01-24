@@ -95,6 +95,11 @@ MD2::AnimType MD2::AnimState::extractAnim()
 
       return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
     }
+    else if( prevAttack || bot->meleeTime != 0.0f ) {
+      prevAttack = bot->meleeTime != 0.0f;
+
+      return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
+    }
     else if( bot->state & Bot::CROUCHING_BIT ) {
       return ANIM_CROUCH_STAND;
     }
@@ -168,19 +173,24 @@ void MD2::AnimState::advance()
 
     frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
   }
-  else if( ( inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK ) &&
-           bot->weapon >= 0 )
-  {
-    const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+  else if( ( inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK ) ) {
+    float shotInterval;
+    if( bot->weapon < 0 || orbis.objects[bot->weapon] == nullptr ) {
+      const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    if( weapon != nullptr ) {
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+      shotInterval = clazz->meleeInterval;
+    }
+    else {
+      const Weapon*      weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+      const WeaponClass* clazz  = static_cast<const WeaponClass*>( weapon->clazz );
 
-      if( clazz->shotInterval >= MIN_SHOT_INTERVAL_SYNC ) {
-        int nFrames = lastFrame - firstFrame + 1;
+      shotInterval = clazz->shotInterval;
+    }
 
-        frameFreq = float( nFrames ) / clazz->shotInterval;
-      }
+    if( shotInterval >= MIN_SHOT_INTERVAL_SYNC ) {
+      int nFrames = lastFrame - firstFrame + 1;
+
+      frameFreq = float( nFrames ) / shotInterval;
     }
   }
 

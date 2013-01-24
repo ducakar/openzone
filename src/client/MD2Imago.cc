@@ -79,7 +79,7 @@ void MD2Imago::draw( const Imago* parent )
 
     md2->scheduleAnim( &anim );
 
-    // HACK Enable when no buggy models are used (no mismatched death animation for weapons).
+    // FIXME Enable when no buggy models are used (no mismatched death animation for weapons).
 //     if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
 //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
 //     }

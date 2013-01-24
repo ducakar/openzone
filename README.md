@@ -52,7 +52,7 @@ MinGW32 is searched in `/usr/i486-mingw32` by default. You may change that in
 
 You may also want to set several options when configuring CMake build system:
 
-#### ozCore ####
+#### ozCore Library ####
 
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
   memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
@@ -65,10 +65,11 @@ You may also want to set several options when configuring CMake build system:
   vector components in OpenZone code.
   `OFF` by default.
 
-#### ozDynamics ####
+#### ozDynamics Library ####
 
-- `OZ_DYNAMICS`: Build OpenZone Dynamics Library. Requires ODE (Open Dynamics Engine) compiled in
-  single precision.
+- `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library. Requires ODE (Open Dynamics Engine)
+  compiled in single precision. If turned off, ozDynamics is built only partially. OpenZone does not
+  need ozDynamics library to run, only a few headers are required to build OpenZone.
   `OFF` by default.
 
 #### OpenZone Engine ####

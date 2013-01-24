@@ -10,7 +10,7 @@ set( OZ_VERSION 0.3.81 )
 
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
-option( OZ_DYNAMICS "Build ozDynamics library." OFF )
+option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
 
 option( OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF )
 option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )

@@ -41,13 +41,14 @@ class Bot : public Dynamic
      */
 
     static const int EVENT_JUMP             = 9;
-    static const int EVENT_FLIP             = 10;
-    static const int EVENT_DEATH            = 11;
+    static const int EVENT_MELEE            = 10;
+    static const int EVENT_FLIP             = 11;
+    static const int EVENT_DEATH            = 12;
 
     // Step and swim events are not in use but merely reserve sound slots.
-    static const int EVENT_STEP             = 12;
-    static const int EVENT_WATERSTEP        = 13;
-    static const int EVENT_SWIM             = 14;
+    static const int EVENT_STEP             = 13;
+    static const int EVENT_WATERSTEP        = 14;
+    static const int EVENT_SWIM             = 15;
 
     /*
      * ACTIONS
@@ -170,6 +171,7 @@ class Bot : public Dynamic
     int    cargo;
     int    weapon;
     float  grabHandle;
+    float  meleeTime;
 
     float  camZ;
 

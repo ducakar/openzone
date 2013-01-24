@@ -1,10 +1,6 @@
 configure_file( config.hh.in config.hh @ONLY )
 configure_file( ozDynamics.pc.in ozDynamics.pc @ONLY )
 
-if( NOT OZ_DYNAMICS )
-  return()
-endif()
-
 add_library( ozDynamics
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
@@ -36,8 +32,8 @@ add_library( ozDynamics
 
 set_target_properties( ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
-# Hack.
-if( ODE_LIBRARIES )
+# HACK.
+if( OZ_DYNAMICS )
   target_link_libraries( ozDynamics ${ODE_LIBRARIES} ozCore )
 else()
   target_link_libraries( ozDynamics ozCore )

@@ -141,6 +141,8 @@ class Class
     float              throwMomentum;
 
     int                weaponItem;
+    float              meleeInterval;
+    String             onMelee;
 
     String             nameList;
 

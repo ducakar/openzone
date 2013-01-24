@@ -78,6 +78,8 @@ class BotClass : public DynamicClass
     float  throwMomentum;
 
     int    weaponItem;
+    float  meleeInterval;
+    String onMelee;
 
     int    nameList;
 

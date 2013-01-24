@@ -36,8 +36,6 @@
 #include "collision/AABB.hh"
 #include "collision/Bounds.hh"
 
-#ifdef OZ_DYNAMICS
-
 /*
  * Shapes.
  */
@@ -59,5 +57,3 @@
  */
 #include "physics/DBody.hh"
 #include "physics/Physics.hh"
-
-#endif

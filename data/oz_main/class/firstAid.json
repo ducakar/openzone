@@ -14,7 +14,7 @@
   "mass":               10,
   "lift":               1.2,
 
-  "onUse":              "healUser100_disposable",
+  "onUse":              "healUser_disposable",
 
   "fragPool":           "metal",
   "nFrags":             2,

@@ -54,7 +54,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( File( File::VIRTUAL, "ui/cur" ).type() == File::DIRECTORY ) {
+  if( File( File::VIRTUAL, "ui/cur" ).type() != File::DIRECTORY ) {
     return;
   }
 
@@ -109,7 +109,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( File( File::VIRTUAL, "ui/icon" ).type() == File::DIRECTORY ) {
+  if( File( File::VIRTUAL, "ui/icon" ).type() != File::DIRECTORY ) {
     return;
   }
 

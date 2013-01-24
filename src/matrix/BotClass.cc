@@ -85,6 +85,8 @@ void BotClass::init( InputStream* is, const char* name )
   throwMomentum     = is->readFloat();
 
   weaponItem        = is->readInt();
+  meleeInterval     = is->readFloat();
+  onMelee           = is->readString();
 
   const char* sNameList = is->readString();
   nameList = String::isEmpty( sNameList ) ? -1 : liber.nameListIndex( sNameList );

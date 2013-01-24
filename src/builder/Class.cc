@@ -368,6 +368,7 @@ void Class::fillBot( const char* className )
     const JSON& soundsConfig = config["audioSounds"];
 
     audioSounds[Bot::EVENT_JUMP]      = soundsConfig["jump"].get( "" );
+    audioSounds[Bot::EVENT_MELEE]     = soundsConfig["melee"].get( "" );
     audioSounds[Bot::EVENT_FLIP]      = soundsConfig["flip"].get( "" );
     audioSounds[Bot::EVENT_DEATH]     = soundsConfig["death"].get( "" );
     audioSounds[Bot::EVENT_STEP]      = soundsConfig["step"].get( "" );
@@ -375,6 +376,7 @@ void Class::fillBot( const char* className )
     audioSounds[Bot::EVENT_SWIM]      = soundsConfig["swim"].get( "" );
 
     context.usedSounds.include( audioSounds[Bot::EVENT_JUMP] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_MELEE] );
     context.usedSounds.include( audioSounds[Bot::EVENT_FLIP] );
     context.usedSounds.include( audioSounds[Bot::EVENT_DEATH] );
     context.usedSounds.include( audioSounds[Bot::EVENT_STEP] );
@@ -447,6 +449,12 @@ void Class::fillBot( const char* className )
   throwMomentum     = config["throwMomentum"].get( 6.0f );
 
   weaponItem        = config["weaponItem"].get( -1 );
+  meleeInterval     = config["meleeInterval"].get( 0.5f );
+  onMelee           = config["onMelee"].get( "" );
+
+  if( !String::isEmpty( onMelee ) ) {
+    flags |= Object::LUA_BIT;
+  }
 
   nameList          = config["nameList"].get( "" );
 
@@ -711,6 +719,8 @@ void Class::writeBot( BufferStream* os )
   os->writeFloat( throwMomentum );
 
   os->writeInt( weaponItem );
+  os->writeFloat( meleeInterval );
+  os->writeString( onMelee );
 
   os->writeString( nameList );
 

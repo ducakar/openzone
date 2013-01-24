@@ -49,7 +49,7 @@ int main( int argc, char** argv )
   monoDomain   = mono_jit_init( "openzone" );
   monoAssembly = mono_domain_assembly_open( monoDomain, "MonoTest.exe" );
 
-  // Reinstall signal handlers Mono overwritten.
+  // Reinstall signal handlers Mono has overwritten.
   System::threadInit();
 
   hard_assert( monoAssembly != nullptr );

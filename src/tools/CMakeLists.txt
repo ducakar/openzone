@@ -2,7 +2,7 @@ if( ANDROID )
 
   add_library( openzone SHARED openzone.cc )
   use_pch( openzone pch )
-  target_link_libraries( openzone client modules nirvana matrix common )
+  target_link_libraries( openzone client modules nirvana matrix common ozCore )
 
   set( jniLibPath ${CMAKE_BINARY_DIR}/../Android/libs/${PLATFORM_PROC_PREFIX}/libopenzone.so )
   add_custom_command( OUTPUT ${jniLibPath} DEPENDS openzone
@@ -13,20 +13,25 @@ elseif( NACL )
 
   add_executable( openzone openzone.cc )
   use_pch( openzone pch )
-  target_link_libraries( openzone client modules nirvana matrix common )
+  target_link_libraries( openzone client modules nirvana matrix common ozCore )
   set_target_properties( openzone PROPERTIES OUTPUT_NAME openzone${PLATFORM_EXE_SUFFIX} )
 
 else()
 
   add_executable( openzone openzone.cc )
   use_pch( openzone pch )
-  target_link_libraries( openzone client modules nirvana matrix common )
+  # HACK
+  if( OZ_DYNAMICS )
+    target_link_libraries( openzone client modules nirvana matrix common ozDynamics )
+  else()
+    target_link_libraries( openzone client modules nirvana matrix common ozCore )
+  endif()
 
   install( TARGETS openzone RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
   add_executable( ozBuild ozBuild.cc )
   use_pch( ozBuild pch )
-  target_link_libraries( ozBuild builder client modules nirvana matrix common )
+  target_link_libraries( ozBuild builder client modules nirvana matrix common ozCore )
 
   install( TARGETS ozBuild RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 

@@ -1,7 +1,7 @@
 {
   "base":               "Bot",
 
-  "dim":                [ 0.45, 0.45, 1 ],
+  "dim":                [ 0.45, 0.45, 1.05 ],
   "crouchDimZ":         0.8,
 
   "life":               150,
@@ -12,38 +12,36 @@
   "camZ":               0.79,
   "crouchCamZ":         0.69,
 
-  "nameList":           "wesnoth.human-male",
+  "nameList":           "wesnoth.ogre-male",
 
   "mindFunc":           "predator",
 
-  "nItems":             8,
+  "nItems":             4,
   "defaultItems":
   [
-                        "knight$mace",
-                        "firstAid",
                         "cvicek",
                         "cvicek"
   ],
-  "weaponItem":         0,
+
   "onMelee":            "meleeAttack",
 
   "fragPool":           "gibs",
   "nFrags":             5,
 
   "imagoType":          "MD2",
-  "imagoModel":         "pknight",
+  "imagoModel":         "ogro",
 
   "audioType":          "Bot",
   "audioSounds":
   {
-    "damage":           "ppm/pains",
+    "damage":           "aard/pain6",
     "hit":              "oz/land",
     "land":             "oz/land",
     "splash":           "free/splash1",
     "jump":             "aard/jump",
     "melee":            "aard/tak",
-    "flip":             "ppm/deathb",
-    "death":            "ppm/deathb",
+    "flip":             "aard/grunt1",
+    "death":            "aard/die1",
     "step":             "openarena/boot4",
     "waterStep":        "openarena/splash1",
     "swim":             "openarena/watr_in"
