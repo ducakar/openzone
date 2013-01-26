@@ -19,6 +19,7 @@ option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1+." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
+option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
 
 #
 # Internal configuration

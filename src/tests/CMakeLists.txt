@@ -1,4 +1,4 @@
-if( PLATFORM_EMBEDDED )
+if( NOT OZ_TESTS )
   return()
 endif()
 
@@ -15,5 +15,9 @@ target_link_libraries( quicksort ozCore )
 add_executable( simd simd.cc )
 target_link_libraries( simd ozCore )
 
+pkg_check_modules( COLLADA collada-dom )
+
+include_directories( SYSTEM /usr/include/collada-dom2.4 )
+include_directories( SYSTEM /usr/include/collada-dom2.4/1.4 )
 add_executable( test test.cc )
-target_link_libraries( test ozCore )
+target_link_libraries( test ozCore ${COLLADA_LIBRARIES} boost_system )

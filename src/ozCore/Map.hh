@@ -81,12 +81,12 @@ class Map
     };
 
     /**
-     * %Iterator with constant access to container elements.
+     * %Iterator with constant access to elements.
      */
     typedef ArrayIterator<const Elem> CIterator;
 
     /**
-     * %Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to elements.
      */
     typedef ArrayIterator<Elem> Iterator;
 

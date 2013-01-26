@@ -261,7 +261,7 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Mesh::load( oz::InputStream* istream, oz::uint usage )
+void Mesh::load( oz::InputStream* istream, uint usage )
 {
   flags = 0;
 

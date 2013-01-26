@@ -43,8 +43,12 @@ bool Lua::readVariable( InputStream* istream )
       l_pushnil();
       return true;
     }
-    case 'b': {
-      l_pushbool( istream->readBool() );
+    case 'F': {
+      l_pushbool( false );
+      return true;
+    }
+    case 'T': {
+      l_pushbool( true );
       return true;
     }
     case 'n': {
@@ -84,8 +88,7 @@ void Lua::writeVariable( BufferStream* ostream )
       break;
     }
     case LUA_TBOOLEAN: {
-      ostream->writeChar( 'b' );
-      ostream->writeBool( l_tobool( -1 ) != 0 );
+      ostream->writeChar( l_tobool( -1 ) ? 'T' : 'F' );
       break;
     }
     case LUA_TNUMBER: {

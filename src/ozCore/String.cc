@@ -320,7 +320,7 @@ float String::parseFloat( const char* s, const char** end )
   }
   // Invalid.
   else {
-invalidNumber:
+    invalidNumber:
     if( end != nullptr ) {
       *end = s;
     }

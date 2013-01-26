@@ -149,7 +149,7 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
       }
     }
   }
-slotsRendered:
+  slotsRendered:
 
   int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
@@ -252,7 +252,7 @@ slotsRendered:
     shape.fill( x + width - ICON_SIZE - 4, y + height - FOOTER_SIZE + 4, ICON_SIZE, ICON_SIZE );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
-noIcon:
+  noIcon:
 
   if( tagged != cachedTaggedItemIndex ) {
     cachedTaggedItemIndex = tagged;

@@ -40,7 +40,8 @@ namespace oz
  *
  * This implementation strictly follows JSON standard with the following exceptions:
  * @li `inf` and `-inf` (case-sensitive) represent positive and negative infinity respectively,
- * @li `nan` and `-nan` (case-sensitive) represent not-a-number.
+ * @li `nan` and `-nan` (case-sensitive) represent not-a-number and
+ * @li C++-style comments are allowed.
  */
 class JSON
 {
@@ -73,9 +74,19 @@ class JSON
   public:
 
     /**
-     * %Iterator for %JSON objects with constant access.
+     * %Iterator for %JSON arrays with constant access to elements.
      */
-    class CIterator : public IteratorBase<const HashMap<String, JSON>::Elem>
+    typedef oz::ArrayIterator<const JSON> ArrayCIterator;
+
+    /**
+     * %Iterator for %JSON arrays with non-constant access to elements.
+     */
+    typedef oz::ArrayIterator<JSON> ArrayIterator;
+
+    /**
+     * %Iterator for %JSON objects with constant access to elements.
+     */
+    class ObjectCIterator : public IteratorBase<const HashMap<String, JSON>::Elem>
     {
       private:
 
@@ -90,26 +101,26 @@ class JSON
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator() :
+        explicit ObjectCIterator() :
           IteratorBase<const HashMap<String, JSON>::Elem>( nullptr )
         {}
 
         /**
          * Create iterator for the given %JSON object's data.
          */
-        explicit CIterator( const ObjectData* data );
+        explicit ObjectCIterator( const ObjectData* data );
 
         /**
          * Advance to the next element.
          */
-        CIterator& operator ++ ();
+        ObjectCIterator& operator ++ ();
 
     };
 
     /**
-     * %Iterator for %JSON objects with non-constant access.
+     * %Iterator for %JSON objects with non-constant access to elements.
      */
-    class Iterator : public IteratorBase<HashMap<String, JSON>::Elem>
+    class ObjectIterator : public IteratorBase<HashMap<String, JSON>::Elem>
     {
       private:
 
@@ -124,19 +135,19 @@ class JSON
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator() :
+        explicit ObjectIterator() :
           IteratorBase<HashMap<String, JSON>::Elem>( nullptr )
         {}
 
         /**
          * Create iterator for the given %JSON object's data.
          */
-        explicit Iterator( ObjectData* data );
+        explicit ObjectIterator( ObjectData* data );
 
         /**
          * Advance to the next element.
          */
-        Iterator& operator ++ ();
+        ObjectIterator& operator ++ ();
 
     };
 
@@ -208,11 +219,32 @@ class JSON
     int isEmpty() const;
 
     /**
-     * True iff value is an object and contains the given key.
+     * %JSON array iterator with constant access.
      *
-     * If value is not either null or an object, `System::error()` is invoked.
+     * An invalid iterator is returned if the %JSON element is not an array.
      */
-    bool contains( const char* key );
+    ArrayCIterator arrayCIter() const;
+
+    /**
+     * %JSON array iterator with non-constant access.
+     *
+     * An invalid iterator is returned if the %JSON element is not an array.
+     */
+    ArrayIterator arrayIter();
+
+    /**
+     * %JSON object iterator with constant access.
+     *
+     * An invalid iterator is returned if the %JSON element is not an object.
+     */
+    ObjectCIterator objectCIter() const;
+
+    /**
+     * %JSON object iterator with non-constant access.
+     *
+     * An invalid iterator is returned if the %JSON element is not an object.
+     */
+    ObjectIterator objectIter();
 
     /**
      * Returns value at position `i` in an array.
@@ -231,18 +263,11 @@ class JSON
     const JSON& operator [] ( const char* key ) const;
 
     /**
-     * %JSON object iterator with constant access.
+     * True iff value is an object and contains the given key.
      *
-     * An invalid iterator is returned if the %JSON element is not an object.
+     * If value is not either null or an object, `System::error()` is invoked.
      */
-    CIterator objectCIter() const;
-
-    /**
-     * %JSON object iterator with non-constant access.
-     *
-     * An invalid iterator is returned if the %JSON element is not an object.
-     */
-    Iterator objectIter();
+    bool contains( const char* key );
 
     /**
      * Get boolean value.

@@ -33,6 +33,18 @@ Buffer::Buffer( int size_ ) :
   data( size_ == 0 ? nullptr : new char[size_] ), size( size_ )
 {}
 
+Buffer::Buffer( const char* data_, int size_ ) :
+  data( size_ == 0 ? nullptr : new char[size_] ), size( size_ )
+{
+  mCopy( data, data_, size_t( size ) );
+}
+
+Buffer::Buffer( const String& s ) :
+  data( s.length() == 0 ? nullptr : new char[s.length()] ), size( s.length() )
+{
+  mCopy( data, s.cstr(), size_t( size ) );
+}
+
 Buffer::~Buffer()
 {
   deallocate();
@@ -84,6 +96,27 @@ Buffer& Buffer::operator = ( Buffer&& b )
   b.size = 0;
 
   return *this;
+}
+
+String Buffer::toString() const
+{
+  char*  buffer;
+  String s = String::create( size, &buffer );
+
+  mCopy( buffer, data, size_t( size ) );
+  return s;
+}
+
+void Buffer::resize( int newSize )
+{
+  hard_assert( newSize >= 0 );
+
+  char* newData = newSize == 0 ? nullptr : new char[newSize];
+  mCopy( newData, data, size_t( min( newSize, size ) ) );
+  delete[] data;
+
+  data = newData;
+  size = newSize;
 }
 
 void Buffer::allocate( int size_ )

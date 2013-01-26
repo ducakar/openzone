@@ -124,7 +124,6 @@ static void eraseTraceEntry( AllocMode mode, void* ptr )
     }
     st = st->next;
   }
-
   if( st == nullptr ) {
     OZ_ERROR( mode == OBJECT ? "ALLOC: Freeing object at %p that has not been allocated" :
                                "ALLOC: Freeing array at %p that has not been allocated", ptr );
@@ -133,8 +132,7 @@ static void eraseTraceEntry( AllocMode mode, void* ptr )
     OZ_ERROR( mode == OBJECT ? "ALLOC: new[] -> delete mismatch for block at %p" :
                                "ALLOC: new -> delete[] mismatch for block at %p", ptr );
   }
-
-backtraceFound:
+  backtraceFound:
 
   free( st );
 }

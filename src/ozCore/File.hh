@@ -126,7 +126,7 @@ class File
     /**
      * Access file to update its type, size and modification time.
      *
-     * @return true iff call succeeds, i.e. file exists.
+     * @return true iff file exists.
      */
     bool stat();
 
@@ -239,14 +239,26 @@ class File
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
     /**
+     * Read at most `size` bytes from file and update `size` to the number of bytes read.
+     */
+    bool read( char* buffer, int* size ) const;
+
+    /**
      * Read file into a buffer.
      */
     Buffer read() const;
 
     /**
+     * Read file as a string.
+     *
+     * Terminating null character is always assured.
+     */
+    String readString() const;
+
+    /**
      * Write buffer contents to the file.
      *
-     * It also sets file type on `REGULAR` and updates file size if it succeeds.
+     * @note
      * Write operation is not possible while file is mapped.
      */
     bool write( const char* data, int size ) const;
@@ -254,10 +266,18 @@ class File
     /**
      * Write buffer contents into a file.
      *
-     * It also sets file type on `REGULAR` and updates file size if it succeeds.
+     * @note
      * Write operation is not possible while file is mapped.
      */
     bool write( const Buffer& buffer ) const;
+
+    /**
+     * Write string into a file (omitting the terminating null character).
+     *
+     * @note
+     * Write operation is not possible while file is mapped.
+     */
+    bool writeString( const String& s ) const;
 
     /**
      * Generate a list of files in directory.

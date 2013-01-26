@@ -117,12 +117,12 @@ class Chain
   public:
 
     /**
-     * %Iterator with constant access to container elements.
+     * %Iterator with constant access to elements.
      */
     typedef ChainIterator<const Elem> CIterator;
 
     /**
-     * %Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to elements.
      */
     typedef ChainIterator<Elem> Iterator;
 

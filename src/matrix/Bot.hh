@@ -139,6 +139,7 @@ class Bot : public Dynamic
     static const float LADDER_SLIP_MOMENTUM;
 
     static const float WOUNDED_THRESHOLD;
+    static const float DROWNING_RATIO;
     static const float CORPSE_FADE_FACTOR;
 
     static const float INSTRUMENT_DIST;

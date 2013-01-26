@@ -105,26 +105,26 @@ struct JSON::ObjectData : JSON::Data
   HashMap<String, JSON> table;
 };
 
-JSON::CIterator::CIterator( const ObjectData* data ) :
+JSON::ObjectCIterator::ObjectCIterator( const ObjectData* data ) :
   IteratorBase<const HashMap<String, JSON>::Elem>( nullptr ), objectIter( data->table.citer() )
 {
   elem = objectIter;
 }
 
-JSON::CIterator& JSON::CIterator::operator ++ ()
+JSON::ObjectCIterator& JSON::ObjectCIterator::operator ++ ()
 {
   ++objectIter;
   elem = objectIter;
   return *this;
 }
 
-JSON::Iterator::Iterator( ObjectData* data ) :
+JSON::ObjectIterator::ObjectIterator( ObjectData* data ) :
   IteratorBase<HashMap<String, JSON>::Elem>( nullptr ), objectIter( data->table.iter() )
 {
   elem = objectIter;
 }
 
-JSON::Iterator& JSON::Iterator::operator ++ ()
+JSON::ObjectIterator& JSON::ObjectIterator::operator ++ ()
 {
   ++objectIter;
   elem = objectIter;
@@ -133,6 +133,13 @@ JSON::Iterator& JSON::Iterator::operator ++ ()
 
 struct JSON::Parser
 {
+  enum BlanksMode
+  {
+    WHITESPACE,
+    LINE_COMMENT,
+    MULTILINE_COMMENT
+  };
+
   struct Position
   {
     InputStream* istream;
@@ -188,6 +195,8 @@ char JSON::Parser::Position::readChar()
 OZ_HIDDEN
 void JSON::Parser::Position::backChar()
 {
+  hard_assert( line != oldLine || column != oldColumn );
+
   istream->seek( istream->pos() - 1 );
 
   line   = oldLine;
@@ -241,13 +250,61 @@ JSON::Parser::Parser( InputStream* istream, const char* path ) :
 OZ_HIDDEN
 char JSON::Parser::skipBlanks()
 {
-  char ch;
-  do {
-    ch = pos.readChar();
-  }
-  while( String::isBlank( ch ) );
+  BlanksMode mode = WHITESPACE;
+  char ch1 = ' ', ch2 = ' ';
 
-  return ch;
+  switch( mode ) {
+    case WHITESPACE: {
+      skipWhitespace:
+      do {
+        ch1 = ch2;
+        ch2 = pos.readChar();
+      }
+      while( String::isBlank( ch2 ) );
+
+      if( ch2 == '/' ) {
+        ch1 = ch2;
+        ch2 = pos.readChar();
+
+        if( ch2 == '/' ) {
+          goto skipLineComment;
+        }
+        else if( ch2 == '*' ) {
+          ch2 = pos.readChar();
+          goto skipMultilineComment;
+        }
+        else {
+          ch2 = ch1;
+          pos.backChar();
+        }
+      }
+      break;
+    }
+    case LINE_COMMENT: {
+      skipLineComment:
+      do {
+        ch1 = ch2;
+        ch2 = pos.readChar();
+      }
+      while( ch2 != '\n' );
+
+      mode = WHITESPACE;
+      goto skipWhitespace;
+    }
+    case MULTILINE_COMMENT: {
+      skipMultilineComment:
+      do {
+        ch1 = ch2;
+        ch2 = pos.readChar();
+      }
+      while( ch1 != '*' || ch2 != '/' );
+
+      mode = WHITESPACE;
+      goto skipWhitespace;
+    }
+  }
+
+  return ch2;
 }
 
 OZ_HIDDEN
@@ -430,11 +487,6 @@ JSON JSON::Parser::parseObject()
     }
 
     JSON value = parseValue();
-
-    if( key.beginsWith( "//" ) ) {
-      setAccessed( &value );
-    }
-
     table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
 
     ch = skipBlanks();
@@ -759,26 +811,52 @@ int JSON::isEmpty() const
   }
 }
 
-bool JSON::contains( const char* key )
+JSON::ArrayCIterator JSON::arrayCIter() const
 {
-  wasAccessed = true;
+  if( valueType == ARRAY ) {
+    const ArrayData* arrayData = static_cast<const ArrayData*>( data );
 
-  if( valueType == NIL ) {
-    return false;
+    return ArrayCIterator( arrayData->list.begin(), arrayData->list.end() );
   }
-  else if( valueType != OBJECT ) {
-    OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
+  else {
+    return ArrayCIterator();
   }
+}
 
-  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
-  const JSON* value = table.find( key );
+JSON::ArrayIterator JSON::arrayIter()
+{
+  if( valueType == ARRAY ) {
+    ArrayData* arrayData = static_cast<ArrayData*>( data );
 
-  if( value == nullptr ) {
-    return false;
+    return ArrayIterator( arrayData->list.begin(), arrayData->list.end() );
   }
+  else {
+    return ArrayIterator();
+  }
+}
 
-  value->wasAccessed = true;
-  return true;
+JSON::ObjectCIterator JSON::objectCIter() const
+{
+  if( valueType == OBJECT ) {
+    const ObjectData* objectData = static_cast<const ObjectData*>( data );
+
+    return ObjectCIterator( objectData );
+  }
+  else {
+    return ObjectCIterator();
+  }
+}
+
+JSON::ObjectIterator JSON::objectIter()
+{
+  if( valueType == OBJECT ) {
+    ObjectData* objectData = static_cast<ObjectData*>( data );
+
+    return ObjectIterator( objectData );
+  }
+  else {
+    return ObjectIterator();
+  }
 }
 
 const JSON& JSON::operator [] ( int i ) const
@@ -824,28 +902,26 @@ const JSON& JSON::operator [] ( const char* key ) const
   return *value;
 }
 
-JSON::CIterator JSON::objectCIter() const
+bool JSON::contains( const char* key )
 {
-  if( valueType == OBJECT ) {
-    const ObjectData* objectData = static_cast<const ObjectData*>( data );
+  wasAccessed = true;
 
-    return CIterator( objectData );
+  if( valueType == NIL ) {
+    return false;
   }
-  else {
-    return CIterator();
+  else if( valueType != OBJECT ) {
+    OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
   }
-}
 
-JSON::Iterator JSON::objectIter()
-{
-  if( valueType == OBJECT ) {
-    ObjectData* objectData = static_cast<ObjectData*>( data );
+  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
+  const JSON* value = table.find( key );
 
-    return Iterator( objectData );
+  if( value == nullptr ) {
+    return false;
   }
-  else {
-    return Iterator();
-  }
+
+  value->wasAccessed = true;
+  return true;
 }
 
 bool JSON::asBool() const

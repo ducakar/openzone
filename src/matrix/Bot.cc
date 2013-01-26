@@ -40,6 +40,7 @@ const float Bot::AIR_FRICTION         =  0.01f;
 const float Bot::LADDER_SLIP_MOMENTUM =  16.0f;
 
 const float Bot::WOUNDED_THRESHOLD    =  0.70f;
+const float Bot::DROWNING_RATIO       =  8.00f;
 const float Bot::CORPSE_FADE_FACTOR   =  0.50f / 100.0f;
 
 const float Bot::INSTRUMENT_DIST      =  2.00f;
@@ -500,12 +501,10 @@ void Bot::onUpdate()
       stamina -= clazz->staminaWaterDrain;
 
       if( stamina < 0.0f ) {
-        float oldLife = life;
-
-        life += stamina;
+        life += stamina * DROWNING_RATIO;
         stamina = 0.0f;
 
-        if( int( life ) / 8 != int( oldLife ) / 8 ) {
+        if( ( uint( index ) + uint( timer.ticks ) ) % Timer::TICKS_PER_SEC == 0 ) {
           addEvent( EVENT_DAMAGE, 1.0f );
         }
       }
@@ -776,7 +775,7 @@ void Bot::onUpdate()
           p.z = originalZ;
         }
       }
-stepSucceeded:
+      stepSucceeded:
 
       Vec3 desiredMomentum = move;
 
@@ -892,7 +891,8 @@ stepSucceeded:
       const Bot* cargoBot = static_cast<const Bot*>( cargoObj );
 
       if( cargoObj == nullptr || cargoObj->cell == nullptr || ( cargoObj->flags & BELOW_BIT ) ||
-          ( actions & ACTION_JUMP ) || ( ( cargoBot->flags & BOT_BIT ) &&
+          ( state & ( LADDER_BIT | LEDGE_BIT ) ) || ( actions & ACTION_JUMP ) ||
+          ( ( cargoObj->flags & BOT_BIT ) &&
             ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo >= 0 ) ) ) )
       {
         releaseCargo();
@@ -1121,7 +1121,7 @@ stepSucceeded:
             item->momentum = velocity;
 
             if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
-                !( state & ( LADDER_BIT | LEDGE_BIT | SWIMMING_BIT ) ) && weapon < 0 )
+                !( state & ( LADDER_BIT | LEDGE_BIT ) ) && weapon < 0 )
             {
               grabCargo( item );
 

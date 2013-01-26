@@ -48,9 +48,19 @@ class Buffer
   public:
 
     /**
-     * Create a buffer of size `size`.
+     * Create an uninitialised buffer of size `size`.
      */
     explicit Buffer( int size = 0 );
+
+    /**
+     * Create a buffer of size `size` and copy `data` into it.
+     */
+    explicit Buffer( const char* data, int size );
+
+    /**
+     * Create a buffer containing the given string (without the terminating null character).
+     */
+    explicit Buffer( const String& s );
 
     /**
      * Destructor.
@@ -154,6 +164,16 @@ class Buffer
     {
       return size == 0;
     }
+
+    /**
+     * Create a string from the buffer contents. Terminating null byte is always appended.
+     */
+    String toString() const;
+
+    /**
+     * Resize the buffer.
+     */
+    void resize( int newSize );
 
     /**
      * For an empty buffer, allocate new storage of `size` bytes.

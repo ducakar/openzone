@@ -19,6 +19,8 @@
 - ozDynamics
     * collision
         + primitives: Box, Capsule, Mesh, Compound
+- matrix
+    * melee attack
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
 - client

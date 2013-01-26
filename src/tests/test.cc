@@ -27,6 +27,9 @@
 #include <clocale>
 #include <climits>
 
+#include <dae.h>
+#include <1.4/dom/domCOLLADA.h>
+
 using namespace oz;
 
 void bar();
@@ -115,11 +118,28 @@ class Foo
 
 };
 
+using namespace ColladaDOM141;
+
 int main()
 {
   System::init();
 
-  JSON json( File( File::NATIVE, "/home/davorin/.config/chromium/Default/Bookmarks" ) );
-  Log() << json.toFormattedString();
+  File file( File::NATIVE, "/home/davorin/untitled.dae" );
+
+  DAE dae;
+  domElement* root = dae.open( file.path().cstr() );
+  hard_assert( root != nullptr );
+  domCOLLADA* dom = static_cast<domCOLLADA*>( dae.getDom( file.name() ) );
+  hard_assert( dom != nullptr );
+
+  auto geometries = dom->getLibrary_geometries_array();
+  for( size_t i = 0; i < geometries.getCount(); ++i ) {
+    Log() << "Geometry #" << i << ": " << geometries[i]->getName() << "\n";
+
+    auto meshes = geometries[i]->getGeometry_array();
+    for( size_t j = 0; j < meshes.getCount(); ++j ) {
+      Log() << "+ Mesh #" << j << ": " << meshes[j]->getName() << "\n";
+    }
+  }
   return 0;
 }

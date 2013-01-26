@@ -597,42 +597,36 @@ InputStream File::inputStream( Endian::Order order ) const
   return InputStream( data, data + fileSize, order );
 }
 
-Buffer File::read() const
+bool File::read( char* buffer, int* size ) const
 {
-  Buffer buffer;
+  if( fileSize <= 0 ) {
+    *size = 0;
+    return fileSize == 0;
+  }
 
   if( fileFS == VIRTUAL ) {
     PHYSFS_File* file = PHYSFS_openRead( filePath );
     if( file == nullptr ) {
-      return buffer;
+      *size = 0;
+      return false;
     }
 
-    int size = int( PHYSFS_fileLength( file ) );
-    buffer.allocate( size );
-
-    int result = int( PHYSFS_readBytes( file, buffer.begin(), ulong64( size ) ) );
+    int result = int( PHYSFS_readBytes( file, buffer, ulong64( *size ) ) );
     PHYSFS_close( file );
 
-    if( result != size ) {
-      buffer.deallocate();
-    }
+    *size = result;
   }
   else {
     if( data != nullptr ) {
-      buffer.allocate( fileSize );
-      mCopy( buffer.begin(), data, size_t( fileSize ) );
-      return buffer;
-    }
-    if( fileSize < 0 ) {
-      return buffer;
+      *size = min( *size, fileSize );
+      mCopy( buffer, data, size_t( *size ) );
+      return true;
     }
 
 #if defined( __native_client__ )
 
-    buffer.allocate( fileSize );
-
-    descriptor->buffer = buffer.begin();
-    descriptor->size   = fileSize;
+    descriptor->buffer = buffer;
+    descriptor->size   = min( *size, fileSize );
     descriptor->offset = 0;
 
     DEFINE_CALLBACK( read, {
@@ -678,63 +672,79 @@ Buffer File::read() const
     MAIN_CALL( open );
     SEMAPHORE_WAIT();
 
-    if( descriptor->offset < fileSize ) {
-      buffer.deallocate();
-      return buffer;
+    if( descriptor->offset != descriptor->size ) {
+      *size = 0;
+      return false;
     }
+
+    *size = descriptor->offset;
 
 #elif defined( _WIN32 )
 
     HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
                               FILE_ATTRIBUTE_NORMAL, nullptr );
     if( file == nullptr ) {
-      return buffer;
+      *size = 0;
+      return false;
     }
-
-    int size = int( GetFileSize( file, nullptr ) );
-    if( size <= 0 || size == int( INVALID_FILE_SIZE ) ) {
-      return buffer;
-    }
-
-    buffer.allocate( size );
 
     DWORD read;
-    BOOL result = ReadFile( file, buffer.begin(), DWORD( size ), &read, nullptr );
+    BOOL result = ReadFile( file, buffer, DWORD( size ), &read, nullptr );
     CloseHandle( file );
 
-    if( result == 0 || int( read ) != size ) {
-      buffer.deallocate();
-      return buffer;
+    if( result == 0 ) {
+      *size = 0;
+      return false;
     }
+
+    *size = int( read );
 
 #else
 
     int fd = open( filePath, O_RDONLY );
     if( fd < 0 ) {
-      return buffer;
+      *size = 0;
+      return false;
     }
 
-    struct stat statInfo;
-    if( fstat( fd, &statInfo ) != 0 ) {
-      close( fd );
-      return buffer;
-    }
-
-    int size = int( statInfo.st_size );
-    buffer.allocate( size );
-
-    int result = int( ::read( fd, buffer.begin(), size_t( size ) ) );
+    int result = int( ::read( fd, buffer, size_t( *size ) ) );
     close( fd );
 
-    if( result != size ) {
-      buffer.deallocate();
-      return buffer;
-    }
-
+    *size = result;
 #endif
   }
 
+  return true;
+}
+
+Buffer File::read() const
+{
+  Buffer buffer;
+
+  if( fileSize <= 0 ) {
+    return buffer;
+  }
+
+  int size = fileSize;
+  buffer.allocate( size );
+
+  read( buffer.begin(), &size );
+
+  if( size != fileSize ) {
+    buffer.resize( size );
+  }
   return buffer;
+}
+
+String File::readString() const
+{
+  char*  buffer;
+  int    size = fileSize;
+  String s    = String::create( size, &buffer );
+
+  read( buffer, &size );
+  buffer[size] = '\0';
+  return s;
 }
 
 bool File::write( const char* buffer, int size ) const
@@ -850,6 +860,11 @@ bool File::write( const char* buffer, int size ) const
 bool File::write( const Buffer& buffer ) const
 {
   return write( buffer.begin(), buffer.length() );
+}
+
+bool File::writeString( const String& s ) const
+{
+  return write( s.cstr(), s.length() );
 }
 
 DArray<File> File::ls() const
