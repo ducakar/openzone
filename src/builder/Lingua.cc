@@ -139,7 +139,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
     messages.add( lastTranslation );
   }
 
-  BufferStream ostream;
+  OutputStream ostream( 0 );
 
   ostream.writeInt( messages.length() / 2 );
 

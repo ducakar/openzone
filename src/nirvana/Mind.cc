@@ -68,7 +68,7 @@ void Mind::update()
   }
 }
 
-void Mind::write( BufferStream* ostream ) const
+void Mind::write( OutputStream* ostream ) const
 {
   ostream->writeInt( flags );
 }

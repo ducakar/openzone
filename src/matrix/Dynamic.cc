@@ -83,7 +83,7 @@ Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* istream ) :
   lift     = clazz_->lift;
 }
 
-void Dynamic::write( BufferStream* ostream ) const
+void Dynamic::write( OutputStream* ostream ) const
 {
   Object::write( ostream );
 
@@ -98,7 +98,7 @@ void Dynamic::write( BufferStream* ostream ) const
 void Dynamic::readUpdate( InputStream* )
 {}
 
-void Dynamic::writeUpdate( BufferStream* ) const
+void Dynamic::writeUpdate( OutputStream* ) const
 {}
 
 }

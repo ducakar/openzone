@@ -41,7 +41,7 @@ class Modules
     void update();
 
     void read( InputStream* istream );
-    void write( BufferStream* ) const;
+    void write( OutputStream* ) const;
 
     void load();
     void unload();

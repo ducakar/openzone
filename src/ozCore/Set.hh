@@ -128,7 +128,7 @@ class Set
     /**
      * Copy operator, copies elements.
      *
-     * Reuse existing storage if it suffices.
+     * Existing storage is reused if it suffices.
      */
     Set& operator = ( const Set& s )
     {

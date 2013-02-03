@@ -91,7 +91,7 @@ void UI::buildCursors()
     Context::Texture tex = context.loadTexture( String::str( "ui/cur/%s", imgPath ), false,
                                                 GL_NEAREST, GL_NEAREST );
 
-    BufferStream os;
+    OutputStream os( 0 );
 
     os.writeInt( size );
     os.writeInt( hotspotX );
@@ -129,7 +129,7 @@ void UI::buildIcons()
     Context::Texture tex = context.loadTexture( srcPath, false, GL_NEAREST, GL_NEAREST );
     hard_assert( !tex.isEmpty() );
 
-    BufferStream os;
+    OutputStream os( 0 );
 
     Log::println( "Compiling '%s'", destPath.cstr() );
     tex.write( &os );

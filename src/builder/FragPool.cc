@@ -36,7 +36,7 @@ namespace oz
 namespace builder
 {
 
-void FragPool::build( BufferStream* os, const char* className )
+void FragPool::build( OutputStream* os, const char* className )
 {
   File configFile( File::VIRTUAL, String::str( "frag/%s.json", className ) );
 

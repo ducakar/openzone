@@ -47,7 +47,7 @@ class Module
     virtual void destroy();
 
     virtual void read( InputStream* );
-    virtual void write( BufferStream* ) const;
+    virtual void write( OutputStream* ) const;
 
 };
 

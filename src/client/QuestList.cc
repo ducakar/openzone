@@ -72,7 +72,7 @@ void QuestList::read( InputStream* istream )
   activeQuest = istream->readInt();
 }
 
-void QuestList::write( BufferStream* ostream ) const
+void QuestList::write( OutputStream* ostream ) const
 {
   ostream->writeInt( quests.length() );
 

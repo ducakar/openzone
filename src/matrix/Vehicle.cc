@@ -450,7 +450,7 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
   }
 }
 
-void Vehicle::write( BufferStream* ostream ) const
+void Vehicle::write( OutputStream* ostream ) const
 {
   Dynamic::write( ostream );
 
@@ -478,7 +478,7 @@ void Vehicle::write( BufferStream* ostream ) const
 void Vehicle::readUpdate( InputStream* )
 {}
 
-void Vehicle::writeUpdate( BufferStream* ) const
+void Vehicle::writeUpdate( OutputStream* ) const
 {}
 
 }

@@ -35,6 +35,28 @@
 
 #include "common.hh"
 
+/**
+ * @def foreach
+ * Macro to shorten common foreach loops.
+ *
+ * It can be used like
+ * @code
+ * List<int> l;
+ * foreach( i, l.citer() ) {
+ *   printf( "%d ", *i );
+ * }
+ * @endcode
+ * to replace a longer piece of code, like:
+ * @code
+ * List<int> l;
+ * for( auto i = l.citer(); i.isValid(); ++i )
+ *   printf( "%d ", *i );
+ * }
+ * @endcode
+ */
+#define foreach( i, iterator ) \
+  for( auto i = iterator; i.isValid(); ++i )
+
 namespace oz
 {
 
@@ -333,27 +355,5 @@ inline void iFree( Iterator iDest )
     elem = nullptr;
   }
 }
-
-/**
- * @def foreach
- * Macro to shorten common foreach loops.
- *
- * It can be used like
- * @code
- * List<int> l;
- * foreach( i, l.citer() ) {
- *   printf( "%d ", *i );
- * }
- * @endcode
- * to replace a longer piece of code, like:
- * @code
- * List<int> l;
- * for( auto i = l.citer(); i.isValid(); ++i )
- *   printf( "%d ", *i );
- * }
- * @endcode
- */
-#define foreach( i, iterator ) \
-  for( auto i = iterator; i.isValid(); ++i )
 
 }

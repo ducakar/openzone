@@ -162,7 +162,7 @@ void Matrix::read( InputStream* istream )
   Log::println( "}" );
 }
 
-void Matrix::write( BufferStream* ostream ) const
+void Matrix::write( OutputStream* ostream ) const
 {
   Log::print( "Writing Matrix ..." );
 

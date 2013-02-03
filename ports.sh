@@ -106,7 +106,7 @@ function setup_nacl_i686()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse"
+  export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse -fomit-frame-pointer"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
   enabled=0
@@ -136,7 +136,7 @@ function setup_nacl_ARM()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math"
+  export CFLAGS="-Ofast"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
   enabled=0
@@ -167,7 +167,7 @@ function setup_pnacl()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math"
+  export CFLAGS="-O4 -ffast-math"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
   enabled=0
@@ -197,7 +197,7 @@ function setup_ndk_i686()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-Ofast -fPIC -msse3 -mfpmath=sse"
+  export CFLAGS="-Ofast -flto -fPIC -march=i686 -msse3 -mfpmath=sse"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   enabled=0
@@ -227,7 +227,7 @@ function setup_ndk_ARM()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-Wno-psabi -Ofast -fPIC"
+  export CFLAGS="-Ofast -flto -fPIC -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   enabled=0
@@ -257,7 +257,7 @@ function setup_ndk_ARMv7a()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-Wno-psabi -Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon"
+  export CFLAGS="-Ofast -flto -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
 
   enabled=0
@@ -287,7 +287,7 @@ function setup_ndk_MIPS()
   export PATH="$toolsroot/bin:$PATH"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
-  export CFLAGS="-Ofast -fPIC"
+  export CFLAGS="-Ofast -flto -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   enabled=0

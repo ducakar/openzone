@@ -377,7 +377,7 @@ void MD2::build( const char* path )
   normals.clear();
   positions.clear();
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   // generate vertex data for animated MD2s
   if( header.nFrames != 1 ) {

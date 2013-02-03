@@ -40,7 +40,7 @@ struct Vertex
 
   bool operator == ( const Vertex& v ) const;
 
-  void write( BufferStream* ostream ) const;
+  void write( OutputStream* ostream ) const;
 };
 
 class Compiler
@@ -137,7 +137,7 @@ class Compiler
     void animPositions( const float* positions );
     void animNormals( const float* normals );
 
-    void writeMesh( BufferStream* os, bool embedTextures = true );
+    void writeMesh( OutputStream* os, bool embedTextures = true );
 
     void init();
     void destroy();

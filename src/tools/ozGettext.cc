@@ -276,17 +276,17 @@ static void readDescription( const File& file )
 
 static void writePOT( const HashMap<String, String>* hs, const char* filePath )
 {
-  BufferStream bs;
+  OutputStream os( 0 );
   String s;
 
   bool isFirst = true;
   foreach( i, hs->citer() ) {
     if( !isFirst ) {
-      bs.writeChar( '\n' );
+      os.writeChar( '\n' );
     }
     isFirst = false;
 
-    bs.writeLine( "#: " + i->value );
+    os.writeLine( "#: " + i->value );
 
     // Escape backslashes and quotes.
     s = i->key;
@@ -299,12 +299,12 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
 
     // If multi-line, put each line into a new line in .pot file and escape newlines.
     if( s.index( '\n' ) < 0 ) {
-      bs.writeLine( String::str( "msgid \"%s\"", s.cstr() ) );
+      os.writeLine( String::str( "msgid \"%s\"", s.cstr() ) );
     }
     else {
       DArray<String> stringLines = s.split( '\n' );
 
-      bs.writeLine( "msgid \"\"" );
+      os.writeLine( "msgid \"\"" );
 
       foreach( l, stringLines.citer() ) {
         if( &*l == &stringLines.last() && l->isEmpty() ) {
@@ -318,16 +318,16 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
           s = String::str( "\"%s\\n\"", l->cstr() );
         }
 
-        bs.writeLine( s );
+        os.writeLine( s );
       }
     }
 
-    bs.writeLine( "msgstr \"\"" );
+    os.writeLine( "msgstr \"\"" );
   }
 
   File outFile( File::NATIVE, filePath );
 
-  if( !outFile.write( bs.begin(), bs.length() ) ) {
+  if( !outFile.write( os.begin(), os.length() ) ) {
     OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
   }
 }
@@ -357,8 +357,6 @@ int main( int argc, char** argv )
   }
 
   String pkgName = pkgDir.substring( pkgDir.lastIndex( '/' ) + 1 );
-
-  BufferStream bs;
 
   File bspDir( File::NATIVE, pkgDir + "/baseq3/maps" );
   DArray<File> files = bspDir.ls();

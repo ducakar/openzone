@@ -45,7 +45,7 @@ class Lua : public common::Lua
     void unregisterObject( int index );
 
     void read( InputStream* istream );
-    void write( BufferStream* ostream );
+    void write( OutputStream* ostream );
 
     void init();
     void destroy();

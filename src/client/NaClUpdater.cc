@@ -70,19 +70,19 @@ void NaClUpdater::writeLocalManifest() const
 {
   Log::print( "Writing local manifest '%s' ...", LOCAL_MANIFEST );
 
-  BufferStream bs;
+  OutputStream os( 0 );
 
-  bs.writeString( "ozManifest" );
-  bs.writeInt( remotePackages.length() );
+  os.writeString( "ozManifest" );
+  os.writeInt( remotePackages.length() );
 
   foreach( pkg, remotePackages.citer() ) {
-    bs.writeString( pkg->name );
-    bs.writeLong64( pkg->time );
+    os.writeString( pkg->name );
+    os.writeLong64( pkg->time );
   }
 
   File localManifest( File::NATIVE, LOCAL_MANIFEST );
 
-  if( !localManifest.write( bs.begin(), bs.length() ) ) {
+  if( !localManifest.write( os.begin(), os.length() ) ) {
     OZ_ERROR( "Failed to write local manifest" );
   }
 
@@ -112,8 +112,8 @@ bool NaClUpdater::checkUpdates()
   }
   while( !downloader.isComplete() );
 
-  BufferStream bs = downloader.take();
-  InputStream  is = bs.inputStream();
+  OutputStream os = downloader.take();
+  InputStream  is = os.inputStream();
 
   is.rewind();
 
@@ -181,18 +181,18 @@ void NaClUpdater::downloadUpdates()
     }
     while( !downloader.isComplete() );
 
-    BufferStream bs = downloader.take();
+    OutputStream os = downloader.take();
 
-    Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
+    Log::printRaw( " %.2f MiB transferred ...", float( os.length() ) / ( 1024.0f*1024.0f ) );
 
-    if( bs.length() < 2 || ( ( bs[0] != 'P' || bs[1] != 'K' ) &&
-                             ( bs[0] != '7' || bs[1] != 'z' ) ) )
+    if( os.length() < 2 || ( ( os[0] != 'P' || os[1] != 'K' ) &&
+                             ( os[0] != '7' || os[1] != 'z' ) ) )
     {
       Log::printEnd( " Failed" );
       continue;
     }
 
-    if( !pkgFile.write( bs.begin(), bs.length() ) ) {
+    if( !pkgFile.write( os.begin(), os.length() ) ) {
       OZ_ERROR( "Cannot write to local storage" );
     }
 

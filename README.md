@@ -229,10 +229,10 @@ One of the following commands must be given:
 - `src`: Create source archive `openzone-src-<version>.tar.xz`.
 - `data`: Create compiled data archive `openzone-data-<version>.tar.xz`. All data packages found in
   `share/openzone` directory are included.
-- `datasrc`: Create source data archive `openzone-data-src-<version>.tar.xz`. All source data
+- `datasrc`: Create source data archive `openzone-datasrc-<version>.tar.xz`. All source data
   packages found in `data` directory are included.
-- `boundle`: Create a ZIP archive that includes Linux-x86_64, Linux-i686 and Windows-i686 standalone
-  builds and compiled game data packages found in `share/openzone`.
+- `boundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
+  standalone builds and compiled game data packages found in `share/openzone`.
 
 ### `ports.sh [clean | fetch | build]` ###
 

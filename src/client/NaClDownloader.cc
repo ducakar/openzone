@@ -118,6 +118,7 @@ void NaClDownloader::begin( const char* url_ )
   url = url_;
 
   semaphore.init();
+  buffer = OutputStream( 0 );
 
   OZ_MAIN_CALL( this, {
     pp::URLRequestInfo request( System::instance );
@@ -140,12 +141,12 @@ void NaClDownloader::begin( const char* url_ )
   } )
 }
 
-BufferStream NaClDownloader::take()
+OutputStream NaClDownloader::take()
 {
   semaphore.wait();
   semaphore.destroy();
 
-  return static_cast<BufferStream&&>( buffer );
+  return static_cast<OutputStream&&>( buffer );
 }
 
 }

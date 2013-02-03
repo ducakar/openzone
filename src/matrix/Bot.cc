@@ -1200,7 +1200,7 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   }
 }
 
-void Bot::write( BufferStream* ostream ) const
+void Bot::write( OutputStream* ostream ) const
 {
   Dynamic::write( ostream );
 
@@ -1231,7 +1231,7 @@ void Bot::write( BufferStream* ostream ) const
 void Bot::readUpdate( InputStream* )
 {}
 
-void Bot::writeUpdate( BufferStream* ) const
+void Bot::writeUpdate( OutputStream* ) const
 {}
 
 }

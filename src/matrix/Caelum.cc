@@ -53,7 +53,7 @@ void Caelum::read( InputStream* istream )
   time    = istream->readFloat();
 }
 
-void Caelum::write( BufferStream* ostream ) const
+void Caelum::write( OutputStream* ostream ) const
 {
   ostream->writeInt( id );
   ostream->writeFloat( heading );

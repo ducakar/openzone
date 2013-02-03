@@ -48,7 +48,7 @@ class Memo : public Device
 
     const char* getMemo() const override;
 
-    void write( BufferStream* ostream ) const override;
+    void write( OutputStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

@@ -1012,7 +1012,7 @@ void BSP::saveMatrix()
     usedSounds.include( demolishSound );
   }
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   os.writePoint( mins );
   os.writePoint( maxs );
@@ -1181,7 +1181,7 @@ void BSP::saveClient()
 
   compiler.endMesh();
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );

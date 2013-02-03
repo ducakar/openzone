@@ -220,7 +220,7 @@ void StrategicProxy::read( InputStream* istream )
   isRTSFast  = istream->readBool();
 }
 
-void StrategicProxy::write( BufferStream* ostream ) const
+void StrategicProxy::write( OutputStream* ostream ) const
 {
   ostream->writeFloat( h );
   ostream->writeFloat( v );

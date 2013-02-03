@@ -34,30 +34,160 @@ namespace oz
 {
 
 /**
- * Fixed-size read/write stream.
+ * Fixed-size or buffered read/write stream.
  *
- * @sa `oz::InputStream`, `oz::BufferStream`
+ * @sa `oz::InputStream`
  */
 class OutputStream
 {
-  friend class BufferStream;
-
   private:
+
+    /// Capacity is always a multiple of `GRANULARITY`.
+    static const int GRANULARITY = 4096;
 
     char*         streamPos;   ///< Current position.
     char*         streamBegin; ///< Beginning.
     const char*   streamEnd;   ///< End.
     Endian::Order order;       ///< Stream byte order.
+    bool          buffered;    ///< If stream writes to an internal buffer.
 
   public:
 
     /**
-     * Create a stream with the given beginning and the end.
+     * Create a fixed-size stream for reading/writing the given memory range.
      */
     explicit OutputStream( char* start = nullptr, const char* end = nullptr,
                            Endian::Order order_ = Endian::NATIVE ) :
-      streamPos( start ), streamBegin( start ), streamEnd( end ), order( order_ )
+      streamPos( start ), streamBegin( start ), streamEnd( end ), order( order_ ), buffered( false )
     {}
+
+    /**
+     * Create a buffered stream with dynamically growing buffer.
+     */
+    explicit OutputStream( int size, Endian::Order order_ = Endian::NATIVE ) :
+      streamPos( size == 0 ? nullptr : new char[size] ), streamBegin( streamPos ),
+      streamEnd( streamBegin + size ), order( order_ ), buffered( true )
+    {}
+
+    /**
+     * Destructor.
+     */
+    ~OutputStream()
+    {
+      if( buffered ) {
+        delete[] streamBegin;
+      }
+    }
+
+    /**
+     * Copy constructor, copies buffer if source stream is buffered.
+     */
+    OutputStream( const OutputStream& s ) :
+      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ),
+      order( s.order ), buffered( s.buffered )
+    {
+      if( s.buffered ) {
+        int length = int( s.streamPos - s.streamBegin );
+        int size   = int( s.streamEnd - s.streamBegin );
+
+        streamBegin = size == 0 ? nullptr : new char[size];
+        streamEnd   = streamBegin + size;
+        streamPos   = streamBegin + length;
+
+        mCopy( streamBegin, s.streamBegin, size_t( size ) );
+      }
+    }
+
+    /**
+     * Move constructor, moves buffer if source stream is buffered.
+     */
+    OutputStream( OutputStream&& s ) :
+      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ),
+      order( s.order ), buffered( s.buffered )
+    {
+      if( s.buffered ) {
+        s.streamPos   = nullptr;
+        s.streamBegin = nullptr;
+        s.streamEnd   = nullptr;
+        s.order       = Endian::NATIVE;
+        s.buffered    = false;
+      }
+    }
+
+    /**
+     * Copy operator, copies buffer if source stream is buffered.
+     *
+     * Existing storage is reused if its size matches.
+     */
+    OutputStream& operator = ( const OutputStream& s )
+    {
+      if( &s == this ) {
+        return *this;
+      }
+
+      if( s.buffered ) {
+        int  length      = int( s.streamPos - s.streamBegin );
+        int  size        = int( s.streamEnd - s.streamBegin );
+        bool sizeMatches = int( streamEnd - streamBegin ) == size;
+
+        if( buffered && !sizeMatches ) {
+          delete[] streamBegin;
+        }
+        if( !buffered || !sizeMatches ) {
+          streamBegin = new char[size];
+          streamEnd   = streamBegin + size;
+        }
+
+        streamPos = streamBegin + length;
+        order     = s.order;
+        buffered  = s.buffered;
+
+        mCopy( streamBegin, s.streamBegin, size_t( size ) );
+      }
+      else {
+        if( buffered ) {
+          delete[] streamBegin;
+        }
+
+        streamPos   = s.streamPos;
+        streamBegin = s.streamBegin;
+        streamEnd   = s.streamEnd;
+        order       = s.order;
+        buffered    = s.buffered;
+      }
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves buffer if source stream is buffered.
+     */
+    OutputStream& operator = ( OutputStream&& s )
+    {
+      if( &s == this ) {
+        return *this;
+      }
+
+      if( buffered ) {
+        delete[] streamBegin;
+      }
+
+      streamPos   = s.streamPos;
+      streamBegin = s.streamBegin;
+      streamEnd   = s.streamEnd;
+      order       = s.order;
+      buffered    = s.buffered;
+
+      if( s.buffered ) {
+        s.streamPos   = nullptr;
+        s.streamBegin = nullptr;
+        s.streamEnd   = nullptr;
+        s.order       = Endian::NATIVE;
+        s.buffered  = false;
+      }
+
+      return *this;
+    }
 
     /**
      * Create `InputStream` for reading this stream (position is not reset).
@@ -66,8 +196,17 @@ class OutputStream
     {
       InputStream is( streamBegin, streamEnd, order );
 
-      is.streamPos = streamPos;
+      is.seek( streamPos );
       return is;
+    }
+
+    /**
+     * Iff stream uses internal buffer instead of given storage.
+     */
+    OZ_ALWAYS_INLINE
+    bool isBuffered()
+    {
+      return buffered;
     }
 
     /**
@@ -235,9 +374,26 @@ class OutputStream
       streamPos += count;
 
       if( streamPos > streamEnd ) {
-        OZ_ERROR( "Buffer overrun for %d B during a read or write of %d B",
-                  int( streamPos - streamEnd ), count );
+        if( buffered ) {
+          int length  = int( streamPos - streamBegin );
+          int size    = int( streamEnd - streamBegin );
+          int newSize = size == 0 ? GRANULARITY : 2 * size;
+
+          if( newSize < length + count ) {
+            newSize = ( ( length + count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+          }
+
+          streamBegin  = aReallocate<char>( streamBegin, size, newSize );
+          streamEnd    = streamBegin + newSize;
+          streamPos    = streamBegin + length;
+          oldPos = streamPos - count;
+        }
+        else {
+          OZ_ERROR( "Buffer overrun for %d B during a read or write of %d B",
+                    int( streamPos - streamEnd ), count );
+        }
       }
+
       return oldPos;
     }
 
@@ -350,12 +506,12 @@ class OutputStream
       const char* data = forward( sizeof( short ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToShort value = { { data[0], data[1] } };
+        Endian::BytesToShort value = { { data[0], data[1] } };
 
         return value.value;
       }
       else {
-        Endian::BitsToShort value = { { data[1], data[0] } };
+        Endian::BytesToShort value = { { data[1], data[0] } };
 
         return value.value;
       }
@@ -369,7 +525,7 @@ class OutputStream
     {
       char* data = forward( sizeof( short ) );
 
-      Endian::ShortToBits value = { s };
+      Endian::ShortToBytes value = { s };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -390,12 +546,12 @@ class OutputStream
       const char* data = forward( sizeof( ushort ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToUShort value = { { data[0], data[1] } };
+        Endian::BytesToUShort value = { { data[0], data[1] } };
 
         return value.value;
       }
       else {
-        Endian::BitsToUShort value = { { data[1], data[0] } };
+        Endian::BytesToUShort value = { { data[1], data[0] } };
 
         return value.value;
       }
@@ -409,7 +565,7 @@ class OutputStream
     {
       char* data = forward( sizeof( ushort ) );
 
-      Endian::UShortToBits value = { s };
+      Endian::UShortToBytes value = { s };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -430,12 +586,12 @@ class OutputStream
       const char* data = forward( sizeof( int ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToInt value = { { data[0], data[1], data[2], data[3] } };
+        Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
 
         return value.value;
       }
       else {
-        Endian::BitsToInt value = { { data[3], data[2], data[1], data[0] } };
+        Endian::BytesToInt value = { { data[3], data[2], data[1], data[0] } };
 
         return value.value;
       }
@@ -449,7 +605,7 @@ class OutputStream
     {
       char* data = forward( sizeof( int ) );
 
-      Endian::IntToBits value = { i };
+      Endian::IntToBytes value = { i };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -474,12 +630,12 @@ class OutputStream
       const char* data = forward( sizeof( uint ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToUInt value = { { data[0], data[1], data[2], data[3] } };
+        Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
 
         return value.value;
       }
       else {
-        Endian::BitsToUInt value = { { data[3], data[2], data[1], data[0] } };
+        Endian::BytesToUInt value = { { data[3], data[2], data[1], data[0] } };
 
         return value.value;
       }
@@ -493,7 +649,7 @@ class OutputStream
     {
       char* data = forward( sizeof( uint ) );
 
-      Endian::UIntToBits value = { i };
+      Endian::UIntToBytes value = { i };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -518,14 +674,14 @@ class OutputStream
       const char* data = forward( sizeof( long64 ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToLong64 value = {
+        Endian::BytesToLong64 value = {
           { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
         };
 
         return value.value;
       }
       else {
-        Endian::BitsToLong64 value = {
+        Endian::BytesToLong64 value = {
           { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
         };
 
@@ -541,7 +697,7 @@ class OutputStream
     {
       char* data = forward( sizeof( long64 ) );
 
-      Endian::Long64ToBits value = { l };
+      Endian::Long64ToBytes value = { l };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -574,14 +730,14 @@ class OutputStream
       const char* data = forward( sizeof( ulong64 ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToULong64 value = {
+        Endian::BytesToULong64 value = {
           { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
         };
 
         return value.value;
       }
       else {
-        Endian::BitsToULong64 value = {
+        Endian::BytesToULong64 value = {
           { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
         };
 
@@ -597,7 +753,7 @@ class OutputStream
     {
       char* data = forward( sizeof( ulong64 ) );
 
-      Endian::ULong64ToBits value = { l };
+      Endian::ULong64ToBytes value = { l };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -630,12 +786,12 @@ class OutputStream
       const char* data = forward( sizeof( float ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+        Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
 
         return value.value;
       }
       else {
-        Endian::BitsToFloat value = { { data[3], data[2], data[1], data[0] } };
+        Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
 
         return value.value;
       }
@@ -649,7 +805,7 @@ class OutputStream
     {
       char* data = forward( sizeof( float ) );
 
-      Endian::FloatToBits value = { f };
+      Endian::FloatToBytes value = { f };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -674,14 +830,14 @@ class OutputStream
       const char* data = forward( sizeof( double ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToDouble value = {
+        Endian::BytesToDouble value = {
           { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
         };
 
         return value.value;
       }
       else {
-        Endian::BitsToDouble value = {
+        Endian::BytesToDouble value = {
           { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
         };
 
@@ -697,7 +853,7 @@ class OutputStream
     {
       char* data = forward( sizeof( double ) );
 
-      Endian::DoubleToBits value = { d };
+      Endian::DoubleToBytes value = { d };
 
       if( order == Endian::NATIVE ) {
         data[0] = value.data[0];
@@ -770,16 +926,16 @@ class OutputStream
       const char* data = forward( sizeof( float[3] ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
 
         return Vec3( x.value, y.value, z.value );
       }
       else {
-        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
 
         return Vec3( x.value, y.value, z.value );
       }
@@ -793,9 +949,9 @@ class OutputStream
     {
       char* data = forward( sizeof( float[3] ) );
 
-      Endian::FloatToBits x = { v.x };
-      Endian::FloatToBits y = { v.y };
-      Endian::FloatToBits z = { v.z };
+      Endian::FloatToBytes x = { v.x };
+      Endian::FloatToBytes y = { v.y };
+      Endian::FloatToBytes z = { v.z };
 
       if( order == Endian::NATIVE ) {
         data[ 0] = x.data[0];
@@ -836,18 +992,18 @@ class OutputStream
       const char* data = forward( sizeof( float[4] ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-        Endian::BitsToFloat w = { { data[12], data[13], data[14], data[15] } };
+        Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
 
         return Vec4( x.value, y.value, z.value, w.value );
       }
       else {
-        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-        Endian::BitsToFloat w = { { data[15], data[14], data[13], data[12] } };
+        Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
 
         return Vec4( x.value, y.value, z.value, w.value );
       }
@@ -861,10 +1017,10 @@ class OutputStream
     {
       char* data = forward( sizeof( float[4] ) );
 
-      Endian::FloatToBits x = { v.x };
-      Endian::FloatToBits y = { v.y };
-      Endian::FloatToBits z = { v.z };
-      Endian::FloatToBits w = { v.w };
+      Endian::FloatToBytes x = { v.x };
+      Endian::FloatToBytes y = { v.y };
+      Endian::FloatToBytes z = { v.z };
+      Endian::FloatToBytes w = { v.w };
 
       if( order == Endian::NATIVE ) {
         data[ 0] = x.data[0];
@@ -913,16 +1069,16 @@ class OutputStream
       const char* data = forward( sizeof( float[3] ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
 
         return Point( x.value, y.value, z.value );
       }
       else {
-        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
 
         return Point( x.value, y.value, z.value );
       }
@@ -936,9 +1092,9 @@ class OutputStream
     {
       char* data = forward( sizeof( float[3] ) );
 
-      Endian::FloatToBits x = { p.x };
-      Endian::FloatToBits y = { p.y };
-      Endian::FloatToBits z = { p.z };
+      Endian::FloatToBytes x = { p.x };
+      Endian::FloatToBytes y = { p.y };
+      Endian::FloatToBytes z = { p.z };
 
       if( order == Endian::NATIVE ) {
         data[ 0] = x.data[0];
@@ -979,18 +1135,18 @@ class OutputStream
       const char* data = forward( sizeof( float[4] ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-        Endian::BitsToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-        Endian::BitsToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
-        Endian::BitsToFloat d  = { { data[12], data[13], data[14], data[15] } };
+        Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BytesToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BytesToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BytesToFloat d  = { { data[12], data[13], data[14], data[15] } };
 
         return Plane( nx.value, ny.value, nz.value, d.value );
       }
       else {
-        Endian::BitsToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-        Endian::BitsToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-        Endian::BitsToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
-        Endian::BitsToFloat d  = { { data[15], data[14], data[13], data[12] } };
+        Endian::BytesToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BytesToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BytesToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BytesToFloat d  = { { data[15], data[14], data[13], data[12] } };
 
         return Plane( nx.value, ny.value, nz.value, d.value );
       }
@@ -1004,10 +1160,10 @@ class OutputStream
     {
       char* data = forward( sizeof( float[4] ) );
 
-      Endian::FloatToBits nx = { p.n.x };
-      Endian::FloatToBits ny = { p.n.y };
-      Endian::FloatToBits nz = { p.n.z };
-      Endian::FloatToBits d  = { p.d };
+      Endian::FloatToBytes nx = { p.n.x };
+      Endian::FloatToBytes ny = { p.n.y };
+      Endian::FloatToBytes nz = { p.n.z };
+      Endian::FloatToBytes d  = { p.d };
 
       if( order == Endian::NATIVE ) {
         data[ 0] = nx.data[0];
@@ -1056,18 +1212,18 @@ class OutputStream
       const char* data = forward( sizeof( float[4] ) );
 
       if( order == Endian::NATIVE ) {
-        Endian::BitsToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-        Endian::BitsToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-        Endian::BitsToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-        Endian::BitsToFloat w = { { data[12], data[13], data[14], data[15] } };
+        Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+        Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+        Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+        Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
 
         return Quat( x.value, y.value, z.value, w.value );
       }
       else {
-        Endian::BitsToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-        Endian::BitsToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-        Endian::BitsToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-        Endian::BitsToFloat w = { { data[15], data[14], data[13], data[12] } };
+        Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+        Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+        Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+        Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
 
         return Quat( x.value, y.value, z.value, w.value );
       }
@@ -1081,10 +1237,10 @@ class OutputStream
     {
       char* data = forward( sizeof( float[4] ) );
 
-      Endian::FloatToBits x = { q.x };
-      Endian::FloatToBits y = { q.y };
-      Endian::FloatToBits z = { q.z };
-      Endian::FloatToBits w = { q.w };
+      Endian::FloatToBytes x = { q.x };
+      Endian::FloatToBytes y = { q.y };
+      Endian::FloatToBytes z = { q.z };
+      Endian::FloatToBytes w = { q.w };
 
       if( order == Endian::NATIVE ) {
         data[ 0] = x.data[0];
@@ -1137,14 +1293,14 @@ class OutputStream
 
       if( order == Endian::NATIVE ) {
         for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+          Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
 
           *values = value.value;
         }
       }
       else {
         for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BitsToFloat value = { { data[3], data[2], data[1], data[0] } };
+          Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
 
           *values = value.value;
         }
@@ -1164,7 +1320,7 @@ class OutputStream
 
       if( order == Endian::NATIVE ) {
         for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::FloatToBits value = { *values };
+          Endian::FloatToBytes value = { *values };
 
           data[0] = value.data[0];
           data[1] = value.data[1];
@@ -1174,7 +1330,7 @@ class OutputStream
       }
       else {
         for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::FloatToBits value = { *values };
+          Endian::FloatToBytes value = { *values };
 
           data[0] = value.data[3];
           data[1] = value.data[2];
@@ -1197,14 +1353,14 @@ class OutputStream
 
       if( order == Endian::NATIVE ) {
         for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BitsToFloat value = { { data[0], data[1], data[2], data[3] } };
+          Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
 
           *values = value.value;
         }
       }
       else {
         for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BitsToFloat value = { { data[3], data[2], data[1], data[0] } };
+          Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
 
           *values = value.value;
         }
@@ -1224,7 +1380,7 @@ class OutputStream
 
       if( order == Endian::NATIVE ) {
         for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::FloatToBits value = { *values };
+          Endian::FloatToBytes value = { *values };
 
           data[0] = value.data[0];
           data[1] = value.data[1];
@@ -1234,7 +1390,7 @@ class OutputStream
       }
       else {
         for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::FloatToBits value = { *values };
+          Endian::FloatToBytes value = { *values };
 
           data[0] = value.data[3];
           data[1] = value.data[2];
@@ -1288,6 +1444,20 @@ class OutputStream
 
       mCopy( data, s, size_t( length ) );
       data[length] = '\n';
+    }
+
+    /**
+     * Deallocate internal buffer if stream is buffered.
+     */
+    void deallocate()
+    {
+      if( buffered ) {
+        delete[] streamBegin;
+
+        streamPos   = nullptr;
+        streamBegin = nullptr;
+        streamEnd   = nullptr;
+      }
     }
 
 };

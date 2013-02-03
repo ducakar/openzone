@@ -36,7 +36,7 @@ namespace oz
 /**
  * Class for basic file and directory operations.
  *
- * This class provides two back-ends: the native filesystem back-end and virtual filesystem (VFS)
+ * This class provides two back-ends: the native file system back-end and virtual file system (VFS)
  * back-end implemented via PhysicsFS.
  */
 class File
@@ -54,18 +54,18 @@ class File
     };
 
     /**
-     * Filesystem type.
+     * File system type.
      */
-    enum Filesystem
+    enum FileSystem
     {
       NATIVE,
       VIRTUAL
     };
 
     /**
-     * NaCl filesystem type.
+     * NaCl file system type.
      */
-    enum NaClFilesystem
+    enum NaClFileSystem
     {
       TEMPORARY,
       PERSISTENT
@@ -77,7 +77,7 @@ class File
 
     String      filePath;   ///< %File path.
     Type        fileType;   ///< %File type.
-    Filesystem  fileFS;     ///< %Filesystem type.
+    FileSystem  fileFS;     ///< %File system type.
     int         fileSize;   ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
     long64      fileTime;   ///< Modification or creation time, what is newer.
     char*       data;       ///< Mapped memory.
@@ -88,11 +88,11 @@ class File
   public:
 
     /**
-     * Create an instance for the given filesystem and path.
+     * Create an instance for the given file system and path.
      *
      * `stat()` is automatically called on construction unless path is an empty string.
      */
-    explicit File( Filesystem filesystem = NATIVE, const char* path = "" );
+    explicit File( FileSystem fileSystem = NATIVE, const char* path = "" );
 
     /**
      * Destructor.
@@ -140,10 +140,10 @@ class File
     }
 
     /**
-     * %Filesystem type.
+     * %File system type.
      */
     OZ_ALWAYS_INLINE
-    Filesystem filesystem() const
+    FileSystem fileSystem() const
     {
       return fileFS;
     }
@@ -210,7 +210,7 @@ class File
     }
 
     /**
-     * %Path to the archive or mountpoint of a VFS, "" for native files.
+     * %Path to the archive or mount-point of a VFS, "" for native files.
      */
     String realDir() const;
 
@@ -224,7 +224,10 @@ class File
     }
 
     /**
-     * %Map native file into memory for reading, always fails for VFS files.
+     * %Map file into memory for reading.
+     *
+     * If the back-end doesn't support mapping files to memory (currently NaCl and VFS), this
+     * function merely copies file contents into an internal buffer.
      */
     bool map();
 
@@ -240,11 +243,24 @@ class File
 
     /**
      * Read at most `size` bytes from file and update `size` to the number of bytes read.
+     *
+     * @return true iff read operation succeeded (it is not necessary the whole file was read).
      */
     bool read( char* buffer, int* size ) const;
 
     /**
+     * Read file and write it to the given stream's current position.
+     *
+     * If there's not enough space on stream, the rest of the file contents is skipped.
+     *
+     * @return true iff read operation succeeded (it is not necessary the whole file was read).
+     */
+    bool read( OutputStream* ostream ) const;
+
+    /**
      * Read file into a buffer.
+     *
+     * @return true iff read operation succeeded (it is not necessary the whole file was read).
      */
     Buffer read() const;
 
@@ -259,23 +275,39 @@ class File
      * Write buffer contents to the file.
      *
      * @note
-     * Write operation is not possible while file is mapped.
+     * @li This function does not update file size and modification time. `stat()` must be invoked
+     *     manually for this.
+     * @li Write operation is not possible while the file is mapped.
      */
     bool write( const char* data, int size ) const;
 
     /**
-     * Write buffer contents into a file.
+     * Write data from the stream's current position to the end of the stream into the file.
      *
      * @note
-     * Write operation is not possible while file is mapped.
+     * @li This function does not update file size and modification time. `stat()` must be invoked
+     *     manually for this.
+     * @li Write operation is not possible while the file is mapped.
+     */
+    bool write( InputStream* istream ) const;
+
+    /**
+     * Write buffer contents into the file.
+     *
+     * @note
+     * @li This function does not update file size and modification time. `stat()` must be invoked
+     *     manually for this.
+     * @li Write operation is not possible while the file is mapped.
      */
     bool write( const Buffer& buffer ) const;
 
     /**
-     * Write string into a file (omitting the terminating null character).
+     * Write string into the file (omitting the terminating null character).
      *
      * @note
-     * Write operation is not possible while file is mapped.
+     * @li This function does not update file size and modification time. `stat()` must be invoked
+     *     manually for this.
+     * @li Write operation is not possible while the file is mapped.
      */
     bool writeString( const String& s ) const;
 
@@ -290,14 +322,14 @@ class File
     DArray<File> ls() const;
 
     /**
-     * Return the current directory in native filesystem.
+     * Return the current directory in native file system.
      *
      * Empty string is returned on failure. This function always fails on NaCl.
      */
     static String cwd();
 
     /**
-     * Change current directory in native filesystem.
+     * Change current directory in native file system.
      *
      * Always fails on NaCl.
      */
@@ -306,17 +338,17 @@ class File
     /**
      * Make a new directory.
      */
-    static bool mkdir( const char* path, Filesystem filesystem = NATIVE );
+    static bool mkdir( const char* path, FileSystem fileSystem = NATIVE );
 
     /**
      * Delete a file or an empty directory.
      */
-    static bool rm( const char* path, Filesystem filesystem = NATIVE );
+    static bool rm( const char* path, FileSystem fileSystem = NATIVE );
 
     /**
      * Mount read-only directory or archive into VFS.
      *
-     * @param path archive or directory in real file system directory to mount.
+     * @param path archive or directory in native file system directory to mount.
      * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
      * @param append true to add to the end instead to the beginning of the search path.
      */
@@ -327,29 +359,29 @@ class File
      *
      * This function does not fork for NaCl.
      *
-     * @param path path to directory in real file system.
+     * @param path path to directory in native file system.
      */
     static bool mountLocal( const char* path );
 
     /**
-     * Initialise filesystem.
+     * Initialise file system.
      *
      * @note
-     * On NaCl, `System::instance` must be set prior to initialising a filesystem (either `NATIVE`
-     * or `VFS`). Persistent NaCl filesystem must be initialised from JavaScript before NaCl module
+     * On NaCl, `System::instance` must be set prior to initialising a file system (either `NATIVE`
+     * or `VFS`). Persistent NaCl file system must be initialised from JavaScript before NaCl module
      * is loaded.
      *
-     * @param filesystem filesystem type, either `NATIVE` or `VFS`.
-     * @param naclFilesystem NaCl filesystem type, either `TEMPORARY` or `PERSISTENT`.
-     * @param naclSize NaCl filesystem size.
+     * @param fileSystem file system type, either `NATIVE` or `VFS`.
+     * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
+     * @param naclSize NaCl file system size.
      */
-    static void init( Filesystem filesystem = NATIVE, NaClFilesystem naclFilesystem = TEMPORARY,
+    static void init( FileSystem fileSystem = NATIVE, NaClFileSystem naclFileSystem = TEMPORARY,
                       int naclSize = 0 );
 
     /**
-     * Deinitialise filesystem.
+     * Deinitialise file system.
      */
-    static void destroy( Filesystem filesystem = NATIVE );
+    static void destroy( FileSystem fileSystem = NATIVE );
 
 };
 

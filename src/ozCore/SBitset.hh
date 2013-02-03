@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Packed array of bits with static storage.
+ * Bit array with static storage.
  *
  * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
  * `sizeof( ulong ) * 8`.

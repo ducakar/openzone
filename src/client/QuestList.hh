@@ -57,7 +57,7 @@ class QuestList
     void remove( int index );
 
     void read( InputStream* istream );
-    void write( BufferStream* ostream ) const;
+    void write( OutputStream* ostream ) const;
 
     void load();
     void unload();

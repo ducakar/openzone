@@ -57,7 +57,7 @@ class Endian
     /**
      * Union for serialisation of `short` type.
      */
-    union ShortToBits
+    union ShortToBytes
     {
       short value;   ///< `short` value.
       char  data[2]; ///< Bytes.
@@ -66,7 +66,7 @@ class Endian
     /**
      * Union for deserialisation of `short` type.
      */
-    union BitsToShort
+    union BytesToShort
     {
       char  data[2]; ///< Bytes.
       short value;   ///< `short` value.
@@ -75,7 +75,7 @@ class Endian
     /**
      * Union for serialisation of `ushort` type.
      */
-    union UShortToBits
+    union UShortToBytes
     {
       ushort value;   ///< `ushort` value.
       char   data[2]; ///< Bytes.
@@ -84,7 +84,7 @@ class Endian
     /**
      * Union for deserialisation of `ushort` type.
      */
-    union BitsToUShort
+    union BytesToUShort
     {
       char   data[2]; ///< Bytes.
       ushort value;   ///< `ushort` value.
@@ -93,7 +93,7 @@ class Endian
     /**
      * Union for serialisation of `int` type.
      */
-    union IntToBits
+    union IntToBytes
     {
       int  value;   ///< `int` value.
       char data[4]; ///< Bytes.
@@ -102,7 +102,7 @@ class Endian
     /**
      * Union for deserialisation of `int` type.
      */
-    union BitsToInt
+    union BytesToInt
     {
       char data[4]; ///< Bytes.
       int  value;   ///< `int` value.
@@ -111,7 +111,7 @@ class Endian
     /**
      * Union for serialisation of `uint` type.
      */
-    union UIntToBits
+    union UIntToBytes
     {
       uint value;   ///< `uint` value.
       char data[4]; ///< Bytes.
@@ -120,7 +120,7 @@ class Endian
     /**
      * Union for deserialisation of `uint` type.
      */
-    union BitsToUInt
+    union BytesToUInt
     {
       char data[4]; ///< Bytes.
       uint value;   ///< `uint` value.
@@ -129,7 +129,7 @@ class Endian
     /**
      * Union for serialisation of `long64` type.
      */
-    union Long64ToBits
+    union Long64ToBytes
     {
       long64 value;   ///< `long64` value.
       char   data[8]; ///< Bytes.
@@ -138,7 +138,7 @@ class Endian
     /**
      * Union for deserialisation of `long64` type.
      */
-    union BitsToLong64
+    union BytesToLong64
     {
       char   data[8]; ///< Bytes.
       long64 value;   ///< `long64` value.
@@ -147,7 +147,7 @@ class Endian
     /**
      * Union for serialisation of `ulong64` type.
      */
-    union ULong64ToBits
+    union ULong64ToBytes
     {
       ulong64 value;   ///< `ulong64` value.
       char    data[8]; ///< Bytes.
@@ -156,7 +156,7 @@ class Endian
     /**
      * Union for deserialisation of `ulong64` type.
      */
-    union BitsToULong64
+    union BytesToULong64
     {
       char    data[8]; ///< Bytes.
       ulong64 value;   ///< `ulong64` value.
@@ -165,7 +165,7 @@ class Endian
     /**
      * Union for serialisation of `float` type.
      */
-    union FloatToBits
+    union FloatToBytes
     {
       float value;   ///< `float` value.
       char  data[4]; ///< Bytes.
@@ -174,7 +174,7 @@ class Endian
     /**
      * Union for deserialisation of `float` type.
      */
-    union BitsToFloat
+    union BytesToFloat
     {
       char  data[4]; ///< Bytes.
       float value;   ///< `float` value.
@@ -183,7 +183,7 @@ class Endian
     /**
      * Union for serialisation of `double` type.
      */
-    union DoubleToBits
+    union DoubleToBytes
     {
       double value;   ///< `double` value.
       char   data[8]; ///< Bytes.
@@ -192,7 +192,7 @@ class Endian
     /**
      * Union for deserialisation of `double` type.
      */
-    union BitsToDouble
+    union BytesToDouble
     {
       char   data[8]; ///< Bytes.
       double value;   ///< `double` value.

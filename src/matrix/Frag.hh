@@ -81,10 +81,10 @@ class Frag
     explicit Frag( const FragPool* pool, int index, const Point& p, const Vec3& velocity );
     explicit Frag( const FragPool* pool, InputStream* istream );
 
-    void write( BufferStream* ostream );
+    void write( OutputStream* ostream );
 
     void readUpdate( InputStream* istream );
-    void writeUpdate( BufferStream* ostream );
+    void writeUpdate( OutputStream* ostream );
 
     OZ_STATIC_POOL_ALLOC( mpool )
 

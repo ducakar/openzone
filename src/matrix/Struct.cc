@@ -767,7 +767,7 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   }
 }
 
-void Struct::write( BufferStream* ostream )
+void Struct::write( OutputStream* ostream )
 {
   ostream->writePoint( mins );
   ostream->writePoint( maxs );

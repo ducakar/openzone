@@ -87,6 +87,30 @@
 #define OZ_WEAK __attribute(( weak ))
 
 /**
+ * @def soft_assert
+ * If condition fails, raise SIGTRAP and print error using global log.
+ */
+#ifdef NDEBUG
+# define soft_assert( cond ) void( 0 )
+#else
+# define soft_assert( cond ) \
+  ( ( cond ) ? \
+    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+#endif
+
+/**
+ * @def hard_assert
+ * If condition fails, raise SIGTRAP, print error using global log and abort program.
+ */
+#ifdef NDEBUG
+# define hard_assert( cond ) void( 0 )
+#else
+# define hard_assert( cond ) \
+  ( ( cond ) ? \
+    void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+#endif
+
+/**
  * Top-level OpenZone namespace.
  */
 namespace oz
@@ -131,37 +155,12 @@ typedef long long long64;
  */
 typedef unsigned long long ulong64;
 
-// Some assumptions type sizes.
 static_assert( sizeof( char   ) == 1, "sizeof( char ) should be 1" );
 static_assert( sizeof( short  ) == 2, "sizeof( short ) should be 2" );
 static_assert( sizeof( int    ) == 4, "sizeof( int ) should be 4" );
 static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
 static_assert( sizeof( float  ) == 4, "sizeof( float ) should be 4" );
 static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
-
-/**
- * @def soft_assert
- * If condition fails, raise SIGTRAP and print error using global log.
- */
-#ifdef NDEBUG
-# define soft_assert( cond ) void( 0 )
-#else
-# define soft_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
-#endif
-
-/**
- * @def hard_assert
- * If condition fails, raise SIGTRAP, print error using global log and abort program.
- */
-#ifdef NDEBUG
-# define hard_assert( cond ) void( 0 )
-#else
-# define hard_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
-#endif
 
 /**
  * Helper method for `soft_assert` macro.

@@ -94,7 +94,7 @@ bool GameStage::read( const char* path )
 
 void GameStage::write( const char* path ) const
 {
-  BufferStream ostream;
+  OutputStream ostream( 0 );
 
   matrix.write( &ostream );
   nirvana.write( &ostream );

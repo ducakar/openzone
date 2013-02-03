@@ -43,7 +43,7 @@ class Lua : public common::Lua
     void unregisterMind( int botIndex );
 
     void read( InputStream* istream );
-    void write( BufferStream* ostream );
+    void write( OutputStream* ostream );
 
     void init();
     void destroy();

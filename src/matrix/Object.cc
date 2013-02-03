@@ -142,7 +142,7 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
   }
 }
 
-void Object::write( BufferStream* ostream ) const
+void Object::write( OutputStream* ostream ) const
 {
   ostream->writePoint( p );
   ostream->writeInt( index );
@@ -166,7 +166,7 @@ void Object::write( BufferStream* ostream ) const
 void Object::readUpdate( InputStream* )
 {}
 
-void Object::writeUpdate( BufferStream* ) const
+void Object::writeUpdate( OutputStream* ) const
 {}
 
 }

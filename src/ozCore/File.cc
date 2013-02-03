@@ -57,7 +57,7 @@
 #ifdef __native_client__
 extern "C"
 int PHYSFS_NACL_init( PP_Instance instance, PPB_GetInterface getInterface,
-                      PP_FileSystemType filesystemType, PHYSFS_sint64 size );
+                      PP_FileSystemType fileSystemType, PHYSFS_sint64 size );
 #endif
 
 namespace oz
@@ -139,7 +139,7 @@ OZ_HIDDEN
 File::Descriptor File::Descriptor::staticDesc( nullptr );
 
 static pp::Core*       ppCore       = nullptr;
-static pp::FileSystem* ppFilesystem = nullptr;
+static pp::FileSystem* ppFileSystem = nullptr;
 
 #endif // __native_client__
 
@@ -148,8 +148,8 @@ static bool operator < ( const File& a, const File& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-File::File( Filesystem filesystem, const char* path ) :
-  filePath( path ), fileType( MISSING ), fileFS( filesystem ), fileSize( -1 ), fileTime( 0 ),
+File::File( FileSystem fileSystem, const char* path ) :
+  filePath( path ), fileType( MISSING ), fileFS( fileSystem ), fileSize( -1 ), fileTime( 0 ),
   data( nullptr )
 {
 #ifdef __native_client__
@@ -344,7 +344,7 @@ bool File::stat()
     DEFINE_CALLBACK( open, {
       _fd->fio = new pp::FileIO( System::instance );
 
-      int ret = _fd->fio->Open( pp::FileRef( *ppFilesystem, _fd->file->filePath ), 0,
+      int ret = _fd->fio->Open( pp::FileRef( *ppFileSystem, _fd->file->filePath ), 0,
                                 CALLBACK_OBJECT( query, _fd ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
         return;
@@ -451,134 +451,75 @@ String File::realDir() const
 
 bool File::map()
 {
-  if( fileFS == VIRTUAL || fileSize < 0 ) {
+  if( fileSize < 0 ) {
     return false;
   }
   if( data != nullptr ) {
     return true;
   }
 
+  if( fileFS == VIRTUAL ) {
+    int size = fileSize;
+
+    data = new char[size];
+    return read( data, &size );
+  }
+  else {
 #if defined( __native_client__ )
 
-  data = new char[fileSize];
+    int size = fileSize;
 
-  descriptor->buffer = data;
-  descriptor->size   = fileSize;
-  descriptor->offset = 0;
-
-  DEFINE_CALLBACK( read, {
-    if( _result > 0 ) {
-      _fd->offset += _result;
-
-      if( _fd->offset != _fd->size ) {
-        int ret = _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                                  CALLBACK_OBJECT( read, _fd ) );
-        if( ret == PP_OK_COMPLETIONPENDING ) {
-          return;
-        }
-      }
-    }
-
-    delete _fd->fio;
-    SEMAPHORE_POST();
-  } );
-  DEFINE_CALLBACK( beginRead, {
-    if( _result == PP_OK ) {
-      int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( read, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-    }
-
-    delete _fd->fio;
-    SEMAPHORE_POST();
-  } );
-  DEFINE_CALLBACK( open, {
-    _fd->fio = new pp::FileIO( System::instance );
-
-    int ret = _fd->fio->Open( pp::FileRef( *ppFilesystem, _fd->file->filePath ),
-                              PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( beginRead, _fd ) );
-    if( ret == PP_OK_COMPLETIONPENDING ) {
-      return;
-    }
-
-    delete _fd->fio;
-    SEMAPHORE_POST();
-  } );
-
-  MAIN_CALL( open );
-  SEMAPHORE_WAIT();
-
-  if( descriptor->offset < fileSize ) {
-    delete[] data;
-    data = nullptr;
-    return false;
-  }
-
-  int size = fileSize;
+    data = new char[fileSize];
+    return read( data, &size );
 
 #elif defined( _WIN32 )
 
-  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                            FILE_ATTRIBUTE_NORMAL, nullptr );
-  if( file == nullptr ) {
-    return false;
-  }
+    HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                              FILE_ATTRIBUTE_NORMAL, nullptr );
+    if( file == nullptr ) {
+      return false;
+    }
 
-  int size = int( GetFileSize( file, nullptr ) );
-  if( size == int( INVALID_FILE_SIZE ) ) {
+    HANDLE mapping = CreateFileMapping( file, nullptr, PAGE_READONLY, 0, 0, nullptr );
+    if( mapping == nullptr ) {
+      CloseHandle( file );
+      return false;
+    }
+
+    data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
+
+    CloseHandle( mapping );
     CloseHandle( file );
-    return false;
-  }
 
-  HANDLE mapping = CreateFileMapping( file, nullptr, PAGE_READONLY, 0, 0, nullptr );
-  if( mapping == nullptr ) {
-    CloseHandle( file );
-    return false;
-  }
-
-  data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
-
-  CloseHandle( mapping );
-  CloseHandle( file );
-
-  if( data == nullptr ) {
-    return false;
-  }
+    return data != nullptr;
 
 #else
 
-  int fd = open( filePath, O_RDONLY );
-  if( fd < 0 ) {
-    return false;
-  }
+    int fd = open( filePath, O_RDONLY );
+    if( fd < 0 ) {
+      return false;
+    }
 
-  struct stat statInfo;
-  if( fstat( fd, &statInfo ) != 0 ) {
+    data = static_cast<char*>( mmap( nullptr, size_t( fileSize ), PROT_READ, MAP_SHARED, fd, 0 ) );
+    data = data == MAP_FAILED ? nullptr : data;
     close( fd );
-    return false;
-  }
 
-  int size = int( statInfo.st_size );
-  data = static_cast<char*>( mmap( nullptr, size_t( statInfo.st_size ),
-                                   PROT_READ, MAP_SHARED, fd, 0 ) );
-  close( fd );
-
-  if( data == MAP_FAILED ) {
-    data = nullptr;
-    return false;
-  }
+    return data != nullptr;
 
 #endif
-
-  fileType = REGULAR;
-  fileSize = size;
-  return true;
+  }
 }
 
 void File::unmap()
 {
-  if( data != nullptr ) {
+  if( data == nullptr ) {
+    return;
+  }
+
+  if( fileFS == VIRTUAL ) {
+    delete[] data;
+  }
+  else {
 #if defined( __native_client__ )
     delete[] data;
 #elif defined( _WIN32 )
@@ -586,8 +527,8 @@ void File::unmap()
 #else
     munmap( data, size_t( fileSize ) );
 #endif
-    data = nullptr;
   }
+  data = nullptr;
 }
 
 InputStream File::inputStream( Endian::Order order ) const
@@ -659,7 +600,7 @@ bool File::read( char* buffer, int* size ) const
     DEFINE_CALLBACK( open, {
       _fd->fio = new pp::FileIO( System::instance );
 
-      int ret = _fd->fio->Open( pp::FileRef( *ppFilesystem, _fd->file->filePath ),
+      int ret = _fd->fio->Open( pp::FileRef( *ppFileSystem, _fd->file->filePath ),
                                 PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( beginRead, _fd ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
         return;
@@ -715,6 +656,16 @@ bool File::read( char* buffer, int* size ) const
   }
 
   return true;
+}
+
+bool File::read( OutputStream* ostream ) const
+{
+  int   size   = fileSize;
+  char* buffer = ostream->forward( fileSize );
+  bool  result = read( buffer, &size );
+
+  ostream->seek( buffer + size );
+  return result;
 }
 
 Buffer File::read() const
@@ -803,7 +754,7 @@ bool File::write( const char* buffer, int size ) const
     DEFINE_CALLBACK( open, {
       _fd->fio = new pp::FileIO( System::instance );
 
-      int ret = _fd->fio->Open( pp::FileRef( *ppFilesystem, _fd->file->filePath ),
+      int ret = _fd->fio->Open( pp::FileRef( *ppFileSystem, _fd->file->filePath ),
                                 PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
                                 CALLBACK_OBJECT( beginWrite, _fd ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
@@ -855,6 +806,11 @@ bool File::write( const char* buffer, int size ) const
   }
 
   return true;
+}
+
+bool File::write( InputStream* istream ) const
+{
+  return write( istream->pos(), istream->available() );
 }
 
 bool File::write( const Buffer& buffer ) const
@@ -1056,9 +1012,9 @@ bool File::chdir( const char* path )
 #endif
 }
 
-bool File::mkdir( const char* path, Filesystem filesystem )
+bool File::mkdir( const char* path, FileSystem fileSystem )
 {
-  if( filesystem == VIRTUAL ) {
+  if( fileSystem == VIRTUAL ) {
     return PHYSFS_mkdir( path ) != 0;
   }
   else {
@@ -1080,7 +1036,7 @@ bool File::mkdir( const char* path, Filesystem filesystem )
       SEMAPHORE_POST();
     } );
     DEFINE_CALLBACK( mkdir, {
-      _fd->fref = new pp::FileRef( *ppFilesystem, _fd->buffer );
+      _fd->fref = new pp::FileRef( *ppFileSystem, _fd->buffer );
 
       int ret = _fd->fref->MakeDirectory( CALLBACK_OBJECT( mkdirResult, _fd ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
@@ -1108,9 +1064,9 @@ bool File::mkdir( const char* path, Filesystem filesystem )
   }
 }
 
-bool File::rm( const char* path, Filesystem filesystem )
+bool File::rm( const char* path, FileSystem fileSystem )
 {
-  if( filesystem == VIRTUAL ) {
+  if( fileSystem == VIRTUAL ) {
     return PHYSFS_delete( path );
   }
   else {
@@ -1132,7 +1088,7 @@ bool File::rm( const char* path, Filesystem filesystem )
       SEMAPHORE_POST();
     } );
     DEFINE_CALLBACK( rm, {
-      _fd->fref = new pp::FileRef( *ppFilesystem, _fd->buffer );
+      _fd->fref = new pp::FileRef( *ppFileSystem, _fd->buffer );
 
       int ret = _fd->fref->Delete( CALLBACK_OBJECT( rmResult, _fd ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
@@ -1187,12 +1143,12 @@ bool File::mountLocal( const char* path )
   return true;
 }
 
-void File::init( Filesystem filesystem, NaClFilesystem naclFilesystem, int naclSize )
+void File::init( FileSystem fileSystem, NaClFileSystem naclFileSystem, int naclSize )
 {
-  static_cast<void>( naclFilesystem );
+  static_cast<void>( naclFileSystem );
   static_cast<void>( naclSize );
 
-  if( filesystem == VIRTUAL ) {
+  if( fileSystem == VIRTUAL ) {
 #ifdef __native_client__
 
     pp::Module* module = pp::Module::Get();
@@ -1205,8 +1161,8 @@ void File::init( Filesystem filesystem, NaClFilesystem naclFilesystem, int naclS
     }
 
     PHYSFS_NACL_init( System::instance->pp_instance(), module->get_browser_interface(),
-                      naclFilesystem == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                          PP_FILESYSTEMTYPE_LOCALTEMPORARY,
+                      naclFileSystem == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                                           PP_FILESYSTEMTYPE_LOCALTEMPORARY,
                       naclSize );
 
 #endif
@@ -1222,64 +1178,64 @@ void File::init( Filesystem filesystem, NaClFilesystem naclFilesystem, int naclS
 
     if( System::instance == nullptr ) {
       OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise"
-                " NaCl filesystem" );
+                " NaCl file system" );
     }
 
     destroy();
 
     Descriptor* descriptor = &Descriptor::staticDesc;
 
-    // We abuse staticDesc.size and staticDesc.offset variables to pass filesystem type and size to
+    // We abuse staticDesc.size and staticDesc.offset variables to pass file system type and size to
     // callback.
     descriptor->size   = naclSize;
-    descriptor->offset = naclFilesystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+    descriptor->offset = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
                                                         PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
     DEFINE_CALLBACK( initResult, {
       if( _result != PP_OK ) {
-        delete ppFilesystem;
-        ppFilesystem = nullptr;
+        delete ppFileSystem;
+        ppFileSystem = nullptr;
       }
       SEMAPHORE_POST();
     } );
     DEFINE_CALLBACK( init, {
-      ppFilesystem = new pp::FileSystem( System::instance, PP_FileSystemType( _fd->offset ) );
+      ppFileSystem = new pp::FileSystem( System::instance, PP_FileSystemType( _fd->offset ) );
 
-      int ret = ppFilesystem->Open( _fd->size, CALLBACK_OBJECT( initResult, _fd ) );
+      int ret = ppFileSystem->Open( _fd->size, CALLBACK_OBJECT( initResult, _fd ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
         return;
       }
 
-      delete ppFilesystem;
-      ppFilesystem = nullptr;
+      delete ppFileSystem;
+      ppFileSystem = nullptr;
       SEMAPHORE_POST();
     } );
 
     MAIN_CALL( init );
     SEMAPHORE_WAIT();
 
-    if( ppFilesystem == nullptr ) {
-      OZ_ERROR( "Local filesystem open failed" );
+    if( ppFileSystem == nullptr ) {
+      OZ_ERROR( "Local file system open failed" );
     }
 
 #endif
   }
 }
 
-void File::destroy( Filesystem filesystem )
+void File::destroy( FileSystem fileSystem )
 {
-  if( filesystem == VIRTUAL ) {
+  if( fileSystem == VIRTUAL ) {
     PHYSFS_deinit();
   }
   else {
 #ifdef __native_client__
 
-    if( ppFilesystem != nullptr ) {
+    if( ppFileSystem != nullptr ) {
       Descriptor* descriptor = &Descriptor::staticDesc;
 
       DEFINE_CALLBACK( free, {
-        delete ppFilesystem;
-        ppFilesystem = nullptr;
+        delete ppFileSystem;
+        ppFileSystem = nullptr;
 
         SEMAPHORE_POST();
       } );

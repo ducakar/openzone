@@ -516,7 +516,7 @@ struct JSON::Formatter
   static const int ALIGNMENT_COLUMN   = 32;
   static const int SIGNIFICANT_DIGITS = 6;
 
-  BufferStream* ostream;
+  OutputStream* ostream;
   const char*   lineEnd;
   int           lineEndLength;
   int           indentLevel;
@@ -2602,7 +2602,7 @@ String JSON::toString() const
 
 String JSON::toFormattedString( const char* lineEnd ) const
 {
-  BufferStream os;
+  OutputStream os( 0 );
   write( &os, lineEnd );
 
   return String( os.begin(), os.length() );
@@ -2613,7 +2613,7 @@ void JSON::read( InputStream* istream, const char* path )
   *this = Parser::parse( istream, path );
 }
 
-void JSON::write( BufferStream* ostream, const char* lineEnd ) const
+void JSON::write( OutputStream* ostream, const char* lineEnd ) const
 {
   Formatter formatter = { ostream, lineEnd, String::length( lineEnd ), 0 };
 
@@ -2635,7 +2635,7 @@ bool JSON::load( const File& file )
 
 bool JSON::save( const File& file, const char* lineEnd ) const
 {
-  BufferStream os;
+  OutputStream os( 0 );
   write( &os, lineEnd );
 
   return file.write( os.begin(), os.length() );

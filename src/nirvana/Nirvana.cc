@@ -115,7 +115,7 @@ void Nirvana::read( InputStream* istream )
   Log::printEnd( " OK" );
 }
 
-void Nirvana::write( BufferStream* ostream ) const
+void Nirvana::write( OutputStream* ostream ) const
 {
   Log::print( "Writing Nirvana ..." );
 

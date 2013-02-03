@@ -424,7 +424,7 @@ void Orbis::read( InputStream* istream )
   }
 }
 
-void Orbis::write( BufferStream* ostream ) const
+void Orbis::write( OutputStream* ostream ) const
 {
   lua.write( ostream );
 

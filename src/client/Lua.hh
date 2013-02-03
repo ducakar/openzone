@@ -44,7 +44,7 @@ class Lua : public common::Lua
     void create( const char* missionPath );
 
     void read( InputStream* istream );
-    void write( BufferStream* ostream );
+    void write( OutputStream* ostream );
 
     void init();
     void destroy();

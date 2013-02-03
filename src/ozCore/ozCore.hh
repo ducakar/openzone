@@ -61,7 +61,7 @@
 #include "HashMap.hh"
 
 /*
- * Bitset.
+ * Bit arrays.
  */
 #include "Bitset.hh"
 #include "SBitset.hh"
@@ -105,7 +105,6 @@
 #include "Endian.hh"
 #include "InputStream.hh"
 #include "OutputStream.hh"
-#include "BufferStream.hh"
 #include "Buffer.hh"
 #include "File.hh"
 

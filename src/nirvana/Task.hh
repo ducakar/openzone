@@ -89,7 +89,7 @@ class Task
 
   public:
 
-    virtual void write( BufferStream* ostream ) const;
+    virtual void write( OutputStream* ostream ) const;
 
 };
 

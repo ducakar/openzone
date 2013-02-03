@@ -320,7 +320,7 @@ void Camera::read( InputStream* istream )
   state = newState;
 }
 
-void Camera::write( BufferStream* ostream ) const
+void Camera::write( OutputStream* ostream ) const
 {
   ostream->writeQuat( desiredRot );
   ostream->writeFloat( desiredMag );

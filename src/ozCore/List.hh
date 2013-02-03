@@ -125,7 +125,7 @@ class List
     /**
      * Copy operator, copies elements.
      *
-     * Reuse existing storage if it suffices.
+     * Existing storage is reused if it suffices.
      */
     List& operator = ( const List& l )
     {

@@ -11,6 +11,8 @@ set( CMAKE_C_COMPILER           "${PLATFORM_TRIPLET}-gcc" )
 set( CMAKE_CXX_COMPILER         "${PLATFORM_TRIPLET}-g++" )
 set( CMAKE_C_FLAGS              "-march=i686 -m32 -msse3 -mfpmath=sse" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "-march=i686 -m32 -msse3 -mfpmath=sse" CACHE STRING "" )
+set( CMAKE_C_FLAGS_RELEASE      "-Ofast" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS_RELEASE    "-Ofast" CACHE STRING "" )
 
 # CMake doesn't detect those correctly.
 set( SDL_INCLUDE_DIR            "${CMAKE_FIND_ROOT_PATH}/include/SDL" CACHE PATH "" )

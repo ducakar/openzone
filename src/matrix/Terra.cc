@@ -113,7 +113,7 @@ void Terra::read( InputStream* istream )
   load( id );
 }
 
-void Terra::write( BufferStream* ostream ) const
+void Terra::write( OutputStream* ostream ) const
 {
   const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
 

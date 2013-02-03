@@ -387,7 +387,7 @@ void OBJ::save()
 
   compiler.endMesh();
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   compiler.writeMesh( &os );
 

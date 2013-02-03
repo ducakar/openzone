@@ -327,10 +327,10 @@ class Object : public AABB
     explicit Object( const ObjectClass* clazz, int index, const Point& p, Heading heading );
     explicit Object( const ObjectClass* clazz, InputStream* istream );
 
-    virtual void write( BufferStream* ostream ) const;
+    virtual void write( OutputStream* ostream ) const;
 
     virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( BufferStream* ostream ) const;
+    virtual void writeUpdate( OutputStream* ostream ) const;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

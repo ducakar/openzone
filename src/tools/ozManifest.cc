@@ -66,8 +66,8 @@ int main( int argc, char** argv )
   Log::println( "Package manifest {" );
   Log::indent();
 
-  BufferStream bs;
-  bs.writeChars( "ozManifest", sizeof( "ozManifest" ) );
+  OutputStream os;
+  os.writeChars( "ozManifest", sizeof( "ozManifest" ) );
 
   File outDir( File::NATIVE, outDirPath );
   DArray<File> files = outDir.ls();
@@ -82,7 +82,7 @@ int main( int argc, char** argv )
     }
   }
 
-  bs.writeInt( packages.length() );
+  os.writeInt( packages.length() );
 
   foreach( pkg, packages.iter() ) {
     File& file = pkg->value;
@@ -92,8 +92,8 @@ int main( int argc, char** argv )
 
     Log::println( "%s, timestamp: %s", name.cstr(), Time::local( time ).toString().cstr() );
 
-    bs.writeString( name );
-    bs.writeLong64( time );
+    os.writeString( name );
+    os.writeLong64( time );
   }
 
   Log::unindent();
@@ -103,7 +103,7 @@ int main( int argc, char** argv )
 
   Log::print( "Writing manifest to '%s' ...", manifest.path().cstr() );
 
-  if( !manifest.write( bs.begin(), bs.length() ) ) {
+  if( !manifest.write( os.begin(), os.length() ) ) {
     OZ_ERROR( "Failed to write manifest file" );
   }
 

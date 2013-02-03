@@ -80,7 +80,7 @@ class Buffer
     /**
      * Copy operator, copies data.
      *
-     * Reuse existing storage if it suffices.
+     * Existing storage is reused if it suffices.
      */
     Buffer& operator = ( const Buffer& b );
 

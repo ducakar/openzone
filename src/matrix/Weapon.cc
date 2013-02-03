@@ -116,7 +116,7 @@ Weapon::Weapon( const WeaponClass* clazz_, InputStream* istream ) :
   shotTime = istream->readFloat();
 }
 
-void Weapon::write( BufferStream* ostream ) const
+void Weapon::write( OutputStream* ostream ) const
 {
   Dynamic::write( ostream );
 
@@ -127,7 +127,7 @@ void Weapon::write( BufferStream* ostream ) const
 void Weapon::readUpdate( InputStream* )
 {}
 
-void Weapon::writeUpdate( BufferStream* ) const
+void Weapon::writeUpdate( OutputStream* ) const
 {}
 
 }

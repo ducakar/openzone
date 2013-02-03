@@ -58,8 +58,8 @@ function build()
     if [[ ! -d build/$platform ]]; then
       mkdir -p build/$platform
       ( cd build/$platform && cmake -Wdev --warn-uninitialized \
-        -D CMAKE_BUILD_TYPE=$buildType \
         -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
+        -D CMAKE_BUILD_TYPE=$buildType \
         ../.. )
     fi
     (( $1 )) || ( cd build/$platform && time make -j4 )

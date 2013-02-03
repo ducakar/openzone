@@ -34,7 +34,7 @@ class FragPool
 {
   public:
 
-    void build( BufferStream* os, const char* className );
+    void build( OutputStream* os, const char* className );
 
 };
 

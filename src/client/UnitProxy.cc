@@ -597,7 +597,7 @@ void UnitProxy::read( InputStream* istream )
   isExternal = istream->readBool();
 }
 
-void UnitProxy::write( BufferStream* ostream ) const
+void UnitProxy::write( OutputStream* ostream ) const
 {
   ostream->writeBool( isExternal );
 }

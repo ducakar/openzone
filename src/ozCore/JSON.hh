@@ -29,7 +29,6 @@
 #pragma once
 
 #include "HashMap.hh"
-#include "BufferStream.hh"
 #include "File.hh"
 
 namespace oz
@@ -91,7 +90,7 @@ class JSON
       private:
 
         /**
-         * HashMap iterator used internally.
+         * `HashMap` iterator used internally.
          */
         HashMap<String, JSON>::CIterator objectIter;
 
@@ -125,7 +124,7 @@ class JSON
       private:
 
         /**
-         * HashMap iterator used internally.
+         * `HashMap` iterator used internally.
          */
         HashMap<String, JSON>::Iterator objectIter;
 
@@ -1093,7 +1092,7 @@ class JSON
     /**
      * Write formatted %JSON to a stream.
      */
-    void write( BufferStream* ostream, const char* lineEnd = "\n" ) const;
+    void write( OutputStream* ostream, const char* lineEnd = "\n" ) const;
 
     /**
      * Clear existing value and read new contents from a %JSON file.

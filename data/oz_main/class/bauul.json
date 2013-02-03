@@ -40,6 +40,7 @@
                         "bauul$skull"
   ],
   "weaponItem":         0,
+  "onMelee":            "meleeAttack",
 
   "attrib.nightVision": true,
   "attrib.binoculars":  true,
@@ -60,6 +61,7 @@
     "land":             "oz/land",
     "splash":           "free/splash1",
     "jump":             "aard/jump",
+    "melee":            "aard/tak",
     "flip":             "ppm/deathb",
     "death":            "ppm/deathb",
     "step":             "openarena/boot4",

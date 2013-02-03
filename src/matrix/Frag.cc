@@ -59,7 +59,7 @@ Frag::Frag( const FragPool* pool_, InputStream* istream )
   elasticity = pool->elasticity;
 }
 
-void Frag::write( BufferStream* ostream )
+void Frag::write( OutputStream* ostream )
 {
   ostream->writeInt( index );
   ostream->writePoint( p );
@@ -70,7 +70,7 @@ void Frag::write( BufferStream* ostream )
 void Frag::readUpdate( InputStream* )
 {}
 
-void Frag::writeUpdate( BufferStream* )
+void Frag::writeUpdate( OutputStream* )
 {}
 
 }

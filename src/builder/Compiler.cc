@@ -36,7 +36,7 @@ bool Vertex::operator == ( const Vertex& v ) const
   return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
 }
 
-void Vertex::write( BufferStream* ostream ) const
+void Vertex::write( OutputStream* ostream ) const
 {
   ostream->writeFloat( pos.x );
   ostream->writeFloat( pos.y );
@@ -365,7 +365,7 @@ void Compiler::animNormals( const float* normals_ )
   }
 }
 
-void Compiler::writeMesh( BufferStream* os, bool embedTextures )
+void Compiler::writeMesh( OutputStream* os, bool embedTextures )
 {
   hard_assert( !( flags & MESH_BIT ) && !( flags & PART_BIT ) );
   hard_assert( parts.length() > 0 && vertices.length() > 0 );

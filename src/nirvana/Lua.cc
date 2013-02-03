@@ -92,7 +92,7 @@ void Lua::read( InputStream* istream )
   }
 }
 
-void Lua::write( BufferStream* ostream )
+void Lua::write( OutputStream* ostream )
 {
   hard_assert( l_gettop() == 1 );
 

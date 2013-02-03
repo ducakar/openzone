@@ -50,7 +50,7 @@ const char* Memo::getMemo() const
   return text;
 }
 
-void Memo::write( BufferStream* ostream ) const
+void Memo::write( OutputStream* ostream ) const
 {
   ostream->writeString( text );
 }

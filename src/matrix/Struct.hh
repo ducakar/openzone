@@ -177,7 +177,7 @@ class Struct : public Bounds
     explicit Struct( const BSP* bsp, int index, const Point& p, Heading heading );
     explicit Struct( const BSP* bsp, InputStream* istream );
 
-    void write( BufferStream* ostream );
+    void write( OutputStream* ostream );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

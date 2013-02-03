@@ -57,10 +57,10 @@ class Dynamic : public Object
     explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
     explicit Dynamic( const DynamicClass* clazz, InputStream* istream );
 
-    void write( BufferStream* ostream ) const override;
+    void write( OutputStream* ostream ) const override;
 
     void readUpdate( InputStream* istream ) override;
-    void writeUpdate( BufferStream* ostream ) const override;
+    void writeUpdate( OutputStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

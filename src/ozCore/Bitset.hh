@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Packed array of bits with dynamically allocated storage.
+ * Bit array with dynamically allocated storage.
  *
  * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
  * `sizeof( ulong ) * 8`.
@@ -101,7 +101,7 @@ class Bitset
     /**
      * Copy operator, copies storage.
      *
-     * Reuse existing storage only if it the size matches.
+     * Existing storage is reused if its size matches.
      */
     Bitset& operator = ( const Bitset& b )
     {

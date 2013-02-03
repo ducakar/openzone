@@ -9,7 +9,6 @@ add_library( ozCore
   arrays.hh
   Bitset.hh
   Buffer.hh
-  BufferStream.hh
   Chain.hh
   clearmacros.hh
   common.hh
@@ -93,4 +92,4 @@ install( TARGETS ozCore
          ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR} )
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozCore )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib/pkgconfig )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib${OZ_BINARY_SUBDIR}/pkgconfig )

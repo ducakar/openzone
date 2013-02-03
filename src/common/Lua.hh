@@ -64,7 +64,7 @@ class Lua
     /**
      * Serialise %Lua variable at the top of the stack (recursively for tables).
      */
-    void writeVariable( BufferStream* stream );
+    void writeVariable( OutputStream* stream );
 
     /**
      * Common initialisation for %Lua classes.

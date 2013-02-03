@@ -66,7 +66,7 @@ class StrategicProxy : public Proxy
     void reset() override;
 
     void read( InputStream* istream ) override;
-    void write( BufferStream* ostream ) const override;
+    void write( OutputStream* ostream ) const override;
 
 };
 

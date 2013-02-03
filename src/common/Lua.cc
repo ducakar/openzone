@@ -78,7 +78,7 @@ bool Lua::readVariable( InputStream* istream )
   }
 }
 
-void Lua::writeVariable( BufferStream* ostream )
+void Lua::writeVariable( OutputStream* ostream )
 {
   int type = l_type( -1 );
 

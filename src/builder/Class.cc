@@ -612,7 +612,7 @@ void Class::fillVehicle( const char* className )
   }
 }
 
-void Class::writeObject( BufferStream* os )
+void Class::writeObject( OutputStream* os )
 {
   os->writeString( name );
   os->writeString( title );
@@ -651,7 +651,7 @@ void Class::writeObject( BufferStream* os )
   os->writeString( onUpdate );
 }
 
-void Class::writeDynamic( BufferStream* os )
+void Class::writeDynamic( OutputStream* os )
 {
   writeObject( os );
 
@@ -659,7 +659,7 @@ void Class::writeDynamic( BufferStream* os )
   os->writeFloat( lift );
 }
 
-void Class::writeWeapon( BufferStream* os )
+void Class::writeWeapon( OutputStream* os )
 {
   writeDynamic( os );
 
@@ -671,7 +671,7 @@ void Class::writeWeapon( BufferStream* os )
   os->writeString( onShot );
 }
 
-void Class::writeBot( BufferStream* os )
+void Class::writeBot( OutputStream* os )
 {
   writeDynamic( os );
 
@@ -735,7 +735,7 @@ void Class::writeBot( BufferStream* os )
   os->writeMat44( injuryColour );
 }
 
-void Class::writeVehicle( BufferStream* os )
+void Class::writeVehicle( OutputStream* os )
 {
   writeDynamic( os );
 
@@ -773,7 +773,7 @@ void Class::writeVehicle( BufferStream* os )
   }
 }
 
-void Class::build( BufferStream* os, const char* className )
+void Class::build( OutputStream* os, const char* className )
 {
   File configFile( File::VIRTUAL, String::str( "class/%s.json", className ) );
 

@@ -81,7 +81,7 @@ class Context
 
         bool isEmpty() const;
 
-        void write( BufferStream* os );
+        void write( OutputStream* os );
 
     };
 

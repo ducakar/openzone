@@ -50,7 +50,7 @@ class Matrix
     void update();
 
     void read( InputStream* istream );
-    void write( BufferStream* ostream ) const;
+    void write( OutputStream* ostream ) const;
 
     void load();
     void unload();

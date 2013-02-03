@@ -265,7 +265,7 @@ void Builder::buildBSPTextures()
       Context::Texture diffuseTex, masksTex, normalsTex;
       context.loadTextures( &diffuseTex, &masksTex, &normalsTex, path );
 
-      BufferStream os;
+      OutputStream os( 0 );
 
       Log::println( "Compiling into '%s'", destFile.path().cstr() );
 
@@ -341,7 +341,7 @@ void Builder::buildClasses( const String& pkgName )
   File dir( File::VIRTUAL, dirName );
   DArray<File> dirList = dir.ls();
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "json" ) ) {
@@ -358,7 +358,7 @@ void Builder::buildClasses( const String& pkgName )
   }
 
   if( !clazz.names.isEmpty() ) {
-    BufferStream headerStream;
+    OutputStream headerStream( 0 );
 
     headerStream.writeInt( clazz.names.length() );
     headerStream.writeInt( clazz.devices.length() );
@@ -415,7 +415,7 @@ void Builder::buildFragPools( const String& pkgName )
   File dir( File::VIRTUAL, dirName );
   DArray<File> dirList = dir.ls();
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "json" ) ) {
@@ -661,7 +661,7 @@ void Builder::buildMissions()
 
     Context::Texture imageTex = context.loadTexture( srcFile.path(), false, GL_LINEAR, GL_LINEAR );
 
-    BufferStream os;
+    OutputStream os( 0 );
     imageTex.write( &os );
 
     if( !outFile.write( os.begin(), os.length() ) ) {

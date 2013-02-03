@@ -50,7 +50,7 @@ class Mind
 
     void update();
 
-    void write( BufferStream* ostream ) const;
+    void write( OutputStream* ostream ) const;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

@@ -20,12 +20,7 @@ else()
 
   add_executable( openzone openzone.cc )
   use_pch( openzone pch )
-  # HACK
-  if( OZ_DYNAMICS )
-    target_link_libraries( openzone client modules nirvana matrix common ozDynamics )
-  else()
-    target_link_libraries( openzone client modules nirvana matrix common ozCore )
-  endif()
+  target_link_libraries( openzone client modules nirvana matrix common ozDynamics )
 
   install( TARGETS openzone RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 

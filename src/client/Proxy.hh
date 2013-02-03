@@ -45,7 +45,7 @@ class Proxy
     virtual void reset()   = 0;
 
     virtual void read( InputStream* istream )         = 0;
-    virtual void write( BufferStream* ostream ) const = 0;
+    virtual void write( OutputStream* ostream ) const = 0;
 
 };
 

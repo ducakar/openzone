@@ -292,7 +292,7 @@ void CinematicProxy::read( InputStream* istream )
   }
 }
 
-void CinematicProxy::write( BufferStream* ostream ) const
+void CinematicProxy::write( OutputStream* ostream ) const
 {
   ostream->writeQuat( beginRot );
   ostream->writePoint( beginPos );

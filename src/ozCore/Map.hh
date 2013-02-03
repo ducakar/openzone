@@ -151,7 +151,7 @@ class Map
     /**
      * Copy operator, copies elements.
      *
-     * Reuse existing storage if it suffices.
+     * Existing storage is reused if it suffices.
      */
     Map& operator = ( const Map& m )
     {

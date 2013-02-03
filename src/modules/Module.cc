@@ -53,7 +53,7 @@ void Module::destroy()
 void Module::read( InputStream* )
 {}
 
-void Module::write( BufferStream* ) const
+void Module::write( OutputStream* ) const
 {}
 
 }

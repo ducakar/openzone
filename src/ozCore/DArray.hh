@@ -109,7 +109,7 @@ class DArray
     /**
      * Copy operator, copies elements.
      *
-     * Reuse existing storage only if it the size matches.
+     * Existing storage is reused if its size matches.
      */
     DArray& operator = ( const DArray& a )
     {

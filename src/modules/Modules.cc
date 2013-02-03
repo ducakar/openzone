@@ -48,7 +48,7 @@ void Modules::read( InputStream* istream )
   }
 }
 
-void Modules::write( BufferStream* ostream ) const
+void Modules::write( OutputStream* ostream ) const
 {
   for( int i = 0; i < modules.length(); ++i ) {
     modules[i]->write( ostream );

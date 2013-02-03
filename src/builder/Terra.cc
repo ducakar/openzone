@@ -156,7 +156,7 @@ void Terra::saveMatrix()
 
   Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   os.writeInt( matrix::Terra::VERTS );
 
@@ -187,7 +187,7 @@ void Terra::saveClient()
   Context::Texture detailTex = context.loadTexture( "terra/" + detailTexture );
   Context::Texture mapTex    = context.loadTexture( "terra/" + mapTexture );
 
-  BufferStream os;
+  OutputStream os( 0 );
 
   liquidTex.write( &os );
   detailTex.write( &os );

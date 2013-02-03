@@ -206,15 +206,15 @@ class Class
     void fillBot( const char* className );
     void fillVehicle( const char* className );
 
-    void writeObject( BufferStream* os );
-    void writeDynamic( BufferStream* os );
-    void writeWeapon( BufferStream* os );
-    void writeBot( BufferStream* os );
-    void writeVehicle( BufferStream* os );
+    void writeObject( OutputStream* os );
+    void writeDynamic( OutputStream* os );
+    void writeWeapon( OutputStream* os );
+    void writeBot( OutputStream* os );
+    void writeVehicle( OutputStream* os );
 
   public:
 
-    void build( BufferStream* os, const char* className );
+    void build( OutputStream* os, const char* className );
     void destroy();
 
 };

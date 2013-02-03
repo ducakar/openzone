@@ -285,7 +285,7 @@ bool Context::Texture::isEmpty() const
   return levels.isEmpty();
 }
 
-void Context::Texture::write( BufferStream* os )
+void Context::Texture::write( OutputStream* os )
 {
   os->writeInt( wrap );
   os->writeInt( magFilter );

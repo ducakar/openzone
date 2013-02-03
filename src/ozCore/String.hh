@@ -439,7 +439,7 @@ class String
     /**
      * Copy operator.
      *
-     * Reuse existing storage only if the size matches.
+     * Existing storage is reused if its size matches.
      */
     String& operator = ( const String& s );
 
