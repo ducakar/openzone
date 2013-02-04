@@ -233,7 +233,10 @@ class String
     static String replace( const char* s, char whatChar, char withChar );
 
     /**
-     * Return array of non-empty substrings between occurrences of the given delimiter.
+     * Return array of substrings between occurrences of the given delimiter.
+     *
+     * Empty strings between two immediate delimiter occurrences or between a delimiter and
+     * beginning/end of the original string are included.
      */
     static DArray<String> split( const char* s, char delimiter );
 
@@ -845,7 +848,10 @@ class String
     String replace( char whatChar, char withChar ) const;
 
     /**
-     * Return array of non-empty substrings between occurrences of the given delimiter.
+     * Return array of substrings between occurrences of the given delimiter.
+     *
+     * Empty strings between two immediate delimiter occurrences or between a delimiter and
+     * beginning/end of the original string are included.
      */
     DArray<String> split( char delimiter ) const;
 

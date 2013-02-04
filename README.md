@@ -24,7 +24,7 @@ development packages for the following libraries:
 - Lua 5.1 or 5.2 or LuaJIT 2.0
 - SDL 1.2 or 2.0
 - SDL_ttf
-- OpenGL 2.1+ or OpenGL ES 2.0
+- OpenGL 2.1 or OpenGL ES 2.0
 - OpenAL 1.1
 - libvorbis
 - FreeImage

@@ -2,226 +2,205 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-29 15:21+0100\n"
+"PO-Revision-Date: 2013-02-04 18:07+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
-"Language: \n"
+"Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Country: SLOVENIA\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: data/openzone/class/goblin.json
+#: data/oz_main/class/goblin.json
 msgid "goblin"
 msgstr "škrat"
 
-#: data/openzone/baseq3/maps/forum.json
+#: data/oz_main/baseq3/maps/forum.json
 msgid "forum"
 msgstr "forum"
 
-#: data/openzone/baseq3/maps/testCastle.json
-msgid "auto door"
-msgstr "samodejna vrata"
-
-#: data/openzone/class/datacube.json
+#: data/oz_main/class/datacube.json
 msgid "data cube"
 msgstr "podatkovna kocka"
 
-#: data/openzone/class/nvGoggles.json
+#: data/oz_main/class/nvGoggles.json
 msgid "night vision goggles"
 msgstr "očala za nočno gledanje"
 
-#: data/openzone/baseq3/maps/testCastle.json
-msgid "crusher"
-msgstr "speštalnik"
-
-#: data/openzone/baseq3/maps/testCastle.json
-msgid "elevator"
-msgstr "dvigalo"
-
-#: data/openzone/class/droid_weapon.grenadeLauncher.json
+#: data/oz_main/class/droid$grenadeLauncher.json
 msgid "grenade launcher"
 msgstr "granatomet"
 
-#: data/openzone/class/pine.json
+#: data/oz_main/class/pine.json
 msgid "pine"
 msgstr "smreka"
 
-#: data/openzone/class/bigCrate.json
+#: data/oz_main/class/bigCrate.json
 msgid "crate"
 msgstr "zaboj"
 
-#: data/openzone/class/grenade.json
+#: data/oz_main/class/grenade.json
 msgid "grenade"
 msgstr "granata"
 
-#: data/openzone/baseq3/maps/beastBunker.json
+#: data/oz_main/baseq3/maps/beastBunker.json
 msgid "beast bunker"
 msgstr "beštji bunker"
 
-#: data/openzone/class/hoverTank.json
+#: data/oz_main/class/hoverTank.json
 msgid "cannon"
 msgstr "top"
 
-#: data/openzone/class/bomb.json
+#: data/oz_main/class/bomb.json
 msgid "bomb"
 msgstr "bomba"
 
-#: data/openzone/class/knight.json
+#: data/oz_main/class/knight.json
 msgid "knight"
 msgstr "vitez"
 
-#: data/openzone/class/beast_weapon.plasmagun.json
+#: data/oz_main/class/beast$plasmagun.json
 msgid "plasma gun"
 msgstr "plazemska puška"
 
-#: data/openzone/baseq3/maps/tower.json
+#: data/oz_main/baseq3/maps/tower.json
 msgid "tower"
 msgstr "stolp"
 
-#: data/openzone/baseq3/maps/testCastle.json
-msgid "manual door"
-msgstr "vrata"
-
-#: data/openzone/class/console.json
+#: data/oz_main/class/console.json
 msgid "console"
 msgstr "konzola"
 
-#: data/openzone/baseq3/maps/testCastle.json
+#: data/oz_main/baseq3/maps/testCastle.json
 msgid "test castle"
 msgstr "testni grad"
 
-#: data/openzone/class/goblin_weapon.axe.json
+#: data/oz_main/class/goblin$axe.json
 msgid "axe"
 msgstr "sekira"
 
-#: data/openzone/class/cyborg.json
+#: data/oz_main/class/cyborg.json
 msgid "cyborg"
 msgstr "kiborg"
 
-#: data/openzone/class/hoverTank.json
+#: data/oz_main/class/hoverTank.json
 msgid "heavy blaster"
 msgstr "težki udarnik"
 
-#: data/openzone/baseq3/maps/tutorial_movement.json
+#: data/oz_main/baseq3/maps/tutorial_movement.json
 msgid "tutorial - movement"
 msgstr "vpeljava - premikanje"
 
-#: data/openzone/baseq3/maps/testCastle.json
-msgid "switch"
-msgstr "stikalo"
-
-#: data/openzone/class/shell.json
+#: data/oz_main/class/shell.json
 msgid "shell"
 msgstr "granata"
 
-#: data/openzone/class/bauul.json
+#: data/oz_main/class/bauul.json
 msgid "bauul"
 msgstr "bauul"
 
-#: data/openzone/baseq3/maps/testCastle.json
-msgid "ignorant"
-msgstr "ignorant"
-
-#: data/openzone/class/droid.OOM-9.json
+#: data/oz_main/class/droid.OOM-9.json
 msgid "droid OOM-9"
 msgstr "droid OOM-9"
 
-#: data/openzone/baseq3/maps/house.json
+#: data/oz_main/baseq3/maps/house.json
 msgid "house"
 msgstr "hiša"
 
-#: data/openzone/class/key.json
+#: data/oz_main/class/zombie.json
+msgid "zombie"
+msgstr "zombi"
+
+#: data/oz_main/class/key.json
 msgid "key"
 msgstr "ključ"
 
-#: data/openzone/class/box.json
+#: data/oz_main/class/box.json
 msgid "box"
 msgstr "škatla"
 
-#: data/openzone/class/droid_weapon.blaster.json
+#: data/oz_main/class/droid$blaster.json
 msgid "blaster"
 msgstr "udarnik"
 
-#: data/openzone/class/binoculars.json
+#: data/oz_main/class/binoculars.json
 msgid "binoculars"
 msgstr "daljnogled"
 
-#: data/openzone/class/serviceStation.json
+#: data/oz_main/class/serviceStation.json
 msgid "service station"
 msgstr "servisna postaja"
 
-#: data/openzone/class/knight_weapon.mace.json
+#: data/oz_main/class/knight$mace.json
 msgid "mace"
 msgstr "buzdovan"
 
-#: data/openzone/baseq3/maps/atlantis.json
+#: data/oz_main/baseq3/maps/atlantis.json
 msgid "atlantis"
 msgstr "atlantida"
 
-#: data/openzone/class/cvicek.json
+#: data/oz_main/class/cvicek.json
 msgid "cviček"
 msgstr "cviček"
 
-#: data/openzone/baseq3/maps/bunker.json
+#: data/oz_main/baseq3/maps/bunker.json
 msgid "bunker"
 msgstr "bunker"
 
-#: data/openzone/class/galileo.json
+#: data/oz_main/class/galileo.json
 msgid "Galileo SatNav"
 msgstr "navigacija Galileo"
 
-#: data/openzone/class/bauul_weapon.skull.json
+#: data/oz_main/class/bauul$skull.json
 msgid "skull"
 msgstr "lobanja"
 
-#: data/openzone/class/cyborg_weapon.chaingun.json
+#: data/oz_main/class/cyborg$chaingun.json
 msgid "chaingun"
 msgstr "strojnica"
 
-#: data/openzone/class/musicPlayer.json
+#: data/oz_main/class/musicPlayer.json
 msgid "music player"
 msgstr "predvajalnik glasbe"
 
-#: data/openzone/baseq3/maps/tutorial_carrying.json
+#: data/oz_main/baseq3/maps/tutorial_carrying.json
 msgid "tutorial - carying"
 msgstr "vpeljava - prenašanje"
 
-#: data/openzone/class/beast.json
+#: data/oz_main/class/beast.json
 msgid "beast"
 msgstr "beštija"
 
-#: data/openzone/class/firstAid.json
+#: data/oz_main/class/firstAid.json
 msgid "first aid"
 msgstr "prva pomoč"
 
-#: data/openzone/class/bigExplosion.json
+#: data/oz_main/class/bigExplosion.json
 msgid "explosion"
 msgstr "eksplozija"
 
-#: data/openzone/class/tree.json
+#: data/oz_main/class/tree.json
 msgid "tree"
 msgstr "drevo"
 
-#: data/openzone/class/droid.json
+#: data/oz_main/class/droid.json
 msgid "droid"
 msgstr "droid"
 
-#: data/openzone/class/droid_weapon.hyperblaster.json
+#: data/oz_main/class/droid$hyperblaster.json
 msgid "hyperblaster"
 msgstr "nadudarnik"
 
-#: data/openzone/class/explosiveBarrel.json
+#: data/oz_main/class/explosiveBarrel.json
 msgid "barrel"
 msgstr "sod"
 
-#: data/openzone/baseq3/maps/pool.json
+#: data/oz_main/baseq3/maps/pool.json
 msgid "pool"
 msgstr "bazen"
 
-#: data/openzone/credits/openzone.txt
+#: data/oz_main/credits/oz_main.txt
 msgid ""
 "> textures <\n"
 "\n"
@@ -270,7 +249,7 @@ msgid ""
 msgstr ""
 "> teksture <\n"
 "\n"
-"paketa tekstur Egyptian & Tech1\n"
+"Egyptian & Tech1 texture packs\n"
 "Sock\n"
 "\n"
 "> zvoki <\n"
@@ -281,7 +260,7 @@ msgstr ""
 "droid-sounds\n"
 "Kevin Good\n"
 "\n"
-"> zgradbe BSP <\n"
+"> strukture BSP <\n"
 "Davorin Učakar\n"
 "\n"
 "> modeli <\n"
@@ -313,19 +292,18 @@ msgstr ""
 "> skripti <\n"
 "Davorin Učakar\n"
 
-#: data/openzone/class/palm.json
+#: data/oz_main/class/palm.json
 msgid "palm"
 msgstr "palma"
 
-#: data/openzone/class/hoverTank.json
+#: data/oz_main/class/hoverTank.json
 msgid "gatling gun"
 msgstr "Gatlingova strojnica"
 
-#: data/openzone/class/hoverTank.json
+#: data/oz_main/class/hoverTank.json
 msgid "hover tank"
 msgstr "lebdeči tank"
 
-#: data/openzone/class/raptor.json
+#: data/oz_main/class/raptor.json
 msgid "raptor"
 msgstr "raptor"
-

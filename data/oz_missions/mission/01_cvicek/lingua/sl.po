@@ -2,65 +2,69 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-29 18:17+0100\n"
+"PO-Revision-Date: 2013-02-04 18:18+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
-"Language: \n"
+"Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Country: SLOVENIA\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:411
+#: data/oz_missions/mission/01_cvicek/main.lua:411
 msgid "I'm sooo thirsty. I've been drinking only water for the past week."
 msgstr "Kako sem žejen. Že cel teden pijem samo vodo."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:451
+#: data/oz_missions/mission/01_cvicek/main.lua:451
 msgid ""
-"Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n"
+"Beast Lair is your home base, hidden on an island, still safe from Colonial "
+"Army.\n"
 "\n"
-"However, supplies are low and there's a terrible shortage of beasts' favourite drink, cviček.\n"
+"However, supplies are low and there's a terrible shortage of beasts' "
+"favourite drink, cviček.\n"
 "\n"
 "You can visit the base anytime during the mission for any supplies you need."
 msgstr ""
-"Beštji brlog je tvoja domača baza, skrita na otoku, kamor noga kolonialne vojske še ni stopila.\n"
+"Beštji brlog je tvoja domača baza, skrita na otoku, kamor noga kolonialne "
+"vojske še ni stopila.\n"
 "\n"
-"V bazi primanjkuje zalog, predvsem kritično je pomanjkanje cvička, najljubše pijače beštij.\n"
+"V bazi primanjkuje zalog, predvsem kritično je pomanjkanje cvička, najljubše "
+"pijače beštij.\n"
 "\n"
-"Bazo lahko obiščeš kadarkoli med misijo, da se okrepčaš ali vzameš kakšne stvari, ki jih potrebuješ."
+"Bazo lahko obiščeš kadarkoli med misijo, da se okrepčaš ali vzameš kakšne "
+"stvari, ki jih potrebuješ."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:95
+#: data/oz_missions/mission/01_cvicek/main.lua:95
 msgid "No more thirst!"
 msgstr "Moja žeja je končno pogašena."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:424
+#: data/oz_missions/mission/01_cvicek/main.lua:424
 msgid "Escape"
 msgstr "Pobeg"
 
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #10
+#: data/oz_missions/mission/01_cvicek/intro.sequence.json:step #10
 msgid ""
 "... those will be scrapped soon.\n"
 "\n"
-"That would be a shame, no true beast would allow so much precious liquid to be thrown away."
+"That would be a shame, no true beast would allow so much precious liquid to "
+"be thrown away."
 msgstr ""
 "... te pa bodo kmalu odposlane na uničenje.\n"
 "\n"
-"To bi bila velika škoda, nobena prava beštija ne bi dopustila, da bi šlo v nič toliko žlahtnih kapljic."
+"To bi bila velika škoda, nobena prava beštija ne bi dopustila, da bi šlo v "
+"nič toliko žlahtnih kapljic."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:444
+#: data/oz_missions/mission/01_cvicek/main.lua:444
 msgid "The Farm"
 msgstr "Kmetija"
 
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #14
-msgid "He will need to do some clever tricks to escape and finish his mission ..."
+#: data/oz_missions/mission/01_cvicek/intro.sequence.json:step #14
+msgid ""
+"He will need to do some clever tricks to escape and finish his mission ..."
 msgstr "Za pobeg in dokončanje naloge bo potreboval nekaj iznajdljivosti ..."
 
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #2
+#: data/oz_missions/mission/01_cvicek/intro.sequence.json:step #2
 msgid ""
 "Beast Lair. You home village.\n"
 "\n"
@@ -68,108 +72,145 @@ msgid ""
 msgstr ""
 "Beštji Brlog. Tvoja domača vas.\n"
 "\n"
-"Trenutno njegovi prebivalci trpijo hudo pomanjkanje svoje najljubše pijače, cvička."
+"Trenutno njegovi prebivalci trpijo hudo pomanjkanje svoje najljubše pijače, "
+"cvička."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:83
+#: data/oz_missions/mission/01_cvicek/main.lua:83
 msgid "Good job!"
 msgstr "Čestitam, dobro opravljeno!"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:419
-msgid "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
-msgstr "A Kmetija še stoji? Daj jo uniči, bo mogoče potem kaj bolj pametnega po televiziji."
-
-#: data/openzone_missions/mission/01_cvicek/main.lua:424
+#: data/oz_missions/mission/01_cvicek/main.lua:419
 msgid ""
-"You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
-"\n"
-"It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
+"Is the Farm still standing? Please destroy it, maybe then there might be "
+"something better on TV."
 msgstr ""
-"Zajela te je kolonialna patrulja in zdaj si zaprt v njihovi postojanki. Jutri te bodo poslali v taborišče za osumljene terorizma in verjetno ne boš nikoli več ugledal luči svobode, zato ti ne preostane drugega, kot da poskušaš pobegniti.\n"
+"A Kmetija še stoji? Daj jo uniči, bo mogoče potem kaj bolj pametnega po "
+"televiziji."
+
+#: data/oz_missions/mission/01_cvicek/main.lua:424
+msgid ""
+"You have been caught by a Colonial patrol and they currently hold you in "
+"that Colonial outpost. Tomorrow you are being transferred to a Colonial "
+"detention camp for terrorist suspects. If you don't find a way to escape, "
+"say goodbye to freedom till the end of your life.\n"
 "\n"
-"Če ti uspe najti navigacijo Galileo, ti bo to v izjemno pomoč, saj prikazuje tvoj položaj in položaje posameznih nalog."
+"It would be extremely helpful if you can get a Galileo gadget, it will will "
+"show you destinations of your tasks and help you with navigation a lot."
+msgstr ""
+"Zajela te je kolonialna patrulja in zdaj si zaprt v njihovi postojanki. "
+"Jutri te bodo poslali v taborišče za osumljene terorizma in verjetno ne boš "
+"nikoli več ugledal luči svobode, zato ti ne preostane drugega, kot da "
+"poskušaš pobegniti.\n"
+"\n"
+"Če ti uspe najti navigacijo Galileo, ti bo to v izjemno pomoč, saj prikazuje "
+"tvoj položaj in položaje posameznih nalog."
 
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #8
-msgid "The beast hero decided to rob a military base in mountains, where large quantities of confiscated cviček are stored ..."
-msgstr "Junaška beštija se je namreč odločila oropati kar vojaško bazo visoko v gorah, kjer hranijo zasežene zaloge cvička ..."
+#: data/oz_missions/mission/01_cvicek/intro.sequence.json:step #8
+msgid ""
+"The beast hero decided to rob a military base in mountains, where large "
+"quantities of confiscated cviček are stored ..."
+msgstr ""
+"Junaška beštija se je namreč odločila oropati kar vojaško bazo visoko v "
+"gorah, kjer hranijo zasežene zaloge cvička ..."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:110
+#: data/oz_missions/mission/01_cvicek/main.lua:110
 msgid "Good riddance! Finally some decent TV programme."
 msgstr "Kmetija je šla v luft, hehe! Končno imamo gledljiv TV spored."
 
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #4
-msgid "But there was a hero who went on a long and dangerous mission to bring cviček to his home village."
-msgstr "A našel se je junak, ki je odšel na dolgo in nevarno misijo, da bi svoji vasi priskrbel zalogo cvička."
+#: data/oz_missions/mission/01_cvicek/intro.sequence.json:step #4
+msgid ""
+"But there was a hero who went on a long and dangerous mission to bring "
+"cviček to his home village."
+msgstr ""
+"A našel se je junak, ki je odšel na dolgo in nevarno misijo, da bi svoji "
+"vasi priskrbel zalogo cvička."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:451
+#: data/oz_missions/mission/01_cvicek/main.lua:451
 msgid "Beast Lair"
 msgstr "Beštji brlog"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:434
+#: data/oz_missions/mission/01_cvicek/main.lua:434
 msgid ""
-"Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
+"Steal at least 20 bottles of cviček from Colonial military base and "
+"transport them back to Beast Lair.\n"
 "\n"
-"The base is heavily defended so you will need some heavy armour to attack it.\n"
+"The base is heavily defended so you will need some heavy armour to attack "
+"it.\n"
 "\n"
-"Beware not to use explosives there, cviček bottles are very fragile and there is a explosives storage in that base.\n"
+"Beware not to use explosives there, cviček bottles are very fragile and "
+"there is a explosives storage in that base.\n"
 "\n"
-"Quest will be complete one you unload 20 bottles of cviček in the Lair (bottles inside an inventory, a box or a vehicle don't count)."
+"Quest will be complete one you unload 20 bottles of cviček in the Lair "
+"(bottles inside an inventory, a box or a vehicle don't count)."
 msgstr ""
-"Ukradi vsaj 20 steklenic cvička iz kolonialne vojaške baze in jih prepelji v Beštji brlog.\n"
+"Ukradi vsaj 20 steklenic cvička iz kolonialne vojaške baze in jih prepelji v "
+"Beštji brlog.\n"
 "\n"
 "Baza je močno varovana, zato boš za napad potreboval tank.\n"
 "\n"
-"Pazi, da v bazi ne uporabljaš eksploziva zaradi tamkajšnjega skladišča eksploziva in krhkih steklenic cvička.\n"
+"Pazi, da v bazi ne uporabljaš eksploziva zaradi tamkajšnjega skladišča "
+"eksploziva in krhkih steklenic cvička.\n"
 "\n"
-"Naloga se zaključi, ko v Brlogu raztovoriš 20 steklenic cvička (če je steklenica v inventarju, zaboju ali vozilu namreč ne šteje)."
+"Naloga se zaključi, ko v Brlogu raztovoriš 20 steklenic cvička (če je "
+"steklenica v inventarju, zaboju ali vozilu namreč ne šteje)."
 
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #13
+#: data/oz_missions/mission/01_cvicek/intro.sequence.json:step #13
 msgid ""
 "But not everything went according to plan.\n"
 "\n"
-"The hero has been captured by a Colonial patrol and is now imprisoned in an outpost, waiting for deportation to a secret prison for terrorism suspects."
+"The hero has been captured by a Colonial patrol and is now imprisoned in an "
+"outpost, waiting for deportation to a secret prison for terrorism suspects."
 msgstr ""
 "A ni šlo vse po načrtu.\n"
 "\n"
-"Junaka je zajela kolonialna patrulja in sedaj zaprt v postojanki čaka na deportacijo v skrivni zapor za teroristične osumljence."
+"Junaka je zajela kolonialna patrulja in sedaj zaprt v postojanki čaka na "
+"deportacijo v skrivni zapor za teroristične osumljence."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:414
+#: data/oz_missions/mission/01_cvicek/main.lua:414
 msgid "Cviček, cviček, cviček ... Where is cviček?"
 msgstr "Cviček, cviček, cviček ... kje je cviček?"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:444
+#: data/oz_missions/mission/01_cvicek/main.lua:444
 msgid ""
-"That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
+"That farm is a stage of an annoying reality show called 'The Farm'. It "
+"wouldn't do much harm to blow it up.\n"
 "\n"
-"The farmhouses are not very robust, so a few bombs or a heavier weapon should do the trick. And don't expect any welcome from participants of the show."
+"The farmhouses are not very robust, so a few bombs or a heavier weapon "
+"should do the trick. And don't expect any welcome from participants of the "
+"show."
 msgstr ""
-"Ta kmetija je prizorišče neumnega resničnostnega šova najbolj gledane komercialne televizije. Ne bo dosti škode, če jo razstreliš.\n"
+"Ta kmetija je prizorišče neumnega resničnostnega šova najbolj gledane "
+"komercialne televizije. Ne bo dosti škode, če jo razstreliš.\n"
 "\n"
-"Kmetijska poslopja niso preveč trdna. Nekaj dobro postavljenih bomb ali težje orožje bi moralo zadostovati. Pazi se udeležencev šova; gotovo te ne bodo veseli."
+"Kmetijska poslopja niso preveč trdna. Nekaj dobro postavljenih bomb ali "
+"težje orožje bi moralo zadostovati. Pazi se udeležencev šova; gotovo te ne "
+"bodo veseli."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:409
-msgid "Well, is cviček coming anytime soon?"
-msgstr "Bo cviček kaj kmalu?"
-
-#: data/openzone_missions/mission/01_cvicek/main.lua:416
-msgid "How's your mission going? I can't imagine how we will live without cviček."
+#: data/oz_missions/mission/01_cvicek/main.lua:416
+msgid ""
+"How's your mission going? I can't imagine how we will live without cviček."
 msgstr "Kako napreduje misija? Ne vem, kako bomo preživeli brez cvička."
 
-#: data/openzone_missions/mission/01_cvicek/description.json
-msgid "You have to escape from a Colonial outpost after a failed mission of stealing wine and try it again."
-msgstr "Med neuspelo misijo kraje cvička te je zajela kolonialna patrulja. Pobegniti moraš iz njihove postojanke in ponovno poskušati ukrasti cviček."
+#: data/oz_missions/mission/01_cvicek/description.json
+msgid ""
+"You have to escape from a Colonial outpost after a failed mission of "
+"stealing wine and try it again."
+msgstr ""
+"Med neuspelo misijo kraje cvička te je zajela kolonialna patrulja. Pobegniti "
+"moraš iz njihove postojanke in ponovno poskušati ukrasti cviček."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:434
+#: data/oz_missions/mission/01_cvicek/main.lua:434
 msgid "Steal cviček"
 msgstr "Kraja cvička"
 
-#: data/openzone_missions/mission/01_cvicek/description.json
+#: data/oz_missions/mission/01_cvicek/description.json
 msgid "Mission 1: Cviček"
 msgstr "Misija 1: Cviček"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:87
+#: data/oz_missions/mission/01_cvicek/main.lua:409
+msgid "Well, is cviček coming any time soon?"
+msgstr "Bo cviček kaj kmalu?"
+
+#: data/oz_missions/mission/01_cvicek/main.lua:87
 msgid "Yeeha! Cviček!"
 msgstr "Juhuhu! Cviček!"
-

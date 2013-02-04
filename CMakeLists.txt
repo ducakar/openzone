@@ -15,7 +15,7 @@ option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
 option( OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF )
 option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )
 option( OZ_NET "Enable networking support." OFF )
-option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1+." OFF )
+option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )

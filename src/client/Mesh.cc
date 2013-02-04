@@ -265,6 +265,8 @@ void Mesh::load( oz::InputStream* istream, uint usage )
 {
   flags = 0;
 
+  OZ_GL_CHECK_ERROR();
+
   int nVertices = istream->readInt();
   int nIndices  = istream->readInt();
 
@@ -308,6 +310,8 @@ void Mesh::load( oz::InputStream* istream, uint usage )
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
                     istream->forward( normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+      OZ_GL_CHECK_ERROR();
     }
     else {
       vertices  = new Vertex[nFrameVertices];

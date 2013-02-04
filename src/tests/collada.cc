@@ -18,28 +18,37 @@
  */
 
 /**
- * @file tests/test.cc
+ * @file tests/collada.cc
  */
 
 #include <ozCore/ozCore.hh>
 
+#include <dae.h>
+#include <1.4/dom/domCOLLADA.h>
+
 using namespace oz;
+using namespace ColladaDOM141;
 
 int main()
 {
   System::init();
 
-  File file( File::NATIVE, "TEST" );
-  file.map();
-  InputStream is = file.inputStream();
+  File file( File::NATIVE, "/home/davorin/untitled.dae" );
 
-  while( is.isAvailable() ) {
-    Log() << is.readLine() << "\n";
-  }
+  DAE dae;
+  domElement* root = dae.open( file.path().cstr() );
+  hard_assert( root != nullptr );
+  domCOLLADA* dom = static_cast<domCOLLADA*>( dae.getDom( file.name() ) );
+  hard_assert( dom != nullptr );
 
-  DArray<String> list = String( ":a::b:::c:" ).split( ':' );
-  for( const String& s : list ) {
-    Log() << '>' << s.cstr() << "\n";
+  auto geometries = dom->getLibrary_geometries_array();
+  for( size_t i = 0; i < geometries.getCount(); ++i ) {
+    Log() << "Geometry #" << i << ": " << geometries[i]->getName() << "\n";
+
+    auto meshes = geometries[i]->getGeometry_array();
+    for( size_t j = 0; j < meshes.getCount(); ++j ) {
+      Log() << "+ Mesh #" << j << ": " << meshes[j]->getName() << "\n";
+    }
   }
   return 0;
 }

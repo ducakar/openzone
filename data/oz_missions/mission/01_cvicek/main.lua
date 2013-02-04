@@ -406,7 +406,7 @@ function onCreate()
   ozBotSetH( 200 )
   ozBotSetMind( "beast_nervous" )
 
-  ozNirvanaAddMemo( oz_beasts[1], ozGettext( "Well, is cviček coming anytime soon?" ) )
+  ozNirvanaAddMemo( oz_beasts[1], ozGettext( "Well, is cviček coming any time soon?" ) )
 
   ozNirvanaAddMemo( oz_beasts[2], ozGettext( "I'm sooo thirsty. I've been drinking only water " ..
                                              "for the past week." ) )

@@ -127,21 +127,16 @@ String String::trim( const char* s )
 DArray<String> String::split( const char* s, char delimiter )
 {
   int count       = length( s );
-  int nPartitions = 0;
+  int nPartitions = 1;
   int begin       = 0;
   int end         = index( s, delimiter );
 
   // Count substrings first.
   while( end >= 0 ) {
-    if( begin != end ) {
-      ++nPartitions;
-    }
+    ++nPartitions;
 
     begin = end + 1;
     end   = index( s, delimiter, begin );
-  }
-  if( begin != count ) {
-    ++nPartitions;
   }
 
   DArray<String> array( nPartitions );
@@ -150,17 +145,13 @@ DArray<String> String::split( const char* s, char delimiter )
   end   = index( s, delimiter );
 
   for( int i = 0; end >= 0; ) {
-    if( begin != end ) {
-      array[i] = substring( s, begin, end );
-      ++i;
-    }
+    array[i] = substring( s, begin, end );
+    ++i;
 
     begin = end + 1;
     end   = index( s, delimiter, begin );
   }
-  if( begin != count ) {
-    array[nPartitions - 1] = substring( s, begin, count );
-  }
+  array[nPartitions - 1] = substring( s, begin, count );
 
   return array;
 }
@@ -853,21 +844,16 @@ String String::replace( char whatChar, char withChar ) const
 
 DArray<String> String::split( char delimiter ) const
 {
-  int nPartitions = 0;
+  int nPartitions = 1;
   int begin       = 0;
   int end         = index( buffer, delimiter );
 
   // Count substrings first.
   while( end >= 0 ) {
-    if( begin != end ) {
-      ++nPartitions;
-    }
+    ++nPartitions;
 
     begin = end + 1;
     end   = index( delimiter, begin );
-  }
-  if( begin != count ) {
-    ++nPartitions;
   }
 
   DArray<String> array( nPartitions );
@@ -876,17 +862,13 @@ DArray<String> String::split( char delimiter ) const
   end   = index( buffer, delimiter );
 
   for( int i = 0; end >= 0; ) {
-    if( begin != end ) {
-      array[i] = substring( begin, end );
-      ++i;
-    }
+    array[i] = substring( begin, end );
+    ++i;
 
     begin = end + 1;
     end   = index( delimiter, begin );
   }
-  if( begin != count ) {
-    array[nPartitions - 1] = substring( begin );
-  }
+  array[nPartitions - 1] = substring( begin );
 
   return array;
 }

@@ -66,7 +66,7 @@ int main( int argc, char** argv )
   Log::println( "Package manifest {" );
   Log::indent();
 
-  OutputStream os;
+  OutputStream os( 0 );
   os.writeChars( "ozManifest", sizeof( "ozManifest" ) );
 
   File outDir( File::NATIVE, outDirPath );

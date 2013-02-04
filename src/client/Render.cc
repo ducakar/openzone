@@ -630,10 +630,6 @@ void Render::init()
   Log::println( "OpenGL extensions {" );
   Log::indent();
 
-#ifdef GL_ES_VERSION_2_0
-  hasFBO = true;
-#endif
-
   if( strstr( version, "Mesa 7" ) != nullptr ) {
     isMesa7 = true;
   }
@@ -657,6 +653,11 @@ void Render::init()
       hasS3TC = true;
     }
   }
+
+#ifdef GL_ES_VERSION_2_0
+  hasFBO      = true;
+  hasFloatTex = false;
+#endif
 
   Log::unindent();
   Log::println( "}" );
