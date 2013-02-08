@@ -69,7 +69,7 @@ function onCreate()
 
   local bounds = { -1100, -900, 500, 700 }
 
-  for i = 1, 100 do
+  for i = 1, 200 do
     local x = -1050 + 100 * math.random()
     local y = 550 + 100 * math.random()
     local z = ozTerraHeight( x, y )

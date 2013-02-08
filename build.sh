@@ -16,7 +16,7 @@
 buildType=Debug
 platforms=(
   Linux-x86_64-Clang
-  Linux-x86_64-GCC
+#   Linux-x86_64-GCC
 #   Linux-i686-Clang
 #   Linux-i686-GCC
 #   FreeBSD-x86_64-Clang
@@ -42,7 +42,7 @@ function clean()
   for platform in ${platforms[@]}; do
     rm -rf build/$platform
   done
-  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android}
+  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,boundle}
 }
 
 function build()

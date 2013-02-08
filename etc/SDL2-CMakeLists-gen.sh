@@ -57,4 +57,6 @@ install( PROGRAMS \${CMAKE_CURRENT_BINARY_DIR}/sdl2-config DESTINATION bin )
 
 EOF
 
-sed -r 's|Java_org_libsdl_app_|Java_com_openzone_|g' -i src/core/android/SDL_android.cpp
+sed -r 's|Java_org_libsdl_app_|Java_com_github_ducakar_openzone_|g' -i \
+    src/core/android/SDL_android.cpp \
+    src/main/android/SDL_android_main.cpp

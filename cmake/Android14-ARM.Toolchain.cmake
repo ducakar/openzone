@@ -11,7 +11,7 @@ set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/Android14-ARM" )
 set( PLATFORM_FLAGS             "-fPIC -Wno-psabi --sysroot=${PLATFORM_PREFIX}" )
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/include" )
 set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/libs/armeabi/include" )
-set( PLATFORM_STL_LIBRARY       "${PLATFORM_STL_PREFIX}/libs/armeabi/libgnustl_shared.so" )
+set( PLATFORM_STL_LIBRARY       "${PLATFORM_STL_PREFIX}/libs/armeabi/libgnustl_static.a" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
 set( CMAKE_SYSTEM_PROCESSOR     "ARM" CACHE STRING "Target processor." )

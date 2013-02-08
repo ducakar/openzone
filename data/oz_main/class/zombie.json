@@ -14,7 +14,7 @@
 
   "nameList":           "wesnoth.ogre-male",
 
-  "mindFunc":           "predator",
+  "mindFunc":           "randomWalk",
 
   "nItems":             4,
   "defaultItems":

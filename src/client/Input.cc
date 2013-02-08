@@ -137,6 +137,8 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDLK_RETURN;
   keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDLK_KP_MULTIPLY;
 
+  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDLK_q;
+  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDLK_e;
   keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDLK_d;
   keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDLK_a;
   keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDLK_w;
@@ -210,6 +212,8 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_RETURN;
   keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDL_SCANCODE_KP_MULTIPLY;
 
+  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_Q;
+  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_E;
   keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_D;
   keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_A;
   keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDL_SCANCODE_W;
@@ -480,6 +484,7 @@ void Input::update()
 
     mouseX *= factor;
     mouseY *= factor;
+    mouseW *= mouseWheelStep;
   }
 # endif
 #endif
@@ -614,6 +619,7 @@ void Input::init()
   mouseAccelC0        = mouseConfig["acceleration.c0"].get( 1.0f );
   mouseAccelC1        = mouseConfig["acceleration.c1"].get( 0.0f );
   mouseAccelC2        = mouseConfig["acceleration.c2"].get( 0.0004f );
+  mouseWheelStep      = mouseConfig["wheelStep"].get( 3.0f );
 
   keySensX            = keyboardConfig["sensitivity.x"].get( 0.04f );
   keySensY            = keyboardConfig["sensitivity.y"].get( 0.04f );
@@ -658,6 +664,7 @@ void Input::destroy()
   mouseConfig.add( "acceleration.c0",        mouseAccelC0 );
   mouseConfig.add( "acceleration.c1",        mouseAccelC1 );
   mouseConfig.add( "acceleration.c2",        mouseAccelC2 );
+  mouseConfig.add( "wheelStep",              mouseWheelStep );
 
   keyboardConfig.add( "sensitivity.x",       keySensX );
   keyboardConfig.add( "sensitivity.y",       keySensY );

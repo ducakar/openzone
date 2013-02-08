@@ -133,13 +133,23 @@ int Client::init( int argc, char** argv )
     }
   }
 
-#if defined( __native_client__ )
+#if defined( __ANDROID__ )
+
+  String configDir = OZ_ANDROID_ROOT "/config/openzone";
+  String localDir  = OZ_ANDROID_ROOT "/local/share/openzone";
+  String musicDir  = OZ_ANDROID_ROOT "/music";
+
+  File::mkdir( OZ_ANDROID_ROOT "/config" );
+  File::mkdir( OZ_ANDROID_ROOT "/local" );
+  File::mkdir( OZ_ANDROID_ROOT "/local/share" );
+
+#elif defined( __native_client__ )
 
   File::init( File::NATIVE, File::TEMPORARY, 64*1024*1024 );
 
   String configDir = "/config/openzone";
-  String localDir = "/local/share/openzone";
-  String musicDir = "/music";
+  String localDir  = "/local/share/openzone";
+  String musicDir  = "/music";
 
   File::mkdir( "/config" );
   File::mkdir( "/local" );

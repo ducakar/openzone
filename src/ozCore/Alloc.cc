@@ -64,7 +64,7 @@ struct TraceEntry
 };
 
 static TraceEntry* volatile firstTraceEntry[2] = { nullptr, nullptr };
-static volatile bool        traceLock          = false;
+static volatile bool        traceLock          = 0;
 
 static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 {
@@ -77,8 +77,8 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
   st->size       = size;
   st->stackTrace = StackTrace::current( 2 );
 
-  while( __sync_lock_test_and_set( &traceLock, true ) ) {
-    while( traceLock );
+  while( __sync_lock_test_and_set( &traceLock, 1 ) != 0 ) {
+    while( traceLock != 0 );
   }
 
   st->next = firstTraceEntry[mode];
@@ -89,8 +89,8 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 
 static void eraseTraceEntry( AllocMode mode, void* ptr )
 {
-  while( __sync_lock_test_and_set( &traceLock, true ) ) {
-    while( traceLock );
+  while( __sync_lock_test_and_set( &traceLock, 1 ) != 0 ) {
+    while( traceLock != 0 );
   }
 
   TraceEntry* st   = firstTraceEntry[mode];

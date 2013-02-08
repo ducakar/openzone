@@ -73,8 +73,10 @@ add_library( ozCore
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
-if( ANDROID )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -llog ${PLATFORM_STL_LIBRARY} )
+if( EMSCRIPTEN )
+#   target_link_libraries( ozCore )
+elseif( ANDROID )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lOpenSLES -llog ${PLATFORM_STL_LIBRARY} )
 elseif( NACL )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )

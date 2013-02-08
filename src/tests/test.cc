@@ -25,21 +25,28 @@
 
 using namespace oz;
 
+struct Bar
+{
+  int value = 21;
+};
+
+extern Bar bar;
+
+struct Foo
+{
+  Foo()
+  {
+    Log() << bar.value << "\n";
+  }
+};
+
+extern Foo foo;
+
+Foo foo;
+Bar bar;
+
 int main()
 {
   System::init();
-
-  File file( File::NATIVE, "TEST" );
-  file.map();
-  InputStream is = file.inputStream();
-
-  while( is.isAvailable() ) {
-    Log() << is.readLine() << "\n";
-  }
-
-  DArray<String> list = String( ":a::b:::c:" ).split( ':' );
-  for( const String& s : list ) {
-    Log() << '>' << s.cstr() << "\n";
-  }
   return 0;
 }

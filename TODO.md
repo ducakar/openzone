@@ -1,10 +1,11 @@
-CURRENT
+0.4
 
 - fix random splash event bug
 - TalkFrame
 - 6-direction-layered meshes
+- fix CreditsMenu scrolling
 
-0.4
+0.5
 
 - new löök
 - matrix
@@ -36,9 +37,8 @@ CURRENT
     * new tutorial missions
     * RTS mission
 
-0.5
+0.6
 
-- per-game data subdirs
 - client
     * networking
     * video to texture
@@ -54,3 +54,4 @@ CURRENT
     * finish ozDynamics
 - matrix
     * collision islands
+- per-game data subdirs

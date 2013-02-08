@@ -278,13 +278,18 @@ void Render::drawGeometry()
   caelumMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
+  Mesh::drawScheduled( Mesh::SOLID_BIT );
+
+  currentMicros = Time::uclock();
+  meshesMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
+
   terra.draw();
 
   currentMicros = Time::uclock();
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Mesh::drawScheduled( Mesh::SOLID_BIT );
   Mesh::drawScheduled( Mesh::ALPHA_BIT );
   Mesh::clearScheduled();
 

@@ -31,12 +31,15 @@
 
 #if defined( __ANDROID__ )
 # include <jni.h>
-extern "C" void SDL_Android_Init( JNIEnv* env, jclass clazz );
-extern "C" void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
+extern "C"
+void SDL_Android_Init( JNIEnv* env, jclass clazz );
+extern "C"
+void Java_com_github_ducakar_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
 #elif defined( __native_client__ )
 # include <SDL_nacl.h>
 #elif defined( _WIN32 )
-extern "C" int SDL_main( int argc, char **argv );
+extern "C"
+int SDL_main( int argc, char **argv );
 #endif
 
 using namespace oz;
@@ -50,7 +53,7 @@ static void crashCleanup()
 }
 
 #if defined( __ANDROID__ )
-void Java_com_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
+void Java_com_github_ducakar_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
 void MainInstance::mainThreadMain( void* instance )
 #elif defined( _WIN32 )

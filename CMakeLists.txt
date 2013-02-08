@@ -217,8 +217,12 @@ mark_as_advanced( OZ_HOSTNAME )
 #
 
 if( ANDROID )
+  file( GLOB dataFiles share/openzone/*.7z )
+
   add_custom_command( OUTPUT ../Android
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/etc/android-project ../Android )
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/etc/android-project ../Android
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/share/openzone
+            ../Android/assets/share/openzone )
   add_custom_target( android_project ALL DEPENDS ${CMAKE_BINARY_DIR}/../Android )
 endif()
 

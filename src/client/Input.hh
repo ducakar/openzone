@@ -173,6 +173,7 @@ class Input
     float  mouseAccelC0;
     float  mouseAccelC1;
     float  mouseAccelC2;
+    float  mouseWheelStep;
 
     float  keySensX;
     float  keySensY;

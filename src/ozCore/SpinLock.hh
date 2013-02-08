@@ -42,7 +42,7 @@ class SpinLock
 {
   private:
 
-    volatile bool locked; ///< True iff locked.
+    volatile int value; ///< 0 - unlocked, 1 - locked.
 
   public:
 
@@ -51,7 +51,7 @@ class SpinLock
      */
     OZ_ALWAYS_INLINE
     explicit SpinLock() :
-      locked( false )
+      value( 0 )
     {}
 
     /**
@@ -60,7 +60,7 @@ class SpinLock
     OZ_ALWAYS_INLINE
     ~SpinLock()
     {
-      hard_assert( !locked );
+      hard_assert( value == 0 );
     }
 
     /**
@@ -79,17 +79,17 @@ class SpinLock
     OZ_ALWAYS_INLINE
     bool isLocked() const
     {
-      return locked;
+      return value != 0;
     }
 
     /**
-     * Loop performing a lock operation until it switches from unlocked to locked state.
+     * Loop performing a lock operation until it switches from an unlocked to a locked state.
      */
     OZ_ALWAYS_INLINE
     void lock()
     {
-      while( __sync_lock_test_and_set( &locked, true ) ) {
-        while( locked );
+      while( __sync_lock_test_and_set( &value, 1 ) != 0 ) {
+        while( value != 0 );
       }
     }
 
@@ -101,7 +101,7 @@ class SpinLock
     OZ_ALWAYS_INLINE
     bool tryLock()
     {
-      return !__sync_lock_test_and_set( &locked, true );
+      return __sync_lock_test_and_set( &value, 1 ) == 0;
     }
 
     /**
@@ -110,7 +110,7 @@ class SpinLock
     OZ_ALWAYS_INLINE
     void unlock()
     {
-      __sync_lock_release( &locked );
+      __sync_lock_release( &value );
     }
 
 };

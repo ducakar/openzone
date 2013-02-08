@@ -652,6 +652,7 @@ bool File::read( char* buffer, int* size ) const
     close( fd );
 
     *size = result;
+
 #endif
   }
 
@@ -868,6 +869,9 @@ DArray<File> File::ls() const
   }
   else {
 #if defined( __native_client__ )
+
+    // TODO: Implement when pp::DirectoryReader gets into stable PPAPI.
+
 #elif defined( _WIN32 )
 
     WIN32_FIND_DATA entity;

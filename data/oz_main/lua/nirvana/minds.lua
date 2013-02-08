@@ -28,21 +28,25 @@
 function randomWalk( localData )
   ozSelfAction( OZ_ACTION_FORWARD )
 
-  if math.random( 3 ) == 1 then
-    ozSelfAddH( math.random() * 120.0 - 60.0 )
+  if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+    ozSelfAction( OZ_ACTION_WALK )
   end
-  if math.random( 10 ) == 1 then
-    ozSelfAction( OZ_ACTION_JUMP )
-  end
-  if math.random( 10 ) == 1 then
-    ozSelfAction( OZ_ACTION_WALK );
+  if math.random( 4 ) == 1 then
+    ozSelfAddH( math.random() * 180 - 90 )
   end
 end
 
 function randomRampage( localData )
   ozSelfAction( OZ_ACTION_FORWARD )
-  if math.random( 3 ) == 1 then
-    ozSelfAddH( math.random() * 120.0 - 60.0 )
+
+  if math.random( 4 ) == 1 then
+    ozSelfAddH( math.random() * 180 - 90 )
+  end
+  if math.random( 8 ) == 1 then
+    ozSelfAction( OZ_ACTION_JUMP )
+  end
+  if math.random( 8 ) == 1 then
+    ozSelfAction( OZ_ACTION_WALK );
   end
 end
 
@@ -92,7 +96,7 @@ end
 function predator( localData )
   local self = ozObjGetIndex()
   local minDistance = 100
-  local heading
+  local heading = 0
 
   ozSelfBindOverlaps( OZ_OBJECTS_BIT, 20 )
 
@@ -106,14 +110,14 @@ function predator( localData )
       end
     end
   end
-  if heading then
+  if minDistance ~= 100 then
     ozSelfSetH( heading )
     if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
       ozSelfAction( OZ_ACTION_WALK )
     end
   else
-    if math.random( 100 ) == 1 then
-      ozSelfAddH( math.random( 120 ) - 60 )
+    if math.random( 8 ) == 1 then
+      ozSelfAddH( math.random( 180 ) - 90 )
     end
     if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
       ozSelfAction( OZ_ACTION_WALK )

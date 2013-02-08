@@ -1,6 +1,8 @@
 OpenZone
 ========
 
+![logo](http://ducakar.github.com/openzone/img/title.jpg)
+
 Simple cross-platform FPS/RTS game engine.
 
     http://ducakar.github.com/openzone/

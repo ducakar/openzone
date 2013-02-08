@@ -16,7 +16,7 @@
 #
 
 platforms=(
-  NaCl-x86_64
+#   NaCl-x86_64
 #   NaCl-i686
 #   NaCl-ARM
 #   PNaCl
@@ -650,6 +650,7 @@ function build()
   setup_ndk_ARM     && build_sdl2
   setup_ndk_ARMv7a  && build_sdl2
   setup_ndk_MIPS    && build_sdl2
+#   setup_emscripten  && build_sdl2
 
   # FreeType
   setup_nacl_x86_64 && build_freetype
@@ -660,7 +661,7 @@ function build()
   setup_ndk_ARM     && build_freetype
   setup_ndk_ARMv7a  && build_freetype
   setup_ndk_MIPS    && build_freetype
-  setup_emscripten  && build_freetype
+#   setup_emscripten  && build_freetype
 
   # SDL_ttf
   setup_nacl_x86_64 && build_sdl_ttf
@@ -671,6 +672,7 @@ function build()
   setup_ndk_ARM     && build_sdl2_ttf
   setup_ndk_ARMv7a  && build_sdl2_ttf
   setup_ndk_MIPS    && build_sdl2_ttf
+#   setup_emscripten  && build_sdl2_ttf
 
   # OpenAL Soft
   setup_nacl_x86_64 && build_openal
@@ -681,7 +683,7 @@ function build()
   setup_ndk_ARM     && build_openal
   setup_ndk_ARMv7a  && build_openal
   setup_ndk_MIPS    && build_openal
-  setup_emscripten  && build_openal
+#   setup_emscripten  && build_openal
 
   # libogg
   setup_nacl_x86_64 && build_libogg

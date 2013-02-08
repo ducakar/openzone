@@ -20,8 +20,8 @@ set( CMAKE_C_COMPILER           "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-clan
 set( CMAKE_CXX_COMPILER         "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-clang++" )
 set( CMAKE_C_FLAGS              "-U__STRICT_ANSI__" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS            "-U__STRICT_ANSI__" CACHE STRING "" )
-set( CMAKE_C_FLAGS_RELEASE      "-O4 -ffast-math" )
-set( CMAKE_CXX_FLAGS_RELEASE    "-O4 -ffast-math" )
+set( CMAKE_C_FLAGS_RELEASE      "-O4 -ffast-math" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS_RELEASE    "-O4 -ffast-math" CACHE STRING "" )
 
 cmake_force_c_compiler(         ${CMAKE_C_COMPILER} Clang )
 cmake_force_cxx_compiler(       ${CMAKE_CXX_COMPILER} Clang )

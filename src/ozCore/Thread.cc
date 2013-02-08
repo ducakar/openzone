@@ -51,7 +51,7 @@ static const int NAME_LENGTH = 15;
 
 #ifdef _WIN32
 static DWORD          nameKey;
-static volatile bool  nameOnce          = false;
+static volatile int   onceLock          = 0;
 static volatile bool  isNameInitialised = false;
 #else
 static pthread_key_t  nameKey;
@@ -62,10 +62,20 @@ static void initName()
 {
 #ifdef _WIN32
 
-  nameKey = TlsAlloc();
-  if( nameKey == TLS_OUT_OF_INDEXES ) {
-    OZ_ERROR( "Thread name key creation failed" );
+  if( __sync_lock_test_and_set( &onceLock, 1 ) != 0 ) {
+    while( onceLock != 0 );
   }
+
+  if( !isNameInitialised ) {
+    nameKey = TlsAlloc();
+
+    if( nameKey == TLS_OUT_OF_INDEXES ) {
+      OZ_ERROR( "Thread name key creation failed" );
+    }
+    isNameInitialised = true;
+  }
+
+  __sync_lock_release( &onceLock );
 
 #else
 
@@ -84,16 +94,7 @@ static struct MainThreadNameInitialiser
   {
 #ifdef _WIN32
 
-    if( !isNameInitialised ) {
-      if( __sync_lock_test_and_set( &nameOnce, true ) ) {
-        while( !isNameInitialised );
-      }
-      else {
-        initName();
-        isNameInitialised = true;
-      }
-    }
-
+    initName();
     TlsSetValue( nameKey, const_cast<char*>( "main" ) );
 
 #else
@@ -132,17 +133,7 @@ DWORD WINAPI Thread::Descriptor::threadMain( void* data )
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  if( !isNameInitialised ) {
-    if( __sync_lock_test_and_set( &nameOnce, true ) ) {
-      while( !isNameInitialised );
-    }
-    else {
-      __sync_synchronize();
-
-      initName();
-      isNameInitialised = true;
-    }
-  }
+  initName();
   TlsSetValue( nameKey, descriptor->name );
 
   System::threadInit();
@@ -175,7 +166,7 @@ void* Thread::Descriptor::threadMain( void* data )
 
   javaVM->AttachCurrentThread( &jniEnv, nullptr );
 #elif defined( __native_client__ )
-//   if( System::javaVM == nullptr ) {
+//   if( System::instance == nullptr ) {
 //     OZ_ERROR( "System::instance must be set before starting new threads" );
 //   }
 //

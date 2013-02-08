@@ -154,10 +154,10 @@ static const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_R
 
 #endif
 
-static volatile bool         isBellPlaying      = false;
-static bool                  isDebuggerAttached = false;
+static volatile int          bellLock           = 0;
 static int                   initFlags          = 0;
 static System::CrashHandler* crashHandler       = nullptr;
+static bool                  isDebuggerAttached = false;
 
 OZ_NORETURN
 static void abort( bool doHalt );
@@ -291,7 +291,7 @@ static void stopBellCallback( void* info_, int )
   free( info->audio );
   free( info );
 
-  __sync_lock_release( &isBellPlaying );
+  __sync_lock_release( &bellLock );
 }
 
 static void bellPlayCallback( void* buffer, uint, void* info_ )
@@ -338,7 +338,7 @@ static void bellInitCallback( void*, int )
     free( info->audio );
     free( info );
 
-    __sync_lock_release( &isBellPlaying );
+    __sync_lock_release( &bellLock );
     return;
   }
 }
@@ -382,7 +382,7 @@ static DWORD WINAPI bellMain( void* )
   PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
   free( wave );
 
-  __sync_lock_release( &isBellPlaying );
+  __sync_lock_release( &bellLock );
   return 0;
 }
 
@@ -408,7 +408,7 @@ static void* bellMain( void* )
     pa_simple_drain( pa, nullptr );
     pa_simple_free( pa );
 
-    __sync_lock_release( &isBellPlaying );
+    __sync_lock_release( &bellLock );
     return nullptr;
   }
 
@@ -419,7 +419,7 @@ static void* bellMain( void* )
       ( fd = open( "/dev/dsp0", O_WRONLY, 0 ) ) < 0 &&
       ( fd = open( "/dev/dsp1", O_WRONLY, 0 ) ) < 0 )
   {
-    __sync_lock_release( &isBellPlaying );
+    __sync_lock_release( &bellLock );
     return nullptr;
   }
 
@@ -437,7 +437,7 @@ static void* bellMain( void* )
   {
     close( fd );
 
-    __sync_lock_release( &isBellPlaying );
+    __sync_lock_release( &bellLock );
     return nullptr;
   }
 
@@ -455,7 +455,7 @@ static void* bellMain( void* )
 
   snd_pcm_t* alsa;
   if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
-    __sync_lock_release( &isBellPlaying );
+    __sync_lock_release( &bellLock );
     return nullptr;
   }
 
@@ -475,7 +475,7 @@ static void* bellMain( void* )
   {
     snd_pcm_close( alsa );
 
-    __sync_lock_release( &isBellPlaying );
+    __sync_lock_release( &bellLock );
     return nullptr;
   }
 
@@ -492,7 +492,7 @@ static void* bellMain( void* )
 
 #endif
 
-  __sync_lock_release( &isBellPlaying );
+  __sync_lock_release( &bellLock );
   return nullptr;
 }
 
@@ -506,7 +506,7 @@ static void waitBell()
   }
 #endif
 
-  while( isBellPlaying ) {
+  while( bellLock != 0 ) {
 #ifdef _WIN32
     Sleep( 10 );
 #else
@@ -594,34 +594,37 @@ void System::bell()
 {
 #if defined( __native_client__ )
 
-  if( instance != nullptr && !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
+  if( instance != nullptr && !__sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     core = pp::Module::Get()->core();
     core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, nullptr ) );
   }
 
 #elif defined( _WIN32 )
 
-  if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
+  if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
+
     if( bellThread == nullptr ) {
-      OZ_ERROR( "Bell thread creation failed" );
+      __sync_lock_release( &bellLock );
     }
-    CloseHandle( bellThread );
+    else {
+      CloseHandle( bellThread );
+    }
   }
 
 #else
 
-  if( !__sync_lock_test_and_set( &isBellPlaying, true ) ) {
+  if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     pthread_t      bellThread;
     pthread_attr_t bellThreadAttr;
 
     pthread_attr_init( &bellThreadAttr );
     pthread_attr_setdetachstate( &bellThreadAttr, PTHREAD_CREATE_DETACHED );
 
-    if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) != 0 ) {
-      OZ_ERROR( "Bell thread creation failed" );
+    if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) == 0 ) {
+      pthread_attr_destroy( &bellThreadAttr );
+      __sync_lock_release( &bellLock );
     }
-    pthread_attr_destroy( &bellThreadAttr );
   }
 
 #endif

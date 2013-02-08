@@ -39,6 +39,8 @@ namespace client
 namespace ui
 {
 
+const float Inventory::ROTATION_VEL = -0.02f;
+
 void Inventory::updateReferences()
 {
   owner = camera.botObj;
@@ -182,9 +184,6 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
     if( item == nullptr ) {
       continue;
     }
-    if( i == tagged ) {
-      taggedItem = item;
-    }
 
     hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
@@ -196,6 +195,15 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
     tf.model.scale( Vec3( scale, scale, scale ) );
     tf.model.rotateX( Math::rad( -45.0f ) );
     tf.model.rotateZ( Math::rad( +70.0f ) );
+
+    if( i == tagged ) {
+      taggedItem = item;
+
+      if( tagged == cachedTaggedItemIndex ) {
+        taggedItemRotation += ROTATION_VEL;
+        tf.model.rotateZ( taggedItemRotation );
+      }
+    }
 
     context.drawImago( item, nullptr );
 
@@ -256,6 +264,7 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
 
   if( tagged != cachedTaggedItemIndex ) {
     cachedTaggedItemIndex = tagged;
+    taggedItemRotation    = 0.0f;
 
     itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
                   Font::SANS, "%s", taggedClazz->title.cstr() );
@@ -359,6 +368,7 @@ void Inventory::onDraw()
 
   if( taggedOwner < 0 && taggedOther < 0 ) {
     cachedTaggedItemIndex = -1;
+    taggedItemRotation    = 0.0f;
   }
 }
 
@@ -366,8 +376,7 @@ Inventory::Inventory() :
   Frame( COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
   owner( nullptr ), other( nullptr ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-  cachedContainerIndex( -1 ),
-  cachedTaggedItemIndex( -1 ),
+  cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ), taggedItemRotation( 0.0f ),
   taggedOwner( -1 ), taggedOther( -1 ),
   scrollOwner( 0 ), scrollOther( 0 ),
   isMouseOver( false )
