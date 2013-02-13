@@ -92,8 +92,10 @@ void BotAudio::play( const Audio* parent )
 
     if( currStep != prevStep ) {
       if( bot->state & Bot::SWIMMING_BIT ) {
-        if( !( bot->state & Bot::SUBMERGED_BIT ) && sounds[Bot::EVENT_SWIM] >= 0 ) {
-          playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot );
+        int sample = Bot::EVENT_SWIM_SURFACE + ( ( bot->state & Bot::SUBMERGED_BIT ) != 0 );
+
+        if( sounds[sample] >= 0 ) {
+          playSound( sounds[sample], 1.0f, bot );
         }
       }
       else if( recent[Object::EVENT_FRICTING] != 0 ) {

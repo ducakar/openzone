@@ -29,23 +29,27 @@ function healUser( l )
   ozBindUser()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
-    ozUseFailed()
+    return false
   else
     ozObjAddLife( 100.0 )
   end
+
+  return true
 end
 
 function healUser_disposable( l )
   ozBindUser()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
-    ozUseFailed()
+    return false
   else
     ozObjAddLife( 100.0 )
 
     ozBindSelf()
     ozObjDestroy( true )
   end
+
+  return true
 end
 
 function meleeAttack( l )
@@ -54,21 +58,23 @@ function meleeAttack( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 )
 
   while ozBindNextObj() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 50.0 * math.random() )
     end
   end
+
+  return true
 end
 
 function spawnSmallExplosion( l )
-  ozOrbisAddObj( OZ_FORCE, "smallExplosion", ozObjGetPos() );
+  ozOrbisAddObj( OZ_FORCE, "smallExplosion", ozObjGetPos() )
 end
 
 function spawnBigExplosion( l )
-  ozOrbisAddObj( OZ_FORCE, "bigExplosion", ozObjGetPos() );
+  ozOrbisAddObj( OZ_FORCE, "bigExplosion", ozObjGetPos() )
 end
 
 function smallExplosion_onUpdate( l )

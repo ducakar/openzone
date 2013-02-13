@@ -42,23 +42,28 @@ bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   ms.frag         = nullptr;
   ms.objIndex     = 0;
   ms.strIndex     = 0;
-  ms.hasUseFailed = false;
 
   hard_assert( l_gettop() == 1 && ms.self != nullptr );
 
   l_getglobal( functionName );
   l_rawgeti( 1, ms.self->index );
-  l_pcall( 1, 0 );
+  l_pcall( 1, 1 );
 
-  if( l_gettop() != 1 ) {
-    Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
-                  ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
-    System::bell();
+  bool success = true;
 
-    l_pop( 1 );
+  if( l_gettop() == 2 ) {
+    if( l_type( 2 ) == LUA_TSTRING ) {
+      Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
+                    ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
+      System::bell();
+    }
+    else {
+      success = l_tobool( 2 );
+    }
+    l_settop( 1 );
   }
-
-  return !ms.hasUseFailed;
+  hard_assert( l_gettop() == 1 );
+  return success;
 }
 
 void Lua::registerObject( int index )
@@ -131,8 +136,6 @@ void Lua::init()
 
   IMPORT_FUNC( ozError );
   IMPORT_FUNC( ozPrintln );
-
-  IMPORT_FUNC( ozUseFailed );
 
   /*
    * Orbis

@@ -88,17 +88,15 @@ void Weapon::trigger( Bot* user )
   const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
   if( shotTime == 0.0f ) {
+    bool success = false;
+
     shotTime = clazz->shotInterval;
 
-    if( nRounds == 0 ) {
-      addEvent( EVENT_SHOT_EMPTY, 1.0f );
-    }
-    else {
+    if( nRounds != 0 && lua.objectCall( clazz->onShot, this, user ) ) {
       nRounds = max( -1, nRounds - 1 );
-
-      addEvent( EVENT_SHOT, 1.0f );
-      lua.objectCall( clazz->onShot, this, user );
+      success = true;
     }
+    addEvent( EVENT_SHOT_EMPTY + success, 1.0f );
   }
 }
 

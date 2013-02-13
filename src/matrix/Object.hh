@@ -280,11 +280,11 @@ class Object : public AABB
       if( !( flags & DESTROYED_BIT ) ) {
         life = 0.0f;
         flags |= DESTROYED_BIT;
-        addEvent( EVENT_DESTROY, 1.0f );
 
         if( flags & DESTROY_FUNC_BIT ) {
           onDestroy();
         }
+        addEvent( EVENT_DESTROY, 1.0f );
       }
     }
 

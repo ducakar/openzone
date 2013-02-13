@@ -1,11 +1,9 @@
+![logo](http://ducakar.github.com/openzone/img/title.jpg)
+
 OpenZone
 ========
 
-![logo](http://ducakar.github.com/openzone/img/title.jpg)
-
-Simple cross-platform FPS/RTS game engine.
-
-    http://ducakar.github.com/openzone/
+Simple cross-platform FPS/RTS game engine. http://ducakar.github.com/openzone/.
 
 This README file is intended for developers only. See `doc/README.html` if you are an end-user.
 
@@ -267,8 +265,6 @@ The following alternative launches are available:
   archives, HTML pages ...), starts a simple python web server in that directory at port 8000
   (`python -m http.server`) and opens `localhost:8000` in chromium browser to test the web-based
   NaCl port. If `strip` is passed as the second option, binaries are stripped too.
-- `pnacl`: Same as `nacl` command but create links `.nexe`s that were created from a `.pexe`
-  (use `./build.sh pnacl`).
 
 Documentation
 -------------

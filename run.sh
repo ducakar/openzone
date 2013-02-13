@@ -12,8 +12,6 @@
 #   archives, HTML pages ...), starts a simple python web server in that directory at port 8000
 #   (`python -m http.server`) and opens `localhost:8000` in chromium browser to test the web-based
 #   NaCl port. If `strip` is passed as the second option, binaries are stripped too.
-# - `pnacl`: Same as `nacl` command but create links `.nexe`s that were created from a `.pexe`
-#   (use `./build.sh pnacl`).
 #
 
 defaultPlatform=Linux-x86_64-Clang
@@ -28,19 +26,11 @@ function run_nacl()
 
   # Just create symlinks instead of copying.
   for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
-           build/NaCl-*/src/tools/openzone.*.nexe etc/nacl/openzone.nmf \
-           etc/nacl/openzone.??.html doc
+           build/NaCl-*/src/tools/openzone.*.nexe build/PNaCl/src/tools/openzone.pexe \
+           etc/nacl/openzone.nmf etc/nacl/openzone.??.html doc
   do
     [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
   done
-
-  if [[ $cmd == pnacl ]]; then
-    rm -f build/NaCl-test/openzone.*.nexe
-
-    for i in build/PNaCl/src/tools/openzone.*.nexe; do
-      ln -sf ../../$i build/NaCl-test
-    done
-  fi
 
   # Strip binaries if `strip` option is given.
   if [[ $arg == strip ]]; then
@@ -82,7 +72,7 @@ case $1 in
     shift
     exec wine bin/Windows-i686/openzone.exe -p . $@
     ;;
-  nacl|pnacl)
+  nacl)
     run_nacl
     ;;
   *)

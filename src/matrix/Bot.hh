@@ -48,7 +48,8 @@ class Bot : public Dynamic
     // Step and swim events are not in use but merely reserve sound slots.
     static const int EVENT_STEP             = 13;
     static const int EVENT_WATERSTEP        = 14;
-    static const int EVENT_SWIM             = 15;
+    static const int EVENT_SWIM_SURFACE     = 15;
+    static const int EVENT_SWIM_SUBMERGED   = 16;
 
     /*
      * ACTIONS

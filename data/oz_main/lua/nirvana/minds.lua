@@ -46,7 +46,7 @@ function randomRampage( localData )
     ozSelfAction( OZ_ACTION_JUMP )
   end
   if math.random( 8 ) == 1 then
-    ozSelfAction( OZ_ACTION_WALK );
+    ozSelfAction( OZ_ACTION_WALK )
   end
 end
 

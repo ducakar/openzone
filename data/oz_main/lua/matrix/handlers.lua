@@ -29,7 +29,7 @@ function cvicek_onUse( l )
   ozBindUser()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
-    ozUseFailed()
+    return false
   else
     ozObjAddLife( 50 )
     ozBotAddStamina( 30 )
@@ -37,6 +37,8 @@ function cvicek_onUse( l )
     ozBindSelf()
     ozObjDestroy( true )
   end
+
+  return true
 end
 
 function bomb_onUse( l )
@@ -47,6 +49,8 @@ function bomb_onUse( l )
     l.ticks = nil
     ozObjEnableUpdate( false )
   end
+
+  return true
 end
 
 function bomb_onUpdate( l )
@@ -83,4 +87,6 @@ function serviceStation_onUse( l )
       ozVehicleService()
     end
   end
+
+  return true
 end

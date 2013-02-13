@@ -138,7 +138,7 @@ if( NOT PLATFORM_EMBEDDED )
   mark_as_advanced( FREEIMAGE_LIBRARY )
 
   if( NOT FREEIMAGE_LIBRARY )
-    message( FATAL_ERROR "FreeImage library missing" )
+    message( FATAL_ERROR "FreeImage library is missing" )
   endif()
 
   if( OZ_NONFREE )
@@ -146,7 +146,7 @@ if( NOT PLATFORM_EMBEDDED )
     mark_as_advanced( SQUISH_LIBRARY )
 
     if( NOT SQUISH_LIBRARY )
-      message( FATAL_ERROR "libsquish missing (required by OZ_NONFREE)" )
+      message( FATAL_ERROR "libsquish library is missing (required by OZ_NONFREE)" )
     endif()
   endif()
 endif()
@@ -192,8 +192,7 @@ else()
 endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )
-# set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fdata-sections -ffunction-sections" )
-# set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections" )
+set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-fwhole-program" )
 
 # Strings for BuildInfo class.
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

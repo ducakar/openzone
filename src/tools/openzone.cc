@@ -45,13 +45,6 @@ int SDL_main( int argc, char **argv );
 using namespace oz;
 using namespace oz::client;
 
-static void crashCleanup()
-{
-#if SDL_MAJOR_VERSION < 2
-  SDL_WM_GrabInput( SDL_GRAB_OFF );
-#endif
-}
-
 #if defined( __ANDROID__ )
 void Java_com_github_ducakar_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
@@ -70,7 +63,7 @@ int main( int argc, char** argv )
   System::instance = static_cast<pp::Instance*>( instance );
 #endif
 
-  System::init( System::DEFAULT_MASK, &crashCleanup );
+  System::init( System::DEFAULT_MASK, &SDL_Quit );
 
   int exitCode = EXIT_FAILURE;
 

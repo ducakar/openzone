@@ -64,26 +64,12 @@ struct MatrixLuaState
 
   List<Struct*> structs;
   List<Object*> objects;
-
-  bool          hasUseFailed;
 };
 
 static MatrixLuaState ms;
 
 /// @addtogroup luaapi
 /// @{
-
-/*
- * General functions
- */
-
-static int ozUseFailed( lua_State* l )
-{
-  ARG( 0 );
-
-  ms.hasUseFailed = true;
-  return 1;
-}
 
 /*
  * Orbis

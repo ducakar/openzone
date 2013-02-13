@@ -131,9 +131,10 @@ void CreditsMenu::onDraw()
   for( int i = 0; i < labels.length(); ++i ) {
     int x = ( width - 240 ) / 2;
     int y = height - 60 - ( i + 1 )*stride + bias;
+    int j = ( scroll + i ) % labels.length();
 
-    labels[i].set( x, y );
-    labels[i].draw( this, true );
+    labels[j].set( x, y );
+    labels[j].draw( this, true );
   }
 
   drawChildren();

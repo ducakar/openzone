@@ -37,7 +37,7 @@ class ObjectClass
 {
   public:
 
-    static const int MAX_SOUNDS       = 16;
+    static const int MAX_SOUNDS       = 32;
 
     static const int NIGHT_VISION_BIT = 0x01;
     static const int BINOCULARS_BIT   = 0x02;

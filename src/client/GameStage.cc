@@ -469,6 +469,7 @@ void GameStage::unload()
   float renderCaelumTime      = float( render.caelumMicros )            * 1.0e-6f;
   float renderTerraTime       = float( render.terraMicros )             * 1.0e-6f;
   float renderMeshesTime      = float( render.meshesMicros )            * 1.0e-6f;
+  float renderMiscTime        = float( render.miscMicros )              * 1.0e-6f;
   float renderPostprocessTime = float( render.postprocessMicros )       * 1.0e-6f;
   float renderUITime          = float( render.uiMicros )                * 1.0e-6f;
   float renderSwapTime        = float( render.swapMicros )              * 1.0e-6f;
@@ -540,6 +541,7 @@ void GameStage::unload()
   Log::println( "%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f );
   Log::println( "%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f );
   Log::println( "%6.2f %%  [M:3]   + meshes",       renderMeshesTime      / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f );
   Log::println( "%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f );
   Log::println( "%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f );
   Log::println( "%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f );

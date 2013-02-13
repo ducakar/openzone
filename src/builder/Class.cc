@@ -330,11 +330,11 @@ void Class::fillWeapon( const char* className )
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
 
-    audioSounds[Weapon::EVENT_SHOT]       = soundsConfig["shot"].get( "" );
     audioSounds[Weapon::EVENT_SHOT_EMPTY] = soundsConfig["shotEmpty"].get( "" );
+    audioSounds[Weapon::EVENT_SHOT]       = soundsConfig["shot"].get( "" );
 
-    context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT] );
     context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT_EMPTY] );
+    context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT] );
   }
 
   int dollar = name.index( '$' );
@@ -367,13 +367,14 @@ void Class::fillBot( const char* className )
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
 
-    audioSounds[Bot::EVENT_JUMP]      = soundsConfig["jump"].get( "" );
-    audioSounds[Bot::EVENT_MELEE]     = soundsConfig["melee"].get( "" );
-    audioSounds[Bot::EVENT_FLIP]      = soundsConfig["flip"].get( "" );
-    audioSounds[Bot::EVENT_DEATH]     = soundsConfig["death"].get( "" );
-    audioSounds[Bot::EVENT_STEP]      = soundsConfig["step"].get( "" );
-    audioSounds[Bot::EVENT_WATERSTEP] = soundsConfig["waterStep"].get( "" );
-    audioSounds[Bot::EVENT_SWIM]      = soundsConfig["swim"].get( "" );
+    audioSounds[Bot::EVENT_JUMP]           = soundsConfig["jump"].get( "" );
+    audioSounds[Bot::EVENT_MELEE]          = soundsConfig["melee"].get( "" );
+    audioSounds[Bot::EVENT_FLIP]           = soundsConfig["flip"].get( "" );
+    audioSounds[Bot::EVENT_DEATH]          = soundsConfig["death"].get( "" );
+    audioSounds[Bot::EVENT_STEP]           = soundsConfig["step"].get( "" );
+    audioSounds[Bot::EVENT_WATERSTEP]      = soundsConfig["waterStep"].get( "" );
+    audioSounds[Bot::EVENT_SWIM_SURFACE]   = soundsConfig["swimSurface"].get( "" );
+    audioSounds[Bot::EVENT_SWIM_SUBMERGED] = soundsConfig["swimSubmerged"].get( "" );
 
     context.usedSounds.include( audioSounds[Bot::EVENT_JUMP] );
     context.usedSounds.include( audioSounds[Bot::EVENT_MELEE] );
@@ -381,7 +382,8 @@ void Class::fillBot( const char* className )
     context.usedSounds.include( audioSounds[Bot::EVENT_DEATH] );
     context.usedSounds.include( audioSounds[Bot::EVENT_STEP] );
     context.usedSounds.include( audioSounds[Bot::EVENT_WATERSTEP] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SURFACE] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SUBMERGED] );
   }
 
   state = 0;

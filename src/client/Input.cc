@@ -513,8 +513,8 @@ void Input::update()
     }
   }
 
-  lookX = -mouseX * input.mouseSensX;
-  lookY = +mouseY * input.mouseSensY;
+  lookX = 0.0f;
+  lookY = 0.0f;
   moveX = 0.0f;
   moveY = 0.0f;
 

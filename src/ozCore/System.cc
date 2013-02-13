@@ -621,10 +621,10 @@ void System::bell()
     pthread_attr_init( &bellThreadAttr );
     pthread_attr_setdetachstate( &bellThreadAttr, PTHREAD_CREATE_DETACHED );
 
-    if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) == 0 ) {
-      pthread_attr_destroy( &bellThreadAttr );
+    if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) != 0 ) {
       __sync_lock_release( &bellLock );
     }
+    pthread_attr_destroy( &bellThreadAttr );
   }
 
 #endif

@@ -34,22 +34,18 @@ namespace oz
 {
 
 /**
- * %Time structure.
- *
- * Keep in mind that epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux and
- * 1601-01-01 0:00:00 on Windows).
+ * Broken-down calendar time representation and other time-related utilities.
  */
 class Time
 {
   public:
 
-    long64 epoch;  ///< Seconds since platform-dependent epoch.
-    int    year;   ///< Year, all digits.
-    int    month;  ///< Month, from 1 to 12.
-    int    day;    ///< Day in month, from 1 to 31.
-    int    hour;   ///< Hour.
-    int    minute; ///< Minute.
-    int    second; ///< Second.
+    int year;   ///< Year, all digits.
+    int month;  ///< Month, from 1 to 12.
+    int day;    ///< Day in month, from 1 to 31.
+    int hour;   ///< Hour.
+    int minute; ///< Minute.
+    int second; ///< Second.
 
   public:
 
@@ -78,24 +74,28 @@ class Time
     static void usleep( uint microseconds );
 
     /**
-     * Get current time in seconds from platform-dependent epoch.
+     * Get current time in seconds from the platform-dependent epoch.
+     *
+     * @note
+     * Keep in mind that epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux
+     * and 1601-01-01 0:00:00 on Windows).
      */
     static long64 time();
 
     /**
-     * Return `Time` structure filled with the current local time.
+     * Get seconds from epoch for the broken-down time.
+     */
+    long64 toEpoch() const;
+
+    /**
+     * Return broken-down local time representing the current time.
      */
     static Time local();
 
     /**
-     * Fill year, month ... etc. fields from time given as seconds from epoch.
+     * Return broken-down local time representing the time given as seconds from epoch.
      */
     static Time local( long64 epoch );
-
-    /**
-     * Get seconds from epoch for the given year, month ... fields in local time zone.
-     */
-    long64 toEpoch() const;
 
     /**
      * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".

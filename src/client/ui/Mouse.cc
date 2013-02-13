@@ -57,18 +57,13 @@ void Mouse::update()
     int newX = x + Math::lround( input.mouseX );
     int newY = y + Math::lround( input.mouseY );
 
-    if( 0 <= newX && newX < camera.width ) {
-      input.lookX = 0.0f;
-    }
-    else {
+    if( newX < 0 || camera.width <= newX ) {
       newX = clamp( newX, 0, camera.width - 1 );
+      input.lookX -= input.mouseX * input.mouseSensX;
     }
-
-    if( 0 < newY && newY < camera.height ) {
-      input.lookY = 0.0f;
-    }
-    else {
+    if( newY < 0 || camera.height <= newY ) {
       newY = clamp( newY, 0, camera.height - 1 );
+      input.lookY += input.mouseY * input.mouseSensY;
     }
 
     dx = newX - x;
@@ -77,6 +72,9 @@ void Mouse::update()
     y  = newY;
   }
   else {
+    input.lookX -= input.mouseX * input.mouseSensX;
+    input.lookY += input.mouseY * input.mouseSensY;
+
     dx = 0;
     dy = 0;
     x  = camera.centreX;

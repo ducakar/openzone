@@ -81,7 +81,8 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
   registerLuaConstant( l, "OZ_EVENT_STEP",                  Bot::EVENT_STEP );
   registerLuaConstant( l, "OZ_EVENT_WATERSTEP",             Bot::EVENT_WATERSTEP );
-  registerLuaConstant( l, "OZ_EVENT_SWIM",                  Bot::EVENT_SWIM );
+  registerLuaConstant( l, "OZ_EVENT_SWIM_SURFACE",          Bot::EVENT_SWIM_SURFACE );
+  registerLuaConstant( l, "OZ_EVENT_SWIM_SUBMERGED",        Bot::EVENT_SWIM_SUBMERGED );
   registerLuaConstant( l, "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
   registerLuaConstant( l, "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
   registerLuaConstant( l, "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );

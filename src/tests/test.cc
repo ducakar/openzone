@@ -25,26 +25,6 @@
 
 using namespace oz;
 
-struct Bar
-{
-  int value = 21;
-};
-
-extern Bar bar;
-
-struct Foo
-{
-  Foo()
-  {
-    Log() << bar.value << "\n";
-  }
-};
-
-extern Foo foo;
-
-Foo foo;
-Bar bar;
-
 int main()
 {
   System::init();

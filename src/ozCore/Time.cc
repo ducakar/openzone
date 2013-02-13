@@ -146,49 +146,6 @@ long64 Time::time()
 #endif
 }
 
-Time Time::local()
-{
-  return local( time() );
-}
-
-Time Time::local( long64 epoch )
-{
-#ifdef _WIN32
-
-  ULARGE_INTEGER largeInteger;
-  FILETIME       fileTime;
-  FILETIME       localFileTime;
-  SYSTEMTIME     timeStruct;
-
-  largeInteger.QuadPart = ulong64( epoch * 10000 );
-
-  fileTime.dwLowDateTime  = largeInteger.LowPart;
-  fileTime.dwHighDateTime = largeInteger.HighPart;
-
-  FileTimeToLocalFileTime( &fileTime, &localFileTime );
-  FileTimeToSystemTime( &localFileTime, &timeStruct );
-
-  return {
-    epoch,
-    int( timeStruct.wYear ), int( timeStruct.wMonth ), int( timeStruct.wDay ),
-    int( timeStruct.wHour ), int( timeStruct.wMinute ), int( timeStruct.wSecond )
-  };
-
-#else
-
-  time_t ctime = time_t( epoch );
-  struct tm timeStruct;
-  localtime_r( &ctime, &timeStruct );
-
-  return {
-    epoch,
-    int( 1900 + timeStruct.tm_year ), int( 1 + timeStruct.tm_mon ), int( timeStruct.tm_mday ),
-    int( timeStruct.tm_hour ), int( timeStruct.tm_min ), int( timeStruct.tm_sec )
-  };
-
-#endif
-}
-
 long64 Time::toEpoch() const
 {
 #ifdef _WIN32
@@ -227,6 +184,47 @@ long64 Time::toEpoch() const
   timeStruct.tm_isdst = -1;
 
   return long64( mktime( &timeStruct ) );
+
+#endif
+}
+
+Time Time::local()
+{
+  return local( time() );
+}
+
+Time Time::local( long64 epoch )
+{
+#ifdef _WIN32
+
+  ULARGE_INTEGER largeInteger;
+  FILETIME       fileTime;
+  FILETIME       localFileTime;
+  SYSTEMTIME     timeStruct;
+
+  largeInteger.QuadPart = ulong64( epoch * 10000 );
+
+  fileTime.dwLowDateTime  = largeInteger.LowPart;
+  fileTime.dwHighDateTime = largeInteger.HighPart;
+
+  FileTimeToLocalFileTime( &fileTime, &localFileTime );
+  FileTimeToSystemTime( &localFileTime, &timeStruct );
+
+  return {
+    int( timeStruct.wYear ), int( timeStruct.wMonth ), int( timeStruct.wDay ),
+    int( timeStruct.wHour ), int( timeStruct.wMinute ), int( timeStruct.wSecond )
+  };
+
+#else
+
+  time_t ctime = time_t( epoch );
+  struct tm timeStruct;
+  localtime_r( &ctime, &timeStruct );
+
+  return {
+    int( 1900 + timeStruct.tm_year ), int( 1 + timeStruct.tm_mon ), int( timeStruct.tm_mday ),
+    int( timeStruct.tm_hour ), int( timeStruct.tm_min ), int( timeStruct.tm_sec )
+  };
 
 #endif
 }

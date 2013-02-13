@@ -426,10 +426,12 @@ uint Context::requestSound( int id )
     OZ_ERROR( "Failed to load WAVE sound '%s'", name.cstr() );
   }
 
-  if( audioSpec.channels != 1 ||
-      ( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) )
-  {
-    OZ_ERROR( "Invalid sound '%s' format, should be U8 mono or S16LE mono", name.cstr() );
+  if( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) {
+    OZ_ERROR( "Invalid sound '%s' format, should be U8 or S16LE", name.cstr() );
+  }
+  if( audioSpec.channels != 1 ) {
+    OZ_ERROR( "Invalid sound '%s' format, should be mono but has %d channels",
+              name.cstr(), audioSpec.channels );
   }
 
   ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
@@ -440,10 +442,6 @@ uint Context::requestSound( int id )
   SDL_FreeWAV( data );
 
   OZ_AL_CHECK_ERROR();
-
-  if( resource.id == 0 ) {
-    OZ_ERROR( "Sound '%s' loading failed", name.cstr() );
-  }
 
   return resource.id;
 }

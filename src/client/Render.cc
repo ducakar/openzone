@@ -171,7 +171,7 @@ void Render::prepareDraw()
     }
   }
 
-  if( shader.medium & Medium::WATER_BIT ) {
+  if( camera.p.z < 0.0f || ( shader.medium & Medium::WATER_BIT ) ) {
     float colourRatio = Math::mix( caelum.nightLuminance, 1.0f, caelum.ratio );
 
     shader.fogColour.x *= colourRatio;
@@ -238,6 +238,10 @@ void Render::drawGeometry()
   glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, shader.fogColour.w );
   glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
+  currentMicros = Time::uclock();
+  swapMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
+
   // camera transformation
   tf.projection();
   tf.camera = camera.rotTMat;
@@ -260,7 +264,7 @@ void Render::drawGeometry()
   }
 
   currentMicros = Time::uclock();
-  swapMicros += currentMicros - beginMicros;
+  miscMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
   if( !( shader.medium & Medium::LIQUID_MASK ) && camera.p.z >= 0.0f ) {
@@ -290,17 +294,18 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
+  terra.drawWater();
+
+  currentMicros = Time::uclock();
+  terraMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
+
   Mesh::drawScheduled( Mesh::ALPHA_BIT );
   Mesh::clearScheduled();
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
-
-  terra.drawWater();
-
-  currentMicros = Time::uclock();
-  terraMicros += currentMicros - beginMicros;
 
   shape.bind();
   shader.program( shader.plain );
@@ -354,6 +359,9 @@ void Render::drawGeometry()
 
   structs.clear();
   objects.clear();
+
+  currentMicros = Time::uclock();
+  miscMicros += currentMicros - beginMicros;
 }
 
 void Render::drawOrbis()
@@ -559,6 +567,7 @@ void Render::load()
   caelumMicros      = 0;
   terraMicros       = 0;
   meshesMicros      = 0;
+  miscMicros        = 0;
   postprocessMicros = 0;
   uiMicros          = 0;
   swapMicros        = 0;
@@ -697,7 +706,7 @@ void Render::init()
   isLowDetail     = config.include( "render.lowDetail",   false ).asBool();
 
   scale           = config.include( "render.scale",       1.0f ).asFloat();
-  sScaleFilter    = config.include( "render.scaleFilter", "NEAREST" ).asString();
+  sScaleFilter    = config.include( "render.scaleFilter", "LINEAR" ).asString();
 
   visibilityRange = config.include( "render.distance",    400.0f ).asFloat();
   showBounds      = config.include( "render.showBounds",  false ).asBool();
@@ -713,7 +722,7 @@ void Render::init()
     scaleFilter = GL_LINEAR;
   }
   else {
-    OZ_ERROR( "render.scaleFilter should be either NEAREST or LINEAR." );
+    OZ_ERROR( "render.scaleFilter should be either LINEAR or NEAREST." );
   }
 
   mainFrame = 0;

@@ -47,6 +47,6 @@
     "death":            "ppm/deathb",
     "step":             "openarena/boot4",
     "waterStep":        "openarena/splash1",
-    "swim":             "openarena/watr_in"
+    "swimSurface":      "openarena/watr_in"
   }
 }

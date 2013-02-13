@@ -12,7 +12,7 @@ set( SDL_STATIC_LIBS -lSDL2 )
 set( ENABLE_SHARED_TRUE "#" )
 set( ENABLE_SHARED_FALSE "" )
 set( ENABLE_STATIC_TRUE "" )
-set( ENABLE_STATIC_FALE "#" )
+set( ENABLE_STATIC_FALSE "#" )
 configure_file( sdl2.pc.in sdl2.pc @ONLY )
 configure_file( sdl2-config.in sdl2-config )
 

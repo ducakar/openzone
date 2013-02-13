@@ -204,7 +204,6 @@ void Lua::init()
 
   IMPORT_FUNC( ozGettext );
 
-  IGNORE_FUNC( ozUseFailed );
   IGNORE_FUNC( ozForceUpdate );
 
   /*

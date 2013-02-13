@@ -24,12 +24,12 @@
 #include <stable.hh>
 #include <client/ui/Inventory.hh>
 
+#include <common/Timer.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/Input.hh>
 #include <client/OpenGL.hh>
-
 #include <client/ui/Style.hh>
 
 namespace oz
@@ -39,7 +39,7 @@ namespace client
 namespace ui
 {
 
-const float Inventory::ROTATION_VEL = -0.02f;
+const float Inventory::ROTATION_VEL = 1.3f * Timer::TICK_TIME;
 
 void Inventory::updateReferences()
 {
@@ -83,6 +83,13 @@ void Inventory::handleComponent( int height, const Object* container, int* tagge
       *tagged = *scroll * COLS + i;
 
       const Dynamic* item;
+
+      if( *tagged != cachedTaggedItemIndex ) {
+        taggedItemRotation = 0.0f;
+      }
+      else {
+        taggedItemRotation += ROTATION_VEL;
+      }
 
       if( input.leftClick ) {
         if( uint( *tagged ) < uint( container->items.length() ) ) {
@@ -198,11 +205,7 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
 
     if( i == tagged ) {
       taggedItem = item;
-
-      if( tagged == cachedTaggedItemIndex ) {
-        taggedItemRotation += ROTATION_VEL;
-        tf.model.rotateZ( taggedItemRotation );
-      }
+      tf.model.rotateZ( taggedItemRotation );
     }
 
     context.drawImago( item, nullptr );
@@ -264,7 +267,6 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
 
   if( tagged != cachedTaggedItemIndex ) {
     cachedTaggedItemIndex = tagged;
-    taggedItemRotation    = 0.0f;
 
     itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
                   Font::SANS, "%s", taggedClazz->title.cstr() );

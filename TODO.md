@@ -1,6 +1,5 @@
 0.4
 
-- fix random splash event bug
 - TalkFrame
 - 6-direction-layered meshes
 - fix CreditsMenu scrolling

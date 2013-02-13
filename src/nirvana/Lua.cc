@@ -126,7 +126,6 @@ void Lua::init()
   IMPORT_FUNC( ozError );
   IMPORT_FUNC( ozPrintln );
 
-  IGNORE_FUNC( ozUseFailed );
   IMPORT_FUNC( ozForceUpdate );
 
   /*

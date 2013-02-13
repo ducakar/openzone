@@ -96,6 +96,7 @@ class Render
     ulong64         caelumMicros;
     ulong64         terraMicros;
     ulong64         meshesMicros;
+    ulong64         miscMicros;
     ulong64         postprocessMicros;
     ulong64         uiMicros;
     ulong64         swapMicros;

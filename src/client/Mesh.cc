@@ -177,7 +177,19 @@ void Mesh::drawScheduled( int mask )
     shader.program( mesh->shaderId );
 
     foreach( instance, mesh->instances.citer() ) {
-      if( !( mesh->flags & mask ) ) {
+      // HACK: This is not a nice way.
+      int instanceMask = mask;
+
+      if( instance->alpha != 1.0f ) {
+        if( mask & ALPHA_BIT ) {
+          instanceMask |= SOLID_BIT;
+        }
+        else {
+          continue;
+        }
+      }
+
+      if( !( mesh->flags & instanceMask ) ) {
         continue;
       }
 
@@ -185,7 +197,7 @@ void Mesh::drawScheduled( int mask )
         mesh->animate( instance );
       }
 
-      mesh->draw( instance, mask );
+      mesh->draw( instance, instanceMask );
     }
   }
 
