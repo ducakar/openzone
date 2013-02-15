@@ -24,7 +24,7 @@
  * @file ozCore/Time.cc
  */
 
-#include "Time.hh"
+#include "ozCore.hh"
 
 #include <cstdio>
 

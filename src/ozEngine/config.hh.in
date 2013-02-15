@@ -1,5 +1,5 @@
 /*
- * ozCore - OpenZone Core Library.
+ * ozEngine - OpenZone Engine Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -20,16 +20,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/Vec3.cc
+#pragma once
+
+/*
+ * Configuration variables
  */
-
-#include "ozCore.hh"
-
-namespace oz
-{
-
-const Vec3 Vec3::ZERO = Vec3( 0.0f, 0.0f, 0.0f );
-const Vec3 Vec3::ONE  = Vec3( 1.0f, 1.0f, 1.0f );
-
-}

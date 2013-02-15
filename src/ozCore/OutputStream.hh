@@ -183,7 +183,7 @@ class OutputStream
         s.streamBegin = nullptr;
         s.streamEnd   = nullptr;
         s.order       = Endian::NATIVE;
-        s.buffered  = false;
+        s.buffered    = false;
       }
 
       return *this;
@@ -196,7 +196,7 @@ class OutputStream
     {
       InputStream is( streamBegin, streamEnd, order );
 
-      is.seek( streamPos );
+      is.set( streamPos );
       return is;
     }
 
@@ -303,14 +303,31 @@ class OutputStream
     }
 
     /**
-     * %Set the current position.
+     * %Set stream position.
      */
     OZ_ALWAYS_INLINE
-    void seek( char* newPos )
+    void set( char* newPos )
     {
-      hard_assert( streamBegin <= newPos && newPos <= streamEnd );
+      if( newPos < streamBegin || streamEnd < newPos ) {
+        OZ_ERROR( "Buffer overrun for %d B during setting stream position",
+                  newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
+      }
 
       streamPos = newPos;
+    }
+
+    /**
+     * %Set stream position relative to the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    void seek( int offset )
+    {
+      if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
+        OZ_ERROR( "Buffer overrun for %d B during stream seek",
+                  offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
+      }
+
+      streamPos = streamBegin + offset;
     }
 
     /**

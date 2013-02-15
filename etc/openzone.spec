@@ -31,7 +31,7 @@ and front-end that renders it and enables the player to manipulate with the
 simulated world.
 
 %package -n liboz
-Summary:        OpenZone Core and Dynamics Libraries
+Summary:        OpenZone Core, Dynamics and Engine Libraries
 Group:          System Environment/Libraries
 License:        zlib
 
@@ -43,15 +43,18 @@ log writer, JSON file manipulation class, math functions and linear algebra
 classes.
 OpenZone Dynamics Library is a rigid body physics engine used in OpenZone
 engine.
+OpenZone Engine Library contains basic engine building blocks for OpenZone
+game.
 
 %package -n liboz-devel
-Summary:        Headers for OpenZone Core and Dynamics Libraries
+Summary:        Headers for OpenZone Core, Dynamics and Engine Libraries
 Group:          Development/Libraries
 License:        zlib
 Requires:       liboz = %{version}
 
 %description -n liboz-devel
-This package contains header files for OpenZone Core and Dynamics Libraries.
+This package contains header files for OpenZone Core, Dynamics and Engine
+Libraries.
 
 %package data
 Summary:        OpenZone game data
@@ -71,7 +74,7 @@ cd build
 cmake \
   -D CMAKE_INSTALL_PREFIX=/usr \
   -D CMAKE_BUILD_TYPE=Release \
-  -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
+  -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse -fPIC" \
   -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
   -D BUILD_SHARED_LIBS=1 \
   ..
@@ -102,14 +105,17 @@ install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
 %defattr(-, root, root, -)
 %{_libdir}/libozCore.so*
 %{_libdir}/libozDynamics.so*
+%{_libdir}/libozEngine.so*
 %doc src/ozCore/COPYING
 
 %files -n liboz-devel
 %defattr(-, root, root, -)
 %{_libdir}/pkgconfig/ozCore.pc
 %{_libdir}/pkgconfig/ozDynamics.pc
+%{_libdir}/pkgconfig/ozEngine.pc
 %{_includedir}/ozCore
 %{_includedir}/ozDynamics
+%{_includedir}/ozEngine
 %doc src/ozCore/COPYING
 
 %files data

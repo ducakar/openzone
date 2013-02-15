@@ -16,6 +16,7 @@ add_library( ozCore
   DChain.hh
   Endian.hh
   File.hh
+  Gettext.hh
   HashMap.hh
   HashSet.hh
   InputStream.hh
@@ -52,6 +53,7 @@ add_library( ozCore
   Buffer.cc
   common.cc
   File.cc
+  Gettext.cc
   JSON.cc
   Log.cc
   Mat33.cc
@@ -71,8 +73,6 @@ add_library( ozCore
 #END SOURCES
 )
 
-set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
-
 if( EMSCRIPTEN )
 #   target_link_libraries( ozCore )
 elseif( ANDROID )
@@ -87,6 +87,11 @@ else()
   # TODO: Remove -lrt once glibc 2.17 becomes minimum.
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
 endif()
+
+set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
+
+add_pch( ozCore_pch ../ozCore_pch.hh ../ozCore_pch.cc )
+use_pch( ozCore ozCore_pch )
 
 install( TARGETS ozCore
          RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}

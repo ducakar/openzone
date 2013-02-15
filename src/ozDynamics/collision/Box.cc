@@ -24,7 +24,7 @@
  * @file ozDynamics/collision/Box.cc
  */
 
-#include "Box.hh"
+#include "../ozDynamics.hh"
 
 namespace oz
 {

@@ -23,7 +23,7 @@
 /**
  * @file ozCore/ozCore.hh
  *
- * Main header for OpenZone Core Library.
+ * Main public header for OpenZone Core Library.
  */
 
 #pragma once
@@ -113,3 +113,4 @@
  */
 #include "Log.hh"
 #include "JSON.hh"
+#include "Gettext.hh"

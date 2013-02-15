@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/ozDynamics.hh
  *
- * Main header for OpenZone Dynamics Library.
+ * Main public header for OpenZone Dynamics Library.
  */
 
 #pragma once

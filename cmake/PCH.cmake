@@ -55,14 +55,14 @@ else( PCH_DISABLE )
     add_library( ${_pchTarget}_trigger STATIC "${_inputModule}" )
 
     # Build PCH and copy original header to the build folder since we include PCH indirectly.
-    add_custom_command( OUTPUT "${_inputHeader}.gch"
+    add_custom_command( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"
       DEPENDS ${_pchTarget}_trigger
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
-              "${_inputHeader}"
-      COMMAND "${CMAKE_COMMAND}" -E remove -f "${_inputHeader}.gch"
-      COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${_inputHeader}.gch"
+              "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}"
+      COMMAND "${CMAKE_COMMAND}" -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"
+      COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"
               "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
-    add_custom_target( ${_pchTarget} DEPENDS "${_inputHeader}.gch" )
+    add_custom_target( ${_pchTarget} DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch" )
 
     # Cache header location for later `use_pch()` macros.
     set( ${_pchTarget}_output "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )

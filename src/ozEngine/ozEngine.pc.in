@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib@OZ_BINARY_SUBDIR@
+includedir=${prefix}/include
+
+Name: ozEngine
+Description: OpenZone Engine Library
+Version: @OZ_VERSION@
+Requires: ozCore ozDynamics
+Libs: -L${libdir} -lozDynamics
+Cflags: -std=c++11 -I${includedir}

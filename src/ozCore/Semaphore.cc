@@ -24,9 +24,7 @@
  * @file ozCore/Semaphore.cc
  */
 
-#include "Semaphore.hh"
-
-#include "System.hh"
+#include "ozCore.hh"
 
 #include <cstdlib>
 

@@ -24,10 +24,7 @@
  * @file ozCore/Alloc.cc
  */
 
-#include "Alloc.hh"
-
-#include "System.hh"
-#include "Log.hh"
+#include "ozCore.hh"
 
 #include <cstdlib>
 #include <malloc.h>

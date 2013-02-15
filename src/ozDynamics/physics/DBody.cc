@@ -24,7 +24,7 @@
  * @file ozDynamics/physics/DBody.hh
  */
 
-#include "DBody.hh"
+#include "../ozDynamics.hh"
 
 namespace oz
 {

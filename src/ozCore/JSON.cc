@@ -24,14 +24,7 @@
  * @file ozCore/JSON.cc
  */
 
-#include "JSON.hh"
-
-#include "List.hh"
-#include "SList.hh"
-#include "Map.hh"
-#include "HashMap.hh"
-#include "System.hh"
-#include "Log.hh"
+#include "ozCore.hh"
 
 #include <cstring>
 
@@ -197,7 +190,7 @@ void JSON::Parser::Position::backChar()
 {
   hard_assert( line != oldLine || column != oldColumn );
 
-  istream->seek( istream->pos() - 1 );
+  istream->set( istream->pos() - 1 );
 
   line   = oldLine;
   column = oldColumn;
@@ -2602,23 +2595,13 @@ String JSON::toString() const
 
 String JSON::toFormattedString( const char* lineEnd ) const
 {
-  OutputStream os( 0 );
-  write( &os, lineEnd );
-
-  return String( os.begin(), os.length() );
-}
-
-void JSON::read( InputStream* istream, const char* path )
-{
-  *this = Parser::parse( istream, path );
-}
-
-void JSON::write( OutputStream* ostream, const char* lineEnd ) const
-{
-  Formatter formatter = { ostream, lineEnd, String::length( lineEnd ), 0 };
+  OutputStream ostream( 0 );
+  Formatter formatter = { &ostream, lineEnd, String::length( lineEnd ), 0 };
 
   formatter.writeValue( *this );
-  ostream->writeChars( lineEnd, formatter.lineEndLength );
+  ostream.writeChars( lineEnd, formatter.lineEndLength );
+
+  return String( ostream.begin(), ostream.length() );
 }
 
 bool JSON::load( const File& file )
@@ -2628,17 +2611,21 @@ bool JSON::load( const File& file )
     return false;
   }
 
-  InputStream is = buffer.inputStream();
-  read( &is, file.path() );
+  InputStream istream = buffer.inputStream();
+
+  *this = Parser::parse( &istream, file.path() );
   return true;
 }
 
 bool JSON::save( const File& file, const char* lineEnd ) const
 {
-  OutputStream os( 0 );
-  write( &os, lineEnd );
+  OutputStream ostream( 0 );
+  Formatter formatter = { &ostream, lineEnd, String::length( lineEnd ), 0 };
 
-  return file.write( os.begin(), os.length() );
+  formatter.writeValue( *this );
+  ostream.writeChars( lineEnd, formatter.lineEndLength );
+
+  return file.write( ostream.begin(), ostream.length() );
 }
 
 }

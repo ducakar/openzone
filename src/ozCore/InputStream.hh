@@ -134,14 +134,31 @@ class InputStream
     }
 
     /**
-     * %Set the curent position.
+     * %Set stream position.
      */
     OZ_ALWAYS_INLINE
-    void seek( const char* newPos )
+    void set( const char* newPos )
     {
-      hard_assert( streamBegin <= newPos && newPos <= streamEnd );
+      if( newPos < streamBegin || streamEnd < newPos ) {
+        OZ_ERROR( "Buffer overrun for %d B during setting stream position",
+                  newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
+      }
 
       streamPos = newPos;
+    }
+
+    /**
+     * %Set stream position relative to the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    void seek( int offset )
+    {
+      if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
+        OZ_ERROR( "Buffer overrun for %d B during stream seek",
+                  offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
+      }
+
+      streamPos = streamBegin + offset;
     }
 
     /**

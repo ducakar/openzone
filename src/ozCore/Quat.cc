@@ -24,7 +24,7 @@
  * @file ozCore/Quat.cc
  */
 
-#include "Quat.hh"
+#include "ozCore.hh"
 
 namespace oz
 {

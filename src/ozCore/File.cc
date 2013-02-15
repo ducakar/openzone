@@ -24,7 +24,7 @@
  * @file ozCore/File.cc
  */
 
-#include "File.hh"
+#include "ozCore.hh"
 
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>
@@ -65,13 +65,6 @@ namespace oz
 
 #ifdef __native_client__
 
-struct Semaphore
-{
-  pthread_mutex_t mutex;
-  pthread_cond_t  cond;
-  volatile int    counter;
-};
-
 #define SEMAPHORE_POST() \
   pthread_mutex_lock( &_fd->semaphore.mutex ); \
   ++_fd->semaphore.counter; \
@@ -106,6 +99,13 @@ struct Semaphore
 
 struct File::Descriptor
 {
+  struct Semaphore
+  {
+    pthread_mutex_t mutex;
+    pthread_cond_t  cond;
+    volatile int    counter;
+  };
+
   // Some Descriptor members are also useful for static functions.
   static Descriptor staticDesc;
 
@@ -665,7 +665,7 @@ bool File::read( OutputStream* ostream ) const
   char* buffer = ostream->forward( fileSize );
   bool  result = read( buffer, &size );
 
-  ostream->seek( buffer + size );
+  ostream->set( buffer + size );
   return result;
 }
 

@@ -24,10 +24,7 @@
  * @file ozCore/String.cc
  */
 
-#include "String.hh"
-
-#include "Math.hh"
-#include "System.hh"
+#include "ozCore.hh"
 
 #include <cmath>
 #include <cstdio>

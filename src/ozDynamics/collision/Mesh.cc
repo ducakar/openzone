@@ -24,7 +24,7 @@
  * @file ozDynamics/collision/Mesh.cc
  */
 
-#include "Mesh.hh"
+#include "../ozDynamics.hh"
 
 namespace oz
 {

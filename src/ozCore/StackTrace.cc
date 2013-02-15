@@ -24,10 +24,7 @@
  * @file ozCore/StackTrace.cc
  */
 
-#include "StackTrace.hh"
-
-#include "arrays.hh"
-#include "Thread.hh"
+#include "ozCore.hh"
 
 #ifdef __GLIBC__
 # include <cstdlib>

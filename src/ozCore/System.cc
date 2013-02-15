@@ -24,10 +24,7 @@
  * @file ozCore/System.cc
  */
 
-#include "System.hh"
-
-#include "Math.hh"
-#include "Log.hh"
+#include "ozCore.hh"
 
 #include <climits>
 #include <clocale>

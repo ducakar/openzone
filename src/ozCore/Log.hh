@@ -28,8 +28,8 @@
 
 #pragma once
 
+#include "String.hh"
 #include "Mat44.hh"
-#include "Time.hh"
 #include "StackTrace.hh"
 
 namespace oz

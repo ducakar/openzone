@@ -28,5 +28,8 @@ using namespace oz;
 int main()
 {
   System::init();
+
+  Gettext gt( File( File::NATIVE, "/usr/share/locale/sl/LC_MESSAGES/sudo.mo" ) );
+  Log() << gt.get( "unable to save stdin" ) << "\n";
   return 0;
 }

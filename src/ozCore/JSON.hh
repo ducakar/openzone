@@ -1082,19 +1082,6 @@ class JSON
     String toFormattedString( const char* lineEnd = "\n" ) const;
 
     /**
-     * Clear existing value and read new contents from a stream.
-     *
-     * @param istream input stream.
-     * @param path optional file path, used for error messages.
-     */
-    void read( InputStream* istream, const char* path = "InputStream" );
-
-    /**
-     * Write formatted %JSON to a stream.
-     */
-    void write( OutputStream* ostream, const char* lineEnd = "\n" ) const;
-
-    /**
      * Clear existing value and read new contents from a %JSON file.
      *
      * If file open fails, existing value is kept intact.

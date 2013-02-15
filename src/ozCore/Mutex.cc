@@ -24,9 +24,7 @@
  * @file ozCore/Mutex.cc
  */
 
-#include "Mutex.hh"
-
-#include "System.hh"
+#include "ozCore.hh"
 
 #include <cstdlib>
 

@@ -24,8 +24,7 @@
  * @file ozCore/common.cc
  */
 
-#include "common.hh"
-#include "System.hh"
+#include "ozCore.hh"
 
 namespace oz
 {
