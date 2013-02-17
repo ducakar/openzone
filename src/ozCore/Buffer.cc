@@ -24,7 +24,7 @@
  * @file ozCore/Buffer.cc
  */
 
-#include "ozCore.hh"
+#include "Buffer.hh"
 
 namespace oz
 {

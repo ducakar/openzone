@@ -24,7 +24,9 @@
  * @file ozDynamics/physics/Physics.cc
  */
 
-#include "../ozDynamics.hh"
+#include "Physics.hh"
+
+#include "DBody.hh"
 
 #ifdef OZ_DYNAMICS
 

@@ -4,7 +4,9 @@ configure_file( ozDynamics.pc.in ozDynamics.pc @ONLY )
 add_library( ozDynamics
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
+  common.hh
   ozDynamics.hh
+  common.cc
   collision/AABB.hh
   collision/Body.hh
   collision/Bounds.hh
@@ -39,7 +41,7 @@ endif()
 
 set_target_properties( ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
-add_pch( ozDynamics_pch ../ozDynamics_pch.hh ../ozDynamics_pch.cc )
+add_pch( ozDynamics_pch pch.hh pch.cc )
 use_pch( ozDynamics ozDynamics_pch )
 
 install( TARGETS ozDynamics

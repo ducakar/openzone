@@ -24,7 +24,7 @@
  * @file ozCore/Point.cc
  */
 
-#include "ozCore.hh"
+#include "Point.hh"
 
 namespace oz
 {

@@ -788,8 +788,8 @@ Render render;
  */
 
 #include <ozDynamics/ozDynamics.hh>
-#include "Input.hh"
 #include <common/Timer.hh>
+#include <client/Input.hh>
 
 namespace oz
 {

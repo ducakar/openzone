@@ -35,6 +35,9 @@ namespace oz
 
 /**
  * Stack trace entry.
+ *
+ * @note
+ * Stack trace retrieval is currently only implemented for glibc.
  */
 class StackTrace
 {

@@ -90,9 +90,6 @@ endif()
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
-add_pch( ozCore_pch ../ozCore_pch.hh ../ozCore_pch.cc )
-use_pch( ozCore ozCore_pch )
-
 install( TARGETS ozCore
          RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
          LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}

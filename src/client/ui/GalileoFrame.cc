@@ -29,7 +29,6 @@
 #include <client/Context.hh>
 #include <client/QuestList.hh>
 #include <client/OpenGL.hh>
-
 #include <client/ui/Style.hh>
 
 namespace oz

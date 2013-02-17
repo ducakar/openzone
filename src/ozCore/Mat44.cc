@@ -24,7 +24,7 @@
  * @file ozCore/Mat44.cc
  */
 
-#include "ozCore.hh"
+#include "Mat44.hh"
 
 namespace oz
 {

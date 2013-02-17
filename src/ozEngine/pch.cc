@@ -1,5 +1,5 @@
 /*
- * ozDynamics - OpenZone Dynamics Library.
+ * ozEngine - OpenZone Engine Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -21,22 +21,9 @@
  */
 
 /**
- * @file ozDynamics/collision/Mesh.cc
+ * @file ozEngine/pch.cc
+ *
+ * Trigger for precompiled header.
  */
 
-#include "Mesh.hh"
-
-namespace oz
-{
-
-Pool<Mesh> Mesh::pool;
-
-Mesh::~Mesh()
-{}
-
-Bounds Mesh::getBounds( const Point&, const Mat33& ) const
-{
-  return Bounds();
-}
-
-}
+#include "pch.hh"

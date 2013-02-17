@@ -25,8 +25,8 @@
 #include <client/BSP.hh>
 
 #include <client/Context.hh>
+#include <client/SMM.hh>
 #include <client/OpenGL.hh>
-#include "SMM.hh"
 
 namespace oz
 {

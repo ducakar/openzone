@@ -26,7 +26,6 @@
 
 #include <client/Shape.hh>
 #include <client/Camera.hh>
-
 #include <client/ui/Style.hh>
 
 namespace oz

@@ -24,7 +24,7 @@
  * @file ozCore/File.cc
  */
 
-#include "ozCore.hh"
+#include "File.hh"
 
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>

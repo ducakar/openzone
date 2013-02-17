@@ -26,9 +26,7 @@
 
 #include <matrix/Liber.hh>
 #include <matrix/Synapse.hh>
-
 #include <nirvana/Nirvana.hh>
-
 #include <client/Camera.hh>
 
 namespace oz

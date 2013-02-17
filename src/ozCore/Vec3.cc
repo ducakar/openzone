@@ -24,7 +24,7 @@
  * @file ozCore/Vec3.cc
  */
 
-#include "ozCore.hh"
+#include "Vec3.hh"
 
 namespace oz
 {

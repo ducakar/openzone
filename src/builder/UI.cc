@@ -25,7 +25,6 @@
 #include <builder/UI.hh>
 
 #include <client/ui/Mouse.hh>
-
 #include <builder/Context.hh>
 
 namespace oz

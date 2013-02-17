@@ -21,22 +21,10 @@
  */
 
 /**
- * @file ozDynamics/collision/Mesh.cc
+ * @file ozDynamics/common.hh
+ *
+ * Common include file for ozDynamics.
  */
 
-#include "Mesh.hh"
-
-namespace oz
-{
-
-Pool<Mesh> Mesh::pool;
-
-Mesh::~Mesh()
-{}
-
-Bounds Mesh::getBounds( const Point&, const Mat33& ) const
-{
-  return Bounds();
-}
-
-}
+#include "pch.hh"
+#include <ozDynamics/config.hh>

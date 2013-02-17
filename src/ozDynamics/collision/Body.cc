@@ -24,7 +24,7 @@
  * @file ozDynamics/collision/Body.hh
  */
 
-#include "../ozDynamics.hh"
+#include "Body.hh"
 
 namespace oz
 {

@@ -24,7 +24,7 @@
  * @file ozCore/Math.cc
  */
 
-#include "ozCore.hh"
+#include "Math.hh"
 
 #include <cstdlib>
 

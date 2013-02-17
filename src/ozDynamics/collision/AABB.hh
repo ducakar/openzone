@@ -28,8 +28,7 @@
 
 #pragma once
 
-#include <ozCore/ozCore.hh>
-#include <ozDynamics/config.hh>
+#include "../common.hh"
 
 namespace oz
 {

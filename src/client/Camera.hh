@@ -24,7 +24,6 @@
 #pragma once
 
 #include <matrix/Vehicle.hh>
-
 #include <client/StrategicProxy.hh>
 #include <client/UnitProxy.hh>
 #include <client/CinematicProxy.hh>

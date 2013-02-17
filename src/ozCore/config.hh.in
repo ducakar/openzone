@@ -63,8 +63,8 @@
 
 // C++11 workarounds for older GCC versions.
 #if defined( OZ_GCC ) && OZ_GCC < 407
-# define override
 # define final
+# define override
 # if OZ_GCC < 406
 #  define constexpr const
 #  define noexcept  throw()

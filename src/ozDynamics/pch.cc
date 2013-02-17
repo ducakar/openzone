@@ -21,22 +21,9 @@
  */
 
 /**
- * @file ozDynamics/collision/Mesh.cc
+ * @file ozDynamics/pch.cc
+ *
+ * Trigger for precompiled header.
  */
 
-#include "Mesh.hh"
-
-namespace oz
-{
-
-Pool<Mesh> Mesh::pool;
-
-Mesh::~Mesh()
-{}
-
-Bounds Mesh::getBounds( const Point&, const Mat33& ) const
-{
-  return Bounds();
-}
-
-}
+#include "pch.hh"

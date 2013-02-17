@@ -26,7 +26,6 @@
 
 #include <client/MD2.hh>
 #include <client/Context.hh>
-
 #include <builder/Compiler.hh>
 
 namespace oz

@@ -26,5 +26,4 @@
 
 #pragma once
 
-#include <ozCore/ozCore.hh>
-#include <ozDynamics/ozDynamics.hh>
+#include "pch.hh"

@@ -24,7 +24,9 @@
  * @file ozCore/Thread.cc
  */
 
-#include "ozCore.hh"
+#include "Thread.hh"
+
+#include "System.hh"
 
 #include <cstdlib>
 #include <cstring>

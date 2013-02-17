@@ -31,7 +31,6 @@
 #include <client/Input.hh>
 #include <client/OpenGL.hh>
 #include <client/NaClPlatform.hh>
-
 #include <client/ui/Style.hh>
 
 namespace oz

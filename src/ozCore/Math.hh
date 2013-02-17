@@ -288,7 +288,7 @@ class Math
     static void sincos( float x, float* s, float* c )
     {
       // No need to use sincosf(). GCC optimises the following calls into one sincosf() call and
-      // LLVM/Clang is missing built-in for sincosf().
+      // LLVM/Clang is missing built-ins for sincosf().
       *s = __builtin_sinf( x );
       *c = __builtin_cosf( x );
     }
@@ -348,9 +348,13 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isFinite( float x )
     {
-      // isfinite() is broken in GCC with -ffinite-math-only (implied by -ffast-math).
-      // Furthermore, this expression is faster.
+      // isfinite() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
+      // Furthermore, those expressions are faster than __builtin_isfinite().
+#if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
       return x + 1.0e38f != x && x == x;
+#else
+      return x + 1.0e38f != x;
+#endif
     }
 
     /**
@@ -359,9 +363,13 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isInf( float x )
     {
-      // isinf() is broken in GCC with -ffinite-math-only (implied by -ffast-math).
-      // Furthermore, this expression is faster.
+      // isinf() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
+      // Furthermore, those expressions are faster than __builtin_isinf().
+#if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
       return x + 1.0e38f == x && x * 0.0f != x;
+#else
+      return x + 1.0e38f == x;
+#endif
     }
 
     /**
@@ -370,9 +378,13 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isNaN( float x )
     {
-      // isnan() is broken in GCC with -ffinite-math-only (implied by -ffast-math).
-      // Furthermore, this expression is faster.
-      return ( x + 1.0e38f == x && x * 0.0f == x ) || x != x;
+      // isnan() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
+      // Furthermore, those expressions are faster than __builtin_isnan().
+#if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
+      return x + 1.0e38f == x && x * 0.0f == x;
+#else
+      return x != x;
+#endif
     }
 
     /**

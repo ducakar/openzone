@@ -25,9 +25,7 @@
 #include <client/ui/DebugFrame.hh>
 
 #include <matrix/Collider.hh>
-
 #include <client/Camera.hh>
-
 #include <client/ui/Style.hh>
 
 namespace oz

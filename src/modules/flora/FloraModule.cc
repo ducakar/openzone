@@ -24,19 +24,17 @@
 #include <stable.hh>
 #include <modules/flora/FloraModule.hh>
 
+#include <common/luabase.hh>
 #include <matrix/Liber.hh>
 #include <matrix/Synapse.hh>
-
 #include <client/Lua.hh>
-
-#include <common/luabase.hh>
-
-using namespace oz::client;
 
 namespace oz
 {
 namespace modules
 {
+
+using oz::client::lua;
 
 // plants/m2
 const float FloraModule::DENSITY    = 0.04f;

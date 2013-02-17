@@ -30,7 +30,6 @@
 #include <client/MenuStage.hh>
 #include <client/OpenGL.hh>
 #include <client/BuildInfo.hh>
-
 #include <client/ui/Style.hh>
 #include <client/ui/MissionMenu.hh>
 #include <client/ui/SettingsFrame.hh>

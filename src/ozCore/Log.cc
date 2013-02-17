@@ -24,7 +24,7 @@
  * @file ozCore/Log.cc
  */
 
-#include "ozCore.hh"
+#include "Log.hh"
 
 #include <cstdio>
 #include <cstdlib>

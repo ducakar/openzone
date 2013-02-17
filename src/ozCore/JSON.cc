@@ -24,7 +24,13 @@
  * @file ozCore/JSON.cc
  */
 
-#include "ozCore.hh"
+#include "JSON.hh"
+
+#include "List.hh"
+#include "SList.hh"
+#include "Map.hh"
+#include "System.hh"
+#include "Log.hh"
 
 #include <cstring>
 

@@ -24,7 +24,7 @@
  * @file ozCore/Gettext.cc
  */
 
-#include "ozCore.hh"
+#include "Gettext.hh"
 
 namespace oz
 {
@@ -199,7 +199,7 @@ bool Gettext::import( const File& file )
   delete[] table;
 
   table = new Message*[nMessages];
-  aFill<Message*>( table, nullptr, nMessages );
+  aFill<Message*, Message*>( table, nullptr, nMessages );
 
   for( int i = 0; i < nMessages; ++i ) {
     uint index = uint( hash( messages[i].original ) ) % uint( nMessages );

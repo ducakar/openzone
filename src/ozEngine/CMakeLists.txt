@@ -13,7 +13,7 @@ add_library( ozEngine
 target_link_libraries( ozEngine ozDynamics )
 set_target_properties( ozEngine PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
-add_pch( ozEngine_pch ../ozEngine_pch.hh ../ozEngine_pch.cc )
+add_pch( ozEngine_pch pch.hh pch.cc )
 use_pch( ozEngine ozEngine_pch )
 
 install( TARGETS ozEngine

@@ -23,6 +23,7 @@
 
 #include <stable.hh>
 #include <client/Window.hh>
+
 #include <client/Input.hh>
 #include <client/OpenGL.hh>
 #include <client/NaClPlatform.hh>
