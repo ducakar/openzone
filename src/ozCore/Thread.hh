@@ -47,8 +47,8 @@ class Thread
      */
     enum Type
     {
-      JOINABLE, ///< %Thread must be joined.
-      DETACHED  ///< %Thread is detached on start and automatically releases resources at exit.
+      DETACHED, ///< %Thread is detached on start and automatically releases resources at exit.
+      JOINABLE  ///< %Thread must be joined.
     };
 
     /// %Thread's main method type.
@@ -107,7 +107,7 @@ class Thread
     }
 
     /**
-     * True iff thread has been started but not yet joined.
+     * True iff a joinable thread has been started but not yet joined.
      */
     bool isValid() const
     {
@@ -117,17 +117,17 @@ class Thread
     /**
      * Create a new thread and run it.
      *
-     * When a new joinable thread is started it is attached to the Thread object that started it.
-     * `join()` should be called later to ensure thread's termination and to release its resources.
-     *
      * Detached thread is not attached to the Thread object so it can be immediately used to start
      * another thread. %Thread's resources are released automatically when it finishes.
+     *
+     * When a new joinable thread is started it is attached to the Thread object that started it.
+     * `join()` should be called later to ensure thread's termination and to release its resources.
      *
      * @note
      * On Android `System::javaVM` must be set prior to invoking this method.
      *
      * @param name thread name (copied to an internal buffer).
-     * @param type `JOINABLE` or `DETACHED`.
+     * @param type `DETACHED` or `JOINABLE`.
      * @param main pointer to the thread's main method.
      * @param data pointer to user data, passed to the thread's main method.
      */

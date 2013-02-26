@@ -56,8 +56,10 @@ class Dynamic : public Object
 
     explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
     explicit Dynamic( const DynamicClass* clazz, InputStream* istream );
+    explicit Dynamic( const DynamicClass* clazz, const JSON& json );
 
     void write( OutputStream* ostream ) const override;
+    void write( JSON* json ) const override;
 
     void readUpdate( InputStream* istream ) override;
     void writeUpdate( OutputStream* ostream ) const override;

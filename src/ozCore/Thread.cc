@@ -116,7 +116,7 @@ struct Thread::Descriptor
 #endif
   Thread::Main* main;
   void*         data;
-  bool          isDetached;
+  Type          type;
   char          name[NAME_LENGTH + 1];
 
 #ifdef _WIN32
@@ -140,7 +140,7 @@ DWORD WINAPI Thread::Descriptor::threadMain( void* data )
 
   descriptor->main( descriptor->data );
 
-  if( descriptor->isDetached ) {
+  if( descriptor->type == DETACHED ) {
     CloseHandle( descriptor->thread );
   }
   return 0;
@@ -166,6 +166,7 @@ void* Thread::Descriptor::threadMain( void* data )
 
   javaVM->AttachCurrentThread( &jniEnv, nullptr );
 #elif defined( __native_client__ )
+  // TODO: Implement MessageLoop?
 //   if( System::instance == nullptr ) {
 //     OZ_ERROR( "System::instance must be set before starting new threads" );
 //   }
@@ -182,7 +183,7 @@ void* Thread::Descriptor::threadMain( void* data )
 
   descriptor->main( descriptor->data );
 
-  if( descriptor->isDetached ) {
+  if( descriptor->type == DETACHED ) {
     free( descriptor );
   }
   return nullptr;
@@ -209,9 +210,9 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
     OZ_ERROR( "Thread resource allocation failed" );
   }
 
-  descriptor->main       = main;
-  descriptor->data       = data;
-  descriptor->isDetached = type != JOINABLE;
+  descriptor->main = main;
+  descriptor->data = data;
+  descriptor->type = type;
 
   strncpy( descriptor->name, name, NAME_LENGTH );
   descriptor->name[NAME_LENGTH] = '\0';
@@ -223,7 +224,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
     OZ_ERROR( "Thread creation failed" );
   }
 
-  if( type != JOINABLE ) {
+  if( type == DETACHED ) {
     CloseHandle( descriptor->thread );
   }
 

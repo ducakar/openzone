@@ -38,9 +38,6 @@ class MenuStage : public Stage
 
     ui::MainMenu* mainMenu;
 
-    bool showQuicksaved;
-    bool showAutosaved;
-
   public:
 
     bool doExit;

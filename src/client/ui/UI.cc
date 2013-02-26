@@ -50,9 +50,11 @@ namespace ui
 {
 
 UI::UI() :
-  fpsLabel( nullptr ), root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ),
-  strategicArea( nullptr ), questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ),
-  inventory( nullptr ), buildMenu( nullptr ), debugFrame( nullptr )
+  fps( 0.0f ), fpsLabel( nullptr ), isFreelook( false ), showFPS( false ), showBuild( false ),
+  showDebug( false ), doShow( true ),
+  root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ), strategicArea( nullptr ),
+  questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ), inventory( nullptr ),
+  buildMenu( nullptr ), debugFrame( nullptr )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -76,16 +78,21 @@ void UI::update()
   root->updateChildren();
 
   if( !isFreelook ) {
-    root->passMouseEvents();
-
     if( input.isKeyPressed || input.isKeyReleased ) {
       root->passKeyEvents();
+    }
+    if( doShow ) {
+      root->passMouseEvents();
     }
   }
 }
 
 void UI::draw()
 {
+  if( !doShow ) {
+    return;
+  }
+
   glViewport( 0, 0, camera.width, camera.height );
   glClear( GL_DEPTH_BUFFER_BIT );
 
@@ -129,7 +136,9 @@ void UI::draw()
 
 void UI::load()
 {
-  isFreelook = false;
+  fps           = 1.0f / Timer::TICK_TIME;
+  isFreelook    = false;
+  doShow        = true;
 
   hudArea       = new HudArea();
   strategicArea = new StrategicArea();
@@ -206,13 +215,12 @@ void UI::unload()
 
 void UI::init()
 {
+  fps        = 1.0f / Timer::TICK_TIME;
   isFreelook = false;
-
-  showFPS   = config.include( "ui.showFPS",   false ).asBool();
-  showBuild = config.include( "ui.showBuild", false ).asBool();
-  showDebug = config.include( "ui.showDebug", false ).asBool();
-
-  fps = 1.0f / Timer::TICK_TIME;
+  showFPS    = config.include( "ui.showFPS",   false ).asBool();
+  showBuild  = config.include( "ui.showBuild", false ).asBool();
+  showDebug  = config.include( "ui.showDebug", false ).asBool();
+  doShow     = true;
 
   style.init();
   mouse.init();

@@ -25,11 +25,174 @@
 
 using namespace oz;
 
+class Resource
+{
+  public:
+
+    mutable volatile int refCount;
+    mutable SpinLock     refLock;
+
+    OZ_ALWAYS_INLINE
+    explicit Resource() :
+      refCount( 0 )
+    {}
+
+    OZ_ALWAYS_INLINE
+    ~Resource()
+    {
+      hard_assert( refCount == 0 );
+    }
+
+    OZ_ALWAYS_INLINE
+    void refIncrement() const
+    {
+      refLock.lock();
+      ++refCount;
+      refLock.unlock();
+    }
+
+    OZ_ALWAYS_INLINE
+    void refDecrement() const
+    {
+      refLock.lock();
+      --refCount;
+      refLock.unlock();
+    }
+
+};
+
+template <class ResourceType>
+class Ref
+{
+  private:
+
+    ResourceType* resource;
+
+  public:
+
+    OZ_ALWAYS_INLINE
+    Ref() :
+      resource( nullptr )
+    {}
+
+    Ref( ResourceType* r ) :
+      resource( r )
+    {
+      if( resource != nullptr ) {
+        resource->refIncrement();
+      }
+    }
+
+    ~Ref()
+    {
+      release();
+    }
+
+    Ref( const Ref& ref ) :
+      resource( ref.resource )
+    {
+      if( resource != nullptr ) {
+        resource->refIncrement();
+      }
+    }
+
+    Ref( Ref&& ref ) :
+      resource( ref.resource )
+    {
+      ref.resource = nullptr;
+    }
+
+    Ref& operator = ( const Ref& ref )
+    {
+      if( &ref == this ) {
+        return *this;
+      }
+
+      release();
+
+      resource = ref.resource;
+
+      if( resource != nullptr ) {
+        resource->refIncrement();
+      }
+
+      return *this;
+    }
+
+    Ref& operator = ( Ref&& ref )
+    {
+      if( &ref == this ) {
+        return *this;
+      }
+
+      release();
+
+      resource = ref.resource;
+      ref.resource = nullptr;
+
+      return *this;
+    }
+
+    OZ_ALWAYS_INLINE
+    operator const ResourceType* () const
+    {
+      return resource->isLoaded ? resource : nullptr;
+    }
+
+    OZ_ALWAYS_INLINE
+    operator ResourceType* ()
+    {
+      return resource->isLoaded ? resource : nullptr;
+    }
+
+    OZ_ALWAYS_INLINE
+    const ResourceType* operator -> () const
+    {
+      return resource->isLoaded ? resource : nullptr;
+    }
+
+    OZ_ALWAYS_INLINE
+    ResourceType* operator -> ()
+    {
+      return resource->isLoaded ? resource : nullptr;
+    }
+
+    void release()
+    {
+      if( resource != nullptr ) {
+        hard_assert( resource->refCount > 0 );
+
+        ResourceType* r = resource;
+
+        resource->refDecrement();
+        resource = nullptr;
+
+        if( r->refCount == 0 ) {
+          delete r;
+        }
+      }
+    }
+
+};
+
+struct Foo : Resource
+{
+  ~Foo()
+  {
+    Log() << "~Foo()\n";
+  }
+};
+
 int main()
 {
   System::init();
 
-  Gettext gt( File( File::NATIVE, "/usr/share/locale/sl/LC_MESSAGES/sudo.mo" ) );
-  Log() << gt.get( "unable to save stdin" ) << "\n";
+  Ref<Foo> foo = new Foo();
+  Ref<Foo> bar = foo;
+
+  foo = new Foo();
+  Log() << "a\n";
+  foo = bar;
+  Log() << "a\n";
   return 0;
 }

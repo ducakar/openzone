@@ -80,9 +80,9 @@ static void test_String_parsing()
     }
 
     String s = String( x, 9 );
-    float  y = String::parseFloat( s );
+    float  y = float( String::parseDouble( s ) );
     String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
-    float  z = String::parseFloat( t );
+    float  z = float( String::parseDouble( t ) );
 
     if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
       continue;
@@ -118,9 +118,9 @@ static void test_String_parsing()
     }
 
     String s = String( x, 9 );
-    float  y = String::parseFloat( s );
+    float  y = float( String::parseDouble( s ) );
     String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
-    float  z = String::parseFloat( t );
+    float  z = float( String::parseDouble( t ) );
 
     if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
       continue;
@@ -156,9 +156,9 @@ static void test_String_parsing()
     }
 
     String s = String( x, 9 );
-    float  y = String::parseFloat( s );
+    float  y = float( String::parseDouble( s ) );
     String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
-    float  z = String::parseFloat( t );
+    float  z = float( String::parseDouble( t ) );
 
     if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
       continue;

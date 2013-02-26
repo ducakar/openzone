@@ -26,8 +26,8 @@
 
 #include "String.hh"
 
-#include "Math.hh"
 #include "System.hh"
+#include "Math.hh"
 
 #include <cmath>
 #include <cstdio>
@@ -267,7 +267,7 @@ int String::parseInt( const char* s, const char** end )
   }
 }
 
-float String::parseFloat( const char* s, const char** end )
+double String::parseDouble( const char* s, const char** end )
 {
   const char* p = s;
   double number;
@@ -300,14 +300,14 @@ float String::parseFloat( const char* s, const char** end )
     if( end != nullptr ) {
       *end = p + 3;
     }
-    return float( sign ) * Math::INF;
+    return sign * Math::INF;
   }
   // Not-a-number.
   else if( p[0] == 'n' && p[1] == 'a' && p[2] == 'n' ) {
     if( end != nullptr ) {
       *end = p + 3;
     }
-    return float( sign ) * Math::NaN;
+    return sign * Math::NaN;
   }
   // Invalid.
   else {
@@ -366,7 +366,7 @@ float String::parseFloat( const char* s, const char** end )
   if( end != nullptr ) {
     *end = p;
   }
-  return float( sign * number );
+  return sign * number;
 }
 
 String::String( const char* s, int count_ ) :
@@ -456,13 +456,11 @@ String::String( int i ) :
   baseBuffer[count] = '\0';
 }
 
-String::String( float f, int nDigits ) :
+String::String( double d, int nDigits ) :
   buffer( baseBuffer ), count( 0 )
 {
-  static_assert( BUFFER_SIZE >= 16, "Too small String::baseBuffer for float representation." );
-  hard_assert( 0 < nDigits && nDigits <= 9 );
-
-  double d = f;
+  static_assert( BUFFER_SIZE >= 25, "Too small String::baseBuffer for double representation." );
+  hard_assert( 0 < nDigits && nDigits <= 17 );
 
   union DoubleBits
   {

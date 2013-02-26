@@ -27,7 +27,6 @@
 #include <client/Camera.hh>
 #include <client/Render.hh>
 #include <client/Sound.hh>
-#include <client/GameStage.hh>
 #include <client/Input.hh>
 #include <client/NaClPlatform.hh>
 
@@ -46,6 +45,9 @@ bool MenuStage::update()
 
 void MenuStage::present( bool isFull )
 {
+  // We don't want to hide UI in the menu.
+  ui::ui.doShow = true;
+
   sound.play();
 
   if( isFull ) {
@@ -63,16 +65,6 @@ void MenuStage::wait( uint micros )
 
 void MenuStage::load()
 {
-  File autosaveFile( File::NATIVE, GameStage::AUTOSAVE_FILE );
-  File quicksaveFile( File::NATIVE, GameStage::QUICKSAVE_FILE );
-
-  if( autosaveFile.type() == File::REGULAR ) {
-    showAutosaved = true;
-  }
-  if( quicksaveFile.type() == File::REGULAR ) {
-    showQuicksaved = true;
-  }
-
   OZ_MAIN_CALL( this, {
     input.buttons     = 0;
     input.currButtons = 0;

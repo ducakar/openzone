@@ -335,10 +335,9 @@ void Orbis::read( InputStream* istream )
   String poolName;
 
   for( int i = 0; i < nStructs; ++i ) {
-    bspName = istream->readString();
-
     Struct* str = nullptr;
 
+    bspName = istream->readString();
     if( !bspName.isEmpty() ) {
       const BSP* bsp = liber.bsp( bspName );
       const_cast<BSP*>( bsp )->request();
@@ -346,33 +345,30 @@ void Orbis::read( InputStream* istream )
       str = new Struct( bsp, istream );
       position( str );
     }
-
     structs.add( str );
   }
   for( int i = 0; i < nObjects; ++i ) {
-    className = istream->readString();
-
     Object* obj = nullptr;
 
+    className = istream->readString();
     if( !className.isEmpty() ) {
       const ObjectClass* clazz = liber.objClass( className );
 
       obj = clazz->create( istream );
 
-      // No need to register objects since Lua state is being deserialised.
-
       bool isCut = istream->readBool();
       if( !isCut ) {
         position( obj );
       }
+
+      // No need to register objects since Lua state is being deserialised.
     }
     objects.add( obj );
   }
   for( int i = 0; i < nFrags; ++i ) {
-    poolName = istream->readString();
-
     Frag* frag = nullptr;
 
+    poolName = istream->readString();
     if( !poolName.isEmpty() ) {
       const FragPool* pool = liber.fragPool( poolName );
 
@@ -511,6 +507,219 @@ void Orbis::write( OutputStream* ostream ) const
   ostream->writeInt( fragAvailableIndices.length() );
   foreach( i, fragAvailableIndices.citer() ) {
     ostream->writeInt( *i );
+  }
+}
+
+void Orbis::read( const JSON& json )
+{
+  hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
+
+//   lua.read( istream );
+
+//   terra.read( istream );
+//   caelum.read( istream );
+
+  String bspName;
+  String className;
+  String poolName;
+
+  const JSON& structsJSON = json["structs"];
+
+  foreach( i, structsJSON.arrayCIter() ) {
+    Struct* str = nullptr;
+
+    if( !i->isEmpty() ) {
+      bspName = ( *i )["bsp"].asString();
+
+      const BSP* bsp = liber.bsp( bspName );
+      const_cast<BSP*>( bsp )->request();
+
+      str = new Struct( bsp, *i );
+      position( str );
+    }
+    structs.add( str );
+  }
+
+  const JSON& objectsJSON = json["objects"];
+
+  foreach( i, objectsJSON.arrayCIter() ) {
+    Object* obj = nullptr;
+
+    if( !i->isEmpty() ) {
+      className = ( *i )["class"].asString();
+
+      const ObjectClass* clazz = liber.objClass( className );
+
+      obj = clazz->create( *i );
+
+      bool isCut = ( *i )["isCut"].asBool();
+      if( !isCut ) {
+        position( obj );
+      }
+
+      if( obj->flags & Object::LUA_BIT ) {
+        lua.registerObject( obj->index );
+      }
+    }
+    objects.add( obj );
+  }
+
+  const JSON& fragsJSON = json["frags"];
+
+  foreach( i, fragsJSON.arrayCIter() ) {
+    Frag* frag = nullptr;
+
+    if( !i->isEmpty() ) {
+      poolName = ( *i )["pool"].asString();
+
+      const FragPool* pool = liber.fragPool( poolName );
+
+      frag = new Frag( pool, *i );
+      position( frag );
+    }
+    frags.add( frag );
+  }
+
+  const JSON& strFreedIndicesFreeingJSON = json["strFreedIndicesFreeing"];
+  foreach( i, strFreedIndicesFreeingJSON.arrayCIter() ) {
+    strFreedIndices[freeing].add( i->asInt() );
+  }
+
+  const JSON& objFreedIndicesFreeingJSON = json["objFreedIndicesFreeing"];
+  foreach( i, objFreedIndicesFreeingJSON.arrayCIter() ) {
+    objFreedIndices[freeing].add( i->asInt() );
+  }
+
+  const JSON& fragFreedIndicesFreeingJSON = json["fragFreedIndicesFreeing"];
+  foreach( i, fragFreedIndicesFreeingJSON.arrayCIter() ) {
+    fragFreedIndices[freeing].add( i->asInt() );
+  }
+
+  const JSON& strFreedIndicesWaitingJSON = json["strFreedIndicesWaiting"];
+  foreach( i, strFreedIndicesWaitingJSON.arrayCIter() ) {
+    strFreedIndices[waiting].add( i->asInt() );
+  }
+
+  const JSON& objFreedIndicesWaitingJSON = json["objFreedIndicesWaiting"];
+  foreach( i, objFreedIndicesWaitingJSON.arrayCIter() ) {
+    objFreedIndices[waiting].add( i->asInt() );
+  }
+
+  const JSON& fragFreedIndicesWaitingJSON = json["fragFreedIndicesWaiting"];
+  foreach( i, fragFreedIndicesWaitingJSON.arrayCIter() ) {
+    fragFreedIndices[waiting].add( i->asInt() );
+  }
+
+  const JSON& strAvailableIndicesJSON = json["strAvailableIndices"];
+  foreach( i, strAvailableIndicesJSON.arrayCIter() ) {
+    strAvailableIndices.add( i->asInt() );
+  }
+
+  const JSON& objAvailableIndicesJSON = json["objAvailableIndices"];
+  foreach( i, objAvailableIndicesJSON.arrayCIter() ) {
+    objAvailableIndices.add( i->asInt() );
+  }
+
+  const JSON& fragAvailableIndicesJSON = json["fragAvailableIndices"];
+  foreach( i, fragAvailableIndicesJSON.arrayCIter() ) {
+    fragAvailableIndices.add( i->asInt() );
+  }
+}
+
+void Orbis::write( JSON* json ) const
+{
+//   lua.write( ostream );
+
+//   terra.write( ostream );
+//   caelum.write( ostream );
+
+  Struct* str;
+  Object* obj;
+  Frag*   frag;
+
+  JSON& structsJSON = json->addArray( "structs" );
+
+  for( int i = 0; i < structs.length(); ++i ) {
+    str = structs[i];
+
+    JSON& structJSON = structsJSON.addObject();
+
+    if( str != nullptr ) {
+      structJSON.add( "bsp", str->bsp->name );
+      str->write( &structJSON );
+    }
+  }
+
+  JSON& objectsJSON = json->addArray( "objects" );
+
+  for( int i = 0; i < objects.length(); ++i ) {
+    obj = objects[i];
+
+    JSON& objectJSON = objectsJSON.addObject();
+
+    if( obj != nullptr ) {
+      objectJSON.add( "class", obj->clazz->name );
+      obj->write( &objectJSON );
+      objectJSON.add( "isCut", obj->cell == nullptr );
+    }
+  }
+
+  JSON& fragsJSON = json->addArray( "frags" );
+
+  for( int i = 0; i < frags.length(); ++i ) {
+    frag = frags[i];
+
+    JSON& fragJSON = fragsJSON.addObject();
+
+    if( frag != nullptr ) {
+      fragJSON.add( "pool", frag->pool->name );
+      frag->write( &fragJSON );
+    }
+  }
+
+  JSON& strFreedIndicesFreeingJSON = json->addArray( "strFreedIndicesFreeing" );
+  foreach( i, strFreedIndices[freeing].citer() ) {
+    strFreedIndicesFreeingJSON.add( *i );
+  }
+
+  JSON& objFreedIndicesFreeingJSON = json->addArray( "objFreedIndicesFreeing" );
+  foreach( i, objFreedIndices[freeing].citer() ) {
+    objFreedIndicesFreeingJSON.add( *i );
+  }
+
+  JSON& fragFreedIndicesFreeingJSON = json->addArray( "fragFreedIndicesFreeing" );
+  foreach( i, fragFreedIndices[freeing].citer() ) {
+    fragFreedIndicesFreeingJSON.add( *i );
+  }
+
+  JSON& strFreedIndicesWaitingJSON = json->addArray( "strFreedIndicesWaiting" );
+  foreach( i, strFreedIndices[waiting].citer() ) {
+    strFreedIndicesWaitingJSON.add( *i );
+  }
+
+  JSON& objFreedIndicesWaitingJSON = json->addArray( "objFreedIndicesWaiting" );
+  foreach( i, objFreedIndices[waiting].citer() ) {
+    objFreedIndicesWaitingJSON.add( *i );
+  }
+
+  JSON& fragFreedIndicesWaitingJSON = json->addArray( "fragFreedIndicesWaiting" );
+  foreach( i, fragFreedIndices[waiting].citer() ) {
+    fragFreedIndicesWaitingJSON.add( *i );
+  }
+
+  JSON& strAvailableIndicesJSON = json->addArray( "strAvailableIndices" );
+  foreach( i, strAvailableIndices.citer() ) {
+    strAvailableIndicesJSON.add( *i );
+  }
+
+  JSON& objAvailableIndicesJSON = json->addArray( "objAvailableIndices" );
+  foreach( i, objAvailableIndices.citer() ) {
+    objAvailableIndicesJSON.add( *i );
+  }
+
+  JSON& fragAvailableIndicesJSON = json->addArray( "fragAvailableIndices" );
+  foreach( i, fragAvailableIndices.citer() ) {
+    fragAvailableIndicesJSON.add( *i );
   }
 }
 

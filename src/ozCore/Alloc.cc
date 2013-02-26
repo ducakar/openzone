@@ -51,80 +51,68 @@ enum AllocMode
 
 #ifdef OZ_TRACK_ALLOCS
 
-// Holds info about a memory allocation, used to track memory leaks and new/delete mismatches.
-// If we deallocate from two different threads at once with OZ_TRACK_ALLOCS, changing the list of
-// allocated blocks while iterating it in another thread can result in a SIGSEGV, so list operations
-// must be protected my a spin lock.
-struct TraceEntry
-{
-  TraceEntry* next;
-  void*       address;
-  size_t      size;
-  StackTrace  stackTrace;
-};
+static Alloc::ChunkInfo* volatile firstChunkInfo[2] = { nullptr, nullptr };
+static volatile bool              chunkInfoLock     = 0;
 
-static TraceEntry* volatile firstTraceEntry[2] = { nullptr, nullptr };
-static volatile bool        traceLock          = 0;
-
-static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
+static void addChunkInfo( AllocMode mode, void* ptr, size_t size )
 {
-  TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
-  if( st == nullptr ) {
-    OZ_ERROR( "TraceEntry allocation failed" );
+  Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>( malloc( sizeof( Alloc::ChunkInfo ) ) );
+  if( ci == nullptr ) {
+    OZ_ERROR( "ChunkInfo allocation failed" );
   }
 
-  st->address    = ptr;
-  st->size       = size;
-  st->stackTrace = StackTrace::current( 2 );
+  ci->address    = ptr;
+  ci->size       = size;
+  ci->stackTrace = StackTrace::current( 2 );
 
-  while( __sync_lock_test_and_set( &traceLock, 1 ) != 0 ) {
-    while( traceLock != 0 );
+  while( __sync_lock_test_and_set( &chunkInfoLock, 1 ) != 0 ) {
+    while( chunkInfoLock != 0 );
   }
 
-  st->next = firstTraceEntry[mode];
-  firstTraceEntry[mode] = st;
+  ci->next = firstChunkInfo[mode];
+  firstChunkInfo[mode] = ci;
 
-  __sync_lock_release( &traceLock );
+  __sync_lock_release( &chunkInfoLock );
 }
 
-static void eraseTraceEntry( AllocMode mode, void* ptr )
+static void eraseChunkInfo( AllocMode mode, void* ptr )
 {
-  while( __sync_lock_test_and_set( &traceLock, 1 ) != 0 ) {
-    while( traceLock != 0 );
+  while( __sync_lock_test_and_set( &chunkInfoLock, 1 ) != 0 ) {
+    while( chunkInfoLock != 0 );
   }
 
-  TraceEntry* st   = firstTraceEntry[mode];
-  TraceEntry* prev = nullptr;
+  Alloc::ChunkInfo* ci   = firstChunkInfo[mode];
+  Alloc::ChunkInfo* prev = nullptr;
 
-  while( st != nullptr ) {
-    if( st->address == ptr ) {
+  while( ci != nullptr ) {
+    if( ci->address == ptr ) {
       if( prev == nullptr ) {
-        firstTraceEntry[mode] = st->next;
+        firstChunkInfo[mode] = ci->next;
       }
       else {
-        prev->next = st->next;
+        prev->next = ci->next;
       }
 
-      __sync_lock_release( &traceLock );
+      __sync_lock_release( &chunkInfoLock );
 
-      goto backtraceFound;
+      goto chunkInfoFound;
     }
-    prev = st;
-    st = st->next;
+    prev = ci;
+    ci = ci->next;
   }
 
-  __sync_lock_release( &traceLock );
+  __sync_lock_release( &chunkInfoLock );
 
   // Check if allocated as a different kind (object/array)
-  st = firstTraceEntry[!mode];
+  ci = firstChunkInfo[!mode];
 
-  while( st != nullptr ) {
-    if( st->address == ptr ) {
+  while( ci != nullptr ) {
+    if( ci->address == ptr ) {
       break;
     }
-    st = st->next;
+    ci = ci->next;
   }
-  if( st == nullptr ) {
+  if( ci == nullptr ) {
     OZ_ERROR( mode == OBJECT ? "ALLOC: Freeing object at %p that has not been allocated" :
                                "ALLOC: Freeing array at %p that has not been allocated", ptr );
   }
@@ -132,9 +120,9 @@ static void eraseTraceEntry( AllocMode mode, void* ptr )
     OZ_ERROR( mode == OBJECT ? "ALLOC: new[] -> delete mismatch for block at %p" :
                                "ALLOC: new -> delete[] mismatch for block at %p", ptr );
   }
-  backtraceFound:
+  chunkInfoFound:
 
-  free( st );
+  free( ci );
 }
 
 #endif // OZ_TRACK_ALLOCS
@@ -168,7 +156,7 @@ static void* allocate( AllocMode mode, size_t size )
   static_cast<size_t*>( ptr )[-1] = size;
 
 #ifdef OZ_TRACK_ALLOCS
-  addTraceEntry( mode, ptr, size );
+  addChunkInfo( mode, ptr, size );
 #else
   static_cast<void>( mode );
 #endif
@@ -179,7 +167,7 @@ static void* allocate( AllocMode mode, size_t size )
 static void deallocate( AllocMode mode, void* ptr )
 {
 #ifdef OZ_TRACK_ALLOCS
-  eraseTraceEntry( mode, ptr );
+  eraseChunkInfo( mode, ptr );
 #else
   static_cast<void>( mode );
 #endif
@@ -221,63 +209,28 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-void Alloc::printSummary()
+#if !defined( OZ_ADDRESS_SANITIZER ) && defined( OZ_TRACK_ALLOCS )
+
+Alloc::ChunkCIterator Alloc::objectCIter()
 {
-  Log::println( "Alloc summary {" );
-  Log::indent();
-
-  Log::println( "current chunks     %d", count );
-  Log::println( "current amount     %.2f MiB (%lu B)",
-                float( amount ) / ( 1024.0f * 1024.0f ), ulong( amount ) );
-  Log::println( "maximum chunks     %d", maxCount );
-  Log::println( "maximum amount     %.2f MiB (%lu B)",
-                float( maxAmount ) / ( 1024.0f * 1024.0f ), ulong( maxAmount ) );
-  Log::println( "cumulative chunks  %d", sumCount );
-  Log::println( "cumulative amount  %.2f MiB (%lu B)",
-                float( sumAmount ) / ( 1024.0f * 1024.0f ), ulong( sumAmount ) );
-
-  Log::unindent();
-  Log::println( "}" );
+  return ChunkCIterator( firstChunkInfo[OBJECT] );
 }
 
-#if defined( OZ_ADDRESS_SANITIZER ) || !defined( OZ_TRACK_ALLOCS )
-
-bool Alloc::printLeaks()
+Alloc::ChunkCIterator Alloc::arrayCIter()
 {
-  return false;
+  return ChunkCIterator( firstChunkInfo[ARRAY] );
 }
 
 #else
 
-bool Alloc::printLeaks()
+Alloc::ChunkCIterator Alloc::objectCIter()
 {
-  bool hasOutput = false;
+  return ChunkCIterator();
+}
 
-  const TraceEntry* bt;
-
-  bt = firstTraceEntry[OBJECT];
-  while( bt != nullptr ) {
-    Log::println( "Leaked object at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
-    Log::indent();
-    Log::printTrace( bt->stackTrace );
-    Log::unindent();
-
-    bt = bt->next;
-    hasOutput = true;
-  }
-
-  bt = firstTraceEntry[ARRAY];
-  while( bt != nullptr ) {
-    Log::println( "Leaked array at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
-    Log::indent();
-    Log::printTrace( bt->stackTrace );
-    Log::unindent();
-
-    bt = bt->next;
-    hasOutput = true;
-  }
-
-  return hasOutput;
+Alloc::ChunkCIterator Alloc::arrayCIter()
+{
+  return ChunkCIterator();
 }
 
 #endif

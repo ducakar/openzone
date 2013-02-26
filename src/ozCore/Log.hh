@@ -28,9 +28,9 @@
 
 #pragma once
 
+#include "StackTrace.hh"
 #include "String.hh"
 #include "Mat44.hh"
-#include "StackTrace.hh"
 
 namespace oz
 {
@@ -124,12 +124,28 @@ class Log
     static void printTrace( const StackTrace& st );
 
     /**
-     * Print 'Caught signal ...' and signal description.
+     * Print "Caught signal ..." and signal description.
      *
-     * This method is only required by signal handler since it has issues with functions that take
-     * variable arguments.
+     * This method is only required internally by signal handler since it has issues with functions
+     * that take variable arguments.
      */
     static void printSignal( int sigNum );
+
+    /**
+     * Print summary about memory usage (`Alloc`'s -`count` and -`size` fields).
+     *
+     * @sa `oz::Alloc`
+     */
+    static void printMemorySummary();
+
+    /**
+     * Print memory chunks allocated via `new` and `new[]` operators, tracked by `Alloc` class.
+     *
+     * @return true iff there is any allocated memory chunk.
+     *
+     * @sa `oz::Alloc`
+     */
+    static bool printMemoryLeaks();
 
     /**
      * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other

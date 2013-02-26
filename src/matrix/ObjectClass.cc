@@ -104,5 +104,10 @@ Object* ObjectClass::create( InputStream* istream ) const
   return new Object( this, istream );
 }
 
+Object* ObjectClass::create( const JSON& json ) const
+{
+  return new Object( this, json );
+}
+
 }
 }

@@ -172,6 +172,26 @@ void Matrix::write( OutputStream* ostream ) const
   Log::printEnd( " OK" );
 }
 
+void Matrix::read( const JSON& json )
+{
+  Log::println( "Reading Matrix {" );
+  Log::indent();
+
+  orbis.read( json );
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Matrix::write( JSON* json ) const
+{
+  Log::print( "Writing Matrix ..." );
+
+  orbis.write( json );
+
+  Log::printEnd( " OK" );
+}
+
 void Matrix::load()
 {
   Log::print( "Loading Matrix ..." );

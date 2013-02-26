@@ -323,7 +323,7 @@ class String
     /**
      * Parse float value.
      *
-     * Single-precision floating-point value should match regular expression `-?inf|nan` or
+     * Double-precision floating-point value should match regular expression `-?inf|nan` or
      * `-?(0|(1-9][0-9]*)(\\.[0-9]+)?((e|E)(-?[0-9]+))` (JSON number format).
      *
      * @param s string to parse.
@@ -331,7 +331,7 @@ class String
      * string. Thus, if parsing fails `end` value equals `s`.
      * @return parsed value, NaN if parsing fails.
      */
-    static float parseFloat( const char* s, const char** end = nullptr );
+    static double parseDouble( const char* s, const char** end = nullptr );
 
     /**
      * Cast signed byte string to C string.
@@ -411,18 +411,19 @@ class String
     explicit String( int i );
 
     /**
-     * Create a string representing the given float value.
+     * Create a string representing the given double value.
      *
      * Number is formatted the same as in JSON or %.9g in `printf()` (using C locale).
      *
-     * Converting a 6-digit decimal representation to a float and back to decimal representation
-     * should be an identity. The same for converting a float to a 9-digit decimal representation
-     * and back to float.
+     * Converting a 6-digit decimal representation to a single-precision float value and back to
+     * decimal representation should be an identity. The same for converting a float to a 9-digit
+     * decimal representation and back to float.
+     * For double-precision values those digit counts are 15 and 17 respectively.
      *
-     * @param f number.
+     * @param d number.
      * @param nDigits number of digits to show.
      */
-    explicit String( float f, int nDigits = 6 );
+    explicit String( double d, int nDigits = 9 );
 
     /**
      * Destructor.
@@ -794,12 +795,12 @@ class String
     }
 
     /**
-     * Parse float value, wraps `parseFloat( const char* s, const char** end )`.
+     * Parse double value, wraps `parseDouble( const char* s, const char** end )`.
      */
     OZ_ALWAYS_INLINE
-    float parseFloat( const char** end = nullptr ) const
+    double parseDouble( const char** end = nullptr ) const
     {
-      return parseFloat( buffer, end );
+      return parseDouble( buffer, end );
     }
 
     /**

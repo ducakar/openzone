@@ -102,6 +102,8 @@ class Input
       KEY_QUICKSAVE,
       KEY_QUICKLOAD,
       KEY_AUTOLOAD,
+      KEY_SAVE_LAYOUT,
+      KEY_LOAD_LAYOUT,
       KEY_QUIT,
 
       KEY_MAX

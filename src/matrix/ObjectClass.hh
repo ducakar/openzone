@@ -88,6 +88,7 @@ class ObjectClass
 
     virtual Object* create( int index, const Point& pos, Heading heading ) const;
     virtual Object* create( InputStream* istream ) const;
+    virtual Object* create( const JSON& json ) const;
 
 };
 

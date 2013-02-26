@@ -191,6 +191,6 @@ int main()
 //     printf( "%d ", array[i] );
 //   }
 
-  Alloc::printLeaks();
+  Log::printMemoryLeaks();
   return 0;
 }

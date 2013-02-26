@@ -767,6 +767,66 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   }
 }
 
+Struct::Struct( const BSP* bsp_, const JSON& json )
+{
+  mins        = json["mins"].asPoint();
+  maxs        = json["maxs"].asPoint();
+  transf      = json["transf"].asMat44();
+  invTransf   = json["invTransf"].asMat44();
+
+  bsp         = bsp_;
+
+  p           = json["p"].asPoint();
+  heading     = Heading( json["heading"].asInt() );
+
+  index       = json["index"].asInt();
+
+  life        = json["life"].asFloat();
+  resistance  = bsp->resistance;
+  demolishing = json["demolishing"].asFloat();
+
+  if( bsp->nEntities != 0 ) {
+    entities.resize( bsp->nEntities );
+
+    const JSON& entitiesJSON = json["entities"];
+
+    for( int i = 0; i < entities.length(); ++i ) {
+      Entity& entity = entities[i];
+
+      const JSON& entityJSON = entitiesJSON[i];
+
+      entity.offset = entityJSON.asVec3();
+      entity.clazz  = &bsp->entities[i];
+      entity.str    = this;
+      entity.key    = entityJSON.asInt();
+      entity.state  = Entity::State( entityJSON.asInt() );
+      entity.ratio  = entityJSON.asFloat();
+      entity.time   = entityJSON.asFloat();
+
+      if( entity.state == Entity::OPENING ) {
+        entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
+      }
+      else if( entity.state == Entity::CLOSING ) {
+        entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
+      }
+      else {
+        entity.velocity = Vec3::ZERO;
+      }
+    }
+  }
+
+  const JSON& boundObjectsJSON = json["boundObjects"];
+  hard_assert( boundObjectsJSON.length() <= bsp->nBoundObjects );
+
+  if( bsp->nBoundObjects != 0 ) {
+    boundObjects.allocate( bsp->nBoundObjects );
+
+    foreach( i, boundObjectsJSON.arrayCIter() ) {
+      boundObjects.add( i->asInt() );
+    }
+  }
+}
+
 void Struct::write( OutputStream* ostream )
 {
   ostream->writePoint( mins );
@@ -793,6 +853,40 @@ void Struct::write( OutputStream* ostream )
   ostream->writeInt( boundObjects.length() );
   for( int i = 0; i < boundObjects.length(); ++i ) {
     ostream->writeInt( boundObjects[i] );
+  }
+}
+
+void Struct::write( JSON* json )
+{
+  json->add( "mins", mins );
+  json->add( "maxs", maxs );
+  json->add( "transf", transf );
+  json->add( "invTransf", invTransf );
+
+  json->add( "p", p );
+  json->add( "heading", heading );
+
+  json->add( "index", index );
+
+  json->add( "life", life );
+  json->add( "demolishing", demolishing );
+
+  JSON& entitiesJSON = json->addArray( "entities" );
+
+  for( int i = 0; i < entities.length(); ++i ) {
+    JSON& entityJSON = entitiesJSON.addObject();
+
+    entityJSON.add( "offset", entities[i].offset );
+    entityJSON.add( "key", entities[i].key );
+    entityJSON.add( "state", entities[i].state );
+    entityJSON.add( "ratio", entities[i].ratio );
+    entityJSON.add( "time", entities[i].time );
+  }
+
+  JSON& boundObjectsJSON = json->addArray( "boundObjects" );
+
+  for( int i = 0; i < boundObjects.length(); ++i ) {
+    boundObjectsJSON.add( boundObjects[i] );
   }
 }
 

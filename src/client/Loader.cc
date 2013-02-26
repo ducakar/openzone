@@ -398,7 +398,7 @@ void Loader::makeScreenshot()
 
   glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, screenshotInfo.pixels );
 
-  screenshotThread.start( "screenshot", Thread::JOINABLE, screenshotMain, nullptr );
+  screenshotThread.start( "screenshot", Thread::JOINABLE, screenshotMain );
 }
 
 void Loader::syncUpdate()
@@ -458,7 +458,7 @@ void Loader::init()
   preloadMainSemaphore.init();
   preloadAuxSemaphore.init();
 
-  preloadThread.start( "preload", Thread::JOINABLE, preloadMain, nullptr );
+  preloadThread.start( "preload", Thread::JOINABLE, preloadMain );
 }
 
 void Loader::destroy()

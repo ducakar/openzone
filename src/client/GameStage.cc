@@ -50,27 +50,17 @@ using matrix::matrix;
 using nirvana::nirvana;
 using modules::modules;
 
-String GameStage::AUTOSAVE_FILE;
-String GameStage::QUICKSAVE_FILE;
-
-void GameStage::auxMain( void* )
+void GameStage::read()
 {
-  gameStage.auxRun();
-}
+  Log::print( "Loading state from '%s' ...", stateFile.path().cstr() );
 
-bool GameStage::read( const char* path )
-{
-  Log::print( "Loading state from '%s' ...", path );
-
-  File file( File::NATIVE, path );
-  if( !file.map() ) {
-    Log::printEnd( " Failed" );
-    return false;
+  if( !stateFile.map() ) {
+    OZ_ERROR( "Reading saved state '%s' failed", stateFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );
 
-  InputStream istream = file.inputStream();
+  InputStream istream = stateFile.inputStream();
 
   matrix.read( &istream );
   nirvana.read( &istream );
@@ -87,19 +77,15 @@ bool GameStage::read( const char* path )
   Log::unindent();
   Log::println( "}" );
 
-  file.unmap();
-
-  return true;
+  stateFile.unmap();
 }
 
-void GameStage::write( const char* path ) const
+void GameStage::write() const
 {
   OutputStream ostream( 0 );
 
   matrix.write( &ostream );
   nirvana.write( &ostream );
-
-  Log::print( "Writing Client ..." );
 
   questList.write( &ostream );
   camera.write( &ostream );
@@ -107,11 +93,9 @@ void GameStage::write( const char* path ) const
 
   lua.write( &ostream );
 
-  Log::printEnd( " OK" );
+  Log::print( "Saving state to %s ...", stateFile.path().cstr() );
 
-  Log::print( "Saving state to %s ...", path );
-
-  if( !File( File::NATIVE, path ).write( ostream.begin(), ostream.length() ) ) {
+  if( !stateFile.write( ostream.begin(), ostream.length() ) ) {
     Log::printEnd( " Failed" );
   }
   else {
@@ -119,80 +103,40 @@ void GameStage::write( const char* path ) const
   }
 }
 
-void GameStage::reload()
+void GameStage::readLayout()
 {
-  Log::println( "[%s] Reloading GameStage {", Time::local().toString().cstr() );
-  Log::indent();
+  Log::print( "Loading layout from '%s' ...", layoutFile.path().cstr() );
 
-  ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.set( "%s", OZ_GETTEXT( "Loading ..." ) );
-  ui::ui.showLoadingScreen( true );
-  ui::ui.loadingScreen->raise();
-
-  loader.unload();
-
-  render.draw( Render::DRAW_UI_BIT );
-  render.draw( Render::DRAW_UI_BIT );
-  render.swap();
-
-  camera.reset();
-
-  modules.unload();
-
-  OZ_MAIN_CALL( this, {
-    context.unload();
-    render.unload();
-  } )
-
-  questList.unload();
-
-  lua.destroy();
-
-  nirvana.unload();
-  matrix.unload();
-
-  matrix.load();
-  nirvana.load();
-
-  lua.init();
-  modules.registerLua();
-
-  questList.load();
-
-  OZ_MAIN_CALL( this, {
-    render.load();
-    context.load();
-  } )
-
-  modules.load();
-
-  if( stateFile.isEmpty() ) {
-    Log::println( "Initialising new world" );
-
-    lua.create( mission );
-  }
-  else if( !read( stateFile ) ) {
-    OZ_ERROR( "Reading saved state '%s' failed", stateFile.cstr() );
+  JSON json;
+  if( json.load( layoutFile ) ) {
+    OZ_ERROR( "Reading saved layout '%s' failed", layoutFile.path().cstr() );
   }
 
-  nirvana.sync();
-  synapse.update();
+  Log::printEnd( " OK" );
 
-  camera.prepare();
-  camera.update();
+  matrix.read( json );
+}
 
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.syncUpdate();
-  sound.play();
-  render.swap();
-  sound.sync();
+void GameStage::writeLayout() const
+{
+  JSON json;
+  json.setObject();
 
-  loader.load();
+  matrix.write( &json );
 
-  ui::ui.showLoadingScreen( false );
+  Log::print( "Saving layout to %s ...", layoutFile.path().cstr() );
 
-  Log::unindent();
-  Log::println( "}" );
+  if( !json.save( layoutFile ) ) {
+    Log::printEnd( " Failed" );
+  }
+  else {
+    Log::printEnd( " OK" );
+  }
+}
+
+void GameStage::auxMain( void* )
+{
+  gameStage.auxRun();
 }
 
 void GameStage::auxRun()
@@ -204,6 +148,8 @@ void GameStage::auxRun()
   while( isAuxAlive ) {
     /*
      * PHASE 2
+     *
+     * World is being updated, other threads should not access world structures here.
      */
 
     beginMicros = Time::uclock();
@@ -220,6 +166,8 @@ void GameStage::auxRun()
 
     /*
      * PHASE 3
+     *
+     * Process AI, main thread renders world and plays sound.
      */
 
     beginMicros = Time::uclock();
@@ -242,6 +190,8 @@ void GameStage::auxRun()
 
     /*
      * PHASE 1
+     *
+     * Nothing, main thread may manipulate world here.
      */
   }
 }
@@ -254,29 +204,44 @@ bool GameStage::update()
 
   /*
    * PHASE 1
+   *
+   * UI and modules update, world may be updated from the main thread during this phase.
    */
 
   beginMicros = Time::uclock();
 
   if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
-    write( QUICKSAVE_FILE );
+    write();
   }
   if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
-    File quicksaveFile( File::NATIVE, QUICKSAVE_FILE );
+    quicksaveFile.stat();
 
     if( quicksaveFile.type() == File::REGULAR ) {
-      stateFile = QUICKSAVE_FILE;
-      reload();
+      stateFile = quicksaveFile;
+      Stage::nextStage = this;
     }
   }
   if( input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD] ) {
-    File autosaveFile( File::NATIVE, AUTOSAVE_FILE );
+    autosaveFile.stat();
 
     if( autosaveFile.type() == File::REGULAR ) {
-      stateFile = AUTOSAVE_FILE;
-      reload();
+      stateFile = autosaveFile;
+      Stage::nextStage = this;
     }
   }
+  if( input.keys[Input::KEY_SAVE_LAYOUT] && !input.oldKeys[Input::KEY_SAVE_LAYOUT] ) {
+    layoutFile = File( File::NATIVE, config["dir.config"].asString() + "/layouts/default.json" );
+    writeLayout();
+    layoutFile = File();
+  }
+  if( input.keys[Input::KEY_LOAD_LAYOUT] && !input.oldKeys[Input::KEY_LOAD_LAYOUT] ) {
+    layoutFile.stat();
+
+    if( layoutFile.type() == File::REGULAR ) {
+      Stage::nextStage = this;
+    }
+  }
+
   if( input.keys[Input::KEY_QUIT] ) {
     Stage::nextStage = &menuStage;
   }
@@ -292,6 +257,9 @@ bool GameStage::update()
 
   /*
    * PHASE 2
+   *
+   * World is being updated in the auxiliary thread, any access of world structures might crash the
+   * game.
    */
 
   beginMicros = Time::uclock();
@@ -306,6 +274,8 @@ bool GameStage::update()
 
   /*
    * PHASE 3
+   *
+   * AI is processed in auxiliary thread here, world is rendered later in this phase in present().
    */
 
   camera.update();
@@ -376,7 +346,7 @@ void GameStage::load()
   isAuxAlive = true;
   mainSemaphore.init( 1 );
   auxSemaphore.init( 0 );
-  auxThread.start( "aux", Thread::JOINABLE, auxMain, nullptr );
+  auxThread.start( "aux", Thread::JOINABLE, auxMain );
 
   Log::printEnd( " OK" );
 
@@ -400,7 +370,13 @@ void GameStage::load()
 
   modules.load();
 
-  if( stateFile.isEmpty() ) {
+  if( layoutFile.type() == File::REGULAR ) {
+    readLayout();
+  }
+  else if( stateFile.type() == File::REGULAR ) {
+    read();
+  }
+  else {
     Log::println( "Initialising new world" );
 
     Log::println( "Loading Client {" );
@@ -411,9 +387,9 @@ void GameStage::load()
     Log::unindent();
     Log::println( "}" );
   }
-  else if( !read( stateFile ) ) {
-    OZ_ERROR( "Reading saved state '%s' failed", stateFile.cstr() );
-  }
+
+  stateFile  = File();
+  layoutFile = File();
 
   nirvana.sync();
   synapse.update();
@@ -437,8 +413,6 @@ void GameStage::load()
   ui::ui.showLoadingScreen( false );
 
   loadingMicros = Time::uclock() - loadingMicros;
-
-  isLoaded = true;
 
   Log::unindent();
   Log::println( "}" );
@@ -482,8 +456,10 @@ void GameStage::unload()
   int   nFrameDrops           = int( timer.ticks - timer.nFrames );
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
-  if( isLoaded ) {
-    write( AUTOSAVE_FILE );
+  if( stateFile.path().isEmpty() ) {
+    stateFile = autosaveFile;
+    write();
+    stateFile = File();
   }
 
   modules.unload();
@@ -552,21 +528,17 @@ void GameStage::unload()
   Log::unindent();
   Log::println( "}" );
 
-  isLoaded = false;
-
   Log::unindent();
   Log::println( "}" );
 }
 
 void GameStage::init()
 {
-  isLoaded = false;
-
   Log::println( "Initialising GameStage {" );
   Log::indent();
 
-  AUTOSAVE_FILE  = String( config["dir.config"].get( "" ), "/saves/autosave.ozState" );
-  QUICKSAVE_FILE = String( config["dir.config"].get( "" ), "/saves/quicksave.ozState" );
+  autosaveFile  = File( File::NATIVE, config["dir.config"].asString() + "/saves/autosave.ozState" );
+  quicksaveFile = File( File::NATIVE, config["dir.config"].asString() + "/saves/quicksave.ozState" );
 
   matrix.init();
   nirvana.init();
@@ -589,10 +561,11 @@ void GameStage::destroy()
   nirvana.destroy();
   matrix.destroy();
 
-  stateFile      = "";
+  stateFile      = File();
+  layoutFile     = File();
   mission        = "";
-  AUTOSAVE_FILE  = "";
-  QUICKSAVE_FILE = "";
+  autosaveFile   = File();
+  quicksaveFile  = File();
 
   Log::unindent();
   Log::println( "}" );

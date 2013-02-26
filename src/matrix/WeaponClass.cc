@@ -58,5 +58,10 @@ Object* WeaponClass::create( InputStream* istream ) const
   return new Weapon( this, istream );
 }
 
+Object* WeaponClass::create( const JSON& json ) const
+{
+  return new Weapon( this, json );
+}
+
 }
 }

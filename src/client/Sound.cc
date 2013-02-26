@@ -801,7 +801,7 @@ void Sound::init()
 
   if( espeak_Initialize != nullptr ) {
     context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );
-    espeak_SetParameter( espeakRATE, 160, 0 );
+    espeak_SetParameter( espeakRATE, 150, 0 );
     espeak_SetVoiceByName( speaker );
     espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
   }
@@ -814,8 +814,8 @@ void Sound::init()
   soundMainSemaphore.init();
   soundAuxSemaphore.init();
 
-  musicThread.start( "music", Thread::JOINABLE, musicMain, nullptr );
-  soundThread.start( "sound", Thread::JOINABLE, soundMain, nullptr );
+  musicThread.start( "music", Thread::JOINABLE, musicMain );
+  soundThread.start( "sound", Thread::JOINABLE, soundMain );
 
   Log::unindent();
   Log::println( "}" );

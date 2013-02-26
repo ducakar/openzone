@@ -54,5 +54,10 @@ Object* DynamicClass::create( InputStream* istream ) const
   return new Dynamic( this, istream );
 }
 
+Object* DynamicClass::create( const JSON& json ) const
+{
+  return new Dynamic( this, json );
+}
+
 }
 }

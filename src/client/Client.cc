@@ -108,7 +108,7 @@ int Client::init( int argc, char** argv )
       }
       case 't': {
         const char* end;
-        benchmarkTime = String::parseFloat( optarg, &end );
+        benchmarkTime = float( String::parseDouble( optarg, &end ) );
 
         if( end == optarg ) {
           printUsage( invocationName );
@@ -200,11 +200,12 @@ int Client::init( int argc, char** argv )
   if( File::mkdir( configDir ) ) {
     Log::println( "Profile directory '%s' created", configDir.cstr() );
   }
-
   if( File::mkdir( configDir + "/saves" ) ) {
     Log::println( "Directory for saved games '%s/saves' created", configDir.cstr() );
   }
-
+  if( File::mkdir( configDir + "/layouts" ) ) {
+    Log::println( "Directory for layouts '%s/layouts' created", configDir.cstr() );
+  }
   if( File::mkdir( configDir + "/screenshots" ) ) {
     Log::println( "Directory for screenshots '%s/screenshots' created", configDir.cstr() );
   }
@@ -477,7 +478,7 @@ int Client::init( int argc, char** argv )
     stage = &gameStage;
   }
   else if( doAutoload ) {
-    gameStage.stateFile = GameStage::AUTOSAVE_FILE;
+    gameStage.stateFile = gameStage.autosaveFile;
     stage = &gameStage;
   }
   else {
@@ -561,8 +562,7 @@ void Client::shutdown()
 #endif
 
   if( initFlags & INIT_MAIN_LOOP ) {
-    Alloc::printSummary();
-
+    Log::printMemorySummary();
     Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );
   }
 }
@@ -607,6 +607,9 @@ int Client::main()
           if( keysym.sym == SDLK_F9 ) {
             if( !( keysym.mod & KMOD_CTRL ) ) {
               loader.makeScreenshot();
+            }
+            else {
+              ui::ui.doShow = !ui::ui.doShow;
             }
           }
           else if( keysym.sym == SDLK_F11 ) {

@@ -51,15 +51,16 @@ class UI
   private:
 
     float          fps;
+    Label*         fpsLabel;
 
     bool           isFreelook;
     bool           showFPS;
     bool           showBuild;
     bool           showDebug;
 
-    Label*         fpsLabel;
-
   public:
+
+    bool           doShow;
 
     Area*          root;
     LoadingArea*   loadingScreen;

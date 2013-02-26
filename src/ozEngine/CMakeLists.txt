@@ -7,7 +7,6 @@ add_library( ozEngine
   common.hh
   ozEngine.hh
   common.cc
-  dummy.cc
 #END SOURCES
 )
 target_link_libraries( ozEngine ozDynamics )

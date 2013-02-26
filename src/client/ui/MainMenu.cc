@@ -53,14 +53,14 @@ namespace ui
 static void loadAutosaved( Button* )
 {
   Stage::nextStage = &gameStage;
-  gameStage.stateFile = GameStage::AUTOSAVE_FILE;
+  gameStage.stateFile = gameStage.autosaveFile;
   gameStage.mission = "";
 }
 
 static void loadQuicksaved( Button* )
 {
   Stage::nextStage = &gameStage;
-  gameStage.stateFile = GameStage::QUICKSAVE_FILE;
+  gameStage.stateFile = gameStage.quicksaveFile;
   gameStage.mission = "";
 }
 
@@ -134,17 +134,17 @@ void MainMenu::onReposition()
 
 void MainMenu::onUpdate()
 {
-  File autosaveFile( File::NATIVE, GameStage::AUTOSAVE_FILE );
-  File quicksaveFile( File::NATIVE, GameStage::QUICKSAVE_FILE );
+  gameStage.autosaveFile.stat();
+  gameStage.quicksaveFile.stat();
 
-  if( autosaveFile.type() == File::REGULAR ) {
+  if( gameStage.autosaveFile.type() == File::REGULAR ) {
     OZ_MAIN_CALL( this, {
       Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
       _this->add( continueButton, -20, 360 );
     } )
   }
 
-  if( quicksaveFile.type() == File::REGULAR ) {
+  if( gameStage.quicksaveFile.type() == File::REGULAR ) {
     OZ_MAIN_CALL( this, {
       Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
       _this->add( quickLoadButton, -20, 320 );

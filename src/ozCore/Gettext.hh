@@ -36,8 +36,8 @@ namespace oz
 /**
  * Translation catalogue database.
  *
- * It reads messages from GNU gettext binary (*.mo) catalogues. It allows merging multiple
- * catalogues into on catalogue. The catalogue info string (translation for "") is discarded, so ""
+ * It reads messages from GNU gettext binary (*.mo) catalogues and allows merging of multiple
+ * catalogues into one catalogue. The catalogue info string (translation for "") is discarded, it
  * always translates to "".
  */
 class Gettext

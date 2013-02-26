@@ -112,5 +112,10 @@ Object* BotClass::create( InputStream* istream ) const
   return new Bot( this, istream );
 }
 
+Object* BotClass::create( const JSON& json ) const
+{
+  return new Bot( this, json );
+}
+
 }
 }

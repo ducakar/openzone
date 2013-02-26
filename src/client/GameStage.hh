@@ -41,9 +41,6 @@ class GameStage : public Stage
       MENU
     };
 
-    static String AUTOSAVE_FILE;
-    static String QUICKSAVE_FILE;
-
   private:
 
     long64        sleepMicros;
@@ -60,24 +57,26 @@ class GameStage : public Stage
     Semaphore     auxSemaphore;
     volatile bool isAuxAlive;
 
-    bool          isLoaded;
-
   public:
 
     State  state;
     Proxy* proxy;
 
-    String stateFile;
+    File   autosaveFile;
+    File   quicksaveFile;
+    File   stateFile;
+    File   layoutFile;
     String mission;
 
   private:
 
+    void read();
+    void write() const;
+
+    void readLayout();
+    void writeLayout() const;
+
     static void auxMain( void* );
-
-    bool read( const char* path );
-    void write( const char* path ) const;
-    void reload();
-
     void auxRun();
 
   public:

@@ -74,9 +74,9 @@ void MissionMenu::loadMission( Button* sender )
   MissionButton* button      = static_cast<MissionButton*>( sender );
   MissionMenu*   missionMenu = static_cast<MissionMenu*>( sender->parent );
 
-  Stage::nextStage = &gameStage;
-  gameStage.stateFile = "";
-  gameStage.mission = missionMenu->missions[missionMenu->scroll + button->index].name;
+  Stage::nextStage    = &gameStage;
+  gameStage.stateFile = File();
+  gameStage.mission   = missionMenu->missions[missionMenu->scroll + button->index].name;
 }
 
 void MissionMenu::onReposition()

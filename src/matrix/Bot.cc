@@ -1200,6 +1200,39 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   }
 }
 
+Bot::Bot( const BotClass* clazz_, const JSON& json ) :
+  Dynamic( clazz_, json )
+{
+  dim        = json["dim"].asVec3();
+
+  h          = json["h"].asFloat();
+  v          = json["v"].asFloat();
+  actions    = json["actions"].asInt();
+  oldActions = json["oldActions"].asInt();
+  instrument = json["instrument"].asInt();
+  container  = json["container"].asInt();
+
+  state      = json["state"].asInt();
+  oldState   = json["oldState"].asInt();
+  stamina    = json["stamina"].asFloat();
+  step       = json["step"].asFloat();
+  stairRate  = json["stairRate"].asFloat();
+
+  cargo      = json["cargo"].asInt();
+  weapon     = json["weapon"].asInt();
+  grabHandle = json["grabHandle"].asFloat();
+  meleeTime  = json["meleeTime"].asFloat();
+
+  camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
+
+  name       = json["name"].asString();
+  mindFunc   = json["mindFunc"].asString();
+
+  if( state & DEAD_BIT ) {
+    resistance = Math::INF;
+  }
+}
+
 void Bot::write( OutputStream* ostream ) const
 {
   Dynamic::write( ostream );
@@ -1226,6 +1259,34 @@ void Bot::write( OutputStream* ostream ) const
 
   ostream->writeString( name );
   ostream->writeString( mindFunc );
+}
+
+void Bot::write( JSON* json ) const
+{
+  Dynamic::write( json );
+
+  json->add( "dim", dim );
+
+  json->add( "h", h );
+  json->add( "v", v );
+  json->add( "actions", actions );
+  json->add( "oldActions", oldActions );
+  json->add( "instrument", instrument );
+  json->add( "container", container );
+
+  json->add( "state", state );
+  json->add( "oldState", oldState );
+  json->add( "stamina", stamina );
+  json->add( "step", step );
+  json->add( "stairRate", stairRate );
+
+  json->add( "cargo", cargo );
+  json->add( "weapon", weapon );
+  json->add( "grabHandle", grabHandle );
+  json->add( "meleeTime", meleeTime );
+
+  json->add( "name", name );
+  json->add( "mindFunc", mindFunc );
 }
 
 void Bot::readUpdate( InputStream* )

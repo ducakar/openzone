@@ -40,6 +40,12 @@
 #include "arrays.hh"
 
 /*
+ * System.
+ */
+#include "System.hh"
+#include "StackTrace.hh"
+
+/*
  * Memory management.
  */
 #include "Alloc.hh"
@@ -93,13 +99,6 @@
 #include "Thread.hh"
 
 /*
- * System.
- */
-#include "Time.hh"
-#include "StackTrace.hh"
-#include "System.hh"
-
-/*
  * I/O.
  */
 #include "Endian.hh"
@@ -111,6 +110,7 @@
 /*
  * Utilities.
  */
+#include "Time.hh"
 #include "Log.hh"
 #include "JSON.hh"
 #include "Gettext.hh"

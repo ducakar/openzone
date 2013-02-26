@@ -219,8 +219,10 @@ class Bot : public Dynamic
 
     explicit Bot( const BotClass* clazz, int index, const Point& p, Heading heading );
     explicit Bot( const BotClass* clazz, InputStream* istream );
+    explicit Bot( const BotClass* clazz, const JSON& json );
 
     void write( OutputStream* ostream ) const override;
+    void write( JSON* json ) const override;
 
     void readUpdate( InputStream* istream ) override;
     void writeUpdate( OutputStream* ostream ) const override;

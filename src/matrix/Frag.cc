@@ -59,12 +59,33 @@ Frag::Frag( const FragPool* pool_, InputStream* istream )
   elasticity = pool->elasticity;
 }
 
+Frag::Frag( const FragPool* pool_, const JSON& json )
+{
+  cell       = nullptr;
+  index      = json["index"].asInt();
+  poolId     = pool_->id;
+  pool       = pool_;
+  p          = json["p"].asPoint();
+  velocity   = json["velocity"].asVec3();
+  life       = json["life"].asFloat();
+  mass       = pool->mass;
+  elasticity = pool->elasticity;
+}
+
 void Frag::write( OutputStream* ostream )
 {
   ostream->writeInt( index );
   ostream->writePoint( p );
   ostream->writeVec3( velocity );
   ostream->writeFloat( life );
+}
+
+void Frag::write( JSON* json )
+{
+  json->add( "index", index );
+  json->add( "p", p );
+  json->add( "velocity", velocity );
+  json->add( "life", life );
 }
 
 void Frag::readUpdate( InputStream* )

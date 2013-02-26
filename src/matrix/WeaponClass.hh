@@ -47,6 +47,7 @@ class WeaponClass : public DynamicClass
 
     Object* create( int index, const Point& pos, Heading heading ) const override;
     Object* create( InputStream* istream ) const override;
+    Object* create( const JSON& json ) const override;
 };
 
 }

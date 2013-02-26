@@ -214,7 +214,7 @@ void Compiler::end()
     case POLYGON: {
       hard_assert( vertNum >= 3 );
 
-      List<ushort> polyIndices = static_cast< List<ushort>&& >( part.indices );
+      List<ushort> polyIndices = static_cast<List<ushort>&&>( part.indices );
       part.indices.clear();
 
       int last[2] = { 0, 1 };

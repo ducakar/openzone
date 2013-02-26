@@ -326,8 +326,10 @@ class Object : public AABB
 
     explicit Object( const ObjectClass* clazz, int index, const Point& p, Heading heading );
     explicit Object( const ObjectClass* clazz, InputStream* istream );
+    explicit Object( const ObjectClass* clazz, const JSON& json );
 
     virtual void write( OutputStream* ostream ) const;
+    virtual void write( JSON* json ) const;
 
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( OutputStream* ostream ) const;

@@ -142,6 +142,45 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
   }
 }
 
+Object::Object( const ObjectClass* clazz_, const JSON& json )
+{
+  p          = json["p"].asPoint();
+  dim        = clazz_->dim;
+  cell       = nullptr;
+  index      = json["index"].asInt();
+  flags      = json["flags"].asInt();
+  life       = json["life"].asFloat();
+  resistance = clazz_->resistance;
+  clazz      = clazz_;
+
+  if( flags & WEST_EAST_MASK ) {
+    swap( dim.x, dim.y );
+  }
+
+  const JSON& eventsJSON = json["events"];
+
+  int nEvents = eventsJSON.length();
+  for( int i = 0; i < nEvents; ++i ) {
+    const JSON& eventJSON = eventsJSON[i];
+
+    int   id        = eventJSON["id"].asInt();
+    float intensity = eventJSON["intensity"].asFloat();
+
+    addEvent( id, intensity );
+  }
+
+  if( clazz->nItems != 0 ) {
+    items.allocate( clazz->nItems );
+
+    const JSON& itemsJSON = json["items"];
+
+    int nItems = itemsJSON.length();
+    for( int i = 0; i < nItems; ++i ) {
+      items.add( itemsJSON[i].asInt() );
+    }
+  }
+}
+
 void Object::write( OutputStream* ostream ) const
 {
   ostream->writePoint( p );
@@ -159,6 +198,31 @@ void Object::write( OutputStream* ostream ) const
     ostream->writeInt( items.length() );
     foreach( item, items.citer() ) {
       ostream->writeInt( *item );
+    }
+  }
+}
+
+void Object::write( JSON* json ) const
+{
+  json->add( "p", p );
+  json->add( "index", index );
+  json->add( "flags", flags );
+  json->add( "life", life );
+
+  JSON& eventsJSON = json->addArray( "events" );
+
+  foreach( event, events.citer() ) {
+    JSON& eventJSON = eventsJSON.addObject();
+
+    eventJSON.add( "id", event->id );
+    eventJSON.add( "intensity", event->intensity );
+  }
+
+  JSON& itemsJSON = json->addArray( "items" );
+
+  if( clazz->nItems != 0 ) {
+    foreach( item, items.citer() ) {
+      itemsJSON.add( *item );
     }
   }
 }

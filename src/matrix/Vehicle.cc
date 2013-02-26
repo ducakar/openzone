@@ -450,6 +450,36 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
   }
 }
 
+Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
+  Dynamic( clazz_, json )
+{
+  h          = json["h"].asFloat();
+  v          = json["v"].asFloat();
+  w          = json["w"].asFloat();
+  rotVelH    = json["rotVelH"].asFloat();
+  rotVelV    = json["rotVelV"].asFloat();
+  actions    = json["actions"].asInt();
+  oldActions = json["oldActions"].asInt();
+
+  rot        = Mat44::rotationZXZ( h, v, w );
+  state      = json["state"].asInt();
+  oldState   = json["oldState"].asInt();
+  fuel       = json["fuel"].asFloat();
+
+  pilot      = json["pilot"].asInt();
+
+  weapon     = json["weapon"].asInt();
+
+  const JSON& weaponsJSON = json["weapons"];
+
+  for( int i = 0; i < MAX_WEAPONS; ++i ) {
+    const JSON& weaponJSON = weaponsJSON[i];
+
+    nRounds[i]  = weaponJSON["nRounds"].asInt();
+    shotTime[i] = weaponJSON["shotTime"].asFloat();
+  }
+}
+
 void Vehicle::write( OutputStream* ostream ) const
 {
   Dynamic::write( ostream );
@@ -472,6 +502,36 @@ void Vehicle::write( OutputStream* ostream ) const
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     ostream->writeInt( nRounds[i] );
     ostream->writeFloat( shotTime[i] );
+  }
+}
+
+void Vehicle::write( JSON* json ) const
+{
+  Dynamic::write( json );
+
+  json->add( "h", h );
+  json->add( "v", v );
+  json->add( "w", w );
+  json->add( "rotVelH", rotVelH );
+  json->add( "rotVelV", rotVelV );
+  json->add( "actions", actions );
+  json->add( "oldActions", oldActions );
+
+  json->add( "state", state );
+  json->add( "oldState", oldState );
+  json->add( "fuel", fuel );
+
+  json->add( "pilot", pilot );
+
+  json->add( "weapon", weapon );
+
+  JSON& weaponsJSON = json->addArray();
+
+  for( int i = 0; i < MAX_WEAPONS; ++i ) {
+    JSON& weaponJSON = weaponsJSON.addObject();
+
+    weaponJSON.add( "nRounds", nRounds[i] );
+    weaponJSON.add( "shotTime", shotTime[i] );
   }
 }
 

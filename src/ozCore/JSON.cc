@@ -26,10 +26,10 @@
 
 #include "JSON.hh"
 
+#include "System.hh"
 #include "List.hh"
 #include "SList.hh"
 #include "Map.hh"
-#include "System.hh"
 #include "Log.hh"
 
 #include <cstring>
@@ -55,22 +55,11 @@ struct JSON::BooleanData : JSON::Data
 
 struct JSON::NumberData : JSON::Data
 {
-  float value;
-  int   intValue;
+  double value;
 
   OZ_HIDDEN
   explicit NumberData( double value_ ) :
-    value( float( value_ ) ), intValue( int( value_ ) )
-  {}
-
-  OZ_HIDDEN
-  explicit NumberData( int value_ ) :
-    value( float( value_ ) ), intValue( value_ )
-  {}
-
-  OZ_HIDDEN
-  explicit NumberData( float value_ ) :
-    value( value_ ), intValue( int( value_ ) )
+    value( value_ )
   {}
 };
 
@@ -416,7 +405,7 @@ JSON JSON::Parser::parseValue()
       chars.add( '\0' );
 
       const char* end;
-      float number = String::parseFloat( chars.begin(), &end );
+      double number = String::parseDouble( chars.begin(), &end );
 
       if( end == chars.begin() ) {
         OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
@@ -513,7 +502,7 @@ void JSON::Parser::finish()
 struct JSON::Formatter
 {
   static const int ALIGNMENT_COLUMN   = 32;
-  static const int SIGNIFICANT_DIGITS = 6;
+  static const int SIGNIFICANT_DIGITS = 17;
 
   OutputStream* ostream;
   const char*   lineEnd;
@@ -940,7 +929,7 @@ int JSON::asInt() const
   if( valueType != NUMBER ) {
     OZ_ERROR( "JSON value accessed as an integer: %s", toString().cstr() );
   }
-  return static_cast<const NumberData*>( data )->intValue;
+  return int( static_cast<const NumberData*>( data )->value );
 }
 
 float JSON::asFloat() const
@@ -950,7 +939,7 @@ float JSON::asFloat() const
   if( valueType != NUMBER ) {
     OZ_ERROR( "JSON value accessed as a float: %s", toString().cstr() );
   }
-  return static_cast<const NumberData*>( data )->value;
+  return float( static_cast<const NumberData*>( data )->value );
 }
 
 const String& JSON::asString() const
@@ -1257,7 +1246,7 @@ int JSON::get( int defaultValue ) const
     OZ_ERROR( "JSON value accessed as an integer: %s", toString().cstr() );
   }
 
-  return static_cast<const NumberData*>( data )->intValue;
+  return int( static_cast<const NumberData*>( data )->value );
 }
 
 float JSON::get( float defaultValue ) const
@@ -1271,7 +1260,7 @@ float JSON::get( float defaultValue ) const
     OZ_ERROR( "JSON value accessed as a float: %s", toString().cstr() );
   }
 
-  return static_cast<const NumberData*>( data )->value;
+  return float( static_cast<const NumberData*>( data )->value );
 }
 
 const String& JSON::get( const String& defaultValue ) const

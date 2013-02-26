@@ -89,10 +89,7 @@ class JSON
     {
       private:
 
-        /**
-         * `HashMap` iterator used internally.
-         */
-        HashMap<String, JSON>::CIterator objectIter;
+        HashMap<String, JSON>::CIterator objectIter; ///< `HashMap` iterator used internally.
 
       public:
 
@@ -105,7 +102,7 @@ class JSON
         {}
 
         /**
-         * Create iterator for the given %JSON object's data.
+         * Create iterator for the given %JSON object's data (used internally).
          */
         explicit ObjectCIterator( const ObjectData* data );
 
@@ -123,10 +120,7 @@ class JSON
     {
       private:
 
-        /**
-         * `HashMap` iterator used internally.
-         */
-        HashMap<String, JSON>::Iterator objectIter;
+        HashMap<String, JSON>::Iterator objectIter; ///< `HashMap` iterator used internally.
 
       public:
 
@@ -139,7 +133,7 @@ class JSON
         {}
 
         /**
-         * Create iterator for the given %JSON object's data.
+         * Create iterator for the given %JSON object's data (used internally).
          */
         explicit ObjectIterator( ObjectData* data );
 

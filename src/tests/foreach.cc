@@ -199,6 +199,6 @@ int main()
   hs.clear();
   hs.deallocate();
 
-  Alloc::printLeaks();
+  Log::printMemoryLeaks();
   return 0;
 }

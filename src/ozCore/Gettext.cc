@@ -154,24 +154,25 @@ bool Gettext::import( const File& file )
 
   istream.set( originals );
   for( int i = 0; i < nNewMessages; ++i ) {
-    istream.readInt();
     newStringsSize += istream.readInt() + 1;
+    istream.readInt();
   }
 
   istream.set( translations );
   for( int i = 0; i < nNewMessages; ++i ) {
-    istream.readInt();
     newStringsSize += istream.readInt() + 1;
+    istream.readInt();
   }
 
   // Expand messages and strings arrays.
   messages = aReallocate<Message>( messages, nMessages, nMessages + nNewMessages );
   strings  = aReallocate<char>( strings, stringsSize, stringsSize + newStringsSize );
 
+  // Add new strings.
   char* stringsPos = strings + stringsSize;
 
   for( int i = 0; i < nNewMessages; ++i ) {
-    istream.set( originals + i * int( sizeof( int[2] ) ) );
+    istream.set( originals + size_t( i ) * sizeof( int[2] ) );
 
     int size   = istream.readInt() + 1;
     int offset = istream.readInt();
@@ -181,7 +182,7 @@ bool Gettext::import( const File& file )
     mCopy( stringsPos, istream.begin() + offset, size_t( size ) );
     stringsPos += size;
 
-    istream.set( translations + i * int( sizeof( int[2] ) ) );
+    istream.set( translations + size_t( i ) * sizeof( int[2] ) );
 
     size   = istream.readInt() + 1;
     offset = istream.readInt();

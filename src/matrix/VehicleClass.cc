@@ -86,5 +86,10 @@ Object* VehicleClass::create( InputStream* istream ) const
   return new Vehicle( this, istream );
 }
 
+Object* VehicleClass::create( const JSON& json ) const
+{
+  return new Vehicle( this, json );
+}
+
 }
 }

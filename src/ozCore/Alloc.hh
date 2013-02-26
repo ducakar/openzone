@@ -23,27 +23,28 @@
 /**
  * @file ozCore/Alloc.hh
  *
- * Alloc class and `new`/`delete` operator overrides.
+ * Alloc class and enhanced `new`/`delete` operators.
  *
  * Apart form Alloc class, enhanced `new`/`delete` operators are defined in this module, overriding
- * ones provided by standard C++ library, including `std::nothrow` versions. Those operators count
- * number of allocations and amount of memory allocated at any given time (reported through
- * `Alloc::count`, `Alloc::amount` etc.).
+ * standard ones defined in \<new\>. Those operators count number of allocations and amount of
+ * memory allocated at any given time (reported through `Alloc::count`, `Alloc::amount` etc.).
  *
  * Several other features may also be configured:
  * @li Unless compiled with `NDEBUG` all freed memory is overwritten by 0xEE bytes.
  * @li If compiled with `OZ_TRACK_ALLOCS` `new`/`delete` also tracks allocated chunks to catch
- *     memory leaks and `new`/`delete` mismatches. `Alloc::printLeaks()` can be called at any time
- *     to print currently allocated chunks.
+ *     memory leaks and `new`/`delete` mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()`
+ *     can be used to iterate over chunks allocated by `new` and `new[]` operators respectively.
  * @li If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to size of 4 floats.
  *
  * @note
- * Enabling AddressSanitizer during compilation of liboz custom `new`/`delete` implementations.
+ * Enabling AddressSanitizer during compilation of liboz disables enhanced `new`/`delete` operator
+ * implementations.
  */
 
 #pragma once
 
-#include "common.hh"
+#include "iterables.hh"
+#include "StackTrace.hh"
 
 namespace oz
 {
@@ -67,6 +68,60 @@ class Alloc
     /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
     static const bool OVERLOADS_NEW_AND_DELETE;
 
+  public:
+
+    /**
+     * Information about an allocated memory chunk.
+     *
+     * Internal list of all memory allocations is held to spot memory leaks and `new`/`delete` mismatches.
+     */
+    struct ChunkInfo
+    {
+      ChunkInfo*  next;       ///< Pointer to the next chunk.
+      void*       address;    ///< Address of actual data (meta data lays before this address).
+      size_t      size;       ///< Size (including meta data).
+      StackTrace  stackTrace; ///< Stack trace for the `new` call that allocated it.
+    };
+
+    /**
+     * %Iterator for memory chunks allocated via overloaded `new` and `new[]` operators.
+     */
+    class ChunkCIterator : public IteratorBase<const ChunkInfo>
+    {
+      public:
+
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        explicit ChunkCIterator() :
+          IteratorBase<const ChunkInfo>( nullptr )
+        {}
+
+        /**
+         * Create iterator for the given `ChunkInfo` element (used internally).
+         */
+        OZ_ALWAYS_INLINE
+        explicit ChunkCIterator( const ChunkInfo* chunkInfo ) :
+          IteratorBase<const ChunkInfo>( chunkInfo )
+        {}
+
+        /**
+         * Advance to the next element.
+         */
+        OZ_ALWAYS_INLINE
+        ChunkCIterator& operator ++ ()
+        {
+          hard_assert( elem != nullptr );
+
+          elem = elem->next;
+          return *this;
+        }
+
+    };
+
+  public:
+
     static int    count;     ///< Current number of allocated memory chunks.
     static size_t amount;    ///< Amount of currently allocated memory.
 
@@ -82,6 +137,16 @@ class Alloc
      * Forbid instances.
      */
     explicit Alloc() = delete;
+
+    /**
+     * Create iterator for iterating over allocated objects.
+     */
+    static ChunkCIterator objectCIter();
+
+    /**
+     * Create iterator for iterating over allocated arrays.
+     */
+    static ChunkCIterator arrayCIter();
 
     /**
      * Align to the previous boundary.
@@ -120,16 +185,6 @@ class Alloc
     {
       return reinterpret_cast<Type*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
     }
-
-    /**
-     * Print summary about memory usage using the global log instance.
-     */
-    static void printSummary();
-
-    /**
-     * Print memory leaks using the global log.
-     */
-    static bool printLeaks();
 
 };
 

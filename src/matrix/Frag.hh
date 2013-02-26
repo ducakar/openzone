@@ -80,8 +80,10 @@ class Frag
 
     explicit Frag( const FragPool* pool, int index, const Point& p, const Vec3& velocity );
     explicit Frag( const FragPool* pool, InputStream* istream );
+    explicit Frag( const FragPool* pool, const JSON& json );
 
     void write( OutputStream* ostream );
+    void write( JSON* json );
 
     void readUpdate( InputStream* istream );
     void writeUpdate( OutputStream* ostream );
