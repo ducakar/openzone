@@ -222,7 +222,7 @@ class Bot : public Dynamic
     explicit Bot( const BotClass* clazz, const JSON& json );
 
     void write( OutputStream* ostream ) const override;
-    void write( JSON* json ) const override;
+    JSON write() const override;
 
     void readUpdate( InputStream* istream ) override;
     void writeUpdate( OutputStream* ostream ) const override;

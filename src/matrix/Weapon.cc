@@ -129,12 +129,14 @@ void Weapon::write( OutputStream* ostream ) const
   ostream->writeFloat( shotTime );
 }
 
-void Weapon::write( JSON* json ) const
+JSON Weapon::write() const
 {
-  Dynamic::write( json );
+  JSON json = Dynamic::write();
 
-  json->add( "nRounds", nRounds );
-  json->add( "shotTime", shotTime );
+  json.add( "nRounds", nRounds );
+  json.add( "shotTime", shotTime );
+
+  return json;
 }
 
 void Weapon::readUpdate( InputStream* )

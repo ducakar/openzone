@@ -45,24 +45,32 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 
 OZ_HIDDEN
 String::String( int count_, int ) :
-  count( count_ )
+  buffer( baseBuffer ), count( 0 )
 {
-  ensureCapacity();
+  ensureCapacity( count_ );
 }
 
 OZ_HIDDEN
-void String::ensureCapacity()
+inline void String::ensureCapacity( int newCount )
 {
-  if( count < BUFFER_SIZE ) {
-    buffer = baseBuffer;
+  hard_assert( buffer != nullptr && count >= 0 && newCount >= 0 );
+
+  if( newCount < BUFFER_SIZE ) {
+    if( buffer != baseBuffer ) {
+      free( buffer );
+      buffer = baseBuffer;
+    }
   }
   else {
-    buffer = static_cast<char*>( malloc( size_t( count + 1 ) ) );
+    buffer = buffer == baseBuffer ? nullptr : buffer;
+    buffer = static_cast<char*>( realloc( buffer, size_t( newCount + 1 ) ) );
 
     if( buffer == nullptr ) {
       OZ_ERROR( "String allocation failed" );
     }
   }
+
+  count = newCount;
 }
 
 bool String::endsWith( const char* s, const char* sub )
@@ -370,38 +378,34 @@ double String::parseDouble( const char* s, const char** end )
 }
 
 String::String( const char* s, int count_ ) :
-  buffer( baseBuffer ), count( count_ )
+  buffer( baseBuffer ), count( 0 )
 {
-  if( count != 0 ) {
-    ensureCapacity();
-    mCopy( buffer, s, size_t( count ) );
-  }
+  ensureCapacity( count_ );
+  mCopy( buffer, s, size_t( count ) );
   buffer[count] = '\0';
 }
 
-String::String( const char* s )
+String::String( const char* s ) :
+  buffer( baseBuffer ), count( 0 )
 {
   if( s == nullptr ) {
-    buffer    = baseBuffer;
-    count     = 0;
     buffer[0] = '\0';
   }
   else {
-    count = length( s );
-    ensureCapacity();
+    ensureCapacity( length( s ) );
     mCopy( buffer, s, size_t( count + 1 ) );
   }
 }
 
-String::String( const char* s, const char* t )
+String::String( const char* s, const char* t ) :
+  buffer( baseBuffer ), count( 0 )
 {
   int sCount = length( s );
   int tCount = length( t );
 
-  count = sCount + tCount;
-  ensureCapacity();
+  ensureCapacity( sCount + tCount );
   mCopy( buffer, s, size_t( sCount ) );
-  mCopy( buffer + sCount, t, size_t( tCount + 1) );
+  mCopy( buffer + sCount, t, size_t( tCount + 1 ) );
 }
 
 String::String( bool b ) :
@@ -579,9 +583,9 @@ String::~String()
 }
 
 String::String( const String& s ) :
-  count( s.count )
+  buffer( baseBuffer ), count( 0 )
 {
-  ensureCapacity();
+  ensureCapacity( s.count );
   mCopy( buffer, s.buffer, size_t( count + 1 ) );
 }
 
@@ -607,12 +611,7 @@ String& String::operator = ( const String& s )
     return *this;
   }
 
-  if( buffer != baseBuffer ) {
-    free( buffer );
-  }
-
-  count = s.count;
-  ensureCapacity();
+  ensureCapacity( s.count );
   mCopy( buffer, s.buffer, size_t( count + 1 ) );
 
   return *this;
@@ -651,18 +650,12 @@ String& String::operator = ( const char* s )
     return *this;
   }
 
-  if( buffer != baseBuffer ) {
-    free( buffer );
-  }
-
   if( s == nullptr ) {
-    buffer    = baseBuffer;
-    count     = 0;
+    ensureCapacity( 0 );
     buffer[0] = '\0';
   }
   else {
-    count = length( s );
-    ensureCapacity();
+    ensureCapacity( length( s ) );
     mCopy( buffer, s, size_t( count + 1 ) );
   }
 
@@ -671,17 +664,15 @@ String& String::operator = ( const char* s )
 
 String String::str( const char* s, ... )
 {
-  String r;
-
   va_list ap;
   va_start( ap, s );
 
   char localBuffer[LOCAL_BUFFER_SIZE];
-  r.count = vsnprintf( localBuffer, LOCAL_BUFFER_SIZE, s, ap );
+  int  length = vsnprintf( localBuffer, LOCAL_BUFFER_SIZE, s, ap );
 
   va_end( ap );
 
-  r.ensureCapacity();
+  String r( length, 0 );
   mCopy( r.buffer, localBuffer, size_t( r.count + 1 ) );
 
   return r;
@@ -750,18 +741,12 @@ String operator + ( const char* s, const String& t )
 
 String& String::operator += ( const String& s )
 {
-  char* oBuffer = buffer;
-  int   oCount  = count;
+  const char* oBuffer = buffer;
+  int         oCount  = count;
 
-  count += s.count;
-  ensureCapacity();
-
-  if( buffer != oBuffer ) {
+  ensureCapacity( count + s.count );
+  if( oCount < BUFFER_SIZE && count >= BUFFER_SIZE ) {
     mCopy( buffer, oBuffer, size_t( oCount ) );
-
-    if( oBuffer != baseBuffer ) {
-      free( oBuffer );
-    }
   }
   mCopy( buffer + oCount, s, size_t( s.count + 1 ) );
 
@@ -770,19 +755,13 @@ String& String::operator += ( const String& s )
 
 String& String::operator += ( const char* s )
 {
-  char* oBuffer = buffer;
-  int   oCount  = count;
-  int   sLength = length( s );
+  const char* oBuffer = buffer;
+  int         oCount  = count;
+  int         sLength = length( s );
 
-  count += sLength;
-  ensureCapacity();
-
-  if( buffer != oBuffer ) {
+  ensureCapacity( count + sLength );
+  if( oCount < BUFFER_SIZE && count >= BUFFER_SIZE ) {
     mCopy( buffer, oBuffer, size_t( oCount ) );
-
-    if( oBuffer != baseBuffer ) {
-      free( oBuffer );
-    }
   }
   mCopy( buffer + oCount, s, size_t( sLength + 1 ) );
 

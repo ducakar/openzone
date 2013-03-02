@@ -178,8 +178,8 @@ class Struct : public Bounds
     explicit Struct( const BSP* bsp, InputStream* istream );
     explicit Struct( const BSP* bsp, const JSON& json );
 
-    void write( OutputStream* ostream );
-    void write( JSON* json );
+    void write( OutputStream* ostream ) const;
+    JSON write() const;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

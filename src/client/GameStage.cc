@@ -119,10 +119,7 @@ void GameStage::readLayout()
 
 void GameStage::writeLayout() const
 {
-  JSON json;
-  json.setObject();
-
-  matrix.write( &json );
+  JSON json = matrix.write();
 
   Log::print( "Saving layout to %s ...", layoutFile.path().cstr() );
 

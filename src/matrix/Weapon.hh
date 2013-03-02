@@ -58,7 +58,7 @@ class Weapon : public Dynamic
     explicit Weapon( const WeaponClass* clazz, const JSON& json );
 
     void write( OutputStream* ostream ) const override;
-    void write( JSON* json ) const override;
+    JSON write() const override;
 
     void readUpdate( InputStream* istream ) override;
     void writeUpdate( OutputStream* ostream ) const override;

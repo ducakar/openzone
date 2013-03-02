@@ -505,34 +505,36 @@ void Vehicle::write( OutputStream* ostream ) const
   }
 }
 
-void Vehicle::write( JSON* json ) const
+JSON Vehicle::write() const
 {
-  Dynamic::write( json );
+  JSON json = Dynamic::write();
 
-  json->add( "h", h );
-  json->add( "v", v );
-  json->add( "w", w );
-  json->add( "rotVelH", rotVelH );
-  json->add( "rotVelV", rotVelV );
-  json->add( "actions", actions );
-  json->add( "oldActions", oldActions );
+  json.add( "h", h );
+  json.add( "v", v );
+  json.add( "w", w );
+  json.add( "rotVelH", rotVelH );
+  json.add( "rotVelV", rotVelV );
+  json.add( "actions", actions );
+  json.add( "oldActions", oldActions );
 
-  json->add( "state", state );
-  json->add( "oldState", oldState );
-  json->add( "fuel", fuel );
+  json.add( "state", state );
+  json.add( "oldState", oldState );
+  json.add( "fuel", fuel );
 
-  json->add( "pilot", pilot );
+  json.add( "pilot", orbis.objIndex( pilot ) );
 
-  json->add( "weapon", weapon );
+  json.add( "weapon", orbis.objIndex( weapon ) );
 
-  JSON& weaponsJSON = json->addArray();
+  JSON& weaponsJSON = json.add( JSON::ARRAY );
 
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    JSON& weaponJSON = weaponsJSON.addObject();
+    JSON& weaponJSON = weaponsJSON.add( JSON::OBJECT );
 
     weaponJSON.add( "nRounds", nRounds[i] );
     weaponJSON.add( "shotTime", shotTime[i] );
   }
+
+  return json;
 }
 
 void Vehicle::readUpdate( InputStream* )

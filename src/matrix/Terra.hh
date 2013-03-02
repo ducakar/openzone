@@ -81,6 +81,9 @@ class Terra
     void read( InputStream* istream );
     void write( OutputStream* ostream ) const;
 
+    void read( const JSON& json );
+    JSON write() const;
+
 };
 
 inline Span Terra::getInters( float minPosX, float minPosY,

@@ -59,9 +59,9 @@ class String
     explicit String( int count, int );
 
     /**
-     * If existing storage is too small, allocate a new one.
+     * Resize storage if necessary and set `count` to `newCount`.
      */
-    void ensureCapacity();
+    void ensureCapacity( int newCount );
 
   public:
 

@@ -323,22 +323,19 @@ void Orbis::read( InputStream* istream )
 
   lua.read( istream );
 
-  terra.read( istream );
   caelum.read( istream );
+  terra.read( istream );
 
   int nStructs = istream->readInt();
   int nObjects = istream->readInt();
   int nFrags   = istream->readInt();
 
-  String bspName;
-  String className;
-  String poolName;
-
   for( int i = 0; i < nStructs; ++i ) {
     Struct* str = nullptr;
 
-    bspName = istream->readString();
-    if( !bspName.isEmpty() ) {
+    const char* bspName = istream->readString();
+
+    if( !String::isEmpty( bspName ) ) {
       const BSP* bsp = liber.bsp( bspName );
       const_cast<BSP*>( bsp )->request();
 
@@ -350,8 +347,9 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < nObjects; ++i ) {
     Object* obj = nullptr;
 
-    className = istream->readString();
-    if( !className.isEmpty() ) {
+    const char* className = istream->readString();
+
+    if( !String::isEmpty( className ) ) {
       const ObjectClass* clazz = liber.objClass( className );
 
       obj = clazz->create( istream );
@@ -368,8 +366,9 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < nFrags; ++i ) {
     Frag* frag = nullptr;
 
-    poolName = istream->readString();
-    if( !poolName.isEmpty() ) {
+    const char* poolName = istream->readString();
+
+    if( !String::isEmpty( poolName ) ) {
       const FragPool* pool = liber.fragPool( poolName );
 
       frag = new Frag( pool, istream );
@@ -424,8 +423,8 @@ void Orbis::write( OutputStream* ostream ) const
 {
   lua.write( ostream );
 
-  terra.write( ostream );
   caelum.write( ostream );
+  terra.write( ostream );
 
   ostream->writeInt( structs.length() );
   ostream->writeInt( objects.length() );
@@ -514,10 +513,8 @@ void Orbis::read( const JSON& json )
 {
   hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
 
-//   lua.read( istream );
-
-//   terra.read( istream );
-//   caelum.read( istream );
+  caelum.read( json["caelum"] );
+  terra.read( json["terra"] );
 
   String bspName;
   String className;
@@ -579,148 +576,60 @@ void Orbis::read( const JSON& json )
     }
     frags.add( frag );
   }
-
-  const JSON& strFreedIndicesFreeingJSON = json["strFreedIndicesFreeing"];
-  foreach( i, strFreedIndicesFreeingJSON.arrayCIter() ) {
-    strFreedIndices[freeing].add( i->asInt() );
-  }
-
-  const JSON& objFreedIndicesFreeingJSON = json["objFreedIndicesFreeing"];
-  foreach( i, objFreedIndicesFreeingJSON.arrayCIter() ) {
-    objFreedIndices[freeing].add( i->asInt() );
-  }
-
-  const JSON& fragFreedIndicesFreeingJSON = json["fragFreedIndicesFreeing"];
-  foreach( i, fragFreedIndicesFreeingJSON.arrayCIter() ) {
-    fragFreedIndices[freeing].add( i->asInt() );
-  }
-
-  const JSON& strFreedIndicesWaitingJSON = json["strFreedIndicesWaiting"];
-  foreach( i, strFreedIndicesWaitingJSON.arrayCIter() ) {
-    strFreedIndices[waiting].add( i->asInt() );
-  }
-
-  const JSON& objFreedIndicesWaitingJSON = json["objFreedIndicesWaiting"];
-  foreach( i, objFreedIndicesWaitingJSON.arrayCIter() ) {
-    objFreedIndices[waiting].add( i->asInt() );
-  }
-
-  const JSON& fragFreedIndicesWaitingJSON = json["fragFreedIndicesWaiting"];
-  foreach( i, fragFreedIndicesWaitingJSON.arrayCIter() ) {
-    fragFreedIndices[waiting].add( i->asInt() );
-  }
-
-  const JSON& strAvailableIndicesJSON = json["strAvailableIndices"];
-  foreach( i, strAvailableIndicesJSON.arrayCIter() ) {
-    strAvailableIndices.add( i->asInt() );
-  }
-
-  const JSON& objAvailableIndicesJSON = json["objAvailableIndices"];
-  foreach( i, objAvailableIndicesJSON.arrayCIter() ) {
-    objAvailableIndices.add( i->asInt() );
-  }
-
-  const JSON& fragAvailableIndicesJSON = json["fragAvailableIndices"];
-  foreach( i, fragAvailableIndicesJSON.arrayCIter() ) {
-    fragAvailableIndices.add( i->asInt() );
-  }
 }
 
-void Orbis::write( JSON* json ) const
+JSON Orbis::write() const
 {
-//   lua.write( ostream );
+  JSON json( JSON::OBJECT );
 
-//   terra.write( ostream );
-//   caelum.write( ostream );
+  json.add( "caelum", caelum.write() );
+  json.add( "terra", terra.write() );
 
   Struct* str;
   Object* obj;
   Frag*   frag;
 
-  JSON& structsJSON = json->addArray( "structs" );
+  JSON& structsJSON = json.add( "structs", JSON::ARRAY );
 
   for( int i = 0; i < structs.length(); ++i ) {
     str = structs[i];
 
-    JSON& structJSON = structsJSON.addObject();
-
-    if( str != nullptr ) {
-      structJSON.add( "bsp", str->bsp->name );
-      str->write( &structJSON );
+    if( str == nullptr ) {
+      structsJSON.add( JSON::OBJECT );
+    }
+    else {
+      structsJSON.add( str->write() );
     }
   }
 
-  JSON& objectsJSON = json->addArray( "objects" );
+  JSON& objectsJSON = json.add( "objects", JSON::ARRAY );
 
   for( int i = 0; i < objects.length(); ++i ) {
     obj = objects[i];
 
-    JSON& objectJSON = objectsJSON.addObject();
-
-    if( obj != nullptr ) {
-      objectJSON.add( "class", obj->clazz->name );
-      obj->write( &objectJSON );
+    if( obj == nullptr ) {
+      objectsJSON.add( JSON::OBJECT );
+    }
+    else {
+      JSON& objectJSON = objectsJSON.add( obj->write() );
       objectJSON.add( "isCut", obj->cell == nullptr );
     }
   }
 
-  JSON& fragsJSON = json->addArray( "frags" );
+  JSON& fragsJSON = json.add( "frags", JSON::ARRAY );
 
   for( int i = 0; i < frags.length(); ++i ) {
     frag = frags[i];
 
-    JSON& fragJSON = fragsJSON.addObject();
-
-    if( frag != nullptr ) {
-      fragJSON.add( "pool", frag->pool->name );
-      frag->write( &fragJSON );
+    if( frag == nullptr ) {
+      fragsJSON.add( JSON::OBJECT );
+    }
+    else {
+      fragsJSON.add( frag->write() );
     }
   }
 
-  JSON& strFreedIndicesFreeingJSON = json->addArray( "strFreedIndicesFreeing" );
-  foreach( i, strFreedIndices[freeing].citer() ) {
-    strFreedIndicesFreeingJSON.add( *i );
-  }
-
-  JSON& objFreedIndicesFreeingJSON = json->addArray( "objFreedIndicesFreeing" );
-  foreach( i, objFreedIndices[freeing].citer() ) {
-    objFreedIndicesFreeingJSON.add( *i );
-  }
-
-  JSON& fragFreedIndicesFreeingJSON = json->addArray( "fragFreedIndicesFreeing" );
-  foreach( i, fragFreedIndices[freeing].citer() ) {
-    fragFreedIndicesFreeingJSON.add( *i );
-  }
-
-  JSON& strFreedIndicesWaitingJSON = json->addArray( "strFreedIndicesWaiting" );
-  foreach( i, strFreedIndices[waiting].citer() ) {
-    strFreedIndicesWaitingJSON.add( *i );
-  }
-
-  JSON& objFreedIndicesWaitingJSON = json->addArray( "objFreedIndicesWaiting" );
-  foreach( i, objFreedIndices[waiting].citer() ) {
-    objFreedIndicesWaitingJSON.add( *i );
-  }
-
-  JSON& fragFreedIndicesWaitingJSON = json->addArray( "fragFreedIndicesWaiting" );
-  foreach( i, fragFreedIndices[waiting].citer() ) {
-    fragFreedIndicesWaitingJSON.add( *i );
-  }
-
-  JSON& strAvailableIndicesJSON = json->addArray( "strAvailableIndices" );
-  foreach( i, strAvailableIndices.citer() ) {
-    strAvailableIndicesJSON.add( *i );
-  }
-
-  JSON& objAvailableIndicesJSON = json->addArray( "objAvailableIndices" );
-  foreach( i, objAvailableIndices.citer() ) {
-    objAvailableIndicesJSON.add( *i );
-  }
-
-  JSON& fragAvailableIndicesJSON = json->addArray( "fragAvailableIndices" );
-  foreach( i, fragAvailableIndices.citer() ) {
-    fragAvailableIndicesJSON.add( *i );
-  }
+  return json;
 }
 
 void Orbis::load()

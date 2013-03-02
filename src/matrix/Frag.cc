@@ -72,7 +72,7 @@ Frag::Frag( const FragPool* pool_, const JSON& json )
   elasticity = pool->elasticity;
 }
 
-void Frag::write( OutputStream* ostream )
+void Frag::write( OutputStream* ostream ) const
 {
   ostream->writeInt( index );
   ostream->writePoint( p );
@@ -80,12 +80,18 @@ void Frag::write( OutputStream* ostream )
   ostream->writeFloat( life );
 }
 
-void Frag::write( JSON* json )
+JSON Frag::write() const
 {
-  json->add( "index", index );
-  json->add( "p", p );
-  json->add( "velocity", velocity );
-  json->add( "life", life );
+  JSON json( JSON::OBJECT );
+
+  json.add( "pool", pool->name );
+
+  json.add( "index", index );
+  json.add( "p", p );
+  json.add( "velocity", velocity );
+  json.add( "life", life );
+
+  return json;
 }
 
 void Frag::readUpdate( InputStream* )

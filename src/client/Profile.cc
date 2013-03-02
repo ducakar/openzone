@@ -45,7 +45,7 @@ void Profile::init()
   bool configExists = profileConfig.load( profileFile );
 
   if( profileConfig.isNull() ) {
-    profileConfig.setObject();
+    profileConfig = JSON( JSON::OBJECT );
   }
 
   name = profileConfig["name"].get( "" );
@@ -82,7 +82,7 @@ void Profile::init()
     profileConfig.add( "class", "beast" );
     profileConfig.add( "weaponItem", 0 );
 
-    JSON& itemsConfig = profileConfig.addArray( "items" );
+    JSON& itemsConfig = profileConfig.add( "items", JSON::ARRAY );
 
     itemsConfig.add( "beast$plasmagun" );
     itemsConfig.add( "nvGoggles" );

@@ -44,13 +44,19 @@ void Lua::staticCall( const char* functionName )
   hard_assert( l_gettop() == 0 );
 
   l_getglobal( functionName );
-  l_pcall( 0, 0 );
 
-  if( l_gettop() != 0 ) {
-    Log::println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
-    System::bell();
-
+  if( l_type( 1 ) == LUA_TNIL ) {
     l_pop( 1 );
+  }
+  else {
+    l_pcall( 0, 0 );
+
+    if( l_gettop() != 0 ) {
+      Log::println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
+      System::bell();
+
+      l_pop( 1 );
+    }
   }
 }
 

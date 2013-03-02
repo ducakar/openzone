@@ -108,16 +108,18 @@ void Dynamic::write( OutputStream* ostream ) const
   ostream->writeFloat( depth );
 }
 
-void Dynamic::write( JSON* json ) const
+JSON Dynamic::write() const
 {
-  Object::write( json );
+  JSON json = Object::write();
 
-  json->add( "velocity", velocity );
-  json->add( "momentum", momentum );
-  json->add( "floor", floor );
-  json->add( "parent", parent );
-  json->add( "lower", lower );
-  json->add( "depth", depth );
+  json.add( "velocity", velocity );
+  json.add( "momentum", momentum );
+  json.add( "floor", floor );
+  json.add( "parent", orbis.objIndex( parent ) );
+  json.add( "lower", orbis.objIndex( lower ) );
+  json.add( "depth", depth );
+
+  return json;
 }
 
 void Dynamic::readUpdate( InputStream* )

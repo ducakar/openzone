@@ -9,7 +9,7 @@
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
-    * String: construction from numbers, number parsing functions
+    * String: construction from numbers, new number parsing functions
     * new Mat33 class
     * SIMD support for linear algebra classes
     * new SpinLock class

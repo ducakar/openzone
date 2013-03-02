@@ -731,9 +731,134 @@ JSON::JSON( Data* data_, Type valueType_ ) :
   data( data_ ), valueType( valueType_ ), wasAccessed( false )
 {}
 
-JSON::JSON() :
-  data( nullptr ), valueType( NIL ), wasAccessed( true )
+JSON::JSON( Type type ) :
+  data( nullptr ), valueType( type ), wasAccessed( true )
+{
+  switch( type ) {
+    case NIL: {
+      break;
+    }
+    case BOOLEAN: {
+      data = new BooleanData( false );
+      break;
+    }
+    case NUMBER: {
+      data = new NumberData( 0.0 );
+      break;
+    }
+    case STRING: {
+      data = new StringData( "" );
+      break;
+    }
+    case ARRAY: {
+      data = new ArrayData();
+      break;
+    }
+    case OBJECT: {
+      data = new ObjectData();
+      break;
+    }
+  }
+}
+
+JSON::JSON( bool value ) :
+  data( new BooleanData( value ) ), valueType( BOOLEAN ), wasAccessed( true )
 {}
+
+JSON::JSON( int value ) :
+  data( new NumberData( value ) ), valueType( NUMBER ), wasAccessed( true )
+{}
+
+JSON::JSON( float value ) :
+  data( new NumberData( value ) ), valueType( NUMBER ), wasAccessed( true )
+{}
+
+JSON::JSON( double value ) :
+  data( new NumberData( value ) ), valueType( NUMBER ), wasAccessed( true )
+{}
+
+JSON::JSON( const String& value ) :
+  data( new StringData( value ) ), valueType( STRING ), wasAccessed( true )
+{}
+
+JSON::JSON( const char* value ) :
+  data( new StringData( value ) ), valueType( STRING ), wasAccessed( true )
+{}
+
+JSON::JSON( const Vec3& v ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    list.add( JSON( new NumberData( v[i] ), NUMBER ) );
+  }
+}
+
+JSON::JSON( const Vec4& v ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 4; ++i ) {
+    list.add( JSON( new NumberData( v[i] ), NUMBER ) );
+  }
+}
+
+JSON::JSON( const Point& p ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    list.add( JSON( new NumberData( p[i] ), NUMBER ) );
+  }
+}
+
+JSON::JSON( const Plane& p ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    list.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
+  }
+  list.add( JSON( new NumberData( p.d ), NUMBER ) );
+}
+
+JSON::JSON( const Quat& q ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    list.add( JSON( new NumberData( q[i] ), NUMBER ) );
+  }
+}
+
+JSON::JSON( const Mat33& m ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    for( int j = 0; j < 3; ++j ) {
+      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
+  }
+}
+
+JSON::JSON( const Mat44& m ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 4; ++i ) {
+    for( int j = 0; j < 4; ++j ) {
+      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
+  }
+}
 
 JSON::JSON( const File& file ) :
   data( nullptr ), valueType( NIL ), wasAccessed( true )
@@ -746,6 +871,36 @@ JSON::~JSON()
   clear();
 }
 
+JSON::JSON( const JSON& v ) :
+  data( nullptr ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
+{
+  switch( valueType ) {
+    case NIL: {
+      break;
+    }
+    case BOOLEAN: {
+      data = new BooleanData( *static_cast<const BooleanData*>( v.data ) );
+      break;
+    }
+    case NUMBER: {
+      data = new NumberData( *static_cast<const NumberData*>( v.data ) );
+      break;
+    }
+    case STRING: {
+      data = new StringData( *static_cast<const StringData*>( v.data ) );
+      break;
+    }
+    case ARRAY: {
+      data = new ArrayData( *static_cast<const ArrayData*>( v.data ) );
+      break;
+    }
+    case OBJECT: {
+      data = new ObjectData( *static_cast<const ObjectData*>( v.data ) );
+      break;
+    }
+  }
+}
+
 JSON::JSON( JSON&& v ) :
   data( v.data ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
@@ -754,8 +909,53 @@ JSON::JSON( JSON&& v ) :
   v.wasAccessed = true;
 }
 
+JSON& JSON::operator = ( const JSON& v )
+{
+  if( &v == this ) {
+    return *this;
+  }
+
+  clear();
+
+  valueType   = v.valueType;
+  wasAccessed = v.wasAccessed;
+
+  switch( valueType ) {
+    case NIL: {
+      data = nullptr;
+      break;
+    }
+    case BOOLEAN: {
+      data = new BooleanData( *static_cast<const BooleanData*>( v.data ) );
+      break;
+    }
+    case NUMBER: {
+      data = new NumberData( *static_cast<const NumberData*>( v.data ) );
+      break;
+    }
+    case STRING: {
+      data = new StringData( *static_cast<const StringData*>( v.data ) );
+      break;
+    }
+    case ARRAY: {
+      data = new ArrayData( *static_cast<const ArrayData*>( v.data ) );
+      break;
+    }
+    case OBJECT: {
+      data = new ObjectData( *static_cast<const ObjectData*>( v.data ) );
+      break;
+    }
+  }
+
+  return *this;
+}
+
 JSON& JSON::operator = ( JSON&& v )
 {
+  if( &v == this ) {
+    return *this;
+  }
+
   clear();
 
   data        = v.data;
@@ -924,22 +1124,22 @@ bool JSON::asBool() const
 
 int JSON::asInt() const
 {
-  wasAccessed = true;
-
-  if( valueType != NUMBER ) {
-    OZ_ERROR( "JSON value accessed as an integer: %s", toString().cstr() );
-  }
-  return int( static_cast<const NumberData*>( data )->value );
+  return int( asDouble() );
 }
 
 float JSON::asFloat() const
 {
+  return float( asDouble() );
+}
+
+double JSON::asDouble() const
+{
   wasAccessed = true;
 
   if( valueType != NUMBER ) {
-    OZ_ERROR( "JSON value accessed as a float: %s", toString().cstr() );
+    OZ_ERROR( "JSON value accessed as a number: %s", toString().cstr() );
   }
-  return float( static_cast<const NumberData*>( data )->value );
+  return static_cast<const NumberData*>( data )->value;
 }
 
 const String& JSON::asString() const
@@ -1058,6 +1258,26 @@ void JSON::asArray( float* array, int count ) const
 
   for( int i = 0; i < count; ++i ) {
     array[i] = list[i].asFloat();
+  }
+}
+
+void JSON::asArray( double* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asDouble();
   }
 }
 
@@ -1243,7 +1463,7 @@ int JSON::get( int defaultValue ) const
     return defaultValue;
   }
   else if( valueType != NUMBER ) {
-    OZ_ERROR( "JSON value accessed as an integer: %s", toString().cstr() );
+    OZ_ERROR( "JSON value accessed as a number: %s", toString().cstr() );
   }
 
   return int( static_cast<const NumberData*>( data )->value );
@@ -1257,10 +1477,24 @@ float JSON::get( float defaultValue ) const
     return defaultValue;
   }
   else if( valueType != NUMBER ) {
-    OZ_ERROR( "JSON value accessed as a float: %s", toString().cstr() );
+    OZ_ERROR( "JSON value accessed as a number: %s", toString().cstr() );
   }
 
   return float( static_cast<const NumberData*>( data )->value );
+}
+
+double JSON::get( double defaultValue ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return defaultValue;
+  }
+  else if( valueType != NUMBER ) {
+    OZ_ERROR( "JSON value accessed as a number: %s", toString().cstr() );
+  }
+
+  return static_cast<const NumberData*>( data )->value;
 }
 
 const String& JSON::get( const String& defaultValue ) const
@@ -1401,6 +1635,30 @@ bool JSON::get( float* array, int count ) const
 
   for( int i = 0; i < count; ++i ) {
     array[i] = list[i].asFloat();
+  }
+  return true;
+}
+
+bool JSON::get( double* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asDouble();
   }
   return true;
 }
@@ -1597,171 +1855,7 @@ bool JSON::get( Mat44* array, int count ) const
   return true;
 }
 
-void JSON::setNull()
-{
-  clear();
-}
-
-void JSON::set( bool value )
-{
-  clear();
-
-  data      = new BooleanData( value );
-  valueType = BOOLEAN;
-}
-
-void JSON::set( int value )
-{
-  clear();
-
-  data      = new NumberData( value );
-  valueType = NUMBER;
-}
-
-void JSON::set( float value )
-{
-  clear();
-
-  data      = new NumberData( value );
-  valueType = NUMBER;
-}
-
-void JSON::set( const String& value )
-{
-  clear();
-
-  data      = new StringData( value );
-  valueType = STRING;
-}
-
-void JSON::set( const char* value )
-{
-  clear();
-
-  data      = new StringData( value );
-  valueType = STRING;
-}
-
-void JSON::set( const Vec3& v )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( v[i] ), NUMBER ) );
-  }
-}
-
-void JSON::set( const Vec4& v )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    list.add( JSON( new NumberData( v[i] ), NUMBER ) );
-  }
-}
-
-void JSON::set( const Point& p )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( p[i] ), NUMBER ) );
-  }
-}
-
-void JSON::set( const Plane& p )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
-  }
-  list.add( JSON( new NumberData( p.d ), NUMBER ) );
-}
-
-void JSON::set( const Quat& q )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( q[i] ), NUMBER ) );
-  }
-}
-
-void JSON::set( const Mat33& m )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    for( int j = 0; j < 3; ++j ) {
-      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-    }
-  }
-}
-
-void JSON::set( const Mat44& m )
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    for( int j = 0; j < 4; ++j ) {
-      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-    }
-  }
-}
-
-void JSON::setArray()
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-}
-
-void JSON::setObject()
-{
-  clear();
-
-  data      = new ObjectData();
-  valueType = OBJECT;
-}
-
-JSON& JSON::addNull()
+JSON& JSON::add( const JSON& json )
 {
   if( valueType != ARRAY ) {
     OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
@@ -1769,198 +1863,23 @@ JSON& JSON::addNull()
 
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
-  list.add( JSON( nullptr, NIL ) );
+  list.add( json );
   return list.last();
 }
 
-JSON& JSON::add( bool value )
-{
-  JSON& elem = addNull();
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( int value )
-{
-  JSON& elem = addNull();
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( float value )
-{
-  JSON& elem = addNull();
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const String& value )
-{
-  JSON& elem = addNull();
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const char* value )
-{
-  JSON& elem = addNull();
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const Vec3& v )
+JSON& JSON::add( JSON&& json )
 {
   if( valueType != ARRAY ) {
     OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
   }
 
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
 
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    elemList.add( JSON( new NumberData( v[i] ), NUMBER ) );
-  }
-  return elem;
+  list.add( json );
+  return list.last();
 }
 
-JSON& JSON::add( const Vec4& v )
-{
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
-  }
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
-
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( v[i] ), NUMBER ) );
-  }
-  return elem;
-}
-
-JSON& JSON::add( const Point& p )
-{
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
-  }
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
-
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    elemList.add( JSON( new NumberData( p[i] ), NUMBER ) );
-  }
-  return elem;
-}
-
-JSON& JSON::add( const Plane& p )
-{
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
-  }
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
-
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
-  }
-  elemList.add( JSON( new NumberData( p.d ), NUMBER ) );
-  return elem;
-}
-
-JSON& JSON::add( const Quat& q )
-{
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
-  }
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
-
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( q[i] ), NUMBER ) );
-  }
-  return elem;
-}
-
-JSON& JSON::add( const Mat33& m )
-{
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
-  }
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
-
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    for( int j = 0; j < 3; ++j ) {
-      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-    }
-  }
-  return elem;
-}
-
-JSON& JSON::add( const Mat44& m )
-{
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
-  }
-
-  List<JSON>& list = static_cast<ArrayData*>( data )->list;
-  list.add( JSON( new ArrayData(), ARRAY ) );
-
-  JSON& elem = list.last();
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    for( int j = 0; j < 4; ++j ) {
-      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-    }
-  }
-  return elem;
-}
-
-JSON& JSON::addArray()
-{
-  JSON& elem = addNull();
-
-  elem.setArray();
-  return elem;
-}
-
-JSON& JSON::addObject()
-{
-  JSON& elem = addNull();
-
-  elem.setObject();
-  return elem;
-}
-
-JSON& JSON::addNull( const char* key )
+JSON& JSON::add( const char* key, const JSON& json )
 {
   if( valueType != OBJECT ) {
     OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
@@ -1968,50 +1887,10 @@ JSON& JSON::addNull( const char* key )
   }
 
   HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  return table.add( key, JSON( nullptr, NIL ) );
+  return table.add( key, json );
 }
 
-JSON& JSON::add( const char* key, bool value )
-{
-  JSON& elem = addNull( key );
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const char* key, int value )
-{
-  JSON& elem = addNull( key );
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const char* key, float value )
-{
-  JSON& elem = addNull( key );
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const String& value )
-{
-  JSON& elem = addNull( key );
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const char* value )
-{
-  JSON& elem = addNull( key );
-
-  elem.set( value );
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const Vec3& v )
+JSON& JSON::add( const char* key, JSON&& json )
 {
   if( valueType != OBJECT ) {
     OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
@@ -2019,146 +1898,10 @@ JSON& JSON::add( const char* key, const Vec3& v )
   }
 
   HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    elemList.add( JSON( new NumberData( v[i] ), NUMBER ) );
-  }
-  return elem;
+  return table.add( key, json );
 }
 
-JSON& JSON::add( const char* key, const Vec4& v )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( v[i] ), NUMBER ) );
-  }
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const Point& p )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    elemList.add( JSON( new NumberData( p[i] ), NUMBER ) );
-  }
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const Plane& p )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    elemList.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
-  }
-  elemList.add( JSON( new NumberData( p.d ), NUMBER ) );
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const Quat& q )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    elemList.add( JSON( new NumberData( q[i] ), NUMBER ) );
-  }
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const Mat33& m )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 3; ++i ) {
-    for( int j = 0; j < 3; ++j ) {
-      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-    }
-  }
-  return elem;
-}
-
-JSON& JSON::add( const char* key, const Mat44& m )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
-
-  for( int i = 0; i < 4; ++i ) {
-    for( int j = 0; j < 4; ++j ) {
-      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-    }
-  }
-  return elem;
-}
-
-JSON& JSON::addArray( const char* key )
-{
-  JSON& elem = addNull( key );
-
-  elem.setArray();
-  return elem;
-}
-
-JSON& JSON::addObject( const char* key )
-{
-  JSON& elem = addNull( key );
-
-  elem.setObject();
-  return elem;
-}
-
-JSON& JSON::includeNull( const char* key )
+JSON& JSON::include( const char* key, const JSON& json )
 {
   if( valueType != OBJECT ) {
     OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
@@ -2169,28 +1912,12 @@ JSON& JSON::includeNull( const char* key )
   JSON* entry = table->table.find( key );
 
   if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( nullptr, NIL ) );
+    entry = &table->table.add( key, json );
   }
   return *entry;
 }
 
-JSON& JSON::include( const char* key, bool value )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value '%s' pair in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new BooleanData( value ), BOOLEAN ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, int value )
+JSON& JSON::include( const char* key, JSON&& json )
 {
   if( valueType != OBJECT ) {
     OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
@@ -2201,246 +1928,7 @@ JSON& JSON::include( const char* key, int value )
   JSON* entry = table->table.find( key );
 
   if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new NumberData( value ), NUMBER ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, float value )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new NumberData( value ), NUMBER ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const String& value )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new StringData( value ), STRING ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const char* value )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new StringData( value ), STRING ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Vec3& v )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 3; ++i ) {
-      list.add( JSON( new NumberData( v[i] ), NUMBER ) );
-    }
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Vec4& v )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 4; ++i ) {
-      list.add( JSON( new NumberData( v[i] ), NUMBER ) );
-    }
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Point& p )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 3; ++i ) {
-      list.add( JSON( new NumberData( p[i] ), NUMBER ) );
-    }
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Plane& p )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 3; ++i ) {
-      list.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
-    }
-    list.add( JSON( new NumberData( p.d ), NUMBER ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Quat& q )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 4; ++i ) {
-      list.add( JSON( new NumberData( q[i] ), NUMBER ) );
-    }
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Mat33& m )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 3; ++i ) {
-      for( int j = 0; j < 3; ++j ) {
-        list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-      }
-    }
-  }
-  return *entry;
-}
-
-JSON& JSON::include( const char* key, const Mat44& m )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
-
-    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
-
-    for( int i = 0; i < 4; ++i ) {
-      for( int j = 0; j < 4; ++j ) {
-        list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
-      }
-    }
-  }
-  return *entry;
-}
-
-JSON& JSON::includeArray( const char* key )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), STRING ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::includeObject( const char* key )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ObjectData(), STRING ) );
+    entry = &table->table.add( key, json );
   }
   return *entry;
 }

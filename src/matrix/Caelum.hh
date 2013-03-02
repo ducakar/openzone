@@ -46,6 +46,9 @@ class Caelum
     void read( InputStream* istream );
     void write( OutputStream* ostream ) const;
 
+    void read( const JSON& json );
+    JSON write() const;
+
 };
 
 }

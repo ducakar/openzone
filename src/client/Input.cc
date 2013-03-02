@@ -327,8 +327,7 @@ void Input::loadKeyMap( const JSON& keyConfig )
 
 JSON Input::keyMapToJSON() const
 {
-  JSON keyConfig;
-  keyConfig.setObject();
+  JSON keyConfig( JSON::OBJECT );
 
 #if SDL_MAJOR_VERSION < 2
   keyConfig.add( "modifier0", SDL_GetKeyName( modifier0 ) );
@@ -339,7 +338,7 @@ JSON Input::keyMapToJSON() const
 #endif
 
   for( int i = KEY_NONE + 1; i < KEY_MAX; ++i ) {
-    JSON& key = keyConfig.addArray( KEY_NAMES[i] );
+    JSON& key = keyConfig.add( KEY_NAMES[i], JSON::ARRAY );
 
     for( int j = 0; j < 2; ++j ) {
       if( keyMap[i][j] != KEY_NONE ) {
@@ -562,12 +561,12 @@ void Input::init()
 
   if( !String::equals( inputConfig["_version"].get( "" ), OZ_VERSION ) ) {
     configExists = false;
-    inputConfig.setNull();
+    inputConfig = JSON();
   }
 
   if( !String::equals( inputConfig["_backend"].get( "" ), BACKEND ) ) {
     configExists = false;
-    inputConfig.setNull();
+    inputConfig = JSON();
   }
 
   const JSON& mouseConfig    = inputConfig["mouse"];
@@ -651,15 +650,14 @@ void Input::destroy()
 
   Log::print( "Writing Input configuration to '%s' ...", configFile.path().cstr() );
 
-  JSON inputConfig;
-  inputConfig.setObject();
+  JSON inputConfig( JSON::OBJECT );
 
   inputConfig.add( "_version", OZ_VERSION );
   inputConfig.add( "_backend", BACKEND );
 
-  JSON& mouseConfig    = inputConfig.addObject( "mouse" );
-  JSON& keyboardConfig = inputConfig.addObject( "keyboard" );
-  JSON& keyMapConfig   = inputConfig.addObject( "bindings" );
+  JSON& mouseConfig    = inputConfig.add( "mouse", JSON::OBJECT );
+  JSON& keyboardConfig = inputConfig.add( "keyboard", JSON::OBJECT );
+  JSON& keyMapConfig   = inputConfig.add( "bindings", JSON::OBJECT );
 
   mouseConfig.add( "sensitivity.x",          mouseSensX );
   mouseConfig.add( "sensitivity.y",          mouseSensY );

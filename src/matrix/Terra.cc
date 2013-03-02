@@ -120,5 +120,22 @@ void Terra::write( OutputStream* ostream ) const
   ostream->writeString( name );
 }
 
+void Terra::read( const JSON& json )
+{
+  const char* name = json["name"].get( "" );
+  int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
+
+  load( id );
+}
+
+JSON Terra::write() const
+{
+  const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
+
+  JSON json( JSON::OBJECT );
+  json.add( "name", name );
+  return json;
+}
+
 }
 }

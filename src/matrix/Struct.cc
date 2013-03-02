@@ -771,13 +771,14 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
 {
   mins        = json["mins"].asPoint();
   maxs        = json["maxs"].asPoint();
-  transf      = json["transf"].asMat44();
-  invTransf   = json["invTransf"].asMat44();
 
   bsp         = bsp_;
 
   p           = json["p"].asPoint();
   heading     = Heading( json["heading"].asInt() );
+
+  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
 
   index       = json["index"].asInt();
 
@@ -827,7 +828,7 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
   }
 }
 
-void Struct::write( OutputStream* ostream )
+void Struct::write( OutputStream* ostream ) const
 {
   ostream->writePoint( mins );
   ostream->writePoint( maxs );
@@ -856,25 +857,27 @@ void Struct::write( OutputStream* ostream )
   }
 }
 
-void Struct::write( JSON* json )
+JSON Struct::write() const
 {
-  json->add( "mins", mins );
-  json->add( "maxs", maxs );
-  json->add( "transf", transf );
-  json->add( "invTransf", invTransf );
+  JSON json( JSON::OBJECT );
 
-  json->add( "p", p );
-  json->add( "heading", heading );
+  json.add( "bsp", bsp->name );
 
-  json->add( "index", index );
+  json.add( "mins", mins );
+  json.add( "maxs", maxs );
 
-  json->add( "life", life );
-  json->add( "demolishing", demolishing );
+  json.add( "p", p );
+  json.add( "heading", heading );
 
-  JSON& entitiesJSON = json->addArray( "entities" );
+  json.add( "index", index );
+
+  json.add( "life", life );
+  json.add( "demolishing", demolishing );
+
+  JSON& entitiesJSON = json.add( "entities", JSON::ARRAY );
 
   for( int i = 0; i < entities.length(); ++i ) {
-    JSON& entityJSON = entitiesJSON.addObject();
+    JSON& entityJSON = entitiesJSON.add( JSON::OBJECT);
 
     entityJSON.add( "offset", entities[i].offset );
     entityJSON.add( "key", entities[i].key );
@@ -883,11 +886,13 @@ void Struct::write( JSON* json )
     entityJSON.add( "time", entities[i].time );
   }
 
-  JSON& boundObjectsJSON = json->addArray( "boundObjects" );
+  JSON& boundObjectsJSON = json.add( "boundObjects", JSON::ARRAY );
 
   for( int i = 0; i < boundObjects.length(); ++i ) {
     boundObjectsJSON.add( boundObjects[i] );
   }
+
+  return json;
 }
 
 }

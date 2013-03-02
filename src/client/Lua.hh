@@ -35,9 +35,11 @@ namespace client
 
 class Lua : public common::Lua
 {
-  public:
+  private:
 
     void staticCall( const char* functionName );
+
+  public:
 
     void update();
     void create( const char* missionPath );

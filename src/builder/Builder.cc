@@ -715,7 +715,7 @@ int Builder::main( int argc, char** argv )
 {
   String invocationName = String::fileBaseName( argv[0] );
 
-  config.setObject();
+  config = JSON( JSON::OBJECT );
 
   bool doCat          = false;
   bool doUI           = false;

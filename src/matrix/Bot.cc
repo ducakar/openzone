@@ -419,22 +419,14 @@ void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Dynamic* cargoObj  = nullptr;
-  Weapon*  weaponObj = nullptr;
+  Dynamic* cargoObj  = static_cast<Dynamic*>( orbis.obj( cargo ) );
+  Weapon*  weaponObj = static_cast<Weapon*>( orbis.obj( weapon ) );
 
-  if( cargo >= 0 ) {
-    cargoObj = static_cast<Dynamic*>( orbis.objects[cargo] );
-
-    if( cargoObj == nullptr ) {
-      releaseCargo();
-    }
+  if( cargoObj == nullptr ) {
+    releaseCargo();
   }
-  if( weapon >= 0 ) {
-    weaponObj = static_cast<Weapon*>( orbis.objects[weapon] );
-
-    if( weaponObj == nullptr ) {
-      weapon = -1;
-    }
+  if( weaponObj == nullptr ) {
+    weapon = -1;
   }
 
   // Sanity checks.
@@ -1207,13 +1199,13 @@ Bot::Bot( const BotClass* clazz_, const JSON& json ) :
 
   h          = json["h"].asFloat();
   v          = json["v"].asFloat();
-  actions    = json["actions"].asInt();
-  oldActions = json["oldActions"].asInt();
-  instrument = json["instrument"].asInt();
-  container  = json["container"].asInt();
+  actions    = 0;
+  oldActions = 0;
+  instrument = -1;
+  container  = -1;
 
   state      = json["state"].asInt();
-  oldState   = json["oldState"].asInt();
+  oldState   = state;
   stamina    = json["stamina"].asFloat();
   step       = json["step"].asFloat();
   stairRate  = json["stairRate"].asFloat();
@@ -1221,7 +1213,7 @@ Bot::Bot( const BotClass* clazz_, const JSON& json ) :
   cargo      = json["cargo"].asInt();
   weapon     = json["weapon"].asInt();
   grabHandle = json["grabHandle"].asFloat();
-  meleeTime  = json["meleeTime"].asFloat();
+  meleeTime  = 0.0f;
 
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
@@ -1261,32 +1253,28 @@ void Bot::write( OutputStream* ostream ) const
   ostream->writeString( mindFunc );
 }
 
-void Bot::write( JSON* json ) const
+JSON Bot::write() const
 {
-  Dynamic::write( json );
+  JSON json = Dynamic::write();
 
-  json->add( "dim", dim );
+  json.add( "dim", dim );
 
-  json->add( "h", h );
-  json->add( "v", v );
-  json->add( "actions", actions );
-  json->add( "oldActions", oldActions );
-  json->add( "instrument", instrument );
-  json->add( "container", container );
+  json.add( "h", h );
+  json.add( "v", v );
 
-  json->add( "state", state );
-  json->add( "oldState", oldState );
-  json->add( "stamina", stamina );
-  json->add( "step", step );
-  json->add( "stairRate", stairRate );
+  json.add( "state", state );
+  json.add( "stamina", stamina );
+  json.add( "step", step );
+  json.add( "stairRate", stairRate );
 
-  json->add( "cargo", cargo );
-  json->add( "weapon", weapon );
-  json->add( "grabHandle", grabHandle );
-  json->add( "meleeTime", meleeTime );
+  json.add( "cargo", orbis.objIndex( cargo ) );
+  json.add( "weapon", orbis.objIndex( weapon ) );
+  json.add( "grabHandle", grabHandle );
 
-  json->add( "name", name );
-  json->add( "mindFunc", mindFunc );
+  json.add( "name", name );
+  json.add( "mindFunc", mindFunc );
+
+  return json;
 }
 
 void Bot::readUpdate( InputStream* )

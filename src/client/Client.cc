@@ -68,6 +68,7 @@ void Client::printUsage( const char* invocationName )
     "  -v            Print verbose log messages to terminal.\n"
     "  -l            Skip main menu and load the last autosaved game.\n"
     "  -i <mission>  Skip main menu and start mission <mission>.\n"
+    "  -e <layout>   Edit world <layout> file. Create a new one if non-existent.\n"
     "  -t <num>      Exit after <num> seconds (can be a floating-point number) and\n"
     "                use 42 as the random seed. Useful for benchmarking.\n"
     "  -L <lang>     Use language <lang>. Should match a subdirectory name in\n"
@@ -88,11 +89,12 @@ int Client::init( int argc, char** argv )
   String prefix;
   String language;
   String mission;
+  String layoutFile;
   bool   doAutoload = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vli:t:L:p:h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "vlie:t:L:p:h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'v': {
         Log::showVerbose = true;
@@ -104,6 +106,10 @@ int Client::init( int argc, char** argv )
       }
       case 'i': {
         mission = optarg;
+        break;
+      }
+      case 'e': {
+        layoutFile = optarg;
         break;
       }
       case 't': {
@@ -266,8 +272,7 @@ int Client::init( int argc, char** argv )
       Log::println( "Invalid configuration file version, configuration will be cleaned and written"
                     " upon exit" );
 
-      config.clear();
-      config.setObject();
+      config = JSON( JSON::OBJECT );
       config.add( "_version", OZ_VERSION );
       config["_version"];
     }
@@ -276,7 +281,7 @@ int Client::init( int argc, char** argv )
     Log::println( "No configuration file, default configuration will be used and written upon"
                   " exit" );
 
-    config.setObject();
+    config = JSON( JSON::OBJECT );
     config.add( "_version", OZ_VERSION );
     config["_version"];
   }
@@ -473,8 +478,10 @@ int Client::init( int argc, char** argv )
 
   Stage::nextStage = nullptr;
 
-  if( !mission.isEmpty() ) {
-    gameStage.mission = mission;
+  if( !mission.isEmpty() || !layoutFile.isEmpty() ) {
+    gameStage.layoutFile = File( File::NATIVE, layoutFile );
+    gameStage.mission    = mission;
+
     stage = &gameStage;
   }
   else if( doAutoload ) {
@@ -573,7 +580,6 @@ int Client::main()
 
   bool isAlive        = true;
   bool isActive       = true;
-
   // time passed form start of the frame
   uint timeSpent;
   uint timeNow;

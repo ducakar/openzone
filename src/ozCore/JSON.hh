@@ -161,12 +161,80 @@ class JSON
   public:
 
     /**
-     * Create a null instance.
+     * Create an instance of the given type with a default value.
+     *
+     * Default value is false for a boolean, 0.0 for a number, "" for a string or an empty container
+     * for an array or an object.
      */
-    explicit JSON();
+    explicit JSON( Type type = NIL );
 
     /**
-     * Create from a file contents.
+     * Create a boolean value.
+     */
+    explicit JSON( bool value );
+
+    /**
+     * Create a number value for an integer.
+     */
+    explicit JSON( int value );
+
+    /**
+     * Create a number value for a float.
+     */
+    explicit JSON( float value );
+
+    /**
+     * Create a number value for a double.
+     */
+    explicit JSON( double value );
+
+    /**
+     * Create a string value for the given string.
+     */
+    explicit JSON( const String& value );
+
+    /**
+     * Create a string value for the given string.
+     */
+    explicit JSON( const char* value );
+
+    /**
+     * Create an array of 3 numbers representing `Vec3` components.
+     */
+    explicit JSON( const Vec3& v );
+
+    /**
+     * Create an array of 4 numbers representing `Vec4` components.
+     */
+    explicit JSON( const Vec4& v );
+
+    /**
+     * Create an array of 4 numbers representing `Point` components.
+     */
+    explicit JSON( const Point& p );
+
+    /**
+     * Create an array of 4 numbers representing `Plane` components.
+     */
+    explicit JSON( const Plane& p );
+
+    /**
+     * Create an array of 4 numbers representing `Quat` components.
+     */
+    explicit JSON( const Quat& q );
+
+    /**
+     * Create an array of 9 numbers representing `Mat33` components.
+     */
+    explicit JSON( const Mat33& m );
+
+    /**
+     * Create an array of 16 numbers representing `Mat44` components.
+     */
+    explicit JSON( const Mat44& m );
+
+    /**
+     * Load from a file.
      */
     explicit JSON( const File& file );
 
@@ -176,9 +244,19 @@ class JSON
     ~JSON();
 
     /**
+     * Copy constructor.
+     */
+    JSON( const JSON& v );
+
+    /**
      * Move constructor.
      */
     JSON( JSON&& v );
+
+    /**
+     * Copy operator.
+     */
+    JSON& operator = ( const JSON& v );
 
     /**
      * Move operator.
@@ -284,6 +362,13 @@ class JSON
     float asFloat() const;
 
     /**
+     * Get number value.
+     *
+     * If value is not a number, `System::error()` is invoked.
+     */
+    double asDouble() const;
+
+    /**
      * Get string value.
      *
      * If value is not a string, `System::error()` is invoked.
@@ -362,6 +447,14 @@ class JSON
      * `System::error()` is invoked.
      */
     void asArray( float* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are numbers,
+     * `System::error()` is invoked.
+     */
+    void asArray( double* array, int count ) const;
 
     /**
      * Write array values into the given array.
@@ -447,6 +540,13 @@ class JSON
      * If value is not either null or a number, `System::error()` is invoked.
      */
     float get( float defaultValue ) const;
+
+    /**
+     * Return number value or `defaultValue` if null.
+     *
+     * If value is not either null or a number, `System::error()` is invoked.
+     */
+    double get( double defaultValue ) const;
 
     /**
      * Return string value or `defaultValue` if null.
@@ -544,6 +644,16 @@ class JSON
     /**
      * Write array values into the given array (it is left unchanged if %JSON element is null).
      *
+     * If value is not either null or an array of the specified length with number elements,
+     * `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON element is null.
+     */
+    bool get( double* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON element is null).
+     *
      * If value is not either null or an array of the specified length with string elements,
      * `System::error()` is invoked.
      *
@@ -622,192 +732,185 @@ class JSON
     bool get( Mat44* array, int count ) const;
 
     /**
-     * Clear existing value and set to null.
-     */
-    void setNull();
-
-    /**
-     * Clear existing value and set to a boolean.
-     */
-    void set( bool value );
-
-    /**
-     * Clear existing value and set to a number.
-     */
-    void set( int value );
-
-    /**
-     * Clear existing value and set to a number.
-     */
-    void set( float value );
-
-    /**
-     * Clear existing value and set to a string.
-     */
-    void set( const String& value );
-
-    /**
-     * Clear existing value and set to a string.
-     */
-    void set( const char* value );
-
-    /**
-     * Clear existing value and set to an array of 3 numbers representing `Vec3` components.
-     */
-    void set( const Vec3& v );
-
-    /**
-     * Clear existing value and set to an array of 4 numbers representing `Vec4` components.
-     */
-    void set( const Vec4& v );
-
-    /**
-     * Clear existing value and set to an array of 3 numbers representing `Point` components.
-     */
-    void set( const Point& p );
-
-    /**
-     * Clear existing value and set to an array of 4 numbers representing `Plane` components.
-     */
-    void set( const Plane& p );
-
-    /**
-     * Clear existing value and set to an array of 4 numbers representing `Quat` components.
-     */
-    void set( const Quat& q );
-
-    /**
-     * Clear existing value and set to an array of 9 numbers representing `Mat33` components.
-     */
-    void set( const Mat33& m );
-
-    /**
-     * Clear existing value and set to an array of 16 numbers representing `Mat44` components.
-     */
-    void set( const Mat44& m );
-
-    /**
-     * Clear existing value and set to an empty array.
-     */
-    void setArray();
-
-    /**
-     * Clear existing value and set to an empty object.
-     */
-    void setObject();
-
-    /**
-     * Add a null value to array.
+     * Append a value to array (copy).
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& addNull();
+    JSON& add( const JSON& json );
 
     /**
-     * Add a boolean value to array.
+     * Append a value to array (move).
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( bool value );
+    JSON& add( JSON&& json );
 
     /**
-     * Add a number value to array.
+     * Append a default value of the given type to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( int value );
+    JSON& add( Type type = NIL )
+    {
+      return add( JSON( type ) );
+    }
 
     /**
-     * Add a number value to array.
+     * Append a boolean value to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( float value );
+    JSON& add( bool value )
+    {
+      return add( JSON( value ) );
+    }
 
     /**
-     * Add a string value to array.
+     * Append a number value to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const String& value );
+    JSON& add( int value )
+    {
+      return add( JSON( value ) );
+    }
 
     /**
-     * Add a string value to array.
+     * Append a number value to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* value );
+    JSON& add( float value )
+    {
+      return add( JSON( value ) );
+    }
 
     /**
-     * Add a `Vec3` to array as a new array of 3 numbers.
+     * Append a number value to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Vec3& v );
+    JSON& add( double value )
+    {
+      return add( JSON( value ) );
+    }
 
     /**
-     * Add a `Vec4` to array as a new array of 4 numbers.
+     * Append a string value to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Vec4& v );
+    JSON& add( const String& value )
+    {
+      return add( JSON( value ) );
+    }
 
     /**
-     * Add a `Point` to array as a new array of 3 numbers.
+     * Append a string value to array.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Point& p );
+    JSON& add( const char* value )
+    {
+      return add( JSON( value ) );
+    }
 
     /**
-     * Add a `Plane` to array as a new array of 4 numbers.
+     * Append a `Vec3` to array as a new array of 3 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Plane& p );
+    JSON& add( const Vec3& v )
+    {
+      return add( JSON( v ) );
+    }
 
     /**
-     * Add a `Quat` to array as a new array of 4 numbers.
+     * Append a `Vec4` to array as a new array of 4 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Quat& q );
+    JSON& add( const Vec4& v )
+    {
+      return add( JSON( v ) );
+    }
 
     /**
-     * Add a `Mat33` to array as a new array of 9 numbers.
+     * Append a `Point` to array as a new array of 3 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Mat33& m );
+    JSON& add( const Point& p )
+    {
+      return add( JSON( p ) );
+    }
 
     /**
-     * Add a `Mat44` to array as a new array of 16 numbers.
+     * Append a `Plane` to array as a new array of 4 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const Mat44& m );
+    JSON& add( const Plane& p )
+    {
+      return add( JSON( p ) );
+    }
 
     /**
-     * Add an empty array value to array.
+     * Append a `Quat` to array as a new array of 4 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& addArray();
+    JSON& add( const Quat& q )
+    {
+      return add( JSON( q ) );
+    }
 
     /**
-     * Add an empty object value to array.
+     * Append a `Mat33` to array as a new array of 9 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& addObject();
+    JSON& add( const Mat33& m )
+    {
+      return add( JSON( m ) );
+    }
 
     /**
-     * Add a null value with the given key to the object, overwriting any existing entry with that
+     * Append a `Mat44` to array as a new array of 16 numbers.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& add( const Mat44& m )
+    {
+      return add( JSON( m ) );
+    }
+
+    /**
+     * Add a value with the given key to the object (copy), overwriting any existing entry with that
      * key.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& addNull( const char* key );
+    JSON& add( const char* key, const JSON& value );
+
+    /**
+     * Add a value with the given key to the object (move), overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& add( const char* key, JSON&& value );
+
+    /**
+     * Add a default value of the given type with the given key to the object (copy), overwriting
+     * any existing entry with that key.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& add( const char* key, Type type )
+    {
+      return add( key, JSON( type ) );
+    }
 
     /**
      * Add a boolean value with the given key to the object, overwriting any existing entry with
@@ -815,7 +918,10 @@ class JSON
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& add( const char* key, bool value );
+    JSON& add( const char* key, bool value )
+    {
+      return add( key, JSON( value ) );
+    }
 
     /**
      * Add a number value with the given key to the object, overwriting any existing entry with that
@@ -823,7 +929,10 @@ class JSON
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& add( const char* key, int value );
+    JSON& add( const char* key, int value )
+    {
+      return add( key, JSON( value ) );
+    }
 
     /**
      * Add a number value with the given key to the object, overwriting any existing entry with that
@@ -831,7 +940,21 @@ class JSON
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& add( const char* key, float value );
+    JSON& add( const char* key, float value )
+    {
+      return add( key, JSON( value ) );
+    }
+
+    /**
+     * Add a number value with the given key to the object, overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& add( const char* key, double value )
+    {
+      return add( key, JSON( value ) );
+    }
 
     /**
      * Add a string value with the given key to the object, overwriting any existing entry with that
@@ -839,7 +962,10 @@ class JSON
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const String& value );
+    JSON& add( const char* key, const String& value )
+    {
+      return add( key, JSON( value ) );
+    }
 
     /**
      * Add a string value with the given key to the object, overwriting any existing entry with that
@@ -847,7 +973,10 @@ class JSON
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const char* value );
+    JSON& add( const char* key, const char* value )
+    {
+      return add( key, JSON( value ) );
+    }
 
     /**
      * Add a `Vec3` with the given key to the object as a new array of 3 numbers, overwriting any
@@ -855,7 +984,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const Vec3& v );
+    JSON& add( const char* key, const Vec3& v )
+    {
+      return add( key, JSON( v ) );
+    }
 
     /**
      * Add a `Vec4` with the given key to the object as a new array of 4 numbers, overwriting any
@@ -863,7 +995,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const Vec4& v );
+    JSON& add( const char* key, const Vec4& v )
+    {
+      return add( key, JSON( v ) );
+    }
 
     /**
      * Add a `Point` with the given key to the object as a new array of 3 numbers, overwriting any
@@ -871,7 +1006,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const Point& p );
+    JSON& add( const char* key, const Point& p )
+    {
+      return add( key, JSON( p ) );
+    }
 
     /**
      * Add a `Plane` with the given key to the object as a new array of 4 numbers, overwriting any
@@ -879,7 +1017,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const Plane& p );
+    JSON& add( const char* key, const Plane& p )
+    {
+      return add( key, JSON( p ) );
+    }
 
     /**
      * Add a `Quat` with the given key to the object as a new array of 4 numbers, overwriting any
@@ -887,15 +1028,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const Quat& q );
-
-    /**
-     * Add a `Mat44` with the given key to the object as a new array of 16 numbers, overwriting any
-     * existing entry with that key.
-     *
-     * If current value is not an array, `System::error()` is invoked.
-     */
-    JSON& add( const char* key, const Mat44& m );
+    JSON& add( const char* key, const Quat& q )
+    {
+      return add( key, JSON( q ) );
+    }
 
     /**
      * Add a `Mat33` with the given key to the object as a new array of 9 numbers, overwriting any
@@ -903,30 +1039,46 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& add( const char* key, const Mat33& m );
+    JSON& add( const char* key, const Mat33& m )
+    {
+      return add( key, JSON( m ) );
+    }
 
     /**
-     * Add an empty array value with the given key to the object, overwriting any existing entry
-     * with that key.
+     * Add a `Mat44` with the given key to the object as a new array of 16 numbers, overwriting any
+     * existing entry with that key.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& add( const char* key, const Mat44& m )
+    {
+      return add( key, JSON( m ) );
+    }
+
+    /**
+     * Add a value with the given key to the object (copy), if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& addArray( const char* key );
+    JSON& include( const char* key, const JSON& json );
 
     /**
-     * Add an empty object value with the given key to the object, overwriting any existing entry
-     * with that key.
+     * Add a value with the given key to the object (move), if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& addObject( const char* key );
+    JSON& include( const char* key, JSON&& json );
 
     /**
-     * Add a null value with the given key to the object, if the key does not exist in the object.
+     * Add a default value of the given type and with the given key to the object, if the key does
+     * not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& includeNull( const char* key );
+    JSON& include( const char* key, Type type )
+    {
+      return include( key, JSON( type ) );
+    }
 
     /**
      * Add a boolean value with the given key to the object, if the key does not exist in the
@@ -934,35 +1086,60 @@ class JSON
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& include( const char* key, bool value );
+    JSON& include( const char* key, bool value )
+    {
+      return include( key, JSON( value ) );
+    }
 
     /**
      * Add a number value with the given key to the object, if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& include( const char* key, int value );
+    JSON& include( const char* key, int value )
+    {
+      return include( key, JSON( value ) );
+    }
 
     /**
      * Add a number value with the given key to the object, if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& include( const char* key, float value );
+    JSON& include( const char* key, float value )
+    {
+      return include( key, JSON( value ) );
+    }
+
+    /**
+     * Add a number value with the given key to the object, if the key does not exist in the object.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& include( const char* key, double value )
+    {
+      return include( key, JSON( value ) );
+    }
 
     /**
      * Add a string value with the given key to the object, if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const String& value );
+    JSON& include( const char* key, const String& value )
+    {
+      return include( key, JSON( value ) );
+    }
 
     /**
      * Add a string value with the given key to the object, if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const char* value );
+    JSON& include( const char* key, const char* value )
+    {
+      return include( key, JSON( value ) );
+    }
 
     /**
      * Add a `Vec3` with the given key to the object as a new array of 3 numbers, if the key does
@@ -970,7 +1147,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Vec3& v );
+    JSON& include( const char* key, const Vec3& v )
+    {
+      return include( key, JSON( v ) );
+    }
 
     /**
      * Add a `Vec4` with the given key to the object as a new array of 4 numbers, if the key does
@@ -978,7 +1158,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Vec4& v );
+    JSON& include( const char* key, const Vec4& v )
+    {
+      return include( key, JSON( v ) );
+    }
 
     /**
      * Add a `Point` with the given key to the object as a new array of 3 numbers, if the key does
@@ -986,7 +1169,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Point& p );
+    JSON& include( const char* key, const Point& p )
+    {
+      return include( key, JSON( p ) );
+    }
 
     /**
      * Add a `Plane` with the given key to the object as a new array of 4 numbers, if the key does
@@ -994,7 +1180,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Plane& p );
+    JSON& include( const char* key, const Plane& p )
+    {
+      return include( key, JSON( p ) );
+    }
 
     /**
      * Add a `Quat` with the given key to the object as a new array of 4 numbers, if the key does
@@ -1002,7 +1191,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Quat& q );
+    JSON& include( const char* key, const Quat& q )
+    {
+      return include( key, JSON( q ) );
+    }
 
     /**
      * Add a `Mat33` with the given key to the object as a new array of 9 numbers, if the key does
@@ -1010,7 +1202,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Mat33& m );
+    JSON& include( const char* key, const Mat33& m )
+    {
+      return include( key, JSON( m ) );
+    }
 
     /**
      * Add a `Mat44` with the given key to the object as a new array of 16 numbers, if the key does
@@ -1018,23 +1213,10 @@ class JSON
      *
      * If current value is not an array, `System::error()` is invoked.
      */
-    JSON& include( const char* key, const Mat44& m );
-
-    /**
-     * Add an empty array value with the given key to the object, if the key does not exist in the
-     * object.
-     *
-     * If current value is not an object, `System::error()` is invoked.
-     */
-    JSON& includeArray( const char* key );
-
-    /**
-     * Add an empty object value with the given key to the object, if the key does not exist in the
-     * object.
-     *
-     * If current value is not an object, `System::error()` is invoked.
-     */
-    JSON& includeObject( const char* key );
+    JSON& include( const char* key, const Mat44& m )
+    {
+      return include( key, JSON( m ) );
+    }
 
     /**
      * Remove element at the given index from an array.

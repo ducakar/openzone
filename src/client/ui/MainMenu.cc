@@ -29,6 +29,7 @@
 #include <client/GameStage.hh>
 #include <client/MenuStage.hh>
 #include <client/OpenGL.hh>
+#include <client/Window.hh>
 #include <client/BuildInfo.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/MissionMenu.hh>
@@ -108,6 +109,8 @@ static void openWeb( Button* )
     _Exit( 0 );
   }
 #endif
+
+  window.minimise();
 }
 
 static void quit( Button* )

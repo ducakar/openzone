@@ -106,7 +106,7 @@ class Vehicle : public Dynamic
     explicit Vehicle( const VehicleClass* clazz, const JSON& json );
 
     void write( OutputStream* ostream ) const override;
-    void write( JSON* json ) const override;
+    JSON write() const override;
 
     void readUpdate( InputStream* istream ) override;
     void writeUpdate( OutputStream* ostream ) const override;

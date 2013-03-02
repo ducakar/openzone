@@ -61,5 +61,23 @@ void Caelum::write( OutputStream* ostream ) const
   ostream->writeFloat( time );
 }
 
+void Caelum::read( const JSON& json )
+{
+  heading = json["heading"].get( 0.0f );
+  period  = json["period"].get( 86400.0f );
+  time    = json["time"].get( 0.0f );
+}
+
+JSON Caelum::write() const
+{
+  JSON json( JSON::OBJECT );
+
+  json.add( "heading", heading );
+  json.add( "period", period );
+  json.add( "time", time );
+
+  return json;
+}
+
 }
 }

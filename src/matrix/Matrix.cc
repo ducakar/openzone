@@ -183,13 +183,15 @@ void Matrix::read( const JSON& json )
   Log::println( "}" );
 }
 
-void Matrix::write( JSON* json ) const
+JSON Matrix::write() const
 {
   Log::print( "Writing Matrix ..." );
 
-  orbis.write( json );
+  JSON json = orbis.write();
 
   Log::printEnd( " OK" );
+
+  return json;
 }
 
 void Matrix::load()
