@@ -55,9 +55,9 @@ class Body
 
     Bounds  bb;              ///< Cached axis-aligned bounding box in absolute coordinates.
 
-    Point   pos;             ///< Position.
-    Quat    rot;             ///< Rotation.
-    Mat33   rotMat;          ///< Cached rotation matrix.
+    Point   p;               ///< Position.
+    Quat    o;               ///< Orientation.
+    Mat33   oMat;            ///< Cached orientation matrix.
 
     int     flags;           ///< Flags.
     int     mask;            ///< Collision bitmask.
@@ -98,11 +98,14 @@ class Body
       }
     }
 
-    Bounds getBounds() const
+    /**
+     * Normalise rotation quaternion and update cached rotation matrix and bounding box.
+     */
+    void update()
     {
-      hard_assert( bodyShape != nullptr );
-
-      return bodyShape->getBounds( pos, rotMat );
+      o    = ~o;
+      oMat = Mat33::rotation( o );
+      bb   = bodyShape == nullptr ? Bounds( p, p ) : bodyShape->getBounds( p, oMat );
     }
 
     OZ_STATIC_POOL_ALLOC( pool )

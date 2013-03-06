@@ -20,11 +20,55 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#pragma once
-
-/*
- * Configuration variables
+/**
+ * @file ozEngine/OpenAL.cc
  */
 
-// Use OpenGL ES 2.0 instead of OpenGL 2.1.
-#cmakedefine OZ_GLES
+#include "OpenAL.hh"
+
+namespace oz
+{
+
+#ifndef NDEBUG
+
+void alCheckError( const char* function, const char* file, int line )
+{
+  const char* message;
+  ALenum result = alGetError();
+
+  switch( result ) {
+    case AL_NO_ERROR: {
+      return;
+    }
+    case AL_INVALID_NAME: {
+      message = "AL_INVALID_NAME";
+      break;
+    }
+    case AL_INVALID_ENUM: {
+      message = "AL_INVALID_ENUM";
+      break;
+    }
+    case AL_INVALID_VALUE: {
+      message = "AL_INVALID_VALUE";
+      break;
+    }
+    case AL_INVALID_OPERATION: {
+      message = "AL_INVALID_OPERATION";
+      break;
+    }
+    case AL_OUT_OF_MEMORY: {
+      message = "AL_OUT_OF_MEMORY";
+      break;
+    }
+    default: {
+      message = String::str( "UNKNOWN(%d)", int( result ) );
+      break;
+    }
+  }
+
+  System::error( function, file, line, 1, "AL error '%s'", message );
+}
+
+#endif
+
+}

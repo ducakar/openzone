@@ -34,10 +34,10 @@
 #if defined( __ANDROID__ )
 # include <jni.h>
 # include <pthread.h>
-// #elif defined( __native_client__ )
-// # include <ppapi/cpp/instance_handle.h>
-// # include <ppapi/cpp/dev/message_loop_dev.h>
-// # include <pthread.h>
+#elif defined( __native_client__ )
+# include <ppapi/cpp/instance_handle.h>
+# include <ppapi/cpp/message_loop.h>
+# include <pthread.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 #else
@@ -157,6 +157,7 @@ void* Thread::Descriptor::threadMain( void* data )
   pthread_setspecific( nameKey, descriptor->name );
 
 #if defined( __ANDROID__ )
+
   if( System::javaVM == nullptr ) {
     OZ_ERROR( "System::javaVM must be set before starting new threads" );
   }
@@ -165,23 +166,24 @@ void* Thread::Descriptor::threadMain( void* data )
   JavaVM* javaVM = static_cast<JavaVM*>( System::javaVM );
 
   javaVM->AttachCurrentThread( &jniEnv, nullptr );
+
 #elif defined( __native_client__ )
-  // TODO: Implement MessageLoop?
-//   if( System::instance == nullptr ) {
-//     OZ_ERROR( "System::instance must be set before starting new threads" );
-//   }
-//
-//   pp::MessageLoop_Dev messageLoop( *System::instance );
-//   messageLoop.AttachToCurrentThread();
+
+  if( System::instance == nullptr ) {
+    OZ_ERROR( "System::instance must be set before starting new threads" );
+  }
+
+  pp::MessageLoop messageLoop( pp::InstanceHandle( System::instance ) );
+  messageLoop.AttachToCurrentThread();
+
 #endif
 
   System::threadInit();
+  descriptor->main( descriptor->data );
 
 #ifdef __ANDROID__
   javaVM->DetachCurrentThread();
 #endif
-
-  descriptor->main( descriptor->data );
 
   if( descriptor->type == DETACHED ) {
     free( descriptor );

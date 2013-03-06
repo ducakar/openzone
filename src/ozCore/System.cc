@@ -96,32 +96,25 @@ int raise( int )
 namespace oz
 {
 
-static const float BELL_TIME           = 0.30f;
-static const float BELL_FREQUENCY      = 1000.0f;
-static const int   BELL_PREFERRED_RATE = 44100;
+static const float    BELL_TIME           = 0.30f;
+static const float    BELL_FREQUENCY      = 1000.0f;
+static const int      BELL_PREFERRED_RATE = 44100;
+#ifndef _WIN32
+static const timespec TIMESPEC_10MS       = { 0, 10 * 1000000 };
+#endif
 
-#if defined( EMSCRIPTEN )
-
-static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
-
-#elif defined( __ANDROID__ )
-
-static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
-
-#elif defined( __native_client__ )
+#if defined( __native_client__ )
 
 struct SampleInfo
 {
-  pp::Audio* audio;
-  int        nFrameSamples;
-  int        nSamples;
-  int        rate;
-  int        end;
-  int        offset;
+  int nFrameSamples;
+  int nSamples;
+  int rate;
+  int end;
+  int offset;
 };
 
-static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
-static pp::Core*      core          = nullptr;
+static pp::Core* core = nullptr;
 
 #elif defined( _WIN32 )
 
@@ -146,11 +139,6 @@ struct Wave
   int   subchunk2Size;
   short samples[BELL_WAVE_SAMPLES * 2];
 };
-
-#else
-
-static const timespec       TIMESPEC_10MS  = { 0, 10 * 1000000 };
-static const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
 
 #endif
 
@@ -282,65 +270,47 @@ static void* bellMain( void* )
 
 #elif defined( __native_client__ )
 
-static void stopBellCallback( void* info_, int )
-{
-  SampleInfo* info = static_cast<SampleInfo*>( info_ );
-
-  info->audio->StopPlayback();
-  info->audio->~Audio();
-  free( info->audio );
-  free( info );
-
-  __sync_lock_release( &bellLock );
-}
-
 static void bellPlayCallback( void* buffer, uint, void* info_ )
 {
   SampleInfo* info    = static_cast<SampleInfo*>( info_ );
   short*      samples = static_cast<short*>( buffer );
 
   if( info->offset >= info->end ) {
-    core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
+    __sync_lock_release( &bellLock );
   }
-
-  genBellSamples( samples, info->nSamples, info->rate, info->offset,
-                  info->offset + info->nFrameSamples );
-  info->offset += info->nFrameSamples;
+  else {
+    genBellSamples( samples, info->nSamples, info->rate, info->offset,
+                    info->offset + info->nFrameSamples );
+    info->offset += info->nFrameSamples;
+  }
 }
 
-static void bellInitCallback( void*, int )
+static void* bellMain( void* )
 {
-  SampleInfo* info = static_cast<SampleInfo*>( malloc( sizeof( SampleInfo ) ) );
-  if( info == nullptr ) {
-    return;
-  }
-
   PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( System::instance );
   uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
 
+  SampleInfo info;
+  info.nFrameSamples = int( nFrameSamples );
+  info.nSamples      = Math::lround( BELL_TIME * float( rate ) );
+  info.rate          = rate;
+  info.end           = info.nSamples + 2*int( nFrameSamples );
+  info.offset        = 0;
+
   pp::AudioConfig config( System::instance, rate, nFrameSamples );
+  pp::Audio       audio( System::instance, config, bellPlayCallback, &info );
 
-  info->nFrameSamples = int( nFrameSamples );
-  info->nSamples      = Math::lround( BELL_TIME * float( rate ) );
-  info->rate          = rate;
-  info->end           = info->nSamples + 2*int( nFrameSamples );
-  info->offset        = 0;
-
-  void* audioPtr = malloc( sizeof( pp::Audio ) );
-  if( audioPtr == nullptr ) {
-    free( info );
-    return;
-  }
-
-  info->audio = new( audioPtr ) pp::Audio( System::instance, config, bellPlayCallback, info );
-  if( info->audio->StartPlayback() == PP_FALSE ) {
-    info->audio->~Audio();
-    free( info->audio );
-    free( info );
-
+  if( audio.StartPlayback() == PP_FALSE ) {
     __sync_lock_release( &bellLock );
-    return;
+    return nullptr;
   }
+
+  while( bellLock != 0 ) {
+    nanosleep( &TIMESPEC_10MS, nullptr );
+  }
+
+  audio.StopPlayback();
+  return nullptr;
 }
 
 #elif defined( _WIN32 )
@@ -390,6 +360,7 @@ static DWORD WINAPI bellMain( void* )
 
 static void* bellMain( void* )
 {
+  const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
 #ifndef _GNU_SOURCE
   const char* program_invocation_short_name = "liboz";
 #endif
@@ -592,14 +563,7 @@ bool System::isInstrumented()
 
 void System::bell()
 {
-#if defined( __native_client__ )
-
-  if( instance != nullptr && !__sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
-    core = pp::Module::Get()->core();
-    core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, nullptr ) );
-  }
-
-#elif defined( _WIN32 )
+#ifdef _WIN32
 
   if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );

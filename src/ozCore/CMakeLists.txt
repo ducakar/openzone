@@ -39,6 +39,7 @@ add_library( ozCore
   SBitset.hh
   Semaphore.hh
   Set.hh
+  SharedLib.hh
   simd.hh
   SList.hh
   SpinLock.hh
@@ -63,6 +64,7 @@ add_library( ozCore
   Point.cc
   Quat.cc
   Semaphore.cc
+  SharedLib.cc
   StackTrace.cc
   String.cc
   System.cc
@@ -76,16 +78,16 @@ add_library( ozCore
 if( EMSCRIPTEN )
 #   target_link_libraries( ozCore )
 elseif( ANDROID )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lOpenSLES -llog ${PLATFORM_STL_LIBRARY} )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -ldl -lOpenSLES -llog ${PLATFORM_STL_LIBRARY} )
 elseif( NACL )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lwinmm )
 elseif( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lrt -lpthread )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -ldl -lpulse-simple -lrt -lpthread )
 else()
   # TODO: Remove -lrt once glibc 2.17 becomes minimum.
-  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -lpulse-simple -lasound -lrt -lpthread )
+  target_link_libraries( ozCore ${PHYSFS_LIBRARY} -ldl -lpulse-simple -lasound -lrt -lpthread )
 endif()
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )

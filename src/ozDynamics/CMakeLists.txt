@@ -6,6 +6,7 @@ add_library( ozDynamics
 #BEGIN SOURCES
   common.hh
   ozDynamics.hh
+  pch.hh
   common.cc
   collision/AABB.hh
   collision/Body.hh

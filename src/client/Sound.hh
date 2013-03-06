@@ -59,9 +59,9 @@ class Sound
     ALCdevice*     soundDevice;
     ALCcontext*    soundContext;
 
-    void*          libeSpeak;
-    void*          libMad;
-    void*          libFaad;
+    SharedLib      libeSpeak;
+    SharedLib      libMad;
+    SharedLib      libFaad;
 
     Bitset         playedStructs;
     float          volume;

@@ -20,11 +20,34 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#pragma once
-
-/*
- * Configuration variables
+/**
+ * @file ozEngine/Texture.cc
  */
 
-// Use OpenGL ES 2.0 instead of OpenGL 2.1.
-#cmakedefine OZ_GLES
+#include "Texture.hh"
+
+#include "OpenGL.hh"
+
+namespace oz
+{
+
+Texture::Texture() :
+  id( 0 ), flags( 0 )
+{}
+
+Texture::~Texture()
+{
+  destroy();
+}
+
+void Texture::destroy()
+{
+  if( flags & UPLOADED_BIT ) {
+    glDeleteTextures( 1, &id );
+
+    id     = 0;
+    flags &= ~UPLOADED_BIT;
+  }
+}
+
+}

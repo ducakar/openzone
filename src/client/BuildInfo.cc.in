@@ -47,6 +47,6 @@ const char* const   BuildInfo::CONFIG      = "OZ_TRACK_ALLOCS: @OZ_TRACK_ALLOCS@
                                              "OZ_DYNAMICS: @OZ_DYNAMICS@, "
                                              "OZ_LUAJIT: @OZ_LUAJIT@, "
                                              "OZ_SDL2: @OZ_SDL2@, "
-                                             "OZ_GL_ES: @OZ_GL_ES@";
+                                             "OZ_GLES: @OZ_GLES@";
 
 }

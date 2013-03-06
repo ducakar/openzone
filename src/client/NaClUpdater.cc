@@ -107,7 +107,7 @@ bool NaClUpdater::checkUpdates()
   downloader.begin( REMOTE_MANIFEST );
 
   do {
-    Time::sleep( 100 );
+    Time::sleep( 20 );
     Log::printRaw( "." );
   }
   while( !downloader.isComplete() );

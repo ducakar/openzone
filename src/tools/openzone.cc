@@ -56,7 +56,7 @@ static void crashHandler()
 #if defined( __ANDROID__ )
 void Java_com_github_ducakar_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
 #elif defined( __native_client__ )
-void MainInstance::mainThreadMain( void* instance )
+void MainInstance::mainThreadMain( void* )
 #elif defined( _WIN32 )
 int SDL_main( int argc, char** argv )
 #else
@@ -67,8 +67,6 @@ int main( int argc, char** argv )
   JavaVM* javaVM;
   env->GetJavaVM( &javaVM );
   System::javaVM = javaVM;
-#elif defined( __native_client__ )
-  System::instance = static_cast<pp::Instance*>( instance );
 #endif
 
   System::init( System::DEFAULT_MASK, &crashHandler );
@@ -125,6 +123,7 @@ int main( int argc, char** argv )
 MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
 {
+  System::instance = static_cast<pp::Instance*>( this );
   NaClPlatform::init();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |

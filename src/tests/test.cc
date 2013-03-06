@@ -186,6 +186,7 @@ struct Foo : Resource
 int main()
 {
   System::init();
+  System::bell();
 
   Ref<Foo> foo = new Foo();
   Ref<Foo> bar = foo;

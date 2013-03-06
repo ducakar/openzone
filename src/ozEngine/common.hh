@@ -27,3 +27,4 @@
 #pragma once
 
 #include "pch.hh"
+#include <ozEngine/config.hh>

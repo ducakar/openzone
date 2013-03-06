@@ -33,4 +33,4 @@
 #cmakedefine OZ_NET
 
 // Use OpenGL ES 2.0.
-#cmakedefine OZ_GL_ES
+#cmakedefine OZ_GLES

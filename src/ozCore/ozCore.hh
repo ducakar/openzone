@@ -110,7 +110,8 @@
 /*
  * Utilities.
  */
-#include "Time.hh"
 #include "Log.hh"
+#include "Time.hh"
+#include "SharedLib.hh"
 #include "JSON.hh"
 #include "Gettext.hh"

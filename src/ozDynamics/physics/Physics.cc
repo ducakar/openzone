@@ -69,8 +69,8 @@ void Physics::add( DBody* body )
 
   body->odeId = dBodyCreate( world );
 
-  dBodySetPosition( body->odeId, body->pos.x, body->pos.y, body->pos.z );
-  dBodySetQuaternion( body->odeId, body->rot );
+  dBodySetPosition( body->odeId, body->p.x, body->p.y, body->p.z );
+  dBodySetQuaternion( body->odeId, body->o );
   dBodySetMass( body->odeId, &mass );
 }
 
@@ -94,7 +94,7 @@ void Physics::update( float time )
 
       Collider::Result result;
       if( collider->overlaps( body0, body1, &result ) ) {
-        Point p = Math::mix( body0->pos, body1->pos, 0.5f );
+        Point p = Math::mix( body0->p, body1->p, 0.5f );
 
 //         Log() << result.depth << ", " << result.axis << "\n";
 
@@ -124,9 +124,9 @@ void Physics::update( float time )
     DBody* body = static_cast<DBody*>( *i );
 
     if( body->odeId != nullptr ) {
-      body->pos    = Point( dBodyGetPosition( body->odeId ) );
-      body->rot    = Quat( dBodyGetQuaternion( body->odeId ) );
-      body->rotMat = Mat33::rotation( body->rot );
+      body->p = Point( dBodyGetPosition( body->odeId ) );
+      body->o = Quat( dBodyGetQuaternion( body->odeId ) );
+      body->update();
     }
   }
 }

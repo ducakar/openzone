@@ -5,8 +5,15 @@ add_library( ozEngine
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   common.hh
+  OpenAL.hh
+  OpenGL.hh
   ozEngine.hh
+  pch.hh
+  Texture.hh
   common.cc
+  OpenAL.cc
+  OpenGL.cc
+  Texture.cc
 #END SOURCES
 )
 target_link_libraries( ozEngine ozDynamics )

@@ -65,81 +65,8 @@ namespace oz
 
 #ifdef __native_client__
 
-#define SEMAPHORE_POST() \
-  pthread_mutex_lock( &_fd->semaphore.mutex ); \
-  ++_fd->semaphore.counter; \
-  pthread_mutex_unlock( &_fd->semaphore.mutex ); \
-  pthread_cond_signal( &_fd->semaphore.cond )
-
-#define SEMAPHORE_WAIT() \
-  pthread_mutex_lock( &descriptor->semaphore.mutex ); \
-  while( descriptor->semaphore.counter == 0 ) { \
-    pthread_cond_wait( &descriptor->semaphore.cond, &descriptor->semaphore.mutex ); \
-  } \
-  --descriptor->semaphore.counter; \
-  pthread_mutex_unlock( &descriptor->semaphore.mutex )
-
-#define DEFINE_CALLBACK( name, code ) \
-  struct _Callback##name \
-  { \
-    static void _main##name( void* _data, int _result ) \
-    { \
-      Descriptor* _fd = static_cast<Descriptor*>( _data ); \
-      static_cast<void>( _fd ); \
-      static_cast<void>( _result ); \
-      code \
-    } \
-  }
-
-#define CALLBACK_OBJECT( name, arg ) \
-  pp::CompletionCallback( _Callback##name::_main##name, arg )
-
-#define MAIN_CALL( name ) \
-  ppCore->CallOnMainThread( 0, CALLBACK_OBJECT( name, descriptor ) )
-
-struct File::Descriptor
-{
-  struct Semaphore
-  {
-    pthread_mutex_t mutex;
-    pthread_cond_t  cond;
-    volatile int    counter;
-  };
-
-  // Some Descriptor members are also useful for static functions.
-  static Descriptor staticDesc;
-
-  Semaphore         semaphore;
-  File*             file;
-  pp::FileRef*      fref;
-  pp::FileIO*       fio;
-  PP_FileInfo       info;
-  char*             buffer;
-  int               size;
-  int               offset;
-
-  OZ_HIDDEN
-  explicit Descriptor( File* file_ ) :
-    file( file_ )
-  {
-    pthread_mutex_init( &semaphore.mutex, nullptr );
-    pthread_cond_init( &semaphore.cond, nullptr );
-    semaphore.counter = 0;
-  }
-
-  OZ_HIDDEN
-  ~Descriptor()
-  {
-    pthread_cond_destroy( &semaphore.cond );
-    pthread_mutex_destroy( &semaphore.mutex );
-  }
-};
-
-OZ_HIDDEN
-File::Descriptor File::Descriptor::staticDesc( nullptr );
-
-static pp::Core*       ppCore       = nullptr;
-static pp::FileSystem* ppFileSystem = nullptr;
+static pp::Core*      ppCore = nullptr;
+static pp::FileSystem ppFileSystem;
 
 #endif // __native_client__
 
@@ -152,10 +79,6 @@ File::File( FileSystem fileSystem, const char* path ) :
   filePath( path ), fileType( MISSING ), fileFS( fileSystem ), fileSize( -1 ), fileTime( 0 ),
   data( nullptr )
 {
-#ifdef __native_client__
-  descriptor = new Descriptor( this );
-#endif
-
   // Avoid stat'ing obviously non-existent files.
   if( filePath.isEmpty() ) {
     return;
@@ -167,29 +90,17 @@ File::File( FileSystem fileSystem, const char* path ) :
 File::~File()
 {
   unmap();
-
-#ifdef __native_client__
-  delete descriptor;
-#endif
 }
 
 File::File( const File& file ) :
   filePath( file.filePath ), fileType( file.fileType ), fileFS( file.fileFS ),
   fileSize( file.fileSize ), fileTime( file.fileTime ), data( nullptr )
-{
-#ifdef __native_client__
-  descriptor = new Descriptor( this );
-#endif
-}
+{}
 
 File::File( File&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
   fileFS( file.fileFS ), fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
 {
-#ifdef __native_client__
-  descriptor = new Descriptor( this );
-#endif
-
   file.filePath = "";
   file.fileType = MISSING;
   file.fileFS   = NATIVE;
@@ -311,51 +222,28 @@ bool File::stat()
       return true;
     }
 
-    DEFINE_CALLBACK( queryResult, {
-      if( _result == PP_OK ) {
-        if( _fd->info.type == PP_FILETYPE_REGULAR ) {
-          _fd->file->fileType = REGULAR;
-          _fd->file->fileSize = int( _fd->info.size );
-          _fd->file->fileTime = long64( max( _fd->info.creation_time,
-                                            _fd->info.last_modified_time ) );
-        }
-        else if( _fd->info.type == PP_FILETYPE_DIRECTORY ) {
-          _fd->file->fileType = DIRECTORY;
-          _fd->file->fileSize = -1;
-          _fd->file->fileTime = long64( max( _fd->info.creation_time,
-                                            _fd->info.last_modified_time ) );
-        }
-      }
+    pp::FileRef file( ppFileSystem, filePath );
+    pp::FileIO  fio( System::instance );
 
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( query, {
-      if( _result == PP_OK ) {
-        int ret = _fd->fio->Query( &_fd->info, CALLBACK_OBJECT( queryResult, _fd ) );
-        if( ret == PP_OK_COMPLETIONPENDING ) {
-          return;
-        }
-      }
+    if( fio.Open( file, 0, pp::BlockUntilComplete() ) != PP_OK ) {
+      return false;
+    }
 
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( open, {
-      _fd->fio = new pp::FileIO( System::instance );
+    PP_FileInfo fileInfo;
+    if( fio.Query( &fileInfo, pp::BlockUntilComplete() ) != PP_OK ) {
+      return false;
+    }
 
-      int ret = _fd->fio->Open( pp::FileRef( *ppFileSystem, _fd->file->filePath ), 0,
-                                CALLBACK_OBJECT( query, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-
-    MAIN_CALL( open );
-    SEMAPHORE_WAIT();
+    if( fileInfo.type == PP_FILETYPE_REGULAR ) {
+      fileType = REGULAR;
+      fileSize = int( fileInfo.size );
+      fileTime = long64( max( fileInfo.creation_time, fileInfo.last_modified_time ) );
+    }
+    else if( fileInfo.type == PP_FILETYPE_DIRECTORY ) {
+      fileType = DIRECTORY;
+      fileSize = -1;
+      fileTime = long64( max( fileInfo.creation_time, fileInfo.last_modified_time ) );
+    }
 
 #elif defined( _WIN32 )
 
@@ -566,59 +454,30 @@ bool File::read( char* buffer, int* size ) const
 
 #if defined( __native_client__ )
 
-    descriptor->buffer = buffer;
-    descriptor->size   = min( *size, fileSize );
-    descriptor->offset = 0;
+    int readSize = min( *size, fileSize );
+    int offset   = 0;
 
-    DEFINE_CALLBACK( read, {
-      if( _result > 0 ) {
-        _fd->offset += _result;
+    pp::FileRef file( ppFileSystem, filePath );
+    pp::FileIO  fio( System::instance );
 
-        if( _fd->offset != _fd->size ) {
-          int ret = _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                                    CALLBACK_OBJECT( read, _fd ) );
-          if( ret == PP_OK_COMPLETIONPENDING ) {
-            return;
-          }
-        }
-      }
-
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( beginRead, {
-      if( _result == PP_OK ) {
-        int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( read, _fd ) );
-        if( ret == PP_OK_COMPLETIONPENDING ) {
-          return;
-        }
-      }
-
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( open, {
-      _fd->fio = new pp::FileIO( System::instance );
-
-      int ret = _fd->fio->Open( pp::FileRef( *ppFileSystem, _fd->file->filePath ),
-                                PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( beginRead, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-
-    MAIN_CALL( open );
-    SEMAPHORE_WAIT();
-
-    if( descriptor->offset != descriptor->size ) {
+    if( fio.Open( file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete() ) != PP_OK ) {
       *size = 0;
       return false;
     }
 
-    *size = descriptor->offset;
+    int result;
+    while( ( result = fio.Read( offset, &buffer[offset], readSize - offset,
+                                pp::BlockUntilComplete() ) ) > 0 )
+    {
+      offset += result;
+    }
+
+    if( result < 0 ) {
+      *size = 0;
+      return false;
+    }
+
+    *size = offset;
 
 #elif defined( _WIN32 )
 
@@ -721,55 +580,26 @@ bool File::write( const char* buffer, int size ) const
 
 #if defined( __native_client__ )
 
-    descriptor->buffer = const_cast<char*>( buffer );
-    descriptor->size   = size;
-    descriptor->offset = 0;
+    int offset = 0;
 
-    DEFINE_CALLBACK( write, {
-      if( _result > 0 ) {
-        _fd->offset += _result;
+    pp::FileRef file( ppFileSystem, filePath );
+    pp::FileIO  fio( System::instance );
 
-        if( _fd->offset != _fd->size ) {
-          int ret = _fd->fio->Write( _fd->offset, &_fd->buffer[_fd->offset],
-                                     _fd->size - _fd->offset, CALLBACK_OBJECT( write, _fd ) );
-          if( ret == PP_OK_COMPLETIONPENDING ) {
-            return;
-          }
-        }
-      }
+    if( fio.Open( file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
+                  pp::BlockUntilComplete() ) != PP_OK )
+    {
+      return false;
+    }
 
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( beginWrite, {
-      if( _result == PP_OK ) {
-        int ret = _fd->fio->Write( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( write, _fd ) );
-        if( ret == PP_OK_COMPLETIONPENDING ) {
-          return;
-        }
-      }
+    int result;
+    while( offset != size &&
+           ( result = fio.Write( offset, &buffer[offset], size - offset,
+                                 pp::BlockUntilComplete() ) ) > 0 )
+    {
+      offset += result;
+    }
 
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( open, {
-      _fd->fio = new pp::FileIO( System::instance );
-
-      int ret = _fd->fio->Open( pp::FileRef( *ppFileSystem, _fd->file->filePath ),
-                                PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
-                                CALLBACK_OBJECT( beginWrite, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-
-      delete _fd->fio;
-      SEMAPHORE_POST();
-    } );
-
-    MAIN_CALL( open );
-    SEMAPHORE_WAIT();
-
-    if( descriptor->offset != size ) {
+    if( offset != size ) {
       return false;
     }
 
@@ -1024,37 +854,8 @@ bool File::mkdir( const char* path, FileSystem fileSystem )
   else {
 #if defined( __native_client__ )
 
-    Descriptor localDescriptor( nullptr );
-    Descriptor* descriptor = &localDescriptor;
-
-    // Abuse buffer for file path and size for result.
-    descriptor->buffer = const_cast<char*>( path );
-    descriptor->size = false;
-
-    DEFINE_CALLBACK( mkdirResult, {
-      if( _result == PP_OK ) {
-        _fd->size = true;
-      }
-
-      delete _fd->fref;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( mkdir, {
-      _fd->fref = new pp::FileRef( *ppFileSystem, _fd->buffer );
-
-      int ret = _fd->fref->MakeDirectory( CALLBACK_OBJECT( mkdirResult, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-
-      delete _fd->fref;
-      SEMAPHORE_POST();
-    } );
-
-    MAIN_CALL( mkdir );
-    SEMAPHORE_WAIT();
-
-    return descriptor->size != 0;
+    pp::FileRef file( ppFileSystem, path );
+    return file.MakeDirectory( pp::BlockUntilComplete() ) == PP_OK;
 
 #elif defined( _WIN32 )
 
@@ -1076,37 +877,8 @@ bool File::rm( const char* path, FileSystem fileSystem )
   else {
 #if defined( __native_client__ )
 
-    Descriptor localDescriptor( nullptr );
-    Descriptor* descriptor = &localDescriptor;
-
-    // Abuse buffer for file path and size for result.
-    descriptor->buffer = const_cast<char*>( path );
-    descriptor->size = false;
-
-    DEFINE_CALLBACK( rmResult, {
-      if( _result == PP_OK ) {
-        _fd->size = true;
-      }
-
-      delete _fd->fref;
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( rm, {
-      _fd->fref = new pp::FileRef( *ppFileSystem, _fd->buffer );
-
-      int ret = _fd->fref->Delete( CALLBACK_OBJECT( rmResult, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-
-      delete _fd->fref;
-      SEMAPHORE_POST();
-    } );
-
-    MAIN_CALL( rm );
-    SEMAPHORE_WAIT();
-
-    return descriptor->size != 0;
+    pp::FileRef file( ppFileSystem, path );
+    return file.Delete( pp::BlockUntilComplete() ) == PP_OK;
 
 #elif defined( _WIN32 )
 
@@ -1187,38 +959,11 @@ void File::init( FileSystem fileSystem, NaClFileSystem naclFileSystem, int naclS
 
     destroy();
 
-    Descriptor* descriptor = &Descriptor::staticDesc;
+    PP_FileSystemType type = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                                            PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
-    // We abuse staticDesc.size and staticDesc.offset variables to pass file system type and size to
-    // callback.
-    descriptor->size   = naclSize;
-    descriptor->offset = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                        PP_FILESYSTEMTYPE_LOCALTEMPORARY;
-
-    DEFINE_CALLBACK( initResult, {
-      if( _result != PP_OK ) {
-        delete ppFileSystem;
-        ppFileSystem = nullptr;
-      }
-      SEMAPHORE_POST();
-    } );
-    DEFINE_CALLBACK( init, {
-      ppFileSystem = new pp::FileSystem( System::instance, PP_FileSystemType( _fd->offset ) );
-
-      int ret = ppFileSystem->Open( _fd->size, CALLBACK_OBJECT( initResult, _fd ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
-        return;
-      }
-
-      delete ppFileSystem;
-      ppFileSystem = nullptr;
-      SEMAPHORE_POST();
-    } );
-
-    MAIN_CALL( init );
-    SEMAPHORE_WAIT();
-
-    if( ppFileSystem == nullptr ) {
+    ppFileSystem = pp::FileSystem( System::instance, type );
+    if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
       OZ_ERROR( "Local file system open failed" );
     }
 
@@ -1230,25 +975,6 @@ void File::destroy( FileSystem fileSystem )
 {
   if( fileSystem == VIRTUAL ) {
     PHYSFS_deinit();
-  }
-  else {
-#ifdef __native_client__
-
-    if( ppFileSystem != nullptr ) {
-      Descriptor* descriptor = &Descriptor::staticDesc;
-
-      DEFINE_CALLBACK( free, {
-        delete ppFileSystem;
-        ppFileSystem = nullptr;
-
-        SEMAPHORE_POST();
-      } );
-
-      MAIN_CALL( free );
-      SEMAPHORE_WAIT();
-    }
-
-#endif
   }
 }
 

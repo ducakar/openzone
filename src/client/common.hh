@@ -41,7 +41,7 @@
   decltype( ::func )* func = nullptr
 
 #define OZ_DL_LOAD( l, func ) \
-  *( void** )( &func ) = SDL_LoadFunction( l, #func ); \
+  func = reinterpret_cast< decltype( func ) >( l.get( #func ) ); \
   if( func == nullptr ) { \
     OZ_ERROR( "Failed to link function: " #func ); \
   }
@@ -118,8 +118,8 @@ struct TexCoord
   }
 };
 
-extern Collider collider;
-extern JSON     config;
+extern matrix::Collider collider;
+extern JSON             config;
 
 }
 }

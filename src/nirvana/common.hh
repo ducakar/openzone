@@ -33,7 +33,7 @@ namespace nirvana
 using namespace common;
 using namespace matrix;
 
-extern Collider collider;
+extern matrix::Collider collider;
 
 }
 }

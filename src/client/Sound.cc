@@ -104,7 +104,7 @@ void Sound::musicOpen( const char* path )
     musicStreamType = OGG;
   }
   else if( file.hasExtension( "mp3" ) ) {
-    if( libMad != nullptr ) {
+    if( libMad.isOpened() ) {
       musicStreamType = MP3;
     }
     else {
@@ -112,7 +112,7 @@ void Sound::musicOpen( const char* path )
     }
   }
   else if( file.hasExtension( "aac" ) ) {
-    if( libFaad != nullptr ) {
+    if( libFaad.isOpened() ) {
       musicStreamType = AAC;
     }
     else {
@@ -868,15 +868,9 @@ void Sound::destroy()
   }
 
 #ifndef __native_client__
-  if( libFaad != nullptr ) {
-    SDL_UnloadObject( libFaad );
-  }
-  if( libMad != nullptr ) {
-    SDL_UnloadObject( libMad );
-  }
-  if( libeSpeak != nullptr ) {
-    SDL_UnloadObject( libeSpeak );
-  }
+  libFaad.close();
+  libMad.close();
+  libeSpeak.close();
 #endif
 
   Log::printEnd( " OK" );
@@ -901,9 +895,7 @@ void Sound::initLibs()
 
   Log::print( "Linking eSpeak library '%s' ...", libeSpeakName );
 
-  libeSpeak = SDL_LoadObject( libeSpeakName );
-
-  if( libeSpeak == nullptr ) {
+  if( !libeSpeak.open( libeSpeakName ) ) {
     Log::printEnd( " Not found, speech synthesis not supported" );
   }
   else {
@@ -919,9 +911,7 @@ void Sound::initLibs()
 
   Log::print( "Linking MAD library '%s' ...", libMadName );
 
-  libMad = SDL_LoadObject( libMadName );
-
-  if( libMad == nullptr ) {
+  if( !libMad.open( libMadName ) ) {
     liber.mapMP3s = false;
 
     Log::printEnd( " Not found, MP3 not supported" );
@@ -943,9 +933,7 @@ void Sound::initLibs()
 
   Log::print( "Linking FAAD library '%s' ...", libFaadName );
 
-  libFaad = SDL_LoadObject( libFaadName );
-
-  if( libFaad == nullptr ) {
+  if( !libFaad.open( libFaadName ) ) {
     liber.mapAACs = false;
 
     Log::printEnd( " Not found, AAC not supported" );

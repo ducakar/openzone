@@ -20,11 +20,26 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#pragma once
-
-/*
- * Configuration variables
+/**
+ * @file ozEngine/OpenAL.hh
  */
 
-// Use OpenGL ES 2.0 instead of OpenGL 2.1.
-#cmakedefine OZ_GLES
+#pragma once
+
+#include "client/common.hh"
+
+#include <AL/al.h>
+
+namespace oz
+{
+
+#ifdef NDEBUG
+# define OZ_AL_CHECK_ERROR() void( 0 )
+#else
+# define OZ_AL_CHECK_ERROR() oz::client::alCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+
+void alCheckError( const char* function, const char* file, int line );
+
+#endif
+
+}

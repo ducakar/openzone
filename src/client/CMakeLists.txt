@@ -174,7 +174,7 @@ else()
   target_link_libraries( client ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
 endif()
 
-if( OZ_GL_ES )
+if( OZ_GLES )
   target_link_libraries( client ${GLES2_LIBRARIES} )
 else()
   target_link_libraries( client ${OPENGL_gl_LIBRARY} )

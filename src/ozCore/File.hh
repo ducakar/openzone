@@ -73,17 +73,12 @@ class File
 
   private:
 
-    struct Descriptor;
-
-    String      filePath;   ///< %File path.
-    Type        fileType;   ///< %File type.
-    FileSystem  fileFS;     ///< %File system type.
-    int         fileSize;   ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
-    long64      fileTime;   ///< Modification or creation time, what is newer.
-    char*       data;       ///< Mapped memory.
-#ifdef __native_client__
-    Descriptor* descriptor; ///< Structure for control and data exchange with NaCl callbacks.
-#endif
+    String     filePath; ///< %File path.
+    Type       fileType; ///< %File type.
+    FileSystem fileFS;   ///< %File system type.
+    int        fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
+    long64     fileTime; ///< Modification or creation time, what is newer.
+    char*      data;     ///< Mapped memory.
 
   public:
 

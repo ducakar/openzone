@@ -17,9 +17,16 @@ for component in ${components[@]}; do
   echo "Generating src/$component/CMakeLists.txt"
 
   cd src/$component
-  # The sed statement removes uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions and makes the
-  # file list newline-separated and indented.
-  sources=`echo *.{hh,cc} */*.{hh,cc} | sed -r 's| (\*/)?\*\...||g; s| |\\\\n  |g'`
+
+  sources=`echo *.{hh,cc} */*.{hh,cc}`
+  # Remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
+  sources=`echo $sources | sed -r 's|(\*/)?\*\...||g'`
+  # Remove PCH trigger library.
+  sources=`echo $sources | sed -r 's|pch\.cc||g'`
+  # Remove duplicated spaces that may have been introduced by the previous removals.
+  sources=`echo $sources | sed -r 's| +| |g'`
+  # Make file list newline-separated and indented.
+  sources=`echo $sources | sed -r 's| |\\\\n  |g'`
 
   # Insert source file list between "#BEGIN SOURCES" and "#END SOURCES" tags in CMakeLists.txt.
   sed -r '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n  '"$sources"'\n#END SOURCES' \

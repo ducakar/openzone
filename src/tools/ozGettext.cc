@@ -66,8 +66,6 @@ static void readBSP( const File& file )
     titles.include( file.baseName(), file.path() );
   }
   else {
-    soft_assert( !file.baseName().equals( title ) );
-
     titles.include( title, file.path() );
   }
 
@@ -103,8 +101,6 @@ static void readClass( const File& file )
     titles.include( file.baseName(), file.path() );
   }
   else {
-    soft_assert( !file.baseName().equals( title ) );
-
     titles.include( title, file.path() );
   }
 

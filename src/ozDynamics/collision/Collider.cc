@@ -387,11 +387,11 @@ bool Collider::overlaps( const Body* body0, const Body* body1, Result* result )
 
   if( type0 <= type1 ) {
     OverlapFunc* func = dispatchMatrix[type0][type1];
-    return func( body0->rotMat, shape0, body1->rotMat, shape1, body1->pos - body0->pos, result );
+    return func( body0->oMat, shape0, body1->oMat, shape1, body1->p - body0->p, result );
   }
   else {
     OverlapFunc* func = dispatchMatrix[type1][type0];
-    return func( body1->rotMat, shape1, body0->rotMat, shape0, body0->pos - body1->pos, result );
+    return func( body1->oMat, shape1, body0->oMat, shape0, body0->p - body1->p, result );
   }
 }
 

@@ -624,12 +624,12 @@ void Render::init()
   bool hasFloatTex = false;
   bool hasS3TC     = false;
 
-  const char* vendor       = String::cstr( glGetString( GL_VENDOR ) );
-  const char* renderer     = String::cstr( glGetString( GL_RENDERER ) );
-  const char* version      = String::cstr( glGetString( GL_VERSION ) );
-  const char* glslVersion  = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
-  const char* sExtensions  = String::cstr( glGetString( GL_EXTENSIONS ) );
-  DArray<String> extensions = String::trim( sExtensions ).split( ' ' );
+  const char*    vendor       = String::cstr( glGetString( GL_VENDOR ) );
+  const char*    renderer     = String::cstr( glGetString( GL_RENDERER ) );
+  const char*    version      = String::cstr( glGetString( GL_VERSION ) );
+  const char*    glslVersion  = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+  const char*    sExtensions  = String::cstr( glGetString( GL_EXTENSIONS ) );
+  DArray<String> extensions   = String::trim( sExtensions ).split( ' ' );
 
   // glGetString( GL_EXTENSIONS ) generates an error when using OpenGL 3.2+ Core Profile.
   glGetError();
@@ -818,12 +818,11 @@ void Render::drawDyn()
       colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
     }
 
-    body->rot    = ~body->rot;
-    body->rotMat = Mat33::rotation( body->rot );
+    body->update();
 
     shape.colour( colour );
-    shape.wireBox( body->getBounds().toAABB() );
-    shape.object( body->pos, body->rotMat, body->shape() );
+    shape.wireBox( body->bb.toAABB() );
+    shape.object( body->p, body->oMat, body->shape() );
   }
 }
 
@@ -841,10 +840,10 @@ void Render::loadDyn()
 //   Capsule* c = new Capsule( 1, 1 );
 
   body = new DBody();
-  body->pos = Point( 140, 0, 80 );
-  body->rot = Quat::ID;
-  body->rotMat = Mat33::rotation( body->rot );
+  body->p = Point( 140, 0, 80 );
+  body->o = Quat::ID;
   body->setShape( c );
+  body->update();
   space.bodies.add( body );
 
   physics.add( body );
@@ -852,10 +851,10 @@ void Render::loadDyn()
   Box* b = new Box( Vec3( 1, 1, 2 ) );
 
   body = new DBody();
-  body->pos = Point( 143, 0, 80 );
-  body->rot = Quat::ID;
-  body->rotMat = Mat33::rotation( body->rot );
+  body->p = Point( 143, 0, 80 );
+  body->o = Quat::ID;
   body->setShape( b );
+  body->update();
   space.bodies.add( body );
 
   physics.add( body );
@@ -863,10 +862,10 @@ void Render::loadDyn()
   Box* p = new Box( Vec3( 10, 10, 1 ) );
 
   body = new DBody();
-  body->pos = Point( 142, 0, 75 );
-  body->rot = Quat::ID;
-  body->rotMat = Mat33::rotation( body->rot );
+  body->p = Point( 142, 0, 75 );
+  body->o = Quat::ID;
   body->setShape( p );
+  body->update();
   space.bodies.add( body );
 }
 

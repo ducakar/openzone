@@ -2,12 +2,6 @@ if( NOT OZ_TESTS )
   return()
 endif()
 
-# pkg_check_modules( COLLADA collada-dom )
-# include_directories( SYSTEM /usr/include/collada-dom2.4 )
-# include_directories( SYSTEM /usr/include/collada-dom2.4/1.4 )
-# add_executable( collada collada.cc )
-# target_link_libraries( collada ozCore ${COLLADA_LIBRARIES} boost_system )
-
 add_executable( foreach foreach.cc )
 target_link_libraries( foreach ozCore )
 
