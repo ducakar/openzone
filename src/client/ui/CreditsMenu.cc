@@ -24,11 +24,11 @@
 #include <stable.hh>
 #include <client/ui/CreditsMenu.hh>
 
+#include <ozEngine/OpenGL.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/Input.hh>
-#include <client/OpenGL.hh>
 #include <client/NaClPlatform.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>

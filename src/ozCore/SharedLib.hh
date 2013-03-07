@@ -30,18 +30,44 @@
 
 #include "common.hh"
 
+/**
+ * @def OZ_DL_DECLARE
+ * Declare pointer to function for the given function definition.
+ */
+#define OZ_DL_DECLARE( func ) \
+  decltype( ::func )* func
+
+/**
+ * @def OZ_DL_DEFINE
+ * Define pointer to function (initially `nullptr`) for the given function definition.
+ */
+#define OZ_DL_DEFINE( func ) \
+  decltype( ::func )* func = nullptr
+
+/**
+ * @def OZ_DL_LOAD
+ * Get address of the requested function in a shared library.
+ *
+ * On error, `System::error()` is invoked.
+ */
+#define OZ_DL_LOAD( l, func ) \
+  func = reinterpret_cast< decltype( func ) >( l.get( #func ) ); \
+  if( func == nullptr ) { \
+    OZ_ERROR( "Failed to link function: " #func ); \
+  }
+
 namespace oz
 {
 
 /**
- * Class for loading shared libraries.
+ * Dynamic linker interface for linking shared libraries.
  */
 class SharedLib
 {
   public:
 
     /**
-     * True iff platform supports shared libraries.
+     * True iff platform supports dynamic linking.
      */
     static const bool SUPPORTED;
 

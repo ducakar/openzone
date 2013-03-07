@@ -34,24 +34,6 @@
 // should be explicitly included when needed.
 #define _SDL_main_h
 
-#define OZ_DL_DECLARE( func ) \
-  decltype( ::func )* func
-
-#define OZ_DL_DEFINE( func ) \
-  decltype( ::func )* func = nullptr
-
-#define OZ_DL_LOAD( l, func ) \
-  func = reinterpret_cast< decltype( func ) >( l.get( #func ) ); \
-  if( func == nullptr ) { \
-    OZ_ERROR( "Failed to link function: " #func ); \
-  }
-
-#define OZ_DL_GLLOAD( func ) \
-  *( void** )( &func ) = SDL_GL_GetProcAddress( #func ); \
-  if( func == nullptr ) { \
-    OZ_ERROR( "Failed to link OpenGL function: " #func ); \
-  }
-
 namespace oz
 {
 namespace client

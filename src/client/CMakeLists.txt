@@ -37,8 +37,6 @@ add_library( client STATIC
   NaClPlatform.hh
   NaClUpdater.hh
   Network.hh
-  OpenAL.hh
-  OpenGL.hh
   openzone.hh
   Profile.hh
   Proxy.hh
@@ -89,8 +87,6 @@ add_library( client STATIC
   NaClPlatform.cc
   NaClUpdater.cc
   Network.cc
-  OpenAL.cc
-  OpenGL.cc
   Profile.cc
   Proxy.cc
   QuestList.cc

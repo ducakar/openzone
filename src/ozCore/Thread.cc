@@ -35,7 +35,6 @@
 # include <jni.h>
 # include <pthread.h>
 #elif defined( __native_client__ )
-# include <ppapi/cpp/instance_handle.h>
 # include <ppapi/cpp/message_loop.h>
 # include <pthread.h>
 #elif defined( _WIN32 )
@@ -173,7 +172,7 @@ void* Thread::Descriptor::threadMain( void* data )
     OZ_ERROR( "System::instance must be set before starting new threads" );
   }
 
-  pp::MessageLoop messageLoop( pp::InstanceHandle( System::instance ) );
+  pp::MessageLoop messageLoop( System::instance );
   messageLoop.AttachToCurrentThread();
 
 #endif

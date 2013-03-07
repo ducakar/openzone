@@ -30,10 +30,10 @@ namespace oz
 {
 
 Collider::OverlapFunc* const Collider::dispatchMatrix[Shape::COMPOUND + 1][Shape::COMPOUND + 1] = {
-  { boxBox,  boxCapsule,     boxMesh,     boxCompound      },
-  { nullptr, capsuleCapsule, capsuleMesh, capsuleCompound  },
-  { nullptr, nullptr,        meshMesh,    meshCompound     },
-  { nullptr, nullptr,        nullptr,     compoundCompound }
+  { boxBox,  boxCapsule,     boxPolytope,      boxCompound      },
+  { nullptr, capsuleCapsule, capsulePolytope,  capsuleCompound  },
+  { nullptr, nullptr,        polytopePolytope, polytopeCompound },
+  { nullptr, nullptr,        nullptr,          compoundCompound }
 };
 
 bool Collider::boxBox( const Mat33& rot0, const Shape* box0_,
@@ -174,18 +174,18 @@ bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
   return false;
 }
 
-bool Collider::boxMesh( const Mat33& rot0, const Shape* box_,
-                        const Mat33& rot1, const Shape* mesh_,
-                        const Vec3& relPos, Result* result )
+bool Collider::boxPolytope( const Mat33& rot0, const Shape* box_,
+                            const Mat33& rot1, const Shape* polytope_,
+                            const Vec3& relPos, Result* result )
 {
-  const Box*  box  = static_cast<const Box*>( box_ );
-  const Mesh* mesh = static_cast<const Mesh*>( mesh_ );
+  const Box*      box      = static_cast<const Box*>( box_ );
+  const Polytope* polytope = static_cast<const Polytope*>( polytope_ );
 
   // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
-  static_cast<void>( mesh );
+  static_cast<void>( polytope );
   static_cast<void>( relPos );
   static_cast<void>( result );
 
@@ -246,18 +246,18 @@ bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
   return false;
 }
 
-bool Collider::capsuleMesh( const Mat33& rot0, const Shape* capsule_,
-                            const Mat33& rot1, const Shape* mesh_,
-                            const Vec3& relPos, Result* result )
+bool Collider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
+                                const Mat33& rot1, const Shape* polytope_,
+                                const Vec3& relPos, Result* result )
 {
-  const Capsule* capsule = static_cast<const Capsule*>( capsule_ );
-  const Mesh*    mesh    = static_cast<const Mesh*>( mesh_ );
+  const Capsule*  capsule  = static_cast<const Capsule*>( capsule_ );
+  const Polytope* polytope = static_cast<const Polytope*>( polytope_ );
 
   // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( capsule );
-  static_cast<void>( mesh );
+  static_cast<void>( polytope );
   static_cast<void>( relPos );
   static_cast<void>( result );
 
@@ -290,29 +290,29 @@ bool Collider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
   return overlaps;
 }
 
-bool Collider::meshMesh( const Mat33& rot0, const Shape* mesh0_,
-                         const Mat33& rot1, const Shape* mesh1_,
-                         const Vec3& relPos, Result* result )
+bool Collider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
+                                 const Mat33& rot1, const Shape* polytope1_,
+                                 const Vec3& relPos, Result* result )
 {
-  const Mesh* mesh0 = static_cast<const Mesh*>( mesh0_ );
-  const Mesh* mesh1 = static_cast<const Mesh*>( mesh1_ );
+  const Polytope* polytope0 = static_cast<const Polytope*>( polytope0_ );
+  const Polytope* polytope1 = static_cast<const Polytope*>( polytope1_ );
 
   // TODO
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
-  static_cast<void>( mesh0 );
-  static_cast<void>( mesh1 );
+  static_cast<void>( polytope0 );
+  static_cast<void>( polytope1 );
   static_cast<void>( relPos );
   static_cast<void>( result );
 
   return false;
 }
 
-bool Collider::meshCompound( const Mat33& rot0, const Shape* mesh_,
-                             const Mat33& rot1, const Shape* compound_,
-                             const Vec3& relPos, Result* result )
+bool Collider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
+                                 const Mat33& rot1, const Shape* compound_,
+                                 const Vec3& relPos, Result* result )
 {
-  const Mesh*     mesh     = static_cast<const Mesh*>( mesh_ );
+  const Polytope* polytope = static_cast<const Polytope*>( polytope_ );
   const Compound* compound = static_cast<const Compound*>( compound_ );
 
   bool overlaps = false;
@@ -321,13 +321,13 @@ bool Collider::meshCompound( const Mat33& rot0, const Shape* mesh_,
     Shape::Type type = i->shape->type;
     Mat33       rot2 = rot1 * i->rot;
 
-    if( Shape::MESH <= type ) {
-      OverlapFunc* func = dispatchMatrix[Shape::MESH][type];
-      overlaps |= func( rot0, mesh, rot2, i->shape, relPos + rot2 * i->off, result );
+    if( Shape::POLYTOPE <= type ) {
+      OverlapFunc* func = dispatchMatrix[Shape::POLYTOPE][type];
+      overlaps |= func( rot0, polytope, rot2, i->shape, relPos + rot2 * i->off, result );
     }
     else {
-      OverlapFunc* func = dispatchMatrix[type][Shape::MESH];
-      overlaps |= func( rot2, i->shape, rot0, mesh, -relPos - rot2 * i->off, result );
+      OverlapFunc* func = dispatchMatrix[type][Shape::POLYTOPE];
+      overlaps |= func( rot2, i->shape, rot0, polytope, -relPos - rot2 * i->off, result );
     }
   }
 

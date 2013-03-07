@@ -50,7 +50,7 @@ void Space::deallocate()
   Compound::pool.free();
   Box::pool.free();
   Capsule::pool.free();
-  Mesh::pool.free();
+  Polytope::pool.free();
   Body::pool.free();
 }
 

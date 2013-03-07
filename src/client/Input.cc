@@ -146,12 +146,10 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDLK_w;
   keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDLK_s;
   keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDLK_SPACE;
-  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDLK_LCTRL;
-  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDLK_c;
+  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDLK_c;
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDLK_LSHIFT;
 
-  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDLK_LCTRL;
-  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDLK_c;
+  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDLK_c;
   keyMap[KEY_JUMP][0]               = MOD_MASK    | SDLK_SPACE;
   keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDLK_x;
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDLK_x;
@@ -223,12 +221,10 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDL_SCANCODE_W;
   keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDL_SCANCODE_S;
   keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDL_SCANCODE_SPACE;
-  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDL_SCANCODE_LCTRL;
-  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDL_SCANCODE_C;
+  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDL_SCANCODE_C;
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
 
-  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_LCTRL;
-  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_C;
+  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_C;
   keyMap[KEY_JUMP][0]               = MOD_MASK    | SDL_SCANCODE_SPACE;
   keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDL_SCANCODE_X;
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDL_SCANCODE_X;

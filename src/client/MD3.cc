@@ -24,8 +24,8 @@
 #include <stable.hh>
 #include <client/MD3.hh>
 
+#include <ozEngine/OpenGL.hh>
 #include <client/Context.hh>
-#include <client/OpenGL.hh>
 
 namespace oz
 {

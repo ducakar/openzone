@@ -57,7 +57,7 @@ void Physics::add( DBody* body )
       dMassSetCapsule( &mass, 1.0f, 3, capsule->radius, 2.0f * capsule->ext );
       break;
     }
-    case Shape::MESH: {
+    case Shape::POLYTOPE: {
       dMassSetZero( &mass );
       break;
     }

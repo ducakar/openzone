@@ -42,7 +42,7 @@
 #include "collision/Shape.hh"
 #include "collision/Box.hh"
 #include "collision/Capsule.hh"
-#include "collision/Mesh.hh"
+#include "collision/Polytope.hh"
 #include "collision/Compound.hh"
 
 /*

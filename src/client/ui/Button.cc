@@ -24,9 +24,9 @@
 #include <stable.hh>
 #include <client/ui/Button.hh>
 
+#include <ozEngine/OpenGL.hh>
 #include <client/Input.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
 
 #include <client/ui/Style.hh>
 

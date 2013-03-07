@@ -25,9 +25,9 @@
 #include <client/Terra.hh>
 
 #include <common/Timer.hh>
+#include <ozEngine/OpenGL.hh>
 #include <client/Frustum.hh>
 #include <client/Context.hh>
-#include <client/OpenGL.hh>
 
 namespace oz
 {

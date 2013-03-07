@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozDynamics/collision/Mesh.hh
+ * @file ozDynamics/collision/Polytope.hh
  *
- * Mesh class.
+ * Polytope class.
  */
 
 #pragma once
@@ -34,22 +34,22 @@ namespace oz
 {
 
 /**
- * Triangle mesh.
+ * Generic polytope.
  */
-class Mesh : public Shape
+class Polytope : public Shape
 {
   public:
 
-    static Pool<Mesh> pool; ///< Memory pool.
+    static Pool<Polytope> pool; ///< Memory pool.
 
   public:
 
     OZ_ALWAYS_INLINE
-    explicit Mesh() :
-      Shape( MESH )
+    explicit Polytope() :
+      Shape( POLYTOPE )
     {}
 
-    ~Mesh() override;
+    ~Polytope() override;
 
     Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
 

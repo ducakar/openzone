@@ -126,7 +126,7 @@ extern OZ_DL_DECLARE( glCheckFramebufferStatusEXT  );
 #ifdef NDEBUG
 # define OZ_GL_CHECK_ERROR() void( 0 )
 #else
-# define OZ_GL_CHECK_ERROR() oz::client::glCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+# define OZ_GL_CHECK_ERROR() oz::glCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
 
 void glCheckError( const char* function, const char* file, int line );
 

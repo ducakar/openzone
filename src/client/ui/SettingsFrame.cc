@@ -24,9 +24,10 @@
 #include <stable.hh>
 #include <client/ui/SettingsFrame.hh>
 
+#include <ozEngine/OpenGL.hh>
+#include <client/NaClPlatform.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
-#include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/MainMenu.hh>
 #include <client/ui/UI.hh>

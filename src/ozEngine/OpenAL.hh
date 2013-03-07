@@ -36,7 +36,7 @@ namespace oz
 #ifdef NDEBUG
 # define OZ_AL_CHECK_ERROR() void( 0 )
 #else
-# define OZ_AL_CHECK_ERROR() oz::client::alCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+# define OZ_AL_CHECK_ERROR() oz::alCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
 
 void alCheckError( const char* function, const char* file, int line );
 

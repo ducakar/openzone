@@ -25,11 +25,11 @@
 #include <client/ui/UI.hh>
 
 #include <common/Timer.hh>
+#include <ozEngine/OpenGL.hh>
 #include <client/Camera.hh>
 #include <client/Input.hh>
 #include <client/Context.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/LoadingArea.hh>
 #include <client/ui/StrategicArea.hh>

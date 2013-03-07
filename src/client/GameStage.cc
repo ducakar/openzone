@@ -208,6 +208,7 @@ bool GameStage::update()
   beginMicros = Time::uclock();
 
   if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
+    stateFile = quicksaveFile;
     write();
   }
   if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {

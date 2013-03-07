@@ -355,10 +355,15 @@ bool File::map()
   else {
 #if defined( __native_client__ )
 
-    int size = fileSize;
+    int   size   = fileSize;
+    char* buffer = new char[fileSize];
 
-    data = new char[fileSize];
-    return read( data, &size );
+    if( !read( buffer, &size ) ) {
+      return false;
+    }
+
+    data = buffer;
+    return true;
 
 #elif defined( _WIN32 )
 
@@ -492,7 +497,7 @@ bool File::read( char* buffer, int* size ) const
     BOOL result = ReadFile( file, buffer, DWORD( size ), &read, nullptr );
     CloseHandle( file );
 
-    if( result == 0 ) {
+    if( !result ) {
       *size = 0;
       return false;
     }
@@ -509,6 +514,11 @@ bool File::read( char* buffer, int* size ) const
 
     int result = int( ::read( fd, buffer, size_t( *size ) ) );
     close( fd );
+
+    if( result < 0 ) {
+      *size = 0;
+      return false;
+    }
 
     *size = result;
 
@@ -615,7 +625,7 @@ bool File::write( const char* buffer, int size ) const
     BOOL result = WriteFile( file, buffer, DWORD( size ), &written, nullptr );
     CloseHandle( file );
 
-    if( result == 0 || int( written ) != size ) {
+    if( !result || int( written ) != size ) {
       return false;
     }
 

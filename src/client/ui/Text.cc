@@ -24,9 +24,9 @@
 #include <stable.hh>
 #include <client/ui/Text.hh>
 
+#include <ozEngine/OpenGL.hh>
 #include <client/Shader.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Area.hh>
 

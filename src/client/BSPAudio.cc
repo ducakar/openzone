@@ -24,8 +24,8 @@
 #include <stable.hh>
 #include <client/BSPAudio.hh>
 
+#include <ozEngine/OpenAL.hh>
 #include <client/Context.hh>
-#include <client/OpenAL.hh>
 
 namespace oz
 {

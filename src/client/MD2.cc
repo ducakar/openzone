@@ -24,9 +24,10 @@
 #include <stable.hh>
 #include <client/MD2.hh>
 
+#include <ozEngine/OpenGL.hh>
+
 #include <common/Timer.hh>
 #include <client/Context.hh>
-#include <client/OpenGL.hh>
 
 namespace oz
 {

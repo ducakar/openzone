@@ -24,9 +24,10 @@
 #include <stable.hh>
 #include <client/MD2WeaponImago.hh>
 
+#include <ozEngine/OpenGL.hh>
+
 #include <client/Camera.hh>
 #include <client/Context.hh>
-#include <client/OpenGL.hh>
 
 namespace oz
 {

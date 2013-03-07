@@ -28,6 +28,14 @@
 
 #include <SDL.h>
 
+#ifdef _WIN32
+# define OZ_DL_GLLOAD( func ) \
+  *( void** )( &func ) = SDL_GL_GetProcAddress( #func ); \
+  if( func == nullptr ) { \
+    OZ_ERROR( "Failed to link OpenGL function: " #func ); \
+  }
+#endif
+
 namespace oz
 {
 

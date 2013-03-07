@@ -15,7 +15,7 @@ add_library( ozDynamics
   collision/Capsule.hh
   collision/Collider.hh
   collision/Compound.hh
-  collision/Mesh.hh
+  collision/Polytope.hh
   collision/Shape.hh
   collision/Space.hh
   physics/DBody.hh
@@ -25,7 +25,7 @@ add_library( ozDynamics
   collision/Capsule.cc
   collision/Collider.cc
   collision/Compound.cc
-  collision/Mesh.cc
+  collision/Polytope.cc
   collision/Shape.cc
   collision/Space.cc
   physics/DBody.cc

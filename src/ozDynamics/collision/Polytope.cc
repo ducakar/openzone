@@ -21,20 +21,20 @@
  */
 
 /**
- * @file ozDynamics/collision/Mesh.cc
+ * @file ozDynamics/collision/Polytope.cc
  */
 
-#include "Mesh.hh"
+#include "Polytope.hh"
 
 namespace oz
 {
 
-Pool<Mesh> Mesh::pool;
+Pool<Polytope> Polytope::pool;
 
-Mesh::~Mesh()
+Polytope::~Polytope()
 {}
 
-Bounds Mesh::getBounds( const Point&, const Mat33& ) const
+Bounds Polytope::getBounds( const Point&, const Mat33& ) const
 {
   return Bounds();
 }

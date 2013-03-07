@@ -70,9 +70,9 @@ class Collider
                             const Mat33& rot1, const Shape* capsule,
                             const Vec3& relPos, Result* result );
 
-    static bool boxMesh( const Mat33& rot0, const Shape* box,
-                         const Mat33& rot1, const Shape* mesh,
-                         const Vec3& relPos, Result* result );
+    static bool boxPolytope( const Mat33& rot0, const Shape* box,
+                             const Mat33& rot1, const Shape* polytope,
+                             const Vec3& relPos, Result* result );
 
     static bool boxCompound( const Mat33& rot0, const Shape* box,
                              const Mat33& rot1, const Shape* compound,
@@ -82,21 +82,21 @@ class Collider
                                 const Mat33& rot1, const Shape* capsule1,
                                 const Vec3& relPos, Result* result );
 
-    static bool capsuleMesh( const Mat33& rot0, const Shape* capsule,
-                             const Mat33& rot1, const Shape* mesh,
-                             const Vec3& relPos, Result* result );
+    static bool capsulePolytope( const Mat33& rot0, const Shape* capsule,
+                                 const Mat33& rot1, const Shape* polytope,
+                                 const Vec3& relPos, Result* result );
 
     static bool capsuleCompound( const Mat33& rot0, const Shape* capsule,
                                  const Mat33& rot1, const Shape* compound,
                                  const Vec3& relPos, Result* result );
 
-    static bool meshMesh( const Mat33& rot0, const Shape* mesh0,
-                          const Mat33& rot1, const Shape* mesh1,
-                          const Vec3& relPos, Result* result );
+    static bool polytopePolytope( const Mat33& rot0, const Shape* polytope0,
+                                  const Mat33& rot1, const Shape* polytope1,
+                                  const Vec3& relPos, Result* result );
 
-    static bool meshCompound( const Mat33& rot0, const Shape* mesh,
-                              const Mat33& rot1, const Shape* compound,
-                              const Vec3& relPos, Result* result );
+    static bool polytopeCompound( const Mat33& rot0, const Shape* polytope,
+                                  const Mat33& rot1, const Shape* compound,
+                                  const Vec3& relPos, Result* result );
 
     static bool compoundCompound( const Mat33& rot0, const Shape* compound0,
                                   const Mat33& rot1, const Shape* compound1,

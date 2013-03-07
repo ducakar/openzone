@@ -30,7 +30,7 @@
 
 #include "Box.hh"
 #include "Capsule.hh"
-#include "Mesh.hh"
+#include "Polytope.hh"
 #include "Compound.hh"
 #include "Body.hh"
 

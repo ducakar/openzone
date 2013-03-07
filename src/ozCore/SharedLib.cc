@@ -62,15 +62,19 @@ SharedLib::Method* SharedLib::get( const char* symbol ) const
   if( handle == nullptr ) {
     return nullptr;
   }
-  else {
+
 #ifdef _WIN32
-    return reinterpret_cast<Method*>( GetProcAddress( static_cast<HMODULE>( handle ), symbol ) );
+
+  FARPROC proc = GetProcAddress( static_cast<HMODULE>( handle ), symbol );
+  return reinterpret_cast<Method*>( proc );
+
 #else
-    Method* method;
-    *( void** ) &method = dlsym( handle, symbol );
-    return method;
+
+  Method* method;
+  *( void** ) &method = dlsym( handle, symbol );
+  return method;
+
 #endif
-  }
 }
 
 bool SharedLib::open( const char* name )

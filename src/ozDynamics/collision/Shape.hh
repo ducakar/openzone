@@ -47,7 +47,7 @@ class Shape
     {
       BOX,
       CAPSULE,
-      MESH,
+      POLYTOPE,
       COMPOUND
     };
 

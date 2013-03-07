@@ -24,11 +24,11 @@
 #include <stable.hh>
 #include <client/Caelum.hh>
 
+#include <ozEngine/OpenGL.hh>
 #include <client/Context.hh>
 #include <client/Camera.hh>
 #include <client/Terra.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
 
 namespace oz
 {
