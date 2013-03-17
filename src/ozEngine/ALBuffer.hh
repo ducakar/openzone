@@ -21,19 +21,68 @@
  */
 
 /**
- * @file ozEngine/ozEngine.hh
- *
- * Main public header for OpenZone Engine Library.
+ * @file ozEngine/ALBuffer.hh
  */
 
 #pragma once
 
 #include "common.hh"
 
-#include "OpenGL.hh"
-#include "OpenAL.hh"
+namespace oz
+{
 
-#include "GLTexture.hh"
+/**
+ * OpenAL buffer wrapper.
+ */
+class ALBuffer
+{
+  private:
 
-#include "ALBuffer.hh"
-#include "ALSource.hh"
+    uint bufferId; ///< OpenAL buffer id, 0 if not loaded.
+
+  public:
+
+    /**
+     * Create an empty instance (no OpenAL buffer is created).
+     */
+    explicit ALBuffer();
+
+    /**
+     * Create a new buffer from the given file. Same as the default constructor plus `load()`.
+     */
+    explicit ALBuffer( const File& file );
+
+    /**
+     * Destructor, destroys OpenAL buffer if created.
+     */
+    ~ALBuffer();
+
+    /**
+     * Get OpenAL buffer id.
+     */
+    uint id() const
+    {
+      return bufferId;
+    }
+
+    /**
+     * True iff loaded.
+     */
+    bool isLoaded() const
+    {
+      return bufferId != 0;
+    }
+
+    /**
+     * Create a new OpenAL buffer from the given WAVE or Ogg Vorbis file.
+     */
+    bool load( const File& file );
+
+    /**
+     * Destroy OpenAL buffer if created.
+     */
+    void destroy();
+
+};
+
+}

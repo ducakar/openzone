@@ -149,7 +149,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
     ostream.writeString( messages[i + 1] );
   }
 
-  if( !outFile.write( ostream.begin(), ostream.length() ) ) {
+  if( !outFile.write( ostream.begin(), ostream.tell() ) ) {
     OZ_ERROR( "Catalogue write failed" );
   }
 

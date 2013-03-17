@@ -24,9 +24,9 @@
 #include <stable.hh>
 #include <client/Mesh.hh>
 
-#include <ozEngine/OpenGL.hh>
 #include <client/Context.hh>
 #include <client/Terra.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

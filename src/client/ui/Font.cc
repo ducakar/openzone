@@ -24,9 +24,8 @@
 #include <stable.hh>
 #include <client/ui/Font.hh>
 
-#include <ozEngine/OpenGL.hh>
-#include <client/NaClPlatform.hh>
 #include <client/Shader.hh>
+#include <client/OpenGL.hh>
 
 #include <SDL_ttf.h>
 

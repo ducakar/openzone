@@ -393,7 +393,7 @@ void OBJ::save()
 
   Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
-  if( !destFile.write( os.begin(), os.length() ) ) {
+  if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 

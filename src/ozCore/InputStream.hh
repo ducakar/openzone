@@ -61,17 +61,6 @@ class InputStream
     {}
 
     /**
-     * Number of bytes from the beginning of the stream.
-     */
-    OZ_ALWAYS_INLINE
-    int length() const
-    {
-      hard_assert( streamPos <= streamEnd );
-
-      return int( streamPos - streamBegin );
-    }
-
-    /**
      * Length of the stream.
      */
     OZ_ALWAYS_INLINE
@@ -131,6 +120,17 @@ class InputStream
       hard_assert( streamBegin <= streamPos && streamPos <= streamEnd );
 
       return streamPos;
+    }
+
+    /**
+     * Offset of the current position from the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    int tell() const
+    {
+      hard_assert( streamPos <= streamEnd );
+
+      return int( streamPos - streamBegin );
     }
 
     /**

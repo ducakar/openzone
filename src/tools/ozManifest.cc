@@ -103,7 +103,7 @@ int main( int argc, char** argv )
 
   Log::print( "Writing manifest to '%s' ...", manifest.path().cstr() );
 
-  if( !manifest.write( os.begin(), os.length() ) ) {
+  if( !manifest.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write manifest file" );
   }
 

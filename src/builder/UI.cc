@@ -97,7 +97,7 @@ void UI::buildCursors()
     os.writeInt( hotspotY );
     tex.write( &os );
 
-    destFile.write( os.begin(), os.length() );
+    destFile.write( os.begin(), os.tell() );
   }
 
   context.useS3TC = useS3TC;
@@ -133,7 +133,7 @@ void UI::buildIcons()
     Log::println( "Compiling '%s'", destPath.cstr() );
     tex.write( &os );
 
-    if( !File( File::NATIVE, destPath ).write( os.begin(), os.length() ) ) {
+    if( !File( File::NATIVE, destPath ).write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Texture writing failed" );
     }
   }

@@ -24,9 +24,9 @@
 #include <stable.hh>
 #include <client/Audio.hh>
 
-#include <ozEngine/OpenAL.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
+#include <client/OpenAL.hh>
 
 namespace oz
 {

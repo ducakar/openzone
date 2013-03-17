@@ -362,6 +362,7 @@ bool File::map()
       return false;
     }
 
+    // If `data` was used directly instead of `buffer` variable, `read()` wouldn't work as expected.
     data = buffer;
     return true;
 

@@ -21,19 +21,57 @@
  */
 
 /**
- * @file ozEngine/ozEngine.hh
- *
- * Main public header for OpenZone Engine Library.
+ * @file ozEngine/ALSource.cc
  */
 
-#pragma once
+#include "ALSource.hh"
 
-#include "common.hh"
-
-#include "OpenGL.hh"
 #include "OpenAL.hh"
 
-#include "GLTexture.hh"
+namespace oz
+{
 
-#include "ALBuffer.hh"
-#include "ALSource.hh"
+ALSource::ALSource() :
+  sourceId( 0 )
+{}
+
+ALSource::ALSource( const ALBuffer& buffer ) :
+  sourceId( 0 )
+{
+  create( buffer );
+}
+
+ALSource::~ALSource()
+{
+  destroy();
+}
+
+bool ALSource::create( const ALBuffer& buffer )
+{
+  destroy();
+
+  if( !buffer.isLoaded() ) {
+    return false;
+  }
+
+  alGenSources( 1, &sourceId );
+  alSourcei( sourceId, AL_BUFFER, int( buffer.id() ) );
+
+  // This is not necessary by specification but seems it's always the case in openalsoft.
+  hard_assert( sourceId != 0 );
+
+  OZ_AL_CHECK_ERROR();
+  return true;
+}
+
+void ALSource::destroy()
+{
+  if( sourceId != 0 ) {
+    alDeleteSources( 1, &sourceId );
+    sourceId = 0;
+
+    OZ_AL_CHECK_ERROR();
+  }
+}
+
+}

@@ -24,9 +24,9 @@
 #include <stable.hh>
 #include <client/ui/Area.hh>
 
-#include <ozEngine/OpenGL.hh>
 #include <client/Camera.hh>
 #include <client/Shape.hh>
+#include <client/OpenGL.hh>
 
 #include <SDL_ttf.h>
 

@@ -25,7 +25,7 @@
 
 #include <builder/common.hh>
 
-#include <ozEngine/OpenGL.hh>
+#include <client/OpenGL.hh>
 
 struct FIBITMAP;
 

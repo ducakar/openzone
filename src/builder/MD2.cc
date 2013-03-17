@@ -392,7 +392,7 @@ void MD2::build( const char* path )
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( os.begin(), os.length() ) ) {
+    if( !destFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 
@@ -403,7 +403,7 @@ void MD2::build( const char* path )
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( os.begin(), os.length() ) ) {
+    if( !destFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 

@@ -154,7 +154,7 @@ void MD3::buildMesh( const char* name, int frame )
   is.forward( header.offSurfaces );
 
   for( int i = 0; i < header.nSurfaces; ++i ) {
-    int surfaceStart = is.length();
+    int surfaceStart = is.tell();
 
     MD3Surface surface;
 
@@ -366,7 +366,7 @@ void MD3::save()
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( os.begin(), os.length() ) ) {
+    if( !destFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 
@@ -377,7 +377,7 @@ void MD3::save()
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( os.begin(), os.length() ) ) {
+    if( !destFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 

@@ -24,12 +24,12 @@
 #include <stable.hh>
 #include <client/ui/MissionMenu.hh>
 
-#include <ozEngine/OpenGL.hh>
 #include <client/Camera.hh>
 #include <client/Shape.hh>
 #include <client/Context.hh>
 #include <client/GameStage.hh>
 #include <client/Input.hh>
+#include <client/OpenGL.hh>
 #include <client/NaClPlatform.hh>
 #include <client/ui/Style.hh>
 

@@ -24,9 +24,6 @@
 #include <stable.hh>
 #include <client/Render.hh>
 
-#include <ozEngine/OpenGL.hh>
-
-#include <client/NaClPlatform.hh>
 #include <client/Shape.hh>
 #include <client/Frustum.hh>
 #include <client/Caelum.hh>
@@ -38,6 +35,8 @@
 #include <client/SMMVehicleImago.hh>
 #include <client/ExplosionImago.hh>
 #include <client/MD2WeaponImago.hh>
+
+#include <client/OpenGL.hh>
 
 namespace oz
 {

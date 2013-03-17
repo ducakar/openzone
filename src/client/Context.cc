@@ -24,10 +24,6 @@
 #include <stable.hh>
 #include <client/Context.hh>
 
-#include <ozEngine/OpenGL.hh>
-#include <ozEngine/OpenAL.hh>
-
-#include <client/NaClPlatform.hh>
 #include <client/SMMImago.hh>
 #include <client/SMMVehicleImago.hh>
 #include <client/ExplosionImago.hh>
@@ -39,6 +35,8 @@
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>
 
+#include <client/OpenGL.hh>
+#include <client/OpenAL.hh>
 #include <client/eSpeak.hh>
 
 #include <SDL.h>

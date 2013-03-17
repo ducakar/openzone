@@ -168,7 +168,7 @@ void Terra::saveMatrix()
 
   os.writeInt( liquid );
 
-  if( !destFile.write( os.begin(), os.length() ) ) {
+  if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
@@ -262,7 +262,7 @@ void Terra::saveClient()
 
   os.writeVec4( liquidColour );
 
-  if( !destFile.write( os.begin(), os.length() ) ) {
+  if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
@@ -279,7 +279,7 @@ void Terra::saveClient()
   os.rewind();
   mapTex.write( &os );
 
-  if( !minimapFile.write( os.begin(), os.length() ) ) {
+  if( !minimapFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
   }
 

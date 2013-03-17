@@ -21,33 +21,68 @@
  */
 
 /**
- * @file ozEngine/Texture.cc
+ * @file ozEngine/ALSource.hh
  */
 
-#include "Texture.hh"
+#pragma once
 
-#include "OpenGL.hh"
+#include "ALBuffer.hh"
 
 namespace oz
 {
 
-Texture::Texture() :
-  id( 0 ), flags( 0 )
-{}
-
-Texture::~Texture()
+/**
+ * OpenAL source wrapper.
+ */
+class ALSource
 {
-  destroy();
-}
+  private:
 
-void Texture::destroy()
-{
-  if( flags & UPLOADED_BIT ) {
-    glDeleteTextures( 1, &id );
+    uint sourceId; ///< OpenAL source id, 0 if not created.
 
-    id     = 0;
-    flags &= ~UPLOADED_BIT;
-  }
-}
+  public:
+
+    /**
+     * Create an empty instance (no OpenAL source is created).
+     */
+    explicit ALSource();
+
+    /**
+     * Create a new source for the given buffer. Same as the default constructor plus `create()`.
+     */
+    explicit ALSource( const ALBuffer& buffer );
+
+    /**
+     * Destructor, destroys OpenAL source if created.
+     */
+    ~ALSource();
+
+    /**
+     * Get OpenAL source id.
+     */
+    uint id() const
+    {
+      return sourceId;
+    }
+
+    /**
+     * True iff created.
+     */
+    bool isCreated() const
+    {
+      return sourceId != 0;
+    }
+
+    /**
+     * Create a new OpenAL source for the given OpenAL buffer.
+     */
+    bool create( const ALBuffer& buffer );
+
+    /**
+     * Destroy OpenAL source if created.
+     */
+    void destroy();
+
+};
 
 }

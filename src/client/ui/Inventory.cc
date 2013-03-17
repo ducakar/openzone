@@ -25,11 +25,11 @@
 #include <client/ui/Inventory.hh>
 
 #include <common/Timer.hh>
-#include <ozEngine/OpenGL.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/Input.hh>
+#include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
 
 namespace oz

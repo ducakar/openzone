@@ -289,7 +289,7 @@ void Builder::buildBSPTextures()
         normalsTex.write( &os );
       }
 
-      if( !destFile.write( os.begin(), os.length() ) ) {
+      if( !destFile.write( os.begin(), os.tell() ) ) {
         OZ_ERROR( "Failed to write texture '%s'", destFile.path().cstr() );
       }
 
@@ -379,8 +379,8 @@ void Builder::buildClasses( const String& pkgName )
       headerStream.writeString( *audio );
     }
 
-    int headerSize = headerStream.length();
-    int bodySize   = os.length();
+    int headerSize = headerStream.tell();
+    int bodySize   = os.tell();
 
     os.forward( headerSize );
     mMove( os.begin() + headerSize, os.begin(), size_t( bodySize ) );
@@ -393,7 +393,7 @@ void Builder::buildClasses( const String& pkgName )
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
-    if( !outFile.write( os.begin(), os.length() ) ) {
+    if( !outFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write object class file '%s'", outFile.path().cstr() );
     }
 
@@ -431,13 +431,13 @@ void Builder::buildFragPools( const String& pkgName )
     Log::printEnd( " OK" );
   }
 
-  if( os.length() != 0 ) {
+  if( os.tell() != 0 ) {
     File::mkdir( "frag" );
     File outFile( File::NATIVE, "frag/" + pkgName + ".ozFragPools" );
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
-    if( !outFile.write( os.begin(), os.length() ) ) {
+    if( !outFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write fragment pool file '%s'", outFile.path().cstr() );
     }
 
@@ -664,7 +664,7 @@ void Builder::buildMissions()
     OutputStream os( 0 );
     imageTex.write( &os );
 
-    if( !outFile.write( os.begin(), os.length() ) ) {
+    if( !outFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
     }
 

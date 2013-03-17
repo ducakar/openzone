@@ -22,178 +22,40 @@
  */
 
 #include <ozCore/ozCore.hh>
+#include <ozEngine/ozEngine.hh>
+#include <AL/alc.h>
 
 using namespace oz;
 
-class Resource
-{
-  public:
-
-    mutable volatile int refCount;
-    mutable SpinLock     refLock;
-
-    OZ_ALWAYS_INLINE
-    explicit Resource() :
-      refCount( 0 )
-    {}
-
-    OZ_ALWAYS_INLINE
-    ~Resource()
-    {
-      hard_assert( refCount == 0 );
-    }
-
-    OZ_ALWAYS_INLINE
-    void refIncrement() const
-    {
-      refLock.lock();
-      ++refCount;
-      refLock.unlock();
-    }
-
-    OZ_ALWAYS_INLINE
-    void refDecrement() const
-    {
-      refLock.lock();
-      --refCount;
-      refLock.unlock();
-    }
-
-};
-
-template <class ResourceType>
-class Ref
-{
-  private:
-
-    ResourceType* resource;
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    Ref() :
-      resource( nullptr )
-    {}
-
-    Ref( ResourceType* r ) :
-      resource( r )
-    {
-      if( resource != nullptr ) {
-        resource->refIncrement();
-      }
-    }
-
-    ~Ref()
-    {
-      release();
-    }
-
-    Ref( const Ref& ref ) :
-      resource( ref.resource )
-    {
-      if( resource != nullptr ) {
-        resource->refIncrement();
-      }
-    }
-
-    Ref( Ref&& ref ) :
-      resource( ref.resource )
-    {
-      ref.resource = nullptr;
-    }
-
-    Ref& operator = ( const Ref& ref )
-    {
-      if( &ref == this ) {
-        return *this;
-      }
-
-      release();
-
-      resource = ref.resource;
-
-      if( resource != nullptr ) {
-        resource->refIncrement();
-      }
-
-      return *this;
-    }
-
-    Ref& operator = ( Ref&& ref )
-    {
-      if( &ref == this ) {
-        return *this;
-      }
-
-      release();
-
-      resource = ref.resource;
-      ref.resource = nullptr;
-
-      return *this;
-    }
-
-    OZ_ALWAYS_INLINE
-    operator const ResourceType* () const
-    {
-      return resource->isLoaded ? resource : nullptr;
-    }
-
-    OZ_ALWAYS_INLINE
-    operator ResourceType* ()
-    {
-      return resource->isLoaded ? resource : nullptr;
-    }
-
-    OZ_ALWAYS_INLINE
-    const ResourceType* operator -> () const
-    {
-      return resource->isLoaded ? resource : nullptr;
-    }
-
-    OZ_ALWAYS_INLINE
-    ResourceType* operator -> ()
-    {
-      return resource->isLoaded ? resource : nullptr;
-    }
-
-    void release()
-    {
-      if( resource != nullptr ) {
-        hard_assert( resource->refCount > 0 );
-
-        ResourceType* r = resource;
-
-        resource->refDecrement();
-        resource = nullptr;
-
-        if( r->refCount == 0 ) {
-          delete r;
-        }
-      }
-    }
-
-};
-
-struct Foo : Resource
-{
-  ~Foo()
-  {
-    Log() << "~Foo()\n";
-  }
-};
-
-int main()
+int main( int argc, char** argv )
 {
   System::init();
-  System::bell();
 
-  Ref<Foo> foo = new Foo();
-  Ref<Foo> bar = foo;
+  const char* sample = argc != 1 ? argv[1] : "/usr/share/sounds/pop.wav";
 
-  foo = new Foo();
-  Log() << "a\n";
-  foo = bar;
-  Log() << "a\n";
+  File file( File::NATIVE, sample );
+
+  ALCdevice*  device  = alcOpenDevice( "" );
+  ALCcontext* context = alcCreateContext( device, nullptr );
+
+  alcMakeContextCurrent( context );
+
+  ALBuffer buffer( file );
+  ALSource source( buffer );
+
+  alSourcePlay( source.id() );
+
+  int state;
+  do {
+    Time::sleep( 100 );
+    alGetSourcei( source.id(), AL_SOURCE_STATE, &state );
+  }
+  while( state != AL_STOPPED );
+
+  source.destroy();
+  buffer.destroy();
+
+  alcDestroyContext( context );
+  alcCloseDevice( device );
   return 0;
 }

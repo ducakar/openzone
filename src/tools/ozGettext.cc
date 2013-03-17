@@ -143,7 +143,7 @@ static void readLua( const File& file )
     switch( state ) {
       case NORMAL: {
         if( last[0] == '(' ) {
-          if( is.length() >= 10 && aEquals( is.pos() - 10, "ozGettext", 9 ) ) {
+          if( is.tell() >= 10 && aEquals( is.pos() - 10, "ozGettext", 9 ) ) {
             inGettext = true;
             gettextLineNum = lineNum;
           }
@@ -323,7 +323,7 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
 
   File outFile( File::NATIVE, filePath );
 
-  if( !outFile.write( os.begin(), os.length() ) ) {
+  if( !outFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
   }
 }

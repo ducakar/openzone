@@ -2084,7 +2084,7 @@ String JSON::toFormattedString( const char* lineEnd ) const
   formatter.writeValue( *this );
   ostream.writeChars( lineEnd, formatter.lineEndLength );
 
-  return String( ostream.begin(), ostream.length() );
+  return String( ostream.begin(), ostream.tell() );
 }
 
 bool JSON::load( const File& file )
@@ -2108,7 +2108,7 @@ bool JSON::save( const File& file, const char* lineEnd ) const
   formatter.writeValue( *this );
   ostream.writeChars( lineEnd, formatter.lineEndLength );
 
-  return file.write( ostream.begin(), ostream.length() );
+  return file.write( ostream.begin(), ostream.tell() );
 }
 
 }

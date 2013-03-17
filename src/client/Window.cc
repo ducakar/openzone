@@ -24,8 +24,8 @@
 #include <stable.hh>
 #include <client/Window.hh>
 
-#include <ozEngine/OpenGL.hh>
 #include <client/Input.hh>
+#include <client/OpenGL.hh>
 #include <client/NaClPlatform.hh>
 
 #ifdef __native_client__

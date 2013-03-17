@@ -24,10 +24,6 @@
 #include <stable.hh>
 #include <client/Loader.hh>
 
-#include <ozEngine/OpenGL.hh>
-#include <ozEngine/OpenAL.hh>
-
-#include <client/NaClPlatform.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/Terra.hh>
@@ -35,6 +31,9 @@
 #include <client/SMM.hh>
 #include <client/MD2.hh>
 #include <client/MD3.hh>
+
+#include <client/OpenGL.hh>
+#include <client/OpenAL.hh>
 
 #include <SDL.h>
 

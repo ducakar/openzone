@@ -1118,7 +1118,7 @@ void BSP::saveMatrix()
     os.writeInt( boundObject->heading );
   }
 
-  if( !destFile.write( os.begin(), os.length() ) ) {
+  if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
@@ -1190,7 +1190,7 @@ void BSP::saveClient()
 
   Log::print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 
-  if( !destFile.write( os.begin(), os.length() ) ) {
+  if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 

@@ -24,11 +24,10 @@
 #include <stable.hh>
 #include <client/FragPool.hh>
 
-#include <ozEngine/OpenGL.hh>
-
 #include <client/Shader.hh>
 #include <client/Context.hh>
 #include <client/SMM.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

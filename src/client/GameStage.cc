@@ -95,7 +95,7 @@ void GameStage::write() const
 
   Log::print( "Saving state to %s ...", stateFile.path().cstr() );
 
-  if( !stateFile.write( ostream.begin(), ostream.length() ) ) {
+  if( !stateFile.write( ostream.begin(), ostream.tell() ) ) {
     Log::printEnd( " Failed" );
   }
   else {

@@ -24,12 +24,12 @@
 #include <stable.hh>
 #include <client/ui/Mouse.hh>
 
-#include <ozEngine/OpenGL.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/Window.hh>
 #include <client/Input.hh>
+#include <client/OpenGL.hh>
 #include <client/ui/Area.hh>
 
 namespace oz

@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozEngine/Texture.hh
+ * @file ozEngine/GLTexture.hh
  */
 
 #pragma once
@@ -31,14 +31,12 @@
 namespace oz
 {
 
-class Texture
+/**
+ * OpenGL texture wrapper.
+ */
+class GLTexture
 {
   public:
-
-    /**
-     * Flag bit telling the texture is uploaded to the graphic card.
-     */
-    static const int UPLOADED_BIT  = 0x01;
 
     /**
      * Build option bit enabling highest quality scaling and compression.
@@ -50,10 +48,9 @@ class Texture
      */
     static const int COMPRESSION_BIT = 0x02;
 
-  public:
+  private:
 
-    uint id;    ///< OpenGL texture id.
-    int  flags; ///< Texture flags.
+    uint textureId; ///< OpenGL texture id.
 
   public:
 
@@ -80,22 +77,30 @@ class Texture
     static bool build( File::FileSystem fs, const char* path, int options, OutputStream* ostream );
 
     /**
-     * Create new empty instance.
+     * Create an empty instance.
      */
-    explicit Texture();
+    explicit GLTexture();
 
     /**
-     * Destructor, unloads texture from graphics card if loaded.
+     * Destructor, unloads texture from GPU if loaded.
      */
-    ~Texture();
+    ~GLTexture();
 
     /**
-     * Upload texture in OpenZone format to graphics card.
+     * OpenGL texture id.
      */
-    bool upload( InputStream* istream );
+    uint id() const
+    {
+      return textureId;
+    }
 
     /**
-     * Unload texture from graphics card if uploaded.
+     * Load texture in OpenZone format to GPU.
+     */
+    bool load( InputStream* istream );
+
+    /**
+     * Unload texture from GPU if loaded.
      */
     void destroy();
 

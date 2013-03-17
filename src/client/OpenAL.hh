@@ -18,51 +18,28 @@
  */
 
 /**
- * @file client/SMM.cc
- *
- * Single mesh model.
- *
- * Common model format that all simple models are compiled to.
+ * @file client/OpenAL.hh
  */
 
-#include <stable.hh>
-#include <client/SMM.hh>
+#pragma once
 
-#include <client/Context.hh>
-#include <client/OpenGL.hh>
+#include <client/common.hh>
+
+#include <AL/al.h>
 
 namespace oz
 {
 namespace client
 {
 
-SMM::SMM( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
-{}
+#ifdef NDEBUG
+# define OZ_AL_CHECK_ERROR() void( 0 )
+#else
+# define OZ_AL_CHECK_ERROR() oz::client::alCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
 
-void SMM::preload()
-{
-  File file( File::VIRTUAL, liber.models[id].path );
+void alCheckError( const char* function, const char* file, int line );
 
-  buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "SMM file '%s' mmap failed", file.path().cstr() );
-  }
-
-  isPreloaded = true;
-}
-
-void SMM::load()
-{
-  InputStream is = buffer.inputStream();
-  mesh.load( &is, GL_STATIC_DRAW );
-
-  hard_assert( !is.isAvailable() );
-
-  buffer.deallocate();
-
-  isLoaded = true;
-}
+#endif
 
 }
 }
