@@ -27,6 +27,9 @@
 #include "ALBuffer.hh"
 
 #include "OpenAL.hh"
+
+// We don't use those callbacks anywhere and they don't compile on MinGW.
+#define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
 namespace oz
@@ -43,7 +46,7 @@ static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
   return size_t( nBlocks );
 }
 
-static int vorbisSeek( void* handle, long offset, int whence )
+static int vorbisSeek( void* handle, ogg_int64_t offset, int whence )
 {
   InputStream* istream = static_cast<InputStream*>( handle );
 
@@ -112,8 +115,23 @@ bool ALBuffer::load( const File& file )
     ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16 :
                                      bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
 
+#ifdef OZ_BIG_ENDIAN
+
+    int    nSamples = size / int( sizeof( short ) );
+    short* data     = new short[nSamples];
+
+    for( int i = 0; i < nSamples; ++i ) {
+      data[i] = Endian::bswap16( istream->readShort() );
+    }
+
+#else
+
+    const char* data = istream.forward( size );
+
+#endif
+
     alGenBuffers( 1, &bufferId );
-    alBufferData( bufferId, format, istream.forward( size ), size, rate );
+    alBufferData( bufferId, format, data, size, rate );
 
     OZ_AL_CHECK_ERROR();
     return true;

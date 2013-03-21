@@ -123,7 +123,7 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
 
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
-  File file( File::VIRTUAL, path );
+  File file( path );
 
   Buffer buffer = file.read();
   if( buffer.isEmpty() ) {
@@ -165,7 +165,7 @@ void Shader::loadProgram( int id )
 {
   const String& name = liber.shaders[id].name;
 
-  File configFile( File::VIRTUAL, "glsl/" + name + ".json" );
+  File configFile( "@glsl/" + name + ".json" );
   JSON programConfig;
 
   if( !programConfig.load( configFile ) ) {
@@ -376,7 +376,7 @@ void Shader::init()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  File file( File::VIRTUAL, "glsl/header.glsl" );
+  File file( "@glsl/header.glsl" );
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {
@@ -386,7 +386,7 @@ void Shader::init()
   sources[1] = buffer.begin();
   lengths[1] = buffer.length();
 
-  File dir( File::VIRTUAL, "glsl" );
+  File dir( "@glsl" );
   DArray<File> shaderFiles = dir.ls();
 
   foreach( file, shaderFiles.citer() ) {

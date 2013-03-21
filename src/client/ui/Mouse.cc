@@ -106,7 +106,7 @@ void Mouse::init()
   doShow = false;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
-    File file( File::VIRTUAL, String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
+    File file( String::str( "@ui/cur/%s.ozCur", NAMES[i] ) );
 
     Buffer buffer = file.read();
     if( buffer.isEmpty() ) {

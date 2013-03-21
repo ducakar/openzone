@@ -38,8 +38,8 @@ class Builder
 
     void printUsage( const char* invocationName );
 
-    void copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse );
-    void buildTextures( const char* srcDir, const char* destDir, bool wrap,
+    void copyFiles( const File& srcDir, const File& destDir, const char* ext, bool recurse );
+    void buildTextures( const File& srcDir, const File& destDir, bool wrap,
                         int magFilter, int minFilter );
 
     void buildCaela();

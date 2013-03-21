@@ -80,35 +80,35 @@ void Builder::printUsage( const char* invocationName )
     invocationName );
 }
 
-void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
+void Builder::copyFiles( const File& srcDir, const File& destDir, const char* ext, bool recurse )
 {
-  String sSrcDir = srcDir;
-  String sDestDir = destDir;
-  File dir( File::VIRTUAL, sSrcDir );
-  DArray<File> dirList = dir.ls();
+  String sSrcDir = srcDir.path();
+  String sDestDir = destDir.path();
+  DArray<File> dirList = srcDir.ls();
 
   if( dirList.isEmpty() ) {
     return;
   }
 
-  if( !sSrcDir.isEmpty() ) {
+  if( !sSrcDir.fileIsEmpty() ) {
     sSrcDir = sSrcDir + "/";
   }
-  if( !sDestDir.isEmpty() ) {
+  if( !sDestDir.fileIsEmpty() ) {
     sDestDir = sDestDir + "/";
   }
 
   Log::println( "Copying '%s*.%s' -> '%s' {", sSrcDir.cstr(), ext, sDestDir.cstr() );
   Log::indent();
 
-  File::mkdir( destDir );
+  File::mkdir( destDir.path() );
 
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
 
     if( file->type() == File::DIRECTORY ) {
       if( recurse ) {
-        copyFiles( srcDir + ( "/" + file->name() ), destDir + ( "/" + file->name() ), ext, true );
+        copyFiles( srcDir.path() + "/" + file->name(), destDir.path() + "/" + file->name(), ext,
+                   true );
       }
     }
     else if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
@@ -116,9 +116,9 @@ void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ex
     {
       Log::print( "Copying '%s' ...", fileName.cstr() );
 
-      File destFile( File::NATIVE, sDestDir + fileName );
+      File destFile( sDestDir + fileName );
       if( !destFile.write( file->read() ) ) {
-        OZ_ERROR( "Failed to write '%s'", file->path().cstr() );
+        OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
 
       Log::printEnd( " OK" );
@@ -135,8 +135,8 @@ void Builder::buildCaela()
   Log::println( "Building Caela {" );
   Log::indent();
 
-  String srcDir = "caelum";
-  File dir( File::VIRTUAL, srcDir );
+  String srcDir = "@caelum";
+  File dir( srcDir );
   DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
@@ -161,8 +161,8 @@ void Builder::buildTerrae()
   Log::println( "Building Terrae {" );
   Log::indent();
 
-  String srcDir = "terra";
-  File dir( File::VIRTUAL, srcDir );
+  String srcDir = "@terra";
+  File dir( srcDir );
   DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
@@ -185,9 +185,9 @@ void Builder::buildBSPs()
   Log::println( "Building BSPs {" );
   Log::indent();
 
-  String srcDir = "baseq3/maps";
+  String srcDir = "@baseq3/maps";
   String destDir = "bsp";
-  File dir( File::VIRTUAL, srcDir );
+  File dir( srcDir );
   DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
@@ -217,7 +217,7 @@ void Builder::buildBSPTextures()
 
   Set<String> usedDirs;
 
-  File dir( File::VIRTUAL, "baseq3/textures" );
+  File dir( "@baseq3/textures" );
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
@@ -260,7 +260,7 @@ void Builder::buildBSPTextures()
       File::mkdir( "tex" );
       File::mkdir( "tex/" + subDir->name() );
 
-      File destFile( File::NATIVE, String::str( "tex/%s.ozcTex", name.cstr() ) );
+      File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
 
       Context::Texture diffuseTex, masksTex, normalsTex;
       context.loadTextures( &diffuseTex, &masksTex, &normalsTex, path );
@@ -299,7 +299,7 @@ void Builder::buildBSPTextures()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    File subDir( File::VIRTUAL, *subDirPath );
+    File subDir( "@" + *subDirPath );
 
     DArray<File> texList = subDir.ls();
 
@@ -317,7 +317,7 @@ void Builder::buildBSPTextures()
         File::mkdir( "tex" );
         File::mkdir( "tex/" + subDir.name() );
 
-        File destFile( File::NATIVE, String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
+        File destFile( String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -337,8 +337,8 @@ void Builder::buildClasses( const String& pkgName )
   Log::println( "Building object classes {" );
   Log::indent();
 
-  String dirName = "class";
-  File dir( File::VIRTUAL, dirName );
+  String dirName = "@class";
+  File dir( dirName );
   DArray<File> dirList = dir.ls();
 
   OutputStream os( 0 );
@@ -389,7 +389,7 @@ void Builder::buildClasses( const String& pkgName )
     headerStream.deallocate();
 
     File::mkdir( "class" );
-    File outFile( File::NATIVE, "class/" + pkgName + ".ozClasses" );
+    File outFile( "class/" + pkgName + ".ozClasses" );
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
@@ -411,8 +411,8 @@ void Builder::buildFragPools( const String& pkgName )
   Log::println( "Building fragment pools {" );
   Log::indent();
 
-  String dirName = "frag";
-  File dir( File::VIRTUAL, dirName );
+  String dirName = "@frag";
+  File dir( dirName );
   DArray<File> dirList = dir.ls();
 
   OutputStream os( 0 );
@@ -433,7 +433,7 @@ void Builder::buildFragPools( const String& pkgName )
 
   if( os.tell() != 0 ) {
     File::mkdir( "frag" );
-    File outFile( File::NATIVE, "frag/" + pkgName + ".ozFragPools" );
+    File outFile( "frag/" + pkgName + ".ozFragPools" );
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
@@ -459,7 +459,7 @@ void Builder::buildModels()
   Log::println( "Building used models {" );
   Log::indent();
 
-  File mdlDir( File::VIRTUAL, "mdl" );
+  File mdlDir( "@mdl" );
   File::mkdir( mdlDir.path() );
   DArray<File> dirList = mdlDir.ls();
 
@@ -482,7 +482,7 @@ void Builder::buildModels()
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        File destFile( File::NATIVE, path );
+        File destFile( &path[1] );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -492,10 +492,10 @@ void Builder::buildModels()
       }
     }
 
-    if( File( File::VIRTUAL, dir->path() + "/data.obj" ).type() != File::MISSING ) {
+    if( File( dir->path() + "/data.obj" ).type() != File::MISSING ) {
       obj.build( dir->path() );
     }
-    else if( File( File::VIRTUAL, dir->path() + "/tris.md2" ).type() != File::MISSING ) {
+    else if( File( dir->path() + "/tris.md2" ).type() != File::MISSING ) {
       md2.build( dir->path() );
     }
     else {
@@ -518,7 +518,7 @@ void Builder::copySounds()
 
   Set<String> usedDirs;
 
-  File dir( File::VIRTUAL, "snd" );
+  File dir( "@snd" );
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
@@ -558,7 +558,7 @@ void Builder::copySounds()
       File::mkdir( "snd" );
       File::mkdir( "snd/" + subDir->name() );
 
-      File destFile( File::NATIVE, file->path() );
+      File destFile( &file->path()[1] );
       if( !destFile.write( file->read() ) ) {
         OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
@@ -568,7 +568,7 @@ void Builder::copySounds()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    File subDir( File::VIRTUAL, *subDirPath );
+    File subDir( *subDirPath );
     DArray<File> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
@@ -585,7 +585,7 @@ void Builder::copySounds()
         File::mkdir( "snd" );
         File::mkdir( "snd/" + subDir.name() );
 
-        File destFile( File::NATIVE, path );
+        File destFile( &path[1] );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -611,11 +611,10 @@ void Builder::buildModules()
 
 void Builder::checkLua( const char* path )
 {
-  Log::println( "Checking Lua scripts '%s' {", path );
+  Log::println( "Checking Lua scripts in '%s' {", path );
   Log::indent();
 
-  String srcDir = String::str( "%s/", path );
-  File dir( File::VIRTUAL, path );
+  File dir( path );
   DArray<File> dirList = dir.ls();
 
   String sources;
@@ -625,7 +624,7 @@ void Builder::checkLua( const char* path )
       continue;
     }
 
-    String cmdLine = "luac -p " + file->realDir() + "/" + file->path();
+    String cmdLine = "luac -p " + file->realPath();
 
     Log::println( "%s", cmdLine.cstr() );
     if( system( cmdLine ) != 0 ) {
@@ -642,15 +641,15 @@ void Builder::buildMissions()
   Log::println( "Building missions {" );
   Log::indent();
 
-  DArray<File> missions = File( File::VIRTUAL, "mission" ).ls();
+  DArray<File> missions = File( "@mission" ).ls();
   foreach( mission, missions.citer() ) {
     checkLua( mission->path() );
 
-    copyFiles( mission->path(), mission->path(), "lua", false );
-    copyFiles( mission->path(), mission->path(), "json", false );
+    copyFiles( mission->path(), &mission->path()[1], "lua", false );
+    copyFiles( mission->path(), &mission->path()[1], "json", false );
 
-    File srcFile( File::VIRTUAL, mission->path() + "/description.png" );
-    File outFile( File::NATIVE, mission->path() + "/description.ozImage" );
+    File srcFile( mission->path() + "/description.png" );
+    File outFile( &( mission->path() + "/description.ozImage" )[1] );
 
     if( srcFile.type() == File::MISSING ) {
       continue;
@@ -683,7 +682,7 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
   Log::println( "Packing archive {" );
   Log::indent();
 
-  File archive( File::NATIVE, String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
+  File archive( String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
 
   String cmdLine = use7zip ? String::str( "7z u -ms=off -mx=9 '%s' *", archive.path().cstr() ) :
                              String::str( "zip -ur %s '%s' *",
@@ -874,7 +873,7 @@ int Builder::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  File::init( File::VIRTUAL );
+  File::initVFS();
   FreeImage_Initialise();
 
   File::mkdir( outDir );
@@ -905,8 +904,8 @@ int Builder::main( int argc, char** argv )
   uint startTime = Time::clock();
 
   // copy package README/COPYING and credits
-  copyFiles( "", "", "txt", false );
-  copyFiles( "credits", "credits", "txt", false );
+  copyFiles( "@", "", "txt", false );
+  copyFiles( "@credits", "credits", "txt", false );
 
   if( doCat ) {
     lingua.build();
@@ -916,14 +915,14 @@ int Builder::main( int argc, char** argv )
     UI::buildIcons();
     UI::copyScheme();
 
-    copyFiles( "ui/font", "ui/font", "ttf", false );
-    copyFiles( "ui/icon", "ui/icon", "", true );
+    copyFiles( "@ui/font", "ui/font", "ttf", false );
+    copyFiles( "@ui/icon", "ui/icon", "", true );
   }
   if( doShaders ) {
-    copyFiles( "glsl", "glsl", "glsl", false );
-    copyFiles( "glsl", "glsl", "vert", false );
-    copyFiles( "glsl", "glsl", "frag", false );
-    copyFiles( "glsl", "glsl", "json", false );
+    copyFiles( "@glsl", "glsl", "glsl", false );
+    copyFiles( "@glsl", "glsl", "vert", false );
+    copyFiles( "@glsl", "glsl", "frag", false );
+    copyFiles( "@glsl", "glsl", "json", false );
   }
   if( doCaela ) {
     buildCaela();
@@ -937,11 +936,11 @@ int Builder::main( int argc, char** argv )
   }
   if( doClasses ) {
     buildClasses( pkgName );
-    copyFiles( "class", "class", "txt", false );
+    copyFiles( "@class", "class", "txt", false );
   }
   if( doFrags ) {
     buildFragPools( pkgName );
-    copyFiles( "frag", "frag", "txt", false );
+    copyFiles( "@frag", "frag", "txt", false );
   }
   if( doModels ) {
     buildModels();
@@ -950,13 +949,13 @@ int Builder::main( int argc, char** argv )
     copySounds();
   }
   if( doNames ) {
-    copyFiles( "name", "name", "txt", false );
+    copyFiles( "@name", "name", "txt", false );
   }
   if( doLua ) {
-    checkLua( "lua/matrix" );
-    checkLua( "lua/nirvana" );
+    checkLua( "@lua/matrix" );
+    checkLua( "@lua/nirvana" );
 
-    copyFiles( "lua", "lua", "lua", true );
+    copyFiles( "@lua", "lua", "lua", true );
   }
   if( doMissions ) {
     buildMissions();
@@ -965,8 +964,8 @@ int Builder::main( int argc, char** argv )
     buildModules();
   }
   if( doMusic ) {
-    copyFiles( "music", "music", "oga", true );
-    copyFiles( "music", "music", "ogg", true );
+    copyFiles( "@music", "music", "oga", true );
+    copyFiles( "@music", "music", "ogg", true );
   }
 
   packArchive( pkgName, useCompression, use7zip );
@@ -979,7 +978,7 @@ int Builder::main( int argc, char** argv )
   config.clear();
 
   FreeImage_DeInitialise();
-  File::destroy( File::VIRTUAL );
+  File::destroyVFS();
 
   return EXIT_SUCCESS;
 }

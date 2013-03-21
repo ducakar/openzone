@@ -189,11 +189,11 @@ MissionMenu::MissionMenu() :
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );
 
-  File missionRootDir( File::VIRTUAL, "mission" );
+  File missionRootDir( "@mission" );
   DArray<File> missionDirs = missionRootDir.ls();
 
   foreach( missionDir, missionDirs.citer() ) {
-    File descriptionFile( File::VIRTUAL, missionDir->path() + "/description.json" );
+    File descriptionFile( missionDir->path() + "/description.json" );
 
     JSON descriptionConfig;
     if( !descriptionConfig.load( descriptionFile ) ) {
@@ -208,7 +208,7 @@ MissionMenu::MissionMenu() :
     const char* title       = lingua.get( descriptionConfig["title"].get( missionName ) );
     const char* description = lingua.get( descriptionConfig["description"].get( "" ) );
 
-    File image( File::VIRTUAL, missionDir->path() + "/description.ozImage" );
+    File image( missionDir->path() + "/description.ozImage" );
 
     uint imageId = 0;
     if( image.type() != File::MISSING ) {
@@ -221,8 +221,8 @@ MissionMenu::MissionMenu() :
     lingua.destroy();
   }
 
-  scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
-  scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
+  scrollUpTexId   = context.loadTextureLayer( "@ui/icon/scrollUp.ozIcon" );
+  scrollDownTexId = context.loadTextureLayer( "@ui/icon/scrollDown.ozIcon" );
 }
 
 MissionMenu::~MissionMenu()

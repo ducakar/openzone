@@ -137,15 +137,11 @@ void Buffer::deallocate()
 
 InputStream Buffer::inputStream( Endian::Order order ) const
 {
-  hard_assert( data != nullptr );
-
   return InputStream( data, data + size, order );
 }
 
 OutputStream Buffer::outputStream( Endian::Order order )
 {
-  hard_assert( data != nullptr );
-
   return OutputStream( data, data + size, order );
 }
 

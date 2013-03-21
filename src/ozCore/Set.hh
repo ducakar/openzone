@@ -160,9 +160,9 @@ class Set
 
       delete[] data;
 
-      data  = s.data;
-      count = s.count;
-      size  = s.size;
+      data    = s.data;
+      count   = s.count;
+      size    = s.size;
 
       s.data  = nullptr;
       s.count = 0;

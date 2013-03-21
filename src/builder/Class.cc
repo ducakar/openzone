@@ -777,7 +777,7 @@ void Class::writeVehicle( OutputStream* os )
 
 void Class::build( OutputStream* os, const char* className )
 {
-  File configFile( File::VIRTUAL, String::str( "class/%s.json", className ) );
+  File configFile( String::str( "@class/%s.json", className ) );
 
   if( !config.load( configFile ) ) {
     OZ_ERROR( "Failed to load '%s'", configFile.path().cstr() );

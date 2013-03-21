@@ -89,6 +89,11 @@ class System
   public:
 
     /**
+     * Forbid instances.
+     */
+    explicit System() = delete;
+
+    /**
      * Trigger a breakpoint.
      *
      * It raises `SIGTRAP` on Linux or calls `DebugBreak()` on Windows.

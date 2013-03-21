@@ -166,22 +166,18 @@ DArray<String> String::split( const char* s, char delimiter )
 
 String String::fileName( const char* s )
 {
+  int begin = s[0] == '@';
   int slash = lastIndex( s, '/' );
 
-  return slash < 0 ? String( s ) : substring( s, slash + 1 );
+  return slash >= 0 ? substring( s, slash + 1 ) : String( s + begin );
 }
 
 String String::fileBaseName( const char* s )
 {
-  int slash = lastIndex( s, '/' );
+  int begin = max<int>( lastIndex( s, '/' ) + 1, s[0] == '@' );
   int dot   = lastIndex( s, '.' );
 
-  if( slash < dot ) {
-    return substring( s, slash + 1, dot );
-  }
-  else {
-    return substring( s, slash + 1 );
-  }
+  return begin <= dot ? substring( s, begin, dot ) : substring( s, begin );
 }
 
 String String::fileExtension( const char* s )
@@ -852,22 +848,18 @@ DArray<String> String::split( char delimiter ) const
 
 String String::fileName() const
 {
+  int begin = buffer[0] == '@';
   int slash = lastIndex( '/' );
 
-  return slash < 0 ? *this : substring( slash + 1 );
+  return slash >= 0 ? substring( slash + 1 ) : String( buffer + begin, count - begin );
 }
 
 String String::fileBaseName() const
 {
-  int slash = lastIndex( '/' );
+  int begin = max<int>( lastIndex( '/' ) + 1, buffer[0] == '@' );
   int dot   = lastIndex( '.' );
 
-  if( slash < dot ) {
-    return substring( slash + 1, dot );
-  }
-  else {
-    return substring( slash + 1 );
-  }
+  return begin < dot ? substring( begin, dot ) : substring( begin );
 }
 
 String String::fileExtension() const

@@ -80,9 +80,9 @@ void NaClUpdater::writeLocalManifest() const
     os.writeLong64( pkg->time );
   }
 
-  File localManifest( File::NATIVE, LOCAL_MANIFEST );
+  File localManifest( LOCAL_MANIFEST );
 
-  if( !localManifest.write( os.begin(), os.length() ) ) {
+  if( !localManifest.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write local manifest" );
   }
 
@@ -96,7 +96,7 @@ bool NaClUpdater::checkUpdates()
   localPackages.clear();
   remotePackages.clear();
 
-  File localManifest( File::NATIVE, LOCAL_MANIFEST );
+  File localManifest( LOCAL_MANIFEST );
 
   if( localManifest.map() ) {
     InputStream is = localManifest.inputStream();
@@ -136,7 +136,7 @@ void NaClUpdater::downloadUpdates()
   int packageNum      = 1;
 
   foreach( pkg, remotePackages.citer() ) {
-    File pkgFile( File::NATIVE, "/local/share/openzone/" + pkg->name );
+    File pkgFile( "/local/share/openzone/" + pkg->name );
 
     if( pkgFile.type() == File::REGULAR ) {
       long64 localTime = 0;
@@ -183,16 +183,16 @@ void NaClUpdater::downloadUpdates()
 
     OutputStream os = downloader.take();
 
-    Log::printRaw( " %.2f MiB transferred ...", float( os.length() ) / ( 1024.0f*1024.0f ) );
+    Log::printRaw( " %.2f MiB transferred ...", float( os.tell() ) / ( 1024.0f*1024.0f ) );
 
-    if( os.length() < 2 || ( ( os[0] != 'P' || os[1] != 'K' ) &&
-                             ( os[0] != '7' || os[1] != 'z' ) ) )
+    if( os.tell() < 2 || ( ( os[0] != 'P' || os[1] != 'K' ) &&
+                           ( os[0] != '7' || os[1] != 'z' ) ) )
     {
       Log::printEnd( " Failed" );
       continue;
     }
 
-    if( !pkgFile.write( os.begin(), os.length() ) ) {
+    if( !pkgFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Cannot write to local storage" );
     }
 
@@ -212,7 +212,7 @@ void NaClUpdater::downloadUpdates()
     }
 
     if( isOrphan ) {
-      File pkgFile( File::NATIVE, "/local/share/openzone/" + localPkg->name );
+      File pkgFile( "/local/share/openzone/" + localPkg->name );
 
       Log::print( "Deleting obsolete package '%s' ...", pkgFile.path().cstr() );
       if( File::rm( pkgFile.path() ) ) {

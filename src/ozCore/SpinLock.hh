@@ -64,12 +64,12 @@ class SpinLock
     }
 
     /**
-     * Copying is not possible.
+     * Copying or moving is not possible.
      */
     SpinLock( const SpinLock& ) = delete;
 
     /**
-     * Copying is not possible.
+     * Copying or moving is not possible.
      */
     SpinLock& operator = ( const SpinLock& ) = delete;
 

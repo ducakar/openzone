@@ -42,6 +42,6 @@ int main( int argc, char** argv )
 
   exitCode = builder::builder.main( argc, argv );
 
-  Log::printMemoryLeaks();
+//   Log::printMemoryLeaks();
   return exitCode;
 }

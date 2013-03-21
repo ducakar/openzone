@@ -38,6 +38,9 @@ namespace oz
  *
  * This class provides two back-ends: the native file system back-end and virtual file system (VFS)
  * back-end implemented via PhysicsFS.
+ *
+ * Paths inside VFS are always absolute and should not begin with '/', they use '/' as a path
+ * separator and are prefixed by "@".
  */
 class File
 {
@@ -54,15 +57,6 @@ class File
     };
 
     /**
-     * File system type.
-     */
-    enum FileSystem
-    {
-      NATIVE,
-      VIRTUAL
-    };
-
-    /**
      * NaCl file system type.
      */
     enum NaClFileSystem
@@ -73,21 +67,27 @@ class File
 
   private:
 
-    String     filePath; ///< %File path.
-    Type       fileType; ///< %File type.
-    FileSystem fileFS;   ///< %File system type.
-    int        fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
-    long64     fileTime; ///< Modification or creation time, what is newer.
-    char*      data;     ///< Mapped memory.
+    String filePath; ///< %File path.
+    Type   fileType; ///< %File type.
+    int    fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
+    long64 fileTime; ///< Modification or creation time, what is newer.
+    char*  data;     ///< Mapped memory.
 
   public:
 
     /**
-     * Create an instance for the given file system and path.
+     * Create an instance for the given path.
      *
-     * `stat()` is automatically called on construction unless path is an empty string.
+     * `stat()` is automatically called on construction unless path empty.
      */
-    explicit File( FileSystem fileSystem = NATIVE, const char* path = "" );
+    File( const char* path = "" );
+
+    /**
+     * Create an instance for the given path.
+     *
+     * `stat()` is automatically called on construction unless path empty.
+     */
+    File( const String& path );
 
     /**
      * Destructor.
@@ -126,6 +126,15 @@ class File
     bool stat();
 
     /**
+     * True iff file path is empty (i.e. an empty string or "@").
+     */
+    OZ_ALWAYS_INLINE
+    bool isEmpty() const
+    {
+      return filePath.fileIsEmpty();
+    }
+
+    /**
      * %File type.
      */
     OZ_ALWAYS_INLINE
@@ -135,12 +144,12 @@ class File
     }
 
     /**
-     * %File system type.
+     * True iff VFS file path.
      */
     OZ_ALWAYS_INLINE
-    FileSystem fileSystem() const
+    bool isVirtual() const
     {
-      return fileFS;
+      return filePath.fileIsVirtual();
     }
 
     /**
@@ -208,6 +217,15 @@ class File
      * %Path to the archive or mount-point of a VFS, "" for native files.
      */
     String realDir() const;
+
+    /**
+     * %Path to file in native file system.
+     *
+     * This function does not work correctly for VFS files from archives and that whose directory
+     * was not mounted to the root of VFS. This function is identical to `path()` for files with
+     * native file system path.
+     */
+    String realPath() const;
 
     /**
      * True iff file is mapped into memory.
@@ -333,12 +351,12 @@ class File
     /**
      * Make a new directory.
      */
-    static bool mkdir( const char* path, FileSystem fileSystem = NATIVE );
+    static bool mkdir( const char* path );
 
     /**
      * Delete a file or an empty directory.
      */
-    static bool rm( const char* path, FileSystem fileSystem = NATIVE );
+    static bool rm( const char* path );
 
     /**
      * Mount read-only directory or archive into VFS.
@@ -347,7 +365,7 @@ class File
      * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
      * @param append true to add to the end instead to the beginning of the search path.
      */
-    static bool mount( const char* path, const char* mountPoint, bool append );
+    static bool mount( const char* path, const char* mountPoint, bool append = true );
 
     /**
      * Mount read/write local resource directory to root of VFS.
@@ -359,24 +377,43 @@ class File
     static bool mountLocal( const char* path );
 
     /**
-     * Initialise file system.
+     * Initialise virtual file system.
      *
-     * @note
-     * On NaCl, `System::instance` must be set prior to initialising a file system (either `NATIVE`
-     * or `VFS`). Persistent NaCl file system must be initialised from JavaScript before NaCl module
-     * is loaded.
-     *
-     * @param fileSystem file system type, either `NATIVE` or `VFS`.
      * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
      * @param naclSize NaCl file system size.
+     *
+     * @note
+     * On NaCl, `System::instance` must be set prior to initialising any kind of file system.
+     * On other platforms `naclFileSystem` and `naclSize` parameters are ignored.
      */
-    static void init( FileSystem fileSystem = NATIVE, NaClFileSystem naclFileSystem = TEMPORARY,
-                      int naclSize = 0 );
+    static void initVFS( NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0 );
 
     /**
-     * Deinitialise file system.
+     * Deinitialise virtual file system.
      */
-    static void destroy( FileSystem fileSystem = NATIVE );
+    static void destroyVFS();
+
+    /**
+     * Initialise native file system.
+     *
+     * This method is a NOP for all platforms except NaCl.
+     *
+     * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
+     * @param naclSize NaCl file system size.
+     *
+     * @note
+     * On NaCl, `System::instance` must be set prior to initialising any kind of file system.
+     * Persistent NaCl file system must be initialised from JavaScript before NaCl module is loaded.
+     * On other platforms `naclFileSystem` and `naclSize` parameters are ignored.
+     */
+    static void init( NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0 );
+
+    /**
+     * Deinitialise native file system.
+     *
+     * Currently this method is a NOP for all platforms.
+     */
+    static void destroy();
 
 };
 

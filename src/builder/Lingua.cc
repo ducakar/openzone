@@ -27,12 +27,12 @@ namespace builder
 
 void Lingua::buildCatalogue( const char* directory, const char* catalogue )
 {
-  Log::print( "%s/%s ...", directory, catalogue );
+  Log::print( "%s/%s ...", &directory[1], catalogue );
 
-  File::mkdir( directory );
+  File::mkdir( &directory[1] );
 
-  File srcFile( File::VIRTUAL, String::str( "%s/%s.po", directory, catalogue ) );
-  File outFile( File::NATIVE, String::str( "%s/%s.ozCat", directory, catalogue ) );
+  File srcFile( String::str( "%s/%s.po", directory, catalogue ) );
+  File outFile( String::str( "%s/%s.ozCat", &directory[1], catalogue ) );
 
   if( srcFile.type() != File::REGULAR ) {
     OZ_ERROR( "Cannot read catalogue source file '%s'", srcFile.path().cstr() );
@@ -161,11 +161,11 @@ void Lingua::build()
   Log::println( "Building package localisations {" );
   Log::indent();
 
-  File linguaDir( File::VIRTUAL, "lingua" );
+  File linguaDir( "@lingua" );
   DArray<File> languages = linguaDir.ls();
 
   if( !languages.isEmpty() ) {
-    File::mkdir( linguaDir.path() );
+    File::mkdir( &linguaDir.path()[1] );
   }
 
   foreach( langDir, languages.iter() ) {
@@ -176,7 +176,7 @@ void Lingua::build()
     DArray<File> catalogues = langDir->ls();
 
     if( !catalogues.isEmpty() ) {
-      File::mkdir( langDir->path() );
+      File::mkdir( &langDir->path()[1] );
     }
 
     foreach( catalogue, catalogues.citer() ) {
@@ -188,11 +188,11 @@ void Lingua::build()
     }
   }
 
-  File missionsDir( File::VIRTUAL, "mission" );
+  File missionsDir( "@mission" );
   DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.citer() ) {
-    linguaDir = File( File::VIRTUAL, mission->path() + "/lingua" );
+    linguaDir = File( mission->path() + "/lingua" );
     languages = linguaDir.ls();
 
     foreach( catalogue, languages.citer() ) {
@@ -201,8 +201,8 @@ void Lingua::build()
       }
 
       File::mkdir( "mission" );
-      File::mkdir( mission->path() );
-      File::mkdir( linguaDir.path() );
+      File::mkdir( &mission->path()[1] );
+      File::mkdir( &linguaDir.path()[1] );
 
       buildCatalogue( linguaDir.path(), catalogue->baseName() );
     }
@@ -217,11 +217,11 @@ void Lingua::buildMissions()
   Log::println( "Building mission localisations {" );
   Log::indent();
 
-  File missionsDir( File::VIRTUAL, "mission" );
+  File missionsDir( "@mission" );
   DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.citer() ) {
-    File linguaDir( File::VIRTUAL, mission->path() + "/lingua" );
+    File linguaDir( mission->path() + "/lingua" );
     DArray<File> languages = linguaDir.ls();
 
     foreach( catalogue, languages.citer() ) {
@@ -230,8 +230,8 @@ void Lingua::buildMissions()
       }
 
       File::mkdir( "mission" );
-      File::mkdir( mission->path() );
-      File::mkdir( linguaDir.path() );
+      File::mkdir( &mission->path()[1] );
+      File::mkdir( &linguaDir.path()[1] );
 
       buildCatalogue( linguaDir.path(), catalogue->baseName() );
     }

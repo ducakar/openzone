@@ -161,7 +161,7 @@ void Terra::load()
 
   const String& name = liber.terrae[id].name;
 
-  File file( File::VIRTUAL, "terra/" + name + ".ozcTerra" );
+  File file( "@terra/" + name + ".ozcTerra" );
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {

@@ -161,8 +161,8 @@ class DChain
         return *this;
       }
 
-      firstElem = c.firstElem;
-      lastElem  = c.lastElem;
+      firstElem   = c.firstElem;
+      lastElem    = c.lastElem;
 
       c.firstElem = nullptr;
       c.lastElem  = nullptr;

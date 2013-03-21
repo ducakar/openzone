@@ -151,7 +151,7 @@ int Client::init( int argc, char** argv )
 
 #elif defined( __native_client__ )
 
-  File::init( File::NATIVE, File::TEMPORARY, 64*1024*1024 );
+  File::init( File::TEMPORARY, 64*1024*1024 );
 
   String configDir = "/config/openzone";
   String localDir  = "/local/share/openzone";
@@ -241,7 +241,7 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
-  File::init( File::VIRTUAL, File::TEMPORARY, 32*1024*1024 );
+  File::initVFS();
   initFlags |= INIT_PHYSFS;
 
   OZ_MAIN_CALL( this, {
@@ -261,7 +261,7 @@ int Client::init( int argc, char** argv )
   // Clean up after previous versions.
   File::rm( configDir + "/client.rc" );
 
-  File configFile( File::NATIVE, configDir + "/client.json" );
+  File configFile( configDir + "/client.json" );
   if( config.load( configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
@@ -322,7 +322,7 @@ int Client::init( int argc, char** argv )
 #ifdef __native_client__
 
   foreach( pkg, packages.citer() ) {
-    File pkgFile( File::NATIVE, localDir + "/" + *pkg );
+    File pkgFile( "@" + localDir + "/" + *pkg );
 
     if( File::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
@@ -346,7 +346,7 @@ int Client::init( int argc, char** argv )
   if( File::mount( localDir, nullptr, true ) ) {
     Log::println( "%s", localDir.cstr() );
 
-    DArray<File> list = File( File::NATIVE, localDir ).ls();
+    DArray<File> list = File( localDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
@@ -362,7 +362,7 @@ int Client::init( int argc, char** argv )
   if( File::mount( dataDir, nullptr, true ) ) {
     Log::println( "%s", dataDir.cstr() );
 
-    DArray<File> list = File( File::NATIVE, dataDir ).ls();
+    DArray<File> list = File( dataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
@@ -479,7 +479,7 @@ int Client::init( int argc, char** argv )
   Stage::nextStage = nullptr;
 
   if( !mission.isEmpty() || !layoutFile.isEmpty() ) {
-    gameStage.layoutFile = File( File::NATIVE, layoutFile );
+    gameStage.layoutFile = File( layoutFile );
     gameStage.mission    = mission;
 
     stage = &gameStage;
@@ -535,7 +535,7 @@ void Client::shutdown()
     window.destroy();
   }
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    File configFile( File::NATIVE, config["dir.config"].asString() + "/client.json" );
+    File configFile( config["dir.config"].asString() + "/client.json" );
 
     config.exclude( "dir.config" );
     config.exclude( "dir.local" );
@@ -555,7 +555,7 @@ void Client::shutdown()
 
 #ifdef __native_client__
 
-  File::destroy( File::NATIVE );
+  File::destroy();
 
 #else
 
@@ -563,7 +563,7 @@ void Client::shutdown()
     SDL_Quit();
   }
   if( initFlags & INIT_PHYSFS ) {
-    File::destroy( File::VIRTUAL );
+    File::destroyVFS();
   }
 
 #endif

@@ -36,8 +36,8 @@ namespace builder
 
 void Terra::load()
 {
-  File configFile( File::VIRTUAL, "terra/" + name + ".json" );
-  File imageFile( File::VIRTUAL, "terra/" + name + ".png" );
+  File configFile( "@terra/" + name + ".json" );
+  File imageFile( "@terra/" + name + ".png" );
 
   JSON config;
   if( !config.load( configFile ) ) {
@@ -68,7 +68,7 @@ void Terra::load()
 
   Log::print( "Loading terrain heightmap '%s' ...", name.cstr() );
 
-  String realPath = imageFile.realDir() + "/" + imageFile.path();
+  String realPath = imageFile.realPath();
 
   FIBITMAP* image = FreeImage_Load( FIF_PNG, realPath );
   if( image == nullptr ) {
@@ -152,7 +152,7 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
-  File destFile( File::NATIVE, "terra/" + name + ".ozTerra" );
+  File destFile( "terra/" + name + ".ozTerra" );
 
   Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
@@ -177,15 +177,15 @@ void Terra::saveMatrix()
 
 void Terra::saveClient()
 {
-  File destFile( File::NATIVE, "terra/" + name + ".ozcTerra" );
-  File minimapFile( File::NATIVE, "terra/" + name + ".ozcTex" );
+  File destFile( "terra/" + name + ".ozcTerra" );
+  File minimapFile( "terra/" + name + ".ozcTex" );
 
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();
 
-  Context::Texture liquidTex = context.loadTexture( "terra/" + liquidTexture );
-  Context::Texture detailTex = context.loadTexture( "terra/" + detailTexture );
-  Context::Texture mapTex    = context.loadTexture( "terra/" + mapTexture );
+  Context::Texture liquidTex = context.loadTexture( "@terra/" + liquidTexture );
+  Context::Texture detailTex = context.loadTexture( "@terra/" + detailTexture );
+  Context::Texture mapTex    = context.loadTexture( "@terra/" + mapTexture );
 
   OutputStream os( 0 );
 
@@ -272,7 +272,7 @@ void Terra::saveClient()
   bool useS3TC = context.useS3TC;
   context.useS3TC = false;
 
-  mapTex = context.loadTexture( "terra/" + mapTexture );
+  mapTex = context.loadTexture( "@terra/" + mapTexture );
 
   Log::print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
 

@@ -69,7 +69,7 @@ class Semaphore
     }
 
     /**
-     * Move constructor, transfers ownership.
+     * Move constructor.
      */
     Semaphore( Semaphore&& b ) :
       descriptor( b.descriptor )
@@ -78,12 +78,17 @@ class Semaphore
     }
 
     /**
-     * Move operator, transfers ownership.
+     * Move operator.
      */
     Semaphore& operator = ( Semaphore&& b )
     {
+      if( &b == this ) {
+        return *this;
+      }
+
       descriptor   = b.descriptor;
       b.descriptor = nullptr;
+
       return *this;
     }
 

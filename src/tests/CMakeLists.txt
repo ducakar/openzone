@@ -16,4 +16,4 @@ add_executable( simd simd.cc )
 target_link_libraries( simd ozCore )
 
 add_executable( test test.cc )
-target_link_libraries( test ozEngine openal vorbisfile )
+target_link_libraries( test ozEngine )

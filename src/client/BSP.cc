@@ -54,7 +54,7 @@ BSP::~BSP()
 
 void BSP::preload()
 {
-  File file( File::VIRTUAL, "bsp/" + bsp->name + ".ozcBSP" );
+  File file( "@bsp/" + bsp->name + ".ozcBSP" );
 
   buffer = file.read();
   if( buffer.isEmpty() ) {

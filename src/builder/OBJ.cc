@@ -274,8 +274,8 @@ void OBJ::load()
 {
   Log::print( "Loading OBJ model '%s' ...", path.cstr() );
 
-  File modelFile( File::VIRTUAL, path + "/data.obj" );
-  File configFile( File::VIRTUAL, path + "/config.json" );
+  File modelFile( path + "/data.obj" );
+  File configFile( path + "/config.json" );
 
   int currentMaterial = 0;
 
@@ -288,7 +288,7 @@ void OBJ::load()
 
   config.clear( true );
 
-  String realPath = modelFile.realDir() + "/" + path;
+  String realPath = modelFile.realDir() + "/" + &path[1];
 
   loadMaterials( realPath + "/data.mtl" );
 
@@ -356,8 +356,10 @@ void OBJ::load()
 
 void OBJ::save()
 {
-  File::mkdir( path );
-  File destFile( File::NATIVE, path + "/data.ozcSMM" );
+  String sDestDir = &path[1];
+
+  File::mkdir( sDestDir );
+  File destFile( sDestDir + "/data.ozcSMM" );
 
   compiler.beginMesh();
   compiler.enable( Compiler::UNIQUE );

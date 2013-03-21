@@ -177,10 +177,10 @@ class Pool
 
       free();
 
-      firstBlock = p.firstBlock;
-      freeSlot   = p.freeSlot;
-      size       = p.size;
-      count      = p.count;
+      firstBlock   = p.firstBlock;
+      freeSlot     = p.freeSlot;
+      size         = p.size;
+      count        = p.count;
 
       p.firstBlock = nullptr;
       p.freeSlot   = nullptr;

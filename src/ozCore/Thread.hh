@@ -88,7 +88,7 @@ class Thread
     }
 
     /**
-     * Move constructor, transfers ownership.
+     * Move constructor.
      */
     Thread( Thread&& t ) :
       descriptor( t.descriptor )
@@ -97,12 +97,17 @@ class Thread
     }
 
     /**
-     * Move operator, transfers ownership.
+     * Move operator.
      */
     Thread& operator = ( Thread&& t )
     {
+      if( &t == this ) {
+        return *this;
+      }
+
       descriptor   = t.descriptor;
       t.descriptor = nullptr;
+
       return *this;
     }
 

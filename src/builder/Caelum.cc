@@ -40,7 +40,7 @@ void Caelum::build( const char* name )
   Log::println( "Prebuilding Caelum '%s' {", name );
   Log::indent();
 
-  File destFile( File::NATIVE, String::str( "caelum/%s.ozcCaelum", name ) );
+  File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
 
   OutputStream os( 0 );
 
@@ -93,10 +93,10 @@ void Caelum::build( const char* name )
     os.writeUShort( ushort( i * 4 + 2 ) );
   }
 
-  Context::Texture texture = context.loadTexture( "caelum/sun.png", false );
+  Context::Texture texture = context.loadTexture( "@caelum/sun.png", false );
   texture.write( &os );
 
-  texture = context.loadTexture( "caelum/moon.png", false );
+  texture = context.loadTexture( "@caelum/moon.png", false );
   texture.write( &os );
 
   Log::print( "Dumping into '%s' ...", destFile.path().cstr() );

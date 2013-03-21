@@ -203,8 +203,8 @@ void MD2::build( const char* path )
 {
   String sPath = path;
 
-  File modelFile( File::VIRTUAL, sPath + "/tris.md2" );
-  File configFile( File::VIRTUAL, sPath + "/config.json" );
+  File modelFile( sPath + "/tris.md2" );
+  File configFile( sPath + "/config.json" );
   String skinPath = sPath + "/skin";
 
   Log::println( "Prebuilding MD2 model '%s' {", path );
@@ -385,10 +385,11 @@ void MD2::build( const char* path )
 
   compiler.writeMesh( &os );
 
-  File::mkdir( sPath );
+  String sDestDir = &sPath[1];
+  File::mkdir( sDestDir );
 
   if( header.nFrames != 1 ) {
-    File destFile( File::NATIVE, sPath + "/data.ozcMD2" );
+    File destFile( sDestDir + "/data.ozcMD2" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -399,7 +400,7 @@ void MD2::build( const char* path )
     Log::printEnd( " OK" );
   }
   else {
-    File destFile( File::NATIVE, sPath + "/data.ozcSMM" );
+    File destFile( sDestDir + "/data.ozcSMM" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

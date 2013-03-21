@@ -58,6 +58,30 @@ class ALBuffer
     ~ALBuffer();
 
     /**
+     * Move constructor.
+     */
+    ALBuffer( ALBuffer&& b ) :
+      bufferId( b.bufferId )
+    {
+      b.bufferId = 0;
+    }
+
+    /**
+     * Move operator.
+     */
+    ALBuffer& operator = ( ALBuffer&& b )
+    {
+      if( &b == this ) {
+        return *this;
+      }
+
+      bufferId   = b.bufferId;
+      b.bufferId = 0;
+
+      return *this;
+    }
+
+    /**
      * Get OpenAL buffer id.
      */
     uint id() const

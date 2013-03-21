@@ -31,9 +31,206 @@
 namespace oz
 {
 
+static const int DDSD_PITCH_BIT       = 0x00000008;
+static const int DDSD_MIPMAPCOUNT_BIT = 0x00020000;
+static const int DDSD_LINEARSIZE_BIT  = 0x00080000;
+static const int DDPF_ALPHAPIXELS     = 0x00000001;
+static const int DDPF_FOURCC          = 0x00000004;
+
+bool GLTexture::build( const File& file, int options, OutputStream* ostream )
+{
+  if( file.isVirtual() ) {
+    return false;
+  }
+
+#if 0
+
+  int  width      = image->width;
+  int  height     = image->height;
+  bool genMipmaps = minFilter == GL_NEAREST_MIPMAP_NEAREST ||
+                    minFilter == GL_LINEAR_MIPMAP_NEAREST ||
+                    minFilter == GL_NEAREST_MIPMAP_LINEAR ||
+                    minFilter == GL_LINEAR_MIPMAP_LINEAR;
+
+  if( genMipmaps && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
+    OZ_ERROR( "Image has dimensions %dx%d but both dimensions must be powers of two to generate"
+              " mipmaps.", width, height );
+  }
+
+  do {
+    levels.add();
+    Level& level = levels.last();
+
+    level.width  = width;
+    level.height = height;
+
+    FIBITMAP* levelDib = image->dib;
+    if( levels.length() > 1 ) {
+      levelDib = FreeImage_Rescale( image->dib, width, height,
+                                    context.isHighQuality ? FILTER_CATMULLROM : FILTER_BOX );
+    }
+
+#ifdef OZ_NONFREE
+    int squishFlags = context.isHighQuality ?
+                      squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
+                      squish::kColourRangeFit;
+#endif
+
+    switch( image->format ) {
+      case GL_LUMINANCE: {
+        if( context.useS3TC ) {
+#ifdef OZ_NONFREE
+          // Collapse data (pitch = width * pixelSize) and convert LUMINANCE -> RGBA.
+          ubyte* data = new ubyte[height * width * 4];
+
+          for( int y = 0; y < height; ++y ) {
+            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
+            ubyte* dstLine = &data[y * width*4];
+
+            for( int x = 0; x < width; ++x ) {
+              dstLine[x*4 + 0] = srcLine[x];
+              dstLine[x*4 + 1] = srcLine[x];
+              dstLine[x*4 + 2] = srcLine[x];
+              dstLine[x*4 + 3] = UCHAR_MAX;
+            }
+          }
+
+          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
+          level.data   = new ubyte[level.size];
+
+          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
+          delete[] data;
+#endif
+        }
+        else {
+          level.format = GL_LUMINANCE;
+          level.size   = width * height;
+          level.data   = new ubyte[level.size];
+
+          for( int y = 0; y < height; ++y ) {
+            mCopy( level.data + y*width, FreeImage_GetScanLine( levelDib, y ), size_t( width ) );
+          }
+        }
+        break;
+      }
+      case GL_RGB: {
+        if( context.useS3TC ) {
+#ifdef OZ_NONFREE
+          // Collapse data (pitch = width * pixelSize) and convert BGR -> RGBA.
+          ubyte* data = new ubyte[height * width * 4];
+
+          for( int y = 0; y < height; ++y ) {
+            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
+            ubyte* dstLine = &data[y * width*4];
+
+            for( int x = 0; x < width; ++x ) {
+              dstLine[x*4 + 0] = srcLine[x*3 + 2];
+              dstLine[x*4 + 1] = srcLine[x*3 + 1];
+              dstLine[x*4 + 2] = srcLine[x*3 + 0];
+              dstLine[x*4 + 3] = UCHAR_MAX;
+            }
+          }
+
+          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
+          level.data   = new ubyte[level.size];
+
+          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
+          delete[] data;
+#endif
+        }
+        else {
+          ubyte* data  = FreeImage_GetBits( levelDib );
+          int    pitch = int( FreeImage_GetPitch( levelDib ) );
+
+          level.format = GL_RGB;
+          level.size   = height * pitch;
+          level.data   = new ubyte[level.size];
+
+          for( int y = 0; y < level.height; ++y ) {
+            ubyte* srcLine = &data[y * pitch];
+            ubyte* dstLine = &level.data[y * pitch];
+
+            for( int x = 0; x + 2 < pitch; x += 3 ) {
+              dstLine[x + 0] = srcLine[x + 2];
+              dstLine[x + 1] = srcLine[x + 1];
+              dstLine[x + 2] = srcLine[x + 0];
+            }
+          }
+        }
+        break;
+      }
+      case GL_RGBA: {
+        if( context.useS3TC ) {
+#ifdef OZ_NONFREE
+          // Collapse data (pitch = width * pixelSize) and convert BGRA -> RGBA.
+          ubyte* data = new ubyte[height * width * 4];
+
+          for( int y = 0; y < height; ++y ) {
+            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
+            ubyte* dstLine = &data[y * width*4];
+
+            for( int x = 0; x < width; ++x ) {
+              dstLine[x*4 + 0] = srcLine[x*4 + 2];
+              dstLine[x*4 + 1] = srcLine[x*4 + 1];
+              dstLine[x*4 + 2] = srcLine[x*4 + 0];
+              dstLine[x*4 + 3] = srcLine[x*4 + 3];
+            }
+          }
+
+          level.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt5 );
+          level.data   = new ubyte[level.size];
+
+          squish::CompressImage( data, width, height, level.data, squish::kDxt5 | squishFlags );
+          delete[] data;
+#endif
+        }
+        else {
+          ubyte* data  = FreeImage_GetBits( levelDib );
+          int    pitch = int( FreeImage_GetPitch( levelDib ) );
+
+          level.format = GL_RGBA;
+          level.size   = height * pitch;
+          level.data   = new ubyte[level.size];
+
+          for( int y = 0; y < level.height; ++y ) {
+            ubyte* srcLine = &data[y * pitch];
+            ubyte* dstLine = &level.data[y * pitch];
+
+            for( int x = 0; x + 3 < pitch; x += 4 ) {
+              dstLine[x + 0] = srcLine[x + 2];
+              dstLine[x + 1] = srcLine[x + 1];
+              dstLine[x + 2] = srcLine[x + 0];
+              dstLine[x + 3] = srcLine[x + 3];
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if( levelDib != image->dib ) {
+      FreeImage_Unload( levelDib );
+    }
+
+    width  = max( width / 2, 1 );
+    height = max( height / 2, 1 );
+  }
+  while( genMipmaps && ( levels.last().width > 1 || levels.last().height > 1 ) );
+#endif
+}
+
 GLTexture::GLTexture() :
-  textureId( 0 )
+  textureId( 0 ), textureFormat( 0 ), textureMipmaps( 0 )
 {}
+
+GLTexture::GLTexture( InputStream* istream ) :
+  textureId( 0 ), textureFormat( 0 ), textureMipmaps( 0 )
+{
+  loadDDS( istream );
+}
 
 GLTexture::~GLTexture()
 {
@@ -91,11 +288,70 @@ bool GLTexture::load( InputStream* istream )
   }
 }
 
+bool GLTexture::loadDDS( InputStream* istream_ )
+{
+  destroy();
+
+  InputStream istream( istream_->pos(), istream_->end() );
+
+  // Implementation is based on specifications from
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
+  if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "DDS " ) ) {
+    return false;
+  }
+
+  istream.readInt();
+  istream.readInt();
+
+  int flags  = istream.readInt();
+  int width  = istream.readInt();
+  int height = istream.readInt();
+  int pitch  = istream.readInt();
+
+  istream.readInt();
+
+  int nMipmaps = istream.readInt();
+
+  if( !( flags & ( DDSD_PITCH_BIT | DDSD_LINEARSIZE_BIT ) ) ) {
+    pitch = 0;
+  }
+  if( !( flags & DDSD_MIPMAPCOUNT_BIT ) ) {
+    nMipmaps = 0;
+  }
+
+  istream.seek( 4 + 76 );
+
+  int pixelFlags = istream.readInt();
+  int format     = istream.readInt();
+  int bpp        = istream.readInt();
+  int redMask    = istream.readInt();
+  int greenMask  = istream.readInt();
+  int blueMask   = istream.readInt();
+  int alphaMask  = istream.readInt();
+
+  if( pixelFlags & DDPF_FOURCC ) {
+
+  }
+  else {
+    format = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+  }
+
+  istream.seek( 4 + 128 );
+
+  //
+
+  istream_->set( istream.pos() );
+  return true;
+}
+
 void GLTexture::destroy()
 {
   if( textureId != 0 ) {
     glDeleteTextures( 1, &textureId );
-    textureId = 0;
+
+    textureId      = 0;
+    textureFormat  = 0;
+    textureMipmaps = 0;
 
     OZ_GL_CHECK_ERROR();
   }

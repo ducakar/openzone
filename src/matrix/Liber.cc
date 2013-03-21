@@ -188,7 +188,7 @@ void Liber::initShaders()
 
   List<Resource> shadersList;
 
-  File dir( File::VIRTUAL, "glsl" );
+  File dir( "@glsl" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -218,7 +218,7 @@ void Liber::initTextures()
 
   List<Resource> texturesList;
 
-  File dir( File::VIRTUAL, "tex" );
+  File dir( "@tex" );
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
@@ -256,7 +256,7 @@ void Liber::initSounds()
 
   List<Resource> soundsList;
 
-  File dir( File::VIRTUAL, "snd" );
+  File dir( "@snd" );
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
@@ -294,7 +294,7 @@ void Liber::initCaela()
 
   List<Resource> caelaList;
 
-  File dir( File::VIRTUAL, "caelum" );
+  File dir( "@caelum" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -324,7 +324,7 @@ void Liber::initTerrae()
 
   List<Resource> terraeList;
 
-  File dir( File::VIRTUAL, "terra" );
+  File dir( "@terra" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -354,7 +354,7 @@ void Liber::initModels()
 
   List<Resource> modelsList;
 
-  File dir( File::VIRTUAL, "mdl" );
+  File dir( "@mdl" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
@@ -365,13 +365,13 @@ void Liber::initModels()
     String name = file->name();
     String path;
 
-    if( File( File::VIRTUAL, file->path() + "/data.ozcSMM" ).type() == File::REGULAR ) {
+    if( File( file->path() + "/data.ozcSMM" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcSMM";
     }
-    else if( File( File::VIRTUAL, file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
+    else if( File( file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD2";
     }
-    else if( File( File::VIRTUAL, file->path() + "/data.ozcMD3" ).type() == File::REGULAR ) {
+    else if( File( file->path() + "/data.ozcMD3" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD3";
     }
     else {
@@ -402,7 +402,7 @@ void Liber::initNameLists()
 
   List<Resource> nameListsList;
 
-  File dir( File::VIRTUAL, "name" );
+  File dir( "@name" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -430,7 +430,7 @@ void Liber::initFragPools()
   Log::println( "Fragment pools (*.ozFragPools in 'frag') {" );
   Log::indent();
 
-  File dir( File::VIRTUAL, "frag" );
+  File dir( "@frag" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
@@ -471,7 +471,7 @@ void Liber::initClasses()
   Log::println( "Object classes (*.ozClasses in 'class') {" );
   Log::indent();
 
-  File dir( File::VIRTUAL, "class" );
+  File dir( "@class" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
@@ -629,7 +629,7 @@ void Liber::initBSPs()
   Log::println( "BSP structures (*.ozBSP, *.ozcBSP in 'bsp') {" );
   Log::indent();
 
-  File dir( File::VIRTUAL, "bsp" );
+  File dir( "@bsp" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -652,7 +652,7 @@ void Liber::initBSPs()
 
 void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
 {
-  File dir( File::VIRTUAL, path );
+  File dir( path );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
@@ -683,13 +683,13 @@ void Liber::initMusic( const char* userMusicPath )
 
   List<Resource> musicTracksList;
 
-  initMusicRecurse( "music", &musicTracksList );
+  initMusicRecurse( "@music", &musicTracksList );
 
   for( int i = 0; i < musicTracksList.length(); ++i ) {
     musicTrackIndices.add( musicTracksList[i].name, i );
   }
 
-  initMusicRecurse( "userMusic", &musicTracksList );
+  initMusicRecurse( "@userMusic", &musicTracksList );
 
   musicTracks.resize( musicTracksList.length() );
   aMove<Resource>( musicTracks.begin(), musicTracksList.begin(), musicTracksList.length() );

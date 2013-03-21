@@ -20,7 +20,16 @@ add_library( ozEngine
   OpenGL.cc
 #END SOURCES
 )
-target_link_libraries( ozEngine ozDynamics )
+target_link_libraries( ozEngine ozDynamics ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARIES} )
+if( OZ_GLES )
+  target_link_libraries( ozEngine ${GLES2_LIBRARIES} )
+else()
+  target_link_libraries( ozEngine ${OPENGL_gl_LIBRARY} )
+endif()
+if( PLATFORM_EMBEDDED )
+  target_link_libraries( ozEngine ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
+endif()
+
 set_target_properties( ozEngine PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 
 add_pch( ozEngine_pch pch.hh pch.cc )

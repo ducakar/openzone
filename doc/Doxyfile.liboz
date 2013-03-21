@@ -107,7 +107,9 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = src/ozCore
+INPUT                  = src/ozCore \
+                         src/ozDynamics \
+                         src/ozEngine
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.hh \
                          *.dox

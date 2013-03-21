@@ -98,7 +98,7 @@ class SharedLib
     }
 
     /**
-     * Move constructor, transfers ownership.
+     * Move constructor.
      */
     SharedLib( SharedLib&& l ) :
       handle( l.handle )
@@ -107,12 +107,17 @@ class SharedLib
     }
 
     /**
-     * Move operator, transfers ownership.
+     * Move operator.
      */
     SharedLib& operator = ( SharedLib&& l )
     {
+      if( &l == this ) {
+        return *this;
+      }
+
       handle   = l.handle;
       l.handle = nullptr;
+
       return *this;
     }
 

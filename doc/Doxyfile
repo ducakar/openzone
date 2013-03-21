@@ -108,6 +108,8 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = src/ozCore \
+                         src/ozDynamics \
+                         src/ozEngine \
                          src/common \
                          src/tools
 INPUT_ENCODING         = UTF-8

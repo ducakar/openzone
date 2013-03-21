@@ -66,7 +66,7 @@ class Mutex
     }
 
     /**
-     * Move constructor, transfers ownership.
+     * Move constructor.
      */
     Mutex( Mutex&& m ) :
       descriptor( m.descriptor )
@@ -75,12 +75,17 @@ class Mutex
     }
 
     /**
-     * Move operator, transfers ownership.
+     * Move operator.
      */
     Mutex& operator = ( Mutex&& m )
     {
+      if( &m == this ) {
+        return *this;
+      }
+
       descriptor   = m.descriptor;
       m.descriptor = nullptr;
+
       return *this;
     }
 

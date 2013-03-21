@@ -69,7 +69,7 @@ int main( int argc, char** argv )
   OutputStream os( 0 );
   os.writeChars( "ozManifest", sizeof( "ozManifest" ) );
 
-  File outDir( File::NATIVE, outDirPath );
+  File outDir( outDirPath );
   DArray<File> files = outDir.ls();
   Map<String, File> packages;
 
@@ -99,7 +99,7 @@ int main( int argc, char** argv )
   Log::unindent();
   Log::println( "}" );
 
-  File manifest( File::NATIVE, outDirPath + "/packages.ozManifest" );
+  File manifest( outDirPath + "/packages.ozManifest" );
 
   Log::print( "Writing manifest to '%s' ...", manifest.path().cstr() );
 

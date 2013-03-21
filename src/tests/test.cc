@@ -33,14 +33,21 @@ int main( int argc, char** argv )
 
   const char* sample = argc != 1 ? argv[1] : "/usr/share/sounds/pop.wav";
 
-  File file( File::NATIVE, sample );
+  File::initVFS();
+  File::mount( "/etc/", "", false );
+
+  File fstab( "@fstab" );
+  Buffer buf = fstab.read();
+
+  Log() << fstab.realPath() << "\n";
+  Log() << buf.begin() << "\n";
 
   ALCdevice*  device  = alcOpenDevice( "" );
   ALCcontext* context = alcCreateContext( device, nullptr );
 
   alcMakeContextCurrent( context );
 
-  ALBuffer buffer( file );
+  ALBuffer buffer( sample );
   ALSource source( buffer );
 
   alSourcePlay( source.id() );
@@ -50,7 +57,7 @@ int main( int argc, char** argv )
     Time::sleep( 100 );
     alGetSourcei( source.id(), AL_SOURCE_STATE, &state );
   }
-  while( state != AL_STOPPED );
+  while( state == AL_PLAYING );
 
   source.destroy();
   buffer.destroy();

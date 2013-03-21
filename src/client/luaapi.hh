@@ -248,7 +248,7 @@ static int ozCameraExecuteSequence( lua_State* l )
 {
   ARG( 1 );
 
-  String file = String::str( "mission/%s/%s.sequence.json", cs.mission.cstr(), l_tostring( 1 ) );
+  String file = String::str( "@mission/%s/%s.sequence.json", cs.mission.cstr(), l_tostring( 1 ) );
 
   camera.setState( Camera::CINEMATIC );
   camera.cinematic.executeSequence( file, &cs.missionLingua );

@@ -53,7 +53,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( File( File::VIRTUAL, "ui/cur" ).type() != File::DIRECTORY ) {
+  if( File( "@ui/cur" ).type() != File::DIRECTORY ) {
     return;
   }
 
@@ -67,10 +67,10 @@ void UI::buildCursors()
   File::mkdir( "ui/cur" );
 
   for( int i = 0; i < ui::Mouse::CURSORS_MAX; ++i ) {
-    File inFile( File::VIRTUAL, String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
-    File destFile( File::NATIVE, String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
+    File inFile( String::str( "@ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
+    File destFile( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
 
-    String realPath = inFile.realDir() + "/" + inFile.path();
+    String realPath = inFile.realPath();
 
     FILE* fs = fopen( realPath, "r" );
     if( fs == nullptr ) {
@@ -87,9 +87,8 @@ void UI::buildCursors()
 
     fclose( fs );
 
-    Context::Texture tex = context.loadTexture( String::str( "ui/cur/%s", imgPath ), false,
+    Context::Texture tex = context.loadTexture( String::str( "@ui/cur/%s", imgPath ), false,
                                                 GL_NEAREST, GL_NEAREST );
-
     OutputStream os( 0 );
 
     os.writeInt( size );
@@ -108,7 +107,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( File( File::VIRTUAL, "ui/icon" ).type() != File::DIRECTORY ) {
+  if( File( "@ui/icon" ).type() != File::DIRECTORY ) {
     return;
   }
 
@@ -122,7 +121,7 @@ void UI::buildIcons()
   File::mkdir( "ui/icon" );
 
   foreach( name, citer( ICON_NAMES ) ) {
-    String srcPath  = String::str( "ui/icon/%s.png", *name );
+    String srcPath  = String::str( "@ui/icon/%s.png", *name );
     String destPath = String::str( "ui/icon/%s.ozIcon", *name );
 
     Context::Texture tex = context.loadTexture( srcPath, false, GL_NEAREST, GL_NEAREST );
@@ -133,7 +132,7 @@ void UI::buildIcons()
     Log::println( "Compiling '%s'", destPath.cstr() );
     tex.write( &os );
 
-    if( !File( File::NATIVE, destPath ).write( os.begin(), os.tell() ) ) {
+    if( !File( destPath ).write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Texture writing failed" );
     }
   }
@@ -146,8 +145,8 @@ void UI::buildIcons()
 
 void UI::copyScheme()
 {
-  File srcFile( File::VIRTUAL, "ui/style.json" );
-  File outFile( File::NATIVE, "ui/style.json" );
+  File srcFile( "@ui/style.json" );
+  File outFile( "ui/style.json" );
 
   if( srcFile.type() == File::REGULAR ) {
     Log::print( "Copying UI colour scheme '%s' ...", srcFile.path().cstr() );

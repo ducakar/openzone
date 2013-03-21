@@ -75,9 +75,19 @@ static bool operator < ( const File& a, const File& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-File::File( FileSystem fileSystem, const char* path ) :
-  filePath( path ), fileType( MISSING ), fileFS( fileSystem ), fileSize( -1 ), fileTime( 0 ),
-  data( nullptr )
+File::File( const char* path ) :
+  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
+{
+  // Avoid stat'ing obviously non-existent files.
+  if( filePath.isEmpty() ) {
+    return;
+  }
+
+  stat();
+}
+
+File::File( const String& path ) :
+  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {
   // Avoid stat'ing obviously non-existent files.
   if( filePath.isEmpty() ) {
@@ -93,17 +103,16 @@ File::~File()
 }
 
 File::File( const File& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), fileFS( file.fileFS ),
-  fileSize( file.fileSize ), fileTime( file.fileTime ), data( nullptr )
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
+  fileTime( file.fileTime ), data( nullptr )
 {}
 
 File::File( File&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  fileFS( file.fileFS ), fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
+  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
 {
   file.filePath = "";
   file.fileType = MISSING;
-  file.fileFS   = NATIVE;
   file.fileSize = -1;
   file.fileTime = 0;
   file.data     = nullptr;
@@ -119,7 +128,6 @@ File& File::operator = ( const File& file )
 
   filePath = file.filePath;
   fileType = file.fileType;
-  fileFS   = file.fileFS;
   fileSize = file.fileSize;
   fileTime = file.fileTime;
 
@@ -136,14 +144,12 @@ File& File::operator = ( File&& file )
 
   filePath = static_cast<String&&>( file.filePath );
   fileType = file.fileType;
-  fileFS   = file.fileFS;
   fileSize = file.fileSize;
   fileTime = file.fileTime;
   data     = file.data;
 
   file.filePath = "";
   file.fileType = MISSING;
-  file.fileFS   = NATIVE;
   file.fileSize = -1;
   file.fileTime = 0;
   file.data     = nullptr;
@@ -153,21 +159,21 @@ File& File::operator = ( File&& file )
 
 bool File::stat()
 {
-  if( fileFS == VIRTUAL ) {
+  if( filePath.fileIsVirtual() ) {
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 
-    if( !PHYSFS_exists( filePath ) ) {
+    if( !PHYSFS_exists( &filePath[1] ) ) {
       fileType = File::MISSING;
       fileSize = -1;
       fileTime = 0;
     }
-    else if( PHYSFS_isDirectory( filePath ) ) {
+    else if( PHYSFS_isDirectory( &filePath[1] ) ) {
       fileType = File::DIRECTORY;
       fileSize = -1;
-      fileTime = PHYSFS_getLastModTime( filePath );
+      fileTime = PHYSFS_getLastModTime( &filePath[1] );
     }
     else {
-      PHYSFS_File* file = PHYSFS_openRead( filePath );
+      PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
 
       if( file == nullptr ) {
         fileType = File::MISSING;
@@ -177,7 +183,7 @@ bool File::stat()
       else {
         fileType = File::REGULAR;
         fileSize = int( PHYSFS_fileLength( file ) );
-        fileTime = PHYSFS_getLastModTime( filePath );
+        fileTime = PHYSFS_getLastModTime( &filePath[1] );
 
         PHYSFS_close( file );
       }
@@ -187,7 +193,7 @@ bool File::stat()
 
     PHYSFS_Stat info;
 
-    if( !PHYSFS_stat( filePath, &info ) ) {
+    if( !PHYSFS_stat( &filePath[1], &info ) ) {
       fileType = File::MISSING;
       fileSize = -1;
       fileTime = 0;
@@ -328,12 +334,25 @@ bool File::stat()
 
 String File::realDir() const
 {
-  if( fileFS == VIRTUAL ) {
-    const char* realDir = PHYSFS_getRealDir( filePath );
+  if( filePath.fileIsVirtual() ) {
+    const char* realDir = PHYSFS_getRealDir( &filePath[1] );
     return realDir == nullptr ? "" : realDir;
   }
   else {
     return "";
+  }
+}
+
+String File::realPath() const
+{
+  if( filePath.fileIsVirtual() ) {
+    const char* realDir = PHYSFS_getRealDir( &filePath[1] );
+    realDir = realDir == nullptr ? "" : realDir;
+
+    return String::str( String::last( realDir ) == '/' ? "%s%s" : "%s/%s", realDir, &filePath[1] );
+  }
+  else {
+    return filePath;
   }
 }
 
@@ -346,7 +365,7 @@ bool File::map()
     return true;
   }
 
-  if( fileFS == VIRTUAL ) {
+  if( filePath.fileIsVirtual() ) {
     int size = fileSize;
 
     data = new char[size];
@@ -410,7 +429,7 @@ void File::unmap()
     return;
   }
 
-  if( fileFS == VIRTUAL ) {
+  if( filePath.fileIsVirtual() ) {
     delete[] data;
   }
   else {
@@ -439,8 +458,8 @@ bool File::read( char* buffer, int* size ) const
     return fileSize == 0;
   }
 
-  if( fileFS == VIRTUAL ) {
-    PHYSFS_File* file = PHYSFS_openRead( filePath );
+  if( filePath.fileIsVirtual() ) {
+    PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
     if( file == nullptr ) {
       *size = 0;
       return false;
@@ -571,8 +590,8 @@ String File::readString() const
 
 bool File::write( const char* buffer, int size ) const
 {
-  if( fileFS == VIRTUAL ) {
-    PHYSFS_File* file = PHYSFS_openWrite( filePath );
+  if( filePath.fileIsVirtual() ) {
+    PHYSFS_File* file = PHYSFS_openWrite( &filePath[1] );
     if( file == nullptr ) {
       return false;
     }
@@ -673,8 +692,8 @@ DArray<File> File::ls() const
     return array;
   }
 
-  if( fileFS == VIRTUAL ) {
-    char** list = PHYSFS_enumerateFiles( filePath );
+  if( filePath.fileIsVirtual() ) {
+    char** list = PHYSFS_enumerateFiles( &filePath[1] );
     if( list == nullptr ) {
       return array;
     }
@@ -696,12 +715,12 @@ DArray<File> File::ls() const
 
     array.resize( count );
 
-    String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
+    String prefix = filePath[1] == '\0' ? filePath : filePath + "/";
 
     entity = list;
     for( int i = 0; i < count; ++entity ) {
       if( ( *entity )[0] != '.' ) {
-        array[i] = File( fileFS, prefix + *entity );
+        array[i] = File( prefix + *entity );
         ++i;
       }
     }
@@ -758,7 +777,7 @@ DArray<File> File::ls() const
       }
 
       if( entity.cFileName[0] != '.' ) {
-        array[i] = File( fileFS, filePath + "/" + entity.cFileName );
+        array[i] = File( filePath + "/" + entity.cFileName );
         ++i;
       }
     }
@@ -804,7 +823,7 @@ DArray<File> File::ls() const
       }
 
       if( entity->d_name[0] != '.' ) {
-        array[i] = File( fileFS, prefix + entity->d_name );
+        array[i] = File( prefix + entity->d_name );
         ++i;
       }
     }
@@ -857,10 +876,10 @@ bool File::chdir( const char* path )
 #endif
 }
 
-bool File::mkdir( const char* path, FileSystem fileSystem )
+bool File::mkdir( const char* path )
 {
-  if( fileSystem == VIRTUAL ) {
-    return PHYSFS_mkdir( path ) != 0;
+  if( String::fileIsVirtual( path ) ) {
+    return PHYSFS_mkdir( &path[1] ) != 0;
   }
   else {
 #if defined( __native_client__ )
@@ -880,10 +899,10 @@ bool File::mkdir( const char* path, FileSystem fileSystem )
   }
 }
 
-bool File::rm( const char* path, FileSystem fileSystem )
+bool File::rm( const char* path )
 {
-  if( fileSystem == VIRTUAL ) {
-    return PHYSFS_delete( path );
+  if( String::fileIsVirtual( path ) ) {
+    return PHYSFS_delete( &path[1] );
   }
   else {
 #if defined( __native_client__ )
@@ -893,7 +912,7 @@ bool File::rm( const char* path, FileSystem fileSystem )
 
 #elif defined( _WIN32 )
 
-    if( File( File::NATIVE, path ).fileType == DIRECTORY ) {
+    if( File( path ).fileType == DIRECTORY ) {
       return RemoveDirectory( path ) != 0;
     }
     else {
@@ -902,7 +921,7 @@ bool File::rm( const char* path, FileSystem fileSystem )
 
 #else
 
-    if( File( File::NATIVE, path ).fileType == DIRECTORY ) {
+    if( File( path ).fileType == DIRECTORY ) {
       return rmdir( path ) == 0;
     }
     else {
@@ -930,63 +949,67 @@ bool File::mountLocal( const char* path )
   return true;
 }
 
-void File::init( FileSystem fileSystem, NaClFileSystem naclFileSystem, int naclSize )
+void File::initVFS( NaClFileSystem naclFileSystem, int naclSize )
 {
   static_cast<void>( naclFileSystem );
   static_cast<void>( naclSize );
 
-  if( fileSystem == VIRTUAL ) {
 #ifdef __native_client__
 
-    pp::Module* module = pp::Module::Get();
+  pp::Module* module = pp::Module::Get();
 
-    if( System::instance == nullptr ) {
-      OZ_ERROR( "System::instance must be set prior to PhysicsFS initialisation" );
-    }
-    if( module->core()->IsMainThread() ) {
-      OZ_ERROR( "PhysicsFS cannot be initialisation in the main thread" );
-    }
-
-    PHYSFS_NACL_init( System::instance->pp_instance(), module->get_browser_interface(),
-                      naclFileSystem == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                           PP_FILESYSTEMTYPE_LOCALTEMPORARY,
-                      naclSize );
-
-#endif
-
-    if( PHYSFS_init( nullptr ) == 0 ) {
-      OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
-    }
+  if( System::instance == nullptr ) {
+    OZ_ERROR( "System::instance must be set prior to PhysicsFS initialisation" );
   }
-  else {
-#ifdef __native_client__
+  if( module->core()->IsMainThread() ) {
+    OZ_ERROR( "PhysicsFS cannot be initialisation in the main thread" );
+  }
 
-    ppCore = pp::Module::Get()->core();
-
-    if( System::instance == nullptr ) {
-      OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise"
-                " NaCl file system" );
-    }
-
-    destroy();
-
-    PP_FileSystemType type = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                            PP_FILESYSTEMTYPE_LOCALTEMPORARY;
-
-    ppFileSystem = pp::FileSystem( System::instance, type );
-    if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
-      OZ_ERROR( "Local file system open failed" );
-    }
+  PHYSFS_NACL_init( System::instance->pp_instance(), module->get_browser_interface(),
+                    naclFileSystem == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                                         PP_FILESYSTEMTYPE_LOCALTEMPORARY,
+                    naclSize );
 
 #endif
+
+  if( PHYSFS_init( nullptr ) == 0 ) {
+    OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
   }
 }
 
-void File::destroy( FileSystem fileSystem )
+void File::destroyVFS()
 {
-  if( fileSystem == VIRTUAL ) {
-    PHYSFS_deinit();
-  }
+  PHYSFS_deinit();
 }
+
+void File::init( NaClFileSystem naclFileSystem, int naclSize )
+{
+  static_cast<void>( naclFileSystem );
+  static_cast<void>( naclSize );
+
+#ifdef __native_client__
+
+  ppCore = pp::Module::Get()->core();
+
+  if( System::instance == nullptr ) {
+    OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise"
+              " NaCl file system" );
+  }
+
+  destroy();
+
+  PP_FileSystemType type = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                                          PP_FILESYSTEMTYPE_LOCALTEMPORARY;
+
+  ppFileSystem = pp::FileSystem( System::instance, type );
+  if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
+    OZ_ERROR( "Local file system open failed" );
+  }
+
+#endif
+}
+
+void File::destroy()
+{}
 
 }

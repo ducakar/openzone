@@ -40,7 +40,7 @@ namespace ui
 
 uint GalileoFrame::loadTexture( const char* path ) const
 {
-  File file( File::VIRTUAL, path );
+  File file( path );
 
   Buffer buffer = file.read();
   if( buffer.isEmpty() ) {
@@ -92,7 +92,7 @@ void GalileoFrame::onUpdate()
 void GalileoFrame::onDraw()
 {
   if( mapTexId == 0 ) {
-    mapTexId = loadTexture( "terra/" + liber.terrae[orbis.terra.id].name + ".ozcTex" );
+    mapTexId = loadTexture( "@terra/" + liber.terrae[orbis.terra.id].name + ".ozcTex" );
   }
 
   float pX = camera.p.x;
@@ -148,8 +148,8 @@ GalileoFrame::GalileoFrame() :
 {
   flags = PINNED_BIT | UPDATE_BIT;
 
-  arrowTexId = loadTexture( "ui/icon/arrow.ozIcon" );
-  markerTexId = loadTexture( "ui/icon/marker.ozIcon" );
+  arrowTexId = loadTexture( "@ui/icon/arrow.ozIcon" );
+  markerTexId = loadTexture( "@ui/icon/marker.ozIcon" );
 
   normalWidth  = width;
   normalHeight = height;

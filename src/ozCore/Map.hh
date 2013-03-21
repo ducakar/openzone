@@ -183,9 +183,9 @@ class Map
 
       delete[] data;
 
-      data  = m.data;
-      count = m.count;
-      size  = m.size;
+      data    = m.data;
+      count   = m.count;
+      size    = m.size;
 
       m.data  = nullptr;
       m.count = 0;

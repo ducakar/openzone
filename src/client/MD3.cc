@@ -38,7 +38,7 @@ MD3::MD3( int id_ ) :
 
 void MD3::preload()
 {
-  File file( File::VIRTUAL, liber.models[id].path );
+  File file( liber.models[id].path );
 
   buffer = file.read();
   if( buffer.isEmpty() ) {

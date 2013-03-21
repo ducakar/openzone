@@ -38,7 +38,7 @@ namespace builder
 
 void FragPool::build( OutputStream* os, const char* className )
 {
-  File configFile( File::VIRTUAL, String::str( "frag/%s.json", className ) );
+  File configFile( String::str( "@frag/%s.json", className ) );
 
   JSON config;
   if( !config.load( configFile ) ) {

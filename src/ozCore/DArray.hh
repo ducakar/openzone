@@ -140,8 +140,8 @@ class DArray
 
       delete[] data;
 
-      data  = a.data;
-      count = a.count;
+      data    = a.data;
+      count   = a.count;
 
       a.data  = nullptr;
       a.count = 0;

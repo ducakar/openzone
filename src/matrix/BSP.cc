@@ -37,7 +37,7 @@ void BSP::load()
 {
   Log::print( "Loading BSP structure '%s' ...", name.cstr() );
 
-  File file( File::VIRTUAL, "bsp/" + name + ".ozBSP" );
+  File file( "@bsp/" + name + ".ozBSP" );
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {
@@ -252,7 +252,7 @@ BSP::BSP( const char* name_, int id_ ) :
   nBrushSides( 0 ), nBoundObjects( 0 ),
   name( name_ ), id( id_ ), nUsers( 0 )
 {
-  File file( File::VIRTUAL, String::str( "bsp/%s.ozBSP", name_ ) );
+  File file( String::str( "@bsp/%s.ozBSP", name_ ) );
 
   if( file.type() != File::REGULAR ) {
     OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );

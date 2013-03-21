@@ -114,6 +114,24 @@ class String
     }
 
     /**
+     * First character or null character if an empty string.
+     */
+    OZ_ALWAYS_INLINE
+    static char first( const char* s )
+    {
+      return s[0];
+    }
+
+    /**
+     * Last character or null character if an empty string.
+     */
+    static char last( const char* s )
+    {
+      int sCount = length( s );
+      return sCount == 0 ? '\0' : s[sCount - 1];
+    }
+
+    /**
      * Index of the first occurrence of the character from the given index (inclusive).
      */
     static int index( const char* s, char ch, int start = 0 )
@@ -239,6 +257,24 @@ class String
      * beginning/end of the original string are included.
      */
     static DArray<String> split( const char* s, char delimiter );
+
+    /**
+     * True iff file path is empty (i.e. an empty string or "@").
+     */
+    OZ_ALWAYS_INLINE
+    static bool fileIsEmpty( const char* s )
+    {
+      return s[0] == '\0' || ( s[1] == '\0' && s[0] == '@' );
+    }
+
+    /**
+     * True iff file path is a VFS file path.
+     */
+    OZ_ALWAYS_INLINE
+    static bool fileIsVirtual( const char* s )
+    {
+      return s[0] == '@';
+    }
 
     /**
      * Extract file name from a path (substring after the last `/`).
@@ -692,13 +728,13 @@ class String
     OZ_ALWAYS_INLINE
     const char& operator [] ( int i ) const
     {
-      hard_assert( 0 <= i && i < count );
+      hard_assert( 0 <= i && i <= count );
 
       return buffer[i];
     }
 
     /**
-     * First character or null character if empty string.
+     * First character or null character if an empty string.
      */
     OZ_ALWAYS_INLINE
     char first() const
@@ -707,7 +743,7 @@ class String
     }
 
     /**
-     * Last character or null character if empty string.
+     * Last character or null character if an empty string.
      */
     OZ_ALWAYS_INLINE
     char last() const
@@ -855,6 +891,24 @@ class String
      * beginning/end of the original string are included.
      */
     DArray<String> split( char delimiter ) const;
+
+    /**
+     * True iff file path is empty (i.e. an empty string or "@").
+     */
+    OZ_ALWAYS_INLINE
+    bool fileIsEmpty() const
+    {
+      return fileIsEmpty( buffer );
+    }
+
+    /**
+     * True iff file path is a VFS file path.
+     */
+    OZ_ALWAYS_INLINE
+    bool fileIsVirtual() const
+    {
+      return fileIsVirtual( buffer );
+    }
 
     /**
      * Extract file name from a path (substring after the last `/`).

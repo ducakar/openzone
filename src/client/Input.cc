@@ -548,7 +548,7 @@ void Input::update()
 
 void Input::init()
 {
-  File configFile( File::NATIVE, config["dir.config"].asString() + "/input.json" );
+  File configFile( config["dir.config"].asString() + "/input.json" );
 
   Log::print( "Initialising Input from '%s' ...", configFile.path().cstr() );
 
@@ -642,7 +642,7 @@ void Input::destroy()
     return;
   }
 
-  File configFile( File::NATIVE, config["dir.config"].asString() + "/input.json" );
+  File configFile( config["dir.config"].asString() + "/input.json" );
 
   Log::print( "Writing Input configuration to '%s' ...", configFile.path().cstr() );
 

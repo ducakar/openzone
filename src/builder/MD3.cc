@@ -34,7 +34,7 @@ namespace builder
 
 void MD3::readAnimData()
 {
-  File animFile( File::VIRTUAL, sPath + "/animation.cfg" );
+  File animFile( sPath + "/animation.cfg" );
 
   String realPath = animFile.realDir() + "/" + animFile.path();
 
@@ -56,7 +56,7 @@ void MD3::buildMesh( const char* name, int frame )
 {
   Log::print( "Mesh '%s' ...", name );
 
-  File file( File::VIRTUAL, String::str( "%s/%s.md3", sPath.cstr(), name ) );
+  File file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
 
   if( file.type() != File::REGULAR ) {
     OZ_ERROR( "Cannot read MD3 model part file '%s'", file.path().cstr() );
@@ -210,11 +210,11 @@ void MD3::buildMesh( const char* name, int frame )
     }
 
     if( skin.isEmpty() ) {
-      File skinFile( File::VIRTUAL, String::replace( surfaceShaders[0].name, '\\', '/' ) );
+      File skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ) );
       texture = skinFile.baseName();
     }
     else {
-      File skinFile( File::VIRTUAL, skin );
+      File skinFile( skin );
       texture = skinFile.baseName();
     }
 
@@ -271,7 +271,7 @@ void MD3::buildMesh( const char* name, int frame )
 
 void MD3::load()
 {
-  File configFile( File::VIRTUAL, sPath + "/config.json" );
+  File configFile( sPath + "/config.json" );
 
   JSON config( configFile );
 
@@ -359,10 +359,11 @@ void MD3::save()
   compiler.endMesh();
   compiler.writeMesh( &os );
 
+  String sDestDir = &sPath[1];
   File::mkdir( sPath );
 
   if( frame < 0 ) {
-    File destFile( File::NATIVE, sPath + "/data.ozcMD3" );
+    File destFile( sDestDir + "/data.ozcMD3" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -373,7 +374,7 @@ void MD3::save()
     Log::printEnd( " OK" );
   }
   else {
-    File destFile( File::NATIVE, sPath + "/data.ozcSMM" );
+    File destFile( sDestDir + "/data.ozcSMM" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

@@ -228,7 +228,7 @@ bool GameStage::update()
     }
   }
   if( input.keys[Input::KEY_SAVE_LAYOUT] && !input.oldKeys[Input::KEY_SAVE_LAYOUT] ) {
-    layoutFile = File( File::NATIVE, config["dir.config"].asString() + "/layouts/default.json" );
+    layoutFile = File( config["dir.config"].asString() + "/layouts/default.json" );
     writeLayout();
     layoutFile = File();
   }
@@ -535,8 +535,8 @@ void GameStage::init()
   Log::println( "Initialising GameStage {" );
   Log::indent();
 
-  autosaveFile  = File( File::NATIVE, config["dir.config"].asString() + "/saves/autosave.ozState" );
-  quicksaveFile = File( File::NATIVE, config["dir.config"].asString() + "/saves/quicksave.ozState" );
+  autosaveFile  = File( config["dir.config"].asString() + "/saves/autosave.ozState" );
+  quicksaveFile = File( config["dir.config"].asString() + "/saves/quicksave.ozState" );
 
   matrix.init();
   nirvana.init();

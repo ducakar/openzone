@@ -317,7 +317,7 @@ uint Context::readTextureLayer( InputStream* istream )
 
 uint Context::loadTextureLayer( const char* path )
 {
-  File file( File::VIRTUAL, path );
+  File file( path );
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {
@@ -344,7 +344,7 @@ Texture Context::readTexture( InputStream* istream )
 
 Texture Context::loadTexture( const char* path )
 {
-  File file( File::VIRTUAL, path );
+  File file( path );
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {
@@ -402,7 +402,7 @@ uint Context::requestSound( int id )
   const String& name = liber.sounds[id].name;
   const String& path = liber.sounds[id].path;
 
-  File file( File::VIRTUAL, path );
+  File file( path );
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {

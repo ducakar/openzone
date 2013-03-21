@@ -39,52 +39,94 @@ class GLTexture
   public:
 
     /**
-     * Build option bit enabling highest quality scaling and compression.
+     * Build option bit enabling generation of mipmaps.
      */
-    static const int QUALITY_BIT = 0x01;
+    static const int MIPMAPS_BIT = 0x01;
 
     /**
-     * Build option bit enabling texture compression (must be compiled with libsquish).
+     * Build option bit enabling texture compression.
      */
     static const int COMPRESSION_BIT = 0x02;
 
+    /**
+     * Build option bit forcing the highest quality compression and mipmap scaling.
+     */
+    static const int QUALITY_BIT = 0x04;
+
   private:
 
-    uint textureId; ///< OpenGL texture id.
+    uint textureId;      ///< OpenGL texture id.
+    int  textureFormat;  ///< OpenGL internal texture format enumerator.
+    bool textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
   public:
 
     /**
-     * Load texture components from files and convert it to OpenZone format.
+     * Convert given image to DDS format and optionally compress it and create mipmaps.
      *
-     * Texture is loaded from different files representing texture diffuse colour (none or "_d"
-     * suffix), normal map ("_n", "_nm", "_normal" or "_local" suffix), specular ("_spec" suffix or
-     * red component in "_m" suffixed image) and emission masks (".blend" suffix or green component
-     * in "_m" suffixed image. png, jpg, jpeg, tga and bmp file extensions are recognised (must be
-     * lower-case).
+     * Mipmap generation, S3 texture compression, and quality of compression and mipmap images
+     * scaling can be controlled via `options` parameter.
+     * @li `MIPMAPS_BIT` enables generation of mipmaps.
+     * @li `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
+     *     alpha channel and DXT5 for images with an alpha channel.
+     *     Texture compression is enabled only if OZ_NONFREE is enabled on ozEngine build.
+     * @li `QUALITY_BIT` enables highest quality but slow methods for scaling texture to smaller
+     *     dimensions in mipmap generation and highest quality settings for S3 texture compression
+     *     libsquish supports.
      *
-     * Quality of texture compression and texture scaling can be controlled via `options` parameter.
-     * `QUALITY_BIT` enables highest quality but slow methods for scaling texture to smaller
-     * dimensions used for mipmaps and for texture compression if enabled. `COMPRESSION_BIT` enables
-     * S3TC texture compression, DXT1 and DXT5 for textures without and with alpha channel
-     * respectively.
+     * png, jpg, jpeg, tga and bmp file extensions are recognised (must be lower-case).
      *
-     * @param fs file system type.
-     * @param path path to texture files, without suffixes and extensions.
+     * @param file image file.
      * @param options bit-mask to control quality and compression.
      * @param ostream stream to write texture to.
      */
-    static bool build( File::FileSystem fs, const char* path, int options, OutputStream* ostream );
+    static bool build( const File& file, int options, OutputStream* ostream );
 
     /**
-     * Create an empty instance.
+     * Create an empty instance (no OpenGL texture is created).
      */
     explicit GLTexture();
+
+    /**
+     * Load a DDS texture from a stream.
+     */
+    explicit GLTexture( InputStream* istream );
 
     /**
      * Destructor, unloads texture from GPU if loaded.
      */
     ~GLTexture();
+
+    /**
+     * Move constructor.
+     */
+    GLTexture( GLTexture&& t ) :
+      textureId( t.textureId ), textureFormat( t.textureFormat ), textureMipmaps( t.textureMipmaps )
+    {
+      t.textureId      = 0;
+      t.textureFormat  = 0;
+      t.textureMipmaps = 0;
+    }
+
+    /**
+     * Move operator.
+     */
+    GLTexture& operator = ( GLTexture& t )
+    {
+      if( &t == this ) {
+        return *this;
+      }
+
+      textureId        = t.textureId;
+      textureFormat    = t.textureFormat;
+      textureMipmaps   = t.textureMipmaps;
+
+      t.textureId      = 0;
+      t.textureFormat  = 0;
+      t.textureMipmaps = 0;
+
+      return *this;
+    }
 
     /**
      * OpenGL texture id.
@@ -95,9 +137,30 @@ class GLTexture
     }
 
     /**
+     * Return OpenGL internal texture format.
+     */
+    int format() const
+    {
+      return textureFormat;
+    }
+
+    /**
+     * True iff mipmaps have been are loaded from file.
+     */
+    bool hasMipmaps() const
+    {
+      return textureMipmaps;
+    }
+
+    /**
      * Load texture in OpenZone format to GPU.
      */
     bool load( InputStream* istream );
+
+    /**
+     * Load a DDS texture from a stream.
+     */
+    bool loadDDS( InputStream* istream );
 
     /**
      * Unload texture from GPU if loaded.

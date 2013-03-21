@@ -148,7 +148,7 @@ CreditsMenu::CreditsMenu() :
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );
 
-  File creditsDir( File::VIRTUAL, "credits" );
+  File creditsDir( "@credits" );
   DArray<File> creditsFiles = creditsDir.ls();
 
   lines.add( "OpenZone " OZ_VERSION );

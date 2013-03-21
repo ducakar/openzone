@@ -157,7 +157,7 @@ class Chain
         return *this;
       }
 
-      firstElem = c.firstElem;
+      firstElem   = c.firstElem;
 
       c.firstElem = nullptr;
 

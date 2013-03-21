@@ -55,7 +55,7 @@ void Terra::load( int id_ )
 
     Log::print( "Loading terrain '%s' ...", name.cstr() );
 
-    File file( File::VIRTUAL, path );
+    File file( path );
     Buffer buffer = file.read();
 
     if( buffer.isEmpty() ) {

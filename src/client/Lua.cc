@@ -80,7 +80,7 @@ void Lua::create( const char* mission_ )
   Log::println( "Executing scripts for mission %s {", cs.mission.cstr() );
   Log::indent();
 
-  File missionDir( File::VIRTUAL, "mission/" + cs.mission );
+  File missionDir( "@mission/" + cs.mission );
   DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
@@ -124,7 +124,7 @@ void Lua::read( InputStream* istream )
 
   Log::print( "Deserialising scripts for mission %s ...", cs.mission.cstr() );
 
-  File missionDir( File::VIRTUAL, "mission/" + cs.mission );
+  File missionDir( "@mission/" + cs.mission );
   DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {

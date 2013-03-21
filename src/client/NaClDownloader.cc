@@ -45,7 +45,7 @@ void NaClDownloader::readCallback( void* data, int result )
     downloader->buffer.deallocate();
   }
   else {
-    int length = downloader->buffer.length() - 4096 + result;
+    int length = downloader->buffer.tell() - 4096 + result;
 
     downloader->buffer.rewind();
     downloader->buffer.forward( length );

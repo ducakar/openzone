@@ -45,7 +45,7 @@ String Lingua::detectLanguage( const char* language_ )
   String lang = language_;
 
   if( !lang.isEmpty() ) {
-    if( File( File::VIRTUAL, "lingua/" + lang ).type() == File::MISSING ) {
+    if( File( "@lingua/" + lang ).type() == File::MISSING ) {
       lang = "";
     }
     return lang;
@@ -53,7 +53,7 @@ String Lingua::detectLanguage( const char* language_ )
 
   lang = getenv( "LANGUAGE" );
 
-  if( !lang.isEmpty() && File( File::VIRTUAL, "lingua/" + lang ).type() != File::MISSING ) {
+  if( !lang.isEmpty() && File( "@lingua/" + lang ).type() != File::MISSING ) {
     return lang;
   }
 
@@ -63,7 +63,7 @@ String Lingua::detectLanguage( const char* language_ )
   if( underscore >= 2 ) {
     lang = lang.substring( 0, underscore );
 
-    if( File( File::VIRTUAL, "lingua/" + lang ).type() != File::MISSING ) {
+    if( File( "@lingua/" + lang ).type() != File::MISSING ) {
       return lang;
     }
   }
@@ -74,7 +74,7 @@ String Lingua::detectLanguage( const char* language_ )
   if( underscore >= 2 ) {
     lang = lang.substring( 0, underscore );
 
-    if( File( File::VIRTUAL, "lingua/" + lang ).type() != File::MISSING ) {
+    if( File( "@lingua/" + lang ).type() != File::MISSING ) {
       return lang;
     }
   }
@@ -107,7 +107,7 @@ bool Lingua::initMission( const char* mission )
 {
   hard_assert( messages == nullptr );
 
-  File file( File::VIRTUAL, String::str( "mission/%s/lingua/%s.ozCat", mission, language.cstr() ) );
+  File file( String::str( "@mission/%s/lingua/%s.ozCat", mission, language.cstr() ) );
 
   Buffer buffer = file.read();
   if( buffer.isEmpty() ) {
@@ -143,7 +143,7 @@ bool Lingua::init( const char* language_ )
 
   language = language_;
 
-  File dir( File::VIRTUAL, "lingua/" + language );
+  File dir( "@lingua/" + language );
   if( dir.type() == File::MISSING ) {
     OZ_ERROR( "Invalid locale '%s', does not match any subdirectory in lingua/", language.cstr() );
   }

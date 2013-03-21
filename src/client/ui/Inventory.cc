@@ -387,11 +387,11 @@ Inventory::Inventory() :
 
   Log::verboseMode = true;
 
-  scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
-  scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
-  useTexId        = context.loadTextureLayer( "ui/icon/use.ozIcon" );
-  equipTexId      = context.loadTextureLayer( "ui/icon/equip.ozIcon" );
-  unequipTexId    = context.loadTextureLayer( "ui/icon/unequip.ozIcon" );
+  scrollUpTexId   = context.loadTextureLayer( "@ui/icon/scrollUp.ozIcon" );
+  scrollDownTexId = context.loadTextureLayer( "@ui/icon/scrollDown.ozIcon" );
+  useTexId        = context.loadTextureLayer( "@ui/icon/use.ozIcon" );
+  equipTexId      = context.loadTextureLayer( "@ui/icon/equip.ozIcon" );
+  unequipTexId    = context.loadTextureLayer( "@ui/icon/unequip.ozIcon" );
 
   Log::verboseMode = false;
 }
