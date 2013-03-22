@@ -99,7 +99,7 @@ void Window::swapBuffers()
 #if defined( __native_client__ )
 
   OZ_MAIN_CALL( this, {
-    _this->context->SwapBuffers( pp::CompletionCallback( &_this->flushCompleteCallback, _this ) );
+    _this->context->SwapBuffers( pp::CompletionCallback( _this->flushCompleteCallback, _this ) );
   } )
   flushSemaphore.wait();
 
@@ -223,7 +223,7 @@ void Window::init()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glFlush();
 
-    _this->context->SwapBuffers( pp::CompletionCallback( &_this->flushCompleteCallback, _this ) );
+    _this->context->SwapBuffers( pp::CompletionCallback( _this->flushCompleteCallback, _this ) );
   } )
   flushSemaphore.wait();
 

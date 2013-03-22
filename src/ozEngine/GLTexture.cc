@@ -37,13 +37,12 @@ static const int DDSD_LINEARSIZE_BIT  = 0x00080000;
 static const int DDPF_ALPHAPIXELS     = 0x00000001;
 static const int DDPF_FOURCC          = 0x00000004;
 
+#if 0
 bool GLTexture::build( const File& file, int options, OutputStream* ostream )
 {
   if( file.isVirtual() ) {
     return false;
   }
-
-#if 0
 
   int  width      = image->width;
   int  height     = image->height;
@@ -219,17 +218,19 @@ bool GLTexture::build( const File& file, int options, OutputStream* ostream )
     height = max( height / 2, 1 );
   }
   while( genMipmaps && ( levels.last().width > 1 || levels.last().height > 1 ) );
-#endif
+
+  return true;
 }
+#endif
 
 GLTexture::GLTexture() :
   textureId( 0 ), textureFormat( 0 ), textureMipmaps( 0 )
 {}
 
-GLTexture::GLTexture( InputStream* istream ) :
+GLTexture::GLTexture( const File& file ) :
   textureId( 0 ), textureFormat( 0 ), textureMipmaps( 0 )
 {
-  loadDDS( istream );
+  load( file );
 }
 
 GLTexture::~GLTexture()
@@ -237,62 +238,12 @@ GLTexture::~GLTexture()
   destroy();
 }
 
-bool GLTexture::load( InputStream* istream )
+bool GLTexture::load( const File& file )
 {
   destroy();
 
-  const char* begin = istream->pos();
-
-  glGenTextures( 1, &textureId );
-  glBindTexture( GL_TEXTURE_2D, textureId );
-
-  int wrap      = istream->readInt();
-  int magFilter = istream->readInt();
-  int minFilter = istream->readInt();
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap );
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-  for( int level = 0; ; ++level ) {
-    int width = istream->readInt();
-    if( width == 0 ) {
-      break;
-    }
-
-    int height = istream->readInt();
-    int format = istream->readInt();
-    int size   = istream->readInt();
-
-    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
-      glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
-                              size, istream->forward( size ) );
-    }
-    else {
-      glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0, uint( format ),
-                    GL_UNSIGNED_BYTE, istream->forward( size ) );
-    }
-  }
-
-  if( glGetError() != GL_NO_ERROR ) {
-    glDeleteTextures( 1, &textureId );
-    textureId = 0;
-
-    istream->set( begin );
-    return false;
-  }
-  else {
-    return true;
-  }
-}
-
-bool GLTexture::loadDDS( InputStream* istream_ )
-{
-  destroy();
-
-  InputStream istream( istream_->pos(), istream_->end() );
+  Buffer      buffer  = file.read();
+  InputStream istream = buffer.inputStream();
 
   // Implementation is based on specifications from
   // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
@@ -309,38 +260,70 @@ bool GLTexture::loadDDS( InputStream* istream_ )
   int pitch  = istream.readInt();
 
   istream.readInt();
-
-  int nMipmaps = istream.readInt();
+  textureMipmaps = istream.readInt();
 
   if( !( flags & ( DDSD_PITCH_BIT | DDSD_LINEARSIZE_BIT ) ) ) {
     pitch = 0;
   }
   if( !( flags & DDSD_MIPMAPCOUNT_BIT ) ) {
-    nMipmaps = 0;
+    textureMipmaps = 1;
   }
 
   istream.seek( 4 + 76 );
 
   int pixelFlags = istream.readInt();
-  int format     = istream.readInt();
-  int bpp        = istream.readInt();
-  int redMask    = istream.readInt();
-  int greenMask  = istream.readInt();
-  int blueMask   = istream.readInt();
-  int alphaMask  = istream.readInt();
+  int baseBlock  = 1;
+
+  char format[4];
+  istream.readChars( format, 4 );
+
+  int bpp = istream.readInt();
 
   if( pixelFlags & DDPF_FOURCC ) {
-
+    if( String::beginsWith( format, "DXT1" ) ) {
+      textureFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      baseBlock     = 8;
+    }
+    else if( String::beginsWith( format, "DXT5" ) ) {
+      textureFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      baseBlock     = 16;
+    }
+    else {
+      textureMipmaps = 0;
+      return false;
+    }
   }
   else {
-    format = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+    textureFormat = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+    baseBlock     = 1;
   }
 
-  istream.seek( 4 + 128 );
+  istream.seek( 4 + 124 );
 
-  //
+  glGenTextures( 1, &textureId );
+  glBindTexture( GL_TEXTURE_2D, textureId );
 
-  istream_->set( istream.pos() );
+  int mipmapWidth  = width;
+  int mipmapHeight = height;
+  int mipmapSize   = pixelFlags & DDPF_FOURCC ? pitch : width * height * ( bpp / 8 );
+
+  for( int i = 0; i < textureMipmaps; ++i ) {
+    if( pixelFlags & DDPF_FOURCC ) {
+      glCompressedTexImage2D( GL_TEXTURE_2D, i, textureFormat, mipmapWidth, mipmapHeight, 0,
+                              mipmapSize, istream.forward( mipmapSize ) );
+    }
+    else {
+      glTexImage2D( GL_TEXTURE_2D, i, int( textureFormat ), mipmapWidth, mipmapHeight, 0,
+                    textureFormat, GL_UNSIGNED_BYTE, istream.forward( mipmapSize ) );
+    }
+
+    mipmapWidth  /= 2;
+    mipmapHeight /= 2;
+    mipmapSize   /= 4;
+    mipmapSize    = max( mipmapSize, baseBlock );
+  }
+
+  OZ_GL_CHECK_ERROR();
   return true;
 }
 

@@ -37,3 +37,5 @@
 
 #include "ALBuffer.hh"
 #include "ALSource.hh"
+
+#include "Window.hh"

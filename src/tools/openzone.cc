@@ -178,7 +178,7 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
   switch( event.GetType() ) {
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
       if( !NaClPlatform::hasFocus ) {
-        LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
+        LockMouse( pp::CompletionCallback( onMouseLocked, this ) );
         return true;
       }
       break;

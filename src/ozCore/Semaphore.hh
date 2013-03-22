@@ -125,12 +125,16 @@ class Semaphore
     /**
      * Initialise semaphore.
      *
+     * Initialising an already initialised semaphore is an error.
+     *
      * @param counter initial counter value.
      */
     void init( int counter = 0 );
 
     /**
      * Destroy semaphore and release resources.
+     *
+     * Destroying uninitialised semaphore is a legal NOP.
      */
     void destroy();
 

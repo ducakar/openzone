@@ -115,7 +115,9 @@ void Mutex::init()
 
 void Mutex::destroy()
 {
-  hard_assert( descriptor != nullptr );
+  if( descriptor == nullptr ) {
+    return;
+  }
 
 #ifdef _WIN32
   CloseHandle( descriptor->mutex );

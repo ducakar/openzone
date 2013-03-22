@@ -167,7 +167,9 @@ void Semaphore::init( int counter )
 
 void Semaphore::destroy()
 {
-  hard_assert( descriptor != nullptr );
+  if( descriptor == nullptr ) {
+    return;
+  }
 
 #ifdef _WIN32
   CloseHandle( &descriptor->semaphore );

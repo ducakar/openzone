@@ -57,7 +57,7 @@ bool ALSource::create( const ALBuffer& buffer )
   alGenSources( 1, &sourceId );
   alSourcei( sourceId, AL_BUFFER, int( buffer.id() ) );
 
-  // This is not necessary by specification but seems it's always the case in openalsoft.
+  // This is not necessary by specification but it seems it's always the case with openalsoft.
   hard_assert( sourceId != 0 );
 
   OZ_AL_CHECK_ERROR();

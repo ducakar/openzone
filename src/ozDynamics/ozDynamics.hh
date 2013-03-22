@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "ozDynamics/config.hh"
+#include "common.hh"
 
 /*
  * Bounding volumes.

@@ -1,34 +1,37 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * ozEngine - OpenZone Engine Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software in
+ *    a product, an acknowledgement in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
  */
 
 /**
- * @file client/NaClPlatform.hh
+ * @file ozEngine/Pepper.hh
  */
 
 #pragma once
 
-#include <client/common.hh>
+#include "common.hh"
 
 #ifdef __native_client__
 
 #define OZ_MAIN_CALL( t, code ) \
-  if( oz::client::NaClPlatform::isMainThread() ) { \
+  if( oz::Pepper::isMainThread() ) { \
     decltype( t ) _this = ( t ); \
     static_cast<void>( _this ); \
     { code } \
@@ -42,14 +45,14 @@
         _This _this = static_cast<_This>( data ); \
         static_cast<void>( _this ); \
         { code } \
-        oz::client::NaClPlatform::mainCallSemaphore.post(); \
+        oz::Pepper::mainCallSemaphore.post(); \
       } \
     }; \
-    oz::client::NaClPlatform::call( _Callback::_main, ( t ) ); \
+    oz::Pepper::call( _Callback::_main, ( t ) ); \
   }
 
 #define OZ_STATIC_MAIN_CALL( code ) \
-  if( oz::client::NaClPlatform::isMainThread() ) { \
+  if( oz::Pepper::isMainThread() ) { \
     { code } \
   } \
   else { \
@@ -58,18 +61,16 @@
       static void _main( void*, int ) \
       { \
         { code } \
-        oz::client::NaClPlatform::mainCallSemaphore.post(); \
+        oz::Pepper::mainCallSemaphore.post(); \
       } \
     }; \
-    oz::client::NaClPlatform::call( _Callback::_main, nullptr ); \
+    oz::Pepper::call( _Callback::_main, nullptr ); \
   }
 
 namespace oz
 {
-namespace client
-{
 
-class NaClPlatform
+class Pepper
 {
   public:
 
@@ -87,7 +88,7 @@ class NaClPlatform
 
     static bool      hasFocus; ///< True iff fullscreen and mouse captured.
 
-    explicit NaClPlatform() = delete;
+    explicit Pepper() = delete;
 
     /*
      * Main thread call.
@@ -110,7 +111,6 @@ class NaClPlatform
 
 };
 
-}
 }
 
 #else

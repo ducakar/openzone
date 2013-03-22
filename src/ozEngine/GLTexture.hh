@@ -56,8 +56,8 @@ class GLTexture
   private:
 
     uint textureId;      ///< OpenGL texture id.
-    int  textureFormat;  ///< OpenGL internal texture format enumerator.
-    bool textureMipmaps; ///< True iff mipmaps have been are loaded from file.
+    uint textureFormat;  ///< OpenGL internal texture format enumerator.
+    int  textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
   public:
 
@@ -88,9 +88,9 @@ class GLTexture
     explicit GLTexture();
 
     /**
-     * Load a DDS texture from a stream.
+     * Load a DDS texture from a file.
      */
-    explicit GLTexture( InputStream* istream );
+    explicit GLTexture( const File& file );
 
     /**
      * Destructor, unloads texture from GPU if loaded.
@@ -139,7 +139,7 @@ class GLTexture
     /**
      * Return OpenGL internal texture format.
      */
-    int format() const
+    uint format() const
     {
       return textureFormat;
     }
@@ -153,14 +153,9 @@ class GLTexture
     }
 
     /**
-     * Load texture in OpenZone format to GPU.
+     * Load a DDS texture from a file.
      */
-    bool load( InputStream* istream );
-
-    /**
-     * Load a DDS texture from a stream.
-     */
-    bool loadDDS( InputStream* istream );
+    bool load( const File& file );
 
     /**
      * Unload texture from GPU if loaded.

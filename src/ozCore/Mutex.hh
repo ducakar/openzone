@@ -125,11 +125,15 @@ class Mutex
 
     /**
      * Initialise mutex.
+     *
+     * Initialising an already initialised mutex is an error.
      */
     void init();
 
     /**
      * Destroy mutex and release resources.
+     *
+     * Destroying uninitialised mutex is a legal NOP.
      */
     void destroy();
 

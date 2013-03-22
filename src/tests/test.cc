@@ -23,46 +23,51 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
-#include <AL/alc.h>
+#include <SDL.h>
 
 using namespace oz;
 
 int main( int argc, char** argv )
 {
   System::init();
+  SDL_Init( SDL_INIT_VIDEO );
+  Window::create( "Test", 1024, 768, false );
 
-  const char* sample = argc != 1 ? argv[1] : "/usr/share/sounds/pop.wav";
+  File dds( argc < 2 ? "skin.dds" : argv[1] );
+  GLTexture texture( dds );
 
-  File::initVFS();
-  File::mount( "/etc/", "", false );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-  File fstab( "@fstab" );
-  Buffer buf = fstab.read();
+  Log() << texture.id() << "\n";
 
-  Log() << fstab.realPath() << "\n";
-  Log() << buf.begin() << "\n";
+  bool isAlive = true;
+  while( isAlive ) {
+    SDL_Event event;
+    SDL_PollEvent( &event );
 
-  ALCdevice*  device  = alcOpenDevice( "" );
-  ALCcontext* context = alcCreateContext( device, nullptr );
+    if( event.type == SDL_QUIT ) {
+      isAlive = false;
+    }
 
-  alcMakeContextCurrent( context );
+    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  ALBuffer buffer( sample );
-  ALSource source( buffer );
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture( GL_TEXTURE_2D, texture.id() );
 
-  alSourcePlay( source.id() );
+    glBegin( GL_QUADS );
+      glTexCoord2i( 0, 1 ); glVertex2d( -0.5, -0.5 );
+      glTexCoord2i( 1, 1 ); glVertex2d( +0.5, -0.5 );
+      glTexCoord2i( 1, 0 ); glVertex2d( +0.5, +0.5 );
+      glTexCoord2i( 0, 0 ); glVertex2d( -0.5, +0.5 );
+    glEnd();
 
-  int state;
-  do {
-    Time::sleep( 100 );
-    alGetSourcei( source.id(), AL_SOURCE_STATE, &state );
+    Window::swapBuffers();
+    Time::sleep( 10 );
   }
-  while( state == AL_PLAYING );
 
-  source.destroy();
-  buffer.destroy();
-
-  alcDestroyContext( context );
-  alcCloseDevice( device );
+  Window::destroy();
+  SDL_Quit();
   return 0;
 }
