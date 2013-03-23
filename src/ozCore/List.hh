@@ -76,11 +76,11 @@ class List
      * Capacity is doubled, if it doesn't suffice, it is set to the least multiple of `GRANULARITY`
      * able to hold the requested number of elements.
      */
-    void ensureCapacity( int desiredSize )
+    void ensureCapacity( int capacity )
     {
-      if( size < desiredSize ) {
+      if( size < capacity ) {
         size *= 2;
-        size  = size < desiredSize ? ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY : size;
+        size  = size < capacity ? ( capacity + GRANULARITY - 1 ) / GRANULARITY * GRANULARITY : size;
         data  = aReallocate<Elem>( data, count, size );
       }
     }
@@ -90,8 +90,8 @@ class List
     /**
      * Create an empty list with the given initial capacity.
      */
-    explicit List( int size_ = 0 ) :
-      data( size_ == 0 ? nullptr : new Elem[size_] ), count( 0 ), size( size_ )
+    explicit List( int capacity = 0 ) :
+      data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
     {}
 
     /**
@@ -631,14 +631,14 @@ class List
     }
 
     /**
-     * For an empty list with no allocated storage, allocate capacity for `size_` elements.
+     * For an empty list with no allocated storage, allocate capacity for `capacity` elements.
      */
-    void allocate( int size_ )
+    void allocate( int capacity )
     {
-      hard_assert( size == 0 && size_ > 0 );
+      hard_assert( size == 0 && capacity > 0 );
 
-      data = new Elem[size_];
-      size = size_;
+      data = new Elem[capacity];
+      size = capacity;
     }
 
     /**

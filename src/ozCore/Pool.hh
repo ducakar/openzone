@@ -132,8 +132,8 @@ class Pool
 
     Block* firstBlock; ///< Linked list of the allocated blocks.
     Slot*  freeSlot;   ///< Linked list of free slots or `nullptr` if none.
-    int    size;       ///< Capacity.
     int    count;      ///< Number of occupied slots in the pool.
+    int    size;       ///< Capacity.
 
   public:
 
@@ -141,7 +141,7 @@ class Pool
      * Create an empty pool, storage is allocated when the first allocation is made.
      */
     explicit Pool() :
-      firstBlock( nullptr ), freeSlot( nullptr ), size( 0 ), count( 0 )
+      firstBlock( nullptr ), freeSlot( nullptr ), count( 0 ), size( 0 )
     {}
 
     /**
@@ -156,12 +156,12 @@ class Pool
      * Move constructor, moves storage.
      */
     Pool( Pool&& p ) :
-      firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ), count( p.count )
+      firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), count( p.count ), size( p.size )
     {
       p.firstBlock = nullptr;
       p.freeSlot   = nullptr;
-      p.size       = 0;
       p.count      = 0;
+      p.size       = 0;
     }
 
     /**
@@ -179,13 +179,13 @@ class Pool
 
       firstBlock   = p.firstBlock;
       freeSlot     = p.freeSlot;
-      size         = p.size;
       count        = p.count;
+      size         = p.size;
 
       p.firstBlock = nullptr;
       p.freeSlot   = nullptr;
-      p.size       = 0;
       p.count      = 0;
+      p.size       = 0;
 
       return *this;
     }
@@ -199,12 +199,14 @@ class Pool
 
       if( freeSlot == nullptr ) {
         firstBlock = new Block( firstBlock );
-        freeSlot = &firstBlock->data[1];
-        size += BLOCK_SIZE;
+        freeSlot   = &firstBlock->data[1];
+        size      += BLOCK_SIZE;
+
         return firstBlock->data[0].content;
       }
       else {
         Slot* slot = freeSlot;
+
         freeSlot = slot->nextSlot;
         return slot;
       }
@@ -283,8 +285,8 @@ class Pool
 
       firstBlock = nullptr;
       freeSlot   = nullptr;
-      size       = 0;
       count      = 0;
+      size       = 0;
     }
 
 };

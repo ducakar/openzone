@@ -66,7 +66,7 @@ class Bitset
         size = 0;
       }
       else {
-        size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
+        size = ( nBits + ULONG_BITSIZE - 1 ) / ULONG_BITSIZE;
         data = new ulong[size];
       }
     }
@@ -461,7 +461,7 @@ class Bitset
     {
       hard_assert( size == 0 && nBits > 0 );
 
-      int nUnits = ( nBits - 1 ) / ULONG_BITSIZE + 1;
+      int nUnits = ( nBits + ULONG_BITSIZE - 1 ) / ULONG_BITSIZE;
 
       data = new ulong[nUnits];
       size = nUnits;

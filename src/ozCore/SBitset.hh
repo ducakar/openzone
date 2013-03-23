@@ -52,7 +52,7 @@ class SBitset
     static const int ULONG_BITSIZE = int( sizeof( ulong ) * 8 );
 
     /// Number of units.
-    static const int SIZE = ( BITSIZE - 1 ) / ULONG_BITSIZE + 1;
+    static const int SIZE = ( BITSIZE + ULONG_BITSIZE - 1 ) / ULONG_BITSIZE;
 
     ulong data[SIZE]; ///< Pointer to array of units that holds the data.
 

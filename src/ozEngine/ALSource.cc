@@ -35,33 +35,23 @@ ALSource::ALSource() :
   sourceId( 0 )
 {}
 
-ALSource::ALSource( const ALBuffer& buffer ) :
-  sourceId( 0 )
-{
-  create( buffer );
-}
-
 ALSource::~ALSource()
 {
   destroy();
 }
 
-bool ALSource::create( const ALBuffer& buffer )
+bool ALSource::create()
 {
-  destroy();
-
-  if( !buffer.isLoaded() ) {
-    return false;
-  }
-
   alGenSources( 1, &sourceId );
-  alSourcei( sourceId, AL_BUFFER, int( buffer.id() ) );
 
-  // This is not necessary by specification but it seems it's always the case with openalsoft.
-  hard_assert( sourceId != 0 );
-
-  OZ_AL_CHECK_ERROR();
-  return true;
+  if( alGetError() != AL_NO_ERROR ) {
+    sourceId = 0;
+  }
+  else {
+    // This is not necessary by specification but it seems it's always the case with openalsoft.
+    hard_assert( sourceId != 0 );
+  }
+  return sourceId != 0;
 }
 
 void ALSource::destroy()
@@ -69,8 +59,6 @@ void ALSource::destroy()
   if( sourceId != 0 ) {
     alDeleteSources( 1, &sourceId );
     sourceId = 0;
-
-    OZ_AL_CHECK_ERROR();
   }
 }
 

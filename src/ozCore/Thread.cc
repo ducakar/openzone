@@ -237,7 +237,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
     }
   }
   else {
-    pthread_attr_t  attrib;
+    pthread_attr_t attrib;
 
     pthread_attr_init( &attrib );
     pthread_attr_setdetachstate( &attrib, PTHREAD_CREATE_DETACHED );

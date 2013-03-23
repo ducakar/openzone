@@ -117,8 +117,23 @@ namespace oz
 {
 
 using std::nullptr_t;
-using std::ptrdiff_t;
 using std::size_t;
+using std::ptrdiff_t;
+
+/**
+ * Null pointer type.
+ */
+typedef std::nullptr_t nullptr_t;
+
+/**
+ * Platform-dependent unsigned integer type for memory offsets and sizes.
+ */
+typedef std::size_t size_t;
+
+/**
+ * Platform-dependent signed integer type for memory offsets and pointer differences.
+ */
+typedef std::ptrdiff_t ptrdiff_t;
 
 /**
  * Signed byte.

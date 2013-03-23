@@ -322,7 +322,7 @@ bool Window::create( const char* title, int width_, int height_, bool fullscreen
 
 #endif
 
-  Log::printEnd( " %dx%d ... OK", width, height );
+  Log::printEnd( "%dx%d ... OK", width, height );
 
   glViewport( 0, 0, width, height );
   glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );

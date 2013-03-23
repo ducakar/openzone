@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "ALBuffer.hh"
+#include "common.hh"
 
 namespace oz
 {
@@ -46,11 +46,6 @@ class ALSource
      * Create an empty instance (no OpenAL source is created).
      */
     explicit ALSource();
-
-    /**
-     * Create a new source for the given buffer. Same as the default constructor plus `create()`.
-     */
-    explicit ALSource( const ALBuffer& buffer );
 
     /**
      * Destructor, destroys OpenAL source if created.
@@ -75,6 +70,8 @@ class ALSource
         return *this;
       }
 
+      destroy();
+
       sourceId   = s.sourceId;
       s.sourceId = 0;
 
@@ -98,9 +95,9 @@ class ALSource
     }
 
     /**
-     * Create a new OpenAL source for the given OpenAL buffer.
+     * Create a new uninitialised OpenAL source.
      */
-    bool create( const ALBuffer& buffer );
+    bool create();
 
     /**
      * Destroy OpenAL source if created.

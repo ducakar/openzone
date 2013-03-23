@@ -176,9 +176,9 @@ class Buffer
     void resize( int newSize );
 
     /**
-     * For an empty buffer, allocate new storage of `size` bytes.
+     * For an empty buffer, allocate new storage of `newSize` bytes.
      */
-    void allocate( int size );
+    void allocate( int newSize );
 
     /**
      * Deallocate storage.

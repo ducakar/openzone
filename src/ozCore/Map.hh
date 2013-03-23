@@ -102,11 +102,11 @@ class Map
      * Capacity is doubled, if it doesn't suffice, it is set to the least multiple of `GRANULARITY`
      * able to hold the requested number of elements.
      */
-    void ensureCapacity( int desiredSize )
+    void ensureCapacity( int capacity )
     {
-      if( size < desiredSize ) {
+      if( size < capacity ) {
         size *= 2;
-        size  = size < desiredSize ? ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY : size;
+        size  = size < capacity ? ( capacity + GRANULARITY - 1 ) / GRANULARITY * GRANULARITY : size;
         data  = aReallocate<Elem>( data, count, size );
       }
     }
@@ -116,8 +116,8 @@ class Map
     /**
      * Create an empty map with the given initial capacity.
      */
-    explicit Map( int size_ = 0 ) :
-      data( size_ == 0 ? nullptr : new Elem[size_] ), count( 0 ), size( size_ )
+    explicit Map( int capacity = 0 ) :
+      data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
     {}
 
     /**
@@ -541,14 +541,14 @@ class Map
     }
 
     /**
-     * For an empty map with no allocated storage, allocate capacity for `size_` elements.
+     * For an empty map with no allocated storage, allocate capacity for `capacity` elements.
      */
-    void allocate( int size_ )
+    void allocate( int capacity )
     {
-      hard_assert( size == 0 && size_ > 0 );
+      hard_assert( size == 0 && capacity > 0 );
 
-      data = new Elem[size_];
-      size = size_;
+      data = new Elem[capacity];
+      size = capacity;
     }
 
     /**

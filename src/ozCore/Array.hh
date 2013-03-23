@@ -156,7 +156,7 @@ class Array
     }
 
     /**
-     * Always false since static array cannot have zero size.
+     * Always false since static array cannot have zero elements.
      */
     OZ_ALWAYS_INLINE
     bool isEmpty() const

@@ -163,7 +163,7 @@ class Alloc
     OZ_ALWAYS_INLINE
     static size_t alignUp( size_t size )
     {
-      return ( ( size - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT;
+      return ( size + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 );
     }
 
     /**
@@ -183,7 +183,7 @@ class Alloc
     OZ_ALWAYS_INLINE
     static Type* alignUp( Type* p )
     {
-      return reinterpret_cast<Type*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
+      return reinterpret_cast<Type*>( size_t( p + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 ) );
     }
 
 };

@@ -40,7 +40,7 @@ Buffer::Buffer( const char* data_, int size_ ) :
 }
 
 Buffer::Buffer( const String& s ) :
-  data( s.length() == 0 ? nullptr : new char[s.length()] ), size( s.length() )
+  data( s.length() == 0 ? nullptr : new char[ s.length() ] ), size( s.length() )
 {
   mCopy( data, s.cstr(), size_t( size ) );
 }
@@ -119,12 +119,12 @@ void Buffer::resize( int newSize )
   size = newSize;
 }
 
-void Buffer::allocate( int size_ )
+void Buffer::allocate( int newSize )
 {
-  hard_assert( size == 0 && size_ > 0 );
+  hard_assert( size == 0 && newSize > 0 );
 
-  data = new char[size_];
-  size = size_;
+  data = new char[newSize];
+  size = newSize;
 }
 
 void Buffer::deallocate()

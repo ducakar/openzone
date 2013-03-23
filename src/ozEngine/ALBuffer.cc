@@ -81,12 +81,44 @@ ALBuffer::~ALBuffer()
   destroy();
 }
 
+ALSource ALBuffer::createSource() const
+{
+  ALSource source;
+
+  if( bufferId == 0 ) {
+    return source;
+  }
+
+  source.create();
+
+  if( source.isCreated() ) {
+    alSourcei( source.id(), AL_BUFFER, int( bufferId ) );
+  }
+  return source;
+}
+
+bool ALBuffer::create()
+{
+  destroy();
+
+  alGenBuffers( 1, &bufferId );
+  return bufferId != 0;
+}
+
 bool ALBuffer::load( const File& file )
 {
   destroy();
 
-  Buffer      buffer  = file.read();
-  InputStream istream = buffer.inputStream();
+  Buffer      buffer;
+  InputStream istream;
+
+  if( file.isMapped() ) {
+    istream = file.inputStream();
+  }
+  else {
+    buffer  = file.read();
+    istream = buffer.inputStream();
+  }
 
   if( !istream.isAvailable() ) {
     return false;
@@ -184,7 +216,7 @@ bool ALBuffer::load( const File& file )
     ov_clear( &ovStream );
 
     OZ_AL_CHECK_ERROR();
-    return true;
+    return bufferId != 0;
   }
 }
 
@@ -193,8 +225,6 @@ void ALBuffer::destroy()
   if( bufferId != 0 ) {
     alDeleteBuffers( 1, &bufferId );
     bufferId = 0;
-
-    OZ_AL_CHECK_ERROR();
   }
 }
 

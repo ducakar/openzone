@@ -24,6 +24,8 @@
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
 #include <SDL.h>
+#include <AL/alc.h>
+#include <vector>
 
 using namespace oz;
 
@@ -33,20 +35,25 @@ int main( int argc, char** argv )
   SDL_Init( SDL_INIT_VIDEO );
   Window::create( "Test", 1024, 768, false );
 
-  File dds( argc < 2 ? "skin.dds" : argv[1] );
+  ALCdevice*  device  = alcOpenDevice( nullptr );
+  ALCcontext* context = alcCreateContext( device, nullptr );
+  alcMakeContextCurrent( context );
+
+  ALBuffer buffer( "/usr/share/sounds/Kopete_Received.ogg" );
+  ALSource source = buffer.createSource();
+
+  hard_assert( source.id() != 0 );
+  alSourcePlay( source.id() );
+
+  File dds( argc < 2 ? "mail.dds" : argv[1] );
   GLTexture texture( dds );
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-  Log() << texture.id() << "\n";
 
   bool isAlive = true;
   while( isAlive ) {
     SDL_Event event;
     SDL_PollEvent( &event );
 
-    if( event.type == SDL_QUIT ) {
+    if( event.type == SDL_QUIT || event.type == SDL_KEYDOWN ) {
       isAlive = false;
     }
 
@@ -57,16 +64,21 @@ int main( int argc, char** argv )
     glBindTexture( GL_TEXTURE_2D, texture.id() );
 
     glBegin( GL_QUADS );
-      glTexCoord2i( 0, 1 ); glVertex2d( -0.5, -0.5 );
-      glTexCoord2i( 1, 1 ); glVertex2d( +0.5, -0.5 );
-      glTexCoord2i( 1, 0 ); glVertex2d( +0.5, +0.5 );
-      glTexCoord2i( 0, 0 ); glVertex2d( -0.5, +0.5 );
+      glTexCoord2i( 0, 1 ); glVertex2d( -1, -1 );
+      glTexCoord2i( 1, 1 ); glVertex2d( +1, -1 );
+      glTexCoord2i( 1, 0 ); glVertex2d( +1, +1 );
+      glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
     glEnd();
 
     Window::swapBuffers();
     Time::sleep( 10 );
   }
 
+  source.destroy();
+  buffer.destroy();
+
+  alcDestroyContext( context );
+  alcCloseDevice( device );
   Window::destroy();
   SDL_Quit();
   return 0;

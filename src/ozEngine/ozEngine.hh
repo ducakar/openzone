@@ -36,6 +36,7 @@
 #include "GLTexture.hh"
 
 #include "ALBuffer.hh"
+#include "ALStreamingBuffer.hh"
 #include "ALSource.hh"
 
 #include "Window.hh"

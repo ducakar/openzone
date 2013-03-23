@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "ALSource.hh"
 
 namespace oz
 {
@@ -96,6 +96,16 @@ class ALBuffer
     {
       return bufferId != 0;
     }
+
+    /**
+     * Create a new OpenAL source for this buffer.
+     */
+    ALSource createSource() const;
+
+    /**
+     * Create a new uninitialised OpenAL buffer.
+     */
+    bool create();
 
     /**
      * Create a new OpenAL buffer from the given WAVE or Ogg Vorbis file.

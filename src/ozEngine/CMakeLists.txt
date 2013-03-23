@@ -6,6 +6,7 @@ add_library( ozEngine
 #BEGIN SOURCES
   ALBuffer.hh
   ALSource.hh
+  ALStreamingBuffer.hh
   common.hh
   GLTexture.hh
   OpenAL.hh
@@ -16,6 +17,7 @@ add_library( ozEngine
   Window.hh
   ALBuffer.cc
   ALSource.cc
+  ALStreamingBuffer.cc
   common.cc
   GLTexture.cc
   OpenAL.cc
