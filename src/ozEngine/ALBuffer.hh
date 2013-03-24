@@ -99,21 +99,33 @@ class ALBuffer
 
     /**
      * Create a new OpenAL source for this buffer.
+     *
+     * If the buffer does not exist, this returns an uninitialised `ALSource`.
      */
     ALSource createSource() const;
 
     /**
      * Create a new uninitialised OpenAL buffer.
+     *
+     * This is a NOP if buffer already exists.
      */
     bool create();
 
     /**
-     * Create a new OpenAL buffer from the given WAVE or Ogg Vorbis file.
+     * Create buffer if necessary and load data from the given WAVE or Ogg Vorbis file.
+     *
+     * If buffer already exists, its contents is replaced by the new data.
+     *
+     * @note
+     * OpenAL error is generated if a buffer contents is changed while some source plays it.
      */
     bool load( const File& file );
 
     /**
      * Destroy OpenAL buffer if created.
+     *
+     * @note
+     * OpenAL error is generated if a buffer is deleted while some source is still bound to it.
      */
     void destroy();
 

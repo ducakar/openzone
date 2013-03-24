@@ -38,9 +38,11 @@ class ALStreamingBuffer
 {
   private:
 
-    Buffer fileBuffer;   ///< Contents of the streamed Ogg Vorbis file.
-    uint   bufferIds[2]; ///< OpenAL buffer ids, both 0 if not loaded.
-    uint   sourceId;     ///< Target OpenAL source for which buffers are queued.
+    struct Stream;
+
+    uint    bufferIds[2]; ///< OpenAL buffer ids, both 0 if not loaded.
+    uint    sourceId;     ///< Target OpenAL source for which buffers are queued.
+    Stream* stream;       ///< Internal file buffer and decoder state.
 
   public:
 
@@ -55,7 +57,7 @@ class ALStreamingBuffer
     explicit ALStreamingBuffer( const File& file );
 
     /**
-     * Destructor, destroys OpenAL buffers if created.
+     * Destructor, invokes `destroy()`.
      */
     ~ALStreamingBuffer();
 
@@ -64,14 +66,15 @@ class ALStreamingBuffer
      */
     ALStreamingBuffer( ALStreamingBuffer&& b )
     {
-      fileBuffer     = static_cast<Buffer&&>( b.fileBuffer );
       bufferIds[0]   = b.bufferIds[0];
       bufferIds[1]   = b.bufferIds[1];
       sourceId       = b.sourceId;
+      stream         = b.stream;
 
       b.bufferIds[0] = 0;
       b.bufferIds[1] = 0;
       b.sourceId     = 0;
+      b.stream       = nullptr;
     }
 
     /**
@@ -83,14 +86,15 @@ class ALStreamingBuffer
         return *this;
       }
 
-      fileBuffer     = static_cast<Buffer&&>( b.fileBuffer );
       bufferIds[0]   = b.bufferIds[0];
       bufferIds[1]   = b.bufferIds[1];
       sourceId       = b.sourceId;
+      stream         = b.stream;
 
       b.bufferIds[0] = 0;
       b.bufferIds[1] = 0;
       b.sourceId     = 0;
+      stream         = nullptr;
 
       return *this;
     }
@@ -106,6 +110,14 @@ class ALStreamingBuffer
     }
 
     /**
+     * Get attached OpenAL source id.
+     */
+    uint attachedSourceId() const
+    {
+      return sourceId;
+    }
+
+    /**
      * True iff loaded.
      */
     bool isLoaded() const
@@ -114,18 +126,12 @@ class ALStreamingBuffer
     }
 
     /**
-     * Create a new source and attach it to this buffer queue.
-     *
-     * Streaming only works for the attached source (the last source created by this function).
+     * True iff a source is attached.
      */
-    ALSource createSource();
-
-    /**
-     * Detach last created source.
-     *
-     * Forgets the last created source and stops queuing buffers for it.
-     */
-    void detachSource();
+    bool isSourceAttached() const
+    {
+      return sourceId != 0;
+    }
 
     /**
      * Update buffers and queue for the attached source.
@@ -133,20 +139,30 @@ class ALStreamingBuffer
      * If a buffer has been processed, unqueues it, fills it with new data and puts it back into
      * the queue. This is a NOP if no source is attached.
      */
-    void update();
+    bool update();
 
     /**
-     * Create a new uninitialised OpenAL buffers for queuing.
+     * Create a new source and attach it to this buffer queue.
+     *
+     * The buffers must be created to attach a source. If there already is a source attached it is
+     * forgotten.
+     */
+    ALSource createSource();
+
+    /**
+     * Create a pair of uninitialised OpenAL buffers for streaming.
      */
     bool create();
 
     /**
      * Create a new buffer queue from the given Ogg Vorbis file.
+     *
+     * If the source is already attached, it is stopped and newly filled buffers are queued for it.
      */
     bool load( const File& file );
 
     /**
-     * Destroy OpenAL buffers if created and detach the source if attached.
+     * Destroy OpenAL buffers if created and forget the attached source.
      */
     void destroy();
 

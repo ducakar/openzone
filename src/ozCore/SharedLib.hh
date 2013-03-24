@@ -69,7 +69,7 @@ class SharedLib
     /**
      * True iff platform supports dynamic linking.
      */
-    static const bool SUPPORTED;
+    static const bool IS_SUPPORTED;
 
     /**
      * Generic method type to avoid casts between pointer-to-function and pointer-to-object.

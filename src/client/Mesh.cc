@@ -177,7 +177,7 @@ void Mesh::drawScheduled( int mask )
     shader.program( mesh->shaderId );
 
     foreach( instance, mesh->instances.citer() ) {
-      // HACK: This is not a nice way.
+      // HACK This is not a nice way to draw non-trasparent parts for which alpha < 1 has been set.
       int instanceMask = mask;
 
       if( instance->alpha != 1.0f ) {

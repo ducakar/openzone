@@ -55,7 +55,7 @@ void SharedLib::close()
 
 #else
 
-const bool SharedLib::SUPPORTED = true;
+const bool SharedLib::IS_SUPPORTED = true;
 
 SharedLib::Method* SharedLib::get( const char* symbol ) const
 {

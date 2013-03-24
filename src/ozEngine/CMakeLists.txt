@@ -23,6 +23,7 @@ add_library( ozEngine
   OpenAL.cc
   OpenGL.cc
   Pepper.cc
+  vorbis.cc
   Window.cc
 #END SOURCES
 )

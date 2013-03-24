@@ -36,7 +36,7 @@
     oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "  Check '%s' failed", #cond ); \
   }
 
-// FIXME: Add a space after ellipsis once KDevelop gets that fixed.
+// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
 #define OZ_CHECK_CONTENTS( container, ...) \
   { \
     auto i = citer( container ); \

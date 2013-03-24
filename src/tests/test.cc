@@ -25,7 +25,6 @@
 #include <ozEngine/ozEngine.hh>
 #include <SDL.h>
 #include <AL/alc.h>
-#include <vector>
 
 using namespace oz;
 
@@ -39,11 +38,13 @@ int main( int argc, char** argv )
   ALCcontext* context = alcCreateContext( device, nullptr );
   alcMakeContextCurrent( context );
 
-  ALBuffer buffer( "/usr/share/sounds/Kopete_Received.ogg" );
+//  ALBuffer buffer( "/usr/share/sounds/Kopete_Received.ogg" );
+  ALStreamingBuffer buffer( "/home/davorin/Glasba/Whatever.ogg" );
   ALSource source = buffer.createSource();
 
   hard_assert( source.id() != 0 );
   alSourcePlay( source.id() );
+  OZ_AL_CHECK_ERROR();
 
   File dds( argc < 2 ? "mail.dds" : argv[1] );
   GLTexture texture( dds );
@@ -71,12 +72,18 @@ int main( int argc, char** argv )
     glEnd();
 
     Window::swapBuffers();
-    Time::sleep( 10 );
+
+    isAlive &= buffer.update();
+    OZ_AL_CHECK_ERROR();
+    Time::sleep( 50 );
   }
 
   source.destroy();
+  OZ_AL_CHECK_ERROR();
   buffer.destroy();
+  OZ_AL_CHECK_ERROR();
 
+  OZ_AL_CHECK_ERROR();
   alcDestroyContext( context );
   alcCloseDevice( device );
   Window::destroy();

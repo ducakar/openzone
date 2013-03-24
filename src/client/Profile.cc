@@ -77,7 +77,7 @@ void Profile::init()
     }
   }
 
-  // HACK default profile
+  // HACK Default player profile is hard-coded.
   if( !configExists ) {
     profileConfig.add( "class", "beast" );
     profileConfig.add( "weaponItem", 0 );

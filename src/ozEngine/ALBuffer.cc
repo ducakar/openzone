@@ -27,44 +27,10 @@
 #include "ALBuffer.hh"
 
 #include "OpenAL.hh"
-
-// We don't use those callbacks anywhere and they don't compile on MinGW.
-#define OV_EXCLUDE_STATIC_CALLBACKS
-#include <vorbis/vorbisfile.h>
+#include "vorbis.h"
 
 namespace oz
 {
-
-static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
-{
-  InputStream* istream = static_cast<InputStream*>( handle );
-
-  int blockSize = int( size );
-  int nBlocks   = min( int( n ), istream->available() / blockSize );
-
-  istream->readChars( static_cast<char*>( buffer ), nBlocks * blockSize );
-  return size_t( nBlocks );
-}
-
-static int vorbisSeek( void* handle, ogg_int64_t offset, int whence )
-{
-  InputStream* istream = static_cast<InputStream*>( handle );
-
-  const char* origin = whence == SEEK_CUR ? istream->pos() :
-                       whence == SEEK_END ? istream->end() : istream->begin();
-
-  istream->set( origin + offset );
-  return 0;
-}
-
-static long vorbisTell( void* handle )
-{
-  InputStream* istream = static_cast<InputStream*>( handle );
-
-  return long( istream->tell() );
-}
-
-static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbisTell };
 
 ALBuffer::ALBuffer() :
   bufferId( 0 )
@@ -85,30 +51,26 @@ ALSource ALBuffer::createSource() const
 {
   ALSource source;
 
-  if( bufferId == 0 ) {
-    return source;
-  }
+  if( bufferId != 0 ) {
+    source.create();
 
-  source.create();
-
-  if( source.isCreated() ) {
-    alSourcei( source.id(), AL_BUFFER, int( bufferId ) );
+    if( source.isCreated() ) {
+      alSourcei( source.id(), AL_BUFFER, int( bufferId ) );
+    }
   }
   return source;
 }
 
 bool ALBuffer::create()
 {
-  destroy();
-
-  alGenBuffers( 1, &bufferId );
+  if( bufferId == 0 ) {
+    alGenBuffers( 1, &bufferId );
+  }
   return bufferId != 0;
 }
 
 bool ALBuffer::load( const File& file )
 {
-  destroy();
-
   Buffer      buffer;
   InputStream istream;
 
@@ -162,11 +124,14 @@ bool ALBuffer::load( const File& file )
 
 #endif
 
-    alGenBuffers( 1, &bufferId );
-    alBufferData( bufferId, format, data, size, rate );
+    create();
+
+    if( bufferId != 0 ) {
+      alBufferData( bufferId, format, data, size, rate );
+    }
 
     OZ_AL_CHECK_ERROR();
-    return true;
+    return bufferId != 0;
   }
   else {
     OggVorbis_File ovStream;
@@ -180,37 +145,28 @@ bool ALBuffer::load( const File& file )
       return false;
     }
 
-    int rate      = int( vorbisInfo->rate );
     int nChannels = vorbisInfo->channels;
-    int size      = int( ov_pcm_total( &ovStream, -1 ) ) * nChannels * 2;
-
     if( nChannels != 1 && nChannels != 2 ) {
       ov_clear( &ovStream );
       return false;
     }
 
-    char* data      = new char[size];
-    long  bytesRead = 0;
-    long  result;
-
-    do {
-      int section;
-      result = ov_read( &ovStream, data + bytesRead, size - int( bytesRead ), 0, 2, 1, &section );
-
-      if( result < 0 ) {
-        delete[] data;
-        ov_clear( &ovStream );
-        return false;
-      }
-
-      bytesRead += result;
-    }
-    while( result > 0 && bytesRead < size );
-
     ALenum format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+    int    rate   = int( vorbisInfo->rate );
+    int    size   = int( ov_pcm_total( &ovStream, -1 ) ) * nChannels * int( sizeof( short ) );
+    char*  data   = new char[size];
 
-    alGenBuffers( 1, &bufferId );
-    alBufferData( bufferId, format, data, size, rate );
+    if( !decodeVorbis( &ovStream, data, size ) ) {
+      delete[] data;
+      ov_clear( &ovStream );
+      return false;
+    }
+
+    create();
+
+    if( bufferId != 0 ) {
+      alBufferData( bufferId, format, data, size, rate );
+    }
 
     delete[] data;
     ov_clear( &ovStream );

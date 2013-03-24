@@ -163,7 +163,7 @@ bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
   const Box*     box     = static_cast<const Box*>( box_ );
   const Capsule* capsule = static_cast<const Capsule*>( capsule_ );
 
-  // TODO
+  // TODO Box-capsule collision.
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
@@ -181,7 +181,7 @@ bool Collider::boxPolytope( const Mat33& rot0, const Shape* box_,
   const Box*      box      = static_cast<const Box*>( box_ );
   const Polytope* polytope = static_cast<const Polytope*>( polytope_ );
 
-  // TODO
+  // TODO Box-polytope collision.
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( box );
@@ -253,7 +253,7 @@ bool Collider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
   const Capsule*  capsule  = static_cast<const Capsule*>( capsule_ );
   const Polytope* polytope = static_cast<const Polytope*>( polytope_ );
 
-  // TODO
+  // TODO Capsule-polytope collision.
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( capsule );
@@ -297,7 +297,7 @@ bool Collider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
   const Polytope* polytope0 = static_cast<const Polytope*>( polytope0_ );
   const Polytope* polytope1 = static_cast<const Polytope*>( polytope1_ );
 
-  // TODO
+  // TODO Polytope-polytope collision.
   static_cast<void>( rot0 );
   static_cast<void>( rot1 );
   static_cast<void>( polytope0 );

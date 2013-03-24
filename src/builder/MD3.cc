@@ -147,7 +147,7 @@ void MD3::buildMesh( const char* name, int frame )
     }
   }
 
-  // FIXME indexBase unused
+  // FIXME cppcheck: indexBase unused.
   int indexBase = 0;
 
   is.rewind();

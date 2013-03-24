@@ -28,49 +28,29 @@
 
 #include "OpenAL.hh"
 
-// We don't use those callbacks anywhere and they don't compile on MinGW.
-#define OV_EXCLUDE_STATIC_CALLBACKS
-#include <vorbis/vorbisfile.h>
+#include "vorbis.h"
 
 namespace oz
 {
 
-static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
+struct ALStreamingBuffer::Stream
 {
-  InputStream* istream = static_cast<InputStream*>( handle );
+  static const int BUFFER_SIZE = 65536 / 2;
 
-  int blockSize = int( size );
-  int nBlocks   = min( int( n ), istream->available() / blockSize );
-
-  istream->readChars( static_cast<char*>( buffer ), nBlocks * blockSize );
-  return size_t( nBlocks );
-}
-
-static int vorbisSeek( void* handle, ogg_int64_t offset, int whence )
-{
-  InputStream* istream = static_cast<InputStream*>( handle );
-
-  const char* origin = whence == SEEK_CUR ? istream->pos() :
-                       whence == SEEK_END ? istream->end() : istream->begin();
-
-  istream->set( origin + offset );
-  return 0;
-}
-
-static long vorbisTell( void* handle )
-{
-  InputStream* istream = static_cast<InputStream*>( handle );
-
-  return long( istream->tell() );
-}
-
-static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbisTell };
+  Buffer         buffer;
+  InputStream    istream;
+  OggVorbis_File ovStream;
+  ALenum         format;
+  int            rate;
+  char           samples[BUFFER_SIZE];
+};
 
 ALStreamingBuffer::ALStreamingBuffer()
 {
   bufferIds[0] = 0;
   bufferIds[1] = 0;
   sourceId     = 0;
+  stream       = nullptr;
 }
 
 ALStreamingBuffer::ALStreamingBuffer( const File& file )
@@ -78,6 +58,7 @@ ALStreamingBuffer::ALStreamingBuffer( const File& file )
   bufferIds[0] = 0;
   bufferIds[1] = 0;
   sourceId     = 0;
+  stream       = nullptr;
 
   load( file );
 }
@@ -87,54 +68,152 @@ ALStreamingBuffer::~ALStreamingBuffer()
   destroy();
 }
 
+bool ALStreamingBuffer::update()
+{
+  if( sourceId == 0 || stream == nullptr ) {
+    return false;
+  }
+  if( !alIsSource( sourceId ) ) {
+    sourceId = 0;
+    return false;
+  }
+
+  int nProcessed;
+  alGetSourcei( sourceId, AL_BUFFERS_PROCESSED, &nProcessed );
+
+  if( nProcessed == 0 ) {
+    return true;
+  }
+
+  uint bufferId;
+  alSourceUnqueueBuffers( sourceId, 1, &bufferId );
+
+  if( !decodeVorbis( &stream->ovStream, stream->samples, Stream::BUFFER_SIZE ) ) {
+    ov_clear( &stream->ovStream );
+    delete stream;
+    stream = nullptr;
+    return false;
+  }
+
+  alBufferData( bufferId, stream->format, stream->samples, Stream::BUFFER_SIZE, stream->rate );
+  alSourceQueueBuffers( sourceId, 1, &bufferId );
+  return true;
+}
+
 ALSource ALStreamingBuffer::createSource()
 {
   ALSource source;
 
-  if( bufferIds[0] == 0 ) {
-    return source;
-  }
+  if( bufferIds[0] != 0 ) {
+    source.create();
 
-  source.create();
-
-  if( source.isCreated() ) {
-    sourceId = source.id();
-    alSourceQueueBuffers( source.id(), 2, bufferIds );
+    if( source.isCreated() ) {
+      sourceId = source.id();
+      alSourceQueueBuffers( source.id(), 2, bufferIds );
+    }
   }
   return source;
 }
 
-void ALStreamingBuffer::detachSource()
+bool ALStreamingBuffer::create()
 {
-  if( sourceId == 0 ) {
-    return;
+  if( bufferIds[0] == 0 ) {
+    alGenBuffers( 2, bufferIds );
   }
-
-  alSourceStop( sourceId );
-  alSourceUnqueueBuffers( sourceId, 2, bufferIds );
-  sourceId = 0;
-}
-
-void ALStreamingBuffer::update()
-{
-
+  return bufferIds[0] != 0;
 }
 
 bool ALStreamingBuffer::load( const File& file )
 {
-  destroy();
+  if( sourceId != 0 ) {
+    if( alIsSource( sourceId ) ) {
+      alSourceStop( sourceId );
+      alSourceUnqueueBuffers( sourceId, 2, bufferIds );
+    }
+    else {
+      sourceId = 0;
+    }
+  }
 
+  stream = stream == nullptr ? new Stream() : stream;
+  stream->buffer = file.read();
+  stream->istream = stream->buffer.inputStream();
+
+  if( stream->buffer.isEmpty() ) {
+    delete stream;
+    stream = nullptr;
+    return false;
+  }
+
+  if( ov_open_callbacks( &stream->istream, &stream->ovStream, nullptr, 0, VORBIS_CALLBACKS ) != 0 )
+  {
+    delete stream;
+    stream = nullptr;
+    return false;
+  }
+
+  vorbis_info* vorbisInfo = ov_info( &stream->ovStream, -1 );
+  if( vorbisInfo == nullptr ) {
+    ov_clear( &stream->ovStream );
+    delete stream;
+    stream = nullptr;
+    return false;
+  }
+
+  int nChannels = vorbisInfo->channels;
+  if( nChannels != 1 && nChannels != 2 ) {
+    ov_clear( &stream->ovStream );
+    delete stream;
+    stream = nullptr;
+    return false;
+  }
+
+  stream->format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+  stream->rate   = int( vorbisInfo->rate );
+
+  create();
+
+  if( bufferIds[0] != 0 ) {
+    if( !decodeVorbis( &stream->ovStream, stream->samples, Stream::BUFFER_SIZE ) ) {
+      ov_clear( &stream->ovStream );
+      delete stream;
+      stream = nullptr;
+    }
+
+    alBufferData( bufferIds[0], stream->format, &stream->samples, Stream::BUFFER_SIZE,
+                  stream->rate );
+
+    if( !decodeVorbis( &stream->ovStream, stream->samples, Stream::BUFFER_SIZE ) ) {
+      ov_clear( &stream->ovStream );
+      delete stream;
+      stream = nullptr;
+    }
+
+    alBufferData( bufferIds[1], stream->format, &stream->samples, Stream::BUFFER_SIZE,
+                  stream->rate );
+  }
+
+  if( sourceId != 0 ) {
+    alSourceQueueBuffers( sourceId, 2, bufferIds );
+  }
+  OZ_AL_CHECK_ERROR();
   return true;
 }
 
 void ALStreamingBuffer::destroy()
 {
   if( bufferIds[0] != 0 ) {
-    detachSource();
+    if( sourceId != 0 && alIsSource( sourceId ) ) {
+      alSourceStop( sourceId );
+    }
+
+    delete stream;
 
     alDeleteBuffers( 2, bufferIds );
     bufferIds[0] = 0;
     bufferIds[1] = 0;
+    sourceId     = 0;
+    stream       = nullptr;
   }
 }
 

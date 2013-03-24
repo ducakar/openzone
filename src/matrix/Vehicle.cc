@@ -117,22 +117,22 @@ void Vehicle::service()
 
 void Vehicle::staticHandler()
 {
-  // TODO
+  // TODO Static turret handler.
 }
 
 void Vehicle::wheeledHandler()
 {
-  // TODO
+  // TODO Wheeled vehicle handler.
 }
 
 void Vehicle::trackedHandler()
 {
-  // TODO
+  // TODO Tracked vehicle handler.
 }
 
 void Vehicle::mechHandler()
 {
-  // TODO
+  // TODO Mech warrior handler.
 }
 
 void Vehicle::hoverHandler()
