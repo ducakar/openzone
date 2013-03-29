@@ -27,7 +27,7 @@
 #include "Window.hh"
 
 #include "Pepper.hh"
-#include "OpenGL.hh"
+#include "GL.hh"
 
 #include <SDL.h>
 #ifdef __native_client__

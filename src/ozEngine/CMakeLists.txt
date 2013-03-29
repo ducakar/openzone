@@ -5,30 +5,29 @@ add_library( ozEngine
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   ALBuffer.hh
+  AL.hh
   ALSource.hh
   ALStreamingBuffer.hh
   common.hh
+  GL.hh
   GLTexture.hh
-  OpenAL.hh
-  OpenGL.hh
   ozEngine.hh
   pch.hh
   Pepper.hh
   Window.hh
   ALBuffer.cc
+  AL.cc
   ALSource.cc
   ALStreamingBuffer.cc
   common.cc
+  GL.cc
   GLTexture.cc
-  OpenAL.cc
-  OpenGL.cc
   Pepper.cc
-  vorbis.cc
   Window.cc
 #END SOURCES
 )
 target_link_libraries( ozEngine ozDynamics ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARIES} )
-if( OZ_GLES )
+if( OZ_GL_ES )
   target_link_libraries( ozEngine ${GLES2_LIBRARIES} )
 else()
   target_link_libraries( ozEngine ${OPENGL_gl_LIBRARY} )

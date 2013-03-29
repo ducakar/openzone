@@ -23,11 +23,12 @@
 /**
  * @file ozCore/Alloc.hh
  *
- * Alloc class and enhanced `new`/`delete` operators.
+ * `Alloc` class and enhanced `new`/`delete` operators.
  *
- * Apart form Alloc class, enhanced `new`/`delete` operators are defined in this module, overriding
- * standard ones defined in \<new\>. Those operators count number of allocations and amount of
- * memory allocated at any given time (reported through `Alloc::count`, `Alloc::amount` etc.).
+ * Apart form `Alloc` class, enhanced `new`/`delete` operators are defined in this module,
+ * overriding standard ones defined in \<new\>. Those operators count number of allocations and
+ * amount of memory allocated at any given time (reported through `Alloc::count`, `Alloc::amount`
+ * etc.).
  *
  * Several other features may also be configured:
  * @li Unless compiled with `NDEBUG` all freed memory is overwritten by 0xEE bytes.

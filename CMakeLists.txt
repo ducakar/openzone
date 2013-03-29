@@ -11,7 +11,7 @@ set( OZ_VERSION 0.3.81 )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
-option( OZ_GLES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF )
+option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF )
 
 option( OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF )
 option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )
@@ -34,7 +34,7 @@ set( OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
 
 if( PLATFORM_EMBEDDED )
   set( OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
-  set( OZ_GLES ON )
+  set( OZ_GL_ES ON )
   set( OZ_STANDALONE OFF )
 endif()
 
@@ -105,7 +105,7 @@ else()
   include_directories( SYSTEM ${SDL_INCLUDE_DIRS} )
 endif()
 
-if( OZ_GLES )
+if( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
   # platform directory, no need to explicitly check existence or to detect library names.
   if( ANDROID )
@@ -230,12 +230,6 @@ endif()
 #
 
 add_subdirectory( src )
-
-#
-# Documentation
-#
-
-add_subdirectory( doc )
 
 #
 # Data files

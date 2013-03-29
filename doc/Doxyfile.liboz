@@ -109,6 +109,8 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = src/ozCore \
                          src/ozDynamics \
+                         src/ozDynamics/collision \
+                         src/ozDynamics/physics \
                          src/ozEngine
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.hh \
@@ -264,7 +266,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             =
+PREDEFINED             = DOXYGEN_IGNORE
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

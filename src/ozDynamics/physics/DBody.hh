@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/physics/DBody.hh
  *
- * Body class.
+ * `DBody` class.
  */
 
 #pragma once

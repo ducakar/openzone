@@ -26,9 +26,6 @@
 
 #include "ALBuffer.hh"
 
-#include "OpenAL.hh"
-#include "vorbis.h"
-
 namespace oz
 {
 
@@ -55,7 +52,7 @@ ALSource ALBuffer::createSource() const
     source.create();
 
     if( source.isCreated() ) {
-      alSourcei( source.id(), AL_BUFFER, int( bufferId ) );
+      alSourcei( source.id(), AL_BUFFER, ALint( bufferId ) );
     }
   }
   return source;
@@ -71,109 +68,13 @@ bool ALBuffer::create()
 
 bool ALBuffer::load( const File& file )
 {
-  Buffer      buffer;
-  InputStream istream;
+  create();
 
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    buffer  = file.read();
-    istream = buffer.inputStream();
-  }
-
-  if( !istream.isAvailable() ) {
+  if( bufferId == 0 ) {
     return false;
   }
 
-  // WAVE loader is implemented according to specification found in
-  // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/.
-  if( istream.capacity() >= 44 &&
-      String::beginsWith( istream.begin(), "RIFF" ) &&
-      String::beginsWith( istream.begin() + 8, "WAVE" ) )
-  {
-    istream.seek( 22 );
-    int nChannels = int( istream.readShort() );
-    int rate      = istream.readInt();
-
-    istream.seek( 34 );
-    int bits = int( istream.readShort() );
-
-    istream.seek( 40 );
-    int size = istream.readInt();
-
-    if( ( nChannels != 1 && nChannels != 2 ) || ( bits != 8 && bits != 16 ) ) {
-      return false;
-    }
-
-    ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16 :
-                                     bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
-
-#ifdef OZ_BIG_ENDIAN
-
-    int    nSamples = size / int( sizeof( short ) );
-    short* data     = new short[nSamples];
-
-    for( int i = 0; i < nSamples; ++i ) {
-      data[i] = Endian::bswap16( istream->readShort() );
-    }
-
-#else
-
-    const char* data = istream.forward( size );
-
-#endif
-
-    create();
-
-    if( bufferId != 0 ) {
-      alBufferData( bufferId, format, data, size, rate );
-    }
-
-    OZ_AL_CHECK_ERROR();
-    return bufferId != 0;
-  }
-  else {
-    OggVorbis_File ovStream;
-    if( ov_open_callbacks( &istream, &ovStream, nullptr, 0, VORBIS_CALLBACKS ) < 0 ) {
-      return false;
-    }
-
-    vorbis_info* vorbisInfo = ov_info( &ovStream, -1 );
-    if( vorbisInfo == nullptr ) {
-      ov_clear( &ovStream );
-      return false;
-    }
-
-    int nChannels = vorbisInfo->channels;
-    if( nChannels != 1 && nChannels != 2 ) {
-      ov_clear( &ovStream );
-      return false;
-    }
-
-    ALenum format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-    int    rate   = int( vorbisInfo->rate );
-    int    size   = int( ov_pcm_total( &ovStream, -1 ) ) * nChannels * int( sizeof( short ) );
-    char*  data   = new char[size];
-
-    if( !decodeVorbis( &ovStream, data, size ) ) {
-      delete[] data;
-      ov_clear( &ovStream );
-      return false;
-    }
-
-    create();
-
-    if( bufferId != 0 ) {
-      alBufferData( bufferId, format, data, size, rate );
-    }
-
-    delete[] data;
-    ov_clear( &ovStream );
-
-    OZ_AL_CHECK_ERROR();
-    return bufferId != 0;
-  }
+  return AL::bufferDataFromFile( bufferId, file );
 }
 
 void ALBuffer::destroy()

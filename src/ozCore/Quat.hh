@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Quat.hh
  *
- * Quat class.
+ * `Quat` class.
  */
 
 #pragma once

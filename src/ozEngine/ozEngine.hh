@@ -30,8 +30,8 @@
 
 #include "common.hh"
 
-#include "OpenGL.hh"
-#include "OpenAL.hh"
+#include "GL.hh"
+#include "AL.hh"
 
 #include "GLTexture.hh"
 

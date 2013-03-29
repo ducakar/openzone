@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Capsule.hh
  *
- * Capsule class.
+ * `Capsule` class.
  */
 
 #pragma once

@@ -23,7 +23,7 @@
 /**
  * @file ozCore/SharedLib.hh
  *
- * SharedLib class.
+ * `SharedLib` class.
  */
 
 #pragma once

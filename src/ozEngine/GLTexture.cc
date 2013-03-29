@@ -26,17 +26,8 @@
 
 #include "GLTexture.hh"
 
-#include "OpenGL.hh"
-
 namespace oz
 {
-
-static const int DDSD_PITCH_BIT       = 0x00000008;
-static const int DDSD_MIPMAPCOUNT_BIT = 0x00020000;
-static const int DDSD_LINEARSIZE_BIT  = 0x00080000;
-static const int DDPF_ALPHAPIXELS     = 0x00000001;
-static const int DDPF_FOURCC          = 0x00000004;
-static const int DDPF_RGB             = 0x00000040;
 
 #if 0
 bool GLTexture::build( const File& file, int options, OutputStream* ostream )
@@ -225,11 +216,11 @@ bool GLTexture::build( const File& file, int options, OutputStream* ostream )
 #endif
 
 GLTexture::GLTexture() :
-  textureId( 0 ), textureFormat( 0 ), textureMipmaps( 0 )
+  textureId( 0 ), textureMipmaps( 0 )
 {}
 
 GLTexture::GLTexture( const File& file ) :
-  textureId( 0 ), textureFormat( 0 ), textureMipmaps( 0 )
+  textureId( 0 ), textureMipmaps( 0 )
 {
   load( file );
 }
@@ -239,144 +230,24 @@ GLTexture::~GLTexture()
   destroy();
 }
 
+bool GLTexture::create()
+{
+  if( textureId == 0 ) {
+    glGenTextures( 1, &textureId );
+  }
+  return textureId != 0;
+}
+
 bool GLTexture::load( const File& file )
 {
   destroy();
+  create();
 
-  Buffer      buffer;
-  InputStream istream;
-
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    buffer  = file.read();
-    istream = buffer.inputStream();
-  }
-
-  // Implementation is based on specifications from
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
-  if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "DDS " ) ) {
+  if( textureId == 0 ) {
     return false;
   }
 
-  istream.readInt();
-  istream.readInt();
-
-  int flags  = istream.readInt();
-  int height = istream.readInt();
-  int width  = istream.readInt();
-  int pitch  = istream.readInt();
-
-  istream.readInt();
-  textureMipmaps = istream.readInt();
-
-  if( !( flags & ( DDSD_PITCH_BIT | DDSD_LINEARSIZE_BIT ) ) ) {
-    pitch = 0;
-  }
-  if( !( flags & DDSD_MIPMAPCOUNT_BIT ) ) {
-    textureMipmaps = 1;
-  }
-
-  istream.seek( 4 + 76 );
-
-  int pixelFlags = istream.readInt();
-  int baseBlock  = 1;
-
-  char format[4];
-  istream.readChars( format, 4 );
-
-  int bpp = istream.readInt();
-
-  if( pixelFlags & DDPF_FOURCC ) {
-    if( String::beginsWith( format, "DXT1" ) ) {
-      textureFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      baseBlock     = 8;
-    }
-    else if( String::beginsWith( format, "DXT3" ) ) {
-      textureFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      baseBlock     = 16;
-    }
-    else if( String::beginsWith( format, "DXT5" ) ) {
-      textureFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      baseBlock     = 16;
-    }
-    else {
-      textureMipmaps = 0;
-      return false;
-    }
-  }
-  else if( pixelFlags & DDPF_RGB ) {
-    textureFormat = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-    baseBlock     = 1;
-  }
-  else {
-    textureMipmaps = 0;
-    return false;
-  }
-
-  istream.seek( 4 + 124 );
-
-  int   mipmapWidth  = width;
-  int   mipmapHeight = height;
-  int   mipmapPitch  = pitch;
-  int   mipmapSize   = pixelFlags & DDPF_FOURCC ? pitch : height * pitch;
-  char* mipmapData   = pixelFlags & DDPF_FOURCC ? nullptr : new char[mipmapSize];
-
-  glGenTextures( 1, &textureId );
-  glBindTexture( GL_TEXTURE_2D, textureId );
-
-  // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding whether
-  // texture actually has mipmaps.
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                   textureMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR );
-
-  for( int i = 0; i < textureMipmaps; ++i ) {
-    if( pixelFlags & DDPF_FOURCC ) {
-      glCompressedTexImage2D( GL_TEXTURE_2D, i, textureFormat, mipmapWidth, mipmapHeight, 0,
-                              mipmapSize, istream.forward( mipmapSize ) );
-
-      mipmapWidth  /= 2;
-      mipmapHeight /= 2;
-      mipmapSize   /= 4;
-      mipmapSize    = max( mipmapSize, baseBlock );
-    }
-    else {
-      char*       data      = mipmapData;
-      const char* source    = istream.forward( mipmapSize );
-      int         pixelSize = bpp / 8;
-
-      for( int j = 0; j < mipmapHeight; ++j ) {
-        for( int k = 0; k < mipmapWidth; ++k ) {
-          data[0] = source[2];
-          data[1] = source[1];
-          data[2] = source[0];
-
-          if( bpp == 32 ) {
-            data[3] = source[3];
-          }
-
-          data   += pixelSize;
-          source += pixelSize;
-        }
-
-        source += mipmapPitch - mipmapWidth * pixelSize;
-      }
-
-      glTexImage2D( GL_TEXTURE_2D, i, int( textureFormat ), mipmapWidth, mipmapHeight, 0,
-                    textureFormat, GL_UNSIGNED_BYTE, mipmapData );
-
-      mipmapWidth  /= 2;
-      mipmapHeight /= 2;
-      mipmapPitch   = ( mipmapWidth * bpp + 7 ) / 8;
-      mipmapSize    = mipmapPitch * mipmapHeight;
-    }
-  }
-
-  delete[] mipmapData;
-
-  OZ_GL_CHECK_ERROR();
-  return true;
+  return GL::textureDataFromFile( textureId, file ) != 0;
 }
 
 void GLTexture::destroy()
@@ -385,7 +256,6 @@ void GLTexture::destroy()
     glDeleteTextures( 1, &textureId );
 
     textureId      = 0;
-    textureFormat  = 0;
     textureMipmaps = 0;
 
     OZ_GL_CHECK_ERROR();

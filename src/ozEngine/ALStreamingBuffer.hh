@@ -22,6 +22,8 @@
 
 /**
  * @file ozEngine/ALStreamingBuffer.hh
+ *
+ * `ALStreamingBuffer` class.
  */
 
 #pragma once
@@ -38,11 +40,8 @@ class ALStreamingBuffer
 {
   private:
 
-    struct Stream;
-
-    uint    bufferIds[2]; ///< OpenAL buffer ids, both 0 if not loaded.
-    uint    sourceId;     ///< Target OpenAL source for which buffers are queued.
-    Stream* stream;       ///< Internal file buffer and decoder state.
+    AL::Streamer streamer; ///< Internal streamer.
+    ALuint       sourceId; ///< Attached source id, 0 if none.
 
   public:
 
@@ -52,7 +51,7 @@ class ALStreamingBuffer
     explicit ALStreamingBuffer();
 
     /**
-     * Create a new buffer from the given file. Same as the default constructor plus `load()`.
+     * Create a new buffer from the given file. Same as the default constructor plus `open()`.
      */
     explicit ALStreamingBuffer( const File& file );
 
@@ -64,65 +63,27 @@ class ALStreamingBuffer
     /**
      * Move constructor.
      */
-    ALStreamingBuffer( ALStreamingBuffer&& b )
-    {
-      bufferIds[0]   = b.bufferIds[0];
-      bufferIds[1]   = b.bufferIds[1];
-      sourceId       = b.sourceId;
-      stream         = b.stream;
-
-      b.bufferIds[0] = 0;
-      b.bufferIds[1] = 0;
-      b.sourceId     = 0;
-      b.stream       = nullptr;
-    }
+    ALStreamingBuffer( ALStreamingBuffer&& b );
 
     /**
      * Move operator.
      */
-    ALStreamingBuffer& operator = ( ALStreamingBuffer&& b )
-    {
-      if( &b == this ) {
-        return *this;
-      }
-
-      bufferIds[0]   = b.bufferIds[0];
-      bufferIds[1]   = b.bufferIds[1];
-      sourceId       = b.sourceId;
-      stream         = b.stream;
-
-      b.bufferIds[0] = 0;
-      b.bufferIds[1] = 0;
-      b.sourceId     = 0;
-      stream         = nullptr;
-
-      return *this;
-    }
+    ALStreamingBuffer& operator = ( ALStreamingBuffer&& b );
 
     /**
-     * Get OpenAL buffer id.
+     * True iff streaming.
      */
-    uint id( int i ) const
+    bool isStreaming() const
     {
-      hard_assert( 0 <= i && i < 2 );
-
-      return bufferIds[i];
+      return streamer.isStreaming();
     }
 
     /**
      * Get attached OpenAL source id.
      */
-    uint attachedSourceId() const
+    ALuint attachedSource() const
     {
       return sourceId;
-    }
-
-    /**
-     * True iff loaded.
-     */
-    bool isLoaded() const
-    {
-      return bufferIds[0] != 0;
     }
 
     /**
@@ -134,12 +95,16 @@ class ALStreamingBuffer
     }
 
     /**
-     * Update buffers and queue for the attached source.
+     * Update processed buffers in the queue, decode new data into them.
      *
-     * If a buffer has been processed, unqueues it, fills it with new data and puts it back into
-     * the queue. This is a NOP if no source is attached.
+     * When the end of the stream is reached it invokes `close()`.
      */
     bool update();
+
+    /**
+     * Stop source and streaming and rewind to the beginning of the stream.
+     */
+    bool rewind();
 
     /**
      * Create a new source and attach it to this buffer queue.
@@ -150,19 +115,17 @@ class ALStreamingBuffer
     ALSource createSource();
 
     /**
-     * Create a pair of uninitialised OpenAL buffers for streaming.
+     * Start streaming the given Ogg Vorbis file.
      */
-    bool create();
+    bool open( const File& file );
 
     /**
-     * Create a new buffer queue from the given Ogg Vorbis file.
-     *
-     * If the source is already attached, it is stopped and newly filled buffers are queued for it.
+     * Stop streaming and free file buffers and stream state.
      */
-    bool load( const File& file );
+    void close();
 
     /**
-     * Destroy OpenAL buffers if created and forget the attached source.
+     * Deinitialise, detach source and delete all buffers.
      */
     void destroy();
 

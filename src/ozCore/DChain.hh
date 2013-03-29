@@ -23,7 +23,7 @@
 /**
  * @file ozCore/DChain.hh
  *
- * DChain template class.
+ * `DChain` class template
  */
 
 #pragma once

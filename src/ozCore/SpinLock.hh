@@ -23,7 +23,7 @@
 /**
  * @file ozCore/SpinLock.hh
  *
- * SpinLock class.
+ * `SpinLock` class.
  */
 
 #pragma once

@@ -33,7 +33,7 @@
 #include <client/MD3.hh>
 
 #include <client/OpenGL.hh>
-#include <client/OpenAL.hh>
+#include <ozEngine/AL.hh>
 
 #include <SDL.h>
 

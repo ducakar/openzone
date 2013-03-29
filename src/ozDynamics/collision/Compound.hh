@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Compound.hh
  *
- * Compound class.
+ * `Compound` class.
  */
 
 #pragma once

@@ -23,7 +23,7 @@
 /**
  * @file ozCore/OutputStream.hh
  *
- * OutputStream class.
+ * `OutputStream` class.
  */
 
 #pragma once

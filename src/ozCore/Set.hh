@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Set.hh
  *
- * Set template class.
+ * `Set` class template
  */
 
 #pragma once

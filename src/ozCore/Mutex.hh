@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Mutex.hh
  *
- * Mutex class.
+ * `Mutex` class.
  */
 
 #pragma once

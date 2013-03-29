@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Math.hh
  *
- * Math class.
+ * `Math` class.
  */
 
 #pragma once

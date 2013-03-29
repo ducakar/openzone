@@ -22,6 +22,8 @@
 
 /**
  * @file ozEngine/Window.hh
+ *
+ * `Window` class.
  */
 
 #pragma once

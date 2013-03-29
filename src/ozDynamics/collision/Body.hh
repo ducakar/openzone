@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Body.hh
  *
- * Body class.
+ * `Body` class.
  */
 
 #pragma once

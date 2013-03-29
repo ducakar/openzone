@@ -21,16 +21,16 @@
  */
 
 /**
- * @file ozEngine/OpenGL.cc
+ * @file ozEngine/GL.cc
  */
 
-#include "OpenGL.hh"
-
-#include <SDL.h>
+#include "GL.hh"
 
 #ifdef _WIN32
+# include <SDL.h>
+
 # define OZ_DL_GLLOAD( func ) \
-  *( void** )( &func ) = SDL_GL_GetProcAddress( #func ); \
+  func = reinterpret_cast< decltype( func ) >( SDL_GL_GetProcAddress( #func ) ); \
   if( func == nullptr ) { \
     OZ_ERROR( "Failed to link OpenGL function: " #func ); \
   }
@@ -38,6 +38,13 @@
 
 namespace oz
 {
+
+static const int DDSD_PITCH_BIT       = 0x00000008;
+static const int DDSD_MIPMAPCOUNT_BIT = 0x00020000;
+static const int DDSD_LINEARSIZE_BIT  = 0x00080000;
+static const int DDPF_ALPHAPIXELS     = 0x00000001;
+static const int DDPF_FOURCC          = 0x00000004;
+static const int DDPF_RGB             = 0x00000040;
 
 #ifdef _WIN32
 
@@ -107,9 +114,7 @@ OZ_DL_DEFINE( glCheckFramebufferStatusEXT  );
 
 #endif
 
-#ifndef NDEBUG
-
-void glCheckError( const char* function, const char* file, int line )
+void GL::checkError( const char* function, const char* file, int line )
 {
   const char* message;
   GLenum result = glGetError();
@@ -161,9 +166,143 @@ void glCheckError( const char* function, const char* file, int line )
   System::error( function, file, line, 1, "GL error '%s'", message );
 }
 
-#endif
+int GL::textureDataFromFile( GLuint texture, const File& file )
+{
+  Buffer      buffer;
+  InputStream istream;
 
-void glInit()
+  if( file.isMapped() ) {
+    istream = file.inputStream();
+  }
+  else {
+    buffer  = file.read();
+    istream = buffer.inputStream();
+  }
+
+  // Implementation is based on specifications from
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
+  if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "DDS " ) ) {
+    return 0;
+  }
+
+  istream.readInt();
+  istream.readInt();
+
+  int flags  = istream.readInt();
+  int height = istream.readInt();
+  int width  = istream.readInt();
+  int pitch  = istream.readInt();
+
+  istream.readInt();
+  int nMipmaps = istream.readInt();
+
+  if( !( flags & ( DDSD_PITCH_BIT | DDSD_LINEARSIZE_BIT ) ) ) {
+    pitch = 0;
+  }
+  if( !( flags & DDSD_MIPMAPCOUNT_BIT ) ) {
+    nMipmaps = 1;
+  }
+
+  istream.seek( 4 + 76 );
+
+  int pixelFlags = istream.readInt();
+  int baseBlock  = 1;
+
+  char formatFourCC[4];
+  istream.readChars( formatFourCC, 4 );
+
+  int    bpp = istream.readInt();
+  GLenum format;
+
+  if( pixelFlags & DDPF_FOURCC ) {
+    if( String::beginsWith( formatFourCC, "DXT1" ) ) {
+      format    = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      baseBlock = 8;
+    }
+    else if( String::beginsWith( formatFourCC, "DXT3" ) ) {
+      format    = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      baseBlock = 16;
+    }
+    else if( String::beginsWith( formatFourCC, "DXT5" ) ) {
+      format    = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      baseBlock = 16;
+    }
+    else {
+      nMipmaps = 0;
+      return 0;
+    }
+  }
+  else if( pixelFlags & DDPF_RGB ) {
+    format    = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+    baseBlock = 1;
+  }
+  else {
+    nMipmaps = 0;
+    return 0;
+  }
+
+  istream.seek( 4 + 124 );
+
+  int   mipmapWidth  = width;
+  int   mipmapHeight = height;
+  int   mipmapPitch  = pitch;
+  int   mipmapSize   = pixelFlags & DDPF_FOURCC ? pitch : height * pitch;
+  char* mipmapData   = pixelFlags & DDPF_FOURCC ? nullptr : new char[mipmapSize];
+
+  glBindTexture( GL_TEXTURE_2D, texture );
+
+  // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding whether
+  // texture actually has mipmaps.
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                   nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR );
+
+  for( int i = 0; i < nMipmaps; ++i ) {
+    if( pixelFlags & DDPF_FOURCC ) {
+      glCompressedTexImage2D( GL_TEXTURE_2D, i, format, mipmapWidth, mipmapHeight, 0,
+                              mipmapSize, istream.forward( mipmapSize ) );
+
+      mipmapWidth  /= 2;
+      mipmapHeight /= 2;
+      mipmapSize   /= 4;
+      mipmapSize    = max( mipmapSize, baseBlock );
+    }
+    else {
+      char*       data      = mipmapData;
+      const char* source    = istream.forward( mipmapSize );
+      int         pixelSize = bpp / 8;
+
+      for( int j = 0; j < mipmapHeight; ++j ) {
+        for( int k = 0; k < mipmapWidth; ++k ) {
+          data[0] = source[2];
+          data[1] = source[1];
+          data[2] = source[0];
+
+          if( bpp == 32 ) {
+            data[3] = source[3];
+          }
+
+          data   += pixelSize;
+          source += pixelSize;
+        }
+
+        source += mipmapPitch - mipmapWidth * pixelSize;
+      }
+
+      glTexImage2D( GL_TEXTURE_2D, i, int( format ), mipmapWidth, mipmapHeight, 0,
+                    format, GL_UNSIGNED_BYTE, mipmapData );
+
+      mipmapWidth  /= 2;
+      mipmapHeight /= 2;
+      mipmapPitch   = ( mipmapWidth * bpp + 7 ) / 8;
+      mipmapSize    = mipmapPitch * mipmapHeight;
+    }
+  }
+
+  delete[] mipmapData;
+  return nMipmaps;
+}
+
+void GL::init()
 {
 #ifdef _WIN32
 

@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Point.hh
  *
- * Point class.
+ * `Point` class.
  */
 
 #pragma once

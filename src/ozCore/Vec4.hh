@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Vec4.hh
  *
- * Vec4 class.
+ * `Vec4` class.
  */
 
 #pragma once

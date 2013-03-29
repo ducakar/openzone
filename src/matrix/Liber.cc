@@ -251,7 +251,7 @@ void Liber::initTextures()
 
 void Liber::initSounds()
 {
-  Log::println( "Sounds (*.wav in 'snd') {" );
+  Log::println( "Sounds (*.wav, *.oga, *.ogg in 'snd') {" );
   Log::indent();
 
   List<Resource> soundsList;
@@ -267,7 +267,9 @@ void Liber::initSounds()
     DArray<File> subDirList = subDir->ls();
 
     foreach( file, subDirList.citer() ) {
-      if( !file->hasExtension( "wav" ) ) {
+      if( !file->hasExtension( "wav" ) && !file->hasExtension( "oga" ) &&
+          !file->hasExtension( "ogg" ) )
+      {
         continue;
       }
 

@@ -38,7 +38,7 @@ namespace oz
 
 #ifdef __native_client__
 
-const bool SharedLib::SUPPORTED = false;
+const bool SharedLib::IS_SUPPORTED = false;
 
 SharedLib::Method* SharedLib::get( const char* ) const
 {

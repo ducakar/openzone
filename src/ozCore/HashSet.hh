@@ -23,7 +23,7 @@
 /**
  * @file ozCore/HashSet.hh
  *
- * Hashtable template class.
+ * `HashSet` class template
  */
 
 #pragma once

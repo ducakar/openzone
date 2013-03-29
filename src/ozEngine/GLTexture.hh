@@ -22,11 +22,13 @@
 
 /**
  * @file ozEngine/GLTexture.hh
+ *
+ * `GLTexture` class.
  */
 
 #pragma once
 
-#include "common.hh"
+#include "GL.hh"
 
 namespace oz
 {
@@ -55,9 +57,8 @@ class GLTexture
 
   private:
 
-    uint textureId;      ///< OpenGL texture id.
-    uint textureFormat;  ///< OpenGL internal texture format enumerator.
-    int  textureMipmaps; ///< True iff mipmaps have been are loaded from file.
+    GLuint textureId;      ///< OpenGL texture id.
+    int    textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
   public:
 
@@ -101,10 +102,9 @@ class GLTexture
      * Move constructor.
      */
     GLTexture( GLTexture&& t ) :
-      textureId( t.textureId ), textureFormat( t.textureFormat ), textureMipmaps( t.textureMipmaps )
+      textureId( t.textureId ), textureMipmaps( t.textureMipmaps )
     {
       t.textureId      = 0;
-      t.textureFormat  = 0;
       t.textureMipmaps = 0;
     }
 
@@ -118,11 +118,9 @@ class GLTexture
       }
 
       textureId        = t.textureId;
-      textureFormat    = t.textureFormat;
       textureMipmaps   = t.textureMipmaps;
 
       t.textureId      = 0;
-      t.textureFormat  = 0;
       t.textureMipmaps = 0;
 
       return *this;
@@ -131,21 +129,13 @@ class GLTexture
     /**
      * OpenGL texture id.
      */
-    uint id() const
+    GLuint id() const
     {
       return textureId;
     }
 
     /**
-     * Return OpenGL internal texture format.
-     */
-    uint format() const
-    {
-      return textureFormat;
-    }
-
-    /**
-     * True iff mipmaps have been are loaded from file.
+     * True iff mipmaps have been loaded.
      */
     bool hasMipmaps() const
     {
@@ -153,7 +143,16 @@ class GLTexture
     }
 
     /**
-     * Load a DDS texture from a file.
+     * Create a new uninitialised OpenGL texture.
+     *
+     * This is a NOP if the texture already exists.
+     */
+    bool create();
+
+    /**
+     * Create a new texture and load its data from a DDS file.
+     *
+     * If the texture already exists, it is destroyed and re-created.
      */
     bool load( const File& file );
 

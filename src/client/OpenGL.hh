@@ -25,7 +25,7 @@
 
 #include <client/NaClPlatform.hh>
 
-#ifdef OZ_GLES
+#ifdef OZ_GL_ES
 # include <GLES2/gl2.h>
 #else
 # define GL_GLEXT_PROTOTYPES

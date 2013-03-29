@@ -23,7 +23,7 @@
 /**
  * @file ozCore/InputStream.hh
  *
- * InputStream class.
+ * `InputStream` class.
  */
 
 #pragma once

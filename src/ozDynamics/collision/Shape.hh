@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Shape.hh
  *
- * Shape class.
+ * `Shape` class.
  */
 
 #pragma once

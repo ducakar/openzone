@@ -37,7 +37,6 @@ add_library( client STATIC
   NaClPlatform.hh
   NaClUpdater.hh
   Network.hh
-  OpenAL.hh
   OpenGL.hh
   openzone.hh
   Profile.hh
@@ -89,7 +88,6 @@ add_library( client STATIC
   NaClPlatform.cc
   NaClUpdater.cc
   Network.cc
-  OpenAL.cc
   OpenGL.cc
   Profile.cc
   Proxy.cc
@@ -174,7 +172,7 @@ else()
   target_link_libraries( client ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
 endif()
 
-if( OZ_GLES )
+if( OZ_GL_ES )
   target_link_libraries( client ${GLES2_LIBRARIES} )
 else()
   target_link_libraries( client ${OPENGL_gl_LIBRARY} )

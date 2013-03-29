@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozDynamics/Bounds.hh
+ * @file ozDynamics/collision/Bounds.hh
  *
- * Bounds class.
+ * `Bounds` class.
  */
 
 #pragma once

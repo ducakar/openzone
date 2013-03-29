@@ -26,41 +26,37 @@
 
 #include "ALStreamingBuffer.hh"
 
-#include "OpenAL.hh"
-
-#include "vorbis.h"
-
 namespace oz
 {
 
-struct ALStreamingBuffer::Stream
-{
-  static const int BUFFER_SIZE = 65536 / 2;
+ALStreamingBuffer::ALStreamingBuffer() :
+  sourceId( 0 )
+{}
 
-  Buffer         buffer;
-  InputStream    istream;
-  OggVorbis_File ovStream;
-  ALenum         format;
-  int            rate;
-  char           samples[BUFFER_SIZE];
-};
-
-ALStreamingBuffer::ALStreamingBuffer()
+ALStreamingBuffer::ALStreamingBuffer( const File& file ) :
+  sourceId( 0 )
 {
-  bufferIds[0] = 0;
-  bufferIds[1] = 0;
-  sourceId     = 0;
-  stream       = nullptr;
+  open( file );
 }
 
-ALStreamingBuffer::ALStreamingBuffer( const File& file )
+ALStreamingBuffer::ALStreamingBuffer( ALStreamingBuffer&& b ) :
+  streamer( static_cast<AL::Streamer&&>( b.streamer ) ), sourceId( b.sourceId )
 {
-  bufferIds[0] = 0;
-  bufferIds[1] = 0;
-  sourceId     = 0;
-  stream       = nullptr;
+  b.sourceId = 0;
+}
 
-  load( file );
+ALStreamingBuffer& ALStreamingBuffer::operator = ( ALStreamingBuffer&& b )
+{
+  if( &b == this ) {
+    return *this;
+  }
+
+  streamer   = static_cast<AL::Streamer&&>( b.streamer );
+  sourceId   = b.sourceId;
+
+  b.sourceId = 0;
+
+  return *this;
 }
 
 ALStreamingBuffer::~ALStreamingBuffer()
@@ -70,151 +66,42 @@ ALStreamingBuffer::~ALStreamingBuffer()
 
 bool ALStreamingBuffer::update()
 {
-  if( sourceId == 0 || stream == nullptr ) {
-    return false;
-  }
-  if( !alIsSource( sourceId ) ) {
-    sourceId = 0;
-    return false;
-  }
+  return streamer.update();
+}
 
-  int nProcessed;
-  alGetSourcei( sourceId, AL_BUFFERS_PROCESSED, &nProcessed );
-
-  if( nProcessed == 0 ) {
-    return true;
-  }
-
-  uint bufferId;
-  alSourceUnqueueBuffers( sourceId, 1, &bufferId );
-
-  if( !decodeVorbis( &stream->ovStream, stream->samples, Stream::BUFFER_SIZE ) ) {
-    ov_clear( &stream->ovStream );
-    delete stream;
-    stream = nullptr;
-    return false;
-  }
-
-  alBufferData( bufferId, stream->format, stream->samples, Stream::BUFFER_SIZE, stream->rate );
-  alSourceQueueBuffers( sourceId, 1, &bufferId );
-  return true;
+bool ALStreamingBuffer::rewind()
+{
+  return streamer.rewind();
 }
 
 ALSource ALStreamingBuffer::createSource()
 {
   ALSource source;
 
-  if( bufferIds[0] != 0 ) {
+  if( streamer.isStreaming() ) {
     source.create();
 
     if( source.isCreated() ) {
       sourceId = source.id();
-      alSourceQueueBuffers( source.id(), 2, bufferIds );
+      streamer.attach( sourceId );
     }
   }
   return source;
 }
 
-bool ALStreamingBuffer::create()
+bool ALStreamingBuffer::open( const File& file )
 {
-  if( bufferIds[0] == 0 ) {
-    alGenBuffers( 2, bufferIds );
-  }
-  return bufferIds[0] != 0;
+  return streamer.open( file );
 }
 
-bool ALStreamingBuffer::load( const File& file )
+void ALStreamingBuffer::close()
 {
-  if( sourceId != 0 ) {
-    if( alIsSource( sourceId ) ) {
-      alSourceStop( sourceId );
-      alSourceUnqueueBuffers( sourceId, 2, bufferIds );
-    }
-    else {
-      sourceId = 0;
-    }
-  }
-
-  stream = stream == nullptr ? new Stream() : stream;
-  stream->buffer = file.read();
-  stream->istream = stream->buffer.inputStream();
-
-  if( stream->buffer.isEmpty() ) {
-    delete stream;
-    stream = nullptr;
-    return false;
-  }
-
-  if( ov_open_callbacks( &stream->istream, &stream->ovStream, nullptr, 0, VORBIS_CALLBACKS ) != 0 )
-  {
-    delete stream;
-    stream = nullptr;
-    return false;
-  }
-
-  vorbis_info* vorbisInfo = ov_info( &stream->ovStream, -1 );
-  if( vorbisInfo == nullptr ) {
-    ov_clear( &stream->ovStream );
-    delete stream;
-    stream = nullptr;
-    return false;
-  }
-
-  int nChannels = vorbisInfo->channels;
-  if( nChannels != 1 && nChannels != 2 ) {
-    ov_clear( &stream->ovStream );
-    delete stream;
-    stream = nullptr;
-    return false;
-  }
-
-  stream->format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-  stream->rate   = int( vorbisInfo->rate );
-
-  create();
-
-  if( bufferIds[0] != 0 ) {
-    if( !decodeVorbis( &stream->ovStream, stream->samples, Stream::BUFFER_SIZE ) ) {
-      ov_clear( &stream->ovStream );
-      delete stream;
-      stream = nullptr;
-    }
-
-    alBufferData( bufferIds[0], stream->format, &stream->samples, Stream::BUFFER_SIZE,
-                  stream->rate );
-
-    if( !decodeVorbis( &stream->ovStream, stream->samples, Stream::BUFFER_SIZE ) ) {
-      ov_clear( &stream->ovStream );
-      delete stream;
-      stream = nullptr;
-    }
-
-    alBufferData( bufferIds[1], stream->format, &stream->samples, Stream::BUFFER_SIZE,
-                  stream->rate );
-  }
-
-  if( sourceId != 0 ) {
-    alSourceQueueBuffers( sourceId, 2, bufferIds );
-  }
-  OZ_AL_CHECK_ERROR();
-  return true;
+  streamer.close();
 }
 
 void ALStreamingBuffer::destroy()
 {
-  if( bufferIds[0] != 0 ) {
-    if( sourceId != 0 && alIsSource( sourceId ) ) {
-      alSourceStop( sourceId );
-    }
-
-    delete stream;
-
-    alDeleteBuffers( 2, bufferIds );
-    bufferIds[0] = 0;
-    bufferIds[1] = 0;
-    sourceId     = 0;
-    stream       = nullptr;
-  }
+  streamer.destroy();
 }
 
 }

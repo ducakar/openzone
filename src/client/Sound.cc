@@ -128,7 +128,7 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case OGG: {
-      musicFile = PHYSFS_openRead( path );
+      musicFile = PHYSFS_openRead( &path[1] );
       if( musicFile == nullptr ) {
         OZ_ERROR( "Failed to open file '%s'", path );
       }
@@ -158,7 +158,7 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case MP3: {
-      musicFile = PHYSFS_openRead( path );
+      musicFile = PHYSFS_openRead( &path[1] );
       if( musicFile == nullptr ) {
         OZ_ERROR( "Failed to open file '%s'", path );
       }
@@ -202,7 +202,7 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case AAC: {
-      musicFile = PHYSFS_openRead( path );
+      musicFile = PHYSFS_openRead( &path[1] );
       if( musicFile == nullptr ) {
         OZ_ERROR( "Failed to open file '%s'", path );
       }

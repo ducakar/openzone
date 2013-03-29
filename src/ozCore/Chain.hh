@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Chain.hh
  *
- * Chain template class.
+ * `Chain` class template
  */
 
 #pragma once

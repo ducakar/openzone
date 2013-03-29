@@ -36,7 +36,7 @@
 #include <client/VehicleAudio.hh>
 
 #include <client/OpenGL.hh>
-#include <client/OpenAL.hh>
+#include <ozEngine/AL.hh>
 #include <client/eSpeak.hh>
 
 #include <SDL.h>
@@ -402,47 +402,13 @@ uint Context::requestSound( int id )
   const String& name = liber.sounds[id].name;
   const String& path = liber.sounds[id].path;
 
-  File file( path );
-  Buffer buffer = file.read();
-
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Sound file '%s' read failed", path.cstr() );
-  }
-
-  InputStream is = buffer.inputStream();
-
-  uint   length;
-  ubyte* data;
-
-  SDL_AudioSpec audioSpec;
-
-  audioSpec.freq     = 44100;
-  audioSpec.format   = AUDIO_S16LSB;
-  audioSpec.channels = 1;
-  audioSpec.samples  = 0;
-
-  SDL_RWops* rwOps = SDL_RWFromConstMem( is.begin(), is.capacity() );
-  if( SDL_LoadWAV_RW( rwOps, 1, &audioSpec, &data, &length ) == nullptr ) {
-    OZ_ERROR( "Failed to load WAVE sound '%s'", name.cstr() );
-  }
-
-  if( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) {
-    OZ_ERROR( "Invalid sound '%s' format, should be U8 or S16LE", name.cstr() );
-  }
-  if( audioSpec.channels != 1 ) {
-    OZ_ERROR( "Invalid sound '%s' format, should be mono but has %d channels",
-              name.cstr(), audioSpec.channels );
-  }
-
-  ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
-
   alGenBuffers( 1, &resource.id );
-  alBufferData( resource.id, format, data, int( length ), audioSpec.freq );
 
-  SDL_FreeWAV( data );
+  if( !AL::bufferDataFromFile( resource.id, path ) ) {
+    OZ_ERROR( "Failed to load WAVE or Ogg Vorbis sound '%s'", name.cstr() );
+  }
 
   OZ_AL_CHECK_ERROR();
-
   return resource.id;
 }
 

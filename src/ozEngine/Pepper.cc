@@ -57,7 +57,7 @@ bool Pepper::isMainThread()
   return core->IsMainThread();
 }
 
-void Pepper::call( Callback* callback, void* caller )
+void Pepper::mainCall( Callback* callback, void* caller )
 {
   core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
   mainCallSemaphore.wait();

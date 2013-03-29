@@ -23,7 +23,7 @@
 /**
  * @file ozCore/String.hh
  *
- * String class.
+ * `String` class.
  */
 
 #pragma once

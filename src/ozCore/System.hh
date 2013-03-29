@@ -23,7 +23,7 @@
 /**
  * @file ozCore/System.hh
  *
- * System class.
+ * `System` class.
  */
 
 #pragma once

@@ -49,7 +49,6 @@ static void crashHandler()
 {
 #if SDL_MAJOR_VERSION < 2
   SDL_WM_GrabInput( SDL_GRAB_OFF );
-  SDL_Quit();
 #endif
 }
 

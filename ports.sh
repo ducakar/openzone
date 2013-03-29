@@ -45,6 +45,8 @@ ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
 
 emscriptenPrefix="$EMSCRIPTEN"
 
+originalPath="$PATH"
+
 function msg()
 {
   echo -ne "\e[1;32m"
@@ -73,7 +75,7 @@ function setup_nacl_x86_64()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3"
@@ -103,7 +105,7 @@ function setup_nacl_i686()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse -fomit-frame-pointer"
@@ -133,7 +135,7 @@ function setup_nacl_ARM()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-Ofast"
@@ -164,7 +166,7 @@ function setup_pnacl()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O4 -ffast-math"
@@ -194,7 +196,7 @@ function setup_ndk_i686()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC -march=i686 -msse3 -mfpmath=sse"
@@ -224,7 +226,7 @@ function setup_ndk_ARM()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC -Wno-psabi"
@@ -254,7 +256,7 @@ function setup_ndk_ARMv7a()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
@@ -284,7 +286,7 @@ function setup_ndk_MIPS()
   export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC"
@@ -315,7 +317,7 @@ function setup_emscripten()
   export STRIP="/bin/true"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$PATH"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-I$buildDir/usr/include"
   export CFLAGS="-O2 -U__STRICT_ANSI__"
@@ -464,6 +466,7 @@ function build_zlib()
   prepare zlib-1.2.7 zlib-1.2.7.tar.bz2 || return
 
   CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts" ./configure --prefix=/usr --static
+
   make -j4 || return 1
   make install DESTDIR="$buildDir"
   rm -rf "$buildDir"/usr/lib/libz.so*
@@ -630,16 +633,6 @@ function build()
   setup_ndk_ARMv7a  && build_lua
   setup_ndk_MIPS    && build_lua
   setup_emscripten  && build_lua
-
-# LuaJIT
-#   setup_nacl_x86_64 && build_luajit
-#   setup_nacl_i686   && build_luajit
-#   setup_nacl_ARM    && build_luajit
-#   setup_pnacl       && build_luajit
-#   setup_ndk_i686    && build_luajit
-#   setup_ndk_ARM     && build_luajit
-#   setup_ndk_ARMv7a  && build_luajit
-#   setup_ndk_MIPS    && build_luajit
 
   # SDL
   setup_nacl_x86_64 && build_sdl

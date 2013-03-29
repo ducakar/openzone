@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Endian.hh
  *
- * Endian class.
+ * `Endian` class.
  */
 
 #pragma once

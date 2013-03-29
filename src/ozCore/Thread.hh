@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Thread.hh
  *
- * Thread class.
+ * `Thread` class.
  */
 
 #pragma once

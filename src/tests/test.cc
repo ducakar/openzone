@@ -23,70 +23,14 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
-#include <SDL.h>
-#include <AL/alc.h>
+
+#include <cstdio>
 
 using namespace oz;
 
-int main( int argc, char** argv )
+int main()
 {
   System::init();
-  SDL_Init( SDL_INIT_VIDEO );
-  Window::create( "Test", 1024, 768, false );
-
-  ALCdevice*  device  = alcOpenDevice( nullptr );
-  ALCcontext* context = alcCreateContext( device, nullptr );
-  alcMakeContextCurrent( context );
-
-//  ALBuffer buffer( "/usr/share/sounds/Kopete_Received.ogg" );
-  ALStreamingBuffer buffer( "/home/davorin/Glasba/Whatever.ogg" );
-  ALSource source = buffer.createSource();
-
-  hard_assert( source.id() != 0 );
-  alSourcePlay( source.id() );
-  OZ_AL_CHECK_ERROR();
-
-  File dds( argc < 2 ? "mail.dds" : argv[1] );
-  GLTexture texture( dds );
-
-  bool isAlive = true;
-  while( isAlive ) {
-    SDL_Event event;
-    SDL_PollEvent( &event );
-
-    if( event.type == SDL_QUIT || event.type == SDL_KEYDOWN ) {
-      isAlive = false;
-    }
-
-    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-    glEnable( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, texture.id() );
-
-    glBegin( GL_QUADS );
-      glTexCoord2i( 0, 1 ); glVertex2d( -1, -1 );
-      glTexCoord2i( 1, 1 ); glVertex2d( +1, -1 );
-      glTexCoord2i( 1, 0 ); glVertex2d( +1, +1 );
-      glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
-    glEnd();
-
-    Window::swapBuffers();
-
-    isAlive &= buffer.update();
-    OZ_AL_CHECK_ERROR();
-    Time::sleep( 50 );
-  }
-
-  source.destroy();
-  OZ_AL_CHECK_ERROR();
-  buffer.destroy();
-  OZ_AL_CHECK_ERROR();
-
-  OZ_AL_CHECK_ERROR();
-  alcDestroyContext( context );
-  alcCloseDevice( device );
-  Window::destroy();
-  SDL_Quit();
+  printf( "Hello\n" );
   return 0;
 }

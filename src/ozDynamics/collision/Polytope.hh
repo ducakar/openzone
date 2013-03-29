@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Polytope.hh
  *
- * Polytope class.
+ * `Polytope` class.
  */
 
 #pragma once

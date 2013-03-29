@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Buffer.hh
  *
- * Buffer class.
+ * `Buffer` class.
  */
 
 #pragma once

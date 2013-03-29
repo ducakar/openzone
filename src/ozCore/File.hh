@@ -23,7 +23,7 @@
 /**
  * @file ozCore/File.hh
  *
- * File class.
+ * `File` class.
  */
 
 #pragma once

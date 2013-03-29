@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/physics/Physics.hh
  *
- * Physics class.
+ * `Physics` class.
  */
 
 #pragma once

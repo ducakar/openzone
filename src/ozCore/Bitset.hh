@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Bitset.hh
  *
- * Bitset class.
+ * `Bitset` class.
  */
 
 #pragma once

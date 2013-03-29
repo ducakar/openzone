@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Collider.hh
  *
- * Collider class.
+ * `Collider` class.
  */
 
 #pragma once

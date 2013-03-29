@@ -17,7 +17,11 @@
 # - `build`: Copy libraries for selected platforms into corresponding directories.
 #
 
-platforms=( Linux-x86_64 Linux-i686 Windows-i686 )
+platforms=(
+  Linux-x86_64
+  Linux-i686
+  Windows-i686
+)
 
 function clean()
 {
@@ -39,16 +43,10 @@ function build()
       rm -rf $outDir
       mkdir -p $outDir
 
-      cp "$prefix/libz.so.1" \
-         "$prefix/libphysfs.so.1" \
+      cp "$prefix/libphysfs.so.1" \
          "$prefix/libSDL-1.2.so.0" \
          "$prefix/libSDL_ttf-2.0.so.0" \
          "$prefix/liblua.so.5.2" \
-         "$prefix/libbz2.so.1.0" \
-         "$prefix/libfreetype.so.6" \
-         "$prefix/libogg.so.0" \
-         "$prefix/libvorbis.so.0" \
-         "$prefix/libvorbisfile.so.3" \
          "$prefix/libfreeimage.so.3" \
          "$outDir"
 

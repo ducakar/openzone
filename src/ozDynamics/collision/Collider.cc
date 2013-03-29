@@ -65,7 +65,7 @@ bool Collider::boxBox( const Mat33& rot0, const Shape* box0_,
       return false;
     }
     else if( depth < lastDepth ) {
-      lastAxis     = rot0[j];
+      lastAxis     = -rot0[j];
       lastDepth    = depth;
       //lastPoint[0] = 0;
       lastPoint[1] = j;

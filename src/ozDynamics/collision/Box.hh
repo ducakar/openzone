@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Box.hh
  *
- * Box class.
+ * `Box` class.
  */
 
 #pragma once

@@ -21,14 +21,18 @@
  */
 
 /**
- * @file ozEngine/OpenGL.hh
+ * @file ozEngine/GL.hh
+ *
+ * `GL` class and wrapper for OpenGL headers.
  */
 
 #pragma once
 
 #include "common.hh"
 
-#ifdef OZ_GLES
+#ifndef DOXYGEN_IGNORE
+
+#ifdef OZ_GL_ES
 # include <GLES2/gl2.h>
 #else
 # define GL_GLEXT_PROTOTYPES
@@ -52,11 +56,26 @@
 # define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
 #endif
 
+#endif // DOXYGEN_IGNORE
+
+/**
+ * @def OZ_GL_CHECK_ERROR
+ * In debug mode, check for OpenGL errors and crash with some diagnostics if there is one.
+ */
+#ifdef NDEBUG
+# define OZ_GL_CHECK_ERROR() void( 0 )
+#else
+# define OZ_GL_CHECK_ERROR() oz::GL::checkError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+#endif
+
 namespace oz
 {
 
 #ifdef _WIN32
 
+/*
+ * OpenGL 2.0+ functions cannot be linked on executable load, we must link them in runtime.
+ */
 extern OZ_DL_DECLARE( glUniform1i                  );
 extern OZ_DL_DECLARE( glUniform2i                  );
 extern OZ_DL_DECLARE( glUniform3i                  );
@@ -123,15 +142,30 @@ extern OZ_DL_DECLARE( glCheckFramebufferStatusEXT  );
 
 #endif
 
-#ifdef NDEBUG
-# define OZ_GL_CHECK_ERROR() void( 0 )
-#else
-# define OZ_GL_CHECK_ERROR() oz::glCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+/**
+ * OpenGL utilities.
+ */
+class GL
+{
+  public:
 
-void glCheckError( const char* function, const char* file, int line );
+    /**
+     * Helper method for `OZ_GL_CHECK_ERROR` macro.
+     */
+    static void checkError( const char* function, const char* file, int line );
 
-#endif
+    /**
+     * Load texture image from a DDS file.
+     *
+     * @return number of mipmaps (including original picture), 0 on an error.
+     */
+    static int textureDataFromFile( GLuint texture, const File& file );
 
-void glInit();
+    /**
+     * Link previously declared OpenGL functions on Windows, NOP on other platforms.
+     */
+    static void init();
+
+};
 
 }

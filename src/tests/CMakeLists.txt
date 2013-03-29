@@ -2,6 +2,9 @@ if( NOT OZ_TESTS )
   return()
 endif()
 
+add_executable( engine engine.cc )
+target_link_libraries( engine ozEngine )
+
 add_executable( foreach foreach.cc )
 target_link_libraries( foreach ozCore )
 

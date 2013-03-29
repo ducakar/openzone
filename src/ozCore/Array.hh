@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Array.hh
  *
- * Array template class.
+ * `Array` class template
  */
 
 #pragma once

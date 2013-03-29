@@ -27,4 +27,4 @@
  */
 
 // Use OpenGL ES 2.0 instead of OpenGL 2.1.
-#cmakedefine OZ_GLES
+#cmakedefine OZ_GL_ES

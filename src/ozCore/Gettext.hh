@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Gettext.hh
  *
- * Gettext class.
+ * `Gettext` class.
  */
 
 #pragma once

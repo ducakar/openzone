@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozCore/AABB.hh
+ * @file ozDynamics/collision/AABB.hh
  *
- * AABB class.
+ * `AABB` class.
  */
 
 #pragma once

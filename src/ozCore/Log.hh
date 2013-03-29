@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Log.hh
  *
- * Log class.
+ * `Log` class.
  */
 
 #pragma once

@@ -23,7 +23,7 @@
 /**
  * @file ozDynamics/collision/Space.hh
  *
- * Space class.
+ * `Space` class.
  */
 
 #pragma once

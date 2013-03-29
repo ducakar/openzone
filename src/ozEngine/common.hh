@@ -22,6 +22,8 @@
 
 /**
  * @file ozEngine/common.hh
+ *
+ * Common include file for ozEngine.
  */
 
 #pragma once

@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Time.hh
  *
- * Time class.
+ * `Time` class.
  */
 
 #pragma once

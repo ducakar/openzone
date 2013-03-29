@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Plane.hh
  *
- * Plane class.
+ * `Plane` class.
  */
 
 #pragma once

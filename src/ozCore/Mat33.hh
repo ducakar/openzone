@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Mat33.hh
  *
- * Mat33 class.
+ * `Mat33` class.
  */
 
 #pragma once

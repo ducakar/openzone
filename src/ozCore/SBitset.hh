@@ -23,7 +23,7 @@
 /**
  * @file ozCore/SBitset.hh
  *
- * SBitset class.
+ * `SBitset` class.
  */
 
 #pragma once

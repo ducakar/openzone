@@ -238,10 +238,10 @@ void Builder::buildBSPTextures()
         continue;
       }
 
-      hard_assert( slash > 15 );
+      hard_assert( slash > 16 );
 
-      // strlen( "baseq3/textures/" ) == 16
-      name = path.substring( 16, dot );
+      // strlen( "@baseq3/textures/" ) == 17
+      name = path.substring( 17, dot );
       path = path.substring( 0, dot );
 
       if( name.endsWith( "_m" ) || name.endsWith( "_n" ) ) {
@@ -543,9 +543,9 @@ void Builder::copySounds()
         continue;
       }
 
-      hard_assert( slash > 3 );
+      hard_assert( slash > 4 );
 
-      name = path.substring( 4, dot );
+      name = path.substring( 5, dot );
 
       if( !context.usedSounds.contains( name ) ) {
         continue;

@@ -23,7 +23,7 @@
 /**
  * @file ozCore/JSON.hh
  *
- * JSON class.
+ * `JSON` class.
  */
 
 #pragma once

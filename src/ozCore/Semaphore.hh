@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Semaphore.hh
  *
- * Semaphore class.
+ * `Semaphore` class.
  */
 
 #pragma once

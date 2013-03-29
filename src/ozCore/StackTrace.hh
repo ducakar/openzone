@@ -23,7 +23,7 @@
 /**
  * @file ozCore/StackTrace.hh
  *
- * StackTrace class.
+ * `StackTrace` class.
  */
 
 #pragma once
