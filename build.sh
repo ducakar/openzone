@@ -15,10 +15,10 @@
 
 buildType=Debug
 platforms=(
-  Linux-x86_64-Clang
 #   Linux-x86_64
-#   Linux-i686-Clang
+  Linux-x86_64-Clang
 #   Linux-i686
+#   Linux-i686-Clang
 #   FreeBSD-x86_64-Clang
 #   FreeBSD-x86_64-GCC
 #   FreeBSD-i686-Clang

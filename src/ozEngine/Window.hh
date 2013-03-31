@@ -40,16 +40,16 @@ class Window
 {
   public:
 
-    static int  width;    ///< Window inner width.
-    static int  height;   ///< Window inner height.
-    static bool isFull;   ///< True iff in full screen mode;
-    static bool hasFocus; ///< True iff window has (input) focus.
-    static bool hasGrab;  ///< True iff window has exclusive input grab.
+    static int  windowWidth;  ///< Window inner width.
+    static int  windowHeight; ///< Window inner height.
+    static bool fullscreen;   ///< True iff in full screen mode;
+    static bool windowFocus;  ///< True iff window has (input) focus.
+    static bool windowGrab;   ///< True iff window has exclusive input grab.
 
   public:
 
     /**
-     * No instances.
+     * Forbid instances.
      */
     explicit Window() = delete;
 
@@ -57,6 +57,51 @@ class Window
      * True the window is created.
      */
     static bool isCreated();
+
+    /**
+     * Window width.
+     */
+    static int width()
+    {
+      return windowWidth;
+    }
+
+    /**
+     * Window height.
+     */
+    static int height()
+    {
+      return windowHeight;
+    }
+
+    /**
+     * True iff in fullscreen mode.
+     */
+    static bool isFullscreen()
+    {
+      return fullscreen;
+    }
+
+    /**
+     * True iff the window has focus.
+     */
+    static bool hasFocus()
+    {
+      return windowFocus;
+    }
+
+    /**
+     * True iff the window has input grab.
+     */
+    static bool hasGrab()
+    {
+      return windowGrab;
+    }
+
+    /**
+     * Toggle input grab.
+     */
+    static void setGrab( bool grab );
 
     /**
      * Warp mouse cursor to the centre of the window.
@@ -80,11 +125,6 @@ class Window
      * On error, window is destroyed.
      */
     static bool resize( int newWidth, int newHeight, bool fullscreen );
-
-    /**
-     * Toggle input grab.
-     */
-    static void setGrab( bool grab );
 
     /**
      * Create the window.

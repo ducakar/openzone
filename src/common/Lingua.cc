@@ -119,8 +119,7 @@ bool Lingua::initMission( const char* mission )
   int length = is.readInt();
 
   nMessages = ( 4 * length ) / 3;
-  messages = new Message*[nMessages];
-  aFill<Message*, Message*>( messages, nullptr, nMessages );
+  messages = new Message*[nMessages] {};
 
   for( int i = 0; i < length; ++i ) {
     uint index = uint( is.readInt() ) % uint( nMessages );

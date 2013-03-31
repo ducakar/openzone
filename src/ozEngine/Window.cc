@@ -50,11 +50,11 @@ static SDL_Window*     descriptor;
 static SDL_GLContext   context;
 #endif
 
-int  Window::width    = 0;
-int  Window::height   = 0;
-bool Window::isFull   = false;
-bool Window::hasFocus = false;
-bool Window::hasGrab  = false;
+int  Window::windowWidth  = 0;
+int  Window::windowHeight = 0;
+bool Window::fullscreen   = false;
+bool Window::windowFocus  = false;
+bool Window::windowGrab   = false;
 
 #ifdef __native_client__
 
@@ -69,8 +69,8 @@ static void createContext()
 {
   int attribs[] = {
     PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
-    PP_GRAPHICS3DATTRIB_WIDTH, Window::width,
-    PP_GRAPHICS3DATTRIB_HEIGHT, Window::height,
+    PP_GRAPHICS3DATTRIB_WIDTH, Window::windowWidth,
+    PP_GRAPHICS3DATTRIB_HEIGHT, Window::windowHeight,
     PP_GRAPHICS3DATTRIB_NONE
   };
 
@@ -95,9 +95,21 @@ bool Window::isCreated()
 #endif
 }
 
+void Window::setGrab( bool grab )
+{
+  windowGrab = grab;
+
+#if SDL_MAJOR_VERSION < 2
+  SDL_ShowCursor( !windowGrab );
+  SDL_WM_GrabInput( SDL_GrabMode( windowGrab && !System::isInstrumented() ) );
+#else
+  SDL_SetRelativeMouseMode( SDL_bool( windowGrab ) );
+#endif
+}
+
 void Window::warpMouse()
 {
-  if( !hasFocus || !hasGrab ) {
+  if( !windowFocus || !windowGrab ) {
     return;
   }
 
@@ -107,7 +119,7 @@ void Window::warpMouse()
   Pepper::moveZ = 0.0f;
   Pepper::moveW = 0.0f;
 #elif SDL_MAJOR_VERSION >= 2
-  SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
+  SDL_WarpMouseInWindow( descriptor, windowWidth / 2, windowHeight / 2 );
   SDL_PumpEvents();
   SDL_GetRelativeMouseState( nullptr, nullptr );
 #endif
@@ -138,18 +150,18 @@ void Window::minimise()
 #endif
 }
 
-bool Window::resize( int newWidth, int newHeight, bool fullscreen )
+bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
 {
 #ifdef __native_client__
 
-  static_cast<void>( fullscreen );
+  static_cast<void>( fullscreen_ );
 
-  width  = newWidth;
-  height = newHeight;
+  windowWidth  = newWidth;
+  windowHeight = newHeight;
 
   OZ_STATIC_MAIN_CALL( {
     glSetCurrentContextPPAPI( 0 );
-    context->ResizeBuffers( width, height );
+    context->ResizeBuffers( windowWidth, windowHeight );
     glSetCurrentContextPPAPI( context->pp_resource() );
   } )
 
@@ -158,19 +170,19 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen )
 
   static_cast<void>( newWidth );
   static_cast<void>( newHeight );
-  static_cast<void>( fullscreen );
+  static_cast<void>( fullscreen_ );
 
 # else
 
-  width  = newWidth;
-  height = newHeight;
-  isFull = fullscreen;
+  windowWidth  = newWidth;
+  windowHeight = newHeight;
+  fullscreen   = fullscreen_;
 
   Log::print( "Resizing OpenGL window to %dx%d [%s] ... ",
-              width, height, isFull ? "fullscreen" : "windowed" );
+              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
   SDL_FreeSurface( descriptor );
-  descriptor = SDL_SetVideoMode( width, height, 0, fullscreen ? SDL_FULLSCREEN : 0 );
+  descriptor = SDL_SetVideoMode( windowWidth, windowHeight, 0, fullscreen ? SDL_FULLSCREEN : 0 );
 
   if( descriptor == nullptr ) {
     Log::printEnd( "Window resize failed" );
@@ -180,17 +192,17 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen )
 # endif
 #else
 
-  width  = newWidth;
-  height = newHeight;
-  isFull = fullscreen;
+  windowWidth  = newWidth;
+  windowHeight = newHeight;
+  fullscreen   = fullscreen_;
 
-  if( isFull ) {
-    SDL_SetWindowSize( descriptor, width, height );
+  if( fullscreen ) {
+    SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
     SDL_SetWindowFullscreen( descriptor, SDL_TRUE );
   }
   else {
     SDL_SetWindowFullscreen( descriptor, SDL_FALSE );
-    SDL_SetWindowSize( descriptor, width, height );
+    SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
   }
 
 #endif
@@ -198,25 +210,13 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen )
   return true;
 }
 
-void Window::setGrab( bool grab )
+bool Window::create( const char* title, int width, int height, bool fullscreen_ )
 {
-  hasGrab = grab;
-
-#if SDL_MAJOR_VERSION < 2
-  SDL_ShowCursor( !hasGrab );
-  SDL_WM_GrabInput( SDL_GrabMode( hasGrab && !System::isInstrumented() ) );
-#else
-  SDL_SetRelativeMouseMode( SDL_bool( hasGrab ) );
-#endif
-}
-
-bool Window::create( const char* title, int width_, int height_, bool fullscreen )
-{
-  width    = width_;
-  height   = height_;
-  isFull   = fullscreen;
-  hasFocus = true;
-  hasGrab  = true;
+  windowWidth  = width;
+  windowHeight = height;
+  fullscreen   = fullscreen_;
+  windowFocus  = true;
+  windowGrab   = true;
 
 #ifdef __native_client__
 
@@ -252,9 +252,9 @@ bool Window::create( const char* title, int width_, int height_, bool fullscreen
 
 #if SDL_MAJOR_VERSION < 2
 
-  uint flags = SDL_OPENGL | ( isFull ? SDL_FULLSCREEN : 0 );
+  uint flags = SDL_OPENGL | ( fullscreen ? SDL_FULLSCREEN : 0 );
 
-  if( width == 0 || height == 0 ) {
+  if( windowWidth == 0 || windowHeight == 0 ) {
     const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
 
     Log::verboseMode = true;
@@ -262,18 +262,18 @@ bool Window::create( const char* title, int width_, int height_, bool fullscreen
                   videoInfo->vfmt->BitsPerPixel );
     Log::verboseMode = false;
 
-    width  = videoInfo->current_w;
-    height = videoInfo->current_h;
+    windowWidth  = videoInfo->current_w;
+    windowHeight = videoInfo->current_h;
   }
 
   Log::print( "Creating OpenGL window %dx%d [%s] ... ",
-              width, height, isFull ? "fullscreen" : "windowed" );
+              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
   SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
 
-  descriptor = SDL_SetVideoMode( width, height, 0, flags );
+  descriptor = SDL_SetVideoMode( windowWidth, windowHeight, 0, flags );
 
   if( descriptor == nullptr ) {
     Log::printEnd( "Window creation failed" );
@@ -284,21 +284,21 @@ bool Window::create( const char* title, int width_, int height_, bool fullscreen
 
 #else
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( isFull ? SDL_WINDOW_FULLSCREEN : 0 );
+  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
 
-  if( width == 0 || height == 0 ) {
+  if( windowWidth == 0 || windowHeight == 0 ) {
     SDL_DisplayMode mode;
     SDL_GetDesktopDisplayMode( 0, &mode );
 
-    width  = mode.w;
-    height = mode.h;
+    windowWidth  = mode.w;
+    windowHeight = mode.h;
   }
 
   Log::print( "Creating OpenGL window %dx%d [%s] ... ",
-              width, height, isFull ? "fullscreen" : "windowed" );
+              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
   descriptor = SDL_CreateWindow( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                 width, height, flags );
+                                 windowWidth, windowHeight, flags );
   if( descriptor == nullptr ) {
     Log::printEnd( "Window creation failed" );
     return false;
@@ -322,9 +322,9 @@ bool Window::create( const char* title, int width_, int height_, bool fullscreen
 
 #endif
 
-  Log::printEnd( "%dx%d ... OK", width, height );
+  Log::printEnd( "%dx%d ... OK", windowWidth, windowHeight );
 
-  glViewport( 0, 0, width, height );
+  glViewport( 0, 0, windowWidth, windowHeight );
   glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
   glFlush();

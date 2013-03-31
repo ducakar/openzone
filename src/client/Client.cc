@@ -322,7 +322,7 @@ int Client::init( int argc, char** argv )
 #ifdef __native_client__
 
   foreach( pkg, packages.citer() ) {
-    File pkgFile( "@" + localDir + "/" + *pkg );
+    File pkgFile( localDir + "/" + *pkg );
 
     if( File::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );

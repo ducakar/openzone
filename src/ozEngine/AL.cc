@@ -108,11 +108,9 @@ struct AL::Streamer::Data
   InputStream    istream;
   char           samples[BUFFER_SIZE];
 
-  explicit Data()
-  {
-    buffers[0] = 0;
-    buffers[1] = 0;
-  }
+  explicit Data() :
+    buffers{ 0, 0 }
+  {}
 };
 
 AL::Streamer::Streamer() :

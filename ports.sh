@@ -77,7 +77,7 @@ function setup_nacl_x86_64()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$buildDir/usr/include"
+  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -107,7 +107,7 @@ function setup_nacl_i686()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$buildDir/usr/include"
+  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse -fomit-frame-pointer"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -137,7 +137,7 @@ function setup_nacl_ARM()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$buildDir/usr/include"
+  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
   export CFLAGS="-Ofast"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -168,7 +168,7 @@ function setup_pnacl()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$buildDir/usr/include"
+  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
   export CFLAGS="-O4 -ffast-math"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -368,7 +368,7 @@ function fetch()
   download 'http://www.lua.org/ftp/lua-5.2.1.tar.gz'
 
   # LuaJIT
-  download 'http://luajit.org/download/LuaJIT-2.0.0.tar.gz'
+  # download 'http://luajit.org/download/LuaJIT-2.0.0.tar.gz'
 
   # SDL
   download 'http://www.libsdl.org/release/SDL-1.2.15.tar.gz'
@@ -496,15 +496,15 @@ function build_lua()
 }
 
 # TODO: LuaJIT cross-compiling doesn't work.
-function build_luajit()
-{
-  prepare LuaJIT-2.0.0 LuaJIT-2.0.0.tar.gz || return
-
-  make amalg PREFIX=/usr CC="$CC" BUILDMODE=static
-  make install DESTDIR="$buildDir" PREFIX=/usr
-
-  finish
-}
+# function build_luajit()
+# {
+#   prepare LuaJIT-2.0.0 LuaJIT-2.0.0.tar.gz || return
+#
+#   make amalg PREFIX=/usr CC="$CC" BUILDMODE=static
+#   make install DESTDIR="$buildDir" PREFIX=/usr
+#
+#   finish
+# }
 
 function build_sdl()
 {

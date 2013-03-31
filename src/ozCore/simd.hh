@@ -52,25 +52,25 @@ typedef uint __attribute__(( vector_size( 16 ) )) uint4;
 OZ_ALWAYS_INLINE
 inline float4 vFill( float x, float y, float z, float w )
 {
-  return ( float4 ) { x, y, z, w };
+  return float4{ x, y, z, w };
 }
 
 OZ_ALWAYS_INLINE
 inline float4 vFill( float x )
 {
-  return ( float4 ) { x, x, x, x };
+  return float4{ x, x, x, x };
 }
 
 OZ_ALWAYS_INLINE
 inline uint4 vFill( uint x, uint y, uint z, uint w )
 {
-  return ( uint4 ) { x, y, z, w };
+  return uint4{ x, y, z, w };
 }
 
 OZ_ALWAYS_INLINE
 inline uint4 vFill( uint x )
 {
-  return ( uint4 ) { x, x, x, x };
+  return uint4{ x, x, x, x };
 }
 
 OZ_ALWAYS_INLINE

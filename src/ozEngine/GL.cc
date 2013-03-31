@@ -30,7 +30,7 @@
 # include <SDL.h>
 
 # define OZ_DL_GLLOAD( func ) \
-  func = reinterpret_cast< decltype( func ) >( SDL_GL_GetProcAddress( #func ) ); \
+  *( void** ) &func = SDL_GL_GetProcAddress( #func ); \
   if( func == nullptr ) { \
     OZ_ERROR( "Failed to link OpenGL function: " #func ); \
   }

@@ -226,10 +226,9 @@ class HashMap
     /**
      * Create an empty hashtable.
      */
-    explicit HashMap()
-    {
-      aFill<Elem*, Elem*>( data, nullptr, SIZE );
-    }
+    explicit HashMap() :
+      data{}
+    {}
 
     /**
      * Destructor.

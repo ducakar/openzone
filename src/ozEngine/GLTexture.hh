@@ -38,50 +38,12 @@ namespace oz
  */
 class GLTexture
 {
-  public:
-
-    /**
-     * Build option bit enabling generation of mipmaps.
-     */
-    static const int MIPMAPS_BIT = 0x01;
-
-    /**
-     * Build option bit enabling texture compression.
-     */
-    static const int COMPRESSION_BIT = 0x02;
-
-    /**
-     * Build option bit forcing the highest quality compression and mipmap scaling.
-     */
-    static const int QUALITY_BIT = 0x04;
-
   private:
 
     GLuint textureId;      ///< OpenGL texture id.
     int    textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
   public:
-
-    /**
-     * Convert given image to DDS format and optionally compress it and create mipmaps.
-     *
-     * Mipmap generation, S3 texture compression, and quality of compression and mipmap images
-     * scaling can be controlled via `options` parameter.
-     * @li `MIPMAPS_BIT` enables generation of mipmaps.
-     * @li `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
-     *     alpha channel and DXT5 for images with an alpha channel.
-     *     Texture compression is enabled only if OZ_NONFREE is enabled on ozEngine build.
-     * @li `QUALITY_BIT` enables highest quality but slow methods for scaling texture to smaller
-     *     dimensions in mipmap generation and highest quality settings for S3 texture compression
-     *     libsquish supports.
-     *
-     * png, jpg, jpeg, tga and bmp file extensions are recognised (must be lower-case).
-     *
-     * @param file image file.
-     * @param options bit-mask to control quality and compression.
-     * @param ostream stream to write texture to.
-     */
-    static bool build( const File& file, int options, OutputStream* ostream );
 
     /**
      * Create an empty instance (no OpenGL texture is created).

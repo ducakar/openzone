@@ -198,9 +198,7 @@ bool Gettext::import( const File& file )
 
   // Rebuild hashtable.
   delete[] table;
-
-  table = new Message*[nMessages];
-  aFill<Message*, Message*>( table, nullptr, nMessages );
+  table = new Message*[nMessages] {};
 
   for( int i = 0; i < nMessages; ++i ) {
     uint index = uint( hash( messages[i].original ) ) % uint( nMessages );

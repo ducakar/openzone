@@ -44,7 +44,10 @@
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
     int id = liber.imagoIndex( #name ); \
-    if( id >= 0 ) { \
+    if( id < 0 ) { \
+      OZ_ERROR( "Invalid imago class: %s", #name ); \
+    } \
+    else { \
       imagoClasses[id] = name##Imago::create; \
     } \
   }
@@ -52,7 +55,10 @@
 #define OZ_REGISTER_AUDIOCLASS( name ) \
   { \
     int id = liber.audioIndex( #name ); \
-    if( id >= 0 ) { \
+    if( id < 0 ) { \
+      OZ_ERROR( "Invalid audio class: %s", #name ); \
+    } \
+    else { \
       audioClasses[id] = name##Audio::create; \
     } \
   }
@@ -760,20 +766,18 @@ void Context::init()
 
   imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses];
   audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses];
-  fragPools    = liber.nFragPools    == 0 ? nullptr : new FragPool*[liber.nFragPools];
+  fragPools    = liber.nFragPools    == 0 ? nullptr : new FragPool*[liber.nFragPools] {};
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );
   OZ_REGISTER_IMAGOCLASS( Explosion );
   OZ_REGISTER_IMAGOCLASS( MD2 );
   OZ_REGISTER_IMAGOCLASS( MD2Weapon );
-  OZ_REGISTER_IMAGOCLASS( MD3 );
+//   OZ_REGISTER_IMAGOCLASS( MD3 );
 
   OZ_REGISTER_AUDIOCLASS( Basic );
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
-
-  aFill<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
 
   int nTextures = liber.textures.length();
   int nSounds   = liber.sounds.length();

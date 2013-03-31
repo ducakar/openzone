@@ -39,7 +39,6 @@ else()
   target_link_libraries( ozManifest ozCore )
 
   install( TARGETS ozManifest RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
-
   install( DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications ${CMAKE_SOURCE_DIR}/share/pixmaps
            DESTINATION share )
 

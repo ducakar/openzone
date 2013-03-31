@@ -16,9 +16,14 @@
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
     * PFile class merged into File class
-- ozDynamics
+- ozDynamics: new rigid body dynamics library
     * collision
-        + primitives: Box, Capsule, Mesh, Compound
+        + primitives: Box, Capsule, Polytope, Compound
+- ozEngine: new engine building blocks library
+    * GL class for OpenGL utilities: error checks, DDS texture loader
+    * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader, Vorbis streamer
+    * Window class based on client::Window
+    * Pepper class based on client::NaClPlatform
 - matrix
     * melee attack
 - ui

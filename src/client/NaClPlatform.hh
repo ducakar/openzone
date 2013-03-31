@@ -123,6 +123,6 @@ class NaClPlatform
   }
 
 #define OZ_STATIC_MAIN_CALL( code ) \
-  { code } \
+  { code }
 
 #endif

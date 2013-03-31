@@ -12,7 +12,7 @@ Building
 
 Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
 Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
-supported platforms/toolchains.
+supported platforms/toolchains. Only GCC >= 4.4 and LLVM/Clang >= 3.1 compilers are supported.
 
 For generic Linux builds, make sure you have all the dependencies installed. You need to install
 development packages for the following libraries:
@@ -267,6 +267,7 @@ The following alternative launches are available:
   NaCl port. If `strip` is passed as the second option, binaries are stripped too.
 
 Documentation
+
 -------------
 
 To generate documentation from source code with Doxygen, run

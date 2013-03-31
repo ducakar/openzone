@@ -22,15 +22,13 @@
  */
 
 #include <ozCore/ozCore.hh>
-#include <ozEngine/ozEngine.hh>
-
-#include <cstdio>
 
 using namespace oz;
 
 int main()
 {
   System::init();
-  printf( "Hello\n" );
+
+  Log::printMemoryLeaks();
   return 0;
 }

@@ -224,10 +224,9 @@ class HashSet
     /**
      * Create an empty hashtable.
      */
-    explicit HashSet()
-    {
-      aFill<Elem*, Elem*>( data, nullptr, SIZE );
-    }
+    explicit HashSet() :
+      data{}
+    {}
 
     /**
      * Destructor.

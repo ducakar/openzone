@@ -351,9 +351,9 @@ class Math
       // isfinite() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
       // Furthermore, those expressions are faster than __builtin_isfinite().
 #if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
-      return x + 1.0e38f != x && x == x;
-#else
       return x + 1.0e38f != x;
+#else
+      return x + 1.0e38f != x && x == x;
 #endif
     }
 
@@ -388,8 +388,7 @@ class Math
     }
 
     /**
-     * True iff the number is not subnormal (i.e. too close to zero for the whole mantissa to be
-     * used).
+     * True iff the number is not subnormal.
      */
     OZ_ALWAYS_INLINE
     static bool isnormal( float x )
@@ -471,6 +470,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float fastSqrt( float x )
     {
+      hard_assert( x >= 0.0f );
+
       union FloatBits
       {
         float value;
@@ -488,7 +489,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float fastInvSqrt( float x )
     {
-      hard_assert( x != 0.0f );
+      hard_assert( x > 0.0f );
 
       union FloatBits
       {
