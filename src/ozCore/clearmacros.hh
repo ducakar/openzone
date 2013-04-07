@@ -27,7 +27,7 @@
  *
  * It undefines `soft_assert()`, `hard_assert()`, `foreach()`, `float4()` and `uint4()` and macros
  * that might be defined for older GCC versions only to ensure for C++11 compatibility. It is not
- * included by `\<oz/oz.hh\>`, one should include it before headers that conflict with liboz.
+ * included by `\<oz/oz.hh\>`, one should include it before headers that might conflict with liboz.
  */
 
 #pragma once

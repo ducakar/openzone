@@ -1,6 +1,6 @@
-diff -Naur lua-5.2.1/src/llex.c lua-5.2.1-android/src/llex.c
---- lua-5.2.1/src/llex.c	2012-01-24 00:05:51.000000000 +0100
-+++ lua-5.2.1-android/src/llex.c	2012-10-14 01:05:28.384042154 +0200
+diff -Naur lua-5.2.2.orig/src/llex.c lua-5.2.2/src/llex.c
+--- lua-5.2.2.orig/src/llex.c	2013-03-16 22:10:18.000000000 +0100
++++ lua-5.2.2/src/llex.c	2013-04-03 18:42:00.327551527 +0200
 @@ -211,7 +211,7 @@
  */
  static void trydecpoint (LexState *ls, SemInfo *seminfo) {

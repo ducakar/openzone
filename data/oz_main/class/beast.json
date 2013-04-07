@@ -42,11 +42,11 @@
     "hit":              "oz/land",
     "land":             "oz/land",
     "splash":           "free/splash1",
-    "jump":             "aard/jump",
-    "flip":             "ppm/deathb",
-    "death":            "ppm/deathb",
     "step":             "openarena/boot4",
     "waterStep":        "openarena/splash1",
-    "swimSurface":      "openarena/watr_in"
+    "swimSurface":      "openarena/watr_in",
+    "death":            "ppm/deathb",
+    "jump":             "aard/jump",
+    "flip":             "ppm/deathb"
   }
 }

@@ -49,7 +49,7 @@ class SBitset
   private:
 
     /// Number of bits per unit.
-    static const int ULONG_BITSIZE = int( sizeof( ulong ) * 8 );
+    static const int ULONG_BITSIZE = int( sizeof( ulong ) ) * 8;
 
     /// Number of units.
     static const int SIZE = ( BITSIZE + ULONG_BITSIZE - 1 ) / ULONG_BITSIZE;

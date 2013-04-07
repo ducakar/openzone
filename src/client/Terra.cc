@@ -53,7 +53,7 @@ void Terra::draw()
   }
 
   // to match strip triangles with matrix terrain we have to make them clockwise since
-  // we draw column-major (strips along y axis) for better cache performance
+  // we draw column-major (triangle strips along y axis) for better cache performance
   glFrontFace( GL_CW );
 
   span.minX = max( int( ( camera.p.x - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );

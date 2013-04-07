@@ -223,7 +223,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     bool readBool()
     {
-      const char* data = forward( sizeof( bool ) );
+      const char* data = forward( int( sizeof( bool ) ) );
       return bool( *data );
     }
 
@@ -233,7 +233,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     char readChar()
     {
-      const char* data = forward( sizeof( char ) );
+      const char* data = forward( int( sizeof( char ) ) );
       return char( *data );
     }
 
@@ -253,7 +253,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     byte readByte()
     {
-      const char* data = forward( sizeof( byte ) );
+      const char* data = forward( int( sizeof( byte ) ) );
       return byte( *data );
     }
 
@@ -263,7 +263,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     ubyte readUByte()
     {
-      const char* data = forward( sizeof( ubyte ) );
+      const char* data = forward( int( sizeof( ubyte ) ) );
       return ubyte( *data );
     }
 
@@ -273,7 +273,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     short readShort()
     {
-      const char* data = forward( sizeof( short ) );
+      const char* data = forward( int( sizeof( short ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToShort value = { { data[0], data[1] } };
@@ -293,7 +293,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     ushort readUShort()
     {
-      const char* data = forward( sizeof( ushort ) );
+      const char* data = forward( int( sizeof( ushort ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToUShort value = { { data[0], data[1] } };
@@ -313,7 +313,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     int readInt()
     {
-      const char* data = forward( sizeof( int ) );
+      const char* data = forward( int( sizeof( int ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
@@ -333,7 +333,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     uint readUInt()
     {
-      const char* data = forward( sizeof( uint ) );
+      const char* data = forward( int( sizeof( uint ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
@@ -353,7 +353,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     long64 readLong64()
     {
-      const char* data = forward( sizeof( long64 ) );
+      const char* data = forward( int( sizeof( long64 ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToLong64 value = {
@@ -377,7 +377,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     ulong64 readULong64()
     {
-      const char* data = forward( sizeof( ulong64 ) );
+      const char* data = forward( int( sizeof( ulong64 ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToULong64 value = {
@@ -401,7 +401,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     float readFloat()
     {
-      const char* data = forward( sizeof( float ) );
+      const char* data = forward( int( sizeof( float ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
@@ -421,7 +421,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     double readDouble()
     {
-      const char* data = forward( sizeof( double ) );
+      const char* data = forward( int( sizeof( double ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToDouble value = {
@@ -463,7 +463,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Vec3 readVec3()
     {
-      const char* data = forward( sizeof( float[3] ) );
+      const char* data = forward( int( sizeof( float[3] ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -487,7 +487,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Vec4 readVec4()
     {
-      const char* data = forward( sizeof( float[4] ) );
+      const char* data = forward( int( sizeof( float[4] ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -513,7 +513,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Point readPoint()
     {
-      const char* data = forward( sizeof( float[3] ) );
+      const char* data = forward( int( sizeof( float[3] ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -537,7 +537,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Plane readPlane()
     {
-      const char* data = forward( sizeof( float[4] ) );
+      const char* data = forward( int( sizeof( float[4] ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -563,7 +563,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Quat readQuat()
     {
-      const char* data = forward( sizeof( float[4] ) );
+      const char* data = forward( int( sizeof( float[4] ) ) );
 
       if( order == Endian::NATIVE ) {
         Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -589,7 +589,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Mat33 readMat33()
     {
-      const char* data = forward( sizeof( float[9] ) );
+      const char* data = forward( int( sizeof( float[9] ) ) );
 
       Mat33 m;
       float* values = m;
@@ -618,7 +618,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     Mat44 readMat44()
     {
-      const char* data = forward( sizeof( float[16] ) );
+      const char* data = forward( int( sizeof( float[16] ) ) );
 
       Mat44 m;
       float* values = m;

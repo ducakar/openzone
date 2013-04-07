@@ -72,7 +72,7 @@ void Pepper::post( const char* message )
   } )
 }
 
-String Pepper::poll()
+String Pepper::pop()
 {
   messageLock.lock();
   String s = messageQueue.isEmpty() ? String() : messageQueue.popFirst();

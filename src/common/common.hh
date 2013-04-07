@@ -59,6 +59,11 @@ namespace common
 const int MAX_WORLD_COORD = 2048;
 
 /**
+ * Extent of world bounding box (equals `MAX_WORLD_COORD` but float type).
+ */
+const float WORLD_DIM = float( MAX_WORLD_COORD );
+
+/**
  * Margin for collision detection.
  *
  * The maximum relative error for transition from world coordinates to relative coordinates is
@@ -74,10 +79,21 @@ const int MAX_WORLD_COORD = 2048;
 const float EPSILON = float( MAX_WORLD_COORD ) * 4.0f * Math::FLOAT_EPS;
 
 /**
- * Wrap angle to interval \f$ [0, \tau) \f$.
+ * 2D integer span.
+ */
+struct Span
+{
+  int minX; ///< Minimum X.
+  int minY; ///< Minimum Y.
+  int maxX; ///< Maximum X.
+  int maxY; ///< Maximum Y.
+};
+
+/**
+ * Wrap angle to the interval \f$ [0, \tau) \f$.
  *
- * This adjustment should be made after each angle addition/subtraction. It assumes the input angle
- * lies on interval \f$ [-\tau, \infty) \f$.
+ * This adjustment should be made after each angle change. It assumes the input angle lies on
+ * the interval \f$ [-\tau, \infty) \f$.
  */
 OZ_ALWAYS_INLINE
 inline float angleWrap( float x )
@@ -88,7 +104,7 @@ inline float angleWrap( float x )
 /**
  * Difference between two angles, maps to interval \f$ [-\frac{\tau}{2}, +\frac{\tau}{2}) \f$.
  *
- * This function assumes that both angles lie on interval \f$ [0, \tau) \f$.
+ * This function assumes that both angles lie on the interval \f$ [0, \tau) \f$.
  */
 OZ_ALWAYS_INLINE
 inline float angleDiff( float x, float y )
@@ -97,15 +113,33 @@ inline float angleDiff( float x, float y )
 }
 
 /**
- * 2D integer span.
+ * Wrap position to the interval \f$ [-WORLD_DIM, +WORLD_DIM) \f$.
+ *
+ * This adjustment should be made after each position change. It assumes the input position lies
+ * on the interval \f$ [-2 WORLD_DIM, \infty) \f$.
  */
-struct Span
+OZ_ALWAYS_INLINE
+inline Point posWrap( const Point& p )
 {
-  int minX; ///< Minimum X.
-  int minY; ///< Minimum Y.
-  int maxX; ///< Maximum X.
-  int maxY; ///< Maximum Y.
-};
+  return Point( Math::fmod( p.x + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
+                Math::fmod( p.y + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
+                Math::fmod( p.z + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM );
+}
+
+/**
+ * Difference between two points in the world.
+ *
+ * This function assumes that both points lie on the interval \f$ [-WORLD_DIM, +WORLD_DIM) \f$.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 posDiff( const Point& p0, const Point& p1 )
+{
+  Vec3 diff = p0 - p1;
+
+  return Vec3( Math::fmod( diff.x + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
+               Math::fmod( diff.y + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
+               Math::fmod( diff.z + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM );
+}
 
 }
 }

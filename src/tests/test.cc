@@ -28,7 +28,5 @@ using namespace oz;
 int main()
 {
   System::init();
-
-  Log::printMemoryLeaks();
   return 0;
 }

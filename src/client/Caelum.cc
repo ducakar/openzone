@@ -112,7 +112,8 @@ void Caelum::draw()
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
     glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), nullptr );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( float[3] ) ),
+                           nullptr );
 
     glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 6, GL_UNSIGNED_SHORT, nullptr );
 

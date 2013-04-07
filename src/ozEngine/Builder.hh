@@ -71,7 +71,7 @@ class Builder
      * @li `MIPMAPS_BIT` enables generation of mipmaps.
      * @li `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
      *     alpha channel and DXT5 for images with an alpha channel.
-     *     Texture compression is enabled only if OZ_NONFREE is enabled on ozEngine build.
+     *     Texture compression is enabled only if `OZ_NONFREE` is enabled on ozEngine build.
      * @li `QUALITY_BIT` enables highest quality but slow methods for scaling texture to smaller
      *     dimensions in mipmap generation and highest quality settings for S3 texture compression
      *     libsquish supports.

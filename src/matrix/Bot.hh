@@ -40,16 +40,22 @@ class Bot : public Dynamic
      * EVENTS
      */
 
-    static const int EVENT_JUMP             = 9;
-    static const int EVENT_MELEE            = 10;
-    static const int EVENT_FLIP             = 11;
-    static const int EVENT_DEATH            = 12;
-
     // Step and swim events are not in use but merely reserve sound slots.
-    static const int EVENT_STEP             = 13;
-    static const int EVENT_WATERSTEP        = 14;
-    static const int EVENT_SWIM_SURFACE     = 15;
-    static const int EVENT_SWIM_SUBMERGED   = 16;
+    static const int EVENT_STEP             = 9;
+    static const int EVENT_WATERSTEP        = 10;
+    static const int EVENT_SWIM_SURFACE     = 11;
+    static const int EVENT_SWIM_SUBMERGED   = 12;
+
+    static const int EVENT_DEATH            = 13;
+    static const int EVENT_JUMP             = 14;
+    static const int EVENT_MELEE            = 15;
+
+    // Gestures.
+    static const int EVENT_POINT            = 16;
+    static const int EVENT_FALL_BACK        = 17;
+    static const int EVENT_SALUTE           = 18;
+    static const int EVENT_WAVE             = 19;
+    static const int EVENT_FLIP             = 20;
 
     /*
      * ACTIONS
@@ -127,12 +133,12 @@ class Bot : public Dynamic
     static const int SUBMERGED_BIT          = 0x00004000;
 
     static const int GESTURE_POINT_BIT      = 0x01000000;
-    static const int GESTURE_BACK_BIT       = 0x02000000;
+    static const int GESTURE_FALL_BACK_BIT  = 0x02000000;
     static const int GESTURE_SALUTE_BIT     = 0x04000000;
     static const int GESTURE_WAVE_BIT       = 0x08000000;
     static const int GESTURE_FLIP_BIT       = 0x10000000;
 
-    static const int GESTURE_MASK           = GESTURE_POINT_BIT | GESTURE_BACK_BIT |
+    static const int GESTURE_MASK           = GESTURE_POINT_BIT | GESTURE_FALL_BACK_BIT |
                                               GESTURE_SALUTE_BIT | GESTURE_WAVE_BIT |
                                               GESTURE_FLIP_BIT;
 

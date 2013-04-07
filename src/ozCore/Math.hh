@@ -503,11 +503,21 @@ class Math
     }
 
     /**
-     * For a positive integer, true iff it is a power of 2.
+     * Index of the first 1 bit or -1 if `v` is 0.
      */
-    template <typename Value>
+    template <typename Value = int>
     OZ_ALWAYS_INLINE
-    static bool isPow2( const Value& v )
+    static int index1( Value v )
+    {
+      return v == 0 ? -1 : int( sizeof( Value ) * 8 - 1 ) - __builtin_clzll( ulong64( v ) );
+    }
+
+    /**
+     * True iff the given positive integer is a power of 2.
+     */
+    template <typename Value = int>
+    OZ_ALWAYS_INLINE
+    static bool isPow2( Value v )
     {
       hard_assert( 0 < v );
 

@@ -38,7 +38,7 @@ namespace oz
  */
 class Window
 {
-  public:
+  private:
 
     static int  windowWidth;  ///< Window inner width.
     static int  windowHeight; ///< Window inner height.
@@ -119,12 +119,12 @@ class Window
     static void minimise();
 
     /**
-     * Resize window and/or toggle full screen mode.
+     * Resize window and/or toggle full-screen mode.
      *
      * If either width or height is 0, desktop resolution is used.
      * On error, window is destroyed.
      */
-    static bool resize( int newWidth, int newHeight, bool fullscreen );
+    static bool resize( int newWidth, int newHeight, bool fullscreen = false );
 
     /**
      * Create the window.
@@ -132,7 +132,7 @@ class Window
      * If either width or height is 0, desktop resolution is used.
      * Invoking this function when the window is already created is an error.
      */
-    static bool create( const char* title, int width, int height, bool isFull );
+    static bool create( const char* title, int width, int height, bool fullscreen = false );
 
     /**
      * Destroy the window.

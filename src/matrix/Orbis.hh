@@ -191,6 +191,15 @@ class Orbis : public Bounds
     // get indices of min and max cells which the bounds intersects
     Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
+    Cell* getCell1( float x, float y );
+    Cell* getCell1( const Point& p );
+    Span getInters1( float x, float y, float epsilon = 0.0f ) const;
+    Span getInters1( const Point& p, float epsilon = 0.0f ) const;
+    Span getInters1( float minPosX, float minPosY, float maxPosX, float maxPosY,
+                     float epsilon = 0.0f ) const;
+    Span getInters1( const AABB& bb, float epsilon = 0.0f ) const;
+    Span getInters1( const Bounds& bounds, float epsilon = 0.0f ) const;
+
     void update();
 
     void read( InputStream* istream );
@@ -331,6 +340,64 @@ OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
 {
   return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
+}
+
+OZ_ALWAYS_INLINE
+inline Cell* Orbis::getCell1( float x, float y )
+{
+  int ix = int( ( x + 3.0f*Orbis::DIM ) / Cell::SIZE ) % Orbis::CELLS;
+  int iy = int( ( y + 3.0f*Orbis::DIM ) / Cell::SIZE ) % Orbis::CELLS;
+
+  return &cells[ix][iy];
+}
+
+OZ_ALWAYS_INLINE
+inline Cell* Orbis::getCell1( const Point& p )
+{
+  return getCell1( p.x, p.y );
+}
+
+OZ_ALWAYS_INLINE
+inline Span Orbis::getInters1( float x, float y, float epsilon ) const
+{
+  return {
+    int( ( x - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
+    int( ( y - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
+    int( ( x + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
+    int( ( y + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS
+  };
+}
+
+OZ_ALWAYS_INLINE
+inline Span Orbis::getInters1( const Point& p, float epsilon ) const
+{
+  return getInters1( p.x, p.y, epsilon );
+}
+
+OZ_ALWAYS_INLINE
+inline Span Orbis::getInters1( float minPosX, float minPosY,
+                               float maxPosX, float maxPosY, float epsilon ) const
+{
+  return {
+    int( ( minPosX - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
+    int( ( minPosY - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
+    int( ( maxPosX + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
+    int( ( maxPosY + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS
+  };
+}
+
+OZ_ALWAYS_INLINE
+inline Span Orbis::getInters1( const AABB& bb, float epsilon ) const
+{
+  return getInters1( bb.p.x - bb.dim.x, bb.p.y - bb.dim.y,
+                     bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
+                     epsilon );
+}
+
+OZ_ALWAYS_INLINE
+inline Span Orbis::getInters1( const Bounds& bounds, float epsilon ) const
+{
+  return getInters1( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
 }
 
 }

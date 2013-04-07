@@ -58,11 +58,11 @@
     "hit":              "droid-sounds/fall2",
     "land":             "droid-sounds/fall1",
     "splash":           "free/splash1",
-    "jump":             "droid-sounds/pain50_1",
-    "flip":             "droid-sounds/death4",
-    "death":            "droid-sounds/death2",
     "step":             "openarena/boot4",
     "waterStep":        "openarena/splash1",
-    "swimSurface":      "openarena/watr_in"
+    "swimSurface":      "openarena/watr_in",
+    "death":            "droid-sounds/death2",
+    "jump":             "droid-sounds/pain50_1",
+    "flip":             "droid-sounds/death4"
   }
 }

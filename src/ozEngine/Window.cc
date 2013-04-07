@@ -63,27 +63,6 @@ static void flushCompleteCallback( void*, int )
   flushSemaphore.post();
 }
 
-// Because of array initialiser this code cannot reside inside OZ_MAIN_CALL macro, so it has been
-// split into a separate function.
-static void createContext()
-{
-  int attribs[] = {
-    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
-    PP_GRAPHICS3DATTRIB_WIDTH, Window::windowWidth,
-    PP_GRAPHICS3DATTRIB_HEIGHT, Window::windowHeight,
-    PP_GRAPHICS3DATTRIB_NONE
-  };
-
-  context = new pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
-  if( context->is_null() ) {
-    OZ_ERROR( "Failed to create OpenGL context" );
-  }
-
-  if( !System::instance->BindGraphics( *context ) ) {
-    OZ_ERROR( "Failed to bind Graphics3D" );
-  }
-}
-
 #endif
 
 bool Window::isCreated()
@@ -178,11 +157,20 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
   windowHeight = newHeight;
   fullscreen   = fullscreen_;
 
+  uint flags = SDL_OPENGL | ( fullscreen ? SDL_FULLSCREEN : 0 );
+
+  if( windowWidth == 0 || windowHeight == 0 ) {
+    const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+
+    windowWidth  = videoInfo->current_w;
+    windowHeight = videoInfo->current_h;
+  }
+
   Log::print( "Resizing OpenGL window to %dx%d [%s] ... ",
               windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
   SDL_FreeSurface( descriptor );
-  descriptor = SDL_SetVideoMode( windowWidth, windowHeight, 0, fullscreen ? SDL_FULLSCREEN : 0 );
+  descriptor = SDL_SetVideoMode( windowWidth, windowHeight, 0, flags );
 
   if( descriptor == nullptr ) {
     Log::printEnd( "Window resize failed" );
@@ -195,6 +183,14 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
   windowWidth  = newWidth;
   windowHeight = newHeight;
   fullscreen   = fullscreen_;
+
+  if( windowWidth == 0 || windowHeight == 0 ) {
+    SDL_DisplayMode mode;
+    SDL_GetDesktopDisplayMode( 0, &mode );
+
+    windowWidth  = mode.w;
+    windowHeight = mode.h;
+  }
 
   if( fullscreen ) {
     SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
@@ -224,18 +220,42 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
   flushSemaphore.init();
 
+  Log::print( "Creating OpenGL surface %dx%d ... ", windowWidth, windowHeight );
+
   OZ_STATIC_MAIN_CALL( {
     glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
-    createContext();
-    glSetCurrentContextPPAPI( context->pp_resource() );
 
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-    glFlush();
+    // Array initialiser cannot be nested inside a macro parameter.
+    int attribs[7];
+    attribs[0] = PP_GRAPHICS3DATTRIB_DEPTH_SIZE;
+    attribs[1] = 16;
+    attribs[2] = PP_GRAPHICS3DATTRIB_WIDTH;
+    attribs[3] = windowWidth;
+    attribs[4] = PP_GRAPHICS3DATTRIB_HEIGHT;
+    attribs[5] = windowHeight;
+    attribs[6] = PP_GRAPHICS3DATTRIB_NONE;
 
-    context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
+    context = new pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
+
+    if( context->is_null() ) {
+      Log::printEnd( "Failed to create OpenGL context" );
+    }
+    else if( !System::instance->BindGraphics( *context ) ) {
+      Log::printEnd( "Failed to bind Graphics3D" );
+    }
+    else {
+      glSetCurrentContextPPAPI( context->pp_resource() );
+
+      glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+      glFlush();
+
+      context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
+    }
   } )
   flushSemaphore.wait();
+
+  Log::printEnd( "OK" );
 
 #else
 
@@ -256,11 +276,6 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
   if( windowWidth == 0 || windowHeight == 0 ) {
     const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-    Log::verboseMode = true;
-    Log::println( "Desktop video mode: %dx%d-%d", videoInfo->current_w, videoInfo->current_h,
-                  videoInfo->vfmt->BitsPerPixel );
-    Log::verboseMode = false;
 
     windowWidth  = videoInfo->current_w;
     windowHeight = videoInfo->current_h;
@@ -322,7 +337,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
 #endif
 
-  Log::printEnd( "%dx%d ... OK", windowWidth, windowHeight );
+  Log::printEnd( "OK" );
 
   glViewport( 0, 0, windowWidth, windowHeight );
   glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );

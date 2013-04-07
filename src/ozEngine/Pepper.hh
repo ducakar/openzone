@@ -149,7 +149,7 @@ class Pepper
     static bool isMainThread();
 
     /**
-     * Call execute callback on the module's main thread.
+     * Execute callback on the module's main thread and block until finished.
      */
     static void mainCall( Callback* callback, void* caller );
 
@@ -159,12 +159,12 @@ class Pepper
     static void post( const char* message );
 
     /**
-     * Pop next incoming message from the queue.
+     * Pop next message from the incoming messages queue.
      */
-    static String poll();
+    static String pop();
 
     /**
-     * Push message back to the queue of incoming messages.
+     * Push message to the incoming messages queue.
      */
     static void push( const char* message );
 

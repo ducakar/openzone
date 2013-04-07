@@ -107,7 +107,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
       if( bot->state & Bot::GESTURE_POINT_BIT ) {
         return ANIM_POINT;
       }
-      else if( bot->state & Bot::GESTURE_BACK_BIT ) {
+      else if( bot->state & Bot::GESTURE_FALL_BACK_BIT ) {
         return ANIM_FALLBACK;
       }
       else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {

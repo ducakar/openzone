@@ -38,7 +38,7 @@ namespace oz
 static const int         OUT_BUFFER_SIZE      = 4096;
 static const int         INDENT_SPACES        = 2;
 static const char        INDENT_BUFFER[49]    = "                                                ";
-static const int         INDENT_BUFFER_LENGTH = sizeof( INDENT_BUFFER ) - 1;
+static const int         INDENT_BUFFER_LENGTH = int( sizeof( INDENT_BUFFER ) ) - 1;
 static const char* const SIGNALS[][2]         =
 {
   { "SIG???",    "[invalid signal number]"    },

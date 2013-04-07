@@ -359,7 +359,7 @@ void Class::fillBot( const char* className )
   fillDynamic( className );
 
   flags |= Object::BOT_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT;
-  // we don't allow browsing bots' inventory as long as they are alive
+  // We don't allow browsing a bot's inventory as long as one is alive.
   flags &= ~Object::BROWSABLE_BIT;
 
   life *= 2.0f;
@@ -367,23 +367,35 @@ void Class::fillBot( const char* className )
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
 
-    audioSounds[Bot::EVENT_JUMP]           = soundsConfig["jump"].get( "" );
-    audioSounds[Bot::EVENT_MELEE]          = soundsConfig["melee"].get( "" );
-    audioSounds[Bot::EVENT_FLIP]           = soundsConfig["flip"].get( "" );
-    audioSounds[Bot::EVENT_DEATH]          = soundsConfig["death"].get( "" );
     audioSounds[Bot::EVENT_STEP]           = soundsConfig["step"].get( "" );
     audioSounds[Bot::EVENT_WATERSTEP]      = soundsConfig["waterStep"].get( "" );
     audioSounds[Bot::EVENT_SWIM_SURFACE]   = soundsConfig["swimSurface"].get( "" );
     audioSounds[Bot::EVENT_SWIM_SUBMERGED] = soundsConfig["swimSubmerged"].get( "" );
 
-    context.usedSounds.include( audioSounds[Bot::EVENT_JUMP] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_MELEE] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_FLIP] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_DEATH] );
+    audioSounds[Bot::EVENT_DEATH]          = soundsConfig["death"].get( "" );
+    audioSounds[Bot::EVENT_JUMP]           = soundsConfig["jump"].get( "" );
+    audioSounds[Bot::EVENT_MELEE]          = soundsConfig["melee"].get( "" );
+
+    audioSounds[Bot::EVENT_POINT]          = soundsConfig["point"].get( "" );
+    audioSounds[Bot::EVENT_FALL_BACK]      = soundsConfig["fallBack"].get( "" );
+    audioSounds[Bot::EVENT_SALUTE]         = soundsConfig["salute"].get( "" );
+    audioSounds[Bot::EVENT_WAVE]           = soundsConfig["wave"].get( "" );
+    audioSounds[Bot::EVENT_FLIP]           = soundsConfig["flip"].get( "" );
+
     context.usedSounds.include( audioSounds[Bot::EVENT_STEP] );
     context.usedSounds.include( audioSounds[Bot::EVENT_WATERSTEP] );
     context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SURFACE] );
     context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SUBMERGED] );
+
+    context.usedSounds.include( audioSounds[Bot::EVENT_DEATH] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_JUMP] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_MELEE] );
+
+    context.usedSounds.include( audioSounds[Bot::EVENT_POINT] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_FALL_BACK] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_SALUTE] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_WAVE] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_FLIP] );
   }
 
   state = 0;

@@ -1239,9 +1239,10 @@ class JSON
     /**
      * Recursively clear node and its children.
      *
-     * @param unusedWarnings warn about unused variables.
+     * @param warnUnused warn about unused variables.
+     * @return True iff `warnUnused` is true and there are unused variables.
      */
-    void clear( bool unusedWarnings = false );
+    bool clear( bool warnUnused = false );
 
     /**
      * String representation of a value.

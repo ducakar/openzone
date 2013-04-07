@@ -70,19 +70,24 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
   registerLuaConstant( l, "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
   registerLuaConstant( l, "OZ_EVENT_HIT",                   Object::EVENT_HIT );
+  registerLuaConstant( l, "OZ_EVENT_LAND",                  Object::EVENT_LAND );
   registerLuaConstant( l, "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
   registerLuaConstant( l, "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
   registerLuaConstant( l, "OZ_EVENT_USE",                   Object::EVENT_USE );
   registerLuaConstant( l, "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
   registerLuaConstant( l, "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
-  registerLuaConstant( l, "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
-  registerLuaConstant( l, "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
-  registerLuaConstant( l, "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
-  registerLuaConstant( l, "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
   registerLuaConstant( l, "OZ_EVENT_STEP",                  Bot::EVENT_STEP );
   registerLuaConstant( l, "OZ_EVENT_WATERSTEP",             Bot::EVENT_WATERSTEP );
   registerLuaConstant( l, "OZ_EVENT_SWIM_SURFACE",          Bot::EVENT_SWIM_SURFACE );
   registerLuaConstant( l, "OZ_EVENT_SWIM_SUBMERGED",        Bot::EVENT_SWIM_SUBMERGED );
+  registerLuaConstant( l, "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
+  registerLuaConstant( l, "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
+  registerLuaConstant( l, "OZ_EVENT_MELEE",                 Bot::EVENT_MELEE );
+  registerLuaConstant( l, "OZ_EVENT_POINT",                 Bot::EVENT_POINT );
+  registerLuaConstant( l, "OZ_EVENT_FALL_BACK",             Bot::EVENT_FALL_BACK );
+  registerLuaConstant( l, "OZ_EVENT_SALUTE",                Bot::EVENT_SALUTE );
+  registerLuaConstant( l, "OZ_EVENT_WAVE",                  Bot::EVENT_WAVE );
+  registerLuaConstant( l, "OZ_EVENT_FLOP",                  Bot::EVENT_FLIP );
   registerLuaConstant( l, "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
   registerLuaConstant( l, "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
   registerLuaConstant( l, "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
@@ -141,7 +146,7 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_BOT_SUBMERGED_BIT",           Bot::SUBMERGED_BIT );
 
   registerLuaConstant( l, "OZ_BOT_GESTURE_POINT_BIT",       Bot::GESTURE_POINT_BIT );
-  registerLuaConstant( l, "OZ_BOT_GESTURE_BACK_BIT",        Bot::GESTURE_BACK_BIT );
+  registerLuaConstant( l, "OZ_BOT_GESTURE_FALL_BACK_BIT",   Bot::GESTURE_FALL_BACK_BIT );
   registerLuaConstant( l, "OZ_BOT_GESTURE_SALUTE_BIT",      Bot::GESTURE_SALUTE_BIT );
   registerLuaConstant( l, "OZ_BOT_GESTURE_WAVE_BIT",        Bot::GESTURE_WAVE_BIT );
   registerLuaConstant( l, "OZ_BOT_GESTURE_FLIP_BIT",        Bot::GESTURE_FLIP_BIT );

@@ -365,7 +365,7 @@ function fetch()
   fi
 
   # Lua
-  download 'http://www.lua.org/ftp/lua-5.2.1.tar.gz'
+  download 'http://www.lua.org/ftp/lua-5.2.2.tar.gz'
 
   # LuaJIT
   # download 'http://luajit.org/download/LuaJIT-2.0.0.tar.gz'
@@ -486,8 +486,8 @@ function build_physfs()
 
 function build_lua()
 {
-  prepare lua-5.2.1 lua-5.2.1.tar.gz || return
-  applyPatches lua-5.2.1.patch
+  prepare lua-5.2.2 lua-5.2.2.tar.gz || return
+  applyPatches lua-5.2.2.patch
 
   make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
   make INSTALL_TOP="$buildDir/usr" install

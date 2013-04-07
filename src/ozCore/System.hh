@@ -152,11 +152,11 @@ class System
     /**
      * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
      *
-     * Signal handlers must be set-up for each thread in a process separately. `System::init()`
+     * Signal handlers must be set up for each thread in a process separately. `System::init()`
      * method sets them up for the caller thread only, for other threads this method should be used
      * unless created with `Thread::start()`, which calls this method implicitly.
      *
-     * If `HANDLERS_BIT` hasn't been passed to `System::init()` this method is a no-op.
+     * If `HANDLERS_BIT` hasn't been passed to `System::init()` this method is a NOP.
      */
     static void threadInit();
 
@@ -174,9 +174,9 @@ class System
      * @li `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
      *     This option has no effect on Android and NaCl.
      *
-     * @param crashHandler user-provided method called when the application is aborted in a signal/
-     *        exception handler or in `System::error()`. If non-null, it is invoked after the stack
-     *        trace is printed and before halting/aborting the application.
+     * @param crashHandler user-provided method called when the application is aborted by a signal/
+     *        exception handler or `System::error()`. If non-null, it is invoked after the stack
+     *        trace is printed.
      */
     static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );
 

@@ -116,6 +116,8 @@
 namespace oz
 {
 
+// These three types are also defined afterwards (which is completely unnecessary) as a workaround
+// for a QtCreator bug and to provide Doxygen documentation.
 using std::nullptr_t;
 using std::size_t;
 using std::ptrdiff_t;

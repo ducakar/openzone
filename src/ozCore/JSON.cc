@@ -1960,11 +1960,14 @@ bool JSON::exclude( const char* key )
   return table.exclude( key );
 }
 
-void JSON::clear( bool unusedWarnings )
+bool JSON::clear( bool warnUnused )
 {
-  if( unusedWarnings && !wasAccessed ) {
+  bool hasUnused = false;
+
+  if( warnUnused && !wasAccessed ) {
     Log::println( "JSON: unused value: %s", toString().cstr() );
     System::bell();
+    hasUnused = true;
   }
 
   switch( valueType ) {
@@ -1987,9 +1990,9 @@ void JSON::clear( bool unusedWarnings )
     case ARRAY: {
       ArrayData* arrayData = static_cast<ArrayData*>( data );
 
-      if( unusedWarnings ) {
+      if( warnUnused ) {
         foreach( i, arrayData->list.iter() ) {
-          i->clear( true );
+          hasUnused |= i->clear( true );
         }
       }
 
@@ -1999,9 +2002,9 @@ void JSON::clear( bool unusedWarnings )
     case OBJECT: {
       ObjectData* objectData = static_cast<ObjectData*>( data );
 
-      if( unusedWarnings ) {
+      if( warnUnused ) {
         foreach( i, objectData->table.iter() ) {
-          i->value.clear( true );
+          hasUnused |= i->value.clear( true );
         }
       }
 
@@ -2013,6 +2016,8 @@ void JSON::clear( bool unusedWarnings )
   data        = nullptr;
   valueType   = NIL;
   wasAccessed = true;
+
+  return hasUnused;
 }
 
 String JSON::toString() const

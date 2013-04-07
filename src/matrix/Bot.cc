@@ -840,24 +840,32 @@ void Bot::onUpdate()
             if( !( state & GESTURE_POINT_BIT ) ) {
               state &= ~GESTURE_MASK;
               state |= GESTURE_POINT_BIT;
+
+              addEvent( EVENT_POINT, 1.0f );
             }
           }
           else if( actions & ACTION_BACK ) {
-            if( !( state & GESTURE_BACK_BIT ) ) {
+            if( !( state & GESTURE_FALL_BACK_BIT ) ) {
               state &= ~GESTURE_MASK;
-              state |= GESTURE_BACK_BIT;
+              state |= GESTURE_FALL_BACK_BIT;
+
+              addEvent( EVENT_FALL_BACK, 1.0f );
             }
           }
           else if( actions & ACTION_SALUTE ) {
             if( !( state & GESTURE_SALUTE_BIT ) ) {
               state &= ~GESTURE_MASK;
               state |= GESTURE_SALUTE_BIT;
+
+              addEvent( EVENT_SALUTE, 1.0f );
             }
           }
           else if( actions & ACTION_WAVE ) {
             if( !( state & GESTURE_WAVE_BIT ) ) {
               state &= ~GESTURE_MASK;
               state |= GESTURE_WAVE_BIT;
+
+              addEvent( EVENT_WAVE, 1.0f );
             }
           }
           else {

@@ -78,7 +78,7 @@ class SharedLib
 
   private:
 
-    void* handle; ///< Internal handle to the library.
+    void* handle; ///< Internal library handle.
 
   public:
 
@@ -90,7 +90,7 @@ class SharedLib
     {}
 
     /**
-     * Destructor, closes library if still opened.
+     * Destructor, closes the library if opened.
      */
     ~SharedLib()
     {
@@ -130,17 +130,17 @@ class SharedLib
     }
 
     /**
-     * Obtain pointer to the requested function in the library (`nullptr` on error).
+     * Obtain a pointer to the requested function from thr library (`nullptr` on error).
      */
     Method* get( const char* symbol ) const;
 
     /**
-     * Open shared library with the given (file) name.
+     * Open a shared library with the given (file) name.
      */
     bool open( const char* name );
 
     /**
-     * Close library if opened.
+     * Close the library if opened.
      */
     void close();
 
