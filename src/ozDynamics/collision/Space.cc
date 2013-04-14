@@ -36,7 +36,8 @@ void Space::clear()
     Shape* shape = body->shape();
 
     body->setShape( nullptr );
-    if( shape->nUsers == 0 ) {
+
+    if( shape != nullptr && shape->nUsers == 0 ) {
       delete shape;
     }
     delete body;

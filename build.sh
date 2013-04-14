@@ -32,7 +32,6 @@ platforms=(
 #   Android14-ARM
 #   Android14-ARMv7a
 #   Android14-MIPS
-#   Emscripten
 )
 
 pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"

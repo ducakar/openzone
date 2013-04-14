@@ -29,6 +29,7 @@
 #pragma once
 
 #include "arrays.hh"
+#include "System.hh"
 
 namespace oz
 {
@@ -104,10 +105,18 @@ class Map
      */
     void ensureCapacity( int capacity )
     {
-      if( size < capacity ) {
+      if( capacity < 0 ) {
+        OZ_ERROR( "oz::Map capacity request overflow" );
+      }
+      else if( size < capacity ) {
         size *= 2;
-        size  = size < capacity ? ( capacity + GRANULARITY - 1 ) / GRANULARITY * GRANULARITY : size;
-        data  = aReallocate<Elem>( data, count, size );
+        size  = size < capacity ? ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 ) : size;
+
+        if( size <= 0 ) {
+          OZ_ERROR( "oz::Map size overflow" );
+        }
+
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 

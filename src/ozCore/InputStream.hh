@@ -140,7 +140,7 @@ class InputStream
     void set( const char* newPos )
     {
       if( newPos < streamBegin || streamEnd < newPos ) {
-        OZ_ERROR( "Buffer overrun for %d B during setting stream position",
+        OZ_ERROR( "oz::InputStream overrun for %d B during setting stream position",
                   newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
       }
 
@@ -154,7 +154,7 @@ class InputStream
     void seek( int offset )
     {
       if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
-        OZ_ERROR( "Buffer overrun for %d B during stream seek",
+        OZ_ERROR( "oz::InputStream overrun for %d B during stream seek",
                   offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
       }
 
@@ -211,7 +211,7 @@ class InputStream
       streamPos += count;
 
       if( streamPos > streamEnd ) {
-        OZ_ERROR( "Buffer overrun for %d B during a read of %d B",
+        OZ_ERROR( "oz::InputStream overrun for %d B during a read of %d B",
                   int( streamPos - streamEnd ), count );
       }
       return oldPos;

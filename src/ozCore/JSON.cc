@@ -26,7 +26,6 @@
 
 #include "JSON.hh"
 
-#include "System.hh"
 #include "List.hh"
 #include "SList.hh"
 #include "Map.hh"
@@ -238,61 +237,48 @@ JSON::Parser::Parser( InputStream* istream, const char* path ) :
 OZ_HIDDEN
 char JSON::Parser::skipBlanks()
 {
-  BlanksMode mode = WHITESPACE;
-  char ch1 = ' ', ch2 = ' ';
+  char ch1, ch2;
 
-  switch( mode ) {
-    case WHITESPACE: {
-      skipWhitespace:
-      do {
-        ch1 = ch2;
-        ch2 = pos.readChar();
-      }
-      while( String::isBlank( ch2 ) );
+  do {
+    do {
+      ch2 = pos.readChar();
+    }
+    while( String::isBlank( ch2 ) );
+
+    if( ch2 == '/' ) {
+      ch1 = ch2;
+      ch2 = pos.readChar();
 
       if( ch2 == '/' ) {
-        ch1 = ch2;
-        ch2 = pos.readChar();
-
-        if( ch2 == '/' ) {
-          goto skipLineComment;
-        }
-        else if( ch2 == '*' ) {
+        // Skip a line comment.
+        do {
           ch2 = pos.readChar();
-          goto skipMultilineComment;
         }
-        else {
-          ch2 = ch1;
-          pos.backChar();
+        while( ch2 != '\n' );
+
+        continue;
+      }
+      else if( ch2 == '*' ) {
+        // Skip a multi-line comment.
+        ch2 = pos.readChar();
+
+        do {
+          ch1 = ch2;
+          ch2 = pos.readChar();
         }
-      }
-      break;
-    }
-    case LINE_COMMENT: {
-      skipLineComment:
-      do {
-        ch1 = ch2;
-        ch2 = pos.readChar();
-      }
-      while( ch2 != '\n' );
+        while( ch1 != '*' || ch2 != '/' );
 
-      mode = WHITESPACE;
-      goto skipWhitespace;
-    }
-    case MULTILINE_COMMENT: {
-      skipMultilineComment:
-      do {
-        ch1 = ch2;
-        ch2 = pos.readChar();
+        continue;
       }
-      while( ch1 != '*' || ch2 != '/' );
-
-      mode = WHITESPACE;
-      goto skipWhitespace;
+      else {
+        ch2 = ch1;
+        pos.backChar();
+      }
     }
+
+    return ch2;
   }
-
-  return ch2;
+  while( true );
 }
 
 OZ_HIDDEN

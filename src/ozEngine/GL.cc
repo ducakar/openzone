@@ -228,7 +228,6 @@ int GL::textureDataFromFile( GLuint texture, const File& file )
       baseBlock = 16;
     }
     else {
-      nMipmaps = 0;
       return 0;
     }
   }
@@ -237,7 +236,6 @@ int GL::textureDataFromFile( GLuint texture, const File& file )
     baseBlock = 1;
   }
   else {
-    nMipmaps = 0;
     return 0;
   }
 

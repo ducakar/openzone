@@ -737,30 +737,38 @@ String operator + ( const char* s, const String& t )
 
 String& String::operator += ( const String& s )
 {
-  const char* oBuffer = buffer;
-  int         oCount  = count;
+  bool wasStatic = buffer == baseBuffer;
+  int  oCount    = count;
 
   ensureCapacity( count + s.count );
-  if( oCount < BUFFER_SIZE && count >= BUFFER_SIZE ) {
-    mCopy( buffer, oBuffer, size_t( oCount ) );
-  }
-  mCopy( buffer + oCount, s, size_t( s.count + 1 ) );
 
+  // If the original string resides in the static baseBuffer and a new memory buffer is malloc'd for
+  // it, we have to manually copy the old contents. If the original string is already in a malloc'd
+  // buffer, realloc() takes care of that.
+  if( wasStatic ) {
+    mCopy( buffer, baseBuffer, size_t( oCount ) );
+  }
+
+  mCopy( buffer + oCount, s, size_t( s.count + 1 ) );
   return *this;
 }
 
 String& String::operator += ( const char* s )
 {
-  const char* oBuffer = buffer;
-  int         oCount  = count;
-  int         sLength = length( s );
+  bool wasStatic = buffer == baseBuffer;
+  int  oCount    = count;
+  int  sLength   = length( s );
 
   ensureCapacity( count + sLength );
-  if( oCount < BUFFER_SIZE && count >= BUFFER_SIZE ) {
-    mCopy( buffer, oBuffer, size_t( oCount ) );
-  }
-  mCopy( buffer + oCount, s, size_t( sLength + 1 ) );
 
+  // If the original string resides in the static baseBuffer and a new memory buffer is malloc'd for
+  // it, we have to manually copy the old contents. If the original string is already in a malloc'd
+  // buffer, realloc() takes care of that.
+  if( wasStatic ) {
+    mCopy( buffer, baseBuffer, size_t( oCount ) );
+  }
+
+  mCopy( buffer + oCount, s, size_t( sLength + 1 ) );
   return *this;
 }
 

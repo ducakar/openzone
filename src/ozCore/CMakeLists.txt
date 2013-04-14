@@ -75,9 +75,7 @@ add_library( ozCore
 #END SOURCES
 )
 
-if( EMSCRIPTEN )
-#   target_link_libraries( ozCore )
-elseif( ANDROID )
+if( ANDROID )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -ldl -lOpenSLES -llog ${PLATFORM_STL_LIBRARY} )
 elseif( NACL )
   target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} -lppapi_cpp -lppapi -lpthread )

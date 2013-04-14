@@ -111,8 +111,12 @@ void Buffer::resize( int newSize )
 {
   hard_assert( newSize >= 0 );
 
-  char* newData = newSize == 0 ? nullptr : new char[newSize];
-  mCopy( newData, data, size_t( min( newSize, size ) ) );
+  char* newData = nullptr;
+
+  if( newSize != 0 ) {
+    newData = new char[newSize];
+    mCopy( newData, data, size_t( min( newSize, size ) ) );
+  }
   delete[] data;
 
   data = newData;

@@ -173,6 +173,11 @@ elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
   set( flags "-std=gnu++0x" )
 else()
   set( flags "-std=c++0x -pedantic -fstrict-enums" )
+
+  # AddressSanitizer.
+  # set( flags "${flags} -fsanitize=address" )
+  # ThreadSanitizer.
+  # set( flags "${flags} -fsanitize=thread -fPIE -pie" )
 endif()
 
 set( flags "${flags} -fno-exceptions -fno-rtti -ffast-math -fvisibility-inlines-hidden" )

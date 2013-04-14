@@ -64,7 +64,6 @@ function setup_nacl_x86_64()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="x86_64-nacl"                                   # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$nacl86Prefix/x86_64-nacl"                     # SDK sysroot.
   toolsroot="$nacl86Prefix"                               # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
@@ -77,7 +76,7 @@ function setup_nacl_x86_64()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
+  export CPPFLAGS="-isystem $NACL_SDK_ROOT/include -isystem $buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -94,7 +93,6 @@ function setup_nacl_i686()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="i686-nacl"                                     # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$nacl86Prefix/i686-nacl"                       # SDK sysroot.
   toolsroot="$nacl86Prefix"                               # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
@@ -107,7 +105,7 @@ function setup_nacl_i686()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
+  export CPPFLAGS="-isystem $NACL_SDK_ROOT/include -isystem $buildDir/usr/include"
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse -fomit-frame-pointer"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -124,7 +122,6 @@ function setup_nacl_ARM()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="arm-nacl"                                      # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$naclARMPrefix/arm-nacl"                       # SDK sysroot.
   toolsroot="$naclARMPrefix"                              # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
@@ -137,7 +134,7 @@ function setup_nacl_ARM()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
+  export CPPFLAGS="-isystem $NACL_SDK_ROOT/include -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
@@ -154,11 +151,9 @@ function setup_pnacl()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="pnacl"                                         # Platform triplet (tools prefix).
   hostTriplet="i686-nacl"                                 # Host triplet for autotools configure.
-  sysroot="$pnaclPrefix/usr"                              # SDK sysroot.
   toolsroot="$pnaclPrefix"                                # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
-  #export CPP="$toolsroot/bin/$triplet-cpp"
   export -n CPP
   export CC="$toolsroot/bin/$triplet-clang"
   export AR="$toolsroot/bin/$triplet-ar"
@@ -185,9 +180,9 @@ function setup_ndk_i686()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="i686-linux-android"                            # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$ndkX86Platform"                               # SDK sysroot.
   toolsroot="$ndkX86Tools"                                # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+  sysroot="$ndkX86Platform"                               # SDK sysroot.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -198,7 +193,7 @@ function setup_ndk_i686()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC -march=i686 -msse3 -mfpmath=sse"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
@@ -215,9 +210,9 @@ function setup_ndk_ARM()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$ndkARMPlatform"                               # SDK sysroot.
   toolsroot="$ndkARMTools"                                # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+  sysroot="$ndkARMPlatform"                               # SDK sysroot.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -228,7 +223,7 @@ function setup_ndk_ARM()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
@@ -245,9 +240,9 @@ function setup_ndk_ARMv7a()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$ndkARMPlatform"                               # SDK sysroot.
   toolsroot="$ndkARMTools"                                # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+  sysroot="$ndkARMPlatform"                               # SDK sysroot.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -258,7 +253,7 @@ function setup_ndk_ARMv7a()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
 
@@ -275,9 +270,9 @@ function setup_ndk_MIPS()
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="mipsel-linux-android"                          # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  sysroot="$ndkMIPSPlatform"                              # SDK sysroot.
   toolsroot="$ndkMIPSTools"                               # SDK tool root.
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+  sysroot="$ndkMIPSPlatform"                              # SDK sysroot.
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
@@ -288,7 +283,7 @@ function setup_ndk_MIPS()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="--sysroot=$sysroot -I$buildDir/usr/include"
+  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -flto -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
@@ -301,15 +296,13 @@ function setup_ndk_MIPS()
 
 function setup_emscripten()
 {
-  platform="Emscripten"                                   # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="emscripten"                                    # Platform triplet (tools prefix).
-  hostTriplet="emscripten"                                # Host triplet for autotools configure.
-  sysroot="$emscriptenPrefix/system"                      # SDK sysroot.
-  toolsroot="$emscriptenPrefix"                           # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
+  platform="Emscripten"                                  # Platform name.
+  buildDir="$topDir/$platform"                           # Build and install directory.
+  triplet="emscripten"                                   # Platform triplet (tools prefix).
+  hostTriplet="emscripten"                               # Host triplet for autotools configure.
+  toolsroot="$emscriptenPrefix"                          # SDK tool root.
+  toolchain="$projectDir/cmake/Platform/$platform.cmake" # CMake toolchain.
 
-  #export CPP="$toolsroot/bin/$triplet-cpp"
   export -n CPP
   export CC="$toolsroot/emcc"
   export AR="$toolsroot/emar"
@@ -319,8 +312,8 @@ function setup_emscripten()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-I$buildDir/usr/include"
-  export CFLAGS="-O2 -U__STRICT_ANSI__"
+  export CPPFLAGS="-isystem $buildDir/usr/include"
+  export CFLAGS="-Qunused-arguments -O2 -U__STRICT_ANSI__"
   export LDFLAGS="-L$buildDir/usr/lib"
 
   enabled=0
@@ -431,6 +424,7 @@ function cmakeBuild()
   mkdir -p build && cd build
 
   cmake \
+    -D CMAKE_MODULE_PATH="$projectDir/cmake" \
     -D CMAKE_TOOLCHAIN_FILE="$toolchain" \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="/usr" \
@@ -643,7 +637,6 @@ function build()
   setup_ndk_ARM     && build_sdl2
   setup_ndk_ARMv7a  && build_sdl2
   setup_ndk_MIPS    && build_sdl2
-#   setup_emscripten  && build_sdl2
 
   # FreeType
   setup_nacl_x86_64 && build_freetype
@@ -676,7 +669,6 @@ function build()
   setup_ndk_ARM     && build_openal
   setup_ndk_ARMv7a  && build_openal
   setup_ndk_MIPS    && build_openal
-#   setup_emscripten  && build_openal
 
   # libogg
   setup_nacl_x86_64 && build_libogg

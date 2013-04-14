@@ -397,10 +397,11 @@ inline void aFree( Elem* array, int count )
 }
 
 /**
- * Reallocate array.
+ * Reallocate array moving the elements.
  *
- * Allocate new array of `length` elements, copy first `count` elements of the source array to the
- * newly created one and delete the source array.
+ * Allocate new array of `length` elements, move first `count` elements of the source array to the
+ * newly created one and delete the source array. If `length` is 0, no new array is allocated and
+ * no elements are moved.
  *
  * @return Newly allocated array.
  */

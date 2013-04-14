@@ -309,7 +309,7 @@ class OutputStream
     void set( char* newPos )
     {
       if( newPos < streamBegin || streamEnd < newPos ) {
-        OZ_ERROR( "Buffer overrun for %d B during setting stream position",
+        OZ_ERROR( "oz::OutputStream overrun for %d B during setting stream position",
                   newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
       }
 
@@ -323,7 +323,7 @@ class OutputStream
     void seek( int offset )
     {
       if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
-        OZ_ERROR( "Buffer overrun for %d B during stream seek",
+        OZ_ERROR( "oz::OutputStream overrun for %d B during stream seek",
                   offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
       }
 
@@ -394,10 +394,14 @@ class OutputStream
         if( buffered ) {
           int length  = int( streamPos - streamBegin );
           int size    = int( streamEnd - streamBegin );
+          int reqSize = length + count;
           int newSize = size == 0 ? GRANULARITY : 2 * size;
 
-          if( newSize < length + count ) {
-            newSize = ( ( length + count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+          if( newSize < 0 || reqSize < 0 ) {
+            OZ_ERROR( "oz::OutputStream capacity overflow" );
+          }
+          else if( newSize < reqSize ) {
+            newSize = ( reqSize + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
           }
 
           streamBegin  = aReallocate<char>( streamBegin, size, newSize );
@@ -406,7 +410,7 @@ class OutputStream
           oldPos = streamPos - count;
         }
         else {
-          OZ_ERROR( "Buffer overrun for %d B during a read or write of %d B",
+          OZ_ERROR( "oz::OutputStream overrun for %d B during a read or write of %d B",
                     int( streamPos - streamEnd ), count );
         }
       }

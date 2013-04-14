@@ -160,6 +160,7 @@ add_library( client STATIC
 )
 use_pch( client pch )
 
+# SDL.
 if( OZ_SDL2 )
   if( OZ_NET )
     target_link_libraries( client ${SDL2_NET_LIBRARIES} )
@@ -172,14 +173,20 @@ else()
   target_link_libraries( client ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
 endif()
 
+# OpenGL.
 if( OZ_GL_ES )
   target_link_libraries( client ${GLES2_LIBRARIES} )
 else()
   target_link_libraries( client ${OPENGL_gl_LIBRARY} )
 endif()
 
-target_link_libraries( client ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARIES} )
+# OpenAL.
+target_link_libraries( client ${OPENAL_LIBRARY} )
 
+# libvorbisfile.
+target_link_libraries( client ${VORBISFILE_LIBRARIES} )
+
+# Dependencies.
 if( PLATFORM_EMBEDDED )
   target_link_libraries( client ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
 endif()

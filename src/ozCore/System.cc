@@ -36,10 +36,7 @@
 #include <cstdlib>
 #include <exception>
 
-#if defined( EMSCRIPTEN )
-# include <ctime>
-# include <pthread.h>
-#elif defined( __ANDROID__ )
+#if defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
@@ -247,18 +244,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   }
 }
 
-#if defined( EMSCRIPTEN )
-
-static void* bellMain( void* )
-{
-  static_cast<void>( genBellSamples );
-
-  // TODO: Implement bell for Emscripten.
-  fprintf( stderr, "*** BELL ***\n" );
-  return nullptr;
-}
-
-#elif defined( __ANDROID__ )
+#if defined( __ANDROID__ )
 
 static void* bellMain( void* )
 {

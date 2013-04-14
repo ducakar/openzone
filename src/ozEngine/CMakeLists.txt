@@ -8,6 +8,7 @@ add_library( ozEngine
   AL.hh
   ALSource.hh
   ALStreamingBuffer.hh
+  Builder.hh
   common.hh
   GL.hh
   GLTexture.hh
@@ -19,6 +20,7 @@ add_library( ozEngine
   AL.cc
   ALSource.cc
   ALStreamingBuffer.cc
+  Builder.cc
   common.cc
   GL.cc
   GLTexture.cc
@@ -26,12 +28,18 @@ add_library( ozEngine
   Window.cc
 #END SOURCES
 )
-target_link_libraries( ozEngine ozDynamics ${OPENAL_LIBRARY} ${VORBISFILE_LIBRARIES} )
+
+# OpenGL.
 if( OZ_GL_ES )
   target_link_libraries( ozEngine ${GLES2_LIBRARIES} )
 else()
   target_link_libraries( ozEngine ${OPENGL_gl_LIBRARY} )
 endif()
+
+# OpenAL.
+target_link_libraries( ozEngine ${OPENAL_LIBRARY} )
+
+# SDL.
 if( OZ_SDL2 )
   if( OZ_NET )
     target_link_libraries( ozEngine ${SDL2_NET_LIBRARIES} )
@@ -43,6 +51,11 @@ else()
   endif()
   target_link_libraries( ozEngine ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
 endif()
+
+# libvorbisfile.
+target_link_libraries( ozEngine ozDynamics ${VORBISFILE_LIBRARIES} )
+
+# Dependencies.
 if( PLATFORM_EMBEDDED )
   target_link_libraries( ozEngine ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
 endif()

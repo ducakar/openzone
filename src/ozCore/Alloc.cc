@@ -32,7 +32,9 @@
 #include <cstdlib>
 #include <malloc.h>
 
-#ifdef has_feature
+#if defined( __SANITIZE_ADDRESS__ )
+# define OZ_ADDRESS_SANITIZER
+#elif defined( has_feature )
 # if has_feature( address_sanitizer )
 #  define OZ_ADDRESS_SANITIZER
 # endif
@@ -237,6 +239,8 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 
 }
 
+#ifndef OZ_ADDRESS_SANITIZER
+
 using namespace oz;
 
 OZ_WEAK
@@ -298,3 +302,5 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   }
   deallocate( ARRAY, ptr );
 }
+
+#endif

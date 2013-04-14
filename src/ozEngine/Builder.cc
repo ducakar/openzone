@@ -24,8 +24,6 @@
  * @file ozEngine/Builder.cc
  */
 
-#pragma once
-
 #include "Builder.hh"
 
 namespace oz
