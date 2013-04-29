@@ -26,8 +26,6 @@
 #include <stable.hh>
 #include <client/NaClDownloader.hh>
 
-#include <client/NaClPlatform.hh>
-
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/url_request_info.h>
 #include <ppapi/cpp/url_loader.h>

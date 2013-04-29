@@ -24,6 +24,7 @@
 #pragma once
 
 #include <client/common.hh>
+#include <ozEngine/Cursor.hh>
 
 namespace oz
 {
@@ -51,15 +52,9 @@ class Mouse
 
   private:
 
-    struct Cursor
-    {
-      int  size;
-      int  hotspotX;
-      int  hotspotY;
-      uint texId;
-    };
-
     Cursor cursors[CURSORS_MAX];
+    Icon   oldIcon;
+    bool   wasShown;
 
   public:
 
@@ -73,7 +68,7 @@ class Mouse
 
     void update();
 
-    void draw() const;
+    void draw();
 
     void init();
     void destroy();

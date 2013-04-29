@@ -39,6 +39,7 @@
 #include "ALStreamingBuffer.hh"
 #include "ALSource.hh"
 
+#include "Cursor.hh"
 #include "Window.hh"
 
 #include "Builder.hh"

@@ -911,12 +911,12 @@ int Builder::main( int argc, char** argv )
     lingua.build();
   }
   if( doUI ) {
-    UI::buildCursors();
     UI::buildIcons();
     UI::copyScheme();
 
+    copyFiles( "@ui/cur", "ui/cur", "", false );
     copyFiles( "@ui/font", "ui/font", "ttf", false );
-    copyFiles( "@ui/icon", "ui/icon", "", true );
+    copyFiles( "@ui/icon", "ui/icon", "", false );
   }
   if( doShaders ) {
     copyFiles( "@glsl", "glsl", "glsl", false );

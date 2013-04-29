@@ -24,13 +24,14 @@
 #include <stable.hh>
 #include <client/ui/Mouse.hh>
 
+#include <common/Timer.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/Window.hh>
 #include <client/Input.hh>
-#include <client/OpenGL.hh>
 #include <client/ui/Area.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -81,44 +82,48 @@ void Mouse::update()
   }
 }
 
-void Mouse::draw() const
+void Mouse::draw()
 {
+  Cursor& cursor = cursors[icon];
+
   if( doShow ) {
-    const Cursor& cur = cursors[icon];
+    if( icon != oldIcon || !wasShown ) {
+      cursor.reset();
+    }
 
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, cur.texId );
-    shape.fill( x - cur.hotspotX, y + 1 + cur.hotspotY - cur.size, cur.size, cur.size );
+    glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
+    shape.fillInv( x - cursor.hotspotLeft(), y - cursor.height() + 1 + cursor.hotspotTop(),
+                   cursor.width(), cursor.height() );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+    cursor.advance( timer.frameMicros / 1000 );
   }
+
+  oldIcon  = icon;
+  wasShown = doShow;
 }
 
 void Mouse::init()
 {
   Log::print( "Initialising Mouse ..." );
 
-  x      = camera.centreX;
-  y      = camera.centreY;
-  dx     = 0;
-  dy     = 0;
+  x        = camera.centreX;
+  y        = camera.centreY;
+  dx       = 0;
+  dy       = 0;
 
-  icon   = ARROW;
-  doShow = false;
+  icon     = ARROW;
+  oldIcon  = ARROW;
+  doShow   = false;
+  wasShown = false;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
-    File file( String::str( "@ui/cur/%s.ozCur", NAMES[i] ) );
+    File file( String::str( "@ui/cur/%s", NAMES[i] ) );
 
-    Buffer buffer = file.read();
-    if( buffer.isEmpty() ) {
+    if( !cursors[i].load( file ) ) {
       OZ_ERROR( "Cursor loading failed" );
     }
-
-    InputStream is = buffer.inputStream();
-
-    cursors[i].size     = is.readInt();
-    cursors[i].hotspotX = is.readInt();
-    cursors[i].hotspotY = is.readInt();
-    cursors[i].texId    = context.readTextureLayer( &is );
   }
 
   Log::printEnd( " OK" );
@@ -129,8 +134,7 @@ void Mouse::destroy()
   Log::print( "Destroying Mouse ..." );
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
-    glDeleteTextures( 1, &cursors[i].texId );
-    cursors[i].texId = 0;
+    cursors[i].destroy();
   }
 
   Log::printEnd( " OK" );

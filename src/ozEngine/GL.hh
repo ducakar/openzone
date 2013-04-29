@@ -28,7 +28,8 @@
 
 #pragma once
 
-#include "common.hh"
+// Useful to include Pepper here, OZ_MAIN_CALL is often used for executing OpenGL functions.
+#include "Pepper.hh"
 
 #ifndef DOXYGEN_IGNORE
 

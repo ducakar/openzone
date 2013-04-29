@@ -35,7 +35,7 @@
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>
 
-#include <client/OpenGL.hh>
+#include <ozEngine/GL.hh>
 #include <ozEngine/AL.hh>
 #include <client/eSpeak.hh>
 
@@ -643,7 +643,7 @@ void Context::load()
 void Context::unload()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::println( "Unloading Context {" );

@@ -74,7 +74,8 @@ class Alloc
     /**
      * Information about an allocated memory chunk.
      *
-     * Internal list of all memory allocations is held to spot memory leaks and `new`/`delete` mismatches.
+     * Internal list of all memory allocations is held to detect memory leaks and `new`/`delete`
+     * mismatches.
      */
     struct ChunkInfo
     {

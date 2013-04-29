@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "AL.hh"
+#include "common.hh"
 
 namespace oz
 {
@@ -40,7 +40,7 @@ class ALSource
 {
   private:
 
-    ALuint sourceId; ///< OpenAL source id, 0 if not created.
+    uint sourceId; ///< OpenAL source id, 0 if not created.
 
   public:
 
@@ -83,7 +83,7 @@ class ALSource
     /**
      * Get OpenAL source id.
      */
-    ALuint id() const
+    uint id() const
     {
       return sourceId;
     }

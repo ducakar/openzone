@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Builder class wraps functions for conversion of generic image and 3D model formats to ones used
+ * %Builder class wraps functions for conversion of generic image and 3D model formats to ones used
  * by OpenZone engine.
  */
 class Builder

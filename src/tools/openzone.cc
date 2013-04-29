@@ -24,8 +24,8 @@
 #include <stable.hh>
 #include <client/openzone.hh>
 
+#include <ozEngine/Pepper.hh>
 #include <client/Client.hh>
-#include <client/NaClPlatform.hh>
 
 #include <SDL.h>
 
@@ -81,7 +81,7 @@ int main( int argc, char** argv )
 #if defined( __ANDROID__ )
   SDL_Android_Init( env, clazz );
 #elif defined( __native_client__ )
-  NaClPlatform::post( "init:" );
+  Pepper::post( "init:" );
 #endif
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
@@ -111,7 +111,7 @@ int main( int argc, char** argv )
 #if defined( __ANDROID__ )
   static_cast<void>( exitCode );
 #elif defined( __native_client__ )
-  NaClPlatform::post( "quit:" );
+  Pepper::post( "quit:" );
 #else
   return exitCode;
 #endif
@@ -122,8 +122,8 @@ int main( int argc, char** argv )
 MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
 {
-  System::instance = static_cast<pp::Instance*>( this );
-  NaClPlatform::init();
+  System::instance = this;
+  Pepper::init();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |
                       PP_INPUTEVENT_CLASS_WHEEL );
@@ -135,7 +135,7 @@ MainInstance::~MainInstance()
     mainThread.join();
   }
 
-  NaClPlatform::destroy();
+  Pepper::destroy();
 }
 
 bool MainInstance::Init( uint32_t, const char**, const char** )
@@ -148,15 +148,15 @@ void MainInstance::DidChangeView( const pp::View& view )
   int width  = view.GetRect().width();
   int height = view.GetRect().height();
 
-  if( width == NaClPlatform::width && height == NaClPlatform::height ) {
+  if( width == Pepper::width && height == Pepper::height ) {
     return;
   }
 
-  NaClPlatform::width  = width;
-  NaClPlatform::height = height;
+  Pepper::width  = width;
+  Pepper::height = height;
 
   if( !mainThread.isValid() ) {
-    SDL_NACL_SetInstance( pp_instance(), NaClPlatform::width, NaClPlatform::height );
+    SDL_NACL_SetInstance( pp_instance(), Pepper::width, Pepper::height );
 
     mainThread.start( "main", Thread::JOINABLE, mainThreadMain, this );
   }
@@ -169,14 +169,14 @@ void MainInstance::DidChangeView( const pp::Rect&, const pp::Rect& )
 
 void MainInstance::HandleMessage( const pp::Var& message )
 {
-  NaClPlatform::push( message.AsString().c_str() );
+  Pepper::push( message.AsString().c_str() );
 }
 
 bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 {
   switch( event.GetType() ) {
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-      if( !NaClPlatform::hasFocus ) {
+      if( !Pepper::hasFocus ) {
         LockMouse( pp::CompletionCallback( onMouseLocked, this ) );
         return true;
       }
@@ -186,16 +186,16 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       pp::MouseInputEvent mouseEvent( event );
       pp::Point move = mouseEvent.GetMovement();
 
-      NaClPlatform::moveX += float( move.x() );
-      NaClPlatform::moveY += float( move.y() );
+      Pepper::moveX += float( move.x() );
+      Pepper::moveY += float( move.y() );
       break;
     }
     case PP_INPUTEVENT_TYPE_WHEEL: {
       pp::WheelInputEvent wheelEvent( event );
       pp::FloatPoint move = wheelEvent.GetDelta();
 
-      NaClPlatform::moveZ += move.x();
-      NaClPlatform::moveW += move.y();
+      Pepper::moveZ += move.x();
+      Pepper::moveW += move.y();
       break;
     }
     case PP_INPUTEVENT_TYPE_KEYDOWN: {
@@ -220,13 +220,13 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 
 void MainInstance::MouseLockLost()
 {
-  NaClPlatform::hasFocus = false;
+  Pepper::hasFocus = false;
   fullscreen.SetFullscreen( false );
 }
 
 void MainInstance::onMouseLocked( void*, int result )
 {
-  NaClPlatform::hasFocus = result == PP_OK;
+  Pepper::hasFocus = result == PP_OK;
 }
 
 pp::Instance* MainModule::CreateInstance( PP_Instance instance )

@@ -51,60 +51,6 @@ const char* const UI::ICON_NAMES[] = {
   "arrow"
 };
 
-void UI::buildCursors()
-{
-  if( File( "@ui/cur" ).type() != File::DIRECTORY ) {
-    return;
-  }
-
-  Log::println( "Building mouse cursors {" );
-  Log::indent();
-
-  bool useS3TC = context.useS3TC;
-  context.useS3TC = false;
-
-  File::mkdir( "ui" );
-  File::mkdir( "ui/cur" );
-
-  for( int i = 0; i < ui::Mouse::CURSORS_MAX; ++i ) {
-    File inFile( String::str( "@ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
-    File destFile( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
-
-    String realPath = inFile.realPath();
-
-    FILE* fs = fopen( realPath, "r" );
-    if( fs == nullptr ) {
-      OZ_ERROR( "Failed to open cursor description '%s'", realPath.cstr() );
-    }
-
-    int size, hotspotX, hotspotY;
-    char imgPath[32];
-
-    int nMatches = fscanf( fs, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgPath );
-    if( nMatches != 4 ) {
-      OZ_ERROR( "Invalid xcursor line" );
-    }
-
-    fclose( fs );
-
-    Context::Texture tex = context.loadTexture( String::str( "@ui/cur/%s", imgPath ), false,
-                                                GL_NEAREST, GL_NEAREST );
-    OutputStream os( 0 );
-
-    os.writeInt( size );
-    os.writeInt( hotspotX );
-    os.writeInt( hotspotY );
-    tex.write( &os );
-
-    destFile.write( os.begin(), os.tell() );
-  }
-
-  context.useS3TC = useS3TC;
-
-  Log::unindent();
-  Log::println( "}" );
-}
-
 void UI::buildIcons()
 {
   if( File( "@ui/icon" ).type() != File::DIRECTORY ) {

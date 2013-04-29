@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Capsule, represents a radius-region around a line segment.
+ * %Capsule, represents a radius-region around a line segment.
  */
 class Capsule : public Shape
 {

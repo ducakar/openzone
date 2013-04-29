@@ -25,8 +25,7 @@
 #include <client/Window.hh>
 
 #include <client/Input.hh>
-#include <client/OpenGL.hh>
-#include <client/NaClPlatform.hh>
+#include <ozEngine/GL.hh>
 
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>
@@ -83,10 +82,10 @@ void Window::warpMouse()
   }
 
 #ifdef __native_client__
-  NaClPlatform::moveX = 0.0f;
-  NaClPlatform::moveY = 0.0f;
-  NaClPlatform::moveZ = 0.0f;
-  NaClPlatform::moveW = 0.0f;
+  Pepper::moveX = 0.0f;
+  Pepper::moveY = 0.0f;
+  Pepper::moveZ = 0.0f;
+  Pepper::moveW = 0.0f;
 #elif SDL_MAJOR_VERSION >= 2
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
   SDL_PumpEvents();
@@ -129,8 +128,8 @@ void Window::resize()
 {
 #ifdef __native_client__
 
-  width  = NaClPlatform::width;
-  height = NaClPlatform::height;
+  width  = Pepper::width;
+  height = Pepper::height;
 
   OZ_MAIN_CALL( this, {
     glSetCurrentContextPPAPI( 0 );
@@ -209,8 +208,8 @@ void Window::init()
 
   flushSemaphore.init();
 
-  width  = NaClPlatform::width;
-  height = NaClPlatform::height;
+  width  = Pepper::width;
+  height = Pepper::height;
   flags  = 0;
   isFull = false;
 

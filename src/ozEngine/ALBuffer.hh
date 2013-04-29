@@ -40,7 +40,7 @@ class ALBuffer
 {
   private:
 
-    ALuint bufferId; ///< OpenAL buffer id, 0 if not loaded.
+    uint bufferId; ///< OpenAL buffer id, 0 if not loaded.
 
   public:
 
@@ -86,7 +86,7 @@ class ALBuffer
     /**
      * Get OpenAL buffer id.
      */
-    ALuint id() const
+    uint id() const
     {
       return bufferId;
     }

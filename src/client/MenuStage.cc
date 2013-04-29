@@ -24,11 +24,11 @@
 #include <stable.hh>
 #include <client/MenuStage.hh>
 
+#include <ozEngine/Pepper.hh>
 #include <client/Camera.hh>
 #include <client/Render.hh>
 #include <client/Sound.hh>
 #include <client/Input.hh>
-#include <client/NaClPlatform.hh>
 
 namespace oz
 {

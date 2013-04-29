@@ -24,8 +24,7 @@
 #pragma once
 
 #include <builder/common.hh>
-
-#include <client/OpenGL.hh>
+#include <ozEngine/GL.hh>
 
 struct FIBITMAP;
 

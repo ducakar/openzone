@@ -26,6 +26,8 @@
 
 #include "ALBuffer.hh"
 
+#include "AL.hh"
+
 namespace oz
 {
 

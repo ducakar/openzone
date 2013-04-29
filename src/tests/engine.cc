@@ -32,7 +32,7 @@ int main( int argc, char** argv )
 {
   System::init();
   SDL_Init( SDL_INIT_VIDEO );
-  Window::create( "Test", 1024, 768, false );
+  Window::create( "Test", 100, 100, false );
 
   ALCdevice*  device  = alcOpenDevice( nullptr );
   ALCcontext* context = alcCreateContext( device, nullptr );
@@ -43,11 +43,21 @@ int main( int argc, char** argv )
   ALSource source = buffer.createSource();
 
   hard_assert( source.id() != 0 );
-  alSourcePlay( source.id() );
+//   alSourcePlay( source.id() );
   OZ_AL_CHECK_ERROR();
 
-  File dds( argc < 2 ? "mail.dds" : argv[1] );
-  GLTexture texture( dds );
+//   File dds( argc < 2 ? "mail.dds" : argv[1] );
+//   GLTexture texture( dds );
+
+  File file( argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1] );
+  Cursor cursor( file, 48 );
+
+  if( !cursor.isLoaded() ) {
+    return EXIT_FAILURE;
+  }
+
+  glEnable( GL_BLEND );
+  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
   bool isAlive = true;
   while( isAlive ) {
@@ -58,23 +68,24 @@ int main( int argc, char** argv )
       isAlive = false;
     }
 
-    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+    glClearColor( 0.2f, 0.2f, 0.2f, 0.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glEnable( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, texture.id() );
+    glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
 
     glBegin( GL_QUADS );
-      glTexCoord2i( 0, 1 ); glVertex2d( -1, -1 );
-      glTexCoord2i( 1, 1 ); glVertex2d( +1, -1 );
-      glTexCoord2i( 1, 0 ); glVertex2d( +1, +1 );
+      glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
+      glTexCoord2i( 1, 1 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height() );
+      glTexCoord2i( 1, 0 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 );
       glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
     glEnd();
 
     Window::swapBuffers();
+    cursor.advance( 15 );
 
-    isAlive &= buffer.update();
-    Time::sleep( 50 );
+//     isAlive &= buffer.update();
+    Time::sleep( 10 );
   }
 
   source.destroy();

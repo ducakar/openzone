@@ -26,6 +26,8 @@
 
 #include "ALSource.hh"
 
+#include "AL.hh"
+
 namespace oz
 {
 

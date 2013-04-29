@@ -15,7 +15,7 @@
     * new SpinLock class
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
-    * PFile class merged into File class
+    * PFile class merged into File class (VFS paths begin with '@')
 - ozDynamics: new rigid body dynamics library
     * collision
         + primitives: Box, Capsule, Polytope, Compound

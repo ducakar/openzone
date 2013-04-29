@@ -36,7 +36,7 @@
 #include <client/ExplosionImago.hh>
 #include <client/MD2WeaponImago.hh>
 
-#include <client/OpenGL.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -431,7 +431,7 @@ void Render::drawUI()
 void Render::draw( int flags_ )
 {
 #ifdef __native_client__
-  hard_assert( !NaClPlatform::isMainThread() );
+  hard_assert( !Pepper::isMainThread() );
 #endif
 
   flags = flags_;
@@ -454,7 +454,7 @@ void Render::draw( int flags_ )
 void Render::swap()
 {
 #ifdef __native_client__
-  hard_assert( !NaClPlatform::isMainThread() );
+  hard_assert( !Pepper::isMainThread() );
 #endif
 
   uint beginMicros = Time::uclock();
@@ -553,7 +553,7 @@ void Render::resize()
 void Render::load()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::print( "Loading Render ..." );
@@ -582,7 +582,7 @@ void Render::load()
 void Render::unload()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::print( "Unloading Render ..." );
@@ -612,7 +612,7 @@ void Render::unload()
 void Render::init()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::println( "Initialising Render {" );
@@ -698,7 +698,7 @@ void Render::init()
     shader.hasS3TC = true;
   }
 
-  glInit();
+  GL::init();
 
   String sScaleFilter;
 
@@ -746,7 +746,7 @@ void Render::init()
 void Render::destroy()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::println( "Destroying Render {" );

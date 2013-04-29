@@ -38,7 +38,6 @@ class UI
 
   public:
 
-    static void buildCursors();
     static void buildIcons();
     static void copyScheme();
 

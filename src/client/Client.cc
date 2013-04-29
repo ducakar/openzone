@@ -26,6 +26,7 @@
 #include <stable.hh>
 #include <client/Client.hh>
 
+#include <ozEngine/Pepper.hh>
 #include <common/Timer.hh>
 #include <common/Lua.hh>
 #include <client/Camera.hh>
@@ -34,7 +35,6 @@
 #include <client/Sound.hh>
 #include <client/Render.hh>
 #include <client/Loader.hh>
-#include <client/NaClPlatform.hh>
 #include <client/NaClUpdater.hh>
 #include <client/Window.hh>
 #include <client/Input.hh>
@@ -381,9 +381,9 @@ int Client::init( int argc, char** argv )
 
 #ifdef __native_client__
 
-  NaClPlatform::post( "lang:" );
+  Pepper::post( "lang:" );
 
-  for( String message = NaClPlatform::poll(); ; message = NaClPlatform::poll() ) {
+  for( String message = Pepper::pop(); ; message = Pepper::pop() ) {
     if( message.isEmpty() ) {
       Time::sleep( 10 );
     }
@@ -392,7 +392,7 @@ int Client::init( int argc, char** argv )
       break;
     }
     else {
-      NaClPlatform::push( message );
+      Pepper::push( message );
     }
   }
 
@@ -473,7 +473,7 @@ int Client::init( int argc, char** argv )
   gameStage.init();
 
 #ifdef __native_client__
-  NaClPlatform::post( "none:" );
+  Pepper::post( "none:" );
 #endif
 
   Stage::nextStage = nullptr;
@@ -719,15 +719,14 @@ int Client::main()
 
 #ifdef __native_client__
 
-    if( NaClPlatform::width != window.width || NaClPlatform::height != window.height ) {
+    if( Pepper::width != window.width || Pepper::height != window.height ) {
       window.resize();
     }
-    if( window.hasFocus != NaClPlatform::hasFocus ) {
-      window.hasFocus = NaClPlatform::hasFocus;
+    if( window.hasFocus != Pepper::hasFocus ) {
+      window.hasFocus = Pepper::hasFocus;
       input.reset();
     }
-    for( String message = NaClPlatform::poll(); !message.isEmpty(); message = NaClPlatform::poll() )
-    {
+    for( String message = Pepper::pop(); !message.isEmpty(); message = Pepper::pop() ) {
       if( message.equals( "quit:" ) ) {
         isAlive = false;
       }

@@ -28,8 +28,8 @@
 #include <client/Camera.hh>
 #include <client/Context.hh>
 #include <client/QuestList.hh>
-#include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {

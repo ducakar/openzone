@@ -26,7 +26,6 @@
 #include <stable.hh>
 #include <client/NaClUpdater.hh>
 
-#include <client/NaClPlatform.hh>
 #include <client/NaClDownloader.hh>
 
 namespace oz
@@ -172,11 +171,10 @@ void NaClUpdater::downloadUpdates()
       float progress = downloader.progress() * 100.0f;
 
       if( Math::isNaN( progress ) ) {
-        NaClPlatform::post( String::str( "upd1:%d/%d", packageNum, nRemotePackages ) );
+        Pepper::post( String::str( "upd1:%d/%d", packageNum, nRemotePackages ) );
       }
       else {
-        NaClPlatform::post( String::str( "upd1:%d/%d: %.0f %%", packageNum, nRemotePackages,
-                                         progress ) );
+        Pepper::post( String::str( "upd1:%d/%d: %.0f %%", packageNum, nRemotePackages, progress ) );
       }
     }
     while( !downloader.isComplete() );
@@ -234,7 +232,7 @@ DArray<String> NaClUpdater::update()
   Log::println( "Updating game data files {" );
   Log::indent();
 
-  NaClPlatform::post( "upd0:" );
+  Pepper::post( "upd0:" );
 
   if( checkUpdates() ) {
     downloadUpdates();
@@ -249,7 +247,7 @@ DArray<String> NaClUpdater::update()
   localPackages.clear();
   remotePackages.clear();
 
-  NaClPlatform::post( "none:" );
+  Pepper::post( "none:" );
 
   Log::unindent();
   Log::println( "}" );

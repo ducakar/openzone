@@ -24,10 +24,10 @@
 #include <stable.hh>
 #include <client/CinematicProxy.hh>
 
+#include <ozEngine/Pepper.hh>
 #include <common/Timer.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>
-#include <client/NaClPlatform.hh>
 #include <client/ui/GalileoFrame.hh>
 #include <client/ui/MusicPlayer.hh>
 #include <client/ui/UI.hh>

@@ -34,10 +34,8 @@ add_library( client STATIC
   MenuStage.hh
   Mesh.hh
   NaClDownloader.hh
-  NaClPlatform.hh
   NaClUpdater.hh
   Network.hh
-  OpenGL.hh
   openzone.hh
   Profile.hh
   Proxy.hh
@@ -85,10 +83,8 @@ add_library( client STATIC
   MenuStage.cc
   Mesh.cc
   NaClDownloader.cc
-  NaClPlatform.cc
   NaClUpdater.cc
   Network.cc
-  OpenGL.cc
   Profile.cc
   Proxy.cc
   QuestList.cc

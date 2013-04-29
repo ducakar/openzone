@@ -26,6 +26,8 @@
 
 #include "GLTexture.hh"
 
+#include "GL.hh"
+
 namespace oz
 {
 

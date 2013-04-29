@@ -29,7 +29,6 @@
 #include <client/Input.hh>
 #include <client/Context.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/LoadingArea.hh>
 #include <client/ui/StrategicArea.hh>
@@ -41,6 +40,7 @@
 #include <client/ui/InfoFrame.hh>
 #include <client/ui/BuildMenu.hh>
 #include <client/ui/DebugFrame.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {

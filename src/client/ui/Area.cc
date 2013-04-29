@@ -26,7 +26,7 @@
 
 #include <client/Camera.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
+#include <ozEngine/GL.hh>
 
 #include <SDL_ttf.h>
 

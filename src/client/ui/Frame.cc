@@ -26,9 +26,8 @@
 
 #include <client/Input.hh>
 #include <client/Shape.hh>
-#include <client/OpenGL.hh>
-
 #include <client/ui/Style.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {

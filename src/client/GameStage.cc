@@ -24,6 +24,7 @@
 #include <stable.hh>
 #include <client/GameStage.hh>
 
+#include <ozEngine/Pepper.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Matrix.hh>
 #include <nirvana/Nirvana.hh>
@@ -38,7 +39,6 @@
 #include <client/QuestList.hh>
 #include <client/MenuStage.hh>
 #include <client/Input.hh>
-#include <client/NaClPlatform.hh>
 #include <client/ui/LoadingArea.hh>
 
 namespace oz

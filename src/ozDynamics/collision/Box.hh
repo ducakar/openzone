@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Box.
+ * %Box.
  */
 class Box : public Shape
 {

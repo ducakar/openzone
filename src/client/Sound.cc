@@ -26,7 +26,6 @@
 
 #include <client/Camera.hh>
 #include <client/eSpeak.hh>
-#include <client/NaClPlatform.hh>
 
 #include <SDL.h>
 
@@ -662,7 +661,7 @@ void Sound::sync()
 void Sound::init()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::println( "Initialising Sound {" );
@@ -826,7 +825,7 @@ void Sound::init()
 void Sound::destroy()
 {
 #ifdef __native_client__
-  hard_assert( NaClPlatform::isMainThread() );
+  hard_assert( Pepper::isMainThread() );
 #endif
 
   Log::print( "Destroying Sound ..." );

@@ -29,9 +29,8 @@
 #include <client/Context.hh>
 #include <client/GameStage.hh>
 #include <client/Input.hh>
-#include <client/OpenGL.hh>
-#include <client/NaClPlatform.hh>
 #include <client/ui/Style.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {

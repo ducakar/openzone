@@ -28,7 +28,6 @@
 #include <client/Shape.hh>
 #include <client/GameStage.hh>
 #include <client/MenuStage.hh>
-#include <client/OpenGL.hh>
 #include <client/Window.hh>
 #include <client/BuildInfo.hh>
 #include <client/ui/Style.hh>
@@ -36,6 +35,7 @@
 #include <client/ui/SettingsFrame.hh>
 #include <client/ui/CreditsMenu.hh>
 #include <client/ui/UI.hh>
+#include <ozEngine/GL.hh>
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
 #elif defined( _WIN32 )
@@ -99,7 +99,7 @@ static void openWeb( Button* )
 {
 #if defined( __ANDROID__ )
 #elif defined( __native_client__ )
-  NaClPlatform::post( "navi:http://ducakar.github.com/openzone/" );
+  Pepper::post( "navi:http://ducakar.github.com/openzone/" );
 #elif defined( _WIN32 )
   ShellExecute( nullptr, "open", "http://ducakar.github.com/openzone/", nullptr, nullptr,
                 SW_SHOWNORMAL );

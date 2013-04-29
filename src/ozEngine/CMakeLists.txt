@@ -10,6 +10,7 @@ add_library( ozEngine
   ALStreamingBuffer.hh
   Builder.hh
   common.hh
+  Cursor.hh
   GL.hh
   GLTexture.hh
   ozEngine.hh
@@ -22,6 +23,7 @@ add_library( ozEngine
   ALStreamingBuffer.cc
   Builder.cc
   common.cc
+  Cursor.cc
   GL.cc
   GLTexture.cc
   Pepper.cc

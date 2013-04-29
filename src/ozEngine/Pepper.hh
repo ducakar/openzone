@@ -110,7 +110,7 @@ namespace oz
 {
 
 /**
- * High-level interface to NaCl's Pepper API (PPAPI).
+ * High-level interface to NaCl %Pepper API (PPAPI).
  *
  * It provides facilities for invoking code on the main thread, passing messages between application
  * and JavaScript on the web page and feedback information about module's geometry and mouse
@@ -125,8 +125,8 @@ class Pepper
      */
     typedef void Callback( void*, int );
 
-    static Semaphore mainCallSemaphore; ///< Semaphore primarily meant for use in conjunction with
-                                        ///< `OZ_MAIN_CALL` and `OZ_STATIC_MAIN_CALL` macros.
+    static Semaphore mainCallSemaphore; ///< Semaphore for use in conjunction with `OZ_MAIN_CALL`
+                                        ///< and `OZ_STATIC_MAIN_CALL` macros.
 
     static int       width;             ///< Module area width.
     static int       height;            ///< Module area height.
@@ -136,7 +136,7 @@ class Pepper
     static float     moveZ;             ///< Mouse wheel (horizontal scroll).
     static float     moveW;             ///< Mouse wheel (vertical scroll).
 
-    static bool      hasFocus;          ///< True iff fullscreen and mouse captured.
+    static bool      hasFocus;          ///< True iff focused and mouse is captured.
 
     /**
      * Forbid instances.

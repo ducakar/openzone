@@ -27,9 +27,8 @@
 #include <client/Shader.hh>
 
 #include <matrix/Liber.hh>
-
 #include <client/Camera.hh>
-#include <client/OpenGL.hh>
+#include <ozEngine/GL.hh>
 
 #define OZ_REGISTER_UNIFORM( uniformVar, uniformName ) \
   programs[id].uniform.uniformVar = glGetUniformLocation( programs[id].program, uniformName )

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "GL.hh"
+#include "common.hh"
 
 namespace oz
 {
@@ -40,8 +40,8 @@ class GLTexture
 {
   private:
 
-    GLuint textureId;      ///< OpenGL texture id.
-    int    textureMipmaps; ///< True iff mipmaps have been are loaded from file.
+    uint textureId;      ///< OpenGL texture id.
+    int  textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
   public:
 
@@ -91,7 +91,7 @@ class GLTexture
     /**
      * OpenGL texture id.
      */
-    GLuint id() const
+    uint id() const
     {
       return textureId;
     }

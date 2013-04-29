@@ -25,7 +25,6 @@
 #include <client/Input.hh>
 
 #include <client/Window.hh>
-#include <client/NaClPlatform.hh>
 
 namespace oz
 {
@@ -463,8 +462,12 @@ void Input::update()
 
 #if defined( __native_client__ )
 
-  mouseX = +NaClPlatform::moveX;
-  mouseY = -NaClPlatform::moveY;
+  mouseX = +Pepper::moveX;
+  mouseY = -Pepper::moveY;
+
+  int dx, dy;
+  SDL_GetRelativeMouseState( &dx, &dy );
+  printf( "SMM: %d, %d\n", dx, dy );
 
 #else
 

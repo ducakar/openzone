@@ -26,7 +26,7 @@
 
 #include <client/Context.hh>
 #include <client/Terra.hh>
-#include <client/OpenGL.hh>
+#include <ozEngine/GL.hh>
 
 namespace oz
 {
