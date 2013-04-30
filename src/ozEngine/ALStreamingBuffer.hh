@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "AL.hh"
 #include "ALSource.hh"
 
 namespace oz
@@ -42,7 +41,7 @@ class ALStreamingBuffer
   private:
 
     AL::Streamer streamer; ///< Internal streamer.
-    uint         sourceId; ///< Attached source id, 0 if none.
+    ALuint       sourceId; ///< Attached source id, 0 if none.
 
   public:
 
@@ -82,7 +81,7 @@ class ALStreamingBuffer
     /**
      * Get attached OpenAL source id.
      */
-    uint attachedSource() const
+    ALuint attachedSource() const
     {
       return sourceId;
     }

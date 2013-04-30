@@ -35,6 +35,7 @@ set( OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
 if( PLATFORM_EMBEDDED )
   set( OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
   set( OZ_GL_ES ON )
+  set( OZ_NONFREE OFF )
   set( OZ_STANDALONE OFF )
 endif()
 
@@ -135,10 +136,12 @@ endif()
 
 if( NOT PLATFORM_EMBEDDED )
   find_library( FREEIMAGE_LIBRARY freeimage )
+  find_library( FREEIMAGEPLUS_LIBRARY freeimageplus)
   mark_as_advanced( FREEIMAGE_LIBRARY )
+  mark_as_advanced( FREEIMAGEPLUS_LIBRARY )
 
-  if( NOT FREEIMAGE_LIBRARY )
-    message( FATAL_ERROR "FreeImage library is missing" )
+  if( NOT FREEIMAGE_LIBRARY OR NOT FREEIMAGEPLUS_LIBRARY )
+    message( FATAL_ERROR "FreeImage(Plus) library is missing" )
   endif()
 
   if( OZ_NONFREE )

@@ -34,44 +34,6 @@ namespace oz
 {
 
 /**
- * Absolute value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float abs( float a )
-{
-  return __builtin_fabsf( a );
-}
-
-/**
- * Minimum value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float min( float a, float b )
-{
-  return __builtin_fminf( a, b );
-}
-
-/**
- * Maximum value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float max( float a, float b )
-{
-  return __builtin_fmaxf( a, b );
-}
-
-/**
- * Clamped value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float clamp( float c, float a, float b )
-{
-  hard_assert( !( b < a ) );
-
-  return __builtin_fminf( b, __builtin_fmaxf( a, c ) );
-}
-
-/**
  * Replacement for `\<cmath\>` plus some other utility functions.
  */
 class Math
@@ -503,13 +465,13 @@ class Math
     }
 
     /**
-     * Index of the first 1 bit or -1 if `v` is 0.
+     * Index (counting from the least significant side) of the first 1 bit or -1 if `v` is 0.
      */
     template <typename Value = int>
     OZ_ALWAYS_INLINE
     static int index1( Value v )
     {
-      return v == 0 ? -1 : int( sizeof( Value ) * 8 - 1 ) - __builtin_clzll( ulong64( v ) );
+      return v == 0 ? -1 : int( sizeof( ulong64 ) * 8 - 1 ) - __builtin_clzll( ulong64( v ) );
     }
 
     /**

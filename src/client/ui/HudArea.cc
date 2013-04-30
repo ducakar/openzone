@@ -28,7 +28,6 @@
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -72,7 +71,7 @@ void HudArea::drawBotCrosshair()
                             life );
 
   shape.colour( colour );
-  glBindTexture( GL_TEXTURE_2D, crossTexId );
+  glBindTexture( GL_TEXTURE_2D, crossTex.id() );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
@@ -102,16 +101,16 @@ void HudArea::drawBotCrosshair()
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
       if( entClazz->target >= 0 && ent->key >= 0 ) {
-        glBindTexture( GL_TEXTURE_2D, useTexId );
+        glBindTexture( GL_TEXTURE_2D, useTex.id() );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
 
       if( ent->key < 0 ) {
-        glBindTexture( GL_TEXTURE_2D, lockedTexId );
+        glBindTexture( GL_TEXTURE_2D, lockedTex.id() );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
       else if( ent->key > 0 ) {
-        glBindTexture( GL_TEXTURE_2D, unlockedTexId );
+        glBindTexture( GL_TEXTURE_2D, unlockedTex.id() );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
@@ -148,14 +147,15 @@ void HudArea::drawBotCrosshair()
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
       if( obj->flags & Object::BROWSABLE_BIT ) {
-        glBindTexture( GL_TEXTURE_2D, browseTexId );
+        glBindTexture( GL_TEXTURE_2D, browseTex.id() );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
       if( ( obj->flags & Object::USE_FUNC_BIT ) &&
           !( obj->flags & ( Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) )
       {
 
-        glBindTexture( GL_TEXTURE_2D, obj->flags & Object::USE_FUNC_BIT ? useTexId : deviceTexId );
+        glBindTexture( GL_TEXTURE_2D,
+                       obj->flags & Object::USE_FUNC_BIT ? useTex.id() : deviceTex.id() );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
 
@@ -168,19 +168,19 @@ void HudArea::drawBotCrosshair()
         const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
 
         if( vehicle->pilot < 0 ) {
-          glBindTexture( GL_TEXTURE_2D, mountTexId );
+          glBindTexture( GL_TEXTURE_2D, mountTex.id() );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
       }
       else if( obj->flags & Object::WEAPON_BIT ) {
         if( me->canEquip( static_cast<const Weapon*>( obj ) ) ) {
-          glBindTexture( GL_TEXTURE_2D, equipTexId );
+          glBindTexture( GL_TEXTURE_2D, equipTex.id() );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
       }
 
       if( obj->flags & Object::ITEM_BIT ) {
-        glBindTexture( GL_TEXTURE_2D, takeTexId );
+        glBindTexture( GL_TEXTURE_2D, takeTex.id() );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
 
@@ -197,12 +197,12 @@ void HudArea::drawBotCrosshair()
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
 
         if( dist <= myClazz->reachDist ) {
-          glBindTexture( GL_TEXTURE_2D, liftTexId );
+          glBindTexture( GL_TEXTURE_2D, liftTex.id() );
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }
       }
       if( camera.botObj->cargo >= 0 ) {
-        glBindTexture( GL_TEXTURE_2D, grabTexId );
+        glBindTexture( GL_TEXTURE_2D, grabTex.id() );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
@@ -416,34 +416,19 @@ HudArea::HudArea() :
 
   Log::verboseMode = true;
 
-  crossTexId    = context.loadTextureLayer( "@ui/icon/crosshair.ozIcon" );
-  useTexId      = context.loadTextureLayer( "@ui/icon/use.ozIcon" );
-  deviceTexId   = context.loadTextureLayer( "@ui/icon/device.ozIcon" );
-  equipTexId    = context.loadTextureLayer( "@ui/icon/equip.ozIcon" );
-  mountTexId    = context.loadTextureLayer( "@ui/icon/mount.ozIcon" );
-  takeTexId     = context.loadTextureLayer( "@ui/icon/take.ozIcon" );
-  browseTexId   = context.loadTextureLayer( "@ui/icon/browse.ozIcon" );
-  liftTexId     = context.loadTextureLayer( "@ui/icon/lift.ozIcon" );
-  grabTexId     = context.loadTextureLayer( "@ui/icon/grab.ozIcon" );
-  lockedTexId   = context.loadTextureLayer( "@ui/icon/locked.ozIcon" );
-  unlockedTexId = context.loadTextureLayer( "@ui/icon/unlocked.ozIcon" );
+  crossTex.load( "@ui/icon/crosshair.dds" );
+  useTex.load( "@ui/icon/use.dds" );
+  deviceTex.load( "@ui/icon/device.dds" );
+  equipTex.load( "@ui/icon/equip.dds" );
+  mountTex.load( "@ui/icon/mount.dds" );
+  takeTex.load( "@ui/icon/take.dds" );
+  browseTex.load( "@ui/icon/browse.dds" );
+  liftTex.load( "@ui/icon/lift.dds" );
+  grabTex.load( "@ui/icon/grab.dds" );
+  lockedTex.load( "@ui/icon/locked.dds" );
+  unlockedTex.load( "@ui/icon/unlocked.dds" );
 
   Log::verboseMode = false;
-}
-
-HudArea::~HudArea()
-{
-  glDeleteTextures( 1, &crossTexId );
-  glDeleteTextures( 1, &useTexId );
-  glDeleteTextures( 1, &deviceTexId );
-  glDeleteTextures( 1, &equipTexId );
-  glDeleteTextures( 1, &mountTexId );
-  glDeleteTextures( 1, &takeTexId );
-  glDeleteTextures( 1, &browseTexId );
-  glDeleteTextures( 1, &liftTexId );
-  glDeleteTextures( 1, &grabTexId );
-  glDeleteTextures( 1, &lockedTexId );
-  glDeleteTextures( 1, &unlockedTexId );
 }
 
 }

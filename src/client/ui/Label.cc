@@ -28,7 +28,6 @@
 #include <client/Shape.hh>
 #include <client/ui/Area.hh>
 #include <client/ui/Style.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -225,9 +224,9 @@ void Label::draw( const Area* area, bool allowChanged )
     int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
 
     shape.colour( style.colours.textBackground );
-    shape.fillInv( posX + 1, posY - 1, width, height );
+    shape.fill( posX + 1, posY - 1, width, height );
     shape.colour( style.colours.text );
-    shape.fillInv( posX, posY, width, height );
+    shape.fill( posX, posY, width, height );
 
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }

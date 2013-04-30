@@ -32,9 +32,6 @@
 #include <client/MD2.hh>
 #include <client/MD3.hh>
 
-#include <ozEngine/GL.hh>
-#include <ozEngine/AL.hh>
-
 #include <SDL.h>
 
 namespace oz

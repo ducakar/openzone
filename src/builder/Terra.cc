@@ -178,7 +178,6 @@ void Terra::saveMatrix()
 void Terra::saveClient()
 {
   File destFile( "terra/" + name + ".ozcTerra" );
-  File minimapFile( "terra/" + name + ".ozcTex" );
 
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();
@@ -269,23 +268,21 @@ void Terra::saveClient()
   Log::unindent();
   Log::println( "}" );
 
-  bool useS3TC = context.useS3TC;
-  context.useS3TC = false;
+  File minimapIn( "@terra/" + mapTexture );
+  File minimapOut( "terra/" + name + ".dds" );
 
-  mapTex = context.loadTexture( "@terra/" + mapTexture );
-
-  Log::print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
+  Log::print( "Writing minimap texture '%s' ...", minimapOut.path().cstr() );
 
   os.rewind();
-  mapTex.write( &os );
+  if( !Builder::buildDDS( minimapIn, 0, &os ) ) {
+    OZ_ERROR( "Minimap texture '%s' loading failed", minimapIn.path().cstr() );
+  }
 
-  if( !minimapFile.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
+  if( !minimapOut.write( os.begin(), os.tell() ) ) {
+    OZ_ERROR( "Minimap texture '%s' writing failed", minimapOut.path().cstr() );
   }
 
   Log::printEnd( " OK" );
-
-  context.useS3TC = useS3TC;
 }
 
 void Terra::build( const char* name_ )

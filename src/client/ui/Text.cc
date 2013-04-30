@@ -28,7 +28,6 @@
 #include <client/Shape.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Area.hh>
-#include <ozEngine/GL.hh>
 
 #if defined( __ANDROID__ ) || defined(  _WIN32 )
 static char* strchrnul( const char* s, int c )

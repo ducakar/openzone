@@ -42,19 +42,19 @@ class Builder
   public:
 
     /**
-     * Build option bit enabling generation of mipmaps.
+     * Enable generation of mipmaps for a texture.
      */
-    static const int TEXTURE_MIPMAPS_BIT = 0x01;
+    static const int MIPMAPS_BIT = 0x01;
 
     /**
-     * Build option bit enabling texture compression.
+     * Enable texture compression.
      */
-    static const int TEXTURE_COMPRESSION_BIT = 0x02;
+    static const int COMPRESSION_BIT = 0x02;
 
     /**
-     * Build option bit forcing the highest quality compression and mipmap scaling.
+     * Use highest possible quality for texture compression and mipmap scaling.
      */
-    static const int TEXTURE_QUALITY_BIT = 0x04;
+    static const int QUALITY_BIT = 0x04;
 
   public:
 
@@ -76,13 +76,13 @@ class Builder
      *     dimensions in mipmap generation and highest quality settings for S3 texture compression
      *     libsquish supports.
      *
-     * png, jpg, jpeg, tga and bmp file extensions are recognised (must be lower-case).
+     * Freeimage library is used for reading a file, so most of image file formats are supported.
      *
      * @param file image file.
      * @param options bit-mask to control quality and compression.
      * @param ostream stream to write texture to.
      */
-    static bool buildTexture( const File& file, int options, OutputStream* ostream );
+    static bool buildDDS( const File& file, int options, OutputStream* ostream );
 
 };
 

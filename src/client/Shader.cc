@@ -28,7 +28,6 @@
 
 #include <matrix/Liber.hh>
 #include <client/Camera.hh>
-#include <ozEngine/GL.hh>
 
 #define OZ_REGISTER_UNIFORM( uniformVar, uniformName ) \
   programs[id].uniform.uniformVar = glGetUniformLocation( programs[id].program, uniformName )

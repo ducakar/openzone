@@ -35,8 +35,6 @@
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>
 
-#include <ozEngine/GL.hh>
-#include <ozEngine/AL.hh>
 #include <client/eSpeak.hh>
 
 #include <SDL.h>
@@ -319,19 +317,6 @@ uint Context::readTextureLayer( InputStream* istream )
   }
 
   return texId;
-}
-
-uint Context::loadTextureLayer( const char* path )
-{
-  File file( path );
-  Buffer buffer = file.read();
-
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Texture file '%s' mmap failed", file.path().cstr() );
-  }
-
-  InputStream is = buffer.inputStream();
-  return readTextureLayer( &is );
 }
 
 Texture Context::readTexture( InputStream* istream )

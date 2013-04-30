@@ -28,7 +28,6 @@
 #include <client/Camera.hh>
 #include <client/Terra.hh>
 #include <client/Shape.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {

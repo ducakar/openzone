@@ -25,7 +25,6 @@
 #include <client/ui/Font.hh>
 
 #include <client/Shader.hh>
-#include <ozEngine/GL.hh>
 
 #include <SDL_ttf.h>
 

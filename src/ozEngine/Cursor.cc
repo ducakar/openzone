@@ -51,7 +51,7 @@ Cursor::Cursor( Cursor&& c ) :
 {
   aCopy<Image>( images, c.images, MAX_IMAGES );
 
-  aFill<Image>( c.images, Image{}, MAX_IMAGES );
+  aFill<Image>( c.images, Image(), MAX_IMAGES );
   c.nImages   = 0;
   c.frame     = 0;
   c.frameTime = 0;
@@ -68,7 +68,7 @@ Cursor& Cursor::operator = ( Cursor&& c )
   frame     = c.frame;
   frameTime = c.frameTime;
 
-  aFill<Image>( c.images, Image{}, MAX_IMAGES );
+  aFill<Image>( c.images, Image(), MAX_IMAGES );
   c.nImages   = 0;
   c.frame     = 0;
   c.frameTime = 0;
@@ -195,7 +195,7 @@ void Cursor::destroy()
     glDeleteTextures( 1, &images[i].textureId );
   }
 
-  aFill<Image>( images, Image{}, MAX_IMAGES );
+  aFill<Image>( images, Image(), MAX_IMAGES );
   nImages   = 0;
   frame     = 0;
   frameTime = 0;

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "GL.hh"
 
 namespace oz
 {
@@ -40,8 +40,8 @@ class GLTexture
 {
   private:
 
-    uint textureId;      ///< OpenGL texture id.
-    int  textureMipmaps; ///< True iff mipmaps have been are loaded from file.
+    GLuint textureId;      ///< OpenGL texture id.
+    int    textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
   public:
 
@@ -73,7 +73,7 @@ class GLTexture
     /**
      * Move operator.
      */
-    GLTexture& operator = ( GLTexture& t )
+    GLTexture& operator = ( GLTexture&& t )
     {
       if( &t == this ) {
         return *this;
@@ -91,9 +91,17 @@ class GLTexture
     /**
      * OpenGL texture id.
      */
-    uint id() const
+    GLuint id() const
     {
       return textureId;
+    }
+
+    /**
+     * True iff loaded.
+     */
+    bool isLoaded() const
+    {
+      return textureId != 0;
     }
 
     /**
@@ -114,7 +122,8 @@ class GLTexture
     /**
      * Create a new texture and load its data from a DDS file.
      *
-     * If the texture already exists, it is destroyed and re-created.
+     * If the texture already exists, it is destroyed and re-created. On loading failure, texture is
+     * deleted.
      */
     bool load( const File& file );
 

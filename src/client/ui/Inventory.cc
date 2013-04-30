@@ -30,7 +30,6 @@
 #include <client/Context.hh>
 #include <client/Input.hh>
 #include <client/ui/Style.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -164,13 +163,13 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
 
   if( scroll != 0 ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
+    glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
     shape.fill( x + 16, y + height + ROWS * SLOT_SIZE, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
   if( scroll != nScrollRows ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
+    glBindTexture( GL_TEXTURE_2D, scrollDownTex.id() );
     shape.fill( x + 16, y + height - 16, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
@@ -248,14 +247,14 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
   shape.rect( x + width - 52, y + height + SLOT_SIZE + 4, 48, 12 );
 
   if( taggedItem->flags & Object::USE_FUNC_BIT ) {
-    uint texId = useTexId;
+    uint texId = useTex.id();
 
     if( taggedItem->flags & Object::WEAPON_BIT ) {
       if( !camera.botObj->canEquip( static_cast<const Weapon*>( taggedItem ) ) ) {
         goto noIcon;
       }
 
-      texId = taggedItem->index == camera.botObj->weapon ? unequipTexId : equipTexId;
+      texId = taggedItem->index == camera.botObj->weapon ? unequipTex.id() : equipTex.id();
     }
 
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -387,22 +386,13 @@ Inventory::Inventory() :
 
   Log::verboseMode = true;
 
-  scrollUpTexId   = context.loadTextureLayer( "@ui/icon/scrollUp.ozIcon" );
-  scrollDownTexId = context.loadTextureLayer( "@ui/icon/scrollDown.ozIcon" );
-  useTexId        = context.loadTextureLayer( "@ui/icon/use.ozIcon" );
-  equipTexId      = context.loadTextureLayer( "@ui/icon/equip.ozIcon" );
-  unequipTexId    = context.loadTextureLayer( "@ui/icon/unequip.ozIcon" );
+  scrollUpTex.load( "@ui/icon/scrollUp.dds" );
+  scrollDownTex.load( "@ui/icon/scrollDown.dds" );
+  useTex.load( "@ui/icon/use.dds" );
+  equipTex.load( "@ui/icon/equip.dds" );
+  unequipTex.load( "@ui/icon/unequip.dds" );
 
   Log::verboseMode = false;
-}
-
-Inventory::~Inventory()
-{
-  glDeleteTextures( 1, &scrollUpTexId );
-  glDeleteTextures( 1, &scrollDownTexId );
-  glDeleteTextures( 1, &useTexId );
-  glDeleteTextures( 1, &equipTexId );
-  glDeleteTextures( 1, &unequipTexId );
 }
 
 }

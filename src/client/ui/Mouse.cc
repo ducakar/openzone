@@ -31,7 +31,6 @@
 #include <client/Window.hh>
 #include <client/Input.hh>
 #include <client/ui/Area.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -93,8 +92,8 @@ void Mouse::draw()
 
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
-    shape.fillInv( x - cursor.hotspotLeft(), y - cursor.height() + 1 + cursor.hotspotTop(),
-                   cursor.width(), cursor.height() );
+    shape.fill( x - cursor.hotspotLeft(), y - cursor.height() + 1 + cursor.hotspotTop(),
+                cursor.width(), cursor.height() );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
     cursor.advance( timer.frameMicros / 1000 );

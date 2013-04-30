@@ -24,7 +24,6 @@
 #include <stable.hh>
 #include <client/GameStage.hh>
 
-#include <ozEngine/Pepper.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Matrix.hh>
 #include <nirvana/Nirvana.hh>

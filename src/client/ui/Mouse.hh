@@ -24,7 +24,6 @@
 #pragma once
 
 #include <client/common.hh>
-#include <ozEngine/Cursor.hh>
 
 namespace oz
 {

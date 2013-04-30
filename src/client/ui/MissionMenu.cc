@@ -30,7 +30,6 @@
 #include <client/GameStage.hh>
 #include <client/Input.hh>
 #include <client/ui/Style.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -57,7 +56,7 @@ bool MissionButton::onMouseEvent()
     missionMenu->selection = selection;
 
     missionMenu->description.set( "%s", missionMenu->missions[selection].description.cstr() );
-    missionMenu->imageId = missionMenu->missions[selection].imageId;
+    missionMenu->imageId = missionMenu->missions[selection].image.id();
   }
 
   return Button::onMouseEvent();
@@ -160,11 +159,11 @@ void MissionMenu::onDraw()
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
   if( scroll > 0 ) {
-    glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
+    glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
     shape.fill( width - 128, height - 32, 16, 16 );
   }
   if( scroll < missions.length() - nSelections ) {
-    glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
+    glBindTexture( GL_TEXTURE_2D, scrollDownTex.id() );
     shape.fill( width - 128, height - nSelections * 40 - 54, 16, 16 );
   }
 
@@ -182,8 +181,7 @@ void MissionMenu::onDraw()
 
 MissionMenu::MissionMenu() :
   Area( camera.width, camera.height ),
-  description( 40, 80, camera.width - 320, 8, Font::SANS, ALIGN_NONE ),
-  imageId( 0 )
+  description( 40, 80, camera.width - 320, 8, Font::SANS, ALIGN_NONE )
 {
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );
@@ -204,34 +202,17 @@ MissionMenu::MissionMenu() :
     Lingua lingua;
     lingua.initMission( missionName );
 
-    const char* title       = lingua.get( descriptionConfig["title"].get( missionName ) );
-    const char* description = lingua.get( descriptionConfig["description"].get( "" ) );
-
-    File image( missionDir->path() + "/description.ozImage" );
-
-    uint imageId = 0;
-    if( image.type() != File::MISSING ) {
-      imageId = context.loadTextureLayer( image.path() );
-    }
-
-    MissionInfo mission = { missionName, title, description, imageId };
-    missions.add( mission );
+    missions.add();
+    missions.last().name        = missionName;
+    missions.last().title       = lingua.get( descriptionConfig["title"].get( missionName ) );
+    missions.last().description = lingua.get( descriptionConfig["description"].get( "" ) );
+    missions.last().image.load( missionDir->path() + "/description.ozImage" );
 
     lingua.destroy();
   }
 
-  scrollUpTexId   = context.loadTextureLayer( "@ui/icon/scrollUp.ozIcon" );
-  scrollDownTexId = context.loadTextureLayer( "@ui/icon/scrollDown.ozIcon" );
-}
-
-MissionMenu::~MissionMenu()
-{
-  for( int i = 0; i < missions.length(); ++i ) {
-    glDeleteTextures( 1, &missions[i].imageId );
-  }
-
-  glDeleteTextures( 1, &scrollDownTexId );
-  glDeleteTextures( 1, &scrollUpTexId );
+  scrollUpTex.load( "@ui/icon/scrollUp.ozIcon" );
+  scrollDownTex.load( "@ui/icon/scrollDown.ozIcon" );
 }
 
 }

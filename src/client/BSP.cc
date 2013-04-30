@@ -26,7 +26,6 @@
 
 #include <client/Context.hh>
 #include <client/SMM.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {

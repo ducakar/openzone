@@ -24,9 +24,6 @@
 #include <stable.hh>
 #include <builder/UI.hh>
 
-#include <client/ui/Mouse.hh>
-#include <builder/Context.hh>
-
 namespace oz
 {
 namespace builder
@@ -53,54 +50,68 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildIcons()
 {
-  if( File( "@ui/icon" ).type() != File::DIRECTORY ) {
+  File dir( "@ui/icon" );
+
+  if( dir.type() != File::DIRECTORY ) {
     return;
+  }
+
+  HashMap<String, bool> icons;
+  foreach( name, citer( ICON_NAMES ) ) {
+    icons.add( *name, false );
   }
 
   Log::println( "Building UI icons {" );
   Log::indent();
 
-  bool useS3TC = context.useS3TC;
-  context.useS3TC = false;
-
   File::mkdir( "ui" );
   File::mkdir( "ui/icon" );
 
-  foreach( name, citer( ICON_NAMES ) ) {
-    String srcPath  = String::str( "@ui/icon/%s.png", *name );
-    String destPath = String::str( "ui/icon/%s.ozIcon", *name );
+  DArray<File> images = dir.ls();
 
-    Context::Texture tex = context.loadTexture( srcPath, false, GL_NEAREST, GL_NEAREST );
-    hard_assert( !tex.isEmpty() );
+  foreach( image, images.citer() ) {
+    String name = image->baseName();
+
+    bool* isBuilt = icons.find( name );
+    if( image->type() != File::REGULAR || isBuilt == nullptr || *isBuilt ) {
+      continue;
+    }
+
+    File destFile( "ui/icon/" + name + ".dds" );
 
     OutputStream os( 0 );
+    if( image->hasExtension( "dds" ) ) {
+      if( !image->read( &os ) ) {
+        OZ_ERROR( "Error reading image '%s'", image->path().cstr() );
+      }
+      else {
+        Log::println( "'%s' copied", image->path().cstr() );
+      }
+    }
+    else {
+      if( !Builder::buildDDS( *image, 0, &os ) ) {
+        continue;
+      }
+      else {
+        Log::println( "'%s' converted to DDS", image->path().cstr() );
+      }
+    }
 
-    Log::println( "Compiling '%s'", destPath.cstr() );
-    tex.write( &os );
+    if( !destFile.write( os.begin(), os.tell() ) ) {
+      OZ_ERROR( "Failed to write '%s' file", destFile.path().cstr() );
+    }
 
-    if( !File( destPath ).write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Texture writing failed" );
+    *isBuilt = true;
+  }
+
+  foreach( i, icons.citer() ) {
+    if( !i->value ) {
+      OZ_ERROR( "Mission icon: %s", i->key.cstr() );
     }
   }
 
-  context.useS3TC = useS3TC;
-
   Log::unindent();
   Log::println( "}" );
-}
-
-void UI::copyScheme()
-{
-  File srcFile( "@ui/style.json" );
-  File outFile( "ui/style.json" );
-
-  if( srcFile.type() == File::REGULAR ) {
-    Log::print( "Copying UI colour scheme '%s' ...", srcFile.path().cstr() );
-
-    outFile.write( srcFile.read() );
-
-    Log::printEnd( " OK" );
-  }
 }
 
 }

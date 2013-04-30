@@ -39,7 +39,6 @@ class UI
   public:
 
     static void buildIcons();
-    static void copyScheme();
 
 };
 

@@ -26,7 +26,6 @@
 
 #include <client/Camera.hh>
 #include <client/Context.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {

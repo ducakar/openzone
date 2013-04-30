@@ -36,8 +36,6 @@
 #include <client/ExplosionImago.hh>
 #include <client/MD2WeaponImago.hh>
 
-#include <ozEngine/GL.hh>
-
 namespace oz
 {
 namespace client

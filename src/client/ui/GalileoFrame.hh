@@ -38,29 +38,25 @@ class GalileoFrame : public Frame
 {
   private:
 
-    uint mapTexId;
-    uint arrowTexId;
-    uint markerTexId;
+    GLTexture mapTex;
+    GLTexture arrowTex;
+    GLTexture markerTex;
 
-    int  normalX;
-    int  normalY;
-    int  normalWidth;
-    int  normalHeight;
+    int       normalX;
+    int       normalY;
+    int       normalWidth;
+    int       normalHeight;
 
-    int  maximisedX;
-    int  maximisedY;
-    int  maximisedWidth;
-    int  maximisedHeight;
+    int       maximisedX;
+    int       maximisedY;
+    int       maximisedWidth;
+    int       maximisedHeight;
 
-    Vec4 colour;
+    Vec4      colour;
 
   public:
 
     bool isMaximised;
-
-  private:
-
-    uint loadTexture( const char* path ) const;
 
   protected:
 
@@ -71,7 +67,6 @@ class GalileoFrame : public Frame
   public:
 
     explicit GalileoFrame();
-    ~GalileoFrame() override;
 
     void setMaximised( bool doMaximise );
 

@@ -42,6 +42,7 @@ namespace oz
 static const int DDSD_PITCH_BIT       = 0x00000008;
 static const int DDSD_MIPMAPCOUNT_BIT = 0x00020000;
 static const int DDSD_LINEARSIZE_BIT  = 0x00080000;
+
 static const int DDPF_ALPHAPIXELS     = 0x00000001;
 static const int DDPF_FOURCC          = 0x00000004;
 static const int DDPF_RGB             = 0x00000040;
@@ -166,7 +167,7 @@ void GL::checkError( const char* function, const char* file, int line )
   System::error( function, file, line, 1, "GL error '%s'", message );
 }
 
-int GL::textureDataFromFile( GLuint texture, const File& file )
+int GL::textureDataFromFile( const File& file )
 {
   Buffer      buffer;
   InputStream istream;
@@ -247,12 +248,16 @@ int GL::textureDataFromFile( GLuint texture, const File& file )
   int   mipmapSize   = pixelFlags & DDPF_FOURCC ? pitch : height * pitch;
   char* mipmapData   = pixelFlags & DDPF_FOURCC ? nullptr : new char[mipmapSize];
 
-  glBindTexture( GL_TEXTURE_2D, texture );
-
   // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding whether
   // texture actually has mipmaps.
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                   nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR );
+  if( nMipmaps == 1 ) {
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+  }
+  else {
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+  }
 
   for( int i = 0; i < nMipmaps; ++i ) {
     if( pixelFlags & DDPF_FOURCC ) {

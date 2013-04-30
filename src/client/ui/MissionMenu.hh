@@ -64,10 +64,10 @@ class MissionMenu : public Area
 
     struct MissionInfo
     {
-      String name;
-      String title;
-      String description;
-      uint   imageId;
+      String    name;
+      String    title;
+      String    description;
+      GLTexture image;
     };
 
     List<MissionInfo> missions;
@@ -77,8 +77,8 @@ class MissionMenu : public Area
 
     Text              description;
 
-    uint              scrollUpTexId;
-    uint              scrollDownTexId;
+    GLTexture         scrollUpTex;
+    GLTexture         scrollDownTex;
 
     uint              imageId;
     int               imageX;
@@ -98,7 +98,6 @@ class MissionMenu : public Area
   public:
 
     explicit MissionMenu();
-    ~MissionMenu() override;
 
 };
 

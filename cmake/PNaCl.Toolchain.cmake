@@ -9,7 +9,7 @@ set( PLATFORM_TRIPLET           "pnacl" )
 set( PLATFORM_PREFIX            "$ENV{NACL_SDK_ROOT}/toolchain/linux_x86_pnacl/newlib" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/PNaCl" )
 set( PLATFORM_EXE_SUFFIX        ".pexe" )
-set( PLATFORM_FLAGS             "-I $ENV{NACL_SDK_ROOT}/include" )
+set( PLATFORM_FLAGS             "-isystem $ENV{NACL_SDK_ROOT}/include" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
 set( CMAKE_SYSTEM_PROCESSOR     "LLVM-IR" CACHE STRING "Target processor." )

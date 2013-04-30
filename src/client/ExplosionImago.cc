@@ -26,7 +26,6 @@
 
 #include <common/Timer.hh>
 #include <client/Context.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {

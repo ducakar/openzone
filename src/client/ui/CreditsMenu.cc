@@ -30,7 +30,6 @@
 #include <client/Input.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {

@@ -25,7 +25,6 @@
 #include <client/BSPAudio.hh>
 
 #include <client/Context.hh>
-#include <ozEngine/AL.hh>
 
 namespace oz
 {

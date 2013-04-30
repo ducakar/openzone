@@ -26,193 +26,178 @@
 
 #include "Builder.hh"
 
+#include <FreeImagePlus.h>
+#ifdef OZ_NONFREE
+# include <squish.h>
+#endif
+
 namespace oz
 {
 
-#if 0
-bool GLTexture::build( const File& file, int options, OutputStream* ostream )
+static const int DDSD_CAPS        = 0x00000001;
+static const int DDSD_HEIGHT      = 0x00000002;
+static const int DDSD_WIDTH       = 0x00000004;
+static const int DDSD_PITCH       = 0x00000008;
+static const int DDSD_PIXELFORMAT = 0x00001000;
+static const int DDSD_MIPMAPCOUNT = 0x00020000;
+static const int DDSD_LINEARSIZE  = 0x00080000;
+
+static const int DDSDCAPS_COMPLEX = 0x00000008;
+static const int DDSDCAPS_TEXTURE = 0x00001000;
+static const int DDSDCAPS_MIPMAP  = 0x00400000;
+
+static const int DDPF_ALPHAPIXELS = 0x00000001;
+static const int DDPF_FOURCC      = 0x00000004;
+static const int DDPF_RGB         = 0x00000040;
+static const int DDPF_LUMINANCE   = 0x00020000;
+
+bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
 {
-  if( file.isVirtual() ) {
+#ifndef OZ_NONFREE
+  if( options & COMPRESSION_BIT ) {
+    return false;
+  }
+#endif
+
+  Buffer      buffer;
+  InputStream istream;
+
+  if( file.isMapped() ) {
+    istream = file.inputStream();
+  }
+  else {
+    buffer  = file.read();
+    istream = buffer.inputStream();
+  }
+
+  fipImage    image;
+  fipMemoryIO memoryIO( reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) ),
+                        uint( istream.available() ) );
+
+  if( !image.loadFromMemory( memoryIO ) ) {
+    return false;
+  }
+  image.flipVertical();
+
+  int width  = int( image.getWidth() );
+  int height = int( image.getHeight() );
+  int bpp    = int( image.getBitsPerPixel() );
+  int pitch  = int( image.getScanWidth() );
+
+  if( ( options & COMPRESSION_BIT ) && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
     return false;
   }
 
-  int  width      = image->width;
-  int  height     = image->height;
-  bool genMipmaps = minFilter == GL_NEAREST_MIPMAP_NEAREST ||
-                    minFilter == GL_LINEAR_MIPMAP_NEAREST ||
-                    minFilter == GL_NEAREST_MIPMAP_LINEAR ||
-                    minFilter == GL_LINEAR_MIPMAP_LINEAR;
+  int nMipmaps = options & MIPMAPS_BIT ? Math::index1( max( width, height ) ) + 1 : 1;
 
-  if( genMipmaps && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
-    OZ_ERROR( "Image has dimensions %dx%d but both dimensions must be powers of two to generate"
-              " mipmaps.", width, height );
-  }
+  int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+  flags |= options & MIPMAPS_BIT ? DDSD_MIPMAPCOUNT : 0;
+  flags |= options & COMPRESSION_BIT ? DDSD_LINEARSIZE : DDSD_PITCH;
 
-  do {
-    levels.add();
-    Level& level = levels.last();
+  int caps = DDSDCAPS_TEXTURE;
+  caps |= options & MIPMAPS_BIT ? DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP : 0;
 
-    level.width  = width;
-    level.height = height;
+  int pixelFlags = 0;
+  pixelFlags |= bpp == 32 ? DDPF_ALPHAPIXELS : 0;
+  pixelFlags |= options & COMPRESSION_BIT ? DDPF_FOURCC :
+                bpp == 8 ? DDPF_LUMINANCE : DDPF_RGB;
 
-    FIBITMAP* levelDib = image->dib;
-    if( levels.length() > 1 ) {
-      levelDib = FreeImage_Rescale( image->dib, width, height,
-                                    context.isHighQuality ? FILTER_CATMULLROM : FILTER_BOX );
+  // Header beginning.
+  ostream->writeChars( "DDS ", 4 );
+  ostream->writeInt( 124 );
+  ostream->writeInt( flags );
+  ostream->writeInt( height );
+  ostream->writeInt( width );
+  ostream->writeInt( pitch ); // Will be overwritten later if compressed.
+  ostream->writeInt( 0 );
+  ostream->writeInt( nMipmaps );
+
+  // Reserved int[11].
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+
+  // Pixel format.
+  ostream->writeInt( 32 );
+  ostream->writeInt( pixelFlags );
+  ostream->writeChars( bpp == 32 ? "DXT5" : "DXT1", 4 );
+  ostream->writeInt( bpp );
+  ostream->writeUInt( 0x00ff0000 );
+  ostream->writeUInt( 0x0000ff00 );
+  ostream->writeUInt( 0x000000ff );
+  ostream->writeUInt( 0xff000000 );
+
+  ostream->writeInt( caps );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+  ostream->writeInt( 0 );
+
+  for( int i = 0; i < nMipmaps; ++i ) {
+    fipImage level = image;
+
+    if( i != 0 ) {
+      level.rescale( uint( width ), uint( height ),
+                     options & QUALITY_BIT ? FILTER_CATMULLROM : FILTER_BOX );
+      pitch = int( level.getScanWidth() );
     }
 
 #ifdef OZ_NONFREE
-    int squishFlags = context.isHighQuality ?
-                      squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
-                      squish::kColourRangeFit;
+    int squishFlags = bpp == 32 ? squish::kDxt5 : squish::kDxt5;
+    squishFlags |= options & QUALITY_BIT ?
+                   squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
+                   squish::kColourRangeFit;
 #endif
 
-    switch( image->format ) {
-      case GL_LUMINANCE: {
-        if( context.useS3TC ) {
+    if( options & COMPRESSION_BIT ) {
 #ifdef OZ_NONFREE
-          // Collapse data (pitch = width * pixelSize) and convert LUMINANCE -> RGBA.
-          ubyte* data = new ubyte[height * width * 4];
+      level.convertTo32Bits();
 
-          for( int y = 0; y < height; ++y ) {
-            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
-            ubyte* dstLine = &data[y * width*4];
+      int   size   = squish::GetStorageRequirements( width, height, squishFlags );
+      char* pixels = reinterpret_cast<char*>( level.accessPixels() );
 
-            for( int x = 0; x < width; ++x ) {
-              dstLine[x*4 + 0] = srcLine[x];
-              dstLine[x*4 + 1] = srcLine[x];
-              dstLine[x*4 + 2] = srcLine[x];
-              dstLine[x*4 + 3] = UCHAR_MAX;
-            }
-          }
-
-          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
-          level.data   = new ubyte[level.size];
-
-          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
-          delete[] data;
-#endif
+      // Swap red and blue channels.
+      for( int y = 0; y < height; ++y ) {
+        for( int x = 0; x < width; ++x ) {
+          swap( pixels[x * 4 + 0], pixels[x * 4 + 2] );
         }
-        else {
-          level.format = GL_LUMINANCE;
-          level.size   = width * height;
-          level.data   = new ubyte[level.size];
-
-          for( int y = 0; y < height; ++y ) {
-            mCopy( level.data + y*width, FreeImage_GetScanLine( levelDib, y ), size_t( width ) );
-          }
-        }
-        break;
+        pixels += pitch;
       }
-      case GL_RGB: {
-        if( context.useS3TC ) {
-#ifdef OZ_NONFREE
-          // Collapse data (pitch = width * pixelSize) and convert BGR -> RGBA.
-          ubyte* data = new ubyte[height * width * 4];
 
-          for( int y = 0; y < height; ++y ) {
-            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
-            ubyte* dstLine = &data[y * width*4];
+      squish::CompressImage( level.accessPixels(), width, height, ostream->forward( size ),
+                             squishFlags );
 
-            for( int x = 0; x < width; ++x ) {
-              dstLine[x*4 + 0] = srcLine[x*3 + 2];
-              dstLine[x*4 + 1] = srcLine[x*3 + 1];
-              dstLine[x*4 + 2] = srcLine[x*3 + 0];
-              dstLine[x*4 + 3] = UCHAR_MAX;
-            }
-          }
+      // Replace pitch with "linear size".
+      if( i == 0 ) {
+        int pos = ostream->tell();
 
-          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
-          level.data   = new ubyte[level.size];
-
-          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
-          delete[] data;
-#endif
-        }
-        else {
-          ubyte* data  = FreeImage_GetBits( levelDib );
-          int    pitch = int( FreeImage_GetPitch( levelDib ) );
-
-          level.format = GL_RGB;
-          level.size   = height * pitch;
-          level.data   = new ubyte[level.size];
-
-          for( int y = 0; y < level.height; ++y ) {
-            ubyte* srcLine = &data[y * pitch];
-            ubyte* dstLine = &level.data[y * pitch];
-
-            for( int x = 0; x + 2 < pitch; x += 3 ) {
-              dstLine[x + 0] = srcLine[x + 2];
-              dstLine[x + 1] = srcLine[x + 1];
-              dstLine[x + 2] = srcLine[x + 0];
-            }
-          }
-        }
-        break;
+        ostream->seek( 20 );
+        ostream->writeInt( size );
+        ostream->seek( pos );
       }
-      case GL_RGBA: {
-        if( context.useS3TC ) {
-#ifdef OZ_NONFREE
-          // Collapse data (pitch = width * pixelSize) and convert BGRA -> RGBA.
-          ubyte* data = new ubyte[height * width * 4];
-
-          for( int y = 0; y < height; ++y ) {
-            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
-            ubyte* dstLine = &data[y * width*4];
-
-            for( int x = 0; x < width; ++x ) {
-              dstLine[x*4 + 0] = srcLine[x*4 + 2];
-              dstLine[x*4 + 1] = srcLine[x*4 + 1];
-              dstLine[x*4 + 2] = srcLine[x*4 + 0];
-              dstLine[x*4 + 3] = srcLine[x*4 + 3];
-            }
-          }
-
-          level.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt5 );
-          level.data   = new ubyte[level.size];
-
-          squish::CompressImage( data, width, height, level.data, squish::kDxt5 | squishFlags );
-          delete[] data;
 #endif
-        }
-        else {
-          ubyte* data  = FreeImage_GetBits( levelDib );
-          int    pitch = int( FreeImage_GetPitch( levelDib ) );
-
-          level.format = GL_RGBA;
-          level.size   = height * pitch;
-          level.data   = new ubyte[level.size];
-
-          for( int y = 0; y < level.height; ++y ) {
-            ubyte* srcLine = &data[y * pitch];
-            ubyte* dstLine = &level.data[y * pitch];
-
-            for( int x = 0; x + 3 < pitch; x += 4 ) {
-              dstLine[x + 0] = srcLine[x + 2];
-              dstLine[x + 1] = srcLine[x + 1];
-              dstLine[x + 2] = srcLine[x + 0];
-              dstLine[x + 3] = srcLine[x + 3];
-            }
-          }
-        }
-        break;
-      }
     }
+    else {
+      const char* pixels = reinterpret_cast<const char*>( level.accessPixels() );
 
-    if( levelDib != image->dib ) {
-      FreeImage_Unload( levelDib );
+      for( int i = 0; i < height; ++i ) {
+        ostream->writeChars( pixels, width * ( bpp / 8 ) );
+        pixels += pitch;
+      }
     }
 
     width  = max( width / 2, 1 );
     height = max( height / 2, 1 );
   }
-  while( genMipmaps && ( levels.last().width > 1 || levels.last().height > 1 ) );
-
   return true;
 }
-#endif
 
 }

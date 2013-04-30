@@ -24,7 +24,6 @@
 #pragma once
 
 #include <client/Context.hh>
-#include <ozEngine/AL.hh>
 
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS

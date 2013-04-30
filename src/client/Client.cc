@@ -26,7 +26,6 @@
 #include <stable.hh>
 #include <client/Client.hh>
 
-#include <ozEngine/Pepper.hh>
 #include <common/Timer.hh>
 #include <common/Lua.hh>
 #include <client/Camera.hh>

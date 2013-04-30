@@ -76,7 +76,11 @@ bool ALBuffer::load( const File& file )
     return false;
   }
 
-  return AL::bufferDataFromFile( bufferId, file );
+  if( !AL::bufferDataFromFile( bufferId, file ) ) {
+    destroy();
+    return false;
+  }
+  return true;
 }
 
 void ALBuffer::destroy()

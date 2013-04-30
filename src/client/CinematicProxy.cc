@@ -24,7 +24,6 @@
 #include <stable.hh>
 #include <client/CinematicProxy.hh>
 
-#include <ozEngine/Pepper.hh>
 #include <common/Timer.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>

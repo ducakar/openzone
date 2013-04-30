@@ -295,16 +295,6 @@ class File
     bool write( const char* data, int size ) const;
 
     /**
-     * Write data from the stream's current position to the end of the stream into the file.
-     *
-     * @note
-     * @li This function does not update file size and modification time. `stat()` must be invoked
-     *     manually for this.
-     * @li Write operation is not possible while the file is mapped.
-     */
-    bool write( InputStream* istream ) const;
-
-    /**
      * Write buffer contents into the file.
      *
      * @note

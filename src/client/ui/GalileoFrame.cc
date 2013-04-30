@@ -29,7 +29,6 @@
 #include <client/Context.hh>
 #include <client/QuestList.hh>
 #include <client/ui/Style.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {
@@ -37,21 +36,6 @@ namespace client
 {
 namespace ui
 {
-
-uint GalileoFrame::loadTexture( const char* path ) const
-{
-  File file( path );
-
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Failed reading galileo texture '%s'", path );
-  }
-
-  InputStream istream = buffer.inputStream();
-  uint texId = context.readTextureLayer( &istream );
-
-  return texId;
-}
 
 void GalileoFrame::onReposition()
 {
@@ -91,8 +75,8 @@ void GalileoFrame::onUpdate()
 
 void GalileoFrame::onDraw()
 {
-  if( mapTexId == 0 ) {
-    mapTexId = loadTexture( "@terra/" + liber.terrae[orbis.terra.id].name + ".ozcTex" );
+  if( !mapTex.isLoaded() ) {
+    mapTex.load( "@terra/" + liber.terrae[orbis.terra.id].name + ".dds" );
   }
 
   float pX = camera.p.x;
@@ -100,7 +84,7 @@ void GalileoFrame::onDraw()
   float h  = camera.botObj == nullptr ? camera.strategic.h : camera.botObj->h;
 
   shape.colour( colour );
-  glBindTexture( GL_TEXTURE_2D, mapTexId );
+  glBindTexture( GL_TEXTURE_2D, mapTex.id() );
   shape.fill( x, y, width, height );
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -112,7 +96,7 @@ void GalileoFrame::onDraw()
   if( questList.activeQuest >= 0 ) {
     const Quest& quest = questList.quests[questList.activeQuest];
 
-    glBindTexture( GL_TEXTURE_2D, markerTexId );
+    glBindTexture( GL_TEXTURE_2D, markerTex.id() );
 
     float mapX = oX + ( Orbis::DIM + quest.place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
     float mapY = oY + ( Orbis::DIM + quest.place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
@@ -125,7 +109,7 @@ void GalileoFrame::onDraw()
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
   }
 
-  glBindTexture( GL_TEXTURE_2D, arrowTexId );
+  glBindTexture( GL_TEXTURE_2D, arrowTex.id() );
 
   float mapX = oX + ( Orbis::DIM + pX ) / ( 2.0f*Orbis::DIM ) * fWidth;
   float mapY = oY + ( Orbis::DIM + pY ) / ( 2.0f*Orbis::DIM ) * fHeight;
@@ -142,30 +126,15 @@ void GalileoFrame::onDraw()
 }
 
 GalileoFrame::GalileoFrame() :
-  Frame( 240, 232 - HEADER_SIZE, "" ),
-  mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), colour( style.colours.galileoNormal ),
-  isMaximised( false )
+  Frame( 240, 232 - HEADER_SIZE, "" ), colour( style.colours.galileoNormal ), isMaximised( false )
 {
   flags = PINNED_BIT | UPDATE_BIT;
 
-  arrowTexId = loadTexture( "@ui/icon/arrow.ozIcon" );
-  markerTexId = loadTexture( "@ui/icon/marker.ozIcon" );
+  arrowTex.load( "@ui/icon/arrow.dds" );
+  markerTex.load( "@ui/icon/marker.dds" );
 
   normalWidth  = width;
   normalHeight = height;
-}
-
-GalileoFrame::~GalileoFrame()
-{
-  if( mapTexId != 0 ) {
-    glDeleteTextures( 1, &mapTexId );
-  }
-  if( arrowTexId != 0 ) {
-    glDeleteTextures( 1, &arrowTexId );
-  }
-  if( markerTexId != 0 ) {
-    glDeleteTextures( 1, &markerTexId );
-  }
 }
 
 void GalileoFrame::setMaximised( bool doMaximise )

@@ -40,7 +40,6 @@
 #include <client/ui/InfoFrame.hh>
 #include <client/ui/BuildMenu.hh>
 #include <client/ui/DebugFrame.hh>
-#include <ozEngine/GL.hh>
 
 namespace oz
 {

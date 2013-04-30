@@ -26,7 +26,6 @@
 
 #include <client/Camera.hh>
 #include <client/Context.hh>
-#include <ozEngine/GL.hh>
 
 #include <ozDynamics/ozDynamics.hh>
 
@@ -37,12 +36,6 @@ namespace client
 
 const Shape::Vertex Shape::VERTICES[40] = {
   // filled rectangle
-  { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-  { { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-  { { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
-  { { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
-
-  // filled rectangle (inverted)
   { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
   { { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
   { { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
@@ -98,65 +91,65 @@ const ushort Shape::INDICES[46] = {
    */
 
   // left
-  32 + 0,
-  32 + 1,
-  32 + 2,
-  32 + 3,
+  28 + 0,
+  28 + 1,
+  28 + 2,
+  28 + 3,
   // back
-  32 + 6,
-  32 + 7,
+  28 + 6,
+  28 + 7,
   // right
-  32 + 4,
-  32 + 5,
+  28 + 4,
+  28 + 5,
   // front
-  32 + 0,
-  32 + 1,
-  32 + 1,
+  28 + 0,
+  28 + 1,
+  28 + 1,
   // bottom
-  32 + 0,
-  32 + 0,
-  32 + 2,
-  32 + 4,
-  32 + 6,
-  32 + 6,
+  28 + 0,
+  28 + 0,
+  28 + 2,
+  28 + 4,
+  28 + 6,
+  28 + 6,
   // top
-  32 + 1,
-  32 + 1,
-  32 + 5,
-  32 + 3,
-  32 + 7,
+  28 + 1,
+  28 + 1,
+  28 + 5,
+  28 + 3,
+  28 + 7,
 
   /*
    * Wire box (GL_LINES)
    */
 
   // parallel to z
-  32 + 0,
-  32 + 1,
-  32 + 2,
-  32 + 3,
-  32 + 4,
-  32 + 5,
-  32 + 6,
-  32 + 7,
+  28 + 0,
+  28 + 1,
+  28 + 2,
+  28 + 3,
+  28 + 4,
+  28 + 5,
+  28 + 6,
+  28 + 7,
   // parallel to y
-  32 + 0,
-  32 + 2,
-  32 + 1,
-  32 + 3,
-  32 + 4,
-  32 + 6,
-  32 + 5,
-  32 + 7,
+  28 + 0,
+  28 + 2,
+  28 + 1,
+  28 + 3,
+  28 + 4,
+  28 + 6,
+  28 + 5,
+  28 + 7,
   // parallel to x
-  32 + 0,
-  32 + 4,
-  32 + 1,
-  32 + 5,
-  32 + 2,
-  32 + 6,
-  32 + 3,
-  32 + 7
+  28 + 0,
+  28 + 4,
+  28 + 1,
+  28 + 5,
+  28 + 2,
+  28 + 6,
+  28 + 3,
+  28 + 7
 };
 
 Shape::Shape() :
@@ -216,27 +209,13 @@ void Shape::fill( int x, int y, int width, int height )
   fill( float( x ), float( y ), float( width ), float( height ) );
 }
 
-void Shape::fillInv( float x, float y, float width, float height )
-{
-  tf.model = Mat44::translation( Vec3( x, y, 0.0f ) );
-  tf.model.scale( Vec3( width, height, 0.0f ) );
-  tf.apply();
-
-  glDrawArrays( GL_TRIANGLE_STRIP, 4, 4 );
-}
-
-void Shape::fillInv( int x, int y, int width, int height )
-{
-  fillInv( float( x ), float( y ), float( width ), float( height ) );
-}
-
 void Shape::rect( float x, float y, float width, float height )
 {
   tf.model = Mat44::translation( Vec3( x + 0.5f, y + 0.5f, 0.0f ) );
   tf.model.scale( Vec3( width - 1.0f, height - 1.0f, 0.0f ) );
   tf.apply();
 
-  glDrawArrays( GL_LINE_LOOP, 8, 4 );
+  glDrawArrays( GL_LINE_LOOP, 4, 4 );
 }
 
 void Shape::rect( int x, int y, int width, int height )
@@ -267,7 +246,7 @@ void Shape::tag( float minX, float minY, float maxX, float maxY )
   tf.model = Mat44::translation( Vec3( minX, maxY, 0.0f ) );
   tf.apply();
 
-  glDrawArrays( GL_LINES, 24, 4 );
+  glDrawArrays( GL_LINES, 20, 4 );
 }
 
 void Shape::quad( float dimX, float dimY )
@@ -275,7 +254,7 @@ void Shape::quad( float dimX, float dimY )
   tf.model.scale( Vec3( dimX, 1.0f, dimY ) );
   tf.apply();
 
-  glDrawArrays( GL_TRIANGLE_STRIP, 28, 4 );
+  glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
 }
 
 void Shape::box( const AABB& bb )

@@ -49,24 +49,24 @@ class Inventory : public Frame
     const Bot*    owner;
     const Object* other;
 
-    uint  scrollUpTexId;
-    uint  scrollDownTexId;
-    uint  useTexId;
-    uint  equipTexId;
-    uint  unequipTexId;
+    GLTexture     scrollUpTex;
+    GLTexture     scrollDownTex;
+    GLTexture     useTex;
+    GLTexture     equipTex;
+    GLTexture     unequipTex;
 
-    Label itemDesc;
+    Label         itemDesc;
 
-    int   cachedContainerIndex;
-    int   cachedTaggedItemIndex;
-    float taggedItemRotation;
+    int           cachedContainerIndex;
+    int           cachedTaggedItemIndex;
+    float         taggedItemRotation;
 
-    int   taggedOwner;
-    int   taggedOther;
-    int   scrollOwner;
-    int   scrollOther;
+    int           taggedOwner;
+    int           taggedOther;
+    int           scrollOwner;
+    int           scrollOther;
 
-    bool  isMouseOver;
+    bool          isMouseOver;
 
   private:
 
@@ -84,7 +84,6 @@ class Inventory : public Frame
   public:
 
     explicit Inventory();
-    ~Inventory() override;
 
 };
 

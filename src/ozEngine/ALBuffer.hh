@@ -40,7 +40,7 @@ class ALBuffer
 {
   private:
 
-    uint bufferId; ///< OpenAL buffer id, 0 if not loaded.
+    ALuint bufferId; ///< OpenAL buffer id, 0 if not loaded.
 
   public:
 
@@ -86,7 +86,7 @@ class ALBuffer
     /**
      * Get OpenAL buffer id.
      */
-    uint id() const
+    ALuint id() const
     {
       return bufferId;
     }
@@ -116,7 +116,8 @@ class ALBuffer
     /**
      * Create a new buffer if necessary and load data from the given WAVE or Ogg Vorbis file.
      *
-     * If the buffer already exists, its contents is replaced by the new data.
+     * If the buffer already exists, its contents is replaced by the new data. On loading failure,
+     * buffer is destroyed.
      *
      * @note
      * OpenAL error is generated if a buffer contents is changed while some source plays it.

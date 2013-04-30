@@ -649,26 +649,24 @@ void Builder::buildMissions()
     copyFiles( mission->path(), &mission->path()[1], "json", false );
 
     File srcFile( mission->path() + "/description.png" );
-    File outFile( &( mission->path() + "/description.ozImage" )[1] );
+    File outFile( &( mission->path() + "/description.dds" )[1] );
 
     if( srcFile.type() == File::MISSING ) {
       continue;
     }
 
-    Log::println( "Building thumbnail {" );
-    Log::indent();
-
-    Context::Texture imageTex = context.loadTexture( srcFile.path(), false, GL_LINEAR, GL_LINEAR );
+    Log::print( "Building thumbnail '%s' ...", outFile.path().cstr() );
 
     OutputStream os( 0 );
-    imageTex.write( &os );
+    if( !oz::Builder::buildDDS( srcFile.path(), 0, &os ) ) {
+      OZ_ERROR( "Failed to convert '%s' to DDS", srcFile.path().cstr() );
+    }
 
     if( !outFile.write( os.begin(), os.tell() ) ) {
       OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
     }
 
-    Log::unindent();
-    Log::println( "}" );
+    Log::printEnd( " OK" );
   }
 
   lingua.buildMissions();
@@ -912,11 +910,11 @@ int Builder::main( int argc, char** argv )
   }
   if( doUI ) {
     UI::buildIcons();
-    UI::copyScheme();
 
     copyFiles( "@ui/cur", "ui/cur", "", false );
     copyFiles( "@ui/font", "ui/font", "ttf", false );
     copyFiles( "@ui/icon", "ui/icon", "", false );
+    copyFiles( "@ui/style", "ui/style", "json", false );
   }
   if( doShaders ) {
     copyFiles( "@glsl", "glsl", "glsl", false );

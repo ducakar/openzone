@@ -27,7 +27,6 @@
 
 #include <nirvana/luaapi.hh>
 
-#include <ozEngine/Pepper.hh>
 #include <client/QuestList.hh>
 #include <client/Camera.hh>
 #include <client/Profile.hh>

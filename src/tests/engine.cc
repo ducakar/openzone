@@ -50,11 +50,16 @@ int main( int argc, char** argv )
 //   GLTexture texture( dds );
 
   File file( argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1] );
-  Cursor cursor( file, 48 );
+  Cursor cursor( file );
 
   if( !cursor.isLoaded() ) {
     return EXIT_FAILURE;
   }
+
+  OutputStream ostream( 0 );
+  Builder::buildDDS( File( "/home/davorin/Slike/users/jojo-64x64.png" ),
+                     Builder::MIPMAPS_BIT | Builder::COMPRESSION_BIT, &ostream );
+  File( "drek.dds" ).write( ostream.begin(), ostream.tell() );
 
   glEnable( GL_BLEND );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

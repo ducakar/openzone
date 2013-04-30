@@ -669,11 +669,6 @@ bool File::write( const char* buffer, int size ) const
   return true;
 }
 
-bool File::write( InputStream* istream ) const
-{
-  return write( istream->pos(), istream->available() );
-}
-
 bool File::write( const Buffer& buffer ) const
 {
   return write( buffer.begin(), buffer.length() );

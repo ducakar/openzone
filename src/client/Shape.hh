@@ -59,8 +59,6 @@ class Shape
 
     static void fill( float x, float y, float width, float height );
     static void fill( int x, int y, int width, int height );
-    static void fillInv( float x, float y, float width, float height );
-    static void fillInv( int x, int y, int width, int height );
     static void rect( float x, float y, float width, float height );
     static void rect( int x, int y, int width, int height );
     static void tag( float minX, float minY, float maxX, float maxY );

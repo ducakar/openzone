@@ -57,6 +57,14 @@ endif()
 # libvorbisfile.
 target_link_libraries( ozEngine ozDynamics ${VORBISFILE_LIBRARIES} )
 
+# FreeImage.
+target_link_libraries( ozEngine ${FREEIMAGEPLUS_LIBRARY} )
+
+# squish.
+if( OZ_NONFREE )
+  target_link_libraries( ozEngine ${SQUISH_LIBRARY} )
+endif()
+
 # Dependencies.
 if( PLATFORM_EMBEDDED )
   target_link_libraries( ozEngine ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )

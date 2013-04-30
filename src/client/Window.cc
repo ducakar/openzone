@@ -25,7 +25,6 @@
 #include <client/Window.hh>
 
 #include <client/Input.hh>
-#include <ozEngine/GL.hh>
 
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>

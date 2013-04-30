@@ -158,9 +158,13 @@ class GL
     /**
      * Load texture image from a DDS file.
      *
+     * For mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR` filters and `GL_REPEAT`
+     * wrapping are used as default, for non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters
+     * and `GL_CLAMP_TO_EDGE` wrapping are used as default.
+     *
      * @return number of mipmaps (including original picture), 0 on an error.
      */
-    static int textureDataFromFile( GLuint texture, const File& file );
+    static int textureDataFromFile( const File& file );
 
     /**
      * Link previously declared OpenGL functions on Windows, NOP on other platforms.

@@ -63,7 +63,14 @@ bool GLTexture::load( const File& file )
     return false;
   }
 
-  return GL::textureDataFromFile( textureId, file ) != 0;
+  glBindTexture( GL_TEXTURE_2D, textureId );
+  textureMipmaps = GL::textureDataFromFile( file );
+
+  if( textureMipmaps == 0 ) {
+    destroy();
+    return false;
+  }
+  return true;
 }
 
 void GLTexture::destroy()
