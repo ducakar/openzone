@@ -332,7 +332,7 @@ bool File::stat()
   return fileType != MISSING;
 }
 
-String File::realDir() const
+String File::realDirectory() const
 {
   if( filePath.fileIsVirtual() ) {
     const char* realDir = PHYSFS_getRealDir( &filePath[1] );

@@ -36,7 +36,7 @@ void MD3::readAnimData()
 {
   File animFile( sPath + "/animation.cfg" );
 
-  String realPath = animFile.realDir() + "/" + animFile.path();
+  String realPath = animFile.realDirectory() + "/" + animFile.path();
 
   FILE* fs = fopen( realPath, "r" );
   if( fs == nullptr ) {

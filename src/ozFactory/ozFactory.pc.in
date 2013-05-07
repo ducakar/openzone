@@ -3,9 +3,9 @@ exec_prefix=${prefix}
 libdir=${exec_prefix}/lib@OZ_BINARY_SUBDIR@
 includedir=${prefix}/include
 
-Name: ozEngine
-Description: OpenZone Engine Library
+Name: ozFactory
+Description: OpenZone Assets Builder Library
 Version: @OZ_VERSION@
-Requires: ozCore ozDynamics
-Libs: -L${libdir} -lozEngine
+Requires: ozCore
+Libs: -L${libdir} -lozFactory
 Cflags: -std=c++11 -I${includedir}

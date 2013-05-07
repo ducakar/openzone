@@ -11,12 +11,12 @@ set( OZ_VERSION 0.3.81 )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
+option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )
 option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF )
+option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
 option( OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF )
-option( OZ_SDL2 "Use SDL 2.0 instead of SDL 1.2." OFF )
 option( OZ_NET "Enable networking support." OFF )
-option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
 option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
@@ -136,7 +136,7 @@ endif()
 
 if( NOT PLATFORM_EMBEDDED )
   find_library( FREEIMAGE_LIBRARY freeimage )
-  find_library( FREEIMAGEPLUS_LIBRARY freeimageplus)
+  find_library( FREEIMAGEPLUS_LIBRARY freeimageplus )
   mark_as_advanced( FREEIMAGE_LIBRARY )
   mark_as_advanced( FREEIMAGEPLUS_LIBRARY )
 

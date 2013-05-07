@@ -267,7 +267,6 @@ The following alternative launches are available:
   NaCl port. If `strip` is passed as the second option, binaries are stripped too.
 
 Documentation
-
 -------------
 
 To generate documentation from source code with Doxygen, run

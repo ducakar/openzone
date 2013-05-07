@@ -180,7 +180,15 @@ class File
     }
 
     /**
-     * %File name.
+     * Extract directory from the path (substring before the last `/`).
+     */
+    String directory() const
+    {
+      return filePath.fileDirectory();
+    }
+
+    /**
+     * Extract file name from the path (substring after the last `/`).
      */
     String name() const
     {
@@ -188,7 +196,8 @@ class File
     }
 
     /**
-     * Name without the extension (and the dot).
+     * Extract base file name from the path (substring after the last `/` till the last dot
+     * following it).
      */
     String baseName() const
     {
@@ -196,7 +205,8 @@ class File
     }
 
     /**
-     * Extension (part of base name after the last dot) or "" if no dot in base name.
+     * Extract file extension from the path (substring after the last dot in file name or "" if no
+     * extension).
      */
     String extension() const
     {
@@ -204,9 +214,9 @@ class File
     }
 
     /**
-     * True iff the extension (without dot) is equal to the given string.
+     * True iff file name has the given extension.
      *
-     * Empty string matches both no extension and files ending with dot.
+     * Empty string matches both no extension and files names ending with dot.
      */
     bool hasExtension( const char* ext ) const
     {
@@ -216,7 +226,7 @@ class File
     /**
      * %Path to the archive or mount-point of a VFS, "" for native files.
      */
-    String realDir() const;
+    String realDirectory() const;
 
     /**
      * %Path to file in native file system.

@@ -25,10 +25,15 @@ else()
   install( TARGETS openzone RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
   add_executable( ozBuild ozBuild.cc )
-  target_link_libraries( ozBuild builder client modules nirvana matrix common ozEngine )
+  target_link_libraries( ozBuild builder client modules nirvana matrix common ozFactory ozEngine )
   use_pch( ozBuild pch )
 
   install( TARGETS ozBuild RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+
+  add_executable( ozDDS ozDDS.cc )
+  target_link_libraries( ozDDS ozFactory )
+
+  install( TARGETS ozDDS RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
   add_executable( ozGettext ozGettext.cc )
   target_link_libraries( ozGettext ozCore )

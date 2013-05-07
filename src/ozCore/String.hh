@@ -132,7 +132,7 @@ class String
     }
 
     /**
-     * Index of the first occurrence of the character from the given index (inclusive).
+     * Index of the first occurrence of a character from the given index (inclusive).
      */
     static int index( const char* s, char ch, int start = 0 )
     {
@@ -145,7 +145,7 @@ class String
     }
 
     /**
-     * Index of the last occurrence of the character before the given index (not inclusive).
+     * Index of the last occurrence of a character before the given index (not inclusive).
      */
     static int lastIndex( const char* s, char ch, int end )
     {
@@ -158,7 +158,7 @@ class String
     }
 
     /**
-     * Index of the last occurrence of the character.
+     * Index of the last occurrence of a character.
      */
     static int lastIndex( const char* s, char ch )
     {
@@ -173,7 +173,7 @@ class String
     }
 
     /**
-     * Pointer to the first occurrence of the character from the given index (inclusive).
+     * Pointer to the first occurrence of a character from the given index (inclusive).
      */
     static const char* find( const char* s, char ch, int start = 0 )
     {
@@ -186,7 +186,7 @@ class String
     }
 
     /**
-     * Pointer to the last occurrence of the character before the given index (not inclusive).
+     * Pointer to the last occurrence of a character before the given index (not inclusive).
      */
     static const char* findLast( const char* s, char ch, int end )
     {
@@ -199,7 +199,7 @@ class String
     }
 
     /**
-     * Pointer to the last occurrence of the character.
+     * Pointer to the last occurrence of a character.
      */
     static const char* findLast( const char* s, char ch )
     {
@@ -277,24 +277,31 @@ class String
     }
 
     /**
+     * Extract directory from a path (substring before the last `/`).
+     */
+    static String fileDirectory( const char* s );
+
+    /**
      * Extract file name from a path (substring after the last `/`).
      */
     static String fileName( const char* s );
 
     /**
-     * Extract base file name from a path (substring after the last `/` till the last following
-     * dot).
+     * Extract base file name from a path (substring after the last `/` till the last dot following
+     * it).
      */
     static String fileBaseName( const char* s );
 
     /**
-     * Extract file extension from a path (substring after the last dot in file name extracted form
-     * the path).
+     * Extract file extension from the path (substring after the last dot in file name or "" if no
+     * extension).
      */
     static String fileExtension( const char* s );
 
     /**
-     * True iff file name extracted from a path has the given extension.
+     * True iff file name has the given extension.
+     *
+     * Empty string matches both no extension and files names ending with dot.
      */
     static bool fileHasExtension( const char* s, const char* ext );
 
@@ -503,7 +510,7 @@ class String
      * Create uninitialised string.
      *
      * Terminating null character is written, so it represents a valid string even if not
-     * initialised manually by the caller.
+     * initialised by the caller.
      *
      * @param length length of string (without the terminating null character).
      * @param buffer where to pass non-constant pointer to the internal buffer.
@@ -752,7 +759,7 @@ class String
     }
 
     /**
-     * Index of the first occurrence of the character from the given index (inclusive).
+     * Index of the first occurrence of a character from the given index (inclusive).
      */
     int index( char ch, int start = 0 ) const
     {
@@ -760,7 +767,7 @@ class String
     }
 
     /**
-     * Index of the last occurrence of the character before the given index (not inclusive).
+     * Index of the last occurrence of a character before the given index (not inclusive).
      */
     int lastIndex( char ch, int end ) const
     {
@@ -768,7 +775,7 @@ class String
     }
 
     /**
-     * Index of the last occurrence of the character.
+     * Index of the last occurrence of a character.
      */
     int lastIndex( char ch ) const
     {
@@ -776,7 +783,7 @@ class String
     }
 
     /**
-     * Pointer to the first occurrence of the character from the given index (inclusive).
+     * Pointer to the first occurrence of a character from the given index (inclusive).
      */
     const char* find( char ch, int start = 0 ) const
     {
@@ -784,7 +791,7 @@ class String
     }
 
     /**
-     * Pointer to the last occurrence of the character before the given index (not inclusive).
+     * Pointer to the last occurrence of a character before the given index (not inclusive).
      */
     const char* findLast( char ch, int end ) const
     {
@@ -792,7 +799,7 @@ class String
     }
 
     /**
-     * Pointer to the last occurrence of the character.
+     * Pointer to the last occurrence of a character.
      */
     const char* findLast( char ch ) const
     {
@@ -911,24 +918,31 @@ class String
     }
 
     /**
+     * Extract directory from a path (substring before the last `/`).
+     */
+    String fileDirectory() const;
+
+    /**
      * Extract file name from a path (substring after the last `/`).
      */
     String fileName() const;
 
     /**
-     * Extract base file name from a path (substring after the last `/` till the last following
-     * dot).
+     * Extract base file name from a path (substring after the last `/` till the last dot following
+     * it).
      */
     String fileBaseName() const;
 
     /**
-     * Extract file extension from a path (substring after the last dot in file name extracted form
-     * the path).
+     * Extract file extension from the path (substring after the last dot in file name or "" if no
+     * extension).
      */
     String fileExtension() const;
 
     /**
-     * True iff file name extracted from a path has the given extension.
+     * True iff file name has the given extension.
+     *
+     * Empty string matches both no extension and files names ending with dot.
      */
     bool fileHasExtension( const char* ext ) const;
 

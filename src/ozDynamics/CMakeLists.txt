@@ -33,11 +33,11 @@ add_library( ozDynamics
 #END SOURCES
 )
 
+target_link_libraries( ozDynamics ozCore )
+
 # HACK
 if( OZ_DYNAMICS )
-  target_link_libraries( ozDynamics ${ODE_LIBRARIES} ozCore )
-else()
-  target_link_libraries( ozDynamics ozCore )
+  target_link_libraries( ozDynamics ${ODE_LIBRARIES} )
 endif()
 
 set_target_properties( ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )

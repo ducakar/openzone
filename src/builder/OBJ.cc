@@ -288,7 +288,7 @@ void OBJ::load()
 
   config.clear( true );
 
-  String realPath = modelFile.realDir() + "/" + &path[1];
+  String realPath = modelFile.realDirectory() + "/" + &path[1];
 
   loadMaterials( realPath + "/data.mtl" );
 

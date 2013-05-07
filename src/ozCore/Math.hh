@@ -465,7 +465,7 @@ class Math
     }
 
     /**
-     * Index (counting from the least significant side) of the first 1 bit or -1 if `v` is 0.
+     * Index of the first 1 bit (counting from the least significant bit) or -1 if `v` is 0.
      */
     template <typename Value = int>
     OZ_ALWAYS_INLINE

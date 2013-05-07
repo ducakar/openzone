@@ -23,6 +23,7 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
+#include <ozFactory/ozFactory.hh>
 #include <SDL.h>
 #include <AL/alc.h>
 
@@ -101,5 +102,15 @@ int main( int argc, char** argv )
   alcCloseDevice( device );
   Window::destroy();
   SDL_Quit();
+
+  List<String> fileNames;
+  List<Buffer> fileContents;
+
+//   Shader::readFile( "data/oz_base/glsl/mesh.vert", &fileNames, &fileContents );
+
+  for( const Buffer& b : fileContents ) {
+    Log() << "---------------\n";
+    Log() << b.toString();
+  }
   return 0;
 }

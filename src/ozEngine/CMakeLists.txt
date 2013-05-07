@@ -8,7 +8,6 @@ add_library( ozEngine
   AL.hh
   ALSource.hh
   ALStreamingBuffer.hh
-  Builder.hh
   common.hh
   Cursor.hh
   GL.hh
@@ -16,12 +15,12 @@ add_library( ozEngine
   ozEngine.hh
   pch.hh
   Pepper.hh
+  Shader.hh
   Window.hh
   ALBuffer.cc
   AL.cc
   ALSource.cc
   ALStreamingBuffer.cc
-  Builder.cc
   common.cc
   Cursor.cc
   GL.cc
@@ -30,6 +29,8 @@ add_library( ozEngine
   Window.cc
 #END SOURCES
 )
+
+target_link_libraries( ozEngine ozCore )
 
 # OpenGL.
 if( OZ_GL_ES )
@@ -43,27 +44,19 @@ target_link_libraries( ozEngine ${OPENAL_LIBRARY} )
 
 # SDL.
 if( OZ_SDL2 )
+  target_link_libraries( ozEngine ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} )
   if( OZ_NET )
     target_link_libraries( ozEngine ${SDL2_NET_LIBRARIES} )
   endif()
-  target_link_libraries( ozEngine ${SDL2_TTF_LIBRARIES} ${SDL2_LIBRARIES} )
 else()
+  target_link_libraries( ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES} )
   if( OZ_NET )
     target_link_libraries( ozEngine ${SDL_NET_LIBRARIES} )
   endif()
-  target_link_libraries( ozEngine ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
 endif()
 
 # libvorbisfile.
-target_link_libraries( ozEngine ozDynamics ${VORBISFILE_LIBRARIES} )
-
-# FreeImage.
-target_link_libraries( ozEngine ${FREEIMAGEPLUS_LIBRARY} )
-
-# squish.
-if( OZ_NONFREE )
-  target_link_libraries( ozEngine ${SQUISH_LIBRARY} )
-endif()
+target_link_libraries( ozEngine ${VORBISFILE_LIBRARIES} )
 
 # Dependencies.
 if( PLATFORM_EMBEDDED )

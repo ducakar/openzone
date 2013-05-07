@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozFactory - OpenZone Assets Builder Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -20,11 +20,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#pragma once
-
-/*
- * Configuration variables
+/**
+ * @file ozFactory/pch.cc
+ *
+ * Trigger for precompiled header.
  */
 
-// Use OpenGL ES 2.0 instead of OpenGL 2.1.
-#cmakedefine OZ_GL_ES
+#include "pch.hh"

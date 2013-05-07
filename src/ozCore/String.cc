@@ -51,7 +51,7 @@ String::String( int count_, int ) :
 }
 
 OZ_HIDDEN
-inline void String::ensureCapacity( int newCount )
+void String::ensureCapacity( int newCount )
 {
   hard_assert( buffer != nullptr && count >= 0 && newCount >= 0 );
 
@@ -162,6 +162,13 @@ DArray<String> String::split( const char* s, char delimiter )
   array[nPartitions - 1] = substring( s, begin, count );
 
   return array;
+}
+
+String String::fileDirectory( const char* s )
+{
+  int slash = lastIndex( s, '/' );
+
+  return slash >= 0 ? substring( s, 0, slash ) : String( s );
 }
 
 String String::fileName( const char* s )
@@ -678,6 +685,7 @@ String String::create( int length, char** buffer_ )
 {
   String r( length, 0 );
 
+  r.buffer[length] = '\0';
   *buffer_ = r.buffer;
   return r;
 }
@@ -852,6 +860,13 @@ DArray<String> String::split( char delimiter ) const
   array[nPartitions - 1] = substring( begin );
 
   return array;
+}
+
+String String::fileDirectory() const
+{
+  int slash = lastIndex( '/' );
+
+  return slash >= 0 ? substring( 0, slash ) : String( buffer );
 }
 
 String String::fileName() const

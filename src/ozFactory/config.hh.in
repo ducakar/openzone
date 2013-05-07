@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozFactory - OpenZone Assets Builder Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -26,5 +26,5 @@
  * Configuration variables
  */
 
-// Use OpenGL ES 2.0 instead of OpenGL 2.1.
-#cmakedefine OZ_GL_ES
+// Enable squish S3TC library.
+#cmakedefine OZ_NONFREE

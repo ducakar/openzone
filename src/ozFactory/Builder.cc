@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozFactory - OpenZone Assets Builder Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozEngine/Builder.cc
+ * @file ozFactory/Builder.cc
  */
 
 #include "Builder.hh"
@@ -88,7 +88,8 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
     return false;
   }
 
-  int nMipmaps = options & MIPMAPS_BIT ? Math::index1( max( width, height ) ) + 1 : 1;
+  int pitchOrLinSize = pitch;
+  int nMipmaps       = options & MIPMAPS_BIT ? Math::index1( max( width, height ) ) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
   flags |= options & MIPMAPS_BIT ? DDSD_MIPMAPCOUNT : 0;
@@ -98,9 +99,23 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   caps |= options & MIPMAPS_BIT ? DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP : 0;
 
   int pixelFlags = 0;
-  pixelFlags |= bpp == 32 ? DDPF_ALPHAPIXELS : 0;
+  pixelFlags |= image.isTransparent() ? DDPF_ALPHAPIXELS : 0;
   pixelFlags |= options & COMPRESSION_BIT ? DDPF_FOURCC :
                 bpp == 8 ? DDPF_LUMINANCE : DDPF_RGB;
+
+  const char* compression = "\0\0\0\0";
+
+#ifdef OZ_NONFREE
+  int squishFlags = image.isTransparent() ? squish::kDxt5 : squish::kDxt1;
+  squishFlags |= options & QUALITY_BIT ?
+                 squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
+                 squish::kColourRangeFit;
+
+  if( options & COMPRESSION_BIT ) {
+    pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
+    compression    = image.isTransparent() ? "DXT5" : "DXT1";
+  }
+#endif
 
   // Header beginning.
   ostream->writeChars( "DDS ", 4 );
@@ -108,7 +123,7 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   ostream->writeInt( flags );
   ostream->writeInt( height );
   ostream->writeInt( width );
-  ostream->writeInt( pitch ); // Will be overwritten later if compressed.
+  ostream->writeInt( pitchOrLinSize );
   ostream->writeInt( 0 );
   ostream->writeInt( nMipmaps );
 
@@ -128,7 +143,7 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   // Pixel format.
   ostream->writeInt( 32 );
   ostream->writeInt( pixelFlags );
-  ostream->writeChars( bpp == 32 ? "DXT5" : "DXT1", 4 );
+  ostream->writeChars( compression, 4 );
   ostream->writeInt( bpp );
   ostream->writeUInt( 0x00ff0000 );
   ostream->writeUInt( 0x0000ff00 );
@@ -150,19 +165,12 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
       pitch = int( level.getScanWidth() );
     }
 
-#ifdef OZ_NONFREE
-    int squishFlags = bpp == 32 ? squish::kDxt5 : squish::kDxt5;
-    squishFlags |= options & QUALITY_BIT ?
-                   squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
-                   squish::kColourRangeFit;
-#endif
-
     if( options & COMPRESSION_BIT ) {
 #ifdef OZ_NONFREE
       level.convertTo32Bits();
 
-      int   size   = squish::GetStorageRequirements( width, height, squishFlags );
-      char* pixels = reinterpret_cast<char*>( level.accessPixels() );
+      int    size   = squish::GetStorageRequirements( width, height, squishFlags );
+      ubyte* pixels = level.accessPixels();
 
       // Swap red and blue channels.
       for( int y = 0; y < height; ++y ) {
@@ -174,15 +182,6 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
 
       squish::CompressImage( level.accessPixels(), width, height, ostream->forward( size ),
                              squishFlags );
-
-      // Replace pitch with "linear size".
-      if( i == 0 ) {
-        int pos = ostream->tell();
-
-        ostream->seek( 20 );
-        ostream->writeInt( size );
-        ostream->seek( pos );
-      }
 #endif
     }
     else {

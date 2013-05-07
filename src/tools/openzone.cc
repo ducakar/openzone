@@ -24,7 +24,6 @@
 #include <stable.hh>
 #include <client/openzone.hh>
 
-#include <ozEngine/Pepper.hh>
 #include <client/Client.hh>
 
 #include <SDL.h>

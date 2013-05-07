@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozFactory - OpenZone Assets Builder Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozEngine/Builder.hh
+ * @file ozFactory/Builder.hh
  *
  * `Builder` class.
  */

@@ -154,9 +154,7 @@ class AL
     static void checkError( const char* function, const char* file, int line );
 
     /**
-     * Load OpenAL buffer with a sound sample from a file.
-     *
-     * WAVE and Ogg Vorbis files are supported.
+     * Load OpenAL buffer from a WAVE of Ogg Vorbis file.
      */
     static bool bufferDataFromFile( ALuint buffer, const File& file );
 

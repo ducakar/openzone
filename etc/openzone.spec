@@ -31,30 +31,28 @@ and front-end that renders it and enables the player to manipulate with the
 simulated world.
 
 %package -n liboz
-Summary:        OpenZone Core, Dynamics and Engine Libraries
+Summary:        OpenZone ozCore, ozDynamics, ozEngine and ozFactory libraries
 Group:          System Environment/Libraries
 License:        zlib
 
 %description -n liboz
-OpenZone Core Library provides facilities like container templates, array
-utilities, string class, memory manager with memory leak tracing, crash
-handlers, I/O buffers and classes for filesystem access with PhysicsFS support,
-log writer, JSON file manipulation class, math functions and linear algebra
-classes.
-OpenZone Dynamics Library is a rigid body physics engine used in OpenZone
-engine.
-OpenZone Engine Library contains basic engine building blocks for OpenZone
-game.
+ozCore library provides facilities like container templates, array utilities,
+string class, memory manager with memory leak tracing, crash handlers,
+I/O buffers and classes for filesystem access with PhysicsFS support,
+log writer, JSON file manipulation class, math functions and math classes.
+ozDynamics library is a rigid body physics engine used in OpenZone engine.
+ozEngine library contains basic engine building blocks for OpenZone game.
+ozFactory library contains functions for building OpenZone assets.
 
 %package -n liboz-devel
-Summary:        Headers for OpenZone Core, Dynamics and Engine Libraries
+Summary:        Headers for liboz
 Group:          Development/Libraries
 License:        zlib
 Requires:       liboz = %{version}
 
 %description -n liboz-devel
-This package contains header files for OpenZone Core, Dynamics and Engine
-Libraries.
+This package contains header files for OpenZone ozCore, ozDynamics, ozEngine and
+ozFactory libraries.
 
 %package data
 Summary:        OpenZone game data
@@ -106,6 +104,7 @@ install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
 %{_libdir}/libozCore.so*
 %{_libdir}/libozDynamics.so*
 %{_libdir}/libozEngine.so*
+%{_libdir}/libozFactory.so*
 %doc src/ozCore/COPYING
 
 %files -n liboz-devel
@@ -113,9 +112,11 @@ install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
 %{_libdir}/pkgconfig/ozCore.pc
 %{_libdir}/pkgconfig/ozDynamics.pc
 %{_libdir}/pkgconfig/ozEngine.pc
+%{_libdir}/pkgconfig/ozFactory.pc
 %{_includedir}/ozCore
 %{_includedir}/ozDynamics
 %{_includedir}/ozEngine
+%{_includedir}/ozFactory
 %doc src/ozCore/COPYING
 
 %files data

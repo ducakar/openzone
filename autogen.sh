@@ -10,7 +10,9 @@
 #
 
 version=0.3.81
-components=( ozCore ozDynamics ozEngine common matrix nirvana modules client builder unittest )
+components=( ozCore ozDynamics ozEngine ozFactory
+             common matrix nirvana modules client builder
+             unittest )
 
 # Generate CMakeLists.txt files.
 for component in ${components[@]}; do
