@@ -24,7 +24,7 @@ platforms=(
 #   FreeBSD-i686-Clang
 #   FreeBSD-i686-GCC
   Windows-i686
-#   NaCl-x86_64
+  NaCl-x86_64
 #   NaCl-i686
 #   NaCl-ARM
 #   PNaCl

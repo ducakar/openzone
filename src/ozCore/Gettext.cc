@@ -34,9 +34,9 @@ static const int  MAX_MESSAGES  = 1 << 16;
 
 struct Gettext::Message
 {
-  const char* original;
-  const char* translation;
-  Message*    next;
+  int      original;
+  int      translation;
+  Message* next;
 };
 
 Gettext::Gettext() :
@@ -55,12 +55,13 @@ Gettext::~Gettext()
 }
 
 Gettext::Gettext( Gettext&& gt ) :
-  table( gt.table ), messages( gt.messages ), strings( gt.strings ), nMessages( gt.nMessages ),
-  stringsSize( gt.stringsSize )
+  table( gt.table ), messages( gt.messages ), strings( gt.strings ), nBuckets( gt.nBuckets ),
+  nMessages( gt.nMessages ), stringsSize( gt.stringsSize )
 {
   gt.table       = nullptr;
   gt.messages    = nullptr;
   gt.strings     = nullptr;
+  gt.nBuckets    = 0;
   gt.nMessages   = 0;
   gt.stringsSize = 0;
 }
@@ -76,12 +77,14 @@ Gettext& Gettext::operator = ( Gettext&& gt )
   table       = gt.table;
   messages    = gt.messages;
   strings     = gt.strings;
+  nBuckets    = gt.nBuckets;
   nMessages   = gt.nMessages;
   stringsSize = gt.stringsSize;
 
   gt.table       = nullptr;
   gt.messages    = nullptr;
   gt.strings     = nullptr;
+  gt.nBuckets    = 0;
   gt.nMessages   = 0;
   gt.stringsSize = 0;
 
@@ -94,10 +97,10 @@ bool Gettext::exists( const char* message ) const
     return false;
   }
 
-  uint index = uint( hash( message ) ) % uint( nMessages );
+  uint index = uint( hash( message ) ) % uint( nBuckets );
 
   for( const Message* m = table[index]; m != nullptr; m = m->next ) {
-    if( String::equals( m->original, message ) ) {
+    if( String::equals( strings + m->original, message ) ) {
       return true;
     }
   }
@@ -110,11 +113,11 @@ const char* Gettext::get( const char* message ) const
     return message;
   }
 
-  uint index = uint( hash( message ) ) % uint( nMessages );
+  uint index = uint( hash( message ) ) % uint( nBuckets );
 
   for( const Message* m = table[index]; m != nullptr; m = m->next ) {
-    if( String::equals( m->original, message ) ) {
-      return m->translation;
+    if( String::equals( strings + m->original, message ) ) {
+      return strings + m->translation;
     }
   }
   return message;
@@ -142,8 +145,8 @@ bool Gettext::import( const File& file )
 
   istream.readInt();
   int nNewMessages = istream.readInt() - 1;
-  if( nNewMessages < 0 || nNewMessages > MAX_MESSAGES ) {
-    return false;
+  if( nNewMessages <= 0 || nNewMessages > MAX_MESSAGES ) {
+    return nNewMessages == 0;
   }
 
   const char* originals    = istream.begin() + istream.readInt() + sizeof( int[2] );
@@ -177,7 +180,7 @@ bool Gettext::import( const File& file )
     int size   = istream.readInt() + 1;
     int offset = istream.readInt();
 
-    messages[nMessages + i].original = stringsPos;
+    messages[nMessages + i].original = int( stringsPos - strings );
 
     mCopy( stringsPos, istream.begin() + offset, size_t( size ) );
     stringsPos += size;
@@ -187,7 +190,7 @@ bool Gettext::import( const File& file )
     size   = istream.readInt() + 1;
     offset = istream.readInt();
 
-    messages[nMessages + i].translation = stringsPos;
+    messages[nMessages + i].translation = int( stringsPos - strings );
 
     mCopy( stringsPos, istream.begin() + offset, size_t( size ) );
     stringsPos += size;
@@ -197,11 +200,13 @@ bool Gettext::import( const File& file )
   stringsSize += newStringsSize;
 
   // Rebuild hashtable.
+  nBuckets = ( 4 * nMessages ) / 3;
+
   delete[] table;
-  table = new Message*[nMessages] {};
+  table = new Message*[nBuckets] {};
 
   for( int i = 0; i < nMessages; ++i ) {
-    uint index = uint( hash( messages[i].original ) ) % uint( nMessages );
+    uint index = uint( hash( strings + messages[i].original ) ) % uint( nBuckets );
 
     messages[i].next = table[index];
     table[index] = &messages[i];
@@ -219,6 +224,7 @@ void Gettext::clear()
   table       = nullptr;
   messages    = nullptr;
   strings     = nullptr;
+  nBuckets    = 0;
   nMessages   = 0;
   stringsSize = 0;
 }

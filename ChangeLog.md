@@ -25,6 +25,7 @@
     * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader, Vorbis streamer
     * Window class based on client::Window
     * Pepper class based on client::NaClPlatform
+    * Shader class
 - matrix
     * melee attack
 - ui

@@ -33,6 +33,7 @@
 
 DISABLED
 *.pot
+*.mo
 *.png
 *.bmp
 

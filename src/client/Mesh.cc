@@ -70,9 +70,9 @@ int        Mesh::vertexAnimBufferLength = 0;
 void Mesh::animate( const Instance* instance )
 {
   if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE3 );
+    glActiveTexture( GL_TEXTURE2 );
     glBindTexture( GL_TEXTURE_2D, positionsTexId );
-    glActiveTexture( GL_TEXTURE4 );
+    glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, normalsTexId );
 
     glUniform3f( uniform.meshAnimation,
@@ -154,8 +154,6 @@ void Mesh::draw( const Instance* instance, int mask )
       glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, part.texture.masks );
-      glActiveTexture( GL_TEXTURE2 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( nullptr ) + part.firstIndex );
@@ -200,7 +198,7 @@ void Mesh::drawScheduled( int mask )
     }
   }
 
-  for( int i = 4; i >= 0; --i ) {
+  for( int i = 3; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
@@ -254,8 +252,6 @@ void Mesh::draw( int mask ) const
       glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, part.texture.masks );
-      glActiveTexture( GL_TEXTURE2 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
       glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, tf.colour );
 

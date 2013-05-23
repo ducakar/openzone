@@ -111,7 +111,7 @@ void Transform::setColour( float r, float g, float b, float a ) const
 
 Transform tf;
 
-const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3, 4, 5 };
+const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3 };
 char      Shader::logBuffer[LOG_BUFFER_SIZE];
 String    Shader::defines;
 
@@ -340,7 +340,7 @@ void Shader::init()
 
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
-  for( int i = 2; i >= 0; --i ) {
+  for( int i = 3; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }

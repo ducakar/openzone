@@ -49,6 +49,7 @@ class Gettext
     Message** table;       ///< Message hashtable.
     Message*  messages;    ///< Messages.
     char*     strings;     ///< Strings buffer.
+    int       nBuckets;    ///< Number of hashtable buckets.
     int       nMessages;   ///< Size of hashtable.
     int       stringsSize; ///< Size of `strings` array.
 

@@ -39,10 +39,10 @@ void main()
 {
 #ifdef OZ_VERTEX_TEXTURE
 
-  vec4 firstPosition  = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[0] ) );
-  vec4 secondPosition = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[1] ) );
-  vec4 firstNormal    = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MeshAnimation[0] ) );
-  vec4 secondNormal   = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MeshAnimation[1] ) );
+  vec4 firstPosition  = texture2D( oz_Textures[2], vec2( inPosition.x, oz_MeshAnimation[0] ) );
+  vec4 secondPosition = texture2D( oz_Textures[2], vec2( inPosition.x, oz_MeshAnimation[1] ) );
+  vec4 firstNormal    = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[0] ) );
+  vec4 secondNormal   = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[1] ) );
   vec4 localPosition  = vec4( mix( firstPosition, secondPosition, oz_MeshAnimation[2] ).xyz, 1.0 );
   vec4 localNormal    = vec4( mix( firstNormal, secondNormal, oz_MeshAnimation[2] ).xyz, 0.0 );
 

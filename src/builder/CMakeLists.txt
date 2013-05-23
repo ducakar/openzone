@@ -14,7 +14,6 @@ add_library( builder STATIC
   Compiler.hh
   Context.hh
   FragPool.hh
-  Lingua.hh
   MD2.hh
   MD3.hh
   OBJ.hh
@@ -28,7 +27,6 @@ add_library( builder STATIC
   Compiler.cc
   Context.cc
   FragPool.cc
-  Lingua.cc
   MD2.cc
   MD3.cc
   OBJ.cc

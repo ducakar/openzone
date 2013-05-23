@@ -616,7 +616,7 @@ void Lua::destroy()
   ms.objects.deallocate();
 
   cs.mission = "";
-  cs.missionLingua.destroy();
+  cs.missionLingua.clear();
 
   freeCommon();
 

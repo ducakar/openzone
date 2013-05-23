@@ -208,7 +208,7 @@ MissionMenu::MissionMenu() :
     missions.last().description = lingua.get( descriptionConfig["description"].get( "" ) );
     missions.last().image.load( missionDir->path() + "/description.ozImage" );
 
-    lingua.destroy();
+    lingua.clear();
   }
 
   scrollUpTex.load( "@ui/icon/scrollUp.ozIcon" );

@@ -73,6 +73,13 @@ class File
     long64 fileTime; ///< Modification or creation time, what is newer.
     char*  data;     ///< Mapped memory.
 
+  private:
+
+    /**
+     * Internal constructor.
+     */
+    File( const String& path, Type type, int size, long64 time );
+
   public:
 
     /**
@@ -247,25 +254,7 @@ class File
     }
 
     /**
-     * %Map file into memory for reading.
-     *
-     * If the back-end doesn't support mapping files to memory (currently NaCl and VFS), this
-     * function merely copies file contents into an internal buffer.
-     */
-    bool map();
-
-    /**
-     * Unmap mapped file.
-     */
-    void unmap();
-
-    /**
-     * Get `InputStream` for currently mapped file.
-     */
-    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
-
-    /**
-     * Read at most `size` bytes from file and update `size` to the number of bytes read.
+     * Read at most `*size` bytes from file and update `*size` to the number of bytes read.
      *
      * @return true iff read operation succeeded (it is not necessary the whole file was read).
      */
@@ -323,6 +312,24 @@ class File
      * @li Write operation is not possible while the file is mapped.
      */
     bool writeString( const String& s ) const;
+
+    /**
+     * %Map file into memory for reading.
+     *
+     * If the back-end doesn't support mapping files to memory (currently NaCl and VFS), this
+     * function merely copies file contents into an internal buffer.
+     */
+    bool map();
+
+    /**
+     * Unmap mapped file.
+     */
+    void unmap();
+
+    /**
+     * Get `InputStream` for currently mapped file.
+     */
+    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
     /**
      * Generate a list of files in directory.

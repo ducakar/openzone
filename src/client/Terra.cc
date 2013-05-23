@@ -69,8 +69,6 @@ void Terra::draw()
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, detailTexId );
   glActiveTexture( GL_TEXTURE1 );
-  glBindTexture( GL_TEXTURE_2D, detailTexId );
-  glActiveTexture( GL_TEXTURE2 );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
 
   OZ_GL_CHECK_ERROR();
@@ -90,7 +88,7 @@ void Terra::draw()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  for( int i = 2; i >= 0; --i ) {
+  for( int i = 3; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
@@ -142,7 +140,7 @@ void Terra::drawWater()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  for( int i = 1; i >= 0; --i ) {
+  for( int i = 3; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }

@@ -194,10 +194,10 @@ class OutputStream
      */
     InputStream inputStream() const
     {
-      InputStream is( streamBegin, streamEnd, order );
+      InputStream istream( streamBegin, streamEnd, order );
 
-      is.set( streamPos );
-      return is;
+      istream.set( streamPos );
+      return istream;
     }
 
     /**

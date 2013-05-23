@@ -24,7 +24,6 @@
 #include <stable.hh>
 #include <builder/Builder.hh>
 
-#include <builder/Lingua.hh>
 #include <builder/Context.hh>
 #include <builder/Compiler.hh>
 #include <builder/UI.hh>
@@ -669,7 +668,7 @@ void Builder::buildMissions()
     Log::printEnd( " OK" );
   }
 
-  lingua.buildMissions();
+  copyFiles( "@mission", "mission", "mo", true );
 
   Log::unindent();
   Log::println( "}" );
@@ -906,7 +905,7 @@ int Builder::main( int argc, char** argv )
   copyFiles( "@credits", "credits", "txt", false );
 
   if( doCat ) {
-    lingua.build();
+    copyFiles( "@lingua", "lingua", "mo", true );
   }
   if( doUI ) {
     UI::buildIcons();

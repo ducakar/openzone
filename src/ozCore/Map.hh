@@ -369,36 +369,40 @@ class Map
     /**
      * True iff the given key is found in the map.
      */
-    bool contains( const Key& key ) const
+    template <typename Key_ = Key>
+    bool contains( const Key_& key ) const
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, key, count );
       return i >= 0 && data[i].key == key;
     }
 
     /**
      * Index of the element with the given value or -1 if not found.
      */
-    int index( const Key& key ) const
+    template <typename Key_ = Key>
+    int index( const Key_& key ) const
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, key, count );
       return i >= 0 && data[i].key == key ? i : -1;
     }
 
     /**
      * Constant pointer to the given key's value or `nullptr` if not found.
      */
-    const Value* find( const Key& key ) const
+    template <typename Key_ = Key>
+    const Value* find( const Key_& key ) const
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, key, count );
       return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
     /**
      * Pointer to the given key's value or `nullptr` if not found.
      */
-    Value* find( const Key& key )
+    template <typename Key_ = Key>
+    Value* find( const Key_& key )
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, key, count );
       return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 

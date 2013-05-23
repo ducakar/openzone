@@ -29,7 +29,7 @@
 #include "GL.hh"
 
 #define OZ_REGISTER_UNIFORM( uniformVar, uniformName ) \
-  programs[id].uniform.uniformVar = glGetUniformLocation( programs[id].program, uniformName )
+  programs[id].uniforms.uniformVar = glGetUniformLocation( programs[id].program, uniformName )
 
 #define OZ_REGISTER_ATTRIBUTE( location, name ) \
   glBindAttribLocation( programs[id].program, location, name )
@@ -37,12 +37,35 @@
 namespace oz
 {
 
+struct Uniforms
+{
+  int projModelTransform;
+  int modelTransform;
+  int boneTransforms;
+  int meshAnimation;
+
+  int colourTransform;
+  int textures;
+
+  int caelumLight_dir;
+  int caelumLight_diffuse;
+  int caelumLight_ambient;
+  int cameraPosition;
+
+  int fog_dist;
+  int fog_colour;
+
+  int starsColour;
+  int waveBias;
+  int wind;
+};
+
 struct Program
 {
-  GLuint  vertShader;
-  GLuint  fragShader;
-  GLuint  program;
-  Uniform uniform;
+  GLuint   vertShader;
+  GLuint   fragShader;
+  GLuint   program;
+  Uniforms uniforms;
 };
 
 static Map<String, uint> vertShaders;
@@ -118,7 +141,7 @@ void Transform::setColour( float r, float g, float b, float a ) const
 
 Transform tf;
 #endif
-const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3, 4, 5 };
+const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3 };
 char      Shader::logBuffer[LOG_BUFFER_SIZE];
 String    Shader::defines;
 #if 0
@@ -127,21 +150,18 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
 {}
 #endif
 
-static Buffer shaderPrologue;
-
-bool Shader::readFile( const File& file, OutputStream* ostream, List<String>* fileNames,
-                       List<int>* fileLengths )
+bool Shader::readFile( const File& file, OutputStream* ostream, List<int>* fileLengths )
 {
   Buffer buffer = file.read();
   if( buffer.isEmpty() ) {
     return false;
   }
 
-  InputStream is    = buffer.inputStream();
-  int         begin = ostream->tell();
+  InputStream istream = buffer.inputStream();
+  int         begin   = ostream->tell();
 
-  while( is.isAvailable() ) {
-    String line = is.readLine();
+  while( istream.isAvailable() ) {
+    String line = istream.readLine();
 
     if( line.beginsWith( "#include" ) ) {
       int startQuote = line.index( '"' );
@@ -150,7 +170,7 @@ bool Shader::readFile( const File& file, OutputStream* ostream, List<String>* fi
       if( startQuote > 0 && startQuote < endQuote ) {
         File includeFile = file.directory() + "/" + line.substring( startQuote + 1, endQuote );
 
-        if( !readFile( includeFile, ostream, fileNames, fileLengths ) ) {
+        if( !readFile( includeFile, ostream, fileLengths ) ) {
           return false;
         }
       }
@@ -160,10 +180,7 @@ bool Shader::readFile( const File& file, OutputStream* ostream, List<String>* fi
     }
   }
 
-  if( !fileNames->contains( file.path() ) ) {
-    fileNames->add( file.path() );
-    fileLengths->add( ostream->tell() - begin );
-  }
+  fileLengths->add( ostream->tell() - begin );
   return true;
 }
 
@@ -173,15 +190,12 @@ bool Shader::loadShader( const File& file, GLenum type )
   List<int>    fileOffsets;
   OutputStream ostream( 0 );
 
-  fileNames.add();
-  ostream.writeChars( shaderPrologue.begin(), shaderPrologue.length() );
-
-  if( !readFile( file, &ostream, &fileNames, &fileOffsets ) ) {
+  if( !readFile( file, &ostream, &fileOffsets ) ) {
     return false;
   }
 
-  const char** fileContents = new const char*[ fileNames.length() ];
-  int          fileLengths  = new int[ fileNames.length() ];
+  const char** fileContents = new const char*[ fileOffsets.length() ];
+  int*         fileLengths  = new int[ fileOffsets.length() ];
   int          prevOffset   = 0;
 
   for( int i = 0; i < fileOffsets.length(); ++i ) {
@@ -189,9 +203,6 @@ bool Shader::loadShader( const File& file, GLenum type )
     fileLengths[i]  = i == fileOffsets.length() - 1 ?  :
                                                       fileOffsets[i + 1] - fileOffsets[i];
   }
-
-  hard_assert( fileNames.length() == fileContents.length() &&
-               fileNames.length() == fileLengths.length() );
 
   GLuint id = glCreateShader( type );
   glShaderSource( id, fileNames.length(), fileContents.fi, fileLengths.begin() );
@@ -313,7 +324,7 @@ void Shader::loadProgram( const char* name )
 Shader::Shader() :
   mode( UI ), plain( -1 ), defaultMasks( 0 )
 {}
-#if 0
+
 void Shader::program( int id )
 {
   if( id == activeProgram ) {
@@ -323,7 +334,6 @@ void Shader::program( int id )
   activeProgram = id;
 
   glUseProgram( programs[id].program );
-  uniform = programs[id].uniform;
 
   OZ_GL_CHECK_ERROR();
 }
@@ -344,6 +354,19 @@ void Shader::setCaelumLight( const Vec3& dir, const Vec4& colour )
   caelumLight.diffuse = colour;
 }
 
+void Shader::setColour( const Mat44& colourTransform )
+{
+  glUniformMatrix4fv( programs[activeProgram].uniforms.colourTransform, 1, false, colourTransform );
+}
+
+void Shader::setColour( const Vec4& colour )
+{
+  Mat44 colourTransform = Mat44::scaling( colour );
+
+  glUniformMatrix4fv( programs[activeProgram].uniforms.colourTransform, 1, false, colourTransform );
+}
+
+#if 0
 void Shader::updateLights()
 {
   glUniform3fv( uniform.caelumLight_dir,     1, caelumLight.dir );

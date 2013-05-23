@@ -33,29 +33,6 @@
 namespace oz
 {
 
-struct Uniform
-{
-  int projModelTransform;
-  int modelTransform;
-  int boneTransforms;
-  int meshAnimation;
-
-  int colourTransform;
-  int textures;
-
-  int caelumLight_dir;
-  int caelumLight_diffuse;
-  int caelumLight_ambient;
-  int cameraPosition;
-
-  int fog_dist;
-  int fog_colour;
-
-  int starsColour;
-  int waveBias;
-  int wind;
-};
-
 class Transform
 {
   friend class Shader;
@@ -115,10 +92,7 @@ class Shader
     {
       POSITION,
       TEXCOORD,
-      NORMAL,
-      TANGENT,
-      BINORMAL,
-      COLOUR
+      NORMAL
     };
 
   public:
@@ -151,8 +125,7 @@ class Shader
     float             lightingDistance;
     CaelumLight       caelumLight;
 
-    static bool readFile( const File& file, OutputStream* ostream, List<String>* fileNames,
-                          List<int>* fileLengths );
+    static bool readFile( const File& file, OutputStream* ostream, List<int>* fileLengths );
     static bool loadShader( const File& file, GLenum type );
     void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
     void loadProgram( const char* name );
@@ -187,6 +160,9 @@ class Shader
     void setLightingDistance( float distance );
     void setAmbientLight( const Vec4& colour );
     void setCaelumLight( const Vec3& dir, const Vec4& colour );
+
+    void setColour( const Mat44& colourTransform );
+    void setColour( const Vec4& colour );
 
     void updateLights();
 

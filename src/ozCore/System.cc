@@ -112,8 +112,6 @@ struct SampleInfo
   int        offset;
 };
 
-static pp::Core* core = nullptr;
-
 #elif defined( _WIN32 )
 
 static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_PREFERRED_RATE );
@@ -257,25 +255,13 @@ static void* bellMain( void* )
 
 #elif defined( __native_client__ )
 
-static void stopBellCallback( void* info_, int )
-{
-  SampleInfo* info = static_cast<SampleInfo*>( info_ );
-
-  info->audio->StopPlayback();
-  info->audio->~Audio();
-  free( info->audio );
-  free( info );
-
-  __sync_lock_release( &bellLock );
-}
-
-static void playBellCallback( void* buffer, uint, void* info_ )
+static void bellCallback( void* buffer, uint, void* info_ )
 {
   SampleInfo* info    = static_cast<SampleInfo*>( info_ );
   short*      samples = static_cast<short*>( buffer );
 
   if( info->offset >= info->end ) {
-    core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
+    __sync_lock_release( &bellLock );
   }
   else {
     genBellSamples( samples, info->nSamples, info->rate, info->offset,
@@ -284,29 +270,28 @@ static void playBellCallback( void* buffer, uint, void* info_ )
   }
 }
 
-static void initBellCallback( void*, int )
+static void* bellMain( void* )
 {
-  SampleInfo* info = static_cast<SampleInfo*>( malloc( sizeof( SampleInfo ) ) );
-  if( info == nullptr ) {
-    __sync_lock_release( &bellLock );
-    return;
+  if( System::instance == nullptr ) {
+    return nullptr;
   }
 
-  void* audioPtr = malloc( sizeof( pp::Audio ) );
-  if( audioPtr == nullptr ) {
+  SampleInfo* info  = static_cast<SampleInfo*>( malloc( sizeof( SampleInfo ) ) );
+  pp::Audio*  audio = static_cast<pp::Audio*>( malloc( sizeof( pp::Audio ) ) );
+
+  if( info == nullptr || audio == nullptr ) {
+    free( audio );
     free( info );
 
     __sync_lock_release( &bellLock );
-    return;
+    return nullptr;
   }
 
   PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( System::instance );
   uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
-
   pp::AudioConfig config( System::instance, rate, nFrameSamples );
-  pp::Audio* audio = new( audioPtr ) pp::Audio( System::instance, config, playBellCallback, info );
 
-  info->audio         = audio;
+  info->audio         = new( audio ) pp::Audio( System::instance, config, bellCallback, info );
   info->rate          = rate;
   info->nFrameSamples = int( nFrameSamples );
   info->nSamples      = Math::lround( BELL_TIME * float( rate ) );
@@ -319,7 +304,18 @@ static void initBellCallback( void*, int )
     free( info );
 
     __sync_lock_release( &bellLock );
+    return nullptr;
   }
+
+  while( bellLock != 0 ) {
+    nanosleep( &TIMESPEC_10MS, nullptr );
+  }
+
+  info->audio->StopPlayback();
+  info->audio->~Audio();
+  free( info->audio );
+  free( info );
+  return nullptr;
 }
 
 #elif defined( _WIN32 )
@@ -481,7 +477,7 @@ static void* bellMain( void* )
 static void waitBell()
 {
 #if defined( __native_client__ )
-  if( core == nullptr || core->IsMainThread() ) {
+  if( pp::Module::Get()->core()->IsMainThread() ) {
     return;
   }
 #endif
@@ -572,14 +568,7 @@ bool System::isInstrumented()
 
 void System::bell()
 {
-#if defined( __native_client__ )
-
-  if( instance != nullptr && __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
-    core = pp::Module::Get()->core();
-    core->CallOnMainThread( 0, pp::CompletionCallback( initBellCallback, nullptr ) );
-  }
-
-#elif defined( _WIN32 )
+#ifdef _WIN32
 
   if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );

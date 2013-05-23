@@ -31,15 +31,6 @@ namespace common
 
 String Lingua::language;
 
-Lingua::Lingua() :
-  messages( nullptr ), nMessages( 0 )
-{}
-
-Lingua::~Lingua()
-{
-  destroy();
-}
-
 String Lingua::detectLanguage( const char* language_ )
 {
   String lang = language_;
@@ -83,145 +74,45 @@ String Lingua::detectLanguage( const char* language_ )
   return lang;
 }
 
-const char* Lingua::get( const char* message ) const
-{
-  if( nMessages == 0 || String::isEmpty( message ) ) {
-    return message;
-  }
-
-  uint index = uint( hash( message ) ) % uint( nMessages );
-  Message* m = messages[index];
-
-  while( m != nullptr ) {
-    if( m->original.equals( message ) ) {
-      return m->translation;
-    }
-
-    m = m->next;
-  }
-
-  return message;
-}
-
 bool Lingua::initMission( const char* mission )
 {
-  hard_assert( messages == nullptr );
+  clear();
 
-  File file( String::str( "@mission/%s/lingua/%s.ozCat", mission, language.cstr() ) );
+  File file( String::str( "@mission/%s/lingua/%s.mo", mission, language.cstr() ) );
+  return catalogue.import( file );
+}
 
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
-    return false;
-  }
-
-  InputStream is = buffer.inputStream();
-
-  int length = is.readInt();
-
-  nMessages = ( 4 * length ) / 3;
-  messages = new Message*[nMessages] {};
-
-  for( int i = 0; i < length; ++i ) {
-    uint index = uint( is.readInt() ) % uint( nMessages );
-
-    Message* msg = new( msgPool ) Message();
-
-    msg->original    = is.readString();
-    msg->translation = is.readString();
-    msg->next        = messages[index];
-
-    messages[index] = msg;
-  }
-
-  return true;
+void Lingua::clear()
+{
+  catalogue.clear();
 }
 
 bool Lingua::init( const char* language_ )
 {
-  hard_assert( messages == nullptr );
-
   language = language_;
+  catalogue.clear();
 
   File dir( "@lingua/" + language );
   if( dir.type() == File::MISSING ) {
-    OZ_ERROR( "Invalid locale '%s', does not match any subdirectory in lingua/", language.cstr() );
+    return false;
   }
 
   DArray<File> files = dir.ls();
 
   foreach( file, files.iter() ) {
-    if( !file->hasExtension( "ozCat" ) ) {
+    if( !file->hasExtension( "mo" ) ) {
       continue;
     }
 
-    Buffer buffer = file->read();
-    if( buffer.isEmpty() ) {
-      OZ_ERROR( "Cannot read catalogue '%s'", file->path().cstr() );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    nMessages += is.readInt();
+    catalogue.import( *file );
   }
-
-  if( nMessages == 0 ) {
-    return false;
-  }
-
-  nMessages = ( 4 * nMessages ) / 3;
-  messages = new Message*[nMessages];
-  aFill<Message*, Message*>( messages, nullptr, nMessages );
-
-  foreach( file, files.iter() ) {
-    if( !file->hasExtension( "ozCat" ) ) {
-      continue;
-    }
-
-    Buffer buffer = file->read();
-    if( buffer.isEmpty() ) {
-      OZ_ERROR( "Cannot read catalogue '%s'", file->path().cstr() );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    int length = is.readInt();
-
-    for( int i = 0; i < length; ++i ) {
-      uint index = uint( is.readInt() ) % uint( nMessages );
-
-      Message* msg = new( msgPool ) Message();
-
-      msg->original    = is.readString();
-      msg->translation = is.readString();
-      msg->next        = messages[index];
-
-      messages[index] = msg;
-    }
-  }
-
   return true;
 }
 
 void Lingua::destroy()
 {
-  for( int i = 0; i < nMessages; ++i ) {
-    Message* chain = messages[i];
-
-    while( chain != nullptr ) {
-      Message* next = chain->next;
-
-      chain->~Message();
-      msgPool.deallocate( chain );
-
-      chain = next;
-    }
-  }
-
-  delete[] messages;
-  msgPool.free();
-
-  messages  = nullptr;
-  nMessages = 0;
+  catalogue.clear();
+  language = "";
 }
 
 Lingua lingua;

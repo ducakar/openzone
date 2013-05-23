@@ -419,7 +419,8 @@ class HashMap
     /**
      * True iff the given key is found in the hashtable.
      */
-    bool contains( const Key& key ) const
+    template <typename Key_ = Key>
+    bool contains( const Key_& key ) const
     {
       uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
@@ -437,7 +438,8 @@ class HashMap
     /**
      * If the key exists, return constant pointer to its value, otherwise return `nullptr`.
      */
-    const Value* find( const Key& key ) const
+    template <typename Key_ = Key>
+    const Value* find( const Key_& key ) const
     {
       uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
@@ -455,7 +457,8 @@ class HashMap
     /**
      * If the key exists, return pointer to its value, otherwise return `nullptr`.
      */
-    Value* find( const Key& key )
+    template <typename Key_ = Key>
+    Value* find( const Key_& key )
     {
       uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];

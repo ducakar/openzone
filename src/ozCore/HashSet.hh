@@ -417,7 +417,8 @@ class HashSet
     /**
      * True iff the given key is found in the hashtable.
      */
-    bool contains( const Key& key ) const
+    template <typename Key_ = Key>
+    bool contains( const Key_& key ) const
     {
       uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];

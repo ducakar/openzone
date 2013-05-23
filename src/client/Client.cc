@@ -243,14 +243,10 @@ int Client::init( int argc, char** argv )
   File::initVFS();
   initFlags |= INIT_PHYSFS;
 
-  OZ_MAIN_CALL( this, {
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) == 0 ) {
-      _this->initFlags |= INIT_SDL;
-    }
-  } )
-  if( !( initFlags & INIT_SDL ) ) {
+  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
     OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
   }
+  initFlags |= INIT_SDL;
 
   if( TTF_Init() < 0 ) {
     OZ_ERROR( "Failed to initialise SDL_ttf" );

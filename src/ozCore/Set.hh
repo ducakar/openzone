@@ -346,19 +346,21 @@ class Set
     /**
      * True iff the given key is found in the set.
      */
-    bool contains( const Elem& elem ) const
+    template <typename Key = Elem>
+    bool contains( const Key& key ) const
     {
-      int i = aBisection<Elem, Elem>( data, elem, count );
-      return i >= 0 && data[i] == elem;
+      int i = aBisection<Elem, Key>( data, key, count );
+      return i >= 0 && data[i] == key;
     }
 
     /**
      * Index of the element with the given value or -1 if not found.
      */
-    int index( const Elem& elem ) const
+    template <typename Key = Elem>
+    int index( const Key& key ) const
     {
-      int i = aBisection<Elem, Elem>( data, elem, count );
-      return i >= 0 && data[i] == elem ? i : -1;
+      int i = aBisection<Elem, Key>( data, key, count );
+      return i >= 0 && data[i] == key ? i : -1;
     }
 
     /**

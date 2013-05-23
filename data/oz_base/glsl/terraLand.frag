@@ -41,7 +41,7 @@ void main()
 #endif
 
   vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
-  vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
+  vec4 mapSample    = texture2D( oz_Textures[1], exTexCoord );
   vec4 diffuse      = skyLightColour( normal );
   vec4 fragColour   = oz_ColourTransform * ( detailSample * mapSample * diffuse );
 

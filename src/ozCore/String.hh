@@ -47,7 +47,7 @@ class String
   private:
 
     /// Size of static buffer.
-    static const int BUFFER_SIZE = 36;
+    static const int BUFFER_SIZE = 48 - sizeof( char* ) - sizeof( int );
 
     char* buffer;                  ///< Pointer to the current buffer.
     int   count;                   ///< Length in bytes without the terminating null character.
@@ -456,12 +456,12 @@ class String
     /**
      * Create a string representing the given double value.
      *
-     * Number is formatted the same as in JSON or %.9g in `printf()` (using C locale).
+     * Number is formatted the same as `%.9g` in `printf()` using C locale.
      *
      * Converting a 6-digit decimal representation to a single-precision float value and back to
      * decimal representation should be an identity. The same for converting a float to a 9-digit
-     * decimal representation and back to float.
-     * For double-precision values those digit counts are 15 and 17 respectively.
+     * decimal representation and back to a float.
+     * For double-precision values these digit counts are 15 and 17 respectively.
      *
      * @param d number.
      * @param nDigits number of digits to show.

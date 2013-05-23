@@ -50,23 +50,9 @@ class Lingua
 {
   private:
 
-    /**
-     * Internal structure for message entry in a hashtable.
-     */
-    struct Message
-    {
-      String   original;    ///< Original message that appears in the source code or resource files.
-      String   translation; ///< Translated message from the catalogue.
-      Message* next;        ///< Next entry in the hashtable linked list.
-
-      OZ_PLACEMENT_POOL_ALLOC( Message, 256 )
-    };
-
     static String language;  ///< Language code (should match subdirectory in lingua).
 
-    Message**     messages;  ///< Message hashtable.
-    int           nMessages; ///< Size of hastable.
-    Pool<Message> msgPool;   ///< Memory pool for messages.
+    Gettext catalogue;       ///< Gettext catalogue.
 
   public:
 
@@ -85,29 +71,12 @@ class Lingua
     static String detectLanguage( const char* language );
 
     /**
-     * Default constructor, creates uninitialised instance.
-     */
-    explicit Lingua();
-
-    /**
-     * Destructor.
-     */
-    ~Lingua();
-
-    /**
-     * No copying.
-     */
-    Lingua( const Lingua& ) = delete;
-
-    /**
-     * No copying.
-     */
-    Lingua& operator = ( const Lingua& ) = delete;
-
-    /**
      * Obtain translation from the loaded catalogue.
      */
-    const char* get( const char* message ) const;
+    const char* get( const char* message ) const
+    {
+      return catalogue.get( message );
+    }
 
     /**
      * Initialise per-mission Lingua instance.
@@ -116,6 +85,11 @@ class Lingua
      * contains translations of strings that appear inside mission scripts.
      */
     bool initMission( const char* mission );
+
+    /**
+     * Clear per-mission Lingua instance.
+     */
+    void clear();
 
     /**
      * Initialise global Lingua instance.
