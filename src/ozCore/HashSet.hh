@@ -175,7 +175,7 @@ class HashSet
     }
 
     /**
-     * Allocate and make a copy of the given chain.
+     * Allocate and make a copy of a given chain.
      */
     Elem* cloneChain( const Elem* chain )
     {
@@ -189,7 +189,7 @@ class HashSet
     }
 
     /**
-     * Delete all elements in the given chain.
+     * Delete all elements in a given chain.
      */
     void clearChain( Elem* chain )
     {
@@ -204,7 +204,7 @@ class HashSet
     }
 
     /**
-     * Delete all elements and referenced objects in the given chain.
+     * Delete all elements and referenced objects in a given chain.
      */
     void freeChain( Elem* chain )
     {
@@ -415,7 +415,7 @@ class HashSet
     }
 
     /**
-     * True iff the given key is found in the hashtable.
+     * True iff a given key is found in the hashtable.
      */
     template <typename Key_ = Key>
     bool contains( const Key_& key ) const
@@ -477,19 +477,19 @@ class HashSet
     }
 
     /**
-     * Remove element with the given key.
+     * Remove element with a given key.
      *
      * @return True iff the key was found (and removed).
      */
     bool exclude( const Key& key )
     {
-      uint   i    = uint( hash( key ) ) % uint( SIZE );
-      Elem*  e    = data[i];
-      Elem** prev = &data[i];
+      uint   i     = uint( hash( key ) ) % uint( SIZE );
+      Elem*  e     = data[i];
+      Elem** pPrev = &data[i];
 
       while( e != nullptr ) {
         if( e->key == key ) {
-          *prev = e->next;
+          *pPrev = e->next;
 
           e->~Elem();
           pool.deallocate( e );
@@ -497,7 +497,7 @@ class HashSet
           return true;
         }
 
-        prev = &e->next;
+        pPrev = &e->next;
         e = e->next;
       }
       return false;

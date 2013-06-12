@@ -55,7 +55,7 @@ static LuaState ls;
  *
  * @code void ozError( string description ) @endcode
  *
- * Engine is aborted with the given error.
+ * Engine is aborted with a given error.
  */
 static int ozError( lua_State* l )
 {

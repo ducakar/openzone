@@ -64,7 +64,7 @@ class DArray
   public:
 
     /**
-     * Create an array with the given size.
+     * Create an array with a given size.
      */
     explicit DArray( int count_ = 0 ) :
       data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
@@ -304,7 +304,7 @@ class DArray
     }
 
     /**
-     * True iff the given value is found in the array.
+     * True iff a given value is found in the array.
      */
     bool contains( const Elem& e ) const
     {

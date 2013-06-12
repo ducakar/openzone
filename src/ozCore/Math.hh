@@ -475,7 +475,7 @@ class Math
     }
 
     /**
-     * True iff the given positive integer is a power of 2.
+     * True iff a given positive integer is a power of 2.
      */
     template <typename Value = int>
     OZ_ALWAYS_INLINE

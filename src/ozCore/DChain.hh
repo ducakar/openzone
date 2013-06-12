@@ -95,7 +95,7 @@ class DChain
         {}
 
         /**
-         * Create chain iterator, initially pointing to the given element.
+         * Create chain iterator, initially pointing to a given element.
          */
         OZ_ALWAYS_INLINE
         explicit ChainIterator( IterElem* first ) :
@@ -314,7 +314,7 @@ class DChain
     }
 
     /**
-     * True iff the given element is in the chain.
+     * True iff a given element is in the chain.
      */
     bool has( const Elem* e ) const
     {
@@ -329,7 +329,7 @@ class DChain
     }
 
     /**
-     * True iff an element equal to the given one is in the chain.
+     * True iff an element equal to a given one is in the chain.
      *
      * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
      * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
@@ -411,7 +411,7 @@ class DChain
     }
 
     /**
-     * Unbind the given element from the chain.
+     * Unbind a given element from the chain.
      */
     void erase( Elem* e )
     {

@@ -162,7 +162,7 @@ class GL
      * wrapping are used as default, for non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters
      * and `GL_CLAMP_TO_EDGE` wrapping are used as default.
      *
-     * @return number of mipmaps (including original picture), 0 on an error.
+     * @return number of mipmaps (including the original picture), 0 on an error.
      */
     static int textureDataFromFile( const File& file );
 

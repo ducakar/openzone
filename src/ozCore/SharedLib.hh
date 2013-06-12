@@ -32,14 +32,14 @@
 
 /**
  * @def OZ_DL_DECLARE
- * Declare pointer to function for the given function definition.
+ * Declare pointer to function for a given function definition.
  */
 #define OZ_DL_DECLARE( func ) \
   decltype( ::func )* func
 
 /**
  * @def OZ_DL_DEFINE
- * Define pointer to function (initially `nullptr`) for the given function definition.
+ * Define pointer to function (initially `nullptr`) for a given function definition.
  */
 #define OZ_DL_DEFINE( func ) \
   decltype( ::func )* func = nullptr
@@ -135,7 +135,7 @@ class SharedLib
     Method* get( const char* symbol ) const;
 
     /**
-     * Open a shared library with the given (file) name.
+     * Open a shared library with a given (file) name.
      */
     bool open( const char* name );
 

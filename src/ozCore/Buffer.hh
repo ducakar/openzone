@@ -58,7 +58,7 @@ class Buffer
     explicit Buffer( const char* data, int size );
 
     /**
-     * Create a buffer containing the given string (without the terminating null character).
+     * Create a buffer containing a given string (without the terminating null character).
      */
     explicit Buffer( const String& s );
 

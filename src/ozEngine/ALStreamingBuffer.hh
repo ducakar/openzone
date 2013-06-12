@@ -51,7 +51,7 @@ class ALStreamingBuffer
     explicit ALStreamingBuffer();
 
     /**
-     * Create a new buffer from the given file. Same as the default constructor plus `open()`.
+     * Create a new buffer from a given file. Same as the default constructor plus `open()`.
      */
     explicit ALStreamingBuffer( const File& file );
 
@@ -115,7 +115,7 @@ class ALStreamingBuffer
     ALSource createSource();
 
     /**
-     * Start streaming the given Ogg Vorbis file.
+     * Start streaming a given Ogg Vorbis file.
      */
     bool open( const File& file );
 

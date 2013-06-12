@@ -52,7 +52,7 @@ class AABB
     explicit AABB() = default;
 
     /**
-     * Create `AABB` with the given centre and extents.
+     * Create `AABB` with a given centre and extents.
      */
     OZ_ALWAYS_INLINE
     explicit AABB( const Point& p_, const Vec3& dim_ ) :
@@ -106,7 +106,7 @@ class AABB
     }
 
     /**
-     * True iff the given point is inside this `AABB`.
+     * True iff a given point is inside this `AABB`.
      *
      * @param point point.
      * @param eps margin for which this `AABB` is enlarged (can also be negative).
@@ -121,7 +121,7 @@ class AABB
     }
 
     /**
-     * True iff the given `AABB` is inside this `AABB`.
+     * True iff a given `AABB` is inside this `AABB`.
      *
      * @param a other AABB.
      * @param eps margin for which this `AABB` is enlarged (can also be negative).
@@ -136,7 +136,7 @@ class AABB
     }
 
     /**
-     * True iff the given `AABB` overlaps with this `AABB`.
+     * True iff a given `AABB` overlaps with this `AABB`.
      *
      * @param a other AABB.
      * @param eps margin for which this `AABB` is enlarged (can also be negative).

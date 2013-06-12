@@ -53,7 +53,7 @@ class InputStream
   public:
 
     /**
-     * Create a stream for reading the given memory range.
+     * Create a stream for reading a given memory range.
      */
     explicit InputStream( const char* start = nullptr, const char* end = nullptr,
                           Endian::Order order_ = Endian::NATIVE ) :

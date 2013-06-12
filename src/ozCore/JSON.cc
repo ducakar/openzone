@@ -136,354 +136,338 @@ struct JSON::Parser
     int          oldLine;
     int          oldColumn;
 
-    char readChar();
-    void backChar();
+    OZ_HIDDEN
+    char readChar()
+    {
+      if( !istream->isAvailable() ) {
+        const Position& pos = *this;
+        OZ_PARSE_ERROR( 0, "Unexpected end of file" );
+      }
+
+      oldLine   = line;
+      oldColumn = column;
+
+      char ch = istream->readChar();
+
+      if( ch == '\n' ) {
+        ++line;
+        column = 0;
+      }
+      else {
+        ++column;
+      }
+      return ch;
+    }
+
+    OZ_HIDDEN
+    void backChar()
+    {
+      hard_assert( line != oldLine || column != oldColumn );
+
+      istream->set( istream->pos() - 1 );
+
+      line   = oldLine;
+      column = oldColumn;
+    }
   };
 
   Position pos;
 
-  static void setAccessed( JSON* value );
-  static JSON parse( InputStream* istream, const char* path );
+  OZ_HIDDEN
+  static void setAccessed( JSON* value )
+  {
+    value->wasAccessed = true;
 
-  explicit Parser( InputStream* istream, const char* path );
-
-  char skipBlanks();
-  String parseString();
-  JSON parseValue();
-  JSON parseArray();
-  JSON parseObject();
-  void finish();
-
-};
-
-OZ_HIDDEN
-char JSON::Parser::Position::readChar()
-{
-  if( !istream->isAvailable() ) {
-    const Position& pos = *this;
-    OZ_PARSE_ERROR( 0, "Unexpected end of file" );
-  }
-
-  oldLine   = line;
-  oldColumn = column;
-
-  char ch = istream->readChar();
-
-  if( ch == '\n' ) {
-    ++line;
-    column = 0;
-  }
-  else {
-    ++column;
-  }
-  return ch;
-}
-
-OZ_HIDDEN
-void JSON::Parser::Position::backChar()
-{
-  hard_assert( line != oldLine || column != oldColumn );
-
-  istream->set( istream->pos() - 1 );
-
-  line   = oldLine;
-  column = oldColumn;
-}
-
-OZ_HIDDEN
-void JSON::Parser::setAccessed( JSON* value )
-{
-  value->wasAccessed = true;
-
-  switch( value->valueType ) {
-    default: {
-      break;
-    }
-    case ARRAY: {
-      List<JSON>& list = static_cast<ArrayData*>( value->data )->list;
-
-      foreach( i, list.iter() ) {
-        setAccessed( i );
+    switch( value->valueType ) {
+      default: {
+        break;
       }
-      break;
-    }
-    case OBJECT: {
-      HashMap<String, JSON>& table = static_cast<ObjectData*>( value->data )->table;
+      case ARRAY: {
+        List<JSON>& list = static_cast<ArrayData*>( value->data )->list;
 
-      foreach( i, table.iter() ) {
-        setAccessed( &i->value );
+        foreach( i, list.iter() ) {
+          setAccessed( i );
+        }
+        break;
       }
-      break;
+      case OBJECT: {
+        HashMap<String, JSON>& table = static_cast<ObjectData*>( value->data )->table;
+
+        foreach( i, table.iter() ) {
+          setAccessed( &i->value );
+        }
+        break;
+      }
     }
   }
-}
 
-OZ_HIDDEN
-JSON JSON::Parser::parse( InputStream* istream, const char* path )
-{
-  Parser parser( istream, path );
+  OZ_HIDDEN
+  static JSON parse( InputStream* istream, const char* path )
+  {
+    Parser parser( istream, path );
 
-  JSON root = parser.parseValue();
+    JSON root = parser.parseValue();
 
-  parser.finish();
-  return root;
-}
+    parser.finish();
+    return root;
+  }
 
-OZ_HIDDEN
-JSON::Parser::Parser( InputStream* istream, const char* path ) :
-  pos( { istream, path, 1, 0, 1, 0 } )
-{}
+  OZ_HIDDEN
+  explicit Parser( InputStream* istream, const char* path ) :
+    pos( { istream, path, 1, 0, 1, 0 } )
+  {}
 
-OZ_HIDDEN
-char JSON::Parser::skipBlanks()
-{
-  char ch1, ch2;
+  OZ_HIDDEN
+  char skipBlanks()
+  {
+    char ch1, ch2;
 
-  do {
     do {
-      ch2 = pos.readChar();
-    }
-    while( String::isBlank( ch2 ) );
-
-    if( ch2 == '/' ) {
-      ch1 = ch2;
-      ch2 = pos.readChar();
+      do {
+        ch2 = pos.readChar();
+      }
+      while( String::isBlank( ch2 ) );
 
       if( ch2 == '/' ) {
-        // Skip a line comment.
-        do {
-          ch2 = pos.readChar();
-        }
-        while( ch2 != '\n' );
-
-        continue;
-      }
-      else if( ch2 == '*' ) {
-        // Skip a multi-line comment.
+        ch1 = ch2;
         ch2 = pos.readChar();
 
-        do {
-          ch1 = ch2;
-          ch2 = pos.readChar();
+        if( ch2 == '/' ) {
+          // Skip a line comment.
+          do {
+            ch2 = pos.readChar();
+          }
+          while( ch2 != '\n' );
+
+          continue;
         }
-        while( ch1 != '*' || ch2 != '/' );
+        else if( ch2 == '*' ) {
+          // Skip a multi-line comment.
+          ch2 = pos.readChar();
 
-        continue;
+          do {
+            ch1 = ch2;
+            ch2 = pos.readChar();
+          }
+          while( ch1 != '*' || ch2 != '/' );
+
+          continue;
+        }
+        else {
+          ch2 = ch1;
+          pos.backChar();
+        }
       }
-      else {
-        ch2 = ch1;
-        pos.backChar();
-      }
+
+      return ch2;
     }
-
-    return ch2;
+    while( true );
   }
-  while( true );
-}
 
-OZ_HIDDEN
-String JSON::Parser::parseString()
-{
-  List<char> chars;
-  char ch = '"';
+  OZ_HIDDEN
+  String parseString()
+  {
+    List<char> chars;
+    char ch = '"';
 
-  do {
-    ch = pos.readChar();
-
-    if( ch == '\n' || ch == '\r' ) {
-      continue;
-    }
-
-    if( ch == '\\' ) {
+    do {
       ch = pos.readChar();
 
-      switch( ch ) {
-        case 'b': {
-          ch = '\b';
-          break;
-        }
-        case 'f': {
-          ch = '\f';
-          break;
-        }
-        case 'n': {
-          ch = '\n';
-          break;
-        }
-        case 'r': {
-          ch = '\r';
-          break;
-        }
-        case 't': {
-          ch = '\t';
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-    }
-    else if( ch == '"' ) {
-      break;
-    }
-
-    chars.add( ch );
-  }
-  while( pos.istream->isAvailable() );
-
-  if( ch != '"' ) {
-    OZ_PARSE_ERROR( 0, "End of file while looking for end of string (Is ending \" missing?)" );
-  }
-  chars.add( '\0' );
-
-  return String( chars.begin(), chars.length() - 1 );
-}
-
-OZ_HIDDEN
-JSON JSON::Parser::parseValue()
-{
-  char ch = skipBlanks();
-
-  switch( ch ) {
-    case 'n': {
-      if( pos.istream->available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
-          pos.readChar() != 'l' )
-      {
-        OZ_PARSE_ERROR( -3, "Unknown value type" );
+      if( ch == '\n' || ch == '\r' ) {
+        continue;
       }
 
-      return JSON( nullptr, NIL );
-    }
-    case 'f': {
-      if( pos.istream->available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
-          pos.readChar() != 's' || pos.readChar() != 'e' )
-      {
-        OZ_PARSE_ERROR( -4, "Unknown value type" );
-      }
-
-      return JSON( new BooleanData( false ), BOOLEAN );
-    }
-    case 't': {
-      if( pos.istream->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
-          pos.readChar() != 'e' )
-      {
-        OZ_PARSE_ERROR( -3, "Unknown value type" );
-      }
-
-      return JSON( new BooleanData( true ), BOOLEAN );
-    }
-    default: { // Number.
-      SList<char, 32> chars;
-      chars.add( ch );
-
-      while( pos.istream->isAvailable() ) {
+      if( ch == '\\' ) {
         ch = pos.readChar();
 
-        if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
-          pos.backChar();
-          break;
+        switch( ch ) {
+          case 'b': {
+            ch = '\b';
+            break;
+          }
+          case 'f': {
+            ch = '\f';
+            break;
+          }
+          case 'n': {
+            ch = '\n';
+            break;
+          }
+          case 'r': {
+            ch = '\r';
+            break;
+          }
+          case 't': {
+            ch = '\t';
+            break;
+          }
+          default: {
+            break;
+          }
         }
-        if( chars.length() == 32 ) {
-          OZ_PARSE_ERROR( -chars.length(), "Too long " );
-        }
-        chars.add( ch );
       }
-      chars.add( '\0' );
-
-      const char* end;
-      double number = String::parseDouble( chars.begin(), &end );
-
-      if( end == chars.begin() ) {
-        OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
+      else if( ch == '"' ) {
+        break;
       }
 
-      return JSON( new NumberData( number ), NUMBER );
+      chars.add( ch );
     }
-    case '"': {
-      return JSON( new StringData( parseString() ), STRING );
-    }
-    case '{': {
-      return parseObject();
-    }
-    case '[': {
-      return parseArray();
-    }
-  }
-}
+    while( pos.istream->isAvailable() );
 
-OZ_HIDDEN
-JSON JSON::Parser::parseArray()
-{
-  JSON arrayValue( new ArrayData(), ARRAY );
-  List<JSON>& list = static_cast<ArrayData*>( arrayValue.data )->list;
-
-  char ch = skipBlanks();
-  if( ch != ']' ) {
-    pos.backChar();
-  }
-
-  while( ch != ']' ) {
-    JSON value = parseValue();
-    list.add( static_cast<JSON&&>( value ) );
-
-    ch = skipBlanks();
-
-    if( ch != ',' && ch != ']' ) {
-      OZ_PARSE_ERROR( 0, "Expected ',' or ']' while parsing array (Is ',' is missing?)" );
-    }
-  }
-
-  return arrayValue;
-}
-
-OZ_HIDDEN
-JSON JSON::Parser::parseObject()
-{
-  JSON objectValue( new ObjectData(), OBJECT );
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
-
-  char ch = skipBlanks();
-  if( ch != '}' ) {
-    pos.backChar();
-  }
-
-  while( ch != '}' ) {
-    ch = skipBlanks();
     if( ch != '"' ) {
-      OZ_PARSE_ERROR( 0, "Expected key while parsing object (Is there ',' after last entry?)" );
+      OZ_PARSE_ERROR( 0, "End of file while looking for end of string (Is ending \" missing?)" );
     }
+    chars.add( '\0' );
 
-    String key = parseString();
+    return String( chars.begin(), chars.length() - 1 );
+  }
 
-    ch = skipBlanks();
-    if( ch != ':' ) {
-      OZ_PARSE_ERROR( 0, "Expected ':' after key in object entry" );
-    }
+  OZ_HIDDEN
+  JSON parseValue()
+  {
+    char ch = skipBlanks();
 
-    JSON value = parseValue();
-    table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
+    switch( ch ) {
+      case 'n': {
+        if( pos.istream->available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
+            pos.readChar() != 'l' )
+        {
+          OZ_PARSE_ERROR( -3, "Unknown value type" );
+        }
 
-    ch = skipBlanks();
+        return JSON( nullptr, NIL );
+      }
+      case 'f': {
+        if( pos.istream->available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
+            pos.readChar() != 's' || pos.readChar() != 'e' )
+        {
+          OZ_PARSE_ERROR( -4, "Unknown value type" );
+        }
 
-    if( ch != ',' && ch != '}' ) {
-      OZ_PARSE_ERROR( 0, "Expected ',' or '}' while parsing object entry" );
+        return JSON( new BooleanData( false ), BOOLEAN );
+      }
+      case 't': {
+        if( pos.istream->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
+            pos.readChar() != 'e' )
+        {
+          OZ_PARSE_ERROR( -3, "Unknown value type" );
+        }
+
+        return JSON( new BooleanData( true ), BOOLEAN );
+      }
+      default: { // Number.
+        SList<char, 32> chars;
+        chars.add( ch );
+
+        while( pos.istream->isAvailable() ) {
+          ch = pos.readChar();
+
+          if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
+            pos.backChar();
+            break;
+          }
+          if( chars.length() == 32 ) {
+            OZ_PARSE_ERROR( -chars.length(), "Too long " );
+          }
+          chars.add( ch );
+        }
+        chars.add( '\0' );
+
+        const char* end;
+        double number = String::parseDouble( chars.begin(), &end );
+
+        if( end == chars.begin() ) {
+          OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
+        }
+
+        return JSON( new NumberData( number ), NUMBER );
+      }
+      case '"': {
+        return JSON( new StringData( parseString() ), STRING );
+      }
+      case '{': {
+        return parseObject();
+      }
+      case '[': {
+        return parseArray();
+      }
     }
   }
 
-  return objectValue;
-}
+  OZ_HIDDEN
+  JSON parseArray()
+  {
+    JSON arrayValue( new ArrayData(), ARRAY );
+    List<JSON>& list = static_cast<ArrayData*>( arrayValue.data )->list;
 
-OZ_HIDDEN
-void JSON::Parser::finish()
-{
-  while( pos.istream->isAvailable() ) {
-    char ch = pos.readChar();
+    char ch = skipBlanks();
+    if( ch != ']' ) {
+      pos.backChar();
+    }
 
-    if( !String::isBlank( ch ) ) {
-      OZ_PARSE_ERROR( 0, "End of file expected but some content found after" );
+    while( ch != ']' ) {
+      JSON value = parseValue();
+      list.add( static_cast<JSON&&>( value ) );
+
+      ch = skipBlanks();
+
+      if( ch != ',' && ch != ']' ) {
+        OZ_PARSE_ERROR( 0, "Expected ',' or ']' while parsing array (Is ',' is missing?)" );
+      }
+    }
+
+    return arrayValue;
+  }
+
+  OZ_HIDDEN
+  JSON parseObject()
+  {
+    JSON objectValue( new ObjectData(), OBJECT );
+    HashMap<String, JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
+
+    char ch = skipBlanks();
+    if( ch != '}' ) {
+      pos.backChar();
+    }
+
+    while( ch != '}' ) {
+      ch = skipBlanks();
+      if( ch != '"' ) {
+        OZ_PARSE_ERROR( 0, "Expected key while parsing object (Is there ',' after last entry?)" );
+      }
+
+      String key = parseString();
+
+      ch = skipBlanks();
+      if( ch != ':' ) {
+        OZ_PARSE_ERROR( 0, "Expected ':' after key in object entry" );
+      }
+
+      JSON value = parseValue();
+      table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
+
+      ch = skipBlanks();
+
+      if( ch != ',' && ch != '}' ) {
+        OZ_PARSE_ERROR( 0, "Expected ',' or '}' while parsing object entry" );
+      }
+    }
+
+    return objectValue;
+  }
+
+  OZ_HIDDEN
+  void finish()
+  {
+    while( pos.istream->isAvailable() ) {
+      char ch = pos.readChar();
+
+      if( !String::isBlank( ch ) ) {
+        OZ_PARSE_ERROR( 0, "End of file expected but some content found after" );
+      }
     }
   }
-}
+};
 
 struct JSON::Formatter
 {
@@ -495,219 +479,214 @@ struct JSON::Formatter
   int           lineEndLength;
   int           indentLevel;
 
-  int writeString( const String& string );
-  void writeValue( const JSON& value );
-  void writeArray( const JSON& value );
-  void writeObject( const JSON& value );
-};
+  OZ_HIDDEN
+  int writeString( const String& string )
+  {
+    int length = string.length() + 2;
 
-OZ_HIDDEN
-int JSON::Formatter::writeString( const String& string )
-{
-  int length = string.length() + 2;
+    ostream->writeChar( '"' );
 
-  ostream->writeChar( '"' );
+    for( int i = 0; i < string.length(); ++i ) {
+      char ch = string[i];
 
-  for( int i = 0; i < string.length(); ++i ) {
-    char ch = string[i];
+      switch( ch ) {
+        case '\\': {
+          ostream->writeChars( "\\\\", 2 );
+          ++length;
+          break;
+        }
+        case '"': {
+          ostream->writeChars( "\\\"", 2 );
+          ++length;
+          break;
+        }
+        case '\b': {
+          ostream->writeChars( "\\b", 2 );
+          ++length;
+          break;
+        }
+        case '\f': {
+          ostream->writeChars( "\\f", 2 );
+          ++length;
+          break;
+        }
+        case '\n': {
+          ostream->writeChars( "\\n", 2 );
+          ++length;
+          break;
+        }
+        case '\r': {
+          ostream->writeChars( "\\r", 2 );
+          ++length;
+          break;
+        }
+        case '\t': {
+          ostream->writeChars( "\\t", 2 );
+          ++length;
+          break;
+        }
+        default: {
+          ostream->writeChar( ch );
+          break;
+        }
+      }
+    }
 
-    switch( ch ) {
-      case '\\': {
-        ostream->writeChars( "\\\\", 2 );
-        ++length;
+    ostream->writeChar( '"' );
+
+    return length;
+  }
+
+  OZ_HIDDEN
+  void writeValue( const JSON& value )
+  {
+    switch( value.valueType ) {
+      case NIL: {
+        ostream->writeChars( "null", 4 );
         break;
       }
-      case '"': {
-        ostream->writeChars( "\\\"", 2 );
-        ++length;
+      case BOOLEAN: {
+        const BooleanData* booleanData = static_cast<const BooleanData*>( value.data );
+
+        if( booleanData->value ) {
+          ostream->writeChars( "true", 4 );
+        }
+        else {
+          ostream->writeChars( "false", 5 );
+        }
         break;
       }
-      case '\b': {
-        ostream->writeChars( "\\b", 2 );
-        ++length;
+      case NUMBER: {
+        const NumberData* numberData = static_cast<const NumberData*>( value.data );
+
+        String s = String( numberData->value, SIGNIFICANT_DIGITS );
+        ostream->writeChars( s, s.length() );
         break;
       }
-      case '\f': {
-        ostream->writeChars( "\\f", 2 );
-        ++length;
+      case STRING: {
+        const StringData* stringData = static_cast<const StringData*>( value.data );
+
+        writeString( stringData->value );
         break;
       }
-      case '\n': {
-        ostream->writeChars( "\\n", 2 );
-        ++length;
+      case ARRAY: {
+        writeArray( value );
         break;
       }
-      case '\r': {
-        ostream->writeChars( "\\r", 2 );
-        ++length;
-        break;
-      }
-      case '\t': {
-        ostream->writeChars( "\\t", 2 );
-        ++length;
-        break;
-      }
-      default: {
-        ostream->writeChar( ch );
+      case OBJECT: {
+        writeObject( value );
         break;
       }
     }
   }
 
-  ostream->writeChar( '"' );
+  OZ_HIDDEN
+  void writeArray( const JSON& value )
+  {
+    const List<JSON>& list = static_cast<const ArrayData*>( value.data )->list;
 
-  return length;
-}
-
-OZ_HIDDEN
-void JSON::Formatter::writeValue( const JSON& value )
-{
-  switch( value.valueType ) {
-    case NIL: {
-      ostream->writeChars( "null", 4 );
-      break;
+    if( list.isEmpty() ) {
+      ostream->writeChars( "[]", 2 );
+      return;
     }
-    case BOOLEAN: {
-      const BooleanData* booleanData = static_cast<const BooleanData*>( value.data );
 
-      if( booleanData->value ) {
-        ostream->writeChars( "true", 4 );
+    ostream->writeChar( '[' );
+    ostream->writeChars( lineEnd, lineEndLength );
+
+    ++indentLevel;
+
+    for( int i = 0; i < list.length(); ++i ) {
+      if( i != 0 ) {
+        ostream->writeChar( ',' );
+        ostream->writeChars( lineEnd, lineEndLength );
       }
-      else {
-        ostream->writeChars( "false", 5 );
-      }
-      break;
-    }
-    case NUMBER: {
-      const NumberData* numberData = static_cast<const NumberData*>( value.data );
-
-      String s = String( numberData->value, SIGNIFICANT_DIGITS );
-      ostream->writeChars( s, s.length() );
-      break;
-    }
-    case STRING: {
-      const StringData* stringData = static_cast<const StringData*>( value.data );
-
-      writeString( stringData->value );
-      break;
-    }
-    case ARRAY: {
-      writeArray( value );
-      break;
-    }
-    case OBJECT: {
-      writeObject( value );
-      break;
-    }
-  }
-}
-
-OZ_HIDDEN
-void JSON::Formatter::writeArray( const JSON& value )
-{
-  const List<JSON>& list = static_cast<const ArrayData*>( value.data )->list;
-
-  if( list.isEmpty() ) {
-    ostream->writeChars( "[]", 2 );
-    return;
-  }
-
-  ostream->writeChar( '[' );
-  ostream->writeChars( lineEnd, lineEndLength );
-
-  ++indentLevel;
-
-  for( int i = 0; i < list.length(); ++i ) {
-    if( i != 0 ) {
-      ostream->writeChar( ',' );
-      ostream->writeChars( lineEnd, lineEndLength );
-    }
-
-    for( int j = 0; j < indentLevel; ++j ) {
-      ostream->writeChars( "  ", 2 );
-    }
-
-    writeValue( list[i] );
-  }
-
-  ostream->writeChars( lineEnd, lineEndLength );
-
-  --indentLevel;
-  for( int j = 0; j < indentLevel; ++j ) {
-    ostream->writeChars( "  ", 2 );
-  }
-
-  ostream->writeChar( ']' );
-}
-
-OZ_HIDDEN
-void JSON::Formatter::writeObject( const JSON& value )
-{
-  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value.data )->table;
-
-  if( table.isEmpty() ) {
-    ostream->writeChars( "{}", 2 );
-    return;
-  }
-
-  ostream->writeChar( '{' );
-  ostream->writeChars( lineEnd, lineEndLength );
-
-  ++indentLevel;
-
-  Map<String, const JSON*> sortedEntries;
-
-  foreach( entry, table.citer() ) {
-    sortedEntries.add( entry->key, &entry->value );
-  }
-
-  for( int i = 0; i < sortedEntries.length(); ++i ) {
-    if( i != 0 ) {
-      ostream->writeChar( ',' );
-      ostream->writeChars( lineEnd, lineEndLength );
-    }
-
-    for( int j = 0; j < indentLevel; ++j ) {
-      ostream->writeChars( "  ", 2 );
-    }
-
-    const String& entryKey   = sortedEntries[i].key;
-    const JSON*   entryValue = sortedEntries[i].value;
-
-    int keyLength = writeString( entryKey );
-    ostream->writeChar( ':' );
-
-    if( entryValue->valueType == ARRAY || entryValue->valueType == OBJECT ) {
-      ostream->writeChars( lineEnd, lineEndLength );
 
       for( int j = 0; j < indentLevel; ++j ) {
         ostream->writeChars( "  ", 2 );
       }
-    }
-    else {
-      int column = indentLevel * 2 + keyLength + 1;
 
-      // Align to 24-th column.
-      for( int j = column; j < ALIGNMENT_COLUMN; ++j ) {
-        ostream->writeChar( ' ' );
+      writeValue( list[i] );
+    }
+
+    ostream->writeChars( lineEnd, lineEndLength );
+
+    --indentLevel;
+    for( int j = 0; j < indentLevel; ++j ) {
+      ostream->writeChars( "  ", 2 );
+    }
+
+    ostream->writeChar( ']' );
+  }
+
+  OZ_HIDDEN
+  void writeObject( const JSON& value )
+  {
+    const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value.data )->table;
+
+    if( table.isEmpty() ) {
+      ostream->writeChars( "{}", 2 );
+      return;
+    }
+
+    ostream->writeChar( '{' );
+    ostream->writeChars( lineEnd, lineEndLength );
+
+    ++indentLevel;
+
+    Map<String, const JSON*> sortedEntries;
+
+    foreach( entry, table.citer() ) {
+      sortedEntries.add( entry->key, &entry->value );
+    }
+
+    for( int i = 0; i < sortedEntries.length(); ++i ) {
+      if( i != 0 ) {
+        ostream->writeChar( ',' );
+        ostream->writeChars( lineEnd, lineEndLength );
       }
+
+      for( int j = 0; j < indentLevel; ++j ) {
+        ostream->writeChars( "  ", 2 );
+      }
+
+      const String& entryKey   = sortedEntries[i].key;
+      const JSON*   entryValue = sortedEntries[i].value;
+
+      int keyLength = writeString( entryKey );
+      ostream->writeChar( ':' );
+
+      if( entryValue->valueType == ARRAY || entryValue->valueType == OBJECT ) {
+        ostream->writeChars( lineEnd, lineEndLength );
+
+        for( int j = 0; j < indentLevel; ++j ) {
+          ostream->writeChars( "  ", 2 );
+        }
+      }
+      else {
+        int column = indentLevel * 2 + keyLength + 1;
+
+        // Align to 24-th column.
+        for( int j = column; j < ALIGNMENT_COLUMN; ++j ) {
+          ostream->writeChar( ' ' );
+        }
+      }
+
+      writeValue( *entryValue );
     }
 
-    writeValue( *entryValue );
+    sortedEntries.clear();
+    sortedEntries.deallocate();
+
+    ostream->writeChars( lineEnd, lineEndLength );
+
+    --indentLevel;
+    for( int j = 0; j < indentLevel; ++j ) {
+      ostream->writeChars( "  ", 2 );
+    }
+
+    ostream->writeChar( '}' );
   }
-
-  sortedEntries.clear();
-  sortedEntries.deallocate();
-
-  ostream->writeChars( lineEnd, lineEndLength );
-
-  --indentLevel;
-  for( int j = 0; j < indentLevel; ++j ) {
-    ostream->writeChars( "  ", 2 );
-  }
-
-  ostream->writeChar( '}' );
-}
+};
 
 OZ_HIDDEN
 const JSON JSON::NIL_VALUE;

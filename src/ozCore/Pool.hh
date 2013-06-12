@@ -35,9 +35,9 @@
  * Add this macro to your class definition to define standard non-array `new`/`delete` operators for
  * a class.
  *
- * As `new`/`delete` are static functions so has to be the given pool. The derived classes also need
- * to have overloaded `new`/`delete` defined the same way otherwise the ones from the base class
- * will be used, which will not end good.
+ * As `new`/`delete` are static functions so has to be the pool. The derived classes also need to
+ * have overloaded `new`/`delete` defined the same way otherwise the ones from the base class will
+ * be used, which will not end good.
  *
  * Array versions of `new`/`delete` operator are disabled for the enclosing class.
  */
@@ -213,7 +213,7 @@ class Pool
     }
 
     /**
-     * Free the given object.
+     * Free a given object.
      */
     void deallocate( void* ptr )
     {

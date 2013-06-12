@@ -80,7 +80,7 @@ class Vec4 : public VectorBase4
 #endif
 
     /**
-     * Create a vector with the given components.
+     * Create a vector with given components.
      */
     OZ_ALWAYS_INLINE
     explicit Vec4( float x, float y, float z, float w ) :

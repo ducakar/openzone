@@ -54,7 +54,7 @@ class OutputStream
   public:
 
     /**
-     * Create a fixed-size stream for reading/writing the given memory range.
+     * Create a fixed-size stream for reading/writing a given memory range.
      */
     explicit OutputStream( char* start = nullptr, const char* end = nullptr,
                            Endian::Order order_ = Endian::NATIVE ) :

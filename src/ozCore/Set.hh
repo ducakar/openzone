@@ -100,7 +100,7 @@ class Set
   public:
 
     /**
-     * Create an empty set with the given initial capacity.
+     * Create an empty set with a given initial capacity.
      */
     explicit Set( int capacity = 0 ) :
       data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
@@ -344,7 +344,7 @@ class Set
     }
 
     /**
-     * True iff the given key is found in the set.
+     * True iff a given key is found in the set.
      */
     template <typename Key = Elem>
     bool contains( const Key& key ) const
@@ -354,7 +354,7 @@ class Set
     }
 
     /**
-     * Index of the element with the given value or -1 if not found.
+     * Index of the element with a given value or -1 if not found.
      */
     template <typename Key = Elem>
     int index( const Key& key ) const
@@ -366,7 +366,7 @@ class Set
     /**
      * Add an element overriding any existing equal element.
      *
-     * @return Position of the inserted or the existing element.
+     * @return Position of the inserted element.
      */
     template <typename Elem_ = Elem>
     int add( Elem_&& elem )
@@ -403,7 +403,7 @@ class Set
     }
 
     /**
-     * Insert an element at the given position.
+     * Insert an element at a given position.
      *
      * All later elements are shifted to make a gap.
      * Use only when you are sure you are inserting at the right position to preserve order of the
@@ -423,7 +423,7 @@ class Set
     }
 
     /**
-     * Remove the element at the given position.
+     * Remove the element at a given position.
      *
      * All later elements are shifted to fill the gap.
      */
@@ -444,7 +444,7 @@ class Set
     }
 
     /**
-     * Find and remove the element with the given value.
+     * Find and remove the element with a given value.
      *
      * @return Index of the removed element or -1 if not found.
      */

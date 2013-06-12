@@ -62,7 +62,7 @@ class Mat33
     explicit Mat33() = default;
 
     /**
-     * Create matrix with the given columns.
+     * Create matrix with given columns.
      */
     OZ_ALWAYS_INLINE
     explicit Mat33( const Vec3& a, const Vec3& b, const Vec3& c ) :
@@ -70,7 +70,7 @@ class Mat33
     {}
 
     /**
-     * Create matrix with the given components.
+     * Create matrix with given components.
      */
     OZ_ALWAYS_INLINE
     explicit Mat33( float xx, float xy, float xz,

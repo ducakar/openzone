@@ -23,10 +23,17 @@
 
 #include <ozCore/ozCore.hh>
 
+#include <unistd.h>
+#include <sys/stat.h>
+
 using namespace oz;
 
 int main()
 {
   System::init();
+//   File::mount( "/home/davorin/Razvoj/openzone/share/openzone/oz_base.zip", "" );
+  File::mount( "/home/davorin/Razvoj/KSP/Vega_Pod1", "" );
+
+  DArray<File> ls = File( "@" ).ls();
   return 0;
 }

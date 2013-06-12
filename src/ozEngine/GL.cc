@@ -246,16 +246,18 @@ int GL::textureDataFromFile( const File& file )
   int   mipmapHeight = height;
   int   mipmapPitch  = pitch;
   int   mipmapSize   = pixelFlags & DDPF_FOURCC ? pitch : height * pitch;
-  char* mipmapData   = pixelFlags & DDPF_FOURCC ? nullptr : new char[mipmapSize];
 
-  // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding whether
-  // texture actually has mipmaps.
   if( nMipmaps == 1 ) {
+    // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
+    // non-mipmapped textures. Since those are usually used in UI, where texture repeating is not
+    // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
   }
   else {
+    // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding
+    // whether texture actually has mipmaps.
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
   }
 
@@ -270,29 +272,41 @@ int GL::textureDataFromFile( const File& file )
       mipmapSize    = max( mipmapSize, baseBlock );
     }
     else {
-      char*       data      = mipmapData;
       const char* source    = istream.forward( mipmapSize );
+      const char* data      = source;
       int         pixelSize = bpp / 8;
 
-      for( int j = 0; j < mipmapHeight; ++j ) {
-        for( int k = 0; k < mipmapWidth; ++k ) {
-          data[0] = source[2];
-          data[1] = source[1];
-          data[2] = source[0];
+      if( mipmapPitch != mipmapWidth * pixelSize ) {
+        // We need to collapse gaps between lines, OpenGL wants pitch = width * pixelSize.
+        char* collapsedData = new char[mipmapSize];
+        char* dest          = collapsedData;
 
-          if( bpp == 32 ) {
-            data[3] = source[3];
+        for( int j = 0; j < mipmapHeight; ++j ) {
+          for( int k = 0; k < mipmapWidth; ++k ) {
+            dest[0] = source[2];
+            dest[1] = source[1];
+            dest[2] = source[0];
+
+            if( bpp == 32 ) {
+              dest[3] = source[3];
+            }
+
+            dest   += pixelSize;
+            source += pixelSize;
           }
 
-          data   += pixelSize;
-          source += pixelSize;
+          source += mipmapPitch - mipmapWidth * pixelSize;
         }
 
-        source += mipmapPitch - mipmapWidth * pixelSize;
+        data = collapsedData;
       }
 
       glTexImage2D( GL_TEXTURE_2D, i, int( format ), mipmapWidth, mipmapHeight, 0,
-                    format, GL_UNSIGNED_BYTE, mipmapData );
+                    format, GL_UNSIGNED_BYTE, data );
+
+      if( data != source ) {
+        delete[] data;
+      }
 
       mipmapWidth  /= 2;
       mipmapHeight /= 2;
@@ -301,7 +315,6 @@ int GL::textureDataFromFile( const File& file )
     }
   }
 
-  delete[] mipmapData;
   return nMipmaps;
 }
 

@@ -870,7 +870,7 @@ int Builder::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  File::initVFS();
+  File::init();
   FreeImage_Initialise();
 
   File::mkdir( outDir );
@@ -975,7 +975,7 @@ int Builder::main( int argc, char** argv )
   config.clear();
 
   FreeImage_DeInitialise();
-  File::destroyVFS();
+  File::destroy();
 
   return EXIT_SUCCESS;
 }

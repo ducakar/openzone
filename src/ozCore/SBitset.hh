@@ -179,7 +179,7 @@ class SBitset
     }
 
     /**
-     * True iff this bitset is a subset of the given bitset.
+     * True iff this bitset is a subset of a given bitset.
      *
      * Let say two bitsets are characteristic vectors of two sets. Return true if first set is a
      * subset of the second one. Other explanation: the result is true iff the following statement

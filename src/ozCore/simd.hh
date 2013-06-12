@@ -206,7 +206,7 @@ class VectorBase3
 #else
 
     /**
-     * Create a vector with the given components.
+     * Create a vector with given components.
      */
     OZ_ALWAYS_INLINE
     explicit VectorBase3( float x_, float y_, float z_, float ) :
@@ -272,7 +272,7 @@ class VectorBase4
 #else
 
     /**
-     * Create a vector with the given components.
+     * Create a vector with given components.
      */
     OZ_ALWAYS_INLINE
     explicit VectorBase4( float x_, float y_, float z_, float w_ ) :
@@ -336,7 +336,7 @@ class scalar
     {}
 
     /**
-     * %Set to the given float value.
+     * %Set to a given float value.
      */
     scalar& operator = ( float f )
     {

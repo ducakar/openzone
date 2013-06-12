@@ -223,7 +223,7 @@ class Array
     }
 
     /**
-     * True iff the given value is found in the array.
+     * True iff a given value is found in the array.
      */
     bool contains( const Elem& e ) const
     {

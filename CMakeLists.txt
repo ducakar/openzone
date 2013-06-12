@@ -185,6 +185,10 @@ endif()
 
 set( flags "${flags} -fno-exceptions -fno-rtti -ffast-math -fvisibility-inlines-hidden" )
 
+if( BUILD_SHARED_LIBS )
+  set( flags "${flags} -fPIC" )
+endif()
+
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-gnu" )

@@ -93,7 +93,7 @@ class Chain
         {}
 
         /**
-         * Create chain iterator, initially pointing to the given element.
+         * Create chain iterator, initially pointing to a given element.
          */
         OZ_ALWAYS_INLINE
         explicit ChainIterator( IterElem* first ) :
@@ -310,7 +310,7 @@ class Chain
     }
 
     /**
-     * Pointer to the element before the given one.
+     * Pointer to the element before a given one.
      */
     Elem* before( const Elem* e ) const
     {
@@ -325,7 +325,7 @@ class Chain
     }
 
     /**
-     * True iff the given element is in the chain.
+     * True iff a given element is in the chain.
      */
     bool has( const Elem* e ) const
     {
@@ -340,7 +340,7 @@ class Chain
     }
 
     /**
-     * True iff an element equal to the given one is in the chain.
+     * True iff an element equal to a given one is in the chain.
      *
      * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
      * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
@@ -391,7 +391,7 @@ class Chain
     }
 
     /**
-     * Unbind the given element from the chain.
+     * Unbind a given element from the chain.
      *
      * Because this chain is not a double-linked, one have to provide pointer to the preceding
      * element.

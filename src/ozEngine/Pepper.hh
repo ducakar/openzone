@@ -32,7 +32,7 @@
 
 /**
  * @def OZ_MAIN_CALL
- * On NaCl, execute the given code in a callback on the main thread and block until finished.
+ * On NaCl, execute a given code in a callback on the main thread and block until finished.
  *
  * This version passes `this` pointer of the current object to the callback as `_this` variable.
  * For platforms other than NaCl the code is just inserted at the macro position.
@@ -74,7 +74,7 @@
 
 /**
  * @def OZ_STATIC_MAIN_CALL
- * On NaCl, execute the given code in a callback on the main thread and block until finished.
+ * On NaCl, execute a given code in a callback on the main thread and block until finished.
  *
  * This version does not pass this pointer or any data to the callback.
  * For platforms other than NaCl the code is just inserted at the macro position.

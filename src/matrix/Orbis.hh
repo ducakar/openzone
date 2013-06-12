@@ -126,25 +126,25 @@ class Orbis : public Bounds
     void reposition( Frag* frag );
 
     /**
-     * Return structure at the given index, nullptr if index is -1.
+     * Return structure at a given index, nullptr if index is -1.
      */
     OZ_ALWAYS_INLINE
     Struct* str( int index ) const;
 
     /**
-     * Return entity with the given index, nullptr if index is -1 or structure does not exist.
+     * Return entity with a given index, nullptr if index is -1 or structure does not exist.
      */
     OZ_ALWAYS_INLINE
     Entity* ent( int index ) const;
 
     /**
-     * Return object at the given index, nullptr if index is -1.
+     * Return object at a given index, nullptr if index is -1.
      */
     OZ_ALWAYS_INLINE
     Object* obj( int index ) const;
 
     /**
-     * Return fragment at the given index, nullptr if index is -1.
+     * Return fragment at a given index, nullptr if index is -1.
      */
     OZ_ALWAYS_INLINE
     Frag* frag( int index ) const;

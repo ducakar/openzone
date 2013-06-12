@@ -492,15 +492,16 @@ static void waitBell()
 }
 
 // Wait bell to finish playing on (normal) process termination.
-static struct BellFinaliser
+struct BellFinaliser
 {
   OZ_HIDDEN
   ~BellFinaliser()
   {
     waitBell();
   }
-}
-bellFinaliser;
+};
+
+static BellFinaliser bellFinaliser;
 
 OZ_NORETURN
 static void abort( bool doHalt )

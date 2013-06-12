@@ -125,7 +125,7 @@ class AL
         bool rewind();
 
         /**
-         * Start streaming the given Ogg Vorbis file.
+         * Start streaming a given Ogg Vorbis file.
          */
         bool open( const File& file );
 

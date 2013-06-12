@@ -237,7 +237,7 @@ class SList
     }
 
     /**
-     * True iff the given value is found in the list.
+     * True iff a given value is found in the list.
      */
     bool contains( const Elem& e ) const
     {
@@ -270,7 +270,7 @@ class SList
     }
 
     /**
-     * Add (copy) elements from the given array to the end.
+     * Add (copy) elements from a given array to the end.
      */
     void addAll( const Elem* array, int arrayCount )
     {
@@ -283,7 +283,7 @@ class SList
     }
 
     /**
-     * Add (move) elements from the given array to the end.
+     * Add (move) elements from a given array to the end.
      */
     void takeAll( Elem* array, int arrayCount )
     {
@@ -316,7 +316,7 @@ class SList
     }
 
     /**
-     * Insert an element at the given position.
+     * Insert an element at a given position.
      *
      * All later elements are shifted to make the gap.
      */
@@ -340,7 +340,7 @@ class SList
     }
 
     /**
-     * Remove the element at the given position.
+     * Remove the element at a given position.
      *
      * All later elements are shifted to fill the gap.
      */
@@ -361,7 +361,7 @@ class SList
     }
 
     /**
-     * Remove the element at the given position from an unordered list.
+     * Remove the element at a given position from an unordered list.
      *
      * The last element is moved to its place.
      */
@@ -380,7 +380,7 @@ class SList
     }
 
     /**
-     * Find and remove the first element with the given value.
+     * Find and remove the first element with a given value.
      *
      * @return Index of the removed element or -1 if not found.
      */
@@ -395,7 +395,7 @@ class SList
     }
 
     /**
-     * Find and remove the first element with the given value from an unordered list.
+     * Find and remove the first element with a given value from an unordered list.
      *
      * The last element is moved to its place.
      *

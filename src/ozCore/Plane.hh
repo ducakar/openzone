@@ -68,7 +68,7 @@ class Plane
     {}
 
     /**
-     * Create with the given member values.
+     * Create with given member values.
      */
     OZ_ALWAYS_INLINE
     explicit Plane( float nx, float ny, float nz, float d_ ) :

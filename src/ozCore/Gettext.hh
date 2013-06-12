@@ -61,7 +61,7 @@ class Gettext
     explicit Gettext();
 
     /**
-     * Create a new instance and import translations from the given file.
+     * Create a new instance and import translations from a given file.
      */
     explicit Gettext( const File& file );
 
@@ -99,14 +99,14 @@ class Gettext
     }
 
     /**
-     * Check whether the given translations exists in the catalogue.
+     * Check whether a given translation exists in the catalogue.
      */
     bool exists( const char* message ) const;
 
     /**
      * Obtain translation from the catalogue.
      *
-     * If translation for the given string does not exist that string itself is returned.
+     * If translation for a given string does not exist that string itself is returned.
      */
     const char* get( const char* message ) const;
 

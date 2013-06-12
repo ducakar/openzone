@@ -264,7 +264,7 @@ inline void aMoveBackward( Elem* destArray, Elem* srcArray, int count )
 }
 
 /**
- * %Set array elements to the given value.
+ * %Set array elements to a given value.
  */
 template <typename Elem, typename Value = Elem>
 inline void aFill( Elem* array, const Value& value, int count )
@@ -315,7 +315,7 @@ inline bool aEquals( const Elem* arrayA, const Elem* arrayB, int count )
 }
 
 /**
- * True iff the given value is found in the array.
+ * True iff a given value is found in an array.
  */
 template <typename Elem, typename Value = Elem>
 inline bool aContains( const Elem* array, const Value& value, int count )
@@ -399,7 +399,7 @@ inline void aFree( Elem* array, int count )
 /**
  * Reallocate array moving the elements.
  *
- * Allocate new array of `length` elements, move first `count` elements of the source array to the
+ * Allocate a new array of `length` elements, move first `count` elements of the source array to the
  * newly created one and delete the source array. If `length` is 0, no new array is allocated and
  * no elements are moved.
  *

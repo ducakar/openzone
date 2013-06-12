@@ -74,7 +74,7 @@ class Point : public VectorBase3
 #endif
 
     /**
-     * Create a point with the given coordinates.
+     * Create a point with given coordinates.
      */
     OZ_ALWAYS_INLINE
     explicit Point( float x, float y, float z ) :
@@ -215,7 +215,7 @@ class Point : public VectorBase3
     }
 
     /**
-     * Projection of the point to the given vector.
+     * Projection of the point to a given vector.
      */
     OZ_ALWAYS_INLINE
 #ifdef OZ_SIMD_MATH

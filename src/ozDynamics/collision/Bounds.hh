@@ -52,7 +52,7 @@ class Bounds
     explicit Bounds() = default;
 
     /**
-     * Create from the given minimal and maximal point.
+     * Create from a given minimal and maximal point.
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const Point& mins_, const Point& maxs_ ) :
@@ -60,7 +60,7 @@ class Bounds
     {}
 
     /**
-     * Create `Bounds` enlarged for the given margin `eps`.
+     * Create `Bounds` enlarged for a given margin `eps`.
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const Bounds& b, float eps ) :
@@ -227,7 +227,7 @@ class Bounds
     }
 
     /**
-     * True iff the given point is inside this `Bounds`.
+     * True iff a given point is inside this `Bounds`.
      *
      * @param p point.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
@@ -241,7 +241,7 @@ class Bounds
     }
 
     /**
-     * True iff the given `AABB` is inside this `Bounds`.
+     * True iff a given `AABB` is inside this `Bounds`.
      *
      * @param a AABB.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
@@ -257,7 +257,7 @@ class Bounds
     }
 
     /**
-     * True iff the given `AABB` overlaps with this `Bounds`.
+     * True iff a given `AABB` overlaps with this `Bounds`.
      *
      * @param a AABB.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
@@ -273,7 +273,7 @@ class Bounds
     }
 
     /**
-     * True iff the given `Bounds` is inside this `Bounds`.
+     * True iff a given `Bounds` is inside this `Bounds`.
      *
      * @param b other `Bounds`.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
@@ -287,7 +287,7 @@ class Bounds
     }
 
     /**
-     * True iff the given `Bounds` overlaps with this `Bounds`.
+     * True iff a given `Bounds` overlaps with this `Bounds`.
      *
      * @param b other `Bounds`.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).

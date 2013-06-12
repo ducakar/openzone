@@ -101,7 +101,7 @@ class Alloc
         {}
 
         /**
-         * Create iterator for the given `ChunkInfo` element (used internally).
+         * Create iterator for a given `ChunkInfo` element (used internally).
          */
         OZ_ALWAYS_INLINE
         explicit ChunkCIterator( const ChunkInfo* chunkInfo ) :

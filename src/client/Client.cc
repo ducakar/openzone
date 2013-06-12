@@ -138,6 +138,8 @@ int Client::init( int argc, char** argv )
     }
   }
 
+  File::init( File::TEMPORARY, 64*1024*1024 );
+
 #if defined( __ANDROID__ )
 
   String configDir = OZ_ANDROID_ROOT "/config/openzone";
@@ -149,8 +151,6 @@ int Client::init( int argc, char** argv )
   File::mkdir( OZ_ANDROID_ROOT "/local/share" );
 
 #elif defined( __native_client__ )
-
-  File::init( File::TEMPORARY, 64*1024*1024 );
 
   String configDir = "/config/openzone";
   String localDir  = "/local/share/openzone";
@@ -239,9 +239,6 @@ int Client::init( int argc, char** argv )
   Log::unindent();
   Log::println( "}" );
   Log::verboseMode = false;
-
-  File::initVFS();
-  initFlags |= INIT_PHYSFS;
 
   if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
     OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
@@ -547,21 +544,11 @@ void Client::shutdown()
   if( initFlags & INIT_SDL_TTF ) {
     TTF_Quit();
   }
-
-#ifdef __native_client__
-
-  File::destroy();
-
-#else
-
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
   }
-  if( initFlags & INIT_PHYSFS ) {
-    File::destroyVFS();
-  }
 
-#endif
+  File::destroy();
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Log::printMemorySummary();

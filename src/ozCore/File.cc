@@ -26,9 +26,6 @@
 
 #include "File.hh"
 
-#include "List.hh"
-#include "HashMap.hh"
-
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>
 # include <ppapi/c/ppb_file_io.h>
@@ -48,10 +45,7 @@
 # include <unistd.h>
 #endif
 
-#include <zlib.h>
 #include <physfs.h>
-
-// #define OZ_ZLIB
 
 #if PHYSFS_VER_MAJOR < 2
 # error PhysicsFS version must be at least 2.0.
@@ -69,19 +63,6 @@ int PHYSFS_NACL_init( PP_Instance instance, PPB_GetInterface getInterface,
 namespace oz
 {
 
-// File entry in the VFS database.
-struct FileEntry
-{
-  File::Type type;
-  int        size;
-  long64     time;
-  FileEntry* next;
-  File*      archive;
-};
-
-static List<File>                 vfsArchives;
-static HashMap<String, FileEntry> vfsLibrary;
-
 #ifdef __native_client__
 static pp::Core*      ppCore = nullptr;
 static pp::FileSystem ppFileSystem;
@@ -91,305 +72,6 @@ static bool operator < ( const File& a, const File& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }
-
-#if defined( __native_client__ )
-
-static void nativeStat( const char* path, File::Type* type, int* size, long64* time )
-{
-  *type = File::MISSING;
-  *size = -1;
-  *time = 0;
-
-  if( String::equals( path, "/" ) ) {
-    *type = File::DIRECTORY;
-    return;
-  }
-
-  pp::FileRef file( ppFileSystem, path );
-  pp::FileIO  fio( System::instance );
-  PP_FileInfo info;
-
-  if( fio.Open( file, 0, pp::BlockUntilComplete() ) == PP_OK &&
-      fio.Query( &info, pp::BlockUntilComplete() ) == PP_OK )
-  {
-    if( info.type == PP_FILETYPE_REGULAR ) {
-      *type = File::REGULAR;
-      *size = int( info.size );
-      *time = long64( max( info.creation_time, info.last_modified_time ) );
-    }
-    else if( info.type == PP_FILETYPE_DIRECTORY ) {
-      *type = File::DIRECTORY;
-      *size = -1;
-      *time = long64( max( info.creation_time, info.last_modified_time ) );
-    }
-  }
-}
-
-static bool nativeRead( const char* path, int start, char* buffer, int* size )
-{
-  pp::FileRef file( ppFileSystem, path );
-  pp::FileIO  fio( System::instance );
-
-  if( fio.Open( file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete() ) != PP_OK ) {
-    *size = 0;
-    return false;
-  }
-
-  int read = 0;
-  int result;
-  while( ( result = fio.Read( start + read, &buffer[read], *size - read,
-                              pp::BlockUntilComplete() ) ) > 0 )
-  {
-    read += result;
-  }
-
-  if( result < 0 || read != *size ) {
-    *size = read;
-    return false;
-  }
-  return true;
-}
-
-static bool nativeWrite( const char* path, int start, const char* buffer, int size )
-{
-  pp::FileRef file( ppFileSystem, path );
-  pp::FileIO  fio( System::instance );
-
-  if( fio.Open( file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
-                pp::BlockUntilComplete() ) != PP_OK )
-  {
-    return false;
-  }
-
-  int written = 0;
-  int result;
-  while( written != size && ( result = fio.Write( start + written, &buffer[written], size - written,
-                                                  pp::BlockUntilComplete() ) ) > 0 )
-  {
-    written += result;
-  }
-
-  return written == size;
-}
-
-static char* nativeMap( const char* path, int size )
-{
-  char* data = new char[size];
-
-  if( !nativeRead( path, 0, data, &size ) ) {
-    delete[] data;
-    return nullptr;
-  }
-
-  return data;
-}
-
-static void nativeUnmap( char* data, int )
-{
-  delete[] data;
-}
-
-#elif defined( _WIN32 )
-
-static void nativeStat( const char* path, File::Type* type, int* size, long64* time )
-{
-  WIN32_FILE_ATTRIBUTE_DATA info;
-
-  if( GetFileAttributesEx( path, GetFileExInfoStandard, &info ) == 0 ) {
-    *type = File::MISSING;
-    *size = -1;
-    *time = 0;
-  }
-  else {
-    ULARGE_INTEGER creationTime = {
-      { info.ftCreationTime.dwLowDateTime, info.ftCreationTime.dwHighDateTime }
-    };
-    ULARGE_INTEGER modificationTime = {
-      { info.ftLastWriteTime.dwLowDateTime, info.ftLastWriteTime.dwHighDateTime }
-    };
-
-    *time = max( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
-    *size = -1;
-
-    if( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
-      *type = File::DIRECTORY;
-    }
-    else {
-      *type = File::REGULAR;
-
-      HANDLE handle = CreateFile( path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                                  FILE_ATTRIBUTE_NORMAL, nullptr );
-
-      if( handle != nullptr ) {
-        *size = int( GetFileSize( handle, nullptr ) );
-
-        if( *size == int( INVALID_FILE_SIZE ) ) {
-          *type = File::MISSING;
-          *size = -1;
-          *time = 0;
-        }
-
-        CloseHandle( handle );
-      }
-    }
-  }
-}
-
-static bool nativeRead( const char* path, int start, char* buffer, int* size )
-{
-  HANDLE file = CreateFile( path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                            FILE_ATTRIBUTE_NORMAL, nullptr );
-  if( file == nullptr ) {
-    *size = 0;
-    return false;
-  }
-
-  // TODO seek
-
-  DWORD read = 0;
-  BOOL result = ReadFile( file, buffer, DWORD( size ), &read, nullptr );
-  CloseHandle( file );
-
-  if( !result || int( read ) != *size ) {
-    *size = int( read );
-    return false;
-  }
-  return true;
-}
-
-static bool nativeWrite( const char* path, int start, const char* buffer, int size )
-{
-  HANDLE file = CreateFile( path, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, nullptr );
-  if( file == nullptr ) {
-    return false;
-  }
-
-  // TODO seek
-
-  DWORD written;
-  BOOL result = WriteFile( file, buffer, DWORD( size ), &written, nullptr );
-  CloseHandle( file );
-
-  return result && int( written ) == size;
-}
-
-static char* nativeMap( const char* path, int )
-{
-  HANDLE file = CreateFile( path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                            FILE_ATTRIBUTE_NORMAL, nullptr );
-  if( file == nullptr ) {
-    return nullptr;
-  }
-
-  HANDLE mapping = CreateFileMapping( file, nullptr, PAGE_READONLY, 0, 0, nullptr );
-  if( mapping == nullptr ) {
-    CloseHandle( file );
-    return nullptr;
-  }
-
-  char* data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
-
-  CloseHandle( mapping );
-  CloseHandle( file );
-
-  return data;
-}
-
-static void nativeUnmap( void* data, int )
-{
-  UnmapViewOfFile( data );
-}
-
-#else
-
-static void nativeStat( const char* path, File::Type* type, int* size, long64* time )
-{
-  struct stat info;
-
-  if( ::stat( path, &info ) != 0 ) {
-    *type = File::MISSING;
-    *size = -1;
-    *time = 0;
-  }
-  else if( S_ISDIR( info.st_mode ) ) {
-    *type = File::DIRECTORY;
-    *size = -1;
-    *time = long64( max( info.st_ctime, info.st_mtime ) );
-  }
-  else if( S_ISREG( info.st_mode ) ) {
-    *type = File::REGULAR;
-    *size = int( info.st_size );
-    *time = long64( max( info.st_ctime, info.st_mtime ) );
-  }
-  else {
-    // Ignore files other that directories and regular files.
-    *type = File::MISSING;
-    *size = -1;
-    *time = 0;
-  }
-}
-
-static bool nativeRead( const char* path, int start, char* buffer, int* size )
-{
-  int fd = open( path, O_RDONLY );
-  if( fd < 0 ) {
-    *size = 0;
-    return false;
-  }
-
-  if( start != 0 ) {
-    lseek( fd, start, SEEK_SET );
-  }
-
-  int read = int( ::read( fd, buffer, size_t( *size ) ) );
-  close( fd );
-
-  if( read != *size ) {
-    *size = max( 0, read );
-    return false;
-  }
-  return true;
-}
-
-static bool nativeWrite( const char* path, int start, const char* buffer, int size )
-{
-  int fd = open( path, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
-  if( fd < 0 ) {
-    return false;
-  }
-
-  if( start != 0 ) {
-    lseek( fd, start, SEEK_SET );
-  }
-
-  int result = int( ::write( fd, buffer, size_t( size ) ) );
-  close( fd );
-
-  return result == size;
-}
-
-static char* nativeMap( const char* path, int size )
-{
-  int fd = open( path, O_RDONLY );
-  if( fd < 0 ) {
-    return nullptr;
-  }
-
-  char* data = static_cast<char*>( mmap( nullptr, size_t( size ), PROT_READ, MAP_SHARED, fd, 0 ) );
-
-  data = data == MAP_FAILED ? nullptr : data;
-  close( fd );
-
-  return data;
-}
-
-static void nativeUnmap( void* data, int size )
-{
-  munmap( data, size_t( size ) );
-}
-
-#endif
 
 OZ_HIDDEN
 File::File( const String& path, File::Type type, int size, long64 time ) :
@@ -481,30 +163,15 @@ File& File::operator = ( File&& file )
 bool File::stat()
 {
   if( filePath.fileIsVirtual() ) {
-#ifdef OZ_ZLIB
-
-    const FileEntry* entry = vfsLibrary.find( filePath );
-
-    if( entry == nullptr ) {
-      fileType = File::MISSING;
-      fileSize = -1;
-      fileTime = 0;
-    }
-    else {
-      fileType = entry->type;
-      fileSize = entry->size;
-      fileTime = entry->time;
-    }
-
-#elif PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
+#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 
     if( !PHYSFS_exists( &filePath[1] ) ) {
-      fileType = File::MISSING;
+      fileType = MISSING;
       fileSize = -1;
       fileTime = 0;
     }
     else if( PHYSFS_isDirectory( &filePath[1] ) ) {
-      fileType = File::DIRECTORY;
+      fileType = DIRECTORY;
       fileSize = -1;
       fileTime = PHYSFS_getLastModTime( &filePath[1] );
     }
@@ -512,12 +179,12 @@ bool File::stat()
       PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
 
       if( file == nullptr ) {
-        fileType = File::MISSING;
+        fileType = MISSING;
         fileSize = -1;
         fileTime = 0;
       }
       else {
-        fileType = File::REGULAR;
+        fileType = REGULAR;
         fileSize = int( PHYSFS_fileLength( file ) );
         fileTime = PHYSFS_getLastModTime( &filePath[1] );
 
@@ -530,22 +197,22 @@ bool File::stat()
     PHYSFS_Stat info;
 
     if( !PHYSFS_stat( &filePath[1], &info ) ) {
-      fileType = File::MISSING;
+      fileType = MISSING;
       fileSize = -1;
       fileTime = 0;
     }
     else if( info.filetype == PHYSFS_FILETYPE_DIRECTORY ) {
-      fileType = File::DIRECTORY;
+      fileType = DIRECTORY;
       fileSize = -1;
       fileTime = max( info.createtime, info.modtime );
     }
     else if( info.filetype == PHYSFS_FILETYPE_REGULAR ) {
-      fileType = File::REGULAR;
+      fileType = REGULAR;
       fileSize = int( info.filesize );
       fileTime = max( info.createtime, info.modtime );
     }
     else {
-      fileType = File::MISSING;
+      fileType = MISSING;
       fileSize = -1;
       fileTime = 0;
     }
@@ -553,8 +220,93 @@ bool File::stat()
 #endif
   }
   else {
-    nativeStat( filePath, &fileType, &fileSize, &fileTime );
+    fileType = MISSING;
+    fileSize = -1;
+    fileTime = 0;
+
+#if defined( __native_client__ )
+
+    if( String::equals( filePath, "/" ) ) {
+      fileType = DIRECTORY;
+      return;
+    }
+
+    pp::FileRef file( ppFileSystem, filePath );
+    pp::FileIO  fio( System::instance );
+    PP_FileInfo info;
+
+    if( fio.Open( file, 0, pp::BlockUntilComplete() ) == PP_OK &&
+        fio.Query( &info, pp::BlockUntilComplete() ) == PP_OK )
+    {
+      if( info.type == PP_FILETYPE_REGULAR ) {
+        fileType = REGULAR;
+        fileSize = int( info.size );
+        fileTime = long64( max( info.creation_time, info.last_modified_time ) );
+      }
+      else if( info.type == PP_FILETYPE_DIRECTORY ) {
+        fileType = DIRECTORY;
+        fileSize = -1;
+        fileTime = long64( max( info.creation_time, info.last_modified_time ) );
+      }
+    }
+
+#elif defined( _WIN32 )
+
+    WIN32_FILE_ATTRIBUTE_DATA info;
+    if( GetFileAttributesEx( filePath, GetFileExInfoStandard, &info ) == 0 ) {
+      return;
+    }
+
+    ULARGE_INTEGER creationTime = {
+      { info.ftCreationTime.dwLowDateTime, info.ftCreationTime.dwHighDateTime }
+    };
+    ULARGE_INTEGER modificationTime = {
+      { info.ftLastWriteTime.dwLowDateTime, info.ftLastWriteTime.dwHighDateTime }
+    };
+
+    long64 time = max( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
+
+    if( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+      fileType = DIRECTORY;
+      fileSize = -1;
+      fileTime = time;
+    }
+    else {
+      HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                  FILE_ATTRIBUTE_NORMAL, nullptr );
+      if( handle != nullptr ) {
+        int size = int( GetFileSize( handle, nullptr ) );
+
+        if( size != int( INVALID_FILE_SIZE ) ) {
+          fileType = REGULAR;
+          fileSize = size;
+          fileTime = time;
+        }
+
+        CloseHandle( handle );
+      }
+    }
+
+#else
+
+    struct stat info;
+
+    if( ::stat( filePath, &info ) == 0 ) {
+      if( S_ISREG( info.st_mode ) ) {
+        fileType = REGULAR;
+        fileSize = int( info.st_size );
+        fileTime = long64( max( info.st_ctime, info.st_mtime ) );
+      }
+      else if( S_ISDIR( info.st_mode ) ) {
+        fileType = DIRECTORY;
+        fileSize = -1;
+        fileTime = long64( max( info.st_ctime, info.st_mtime ) );
+      }
+    }
+
+#endif
   }
+
   return fileType != MISSING;
 }
 
@@ -608,7 +360,67 @@ bool File::read( char* buffer, int* size ) const
     return true;
   }
   else {
-    return nativeRead( filePath, 0, buffer, size );
+#if defined( __native_client__ )
+
+    pp::FileRef file( ppFileSystem, filePath );
+    pp::FileIO  fio( System::instance );
+
+    if( fio.Open( file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete() ) != PP_OK ) {
+      *size = 0;
+      return false;
+    }
+
+    int read = 0;
+    int result;
+    while( ( result = fio.Read( read, &buffer[read], *size - read,
+                                pp::BlockUntilComplete() ) ) > 0 )
+    {
+      read += result;
+    }
+
+    if( result < 0 || read != *size ) {
+      *size = read;
+      return false;
+    }
+    return true;
+
+#elif defined( _WIN32 )
+
+    HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                              FILE_ATTRIBUTE_NORMAL, nullptr );
+    if( file == nullptr ) {
+      *size = 0;
+      return false;
+    }
+
+    DWORD read = 0;
+    BOOL result = ReadFile( file, buffer, DWORD( size ), &read, nullptr );
+    CloseHandle( file );
+
+    if( !result || int( read ) != *size ) {
+      *size = int( read );
+      return false;
+    }
+    return true;
+
+#else
+
+    int fd = open( filePath, O_RDONLY );
+    if( fd < 0 ) {
+      *size = 0;
+      return false;
+    }
+
+    int read = int( ::read( fd, buffer, size_t( *size ) ) );
+    close( fd );
+
+    if( read != *size ) {
+      *size = max( 0, read );
+      return false;
+    }
+    return true;
+
+#endif
   }
 }
 
@@ -669,7 +481,55 @@ bool File::write( const char* buffer, int size ) const
     return false;
   }
   else {
-    return nativeWrite( filePath, 0, buffer, size );
+#if defined( __native_client__ )
+
+    pp::FileRef file( ppFileSystem, filePath );
+    pp::FileIO  fio( System::instance );
+
+    if( fio.Open( file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
+                  pp::BlockUntilComplete() ) != PP_OK )
+    {
+      return false;
+    }
+
+    int written = 0;
+    int result;
+    while( written != size &&
+          ( result = fio.Write( written, &buffer[written], size - written,
+                                pp::BlockUntilComplete() ) ) > 0 )
+    {
+      written += result;
+    }
+
+    return written == size;
+
+#elif defined( _WIN32 )
+
+    HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL, nullptr );
+    if( file == nullptr ) {
+      return false;
+    }
+
+    DWORD written;
+    BOOL result = WriteFile( file, buffer, DWORD( size ), &written, nullptr );
+    CloseHandle( file );
+
+    return result && int( written ) == size;
+
+#else
+
+    int fd = open( filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
+    if( fd < 0 ) {
+      return false;
+    }
+
+    int result = int( ::write( fd, buffer, size_t( size ) ) );
+    close( fd );
+
+    return result == size;
+
+#endif
   }
 }
 
@@ -699,8 +559,54 @@ bool File::map()
     return read( data, &size );
   }
   else {
-    data = nativeMap( filePath, fileSize );
+#if defined( __native_client__ )
+
+    // If we used `data` member here `read()` would copy it into itself.
+    char* buffer = new char[size];
+
+    if( !read( filePath, buffer, &size ) ) {
+      delete[] buffer;
+      return nullptr;
+    }
+
+    data = buffer;
+    return true;
+
+#elif defined( _WIN32 )
+
+    HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                              FILE_ATTRIBUTE_NORMAL, nullptr );
+    if( file == nullptr ) {
+      return nullptr;
+    }
+
+    HANDLE mapping = CreateFileMapping( file, nullptr, PAGE_READONLY, 0, 0, nullptr );
+    if( mapping == nullptr ) {
+      CloseHandle( file );
+      return nullptr;
+    }
+
+    data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
+
+    CloseHandle( mapping );
+    CloseHandle( file );
+
     return data != nullptr;
+
+#else
+
+    int fd = open( filePath, O_RDONLY );
+    if( fd < 0 ) {
+      return nullptr;
+    }
+
+    data = static_cast<char*>( mmap( nullptr, size_t( fileSize ), PROT_READ, MAP_SHARED, fd, 0 ) );
+    data = data == MAP_FAILED ? nullptr : data;
+
+    close( fd );
+    return data != nullptr;
+
+#endif
   }
 }
 
@@ -714,7 +620,13 @@ void File::unmap()
     delete[] data;
   }
   else {
-    nativeUnmap( data, fileSize );
+#if defined( __native_client__ )
+    delete[] data;
+#elif defined( _WIN32 )
+    UnmapViewOfFile( data );
+#else
+    munmap( data, size_t( fileSize ) );
+#endif
   }
   data = nullptr;
 }
@@ -903,18 +815,12 @@ String File::cwd()
 bool File::chdir( const char* path )
 {
 #if defined( __native_client__ )
-
   static_cast<void>( path );
   return false;
-
 #elif defined( _WIN32 )
-
   return SetCurrentDirectory( path ) != 0;
-
 #else
-
   return ::chdir( path ) == 0;
-
 #endif
 }
 
@@ -925,18 +831,12 @@ bool File::mkdir( const char* path )
   }
   else {
 #if defined( __native_client__ )
-
     pp::FileRef file( ppFileSystem, path );
     return file.MakeDirectory( pp::BlockUntilComplete() ) == PP_OK;
-
 #elif defined( _WIN32 )
-
     return CreateDirectory( path, nullptr ) != 0;
-
 #else
-
     return ::mkdir( path, 0755 ) == 0;
-
 #endif
   }
 }
@@ -991,39 +891,6 @@ bool File::mountLocal( const char* path )
   return true;
 }
 
-void File::initVFS( NaClFileSystem naclFileSystem, int naclSize )
-{
-  static_cast<void>( naclFileSystem );
-  static_cast<void>( naclSize );
-
-#ifdef __native_client__
-
-  pp::Module* module = pp::Module::Get();
-
-  if( System::instance == nullptr ) {
-    OZ_ERROR( "System::instance must be set prior to PhysicsFS initialisation" );
-  }
-  if( module->core()->IsMainThread() ) {
-    OZ_ERROR( "PhysicsFS cannot be initialisation in the main thread" );
-  }
-
-  PHYSFS_NACL_init( System::instance->pp_instance(), module->get_browser_interface(),
-                    naclFileSystem == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                         PP_FILESYSTEMTYPE_LOCALTEMPORARY,
-                    naclSize );
-
-#endif
-
-  if( PHYSFS_init( nullptr ) == 0 ) {
-    OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
-  }
-}
-
-void File::destroyVFS()
-{
-  PHYSFS_deinit();
-}
-
 void File::init( NaClFileSystem naclFileSystem, int naclSize )
 {
   static_cast<void>( naclFileSystem );
@@ -1033,25 +900,34 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
 
   ppCore = pp::Module::Get()->core();
 
-  if( System::instance == nullptr ) {
-    OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise"
-              " NaCl file system" );
-  }
+  PP_FileSystemType naclType = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                                              PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
-  destroy();
+  ppFileSystem = pp::FileSystem( System::instance, naclType );
 
-  PP_FileSystemType type = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                          PP_FILESYSTEMTYPE_LOCALTEMPORARY;
-
-  ppFileSystem = pp::FileSystem( System::instance, type );
   if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
-    OZ_ERROR( "Local file system open failed" );
+    OZ_ERROR( "Local NaCl file system open failed" );
   }
+  if( System::instance == nullptr ) {
+    OZ_ERROR( "System::instance must be set prior to NaCl file system initialisation" );
+  }
+  if( pp::Module::Get()->IsMainThread() ) {
+    OZ_ERROR( "PhysicsFS cannot be initialised from the main NaCl thread" );
+  }
+
+  PHYSFS_NACL_init( System::instance->pp_instance(), pp::Module::Get()->get_browser_interface(),
+                    naclType, naclSize );
 
 #endif
+
+  if( PHYSFS_init( nullptr ) == 0 ) {
+    OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
+  }
 }
 
 void File::destroy()
-{}
+{
+  PHYSFS_deinit();
+}
 
 }

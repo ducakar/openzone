@@ -75,7 +75,7 @@ class Quat : public VectorBase4
 #endif
 
     /**
-     * Create a quaternion with the given components.
+     * Create a quaternion with given components.
      */
     OZ_ALWAYS_INLINE
     explicit Quat( float x, float y, float z, float w ) :
@@ -547,7 +547,7 @@ class Quat : public VectorBase4
     }
 
     /**
-     * Create quaternion for rotation around the given axis.
+     * Create quaternion for rotation around a given axis.
      */
     static Quat rotationAxis( const Vec3& axis, float theta )
     {

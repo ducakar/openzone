@@ -113,7 +113,7 @@
 
 /**
  * @def STR_INDEX
- * Initialises variable `str` to structure with the given index or returns with error for invalid
+ * Initialises variable `str` to structure with a given index or returns with error for invalid
  * indices.
  */
 #define STR_INDEX( index ) \
@@ -136,7 +136,7 @@
 
 /**
  * @def ENT_INDEX
- * Initialises variable `ent` to structure entity with the given index (i.e.
+ * Initialises variable `ent` to structure entity with a given index (i.e.
  * structureIndex * 128 + entityIndex)or returns with error for invalid indices.
  */
 #define ENT_INDEX( index ) \
@@ -176,7 +176,7 @@
 
 /**
  * @def OBJ_INDEX
- * Initialises variable `obj` to object with the given index or returns with error for invalid
+ * Initialises variable `obj` to object with a given index or returns with error for invalid
  * indices.
  */
 #define OBJ_INDEX( index ) \
@@ -190,8 +190,8 @@
 
 /**
  * @def ITEM_INDEX
- * Initialises variable `item` to item with the given index or returns with error for invalid
- * indices or objects that are not items.
+ * Initialises variable `item` to item with a given index or returns with error for invalid indices
+ * or objects that are not items.
  */
 #define ITEM_INDEX( index ) \
   if( uint( index ) >= uint( orbis.objects.length() ) ) { \
@@ -207,7 +207,7 @@
 
 /**
  * @def BOT_INDEX
- * Initialises variable `bot` to bot with the given index or returns with error for invalid indices
+ * Initialises variable `bot` to bot with a given index or returns with error for invalid indices
  * or objects that are not bots.
  */
 #define BOT_INDEX( index ) \
@@ -478,14 +478,14 @@
 
 /**
  * @def l_dobuffer
- * Loads (executes) %Lua code from the given buffer.
+ * Loads (executes) %Lua code from a given buffer.
  */
 #define l_dobuffer( begin, length, name ) \
   ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
 
 /**
  * @def l_dostring
- * Loads (executes) %Lua code from the given null-terminated string.
+ * Loads (executes) %Lua code from a given null-terminated string.
  */
 #define l_dostring( code ) \
   luaL_dostring( l, code )

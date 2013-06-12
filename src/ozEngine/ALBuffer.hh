@@ -50,7 +50,7 @@ class ALBuffer
     explicit ALBuffer();
 
     /**
-     * Create a new buffer from the given file. Same as the default constructor plus `load()`.
+     * Create a new buffer from a given file. Same as the default constructor plus `load()`.
      */
     explicit ALBuffer( const File& file );
 
@@ -114,7 +114,7 @@ class ALBuffer
     bool create();
 
     /**
-     * Create a new buffer if necessary and load data from the given WAVE or Ogg Vorbis file.
+     * Create a new buffer if necessary and load data from a given WAVE or Ogg Vorbis file.
      *
      * If the buffer already exists, its contents is replaced by the new data. On loading failure,
      * buffer is destroyed.

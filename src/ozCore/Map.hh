@@ -123,7 +123,7 @@ class Map
   public:
 
     /**
-     * Create an empty map with the given initial capacity.
+     * Create an empty map with a given initial capacity.
      */
     explicit Map( int capacity = 0 ) :
       data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
@@ -367,7 +367,7 @@ class Map
     }
 
     /**
-     * True iff the given key is found in the map.
+     * True iff a given key is found in the map.
      */
     template <typename Key_ = Key>
     bool contains( const Key_& key ) const
@@ -377,7 +377,7 @@ class Map
     }
 
     /**
-     * Index of the element with the given value or -1 if not found.
+     * Index of the element with a given value or -1 if not found.
      */
     template <typename Key_ = Key>
     int index( const Key_& key ) const
@@ -387,7 +387,7 @@ class Map
     }
 
     /**
-     * Constant pointer to the given key's value or `nullptr` if not found.
+     * Constant pointer to the value for a given key or `nullptr` if not found.
      */
     template <typename Key_ = Key>
     const Value* find( const Key_& key ) const
@@ -397,7 +397,7 @@ class Map
     }
 
     /**
-     * Pointer to the given key's value or `nullptr` if not found.
+     * Pointer to the value for a given key or `nullptr` if not found.
      */
     template <typename Key_ = Key>
     Value* find( const Key_& key )
@@ -409,7 +409,7 @@ class Map
     /**
      * Add an element or override value if an element with the same key exists.
      *
-     * @return Position of the inserted or the existing element.
+     * @return Position of the inserted element.
      */
     template <typename Key_ = Key, typename Value_ = Value>
     int add( Key_&& key, Value_&& value )
@@ -447,7 +447,7 @@ class Map
     }
 
     /**
-     * Insert an element at the given position.
+     * Insert an element at a given position.
      *
      * All later elements are shifted to make a gap.
      * Use only when you are sure you are inserting at the right position to preserve order of the
@@ -468,7 +468,7 @@ class Map
     }
 
     /**
-     * Remove the element at the given position.
+     * Remove the element at a given position.
      *
      * All later elements are shifted to fill the gap.
      */
@@ -489,7 +489,7 @@ class Map
     }
 
     /**
-     * Find and remove the element with the given key.
+     * Find and remove the element with a given key.
      *
      * @return Index of the removed element or -1 if not found.
      */

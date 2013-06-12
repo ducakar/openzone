@@ -83,14 +83,14 @@ class File
   public:
 
     /**
-     * Create an instance for the given path.
+     * Create an instance for a given path.
      *
      * `stat()` is automatically called on construction unless path empty.
      */
     File( const char* path = "" );
 
     /**
-     * Create an instance for the given path.
+     * Create an instance for a given path.
      *
      * `stat()` is automatically called on construction unless path empty.
      */
@@ -221,7 +221,7 @@ class File
     }
 
     /**
-     * True iff file name has the given extension.
+     * True iff file name has a given extension.
      *
      * Empty string matches both no extension and files names ending with dot.
      */
@@ -261,7 +261,7 @@ class File
     bool read( char* buffer, int* size ) const;
 
     /**
-     * Read file and write it to the given stream's current position.
+     * Read file and write it to a given stream's current position.
      *
      * If there's not enough space on stream, the rest of the file contents is skipped.
      *
@@ -384,26 +384,9 @@ class File
     static bool mountLocal( const char* path );
 
     /**
-     * Initialise virtual file system.
+     * Initialise NaCl native file system and VFS.
      *
-     * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
-     * @param naclSize NaCl file system size.
-     *
-     * @note
-     * On NaCl, `System::instance` must be set prior to initialising any kind of file system.
-     * On other platforms `naclFileSystem` and `naclSize` parameters are ignored.
-     */
-    static void initVFS( NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0 );
-
-    /**
-     * Deinitialise virtual file system.
-     */
-    static void destroyVFS();
-
-    /**
-     * Initialise native file system.
-     *
-     * This method is a NOP for all platforms except NaCl.
+     * On platforms other than NaCl, native file system does not need to be (de)initialised.
      *
      * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
      * @param naclSize NaCl file system size.
@@ -416,9 +399,7 @@ class File
     static void init( NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0 );
 
     /**
-     * Deinitialise native file system.
-     *
-     * Currently this method is a NOP for all platforms.
+     * Deinitialise VFS.
      */
     static void destroy();
 

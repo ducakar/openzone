@@ -132,7 +132,7 @@ class String
     }
 
     /**
-     * Index of the first occurrence of a character from the given index (inclusive).
+     * Index of the first occurrence of a character from a given index (inclusive).
      */
     static int index( const char* s, char ch, int start = 0 )
     {
@@ -145,7 +145,7 @@ class String
     }
 
     /**
-     * Index of the last occurrence of a character before the given index (not inclusive).
+     * Index of the last occurrence of a character before a given index (not inclusive).
      */
     static int lastIndex( const char* s, char ch, int end )
     {
@@ -173,7 +173,7 @@ class String
     }
 
     /**
-     * Pointer to the first occurrence of a character from the given index (inclusive).
+     * Pointer to the first occurrence of a character from a given index (inclusive).
      */
     static const char* find( const char* s, char ch, int start = 0 )
     {
@@ -186,7 +186,7 @@ class String
     }
 
     /**
-     * Pointer to the last occurrence of a character before the given index (not inclusive).
+     * Pointer to the last occurrence of a character before a given index (not inclusive).
      */
     static const char* findLast( const char* s, char ch, int end )
     {
@@ -214,7 +214,7 @@ class String
     }
 
     /**
-     * True iff string begins with the given characters.
+     * True iff string begins with given characters.
      */
     static bool beginsWith( const char* s, const char* sub )
     {
@@ -226,7 +226,7 @@ class String
     }
 
     /**
-     * True iff string ends with the given characters.
+     * True iff string ends with given characters.
      */
     static bool endsWith( const char* s, const char* sub );
 
@@ -251,7 +251,7 @@ class String
     static String replace( const char* s, char whatChar, char withChar );
 
     /**
-     * Return array of substrings between occurrences of the given delimiter.
+     * Return array of substrings between occurrences of a given delimiter.
      *
      * Empty strings between two immediate delimiter occurrences or between a delimiter and
      * beginning/end of the original string are included.
@@ -299,7 +299,7 @@ class String
     static String fileExtension( const char* s );
 
     /**
-     * True iff file name has the given extension.
+     * True iff file name has a given extension.
      *
      * Empty string matches both no extension and files names ending with dot.
      */
@@ -426,7 +426,7 @@ class String
     }
 
     /**
-     * Create string form the given C string with a known length.
+     * Create string form a given C string with a known length.
      *
      * @param s C string.
      * @param count length in bytes without the terminating null character.
@@ -434,12 +434,12 @@ class String
     String( const char* s, int count );
 
     /**
-     * Create string form the given C string (nullptr is permitted, equals "").
+     * Create string form a given C string (nullptr is permitted, equals "").
      */
     String( const char* s );
 
     /**
-     * Create string by concatenating the given two C strings.
+     * Create string by concatenating given two C strings.
      */
     String( const char* s, const char* t );
 
@@ -449,12 +449,12 @@ class String
     explicit String( bool b );
 
     /**
-     * Create a string representing the given int value.
+     * Create a string representing a given int value.
      */
     explicit String( int i );
 
     /**
-     * Create a string representing the given double value.
+     * Create a string representing a given double value.
      *
      * Number is formatted the same as `%.9g` in `printf()` using C locale.
      *
@@ -496,7 +496,7 @@ class String
     String& operator = ( String&& s );
 
     /**
-     * Replace current string with the given C string (nullptr is permitted, equals "").
+     * Replace current string with a given C string (nullptr is permitted, equals "").
      */
     String& operator = ( const char* s );
 
@@ -759,7 +759,7 @@ class String
     }
 
     /**
-     * Index of the first occurrence of a character from the given index (inclusive).
+     * Index of the first occurrence of a character from a given index (inclusive).
      */
     int index( char ch, int start = 0 ) const
     {
@@ -767,7 +767,7 @@ class String
     }
 
     /**
-     * Index of the last occurrence of a character before the given index (not inclusive).
+     * Index of the last occurrence of a character before a given index (not inclusive).
      */
     int lastIndex( char ch, int end ) const
     {
@@ -783,7 +783,7 @@ class String
     }
 
     /**
-     * Pointer to the first occurrence of a character from the given index (inclusive).
+     * Pointer to the first occurrence of a character from a given index (inclusive).
      */
     const char* find( char ch, int start = 0 ) const
     {
@@ -791,7 +791,7 @@ class String
     }
 
     /**
-     * Pointer to the last occurrence of a character before the given index (not inclusive).
+     * Pointer to the last occurrence of a character before a given index (not inclusive).
      */
     const char* findLast( char ch, int end ) const
     {
@@ -807,7 +807,7 @@ class String
     }
 
     /**
-     * True iff string begins with the given characters.
+     * True iff string begins with given characters.
      */
     bool beginsWith( const char* sub ) const
     {
@@ -815,7 +815,7 @@ class String
     }
 
     /**
-     * True iff string ends with the given characters.
+     * True iff string ends with given characters.
      */
     bool endsWith( const char* sub ) const;
 
@@ -892,7 +892,7 @@ class String
     String replace( char whatChar, char withChar ) const;
 
     /**
-     * Return array of substrings between occurrences of the given delimiter.
+     * Return array of substrings between occurrences of a given delimiter.
      *
      * Empty strings between two immediate delimiter occurrences or between a delimiter and
      * beginning/end of the original string are included.
@@ -940,7 +940,7 @@ class String
     String fileExtension() const;
 
     /**
-     * True iff file name has the given extension.
+     * True iff file name has a given extension.
      *
      * Empty string matches both no extension and files names ending with dot.
      */

@@ -17,6 +17,7 @@
     * linear algebra classes added as primitives to streams, Log and JSON
     * PFile class merged into File class (VFS paths begin with '@')
     * new SharedLib class
+    * new Gettext class
 - ozDynamics: new rigid body dynamics library
     * collision
         + primitives: Box, Capsule, Polytope, Compound

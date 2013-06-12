@@ -87,7 +87,7 @@ class IteratorBase
   protected:
 
     /**
-     * Create an iterator pointing to the given element.
+     * Create an iterator pointing to a given element.
      */
     OZ_ALWAYS_INLINE
     explicit IteratorBase( Elem* first ) :
@@ -227,7 +227,7 @@ inline void iMove( IteratorA destIter, IteratorB srcIter )
 }
 
 /**
- * %Set elements to the given value.
+ * %Set elements to a given value.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline void iFill( Iterator iter, const Value& value )
@@ -278,7 +278,7 @@ inline bool iEquals( CIteratorA iterA, CIteratorB iterB )
 }
 
 /**
- * True iff the given value is found in the container.
+ * True iff a given value is found in a container.
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
 inline bool iContains( CIterator iter, const Value& value )

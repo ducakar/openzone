@@ -86,25 +86,22 @@ static void initName()
 }
 
 // Set main thread name to "main" during static initialisation.
-static struct MainThreadNameInitialiser
+struct MainThreadNameInitialiser
 {
   OZ_HIDDEN
   explicit MainThreadNameInitialiser()
   {
 #ifdef _WIN32
-
     initName();
     TlsSetValue( nameKey, const_cast<char*>( "main" ) );
-
 #else
-
     pthread_once( &nameOnce, initName );
     pthread_setspecific( nameKey, "main" );
-
 #endif
   }
-}
-mainThreadNameInitialiser;
+};
+
+static MainThreadNameInitialiser mainThreadNameInitialiser;
 
 struct Thread::Descriptor
 {

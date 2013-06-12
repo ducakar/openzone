@@ -62,7 +62,7 @@ class Mat44
     explicit Mat44() = default;
 
     /**
-     * Create matrix with the given columns.
+     * Create matrix with given columns.
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :
@@ -78,7 +78,7 @@ class Mat44
     {}
 
     /**
-     * Create matrix with the given components.
+     * Create matrix with given components.
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( float xx, float xy, float xz, float xw,

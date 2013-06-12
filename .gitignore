@@ -11,31 +11,29 @@
 /ports
 /build
 
-/data/*/*
-!/data/netradiant/*
-!/data/*/ui
-/data/*/ui/cur
-/data/*/ui/font
-/data/*/ui/icon
-!/data/gtkradiant/*
-!/data/*/baseq3
 /data/*/baseq3/*
 !/data/*/baseq3/maps
-/data/*/baseq3/maps/*
-!/data/*/baseq3/maps/*.json
-!/data/*/class
-!/data/*/credits
-!/data/*/frag
-!/data/*/glsl
-!/data/*/lingua
-!/data/*/lua
-!/data/*/mission
+/data/*/caelum
+/data/*/mdl
+/data/*/music
+/data/*/name
+/data/*/snd
+/data/*/terra
+/data/*/ui/*
+!/data/*/ui/style
 
 DISABLED
 *.pot
 *.mo
 *.png
+*.jpg
+*.jpeg
 *.bmp
+*.map
+*.bsp
+*.prt
+*.srf
+*.bak
 
 /*.patch
 /*.trace
