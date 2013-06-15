@@ -55,6 +55,7 @@
  * Containers.
  */
 #include "Pair.hh"
+#include "Tuple.hh"
 #include "Chain.hh"
 #include "DChain.hh"
 #include "Array.hh"

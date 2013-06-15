@@ -6,6 +6,7 @@
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
         + STL-like begin() and end() members on containers
+	+ Tuple template class
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
