@@ -368,20 +368,26 @@ class File
     /**
      * Mount read-only directory or archive into VFS.
      *
-     * @param path archive or directory in native file system directory to mount.
+     * @param path archive or directory in native file system.
      * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
-     * @param append true to add to the end instead to the beginning of the search path.
+     * @param append true to append to the end instead to the beginning of the search path.
      */
-    static bool mount( const char* path, const char* mountPoint, bool append = true );
+    static bool mount( const char* path, const char* mountPoint, bool append = false );
 
     /**
-     * Mount read/write local resource directory to root of VFS.
+     * Mount writeable local resource directory to the root of VFS.
      *
-     * This function does not fork for NaCl.
+     * Only physical files under this directory can be changed in VFS. Any new files or directories
+     * created in VFS will be physically written here.
+     *
+     * @note
+     * If more than one directory is mounted via `mountLocal()` the last one will be used for
+     * writing.
      *
      * @param path path to directory in native file system.
+     * @param append true to append to the end instead to the beginning of the search path.
      */
-    static bool mountLocal( const char* path );
+    static bool mountLocal( const char* path, bool append = false );
 
     /**
      * Initialise NaCl native file system and VFS.

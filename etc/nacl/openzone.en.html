@@ -79,6 +79,10 @@
         hudArea.style.display = "inline";
         hudText.innerHTML = "Downloading updates<br/>" + text;
       }
+      else if( type == "data:" ) {
+        hudArea.style.display = "inline";
+        hudText.innerHTML = "Reading game data archives<br/>" + text;
+      }
       else if( type == "lang:" ) {
         module.postMessage( "lang:" + navigator.language );
       }

@@ -34,7 +34,8 @@
 # include <ppapi/cpp/file_io.h>
 # include <ppapi/cpp/file_ref.h>
 # include <ppapi/cpp/file_system.h>
-# include <pthread.h>
+# include <ppapi/cpp/dev/directory_entry_dev.h>
+# include <ppapi/cpp/dev/directory_reader_dev.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 #else
@@ -228,7 +229,7 @@ bool File::stat()
 
     if( String::equals( filePath, "/" ) ) {
       fileType = DIRECTORY;
-      return;
+      return true;
     }
 
     pp::FileRef file( ppFileSystem, filePath );
@@ -254,7 +255,7 @@ bool File::stat()
 
     WIN32_FILE_ATTRIBUTE_DATA info;
     if( GetFileAttributesEx( filePath, GetFileExInfoStandard, &info ) == 0 ) {
-      return;
+      return false;
     }
 
     ULARGE_INTEGER creationTime = {
@@ -562,9 +563,10 @@ bool File::map()
 #if defined( __native_client__ )
 
     // If we used `data` member here `read()` would copy it into itself.
-    char* buffer = new char[size];
+    char* buffer = new char[fileSize];
+    int   size   = fileSize;
 
-    if( !read( filePath, buffer, &size ) ) {
+    if( !read( buffer, &size ) || size != fileSize ) {
       delete[] buffer;
       return nullptr;
     }
@@ -684,7 +686,42 @@ DArray<File> File::ls() const
   else {
 #if defined( __native_client__ )
 
-    // TODO: Implement when pp::DirectoryReader gets into stable PPAPI.
+    typedef std::vector<pp::DirectoryEntry_Dev> EntryList;
+
+    pp::FileRef                                     file( ppFileSystem, filePath );
+    pp::DirectoryReader_Dev                         dirReader( file );
+    pp::DirectoryEntryArrayOutputAdapterWithStorage entryArray;
+
+    dirReader.ReadEntries( pp::CompletionCallbackWithOutput<EntryList>( &entryArray ) );
+    EntryList& entries = entryArray.output();
+
+    // Count entries first.
+    int count = 0;
+    for( size_t i = 0; i < entries.size(); ++i ) {
+      std::string entryName = entries[i].file_ref().GetName().AsString();
+
+      if( entryName[0] != '.' ) {
+        ++count;
+      }
+    }
+
+    if( count == 0 ) {
+      return array;
+    }
+
+    array.resize( count );
+
+    String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
+
+    int j = 0;
+    for( size_t i = 0; i < entries.size(); ++i ) {
+      std::string entryName = entries[i].file_ref().GetName().AsString();
+
+      if( entryName[0] != '.' ) {
+        array[j] = File( prefix + entryName.c_str() );
+        ++j;
+      }
+    }
 
 #elif defined( _WIN32 )
 
@@ -745,7 +782,11 @@ DArray<File> File::ls() const
       return array;
     }
 
-    struct dirent* entity = readdir( directory );
+    char    entityBuffer[ offsetof( dirent, d_name ) + 256 ];
+    dirent* entityData = reinterpret_cast<dirent*>( entityBuffer );
+    dirent* entity;
+
+    readdir_r( directory, entityData, &entity );
 
     // Count entries first.
     int count = 0;
@@ -753,7 +794,7 @@ DArray<File> File::ls() const
       if( entity->d_name[0] != '.' ) {
         ++count;
       }
-      entity = readdir( directory );
+      readdir_r( directory, entityData, &entity );
     }
 
     if( count == 0 ) {
@@ -762,13 +803,12 @@ DArray<File> File::ls() const
     }
 
     rewinddir( directory );
-
     array.resize( count );
 
     String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
 
     for( int i = 0; i < count; ) {
-      entity = readdir( directory );
+      readdir_r( directory, entityData, &entity );
 
       if( entity == nullptr ) {
         closedir( directory );
@@ -879,12 +919,12 @@ bool File::mount( const char* path, const char* mountPoint, bool append )
   return PHYSFS_mount( path, mountPoint, append ) != 0;
 }
 
-bool File::mountLocal( const char* path )
+bool File::mountLocal( const char* path, bool append )
 {
   if( PHYSFS_setWriteDir( path ) == 0 ) {
     return false;
   }
-  if( PHYSFS_mount( path, nullptr, false ) == 0 ) {
+  if( PHYSFS_mount( path, nullptr, append ) == 0 ) {
     PHYSFS_setWriteDir( nullptr );
     return false;
   }
@@ -911,7 +951,7 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
   if( System::instance == nullptr ) {
     OZ_ERROR( "System::instance must be set prior to NaCl file system initialisation" );
   }
-  if( pp::Module::Get()->IsMainThread() ) {
+  if( ppCore->IsMainThread() ) {
     OZ_ERROR( "PhysicsFS cannot be initialised from the main NaCl thread" );
   }
 

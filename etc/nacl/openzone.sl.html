@@ -78,6 +78,10 @@
         hudArea.style.display = "inline";
         hudText.innerHTML = "Prenašam posodobitve<br/>" + text;
       }
+      else if( type == "data:" ) {
+        hudArea.style.display = "inline";
+        hudText.innerHTML = "Berem podatkovne arhive<br/>" + text;
+      }
       else if( type == "lang:" ) {
         module.postMessage( "lang:" + navigator.language );
       }

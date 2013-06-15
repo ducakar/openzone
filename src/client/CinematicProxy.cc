@@ -147,11 +147,8 @@ void CinematicProxy::begin()
   ui::ui.galileoFrame->enable( false );
   ui::ui.musicPlayer->enable( false );
 
-  OZ_MAIN_CALL( this, {
-    _this->cinematicText = new ui::CinematicText();
-    ui::ui.root->add( _this->cinematicText, ui::Area::CENTRE, 200 );
-  } )
-
+  cinematicText = new ui::CinematicText();
+  ui::ui.root->add( cinematicText, ui::Area::CENTRE, 200 );
   ui::mouse.doShow = false;
 
   beginRot    = camera.rot;
@@ -165,9 +162,7 @@ void CinematicProxy::begin()
 
 void CinematicProxy::end()
 {
-  OZ_MAIN_CALL( this, {
-    ui::ui.root->remove( _this->cinematicText );
-  } )
+  ui::ui.root->remove( cinematicText );
 
   ui::ui.musicPlayer->enable( true );
   ui::ui.galileoFrame->enable( true );

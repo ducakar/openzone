@@ -40,12 +40,9 @@ namespace ui
 
 static void back( Button* sender )
 {
-  OZ_MAIN_CALL( sender, {
-    Button*      _sender     = static_cast<Button*>( _this );
-    MissionMenu* missionMenu = static_cast<MissionMenu*>( _sender->parent );
+  MissionMenu* missionMenu = static_cast<MissionMenu*>( sender->parent );
 
-    missionMenu->parent->remove( missionMenu );
-  } )
+  missionMenu->parent->remove( missionMenu );
 }
 
 bool MissionButton::onMouseEvent()
@@ -106,17 +103,14 @@ void MissionMenu::onReposition()
     imageX = ( width - 240 - imageWidth ) / 2;
   }
 
-  OZ_MAIN_CALL( this, {
-    while( _this->children.first() != _this->children.last() ) {
-      _this->remove( _this->children.first() );
-    }
+  while( children.first() != children.last() ) {
+    remove( children.first() );
+  }
 
-    for( int i = 0; i < _this->nSelections; ++i ) {
-      Button* missionButton = new MissionButton( _this->missions[i].title, loadMission, _this, i,
-                                                 200, 30 );
-      _this->add( missionButton, -20, -( i + 2 ) * 40 );
-    }
-  } )
+  for( int i = 0; i < nSelections; ++i ) {
+    Button* missionButton = new MissionButton( missions[i].title, loadMission, this, i, 200, 30 );
+    add( missionButton, -20, -( i + 2 ) * 40 );
+  }
 }
 
 bool MissionMenu::onMouseEvent()

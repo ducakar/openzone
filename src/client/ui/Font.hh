@@ -25,6 +25,9 @@
 
 #include <client/common.hh>
 
+struct _TTF_Font;
+typedef struct _TTF_Font TTF_Font;
+
 namespace oz
 {
 namespace client
@@ -46,12 +49,15 @@ class Font
       MAX
     };
 
-    int  height;
 
   private:
 
-    Buffer buffer;
-    void*  handle;
+    Buffer    buffer;
+    TTF_Font* handle;
+
+  public:
+
+    int height;
 
   public:
 

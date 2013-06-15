@@ -37,27 +37,24 @@ namespace ui
 
 static const SDL_Colour SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
-static SDL_Surface* textSurface;
-static uint         texId;
-
 int Font::size( const char* s ) const
 {
   int width;
-  TTF_SizeUTF8( static_cast<TTF_Font*>( handle ), s, &width, nullptr );
+  TTF_SizeUTF8( handle, s, &width, nullptr );
   return width;
 }
 
-void Font::draw( const char* s, uint texId_, int* width, int* height ) const
+void Font::draw( const char* s, uint texId, int* width, int* height ) const
 {
-  textSurface = TTF_RenderUTF8_Blended( static_cast<TTF_Font*>( handle ), s, SDL_COLOUR_WHITE );
-  texId       = texId_;
+  SDL_Surface* textSurface = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
 
-  OZ_MAIN_CALL( const_cast<Font*>( this ), {
+  MainCall() << [&]()
+  {
     glBindTexture( GL_TEXTURE_2D, texId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textSurface->w, textSurface->h, 0, GL_RGBA,
                   GL_UNSIGNED_BYTE, textSurface->pixels );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  } )
+  };
 
   *width  = textSurface->w;
   *height = textSurface->h;
@@ -87,7 +84,7 @@ void Font::init( const char* name, int height_ )
 void Font::destroy()
 {
   if( handle != nullptr ) {
-    TTF_CloseFont( static_cast<TTF_Font*>( handle ) );
+    TTF_CloseFont( handle );
   }
 
   buffer.deallocate();

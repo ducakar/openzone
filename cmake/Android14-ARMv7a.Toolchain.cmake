@@ -9,8 +9,6 @@ set( PLATFORM_TOOL_PREFIX       "$ENV{ANDROID_NDK}/toolchains/arm-linux-androide
 set( PLATFORM_STL_PREFIX        "$ENV{ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.6" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/Android14-ARMv7a" )
 set( PLATFORM_FLAGS             "-fPIC -Wno-psabi --sysroot=${PLATFORM_PREFIX}" )
-set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/include" )
-set( PLATFORM_FLAGS             "${PLATFORM_FLAGS} -isystem ${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/include" )
 set( PLATFORM_STL_LIBRARY       "${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/libgnustl_static.a" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
@@ -28,3 +26,6 @@ set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
 set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
+
+include_directories( SYSTEM ${PLATFORM_STL_PREFIX}/include )
+include_directories( SYSTEM ${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/include )
