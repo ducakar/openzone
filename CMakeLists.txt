@@ -8,6 +8,7 @@ project( openzone C CXX )
 
 set( OZ_VERSION 0.3.81 )
 
+option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
@@ -34,6 +35,7 @@ set( OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
 
 if( PLATFORM_EMBEDDED )
   set( OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
+  set( OZ_SHARED_LIBS OFF )
   set( OZ_GL_ES ON )
   set( OZ_NONFREE OFF )
   set( OZ_STANDALONE OFF )
@@ -55,6 +57,8 @@ if( OZ_STANDALONE )
 else()
   set( OZ_BINARY_SUBDIR "" )
 endif()
+
+set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBS} )
 
 #
 # Libraries

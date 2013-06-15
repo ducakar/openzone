@@ -118,25 +118,26 @@ void NaClDownloader::begin( const char* url_ )
   semaphore.init();
   buffer = OutputStream( 0 );
 
-  OZ_MAIN_CALL( this, {
+  MainCall() << [&]()
+  {
     pp::URLRequestInfo request( System::instance );
-    request.SetURL( _this->url );
+    request.SetURL( url );
     request.SetMethod( "GET" );
     request.SetRecordDownloadProgress( true );
 
-    _this->loader = new pp::URLLoader( System::instance );
-    if( _this->loader == nullptr ) {
-      _this->semaphore.post();
+    loader = new pp::URLLoader( System::instance );
+    if( loader == nullptr ) {
+      semaphore.post();
       return;
     }
 
-    int ret = _this->loader->Open( request, pp::CompletionCallback( beginCallback, _this ) );
+    int ret = loader->Open( request, pp::CompletionCallback( beginCallback, this ) );
     if( ret != PP_OK_COMPLETIONPENDING ) {
-      delete _this->loader;
-      _this->semaphore.post();
+      delete loader;
+      semaphore.post();
       return;
     }
-  } )
+  };
 }
 
 OutputStream NaClDownloader::take()

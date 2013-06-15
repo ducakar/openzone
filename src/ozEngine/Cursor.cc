@@ -157,6 +157,9 @@ bool Cursor::load( const File& file, int size )
     char* pixels = new char[size];
     istream.readChars( pixels, size );
 
+#ifdef GL_ES_VERSION_2_0
+    GLenum srcFormat = GL_RGBA;
+
     // BGRA -> RGBA
     char* pixel = pixels;
     for( int y = 0; y < image.height; ++y ) {
@@ -165,6 +168,9 @@ bool Cursor::load( const File& file, int size )
         pixel += 4;
       }
     }
+#else
+    GLenum srcFormat = GL_BGRA;
+#endif
 
     glGenTextures( 1, &image.textureId );
     glBindTexture( GL_TEXTURE_2D, image.textureId );
@@ -174,7 +180,7 @@ bool Cursor::load( const File& file, int size )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA,
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, srcFormat,
                   GL_UNSIGNED_BYTE, pixels );
 
     delete[] pixels;

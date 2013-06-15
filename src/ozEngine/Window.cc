@@ -107,9 +107,10 @@ void Window::warpMouse()
 void Window::swapBuffers()
 {
 #if defined( __native_client__ )
-  OZ_STATIC_MAIN_CALL( {
+  MainCall() << []()
+  {
     context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
-  } )
+  };
   flushSemaphore.wait();
 #elif SDL_MAJOR_VERSION < 2
   SDL_GL_SwapBuffers();
@@ -138,11 +139,12 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
   windowWidth  = newWidth;
   windowHeight = newHeight;
 
-  OZ_STATIC_MAIN_CALL( {
+  MainCall() << []()
+  {
     glSetCurrentContextPPAPI( 0 );
     context->ResizeBuffers( windowWidth, windowHeight );
     glSetCurrentContextPPAPI( context->pp_resource() );
-  } )
+  };
 
 #elif SDL_MAJOR_VERSION < 2
 # ifdef _WIN32
@@ -222,18 +224,17 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
   Log::print( "Creating OpenGL surface %dx%d ... ", windowWidth, windowHeight );
 
-  OZ_STATIC_MAIN_CALL( {
+  MainCall() << []()
+  {
     glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
 
     // Array initialiser cannot be nested inside a macro parameter.
-    int attribs[7];
-    attribs[0] = PP_GRAPHICS3DATTRIB_DEPTH_SIZE;
-    attribs[1] = 16;
-    attribs[2] = PP_GRAPHICS3DATTRIB_WIDTH;
-    attribs[3] = windowWidth;
-    attribs[4] = PP_GRAPHICS3DATTRIB_HEIGHT;
-    attribs[5] = windowHeight;
-    attribs[6] = PP_GRAPHICS3DATTRIB_NONE;
+    int attribs[] = {
+      PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
+      PP_GRAPHICS3DATTRIB_WIDTH, windowWidth,
+      PP_GRAPHICS3DATTRIB_HEIGHT, windowHeight,
+      PP_GRAPHICS3DATTRIB_NONE
+    };
 
     context = new pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
 
@@ -252,7 +253,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
       context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
     }
-  } )
+  };
   flushSemaphore.wait();
 
   Log::printEnd( "OK" );
@@ -359,11 +360,13 @@ void Window::destroy()
 #if defined( __native_client__ )
 
   if( !context->is_null() ) {
-    OZ_STATIC_MAIN_CALL( {
+    MainCall() << []()
+    {
       glSetCurrentContextPPAPI( 0 );
       delete context;
+      context = nullptr;
       glTerminatePPAPI();
-    } )
+    };
     flushSemaphore.destroy();
   }
 

@@ -1,4 +1,4 @@
-# Doxyfile 1.8.3.1
+# Doxyfile 1.8.4
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -54,7 +54,6 @@ SUBGROUPING            = YES
 INLINE_GROUPED_CLASSES = NO
 INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
-SYMBOL_CACHE_SIZE      = 0
 LOOKUP_CACHE_SIZE      = 0
 #---------------------------------------------------------------------------
 # Build related configuration options
@@ -197,6 +196,7 @@ USE_MATHJAX            = NO
 MATHJAX_FORMAT         = HTML-CSS
 MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
 MATHJAX_EXTENSIONS     =
+MATHJAX_CODEFILE       =
 SEARCHENGINE           = NO
 SERVER_BASED_SEARCH    = NO
 EXTERNAL_SEARCH        = NO
@@ -216,6 +216,7 @@ PAPER_TYPE             = a4
 EXTRA_PACKAGES         =
 LATEX_HEADER           =
 LATEX_FOOTER           =
+LATEX_EXTRA_FILES      =
 PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
@@ -247,6 +248,11 @@ XML_SCHEMA             =
 XML_DTD                =
 XML_PROGRAMLISTING     = YES
 #---------------------------------------------------------------------------
+# configuration options related to the DOCBOOK output
+#---------------------------------------------------------------------------
+GENERATE_DOCBOOK       = NO
+DOCBOOK_OUTPUT         = docbook
+#---------------------------------------------------------------------------
 # configuration options for the AutoGen Definitions output
 #---------------------------------------------------------------------------
 GENERATE_AUTOGEN_DEF   = NO
@@ -276,6 +282,7 @@ TAGFILES               =
 GENERATE_TAGFILE       =
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
+EXTERNAL_PAGES         = YES
 PERL_PATH              = /usr/bin/perl
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool

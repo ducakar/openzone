@@ -66,32 +66,23 @@ static void loadQuicksaved( Button* )
 
 static void openMissions( Button* sender )
 {
-  OZ_MAIN_CALL( sender, {
-    Button*   _sender  = static_cast<Button*>( _this );
-    MainMenu* mainMenu = static_cast<MainMenu*>( _sender->parent );
+  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-    mainMenu->add( new MissionMenu(), 0, 0 );
-  } )
+  mainMenu->add( new MissionMenu(), 0, 0 );
 }
 
 static void openSettings( Button* sender )
 {
-  OZ_MAIN_CALL( sender, {
-    Button*   _sender  = static_cast<Button*>( _this );
-    MainMenu* mainMenu = static_cast<MainMenu*>( _sender->parent );
+  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-    mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
-  } )
+  mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
 }
 
 static void openCredits( Button* sender )
 {
-  OZ_MAIN_CALL( sender, {
-    Button*   _sender  = static_cast<Button*>( _this );
-    MainMenu* mainMenu = static_cast<MainMenu*>( _sender->parent );
+  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-    mainMenu->add( new CreditsMenu(), 0, 0 );
-  } )
+  mainMenu->add( new CreditsMenu(), 0, 0 );
 }
 
 static void openWeb( Button* )
@@ -140,17 +131,13 @@ void MainMenu::onUpdate()
   gameStage.quicksaveFile.stat();
 
   if( gameStage.autosaveFile.type() == File::REGULAR ) {
-    OZ_MAIN_CALL( this, {
-      Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
-      _this->add( continueButton, -20, 360 );
-    } )
+    Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
+    add( continueButton, -20, 360 );
   }
 
   if( gameStage.quicksaveFile.type() == File::REGULAR ) {
-    OZ_MAIN_CALL( this, {
-      Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
-      _this->add( quickLoadButton, -20, 320 );
-    } )
+    Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
+    add( quickLoadButton, -20, 320 );
   }
 
   flags &= ~UPDATE_BIT;

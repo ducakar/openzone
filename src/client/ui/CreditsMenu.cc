@@ -40,12 +40,9 @@ namespace ui
 
 static void back( Button* sender )
 {
-  OZ_MAIN_CALL( sender, {
-    Button*      _sender     = static_cast<Button*>( _this );
-    CreditsMenu* creditsMenu = static_cast<CreditsMenu*>( _sender->parent );
+  CreditsMenu* creditsMenu = static_cast<CreditsMenu*>( sender->parent );
 
-    creditsMenu->parent->remove( creditsMenu );
-  } )
+  creditsMenu->parent->remove( creditsMenu );
 }
 
 void CreditsMenu::onReposition()

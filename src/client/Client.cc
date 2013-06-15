@@ -314,6 +314,8 @@ int Client::init( int argc, char** argv )
 #ifdef __native_client__
 
   foreach( pkg, packages.citer() ) {
+    Pepper::post( "data:" + *pkg );
+
     File pkgFile( localDir + "/" + *pkg );
 
     if( File::mount( pkgFile.path(), nullptr, true ) ) {
@@ -373,6 +375,7 @@ int Client::init( int argc, char** argv )
 
 #ifdef __native_client__
 
+  Pepper::post( "none:" );
   Pepper::post( "lang:" );
 
   for( String message = Pepper::pop(); ; message = Pepper::pop() ) {
@@ -450,15 +453,11 @@ int Client::init( int argc, char** argv )
   context.init();
 
   initFlags |= INIT_RENDER;
-  OZ_MAIN_CALL( this, {
-    render.init();
-  } )
+  render.init();
   render.swap();
 
   initFlags |= INIT_AUDIO;
-  OZ_MAIN_CALL( this, {
-    sound.init();
-  } )
+  sound.init();
 
   initFlags |= INIT_STAGE_INIT;
   menuStage.init();
@@ -499,14 +498,10 @@ void Client::shutdown()
     menuStage.destroy();
   }
   if( initFlags & INIT_AUDIO ) {
-    OZ_MAIN_CALL( this, {
-      sound.destroy();
-    } )
+    sound.destroy();
   }
   if( initFlags & INIT_RENDER ) {
-    OZ_MAIN_CALL( this, {
-      render.destroy();
-    } )
+    render.destroy();
   }
   if( initFlags & INIT_CONTEXT ) {
     context.destroy();

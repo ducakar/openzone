@@ -185,75 +185,78 @@ void Shader::loadProgram( int id )
               fragName, name.cstr() );
   }
 
-  programs[id].vertShader = *vertId;
-  programs[id].fragShader = *fragId;
-  programs[id].program    = glCreateProgram();
+  MainCall() << [&]()
+  {
+    programs[id].vertShader = *vertId;
+    programs[id].fragShader = *fragId;
+    programs[id].program    = glCreateProgram();
 
-  glAttachShader( programs[id].program, programs[id].vertShader );
-  glAttachShader( programs[id].program, programs[id].fragShader );
+    glAttachShader( programs[id].program, programs[id].vertShader );
+    glAttachShader( programs[id].program, programs[id].fragShader );
 
-  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
+    OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
+    OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
+    OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
 
-  glLinkProgram( programs[id].program );
+    glLinkProgram( programs[id].program );
 
-  int result;
-  glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
+    int result;
+    glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
 
-  int length;
-  glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
-  logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
+    int length;
+    glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
+    logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 
-  if( length != 0 ) {
-    if( result == GL_TRUE ) {
-      Log::verboseMode = true;
+    if( length != 0 ) {
+      if( result == GL_TRUE ) {
+        Log::verboseMode = true;
+      }
+
+      Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
+      Log::verboseMode = false;
     }
 
-    Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
-    Log::verboseMode = false;
-  }
+    if( result != GL_TRUE ) {
+      OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
+    }
 
-  if( result != GL_TRUE ) {
-    OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
-  }
+    glUseProgram( programs[id].program );
 
-  glUseProgram( programs[id].program );
+    OZ_REGISTER_UNIFORM( projModelTransform,  "oz_ProjModelTransform"  );
+    OZ_REGISTER_UNIFORM( modelTransform,      "oz_ModelTransform"      );
+    OZ_REGISTER_UNIFORM( boneTransforms,      "oz_BoneTransforms"      );
+    OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
 
-  OZ_REGISTER_UNIFORM( projModelTransform,  "oz_ProjModelTransform"  );
-  OZ_REGISTER_UNIFORM( modelTransform,      "oz_ModelTransform"      );
-  OZ_REGISTER_UNIFORM( boneTransforms,      "oz_BoneTransforms"      );
-  OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
+    OZ_REGISTER_UNIFORM( colourTransform,     "oz_ColourTransform"     );
+    OZ_REGISTER_UNIFORM( textures,            "oz_Textures"            );
 
-  OZ_REGISTER_UNIFORM( colourTransform,     "oz_ColourTransform"     );
-  OZ_REGISTER_UNIFORM( textures,            "oz_Textures"            );
+    OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
+    OZ_REGISTER_UNIFORM( caelumLight_diffuse, "oz_CaelumLight.diffuse" );
+    OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
+    OZ_REGISTER_UNIFORM( cameraPosition,      "oz_CameraPosition"      );
 
-  OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
-  OZ_REGISTER_UNIFORM( caelumLight_diffuse, "oz_CaelumLight.diffuse" );
-  OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
-  OZ_REGISTER_UNIFORM( cameraPosition,      "oz_CameraPosition"      );
+    OZ_REGISTER_UNIFORM( fog_dist,            "oz_Fog.dist"            );
+    OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
 
-  OZ_REGISTER_UNIFORM( fog_dist,            "oz_Fog.dist"            );
-  OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
+    OZ_REGISTER_UNIFORM( starsColour,         "oz_StarsColour"         );
+    OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
+    OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
 
-  OZ_REGISTER_UNIFORM( starsColour,         "oz_StarsColour"         );
-  OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
-  OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
+    uniform = programs[id].uniform;
 
-  uniform = programs[id].uniform;
+    if( setSamplerMap ) {
+      glUniform1iv( uniform.textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
+    }
 
-  if( setSamplerMap ) {
-    glUniform1iv( uniform.textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
-  }
+    Mat44 bones[] = {
+      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
+      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
+      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
+      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID
+    };
 
-  Mat44 bones[] = {
-    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
-    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
-    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
-    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID
+    glUniformMatrix4fv( uniform.boneTransforms, 16, GL_FALSE, bones[0] );
   };
-
-  glUniformMatrix4fv( uniform.boneTransforms, 16, GL_FALSE, bones[0] );
 
   OZ_GL_CHECK_ERROR();
 }

@@ -284,18 +284,13 @@ static int ozUIShowBuild( lua_State* l )
   bool doShow = l_tobool( 1 );
 
   if( doShow && ui::ui.buildMenu == nullptr ) {
-    OZ_MAIN_CALL( static_cast<void*>( nullptr ), {
-      ui::ui.buildMenu = new ui::BuildMenu();
-    } )
-
+    ui::ui.buildMenu = new ui::BuildMenu();
     ui::ui.buildMenu->show( ui::mouse.doShow );
     ui::ui.root->add( ui::ui.buildMenu, 8, -24 - 210 - 47 - 22 - 22 );
   }
   else if( !doShow && ui::ui.buildMenu != nullptr ) {
-    OZ_MAIN_CALL( static_cast<void*>( nullptr ), {
-      ui::ui.root->remove( ui::ui.buildMenu );
-      ui::ui.buildMenu = nullptr;
-    } )
+    ui::ui.root->remove( ui::ui.buildMenu );
+    ui::ui.buildMenu = nullptr;
   }
   return 0;
 }

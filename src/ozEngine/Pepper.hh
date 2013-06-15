@@ -30,84 +30,10 @@
 
 #include "common.hh"
 
-/**
- * @def OZ_MAIN_CALL
- * On NaCl, execute a given code in a callback on the main thread and block until finished.
- *
- * This version passes `this` pointer of the current object to the callback as `_this` variable.
- * For platforms other than NaCl the code is just inserted at the macro position.
- */
-#ifdef __native_client__
-
-# define OZ_MAIN_CALL( this, code ) \
-  if( oz::Pepper::isMainThread() ) { \
-    typedef decltype( this ) _This; \
-    _This _this = ( this ); \
-    static_cast<void>( _this ); \
-    { code } \
-  } \
-  else { \
-    typedef decltype( this ) _This; \
-    struct _Callback \
-    { \
-      static void _main( void* data, int ) \
-      { \
-        _This _this = static_cast<_This>( data ); \
-        static_cast<void>( _this ); \
-        { code } \
-        oz::Pepper::mainCallSemaphore.post(); \
-      } \
-    }; \
-    oz::Pepper::mainCall( _Callback::_main, ( this ) ); \
-  }
-
-#else
-
-# define OZ_MAIN_CALL( this, code ) \
-  { \
-    decltype( this ) _this = ( this ); \
-    static_cast<void>( _this ); \
-    { code } \
-  }
-
-#endif
-
-/**
- * @def OZ_STATIC_MAIN_CALL
- * On NaCl, execute a given code in a callback on the main thread and block until finished.
- *
- * This version does not pass this pointer or any data to the callback.
- * For platforms other than NaCl the code is just inserted at the macro position.
- */
-#ifdef __native_client__
-
-# define OZ_STATIC_MAIN_CALL( code ) \
-  if( oz::Pepper::isMainThread() ) { \
-    { code } \
-  } \
-  else { \
-    struct _Callback \
-    { \
-      static void _main( void*, int ) \
-      { \
-        { code } \
-        oz::Pepper::mainCallSemaphore.post(); \
-      } \
-    }; \
-    oz::Pepper::mainCall( _Callback::_main, nullptr ); \
-  }
-
-#else
-
-# define OZ_STATIC_MAIN_CALL( code ) \
-  { code }
-
-#endif
-
-#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
-
 namespace oz
 {
+
+#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
 
 /**
  * High-level interface to NaCl %Pepper API (PPAPI).
@@ -149,9 +75,9 @@ class Pepper
     static bool isMainThread();
 
     /**
-     * Execute callback on the module's main thread and block until finished.
+     * Execute asynchronous callback on the module's main thread.
      */
-    static void mainCall( Callback* callback, void* caller );
+    static void mainCall( Callback* callback, void* data );
 
     /**
      * Post a message to JavaScript running on the page.
@@ -180,6 +106,68 @@ class Pepper
 
 };
 
-}
+/**
+ * Utility for performing synchronous calls on the main NaCl thread.
+ *
+ * Methods called on the main thread would typically be lambda functions as those often need to
+ * access local variables of a function on a non-main thread and are quick to implement.
+ *
+ * A typical scenario:
+ * <code>
+ * GLuint id = loadTexture( file );
+ * MainCall() << [&]()
+ * {
+ *   glBindTexture( GL_TEXTURE_2D, id );
+ * };
+ * </code>
+ *
+ * This mechanism also works if used from the main thread.
+ *
+ * On platforms other than NaCl the lambda function is called immediately.
+ */
+struct MainCall
+{
+  /**
+   * Call a method without parameters on the main thread and wait for it to finish.
+   */
+  template <typename Method>
+  void operator << ( Method method ) const
+  {
+    if( Pepper::isMainThread() ) {
+      method();
+    }
+    else {
+      struct CallbackWrapper
+      {
+        Method func;
+
+        static void callback( void* data, int )
+        {
+          const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+
+          cw->func();
+          Pepper::mainCallSemaphore.post();
+        }
+      };
+      CallbackWrapper callbackWrapper = { method };
+
+      Pepper::mainCall( CallbackWrapper::callback, &callbackWrapper );
+      Pepper::mainCallSemaphore.wait();
+    }
+  }
+};
+
+#else
+
+struct MainCall
+{
+  template <typename Method>
+  void operator << ( Method method ) const
+  {
+    method();
+  }
+};
 
 #endif
+
+}

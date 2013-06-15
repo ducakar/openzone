@@ -95,7 +95,7 @@
 #else
 # define soft_assert( cond ) \
   ( ( cond ) ? \
-    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+    void( 0 ) : oz::detail::softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
 #endif
 
 /**
@@ -107,7 +107,7 @@
 #else
 # define hard_assert( cond ) \
   ( ( cond ) ? \
-    void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+    void( 0 ) : oz::detail::hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
 #endif
 
 /**
@@ -180,15 +180,23 @@ static_assert( sizeof( float  ) == 4, "sizeof( float ) should be 4" );
 static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
 /**
+ * Internal helpers.
+ */
+namespace detail
+{
+
+/**
  * Helper method for `soft_assert` macro.
  */
-void _softAssertHelper( const char* function, const char* file, int line, const char* message );
+void softAssertHelper( const char* function, const char* file, int line, const char* message );
 
 /**
  * Helper method for `hard_assert` macro.
  */
 OZ_NORETURN
-void _hardAssertHelper( const char* function, const char* file, int line, const char* message );
+void hardAssertHelper( const char* function, const char* file, int line, const char* message );
+
+}
 
 /**
  * Swap values of variables.

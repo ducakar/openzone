@@ -57,19 +57,19 @@ bool Pepper::isMainThread()
   return core->IsMainThread();
 }
 
-void Pepper::mainCall( Callback* callback, void* caller )
+void Pepper::mainCall( Callback* callback, void* data )
 {
-  core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
-  mainCallSemaphore.wait();
+  core->CallOnMainThread( 0, pp::CompletionCallback( callback, data ) );
 }
 
 void Pepper::post( const char* message )
 {
-  OZ_MAIN_CALL( const_cast<char*>( message ), {
-    const char* message = reinterpret_cast<const char*>( _this );
+  pp::Var var( message );
 
-    System::instance->PostMessage( pp::Var( message ) );
-  } )
+  MainCall() << [&]()
+  {
+    System::instance->PostMessage( var );
+  };
 }
 
 String Pepper::pop()

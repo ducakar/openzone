@@ -16,18 +16,18 @@
 buildType=Debug
 platforms=(
 #   Linux-x86_64
-  Linux-x86_64-Clang
+#   Linux-x86_64-Clang
 #   Linux-i686
 #   Linux-i686-Clang
 #   FreeBSD-x86_64-Clang
 #   FreeBSD-x86_64-GCC
 #   FreeBSD-i686-Clang
 #   FreeBSD-i686-GCC
-  Windows-i686
-  NaCl-x86_64
+#   Windows-i686
+#   NaCl-x86_64
 #   NaCl-i686
 #   NaCl-ARM
-#   PNaCl
+  PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a

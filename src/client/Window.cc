@@ -96,9 +96,10 @@ void Window::swapBuffers()
 {
 #if defined( __native_client__ )
 
-  OZ_MAIN_CALL( this, {
-    _this->context->SwapBuffers( pp::CompletionCallback( _this->flushCompleteCallback, _this ) );
-  } )
+  MainCall() << [&]()
+  {
+    context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, this ) );
+  };
   flushSemaphore.wait();
 
 #elif SDL_MAJOR_VERSION < 2
@@ -130,11 +131,12 @@ void Window::resize()
   width  = Pepper::width;
   height = Pepper::height;
 
-  OZ_MAIN_CALL( this, {
+  MainCall() << [&]()
+  {
     glSetCurrentContextPPAPI( 0 );
-    _this->context->ResizeBuffers( _this->width, _this->height );
-    glSetCurrentContextPPAPI( _this->context->pp_resource() );
-  } )
+    context->ResizeBuffers( width, height );
+    glSetCurrentContextPPAPI( context->pp_resource() );
+  };
 
 #endif
 }
@@ -212,17 +214,18 @@ void Window::init()
   flags  = 0;
   isFull = false;
 
-  OZ_MAIN_CALL( this, {
+  MainCall() << [&]()
+  {
     glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
-    _this->createContext();
-    glSetCurrentContextPPAPI( _this->context->pp_resource() );
+    createContext();
+    glSetCurrentContextPPAPI( context->pp_resource() );
 
     glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glFlush();
 
-    _this->context->SwapBuffers( pp::CompletionCallback( _this->flushCompleteCallback, _this ) );
-  } )
+    context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, this ) );
+  };
   flushSemaphore.wait();
 
 #else
@@ -352,11 +355,13 @@ void Window::destroy()
 {
 #if defined( __native_client__ )
 
-  OZ_MAIN_CALL( this, {
+  MainCall() << [&]()
+  {
     glSetCurrentContextPPAPI( 0 );
-    delete _this->context;
+    delete context;
+    context = nullptr;
     glTerminatePPAPI();
-  } )
+  };
 
   flushSemaphore.destroy();
 

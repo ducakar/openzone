@@ -357,10 +357,8 @@ void GameStage::load()
 
   questList.load();
 
-  OZ_MAIN_CALL( this, {
-    render.load();
-    context.load();
-  } )
+  render.load();
+  context.load();
 
   camera.reset();
   camera.setState( Camera::STRATEGIC );
@@ -463,10 +461,8 @@ void GameStage::unload()
 
   camera.reset();
 
-  OZ_MAIN_CALL( this, {
-    context.unload();
-    render.unload();
-  } )
+  context.unload();
+  render.unload();
 
   questList.unload();
 

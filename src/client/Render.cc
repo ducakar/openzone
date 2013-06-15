@@ -434,19 +434,17 @@ void Render::draw( int flags_ )
 
   flags = flags_;
 
-  OZ_MAIN_CALL( this, {
-    if( render.flags & DRAW_ORBIS_BIT ) {
-      shader.mode = Shader::SCENE;
+  if( render.flags & DRAW_ORBIS_BIT ) {
+    shader.mode = Shader::SCENE;
 
-      render.drawOrbis();
-    }
+    render.drawOrbis();
+  }
 
-    if( render.flags & DRAW_UI_BIT ) {
-      shader.mode = Shader::UI;
+  if( render.flags & DRAW_UI_BIT ) {
+    shader.mode = Shader::UI;
 
-      render.drawUI();
-    }
-  } )
+    render.drawUI();
+  }
 }
 
 void Render::swap()
@@ -464,6 +462,10 @@ void Render::swap()
 
 void Render::resize()
 {
+#ifdef __native_client__
+  hard_assert( !Pepper::isMainThread() );
+#endif
+
   windowWidth  = window.width;
   windowHeight = window.height;
 
@@ -474,84 +476,87 @@ void Render::resize()
   frameWidth  = Math::lround( float( window.width  ) * scale );
   frameHeight = Math::lround( float( window.height ) * scale );
 
-  if( mainFrame != 0 ) {
+  MainCall() << [&]()
+  {
+    if( mainFrame != 0 ) {
 #ifdef GL_ES_VERSION_2_0
-    glDeleteFramebuffers( 1, &mainFrame );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffers( 1, &depthBuffer );
+      glDeleteFramebuffers( 1, &mainFrame );
+      glDeleteTextures( 1, &colourBuffer );
+      glDeleteRenderbuffers( 1, &depthBuffer );
 #else
-    glDeleteFramebuffersEXT( 1, &mainFrame );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+      glDeleteFramebuffersEXT( 1, &mainFrame );
+      glDeleteTextures( 1, &colourBuffer );
+      glDeleteRenderbuffersEXT( 1, &depthBuffer );
 #endif
-  }
-
-#ifdef GL_ES_VERSION_2_0
-
-  glGenRenderbuffers( 1, &depthBuffer );
-  glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
-  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-
-#else
-
-  glGenRenderbuffersEXT( 1, &depthBuffer );
-  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
-  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
-  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
-
-#endif
-
-  glGenTextures( 1, &colourBuffer );
-  glBindTexture( GL_TEXTURE_2D, colourBuffer );
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaleFilter );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaleFilter );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
-                GL_UNSIGNED_BYTE, nullptr );
-
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+    }
 
 #ifdef GL_ES_VERSION_2_0
 
-  glGenFramebuffers( 1, &mainFrame );
-  glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-
-  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
-  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
-
-  if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-    OZ_ERROR( "Main framebuffer creation failed" );
-  }
-
-  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glGenRenderbuffers( 1, &depthBuffer );
+    glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
+    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
+    glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
 #else
 
-  glGenFramebuffersEXT( 1, &mainFrame );
-  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
-
-  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-                                depthBuffer );
-  glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-                             colourBuffer, 0 );
-
-  if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
-    OZ_ERROR( "Main framebuffer creation failed" );
-  }
-
-  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+    glGenRenderbuffersEXT( 1, &depthBuffer );
+    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
+    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
+    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
 
 #endif
+
+    glGenTextures( 1, &colourBuffer );
+    glBindTexture( GL_TEXTURE_2D, colourBuffer );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaleFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaleFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
+                  GL_UNSIGNED_BYTE, nullptr );
+
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+#ifdef GL_ES_VERSION_2_0
+
+    glGenFramebuffers( 1, &mainFrame );
+    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
+
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
+
+    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
+      OZ_ERROR( "Main framebuffer creation failed" );
+    }
+
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+#else
+
+    glGenFramebuffersEXT( 1, &mainFrame );
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+
+    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+                                  depthBuffer );
+    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+                               colourBuffer, 0 );
+
+    if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
+      OZ_ERROR( "Main framebuffer creation failed" );
+    }
+
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+
+#endif
+  };
 }
 
 void Render::load()
 {
 #ifdef __native_client__
-  hard_assert( Pepper::isMainThread() );
+  hard_assert( !Pepper::isMainThread() );
 #endif
 
   Log::print( "Loading Render ..." );
@@ -580,7 +585,7 @@ void Render::load()
 void Render::unload()
 {
 #ifdef __native_client__
-  hard_assert( Pepper::isMainThread() );
+  hard_assert( !Pepper::isMainThread() );
 #endif
 
   Log::print( "Unloading Render ..." );
@@ -589,7 +594,10 @@ void Render::unload()
   unloadDyn();
 #endif
 
-  glFinish();
+  MainCall() << []()
+  {
+    glFinish();
+  };
 
   caelum.unload();
   terra.unload();
@@ -610,7 +618,7 @@ void Render::unload()
 void Render::init()
 {
 #ifdef __native_client__
-  hard_assert( Pepper::isMainThread() );
+  hard_assert( !Pepper::isMainThread() );
 #endif
 
   Log::println( "Initialising Render {" );
@@ -622,15 +630,25 @@ void Render::init()
   bool hasFloatTex = false;
   bool hasS3TC     = false;
 
-  const char*    vendor       = String::cstr( glGetString( GL_VENDOR ) );
-  const char*    renderer     = String::cstr( glGetString( GL_RENDERER ) );
-  const char*    version      = String::cstr( glGetString( GL_VERSION ) );
-  const char*    glslVersion  = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
-  const char*    sExtensions  = String::cstr( glGetString( GL_EXTENSIONS ) );
-  DArray<String> extensions   = String::trim( sExtensions ).split( ' ' );
+  const char* vendor;
+  const char* renderer;
+  const char* version;
+  const char* glslVersion;
+  const char* sExtensions;
 
-  // glGetString( GL_EXTENSIONS ) generates an error when using OpenGL 3.2+ Core Profile.
-  glGetError();
+  MainCall() << [&]()
+  {
+    vendor      = String::cstr( glGetString( GL_VENDOR ) );
+    renderer    = String::cstr( glGetString( GL_RENDERER ) );
+    version     = String::cstr( glGetString( GL_VERSION ) );
+    glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+    sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
+
+    // glGetString( GL_EXTENSIONS ) generates an error when using OpenGL 3.2+ Core Profile.
+    glGetError();
+  };
+
+  DArray<String> extensions  = String::trim( sExtensions ).split( ' ' );
 
   Log::println( "OpenGL vendor: %s", vendor );
   Log::println( "OpenGL renderer: %s", renderer );
@@ -726,9 +744,12 @@ void Render::init()
   mainFrame = 0;
   resize();
 
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-  glEnable( GL_CULL_FACE );
-  glEnable( GL_BLEND );
+  MainCall() << []()
+  {
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glEnable( GL_CULL_FACE );
+    glEnable( GL_BLEND );
+  };
 
   shader.init();
   shape.init();
@@ -751,15 +772,18 @@ void Render::destroy()
   Log::indent();
 
   if( mainFrame != 0 ) {
+    MainCall() << [&]()
+    {
 #ifdef GL_ES_VERSION_2_0
-    glDeleteFramebuffers( 1, &mainFrame );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffers( 1, &depthBuffer );
+      glDeleteFramebuffers( 1, &mainFrame );
+      glDeleteTextures( 1, &colourBuffer );
+      glDeleteRenderbuffers( 1, &depthBuffer );
 #else
-    glDeleteFramebuffersEXT( 1, &mainFrame );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+      glDeleteFramebuffersEXT( 1, &mainFrame );
+      glDeleteTextures( 1, &colourBuffer );
+      glDeleteRenderbuffersEXT( 1, &depthBuffer );
 #endif
+    };
 
     mainFrame = 0;
   }

@@ -64,16 +64,13 @@ void MenuStage::wait( uint micros )
 
 void MenuStage::load()
 {
-  OZ_MAIN_CALL( this, {
-    input.buttons     = 0;
-    input.currButtons = 0;
+  input.buttons     = 0;
+  input.currButtons = 0;
 
-    _this->mainMenu = new ui::MainMenu();
-    ui::ui.root->add( _this->mainMenu, 0, 0 );
-
-    ui::ui.showLoadingScreen( false );
-    ui::mouse.doShow = true;
-  } )
+  mainMenu = new ui::MainMenu();
+  ui::ui.root->add( mainMenu, 0, 0 );
+  ui::ui.showLoadingScreen( false );
+  ui::mouse.doShow = true;
 
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
@@ -82,10 +79,8 @@ void MenuStage::load()
 
 void MenuStage::unload()
 {
-  OZ_MAIN_CALL( this, {
-    ui::mouse.doShow = false;
-    ui::ui.root->remove( _this->mainMenu );
-  } )
+  ui::mouse.doShow = false;
+  ui::ui.root->remove( mainMenu );
 }
 
 void MenuStage::init()

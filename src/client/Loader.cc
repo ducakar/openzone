@@ -403,9 +403,7 @@ void Loader::syncUpdate()
   Log::verboseMode = true;
 
   preloadRender();
-  OZ_MAIN_CALL( this, {
-    loader.uploadRender();
-  } )
+  loader.uploadRender();
 
   Log::verboseMode = false;
 }
@@ -424,10 +422,8 @@ void Loader::update()
 
   Log::verboseMode = true;
 
-  OZ_MAIN_CALL( this, {
-    loader.cleanupRender();
-    loader.uploadRender();
-  } )
+  loader.cleanupRender();
+  loader.uploadRender();
 
   tick = ( tick + 1 ) % TICK_PERIOD;
 
