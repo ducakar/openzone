@@ -98,7 +98,7 @@ class Collider
     const Struct*  str;
     const BSP*     bsp;
 
-    int            flags;
+    Object::Flags  flags;
     float          margin;
 
     /**
@@ -134,8 +134,8 @@ class Collider
 
   public:
 
-    int mask; /// Only objects whose `Object::flags` matches that mask are collided against.
-    Hit hit;  /// Collision feedback data.
+    Object::Flags mask; /// Only objects whose `Object::flags` match those are collided against.
+    Hit           hit;  /// Collision feedback data.
 
     explicit Collider();
 

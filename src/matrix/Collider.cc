@@ -39,9 +39,10 @@ const Vec3 Collider::NORMALS[] =
   Vec3(  0.0f,  0.0f, -1.0f )
 };
 
-Collider::Collider() :
-  mask( Object::SOLID_BIT )
-{}
+Collider::Collider()
+{
+  mask.solid = true;
+}
 
 inline bool Collider::visitBrush( int index )
 {
@@ -56,7 +57,7 @@ inline bool Collider::visitBrush( int index )
 
 bool Collider::overlapsAABBObj( const Object* sObj ) const
 {
-  if( flags & sObj->flags & Object::CYLINDER_BIT ) {
+  if( flags.cylinder && sObj->flags.cylinder ) {
     Vec3  relPos  = aabb.p - sObj->p;
 
     float sumDimXY = aabb.dim.x + sObj->dim.x;
@@ -207,7 +208,7 @@ bool Collider::overlapsAABBOrbis()
       }
 
       for( const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
-        if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
+        if( sObj != exclObj && ( sObj->flags.bitfield & mask.bitfield ) && overlapsAABBObj( sObj ) ) {
           return true;
         }
       }

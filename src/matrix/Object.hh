@@ -49,126 +49,67 @@ class Object : public AABB
 
   public:
 
-    /*
-     * TYPE FLAGS
-     */
+    union Flags
+    {
+      struct {
+      int dynamic     : 1; ///< Dynamic object.
+      int weapon      : 1; ///< Weapon.
+      int bot         : 1; ///< Bot.
+      int vehicle     : 1; ///< Vehicle.
+      int item        : 1; ///< Can be put into inventory.
+      int browsable   : 1; ///< Bots can access this object's inventory.
 
-    // Dynamic object
-    static const int DYNAMIC_BIT        = 0x40000000;
+      int lua         : 1; ///< Class has %Lua handlers.
+      int destroyFunc : 1; ///< `onDestroy()` handler is present and enabled.
+      int useFunc     : 1; ///< `onUse()` handler is present and enabled.
+      int updateFunc  : 1; ///< `onUpdate()` handler is present and enabled.
 
-    // Weapon
-    static const int WEAPON_BIT         = 0x20000000;
+      int device      : 1; ///< The object has a `Device` object bound in nirvana.
+      int imago       : 1; ///< The object has an `Imago` object in client.
+      int audio       : 1; ///< The object has an `Audio` object in client.
 
-    // Bot
-    static const int BOT_BIT            = 0x10000000;
+      int destroyed   : 1; ///< When an object's life drops to <= 0.0 it's tagged as destroyed
+                           ///< first and kept one more tick in the world, so destruction effects
+                           ///< can be processed by client (e.g. destruction sounds) in the next
+                           ///< tick the destroyed objects are actually removed.
 
-    // Vehicle
-    static const int VEHICLE_BIT        = 0x08000000;
+      int solid       : 1; ///< Other object can collide with the object.
+      int cylinder    : 1; ///< Use cylinder collision model if the other object is also cylinder.
+      int disabled    : 1; ///< The Object is still (on a still surface), skip physics for it.
+      int enable      : 1; ///< Force full physics update in the next tick.
+      int fricting    : 1; ///< The object has been sliding on floor or another object in last tick.
+      int below       : 1; ///< If an object has collided into another dynamic object from below
+                           ///< (to prevent stacked objects from being carried around).
+      int onFloor     : 1; ///< The object lies or moves on a structure, terrain or non-dynamic
+                           ///< object.
+      int onSlick     : 1; ///< The object is on slipping surface.
+      int inLiquid    : 1; ///< The object intersects with liquid.
+      int inLava      : 1; ///< The liquid object intersects with is lava.
+      int onLadder    : 1; ///< The bot is on ladder.
 
-    // can be put into inventory
-    static const int ITEM_BIT           = 0x04000000;
+      int wideCull    : 1; ///< Wide frustum culling: object is represented some times larger to
+                           ///< frustum culling system than it really is; how larger it is, is
+                           ///< specified by `client::Render::WIDE_CULL_FACTOR`.
 
-    // bots have access to this object's inventory
-    static const int BROWSABLE_BIT      = 0x02000000;
+      Heading heading : 2; ///< Heading.
+      };
+      int bitfield;
 
-    /*
-     * FUNCTION FLAGS
-     */
+      void tickClear()
+      {
+        fricting = false;
+      }
 
-    // if object has Lua handlers
-    static const int LUA_BIT            = 0x00800000;
-
-    // if the onDestroy method should be called on destruction
-    static const int DESTROY_FUNC_BIT   = 0x00400000;
-
-    // if the onUse function should be called when object is used
-    static const int USE_FUNC_BIT       = 0x00200000;
-
-    // if the onUpdate method should be called on each tick
-    static const int UPDATE_FUNC_BIT    = 0x00100000;
-
-    /*
-     * BOUND OBJECTS
-     */
-
-    // if the object has an Device object in nirvana
-    static const int DEVICE_BIT         = 0x00040000;
-
-    // if the object has an Imago object in frontend
-    static const int IMAGO_BIT          = 0x00020000;
-
-    // if the object has an Audio object in frontend
-    static const int AUDIO_BIT          = 0x00010000;
-
-    /*
-     * STATE FLAGS
-     */
-
-    // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
-    // in the world, so destruction effects can be processed by frontend (e.g. destruction sounds)
-    // in the next tick the destroyed objects are actually removed
-    static const int DESTROYED_BIT      = 0x00008000;
-
-    /*
-     * COLLISION & PHYSICS FLAGS
-     */
-
-    // other object can collide with the object
-    static const int SOLID_BIT          = 0x00004000;
-
-    // use cylinder model for collision between objects when both are flagged as cylinder
-    static const int CYLINDER_BIT       = 0x00002000;
-
-    // if the object is still and on a still surface, we won't handle physics for it
-    static const int DISABLED_BIT       = 0x00001000;
-
-    // force full physics update in the next step
-    static const int ENABLE_BIT         = 0x00000800;
-
-    // if the object is has been sliding on a floor or on another object in last step
-    static const int FRICTING_BIT       = 0x00000400;
-
-    // if the object has collided into another dynamic object from below (to prevent stacked
-    // objects from being carried around)
-    static const int BELOW_BIT          = 0x00000200;
-
-    // if the object lies or moves on a structure, terrain or non-dynamic object
-    // (if on another dynamic object, we determine that with "lower" index)
-    static const int ON_FLOOR_BIT       = 0x00000100;
-
-    // if the object is on slipping surface (not cleared if disabled)
-    static const int ON_SLICK_BIT       = 0x00000080;
-
-    // if the object intersects with a liquid (not cleared if disabled)
-    static const int IN_LIQUID_BIT      = 0x00000040;
-
-    // if the object is in lava
-    static const int IN_LAVA_BIT        = 0x00000020;
-
-    // if the object (bot in this case) is on ladder (not cleared if disabled)
-    static const int ON_LADDER_BIT      = 0x00000010;
-
-    /*
-     * RENDER FLAGS
-     */
-
-    // wide frustum culling: object is represented some times larger to frustum culling system than
-    // it really is; how larger it is, is specified by client::Render::WIDE_CULL_FACTOR
-    static const int WIDE_CULL_BIT      = 0x00000008;
-
-    /*
-     * FLAG MASKS
-     */
-
-    // masks Heading enum number
-    static const int HEADING_MASK       = 0x00000003;
-
-    // those flags are cleared by Physics on each tick
-    static const int TICK_CLEAR_MASK    = FRICTING_BIT;
-
-    // those flags are cleared by Physics on each update when an object moves (plus lower = -1)
-    static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT |
-                                          IN_LAVA_BIT | ON_LADDER_BIT | ON_SLICK_BIT;
+      void moveClear()
+      {
+        disabled = false;
+        onFloor  = false;
+        onSlick  = false;
+        inLiquid = false;
+        inLava   = false;
+        onLadder = false;
+      }
+    };
 
     static const int   MAX_DIM          = 5;
     static const float REAL_MAX_DIM;
@@ -234,7 +175,7 @@ class Object : public AABB
     Cell*              cell;       // parent cell, nullptr if not positioned in the world
     int                index;      // position in world.objects vector
 
-    int                flags;
+    Flags              flags;
 
     float              life;
     float              resistance;
@@ -277,11 +218,11 @@ class Object : public AABB
     OZ_ALWAYS_INLINE
     void destroy()
     {
-      if( !( flags & DESTROYED_BIT ) ) {
+      if( !flags.destroyed ) {
+        flags.destroyed = true;
         life = 0.0f;
-        flags |= DESTROYED_BIT;
 
-        if( flags & DESTROY_FUNC_BIT ) {
+        if( flags.destroyFunc ) {
           onDestroy();
         }
         addEvent( EVENT_DESTROY, 1.0f );
@@ -305,7 +246,7 @@ class Object : public AABB
     OZ_ALWAYS_INLINE
     void use( Bot* user )
     {
-      if( flags & USE_FUNC_BIT ) {
+      if( flags.useFunc ) {
         bool success = onUse( user );
         addEvent( EVENT_USE_FAILED - success, 1.0f );
       }
@@ -317,7 +258,7 @@ class Object : public AABB
     OZ_ALWAYS_INLINE
     void update()
     {
-      if( flags & UPDATE_FUNC_BIT ) {
+      if( flags.updateFunc ) {
         onUpdate();
       }
     }
