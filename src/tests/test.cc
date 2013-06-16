@@ -31,6 +31,5 @@ int main()
 //   File::init();
 //   File::mount( "/home/davorin/Razvoj/openzone/share/openzone/oz_base.zip", "" );
 //   File::mount( "/home/davorin/Razvoj/KSP/Vega_Pod1", "" );
-
   return 0;
 }

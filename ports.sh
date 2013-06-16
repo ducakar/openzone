@@ -27,25 +27,26 @@ platforms=(
 #   Emscripten
 )
 
+buildTriplet="`uname -m`-`uname -i`-linux-gnu"
+
 projectDir=`pwd`
 topDir="$projectDir/ports"
+originalPath="$PATH"
 
 nacl86Prefix="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
 naclARMPrefix="$NACL_SDK_ROOT/toolchain/linux_arm_newlib"
 pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
 
-ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.6/prebuilt/linux-x86"
+ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.7/prebuilt/linux-x86"
 ndkX86Platform="$ANDROID_NDK/platforms/android-14/arch-x86"
 
-ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86"
+ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.7/prebuilt/linux-x86"
 ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 
-ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.6/prebuilt/linux-x86"
+ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.7/prebuilt/linux-x86"
 ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
 
 emscriptenPrefix="$EMSCRIPTEN"
-
-originalPath="$PATH"
 
 function msg()
 {
@@ -80,11 +81,10 @@ function setup_nacl_x86_64()
   export CFLAGS="-O3 -ffast-math -msse3"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_nacl_i686()
@@ -109,11 +109,10 @@ function setup_nacl_i686()
   export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse -fomit-frame-pointer"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_nacl_ARM()
@@ -138,11 +137,10 @@ function setup_nacl_ARM()
   export CFLAGS="-Ofast"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_pnacl()
@@ -167,11 +165,10 @@ function setup_pnacl()
   export CFLAGS="-O4 -ffast-math"
   export LDFLAGS="-L$buildDir/usr/lib -lnosys"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_ndk_i686()
@@ -194,14 +191,13 @@ function setup_ndk_i686()
   export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -flto -fPIC -march=i686 -msse3 -mfpmath=sse"
+  export CFLAGS="-Ofast -fPIC -march=i686 -msse3 -mfpmath=sse"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_ndk_ARM()
@@ -224,14 +220,13 @@ function setup_ndk_ARM()
   export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -flto -fPIC -Wno-psabi"
+  export CFLAGS="-Ofast -fPIC -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_ndk_ARMv7a()
@@ -254,14 +249,13 @@ function setup_ndk_ARMv7a()
   export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -flto -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
+  export CFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_ndk_MIPS()
@@ -284,24 +278,23 @@ function setup_ndk_MIPS()
   export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -flto -fPIC"
+  export CFLAGS="-Ofast -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function setup_emscripten()
 {
-  platform="Emscripten"                                  # Platform name.
-  buildDir="$topDir/$platform"                           # Build and install directory.
-  triplet="emscripten"                                   # Platform triplet (tools prefix).
-  hostTriplet="emscripten"                               # Host triplet for autotools configure.
-  toolsroot="$emscriptenPrefix"                          # SDK tool root.
-  toolchain="$projectDir/cmake/Platform/$platform.cmake" # CMake toolchain.
+  platform="Emscripten"                                   # Platform name.
+  buildDir="$topDir/$platform"                            # Build and install directory.
+  triplet="emscripten"                                    # Platform triplet (tools prefix).
+  hostTriplet="emscripten"                                # Host triplet for autotools configure.
+  toolsroot="$emscriptenPrefix"                           # SDK tool root.
+  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export -n CPP
   export CC="$toolsroot/emcc"
@@ -313,14 +306,13 @@ function setup_emscripten()
   export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-isystem $buildDir/usr/include"
-  export CFLAGS="-Qunused-arguments -O2 -U__STRICT_ANSI__"
+  export CFLAGS="-O2 -Qunused-arguments -U__STRICT_ANSI__"
   export LDFLAGS="-L$buildDir/usr/lib"
 
-  enabled=0
   for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && enabled=1
+    [[ $p == $platform ]] && return 0
   done
-  (( $enabled )) || return 1
+  return 1
 }
 
 function clean()
@@ -336,6 +328,9 @@ function buildclean()
     for subDir in `echo "$topDir/$platform/*"`; do
       [[ $subDir == */usr ]] || rm -rf "$subDir"
     done
+
+    rm -rf "$topDir/$platform"/usr/lib/*.la
+    rm -rf "$topDir/$platform"/usr/lib/lua
   done
 }
 
@@ -348,7 +343,16 @@ function download()
 function fetch()
 {
   # zlib
-  download 'http://zlib.net/zlib-1.2.7.tar.bz2'
+  download 'http://zlib.net/zlib-1.2.8.tar.xz'
+
+  # libogg
+  download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.xz'
+
+  # libvorbis
+  download 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz'
+
+  # FreeType
+  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.12/freetype-2.4.12.tar.bz2'
 
   # PhysicsFS 2.1
   cd "$topDir/archives"
@@ -361,7 +365,10 @@ function fetch()
   download 'http://www.lua.org/ftp/lua-5.2.2.tar.gz'
 
   # LuaJIT
-  # download 'http://luajit.org/download/LuaJIT-2.0.0.tar.gz'
+  # download 'http://luajit.org/download/LuaJIT-2.0.2.tar.gz'
+
+  # OpenAL Soft
+  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
 
   # SDL
   download 'http://www.libsdl.org/release/SDL-1.2.15.tar.gz'
@@ -382,18 +389,6 @@ function fetch()
     then cd SDL_ttf && hg pull -u
     else hg clone 'http://hg.libsdl.org/SDL_ttf'
   fi
-
-  # FreeType
-  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.4.11/freetype-2.4.11.tar.bz2'
-
-  # OpenAL Soft
-  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
-
-  # libogg
-  download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.xz'
-
-  # libvorbis
-  download 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz'
 }
 
 function prepare()
@@ -439,7 +434,7 @@ function cmakeBuild()
 function autotoolsBuild()
 {
   mkdir -p build && cd build
-  ../configure --host=$hostTriplet --prefix=/usr $@ || exit 1
+  ../configure --build=$buildTriplet --host=$hostTriplet --prefix=/usr --disable-shared $@ || exit 1
 
   make -j4 || exit 1
   make install DESTDIR="$buildDir"
@@ -457,13 +452,43 @@ function finish()
 
 function build_zlib()
 {
-  prepare zlib-1.2.7 zlib-1.2.7.tar.bz2 || return
+  prepare zlib-1.2.8 zlib-1.2.8.tar.xz || return
 
   CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts" ./configure --prefix=/usr --static
 
   make -j4 || return 1
   make install DESTDIR="$buildDir"
   rm -rf "$buildDir"/usr/lib/libz.so*
+
+  finish
+}
+
+function build_libogg()
+{
+  prepare libogg-1.3.1 libogg-1.3.1.tar.xz || return
+  applyPatches libogg-1.3.1.patch
+
+  autotoolsBuild
+
+  finish
+}
+
+function build_libvorbis()
+{
+  prepare libvorbis-1.3.3 libvorbis-1.3.3.tar.xz || return
+  applyPatches libvorbis-1.3.3.patch
+
+  autotoolsBuild
+
+  finish
+}
+
+function build_freetype()
+{
+  prepare freetype-2.4.12 freetype-2.4.12.tar.bz2 || return
+  applyPatches freetype-2.4.12.patch
+
+  autotoolsBuild --without-bzip2
 
   finish
 }
@@ -490,15 +515,25 @@ function build_lua()
 }
 
 # TODO: LuaJIT cross-compiling doesn't work.
-# function build_luajit()
-# {
-#   prepare LuaJIT-2.0.0 LuaJIT-2.0.0.tar.gz || return
-#
-#   make amalg PREFIX=/usr CC="$CC" BUILDMODE=static
-#   make install DESTDIR="$buildDir" PREFIX=/usr
-#
-#   finish
-# }
+function build_luajit()
+{
+  prepare LuaJIT-2.0.2 LuaJIT-2.0.2.tar.gz || return
+
+  make amalg PREFIX=/usr CC="$CC" BUILDMODE=static
+  make install DESTDIR="$buildDir" PREFIX=/usr
+
+  finish
+}
+
+function build_openal()
+{
+  prepare openal-soft-1.15.1 openal-soft-1.15.1.tar.bz2 || return
+  applyPatches openal-soft-1.15.1.patch
+
+  cmakeBuild -D UTILS=0 -D EXAMPLES=0 -D LIBTYPE=STATIC
+
+  finish
+}
 
 function build_sdl()
 {
@@ -509,10 +544,10 @@ function build_sdl()
   case $triplet in
     *nacl)
       # Assembly causes NaCl validity check to fail when .nexe is loading.
-      autotoolsBuild --disable-shared --disable-pthread-sem --disable-assembly
+      autotoolsBuild --disable-pthread-sem --disable-assembly
       ;;
     *)
-      autotoolsBuild --disable-shared
+      autotoolsBuild
       ;;
   esac
 
@@ -527,16 +562,6 @@ function build_sdl2()
   cp "$projectDir/etc/SDL2-CMakeLists-gen.sh" "$buildDir/SDL"
   buildDir="$buildDir" ./SDL2-CMakeLists-gen.sh
   cmakeBuild
-
-  finish
-}
-
-function build_freetype()
-{
-  prepare freetype-2.4.11 freetype-2.4.11.tar.bz2 || return
-  applyPatches freetype-2.4.11.patch
-
-  autotoolsBuild --disable-shared --without-bzip2
 
   finish
 }
@@ -567,36 +592,6 @@ function build_sdl2_ttf()
   finish
 }
 
-function build_openal()
-{
-  prepare openal-soft-1.15.1 openal-soft-1.15.1.tar.bz2 || return
-  applyPatches openal-soft-1.15.1.patch
-
-  cmakeBuild -D UTILS=0 -D EXAMPLES=0 -D LIBTYPE=STATIC
-
-  finish
-}
-
-function build_libogg()
-{
-  prepare libogg-1.3.0 libogg-1.3.0.tar.xz || return
-  applyPatches libogg-1.3.0.patch
-
-  autotoolsBuild
-
-  finish
-}
-
-function build_libvorbis()
-{
-  prepare libvorbis-1.3.3 libvorbis-1.3.3.tar.xz || return
-  applyPatches libvorbis-1.3.3.patch
-
-  autotoolsBuild
-
-  finish
-}
-
 function build()
 {
   # zlib
@@ -605,6 +600,39 @@ function build()
   setup_nacl_ARM    && build_zlib
   setup_pnacl       && build_zlib
   setup_emscripten  && build_zlib
+
+  # libogg
+  setup_nacl_x86_64 && build_libogg
+  setup_nacl_i686   && build_libogg
+  setup_nacl_ARM    && build_libogg
+  setup_pnacl       && build_libogg
+  setup_ndk_i686    && build_libogg
+  setup_ndk_ARM     && build_libogg
+  setup_ndk_ARMv7a  && build_libogg
+  setup_ndk_MIPS    && build_libogg
+  setup_emscripten  && build_libogg
+
+  # libvorbis
+  setup_nacl_x86_64 && build_libvorbis
+  setup_nacl_i686   && build_libvorbis
+  setup_nacl_ARM    && build_libvorbis
+  setup_pnacl       && build_libvorbis
+  setup_ndk_i686    && build_libvorbis
+  setup_ndk_ARM     && build_libvorbis
+  setup_ndk_ARMv7a  && build_libvorbis
+  setup_ndk_MIPS    && build_libvorbis
+  setup_emscripten  && build_libvorbis
+
+  # FreeType
+  setup_nacl_x86_64 && build_freetype
+  setup_nacl_i686   && build_freetype
+  setup_nacl_ARM    && build_freetype
+  setup_pnacl       && build_freetype
+  setup_ndk_i686    && build_freetype
+  setup_ndk_ARM     && build_freetype
+  setup_ndk_ARMv7a  && build_freetype
+  setup_ndk_MIPS    && build_freetype
+  setup_emscripten  && build_freetype
 
   # PhysicsFS
   setup_nacl_x86_64 && build_physfs
@@ -628,38 +656,6 @@ function build()
   setup_ndk_MIPS    && build_lua
   setup_emscripten  && build_lua
 
-  # SDL
-  setup_nacl_x86_64 && build_sdl
-  setup_nacl_i686   && build_sdl
-  setup_nacl_ARM    && build_sdl
-  setup_pnacl       && build_sdl
-  setup_ndk_i686    && build_sdl2
-  setup_ndk_ARM     && build_sdl2
-  setup_ndk_ARMv7a  && build_sdl2
-  setup_ndk_MIPS    && build_sdl2
-
-  # FreeType
-  setup_nacl_x86_64 && build_freetype
-  setup_nacl_i686   && build_freetype
-  setup_nacl_ARM    && build_freetype
-  setup_pnacl       && build_freetype
-  setup_ndk_i686    && build_freetype
-  setup_ndk_ARM     && build_freetype
-  setup_ndk_ARMv7a  && build_freetype
-  setup_ndk_MIPS    && build_freetype
-#   setup_emscripten  && build_freetype
-
-  # SDL_ttf
-  setup_nacl_x86_64 && build_sdl_ttf
-  setup_nacl_i686   && build_sdl_ttf
-  setup_nacl_ARM    && build_sdl_ttf
-  setup_pnacl       && build_sdl_ttf
-  setup_ndk_i686    && build_sdl2_ttf
-  setup_ndk_ARM     && build_sdl2_ttf
-  setup_ndk_ARMv7a  && build_sdl2_ttf
-  setup_ndk_MIPS    && build_sdl2_ttf
-#   setup_emscripten  && build_sdl2_ttf
-
   # OpenAL Soft
   setup_nacl_x86_64 && build_openal
   setup_nacl_i686   && build_openal
@@ -670,27 +666,26 @@ function build()
   setup_ndk_ARMv7a  && build_openal
   setup_ndk_MIPS    && build_openal
 
-  # libogg
-  setup_nacl_x86_64 && build_libogg
-  setup_nacl_i686   && build_libogg
-  setup_nacl_ARM    && build_libogg
-  setup_pnacl       && build_libogg
-  setup_ndk_i686    && build_libogg
-  setup_ndk_ARM     && build_libogg
-  setup_ndk_ARMv7a  && build_libogg
-  setup_ndk_MIPS    && build_libogg
-  setup_emscripten  && build_libogg
+  # SDL
+  setup_nacl_x86_64 && build_sdl
+  setup_nacl_i686   && build_sdl
+  setup_nacl_ARM    && build_sdl
+  setup_pnacl       && build_sdl
+  setup_ndk_i686    && build_sdl2
+  setup_ndk_ARM     && build_sdl2
+  setup_ndk_ARMv7a  && build_sdl2
+  setup_ndk_MIPS    && build_sdl2
 
-  # libvorbis
-  setup_nacl_x86_64 && build_libvorbis
-  setup_nacl_i686   && build_libvorbis
-  setup_nacl_ARM    && build_libvorbis
-  setup_pnacl       && build_libvorbis
-  setup_ndk_i686    && build_libvorbis
-  setup_ndk_ARM     && build_libvorbis
-  setup_ndk_ARMv7a  && build_libvorbis
-  setup_ndk_MIPS    && build_libvorbis
-  setup_emscripten  && build_libvorbis
+  # SDL_ttf
+  setup_nacl_x86_64 && build_sdl_ttf
+  setup_nacl_i686   && build_sdl_ttf
+  setup_nacl_ARM    && build_sdl_ttf
+  setup_pnacl       && build_sdl_ttf
+  setup_ndk_i686    && build_sdl2_ttf
+  setup_ndk_ARM     && build_sdl2_ttf
+  setup_ndk_ARMv7a  && build_sdl2_ttf
+  setup_ndk_MIPS    && build_sdl2_ttf
+  setup_emscripten  && build_sdl_ttf
 }
 
 case $1 in

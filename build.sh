@@ -27,11 +27,12 @@ platforms=(
 #   NaCl-x86_64
 #   NaCl-i686
 #   NaCl-ARM
-  PNaCl
+#   PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a
 #   Android14-MIPS
+#   Emscripten
 )
 
 pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"

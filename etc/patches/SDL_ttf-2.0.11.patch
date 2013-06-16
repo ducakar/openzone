@@ -1,7 +1,7 @@
-diff -Naur SDL_ttf-2.0.11/config.sub SDL_ttf-2.0.11-nacl/config.sub
---- SDL_ttf-2.0.11/config.sub	2012-01-15 05:44:08.000000000 +0100
-+++ SDL_ttf-2.0.11-nacl/config.sub	2012-10-14 17:55:58.585405568 +0200
-@@ -237,6 +237,14 @@
+diff -Naur SDL_ttf-2.0.11.orig/config.sub SDL_ttf-2.0.11/config.sub
+--- SDL_ttf-2.0.11.orig/config.sub	2012-01-15 05:44:08.000000000 +0100
++++ SDL_ttf-2.0.11/config.sub	2013-06-16 19:10:17.776996347 +0200
+@@ -237,6 +237,18 @@
  		basic_machine=m68k-atari
  		os=-mint
  		;;
@@ -13,22 +13,37 @@ diff -Naur SDL_ttf-2.0.11/config.sub SDL_ttf-2.0.11-nacl/config.sub
 +		basic_machine=i686-pc
 +		os=-nacl
 +		;;
++	-emscripten)
++		basic_machine=i686-pc
++		os=-emscripten
++		;;
  esac
  
  # Decode aliases for certain CPU-COMPANY combinations.
-@@ -1297,7 +1305,8 @@
+@@ -1225,6 +1237,10 @@
+ 	pmac | pmac-mpw)
+ 		basic_machine=powerpc-apple
+ 		;;
++	emscripten)
++		basic_machine=i686-pc
++		os=-emscripten
++		;;
+ 	*-unknown)
+ 		# Make sure to match an already-canonicalized machine name.
+ 		;;
+@@ -1297,7 +1313,8 @@
  	      | -os2* | -vos* | -palmos* | -uclinux* | -nucleus* \
  	      | -morphos* | -superux* | -rtmk* | -rtmk-nova* | -windiss* \
  	      | -powermax* | -dnix* | -nx6 | -nx7 | -sei* | -dragonfly* \
 -	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es*)
 +	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es* \
-+	      | -android* | -nacl*)
++	      | -android* | -nacl* | -emscripten*)
  	# Remember, each alternative MUST END IN *, to match a version number.
  		;;
  	-qnx*)
-diff -Naur SDL_ttf-2.0.11/Makefile.in SDL_ttf-2.0.11-nacl/Makefile.in
---- SDL_ttf-2.0.11/Makefile.in	2012-01-15 05:44:08.000000000 +0100
-+++ SDL_ttf-2.0.11-nacl/Makefile.in	2012-10-14 17:53:36.049610816 +0200
+diff -Naur SDL_ttf-2.0.11.orig/Makefile.in SDL_ttf-2.0.11/Makefile.in
+--- SDL_ttf-2.0.11.orig/Makefile.in	2012-01-15 05:44:08.000000000 +0100
++++ SDL_ttf-2.0.11/Makefile.in	2013-06-16 19:10:17.780329701 +0200
 @@ -37,7 +37,6 @@
  POST_UNINSTALL = :
  build_triplet = @build@

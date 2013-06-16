@@ -92,7 +92,8 @@ else()
   pkg_check_modules( LUA REQUIRED lua )
 endif()
 
-if( OZ_SDL2 )
+if( EMSCRIPTEN )
+elseif( OZ_SDL2 )
   pkg_check_modules( SDL2 REQUIRED sdl2 )
   pkg_check_modules( SDL2_TTF REQUIRED SDL2_ttf )
   if( OZ_NET )
@@ -126,7 +127,13 @@ else()
   find_package( OpenGL REQUIRED )
 endif()
 
-find_package( OpenAL REQUIRED )
+if( EMSCRIPTEN )
+  set( OPENAL_INCLUDE_DIR "" )
+  set( OPENAL_LIBRARY "" )
+else()
+  find_package( OpenAL REQUIRED )
+endif()
+
 pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked

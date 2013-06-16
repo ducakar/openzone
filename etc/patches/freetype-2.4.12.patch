@@ -1,0 +1,23 @@
+diff -Naur freetype-2.4.12.orig/builds/unix/config.sub freetype-2.4.12/builds/unix/config.sub
+--- freetype-2.4.12.orig/builds/unix/config.sub	2013-06-16 18:18:30.606077763 +0200
++++ freetype-2.4.12/builds/unix/config.sub	2013-06-16 18:18:49.222468210 +0200
+@@ -634,6 +634,10 @@
+ 		basic_machine=elxsi-elxsi
+ 		os=-bsd
+ 		;;
++	emscripten)
++		basic_machine=le32-unknown
++		os=-emscripten
++		;;
+ 	encore | umax | mmax)
+ 		basic_machine=ns32k-encore
+ 		;;
+@@ -1506,6 +1510,8 @@
+ 		;;
+ 	-nacl*)
+ 		;;
++	-emscripten*)
++		;;
+ 	-none)
+ 		;;
+ 	*)
