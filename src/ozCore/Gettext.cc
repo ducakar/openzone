@@ -40,11 +40,13 @@ struct Gettext::Message
 };
 
 Gettext::Gettext() :
-  table( nullptr ), messages( nullptr ), strings( nullptr ), nMessages( 0 ), stringsSize( 0 )
+  table( nullptr ), messages( nullptr ), strings( nullptr ), nBuckets( 0 ), nMessages( 0 ),
+  stringsSize( 0 )
 {}
 
 Gettext::Gettext( const File& file ) :
-  table( nullptr ), messages( nullptr ), strings( nullptr ), nMessages( 0 ), stringsSize( 0 )
+  table( nullptr ), messages( nullptr ), strings( nullptr ), nBuckets( 0 ), nMessages( 0 ),
+  stringsSize( 0 )
 {
   import( file );
 }

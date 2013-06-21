@@ -146,13 +146,11 @@ if( PLATFORM_EMBEDDED )
 endif()
 
 if( NOT PLATFORM_EMBEDDED )
-  find_library( FREEIMAGE_LIBRARY freeimage )
-  find_library( FREEIMAGEPLUS_LIBRARY freeimageplus )
+  find_library( FREEIMAGE_LIBRARY NAMES freeimage FreeImage )
   mark_as_advanced( FREEIMAGE_LIBRARY )
-  mark_as_advanced( FREEIMAGEPLUS_LIBRARY )
 
-  if( NOT FREEIMAGE_LIBRARY OR NOT FREEIMAGEPLUS_LIBRARY )
-    message( FATAL_ERROR "FreeImage(Plus) library is missing" )
+  if( NOT FREEIMAGE_LIBRARY )
+    message( FATAL_ERROR "FreeImage library is missing" )
   endif()
 
   if( OZ_NONFREE )

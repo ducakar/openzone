@@ -164,15 +164,15 @@ class System
      * Initialise `System` features.
      *
      * @param flags is a bitwise OR of the following bits:
-     * @li `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
-     *     which print diagnostics and abort the program (similar to `System::error()` method).
-     *     Additionally, install handlers for exception violations (`std::terminate()` and
-     *     `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
-     * @li `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter
-     *     before terminating process via `System::abort()`, so one have time to attach a debugger.
-     *     This option has no effect on Android and NaCl.
-     * @li `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
-     *     This option has no effect on Android and NaCl.
+     * - `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
+     *   which print diagnostics and abort the program (similar to `System::error()` method).
+     *   Additionally, install handlers for exception violations (`std::terminate()` and
+     *   `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
+     * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter
+     *   before terminating process via `System::abort()`, so one have time to attach a debugger.
+     *   This option has no effect on Android and NaCl.
+     * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
+     *   This option has no effect on Android and NaCl.
      *
      * @param crashHandler user-provided method called when the application is aborted by a signal/
      *        exception handler or `System::error()`. If non-null, it is invoked after the stack

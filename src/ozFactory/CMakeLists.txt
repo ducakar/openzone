@@ -16,7 +16,7 @@ add_library( ozFactory
 #END SOURCES
 )
 
-target_link_libraries( ozFactory ozCore ${FREEIMAGEPLUS_LIBRARY} )
+target_link_libraries( ozFactory ozCore ${FREEIMAGE_LIBRARY} )
 if( OZ_NONFREE )
   target_link_libraries( ozFactory ${SQUISH_LIBRARY} )
 endif()

@@ -34,7 +34,6 @@ static void usage()
     "Usage: img2dds [-c] [-m] [-q] <inputImage> <outputDDS>\n"
     "\t-c\tUse S3 texture compression\n"
     "\t-m\tGenerate mipmaps\n"
-    "\t-q\tUse top quality for texture compression and mipmap scaling.\n"
   );
 }
 
@@ -53,10 +52,6 @@ int main( int argc, char** argv )
       }
       case 'm': {
         ddsOptions |= Builder::MIPMAPS_BIT;
-        break;
-      }
-      case 'q': {
-        ddsOptions |= Builder::QUALITY_BIT;
         break;
       }
       default: {

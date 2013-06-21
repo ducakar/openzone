@@ -14,7 +14,10 @@ set( CMAKE_CXX_FLAGS            "-march=i686 -m32 -msse3 -mfpmath=sse" CACHE STR
 set( CMAKE_C_FLAGS_RELEASE      "-Ofast" CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELEASE    "-Ofast" CACHE STRING "" )
 
-# CMake doesn't detect those correctly.
-set( SDL_INCLUDE_DIR            "${CMAKE_FIND_ROOT_PATH}/include/SDL" CACHE PATH "" )
-set( SQUISH_LIBRARY             "${CMAKE_FIND_ROOT_PATH}/lib/libsquish.a" CACHE PATH "" )
-set( FREEIMAGE_LIBRARY          "${CMAKE_FIND_ROOT_PATH}/lib/FreeImage.lib" CACHE PATH "" )
+set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
+set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
+set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
+set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
+
+# CMake fails to detect this.
+set( OPENAL_INCLUDE_DIR         "${CMAKE_FIND_ROOT_PATH}/include/AL" )

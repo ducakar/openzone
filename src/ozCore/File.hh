@@ -287,9 +287,9 @@ class File
      * Write buffer contents to the file.
      *
      * @note
-     * @li This function does not update file size and modification time. `stat()` must be invoked
-     *     manually for this.
-     * @li Write operation is not possible while the file is mapped.
+     * - This function does not update file size and modification time. `stat()` must be invoked
+     *   manually for this.
+     * - Write operation is not possible while the file is mapped.
      */
     bool write( const char* data, int size ) const;
 
@@ -297,9 +297,9 @@ class File
      * Write buffer contents into the file.
      *
      * @note
-     * @li This function does not update file size and modification time. `stat()` must be invoked
-     *     manually for this.
-     * @li Write operation is not possible while the file is mapped.
+     * - This function does not update file size and modification time. `stat()` must be invoked
+     *   manually for this.
+     * - Write operation is not possible while the file is mapped.
      */
     bool write( const Buffer& buffer ) const;
 
@@ -307,9 +307,9 @@ class File
      * Write string into the file (omitting the terminating null character).
      *
      * @note
-     * @li This function does not update file size and modification time. `stat()` must be invoked
-     *     manually for this.
-     * @li Write operation is not possible while the file is mapped.
+     * - This function does not update file size and modification time. `stat()` must be invoked
+     *   manually for this.
+     * - Write operation is not possible while the file is mapped.
      */
     bool writeString( const String& s ) const;
 

@@ -156,15 +156,19 @@ class GL
     static void checkError( const char* function, const char* file, int line );
 
     /**
-     * Load texture image from a DDS file.
+     * Load texture image from a (DirectX 9) DDS file.
      *
      * For mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR` filters and `GL_REPEAT`
      * wrapping are used as default, for non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters
      * and `GL_CLAMP_TO_EDGE` wrapping are used as default.
      *
-     * @return number of mipmaps (including the original picture), 0 on an error.
+     * @param file source file.
+     * @param bias the number of mipmaps at the beginning that should be skipped to obtain lower
+     *        texture quality.
+     *
+     * @return number of mipmap levels loaded, 0 on an error.
      */
-    static int textureDataFromFile( const File& file );
+    static int textureDataFromFile( const File& file, int bias = 0 );
 
     /**
      * Link previously declared OpenGL functions on Windows, NOP on other platforms.

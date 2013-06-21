@@ -90,7 +90,6 @@ class Context
 
     bool bumpmap;
     bool useS3TC;
-    bool isHighQuality;
 
   private:
 

@@ -73,8 +73,8 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 # endif
 #endif
 
-// Workaround for LLVM/Clang 3.2+ using glibc headers.
-#if defined( OZ_CLANG ) && OZ_CLANG >= 302
+// Workaround for LLVM/Clang 3.2 having issues with glibc headers.
+#if defined( OZ_CLANG ) && OZ_CLANG == 302
 # define __extern_always_inline extern __always_inline __attribute__(( __gnu_inline__ ))
 #endif
 

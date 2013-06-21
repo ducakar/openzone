@@ -26,7 +26,7 @@
 
 #include "Builder.hh"
 
-#include <FreeImagePlus.h>
+#include <FreeImage.h>
 #ifdef OZ_NONFREE
 # include <squish.h>
 #endif
@@ -51,6 +51,28 @@ static const int DDPF_FOURCC      = 0x00000004;
 static const int DDPF_RGB         = 0x00000040;
 static const int DDPF_LUMINANCE   = 0x00020000;
 
+bool Builder::isImage( const File& file )
+{
+  Buffer      buffer;
+  InputStream istream;
+
+  if( file.isMapped() ) {
+    istream = file.inputStream();
+  }
+  else {
+    buffer  = file.read();
+    istream = buffer.inputStream();
+  }
+
+  ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
+
+  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
+  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+
+  FreeImage_CloseMemory( memoryIO );
+  return format != FIF_UNKNOWN;
+}
+
 bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
 {
 #ifndef OZ_NONFREE
@@ -70,21 +92,28 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
     istream = buffer.inputStream();
   }
 
-  fipImage    image;
-  fipMemoryIO memoryIO( reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) ),
-                        uint( istream.available() ) );
+  ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
 
-  if( !image.loadFromMemory( memoryIO ) ) {
+  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
+  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+  FIBITMAP*         image    = FreeImage_LoadFromMemory( format, memoryIO );
+
+  if( image == nullptr ) {
+    FreeImage_CloseMemory( memoryIO );
     return false;
   }
-  image.flipVertical();
 
-  int width  = int( image.getWidth() );
-  int height = int( image.getHeight() );
-  int bpp    = int( image.getBitsPerPixel() );
-  int pitch  = int( image.getScanWidth() );
+  FreeImage_FlipVertical( image );
+
+  int  width         = int( FreeImage_GetWidth( image ) );
+  int  height        = int( FreeImage_GetHeight( image ) );
+  int  bpp           = int( FreeImage_GetBPP( image ) );
+  int  pitch         = int( FreeImage_GetPitch( image ) );
+  bool isTransparent = FreeImage_IsTransparent( image );
 
   if( ( options & COMPRESSION_BIT ) && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
+    FreeImage_Unload( image );
+    FreeImage_CloseMemory( memoryIO );
     return false;
   }
 
@@ -99,21 +128,19 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   caps |= options & MIPMAPS_BIT ? DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP : 0;
 
   int pixelFlags = 0;
-  pixelFlags |= image.isTransparent() ? DDPF_ALPHAPIXELS : 0;
+  pixelFlags |= isTransparent ? DDPF_ALPHAPIXELS : 0;
   pixelFlags |= options & COMPRESSION_BIT ? DDPF_FOURCC :
                 bpp == 8 ? DDPF_LUMINANCE : DDPF_RGB;
 
   const char* compression = "\0\0\0\0";
 
 #ifdef OZ_NONFREE
-  int squishFlags = image.isTransparent() ? squish::kDxt5 : squish::kDxt1;
-  squishFlags |= options & QUALITY_BIT ?
-                 squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
-                 squish::kColourRangeFit;
+  int squishFlags = isTransparent ? squish::kDxt5 : squish::kDxt1;
+  squishFlags    |= squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
 
   if( options & COMPRESSION_BIT ) {
     pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
-    compression    = image.isTransparent() ? "DXT5" : "DXT1";
+    compression    = isTransparent ? "DXT5" : "DXT1";
   }
 #endif
 
@@ -157,20 +184,20 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   ostream->writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
-    fipImage level = image;
+    FIBITMAP* level = image;
 
     if( i != 0 ) {
-      level.rescale( uint( width ), uint( height ),
-                     options & QUALITY_BIT ? FILTER_CATMULLROM : FILTER_BOX );
-      pitch = int( level.getScanWidth() );
+      level = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
+      hard_assert( level != image );
+      pitch = int( FreeImage_GetPitch( image ) );
     }
 
     if( options & COMPRESSION_BIT ) {
 #ifdef OZ_NONFREE
-      level.convertTo32Bits();
+      level = FreeImage_ConvertTo32Bits( level );
 
       int    size   = squish::GetStorageRequirements( width, height, squishFlags );
-      ubyte* pixels = level.accessPixels();
+      ubyte* pixels = FreeImage_GetBits( level );
 
       // Swap red and blue channels.
       for( int y = 0; y < height; ++y ) {
@@ -180,12 +207,12 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
         pixels += pitch;
       }
 
-      squish::CompressImage( level.accessPixels(), width, height, ostream->forward( size ),
+      squish::CompressImage( FreeImage_GetBits( level ), width, height, ostream->forward( size ),
                              squishFlags );
 #endif
     }
     else {
-      const char* pixels = reinterpret_cast<const char*>( level.accessPixels() );
+      const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
 
       for( int i = 0; i < height; ++i ) {
         ostream->writeChars( pixels, width * ( bpp / 8 ) );
@@ -196,6 +223,9 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
     width  = max( width / 2, 1 );
     height = max( height / 2, 1 );
   }
+
+  FreeImage_Unload( image );
+  FreeImage_CloseMemory( memoryIO );
   return true;
 }
 

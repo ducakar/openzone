@@ -200,7 +200,7 @@ MissionMenu::MissionMenu() :
     missions.last().name        = missionName;
     missions.last().title       = lingua.get( descriptionConfig["title"].get( missionName ) );
     missions.last().description = lingua.get( descriptionConfig["description"].get( "" ) );
-    missions.last().image.load( missionDir->path() + "/description.ozImage" );
+    missions.last().image.load( missionDir->path() + "/description.dds" );
 
     lingua.clear();
   }

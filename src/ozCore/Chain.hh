@@ -58,12 +58,12 @@ namespace oz
  * `next[0]` points to next element in `chain1` and `next[1]` points to next element in `chain2`.
  *
  * @note
- * @li Copy operations do not copy elements, to make a copy of a chain including its elements, use
- *     `clone()` instead.
- * @li Removal operations (except for `free()` do not actually remove elements but only decouples
- *     them from the chain.
- * @li `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
- *     point to elements in the chain or to invalid locations.
+ * - Copy operations do not copy elements, to make a copy of a chain including its elements, use
+ *   `clone()` instead.
+ * - Removal operations (except for `free()` do not actually remove elements but only decouples them
+ *   from the chain.
+ * - `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
+ *   point to elements in the chain or to invalid locations.
  *
  * @sa `oz::DChain`
  */

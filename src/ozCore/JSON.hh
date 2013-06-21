@@ -38,9 +38,9 @@ namespace oz
  * DOM class for reading JSON configuration files.
  *
  * This implementation strictly follows JSON standard with the following exceptions:
- * @li `inf` and `-inf` (case-sensitive) represent positive and negative infinity respectively,
- * @li `nan` and `-nan` (case-sensitive) represent not-a-number and
- * @li C++-style comments are allowed.
+ * - `inf` and `-inf` (case-sensitive) represent positive and negative infinity respectively,
+ * - `nan` and `-nan` (case-sensitive) represent not-a-number and
+ * - C++-style comments are allowed.
  */
 class JSON
 {

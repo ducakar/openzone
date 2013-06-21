@@ -167,7 +167,7 @@ void GL::checkError( const char* function, const char* file, int line )
   System::error( function, file, line, 1, "GL error '%s'", message );
 }
 
-int GL::textureDataFromFile( const File& file )
+int GL::textureDataFromFile( const File& file, int bias )
 {
   Buffer      buffer;
   InputStream istream;
@@ -192,22 +192,23 @@ int GL::textureDataFromFile( const File& file )
   int flags  = istream.readInt();
   int height = istream.readInt();
   int width  = istream.readInt();
-  int pitch  = istream.readInt();
 
   istream.readInt();
+  istream.readInt();
+
   int nMipmaps = istream.readInt();
 
-  if( !( flags & ( DDSD_PITCH_BIT | DDSD_LINEARSIZE_BIT ) ) ) {
-    pitch = 0;
-  }
   if( !( flags & DDSD_MIPMAPCOUNT_BIT ) ) {
     nMipmaps = 1;
   }
 
+  hard_assert( nMipmaps >= 1 );
+  bias = min( bias, nMipmaps - 1 );
+
   istream.seek( 4 + 76 );
 
   int pixelFlags = istream.readInt();
-  int baseBlock  = 1;
+  int blockSize  = 1;
 
   char formatFourCC[4];
   istream.readChars( formatFourCC, 4 );
@@ -218,15 +219,15 @@ int GL::textureDataFromFile( const File& file )
   if( pixelFlags & DDPF_FOURCC ) {
     if( String::beginsWith( formatFourCC, "DXT1" ) ) {
       format    = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      baseBlock = 8;
+      blockSize = 8;
     }
     else if( String::beginsWith( formatFourCC, "DXT3" ) ) {
       format    = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      baseBlock = 16;
+      blockSize = 16;
     }
     else if( String::beginsWith( formatFourCC, "DXT5" ) ) {
       format    = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      baseBlock = 16;
+      blockSize = 16;
     }
     else {
       return 0;
@@ -234,7 +235,7 @@ int GL::textureDataFromFile( const File& file )
   }
   else if( pixelFlags & DDPF_RGB ) {
     format    = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-    baseBlock = 1;
+    blockSize = 1;
   }
   else {
     return 0;
@@ -242,10 +243,8 @@ int GL::textureDataFromFile( const File& file )
 
   istream.seek( 4 + 124 );
 
-  int   mipmapWidth  = width;
-  int   mipmapHeight = height;
-  int   mipmapPitch  = pitch;
-  int   mipmapSize   = pixelFlags & DDPF_FOURCC ? pitch : height * pitch;
+  int mipmapWidth  = width;
+  int mipmapHeight = height;
 
   if( nMipmaps == 1 ) {
     // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
@@ -263,24 +262,28 @@ int GL::textureDataFromFile( const File& file )
 
   for( int i = 0; i < nMipmaps; ++i ) {
     if( pixelFlags & DDPF_FOURCC ) {
-      glCompressedTexImage2D( GL_TEXTURE_2D, i, format, mipmapWidth, mipmapHeight, 0,
-                              mipmapSize, istream.forward( mipmapSize ) );
+      int         mipmapSize = max( 1, ( ( mipmapWidth + 3 ) / 4 ) ) * blockSize;
+      const char* source     = istream.forward( mipmapSize );
+
+      if( i >= bias ) {
+        glCompressedTexImage2D( GL_TEXTURE_2D, i - bias, format, mipmapWidth, mipmapHeight, 0,
+                                mipmapSize, source );
+      }
 
       mipmapWidth  /= 2;
       mipmapHeight /= 2;
-      mipmapSize   /= 4;
-      mipmapSize    = max( mipmapSize, baseBlock );
     }
     else {
-      const char* source    = istream.forward( mipmapSize );
-      const char* data      = source;
-      int         pixelSize = bpp / 8;
+      int         mipmapPitch = ( mipmapWidth * bpp + 7 ) / 8;
+      int         mipmapSize  = mipmapPitch * mipmapHeight;
+      const char* source      = istream.forward( mipmapSize );
 
-      if( mipmapPitch != mipmapWidth * pixelSize ) {
-        // We need to collapse gaps between lines, OpenGL wants pitch = width * pixelSize.
-        char* collapsedData = new char[mipmapSize];
-        char* dest          = collapsedData;
+      if( i >= bias ) {
+        char* data      = new char[mipmapSize];
+        char* dest      = data;
+        int   pixelSize = bpp / 8;
 
+        // Swap red and blue components and collapse gaps between scan lines.
         for( int j = 0; j < mipmapHeight; ++j ) {
           for( int k = 0; k < mipmapWidth; ++k ) {
             dest[0] = source[2];
@@ -298,24 +301,17 @@ int GL::textureDataFromFile( const File& file )
           source += mipmapPitch - mipmapWidth * pixelSize;
         }
 
-        data = collapsedData;
-      }
-
-      glTexImage2D( GL_TEXTURE_2D, i, int( format ), mipmapWidth, mipmapHeight, 0,
-                    format, GL_UNSIGNED_BYTE, data );
-
-      if( data != source ) {
+        glTexImage2D( GL_TEXTURE_2D, i - bias, int( format ), mipmapWidth, mipmapHeight, 0, format,
+                      GL_UNSIGNED_BYTE, data );
         delete[] data;
       }
 
       mipmapWidth  /= 2;
       mipmapHeight /= 2;
-      mipmapPitch   = ( mipmapWidth * bpp + 7 ) / 8;
-      mipmapSize    = mipmapPitch * mipmapHeight;
     }
   }
 
-  return nMipmaps;
+  return nMipmaps - bias;
 }
 
 void GL::init()

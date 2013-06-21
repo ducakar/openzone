@@ -31,11 +31,11 @@
  * etc.).
  *
  * Several other features may also be configured:
- * @li Unless compiled with `NDEBUG` all freed memory is overwritten by 0xEE bytes.
- * @li If compiled with `OZ_TRACK_ALLOCS` `new`/`delete` also tracks allocated chunks to catch
- *     memory leaks and `new`/`delete` mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()`
- *     can be used to iterate over chunks allocated by `new` and `new[]` operators respectively.
- * @li If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to size of 4 floats.
+ * - Unless compiled with `NDEBUG` all freed memory is overwritten by 0xEE bytes.
+ * - If compiled with `OZ_TRACK_ALLOCS` `new`/`delete` also tracks allocated chunks to catch memory
+ *   leaks and `new`/`delete` mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()` can be
+ *   used to iterate over chunks allocated by `new` and `new[]` operators respectively.
+ * - If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to size of 4 floats.
  *
  * @note
  * Enabling AddressSanitizer during compilation of liboz disables enhanced `new`/`delete` operator

@@ -124,14 +124,11 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
 
     FIBITMAP* levelDib = image->dib;
     if( levels.length() > 1 ) {
-      levelDib = FreeImage_Rescale( image->dib, width, height,
-                                    context.isHighQuality ? FILTER_CATMULLROM : FILTER_BOX );
+      levelDib = FreeImage_Rescale( image->dib, width, height, FILTER_CATMULLROM );
     }
 
 #ifdef OZ_NONFREE
-    int squishFlags = context.isHighQuality ?
-                      squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
-                      squish::kColourRangeFit;
+    int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
 #endif
 
     switch( image->format ) {

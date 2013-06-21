@@ -64,8 +64,8 @@ namespace oz
  * Base class for iterators.
  *
  * It should only be used as a base class. The following functions have to be implemented:
- * @li Default constructor that should create an invalid iterator and
- * @li `Iterator& operator ++ ()`.
+ * - Default constructor that should create an invalid iterator and
+ * - `Iterator& operator ++ ()`.
  */
 template <typename Elem>
 class IteratorBase

@@ -51,11 +51,6 @@ class Builder
      */
     static const int COMPRESSION_BIT = 0x02;
 
-    /**
-     * Use highest possible quality for texture compression and mipmap scaling.
-     */
-    static const int QUALITY_BIT = 0x04;
-
   public:
 
     /**
@@ -64,22 +59,27 @@ class Builder
     explicit Builder() = delete;
 
     /**
+     * True iff the given file contains an image according to FreeImage.
+     */
+    static bool isImage( const File& file );
+
+    /**
      * Convert given image to DDS format and optionally compress it and create mipmaps.
      *
-     * Mipmap generation, S3 texture compression, and quality of compression and mipmap images
-     * scaling can be controlled via `options` parameter.
-     * @li `MIPMAPS_BIT` enables generation of mipmaps.
-     * @li `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
-     *     alpha channel and DXT5 for images with an alpha channel.
-     *     Texture compression is enabled only if `OZ_NONFREE` is enabled on ozEngine build.
-     * @li `QUALITY_BIT` enables highest quality but slow methods for scaling texture to smaller
-     *     dimensions in mipmap generation and highest quality settings for S3 texture compression
-     *     libsquish supports.
+     * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
+     * - `MIPMAPS_BIT` enables generation of mipmaps.
+     * - `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
+     *   alpha channel and DXT5 for images with an alpha channel. Texture compression is enabled
+     *   only if `OZ_NONFREE` is enabled on ozEngine build.
      *
      * Freeimage library is used for reading a file, so most of image file formats are supported.
      *
+     * @note
+     * The highest possible quality settings are used for compression and mipmap scaling, so this
+     * might take a long time for a large image.
+     *
      * @param file image file.
-     * @param options bit-mask to control quality and compression.
+     * @param options bit-mask to control mipmap generation and compression.
      * @param ostream stream to write texture to.
      */
     static bool buildDDS( const File& file, int options, OutputStream* ostream );

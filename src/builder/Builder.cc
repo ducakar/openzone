@@ -72,7 +72,6 @@ void Builder::printUsage( const char* invocationName )
     "  -A         Everything above.\n"
     "  -B         Build with bumpmap vertex format.\n"
     "  -C         Use S3 texture compression.\n"
-    "  -Q         Use highest quality for texture mipmaps and compression.\n"
     "  -Z         Compress created ZIP archive (highest compression level).\n"
     "  -7         Create non-solid LZMA-compressed 7zip archive.\n"
     "\n",
@@ -459,15 +458,18 @@ void Builder::buildModels()
   Log::indent();
 
   File mdlDir( "@mdl" );
-  File::mkdir( mdlDir.path() );
   DArray<File> dirList = mdlDir.ls();
+
+  if( !dirList.isEmpty() ) {
+    File::mkdir( "mdl" );
+  }
 
   foreach( dir, dirList.iter() ) {
     if( !context.usedModels.contains( dir->name() ) ) {
       continue;
     }
 
-    File::mkdir( dir->path() );
+    File::mkdir( &dir->path()[1] );
     DArray<File> fileList = dir->ls();
 
     foreach( file, fileList.iter() ) {
@@ -641,6 +643,11 @@ void Builder::buildMissions()
   Log::indent();
 
   DArray<File> missions = File( "@mission" ).ls();
+
+  if( !missions.isEmpty() ) {
+    File::mkdir( "mission" );
+  }
+
   foreach( mission, missions.citer() ) {
     checkLua( mission->path() );
 
@@ -731,13 +738,12 @@ int Builder::main( int argc, char** argv )
   bool useCompression = false;
   bool use7zip        = false;
 
-  context.bumpmap       = false;
-  context.useS3TC       = false;
-  context.isHighQuality = false;
+  context.bumpmap     = false;
+  context.useS3TC     = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbmsafnxoriACQZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbmsafnxoriACZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -819,10 +825,6 @@ int Builder::main( int argc, char** argv )
       }
       case 'C': {
         context.useS3TC = true;
-        break;
-      }
-      case 'Q': {
-        context.isHighQuality = true;
         break;
       }
       case 'Z': {

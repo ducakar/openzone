@@ -56,10 +56,7 @@ void UI::buildIcons()
     return;
   }
 
-  HashMap<String, bool> icons;
-  foreach( name, citer( ICON_NAMES ) ) {
-    icons.add( *name, false );
-  }
+  Set<String> builtIcons;
 
   Log::println( "Building UI icons {" );
   Log::indent();
@@ -69,12 +66,24 @@ void UI::buildIcons()
 
   DArray<File> images = dir.ls();
 
-  foreach( image, images.citer() ) {
+  foreach( image, images.iter() ) {
     String name = image->baseName();
 
-    bool* isBuilt = icons.find( name );
-    if( image->type() != File::REGULAR || isBuilt == nullptr || *isBuilt ) {
+    if( image->type() != File::REGULAR || builtIcons.contains( name ) ) {
       continue;
+    }
+
+    image->map();
+
+    if( !Builder::isImage( *image ) ) {
+      image->unmap();
+      continue;
+    }
+
+    Log::print( "%s ...", image->name().cstr() );
+
+    if( !aContains( ICON_NAMES, name, aLength( ICON_NAMES ) ) ) {
+      OZ_ERROR( "Unnecessary icon: %s", image->path().cstr() );
     }
 
     File destFile( "ui/icon/" + name + ".dds" );
@@ -85,15 +94,15 @@ void UI::buildIcons()
         OZ_ERROR( "Error reading image '%s'", image->path().cstr() );
       }
       else {
-        Log::println( "'%s' copied", image->path().cstr() );
+        Log::printEnd( " OK" );
       }
     }
     else {
       if( !Builder::buildDDS( *image, 0, &os ) ) {
-        continue;
+        OZ_ERROR( "Error converting '%s' to DDS", image->name().cstr() );
       }
       else {
-        Log::println( "'%s' converted to DDS", image->path().cstr() );
+        Log::printEnd( " %s ... OK", destFile.name().cstr() );
       }
     }
 
@@ -101,14 +110,16 @@ void UI::buildIcons()
       OZ_ERROR( "Failed to write '%s' file", destFile.path().cstr() );
     }
 
-    *isBuilt = true;
+    builtIcons.add( name );
   }
 
-  foreach( i, icons.citer() ) {
-    if( !i->value ) {
-      OZ_ERROR( "Mission icon: %s", i->key.cstr() );
+  for( int i = 0; i < aLength( ICON_NAMES ); ++i ) {
+    if( !builtIcons.contains( ICON_NAMES[i]) ) {
+      OZ_ERROR( "Mission icon: %s", ICON_NAMES[i] );
     }
   }
+
+  hard_assert( builtIcons.length() == aLength( ICON_NAMES ) );
 
   Log::unindent();
   Log::println( "}" );
