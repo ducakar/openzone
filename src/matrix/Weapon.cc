@@ -21,7 +21,6 @@
  * @file matrix/Weapon.cc
  */
 
-#include <stable.hh>
 #include <matrix/Weapon.hh>
 
 #include <common/Timer.hh>

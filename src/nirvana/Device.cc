@@ -21,7 +21,6 @@
  * @file nirvana/Device.cc
  */
 
-#include <stable.hh>
 #include <nirvana/Device.hh>
 
 namespace oz

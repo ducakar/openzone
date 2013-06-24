@@ -21,7 +21,6 @@
  * @file client/ui/Area.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Area.hh>
 
 #include <client/Camera.hh>

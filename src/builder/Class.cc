@@ -21,7 +21,6 @@
  * @file builder/Class.cc
  */
 
-#include <stable.hh>
 #include <builder/Class.hh>
 
 #include <common/Timer.hh>

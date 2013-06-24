@@ -21,7 +21,6 @@
  * @file client/ui/HudArea.cc
  */
 
-#include <stable.hh>
 #include <client/ui/HudArea.hh>
 
 #include <matrix/Physics.hh>

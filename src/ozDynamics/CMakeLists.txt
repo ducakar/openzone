@@ -33,6 +33,9 @@ add_library( ozDynamics
 #END SOURCES
 )
 
+add_pch( ozDynamics_pch pch.hh pch.cc )
+use_pch( ozDynamics ozDynamics_pch )
+
 target_link_libraries( ozDynamics ozCore )
 
 # HACK
@@ -41,9 +44,6 @@ if( OZ_DYNAMICS )
 endif()
 
 set_target_properties( ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
-
-add_pch( ozDynamics_pch pch.hh pch.cc )
-use_pch( ozDynamics ozDynamics_pch )
 
 install( TARGETS ozDynamics
          RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}

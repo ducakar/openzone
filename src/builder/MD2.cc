@@ -21,7 +21,6 @@
  * @file builder/MD2.cc
  */
 
-#include <stable.hh>
 #include <builder/MD2.hh>
 
 #include <client/MD2.hh>

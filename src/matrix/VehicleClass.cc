@@ -21,7 +21,6 @@
  * @file matrix/VehicleClass.cc
  */
 
-#include <stable.hh>
 #include <matrix/VehicleClass.hh>
 
 #include <common/Lingua.hh>

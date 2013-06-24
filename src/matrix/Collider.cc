@@ -21,7 +21,6 @@
  * @file matrix/Collider.cc
  */
 
-#include <stable.hh>
 #include <matrix/Collider.hh>
 
 namespace oz

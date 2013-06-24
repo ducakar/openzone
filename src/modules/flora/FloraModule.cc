@@ -21,7 +21,6 @@
  * @file modules/flora/FloraModule.cc
  */
 
-#include <stable.hh>
 #include <modules/flora/FloraModule.hh>
 
 #include <common/luabase.hh>

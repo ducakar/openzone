@@ -30,6 +30,9 @@ add_library( ozEngine
 #END SOURCES
 )
 
+add_pch( ozEngine_pch pch.hh pch.cc )
+use_pch( ozEngine ozEngine_pch )
+
 target_link_libraries( ozEngine ozCore )
 
 # OpenGL.
@@ -64,9 +67,6 @@ if( PLATFORM_EMBEDDED )
 endif()
 
 set_target_properties( ozEngine PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
-
-add_pch( ozEngine_pch pch.hh pch.cc )
-use_pch( ozEngine ozEngine_pch )
 
 install( TARGETS ozEngine
          RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}

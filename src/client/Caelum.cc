@@ -21,7 +21,6 @@
  * @file client/Caelum.cc
  */
 
-#include <stable.hh>
 #include <client/Caelum.hh>
 
 #include <client/Context.hh>

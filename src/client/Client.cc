@@ -23,7 +23,6 @@
  * Game initialisation and main loop.
  */
 
-#include <stable.hh>
 #include <client/Client.hh>
 
 #include <common/Timer.hh>
@@ -35,7 +34,6 @@
 #include <client/Render.hh>
 #include <client/Loader.hh>
 #include <client/NaClUpdater.hh>
-#include <client/Window.hh>
 #include <client/Input.hh>
 #include <client/Network.hh>
 #include <client/BuildInfo.hh>
@@ -285,7 +283,21 @@ int Client::init( int argc, char** argv )
   config["dir.config"];
   config["dir.local"];
 
-  window.init();
+  desiredWidth    = config.include( "window.desiredWidth",  1280 ).asInt();
+  desiredHeight   = config.include( "window.desiredHeight", 720  ).asInt();
+  screenHeight    = config.include( "window.screenWidth",   0    ).asInt();
+  screenHeight    = config.include( "window.screenHeight",  0    ).asInt();
+
+  desiredWidth    = desiredWidth  == 0 ? Window::desktopWidth()  : desiredWidth;
+  desiredHeight   = desiredHeight == 0 ? Window::desktopHeight() : desiredHeight;
+  screenWidth     = screenWidth   == 0 ? Window::desktopWidth()  : screenWidth;
+  screenHeight    = screenHeight  == 0 ? Window::desktopHeight() : screenHeight;
+
+  bool fullscreen = config.include( "window.fullscreen",    true ).asBool();
+
+  Window::create( "OpenZone " OZ_VERSION,
+                  fullscreen ? screenWidth  : desiredWidth,
+                  fullscreen ? screenHeight : desiredHeight );
   initFlags |= INIT_WINDOW;
 
   input.init();
@@ -485,7 +497,7 @@ int Client::init( int argc, char** argv )
 
   stage->load();
 
-  window.setGrab( true );
+  Window::setGrab( true );
   input.reset();
 
   return EXIT_SUCCESS;
@@ -519,7 +531,7 @@ void Client::shutdown()
     input.destroy();
   }
   if( initFlags & INIT_WINDOW ) {
-    window.destroy();
+    Window::destroy();
   }
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
     File configFile( config["dir.config"].asString() + "/client.json" );
@@ -597,10 +609,15 @@ int Client::main()
           }
           else if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod & KMOD_CTRL ) {
-              window.setGrab( !window.hasGrab );
+              Window::setGrab( !Window::hasGrab() );
             }
             else  {
-              window.setFullscreen( !window.isFull );
+              if( Window::isFullscreen() ) {
+                Window::resize( desiredWidth, desiredHeight, false );
+              }
+              else {
+                Window::resize( screenWidth, screenHeight, true );
+              }
             }
           }
           else if( keysym.sym == SDLK_F12 ) {
@@ -608,7 +625,7 @@ int Client::main()
               isAlive = false;
             }
             else {
-              window.minimise();
+              Window::minimise();
             }
           }
 #endif
@@ -628,11 +645,11 @@ int Client::main()
 #elif SDL_MAJOR_VERSION < 2
         case SDL_ACTIVEEVENT: {
           if( event.active.state & SDL_APPMOUSEFOCUS ) {
-            window.hasFocus = event.active.gain != 0;
+            Window::setFocus( event.active.gain != 0 );
           }
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
-              window.setGrab( window.hasGrab );
+              Window::setGrab( Window::hasGrab() );
               input.reset();
               sound.resume();
 
@@ -652,13 +669,13 @@ int Client::main()
           switch( event.window.event ) {
             case SDL_WINDOWEVENT_FOCUS_GAINED:
             case SDL_WINDOWEVENT_ENTER: {
-              window.hasFocus = true;
+              Window::setFocus( true );
               input.reset();
               break;
             }
             case SDL_WINDOWEVENT_FOCUS_LOST:
             case SDL_WINDOWEVENT_LEAVE: {
-              window.hasFocus = false;
+              Window::setFocus( false );
               input.reset();
               break;
             }

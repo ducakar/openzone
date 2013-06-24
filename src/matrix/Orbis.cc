@@ -21,7 +21,6 @@
  * @file matrix/Orbis.cc
  */
 
-#include <stable.hh>
 #include <matrix/Orbis.hh>
 
 #include <matrix/Liber.hh>

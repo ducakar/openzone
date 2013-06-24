@@ -21,7 +21,6 @@
  * @file client/ui/MusicPlayer.cc
  */
 
-#include <stable.hh>
 #include <client/ui/MusicPlayer.hh>
 
 #include <client/Camera.hh>

@@ -21,7 +21,6 @@
  * @file client/MD2.cc
  */
 
-#include <stable.hh>
 #include <client/MD2.hh>
 
 #include <common/Timer.hh>

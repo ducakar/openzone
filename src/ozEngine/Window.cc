@@ -50,10 +50,12 @@ static SDL_Window*     descriptor;
 static SDL_GLContext   context;
 #endif
 
+int  Window::screenWidth  = 0;
+int  Window::screenHeight = 0;
 int  Window::windowWidth  = 0;
 int  Window::windowHeight = 0;
 bool Window::fullscreen   = false;
-bool Window::windowFocus  = false;
+bool Window::windowFocus  = true;
 bool Window::windowGrab   = false;
 
 #ifdef __native_client__
@@ -64,6 +66,31 @@ static void flushCompleteCallback( void*, int )
 }
 
 #endif
+
+void Window::measureScreen()
+{
+#if defined( __native_client__ )
+
+  screenWidth  = Pepper::width;
+  screenHeight = Pepper::height;
+
+#elif SDL_MAJOR_VERSION < 2
+
+  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+
+  screenWidth  = videoInfo->current_w;
+  screenHeight = videoInfo->current_h;
+
+#else
+
+  SDL_DisplayMode mode;
+  SDL_GetDesktopDisplayMode( 0, &mode );
+
+  screenWidth  = mode.w;
+  screenHeight = mode.h;
+
+#endif
+}
 
 bool Window::isCreated()
 {
@@ -155,18 +182,11 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
 
 # else
 
-  windowWidth  = newWidth;
-  windowHeight = newHeight;
+  windowWidth  = windowWidth  == 0 ? screenWidth  : newWidth;
+  windowHeight = windowHeight == 0 ? screenHeight : newHeight;
   fullscreen   = fullscreen_;
 
   uint flags = SDL_OPENGL | ( fullscreen ? SDL_FULLSCREEN : 0 );
-
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-    windowWidth  = videoInfo->current_w;
-    windowHeight = videoInfo->current_h;
-  }
 
   Log::print( "Resizing OpenGL window to %dx%d [%s] ... ",
               windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
@@ -179,20 +199,17 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
     return false;
   }
 
+  Log::printEnd( "OK" );
+
 # endif
 #else
 
-  windowWidth  = newWidth;
-  windowHeight = newHeight;
+  windowWidth  = windowWidth  == 0 ? screenWidth  : newWidth;
+  windowHeight = windowHeight == 0 ? screenHeight : newHeight;
   fullscreen   = fullscreen_;
 
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    SDL_DisplayMode mode;
-    SDL_GetDesktopDisplayMode( 0, &mode );
-
-    windowWidth  = mode.w;
-    windowHeight = mode.h;
-  }
+  Log::print( "Resizing OpenGL window to %dx%d [%s] ... ",
+              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
   if( fullscreen ) {
     SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
@@ -203,6 +220,8 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
     SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
   }
 
+  Log::printEnd( "OK" );
+
 #endif
 
   return true;
@@ -210,8 +229,10 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
 
 bool Window::create( const char* title, int width, int height, bool fullscreen_ )
 {
-  windowWidth  = width;
-  windowHeight = height;
+  measureScreen();
+
+  windowWidth  = width  == 0 ? screenWidth  : width;
+  windowHeight = height == 0 ? screenHeight : height;
   fullscreen   = fullscreen_;
   windowFocus  = true;
   windowGrab   = true;
@@ -219,6 +240,9 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 #ifdef __native_client__
 
   static_cast<void>( title );
+
+  windowWidth  = screenWidth;
+  windowHeight = screenHeight;
 
   flushSemaphore.init();
 
@@ -275,13 +299,6 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
   uint flags = SDL_OPENGL | ( fullscreen ? SDL_FULLSCREEN : 0 );
 
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-    windowWidth  = videoInfo->current_w;
-    windowHeight = videoInfo->current_h;
-  }
-
   Log::print( "Creating OpenGL window %dx%d [%s] ... ",
               windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
@@ -301,14 +318,6 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 #else
 
   uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
-
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    SDL_DisplayMode mode;
-    SDL_GetDesktopDisplayMode( 0, &mode );
-
-    windowWidth  = mode.w;
-    windowHeight = mode.h;
-  }
 
   Log::print( "Creating OpenGL window %dx%d [%s] ... ",
               windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );

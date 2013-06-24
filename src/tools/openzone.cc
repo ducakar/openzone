@@ -21,7 +21,6 @@
  * @file client/openzone.cc
  */
 
-#include <stable.hh>
 #include <client/openzone.hh>
 
 #include <client/Client.hh>

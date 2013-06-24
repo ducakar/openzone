@@ -21,11 +21,9 @@
  * @file client/Camera.cc
  */
 
-#include <stable.hh>
 #include <client/Camera.hh>
 
 #include <common/Timer.hh>
-#include <client/Window.hh>
 #include <client/Input.hh>
 #include <client/ui/Area.hh>
 #include <client/ui/UI.hh>
@@ -176,12 +174,12 @@ void Camera::prepare()
 
   ui::ui.update();
 
-  if( window.width != width || window.height != height ) {
-    width   = window.width;
-    height  = window.height;
+  if( Window::width() != width || Window::height() != height ) {
+    width   = Window::width();
+    height  = Window::height();
 
-    centreX = window.width / 2;
-    centreY = window.height / 2;
+    centreX = Window::width() / 2;
+    centreY = Window::height() / 2;
 
     aspect  = isFixedAspect ? aspect : float( width ) / float( height );
 
@@ -354,10 +352,10 @@ void Camera::write( OutputStream* ostream ) const
 
 void Camera::init()
 {
-  width         = window.width;
-  height        = window.height;
-  centreX       = window.width / 2;
-  centreY       = window.height / 2;
+  width         = Window::width();
+  height        = Window::height();
+  centreX       = Window::width() / 2;
+  centreY       = Window::height() / 2;
 
   float angle   = Math::rad( config.include( "camera.angle", 80.0f ).asFloat() );
   aspect        = config.include( "camera.aspect", 0.0f ).asFloat();

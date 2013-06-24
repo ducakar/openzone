@@ -21,7 +21,6 @@
  * @file matrix/Frag.cc
  */
 
-#include <stable.hh>
 #include <matrix/Frag.hh>
 
 namespace oz

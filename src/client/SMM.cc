@@ -25,7 +25,6 @@
  * Common model format that all simple models are compiled to.
  */
 
-#include <stable.hh>
 #include <client/SMM.hh>
 
 #include <client/Context.hh>

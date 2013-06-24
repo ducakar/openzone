@@ -23,7 +23,6 @@
  * Data builder launcher.
  */
 
-#include <stable.hh>
 #include <builder/Builder.hh>
 
 using namespace oz;

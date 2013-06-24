@@ -21,7 +21,6 @@
  * @file client/ui/CinematicText.cc
  */
 
-#include <stable.hh>
 #include <client/ui/CinematicText.hh>
 
 #include <client/Camera.hh>

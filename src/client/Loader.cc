@@ -21,7 +21,6 @@
  * @file client/Loader.cc
  */
 
-#include <stable.hh>
 #include <client/Loader.hh>
 
 #include <client/Camera.hh>

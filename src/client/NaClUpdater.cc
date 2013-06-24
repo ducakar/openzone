@@ -23,7 +23,6 @@
 
 #ifdef __native_client__
 
-#include <stable.hh>
 #include <client/NaClUpdater.hh>
 
 #include <client/NaClDownloader.hh>

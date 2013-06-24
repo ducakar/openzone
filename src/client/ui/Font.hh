@@ -49,7 +49,6 @@ class Font
       MAX
     };
 
-
   private:
 
     Buffer    buffer;

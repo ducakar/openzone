@@ -21,7 +21,6 @@
  * @file client/ui/UI.cc
  */
 
-#include <stable.hh>
 #include <client/ui/UI.hh>
 
 #include <common/Timer.hh>

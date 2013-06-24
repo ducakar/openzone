@@ -21,7 +21,6 @@
  * @file builder/OBJ.cc
  */
 
-#include <stable.hh>
 #include <builder/OBJ.hh>
 
 #include <client/Context.hh>

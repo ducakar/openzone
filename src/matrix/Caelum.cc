@@ -21,7 +21,6 @@
  * @file matrix/Caelum.cc
  */
 
-#include <stable.hh>
 #include <matrix/Caelum.hh>
 
 #include <common/Timer.hh>

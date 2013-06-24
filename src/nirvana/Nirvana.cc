@@ -21,7 +21,6 @@
  * @file nirvana/Nirvana.cc
  */
 
-#include <stable.hh>
 #include <nirvana/Nirvana.hh>
 
 #include <matrix/Synapse.hh>

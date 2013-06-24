@@ -21,7 +21,6 @@
  * @file client/ui/BuildMenu.cc
  */
 
-#include <stable.hh>
 #include <client/ui/BuildMenu.hh>
 
 #include <matrix/Liber.hh>

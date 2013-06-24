@@ -18,11 +18,28 @@
  */
 
 /**
- * @file stable.hh
+ * @file common/pch.hh
  *
- * Precompiled header, includes only \<common/common.hh\>.
- *
- * It should be directly included by all '.cc' source files in the project.
+ * Precompiled header.
  */
 
-#include <common/common.hh>
+#include <ozCore/ozCore.hh>
+#include <ozDynamics/collision/AABB.hh>
+#include <ozDynamics/collision/Bounds.hh>
+
+#ifdef _WIN32
+# include <windows.h>
+// Fix M$ crap from Windows headers.
+# undef ERROR
+# undef PLANES
+# undef near
+# undef far
+#endif
+
+// Some standard C/C++ headers.
+#include <climits>
+#include <cctype>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>

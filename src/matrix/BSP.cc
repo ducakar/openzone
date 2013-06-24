@@ -21,7 +21,6 @@
  * @file matrix/BSP.cc
  */
 
-#include <stable.hh>
 #include <matrix/BSP.hh>
 
 #include <common/Lingua.hh>

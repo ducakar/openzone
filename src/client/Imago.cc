@@ -21,7 +21,6 @@
  * @file client/Imago.cc
  */
 
-#include <stable.hh>
 #include <client/Imago.hh>
 
 namespace oz

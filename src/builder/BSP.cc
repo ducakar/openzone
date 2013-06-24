@@ -21,7 +21,6 @@
  * @file builder/BSP.cc
  */
 
-#include <stable.hh>
 #include <builder/BSP.hh>
 
 #include <common/Timer.hh>

@@ -21,7 +21,6 @@
  * @file client/BotAudio.cc
  */
 
-#include <stable.hh>
 #include <client/BotAudio.hh>
 
 #include <client/Context.hh>

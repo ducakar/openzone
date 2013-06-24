@@ -21,7 +21,6 @@
  * @file client/SparkModel.cc
  */
 
-#include <stable.hh>
 #include <client/SparkModel.hh>
 
 #include <client/Frustum.hh>

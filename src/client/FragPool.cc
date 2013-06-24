@@ -21,7 +21,6 @@
  * @file client/FragPool.cc
  */
 
-#include <stable.hh>
 #include <client/FragPool.hh>
 
 #include <client/Shader.hh>

@@ -21,7 +21,6 @@
  * @file builder/Terra.cc
  */
 
-#include <stable.hh>
 #include <builder/Terra.hh>
 
 #include <client/Terra.hh>

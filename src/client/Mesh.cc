@@ -21,7 +21,6 @@
  * @file client/Mesh.cc
  */
 
-#include <stable.hh>
 #include <client/Mesh.hh>
 
 #include <client/Context.hh>

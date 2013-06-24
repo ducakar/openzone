@@ -21,7 +21,6 @@
  * @file matrix/DynamicClass.cc
  */
 
-#include <stable.hh>
 #include <matrix/DynamicClass.hh>
 
 #include <matrix/Dynamic.hh>

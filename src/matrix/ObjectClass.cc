@@ -21,7 +21,6 @@
  * @file matrix/ObjectClass.cc
  */
 
-#include <stable.hh>
 #include <matrix/ObjectClass.hh>
 
 #include <common/Lingua.hh>

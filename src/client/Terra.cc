@@ -21,7 +21,6 @@
  * @file client/Terra.cc
  */
 
-#include <stable.hh>
 #include <client/Terra.hh>
 
 #include <common/Timer.hh>

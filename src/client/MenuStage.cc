@@ -21,7 +21,6 @@
  * @file client/MenuStage.cc
  */
 
-#include <stable.hh>
 #include <client/MenuStage.hh>
 
 #include <client/Camera.hh>

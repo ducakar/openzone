@@ -21,7 +21,6 @@
  * @file nirvana/common.cc
  */
 
-#include <stable.hh>
 #include <nirvana/common.hh>
 
 namespace oz

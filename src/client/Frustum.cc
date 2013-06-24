@@ -21,7 +21,6 @@
  * @file client/Frustum.cc
  */
 
-#include <stable.hh>
 #include <client/Frustum.hh>
 
 namespace oz

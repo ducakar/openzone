@@ -21,7 +21,6 @@
  * @file client/common.cc
  */
 
-#include <stable.hh>
 #include <client/common.hh>
 
 namespace oz

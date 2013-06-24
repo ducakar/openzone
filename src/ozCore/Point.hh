@@ -233,7 +233,7 @@ class Point : public VectorBase3
 };
 
 /**
- * Per-component absolute value of a vector.
+ * Per-component absolute value of a point.
  */
 OZ_ALWAYS_INLINE
 inline Point abs( const Point& a )
@@ -246,7 +246,7 @@ inline Point abs( const Point& a )
 }
 
 /**
- * Per-component minimum of two vectors.
+ * Per-component minimum of two points.
  */
 OZ_ALWAYS_INLINE
 inline Point min( const Point& a, const Point& b )
@@ -259,7 +259,7 @@ inline Point min( const Point& a, const Point& b )
 }
 
 /**
- * Per-component maximum of two vectors.
+ * Per-component maximum of two points.
  */
 OZ_ALWAYS_INLINE
 inline Point max( const Point& a, const Point& b )
@@ -272,7 +272,7 @@ inline Point max( const Point& a, const Point& b )
 }
 
 /**
- * Per-component clamped value of vectors.
+ * Per-component clamped value of points.
  */
 OZ_ALWAYS_INLINE
 inline Point clamp( const Point& c, const Point& a, const Point& b )

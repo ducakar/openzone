@@ -21,7 +21,6 @@
  * @file matrix/Struct.cc
  */
 
-#include <stable.hh>
 #include <matrix/Struct.hh>
 
 #include <common/Timer.hh>

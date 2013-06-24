@@ -21,7 +21,6 @@
  * @file matrix/Bot.cc
  */
 
-#include <stable.hh>
 #include <matrix/Bot.hh>
 
 #include <common/Timer.hh>

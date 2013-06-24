@@ -45,10 +45,7 @@ class Math
 
 #if defined( OZ_GCC ) && OZ_GCC < 406
 
-    /// Not a number.
     static constexpr float NaN = 0.0f / 0.0f;
-
-    /// \f$ +\infty \f$.
     static constexpr float INF = 1.0f / 0.0f;
 
 #else

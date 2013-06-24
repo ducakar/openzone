@@ -23,7 +23,6 @@
 
 #ifdef __native_client__
 
-#include <stable.hh>
 #include <client/NaClDownloader.hh>
 
 #include <ppapi/cpp/completion_callback.h>

@@ -21,7 +21,6 @@
  * @file client/Audio.cc
  */
 
-#include <stable.hh>
 #include <client/Audio.hh>
 
 #include <client/Camera.hh>

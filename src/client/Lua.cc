@@ -23,7 +23,6 @@
  * Lua scripting engine for client
  */
 
-#include <stable.hh>
 #include <client/Lua.hh>
 
 #include <client/luaapi.hh>

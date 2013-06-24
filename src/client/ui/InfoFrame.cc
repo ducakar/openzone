@@ -21,7 +21,6 @@
  * @file client/ui/InfoFrame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/InfoFrame.hh>
 
 #include <common/Timer.hh>

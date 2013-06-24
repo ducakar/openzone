@@ -21,7 +21,6 @@
  * @file client/ui/Button.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Button.hh>
 
 #include <client/Input.hh>

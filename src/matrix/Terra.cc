@@ -21,7 +21,6 @@
  * @file matrix/Terra.cc
  */
 
-#include <stable.hh>
 #include <matrix/Terra.hh>
 
 #include <matrix/Liber.hh>

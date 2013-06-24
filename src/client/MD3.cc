@@ -21,7 +21,6 @@
  * @file client/MD3.cc
  */
 
-#include <stable.hh>
 #include <client/MD3.hh>
 
 #include <client/Context.hh>

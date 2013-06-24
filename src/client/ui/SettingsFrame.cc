@@ -21,7 +21,6 @@
  * @file client/ui/SettingsFrame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/SettingsFrame.hh>
 
 #include <client/Shape.hh>

@@ -21,7 +21,6 @@
  * @file client/eSpeak.hh
  */
 
-#include <stable.hh>
 #include <client/eSpeak.hh>
 
 namespace oz

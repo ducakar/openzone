@@ -21,7 +21,6 @@
  * @file client/Context.cc
  */
 
-#include <stable.hh>
 #include <client/Context.hh>
 
 #include <client/SMMImago.hh>

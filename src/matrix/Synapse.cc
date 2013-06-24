@@ -21,7 +21,6 @@
  * @file matrix/Synapse.cc
  */
 
-#include <stable.hh>
 #include <matrix/Synapse.hh>
 
 #include <matrix/Liber.hh>

@@ -21,7 +21,6 @@
  * @file client/ui/CreditsMenu.cc
  */
 
-#include <stable.hh>
 #include <client/ui/CreditsMenu.hh>
 
 #include <client/Shape.hh>

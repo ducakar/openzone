@@ -21,7 +21,6 @@
  * @file client/ui/LoadingArea.cc
  */
 
-#include <stable.hh>
 #include <client/ui/LoadingArea.hh>
 
 #include <client/Shape.hh>

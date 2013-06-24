@@ -21,7 +21,6 @@
  * @file client/Proxy.cc
  */
 
-#include <stable.hh>
 #include <client/Proxy.hh>
 
 namespace oz

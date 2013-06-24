@@ -18,11 +18,9 @@
  */
 
 /**
- * @file stable.cc
+ * @file common/pch.cc
  *
- * Trigger module for precompiled header.
- *
- * This file is required for a dummy target to properly trigger recompilation of precompiled header.
+ * Trigger for precompiled header.
  */
 
-#include "stable.hh"
+#include "pch.hh"

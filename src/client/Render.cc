@@ -21,7 +21,6 @@
  * @file client/Render.cc
  */
 
-#include <stable.hh>
 #include <client/Render.hh>
 
 #include <client/Shape.hh>
@@ -29,7 +28,6 @@
 #include <client/Caelum.hh>
 #include <client/Terra.hh>
 #include <client/Context.hh>
-#include <client/Window.hh>
 
 #include <client/SMMImago.hh>
 #include <client/SMMVehicleImago.hh>
@@ -365,7 +363,7 @@ void Render::drawGeometry()
 void Render::drawOrbis()
 {
   if( isOffscreen ) {
-    if( window.width != windowWidth || windowHeight != window.height ) {
+    if( windowWidth != Window::width() || windowHeight != Window::height() ) {
       resize();
     }
 
@@ -455,7 +453,7 @@ void Render::swap()
 
   uint beginMicros = Time::uclock();
 
-  window.swapBuffers();
+  Window::swapBuffers();
 
   swapMicros += Time::uclock() - beginMicros;
 }
@@ -466,15 +464,15 @@ void Render::resize()
   hard_assert( !Pepper::isMainThread() );
 #endif
 
-  windowWidth  = window.width;
-  windowHeight = window.height;
+  windowWidth  = Window::width();
+  windowHeight = Window::height();
 
   if( !isOffscreen ) {
     return;
   }
 
-  frameWidth  = Math::lround( float( window.width  ) * scale );
-  frameHeight = Math::lround( float( window.height ) * scale );
+  frameWidth  = Math::lround( float( Window::width()  ) * scale );
+  frameHeight = Math::lround( float( Window::height() ) * scale );
 
   MainCall() << [&]()
   {

@@ -57,6 +57,11 @@ class Client
     Stage* stage;
     int    initFlags;
 
+    int    desiredWidth;
+    int    desiredHeight;
+    int    screenWidth;
+    int    screenHeight;
+
     float  benchmarkTime;
     bool   isBenchmark;
 

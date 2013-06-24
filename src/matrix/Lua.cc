@@ -23,7 +23,6 @@
  * Lua scripting engine for Matrix
  */
 
-#include <stable.hh>
 #include <matrix/Lua.hh>
 
 #include <matrix/luaapi.hh>

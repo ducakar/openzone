@@ -21,7 +21,6 @@
  * @file client/ui/DebugFrame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/DebugFrame.hh>
 
 #include <matrix/Collider.hh>

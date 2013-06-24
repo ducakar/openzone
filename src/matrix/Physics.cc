@@ -21,7 +21,6 @@
  * @file matrix/Physics.cc
  */
 
-#include <stable.hh>
 #include <matrix/Physics.hh>
 
 #include <common/Timer.hh>

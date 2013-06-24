@@ -21,7 +21,6 @@
  * @file client/ui/Inventory.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Inventory.hh>
 
 #include <common/Timer.hh>

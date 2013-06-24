@@ -21,7 +21,6 @@
  * @file nirvana/Mind.cc
  */
 
-#include <stable.hh>
 #include <nirvana/Mind.hh>
 
 #include <nirvana/Lua.hh>

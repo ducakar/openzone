@@ -21,7 +21,6 @@
  * @file matrix/BotClass.cc
  */
 
-#include <stable.hh>
 #include <matrix/BotClass.hh>
 
 #include <matrix/Liber.hh>

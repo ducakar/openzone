@@ -21,7 +21,6 @@
  * @file client/ui/Text.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Text.hh>
 
 #include <client/Shader.hh>

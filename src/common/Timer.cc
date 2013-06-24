@@ -21,7 +21,6 @@
  * @file common/Timer.cc
  */
 
-#include <stable.hh>
 #include <common/Timer.hh>
 
 namespace oz

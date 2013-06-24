@@ -21,7 +21,6 @@
  * @file client/BSPAudio.cc
  */
 
-#include <stable.hh>
 #include <client/BSPAudio.hh>
 
 #include <client/Context.hh>

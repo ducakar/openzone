@@ -21,7 +21,6 @@
  * @file client/Shape.cc
  */
 
-#include <stable.hh>
 #include <client/Shape.hh>
 
 #include <client/Camera.hh>

@@ -21,7 +21,6 @@
  * @file client/StrategicProxy.cc
  */
 
-#include <stable.hh>
 #include <client/StrategicProxy.hh>
 
 #include <common/Timer.hh>

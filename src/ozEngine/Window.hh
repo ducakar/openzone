@@ -40,11 +40,20 @@ class Window
 {
   private:
 
+    static int  screenWidth;  ///< Screen width (desktop resolution).
+    static int  screenHeight; ///< Screen height (desktop resolution).
     static int  windowWidth;  ///< Window inner width.
     static int  windowHeight; ///< Window inner height.
     static bool fullscreen;   ///< True iff in full screen mode;
     static bool windowFocus;  ///< True iff window has (input) focus.
     static bool windowGrab;   ///< True iff window has exclusive input grab.
+
+  private:
+
+    /**
+     * Obtain screen (desktop) width and height.
+     */
+    static void measureScreen();
 
   public:
 
@@ -57,6 +66,28 @@ class Window
      * True the window is created.
      */
     static bool isCreated();
+
+    /**
+     * Desktop width.
+     */
+    static int desktopWidth()
+    {
+      if( screenWidth == 0 ) {
+        measureScreen();
+      }
+      return screenWidth;
+    }
+
+    /**
+     * Desktop height.
+     */
+    static int desktopHeight()
+    {
+      if( screenHeight == 0 ) {
+        measureScreen();
+      }
+      return screenHeight;
+    }
 
     /**
      * Window width.
@@ -83,11 +114,19 @@ class Window
     }
 
     /**
-     * True iff the window has focus.
+     * True iff the window has focus (must be set by `setFocus()`).
      */
     static bool hasFocus()
     {
       return windowFocus;
+    }
+
+    /**
+     * Set whether window has focus.
+     */
+    static void setFocus( bool focus )
+    {
+      windowFocus = focus;
     }
 
     /**
@@ -121,7 +160,7 @@ class Window
     /**
      * Resize window and/or toggle full-screen mode.
      *
-     * If either width or height is 0, desktop resolution is used.
+     * If width (or height) is 0, desktop width (or height) is used.
      * On error, window is destroyed.
      */
     static bool resize( int newWidth, int newHeight, bool fullscreen = false );
@@ -129,7 +168,7 @@ class Window
     /**
      * Create the window.
      *
-     * If either width or height is 0, desktop resolution is used.
+     * If width (or height) is 0, desktop width (or height) is used.
      * Invoking this function when the window is already created is an error.
      */
     static bool create( const char* title, int width, int height, bool fullscreen = false );

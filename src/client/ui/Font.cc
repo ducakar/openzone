@@ -21,7 +21,6 @@
  * @file client/ui/Font.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Font.hh>
 
 #include <client/Shader.hh>

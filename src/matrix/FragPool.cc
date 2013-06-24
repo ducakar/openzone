@@ -21,7 +21,6 @@
  * @file matrix/FragPool.cc
  */
 
-#include <stable.hh>
 #include <matrix/FragPool.hh>
 
 #include <matrix/Frag.hh>

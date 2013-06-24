@@ -23,7 +23,6 @@
  * Map of all resources, object types, scripts etc.
  */
 
-#include <stable.hh>
 #include <matrix/Liber.hh>
 
 #include <matrix/Vehicle.hh>

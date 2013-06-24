@@ -21,7 +21,6 @@
  * @file matrix/WeaponClass.cc
  */
 
-#include <stable.hh>
 #include <matrix/WeaponClass.hh>
 
 #include <matrix/Weapon.hh>

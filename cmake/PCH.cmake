@@ -52,7 +52,7 @@ else( PCH_DISABLE )
     endforeach()
 
     # Helper target that properly triggers recompilation of precompiled header.
-    add_library( ${_pchTarget}_trigger STATIC "${_inputModule}" )
+    add_library( ${_pchTarget}_trigger STATIC "${_inputHeader}" "${_inputModule}" )
 
     # Build PCH and copy original header to the build folder since we include PCH indirectly.
     add_custom_command( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"

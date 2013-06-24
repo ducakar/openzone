@@ -21,7 +21,6 @@
  * @file modules/Module.cc
  */
 
-#include <stable.hh>
 #include <modules/Module.hh>
 
 namespace oz

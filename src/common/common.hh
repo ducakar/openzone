@@ -20,30 +20,12 @@
 /**
  * @file common/common.hh
  *
- * Main include file for the engine. Included via precompiled header `stable.hh`.
+ * Main include file for the engine.
  */
 
 #pragma once
 
-#include <ozCore/ozCore.hh>
-#include <ozDynamics/collision/Bounds.hh>
-
-#ifdef _WIN32
-# include <windows.h>
-// Fix M$ crap from Windows headers.
-# undef ERROR
-# undef PLANES
-# undef near
-# undef far
-#endif
-
-// Some standard C/C++ headers.
-#include <climits>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <pch.hh>
 
 namespace oz
 {
@@ -110,35 +92,6 @@ OZ_ALWAYS_INLINE
 inline float angleDiff( float x, float y )
 {
   return Math::fmod( x - y + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
-}
-
-/**
- * Wrap position to the interval \f$ [-WORLD_DIM, +WORLD_DIM) \f$.
- *
- * This adjustment should be made after each position change. It assumes the input position lies
- * on the interval \f$ [-2 WORLD_DIM, \infty) \f$.
- */
-OZ_ALWAYS_INLINE
-inline Point posWrap( const Point& p )
-{
-  return Point( Math::fmod( p.x + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
-                Math::fmod( p.y + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
-                Math::fmod( p.z + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM );
-}
-
-/**
- * Difference between two points in the world.
- *
- * This function assumes that both points lie on the interval \f$ [-WORLD_DIM, +WORLD_DIM) \f$.
- */
-OZ_ALWAYS_INLINE
-inline Vec3 posDiff( const Point& p0, const Point& p1 )
-{
-  Vec3 diff = p0 - p1;
-
-  return Vec3( Math::fmod( diff.x + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
-               Math::fmod( diff.y + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM,
-               Math::fmod( diff.z + 3.0f*WORLD_DIM, 2.0f*WORLD_DIM ) - WORLD_DIM );
 }
 
 }

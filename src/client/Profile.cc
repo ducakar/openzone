@@ -21,7 +21,6 @@
  * @file client/Profile.cc
  */
 
-#include <stable.hh>
 #include <client/Profile.hh>
 
 #include <common/Lingua.hh>

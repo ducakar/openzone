@@ -53,7 +53,6 @@ add_library( client STATIC
   Terra.hh
   UnitProxy.hh
   VehicleAudio.hh
-  Window.hh
   Audio.cc
   BasicAudio.cc
   BotAudio.cc
@@ -101,7 +100,6 @@ add_library( client STATIC
   Terra.cc
   UnitProxy.cc
   VehicleAudio.cc
-  Window.cc
   ui/Area.hh
   ui/BuildMenu.hh
   ui/Button.hh
@@ -154,6 +152,7 @@ add_library( client STATIC
   ui/UI.cc
 #END SOURCES
 )
+
 use_pch( client pch )
 
 # SDL.

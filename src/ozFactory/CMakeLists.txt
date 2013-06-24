@@ -16,15 +16,15 @@ add_library( ozFactory
 #END SOURCES
 )
 
+add_pch( ozFactory_pch pch.hh pch.cc )
+use_pch( ozFactory ozFactory_pch )
+
 target_link_libraries( ozFactory ozCore ${FREEIMAGE_LIBRARY} )
 if( OZ_NONFREE )
   target_link_libraries( ozFactory ${SQUISH_LIBRARY} )
 endif()
 
 set_target_properties( ozFactory PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
-
-add_pch( ozFactory_pch pch.hh pch.cc )
-use_pch( ozFactory ozFactory_pch )
 
 install( TARGETS ozFactory
          RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}

@@ -21,7 +21,6 @@
  * @file builder/UI.cc
  */
 
-#include <stable.hh>
 #include <builder/UI.hh>
 
 namespace oz

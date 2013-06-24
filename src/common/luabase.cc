@@ -21,7 +21,6 @@
  * @file common/luabase.cc
  */
 
-#include <stable.hh>
 #include <common/luabase.hh>
 
 namespace oz

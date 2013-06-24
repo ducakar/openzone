@@ -21,7 +21,6 @@
  * @file client/BSP.cc
  */
 
-#include <stable.hh>
 #include <client/BSP.hh>
 
 #include <client/Context.hh>

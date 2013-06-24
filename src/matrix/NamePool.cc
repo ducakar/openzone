@@ -21,7 +21,6 @@
  * @file matrix/NamePool.cc
  */
 
-#include <stable.hh>
 #include <matrix/NamePool.hh>
 
 #include <matrix/Liber.hh>

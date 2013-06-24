@@ -21,7 +21,6 @@
  * @file client/QuestList.cc
  */
 
-#include <stable.hh>
 #include <client/QuestList.hh>
 
 #include <client/ui/UI.hh>

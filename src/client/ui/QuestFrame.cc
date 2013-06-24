@@ -21,7 +21,6 @@
  * @file client/ui/QuestFrame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/QuestFrame.hh>
 
 #include <client/Camera.hh>

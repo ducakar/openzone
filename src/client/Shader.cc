@@ -23,7 +23,6 @@
  * Shader utilities.
  */
 
-#include <stable.hh>
 #include <client/Shader.hh>
 
 #include <matrix/Liber.hh>

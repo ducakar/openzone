@@ -21,7 +21,6 @@
  * @file common/Lingua.cc
  */
 
-#include <stable.hh>
 #include <common/Lingua.hh>
 
 namespace oz

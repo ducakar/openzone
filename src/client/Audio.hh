@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <matrix/Vehicle.hh>
 #include <client/common.hh>
 
 namespace oz

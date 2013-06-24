@@ -99,9 +99,9 @@ class Gettext
     }
 
     /**
-     * Check whether a given translation exists in the catalogue.
+     * Check whether the catalogue contains a given translation.
      */
-    bool exists( const char* message ) const;
+    bool contains( const char* message ) const;
 
     /**
      * Obtain translation from the catalogue.

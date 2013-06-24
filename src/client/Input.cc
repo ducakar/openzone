@@ -21,10 +21,7 @@
  * @file client/Input.cc
  */
 
-#include <stable.hh>
 #include <client/Input.hh>
-
-#include <client/Window.hh>
 
 namespace oz
 {
@@ -411,7 +408,7 @@ void Input::readEvent( SDL_Event* event )
 
 void Input::reset()
 {
-  window.warpMouse();
+  Window::warpMouse();
 
   mouseX      = 0.0f;
   mouseY      = 0.0f;
@@ -456,7 +453,7 @@ void Input::prepare()
 
 void Input::update()
 {
-  if( !window.hasFocus ) {
+  if( !Window::hasFocus() ) {
     return;
   }
 
@@ -478,7 +475,7 @@ void Input::update()
   mouseY = -float( dy );
 
 # ifndef _WIN32
-  if( window.hasGrab ) {
+  if( Window::hasGrab() ) {
     // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
     // code is not based on actual code from X.Org, but experimentally tuned to match default X
     // server mouse acceleration as closely as possible.
@@ -501,7 +498,7 @@ void Input::update()
   wheelUp     = input.mouseW > 0;
   wheelDown   = input.mouseW < 0;
 
-  window.warpMouse();
+  Window::warpMouse();
 
   mCopy( oldKeys, keys, sizeof( keys ) );
   mSet( keys, 0, sizeof( keys ) );

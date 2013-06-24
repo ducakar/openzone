@@ -93,7 +93,7 @@ Gettext& Gettext::operator = ( Gettext&& gt )
   return *this;
 }
 
-bool Gettext::exists( const char* message ) const
+bool Gettext::contains( const char* message ) const
 {
   if( nMessages == 0 || String::isEmpty( message ) ) {
     return false;
@@ -125,6 +125,7 @@ const char* Gettext::get( const char* message ) const
   return message;
 }
 
+// .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import( const File& file )
 {
   Buffer buffer = file.read();
@@ -151,6 +152,7 @@ bool Gettext::import( const File& file )
     return nNewMessages == 0;
   }
 
+  // We assume here that the first entry is always "" -- catalogue description string.
   const char* originals    = istream.begin() + istream.readInt() + sizeof( int[2] );
   const char* translations = istream.begin() + istream.readInt() + sizeof( int[2] );
 

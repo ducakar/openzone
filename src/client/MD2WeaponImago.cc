@@ -21,7 +21,6 @@
  * @file client/MD2WeaponImago.cc
  */
 
-#include <stable.hh>
 #include <client/MD2WeaponImago.hh>
 
 #include <client/Camera.hh>

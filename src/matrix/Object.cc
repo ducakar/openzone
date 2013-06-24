@@ -21,7 +21,6 @@
  * @file matrix/Object.cc
  */
 
-#include <stable.hh>
 #include <matrix/Object.hh>
 
 #include <matrix/Lua.hh>

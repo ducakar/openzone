@@ -21,7 +21,6 @@
  * @file builder/FragPool.cc
  */
 
-#include <stable.hh>
 #include <builder/FragPool.hh>
 
 #include <builder/Context.hh>

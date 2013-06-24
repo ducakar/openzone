@@ -21,7 +21,6 @@
  * @file client/MD3Imago.cc
  */
 
-#include <stable.hh>
 #include <client/MD3Imago.hh>
 
 #include <client/Context.hh>

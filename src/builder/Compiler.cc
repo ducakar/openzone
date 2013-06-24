@@ -21,7 +21,6 @@
  * @file builder/Compiler.cc
  */
 
-#include <stable.hh>
 #include <builder/Compiler.hh>
 
 #include <builder/Context.hh>

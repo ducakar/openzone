@@ -21,7 +21,6 @@
  * @file client/ui/MissionMenu.cc
  */
 
-#include <stable.hh>
 #include <client/ui/MissionMenu.hh>
 
 #include <client/Camera.hh>

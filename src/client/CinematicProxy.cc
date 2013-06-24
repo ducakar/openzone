@@ -21,7 +21,6 @@
  * @file client/CinematicProxy.hh
  */
 
-#include <stable.hh>
 #include <client/CinematicProxy.hh>
 
 #include <common/Timer.hh>

@@ -21,7 +21,6 @@
  * @file common/Lua.cc
  */
 
-#include <stable.hh>
 #include <common/Lua.hh>
 
 #include <common/luaapi.hh>

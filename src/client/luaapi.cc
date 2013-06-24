@@ -21,7 +21,6 @@
  * @file client/luaapi.cc
  */
 
-#include <stable.hh>
 #include <common/luabase.hh>
 
 #include <client/QuestList.hh>

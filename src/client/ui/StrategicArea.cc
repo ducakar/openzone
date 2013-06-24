@@ -21,7 +21,6 @@
  * @file client/ui/StrategicArea.cc
  */
 
-#include <stable.hh>
 #include <client/ui/StrategicArea.hh>
 
 #include <client/Shader.hh>

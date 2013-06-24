@@ -21,7 +21,6 @@
  * @file client/ui/TalkFrame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/TalkFrame.hh>
 
 namespace oz

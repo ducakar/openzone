@@ -21,7 +21,6 @@
  * @file client/GameStage.cc
  */
 
-#include <stable.hh>
 #include <client/GameStage.hh>
 
 #include <matrix/Synapse.hh>

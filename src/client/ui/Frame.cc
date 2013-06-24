@@ -21,7 +21,6 @@
  * @file client/ui/Frame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Frame.hh>
 
 #include <client/Input.hh>

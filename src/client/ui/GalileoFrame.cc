@@ -21,7 +21,6 @@
  * @file client/ui/GalileoFrame.cc
  */
 
-#include <stable.hh>
 #include <client/ui/GalileoFrame.hh>
 
 #include <client/Shape.hh>

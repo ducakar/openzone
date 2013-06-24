@@ -21,7 +21,6 @@
  * @file client/UnitProxy.cc
  */
 
-#include <stable.hh>
 #include <client/UnitProxy.hh>
 
 #include <common/Timer.hh>

@@ -21,7 +21,6 @@
  * @file matrix/Dynamic.cc
  */
 
-#include <stable.hh>
 #include <matrix/Dynamic.hh>
 
 #include <matrix/Lua.hh>

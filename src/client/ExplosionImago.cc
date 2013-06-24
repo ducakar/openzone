@@ -21,7 +21,6 @@
  * @file client/ExplosionImago.cc
  */
 
-#include <stable.hh>
 #include <client/ExplosionImago.hh>
 
 #include <common/Timer.hh>

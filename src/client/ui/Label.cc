@@ -21,7 +21,6 @@
  * @file client/ui/Label.cc
  */
 
-#include <stable.hh>
 #include <client/ui/Label.hh>
 
 #include <client/Shader.hh>

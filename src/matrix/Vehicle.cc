@@ -21,7 +21,6 @@
  * @file matrix/Vehicle.cc
  */
 
-#include <stable.hh>
 #include <matrix/Vehicle.hh>
 
 #include <common/Timer.hh>

@@ -21,7 +21,6 @@
  * @file builder/common.cc
  */
 
-#include <stable.hh>
 #include <builder/common.hh>
 
 namespace oz

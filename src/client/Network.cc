@@ -21,7 +21,6 @@
  * @file client/Network.cc
  */
 
-#include <stable.hh>
 #include <client/Network.hh>
 
 #ifdef OZ_NET
