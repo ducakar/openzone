@@ -39,6 +39,10 @@ using namespace nirvana;
 using namespace modules;
 using namespace client;
 
+using common::Point;
+using common::AABB;
+using common::Bounds;
+
 extern JSON config;
 
 }

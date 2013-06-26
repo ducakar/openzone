@@ -47,7 +47,7 @@ struct Cell
  * Matrix data structure for world (terrain, all structures and objects in the world).
  * The world should not be manipulated directly; use Synapse instead.
  */
-class Orbis : public Bounds
+class Orbis
 {
   friend class Synapse;
 

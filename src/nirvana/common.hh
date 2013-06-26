@@ -33,6 +33,10 @@ namespace nirvana
 using namespace common;
 using namespace matrix;
 
+using common::Point;
+using common::AABB;
+using common::Bounds;
+
 extern Collider collider;
 
 }

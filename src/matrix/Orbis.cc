@@ -711,9 +711,6 @@ void Orbis::init()
   freeing = 0;
   waiting = 1;
 
-  mins = Point( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
-  maxs = Point( +Orbis::DIM, +Orbis::DIM, +Orbis::DIM );
-
   caelum.reset();
   terra.init();
   terra.reset();

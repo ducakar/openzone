@@ -1,14 +1,18 @@
 add_library( common STATIC
 #BEGIN SOURCES
+  AABB.hh
+  Bounds.hh
   common.hh
   Lingua.hh
   luaapi.hh
   luabase.hh
   Lua.hh
+  Point.hh
   Timer.hh
   Lingua.cc
   luabase.cc
   Lua.cc
+  Point.cc
   Timer.cc
 #END SOURCES
 )

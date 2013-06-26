@@ -257,21 +257,21 @@ BSP::BSP( const char* name_, int id_ ) :
     OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
   }
 
-  Buffer buffer = file.read();
-  InputStream is = buffer.inputStream();
+  Buffer buffer    = file.read();
+  InputStream is   = buffer.inputStream();
 
-  mins          = is.readPoint();
-  maxs          = is.readPoint();
+  mins             = is.readPoint();
+  maxs             = is.readPoint();
 
-  title         = lingua.get( is.readString() );
-  description   = lingua.get( is.readString() );
+  title            = lingua.get( is.readString() );
+  description      = lingua.get( is.readString() );
 
-  life          = is.readFloat();
-  resistance    = is.readFloat();
+  life             = is.readFloat();
+  resistance       = is.readFloat();
 
   String sFragPool = is.readString();
-  fragPool = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
-  nFrags   = is.readInt();
+  fragPool         = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
+  nFrags           = is.readInt();
 
   models.resize( is.readInt() );
   for( int i = 0; i < models.length(); ++i ) {

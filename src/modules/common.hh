@@ -34,5 +34,9 @@ using namespace common;
 using namespace matrix;
 using namespace nirvana;
 
+using common::Point;
+using common::AABB;
+using common::Bounds;
+
 }
 }

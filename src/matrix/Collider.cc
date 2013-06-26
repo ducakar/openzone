@@ -172,10 +172,6 @@ bool Collider::overlapsAABBEntities()
 
 bool Collider::overlapsAABBOrbis()
 {
-  if( !orbis.includes( aabb, -EPSILON ) ) {
-    return true;
-  }
-
   if( aabb.p.z - aabb.dim.z - orbis.terra.height( aabb.p.x, aabb.p.y ) <= 0.0f ) {
     return true;
   }
@@ -249,30 +245,6 @@ bool Collider::overlapsEntityOrbis()
 //***********************************
 //*        DYNAMIC AABB CD          *
 //***********************************
-
-void Collider::trimAABBVoid()
-{
-  for( int i = 0; i < 3; ++i ) {
-    int side = move[i] >= 0.0f;
-    const Vec3& normal = NORMALS[i * 2 + side];
-
-    float startDist = orbis.maxs[i] + startPos[i] * normal[i] - aabb.dim[i];
-    float endDist   = orbis.maxs[i] + endPos[i]   * normal[i] - aabb.dim[i];
-
-    if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = startDist / max( startDist - endDist, Math::FLOAT_EPS );
-
-      if( ratio < hit.ratio ) {
-        hit.ratio    = max( 0.0f, ratio );
-        hit.normal   = normal;
-        hit.obj      = nullptr;
-        hit.str      = nullptr;
-        hit.entity   = nullptr;
-        hit.material = Material::VOID_BIT;
-      }
-    }
-  }
-}
 
 void Collider::trimAABBObj( const Object* sObj )
 {
@@ -662,10 +634,6 @@ void Collider::trimAABBOrbis()
 
   startPos = originalStartPos;
   endPos   = originalEndPos;
-
-  if( !orbis.includes( trace ) ) {
-    trimAABBVoid();
-  }
 
   SList<int, 24> visitedStructs;
 

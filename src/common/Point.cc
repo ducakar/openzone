@@ -18,45 +18,17 @@
  */
 
 /**
- * @file matrix/common.hh
- *
- * Common matrix includes and definitions for matrix.
+ * @file common/Point.cc
  */
 
-#pragma once
-
-#include <common/common.hh>
 #include <common/Point.hh>
-#include <common/AABB.hh>
-#include <common/Bounds.hh>
 
 namespace oz
 {
-/**
- * Matrix layer.
- */
-namespace matrix
+namespace common
 {
 
-using namespace common;
-
-using common::Point;
-using common::AABB;
-using common::Bounds;
-
-/**
- * Discrete heading for structures and objects.
- */
-enum Heading
-{
-  NORTH = 0x00, ///< Y+.
-  WEST  = 0x01, ///< X-.
-  SOUTH = 0x02, ///< Y-.
-  EAST  = 0x03  ///< X+.
-};
-
-/// Bitwise AND with this mask is non-zero iff heading is either `EAST` or `WEST`.
-const int WEST_EAST_MASK = 0x01;
+const Point Point::ORIGIN = Point( 0.0f, 0.0f, 0.0f );
 
 }
 }

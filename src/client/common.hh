@@ -45,6 +45,10 @@ using namespace matrix;
 using namespace nirvana;
 using namespace modules;
 
+using common::Point;
+using common::AABB;
+using common::Bounds;
+
 struct TexCoord
 {
   static const TexCoord ZERO;

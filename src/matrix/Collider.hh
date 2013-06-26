@@ -115,7 +115,6 @@ class Collider
 
     bool overlapsEntityOrbis();
 
-    void trimAABBVoid();
     void trimAABBObj( const Object* sObj );
     void trimAABBBrush( const BSP::Brush* brush );
     void trimAABBLiquid( const BSP::Brush* brush );
