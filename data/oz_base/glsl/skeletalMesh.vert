@@ -23,6 +23,8 @@
  * Mesh shader with support for skeletal animation.
  */
 
+#include "header.glsl"
+
 attribute vec3  inPosition;
 attribute vec2  inTexCoord;
 attribute vec3  inNormal;

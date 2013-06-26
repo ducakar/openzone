@@ -35,32 +35,12 @@ int main( int argc, char** argv )
   SDL_Init( SDL_INIT_VIDEO );
   Window::create( "Test", 100, 100, false );
 
-  ALCdevice*  device  = alcOpenDevice( nullptr );
-  ALCcontext* context = alcCreateContext( device, nullptr );
-  alcMakeContextCurrent( context );
-
-//   ALBuffer buffer( "/usr/share/sounds/Kopete_Received.ogg" );
-  ALStreamingBuffer buffer( "/home/davorin/Glasba/Whatever.ogg" );
-  ALSource source = buffer.createSource();
-
-  hard_assert( source.id() != 0 );
-//   alSourcePlay( source.id() );
-  OZ_AL_CHECK_ERROR();
-
-//   File dds( argc < 2 ? "mail.dds" : argv[1] );
-//   GLTexture texture( dds );
-
   File file( argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1] );
   Cursor cursor( file );
 
   if( !cursor.isLoaded() ) {
     return EXIT_FAILURE;
   }
-
-  OutputStream ostream( 0 );
-  Builder::buildDDS( File( "/home/davorin/Slike/users/jojo-64x64.png" ),
-                     Builder::MIPMAPS_BIT | Builder::COMPRESSION_BIT, &ostream );
-  File( "drek.dds" ).write( ostream.begin(), ostream.tell() );
 
   glEnable( GL_BLEND );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -90,27 +70,13 @@ int main( int argc, char** argv )
     Window::swapBuffers();
     cursor.advance( 15 );
 
-//     isAlive &= buffer.update();
     Time::sleep( 10 );
   }
 
-  source.destroy();
-  buffer.destroy();
-
-  OZ_AL_CHECK_ERROR();
-  alcDestroyContext( context );
-  alcCloseDevice( device );
   Window::destroy();
   SDL_Quit();
 
-  List<String> fileNames;
-  List<Buffer> fileContents;
-
-//   Shader::readFile( "data/oz_base/glsl/mesh.vert", &fileNames, &fileContents );
-
-  for( const Buffer& b : fileContents ) {
-    Log() << "---------------\n";
-    Log() << b.toString();
-  }
+  GLuint vs = glCreateShader( GL_VERTEX_SHADER );
+  GL::compileShaderFromFile( vs, "", "drek.glsl" );
   return 0;
 }

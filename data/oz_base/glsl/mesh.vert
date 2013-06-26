@@ -23,6 +23,8 @@
  * Generic shader for meshes.
  */
 
+#include "header.glsl"
+
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;

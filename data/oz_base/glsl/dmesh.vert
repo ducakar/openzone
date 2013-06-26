@@ -23,6 +23,8 @@
  * Mesh shader that reads and interpolates vertex positions from the given vertex texture.
  */
 
+#include "header.glsl"
+
 #ifdef OZ_VERTEX_TEXTURE
 uniform vec3 oz_MeshAnimation;
 #endif

@@ -23,6 +23,8 @@
  * Terrain sea surface shader.
  */
 
+#include "header.glsl"
+
 const float TERRA_WATER_SCALE = 512.0;
 const vec3  NORMAL            = vec3( 0.0, 0.0, 1.0 );
 

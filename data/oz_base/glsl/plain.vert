@@ -23,6 +23,8 @@
  * Shader for UI, bounding boxes, aim dot etc.
  */
 
+#include "header.glsl"
+
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 

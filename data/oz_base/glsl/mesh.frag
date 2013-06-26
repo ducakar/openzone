@@ -23,6 +23,8 @@
  * Generic shader for meshes.
  */
 
+#include "header.glsl"
+
 varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;

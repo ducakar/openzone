@@ -23,6 +23,8 @@
  * Terrain (land) shader.
  */
 
+#include "header.glsl"
+
 const float TERRA_DETAIL_SCALE = 768.0;
 
 varying vec3 exPosition;

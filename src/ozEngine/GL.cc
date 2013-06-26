@@ -314,6 +314,76 @@ int GL::textureDataFromFile( const File& file, int bias )
   return nMipmaps - bias;
 }
 
+static bool readShaderFile( const File& file, OutputStream* ostream, List<int>* fileOffsets )
+{
+  Buffer buffer = file.read();
+  if( buffer.isEmpty() ) {
+    return false;
+  }
+
+  InputStream  istream = buffer.inputStream();
+  OutputStream cstream( 0 ); // Clean file contents, without #include directives.
+
+  while( istream.isAvailable() ) {
+    String line = istream.readLine();
+
+    if( !line.beginsWith( "#include" ) ) {
+      cstream.writeChars( line, line.length() );
+    }
+    else {
+      // Insert included file BEFORE the current one (not at the position of #include directive).
+      int startQuote = line.index( '"' );
+      int endQuote   = line.lastIndex( '"' );
+
+      if( startQuote > 0 && startQuote < endQuote ) {
+        String dirName     = file.directory();
+        String fileName    = line.substring( startQuote + 1, endQuote );
+        File   includeFile = dirName.isEmpty() ? fileName : dirName + "/" + fileName;
+
+        if( !readShaderFile( includeFile, ostream, fileOffsets ) ) {
+          return false;
+        }
+      }
+    }
+    cstream.writeChar( '\n' );
+  }
+
+  fileOffsets->add( ostream->tell() );
+  ostream->writeChars( cstream.begin(), cstream.tell() );
+  return true;
+}
+
+bool GL::compileShaderFromFile( GLuint shader, const char* defines, const File& file )
+{
+  OutputStream ostream( 0 );
+  List<int>    fileOffsets;
+
+  if( !readShaderFile( file, &ostream, &fileOffsets ) ) {
+    return false;
+  }
+
+  SList<const char*, 16> fileContents;
+  SList<int, 16>         fileLengths;
+
+  fileContents.add( defines );
+  fileLengths.add( String::length( defines ) );
+
+  for( int i = 0; i < fileOffsets.length(); ++i ) {
+    fileContents.add( ostream.begin() + fileOffsets[i] );
+    fileLengths.add( i == fileOffsets.length() - 1 ? ostream.tell() - fileOffsets[i] :
+                                                     fileOffsets[i + 1] - fileOffsets[i] );
+  }
+
+  glShaderSource( shader, fileContents.length(), fileContents.begin(), fileLengths.begin() );
+  glCompileShader( shader );
+
+  int result;
+  glGetShaderiv( shader, GL_COMPILE_STATUS, &result );
+
+  OZ_GL_CHECK_ERROR();
+  return result == GL_TRUE;
+}
+
 void GL::init()
 {
 #ifdef _WIN32

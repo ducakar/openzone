@@ -158,6 +158,8 @@ class GL
     /**
      * Load texture image from a (DirectX 9) DDS file.
      *
+     * This function is to be used in place of `glTexImage2D()`.
+     *
      * For mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR` filters and `GL_REPEAT`
      * wrapping are used as default, for non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters
      * and `GL_CLAMP_TO_EDGE` wrapping are used as default.
@@ -169,6 +171,25 @@ class GL
      * @return number of mipmap levels loaded, 0 on an error.
      */
     static int textureDataFromFile( const File& file, int bias = 0 );
+
+    /**
+     * Compile a GLSL shader from a file.
+     *
+     * This function is to be used in place of `glShaderSource()`/`glCompileShader()`.
+     *
+     * If an `#include` directive is encountered in a file, the included file is inserted before
+     * the current one in the source files list passed to `glShaderSource()`. The line with
+     * `#include` directive is replaced by an empty line.
+     *
+     * The given `defines` string should contain newline separated list of `#define` directives that
+     * are processed before the rest of GLSL source. It is passed as the first entry in the source
+     * files list to `glShaderSource()`.
+     *
+     * @param shader OpenGL shader id.
+     * @param defines a string containing #defines used during shader compilation.
+     * @param file main source file.
+     */
+    static bool compileShaderFromFile( GLuint shader, const char* defines, const File& file );
 
     /**
      * Link previously declared OpenGL functions on Windows, NOP on other platforms.

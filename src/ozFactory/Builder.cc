@@ -184,20 +184,22 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   ostream->writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
-    FIBITMAP* level = image;
+    FIBITMAP* level;
 
-    if( i != 0 ) {
+    if( i == 0 ) {
+      level = FreeImage_Clone( image );
+    }
+    else {
       level = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
-      hard_assert( level != image );
       pitch = int( FreeImage_GetPitch( image ) );
     }
 
     if( options & COMPRESSION_BIT ) {
 #ifdef OZ_NONFREE
-      level = FreeImage_ConvertTo32Bits( level );
+      FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
 
       int    size   = squish::GetStorageRequirements( width, height, squishFlags );
-      ubyte* pixels = FreeImage_GetBits( level );
+      ubyte* pixels = FreeImage_GetBits( level32 );
 
       // Swap red and blue channels.
       for( int y = 0; y < height; ++y ) {
@@ -209,6 +211,8 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
 
       squish::CompressImage( FreeImage_GetBits( level ), width, height, ostream->forward( size ),
                              squishFlags );
+
+      FreeImage_Unload( level32 );
 #endif
     }
     else {
@@ -219,6 +223,8 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
         pixels += pitch;
       }
     }
+
+    FreeImage_Unload( level );
 
     width  = max( width / 2, 1 );
     height = max( height / 2, 1 );

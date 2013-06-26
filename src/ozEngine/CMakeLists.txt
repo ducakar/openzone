@@ -26,6 +26,7 @@ add_library( ozEngine
   GL.cc
   GLTexture.cc
   Pepper.cc
+  Shader.cc
   Window.cc
 #END SOURCES
 )

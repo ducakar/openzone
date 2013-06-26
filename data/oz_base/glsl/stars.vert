@@ -21,6 +21,8 @@
  * stars.vert
  */
 
+#include "header.glsl"
+
 attribute vec3 inPosition;
 
 varying vec3  exPosition;

@@ -23,6 +23,8 @@
  * Shader for UI, bounding boxes, aim dot etc.
  */
 
+#include "header.glsl"
+
 varying vec2 exTexCoord;
 
 void main()

@@ -23,6 +23,8 @@
  * Postprocess pass.
  */
 
+#include "header.glsl"
+
 const int   MS_LEVEL         = 16;
 const float MS_SIZE          = 0.04;
 

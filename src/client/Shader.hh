@@ -165,7 +165,7 @@ class Shader
     float             lightingDistance;
     CaelumLight       caelumLight;
 
-    void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
+    void compileShader( uint shaderId, const char* defines, const char* path ) const;
     void loadProgram( int id );
 
   public:

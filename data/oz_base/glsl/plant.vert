@@ -23,6 +23,8 @@
  * Mesh shader that deforms mesh according to the given wind.
  */
 
+#include "header.glsl"
+
 uniform vec4 oz_Wind;
 
 attribute vec3 inPosition;

@@ -23,6 +23,8 @@
  * Shader for celestial bodies (except stars).
  */
 
+#include "header.glsl"
+
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 

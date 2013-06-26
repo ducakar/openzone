@@ -115,9 +115,7 @@ void Vehicle::service()
 }
 
 void Vehicle::staticHandler()
-{
-  // TODO Static turret handler.
-}
+{}
 
 void Vehicle::wheeledHandler()
 {

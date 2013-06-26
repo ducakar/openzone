@@ -23,6 +23,8 @@
  * Shader for celestial bodies (except stars).
  */
 
+#include "header.glsl"
+
 varying vec2  exTexCoord;
 varying float exAzimuth;
 

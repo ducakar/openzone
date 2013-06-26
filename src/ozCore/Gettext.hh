@@ -106,16 +106,26 @@ class Gettext
     /**
      * Obtain translation from the catalogue.
      *
-     * If translation for a given string does not exist that string itself is returned.
+     * If translation for a given string does not exist that string itself is returned. An empty
+     * string is always translated into an empty string -- use `catalogueInfos()` to get catalogue
+     * descriptions.
      */
     const char* get( const char* message ) const;
+
+    /**
+     * Obtain descriptions of all .mo catalogues that have been merged into this catalogue.
+     */
+    DArray<const char*> catalogueDescriptions() const;
 
     /**
      * Import messages from GNU gettext binary .mo file.
      *
      * Existing messages are kept in the catalogue. There is no checking for duplicates, so both
      * copies will be kept in the final catalogue. However, the later added copy should always
-     * override the earlier one.
+     * override the earlier one in the hashtable making the old one inaccessible.
+     *
+     * Empty strings (storage for catalogue descriptions) are never included in the hashtable, use
+     * `catalogueInfos()` to obtain those.
      */
     bool import( const File& file );
 

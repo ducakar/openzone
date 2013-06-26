@@ -21,6 +21,8 @@
  * stars.frag
  */
 
+#include "header.glsl"
+
 uniform vec4  oz_StarsColour;
 
 varying vec3  exPosition;

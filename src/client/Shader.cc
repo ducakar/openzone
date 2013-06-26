@@ -118,32 +118,16 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
   pos( pos_ ), diffuse( diffuse_ )
 {}
 
-void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
+void Shader::compileShader( uint shaderId, const char* defines, const char* path ) const
 {
-  File file( path );
-
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Shader source '%s' read failed", path );
-  }
-
-  InputStream is = buffer.inputStream();
-
-  sources[2] = is.begin();
-  lengths[2] = is.capacity();
-
-  glShaderSource( id, 3, sources, lengths );
-  glCompileShader( id );
-
-  int result;
-  glGetShaderiv( id, GL_COMPILE_STATUS, &result );
+  bool hasCompiled = GL::compileShaderFromFile( shaderId, defines, path );
 
   int length;
-  glGetShaderInfoLog( id, LOG_BUFFER_SIZE, &length, logBuffer );
+  glGetShaderInfoLog( shaderId, LOG_BUFFER_SIZE, &length, logBuffer );
   logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 
   if( length != 0 ) {
-    if( result == GL_TRUE ) {
+    if( hasCompiled ) {
       Log::verboseMode = true;
     }
 
@@ -151,7 +135,7 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
     Log::verboseMode = false;
   }
 
-  if( result != GL_TRUE ) {
+  if( !hasCompiled ) {
     OZ_ERROR( "Shader '%s' compile failed", path );
   }
 
@@ -357,24 +341,20 @@ void Shader::init()
 
   programs.resize( liber.shaders.length() );
 
-  const char* sources[3];
-  int         lengths[3];
-
 #ifdef GL_ES_VERSION_2_0
   defines = "#version 100\n";
 #else
   defines = "#version 120\n";
 #endif
-  defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
-  defines = defines + ( doPostprocess ?    "#define OZ_POSTPROCESS\n" : "\n" );
-  defines = defines + ( isLowDetail ?      "#define OZ_LOW_DETAIL\n" : "\n" );
-
-  for( int i = 4; i < 10; ++i ) {
-    defines = defines + "\n";
+  if( hasVertexTexture ) {
+    defines += "#define OZ_VERTEX_TEXTURE\n";
   }
-
-  sources[0] = defines;
-  lengths[0] = defines.length();
+  if( doPostprocess ) {
+    defines += "#define OZ_POSTPROCESS\n";
+  }
+  if( isLowDetail ) {
+    defines += "#define OZ_LOW_DETAIL\n";
+  }
 
   File file( "@glsl/header.glsl" );
   Buffer buffer = file.read();
@@ -382,9 +362,6 @@ void Shader::init()
   if( buffer.isEmpty() ) {
     OZ_ERROR( "'%s' read failed", file.path().cstr() );
   }
-
-  sources[1] = buffer.begin();
-  lengths[1] = buffer.length();
 
   File dir( "@glsl" );
   DArray<File> shaderFiles = dir.ls();
@@ -394,13 +371,13 @@ void Shader::init()
       uint id = glCreateShader( GL_VERTEX_SHADER );
 
       vertShaders.add( file->baseName(), id );
-      compileShader( id, file->path(), sources, lengths );
+      compileShader( id, defines, file->path() );
     }
     else if( file->hasExtension( "frag" ) ) {
       uint id = glCreateShader( GL_FRAGMENT_SHADER );
 
       fragShaders.add( file->baseName(), id );
-      compileShader( id, file->path(), sources, lengths );
+      compileShader( id, defines, file->path() );
     }
   }
 

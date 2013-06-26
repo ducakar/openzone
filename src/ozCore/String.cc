@@ -866,7 +866,7 @@ String String::fileDirectory() const
 {
   int slash = lastIndex( '/' );
 
-  return slash >= 0 ? substring( 0, slash ) : String( buffer );
+  return slash >= 0 ? substring( 0, slash ) : String();
 }
 
 String String::fileName() const
