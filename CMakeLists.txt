@@ -153,6 +153,8 @@ if( NOT PLATFORM_EMBEDDED )
     message( FATAL_ERROR "FreeImage library is missing" )
   endif()
 
+  pkg_check_modules( ASSIMP REQUIRED assimp )
+
   if( OZ_NONFREE )
     find_library( SQUISH_LIBRARY squish )
     mark_as_advanced( SQUISH_LIBRARY )

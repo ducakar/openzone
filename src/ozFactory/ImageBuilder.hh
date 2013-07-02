@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozFactory/Builder.hh
+ * @file ozFactory/ImageBuilder.hh
  *
- * `Builder` class.
+ * `ImageBuilder` class.
  */
 
 #pragma once
@@ -34,10 +34,12 @@ namespace oz
 {
 
 /**
- * %Builder class wraps functions for conversion of generic image and 3D model formats to ones used
- * by OpenZone engine.
+ * %ImageBuilder class converts generic image formats to DDS (DirectDraw Surface).
+ *
+ * FreeImage library is used to read source images and apply transformations to them (e.g. resizing
+ * for mipmaps) and libsquish to apply S3 texture compression.
  */
-class Builder
+class ImageBuilder
 {
   public:
 
@@ -56,12 +58,17 @@ class Builder
     /**
      * Forbid instances.
      */
-    explicit Builder() = delete;
+    explicit ImageBuilder() = delete;
 
     /**
      * True iff the given file contains an image according to FreeImage.
      */
     static bool isImage( const File& file );
+
+    /**
+     * Get the last error string from `buildDDS()`.
+     */
+    static const char* getError();
 
     /**
      * Convert given image to DDS format and optionally compress it and create mipmaps.

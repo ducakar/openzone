@@ -74,7 +74,7 @@ void UI::buildIcons()
 
     image->map();
 
-    if( !Builder::isImage( *image ) ) {
+    if( !ImageBuilder::isImage( *image ) ) {
       image->unmap();
       continue;
     }
@@ -97,7 +97,7 @@ void UI::buildIcons()
       }
     }
     else {
-      if( !Builder::buildDDS( *image, 0, &os ) ) {
+      if( !ImageBuilder::buildDDS( *image, 0, &os ) ) {
         OZ_ERROR( "Error converting '%s' to DDS", image->name().cstr() );
       }
       else {

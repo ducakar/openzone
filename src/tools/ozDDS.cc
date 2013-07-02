@@ -47,11 +47,11 @@ int main( int argc, char** argv )
   while( ( opt = getopt( argc, argv, "cmq" ) ) >= 0 ) {
     switch( opt ) {
       case 'c': {
-        ddsOptions |= Builder::COMPRESSION_BIT;
+        ddsOptions |= ImageBuilder::COMPRESSION_BIT;
         break;
       }
       case 'm': {
-        ddsOptions |= Builder::MIPMAPS_BIT;
+        ddsOptions |= ImageBuilder::MIPMAPS_BIT;
         break;
       }
       default: {
@@ -67,7 +67,7 @@ int main( int argc, char** argv )
   }
 
   OutputStream ostream( 0 );
-  if( !Builder::buildDDS( argv[optind], ddsOptions, &ostream ) ) {
+  if( !ImageBuilder::buildDDS( argv[optind], ddsOptions, &ostream ) ) {
     return EXIT_FAILURE;
   }
 

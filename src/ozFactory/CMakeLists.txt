@@ -8,18 +8,20 @@ configure_file( ozFactory.pc.in ozFactory.pc @ONLY )
 add_library( ozFactory
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
-  Builder.hh
   common.hh
+  ImageBuilder.hh
+  ModelBuilder.hh
   ozFactory.hh
   pch.hh
-  Builder.cc
+  ImageBuilder.cc
+  ModelBuilder.cc
 #END SOURCES
 )
 
 add_pch( ozFactory_pch pch.hh pch.cc )
 use_pch( ozFactory ozFactory_pch )
 
-target_link_libraries( ozFactory ozCore ${FREEIMAGE_LIBRARY} )
+target_link_libraries( ozFactory ozCore ${FREEIMAGE_LIBRARY} ${ASSIMP_LIBRARIES} )
 if( OZ_NONFREE )
   target_link_libraries( ozFactory ${SQUISH_LIBRARY} )
 endif()

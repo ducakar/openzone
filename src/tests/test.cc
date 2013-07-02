@@ -22,14 +22,19 @@
  */
 
 #include <ozCore/ozCore.hh>
+#include <ozFactory/ModelBuilder.hh>
 
 using namespace oz;
 
-int main()
+int main( int argc, char** argv )
 {
   System::init();
-//   File::init();
-//   File::mount( "/home/davorin/Razvoj/openzone/share/openzone/oz_base.zip", "" );
-//   File::mount( "/home/davorin/Razvoj/KSP/Vega_Pod1", "" );
+
+  File file = argc == 2 ? argv[1] : "data/oz_main/mdl/tank/data.obj";
+  OutputStream os( 0 );
+
+  if( !ModelBuilder::buildModel( file, &os ) ) {
+    Log() << ModelBuilder::getError() << "\n";
+  }
   return 0;
 }

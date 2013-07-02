@@ -21,13 +21,44 @@
  */
 
 /**
- * @file ozEngine/ozFactory.hh
+ * @file ozFactory/ModelBuilder.hh
  *
- * Main public header for OpenZone Assets Builder Library.
+ * `ModelBuilder` class.
  */
 
 #pragma once
 
 #include "common.hh"
 
-#include "ImageBuilder.hh"
+namespace oz
+{
+
+/**
+ * %ModelBuilder converts generic 3D model to OpenZone format (.ozModel).
+ *
+ * Assimp (Open Asset Import Library) is used to read source models.
+ */
+class ModelBuilder
+{
+  public:
+
+    /**
+     * Forbid instances.
+     */
+    explicit ModelBuilder() = delete;
+
+    /**
+     * True iff the given 3D model format is supported by Assimp (only file extension is checked).
+     */
+    static bool isModel( const File& file );
+
+    /**
+     * Get the last error string from Assimp.
+     */
+    static const char* getError();
+
+    static bool buildModel( const File& file, OutputStream* ostream );
+
+};
+
+}

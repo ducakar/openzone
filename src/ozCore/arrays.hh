@@ -210,6 +210,24 @@ inline void* mSet( void* dest, int value, size_t size )
 }
 
 /**
+ * Equivalent to `memcmp()`.
+ */
+OZ_ALWAYS_INLINE
+inline int mCompare( const void* srcA, const void* srcB, size_t size )
+{
+  return __builtin_memcmp( srcA, srcB, size );
+}
+
+/**
+ * Equivalent to `memchr()`.
+ */
+OZ_ALWAYS_INLINE
+inline void* mChar( const void* src, int ch, size_t size )
+{
+  return __builtin_memchr( src, ch, size );
+}
+
+/**
  * Length of a static array.
  */
 template <typename Elem, int COUNT>

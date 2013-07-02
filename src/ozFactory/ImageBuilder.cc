@@ -21,11 +21,12 @@
  */
 
 /**
- * @file ozFactory/Builder.cc
+ * @file ozFactory/ImageBuilder.cc
  */
 
-#include "Builder.hh"
+#include "ImageBuilder.hh"
 
+#include <cstdio>
 #include <FreeImage.h>
 #ifdef OZ_NONFREE
 # include <squish.h>
@@ -34,24 +35,28 @@
 namespace oz
 {
 
-static const int DDSD_CAPS        = 0x00000001;
-static const int DDSD_HEIGHT      = 0x00000002;
-static const int DDSD_WIDTH       = 0x00000004;
-static const int DDSD_PITCH       = 0x00000008;
-static const int DDSD_PIXELFORMAT = 0x00001000;
-static const int DDSD_MIPMAPCOUNT = 0x00020000;
-static const int DDSD_LINEARSIZE  = 0x00080000;
+static const int DDSD_CAPS            = 0x00000001;
+static const int DDSD_HEIGHT          = 0x00000002;
+static const int DDSD_WIDTH           = 0x00000004;
+static const int DDSD_PITCH           = 0x00000008;
+static const int DDSD_PIXELFORMAT     = 0x00001000;
+static const int DDSD_MIPMAPCOUNT     = 0x00020000;
+static const int DDSD_LINEARSIZE      = 0x00080000;
 
-static const int DDSDCAPS_COMPLEX = 0x00000008;
-static const int DDSDCAPS_TEXTURE = 0x00001000;
-static const int DDSDCAPS_MIPMAP  = 0x00400000;
+static const int DDSDCAPS_COMPLEX     = 0x00000008;
+static const int DDSDCAPS_TEXTURE     = 0x00001000;
+static const int DDSDCAPS_MIPMAP      = 0x00400000;
 
-static const int DDPF_ALPHAPIXELS = 0x00000001;
-static const int DDPF_FOURCC      = 0x00000004;
-static const int DDPF_RGB         = 0x00000040;
-static const int DDPF_LUMINANCE   = 0x00020000;
+static const int DDPF_ALPHAPIXELS     = 0x00000001;
+static const int DDPF_FOURCC          = 0x00000004;
+static const int DDPF_RGB             = 0x00000040;
+static const int DDPF_LUMINANCE       = 0x00020000;
 
-bool Builder::isImage( const File& file )
+static const int ERROR_LENGTH         = 1024;
+
+static char errorBuffer[ERROR_LENGTH] = {};
+
+bool ImageBuilder::isImage( const File& file )
 {
   Buffer      buffer;
   InputStream istream;
@@ -73,10 +78,19 @@ bool Builder::isImage( const File& file )
   return format != FIF_UNKNOWN;
 }
 
-bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
+const char* ImageBuilder::getError()
 {
+  return errorBuffer;
+}
+
+bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostream )
+{
+  errorBuffer[0] = '\0';
+
 #ifndef OZ_NONFREE
   if( options & COMPRESSION_BIT ) {
+    snprintf( error, ERROR_LENGTH, "Texture compression requested, but compiled without libsquish"
+                                   " (enable OZ_NONFREE)." );
     return false;
   }
 #endif
@@ -100,6 +114,8 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
 
   if( image == nullptr ) {
     FreeImage_CloseMemory( memoryIO );
+
+    snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr() );
     return false;
   }
 
@@ -114,6 +130,8 @@ bool Builder::buildDDS( const File& file, int options, OutputStream* ostream )
   if( ( options & COMPRESSION_BIT ) && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
     FreeImage_Unload( image );
     FreeImage_CloseMemory( memoryIO );
+
+    snprintf( errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2." );
     return false;
   }
 

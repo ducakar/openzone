@@ -273,7 +273,7 @@ void Terra::saveClient()
   Log::print( "Writing minimap texture '%s' ...", minimapOut.path().cstr() );
 
   os.rewind();
-  if( !Builder::buildDDS( minimapIn, 0, &os ) ) {
+  if( !ImageBuilder::buildDDS( minimapIn, 0, &os ) ) {
     OZ_ERROR( "Minimap texture '%s' loading failed", minimapIn.path().cstr() );
   }
 
