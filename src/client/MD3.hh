@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/common.hh>
+#include <client/Mesh.hh>
 
 namespace oz
 {
@@ -127,8 +127,8 @@ class MD3
 //     AnimInfo torsoAnimList[TORSO_ANIM_MAX];
 //     Joint    joints[MAX_FRAMES][JOINTS_MAX];
 
-    int    id;
-    Buffer buffer;
+    Mesh  mesh;
+    int   id;
 
   public:
 

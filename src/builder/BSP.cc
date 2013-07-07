@@ -1182,10 +1182,9 @@ void BSP::saveClient()
 
   OutputStream os( 0 );
 
+  compiler.writeMesh( &os, true );
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );
-
-  compiler.writeMesh( &os, false );
 
   Log::print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 

@@ -43,7 +43,7 @@ static int nacl_main()
 int main()
 #endif
 {
-  Log() << "Unittest began\n";
+  Log() << "Unittest began";
 
   System::init();
   Math::seed( 42 );
@@ -56,7 +56,7 @@ int main()
 
   test_String();
 
-  Log() << ( hasPassed ? "Unittest PASSED\n" : "Unittest FAILED\n" );
+  Log() << ( hasPassed ? "Unittest PASSED" : "Unittest FAILED" );
   return EXIT_SUCCESS;
 }
 

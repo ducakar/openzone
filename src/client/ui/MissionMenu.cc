@@ -174,7 +174,8 @@ void MissionMenu::onDraw()
 
 MissionMenu::MissionMenu() :
   Area( camera.width, camera.height ),
-  description( 40, 80, camera.width - 320, 8, Font::SANS, ALIGN_NONE )
+  description( 40, 80, camera.width - 320, 8, Font::SANS, ALIGN_NONE ),
+  imageId( 0 )
 {
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );

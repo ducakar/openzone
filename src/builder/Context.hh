@@ -104,6 +104,8 @@ class Context
                        const char* basePath, bool wrap = true,
                        int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
 
+    void buildTexture( const char* basePath, const char* destPath );
+
     void init();
     void destroy();
 

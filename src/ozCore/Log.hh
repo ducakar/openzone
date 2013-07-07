@@ -54,6 +54,17 @@ class Log
   public:
 
     /**
+     * Print newline.
+     *
+     * The only purpose of `Log` instances is to support C++ streams-like syntax:
+     * @code
+     * Log() << "Hello, " << "world!";
+     * @endcode
+     * This destructor adds newline to the end of each string printed with such syntax.
+     */
+    ~Log();
+
+    /**
      * Return log file path or an empty string if log is printed to stdout only.
      */
     static const char* logFile();

@@ -40,25 +40,13 @@ SMM::SMM( int id_ ) :
 
 void SMM::preload()
 {
-  File file( liber.models[id].path );
-
-  buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "SMM file '%s' mmap failed", file.path().cstr() );
-  }
-
+  mesh.preload( liber.models[id].path );
   isPreloaded = true;
 }
 
 void SMM::load()
 {
-  InputStream is = buffer.inputStream();
-  mesh.load( &is, GL_STATIC_DRAW );
-
-  hard_assert( !is.isAvailable() );
-
-  buffer.deallocate();
-
+  mesh.load( GL_STATIC_DRAW );
   isLoaded = true;
 }
 

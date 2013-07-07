@@ -235,27 +235,18 @@ MD2::MD2( int id_ ) :
 
 void MD2::preload()
 {
-  File file( liber.models[id].path );
+  const File* file = mesh.preload( liber.models[id].path );
+  InputStream is   = file->inputStream();
 
-  buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "MD2 model file '%s' read failed", file.path().cstr() );
-  }
+  is.seek( is.available() - int( sizeof( float[16] ) ) );
+  weaponTransf = is.readMat44();
 
   isPreloaded = true;
 }
 
 void MD2::load()
 {
-  InputStream is = buffer.inputStream();
-
-  weaponTransf = is.readMat44();
-  mesh.load( &is, shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
-
-  hard_assert( !is.isAvailable() );
-
-  buffer.deallocate();
-
+  mesh.load( shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
   isLoaded = true;
 }
 

@@ -192,8 +192,8 @@ int GL::textureDataFromFile( const File& file, int bias )
   int flags  = istream.readInt();
   int height = istream.readInt();
   int width  = istream.readInt();
+  int pitch  = istream.readInt();
 
-  istream.readInt();
   istream.readInt();
 
   int nMipmaps = istream.readInt();
@@ -245,6 +245,7 @@ int GL::textureDataFromFile( const File& file, int bias )
 
   int mipmapWidth  = width;
   int mipmapHeight = height;
+  int mipmapS3Size = pitch;
 
   if( nMipmaps == 1 ) {
     // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
@@ -262,20 +263,16 @@ int GL::textureDataFromFile( const File& file, int bias )
 
   for( int i = 0; i < nMipmaps; ++i ) {
     if( pixelFlags & DDPF_FOURCC ) {
-      int         mipmapSize = max( 1, ( ( mipmapWidth + 3 ) / 4 ) ) * blockSize;
-      const char* source     = istream.forward( mipmapSize );
+      const char* source = istream.forward( mipmapS3Size );
 
       if( i >= bias ) {
         glCompressedTexImage2D( GL_TEXTURE_2D, i - bias, format, mipmapWidth, mipmapHeight, 0,
-                                mipmapSize, source );
+                                mipmapS3Size, source );
       }
-
-      mipmapWidth  /= 2;
-      mipmapHeight /= 2;
     }
     else {
       int         mipmapPitch = ( mipmapWidth * bpp + 7 ) / 8;
-      int         mipmapSize  = mipmapPitch * mipmapHeight;
+      int         mipmapSize  = mipmapHeight * mipmapPitch;
       const char* source      = istream.forward( mipmapSize );
 
       if( i >= bias ) {
@@ -305,10 +302,11 @@ int GL::textureDataFromFile( const File& file, int bias )
                       GL_UNSIGNED_BYTE, data );
         delete[] data;
       }
-
-      mipmapWidth  /= 2;
-      mipmapHeight /= 2;
     }
+
+    mipmapWidth  = max( 1, mipmapWidth / 2 );
+    mipmapHeight = max( 1, mipmapHeight / 2 );
+    mipmapS3Size = max( blockSize, mipmapS3Size / 4 );
   }
 
   return nMipmaps - bias;

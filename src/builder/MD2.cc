@@ -322,7 +322,7 @@ void MD2::build( const char* path )
 
   for( int i = 0; i < texCoords.length(); ++i ) {
     texCoords[i].u = float( is.readShort() ) / float( header.skinWidth );
-    texCoords[i].v = float( header.skinHeight - is.readShort() ) / float( header.skinHeight );
+    texCoords[i].v = float( is.readShort() ) / float( header.skinHeight );
   }
 
   is.rewind();
@@ -375,19 +375,17 @@ void MD2::build( const char* path )
   normals.clear();
   positions.clear();
 
-  OutputStream os( 0 );
-
-  // generate vertex data for animated MD2s
-  if( header.nFrames != 1 ) {
-    os.writeMat44( weaponTransf );
-  }
-
-  compiler.writeMesh( &os );
-
   String sDestDir = &sPath[1];
   File::mkdir( sDestDir );
 
+  OutputStream os( 0 );
+
+  compiler.writeMesh( &os );
+  compiler.buildMeshTextures( sDestDir );
+
   if( header.nFrames != 1 ) {
+    os.writeMat44( weaponTransf );
+
     File destFile( sDestDir + "/data.ozcMD2" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );

@@ -482,13 +482,14 @@ static void waitBell()
   }
 #endif
 
-  while( bellLock != 0 ) {
+  while( __sync_lock_test_and_set( &bellLock, 1 ) != 0 ) {
 #ifdef _WIN32
     Sleep( 10 );
 #else
     nanosleep( &TIMESPEC_10MS, nullptr );
 #endif
   }
+  __sync_lock_release( &bellLock );
 }
 
 // Wait bell to finish playing on (normal) process termination.

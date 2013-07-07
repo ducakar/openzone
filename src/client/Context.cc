@@ -345,19 +345,60 @@ Texture Context::loadTexture( const char* path )
   return readTexture( &is );
 }
 
+Texture Context::loadTextures( const File& diffuseFile, const File& masksFile,
+                               const File& normalsFile )
+{
+  Texture texture;
+
+  if( diffuseFile.isMapped() ) {
+    glGenTextures( 1, &texture.diffuse );
+    glBindTexture( GL_TEXTURE_2D, texture.diffuse );
+    GL::textureDataFromFile( diffuseFile );
+  }
+  if( masksFile.isMapped() ) {
+    glGenTextures( 1, &texture.masks );
+    glBindTexture( GL_TEXTURE_2D, texture.masks );
+    GL::textureDataFromFile( masksFile );
+  }
+  if( normalsFile.isMapped() ) {
+    glGenTextures( 1, &texture.normals );
+    glBindTexture( GL_TEXTURE_2D, texture.normals );
+    GL::textureDataFromFile( normalsFile );
+  }
+
+  OZ_GL_CHECK_ERROR();
+  return texture;
+}
+
+void Context::unloadTexture( const Texture* texture )
+{
+  if( texture->diffuse != shader.defaultTexture ) {
+    glDeleteTextures( 1, &texture->diffuse );
+  }
+  if( texture->masks != shader.defaultMasks ) {
+    glDeleteTextures( 1, &texture->masks );
+  }
+  if( texture->normals != shader.defaultNormals ) {
+    glDeleteTextures( 1, &texture->normals );
+  }
+
+  OZ_GL_CHECK_ERROR();
+}
+
 Texture Context::requestTexture( int id )
 {
   Resource<Texture>& resource = textures[id];
 
   if( resource.nUsers >= 0 ) {
     ++resource.nUsers;
-    return resource.id;
+    return resource.handle;
   }
 
-  resource.nUsers = 1;
-  resource.id = loadTexture( liber.textures[id].path );
+  resource.nUsers    = 1;
+  resource.handle    = loadTexture( liber.textures[id].path );
+  resource.handle.id = id;
 
-  return resource.id;
+  return resource.handle;
 }
 
 void Context::releaseTexture( int id )
@@ -370,9 +411,7 @@ void Context::releaseTexture( int id )
 
   if( resource.nUsers == 0 ) {
     resource.nUsers = -1;
-    resource.id.destroy();
-
-    OZ_GL_CHECK_ERROR();
+    unloadTexture( &resource.handle );
   }
 }
 
@@ -382,7 +421,7 @@ uint Context::requestSound( int id )
 
   if( resource.nUsers >= 0 ) {
     ++resource.nUsers;
-    return resource.id;
+    return resource.handle;
   }
 
   resource.nUsers = 1;
@@ -392,14 +431,14 @@ uint Context::requestSound( int id )
   const String& name = liber.sounds[id].name;
   const String& path = liber.sounds[id].path;
 
-  alGenBuffers( 1, &resource.id );
+  alGenBuffers( 1, &resource.handle );
 
-  if( !AL::bufferDataFromFile( resource.id, path ) ) {
+  if( !AL::bufferDataFromFile( resource.handle, path ) ) {
     OZ_ERROR( "Failed to load WAVE or Ogg Vorbis sound '%s'", name.cstr() );
   }
 
   OZ_AL_CHECK_ERROR();
-  return resource.id;
+  return resource.handle;
 }
 
 void Context::releaseSound( int id )
@@ -418,7 +457,7 @@ void Context::freeSound( int id )
   hard_assert( resource.nUsers == 0 );
 
   --resource.nUsers;
-  alDeleteBuffers( 1, &resource.id );
+  alDeleteBuffers( 1, &resource.handle );
 
   OZ_AL_CHECK_ERROR();
 }
@@ -428,19 +467,19 @@ SMM* Context::requestSMM( int id )
   Resource<SMM*>& resource = smms[id];
 
   if( resource.nUsers < 0 ) {
-    resource.object = new SMM( id );
+    resource.handle = new SMM( id );
     resource.nUsers = 1;
   }
 
   ++resource.nUsers;
-  return resource.object;
+  return resource.handle;
 }
 
 void Context::releaseSMM( int id )
 {
   Resource<SMM*>& resource = smms[id];
 
-  hard_assert( resource.object != nullptr && resource.nUsers > 0 );
+  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -450,19 +489,19 @@ MD2* Context::requestMD2( int id )
   Resource<MD2*>& resource = md2s[id];
 
   if( resource.nUsers < 0 ) {
-    resource.object = new MD2( id );
+    resource.handle = new MD2( id );
     resource.nUsers = 1;
   }
 
   ++resource.nUsers;
-  return resource.object;
+  return resource.handle;
 }
 
 void Context::releaseMD2( int id )
 {
   Resource<MD2*>& resource = md2s[id];
 
-  hard_assert( resource.object != nullptr && resource.nUsers > 0 );
+  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -472,19 +511,19 @@ MD3* Context::requestMD3( int id )
   Resource<MD3*>& resource = md3s[id];
 
   if( resource.nUsers < 0 ) {
-    resource.object = new MD3( id );
+    resource.handle = new MD3( id );
     resource.nUsers = 1;
   }
 
   ++resource.nUsers;
-  return resource.object;
+  return resource.handle;
 }
 
 void Context::releaseMD3( int id )
 {
   Resource<MD3*>& resource = md3s[id];
 
-  hard_assert( resource.object != nullptr && resource.nUsers > 0 );
+  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -493,7 +532,7 @@ BSP* Context::getBSP( const Struct* str )
 {
   Resource<BSP*>& resource = bsps[str->bsp->id];
 
-  return resource.object != nullptr && resource.object->isLoaded ? resource.object : nullptr;
+  return resource.handle != nullptr && resource.handle->isLoaded ? resource.handle : nullptr;
 }
 
 void Context::drawBSP( const Struct* str )
@@ -503,11 +542,11 @@ void Context::drawBSP( const Struct* str )
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
-  if( resource.object == nullptr ) {
-    resource.object = new BSP( str->bsp );
+  if( resource.handle == nullptr ) {
+    resource.handle = new BSP( str->bsp );
   }
-  else if( resource.object->isLoaded ) {
-    resource.object->draw( str );
+  else if( resource.handle->isLoaded ) {
+    resource.handle->draw( str );
   }
 }
 
@@ -518,11 +557,11 @@ void Context::playBSP( const Struct* str )
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
-  if( resource.object == nullptr ) {
-    resource.object = new BSPAudio( str->bsp );
+  if( resource.handle == nullptr ) {
+    resource.handle = new BSPAudio( str->bsp );
   }
 
-  resource.object->play( str );
+  resource.handle->play( str );
 }
 
 void Context::drawImago( const Object* obj, const Imago* parent )
@@ -677,27 +716,27 @@ void Context::unload()
   OZ_AL_CHECK_ERROR();
 
   for( int i = 0; i < liber.nBSPs; ++i ) {
-    delete bsps[i].object;
+    delete bsps[i].handle;
 
-    bsps[i].object = nullptr;
+    bsps[i].handle = nullptr;
     bsps[i].nUsers = -1;
 
-    delete bspAudios[i].object;
+    delete bspAudios[i].handle;
 
-    bspAudios[i].object = nullptr;
+    bspAudios[i].handle = nullptr;
     bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < liber.models.length(); ++i ) {
-    delete smms[i].object;
-    smms[i].object = nullptr;
+    delete smms[i].handle;
+    smms[i].handle = nullptr;
     smms[i].nUsers = -1;
 
-    delete md2s[i].object;
-    md2s[i].object = nullptr;
+    delete md2s[i].handle;
+    md2s[i].handle = nullptr;
     md2s[i].nUsers = -1;
 
-    delete md3s[i].object;
-    md3s[i].object = nullptr;
+    delete md3s[i].handle;
+    md3s[i].handle = nullptr;
     md3s[i].nUsers = -1;
   }
 
@@ -785,20 +824,20 @@ void Context::init()
     sounds[i].nUsers = -1;
   }
   for( int i = 0; i < nBSPs; ++i ) {
-    bsps[i].object = nullptr;
+    bsps[i].handle = nullptr;
     bsps[i].nUsers = -1;
 
-    bspAudios[i].object = nullptr;
+    bspAudios[i].handle = nullptr;
     bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < nModels; ++i ) {
-    smms[i].object = nullptr;
+    smms[i].handle = nullptr;
     smms[i].nUsers = -1;
 
-    md2s[i].object = nullptr;
+    md2s[i].handle = nullptr;
     md2s[i].nUsers = -1;
 
-    md3s[i].object = nullptr;
+    md3s[i].handle = nullptr;
     md3s[i].nUsers = -1;
   }
 

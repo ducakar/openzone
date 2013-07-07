@@ -30,7 +30,7 @@ using namespace oz;
 
 void test_arrays()
 {
-  Log() << "+ arrays\n";
+  Log() << "+ arrays";
 
   CIterator<Foo> ici;
   Iterator<Foo>  ii;

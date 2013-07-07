@@ -30,7 +30,7 @@ using namespace oz;
 
 void test_Alloc()
 {
-  Log() << "+ Alloc\n";
+  Log() << "+ Alloc";
 
   if( Alloc::OVERLOADS_NEW_AND_DELETE ) {
     static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;

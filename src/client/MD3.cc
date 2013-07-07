@@ -36,19 +36,13 @@ MD3::MD3( int id_ ) :
 
 void MD3::preload()
 {
-  File file( liber.models[id].path );
-
-  buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "MD3 model file '%s' mmap failed", file.path().cstr() );
-  }
-
+  mesh.preload( liber.models[id].path );
   isPreloaded = true;
 }
 
 void MD3::load()
 {
-  buffer.deallocate();
+  mesh.load( GL_STATIC_DRAW );
   isLoaded = true;
 }
 

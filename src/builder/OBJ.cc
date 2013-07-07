@@ -376,7 +376,7 @@ void OBJ::save()
         const FaceVertex& vertex = face.vertices[k];
 
         if( vertex.texCoord >= 0 ) {
-          compiler.texCoord( texCoords[vertex.texCoord].u, texCoords[vertex.texCoord].v );
+          compiler.texCoord( texCoords[vertex.texCoord].u, 1.0f - texCoords[vertex.texCoord].v );
         }
         compiler.normal( normals[vertex.normal] );
         compiler.vertex( positions[vertex.position] );
@@ -391,6 +391,7 @@ void OBJ::save()
   OutputStream os( 0 );
 
   compiler.writeMesh( &os );
+  compiler.buildMeshTextures( sDestDir );
 
   Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

@@ -161,6 +161,42 @@ File& File::operator = ( File&& file )
   return *this;
 }
 
+File& File::operator = ( const char* path )
+{
+  unmap();
+
+  filePath = path;
+
+  if( filePath.isEmpty() ) {
+    fileType = MISSING;
+    fileSize = -1;
+    fileTime = 0;
+  }
+  else {
+    stat();
+  }
+
+  return *this;
+}
+
+File& File::operator = ( const String& path )
+{
+  unmap();
+
+  filePath = path;
+
+  if( filePath.isEmpty() ) {
+    fileType = MISSING;
+    fileSize = -1;
+    fileTime = 0;
+  }
+  else {
+    stat();
+  }
+
+  return *this;
+}
+
 bool File::stat()
 {
   if( filePath.fileIsVirtual() ) {

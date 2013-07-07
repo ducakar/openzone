@@ -104,9 +104,8 @@ class MD2
 
   private:
 
-    int    id;
-    Buffer buffer;
-    Mesh   mesh;
+    int   id;
+    Mesh  mesh;
 
   public:
 

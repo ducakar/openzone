@@ -663,7 +663,7 @@ void Builder::buildMissions()
     Log::print( "Building thumbnail '%s' ...", outFile.path().cstr() );
 
     OutputStream os( 0 );
-    if( !oz::ImageBuilder::buildDDS( srcFile.path(), 0, &os ) ) {
+    if( !ImageBuilder::buildDDS( srcFile.path(), 0, &os ) ) {
       OZ_ERROR( "Failed to convert '%s' to DDS", srcFile.path().cstr() );
     }
 

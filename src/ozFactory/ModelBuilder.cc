@@ -30,8 +30,12 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+#include <ozEngine/GL.hh>
+
 namespace oz
 {
+
+static const int ERROR_LENGTH = 1024;
 
 struct Vertex
 {
@@ -41,35 +45,12 @@ struct Vertex
   float t;
 
   OZ_HIDDEN
-  bool operator == ( const Vertex& v ) const
-  {
-    return p == v.p && n == v.n && s == v.s && t == v.t;
-  }
-
-  OZ_HIDDEN
-  bool operator < ( const Vertex& v ) const
-  {
-    if( p.x < v.p.x ) { return true; } if( p.x > v.p.x ) { return false; }
-    if( p.y < v.p.y ) { return true; } if( p.y > v.p.y ) { return false; }
-    if( p.z < v.p.z ) { return true; } if( p.z > v.p.z ) { return false; }
-
-    if( n.x < v.n.x ) { return true; } if( n.x > v.n.x ) { return false; }
-    if( n.y < v.n.y ) { return true; } if( n.y > v.n.y ) { return false; }
-    if( n.z < v.n.z ) { return true; } if( n.z > v.n.z ) { return false; }
-
-    if( s < v.s ) { return true; } if( s > v.s ) { return false; }
-    if( t < v.t ) { return true; } if( t > v.t ) { return false; }
-
-    return false;
-  }
-
-  OZ_HIDDEN
   void write( OutputStream* ostream ) const
   {
     ostream->writePoint( p );
-    ostream->writeVec3( n );
     ostream->writeFloat( s );
     ostream->writeFloat( t );
+    ostream->writeVec3( n );
   }
 };
 
@@ -83,13 +64,11 @@ struct Mesh
 {
   int firstIndex;
   int nIndices;
+
   int material;
 };
 
-static const int ERROR_LENGTH = 1024;
-
-static char errorBuffer[ERROR_LENGTH] = {};
-
+static char             errorBuffer[ERROR_LENGTH] = {};
 static Assimp::Importer importer;
 
 bool ModelBuilder::isModel( const File& file )
@@ -122,12 +101,18 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
     return false;
   }
 
-  const aiScene* scene = importer.ReadFileFromMemory( istream.begin(), size_t( istream.capacity() ),
-                                                      aiProcess_JoinIdenticalVertices |
-                                                      aiProcess_Triangulate |
-                                                      aiProcess_GenNormals |
-                                                      aiProcess_ImproveCacheLocality |
-                                                      aiProcess_SortByPType );
+  const aiScene* scene = importer.ReadFile( file.realPath(),
+                                            aiProcess_JoinIdenticalVertices |
+                                            aiProcess_Triangulate |
+                                            aiProcess_GenNormals |
+                                            aiProcess_PreTransformVertices |
+                                            aiProcess_ValidateDataStructure |
+                                            aiProcess_ImproveCacheLocality |
+                                            aiProcess_RemoveRedundantMaterials |
+                                            aiProcess_FindInvalidData |
+                                            aiProcess_FindInstances |
+                                            aiProcess_OptimizeMeshes |
+                                            aiProcess_OptimizeGraph );
   if( scene == nullptr ) {
     return false;
   }
@@ -141,13 +126,15 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
     return false;
   }
 
-  Set<Vertex>    vertices;
+  List<Vertex>   vertices;
   List<ushort>   indices;
   List<Material> materials;
   List<Mesh>     meshes;
 
   for( uint i = 0; i < scene->mNumMeshes; ++i ) {
     const aiMesh* mesh = scene->mMeshes[i];
+
+    int firstVertex = vertices.length();
 
     for( uint j = 0; j < mesh->mNumVertices; ++j ) {
       const aiVector3D* positions = mesh->mVertices;
@@ -169,13 +156,15 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
 
       hard_assert( face.mNumIndices == 3 );
 
-      indices.add( ushort( face.mIndices[0] ) );
-      indices.add( ushort( face.mIndices[1] ) );
-      indices.add( ushort( face.mIndices[2] ) );
+      indices.add( ushort( firstVertex + int( face.mIndices[0] ) ) );
+      indices.add( ushort( firstVertex + int( face.mIndices[1] ) ) );
+      indices.add( ushort( firstVertex + int( face.mIndices[2] ) ) );
     }
 
     int nIndices = indices.length() - firstIndex;
     int material = int( mesh->mMaterialIndex );
+
+    Log() << material;
 
     meshes.add( { firstIndex, nIndices, material } );
   }
@@ -193,13 +182,11 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
 
     materials.add( { String::fileBaseName( path.C_Str() ), alpha } );
 
-    Log() << i << ": " << String::fileBaseName( path.C_Str() ) << "\n";
+    Log() << String::fileBaseName( path.C_Str() );
   }
 
   ostream->writeInt( vertices.length() );
   ostream->writeInt( indices.length() );
-  ostream->writeInt( materials.length() );
-  ostream->writeInt( meshes.length() );
 
   for( int i = 0; i < vertices.length(); ++i ) {
     vertices[i].write( ostream );
@@ -207,18 +194,28 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
   for( int i = 0; i < indices.length(); ++i ) {
     ostream->writeUShort( indices[i] );
   }
-  for( int i = 0; i < materials.length(); ++i ) {
-    ostream->writeString( materials[i].texture );
-    ostream->writeFloat( materials[i].alpha );
-  }
-  for( int i = 0; i < meshes.length(); ++i ) {
-    ostream->writeInt( meshes[i].firstIndex );
-    ostream->writeInt( meshes[i].nIndices );
-  }
 
-  Log() << "Meshes: " << meshes.length() << "\n";
-  Log() << "Vertices: " << vertices.length() << "\n";
-  Log() << "Indices: " << indices.length() << "\n";
+  ostream->writeInt( 0 );
+  ostream->writeString( "mesh" );
+  ostream->writeInt( 1 );
+  ostream->writeString( "openzone/_Drkalisce" );
+
+//   for( int i = 0; i < materials.length(); ++i ) {
+//     ostream->writeString( materials[i].texture );
+//     ostream->writeFloat( materials[i].alpha );
+//   }
+
+  ostream->writeInt( 1 );
+  ostream->writeInt( meshes.length() );
+
+  for( int i = 0; i < meshes.length(); ++i ) {
+    ostream->writeInt( 512 );
+    ostream->writeUInt( GL_TRIANGLES );
+    ostream->writeInt( 0 );
+
+    ostream->writeInt( meshes[i].nIndices );
+    ostream->writeInt( meshes[i].firstIndex );
+  }
 
   return true;
 }

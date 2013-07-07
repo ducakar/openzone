@@ -46,21 +46,18 @@ void Vertex::setFormat()
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 }
 
-void Texture::destroy()
+struct Mesh::PreloadData
 {
-  if( diffuse != 0 ) {
-    glDeleteTextures( 1, &diffuse );
-    diffuse = 0;
-  }
-  if( masks != shader.defaultMasks ) {
-    glDeleteTextures( 1, &masks );
-    masks = 0;
-  }
-  if( normals != shader.defaultNormals ) {
-    glDeleteTextures( 1, &normals );
-    normals = 0;
-  }
-}
+  struct TexFiles
+  {
+    File diffuse;
+    File masks;
+    File normals;
+  };
+
+  File           modelFile;
+  List<TexFiles> textures;
+};
 
 Set<Mesh*> Mesh::loadedMeshes;
 Vertex*    Mesh::vertexAnimBuffer       = nullptr;
@@ -84,7 +81,7 @@ void Mesh::animate( const Instance* instance )
     const Vec3*  currFrameNormals   = &normals[instance->firstFrame * nFramePositions];
 
     if( instance->interpolation == 0.0f ) {
-      for( int i = 0; i < nFrameVertices; ++i ) {
+      for( int i = 0; i < nVertices; ++i ) {
         int j = Math::lround( vertices[i].pos[0] * float( nFramePositions - 1 ) );
 
         Point pos    = currFramePositions[j];
@@ -106,7 +103,7 @@ void Mesh::animate( const Instance* instance )
       const Point* nextFramePositions = &positions[instance->secondFrame * nFramePositions];
       const Vec3*  nextFrameNormals   = &normals[instance->secondFrame * nFramePositions];
 
-      for( int i = 0; i < nFrameVertices; ++i ) {
+      for( int i = 0; i < nVertices; ++i ) {
         int j = Math::lround( vertices[i].pos[0] * float( nFramePositions - 1 ) );
 
         Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], instance->interpolation );
@@ -125,7 +122,7 @@ void Mesh::animate( const Instance* instance )
       }
     }
 
-    upload( vertexAnimBuffer, nFrameVertices, GL_STREAM_DRAW );
+    upload( vertexAnimBuffer, nVertices, GL_STREAM_DRAW );
   }
 }
 
@@ -149,10 +146,12 @@ void Mesh::draw( const Instance* instance, int mask )
     const Part& part = parts[i];
 
     if( part.flags & mask ) {
+      const Texture& texture = textures[part.texture];
+
       glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
+      glBindTexture( GL_TEXTURE_2D, texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+      glBindTexture( GL_TEXTURE_2D, texture.masks );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( nullptr ) + part.firstIndex );
@@ -165,6 +164,10 @@ void Mesh::drawScheduled( int mask )
   foreach( i, loadedMeshes.iter() ) {
     Mesh* mesh = *i;
 
+    if( mesh->instances.isEmpty() ) {
+      continue;
+    }
+
     glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
 
@@ -173,7 +176,7 @@ void Mesh::drawScheduled( int mask )
     shader.program( mesh->shaderId );
 
     foreach( instance, mesh->instances.citer() ) {
-      // HACK This is not a nice way to draw non-trasparent parts for which alpha < 1 has been set.
+      // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
       int instanceMask = mask;
 
       if( instance->alpha != 1.0f ) {
@@ -226,8 +229,9 @@ void Mesh::deallocate()
 
 Mesh::Mesh() :
   vbo( 0 ), ibo( 0 ), positionsTexId( 0 ), normalsTexId( 0 ),
+  nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFrames( 0 ), nFramePositions( 0 ),
   vertices( nullptr ), positions( nullptr ), normals( nullptr ),
-  instances( 8 )
+  instances( 8 ), preloadData( nullptr )
 {}
 
 Mesh::~Mesh()
@@ -235,29 +239,54 @@ Mesh::~Mesh()
   unload();
 }
 
-void Mesh::draw( int mask ) const
+const File* Mesh::preload( const char* path )
 {
-  mask &= flags;
+  hard_assert( preloadData == nullptr );
 
-  if( mask == 0 ) {
-    return;
+  preloadData = new PreloadData();
+  preloadData->modelFile = path;
+
+  if( !preloadData->modelFile.map() ) {
+    OZ_ERROR( "Failed to map '%s'", path );
   }
 
-  for( int i = 0; i < parts.length(); ++i ) {
-    const Part& part = parts[i];
+  InputStream istream = preloadData->modelFile.inputStream();
 
-    if( part.flags & mask ) {
-      glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
-      glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+  nTextures       = istream.readInt();
+  nVertices       = istream.readInt();
+  nIndices        = istream.readInt();
+  nFrames         = istream.readInt();
+  nFramePositions = istream.readInt();
 
-      glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, tf.colour );
+  istream.readInt();
+  istream.readInt();
 
-      glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( nullptr ) + part.firstIndex );
+  shaderId        = liber.shaderIndex( istream.readString() );
+
+  if( nTextures > 0 ) {
+    for( int i = 0; i < nTextures; ++i ) {
+      const String& name = istream.readString();
+
+      preloadData->textures.add();
+
+      if( !name.isEmpty() ) {
+        PreloadData::TexFiles& texFiles = preloadData->textures.last();
+
+        texFiles.diffuse = name + ".dds";
+        texFiles.masks   = name + "_m.dds";
+        texFiles.normals = name + "_n.dds";
+
+        if( !texFiles.diffuse.map() ) {
+          OZ_ERROR( "Failed to map '%s'", texFiles.diffuse.path().cstr() );
+        }
+
+        texFiles.masks.map();
+//         texFiles.normals.map();
+      }
     }
   }
+
+  return &preloadData->modelFile;
 }
 
 void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
@@ -267,19 +296,65 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Mesh::load( InputStream* istream, uint usage )
+void Mesh::load( uint usage )
 {
   flags = 0;
 
+  hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
+  InputStream istream = preloadData->modelFile.inputStream();
+
   OZ_GL_CHECK_ERROR();
 
-  int nVertices = istream->readInt();
-  int nIndices  = istream->readInt();
+  istream.readInt();
+  istream.readInt();
+  istream.readInt();
+  istream.readInt();
+  istream.readInt();
+
+  int nComponents = istream.readInt();
+  int nParts      = istream.readInt();
+
+  liber.shaderIndex( istream.readString() );
+
+  if( nTextures < 0 ) {
+    nTextures = ~nTextures;
+
+    textures.resize( nTextures );
+
+    for( int i = 0; i < nTextures; ++i ) {
+      const String& name = istream.readString();
+
+      if( name.isEmpty() ) {
+        textures[i].diffuse = shader.defaultTexture;
+        textures[i].masks   = shader.defaultMasks;
+        textures[i].normals = shader.defaultNormals;
+      }
+      else if( name.beginsWith( "@sea:" ) ) {
+        textures[i].diffuse = terra.waterTexId;
+        textures[i].masks   = shader.defaultMasks;
+        textures[i].normals = shader.defaultNormals;
+      }
+      else {
+        textures[i] = context.requestTexture( liber.textureIndex( name ) );
+      }
+    }
+  }
+  else {
+    textures.resize( nTextures );
+
+    for( int i = 0; i < nTextures; ++i ) {
+      istream.readString();
+
+      textures[i] = context.loadTextures( preloadData->textures[i].diffuse,
+                                          preloadData->textures[i].masks,
+                                          preloadData->textures[i].normals );
+    }
+  }
 
   int vboSize = nVertices * int( sizeof( Vertex ) );
-  int iboSize = nIndices * int( sizeof( ushort ) );
+  int iboSize = nIndices  * int( sizeof( ushort ) );
 
-  const void* vertexBuffer = istream->forward( vboSize );
+  const void* vertexBuffer = istream.forward( vboSize );
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -288,15 +363,10 @@ void Mesh::load( InputStream* istream, uint usage )
 
   glGenBuffers( 1, &ibo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream->forward( iboSize ), GL_STATIC_DRAW );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream.forward( iboSize ), GL_STATIC_DRAW );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-  nFrames = istream->readInt();
-
   if( nFrames != 0 ) {
-    nFramePositions = istream->readInt();
-    nFrameVertices  = istream->readInt();
-
     if( shader.hasVertexTexture ) {
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
@@ -306,7 +376,7 @@ void Mesh::load( InputStream* istream, uint usage )
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
-                    istream->forward( vertexBufferSize ) );
+                    istream.forward( vertexBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       glGenTextures( 1, &normalsTexId );
@@ -314,92 +384,35 @@ void Mesh::load( InputStream* istream, uint usage )
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
-                    istream->forward( normalBufferSize ) );
+                    istream.forward( normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       OZ_GL_CHECK_ERROR();
     }
     else {
-      vertices  = new Vertex[nFrameVertices];
+      vertices  = new Vertex[nVertices];
       positions = new Point[nFramePositions * nFrames];
       normals   = new Vec3[nFramePositions * nFrames];
 
       for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-        positions[i] = istream->readPoint();
+        positions[i] = istream.readPoint();
       }
       for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-        normals[i] = istream->readVec3();
+        normals[i] = istream.readVec3();
       }
 
-      mCopy( vertices, vertexBuffer, size_t( nFrameVertices ) * sizeof( Vertex ) );
+      mCopy( vertices, vertexBuffer, size_t( nVertices ) * sizeof( Vertex ) );
 
-      if( nFrameVertices > vertexAnimBufferLength ) {
+      if( nVertices > vertexAnimBufferLength ) {
         delete[] vertexAnimBuffer;
 
-        vertexAnimBuffer = new Vertex[nFrameVertices];
-        vertexAnimBufferLength = nFrameVertices;
+        vertexAnimBuffer = new Vertex[nVertices];
+        vertexAnimBufferLength = nVertices;
       }
     }
   }
 
-  shaderId = liber.shaderIndex( istream->readString() );
-
-  DArray<Texture> textures;
-  int nTextures = istream->readInt();
-
-  if( nTextures < 0 ) {
-    nTextures = ~nTextures;
-
-    textures.resize( nTextures );
-    texIds.resize( nTextures * 3 );
-
-    flags |= EMBEDED_TEX_BIT;
-
-    textures[0].diffuse = 0;
-    textures[0].masks   = shader.defaultMasks;
-    textures[0].normals = shader.defaultNormals;
-
-    texIds[0] = 0;
-    texIds[1] = 0;
-    texIds[2] = 0;
-
-    for( int i = 1; i < nTextures; ++i ) {
-      textures[i]     = context.readTexture( istream );
-      texIds[i*3 + 0] = int( textures[i].diffuse );
-      texIds[i*3 + 1] = int( textures[i].masks );
-      texIds[i*3 + 2] = int( textures[i].normals );
-    }
-  }
-  else {
-    textures.resize( nTextures );
-    texIds.resize( nTextures );
-
-    for( int i = 0; i < nTextures; ++i ) {
-      const String& name = istream->readString();
-
-      if( name.isEmpty() ) {
-        texIds[i]           = -1;
-        textures[i].diffuse = 0;
-        textures[i].masks   = shader.defaultMasks;
-        textures[i].normals = shader.defaultNormals;
-      }
-      else if( name.beginsWith( "@sea:" ) ) {
-        texIds[i]           = -1;
-        textures[i].diffuse = terra.waterTexId;
-        textures[i].masks   = shader.defaultMasks;
-        textures[i].normals = shader.defaultNormals;
-      }
-      else {
-        texIds[i]   = liber.textureIndex( name );
-        textures[i] = context.requestTexture( texIds[i] );
-      }
-    }
-  }
-
-  int nComponents = istream->readInt();
   componentIndices.resize( nComponents + 1 );
-
-  int nParts = istream->readInt();
   parts.resize( nParts );
 
   int lastComponent = 0;
@@ -409,12 +422,12 @@ void Mesh::load( InputStream* istream, uint usage )
   }
 
   for( int i = 0; i < nParts; ++i ) {
-    parts[i].flags      = istream->readInt();
-    parts[i].mode       = istream->readUInt();
-    parts[i].texture    = textures[ istream->readInt() ];
+    parts[i].flags      = istream.readInt();
+    parts[i].mode       = istream.readUInt();
+    parts[i].texture    = istream.readInt();
 
-    parts[i].nIndices   = istream->readInt();
-    parts[i].firstIndex = istream->readInt();
+    parts[i].nIndices   = istream.readInt();
+    parts[i].firstIndex = istream.readInt();
 
     int j = parts[i].flags & COMPONENT_MASK;
     if( j != lastComponent ) {
@@ -429,9 +442,10 @@ void Mesh::load( InputStream* istream, uint usage )
 
   hard_assert( nComponents == 0 || lastComponent == nComponents - 1 );
 
-  textures.clear();
-
   loadedMeshes.add( this );
+
+  delete preloadData;
+  preloadData = nullptr;
 
   OZ_GL_CHECK_ERROR();
 }
@@ -442,27 +456,18 @@ void Mesh::unload()
     return;
   }
 
+  foreach( texture, textures.citer() ) {
+    if( texture->id >= 0 ) {
+      context.releaseTexture( texture->id );
+    }
+    else {
+      context.unloadTexture( texture );
+    }
+  }
+
   componentIndices.clear();
   parts.clear();
-
-  if( flags & EMBEDED_TEX_BIT ) {
-    foreach( texId, texIds.citer() ) {
-      uint id = uint( *texId );
-
-      if( id != 0 && id != shader.defaultMasks && id != shader.defaultNormals ) {
-        glDeleteTextures( 1, &id );
-      }
-    }
-  }
-  else {
-    foreach( id, texIds.citer() ) {
-      if( *id >= 0 ) {
-        context.releaseTexture( *id );
-      }
-    }
-  }
-
-  texIds.clear();
+  textures.clear();
 
   if( shader.hasVertexTexture ) {
     glDeleteTextures( 1, &normalsTexId );

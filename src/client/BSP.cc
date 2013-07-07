@@ -52,29 +52,18 @@ BSP::~BSP()
 
 void BSP::preload()
 {
-  File file( "@bsp/" + bsp->name + ".ozcBSP" );
+  const File* file = mesh.preload( "@bsp/" + bsp->name + ".ozcBSP" );
+  InputStream is   = file->inputStream();
 
-  buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
-  }
+  waterFogColour   = is.readVec4();
+  lavaFogColour    = is.readVec4();
 
   isPreloaded = true;
 }
 
 void BSP::load()
 {
-  InputStream istream = buffer.inputStream();
-
-  waterFogColour = istream.readVec4();
-  lavaFogColour = istream.readVec4();
-
-  mesh.load( &istream, GL_STATIC_DRAW );
-
-  hard_assert( !istream.isAvailable() );
-
-  buffer.deallocate();
-
+  mesh.load( GL_STATIC_DRAW );
   isLoaded = true;
 }
 
@@ -92,7 +81,7 @@ void BSP::draw( const Struct* str )
     mesh.schedule( i + 1 );
 
     if( entity.clazz->model != -1 ) {
-      SMM* smm = context.smms[entity.clazz->model].object;
+      SMM* smm = context.smms[entity.clazz->model].handle;
 
       if( smm != nullptr && smm->isLoaded ) {
         tf.model = tf.model * entity.clazz->modelTransf;

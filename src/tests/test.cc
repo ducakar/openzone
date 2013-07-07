@@ -22,19 +22,22 @@
  */
 
 #include <ozCore/ozCore.hh>
-#include <ozFactory/ModelBuilder.hh>
+#include <ozFactory/ozFactory.hh>
 
 using namespace oz;
 
-int main( int argc, char** argv )
+int main()
 {
   System::init();
 
-  File file = argc == 2 ? argv[1] : "data/oz_main/mdl/tank/data.obj";
+  File file = "data/oz_main/mdl/tank/data.obj";
   OutputStream os( 0 );
 
   if( !ModelBuilder::buildModel( file, &os ) ) {
-    Log() << ModelBuilder::getError() << "\n";
+    Log() << ModelBuilder::getError();
   }
+
+  File out = "share/openzone/oz_main/mdl/tank/data.ozcSMM";
+  out.write( os.begin(), os.tell() );
   return 0;
 }

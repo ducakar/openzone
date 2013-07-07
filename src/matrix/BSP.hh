@@ -47,7 +47,7 @@ struct EntityClass : Bounds
     ELEVATOR
   };
 
-  String title;       ///< %Entity itle.
+  String title;       ///< %Entity title.
 
   Vec3   move;        ///< Move vector (destination - original position), in %BSP
                       ///< coordinate system.

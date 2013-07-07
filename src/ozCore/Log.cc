@@ -82,12 +82,17 @@ static int   indentLevel   = 0;
 bool Log::showVerbose      = false;
 bool Log::verboseMode      = false;
 
-static const char* getIndent()
+static inline const char* getIndent()
 {
   hard_assert( indentLevel >= 0 );
 
   int bias = max<int>( INDENT_BUFFER_LENGTH - indentLevel * INDENT_SPACES, 0 );
   return &INDENT_BUFFER[bias];
+}
+
+Log::~Log()
+{
+  printRaw( "\n" );
 }
 
 const char* Log::logFile()

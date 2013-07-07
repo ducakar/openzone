@@ -178,7 +178,7 @@ static void test_String_parsing()
 
 void test_String()
 {
-  Log() << "+ String\n";
+  Log() << "+ String";
 
   test_String_parsing();
 }

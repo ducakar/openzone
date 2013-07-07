@@ -83,7 +83,7 @@ int main()
     }
   }
 
-  Log() << "Vectors: " << float( Time::clock() - t0 ) / 1000.0f << "\n";
+  Log() << "Vectors: " << float( Time::clock() - t0 ) / 1000.0f;
 
   t0 = Time::clock();
 
@@ -95,6 +95,6 @@ int main()
     }
   }
 
-  Log() << "Matrices: " << float( Time::clock() - t0 ) / 1000.0f << "\n";
+  Log() << "Matrices: " << float( Time::clock() - t0 ) / 1000.0f;
   return 0;
 }

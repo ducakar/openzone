@@ -181,17 +181,10 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   # set( flags "${flags} -stdlib=libc++" )
   # Analyse only.
   # set( flags "${flags} --analyze -Qunused-arguments" )
-  # AddressSanitizer.
-  # set( flags "${flags} -fsanitize=address" )
 elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
   set( flags "-std=gnu++0x" )
 else()
   set( flags "-std=c++0x -pedantic -fstrict-enums" )
-
-  # AddressSanitizer.
-  # set( flags "${flags} -fsanitize=address" )
-  # ThreadSanitizer.
-  # set( flags "${flags} -fsanitize=thread -fPIE -pie" )
 endif()
 
 set( flags "${flags} -fno-exceptions -fno-rtti -ffast-math -fvisibility-inlines-hidden" )
@@ -199,6 +192,11 @@ set( flags "${flags} -fno-exceptions -fno-rtti -ffast-math -fvisibility-inlines-
 if( BUILD_SHARED_LIBS )
   set( flags "${flags} -fPIC" )
 endif()
+
+# AddressSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
+# set( flags "${flags} -fsanitize=address" )
+# ThreadSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
+# set( flags "${flags} -fsanitize=thread -fPIE -pie" )
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )

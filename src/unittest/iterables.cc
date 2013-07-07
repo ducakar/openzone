@@ -30,7 +30,7 @@ using namespace oz;
 
 void test_iterables()
 {
-  Log() << "+ iterables\n";
+  Log() << "+ iterables";
 
   Chain<Foo>::CIterator        icl;
   Chain<Foo>::Iterator         il;

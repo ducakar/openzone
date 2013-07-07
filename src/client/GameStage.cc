@@ -337,15 +337,6 @@ void GameStage::load()
   matrixMicros  = 0;
   nirvanaMicros = 0;
 
-  Log::print( "Starting auxilary thread ..." );
-
-  isAuxAlive = true;
-  mainSemaphore.init( 1 );
-  auxSemaphore.init( 0 );
-  auxThread.start( "aux", Thread::JOINABLE, auxMain );
-
-  Log::printEnd( " OK" );
-
   network.connect();
 
   matrix.load();
@@ -404,6 +395,15 @@ void GameStage::load()
 
   loader.load();
 
+  Log::print( "Starting auxilary thread ..." );
+
+  isAuxAlive = true;
+  mainSemaphore.init( 1 );
+  auxSemaphore.init( 0 );
+  auxThread.start( "aux", Thread::JOINABLE, auxMain );
+
+  Log::printEnd( " OK" );
+
   ui::ui.showLoadingScreen( false );
 
   loadingMicros = Time::uclock() - loadingMicros;
@@ -426,6 +426,13 @@ void GameStage::unload()
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
+
+  Log::print( "Stopping auxilary thread ..." );
+
+  isAuxAlive = false;
+
+  auxSemaphore.post();
+  auxThread.join();
 
   float sleepTime             = float( sleepMicros )                    * 1.0e-6f;
   float uiTime                = float( uiMicros )                       * 1.0e-6f;
@@ -471,13 +478,6 @@ void GameStage::unload()
   matrix.unload();
 
   network.disconnect();
-
-  Log::print( "Stopping auxilary thread ..." );
-
-  isAuxAlive = false;
-
-  auxSemaphore.post();
-  auxThread.join();
 
   auxSemaphore.destroy();
   mainSemaphore.destroy();

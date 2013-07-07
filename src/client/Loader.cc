@@ -134,21 +134,21 @@ void Loader::cleanupRender()
       Context::Resource<MD3*>& md3 = context.md3s[i];
 
       if( smm.nUsers == 0 ) {
-        delete smm.object;
+        delete smm.handle;
 
-        smm.object = nullptr;
+        smm.handle = nullptr;
         smm.nUsers = -1;
       }
       if( md2.nUsers == 0 ) {
-        delete md2.object;
+        delete md2.handle;
 
-        md2.object = nullptr;
+        md2.handle = nullptr;
         md2.nUsers = -1;
       }
       if( md3.nUsers == 0 ) {
-        delete md3.object;
+        delete md3.handle;
 
-        md3.object = nullptr;
+        md3.handle = nullptr;
         md3.nUsers = -1;
       }
     }
@@ -163,9 +163,9 @@ void Loader::cleanupRender()
         bsp.nUsers = 0;
       }
       else {
-        delete bsp.object;
+        delete bsp.handle;
 
-        bsp.object = nullptr;
+        bsp.handle = nullptr;
         bsp.nUsers = -1;
       }
     }
@@ -270,9 +270,9 @@ void Loader::cleanupSound()
         bspAudio.nUsers = 0;
       }
       else {
-        delete bspAudio.object;
+        delete bspAudio.handle;
 
-        bspAudio.object = nullptr;
+        bspAudio.handle = nullptr;
         bspAudio.nUsers = -1;
       }
     }
@@ -284,7 +284,7 @@ void Loader::cleanupSound()
 void Loader::preloadRender()
 {
   for( int i = 0; i < liber.nBSPs; ++i ) {
-    BSP* bsp = context.bsps[i].object;
+    BSP* bsp = context.bsps[i].handle;
 
     if( bsp != nullptr && !bsp->isPreloaded ) {
       bsp->preload();
@@ -292,7 +292,7 @@ void Loader::preloadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    SMM* smm = context.smms[i].object;
+    SMM* smm = context.smms[i].handle;
 
     if( smm != nullptr && !smm->isPreloaded ) {
       smm->preload();
@@ -300,7 +300,7 @@ void Loader::preloadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    MD2* md2 = context.md2s[i].object;
+    MD2* md2 = context.md2s[i].handle;
 
     if( md2 != nullptr && !md2->isPreloaded ) {
       md2->preload();
@@ -308,7 +308,7 @@ void Loader::preloadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    MD3* md3 = context.md3s[i].object;
+    MD3* md3 = context.md3s[i].handle;
 
     if( md3 != nullptr && !md3->isPreloaded ) {
       md3->preload();
@@ -329,7 +329,7 @@ void Loader::uploadRender()
   }
 
   for( int i = 0; i < liber.nBSPs; ++i ) {
-    BSP* bsp = context.bsps[i].object;
+    BSP* bsp = context.bsps[i].handle;
 
     if( bsp != nullptr && !bsp->isLoaded && bsp->isPreloaded ) {
       bsp->load();
@@ -338,7 +338,7 @@ void Loader::uploadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    SMM* smm = context.smms[i].object;
+    SMM* smm = context.smms[i].handle;
 
     if( smm != nullptr && !smm->isLoaded && smm->isPreloaded ) {
       smm->load();
@@ -347,7 +347,7 @@ void Loader::uploadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    MD2* md2 = context.md2s[i].object;
+    MD2* md2 = context.md2s[i].handle;
 
     if( md2 != nullptr && !md2->isLoaded && md2->isPreloaded ) {
       md2->load();
@@ -356,7 +356,7 @@ void Loader::uploadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    MD3* md3 = context.md3s[i].object;
+    MD3* md3 = context.md3s[i].handle;
 
     if( md3 != nullptr && !md3->isLoaded && md3->isPreloaded ) {
       md3->load();

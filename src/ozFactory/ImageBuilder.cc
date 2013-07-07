@@ -89,8 +89,8 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
 
 #ifndef OZ_NONFREE
   if( options & COMPRESSION_BIT ) {
-    snprintf( error, ERROR_LENGTH, "Texture compression requested, but compiled without libsquish"
-                                   " (enable OZ_NONFREE)." );
+    snprintf( errorBuffer, ERROR_LENGTH, "Texture compression requested, but compiled without"
+                                         "libsquish (enable OZ_NONFREE)." );
     return false;
   }
 #endif
@@ -119,13 +119,17 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
     return false;
   }
 
-  FreeImage_FlipVertical( image );
-
-  int  width         = int( FreeImage_GetWidth( image ) );
-  int  height        = int( FreeImage_GetHeight( image ) );
-  int  bpp           = int( FreeImage_GetBPP( image ) );
-  int  pitch         = int( FreeImage_GetPitch( image ) );
   bool isTransparent = FreeImage_IsTransparent( image );
+  FIBITMAP* newImage = isTransparent ? FreeImage_ConvertTo32Bits( image ) :
+                                       FreeImage_ConvertTo24Bits( image );
+  FreeImage_Unload( image );
+  FreeImage_FlipVertical( newImage );
+  image = newImage;
+
+  int width  = int( FreeImage_GetWidth( image ) );
+  int height = int( FreeImage_GetHeight( image ) );
+  int bpp    = int( FreeImage_GetBPP( image ) );
+  int pitch  = int( FreeImage_GetPitch( image ) );
 
   if( ( options & COMPRESSION_BIT ) && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
     FreeImage_Unload( image );
@@ -202,33 +206,27 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
   ostream->writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
-    FIBITMAP* level;
+    FIBITMAP* level = image;
 
-    if( i == 0 ) {
-      level = FreeImage_Clone( image );
-    }
-    else {
-      level = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
-      pitch = int( FreeImage_GetPitch( image ) );
+    if( i != 0 ) {
+      width  = max( 1, width / 2 );
+      height = max( 1, height / 2 );
+      level  = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
+      pitch  = int( FreeImage_GetPitch( level ) );
     }
 
     if( options & COMPRESSION_BIT ) {
 #ifdef OZ_NONFREE
       FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
+      ubyte*    pixels  = FreeImage_GetBits( level32 );
+      int       size    = width * height * 4;
+      int       s3Size  = squish::GetStorageRequirements( width, height, squishFlags );
 
-      int    size   = squish::GetStorageRequirements( width, height, squishFlags );
-      ubyte* pixels = FreeImage_GetBits( level32 );
-
-      // Swap red and blue channels.
-      for( int y = 0; y < height; ++y ) {
-        for( int x = 0; x < width; ++x ) {
-          swap( pixels[x * 4 + 0], pixels[x * 4 + 2] );
-        }
-        pixels += pitch;
+      for( int i = 0; i < size; i += 4 ) {
+        swap( pixels[i], pixels[i + 2] );
       }
 
-      squish::CompressImage( FreeImage_GetBits( level ), width, height, ostream->forward( size ),
-                             squishFlags );
+      squish::CompressImage( pixels, width, height, ostream->forward( s3Size ), squishFlags );
 
       FreeImage_Unload( level32 );
 #endif
@@ -242,10 +240,9 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
       }
     }
 
-    FreeImage_Unload( level );
-
-    width  = max( width / 2, 1 );
-    height = max( height / 2, 1 );
+    if( level != image ) {
+      FreeImage_Unload( level );
+    }
   }
 
   FreeImage_Unload( image );

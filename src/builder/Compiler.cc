@@ -364,22 +364,19 @@ void Compiler::animNormals( const float* normals_ )
   }
 }
 
-void Compiler::writeMesh( OutputStream* os, bool embedTextures )
+void Compiler::writeMesh( OutputStream* os, bool globalTextures )
 {
   hard_assert( !( flags & MESH_BIT ) && !( flags & PART_BIT ) );
   hard_assert( parts.length() > 0 && vertices.length() > 0 );
   hard_assert( positions.length() == normals.length() );
 
-  Log::println( "Writing mesh {" );
-  Log::indent();
+  Log::print( "Writing mesh ..." );
 
   List<String> textures;
   List<ushort> indices;
 
-  int nIndices = 0;
+  int nIndices    = 0;
   int nComponents = 0;
-
-  textures.add( "" ); // No texture.
 
   for( int i = 0; i < parts.length(); ++i ) {
     textures.include( parts[i].texture );
@@ -397,8 +394,20 @@ void Compiler::writeMesh( OutputStream* os, bool embedTextures )
     OZ_ERROR( "Model should have at least one component" );
   }
 
+  os->writeInt( globalTextures ? ~textures.length() : textures.length() );
   os->writeInt( vertices.length() );
   os->writeInt( indices.length() );
+  os->writeInt( nFrames );
+  os->writeInt( nFramePositions );
+
+  os->writeInt( nComponents );
+  os->writeInt( parts.length() );
+
+  os->writeString( shaderName );
+
+  foreach( texture, textures.citer() ) {
+    os->writeString( *texture );
+  }
 
   foreach( vertex, vertices.iter() ) {
     if( nFrames != 0 ) {
@@ -410,12 +419,7 @@ void Compiler::writeMesh( OutputStream* os, bool embedTextures )
     os->writeUShort( *index );
   }
 
-  os->writeInt( nFrames );
-
   if( nFrames != 0 ) {
-    os->writeInt( nFramePositions );
-    os->writeInt( vertices.length() );
-
     hard_assert( positions.length() == nFrames * nFramePositions );
     hard_assert( normals.length() == nFrames * nFramePositions );
 
@@ -426,51 +430,6 @@ void Compiler::writeMesh( OutputStream* os, bool embedTextures )
       os->writeVec3( *normal );
     }
   }
-
-  os->writeString( shaderName );
-
-  if( embedTextures ) {
-    os->writeInt( ~textures.length() );
-
-    for( int i = 1; i < textures.length(); ++i ) {
-      Context::Texture diffuseTex, masksTex, normalsTex;
-      context.loadTextures( &diffuseTex, &masksTex, &normalsTex, textures[i] );
-
-      int textureFlags = 0;
-
-      if( !diffuseTex.isEmpty() ) {
-        textureFlags |= Mesh::DIFFUSE_BIT;
-      }
-      if( !masksTex.isEmpty() ) {
-        textureFlags |= Mesh::MASKS_BIT;
-      }
-      if( !normalsTex.isEmpty() ) {
-        textureFlags |= Mesh::NORMALS_BIT;
-      }
-
-      os->writeInt( textureFlags );
-
-      if( !diffuseTex.isEmpty() != 0 ) {
-        diffuseTex.write( os );
-      }
-      if( !masksTex.isEmpty() ) {
-        masksTex.write( os );
-      }
-      if( !normalsTex.isEmpty() ) {
-        normalsTex.write( os );
-      }
-    }
-  }
-  else {
-    os->writeInt( textures.length() );
-
-    foreach( texture, textures.citer() ) {
-      os->writeString( *texture );
-    }
-  }
-
-  os->writeInt( nComponents );
-  os->writeInt( parts.length() );
 
   foreach( part, parts.citer() ) {
     os->writeInt( part->component | part->material );
@@ -503,8 +462,20 @@ void Compiler::writeMesh( OutputStream* os, bool embedTextures )
     os->writeInt( part->firstIndex );
   }
 
-  Log::unindent();
-  Log::println( "}" );
+  Log::printEnd( " OK" );
+}
+
+void Compiler::buildMeshTextures( const char* destDir )
+{
+  List<String> textures;
+
+  for( int i = 0; i < parts.length(); ++i ) {
+    textures.include( parts[i].texture );
+  }
+
+  for( int i = 0; i < textures.length(); ++i ) {
+    context.buildTexture( textures[i], destDir );
+  }
 }
 
 void Compiler::init()

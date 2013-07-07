@@ -419,6 +419,12 @@ void Input::reset()
   oldButtons  = 0;
   currButtons = 0;
 
+  leftClick   = false;
+  middleClick = false;
+  rightClick  = false;
+  wheelUp     = false;
+  wheelDown   = false;
+
   lookX       = 0.0f;
   lookY       = 0.0f;
   moveX       = 0.0f;
@@ -431,18 +437,24 @@ void Input::reset()
 
 void Input::prepare()
 {
-  mouseX     = 0.0f;
-  mouseY     = 0.0f;
-  mouseZ     = 0.0f;
-  mouseW     = 0.0f;
+  mouseX      = 0.0f;
+  mouseY      = 0.0f;
+  mouseZ      = 0.0f;
+  mouseW      = 0.0f;
 
-  oldButtons = buttons;
-  buttons    = currButtons;
+  oldButtons  = buttons;
+  buttons     = currButtons;
 
-  lookX      = 0.0f;
-  lookY      = 0.0f;
-  moveX      = 0.0f;
-  moveY      = 0.0f;
+  leftClick   = false;
+  middleClick = false;
+  rightClick  = false;
+  wheelUp     = false;
+  wheelDown   = false;
+
+  lookX       = 0.0f;
+  lookY       = 0.0f;
+  moveX       = 0.0f;
+  moveY       = 0.0f;
 
   mCopy( sdlOldKeys, sdlKeys, sizeof( sdlKeys ) );
   mCopy( sdlKeys, sdlCurrKeys, sizeof( sdlKeys ) );

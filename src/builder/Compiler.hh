@@ -137,7 +137,8 @@ class Compiler
     void animPositions( const float* positions );
     void animNormals( const float* normals );
 
-    void writeMesh( OutputStream* os, bool embedTextures = true );
+    void writeMesh( OutputStream* os, bool globalTextures = false );
+    void buildMeshTextures( const char* destDir );
 
     void init();
     void destroy();

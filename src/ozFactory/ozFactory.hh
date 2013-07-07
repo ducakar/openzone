@@ -31,3 +31,4 @@
 #include "common.hh"
 
 #include "ImageBuilder.hh"
+#include "ModelBuilder.hh"

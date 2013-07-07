@@ -568,6 +568,60 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   }
 }
 
+void Context::buildTexture( const char* basePath_, const char* destDir )
+{
+  String basePath        = basePath_;
+  String diffuseBasePath = basePath;
+  String masksBasePath   = basePath + "_m";
+  String destBasePath    = destDir + ( "/" + basePath.fileBaseName() );
+
+  File diffuse, masks;
+
+  for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
+    if( diffuse.path().isEmpty() || diffuse.type() == File::MISSING ) {
+      diffuse = File( diffuseBasePath + IMAGE_EXTENSIONS[i] );
+    }
+
+    if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
+      masks = File( masksBasePath + IMAGE_EXTENSIONS[i] );
+    }
+  }
+
+  int flags = ImageBuilder::MIPMAPS_BIT;
+  if( useS3TC ) {
+    flags |= ImageBuilder::COMPRESSION_BIT;
+  }
+
+  OutputStream os( 0 );
+
+  if( diffuse.type() != File::MISSING ) {
+    File outFile = destBasePath + ".dds";
+
+    Log::print( "Building texture '%s' ...", outFile.path().cstr() );
+
+    ImageBuilder::buildDDS( diffuse, flags, &os );
+    outFile.write( os.begin(), os.tell() );
+    os.deallocate();
+
+    Log::printEnd( " OK" );
+  }
+  else {
+    OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
+  }
+
+  if( masks.type() != File::MISSING ) {
+    File outFile = destBasePath + "_m.dds";
+
+    Log::print( "Building texture '%s' ...", outFile.path().cstr() );
+
+    ImageBuilder::buildDDS( masks, flags, &os );
+    outFile.write( os.begin(), os.tell() );
+    os.deallocate();
+
+    Log::printEnd( " OK" );
+  }
+}
+
 void Context::init()
 {}
 

@@ -41,11 +41,15 @@ struct Vertex
 
 struct Texture
 {
+  int  id;
   uint diffuse;
   uint masks;
   uint normals;
 
-  void destroy();
+  explicit Texture() :
+    id( -1 ), diffuse( shader.defaultTexture ), masks( shader.defaultMasks ),
+    normals( shader.defaultNormals )
+  {}
 };
 
 class Mesh
@@ -53,7 +57,7 @@ class Mesh
   public:
 
     static const int COMPONENT_MASK  = 0x00ff; ///< Mask to get number of mesh components.
-    static const int EMBEDED_TEX_BIT = 0x0100; ///< Textures are embedded in SMM file.
+    static const int EMBEDED_TEX_BIT = 0x0100; ///< Textures are embedded into SMM file.
     static const int SOLID_BIT       = 0x0200; ///< Mesh component is not transparent.
     static const int ALPHA_BIT       = 0x0400; ///< Mesh component is transparent.
 
@@ -61,16 +65,16 @@ class Mesh
     static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
     static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
 
-  protected:
+  private:
 
     struct Part
     {
-      int     flags;
-      uint    mode;
-      Texture texture;
+      uint mode;
+      int  flags;
+      int  texture;
 
-      int     nIndices;
-      int     firstIndex;
+      int  nIndices;
+      int  firstIndex;
     };
 
     struct Instance
@@ -98,6 +102,10 @@ class Mesh
       {}
     };
 
+    struct PreloadData;
+
+  private:
+
     static Set<Mesh*> loadedMeshes;
 
     static Vertex*    vertexAnimBuffer;
@@ -108,22 +116,25 @@ class Mesh
     int               shaderId;
 
     int               flags;
+    DArray<Texture>   textures;
     DArray<Part>      parts;
     DArray<int>       componentIndices;
-    DArray<int>       texIds;
 
     uint              positionsTexId;
     uint              normalsTexId;
 
+    int               nTextures;
+    int               nVertices;
+    int               nIndices;
     int               nFrames;
     int               nFramePositions;
-    int               nFrameVertices;
 
     Vertex*           vertices;
     Point*            positions;
     Vec3*             normals;
 
     List<Instance>    instances;
+    PreloadData*      preloadData;
 
     void animate( const Instance* instance );
     void draw( const Instance* instance, int mask );
@@ -154,10 +165,9 @@ class Mesh
                                firstFrame, secondFrame, interpolation ) );
     }
 
+    const File* preload( const char* path );
     void upload( const Vertex* vertices, int nVertices, uint usage ) const;
-    void draw( int mask ) const;
-
-    void load( InputStream* istream, uint usage );
+    void load( uint usage );
     void unload();
 
 };

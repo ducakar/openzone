@@ -96,7 +96,7 @@ void Physics::update( float time )
       if( collider->overlaps( body0, body1, &result ) ) {
         Point p = Math::mix( body0->p, body1->p, 0.5f );
 
-//         Log() << result.depth << ", " << result.axis << "\n";
+//         Log() << result.depth << ", " << result.axis;
 
         dContact contact;
         contact.surface.mode       = dContactBounce;

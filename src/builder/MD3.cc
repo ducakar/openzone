@@ -356,10 +356,12 @@ void MD3::save()
   }
 
   compiler.endMesh();
-  compiler.writeMesh( &os );
 
   String sDestDir = &sPath[1];
   File::mkdir( sPath );
+
+  compiler.writeMesh( &os );
+  compiler.buildMeshTextures( sDestDir );
 
   if( frame < 0 ) {
     File destFile( sDestDir + "/data.ozcMD3" );

@@ -298,7 +298,7 @@ void Shader::init()
 
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)
-  ubyte whitePixel[] = { 0xff, 0xff, 0xff, 0xff };
+  ubyte whitePixel[] = { 0xff, 0xff, 0xff };
 
   glGenTextures( 1, &defaultTexture );
   glBindTexture( GL_TEXTURE_2D, defaultTexture );
@@ -307,7 +307,7 @@ void Shader::init()
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
 
   // default masks (specular 0.0, emission 0.0)
-  ubyte masksPixel[] = { 0x00, 0x00, 0x00, 0xff };
+  ubyte masksPixel[] = { 0x00, 0x00, 0x00 };
 
   glGenTextures( 1, &defaultMasks );
   glBindTexture( GL_TEXTURE_2D, defaultMasks );
@@ -316,7 +316,7 @@ void Shader::init()
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel );
 
   // default normals for bumpmap [0, 0, 1]
-  ubyte normalsPixel[] = { 0x80, 0x80, 0xff, 0xff };
+  ubyte normalsPixel[] = { 0x80, 0x80, 0xff };
 
   glGenTextures( 1, &defaultNormals );
   glBindTexture( GL_TEXTURE_2D, defaultNormals );

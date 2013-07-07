@@ -85,14 +85,14 @@ class File
     /**
      * Create an instance for a given path.
      *
-     * `stat()` is automatically called on construction unless path empty.
+     * `stat()` is automatically called on construction unless the path is empty.
      */
     File( const char* path = "" );
 
     /**
      * Create an instance for a given path.
      *
-     * `stat()` is automatically called on construction unless path empty.
+     * `stat()` is automatically called on construction unless the path is empty.
      */
     File( const String& path );
 
@@ -124,6 +124,20 @@ class File
      * Move operator, transfers mapped memory.
      */
     File& operator = ( File&& file );
+
+    /**
+     * Recreate instance for a given path.
+     *
+     * `stat()` is automatically called on construction unless the new path is empty.
+     */
+    File& operator = ( const char* path );
+
+    /**
+     * Recreate instance for a given path.
+     *
+     * `stat()` is automatically called on construction unless the new path is empty.
+     */
+    File& operator = ( const String& path );
 
     /**
      * Access file to update its type, size and modification time.

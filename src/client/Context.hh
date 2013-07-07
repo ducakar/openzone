@@ -58,15 +58,8 @@ class Context
     template <typename Type>
     struct Resource
     {
-      Type id;
+      Type handle;
       int  nUsers; ///< Number of users or -1 if not loaded.
-    };
-
-    template <typename Type>
-    struct Resource<Type*>
-    {
-      Type* object;
-      int   nUsers; ///< Number of users or -1 if not loaded.
     };
 
     struct Source
@@ -173,6 +166,9 @@ class Context
     static uint readTextureLayer( InputStream* istream );
     static Texture readTexture( InputStream* istream );
     static Texture loadTexture( const char* path );
+    static Texture loadTextures( const File& diffuseFile, const File& masksFile,
+                                 const File& normalsFile );
+    static void unloadTexture( const Texture* texture );
 
     Texture requestTexture( int id );
     void releaseTexture( int id );
