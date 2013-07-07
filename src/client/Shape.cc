@@ -230,17 +230,17 @@ void Shape::tag( float minX, float minY, float maxX, float maxY )
   tf.model = Mat44::translation( Vec3( minX, minY, 0.0f ) );
   tf.apply();
 
-  glDrawArrays( GL_LINES, 12, 4 );
+  glDrawArrays( GL_LINES, 8, 4 );
 
   tf.model = Mat44::translation( Vec3( maxX, minY, 0.0f ) );
   tf.apply();
 
-  glDrawArrays( GL_LINES, 16, 4 );
+  glDrawArrays( GL_LINES, 12, 4 );
 
   tf.model = Mat44::translation( Vec3( maxX, maxY, 0.0f ) );
   tf.apply();
 
-  glDrawArrays( GL_LINES, 20, 4 );
+  glDrawArrays( GL_LINES, 16, 4 );
 
   tf.model = Mat44::translation( Vec3( minX, maxY, 0.0f ) );
   tf.apply();

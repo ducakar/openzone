@@ -97,16 +97,7 @@ void Cursor::advance( int millis )
 
 bool Cursor::load( const File& file, int size )
 {
-  Buffer      buffer;
-  InputStream istream;
-
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    buffer  = file.read();
-    istream = buffer.inputStream();
-  }
+  InputStream istream = file.inputStream();
 
   // Implementation is based on specifications from xcursor(3) manual.
   if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "Xcur" ) ) {

@@ -9,7 +9,7 @@
 - new löök
 - matrix
     * variable sizes for world
-    * Vehicle: turret, wheeled, tracked, submarine, mech warrior, orca
+    * Vehicle: wheeled, tracked, submarine, mech warrior, orca
     * smooth/limited Vehicle rotation
 - nirvana
     * AI tasks

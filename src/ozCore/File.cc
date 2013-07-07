@@ -580,7 +580,7 @@ bool File::writeString( const String& s ) const
   return write( s.cstr(), s.length() );
 }
 
-bool File::map()
+bool File::map() const
 {
   if( fileSize < 0 ) {
     return false;
@@ -648,7 +648,7 @@ bool File::map()
   }
 }
 
-void File::unmap()
+void File::unmap() const
 {
   if( data == nullptr ) {
     return;
@@ -671,7 +671,13 @@ void File::unmap()
 
 InputStream File::inputStream( Endian::Order order ) const
 {
-  hard_assert( data != nullptr );
+  if( data == nullptr ) {
+    map();
+
+    if( data == nullptr ) {
+      return InputStream( nullptr, nullptr, order );
+    }
+  }
 
   return InputStream( data, data + fileSize, order );
 }
@@ -917,33 +923,45 @@ bool File::mkdir( const char* path )
   }
 }
 
-bool File::rm( const char* path )
+bool File::cp( const File& file, const char* path )
 {
-  if( String::fileIsVirtual( path ) ) {
-    return PHYSFS_delete( &path[1] );
+  File destFile( path );
+
+  if( destFile.type() == DIRECTORY ) {
+    destFile = destFile.path() + "/" + file.name();
+  }
+
+  InputStream istream = file.inputStream();
+  return !istream.isAvailable() ? false : destFile.write( istream.begin(), istream.available() );
+}
+
+bool File::rm( const File& file )
+{
+  if( file.filePath.fileIsVirtual() ) {
+    return PHYSFS_delete( &file.filePath[1] );
   }
   else {
 #if defined( __native_client__ )
 
-    pp::FileRef file( ppFileSystem, path );
-    return file.Delete( pp::BlockUntilComplete() ) == PP_OK;
+    pp::FileRef fileRef( ppFileSystem, file.filePath );
+    return fileRef.Delete( pp::BlockUntilComplete() ) == PP_OK;
 
 #elif defined( _WIN32 )
 
-    if( File( path ).fileType == DIRECTORY ) {
-      return RemoveDirectory( path ) != 0;
+    if( file.fileType == DIRECTORY ) {
+      return RemoveDirectory( file.filePath ) != 0;
     }
     else {
-      return DeleteFile( path ) != 0;
+      return DeleteFile( file.filePath ) != 0;
     }
 
 #else
 
-    if( File( path ).fileType == DIRECTORY ) {
-      return rmdir( path ) == 0;
+    if( file.fileType == DIRECTORY ) {
+      return rmdir( file.filePath ) == 0;
     }
     else {
-      return unlink( path ) == 0;
+      return unlink( file.filePath ) == 0;
     }
 
 #endif

@@ -111,11 +111,10 @@ void Builder::copyFiles( const File& srcDir, const File& destDir, const char* ex
     else if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
              fileName.beginsWith( "COPYING" ) )
     {
-      Log::print( "Copying '%s' ...", fileName.cstr() );
+      Log::print( "Copying '%s' -> '%s' ...", file->path().cstr(), sDestDir.cstr() );
 
-      File destFile( sDestDir + fileName );
-      if( !destFile.write( file->read() ) ) {
-        OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
+      if( !File::cp( *file, sDestDir ) ) {
+        OZ_ERROR( "Failed to copy '%s' -> '%s'", file->path().cstr(), sDestDir.cstr() );
       }
 
       Log::printEnd( " OK" );
@@ -902,7 +901,7 @@ int Builder::main( int argc, char** argv )
   uint startTime = Time::clock();
 
   // copy package README/COPYING and credits
-  copyFiles( "@", "", "txt", false );
+  copyFiles( "@", ".", "txt", false );
   copyFiles( "@credits", "credits", "txt", false );
 
   if( doCat ) {

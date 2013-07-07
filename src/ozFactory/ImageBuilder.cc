@@ -58,16 +58,7 @@ static char errorBuffer[ERROR_LENGTH] = {};
 
 bool ImageBuilder::isImage( const File& file )
 {
-  Buffer      buffer;
-  InputStream istream;
-
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    buffer  = file.read();
-    istream = buffer.inputStream();
-  }
+  InputStream istream = file.inputStream();
 
   ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
 
@@ -95,22 +86,11 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
   }
 #endif
 
-  Buffer      buffer;
-  InputStream istream;
-
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    buffer  = file.read();
-    istream = buffer.inputStream();
-  }
-
-  ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
-
-  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
-  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
-  FIBITMAP*         image    = FreeImage_LoadFromMemory( format, memoryIO );
+  InputStream       istream   = file.inputStream();
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+  FIBITMAP*         image     = FreeImage_LoadFromMemory( format, memoryIO );
 
   if( image == nullptr ) {
     FreeImage_CloseMemory( memoryIO );

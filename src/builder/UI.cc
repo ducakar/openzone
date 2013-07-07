@@ -23,6 +23,8 @@
 
 #include <builder/UI.hh>
 
+#include <builder/Context.hh>
+
 namespace oz
 {
 namespace builder
@@ -85,29 +87,26 @@ void UI::buildIcons()
       OZ_ERROR( "Unnecessary icon: %s", image->path().cstr() );
     }
 
-    File destFile( "ui/icon/" + name + ".dds" );
+    File destFile = "ui/icon/" + name + ".dds";
 
-    OutputStream os( 0 );
     if( image->hasExtension( "dds" ) ) {
-      if( !image->read( &os ) ) {
-        OZ_ERROR( "Error reading image '%s'", image->path().cstr() );
-      }
-      else {
-        Log::printEnd( " OK" );
+      if( !File::cp( *image, destFile.path() ) ) {
+        OZ_ERROR( "Failed to copy '%s' -> '%s'", image->path().cstr(), destFile.path().cstr() );
       }
     }
     else {
+      OutputStream os( 0 );
+
       if( !ImageBuilder::buildDDS( *image, 0, &os ) ) {
         OZ_ERROR( "Error converting '%s' to DDS", image->name().cstr() );
       }
-      else {
-        Log::printEnd( " %s ... OK", destFile.name().cstr() );
+
+      if( !destFile.write( os.begin(), os.tell() ) ) {
+        OZ_ERROR( "Failed to write '%s' file", destFile.path().cstr() );
       }
     }
 
-    if( !destFile.write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Failed to write '%s' file", destFile.path().cstr() );
-    }
+    Log::printEnd( " %s ... OK", destFile.name().cstr() );
 
     builtIcons.add( name );
   }

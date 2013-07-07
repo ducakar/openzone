@@ -85,16 +85,7 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
 {
   errorBuffer[0] = '\0';
 
-  Buffer      buffer;
-  InputStream istream;
-
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    buffer  = file.read();
-    istream = buffer.inputStream();
-  }
+  InputStream istream = file.inputStream();
 
   if( !istream.isAvailable() ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr() );

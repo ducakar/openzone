@@ -365,16 +365,7 @@ void AL::checkError( const char* function, const char* file, int line )
 
 bool AL::bufferDataFromFile( ALuint buffer, const File &file )
 {
-  Buffer      fileBuffer;
-  InputStream istream;
-
-  if( file.isMapped() ) {
-    istream = file.inputStream();
-  }
-  else {
-    fileBuffer = file.read();
-    istream    = fileBuffer.inputStream();
-  }
+  InputStream istream = file.inputStream();
 
   if( !istream.isAvailable() ) {
     return false;

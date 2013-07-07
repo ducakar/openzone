@@ -67,11 +67,11 @@ class File
 
   private:
 
-    String filePath; ///< %File path.
-    Type   fileType; ///< %File type.
-    int    fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
-    long64 fileTime; ///< Modification or creation time, what is newer.
-    char*  data;     ///< Mapped memory.
+    String        filePath; ///< %File path.
+    Type          fileType; ///< %File type.
+    int           fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
+    long64        fileTime; ///< Modification or creation time, what is newer.
+    mutable char* data;     ///< Mapped memory.
 
   private:
 
@@ -333,15 +333,18 @@ class File
      * If the back-end doesn't support mapping files to memory (currently NaCl and VFS), this
      * function merely copies file contents into an internal buffer.
      */
-    bool map();
+    bool map() const;
 
     /**
      * Unmap mapped file.
      */
-    void unmap();
+    void unmap() const;
 
     /**
-     * Get `InputStream` for currently mapped file.
+     * Get `InputStream` for the memory mapped of the file.
+     *
+     * If the file is not mapped, `map()` is called implicitly. An invalid (empty) `InputStream` is
+     * returned on an error.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
@@ -375,9 +378,19 @@ class File
     static bool mkdir( const char* path );
 
     /**
+     * Copy a file.
+     *
+     * Native file system copy may me faster if the given file is mapped to memory.
+     *
+     * @param file source file.
+     * @param path destination directory or file path.
+     */
+    static bool cp( const File& file, const char* path );
+
+    /**
      * Delete a file or an empty directory.
      */
-    static bool rm( const char* path );
+    static bool rm( const File& file );
 
     /**
      * Mount read-only directory or archive into VFS.
