@@ -73,7 +73,7 @@ class Array
      */
     explicit Array( const Elem* array )
     {
-      aCopy<Elem>( data, array, COUNT );
+      aCopy<Elem>( array, COUNT, data );
     }
 
     /**
@@ -81,7 +81,7 @@ class Array
      */
     bool operator == ( const Array& a ) const
     {
-      return aEquals<Elem>( data, a.data, COUNT );
+      return aEquals<Elem>( data, COUNT, a.data );
     }
 
     /**
@@ -89,7 +89,7 @@ class Array
      */
     bool operator != ( const Array& a ) const
     {
-      return !aEquals<Elem>( data, a.data, COUNT );
+      return !aEquals<Elem>( data, COUNT, a.data );
     }
 
     /**
@@ -227,7 +227,7 @@ class Array
      */
     bool contains( const Elem& e ) const
     {
-      return aContains<Elem, Elem>( data, e, COUNT );
+      return aContains<Elem, Elem>( data, COUNT, e );
     }
 
     /**
@@ -235,7 +235,7 @@ class Array
      */
     int index( const Elem& e ) const
     {
-      return aIndex<Elem, Elem>( data, e, COUNT );
+      return aIndex<Elem, Elem>( data, COUNT, e );
     }
 
     /**
@@ -243,7 +243,7 @@ class Array
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex<Elem, Elem>( data, e, COUNT );
+      return aLastIndex<Elem, Elem>( data, COUNT, e );
     }
 
     /**

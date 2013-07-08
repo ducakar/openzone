@@ -117,7 +117,7 @@ class List
     List( const List& l ) :
       data( l.size == 0 ? nullptr : new Elem[l.size] ), count( l.count ), size( l.size )
     {
-      aCopy<Elem>( data, l.data, l.count );
+      aCopy<Elem>( l.data, l.count, data );
     }
 
     /**
@@ -149,7 +149,7 @@ class List
         size = l.size;
       }
 
-      aCopy<Elem>( data, l.data, l.count );
+      aCopy<Elem>( l.data, l.count, data );
       count = l.count;
 
       return *this;
@@ -182,7 +182,7 @@ class List
      */
     bool operator == ( const List& l ) const
     {
-      return count == l.count && aEquals<Elem>( data, l.data, count );
+      return count == l.count && aEquals<Elem>( data, count, l.data );
     }
 
     /**
@@ -190,7 +190,7 @@ class List
      */
     bool operator != ( const List& l ) const
     {
-      return count != l.count || !aEquals<Elem>( data, l.data, count );
+      return count != l.count || !aEquals<Elem>( data, count, l.data );
     }
 
     /**
@@ -345,7 +345,7 @@ class List
      */
     bool contains( const Elem& e ) const
     {
-      return aContains<Elem, Elem>( data, e, count );
+      return aContains<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -353,7 +353,7 @@ class List
      */
     int index( const Elem& e ) const
     {
-      return aIndex<Elem, Elem>( data, e, count );
+      return aIndex<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -361,7 +361,7 @@ class List
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex<Elem, Elem>( data, e, count );
+      return aLastIndex<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -382,7 +382,7 @@ class List
 
       ensureCapacity( newCount );
 
-      aCopy<Elem>( data + count, array, arrayCount );
+      aCopy<Elem>( array, arrayCount, data + count );
       count = newCount;
     }
 
@@ -395,7 +395,7 @@ class List
 
       ensureCapacity( newCount );
 
-      aMove<Elem>( data + count, array, arrayCount );
+      aMove<Elem>( array, arrayCount, data + count );
       count = newCount;
     }
 
@@ -407,7 +407,7 @@ class List
     template <typename Elem_ = Elem>
     int include( Elem_&& e )
     {
-      int i = aIndex<Elem, Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, count, e );
 
       if( i < 0 ) {
         ensureCapacity( count + 1 );
@@ -431,7 +431,7 @@ class List
 
       ensureCapacity( count + 1 );
 
-      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
       data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -461,7 +461,7 @@ class List
         data[count] = Elem();
       }
       else {
-        aMove<Elem>( data + i, data + i + 1, count - i );
+        aMove<Elem>( data + i + 1, count - i, data + i );
       }
     }
 
@@ -493,7 +493,7 @@ class List
      */
     int exclude( const Elem& e )
     {
-      int i = aIndex<Elem, Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, count, e );
 
       if( i >= 0 ) {
         erase( i );
@@ -510,7 +510,7 @@ class List
      */
     int excludeUnordered( const Elem& e )
     {
-      int i = aIndex<Elem, Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, count, e );
 
       if( i >= 0 ) {
         eraseUnordered( i );
@@ -528,7 +528,7 @@ class List
     {
       ensureCapacity( count + 1 );
 
-      aMoveBackward<Elem>( data + 1, data, count );
+      aMoveBackward<Elem>( data, count, data + 1 );
       data[0] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -557,7 +557,7 @@ class List
       Elem e = static_cast<Elem&&>( data[0] );
 
       --count;
-      aMove<Elem>( data, data + 1, count );
+      aMove<Elem>( data + 1, count, data );
       return e;
     }
 

@@ -63,7 +63,7 @@ class SBitset
      */
     bool operator == ( const SBitset& b ) const
     {
-      return aEquals<ulong>( data, b.data, SIZE );
+      return aEquals<ulong>( data, SIZE, b.data );
     }
 
     /**
@@ -71,7 +71,7 @@ class SBitset
      */
     bool operator != ( const SBitset& b ) const
     {
-      return !aEquals<ulong>( data, b.data, SIZE );
+      return !aEquals<ulong>( data, SIZE, b.data );
     }
 
     /**
@@ -259,7 +259,7 @@ class SBitset
      */
     void setAll()
     {
-      aFill<ulong, ulong>( data, ~0ul, SIZE );
+      aFill<ulong, ulong>( data, SIZE, ~0ul );
     }
 
     /**
@@ -267,7 +267,7 @@ class SBitset
      */
     void clearAll()
     {
-      aFill<ulong, ulong>( data, 0ul, SIZE );
+      aFill<ulong, ulong>( data, SIZE, 0ul );
     }
 
     /**

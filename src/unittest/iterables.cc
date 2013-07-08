@@ -68,8 +68,8 @@ void test_iterables()
   v.add( 0 );
   v.add( 0 );
 
-  iMove( v.iter(), l.iter() );
-  iMove( iter( l ), l.iter() );
+  iMove( l.iter(), v.iter() );
+  iMove( l.iter(), iter( l ) );
   iMove( invalid, invalid );
   foreach( i, l.citer() ) {
     OZ_CHECK( *i == -1 );
@@ -87,11 +87,11 @@ void test_iterables()
   OZ_CHECK_CONTENTS( v, 0, 0, 0, 0 );
   iSwap( v.iter(), l.iter() );
 
-  iCopy( l.iter(), v.citer() );
+  iCopy( v.citer(), l.iter() );
   iCopy( invalid, invalid );
   OZ_CHECK( iEquals( l.citer(), v.citer() ) );
 
-  iCopy( l.iter(), l.citer() );
+  iCopy( l.citer(), l.iter() );
   OZ_CHECK( iEquals( citer( l ), v.citer() ) );
 
   v.add();
@@ -186,8 +186,8 @@ void test_iterables()
   v.clear();
   v.deallocate();
 
-  iCopy( l.iter(), v.citer() );
-  iMove( l.iter(), v.iter() );
+  iCopy( v.citer(), l.iter() );
+  iMove( v.iter(), l.iter() );
   iFill( l.iter(), 0 );
 
   OZ_CHECK( iEquals( l.citer(), v.citer() ) );

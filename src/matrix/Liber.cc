@@ -204,7 +204,7 @@ void Liber::initShaders()
   }
 
   shaders.resize( shadersList.length() );
-  aMove<Resource>( shaders.begin(), shadersList.begin(), shadersList.length() );
+  aMove<Resource>( shadersList.begin(), shadersList.length(), shaders.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -242,7 +242,7 @@ void Liber::initTextures()
   }
 
   textures.resize( texturesList.length() );
-  aMove<Resource>( textures.begin(), texturesList.begin(), texturesList.length() );
+  aMove<Resource>( texturesList.begin(), texturesList.length(), textures.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -282,7 +282,7 @@ void Liber::initSounds()
   }
 
   sounds.resize( soundsList.length() );
-  aMove<Resource>( sounds.begin(), soundsList.begin(), soundsList.length() );
+  aMove<Resource>( soundsList.begin(), soundsList.length(), sounds.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -312,7 +312,7 @@ void Liber::initCaela()
   }
 
   caela.resize( caelaList.length() );
-  aMove<Resource>( caela.begin(), caelaList.begin(), caelaList.length() );
+  aMove<Resource>( caelaList.begin(), caelaList.length(), caela.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -320,7 +320,7 @@ void Liber::initCaela()
 
 void Liber::initTerrae()
 {
-  Log::println( "Terrae (*.ozTerra, *.ozcTerra in 'terra') {" );
+  Log::println( "Terrae (*.ozmTerra, *.ozcTerra in 'terra') {" );
   Log::indent();
 
   List<Resource> terraeList;
@@ -329,7 +329,7 @@ void Liber::initTerrae()
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozTerra" ) ) {
+    if( !file->hasExtension( "ozmTerra" ) ) {
       continue;
     }
 
@@ -342,7 +342,7 @@ void Liber::initTerrae()
   }
 
   terrae.resize( terraeList.length() );
-  aMove<Resource>( terrae.begin(), terraeList.begin(), terraeList.length() );
+  aMove<Resource>( terraeList.begin(), terraeList.length(), terrae.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -390,7 +390,7 @@ void Liber::initModels()
   }
 
   models.resize( modelsList.length() );
-  aMove<Resource>( models.begin(), modelsList.begin(), modelsList.length() );
+  aMove<Resource>( modelsList.begin(), modelsList.length(), models.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -420,7 +420,7 @@ void Liber::initNameLists()
   }
 
   nameLists.resize( nameListsList.length() );
-  aMove<Resource>( nameLists.begin(), nameListsList.begin(), nameListsList.length() );
+  aMove<Resource>( nameListsList.begin(), nameListsList.length(), nameLists.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -693,7 +693,7 @@ void Liber::initMusic( const char* userMusicPath )
   initMusicRecurse( "@userMusic", &musicTracksList );
 
   musicTracks.resize( musicTracksList.length() );
-  aMove<Resource>( musicTracks.begin(), musicTracksList.begin(), musicTracksList.length() );
+  aMove<Resource>( musicTracksList.begin(), musicTracksList.length(), musicTracks.begin() );
 
   Log::unindent();
   Log::println( "}" );

@@ -66,7 +66,7 @@ namespace client
 //    nSparks( sparkGenRender.nSparks )
 //  {
 //    sparks = new Spark[nSparks];
-//    aCopy( sparks, sparkGenRender.sparks, nSparks );
+//    aCopy( sparkGenRender.sparks, nSparks, sparks );
 //  }
 //
 //  SparkGenRender::~SparkGenRender()

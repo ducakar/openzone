@@ -241,7 +241,7 @@ inline int aLength( const Elem ( & )[COUNT] )
  * Copy array elements from the first to the last.
  */
 template <typename Elem>
-inline void aCopy( Elem* destArray, const Elem* srcArray, int count )
+inline void aCopy( const Elem* srcArray, int count, Elem* destArray )
 {
   for( int i = 0; i < count; ++i ) {
     destArray[i] = srcArray[i];
@@ -252,7 +252,7 @@ inline void aCopy( Elem* destArray, const Elem* srcArray, int count )
  * Move array elements from the last to the first.
  */
 template <typename Elem>
-inline void aCopyBackward( Elem* destArray, const Elem* srcArray, int count )
+inline void aCopyBackward( const Elem* srcArray, int count, Elem* destArray )
 {
   for( int i = count - 1; i >= 0; --i ) {
     destArray[i] = srcArray[i];
@@ -263,7 +263,7 @@ inline void aCopyBackward( Elem* destArray, const Elem* srcArray, int count )
  * Move array elements from the first to the last.
  */
 template <typename Elem>
-inline void aMove( Elem* destArray, Elem* srcArray, int count )
+inline void aMove( Elem* srcArray, int count, Elem* destArray )
 {
   for( int i = 0; i < count; ++i ) {
     destArray[i] = static_cast<Elem&&>( srcArray[i] );
@@ -274,7 +274,7 @@ inline void aMove( Elem* destArray, Elem* srcArray, int count )
  * Move array elements from the last to the first.
  */
 template <typename Elem>
-inline void aMoveBackward( Elem* destArray, Elem* srcArray, int count )
+inline void aMoveBackward( Elem* srcArray, int count, Elem* destArray )
 {
   for( int i = count - 1; i >= 0; --i ) {
     destArray[i] = static_cast<Elem&&>( srcArray[i] );
@@ -285,7 +285,7 @@ inline void aMoveBackward( Elem* destArray, Elem* srcArray, int count )
  * %Set array elements to a given value.
  */
 template <typename Elem, typename Value = Elem>
-inline void aFill( Elem* array, const Value& value, int count )
+inline void aFill( Elem* array, int count, const Value& value )
 {
   for( int i = 0; i < count; ++i ) {
     array[i] = value;
@@ -296,22 +296,9 @@ inline void aFill( Elem* array, const Value& value, int count )
  * Swap array elements.
  */
 template <typename Elem>
-inline void aSwap( Elem* arrayA, Elem* arrayB, int count )
+inline void aSwap( Elem* arrayA, int count, Elem* arrayB )
 {
   for( int i = 0; i < count; ++i ) {
-    Elem t = static_cast<Elem&&>( arrayA[i] );
-    arrayA[i] = static_cast<Elem&&>( arrayB[i] );
-    arrayB[i] = static_cast<Elem&&>( t );
-  }
-}
-
-/**
- * Swap elements of two same-length static arrays.
- */
-template <typename Elem, int COUNT>
-inline void aSwap( Elem ( & arrayA )[COUNT], Elem ( & arrayB )[COUNT] )
-{
-  for( int i = 0; i < COUNT; ++i ) {
     Elem t = static_cast<Elem&&>( arrayA[i] );
     arrayA[i] = static_cast<Elem&&>( arrayB[i] );
     arrayB[i] = static_cast<Elem&&>( t );
@@ -322,7 +309,7 @@ inline void aSwap( Elem ( & arrayA )[COUNT], Elem ( & arrayB )[COUNT] )
  * True iff respective elements are equal.
  */
 template <typename Elem>
-inline bool aEquals( const Elem* arrayA, const Elem* arrayB, int count )
+inline bool aEquals( const Elem* arrayA, int count, const Elem* arrayB )
 {
   for( int i = 0; i < count; ++i ) {
     if( !( arrayA[i] == arrayB[i] ) ) {
@@ -336,7 +323,7 @@ inline bool aEquals( const Elem* arrayA, const Elem* arrayB, int count )
  * True iff a given value is found in an array.
  */
 template <typename Elem, typename Value = Elem>
-inline bool aContains( const Elem* array, const Value& value, int count )
+inline bool aContains( const Elem* array, int count, const Value& value )
 {
   for( int i = 0; i < count; ++i ) {
     if( array[i] == value ) {
@@ -350,7 +337,7 @@ inline bool aContains( const Elem* array, const Value& value, int count )
  * Pointer to the first occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline Elem* aFind( Elem* array, const Value& value, int count )
+inline Elem* aFind( Elem* array, int count, const Value& value )
 {
   for( int i = 0; i < count; ++i ) {
     if( array[i] == value ) {
@@ -364,7 +351,7 @@ inline Elem* aFind( Elem* array, const Value& value, int count )
  * Pointer to the last occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline Elem* aFindLast( Elem* array, const Value& value, int count )
+inline Elem* aFindLast( Elem* array, int count, const Value& value )
 {
   for( int i = count - 1; i >= 0; --i ) {
     if( array[i] == value ) {
@@ -378,7 +365,7 @@ inline Elem* aFindLast( Elem* array, const Value& value, int count )
  * Index of the first occurrence of the value or -1 if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline int aIndex( const Elem* array, const Value& value, int count )
+inline int aIndex( const Elem* array, int count, const Value& value )
 {
   for( int i = 0; i < count; ++i ) {
     if( array[i] == value ) {
@@ -392,7 +379,7 @@ inline int aIndex( const Elem* array, const Value& value, int count )
  * Index of the last occurrence of the value or -1 if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline int aLastIndex( const Elem* array, const Value& value, int count )
+inline int aLastIndex( const Elem* array, int count, const Value& value )
 {
   for( int i = count - 1; i >= 0; --i ) {
     if( array[i] == value ) {
@@ -540,12 +527,12 @@ inline void aSort( Elem* array, int count )
  * If all elements are lesser return `count - 1` and if all elements are greater return -1.
  *
  * @param array array of elements.
- * @param key the key we are looking for.
  * @param count number of elements.
+ * @param key the key we are looking for.
  * @return Index of the last element not greater than `key`, -1 otherwise.
  */
 template <typename Elem, typename Key = Elem>
-inline int aBisection( Elem* array, const Key& key, int count )
+inline int aBisection( Elem* array, int count, const Key& key )
 {
   int a = -1;
   int b = count;

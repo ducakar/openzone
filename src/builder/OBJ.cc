@@ -216,7 +216,7 @@ void OBJ::loadMaterials( const char* filePath )
 
     switch( pos[0] ) {
       case 'n': {
-        if( aEquals( pos, "newmtl", 6 ) ) {
+        if( aEquals( pos, 6, "newmtl" ) ) {
           end = readWord( pos );
           pos = skipSpaces( end );
           *end = '\0';
@@ -240,7 +240,7 @@ void OBJ::loadMaterials( const char* filePath )
         break;
       }
       case 'm': {
-        if( aEquals( pos, "map_Kd", 6 ) ) {
+        if( aEquals( pos, 6, "map_Kd" ) ) {
           end = readWord( pos );
           pos = skipSpaces( end );
           end = readWord( pos );
@@ -317,7 +317,7 @@ void OBJ::load()
       }
       // usemtl
       case 'u': {
-        if( aEquals( pos, "usemtl", 6 ) ) {
+        if( aEquals( pos, 6, "usemtl" ) ) {
           pos += 6;
           pos = skipSpaces( pos );
           end = readWord( pos );

@@ -87,13 +87,13 @@ static void openWeb( Button* )
 {
 #if defined( __ANDROID__ )
 #elif defined( __native_client__ )
-  Pepper::post( "navi:http://ducakar.github.com/openzone/" );
+  Pepper::post( "navi:http://ducakar.github.io/openzone/" );
 #elif defined( _WIN32 )
-  ShellExecute( nullptr, "open", "http://ducakar.github.com/openzone/", nullptr, nullptr,
+  ShellExecute( nullptr, "open", "http://ducakar.github.io/openzone/", nullptr, nullptr,
                 SW_SHOWNORMAL );
 #else
   if( fork() == 0 ) {
-    execl( "/bin/sh", "sh", "xdg-open", "http://ducakar.github.com/openzone/", nullptr );
+    execl( "/bin/sh", "sh", "xdg-open", "http://ducakar.github.io/openzone/", nullptr );
     _Exit( 0 );
   }
 #endif

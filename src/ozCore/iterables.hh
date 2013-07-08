@@ -195,16 +195,16 @@ inline int iLength( CIterator iter )
 /**
  * Copy all elements from `srcIter` to `destIter`.
  */
-template <class IteratorA, class CIteratorB>
-inline void iCopy( IteratorA destIter, CIteratorB srcIter )
+template <class CIteratorA, class IteratorB>
+inline void iCopy( CIteratorA srcIter, IteratorB destIter )
 {
   while( srcIter.isValid() ) {
     hard_assert( destIter.isValid() );
 
     *destIter = *srcIter;
 
-    ++destIter;
     ++srcIter;
+    ++destIter;
   }
 }
 
@@ -212,7 +212,7 @@ inline void iCopy( IteratorA destIter, CIteratorB srcIter )
  * Move all elements from `srcIter` to `destIter`.
  */
 template <class IteratorA, class IteratorB>
-inline void iMove( IteratorA destIter, IteratorB srcIter )
+inline void iMove( IteratorA srcIter, IteratorB destIter )
 {
   typedef typename IteratorB::ElemType ElemB;
 
@@ -221,8 +221,8 @@ inline void iMove( IteratorA destIter, IteratorB srcIter )
 
     *destIter = static_cast<ElemB&&>( *srcIter );
 
-    ++destIter;
     ++srcIter;
+    ++destIter;
   }
 }
 

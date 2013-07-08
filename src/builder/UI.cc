@@ -83,7 +83,7 @@ void UI::buildIcons()
 
     Log::print( "%s ...", image->name().cstr() );
 
-    if( !aContains( ICON_NAMES, name, aLength( ICON_NAMES ) ) ) {
+    if( !aContains( ICON_NAMES, aLength( ICON_NAMES ), name ) ) {
       OZ_ERROR( "Unnecessary icon: %s", image->path().cstr() );
     }
 

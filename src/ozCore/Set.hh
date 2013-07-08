@@ -120,7 +120,7 @@ class Set
     Set( const Set& s ) :
       data( s.size == 0 ? nullptr : new Elem[s.size] ), count( s.count ), size( s.size )
     {
-      aCopy<Elem>( data, s.data, s.count );
+      aCopy<Elem>( s.data, s.count, data );
     }
 
     /**
@@ -152,7 +152,7 @@ class Set
         size = s.size;
       }
 
-      aCopy<Elem>( data, s.data, s.count );
+      aCopy<Elem>( s.data, s.count, data );
       count = s.count;
 
       return *this;
@@ -185,7 +185,7 @@ class Set
      */
     bool operator == ( const Set& s ) const
     {
-      return count == s.count && aEquals<Elem>( data, s.data, count );
+      return count == s.count && aEquals<Elem>( data, count, s.data );
     }
 
     /**
@@ -193,7 +193,7 @@ class Set
      */
     bool operator != ( const Set& s ) const
     {
-      return count != s.count || !aEquals<Elem>( data, s.data, count );
+      return count != s.count || !aEquals<Elem>( data, count, s.data );
     }
 
     /**
@@ -349,7 +349,7 @@ class Set
     template <typename Key = Elem>
     bool contains( const Key& key ) const
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, count, key );
       return i >= 0 && data[i] == key;
     }
 
@@ -359,7 +359,7 @@ class Set
     template <typename Key = Elem>
     int index( const Key& key ) const
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, count, key );
       return i >= 0 && data[i] == key ? i : -1;
     }
 
@@ -371,7 +371,7 @@ class Set
     template <typename Elem_ = Elem>
     int add( Elem_&& elem )
     {
-      int i = aBisection<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, count, elem );
 
       if( i >= 0 && data[i] == elem ) {
         data[i] = static_cast<Elem_&&>( elem );
@@ -391,7 +391,7 @@ class Set
     template <typename Elem_ = Elem>
     int include( Elem_&& elem )
     {
-      int i = aBisection<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, count, elem );
 
       if( i >= 0 && data[i] == elem ) {
         return i;
@@ -416,7 +416,7 @@ class Set
 
       ensureCapacity( count + 1 );
 
-      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
       data[i] = static_cast<Elem_&&>( elem );
 
       ++count;
@@ -439,7 +439,7 @@ class Set
         data[count] = Elem();
       }
       else {
-        aMove<Elem>( data + i, data + i + 1, count - i );
+        aMove<Elem>( data + i + 1, count - i, data + i );
       }
     }
 
@@ -450,7 +450,7 @@ class Set
      */
     int exclude( const Elem& elem )
     {
-      int i = aBisection<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, count, elem );
 
       if( i >= 0 && data[i] == elem ) {
         erase( i );

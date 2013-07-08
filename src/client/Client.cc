@@ -297,7 +297,8 @@ int Client::init( int argc, char** argv )
 
   Window::create( "OpenZone " OZ_VERSION,
                   fullscreen ? screenWidth  : desiredWidth,
-                  fullscreen ? screenHeight : desiredHeight );
+                  fullscreen ? screenHeight : desiredHeight,
+                  fullscreen );
   initFlags |= INIT_WINDOW;
 
   input.init();

@@ -1,9 +1,9 @@
-![logo](http://ducakar.github.com/openzone/img/title.jpg)
+![logo](http://ducakar.github.io/openzone/img/title.jpg)
 
 OpenZone
 ========
 
-Simple cross-platform FPS/RTS game engine. http://ducakar.github.com/openzone/.
+Simple cross-platform FPS/RTS game engine. http://ducakar.github.io/openzone/.
 
 This README file is intended for developers only. See `doc/README.html` if you are an end-user.
 

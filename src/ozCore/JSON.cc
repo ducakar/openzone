@@ -2059,12 +2059,11 @@ String JSON::toFormattedString( const char* lineEnd ) const
 
 bool JSON::load( const File& file )
 {
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
+  InputStream istream = file.inputStream();
+
+  if( !istream.isAvailable() ) {
     return false;
   }
-
-  InputStream istream = buffer.inputStream();
 
   *this = Parser::parse( &istream, file.path() );
   return true;

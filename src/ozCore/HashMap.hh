@@ -255,8 +255,8 @@ class HashMap
     HashMap( HashMap&& hm ) :
       pool( static_cast<Pool<Elem, SIZE>&&>( hm.pool ) )
     {
-      aCopy<Elem*>( data, hm.data, SIZE );
-      aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
+      aCopy<Elem*>( hm.data, SIZE, data );
+      aFill<Elem*, Elem*>( hm.data, SIZE, nullptr );
     }
 
     /**
@@ -286,8 +286,8 @@ class HashMap
 
       clear();
 
-      aCopy<Elem*>( data, hm.data, SIZE );
-      aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
+      aCopy<Elem*>( hm.data, SIZE, data );
+      aFill<Elem*, Elem*>( hm.data, SIZE, nullptr );
       pool = static_cast<Pool<Elem, SIZE>&&>( hm.pool );
 
       return *this;

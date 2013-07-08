@@ -40,7 +40,7 @@ void Terra::load()
 
   JSON config;
   if( !config.load( configFile ) ) {
-    OZ_ERROR( "Failed to loa terra configuration '%s'", configFile.path().cstr() );
+    OZ_ERROR( "Failed to load terra configuration '%s'", configFile.path().cstr() );
   }
 
   float minHeight = config["minHeight"].get( -1000.0f );
@@ -151,7 +151,7 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
-  File destFile( "terra/" + name + ".ozTerra" );
+  File destFile( "terra/" + name + ".ozmTerra" );
 
   Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 

@@ -78,7 +78,7 @@ class SList
      */
     bool operator == ( const SList& l ) const
     {
-      return count == l.count && aEquals<Elem>( data, l.data, count );
+      return count == l.count && aEquals<Elem>( data, count, l.data );
     }
 
     /**
@@ -86,7 +86,7 @@ class SList
      */
     bool operator != ( const SList& l ) const
     {
-      return count != l.count || !aEquals<Elem>( data, l.data, count );
+      return count != l.count || !aEquals<Elem>( data, count, l.data );
     }
 
     /**
@@ -241,7 +241,7 @@ class SList
      */
     bool contains( const Elem& e ) const
     {
-      return aContains<Elem, Elem>( data, e, count );
+      return aContains<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -249,7 +249,7 @@ class SList
      */
     int index( const Elem& e ) const
     {
-      return aIndex<Elem, Elem>( data, e, count );
+      return aIndex<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -257,7 +257,7 @@ class SList
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex<Elem, Elem>( data, e, count );
+      return aLastIndex<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -278,7 +278,7 @@ class SList
 
       hard_assert( uint( newCount ) <= uint( SIZE ) );
 
-      aCopy<Elem>( data + count, array, arrayCount );
+      aCopy<Elem>( array, arrayCount, data + count );
       count = newCount;
     }
 
@@ -291,7 +291,7 @@ class SList
 
       hard_assert( uint( newCount ) <= uint( SIZE ) );
 
-      aMove<Elem>( data + count, array, arrayCount );
+      aMove<Elem>( array, arrayCount, data + count );
       count = newCount;
     }
 
@@ -303,7 +303,7 @@ class SList
     template <typename Elem_ = Elem>
     int include( Elem_&& e )
     {
-      int i = aIndex<Elem, Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, count, e );
 
       if( i < 0 ) {
         hard_assert( uint( count ) < uint( SIZE ) );
@@ -326,7 +326,7 @@ class SList
       hard_assert( uint( i ) <= uint( count ) );
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
       data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -356,7 +356,7 @@ class SList
         data[count] = Elem();
       }
       else {
-        aMove<Elem>( data + i, data + i + 1, count - i );
+        aMove<Elem>( data + i + 1, count - i, data + i );
       }
     }
 
@@ -386,7 +386,7 @@ class SList
      */
     int exclude( const Elem& e )
     {
-      int i = aIndex<Elem, Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, count, e );
 
       if( i >= 0 ) {
         erase( i );
@@ -403,7 +403,7 @@ class SList
      */
     int excludeUnordered( const Elem& e )
     {
-      int i = aIndex<Elem, Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, count, e );
 
       if( i >= 0 ) {
         eraseUnordered( i );
@@ -421,7 +421,7 @@ class SList
     {
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      aMoveBackward<Elem>( data + 1, data, count );
+      aMoveBackward<Elem>( data, count, data + 1 );
       data[0] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -450,7 +450,7 @@ class SList
       Elem e = static_cast<Elem&&>( data[0] );
 
       --count;
-      aMove<Elem>( data, data + 1, count );
+      aMove<Elem>( data + 1, count, data );
       return e;
     }
 

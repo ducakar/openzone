@@ -143,7 +143,7 @@ class Map
     Map( const Map& m ) :
       data( m.size == 0 ? nullptr : new Elem[m.size] ), count( m.count ), size( m.size )
     {
-      aCopy<Elem>( data, m.data, m.count );
+      aCopy<Elem>( m.data, m.count, data );
     }
 
     /**
@@ -175,7 +175,7 @@ class Map
         size = m.size;
       }
 
-      aCopy<Elem>( data, m.data, m.count );
+      aCopy<Elem>( m.data, m.count, data );
       count = m.count;
 
       return *this;
@@ -208,7 +208,7 @@ class Map
      */
     bool operator == ( const Map& m ) const
     {
-      return count == m.count && aEquals<Elem>( data, m.data, count );
+      return count == m.count && aEquals<Elem>( data, count, m.data );
     }
 
     /**
@@ -216,7 +216,7 @@ class Map
      */
     bool operator != ( const Map& m ) const
     {
-      return count != m.count || !aEquals<Elem>( data, m.data, count );
+      return count != m.count || !aEquals<Elem>( data, count, m.data );
     }
 
     /**
@@ -372,7 +372,7 @@ class Map
     template <typename Key_ = Key>
     bool contains( const Key_& key ) const
     {
-      int i = aBisection<Elem, Key_>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, count, key );
       return i >= 0 && data[i].key == key;
     }
 
@@ -382,7 +382,7 @@ class Map
     template <typename Key_ = Key>
     int index( const Key_& key ) const
     {
-      int i = aBisection<Elem, Key_>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, count, key );
       return i >= 0 && data[i].key == key ? i : -1;
     }
 
@@ -392,7 +392,7 @@ class Map
     template <typename Key_ = Key>
     const Value* find( const Key_& key ) const
     {
-      int i = aBisection<Elem, Key_>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, count, key );
       return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
@@ -402,7 +402,7 @@ class Map
     template <typename Key_ = Key>
     Value* find( const Key_& key )
     {
-      int i = aBisection<Elem, Key_>( data, key, count );
+      int i = aBisection<Elem, Key_>( data, count, key );
       return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
@@ -414,7 +414,7 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int add( Key_&& key, Value_&& value )
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, count, key );
 
       if( i >= 0 && data[i].key == key ) {
         data[i].key   = static_cast<Key_&&>( key );
@@ -435,7 +435,7 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int include( Key_&& key, Value_&& value )
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, count, key );
 
       if( i >= 0 && data[i].key == key ) {
         return i;
@@ -460,7 +460,7 @@ class Map
 
       ensureCapacity( count + 1 );
 
-      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
       data[i].key   = static_cast<Key_&&>( key );
       data[i].value = static_cast<Value_&&>( value );
 
@@ -484,7 +484,7 @@ class Map
         data[count] = Elem();
       }
       else {
-        aMove<Elem>( data + i, data + i + 1, count - i );
+        aMove<Elem>( data + i + 1, count - i, data + i );
       }
     }
 
@@ -495,7 +495,7 @@ class Map
      */
     int exclude( const Key& key )
     {
-      int i = aBisection<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, count, key );
 
       if( i >= 0 && data[i].key == key ) {
         erase( i );

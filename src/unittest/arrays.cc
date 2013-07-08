@@ -38,89 +38,89 @@ void test_arrays()
   Foo a[4] = { 1, 2, 3, 2 };
   Foo b[4];
 
-  aMove( b, a, 4 );
-  aMove( b, b, 4 );
-  aMove( b, a, 0 );
+  aMove( a, 4, b );
+  aMove( b, 4, b );
+  aMove( a, 0, b );
   OZ_CHECK_CONTENTS( a, -1, -1, -1, -1 );
   OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
-  OZ_CHECK( !aEquals( a, b, 4 ) );
-  OZ_CHECK( aEquals( a, b, 0 ) );
+  OZ_CHECK( !aEquals( a, 4, b ) );
+  OZ_CHECK( aEquals( a, 0, b ) );
 
-  aMoveBackward( a, b, 4 );
-  aMoveBackward( a, a, 4 );
-  aMoveBackward( a, b, 0 );
-  aMove( b, a, 4 );
+  aMoveBackward( b, 4, a );
+  aMoveBackward( a, 4, a );
+  aMoveBackward( b, 0, a );
+  aMove( a, 4, b );
   OZ_CHECK_CONTENTS( a, -1, -1, -1, -1 );
   OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
-  OZ_CHECK( !aEquals( a, b, 4 ) );
-  OZ_CHECK( aEquals( a, b, 0 ) );
+  OZ_CHECK( !aEquals( a, 4, b ) );
+  OZ_CHECK( aEquals( a, 0, b ) );
 
-  aFill( a, 0, 4 );
-  aFill( a, -1, 0 );
+  aFill( a, 4, 0 );
+  aFill( a, 0, -1 );
   OZ_CHECK_CONTENTS( a, 0, 0, 0, 0 );
 
   iFill( iter( a ), 1 );
   OZ_CHECK_CONTENTS( a, 1, 1, 1, 1 );
 
-  aSwap( a, b, 4 );
+  aSwap( a, 4, b );
   OZ_CHECK_CONTENTS( a, 1, 2, 3, 2 );
   OZ_CHECK_CONTENTS( b, 1, 1, 1, 1 );
-  aSwap( a + 1, b + 1, 3 );
-  aSwap( a, b, 1 );
+  aSwap( a + 1, 3, b + 1 );
+  aSwap( a, 1, b );
 
-  aCopy( a, b, 4 );
-  aCopy( a, b, 0 );
-  OZ_CHECK( aEquals( a, b, 4 ) );
+  aCopy( b, 4, a );
+  aCopy( b, 0, a );
+  OZ_CHECK( aEquals( a, 4, b ) );
   OZ_CHECK( iEquals( citer( a ), citer( b ) ) );
 
-  aCopyBackward( b, a, 4 );
-  aCopyBackward( b, a, 0 );
-  OZ_CHECK( aEquals( a, b, 4 ) );
+  aCopyBackward( a, 4, b );
+  aCopyBackward( a, 0, b );
+  OZ_CHECK( aEquals( a, 4, b ) );
 
-  aCopy( a, a, 4 );
-  OZ_CHECK( aEquals( a, b, 4 ) );
+  aCopy( a, 4, a );
+  OZ_CHECK( aEquals( a, 4, b ) );
 
-  aCopyBackward( a, a, 4 );
-  OZ_CHECK( aEquals( a, b, 4 ) );
+  aCopyBackward( a, 4, a );
+  OZ_CHECK( aEquals( a, 4, b ) );
 
-  OZ_CHECK( !aContains( a, 0, 4 ) );
-  OZ_CHECK( !aContains( b, 0, 4 ) );
-  OZ_CHECK( aContains( a, 1, 4 ) );
-  OZ_CHECK( aContains( b, 1, 4 ) );
-  OZ_CHECK( aContains( a, 2, 4 ) );
-  OZ_CHECK( aContains( b, 2, 4 ) );
-  OZ_CHECK( aContains( a, 3, 4 ) );
-  OZ_CHECK( aContains( b, 3, 4 ) );
-  OZ_CHECK( !aContains( b, 3, 0 ) );
+  OZ_CHECK( !aContains( a, 4, 0 ) );
+  OZ_CHECK( !aContains( b, 4, 0 ) );
+  OZ_CHECK( aContains( a, 4, 1 ) );
+  OZ_CHECK( aContains( b, 4, 1 ) );
+  OZ_CHECK( aContains( a, 4, 2 ) );
+  OZ_CHECK( aContains( b, 4, 2 ) );
+  OZ_CHECK( aContains( a, 4, 3 ) );
+  OZ_CHECK( aContains( b, 4, 3 ) );
+  OZ_CHECK( !aContains( b, 0, 3 ) );
 
-  OZ_CHECK( aFind( a, 0, 4 ) == nullptr );
-  OZ_CHECK( aFind( a, 1, 4 ) == &a[0] );
-  OZ_CHECK( aFind( a, 2, 4 ) == &a[1] );
-  OZ_CHECK( aFind( a, 3, 4 ) == &a[2] );
-  OZ_CHECK( aFind( a, 3, 0 ) == nullptr );
+  OZ_CHECK( aFind( a, 4, 0 ) == nullptr );
+  OZ_CHECK( aFind( a, 4, 1 ) == &a[0] );
+  OZ_CHECK( aFind( a, 4, 2 ) == &a[1] );
+  OZ_CHECK( aFind( a, 4, 3 ) == &a[2] );
+  OZ_CHECK( aFind( a, 0, 3 ) == nullptr );
 
-  OZ_CHECK( aFindLast( a, 0, 4 ) == nullptr );
-  OZ_CHECK( aFindLast( a, 1, 4 ) == &a[0] );
-  OZ_CHECK( aFindLast( a, 2, 4 ) == &a[3] );
-  OZ_CHECK( aFindLast( a, 3, 4 ) == &a[2] );
-  OZ_CHECK( aFindLast( a, 3, 0 ) == nullptr );
+  OZ_CHECK( aFindLast( a, 4, 0 ) == nullptr );
+  OZ_CHECK( aFindLast( a, 4, 1 ) == &a[0] );
+  OZ_CHECK( aFindLast( a, 4, 2 ) == &a[3] );
+  OZ_CHECK( aFindLast( a, 4, 3 ) == &a[2] );
+  OZ_CHECK( aFindLast( a, 0, 3 ) == nullptr );
 
   const Foo ( & ca )[4] = a;
-  OZ_CHECK( aFind( ca, 0, 4 ) == nullptr );
-  OZ_CHECK( aFindLast( ca, 0, 4 ) == nullptr );
-  OZ_CHECK( aFindLast( ca, 3, 0 ) == nullptr );
+  OZ_CHECK( aFind( ca, 4, 0 ) == nullptr );
+  OZ_CHECK( aFindLast( ca, 4, 0 ) == nullptr );
+  OZ_CHECK( aFindLast( ca, 0, 3 ) == nullptr );
 
-  OZ_CHECK( aIndex( a, 0, 4 ) == -1 );
-  OZ_CHECK( aIndex( a, 1, 4 ) == 0 );
-  OZ_CHECK( aIndex( a, 2, 4 ) == 1 );
-  OZ_CHECK( aIndex( a, 3, 4 ) == 2 );
-  OZ_CHECK( aIndex( a, 3, 0 ) == -1 );
+  OZ_CHECK( aIndex( a, 4, 0 ) == -1 );
+  OZ_CHECK( aIndex( a, 4, 1 ) == 0 );
+  OZ_CHECK( aIndex( a, 4, 2 ) == 1 );
+  OZ_CHECK( aIndex( a, 4, 3 ) == 2 );
+  OZ_CHECK( aIndex( a, 0, 3 ) == -1 );
 
-  OZ_CHECK( aLastIndex( a, 0, 4 ) == -1 );
-  OZ_CHECK( aLastIndex( a, 1, 4 ) == 0 );
-  OZ_CHECK( aLastIndex( a, 2, 4 ) == 3 );
-  OZ_CHECK( aLastIndex( a, 3, 4 ) == 2 );
-  OZ_CHECK( aLastIndex( a, 3, 0 ) == -1 );
+  OZ_CHECK( aLastIndex( a, 4, 0 ) == -1 );
+  OZ_CHECK( aLastIndex( a, 4, 1 ) == 0 );
+  OZ_CHECK( aLastIndex( a, 4, 2 ) == 3 );
+  OZ_CHECK( aLastIndex( a, 4, 3 ) == 2 );
+  OZ_CHECK( aLastIndex( a, 0, 3 ) == -1 );
 
   aReverse( a, 4 );
   OZ_CHECK_CONTENTS( a, 2, 3, 2, 1 );
@@ -135,9 +135,9 @@ void test_arrays()
   OZ_CHECK( aLength( a ) == 4 );
 
   Foo* d = new Foo[4];
-  aCopy( d, b, 4 );
+  aCopy( b, 4, d );
   d = aReallocate( d, 4, 10 );
-  OZ_CHECK( aEquals( b, d, 4 ) );
+  OZ_CHECK( aEquals( b, 4, d ) );
   delete[] d;
 
   for( int j = 0; j < 100; ++j ) {
@@ -148,7 +148,7 @@ void test_arrays()
     aSort( r, 1000 );
 
     for( int i = -1; i <= 1000; ++i ) {
-      int index = aBisection( r, i, 1000 );
+      int index = aBisection( r, 1000, i );
 
       if( 1 <= i && i < 1000 ) {
         OZ_CHECK( r[i - 1] <= r[i] );

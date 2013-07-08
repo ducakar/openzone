@@ -23,6 +23,7 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozFactory/ozFactory.hh>
+#include <algorithm>
 
 using namespace oz;
 

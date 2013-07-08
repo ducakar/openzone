@@ -76,7 +76,7 @@ class DArray
     explicit DArray( const Elem* array, int count_ ) :
       data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
     {
-      aCopy<Elem>( data, array, count );
+      aCopy<Elem>( array, count, data );
     }
 
     /**
@@ -93,7 +93,7 @@ class DArray
     DArray( const DArray& a ) :
       data( a.count == 0 ? nullptr : new Elem[a.count] ), count( a.count )
     {
-      aCopy<Elem>( data, a.data, a.count );
+      aCopy<Elem>( a.data, a.count, data );
     }
 
     /**
@@ -124,7 +124,7 @@ class DArray
         count = a.count;
       }
 
-      aCopy<Elem>( data, a.data, a.count );
+      aCopy<Elem>( a.data, a.count, data );
 
       return *this;
     }
@@ -154,7 +154,7 @@ class DArray
      */
     bool operator == ( const DArray& a ) const
     {
-      return count == a.count && aEquals<Elem>( data, a.data, count );
+      return count == a.count && aEquals<Elem>( data, count, a.data );
     }
 
     /**
@@ -162,7 +162,7 @@ class DArray
      */
     bool operator != ( const DArray& a ) const
     {
-      return count != a.count || !aEquals<Elem>( data, a.data, count );
+      return count != a.count || !aEquals<Elem>( data, count, a.data );
     }
 
     /**
@@ -310,7 +310,7 @@ class DArray
     {
       hard_assert( count > 0 );
 
-      return aContains<Elem, Elem>( data, e, count );
+      return aContains<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -320,7 +320,7 @@ class DArray
     {
       hard_assert( count > 0 );
 
-      return aIndex<Elem, Elem>( data, e, count );
+      return aIndex<Elem, Elem>( data, count, e );
     }
 
     /**
@@ -330,7 +330,7 @@ class DArray
     {
       hard_assert( count > 0 );
 
-      return aLastIndex<Elem, Elem>( data, e, count );
+      return aLastIndex<Elem, Elem>( data, count, e );
     }
 
     /**

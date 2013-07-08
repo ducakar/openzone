@@ -158,7 +158,7 @@ void MD3::buildMesh( const char* name, int frame )
     MD3Surface surface;
 
     surface.id           = is.readInt();
-    aCopy( surface.name, is.forward( 64 ), 64 );
+    aCopy( is.forward( 64 ), 64, surface.name );
     surface.flags        = is.readInt();
 
     surface.nFrames      = is.readInt();
@@ -204,7 +204,7 @@ void MD3::buildMesh( const char* name, int frame )
     is.forward( surfaceStart + surface.offShaders );
 
     for( int i = 0; i < surfaceShaders.length(); ++i ) {
-      aCopy( surfaceShaders[i].name, is.forward( 64 ), 64 );
+      aCopy( is.forward( 64 ), 64, surfaceShaders[i].name );
       surfaceShaders[i].index = is.readInt();
     }
 

@@ -707,7 +707,7 @@ void Context::unload()
   audios.deallocate();
 
   aFree( fragPools, liber.nFragPools );
-  aFill<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
+  aFill<FragPool*, FragPool*>( fragPools, liber.nFragPools, nullptr );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();

@@ -253,8 +253,8 @@ class HashSet
     HashSet( HashSet&& hs ) :
       pool( static_cast<Pool<Elem, SIZE>&&>( hs.pool ) )
     {
-      aCopy<Elem*>( data, hs.data, SIZE );
-      aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
+      aCopy<Elem*>( hs.data, SIZE, data );
+      aFill<Elem*, Elem*>( hs.data, SIZE, nullptr );
     }
 
     /**
@@ -284,8 +284,8 @@ class HashSet
 
       clear();
 
-      aCopy<Elem*>( data, hs.data, SIZE );
-      aFill<Elem*, Elem*>( hs.data, nullptr, SIZE );
+      aCopy<Elem*>( hs.data, SIZE, data );
+      aFill<Elem*, Elem*>( hs.data, SIZE, nullptr );
       pool = static_cast<Pool<Elem, SIZE>&&>( hs.pool );
 
       return *this;

@@ -143,7 +143,7 @@ static void readLua( const File& file )
     switch( state ) {
       case NORMAL: {
         if( last[0] == '(' ) {
-          if( is.tell() >= 10 && aEquals( is.pos() - 10, "ozGettext", 9 ) ) {
+          if( is.tell() >= 10 && aEquals( is.pos() - 10, 9, "ozGettext" ) ) {
             inGettext = true;
             gettextLineNum = lineNum;
           }
