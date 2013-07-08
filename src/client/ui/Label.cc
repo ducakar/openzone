@@ -37,77 +37,36 @@ namespace ui
 
 Label::Label() :
   x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
-  width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
+  width( 0 ), height( 0 ), texId( 0 )
+{}
+
+Label::Label( int x, int y, int align_, Font::Type font_, const char* s, ... ) :
+  align( align_ ), font( font_ ), offsetX( 0 ), offsetY( 0 ), texId( 0 )
 {
-  glGenTextures( 2, texIds );
-
-  glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-}
-
-Label::Label( int x_, int y_, int align_, Font::Type font_, const char* s, ... ) :
-  offsetX( 0 ), offsetY( 0 ), activeTexId( 0 ), hasChanged( false )
-{
-  glGenTextures( 2, texIds );
-
-  glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
   va_list ap;
   va_start( ap, s );
-  vset( x_, y_, align_, font_, s, ap );
+  vset( x, y, s, ap );
   va_end( ap );
 }
 
 Label::~Label()
 {
-  glDeleteTextures( 2, texIds );
+  clear();
 }
 
 Label::Label( Label&& l ) :
   x( l.x ), y( l.y ), align( l.align ), font( l.font ), offsetX( l.offsetX ), offsetY( l.offsetY ),
-  width( l.width ), height( l.height ), newWidth( l.newWidth ), newHeight( l.newHeight ),
-  activeTexId( l.activeTexId ), hasChanged( l.hasChanged )
+  width( l.width ), height( l.height ), texId( l.texId )
 {
-  texIds[0] = l.texIds[0];
-  texIds[1] = l.texIds[1];
-
-  l.x           = 0;
-  l.y           = 0;
-  l.align       = Area::ALIGN_NONE;
-  l.font        = Font::MONO;
-  l.offsetX     = 0;
-  l.offsetY     = 0;
-  l.width       = 0;
-  l.height      = 0;
-  l.activeTexId = 0;
-  l.hasChanged  = false;
-
-  glGenTextures( 2, l.texIds );
-
-  glBindTexture( GL_TEXTURE_2D, l.texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, l.texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  l.x       = 0;
+  l.y       = 0;
+  l.align   = Area::ALIGN_NONE;
+  l.font    = Font::MONO;
+  l.offsetX = 0;
+  l.offsetY = 0;
+  l.width   = 0;
+  l.height  = 0;
+  l.texId   = 0;
 }
 
 Label& Label::operator = ( Label&& l )
@@ -116,76 +75,66 @@ Label& Label::operator = ( Label&& l )
     return *this;
   }
 
-  x           = l.x;
-  y           = l.y;
-  align       = l.align;
-  font        = l.font;
-  offsetX     = l.offsetX;
-  offsetY     = l.offsetY;
-  width       = l.width;
-  height      = l.height;
-  activeTexId = l.activeTexId;
-  hasChanged  = l.hasChanged;
+  clear();
 
-  swap( texIds[0], l.texIds[0] );
-  swap( texIds[1], l.texIds[1] );
+  x       = l.x;
+  y       = l.y;
+  align   = l.align;
+  font    = l.font;
+  offsetX = l.offsetX;
+  offsetY = l.offsetY;
+  width   = l.width;
+  height  = l.height;
+  texId   = l.texId;
 
-  l.x           = 0;
-  l.y           = 0;
-  l.align       = Area::ALIGN_NONE;
-  l.font        = Font::MONO;
-  l.offsetX     = 0;
-  l.offsetY     = 0;
-  l.width       = 0;
-  l.height      = 0;
-  l.activeTexId = 0;
-  l.hasChanged  = false;
+  l.x       = 0;
+  l.y       = 0;
+  l.align   = Area::ALIGN_NONE;
+  l.font    = Font::MONO;
+  l.offsetX = 0;
+  l.offsetY = 0;
+  l.width   = 0;
+  l.height  = 0;
+  l.texId   = 0;
 
   return *this;
 }
 
-void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, va_list ap )
+void Label::vset( int x, int y, const char* s, va_list ap )
 {
   hard_assert( s != nullptr );
-
-  x          = x_;
-  y          = y_;
-  align      = align_;
-  font       = font_;
-  hasChanged = true;
 
   char buffer[1024];
   vsnprintf( buffer, 1024, s, ap );
   buffer[1023] = '\0';
 
   if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
-    newWidth  = 0;
-    newHeight = 0;
+    clear();
   }
   else {
-    uint texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+    glGenTextures( 1, &texId );
 
-    style.fonts[font].draw( buffer, texId, &newWidth, &newHeight );
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+    style.fonts[font].upload( buffer, &width, &height );
+
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
+
+  setPosition( x, y );
 }
 
-void Label::set( int x_, int y_, int align_, Font::Type font_, const char* s, ... )
+void Label::set( int x, int y, const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
-  vset( x_, y_, align_, font_, s, ap );
+  vset( x, y, s, ap );
   va_end( ap );
 }
 
-void Label::set( int x_, int y_, const char* s, ... )
-{
-  va_list ap;
-  va_start( ap, s );
-  vset( x_, y_, align, font, s, ap );
-  va_end( ap );
-}
-
-void Label::set( int x_, int y_ )
+void Label::setPosition( int x_, int y_ )
 {
   x       = x_;
   y       = y_;
@@ -206,51 +155,43 @@ void Label::set( int x_, int y_ )
   }
 }
 
-void Label::set( const char* s, ... )
+void Label::setText( const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
-  vset( x, y, align, font, s, ap );
+  vset( x, y, s, ap );
   va_end( ap );
 }
 
-void Label::draw( const Area* area, bool allowChanged )
+void Label::draw( const Area* area )
 {
-  if( ( allowChanged || !hasChanged ) && activeTexId != 0 ) {
-    glBindTexture( GL_TEXTURE_2D, activeTexId );
-
-    int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
-    int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
-
-    shape.colour( style.colours.textBackground );
-    shape.fill( posX + 1, posY - 1, width, height );
-    shape.colour( style.colours.text );
-    shape.fill( posX, posY, width, height );
-
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  if( texId == 0 ) {
+    return;
   }
 
-  if( hasChanged ) {
-    hasChanged  = false;
-    activeTexId = newWidth == 0 ? 0 : activeTexId == texIds[0] ? texIds[1] : texIds[0];
+  int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
+  int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
+
+  glBindTexture( GL_TEXTURE_2D, texId );
+
+  shape.colour( style.colours.textBackground );
+  shape.fill( posX + 1, posY - 1, width, height );
+  shape.colour( style.colours.text );
+  shape.fill( posX, posY, width, height );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+}
+
+void Label::clear()
+{
+  if( texId != 0 ) {
+    glDeleteTextures( 1, &texId );
 
     offsetX = x;
     offsetY = y;
-    width   = newWidth;
-    height  = newHeight;
-
-    if( align & Area::ALIGN_RIGHT ) {
-      offsetX -= width;
-    }
-    else if( align & Area::ALIGN_HCENTRE ) {
-      offsetX -= width / 2;
-    }
-    if( align & Area::ALIGN_TOP ) {
-      offsetY -= height;
-    }
-    else if( align & Area::ALIGN_VCENTRE ) {
-      offsetY -= height / 2;
-    }
+    width   = 0;
+    height  = 0;
+    texId   = 0;
   }
 }
 

@@ -92,10 +92,10 @@ void HudArea::drawBotCrosshair()
       if( lastEntityId != camera.entity ) {
         lastEntityId = camera.entity;
 
-        title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", entClazz->title.cstr() );
+        title.set( descTextX, descTextY, "%s", entClazz->title.cstr() );
       }
 
-      title.draw( this, false );
+      title.draw( this );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -138,10 +138,10 @@ void HudArea::drawBotCrosshair()
         String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
                         bot->name + " (" + objClazz->title + ")" : objClazz->title;
 
-        title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", sTitle.cstr() );
+        title.set( descTextX, descTextY, "%s", sTitle.cstr() );
       }
 
-      title.draw( this, false );
+      title.draw( this );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -229,26 +229,26 @@ void HudArea::drawBotStatus()
     shape.colour( style.colours.frame );
     shape.fill( pos.x, pos.y, style.botWeapon.w, style.botWeapon.h );
 
-    weaponName.set( pos.x + 4, pos.y + 2 );
-    weaponRounds.set( pos.x + style.botWeapon.w - 4, pos.y + 2 );
+    weaponName.setPosition( pos.x + 4, pos.y + 2 );
+    weaponRounds.setPosition( pos.x + style.botWeapon.w - 4, pos.y + 2 );
 
     if( lastWeaponId != bot->weapon ) {
       lastWeaponId = bot->weapon;
-      weaponName.set( "%s", weaponObj->clazz->title.cstr() );
+      weaponName.setText( "%s", weaponObj->clazz->title.cstr() );
     }
     if( lastWeaponRounds != weaponObj->nRounds ) {
       lastWeaponRounds = weaponObj->nRounds;
 
       if( weaponObj->nRounds < 0 ) {
-        weaponRounds.set( "∞" );
+        weaponRounds.setText( "∞" );
       }
       else {
-        weaponRounds.set( "%d", weaponObj->nRounds );
+        weaponRounds.setText( "%d", weaponObj->nRounds );
       }
     }
 
-    weaponName.draw( this, false );
-    weaponRounds.draw( this, true );
+    weaponName.draw( this );
+    weaponRounds.draw( this );
   }
 }
 
@@ -301,25 +301,25 @@ void HudArea::drawVehicleStatus()
       shape.fill( pos.x, pos.y, areaStyle.w, areaStyle.h );
     }
 
-    nameLabel.set( pos.x + 2, pos.y + 2 );
-    roundsLabel.set( pos.x + areaStyle.w - 4, pos.y + 2 );
+    nameLabel.setPosition( pos.x + 2, pos.y + 2 );
+    roundsLabel.setPosition( pos.x + areaStyle.w - 4, pos.y + 2 );
 
     if( lastVehicleId != bot->parent ) {
-      nameLabel.set( "%s", vehClazz->weaponTitles[i].cstr() );
+      nameLabel.setText( "%s", vehClazz->weaponTitles[i].cstr() );
     }
     if( lastVehicleWeaponRounds[labelIndex] != vehicle->nRounds[i] ) {
       lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
 
       if( vehicle->nRounds[i] < 0 ) {
-        roundsLabel.set( "∞" );
+        roundsLabel.setText( "∞" );
       }
       else {
-        roundsLabel.set( "%d", vehicle->nRounds[i] );
+        roundsLabel.setText( "%d", vehicle->nRounds[i] );
       }
     }
 
-    nameLabel.draw( this, false );
-    roundsLabel.draw( this, true );
+    nameLabel.draw( this );
+    roundsLabel.draw( this );
   }
 
   lastVehicleId = bot->parent;
@@ -346,7 +346,7 @@ void HudArea::onReposition()
   lastObjectId = -1;
   lastEntityId = -1;
 
-  title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, " " );
+  title.set( descTextX, descTextY, " " );
 }
 
 void HudArea::onVisibilityChange( bool )
@@ -396,6 +396,7 @@ void HudArea::onDraw()
 
 HudArea::HudArea() :
   Area( camera.width, camera.height ),
+  title( 0, 0, ALIGN_CENTRE, Font::LARGE, " " ),
   weaponName( 0, 0, ALIGN_LEFT, Font::LARGE, " " ),
   weaponRounds( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" ),
   lastObjectId( -1 ),
@@ -408,9 +409,8 @@ HudArea::HudArea() :
 
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;
-
-    vehicleWeaponNames[i].set( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
-    vehicleWeaponRounds[i].set( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
+    vehicleWeaponNames[i]      = Label( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
+    vehicleWeaponRounds[i]     = Label( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
   Log::verboseMode = true;

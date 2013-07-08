@@ -47,7 +47,7 @@ void SettingsFrame::onDraw()
 {
   Frame::onDraw();
 
-  message.draw( this, false );
+  message.draw( this );
 }
 
 SettingsFrame::SettingsFrame() :
@@ -59,12 +59,12 @@ SettingsFrame::SettingsFrame() :
 
   const String& configDirPath = config["dir.config"].asString();
 
-  message.set( "%s\n\n  %s\n  %s\n  %s",
-               OZ_GETTEXT( "NOT IMPLEMENTED.\nYou can change your settings by manually editing the"
-                           " following files:" ),
-               ( configDirPath + "/config.json" ).cstr(),
-               ( configDirPath + "/input.json" ).cstr(),
-               ( configDirPath + "/profile.json" ).cstr() );
+  message.setText( "%s\n\n  %s\n  %s\n  %s",
+                   OZ_GETTEXT( "NOT IMPLEMENTED.\nYou can change your settings by manually editing"
+                               " the following files:" ),
+                   ( configDirPath + "/config.json" ).cstr(),
+                   ( configDirPath + "/input.json" ).cstr(),
+                   ( configDirPath + "/profile.json" ).cstr() );
 
   add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 80, 25 ), -4, 4 );
 }

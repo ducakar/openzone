@@ -266,11 +266,10 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
   if( tagged != cachedTaggedItemIndex ) {
     cachedTaggedItemIndex = tagged;
 
-    itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
-                  Font::SANS, "%s", taggedClazz->title.cstr() );
+    itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, "%s", taggedClazz->title.cstr() );
   }
 
-  itemDesc.draw( this, false );
+  itemDesc.draw( this );
 }
 
 void Inventory::onVisibilityChange( bool )
@@ -351,10 +350,10 @@ void Inventory::onDraw()
     if( container->flags & Object::BOT_BIT ) {
       const Bot* bot = static_cast<const Bot*>( container );
 
-      title.set( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
+      title.setText( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
     }
     else {
-      title.set( "%s", containerClazz->title.cstr() );
+      title.setText( "%s", containerClazz->title.cstr() );
     }
   }
 

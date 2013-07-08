@@ -53,7 +53,7 @@ Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_, int align
   labels = new Label[nLines];
 
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].set( x, y + ( nLines - i - 1 ) * font->height, alignment, font_, " " );
+    labels[i] = Label( x, y + ( nLines - i - 1 ) * font->height, alignment, font_, " " );
   }
 }
 
@@ -67,7 +67,7 @@ void Text::resize( int width_ )
   width = width_;
 }
 
-void Text::set( const char* s, ... )
+void Text::setText( const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
@@ -88,7 +88,7 @@ void Text::set( const char* s, ... )
       char ch = *next;
       *next = '\0';
 
-      int w = font->size( pos );
+      int w = font->sizeOf( pos );
 
       *next = ch;
 
@@ -106,7 +106,7 @@ void Text::set( const char* s, ... )
     char ch = *end;
     *end = '\0';
 
-    labels[line].set( "%s", pos );
+    labels[line].setText( "%s", pos );
 
     *end = ch;
 
@@ -116,11 +116,11 @@ void Text::set( const char* s, ... )
     ++line;
   }
 
-  labels[line].set( "%s", pos );
+  labels[line].setText( "%s", pos );
   ++line;
 
   while( line < nLines ) {
-    labels[line].set( " " );
+    labels[line].setText( " " );
     ++line;
   }
 }
@@ -128,14 +128,14 @@ void Text::set( const char* s, ... )
 void Text::clear()
 {
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].set( " " );
+    labels[i].clear();
   }
 }
 
-void Text::draw( const Area* area, bool allowChanged ) const
+void Text::draw( const Area* area ) const
 {
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].draw( area, allowChanged );
+    labels[i].draw( area );
   }
 }
 

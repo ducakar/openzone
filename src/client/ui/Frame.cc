@@ -73,16 +73,15 @@ void Frame::onDraw()
   shape.colour( style.colours.frame );
   shape.fill( x, y, width, height );
 
-  title.draw( this, false );
+  title.draw( this );
 
   drawChildren();
 }
 
 Frame::Frame( int width, int height, const char* text ) :
-  Area( width, height + HEADER_SIZE )
-{
-  title.set( width / 2, -HEADER_SIZE / 2, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "%s", text );
-}
+  Area( width, height + HEADER_SIZE ),
+  title( width / 2, -HEADER_SIZE / 2, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "%s", text )
+{}
 
 }
 }

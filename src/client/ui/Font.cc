@@ -36,24 +36,19 @@ namespace ui
 
 static const SDL_Colour SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
-int Font::size( const char* s ) const
+int Font::sizeOf( const char* s ) const
 {
   int width;
   TTF_SizeUTF8( handle, s, &width, nullptr );
   return width;
 }
 
-void Font::draw( const char* s, uint texId, int* width, int* height ) const
+void Font::upload( const char* s, int* width, int* height ) const
 {
   SDL_Surface* textSurface = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
 
-  MainCall() << [&]()
-  {
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textSurface->w, textSurface->h, 0, GL_RGBA,
-                  GL_UNSIGNED_BYTE, textSurface->pixels );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  };
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textSurface->w, textSurface->h, 0, GL_RGBA,
+                GL_UNSIGNED_BYTE, textSurface->pixels );
 
   *width  = textSurface->w;
   *height = textSurface->h;

@@ -60,8 +60,8 @@ class Font
 
   public:
 
-    int size( const char* s ) const;
-    void draw( const char* s, uint texId, int* width, int* height ) const;
+    int sizeOf( const char* s ) const;
+    void upload( const char* s, int* width, int* height ) const;
 
     void init( const char* name, int height );
     void destroy();

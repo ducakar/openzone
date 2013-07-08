@@ -114,10 +114,10 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
         unitName.set( labelX, labelY, "%s", title.cstr() );
       }
       else {
-        unitName.set( labelX, labelY );
+        unitName.setPosition( labelX, labelY );
       }
 
-      unitName.draw( this, false );
+      unitName.draw( this );
     }
     else {
       if( str->index != cachedStructIndex ) {
@@ -130,12 +130,12 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
         unitName.set( labelX, labelY, "%s", title.cstr() );
       }
       else {
-        unitName.set( labelX, labelY );
+        unitName.setPosition( labelX, labelY );
       }
 
       life = str->life / str->bsp->life;
 
-      unitName.draw( this, false );
+      unitName.draw( this );
     }
   }
   else {
@@ -156,14 +156,14 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
       unitName.set( labelX, labelY, "%s", title.cstr() );
     }
     else {
-      unitName.set( labelX, labelY );
+      unitName.setPosition( labelX, labelY );
     }
 
     life = obj->flags & Object::BOT_BIT ?
            max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
            obj->life / clazz->life;
 
-    unitName.draw( this, false );
+    unitName.draw( this );
   }
 
   if( ent == nullptr ) {

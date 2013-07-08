@@ -112,11 +112,12 @@ void MainMenu::onReposition()
   height = camera.height;
 
   copyright.resize( width - 280 );
-  copyright.set( "OpenZone © 2002-2013 Davorin Učakar. %s",
-                 OZ_GETTEXT( "Licensed under GNU GPL 3.0. Game data archives and libraries"
-                             " distributed with OpenZone are work of various authors and use"
-                             " separate licences. For more details see doc/README.html and files"
-                             " named README.txt and COPYING.txt inside game data archives." ) );
+  copyright.setText( "OpenZone © 2002-2013 Davorin Učakar. %s",
+                     OZ_GETTEXT( "Licensed under GNU GPL 3.0. Game data archives and libraries"
+                                 " distributed with OpenZone are work of various authors and use"
+                                 " separate licences. For more details see doc/README.html and"
+                                 " files named README.txt and COPYING.txt inside game data"
+                                 " archives." ) );
 
   foreach( child, children.iter() ) {
     child->reposition();
@@ -159,8 +160,8 @@ void MainMenu::onDraw()
   shape.colour( style.colours.menuStrip );
   shape.fill( camera.width - 240, 0, 240, camera.height );
 
-  copyright.draw( this, true );
-  title.draw( this, true );
+  copyright.draw( this );
+  title.draw( this );
 
   drawChildren();
 }

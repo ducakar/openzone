@@ -54,11 +54,11 @@ class Text
     void resize( int width );
 
     OZ_PRINTF_FORMAT( 2, 3 )
-    void set( const char* s, ... );
+    void setText( const char* s, ... );
 
     void clear();
 
-    void draw( const Area* area, bool allowChanged ) const;
+    void draw( const Area* area ) const;
 
 };
 

@@ -47,12 +47,8 @@ class Label
     int        offsetY;
     int        width;
     int        height;
-    int        newWidth;
-    int        newHeight;
 
-    uint       texIds[2];
-    uint       activeTexId;
-    bool       hasChanged;
+    uint       texId;
 
   public:
 
@@ -69,21 +65,20 @@ class Label
     Label& operator = ( const Label& ) = delete;
     Label& operator = ( Label&& l );
 
-    OZ_PRINTF_FORMAT( 6, 0 )
-    void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
-
-    OZ_PRINTF_FORMAT( 6, 7 )
-    void set( int x, int y, int align, Font::Type font, const char* s, ... );
+    OZ_PRINTF_FORMAT( 4, 0 )
+    void vset( int x, int y, const char* s, va_list ap );
 
     OZ_PRINTF_FORMAT( 4, 5 )
     void set( int x, int y, const char* s, ... );
 
-    void set( int x, int y );
+    void setPosition( int x, int y );
 
     OZ_PRINTF_FORMAT( 2, 3 )
-    void set( const char* s, ... );
+    void setText( const char* s, ... );
 
-    void draw( const Area* area, bool allowChanged );
+    void draw( const Area* area );
+
+    void clear();
 
 };
 

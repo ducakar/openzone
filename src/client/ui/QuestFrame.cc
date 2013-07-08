@@ -36,8 +36,8 @@ namespace ui
 void QuestFrame::updateTask()
 {
   if( questList.activeQuest < 0 ) {
-    title.set( "%s", OZ_GETTEXT( "No quest" ) );
-    description.set( " " );
+    title.setText( "%s", OZ_GETTEXT( "No quest" ) );
+    description.setText( " " );
 
     lastQuest = questList.activeQuest;
     lastState = Quest::NONE;
@@ -46,7 +46,7 @@ void QuestFrame::updateTask()
     const Quest& quest = questList.quests[questList.activeQuest];
 
     if( quest.state == Quest::NONE ) {
-      title.set( "%s", quest.title.cstr() );
+      title.setText( "%s", quest.title.cstr() );
     }
     else {
       const char* stateText;
@@ -61,10 +61,10 @@ void QuestFrame::updateTask()
         stateText = OZ_GETTEXT( "failed" );
       }
 
-      title.set( "%s  [%s]", quest.title.cstr(), stateText );
+      title.setText( "%s  [%s]", quest.title.cstr(), stateText );
     }
 
-    description.set( "%s", quest.description.cstr() );
+    description.setText( "%s", quest.description.cstr() );
 
     lastQuest = questList.activeQuest;
     lastState = quest.state;
@@ -125,7 +125,7 @@ void QuestFrame::onDraw()
   Frame::onDraw();
 
   if( isOpened ) {
-    description.draw( this, false );
+    description.draw( this );
   }
 }
 

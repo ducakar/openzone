@@ -51,7 +51,7 @@ bool MissionButton::onMouseEvent()
   if( missionMenu->selection != selection ) {
     missionMenu->selection = selection;
 
-    missionMenu->description.set( "%s", missionMenu->missions[selection].description.cstr() );
+    missionMenu->description.setText( "%s", missionMenu->missions[selection].description.cstr() );
     missionMenu->imageId = missionMenu->missions[selection].image.id();
   }
 
@@ -90,7 +90,7 @@ void MissionMenu::onReposition()
   description.resize( width - 320 );
 
   if( selection != -1 ) {
-    description.set( "%s", missions[selection].description.cstr() );
+    description.setText( "%s", missions[selection].description.cstr() );
   }
 
   float aspect = float( imageWidth ) / float( imageHeight );
@@ -167,7 +167,7 @@ void MissionMenu::onDraw()
 
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
-  description.draw( this, true );
+  description.draw( this );
 
   drawChildren();
 }

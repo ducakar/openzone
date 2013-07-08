@@ -43,7 +43,7 @@ void CinematicText::onReposition()
 
 void CinematicText::onDraw()
 {
-  text.draw( this, true );
+  text.draw( this );
 }
 
 CinematicText::CinematicText() :
@@ -54,7 +54,7 @@ CinematicText::CinematicText() :
 
 void CinematicText::set( const char* title )
 {
-  text.set( "%s", title );
+  text.setText( "%s", title );
 }
 
 }

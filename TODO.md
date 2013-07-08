@@ -2,7 +2,6 @@
 
 - TalkFrame
 - 6-direction-layered meshes
-- fix CreditsMenu scrolling
 
 0.5
 

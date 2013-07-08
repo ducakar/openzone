@@ -56,35 +56,36 @@ void CreditsMenu::onReposition()
     int line = scroll + i;
 
     if( line < nLabels ) {
-      labels[i].set( 0, 0, ALIGN_HCENTRE, Font::SANS, " " );
+      labels[i] = Label( 0, 0, ALIGN_HCENTRE, Font::SANS, " " );
     }
     else {
-      labels[i].set( 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr() );
+      labels[i] = Label( 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr() );
     }
   }
 }
 
 void CreditsMenu::onUpdate()
 {
-  int nEntries = ( labels.length() + lines.length() );
-
-  if( !isPaused || bias == stride - 1 ) {
-    ++bias;
+  if( isPaused ) {
+    return;
   }
+
+  ++bias;
 
   if( bias == stride ) {
+    int nEntries = ( labels.length() + lines.length() );
+
     scroll = ( scroll + 1 ) % nEntries;
     bias   = 0;
-  }
-  else if( bias == stride - 1 ) {
+
     for( int i = 0; i < labels.length(); ++i ) {
-      int line = ( scroll + 1 + i ) % nEntries;
+      int line = ( scroll + i ) % nEntries;
 
       if( line < labels.length() ) {
-        labels[i].set( " " );
+        labels[i].setText( " " );
       }
       else {
-        labels[i].set( "%s", lines[ line - labels.length() ].cstr() );
+        labels[i].setText( "%s", lines[ line - labels.length() ].cstr() );
       }
     }
   }
@@ -124,10 +125,9 @@ void CreditsMenu::onDraw()
   for( int i = 0; i < labels.length(); ++i ) {
     int x = ( width - 240 ) / 2;
     int y = height - 60 - ( i + 1 )*stride + bias;
-    int j = ( scroll + i ) % labels.length();
 
-    labels[j].set( x, y );
-    labels[j].draw( this, true );
+    labels[i].setPosition( x, y );
+    labels[i].draw( this );
   }
 
   drawChildren();
@@ -190,6 +190,7 @@ CreditsMenu::CreditsMenu() :
 
   lines.add( "The following libraries may be distributed with/linked into the engine" );
   lines.add( "" );
+  lines.add( "Assimp" );
   lines.add( "FreeImage" );
   lines.add( "FreeType" );
   lines.add( "libogg" );

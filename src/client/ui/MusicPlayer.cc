@@ -44,8 +44,8 @@ void MusicPlayer::prevTrack( Button* sender )
 
     sound.playMusic( musicPlayer->currentTrack );
 
-    musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
+    musicPlayer->title.setText( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
+    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
 }
@@ -60,8 +60,8 @@ void MusicPlayer::nextTrack( Button* sender )
 
     sound.playMusic( musicPlayer->currentTrack );
 
-    musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
+    musicPlayer->title.setText( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
+    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
 }
@@ -74,8 +74,8 @@ void MusicPlayer::playTrack( Button* sender )
   if( nTracks != 0 ) {
     sound.playMusic( musicPlayer->currentTrack );
 
-    musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
+    musicPlayer->title.setText( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
+    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
 }
@@ -86,7 +86,7 @@ void MusicPlayer::stopTrack( Button* sender )
 
   sound.stopMusic();
 
-  musicPlayer->title.set( " " );
+  musicPlayer->title.setText( " " );
   musicPlayer->isPlaying = false;
 }
 
@@ -95,7 +95,7 @@ void MusicPlayer::volumeDown( Button* sender )
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
   musicPlayer->volume = max( musicPlayer->volume - 1, 0 );
-  musicPlayer->volumeLabel.set( "%d", musicPlayer->volume );
+  musicPlayer->volumeLabel.setText( "%d", musicPlayer->volume );
 
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
@@ -105,7 +105,7 @@ void MusicPlayer::volumeUp( Button* sender )
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
   musicPlayer->volume = min( musicPlayer->volume + 1, 10 );
-  musicPlayer->volumeLabel.set( "%d", musicPlayer->volume );
+  musicPlayer->volumeLabel.setText( "%d", musicPlayer->volume );
 
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
@@ -119,7 +119,7 @@ void MusicPlayer::onUpdate()
   {
     if( isPlaying ) {
       isPlaying = false;
-      title.set( " " );
+      title.setText( " " );
       sound.stopMusic();
     }
     if( !( flags & HIDDEN_BIT ) ) {
@@ -142,8 +142,8 @@ void MusicPlayer::onUpdate()
 
         sound.playMusic( currentTrack );
 
-        title.set( "%s", liber.musicTracks[currentTrack].name.cstr() );
-        trackLabel.set( "%d", currentTrack + 1 );
+        title.setText( "%s", liber.musicTracks[currentTrack].name.cstr() );
+        trackLabel.setText( "%d", currentTrack + 1 );
       }
     }
   }
@@ -153,9 +153,9 @@ void MusicPlayer::onDraw()
 {
   Frame::onDraw();
 
-  title.draw( this, true );
-  trackLabel.draw( this, true );
-  volumeLabel.draw( this, true );
+  title.draw( this );
+  trackLabel.draw( this );
+  volumeLabel.draw( this );
 }
 
 MusicPlayer::MusicPlayer() :
@@ -168,7 +168,7 @@ MusicPlayer::MusicPlayer() :
   flags = UPDATE_BIT;
 
   if( liber.musicTracks.length() > 0 ) {
-    trackLabel.set( "1" );
+    trackLabel.setText( "1" );
   }
   sound.setMusicVolume( 0.5f );
 

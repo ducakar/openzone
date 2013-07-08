@@ -320,7 +320,7 @@ void GameStage::load()
   loadingMicros = Time::uclock();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.set( "%s", OZ_GETTEXT( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
   render.draw( Render::DRAW_UI_BIT );
@@ -418,7 +418,7 @@ void GameStage::unload()
   Log::indent();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.set( "%s", OZ_GETTEXT( "Shutting down ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
 
   loader.unload();

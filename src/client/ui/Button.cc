@@ -69,7 +69,7 @@ void Button::onDraw()
   }
 
   shape.fill( x, y, width, height );
-  label.draw( this, true );
+  label.draw( this );
 
   isHighlighted = false;
   isClicked = false;
@@ -83,7 +83,7 @@ Button::Button( const char* text, Callback* callback_, int width, int height ) :
 
 void Button::setLabel( const char* text )
 {
-  label.set( "%s", text );
+  label.setText( "%s", text );
 }
 
 void Button::setCallback( Callback* callback_ )

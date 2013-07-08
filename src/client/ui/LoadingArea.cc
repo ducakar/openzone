@@ -39,7 +39,7 @@ void LoadingArea::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  status.set( width / 2, height / 5 );
+  status.setPosition( width / 2, height / 5 );
 }
 
 void LoadingArea::onDraw()
@@ -47,7 +47,7 @@ void LoadingArea::onDraw()
   shape.colour( style.colours.background );
   shape.fill( 0, 0, width, height );
 
-  status.draw( this, false );
+  status.draw( this );
 }
 
 LoadingArea::LoadingArea() :
