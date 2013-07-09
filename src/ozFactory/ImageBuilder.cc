@@ -78,6 +78,10 @@ bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath
 {
   errorBuffer[0] = '\0';
 
+  if( file.hasExtension( "dds" ) ) {
+    return File::cp( file, destPath );
+  }
+
 #ifndef OZ_NONFREE
   if( options & COMPRESSION_BIT ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Texture compression requested, but compiled without"
@@ -93,9 +97,9 @@ bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
   FIBITMAP*         image     = FreeImage_LoadFromMemory( format, memoryIO );
 
-  if( image == nullptr ) {
-    FreeImage_CloseMemory( memoryIO );
+  FreeImage_CloseMemory( memoryIO );
 
+  if( image == nullptr ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr() );
     return false;
   }
@@ -114,13 +118,12 @@ bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath
 
   if( ( options & COMPRESSION_BIT ) && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
     FreeImage_Unload( image );
-    FreeImage_CloseMemory( memoryIO );
 
     snprintf( errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2." );
     return false;
   }
 
-  int pitchOrLinSize = pitch;
+  int pitchOrLinSize = width * ( bpp / 8 );
   int nMipmaps       = options & MIPMAPS_BIT ? Math::index1( max( width, height ) ) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
@@ -227,7 +230,6 @@ bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath
   }
 
   FreeImage_Unload( image );
-  FreeImage_CloseMemory( memoryIO );
 
   File destFile( destPath );
   if( destFile.type() == File::DIRECTORY ) {

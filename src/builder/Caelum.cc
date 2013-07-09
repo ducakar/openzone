@@ -39,6 +39,18 @@ void Caelum::build( const char* name )
   Log::println( "Prebuilding Caelum '%s' {", name );
   Log::indent();
 
+  int texOptions = ImageBuilder::MIPMAPS_BIT;
+  if( context.useS3TC ) {
+    texOptions |= ImageBuilder::COMPRESSION_BIT;
+  }
+
+  if( !ImageBuilder::buildDDS( "@caelum/sun.png", texOptions, "caelum" ) ) {
+    OZ_ERROR( "Failed to build sun texture" );
+  }
+  if( !ImageBuilder::buildDDS( "@caelum/moon.png", texOptions, "caelum" ) ) {
+    OZ_ERROR( "Failed to build moon texture" );
+  }
+
   File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
 
   OutputStream os( 0 );
@@ -91,12 +103,6 @@ void Caelum::build( const char* name )
     os.writeUShort( ushort( i * 4 + 2 ) );
     os.writeUShort( ushort( i * 4 + 2 ) );
   }
-
-  Context::Texture texture = context.loadTexture( "@caelum/sun.png" );
-  texture.write( &os );
-
-  texture = context.loadTexture( "@caelum/moon.png" );
-  texture.write( &os );
 
   Log::print( "Dumping into '%s' ...", destFile.path().cstr() );
 

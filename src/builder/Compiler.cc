@@ -474,12 +474,7 @@ void Compiler::buildMeshTextures( const char* destDir )
   }
 
   for( int i = 0; i < textures.length(); ++i ) {
-    if( textures[i].fileHasExtension( "dds" ) ) {
-      File::cp( textures[i], destDir );
-    }
-    else {
-      context.buildTexture( textures[i], destDir );
-    }
+    context.buildTexture( textures[i], destDir + ( "/" + textures[i].fileName() ) );
   }
 }
 

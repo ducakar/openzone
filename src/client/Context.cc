@@ -272,72 +272,6 @@ Context::Context() :
   bsps( nullptr ), smms( nullptr ), md2s( nullptr ), md3s( nullptr )
 {}
 
-uint Context::readTextureLayer( InputStream* istream )
-{
-  OZ_GL_CHECK_ERROR();
-
-  uint texId;
-  glGenTextures( 1, &texId );
-  glBindTexture( GL_TEXTURE_2D, texId );
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-
-  for( int level = 0; ; ++level ) {
-    int width = istream->readInt();
-
-    if( width == 0 ) {
-      break;
-    }
-
-    int height = istream->readInt();
-    int format = istream->readInt();
-    int size   = istream->readInt();
-
-    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
-      glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
-                              size, istream->forward( size ) );
-    }
-    else {
-      glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0, uint( format ),
-                    GL_UNSIGNED_BYTE, istream->forward( size ) );
-    }
-  }
-
-  if( glGetError() != GL_NO_ERROR ) {
-    OZ_ERROR( "Texture loading error; maybe missing S3 texture compression support?" );
-  }
-
-  return texId;
-}
-
-Texture Context::readTexture( InputStream* istream )
-{
-  Texture texture;
-
-  int textureFlags = istream->readInt();
-
-  texture.diffuse = textureFlags & Mesh::DIFFUSE_BIT ? readTextureLayer( istream ) : 0;
-  texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( istream ) :
-                                                       shader.defaultMasks;
-  texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( istream ) :
-                                                       shader.defaultNormals;
-  return texture;
-}
-
-Texture Context::loadTexture( const char* path )
-{
-  File file( path );
-  Buffer buffer = file.read();
-
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Texture file '%s' read failed", path );
-  }
-
-  InputStream is = buffer.inputStream();
-  return readTexture( &is );
-}
-
 Texture Context::loadTextures( const File& diffuseFile, const File& masksFile,
                                const File& normalsFile )
 {
@@ -387,8 +321,21 @@ Texture Context::requestTexture( int id )
     return resource.handle;
   }
 
+  const String& basePath = liber.textures[id].path;
+
+  File diffuseFile = basePath + ".dds";
+  File masksFile   = basePath + "_m.dds";
+//   File normalsFile = basePath + "_n.dds";
+
+  if( !diffuseFile.map() ) {
+    OZ_ERROR( "Failed to load '%s'", diffuseFile.path().cstr() );
+  }
+
+  masksFile.map();
+//   normalsFile.map();
+
   resource.nUsers    = 1;
-  resource.handle    = loadTexture( liber.textures[id].path );
+  resource.handle    = loadTextures( diffuseFile, masksFile, File() );
   resource.handle.id = id;
 
   return resource.handle;

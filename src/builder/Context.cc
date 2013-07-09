@@ -43,374 +43,193 @@ namespace oz
 namespace builder
 {
 
-const char* const Context::IMAGE_EXTENSIONS[] = {
+static const int DDSD_CAPS        = 0x00000001;
+static const int DDSD_HEIGHT      = 0x00000002;
+static const int DDSD_WIDTH       = 0x00000004;
+static const int DDSD_PITCH       = 0x00000008;
+static const int DDSD_PIXELFORMAT = 0x00001000;
+static const int DDSD_MIPMAPCOUNT = 0x00020000;
+static const int DDSD_LINEARSIZE  = 0x00080000;
+
+static const int DDSDCAPS_COMPLEX = 0x00000008;
+static const int DDSDCAPS_TEXTURE = 0x00001000;
+static const int DDSDCAPS_MIPMAP  = 0x00400000;
+
+static const int DDPF_ALPHAPIXELS = 0x00000001;
+static const int DDPF_FOURCC      = 0x00000004;
+static const int DDPF_RGB         = 0x00000040;
+static const int DDPF_LUMINANCE   = 0x00020000;
+
+const char* const IMAGE_EXTENSIONS[] = {
   ".png",
   ".jpeg",
   ".jpg",
-  ".tga"
+  ".bmp",
+  ".tga",
+  ".tiff"
 };
 
-struct Context::Image
+static FIBITMAP* loadImage( const File& file, bool force24Bits )
 {
-  FIBITMAP* dib;
-  ubyte*    pixels;
-  int       width;
-  int       height;
-  int       bpp;
-  int       format;
-};
+  InputStream       istream   = file.inputStream();
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+  FIBITMAP*         image     = FreeImage_LoadFromMemory( format, memoryIO );
 
-Context::Texture::Level::Level() :
-  data( nullptr )
-{}
+  FreeImage_CloseMemory( memoryIO );
 
-Context::Texture::Level::~Level()
-{
-  delete[] data;
-}
-
-Context::Texture::Level::Level( Level&& l ) :
-  data( l.data ), width( l.width ), height( l.height ), size( l.size ), format( l.format )
-{
-  l.data = nullptr;
-}
-
-Context::Texture::Level& Context::Texture::Level::operator = ( Level&& l )
-{
-  if( &l == this ) {
-    return *this;
+  if( image == nullptr ) {
+    OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
   }
 
-  data   = l.data;
-  width  = l.width;
-  height = l.height;
-  size   = l.size;
-  format = l.format;
-
-  l.data = nullptr;
-
-  return *this;
+  bool isTransparent = FreeImage_IsTransparent( image );
+  FIBITMAP* newImage = isTransparent && !force24Bits ? FreeImage_ConvertTo32Bits( image ) :
+                                                       FreeImage_ConvertTo24Bits( image );
+  FreeImage_Unload( image );
+  FreeImage_FlipVertical( newImage );
+  return newImage;
 }
 
-Context::Texture::Texture( Image* image )
+static void writeDDS( FIBITMAP* image, const char* filePath )
 {
-  hard_assert( image->format == GL_LUMINANCE ||
-               image->format == GL_RGB ||
-               image->format == GL_RGBA );
+  int width  = int( FreeImage_GetWidth( image ) );
+  int height = int( FreeImage_GetHeight( image ) );
+  int bpp    = int( FreeImage_GetBPP( image ) );
+  int pitch  = int( FreeImage_GetPitch( image ) );
 
-  int width  = image->width;
-  int height = image->height;
-
-  if( !Math::isPow2( width ) || !Math::isPow2( height ) ) {
-    OZ_ERROR( "Image has dimensions %dx%d but both dimensions must be powers of two to generate"
-              " mipmaps.", width, height );
+  if( context.useS3TC && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
+    OZ_ERROR( "Dimensions of compressed textures must be powers of 2" );
   }
 
-  do {
-    levels.add();
-    Level& level = levels.last();
+  bool isTransparent  = bpp == 32;
+  int  pitchOrLinSize = width * ( bpp / 8 );
+  int  nMipmaps       = Math::index1( max( width, height ) ) + 1;
 
-    level.width  = width;
-    level.height = height;
+  int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_MIPMAPCOUNT;
+  flags |= context.useS3TC ? DDSD_LINEARSIZE : DDSD_PITCH;
 
-    FIBITMAP* levelDib = image->dib;
-    if( levels.length() > 1 ) {
-      levelDib = FreeImage_Rescale( image->dib, width, height, FILTER_CATMULLROM );
+  int caps = DDSDCAPS_TEXTURE | DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP;
+
+  int pixelFlags = 0;
+  pixelFlags |= isTransparent ? DDPF_ALPHAPIXELS : 0;
+  pixelFlags |= context.useS3TC ? DDPF_FOURCC :
+                bpp == 8 ? DDPF_LUMINANCE : DDPF_RGB;
+
+  const char* compression = "\0\0\0\0";
+
+#ifdef OZ_NONFREE
+  int squishFlags = isTransparent ? squish::kDxt5 : squish::kDxt1;
+  squishFlags    |= squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
+
+  if( context.useS3TC ) {
+    pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
+    compression    = isTransparent ? "DXT5" : "DXT1";
+  }
+#endif
+
+  OutputStream ostream( 0 );
+
+  // Header beginning.
+  ostream.writeChars( "DDS ", 4 );
+  ostream.writeInt( 124 );
+  ostream.writeInt( flags );
+  ostream.writeInt( height );
+  ostream.writeInt( width );
+  ostream.writeInt( pitchOrLinSize );
+  ostream.writeInt( 0 );
+  ostream.writeInt( nMipmaps );
+
+  // Reserved int[11].
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+
+  // Pixel format.
+  ostream.writeInt( 32 );
+  ostream.writeInt( pixelFlags );
+  ostream.writeChars( compression, 4 );
+  ostream.writeInt( bpp );
+  ostream.writeUInt( 0x00ff0000 );
+  ostream.writeUInt( 0x0000ff00 );
+  ostream.writeUInt( 0x000000ff );
+  ostream.writeUInt( 0xff000000 );
+
+  ostream.writeInt( caps );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+
+  for( int i = 0; i < nMipmaps; ++i ) {
+    FIBITMAP* level = image;
+
+    if( i != 0 ) {
+      width  = max( 1, width / 2 );
+      height = max( 1, height / 2 );
+      level  = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
+      pitch  = int( FreeImage_GetPitch( level ) );
     }
 
+    if( context.useS3TC ) {
 #ifdef OZ_NONFREE
-    int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
-#endif
+      FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
+      ubyte*    pixels  = FreeImage_GetBits( level32 );
+      int       size    = width * height * 4;
+      int       s3Size  = squish::GetStorageRequirements( width, height, squishFlags );
 
-    switch( image->format ) {
-      case GL_LUMINANCE: {
-        if( context.useS3TC ) {
-#ifdef OZ_NONFREE
-          // Collapse data (pitch = width * pixelSize) and convert LUMINANCE -> RGBA.
-          ubyte* data = new ubyte[height * width * 4];
-
-          for( int y = 0; y < height; ++y ) {
-            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
-            ubyte* dstLine = &data[y * width*4];
-
-            for( int x = 0; x < width; ++x ) {
-              dstLine[x*4 + 0] = srcLine[x];
-              dstLine[x*4 + 1] = srcLine[x];
-              dstLine[x*4 + 2] = srcLine[x];
-              dstLine[x*4 + 3] = UCHAR_MAX;
-            }
-          }
-
-          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
-          level.data   = new ubyte[level.size];
-
-          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
-          delete[] data;
-#endif
-        }
-        else {
-          level.format = GL_LUMINANCE;
-          level.size   = width * height;
-          level.data   = new ubyte[level.size];
-
-          for( int y = 0; y < height; ++y ) {
-            mCopy( level.data + y*width, FreeImage_GetScanLine( levelDib, y ), size_t( width ) );
-          }
-        }
-        break;
+      for( int i = 0; i < size; i += 4 ) {
+        swap( pixels[i], pixels[i + 2] );
       }
-      case GL_RGB: {
-        if( context.useS3TC ) {
-#ifdef OZ_NONFREE
-          // Collapse data (pitch = width * pixelSize) and convert BGR -> RGBA.
-          ubyte* data = new ubyte[height * width * 4];
 
-          for( int y = 0; y < height; ++y ) {
-            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
-            ubyte* dstLine = &data[y * width*4];
+      squish::CompressImage( pixels, width, height, ostream.forward( s3Size ), squishFlags );
 
-            for( int x = 0; x < width; ++x ) {
-              dstLine[x*4 + 0] = srcLine[x*3 + 2];
-              dstLine[x*4 + 1] = srcLine[x*3 + 1];
-              dstLine[x*4 + 2] = srcLine[x*3 + 0];
-              dstLine[x*4 + 3] = UCHAR_MAX;
-            }
-          }
-
-          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
-          level.data   = new ubyte[level.size];
-
-          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
-          delete[] data;
+      FreeImage_Unload( level32 );
 #endif
-        }
-        else {
-          ubyte* data  = FreeImage_GetBits( levelDib );
-          int    pitch = int( FreeImage_GetPitch( levelDib ) );
-
-          level.format = GL_RGB;
-          level.size   = height * pitch;
-          level.data   = new ubyte[level.size];
-
-          for( int y = 0; y < level.height; ++y ) {
-            ubyte* srcLine = &data[y * pitch];
-            ubyte* dstLine = &level.data[y * pitch];
-
-            for( int x = 0; x + 2 < pitch; x += 3 ) {
-              dstLine[x + 0] = srcLine[x + 2];
-              dstLine[x + 1] = srcLine[x + 1];
-              dstLine[x + 2] = srcLine[x + 0];
-            }
-          }
-        }
-        break;
-      }
-      case GL_RGBA: {
-        if( context.useS3TC ) {
-#ifdef OZ_NONFREE
-          // Collapse data (pitch = width * pixelSize) and convert BGRA -> RGBA.
-          ubyte* data = new ubyte[height * width * 4];
-
-          for( int y = 0; y < height; ++y ) {
-            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
-            ubyte* dstLine = &data[y * width*4];
-
-            for( int x = 0; x < width; ++x ) {
-              dstLine[x*4 + 0] = srcLine[x*4 + 2];
-              dstLine[x*4 + 1] = srcLine[x*4 + 1];
-              dstLine[x*4 + 2] = srcLine[x*4 + 0];
-              dstLine[x*4 + 3] = srcLine[x*4 + 3];
-            }
-          }
-
-          level.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt5 );
-          level.data   = new ubyte[level.size];
-
-          squish::CompressImage( data, width, height, level.data, squish::kDxt5 | squishFlags );
-          delete[] data;
-#endif
-        }
-        else {
-          ubyte* data  = FreeImage_GetBits( levelDib );
-          int    pitch = int( FreeImage_GetPitch( levelDib ) );
-
-          level.format = GL_RGBA;
-          level.size   = height * pitch;
-          level.data   = new ubyte[level.size];
-
-          for( int y = 0; y < level.height; ++y ) {
-            ubyte* srcLine = &data[y * pitch];
-            ubyte* dstLine = &level.data[y * pitch];
-
-            for( int x = 0; x + 3 < pitch; x += 4 ) {
-              dstLine[x + 0] = srcLine[x + 2];
-              dstLine[x + 1] = srcLine[x + 1];
-              dstLine[x + 2] = srcLine[x + 0];
-              dstLine[x + 3] = srcLine[x + 3];
-            }
-          }
-        }
-        break;
-      }
-    }
-
-    if( levelDib != image->dib ) {
-      FreeImage_Unload( levelDib );
-    }
-
-    width  = max( width / 2, 1 );
-    height = max( height / 2, 1 );
-  }
-  while( levels.last().width > 1 || levels.last().height > 1 );
-}
-
-bool Context::Texture::isEmpty() const
-{
-  return levels.isEmpty();
-}
-
-void Context::Texture::write( OutputStream* os )
-{
-  for( int i = 0; i < levels.length(); ++i ) {
-    const Level& level = levels[i];
-
-    os->writeInt( level.width );
-    os->writeInt( level.height );
-    os->writeInt( level.format );
-    os->writeInt( level.size );
-
-    os->writeChars( reinterpret_cast<char*>( level.data ), level.size );
-  }
-
-  os->writeInt( 0 );
-}
-
-Context::Image Context::loadImage( const char* path, int forceFormat )
-{
-  Log::print( "Loading image '%s' ...", path );
-
-  File file( path );
-  String realPath = file.realPath();
-
-  if( file.type() == File::MISSING ) {
-    OZ_ERROR( "File '%s' does not exits", realPath.cstr() );
-  }
-
-  FREE_IMAGE_FORMAT type = FreeImage_GetFileType( realPath );
-  if( type == FIF_UNKNOWN ) {
-    OZ_ERROR( "Invalid image file type '%s'", realPath.cstr() );
-  }
-
-  FIBITMAP* dib = FreeImage_Load( type, realPath );
-  if( dib == nullptr ) {
-    OZ_ERROR( "Texture '%s' loading failed", realPath.cstr() );
-  }
-
-  int width  = int( FreeImage_GetWidth( dib ) );
-  int height = int( FreeImage_GetHeight( dib ) );
-  int bpp    = int( FreeImage_GetBPP( dib ) );
-
-  Log::printRaw( " %d x %d %d BPP ...", width, height, bpp );
-
-  if( height != 1 && ( width * bpp ) % 32 != 0 ) {
-    OZ_ERROR( "Image scan line (width * bytesPerPixel) should be a multiple of 4." );
-  }
-
-  int format = int( FreeImage_GetImageType( dib ) );
-
-  if( format != FIT_BITMAP ) {
-    OZ_ERROR( "Invalid image colour format" );
-  }
-
-  bool isPalettised = FreeImage_GetColorsUsed( dib ) != 0;
-  bool isOpaque     = FreeImage_GetTransparentIndex( dib ) < 0;
-
-  if( forceFormat == 0 ) {
-    if( isPalettised ) {
-      forceFormat = isOpaque ? GL_RGB : GL_RGBA;
     }
     else {
-      forceFormat = bpp == 8 ? GL_LUMINANCE : bpp == 24 ? GL_RGB : GL_RGBA;
+      const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
+
+      for( int i = 0; i < height; ++i ) {
+        ostream.writeChars( pixels, width * ( bpp / 8 ) );
+        pixels += pitch;
+      }
+    }
+
+    if( level != image ) {
+      FreeImage_Unload( level );
     }
   }
 
-  switch( forceFormat ) {
-    case GL_LUMINANCE: {
-      bpp    = 8;
-      format = GL_LUMINANCE;
-
-      FIBITMAP* newImage = FreeImage_ConvertToGreyscale( dib );
-      if( newImage == nullptr ) {
-        OZ_ERROR( "Conversion from palettised to grayscale image failed" );
-      }
-
-      FreeImage_Unload( dib );
-      dib = newImage;
-
-      break;
-    }
-    case GL_RGB: {
-      bpp    = 24;
-      format = GL_RGB;
-
-      FIBITMAP* newImage = FreeImage_ConvertTo24Bits( dib );
-      if( newImage == nullptr ) {
-        OZ_ERROR( "Conversion from palettised to RGB image failed" );
-      }
-
-      FreeImage_Unload( dib );
-      dib = newImage;
-
-      break;
-    }
-    case GL_RGBA: {
-      bpp    = 32;
-      format = GL_RGBA;
-
-      FIBITMAP* newDIB = FreeImage_ConvertTo32Bits( dib );
-      if( newDIB == nullptr ) {
-        OZ_ERROR( "Conversion from palettised to RGBA image failed" );
-      }
-
-      FreeImage_Unload( dib );
-      dib = newDIB;
-
-      break;
-    }
-    default: {
-      hard_assert( false );
-      break;
-    }
+  File destFile( filePath );
+  if( !destFile.write( ostream.begin(), ostream.tell() ) ) {
+    OZ_ERROR( "Failed to write '%s'", filePath );
   }
-
-  ubyte* pixels = FreeImage_GetBits( dib );
-  if( pixels == nullptr ) {
-    OZ_ERROR( "Failed to access image data" );
-  }
-
-  Log::printEnd( " OK" );
-
-  return { dib, pixels, width, height, bpp, format };
 }
 
-Context::Texture Context::loadTexture( const char* path )
+bool Context::isBaseTexture( const char* path_ )
 {
-  Image   image = loadImage( path );
-  Texture texture( &image );
-  FreeImage_Unload( image.dib );
-
-  return texture;
+  String path = path_;
+  return !path.endsWith( "_d" ) && !path.endsWith( "_m" ) && !path.endsWith( "_s" ) &&
+         !path.endsWith( "_spec" ) && !path.endsWith( ".blend" ) && !path.endsWith( "_n" ) &&
+         !path.endsWith( "_nm" ) && !path.endsWith( "_normal" ) && !path.endsWith( "_local" );
 }
 
-void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* normalsTex,
-                            const char* basePath_ )
+void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
 {
+  Log::print( "Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_ );
+
+  String destBasePath      = destBasePath_;
   String basePath          = basePath_;
   String diffuseBasePath   = basePath;
-  String diffuse1BasePath  = basePath + "_d";
   String masksBasePath     = basePath + "_m";
   String specularBasePath  = basePath + "_s";
   String specular1BasePath = basePath + "_spec";
@@ -425,9 +244,6 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
     if( diffuse.path().isEmpty() || diffuse.type() == File::MISSING ) {
       diffuse = File( diffuseBasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( diffuse.type() == File::MISSING ) {
-      diffuse = File( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
@@ -460,140 +276,109 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   }
 
   if( diffuse.type() != File::MISSING ) {
-    Image diffuseImage = loadImage( diffuse.path() );
+    FIBITMAP* image = loadImage( diffuse, false );
 
-    *diffuseTex = Texture( &diffuseImage );
-    FreeImage_Unload( diffuseImage.dib );
+    writeDDS( image, destBasePath + ".dds" );
+    FreeImage_Unload( image );
   }
   else {
     OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
   if( masks.type() != File::MISSING ) {
-    Image masksImage = loadImage( masks.path(), GL_RGB );
+    FIBITMAP* image = loadImage( masks, true );
 
-    *masksTex = Texture( &masksImage );
-    FreeImage_Unload( masksImage.dib );
+    writeDDS( image, destBasePath + "_m.dds" );
+    FreeImage_Unload( image );
   }
   else {
-    Image specularImage, emissionImage;
-    specularImage.dib = nullptr;
-    emissionImage.dib = nullptr;
+    FIBITMAP* specularImage  = nullptr;
+    ubyte*    specularPixels = nullptr;
+    int       specularWidth  = 0;
+    int       specularHeight = 0;
+
+    FIBITMAP* emissionImage  = nullptr;
+    ubyte*    emissionPixels = nullptr;
+    int       emissionWidth  = 0;
+    int       emissionHeight = 0;
 
     if( specular.type() != File::MISSING ) {
-      specularImage = loadImage( specular.path(), GL_RGB );
+      specularImage  = loadImage( specular, true );
+      specularPixels = FreeImage_GetBits( specularImage );
+      specularWidth  = int( FreeImage_GetWidth( specularImage ) );
+      specularHeight = int( FreeImage_GetHeight( specularImage ) );
     }
     if( emission.type() != File::MISSING ) {
-      emissionImage = loadImage( emission.path(), GL_LUMINANCE );
+      emissionImage  = loadImage( emission, true );
+      emissionPixels = FreeImage_GetBits( emissionImage );
+      emissionWidth  = int( FreeImage_GetWidth( emissionImage ) );
+      emissionHeight = int( FreeImage_GetHeight( emissionImage ) );
     }
 
-    if( specularImage.dib == nullptr && emissionImage.dib == nullptr ) {
+    if( specularImage == nullptr && emissionImage == nullptr ) {
       // Drop through.
     }
-    else if( specularImage.dib == nullptr ) {
-      for( int i = 0; i < emissionImage.width * emissionImage.height; ++i ) {
-        ubyte& b = emissionImage.pixels[i*3 + 0];
-        ubyte& g = emissionImage.pixels[i*3 + 1];
-        ubyte& r = emissionImage.pixels[i*3 + 2];
-
-        r = 0;
-        g = ubyte( ( b + g + r ) / 3 );
-        b = 0;
-      }
-
-      *masksTex = Texture( &emissionImage );
-    }
-    else if( emissionImage.dib == nullptr ) {
-      for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
-        ubyte& b = specularImage.pixels[i*3 + 0];
-        ubyte& g = specularImage.pixels[i*3 + 1];
-        ubyte& r = specularImage.pixels[i*3 + 2];
+    else if( emissionImage == nullptr ) {
+      for( int i = 0; i < specularWidth * specularHeight; ++i ) {
+        ubyte& b = specularPixels[i*3 + 0];
+        ubyte& g = specularPixels[i*3 + 1];
+        ubyte& r = specularPixels[i*3 + 2];
 
         r = ubyte( ( b + g + r ) / 3 );
         g = 0;
         b = 0;
       }
 
-      *masksTex = Texture( &specularImage );
+      writeDDS( specularImage, destBasePath + "_m.dds" );
+      FreeImage_Unload( specularImage );
+    }
+    else if( specularImage == nullptr ) {
+      for( int i = 0; i < emissionWidth * emissionHeight; ++i ) {
+        ubyte& b = emissionPixels[i*3 + 0];
+        ubyte& g = emissionPixels[i*3 + 1];
+        ubyte& r = emissionPixels[i*3 + 2];
+
+        r = 0;
+        g = ubyte( ( b + g + r ) / 3 );
+        b = 0;
+      }
+
+      writeDDS( emissionImage, destBasePath + "_m.dds" );
+      FreeImage_Unload( emissionImage );
     }
     else {
-      if( specularImage.width != emissionImage.width ||
-          specularImage.height != emissionImage.height )
-      {
+      if( specularWidth != emissionWidth || specularHeight != emissionHeight ) {
         OZ_ERROR( "Specular and emission texture masks must have the same size." );
       }
 
-      for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
-        ubyte& b = specularImage.pixels[i*3 + 0];
-        ubyte& g = specularImage.pixels[i*3 + 1];
-        ubyte& r = specularImage.pixels[i*3 + 2];
+      for( int i = 0; i < specularWidth * specularHeight; ++i ) {
+        ubyte& b = specularPixels[i*3 + 0];
+        ubyte& g = specularPixels[i*3 + 1];
+        ubyte& r = specularPixels[i*3 + 2];
 
-        ubyte& eb = emissionImage.pixels[i*3 + 0];
-        ubyte& eg = emissionImage.pixels[i*3 + 1];
-        ubyte& er = emissionImage.pixels[i*3 + 2];
+        ubyte& eb = emissionPixels[i*3 + 0];
+        ubyte& eg = emissionPixels[i*3 + 1];
+        ubyte& er = emissionPixels[i*3 + 2];
 
         r = ubyte( ( b + g + r ) / 3 );
         g = ubyte( ( eb + eg + er ) / 3 );
         b = 0;
       }
 
-      *masksTex = Texture( &specularImage );
-    }
-
-    if( specularImage.dib != nullptr ) {
-      FreeImage_Unload( specularImage.dib );
-    }
-    if( emissionImage.dib != nullptr ) {
-      FreeImage_Unload( emissionImage.dib );
+      writeDDS( specularImage, destBasePath + "_m.dds" );
+      FreeImage_Unload( specularImage );
+      FreeImage_Unload( emissionImage );
     }
   }
 
   if( bumpmap && normals.type() != File::MISSING ) {
-    Image normalsImage = loadImage( normals.path() );
+    FIBITMAP* image = loadImage( normals, true );
 
-    *normalsTex = Texture( &normalsImage );
-    FreeImage_Unload( normalsImage.dib );
-  }
-}
-
-void Context::buildTexture( const char* basePath_, const char* destDir )
-{
-  String basePath        = basePath_;
-  String diffuseBasePath = basePath;
-  String masksBasePath   = basePath + "_m";
-  String destBasePath    = destDir + ( "/" + basePath.fileBaseName() );
-
-  File diffuse, masks;
-
-  for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( diffuse.path().isEmpty() || diffuse.type() == File::MISSING ) {
-      diffuse = File( diffuseBasePath + IMAGE_EXTENSIONS[i] );
-    }
-
-    if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
-      masks = File( masksBasePath + IMAGE_EXTENSIONS[i] );
-    }
+    writeDDS( image, destBasePath + "_n.dds" );
+    FreeImage_Unload( image );
   }
 
-  int flags = ImageBuilder::MIPMAPS_BIT;
-  if( useS3TC ) {
-    flags |= ImageBuilder::COMPRESSION_BIT;
-  }
-
-  if( diffuse.type() != File::MISSING ) {
-    Log::print( "Building texture '%s' ...", diffuse.path().cstr() );
-    ImageBuilder::buildDDS( diffuse, flags, destDir );
-    Log::printEnd( " OK" );
-  }
-  else {
-    OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
-  }
-
-  if( masks.type() != File::MISSING ) {
-    Log::print( "Building texture '%s' ...", masks.path().cstr() );
-    ImageBuilder::buildDDS( masks, flags, destDir );
-    Log::printEnd( " OK" );
-  }
+  Log::printEnd( " OK" );
 }
 
 void Context::init()

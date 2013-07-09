@@ -240,57 +240,19 @@ void Builder::buildBSPTextures()
       name = path.substring( 17, dot );
       path = path.substring( 0, dot );
 
-      if( name.endsWith( "_m" ) || name.endsWith( "_n" ) ) {
+      if( !context.isBaseTexture( name ) ) {
         continue;
       }
-
       if( !context.usedTextures.contains( name ) ) {
         continue;
       }
-
-      Log::println( "Building texture '%s' {", name.cstr() );
-      Log::indent();
 
       usedDirs.include( subDir->path() );
 
       File::mkdir( "tex" );
       File::mkdir( "tex/" + subDir->name() );
 
-      File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
-
-      Context::Texture diffuseTex, masksTex, normalsTex;
-      context.loadTextures( &diffuseTex, &masksTex, &normalsTex, path );
-
-      OutputStream os( 0 );
-
-      Log::println( "Compiling into '%s'", destFile.path().cstr() );
-
-      int textureFlags = Mesh::DIFFUSE_BIT;
-
-      if( !masksTex.isEmpty() ) {
-        textureFlags |= Mesh::MASKS_BIT;
-      }
-      if( !normalsTex.isEmpty() ) {
-        textureFlags |= Mesh::NORMALS_BIT;
-      }
-
-      os.writeInt( textureFlags );
-
-      diffuseTex.write( &os );
-
-      if( !masksTex.isEmpty() ) {
-        masksTex.write( &os );
-      }
-      if( !normalsTex.isEmpty() != 0 ) {
-        normalsTex.write( &os );
-      }
-
-      if( !destFile.write( os.begin(), os.tell() ) ) {
-        OZ_ERROR( "Failed to write texture '%s'", destFile.path().cstr() );
-      }
-
-      Log::unindent();
-      Log::println( "}" );
+      context.buildTexture( path, "tex/" + name );
     }
   }
 

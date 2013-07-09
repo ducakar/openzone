@@ -181,9 +181,9 @@ void Terra::saveClient()
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();
 
-  context.buildTexture( "@terra/" + liquidTexture.fileBaseName(), "terra/" + name + "-liquid.dds" );
-  context.buildTexture( "@terra/" + detailTexture.fileBaseName(), "terra/" + name + "-detail.dds" );
-  context.buildTexture( "@terra/" + mapTexture.fileBaseName(), "terra/" + name + "-map.dds" );
+  context.buildTexture( "@terra/" + liquidTexture.fileBaseName(), "terra/" + name + "-liquid" );
+  context.buildTexture( "@terra/" + detailTexture.fileBaseName(), "terra/" + name + "-detail" );
+  context.buildTexture( "@terra/" + mapTexture.fileBaseName(), "terra/" + name + "-map" );
 
   OutputStream os( 0 );
 

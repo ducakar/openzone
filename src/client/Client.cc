@@ -601,11 +601,11 @@ int Client::main()
 # endif
 
           if( keysym.sym == SDLK_F9 ) {
-            if( !( keysym.mod & KMOD_CTRL ) ) {
-              loader.makeScreenshot();
+            if( keysym.mod & KMOD_CTRL ) {
+              ui::ui.doShow = !ui::ui.doShow;
             }
             else {
-              ui::ui.doShow = !ui::ui.doShow;
+              loader.makeScreenshot();
             }
           }
           else if( keysym.sym == SDLK_F11 ) {

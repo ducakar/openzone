@@ -212,7 +212,7 @@ void Liber::initShaders()
 
 void Liber::initTextures()
 {
-  Log::println( "Textures (*.ozcTex in 'tex/*') {" );
+  Log::println( "Textures (*.dds in 'tex/*') {" );
   Log::indent();
 
   List<Resource> texturesList;
@@ -228,7 +228,9 @@ void Liber::initTextures()
     DArray<File> subDirList = subDir->ls();
 
     foreach( file, subDirList.citer() ) {
-      if( !file->hasExtension( "ozcTex" ) ) {
+      if( !file->hasExtension( "dds" ) ||
+          file->path().endsWith( "_m.dds" ) || file->path().endsWith( "_n.dds" ) )
+      {
         continue;
       }
 
@@ -237,7 +239,7 @@ void Liber::initTextures()
       Log::println( "%s", name.cstr() );
 
       textureIndices.add( name, texturesList.length() );
-      texturesList.add( Resource( name, file->path() ) );
+      texturesList.add( Resource( name, "@tex/" + name ) );
     }
   }
 

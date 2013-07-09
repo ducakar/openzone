@@ -161,6 +161,20 @@ void Caelum::load()
 
   const String& path = liber.caela[id].path;
 
+  glGenTextures( 1, &sunTexId );
+  glBindTexture( GL_TEXTURE_2D, sunTexId );
+
+  if( !GL::textureDataFromFile( "@caelum/sun.dds" ) ) {
+    OZ_ERROR( "Failed to load sun texture" );
+  }
+
+  glGenTextures( 1, &moonTexId );
+  glBindTexture( GL_TEXTURE_2D, moonTexId );
+
+  if( !GL::textureDataFromFile( "@caelum/moon.dds" ) ) {
+    OZ_ERROR( "Failed to load moon texture" );
+  }
+
   axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
   originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
                            Math::sin( orbis.caelum.heading ),
@@ -185,9 +199,6 @@ void Caelum::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-  sunTexId  = context.readTextureLayer( &is );
-  moonTexId = context.readTextureLayer( &is );
 
   starShaderId      = liber.shaderIndex( "stars" );
   celestialShaderId = liber.shaderIndex( "celestial" );

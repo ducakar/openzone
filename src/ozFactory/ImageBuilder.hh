@@ -73,6 +73,8 @@ class ImageBuilder
     /**
      * Convert given image to DDS format and optionally compress it and create mipmaps.
      *
+     * If the input file is a valid DDS file, it is only copied.
+     *
      * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
      * - `MIPMAPS_BIT` enables generation of mipmaps.
      * - `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
@@ -85,10 +87,10 @@ class ImageBuilder
      * The highest possible quality settings are used for compression and mipmap scaling, so this
      * might take a long time for a large image.
      *
-     * @param file image file.
+     * @param file input image file.
      * @param options bit-mask to control mipmap generation and compression.
      * @param destPath output file or directory (in the latter case output file has the same base
-     *        name as input one but "dds" extension).
+     *        name as the input file but "dds" extension).
      */
     static bool buildDDS( const File& file, int options, const char* destPath );
 

@@ -25,8 +25,6 @@
 
 #include <builder/common.hh>
 
-struct FIBITMAP;
-
 namespace oz
 {
 namespace builder
@@ -34,55 +32,7 @@ namespace builder
 
 class Context
 {
-  private:
-
-    static const char* const IMAGE_EXTENSIONS[];
-
-    struct Image;
-
   public:
-
-    class Texture
-    {
-      private:
-
-        struct Level
-        {
-          ubyte* data;
-          int    width;
-          int    height;
-          int    size;
-          int    format;
-
-          explicit Level();
-          ~Level();
-
-          Level( const Level& ) = delete;
-          Level( Level&& l );
-
-          Level& operator = ( const Level& ) = delete;
-          Level& operator = ( Level&& l );
-        };
-
-        List<Level> levels;
-
-      public:
-
-        explicit Texture() = default;
-        explicit Texture( Image* image );
-
-        bool isEmpty() const;
-
-        void write( OutputStream* os );
-
-    };
-
-    struct TexArray
-    {
-      Texture diffuse;
-      Texture masks;
-      Texture normals;
-    };
 
     HashSet<String> usedTextures;
     HashSet<String> usedSounds;
@@ -91,19 +41,10 @@ class Context
     bool bumpmap;
     bool useS3TC;
 
-  private:
-
-    static Image loadImage( const char* path, int forceFormat = 0 );
-
   public:
 
-    Texture loadTexture( const char* path );
-
-    void loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* normalsTex,
-                       const char* basePath );
-
-    void buildTextureArray( const char* basePath, const char* destPath );
-    void buildTexture( const char* basePath, const char* destPath );
+    bool isBaseTexture( const char* path );
+    void buildTexture( const char* path, const char* destPath );
 
     void init();
     void destroy();

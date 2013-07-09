@@ -163,9 +163,6 @@ class Context
 
     explicit Context();
 
-    static uint readTextureLayer( InputStream* istream );
-    static Texture readTexture( InputStream* istream );
-    static Texture loadTexture( const char* path );
     static Texture loadTextures( const File& diffuseFile, const File& masksFile,
                                  const File& normalsFile );
     static void unloadTexture( const Texture* texture );
