@@ -24,7 +24,6 @@
 #pragma once
 
 #include <builder/common.hh>
-#include <ozEngine/GL.hh>
 
 struct FIBITMAP;
 
@@ -36,9 +35,6 @@ namespace builder
 class Context
 {
   private:
-
-    static const int DEFAULT_MAG_FILTER = GL_LINEAR;
-    static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
     static const char* const IMAGE_EXTENSIONS[];
 
@@ -55,8 +51,8 @@ class Context
           ubyte* data;
           int    width;
           int    height;
-          int    format;
           int    size;
+          int    format;
 
           explicit Level();
           ~Level();
@@ -69,19 +65,23 @@ class Context
         };
 
         List<Level> levels;
-        int         wrap;
-        int         magFilter;
-        int         minFilter;
 
       public:
 
         explicit Texture() = default;
-        explicit Texture( Image* image, bool wrap, int magFilter, int minFilter );
+        explicit Texture( Image* image );
 
         bool isEmpty() const;
 
         void write( OutputStream* os );
 
+    };
+
+    struct TexArray
+    {
+      Texture diffuse;
+      Texture masks;
+      Texture normals;
     };
 
     HashSet<String> usedTextures;
@@ -93,17 +93,16 @@ class Context
 
   private:
 
-    Image loadImage( const char* path, int forceFormat = 0 );
+    static Image loadImage( const char* path, int forceFormat = 0 );
 
   public:
 
-    Texture loadTexture( const char* path, bool wrap = true,
-                         int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
+    Texture loadTexture( const char* path );
 
     void loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* normalsTex,
-                       const char* basePath, bool wrap = true,
-                       int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
+                       const char* basePath );
 
+    void buildTextureArray( const char* basePath, const char* destPath );
     void buildTexture( const char* basePath, const char* destPath );
 
     void init();

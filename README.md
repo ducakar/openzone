@@ -290,6 +290,9 @@ OpenZone engine is licensed under GNU General Public License version 3 or (at yo
 version. liboz library is a part of OpenZone engine but can also be distributed or modified under
 ZLIB licence.
 
+Libraries that may be bundled with binary distributions of OpenZone come under different licences.
+See doc/README.html for details.
+
 Game data are obtained from various sources and covered by many different licences. See individual
 README.txt and COPYING.txt files inside game data archives for details.
 

@@ -83,14 +83,14 @@ class Set
     void ensureCapacity( int capacity )
     {
       if( capacity < 0 ) {
-        OZ_ERROR( "oz::Set capacity request overflow" );
+        OZ_ERROR( "oz::Set capacity overflow" );
       }
       else if( size < capacity ) {
         size *= 2;
         size  = size < capacity ? ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 ) : size;
 
         if( size <= 0 ) {
-          OZ_ERROR( "oz::Set size overflow" );
+          OZ_ERROR( "oz::Set capacity overflow" );
         }
 
         data = aReallocate<Elem>( data, count, size );

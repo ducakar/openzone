@@ -434,6 +434,8 @@ void GameStage::unload()
   auxSemaphore.post();
   auxThread.join();
 
+  Log::printEnd( " OK" );
+
   float sleepTime             = float( sleepMicros )                    * 1.0e-6f;
   float uiTime                = float( uiMicros )                       * 1.0e-6f;
   float loaderTime            = float( loaderMicros )                   * 1.0e-6f;
@@ -481,8 +483,6 @@ void GameStage::unload()
 
   auxSemaphore.destroy();
   mainSemaphore.destroy();
-
-  Log::printEnd( " OK" );
 
   ui::ui.showLoadingScreen( false );
 

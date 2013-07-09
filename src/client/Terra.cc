@@ -158,6 +158,10 @@ void Terra::load()
   const String& name = liber.terrae[id].name;
 
   File file( "@terra/" + name + ".ozcTerra" );
+  File liquidTexFile( "@terra/" + name + "-liquid.dds" );
+  File detailTexFile( "@terra/" + name + "-detail.dds" );
+  File mapTexFile( "@terra/" + name + "-map.dds" );
+
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {
@@ -166,9 +170,26 @@ void Terra::load()
 
   InputStream is = buffer.inputStream();
 
-  waterTexId  = context.readTextureLayer( &is );
-  detailTexId = context.readTextureLayer( &is );
-  mapTexId    = context.readTextureLayer( &is );
+  glGenTextures( 1, &waterTexId );
+  glBindTexture( GL_TEXTURE_2D, waterTexId );
+
+  if( GL::textureDataFromFile( liquidTexFile ) == 0 ) {
+    OZ_ERROR( "Failed to load '%s'", liquidTexFile.path().cstr() );
+  }
+
+  glGenTextures( 1, &detailTexId );
+  glBindTexture( GL_TEXTURE_2D, detailTexId );
+
+  if( GL::textureDataFromFile( detailTexFile ) == 0 ) {
+    OZ_ERROR( "Failed to load '%s'", detailTexFile.path().cstr() );
+  }
+
+  glGenTextures( 1, &mapTexId );
+  glBindTexture( GL_TEXTURE_2D, mapTexId );
+
+  if( GL::textureDataFromFile( mapTexFile ) == 0 ) {
+    OZ_ERROR( "Failed to load '%s'", mapTexFile.path().cstr() );
+  }
 
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );
@@ -196,7 +217,7 @@ void Terra::load()
           vertex.pos[2] = orbis.terra.quads[x][y].vertex.z;
 
           vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
-          vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
+          vertex.texCoord[1] = float( matrix::Terra::VERTS - y ) / float( matrix::Terra::VERTS );
 
           vertex.normal[0] = float( is.readByte() ) / 127.0f;
           vertex.normal[1] = float( is.readByte() ) / 127.0f;

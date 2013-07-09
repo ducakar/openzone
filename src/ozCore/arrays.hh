@@ -404,19 +404,21 @@ inline void aFree( Elem* array, int count )
 /**
  * Reallocate array moving the elements.
  *
- * Allocate a new array of `length` elements, move first `count` elements of the source array to the
- * newly created one and delete the source array. If `length` is 0, no new array is allocated and
- * no elements are moved.
+ * Allocate a new array of `newCount` elements, move first `min( count, newCount )` elements of the
+ * source array to the newly created one and delete the source array. Similar to `realloc()`,
+ * the given array is deleted and `nullptr` is returned if `newCount` is 0 and a new array one is
+ * created and no elements are moved if `count` is 0.
  *
  * @return Newly allocated array.
  */
 template <typename Elem>
-inline Elem* aReallocate( Elem* array, int count, int length )
+inline Elem* aReallocate( Elem* array, int count, int newCount )
 {
   Elem* newArray = nullptr;
 
-  if( length != 0 ) {
-    newArray = new Elem[length];
+  if( newCount != 0 ) {
+    newArray = new Elem[newCount];
+    count    = min( count, newCount );
 
     for( int i = 0; i < count; ++i ) {
       newArray[i] = static_cast<Elem&&>( array[i] );

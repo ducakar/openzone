@@ -74,7 +74,7 @@ const char* ImageBuilder::getError()
   return errorBuffer;
 }
 
-bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostream )
+bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath )
 {
   errorBuffer[0] = '\0';
 
@@ -86,6 +86,7 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
   }
 #endif
 
+  OutputStream      ostream( 0 );
   InputStream       istream   = file.inputStream();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
@@ -147,43 +148,43 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
 #endif
 
   // Header beginning.
-  ostream->writeChars( "DDS ", 4 );
-  ostream->writeInt( 124 );
-  ostream->writeInt( flags );
-  ostream->writeInt( height );
-  ostream->writeInt( width );
-  ostream->writeInt( pitchOrLinSize );
-  ostream->writeInt( 0 );
-  ostream->writeInt( nMipmaps );
+  ostream.writeChars( "DDS ", 4 );
+  ostream.writeInt( 124 );
+  ostream.writeInt( flags );
+  ostream.writeInt( height );
+  ostream.writeInt( width );
+  ostream.writeInt( pitchOrLinSize );
+  ostream.writeInt( 0 );
+  ostream.writeInt( nMipmaps );
 
   // Reserved int[11].
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
 
   // Pixel format.
-  ostream->writeInt( 32 );
-  ostream->writeInt( pixelFlags );
-  ostream->writeChars( compression, 4 );
-  ostream->writeInt( bpp );
-  ostream->writeUInt( 0x00ff0000 );
-  ostream->writeUInt( 0x0000ff00 );
-  ostream->writeUInt( 0x000000ff );
-  ostream->writeUInt( 0xff000000 );
+  ostream.writeInt( 32 );
+  ostream.writeInt( pixelFlags );
+  ostream.writeChars( compression, 4 );
+  ostream.writeInt( bpp );
+  ostream.writeUInt( 0x00ff0000 );
+  ostream.writeUInt( 0x0000ff00 );
+  ostream.writeUInt( 0x000000ff );
+  ostream.writeUInt( 0xff000000 );
 
-  ostream->writeInt( caps );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
-  ostream->writeInt( 0 );
+  ostream.writeInt( caps );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
+  ostream.writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
     FIBITMAP* level = image;
@@ -206,7 +207,7 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
         swap( pixels[i], pixels[i + 2] );
       }
 
-      squish::CompressImage( pixels, width, height, ostream->forward( s3Size ), squishFlags );
+      squish::CompressImage( pixels, width, height, ostream.forward( s3Size ), squishFlags );
 
       FreeImage_Unload( level32 );
 #endif
@@ -215,7 +216,7 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
       const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
 
       for( int i = 0; i < height; ++i ) {
-        ostream->writeChars( pixels, width * ( bpp / 8 ) );
+        ostream.writeChars( pixels, width * ( bpp / 8 ) );
         pixels += pitch;
       }
     }
@@ -227,7 +228,13 @@ bool ImageBuilder::buildDDS( const File& file, int options, OutputStream* ostrea
 
   FreeImage_Unload( image );
   FreeImage_CloseMemory( memoryIO );
-  return true;
+
+  File destFile( destPath );
+  if( destFile.type() == File::DIRECTORY ) {
+    destFile = String::str( "%s/%s.dds", destPath, file.baseName().cstr() );
+  }
+
+  return destFile.write( ostream.begin(), ostream.tell() );
 }
 
 }

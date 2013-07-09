@@ -87,26 +87,20 @@ void UI::buildIcons()
       OZ_ERROR( "Unnecessary icon: %s", image->path().cstr() );
     }
 
-    File destFile = "ui/icon/" + name + ".dds";
+    String destPath = "ui/icon/" + name + ".dds";
 
     if( image->hasExtension( "dds" ) ) {
-      if( !File::cp( *image, destFile.path() ) ) {
-        OZ_ERROR( "Failed to copy '%s' -> '%s'", image->path().cstr(), destFile.path().cstr() );
+      if( !File::cp( *image, destPath ) ) {
+        OZ_ERROR( "Failed to copy '%s' -> '%s'", image->path().cstr(), destPath.cstr() );
       }
     }
     else {
-      OutputStream os( 0 );
-
-      if( !ImageBuilder::buildDDS( *image, 0, &os ) ) {
+      if( !ImageBuilder::buildDDS( *image, 0, "ui/icon" ) ) {
         OZ_ERROR( "Error converting '%s' to DDS", image->name().cstr() );
-      }
-
-      if( !destFile.write( os.begin(), os.tell() ) ) {
-        OZ_ERROR( "Failed to write '%s' file", destFile.path().cstr() );
       }
     }
 
-    Log::printEnd( " %s ... OK", destFile.name().cstr() );
+    Log::printEnd( " ... OK" );
 
     builtIcons.add( name );
   }

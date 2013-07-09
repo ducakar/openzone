@@ -380,8 +380,6 @@ class File
     /**
      * Copy a file.
      *
-     * Native file system copy may me faster if the given file is mapped to memory.
-     *
      * @param file source file.
      * @param path destination directory or file path.
      */

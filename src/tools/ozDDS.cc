@@ -31,7 +31,7 @@ using namespace oz;
 static void usage()
 {
   Log::printRaw(
-    "Usage: img2dds [-c] [-m] [-q] <inputImage> <outputDDS>\n"
+    "Usage: img2dds [-c] [-m] [-q] <inputImage> [outputDir]\n"
     "\t-c\tUse S3 texture compression\n"
     "\t-m\tGenerate mipmaps\n"
   );
@@ -61,17 +61,13 @@ int main( int argc, char** argv )
     }
   }
 
-  if( argc - optind != 2 ) {
+  int nArgs = argc - optind;
+  if( nArgs < 1 || nArgs > 2 ) {
     usage();
     return EXIT_FAILURE;
   }
 
-  OutputStream ostream( 0 );
-  if( !ImageBuilder::buildDDS( argv[optind], ddsOptions, &ostream ) ) {
-    return EXIT_FAILURE;
-  }
-
-  if( !File( argv[optind + 1] ).write( ostream.begin(), ostream.tell() ) ) {
+  if( !ImageBuilder::buildDDS( argv[optind], ddsOptions, nArgs == 1 ? "." : argv[optind + 1] ) ) {
     return EXIT_FAILURE;
   }
 

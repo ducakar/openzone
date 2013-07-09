@@ -75,7 +75,7 @@ void GalileoFrame::onUpdate()
 void GalileoFrame::onDraw()
 {
   if( !mapTex.isLoaded() ) {
-    mapTex.load( "@terra/" + liber.terrae[orbis.terra.id].name + ".dds" );
+    mapTex.load( "@terra/" + liber.terrae[orbis.terra.id].name + "-map.dds" );
   }
 
   float pX = camera.p.x;

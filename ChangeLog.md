@@ -5,6 +5,7 @@
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
+        + STL-like parameter order in container functions (iCopy/aCopy, aFill, aIndex ...)
         + STL-like begin() and end() members on containers
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
@@ -26,7 +27,9 @@
     * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader, Vorbis streamer
     * Window class based on client::Window
     * Pepper class based on client::NaClPlatform
-    * Shader class
+- ozFactory: new builder building blocks library
+    * ImageBuilder class for building DDS textures
+    * ModelBuilder class for building OpenZone models using Assimp library
 - matrix
     * melee attack
 - ui
@@ -34,10 +37,11 @@
 - client
     * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities
+    * switched over to ozEngine classes wherever possible
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
 - general
-    * ported to Android (i686, ARM, ARMv7a, MIPS)
+    * builds on Android (i686, ARM, ARMv7a, MIPS)
     * LuaJIT can be optionally used instead of official Lua
 
 0.3.1

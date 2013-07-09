@@ -181,15 +181,11 @@ void Terra::saveClient()
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();
 
-  Context::Texture liquidTex = context.loadTexture( "@terra/" + liquidTexture );
-  Context::Texture detailTex = context.loadTexture( "@terra/" + detailTexture );
-  Context::Texture mapTex    = context.loadTexture( "@terra/" + mapTexture );
+  context.buildTexture( "@terra/" + liquidTexture.fileBaseName(), "terra/" + name + "-liquid.dds" );
+  context.buildTexture( "@terra/" + detailTexture.fileBaseName(), "terra/" + name + "-detail.dds" );
+  context.buildTexture( "@terra/" + mapTexture.fileBaseName(), "terra/" + name + "-map.dds" );
 
   OutputStream os( 0 );
-
-  liquidTex.write( &os );
-  detailTex.write( &os );
-  mapTex.write( &os );
 
   // generate index buffer
   int index = 0;
@@ -266,22 +262,6 @@ void Terra::saveClient()
 
   Log::unindent();
   Log::println( "}" );
-
-  File minimapIn( "@terra/" + mapTexture );
-  File minimapOut( "terra/" + name + ".dds" );
-
-  Log::print( "Writing minimap texture '%s' ...", minimapOut.path().cstr() );
-
-  os.rewind();
-  if( !ImageBuilder::buildDDS( minimapIn, 0, &os ) ) {
-    OZ_ERROR( "Minimap texture '%s' loading failed", minimapIn.path().cstr() );
-  }
-
-  if( !minimapOut.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Minimap texture '%s' writing failed", minimapOut.path().cstr() );
-  }
-
-  Log::printEnd( " OK" );
 }
 
 void Terra::build( const char* name_ )

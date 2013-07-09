@@ -92,10 +92,10 @@ void Caelum::build( const char* name )
     os.writeUShort( ushort( i * 4 + 2 ) );
   }
 
-  Context::Texture texture = context.loadTexture( "@caelum/sun.png", false );
+  Context::Texture texture = context.loadTexture( "@caelum/sun.png" );
   texture.write( &os );
 
-  texture = context.loadTexture( "@caelum/moon.png", false );
+  texture = context.loadTexture( "@caelum/moon.png" );
   texture.write( &os );
 
   Log::print( "Dumping into '%s' ...", destFile.path().cstr() );

@@ -70,7 +70,7 @@ Context::Texture::Level::~Level()
 }
 
 Context::Texture::Level::Level( Level&& l ) :
-  data( l.data ), width( l.width ), height( l.height ), format( l.format ), size( l.size )
+  data( l.data ), width( l.width ), height( l.height ), size( l.size ), format( l.format )
 {
   l.data = nullptr;
 }
@@ -84,32 +84,24 @@ Context::Texture::Level& Context::Texture::Level::operator = ( Level&& l )
   data   = l.data;
   width  = l.width;
   height = l.height;
-  format = l.format;
   size   = l.size;
+  format = l.format;
 
   l.data = nullptr;
 
   return *this;
 }
 
-Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilter_ )
+Context::Texture::Texture( Image* image )
 {
   hard_assert( image->format == GL_LUMINANCE ||
                image->format == GL_RGB ||
                image->format == GL_RGBA );
 
-  magFilter = magFilter_;
-  minFilter = minFilter_;
-  wrap      = wrap_ ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+  int width  = image->width;
+  int height = image->height;
 
-  int  width      = image->width;
-  int  height     = image->height;
-  bool genMipmaps = minFilter == GL_NEAREST_MIPMAP_NEAREST ||
-                    minFilter == GL_LINEAR_MIPMAP_NEAREST ||
-                    minFilter == GL_NEAREST_MIPMAP_LINEAR ||
-                    minFilter == GL_LINEAR_MIPMAP_LINEAR;
-
-  if( genMipmaps && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
+  if( !Math::isPow2( width ) || !Math::isPow2( height ) ) {
     OZ_ERROR( "Image has dimensions %dx%d but both dimensions must be powers of two to generate"
               " mipmaps.", width, height );
   }
@@ -272,7 +264,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
     width  = max( width / 2, 1 );
     height = max( height / 2, 1 );
   }
-  while( genMipmaps && ( levels.last().width > 1 || levels.last().height > 1 ) );
+  while( levels.last().width > 1 || levels.last().height > 1 );
 }
 
 bool Context::Texture::isEmpty() const
@@ -282,10 +274,6 @@ bool Context::Texture::isEmpty() const
 
 void Context::Texture::write( OutputStream* os )
 {
-  os->writeInt( wrap );
-  os->writeInt( magFilter );
-  os->writeInt( minFilter );
-
   for( int i = 0; i < levels.length(); ++i ) {
     const Level& level = levels[i];
 
@@ -408,17 +396,17 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   return { dib, pixels, width, height, bpp, format };
 }
 
-Context::Texture Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
+Context::Texture Context::loadTexture( const char* path )
 {
   Image   image = loadImage( path );
-  Texture texture( &image, wrap, magFilter, minFilter );
+  Texture texture( &image );
   FreeImage_Unload( image.dib );
 
   return texture;
 }
 
 void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* normalsTex,
-                            const char* basePath_, bool wrap, int magFilter, int minFilter )
+                            const char* basePath_ )
 {
   String basePath          = basePath_;
   String diffuseBasePath   = basePath;
@@ -474,7 +462,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   if( diffuse.type() != File::MISSING ) {
     Image diffuseImage = loadImage( diffuse.path() );
 
-    *diffuseTex = Texture( &diffuseImage, wrap, magFilter, minFilter );
+    *diffuseTex = Texture( &diffuseImage );
     FreeImage_Unload( diffuseImage.dib );
   }
   else {
@@ -484,7 +472,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   if( masks.type() != File::MISSING ) {
     Image masksImage = loadImage( masks.path(), GL_RGB );
 
-    *masksTex = Texture( &masksImage, wrap, magFilter, minFilter );
+    *masksTex = Texture( &masksImage );
     FreeImage_Unload( masksImage.dib );
   }
   else {
@@ -513,7 +501,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
         b = 0;
       }
 
-      *masksTex = Texture( &emissionImage, wrap, magFilter, minFilter );
+      *masksTex = Texture( &emissionImage );
     }
     else if( emissionImage.dib == nullptr ) {
       for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
@@ -526,7 +514,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
         b = 0;
       }
 
-      *masksTex = Texture( &specularImage, wrap, magFilter, minFilter );
+      *masksTex = Texture( &specularImage );
     }
     else {
       if( specularImage.width != emissionImage.width ||
@@ -549,7 +537,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
         b = 0;
       }
 
-      *masksTex = Texture( &specularImage, wrap, magFilter, minFilter );
+      *masksTex = Texture( &specularImage );
     }
 
     if( specularImage.dib != nullptr ) {
@@ -563,7 +551,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   if( bumpmap && normals.type() != File::MISSING ) {
     Image normalsImage = loadImage( normals.path() );
 
-    *normalsTex = Texture( &normalsImage, wrap, magFilter, minFilter );
+    *normalsTex = Texture( &normalsImage );
     FreeImage_Unload( normalsImage.dib );
   }
 }
@@ -592,17 +580,9 @@ void Context::buildTexture( const char* basePath_, const char* destDir )
     flags |= ImageBuilder::COMPRESSION_BIT;
   }
 
-  OutputStream os( 0 );
-
   if( diffuse.type() != File::MISSING ) {
-    File outFile = destBasePath + ".dds";
-
-    Log::print( "Building texture '%s' ...", outFile.path().cstr() );
-
-    ImageBuilder::buildDDS( diffuse, flags, &os );
-    outFile.write( os.begin(), os.tell() );
-    os.deallocate();
-
+    Log::print( "Building texture '%s' ...", diffuse.path().cstr() );
+    ImageBuilder::buildDDS( diffuse, flags, destDir );
     Log::printEnd( " OK" );
   }
   else {
@@ -610,14 +590,8 @@ void Context::buildTexture( const char* basePath_, const char* destDir )
   }
 
   if( masks.type() != File::MISSING ) {
-    File outFile = destBasePath + "_m.dds";
-
-    Log::print( "Building texture '%s' ...", outFile.path().cstr() );
-
-    ImageBuilder::buildDDS( masks, flags, &os );
-    outFile.write( os.begin(), os.tell() );
-    os.deallocate();
-
+    Log::print( "Building texture '%s' ...", masks.path().cstr() );
+    ImageBuilder::buildDDS( masks, flags, destDir );
     Log::printEnd( " OK" );
   }
 }

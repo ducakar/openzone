@@ -188,7 +188,8 @@ CreditsMenu::CreditsMenu() :
   lines.add( "" );
   lines.add( "" );
 
-  lines.add( "The following libraries may be distributed with/linked into the engine" );
+  lines.add( OZ_GETTEXT( "The following libraries may be bundled with the engine:" ) );
+  lines.add( OZ_GETTEXT( "(See doc/README.html for individual copyrights and licences.)" ) );
   lines.add( "" );
   lines.add( "Assimp" );
   lines.add( "FreeImage" );

@@ -87,9 +87,10 @@ class ImageBuilder
      *
      * @param file image file.
      * @param options bit-mask to control mipmap generation and compression.
-     * @param ostream stream to write texture to.
+     * @param destPath output file or directory (in the latter case output file has the same base
+     *        name as input one but "dds" extension).
      */
-    static bool buildDDS( const File& file, int options, OutputStream* ostream );
+    static bool buildDDS( const File& file, int options, const char* destPath );
 
 };
 

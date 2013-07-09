@@ -300,6 +300,8 @@ int GL::textureDataFromFile( const File& file, int bias )
     mipmapS3Size = max( blockSize, mipmapS3Size / 4 );
   }
 
+  hard_assert( !istream.isAvailable() );
+
   return nMipmaps - bias;
 }
 

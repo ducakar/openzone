@@ -196,7 +196,7 @@ endif()
 # AddressSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
 # set( flags "${flags} -fsanitize=address" )
 # ThreadSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
-# set( flags "${flags} -fsanitize=thread -fPIE -pie" )
+# set( flags "${flags} -fsanitize=thread -fPIE" )
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )

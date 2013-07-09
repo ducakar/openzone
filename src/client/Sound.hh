@@ -96,7 +96,7 @@ class Sound
 
     // Music track id to switch to, -1 to do nothing, -2 stop playing.
     int            selectedTrack;
-    int            streamedTrack;
+    volatile int   streamedTrack;
     volatile int   streamedBytes;
 
     Thread         musicThread;

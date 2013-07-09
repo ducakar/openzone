@@ -280,15 +280,8 @@ uint Context::readTextureLayer( InputStream* istream )
   glGenTextures( 1, &texId );
   glBindTexture( GL_TEXTURE_2D, texId );
 
-  int wrap      = istream->readInt();
-  int magFilter = istream->readInt();
-  int minFilter = istream->readInt();
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap );
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
   for( int level = 0; ; ++level ) {
     int width = istream->readInt();

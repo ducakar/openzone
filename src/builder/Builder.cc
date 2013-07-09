@@ -653,21 +653,14 @@ void Builder::buildMissions()
     copyFiles( mission->path(), &mission->path()[1], "json", false );
 
     File srcFile( mission->path() + "/description.png" );
-    File outFile( &( mission->path() + "/description.dds" )[1] );
-
     if( srcFile.type() == File::MISSING ) {
       continue;
     }
 
-    Log::print( "Building thumbnail '%s' ...", outFile.path().cstr() );
+    Log::print( "Building thumbnail '%s' ...", srcFile.path().cstr() );
 
-    OutputStream os( 0 );
-    if( !ImageBuilder::buildDDS( srcFile.path(), 0, &os ) ) {
+    if( !ImageBuilder::buildDDS( srcFile.path(), 0, &mission->path()[1] ) ) {
       OZ_ERROR( "Failed to convert '%s' to DDS", srcFile.path().cstr() );
-    }
-
-    if( !outFile.write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );
