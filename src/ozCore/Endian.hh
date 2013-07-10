@@ -47,7 +47,7 @@ class Endian
     {
       LITTLE = 0,
       BIG    = 1,
-#ifdef OZ_BIG_ENDIAN
+#if OZ_BYTE_ORDER == 4321
       NATIVE = BIG
 #else
       NATIVE = LITTLE

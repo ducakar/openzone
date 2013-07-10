@@ -88,10 +88,7 @@ else()
   target_link_libraries( ozCore -lpthread -lrt -ldl -lasound -lpulse-simple )
 endif()
 
-target_link_libraries( ozCore ${PHYSFS_LIBRARY} )
-if( PLATFORM_EMBEDDED )
-  target_link_libraries( ozCore ${ZLIB_LIBRARY} )
-endif()
+target_link_libraries( ozCore ${ZLIB_LIBRARY} ${PHYSFS_LIBRARY} )
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
 

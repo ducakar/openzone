@@ -65,7 +65,7 @@ class Terra
     static const int VERTS = QUADS + 1;
     static const int DIM   = QUADS * Quad::DIM;
 
-    Quad quads[VERTS][VERTS];
+    Quad quads[VERTS][VERTS]; ///< Vertices and triangle normals.
     int  liquid;              ///< Either `matrix::Medium::GLOBAL_WATER_BIT` or
                               ///< `matrix::Medium::GLOBAL_LAVA_BIT`
     int  id;

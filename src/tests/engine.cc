@@ -23,7 +23,7 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
-#include <ozFactory/ozFactory.hh>
+
 #include <SDL.h>
 #include <AL/alc.h>
 

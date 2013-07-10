@@ -394,7 +394,7 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
     ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16 :
                                      bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
 
-#ifdef OZ_BIG_ENDIAN
+#if OZ_BYTE_ORDER == 4321
 
     int    nSamples = size / int( sizeof( short ) );
     short* data     = new short[nSamples];

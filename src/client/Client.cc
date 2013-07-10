@@ -455,7 +455,7 @@ int Client::init( int argc, char** argv )
   Math::seed( seed );
   common::Lua::randomSeed = seed;
 
-  Log::println( "Random generator seed set to: %d", seed );
+  Log::println( "Random generator seed set to: %u", uint( seed ) );
 
   sound.initLibs();
 

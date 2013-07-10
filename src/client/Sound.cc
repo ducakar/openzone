@@ -322,7 +322,7 @@ int Sound::musicDecode()
 
           short value = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
 
-#ifdef OZ_BIG_ENDIAN
+#if OZ_BYTE_ORDER == 4321
           musicOutput[0] = char( value >> 8 );
           musicOutput[1] = char( value );
 #else
@@ -334,7 +334,7 @@ int Sound::musicDecode()
           if( musicChannels == 2 ) {
             value = madFixedToShort( madSynth.pcm.samples[1][madWrittenSamples] );
 
-#ifdef OZ_BIG_ENDIAN
+#if OZ_BYTE_ORDER == 4321
             musicOutput[0] = char( value >> 8 );
             musicOutput[1] = char( value );
 #else

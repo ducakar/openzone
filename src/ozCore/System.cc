@@ -399,7 +399,7 @@ static void* bellMain( void* )
     return nullptr;
   }
 
-# ifdef OZ_BIG_ENDIAN
+# if OZ_BYTE_ORDER == 4321
   int format   = AFMT_S16_BE;
 # else
   int format   = AFMT_S16_LE;

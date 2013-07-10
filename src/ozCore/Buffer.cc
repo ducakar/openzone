@@ -26,6 +26,8 @@
 
 #include "Buffer.hh"
 
+#include <zlib.h>
+
 namespace oz
 {
 
@@ -105,6 +107,74 @@ String Buffer::toString() const
 
   mCopy( buffer, data, size_t( size ) );
   return s;
+}
+
+Buffer Buffer::deflate( int level ) const
+{
+  Buffer buffer;
+
+  z_stream zstream = {};
+  if( deflateInit( &zstream, level ) != Z_OK ) {
+    return buffer;
+  }
+
+  // Upper bound for deflated data plus sizeof( int ) to write down size of the uncompressed data.
+  int newSize = int( deflateBound( &zstream, ulong( size ) ) ) + 4;
+  buffer.allocate( newSize );
+
+  zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
+  zstream.avail_in  = uint( size );
+  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.begin() );
+  zstream.avail_out = uint( newSize );
+
+  int ret = ::deflate( &zstream, Z_FINISH );
+  deflateEnd( &zstream );
+
+  if( ret != Z_STREAM_END ) {
+    buffer.deallocate();
+  }
+  else if( zstream.total_out + 4 != uint( newSize ) ) {
+    buffer.resize( int( zstream.total_out + 4 ) );
+
+    // Write size of the original data, ensure portability between little and big endian platforms.
+#if OZ_BYTE_ORDER == 4321
+    reinterpret_cast<int*>( buffer.end() )[-1] = Endian::bswap32( size );
+#else
+    reinterpret_cast<int*>( buffer.end() )[-1] = size;
+#endif
+  }
+  return buffer;
+}
+
+Buffer Buffer::inflate() const
+{
+  Buffer buffer;
+
+  z_stream zstream = {};
+  if( inflateInit( &zstream ) != Z_OK ) {
+    return buffer;
+  }
+
+#if OZ_BYTE_ORDER == 4321
+  int newSize = Endian::bswap32( reinterpret_cast<int*>( data + size )[-1] );
+#else
+  int newSize = reinterpret_cast<int*>( data + size )[-1];
+#endif
+
+  buffer.allocate( newSize );
+
+  zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
+  zstream.avail_in  = uint( size - 4 );
+  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.begin() );
+  zstream.avail_out = uint( newSize );
+
+  int ret = ::inflate( &zstream, Z_FINISH );
+  inflateEnd( &zstream );
+
+  if( ret != Z_STREAM_END ) {
+    buffer.deallocate();
+  }
+  return buffer;
 }
 
 void Buffer::resize( int newSize )

@@ -37,6 +37,7 @@
 - client
     * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities
+    * DDS format used for all textures, every texture is in its own file
     * switched over to ozEngine classes wherever possible
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL

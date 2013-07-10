@@ -21,7 +21,7 @@ add_library( ozFactory
 add_pch( ozFactory_pch pch.hh pch.cc )
 use_pch( ozFactory ozFactory_pch )
 
-target_link_libraries( ozFactory ozCore ${FREEIMAGE_LIBRARY} ${ASSIMP_LIBRARIES} )
+target_link_libraries( ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY} )
 if( OZ_NONFREE )
   target_link_libraries( ozFactory ${SQUISH_LIBRARY} )
 endif()

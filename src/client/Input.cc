@@ -474,10 +474,6 @@ void Input::update()
   mouseX = +Pepper::moveX;
   mouseY = -Pepper::moveY;
 
-  int dx, dy;
-  SDL_GetRelativeMouseState( &dx, &dy );
-  printf( "SMM: %d, %d\n", dx, dy );
-
 #else
 
   int dx, dy;

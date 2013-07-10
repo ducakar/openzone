@@ -171,6 +171,21 @@ class Buffer
     String toString() const;
 
     /**
+     * Compress using deflate algorithm.
+     *
+     * @param level compression level: -1 (default), 0 (no compression) or 1--9
+     *        (1 - best speed, 9 - best compression).
+     */
+    Buffer deflate( int level = -1 ) const;
+
+    /**
+     * Uncompress using inflate algorithm.
+     *
+     * An empty buffer is returned on an error.
+     */
+    Buffer inflate() const;
+
+    /**
      * Resize the buffer.
      */
     void resize( int newSize );

@@ -50,13 +50,11 @@
  */
 #define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 
-#if defined( __BIG_ENDIAN__ ) || ( defined( __BYTE_ORDER__ ) && __BYTE_ORDER__ == 4321 )
 /**
- * @def OZ_BIG_ENDIAN
- * Defined on big endian platforms.
+ * @def OZ_BYTE_ORDER
+ * Byte order inside a 32-bit integer. 1234 for little endian and 4321 for big endian machines.
  */
-# define OZ_BIG_ENDIAN
-#endif
+#define OZ_BYTE_ORDER __BYTE_ORDER__
 
 /**
  * @def OZ_HIDDEN
@@ -84,7 +82,11 @@
  * @def OZ_WEAK
  * Compiler-specific attribute specifying a weak symbol.
  */
-#define OZ_WEAK __attribute(( weak ))
+#ifdef _WIN32
+# define OZ_WEAK
+#else
+# define OZ_WEAK __attribute(( weak ))
+#endif
 
 /**
  * @def soft_assert

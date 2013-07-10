@@ -76,6 +76,7 @@ else()
   pkg_check_modules( PULSE_SIMPLE REQUIRED libpulse-simple )
 endif()
 
+find_package( ZLIB REQUIRED )
 find_package( PhysFS REQUIRED )
 mark_as_advanced( PHYSFS_INCLUDE_DIR )
 mark_as_advanced( PHYSFS_LIBRARY )
@@ -139,21 +140,25 @@ pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.
 if( PLATFORM_EMBEDDED )
-  find_package( ZLIB REQUIRED )               # required by PhysicsFS & FreeType
   find_package( Freetype REQUIRED )           # required by SDL_ttf
   pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
   pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
 endif()
 
 if( NOT PLATFORM_EMBEDDED )
+  pkg_check_modules( ASSIMP REQUIRED assimp )
+
   find_library( FREEIMAGE_LIBRARY NAMES freeimage FreeImage )
   mark_as_advanced( FREEIMAGE_LIBRARY )
-
   if( NOT FREEIMAGE_LIBRARY )
     message( FATAL_ERROR "FreeImage library is missing" )
   endif()
 
-  pkg_check_modules( ASSIMP REQUIRED assimp )
+  find_library( NOISE_LIBRARY noise )
+  mark_as_advanced( NOISE_LIBRARY )
+  if( NOT FREEIMAGE_LIBRARY )
+    message( FATAL_ERROR "libnoise library is missing" )
+  endif()
 
   if( OZ_NONFREE )
     find_library( SQUISH_LIBRARY squish )
