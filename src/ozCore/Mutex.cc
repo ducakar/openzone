@@ -94,20 +94,20 @@ void Mutex::init()
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {
-    OZ_ERROR( "Mutex resource allocation failed" );
+    OZ_ERROR( "oz::Mutex: Descriptor allocation failed" );
   }
 
 #ifdef _WIN32
 
   descriptor->mutex = CreateMutex( nullptr, false, nullptr );
   if( descriptor->mutex == nullptr ) {
-    OZ_ERROR( "Mutex initialisation failed" );
+    OZ_ERROR( "oz::Mutex: Mutex creation failed" );
   }
 
 #else
 
   if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
-    OZ_ERROR( "Mutex initialisation failed" );
+    OZ_ERROR( "oz::Mutex: Mutex creation failed" );
   }
 
 #endif

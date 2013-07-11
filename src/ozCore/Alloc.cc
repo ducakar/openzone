@@ -60,7 +60,7 @@ static void addChunkInfo( AllocMode mode, void* ptr, size_t size )
 {
   Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>( malloc( sizeof( Alloc::ChunkInfo ) ) );
   if( ci == nullptr ) {
-    OZ_ERROR( "ChunkInfo allocation failed" );
+    OZ_ERROR( "oz::Alloc::ChunkInfo: Allocation failed" );
   }
 
   ci->address    = ptr;
@@ -115,12 +115,12 @@ static void eraseChunkInfo( AllocMode mode, void* ptr )
     ci = ci->next;
   }
   if( ci == nullptr ) {
-    OZ_ERROR( mode == OBJECT ? "ALLOC: Freeing object at %p that has not been allocated" :
-                               "ALLOC: Freeing array at %p that has not been allocated", ptr );
+    OZ_ERROR( mode == OBJECT ? "oz::Alloc: Freeing object at %p that has not been allocated" :
+                               "oz::Alloc: Freeing array at %p that has not been allocated", ptr );
   }
   else {
-    OZ_ERROR( mode == OBJECT ? "ALLOC: new[] -> delete mismatch for block at %p" :
-                               "ALLOC: new -> delete[] mismatch for block at %p", ptr );
+    OZ_ERROR( mode == OBJECT ? "oz::Alloc: new[] -> delete mismatch for block at %p" :
+                               "oz::Alloc: new -> delete[] mismatch for block at %p", ptr );
   }
   chunkInfoFound:
 
@@ -142,7 +142,7 @@ static void* allocate( AllocMode mode, size_t size )
 #endif
 
   if( ptr == nullptr ) {
-    OZ_ERROR( "Out of memory" );
+    OZ_ERROR( "oz::Alloc: Out of memory" );
   }
 
   ++Alloc::count;
@@ -195,7 +195,7 @@ static void deallocate( AllocMode mode, void* ptr )
 
 static_assert( Alloc::ALIGNMENT >= sizeof( void* ) &&
                ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-               "Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
+               "oz::Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
 
 const size_t         Alloc::ALIGNMENT;
 #ifdef OZ_ADDRESS_SANITIZER

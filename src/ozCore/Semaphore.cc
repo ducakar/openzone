@@ -141,7 +141,7 @@ void Semaphore::init( int counter )
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {
-    OZ_ERROR( "Semaphore resource allocation failed" );
+    OZ_ERROR( "oz::Semaphore: Descriptor allocation failed" );
   }
 
   descriptor->counter = counter;
@@ -150,16 +150,16 @@ void Semaphore::init( int counter )
 
   descriptor->semaphore = CreateSemaphore( nullptr, counter, 0x7fffffff, nullptr );
   if( descriptor->semaphore == nullptr ) {
-    OZ_ERROR( "Semaphore semaphore creation failed" );
+    OZ_ERROR( "oz::Semaphore: Semaphore creation failed" );
   }
 
 #else
 
   if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
-    OZ_ERROR( "Semaphore mutex creation failed" );
+    OZ_ERROR( "oz::Semaphore: Mutex creation failed" );
   }
   if( pthread_cond_init( &descriptor->cond, nullptr ) != 0 ) {
-    OZ_ERROR( "Semaphore condition variable creation failed" );
+    OZ_ERROR( "oz::Semaphore: Condition variable creation failed" );
   }
 
 #endif

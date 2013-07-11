@@ -24,6 +24,7 @@
 #pragma once
 
 #include <builder/common.hh>
+#include <client/Terra.hh>
 
 namespace oz
 {
@@ -34,12 +35,20 @@ class Terra
 {
   private:
 
-    matrix::Terra::Quad quads[matrix::Terra::VERTS][matrix::Terra::VERTS];
+    // Some "shortcuts".
+    typedef matrix::Terra::Quad Quad;
+
+    static const int DIM        = matrix::Terra::DIM;
+    static const int VERTS      = matrix::Terra::VERTS;
+    static const int QUADS      = matrix::Terra::QUADS;
+    static const int TILES      = client::Terra::TILES;
+    static const int TILE_QUADS = client::Terra::TILE_QUADS;
+
+  private:
+
+    Quad   quads[VERTS][VERTS];
 
     String name;
-
-    int    imageWidth;
-    int    imageHeight;
 
     int    liquid;
     Vec4   liquidColour;
@@ -47,6 +56,8 @@ class Terra
     String liquidTexture;
     String detailTexture;
     String mapTexture;
+
+  private:
 
     void load();
     void saveMatrix();

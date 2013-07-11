@@ -66,7 +66,7 @@ void String::ensureCapacity( int newCount )
     buffer = static_cast<char*>( realloc( buffer, size_t( newCount + 1 ) ) );
 
     if( buffer == nullptr ) {
-      OZ_ERROR( "String allocation failed" );
+      OZ_ERROR( "oz::String: Allocation failed" );
     }
   }
 
@@ -467,7 +467,8 @@ String::String( double d, int nDigits ) :
   buffer( baseBuffer ), count( 0 )
 {
   static_assert( BUFFER_SIZE >= 25, "Too small String::baseBuffer for double representation." );
-  hard_assert( 1 <= nDigits && nDigits <= 17 );
+
+  nDigits = clamp( nDigits, 1, 16 );
 
   union DoubleBits
   {
@@ -506,7 +507,7 @@ String::String( double d, int nDigits ) :
   // Non-exponential form.
   if( -4 < e && e < nDigits ) {
     // Mantissa.
-    double eps = d * max<double>( exp10( 1 - nDigits ), 1e-15 );
+    double eps = d * exp10( 1 - nDigits );
     double n   = d;
 
     for( int i = min( 0, e ); ; ++i ) {
@@ -535,7 +536,7 @@ String::String( double d, int nDigits ) :
   // Exponential form.
   else {
     // Mantissa.
-    double eps = d * max<double>( exp10( 1 - nDigits ), 1e-15 );
+    double eps = d * exp10( 1 - nDigits );
     double n   = d;
 
     if( d < 1.0 ) {

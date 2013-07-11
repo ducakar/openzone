@@ -35,10 +35,23 @@ namespace oz
 
 static const int ERROR_LENGTH = 1024;
 
-static char       errorBuffer[ERROR_LENGTH] = {};
-static List<Vec4> gradientPoints;
+static char                errorBuffer[ERROR_LENGTH] = {};
+static module::Billow      plains;
+static module::RidgedMulti mountains;
+static module::Perlin      terrainType;
+static module::Turbulence  turbulence;
+static double              meanHeight                = 0.0;
+static double              heightExtent              = 1.0;
+static List<Vec4>          gradientPoints;
 
-static uint colour( float height )
+static float genHeight( double x, double y )
+{
+  double plainsHeight = plains.GetValue( x, y, 1.0 );
+
+  return float( meanHeight + plainsHeight * heightExtent );
+}
+
+static uint getColour( float height )
 {
   if( gradientPoints.isEmpty() ) {
     return 0xff000000;
@@ -76,6 +89,82 @@ const char* TerraBuilder::getError()
   return errorBuffer;
 }
 
+void TerraBuilder::setSeed( int seed )
+{
+  plains.SetSeed( seed );
+  mountains.SetSeed( seed );
+  terrainType.SetSeed( seed );
+  turbulence.SetSeed( seed );
+}
+
+void TerraBuilder::setOctaveCount( Module module, int count )
+{
+  switch( module ) {
+    case PLAINS: {
+      plains.SetOctaveCount( count );
+      break;
+    }
+    case MOUNTAINS: {
+      break;
+    }
+    case TERRAIN_TYPE: {
+      terrainType.SetOctaveCount( count );
+      break;
+    }
+    case TURBULENCE: {
+      break;
+    }
+  }
+}
+
+void TerraBuilder::setFrequency( TerraBuilder::Module module, float frequency )
+{
+  switch( module ) {
+    case PLAINS: {
+      plains.SetFrequency( frequency );
+      break;
+    }
+    case MOUNTAINS: {
+      mountains.SetFrequency( frequency );
+      break;
+    }
+    case TERRAIN_TYPE: {
+      terrainType.SetFrequency( frequency );
+      break;
+    }
+    case TURBULENCE: {
+      turbulence.SetFrequency( frequency );
+      break;
+    }
+  }
+}
+
+void TerraBuilder::setPersistence( TerraBuilder::Module module, float persistence )
+{
+  switch( module ) {
+    case PLAINS: {
+      plains.SetPersistence( persistence );
+      break;
+    }
+    case MOUNTAINS: {
+      break;
+    }
+    case TERRAIN_TYPE: {
+      terrainType.SetPersistence( persistence );
+      break;
+    }
+    case TURBULENCE: {
+      break;
+    }
+  }
+}
+
+void TerraBuilder::setBounds( float bottomHeight, float topHeight )
+{
+  meanHeight   = ( bottomHeight + topHeight ) / 2.0;
+  heightExtent = ( topHeight - bottomHeight ) / 2.0;
+}
+
 void TerraBuilder::addGradientPoint( const Vec4& point )
 {
   errorBuffer[0] = '\0';
@@ -95,20 +184,13 @@ float* TerraBuilder::generateHeightmap( int width, int height )
 {
   errorBuffer[0] = '\0';
 
-  module::Billow mod;
-
-  mod.SetSeed( 45 );
-  mod.SetFrequency( 0.80 );
-  mod.SetOctaveCount( 4 );
-  mod.SetPersistence( 0.5 );
-
   float* heightmap = new float[width * height];
   double dWidth    = width;
   double dHeight   = height;
 
   for( int x = 0; x < width; ++x ) {
     for( int y = 0; y < height; ++y ) {
-      heightmap[x * height + y] = float( mod.GetValue( x / dWidth, y / dHeight, 1.0 ) );
+      heightmap[x * height + y] = genHeight( x / dWidth, y / dHeight );
     }
   }
   return heightmap;
@@ -117,13 +199,6 @@ float* TerraBuilder::generateHeightmap( int width, int height )
 char* TerraBuilder::generateImage( int width, int height )
 {
   errorBuffer[0] = '\0';
-
-  module::Billow mod;
-
-  mod.SetSeed( 45 );
-  mod.SetFrequency( 2.0 );
-  mod.SetOctaveCount( 4 );
-  mod.SetPersistence( 0.5 );
 
   int    pitch   = ( ( width * 3 + 3 ) / 4 ) * 4;
   char*  image   = new char[height * pitch] {};
@@ -134,8 +209,8 @@ char* TerraBuilder::generateImage( int width, int height )
     char* pixels = &image[y * pitch];
 
     for( int x = 0; x < width; ++x ) {
-      float value       = float( mod.GetValue( x / dWidth, y / dHeight, 1.0 ) );
-      uint  pixelColour = colour( value );
+      float value       = genHeight( x / dWidth, 1.0 - y / dHeight );
+      uint  pixelColour = getColour( value );
 
       pixels[0] = char( pixelColour & 0xff );
       pixels[1] = char( pixelColour >> 8 & 0xff );

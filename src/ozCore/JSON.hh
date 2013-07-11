@@ -153,6 +153,8 @@ class JSON
     Type         valueType;   ///< Value type, `JSON::Type`.
     mutable bool wasAccessed; ///< For warnings about unused variables.
 
+  private:
+
     /**
      * Internal constructor.
      */

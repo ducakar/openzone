@@ -523,30 +523,17 @@ void Class::fillVehicle( const char* className )
     OZ_ERROR( "%s: Vehicle has state.autoEject but not state.hasEject.", className );
   }
 
-  const char* sType = config["type"].get( "" );
-  if( String::equals( sType, "STATIC" ) ) {
-    type = VehicleClass::WHEELED;
-  }
-  else if( String::equals( sType, "WHEELED" ) ) {
-    type = VehicleClass::WHEELED;
-  }
-  else if( String::equals( sType, "TRACKED" ) ) {
-    type = VehicleClass::TRACKED;
-  }
-  else if( String::equals( sType, "MECH" ) ) {
-    type = VehicleClass::TRACKED;
-  }
-  else if( String::equals( sType, "HOVER" ) ) {
-    type = VehicleClass::HOVER;
-  }
-  else if( String::equals( sType, "AIR" ) ) {
-    type = VehicleClass::AIR;
-  }
-  else {
-    OZ_ERROR( "%s: Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, HOVER or"
-              " AIR", className );
-  }
+  static const EnumName VEHICLE_MAP[] = {
+    { VehicleClass::STATIC,  "STATIC"  },
+    { VehicleClass::WHEELED, "WHEELED" },
+    { VehicleClass::TRACKED, "TRACKED" },
+    { VehicleClass::MECH,    "MECH"    },
+    { VehicleClass::HOVER,   "HOVER"   },
+    { VehicleClass::AIR,     "AIR"     }
+  };
+  EnumMap<VehicleClass::Type> vehicleMap( VEHICLE_MAP );
 
+  type     = vehicleMap[ config["type"].get( "" ) ];
   pilotPos = config["pilotPos"].get( Vec3::ZERO );
   lookHMin = config["lookHMin"].get( -120.0f );
   lookHMax = config["lookHMax"].get( +120.0f );

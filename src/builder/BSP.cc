@@ -241,38 +241,17 @@ void BSP::load()
     models[i].title      = entityConfig["title"].get( "" );
     models[i].move       = entityConfig["move"].get( Vec3::ZERO );
 
-    String sType = entityConfig["type"].get( "" );
+    static const EnumName ENTITY_MAP[] = {
+      { EntityClass::STATIC,         "STATIC"         },
+      { EntityClass::MANUAL_DOOR,    "MAUAL_DOOR"     },
+      { EntityClass::AUTO_DOOR,      "AUTO_DOOR"      },
+      { EntityClass::IGNORING_BLOCK, "IGNORING_BLOCK" },
+      { EntityClass::CRUSHING_BLOCK, "CRUSHING_BLOCK" },
+      { EntityClass::ELEVATOR,       "ELEVATOR"       }
+    };
+    static const EnumMap<EntityClass::Type> entityMap( ENTITY_MAP );
 
-    if( sType.equals( "STATIC" ) ) {
-      models[i].type = EntityClass::STATIC;
-    }
-    else if( sType.equals( "MANUAL_DOOR" ) ) {
-      models[i].type = EntityClass::MANUAL_DOOR;
-    }
-    else if( sType.equals( "AUTO_DOOR" ) ) {
-      models[i].type = EntityClass::AUTO_DOOR;
-    }
-    else if( sType.equals( "IGNORING_BLOCK" ) ) {
-      models[i].type = EntityClass::IGNORING_BLOCK;
-    }
-    else if( sType.equals( "CRUSHING_BLOCK" ) ) {
-      models[i].type = EntityClass::CRUSHING_BLOCK;
-    }
-    else if( sType.equals( "ELEVATOR" ) ) {
-      models[i].type = EntityClass::ELEVATOR;
-    }
-    else {
-      OZ_ERROR( "Invalid BSP model type '%s', must be either STATIC, MANUAL_DOOR, AUTO_DOOR,"
-                " IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR.", sType.cstr() );
-    }
-
-    if( models[i].type == EntityClass::ELEVATOR &&
-        ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
-    {
-      OZ_ERROR( "Elevator can only move vertically, but model[%d].move = (%g %g %g)",
-                i, models[i].move.x, models[i].move.y, models[i].move.z );
-    }
-
+    models[i].type       = entityMap[ entityConfig["type"].get( "" ) ];
     models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );
     models[i].timeout    = entityConfig["timeout"].get( Math::INF );
     models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get( 1.0f );
@@ -283,6 +262,13 @@ void BSP::load()
     models[i].openSound  = entityConfig["openSound"].get( "" );
     models[i].closeSound = entityConfig["closeSound"].get( "" );
     models[i].frictSound = entityConfig["frictSound"].get( "" );
+
+    if( models[i].type == EntityClass::ELEVATOR &&
+        ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
+    {
+      OZ_ERROR( "Elevator can only move vertically, but model[%d].move = (%g %g %g)",
+                i, models[i].move.x, models[i].move.y, models[i].move.z );
+    }
 
     const JSON& modelConfig = entityConfig["model"];
 

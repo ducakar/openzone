@@ -206,27 +206,36 @@ int GL::textureDataFromFile( const File& file, int bias )
 
   int    bpp = istream.readInt();
   GLenum format;
+  GLint  internalFormat;
 
   if( pixelFlags & DDPF_FOURCC ) {
     if( String::beginsWith( formatFourCC, "DXT1" ) ) {
-      format    = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      blockSize = 8;
+      format         = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      blockSize      = 8;
     }
     else if( String::beginsWith( formatFourCC, "DXT3" ) ) {
-      format    = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      blockSize = 16;
+      format         = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      blockSize      = 16;
     }
     else if( String::beginsWith( formatFourCC, "DXT5" ) ) {
-      format    = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      blockSize = 16;
+      format         = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      blockSize      = 16;
     }
     else {
       return 0;
     }
   }
   else if( pixelFlags & DDPF_RGB ) {
-    format    = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-    blockSize = 1;
+#ifdef GL_ES_VERSION_2_0
+    format         = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+#else
+    format         = pixelFlags & DDPF_ALPHAPIXELS ? GL_BGRA : GL_BGR;
+#endif
+    internalFormat = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+    blockSize      = 1;
   }
   else {
     return 0;
@@ -277,14 +286,16 @@ int GL::textureDataFromFile( const File& file, int bias )
 
           mCopy( pixels, istream.forward( lineWidth ), size_t( lineWidth ) );
 
+#ifdef GL_ES_VERSION_2_0
           // BGR(A) -> RGB(A).
           for( int x = 0; x < mipmapWidth; ++x ) {
             swap( pixels[0], pixels[2] );
             pixels += pixelSize;
           }
+#endif
         }
 
-        glTexImage2D( GL_TEXTURE_2D, i - bias, int( format ), mipmapWidth, mipmapHeight, 0, format,
+        glTexImage2D( GL_TEXTURE_2D, i - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
                       GL_UNSIGNED_BYTE, data );
         delete[] data;
       }

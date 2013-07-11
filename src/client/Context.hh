@@ -163,8 +163,9 @@ class Context
 
     explicit Context();
 
-    static Texture loadTextures( const File& diffuseFile, const File& masksFile,
-                                 const File& normalsFile );
+    static Texture loadTexture( const File& diffuseFile, const File& masksFile,
+                                const File& normalsFile );
+    static Texture loadTexture( const char* basePath );
     static void unloadTexture( const Texture* texture );
 
     Texture requestTexture( int id );

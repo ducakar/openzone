@@ -272,8 +272,8 @@ Context::Context() :
   bsps( nullptr ), smms( nullptr ), md2s( nullptr ), md3s( nullptr )
 {}
 
-Texture Context::loadTextures( const File& diffuseFile, const File& masksFile,
-                               const File& normalsFile )
+Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
+                              const File& normalsFile )
 {
   Texture texture;
 
@@ -295,6 +295,29 @@ Texture Context::loadTextures( const File& diffuseFile, const File& masksFile,
 
   OZ_GL_CHECK_ERROR();
   return texture;
+}
+
+Texture Context::loadTexture( const char* basePath_ )
+{
+  String basePath = basePath_;
+  File   diffuse  = basePath + ".dds";
+  File   masks    = basePath + "_m.dds";
+  File   normals  = basePath + "_n.dds";
+
+  if( diffuse.type() == File::REGULAR ) {
+    diffuse.map();
+  }
+  else {
+    OZ_ERROR( "Missing texture '%s'", basePath_ );
+  }
+  if( masks.type() == File::REGULAR ) {
+    masks.map();
+  }
+  if( normals.type() == File::REGULAR ) {
+    normals.map();
+  }
+
+  return loadTexture( diffuse, masks, normals );
 }
 
 void Context::unloadTexture( const Texture* texture )
@@ -335,7 +358,7 @@ Texture Context::requestTexture( int id )
 //   normalsFile.map();
 
   resource.nUsers    = 1;
-  resource.handle    = loadTextures( diffuseFile, masksFile, File() );
+  resource.handle    = loadTexture( diffuseFile, masksFile, File() );
   resource.handle.id = id;
 
   return resource.handle;

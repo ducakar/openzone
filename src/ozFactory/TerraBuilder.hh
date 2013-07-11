@@ -40,6 +40,16 @@ class TerraBuilder
 {
   public:
 
+    enum Module
+    {
+      PLAINS,
+      MOUNTAINS,
+      TERRAIN_TYPE,
+      TURBULENCE
+    };
+
+  public:
+
     /**
      * Forbid instances.
      */
@@ -49,6 +59,42 @@ class TerraBuilder
      * Get the last error string.
      */
     static const char* getError();
+
+    /**
+     * Set seed.
+     */
+    static void setSeed( int seed );
+
+    /**
+     * Set number of octaves for a given module.
+     *
+     * Default: 6.
+     */
+    static void setOctaveCount( Module module, int count );
+
+    /**
+     * Set frequency for a given module.
+     *
+     * Default: 1.0.
+     */
+    static void setFrequency( Module module, float frequency );
+
+    /**
+     * Set persistence for a given module.
+     *
+     * Default: 0.5.
+     */
+    static void setPersistence( Module module, float persistence );
+
+    /**
+     * Set height values to which -1.0 and +1.0 map respectively.
+     *
+     * This roughly represents the highest and the lowest height in the heightmap. Note that the
+     * generated height may go also slightly out of these bounds.
+     *
+     * Default: -1.0 and +1.0.
+     */
+    static void setBounds( float bottomHeight, float topHeight );
 
     /**
      * Add a colour to gradient scale. W coordinate is used as level.

@@ -69,7 +69,7 @@ static void initName()
     nameKey = TlsAlloc();
 
     if( nameKey == TLS_OUT_OF_INDEXES ) {
-      OZ_ERROR( "Thread name key creation failed" );
+      OZ_ERROR( "oz::Thread: Name key creation failed" );
     }
     isNameInitialised = true;
   }
@@ -79,7 +79,7 @@ static void initName()
 #else
 
   if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
-    OZ_ERROR( "Thread name key creation failed" );
+    OZ_ERROR( "oz::Thread: Name key creation failed" );
   }
 
 #endif
@@ -155,7 +155,7 @@ void* Thread::Descriptor::threadMain( void* data )
 #if defined( __ANDROID__ )
 
   if( System::javaVM == nullptr ) {
-    OZ_ERROR( "System::javaVM must be set before starting new threads" );
+    OZ_ERROR( "oz::Thread: System::javaVM must be set before starting new threads" );
   }
 
   JNIEnv* jniEnv = nullptr;
@@ -166,7 +166,7 @@ void* Thread::Descriptor::threadMain( void* data )
 #elif defined( __native_client__ )
 
   if( System::instance == nullptr ) {
-    OZ_ERROR( "System::instance must be set before starting new threads" );
+    OZ_ERROR( "oz::Thread: System::instance must be set before starting new threads" );
   }
 
   pp::MessageLoop messageLoop( System::instance );
@@ -205,7 +205,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {
-    OZ_ERROR( "Thread resource allocation failed" );
+    OZ_ERROR( "oz::Thread: Descriptor allocation failed" );
   }
 
   descriptor->main = main;
@@ -219,7 +219,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
 
   descriptor->thread = CreateThread( nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr );
   if( descriptor->thread == nullptr ) {
-    OZ_ERROR( "Thread creation failed" );
+    OZ_ERROR( "oz::Thread: Thread creation failed" );
   }
 
   if( type == DETACHED ) {
@@ -230,7 +230,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
 
   if( type == JOINABLE ) {
     if( pthread_create( &descriptor->thread, nullptr, Descriptor::threadMain, descriptor ) != 0 ) {
-      OZ_ERROR( "Thread creation failed" );
+      OZ_ERROR( "oz::Thread: Thread creation failed" );
     }
   }
   else {
@@ -240,7 +240,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
     pthread_attr_setdetachstate( &attrib, PTHREAD_CREATE_DETACHED );
 
     if( pthread_create( &descriptor->thread, &attrib, Descriptor::threadMain, descriptor ) != 0 ) {
-      OZ_ERROR( "Thread creation failed" );
+      OZ_ERROR( "oz::Thread: Thread creation failed" );
     }
 
     pthread_attr_destroy( &attrib );
@@ -258,7 +258,7 @@ void Thread::join()
   CloseHandle( descriptor->thread );
 #else
   if( pthread_join( descriptor->thread, nullptr ) != 0 ) {
-    OZ_ERROR( "Thread join failed" );
+    OZ_ERROR( "oz::Thread: Join failed" );
   }
 #endif
 

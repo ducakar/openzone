@@ -1000,13 +1000,13 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
   ppFileSystem = pp::FileSystem( System::instance, naclType );
 
   if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
-    OZ_ERROR( "Local NaCl file system open failed" );
+    OZ_ERROR( "oz::File: Local NaCl file system open failed" );
   }
   if( System::instance == nullptr ) {
-    OZ_ERROR( "System::instance must be set prior to NaCl file system initialisation" );
+    OZ_ERROR( "oz::File: System::instance must be set prior to NaCl file system initialisation" );
   }
   if( ppCore->IsMainThread() ) {
-    OZ_ERROR( "PhysicsFS cannot be initialised from the main NaCl thread" );
+    OZ_ERROR( "oz::File: PhysicsFS cannot be initialised from the main NaCl thread" );
   }
 
   PHYSFS_NACL_init( System::instance->pp_instance(), pp::Module::Get()->get_browser_interface(),
@@ -1015,7 +1015,7 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
 #endif
 
   if( PHYSFS_init( nullptr ) == 0 ) {
-    OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
+    OZ_ERROR( "oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
   }
 }
 

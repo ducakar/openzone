@@ -15,6 +15,7 @@ add_library( ozCore
   DArray.hh
   DChain.hh
   Endian.hh
+  EnumMap.hh
   File.hh
   Gettext.hh
   HashMap.hh

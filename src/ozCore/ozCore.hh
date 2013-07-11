@@ -113,5 +113,6 @@
 #include "Log.hh"
 #include "Time.hh"
 #include "SharedLib.hh"
+#include "EnumMap.hh"
 #include "JSON.hh"
 #include "Gettext.hh"

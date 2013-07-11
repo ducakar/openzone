@@ -345,9 +345,9 @@ void Mesh::load( uint usage )
     for( int i = 0; i < nTextures; ++i ) {
       istream.readString();
 
-      textures[i] = context.loadTextures( preloadData->textures[i].diffuse,
-                                          preloadData->textures[i].masks,
-                                          preloadData->textures[i].normals );
+      textures[i] = context.loadTexture( preloadData->textures[i].diffuse,
+                                         preloadData->textures[i].masks,
+                                         preloadData->textures[i].normals );
     }
   }
 

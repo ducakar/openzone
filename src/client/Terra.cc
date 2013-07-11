@@ -157,10 +157,10 @@ void Terra::load()
 
   const String& name = liber.terrae[id].name;
 
-  File file( "@terra/" + name + ".ozcTerra" );
-  File liquidTexFile( "@terra/" + name + "-liquid.dds" );
-  File detailTexFile( "@terra/" + name + "-detail.dds" );
-  File mapTexFile( "@terra/" + name + "-map.dds" );
+  File file          = "@terra/" + name + ".ozcTerra";
+  File liquidTexFile = "@terra/" + name + "-liquid.dds";
+  File detailTexFile = "@terra/" + name + "-detail.dds";
+  File mapTexFile    = "@terra/" + name + "-map.dds";
 
   Buffer buffer = file.read();
 
@@ -190,6 +190,9 @@ void Terra::load()
   if( GL::textureDataFromFile( mapTexFile ) == 0 ) {
     OZ_ERROR( "Failed to load '%s'", mapTexFile.path().cstr() );
   }
+
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );

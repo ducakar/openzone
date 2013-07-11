@@ -25,16 +25,29 @@
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>
 
-#include <cstdio>
-
 using namespace oz;
+
+enum Enum
+{
+  DREK,
+  NA,
+  PALCI
+};
+
+static EnumName map[] = {
+  { DREK, "DREK" },
+  { NA, "NA" },
+  { PALCI, "PALCI" }
+};
 
 int main()
 {
-  double n = 6666;
-
   System::init();
-  Log() << String( n, 17 );
-  printf( "%.20f\n", n );
+
+  EnumMap<Enum> enumMap( map );
+
+  Log() << enumMap.defaultName();
+  Log() << enumMap[PALCI];
+  Log() << enumMap["PALCI"];
   return 0;
 }
