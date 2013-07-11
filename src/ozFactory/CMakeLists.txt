@@ -13,8 +13,10 @@ add_library( ozFactory
   ModelBuilder.hh
   ozFactory.hh
   pch.hh
+  TerraBuilder.hh
   ImageBuilder.cc
   ModelBuilder.cc
+  TerraBuilder.cc
 #END SOURCES
 )
 

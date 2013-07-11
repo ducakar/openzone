@@ -23,6 +23,7 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
+#include <ozFactory/ozFactory.hh>
 
 #include <SDL.h>
 #include <noise/noise.h>
@@ -30,41 +31,41 @@
 using namespace oz;
 using namespace noise;
 
-static const int width  = 513;
-static const int height = 513;
-
-static uint data[width][height];
-
-static void populate()
+struct Colour
 {
-  module::Perlin mod;
-  mod.SetFrequency( 8 );
+  double margin;
+  double colour[3];
+};
 
-  for( int x = 0; x < width; ++x ) {
-    for( int y = 0; y < height; ++y ) {
-      double v = mod.GetValue( 0.01 * x, 0.01 * y, 1 );
-      uint value = 120 + uint( v * 50.0 );
-
-      hard_assert( 0 <= value && value <= 255 );
-
-      data[x][y] = 0xff000000 | value | ( value << 8 ) | ( value << 16 );
-    }
-  }
-}
+static const int width  = 1024;
+static const int height = 1024;
 
 int main()
 {
   System::init();
   SDL_Init( SDL_INIT_VIDEO );
-  Window::create( "test", width, height );
+  Window::create( "test", 800, 800 );
 
   uint t0 = Time::clock();
-  populate();
+
+  TerraBuilder::addGradientPoint( Vec4( 0.00f, 0.00f, 0.10f, -1.00f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.00f, 0.20f, 0.40f, -0.20f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.20f, 0.60f, 0.60f, -0.00f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.80f, 0.60f, 0.20f, +0.05f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.10f, 0.40f, 0.15f, +0.20f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.05f, 0.30f, 0.10f, +0.50f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.50f, 0.50f, 0.50f, +0.80f ) );
+  TerraBuilder::addGradientPoint( Vec4( 0.80f, 0.80f, 0.80f, +0.95f ) );
+
+  char* data = TerraBuilder::generateImage( width, height );
+  ImageBuilder::createDDS( data, width, height, 24, 0, "drek.dds" );
+  delete[] data;
+
   Log() << "populate time: " << ( Time::clock() - t0 ) << " ms";
 
   t0 = Time::clock();
 
-  Buffer b0( reinterpret_cast<char*>( data ), int( sizeof( data ) ) );
+  Buffer b0( data, width * height * 3 );
   Buffer b1 = b0.deflate( 1 );
   Buffer b2 = b1.inflate();
   Buffer b3 = b2.deflate( 1 );
@@ -86,12 +87,14 @@ int main()
   glGenTextures( 1, &texId );
   glBindTexture( GL_TEXTURE_2D, texId );
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+//   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+  GL::textureDataFromFile( "drek.dds" );
+//   delete[] data;
 
   glEnable( GL_TEXTURE_2D );
 

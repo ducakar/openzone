@@ -67,7 +67,8 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if( !ImageBuilder::buildDDS( argv[optind], ddsOptions, nArgs == 1 ? "." : argv[optind + 1] ) ) {
+  if( !ImageBuilder::convertToDDS( argv[optind], ddsOptions, nArgs == 1 ? "." : argv[optind + 1] ) )
+  {
     return EXIT_FAILURE;
   }
 

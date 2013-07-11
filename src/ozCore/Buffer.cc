@@ -113,7 +113,11 @@ Buffer Buffer::deflate( int level ) const
 {
   Buffer buffer;
 
-  z_stream zstream = {};
+  z_stream zstream;
+  zstream.zalloc = nullptr;
+  zstream.zfree  = nullptr;
+  zstream.opaque = nullptr;
+
   if( deflateInit( &zstream, level ) != Z_OK ) {
     return buffer;
   }
@@ -150,7 +154,11 @@ Buffer Buffer::inflate() const
 {
   Buffer buffer;
 
-  z_stream zstream = {};
+  z_stream zstream;
+  zstream.zalloc = nullptr;
+  zstream.zfree  = nullptr;
+  zstream.opaque = nullptr;
+
   if( inflateInit( &zstream ) != Z_OK ) {
     return buffer;
   }

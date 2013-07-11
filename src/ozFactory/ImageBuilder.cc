@@ -56,99 +56,57 @@ static const int ERROR_LENGTH         = 1024;
 
 static char errorBuffer[ERROR_LENGTH] = {};
 
-bool ImageBuilder::isImage( const File& file )
+static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& destFile )
 {
-  InputStream istream = file.inputStream();
+  int width  = int( FreeImage_GetWidth( dib ) );
+  int height = int( FreeImage_GetHeight( dib ) );
+  int bpp    = int( FreeImage_GetBPP( dib ) );
 
-  ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
-
-  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
-  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
-
-  FreeImage_CloseMemory( memoryIO );
-  return format != FIF_UNKNOWN;
-}
-
-const char* ImageBuilder::getError()
-{
-  return errorBuffer;
-}
-
-bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath )
-{
-  errorBuffer[0] = '\0';
-
-  if( file.hasExtension( "dds" ) ) {
-    return File::cp( file, destPath );
+  if( bpp != 24 && bpp != 32 ) {
+    snprintf( errorBuffer, ERROR_LENGTH, "Image should be either 24-bit RGB or 32-bit RGBA." );
+    return false;
   }
 
 #ifndef OZ_NONFREE
-  if( options & COMPRESSION_BIT ) {
+  if( compress ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Texture compression requested, but compiled without"
                                          "libsquish (enable OZ_NONFREE)." );
     return false;
   }
 #endif
 
-  OutputStream      ostream( 0 );
-  InputStream       istream   = file.inputStream();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
-  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
-  FIBITMAP*         image     = FreeImage_LoadFromMemory( format, memoryIO );
-
-  FreeImage_CloseMemory( memoryIO );
-
-  if( image == nullptr ) {
-    snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr() );
-    return false;
-  }
-
-  bool isTransparent = FreeImage_IsTransparent( image );
-  FIBITMAP* newImage = isTransparent ? FreeImage_ConvertTo32Bits( image ) :
-                                       FreeImage_ConvertTo24Bits( image );
-  FreeImage_Unload( image );
-  FreeImage_FlipVertical( newImage );
-  image = newImage;
-
-  int width  = int( FreeImage_GetWidth( image ) );
-  int height = int( FreeImage_GetHeight( image ) );
-  int bpp    = int( FreeImage_GetBPP( image ) );
-  int pitch  = int( FreeImage_GetPitch( image ) );
-
-  if( ( options & COMPRESSION_BIT ) && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
-    FreeImage_Unload( image );
-
+  if( compress && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2." );
     return false;
   }
 
-  int pitchOrLinSize = width * ( bpp / 8 );
-  int nMipmaps       = options & MIPMAPS_BIT ? Math::index1( max( width, height ) ) + 1 : 1;
+  int pitchOrLinSize = ( ( width * bpp / 8 + 3 ) / 4 ) * 4;
+  int nMipmaps       = doMipmaps ? Math::index1( max( width, height ) ) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-  flags |= options & MIPMAPS_BIT ? DDSD_MIPMAPCOUNT : 0;
-  flags |= options & COMPRESSION_BIT ? DDSD_LINEARSIZE : DDSD_PITCH;
+  flags |= doMipmaps ? DDSD_MIPMAPCOUNT : 0;
+  flags |= compress ? DDSD_LINEARSIZE : DDSD_PITCH;
 
   int caps = DDSDCAPS_TEXTURE;
-  caps |= options & MIPMAPS_BIT ? DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP : 0;
+  caps |= doMipmaps ? DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP : 0;
 
   int pixelFlags = 0;
-  pixelFlags |= isTransparent ? DDPF_ALPHAPIXELS : 0;
-  pixelFlags |= options & COMPRESSION_BIT ? DDPF_FOURCC :
-                bpp == 8 ? DDPF_LUMINANCE : DDPF_RGB;
+  pixelFlags |= bpp == 32 ? DDPF_ALPHAPIXELS : 0;
+  pixelFlags |= compress ? DDPF_FOURCC : DDPF_RGB;
 
   const char* compression = "\0\0\0\0";
 
 #ifdef OZ_NONFREE
-  int squishFlags = isTransparent ? squish::kDxt5 : squish::kDxt1;
+  int squishFlags = bpp == 32 ? squish::kDxt5 : squish::kDxt1;
   squishFlags    |= squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
 
-  if( options & COMPRESSION_BIT ) {
+  if( compress ) {
     pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
-    compression    = isTransparent ? "DXT5" : "DXT1";
+    compression    = bpp == 32 ? "DXT5" : "DXT1";
   }
 #endif
+
+  OutputStream ostream( 0 );
 
   // Header beginning.
   ostream.writeChars( "DDS ", 4 );
@@ -190,16 +148,15 @@ bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath
   ostream.writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
-    FIBITMAP* level = image;
+    FIBITMAP* level = dib;
 
     if( i != 0 ) {
       width  = max( 1, width / 2 );
       height = max( 1, height / 2 );
-      level  = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
-      pitch  = int( FreeImage_GetPitch( level ) );
+      level  = FreeImage_Rescale( dib, width, height, FILTER_CATMULLROM );
     }
 
-    if( options & COMPRESSION_BIT ) {
+    if( compress ) {
 #ifdef OZ_NONFREE
       FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
       ubyte*    pixels  = FreeImage_GetBits( level32 );
@@ -217,26 +174,114 @@ bool ImageBuilder::buildDDS( const File& file, int options, const char* destPath
     }
     else {
       const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
+      int         pitch  = int( FreeImage_GetPitch( level ) );
 
       for( int i = 0; i < height; ++i ) {
-        ostream.writeChars( pixels, width * ( bpp / 8 ) );
+        ostream.writeChars( pixels, width * bpp / 8 );
         pixels += pitch;
       }
     }
 
-    if( level != image ) {
+    if( level != dib ) {
       FreeImage_Unload( level );
     }
   }
 
-  FreeImage_Unload( image );
+  return destFile.write( ostream.begin(), ostream.tell() );
+}
+
+const char* ImageBuilder::getError()
+{
+  return errorBuffer;
+}
+
+bool ImageBuilder::isImage( const File& file )
+{
+  errorBuffer[0] = '\0';
+
+  InputStream istream = file.inputStream();
+
+  ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
+
+  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
+  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+
+  FreeImage_CloseMemory( memoryIO );
+  return format != FIF_UNKNOWN;
+}
+
+bool ImageBuilder::createDDS( const void* data, int width, int height, int bpp, int options,
+                              const File& destFile )
+{
+  errorBuffer[0] = '\0';
+
+  int    pixelSize = bpp / 8;
+  int    pitch     = ( ( width * pixelSize + 3 ) / 4 ) * 4;
+  int    size      = height * pitch;
+  ubyte* image     = new ubyte[size];
+
+  mCopy( image, data, size_t( size ) );
+
+  // RGB(A) -> BGR(A)
+  for( int y = 0; y < height; ++y ) {
+    ubyte* pixels = &image[y * pitch];
+
+    for( int x = 0; x < width; ++x ) {
+      swap( pixels[0], pixels[2] );
+      pixels += pixelSize;
+    }
+  }
+
+  FIBITMAP* dib = FreeImage_ConvertFromRawBits( image, width, height, pitch, uint( bpp ),
+                                                FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
+                                                FI_RGBA_BLUE_MASK );
+  if( dib == nullptr ) {
+    snprintf( errorBuffer, ERROR_LENGTH, "FreeImage_ConvertFromRawBits failed to build image." );
+    return false;
+  }
+
+  bool success = buildDDS( dib, options & MIPMAPS_BIT, options & COMPRESSION_BIT, destFile );
+
+  FreeImage_Unload( dib );
+  return success;
+}
+
+bool ImageBuilder::convertToDDS( const File& file, int options, const char* destPath )
+{
+  errorBuffer[0] = '\0';
+
+  if( file.hasExtension( "dds" ) ) {
+    return File::cp( file, destPath );
+  }
+
+  InputStream       istream   = file.inputStream();
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+  FIBITMAP*         dib       = FreeImage_LoadFromMemory( format, memoryIO );
+
+  FreeImage_CloseMemory( memoryIO );
+
+  if( dib == nullptr ) {
+    snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr() );
+    return false;
+  }
+
+  bool isTransparent = FreeImage_IsTransparent( dib );
+  FIBITMAP* newDib = isTransparent ? FreeImage_ConvertTo32Bits( dib ) :
+                                     FreeImage_ConvertTo24Bits( dib );
+  FreeImage_Unload( dib );
+  dib = newDib;
 
   File destFile( destPath );
   if( destFile.type() == File::DIRECTORY ) {
     destFile = String::str( "%s/%s.dds", destPath, file.baseName().cstr() );
   }
 
-  return destFile.write( ostream.begin(), ostream.tell() );
+  bool success = buildDDS( dib, options & MIPMAPS_BIT, options & COMPRESSION_BIT, destFile );
+
+  FreeImage_Unload( dib );
+  return success;
 }
 
 }

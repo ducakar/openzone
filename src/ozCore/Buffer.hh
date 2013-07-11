@@ -173,8 +173,8 @@ class Buffer
     /**
      * Compress using deflate algorithm.
      *
-     * @param level compression level: -1 (default), 0 (no compression) or 1--9
-     *        (1 - best speed, 9 - best compression).
+     * @param level compression level: -1 (default), 0 (no compression) or 1...9 (1 - best speed,
+     *        9 - best compression).
      */
     Buffer deflate( int level = -1 ) const;
 

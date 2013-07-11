@@ -44,10 +44,10 @@ void Caelum::build( const char* name )
     texOptions |= ImageBuilder::COMPRESSION_BIT;
   }
 
-  if( !ImageBuilder::buildDDS( "@caelum/sun.png", texOptions, "caelum" ) ) {
+  if( !ImageBuilder::convertToDDS( "@caelum/sun.png", texOptions, "caelum" ) ) {
     OZ_ERROR( "Failed to build sun texture" );
   }
-  if( !ImageBuilder::buildDDS( "@caelum/moon.png", texOptions, "caelum" ) ) {
+  if( !ImageBuilder::convertToDDS( "@caelum/moon.png", texOptions, "caelum" ) ) {
     OZ_ERROR( "Failed to build moon texture" );
   }
 

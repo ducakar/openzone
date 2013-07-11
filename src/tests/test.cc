@@ -25,10 +25,16 @@
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>
 
+#include <cstdio>
+
 using namespace oz;
 
 int main()
 {
+  double n = 6666;
+
   System::init();
+  Log() << String( n, 17 );
+  printf( "%.20f\n", n );
   return 0;
 }

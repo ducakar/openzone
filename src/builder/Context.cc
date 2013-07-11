@@ -96,7 +96,6 @@ static void writeDDS( FIBITMAP* image, const char* filePath )
   int width  = int( FreeImage_GetWidth( image ) );
   int height = int( FreeImage_GetHeight( image ) );
   int bpp    = int( FreeImage_GetBPP( image ) );
-  int pitch  = int( FreeImage_GetPitch( image ) );
 
   if( context.useS3TC && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
     OZ_ERROR( "Dimensions of compressed textures must be powers of 2" );
@@ -176,7 +175,6 @@ static void writeDDS( FIBITMAP* image, const char* filePath )
       width  = max( 1, width / 2 );
       height = max( 1, height / 2 );
       level  = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
-      pitch  = int( FreeImage_GetPitch( level ) );
     }
 
     if( context.useS3TC ) {
@@ -197,9 +195,10 @@ static void writeDDS( FIBITMAP* image, const char* filePath )
     }
     else {
       const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
+      int         pitch  = int( FreeImage_GetPitch( level ) );
 
       for( int i = 0; i < height; ++i ) {
-        ostream.writeChars( pixels, width * ( bpp / 8 ) );
+        ostream.writeChars( pixels, width * bpp / 8 );
         pixels += pitch;
       }
     }

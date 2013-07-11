@@ -13,7 +13,7 @@ target_link_libraries( foreach ozCore )
 # target_link_libraries( mono -lmono-2.0 ozCore )
 
 add_executable( noise noise.cc )
-target_link_libraries( noise ozCore ozEngine ${NOISE_LIBRARY} )
+target_link_libraries( noise ozCore ozEngine ozFactory )
 
 add_executable( quicksort quicksort.cc )
 target_link_libraries( quicksort ozCore )

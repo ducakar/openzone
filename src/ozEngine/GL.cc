@@ -254,39 +254,34 @@ int GL::textureDataFromFile( const File& file, int bias )
 
   for( int i = 0; i < nMipmaps; ++i ) {
     if( pixelFlags & DDPF_FOURCC ) {
-      const char* source = istream.forward( mipmapS3Size );
+      const char* data = istream.forward( mipmapS3Size );
 
       if( i >= bias ) {
         glCompressedTexImage2D( GL_TEXTURE_2D, i - bias, format, mipmapWidth, mipmapHeight, 0,
-                                mipmapS3Size, source );
+                                mipmapS3Size, data );
       }
     }
     else {
-      int         mipmapPitch = ( mipmapWidth * bpp + 7 ) / 8;
-      int         mipmapSize  = mipmapHeight * mipmapPitch;
-      const char* source      = istream.forward( mipmapSize );
+      int   mipmapPitch = ( ( mipmapWidth * bpp / 8 + 3 ) / 4 ) * 4;
+      int   mipmapSize  = mipmapHeight * mipmapPitch;
+      char* data        = new char[mipmapSize];
+      int   pixelSize   = bpp / 8;
 
-      if( i >= bias ) {
-        char* data      = new char[mipmapSize];
-        char* dest      = data;
-        int   pixelSize = bpp / 8;
+      if( i < bias ) {
+        istream.forward( mipmapWidth * mipmapHeight * pixelSize );
+      }
+      else {
+        for( int y = 0; y < mipmapHeight; ++y ) {
+          char* pixels    = &data[y * mipmapPitch];
+          int   lineWidth = mipmapWidth * pixelSize;
 
-        // Swap red and blue components and collapse gaps between scan lines.
-        for( int j = 0; j < mipmapHeight; ++j ) {
-          for( int k = 0; k < mipmapWidth; ++k ) {
-            dest[0] = source[2];
-            dest[1] = source[1];
-            dest[2] = source[0];
+          mCopy( pixels, istream.forward( lineWidth ), size_t( lineWidth ) );
 
-            if( bpp == 32 ) {
-              dest[3] = source[3];
-            }
-
-            dest   += pixelSize;
-            source += pixelSize;
+          // BGR(A) -> RGB(A).
+          for( int x = 0; x < mipmapWidth; ++x ) {
+            swap( pixels[0], pixels[2] );
+            pixels += pixelSize;
           }
-
-          source += mipmapPitch - mipmapWidth * pixelSize;
         }
 
         glTexImage2D( GL_TEXTURE_2D, i - bias, int( format ), mipmapWidth, mipmapHeight, 0, format,

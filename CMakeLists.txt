@@ -192,7 +192,7 @@ else()
   set( flags "-std=c++0x -pedantic -fstrict-enums" )
 endif()
 
-set( flags "${flags} -fno-exceptions -fno-rtti -ffast-math -fvisibility-inlines-hidden" )
+set( flags "${flags} -ffast-math -fvisibility-inlines-hidden" )
 
 if( BUILD_SHARED_LIBS )
   set( flags "${flags} -fPIC" )

@@ -21,15 +21,57 @@
  */
 
 /**
- * @file ozEngine/ozFactory.hh
+ * @file ozFactory/TerraBuilder.hh
  *
- * Main public header for OpenZone Assets Builder Library.
+ * `TerraBuilder` class.
  */
 
 #pragma once
 
 #include "common.hh"
 
-#include "ImageBuilder.hh"
-#include "ModelBuilder.hh"
-#include "TerraBuilder.hh"
+namespace oz
+{
+
+/**
+ * Utilities for generating terrain heightmaps and textures.
+ */
+class TerraBuilder
+{
+  public:
+
+    /**
+     * Forbid instances.
+     */
+    explicit TerraBuilder() = delete;
+
+    /**
+     * Get the last error string.
+     */
+    static const char* getError();
+
+    /**
+     * Add a colour to gradient scale. W coordinate is used as level.
+     */
+    static void addGradientPoint( const Vec4& point );
+
+    /**
+     * Clear gradient scale.
+     */
+    static void clearGradient();
+
+    /**
+     * Generate column-major heightmap array.
+     */
+    static float* generateHeightmap( int width, int height );
+
+    /**
+     * Generate terrain texture using the given gradient scale.
+     *
+     * Returned image is in RGB format with lines aligned on 32-bit boundaries.
+     */
+    static char* generateImage( int width, int height );
+
+};
+
+}

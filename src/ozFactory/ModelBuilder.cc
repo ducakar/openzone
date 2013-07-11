@@ -71,14 +71,16 @@ struct Mesh
 static char             errorBuffer[ERROR_LENGTH] = {};
 static Assimp::Importer importer;
 
-bool ModelBuilder::isModel( const File& file )
-{
-  return importer.IsExtensionSupported( file.extension() );
-}
-
 const char* ModelBuilder::getError()
 {
   return errorBuffer[0] == '\0' ? importer.GetErrorString() : errorBuffer;
+}
+
+bool ModelBuilder::isModel( const File& file )
+{
+  errorBuffer[0] = '\0';
+
+  return importer.IsExtensionSupported( file.extension() );
 }
 
 bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )

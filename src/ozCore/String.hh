@@ -352,7 +352,7 @@ class String
     static bool parseBool( const char* s, const char** end = nullptr );
 
     /**
-     * Parse int value.
+     * Parse integer value.
      *
      * Signed integer string the should match regular expression `-?(0|[1-9][0-9]*)`.
      *
@@ -364,10 +364,14 @@ class String
     static int parseInt( const char* s, const char** end = nullptr );
 
     /**
-     * Parse float value.
+     * Parse floating-point value.
      *
      * Double-precision floating-point value should match regular expression `-?inf|nan` or
      * `-?(0|(1-9][0-9]*)(\\.[0-9]+)?((e|E)(-?[0-9]+))` (JSON number format).
+     *
+     * @note
+     * Only single-precision accuracy is guaranteed. Rounding errors as big as 3.33e-16 are known to
+     * occur.
      *
      * @param s string to parse.
      * @param end if not nullptr, it is set to the first character after the successfully parsed
@@ -461,10 +465,12 @@ class String
      * Converting a 6-digit decimal representation to a single-precision float value and back to
      * decimal representation should be an identity. The same for converting a float to a 9-digit
      * decimal representation and back to a float.
-     * For double-precision values these digit counts are 15 and 17 respectively.
+     * For double-precision values these digit counts are 15 and 17 respectively. However, due to
+     * `parseDouble()` accuracy limitation, accuracy of this function is limited to 1e-15 to avoid
+     * producing numbers like 6665.999... instead of 6666 on all compilers.
      *
      * @param d number.
-     * @param nDigits number of digits to show.
+     * @param nDigits number of digits to show (must be 1...17).
      */
     explicit String( double d, int nDigits = 9 );
 

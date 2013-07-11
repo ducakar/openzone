@@ -48,14 +48,14 @@ class ModelBuilder
     explicit ModelBuilder() = delete;
 
     /**
-     * True iff the given 3D model format is supported by Assimp (only file extension is checked).
-     */
-    static bool isModel( const File& file );
-
-    /**
      * Get the last error string from Assimp.
      */
     static const char* getError();
+
+    /**
+     * True iff the given 3D model format is supported by Assimp (only file extension is checked).
+     */
+    static bool isModel( const File& file );
 
     static bool buildModel( const File& file, OutputStream* ostream );
 

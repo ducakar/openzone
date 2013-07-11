@@ -164,6 +164,8 @@ class GL
      * wrapping are used as default, for non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters
      * and `GL_CLAMP_TO_EDGE` wrapping are used as default.
      *
+     * The source file must be in either BGR, BGRA, DXT1, DXT3 or DXT5 format.
+     *
      * @param file source file.
      * @param bias the number of mipmaps at the beginning that should be skipped to obtain lower
      *        texture quality.
