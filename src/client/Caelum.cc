@@ -63,7 +63,7 @@ void Caelum::update()
   Mat44 rot = Mat44::rotation( Quat::rotationAxis( axis, angle ) );
   Vec3  dir = rot * originalLightDir;
 
-  ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
+  ratio = clamp( dir.z + DAY_BIAS, 0.0f, 1.0f );
   float ratioDiff = 1.0f - abs( 1.0f - 2.0f * ratio );
 
   caelumColour.x = Math::mix( NIGHT_COLOUR.x, DAY_COLOUR.x, ratio ) + RED_COEF   * ratioDiff;
@@ -176,8 +176,8 @@ void Caelum::load()
   }
 
   axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
-  originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
-                           Math::sin( orbis.caelum.heading ),
+  originalLightDir = Vec3( -Math::cos( orbis.caelum.heading ),
+                           -Math::sin( orbis.caelum.heading ),
                            0.0f );
 
   Buffer buffer = File( path ).read();

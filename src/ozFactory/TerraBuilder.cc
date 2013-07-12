@@ -43,6 +43,8 @@ static module::ScaleBias   mountainsFinal;
 static module::Perlin      terrainType;
 static module::Select      combiner;
 static module::Turbulence  turbulence;
+static module::Billow      noiseBase;
+static module::ScaleBias   noiseFinal;
 static List<Vec4>          gradientPoints;
 static bool                isInitialised = false;
 
@@ -61,17 +63,22 @@ static void ensureInitialised()
 
   turbulence.SetSourceModule( 0, combiner );
 
+  noiseFinal.SetSourceModule( 0, noiseBase );
+
   isInitialised = true;
 }
 
 static float genHeight( double x, double y )
 {
-  double height = turbulence.GetValue( x, y, 1.0 );
+  double height = combiner.GetValue( x, y, 1.0 );
   return float( height );
 }
 
-static uint getColour( float height )
+static uint getColour( double x, double y )
 {
+  float height = float( turbulence.GetValue( x, y, 1.0 ) );
+  float detail = float( noiseFinal.GetValue( x, y, 1.0 ) );
+
   if( gradientPoints.isEmpty() ) {
     return 0xff000000;
   }
@@ -94,7 +101,9 @@ static uint getColour( float height )
     }
   }
 
-  Vec4 colour = Math::mix( *bottom, *top, t );
+  Vec4 baseColour = Math::mix( *bottom, *top, t );
+  Vec4 noise      = Vec4( detail, detail, detail, 1.0f );
+  Vec4 colour     = clamp( baseColour + noise, Vec4::ID, Vec4::ONE );
 
   uint red   = uint( 255.0f * colour.x );
   uint green = uint( 255.0f * colour.y );
@@ -124,6 +133,11 @@ bool TerraBuilder::setBounds( Module module, float bottomHeight, float topHeight
       mountainsFinal.SetScale( scale );
       return true;
     }
+    case NOISE: {
+      noiseFinal.SetBias( bias );
+      noiseFinal.SetScale( scale );
+      return true;
+    }
     default: {
       return false;
     }
@@ -149,6 +163,10 @@ bool TerraBuilder::setSeed( Module module, int seed )
       turbulence.SetSeed( seed );
       return true;
     }
+    case NOISE: {
+      noiseBase.SetSeed( seed );
+      return true;
+    }
   }
 }
 
@@ -165,6 +183,10 @@ bool TerraBuilder::setOctaveCount( Module module, int count )
     }
     case COMBINER: {
       terrainType.SetOctaveCount( count );
+      return true;
+    }
+    case NOISE: {
+      noiseBase.SetOctaveCount( count );
       return true;
     }
     default: {
@@ -205,6 +227,10 @@ bool TerraBuilder::setFrequency( Module module, float frequency )
       turbulence.SetFrequency( frequency );
       return true;
     }
+    case NOISE: {
+      noiseBase.SetFrequency( frequency );
+      return true;
+    }
   }
 }
 
@@ -217,6 +243,10 @@ bool TerraBuilder::setPersistence( Module module, float persistence )
     }
     case COMBINER: {
       terrainType.SetPersistence( persistence );
+      return true;
+    }
+    case NOISE: {
+      noiseBase.SetPersistence( persistence );
       return true;
     }
     default: {
@@ -315,8 +345,7 @@ char* TerraBuilder::generateImage( int width, int height )
     char* pixels = &image[y * pitch];
 
     for( int x = 0; x < width; ++x ) {
-      float value       = genHeight( x / dWidth, 1.0 - y / dHeight );
-      uint  pixelColour = getColour( value );
+      uint pixelColour = getColour( x / dWidth, 1.0 - y / dHeight );
 
       pixels[0] = char( pixelColour & 0xff );
       pixels[1] = char( pixelColour >> 8 & 0xff );

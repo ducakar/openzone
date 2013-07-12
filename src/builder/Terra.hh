@@ -53,9 +53,9 @@ class Terra
     int    liquid;
     Vec4   liquidColour;
 
-    String liquidTexture;
-    String detailTexture;
-    String mapTexture;
+    String detailTex;
+    String liquidTex;
+    String map;
 
   private:
 

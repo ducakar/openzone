@@ -290,7 +290,7 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  terra.drawWater();
+  terra.drawLiquid();
 
   currentMicros = Time::uclock();
   terraMicros += currentMicros - beginMicros;
@@ -596,9 +596,6 @@ void Render::unload()
   {
     glFinish();
   };
-
-  caelum.unload();
-  terra.unload();
 
   drawnStructs.deallocate();
 

@@ -150,6 +150,7 @@ void Mesh::draw( const Instance* instance, int mask )
 
       glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, texture.diffuse );
+
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, texture.masks );
 
@@ -324,19 +325,10 @@ void Mesh::load( uint usage )
     for( int i = 0; i < nTextures; ++i ) {
       const String& name = istream.readString();
 
-      if( name.isEmpty() ) {
-        textures[i].diffuse = shader.defaultTexture;
-        textures[i].masks   = shader.defaultMasks;
-        textures[i].normals = shader.defaultNormals;
-      }
-      else if( name.beginsWith( "@sea:" ) ) {
-        textures[i].diffuse = terra.waterTexId;
-        textures[i].masks   = shader.defaultMasks;
-        textures[i].normals = shader.defaultNormals;
-      }
-      else {
-        textures[i] = context.requestTexture( liber.textureIndex( name ) );
-      }
+      int id = name.isEmpty()             ? -1 :
+               name.beginsWith( "@sea:" ) ? terra.liquidTexId : liber.textureIndex( name );
+
+      textures[i] = context.requestTexture( id );
     }
   }
   else {
@@ -457,7 +449,7 @@ void Mesh::unload()
   }
 
   foreach( texture, textures.citer() ) {
-    if( texture->id >= 0 ) {
+    if( texture->id >= -1 ) {
       context.releaseTexture( texture->id );
     }
     else {

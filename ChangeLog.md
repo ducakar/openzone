@@ -18,6 +18,7 @@
     * linear algebra classes added as primitives to streams, Log and JSON
     * PFile class merged into File class (VFS paths begin with '@')
     * new SharedLib class
+    * new EnumMap class
     * new Gettext class
 - ozDynamics: new rigid body dynamics library
     * collision
@@ -42,6 +43,7 @@
     * switched over to ozEngine classes wherever possible
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
+    * Terrain can be generated based on config file settings
 - general
     * builds on Android (i686, ARM, ARMv7a, MIPS)
     * LuaJIT can be optionally used instead of official Lua

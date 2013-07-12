@@ -25,33 +25,40 @@
 
 #include "header.glsl"
 
-varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
+varying vec3 exLook;
 
 void main()
 {
-  vec3  normal      = normalize( exNormal );
-
+  vec3  normal       = normalize( exNormal );
 #ifdef OZ_LOW_DETAIL
-  float dist        = 1.0 / gl_FragCoord.w;
+  float dist         = 1.0 / gl_FragCoord.w;
 #else
-  vec3  toCamera    = oz_CameraPosition - exPosition;
-  float dist        = length( toCamera );
+  float dist         = length( exLook );
+  vec3  reflectDir   = reflect( exLook / dist, normal );
 #endif
 
-  vec4 colourSample = texture2D( oz_Textures[0], exTexCoord );
-  vec4 diffuse      = skyLightColour( normal );
-
-#ifdef OZ_LOW_DETAIL
-  vec4 fragColour   = oz_ColourTransform * min( colourSample * diffuse, 1.0 );
-#else
-  vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
-  vec4 emission     = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
-  vec4 specular     = specularColour( masksSample.r, normal, toCamera / dist );
-  vec4 illuminated  = colourSample * ( diffuse + emission + specular );
-  vec4 fragColour   = oz_ColourTransform * min( illuminated, vec4( 1.0 ) );
+  vec4  colourSample = texture2D( oz_Textures[0], exTexCoord );
+#ifndef OZ_LOW_DETAIL
+  vec4  masksSample  = texture2D( oz_Textures[1], exTexCoord );
 #endif
 
-  gl_FragData[0]    = applyFog( fragColour, dist );
+  vec3  ambient      = oz_CaelumLight.ambient;
+  vec3  diffuse      = oz_CaelumLight.diffuse * max( 0.0, dot( oz_CaelumLight.dir, normal ) );
+#ifdef OZ_LOW_DETAIL
+  vec3  lighting     = min( ambient * diffuse, vec3( 1.25 ) );
+#else
+  float specularDot  = dot( oz_CaelumLight.dir, reflectDir );
+  vec3  emission     = vec3( masksSample.g, masksSample.g, masksSample.g );
+  vec3  specular     = vec3( 1.5 * masksSample.r * specularDot * specularDot );
+  vec3  lighting     = min( ambient + diffuse + emission, vec3( 1.25 ) ) + specular;
+#endif
+  vec4  fragColour   = vec4( colourSample.xyz * lighting, colourSample.w );
+
+  gl_FragData[0]     = applyFog( oz_ColourTransform * fragColour, dist );
+
+//   vec3 envDir = reflect( reflectDir, normal );
+//   float env = smoothstep( 0.8, 1.1, dot( envDir, vec3( 0.57 ) ) );
+//   gl_FragData[0] += vec4( env, env, env, 0.0 );
 }

@@ -75,7 +75,7 @@ void GalileoFrame::onUpdate()
 void GalileoFrame::onDraw()
 {
   if( !mapTex.isLoaded() ) {
-    mapTex.load( "@terra/" + liber.terrae[orbis.terra.id].name + "-map.dds" );
+    mapTex.load( "@terra/" + liber.terrae[orbis.terra.id].name + ".dds" );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );

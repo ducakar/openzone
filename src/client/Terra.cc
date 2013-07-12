@@ -35,7 +35,7 @@ namespace client
 const float Terra::WAVE_BIAS_INC = 2.0f;
 
 Terra::Terra() :
-  ibo( 0 ), id( -1 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 )
+  ibo( 0 ), id( -1 )
 {
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {
@@ -66,9 +66,9 @@ void Terra::draw()
   tf.applyColour();
 
   glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, detailTexId );
+  glBindTexture( GL_TEXTURE_2D, detailTex.diffuse );
   glActiveTexture( GL_TEXTURE1 );
-  glBindTexture( GL_TEXTURE_2D, mapTexId );
+  glBindTexture( GL_TEXTURE_2D, mapTex );
 
   OZ_GL_CHECK_ERROR();
 
@@ -97,7 +97,7 @@ void Terra::draw()
   OZ_GL_CHECK_ERROR();
 }
 
-void Terra::drawWater()
+void Terra::drawLiquid()
 {
   if( id < 0 ) {
     return;
@@ -109,7 +109,7 @@ void Terra::drawWater()
 
   waveBias = Math::fmod( waveBias + WAVE_BIAS_INC * Timer::TICK_TIME, Math::TAU );
 
-  shader.program( waterShaderId );
+  shader.program( liquidShaderId );
 
   tf.model = Mat44::ID;
   tf.apply();
@@ -118,15 +118,15 @@ void Terra::drawWater()
   glUniform1f( uniform.waveBias, waveBias );
 
   glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, waterTexId );
+  glBindTexture( GL_TEXTURE_2D, liquidTex.diffuse );
   glActiveTexture( GL_TEXTURE1 );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
+  glBindTexture( GL_TEXTURE_2D, liquidTex.masks );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
   for( int i = span.minX; i <= span.maxX; ++i ) {
     for( int j = span.minY; j <= span.maxY; ++j ) {
-      if( waterTiles.get( i * TILES + j ) ) {
+      if( liquidTiles.get( i * TILES + j ) ) {
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
 
         Vertex::setFormat();
@@ -155,12 +155,10 @@ void Terra::load()
 {
   id = orbis.terra.id;
 
-  const String& name = liber.terrae[id].name;
+  const String& name  = liber.terrae[id].name;
 
-  File file          = "@terra/" + name + ".ozcTerra";
-  File liquidTexFile = "@terra/" + name + "-liquid.dds";
-  File detailTexFile = "@terra/" + name + "-detail.dds";
-  File mapTexFile    = "@terra/" + name + "-map.dds";
+  File file = "@terra/" + name + ".ozcTerra";
+  File map  = "@terra/" + name + ".dds";
 
   Buffer buffer = file.read();
 
@@ -169,27 +167,6 @@ void Terra::load()
   }
 
   InputStream is = buffer.inputStream();
-
-  glGenTextures( 1, &waterTexId );
-  glBindTexture( GL_TEXTURE_2D, waterTexId );
-
-  if( GL::textureDataFromFile( liquidTexFile ) == 0 ) {
-    OZ_ERROR( "Failed to load '%s'", liquidTexFile.path().cstr() );
-  }
-
-  glGenTextures( 1, &detailTexId );
-  glBindTexture( GL_TEXTURE_2D, detailTexId );
-
-  if( GL::textureDataFromFile( detailTexFile ) == 0 ) {
-    OZ_ERROR( "Failed to load '%s'", detailTexFile.path().cstr() );
-  }
-
-  glGenTextures( 1, &mapTexId );
-  glBindTexture( GL_TEXTURE_2D, mapTexId );
-
-  if( GL::textureDataFromFile( mapTexFile ) == 0 ) {
-    OZ_ERROR( "Failed to load '%s'", mapTexFile.path().cstr() );
-  }
 
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
@@ -236,17 +213,35 @@ void Terra::load()
     }
   }
 
-  waterTiles.clearAll();
-  for( int i = 0; i < waterTiles.length(); ++i ) {
+  liquidTiles.clearAll();
+  for( int i = 0; i < liquidTiles.length(); ++i ) {
     if( is.readBool() ) {
-      waterTiles.set( i );
+      liquidTiles.set( i );
     }
   }
 
-  landShaderId = liber.shaderIndex( "terraLand" );
-  waterShaderId = liber.shaderIndex( "terraWater" );
+  String sDetail  = is.readString();
+  String sLiquid  = is.readString();
 
+  detailTexId     = sDetail.isEmpty() ? -1 : liber.textureIndex( sDetail );
+  liquidTexId     = sLiquid.isEmpty() ? -1 : liber.textureIndex( sLiquid );
   liquidFogColour = is.readVec4();
+
+  detailTex       = context.requestTexture( detailTexId );
+  liquidTex       = context.requestTexture( liquidTexId );
+
+  glGenTextures( 1, &mapTex );
+  glBindTexture( GL_TEXTURE_2D, mapTex );
+
+  if( GL::textureDataFromFile( map ) == 0 ) {
+    OZ_ERROR( "Failed to load terain map texture '%s'", map.path().cstr() );
+  }
+
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+  landShaderId    = liber.shaderIndex( "terraLand" );
+  liquidShaderId  = liber.shaderIndex( "terraLiquid" );
 
   hard_assert( !is.isAvailable() );
 }
@@ -254,16 +249,13 @@ void Terra::load()
 void Terra::unload()
 {
   if( id >= 0 ) {
-    glDeleteTextures( 1, &mapTexId );
-    glDeleteTextures( 1, &detailTexId );
-    glDeleteTextures( 1, &waterTexId );
+    context.releaseTexture( detailTexId );
+    context.releaseTexture( liquidTexId );
+
+    glDeleteTextures( 1, &mapTex );
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( TILES * TILES, &vbos[0][0] );
-
-    mapTexId = 0;
-    detailTexId = 0;
-    waterTexId = 0;
 
     ibo = 0;
     for( int i = 0; i < TILES; ++i ) {

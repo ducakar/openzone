@@ -55,8 +55,9 @@ void BSP::preload()
   const File* file = mesh.preload( "@bsp/" + bsp->name + ".ozcBSP" );
   InputStream is   = file->inputStream();
 
-  waterFogColour   = is.readVec4();
-  lavaFogColour    = is.readVec4();
+  is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
+  waterFogColour = is.readVec4();
+  lavaFogColour  = is.readVec4();
 
   isPreloaded = true;
 }

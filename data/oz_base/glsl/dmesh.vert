@@ -33,9 +33,9 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
-varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
+varying vec3 exLook;
 
 void main()
 {
@@ -49,16 +49,16 @@ void main()
   vec4 localNormal    = vec4( mix( firstNormal, secondNormal, oz_MeshAnimation[2] ).xyz, 0.0 );
 
   gl_Position   = oz_ProjModelTransform * localPosition;
-  exPosition    = ( oz_ModelTransform * localPosition ).xyz;
   exTexCoord    = inTexCoord;
   exNormal      = ( oz_ModelTransform * localNormal ).xyz;
+  exLook        = ( oz_ModelTransform * localPosition ).xyz - oz_CameraPosition;
 
 #else
 
   gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
-  exPosition  = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
   exTexCoord  = inTexCoord;
   exNormal    = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
+  exLook      = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz - oz_CameraPosition;
 
 #endif
 }

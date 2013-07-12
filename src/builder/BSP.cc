@@ -374,7 +374,7 @@ void BSP::load()
     vertices[i].pos[2]      = is.readFloat() * scale;
 
     vertices[i].texCoord[0] = is.readFloat();
-    vertices[i].texCoord[1] = 1.0f - is.readFloat();
+    vertices[i].texCoord[1] = is.readFloat();
 
     // float lightmapCoord[2]
     is.readFloat();
@@ -1137,7 +1137,9 @@ void BSP::saveClient()
         compiler.blend( false );
       }
 
-      context.usedTextures.include( tex.name );
+      if( !tex.name.beginsWith( "@sea:" ) ) {
+        context.usedTextures.include( tex.name );
+      }
 
       compiler.texture( tex.name );
       compiler.begin( Compiler::TRIANGLES );

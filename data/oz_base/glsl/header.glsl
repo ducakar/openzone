@@ -53,14 +53,14 @@ uniform sampler2D       oz_Textures[6];
 struct CaelumLight
 {
   vec3 dir;
-  vec4 diffuse;
-  vec4 ambient;
+  vec3 diffuse;
+  vec3 ambient;
 };
 
 struct Light
 {
   vec3 pos;
-  vec4 diffuse;
+  vec3 diffuse;
 };
 
 uniform CaelumLight     oz_CaelumLight;
@@ -81,26 +81,6 @@ uniform Fog             oz_Fog;
 /*
  * FUNCTIONS
  */
-
-vec4 greyscale( vec4 colour )
-{
-  float avg = dot( colour, vec4( 0.333, 0.333, 0.333, 0.0 ) );
-  return vec4( avg, avg, avg, colour.a );
-}
-
-vec4 skyLightColour( vec3 normal )
-{
-  float diffuseFactor = max( dot( -oz_CaelumLight.dir, normal ), 0.0 );
-  vec4 colour = diffuseFactor * oz_CaelumLight.diffuse + oz_CaelumLight.ambient;
-  return min( colour, vec4( 1.0, 1.0, 1.0, 1.0 ) );
-}
-
-vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
-{
-  vec3 reflectedLight = reflect( oz_CaelumLight.dir, normal );
-  float factor = 2.0 * specular * max( dot( reflectedLight, toCamera ), 0.0 );
-  return factor * oz_CaelumLight.diffuse;
-}
 
 vec4 applyFog( vec4 colour, float dist )
 {

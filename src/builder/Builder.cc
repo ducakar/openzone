@@ -240,6 +240,7 @@ void Builder::buildBSPTextures()
       name = path.substring( 17, dot );
       path = path.substring( 0, dot );
 
+      // Skip "*_m.*", "*_n.*" etc. as those get build together with diffuse texture.
       if( !context.isBaseTexture( name ) ) {
         continue;
       }
@@ -253,6 +254,7 @@ void Builder::buildBSPTextures()
       File::mkdir( "tex/" + subDir->name() );
 
       context.buildTexture( path, "tex/" + name );
+      context.usedTextures.exclude( name );
     }
   }
 
@@ -284,6 +286,20 @@ void Builder::buildBSPTextures()
         continue;
       }
     }
+  }
+
+  if( !context.usedTextures.isEmpty() ) {
+    Log::println( "The following referenced textures are missing in 'baseq3/textures' {" );
+    Log::indent();
+
+    foreach( tex, context.usedTextures.citer() ) {
+      Log::println( "'%s'", tex->key.cstr() );
+    }
+
+    Log::unindent();
+    Log::println( "}" );
+
+    OZ_ERROR( "Referenced textures missing" );
   }
 
   Log::unindent();
@@ -884,6 +900,8 @@ int Builder::main( int argc, char** argv )
   }
   if( doBSPs ) {
     buildBSPs();
+  }
+  if( doTerrae || doBSPs ) {
     buildBSPTextures();
   }
   if( doClasses ) {

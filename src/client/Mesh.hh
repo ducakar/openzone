@@ -41,7 +41,7 @@ struct Vertex
 
 struct Texture
 {
-  int  id;
+  int  id;      ///< -2: external, -1: default, 0+ BSP texture index.
   uint diffuse;
   uint masks;
   uint normals;

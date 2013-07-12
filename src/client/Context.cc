@@ -23,6 +23,9 @@
 
 #include <client/Context.hh>
 
+#include <client/Caelum.hh>
+#include <client/Terra.hh>
+
 #include <client/SMMImago.hh>
 #include <client/SMMVehicleImago.hh>
 #include <client/ExplosionImago.hh>
@@ -276,6 +279,7 @@ Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
                               const File& normalsFile )
 {
   Texture texture;
+  texture.id = -2;
 
   if( diffuseFile.isMapped() ) {
     glGenTextures( 1, &texture.diffuse );
@@ -337,6 +341,11 @@ void Context::unloadTexture( const Texture* texture )
 
 Texture Context::requestTexture( int id )
 {
+  // No texture.
+  if( id == -1 ) {
+    return Texture();
+  }
+
   Resource<Texture>& resource = textures[id];
 
   if( resource.nUsers >= 0 ) {
@@ -366,6 +375,11 @@ Texture Context::requestTexture( int id )
 
 void Context::releaseTexture( int id )
 {
+  // No texture.
+  if( id == -1 ) {
+    return;
+  }
+
   Resource<Texture>& resource = textures[id];
 
   hard_assert( resource.nUsers > 0 );
@@ -668,6 +682,9 @@ void Context::unload()
   imagines.deallocate();
   audios.free();
   audios.deallocate();
+
+  caelum.unload();
+  terra.unload();
 
   aFree( fragPools, liber.nFragPools );
   aFill<FragPool*, FragPool*>( fragPools, liber.nFragPools, nullptr );

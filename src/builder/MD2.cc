@@ -322,7 +322,7 @@ void MD2::build( const char* path )
 
   for( int i = 0; i < texCoords.length(); ++i ) {
     texCoords[i].u = float( is.readShort() ) / float( header.skinWidth );
-    texCoords[i].v = float( header.skinHeight - is.readShort() ) / float( header.skinHeight );
+    texCoords[i].v = float( is.readShort() ) / float( header.skinHeight );
   }
 
   is.rewind();

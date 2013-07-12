@@ -31,19 +31,19 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
-varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
+varying vec3 exLook;
 
 void main()
 {
-  exPosition     = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
-  exTexCoord     = inTexCoord;
-  exNormal       = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
-
   float windFact = max( inPosition.z, 0.0 );
+  vec3  position = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
-                        sin( 0.08 * ( exPosition.x + exPosition.y ) + oz_Wind.w );
+                     sin( 0.08 * ( position.x + position.y ) + oz_Wind.w );
 
   gl_Position    = oz_ProjModelTransform * vec4( inPosition.xy + windBias.xy, inPosition.z, 1.0 );
+  exTexCoord     = inTexCoord;
+  exNormal       = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
+  exLook         = position - oz_CameraPosition;
 }

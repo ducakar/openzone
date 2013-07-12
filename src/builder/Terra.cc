@@ -47,11 +47,11 @@ void Terra::load()
   };
   EnumMap<int> liquidMap( LIQUID_MAP );
 
-  liquid        = liquidMap[ config["liquid"].get( "" ) ];
+  detailTex     = config["detailTexture"].get( "" );
+  liquidTex     = config["liquidTexture"].get( "" );
   liquidColour  = config["liquidFogColour"].get( Vec4( 0.00f, 0.05f, 0.20f, 1.00f ) );
-  liquidTexture = config["liquidTexture"].get( "" );
-  detailTexture = config["detailTexture"].get( "" );
-  mapTexture    = config["mapTexture"].get( "" );
+  liquid        = liquidMap[ config["liquid"].get( "" ) ];
+  map           = config["map"].get( "" );
 
   float  minHeight     = config["minHeight"].get( -200.0f );
   float  maxHeight     = config["maxHeight"].get( +200.0f );
@@ -103,7 +103,9 @@ void Terra::load()
   else {
     Log::print( "Generating terrain heightmap ..." );
 
-    static const char* MODULE_NAMES[] = { "combiner", "plains", "mountains", "turbulence" };
+    static const char* MODULE_NAMES[] = {
+      "combiner", "plains", "mountains", "turbulence", "noise"
+    };
 
     static const EnumName CONTROL_MAP[] = {
       { TerraBuilder::COMBINER, "combiner" },
@@ -113,8 +115,6 @@ void Terra::load()
 
     for( int i = 0; i < aLength( MODULE_NAMES ); ++i ) {
       const JSON& moduleConfig = config[ MODULE_NAMES[i] ];
-
-      hard_assert( !moduleConfig.isNull() );
 
       float bottomHeight = moduleConfig["bottomHeight"].get( -100.0f );
       float topHeight    = moduleConfig["topHeight"].get( +100.0f );
@@ -246,21 +246,27 @@ void Terra::saveClient()
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();
 
-  context.buildTexture( "@terra/" + liquidTexture.fileBaseName(), "terra/" + name + "-liquid" );
-  context.buildTexture( "@terra/" + detailTexture.fileBaseName(), "terra/" + name + "-detail" );
+  if( !detailTex.isEmpty() ) {
+    context.usedTextures.include( detailTex );
+  }
+  if( !liquidTex.isEmpty() ) {
+    context.usedTextures.include( liquidTex );
+  }
 
-  if( !mapTexture.isEmpty() ) {
-    context.buildTexture( "@terra/" + mapTexture.fileBaseName(), "terra/" + name + "-map" );
+  if( !map.isEmpty() ) {
+    context.buildTexture( "@terra/" + map.fileBaseName(), "terra/" + name );
   }
   else {
-    Log::print( "Generating terrain texture ..." );
+    Log::print( "Generating terrain texture (this might take a long time) ..." );
 
-    int imageLength = 2*( VERTS - 1 );
-    int imageFlags  = ImageBuilder::MIPMAPS_BIT; // S3TC introduces too much distortion.
+    int imageLength = 4*( VERTS - 1 );
+    int imageFlags  = ImageBuilder::MIPMAPS_BIT;
+    // S3TC introduces noticeable distortion.
+    imageFlags |= context.useS3TC ? ImageBuilder::COMPRESSION_BIT : 0;
 
     char* image = TerraBuilder::generateImage( imageLength, imageLength );
     ImageBuilder::createDDS( image, imageLength, imageLength, 24, imageFlags,
-                             "terra/" + name + "-map.dds" );
+                             "terra/" + name + ".dds" );
 
     Log::printEnd( " OK" );
   }
@@ -334,6 +340,8 @@ void Terra::saveClient()
     os.writeBool( waterTiles.get( i ) );
   }
 
+  os.writeString( detailTex );
+  os.writeString( liquidTex );
   os.writeVec4( liquidColour );
 
   if( !destFile.write( os.begin(), os.tell() ) ) {
@@ -352,10 +360,10 @@ void Terra::build( const char* name_ )
   saveMatrix();
   saveClient();
 
-  name          = "";
-  liquidTexture = "";
-  detailTexture = "";
-  mapTexture    = "";
+  name      = "";
+  liquidTex = "";
+  detailTex = "";
+  map       = "";
 }
 
 Terra terra;

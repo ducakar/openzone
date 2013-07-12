@@ -31,9 +31,9 @@ attribute vec3  inNormal;
 attribute vec2  inBones;
 attribute float inBlend;
 
-varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
+varying vec3 exLook;
 
 void main()
 {
@@ -49,7 +49,7 @@ void main()
                         oz_BoneTransforms[ bone1 ] * localNormal );
 
   gl_Position = oz_ProjModelTransform * localPos;
-  exPosition  = ( oz_ModelTransform * localPos ).xyz;
   exTexCoord  = inTexCoord;
   exNormal    = ( oz_ModelTransform * localNormal ).xyz;
+  exLook      = ( oz_ModelTransform * localPos ).xyz - oz_CameraPosition;
 }

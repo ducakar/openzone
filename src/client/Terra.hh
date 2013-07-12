@@ -45,31 +45,33 @@ class Terra
 
     static const float WAVE_BIAS_INC;
 
-    uint  vbos[TILES][TILES];
-    uint  ibo;
+    uint    vbos[TILES][TILES];
+    uint    ibo;
 
-    int   landShaderId;
-    int   waterShaderId;
+    int     detailTexId;
+    int     landShaderId;
+    int     liquidShaderId;
 
-    float waveBias;
+    Texture detailTex;
+    Texture liquidTex;
+    GLuint  mapTex;
 
-    Span  span;
-    SBitset<TILES * TILES> waterTiles;
+    float   waveBias;
+
+    Span    span;
+    SBitset<TILES * TILES> liquidTiles;
 
   public:
 
     int  id;
 
-    uint waterTexId;
-    uint detailTexId;
-    uint mapTexId;
-
+    int  liquidTexId;
     Vec4 liquidFogColour;
 
     explicit Terra();
 
     void draw();
-    void drawWater();
+    void drawLiquid();
 
     void load();
     void unload();

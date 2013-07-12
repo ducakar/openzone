@@ -281,8 +281,8 @@ void Shader::setCaelumLight( const Vec3& dir, const Vec4& colour )
 void Shader::updateLights()
 {
   glUniform3fv( uniform.caelumLight_dir,     1, caelumLight.dir );
-  glUniform4fv( uniform.caelumLight_diffuse, 1, caelumLight.diffuse );
-  glUniform4fv( uniform.caelumLight_ambient, 1, caelumLight.ambient );
+  glUniform3fv( uniform.caelumLight_diffuse, 1, caelumLight.diffuse );
+  glUniform3fv( uniform.caelumLight_ambient, 1, caelumLight.ambient );
 }
 
 void Shader::init()

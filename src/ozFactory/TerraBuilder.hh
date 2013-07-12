@@ -45,7 +45,8 @@ class TerraBuilder
       PLAINS,
       MOUNTAINS,
       COMBINER,
-      TURBULENCE
+      TURBULENCE,
+      NOISE
     };
 
   public:
@@ -67,7 +68,7 @@ class TerraBuilder
      * generated height may go also slightly out of these bounds.
      *
      * Default: -1.0 and +1.0.
-     * Applies to: PLAINS, MOUNTAINS.
+     * Applies to: PLAINS, MOUNTAINS, NOISE.
      */
     static bool setBounds( Module module, float bottomHeight, float topHeight );
 
@@ -75,7 +76,7 @@ class TerraBuilder
      * Set seed.
      *
      * Default: 0.
-     * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE.
+     * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE, NOISE.
      */
     static bool setSeed( Module module, int seed );
 
@@ -83,7 +84,7 @@ class TerraBuilder
      * Set number of octaves for a given module.
      *
      * Default: 6.
-     * Applies to: PLAINS, MOUNTAINS, COMBINER.
+     * Applies to: PLAINS, MOUNTAINS, COMBINER, NOISE.
      */
     static bool setOctaveCount( Module module, int count );
 
@@ -99,7 +100,7 @@ class TerraBuilder
      * Set frequency for a given module.
      *
      * Default: 1.0.
-     * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE.
+     * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE, NOISE.
      */
     static bool setFrequency( Module module, float frequency );
 
@@ -107,7 +108,7 @@ class TerraBuilder
      * Set persistence for a given module.
      *
      * Default: 0.5.
-     * Applies to: PLAINS, COMBINER.
+     * Applies to: PLAINS, COMBINER, NOISE.
      */
     static bool setPersistence( Module module, float persistence );
 

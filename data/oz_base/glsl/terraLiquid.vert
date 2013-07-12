@@ -18,9 +18,9 @@
  */
 
 /*
- * terraWater.vert
+ * terraLiquid.vert
  *
- * Terrain sea surface shader.
+ * Terrain (lava) sea surface shader.
  */
 
 #include "header.glsl"
@@ -34,9 +34,9 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
-varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
+varying vec3 exLook;
 
 void main()
 {
@@ -45,7 +45,7 @@ void main()
   vec3  position = ( oz_ModelTransform * localPos ).xyz;
 
   gl_Position    = oz_ProjModelTransform * localPos;
-  exPosition     = position;
   exTexCoord     = inTexCoord * TERRA_WATER_SCALE;
   exNormal       = NORMAL;
+  exLook         = position - oz_CameraPosition;
 }
