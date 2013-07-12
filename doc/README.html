@@ -887,6 +887,18 @@ table.settings td {
   </tr>
 </table>
 
+<h4>libnoise</h4>
+<table>
+  <tr>
+    <td>Web page:</td>
+    <td><a href="http://libnoise.sourceforge.net/">libnoise.sourceforge.net</a></td>
+  </tr>
+  <tr>
+    <td>Licence:</td>
+    <td><a href="licences/COPYING.LGPL2.1.txt">LGPL 2.1</a></td>
+  </tr>
+</table>
+
 <h4>libogg</h4>
 <table>
   <tr>
@@ -1022,10 +1034,9 @@ table.settings td {
 <h3>Software patents</h3>
 <p>
   OpenZone uses several techniques patented in United States (and maybe some other countries). In
-  particular OpenZone engine uses MP3 and AAC decoders (implemented in libmad and faad respectively)
+  particular OpenZone engine uses external MP3 (libmad) and AAC (faad) decoders if found on your OS
   and <tt>ozBuild</tt> tool uses S3 texture compression (implemented in libsquish). If software
-  patents are an issue for you, use US version of OpenZone instead of International or, if you build
-  it from source, compile it with <tt>OZ_NONFREE</tt> option turned off.
+  patents are an issue for you, build it from source with <tt>OZ_NONFREE</tt> option turned off.
 </p>
 
 </body>

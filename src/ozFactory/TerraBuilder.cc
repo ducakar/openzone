@@ -36,19 +36,38 @@ namespace oz
 static const int ERROR_LENGTH = 1024;
 
 static char                errorBuffer[ERROR_LENGTH] = {};
-static module::Billow      plains;
-static module::RidgedMulti mountains;
+static module::Billow      plainsBase;
+static module::ScaleBias   plainsFinal;
+static module::RidgedMulti mountainsBase;
+static module::ScaleBias   mountainsFinal;
 static module::Perlin      terrainType;
+static module::Select      combiner;
 static module::Turbulence  turbulence;
-static double              meanHeight                = 0.0;
-static double              heightExtent              = 1.0;
 static List<Vec4>          gradientPoints;
+static bool                isInitialised = false;
+
+static void ensureInitialised()
+{
+  if( isInitialised ) {
+    return;
+  }
+
+  plainsFinal.SetSourceModule( 0, plainsBase );
+  mountainsFinal.SetSourceModule( 0, mountainsBase );
+
+  combiner.SetSourceModule( 0, plainsFinal );
+  combiner.SetSourceModule( 1, mountainsFinal );
+  combiner.SetControlModule( terrainType );
+
+  turbulence.SetSourceModule( 0, combiner );
+
+  isInitialised = true;
+}
 
 static float genHeight( double x, double y )
 {
-  double plainsHeight = plains.GetValue( x, y, 1.0 );
-
-  return float( meanHeight + plainsHeight * heightExtent );
+  double height = turbulence.GetValue( x, y, 1.0 );
+  return float( height );
 }
 
 static uint getColour( float height )
@@ -89,80 +108,163 @@ const char* TerraBuilder::getError()
   return errorBuffer;
 }
 
-void TerraBuilder::setSeed( int seed )
+bool TerraBuilder::setBounds( Module module, float bottomHeight, float topHeight )
 {
-  plains.SetSeed( seed );
-  mountains.SetSeed( seed );
-  terrainType.SetSeed( seed );
-  turbulence.SetSeed( seed );
-}
+  double bias  = ( bottomHeight + topHeight ) / 2.0;
+  double scale = ( topHeight - bottomHeight ) / 2.0;
 
-void TerraBuilder::setOctaveCount( Module module, int count )
-{
   switch( module ) {
     case PLAINS: {
-      plains.SetOctaveCount( count );
-      break;
+      plainsFinal.SetBias( bias );
+      plainsFinal.SetScale( scale );
+      return true;
     }
     case MOUNTAINS: {
-      break;
+      mountainsFinal.SetBias( bias );
+      mountainsFinal.SetScale( scale );
+      return true;
     }
-    case TERRAIN_TYPE: {
-      terrainType.SetOctaveCount( count );
-      break;
-    }
-    case TURBULENCE: {
-      break;
+    default: {
+      return false;
     }
   }
 }
 
-void TerraBuilder::setFrequency( TerraBuilder::Module module, float frequency )
+bool TerraBuilder::setSeed( Module module, int seed )
 {
   switch( module ) {
     case PLAINS: {
-      plains.SetFrequency( frequency );
-      break;
+      plainsBase.SetSeed( seed );
+      return true;
     }
     case MOUNTAINS: {
-      mountains.SetFrequency( frequency );
-      break;
+      mountainsBase.SetSeed( seed );
+      return true;
     }
-    case TERRAIN_TYPE: {
+    case COMBINER: {
+      terrainType.SetSeed( seed );
+      return true;
+    }
+    case TURBULENCE: {
+      turbulence.SetSeed( seed );
+      return true;
+    }
+  }
+}
+
+bool TerraBuilder::setOctaveCount( Module module, int count )
+{
+  switch( module ) {
+    case PLAINS: {
+      plainsBase.SetOctaveCount( count );
+      return true;
+    }
+    case MOUNTAINS: {
+      mountainsBase.SetOctaveCount( count );
+      return true;
+    }
+    case COMBINER: {
+      terrainType.SetOctaveCount( count );
+      return true;
+    }
+    default: {
+      return false;
+    }
+  }
+}
+
+bool TerraBuilder::setRoughness( Module module, int roughness )
+{
+  switch( module ) {
+    case TURBULENCE: {
+      turbulence.SetRoughness( roughness );
+      return true;
+    }
+    default: {
+      return false;
+    }
+  }
+}
+
+bool TerraBuilder::setFrequency( Module module, float frequency )
+{
+  switch( module ) {
+    case PLAINS: {
+      plainsBase.SetFrequency( frequency );
+      return true;
+    }
+    case MOUNTAINS: {
+      mountainsBase.SetFrequency( frequency );
+      return true;
+    }
+    case COMBINER: {
       terrainType.SetFrequency( frequency );
-      break;
+      return true;
     }
     case TURBULENCE: {
       turbulence.SetFrequency( frequency );
-      break;
+      return true;
     }
   }
 }
 
-void TerraBuilder::setPersistence( TerraBuilder::Module module, float persistence )
+bool TerraBuilder::setPersistence( Module module, float persistence )
 {
   switch( module ) {
     case PLAINS: {
-      plains.SetPersistence( persistence );
-      break;
+      plainsBase.SetPersistence( persistence );
+      return true;
     }
-    case MOUNTAINS: {
-      break;
-    }
-    case TERRAIN_TYPE: {
+    case COMBINER: {
       terrainType.SetPersistence( persistence );
+      return true;
+    }
+    default: {
+      return false;
+    }
+  }
+}
+
+bool TerraBuilder::setPower( Module module, float power )
+{
+  switch( module ) {
+    case TURBULENCE: {
+      turbulence.SetPower( power );
+      return true;
+    }
+    default: {
+      return false;
+    }
+  }
+}
+
+void TerraBuilder::setMountainsControl( Module module )
+{
+  ensureInitialised();
+
+  switch( module ) {
+    case PLAINS: {
+      combiner.SetControlModule( plainsBase );
       break;
     }
-    case TURBULENCE: {
+    case COMBINER: {
+      combiner.SetControlModule( terrainType );
+      break;
+    }
+    default: {
       break;
     }
   }
 }
 
-void TerraBuilder::setBounds( float bottomHeight, float topHeight )
+void TerraBuilder::setMountainsBounds( float lower, float upper )
 {
-  meanHeight   = ( bottomHeight + topHeight ) / 2.0;
-  heightExtent = ( topHeight - bottomHeight ) / 2.0;
+  combiner.SetBounds( lower, upper );
+}
+
+void TerraBuilder::setEdgeFalloff( float falloff )
+{
+  combiner.SetEdgeFalloff( falloff );
 }
 
 void TerraBuilder::addGradientPoint( const Vec4& point )
@@ -184,6 +286,8 @@ float* TerraBuilder::generateHeightmap( int width, int height )
 {
   errorBuffer[0] = '\0';
 
+  ensureInitialised();
+
   float* heightmap = new float[width * height];
   double dWidth    = width;
   double dHeight   = height;
@@ -199,6 +303,8 @@ float* TerraBuilder::generateHeightmap( int width, int height )
 char* TerraBuilder::generateImage( int width, int height )
 {
   errorBuffer[0] = '\0';
+
+  ensureInitialised();
 
   int    pitch   = ( ( width * 3 + 3 ) / 4 ) * 4;
   char*  image   = new char[height * pitch] {};

@@ -44,7 +44,7 @@ class TerraBuilder
     {
       PLAINS,
       MOUNTAINS,
-      TERRAIN_TYPE,
+      COMBINER,
       TURBULENCE
     };
 
@@ -61,40 +61,87 @@ class TerraBuilder
     static const char* getError();
 
     /**
-     * Set seed.
-     */
-    static void setSeed( int seed );
-
-    /**
-     * Set number of octaves for a given module.
-     *
-     * Default: 6.
-     */
-    static void setOctaveCount( Module module, int count );
-
-    /**
-     * Set frequency for a given module.
-     *
-     * Default: 1.0.
-     */
-    static void setFrequency( Module module, float frequency );
-
-    /**
-     * Set persistence for a given module.
-     *
-     * Default: 0.5.
-     */
-    static void setPersistence( Module module, float persistence );
-
-    /**
      * Set height values to which -1.0 and +1.0 map respectively.
      *
      * This roughly represents the highest and the lowest height in the heightmap. Note that the
      * generated height may go also slightly out of these bounds.
      *
      * Default: -1.0 and +1.0.
+     * Applies to: PLAINS, MOUNTAINS.
      */
-    static void setBounds( float bottomHeight, float topHeight );
+    static bool setBounds( Module module, float bottomHeight, float topHeight );
+
+    /**
+     * Set seed.
+     *
+     * Default: 0.
+     * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE.
+     */
+    static bool setSeed( Module module, int seed );
+
+    /**
+     * Set number of octaves for a given module.
+     *
+     * Default: 6.
+     * Applies to: PLAINS, MOUNTAINS, COMBINER.
+     */
+    static bool setOctaveCount( Module module, int count );
+
+    /**
+     * Set roughness.
+     *
+     * Default: 3.
+     * Applies to: TURBULENCE.
+     */
+    static bool setRoughness( Module module, int roughness );
+
+    /**
+     * Set frequency for a given module.
+     *
+     * Default: 1.0.
+     * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE.
+     */
+    static bool setFrequency( Module module, float frequency );
+
+    /**
+     * Set persistence for a given module.
+     *
+     * Default: 0.5.
+     * Applies to: PLAINS, COMBINER.
+     */
+    static bool setPersistence( Module module, float persistence );
+
+    /**
+     * Set power.
+     *
+     * Default: 1.0.
+     * Applies to: TURBULENCE.
+     */
+    static bool setPower( Module module, float power );
+
+    /**
+     * Set combiner control module which defines mountain regions (PLAINS or COMBINER).
+     *
+     * Default: COMBINER.
+     * Applies to: COMBINER.
+     */
+    static void setMountainsControl( Module module );
+
+    /**
+     * Set lower bound for combiner control input to switch to mountain terrain.
+     *
+     * Default: -1.0 and +1.0.
+     * Applies to: COMBINER.
+     */
+    static void setMountainsBounds( float lower, float upper );
+
+    /**
+     * Set edge smoothing between plain and mountain regions.
+     *
+     * Default: 0.0.
+     * Applies to: COMBINER.
+     */
+    static void setEdgeFalloff( float falloff );
 
     /**
      * Add a colour to gradient scale. W coordinate is used as level.

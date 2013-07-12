@@ -53,20 +53,18 @@ void Terra::load()
   detailTexture = config["detailTexture"].get( "" );
   mapTexture    = config["mapTexture"].get( "" );
 
-  float minHeight = config["bottomHeight"].get( -200.0f );
-  float maxHeight = config["topHeight"].get( +200.0f );
-
-  File heightmapFile = String::str( "@terra/%s", config["heightmap"].get( "" ) );
-
-  config.clear( true );
+  float  minHeight     = config["minHeight"].get( -200.0f );
+  float  maxHeight     = config["maxHeight"].get( +200.0f );
+  String heightmapName = config["heightmap"].get( "" );
 
   FIBITMAP* image     = nullptr;
   float*    heightmap = nullptr;
 
-  if( !heightmapFile.type() == File::REGULAR ) {
+  if( !heightmapName.isEmpty() ) {
     Log::print( "Loading terrain heightmap image '%s' ...", name.cstr() );
 
-    String realPath  = heightmapFile.realPath();
+    File   heightmapFile = "@terra/" + heightmapName;
+    String realPath      = heightmapFile.realPath();
 
     image = FreeImage_Load( FIF_PNG, realPath );
     if( image == nullptr ) {
@@ -105,8 +103,59 @@ void Terra::load()
   else {
     Log::print( "Generating terrain heightmap ..." );
 
-    TerraBuilder::setBounds( minHeight, maxHeight );
-    TerraBuilder::setBounds( -200.0f, +200.0f );
+    static const char* MODULE_NAMES[] = { "combiner", "plains", "mountains", "turbulence" };
+
+    static const EnumName CONTROL_MAP[] = {
+      { TerraBuilder::COMBINER, "combiner" },
+      { TerraBuilder::PLAINS,   "plains"   },
+    };
+    static const EnumMap<TerraBuilder::Module> controlMap( CONTROL_MAP );
+
+    for( int i = 0; i < aLength( MODULE_NAMES ); ++i ) {
+      const JSON& moduleConfig = config[ MODULE_NAMES[i] ];
+
+      hard_assert( !moduleConfig.isNull() );
+
+      float bottomHeight = moduleConfig["bottomHeight"].get( -100.0f );
+      float topHeight    = moduleConfig["topHeight"].get( +100.0f );
+      int   seed         = moduleConfig["seed"].get( 0 );
+      int   octaveCount  = moduleConfig["octaveCount"].get( 6 );
+      int   roughness    = moduleConfig["roughness"].get( 3 );
+      float frequency    = moduleConfig["frequency"].get( 1.0f );
+      float persistence  = moduleConfig["persistence"].get( 0.5f );
+      float power        = moduleConfig["power"].get( 1.0f );
+
+      TerraBuilder::Module module = TerraBuilder::Module( i );
+
+      TerraBuilder::setBounds( module, bottomHeight, topHeight );
+      TerraBuilder::setSeed( module, seed );
+      TerraBuilder::setOctaveCount( module, octaveCount );
+      TerraBuilder::setRoughness( module, roughness );
+      TerraBuilder::setFrequency( module, frequency );
+      TerraBuilder::setPersistence( module, persistence );
+      TerraBuilder::setPower( module, power );
+
+      if( i == 0 ) {
+        float  lowerBound = moduleConfig["lowerBound"].get( -1.0f );
+        float  upperBound = moduleConfig["upperBound"].get( +1.0f );
+        float  falloff    = moduleConfig["falloff"].get( 0.0f );
+        String sControl   = moduleConfig["mountainsControl"].get( controlMap.defaultName() );
+
+        TerraBuilder::setMountainsControl( controlMap[sControl] );
+        TerraBuilder::setMountainsBounds( lowerBound, upperBound );
+        TerraBuilder::setEdgeFalloff( falloff );
+      }
+    }
+
+    TerraBuilder::clearGradient();
+
+    const JSON& gradientConfig = config["gradient"];
+
+    for( int i = 0; i < gradientConfig.length(); ++i ) {
+      Vec4 gradientPoint = gradientConfig[i].asVec4();
+
+      TerraBuilder::addGradientPoint( gradientPoint );
+    }
 
     heightmap = TerraBuilder::generateHeightmap( VERTS, VERTS );
 
@@ -160,6 +209,8 @@ void Terra::load()
     FreeImage_Unload( image );
   }
 
+  config.clear( true );
+
   Log::printEnd( " OK" );
 }
 
@@ -202,18 +253,16 @@ void Terra::saveClient()
     context.buildTexture( "@terra/" + mapTexture.fileBaseName(), "terra/" + name + "-map" );
   }
   else {
-    TerraBuilder::addGradientPoint( Vec4( 0.00f, 0.00f, 0.10f, -1.00f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.00f, 0.20f, 0.40f, -0.20f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.20f, 0.60f, 0.60f, -0.10f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.80f, 0.60f, 0.20f, +0.00f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.10f, 0.40f, 0.15f, +0.20f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.05f, 0.30f, 0.10f, +0.50f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.50f, 0.50f, 0.50f, +0.80f * 100 ) );
-    TerraBuilder::addGradientPoint( Vec4( 0.80f, 0.80f, 0.80f, +0.95f * 100 ) );
+    Log::print( "Generating terrain texture ..." );
 
-    char* image = TerraBuilder::generateImage( VERTS - 1, VERTS - 1 );
-    ImageBuilder::createDDS( image, VERTS - 1, VERTS - 1, 24,
-                            ImageBuilder::MIPMAPS_BIT, "terra/" + name + "-map.dds" );
+    int imageLength = 2*( VERTS - 1 );
+    int imageFlags  = ImageBuilder::MIPMAPS_BIT; // S3TC introduces too much distortion.
+
+    char* image = TerraBuilder::generateImage( imageLength, imageLength );
+    ImageBuilder::createDDS( image, imageLength, imageLength, 24, imageFlags,
+                             "terra/" + name + "-map.dds" );
+
+    Log::printEnd( " OK" );
   }
 
   OutputStream os( 0 );

@@ -382,15 +382,11 @@ Inventory::Inventory() :
 {
   flags = UPDATE_BIT | HIDDEN_BIT | IGNORE_BIT;
 
-  Log::verboseMode = true;
-
   scrollUpTex.load( "@ui/icon/scrollUp.dds" );
   scrollDownTex.load( "@ui/icon/scrollDown.dds" );
   useTex.load( "@ui/icon/use.dds" );
   equipTex.load( "@ui/icon/equip.dds" );
   unequipTex.load( "@ui/icon/unequip.dds" );
-
-  Log::verboseMode = false;
 }
 
 }

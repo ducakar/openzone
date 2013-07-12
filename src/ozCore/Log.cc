@@ -121,6 +121,7 @@ void Log::putsRaw( const char* s )
 {
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( s, stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( s, file );
@@ -136,6 +137,7 @@ void Log::vprintRaw( const char* s, va_list ap )
 
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( buffer, file );
@@ -154,6 +156,7 @@ void Log::printRaw( const char* s, ... )
 
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( buffer, file );
@@ -175,6 +178,7 @@ void Log::print( const char* s, ... )
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( indent, stdout );
     fputs( buffer, stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( indent, file );
@@ -195,6 +199,7 @@ void Log::printEnd( const char* s, ... )
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
     fputc( '\n', stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( buffer, file );
@@ -207,6 +212,7 @@ void Log::printEnd()
 {
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputc( '\n', stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputc( '\n', file );
@@ -229,6 +235,7 @@ void Log::println( const char* s, ... )
     fputs( indent, stdout );
     fputs( buffer, stdout );
     fputc( '\n', stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( indent, file );
@@ -242,6 +249,7 @@ void Log::println()
 {
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputc( '\n', stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputc( '\n', file );
@@ -291,6 +299,8 @@ void Log::printTrace( const StackTrace& st )
     free( entries );
   }
 
+  fflush( stdout );
+
   if( file != nullptr ) {
     fflush( file );
   }
@@ -307,6 +317,7 @@ void Log::printSignal( int sigNum )
 
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
+    fflush( stdout );
   }
   if( file != nullptr ) {
     fputs( buffer, file );

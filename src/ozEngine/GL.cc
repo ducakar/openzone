@@ -303,7 +303,7 @@ int GL::textureDataFromFile( const File& file, int bias )
 
     mipmapWidth  = max( 1, mipmapWidth / 2 );
     mipmapHeight = max( 1, mipmapHeight / 2 );
-    mipmapS3Size = max( blockSize, mipmapS3Size / 4 );
+    mipmapS3Size = ( ( mipmapWidth + 3 ) / 4 ) * ( ( mipmapHeight + 3 ) / 4 ) * blockSize;
   }
 
   hard_assert( !istream.isAvailable() );

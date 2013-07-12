@@ -413,8 +413,6 @@ HudArea::HudArea() :
     vehicleWeaponRounds[i]     = Label( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
-  Log::verboseMode = true;
-
   crossTex.load( "@ui/icon/crosshair.dds" );
   useTex.load( "@ui/icon/use.dds" );
   deviceTex.load( "@ui/icon/device.dds" );
@@ -426,8 +424,6 @@ HudArea::HudArea() :
   grabTex.load( "@ui/icon/grab.dds" );
   lockedTex.load( "@ui/icon/locked.dds" );
   unlockedTex.load( "@ui/icon/unlocked.dds" );
-
-  Log::verboseMode = false;
 }
 
 }

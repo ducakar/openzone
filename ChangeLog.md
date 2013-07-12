@@ -30,6 +30,7 @@
 - ozFactory: new builder building blocks library
     * ImageBuilder class for building DDS textures
     * ModelBuilder class for building OpenZone models using Assimp library
+    * TerraBuilder class generates random terrain heightmaps and corresponding textures
 - matrix
     * melee attack
 - ui

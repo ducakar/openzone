@@ -243,7 +243,7 @@ void BSP::load()
 
     static const EnumName ENTITY_MAP[] = {
       { EntityClass::STATIC,         "STATIC"         },
-      { EntityClass::MANUAL_DOOR,    "MAUAL_DOOR"     },
+      { EntityClass::MANUAL_DOOR,    "MANUAL_DOOR"    },
       { EntityClass::AUTO_DOOR,      "AUTO_DOOR"      },
       { EntityClass::IGNORING_BLOCK, "IGNORING_BLOCK" },
       { EntityClass::CRUSHING_BLOCK, "CRUSHING_BLOCK" },

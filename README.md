@@ -28,8 +28,9 @@ development packages for the following libraries:
 - OpenAL 1.1
 - libvorbis
 - FreeImage
-- Assimp
 - libsquish (optional)
+- Assimp
+- libnoise
 
 You can then use generic steps for building CMake projects:
 

@@ -32,7 +32,7 @@ end
 function onCreate()
   --ozOrbisSetGravity( -6.0 )
 
-  ozTerraLoad( "terra" )
+  ozTerraLoad( "random-0" )
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )

@@ -29,7 +29,7 @@ function onUpdate()
 end
 
 function onCreate()
-  ozTerraLoad( "terra" )
+  ozTerraLoad( "sample" )
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )

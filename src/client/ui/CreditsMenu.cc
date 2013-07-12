@@ -194,6 +194,7 @@ CreditsMenu::CreditsMenu() :
   lines.add( "Assimp" );
   lines.add( "FreeImage" );
   lines.add( "FreeType" );
+  lines.add( "libnoise" );
   lines.add( "libogg" );
   lines.add( "libsquish" );
   lines.add( "libvorbis" );

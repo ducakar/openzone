@@ -399,34 +399,22 @@ void Loader::makeScreenshot()
 
 void Loader::syncUpdate()
 {
-  Log::verboseMode = true;
-
   preloadRender();
   loader.uploadRender();
-
-  Log::verboseMode = false;
 }
 
 void Loader::update()
 {
-  Log::verboseMode = true;
-
   cleanupSound();
-
-  Log::verboseMode = false;
 
   if( !preloadMainSemaphore.tryWait() ) {
     return;
   }
 
-  Log::verboseMode = true;
-
   loader.cleanupRender();
   loader.uploadRender();
 
   tick = ( tick + 1 ) % TICK_PERIOD;
-
-  Log::verboseMode = false;
 
   preloadAuxSemaphore.post();
 }

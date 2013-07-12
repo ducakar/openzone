@@ -271,6 +271,7 @@ bool ImageBuilder::convertToDDS( const File& file, int options, const char* dest
   FIBITMAP* newDib = isTransparent ? FreeImage_ConvertTo32Bits( dib ) :
                                      FreeImage_ConvertTo24Bits( dib );
   FreeImage_Unload( dib );
+  FreeImage_FlipVertical( newDib );
   dib = newDib;
 
   File destFile( destPath );
