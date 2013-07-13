@@ -259,7 +259,7 @@ void Terra::saveClient()
   else {
     Log::print( "Generating terrain texture (this might take a long time) ..." );
 
-    int imageLength = 4*( VERTS - 1 );
+    int imageLength = 2 * ( VERTS - 1 );
     int imageFlags  = ImageBuilder::MIPMAPS_BIT;
     // S3TC introduces noticeable distortion.
     imageFlags |= context.useS3TC ? ImageBuilder::COMPRESSION_BIT : 0;

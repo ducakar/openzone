@@ -12,8 +12,6 @@ fi
 
 dir=$1
 
-echo "rm -vf $dir/lingua/*/*.mo $dir/mission/*/lingua/*.mo"
-rm -vf "$dir"/lingua/*/*.mo "$dir"/mission/*/lingua/*.mo
 echo "rm -vf "$dir"/baseq3/maps/*{autosave.map,.bak,.prt,.srf}"
 rm -vf "$dir"/baseq3/maps/*{autosave.map,.bak,.prt,.srf,autosave.bsp}
 echo "rm -vf $dir/mdl/*.{blend1,blend2}"

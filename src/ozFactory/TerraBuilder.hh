@@ -166,6 +166,17 @@ class TerraBuilder
      */
     static char* generateImage( int width, int height );
 
+    /**
+     * Generate grey noise on cube map.
+     *
+     * Returns an array of 6 pointers to RGB images { x-, x+, y-, y+, z-, z+ } for OpenGL cube map
+     * texture. -1.0 maps to black and +1.0 maps to white, so make sure NOISE module has bounds
+     * close to [-1.0, +1.0].
+     *
+     * Do not forget to free the array and all its members.
+     */
+    static char** generateCubeNoise( int size );
+
 };
 
 }

@@ -714,8 +714,6 @@ void Render::init()
   String sScaleFilter;
 
   doPostprocess   = config.include( "render.postprocess", false ).asBool();
-  isLowDetail     = config.include( "render.lowDetail",   false ).asBool();
-
   scale           = config.include( "render.scale",       1.0f ).asFloat();
   sScaleFilter    = config.include( "render.scaleFilter", "LINEAR" ).asString();
 

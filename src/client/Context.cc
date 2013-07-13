@@ -284,17 +284,17 @@ Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
   if( diffuseFile.isMapped() ) {
     glGenTextures( 1, &texture.diffuse );
     glBindTexture( GL_TEXTURE_2D, texture.diffuse );
-    GL::textureDataFromFile( diffuseFile );
+    GL::textureDataFromFile( diffuseFile, context.textureLod );
   }
   if( masksFile.isMapped() ) {
     glGenTextures( 1, &texture.masks );
     glBindTexture( GL_TEXTURE_2D, texture.masks );
-    GL::textureDataFromFile( masksFile );
+    GL::textureDataFromFile( masksFile, context.textureLod );
   }
   if( normalsFile.isMapped() ) {
     glGenTextures( 1, &texture.normals );
     glBindTexture( GL_TEXTURE_2D, texture.normals );
-    GL::textureDataFromFile( normalsFile );
+    GL::textureDataFromFile( normalsFile, context.textureLod );
   }
 
   OZ_GL_CHECK_ERROR();
@@ -766,6 +766,8 @@ void Context::unload()
 void Context::init()
 {
   Log::print( "Initialising Context ..." );
+
+  textureLod   = config.include( "context.textureLod", 1 ).asInt();
 
   imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses];
   audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses];

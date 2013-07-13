@@ -356,4 +356,106 @@ char* TerraBuilder::generateImage( int width, int height )
   return image;
 }
 
+char** TerraBuilder::generateCubeNoise( int size )
+{
+  ensureInitialised();
+
+  int    pitch  = ( ( size * 3 + 3 ) / 4 ) * 4;
+  double dim    = size / 2.0;
+  char** images = new char*[6] {
+    new char[size * pitch * 3],
+    new char[size * pitch * 3],
+    new char[size * pitch * 3],
+    new char[size * pitch * 3],
+    new char[size * pitch * 3],
+    new char[size * pitch * 3]
+  };
+
+  // X-.
+  for( int y = 0; y < size; ++y ) {
+    char* line = &images[0][ ( size - 1 - y ) * pitch ];
+
+    for( int x = 0; x < size; ++x ) {
+      double value  = noiseFinal.GetValue( -dim, -dim + 0.5 + y, -dim + 0.5 + x );
+      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+
+      line[x * 3 + 0] = char( colour );
+      line[x * 3 + 1] = char( colour );
+      line[x * 3 + 2] = char( colour );
+    }
+  }
+
+  // X+.
+  for( int y = 0; y < size; ++y ) {
+    char* line = &images[1][ ( size - 1 - y ) * pitch ];
+
+    for( int x = 0; x < size; ++x ) {
+      double value  = noiseFinal.GetValue( +dim, -dim + 0.5 + y, +dim - 0.5 - x );
+      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+
+      line[x * 3 + 0] = char( colour );
+      line[x * 3 + 1] = char( colour );
+      line[x * 3 + 2] = char( colour );
+    }
+  }
+
+  // Y-.
+  for( int y = 0; y < size; ++y ) {
+    char* line = &images[2][ ( size - 1 - y ) * pitch ];
+
+    for( int x = 0; x < size; ++x ) {
+      double value  = noiseFinal.GetValue( -dim + 0.5 + x, -dim, -dim + 0.5 + y );
+      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+
+      line[x * 3 + 0] = char( colour );
+      line[x * 3 + 1] = char( colour );
+      line[x * 3 + 2] = char( colour );
+    }
+  }
+
+  // Y+.
+  for( int y = 0; y < size; ++y ) {
+    char* line = &images[3][ ( size - 1 - y ) * pitch ];
+
+    for( int x = 0; x < size; ++x ) {
+      double value  = noiseFinal.GetValue( -dim + 0.5 + x, +dim, +dim - 0.5 - y );
+      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+
+      line[x * 3 + 0] = char( colour );
+      line[x * 3 + 1] = char( colour );
+      line[x * 3 + 2] = char( colour );
+    }
+  }
+
+  // Z-.
+  for( int y = 0; y < size; ++y ) {
+    char* line = &images[4][ ( size - 1 - y ) * pitch ];
+
+    for( int x = 0; x < size; ++x ) {
+      double value  = noiseFinal.GetValue( +dim - 0.5 - x, -dim + 0.5 + y, -dim );
+      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+
+      line[x * 3 + 0] = char( colour );
+      line[x * 3 + 1] = char( colour );
+      line[x * 3 + 2] = char( colour );
+    }
+  }
+
+  // Z+.
+  for( int y = 0; y < size; ++y ) {
+    char* line = &images[5][ ( size - 1 - y ) * pitch ];
+
+    for( int x = 0; x < size; ++x ) {
+      double value  = noiseFinal.GetValue( -dim + 0.5 + x, -dim + 0.5 + y, +dim );
+      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+
+      line[x * 3 + 0] = char( colour );
+      line[x * 3 + 1] = char( colour );
+      line[x * 3 + 2] = char( colour );
+    }
+  }
+
+  return images;
+}
+
 }

@@ -120,8 +120,7 @@ class Mesh
     DArray<Part>      parts;
     DArray<int>       componentIndices;
 
-    uint              positionsTexId;
-    uint              normalsTexId;
+    uint              animationTexId;
 
     int               nTextures;
     int               nVertices;

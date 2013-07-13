@@ -67,9 +67,7 @@ void Mesh::animate( const Instance* instance )
 {
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE2 );
-    glBindTexture( GL_TEXTURE_2D, positionsTexId );
-    glActiveTexture( GL_TEXTURE3 );
-    glBindTexture( GL_TEXTURE_2D, normalsTexId );
+    glBindTexture( GL_TEXTURE_2D, animationTexId );
 
     glUniform3f( uniform.meshAnimation,
                  float( instance->firstFrame ) / float( nFrames ),
@@ -150,7 +148,6 @@ void Mesh::draw( const Instance* instance, int mask )
 
       glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, texture.diffuse );
-
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, texture.masks );
 
@@ -201,10 +198,14 @@ void Mesh::drawScheduled( int mask )
     }
   }
 
-  for( int i = 3; i >= 0; --i ) {
-    glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  }
+  glActiveTexture( GL_TEXTURE2 );
+  glBindTexture( GL_TEXTURE_2D, 0 );
+
+  glActiveTexture( GL_TEXTURE1 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
+
+  glActiveTexture( GL_TEXTURE0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -229,7 +230,7 @@ void Mesh::deallocate()
 }
 
 Mesh::Mesh() :
-  vbo( 0 ), ibo( 0 ), positionsTexId( 0 ), normalsTexId( 0 ),
+  vbo( 0 ), ibo( 0 ), animationTexId( 0 ),
   nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFrames( 0 ), nFramePositions( 0 ),
   vertices( nullptr ), positions( nullptr ), normals( nullptr ),
   instances( 8 ), preloadData( nullptr )
@@ -262,7 +263,7 @@ const File* Mesh::preload( const char* path )
   istream.readInt();
   istream.readInt();
 
-  shaderId        = liber.shaderIndex( istream.readString() );
+  shaderId = liber.shaderIndex( istream.readString() );
 
   if( nTextures > 0 ) {
     for( int i = 0; i < nTextures; ++i ) {
@@ -363,20 +364,12 @@ void Mesh::load( uint usage )
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
-      glGenTextures( 1, &positionsTexId );
-      glBindTexture( GL_TEXTURE_2D, positionsTexId );
+      glGenTextures( 1, &animationTexId );
+      glBindTexture( GL_TEXTURE_2D, animationTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
-                    istream.forward( vertexBufferSize ) );
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-      glGenTextures( 1, &normalsTexId );
-      glBindTexture( GL_TEXTURE_2D, normalsTexId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
-                    istream.forward( normalBufferSize ) );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, 2 * nFrames, 0, GL_RGB, GL_FLOAT,
+                    istream.forward( vertexBufferSize + normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       OZ_GL_CHECK_ERROR();
@@ -461,14 +454,15 @@ void Mesh::unload()
   parts.clear();
   textures.clear();
 
-  if( shader.hasVertexTexture ) {
-    glDeleteTextures( 1, &normalsTexId );
-    glDeleteTextures( 1, &positionsTexId );
-  }
-  else {
-    delete[] normals;
-    delete[] positions;
-    delete[] vertices;
+  if( nFrames != 0 ) {
+    if( shader.hasVertexTexture ) {
+      glDeleteTextures( 1, &animationTexId );
+    }
+    else {
+      delete[] normals;
+      delete[] positions;
+      delete[] vertices;
+    }
   }
 
   glDeleteBuffers( 1, &ibo );

@@ -891,6 +891,7 @@ int Builder::main( int argc, char** argv )
     copyFiles( "@glsl", "glsl", "vert", false );
     copyFiles( "@glsl", "glsl", "frag", false );
     copyFiles( "@glsl", "glsl", "json", false );
+    copyFiles( "@glsl", "glsl", "dds", false );
   }
   if( doCaela ) {
     buildCaela();

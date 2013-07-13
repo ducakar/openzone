@@ -25,6 +25,7 @@
 DISABLED
 *.pot
 *.mo
+*.dds
 *.png
 *.jpg
 *.jpeg

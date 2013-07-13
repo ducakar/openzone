@@ -169,10 +169,11 @@ class GL
      * @param file source file.
      * @param bias the number of mipmaps at the beginning that should be skipped to obtain lower
      *        texture quality.
+     * @param target texture target type.
      *
      * @return number of mipmap levels loaded, 0 on an error.
      */
-    static int textureDataFromFile( const File& file, int bias = 0 );
+    static int textureDataFromFile( const File& file, int bias = 0, GLenum target = GL_TEXTURE_2D );
 
     /**
      * Compile a GLSL shader from a file.

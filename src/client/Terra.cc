@@ -65,7 +65,6 @@ void Terra::draw()
   tf.apply();
   tf.applyColour();
 
-  glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, detailTex.diffuse );
   glActiveTexture( GL_TEXTURE1 );
   glBindTexture( GL_TEXTURE_2D, mapTex );
@@ -87,10 +86,9 @@ void Terra::draw()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  for( int i = 3; i >= 0; --i ) {
-    glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  }
+  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
+  glActiveTexture( GL_TEXTURE0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   glFrontFace( GL_CCW );
 
@@ -117,7 +115,6 @@ void Terra::drawLiquid()
 
   glUniform1f( uniform.waveBias, waveBias );
 
-  glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, liquidTex.diffuse );
   glActiveTexture( GL_TEXTURE1 );
   glBindTexture( GL_TEXTURE_2D, liquidTex.masks );
@@ -139,10 +136,9 @@ void Terra::drawLiquid()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  for( int i = 3; i >= 0; --i ) {
-    glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  }
+  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
+  glActiveTexture( GL_TEXTURE0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   if( camera.p.z >= 0.0f ) {
     glFrontFace( GL_CCW );
@@ -167,9 +163,6 @@ void Terra::load()
   }
 
   InputStream is = buffer.inputStream();
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );
@@ -233,12 +226,14 @@ void Terra::load()
   glGenTextures( 1, &mapTex );
   glBindTexture( GL_TEXTURE_2D, mapTex );
 
-  if( GL::textureDataFromFile( map ) == 0 ) {
+  if( GL::textureDataFromFile( map, context.textureLod ) == 0 ) {
     OZ_ERROR( "Failed to load terain map texture '%s'", map.path().cstr() );
   }
 
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   landShaderId    = liber.shaderIndex( "terraLand" );
   liquidShaderId  = liber.shaderIndex( "terraLiquid" );

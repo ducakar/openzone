@@ -187,7 +187,13 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
     }
   }
 
-  return destFile.write( ostream.begin(), ostream.tell() );
+  bool success = destFile.write( ostream.begin(), ostream.tell() );
+
+  if( !success ) {
+    snprintf( errorBuffer, ERROR_LENGTH, "Failed to write '%s'", destFile.path().cstr() );
+    return false;
+  }
+  return true;
 }
 
 const char* ImageBuilder::getError()

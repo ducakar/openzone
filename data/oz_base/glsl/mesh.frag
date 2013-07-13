@@ -44,21 +44,23 @@ void main()
   vec4  masksSample  = texture2D( oz_Textures[1], exTexCoord );
 #endif
 
+  vec3  base         = colourSample.xyz;
   vec3  ambient      = oz_CaelumLight.ambient;
   vec3  diffuse      = oz_CaelumLight.diffuse * max( 0.0, dot( oz_CaelumLight.dir, normal ) );
 #ifdef OZ_LOW_DETAIL
-  vec3  lighting     = min( ambient * diffuse, vec3( 1.25 ) );
+  vec3  lighting     = min( ambient + diffuse, vec3( 1.25 ) );
 #else
   float specularDot  = dot( oz_CaelumLight.dir, reflectDir );
   vec3  emission     = vec3( masksSample.g, masksSample.g, masksSample.g );
-  vec3  specular     = vec3( 1.5 * masksSample.r * specularDot * specularDot );
+  vec3  specular     = oz_CaelumLight.diffuse * vec3( 1.5*masksSample.r * specularDot*specularDot );
   vec3  lighting     = min( ambient + diffuse + emission, vec3( 1.25 ) ) + specular;
+# ifdef OZ_ENV_MAP
+  vec3  environment  = textureCube( oz_Environment, reflectDir ).xyz;
+  base               = mix( base, environment, masksSample.b );
+# endif
 #endif
-  vec4  fragColour   = vec4( colourSample.xyz * lighting, colourSample.w );
+
+  vec4  fragColour   = vec4( base * lighting, colourSample.w );
 
   gl_FragData[0]     = applyFog( oz_ColourTransform * fragColour, dist );
-
-//   vec3 envDir = reflect( reflectDir, normal );
-//   float env = smoothstep( 0.8, 1.1, dot( envDir, vec3( 0.57 ) ) );
-//   gl_FragData[0] += vec4( env, env, env, 0.0 );
 }

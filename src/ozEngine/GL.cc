@@ -167,7 +167,7 @@ void GL::checkError( const char* function, const char* file, int line )
   System::error( function, file, line, 1, "GL error '%s'", message );
 }
 
-int GL::textureDataFromFile( const File& file, int bias )
+int GL::textureDataFromFile( const File& file, int bias, GLenum target )
 {
   InputStream istream = file.inputStream();
 
@@ -247,18 +247,20 @@ int GL::textureDataFromFile( const File& file, int bias )
   int mipmapHeight = height;
   int mipmapS3Size = pitch;
 
-  if( nMipmaps == 1 ) {
-    // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
-    // non-mipmapped textures. Since those are usually used in UI, where texture repeating is not
-    // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  }
-  else {
-    // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding
-    // whether texture actually has mipmaps.
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+  if( target == GL_TEXTURE_1D || target == GL_TEXTURE_2D || target == GL_TEXTURE_3D ) {
+    if( nMipmaps == 1 ) {
+      // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
+      // non-mipmapped textures. Since those are usually used in UI, where texture repeating is not
+      // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
+      glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+      glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    }
+    else {
+      // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding
+      // whether texture actually has mipmaps.
+      glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+    }
   }
 
   for( int i = 0; i < nMipmaps; ++i ) {
@@ -266,7 +268,7 @@ int GL::textureDataFromFile( const File& file, int bias )
       const char* data = istream.forward( mipmapS3Size );
 
       if( i >= bias ) {
-        glCompressedTexImage2D( GL_TEXTURE_2D, i - bias, format, mipmapWidth, mipmapHeight, 0,
+        glCompressedTexImage2D( target, i - bias, format, mipmapWidth, mipmapHeight, 0,
                                 mipmapS3Size, data );
       }
     }
@@ -295,7 +297,7 @@ int GL::textureDataFromFile( const File& file, int bias )
 #endif
         }
 
-        glTexImage2D( GL_TEXTURE_2D, i - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
+        glTexImage2D( target, i - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
                       GL_UNSIGNED_BYTE, data );
         delete[] data;
       }

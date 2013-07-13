@@ -41,17 +41,24 @@ void main()
 {
 #ifdef OZ_VERTEX_TEXTURE
 
-  vec4 firstPosition  = texture2D( oz_Textures[2], vec2( inPosition.x, oz_MeshAnimation[0] ) );
-  vec4 secondPosition = texture2D( oz_Textures[2], vec2( inPosition.x, oz_MeshAnimation[1] ) );
-  vec4 firstNormal    = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[0] ) );
-  vec4 secondNormal   = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[1] ) );
-  vec4 localPosition  = vec4( mix( firstPosition, secondPosition, oz_MeshAnimation[2] ).xyz, 1.0 );
-  vec4 localNormal    = vec4( mix( firstNormal, secondNormal, oz_MeshAnimation[2] ).xyz, 0.0 );
+  float iVertex       = inPosition.x;
+  float iPosition0    = oz_MeshAnimation[0] * 0.5;
+  float iPosition1    = oz_MeshAnimation[1] * 0.5;
+  float iNormal0      = 0.5 + oz_MeshAnimation[0] * 0.5;
+  float iNormal1      = 0.5 + oz_MeshAnimation[1] * 0.5;
+  float interpolation = oz_MeshAnimation[2];
 
-  gl_Position   = oz_ProjModelTransform * localPosition;
-  exTexCoord    = inTexCoord;
-  exNormal      = ( oz_ModelTransform * localNormal ).xyz;
-  exLook        = ( oz_ModelTransform * localPosition ).xyz - oz_CameraPosition;
+  vec4  position0     = texture2D( oz_Textures[2], vec2( iVertex, iPosition0 ) );
+  vec4  position1     = texture2D( oz_Textures[2], vec2( iVertex, iPosition1 ) );
+  vec4  normal0       = texture2D( oz_Textures[2], vec2( iVertex, iNormal0 ) );
+  vec4  normal1       = texture2D( oz_Textures[2], vec2( iVertex, iNormal1 ) );
+  vec4  localPosition = vec4( mix( position0, position1, interpolation ).xyz, 1.0 );
+  vec4  localNormal   = vec4( mix( normal0,   normal1,   interpolation ).xyz, 0.0 );
+
+  gl_Position         = oz_ProjModelTransform * localPosition;
+  exTexCoord          = inTexCoord;
+  exNormal            = ( oz_ModelTransform * localNormal ).xyz;
+  exLook              = ( oz_ModelTransform * localPosition ).xyz - oz_CameraPosition;
 
 #else
 

@@ -39,8 +39,6 @@ class Builder
     void printUsage( const char* invocationName );
 
     void copyFiles( const File& srcDir, const File& destDir, const char* ext, bool recurse );
-    void buildTextures( const File& srcDir, const File& destDir, bool wrap,
-                        int magFilter, int minFilter );
 
     void buildCaela();
     void buildTerrae();

@@ -54,7 +54,7 @@ bool GLTexture::create()
   return textureId != 0;
 }
 
-bool GLTexture::load( const File& file )
+bool GLTexture::load( const File& file, int bias )
 {
   destroy();
   create();
@@ -64,7 +64,7 @@ bool GLTexture::load( const File& file )
   }
 
   glBindTexture( GL_TEXTURE_2D, textureId );
-  textureMipmaps = GL::textureDataFromFile( file );
+  textureMipmaps = GL::textureDataFromFile( file, bias );
 
   if( textureMipmaps == 0 ) {
     destroy();

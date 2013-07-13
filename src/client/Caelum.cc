@@ -131,9 +131,8 @@ void Caelum::draw()
   tf.apply();
   tf.setColour( tf.colour * sunColour );
 
-  glBindTexture( GL_TEXTURE_2D, sunTexId );
-
   glDisable( GL_CULL_FACE );
+  glBindTexture( GL_TEXTURE_2D, sunTexId );
 
   tf.model = transf;
   tf.model.translate( Vec3( 0.0f, 0.0f, +15.0f ) );
@@ -148,6 +147,7 @@ void Caelum::draw()
 
   shape.quad( 1.0f, 1.0f );
 
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   glEnable( GL_CULL_FACE );
 
   shape.unbind();
@@ -174,6 +174,8 @@ void Caelum::load()
   if( !GL::textureDataFromFile( "@caelum/moon.dds" ) ) {
     OZ_ERROR( "Failed to load moon texture" );
   }
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
   originalLightDir = Vec3( -Math::cos( orbis.caelum.heading ),

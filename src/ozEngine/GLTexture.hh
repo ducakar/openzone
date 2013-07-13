@@ -125,7 +125,7 @@ class GLTexture
      * If the texture already exists, it is destroyed and re-created. On loading failure, texture is
      * deleted.
      */
-    bool load( const File& file );
+    bool load( const File& file, int bias = 0 );
 
     /**
      * Unload texture from GPU if loaded.

@@ -41,6 +41,7 @@ struct Uniform
 
   int colourTransform;
   int textures;
+  int environment;
 
   int caelumLight_dir;
   int caelumLight_diffuse;
@@ -183,13 +184,15 @@ class Shader
     uint  defaultTexture;
     uint  defaultMasks;
     uint  defaultNormals;
+    uint  noiseTexture;
 
     int   medium;
     bool  hasS3TC;
     bool  hasVertexTexture;
     bool  setSamplerMap;
-    bool  doPostprocess;
     bool  isLowDetail;
+    bool  doEnvMap;
+    bool  doPostprocess;
 
     explicit Shader();
 

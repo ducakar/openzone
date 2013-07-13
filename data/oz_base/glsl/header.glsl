@@ -43,9 +43,10 @@ uniform mat4            oz_BoneTransforms[16];
 uniform mat4            oz_ColourTransform;
 
 /*
- * Texturing { albedo, masks, normals, frames positions, frame normals }
+ * Texturing { albedo, masks, animation } + environment map
  */
-uniform sampler2D       oz_Textures[6];
+uniform sampler2D       oz_Textures[3];
+uniform samplerCube     oz_Environment;
 
 /*
  * Lighting

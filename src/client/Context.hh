@@ -106,6 +106,8 @@ class Context
       short         samples[2 * BUFFER_SIZE];
     };
 
+  private:
+
     Imago::CreateFunc**         imagoClasses;
     Audio::CreateFunc**         audioClasses;
 
@@ -146,6 +148,12 @@ class Context
 
     static int                  speakSampleRate; // Set from Sound class.
     static SpeakSource          speakSource;
+
+  public:
+
+    int                         textureLod;
+
+  private:
 
     static int speakCallback( short int* samples, int nSamples, void* );
     static void speakMain( void* );
