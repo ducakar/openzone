@@ -437,6 +437,11 @@ void Mesh::load( uint usage )
 
 void Mesh::unload()
 {
+  if( preloadData != nullptr ) {
+    delete preloadData;
+    preloadData = nullptr;
+  }
+
   if( vbo == 0 ) {
     return;
   }

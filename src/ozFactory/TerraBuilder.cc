@@ -163,7 +163,7 @@ bool TerraBuilder::setSeed( Module module, int seed )
       turbulence.SetSeed( seed );
       return true;
     }
-    case NOISE: {
+    default: {
       noiseBase.SetSeed( seed );
       return true;
     }
@@ -227,7 +227,7 @@ bool TerraBuilder::setFrequency( Module module, float frequency )
       turbulence.SetFrequency( frequency );
       return true;
     }
-    case NOISE: {
+    default: {
       noiseBase.SetFrequency( frequency );
       return true;
     }
@@ -362,6 +362,7 @@ char** TerraBuilder::generateCubeNoise( int size )
 
   int    pitch  = ( ( size * 3 + 3 ) / 4 ) * 4;
   double dim    = size / 2.0;
+
   char** images = new char*[6] {
     new char[size * pitch * 3],
     new char[size * pitch * 3],
@@ -376,7 +377,9 @@ char** TerraBuilder::generateCubeNoise( int size )
     char* line = &images[0][ ( size - 1 - y ) * pitch ];
 
     for( int x = 0; x < size; ++x ) {
-      double value  = noiseFinal.GetValue( -dim, -dim + 0.5 + y, -dim + 0.5 + x );
+      double u      = x / ( dim - 0.5 );
+      double v      = y / ( dim - 0.5 );
+      double value  = noiseFinal.GetValue( -1.0, -1.0 + v, -1.0 + u );
       int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
 
       line[x * 3 + 0] = char( colour );
@@ -390,7 +393,9 @@ char** TerraBuilder::generateCubeNoise( int size )
     char* line = &images[1][ ( size - 1 - y ) * pitch ];
 
     for( int x = 0; x < size; ++x ) {
-      double value  = noiseFinal.GetValue( +dim, -dim + 0.5 + y, +dim - 0.5 - x );
+      double u      = x / ( dim - 0.5 );
+      double v      = y / ( dim - 0.5 );
+      double value  = noiseFinal.GetValue( +1.0, -1.0 + v, +1.0 - u );
       int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
 
       line[x * 3 + 0] = char( colour );
@@ -404,7 +409,9 @@ char** TerraBuilder::generateCubeNoise( int size )
     char* line = &images[2][ ( size - 1 - y ) * pitch ];
 
     for( int x = 0; x < size; ++x ) {
-      double value  = noiseFinal.GetValue( -dim + 0.5 + x, -dim, -dim + 0.5 + y );
+      double u      = x / ( dim - 0.5 );
+      double v      = y / ( dim - 0.5 );
+      double value  = noiseFinal.GetValue( -1.0 + u, -1.0, -1.0 + v );
       int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
 
       line[x * 3 + 0] = char( colour );
@@ -418,7 +425,9 @@ char** TerraBuilder::generateCubeNoise( int size )
     char* line = &images[3][ ( size - 1 - y ) * pitch ];
 
     for( int x = 0; x < size; ++x ) {
-      double value  = noiseFinal.GetValue( -dim + 0.5 + x, +dim, +dim - 0.5 - y );
+      double u      = x / ( dim - 0.5 );
+      double v      = y / ( dim - 0.5 );
+      double value  = noiseFinal.GetValue( -1.0 + u, +1.0, +1.0 - v );
       int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
 
       line[x * 3 + 0] = char( colour );
@@ -432,7 +441,9 @@ char** TerraBuilder::generateCubeNoise( int size )
     char* line = &images[4][ ( size - 1 - y ) * pitch ];
 
     for( int x = 0; x < size; ++x ) {
-      double value  = noiseFinal.GetValue( +dim - 0.5 - x, -dim + 0.5 + y, -dim );
+      double u      = x / ( dim - 0.5 );
+      double v      = y / ( dim - 0.5 );
+      double value  = noiseFinal.GetValue( +1.0 - u, -1.0 + v, -1.0 );
       int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
 
       line[x * 3 + 0] = char( colour );
@@ -446,7 +457,9 @@ char** TerraBuilder::generateCubeNoise( int size )
     char* line = &images[5][ ( size - 1 - y ) * pitch ];
 
     for( int x = 0; x < size; ++x ) {
-      double value  = noiseFinal.GetValue( -dim + 0.5 + x, -dim + 0.5 + y, +dim );
+      double u      = x / ( dim - 0.5 );
+      double v      = y / ( dim - 0.5 );
+      double value  = noiseFinal.GetValue( -1.0 + u, -1.0 + v, +1.0 );
       int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
 
       line[x * 3 + 0] = char( colour );

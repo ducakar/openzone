@@ -9,7 +9,7 @@
 # Additionally this scripts updates version numbers in various files.
 #
 
-version=0.3.81
+version=0.3.82
 components=( ozCore ozDynamics ozEngine ozFactory
              common matrix nirvana modules client builder
              unittest )

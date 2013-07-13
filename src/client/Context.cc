@@ -767,7 +767,7 @@ void Context::init()
 {
   Log::print( "Initialising Context ..." );
 
-  textureLod   = config.include( "context.textureLod", 1 ).asInt();
+  textureLod   = config.include( "context.textureLod", 0 ).asInt();
 
   imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses];
   audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses];

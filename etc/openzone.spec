@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.3.81
+Version:        0.3.82
 Release:        1%{?dist}
 Summary:        Simple cross-platform FPS/RTS game engine
 Group:          Amusements/Games
@@ -14,6 +14,7 @@ Source1:        https://github.com/downloads/ducakar/openzone/%{name}-data-%{ver
 BuildRequires:  cmake
 BuildRequires:  alsa-lib-devel
 BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  zlib-devel
 BuildRequires:  physfs-devel
 BuildRequires:  lua-devel
 BuildRequires:  SDL-devel
@@ -22,6 +23,8 @@ BuildRequires:  mesa-libGL-devel
 BuildRequires:  openal-soft-devel
 BuildRequires:  libvorbis-devel
 BuildRequires:  freeimage-devel
+BuildRequires:  libsquish-devel
+BuildRequires:  assimp-devel
 
 %description
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -72,9 +75,10 @@ cd build
 cmake \
   -D CMAKE_INSTALL_PREFIX=/usr \
   -D CMAKE_BUILD_TYPE=Release \
-  -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse -fPIC" \
+  -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
   -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
-  -D BUILD_SHARED_LIBS=1 \
+  -D OZ_SHARED_LIBS=1 \
+  -D OZ_NONFREE=1 \
   ..
 
 make %{?_smp_mflags}

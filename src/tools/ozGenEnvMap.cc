@@ -33,31 +33,81 @@
  * Those files are to be copied to `oz_base/glsl` directory.
  */
 
-#include <ozCore/ozCore.hh>
 #include <ozFactory/ozFactory.hh>
 
 #include <cstdlib>
+#include <getopt.h>
 
 using namespace oz;
 
-int main()
+static void usage()
+{
+  Log::printRaw(
+    "Usage: ozGenEnvMap [-C] [-M] [size]\n"
+    "\tsize\tTexture size, 32 by default"
+    "\t-C\tUse S3 texture compression\n"
+    "\t-M\tGenerate mipmaps\n"
+  );
+}
+
+int main( int argc, char** argv )
 {
   System::init();
 
+  int ddsOptions = 0;
+  int size       = 32;
+
+  int opt;
+  while( ( opt = getopt( argc, argv, "CM" ) ) >= 0 ) {
+    switch( opt ) {
+      case 'C': {
+        ddsOptions |= ImageBuilder::COMPRESSION_BIT;
+        break;
+      }
+      case 'M': {
+        ddsOptions |= ImageBuilder::MIPMAPS_BIT;
+        break;
+      }
+      default: {
+        usage();
+        return EXIT_FAILURE;
+      }
+    }
+  }
+
+  int nArgs = argc - optind;
+  if( nArgs > 1 ) {
+    usage();
+    return EXIT_FAILURE;
+  }
+  else if( nArgs == 1 ) {
+    const char* end;
+
+    size = String::parseInt( argv[optind], &end );
+
+    if( *end != '\0' ) {
+      usage();
+      return EXIT_FAILURE;
+    }
+  }
+
+  int exitCode = EXIT_SUCCESS;
+
   TerraBuilder::setBounds( TerraBuilder::NOISE, -1.75f, +1.75f );
   TerraBuilder::setOctaveCount( TerraBuilder::NOISE, 1 );
-  TerraBuilder::setFrequency( TerraBuilder::NOISE, 0.02f );
+  TerraBuilder::setFrequency( TerraBuilder::NOISE, 2.0f );
 
-  char** images = TerraBuilder::generateCubeNoise( 128 );
+  char** images = TerraBuilder::generateCubeNoise( size );
 
-  if( !ImageBuilder::createDDS( images[0], 128, 128, 24, ImageBuilder::MIPMAPS_BIT, "env-x.dds" ) ||
-      !ImageBuilder::createDDS( images[1], 128, 128, 24, ImageBuilder::MIPMAPS_BIT, "env+x.dds" ) ||
-      !ImageBuilder::createDDS( images[2], 128, 128, 24, ImageBuilder::MIPMAPS_BIT, "env-y.dds" ) ||
-      !ImageBuilder::createDDS( images[3], 128, 128, 24, ImageBuilder::MIPMAPS_BIT, "env+y.dds" ) ||
-      !ImageBuilder::createDDS( images[4], 128, 128, 24, ImageBuilder::MIPMAPS_BIT, "env-z.dds" ) ||
-      !ImageBuilder::createDDS( images[5], 128, 128, 24, ImageBuilder::MIPMAPS_BIT, "env+z.dds" ) )
+  if( !ImageBuilder::createDDS( images[0], size, size, 24, ddsOptions, "env-x.dds" ) ||
+      !ImageBuilder::createDDS( images[1], size, size, 24, ddsOptions, "env+x.dds" ) ||
+      !ImageBuilder::createDDS( images[2], size, size, 24, ddsOptions, "env-y.dds" ) ||
+      !ImageBuilder::createDDS( images[3], size, size, 24, ddsOptions, "env+y.dds" ) ||
+      !ImageBuilder::createDDS( images[4], size, size, 24, ddsOptions, "env-z.dds" ) ||
+      !ImageBuilder::createDDS( images[5], size, size, 24, ddsOptions, "env+z.dds" ) )
   {
-    OZ_ERROR( "Failed to generate maps: %s", ImageBuilder::getError() );
+    Log::println( "Failed to generate maps: %s", ImageBuilder::getError() );
+    exitCode = EXIT_FAILURE;
   }
 
   delete[] images[0];
@@ -68,5 +118,5 @@ int main()
   delete[] images[5];
   delete[] images;
 
-  return EXIT_SUCCESS;
+  return exitCode;
 }

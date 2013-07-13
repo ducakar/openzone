@@ -22,7 +22,6 @@
 
 #include <ozFactory/ozFactory.hh>
 
-#include <cstdio>
 #include <cstdlib>
 #include <getopt.h>
 
@@ -31,9 +30,9 @@ using namespace oz;
 static void usage()
 {
   Log::printRaw(
-    "Usage: img2dds [-c] [-m] [-q] <inputImage> [outputDir]\n"
-    "\t-c\tUse S3 texture compression\n"
-    "\t-m\tGenerate mipmaps\n"
+    "Usage: ozDDS [-c] [-m] <inputImage> [outputDir]\n"
+    "\t-C\tUse S3 texture compression\n"
+    "\t-M\tGenerate mipmaps\n"
   );
 }
 
@@ -44,13 +43,13 @@ int main( int argc, char** argv )
   int ddsOptions = 0;
 
   int opt;
-  while( ( opt = getopt( argc, argv, "cmq" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "CM" ) ) >= 0 ) {
     switch( opt ) {
-      case 'c': {
+      case 'C': {
         ddsOptions |= ImageBuilder::COMPRESSION_BIT;
         break;
       }
-      case 'm': {
+      case 'M': {
         ddsOptions |= ImageBuilder::MIPMAPS_BIT;
         break;
       }
@@ -71,6 +70,5 @@ int main( int argc, char** argv )
   {
     return EXIT_FAILURE;
   }
-
   return EXIT_SUCCESS;
 }

@@ -30,26 +30,5 @@ using namespace oz;
 int main()
 {
   System::init();
-
-  TerraBuilder::setBounds( TerraBuilder::NOISE, -0.75f, +0.75f );
-  TerraBuilder::setOctaveCount( TerraBuilder::NOISE, 2 );
-  TerraBuilder::setFrequency( TerraBuilder::NOISE, 0.04f );
-
-  char** images = TerraBuilder::generateCubeNoise( 128 );
-
-  ImageBuilder::createDDS( images[0], 128, 128, 24, 0, "x-.dds" );
-  ImageBuilder::createDDS( images[1], 128, 128, 24, 0, "x+.dds" );
-  ImageBuilder::createDDS( images[2], 128, 128, 24, 0, "y-.dds" );
-  ImageBuilder::createDDS( images[3], 128, 128, 24, 0, "y+.dds" );
-  ImageBuilder::createDDS( images[4], 128, 128, 24, 0, "z-.dds" );
-  ImageBuilder::createDDS( images[5], 128, 128, 24, 0, "z+.dds" );
-
-  delete[] images[0];
-  delete[] images[1];
-  delete[] images[2];
-  delete[] images[3];
-  delete[] images[4];
-  delete[] images[5];
-  delete[] images;
   return 0;
 }

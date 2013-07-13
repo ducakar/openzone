@@ -173,7 +173,11 @@ class TerraBuilder
      * texture. -1.0 maps to black and +1.0 maps to white, so make sure NOISE module has bounds
      * close to [-1.0, +1.0].
      *
-     * Do not forget to free the array and all its members.
+     * All textures are stretched for an amount of 1 pixel, so the adjacent pixels edge pixels of
+     * adjacent textures actually map to the same point in an effort to reduce artefacts on borders
+     * of low-resolution textures.
+     *
+     * Do not forget to free the returned array and all its members.
      */
     static char** generateCubeNoise( int size );
 
