@@ -247,7 +247,7 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
   int mipmapHeight = height;
   int mipmapS3Size = pitch;
 
-  if( target == GL_TEXTURE_1D || target == GL_TEXTURE_2D || target == GL_TEXTURE_3D ) {
+  if( target == GL_TEXTURE_2D ) {
     if( nMipmaps == 1 ) {
       // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
       // non-mipmapped textures. Since those are usually used in UI, where texture repeating is not

@@ -254,7 +254,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
     // Array initialiser cannot be nested inside a macro parameter.
     int attribs[] = {
-      PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
+      PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
       PP_GRAPHICS3DATTRIB_WIDTH, windowWidth,
       PP_GRAPHICS3DATTRIB_HEIGHT, windowHeight,
       PP_GRAPHICS3DATTRIB_NONE
@@ -338,6 +338,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
 # endif
+  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,            24 );
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
 

@@ -76,9 +76,9 @@ void Terra::load()
     int bpp    = int( FreeImage_GetBPP( image ) );
     int type   = int( FreeImage_GetImageType( image ) );
 
-    if( type != FIT_RGB16 || bpp != 48 || width != VERTS || height != VERTS ) {
-      OZ_ERROR( "Invalid terrain heightmap format %d x %d %d bpp, should be %d x %d and 48 bpp RGB"
-                " (red channel is used as height, green and blue are ignored)",
+    if( ( type != FIT_RGB16 && type != FIT_UINT16 ) || width != VERTS || height != VERTS ) {
+      OZ_ERROR( "Invalid terrain heightmap format %d x %d %d bpp, should be %d x %d and 16 bpp"
+                " greyscale or 48 bpp RGB (red channel is used as height)",
                 width, height, bpp, VERTS, VERTS );
     }
 
@@ -94,7 +94,7 @@ void Terra::load()
         quads[x][y].triNormal[0] = Vec3::ZERO;
         quads[x][y].triNormal[1] = Vec3::ZERO;
 
-        pixel += 3;
+        pixel += bpp / 16;
       }
     }
 

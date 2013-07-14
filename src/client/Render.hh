@@ -53,6 +53,8 @@ class Render
     static const float WIND_FACTOR;
     static const float WIND_PHI_INC;
 
+    static const int   GLOW_MINIFICATION;
+
     static const Vec4  STRUCT_AABB;
     static const Vec4  ENTITY_AABB;
     static const Vec4  SOLID_AABB;
@@ -83,11 +85,14 @@ class Render
     int             frameWidth;
     int             frameHeight;
     float           scale;
-    int             scaleFilter;
+    uint            scaleFilter;
 
     uint            mainFrame;
+    uint            minGlowFrame;
     uint            depthBuffer;
     uint            colourBuffer;
+    uint            glowBuffer;
+    uint            minGlowBuffer;
 
   public:
 

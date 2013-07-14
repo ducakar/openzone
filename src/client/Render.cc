@@ -53,6 +53,8 @@ const float Render::LAVA_VISIBILITY        = 4.0f;
 const float Render::WIND_FACTOR            = 0.0008f;
 const float Render::WIND_PHI_INC           = 0.04f;
 
+const int   Render::GLOW_MINIFICATION      = 6;
+
 const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 1.00f );
 const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.20f, 0.50f, 1.00f );
 const Vec4  Render::SOLID_AABB             = Vec4( 0.50f, 0.80f, 0.20f, 1.00f );
@@ -362,26 +364,25 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
-  if( isOffscreen ) {
-    if( windowWidth != Window::width() || windowHeight != Window::height() ) {
-      resize();
-    }
+  if( windowWidth != Window::width() || windowHeight != Window::height() ) {
+    resize();
+  }
 
+  if( isOffscreen ) {
     glViewport( 0, 0, frameWidth, frameHeight );
 
 #ifdef GL_ES_VERSION_2_0
-    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-#else
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
-#endif
 
-#ifndef GL_ES_VERSION_2_0
-//     uint dbos[] = { GL_COLOR_ATTACHMENT0_EXT };
-//     glDrawBuffers( 1, dbos );
+    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
+
+#else
+
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+
+    uint dbos[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT };
+    glDrawBuffers( 2, dbos );
+
 #endif
-  }
-  else {
-    glViewport( 0, 0, camera.width, camera.height );
   }
 
   prepareDraw();
@@ -392,22 +393,67 @@ void Render::drawOrbis()
   if( isOffscreen ) {
     glViewport( 0, 0, windowWidth, windowHeight );
 
-#ifdef GL_ES_VERSION_2_0
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-#else
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
-#endif
-
     tf.ortho( windowWidth, windowHeight );
     tf.camera = Mat44::ID;
 
-    shader.program( doPostprocess ? shader.postprocess : shader.plain );
+    glDisable( GL_CULL_FACE );
+
+#ifdef GL_ES_VERSION_2_0
+
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    shader.program( shader.plain );
     tf.applyCamera();
     shape.colour( 1.0f, 1.0f, 1.0f );
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
-    shape.fill( 0, 0, windowWidth, windowHeight );
+    shape.fill( 0, windowHeight, windowWidth, -windowHeight );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+#else
+
+    if( doPostprocess ) {
+      // Scale glow buffer down.
+      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, minGlowFrame );
+
+      shader.program( shader.plain );
+      tf.applyCamera();
+      shape.colour( 1.0f, 1.0f, 1.0f );
+
+      glBindTexture( GL_TEXTURE_2D, glowBuffer );
+      shape.fill( 0, windowHeight / GLOW_MINIFICATION,
+                  frameWidth / GLOW_MINIFICATION, -windowHeight / GLOW_MINIFICATION );
+
+      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+
+      // Perform prostprocessing into the screen buffer.
+      shader.program( shader.postprocess );
+      tf.applyCamera();
+      shape.colour( 1.0f, 1.0f, 1.0f );
+
+      glBindTexture( GL_TEXTURE_2D, colourBuffer );
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, minGlowBuffer );
+
+      shape.fill( 0, windowHeight, windowWidth, -windowHeight );
+
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+      glActiveTexture( GL_TEXTURE0 );
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+    }
+    else {
+      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, mainFrame );
+      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, 0 );
+
+      glBlitFramebuffer( 0, 0, frameWidth, frameHeight, 0, 0, windowWidth, windowHeight,
+                         GL_COLOR_BUFFER_BIT, scaleFilter );
+
+      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+    }
+
+#endif
+
+    glEnable( GL_CULL_FACE );
   }
 
   postprocessMicros += Time::uclock() - beginMicros;
@@ -474,81 +520,134 @@ void Render::resize()
   frameWidth  = Math::lround( float( Window::width()  ) * scale );
   frameHeight = Math::lround( float( Window::height() ) * scale );
 
-  MainCall() << [&]()
-  {
-    if( mainFrame != 0 ) {
-#ifdef GL_ES_VERSION_2_0
-      glDeleteFramebuffers( 1, &mainFrame );
-      glDeleteTextures( 1, &colourBuffer );
-      glDeleteRenderbuffers( 1, &depthBuffer );
-#else
-      glDeleteFramebuffersEXT( 1, &mainFrame );
-      glDeleteTextures( 1, &colourBuffer );
-      glDeleteRenderbuffersEXT( 1, &depthBuffer );
-#endif
-    }
-
 #ifdef GL_ES_VERSION_2_0
 
-    glGenRenderbuffers( 1, &depthBuffer );
-    glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
-    glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  if( mainFrame != 0 ) {
+    glDeleteFramebuffers( 1, &mainFrame );
+    glDeleteTextures( 1, &colourBuffer );
+    glDeleteRenderbuffers( 1, &depthBuffer );
+  }
 
 #else
 
-    glGenRenderbuffersEXT( 1, &depthBuffer );
-    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
-    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
-    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
+  if( mainFrame != 0 ) {
+    glDeleteFramebuffersEXT( 1, &mainFrame );
+    glDeleteTextures( 1, &colourBuffer );
+    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+  }
+  if( minGlowFrame != 0 ) {
+    glDeleteFramebuffers( 1, &minGlowFrame );
+    glDeleteTextures( 1, &minGlowBuffer );
+    glDeleteTextures( 1, &glowBuffer );
+  }
 
 #endif
 
-    glGenTextures( 1, &colourBuffer );
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
+#ifdef GL_ES_VERSION_2_0
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaleFilter );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaleFilter );
+  glGenRenderbuffers( 1, &depthBuffer );
+  glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
+  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
+  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+#else
+
+  glGenRenderbuffersEXT( 1, &depthBuffer );
+  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
+  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, frameWidth, frameHeight );
+  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
+
+#endif
+
+  glGenTextures( 1, &colourBuffer );
+  glBindTexture( GL_TEXTURE_2D, colourBuffer );
+
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, int( scaleFilter ) );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, int( scaleFilter ) );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
+                GL_UNSIGNED_BYTE, nullptr );
+
+#ifndef GL_ES_VERSION_2_0
+
+  if( doPostprocess ) {
+    glGenTextures( 1, &glowBuffer );
+    glBindTexture( GL_TEXTURE_2D, glowBuffer );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
                   GL_UNSIGNED_BYTE, nullptr );
 
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+    glGenTextures( 1, &minGlowBuffer );
+    glBindTexture( GL_TEXTURE_2D, minGlowBuffer );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+                  frameWidth / GLOW_MINIFICATION, frameHeight / GLOW_MINIFICATION, 0, GL_RGB,
+                  GL_UNSIGNED_BYTE, nullptr );
+  }
+
+#endif
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
 #ifdef GL_ES_VERSION_2_0
 
-    glGenFramebuffers( 1, &mainFrame );
-    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
+  glGenFramebuffers( 1, &mainFrame );
+  glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
 
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
+  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
+  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
 
-    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-      OZ_ERROR( "Main framebuffer creation failed" );
-    }
+  if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
+    OZ_ERROR( "Main framebuffer creation failed" );
+  }
 
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 #else
 
-    glGenFramebuffersEXT( 1, &mainFrame );
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+  glGenFramebuffersEXT( 1, &mainFrame );
+  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
 
-    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-                                  depthBuffer );
+  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+                                depthBuffer );
+  glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+                             colourBuffer, 0 );
+  if( doPostprocess ) {
+    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
+                               glowBuffer, 0 );
+  }
+
+  if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
+    OZ_ERROR( "Main framebuffer creation failed" );
+  }
+
+  if( doPostprocess ) {
+    glGenFramebuffersEXT( 1, &minGlowFrame );
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, minGlowFrame );
+
     glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-                               colourBuffer, 0 );
+                               minGlowBuffer, 0 );
 
     if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
-      OZ_ERROR( "Main framebuffer creation failed" );
+      OZ_ERROR( "Glow framebuffer creation failed" );
     }
+  }
 
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 
 #endif
-  };
 }
 
 void Render::load()
@@ -711,30 +810,29 @@ void Render::init()
 
   GL::init();
 
-  String sScaleFilter;
+  static const EnumName SCALE_FILTER_MAP[] = {
+    { GL_LINEAR,  "LINEAR"  },
+    { GL_NEAREST, "NEAREST" }
+  };
+  EnumMap<GLenum> scaleFilterMap( SCALE_FILTER_MAP );
 
   doPostprocess   = config.include( "render.postprocess", false ).asBool();
   scale           = config.include( "render.scale",       1.0f ).asFloat();
-  sScaleFilter    = config.include( "render.scaleFilter", "LINEAR" ).asString();
+  scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).asString() ];
 
   visibilityRange = config.include( "render.distance",    400.0f ).asFloat();
   showBounds      = config.include( "render.showBounds",  false ).asBool();
   showAim         = config.include( "render.showAim",     false ).asBool();
 
+#ifdef GL_ES_VERSION_2_0
+  doPostprocess   = false;
+#endif
   isOffscreen     = doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;
 
-  if( sScaleFilter.equals( "NEAREST" ) ) {
-    scaleFilter = GL_NEAREST;
-  }
-  else if( sScaleFilter.equals( "LINEAR" ) ) {
-    scaleFilter = GL_LINEAR;
-  }
-  else {
-    OZ_ERROR( "render.scaleFilter should be either LINEAR or NEAREST." );
-  }
+  mainFrame       = 0;
+  minGlowBuffer   = 0;
 
-  mainFrame = 0;
   resize();
 
   MainCall() << []()
@@ -769,6 +867,7 @@ void Render::destroy()
     {
 #ifdef GL_ES_VERSION_2_0
       glDeleteFramebuffers( 1, &mainFrame );
+      glDeleteTextures( 1, &glowBuffer );
       glDeleteTextures( 1, &colourBuffer );
       glDeleteRenderbuffers( 1, &depthBuffer );
 #else

@@ -30,5 +30,13 @@ varying float exAzimuth;
 
 void main()
 {
-  gl_FragData[0] = oz_ColourTransform * texture2D( oz_Textures[0], exTexCoord );
+  vec4 colour    = texture2D( oz_Textures[0], exTexCoord );
+
+  gl_FragData[0] = oz_ColourTransform * colour;
+
+#ifdef OZ_POSTPROCESS
+  float glow     = ( colour.r + colour.g + colour.b ) / 2.0;
+
+  gl_FragData[1] = vec4( glow, glow, glow, 1.0 );
+#endif
 }

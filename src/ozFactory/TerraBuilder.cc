@@ -33,9 +33,6 @@ using namespace noise;
 namespace oz
 {
 
-static const int ERROR_LENGTH = 1024;
-
-static char                errorBuffer[ERROR_LENGTH] = {};
 static module::Billow      plainsBase;
 static module::ScaleBias   plainsFinal;
 static module::RidgedMulti mountainsBase;
@@ -110,11 +107,6 @@ static uint getColour( double x, double y )
   uint blue  = uint( 255.0f * colour.z );
 
   return 0xff000000 | red | ( green << 8 ) | ( blue << 16 );
-}
-
-const char* TerraBuilder::getError()
-{
-  return errorBuffer;
 }
 
 bool TerraBuilder::setBounds( Module module, float bottomHeight, float topHeight )
@@ -299,23 +291,17 @@ void TerraBuilder::setEdgeFalloff( float falloff )
 
 void TerraBuilder::addGradientPoint( const Vec4& point )
 {
-  errorBuffer[0] = '\0';
-
   gradientPoints.add( point );
 }
 
 void TerraBuilder::clearGradient()
 {
-  errorBuffer[0] = '\0';
-
   gradientPoints.clear();
   gradientPoints.deallocate();
 }
 
 float* TerraBuilder::generateHeightmap( int width, int height )
 {
-  errorBuffer[0] = '\0';
-
   ensureInitialised();
 
   float* heightmap = new float[width * height];
@@ -332,8 +318,6 @@ float* TerraBuilder::generateHeightmap( int width, int height )
 
 char* TerraBuilder::generateImage( int width, int height )
 {
-  errorBuffer[0] = '\0';
-
   ensureInitialised();
 
   int    pitch   = ( ( width * 3 + 3 ) / 4 ) * 4;

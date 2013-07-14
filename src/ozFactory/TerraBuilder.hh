@@ -57,11 +57,6 @@ class TerraBuilder
     explicit TerraBuilder() = delete;
 
     /**
-     * Get the last error string.
-     */
-    static const char* getError();
-
-    /**
      * Set height values to which -1.0 and +1.0 map respectively.
      *
      * This roughly represents the highest and the lowest height in the heightmap. Note that the

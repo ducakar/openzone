@@ -31,7 +31,8 @@ namespace oz
 namespace client
 {
 
-const float Audio::ROLLOFF_FACTOR       = 0.25f;
+const float Audio::REFERENCE_DISTANCE   = 2.00f;
+const float Audio::ROLLOFF_FACTOR       = 0.35f;
 const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
 const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
@@ -47,6 +48,7 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
   }
 
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
+  alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
   alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
   alSourcef( srcId, AL_GAIN, volume );
@@ -92,6 +94,7 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
 
     alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
     alSourcef( srcId, AL_GAIN, volume );
@@ -131,6 +134,7 @@ bool Audio::playSpeak( const char* text, float volume, const Object* parent ) co
       return false;
     }
 
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
     alSourcef( srcId, AL_GAIN, volume );
@@ -178,6 +182,7 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
 
     alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
     alSourcef( srcId, AL_PITCH, pitch );

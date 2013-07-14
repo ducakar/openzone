@@ -25,11 +25,11 @@
 
 #include "header.glsl"
 
-const int   MS_LEVEL         = 16;
-const float MS_SIZE          = 0.04;
+const int   MS_LEVEL         = 12;
+const float MS_SIZE          = 0.03;
 
 const float BLOOM_THRESHOLD  = 2.0;
-const float BLOOM_INTENSITY  = 0.5 / float( MS_LEVEL );
+const float BLOOM_INTENSITY  = 0.30 / float( MS_LEVEL );
 
 const float MS_DIM           = float( MS_LEVEL - 1 ) / 2.0;
 const float MS_SPACING       = MS_SIZE / float( MS_LEVEL - 1 );
@@ -42,14 +42,14 @@ void main()
 
   for( float x = -MS_DIM; x <= MS_DIM; x += 1.0 ) {
     vec2  coords    = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
-    vec4  sample    = texture2D( oz_Textures[0], coords );
+    vec4  sample    = texture2D( oz_Textures[1], coords );
     float luminance = sample.r + sample.g + sample.b;
 
     multiSample += vec3( max( luminance - BLOOM_THRESHOLD, 0.0 ) );
   }
 
-  vec4 sample = texture2D( oz_Textures[0], exTexCoord );
-  vec3 bloom  = multiSample * BLOOM_INTENSITY;
+  vec3 bloom   = multiSample * BLOOM_INTENSITY;
+  vec4 colour  = texture2D( oz_Textures[0], exTexCoord );
 
-  gl_FragColor = sample + vec4( bloom, 0.0 );
+  gl_FragColor = colour + vec4( bloom, 0 );
 }
