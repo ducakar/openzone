@@ -23,12 +23,10 @@
 
 #include <matrix/Dynamic.hh>
 
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 Pool<Dynamic, 4096> Dynamic::pool;
@@ -36,7 +34,7 @@ Pool<Dynamic, 4096> Dynamic::pool;
 void Dynamic::onDestroy()
 {
   if( !clazz->onDestroy.isEmpty() ) {
-    lua.objectCall( clazz->onDestroy, this );
+    luaMatrix.objectCall( clazz->onDestroy, this );
   }
 
   foreach( i, items.citer() ) {
@@ -127,5 +125,4 @@ void Dynamic::readUpdate( InputStream* )
 void Dynamic::writeUpdate( OutputStream* ) const
 {}
 
-}
 }

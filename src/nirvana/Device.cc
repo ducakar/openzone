@@ -25,8 +25,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 void Device::onUse( const Bot* )
 {}
@@ -45,5 +43,4 @@ const char* Device::getMemo() const
 void Device::write( OutputStream* ) const
 {}
 
-}
 }

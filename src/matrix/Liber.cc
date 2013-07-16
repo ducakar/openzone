@@ -32,8 +32,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 Liber::Resource::Resource( const String& name_, const String& path_ ) :
   name( name_ ), path( path_ )
@@ -441,12 +439,11 @@ void Liber::initFragPools()
       continue;
     }
 
-    Buffer buffer = file->read();
-    if( buffer.isEmpty() ) {
+    InputStream is = file->inputStream();
+
+    if( !is.isAvailable() ) {
       OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
     }
-
-    InputStream is = buffer.inputStream();
 
     while( is.isAvailable() ) {
       const char* name = is.readString();
@@ -482,12 +479,11 @@ void Liber::initClasses()
       continue;
     }
 
-    Buffer buffer = file->read();
-    if( buffer.isEmpty() ) {
+    InputStream is = file->inputStream();
+
+    if( !is.isAvailable() ) {
       OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
     }
-
-    InputStream is = buffer.inputStream();
 
     int nClasses  = is.readInt();
     int nDevices  = is.readInt();
@@ -552,8 +548,7 @@ void Liber::initClasses()
       continue;
     }
 
-    Buffer buffer = file->read();
-    InputStream is = buffer.inputStream();
+    InputStream is = file->inputStream();
 
     int nClasses  = is.readInt();
     int nDevices  = is.readInt();
@@ -797,5 +792,4 @@ void Liber::destroy()
 
 Liber liber;
 
-}
 }

@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 void importMatrixConstants( lua_State* l );
 
@@ -192,5 +190,4 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_ACTION_INV_GRAB",             Bot::ACTION_INV_GRAB );
 }
 
-}
 }

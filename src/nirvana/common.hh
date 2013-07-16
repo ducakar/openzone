@@ -23,17 +23,4 @@
 
 #pragma once
 
-#include <matrix/Collider.hh>
-
-namespace oz
-{
-namespace nirvana
-{
-
-using namespace common;
-using namespace matrix;
-
-extern Collider collider;
-
-}
-}
+#include <matrix/Orbis.hh>

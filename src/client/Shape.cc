@@ -26,7 +26,9 @@
 #include <client/Camera.hh>
 #include <client/Context.hh>
 
-#include <ozDynamics/ozDynamics.hh>
+#ifdef OZ_DYNAMICS
+# include <ozDynamics/ozDynamics.hh>
+#endif
 
 namespace oz
 {

@@ -215,8 +215,7 @@ void MD2::build( const char* path )
     OZ_ERROR( "MD2 file read failed" );
   }
 
-  Buffer buffer = modelFile.read();
-  InputStream is = buffer.inputStream( Endian::LITTLE );
+  InputStream is = modelFile.inputStream( Endian::LITTLE );
 
   MD2Header header;
 

@@ -36,8 +36,6 @@ namespace client
 namespace ui
 {
 
-using nirvana::nirvana;
-
 void InfoFrame::onVisibilityChange( bool )
 {
   lastId = -1;

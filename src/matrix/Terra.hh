@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Terra
 {
@@ -119,5 +117,4 @@ inline float Terra::height( float x, float y ) const
   return height - ( normal.x * localX + normal.y * localY ) / normal.z;
 }
 
-}
 }

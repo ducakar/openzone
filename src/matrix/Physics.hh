@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Physics
 {
@@ -100,5 +98,4 @@ class Physics
 
 extern Physics physics;
 
-}
 }

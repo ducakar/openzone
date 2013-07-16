@@ -18,7 +18,7 @@
  */
 
 /**
- * @file common/Lua.hh
+ * @file common/LuaCommon.hh
  */
 
 #pragma once
@@ -30,15 +30,13 @@ struct lua_State;
 
 namespace oz
 {
-namespace common
-{
 
 /**
  * %Lua base class.
  *
  * It provides common functions for derived %Lua classes in matrix, nirvana and client layers.
  */
-class Lua
+class LuaCommon
 {
   public:
 
@@ -105,5 +103,4 @@ class Lua
 
 };
 
-}
 }

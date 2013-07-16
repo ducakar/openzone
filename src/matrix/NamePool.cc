@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 char NamePool::buffer[LINE_LENGTH];
 
@@ -59,8 +57,7 @@ void NamePool::init()
       OZ_ERROR( "Reading '%s' failed", liber.nameLists[i].path.cstr() );
     }
 
-    Buffer buffer = file.read();
-    InputStream is = buffer.inputStream();
+    InputStream is = file.inputStream();
 
     const char* wordBegin = is.pos();
 
@@ -101,5 +98,4 @@ void NamePool::destroy()
 
 NamePool namePool;
 
-}
 }

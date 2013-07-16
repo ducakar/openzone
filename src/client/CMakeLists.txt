@@ -116,6 +116,7 @@ add_library( client STATIC
   ui/LoadingArea.hh
   ui/MainMenu.hh
   ui/MissionMenu.hh
+  ui/ModelField.hh
   ui/Mouse.hh
   ui/MusicPlayer.hh
   ui/QuestFrame.hh
@@ -141,6 +142,7 @@ add_library( client STATIC
   ui/LoadingArea.cc
   ui/MainMenu.cc
   ui/MissionMenu.cc
+  ui/ModelField.cc
   ui/Mouse.cc
   ui/MusicPlayer.cc
   ui/QuestFrame.cc

@@ -32,8 +32,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 struct NirvanaLuaState
 {
@@ -526,14 +524,14 @@ static int ozNirvanaRemoveDevice( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  const nirvana::Device* const* device = nirvana::nirvana.devices.find( index );
+  const Device* const* device = nirvana.devices.find( index );
 
   if( device == nullptr ) {
     l_pushbool( false );
   }
   else {
     delete *device;
-    nirvana::nirvana.devices.exclude( index );
+    nirvana.devices.exclude( index );
     l_pushbool( true );
   }
   return 1;
@@ -551,15 +549,14 @@ static int ozNirvanaAddMemo( lua_State* l )
     ERROR( "object is null" );
   }
 
-  if( nirvana::nirvana.devices.contains( index ) ) {
+  if( nirvana.devices.contains( index ) ) {
     ERROR( "object already has a device" );
   }
 
-  nirvana::nirvana.devices.add( index, new nirvana::Memo( l_tostring( 2 ) ) );
+  nirvana.devices.add( index, new Memo( l_tostring( 2 ) ) );
   return 0;
 }
 
 /// @}
 
-}
 }

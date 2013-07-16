@@ -492,8 +492,6 @@
 
 namespace oz
 {
-namespace common
-{
 
 /**
  * Overload for registering boolean %Lua constant.
@@ -523,5 +521,4 @@ void registerLuaConstant( lua_State* l, const char* name, float value );
  */
 void registerLuaConstant( lua_State* l, const char* name, const char* value );
 
-}
 }

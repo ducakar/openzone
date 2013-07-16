@@ -25,12 +25,10 @@
 
 #include <common/Timer.hh>
 #include <matrix/Bot.hh>
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 Pool<Weapon, 2048> Weapon::pool;
@@ -42,7 +40,7 @@ void Weapon::onUpdate()
   }
 
   if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
-    lua.objectCall( clazz->onUpdate, this );
+    luaMatrix.objectCall( clazz->onUpdate, this );
   }
 
   if( !( flags & Object::UPDATE_FUNC_BIT ) ) {
@@ -91,7 +89,7 @@ void Weapon::trigger( Bot* user )
 
     shotTime = clazz->shotInterval;
 
-    if( nRounds != 0 && lua.objectCall( clazz->onShot, this, user ) ) {
+    if( nRounds != 0 && luaMatrix.objectCall( clazz->onShot, this, user ) ) {
       nRounds = max( -1, nRounds - 1 );
       success = true;
     }
@@ -144,5 +142,4 @@ void Weapon::readUpdate( InputStream* )
 void Weapon::writeUpdate( OutputStream* ) const
 {}
 
-}
 }

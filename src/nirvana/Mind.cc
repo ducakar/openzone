@@ -23,12 +23,10 @@
 
 #include <nirvana/Mind.hh>
 
-#include <nirvana/Lua.hh>
+#include <nirvana/LuaNirvana.hh>
 #include <matrix/Bot.hh>
 
 namespace oz
-{
-namespace nirvana
 {
 
 Pool<Mind, 1024> Mind::pool;
@@ -36,7 +34,7 @@ Pool<Mind, 1024> Mind::pool;
 Mind::Mind( int bot_ ) :
   flags( 0 ), bot( bot_ )
 {
-  lua.registerMind( bot );
+  luaNirvana.registerMind( bot );
 }
 
 Mind::Mind( int bot_, InputStream* istream ) :
@@ -47,7 +45,7 @@ Mind::Mind( int bot_, InputStream* istream ) :
 
 Mind::~Mind()
 {
-  lua.unregisterMind( bot );
+  luaNirvana.unregisterMind( bot );
 }
 
 void Mind::update()
@@ -61,7 +59,7 @@ void Mind::update()
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 
-    if( lua.mindCall( botObj->mindFunc, botObj ) ) {
+    if( luaNirvana.mindCall( botObj->mindFunc, botObj ) ) {
       flags |= FORCE_UPDATE_BIT;
     }
   }
@@ -72,5 +70,4 @@ void Mind::write( OutputStream* ostream ) const
   ostream->writeInt( flags );
 }
 
-}
 }

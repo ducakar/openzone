@@ -61,8 +61,7 @@ void MD3::buildMesh( const char* name, int frame )
     OZ_ERROR( "Cannot read MD3 model part file '%s'", file.path().cstr() );
   }
 
-  Buffer buffer = file.read();
-  InputStream is = buffer.inputStream( Endian::LITTLE );
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   MD3Header header;
 

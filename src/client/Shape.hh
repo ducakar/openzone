@@ -66,7 +66,9 @@ class Shape
     static void quad( float dimX, float dimY );
     static void box( const AABB& bb );
     static void wireBox( const AABB& bb );
+#ifdef OZ_DYNAMICS
     static void object( const Point& pos, const Mat33& rot, const void* shape );
+#endif
 
     void init();
     void destroy();

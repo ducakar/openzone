@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 ObjectClass* WeaponClass::createClass()
 {
@@ -62,5 +60,4 @@ Object* WeaponClass::create( const JSON& json ) const
   return new Weapon( this, json );
 }
 
-}
 }

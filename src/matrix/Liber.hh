@@ -28,8 +28,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 /**
  * Mapping of all resources, object types, scripts etc.
@@ -132,5 +130,4 @@ class Liber
 
 extern Liber liber;
 
-}
 }

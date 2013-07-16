@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class WeaponClass : public DynamicClass
 {
@@ -50,5 +48,4 @@ class WeaponClass : public DynamicClass
     Object* create( const JSON& json ) const override;
 };
 
-}
 }

@@ -21,18 +21,34 @@
  * @file common/common.hh
  *
  * Main include file for the engine.
+ *
+ * This header is also precompiled via `src/pch.hh` and included by all other OpenZone layers.
  */
 
 #pragma once
 
-#include <pch.hh>
+#include <ozCore/ozCore.hh>
+#include <ozDynamics/collision/AABB.hh>
+#include <ozDynamics/collision/Bounds.hh>
+
+#ifdef _WIN32
+# include <windows.h>
+// Fix M$ crap from Windows headers.
+# undef ERROR
+# undef PLANES
+# undef near
+# undef far
+#endif
+
+// Some standard C/C++ headers.
+#include <climits>
+#include <cctype>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 namespace oz
-{
-/**
- * Common layer.
- */
-namespace common
 {
 
 /**
@@ -94,5 +110,4 @@ inline float angleDiff( float x, float y )
   return Math::fmod( x - y + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
 }
 
-}
 }

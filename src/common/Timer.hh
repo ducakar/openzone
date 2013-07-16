@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace common
-{
 
 /**
  * Class that keeps track of the current game time, time passed from the last rendered frame etc.
@@ -99,5 +97,4 @@ class Timer
  */
 extern Timer timer;
 
-}
 }

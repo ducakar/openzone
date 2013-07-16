@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class BSP;
 
@@ -188,5 +186,4 @@ inline void BSP::release()
   }
 }
 
-}
 }

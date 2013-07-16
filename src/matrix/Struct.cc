@@ -30,8 +30,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 const Mat44 Struct::ROTATIONS[] =
 {
@@ -894,5 +892,4 @@ JSON Struct::write() const
   return json;
 }
 
-}
 }

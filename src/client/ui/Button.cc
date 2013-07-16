@@ -45,12 +45,10 @@ bool Button::onMouseEvent()
   if( !input.keys[Input::KEY_UI_ALT] ) {
     isHighlighted = true;
 
-    if( input.leftClick ) {
+    if( input.leftClick && callback != nullptr ) {
       isClicked = true;
 
-      if( callback != nullptr ) {
-        callback( this );
-      }
+      callback( this );
     }
   }
   return true;
@@ -72,7 +70,7 @@ void Button::onDraw()
   label.draw( this );
 
   isHighlighted = false;
-  isClicked = false;
+  isClicked     = false;
 }
 
 Button::Button( const char* text, Callback* callback_, int width, int height ) :

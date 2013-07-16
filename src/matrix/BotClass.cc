@@ -28,8 +28,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 ObjectClass* BotClass::createClass()
 {
@@ -116,5 +114,4 @@ Object* BotClass::create( const JSON& json ) const
   return new Bot( this, json );
 }
 
-}
 }

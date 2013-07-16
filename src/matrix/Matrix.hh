@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Matrix
 {
@@ -65,5 +63,4 @@ class Matrix
 
 extern Matrix matrix;
 
-}
 }

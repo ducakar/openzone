@@ -21,25 +21,8 @@
  * @file common/pch.hh
  *
  * Precompiled header.
+ *
+ * It includes all public headers from the common layer.
  */
 
-#include <ozCore/ozCore.hh>
-#include <ozDynamics/collision/AABB.hh>
-#include <ozDynamics/collision/Bounds.hh>
-
-#ifdef _WIN32
-# include <windows.h>
-// Fix M$ crap from Windows headers.
-# undef ERROR
-# undef PLANES
-# undef near
-# undef far
-#endif
-
-// Some standard C/C++ headers.
-#include <climits>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <common/common.hh>

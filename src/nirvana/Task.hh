@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 class Mind;
 
@@ -93,5 +91,4 @@ class Task
 
 };
 
-}
 }

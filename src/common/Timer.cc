@@ -25,8 +25,6 @@
 
 namespace oz
 {
-namespace common
-{
 
 Timer::Timer()
 {
@@ -75,5 +73,4 @@ void Timer::drop( uint micros_ )
 
 Timer timer;
 
-}
 }

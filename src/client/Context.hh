@@ -192,10 +192,12 @@ class Context
     MD3* requestMD3( int id );
     void releaseMD3( int id );
 
-    BSP* getBSP( const Struct* str );
+    void drawBSP( const oz::BSP* bsp );
     void drawBSP( const Struct* str );
     void playBSP( const Struct* str );
+    BSP* getBSP( const Struct* str );
 
+    void drawModel( int id );
     void drawImago( const Object* obj, const Imago* parent );
     void playAudio( const Object* obj, const Audio* parent );
 

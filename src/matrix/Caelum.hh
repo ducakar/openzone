@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Caelum
 {
@@ -51,5 +49,4 @@ class Caelum
 
 };
 
-}
 }

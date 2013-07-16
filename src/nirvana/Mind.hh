@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 class Mind
 {
@@ -56,5 +54,4 @@ class Mind
 
 };
 
-}
 }

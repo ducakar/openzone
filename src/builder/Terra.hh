@@ -36,11 +36,11 @@ class Terra
   private:
 
     // Some "shortcuts".
-    typedef matrix::Terra::Quad Quad;
+    typedef oz::Terra::Quad Quad;
 
-    static const int DIM        = matrix::Terra::DIM;
-    static const int VERTS      = matrix::Terra::VERTS;
-    static const int QUADS      = matrix::Terra::QUADS;
+    static const int DIM        = oz::Terra::DIM;
+    static const int VERTS      = oz::Terra::VERTS;
+    static const int QUADS      = oz::Terra::QUADS;
     static const int TILES      = client::Terra::TILES;
     static const int TILE_QUADS = client::Terra::TILE_QUADS;
 

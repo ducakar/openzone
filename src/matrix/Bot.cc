@@ -25,14 +25,12 @@
 
 #include <common/Timer.hh>
 #include <matrix/Liber.hh>
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 #include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 const float Bot::AIR_FRICTION         =  0.01f;
@@ -830,7 +828,7 @@ void Bot::onUpdate()
           meleeTime = clazz->meleeInterval;
 
           addEvent( EVENT_MELEE, 1.0f );
-          lua.objectCall( clazz->onMelee, this, this );
+          luaMatrix.objectCall( clazz->onMelee, this, this );
         }
       }
       else if( !( state & CROUCHING_BIT ) ) {
@@ -890,7 +888,7 @@ void Bot::onUpdate()
       const Bot* cargoBot = static_cast<const Bot*>( cargoObj );
 
       if( cargoObj == nullptr || cargoObj->cell == nullptr || ( cargoObj->flags & BELOW_BIT ) ||
-          ( state & ( LADDER_BIT | LEDGE_BIT ) ) || ( actions & ACTION_JUMP ) ||
+          weapon >= 0 || ( state & ( LADDER_BIT | LEDGE_BIT ) ) || ( actions & ACTION_JUMP ) ||
           ( ( cargoObj->flags & BOT_BIT ) &&
             ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo >= 0 ) ) ) )
       {
@@ -1290,5 +1288,4 @@ void Bot::readUpdate( InputStream* )
 void Bot::writeUpdate( OutputStream* ) const
 {}
 
-}
 }

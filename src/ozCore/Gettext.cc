@@ -151,12 +151,11 @@ DArray<const char*> Gettext::catalogueDescriptions() const
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import( const File& file )
 {
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
+  InputStream istream = file.inputStream();
+
+  if( !istream.isAvailable() ) {
     return false;
   }
-
-  InputStream istream = buffer.inputStream();
 
   // Header.
   uint magic = istream.readUInt();

@@ -18,22 +18,20 @@
  */
 
 /**
- * @file common/Lua.cc
+ * @file common/LuaCommon.cc
  */
 
-#include <common/Lua.hh>
+#include <common/LuaCommon.hh>
 
 #include <common/luaapi.hh>
 
 namespace oz
 {
-namespace common
-{
 
-int  Lua::randomSeed       = 0;
-bool Lua::isRandomSeedTime = true;
+int  LuaCommon::randomSeed       = 0;
+bool LuaCommon::isRandomSeedTime = true;
 
-bool Lua::readVariable( InputStream* istream )
+bool LuaCommon::readVariable( InputStream* istream )
 {
   char ch = istream->readChar();
 
@@ -77,7 +75,7 @@ bool Lua::readVariable( InputStream* istream )
   }
 }
 
-void Lua::writeVariable( OutputStream* ostream )
+void LuaCommon::writeVariable( OutputStream* ostream )
 {
   int type = l_type( -1 );
 
@@ -126,7 +124,7 @@ void Lua::writeVariable( OutputStream* ostream )
   }
 }
 
-void Lua::initCommon( const char* componentName )
+void LuaCommon::initCommon( const char* componentName )
 {
   ls.envName = componentName;
 
@@ -160,40 +158,39 @@ void Lua::initCommon( const char* componentName )
   IGNORE_FUNC( ozPrintln );
 }
 
-void Lua::freeCommon()
+void LuaCommon::freeCommon()
 {
   lua_close( l );
   l = nullptr;
 }
 
-void Lua::registerFunction( const char* name, APIFunc func )
+void LuaCommon::registerFunction( const char* name, APIFunc func )
 {
   l_register( name, func );
 }
 
-void Lua::registerConstant( const char* name, bool value )
+void LuaCommon::registerConstant( const char* name, bool value )
 {
   l_pushbool( value );
   l_setglobal( name );
 }
 
-void Lua::registerConstant( const char* name, int value )
+void LuaCommon::registerConstant( const char* name, int value )
 {
   l_pushint( value );
   l_setglobal( name );
 }
 
-void Lua::registerConstant( const char* name, float value )
+void LuaCommon::registerConstant( const char* name, float value )
 {
   l_pushfloat( value );
   l_setglobal( name );
 }
 
-void Lua::registerConstant( const char* name, const char* value )
+void LuaCommon::registerConstant( const char* name, const char* value )
 {
   l_pushstring( value );
   l_setglobal( name );
 }
 
-}
 }

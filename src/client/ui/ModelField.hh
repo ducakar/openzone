@@ -18,44 +18,60 @@
  */
 
 /**
- * @file client/BSP.hh
+ * @file client/ui/ModelField.hh
  */
 
 #pragma once
 
-#include <client/Mesh.hh>
+#include <client/ui/Area.hh>
 
 namespace oz
 {
 namespace client
 {
-
-class BSP
+namespace ui
 {
+
+class ModelField : public Area
+{
+  public:
+
+    typedef void Callback( ModelField* sender );
+
   private:
 
+    static const float DEFAULT_ROTATION;
+    static const float ROTATION_VEL;
+    static const float ROTATION_SMOOTHING;
+
+    Callback*      callback;
     const oz::BSP* bsp;
-    Mesh           mesh;
+
+    float          defaultRot;
+    float          currRot;
+    float          nextRot;
+
+    bool           isHighlighted;
+    bool           isClicked;
+
+  protected:
+
+    void onVisibilityChange( bool doShow ) override;
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 
-    Vec4 waterFogColour;
-    Vec4 lavaFogColour;
+    explicit ModelField( Callback* callback, int width, int height );
 
-    bool isPreloaded;
-    bool isLoaded;
+    void setCallback( Callback* callback );
+    void setDefaultRotation( float defaultRotation );
 
-  public:
-
-    explicit BSP( const oz::BSP* bsp );
-    ~BSP();
-
-    void preload();
-    void load();
-
-    void draw( const Struct* str );
+    void setBSP( const oz::BSP* bsp );
+    void setModel( int );
 
 };
 
+}
 }
 }

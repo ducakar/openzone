@@ -1,4 +1,4 @@
-![logo](http://ducakar.github.io/openzone/img/title.jpg)
+![logo](http://ducakar.github.io/openzone-web/img/title.jpg)
 
 OpenZone
 ========

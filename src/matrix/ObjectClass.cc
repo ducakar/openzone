@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 ObjectClass::~ObjectClass()
 {}
@@ -108,5 +106,4 @@ Object* ObjectClass::create( const JSON& json ) const
   return new Object( this, json );
 }
 
-}
 }

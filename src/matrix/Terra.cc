@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 void Terra::reset()
 {
@@ -55,13 +53,11 @@ void Terra::load( int id_ )
     Log::print( "Loading terrain '%s' ...", name.cstr() );
 
     File file( path );
-    Buffer buffer = file.read();
+    InputStream is = file.inputStream();
 
-    if( buffer.isEmpty() ) {
+    if( !is.isAvailable() ) {
       OZ_ERROR( "Cannot read terra file '%s'", file.path().cstr() );
     }
-
-    InputStream is = buffer.inputStream();
 
     int max = is.readInt();
     if( max != VERTS ) {
@@ -136,5 +132,4 @@ JSON Terra::write() const
   return json;
 }
 
-}
 }

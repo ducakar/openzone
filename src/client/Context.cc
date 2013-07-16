@@ -505,16 +505,24 @@ void Context::releaseMD3( int id )
   --resource.nUsers;
 }
 
-BSP* Context::getBSP( const Struct* str )
+void Context::drawBSP( const oz::BSP* bsp )
 {
-  Resource<BSP*>& resource = bsps[str->bsp->id];
+  Resource<BSP*>& resource = bsps[bsp->id];
 
-  return resource.handle != nullptr && resource.handle->isLoaded ? resource.handle : nullptr;
+  // we don't count users, just to show there is at least one
+  resource.nUsers = 1;
+
+  if( resource.handle == nullptr ) {
+    resource.handle = new BSP( bsp );
+  }
+  else if( resource.handle->isLoaded ) {
+    resource.handle->draw( nullptr );
+  }
 }
 
 void Context::drawBSP( const Struct* str )
 {
-  volatile Resource<BSP*>& resource = bsps[str->bsp->id];
+  Resource<BSP*>& resource = bsps[str->bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
@@ -539,6 +547,13 @@ void Context::playBSP( const Struct* str )
   }
 
   resource.handle->play( str );
+}
+
+BSP* Context::getBSP( const Struct* str )
+{
+  Resource<BSP*>& resource = bsps[str->bsp->id];
+
+  return resource.handle != nullptr && resource.handle->isLoaded ? resource.handle : nullptr;
 }
 
 void Context::drawImago( const Object* obj, const Imago* parent )

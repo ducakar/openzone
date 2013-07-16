@@ -24,7 +24,9 @@
 #include <client/ui/DebugFrame.hh>
 
 #include <matrix/Collider.hh>
+#include <matrix/Liber.hh>
 #include <client/Camera.hh>
+#include <client/ui/ModelField.hh>
 #include <client/ui/Style.hh>
 
 namespace oz
@@ -111,6 +113,10 @@ DebugFrame::DebugFrame() :
   tagPos        = Label( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, " " );
   tagVelMom     = Label( 5, 5 + height * 1, ALIGN_NONE, Font::MONO, " " );
   tagFlags      = Label( 5, 5 + height * 0, ALIGN_NONE, Font::MONO, " " );
+
+  ModelField* mf = new ModelField( nullptr, 100, 100 );
+  mf->setBSP( liber.bsp( "house" ) );
+  add( mf, 0, 0 );
 }
 
 }

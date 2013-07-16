@@ -28,8 +28,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 FragPool::FragPool( InputStream* is, const char* name_, int id_ ) :
   name( name_ ), id( id_ )
@@ -64,5 +62,4 @@ Frag* FragPool::create( InputStream* istream ) const
   return new Frag( this, istream );
 }
 
-}
 }

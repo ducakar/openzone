@@ -25,11 +25,9 @@
 
 #include <common/Timer.hh>
 #include <matrix/Physics.hh>
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 const float Vehicle::ROT_DIFF_LIMIT     = 0.50f;
@@ -350,7 +348,7 @@ void Vehicle::onUpdate()
           nRounds[weapon] = max( -1, nRounds[weapon] - 1 );
 
           addEvent( EVENT_SHOT0 + weapon, 1.0f );
-          lua.objectCall( clazz->onWeaponShot[weapon], this, bot );
+          luaMatrix.objectCall( clazz->onWeaponShot[weapon], this, bot );
         }
       }
     }
@@ -540,5 +538,4 @@ void Vehicle::readUpdate( InputStream* )
 void Vehicle::writeUpdate( OutputStream* ) const
 {}
 
-}
 }

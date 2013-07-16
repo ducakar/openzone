@@ -23,13 +23,11 @@
 
 #include <matrix/Object.hh>
 
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Bot.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 const float Object::REAL_MAX_DIM            = MAX_DIM - 0.01f;
@@ -46,7 +44,7 @@ void Object::onDestroy()
   hard_assert( cell != nullptr );
 
   if( !clazz->onDestroy.isEmpty() ) {
-    lua.objectCall( clazz->onDestroy, this );
+    luaMatrix.objectCall( clazz->onDestroy, this );
   }
 
   foreach( i, items.citer() ) {
@@ -70,14 +68,14 @@ bool Object::onUse( Bot* user )
 {
   hard_assert( !clazz->onUse.isEmpty() );
 
-  return lua.objectCall( clazz->onUse, this, user );
+  return luaMatrix.objectCall( clazz->onUse, this, user );
 }
 
 void Object::onUpdate()
 {
   hard_assert( !clazz->onUpdate.isEmpty() );
 
-  lua.objectCall( clazz->onUpdate, this );
+  luaMatrix.objectCall( clazz->onUpdate, this );
 }
 
 Object::~Object()
@@ -217,5 +215,4 @@ void Object::readUpdate( InputStream* )
 void Object::writeUpdate( OutputStream* ) const
 {}
 
-}
 }

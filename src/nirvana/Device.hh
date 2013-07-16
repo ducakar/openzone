@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 class Device
 {
@@ -62,5 +60,4 @@ class Device
 
 };
 
-}
 }

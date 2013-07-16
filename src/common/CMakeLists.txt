@@ -4,11 +4,11 @@ add_library( common STATIC
   Lingua.hh
   luaapi.hh
   luabase.hh
-  Lua.hh
+  LuaCommon.hh
   Timer.hh
   Lingua.cc
   luabase.cc
-  Lua.cc
+  LuaCommon.cc
   Timer.cc
 #END SOURCES
 )

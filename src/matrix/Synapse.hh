@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Bot;
 
@@ -103,5 +101,4 @@ class Synapse
 
 extern Synapse synapse;
 
-}
 }

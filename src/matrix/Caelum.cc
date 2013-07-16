@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 void Caelum::reset()
 {
@@ -78,5 +76,4 @@ JSON Caelum::write() const
   return json;
 }
 
-}
 }

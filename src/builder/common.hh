@@ -33,11 +33,8 @@ namespace oz
 namespace builder
 {
 
-using namespace common;
-using namespace matrix;
-using namespace nirvana;
-using namespace modules;
-using namespace client;
+using namespace oz::modules;
+using namespace oz::client;
 
 extern JSON config;
 

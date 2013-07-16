@@ -46,7 +46,7 @@ void FragPool::build( OutputStream* os, const char* className )
 
   int flags = 0;
 
-  SET_FLAG( matrix::FragPool::FADEOUT_BIT, "flag.fadeout", true );
+  SET_FLAG( oz::FragPool::FADEOUT_BIT, "flag.fadeout", true );
 
   float velocitySpread = config["velocitySpread"].get( 4.0f );
 

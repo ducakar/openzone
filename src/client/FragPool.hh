@@ -37,12 +37,12 @@ class FragPool
   public:
 
     static const int   UPDATED_BIT = 0x01;
-    static const int   FADEOUT_BIT = matrix::FragPool::FADEOUT_BIT;
+    static const int   FADEOUT_BIT = oz::FragPool::FADEOUT_BIT;
     static const float FRAG_RADIUS;
 
   private:
 
-    const matrix::FragPool* pool;
+    const oz::FragPool* pool;
 
     List<SMM*> models;
 
@@ -50,7 +50,7 @@ class FragPool
 
     int flags;
 
-    explicit FragPool( const matrix::FragPool* pool );
+    explicit FragPool( const oz::FragPool* pool );
     ~FragPool();
 
     void draw( const Frag* frag );

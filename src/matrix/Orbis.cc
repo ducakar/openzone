@@ -24,12 +24,10 @@
 #include <matrix/Orbis.hh>
 
 #include <matrix/Liber.hh>
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 #include <matrix/Vehicle.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
@@ -181,7 +179,7 @@ Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
   }
 
   if( obj->flags & Object::LUA_BIT ) {
-    lua.registerObject( obj->index );
+    luaMatrix.registerObject( obj->index );
   }
 
   return obj;
@@ -229,7 +227,7 @@ void Orbis::remove( Object* obj )
   hard_assert( obj->cell == nullptr );
 
   if( obj->flags & Object::LUA_BIT ) {
-    lua.unregisterObject( obj->index );
+    luaMatrix.unregisterObject( obj->index );
   }
   objFreedIndices[freeing].add( obj->index );
   objects[obj->index] = nullptr;
@@ -320,7 +318,7 @@ void Orbis::read( InputStream* istream )
 {
   hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
 
-  lua.read( istream );
+  luaMatrix.read( istream );
 
   caelum.read( istream );
   terra.read( istream );
@@ -420,7 +418,7 @@ void Orbis::read( InputStream* istream )
 
 void Orbis::write( OutputStream* ostream ) const
 {
-  lua.write( ostream );
+  luaMatrix.write( ostream );
 
   caelum.write( ostream );
   terra.write( ostream );
@@ -554,7 +552,7 @@ void Orbis::read( const JSON& json )
       }
 
       if( obj->flags & Object::LUA_BIT ) {
-        lua.registerObject( obj->index );
+        luaMatrix.registerObject( obj->index );
       }
     }
     objects.add( obj );
@@ -649,7 +647,7 @@ void Orbis::unload()
 {
   for( int i = 0; i < objects.length(); ++i ) {
     if( objects[i] != nullptr && ( objects[i]->flags & Object::LUA_BIT ) ) {
-      lua.unregisterObject( i );
+      luaMatrix.unregisterObject( i );
     }
   }
 
@@ -728,5 +726,4 @@ void Orbis::destroy()
 
 Orbis orbis;
 
-}
 }

@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <common/Lua.hh>
+#include <common/LuaCommon.hh>
 
 #include <modules/Module.hh>
 

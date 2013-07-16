@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class NamePool
 {
@@ -52,5 +50,4 @@ class NamePool
 
 extern NamePool namePool;
 
-}
 }

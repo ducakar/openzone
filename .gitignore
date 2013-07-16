@@ -10,6 +10,8 @@
 /lib
 /ports
 /build
+/gh-pages
+/web
 
 /data/*/baseq3/*
 !/data/*/baseq3/maps

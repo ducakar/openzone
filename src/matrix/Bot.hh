@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Bot : public Dynamic
 {
@@ -237,5 +235,4 @@ class Bot : public Dynamic
 
 };
 
-}
 }

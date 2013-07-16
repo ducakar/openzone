@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Struct;
 class Object;
@@ -233,5 +231,4 @@ inline void Struct::update()
   }
 }
 
-}
 }

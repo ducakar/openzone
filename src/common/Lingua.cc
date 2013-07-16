@@ -25,8 +25,6 @@
 
 namespace oz
 {
-namespace common
-{
 
 String Lingua::language;
 
@@ -116,5 +114,4 @@ void Lingua::destroy()
 
 Lingua lingua;
 
-}
 }

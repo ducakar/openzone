@@ -28,8 +28,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Vehicle : public Dynamic
 {
@@ -115,5 +113,4 @@ class Vehicle : public Dynamic
 
 };
 
-}
 }

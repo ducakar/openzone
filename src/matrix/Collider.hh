@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 struct Material
 {
@@ -164,5 +162,4 @@ class Collider
 
 extern Collider collider;
 
-}
 }

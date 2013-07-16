@@ -25,8 +25,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 const float Frag::DAMAGE_THRESHOLD = 50.0f;
 
@@ -99,5 +97,4 @@ void Frag::readUpdate( InputStream* )
 void Frag::writeUpdate( OutputStream* )
 {}
 
-}
 }

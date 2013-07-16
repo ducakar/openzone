@@ -44,8 +44,6 @@ namespace oz
 namespace client
 {
 
-using matrix::matrix;
-using nirvana::nirvana;
 using modules::modules;
 
 void GameStage::read()

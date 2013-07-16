@@ -40,11 +40,6 @@ namespace oz
 namespace client
 {
 
-using namespace common;
-using namespace matrix;
-using namespace nirvana;
-using namespace modules;
-
 struct TexCoord
 {
   static const TexCoord ZERO;
@@ -101,8 +96,8 @@ struct TexCoord
   }
 };
 
-extern matrix::Collider collider;
-extern JSON             config;
+extern Collider collider;
+extern JSON     config;
 
 }
 }

@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  EPSILON;
@@ -608,5 +606,4 @@ void Physics::updateObj( Dynamic* dyn_ )
 
 Physics physics;
 
-}
 }

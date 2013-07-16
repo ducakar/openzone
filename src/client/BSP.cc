@@ -31,7 +31,7 @@ namespace oz
 namespace client
 {
 
-BSP::BSP( const matrix::BSP* bsp_ ) :
+BSP::BSP( const oz::BSP* bsp_ ) :
   bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
 {
   foreach( model, bsp->models.citer() ) {
@@ -45,8 +45,10 @@ BSP::~BSP()
     mesh.unload();
   }
 
-  foreach( model, bsp->models.citer() ) {
-    context.releaseSMM( *model );
+  if( bsp != nullptr ) {
+    foreach( model, bsp->models.citer() ) {
+      context.releaseSMM( *model );
+    }
   }
 }
 
@@ -70,28 +72,30 @@ void BSP::load()
 
 void BSP::draw( const Struct* str )
 {
-  tf.model = Mat44::translation( str->p - Point::ORIGIN );
-  tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
+  if( str != nullptr ) {
+    tf.model = Mat44::translation( str->p - Point::ORIGIN );
+    tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
 
-  for( int i = 0; i < str->entities.length(); ++i ) {
-    const Entity& entity = str->entities[i];
+    for( int i = 0; i < str->entities.length(); ++i ) {
+      const Entity& entity = str->entities[i];
 
-    tf.push();
-    tf.model.translate( entity.offset );
+      tf.push();
+      tf.model.translate( entity.offset );
 
-    mesh.schedule( i + 1 );
+      mesh.schedule( i + 1 );
 
-    if( entity.clazz->model != -1 ) {
-      SMM* smm = context.smms[entity.clazz->model].handle;
+      if( entity.clazz->model != -1 ) {
+        SMM* smm = context.smms[entity.clazz->model].handle;
 
-      if( smm != nullptr && smm->isLoaded ) {
-        tf.model = tf.model * entity.clazz->modelTransf;
+        if( smm != nullptr && smm->isLoaded ) {
+          tf.model = tf.model * entity.clazz->modelTransf;
 
-        smm->schedule( 0 );
+          smm->schedule( 0 );
+        }
       }
-    }
 
-    tf.pop();
+      tf.pop();
+    }
   }
 
   mesh.schedule( 0 );

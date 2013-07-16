@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Object;
 class FragPool;
@@ -92,5 +90,4 @@ class ObjectClass
 
 };
 
-}
 }

@@ -18,63 +18,75 @@
  */
 
 /**
- * @file nirvana/Lua.cc
+ * @file matrix/LuaMatrix.cc
  *
- * Lua scripting engine for Nirvana
+ * Lua scripting engine for Matrix
  */
 
-#include <nirvana/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 
-#include <nirvana/luaapi.hh>
+#include <matrix/luaapi.hh>
 
 namespace oz
 {
-namespace nirvana
-{
 
-bool Lua::mindCall( const char* functionName, Bot* self_ )
+// For IMPORT_FUNC()/IGNORE_FUNC() macros.
+static LuaMatrix& lua = luaMatrix;
+
+bool LuaMatrix::objectCall( const char* functionName, Object* self_, Bot* user_ )
 {
-  ms.self        = self_;
-  ms.obj         = self_;
-  ms.str         = nullptr;
-  ms.objIndex    = 0;
-  ms.strIndex    = 0;
-  ns.self        = self_;
-  ns.forceUpdate = false;
+  ms.self         = self_;
+  ms.user         = user_;
+  ms.obj          = self_;
+  ms.str          = nullptr;
+  ms.frag         = nullptr;
+  ms.objIndex     = 0;
+  ms.strIndex     = 0;
 
   hard_assert( l_gettop() == 1 && ms.self != nullptr );
 
   l_getglobal( functionName );
   l_rawgeti( 1, ms.self->index );
-  l_pcall( 1, 0 );
+  l_pcall( 1, 1 );
 
-  if( l_gettop() != 1 ) {
-    Log::println( "Lua[N] in %s(self = %d): %s", functionName, ms.self->index, l_tostring( -1 ) );
-    System::bell();
+  bool success = true;
 
-    l_pop( 1 );
+  if( l_gettop() == 2 ) {
+    if( l_type( 2 ) == LUA_TSTRING ) {
+      Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
+                    ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
+      System::bell();
+    }
+    else {
+      success = l_tobool( 2 );
+    }
+    l_settop( 1 );
   }
-
-  return ns.forceUpdate;
+  hard_assert( l_gettop() == 1 );
+  return success;
 }
 
-void Lua::registerMind( int botIndex )
+void LuaMatrix::registerObject( int index )
 {
-  hard_assert( l_gettop() == 1 );
-
+  // we cannot depend that ozLocalData exists at index 1 as this function can be called via a
+  // script creating an object
+  l_getglobal( "ozLocalData" );
   l_newtable();
-  l_rawseti( 1, botIndex );
+  l_rawseti( -2, index );
+  l_pop( 1 );
 }
 
-void Lua::unregisterMind( int botIndex )
+void LuaMatrix::unregisterObject( int index )
 {
-  hard_assert( l_gettop() == 1 );
-
+  // we cannot depend that ozLocalData exists at index 1 as this function can be called via a
+  // script creating an object
+  l_getglobal( "ozLocalData" );
   l_pushnil();
-  l_rawseti( 1, botIndex );
+  l_rawseti( -2, index );
+  l_pop( 1 );
 }
 
-void Lua::read( InputStream* istream )
+void LuaMatrix::read( InputStream* istream )
 {
   hard_assert( l_gettop() == 1 );
   hard_assert( ( l_pushnil(), true ) );
@@ -91,7 +103,7 @@ void Lua::read( InputStream* istream )
   }
 }
 
-void Lua::write( OutputStream* ostream )
+void LuaMatrix::write( OutputStream* ostream )
 {
   hard_assert( l_gettop() == 1 );
 
@@ -109,11 +121,11 @@ void Lua::write( OutputStream* ostream )
   ostream->writeInt( -1 );
 }
 
-void Lua::init()
+void LuaMatrix::init()
 {
-  Log::print( "Initialising Nirvana Lua ..." );
+  Log::print( "Initialising Matrix Lua ..." );
 
-  initCommon( "nirvana" );
+  initCommon( "matrix" );
 
   ms.structs.allocate( 32 );
   ms.objects.allocate( 512 );
@@ -125,19 +137,17 @@ void Lua::init()
   IMPORT_FUNC( ozError );
   IMPORT_FUNC( ozPrintln );
 
-  IMPORT_FUNC( ozForceUpdate );
-
   /*
    * Orbis
    */
 
   IMPORT_FUNC( ozOrbisGetGravity );
-  IGNORE_FUNC( ozOrbisSetGravity );
+  IMPORT_FUNC( ozOrbisSetGravity );
 
-  IGNORE_FUNC( ozOrbisAddStr );
-  IGNORE_FUNC( ozOrbisAddObj );
-  IGNORE_FUNC( ozOrbisAddFrag );
-  IGNORE_FUNC( ozOrbisGenFrags );
+  IMPORT_FUNC( ozOrbisAddStr );
+  IMPORT_FUNC( ozOrbisAddObj );
+  IMPORT_FUNC( ozOrbisAddFrag );
+  IMPORT_FUNC( ozOrbisGenFrags );
 
   IMPORT_FUNC( ozOrbisOverlaps );
   IMPORT_FUNC( ozOrbisBindOverlaps );
@@ -146,22 +156,22 @@ void Lua::init()
    * Caelum
    */
 
-  IGNORE_FUNC( ozCaelumLoad );
+  IMPORT_FUNC( ozCaelumLoad );
 
   IMPORT_FUNC( ozCaelumGetHeading );
-  IGNORE_FUNC( ozCaelumSetHeading );
+  IMPORT_FUNC( ozCaelumSetHeading );
   IMPORT_FUNC( ozCaelumGetPeriod );
-  IGNORE_FUNC( ozCaelumSetPeriod );
+  IMPORT_FUNC( ozCaelumSetPeriod );
   IMPORT_FUNC( ozCaelumGetTime );
-  IGNORE_FUNC( ozCaelumSetTime );
-  IGNORE_FUNC( ozCaelumAddTime );
-  IGNORE_FUNC( ozCaelumSetRealTime );
+  IMPORT_FUNC( ozCaelumSetTime );
+  IMPORT_FUNC( ozCaelumAddTime );
+  IMPORT_FUNC( ozCaelumSetRealTime );
 
   /*
    * Terra
    */
 
-  IGNORE_FUNC( ozTerraLoad );
+  IMPORT_FUNC( ozTerraLoad );
 
   IMPORT_FUNC( ozTerraHeight );
 
@@ -182,15 +192,15 @@ void Lua::init()
 
   IMPORT_FUNC( ozStrMaxLife );
   IMPORT_FUNC( ozStrGetLife );
-  IGNORE_FUNC( ozStrSetLife );
-  IGNORE_FUNC( ozStrAddLife );
+  IMPORT_FUNC( ozStrSetLife );
+  IMPORT_FUNC( ozStrAddLife );
   IMPORT_FUNC( ozStrDefaultResistance );
   IMPORT_FUNC( ozStrGetResistance );
-  IGNORE_FUNC( ozStrSetResistance );
+  IMPORT_FUNC( ozStrSetResistance );
 
-  IGNORE_FUNC( ozStrDamage );
-  IGNORE_FUNC( ozStrDestroy );
-  IGNORE_FUNC( ozStrRemove );
+  IMPORT_FUNC( ozStrDamage );
+  IMPORT_FUNC( ozStrDestroy );
+  IMPORT_FUNC( ozStrRemove );
 
   IMPORT_FUNC( ozStrNumBoundObjs );
   IMPORT_FUNC( ozStrBindBoundObj );
@@ -218,10 +228,10 @@ void Lua::init()
    */
 
   IMPORT_FUNC( ozEntGetState );
-  IGNORE_FUNC( ozEntSetState );
+  IMPORT_FUNC( ozEntSetState );
   IMPORT_FUNC( ozEntGetLock );
-  IGNORE_FUNC( ozEntSetLock );
-  IGNORE_FUNC( ozEntTrigger );
+  IMPORT_FUNC( ozEntSetLock );
+  IMPORT_FUNC( ozEntTrigger );
 
   IMPORT_FUNC( ozEntOverlaps );
   IMPORT_FUNC( ozEntBindOverlaps );
@@ -244,17 +254,17 @@ void Lua::init()
 
   IMPORT_FUNC( ozBindObj );
   IMPORT_FUNC( ozBindSelf );
-  IGNORE_FUNC( ozBindUser );
+  IMPORT_FUNC( ozBindUser );
   IMPORT_FUNC( ozBindNextObj );
 
   IMPORT_FUNC( ozObjIsNull );
   IMPORT_FUNC( ozObjIsSelf );
-  IGNORE_FUNC( ozObjIsUser );
+  IMPORT_FUNC( ozObjIsUser );
   IMPORT_FUNC( ozObjIsCut );
 
   IMPORT_FUNC( ozObjGetIndex );
   IMPORT_FUNC( ozObjGetPos );
-  IGNORE_FUNC( ozObjWarpPos );
+  IMPORT_FUNC( ozObjWarpPos );
   IMPORT_FUNC( ozObjGetDim );
   IMPORT_FUNC( ozObjHasFlag );
   IMPORT_FUNC( ozObjGetHeading );
@@ -262,23 +272,23 @@ void Lua::init()
 
   IMPORT_FUNC( ozObjMaxLife );
   IMPORT_FUNC( ozObjGetLife );
-  IGNORE_FUNC( ozObjSetLife );
-  IGNORE_FUNC( ozObjAddLife );
+  IMPORT_FUNC( ozObjSetLife );
+  IMPORT_FUNC( ozObjAddLife );
   IMPORT_FUNC( ozObjDefaultResistance );
   IMPORT_FUNC( ozObjGetResistance );
-  IGNORE_FUNC( ozObjSetResistance );
+  IMPORT_FUNC( ozObjSetResistance );
 
-  IGNORE_FUNC( ozObjAddEvent );
+  IMPORT_FUNC( ozObjAddEvent );
 
   IMPORT_FUNC( ozObjBindItems );
   IMPORT_FUNC( ozObjBindItem );
-  IGNORE_FUNC( ozObjAddItem );
-  IGNORE_FUNC( ozObjRemoveItem );
-  IGNORE_FUNC( ozObjRemoveAllItems );
+  IMPORT_FUNC( ozObjAddItem );
+  IMPORT_FUNC( ozObjRemoveItem );
+  IMPORT_FUNC( ozObjRemoveAllItems );
 
-  IGNORE_FUNC( ozObjEnableUpdate );
-  IGNORE_FUNC( ozObjDamage );
-  IGNORE_FUNC( ozObjDestroy );
+  IMPORT_FUNC( ozObjEnableUpdate );
+  IMPORT_FUNC( ozObjDamage );
+  IMPORT_FUNC( ozObjDestroy );
 
   IMPORT_FUNC( ozObjOverlaps );
   IMPORT_FUNC( ozObjBindOverlaps );
@@ -303,8 +313,8 @@ void Lua::init()
 
   IMPORT_FUNC( ozDynGetVelocity );
   IMPORT_FUNC( ozDynGetMomentum );
-  IGNORE_FUNC( ozDynSetMomentum );
-  IGNORE_FUNC( ozDynAddMomentum );
+  IMPORT_FUNC( ozDynSetMomentum );
+  IMPORT_FUNC( ozDynAddMomentum );
   IMPORT_FUNC( ozDynGetMass );
   IMPORT_FUNC( ozDynGetLift );
 
@@ -314,45 +324,45 @@ void Lua::init()
 
   IMPORT_FUNC( ozWeaponMaxRounds );
   IMPORT_FUNC( ozWeaponGetRounds );
-  IGNORE_FUNC( ozWeaponSetRounds );
-  IGNORE_FUNC( ozWeaponAddRounds );
+  IMPORT_FUNC( ozWeaponSetRounds );
+  IMPORT_FUNC( ozWeaponAddRounds );
 
   /*
    * Bot
    */
 
   IMPORT_FUNC( ozBotGetName );
-  IGNORE_FUNC( ozBotSetName );
+  IMPORT_FUNC( ozBotSetName );
   IMPORT_FUNC( ozBotGetMind );
-  IGNORE_FUNC( ozBotSetMind );
+  IMPORT_FUNC( ozBotSetMind );
 
   IMPORT_FUNC( ozBotHasState );
   IMPORT_FUNC( ozBotGetEyePos );
   IMPORT_FUNC( ozBotGetH );
-  IGNORE_FUNC( ozBotSetH );
-  IGNORE_FUNC( ozBotAddH );
+  IMPORT_FUNC( ozBotSetH );
+  IMPORT_FUNC( ozBotAddH );
   IMPORT_FUNC( ozBotGetV );
-  IGNORE_FUNC( ozBotSetV );
-  IGNORE_FUNC( ozBotAddV );
+  IMPORT_FUNC( ozBotSetV );
+  IMPORT_FUNC( ozBotAddV );
   IMPORT_FUNC( ozBotGetDir );
-
-  IMPORT_FUNC( ozBotMaxStamina );
-  IMPORT_FUNC( ozBotGetStamina );
-  IGNORE_FUNC( ozBotSetStamina );
-  IGNORE_FUNC( ozBotAddStamina );
 
   IMPORT_FUNC( ozBotGetCargo );
   IMPORT_FUNC( ozBotGetWeapon );
-  IGNORE_FUNC( ozBotSetWeaponItem );
+  IMPORT_FUNC( ozBotSetWeaponItem );
+
+  IMPORT_FUNC( ozBotMaxStamina );
+  IMPORT_FUNC( ozBotGetStamina );
+  IMPORT_FUNC( ozBotSetStamina );
+  IMPORT_FUNC( ozBotAddStamina );
+
+  IMPORT_FUNC( ozBotAction );
+
+  IMPORT_FUNC( ozBotHeal );
+  IMPORT_FUNC( ozBotRearm );
+  IMPORT_FUNC( ozBotKill );
 
   IMPORT_FUNC( ozBotCanReachEntity );
   IMPORT_FUNC( ozBotCanReachObj );
-
-  IGNORE_FUNC( ozBotAction );
-
-  IGNORE_FUNC( ozBotHeal );
-  IGNORE_FUNC( ozBotRearm );
-  IGNORE_FUNC( ozBotKill );
 
   /*
    * Vehicle
@@ -361,17 +371,17 @@ void Lua::init()
   IMPORT_FUNC( ozVehicleGetPilot );
 
   IMPORT_FUNC( ozVehicleGetH );
-  IGNORE_FUNC( ozVehicleSetH );
-  IGNORE_FUNC( ozVehicleAddH );
+  IMPORT_FUNC( ozVehicleSetH );
+  IMPORT_FUNC( ozVehicleAddH );
   IMPORT_FUNC( ozVehicleGetV );
-  IGNORE_FUNC( ozVehicleSetV );
-  IGNORE_FUNC( ozVehicleAddV );
+  IMPORT_FUNC( ozVehicleSetV );
+  IMPORT_FUNC( ozVehicleAddV );
   IMPORT_FUNC( ozVehicleGetDir );
 
-  IGNORE_FUNC( ozVehicleEmbarkBot );
-  IGNORE_FUNC( ozVehicleDisembarkBot );
+  IMPORT_FUNC( ozVehicleEmbarkBot );
+  IMPORT_FUNC( ozVehicleDisembarkBot );
 
-  IGNORE_FUNC( ozVehicleService );
+  IMPORT_FUNC( ozVehicleService );
 
   /*
    * Frag
@@ -382,16 +392,16 @@ void Lua::init()
   IMPORT_FUNC( ozFragIsNull );
 
   IMPORT_FUNC( ozFragGetPos );
-  IGNORE_FUNC( ozFragWarpPos );
+  IMPORT_FUNC( ozFragWarpPos );
   IMPORT_FUNC( ozFragGetIndex );
   IMPORT_FUNC( ozFragGetVelocity );
-  IGNORE_FUNC( ozFragSetVelocity );
-  IGNORE_FUNC( ozFragAddVelocity );
+  IMPORT_FUNC( ozFragSetVelocity );
+  IMPORT_FUNC( ozFragAddVelocity );
   IMPORT_FUNC( ozFragGetLife );
-  IGNORE_FUNC( ozFragSetLife );
-  IGNORE_FUNC( ozFragAddLife );
+  IMPORT_FUNC( ozFragSetLife );
+  IMPORT_FUNC( ozFragAddLife );
 
-  IGNORE_FUNC( ozFragRemove );
+  IMPORT_FUNC( ozFragRemove );
 
   IMPORT_FUNC( ozFragOverlaps );
   IMPORT_FUNC( ozFragBindOverlaps );
@@ -408,73 +418,13 @@ void Lua::init()
   IMPORT_FUNC( ozFragIsVisibleFromSelf );
   IMPORT_FUNC( ozFragIsVisibleFromSelfEye );
 
-  /*
-   * Mind's bot
-   */
-
-  IMPORT_FUNC( ozSelfIsCut );
-
-  IMPORT_FUNC( ozSelfGetIndex );
-  IMPORT_FUNC( ozSelfGetPos );
-  IMPORT_FUNC( ozSelfGetDim );
-  IMPORT_FUNC( ozSelfHasFlag );
-  IMPORT_FUNC( ozSelfGetHeading );
-  IMPORT_FUNC( ozSelfGetClassName );
-  IMPORT_FUNC( ozSelfMaxLife );
-  IMPORT_FUNC( ozSelfGetLife );
-  IMPORT_FUNC( ozSelfDefaultResistance );
-  IMPORT_FUNC( ozSelfGetResistance );
-
-  IMPORT_FUNC( ozSelfGetParent );
-  IMPORT_FUNC( ozSelfGetVelocity );
-  IMPORT_FUNC( ozSelfGetMomentum );
-  IMPORT_FUNC( ozSelfGetMass );
-  IMPORT_FUNC( ozSelfGetLift );
-
-  IMPORT_FUNC( ozSelfGetName );
-  IMPORT_FUNC( ozSelfGetMind );
-  IMPORT_FUNC( ozSelfHasState );
-  IMPORT_FUNC( ozSelfGetEyePos );
-  IMPORT_FUNC( ozSelfGetH );
-  IMPORT_FUNC( ozSelfSetH );
-  IMPORT_FUNC( ozSelfAddH );
-  IMPORT_FUNC( ozSelfGetV );
-  IMPORT_FUNC( ozSelfSetV );
-  IMPORT_FUNC( ozSelfAddV );
-  IMPORT_FUNC( ozSelfGetDir );
-
-  IMPORT_FUNC( ozSelfGetStamina );
-  IMPORT_FUNC( ozSelfMaxStamina );
-
-  IMPORT_FUNC( ozSelfGetCargo );
-  IMPORT_FUNC( ozSelfGetWeapon );
-  IMPORT_FUNC( ozSelfSetWeaponItem );
-
-  IMPORT_FUNC( ozSelfCanReachEntity );
-  IMPORT_FUNC( ozSelfCanReachObj );
-
-  IMPORT_FUNC( ozSelfAction );
-
-  IMPORT_FUNC( ozSelfBindItems );
-  IMPORT_FUNC( ozSelfBindItem );
-
-  IMPORT_FUNC( ozSelfOverlaps );
-  IMPORT_FUNC( ozSelfBindOverlaps );
-
-  /*
-   * Nirvana
-   */
-
-  IMPORT_FUNC( ozNirvanaRemoveDevice );
-  IMPORT_FUNC( ozNirvanaAddMemo );
-
   importMatrixConstants( l );
 
   l_newtable();
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
-  File luaDir( "@lua/nirvana" );
+  File luaDir( "@lua/matrix" );
   DArray<File> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.iter() ) {
@@ -482,7 +432,7 @@ void Lua::init()
       Buffer buffer = file->read();
 
       if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
-        OZ_ERROR( "Nirvana Lua script error" );
+        OZ_ERROR( "Matrix Lua script error" );
       }
     }
   }
@@ -492,13 +442,13 @@ void Lua::init()
   Log::printEnd( " OK" );
 }
 
-void Lua::destroy()
+void LuaMatrix::destroy()
 {
   if( l == nullptr ) {
     return;
   }
 
-  Log::print( "Destroying Nirvana Lua ..." );
+  Log::print( "Destroying Matrix Lua ..." );
 
   ms.structs.clear();
   ms.structs.deallocate();
@@ -515,7 +465,6 @@ void Lua::destroy()
   Log::printEnd( " OK" );
 }
 
-Lua lua;
+LuaMatrix luaMatrix;
 
-}
 }

@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 struct Cell;
 struct Hit;
@@ -92,5 +90,4 @@ class Frag
 
 };
 
-}
 }

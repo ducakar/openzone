@@ -159,7 +159,12 @@ void Caelum::load()
 {
   id = orbis.caelum.id;
 
-  const String& path = liber.caela[id].path;
+  File file = liber.caela[id].path;
+  InputStream is = file.inputStream();
+
+  if( !is.isAvailable() ) {
+    OZ_ERROR( "Caelum file '%s' read failed", file.path().cstr() );
+  }
 
   glGenTextures( 1, &sunTexId );
   glBindTexture( GL_TEXTURE_2D, sunTexId );
@@ -181,13 +186,6 @@ void Caelum::load()
   originalLightDir = Vec3( -Math::cos( orbis.caelum.heading ),
                            -Math::sin( orbis.caelum.heading ),
                            0.0f );
-
-  Buffer buffer = File( path ).read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Caelum file '%s' read failed", path.cstr() );
-  }
-
-  InputStream is = buffer.inputStream();
 
   int vboSize = MAX_STARS * 4 * int( sizeof( float[3] ) );
   int iboSize = MAX_STARS * 6 * int( sizeof( ushort ) );

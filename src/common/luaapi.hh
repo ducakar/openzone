@@ -31,8 +31,6 @@
 
 namespace oz
 {
-namespace common
-{
 
 /**
  * %Lua state structure for common layer %Lua API.
@@ -85,5 +83,4 @@ static int ozPrintln( lua_State* l )
 
 /// @}
 
-}
 }

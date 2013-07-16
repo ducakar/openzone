@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 struct Cell;
 class  Bot;
@@ -338,5 +336,4 @@ class Object : public AABB
 
 };
 
-}
 }

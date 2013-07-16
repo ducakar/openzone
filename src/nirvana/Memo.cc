@@ -25,8 +25,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 Pool<Memo, 1024> Memo::pool;
 
@@ -54,5 +52,4 @@ void Memo::write( OutputStream* ostream ) const
   ostream->writeString( text );
 }
 
-}
 }

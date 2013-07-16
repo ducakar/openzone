@@ -36,11 +36,9 @@
  * like `oz::lingua.get()`, that's why we need this macro.
  */
 #define OZ_GETTEXT( s ) \
-  oz::common::lingua.get( s )
+  oz::lingua.get( s )
 
 namespace oz
-{
-namespace common
 {
 
 /**
@@ -114,5 +112,4 @@ class Lingua
  */
 extern Lingua lingua;
 
-}
 }

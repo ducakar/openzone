@@ -18,24 +18,22 @@
  */
 
 /**
- * @file matrix/Lua.hh
+ * @file matrix/LuaMatrix.hh
  *
  * Lua scripting engine for Matrix
  */
 
 #pragma once
 
-#include <common/Lua.hh>
+#include <common/LuaCommon.hh>
 #include <matrix/Object.hh>
 
 namespace oz
 {
-namespace matrix
-{
 
 class Bot;
 
-class Lua : public common::Lua
+class LuaMatrix : public LuaCommon
 {
   public:
 
@@ -52,7 +50,6 @@ class Lua : public common::Lua
 
 };
 
-extern Lua lua;
+extern LuaMatrix luaMatrix;
 
-}
 }

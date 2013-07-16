@@ -29,21 +29,17 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 void BSP::load()
 {
   Log::print( "Loading BSP structure '%s' ...", name.cstr() );
 
   File file( "@bsp/" + name + ".ozBSP" );
-  Buffer buffer = file.read();
+  InputStream is = file.inputStream();
 
-  if( buffer.isEmpty() ) {
+  if( !is.isAvailable() ) {
     OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
   }
-
-  InputStream is = buffer.inputStream();
 
   // bounds
   is.readPoint();
@@ -257,21 +253,20 @@ BSP::BSP( const char* name_, int id_ ) :
     OZ_ERROR( "BSP file '%s' read failed", file.path().cstr() );
   }
 
-  Buffer buffer = file.read();
-  InputStream is = buffer.inputStream();
+  InputStream is   = file.inputStream();
 
-  mins          = is.readPoint();
-  maxs          = is.readPoint();
+  mins             = is.readPoint();
+  maxs             = is.readPoint();
 
-  title         = lingua.get( is.readString() );
-  description   = lingua.get( is.readString() );
+  title            = lingua.get( is.readString() );
+  description      = lingua.get( is.readString() );
 
-  life          = is.readFloat();
-  resistance    = is.readFloat();
+  life             = is.readFloat();
+  resistance       = is.readFloat();
 
   String sFragPool = is.readString();
-  fragPool = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
-  nFrags   = is.readInt();
+  fragPool         = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
+  nFrags           = is.readInt();
 
   models.resize( is.readInt() );
   for( int i = 0; i < models.length(); ++i ) {
@@ -287,5 +282,4 @@ BSP::BSP( const char* name_, int id_ ) :
   demolishSound = sDemolishSound.isEmpty() ? -1 : liber.soundIndex( sDemolishSound );
 }
 
-}
 }

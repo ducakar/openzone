@@ -26,15 +26,13 @@
 #include <matrix/Synapse.hh>
 #include <matrix/Matrix.hh>
 #include <matrix/Bot.hh>
-#include <nirvana/Lua.hh>
+#include <nirvana/LuaNirvana.hh>
 #include <nirvana/Memo.hh>
 
 #define OZ_REGISTER_DEVICE( name ) \
   deviceClasses.add( #name, &name::create )
 
 namespace oz
-{
-namespace nirvana
 {
 
 void Nirvana::sync()
@@ -86,7 +84,7 @@ void Nirvana::read( InputStream* istream )
 {
   Log::print( "Reading Nirvana ..." );
 
-  lua.read( istream );
+  luaNirvana.read( istream );
 
   String typeName;
 
@@ -118,7 +116,7 @@ void Nirvana::write( OutputStream* ostream ) const
 {
   Log::print( "Writing Nirvana ..." );
 
-  lua.write( ostream );
+  luaNirvana.write( ostream );
 
   ostream->writeInt( devices.length() );
   ostream->writeInt( minds.length() );
@@ -166,7 +164,7 @@ void Nirvana::init()
 
   OZ_REGISTER_DEVICE( Memo );
 
-  lua.init();
+  luaNirvana.init();
 
   updateModulo = 0;
 
@@ -179,7 +177,7 @@ void Nirvana::destroy()
   Log::println( "Destroy Nirvana {" );
   Log::indent();
 
-  lua.destroy();
+  luaNirvana.destroy();
 
   deviceClasses.clear();
   deviceClasses.deallocate();
@@ -190,5 +188,4 @@ void Nirvana::destroy()
 
 Nirvana nirvana;
 
-}
 }

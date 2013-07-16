@@ -29,8 +29,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 Synapse::Synapse() :
   mode( SINGLE )
@@ -348,5 +346,4 @@ void Synapse::unload()
 
 Synapse synapse;
 
-}
 }

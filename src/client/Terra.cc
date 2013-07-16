@@ -54,10 +54,10 @@ void Terra::draw()
   // we draw column-major (triangle strips along y axis) for better cache performance
   glFrontFace( GL_CW );
 
-  span.minX = max( int( ( camera.p.x - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );
-  span.minY = max( int( ( camera.p.y - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );
-  span.maxX = min( int( ( camera.p.x + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
-  span.maxY = min( int( ( camera.p.y + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
+  span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), 0 );
+  span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), 0 );
+  span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
+  span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
 
   shader.program( landShaderId );
 
@@ -156,13 +156,11 @@ void Terra::load()
   File file = "@terra/" + name + ".ozcTerra";
   File map  = "@terra/" + name + ".dds";
 
-  Buffer buffer = file.read();
+  InputStream is = file.inputStream();
 
-  if( buffer.isEmpty() ) {
+  if( !is.isAvailable() ) {
     OZ_ERROR( "Terra file '%s' read failed", file.path().cstr() );
   }
-
-  InputStream is = buffer.inputStream();
 
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );
@@ -189,8 +187,8 @@ void Terra::load()
           vertex.pos[1] = orbis.terra.quads[x][y].vertex.y;
           vertex.pos[2] = orbis.terra.quads[x][y].vertex.z;
 
-          vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
-          vertex.texCoord[1] = float( matrix::Terra::VERTS - y ) / float( matrix::Terra::VERTS );
+          vertex.texCoord[0] = float( x ) / float( oz::Terra::VERTS );
+          vertex.texCoord[1] = float( oz::Terra::VERTS - y ) / float( oz::Terra::VERTS );
 
           vertex.normal[0] = float( is.readByte() ) / 127.0f;
           vertex.normal[1] = float( is.readByte() ) / 127.0f;

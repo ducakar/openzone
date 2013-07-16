@@ -12,7 +12,7 @@ add_library( matrix STATIC
   FragPool.hh
   Liber.hh
   luaapi.hh
-  Lua.hh
+  LuaMatrix.hh
   Matrix.hh
   NamePool.hh
   ObjectClass.hh
@@ -37,7 +37,7 @@ add_library( matrix STATIC
   FragPool.cc
   Liber.cc
   luaapi.cc
-  Lua.cc
+  LuaMatrix.cc
   Matrix.cc
   NamePool.cc
   Object.cc

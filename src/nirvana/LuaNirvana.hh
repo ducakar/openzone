@@ -18,17 +18,36 @@
  */
 
 /**
- * @file nirvana/common.cc
+ * @file nirvana/LuaNirvana.hh
+ *
+ * Lua scripting engine for Nirvana
  */
 
+#pragma once
+
+#include <common/LuaCommon.hh>
 #include <nirvana/common.hh>
 
 namespace oz
 {
-namespace nirvana
+
+class LuaNirvana : public LuaCommon
 {
+  public:
 
-Collider collider;
+    bool mindCall( const char* functionName, Bot* self );
 
-}
+    void registerMind( int botIndex );
+    void unregisterMind( int botIndex );
+
+    void read( InputStream* istream );
+    void write( OutputStream* ostream );
+
+    void init();
+    void destroy();
+
+};
+
+extern LuaNirvana luaNirvana;
+
 }

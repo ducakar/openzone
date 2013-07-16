@@ -29,7 +29,7 @@
 #include "arrays.hh"
 #include "Thread.hh"
 
-#ifdef __GLIBC__
+#if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
 # include <cstdlib>
 # include <cstring>
 # include <cxxabi.h>
@@ -41,7 +41,7 @@ namespace oz
 
 const int StackTrace::MAX_FRAMES;
 
-#ifndef __GLIBC__
+#if !defined( __GLIBC__ ) && !defined( _LIBCPP_VERSION )
 
 StackTrace StackTrace::current( int )
 {

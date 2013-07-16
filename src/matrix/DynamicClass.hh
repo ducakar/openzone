@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class DynamicClass : public ObjectClass
 {
@@ -47,5 +45,4 @@ class DynamicClass : public ObjectClass
 
 };
 
-}
 }

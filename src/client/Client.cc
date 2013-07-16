@@ -26,7 +26,7 @@
 #include <client/Client.hh>
 
 #include <common/Timer.hh>
-#include <common/Lua.hh>
+#include <common/LuaCommon.hh>
 #include <client/Camera.hh>
 #include <client/MenuStage.hh>
 #include <client/GameStage.hh>
@@ -444,16 +444,16 @@ int Client::init( int argc, char** argv )
   }
   else {
     seed = config["seed"].asInt();
-    common::Lua::isRandomSeedTime = false;
+    LuaCommon::isRandomSeedTime = false;
   }
 
   if( isBenchmark ) {
     seed = 42;
-    common::Lua::isRandomSeedTime = false;
+    LuaCommon::isRandomSeedTime = false;
   }
 
   Math::seed( seed );
-  common::Lua::randomSeed = seed;
+  LuaCommon::randomSeed = seed;
 
   Log::println( "Random generator seed set to: %u", uint( seed ) );
 

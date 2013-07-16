@@ -31,8 +31,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 struct Cell
 {
@@ -400,5 +398,4 @@ inline Span Orbis::getInters1( const Bounds& bounds, float epsilon ) const
   return getInters1( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
 }
 
-}
 }

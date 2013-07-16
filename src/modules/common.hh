@@ -28,11 +28,5 @@
 namespace oz
 {
 namespace modules
-{
-
-using namespace common;
-using namespace matrix;
-using namespace nirvana;
-
-}
+{}
 }

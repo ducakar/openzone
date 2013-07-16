@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 ObjectClass* DynamicClass::createClass()
 {
@@ -58,5 +56,4 @@ Object* DynamicClass::create( const JSON& json ) const
   return new Dynamic( this, json );
 }
 
-}
 }

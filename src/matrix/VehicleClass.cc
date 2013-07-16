@@ -28,8 +28,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 ObjectClass* VehicleClass::createClass()
 {
@@ -90,5 +88,4 @@ Object* VehicleClass::create( const JSON& json ) const
   return new Vehicle( this, json );
 }
 
-}
 }

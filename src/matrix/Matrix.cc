@@ -24,15 +24,13 @@
 #include <matrix/Matrix.hh>
 
 #include <common/Timer.hh>
-#include <matrix/Lua.hh>
+#include <matrix/LuaMatrix.hh>
 #include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Vehicle.hh>
 
 namespace oz
-{
-namespace matrix
 {
 
 // default 10000.0f: 100 m/s
@@ -246,7 +244,7 @@ void Matrix::init()
   Log::println( "Initialising Matrix {" );
   Log::indent();
 
-  lua.init();
+  luaMatrix.init();
   namePool.init();
   orbis.init();
 
@@ -261,7 +259,7 @@ void Matrix::destroy()
 
   orbis.destroy();
   namePool.destroy();
-  lua.destroy();
+  luaMatrix.destroy();
 
   Log::unindent();
   Log::println( "}" );
@@ -269,5 +267,4 @@ void Matrix::destroy()
 
 Matrix matrix;
 
-}
 }

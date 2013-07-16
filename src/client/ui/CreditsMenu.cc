@@ -151,9 +151,9 @@ CreditsMenu::CreditsMenu() :
   lines.add( "Davorin Učakar" );
 
   foreach( creditsFile, creditsFiles.iter() ) {
-    Buffer buffer = creditsFile->read();
+    InputStream is = creditsFile->inputStream();
 
-    if( buffer.isEmpty() ) {
+    if( !is.isAvailable() ) {
       OZ_ERROR( "Failed to read '%s'", creditsFile->path().cstr() );
     }
 
@@ -168,7 +168,6 @@ CreditsMenu::CreditsMenu() :
     lines.add( "" );
 
     String contents = "";
-    InputStream is = buffer.inputStream();
 
     while( is.isAvailable() ) {
       contents += is.readLine() + "\n";

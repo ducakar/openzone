@@ -86,8 +86,7 @@ void BSP::load()
     OZ_ERROR( "BSP reading failed" );
   }
 
-  Buffer buffer = bspFile.read();
-  InputStream is = buffer.inputStream( Endian::LITTLE );
+  InputStream is = bspFile.inputStream( Endian::LITTLE );
 
   char id[4];
   id[0] = is.readChar();
@@ -323,8 +322,8 @@ void BSP::load()
 
   brushes.resize( lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) ) );
 
-  if( brushes.length() > matrix::BSP::MAX_BRUSHES ) {
-    OZ_ERROR( "Too many brushes %d, maximum is %d", brushes.length(), matrix::BSP::MAX_BRUSHES );
+  if( brushes.length() > oz::BSP::MAX_BRUSHES ) {
+    OZ_ERROR( "Too many brushes %d, maximum is %d", brushes.length(), oz::BSP::MAX_BRUSHES );
   }
 
   is.rewind();

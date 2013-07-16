@@ -27,8 +27,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 class Frag;
 
@@ -66,5 +64,4 @@ class FragPool
 
 };
 
-}
 }

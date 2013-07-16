@@ -33,8 +33,6 @@
 
 namespace oz
 {
-namespace matrix
-{
 
 enum AddMode
 {
@@ -2725,5 +2723,4 @@ static int ozFragIsVisibleFromSelfEye( lua_State* l )
  */
 void importMatrixConstants( lua_State* l );
 
-}
 }

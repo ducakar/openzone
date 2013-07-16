@@ -25,8 +25,6 @@
 
 namespace oz
 {
-namespace nirvana
-{
 
 Task::~Task()
 {}
@@ -40,5 +38,4 @@ void Task::write( OutputStream* ostream ) const
   ostream->writeInt( flags );
 }
 
-}
 }
