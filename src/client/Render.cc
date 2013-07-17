@@ -151,7 +151,7 @@ void Render::prepareDraw()
   }
 
   if( collider.hit.mediumStr != nullptr && ( shader.medium & Medium::LIQUID_MASK ) ) {
-    const BSP* bsp = context.getBSP( collider.hit.mediumStr );
+    const BSP* bsp = context.getBSP( collider.hit.mediumStr->bsp );
 
     if( bsp != nullptr ) {
       if( shader.medium & Medium::SEA_BIT ) {

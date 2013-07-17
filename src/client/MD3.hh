@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/Mesh.hh>
+#include <client/SMM.hh>
 
 namespace oz
 {
@@ -32,7 +32,7 @@ namespace client
 
 struct MD3Tag;
 
-class MD3
+class MD3 : public SMM
 {
   public:
 
@@ -127,25 +127,21 @@ class MD3
 //     AnimInfo torsoAnimList[TORSO_ANIM_MAX];
 //     Joint    joints[MAX_FRAMES][JOINTS_MAX];
 
-    Mesh  mesh;
-    int   id;
-
   public:
 
     Mat44 weaponTransf;
 
-    bool  isPreloaded;
-    bool  isLoaded;
+  public:
 
     explicit MD3( int id );
 
-    void preload();
-    void load();
+    void scheduleFrame( int frame )
+    {
+      mesh.scheduleFrame( -1, frame );
+    }
 
-//       void advance( AnimState* anim, float dt ) const;
-
-    void drawFrame( int frame ) const;
-//       void draw( const AnimState* anim ) const;
+    void preload() override;
+    void load() override;
 
 };
 

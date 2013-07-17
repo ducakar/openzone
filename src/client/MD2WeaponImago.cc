@@ -35,7 +35,7 @@ Pool<MD2WeaponImago, 256> MD2WeaponImago::pool;
 
 MD2WeaponImago::~MD2WeaponImago()
 {
-  context.releaseMD2( clazz->imagoModel );
+  context.releaseModel( clazz->imagoModel );
 }
 
 Imago* MD2WeaponImago::create( const Object* obj )
@@ -52,7 +52,7 @@ Imago* MD2WeaponImago::create( const Object* obj )
 
 void MD2WeaponImago::draw( const Imago* parent )
 {
-  if( !md2->isLoaded ) {
+  if( !md2->isLoaded() ) {
     return;
   }
 

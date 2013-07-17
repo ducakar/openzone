@@ -272,7 +272,7 @@ void Context::releaseSpeakSource()
 
 Context::Context() :
   imagoClasses( nullptr ), audioClasses( nullptr ), textures( nullptr ), sounds( nullptr ),
-  bsps( nullptr ), smms( nullptr ), md2s( nullptr ), md3s( nullptr )
+  bsps( nullptr ), smms( nullptr )
 {}
 
 Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
@@ -439,73 +439,14 @@ void Context::freeSound( int id )
   OZ_AL_CHECK_ERROR();
 }
 
-SMM* Context::requestSMM( int id )
+BSP* Context::getBSP( const oz::BSP* bsp )
 {
-  Resource<SMM*>& resource = smms[id];
+  Resource<BSP*>& resource = bsps[bsp->id];
 
-  if( resource.nUsers < 0 ) {
-    resource.handle = new SMM( id );
-    resource.nUsers = 1;
-  }
-
-  ++resource.nUsers;
-  return resource.handle;
+  return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
 }
 
-void Context::releaseSMM( int id )
-{
-  Resource<SMM*>& resource = smms[id];
-
-  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
-
-  --resource.nUsers;
-}
-
-MD2* Context::requestMD2( int id )
-{
-  Resource<MD2*>& resource = md2s[id];
-
-  if( resource.nUsers < 0 ) {
-    resource.handle = new MD2( id );
-    resource.nUsers = 1;
-  }
-
-  ++resource.nUsers;
-  return resource.handle;
-}
-
-void Context::releaseMD2( int id )
-{
-  Resource<MD2*>& resource = md2s[id];
-
-  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
-
-  --resource.nUsers;
-}
-
-MD3* Context::requestMD3( int id )
-{
-  Resource<MD3*>& resource = md3s[id];
-
-  if( resource.nUsers < 0 ) {
-    resource.handle = new MD3( id );
-    resource.nUsers = 1;
-  }
-
-  ++resource.nUsers;
-  return resource.handle;
-}
-
-void Context::releaseMD3( int id )
-{
-  Resource<MD3*>& resource = md3s[id];
-
-  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
-
-  --resource.nUsers;
-}
-
-void Context::drawBSP( const oz::BSP* bsp )
+BSP* Context::requestBSP( const oz::BSP* bsp )
 {
   Resource<BSP*>& resource = bsps[bsp->id];
 
@@ -515,23 +456,16 @@ void Context::drawBSP( const oz::BSP* bsp )
   if( resource.handle == nullptr ) {
     resource.handle = new BSP( bsp );
   }
-  else if( resource.handle->isLoaded ) {
-    resource.handle->draw( nullptr );
-  }
+
+  return resource.handle;
 }
 
 void Context::drawBSP( const Struct* str )
 {
-  Resource<BSP*>& resource = bsps[str->bsp->id];
+  BSP* bsp = requestBSP( str->bsp );
 
-  // we don't count users, just to show there is at least one
-  resource.nUsers = 1;
-
-  if( resource.handle == nullptr ) {
-    resource.handle = new BSP( str->bsp );
-  }
-  else if( resource.handle->isLoaded ) {
-    resource.handle->draw( str );
+  if( bsp->isLoaded() ) {
+    bsp->schedule( str );
   }
 }
 
@@ -549,11 +483,52 @@ void Context::playBSP( const Struct* str )
   resource.handle->play( str );
 }
 
-BSP* Context::getBSP( const Struct* str )
+SMM* Context::requestSMM( int id )
 {
-  Resource<BSP*>& resource = bsps[str->bsp->id];
+  Resource<SMM*>& resource = smms[id];
 
-  return resource.handle != nullptr && resource.handle->isLoaded ? resource.handle : nullptr;
+  if( resource.nUsers < 0 ) {
+    resource.handle = new SMM( id );
+    resource.nUsers = 1;
+  }
+
+  ++resource.nUsers;
+  return resource.handle;
+}
+
+MD2* Context::requestMD2( int id )
+{
+  Resource<SMM*>& resource = smms[id];
+
+  if( resource.nUsers < 0 ) {
+    resource.handle = new MD2( id );
+    resource.nUsers = 1;
+  }
+
+  ++resource.nUsers;
+  return static_cast<MD2*>( resource.handle );
+}
+
+MD3* Context::requestMD3( int id )
+{
+  Resource<SMM*>& resource = smms[id];
+
+  if( resource.nUsers < 0 ) {
+    resource.handle = new MD3( id );
+    resource.nUsers = 1;
+  }
+
+  ++resource.nUsers;
+  return static_cast<MD3*>( resource.handle );
+}
+
+void Context::releaseModel( int id )
+{
+  Resource<SMM*>& resource = smms[id];
+
+  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
+
+  --resource.nUsers;
 }
 
 void Context::drawImago( const Object* obj, const Imago* parent )
@@ -725,14 +700,6 @@ void Context::unload()
     delete smms[i].handle;
     smms[i].handle = nullptr;
     smms[i].nUsers = -1;
-
-    delete md2s[i].handle;
-    md2s[i].handle = nullptr;
-    md2s[i].nUsers = -1;
-
-    delete md3s[i].handle;
-    md3s[i].handle = nullptr;
-    md3s[i].nUsers = -1;
   }
 
   SMMImago::pool.free();
@@ -811,8 +778,6 @@ void Context::init()
   bspAudios = nBSPs     == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
 
   smms      = nModels   == 0 ? nullptr : new Resource<SMM*>[nModels];
-  md2s      = nModels   == 0 ? nullptr : new Resource<MD2*>[nModels];
-  md3s      = nModels   == 0 ? nullptr : new Resource<MD3*>[nModels];
 
   for( int i = 0; i < nTextures; ++i ) {
     textures[i].nUsers = -1;
@@ -830,12 +795,6 @@ void Context::init()
   for( int i = 0; i < nModels; ++i ) {
     smms[i].handle = nullptr;
     smms[i].nUsers = -1;
-
-    md2s[i].handle = nullptr;
-    md2s[i].nUsers = -1;
-
-    md3s[i].handle = nullptr;
-    md3s[i].nUsers = -1;
   }
 
   speakSource.mutex.init();
@@ -860,8 +819,6 @@ void Context::destroy()
   delete[] bspAudios;
 
   delete[] smms;
-  delete[] md2s;
-  delete[] md3s;
 
   imagoClasses = nullptr;
   audioClasses = nullptr;
@@ -874,8 +831,6 @@ void Context::destroy()
   bspAudios    = nullptr;
 
   smms         = nullptr;
-  md2s         = nullptr;
-  md3s         = nullptr;
 
   Log::printEnd( " OK" );
 }

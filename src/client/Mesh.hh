@@ -135,6 +135,12 @@ class Mesh
     List<Instance>    instances;
     PreloadData*      preloadData;
 
+  public:
+
+    Vec3              dim;
+
+  private:
+
     void animate( const Instance* instance );
     void draw( const Instance* instance, int mask );
 
@@ -147,6 +153,16 @@ class Mesh
 
     explicit Mesh();
     ~Mesh();
+
+    bool isPreloaded() const
+    {
+      return preloadData != nullptr;
+    }
+
+    bool isLoaded() const
+    {
+      return !parts.isEmpty();
+    }
 
     void schedule( int component )
     {

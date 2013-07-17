@@ -230,7 +230,7 @@ void MD2::AnimState::advance()
 }
 
 MD2::MD2( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
+  SMM( id_ )
 {}
 
 void MD2::preload()
@@ -240,14 +240,11 @@ void MD2::preload()
 
   is.seek( is.available() - int( sizeof( float[16] ) ) );
   weaponTransf = is.readMat44();
-
-  isPreloaded = true;
 }
 
 void MD2::load()
 {
   mesh.load( shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
-  isLoaded = true;
 }
 
 }

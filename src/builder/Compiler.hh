@@ -93,6 +93,8 @@ class Compiler
     DArray<Point> positions;
     DArray<Vec3>  normals;
 
+    Bounds        bounds;
+
     Vertex        vert;
     Part          part;
 

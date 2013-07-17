@@ -43,12 +43,12 @@ Imago* SMMImago::create( const Object* obj )
 
 SMMImago::~SMMImago()
 {
-  context.releaseSMM( clazz->imagoModel );
+  context.releaseModel( clazz->imagoModel );
 }
 
 void SMMImago::draw( const Imago* )
 {
-  if( !smm->isLoaded ) {
+  if( !smm->isLoaded() ) {
     return;
   }
 

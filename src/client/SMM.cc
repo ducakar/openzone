@@ -19,10 +19,6 @@
 
 /**
  * @file client/SMM.cc
- *
- * Single mesh model.
- *
- * Common model format that all simple models are compiled to.
  */
 
 #include <client/SMM.hh>
@@ -35,19 +31,20 @@ namespace client
 {
 
 SMM::SMM( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
+  id( id_ )
+{}
+
+SMM::~SMM()
 {}
 
 void SMM::preload()
 {
   mesh.preload( liber.models[id].path );
-  isPreloaded = true;
 }
 
 void SMM::load()
 {
   mesh.load( GL_STATIC_DRAW );
-  isLoaded = true;
 }
 
 }

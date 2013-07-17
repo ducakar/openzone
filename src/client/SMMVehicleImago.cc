@@ -46,12 +46,12 @@ Imago* SMMVehicleImago::create( const Object* obj )
 
 SMMVehicleImago::~SMMVehicleImago()
 {
-  context.releaseSMM( clazz->imagoModel );
+  context.releaseModel( clazz->imagoModel );
 }
 
 void SMMVehicleImago::draw( const Imago* )
 {
-  if( !smm->isLoaded ) {
+  if( !smm->isLoaded() ) {
     return;
   }
 

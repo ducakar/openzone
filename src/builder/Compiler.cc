@@ -69,13 +69,16 @@ void Compiler::beginMesh()
   positions.clear();
   normals.clear();
 
-  part.component  = 0;
-  part.material   = Mesh::SOLID_BIT;
-  part.texture    = "";
+  bounds.mins     = Point( +Math::INF, +Math::INF, +Math::INF );
+  bounds.maxs     = Point( -Math::INF, -Math::INF, -Math::INF );
 
   vert.pos        = Point::ORIGIN;
   vert.texCoord   = TexCoord( 0.0f, 0.0f );
   vert.normal     = Vec3::ZERO;
+
+  part.component  = 0;
+  part.material   = Mesh::SOLID_BIT;
+  part.texture    = "";
 
   caps            = 0;
   flags          |= MESH_BIT;
@@ -290,6 +293,14 @@ void Compiler::vertex( float x, float y, float z )
   hard_assert( flags & MESH_BIT );
   hard_assert( nFrames == 0 || ( y == 0.0f && z == 0.0f ) );
 
+  bounds.mins.x = min( bounds.mins.x, x );
+  bounds.mins.y = min( bounds.mins.y, y );
+  bounds.mins.z = min( bounds.mins.z, z );
+
+  bounds.maxs.x = max( bounds.maxs.x, x );
+  bounds.maxs.y = max( bounds.maxs.y, y );
+  bounds.maxs.z = max( bounds.maxs.z, z );
+
   vert.pos.x = x;
   vert.pos.y = y;
   vert.pos.z = z;
@@ -393,6 +404,8 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
   if( nComponents == 0 ) {
     OZ_ERROR( "Model should have at least one component" );
   }
+
+  os->writeVec3( bounds.dim() );
 
   os->writeInt( globalTextures ? ~textures.length() : textures.length() );
   os->writeInt( vertices.length() );

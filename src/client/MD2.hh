@@ -24,14 +24,14 @@
 #pragma once
 
 #include <matrix/Bot.hh>
-#include <client/Mesh.hh>
+#include <client/SMM.hh>
 
 namespace oz
 {
 namespace client
 {
 
-class MD2
+class MD2 : public SMM
 {
   public:
 
@@ -102,22 +102,13 @@ class MD2
 
     static const AnimInfo ANIM_LIST[];
 
-  private:
-
-    int   id;
-    Mesh  mesh;
-
   public:
 
     Mat44 weaponTransf;
 
-    bool  isPreloaded;
-    bool  isLoaded;
+  public:
 
     explicit MD2( int id );
-
-    void preload();
-    void load();
 
     void scheduleFrame( int frame )
     {
@@ -128,6 +119,9 @@ class MD2
     {
       mesh.scheduleAnimated( -1, anim->currFrame, anim->nextFrame, anim->frameRatio );
     }
+
+    void preload() override;
+    void load() override;
 
 };
 

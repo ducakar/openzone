@@ -42,18 +42,30 @@ class BSP
     Vec4 waterFogColour;
     Vec4 lavaFogColour;
 
-    bool isPreloaded;
-    bool isLoaded;
-
   public:
 
     explicit BSP( const oz::BSP* bsp );
     ~BSP();
 
+    Vec3 dim() const
+    {
+      return mesh.dim;
+    }
+
+    bool isPreloaded() const
+    {
+      return mesh.isPreloaded();
+    }
+
+    bool isLoaded() const
+    {
+      return mesh.isLoaded();
+    }
+
+    void schedule( const Struct* str );
+
     void preload();
     void load();
-
-    void draw( const Struct* str );
 
 };
 

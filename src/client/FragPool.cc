@@ -47,7 +47,7 @@ FragPool::FragPool( const oz::FragPool* pool_ ) :
 FragPool::~FragPool()
 {
   for( int i = 0; i < pool->models.length(); ++i ) {
-    context.releaseSMM( pool->models[i] );
+    context.releaseModel( pool->models[i] );
   }
 }
 
@@ -56,7 +56,7 @@ void FragPool::draw( const Frag* frag )
   int  index = frag->index % models.length();
   SMM* model = models[index];
 
-  if( model->isLoaded ) {
+  if( model->isLoaded() ) {
     tf.model = Mat44::translation( frag->p - Point::ORIGIN );
     tf.model.rotateX( frag->p.x );
     tf.model.rotateY( frag->p.y );

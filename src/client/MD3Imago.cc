@@ -55,7 +55,7 @@ Imago* MD3Imago::create( const Object* obj )
 
 MD3Imago::~MD3Imago()
 {
-  context.releaseMD3( clazz->imagoModel );
+  context.releaseModel( clazz->imagoModel );
 }
 
 //   void MD3Imago::setAnim( Anim::Type type_ )
@@ -90,7 +90,7 @@ MD3Imago::~MD3Imago()
 
 void MD3Imago::draw( const Imago* parent )
 {
-  if( !md3->isLoaded ) {
+  if( !md3->isLoaded() ) {
     return;
   }
 
@@ -127,7 +127,7 @@ void MD3Imago::draw( const Imago* parent )
 
 //       md3->advance( &anim, timer.frameTime );
 //       md3->draw( &anim );
-    md3->drawFrame( 0 );
+    md3->scheduleFrame( 0 );
 
     tf.colour.w.w = 1.0f;
   }
@@ -138,7 +138,7 @@ void MD3Imago::draw( const Imago* parent )
 
 //       md3->advance( &anim, timer.frameTime );
 //       md3->draw( &anim );
-    md3->drawFrame( 0 );
+    md3->scheduleFrame( 0 );
 
     if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
       context.drawImago( orbis.objects[bot->weapon], this );

@@ -37,7 +37,7 @@ Pool<MD2Imago, 256> MD2Imago::pool;
 
 MD2Imago::~MD2Imago()
 {
-  context.releaseMD2( clazz->imagoModel );
+  context.releaseModel( clazz->imagoModel );
 }
 
 Imago* MD2Imago::create( const Object* obj )
@@ -56,7 +56,7 @@ Imago* MD2Imago::create( const Object* obj )
 
 void MD2Imago::draw( const Imago* parent )
 {
-  if( !md2->isLoaded ) {
+  if( !md2->isLoaded() ) {
     return;
   }
 

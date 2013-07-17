@@ -36,25 +36,38 @@ namespace client
 
 class SMM
 {
-  private:
+  protected:
 
     int  id;
     Mesh mesh;
 
   public:
 
-    bool isPreloaded;
-    bool isLoaded;
-
     explicit SMM( int id );
+    virtual ~SMM();
+
+    Vec3 dim() const
+    {
+      return mesh.dim;
+    }
+
+    bool isPreloaded() const
+    {
+      return mesh.isPreloaded();
+    }
+
+    bool isLoaded() const
+    {
+      return mesh.isLoaded();
+    }
 
     void schedule( int component )
     {
       mesh.schedule( component );
     }
 
-    void preload();
-    void load();
+    virtual void preload();
+    virtual void load();
 
 };
 

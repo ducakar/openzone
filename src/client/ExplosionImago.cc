@@ -49,12 +49,12 @@ Imago* ExplosionImago::create( const Object* obj )
 
 ExplosionImago::~ExplosionImago()
 {
-  context.releaseSMM( modelId );
+  context.releaseModel( modelId );
 }
 
 void ExplosionImago::draw( const Imago* )
 {
-  if( !smm->isLoaded ) {
+  if( !smm->isLoaded() ) {
     return;
   }
 

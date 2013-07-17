@@ -26,8 +26,9 @@
 #include <common/Timer.hh>
 #include <client/Input.hh>
 #include <client/Shape.hh>
-#include <client/ui/Style.hh>
+#include <client/SMM.hh>
 #include <client/Context.hh>
+#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -77,8 +78,21 @@ void ModelField::onDraw()
 
   shape.fill( x, y, width, height );
 
-  if( bsp != nullptr ) {
-    float scale = float( width / 2 ) / bsp->dim().fastN();
+  if( bsp != nullptr || model >= 0 ) {
+    BSP*  bspModel = nullptr;
+    SMM*  smmModel = nullptr;
+    float dim;
+
+    if( bsp != nullptr ) {
+      bspModel = context.requestBSP( bsp );
+      dim      = bspModel->dim().fastN();
+    }
+    else {
+      smmModel = context.requestSMM( model );
+      dim      = smmModel->dim().fastN();
+    }
+
+    float scale = float( width / 2 ) / dim;
 
     currRot = nextRot + ROTATION_SMOOTHING * angleDiff( currRot, nextRot );
 
@@ -87,7 +101,16 @@ void ModelField::onDraw()
     tf.model.rotateX( -Math::TAU / 8.0f );
     tf.model.rotateZ( currRot );
 
-    context.drawBSP( bsp );
+    if( bsp != nullptr ) {
+      if( bspModel->isLoaded() ) {
+        bspModel->schedule( nullptr );
+      }
+    }
+    else {
+      if( smmModel->isLoaded() ) {
+        smmModel->schedule( -1 );
+      }
+    }
 
     shape.unbind();
 
@@ -132,15 +155,22 @@ void ModelField::setBSP( const oz::BSP* bsp_ )
 {
   if( bsp_ != bsp ) {
     bsp     = bsp_;
+    model   = -1;
+
     currRot = defaultRot;
     nextRot = defaultRot;
   }
 }
 
-void ModelField::setModel( int )
+void ModelField::setModel( int model_ )
 {
-  currRot = defaultRot;
-  nextRot = defaultRot;
+  if( model_ != model ) {
+    bsp     = nullptr;
+    model   = model_;
+
+    currRot = defaultRot;
+    nextRot = defaultRot;
+  }
 }
 
 }

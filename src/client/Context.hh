@@ -121,8 +121,6 @@ class Context
     Resource<BSPAudio*>*        bspAudios;
 
     Resource<SMM*>*             smms;
-    Resource<MD2*>*             md2s;
-    Resource<MD3*>*             md3s;
 
     HashMap<int, Imago*, 10223> imagines;        // currently loaded graphics models
     HashMap<int, Audio*, 6143>  audios;          // currently loaded audio models
@@ -183,21 +181,17 @@ class Context
     void releaseSound( int id );
     void freeSound( int id );
 
-    SMM* requestSMM( int id );
-    void releaseSMM( int id );
+    BSP* getBSP( const oz::BSP* bsp );
+    BSP* requestBSP( const oz::BSP* bsp );
 
-    MD2* requestMD2( int id );
-    void releaseMD2( int id );
-
-    MD3* requestMD3( int id );
-    void releaseMD3( int id );
-
-    void drawBSP( const oz::BSP* bsp );
     void drawBSP( const Struct* str );
     void playBSP( const Struct* str );
-    BSP* getBSP( const Struct* str );
 
-    void drawModel( int id );
+    SMM* requestSMM( int id );
+    MD2* requestMD2( int id );
+    MD3* requestMD3( int id );
+    void releaseModel( int id );
+
     void drawImago( const Object* obj, const Imago* parent );
     void playAudio( const Object* obj, const Audio* parent );
 

@@ -31,23 +31,18 @@ namespace client
 {
 
 MD3::MD3( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
+  SMM( id_ )
 {}
 
 void MD3::preload()
 {
   mesh.preload( liber.models[id].path );
-  isPreloaded = true;
 }
 
 void MD3::load()
 {
   mesh.load( GL_STATIC_DRAW );
-  isLoaded = true;
 }
-
-void MD3::drawFrame( int ) const
-{}
 
 }
 }

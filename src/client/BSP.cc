@@ -32,7 +32,7 @@ namespace client
 {
 
 BSP::BSP( const oz::BSP* bsp_ ) :
-  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
+  bsp( bsp_ )
 {
   foreach( model, bsp->models.citer() ) {
     context.requestSMM( *model );
@@ -41,36 +41,16 @@ BSP::BSP( const oz::BSP* bsp_ ) :
 
 BSP::~BSP()
 {
-  if( isLoaded ) {
-    mesh.unload();
-  }
+  mesh.unload();
 
   if( bsp != nullptr ) {
     foreach( model, bsp->models.citer() ) {
-      context.releaseSMM( *model );
+      context.releaseModel( *model );
     }
   }
 }
 
-void BSP::preload()
-{
-  const File* file = mesh.preload( "@bsp/" + bsp->name + ".ozcBSP" );
-  InputStream is   = file->inputStream();
-
-  is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
-  waterFogColour = is.readVec4();
-  lavaFogColour  = is.readVec4();
-
-  isPreloaded = true;
-}
-
-void BSP::load()
-{
-  mesh.load( GL_STATIC_DRAW );
-  isLoaded = true;
-}
-
-void BSP::draw( const Struct* str )
+void BSP::schedule( const Struct* str )
 {
   if( str != nullptr ) {
     tf.model = Mat44::translation( str->p - Point::ORIGIN );
@@ -87,7 +67,7 @@ void BSP::draw( const Struct* str )
       if( entity.clazz->model != -1 ) {
         SMM* smm = context.smms[entity.clazz->model].handle;
 
-        if( smm != nullptr && smm->isLoaded ) {
+        if( smm != nullptr && smm->isLoaded() ) {
           tf.model = tf.model * entity.clazz->modelTransf;
 
           smm->schedule( 0 );
@@ -99,6 +79,21 @@ void BSP::draw( const Struct* str )
   }
 
   mesh.schedule( 0 );
+}
+
+void BSP::preload()
+{
+  const File* file = mesh.preload( "@bsp/" + bsp->name + ".ozcBSP" );
+  InputStream is   = file->inputStream();
+
+  is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
+  waterFogColour = is.readVec4();
+  lavaFogColour  = is.readVec4();
+}
+
+void BSP::load()
+{
+  mesh.load( GL_STATIC_DRAW );
 }
 
 }

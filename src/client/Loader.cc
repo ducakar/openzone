@@ -130,26 +130,12 @@ void Loader::cleanupRender()
   if( tick % IMAGOCLASS_CLEAR_INTERVAL == IMAGOCLASS_CLEAR_LAG ) {
     for( int i = 0; i < liber.models.length(); ++i ) {
       Context::Resource<SMM*>& smm = context.smms[i];
-      Context::Resource<MD2*>& md2 = context.md2s[i];
-      Context::Resource<MD3*>& md3 = context.md3s[i];
 
       if( smm.nUsers == 0 ) {
         delete smm.handle;
 
         smm.handle = nullptr;
         smm.nUsers = -1;
-      }
-      if( md2.nUsers == 0 ) {
-        delete md2.handle;
-
-        md2.handle = nullptr;
-        md2.nUsers = -1;
-      }
-      if( md3.nUsers == 0 ) {
-        delete md3.handle;
-
-        md3.handle = nullptr;
-        md3.nUsers = -1;
       }
     }
   }
@@ -286,7 +272,7 @@ void Loader::preloadRender()
   for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].handle;
 
-    if( bsp != nullptr && !bsp->isPreloaded ) {
+    if( bsp != nullptr && !bsp->isPreloaded() ) {
       bsp->preload();
     }
   }
@@ -294,24 +280,8 @@ void Loader::preloadRender()
   for( int i = 0; i < liber.models.length(); ++i ) {
     SMM* smm = context.smms[i].handle;
 
-    if( smm != nullptr && !smm->isPreloaded ) {
+    if( smm != nullptr && !smm->isPreloaded() ) {
       smm->preload();
-    }
-  }
-
-  for( int i = 0; i < liber.models.length(); ++i ) {
-    MD2* md2 = context.md2s[i].handle;
-
-    if( md2 != nullptr && !md2->isPreloaded ) {
-      md2->preload();
-    }
-  }
-
-  for( int i = 0; i < liber.models.length(); ++i ) {
-    MD3* md3 = context.md3s[i].handle;
-
-    if( md3 != nullptr && !md3->isPreloaded ) {
-      md3->preload();
     }
   }
 }
@@ -331,7 +301,7 @@ void Loader::uploadRender()
   for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].handle;
 
-    if( bsp != nullptr && !bsp->isLoaded && bsp->isPreloaded ) {
+    if( bsp != nullptr && !bsp->isLoaded() && bsp->isPreloaded() ) {
       bsp->load();
       return;
     }
@@ -340,26 +310,8 @@ void Loader::uploadRender()
   for( int i = 0; i < liber.models.length(); ++i ) {
     SMM* smm = context.smms[i].handle;
 
-    if( smm != nullptr && !smm->isLoaded && smm->isPreloaded ) {
+    if( smm != nullptr && !smm->isLoaded() && smm->isPreloaded() ) {
       smm->load();
-      return;
-    }
-  }
-
-  for( int i = 0; i < liber.models.length(); ++i ) {
-    MD2* md2 = context.md2s[i].handle;
-
-    if( md2 != nullptr && !md2->isLoaded && md2->isPreloaded ) {
-      md2->load();
-      return;
-    }
-  }
-
-  for( int i = 0; i < liber.models.length(); ++i ) {
-    MD3* md3 = context.md3s[i].handle;
-
-    if( md3 != nullptr && !md3->isLoaded && md3->isPreloaded ) {
-      md3->load();
       return;
     }
   }

@@ -233,7 +233,7 @@ Mesh::Mesh() :
   vbo( 0 ), ibo( 0 ), animationTexId( 0 ),
   nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFrames( 0 ), nFramePositions( 0 ),
   vertices( nullptr ), positions( nullptr ), normals( nullptr ),
-  instances( 8 ), preloadData( nullptr )
+  instances( 8 ), preloadData( nullptr ), dim( Vec3::ONE )
 {}
 
 Mesh::~Mesh()
@@ -254,6 +254,7 @@ const File* Mesh::preload( const char* path )
 
   InputStream istream = preloadData->modelFile.inputStream();
 
+  dim             = istream.readVec3();
   nTextures       = istream.readInt();
   nVertices       = istream.readInt();
   nIndices        = istream.readInt();
@@ -307,6 +308,7 @@ void Mesh::load( uint usage )
 
   OZ_GL_CHECK_ERROR();
 
+  istream.readVec3();
   istream.readInt();
   istream.readInt();
   istream.readInt();

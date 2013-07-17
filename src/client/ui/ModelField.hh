@@ -46,6 +46,7 @@ class ModelField : public Area
 
     Callback*      callback;
     const oz::BSP* bsp;
+    int            model;
 
     float          defaultRot;
     float          currRot;
@@ -68,7 +69,7 @@ class ModelField : public Area
     void setDefaultRotation( float defaultRotation );
 
     void setBSP( const oz::BSP* bsp );
-    void setModel( int );
+    void setModel( int model );
 
 };
 
