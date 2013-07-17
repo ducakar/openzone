@@ -73,17 +73,15 @@ void BasicAudio::play( const Audio* parent )
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }
 
-    if( recent[Object::EVENT_FRICTING] != 0 && recent ) {
+    if( recent[Object::EVENT_FRICTING] != 0 ) {
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 
-      if( dyn->lower >= 0 ) {
-        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
+      const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.obj( dyn->lower ) );
 
-        if( sDyn != nullptr ) {
-          dvx -= sDyn->velocity.x;
-          dvy -= sDyn->velocity.y;
-        }
+      if( sDyn != nullptr ) {
+        dvx -= sDyn->velocity.x;
+        dvy -= sDyn->velocity.y;
       }
 
       playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn );
@@ -92,7 +90,7 @@ void BasicAudio::play( const Audio* parent )
 
   // inventory items' events
   for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* item = orbis.objects[ obj->items[i] ];
+    const Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( item, parent == nullptr ? this : parent );

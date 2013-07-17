@@ -82,15 +82,13 @@ static int ozSelfGetPos( lua_State* l )
   ARG( 0 );
 
   if( ns.self->cell == nullptr ) {
-    if( ns.self->parent >= 0 ) {
-      Object* parent = orbis.objects[ns.self->parent];
+    Object* parent = orbis.obj( ns.self->parent );
 
-      if( parent != nullptr ) {
-        l_pushfloat( parent->p.x );
-        l_pushfloat( parent->p.y );
-        l_pushfloat( parent->p.z );
-        return 3;
-      }
+    if( parent != nullptr ) {
+      l_pushfloat( parent->p.x );
+      l_pushfloat( parent->p.y );
+      l_pushfloat( parent->p.z );
+      return 3;
     }
   }
 
@@ -170,8 +168,9 @@ static int ozSelfGetParent( lua_State* l )
 {
   ARG( 0 );
 
-  int parent = ns.self->parent;
-  l_pushint( parent >= 0 && orbis.objects[parent] == nullptr ? -1 : parent );
+  const Object* parent = orbis.obj( ns.self->parent );
+
+  l_pushint( parent == nullptr ? -1 : ns.self->parent );
   return 1;
 }
 
@@ -339,8 +338,9 @@ static int ozSelfGetCargo( lua_State* l )
 {
   ARG( 0 );
 
-  int cargo = ns.self->cargo;
-  l_pushint( cargo >= 0 && orbis.objects[cargo] == nullptr ? -1 : cargo );
+  const Object* cargo = orbis.obj( ns.self->cargo );
+
+  l_pushint( cargo == nullptr ? -1 : ns.self->cargo );
   return 1;
 }
 
@@ -348,8 +348,9 @@ static int ozSelfGetWeapon( lua_State* l )
 {
   ARG( 0 );
 
-  int weapon = ns.self->weapon;
-  l_pushint( weapon >= 0 && orbis.objects[weapon] == nullptr ? -1 : weapon );
+  const Object* weapon = orbis.obj( ns.self->weapon );
+
+  l_pushint( weapon == nullptr ? -1 : ns.self->weapon );
   return 1;
 }
 
@@ -367,7 +368,7 @@ static int ozSelfSetWeaponItem( lua_State* l )
     }
 
     int index = ns.self->items[item];
-    Weapon* weapon = static_cast<Weapon*>( orbis.objects[index] );
+    Weapon* weapon = static_cast<Weapon*>( orbis.obj( index ) );
 
     if( weapon == nullptr ) {
       l_pushbool( false );
@@ -437,7 +438,7 @@ static int ozSelfBindItems( lua_State* l )
   foreach( item, ns.self->items.citer() ) {
     hard_assert( *item >= 0 );
 
-    ms.objects.add( orbis.objects[*item] );
+    ms.objects.add( orbis.obj( *item ) );
   }
   return 0;
 }
@@ -452,7 +453,7 @@ static int ozSelfBindItem( lua_State* l )
     ERROR( "Invalid inventory item index" );
   }
 
-  ms.obj = orbis.objects[ ns.self->items[index] ];
+  ms.obj = orbis.obj( ns.self->items[index] );
   l_pushbool( ms.obj != nullptr );
   return 1;
 }
@@ -542,10 +543,10 @@ static int ozNirvanaAddMemo( lua_State* l )
   ARG( 2 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
+  if( uint( index ) >= uint( orbis.nObjects() ) ) {
     ERROR( "invalid object index" );
   }
-  if( orbis.objects[index] == nullptr ) {
+  if( orbis.obj( index ) == nullptr ) {
     ERROR( "object is null" );
   }
 

@@ -53,7 +53,7 @@ void Nirvana::sync()
   }
   // add minds for new bots
   foreach( i, synapse.addedObjects.citer() ) {
-    const Object* obj = orbis.objects[*i];
+    const Object* obj = orbis.obj( *i );
 
     if( obj != nullptr && ( obj->flags & Object::BOT_BIT ) ) {
       minds.add( obj->index, new Mind( obj->index ) );
@@ -67,7 +67,7 @@ void Nirvana::update()
   foreach( i, minds.iter() ) {
     Mind* mind = i->value;
 
-    const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
+    const Bot* bot = static_cast<const Bot*>( orbis.obj( mind->bot ) );
     hard_assert( bot != nullptr && ( bot->flags & Object::BOT_BIT ) );
 
     if( !( bot->state & Bot::PLAYER_BIT ) &&

@@ -187,7 +187,7 @@ bool Physics::handleObjFriction()
         int structIndex = dyn->lower / Struct::MAX_ENTITIES;
         int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
 
-        const Entity& entity = orbis.structs[structIndex]->entities[entityIndex];
+        const Entity& entity = orbis.str( structIndex )->entities[entityIndex];
 
         if( entity.velocity != Vec3::ZERO ) {
           isLowerStill = false;
@@ -202,7 +202,7 @@ bool Physics::handleObjFriction()
         }
       }
       else {
-        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
+        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.obj( dyn->lower ) );
 
         if( sDyn->velocity != Vec3::ZERO ) {
           isLowerStill = false;
@@ -525,7 +525,7 @@ void Physics::updateObj( Dynamic* dyn_ )
       int structIndex = dyn->lower / Struct::MAX_ENTITIES;
       int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
 
-      const Struct* str = orbis.structs[structIndex];
+      const Struct* str = orbis.str( structIndex );
 
       if( str == nullptr ) {
         dyn->flags &= ~Object::DISABLED_BIT;
@@ -540,7 +540,7 @@ void Physics::updateObj( Dynamic* dyn_ )
       }
     }
     else {
-      const Object* sObj = orbis.objects[dyn->lower];
+      const Object* sObj = orbis.obj( dyn->lower );
 
       // Clear the lower object if it doesn't exist any more.
       if( sObj == nullptr || sObj->cell == nullptr ) {

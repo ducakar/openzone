@@ -73,7 +73,7 @@ void VehicleAudio::play( const Audio* parent )
 
   // inventory items' events
   for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* item = orbis.objects[ obj->items[i] ];
+    const Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( item, parent == nullptr ? this : parent );
@@ -82,9 +82,7 @@ void VehicleAudio::play( const Audio* parent )
 
   // pilot
   if( vehicle->pilot >= 0 && camera.bot == vehicle->pilot ) {
-    const Bot* bot = static_cast<const Bot*>( orbis.objects[vehicle->pilot] );
-
-    hard_assert( bot->flags & Object::BOT_BIT );
+    const Bot* bot = static_cast<const Bot*>( orbis.obj( vehicle->pilot ) );
 
     if( bot != nullptr && ( bot->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( bot, parent == nullptr ? this : parent );

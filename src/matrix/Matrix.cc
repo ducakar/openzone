@@ -47,8 +47,8 @@ void Matrix::update()
   maxVehicles = max( maxVehicles, Vehicle::pool.length() );
   maxFrags    = max( maxFrags,    Frag::mpool.length() );
 
-  for( int i = 0; i < orbis.objects.length(); ++i ) {
-    Object* obj = orbis.objects[i];
+  for( int i = 0; i < orbis.nObjects(); ++i ) {
+    Object* obj = orbis.obj( i );
 
     if( obj != nullptr ) {
       // If this is cleared on the object's update, we may also remove effects that were added
@@ -63,8 +63,8 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.structs.length(); ++i ) {
-    Struct* str = orbis.structs[i];
+  for( int i = 0; i < orbis.nStructs(); ++i ) {
+    Struct* str = orbis.str( i );
 
     if( str == nullptr ) {
       continue;
@@ -81,8 +81,8 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.objects.length(); ++i ) {
-    Object* obj = orbis.objects[i];
+  for( int i = 0; i < orbis.nObjects(); ++i ) {
+    Object* obj = orbis.obj( i );
 
     if( obj == nullptr ) {
       continue;
@@ -95,7 +95,7 @@ void Matrix::update()
       // clear inventory of invalid references
       if( !obj->items.isEmpty() ) {
         for( int j = 0; j < obj->items.length(); ) {
-          if( orbis.objects[ obj->items[j] ] == nullptr ) {
+          if( orbis.obj( obj->items[j] ) == nullptr ) {
             obj->items.erase( j );
           }
           else {
@@ -107,13 +107,13 @@ void Matrix::update()
       obj->update();
 
       // objects should not remove themselves within onUpdate()
-      hard_assert( orbis.objects[i] != nullptr );
+      hard_assert( orbis.obj( i ) != nullptr );
 
       if( obj->flags & Object::DYNAMIC_BIT ) {
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
         hard_assert( ( dyn->parent >= 0 ) == ( dyn->cell == nullptr ) );
-        hard_assert( dyn->parent == -1 || orbis.objects[dyn->parent] != nullptr );
+        hard_assert( dyn->parent == -1 || orbis.obj( dyn->parent ) != nullptr );
 
         if( dyn->cell != nullptr ) {
           physics.updateObj( dyn );
@@ -127,8 +127,8 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.frags.length(); ++i ) {
-    Frag* frag = orbis.frags[i];
+  for( int i = 0; i < orbis.nFrags(); ++i ) {
+    Frag* frag = orbis.frag( i );
 
     if( frag == nullptr ) {
       continue;

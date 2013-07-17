@@ -51,22 +51,20 @@ const Vehicle::Handler Vehicle::HANDLERS[] = {
 
 void Vehicle::exit()
 {
-  if( pilot >= 0 ) {
-    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
 
-    if( bot != nullptr ) {
-      float hsc[2];
-      Math::sincos( h, &hsc[0], &hsc[1] );
+  if( bot != nullptr ) {
+    float hsc[2];
+    Math::sincos( h, &hsc[0], &hsc[1] );
 
-      float handle = !( dim + bot->dim ) + EXIT_EPSILON;
-      Point exitPos = Point( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
+    float handle = !( dim + bot->dim ) + EXIT_EPSILON;
+    Point exitPos = Point( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
 
-      if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
-        pilot = -1;
+    if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
+      pilot = -1;
 
-        bot->p = exitPos;
-        bot->exit();
-      }
+      bot->p = exitPos;
+      bot->exit();
     }
   }
 }
@@ -75,25 +73,23 @@ void Vehicle::eject()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  if( pilot >= 0 ) {
-    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
 
-    if( bot != nullptr ) {
-      bot->p    = p + rot * clazz->pilotPos;
-      bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
+  if( bot != nullptr ) {
+    bot->p    = p + rot * clazz->pilotPos;
+    bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
 
-      // kill bot if eject path is blocked
-      if( collider.overlaps( *bot, this ) ) {
-        bot->exit();
-        bot->kill();
-      }
-      else {
-        float hsc[2];
-        Math::sincos( h, &hsc[0], &hsc[1] );
+    // kill bot if eject path is blocked
+    if( collider.overlaps( *bot, this ) ) {
+      bot->exit();
+      bot->kill();
+    }
+    else {
+      float hsc[2];
+      Math::sincos( h, &hsc[0], &hsc[1] );
 
-        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-        bot->exit();
-      }
+      bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+      bot->exit();
     }
   }
 }
@@ -227,20 +223,18 @@ void Vehicle::airHandler()
 
 void Vehicle::onDestroy()
 {
-  if( pilot >= 0 ) {
-    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
 
-    if( bot != nullptr ) {
-      if( state & AUTO_EJECT_BIT ) {
-        eject();
-      }
-      else {
-        bot->destroy();
-      }
+  if( bot != nullptr ) {
+    if( state & AUTO_EJECT_BIT ) {
+      eject();
     }
-
-    pilot = -1;
+    else {
+      bot->destroy();
+    }
   }
+
+  pilot = -1;
 
   Dynamic::onDestroy();
 }
@@ -250,25 +244,21 @@ void Vehicle::onUpdate()
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
   // clean invalid pilot reference and throw him out if dead
-  if( pilot >= 0 ) {
-    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
 
-    if( bot == nullptr || bot->parent < 0 ) {
-      pilot = -1;
-    }
-    else if( bot->state & Bot::DEAD_BIT ) {
-      pilot = -1;
-      bot->exit();
-    }
+  if( bot == nullptr || bot->parent < 0 ) {
+    pilot = -1;
+    bot   = nullptr;
+  }
+  else if( bot->state & Bot::DEAD_BIT ) {
+    pilot = -1;
+    bot->exit();
+    bot = nullptr;
   }
 
   actions = 0;
 
-  Bot* bot = nullptr;
-
-  if( pilot >= 0 ) {
-    bot = static_cast<Bot*>( orbis.objects[pilot] );
-
+  if( bot != nullptr ) {
     // TODO Limit rotational velocity.
 //     float diffH = bot->h - h;
 //     float diffV = bot->v - v;

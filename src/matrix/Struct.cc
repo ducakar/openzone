@@ -78,12 +78,13 @@ void Entity::trigger()
 
   if( clazz->type == EntityClass::STATIC ) {
     state = OPENING;
+    hard_assert( time == 0.0f );
   }
 
   int strIndex = clazz->target / Struct::MAX_ENTITIES;
   int entIndex = clazz->target % Struct::MAX_ENTITIES;
 
-  Struct* targetStr = orbis.structs[strIndex];
+  Struct* targetStr = orbis.str( strIndex );
 
   if( targetStr != nullptr ) {
     Entity& target = targetStr->entities[entIndex];
@@ -113,7 +114,7 @@ void Entity::lock( Bot* user )
   }
 
   foreach( i, user->items.citer() ) {
-    Object* obj = orbis.objects[*i];
+    Object* obj = orbis.obj( *i );
 
     if( obj->clazz->key == key || obj->clazz->key == ~key ) {
       key = ~key;
@@ -558,7 +559,7 @@ void Struct::onDemolish()
 void Struct::onUpdate()
 {
   for( int i = 0; i < boundObjects.length(); ) {
-    if( orbis.objects[ boundObjects[i] ] == nullptr ) {
+    if( orbis.obj( boundObjects[i] ) == nullptr ) {
       boundObjects.eraseUnordered( i );
     }
     else {
@@ -651,7 +652,7 @@ Bounds Struct::rotate( const Bounds& in, Heading heading )
 void Struct::destroy()
 {
   for( int i = 0; i < boundObjects.length(); ++i ) {
-    Object* obj = orbis.objects[ boundObjects[i] ];
+    Object* obj = orbis.obj( boundObjects[i] );
 
     if( obj != nullptr ) {
       obj->destroy();

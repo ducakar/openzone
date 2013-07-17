@@ -80,7 +80,7 @@ void StrategicProxy::prepare()
       camera.allowReincarnation )
   {
     if( ui::ui.strategicArea->taggedObjs.length() == 1 ) {
-      const Object* tagged = orbis.objects[ ui::ui.strategicArea->taggedObjs.first() ];
+      const Object* tagged = orbis.obj( ui::ui.strategicArea->taggedObjs.first() );
       const Bot*    me     = nullptr;
 
       if( tagged != nullptr ) {
@@ -90,9 +90,7 @@ void StrategicProxy::prepare()
         else if( tagged->flags & Object::VEHICLE_BIT ) {
           const Vehicle* veh = static_cast<const Vehicle*>( tagged );
 
-          if( veh->pilot >= 0 && orbis.objects[veh->pilot] != nullptr ) {
-            me = static_cast<const Bot*>( orbis.objects[veh->pilot] );
-          }
+          me = static_cast<const Bot*>( orbis.obj( veh->pilot ) );
         }
       }
 
@@ -105,7 +103,7 @@ void StrategicProxy::prepare()
 
   if( input.keys[Input::KEY_CYCLE_UNITS] && !input.oldKeys[Input::KEY_CYCLE_UNITS] ) {
     if( !camera.switchableUnits.isEmpty() ) {
-      Bot* bot = static_cast<Bot*>( orbis.objects[ camera.switchableUnits.first() ] );
+      Bot* bot = static_cast<Bot*>( orbis.obj( camera.switchableUnits.first() ) );
 
       camera.setBot( bot );
       camera.setState( Camera::UNIT );

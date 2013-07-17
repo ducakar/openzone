@@ -185,7 +185,7 @@ bool Collider::overlapsAABBOrbis()
       const Cell& cell = orbis.cells[x][y];
 
       for( int i = 0; i < cell.structs.length(); ++i ) {
-        str = orbis.structs[ cell.structs[i] ];
+        str = orbis.str( cell.structs[i] );
 
         if( !trace.overlaps( *str ) || visitedStructs.contains( cell.structs[i] ) ) {
           continue;
@@ -672,7 +672,7 @@ void Collider::trimAABBOrbis()
       const Cell& cell = orbis.cells[x][y];
 
       for( int i = 0; i < cell.structs.length(); ++i ) {
-        str = orbis.structs[ cell.structs[i] ];
+        str = orbis.str( cell.structs[i] );
 
         if( !trace.overlaps( *str ) || visitedStructs.contains( cell.structs[i] ) ) {
           continue;
@@ -726,7 +726,7 @@ void Collider::getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects 
 
       if( structs != nullptr ) {
         for( int i = 0; i < cell.structs.length(); ++i ) {
-          str = orbis.structs[ cell.structs[i] ];
+          str = orbis.str( cell.structs[i] );
 
           if( trace.overlaps( *str ) && !structs->contains( const_cast<Struct*>( str ) ) ) {
             visitedBrushes.clearAll();

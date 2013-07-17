@@ -48,7 +48,7 @@ void Object::onDestroy()
   }
 
   foreach( i, items.citer() ) {
-    Object* item = orbis.objects[*i];
+    Object* item = orbis.obj( *i );
 
     if( item != nullptr ) {
       item->destroy();

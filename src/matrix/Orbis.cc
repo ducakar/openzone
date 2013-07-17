@@ -144,13 +144,13 @@ Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
       return nullptr;
     }
 
-    str = new Struct( bsp, index, p, heading );
+    str = new Struct( bsp, index - 1, p, heading );
     structs.add( str );
   }
   else {
     int index = strAvailableIndices.popLast();
 
-    str = new Struct( bsp, index, p, heading );
+    str = new Struct( bsp, index - 1, p, heading );
     structs[index] = str;
   }
 
@@ -168,13 +168,13 @@ Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
       return nullptr;
     }
 
-    obj = clazz->create( index, p, heading );
+    obj = clazz->create( index - 1, p, heading );
     objects.add( obj );
   }
   else {
     int index = objAvailableIndices.popLast();
 
-    obj = clazz->create( index, p, heading );
+    obj = clazz->create( index - 1, p, heading );
     objects[index] = obj;
   }
 
@@ -196,13 +196,13 @@ Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
       return nullptr;
     }
 
-    frag = new Frag( pool, index, p, velocity );
+    frag = new Frag( pool, index - 1, p, velocity );
     frags.add( frag );
   }
   else {
     int index = fragAvailableIndices.popLast();
 
-    frag = new Frag( pool, index, p, velocity );
+    frag = new Frag( pool, index - 1, p, velocity );
     frags[index] = frag;
   }
 
@@ -213,8 +213,8 @@ void Orbis::remove( Struct* str )
 {
   hard_assert( str->index >= 0 );
 
-  strFreedIndices[freeing].add( str->index );
-  structs[str->index] = nullptr;
+  strFreedIndices[freeing].add( 1 + str->index );
+  structs[1 + str->index] = nullptr;
 
   const_cast<BSP*>( str->bsp )->release();
 
@@ -229,8 +229,8 @@ void Orbis::remove( Object* obj )
   if( obj->flags & Object::LUA_BIT ) {
     luaMatrix.unregisterObject( obj->index );
   }
-  objFreedIndices[freeing].add( obj->index );
-  objects[obj->index] = nullptr;
+  objFreedIndices[freeing].add( 1 + obj->index );
+  objects[1 + obj->index] = nullptr;
 
   delete obj;
 }
@@ -240,8 +240,8 @@ void Orbis::remove( Frag* frag )
   hard_assert( frag->index >= 0 );
   hard_assert( frag->cell == nullptr );
 
-  fragFreedIndices[freeing].add( frag->index );
-  frags[frag->index] = nullptr;
+  fragFreedIndices[freeing].add( 1 + frag->index );
+  frags[1 + frag->index] = nullptr;
 
   delete frag;
 }
@@ -316,7 +316,7 @@ void Orbis::update()
 
 void Orbis::read( InputStream* istream )
 {
-  hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
+  hard_assert( structs.length() == 1 && objects.length() == 1 && frags.length() == 1 );
 
   luaMatrix.read( istream );
 
@@ -423,15 +423,15 @@ void Orbis::write( OutputStream* ostream ) const
   caelum.write( ostream );
   terra.write( ostream );
 
-  ostream->writeInt( structs.length() );
-  ostream->writeInt( objects.length() );
-  ostream->writeInt( frags.length() );
+  ostream->writeInt( structs.length() - 1 );
+  ostream->writeInt( objects.length() - 1 );
+  ostream->writeInt( frags.length() - 1 );
 
   Struct* str;
   Object* obj;
   Frag*   frag;
 
-  for( int i = 0; i < structs.length(); ++i ) {
+  for( int i = 1; i < structs.length(); ++i ) {
     str = structs[i];
 
     if( str == nullptr ) {
@@ -442,7 +442,7 @@ void Orbis::write( OutputStream* ostream ) const
       str->write( ostream );
     }
   }
-  for( int i = 0; i < objects.length(); ++i ) {
+  for( int i = 1; i < objects.length(); ++i ) {
     obj = objects[i];
 
     if( obj == nullptr ) {
@@ -454,7 +454,7 @@ void Orbis::write( OutputStream* ostream ) const
       ostream->writeBool( obj->cell == nullptr );
     }
   }
-  for( int i = 0; i < frags.length(); ++i ) {
+  for( int i = 1; i < frags.length(); ++i ) {
     frag = frags[i];
 
     if( frag == nullptr ) {
@@ -508,7 +508,7 @@ void Orbis::write( OutputStream* ostream ) const
 
 void Orbis::read( const JSON& json )
 {
-  hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
+  hard_assert( structs.length() == 1 && objects.length() == 1 && frags.length() == 1 );
 
   caelum.read( json["caelum"] );
   terra.read( json["terra"] );
@@ -588,7 +588,7 @@ JSON Orbis::write() const
 
   JSON& structsJSON = json.add( "structs", JSON::ARRAY );
 
-  for( int i = 0; i < structs.length(); ++i ) {
+  for( int i = 1; i < structs.length(); ++i ) {
     str = structs[i];
 
     if( str == nullptr ) {
@@ -601,7 +601,7 @@ JSON Orbis::write() const
 
   JSON& objectsJSON = json.add( "objects", JSON::ARRAY );
 
-  for( int i = 0; i < objects.length(); ++i ) {
+  for( int i = 1; i < objects.length(); ++i ) {
     obj = objects[i];
 
     if( obj == nullptr ) {
@@ -615,7 +615,7 @@ JSON Orbis::write() const
 
   JSON& fragsJSON = json.add( "frags", JSON::ARRAY );
 
-  for( int i = 0; i < frags.length(); ++i ) {
+  for( int i = 1; i < frags.length(); ++i ) {
     frag = frags[i];
 
     if( frag == nullptr ) {
@@ -647,7 +647,7 @@ void Orbis::unload()
 {
   for( int i = 0; i < objects.length(); ++i ) {
     if( objects[i] != nullptr && ( objects[i]->flags & Object::LUA_BIT ) ) {
-      luaMatrix.unregisterObject( i );
+      luaMatrix.unregisterObject( i - 1 );
     }
   }
 
@@ -662,6 +662,10 @@ void Orbis::unload()
   frags.free();
   objects.free();
   structs.free();
+
+  structs.add( nullptr );
+  objects.add( nullptr );
+  frags.add( nullptr );
 
   terra.reset();
   caelum.reset();
@@ -715,6 +719,10 @@ void Orbis::init()
   caelum.reset();
   terra.init();
   terra.reset();
+
+  structs.add( nullptr );
+  objects.add( nullptr );
+  frags.add( nullptr );
 
   Log::printEnd( " OK" );
 }

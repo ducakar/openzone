@@ -66,7 +66,7 @@ bool Weapon::onUse( Bot* user )
       synapse.cut( this );
     }
     else {
-      Object* container = orbis.objects[parent];
+      Object* container = orbis.obj( parent );
 
       hard_assert( container->items.contains( index ) );
 

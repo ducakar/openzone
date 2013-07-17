@@ -55,60 +55,20 @@ CinematicProxy Camera::cinematic;
 
 void Camera::updateReferences()
 {
-  if( object < 0 ) {
-    objectObj = nullptr;
-  }
-  else {
-    objectObj = orbis.objects[object];
-    object = objectObj == nullptr ? -1 : object;
-  }
+  objectObj  = orbis.obj( object );
+  object     = objectObj == nullptr ? -1 : object;
 
-  if( entity < 0 ) {
-    entityObj = nullptr;
-  }
-  else {
-    int strIndex = entity / Struct::MAX_ENTITIES;
-    int entIndex = entity % Struct::MAX_ENTITIES;
+  entityObj  = orbis.ent( entity );
+  entity     = entityObj == nullptr ? -1 : entity;
 
-    Struct* str = orbis.structs[strIndex];
+  botObj     = static_cast<Bot*>( orbis.obj( bot ) );
+  bot        = botObj == nullptr ? -1 : bot;
 
-    if( str == nullptr ) {
-      entity    = -1;
-      entityObj = nullptr;
-    }
-    else {
-      entityObj = &str->entities[entIndex];
-    }
-  }
-
-  if( bot < 0 ) {
-    botObj = nullptr;
-  }
-  else {
-    botObj = static_cast<Bot*>( orbis.objects[bot] );
-
-    if( botObj == nullptr ) {
-      bot    = -1;
-      botObj = nullptr;
-    }
-  }
-
-  if( botObj == nullptr || botObj->parent < 0 ) {
-    vehicle    = -1;
-    vehicleObj = nullptr;
-  }
-  else {
-    vehicle    = botObj->parent;
-    vehicleObj = static_cast<Vehicle*>( orbis.objects[vehicle] );
-
-    if( vehicleObj == nullptr ) {
-      vehicle    = -1;
-      vehicleObj = nullptr;
-    }
-  }
+  vehicleObj = botObj == nullptr ? nullptr : static_cast<Vehicle*>( orbis.obj( botObj->parent ) );
+  vehicle    = vehicleObj == nullptr ? -1 : botObj->parent;
 
   for( int i = 0; i < switchableUnits.length(); ) {
-    const Bot* unit = static_cast<const Bot*>( orbis.objects[ switchableUnits[i] ] );
+    const Bot* unit = static_cast<const Bot*>( orbis.obj( switchableUnits[i] ) );
 
     if( unit == nullptr ) {
       switchableUnits.erase( i );
@@ -286,10 +246,10 @@ void Camera::read( InputStream* istream )
   objectObj  = nullptr;
   entity     = -1;
   entityObj  = nullptr;
-  bot        =  istream->readInt();
-  botObj     = bot < 0 ? nullptr : static_cast<Bot*>( orbis.objects[bot] );
+  bot        = istream->readInt();
+  botObj     = static_cast<Bot*>( orbis.obj( bot ) );
   vehicle    = istream->readInt();
-  vehicleObj = vehicle < 0 ? nullptr : static_cast<Vehicle*>( orbis.objects[vehicle] );
+  vehicleObj = static_cast<Vehicle*>( orbis.obj( vehicle ) );
 
   hard_assert( switchableUnits.isEmpty() );
 

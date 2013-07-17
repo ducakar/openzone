@@ -467,7 +467,7 @@ void Sound::playCell( int cellX, int cellY )
     if( !playedStructs.get( strIndex ) ) {
       playedStructs.set( strIndex );
 
-      const Struct* str = orbis.structs[strIndex];
+      const Struct* str = orbis.str( strIndex );
       context.playBSP( str );
     }
   }
@@ -579,9 +579,9 @@ void Sound::soundRun()
     alListenerfv( AL_POSITION, camera.p );
     alListenerfv( AL_VELOCITY, camera.velocity );
 
-    if( playedStructs.length() < orbis.structs.length() ) {
+    if( playedStructs.length() < orbis.nStructs() ) {
       playedStructs.deallocate();
-      playedStructs.allocate( orbis.structs.length() );
+      playedStructs.allocate( orbis.nStructs() );
     }
     playedStructs.clearAll();
 

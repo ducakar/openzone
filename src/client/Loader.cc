@@ -85,7 +85,7 @@ void Loader::cleanupRender()
     // We can afford to do this as orbis.objects[key] will remain nullptr at least one whole tick
     // after the object has been removed (because matrix also needs to clear references to this
     // object).
-    if( orbis.objects[imago->key] == nullptr ) {
+    if( orbis.obj( imago->key ) == nullptr ) {
       delete imago->value;
       context.imagines.exclude( imago->key );
     }
@@ -170,7 +170,7 @@ void Loader::cleanupSound()
 
     // We can afford to do this as orbis.objects[key] will remain nullptr at least one whole tick after
     // the object has been removed (because matrix also needs to clear references to this object).
-    if( orbis.objects[audio->key] == nullptr ) {
+    if( orbis.obj( audio->key ) == nullptr ) {
       delete audio->value;
       context.audios.exclude( audio->key );
     }
@@ -195,7 +195,7 @@ void Loader::cleanupSound()
       context.releaseSpeakSource();
     }
   }
-  else if( orbis.objects[speaker] == nullptr ) {
+  else if( orbis.obj( speaker ) == nullptr ) {
     context.speakSource.isAlive = false;
   }
 

@@ -217,11 +217,11 @@ static int ozOrbisOverlaps( lua_State* l )
   if( l_gettop() == 8 ) {
     int index = l_toint( 8 );
 
-    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+    if( uint( index ) >= uint( orbis.nObjects() ) ) {
       ERROR( "Invalid excluded object index (out of range)" );
     }
 
-    exclObj = orbis.objects[index];
+    exclObj = orbis.obj( index );
   }
 
   hard_assert( collider.mask == Object::SOLID_BIT );
@@ -394,11 +394,11 @@ static int ozBindStr( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.structs.length() ) ) {
+  if( uint( index ) >= uint( orbis.nStructs() ) ) {
     ms.str = nullptr;
   }
   else {
-    ms.str = orbis.structs[index];
+    ms.str = orbis.str( index );
   }
 
   l_pushbool( ms.str != nullptr );
@@ -589,7 +589,7 @@ static int ozStrBindBoundObj( lua_State* l )
     ERROR( "Invalid structure bound object index (out of range)" );
   }
 
-  ms.obj = orbis.objects[ ms.str->boundObjects[index] ];
+  ms.obj = orbis.obj( ms.str->boundObjects[index] );
   l_pushbool( ms.obj != nullptr );
   return 1;
 }
@@ -1129,11 +1129,11 @@ static int ozBindObj( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
+  if( uint( index ) >= uint( orbis.nObjects() ) ) {
     ms.obj = nullptr;
   }
   else {
-    ms.obj = orbis.objects[index];
+    ms.obj = orbis.obj( index );
   }
 
   l_pushbool( ms.obj != nullptr );
@@ -1223,17 +1223,14 @@ static int ozObjGetPos( lua_State* l )
   if( ms.obj->cell == nullptr ) {
     hard_assert( ms.obj->flags & Object::DYNAMIC_BIT );
 
-    const Dynamic* dyn = static_cast<const Dynamic*>( ms.obj );
+    const Dynamic* dyn    = static_cast<const Dynamic*>( ms.obj );
+    const Object*  parent = orbis.obj( dyn->parent );
 
-    if( dyn->parent >= 0 ) {
-      Object* parent = orbis.objects[dyn->parent];
-
-      if( parent != nullptr ) {
-        l_pushfloat( parent->p.x );
-        l_pushfloat( parent->p.y );
-        l_pushfloat( parent->p.z );
-        return 3;
-      }
+    if( parent != nullptr ) {
+      l_pushfloat( parent->p.x );
+      l_pushfloat( parent->p.y );
+      l_pushfloat( parent->p.z );
+      return 3;
     }
   }
 
@@ -1435,7 +1432,7 @@ static int ozObjBindItems( lua_State* l )
   foreach( item, ms.obj->items.citer() ) {
     hard_assert( *item >= 0 );
 
-    ms.objects.add( orbis.objects[*item] );
+    ms.objects.add( orbis.obj( *item ) );
   }
   return 0;
 }
@@ -1451,7 +1448,7 @@ static int ozObjBindItem( lua_State* l )
     ERROR( "Invalid inventory item index" );
   }
 
-  ms.obj = orbis.objects[ ms.obj->items[index] ];
+  ms.obj = orbis.obj( ms.obj->items[index] );
   l_pushbool( ms.obj != nullptr );
   return 1;
 }
@@ -1474,7 +1471,7 @@ static int ozObjAddItem( lua_State* l )
     if( item->cell == nullptr ) {
       hard_assert( item->parent >= 0 );
 
-      Object* container = orbis.objects[item->parent];
+      Object* container = orbis.obj( item->parent );
       if( container != nullptr ) {
         container->items.exclude( item->index );
       }
@@ -1757,7 +1754,9 @@ static int ozDynGetParent( lua_State* l )
   OBJ();
   OBJ_DYNAMIC();
 
-  l_pushint( dyn->parent >= 0 && orbis.objects[dyn->parent] == nullptr ? -1 : dyn->parent );
+  const Object* parent = orbis.obj( dyn->parent );
+
+  l_pushint( parent == nullptr ? -1 : dyn->parent );
   return 1;
 }
 
@@ -2087,7 +2086,9 @@ static int ozBotGetCargo( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushint( bot->cargo >= 0 && orbis.objects[bot->cargo] == nullptr ? -1 : bot->cargo );
+  const Object* cargo = orbis.obj( bot->cargo );
+
+  l_pushint( cargo == nullptr ? -1 : bot->cargo );
   return 1;
 }
 
@@ -2097,7 +2098,9 @@ static int ozBotGetWeapon( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushint( bot->weapon >= 0 && orbis.objects[bot->weapon] == nullptr ? -1 : bot->weapon );
+  const Object* weapon = orbis.obj( bot->weapon );
+
+  l_pushint( weapon == nullptr ? -1 : bot->weapon );
   return 1;
 }
 
@@ -2117,7 +2120,7 @@ static int ozBotSetWeaponItem( lua_State* l )
     }
 
     int index = bot->items[item];
-    Weapon* weapon = static_cast<Weapon*>( orbis.objects[index] );
+    Weapon* weapon = static_cast<Weapon*>( orbis.obj( index ) );
 
     if( weapon == nullptr ) {
       l_pushbool( false );
@@ -2226,7 +2229,9 @@ static int ozVehicleGetPilot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  l_pushint( veh->pilot >= 0 && orbis.objects[veh->pilot] == nullptr ? -1 : veh->pilot );
+  Object* pilot = orbis.obj( veh->pilot );
+
+  l_pushint( pilot == nullptr ? -1 : veh->pilot );
   return 1;
 }
 
@@ -2351,11 +2356,7 @@ static int ozVehicleDisembarkBot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  if( veh->pilot < 0 ) {
-    return 0;
-  }
-
-  Bot* pilot = static_cast<Bot*>( orbis.objects[veh->pilot] );
+  Bot* pilot = static_cast<Bot*>( orbis.obj( veh->pilot ) );
   if( pilot == nullptr ) {
     return 0;
   }
@@ -2383,11 +2384,11 @@ static int ozFragBindIndex( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.frags.length() ) ) {
+  if( uint( index ) >= uint( orbis.nFrags() ) ) {
     ms.frag = nullptr;
   }
   else {
-    ms.frag = orbis.frags[index];
+    ms.frag = orbis.frag( index );
   }
 
   l_pushbool( ms.frag != nullptr );

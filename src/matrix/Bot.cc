@@ -61,16 +61,14 @@ bool Bot::hasAttribute( int attribute ) const
     return true;
   }
 
-  if( parent >= 0 ) {
-    const Object* vehicle = orbis.objects[parent];
+  const Object* vehicle = orbis.obj( parent );
 
-    if( vehicle != nullptr && ( vehicle->clazz->attributes & attribute ) ) {
-      return true;
-    }
+  if( vehicle != nullptr && ( vehicle->clazz->attributes & attribute ) ) {
+    return true;
   }
 
   for( int i = 0; i < items.length(); ++i ) {
-    const Object* item = orbis.objects[ items[i] ];
+    const Object* item = orbis.obj( items[i] );
 
     if( item != nullptr && ( item->clazz->attributes & attribute ) ) {
       return true;
@@ -328,14 +326,12 @@ void Bot::heal()
 void Bot::rearm()
 {
   for( int i = 0; i < items.length(); ++i ) {
-    if( items[i] >= 0 ) {
-      Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[ items[i] ] );
+    Weapon* weaponObj = static_cast<Weapon*>( orbis.obj( items[i] ) );
 
-      if( weaponObj != nullptr && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
-        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
+    if( weaponObj != nullptr && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
+      const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
 
-        weaponObj->nRounds = weaponClazz->nRounds;
-      }
+      weaponObj->nRounds = weaponClazz->nRounds;
     }
   }
 }
@@ -464,7 +460,7 @@ void Bot::onUpdate()
   meleeTime = max( meleeTime - Timer::TICK_TIME, 0.0f );
 
   if( parent >= 0 ) {
-    Object* vehicle = orbis.objects[parent];
+    Object* vehicle = orbis.obj( parent );
 
     if( vehicle == nullptr ) {
       exit();
@@ -790,7 +786,7 @@ void Bot::onUpdate()
       else if( state & SWIMMING_BIT ) {
         // not on static ground
         if( !( flags & ON_FLOOR_BIT ) &&
-            !( lower >= 0 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) ) )
+            !( lower >= 0 && ( orbis.obj( lower )->flags & Object::DISABLED_BIT ) ) )
         {
           desiredMomentum *= clazz->waterControl;
         }
@@ -933,8 +929,8 @@ void Bot::onUpdate()
 
   if( actions & ~oldActions & INSTRUMENT_ACTIONS ) {
     if( actions & ~oldActions & ACTION_INV_USE ) {
-      Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
-      Object*  source = orbis.objects[container];
+      Dynamic* item   = static_cast<Dynamic*>( orbis.obj( instrument ) );
+      Object*  source = orbis.obj( container );
 
       if( item != nullptr && source != nullptr &&
           source->items.contains( instrument ) && canReach( source ) )
@@ -945,8 +941,8 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ACTION_INV_TAKE ) {
-      Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
-      Object*  source = orbis.objects[container];
+      Dynamic* item   = static_cast<Dynamic*>( orbis.obj( instrument ) );
+      Object*  source = orbis.obj( container );
 
       if( item != nullptr && source != nullptr && items.length() != clazz->nItems &&
           source->items.contains( instrument ) && canReach( source ) )
@@ -967,8 +963,8 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ACTION_INV_GIVE ) {
-      Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
-      Object*  target = orbis.objects[container];
+      Dynamic* item   = static_cast<Dynamic*>( orbis.obj( instrument ) );
+      Object*  target = orbis.obj( container );
 
       if( item != nullptr && target != nullptr && target->items.length() != target->clazz->nItems &&
           items.contains( instrument ) && canReach( target ) )
@@ -989,7 +985,7 @@ void Bot::onUpdate()
         int strIndex = instrument / Struct::MAX_ENTITIES;
         int entIndex = instrument % Struct::MAX_ENTITIES;
 
-        Struct* str = orbis.structs[strIndex];
+        Struct* str = orbis.str( strIndex );
 
         if( str != nullptr ) {
           Entity* ent = &str->entities[entIndex];
@@ -1005,14 +1001,14 @@ void Bot::onUpdate()
         }
       }
       else if( actions & ~oldActions & ACTION_USE ) {
-        Dynamic* obj = static_cast<Dynamic*>( orbis.objects[instrument] );
+        Dynamic* obj = static_cast<Dynamic*>( orbis.obj( instrument ) );
 
         if( obj != nullptr && canReach( obj ) ) {
           synapse.use( this, obj );
         }
       }
       else if( actions & ~oldActions & ACTION_TAKE ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
+        Dynamic* item = static_cast<Dynamic*>( orbis.obj( instrument ) );
 
         if( item != nullptr && items.length() != clazz->nItems && canReach( item ) ) {
           hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
@@ -1062,7 +1058,7 @@ void Bot::onUpdate()
           releaseCargo();
         }
         else {
-          Dynamic*   dyn      = static_cast<Dynamic*>( orbis.objects[instrument] );
+          Dynamic*   dyn      = static_cast<Dynamic*>( orbis.obj( instrument ) );
           const Bot* dynBot   = static_cast<const Bot*>( dyn );
 
           if( dyn != nullptr && abs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
@@ -1084,7 +1080,7 @@ void Bot::onUpdate()
         }
       }
       else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
+        Dynamic* item = static_cast<Dynamic*>( orbis.obj( instrument ) );
 
         if( item != nullptr && cargo < 0 && items.contains( instrument ) ) {
           hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );

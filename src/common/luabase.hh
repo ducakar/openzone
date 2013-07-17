@@ -117,10 +117,10 @@
  * indices.
  */
 #define STR_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.structs.length() ) ) { \
+  if( uint( index ) >= uint( orbis.nStructs() ) ) { \
     ERROR( "Invalid structure index (out of range)" ); \
   } \
-  Struct* str = orbis.structs[index]; \
+  Struct* str = orbis.str( index ); \
   if( str == nullptr ) { \
     ERROR( "Invalid structures index (null)" ); \
   }
@@ -180,10 +180,10 @@
  * indices.
  */
 #define OBJ_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.objects.length() ) ) { \
+  if( uint( index ) >= uint( orbis.nObjects() ) ) { \
     ERROR( "Invalid object index (out of range)" ); \
   } \
-  Object* obj = orbis.objects[index]; \
+  Object* obj = orbis.obj( index ); \
   if( obj == nullptr ) { \
     ERROR( "Invalid object index (null)" ); \
   }
@@ -194,10 +194,10 @@
  * or objects that are not items.
  */
 #define ITEM_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.objects.length() ) ) { \
+  if( uint( index ) >= uint( orbis.nObjects() ) ) { \
     ERROR( "Invalid item index (out of range)" ); \
   } \
-  Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] ); \
+  Dynamic* item = static_cast<Dynamic*>( orbis.obj( index ) ); \
   if( item == nullptr ) { \
     ERROR( "Invalid item index (null)" ); \
   } \
@@ -211,10 +211,10 @@
  * or objects that are not bots.
  */
 #define BOT_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.objects.length() ) ) { \
+  if( uint( index ) >= uint( orbis.nObjects() ) ) { \
     ERROR( "Invalid bot index (out of range)" ); \
   } \
-  Bot* bot = static_cast<Bot*>( orbis.objects[index] ); \
+  Bot* bot = static_cast<Bot*>( orbis.obj( index ) ); \
   if( bot == nullptr ) { \
     ERROR( "Invalid bot index (null)" ); \
   } \

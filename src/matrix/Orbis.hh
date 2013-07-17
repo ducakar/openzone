@@ -63,12 +63,13 @@ class Orbis : public Bounds
 
     Caelum                      caelum;
     Terra                       terra;
-    SList<Struct*, MAX_STRUCTS> structs;
-    SList<Object*, MAX_OBJECTS> objects;
-    SList<Frag*,   MAX_FRAGS>   frags;
     Cell                        cells[CELLS][CELLS];
 
   private:
+
+    SList<Struct*, MAX_STRUCTS> structs;
+    SList<Object*, MAX_OBJECTS> objects;
+    SList<Frag*,   MAX_FRAGS>   frags;
 
     /*
      * Index reusing: when an entity is removed, there may still be references to it (from other
@@ -122,6 +123,24 @@ class Orbis : public Bounds
 
     void reposition( Object* obj );
     void reposition( Frag* frag );
+
+    OZ_ALWAYS_INLINE
+    int nStructs() const
+    {
+      return structs.length() - 1;
+    }
+
+    OZ_ALWAYS_INLINE
+    int nObjects() const
+    {
+      return objects.length() - 1;
+    }
+
+    OZ_ALWAYS_INLINE
+    int nFrags() const
+    {
+      return frags.length() - 1;
+    }
 
     /**
      * Return structure at a given index, nullptr if index is -1.
@@ -189,15 +208,6 @@ class Orbis : public Bounds
     // get indices of min and max cells which the bounds intersects
     Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
-    Cell* getCell1( float x, float y );
-    Cell* getCell1( const Point& p );
-    Span getInters1( float x, float y, float epsilon = 0.0f ) const;
-    Span getInters1( const Point& p, float epsilon = 0.0f ) const;
-    Span getInters1( float minPosX, float minPosY, float maxPosX, float maxPosY,
-                     float epsilon = 0.0f ) const;
-    Span getInters1( const AABB& bb, float epsilon = 0.0f ) const;
-    Span getInters1( const Bounds& bounds, float epsilon = 0.0f ) const;
-
     void update();
 
     void read( InputStream* istream );
@@ -219,17 +229,17 @@ extern Orbis orbis;
 OZ_ALWAYS_INLINE
 inline Struct* Orbis::str( int index ) const
 {
-  return index == -1 ? nullptr : structs[index];
+  return structs[1 + index];
 }
 
 OZ_ALWAYS_INLINE
 inline Entity* Orbis::ent( int index ) const
 {
-  if( index == -1 ) {
+  if( index < 0 ) {
     return nullptr;
   }
 
-  Struct* str = structs[index / Struct::MAX_ENTITIES];
+  Struct* str = structs[1 + index / Struct::MAX_ENTITIES];
   if( str == nullptr ) {
     return nullptr;
   }
@@ -241,42 +251,42 @@ inline Entity* Orbis::ent( int index ) const
 OZ_ALWAYS_INLINE
 inline Object* Orbis::obj( int index ) const
 {
-  return index == -1 ? nullptr : objects[index];
+  return objects[1 + index];
 }
 
 OZ_ALWAYS_INLINE
 inline Frag* Orbis::frag( int index ) const
 {
-  return index == -1 ? nullptr : frags[index];
+  return frags[1 + index];
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::strIndex( int index ) const
 {
-  return index >= 0 && structs[index] == nullptr ? -1 : index;
+  return structs[1 + index] == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::entIndex( int index ) const
 {
-  if( index == -1 ) {
+  if( index < 0 ) {
     return -1;
   }
 
-  Struct* str = structs[index / Struct::MAX_ENTITIES];
+  Struct* str = structs[1 + index / Struct::MAX_ENTITIES];
   return str == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::objIndex( int index ) const
 {
-  return index >= 0 && objects[index] == nullptr ? -1 : index;
+  return objects[1 + index] == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::fragIndex( int index ) const
 {
-  return index >= 0 && frags[index] == nullptr ? -1 : index;
+  return frags[1 + index] == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
@@ -338,64 +348,6 @@ OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
 {
   return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
-}
-
-OZ_ALWAYS_INLINE
-inline Cell* Orbis::getCell1( float x, float y )
-{
-  int ix = int( ( x + 3.0f*Orbis::DIM ) / Cell::SIZE ) % Orbis::CELLS;
-  int iy = int( ( y + 3.0f*Orbis::DIM ) / Cell::SIZE ) % Orbis::CELLS;
-
-  return &cells[ix][iy];
-}
-
-OZ_ALWAYS_INLINE
-inline Cell* Orbis::getCell1( const Point& p )
-{
-  return getCell1( p.x, p.y );
-}
-
-OZ_ALWAYS_INLINE
-inline Span Orbis::getInters1( float x, float y, float epsilon ) const
-{
-  return {
-    int( ( x - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
-    int( ( y - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
-    int( ( x + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
-    int( ( y + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS
-  };
-}
-
-OZ_ALWAYS_INLINE
-inline Span Orbis::getInters1( const Point& p, float epsilon ) const
-{
-  return getInters1( p.x, p.y, epsilon );
-}
-
-OZ_ALWAYS_INLINE
-inline Span Orbis::getInters1( float minPosX, float minPosY,
-                               float maxPosX, float maxPosY, float epsilon ) const
-{
-  return {
-    int( ( minPosX - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
-    int( ( minPosY - epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
-    int( ( maxPosX + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS,
-    int( ( maxPosY + epsilon + 3.0f*Orbis::DIM ) / Cell::SIZE ) - Orbis::CELLS
-  };
-}
-
-OZ_ALWAYS_INLINE
-inline Span Orbis::getInters1( const AABB& bb, float epsilon ) const
-{
-  return getInters1( bb.p.x - bb.dim.x, bb.p.y - bb.dim.y,
-                     bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
-                     epsilon );
-}
-
-OZ_ALWAYS_INLINE
-inline Span Orbis::getInters1( const Bounds& bounds, float epsilon ) const
-{
-  return getInters1( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
 }
 
 }

@@ -253,7 +253,7 @@ void StrategicArea::onReposition()
 void StrategicArea::onUpdate()
 {
   for( int i = 0; i < taggedStrs.length(); ) {
-    const Struct* str = orbis.structs[ taggedStrs[i] ];
+    const Struct* str = orbis.str( taggedStrs[i] );
 
     if( str == nullptr ) {
       taggedStrs.eraseUnordered( i );
@@ -264,7 +264,7 @@ void StrategicArea::onUpdate()
   }
 
   for( int i = 0; i < taggedObjs.length(); ) {
-    const Object* obj = orbis.objects[ taggedObjs[i] ];
+    const Object* obj = orbis.obj( taggedObjs[i] );
 
     if( obj == nullptr || obj->cell == nullptr ) {
       taggedObjs.eraseUnordered( i );
@@ -332,10 +332,9 @@ bool StrategicArea::onMouseEvent()
 
 void StrategicArea::onDraw()
 {
-  const Struct* str = hoverStr < 0 ? nullptr : orbis.structs[hoverStr];
-  const Entity* ent = hoverEnt < 0 ? nullptr : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
-                      entities[hoverEnt % Struct::MAX_ENTITIES];
-  const Object* obj = hoverObj < 0 ? nullptr : orbis.objects[hoverObj];
+  const Struct* str = orbis.str( hoverStr );
+  const Entity* ent = orbis.ent( hoverEnt );
+  const Object* obj = orbis.obj( hoverObj );
 
   Span span;
 
@@ -363,7 +362,7 @@ void StrategicArea::onDraw()
   }
 
   for( int i = 0; i < taggedStrs.length(); ++i ) {
-    const Struct* str = orbis.structs[ taggedStrs[i] ];
+    const Struct* str = orbis.str( taggedStrs[i] );
 
     if( str != nullptr ) {
       if( ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
@@ -375,7 +374,7 @@ void StrategicArea::onDraw()
   }
 
   for( int i = 0; i < taggedObjs.length(); ++i ) {
-    const Object* obj = orbis.objects[ taggedObjs[i] ];
+    const Object* obj = orbis.obj( taggedObjs[i] );
 
     if( obj != nullptr ) {
       if( ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {

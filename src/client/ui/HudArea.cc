@@ -220,9 +220,9 @@ void HudArea::drawBotStatus()
   drawBar( &style.botHealth, life );
   drawBar( &style.botStamina, stamina );
 
-  if( bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
-    const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+  const Weapon* weaponObj = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
 
+  if( weaponObj != nullptr ) {
     Pair<int> pos = align( style.botWeapon.x, style.botWeapon.y,
                            style.botWeapon.w, style.botWeapon.h );
 
@@ -254,13 +254,13 @@ void HudArea::drawBotStatus()
 
 void HudArea::drawVehicleStatus()
 {
-  if( camera.botObj->parent < 0 || orbis.objects[camera.botObj->parent] == nullptr ) {
+  if( orbis.obj( camera.botObj->parent ) == nullptr ) {
     vehicleModel->setModel( -1 );
     return;
   }
 
   const Bot*          bot      = camera.botObj;
-  const Vehicle*      vehicle  = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
+  const Vehicle*      vehicle  = static_cast<const Vehicle*>( orbis.obj( bot->parent ) );
   const VehicleClass* vehClazz = static_cast<const VehicleClass*>( vehicle->clazz );
 
   // HACK close gap between vehicle model and weapons.
@@ -360,7 +360,7 @@ void HudArea::onUpdate()
   if( camera.state != Camera::UNIT || camera.bot < 0 ) {
     lastWeaponId = -1;
   }
-  else if( bot->parent < 0 || orbis.objects[bot->parent] == nullptr ) {
+  else if( orbis.obj( bot->parent ) == nullptr ) {
     lastVehicleId = -1;
   }
 }

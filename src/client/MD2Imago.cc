@@ -85,7 +85,7 @@ void MD2Imago::draw( const Imago* parent )
   else if( bot->index == camera.bot && !camera.isExternal ) {
     h = bot->h;
 
-    if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
+    if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
       tf.model = Mat44::translation( obj->p - Point::ORIGIN );
       tf.model.rotateZ( bot->h );
 
@@ -95,7 +95,7 @@ void MD2Imago::draw( const Imago* parent )
 
       glDepthFunc( GL_ALWAYS );
 
-      context.drawImago( orbis.objects[bot->weapon], this );
+      context.drawImago( orbis.obj( bot->weapon ), this );
 
       glDepthFunc( GL_LEQUAL );
     }
@@ -114,8 +114,8 @@ void MD2Imago::draw( const Imago* parent )
 
     md2->scheduleAnim( &anim );
 
-    if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
-      context.drawImago( orbis.objects[bot->weapon], this );
+    if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
+      context.drawImago( orbis.obj( bot->weapon ), this );
     }
   }
 

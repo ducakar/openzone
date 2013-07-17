@@ -97,7 +97,7 @@ void Render::scheduleCell( int cellX, int cellY )
     if( !drawnStructs.get( cell.structs[i] ) ) {
       drawnStructs.set( cell.structs[i] );
 
-      Struct* str    = orbis.structs[ cell.structs[i] ];
+      Struct* str    = orbis.str( cell.structs[i] );
       float   radius = str->dim().fastN();
 
       if( frustum.isVisible( str->p, radius ) ) {
@@ -192,9 +192,9 @@ void Render::prepareDraw()
   caelum.update();
 
   // drawnStructs
-  if( drawnStructs.length() < orbis.structs.length() ) {
+  if( drawnStructs.length() < orbis.nStructs() ) {
     drawnStructs.deallocate();
-    drawnStructs.allocate( orbis.structs.length() );
+    drawnStructs.allocate( orbis.nStructs() );
   }
   drawnStructs.clearAll();
 

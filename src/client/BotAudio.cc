@@ -72,7 +72,7 @@ void BotAudio::play( const Audio* parent )
 
   // inventory items' events
   for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* item = orbis.objects[ obj->items[i] ];
+    const Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( item, parent == nullptr ? this : parent );

@@ -130,7 +130,7 @@ void UnitProxy::prepare()
 
       currUnit = ( currUnit + 1 ) % nSwitchableunits;
 
-      Bot* unit = static_cast<Bot*>( orbis.objects[ camera.switchableUnits[currUnit] ] );
+      Bot* unit = static_cast<Bot*>( orbis.obj( camera.switchableUnits[currUnit] ) );
 
       if( unit->state & Bot::DEAD_BIT ) {
         botEye    = unit->p;
@@ -529,7 +529,7 @@ void UnitProxy::update()
     camera.setTaggedObj( nullptr );
   }
   else if( bot->cargo >= 0 ) {
-    camera.setTaggedObj( orbis.objects[bot->cargo] );
+    camera.setTaggedObj( orbis.obj( bot->cargo ) );
   }
   else {
     // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }

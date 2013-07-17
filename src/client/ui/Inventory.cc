@@ -48,7 +48,7 @@ bool Inventory::ownerItemCallback( ModelField* sender )
   hard_assert( bot != nullptr );
 
   if( uint( id ) < uint( container->items.length() ) ) {
-    item = static_cast<const Dynamic*>( orbis.objects[ container->items[id] ] );
+    item = static_cast<const Dynamic*>( orbis.obj( container->items[id] ) );
   }
   if( item == nullptr ) {
     return false;
@@ -92,7 +92,7 @@ bool Inventory::otherItemCallback( ModelField* sender )
   hard_assert( bot != nullptr );
 
   if( uint( id ) < uint( container->items.length() ) ) {
-    item = static_cast<const Dynamic*>( orbis.objects[ container->items[id] ] );
+    item = static_cast<const Dynamic*>( orbis.obj( container->items[id] ) );
   }
   if( item == nullptr ) {
     return false;
@@ -118,7 +118,7 @@ void Inventory::updateReferences()
   other = nullptr;
 
   if( camera.botObj != nullptr && camera.botObj->parent >= 0 ) {
-    other = orbis.objects[camera.botObj->parent];
+    other = orbis.obj( camera.botObj->parent );
   }
   else if( camera.objectObj != nullptr && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
     other = camera.objectObj;
@@ -285,7 +285,7 @@ void Inventory::onDraw()
     int id = scrollOwner * COLS + i;
 
     if( id < owner->items.length() ) {
-      const Object* item = orbis.objects[ owner->items[id] ];
+      const Object* item = orbis.obj( owner->items[id] );
 
       ownerModels[i]->show( true );
       ownerModels[i]->setModel( item == nullptr ? -1 : item->clazz->imagoModel );
@@ -300,7 +300,7 @@ void Inventory::onDraw()
     int id = scrollOther * COLS + i;
 
     if( other != nullptr && id < other->items.length() ) {
-      const Object* item = orbis.objects[ other->items[id] ];
+      const Object* item = orbis.obj( other->items[id] );
 
       otherModels[i]->show( true );
       otherModels[i]->setModel( item == nullptr ? -1 : item->clazz->imagoModel );

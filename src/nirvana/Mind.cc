@@ -50,10 +50,9 @@ Mind::~Mind()
 
 void Mind::update()
 {
-  hard_assert( orbis.objects[bot] != nullptr );
-  hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
+  hard_assert( orbis.obj( bot ) != nullptr && ( orbis.obj( bot )->flags & Object::BOT_BIT ) );
 
-  Bot* botObj = static_cast<Bot*>( orbis.objects[bot] );
+  Bot* botObj = static_cast<Bot*>( orbis.obj( bot ) );
 
   if( !botObj->mindFunc.isEmpty() && !( botObj->state & Bot::DEAD_BIT ) ) {
     flags &= ~FORCE_UPDATE_BIT;
