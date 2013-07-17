@@ -112,7 +112,9 @@ void Label::vset( int x, int y, const char* s, va_list ap )
     clear();
   }
   else {
-    glGenTextures( 1, &texId );
+    if( texId == 0 ) {
+      glGenTextures( 1, &texId );
+    }
 
     glBindTexture( GL_TEXTURE_2D, texId );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );

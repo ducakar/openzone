@@ -34,7 +34,7 @@ namespace client
 namespace ui
 {
 
-void MusicPlayer::prevTrack( Button* sender )
+bool MusicPlayer::prevTrack( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
   int nTracks = liber.musicTracks.length();
@@ -48,9 +48,10 @@ void MusicPlayer::prevTrack( Button* sender )
     musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
+  return true;
 }
 
-void MusicPlayer::nextTrack( Button* sender )
+bool MusicPlayer::nextTrack( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
   int nTracks = liber.musicTracks.length();
@@ -64,9 +65,10 @@ void MusicPlayer::nextTrack( Button* sender )
     musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
+  return true;
 }
 
-void MusicPlayer::playTrack( Button* sender )
+bool MusicPlayer::playTrack( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
   int nTracks = liber.musicTracks.length();
@@ -78,9 +80,10 @@ void MusicPlayer::playTrack( Button* sender )
     musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
+  return true;
 }
 
-void MusicPlayer::stopTrack( Button* sender )
+bool MusicPlayer::stopTrack( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
@@ -88,9 +91,10 @@ void MusicPlayer::stopTrack( Button* sender )
 
   musicPlayer->title.setText( " " );
   musicPlayer->isPlaying = false;
+  return true;
 }
 
-void MusicPlayer::volumeDown( Button* sender )
+bool MusicPlayer::volumeDown( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
@@ -98,9 +102,10 @@ void MusicPlayer::volumeDown( Button* sender )
   musicPlayer->volumeLabel.setText( "%d", musicPlayer->volume );
 
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
+  return true;
 }
 
-void MusicPlayer::volumeUp( Button* sender )
+bool MusicPlayer::volumeUp( Button* sender )
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
@@ -108,6 +113,7 @@ void MusicPlayer::volumeUp( Button* sender )
   musicPlayer->volumeLabel.setText( "%d", musicPlayer->volume );
 
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
+  return true;
 }
 
 void MusicPlayer::onUpdate()

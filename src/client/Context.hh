@@ -39,7 +39,6 @@ namespace client
 
 class SMM;
 class MD2;
-class MD3;
 
 class Context
 {
@@ -136,7 +135,6 @@ class Context
     int                         maxExplosionImagines;
     int                         maxMD2Imagines;
     int                         maxMD2WeaponImagines;
-    int                         maxMD3Imagines;
 
     int                         maxBasicAudios;
     int                         maxBotAudios;
@@ -187,9 +185,7 @@ class Context
     void drawBSP( const Struct* str );
     void playBSP( const Struct* str );
 
-    SMM* requestSMM( int id );
-    MD2* requestMD2( int id );
-    MD3* requestMD3( int id );
+    SMM* requestModel( int id );
     void releaseModel( int id );
 
     void drawImago( const Object* obj, const Imago* parent );

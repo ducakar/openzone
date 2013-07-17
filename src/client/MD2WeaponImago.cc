@@ -45,7 +45,7 @@ Imago* MD2WeaponImago::create( const Object* obj )
 
   MD2WeaponImago* imago = new MD2WeaponImago( obj );
 
-  imago->md2 = context.requestMD2( obj->clazz->imagoModel );
+  imago->md2 = static_cast<MD2*>( context.requestModel( obj->clazz->imagoModel ) );
 
   return imago;
 }
@@ -57,17 +57,11 @@ void MD2WeaponImago::draw( const Imago* parent )
   }
 
   if( parent == nullptr ) {
-    if( shader.mode == Shader::SCENE ) {
-      tf.model = Mat44::translation( obj->p - Point::ORIGIN );
-      tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
-    }
-
-    tf.push();
+    tf.model = Mat44::translation( obj->p - Point::ORIGIN );
+    tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
     tf.model = tf.model * md2->weaponTransf;
 
     md2->scheduleFrame( 0 );
-
-    tf.pop();
   }
   else if( parent->flags & Imago::MD2MODEL_BIT ) {
     const MD2Imago* parentImago = static_cast<const MD2Imago*>( parent );

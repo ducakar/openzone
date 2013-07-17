@@ -44,12 +44,12 @@ class MusicPlayer : public Frame
     int   volume;
     bool  isPlaying;
 
-    static void prevTrack( Button* sender );
-    static void nextTrack( Button* sender );
-    static void playTrack( Button* sender );
-    static void stopTrack( Button* sender );
-    static void volumeDown( Button* sender );
-    static void volumeUp( Button* sender );
+    static bool prevTrack( Button* sender );
+    static bool nextTrack( Button* sender );
+    static bool playTrack( Button* sender );
+    static bool stopTrack( Button* sender );
+    static bool volumeDown( Button* sender );
+    static bool volumeUp( Button* sender );
 
   protected:
 

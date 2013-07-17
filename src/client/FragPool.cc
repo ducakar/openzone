@@ -40,7 +40,7 @@ FragPool::FragPool( const oz::FragPool* pool_ ) :
   models.allocate( pool->models.length() );
 
   for( int i = 0; i < pool->models.length(); ++i ) {
-    models.add( context.requestSMM( pool->models[i] ) );
+    models.add( context.requestModel( pool->models[i] ) );
   }
 }
 

@@ -37,7 +37,7 @@ namespace client
 namespace ui
 {
 
-const float ModelField::DEFAULT_ROTATION   = -Math::TAU / 8.0f;
+const float ModelField::DEFAULT_ROTATION   = 3.0f * Math::TAU / 8.0f;
 const float ModelField::ROTATION_VEL       = 1.30f * Timer::TICK_TIME;
 const float ModelField::ROTATION_SMOOTHING = 0.75f;
 
@@ -52,13 +52,13 @@ void ModelField::onVisibilityChange( bool )
 bool ModelField::onMouseEvent()
 {
   if( !input.keys[Input::KEY_UI_ALT] ) {
-    nextRot       = angleWrap( nextRot + ROTATION_VEL );
-    isHighlighted = true;
+    if( callback != nullptr ) {
+      nextRot       = angleWrap( nextRot + ROTATION_VEL );
+      isHighlighted = true;
 
-    if( input.leftClick && callback != nullptr ) {
-      isClicked = true;
-
-      callback( this );
+      if( clickMask == -1 || ( input.buttons & clickMask ) ) {
+        isClicked = callback( this );
+      }
     }
   }
   return true;
@@ -66,17 +66,19 @@ bool ModelField::onMouseEvent()
 
 void ModelField::onDraw()
 {
-  if( isClicked ) {
-    shape.colour( style.colours.buttonClicked );
-  }
-  else if( isHighlighted ) {
-    shape.colour( style.colours.buttonHover );
-  }
-  else {
-    shape.colour( style.colours.button );
-  }
+  if( callback != nullptr ) {
+    if( isClicked ) {
+      shape.colour( style.colours.buttonClicked );
+    }
+    else if( isHighlighted ) {
+      shape.colour( style.colours.buttonHover );
+    }
+    else {
+      shape.colour( style.colours.button );
+    }
 
-  shape.fill( x, y, width, height );
+    shape.fill( x, y, width, height );
+  }
 
   if( bsp != nullptr || model >= 0 ) {
     BSP*  bspModel = nullptr;
@@ -88,7 +90,7 @@ void ModelField::onDraw()
       dim      = bspModel->dim().fastN();
     }
     else {
-      smmModel = context.requestSMM( model );
+      smmModel = context.requestModel( model );
       dim      = smmModel->dim().fastN();
     }
 
@@ -98,7 +100,7 @@ void ModelField::onDraw()
 
     tf.model = Mat44::translation( Vec3( float( x + width / 2 ), float( y + height / 2 ), 0.0f ) );
     tf.model.scale( Vec3( scale, scale, scale ) );
-    tf.model.rotateX( -Math::TAU / 8.0f );
+    tf.model.rotateX( -Math::TAU / 7.0f );
     tf.model.rotateZ( currRot );
 
     if( bsp != nullptr ) {
@@ -131,9 +133,9 @@ void ModelField::onDraw()
 }
 
 ModelField::ModelField( Callback* callback_, int width, int height ) :
-  Area( width, height ), callback( callback_ ), bsp( nullptr ),
+  Area( width, height ), callback( callback_ ), bsp( nullptr ), model( -1 ),
   defaultRot( DEFAULT_ROTATION ), currRot( DEFAULT_ROTATION ), nextRot( DEFAULT_ROTATION ),
-  isHighlighted( false ), isClicked( false )
+  clickMask( Input::LEFT_BUTTON ), isHighlighted( false ), isClicked( false ), id( -1 )
 {}
 
 void ModelField::setDefaultRotation( float defaultRotation )

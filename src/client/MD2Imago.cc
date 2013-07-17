@@ -48,7 +48,7 @@ Imago* MD2Imago::create( const Object* obj )
   MD2Imago*  imago = new MD2Imago( obj );
 
   imago->flags = Imago::MD2MODEL_BIT;
-  imago->md2   = context.requestMD2( obj->clazz->imagoModel );
+  imago->md2   = static_cast<MD2*>( context.requestModel( obj->clazz->imagoModel ) );
   imago->h     = bot->h;
 
   return imago;

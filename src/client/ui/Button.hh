@@ -37,12 +37,14 @@ class Button : public Area
 {
   public:
 
-    typedef void Callback( Button* sender );
+    typedef bool Callback( Button* sender );
 
   private:
 
     Label     label;
     Callback* callback;
+
+    int       clickMask;
     bool      isHighlighted;
     bool      isClicked;
 
@@ -58,6 +60,12 @@ class Button : public Area
 
     void setLabel( const char* text );
     void setCallback( Callback* callback );
+
+    // Bitmask for input.buttons or -1 for calling callback on all events (including mouse move).
+    void setClickMask( int mask )
+    {
+      clickMask = mask;
+    }
 
 };
 

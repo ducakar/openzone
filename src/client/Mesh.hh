@@ -90,11 +90,6 @@ class Mesh
       explicit Instance() = default;
 
       OZ_ALWAYS_INLINE
-      explicit Instance( const Mat44& transform_, float alpha_, int component_ ) :
-        transform( transform_ ), alpha( alpha_ ), component( component_ )
-      {}
-
-      OZ_ALWAYS_INLINE
       explicit Instance( const Mat44& transform_, float alpha_, int component_,
                          int firstFrame_, int secondFrame_, float interpolation_ ) :
         transform( transform_ ), alpha( alpha_ ), component( component_ ),
@@ -166,7 +161,7 @@ class Mesh
 
     void schedule( int component )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component ) );
+      instances.add( Instance( tf.model, tf.colour.w.w, component, 0, 0, 0.0f ) );
     }
 
     void scheduleFrame( int component, int frame )

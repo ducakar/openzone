@@ -28,7 +28,6 @@
 #include <client/ExplosionImago.hh>
 #include <client/MD2Imago.hh>
 #include <client/MD2WeaponImago.hh>
-#include <client/MD3Imago.hh>
 #include <client/BasicAudio.hh>
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>

@@ -106,9 +106,13 @@ class MD2 : public SMM
 
     Mat44 weaponTransf;
 
-  public:
+  private:
 
     explicit MD2( int id );
+
+  public:
+
+    static SMM* create( int id );
 
     void scheduleFrame( int frame )
     {

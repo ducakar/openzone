@@ -254,33 +254,21 @@ void HudArea::drawBotStatus()
 
 void HudArea::drawVehicleStatus()
 {
+  if( camera.botObj->parent < 0 || orbis.objects[camera.botObj->parent] == nullptr ) {
+    vehicleModel->setModel( -1 );
+    return;
+  }
+
   const Bot*          bot      = camera.botObj;
   const Vehicle*      vehicle  = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
   const VehicleClass* vehClazz = static_cast<const VehicleClass*>( vehicle->clazz );
 
-  float size = vehicle->dim.fastN();
-  float scale = VEHICLE_DIM / size;
-  int x = camera.width - 208 + VEHICLE_SIZE / 2;
-  int y = 52 + vehClazz->nWeapons * ( style.fonts[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
+  // HACK close gap between vehicle model and weapons.
+  int modelBiasY = ( 4 - vehClazz->nWeapons ) * ( style.vehicleWeapon[0].h + 4 );
 
-  tf.model = Mat44::translation( Vec3( float( x ), float( y ), 0.0f ) );
-  tf.model.scale( Vec3( scale, scale, scale ) );
-  tf.model.rotateX( Math::rad( -45.0f ) );
-  tf.model.rotateZ( Math::rad( +160.0f ) );
-
-  context.drawImago( vehicle, nullptr );
-
-  shape.unbind();
-
-  glEnable( GL_DEPTH_TEST );
-
-  Mesh::drawScheduled( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
-  Mesh::clearScheduled();
-
-  glDisable( GL_DEPTH_TEST );
-
-  shape.bind();
-  shader.program( shader.plain );
+  vehicleModel->setModel( vehClazz->imagoModel );
+  vehicleModel->reposition();
+  vehicleModel->y -= modelBiasY;
 
   float fuel = max( vehicle->fuel / vehClazz->fuel, 0.0f );
   float hull = max( vehicle->life / vehClazz->life, 0.0f );
@@ -385,12 +373,7 @@ void HudArea::onDraw()
 
   drawBotCrosshair();
   drawBotStatus();
-
-  int parent = camera.botObj->parent;
-  if( parent >= 0 && orbis.objects[parent] != nullptr ) {
-    drawVehicleStatus();
-  }
-
+  drawVehicleStatus();
   drawChildren();
 }
 
@@ -399,6 +382,7 @@ HudArea::HudArea() :
   title( 0, 0, ALIGN_CENTRE, Font::LARGE, " " ),
   weaponName( 0, 0, ALIGN_LEFT, Font::LARGE, " " ),
   weaponRounds( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" ),
+  vehicleModel( nullptr ),
   lastObjectId( -1 ),
   lastEntityId( -1 ),
   lastWeaponId( -1 ),
@@ -412,6 +396,9 @@ HudArea::HudArea() :
     vehicleWeaponNames[i]      = Label( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
     vehicleWeaponRounds[i]     = Label( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
+
+  vehicleModel = new ModelField( nullptr, style.vehicleField.w, style.vehicleField.h );
+  add( vehicleModel, style.vehicleField.x, style.vehicleField.y );
 
   crossTex.load( "@ui/icon/crosshair.dds" );
   useTex.load( "@ui/icon/use.dds" );

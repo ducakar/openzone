@@ -43,7 +43,7 @@ BuildButton::BuildButton( const char* className_, Callback* callback, int width,
 BuildButton::~BuildButton()
 {}
 
-void BuildMenu::createObject( Button* button_ )
+bool BuildMenu::createObject( Button* button_ )
 {
   const BuildButton* button = static_cast<const BuildButton*>( button_ );
   const ObjectClass* clazz = liber.objClass( button->className );
@@ -54,6 +54,7 @@ void BuildMenu::createObject( Button* button_ )
   if( !collider.overlaps( bb ) ) {
     synapse.addObject( button->className, p, NORTH, false );
   }
+  return true;
 }
 
 BuildMenu::BuildMenu() :

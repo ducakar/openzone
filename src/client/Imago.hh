@@ -40,7 +40,6 @@ class Imago
 
     static const int UPDATED_BIT  = 0x00000001;
     static const int MD2MODEL_BIT = 0x00000002;
-    static const int MD3MODEL_BIT = 0x00000004;
 
   protected:
 

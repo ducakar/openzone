@@ -48,42 +48,47 @@ namespace client
 namespace ui
 {
 
-static void loadAutosaved( Button* )
+static bool loadAutosaved( Button* )
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = gameStage.autosaveFile;
   gameStage.mission = "";
+  return true;
 }
 
-static void loadQuicksaved( Button* )
+static bool loadQuicksaved( Button* )
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = gameStage.quicksaveFile;
   gameStage.mission = "";
+  return true;
 }
 
-static void openMissions( Button* sender )
+static bool openMissions( Button* sender )
 {
   MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
   mainMenu->add( new MissionMenu(), 0, 0 );
+  return true;
 }
 
-static void openSettings( Button* sender )
+static bool openSettings( Button* sender )
 {
   MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
   mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
+  return true;
 }
 
-static void openCredits( Button* sender )
+static bool openCredits( Button* sender )
 {
   MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
   mainMenu->add( new CreditsMenu(), 0, 0 );
+  return true;
 }
 
-static void openWeb( Button* )
+static bool openWeb( Button* )
 {
 #if defined( __ANDROID__ )
 #elif defined( __native_client__ )
@@ -99,11 +104,13 @@ static void openWeb( Button* )
 #endif
 
   Window::minimise();
+  return true;
 }
 
-static void quit( Button* )
+static bool quit( Button* )
 {
   menuStage.doExit = true;
+  return true;
 }
 
 void MainMenu::onReposition()

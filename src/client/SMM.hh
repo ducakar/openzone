@@ -36,14 +36,20 @@ namespace client
 
 class SMM
 {
+  public:
+
+    typedef SMM* CreateFunc( int id );
+
   protected:
 
     int  id;
     Mesh mesh;
 
+    explicit SMM( int id );
+
   public:
 
-    explicit SMM( int id );
+    static SMM* create( int id );
     virtual ~SMM();
 
     Vec3 dim() const

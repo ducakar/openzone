@@ -293,13 +293,15 @@ void Compiler::vertex( float x, float y, float z )
   hard_assert( flags & MESH_BIT );
   hard_assert( nFrames == 0 || ( y == 0.0f && z == 0.0f ) );
 
-  bounds.mins.x = min( bounds.mins.x, x );
-  bounds.mins.y = min( bounds.mins.y, y );
-  bounds.mins.z = min( bounds.mins.z, z );
+  if( nFrames == 0 ) {
+    bounds.mins.x = min( bounds.mins.x, x );
+    bounds.mins.y = min( bounds.mins.y, y );
+    bounds.mins.z = min( bounds.mins.z, z );
 
-  bounds.maxs.x = max( bounds.maxs.x, x );
-  bounds.maxs.y = max( bounds.maxs.y, y );
-  bounds.maxs.z = max( bounds.maxs.z, z );
+    bounds.maxs.x = max( bounds.maxs.x, x );
+    bounds.maxs.y = max( bounds.maxs.y, y );
+    bounds.maxs.z = max( bounds.maxs.z, z );
+  }
 
   vert.pos.x = x;
   vert.pos.y = y;
@@ -361,6 +363,16 @@ void Compiler::animPositions( const float* positions_ )
     positions[i].x = *positions_++;
     positions[i].y = *positions_++;
     positions[i].z = *positions_++;
+
+    if( i < nFramePositions ) {
+      bounds.mins.x = min( bounds.mins.x, positions[i].x );
+      bounds.mins.y = min( bounds.mins.y, positions[i].y );
+      bounds.mins.z = min( bounds.mins.z, positions[i].z );
+
+      bounds.maxs.x = max( bounds.maxs.x, positions[i].x );
+      bounds.maxs.y = max( bounds.maxs.y, positions[i].y );
+      bounds.maxs.z = max( bounds.maxs.z, positions[i].z );
+    }
   }
 }
 

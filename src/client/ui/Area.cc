@@ -169,6 +169,12 @@ void Area::show( bool doShow )
     return;
   }
 
+  bool isVisible = !( flags & HIDDEN_BIT );
+
+  if( doShow == isVisible ) {
+    return;
+  }
+
   if( doShow ) {
     flags &= ~( IGNORE_BIT | HIDDEN_BIT );
   }

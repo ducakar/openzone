@@ -31,7 +31,6 @@
 #include <client/ExplosionImago.hh>
 #include <client/MD2Imago.hh>
 #include <client/MD2WeaponImago.hh>
-#include <client/MD3Imago.hh>
 
 #include <client/BasicAudio.hh>
 #include <client/BotAudio.hh>
@@ -483,43 +482,22 @@ void Context::playBSP( const Struct* str )
   resource.handle->play( str );
 }
 
-SMM* Context::requestSMM( int id )
+SMM* Context::requestModel( int id )
 {
   Resource<SMM*>& resource = smms[id];
 
   if( resource.nUsers < 0 ) {
-    resource.handle = new SMM( id );
+    if( liber.models[id].path.endsWith( "MD2" ) ) {
+      resource.handle = MD2::create( id );
+    }
+    else {
+      resource.handle = SMM::create( id );
+    }
     resource.nUsers = 1;
   }
 
   ++resource.nUsers;
   return resource.handle;
-}
-
-MD2* Context::requestMD2( int id )
-{
-  Resource<SMM*>& resource = smms[id];
-
-  if( resource.nUsers < 0 ) {
-    resource.handle = new MD2( id );
-    resource.nUsers = 1;
-  }
-
-  ++resource.nUsers;
-  return static_cast<MD2*>( resource.handle );
-}
-
-MD3* Context::requestMD3( int id )
-{
-  Resource<SMM*>& resource = smms[id];
-
-  if( resource.nUsers < 0 ) {
-    resource.handle = new MD3( id );
-    resource.nUsers = 1;
-  }
-
-  ++resource.nUsers;
-  return static_cast<MD3*>( resource.handle );
 }
 
 void Context::releaseModel( int id )
@@ -593,7 +571,6 @@ void Context::updateLoad()
   maxExplosionImagines  = max( maxExplosionImagines,  ExplosionImago::pool.length() );
   maxMD2Imagines        = max( maxMD2Imagines,        MD2Imago::pool.length() );
   maxMD2WeaponImagines  = max( maxMD2WeaponImagines,  MD2WeaponImago::pool.length() );
-  maxMD3Imagines        = max( maxMD3Imagines,        MD3Imago::pool.length() );
 
   maxBasicAudios        = max( maxBasicAudios,        BasicAudio::pool.length() );
   maxBotAudios          = max( maxBotAudios,          BotAudio::pool.length() );
@@ -621,7 +598,6 @@ void Context::load()
   maxExplosionImagines  = 0;
   maxMD2Imagines        = 0;
   maxMD2WeaponImagines  = 0;
-  maxMD3Imagines        = 0;
 
   maxBasicAudios        = 0;
   maxBotAudios          = 0;
@@ -650,7 +626,6 @@ void Context::unload()
   Log::println( "%6d  Explosion imagines",     maxExplosionImagines );
   Log::println( "%6d  MD2 imagines",           maxMD2Imagines );
   Log::println( "%6d  MD2Weapon imagines",     maxMD2WeaponImagines );
-  Log::println( "%6d  MD3 imagines",           maxMD3Imagines );
   Log::println( "%6d  Basic audios",           maxBasicAudios );
   Log::println( "%6d  Bot audios",             maxBotAudios );
   Log::println( "%6d  Vehicle audios",         maxVehicleAudios );
@@ -707,7 +682,6 @@ void Context::unload()
   ExplosionImago::pool.free();
   MD2Imago::pool.free();
   MD2WeaponImago::pool.free();
-  MD3Imago::pool.free();
 
   Mesh::deallocate();
 
@@ -760,7 +734,6 @@ void Context::init()
   OZ_REGISTER_IMAGOCLASS( Explosion );
   OZ_REGISTER_IMAGOCLASS( MD2 );
   OZ_REGISTER_IMAGOCLASS( MD2Weapon );
-//   OZ_REGISTER_IMAGOCLASS( MD3 );
 
   OZ_REGISTER_AUDIOCLASS( Basic );
   OZ_REGISTER_AUDIOCLASS( Bot );

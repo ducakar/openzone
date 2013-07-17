@@ -103,7 +103,14 @@ class Area
     explicit Area( int width, int height );
     virtual ~Area();
 
+    /**
+     * Fix position if parent has been resized.
+     */
     void reposition();
+
+    /**
+     * Move for `moveX` to the right and for `moveY` up.
+     */
     void move( int moveX, int moveY );
 
     void show( bool doShow );

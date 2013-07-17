@@ -26,7 +26,6 @@
 #include <matrix/Collider.hh>
 #include <matrix/Liber.hh>
 #include <client/Camera.hh>
-#include <client/ui/ModelField.hh>
 #include <client/ui/Style.hh>
 
 namespace oz

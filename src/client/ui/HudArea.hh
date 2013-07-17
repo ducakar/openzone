@@ -24,8 +24,8 @@
 #pragma once
 
 #include <matrix/Vehicle.hh>
-#include <client/ui/Area.hh>
 #include <client/ui/Label.hh>
+#include <client/ui/ModelField.hh>
 #include <client/ui/Style.hh>
 
 namespace oz
@@ -46,44 +46,46 @@ class HudArea : public Area
     static const float VEHICLE_DIM;
     static const float CROSS_FADE_COEFF;
 
-    Label     title;
-    Label     weaponName;
-    Label     weaponRounds;
-    Label     vehicleWeaponNames[Vehicle::MAX_WEAPONS];
-    Label     vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+    Label       title;
+    Label       weaponName;
+    Label       weaponRounds;
+    Label       vehicleWeaponNames[Vehicle::MAX_WEAPONS];
+    Label       vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+
+    ModelField* vehicleModel;
 
     // cache last ids so we know when to re-generate labels
-    int       lastObjectId;
-    int       lastEntityId;
-    int       lastWeaponId;
-    int       lastWeaponRounds;
-    int       lastVehicleId;
-    int       lastVehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+    int         lastObjectId;
+    int         lastEntityId;
+    int         lastWeaponId;
+    int         lastWeaponRounds;
+    int         lastVehicleId;
+    int         lastVehicleWeaponRounds[Vehicle::MAX_WEAPONS];
 
-    GLTexture crossTex;
-    GLTexture useTex;
-    GLTexture deviceTex;
-    GLTexture equipTex;
-    GLTexture mountTex;
-    GLTexture takeTex;
-    GLTexture browseTex;
-    GLTexture liftTex;
-    GLTexture grabTex;
-    GLTexture lockedTex;
-    GLTexture unlockedTex;
+    GLTexture   crossTex;
+    GLTexture   useTex;
+    GLTexture   deviceTex;
+    GLTexture   equipTex;
+    GLTexture   mountTex;
+    GLTexture   takeTex;
+    GLTexture   browseTex;
+    GLTexture   liftTex;
+    GLTexture   grabTex;
+    GLTexture   lockedTex;
+    GLTexture   unlockedTex;
 
-    int       descTextX;
-    int       descTextY;
-    int       healthBarX;
-    int       healthBarY;
-    int       crossIconX;
-    int       crossIconY;
-    int       leftIconX;
-    int       leftIconY;
-    int       rightIconX;
-    int       rightIconY;
-    int       bottomIconX;
-    int       bottomIconY;
+    int         descTextX;
+    int         descTextY;
+    int         healthBarX;
+    int         healthBarY;
+    int         crossIconX;
+    int         crossIconY;
+    int         leftIconX;
+    int         leftIconY;
+    int         rightIconX;
+    int         rightIconY;
+    int         bottomIconX;
+    int         bottomIconY;
 
     void drawBar( const Style::Bar* barStype, float ratio ) const;
     void drawBotCrosshair();

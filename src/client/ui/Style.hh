@@ -85,7 +85,8 @@ class Style
     Bar     botWeapon;
     Bar     vehicleHull;
     Bar     vehicleFuel;
-    Bar     vehicleWeapon[4];
+    Area    vehicleWeapon[4];
+    Area    vehicleField;
 
   public:
 

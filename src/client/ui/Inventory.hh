@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <client/ui/ModelField.hh>
 #include <client/ui/Frame.hh>
 
 namespace oz
@@ -37,42 +38,42 @@ class Inventory : public Frame
   private:
 
     static const int   COLS          = 8;
-    static const int   ROWS          = 1;
     static const int   PADDING_SIZE  = 2;
     static const int   FOOTER_SIZE   = 32;
     static const int   ICON_SIZE     = 32;
     static const int   SLOT_SIZE     = 68;
     static const int   SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
-    static const int   SINGLE_HEIGHT = FOOTER_SIZE + ROWS * SLOT_SIZE;
-    static const float ROTATION_VEL;
+    static const int   SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
 
-    const Bot*    owner;
-    const Object* other;
+    const Bot*     owner;
+    const Object*  other;
 
-    GLTexture     scrollUpTex;
-    GLTexture     scrollDownTex;
-    GLTexture     useTex;
-    GLTexture     equipTex;
-    GLTexture     unequipTex;
+    ModelField*    ownerModels[COLS];
+    ModelField*    otherModels[COLS];
 
-    Label         itemDesc;
+    GLTexture      scrollUpTex;
+    GLTexture      scrollDownTex;
+    GLTexture      useTex;
+    GLTexture      equipTex;
+    GLTexture      unequipTex;
 
-    int           cachedContainerIndex;
-    int           cachedTaggedItemIndex;
-    float         taggedItemRotation;
+    Label          itemDesc;
 
-    int           taggedOwner;
-    int           taggedOther;
-    int           scrollOwner;
-    int           scrollOther;
+    int            taggedItemIndex;
+    int            cachedContainerIndex;
+    int            cachedTaggedItemIndex;
 
-    bool          isMouseOver;
+    int            scrollOwner;
+    int            scrollOther;
 
   private:
 
+    static bool ownerItemCallback( ModelField* sender );
+    static bool otherItemCallback( ModelField* sender );
+
     void updateReferences();
-    void handleComponent( int height, const Object* container, int* tagged, int* scroll );
-    void drawComponent( int height, const Object* container, int tagged, int scroll );
+    void handleScroll( const Object* container, int* scroll );
+    void drawComponent( int height, const Object* container, const Object* taggedItem, int scroll );
 
   protected:
 

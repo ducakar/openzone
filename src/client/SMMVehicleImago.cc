@@ -39,7 +39,7 @@ Imago* SMMVehicleImago::create( const Object* obj )
 
   SMMVehicleImago* imago = new SMMVehicleImago( obj );
 
-  imago->smm = context.requestSMM( obj->clazz->imagoModel );
+  imago->smm = context.requestModel( obj->clazz->imagoModel );
 
   return imago;
 }

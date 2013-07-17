@@ -134,6 +134,8 @@ void Style::init()
   OZ_READ_AREA( vehicleWeapon[2],   -8, 52 + 2 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
   OZ_READ_AREA( vehicleWeapon[3],   -8, 52 + 3 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
 
+  OZ_READ_AREA( vehicleField,       -8, 52 + 4 * ( weaponBarHeight + 2 ), 180, 180 );
+
   config.clear( true );
 
   Log::printEnd( " OK" );

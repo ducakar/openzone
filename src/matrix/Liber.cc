@@ -151,21 +151,30 @@ int Liber::deviceIndex( const char* name ) const
 {
   const int* value = deviceIndices.find( name );
 
-  return value == nullptr ? -1 : *value;
+  if( value == nullptr ) {
+    OZ_ERROR( "Invalid device index requested '%s'", name );
+  }
+  return *value;
 }
 
 int Liber::imagoIndex( const char* name ) const
 {
   const int* value = imagoIndices.find( name );
 
-  return value == nullptr ? -1 : *value;
+  if( value == nullptr ) {
+    OZ_ERROR( "Invalid imago index requested '%s'", name );
+  }
+  return *value;
 }
 
 int Liber::audioIndex( const char* name ) const
 {
   const int* value = audioIndices.find( name );
 
-  return value == nullptr ? -1 : *value;
+  if( value == nullptr ) {
+    OZ_ERROR( "Invalid audio index requested '%s'", name );
+  }
+  return *value;
 }
 
 void Liber::freeBSPs()
@@ -371,9 +380,6 @@ void Liber::initModels()
     }
     else if( File( file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
       path = file->path() + "/data.ozcMD2";
-    }
-    else if( File( file->path() + "/data.ozcMD3" ).type() == File::REGULAR ) {
-      path = file->path() + "/data.ozcMD3";
     }
     else {
       OZ_ERROR( "Invalid model '%s'", name.cstr() );

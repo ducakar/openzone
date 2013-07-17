@@ -37,7 +37,80 @@ namespace client
 namespace ui
 {
 
-const float Inventory::ROTATION_VEL = 1.3f * Timer::TICK_TIME;
+bool Inventory::ownerItemCallback( ModelField* sender )
+{
+  Inventory*     inventory = static_cast<Inventory*>( sender->parent );
+  const Object*  container = inventory->owner;
+  const Dynamic* item      = nullptr;
+  Bot*           bot       = camera.botObj;
+  int            id        = inventory->scrollOwner * COLS + sender->id;
+
+  hard_assert( bot != nullptr );
+
+  if( uint( id ) < uint( container->items.length() ) ) {
+    item = static_cast<const Dynamic*>( orbis.objects[ container->items[id] ] );
+  }
+  if( item == nullptr ) {
+    return false;
+  }
+
+  hard_assert( inventory->taggedItemIndex == -1 );
+  inventory->taggedItemIndex = item->index;
+
+  if( input.leftClick ) {
+    if( inventory->other != nullptr ) {
+      bot->invGive( item, inventory->other );
+    }
+    else if( bot->cargo < 0 ) {
+      bot->invDrop( item );
+    }
+    return true;
+  }
+  else if( input.rightClick ) {
+    bot->invUse( item, container );
+    return true;
+  }
+  else if( input.middleClick ) {
+    if( bot->cargo < 0 ) {
+      ui::mouse.doShow = false;
+
+      bot->invGrab( item );
+    }
+    return true;
+  }
+  return false;
+}
+
+bool Inventory::otherItemCallback( ModelField* sender )
+{
+  Inventory*     inventory = static_cast<Inventory*>( sender->parent );
+  const Object*  container = inventory->other;
+  const Dynamic* item      = nullptr;
+  Bot*           bot       = camera.botObj;
+  int            id        = inventory->scrollOther * COLS + sender->id;
+
+  hard_assert( bot != nullptr );
+
+  if( uint( id ) < uint( container->items.length() ) ) {
+    item = static_cast<const Dynamic*>( orbis.objects[ container->items[id] ] );
+  }
+  if( item == nullptr ) {
+    return false;
+  }
+
+  hard_assert( inventory->taggedItemIndex == -1 );
+  inventory->taggedItemIndex = item->index;
+
+  if( input.leftClick ) {
+    bot->invTake( item, container );
+    return true;
+  }
+  else if( input.rightClick ) {
+    bot->invUse( item, container );
+    return true;
+  }
+  return false;
+}
 
 void Inventory::updateReferences()
 {
@@ -52,118 +125,34 @@ void Inventory::updateReferences()
   }
 }
 
-void Inventory::handleComponent( int height, const Object* container, int* tagged, int* scroll )
+void Inventory::handleScroll( const Object* container, int* scroll )
 {
-  Bot* bot = camera.botObj;
-
-  int minY = y + height;
-  int maxY = y + height + ROWS * SLOT_SIZE;
-
   // scroll
   if( ( container == owner && mouse.y < y + SINGLE_HEIGHT ) ||
       ( container == other && mouse.y >= y + SINGLE_HEIGHT ) )
   {
     if( input.wheelDown ) {
-      int nScrollRows = max( 0, container->clazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+      int nScrollRows = max( 0, container->clazz->nItems - 1 ) / COLS;
       *scroll = clamp( *scroll + 1,  0, nScrollRows );
     }
     if( input.wheelUp ) {
-      int nScrollRows = max( 0, container->clazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+      int nScrollRows = max( 0, container->clazz->nItems - 1 ) / COLS;
       *scroll = clamp( *scroll - 1,  0, nScrollRows );
-    }
-  }
-
-  // mouse-over selects
-  if( minY <= mouse.y && mouse.y < maxY ) {
-    int i = ( mouse.x - x ) / SLOT_SIZE + COLS * ( ROWS - 1 - ( mouse.y - minY ) / SLOT_SIZE );
-
-    if( 0 <= i && i < COLS * ROWS ) {
-      *tagged = *scroll * COLS + i;
-
-      const Dynamic* item;
-
-      if( *tagged != cachedTaggedItemIndex ) {
-        taggedItemRotation = 0.0f;
-      }
-      else {
-        taggedItemRotation += ROTATION_VEL;
-      }
-
-      if( input.leftClick ) {
-        if( uint( *tagged ) < uint( container->items.length() ) ) {
-          item = static_cast<const Dynamic*>( orbis.objects[ container->items[*tagged] ] );
-
-          if( item != nullptr ) {
-            if( container == other ) {
-              bot->invTake( item, other );
-            }
-            else if( other != nullptr ) {
-              bot->invGive( item, other );
-            }
-            else if( bot->cargo < 0 ) {
-              bot->invDrop( item );
-            }
-          }
-        }
-      }
-      else if( input.rightClick ) {
-        if( uint( *tagged ) < uint( container->items.length() ) ) {
-          item = static_cast<const Dynamic*>( orbis.objects[ container->items[*tagged] ] );
-
-          if( item != nullptr ) {
-            bot->invUse( item, container );
-          }
-        }
-      }
-      else if( input.middleClick ) {
-        if( uint( *tagged ) < uint( bot->items.length() ) ) {
-          item = static_cast<const Dynamic*>( orbis.objects[ bot->items[*tagged] ] );
-
-          if( item != nullptr && container == owner && bot->cargo < 0 ) {
-            ui::mouse.doShow = false;
-
-            bot->invGrab( item );
-          }
-        }
-      }
     }
   }
 }
 
-void Inventory::drawComponent( int height, const Object* container, int tagged, int scroll )
+void Inventory::drawComponent( int height, const Object* container, const Object* taggedItem,
+                               int scroll )
 {
   const ObjectClass* containerClazz = container->clazz;
 
-  for( int i = 0; i < ROWS; ++i ) {
-    for( int j = 0; j < COLS; ++j ) {
-      int index = ( scroll + i ) * COLS + j;
-
-      if( index < containerClazz->nItems ) {
-        if( index == tagged ) {
-          shape.colour( style.colours.tileHover );
-        }
-        else {
-          shape.colour( style.colours.tile );
-        }
-
-        shape.fill( x + j * SLOT_SIZE + PADDING_SIZE,
-                    y + height + ( ROWS - i - 1 ) * SLOT_SIZE + PADDING_SIZE,
-                    SLOT_SIZE - 2*PADDING_SIZE,
-                    SLOT_SIZE - 2*PADDING_SIZE );
-      }
-      else {
-        goto slotsRendered;
-      }
-    }
-  }
-  slotsRendered:
-
-  int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+  int nScrollRows = max( 0, containerClazz->nItems - 1 ) / COLS;
 
   if( scroll != 0 ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
-    shape.fill( x + 16, y + height + ROWS * SLOT_SIZE, 16, 16 );
+    shape.fill( x + 16, y + height + SLOT_SIZE, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
   if( scroll != nScrollRows ) {
@@ -172,61 +161,6 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
     shape.fill( x + 16, y + height - 16, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
-
-  tf.model = Mat44::translation( Vec3( float( x + SLOT_SIZE / 2 ),
-                                       float( y + height + SLOT_SIZE / 2 ),
-                                       0.0f ) );
-
-  const List<int>& items = container->items;
-
-  int minIndex = scroll * COLS;
-  int maxIndex = min( minIndex + COLS * ROWS, items.length() );
-  const Dynamic* taggedItem = nullptr;
-
-  for( int i = minIndex; i < maxIndex; ++i ) {
-    const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ items[i] ] );
-
-    if( item == nullptr ) {
-      continue;
-    }
-
-    hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
-
-    float size = item->dim.fastN();
-    float scale = SLOT_OBJ_DIM / size;
-
-    tf.push();
-
-    tf.model.scale( Vec3( scale, scale, scale ) );
-    tf.model.rotateX( Math::rad( -45.0f ) );
-    tf.model.rotateZ( Math::rad( +70.0f ) );
-
-    if( i == tagged ) {
-      taggedItem = item;
-      tf.model.rotateZ( taggedItemRotation );
-    }
-
-    context.drawImago( item, nullptr );
-
-    tf.pop();
-
-    tf.model.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
-    if( ( i + 1 ) % COLS == 0 ) {
-      tf.model.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
-    }
-  }
-
-  shape.unbind();
-
-  glEnable( GL_DEPTH_TEST );
-
-  Mesh::drawScheduled( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
-  Mesh::clearScheduled();
-
-  glDisable( GL_DEPTH_TEST );
-
-  shape.bind();
-  shader.program( shader.plain );
 
   if( taggedItem == nullptr ) {
     return;
@@ -263,8 +197,8 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
   }
   noIcon:
 
-  if( tagged != cachedTaggedItemIndex ) {
-    cachedTaggedItemIndex = tagged;
+  if( taggedItemIndex != cachedTaggedItemIndex ) {
+    cachedTaggedItemIndex = taggedItem->index;
 
     itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, "%s", taggedClazz->title.cstr() );
   }
@@ -277,8 +211,6 @@ void Inventory::onVisibilityChange( bool )
   cachedContainerIndex  = -1;
   cachedTaggedItemIndex = -1;
 
-  taggedOwner = -1;
-  taggedOther = -1;
   scrollOwner = 0;
   scrollOther = 0;
 }
@@ -286,6 +218,8 @@ void Inventory::onVisibilityChange( bool )
 void Inventory::onUpdate()
 {
   updateReferences();
+
+  taggedItemIndex = -1;
 
   height = HEADER_SIZE + ( other == nullptr ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
 
@@ -299,16 +233,8 @@ void Inventory::onUpdate()
   else if( flags & HIDDEN_BIT ) {
     show( true );
   }
-  else {
-    if( other == nullptr ) {
-      taggedOther = -1;
-      scrollOther = 0;
-    }
-    if( !isMouseOver ) {
-      taggedOwner = -1;
-      taggedOther = -1;
-    }
-    isMouseOver = false;
+  else if( other == nullptr ) {
+    scrollOther = 0;
   }
 }
 
@@ -320,16 +246,11 @@ bool Inventory::onMouseEvent()
     return true;
   }
 
-  taggedOwner = -1;
-  taggedOther = -1;
-  isMouseOver = true;
-
-  handleComponent( FOOTER_SIZE, owner, &taggedOwner, &scrollOwner );
+  handleScroll( owner, &scrollOwner );
 
   if( other != nullptr ) {
-    handleComponent( FOOTER_SIZE + SINGLE_HEIGHT, other, &taggedOther, &scrollOther );
+    handleScroll( other, &scrollOther );
   }
-
   return true;
 }
 
@@ -343,6 +264,9 @@ void Inventory::onDraw()
 
   const Object*      container      = other == nullptr ? owner : other;
   const ObjectClass* containerClazz = container->clazz;
+  const Object*      taggedItem     = orbis.obj( taggedItemIndex );
+
+  taggedItemIndex = taggedItem == nullptr ? -1 : taggedItemIndex;
 
   if( container->index != cachedContainerIndex ) {
     cachedContainerIndex = container->index;
@@ -357,30 +281,70 @@ void Inventory::onDraw()
     }
   }
 
-  Frame::onDraw();
+  for( int i = 0; i < COLS; ++i ) {
+    int id = scrollOwner * COLS + i;
 
-  drawComponent( FOOTER_SIZE, owner, taggedOwner, scrollOwner );
+    if( id < owner->items.length() ) {
+      const Object* item = orbis.objects[ owner->items[id] ];
 
-  if( other != nullptr ) {
-    drawComponent( FOOTER_SIZE + SINGLE_HEIGHT, other, taggedOther, scrollOther );
+      ownerModels[i]->show( true );
+      ownerModels[i]->setModel( item == nullptr ? -1 : item->clazz->imagoModel );
+    }
+    else {
+      ownerModels[i]->show( id < owner->items.capacity() );
+      ownerModels[i]->setModel( -1 );
+    }
   }
 
-  if( taggedOwner < 0 && taggedOther < 0 ) {
-    cachedTaggedItemIndex = -1;
-    taggedItemRotation    = 0.0f;
+  for( int i = 0; i < COLS; ++i ) {
+    int id = scrollOther * COLS + i;
+
+    if( other != nullptr && id < other->items.length() ) {
+      const Object* item = orbis.objects[ other->items[id] ];
+
+      otherModels[i]->show( true );
+      otherModels[i]->setModel( item == nullptr ? -1 : item->clazz->imagoModel );
+    }
+    else {
+      otherModels[i]->show( other != nullptr && id < other->items.capacity() );
+      otherModels[i]->setModel( -1 );
+    }
+  }
+
+  Frame::onDraw();
+
+  drawComponent( FOOTER_SIZE, owner, taggedItem, scrollOwner );
+
+  if( other != nullptr ) {
+    drawComponent( FOOTER_SIZE + SINGLE_HEIGHT, other, taggedItem, scrollOther );
   }
 }
 
 Inventory::Inventory() :
-  Frame( COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
+  Frame( COLS*SLOT_SIZE, SLOT_SIZE + FOOTER_SIZE, " " ),
   owner( nullptr ), other( nullptr ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-  cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ), taggedItemRotation( 0.0f ),
-  taggedOwner( -1 ), taggedOther( -1 ),
-  scrollOwner( 0 ), scrollOther( 0 ),
-  isMouseOver( false )
+  taggedItemIndex( -1 ), cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ),
+  scrollOwner( 0 ), scrollOther( 0 )
 {
   flags = UPDATE_BIT | HIDDEN_BIT | IGNORE_BIT;
+
+  for( int i = 0; i < COLS; ++i ) {
+    ownerModels[i] = new ModelField( ownerItemCallback,
+                                     SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE );
+    ownerModels[i]->setClickMask( -1 );
+    ownerModels[i]->id = i;
+
+    add( ownerModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
+  }
+  for( int i = 0; i < COLS; ++i ) {
+    otherModels[i] = new ModelField( otherItemCallback,
+                                     SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE );
+    otherModels[i]->setClickMask( -1 );
+    otherModels[i]->id = i;
+
+    add( otherModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE );
+  }
 
   scrollUpTex.load( "@ui/icon/scrollUp.dds" );
   scrollDownTex.load( "@ui/icon/scrollDown.dds" );

@@ -23,8 +23,6 @@
 
 #pragma once
 
-#include <client/MD3.hh>
-
 #include <builder/common.hh>
 
 namespace oz
@@ -127,7 +125,7 @@ class MD3
 
 //     client::MD3::AnimInfo legsAnimList[client::MD3::LEGS_ANIM_MAX];
 //     client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
-    client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
+//     client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
 
     String   sPath;
 

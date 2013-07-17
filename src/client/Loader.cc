@@ -29,7 +29,6 @@
 #include <client/Caelum.hh>
 #include <client/SMM.hh>
 #include <client/MD2.hh>
-#include <client/MD3.hh>
 
 #include <SDL.h>
 

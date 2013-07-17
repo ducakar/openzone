@@ -41,7 +41,7 @@ Imago* ExplosionImago::create( const Object* obj )
 
   modelId = obj->clazz->imagoModel;
 
-  imago->smm = context.requestSMM( modelId );
+  imago->smm = context.requestModel( modelId );
   imago->startMicros = uint( timer.micros );
 
   return imago;

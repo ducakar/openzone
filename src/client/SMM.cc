@@ -34,6 +34,11 @@ SMM::SMM( int id_ ) :
   id( id_ )
 {}
 
+SMM* SMM::create( int id )
+{
+  return new SMM( id );
+}
+
 SMM::~SMM()
 {}
 

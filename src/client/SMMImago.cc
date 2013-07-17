@@ -36,7 +36,7 @@ Imago* SMMImago::create( const Object* obj )
 {
   SMMImago* imago = new SMMImago( obj );
 
-  imago->smm = context.requestSMM( obj->clazz->imagoModel );
+  imago->smm = context.requestModel( obj->clazz->imagoModel );
 
   return imago;
 }

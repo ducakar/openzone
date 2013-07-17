@@ -37,11 +37,12 @@ namespace client
 namespace ui
 {
 
-static void back( Button* sender )
+static bool back( Button* sender )
 {
   MissionMenu* missionMenu = static_cast<MissionMenu*>( sender->parent );
 
   missionMenu->parent->remove( missionMenu );
+  return true;
 }
 
 bool MissionButton::onMouseEvent()
@@ -63,7 +64,7 @@ MissionButton::MissionButton( const char* text, Callback* callback, MissionMenu*
   Button( text, callback, width, height ), missionMenu( missionMenu_ ), index( index_ )
 {}
 
-void MissionMenu::loadMission( Button* sender )
+bool MissionMenu::loadMission( Button* sender )
 {
   MissionButton* button      = static_cast<MissionButton*>( sender );
   MissionMenu*   missionMenu = static_cast<MissionMenu*>( sender->parent );
@@ -71,6 +72,8 @@ void MissionMenu::loadMission( Button* sender )
   Stage::nextStage    = &gameStage;
   gameStage.stateFile = File();
   gameStage.mission   = missionMenu->missions[missionMenu->scroll + button->index].name;
+
+  return true;
 }
 
 void MissionMenu::onReposition()

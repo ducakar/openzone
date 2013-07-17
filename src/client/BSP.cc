@@ -35,7 +35,7 @@ BSP::BSP( const oz::BSP* bsp_ ) :
   bsp( bsp_ )
 {
   foreach( model, bsp->models.citer() ) {
-    context.requestSMM( *model );
+    context.requestModel( *model );
   }
 }
 

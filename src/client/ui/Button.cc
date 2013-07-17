@@ -45,10 +45,8 @@ bool Button::onMouseEvent()
   if( !input.keys[Input::KEY_UI_ALT] ) {
     isHighlighted = true;
 
-    if( input.leftClick && callback != nullptr ) {
-      isClicked = true;
-
-      callback( this );
+    if( callback != nullptr && ( clickMask == -1 || input.buttons & clickMask ) ) {
+      isClicked = callback( this );
     }
   }
   return true;
@@ -76,7 +74,8 @@ void Button::onDraw()
 Button::Button( const char* text, Callback* callback_, int width, int height ) :
   Area( width, height ),
   label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%s", text ),
-  callback( callback_ ), isHighlighted( false ), isClicked( false )
+  callback( callback_ ),
+  clickMask( Input::LEFT_BUTTON ), isHighlighted( false ), isClicked( false )
 {}
 
 void Button::setLabel( const char* text )

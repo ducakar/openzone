@@ -233,6 +233,11 @@ MD2::MD2( int id_ ) :
   SMM( id_ )
 {}
 
+SMM* MD2::create( int id )
+{
+  return new MD2( id );
+}
+
 void MD2::preload()
 {
   const File* file = mesh.preload( liber.models[id].path );
