@@ -78,6 +78,7 @@ cmake \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
   -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
   -D OZ_SHARED_LIBS=1 \
+  -D OZ_PULSE_BELL=1 \
   -D OZ_NONFREE=1 \
   ..
 

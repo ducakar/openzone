@@ -251,7 +251,7 @@ void Shader::loadProgram( int id )
 }
 
 Shader::Shader() :
-  mode( UI ), plain( -1 ), defaultMasks( 0 )
+  plain( -1 ), defaultMasks( 0 )
 {}
 
 void Shader::program( int id )

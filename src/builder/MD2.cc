@@ -276,7 +276,8 @@ void MD2::build( const char* path )
 
   config.clear( true );
 
-  Mat44 weaponTransf = Mat44::translation( weaponTranslation );
+  Mat44 weaponTransf = Mat44::ID;
+  weaponTransf.translate( weaponTranslation );
   weaponTransf.rotateY( Math::rad( weaponRotation.y ) );
   weaponTransf.rotateX( Math::rad( weaponRotation.x ) );
   weaponTransf.rotateZ( Math::rad( weaponRotation.z ) );
@@ -313,6 +314,8 @@ void MD2::build( const char* path )
       {
         position += jumpTranslation;
       }
+
+      position = weaponTransf * position;
     }
   }
 
@@ -383,7 +386,13 @@ void MD2::build( const char* path )
   compiler.buildMeshTextures( sDestDir );
 
   if( header.nFrames != 1 ) {
-    os.writeMat44( weaponTransf );
+    Mat44 weaponTransfInv = Mat44::ID;
+    weaponTransfInv.rotateZ( Math::rad( -weaponRotation.z ) );
+    weaponTransfInv.rotateX( Math::rad( -weaponRotation.x ) );
+    weaponTransfInv.rotateY( Math::rad( -weaponRotation.y ) );
+    weaponTransfInv.translate( -weaponTranslation );
+
+    os.writeMat44( weaponTransfInv );
 
     File destFile( sDestDir + "/data.ozcMD2" );
 

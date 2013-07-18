@@ -59,12 +59,13 @@ void MD2WeaponImago::draw( const Imago* parent )
   if( parent == nullptr ) {
     tf.model = Mat44::translation( obj->p - Point::ORIGIN );
     tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
-    tf.model = tf.model * md2->weaponTransf;
 
     md2->scheduleFrame( 0 );
   }
   else if( parent->flags & Imago::MD2MODEL_BIT ) {
     const MD2Imago* parentImago = static_cast<const MD2Imago*>( parent );
+
+    tf.model = tf.model * md2->weaponTransf;
 
     md2->scheduleAnim( &parentImago->anim );
   }

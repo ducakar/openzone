@@ -56,6 +56,11 @@ You may also want to set several options when configuring CMake build system:
 
 #### ozCore Library ####
 
+- `OZ_PULSE_BELL`: Enable PulseAudio back-end for System::bell() on Linux and generic Unix ports.
+  If enabled, PulseAudio is tried first to play the bell while the native sound system (ALSA on
+  Linux or OSS on generic Unix port) is used as fall-back.
+  `OFF` by default.
+
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
   memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
   mismatches and one can check for currently allocated memory chunks (and hence memory leaks).

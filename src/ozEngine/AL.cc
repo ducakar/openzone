@@ -384,8 +384,25 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
     istream.seek( 34 );
     int bits = int( istream.readShort() );
 
-    istream.seek( 40 );
+    istream.seek( 36 );
+
+    const char* chunkName = istream.pos();
+    istream.readInt();
+
     int size = istream.readInt();
+
+    while( !String::beginsWith( chunkName, "data" ) ) {
+      istream.forward( size );
+
+      if( !istream.isAvailable() ) {
+        return false;
+      }
+
+      chunkName = istream.pos();
+      istream.readInt();
+
+      size = istream.readInt();
+    }
 
     if( ( nChannels != 1 && nChannels != 2 ) || ( bits != 8 && bits != 16 ) ) {
       return false;

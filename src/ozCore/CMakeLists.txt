@@ -84,11 +84,17 @@ elseif( NACL )
   target_link_libraries( ozCore -lppapi_cpp -lppapi -lpthread )
 elseif( WIN32 )
   target_link_libraries( ozCore -lwinmm )
-elseif( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
-  target_link_libraries( ozCore -lpulse-simple -ldl -lrt -lpthread )
 else()
-  # TODO: Remove -lrt once glibc 2.17 becomes minimum.
-  target_link_libraries( ozCore -lpulse-simple -lasound -ldl -lrt -lpthread )
+  if( OZ_PULSE_BELL )
+    target_link_libraries( ozCore -lpulse-simple )
+  endif()
+
+  if( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
+    target_link_libraries( ozCore -ldl -lrt -lpthread )
+  else()
+    # TODO: Remove -lrt once glibc 2.17 becomes minimum.
+    target_link_libraries( ozCore -lasound -ldl -lrt -lpthread )
+  endif()
 endif()
 
 set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )

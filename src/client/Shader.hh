@@ -117,14 +117,6 @@ struct Attrib
 
 class Shader
 {
-  public:
-
-    enum Mode
-    {
-      UI,
-      SCENE
-    };
-
   private:
 
     struct Program
@@ -170,8 +162,6 @@ class Shader
     void loadProgram( int id );
 
   public:
-
-    Mode  mode;
 
     int   plain;
     int   mesh;

@@ -58,20 +58,18 @@ void SMMVehicleImago::draw( const Imago* )
   const Vehicle*      veh   = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
-  if( shader.mode == Shader::SCENE ) {
-    tf.model = Mat44::translation( obj->p - Point::ORIGIN ) * veh->rot;
-    tf.model.rotateX( Math::TAU / -4.0f );
+  tf.model = Mat44::translation( obj->p - Point::ORIGIN ) * veh->rot;
+  tf.model.rotateX( Math::TAU / -4.0f );
 
-    const Bot* pilot = static_cast<const Bot*>( orbis.obj( veh->pilot ) );
+  const Bot* pilot = static_cast<const Bot*>( orbis.obj( veh->pilot ) );
 
-    if( pilot != nullptr && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
-      tf.push();
-      tf.model.translate( clazz->pilotPos );
+  if( pilot != nullptr && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
+    tf.push();
+    tf.model.translate( clazz->pilotPos );
 
-      context.drawImago( pilot, this );
+    context.drawImago( pilot, this );
 
-      tf.pop();
-    }
+    tf.pop();
   }
 
   smm->schedule( -1 );

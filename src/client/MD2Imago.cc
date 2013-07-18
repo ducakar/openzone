@@ -66,7 +66,7 @@ void MD2Imago::draw( const Imago* parent )
   anim.advance();
 
   if( bot->state & Bot::DEAD_BIT ) {
-    if( shader.mode == Shader::SCENE && parent == nullptr ) {
+    if( parent == nullptr ) {
       Vec3 t = Vec3( obj->p.x, obj->p.y, obj->p.z + clazz->dim.z - clazz->corpseDim.z );
 
       tf.model = Mat44::translation( t );
@@ -101,7 +101,7 @@ void MD2Imago::draw( const Imago* parent )
     }
   }
   else {
-    if( shader.mode == Shader::SCENE && parent == nullptr ) {
+    if( parent == nullptr ) {
       h = angleWrap( h + TURN_SMOOTHING_COEF * angleDiff( bot->h, h ) );
 
       tf.model = Mat44::translation( obj->p - Point::ORIGIN );

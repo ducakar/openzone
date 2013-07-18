@@ -58,13 +58,15 @@
 # include <ctime>
 # include <pthread.h>
 # include <unistd.h>
-# include <pulse/simple.h>
 # include <sys/fcntl.h>
 # ifndef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/soundcard.h>
 # else
 #  include <alsa/asoundlib.h>
+# endif
+# ifdef OZ_PULSE_BELL
+#  include <pulse/simple.h>
 # endif
 #endif
 
@@ -365,10 +367,12 @@ static DWORD WINAPI bellMain( void* )
 
 static void* bellMain( void* )
 {
+#ifdef OZ_PULSE_BELL
+
   const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
-#ifndef _GNU_SOURCE
+# ifndef _GNU_SOURCE
   const char* program_invocation_short_name = "liboz";
-#endif
+# endif
 
   pa_simple* pa = pa_simple_new( nullptr, program_invocation_short_name, PA_STREAM_PLAYBACK,
                                  nullptr, "bell", &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
@@ -388,6 +392,7 @@ static void* bellMain( void* )
     return nullptr;
   }
 
+#endif
 #ifndef __linux__
 
   int fd;

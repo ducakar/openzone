@@ -479,14 +479,10 @@ void Render::draw( int flags_ )
   flags = flags_;
 
   if( render.flags & DRAW_ORBIS_BIT ) {
-    shader.mode = Shader::SCENE;
-
     render.drawOrbis();
   }
 
   if( render.flags & DRAW_UI_BIT ) {
-    shader.mode = Shader::UI;
-
     render.drawUI();
   }
 }

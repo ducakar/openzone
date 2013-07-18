@@ -58,16 +58,14 @@ void ExplosionImago::draw( const Imago* )
     return;
   }
 
-  if( shader.mode == Shader::SCENE ) {
-    float time   = float( uint( timer.micros ) - startMicros ) * 1.0e-6f;
-    float radius = 4.0f * time * obj->dim.z;
-    float alpha  = 1.0f - 2.0f * time;
+  float time   = float( uint( timer.micros ) - startMicros ) * 1.0e-6f;
+  float radius = 4.0f * time * obj->dim.z;
+  float alpha  = 1.0f - 2.0f * time;
 
-    tf.model = Mat44::translation( obj->p - Point::ORIGIN );
-    tf.model.scale( Vec3( radius, radius, radius ) );
+  tf.model = Mat44::translation( obj->p - Point::ORIGIN );
+  tf.model.scale( Vec3( radius, radius, radius ) );
 
-    tf.colour.w.w = alpha*alpha;
-  }
+  tf.colour.w.w = alpha*alpha;
 
   smm->schedule( -1 );
 

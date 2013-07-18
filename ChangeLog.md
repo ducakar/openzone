@@ -17,9 +17,9 @@
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
     * PFile class merged into File class (VFS paths begin with '@')
-    * new SharedLib class
+    * new SharedLib class for run-time linking
     * new EnumMap class
-    * new Gettext class
+    * new Gettext class for gettext translations
 - ozDynamics: new rigid body dynamics library
     * collision
         + primitives: Box, Capsule, Polytope, Compound
@@ -36,6 +36,7 @@
     * melee attack
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
+    * new ModelField class to unify rendering of models in UI
 - client
     * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities
