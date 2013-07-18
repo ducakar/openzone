@@ -86,7 +86,7 @@ void FragPool::build( OutputStream* os, const char* className )
 
     models.add( modelName );
 
-    context.usedModels.include( modelName );
+    context.usedModels.include( modelName, String( className ) + " (Object class)" );
   }
 
   os->writeString( className );

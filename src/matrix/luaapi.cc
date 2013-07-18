@@ -85,7 +85,6 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_EVENT_WAVE",                  Bot::EVENT_WAVE );
   registerLuaConstant( l, "OZ_EVENT_FLOP",                  Bot::EVENT_FLIP );
   registerLuaConstant( l, "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
-  registerLuaConstant( l, "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
   registerLuaConstant( l, "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
   registerLuaConstant( l, "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
   registerLuaConstant( l, "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );

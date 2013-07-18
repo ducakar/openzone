@@ -191,6 +191,8 @@ uint Context::addSource( int sound )
     return INVALID_SOURCE;
   }
 
+  alSourcei( srcId, AL_BUFFER, int( sounds[sound].handle ) );
+
   ++sounds[sound].nUsers;
   sources.add( new Source( srcId, sound ) );
   return srcId;
@@ -227,6 +229,8 @@ uint Context::addContSource( int sound, int key )
     Log::printRaw( "AL: Too many sources\n" );
     return INVALID_SOURCE;
   }
+
+  alSourcei( srcId, AL_BUFFER, int( sounds[sound].handle ) );
 
   ++sounds[sound].nUsers;
   contSources.add( key, ContSource( srcId, sound ) );
@@ -434,6 +438,20 @@ void Context::freeSound( int id )
 
   --resource.nUsers;
   alDeleteBuffers( 1, &resource.handle );
+
+  OZ_AL_CHECK_ERROR();
+}
+
+void Context::playSample( int id )
+{
+  requestSound( id );
+
+  uint srcId = addSource( id );
+
+  alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
+  alSourcePlay( srcId );
+
+  releaseSound( id );
 
   OZ_AL_CHECK_ERROR();
 }

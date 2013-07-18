@@ -357,7 +357,7 @@ int main( int argc, char** argv )
   File bspDir( pkgDir + "/baseq3/maps" );
   DArray<File> files = bspDir.ls();
 
-  foreach( file, files.iter() ) {
+  foreach( file, files.citer() ) {
     if( !file->hasExtension( "json" ) ) {
       continue;
     }
@@ -368,7 +368,7 @@ int main( int argc, char** argv )
   File classDir( pkgDir + "/class" );
   files = classDir.ls();
 
-  foreach( file, files.iter() ) {
+  foreach( file, files.citer() ) {
     if( !file->hasExtension( "json" ) ) {
       continue;
     }
@@ -396,14 +396,14 @@ int main( int argc, char** argv )
   File missionsDir( pkgDir + "/mission" );
   DArray<File> missions = missionsDir.ls();
 
-  foreach( mission, missions.iter() ) {
+  foreach( mission, missions.citer() ) {
     if( mission->type() != File::DIRECTORY ) {
       continue;
     }
 
     files = mission->ls();
 
-    foreach( file, files.iter() ) {
+    foreach( file, files.citer() ) {
       if( file->hasExtension( "lua" ) ) {
         readLua( *file );
       }

@@ -96,7 +96,7 @@ bool Lingua::init( const char* language_ )
 
   DArray<File> files = dir.ls();
 
-  foreach( file, files.iter() ) {
+  foreach( file, files.citer() ) {
     if( !file->hasExtension( "mo" ) ) {
       continue;
     }

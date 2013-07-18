@@ -25,6 +25,7 @@
 
 #include <client/Input.hh>
 #include <client/Shape.hh>
+#include <client/Context.hh>
 #include <client/ui/Style.hh>
 
 namespace oz
@@ -45,7 +46,12 @@ bool Button::onMouseEvent()
   if( !input.keys[Input::KEY_UI_ALT] ) {
     isHighlighted = true;
 
-    if( callback != nullptr && ( clickMask == -1 || input.buttons & clickMask ) ) {
+    if( callback != nullptr &&
+        ( clickMask == -1 || ( input.buttons & ~input.oldButtons & clickMask ) ) )
+    {
+      if( ( input.buttons & ~input.oldButtons & clickMask ) && style.sounds.click >= 0 ) {
+        context.playSample( style.sounds.click );
+      }
       isClicked = callback( this );
     }
   }

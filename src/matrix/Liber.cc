@@ -227,7 +227,7 @@ void Liber::initTextures()
   File dir( "@tex" );
   DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.iter() ) {
+  foreach( subDir, dirList.citer() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -267,7 +267,7 @@ void Liber::initSounds()
   File dir( "@snd" );
   DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.iter() ) {
+  foreach( subDir, dirList.citer() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -367,7 +367,7 @@ void Liber::initModels()
   File dir( "@mdl" );
   DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( file->type() != File::DIRECTORY ) {
       continue;
     }
@@ -440,7 +440,7 @@ void Liber::initFragPools()
   File dir( "@frag" );
   DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozFragPools" ) ) {
       continue;
     }
@@ -480,7 +480,7 @@ void Liber::initClasses()
   File dir( "@class" );
   DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozClasses" ) ) {
       continue;
     }
@@ -549,7 +549,7 @@ void Liber::initClasses()
   nAudioClasses  = audioIndices.length();
 
   // Initialise all classes.
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( file->type() != File::REGULAR || !file->hasExtension( "ozClasses" ) ) {
       continue;
     }
@@ -659,7 +659,7 @@ void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList 
   File dir( path );
   DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( file->type() == File::DIRECTORY ) {
       initMusicRecurse( file->path(), musicTracksList );
     }

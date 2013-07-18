@@ -56,7 +56,10 @@ bool ModelField::onMouseEvent()
       nextRot       = angleWrap( nextRot + ROTATION_VEL );
       isHighlighted = true;
 
-      if( clickMask == -1 || ( input.buttons & clickMask ) ) {
+      if( clickMask == -1 || ( input.buttons & ~input.oldButtons & clickMask ) ) {
+        if( ( input.buttons & ~input.oldButtons & clickMask ) && style.sounds.click >= 0 ) {
+          context.playSample( style.sounds.click );
+        }
         isClicked = callback( this );
       }
     }

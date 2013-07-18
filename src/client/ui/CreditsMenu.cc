@@ -151,7 +151,7 @@ CreditsMenu::CreditsMenu() :
   lines.add( OZ_GETTEXT( "engine developer" ) );
   lines.add( "Davorin Učakar" );
 
-  foreach( creditsFile, creditsFiles.iter() ) {
+  foreach( creditsFile, creditsFiles.citer() ) {
     InputStream is = creditsFile->inputStream();
 
     if( !is.isAvailable() ) {

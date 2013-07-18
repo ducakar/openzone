@@ -73,7 +73,7 @@ int main( int argc, char** argv )
   DArray<File> files = outDir.ls();
   Map<String, File> packages;
 
-  foreach( file, files.iter() ) {
+  foreach( file, files.citer() ) {
     if( file->hasExtension( "7z" ) ) {
       packages.add( file->baseName(), *file );
     }

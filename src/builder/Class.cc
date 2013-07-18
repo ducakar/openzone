@@ -209,7 +209,7 @@ void Class::fillObject( const char* className )
 
     imagoModel = config["imagoModel"].get( "" );
 
-    context.usedModels.include( imagoModel );
+    context.usedModels.include( imagoModel, name + " (Object class)" );
 
     imagines.include( imagoType );
   }
@@ -236,12 +236,12 @@ void Class::fillObject( const char* className )
     audioSounds[Object::EVENT_USE]        = soundsConfig["use"].get( "" );
     audioSounds[Object::EVENT_USE_FAILED] = soundsConfig["useFailed"].get( "" );
 
-    context.usedSounds.include( audioSounds[Object::EVENT_CREATE] );
-    context.usedSounds.include( audioSounds[Object::EVENT_DESTROY] );
-    context.usedSounds.include( audioSounds[Object::EVENT_DAMAGE] );
-    context.usedSounds.include( audioSounds[Object::EVENT_HIT] );
-    context.usedSounds.include( audioSounds[Object::EVENT_USE] );
-    context.usedSounds.include( audioSounds[Object::EVENT_USE_FAILED] );
+    context.usedSounds.include( audioSounds[Object::EVENT_CREATE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_DESTROY], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_DAMAGE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_HIT], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_USE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_USE_FAILED], name + " (Object class)" );
 
     audios.include( audioType );
   }
@@ -304,9 +304,9 @@ void Class::fillDynamic( const char* className )
     audioSounds[Object::EVENT_SPLASH]   = soundsConfig["splash"].get( "" );
     audioSounds[Object::EVENT_FRICTING] = soundsConfig["fricting"].get( "" );
 
-    context.usedSounds.include( audioSounds[Object::EVENT_LAND] );
-    context.usedSounds.include( audioSounds[Object::EVENT_SPLASH] );
-    context.usedSounds.include( audioSounds[Object::EVENT_FRICTING] );
+    context.usedSounds.include( audioSounds[Object::EVENT_LAND], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_SPLASH], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Object::EVENT_FRICTING], name + " (Object class)" );
   }
 
   mass = config["mass"].get( 0.0f );
@@ -332,8 +332,8 @@ void Class::fillWeapon( const char* className )
     audioSounds[Weapon::EVENT_SHOT_EMPTY] = soundsConfig["shotEmpty"].get( "" );
     audioSounds[Weapon::EVENT_SHOT]       = soundsConfig["shot"].get( "" );
 
-    context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT_EMPTY] );
-    context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT] );
+    context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT_EMPTY], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Weapon::EVENT_SHOT], name + " (Object class)" );
   }
 
   int dollar = name.index( '$' );
@@ -381,20 +381,20 @@ void Class::fillBot( const char* className )
     audioSounds[Bot::EVENT_WAVE]           = soundsConfig["wave"].get( "" );
     audioSounds[Bot::EVENT_FLIP]           = soundsConfig["flip"].get( "" );
 
-    context.usedSounds.include( audioSounds[Bot::EVENT_STEP] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_WATERSTEP] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SURFACE] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SUBMERGED] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_STEP], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_WATERSTEP], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SURFACE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_SWIM_SUBMERGED], name + " (Object class)" );
 
-    context.usedSounds.include( audioSounds[Bot::EVENT_DEATH] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_JUMP] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_MELEE] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_DEATH], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_JUMP], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_MELEE], name + " (Object class)" );
 
-    context.usedSounds.include( audioSounds[Bot::EVENT_POINT] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_FALL_BACK] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_SALUTE] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_WAVE] );
-    context.usedSounds.include( audioSounds[Bot::EVENT_FLIP] );
+    context.usedSounds.include( audioSounds[Bot::EVENT_POINT], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_FALL_BACK], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_SALUTE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_WAVE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_FLIP], name + " (Object class)" );
   }
 
   state = 0;
@@ -496,21 +496,19 @@ void Class::fillVehicle( const char* className )
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
 
-    audioSounds[Vehicle::EVENT_ENGINE]      = soundsConfig["engine"].get( "" );
-    audioSounds[Vehicle::EVENT_NEXT_WEAPON] = soundsConfig["nextWeapon"].get( "" );
-    audioSounds[Vehicle::EVENT_SHOT0]       = soundsConfig["shot0"].get( "" );
-    audioSounds[Vehicle::EVENT_SHOT1]       = soundsConfig["shot1"].get( "" );
-    audioSounds[Vehicle::EVENT_SHOT2]       = soundsConfig["shot2"].get( "" );
-    audioSounds[Vehicle::EVENT_SHOT3]       = soundsConfig["shot3"].get( "" );
-    audioSounds[Vehicle::EVENT_SHOT_EMPTY]  = soundsConfig["shotEmpty"].get( "" );
+    audioSounds[Vehicle::EVENT_ENGINE]     = soundsConfig["engine"].get( "" );
+    audioSounds[Vehicle::EVENT_SHOT0]      = soundsConfig["shot0"].get( "" );
+    audioSounds[Vehicle::EVENT_SHOT1]      = soundsConfig["shot1"].get( "" );
+    audioSounds[Vehicle::EVENT_SHOT2]      = soundsConfig["shot2"].get( "" );
+    audioSounds[Vehicle::EVENT_SHOT3]      = soundsConfig["shot3"].get( "" );
+    audioSounds[Vehicle::EVENT_SHOT_EMPTY] = soundsConfig["shotEmpty"].get( "" );
 
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_ENGINE] );
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_NEXT_WEAPON] );
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT0] );
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT1] );
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT2] );
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT3] );
-    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT_EMPTY] );
+    context.usedSounds.include( audioSounds[Vehicle::EVENT_ENGINE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT0], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT1], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT2], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT3], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Vehicle::EVENT_SHOT_EMPTY], name + " (Object class)" );
   }
 
   state = 0;

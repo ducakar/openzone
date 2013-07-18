@@ -60,6 +60,11 @@ class Style
       Vec4 menuStrip;
     };
 
+    struct Sounds
+    {
+      int click;
+    };
+
     struct Area
     {
       int x;
@@ -78,6 +83,7 @@ class Style
 
     Font    fonts[Font::MAX];
     Colours colours;
+    Sounds  sounds;
     int     iconSize;
 
     Bar     botHealth;

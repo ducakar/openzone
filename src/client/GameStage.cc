@@ -32,7 +32,7 @@
 #include <client/Sound.hh>
 #include <client/Network.hh>
 #include <client/Camera.hh>
-#include <client/Lua.hh>
+#include <client/LuaClient.hh>
 #include <client/Profile.hh>
 #include <client/QuestList.hh>
 #include <client/MenuStage.hh>
@@ -68,7 +68,7 @@ void GameStage::read()
   camera.read( &istream );
   modules.read( &istream );
 
-  lua.read( &istream );
+  luaClient.read( &istream );
 
   Log::unindent();
   Log::println( "}" );
@@ -87,7 +87,7 @@ void GameStage::write() const
   camera.write( &ostream );
   modules.write( &ostream );
 
-  lua.write( &ostream );
+  luaClient.write( &ostream );
 
   Log::print( "Saving state to %s ...", stateFile.path().cstr() );
 
@@ -243,7 +243,7 @@ bool GameStage::update()
   camera.prepare();
 
   modules.update();
-  lua.update();
+  luaClient.update();
 
   uiMicros += Time::uclock() - beginMicros;
 
@@ -340,7 +340,7 @@ void GameStage::load()
   matrix.load();
   nirvana.load();
 
-  lua.init();
+  luaClient.init();
   modules.registerLua();
 
   questList.load();
@@ -365,7 +365,7 @@ void GameStage::load()
     Log::println( "Loading Client {" );
     Log::indent();
 
-    lua.create( mission );
+    luaClient.create( mission );
 
     Log::unindent();
     Log::println( "}" );
@@ -472,7 +472,7 @@ void GameStage::unload()
 
   questList.unload();
 
-  lua.destroy();
+  luaClient.destroy();
 
   nirvana.unload();
   matrix.unload();

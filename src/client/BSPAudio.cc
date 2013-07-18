@@ -39,7 +39,6 @@ void BSPAudio::playDemolish( const Struct* str, int sound ) const
     return;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
   alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 
@@ -63,7 +62,6 @@ void BSPAudio::playSound( const Entity* entity, int sound ) const
     return;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
   alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 
@@ -93,7 +91,6 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 

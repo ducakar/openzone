@@ -23,8 +23,16 @@
 
 #include <client/ui/Style.hh>
 
+#include <matrix/Liber.hh>
+
 #define OZ_READ_COLOUR( var, r, g, b, a ) \
   colours.var = coloursConfig[#var].get( Vec4( r, g, b, a ) )
+
+#define OZ_READ_SOUND( var, name_ ) \
+  { \
+    const char* name = soundsConfig[#var].get( #name_ ); \
+    sounds.var = String::isEmpty( name ) ? -1 : liber.soundIndex( name ); \
+  }
 
 #define OZ_READ_AREA( area, x_, y_, w_, h_ ) \
   ( \
@@ -108,6 +116,10 @@ void Style::init()
   OZ_READ_COLOUR( galileoMaximised, 1.00f, 1.00f, 1.00f, 0.80f );
 
   OZ_READ_COLOUR( menuStrip,        0.00f, 0.00f, 0.00f, 1.00f );
+
+  const JSON& soundsConfig = config["sounds"];
+
+  OZ_READ_SOUND( click,             "" );
 
   int weaponBarHeight = fonts[Font::LARGE].height + 8;
 

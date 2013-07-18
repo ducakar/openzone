@@ -159,7 +159,7 @@ void Mesh::draw( const Instance* instance, int mask )
 
 void Mesh::drawScheduled( int mask )
 {
-  foreach( i, loadedMeshes.iter() ) {
+  foreach( i, loadedMeshes.citer() ) {
     Mesh* mesh = *i;
 
     if( mesh->instances.isEmpty() ) {
@@ -213,7 +213,7 @@ void Mesh::drawScheduled( int mask )
 
 void Mesh::clearScheduled()
 {
-  foreach( i, loadedMeshes.iter() ) {
+  foreach( i, loadedMeshes.citer() ) {
     Mesh* mesh = *i;
 
     mesh->instances.clear();

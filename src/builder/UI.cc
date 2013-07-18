@@ -65,9 +65,9 @@ void UI::buildIcons()
   File::mkdir( "ui" );
   File::mkdir( "ui/icon" );
 
-  DArray<File> images = dir.ls();
+  DArray<File> ls = dir.ls();
 
-  foreach( image, images.iter() ) {
+  foreach( image, ls.citer() ) {
     String name = image->baseName();
 
     if( image->type() != File::REGULAR || !image->hasExtension( "png" ) ) {
@@ -97,6 +97,26 @@ void UI::buildIcons()
   }
 
   hard_assert( builtIcons.length() == aLength( ICON_NAMES ) );
+
+  dir = "@ui/style";
+  ls  = dir.ls();
+
+  foreach( file, ls.citer() ) {
+    if( !file->hasExtension( "json" ) ) {
+      continue;
+    }
+
+    JSON style;
+    if( !style.load( *file ) ) {
+      OZ_ERROR( "Failed to load style '%s'", file->path().cstr() );
+    }
+
+    const JSON& sounds = style["sounds"];
+
+    foreach( sound, sounds.objectCIter() ) {
+      context.usedSounds.add( sound->value.asString(), "UI style" );
+    }
+  }
 
   Log::unindent();
   Log::println( "}" );

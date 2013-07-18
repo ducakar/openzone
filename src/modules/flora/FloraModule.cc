@@ -26,14 +26,16 @@
 #include <common/luabase.hh>
 #include <matrix/Liber.hh>
 #include <matrix/Synapse.hh>
-#include <client/Lua.hh>
+#include <client/LuaClient.hh>
+
+using namespace oz::client;
 
 namespace oz
 {
 namespace modules
 {
 
-using oz::client::lua;
+static LuaClient& lua = luaClient;
 
 // plants/m2
 const float FloraModule::DENSITY    = 0.04f;

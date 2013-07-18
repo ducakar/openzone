@@ -47,7 +47,6 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
     return;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
   alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
@@ -92,7 +91,6 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
@@ -180,7 +178,6 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].handle ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );

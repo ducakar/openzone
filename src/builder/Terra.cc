@@ -247,10 +247,10 @@ void Terra::saveClient()
   Log::indent();
 
   if( !detailTex.isEmpty() ) {
-    context.usedTextures.include( detailTex );
+    context.usedTextures.include( detailTex, name + " (Terra)" );
   }
   if( !liquidTex.isEmpty() ) {
-    context.usedTextures.include( liquidTex );
+    context.usedTextures.include( liquidTex, name + " (Terra)" );
   }
 
   if( !map.isEmpty() ) {

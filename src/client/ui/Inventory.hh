@@ -73,7 +73,8 @@ class Inventory : public Frame
 
     void updateReferences();
     void handleScroll( const Object* container, int* scroll );
-    void drawComponent( int height, const Object* container, const Object* taggedItem, int scroll );
+    void drawComponent( int height, const Object* container, const Dynamic* taggedItem,
+                        int scroll );
 
   protected:
 

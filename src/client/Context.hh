@@ -179,6 +179,9 @@ class Context
     void releaseSound( int id );
     void freeSound( int id );
 
+    // Play sample without 3D effects and take care of loading and clean-up.
+    void playSample( int id );
+
     BSP* getBSP( const oz::BSP* bsp );
     BSP* requestBSP( const oz::BSP* bsp );
 

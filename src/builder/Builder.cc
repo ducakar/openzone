@@ -43,6 +43,8 @@ namespace oz
 namespace builder
 {
 
+static bool skipReferences = false;
+
 void Builder::printUsage( const char* invocationName )
 {
   Log::printRaw(
@@ -59,17 +61,19 @@ void Builder::printUsage( const char* invocationName )
     "  -g         Copy shaders.\n"
     "  -c         Build caela (skies).\n"
     "  -t         Build terrae (terrains).\n"
-    "  -b         Compile maps into BSPs and build BPSs with referenced textures.\n"
-    "  -m         Build models.\n"
-    "  -s         Copy sounds (only used ones).\n"
+    "  -b         Compile maps into BSPs.\n"
+    "  -e         Build textures referenced by terrae and BSPs."
     "  -a         Copy object class definitions.\n"
     "  -f         Copy fragment pool definitions.\n"
+    "  -m         Build models.\n"
+    "  -s         Copy referenced sounds (by UI, BSPs and object classes).\n"
     "  -n         Copy name lists.\n"
     "  -x         Check and copy Lua scripts.\n"
     "  -o         Build modules.\n"
     "  -r         Copy music tracks.\n"
+    "  -i         Build missions.\n"
     "  -A         Everything above.\n"
-    "  -B         Build with bumpmap vertex format.\n"
+    "  -R         Allow missing model texture and sound references.\n"
     "  -C         Use S3 texture compression.\n"
     "  -Z         Compress created ZIP archive (highest compression level).\n"
     "  -7         Create non-solid LZMA-compressed 7zip archive.\n"
@@ -99,7 +103,7 @@ void Builder::copyFiles( const File& srcDir, const File& destDir, const char* ex
 
   File::mkdir( destDir.path() );
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     String fileName = file->name();
 
     if( file->type() == File::DIRECTORY ) {
@@ -216,7 +220,7 @@ void Builder::buildBSPTextures()
   File dir( "@baseq3/textures" );
   DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.iter() ) {
+  foreach( subDir, dirList.citer() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -263,7 +267,7 @@ void Builder::buildBSPTextures()
 
     DArray<File> texList = subDir.ls();
 
-    foreach( file, texList.iter() ) {
+    foreach( file, texList.citer() ) {
       if( file->type() != File::REGULAR ) {
         continue;
       }
@@ -288,12 +292,12 @@ void Builder::buildBSPTextures()
     }
   }
 
-  if( !context.usedTextures.isEmpty() ) {
+  if( !skipReferences && !context.usedTextures.isEmpty() ) {
     Log::println( "The following referenced textures are missing in 'baseq3/textures' {" );
     Log::indent();
 
     foreach( tex, context.usedTextures.citer() ) {
-      Log::println( "'%s'", tex->key.cstr() );
+      Log::println( "'%s' referenced by %s", tex->key.cstr(), tex->value.cstr() );
     }
 
     Log::unindent();
@@ -317,7 +321,7 @@ void Builder::buildClasses( const String& pkgName )
 
   OutputStream os( 0 );
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {
       continue;
     }
@@ -391,7 +395,7 @@ void Builder::buildFragPools( const String& pkgName )
 
   OutputStream os( 0 );
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {
       continue;
     }
@@ -440,15 +444,15 @@ void Builder::buildModels()
     File::mkdir( "mdl" );
   }
 
-  foreach( dir, dirList.iter() ) {
-    if( !context.usedModels.contains( dir->name() ) ) {
+  foreach( dir, dirList.citer() ) {
+    if( !context.usedModels.exclude( dir->name() ) ) {
       continue;
     }
 
     File::mkdir( &dir->path()[1] );
     DArray<File> fileList = dir->ls();
 
-    foreach( file, fileList.iter() ) {
+    foreach( file, fileList.citer() ) {
       if( file->type() != File::REGULAR ) {
         continue;
       }
@@ -480,6 +484,20 @@ void Builder::buildModels()
     }
   }
 
+  if( !skipReferences && !context.usedModels.isEmpty() ) {
+    Log::println( "The following referenced models are missing in 'mdl' {" );
+    Log::indent();
+
+    foreach( mdl, context.usedModels.citer() ) {
+      Log::println( "'%s' referenced by %s", mdl->key.cstr(), mdl->value.cstr() );
+    }
+
+    Log::unindent();
+    Log::println( "}" );
+
+    OZ_ERROR( "Referenced models missing" );
+  }
+
   Log::unindent();
   Log::println( "}" );
 }
@@ -498,15 +516,17 @@ void Builder::copySounds()
   File dir( "@snd" );
   DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.iter() ) {
+  foreach( subDir, dirList.citer() ) {
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
     DArray<File> sndList = subDir->ls();
 
-    foreach( file, sndList.iter() ) {
-      if( file->type() != File::REGULAR ) {
+    foreach( file, sndList.citer() ) {
+      if( file->type() != File::REGULAR || ( !file->hasExtension( "wav" ) &&
+            !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) )
+      {
         continue;
       }
 
@@ -524,7 +544,7 @@ void Builder::copySounds()
 
       name = path.substring( 5, dot );
 
-      if( !context.usedSounds.contains( name ) ) {
+      if( !context.usedSounds.exclude( name ) ) {
         continue;
       }
 
@@ -548,7 +568,7 @@ void Builder::copySounds()
     File subDir( *subDirPath );
     DArray<File> texList = subDir.ls();
 
-    foreach( file, texList.iter() ) {
+    foreach( file, texList.citer() ) {
       if( file->type() != File::REGULAR ) {
         continue;
       }
@@ -573,14 +593,19 @@ void Builder::copySounds()
     }
   }
 
-  Log::unindent();
-  Log::println( "}" );
-}
+  if( !skipReferences && !context.usedSounds.isEmpty() ) {
+    Log::println( "The following referenced sounds are missing in 'snd' {" );
+    Log::indent();
 
-void Builder::buildModules()
-{
-  Log::println( "Building Modules {" );
-  Log::indent();
+    foreach( snd, context.usedSounds.citer() ) {
+      Log::println( "'%s' referenced by %s", snd->key.cstr(), snd->value.cstr() );
+    }
+
+    Log::unindent();
+    Log::println( "}" );
+
+    OZ_ERROR( "Referenced sounds missing" );
+  }
 
   Log::unindent();
   Log::println( "}" );
@@ -608,6 +633,15 @@ void Builder::checkLua( const char* path )
       OZ_ERROR( "Lua syntax check failed" );
     }
   }
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Builder::buildModules()
+{
+  Log::println( "Building Modules {" );
+  Log::indent();
 
   Log::unindent();
   Log::println( "}" );
@@ -695,10 +729,11 @@ int Builder::main( int argc, char** argv )
   bool doCaela        = false;
   bool doTerrae       = false;
   bool doBSPs         = false;
-  bool doModels       = false;
-  bool doSounds       = false;
+  bool doTextures     = false;
   bool doClasses      = false;
   bool doFrags        = false;
+  bool doModels       = false;
+  bool doSounds       = false;
   bool doNames        = false;
   bool doLua          = false;
   bool doModules      = false;
@@ -712,7 +747,7 @@ int Builder::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbmsafnxoriACZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbeafmsnxoriARCZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -736,6 +771,10 @@ int Builder::main( int argc, char** argv )
       }
       case 'b': {
         doBSPs = true;
+        break;
+      }
+      case 'e': {
+        doTextures = true;
         break;
       }
       case 'm': {
@@ -781,15 +820,20 @@ int Builder::main( int argc, char** argv )
         doCaela    = true;
         doTerrae   = true;
         doBSPs     = true;
-        doModels   = true;
-        doSounds   = true;
+        doTextures = true;
         doClasses  = true;
         doFrags    = true;
+        doModels   = true;
+        doSounds   = true;
         doNames    = true;
         doLua      = true;
         doModules  = true;
         doMusic    = true;
         doMissions = true;
+        break;
+      }
+      case 'R': {
+        skipReferences = true;
         break;
       }
       case 'C': {
@@ -902,7 +946,7 @@ int Builder::main( int argc, char** argv )
   if( doBSPs ) {
     buildBSPs();
   }
-  if( doTerrae || doBSPs ) {
+  if( doTextures ) {
     buildBSPTextures();
   }
   if( doClasses ) {
@@ -928,15 +972,15 @@ int Builder::main( int argc, char** argv )
 
     copyFiles( "@lua", "lua", "lua", true );
   }
-  if( doMissions ) {
-    buildMissions();
-  }
   if( doModules ) {
     buildModules();
   }
   if( doMusic ) {
     copyFiles( "@music", "music", "oga", true );
     copyFiles( "@music", "music", "ogg", true );
+  }
+  if( doMissions ) {
+    buildMissions();
   }
 
   packArchive( pkgName, useCompression, use7zip );

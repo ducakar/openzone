@@ -427,13 +427,15 @@ void LuaMatrix::init()
   File luaDir( "@lua/matrix" );
   DArray<File> luaFiles = luaDir.ls();
 
-  foreach( file, luaFiles.iter() ) {
-    if( file->type() != File::REGULAR || file->hasExtension( "lua" ) ) {
-      Buffer buffer = file->read();
+  foreach( file, luaFiles.citer() ) {
+    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
+      continue;
+    }
 
-      if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
-        OZ_ERROR( "Matrix Lua script error" );
-      }
+    InputStream is = file->inputStream();
+
+    if( !is.isAvailable() || l_dobuffer( is.begin(), is.available(), file->path() ) != 0 ) {
+      OZ_ERROR( "Matrix Lua script error" );
     }
   }
 

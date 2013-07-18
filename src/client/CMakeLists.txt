@@ -25,7 +25,7 @@ add_library( client STATIC
   Input.hh
   Loader.hh
   luaapi.hh
-  Lua.hh
+  LuaClient.hh
   MD2.hh
   MD2Imago.hh
   MD2WeaponImago.hh
@@ -71,7 +71,7 @@ add_library( client STATIC
   Input.cc
   Loader.cc
   luaapi.cc
-  Lua.cc
+  LuaClient.cc
   MD2.cc
   MD2Imago.cc
   MD2WeaponImago.cc

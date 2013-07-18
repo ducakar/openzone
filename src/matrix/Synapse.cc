@@ -211,7 +211,7 @@ void Synapse::remove( Struct* str )
   hard_assert( str->index >= 0 );
 
   for( int i = 0; i < str->boundObjects.length(); ++i ) {
-    Object* boundObj = orbis.objects[ str->boundObjects[i] ];
+    Object* boundObj = orbis.obj( str->boundObjects[i] );
 
     if( boundObj != nullptr ) {
       remove( boundObj );
@@ -230,7 +230,7 @@ void Synapse::remove( Object* obj )
   hard_assert( obj->index >= 0 );
 
   for( int i = 0; i < obj->items.length(); ++i ) {
-    Object* item = orbis.objects[ obj->items[i] ];
+    Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr ) {
       remove( item );
@@ -265,7 +265,7 @@ void Synapse::removeStruct( int index )
 {
   hard_assert( index >= 0 );
 
-  Struct* str = orbis.structs[index];
+  Struct* str = orbis.str( index );
 
   if( str != nullptr ) {
     remove( str );
@@ -276,7 +276,7 @@ void Synapse::removeObject( int index )
 {
   hard_assert( index >= 0 );
 
-  Object* obj = orbis.objects[index];
+  Object* obj = orbis.obj( index );
 
   if( obj != nullptr ) {
     remove( obj );
@@ -287,7 +287,7 @@ void Synapse::removeFrag( int index )
 {
   hard_assert( index >= 0 );
 
-  Frag* frag = orbis.frags[index];
+  Frag* frag = orbis.frag( index );
 
   if( frag != nullptr ) {
     remove( frag );

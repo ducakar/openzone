@@ -34,9 +34,9 @@ class Context
 {
   public:
 
-    HashSet<String> usedTextures;
-    HashSet<String> usedSounds;
-    HashSet<String> usedModels;
+    HashMap<String, String> usedTextures;
+    HashMap<String, String> usedSounds;
+    HashMap<String, String> usedModels;
 
     bool bumpmap;
     bool useS3TC;

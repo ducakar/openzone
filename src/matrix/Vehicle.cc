@@ -325,7 +325,6 @@ void Vehicle::onUpdate()
   if( clazz->nWeapons != 0 ) {
     if( actions & ~oldActions & Bot::ACTION_VEH_NEXT_WEAPON ) {
       weapon = ( weapon + 1 ) % clazz->nWeapons;
-      addEvent( EVENT_NEXT_WEAPON, 1.0f );
     }
     if( actions & Bot::ACTION_ATTACK ) {
       if( shotTime[weapon] == 0.0f ) {

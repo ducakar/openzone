@@ -1082,15 +1082,15 @@ void BSP::saveMatrix()
     os.writeInt( model->target );
     os.writeInt( model->key );
 
-    context.usedSounds.include( model->openSound );
-    context.usedSounds.include( model->closeSound );
-    context.usedSounds.include( model->frictSound );
+    context.usedSounds.include( model->openSound, name + " (BSP)" );
+    context.usedSounds.include( model->closeSound, name + " (BSP)" );
+    context.usedSounds.include( model->frictSound, name + " (BSP)" );
 
     os.writeString( model->openSound );
     os.writeString( model->closeSound );
     os.writeString( model->frictSound );
 
-    context.usedModels.include( model->modelName );
+    context.usedModels.include( model->modelName, name + " (BSP)" );
 
     os.writeString( model->modelName );
     os.writeMat44( model->modelTransf );
@@ -1137,7 +1137,7 @@ void BSP::saveClient()
       }
 
       if( !tex.name.beginsWith( "@sea:" ) ) {
-        context.usedTextures.include( tex.name );
+        context.usedTextures.include( tex.name, name + " (BSP)" );
       }
 
       compiler.texture( tex.name );

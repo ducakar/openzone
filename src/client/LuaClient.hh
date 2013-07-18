@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/Lua.hh
+ * @file client/LuaClient.hh
  *
  * Lua scripting engine for client
  */
@@ -33,7 +33,7 @@ namespace oz
 namespace client
 {
 
-class Lua : public LuaCommon
+class LuaClient : public LuaCommon
 {
   private:
 
@@ -52,7 +52,7 @@ class Lua : public LuaCommon
 
 };
 
-extern Lua lua;
+extern LuaClient luaClient;
 
 }
 }

@@ -1,47 +1,50 @@
 {
   "fonts": {
     "mono": {
-      "name":             "DroidSansMono",
-      "height":           13
+      "name":           "DroidSansMono",
+      "height":         13
     },
     "sans": {
-      "name":             "DroidSansMono",
-      "height":           13
+      "name":           "DroidSansMono",
+      "height":         13
     },
     "small": {
-      "name":             "DroidSansMono",
-      "height":           10
+      "name":           "DroidSansMono",
+      "height":         10
     },
     "large": {
-      "name":             "DroidSansMono",
-      "height":           14
+      "name":           "DroidSansMono",
+      "height":         14
     },
     "title": {
-      "name":             "DroidSansMono",
-      "height":           18
+      "name":           "DroidSansMono",
+      "height":         18
     }
   },
   "colours":
   {
-    "text":               [ 0.80, 1.00, 0.90, 1.00 ],
-    "textBackground":     [ 0.00, 0.00, 0.00, 1.00 ],
+    "text":             [ 0.80, 1.00, 0.90, 1.00 ],
+    "textBackground":   [ 0.00, 0.00, 0.00, 1.00 ],
 
-    "button":             [ 0.20, 0.30, 0.25, 0.40 ],
-    "buttonHover":        [ 0.40, 0.60, 0.50, 0.40 ],
-    "buttonClicked":      [ 0.80, 1.00, 0.90, 0.40 ],
+    "button":           [ 0.20, 0.30, 0.25, 0.40 ],
+    "buttonHover":      [ 0.40, 0.60, 0.50, 0.40 ],
+    "buttonClicked":    [ 0.80, 1.00, 0.90, 0.40 ],
 
-    "tile":               [ 0.24, 0.30, 0.27, 0.60 ],
-    "tileHover":          [ 0.48, 0.60, 0.54, 0.60 ],
+    "tile":             [ 0.24, 0.30, 0.27, 0.60 ],
+    "tileHover":        [ 0.48, 0.60, 0.54, 0.60 ],
 
-    "frame":              [ 0.00, 0.00, 0.00, 0.30 ],
-    "background":         [ 0.04, 0.06, 0.05, 1.00 ],
+    "frame":            [ 0.00, 0.00, 0.00, 0.30 ],
+    "background":       [ 0.04, 0.06, 0.05, 1.00 ],
 
-    "barBorder":          [ 0.80, 1.00, 0.90, 0.50 ],
-    "barBackground":      [ 0.00, 0.00, 0.00, 0.10 ],
+    "barBorder":        [ 0.80, 1.00, 0.90, 0.50 ],
+    "barBackground":    [ 0.00, 0.00, 0.00, 0.10 ],
 
-    "galileoNormal":      [ 1.00, 1.00, 1.00, 0.60 ],
-    "galileoMaximised":   [ 1.00, 1.00, 1.00, 1.00 ],
+    "galileoNormal":    [ 1.00, 1.00, 1.00, 0.60 ],
+    "galileoMaximised": [ 1.00, 1.00, 1.00, 1.00 ],
 
-    "menuStrip":          [ 0.00, 0.00, 0.00, 1.00 ]
+    "menuStrip":        [ 0.00, 0.00, 0.00, 1.00 ]
+  },
+  "sounds": {
+    "click":            "sfxr/click"
   }
 }

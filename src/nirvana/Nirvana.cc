@@ -64,7 +64,7 @@ void Nirvana::sync()
 void Nirvana::update()
 {
   int count = 0;
-  foreach( i, minds.iter() ) {
+  foreach( i, minds.citer() ) {
     Mind* mind = i->value;
 
     const Bot* bot = static_cast<const Bot*>( orbis.obj( mind->bot ) );

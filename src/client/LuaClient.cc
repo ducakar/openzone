@@ -18,12 +18,12 @@
  */
 
 /**
- * @file client/Lua.cc
+ * @file client/LuaClient.cc
  *
  * Lua scripting engine for client
  */
 
-#include <client/Lua.hh>
+#include <client/LuaClient.hh>
 
 #include <client/luaapi.hh>
 
@@ -32,7 +32,9 @@ namespace oz
 namespace client
 {
 
-void Lua::staticCall( const char* functionName )
+static LuaClient& lua = luaClient;
+
+void LuaClient::staticCall( const char* functionName )
 {
   ms.obj      = nullptr;
   ms.str      = nullptr;
@@ -59,12 +61,12 @@ void Lua::staticCall( const char* functionName )
   }
 }
 
-void Lua::update()
+void LuaClient::update()
 {
   staticCall( "onUpdate" );
 }
 
-void Lua::create( const char* mission_ )
+void LuaClient::create( const char* mission_ )
 {
   cs.mission = mission_;
 
@@ -89,7 +91,7 @@ void Lua::create( const char* mission_ )
     OZ_ERROR( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
   }
 
-  foreach( file, files.iter() ) {
+  foreach( file, files.citer() ) {
     if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
       continue;
     }
@@ -107,7 +109,7 @@ void Lua::create( const char* mission_ )
   Log::println( "}" );
 }
 
-void Lua::read( InputStream* istream )
+void LuaClient::read( InputStream* istream )
 {
   hard_assert( l_gettop() == 0 );
 
@@ -133,14 +135,14 @@ void Lua::read( InputStream* istream )
     OZ_ERROR( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
   }
 
-  foreach( file, files.iter() ) {
+  foreach( file, files.citer() ) {
     if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
       continue;
     }
 
-    Buffer buffer = file->read();
+    InputStream is = file->inputStream();
 
-    if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
+    if( !is.isAvailable() || l_dobuffer( is.begin(), is.available(), file->path() ) != 0 ) {
       OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
     }
   }
@@ -158,7 +160,7 @@ void Lua::read( InputStream* istream )
   Log::printEnd( " OK" );
 }
 
-void Lua::write( OutputStream* ostream )
+void LuaClient::write( OutputStream* ostream )
 {
   hard_assert( l_gettop() == 0 );
 
@@ -191,7 +193,7 @@ void Lua::write( OutputStream* ostream )
   ostream->writeString( "" );
 }
 
-void Lua::init()
+void LuaClient::init()
 {
   Log::print( "Initialising Client Lua ..." );
 
@@ -600,7 +602,7 @@ void Lua::init()
   Log::printEnd( " OK" );
 }
 
-void Lua::destroy()
+void LuaClient::destroy()
 {
   if( l == nullptr ) {
     return;
@@ -622,7 +624,7 @@ void Lua::destroy()
   Log::printEnd( " OK" );
 }
 
-Lua lua;
+LuaClient luaClient;
 
 }
 }

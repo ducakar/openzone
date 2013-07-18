@@ -55,7 +55,6 @@ bool Inventory::ownerItemCallback( ModelField* sender )
   }
 
   hard_assert( inventory->taggedItemIndex == -1 );
-  inventory->taggedItemIndex = item->index;
 
   if( input.leftClick ) {
     if( inventory->other != nullptr ) {
@@ -78,6 +77,8 @@ bool Inventory::ownerItemCallback( ModelField* sender )
     }
     return true;
   }
+
+  inventory->taggedItemIndex = item->index;
   return false;
 }
 
@@ -99,7 +100,6 @@ bool Inventory::otherItemCallback( ModelField* sender )
   }
 
   hard_assert( inventory->taggedItemIndex == -1 );
-  inventory->taggedItemIndex = item->index;
 
   if( input.leftClick ) {
     bot->invTake( item, container );
@@ -109,6 +109,8 @@ bool Inventory::otherItemCallback( ModelField* sender )
     bot->invUse( item, container );
     return true;
   }
+
+  inventory->taggedItemIndex = item->index;
   return false;
 }
 
@@ -142,7 +144,7 @@ void Inventory::handleScroll( const Object* container, int* scroll )
   }
 }
 
-void Inventory::drawComponent( int height, const Object* container, const Object* taggedItem,
+void Inventory::drawComponent( int height, const Object* container, const Dynamic* taggedItem,
                                int scroll )
 {
   const ObjectClass* containerClazz = container->clazz;
@@ -162,7 +164,7 @@ void Inventory::drawComponent( int height, const Object* container, const Object
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
-  if( taggedItem == nullptr ) {
+  if( taggedItem == nullptr || taggedItem->parent != container->index ) {
     return;
   }
 
@@ -200,9 +202,10 @@ void Inventory::drawComponent( int height, const Object* container, const Object
   if( taggedItemIndex != cachedTaggedItemIndex ) {
     cachedTaggedItemIndex = taggedItem->index;
 
-    itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, "%s", taggedClazz->title.cstr() );
+    itemDesc.setText( "%s", taggedClazz->title.cstr() );
   }
 
+  itemDesc.setPosition( -ICON_SIZE - 8, height - FOOTER_SIZE / 2 );
   itemDesc.draw( this );
 }
 
@@ -264,7 +267,7 @@ void Inventory::onDraw()
 
   const Object*      container      = other == nullptr ? owner : other;
   const ObjectClass* containerClazz = container->clazz;
-  const Object*      taggedItem     = orbis.obj( taggedItemIndex );
+  const Dynamic*     taggedItem     = static_cast<const Dynamic*>( orbis.obj( taggedItemIndex ) );
 
   taggedItemIndex = taggedItem == nullptr ? -1 : taggedItemIndex;
 
