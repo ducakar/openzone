@@ -79,6 +79,7 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
   registerLuaConstant( l, "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
   registerLuaConstant( l, "OZ_EVENT_MELEE",                 Bot::EVENT_MELEE );
+  registerLuaConstant( l, "OZ_EVENT_TAKE",                  Bot::EVENT_TAKE );
   registerLuaConstant( l, "OZ_EVENT_POINT",                 Bot::EVENT_POINT );
   registerLuaConstant( l, "OZ_EVENT_FALL_BACK",             Bot::EVENT_FALL_BACK );
   registerLuaConstant( l, "OZ_EVENT_SALUTE",                Bot::EVENT_SALUTE );

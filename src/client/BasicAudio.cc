@@ -41,8 +41,10 @@ Audio* BasicAudio::create( const Object* obj )
   return new BasicAudio( obj );
 }
 
-void BasicAudio::play( const Audio* parent )
+void BasicAudio::play( const Object* playAt )
 {
+  hard_assert( playAt != nullptr );
+
   const auto& sounds = obj->clazz->audioSounds;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
@@ -57,16 +59,16 @@ void BasicAudio::play( const Audio* parent )
       hard_assert( 0.0f <= event->intensity );
 
       recent[event->id] = RECENT_TICKS;
-      playSound( sounds[event->id], event->intensity, parent == nullptr ? obj : parent->obj );
+      playSound( sounds[event->id], event->intensity, playAt );
     }
   }
 
   // friction
-  if( parent == nullptr && ( obj->flags & Object::DYNAMIC_BIT ) &&
+  const Dynamic* dyn = static_cast<const Dynamic*>( obj );
+
+  if( dyn->parent < 0 && ( dyn->flags & Object::DYNAMIC_BIT ) &&
       sounds[Object::EVENT_FRICTING] >= 0 )
   {
-    const Dynamic* dyn = static_cast<const Dynamic*>( obj );
-
     if( ( dyn->flags & ( Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) == Object::FRICTING_BIT &&
         ( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower >= 0 ) )
     {
@@ -93,7 +95,7 @@ void BasicAudio::play( const Audio* parent )
     const Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, parent == nullptr ? this : parent );
+      context.playAudio( item, playAt );
     }
   }
 }

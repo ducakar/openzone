@@ -7,12 +7,15 @@ add_library( nirvana STATIC
   Memo.hh
   Mind.hh
   Nirvana.hh
+  QuestList.hh
   Task.hh
   Device.cc
+  luaapi.cc
   LuaNirvana.cc
   Memo.cc
   Mind.cc
   Nirvana.cc
+  QuestList.cc
   Task.cc
 #END SOURCES
 )

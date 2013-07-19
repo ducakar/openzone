@@ -40,8 +40,10 @@ Audio* VehicleAudio::create( const Object* obj )
   return new VehicleAudio( obj );
 }
 
-void VehicleAudio::play( const Audio* parent )
+void VehicleAudio::play( const Object* playAt )
 {
+  hard_assert( playAt != nullptr );
+
   const Vehicle*      vehicle = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz   = static_cast<const VehicleClass*>( this->clazz );
   const auto&         sounds  = obj->clazz->audioSounds;
@@ -51,10 +53,9 @@ void VehicleAudio::play( const Audio* parent )
   }
 
   // engine sound
-  if( ( vehicle->pilot >= 0 ) && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
+  if( vehicle->pilot >= 0 && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
     float pitch = clazz->enginePitchBias +
-                  min<float>( vehicle->momentum.sqN() * clazz->enginePitchRatio,
-                              clazz->enginePitchLimit );
+                  min( vehicle->momentum.sqN() * clazz->enginePitchRatio, clazz->enginePitchLimit );
 
     playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch );
   }
@@ -67,7 +68,7 @@ void VehicleAudio::play( const Audio* parent )
       hard_assert( 0.0f <= event->intensity );
 
       recent[event->id] = RECENT_TICKS;
-      playSound( sounds[event->id], event->intensity, parent == nullptr ? obj : parent->obj );
+      playSound( sounds[event->id], event->intensity, playAt );
     }
   }
 
@@ -76,7 +77,7 @@ void VehicleAudio::play( const Audio* parent )
     const Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, parent == nullptr ? this : parent );
+      context.playAudio( item, vehicle );
     }
   }
 
@@ -85,7 +86,7 @@ void VehicleAudio::play( const Audio* parent )
     const Bot* bot = static_cast<const Bot*>( orbis.obj( vehicle->pilot ) );
 
     if( bot != nullptr && ( bot->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( bot, parent == nullptr ? this : parent );
+      context.playAudio( bot, playAt );
     }
   }
 }

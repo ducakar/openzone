@@ -20,12 +20,12 @@
 /**
  * @file common/luabase.hh
  *
- * Handy macros and methods for %Lua API implementation.
+ * Handy macros and methods for Lua API implementation.
  *
- * This is internal header, it should only be included by modules that contain %Lua API
+ * This is internal header, it should only be included by modules that contain Lua API
  * implementation. It contains macros for parameter checking, reporting errors, checking validity of
- * %Lua API calls etc. that can be used as some basic building blocks for %Lua APIs. Furthermore
- * there are macros that wrap %Lua library calls so, one can e.g. write
+ * Lua API calls etc. that can be used as some basic building blocks for Lua APIs. Furthermore there
+ * are macros that wrap Lua library calls so, one can e.g. write
  * @code
  *   l_tofloat( 1 );
  * @endcode
@@ -33,7 +33,7 @@
  * @code
  *   float( lua_tonumber( l, 1 ) );
  * @endcode
- * Finally it defines overloaded methods for registering %Lua API constants that simplify code in
+ * Finally it defines overloaded methods for registering Lua API constants that simplify code in
  * similar way as the macro above.
  */
 
@@ -45,35 +45,35 @@
 
 /**
  * @def IMPORT_FUNC
- * Registers %Lua API function with the Lua class in the current namespace.
+ * Registers Lua API function with the Lua class in the current namespace.
  */
 #define IMPORT_FUNC( func ) \
   lua.registerFunction( #func, func )
 
 /**
  * @def IGNORE_FUNC
- * Does nothing except silences warning that %Lua API function was not used.
+ * Does nothing except silences warning that Lua API function was not used.
  */
 #define IGNORE_FUNC( func ) \
   static_cast<void>( func )
 
 /**
  * @def IMPORT_CONST
- * Registers %Lua API constant with the Lua class in the current namespace.
+ * Registers Lua API constant with the Lua class in the current namespace.
  */
 #define IMPORT_CONST( name, value ) \
   lua.registerConstant( name, value )
 
 /**
  * @def ERROR
- * Exits %Lua API function call with the giver error message.
+ * Exits Lua API function call with the giver error message.
  */
 #define ERROR( message ) \
   luaL_error( l, "%s: %s", __func__, message )
 
 /**
  * @def ARG( n )
- * Exits %Lua API function call with an error if number of parameters is not `n`.
+ * Exits Lua API function call with an error if number of parameters is not `n`.
  */
 #define ARG( n ) \
   if( lua_gettop( l ) != ( n ) ) { \
@@ -82,8 +82,7 @@
 
 /**
  * @def VARG( min, max )
- * Exits %Lua API function call with an error if number of parameters is not between `min` and
- * `max`.
+ * Exits Lua API function call with an error if number of parameters is not between `min` and `max`.
  */
 #define VARG( min, max ) \
   { \
@@ -95,7 +94,7 @@
 
 /**
  * @def ARG_VAR( n )
- * Exits %Lua API function call with an error if number of parameters is less than `n`.
+ * Exits Lua API function call with an error if number of parameters is less than `n`.
  */
 #define ARG_VAR( n ) \
   if( lua_gettop( l ) < ( n ) ) { \
@@ -104,7 +103,7 @@
 
 /**
  * @def STR
- * Exits %Lua API function call with an error if there is no structure bound.
+ * Exits Lua API function call with an error if there is no structure bound.
  */
 #define STR() \
   if( ms.str == nullptr ) { \
@@ -127,7 +126,7 @@
 
 /**
  * @def ENT
- * Exits %Lua API function call with an error if there is no structure entity bound.
+ * Exits Lua API function call with an error if there is no structure entity bound.
  */
 #define ENT() \
   if( ms.ent == nullptr ) { \
@@ -147,7 +146,7 @@
 
 /**
  * @def OBJ
- * Exits %Lua API function call with an error if there is no object bound.
+ * Exits Lua API function call with an error if there is no object bound.
  */
 #define OBJ() \
   if( ms.obj == nullptr ) { \
@@ -156,7 +155,7 @@
 
 /**
  * @def SELF
- * Exits %Lua API function call with an error if self object is `nullptr`.
+ * Exits Lua API function call with an error if self object is `nullptr`.
  */
 #define SELF() \
   if( ms.self == nullptr ) { \
@@ -165,7 +164,7 @@
 
 /**
  * @def SELF_BOT
- * Exits %Lua API function call with an error if self object is `nullptr` or not a bot.
+ * Exits Lua API function call with an error if self object is `nullptr` or not a bot.
  */
 #define SELF_BOT() \
   SELF(); \
@@ -224,7 +223,7 @@
 
 /**
  * @def OBJ_NOT_SELF
- * Exits %Lua API function call with an error if the bound object is self.
+ * Exits Lua API function call with an error if the bound object is self.
  */
 #define OBJ_NOT_SELF() \
   if( ms.obj == ms.self ) { \
@@ -233,7 +232,7 @@
 
 /**
  * @def OBJ_DYNAMIC
- * Exits %Lua API function call with an error if the bound object is not dynamic (Dynamic class).
+ * Exits Lua API function call with an error if the bound object is not dynamic (Dynamic class).
  */
 #define OBJ_DYNAMIC() \
   if( !( ms.obj->flags & Object::DYNAMIC_BIT ) ) { \
@@ -243,7 +242,7 @@
 
 /**
  * @def OBJ_WEAPON
- * Exits %Lua API function call with an error if the bound object is not a weapon (Weapon class).
+ * Exits Lua API function call with an error if the bound object is not a weapon (Weapon class).
  */
 #define OBJ_WEAPON() \
   if( !( ms.obj->flags & Object::WEAPON_BIT ) ) { \
@@ -253,7 +252,7 @@
 
 /**
  * @def OBJ_BOT
- * Exits %Lua API function call with an error if the bound object is not a bot (Bot class).
+ * Exits Lua API function call with an error if the bound object is not a bot (Bot class).
  */
 #define OBJ_BOT() \
   if( !( ms.obj->flags & Object::BOT_BIT ) ) { \
@@ -263,7 +262,7 @@
 
 /**
  * @def OBJ_VEHICLE
- * Exits %Lua API function call with an error if the bound object is not a vehicle (Vehicle class).
+ * Exits Lua API function call with an error if the bound object is not a vehicle (Vehicle class).
  */
 #define OBJ_VEHICLE() \
   if( !( ms.obj->flags & Object::VEHICLE_BIT ) ) { \
@@ -273,7 +272,7 @@
 
 /**
  * @def FRAG
- * Exits %Lua API function call with an error if there is no fragment bound.
+ * Exits Lua API function call with an error if there is no fragment bound.
  */
 #define FRAG() \
   if( ms.frag == nullptr ) { \
@@ -478,14 +477,14 @@
 
 /**
  * @def l_dobuffer
- * Loads (executes) %Lua code from a given buffer.
+ * Loads (executes) Lua code from a given buffer.
  */
 #define l_dobuffer( begin, length, name ) \
   ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
 
 /**
  * @def l_dostring
- * Loads (executes) %Lua code from a given null-terminated string.
+ * Loads (executes) Lua code from a given null-terminated string.
  */
 #define l_dostring( code ) \
   luaL_dostring( l, code )
@@ -494,30 +493,30 @@ namespace oz
 {
 
 /**
- * Overload for registering boolean %Lua constant.
+ * Overload for registering boolean Lua constant.
  *
- * This method is only intended for use inside methods that register %Lua constants.
+ * This method is only intended for use inside methods that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, bool value );
 
 /**
- * Overload for registering integer %Lua constant.
+ * Overload for registering integer Lua constant.
  *
- * This method is only intended for use inside methods that register %Lua constants.
+ * This method is only intended for use inside methods that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, int value );
 
 /**
- * Overload for registering number %Lua constant.
+ * Overload for registering number Lua constant.
  *
- * This method is only intended for use inside methods that register %Lua constants.
+ * This method is only intended for use inside methods that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, float value );
 
 /**
- * Overload for registering string %Lua constant.
+ * Overload for registering string Lua constant.
  *
- * This method is only intended for use inside methods that register %Lua constants.
+ * This method is only intended for use inside methods that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, const char* value );
 

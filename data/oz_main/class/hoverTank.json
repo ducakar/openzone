@@ -76,7 +76,6 @@
     "land":             "oz/hit_metal1",
     "splash":           "free/splash2",
     "engine":           "soundsnap/fan",
-    "nextWeapon":       "free/itempick",
     "shot0":            "awesund/cg1",
     "shot1":            "awesund/flaunch",
     "shot2":            "awesund/cg2",

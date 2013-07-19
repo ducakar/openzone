@@ -155,6 +155,9 @@ class AL
 
     /**
      * Load OpenAL buffer from a WAVE of Ogg Vorbis file.
+     *
+     * @note
+     * Beware, 3D effects in OpenAL only work on mono sound samples.
      */
     static bool bufferDataFromFile( ALuint buffer, const File& file );
 

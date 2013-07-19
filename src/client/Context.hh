@@ -179,7 +179,7 @@ class Context
     void releaseSound( int id );
     void freeSound( int id );
 
-    // Play sample without 3D effects and take care of loading and clean-up.
+    // Play sample without 3D effects.
     void playSample( int id );
 
     BSP* getBSP( const oz::BSP* bsp );
@@ -192,7 +192,7 @@ class Context
     void releaseModel( int id );
 
     void drawImago( const Object* obj, const Imago* parent );
-    void playAudio( const Object* obj, const Audio* parent );
+    void playAudio( const Object* obj, const Object* parent );
 
     void drawFrag( const Frag* frag );
 

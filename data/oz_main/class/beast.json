@@ -47,6 +47,7 @@
     "swimSurface":      "openarena/watr_in",
     "death":            "ppm/deathb",
     "jump":             "aard/jump",
+    "take":             "oz/itempick",
     "flip":             "ppm/deathb"
   }
 }

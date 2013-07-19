@@ -408,27 +408,41 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
       return false;
     }
 
-    ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16 :
+    ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8   : AL_FORMAT_MONO16 :
                                      bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
+
+    size = min( size, istream.available() );
+
+    const char* data = istream.forward( size );
 
 #if OZ_BYTE_ORDER == 4321
 
-    int    nSamples = size / int( sizeof( short ) );
-    short* data     = new short[nSamples];
+    if( nChannels == 2 ) {
+      int    nSamples = size / int( sizeof( short ) );
+      short* samples  = new short[nSamples];
 
-    mCopy( data, istream.forward( size ), size_t( size ) );
+      mCopy( samples, data, size_t( size ) );
 
-    for( int i = 0; i < nSamples; ++i ) {
-      data[i] = Endian::bswap16( data[i] );
+      for( int i = 0; i < nSamples; ++i ) {
+        samples[i] = Endian::bswap16( samples[i] );
+      }
+
+      data = reinterpret_cast<const char*>( samples );
     }
-
-#else
-
-    const char* data = istream.forward( size );
 
 #endif
 
     alBufferData( buffer, format, data, size, rate );
+
+#if OZ_BYTE_ORDER == 4321
+
+    if( nChannels == 2 ) {
+      delete[] data;
+    }
+
+#endif
+
+    OZ_AL_CHECK_ERROR();
     return true;
   }
   else {
@@ -465,6 +479,7 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
     delete[] data;
     ov_clear( &ovStream );
 
+    OZ_AL_CHECK_ERROR();
     return true;
   }
 }

@@ -465,12 +465,12 @@ int Client::init( int argc, char** argv )
   initFlags |= INIT_CONTEXT;
   context.init();
 
+  initFlags |= INIT_AUDIO;
+  sound.init();
+
   initFlags |= INIT_RENDER;
   render.init();
   render.swap();
-
-  initFlags |= INIT_AUDIO;
-  sound.init();
 
   initFlags |= INIT_STAGE_INIT;
   menuStage.init();
@@ -510,11 +510,11 @@ void Client::shutdown()
     gameStage.destroy();
     menuStage.destroy();
   }
-  if( initFlags & INIT_AUDIO ) {
-    sound.destroy();
-  }
   if( initFlags & INIT_RENDER ) {
     render.destroy();
+  }
+  if( initFlags & INIT_AUDIO ) {
+    sound.destroy();
   }
   if( initFlags & INIT_CONTEXT ) {
     context.destroy();

@@ -18,28 +18,50 @@
  */
 
 /**
- * @file client/luaapi.cc
+ * @file nirvana/QuestList.hh
  */
 
-#include <common/luabase.hh>
+#pragma once
 
-#include <nirvana/QuestList.hh>
-#include <client/Camera.hh>
+#include <nirvana/common.hh>
 
 namespace oz
 {
-namespace client
+
+struct Quest
 {
+  enum State
+  {
+    NONE,
+    PENDING,
+    SUCCESSFUL,
+    FAILED
+  };
 
-void importClientConstants( lua_State* l );
+  String title;
+  String description;
+  Point  place;
+  State  state;
+};
 
-void importClientConstants( lua_State* l )
+class QuestList
 {
-  registerLuaConstant( l, "OZ_CAMERA_NONE",                 Camera::NONE );
-  registerLuaConstant( l, "OZ_CAMERA_STRATEGIC",            Camera::STRATEGIC );
-  registerLuaConstant( l, "OZ_CAMERA_UNIT",                 Camera::UNIT );
-  registerLuaConstant( l, "OZ_CAMERA_CINEMATIC",            Camera::CINEMATIC );
-}
+  public:
 
-}
+    List<Quest> quests;
+    int         activeQuest;
+
+    void add( const char* title, const char* description, const Point& place, Quest::State state );
+    void remove( int index );
+
+    void read( InputStream* istream );
+    void write( OutputStream* ostream ) const;
+
+    void load();
+    void unload();
+
+};
+
+extern QuestList questList;
+
 }

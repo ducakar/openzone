@@ -484,6 +484,8 @@ void Builder::buildModels()
     }
   }
 
+  context.usedModels.exclude( "" );
+
   if( !skipReferences && !context.usedModels.isEmpty() ) {
     Log::println( "The following referenced models are missing in 'mdl' {" );
     Log::indent();
@@ -592,6 +594,8 @@ void Builder::copySounds()
       }
     }
   }
+
+  context.usedSounds.exclude( "" );
 
   if( !skipReferences && !context.usedSounds.isEmpty() ) {
     Log::println( "The following referenced sounds are missing in 'snd' {" );
@@ -928,7 +932,7 @@ int Builder::main( int argc, char** argv )
     copyFiles( "@ui/cur", "ui/cur", "", false );
     copyFiles( "@ui/font", "ui/font", "ttf", false );
     copyFiles( "@ui/icon", "ui/icon", "", false );
-    copyFiles( "@ui/style", "ui/style", "json", false );
+    copyFiles( "@ui", "ui", "json", false );
   }
   if( doShaders ) {
     copyFiles( "@glsl", "glsl", "glsl", false );

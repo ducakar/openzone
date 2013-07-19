@@ -48,7 +48,7 @@ class BotAudio : public BasicAudio
 
     static Audio* create( const Object* obj );
 
-    void play( const Audio* parent ) override;
+    void play( const Object* playAt ) override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

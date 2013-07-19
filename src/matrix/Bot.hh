@@ -47,13 +47,14 @@ class Bot : public Dynamic
     static const int EVENT_DEATH            = 13;
     static const int EVENT_JUMP             = 14;
     static const int EVENT_MELEE            = 15;
+    static const int EVENT_TAKE             = 16;
 
     // Gestures.
-    static const int EVENT_POINT            = 16;
-    static const int EVENT_FALL_BACK        = 17;
-    static const int EVENT_SALUTE           = 18;
-    static const int EVENT_WAVE             = 19;
-    static const int EVENT_FLIP             = 20;
+    static const int EVENT_POINT            = 17;
+    static const int EVENT_FALL_BACK        = 18;
+    static const int EVENT_SALUTE           = 19;
+    static const int EVENT_WAVE             = 20;
+    static const int EVENT_FLIP             = 21;
 
     /*
      * ACTIONS

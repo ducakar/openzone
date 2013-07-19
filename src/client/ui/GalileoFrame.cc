@@ -23,10 +23,10 @@
 
 #include <client/ui/GalileoFrame.hh>
 
+#include <nirvana/QuestList.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
-#include <client/QuestList.hh>
 #include <client/ui/Style.hh>
 
 namespace oz

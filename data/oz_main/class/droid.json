@@ -65,6 +65,7 @@
     "swimSurface":      "openarena/watr_in",
     "death":            "droid-sounds/death2",
     "jump":             "droid-sounds/pain50_1",
+    "take":             "oz/itempick",
     "flip":             "droid-sounds/death4"
   }
 }

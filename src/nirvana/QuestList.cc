@@ -18,16 +18,12 @@
  */
 
 /**
- * @file client/QuestList.cc
+ * @file nirvana/QuestList.cc
  */
 
-#include <client/QuestList.hh>
-
-#include <client/ui/UI.hh>
+#include <nirvana/QuestList.hh>
 
 namespace oz
-{
-namespace client
 {
 
 void QuestList::add( const char* title, const char* description, const Point& place,
@@ -98,5 +94,4 @@ void QuestList::unload()
 
 QuestList questList;
 
-}
 }

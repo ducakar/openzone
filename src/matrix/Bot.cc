@@ -1018,6 +1018,8 @@ void Bot::onUpdate()
           item->parent = index;
           items.add( item->index );
           synapse.cut( item );
+
+          addEvent( EVENT_TAKE, 1.0f );
         }
       }
       else if( actions & ~oldActions & ACTION_ROTATE ) {

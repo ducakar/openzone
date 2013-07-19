@@ -28,6 +28,7 @@
 #include <matrix/luaapi.hh>
 
 #include <nirvana/Memo.hh>
+#include <nirvana/QuestList.hh>
 #include <nirvana/Nirvana.hh>
 
 namespace oz
@@ -517,6 +518,36 @@ static int ozSelfBindOverlaps( lua_State* l )
 }
 
 /*
+ * QuestList
+ */
+
+static int ozQuestAdd( lua_State* l )
+{
+  ARG( 6 );
+
+  questList.add( l_tostring( 1 ),
+                 l_tostring( 2 ),
+                 Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
+                 Quest::State( l_toint( 6 ) ) );
+
+  l_pushint( questList.quests.length() - 1 );
+  return 1;
+}
+
+static int ozQuestEnd( lua_State* l )
+{
+  ARG( 2 );
+
+  int id = l_toint( 1 );
+  if( uint( id ) >= uint( questList.quests.length() ) ) {
+    ERROR( "Invalid quest id" );
+  }
+
+  questList.quests[id].state = l_tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
+  return 0;
+}
+
+/*
  * Nirvana
  */
 
@@ -559,5 +590,10 @@ static int ozNirvanaAddMemo( lua_State* l )
 }
 
 /// @}
+
+/**
+ * Register nirvana-specific Lua constants with a given Lua VM.
+ */
+void importNirvanaConstants( lua_State* l );
 
 }

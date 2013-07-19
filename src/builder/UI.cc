@@ -98,24 +98,17 @@ void UI::buildIcons()
 
   hard_assert( builtIcons.length() == aLength( ICON_NAMES ) );
 
-  dir = "@ui/style";
-  ls  = dir.ls();
+  File styleFile = "@ui/style.json";
+  JSON style;
 
-  foreach( file, ls.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
-      continue;
-    }
+  if( !style.load( styleFile ) ) {
+    OZ_ERROR( "Failed to load style '%s'", styleFile.path().cstr() );
+  }
 
-    JSON style;
-    if( !style.load( *file ) ) {
-      OZ_ERROR( "Failed to load style '%s'", file->path().cstr() );
-    }
+  const JSON& sounds = style["sounds"];
 
-    const JSON& sounds = style["sounds"];
-
-    foreach( sound, sounds.objectCIter() ) {
-      context.usedSounds.add( sound->value.asString(), "UI style" );
-    }
+  foreach( sound, sounds.objectCIter() ) {
+    context.usedSounds.add( sound->value.asString(), "UI style" );
   }
 
   Log::unindent();

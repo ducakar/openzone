@@ -463,6 +463,13 @@ void LuaNirvana::init()
   IMPORT_FUNC( ozSelfBindOverlaps );
 
   /*
+   * QuestList
+   */
+
+  IMPORT_FUNC( ozQuestAdd );
+  IMPORT_FUNC( ozQuestEnd );
+
+  /*
    * Nirvana
    */
 
@@ -470,6 +477,7 @@ void LuaNirvana::init()
   IMPORT_FUNC( ozNirvanaAddMemo );
 
   importMatrixConstants( l );
+  importNirvanaConstants( l );
 
   l_newtable();
   l_setglobal( "ozLocalData" );

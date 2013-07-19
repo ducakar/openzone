@@ -37,7 +37,6 @@ add_library( client STATIC
   openzone.hh
   Profile.hh
   Proxy.hh
-  QuestList.hh
   Render.hh
   Shader.hh
   Shape.hh
@@ -82,7 +81,6 @@ add_library( client STATIC
   Network.cc
   Profile.cc
   Proxy.cc
-  QuestList.cc
   Render.cc
   Shader.cc
   Shape.cc

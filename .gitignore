@@ -22,7 +22,7 @@
 /data/*/snd
 /data/*/terra
 /data/*/ui/*
-!/data/*/ui/style
+!/data/*/ui/style.json
 
 DISABLED
 *.pot

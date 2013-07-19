@@ -46,8 +46,10 @@ Audio* BotAudio::create( const Object* obj )
   return new BotAudio( obj );
 }
 
-void BotAudio::play( const Audio* parent )
+void BotAudio::play( const Object* playAt )
 {
+  hard_assert( playAt != nullptr );
+
   const Bot*  bot    = static_cast<const Bot*>( obj );
   const auto& sounds = obj->clazz->audioSounds;
 
@@ -65,7 +67,7 @@ void BotAudio::play( const Audio* parent )
       recent[event->id] = RECENT_TICKS;
 
       if( !( bot->state & Bot::DEAD_BIT ) || event->id == Bot::EVENT_DEATH ) {
-        playSound( sounds[event->id], event->intensity, parent == nullptr ? obj : parent->obj );
+        playSound( sounds[event->id], event->intensity, playAt );
       }
     }
   }
@@ -75,7 +77,7 @@ void BotAudio::play( const Audio* parent )
     const Object* item = orbis.obj( obj->items[i] );
 
     if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, parent == nullptr ? this : parent );
+      context.playAudio( item, playAt );
     }
   }
 

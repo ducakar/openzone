@@ -63,6 +63,7 @@
     "death":            "ppm/deathd",
     "jump":             "aard/jump",
     "melee":            "aard/tak",
+    "take":             "oz/itempick",
     "flip":             "ppm/deathd"
   }
 }

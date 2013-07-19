@@ -23,8 +23,7 @@
 
 #pragma once
 
-#include <client/QuestList.hh>
-
+#include <nirvana/QuestList.hh>
 #include <client/ui/Frame.hh>
 #include <client/ui/Button.hh>
 #include <client/ui/Text.hh>

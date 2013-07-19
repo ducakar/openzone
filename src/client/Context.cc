@@ -444,14 +444,14 @@ void Context::freeSound( int id )
 
 void Context::playSample( int id )
 {
-  requestSound( id );
+  if( id < 0 ) {
+    return;
+  }
 
   uint srcId = addSource( id );
 
   alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
   alSourcePlay( srcId );
-
-  releaseSound( id );
 
   OZ_AL_CHECK_ERROR();
 }
@@ -543,7 +543,7 @@ void Context::drawImago( const Object* obj, const Imago* parent )
   imago->draw( parent );
 }
 
-void Context::playAudio( const Object* obj, const Audio* parent )
+void Context::playAudio( const Object* obj, const Object* parent )
 {
   hard_assert( obj->flags & Object::AUDIO_BIT );
 
@@ -728,7 +728,6 @@ void Context::unload()
     if( sounds[i].nUsers == 0 ) {
       freeSound( i );
     }
-    hard_assert( sounds[i].nUsers == -1 );
   }
 
   OZ_AL_CHECK_ERROR();

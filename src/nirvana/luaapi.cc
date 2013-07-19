@@ -18,53 +18,24 @@
  */
 
 /**
- * @file client/QuestList.hh
+ * @file nirvana/luaapi.cc
  */
 
-#pragma once
+#include <common/luabase.hh>
 
-#include <client/common.hh>
+#include <nirvana/QuestList.hh>
 
 namespace oz
 {
-namespace client
+
+void importNirvanaConstants( lua_State* l );
+
+void importNirvanaConstants( lua_State* l )
 {
-
-struct Quest
-{
-  enum State
-  {
-    NONE,
-    PENDING,
-    SUCCESSFUL,
-    FAILED
-  };
-
-  String title;
-  String description;
-  Point  place;
-  State  state;
-};
-
-class QuestList
-{
-  public:
-
-    List<Quest> quests;
-    int         activeQuest;
-
-    void add( const char* title, const char* description, const Point& place, Quest::State state );
-    void remove( int index );
-
-    void read( InputStream* istream );
-    void write( OutputStream* ostream ) const;
-
-    void load();
-    void unload();
-
-};
-
-extern QuestList questList;
-
+  registerLuaConstant( l, "OZ_QUEST_NONE",                  Quest::NONE );
+  registerLuaConstant( l, "OZ_QUEST_PENDING",               Quest::PENDING );
+  registerLuaConstant( l, "OZ_QUEST_SUCCESSFUL",            Quest::SUCCESSFUL );
+  registerLuaConstant( l, "OZ_QUEST_FAILED",                Quest::FAILED );
 }
+
 }

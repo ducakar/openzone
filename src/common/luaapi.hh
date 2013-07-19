@@ -33,15 +33,15 @@ namespace oz
 {
 
 /**
- * %Lua state structure for common layer %Lua API.
+ * Lua state structure for common layer Lua API.
  */
 struct LuaState
 {
-  const char* envName; ///< Name of %Lua component. Used when printing messages or errors.
+  const char* envName; ///< Name of Lua component. Used when printing messages or errors.
 };
 
 /**
- * %Lua state for common layer %Lua API.
+ * Lua state for common layer Lua API.
  */
 static LuaState ls;
 

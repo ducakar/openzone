@@ -374,6 +374,7 @@ void Class::fillBot( const char* className )
     audioSounds[Bot::EVENT_DEATH]          = soundsConfig["death"].get( "" );
     audioSounds[Bot::EVENT_JUMP]           = soundsConfig["jump"].get( "" );
     audioSounds[Bot::EVENT_MELEE]          = soundsConfig["melee"].get( "" );
+    audioSounds[Bot::EVENT_TAKE]           = soundsConfig["take"].get( "" );
 
     audioSounds[Bot::EVENT_POINT]          = soundsConfig["point"].get( "" );
     audioSounds[Bot::EVENT_FALL_BACK]      = soundsConfig["fallBack"].get( "" );
@@ -389,6 +390,7 @@ void Class::fillBot( const char* className )
     context.usedSounds.include( audioSounds[Bot::EVENT_DEATH], name + " (Object class)" );
     context.usedSounds.include( audioSounds[Bot::EVENT_JUMP], name + " (Object class)" );
     context.usedSounds.include( audioSounds[Bot::EVENT_MELEE], name + " (Object class)" );
+    context.usedSounds.include( audioSounds[Bot::EVENT_TAKE], name + " (Object class)" );
 
     context.usedSounds.include( audioSounds[Bot::EVENT_POINT], name + " (Object class)" );
     context.usedSounds.include( audioSounds[Bot::EVENT_FALL_BACK], name + " (Object class)" );

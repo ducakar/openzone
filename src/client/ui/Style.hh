@@ -63,6 +63,7 @@ class Style
     struct Sounds
     {
       int click;
+      int nextWeapon;
     };
 
     struct Area

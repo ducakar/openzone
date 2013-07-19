@@ -24,13 +24,14 @@
 #include <client/ui/Style.hh>
 
 #include <matrix/Liber.hh>
+#include <client/Context.hh>
 
 #define OZ_READ_COLOUR( var, r, g, b, a ) \
   colours.var = coloursConfig[#var].get( Vec4( r, g, b, a ) )
 
 #define OZ_READ_SOUND( var, name_ ) \
   { \
-    const char* name = soundsConfig[#var].get( #name_ ); \
+    const char* name = soundsConfig[#var].get( name_ ); \
     sounds.var = String::isEmpty( name ) ? -1 : liber.soundIndex( name ); \
   }
 
@@ -80,7 +81,7 @@ void Style::init()
 {
   Log::print( "Initialising Style ..." );
 
-  File configFile( "@ui/style/style.json" );
+  File configFile( "@ui/style.json" );
   JSON config( configFile );
 
   const JSON& fontsConfig = config["fonts"];
@@ -120,6 +121,7 @@ void Style::init()
   const JSON& soundsConfig = config["sounds"];
 
   OZ_READ_SOUND( click,             "" );
+  OZ_READ_SOUND( nextWeapon,        "" );
 
   int weaponBarHeight = fonts[Font::LARGE].height + 8;
 
@@ -150,11 +152,17 @@ void Style::init()
 
   config.clear( true );
 
+  context.requestSound( sounds.click );
+  context.requestSound( sounds.nextWeapon );
+
   Log::printEnd( " OK" );
 }
 
 void Style::destroy()
 {
+  context.releaseSound( sounds.nextWeapon );
+  context.releaseSound( sounds.click );
+
   for( int i = 0; i < Font::MAX; ++i ) {
     fonts[i].destroy();
   }

@@ -34,7 +34,6 @@
 #include <client/Camera.hh>
 #include <client/LuaClient.hh>
 #include <client/Profile.hh>
-#include <client/QuestList.hh>
 #include <client/MenuStage.hh>
 #include <client/Input.hh>
 #include <client/ui/LoadingArea.hh>
@@ -64,7 +63,6 @@ void GameStage::read()
   Log::println( "Reading Client {" );
   Log::indent();
 
-  questList.read( &istream );
   camera.read( &istream );
   modules.read( &istream );
 
@@ -83,7 +81,6 @@ void GameStage::write() const
   matrix.write( &ostream );
   nirvana.write( &ostream );
 
-  questList.write( &ostream );
   camera.write( &ostream );
   modules.write( &ostream );
 
@@ -343,8 +340,6 @@ void GameStage::load()
   luaClient.init();
   modules.registerLua();
 
-  questList.load();
-
   render.load();
   context.load();
 
@@ -469,8 +464,6 @@ void GameStage::unload()
 
   context.unload();
   render.unload();
-
-  questList.unload();
 
   luaClient.destroy();
 

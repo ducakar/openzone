@@ -26,6 +26,7 @@
 #include <common/Timer.hh>
 #include <client/Camera.hh>
 #include <client/Input.hh>
+#include <client/Context.hh>
 #include <client/ui/HudArea.hh>
 #include <client/ui/Inventory.hh>
 #include <client/ui/InfoFrame.hh>
@@ -180,6 +181,8 @@ void UnitProxy::prepare()
     }
     if( input.rightClick ) {
       if( bot->parent >= 0 ) {
+        context.playSample( ui::style.sounds.nextWeapon );
+
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
       else if( camera.entityObj != nullptr ) {

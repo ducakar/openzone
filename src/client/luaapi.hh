@@ -27,7 +27,6 @@
 
 #include <nirvana/luaapi.hh>
 
-#include <client/QuestList.hh>
 #include <client/Camera.hh>
 #include <client/Profile.hh>
 #include <client/ui/BuildMenu.hh>
@@ -126,36 +125,6 @@ static int ozOrbisAddPlayer( lua_State* l )
     }
   }
   return 1;
-}
-
-/*
- * QuestList
- */
-
-static int ozQuestAdd( lua_State* l )
-{
-  ARG( 6 );
-
-  questList.add( l_tostring( 1 ),
-                 l_tostring( 2 ),
-                 Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
-                 Quest::State( l_toint( 6 ) ) );
-
-  l_pushint( questList.quests.length() - 1 );
-  return 1;
-}
-
-static int ozQuestEnd( lua_State* l )
-{
-  ARG( 2 );
-
-  int id = l_toint( 1 );
-  if( uint( id ) >= uint( questList.quests.length() ) ) {
-    ERROR( "Invalid quest id" );
-  }
-
-  questList.quests[id].state = l_tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
-  return 0;
 }
 
 /*
@@ -298,7 +267,7 @@ static int ozUIShowBuild( lua_State* l )
 /// @}
 
 /**
- * Register client-specific %Lua constants with a given %Lua VM.
+ * Register client-specific Lua constants with a given Lua VM.
  */
 void importClientConstants( lua_State* l );
 

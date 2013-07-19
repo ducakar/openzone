@@ -2720,7 +2720,7 @@ static int ozFragIsVisibleFromSelfEye( lua_State* l )
 /// @}
 
 /**
- * Register matrix-specific %Lua constants with a given %Lua VM.
+ * Register matrix-specific Lua constants with a given Lua VM.
  */
 void importMatrixConstants( lua_State* l );
 

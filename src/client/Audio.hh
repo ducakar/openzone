@@ -66,7 +66,7 @@ class Audio
 
     virtual ~Audio();
 
-    virtual void play( const Audio* parent ) = 0;
+    virtual void play( const Object* playAt ) = 0;
 
 };
 

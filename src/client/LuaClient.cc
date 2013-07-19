@@ -595,6 +595,7 @@ void LuaClient::init()
   IMPORT_FUNC( ozUIShowBuild );
 
   importMatrixConstants( l );
+  importNirvanaConstants( l );
   importClientConstants( l );
 
   hard_assert( l_gettop() == 0 );

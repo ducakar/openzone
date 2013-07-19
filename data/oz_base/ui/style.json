@@ -45,6 +45,7 @@
     "menuStrip":        [ 0.00, 0.00, 0.00, 1.00 ]
   },
   "sounds": {
-    "click":            "sfxr/click"
+    "click":            "sfxr/click",
+    "nextWeapon":       "free/itempick"
   }
 }

@@ -32,9 +32,9 @@ namespace oz
 {
 
 /**
- * %Lua base class.
+ * Lua base class.
  *
- * It provides common functions for derived %Lua classes in matrix, nirvana and client layers.
+ * It provides common functions for derived Lua classes in matrix, nirvana and client layers.
  */
 class LuaCommon
 {
@@ -45,59 +45,59 @@ class LuaCommon
      */
     typedef int APIFunc( lua_State* );
 
-    static int  randomSeed;       ///< Random seed for %Lua environments.
+    static int  randomSeed;       ///< Random seed for Lua environments.
     static bool isRandomSeedTime; ///< True iff current time (`Time::time()`) should be seed.
 
   protected:
 
-    lua_State* l;                 ///< %Lua state descriptor.
+    lua_State* l;                 ///< Lua state descriptor.
 
   protected:
 
     /**
-     * Read serialised %Lua variable and push it on global stack (recursively for tables).
+     * Read serialised Lua variable and push it on global stack (recursively for tables).
      */
     bool readVariable( InputStream* istream );
 
     /**
-     * Serialise %Lua variable at the top of the stack (recursively for tables).
+     * Serialise Lua variable at the top of the stack (recursively for tables).
      */
     void writeVariable( OutputStream* stream );
 
     /**
-     * Common initialisation for %Lua classes.
+     * Common initialisation for Lua classes.
      */
     void initCommon( const char* componentName );
 
     /**
-     * Common clean-up for %Lua classes.
+     * Common clean-up for Lua classes.
      */
     void freeCommon();
 
   public:
 
     /**
-     * Register %Lua API function to the %Lua state.
+     * Register Lua API function to the Lua state.
      */
     void registerFunction( const char* name, APIFunc func );
 
     /**
-     * Import global variable into the %Lua state.
+     * Import global variable into the Lua state.
      */
     void registerConstant( const char* name, bool value );
 
     /**
-     * Import global variable into the %Lua state.
+     * Import global variable into the Lua state.
      */
     void registerConstant( const char* name, int value );
 
     /**
-     * Import global variable into the %Lua state.
+     * Import global variable into the Lua state.
      */
     void registerConstant( const char* name, float value );
 
     /**
-     * Import global variable into the %Lua state.
+     * Import global variable into the Lua state.
      */
     void registerConstant( const char* name, const char* value );
 

@@ -476,7 +476,7 @@ void Sound::playCell( int cellX, int cellY )
 
   foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
-      context.playAudio( obj, nullptr );
+      context.playAudio( obj, obj );
     }
   }
 

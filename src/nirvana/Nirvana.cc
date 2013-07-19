@@ -28,6 +28,7 @@
 #include <matrix/Bot.hh>
 #include <nirvana/LuaNirvana.hh>
 #include <nirvana/Memo.hh>
+#include <nirvana/QuestList.hh>
 
 #define OZ_REGISTER_DEVICE( name ) \
   deviceClasses.add( #name, &name::create )
@@ -109,6 +110,8 @@ void Nirvana::read( InputStream* istream )
     minds.add( index, new Mind( index, istream ) );
   }
 
+  questList.read( istream );
+
   Log::printEnd( " OK" );
 }
 
@@ -132,12 +135,17 @@ void Nirvana::write( OutputStream* ostream ) const
     mind->value->write( ostream );
   }
 
+  questList.write( ostream );
+
   Log::printEnd( " OK" );
 }
 
 void Nirvana::load()
 {
   Log::print( "Loading Nirvana ..." );
+
+  questList.load();
+
   Log::printEnd( " OK" );
 }
 
@@ -153,6 +161,8 @@ void Nirvana::unload()
 
   Memo::pool.free();
   Mind::pool.free();
+
+  questList.unload();
 
   Log::printEnd( " OK" );
 }
