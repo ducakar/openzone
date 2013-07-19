@@ -28,6 +28,7 @@
 #include <matrix/luaapi.hh>
 
 #include <nirvana/Memo.hh>
+#include <nirvana/TechTree.hh>
 #include <nirvana/QuestList.hh>
 #include <nirvana/Nirvana.hh>
 
@@ -516,6 +517,10 @@ static int ozSelfBindOverlaps( lua_State* l )
 
   return 0;
 }
+
+/*
+ * TechTree
+ */
 
 /*
  * QuestList

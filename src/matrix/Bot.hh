@@ -219,6 +219,7 @@ class Bot : public Dynamic
 
     void onDestroy() override;
     void onUpdate() override;
+    float getStatus() const override;
 
   public:
 

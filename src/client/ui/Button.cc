@@ -44,12 +44,11 @@ void Button::onVisibilityChange( bool )
 bool Button::onMouseEvent()
 {
   if( !input.keys[Input::KEY_UI_ALT] ) {
+    bool hasClick = ( input.buttons & ~input.oldButtons & clickMask );
     isHighlighted = true;
 
-    if( callback != nullptr &&
-        ( clickMask == -1 || ( input.buttons & ~input.oldButtons & clickMask ) ) )
-    {
-      if( ( input.buttons & ~input.oldButtons & clickMask ) && style.sounds.click >= 0 ) {
+    if( callback != nullptr && ( clickMask == -1 || hasClick ) ) {
+      if( hasClick && style.sounds.click >= 0 ) {
         context.playSample( style.sounds.click );
       }
       isClicked = callback( this );

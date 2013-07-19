@@ -365,6 +365,7 @@ void LuaClient::init()
   IMPORT_FUNC( ozObjRemoveAllItems );
 
   IMPORT_FUNC( ozObjEnableUpdate );
+  IGNORE_FUNC( ozObjReportStatus );
   IMPORT_FUNC( ozObjDamage );
   IMPORT_FUNC( ozObjDestroy );
 

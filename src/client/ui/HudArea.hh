@@ -25,6 +25,7 @@
 
 #include <matrix/Vehicle.hh>
 #include <client/ui/Label.hh>
+#include <client/ui/Bar.hh>
 #include <client/ui/ModelField.hh>
 #include <client/ui/Style.hh>
 
@@ -51,6 +52,13 @@ class HudArea : public Area
     Label       weaponRounds;
     Label       vehicleWeaponNames[Vehicle::MAX_WEAPONS];
     Label       vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+
+    Bar         taggedLife;
+    Bar         taggedStatus;
+    Bar         botLife;
+    Bar         botStamina;
+    Bar         vehicleHull;
+    Bar         vehicleFuel;
 
     ModelField* vehicleModel;
 
@@ -87,7 +95,6 @@ class HudArea : public Area
     int         bottomIconX;
     int         bottomIconY;
 
-    void drawBar( const Style::Bar* barStype, float ratio ) const;
     void drawBotCrosshair();
     void drawBotStatus();
     void drawVehicleStatus();
@@ -97,6 +104,7 @@ class HudArea : public Area
     void onVisibilityChange( bool doShow ) override;
     void onReposition() override;
     void onUpdate() override;
+    bool onMouseEvent() override;
     void onDraw() override;
 
   public:

@@ -78,6 +78,14 @@ void Object::onUpdate()
   luaMatrix.objectCall( clazz->onUpdate, this );
 }
 
+float Object::getStatus() const
+{
+  hard_assert( !clazz->getStatus.isEmpty() );
+
+  luaMatrix.objectCall( clazz->getStatus, const_cast<Object*>( this ) );
+  return luaMatrix.objectStatus;
+}
+
 Object::~Object()
 {
   hard_assert( dim.x <= REAL_MAX_DIM );

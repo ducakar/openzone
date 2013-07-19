@@ -85,6 +85,9 @@ class Object : public AABB
     // if the onUpdate method should be called on each tick
     static const int UPDATE_FUNC_BIT    = 0x00100000;
 
+    // if the getStatus method should be called to retrieve status bar
+    static const int STATUS_FUNC_BIT    = 0x00080000;
+
     /*
      * BOUND OBJECTS
      */
@@ -255,6 +258,12 @@ class Object : public AABB
     virtual bool onUse( Bot* user );
     virtual void onUpdate();
 
+    /*
+     * STATUS BAR
+     */
+
+    virtual float getStatus() const;
+
   public:
 
     virtual ~Object();
@@ -318,6 +327,12 @@ class Object : public AABB
       if( flags & UPDATE_FUNC_BIT ) {
         onUpdate();
       }
+    }
+
+    OZ_ALWAYS_INLINE
+    float status() const
+    {
+      return flags & STATUS_FUNC_BIT ? getStatus() : -1.0f;
     }
 
   public:

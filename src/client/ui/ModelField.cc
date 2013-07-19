@@ -39,7 +39,7 @@ namespace ui
 
 const float ModelField::DEFAULT_ROTATION   = 3.0f * Math::TAU / 8.0f;
 const float ModelField::ROTATION_VEL       = 1.30f * Timer::TICK_TIME;
-const float ModelField::ROTATION_SMOOTHING = 0.75f;
+const float ModelField::ROTATION_SMOOTHING = 0.80f;
 
 void ModelField::onVisibilityChange( bool )
 {
@@ -52,16 +52,15 @@ void ModelField::onVisibilityChange( bool )
 bool ModelField::onMouseEvent()
 {
   if( !input.keys[Input::KEY_UI_ALT] ) {
-    if( callback != nullptr ) {
-      nextRot       = angleWrap( nextRot + ROTATION_VEL );
-      isHighlighted = true;
+    bool hasClick = ( input.buttons & ~input.oldButtons & clickMask );
+    nextRot       = angleWrap( nextRot + ROTATION_VEL );
+    isHighlighted = true;
 
-      if( clickMask == -1 || ( input.buttons & ~input.oldButtons & clickMask ) ) {
-        if( ( input.buttons & ~input.oldButtons & clickMask ) && style.sounds.click >= 0 ) {
-          context.playSample( style.sounds.click );
-        }
-        isClicked = callback( this );
+    if( callback != nullptr && ( clickMask == -1 || hasClick ) ) {
+      if( hasClick && style.sounds.click >= 0 ) {
+        context.playSample( style.sounds.click );
       }
+      isClicked = callback( this );
     }
   }
   return true;

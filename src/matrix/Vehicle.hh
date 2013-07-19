@@ -93,8 +93,9 @@ class Vehicle : public Dynamic
     void airHandler();
 
     void onDestroy() override;
-    void onUpdate() override;
     bool onUse( Bot* user ) override;
+    void onUpdate() override;
+    float getStatus() const override;
 
   public:
 

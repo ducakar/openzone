@@ -44,15 +44,17 @@
     config[#area].get( &area.x, 4 ) \
   )
 
-#define OZ_READ_BAR( bar, x_, y_, w_, h_, minColour_, maxColour_ ) \
+#define OZ_READ_BAR( bar, x_, y_, w_, h_, border_, background_, minColour_, maxColour_ ) \
   ( \
-    bar.x         = x_, \
-    bar.y         = y_, \
-    bar.w         = w_, \
-    bar.h         = h_, \
-    bar.minColour = minColour_, \
-    bar.maxColour = maxColour_, \
-    config[#bar].get( &bar.x, 16 ) \
+    bar.x          = x_, \
+    bar.y          = y_, \
+    bar.w          = w_, \
+    bar.h          = h_, \
+    bar.border     = border_, \
+    bar.background = background_, \
+    bar.minColour  = minColour_, \
+    bar.maxColour  = maxColour_, \
+    config[#bar].get( &bar.x, 20 ) \
   )
 
 namespace oz
@@ -71,10 +73,10 @@ struct FontInfo
 
 static const FontInfo FONT_INFOS[Font::MAX] = {
   { "mono",  "DroidSansMono", 13 },
-  { "sans",  "DroidSans",     13 },
-  { "small", "DroidSans",     11 },
-  { "large", "DroidSans",     14 },
-  { "title", "DroidSans",     18 }
+  { "sans",  "DroidSansMono", 13 },
+  { "small", "DroidSansMono", 10 },
+  { "large", "DroidSansMono", 14 },
+  { "title", "DroidSansMono", 18 }
 };
 
 void Style::init()
@@ -97,24 +99,21 @@ void Style::init()
 
   const JSON& coloursConfig = config["colours"];
 
-  OZ_READ_COLOUR( text,             1.00f, 1.00f, 1.00f, 1.00f );
+  OZ_READ_COLOUR( text,             0.80f, 1.00f, 0.90f, 1.00f );
   OZ_READ_COLOUR( textBackground,   0.00f, 0.00f, 0.00f, 1.00f );
 
-  OZ_READ_COLOUR( button,           0.40f, 0.40f, 0.40f, 0.40f );
-  OZ_READ_COLOUR( buttonHover,      0.60f, 0.60f, 0.60f, 0.40f );
-  OZ_READ_COLOUR( buttonClicked,    1.00f, 1.00f, 1.00f, 0.40f );
+  OZ_READ_COLOUR( button,           0.20f, 0.30f, 0.25f, 0.40f );
+  OZ_READ_COLOUR( buttonHover,      0.40f, 0.60f, 0.50f, 0.40f );
+  OZ_READ_COLOUR( buttonClicked,    0.80f, 1.00f, 0.90f, 0.40f );
 
-  OZ_READ_COLOUR( tile,             0.40f, 0.40f, 0.40f, 0.60f );
-  OZ_READ_COLOUR( tileHover,        0.60f, 0.60f, 0.60f, 0.60f );
+  OZ_READ_COLOUR( tile,             0.24f, 0.30f, 0.27f, 0.60f );
+  OZ_READ_COLOUR( tileHover,        0.48f, 0.60f, 0.54f, 0.60f );
 
   OZ_READ_COLOUR( frame,            0.00f, 0.00f, 0.00f, 0.30f );
-  OZ_READ_COLOUR( background,       0.05f, 0.05f, 0.05f, 1.00f );
-
-  OZ_READ_COLOUR( barBorder,        1.00f, 1.00f, 1.00f, 0.50f );
-  OZ_READ_COLOUR( barBackground,    0.00f, 0.00f, 0.00f, 0.10f );
+  OZ_READ_COLOUR( background,       0.04f, 0.06f, 0.05f, 1.00f );
 
   OZ_READ_COLOUR( galileoNormal,    1.00f, 1.00f, 1.00f, 0.60f );
-  OZ_READ_COLOUR( galileoMaximised, 1.00f, 1.00f, 1.00f, 0.80f );
+  OZ_READ_COLOUR( galileoMaximised, 1.00f, 1.00f, 1.00f, 1.00f );
 
   OZ_READ_COLOUR( menuStrip,        0.00f, 0.00f, 0.00f, 1.00f );
 
@@ -123,25 +122,45 @@ void Style::init()
   OZ_READ_SOUND( click,             "" );
   OZ_READ_SOUND( nextWeapon,        "" );
 
+  OZ_READ_BAR( taggedLife,          0, 0, 0, 0,
+                                    Vec4( 1.00f, 1.00f, 1.00f, 1.00f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.60f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.60f ) );
+
+  OZ_READ_BAR( taggedStatus,        0, 0, 0, 0,
+                                    Vec4( 1.00f, 1.00f, 1.00f, 1.00f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.60f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.60f ) );
+
   int weaponBarHeight = fonts[Font::LARGE].height + 8;
 
-  OZ_READ_BAR( botStamina,          8,  8, 200, 14,
-                                    Vec4( 0.70f, 0.30f, 0.40f, 0.50f ),
-                                    Vec4( 0.00f, 0.30f, 1.00f, 0.50f ) );
+  OZ_READ_BAR( botLife,             8, 30, 200, 14,
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.60f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.60f ) );
 
-  OZ_READ_BAR( botHealth,           8, 30, 200, 14,
-                                    Vec4( 1.00f, 0.00f, 0.00f, 0.50f ),
-                                    Vec4( 0.00f, 1.00f, 0.00f, 0.50f ) );
+  OZ_READ_BAR( botStamina,          8, 8, 200, 14,
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 0.70f, 0.30f, 0.40f, 0.60f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.60f ) );
 
   OZ_READ_AREA( botWeapon,          8, 52, 200, weaponBarHeight );
 
-  OZ_READ_BAR( vehicleFuel,         -8,  8, 200, 14,
-                                    Vec4( 0.70f, 0.30f, 0.40f, 0.50f ),
-                                    Vec4( 0.00f, 0.30f, 1.00f, 0.50f ) );
-
   OZ_READ_BAR( vehicleHull,         -8, 30, 200, 14,
-                                    Vec4( 1.00f, 0.00f, 0.00f, 0.50f ),
-                                    Vec4( 0.00f, 1.00f, 0.00f, 0.50f ) );
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.60f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.60f ) );
+
+  OZ_READ_BAR( vehicleFuel,         -8, 8, 200, 14,
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 0.70f, 0.30f, 0.40f, 0.60f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.60f ) );
 
   OZ_READ_AREA( vehicleWeapon[0],   -8, 52 + 0 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
   OZ_READ_AREA( vehicleWeapon[1],   -8, 52 + 1 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );

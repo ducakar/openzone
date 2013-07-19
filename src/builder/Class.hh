@@ -74,6 +74,7 @@ class Class
     String             onDestroy;
     String             onUse;
     String             onUpdate;
+    String             getStatus;
 
     /*
      * Dynamic

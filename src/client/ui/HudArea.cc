@@ -38,25 +38,6 @@ namespace ui
 const float HudArea::VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
 const float HudArea::CROSS_FADE_COEFF = 8.0f;
 
-void HudArea::drawBar( const Style::Bar* barStyle, float ratio ) const
-{
-  int x = barStyle->x == CENTRE ? ( width - barStyle->w ) / 2 :
-          barStyle->x < 0 ? width - barStyle->w + barStyle->x : barStyle->x;
-  int y = barStyle->y == CENTRE ? ( width - barStyle->h ) / 2 :
-          barStyle->y < 0 ? height - barStyle->h + barStyle->y : barStyle->y;
-
-  int width = Math::lround( float( barStyle->w - 2 ) * ratio );
-
-  shape.colour( style.colours.barBorder );
-  shape.rect( x, y, barStyle->w, barStyle->h );
-
-  shape.colour( Math::mix( barStyle->minColour, barStyle->maxColour, ratio ) );
-  shape.fill( x + 1, y + 1, width, barStyle->h - 2 );
-
-  shape.colour( style.colours.barBackground );
-  shape.fill( x + 1 + width, y + 1, barStyle->w - 2 - width, barStyle->h - 2 );
-}
-
 void HudArea::drawBotCrosshair()
 {
   const Bot*      me      = camera.botObj;
@@ -121,16 +102,12 @@ void HudArea::drawBotCrosshair()
         life = obj->life / objClazz->life;
       }
 
-      int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
+      float status = obj->status();
 
-      shape.colour( 1.0f - life, life, 0.0f, 0.5f );
-      shape.fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
-
-      shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
-      shape.fill( healthBarX + 1 + lifeWidth, healthBarY + 11, ICON_SIZE + 14 - lifeWidth, 10 );
-
-      shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
-      shape.rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
+      taggedLife.draw( this, healthBarX, healthBarY + 14, ICON_SIZE + 16, 10, life );
+      if( status >= 0.0f ) {
+        taggedStatus.draw( this, healthBarX, healthBarY + 7, ICON_SIZE + 16, 8, status );
+      }
 
       if( lastObjectId != camera.object ) {
         lastObjectId = camera.object;
@@ -214,11 +191,11 @@ void HudArea::drawBotStatus()
   const Bot*      bot      = camera.botObj;
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float stamina = max( bot->stamina / botClazz->stamina, 0.0f );
   float life    = max( 2.0f * bot->life / botClazz->life - 1.0f, 0.0f );
+  float stamina = max( bot->stamina / botClazz->stamina, 0.0f );
 
-  drawBar( &style.botHealth, life );
-  drawBar( &style.botStamina, stamina );
+  botLife.draw( this, life );
+  botStamina.draw( this, stamina );
 
   const Weapon* weaponObj = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
 
@@ -273,8 +250,8 @@ void HudArea::drawVehicleStatus()
   float fuel = max( vehicle->fuel / vehClazz->fuel, 0.0f );
   float hull = max( vehicle->life / vehClazz->life, 0.0f );
 
-  drawBar( &style.vehicleFuel, fuel );
-  drawBar( &style.vehicleHull, hull );
+  vehicleHull.draw( this, fuel );
+  vehicleFuel.draw( this, hull );
 
   for( int i = 0; i < vehClazz->nWeapons; ++i ) {
     int    labelIndex  = vehClazz->nWeapons - i - 1;
@@ -365,6 +342,11 @@ void HudArea::onUpdate()
   }
 }
 
+bool HudArea::onMouseEvent()
+{
+  return Area::passMouseEvents();
+}
+
 void HudArea::onDraw()
 {
   if( camera.botObj == nullptr || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
@@ -382,6 +364,12 @@ HudArea::HudArea() :
   title( 0, 0, ALIGN_CENTRE, Font::LARGE, " " ),
   weaponName( 0, 0, ALIGN_LEFT, Font::LARGE, " " ),
   weaponRounds( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" ),
+  taggedLife( &style.taggedLife ),
+  taggedStatus( &style.taggedStatus ),
+  botLife( &style.botLife ),
+  botStamina( &style.botStamina ),
+  vehicleHull( &style.vehicleHull ),
+  vehicleFuel( &style.vehicleHull ),
   vehicleModel( nullptr ),
   lastObjectId( -1 ),
   lastEntityId( -1 ),
@@ -389,7 +377,7 @@ HudArea::HudArea() :
   lastWeaponRounds( -1 ),
   lastVehicleId( -1 )
 {
-  flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
+  flags = UPDATE_BIT | PINNED_BIT;
 
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;

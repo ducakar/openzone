@@ -76,6 +76,7 @@ void Class::fillObject( const char* className )
   SET_FLAG( Object::DESTROY_FUNC_BIT, "flag.onDestroy", true  );
   SET_FLAG( Object::USE_FUNC_BIT,     "flag.onUse",     false );
   SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.onUpdate",  false );
+  SET_FLAG( Object::STATUS_FUNC_BIT,  "flag.getStatus", false );
   SET_FLAG( Object::SOLID_BIT,        "flag.solid",     true  );
   SET_FLAG( Object::CYLINDER_BIT,     "flag.cylinder",  true  );
   SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",  false );
@@ -253,6 +254,7 @@ void Class::fillObject( const char* className )
   onDestroy = config["onDestroy"].get( "" );
   onUse     = config["onUse"].get( "" );
   onUpdate  = config["onUpdate"].get( "" );
+  getStatus = config["getStatus"].get( "" );
 
   if( !onDestroy.isEmpty() ) {
     flags |= Object::LUA_BIT;
@@ -285,6 +287,17 @@ void Class::fillObject( const char* className )
     }
     else {
       flags |= Object::UPDATE_FUNC_BIT;
+    }
+  }
+  if( !getStatus.isEmpty() ) {
+    flags |= Object::LUA_BIT;
+
+    // disable event handler if explicitly set to false
+    if( !config["flag.getStatus"].get( true ) ) {
+      flags &= ~Object::STATUS_FUNC_BIT;
+    }
+    else {
+      flags |= Object::STATUS_FUNC_BIT;
     }
   }
 }
@@ -324,7 +337,8 @@ void Class::fillWeapon( const char* className )
 {
   fillDynamic( className );
 
-  flags |= Object::WEAPON_BIT | Object::ITEM_BIT | Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+  flags |= Object::WEAPON_BIT | Object::ITEM_BIT | Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT |
+           Object::STATUS_FUNC_BIT;
 
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
@@ -357,7 +371,8 @@ void Class::fillBot( const char* className )
 {
   fillDynamic( className );
 
-  flags |= Object::BOT_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT;
+  flags |= Object::BOT_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT |
+           Object::STATUS_FUNC_BIT;
   // We don't allow browsing a bot's inventory as long as one is alive.
   flags &= ~Object::BROWSABLE_BIT;
 
@@ -492,8 +507,8 @@ void Class::fillVehicle( const char* className )
 {
   fillDynamic( className );
 
-  flags |= Object::VEHICLE_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT |
-           Object::USE_FUNC_BIT;
+  flags |= Object::VEHICLE_BIT | Object::CYLINDER_BIT | Object::USE_FUNC_BIT |
+           Object::UPDATE_FUNC_BIT | Object::STATUS_FUNC_BIT;
 
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
@@ -649,6 +664,7 @@ void Class::writeObject( OutputStream* os )
   os->writeString( onDestroy );
   os->writeString( onUse );
   os->writeString( onUpdate );
+  os->writeString( getStatus );
 }
 
 void Class::writeDynamic( OutputStream* os )

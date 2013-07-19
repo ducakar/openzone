@@ -33,22 +33,6 @@ namespace oz
 
 Pool<Weapon, 2048> Weapon::pool;
 
-void Weapon::onUpdate()
-{
-  if( shotTime > 0.0f ) {
-    shotTime = max( shotTime - Timer::TICK_TIME, 0.0f );
-  }
-
-  if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
-    luaMatrix.objectCall( clazz->onUpdate, this );
-  }
-
-  if( !( flags & Object::UPDATE_FUNC_BIT ) ) {
-    // actually a hack, if Lua handler disables update
-    shotTime = 0.0f;
-  }
-}
-
 bool Weapon::onUse( Bot* user )
 {
   hard_assert( user->canEquip( this ) );
@@ -76,6 +60,29 @@ bool Weapon::onUse( Bot* user )
     return true;
   }
   return false;
+}
+
+void Weapon::onUpdate()
+{
+  if( shotTime > 0.0f ) {
+    shotTime = max( shotTime - Timer::TICK_TIME, 0.0f );
+  }
+
+  if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
+    luaMatrix.objectCall( clazz->onUpdate, this );
+  }
+
+  if( !( flags & Object::UPDATE_FUNC_BIT ) ) {
+    // actually a hack, if Lua handler disables update
+    shotTime = 0.0f;
+  }
+}
+
+float Weapon::getStatus() const
+{
+  const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
+
+  return float( nRounds ) / float( clazz->nRounds );
 }
 
 void Weapon::trigger( Bot* user )

@@ -63,6 +63,8 @@ bool LuaMatrix::objectCall( const char* functionName, Object* self_, Bot* user_ 
     l_settop( 1 );
   }
   hard_assert( l_gettop() == 1 );
+
+  objectStatus = ms.status;
   return success;
 }
 
@@ -172,7 +174,6 @@ void LuaMatrix::init()
    */
 
   IMPORT_FUNC( ozTerraLoad );
-
   IMPORT_FUNC( ozTerraHeight );
 
   /*
@@ -287,6 +288,7 @@ void LuaMatrix::init()
   IMPORT_FUNC( ozObjRemoveAllItems );
 
   IMPORT_FUNC( ozObjEnableUpdate );
+  IMPORT_FUNC( ozObjReportStatus );
   IMPORT_FUNC( ozObjDamage );
   IMPORT_FUNC( ozObjDestroy );
 

@@ -95,6 +95,7 @@ add_library( client STATIC
   UnitProxy.cc
   VehicleAudio.cc
   ui/Area.hh
+  ui/Bar.hh
   ui/BuildMenu.hh
   ui/Button.hh
   ui/CinematicText.hh
@@ -121,6 +122,7 @@ add_library( client STATIC
   ui/Text.hh
   ui/UI.hh
   ui/Area.cc
+  ui/Bar.cc
   ui/BuildMenu.cc
   ui/Button.cc
   ui/CinematicText.cc

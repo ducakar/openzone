@@ -89,6 +89,7 @@ void ObjectClass::init( InputStream* is, const char* name_ )
   onDestroy = is->readString();
   onUse     = is->readString();
   onUpdate  = is->readString();
+  getStatus = is->readString();
 }
 
 Object* ObjectClass::create( int index, const Point& pos, Heading heading ) const

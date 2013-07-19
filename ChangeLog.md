@@ -37,6 +37,7 @@
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
     * new ModelField class to unify rendering of models in UI
+    * UI sounds
 - client
     * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities

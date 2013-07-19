@@ -60,6 +60,8 @@ struct MatrixLuaState
   int           strIndex;
   int           objIndex;
 
+  float         status;
+
   List<Struct*> structs;
   List<Object*> objects;
 };
@@ -1380,6 +1382,15 @@ static int ozObjEnableUpdate( lua_State* l )
   else {
     ms.obj->flags &= ~Object::UPDATE_FUNC_BIT;
   }
+  return 0;
+}
+
+static int ozObjReportStatus( lua_State* l )
+{
+  ARG( 1 );
+  OBJ();
+
+  ms.status = l_tofloat( 1 );
   return 0;
 }
 

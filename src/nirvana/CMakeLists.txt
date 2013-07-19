@@ -9,6 +9,7 @@ add_library( nirvana STATIC
   Nirvana.hh
   QuestList.hh
   Task.hh
+  TechTree.hh
   Device.cc
   luaapi.cc
   LuaNirvana.cc
@@ -17,6 +18,7 @@ add_library( nirvana STATIC
   Nirvana.cc
   QuestList.cc
   Task.cc
+  TechTree.cc
 #END SOURCES
 )
 

@@ -46,8 +46,9 @@ class Weapon : public Dynamic
 
   protected:
 
-    void onUpdate() override;
     bool onUse( Bot* user ) override;
+    void onUpdate() override;
+    float getStatus() const override;
 
   public:
 

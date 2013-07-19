@@ -239,6 +239,20 @@ void Vehicle::onDestroy()
   Dynamic::onDestroy();
 }
 
+bool Vehicle::onUse( Bot* user )
+{
+  if( pilot < 0 ) {
+    pilot = user->index;
+
+    user->h = h;
+    user->v = v;
+    user->enter( index );
+
+    return true;
+  }
+  return false;
+}
+
 void Vehicle::onUpdate()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
@@ -370,18 +384,11 @@ void Vehicle::onUpdate()
   oldState   = state;
 }
 
-bool Vehicle::onUse( Bot* user )
+float Vehicle::getStatus() const
 {
-  if( pilot < 0 ) {
-    pilot = user->index;
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-    user->h = h;
-    user->v = v;
-    user->enter( index );
-
-    return true;
-  }
-  return false;
+  return max( fuel / clazz->fuel, 0.0f );
 }
 
 Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Heading heading ) :

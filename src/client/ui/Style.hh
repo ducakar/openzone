@@ -51,9 +51,6 @@ class Style
       Vec4 frame;
       Vec4 background;
 
-      Vec4 barBorder;
-      Vec4 barBackground;
-
       Vec4 galileoNormal;
       Vec4 galileoMaximised;
 
@@ -76,6 +73,8 @@ class Style
 
     struct Bar : Area
     {
+      Vec4 border;
+      Vec4 background;
       Vec4 minColour;
       Vec4 maxColour;
     };
@@ -87,7 +86,9 @@ class Style
     Sounds  sounds;
     int     iconSize;
 
-    Bar     botHealth;
+    Bar     taggedLife;
+    Bar     taggedStatus;
+    Bar     botLife;
     Bar     botStamina;
     Bar     botWeapon;
     Bar     vehicleHull;

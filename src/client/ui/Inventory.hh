@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <client/ui/Bar.hh>
 #include <client/ui/ModelField.hh>
 #include <client/ui/Frame.hh>
 
@@ -47,6 +48,9 @@ class Inventory : public Frame
 
     const Bot*     owner;
     const Object*  other;
+
+    Bar            lifeBar;
+    Bar            statusBar;
 
     ModelField*    ownerModels[COLS];
     ModelField*    otherModels[COLS];

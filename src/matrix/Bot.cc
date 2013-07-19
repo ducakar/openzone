@@ -1135,6 +1135,13 @@ void Bot::onUpdate()
   container  = -1;
 }
 
+float Bot::getStatus() const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  return max( stamina / clazz->stamina, 0.0f );
+}
+
 Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) :
   Dynamic( clazz_, index, p_, heading )
 {

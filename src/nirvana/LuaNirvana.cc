@@ -278,6 +278,7 @@ void LuaNirvana::init()
   IGNORE_FUNC( ozObjRemoveAllItems );
 
   IGNORE_FUNC( ozObjEnableUpdate );
+  IGNORE_FUNC( ozObjReportStatus );
   IGNORE_FUNC( ozObjDamage );
   IGNORE_FUNC( ozObjDestroy );
 

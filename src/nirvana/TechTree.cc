@@ -18,42 +18,26 @@
  */
 
 /**
- * @file matrix/LuaMatrix.hh
- *
- * Lua scripting engine for Matrix
+ * @file nirvana/TechTree.cc
  */
 
-#pragma once
-
-#include <common/LuaCommon.hh>
-#include <matrix/Object.hh>
+#include <nirvana/TechTree.hh>
 
 namespace oz
 {
 
-class Bot;
+void TechTree::read( InputStream* )
+{}
 
-class LuaMatrix : public LuaCommon
-{
-  public:
+void TechTree::write( OutputStream* ) const
+{}
 
-    float objectStatus;
+void TechTree::load()
+{}
 
-  public:
+void TechTree::unload()
+{}
 
-    bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
-
-    void registerObject( int index );
-    void unregisterObject( int index );
-
-    void read( InputStream* istream );
-    void write( OutputStream* ostream );
-
-    void init();
-    void destroy();
-
-};
-
-extern LuaMatrix luaMatrix;
+TechTree techTree;
 
 }

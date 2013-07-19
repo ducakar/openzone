@@ -18,42 +18,39 @@
  */
 
 /**
- * @file matrix/LuaMatrix.hh
- *
- * Lua scripting engine for Matrix
+ * @file client/ui/Bar.hh
  */
 
 #pragma once
 
-#include <common/LuaCommon.hh>
-#include <matrix/Object.hh>
+#include <client/ui/Area.hh>
+#include <client/ui/Style.hh>
 
 namespace oz
 {
-
-class Bot;
-
-class LuaMatrix : public LuaCommon
+namespace client
 {
+namespace ui
+{
+
+class Bar
+{
+  private:
+
+    const Style::Bar* style;
+
   public:
 
-    float objectStatus;
+    explicit Bar( const Style::Bar* style = nullptr );
 
-  public:
+    void setStyle( const Style::Bar* style );
 
-    bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
-
-    void registerObject( int index );
-    void unregisterObject( int index );
-
-    void read( InputStream* istream );
-    void write( OutputStream* ostream );
-
-    void init();
-    void destroy();
+    void draw( const Area* area, float ratio ) const;
+    void draw( const Area* area, int barX, int barY, int barWidth, int barHeight,
+               float ratio ) const;
 
 };
 
-extern LuaMatrix luaMatrix;
-
+}
+}
 }

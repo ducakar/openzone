@@ -170,16 +170,13 @@ void Inventory::drawComponent( int height, const Object* container, const Dynami
 
   const ObjectClass* taggedClazz = taggedItem->clazz;
 
-  float life = taggedItem->life / taggedClazz->life;
-  int lifeWidth = int( life * 46.0f );
+  float life   = taggedItem->life / taggedClazz->life;
+  float status = taggedItem->status();
 
-  hard_assert( 0.0f <= life && life <= 1.0f );
-
-  shape.colour( 1.0f - life, life, 0.0f, 0.6f );
-  shape.fill( x + width - 51, y + height + SLOT_SIZE + 5, lifeWidth, 10 );
-
-  shape.colour( 1.0f, 1.0f, 1.0f, 0.6f );
-  shape.rect( x + width - 52, y + height + SLOT_SIZE + 4, 48, 12 );
+  lifeBar.draw( this, x + width - 52, y + height + SLOT_SIZE + 8, 50, 12, life );
+  if( status >= 0.0f ) {
+    statusBar.draw( this, x + width - 52, y + height + SLOT_SIZE + 1, 50, 8, status );
+  }
 
   if( taggedItem->flags & Object::USE_FUNC_BIT ) {
     uint texId = useTex.id();
@@ -326,6 +323,7 @@ void Inventory::onDraw()
 Inventory::Inventory() :
   Frame( COLS*SLOT_SIZE, SLOT_SIZE + FOOTER_SIZE, " " ),
   owner( nullptr ), other( nullptr ),
+  lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
   taggedItemIndex( -1 ), cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ),
   scrollOwner( 0 ), scrollOther( 0 )

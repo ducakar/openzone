@@ -75,6 +75,7 @@ class ObjectClass
     String                   onDestroy;
     String                   onUse;
     String                   onUpdate;
+    String                   getStatus;
 
   public:
 
