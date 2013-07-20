@@ -96,6 +96,11 @@ class Style
     Area    vehicleWeapon[4];
     Area    vehicleField;
 
+    Bar     selectedLife;
+    Bar     selectedStatus;
+    Bar     hoverLife;
+    Bar     hoverStatus;
+
   public:
 
     void init();

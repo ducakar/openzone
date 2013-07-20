@@ -60,13 +60,17 @@ static void readBSP( const File& file )
     OZ_ERROR( "Failed to load '%s'", file.path().cstr() );
   }
 
-  const char* title = config["title"].get( "" );
+  const char* title       = config["title"].get( "" );
+  const char* description = config["description"].get( "" );
 
   if( String::isEmpty( title ) ) {
     titles.include( file.baseName(), file.path() );
   }
   else {
     titles.include( title, file.path() );
+  }
+  if( !String::isEmpty( description ) ) {
+    titles.include( description, file.path() );
   }
 
   const JSON& models = config["models"];
@@ -95,13 +99,17 @@ static void readClass( const File& file )
     OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
   }
 
-  const char* title = config["title"].get( "" );
+  const char* title       = config["title"].get( "" );
+  const char* description = config["description"].get( "" );
 
   if( String::isEmpty( title ) ) {
     titles.include( file.baseName(), file.path() );
   }
   else {
     titles.include( title, file.path() );
+  }
+  if( !String::isEmpty( description ) ) {
+    titles.include( description, file.path() );
   }
 
   const JSON& weaponsConfig = config["weapons"];
@@ -115,6 +123,26 @@ static void readClass( const File& file )
   }
 
   config.clear();
+}
+
+static void readNirvana( const File& dir )
+{
+  File techFile( dir.path() + "/techTree.json" );
+  JSON techConfig;
+
+  if( techConfig.load( techFile ) ) {
+    foreach( node, techConfig.arrayCIter() ) {
+      const char* technology  = ( *node )["technology"].get( "" );
+      const char* description = ( *node )["description"].get( "" );
+
+      if( !String::isEmpty( technology ) ) {
+        titles.include( technology, techFile.path() );
+      }
+      if( !String::isEmpty( description ) ) {
+        titles.include( description, techFile.path() );
+      }
+    }
+  }
 }
 
 static void readLua( const File& file )
@@ -375,6 +403,9 @@ int main( int argc, char** argv )
 
     readClass( *file );
   }
+
+  File nirvanaDir( pkgDir + "/nirvana" );
+  readNirvana( nirvanaDir );
 
   File creditsFile( pkgDir + "/credits/" + pkgName + ".txt" );
   readCredits( creditsFile );

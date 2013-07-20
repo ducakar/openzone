@@ -32,6 +32,42 @@ class TechTree
 {
   public:
 
+    struct Node
+    {
+      static const int MAX_DEPS = 8;
+
+      enum Type
+      {
+        TECHNOLOGY,
+        BUILDING,
+        UNIT,
+        ITEM
+      };
+
+      Type                   type;
+      int                    price;
+      String                 name;
+      String                 title;
+      String                 description;
+      union
+      {
+        const BSP*           building;
+        const ObjectClass*   unit;
+        const ObjectClass*   item;
+      };
+      SList<Node*, MAX_DEPS> requires;
+      SList<Node*, MAX_DEPS> supports;
+      float                  progress;
+    };
+
+  private:
+
+    List<Node> nodes;
+
+    Node* findNode( const char* name );
+
+  public:
+
     Set<BSP*>         allowedBuildings;
     Set<ObjectClass*> allowedUnits;
     Set<ObjectClass*> allowedItems;

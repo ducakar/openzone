@@ -137,13 +137,13 @@ void Style::init()
   int weaponBarHeight = fonts[Font::LARGE].height + 8;
 
   OZ_READ_BAR( botLife,             8, 30, 200, 14,
-                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.60f ),
                                     Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
                                     Vec4( 1.00f, 0.00f, 0.00f, 0.60f ),
                                     Vec4( 0.00f, 1.00f, 0.00f, 0.60f ) );
 
   OZ_READ_BAR( botStamina,          8, 8, 200, 14,
-                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.60f ),
                                     Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
                                     Vec4( 0.70f, 0.30f, 0.40f, 0.60f ),
                                     Vec4( 0.20f, 0.40f, 1.00f, 0.60f ) );
@@ -151,13 +151,13 @@ void Style::init()
   OZ_READ_AREA( botWeapon,          8, 52, 200, weaponBarHeight );
 
   OZ_READ_BAR( vehicleHull,         -8, 30, 200, 14,
-                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.60f ),
                                     Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
                                     Vec4( 1.00f, 0.00f, 0.00f, 0.60f ),
                                     Vec4( 0.00f, 1.00f, 0.00f, 0.60f ) );
 
   OZ_READ_BAR( vehicleFuel,         -8, 8, 200, 14,
-                                    Vec4( 0.80f, 1.00f, 0.90f, 0.50f ),
+                                    Vec4( 0.80f, 1.00f, 0.90f, 0.60f ),
                                     Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
                                     Vec4( 0.70f, 0.30f, 0.40f, 0.60f ),
                                     Vec4( 0.20f, 0.40f, 1.00f, 0.60f ) );
@@ -168,6 +168,30 @@ void Style::init()
   OZ_READ_AREA( vehicleWeapon[3],   -8, 52 + 3 * ( weaponBarHeight + 2 ), 200, weaponBarHeight );
 
   OZ_READ_AREA( vehicleField,       -8, 52 + 4 * ( weaponBarHeight + 2 ), 180, 180 );
+
+  OZ_READ_BAR( selectedLife,        0, 0, 0, 0,
+                                    Vec4( 1.00f, 1.00f, 1.00f, 0.80f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.60f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.60f ) );
+
+  OZ_READ_BAR( selectedStatus,      0, 0, 0, 0,
+                                    Vec4( 1.00f, 1.00f, 1.00f, 0.80f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.60f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.60f ) );
+
+  OZ_READ_BAR( hoverLife,           0, 0, 0, 0,
+                                    Vec4( 1.00f, 1.00f, 1.00f, 1.00f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 1.00f, 0.00f, 0.00f, 0.80f ),
+                                    Vec4( 0.00f, 1.00f, 0.00f, 0.80f ) );
+
+  OZ_READ_BAR( hoverStatus,         0, 0, 0, 0,
+                                    Vec4( 1.00f, 1.00f, 1.00f, 1.00f ),
+                                    Vec4( 0.00f, 0.00f, 0.00f, 0.10f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.80f ),
+                                    Vec4( 0.20f, 0.40f, 1.00f, 0.80f ) );
 
   config.clear( true );
 

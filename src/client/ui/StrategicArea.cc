@@ -27,6 +27,8 @@
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Input.hh>
+#include <client/ui/Bar.hh>
+#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -88,18 +90,15 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
   return true;
 }
 
-void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const Entity* ent,
-                                     const Object* obj )
+void StrategicArea::drawHoverRect( const Span& span, const Struct* str, const Entity* ent,
+                                   const Object* obj )
 {
-  float minX = float( span.minX );
-  float maxX = float( span.maxX );
-  float maxY = float( span.maxY );
-
-  float life = 1.0f;
+  float life   = +1.0f;
+  float status = -1.0f;
 
   if( str != nullptr ) {
     int labelX = ( span.minX + span.maxX ) / 2;
-    int labelY = span.maxY + 12;
+    int labelY = span.maxY + 16;
 
     if( ent != nullptr ) {
       int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
@@ -143,59 +142,60 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
     const ObjectClass* clazz = obj->clazz;
 
     int labelX = ( span.minX + span.maxX ) / 2;
-    int labelY = span.maxY + 12;
+    int labelY = span.maxY + 16;
 
     if( obj->index != cachedObjectIndex ) {
-      String title = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-                     bot->name + " (" + clazz->title + ")" : clazz->title;
-
       cachedStructIndex = -1;
       cachedEntityIndex = -1;
       cachedObjectIndex = obj->index;
 
-      unitName.set( labelX, labelY, "%s", title.cstr() );
+      if( obj->flags & Object::BOT_BIT ) {
+        unitName.set( labelX, labelY, "%s (%s)", bot->name.cstr(), clazz->title.cstr() );
+      }
+      else {
+        unitName.set( labelX, labelY, "%s", clazz->title.cstr() );
+      }
     }
     else {
       unitName.setPosition( labelX, labelY );
     }
 
-    life = obj->flags & Object::BOT_BIT ?
-           max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
-           obj->life / clazz->life;
+    life   = obj->flags & Object::BOT_BIT ?
+             max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+             obj->life / clazz->life;
+    status = obj->status();
 
     unitName.draw( this );
   }
 
   if( ent == nullptr ) {
-    float barWidth = maxX - minX + 2.0f;
-    float lifeWidth = life * barWidth;
-    float lifeWidthLeft = barWidth - lifeWidth;
+    int barWidth = span.maxX - span.minX + 4;
 
-    shape.colour( 1.0f - life, life, 0.0f, 0.8f );
-    shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+    if( status < 0.0f ) {
+      Bar lifeBar( &style.hoverLife );
+      lifeBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 8, life );
+    }
+    else {
+      Bar lifeBar( &style.hoverLife );
+      Bar statusBar( &style.hoverStatus );
 
-    shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
-    shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
-
-    shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
-    shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
+      lifeBar.draw( this, span.minX - 2, span.maxY + 7, barWidth, 8, life );
+      statusBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 6, status );
+    }
   }
 }
 
-void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const Object* obj,
-                                    bool isHovered )
+void StrategicArea::drawTagRect( const Span& span, const Struct* str, const Object* obj,
+                                 bool isHovered )
 {
   float minX = float( span.minX );
   float maxX = float( span.maxX );
   float minY = float( span.minY );
   float maxY = float( span.maxY );
 
-  if( isHovered ) {
-    shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
-    shape.tag( minX, minY, maxX, maxY );
-  }
-  else {
-    float life = 1.0f;
+  if( !isHovered ) {
+    float life   = +1.0f;
+    float status = -1.0f;
 
     if( str != nullptr ) {
       float maxLife = str->bsp->life;
@@ -205,27 +205,32 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
     else {
       float maxLife = obj->clazz->life;
 
-      life = obj->flags & Object::BOT_BIT ?
-             max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
-             obj->life / maxLife;
+      life   = obj->flags & Object::BOT_BIT ?
+               max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
+               obj->life / maxLife;
+      status = obj->status();
     }
-
-    float barWidth = maxX - minX + 2.0f;
-    float lifeWidth = life * barWidth;
-    float lifeWidthLeft = barWidth - lifeWidth;
 
     hard_assert( 0.0f <= life && life <= 1.0f );
 
-    shape.colour( 1.0f - life, life, 0.0f, 0.5f );
-    shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+    int barWidth = span.maxX - span.minX + 4;
 
-    shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
-    shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
+    if( status < 0.0f ) {
+      Bar lifeBar( &style.selectedLife );
 
-    shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
-    shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
-    shape.tag( minX, minY, maxX, maxY );
+      lifeBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 8, life );
+    }
+    else {
+      Bar lifeBar( &style.selectedLife );
+      Bar statusBar( &style.selectedStatus );
+
+      lifeBar.draw( this, span.minX - 2, span.maxY + 7, barWidth, 8, life );
+      statusBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 6, status );
+    }
   }
+
+  shape.colour( style.selectedLife.border );
+  shape.tag( minX, minY, maxX, maxY );
 }
 
 void StrategicArea::onVisibilityChange( bool )
@@ -290,7 +295,7 @@ bool StrategicArea::onMouseEvent()
   const Entity* ent = collider.hit.entity;
   const Object* obj = collider.hit.obj;
 
-  if( input.leftClick && !input.keys[Input::KEY_UI_ALT] ) {
+  if( input.leftClick && !input.keys[Input::KEY_GROUP_SELECT] ) {
     taggedStrs.clear();
     taggedObjs.clear();
   }
@@ -340,19 +345,19 @@ void StrategicArea::onDraw()
 
   if( obj != nullptr ) {
     if( projectBounds( &span, *obj ) ) {
-      drawHoveredRect( span, nullptr, nullptr, obj );
+      drawHoverRect( span, nullptr, nullptr, obj );
     }
   }
   else if( ent != nullptr ) {
     str = ent->str;
 
     if( projectBounds( &span, str->toAbsoluteCS( *ent->clazz + ent->offset ).toAABB() ) ) {
-      drawHoveredRect( span, str, ent, nullptr );
+      drawHoverRect( span, str, ent, nullptr );
     }
   }
   else if( str != nullptr ) {
     if( projectBounds( &span, str->toAABB() ) ) {
-      drawHoveredRect( span, str, nullptr, nullptr );
+      drawHoverRect( span, str, nullptr, nullptr );
     }
   }
   else {
@@ -367,7 +372,7 @@ void StrategicArea::onDraw()
     if( str != nullptr ) {
       if( ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, str->toAABB() ) ) {
-          drawTaggedRect( span, str, nullptr, taggedStrs[i] == hoverStr );
+          drawTagRect( span, str, nullptr, taggedStrs[i] == hoverStr && hoverEnt < 0 );
         }
       }
     }
@@ -379,7 +384,7 @@ void StrategicArea::onDraw()
     if( obj != nullptr ) {
       if( ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, *obj ) ) {
-          drawTaggedRect( span, nullptr, obj, taggedObjs[i] == hoverObj );
+          drawTagRect( span, nullptr, obj, taggedObjs[i] == hoverObj );
         }
       }
     }

@@ -81,6 +81,8 @@ const char* const Input::KEY_NAMES[] = {
   "Switch to selected unit",
   "Cycle switchable units",
 
+  "Group selection",
+
   "Fast forward sky (cheat)",
   "Fast backward sky (cheat)",
 
@@ -165,6 +167,9 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDLK_i;
   keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDLK_y;
 
+  keyMap[KEY_GROUP_SELECT][0]       = MOD_MASK    | SDLK_LSHIFT;
+  keyMap[KEY_GROUP_SELECT][1]       = MOD_MASK    | SDLK_RSHIFT;
+
   keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDLK_p;
   keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDLK_o;
 
@@ -239,6 +244,9 @@ void Input::loadDefaultKeyMap()
 
   keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDL_SCANCODE_I;
   keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDL_SCANCODE_Y;
+
+  keyMap[KEY_GROUP_SELECT][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
+  keyMap[KEY_GROUP_SELECT][1]       = MOD_MASK    | SDL_SCANCODE_RSHIFT;
 
   keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDL_SCANCODE_P;
   keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDL_SCANCODE_O;

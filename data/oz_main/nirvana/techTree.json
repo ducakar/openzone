@@ -1,0 +1,10 @@
+[
+  {
+    "technology":       "plasma",
+    "price":            2000
+  },
+  {
+    "item":             "beast$plasmagun",
+    "requires":         [ "plasma" ]
+  }
+]

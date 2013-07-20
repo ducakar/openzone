@@ -98,6 +98,8 @@ class Input
       KEY_SWITCH_TO_UNIT,
       KEY_CYCLE_UNITS,
 
+      KEY_GROUP_SELECT,
+
       KEY_CHEAT_SKY_FORWARD,
       KEY_CHEAT_SKY_BACKWARD,
 

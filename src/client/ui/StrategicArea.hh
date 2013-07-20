@@ -68,8 +68,8 @@ class StrategicArea : public Area
     OZ_PRINTF_FORMAT( 4, 5 )
     void printName( int baseX, int baseY, const char* s, ... );
 
-    void drawHoveredRect( const Span& span, const Struct* str, const Entity* ent, const Object* obj );
-    void drawTaggedRect( const Span& span, const Struct* str, const Object* obj, bool isHovered );
+    void drawHoverRect( const Span& span, const Struct* str, const Entity* ent, const Object* obj );
+    void drawTagRect( const Span& span, const Struct* str, const Object* obj, bool isHovered );
 
   protected:
 

@@ -62,13 +62,14 @@ void Builder::printUsage( const char* invocationName )
     "  -c         Build caela (skies).\n"
     "  -t         Build terrae (terrains).\n"
     "  -b         Compile maps into BSPs.\n"
-    "  -e         Build textures referenced by terrae and BSPs."
+    "  -e         Build textures referenced by terrae and BSPs.\n"
     "  -a         Copy object class definitions.\n"
     "  -f         Copy fragment pool definitions.\n"
     "  -m         Build models.\n"
     "  -s         Copy referenced sounds (by UI, BSPs and object classes).\n"
     "  -n         Copy name lists.\n"
     "  -x         Check and copy Lua scripts.\n"
+    "  -v         Copy nirvana configuration files.\n"
     "  -o         Build modules.\n"
     "  -r         Copy music tracks.\n"
     "  -i         Build missions.\n"
@@ -740,6 +741,7 @@ int Builder::main( int argc, char** argv )
   bool doSounds       = false;
   bool doNames        = false;
   bool doLua          = false;
+  bool doNirvana      = false;
   bool doModules      = false;
   bool doMusic        = false;
   bool doMissions     = false;
@@ -751,7 +753,7 @@ int Builder::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbeafmsnxoriARCZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbeafmsnxvoriARCZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -805,6 +807,10 @@ int Builder::main( int argc, char** argv )
         doLua = true;
         break;
       }
+      case 'v': {
+        doNirvana = true;
+        break;
+      }
       case 'o': {
         doModules = true;
         break;
@@ -831,6 +837,7 @@ int Builder::main( int argc, char** argv )
         doSounds   = true;
         doNames    = true;
         doLua      = true;
+        doNirvana  = true;
         doModules  = true;
         doMusic    = true;
         doMissions = true;
@@ -975,6 +982,9 @@ int Builder::main( int argc, char** argv )
     checkLua( "@lua/nirvana" );
 
     copyFiles( "@lua", "lua", "lua", true );
+  }
+  if( doNirvana ) {
+    copyFiles( "@nirvana", "nirvana", "json", false );
   }
   if( doModules ) {
     buildModules();

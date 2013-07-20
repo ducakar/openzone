@@ -60,16 +60,15 @@ void Bar::draw( const Area* area, int barX, int barY, int barWidth, int barHeigh
 
   int width = Math::lround( float( barWidth - 2 ) * ratio );
 
-  shape.colour( style->border );
-  shape.rect( x, y, barWidth, barHeight );
-
   shape.colour( Math::mix( style->minColour, style->maxColour, ratio ) );
   shape.fill( x + 1, y + 1, width, barHeight - 2 );
 
   shape.colour( style->background );
   shape.fill( x + 1 + width, y + 1, barWidth - 2 - width, barHeight - 2 );
-}
 
+  shape.colour( style->border );
+  shape.rect( x, y, barWidth, barHeight );
+}
 
 }
 }

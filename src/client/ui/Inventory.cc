@@ -67,6 +67,8 @@ bool Inventory::ownerItemCallback( ModelField* sender )
   }
   else if( input.rightClick ) {
     bot->invUse( item, container );
+
+    inventory->taggedItemIndex = item->index;
     return true;
   }
   else if( input.middleClick ) {

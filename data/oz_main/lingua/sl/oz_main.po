@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-07-13 02:04+0100\n"
+"PO-Revision-Date: 2013-07-20 04:16+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: sl_SI\n"
@@ -15,6 +15,10 @@ msgstr ""
 #: data/oz_main/class/goblin.json
 msgid "goblin"
 msgstr "škrat"
+
+#: data/oz_main/nirvana/techTree.json
+msgid "plasma"
+msgstr "plazma"
 
 #: data/oz_main/baseq3/maps/forum.json
 msgid "forum"
