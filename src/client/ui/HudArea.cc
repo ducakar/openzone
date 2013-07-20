@@ -247,11 +247,11 @@ void HudArea::drawVehicleStatus()
   vehicleModel->reposition();
   vehicleModel->y -= modelBiasY;
 
-  float fuel = max( vehicle->fuel / vehClazz->fuel, 0.0f );
   float hull = max( vehicle->life / vehClazz->life, 0.0f );
+  float fuel = max( vehicle->fuel / vehClazz->fuel, 0.0f );
 
-  vehicleHull.draw( this, fuel );
-  vehicleFuel.draw( this, hull );
+  vehicleHull.draw( this, hull );
+  vehicleFuel.draw( this, fuel );
 
   for( int i = 0; i < vehClazz->nWeapons; ++i ) {
     int    labelIndex  = vehClazz->nWeapons - i - 1;
@@ -369,7 +369,7 @@ HudArea::HudArea() :
   botLife( &style.botLife ),
   botStamina( &style.botStamina ),
   vehicleHull( &style.vehicleHull ),
-  vehicleFuel( &style.vehicleHull ),
+  vehicleFuel( &style.vehicleFuel ),
   vehicleModel( nullptr ),
   lastObjectId( -1 ),
   lastEntityId( -1 ),

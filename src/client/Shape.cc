@@ -221,9 +221,6 @@ void Shape::rect( float x, float y, float width, float height )
 
 void Shape::rect( int x, int y, int width, int height )
 {
-  x = x < 0 ? camera.width  + x : x;
-  y = y < 0 ? camera.height + y : y;
-
   rect( float( x ), float( y ), float( width ), float( height ) );
 }
 

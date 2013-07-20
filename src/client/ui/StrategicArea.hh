@@ -39,36 +39,39 @@ class StrategicArea : public Area
 {
   private:
 
+    static const float TAG_REACH_DIST;
     static const float TAG_CLIP_DIST;
-    static const float TAG_CLAMP_LIMIT;
+    static const float TAG_CLIP_K;
     static const float TAG_MIN_PIXEL_SIZE;
     static const float TAG_MAX_COEFF_SIZE;
 
-    Label unitName;
-    int   cachedStructIndex;
-    int   cachedEntityIndex;
-    int   cachedObjectIndex;
+    Label     unitName;
 
-    float pixelStep;
-    float stepPixel;
+    float     pixelStep;
+    float     stepPixel;
+
+    int       dragStartX;
+    int       dragStartY;
+
+    int       hoverStr;
+    int       hoverEnt;
+    int       hoverObj;
+    Set<int>  dragObjs;
 
   public:
 
-    List<int> taggedStrs;
-    List<int> taggedObjs;
-
-    int hoverStr;
-    int hoverEnt;
-    int hoverObj;
+    int       taggedStr;
+    Set<int>  taggedObjs;
 
   private:
 
-    bool projectBounds( Span* span, const AABB& bb ) const;
+    bool projectPoint( const Point& p, int* x, int* y ) const;
+    bool projectBounds( const AABB& bb, Span* span ) const;
+    Vec3 getRay( int x, int y );
+    void collectHovers();
 
-    OZ_PRINTF_FORMAT( 4, 5 )
-    void printName( int baseX, int baseY, const char* s, ... );
-
-    void drawHoverRect( const Span& span, const Struct* str, const Entity* ent, const Object* obj );
+    void drawHoverTitle( const Span& span, const char* title, const Object* obj = nullptr );
+    void drawHoverRect( const Span& span, const Struct* str, const Object* obj );
     void drawTagRect( const Span& span, const Struct* str, const Object* obj, bool isHovered );
 
   protected:

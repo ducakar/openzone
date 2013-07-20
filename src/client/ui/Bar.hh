@@ -48,6 +48,7 @@ class Bar
     void draw( const Area* area, float ratio ) const;
     void draw( const Area* area, int barX, int barY, int barWidth, int barHeight,
                float ratio ) const;
+    void drawAbs( int barX, int barY, int barWidth, int barHeight, float ratio ) const;
 
 };
 

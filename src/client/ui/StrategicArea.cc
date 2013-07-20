@@ -37,14 +37,27 @@ namespace client
 namespace ui
 {
 
+const float StrategicArea::TAG_REACH_DIST     = 100.0f;
 const float StrategicArea::TAG_CLIP_DIST      = 0.1f;
-const float StrategicArea::TAG_CLAMP_LIMIT    = 1e6f;
+const float StrategicArea::TAG_CLIP_K         = 9.0f;
 // size in pixels
 const float StrategicArea::TAG_MIN_PIXEL_SIZE = 4.0f;
 // size in coefficient
 const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f;
 
-bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
+bool StrategicArea::projectPoint( const Point& p, int* x, int* y ) const
+{
+  Vec3  t  = camera.rotTMat * ( p - camera.p );
+  float d  = -t.z;    if( d < TAG_CLIP_DIST )                    { return false; }
+  float kx = t.x / d; if( kx < -TAG_CLIP_K || +TAG_CLIP_K < kx ) { return false; }
+  float ky = t.y / d; if( ky < -TAG_CLIP_K || +TAG_CLIP_K < ky ) { return false; }
+
+  *x = camera.centreX + Math::lround( kx * stepPixel );
+  *y = camera.centreY + Math::lround( ky * stepPixel );
+  return true;
+}
+
+bool StrategicArea::projectBounds( const AABB& bb, Span* span ) const
 {
   Vec3 p = bb.p - camera.p;
   Vec3 corners[8] = {
@@ -65,10 +78,12 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
 
   for( int i = 0; i < 8; ++i ) {
     Vec3  t = camera.rotTMat * corners[i];
-    float d = max( -t.z, TAG_CLIP_DIST );
-    // we have to clamp to prevent integer overflows
-    float x = clamp( ( t.x / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
-    float y = clamp( ( t.y / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
+    float d  = -t.z;    if( d < TAG_CLIP_DIST )                    { return false; }
+    float kx = t.x / d; if( kx < -TAG_CLIP_K || +TAG_CLIP_K < kx ) { return false; }
+    float ky = t.y / d; if( ky < -TAG_CLIP_K || +TAG_CLIP_K < ky ) { return false; }
+
+    float x = kx * stepPixel;
+    float y = ky * stepPixel;
 
     minX = min( minX, x );
     minY = min( minY, y );
@@ -90,98 +105,137 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
   return true;
 }
 
-void StrategicArea::drawHoverRect( const Span& span, const Struct* str, const Entity* ent,
-                                   const Object* obj )
+Vec3 StrategicArea::getRay( int x, int y )
 {
-  float life   = +1.0f;
-  float status = -1.0f;
+  float cx = float( x - camera.centreX ) * pixelStep;
+  float cy = float( y - camera.centreY ) * pixelStep;
+  Vec3  at = Vec3( cx * TAG_REACH_DIST, cy * TAG_REACH_DIST, -TAG_REACH_DIST );
 
-  if( str != nullptr ) {
-    int labelX = ( span.minX + span.maxX ) / 2;
-    int labelY = span.maxY + 16;
+  return camera.rotMat * at;
+}
 
-    if( ent != nullptr ) {
-      int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
+void StrategicArea::collectHovers()
+{
+  bool isDragging = dragStartX >= 0 && mouse.x != dragStartX && mouse.y != dragStartY;
 
-      if( entIndex != cachedEntityIndex ) {
-        const String& title = ent->clazz->title;
+  if( !isDragging ) {
+    Vec3 reach = getRay( mouse.x, mouse.y );
 
-        cachedStructIndex = -1;
-        cachedEntityIndex = entIndex;
-        cachedObjectIndex = -1;
+    collider.translate( camera.p, reach );
 
-        unitName.set( labelX, labelY, "%s", title.cstr() );
+    const Struct* str = collider.hit.str;
+    const Entity* ent = collider.hit.entity;
+    const Object* obj = collider.hit.obj;
+
+    if( str != nullptr ) {
+      hoverStr = str->index;
+
+      if( ent != nullptr ) {
+        hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
       }
-      else {
-        unitName.setPosition( labelX, labelY );
-      }
-
-      unitName.draw( this );
     }
-    else {
-      if( str->index != cachedStructIndex ) {
-        const String& title = str->bsp->title;
-
-        cachedStructIndex = str->index;
-        cachedEntityIndex = -1;
-        cachedObjectIndex = -1;
-
-        unitName.set( labelX, labelY, "%s", title.cstr() );
-      }
-      else {
-        unitName.setPosition( labelX, labelY );
-      }
-
-      life = str->life / str->bsp->life;
-
-      unitName.draw( this );
+    else if( obj != nullptr ) {
+      hoverObj = obj->index;
     }
   }
   else {
-    const Bot*         bot   = static_cast<const Bot*>( obj );
+    Span drag = {
+      min( mouse.x, dragStartX ),
+      min( mouse.y, dragStartY ),
+      max( mouse.x, dragStartX ),
+      max( mouse.y, dragStartY )
+    };
+
+    Vec3 rays[] = {
+      getRay( dragStartX, dragStartY ),
+      getRay( mouse.x,    dragStartY ),
+      getRay( dragStartX, mouse.y    ),
+      getRay( mouse.x,    mouse.y    )
+    };
+
+    float minX = +Math::INF;
+    float minY = +Math::INF;
+    float maxX = -Math::INF;
+    float maxY = -Math::INF;
+
+    for( int i = 0; i < 4; ++i ) {
+      collider.translate( camera.p, rays[i] );
+      Point point = camera.p + rays[i] * collider.hit.ratio;
+
+      minX = min( minX, point.x );
+      minY = min( minY, point.y );
+      maxX = max( maxX, point.x );
+      maxY = max( maxY, point.y );
+    }
+
+    Span span = orbis.getInters( minX, minY, maxX, maxY );
+
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        const Cell& cell = orbis.cells[x][y];
+
+        foreach( obj, cell.objects.citer() ) {
+          if( ( obj->flags & Object::SOLID_BIT ) &&
+              ( obj->flags & ( Object::BOT_BIT | Object::VEHICLE_BIT ) ) )
+          {
+            int  x, y;
+            bool hasProj = projectPoint( obj->p, &x, &y );
+
+            if( hasProj && drag.minX <= x && x <= drag.maxX && drag.minY <= y && y <= drag.maxY ) {
+              dragObjs.include( obj->index );
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void StrategicArea::drawHoverTitle( const Span& span, const char* title, const Object* obj )
+{
+  const Bot* bot = static_cast<const Bot*>( obj );
+
+  int labelX = ( span.minX + span.maxX ) / 2;
+  int labelY = span.maxY + 16;
+
+  if( obj != nullptr && obj->flags & Object::BOT_BIT ) {
+    unitName.set( labelX, labelY, "%s (%s)", bot->name.cstr(), title );
+  }
+  else {
+    unitName.set( labelX, labelY, "%s", title );
+  }
+
+  unitName.draw( this );
+}
+
+void StrategicArea::drawHoverRect( const Span& span, const Struct* str, const Object* obj )
+{
+  float life;
+  float status   = -1.0f;
+  int   barWidth = span.maxX - span.minX + 4;
+
+  if( str != nullptr ) {
+    life = str->life / str->bsp->life;
+  }
+  else {
     const ObjectClass* clazz = obj->clazz;
-
-    int labelX = ( span.minX + span.maxX ) / 2;
-    int labelY = span.maxY + 16;
-
-    if( obj->index != cachedObjectIndex ) {
-      cachedStructIndex = -1;
-      cachedEntityIndex = -1;
-      cachedObjectIndex = obj->index;
-
-      if( obj->flags & Object::BOT_BIT ) {
-        unitName.set( labelX, labelY, "%s (%s)", bot->name.cstr(), clazz->title.cstr() );
-      }
-      else {
-        unitName.set( labelX, labelY, "%s", clazz->title.cstr() );
-      }
-    }
-    else {
-      unitName.setPosition( labelX, labelY );
-    }
 
     life   = obj->flags & Object::BOT_BIT ?
              max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
              obj->life / clazz->life;
     status = obj->status();
-
-    unitName.draw( this );
   }
 
-  if( ent == nullptr ) {
-    int barWidth = span.maxX - span.minX + 4;
+  if( status < 0.0f ) {
+    Bar lifeBar( &style.hoverLife );
+    lifeBar.drawAbs( span.minX - 2, span.maxY + 2, barWidth, 8, life );
+  }
+  else {
+    Bar lifeBar( &style.hoverLife );
+    Bar statusBar( &style.hoverStatus );
 
-    if( status < 0.0f ) {
-      Bar lifeBar( &style.hoverLife );
-      lifeBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 8, life );
-    }
-    else {
-      Bar lifeBar( &style.hoverLife );
-      Bar statusBar( &style.hoverStatus );
-
-      lifeBar.draw( this, span.minX - 2, span.maxY + 7, barWidth, 8, life );
-      statusBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 6, status );
-    }
+    lifeBar.drawAbs( span.minX - 2, span.maxY + 7, barWidth, 8, life );
+    statusBar.drawAbs( span.minX - 2, span.maxY + 2, barWidth, 6, status );
   }
 }
 
@@ -218,14 +272,14 @@ void StrategicArea::drawTagRect( const Span& span, const Struct* str, const Obje
     if( status < 0.0f ) {
       Bar lifeBar( &style.selectedLife );
 
-      lifeBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 8, life );
+      lifeBar.drawAbs( span.minX - 2, span.maxY + 2, barWidth, 8, life );
     }
     else {
       Bar lifeBar( &style.selectedLife );
       Bar statusBar( &style.selectedStatus );
 
-      lifeBar.draw( this, span.minX - 2, span.maxY + 7, barWidth, 8, life );
-      statusBar.draw( this, span.minX - 2, span.maxY + 2, barWidth, 6, status );
+      lifeBar.drawAbs( span.minX - 2, span.maxY + 7, barWidth, 8, life );
+      statusBar.drawAbs( span.minX - 2, span.maxY + 2, barWidth, 6, status );
     }
   }
 
@@ -235,15 +289,14 @@ void StrategicArea::drawTagRect( const Span& span, const Struct* str, const Obje
 
 void StrategicArea::onVisibilityChange( bool )
 {
-  taggedStrs.clear();
+  taggedStr = -1;
   taggedObjs.clear();
 
   hoverStr = -1;
   hoverObj = -1;
+  hoverEnt = -1;
 
-  cachedStructIndex = -1;
-  cachedEntityIndex = -1;
-  cachedObjectIndex = -1;
+  dragObjs.clear();
 }
 
 void StrategicArea::onReposition()
@@ -257,22 +310,13 @@ void StrategicArea::onReposition()
 
 void StrategicArea::onUpdate()
 {
-  for( int i = 0; i < taggedStrs.length(); ) {
-    const Struct* str = orbis.str( taggedStrs[i] );
-
-    if( str == nullptr ) {
-      taggedStrs.eraseUnordered( i );
-    }
-    else {
-      ++i;
-    }
-  }
+  taggedStr = orbis.strIndex( taggedStr );
 
   for( int i = 0; i < taggedObjs.length(); ) {
     const Object* obj = orbis.obj( taggedObjs[i] );
 
     if( obj == nullptr || obj->cell == nullptr ) {
-      taggedObjs.eraseUnordered( i );
+      taggedObjs.erase( i );
     }
     else {
       ++i;
@@ -282,53 +326,30 @@ void StrategicArea::onUpdate()
 
 bool StrategicArea::onMouseEvent()
 {
-  Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
-                  float( mouse.y - camera.centreY ) * pixelStep * 100.0f,
-                  -100.0f );
+  collectHovers();
 
-  at = camera.rotMat * at;
-  collider.mask = ~0;
-  collider.translate( camera.p, at );
-  collider.mask = Object::SOLID_BIT;
+  if( input.leftClick ) {
+    dragStartX = mouse.x;
+    dragStartY = mouse.y;
 
-  const Struct* str = collider.hit.str;
-  const Entity* ent = collider.hit.entity;
-  const Object* obj = collider.hit.obj;
-
-  if( input.leftClick && !input.keys[Input::KEY_GROUP_SELECT] ) {
-    taggedStrs.clear();
-    taggedObjs.clear();
-  }
-
-  if( str != nullptr ) {
-    hoverStr = str->index;
-
-    if( ent != nullptr ) {
-      hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
-    }
-
-    if( input.leftClick ) {
-      int index = taggedStrs.index( hoverStr );
-
-      if( index >= 0 ) {
-        taggedStrs.eraseUnordered( index );
-      }
-      else {
-        taggedStrs.add( hoverStr );
-      }
+    if( !input.keys[Input::KEY_GROUP_SELECT] ) {
+      taggedStr = -1;
+      taggedObjs.clear();
     }
   }
-  else if( obj != nullptr ) {
-    hoverObj = obj->index;
+  else if( !( input.buttons & Input::LEFT_BUTTON ) ) {
+    dragStartX = -1;
+    dragStartY = -1;
 
-    if( input.leftClick ) {
-      int index = taggedObjs.index( hoverObj );
-
-      if( index >= 0 ) {
-        taggedObjs.eraseUnordered( index );
+    if( input.oldButtons & Input::LEFT_BUTTON ) {
+      if( hoverStr != -1 ) {
+        taggedStr = hoverStr;
       }
-      else {
-        taggedObjs.add( hoverObj );
+      if( hoverObj != -1 ) {
+        taggedObjs.include( hoverObj );
+      }
+      foreach( obj, dragObjs.citer() ) {
+        taggedObjs.include( *obj );
       }
     }
   }
@@ -343,63 +364,72 @@ void StrategicArea::onDraw()
 
   Span span;
 
-  if( obj != nullptr ) {
-    if( projectBounds( &span, *obj ) ) {
-      drawHoverRect( span, nullptr, nullptr, obj );
-    }
-  }
-  else if( ent != nullptr ) {
-    str = ent->str;
+  if( str != nullptr ) {
+    if( projectBounds( str->toAABB(), &span ) ) {
+      drawHoverRect( span, str, nullptr );
 
-    if( projectBounds( &span, str->toAbsoluteCS( *ent->clazz + ent->offset ).toAABB() ) ) {
-      drawHoverRect( span, str, ent, nullptr );
-    }
-  }
-  else if( str != nullptr ) {
-    if( projectBounds( &span, str->toAABB() ) ) {
-      drawHoverRect( span, str, nullptr, nullptr );
-    }
-  }
-  else {
-    cachedStructIndex = -1;
-    cachedEntityIndex = -1;
-    cachedObjectIndex = -1;
-  }
-
-  for( int i = 0; i < taggedStrs.length(); ++i ) {
-    const Struct* str = orbis.str( taggedStrs[i] );
-
-    if( str != nullptr ) {
-      if( ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
-        if( projectBounds( &span, str->toAABB() ) ) {
-          drawTagRect( span, str, nullptr, taggedStrs[i] == hoverStr && hoverEnt < 0 );
-        }
+      if( ent == nullptr ) {
+        drawHoverTitle( span, str->bsp->title );
       }
     }
+    if( ent != nullptr &&
+        projectBounds( str->toAbsoluteCS( *ent->clazz + ent->offset ).toAABB(), &span ) )
+    {
+      drawHoverTitle( span, ent->clazz->title );
+    }
+  }
+
+  if( obj != nullptr && obj->cell != nullptr && projectBounds( *obj, &span ) ) {
+    drawHoverRect( span, nullptr, obj );
+    drawHoverTitle( span, obj->clazz->title, obj );
+  }
+
+  for( int i = 0; i < dragObjs.length(); ++i ) {
+    const Object* obj = orbis.obj( dragObjs[i] );
+
+    if( obj != nullptr && obj->cell != nullptr && projectBounds( *obj, &span ) ) {
+      drawHoverRect( span, nullptr, obj );
+    }
+  }
+
+  str = orbis.str( taggedStr );
+
+  if( str != nullptr && ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST &&
+      projectBounds( str->toAABB(), &span ) )
+  {
+    drawTagRect( span, str, nullptr, str->index == hoverStr );
   }
 
   for( int i = 0; i < taggedObjs.length(); ++i ) {
     const Object* obj = orbis.obj( taggedObjs[i] );
 
-    if( obj != nullptr ) {
-      if( ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
-        if( projectBounds( &span, *obj ) ) {
-          drawTagRect( span, nullptr, obj, taggedObjs[i] == hoverObj );
-        }
-      }
+    if( obj != nullptr && obj->cell != nullptr &&
+        ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST && projectBounds( *obj, &span ) )
+    {
+      drawTagRect( span, nullptr, obj, obj->index == hoverObj || dragObjs.contains( obj->index ) );
+    }
+  }
+
+  if( dragStartX >= 0 ) {
+    int width  = mouse.x - dragStartX;
+    int height = mouse.y - dragStartY;
+
+    if( abs( width ) > 2 || abs( height ) > 2 ) {
+      shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+      shape.rect( dragStartX, dragStartY, width, height );
     }
   }
 
   hoverStr = -1;
   hoverEnt = -1;
   hoverObj = -1;
+  dragObjs.clear();
 }
 
 StrategicArea::StrategicArea() :
   Area( camera.width, camera.height ),
   unitName( 0, 0, ALIGN_HCENTRE, Font::SANS, " " ),
-  cachedStructIndex( -1 ), cachedEntityIndex( -1 ), cachedObjectIndex( -1 ),
-  hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 )
+  hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 ), taggedStr( -1 )
 {
   flags = UPDATE_BIT | PINNED_BIT;
 }

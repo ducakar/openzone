@@ -51,23 +51,28 @@ void Bar::draw( const Area* area, float ratio ) const
 void Bar::draw( const Area* area, int barX, int barY, int barWidth, int barHeight,
                 float ratio ) const
 {
-  hard_assert( style != nullptr );
-
   int x = barX == Area::CENTRE ? ( area->width - barWidth ) / 2 :
           barX < 0 ? area->width - barWidth + barX : barX;
   int y = barY == Area::CENTRE ? ( area->height - barHeight ) / 2 :
           barY < 0 ? area->height - barHeight + barY : barY;
 
+  drawAbs( x, y, barWidth, barHeight, ratio );
+}
+
+void Bar::drawAbs( int barX, int barY, int barWidth, int barHeight, float ratio ) const
+{
+  hard_assert( style != nullptr );
+
   int width = Math::lround( float( barWidth - 2 ) * ratio );
 
   shape.colour( Math::mix( style->minColour, style->maxColour, ratio ) );
-  shape.fill( x + 1, y + 1, width, barHeight - 2 );
+  shape.fill( barX + 1, barY + 1, width, barHeight - 2 );
 
   shape.colour( style->background );
-  shape.fill( x + 1 + width, y + 1, barWidth - 2 - width, barHeight - 2 );
+  shape.fill( barX + 1 + width, barY + 1, barWidth - 2 - width, barHeight - 2 );
 
   shape.colour( style->border );
-  shape.rect( x, y, barWidth, barHeight );
+  shape.rect( barX, barY, barWidth, barHeight );
 }
 
 }
