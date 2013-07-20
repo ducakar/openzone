@@ -53,7 +53,7 @@ void Caelum::build( const char* name )
 
   File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
     Vec3 p;

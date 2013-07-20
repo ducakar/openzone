@@ -53,7 +53,7 @@ void Terra::load( int id_ )
     Log::print( "Loading terrain '%s' ...", name.cstr() );
 
     File file( path );
-    InputStream is = file.inputStream();
+    InputStream is = file.inputStream( Endian::LITTLE );
 
     if( !is.isAvailable() ) {
       OZ_ERROR( "Cannot read terra file '%s'", file.path().cstr() );

@@ -71,7 +71,7 @@ void QuestFrame::updateTask()
   }
 }
 
-bool QuestFrame::open( Button* sender )
+void QuestFrame::open( Button* sender )
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
 
@@ -85,10 +85,9 @@ bool QuestFrame::open( Button* sender )
     questFrame->height += questFrame->contentHeight;
     questFrame->isOpened = true;
   }
-  return true;
 }
 
-bool QuestFrame::next( Button* sender )
+void QuestFrame::next( Button* sender )
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
 
@@ -98,10 +97,9 @@ bool QuestFrame::next( Button* sender )
     questList.activeQuest = ( questList.activeQuest + 1 ) % nQuests;
     questFrame->updateTask();
   }
-  return true;
 }
 
-bool QuestFrame::prev( Button* sender )
+void QuestFrame::prev( Button* sender )
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
 
@@ -111,7 +109,6 @@ bool QuestFrame::prev( Button* sender )
     questList.activeQuest = ( questList.activeQuest + nQuests - 1 ) % nQuests;
     questFrame->updateTask();
   }
-  return true;
 }
 
 void QuestFrame::onUpdate()

@@ -220,7 +220,7 @@ void Terra::saveMatrix()
 
   Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   os.writeInt( VERTS );
 
@@ -271,7 +271,7 @@ void Terra::saveClient()
     Log::printEnd( " OK" );
   }
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   // generate index buffer
   int index = 0;

@@ -243,6 +243,8 @@ void UI::destroy()
 
   mouse.destroy();
   style.destroy();
+
+  context.clearSounds();
 }
 
 UI ui;

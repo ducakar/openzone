@@ -500,14 +500,18 @@ static void waitBell()
 // Wait bell to finish playing on (normal) process termination.
 struct BellFinaliser
 {
+  bool isFinalised;
+
   OZ_HIDDEN
   ~BellFinaliser()
   {
+    isFinalised = true;
+
     waitBell();
   }
 };
 
-static BellFinaliser bellFinaliser;
+static BellFinaliser bellFinaliser = { false };
 
 OZ_NORETURN
 static void abort( bool doHalt )
@@ -604,6 +608,11 @@ void System::bell()
   }
 
 #endif
+
+  // If this occurs during static finalisation bellFinaliser may already be destructed.
+  if( bellFinaliser.isFinalised ) {
+    waitBell();
+  }
 }
 
 void System::warning( const char* function, const char* file, int line, int nSkippedFrames,

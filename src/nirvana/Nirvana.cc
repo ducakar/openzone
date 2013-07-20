@@ -80,6 +80,8 @@ void Nirvana::update()
     ++count;
   }
   updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
+
+  techTree.update();
 }
 
 void Nirvana::read( InputStream* istream )

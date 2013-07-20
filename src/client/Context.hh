@@ -201,6 +201,9 @@ class Context
     void load();
     void unload();
 
+    // Used to remove UI sounds and sources.
+    void clearSounds();
+
     void init();
     void destroy();
 

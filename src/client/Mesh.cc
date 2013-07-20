@@ -252,7 +252,7 @@ const File* Mesh::preload( const char* path )
     OZ_ERROR( "Failed to map '%s'", path );
   }
 
-  InputStream istream = preloadData->modelFile.inputStream();
+  InputStream istream = preloadData->modelFile.inputStream( Endian::LITTLE );
 
   dim             = istream.readVec3();
   nTextures       = istream.readInt();
@@ -304,7 +304,7 @@ void Mesh::load( uint usage )
   flags = 0;
 
   hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
-  InputStream istream = preloadData->modelFile.inputStream();
+  InputStream istream = preloadData->modelFile.inputStream( Endian::LITTLE );
 
   OZ_GL_CHECK_ERROR();
 

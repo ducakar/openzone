@@ -241,7 +241,7 @@ SMM* MD2::create( int id )
 void MD2::preload()
 {
   const File* file = mesh.preload( liber.models[id].path );
-  InputStream is   = file->inputStream();
+  InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - int( sizeof( float[16] ) ) );
   weaponTransf = is.readMat44();

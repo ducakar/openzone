@@ -84,7 +84,7 @@ void BSP::schedule( const Struct* str )
 void BSP::preload()
 {
   const File* file = mesh.preload( "@bsp/" + bsp->name + ".ozcBSP" );
-  InputStream is   = file->inputStream();
+  InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
   waterFogColour = is.readVec4();

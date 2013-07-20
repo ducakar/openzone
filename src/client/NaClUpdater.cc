@@ -68,7 +68,7 @@ void NaClUpdater::writeLocalManifest() const
 {
   Log::print( "Writing local manifest '%s' ...", LOCAL_MANIFEST );
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   os.writeString( "ozManifest" );
   os.writeInt( remotePackages.length() );
@@ -97,7 +97,7 @@ bool NaClUpdater::checkUpdates()
   File localManifest( LOCAL_MANIFEST );
 
   if( localManifest.map() ) {
-    InputStream is = localManifest.inputStream();
+    InputStream is = localManifest.inputStream( Endian::LITTLE );
     localPackages = readManifest( &is );
   }
 
@@ -111,7 +111,7 @@ bool NaClUpdater::checkUpdates()
   while( !downloader.isComplete() );
 
   OutputStream os = downloader.take();
-  InputStream  is = os.inputStream();
+  InputStream  is = os.inputStream( Endian::LITTLE );
 
   is.rewind();
 

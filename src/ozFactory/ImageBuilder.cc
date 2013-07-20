@@ -106,7 +106,7 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
   }
 #endif
 
-  OutputStream ostream( 0 );
+  OutputStream ostream( 0, Endian::LITTLE );
 
   // Header beginning.
   ostream.writeChars( "DDS ", 4 );

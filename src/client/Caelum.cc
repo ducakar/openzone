@@ -160,7 +160,7 @@ void Caelum::load()
   id = orbis.caelum.id;
 
   File file = liber.caela[id].path;
-  InputStream is = file.inputStream();
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   if( !is.isAvailable() ) {
     OZ_ERROR( "Caelum file '%s' read failed", file.path().cstr() );

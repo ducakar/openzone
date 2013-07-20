@@ -36,7 +36,7 @@ class ModelField : public Area
 {
   public:
 
-    typedef bool Callback( ModelField* sender );
+    typedef void Callback( ModelField* sender );
 
   private:
 
@@ -52,9 +52,9 @@ class ModelField : public Area
     float          currRot;
     float          nextRot;
 
-    int            clickMask;
     bool           isHighlighted;
     bool           isClicked;
+    bool           wasClicked;
 
   public:
 
@@ -75,12 +75,6 @@ class ModelField : public Area
 
     void setBSP( const oz::BSP* bsp );
     void setModel( int model );
-
-    // Bitmask for input.buttons or -1 for calling callback on all events (including mouse move).
-    void setClickMask( int mask )
-    {
-      clickMask = mask;
-    }
 
 };
 

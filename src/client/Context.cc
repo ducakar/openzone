@@ -736,6 +736,23 @@ void Context::unload()
   Log::println( "}" );
 }
 
+void Context::clearSounds()
+{
+  while( !sources.isEmpty() ) {
+    removeSource( sources.first(), nullptr );
+    OZ_AL_CHECK_ERROR();
+  }
+
+  for( int i = 0; i < liber.sounds.length(); ++i ) {
+    if( sounds[i].nUsers == 0 ) {
+      freeSound( i );
+    }
+    hard_assert( sounds[i].nUsers == -1 );
+  }
+
+  OZ_AL_CHECK_ERROR();
+}
+
 void Context::init()
 {
   Log::print( "Initialising Context ..." );

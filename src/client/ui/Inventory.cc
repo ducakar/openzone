@@ -37,7 +37,7 @@ namespace client
 namespace ui
 {
 
-bool Inventory::ownerItemCallback( ModelField* sender )
+void Inventory::ownerItemCallback( ModelField* sender )
 {
   Inventory*     inventory = static_cast<Inventory*>( sender->parent );
   const Object*  container = inventory->owner;
@@ -51,7 +51,7 @@ bool Inventory::ownerItemCallback( ModelField* sender )
     item = static_cast<const Dynamic*>( orbis.obj( container->items[id] ) );
   }
   if( item == nullptr ) {
-    return false;
+    return;
   }
 
   hard_assert( inventory->taggedItemIndex == -1 );
@@ -59,32 +59,29 @@ bool Inventory::ownerItemCallback( ModelField* sender )
   if( input.leftClick ) {
     if( inventory->other != nullptr ) {
       bot->invGive( item, inventory->other );
+      return;
     }
     else if( bot->cargo < 0 ) {
       bot->invDrop( item );
+      return;
     }
-    return true;
   }
   else if( input.rightClick ) {
     bot->invUse( item, container );
-
-    inventory->taggedItemIndex = item->index;
-    return true;
   }
   else if( input.middleClick ) {
-    if( bot->cargo < 0 ) {
+    if( bot->cargo < 0 && inventory->other == nullptr ) {
       ui::mouse.doShow = false;
 
       bot->invGrab( item );
+      return;
     }
-    return true;
   }
 
   inventory->taggedItemIndex = item->index;
-  return false;
 }
 
-bool Inventory::otherItemCallback( ModelField* sender )
+void Inventory::otherItemCallback( ModelField* sender )
 {
   Inventory*     inventory = static_cast<Inventory*>( sender->parent );
   const Object*  container = inventory->other;
@@ -98,22 +95,20 @@ bool Inventory::otherItemCallback( ModelField* sender )
     item = static_cast<const Dynamic*>( orbis.obj( container->items[id] ) );
   }
   if( item == nullptr ) {
-    return false;
+    return;
   }
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
   if( input.leftClick ) {
     bot->invTake( item, container );
-    return true;
   }
   else if( input.rightClick ) {
     bot->invUse( item, container );
-    return true;
   }
-
-  inventory->taggedItemIndex = item->index;
-  return false;
+  else {
+    inventory->taggedItemIndex = item->index;
+  }
 }
 
 void Inventory::updateReferences()
@@ -335,7 +330,6 @@ Inventory::Inventory() :
   for( int i = 0; i < COLS; ++i ) {
     ownerModels[i] = new ModelField( ownerItemCallback,
                                      SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE );
-    ownerModels[i]->setClickMask( -1 );
     ownerModels[i]->id = i;
 
     add( ownerModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
@@ -343,7 +337,6 @@ Inventory::Inventory() :
   for( int i = 0; i < COLS; ++i ) {
     otherModels[i] = new ModelField( otherItemCallback,
                                      SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE );
-    otherModels[i]->setClickMask( -1 );
     otherModels[i]->id = i;
 
     add( otherModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE );

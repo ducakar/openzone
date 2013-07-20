@@ -445,7 +445,7 @@ void Liber::initFragPools()
       continue;
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = file->inputStream( Endian::LITTLE );
 
     if( !is.isAvailable() ) {
       OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
@@ -485,7 +485,7 @@ void Liber::initClasses()
       continue;
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = file->inputStream( Endian::LITTLE );
 
     if( !is.isAvailable() ) {
       OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
@@ -554,7 +554,7 @@ void Liber::initClasses()
       continue;
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = file->inputStream( Endian::LITTLE );
 
     int nClasses  = is.readInt();
     int nDevices  = is.readInt();

@@ -388,7 +388,7 @@ void OBJ::save()
 
   compiler.endMesh();
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   compiler.writeMesh( &os );
   compiler.buildMeshTextures( sDestDir );

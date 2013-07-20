@@ -126,7 +126,7 @@ static void writeDDS( FIBITMAP* image, const char* filePath )
   }
 #endif
 
-  OutputStream ostream( 0 );
+  OutputStream ostream( 0, Endian::LITTLE );
 
   // Header beginning.
   ostream.writeChars( "DDS ", 4 );

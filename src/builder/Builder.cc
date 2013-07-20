@@ -320,7 +320,7 @@ void Builder::buildClasses( const String& pkgName )
   File dir( dirName );
   DArray<File> dirList = dir.ls();
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {
@@ -337,7 +337,7 @@ void Builder::buildClasses( const String& pkgName )
   }
 
   if( !clazz.names.isEmpty() ) {
-    OutputStream headerStream( 0 );
+    OutputStream headerStream( 0, Endian::LITTLE );
 
     headerStream.writeInt( clazz.names.length() );
     headerStream.writeInt( clazz.devices.length() );
@@ -394,7 +394,7 @@ void Builder::buildFragPools( const String& pkgName )
   File dir( dirName );
   DArray<File> dirList = dir.ls();
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {

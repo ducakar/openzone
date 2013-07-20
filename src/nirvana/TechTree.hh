@@ -46,6 +46,7 @@ class TechTree
 
       Type                   type;
       int                    price;
+      float                  time;
       String                 name;
       String                 title;
       String                 description;
@@ -71,6 +72,8 @@ class TechTree
     Set<BSP*>         allowedBuildings;
     Set<ObjectClass*> allowedUnits;
     Set<ObjectClass*> allowedItems;
+
+    void update();
 
     void read( InputStream* istream );
     void write( OutputStream* ostream ) const;

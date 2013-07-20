@@ -50,9 +50,9 @@ class QuestFrame : public Frame
 
     void updateTask();
 
-    static bool open( Button* sender );
-    static bool next( Button* sender );
-    static bool prev( Button* sender );
+    static void open( Button* sender );
+    static void next( Button* sender );
+    static void prev( Button* sender );
 
   protected:
 

@@ -365,7 +365,7 @@ void AL::checkError( const char* function, const char* file, int line )
 
 bool AL::bufferDataFromFile( ALuint buffer, const File &file )
 {
-  InputStream istream = file.inputStream();
+  InputStream istream = file.inputStream( Endian::LITTLE );
 
   if( !istream.isAvailable() ) {
     return false;

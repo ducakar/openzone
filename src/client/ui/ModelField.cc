@@ -51,18 +51,28 @@ void ModelField::onVisibilityChange( bool )
 
 bool ModelField::onMouseEvent()
 {
-  if( !input.keys[Input::KEY_UI_ALT] ) {
-    bool hasClick = ( input.buttons & ~input.oldButtons & clickMask );
-    nextRot       = angleWrap( nextRot + ROTATION_VEL );
-    isHighlighted = true;
+  if( input.keys[Input::KEY_UI_ALT] ) {
+    return false;
+  }
 
-    if( callback != nullptr && ( clickMask == -1 || hasClick ) ) {
-      if( hasClick && style.sounds.click >= 0 ) {
-        context.playSample( style.sounds.click );
-      }
-      isClicked = callback( this );
+  nextRot       = angleWrap( nextRot + ROTATION_VEL );
+  isHighlighted = true;
+  isClicked     = wasClicked && input.buttons;
+
+  if( callback == nullptr ) {
+    return true;
+  }
+
+  if( input.buttons & ~input.oldButtons ) {
+    isClicked  = true;
+    wasClicked = true;
+
+    if( style.sounds.click >= 0 ) {
+      context.playSample( style.sounds.click );
     }
   }
+
+  callback( this );
   return true;
 }
 
@@ -74,9 +84,11 @@ void ModelField::onDraw()
     }
     else if( isHighlighted ) {
       shape.colour( style.colours.buttonHover );
+      wasClicked = false;
     }
     else {
       shape.colour( style.colours.button );
+      wasClicked = false;
     }
 
     shape.fill( x, y, width, height );
@@ -137,7 +149,7 @@ void ModelField::onDraw()
 ModelField::ModelField( Callback* callback_, int width, int height ) :
   Area( width, height ), callback( callback_ ), bsp( nullptr ), model( -1 ),
   defaultRot( DEFAULT_ROTATION ), currRot( DEFAULT_ROTATION ), nextRot( DEFAULT_ROTATION ),
-  clickMask( Input::LEFT_BUTTON ), isHighlighted( false ), isClicked( false ), id( -1 )
+  isHighlighted( false ), isClicked( false ), wasClicked( false ), id( -1 )
 {}
 
 void ModelField::setDefaultRotation( float defaultRotation )

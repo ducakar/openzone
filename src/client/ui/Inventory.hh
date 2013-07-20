@@ -72,8 +72,8 @@ class Inventory : public Frame
 
   private:
 
-    static bool ownerItemCallback( ModelField* sender );
-    static bool otherItemCallback( ModelField* sender );
+    static void ownerItemCallback( ModelField* sender );
+    static void otherItemCallback( ModelField* sender );
 
     void updateReferences();
     void handleScroll( const Object* container, int* scroll );

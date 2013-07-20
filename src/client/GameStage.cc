@@ -55,7 +55,7 @@ void GameStage::read()
 
   Log::printEnd( " OK" );
 
-  InputStream istream = stateFile.inputStream();
+  InputStream istream = stateFile.inputStream( Endian::LITTLE );
 
   matrix.read( &istream );
   nirvana.read( &istream );
@@ -76,7 +76,7 @@ void GameStage::read()
 
 void GameStage::write() const
 {
-  OutputStream ostream( 0 );
+  OutputStream ostream( 0, Endian::LITTLE );
 
   matrix.write( &ostream );
   nirvana.write( &ostream );

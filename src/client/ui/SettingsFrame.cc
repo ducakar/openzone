@@ -36,12 +36,10 @@ namespace client
 namespace ui
 {
 
-static bool closeFrame( Button* sender )
+static void closeFrame( Button* sender )
 {
   SettingsFrame* settings = static_cast<SettingsFrame*>( sender->parent );
-
   settings->parent->remove( settings );
-  return true;
 }
 
 void SettingsFrame::onDraw()

@@ -39,19 +39,30 @@ void Button::onVisibilityChange( bool )
 {
   isHighlighted = false;
   isClicked     = false;
+  wasClicked    = false;
 }
 
 bool Button::onMouseEvent()
 {
-  if( !input.keys[Input::KEY_UI_ALT] ) {
-    bool hasClick = ( input.buttons & ~input.oldButtons & clickMask );
-    isHighlighted = true;
+  if( input.keys[Input::KEY_UI_ALT] ) {
+    return false;
+  }
 
-    if( callback != nullptr && ( clickMask == -1 || hasClick ) ) {
-      if( hasClick && style.sounds.click >= 0 ) {
-        context.playSample( style.sounds.click );
-      }
-      isClicked = callback( this );
+  bool buttonDown = input.buttons & ~input.oldButtons & Input::LEFT_BUTTON;
+  bool buttonUp   = ~input.buttons & input.oldButtons & Input::LEFT_BUTTON;
+
+  isHighlighted = true;
+  isClicked     = wasClicked && ( input.buttons & Input::LEFT_BUTTON );
+
+  if( wasClicked && buttonUp && callback != nullptr ) {
+    callback( this );
+  }
+  else if( buttonDown ) {
+    isClicked  = true;
+    wasClicked = true;
+
+    if( style.sounds.click >= 0 ) {
+      context.playSample( style.sounds.click );
     }
   }
   return true;
@@ -64,9 +75,11 @@ void Button::onDraw()
   }
   else if( isHighlighted ) {
     shape.colour( style.colours.buttonHover );
+    wasClicked = false;
   }
   else {
     shape.colour( style.colours.button );
+    wasClicked = false;
   }
 
   shape.fill( x, y, width, height );
@@ -79,8 +92,7 @@ void Button::onDraw()
 Button::Button( const char* text, Callback* callback_, int width, int height ) :
   Area( width, height ),
   label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%s", text ),
-  callback( callback_ ),
-  clickMask( Input::LEFT_BUTTON ), isHighlighted( false ), isClicked( false )
+  callback( callback_ ), isHighlighted( false ), isClicked( false ), wasClicked( false )
 {}
 
 void Button::setLabel( const char* text )

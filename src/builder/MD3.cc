@@ -295,7 +295,7 @@ void MD3::load()
 
 void MD3::save()
 {
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   compiler.beginMesh();
 

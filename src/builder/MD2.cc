@@ -380,7 +380,7 @@ void MD2::build( const char* path )
   String sDestDir = &sPath[1];
   File::mkdir( sDestDir );
 
-  OutputStream os( 0 );
+  OutputStream os( 0, Endian::LITTLE );
 
   compiler.writeMesh( &os );
   compiler.buildMeshTextures( sDestDir );

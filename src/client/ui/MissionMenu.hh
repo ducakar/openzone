@@ -86,7 +86,7 @@ class MissionMenu : public Area
     int               imageWidth;
     int               imageHeight;
 
-    static bool loadMission( Button* sender );
+    static void loadMission( Button* sender );
 
   protected:
 

@@ -97,7 +97,7 @@ void Cursor::advance( int millis )
 
 bool Cursor::load( const File& file, int size )
 {
-  InputStream istream = file.inputStream();
+  InputStream istream = file.inputStream( Endian::LITTLE );
 
   // Implementation is based on specifications from xcursor(3) manual.
   if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "Xcur" ) ) {

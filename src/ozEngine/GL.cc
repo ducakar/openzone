@@ -169,7 +169,7 @@ void GL::checkError( const char* function, const char* file, int line )
 
 int GL::textureDataFromFile( const File& file, int bias, GLenum target )
 {
-  InputStream istream = file.inputStream();
+  InputStream istream = file.inputStream( Endian::LITTLE );
 
   // Implementation is based on specifications from
   // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.

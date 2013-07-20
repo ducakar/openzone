@@ -40,6 +40,9 @@ TechTree::Node* TechTree::findNode( const char* name )
   OZ_ERROR( "Invalid TechTree node reference '%s'", name );
 }
 
+void TechTree::update()
+{}
+
 void TechTree::read( InputStream* istream )
 {
   foreach( node, nodes.iter() ) {
@@ -101,6 +104,7 @@ void TechTree::load()
     node.title       = lingua.get( node.name );
     node.description = lingua.get( tech["description"].get( "" ) );
     node.price       = tech["price"].get( 0 );
+    node.time        = tech["time"].get( 60.0f );
     node.progress    = node.price == 0 ? 1.0f : 0.0f;
   }
 

@@ -37,12 +37,10 @@ namespace client
 namespace ui
 {
 
-static bool back( Button* sender )
+static void back( Button* sender )
 {
   CreditsMenu* creditsMenu = static_cast<CreditsMenu*>( sender->parent );
-
   creditsMenu->parent->remove( creditsMenu );
-  return true;
 }
 
 void CreditsMenu::onReposition()

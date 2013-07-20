@@ -48,7 +48,7 @@ class BuildMenu : public Frame
 {
   private:
 
-    static bool createObject( Button* button );
+    static void createObject( Button* button );
 
   public:
 
