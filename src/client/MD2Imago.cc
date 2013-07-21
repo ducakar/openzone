@@ -75,7 +75,7 @@ void MD2Imago::draw( const Imago* parent )
       tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
     }
 
-    md2->scheduleAnim( &anim );
+    md2->scheduleAnim( &anim, Mesh::SCENE_QUEUE );
 
     // FIXME Enable when no buggy models are used (no mismatched death animation for weapons).
 //     if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
@@ -112,7 +112,7 @@ void MD2Imago::draw( const Imago* parent )
       }
     }
 
-    md2->scheduleAnim( &anim );
+    md2->scheduleAnim( &anim, Mesh::SCENE_QUEUE );
 
     if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
       context.drawImago( orbis.obj( bot->weapon ), this );

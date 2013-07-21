@@ -23,12 +23,10 @@
 
 #include <client/ui/StrategicArea.hh>
 
-#include <client/Shader.hh>
+#include <client/Input.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
-#include <client/Input.hh>
 #include <client/ui/Bar.hh>
-#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -160,7 +158,7 @@ void StrategicArea::collectHovers()
 
     for( int i = 0; i < 4; ++i ) {
       collider.translate( camera.p, rays[i] );
-      Point point = camera.p + rays[i] * collider.hit.ratio;
+      Point point = camera.p + collider.hit.ratio * rays[i];
 
       minX = min( minX, point.x );
       minY = min( minY, point.y );
@@ -293,6 +291,8 @@ void StrategicArea::onVisibilityChange( bool )
   hoverEnt = -1;
 
   dragObjs.clear();
+
+  mouseW   = 0.0f;
 }
 
 void StrategicArea::onReposition()
@@ -318,10 +318,16 @@ void StrategicArea::onUpdate()
       ++i;
     }
   }
+
+  if( input.rightClick ) {
+    clearOverlay();
+  }
 }
 
 bool StrategicArea::onMouseEvent()
 {
+  mouseW = input.mouseW;
+
   collectHovers();
 
   if( input.leftClick ) {
@@ -348,6 +354,12 @@ bool StrategicArea::onMouseEvent()
         taggedObjs.include( *obj );
       }
     }
+  }
+
+  if( overlayCallback != nullptr ) {
+    Vec3 ray = getRay( mouse.x, mouse.y );
+
+    overlayCallback( overlaySender, ray, input.leftClick );
   }
   return true;
 }
@@ -425,9 +437,23 @@ void StrategicArea::onDraw()
 StrategicArea::StrategicArea() :
   Area( camera.width, camera.height ),
   unitName( 0, 0, ALIGN_HCENTRE, Font::SANS, " " ),
-  hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 ), taggedStr( -1 )
+  overlayCallback( nullptr ), overlaySender( nullptr ),
+  hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 ), taggedStr( -1 ),
+  mouseW( 0.0f )
 {
   flags = UPDATE_BIT | PINNED_BIT;
+}
+
+void StrategicArea::setOverlay( OverlayCallback* callback, Area* sender )
+{
+  overlayCallback = callback;
+  overlaySender   = sender;
+}
+
+void StrategicArea::clearOverlay()
+{
+  overlayCallback = nullptr;
+  overlaySender   = nullptr;
 }
 
 }

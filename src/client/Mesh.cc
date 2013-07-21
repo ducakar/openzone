@@ -129,7 +129,7 @@ void Mesh::draw( const Instance* instance, int mask )
   tf.model = instance->transform;
   tf.apply();
 
-  tf.colour.w.w = instance->alpha;
+  tf.colour = instance->colour;
   tf.applyColour();
 
   int firstPart = 0;
@@ -157,12 +157,12 @@ void Mesh::draw( const Instance* instance, int mask )
   }
 }
 
-void Mesh::drawScheduled( int mask )
+void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
 {
   foreach( i, loadedMeshes.citer() ) {
     Mesh* mesh = *i;
 
-    if( mesh->instances.isEmpty() ) {
+    if( mesh->instances[queue].isEmpty() ) {
       continue;
     }
 
@@ -173,11 +173,11 @@ void Mesh::drawScheduled( int mask )
 
     shader.program( mesh->shaderId );
 
-    foreach( instance, mesh->instances.citer() ) {
+    foreach( instance, mesh->instances[queue].citer() ) {
       // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
       int instanceMask = mask;
 
-      if( instance->alpha != 1.0f ) {
+      if( instance->colour.w.w != 1.0f ) {
         if( mask & ALPHA_BIT ) {
           instanceMask |= SOLID_BIT;
         }
@@ -211,12 +211,12 @@ void Mesh::drawScheduled( int mask )
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Mesh::clearScheduled()
+void Mesh::clearScheduled( Mesh::QueueType queue )
 {
   foreach( i, loadedMeshes.citer() ) {
     Mesh* mesh = *i;
 
-    mesh->instances.clear();
+    mesh->instances[queue].clear();
   }
 }
 
@@ -233,7 +233,7 @@ Mesh::Mesh() :
   vbo( 0 ), ibo( 0 ), animationTexId( 0 ),
   nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFrames( 0 ), nFramePositions( 0 ),
   vertices( nullptr ), positions( nullptr ), normals( nullptr ),
-  instances( 8 ), preloadData( nullptr ), dim( Vec3::ONE )
+  preloadData( nullptr ), dim( Vec3::ONE )
 {}
 
 Mesh::~Mesh()

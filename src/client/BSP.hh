@@ -62,7 +62,7 @@ class BSP
       return mesh.isLoaded();
     }
 
-    void schedule( const Struct* str );
+    void schedule( const Struct* str, Mesh::QueueType queue );
 
     void preload();
     void load();

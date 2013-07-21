@@ -25,10 +25,14 @@
 
 #include <matrix/Synapse.hh>
 #include <nirvana/TechTree.hh>
+#include <client/Input.hh>
 #include <client/Shape.hh>
 #include <client/Shader.hh>
 #include <client/Camera.hh>
-#include <client/Input.hh>
+#include <client/SMM.hh>
+#include <client/Context.hh>
+#include <client/ui/StrategicArea.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {
@@ -37,7 +41,20 @@ namespace client
 namespace ui
 {
 
-const int BuildMenu::SLOT_SIZE = 76;
+const Mat44 BuildMenu::OVERLAY_GREEN  = Mat44( 0.0f, 1.0f, 0.0f, 0.0f,
+                                               0.0f, 1.0f, 0.0f, 0.0f,
+                                               0.0f, 1.0f, 0.0f, 0.0f,
+                                               0.0f, 0.0f, 0.0f, 0.5f );
+
+const Mat44 BuildMenu::OVERLAY_YELLOW = Mat44( 0.8f, 0.8f, 0.0f, 0.0f,
+                                               0.8f, 0.8f, 0.0f, 0.0f,
+                                               0.8f, 0.8f, 0.0f, 0.0f,
+                                               0.0f, 0.0f, 0.0f, 0.5f );
+
+const Mat44 BuildMenu::OVERLAY_RED    = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                                               1.0f, 0.0f, 0.0f, 0.0f,
+                                               1.0f, 0.0f, 0.0f, 0.0f,
+                                               0.0f, 0.0f, 0.0f, 0.5f );
 
 void BuildMenu::selectBuildings( Button* sender )
 {
@@ -76,17 +93,15 @@ void BuildMenu::createSelection( ModelField* sender )
 
   switch( buildMenu->mode ) {
     case BUILDINGS: {
-      const BSP* bsp = techTree.allowedBuildings[sender->id];
+      const oz::BSP* bsp = techTree.allowedBuildings[sender->id];
 
       buildMenu->title.setText( "%s", bsp->title.cstr() );
 
-      if( input.leftClick ) {
-        Point p  = camera.p + ( 2.0f + bsp->dim().fastN() ) * camera.at;
-        AABB  bb = AABB( p, bsp->dim() );
+      if( input.leftClick && ui.strategicArea != nullptr ) {
+        buildMenu->overlayBSP   = bsp;
+        buildMenu->overlayModel = -1;
 
-        if( !collider.overlaps( bb ) ) {
-          synapse.add( bsp, p, NORTH, false );
-        }
+        ui.strategicArea->setOverlay( overlayCallback, buildMenu );
       }
       break;
     }
@@ -95,13 +110,11 @@ void BuildMenu::createSelection( ModelField* sender )
 
       buildMenu->title.setText( "%s", clazz->title.cstr() );
 
-      if( input.leftClick ) {
-        Point p  = camera.p + ( 2.0f + clazz->dim.fastN() ) * camera.at;
-        AABB  bb = AABB( p, clazz->dim );
+      if( input.leftClick && ui.strategicArea != nullptr ) {
+        buildMenu->overlayBSP   = nullptr;
+        buildMenu->overlayModel = clazz->imagoModel;
 
-        if( !collider.overlaps( bb ) ) {
-          synapse.add( clazz, p, NORTH, false );
-        }
+        ui.strategicArea->setOverlay( overlayCallback, buildMenu );
       }
       break;
     }
@@ -110,17 +123,57 @@ void BuildMenu::createSelection( ModelField* sender )
 
       buildMenu->title.setText( "%s", clazz->title.cstr() );
 
-      if( input.leftClick ) {
-        Point p  = camera.p + ( 2.0f + clazz->dim.fastN() ) * camera.at;
-        AABB  bb = AABB( p, clazz->dim );
+      if( input.leftClick && ui.strategicArea != nullptr ) {
+        buildMenu->overlayBSP   = nullptr;
+        buildMenu->overlayModel = clazz->imagoModel;
 
-        if( !collider.overlaps( bb ) ) {
-          synapse.add( clazz, p, NORTH, false );
-        }
+        ui.strategicArea->setOverlay( overlayCallback, buildMenu );
       }
       break;
     }
   }
+}
+
+void BuildMenu::overlayCallback( Area* area, const Vec3& ray, bool isClicked )
+{
+  const BuildMenu* buildMenu = static_cast<const BuildMenu*>( area );
+
+  collider.translate( camera.p, ray );
+
+  tf.model  = Mat44::translation( camera.p + collider.hit.ratio * ray - Point::ORIGIN );
+  tf.colour = Mat44( OVERLAY_GREEN );
+
+  if( buildMenu->overlayBSP != nullptr ) {
+    BSP* bsp = context.requestBSP( buildMenu->overlayBSP );
+
+    bsp->schedule( nullptr, Mesh::OVERLAY_QUEUE );
+  }
+  else {
+    SMM* model = context.requestModel( buildMenu->overlayModel );
+
+    model->schedule( -1, Mesh::OVERLAY_QUEUE );
+    context.releaseModel( buildMenu->overlayModel );
+  }
+
+  tf.colour = Mat44::ID;
+
+  if( isClicked && ui.strategicArea ) {
+    ui.strategicArea->clearOverlay();
+  }
+
+//   Point p  = camera.p + ( 2.0f + bsp->dim().fastN() ) * camera.at;
+//   AABB  bb = AABB( p, bsp->dim() );
+//
+//   if( !collider.overlaps( bb ) ) {
+//     synapse.add( bsp, p, NORTH, false );
+//   }
+
+//   Point p  = camera.p + ( 2.0f + clazz->dim.fastN() ) * camera.at;
+//   AABB  bb = AABB( p, clazz->dim );
+//
+//   if( !collider.overlaps( bb ) ) {
+//     synapse.add( clazz, p, NORTH, false );
+//   }
 }
 
 bool BuildMenu::onMouseEvent()
@@ -159,12 +212,12 @@ void BuildMenu::onDraw()
         int index = scroll * 3 + i;
 
         if( index < techTree.allowedBuildings.length() ) {
-          models[i]->setBSP( techTree.allowedBuildings[index] );
+          models[i]->setModel( techTree.allowedBuildings[index] );
           models[i]->show( true );
           models[i]->id = index;
         }
         else {
-          models[i]->setBSP( nullptr );
+          models[i]->setModel( nullptr );
           models[i]->show( false );
           models[i]->id = -1;
         }
@@ -238,7 +291,8 @@ void BuildMenu::onDraw()
 
 BuildMenu::BuildMenu() :
   Frame( 240, 374, OZ_GETTEXT( "Buildings" ) ),
-  mode( BUILDINGS ), nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
+  mode( BUILDINGS ), overlayBSP( nullptr ), overlayModel( -1 ),
+  nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
 {
   scrollUpTex.load( "@ui/icon/scrollUp.dds" );
   scrollDownTex.load( "@ui/icon/scrollDown.dds" );

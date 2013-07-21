@@ -482,7 +482,7 @@ void Context::drawBSP( const Struct* str )
   BSP* bsp = requestBSP( str->bsp );
 
   if( bsp->isLoaded() ) {
-    bsp->schedule( str );
+    bsp->schedule( str, Mesh::SCENE_QUEUE );
   }
 }
 

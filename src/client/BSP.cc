@@ -50,7 +50,7 @@ BSP::~BSP()
   }
 }
 
-void BSP::schedule( const Struct* str )
+void BSP::schedule( const Struct* str, Mesh::QueueType queue )
 {
   if( str != nullptr ) {
     tf.model = Mat44::translation( str->p - Point::ORIGIN );
@@ -62,7 +62,7 @@ void BSP::schedule( const Struct* str )
       tf.push();
       tf.model.translate( entity.offset );
 
-      mesh.schedule( i + 1 );
+      mesh.schedule( i + 1, queue );
 
       if( entity.clazz->model != -1 ) {
         SMM* smm = context.smms[entity.clazz->model].handle;
@@ -70,7 +70,7 @@ void BSP::schedule( const Struct* str )
         if( smm != nullptr && smm->isLoaded() ) {
           tf.model = tf.model * entity.clazz->modelTransf;
 
-          smm->schedule( 0 );
+          smm->schedule( 0, queue );
         }
       }
 
@@ -78,7 +78,7 @@ void BSP::schedule( const Struct* str )
     }
   }
 
-  mesh.schedule( 0 );
+  mesh.schedule( 0, queue );
 }
 
 void BSP::preload()

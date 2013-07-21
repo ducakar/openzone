@@ -107,9 +107,11 @@ class Render
 
   private:
 
+#ifdef OZ_DYNAMICS
     void drawDyn();
     void loadDyn();
     void unloadDyn();
+#endif
 
     void scheduleCell( int cellX, int cellY );
     void prepareDraw();
@@ -122,6 +124,7 @@ class Render
 
     void draw( int flags );
     void swap();
+    void update();
 
     void resize();
 

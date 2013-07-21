@@ -126,7 +126,6 @@ void Inventory::updateReferences()
 
 void Inventory::handleScroll( const Object* container, int* scroll )
 {
-  // scroll
   if( ( container == owner && mouse.y < y + SINGLE_HEIGHT ) ||
       ( container == other && mouse.y >= y + SINGLE_HEIGHT ) )
   {
@@ -318,7 +317,7 @@ void Inventory::onDraw()
 }
 
 Inventory::Inventory() :
-  Frame( COLS*SLOT_SIZE, SLOT_SIZE + FOOTER_SIZE, " " ),
+  Frame( COLS*SLOT_SIZE + 2*PADDING_SIZE, SLOT_SIZE + FOOTER_SIZE, " " ),
   owner( nullptr ), other( nullptr ),
   lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
@@ -333,7 +332,7 @@ Inventory::Inventory() :
     ownerModels[i]->setClickMask( -1 );
     ownerModels[i]->id = i;
 
-    add( ownerModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
+    add( ownerModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
   }
   for( int i = 0; i < COLS; ++i ) {
     otherModels[i] = new ModelField( otherItemCallback,
@@ -341,7 +340,7 @@ Inventory::Inventory() :
     ownerModels[i]->setClickMask( -1 );
     otherModels[i]->id = i;
 
-    add( otherModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE );
+    add( otherModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE );
   }
 
   scrollUpTex.load( "@ui/icon/scrollUp.dds" );

@@ -20,7 +20,9 @@
 /**
  * @file client/ui/StrategicArea.hh
  *
- * Real-time strategy interface layer for HUD. Provides unit selection and commanding.
+ * Real-time strategy interface layer for HUD.
+ *
+ * Provides unit selection and commanding and placement.
  */
 
 #pragma once
@@ -45,23 +47,30 @@ class StrategicArea : public Area
     static const float TAG_MIN_PIXEL_SIZE;
     static const float TAG_MAX_COEFF_SIZE;
 
-    Label     unitName;
+    typedef void OverlayCallback( Area* sender, const Vec3& p, bool isClicked );
 
-    float     pixelStep;
-    float     stepPixel;
+    Label            unitName;
 
-    int       dragStartX;
-    int       dragStartY;
+    float            pixelStep;
+    float            stepPixel;
 
-    int       hoverStr;
-    int       hoverEnt;
-    int       hoverObj;
-    Set<int>  dragObjs;
+    OverlayCallback* overlayCallback;
+    Area*            overlaySender;
+
+    int              dragStartX;
+    int              dragStartY;
+
+    int              hoverStr;
+    int              hoverEnt;
+    int              hoverObj;
+    Set<int>         dragObjs;
 
   public:
 
-    int       taggedStr;
-    Set<int>  taggedObjs;
+    int              taggedStr;
+    Set<int>         taggedObjs;
+
+    float            mouseW;
 
   private:
 
@@ -85,6 +94,9 @@ class StrategicArea : public Area
   public:
 
     explicit StrategicArea();
+
+    void setOverlay( OverlayCallback* callback, Area* sender );
+    void clearOverlay();
 
 };
 

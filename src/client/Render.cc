@@ -234,7 +234,7 @@ void Render::drawGeometry()
 
   // clear buffer
   glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, shader.fogColour.w );
-  glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+  glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
   currentMicros = Time::uclock();
   swapMicros += currentMicros - beginMicros;
@@ -280,7 +280,7 @@ void Render::drawGeometry()
   caelumMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Mesh::drawScheduled( Mesh::SOLID_BIT );
+  Mesh::drawScheduled( Mesh::SCENE_QUEUE, Mesh::SOLID_BIT );
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
@@ -298,12 +298,15 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Mesh::drawScheduled( Mesh::ALPHA_BIT );
-  Mesh::clearScheduled();
+  Mesh::drawScheduled( Mesh::SCENE_QUEUE, Mesh::ALPHA_BIT );
+  Mesh::clearScheduled( Mesh::SCENE_QUEUE );
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
+
+  Mesh::drawScheduled( Mesh::OVERLAY_QUEUE, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+  Mesh::clearScheduled( Mesh::OVERLAY_QUEUE );
 
   shape.bind();
   shader.program( shader.plain );
@@ -498,6 +501,12 @@ void Render::swap()
   Window::swapBuffers();
 
   swapMicros += Time::uclock() - beginMicros;
+}
+
+void Render::update()
+{
+  Mesh::clearScheduled( Mesh::SCENE_QUEUE );
+  Mesh::clearScheduled( Mesh::OVERLAY_QUEUE );
 }
 
 void Render::resize()

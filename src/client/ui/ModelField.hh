@@ -74,7 +74,7 @@ class ModelField : public Area
     void setCallback( Callback* callback );
     void setDefaultRotation( float defaultRotation );
 
-    void setBSP( const oz::BSP* bsp );
+    void setModel( const oz::BSP* bsp );
     void setModel( int model );
 
     void setClickMask( int mask );

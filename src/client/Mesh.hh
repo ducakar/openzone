@@ -65,6 +65,12 @@ class Mesh
     static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
     static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
 
+    enum QueueType
+    {
+      SCENE_QUEUE,
+      OVERLAY_QUEUE
+    };
+
   private:
 
     struct Part
@@ -80,7 +86,7 @@ class Mesh
     struct Instance
     {
       Mat44 transform;
-      float alpha;
+      Mat44 colour;
       int   component;
       int   firstFrame;
       int   secondFrame;
@@ -90,9 +96,9 @@ class Mesh
       explicit Instance() = default;
 
       OZ_ALWAYS_INLINE
-      explicit Instance( const Mat44& transform_, float alpha_, int component_,
+      explicit Instance( const Mat44& transform_, Mat44 colour_, int component_,
                          int firstFrame_, int secondFrame_, float interpolation_ ) :
-        transform( transform_ ), alpha( alpha_ ), component( component_ ),
+        transform( transform_ ), colour( colour_ ), component( component_ ),
         firstFrame( firstFrame_ ), secondFrame( secondFrame_ ), interpolation( interpolation_ )
       {}
     };
@@ -127,7 +133,7 @@ class Mesh
     Point*            positions;
     Vec3*             normals;
 
-    List<Instance>    instances;
+    List<Instance>    instances[2];
     PreloadData*      preloadData;
 
   public:
@@ -141,8 +147,8 @@ class Mesh
 
   public:
 
-    static void drawScheduled( int mask );
-    static void clearScheduled();
+    static void drawScheduled( Mesh::QueueType queue, int mask );
+    static void clearScheduled( Mesh::QueueType queue );
 
     static void deallocate();
 
@@ -159,20 +165,21 @@ class Mesh
       return !parts.isEmpty();
     }
 
-    void schedule( int component )
+    void schedule( int component, QueueType queue )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component, 0, 0, 0.0f ) );
+      instances[queue].add( Instance( tf.model, tf.colour, component, 0, 0, 0.0f ) );
     }
 
-    void scheduleFrame( int component, int frame )
+    void scheduleFrame( int component, int frame, QueueType queue )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component, frame, 0, 0.0f ) );
+      instances[queue].add( Instance( tf.model, tf.colour, component, frame, 0, 0.0f ) );
     }
 
-    void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation )
+    void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation,
+                           QueueType queue )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component,
-                               firstFrame, secondFrame, interpolation ) );
+      instances[queue].add( Instance( tf.model, tf.colour, component,
+                                      firstFrame, secondFrame, interpolation ) );
     }
 
     const File* preload( const char* path );

@@ -67,9 +67,9 @@ class SMM
       return mesh.isLoaded();
     }
 
-    void schedule( int component )
+    void schedule( int component, Mesh::QueueType queue )
     {
-      mesh.schedule( component );
+      mesh.schedule( component, queue );
     }
 
     virtual void preload();

@@ -124,10 +124,6 @@ void StrategicProxy::prepare()
   if( input.keys[Input::KEY_CHEAT_SKY_BACKWARD] ) {
     orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
   }
-
-  if( input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
-  }
 }
 
 void StrategicProxy::update()
@@ -146,7 +142,7 @@ void StrategicProxy::update()
 
     float speed = ( isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED ) * Timer::TICK_TIME;
 
-    desiredPos += input.moveY * camera.at * speed;
+    desiredPos += input.moveY * camera.at    * speed;
     desiredPos += input.moveX * camera.right * speed;
 
     if( input.keys[Input::KEY_MOVE_UP] ) {
@@ -170,18 +166,15 @@ void StrategicProxy::update()
     float logHeight = Math::log( height );
     float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * Timer::TICK_TIME * logHeight;
 
-    desiredPos += input.moveY * up * speed;
+    desiredPos += input.moveY * up           * speed;
     desiredPos += input.moveX * camera.right * speed;
 
-    if( input.wheelUp ) {
-      float wheelFactor = float( input.mouseW );
+    if( input.wheelDown || input.wheelUp ) {
+      float wheelFactor = float( ui::ui.strategicArea->mouseW );
 
-      height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
-    }
-    if( input.wheelDown ) {
-      float wheelFactor = float( input.mouseW );
+      height = clamp( height + logHeight * ZOOM_FACTOR * wheelFactor, MIN_HEIGHT, MAX_HEIGHT );
 
-      height = max( MIN_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
+      ui::ui.strategicArea->mouseW = 0.0f;
     }
 
     desiredPos.x = clamp<float>( desiredPos.x, -Orbis::DIM, +Orbis::DIM );

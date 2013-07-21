@@ -16,6 +16,7 @@
     * new SpinLock class
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
+    * Buffer supports zlib comression
     * PFile class merged into File class (VFS paths begin with '@')
     * new SharedLib class for run-time linking
     * new EnumMap class
@@ -34,11 +35,16 @@
     * TerraBuilder class generates random terrain heightmaps and corresponding textures
 - matrix
     * melee attack
+- nirvana
+    * Technology tree
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
-    * new ModelField class to unify rendering of models in UI
     * UI sounds
+    * new BuildMenu, unit/building placement
+    * StrategicArea group selection
+    * status bars under health bars
 - client
+    * environment maps
     * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities
     * DDS format used for all textures, every texture is in its own file

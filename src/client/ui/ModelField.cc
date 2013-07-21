@@ -119,21 +119,22 @@ void ModelField::onDraw()
 
     if( bsp != nullptr ) {
       if( bspModel->isLoaded() ) {
-        bspModel->schedule( nullptr );
+        bspModel->schedule( nullptr, Mesh::SCENE_QUEUE );
       }
     }
     else {
       if( smmModel->isLoaded() ) {
-        smmModel->schedule( -1 );
+        smmModel->schedule( -1, Mesh::SCENE_QUEUE );
       }
+      context.releaseModel( model );
     }
 
     shape.unbind();
 
     glEnable( GL_DEPTH_TEST );
 
-    Mesh::drawScheduled( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
-    Mesh::clearScheduled();
+    Mesh::drawScheduled( Mesh::SCENE_QUEUE, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+    Mesh::clearScheduled( Mesh::SCENE_QUEUE );
 
     glDisable( GL_DEPTH_TEST );
 
@@ -168,7 +169,7 @@ void ModelField::setCallback( Callback* callback_ )
   callback = callback_;
 }
 
-void ModelField::setBSP( const oz::BSP* bsp_ )
+void ModelField::setModel( const oz::BSP* bsp_ )
 {
   if( bsp_ != bsp ) {
     bsp     = bsp_;

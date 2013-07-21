@@ -55,7 +55,7 @@ void SMMImago::draw( const Imago* )
   tf.model = Mat44::translation( obj->p - Point::ORIGIN );
   tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
 
-  smm->schedule( -1 );
+  smm->schedule( -1, Mesh::SCENE_QUEUE );
 }
 
 }

@@ -73,11 +73,6 @@ MD2::AnimType MD2::AnimState::extractAnim()
   else if( bot->cell == nullptr ) {
     return ANIM_CROUCH_STAND;
   }
-  else if( ( bot->actions & Bot::ACTION_JUMP ) &&
-           !( bot->state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) )
-  {
-    return ANIM_JUMP;
-  }
   else if( bot->state & Bot::MOVING_BIT ) {
     if( bot->state & Bot::CROUCHING_BIT ) {
       return ANIM_CROUCH_WALK;
@@ -85,6 +80,11 @@ MD2::AnimType MD2::AnimState::extractAnim()
     else {
       return ANIM_RUN;
     }
+  }
+  else if( ( bot->actions & Bot::ACTION_JUMP ) &&
+           !( bot->state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT ) ) )
+  {
+    return ANIM_JUMP;
   }
   else if( bot->cargo < 0 ) {
     if( weapon != nullptr && ( prevAttack || weapon->shotTime != 0.0f ) ) {

@@ -294,6 +294,7 @@ void GameStage::present( bool isFull )
     beginMicros = currentMicros;
   }
 
+  render.update();
   sound.sync();
 
   currentMicros = Time::uclock();

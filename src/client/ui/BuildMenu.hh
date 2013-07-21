@@ -38,7 +38,10 @@ class BuildMenu : public Frame
 {
   private:
 
-    static const int SLOT_SIZE;
+    static const int   SLOT_SIZE      = 76;
+    static const Mat44 OVERLAY_GREEN;
+    static const Mat44 OVERLAY_YELLOW;
+    static const Mat44 OVERLAY_RED;
 
     enum Mode
     {
@@ -47,15 +50,18 @@ class BuildMenu : public Frame
       ITEMS
     };
 
-    Mode        mode;
-    GLTexture   scrollUpTex;
-    GLTexture   scrollDownTex;
-    ModelField* models[12];
+    Mode           mode;
+    GLTexture      scrollUpTex;
+    GLTexture      scrollDownTex;
+    ModelField*    models[12];
 
-    int         nScrollRows;
-    int         scroll;
-    bool        isOverModel;
-    bool        wasOverModel;
+    const oz::BSP* overlayBSP;
+    int            overlayModel;
+
+    int            nScrollRows;
+    int            scroll;
+    bool           isOverModel;
+    bool           wasOverModel;
 
   private:
 
@@ -63,6 +69,7 @@ class BuildMenu : public Frame
     static void selectUnits( Button* sender );
     static void selectItems( Button* sender );
     static void createSelection( ModelField* sender );
+    static void overlayCallback( Area* area, const Vec3& ray, bool isClicked );
 
     bool onMouseEvent() override;
     void onDraw() override;

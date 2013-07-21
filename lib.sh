@@ -48,6 +48,8 @@ function build()
          "$prefix/libSDL_ttf-2.0.so.0" \
          "$prefix/liblua.so.5.2" \
          "$prefix/libfreeimage.so.3" \
+         "$prefix/libnoise.so.1.0.0" \
+         "$prefix/libassimp.so.3" \
          "$outDir"
 
       chmod +x $outDir/*

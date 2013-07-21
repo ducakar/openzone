@@ -24,7 +24,6 @@
 - client
     * editor
     * layout files
-    * MD3 animation, MD2 animation++
     * BSP rendering per partes
     * decals
     * particle model (smoke, fire ...)
