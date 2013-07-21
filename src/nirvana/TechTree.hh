@@ -57,7 +57,6 @@ class TechTree
         const ObjectClass*   item;
       };
       SList<Node*, MAX_DEPS> requires;
-      SList<Node*, MAX_DEPS> supports;
       float                  progress;
     };
 
@@ -69,9 +68,9 @@ class TechTree
 
   public:
 
-    Set<BSP*>         allowedBuildings;
-    Set<ObjectClass*> allowedUnits;
-    Set<ObjectClass*> allowedItems;
+    List<const BSP*>         allowedBuildings;
+    List<const ObjectClass*> allowedUnits;
+    List<const ObjectClass*> allowedItems;
 
     void update();
 

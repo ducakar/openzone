@@ -41,7 +41,31 @@ TechTree::Node* TechTree::findNode( const char* name )
 }
 
 void TechTree::update()
-{}
+{
+  if( allowedBuildings.isEmpty() ) {
+    foreach( node, nodes.citer() ) {
+      if( node->type == Node::BUILDING ) {
+        allowedBuildings.add( node->building );
+      }
+    }
+  }
+
+  if( allowedUnits.isEmpty() ) {
+    foreach( node, nodes.citer() ) {
+      if( node->type == Node::UNIT ) {
+        allowedUnits.add( node->unit );
+      }
+    }
+  }
+
+  if( allowedItems.isEmpty() ) {
+    foreach( node, nodes.citer() ) {
+      if( node->type == Node::ITEM ) {
+        allowedItems.add( node->item );
+      }
+    }
+  }
+}
 
 void TechTree::read( InputStream* istream )
 {
@@ -101,7 +125,7 @@ void TechTree::load()
       OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit' or 'item' defined" );
     }
 
-    node.title       = lingua.get( node.name );
+    node.title       = lingua.get( tech["title"].get( node.name ) );
     node.description = lingua.get( tech["description"].get( "" ) );
     node.price       = tech["price"].get( 0 );
     node.time        = tech["time"].get( 60.0f );
@@ -114,21 +138,14 @@ void TechTree::load()
     Node&       node     = nodes[i];
 
     if( requires.length() > Node::MAX_DEPS ) {
-      OZ_ERROR( "Only %d dependencies per technology supported in both directions.",
-                Node::MAX_DEPS );
+      OZ_ERROR( "Only %d dependencies per technology supported.", Node::MAX_DEPS );
     }
 
     int nRequires = requires.length();
     for( int i = 0; i < nRequires; ++i ) {
       Node* depNode = findNode( requires[i].asString() );
 
-      if( depNode->supports.length() >= Node::MAX_DEPS ) {
-        OZ_ERROR( "Only %d dependencies per technology supported in both directions.",
-                  Node::MAX_DEPS );
-      }
-
       node.requires.add( depNode );
-      depNode->supports.add( &node );
     }
   }
 

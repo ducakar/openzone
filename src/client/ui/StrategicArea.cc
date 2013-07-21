@@ -220,9 +220,8 @@ void StrategicArea::drawHoverRect( const Span& span, const Struct* str, const Ob
   else {
     const ObjectClass* clazz = obj->clazz;
 
-    life   = obj->flags & Object::BOT_BIT ?
-             max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
-             obj->life / clazz->life;
+    life   = obj->flags & Object::BOT_BIT ? ( 2.0f * obj->life - clazz->life ) / clazz->life :
+                                            obj->life / clazz->life;
     status = obj->status();
   }
 
@@ -259,13 +258,10 @@ void StrategicArea::drawTagRect( const Span& span, const Struct* str, const Obje
     else {
       float maxLife = obj->clazz->life;
 
-      life   = obj->flags & Object::BOT_BIT ?
-               max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
-               obj->life / maxLife;
+      life   = obj->flags & Object::BOT_BIT ? ( 2.0f * obj->life - maxLife ) / maxLife :
+                                              obj->life / maxLife;
       status = obj->status();
     }
-
-    hard_assert( 0.0f <= life && life <= 1.0f );
 
     int barWidth = span.maxX - span.minX + 4;
 

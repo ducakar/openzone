@@ -57,13 +57,13 @@ bool ModelField::onMouseEvent()
 
   nextRot       = angleWrap( nextRot + ROTATION_VEL );
   isHighlighted = true;
-  isClicked     = wasClicked && input.buttons;
+  isClicked     = wasClicked && ( input.buttons & clickMask );
 
   if( callback == nullptr ) {
     return true;
   }
 
-  if( input.buttons & ~input.oldButtons ) {
+  if( input.buttons & ~input.oldButtons & clickMask ) {
     isClicked  = true;
     wasClicked = true;
 
@@ -149,7 +149,8 @@ void ModelField::onDraw()
 ModelField::ModelField( Callback* callback_, int width, int height ) :
   Area( width, height ), callback( callback_ ), bsp( nullptr ), model( -1 ),
   defaultRot( DEFAULT_ROTATION ), currRot( DEFAULT_ROTATION ), nextRot( DEFAULT_ROTATION ),
-  isHighlighted( false ), isClicked( false ), wasClicked( false ), id( -1 )
+  clickMask( Input::LEFT_BUTTON ), isHighlighted( false ), isClicked( false ), wasClicked( false ),
+  id( -1 )
 {}
 
 void ModelField::setDefaultRotation( float defaultRotation )
@@ -187,6 +188,11 @@ void ModelField::setModel( int model_ )
     currRot = defaultRot;
     nextRot = defaultRot;
   }
+}
+
+void ModelField::setClickMask( int mask )
+{
+  clickMask = mask;
 }
 
 }

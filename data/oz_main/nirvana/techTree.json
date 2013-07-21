@@ -1,10 +1,108 @@
 [
   {
-    "technology":       "plasma",
-    "price":            2000
+    "technology":       "beastTech",
+    "title":            "Beastie technology",
+    "price":            500,
+    "time":             500
+  },
+  {
+    "technology":       "cyborgTech",
+    "title":            "Cyborg technology",
+    "price":            1200,
+    "time":             700
+  },
+  {
+    "technology":       "droidTech",
+    "title":            "Droid technology",
+    "price":            1000,
+    "time":             600
+  },
+
+  {
+    "building":         "beastBunker",
+    "requires":         [ "beastTech" ]
+  },
+  {
+    "building":         "bunker",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "building":         "tower",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "building":         "house"
+  },
+
+  {
+    "unit":             "beast",
+    "requires":         [ "beastTech" ]
+  },
+  {
+    "unit":             "cyborg",
+    "requires":         [ "cyborgTech" ]
+  },
+  {
+    "unit":             "droid",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "unit":             "droid.OOM-9",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "unit":             "knight"
+  },
+  {
+    "unit":             "goblin"
+  },
+
+  {
+    "item":             "nvGoggles"
+  },
+  {
+    "item":             "binoculars"
+  },
+  {
+    "item":             "musicPlayer"
+  },
+  {
+    "item":             "galileo"
+  },
+  {
+    "item":             "firstAid"
+  },
+  {
+    "item":             "cvicek"
   },
   {
     "item":             "beast$plasmagun",
-    "requires":         [ "plasma" ]
+    "requires":         [ "beastTech" ]
+  },
+  {
+    "item":             "cyborg$chaingun",
+    "requires":         [ "cyborgTech" ]
+  },
+  {
+    "item":             "droid$blaster",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "item":             "droid$hyperblaster",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "item":             "droid$chaingun",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "item":             "droid$grenadeLauncher",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "item":             "knight$mace"
+  },
+  {
+    "item":             "goblin$axe"
   }
 ]

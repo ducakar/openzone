@@ -52,6 +52,7 @@ class ModelField : public Area
     float          currRot;
     float          nextRot;
 
+    int            clickMask;
     bool           isHighlighted;
     bool           isClicked;
     bool           wasClicked;
@@ -75,6 +76,8 @@ class ModelField : public Area
 
     void setBSP( const oz::BSP* bsp );
     void setModel( int model );
+
+    void setClickMask( int mask );
 
 };
 

@@ -23,8 +23,9 @@
 
 #pragma once
 
-#include <client/ui/Frame.hh>
 #include <client/ui/Button.hh>
+#include <client/ui/ModelField.hh>
+#include <client/ui/Frame.hh>
 
 namespace oz
 {
@@ -33,22 +34,38 @@ namespace client
 namespace ui
 {
 
-class BuildButton : public Button
-{
-  public:
-
-    String className;
-
-    explicit BuildButton( const char* className, Callback* callback, int width, int height );
-    ~BuildButton() override;
-
-};
-
 class BuildMenu : public Frame
 {
   private:
 
-    static void createObject( Button* button );
+    static const int SLOT_SIZE;
+
+    enum Mode
+    {
+      BUILDINGS,
+      UNITS,
+      ITEMS
+    };
+
+    Mode        mode;
+    GLTexture   scrollUpTex;
+    GLTexture   scrollDownTex;
+    ModelField* models[12];
+
+    int         nScrollRows;
+    int         scroll;
+    bool        isOverModel;
+    bool        wasOverModel;
+
+  private:
+
+    static void selectBuildings( Button* sender );
+    static void selectUnits( Button* sender );
+    static void selectItems( Button* sender );
+    static void createSelection( ModelField* sender );
+
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 

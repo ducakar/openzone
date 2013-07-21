@@ -330,6 +330,7 @@ Inventory::Inventory() :
   for( int i = 0; i < COLS; ++i ) {
     ownerModels[i] = new ModelField( ownerItemCallback,
                                      SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE );
+    ownerModels[i]->setClickMask( -1 );
     ownerModels[i]->id = i;
 
     add( ownerModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
@@ -337,6 +338,7 @@ Inventory::Inventory() :
   for( int i = 0; i < COLS; ++i ) {
     otherModels[i] = new ModelField( otherItemCallback,
                                      SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE );
+    ownerModels[i]->setClickMask( -1 );
     otherModels[i]->id = i;
 
     add( otherModels[i], PADDING_SIZE + i * SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE );

@@ -133,10 +133,11 @@ static void readNirvana( const File& dir )
   if( techConfig.load( techFile ) ) {
     foreach( node, techConfig.arrayCIter() ) {
       const char* technology  = ( *node )["technology"].get( "" );
+      const char* title       = ( *node )["title"].get( technology );
       const char* description = ( *node )["description"].get( "" );
 
       if( !String::isEmpty( technology ) ) {
-        titles.include( technology, techFile.path() );
+        titles.include( title, techFile.path() );
       }
       if( !String::isEmpty( description ) ) {
         titles.include( description, techFile.path() );

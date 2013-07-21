@@ -63,6 +63,8 @@ void Bar::drawAbs( int barX, int barY, int barWidth, int barHeight, float ratio 
 {
   hard_assert( style != nullptr );
 
+  ratio = clamp( ratio, 0.0f, 1.0f );
+
   int width = Math::lround( float( barWidth - 2 ) * ratio );
 
   shape.colour( Math::mix( style->minColour, style->maxColour, ratio ) );

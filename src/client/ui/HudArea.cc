@@ -191,8 +191,8 @@ void HudArea::drawBotStatus()
   const Bot*      bot      = camera.botObj;
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float life    = max( 2.0f * bot->life / botClazz->life - 1.0f, 0.0f );
-  float stamina = max( bot->stamina / botClazz->stamina, 0.0f );
+  float life    = 2.0f * bot->life / botClazz->life - 1.0f;
+  float stamina = bot->stamina / botClazz->stamina;
 
   botLife.draw( this, life );
   botStamina.draw( this, stamina );
