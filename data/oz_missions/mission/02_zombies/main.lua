@@ -42,9 +42,9 @@ function onCreate()
   ozBotSetName( ozProfileGetName() )
   ozBotSetMind( "" )
 
-  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1014.0, 620.0, 52.0, OZ_NORTH )
-  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1029.0, 610.0, 51.5, OZ_WEST )
-  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1010.0, 595.0, 53.0, OZ_SOUTH )
+  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1014.0, 620.0, 52.0, OZ_SOUTH )
+  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1029.0, 610.0, 51.5, OZ_EAST )
+  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1010.0, 595.0, 53.0, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1022.30, 596.59, 51.54 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1021.96, 597.80, 51.45 )

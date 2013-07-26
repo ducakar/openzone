@@ -74,6 +74,9 @@ void BSP::load()
   // demolishSound
   is.readString();
 
+  // groundOffset
+  is.readFloat();
+
   nPlanes       = is.readInt();
   nNodes        = is.readInt();
   nLeaves       = is.readInt();
@@ -280,6 +283,8 @@ BSP::BSP( const char* name_, int id_ ) :
 
   String sDemolishSound = is.readString();
   demolishSound = sDemolishSound.isEmpty() ? -1 : liber.soundIndex( sDemolishSound );
+
+  groundOffset  = is.readFloat();
 }
 
 }

@@ -56,6 +56,70 @@ const Mat44 BuildMenu::OVERLAY_RED    = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
                                                1.0f, 0.0f, 0.0f, 0.0f,
                                                0.0f, 0.0f, 0.0f, 0.5f );
 
+void BuildMenu::overlayCallback( Area* area, const Vec3& ray )
+{
+  BuildMenu*         buildMenu = static_cast<BuildMenu*>( area );
+  const oz::BSP*     bsp       = buildMenu->overlayBSP;
+  const ObjectClass* clazz     = buildMenu->overlayClass;
+  Heading            heading   = buildMenu->overlayHeading;
+  bool               overlaps  = false;
+
+  collider.translate( camera.p, ray );
+
+  Point position = camera.p + collider.hit.ratio * ray;
+  position.z += bsp != nullptr ? bsp->groundOffset : clazz->dim.z;
+  position.z += 2.0f * EPSILON;
+
+  tf.model = Mat44::translation( position - Point::ORIGIN );
+  tf.model.rotateZ( float( heading ) * Math::TAU / 4.0f );
+
+  if( buildMenu->overlayBSP != nullptr ) {
+    AABB bb       = AABB( position, bsp->dim() );
+    BSP* bspModel = context.requestBSP( bsp );
+
+    List<Struct*> strs;
+    List<Object*> objs;
+
+    collider.getOverlaps( bb, &strs, &objs );
+    overlaps  = !strs.isEmpty() || !objs.isEmpty();
+    tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
+
+    bspModel->schedule( nullptr, Mesh::OVERLAY_QUEUE );
+  }
+  else {
+    AABB bb    = AABB( position, clazz->dim + Vec3( EPSILON, EPSILON, EPSILON ) );
+    SMM* model = context.requestModel( clazz->imagoModel );
+
+    overlaps  = collider.overlaps( bb );
+    tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
+
+    model->schedule( -1, Mesh::OVERLAY_QUEUE );
+    context.releaseModel( clazz->imagoModel );
+  }
+
+  tf.colour = Mat44::ID;
+
+  if( input.leftPressed ) {
+    buildMenu->overlayHeading = Heading( ( heading + 1 ) % 4 );
+  }
+  else if( input.middlePressed && !overlaps ) {
+    if( bsp != nullptr ) {
+      synapse.add( bsp, position, heading, false );
+    }
+    else {
+      synapse.add( clazz, position, heading, false );
+    }
+
+    buildMenu->overlayBSP     = nullptr;
+    buildMenu->overlayClass   = nullptr;
+    buildMenu->overlayHeading = NORTH;
+
+    if( ui.strategicArea ) {
+      ui.strategicArea->clearOverlay();
+    }
+  }
+}
+
 void BuildMenu::selectBuildings( Button* sender )
 {
   BuildMenu* buildMenu = static_cast<BuildMenu*>( sender->parent );
@@ -80,7 +144,7 @@ void BuildMenu::selectItems( Button* sender )
   buildMenu->title.setText( "%s", OZ_GETTEXT( "Items" ) );
 }
 
-void BuildMenu::createSelection( ModelField* sender )
+void BuildMenu::startPlacement( ModelField* sender )
 {
   if( sender->id < 0 ) {
     return;
@@ -97,9 +161,10 @@ void BuildMenu::createSelection( ModelField* sender )
 
       buildMenu->title.setText( "%s", bsp->title.cstr() );
 
-      if( input.leftClick && ui.strategicArea != nullptr ) {
-        buildMenu->overlayBSP   = bsp;
-        buildMenu->overlayModel = -1;
+      if( input.leftReleased && ui.strategicArea != nullptr ) {
+        buildMenu->overlayBSP     = bsp;
+        buildMenu->overlayClass   = nullptr;
+        buildMenu->overlayHeading = NORTH;
 
         ui.strategicArea->setOverlay( overlayCallback, buildMenu );
       }
@@ -110,9 +175,10 @@ void BuildMenu::createSelection( ModelField* sender )
 
       buildMenu->title.setText( "%s", clazz->title.cstr() );
 
-      if( input.leftClick && ui.strategicArea != nullptr ) {
-        buildMenu->overlayBSP   = nullptr;
-        buildMenu->overlayModel = clazz->imagoModel;
+      if( input.leftReleased && ui.strategicArea != nullptr ) {
+        buildMenu->overlayBSP     = nullptr;
+        buildMenu->overlayClass   = clazz;
+        buildMenu->overlayHeading = NORTH;
 
         ui.strategicArea->setOverlay( overlayCallback, buildMenu );
       }
@@ -123,57 +189,16 @@ void BuildMenu::createSelection( ModelField* sender )
 
       buildMenu->title.setText( "%s", clazz->title.cstr() );
 
-      if( input.leftClick && ui.strategicArea != nullptr ) {
-        buildMenu->overlayBSP   = nullptr;
-        buildMenu->overlayModel = clazz->imagoModel;
+      if( input.leftReleased && ui.strategicArea != nullptr ) {
+        buildMenu->overlayBSP     = nullptr;
+        buildMenu->overlayClass   = clazz;
+        buildMenu->overlayHeading = NORTH;
 
         ui.strategicArea->setOverlay( overlayCallback, buildMenu );
       }
       break;
     }
   }
-}
-
-void BuildMenu::overlayCallback( Area* area, const Vec3& ray, bool isClicked )
-{
-  const BuildMenu* buildMenu = static_cast<const BuildMenu*>( area );
-
-  collider.translate( camera.p, ray );
-
-  tf.model  = Mat44::translation( camera.p + collider.hit.ratio * ray - Point::ORIGIN );
-  tf.colour = Mat44( OVERLAY_GREEN );
-
-  if( buildMenu->overlayBSP != nullptr ) {
-    BSP* bsp = context.requestBSP( buildMenu->overlayBSP );
-
-    bsp->schedule( nullptr, Mesh::OVERLAY_QUEUE );
-  }
-  else {
-    SMM* model = context.requestModel( buildMenu->overlayModel );
-
-    model->schedule( -1, Mesh::OVERLAY_QUEUE );
-    context.releaseModel( buildMenu->overlayModel );
-  }
-
-  tf.colour = Mat44::ID;
-
-  if( isClicked && ui.strategicArea ) {
-    ui.strategicArea->clearOverlay();
-  }
-
-//   Point p  = camera.p + ( 2.0f + bsp->dim().fastN() ) * camera.at;
-//   AABB  bb = AABB( p, bsp->dim() );
-//
-//   if( !collider.overlaps( bb ) ) {
-//     synapse.add( bsp, p, NORTH, false );
-//   }
-
-//   Point p  = camera.p + ( 2.0f + clazz->dim.fastN() ) * camera.at;
-//   AABB  bb = AABB( p, clazz->dim );
-//
-//   if( !collider.overlaps( bb ) ) {
-//     synapse.add( clazz, p, NORTH, false );
-//   }
 }
 
 bool BuildMenu::onMouseEvent()
@@ -291,7 +316,7 @@ void BuildMenu::onDraw()
 
 BuildMenu::BuildMenu() :
   Frame( 240, 374, OZ_GETTEXT( "Buildings" ) ),
-  mode( BUILDINGS ), overlayBSP( nullptr ), overlayModel( -1 ),
+  mode( BUILDINGS ), overlayBSP( nullptr ), overlayClass( nullptr ), overlayHeading( NORTH ),
   nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
 {
   scrollUpTex.load( "@ui/icon/scrollUp.dds" );
@@ -302,9 +327,9 @@ BuildMenu::BuildMenu() :
   add( new Button( OZ_GETTEXT( "I" ), selectItems,     SLOT_SIZE, 18 ), 160, -HEADER_SIZE - 2 );
 
   for( int i = 0; i < 4; ++i ) {
-    models[i*3 + 0] = new ModelField( createSelection, SLOT_SIZE, SLOT_SIZE );
-    models[i*3 + 1] = new ModelField( createSelection, SLOT_SIZE, SLOT_SIZE );
-    models[i*3 + 2] = new ModelField( createSelection, SLOT_SIZE, SLOT_SIZE );
+    models[i*3 + 0] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
+    models[i*3 + 1] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
+    models[i*3 + 2] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
 
     models[i*3 + 0]->id = i*3 + 0;
     models[i*3 + 1]->id = i*3 + 1;

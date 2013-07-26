@@ -306,6 +306,13 @@ void StrategicArea::onReposition()
 
 void StrategicArea::onUpdate()
 {
+  if( !mouse.doShow ) {
+    mouseW = input.mouseW;
+
+    clearOverlay();
+    return;
+  }
+
   taggedStr = orbis.strIndex( taggedStr );
 
   for( int i = 0; i < taggedObjs.length(); ) {
@@ -319,7 +326,7 @@ void StrategicArea::onUpdate()
     }
   }
 
-  if( input.rightClick ) {
+  if( input.rightPressed ) {
     clearOverlay();
   }
 }
@@ -328,38 +335,39 @@ bool StrategicArea::onMouseEvent()
 {
   mouseW = input.mouseW;
 
-  collectHovers();
-
-  if( input.leftClick ) {
-    dragStartX = mouse.x;
-    dragStartY = mouse.y;
-
-    if( !input.keys[Input::KEY_GROUP_SELECT] ) {
-      taggedStr = -1;
-      taggedObjs.clear();
-    }
-  }
-  else if( !( input.buttons & Input::LEFT_BUTTON ) ) {
-    dragStartX = -1;
-    dragStartY = -1;
-
-    if( input.oldButtons & Input::LEFT_BUTTON ) {
-      if( hoverStr != -1 ) {
-        taggedStr = hoverStr;
-      }
-      if( hoverObj != -1 ) {
-        taggedObjs.include( hoverObj );
-      }
-      foreach( obj, dragObjs.citer() ) {
-        taggedObjs.include( *obj );
-      }
-    }
-  }
-
   if( overlayCallback != nullptr ) {
     Vec3 ray = getRay( mouse.x, mouse.y );
 
-    overlayCallback( overlaySender, ray, input.leftClick );
+    overlayCallback( overlaySender, ray );
+  }
+  else {
+    collectHovers();
+
+    if( input.leftPressed ) {
+      dragStartX = mouse.x;
+      dragStartY = mouse.y;
+
+      if( !input.keys[Input::KEY_GROUP_SELECT] ) {
+        taggedStr = -1;
+        taggedObjs.clear();
+      }
+    }
+    else if( !( input.buttons & Input::LEFT_BUTTON ) ) {
+      dragStartX = -1;
+      dragStartY = -1;
+
+      if( input.oldButtons & Input::LEFT_BUTTON ) {
+        if( hoverStr != -1 ) {
+          taggedStr = hoverStr;
+        }
+        if( hoverObj != -1 ) {
+          taggedObjs.include( hoverObj );
+        }
+        foreach( obj, dragObjs.citer() ) {
+          taggedObjs.include( *obj );
+        }
+      }
+    }
   }
   return true;
 }

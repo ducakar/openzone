@@ -122,9 +122,9 @@ function init_sample()
   ozOrbisAddObj( OZ_FORCE, "metalCrate",  cX - 3, cY - 4,   cZ - 7 )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", cX - 3, cY - 5.5, cZ - 7 )
 
-  ozOrbisAddStr( OZ_FORCE, "testCastle", cX,       cY,       cZ,      OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "testCastle", cX,       cY,       cZ,      OZ_SOUTH )
   ozOrbisAddStr( OZ_FORCE, "pool",       cX - 31,  cY - 7,   cZ - 9 )
-  ozOrbisAddStr( OZ_FORCE, "tower",      cX - 37,  cY - 7,   cZ - 4,  OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "tower",      cX - 37,  cY - 7,   cZ - 4,  OZ_SOUTH )
   ozOrbisAddStr( OZ_FORCE, "atlantis",   cX - 303, cY + 220, cZ - 84 )
   ozOrbisAddStr( OZ_FORCE, "house",      cX - 17,  cY - 30,  cZ - 8.5 )
 

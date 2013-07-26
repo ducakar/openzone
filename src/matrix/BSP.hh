@@ -150,6 +150,7 @@ class BSP : public Bounds
     DArray<int>     models;        ///< Set of used entity models.
     DArray<int>     sounds;        ///< Set of used sound samples.
     int             demolishSound;
+    float           groundOffset;  ///< Centre offset from ground when placing a building.
 
     int             id;            ///< Used for indexing BSPs in Context.
     int             nUsers;

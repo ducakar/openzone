@@ -41,7 +41,7 @@ function onCreate()
   ozBotSetMind( "" )
 
   local oX, oY, oZ = 80, -80, 69.7
-  ozOrbisAddStr( OZ_FORCE, "tutorial_movement", oX, oY, oZ, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "tutorial_movement", oX, oY, oZ, OZ_SOUTH )
 
   local infoMove = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 2, oY - 9, oZ - 3 )
   local infoClimb = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 2.5, oY + 1, oZ - 2.5 )
@@ -83,7 +83,7 @@ function onCreate()
     "Your stamina is restoring while you are still or walking." ) )
 
   local oX, oY, oZ = 60, -92, 69.7
-  ozOrbisAddStr( OZ_FORCE, "tutorial_carrying", oX, oY, oZ, OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "tutorial_carrying", oX, oY, oZ, OZ_EAST )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 3.2, oY - 4.5, oZ - 3 )
   ozOrbisAddObj( OZ_FORCE, "bigCrate", oX + 1, oY - 3, oZ - 3 )

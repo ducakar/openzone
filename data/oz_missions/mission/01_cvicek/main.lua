@@ -164,7 +164,7 @@ function onCreate()
   ozBotSetH( 270 )
 
   -- outpost
-  ozOrbisAddStr( OZ_FORCE, "bunker", 788.0, 1000.0, 125, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "bunker", 788.0, 1000.0, 125, OZ_SOUTH )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", 790.56, 1002.59, 124.33 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", 789.65, 1002.89, 124.03 )
@@ -200,10 +200,10 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "hoverTank", 815.22, 991.62, 124.76 )
 
   -- military base
-  ozOrbisAddStr( OZ_FORCE, "tower", 2.0, -926.0, 145.7, OZ_NORTH )
-  ozOrbisAddStr( OZ_FORCE, "bunker", -35.0, -940.0, 138.6, OZ_SOUTH )
-  ozOrbisAddStr( OZ_FORCE, "bunker", -20.0, -940.0, 138.6, OZ_SOUTH )
-  ozOrbisAddStr( OZ_FORCE, "bunker", -20.0, -915.0, 138.5, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "tower", 2.0, -926.0, 145.7, OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "bunker", -35.0, -940.0, 138.6, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "bunker", -20.0, -940.0, 138.6, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "bunker", -20.0, -915.0, 138.5, OZ_SOUTH )
 
   ozOrbisAddObj( OZ_FORCE, "bigCrate", -33.32, -942.53, 137.93 )
   ozObjAddItem( "droid$chaingun" )
@@ -345,8 +345,8 @@ function onCreate()
   ozVehicleEmbarkBot( pilot )
 
   -- kmetija
-  ozOrbisAddStr( OZ_FORCE, "house", 80.0, -20.0, 70.2, OZ_NORTH )
-  ozOrbisAddStr( OZ_FORCE, "house", 85.0, -30.0, 69.4, OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "house", 80.0, -20.0, 70.2, OZ_EAST )
+  ozOrbisAddStr( OZ_FORCE, "house", 85.0, -30.0, 69.4, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 80.0, -20.0, 70.0 )
   ozBotSetMind( "goblin_defend" )
@@ -363,9 +363,9 @@ function onCreate()
   ozBotSetH( 230 )
 
   -- lair
-  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1014.0, 620.0, 52.0, OZ_NORTH )
-  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1029.0, 610.0, 51.5, OZ_WEST )
-  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1010.0, 595.0, 53.0, OZ_SOUTH )
+  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1014.0, 620.0, 52.0, OZ_SOUTH )
+  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1029.0, 610.0, 51.5, OZ_EAST )
+  ozOrbisAddStr( OZ_FORCE, "beastBunker", -1010.0, 595.0, 53.0, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1022.30, 596.59, 51.54 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1021.96, 597.80, 51.45 )

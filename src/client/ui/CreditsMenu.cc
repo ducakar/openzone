@@ -93,7 +93,7 @@ void CreditsMenu::onUpdate()
 bool CreditsMenu::onMouseEvent()
 {
   if( mouse.x < width - 240 ) {
-    if( input.leftClick ) {
+    if( input.leftReleased ) {
       isPaused = !isPaused;
     }
     else if( input.mouseW != 0 ) {

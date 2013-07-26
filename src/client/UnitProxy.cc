@@ -170,16 +170,16 @@ void UnitProxy::prepare()
    */
 
   if( !ui::mouse.doShow ) {
-    if( input.buttons & SDL_BUTTON_LMASK ) {
+    if( input.buttons & Input::LEFT_BUTTON ) {
       bot->actions |= Bot::ACTION_ATTACK;
     }
 
-    if( input.leftClick ) {
+    if( input.leftPressed ) {
       if( bot->cargo >= 0 ) {
         bot->rotateCargo();
       }
     }
-    if( input.rightClick ) {
+    if( input.rightPressed ) {
       if( bot->parent >= 0 ) {
         context.playSample( ui::style.sounds.nextWeapon );
 
@@ -192,7 +192,7 @@ void UnitProxy::prepare()
         bot->use( camera.objectObj );
       }
     }
-    else if( input.middleClick ) {
+    else if( input.middlePressed ) {
       if( bot->cargo >= 0 ) {
         bot->grab();
       }

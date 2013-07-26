@@ -418,51 +418,60 @@ void Input::reset()
 {
   Window::warpMouse();
 
-  mouseX      = 0.0f;
-  mouseY      = 0.0f;
-  mouseZ      = 0.0f;
-  mouseW      = 0.0f;
+  mouseX         = 0.0f;
+  mouseY         = 0.0f;
+  mouseZ         = 0.0f;
+  mouseW         = 0.0f;
 
-  buttons     = 0;
-  oldButtons  = 0;
-  currButtons = 0;
+  buttons        = 0;
+  oldButtons     = 0;
+  currButtons    = 0;
 
-  leftClick   = false;
-  middleClick = false;
-  rightClick  = false;
-  wheelUp     = false;
-  wheelDown   = false;
+  leftPressed    = false;
+  leftReleased   = false;
+  middlePressed  = false;
+  middleReleased = false;
+  rightPressed   = false;
+  rightReleased  = false;
+  wheelUp        = false;
+  wheelDown      = false;
 
-  lookX       = 0.0f;
-  lookY       = 0.0f;
-  moveX       = 0.0f;
-  moveY       = 0.0f;
+  lookX          = 0.0f;
+  lookY          = 0.0f;
+  moveX          = 0.0f;
+  moveY          = 0.0f;
 
   mSet( sdlKeys, 0, sizeof( sdlKeys ) );
   mSet( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
   mSet( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
+
+  isKeyPressed   = false;
+  isKeyReleased  = false;
 }
 
 void Input::prepare()
 {
-  mouseX      = 0.0f;
-  mouseY      = 0.0f;
-  mouseZ      = 0.0f;
-  mouseW      = 0.0f;
+  mouseX         = 0.0f;
+  mouseY         = 0.0f;
+  mouseZ         = 0.0f;
+  mouseW         = 0.0f;
 
-  oldButtons  = buttons;
-  buttons     = currButtons;
+  oldButtons     = buttons;
+  buttons        = currButtons;
 
-  leftClick   = false;
-  middleClick = false;
-  rightClick  = false;
-  wheelUp     = false;
-  wheelDown   = false;
+  leftPressed    = false;
+  leftReleased   = false;
+  middlePressed  = false;
+  middleReleased = false;
+  rightPressed   = false;
+  rightReleased  = false;
+  wheelUp        = false;
+  wheelDown      = false;
 
-  lookX       = 0.0f;
-  lookY       = 0.0f;
-  moveX       = 0.0f;
-  moveY       = 0.0f;
+  lookX          = 0.0f;
+  lookY          = 0.0f;
+  moveX          = 0.0f;
+  moveY          = 0.0f;
 
   mCopy( sdlOldKeys, sdlKeys, sizeof( sdlKeys ) );
   mCopy( sdlKeys, sdlCurrKeys, sizeof( sdlKeys ) );
@@ -506,13 +515,17 @@ void Input::update()
 # endif
 #endif
 
-  int clickedButtons = input.buttons & ~input.oldButtons;
+  int pressedButtons  = input.buttons & ~input.oldButtons;
+  int releasedButtons = ~input.buttons & input.oldButtons;
 
-  leftClick   = clickedButtons & Input::LEFT_BUTTON;
-  middleClick = clickedButtons & Input::MIDDLE_BUTTON;
-  rightClick  = clickedButtons & Input::RIGHT_BUTTON;
-  wheelUp     = input.mouseW > 0;
-  wheelDown   = input.mouseW < 0;
+  leftPressed    = pressedButtons  & Input::LEFT_BUTTON;
+  leftReleased   = releasedButtons & Input::LEFT_BUTTON;
+  middlePressed  = pressedButtons  & Input::MIDDLE_BUTTON;
+  middleReleased = releasedButtons & Input::MIDDLE_BUTTON;
+  rightPressed   = pressedButtons  & Input::RIGHT_BUTTON;
+  rightReleased  = releasedButtons & Input::RIGHT_BUTTON;
+  wheelUp        = input.mouseW > 0;
+  wheelDown      = input.mouseW < 0;
 
   Window::warpMouse();
 
@@ -600,25 +613,28 @@ void Input::init()
     loadDefaultKeyMap();
   }
 
-  mouseX      = 0.0f;
-  mouseY      = 0.0f;
-  mouseZ      = 0.0f;
-  mouseW      = 0.0f;
+  mouseX         = 0.0f;
+  mouseY         = 0.0f;
+  mouseZ         = 0.0f;
+  mouseW         = 0.0f;
 
-  buttons     = 0;
-  oldButtons  = 0;
-  currButtons = 0;
+  buttons        = 0;
+  oldButtons     = 0;
+  currButtons    = 0;
 
-  leftClick   = false;
-  middleClick = false;
-  rightClick  = false;
-  wheelUp     = false;
-  wheelDown   = false;
+  leftPressed    = false;
+  leftReleased   = false;
+  middlePressed  = false;
+  middleReleased = false;
+  rightPressed   = false;
+  rightReleased  = false;
+  wheelUp        = false;
+  wheelDown      = false;
 
-  lookX       = 0.0f;
-  lookY       = 0.0f;
-  moveX       = 0.0f;
-  moveY       = 0.0f;
+  lookX          = 0.0f;
+  lookY          = 0.0f;
+  moveX          = 0.0f;
+  moveY          = 0.0f;
 
   mSet( keys, 0, sizeof( keys ) );
   mSet( oldKeys, 0, sizeof( oldKeys ) );

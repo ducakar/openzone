@@ -500,7 +500,7 @@ static void waitBell()
 // Wait bell to finish playing on (normal) process termination.
 struct BellFinaliser
 {
-  bool isFinalised;
+  volatile bool isFinalised;
 
   OZ_HIDDEN
   ~BellFinaliser()

@@ -6,6 +6,7 @@
   "nFrags":             20,
 
   "demolishSound":      "free/explode",
+  "groundOffset":       2.3,
 
   "entities":
   [

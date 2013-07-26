@@ -41,11 +41,15 @@ const char* const   BuildInfo::COMPILER    = "LLVM/Clang " __clang_version__;
 const char* const   BuildInfo::COMPILER    = "GCC " __VERSION__;
 #endif
 const char* const   BuildInfo::CXX_FLAGS   = "@OZ_CXX_FLAGS@";
-const char* const   BuildInfo::CONFIG      = "OZ_TRACK_ALLOCS: @OZ_TRACK_ALLOCS@, "
+const char* const   BuildInfo::CONFIG      = "OZ_SHARED_LIBS: @OZ_SHARED_LIBS@, "
+                                             "OZ_PULSE_BELL: @OZ_PULSE_BELL@, "
+                                             "OZ_TRACK_ALLOCS: @OZ_TRACK_ALLOCS@, "
                                              "OZ_SIMD_MATH: @OZ_SIMD_MATH@, "
                                              "OZ_DYNAMICS: @OZ_DYNAMICS@, "
-                                             "OZ_LUAJIT: @OZ_LUAJIT@, "
                                              "OZ_SDL2: @OZ_SDL2@, "
-                                             "OZ_GL_ES: @OZ_GL_ES@";
+                                             "OZ_GL_ES: @OZ_GL_ES@, "
+                                             "OZ_NONFREE: @OZ_NONFREE@, "
+                                             "OZ_LUAJIT: @OZ_LUAJIT@, "
+                                             "OZ_NET: @OZ_NET@";
 
 }

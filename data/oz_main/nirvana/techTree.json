@@ -33,6 +33,9 @@
   {
     "building":         "house"
   },
+  {
+    "building":         "forum"
+  },
 
   {
     "unit":             "beast",

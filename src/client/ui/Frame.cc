@@ -44,7 +44,7 @@ bool Frame::onMouseEvent()
     mouse.icon = Mouse::OPENHAND;
 
     if( input.buttons & Input::LEFT_BUTTON ) {
-      if( input.leftClick ) {
+      if( input.leftPressed ) {
         flags |= GRAB_BIT;
       }
       if( flags & GRAB_BIT ) {

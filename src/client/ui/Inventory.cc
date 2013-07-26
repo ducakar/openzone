@@ -56,7 +56,7 @@ void Inventory::ownerItemCallback( ModelField* sender )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
-  if( input.leftClick ) {
+  if( input.leftReleased ) {
     if( inventory->other != nullptr ) {
       bot->invGive( item, inventory->other );
       return;
@@ -66,10 +66,10 @@ void Inventory::ownerItemCallback( ModelField* sender )
       return;
     }
   }
-  else if( input.rightClick ) {
+  else if( input.rightReleased ) {
     bot->invUse( item, container );
   }
-  else if( input.middleClick ) {
+  else if( input.middleReleased ) {
     if( bot->cargo < 0 && inventory->other == nullptr ) {
       ui::mouse.doShow = false;
 
@@ -100,10 +100,10 @@ void Inventory::otherItemCallback( ModelField* sender )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
-  if( input.leftClick ) {
+  if( input.leftReleased ) {
     bot->invTake( item, container );
   }
-  else if( input.rightClick ) {
+  else if( input.rightReleased ) {
     bot->invUse( item, container );
   }
   else {

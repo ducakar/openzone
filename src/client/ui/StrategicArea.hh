@@ -47,7 +47,7 @@ class StrategicArea : public Area
     static const float TAG_MIN_PIXEL_SIZE;
     static const float TAG_MAX_COEFF_SIZE;
 
-    typedef void OverlayCallback( Area* sender, const Vec3& p, bool isClicked );
+    typedef void OverlayCallback( Area* sender, const Vec3& p );
 
     Label            unitName;
 

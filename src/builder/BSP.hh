@@ -290,6 +290,8 @@ class BSP : public Bounds
 
     String               demolishSound;
 
+    float                groundOffset;
+
     List<BoundObject>    boundObjects;
 
     Vec4                 waterFogColour;

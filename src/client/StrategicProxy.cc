@@ -124,6 +124,10 @@ void StrategicProxy::prepare()
   if( input.keys[Input::KEY_CHEAT_SKY_BACKWARD] ) {
     orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
   }
+
+  if( input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
+  }
 }
 
 void StrategicProxy::update()

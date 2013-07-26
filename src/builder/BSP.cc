@@ -74,6 +74,7 @@ void BSP::load()
   nFrags   = config["nFrags"].get( 0 );
 
   demolishSound = config["demolishSound"].get( "" );
+  groundOffset  = config["groundOffset"].get( 0.0f );
 
   mins = Point( -Math::INF, -Math::INF, -Math::INF );
   maxs = Point( +Math::INF, +Math::INF, +Math::INF );
@@ -1025,6 +1026,7 @@ void BSP::saveMatrix()
   usedSounds.deallocate();
 
   os.writeString( demolishSound );
+  os.writeFloat( groundOffset );
 
   os.writeInt( planes.length() );
   os.writeInt( nodes.length() );

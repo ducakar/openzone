@@ -153,9 +153,12 @@ class Input
     char   oldButtons;
     char   currButtons;
 
-    bool   leftClick;
-    bool   rightClick;
-    bool   middleClick;
+    bool   leftPressed;
+    bool   leftReleased;
+    bool   middlePressed;
+    bool   middleReleased;
+    bool   rightPressed;
+    bool   rightReleased;
     bool   wheelUp;
     bool   wheelDown;
 

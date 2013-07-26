@@ -50,26 +50,27 @@ class BuildMenu : public Frame
       ITEMS
     };
 
-    Mode           mode;
-    GLTexture      scrollUpTex;
-    GLTexture      scrollDownTex;
-    ModelField*    models[12];
+    Mode               mode;
+    GLTexture          scrollUpTex;
+    GLTexture          scrollDownTex;
+    ModelField*        models[12];
 
-    const oz::BSP* overlayBSP;
-    int            overlayModel;
+    const oz::BSP*     overlayBSP;
+    const ObjectClass* overlayClass;
+    Heading            overlayHeading;
 
-    int            nScrollRows;
-    int            scroll;
-    bool           isOverModel;
-    bool           wasOverModel;
+    int                nScrollRows;
+    int                scroll;
+    bool               isOverModel;
+    bool               wasOverModel;
 
   private:
 
+    static void overlayCallback( Area* area, const Vec3& ray );
     static void selectBuildings( Button* sender );
     static void selectUnits( Button* sender );
     static void selectItems( Button* sender );
-    static void createSelection( ModelField* sender );
-    static void overlayCallback( Area* area, const Vec3& ray, bool isClicked );
+    static void startPlacement( ModelField* sender );
 
     bool onMouseEvent() override;
     void onDraw() override;
