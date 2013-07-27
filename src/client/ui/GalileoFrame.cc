@@ -60,15 +60,11 @@ void GalileoFrame::onUpdate()
   if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && ( bot == nullptr ||
         ( bot->state & Bot::DEAD_BIT ) || !bot->hasAttribute( ObjectClass::GALILEO_BIT ) ) ) )
   {
-    if( !( flags & HIDDEN_BIT ) ) {
-      setMaximised( false );
-      show( false );
-    }
+    show( false );
+    setMaximised( false );
   }
   else {
-    if( flags & HIDDEN_BIT ) {
-      show( true );
-    }
+    show( true );
   }
 }
 
@@ -130,7 +126,7 @@ void GalileoFrame::onDraw()
 GalileoFrame::GalileoFrame() :
   Frame( 240, 232 - HEADER_SIZE, "" ), colour( style.colours.galileoNormal ), isMaximised( false )
 {
-  flags = PINNED_BIT | UPDATE_BIT;
+  flags |= UPDATE_BIT | PINNED_BIT;
 
   arrowTex.load( "@ui/icon/arrow.dds" );
   markerTex.load( "@ui/icon/marker.dds" );

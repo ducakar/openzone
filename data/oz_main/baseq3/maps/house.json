@@ -12,7 +12,7 @@
   [
     {
       "type":           "AUTO_DOOR",
-      "move":           [ 0, -1.2, 0 ],
+      "move":           [ 1.2, 0, 0 ],
       "slideTime":      0.5,
       "timeout":        3.0,
       "margin":         0.3,

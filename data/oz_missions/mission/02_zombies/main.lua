@@ -25,10 +25,6 @@
  * Test world.
 ]]--
 
-function onUpdate()
-  ozUIShowBuild( true )
-end
-
 function onCreate()
   ozTerraLoad( "sample" )
 
@@ -79,7 +75,9 @@ function onCreate()
     end
   end
 
+--   ozCameraAllowReincarnation( false )
   ozCameraAddSwitchableUnit( oz_me )
   ozCameraSwitchTo( oz_me )
---   ozCameraAllowReincarnation( false )
+
+  ozUIShowBuild( true )
 end

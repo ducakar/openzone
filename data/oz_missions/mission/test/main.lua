@@ -26,7 +26,6 @@
 ]]--
 
 function onUpdate()
-  ozUIShowBuild( true )
 end
 
 function onCreate()
@@ -50,6 +49,8 @@ function onCreate()
   ozFloraSeed()
 
   init_stressTest()
+
+  ozUIShowBuild( true )
 end
 
 function init_sample()

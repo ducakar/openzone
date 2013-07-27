@@ -113,8 +113,7 @@ static int ozOrbisAddStr( lua_State* l )
   }
 
   if( mode != ADD_FORCE ) {
-    Bounds bounds = *bsp;
-    bounds = Struct::rotate( bounds, heading ) + ( p - Point::ORIGIN );
+    Bounds bounds = rotate( *bsp, heading ) + ( p - Point::ORIGIN );
 
     if( collider.overlaps( bounds.toAABB() ) ) {
       ms.str = nullptr;
@@ -150,11 +149,8 @@ static int ozOrbisAddObj( lua_State* l )
   }
 
   if( mode != ADD_FORCE ) {
-    AABB aabb = AABB( p, clazz->dim );
-
-    if( heading & WEST_EAST_MASK ) {
-      swap( aabb.dim.x, aabb.dim.y );
-    }
+    Vec3 dim  = clazz->dim + Vec3( 2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON );
+    AABB aabb = AABB( p, rotate( dim, heading ) );
 
     if( collider.overlaps( aabb ) ) {
       ms.obj = nullptr;

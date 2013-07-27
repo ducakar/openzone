@@ -377,7 +377,7 @@ HudArea::HudArea() :
   lastWeaponRounds( -1 ),
   lastVehicleId( -1 )
 {
-  flags = UPDATE_BIT | PINNED_BIT;
+  flags |= UPDATE_BIT | PINNED_BIT;
 
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;

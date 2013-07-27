@@ -55,7 +55,6 @@ class UI
 
     bool           isFreelook;
     bool           showFPS;
-    bool           showBuild;
     bool           showDebug;
 
   public:

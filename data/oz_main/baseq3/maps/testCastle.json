@@ -23,7 +23,7 @@
       "title":          "crusher",
       "type":           "CRUSHING_BLOCK",
       "target":         0,
-      "move":           [ 0, 7.68, 0 ],
+      "move":           [ 0, -7.68, 0 ],
       "slideTime":      2.0,
       "timeout":        3.0,
       "openSound":      "free/rumble",
@@ -33,7 +33,7 @@
     {
       "title":          "ignorant",
       "type":           "IGNORING_BLOCK",
-      "move":           [ 0, 7.68, 0 ],
+      "move":           [ 0, -7.68, 0 ],
       "slideTime":      2.0,
       "timeout":        4.0,
       "openSound":      "free/rumble",
@@ -42,15 +42,15 @@
       "model":
       {
         "name":         "biotank",
-        "translation":  [ 0, -1, 0.5 ],
-        "rotation":     [ 0, 0, 90 ]
+        "translation":  [ 0, 1, 0.5 ],
+        "rotation":     [ 0, 0, -90 ]
       }
     },
     {
       "title":          "auto door",
       "type":           "AUTO_DOOR",
       "target":         2,
-      "move":           [ 2.55, 0, 0 ],
+      "move":           [ -2.55, 0, 0 ],
       "slideTime":      2.0,
       "timeout":        2.0,
       "openSound":      "free/itemback",
@@ -62,7 +62,7 @@
       "type":           "MANUAL_DOOR",
       "target":         3,
       "key":            1,
-      "move":           [ 5, 0, 0 ],
+      "move":           [ -5, 0, 0 ],
       "slideTime":      2.0,
       "openSound":      "free/itemback",
       "closeSound":     "free/itemback",

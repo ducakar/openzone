@@ -99,7 +99,7 @@ void DebugFrame::onDraw()
 DebugFrame::DebugFrame() :
   Frame( 560, 10 + 7 * ( style.fonts[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
 {
-  flags = PINNED_BIT;
+  flags |= PINNED_BIT;
 
   x = ( camera.width - width ) / 2;
 

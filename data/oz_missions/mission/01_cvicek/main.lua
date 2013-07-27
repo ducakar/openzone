@@ -456,9 +456,9 @@ function onCreate()
     -1015, 608, 50,
     OZ_QUEST_NONE )
 
+  ozCameraAllowReincarnation( false )
   ozCameraAddSwitchableUnit( oz_me )
   ozCameraSwitchTo( oz_me )
-  ozCameraAllowReincarnation( false )
 
   ozCameraWarpTo( -600, 608, 80, 90.0, 90.0 )
   ozCameraExecuteSequence( "intro" )

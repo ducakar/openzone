@@ -168,7 +168,7 @@ MainMenu::MainMenu() :
   copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE ),
   title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION )
 {
-  flags = UPDATE_BIT;
+  flags |= UPDATE_BIT;
 
   Button* missionsButton  = new Button( OZ_GETTEXT( "Missions" ),  openMissions,       200, 30 );
   Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  openSettings,       200, 30 );

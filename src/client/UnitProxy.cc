@@ -129,16 +129,18 @@ void UnitProxy::prepare()
         }
       }
 
-      currUnit = ( currUnit + 1 ) % nSwitchableunits;
+      if( currUnit != 0 || nSwitchableunits > 1 ) {
+        currUnit = ( currUnit + 1 ) % nSwitchableunits;
 
-      Bot* unit = static_cast<Bot*>( orbis.obj( camera.switchableUnits[currUnit] ) );
+        Bot* unit = static_cast<Bot*>( orbis.obj( camera.switchableUnits[currUnit] ) );
 
-      if( unit->state & Bot::DEAD_BIT ) {
-        botEye    = unit->p;
-        botEye.z += unit->camZ;
+        if( unit->state & Bot::DEAD_BIT ) {
+          botEye    = unit->p;
+          botEye.z += unit->camZ;
+        }
+        camera.setBot( unit );
+        return;
       }
-      camera.setBot( unit );
-      return;
     }
   }
 

@@ -74,20 +74,37 @@ void BuildMenu::overlayCallback( Area* area, const Vec3& ray )
   tf.model.rotateZ( float( heading ) * Math::TAU / 4.0f );
 
   if( buildMenu->overlayBSP != nullptr ) {
-    AABB bb       = AABB( position, bsp->dim() );
-    BSP* bspModel = context.requestBSP( bsp );
+    Bounds bounds   = rotate( *bsp, heading ) + ( position - Point::ORIGIN );
+    BSP*   bspModel = context.requestBSP( bsp );
 
     List<Struct*> strs;
     List<Object*> objs;
 
-    collider.getOverlaps( bb, &strs, &objs );
+    collider.getOverlaps( bounds.toAABB(), &strs, &objs );
     overlaps  = !strs.isEmpty() || !objs.isEmpty();
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
+
+    // Check in ground in levelled enough.
+    float corners[][2] = {
+      { bounds.mins.x, bounds.mins.y },
+      { bounds.maxs.x, bounds.mins.y },
+      { bounds.mins.x, bounds.maxs.y },
+      { bounds.maxs.x, bounds.maxs.y }
+    };
+
+    for( int i = 0; i < 4; ++i ) {
+      if( orbis.terra.height( corners[i][0], corners[i][1] ) < bounds.mins.z ) {
+        overlaps  = true;
+        tf.colour = OVERLAY_YELLOW;
+        break;
+      }
+    }
 
     bspModel->schedule( nullptr, Mesh::OVERLAY_QUEUE );
   }
   else {
-    AABB bb    = AABB( position, clazz->dim + Vec3( EPSILON, EPSILON, EPSILON ) );
+    Vec3 dim   = clazz->dim + Vec3( 2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON );
+    AABB bb    = AABB( position, rotate( dim, heading ) );
     SMM* model = context.requestModel( clazz->imagoModel );
 
     overlaps  = collider.overlaps( bb );

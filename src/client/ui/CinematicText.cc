@@ -49,7 +49,7 @@ void CinematicText::onDraw()
 CinematicText::CinematicText() :
   Area( 600, 400 ), text( 0, 0, 600, 8, Font::TITLE, Area::ALIGN_NONE )
 {
-  flags = PINNED_BIT | IGNORE_BIT;
+  flags |= PINNED_BIT;
 }
 
 void CinematicText::set( const char* title )

@@ -43,13 +43,11 @@ class Area
     static const int CENTRE          = 0x10000000; ///< Special value for x and y.
 
     static const int UPDATE_BIT      = 0x01;       ///< If `onUpdate()` should be called.
-    static const int IGNORE_BIT      = 0x02;       ///< Ignore when passing events.
+    static const int PINNED_BIT      = 0x02;       ///< Show in both freelook and interface mode.
     static const int GRAB_BIT        = 0x04;       ///< A child with GRAB_BIT get exclusive focus
                                                    ///< for events
-    static const int HIDDEN_BIT      = 0x08;       ///< Do not draw.
-    static const int PINNED_BIT      = 0x10;       ///< Show in both freelook and interface mode.
-    static const int DISABLED_BIT    = 0x20;       ///< Hide and disable both `onUpdate()` and
-                                                   ///< `show()` methods.
+    static const int ENABLED_BIT     = 0x10;       ///< Visibility and `onUpdate()` enabled.
+    static const int VISIBLE_BIT     = 0x20;       ///< Visible.
 
     // text alignment
     static const int ALIGN_LEFT      = 0x00;
@@ -103,6 +101,22 @@ class Area
     explicit Area( int width, int height );
     virtual ~Area();
 
+    OZ_ALWAYS_INLINE
+    bool isEnabled() const
+    {
+      return flags & ENABLED_BIT;
+    }
+
+    void enable( bool doEnable );
+
+    OZ_ALWAYS_INLINE
+    bool isVisible() const
+    {
+      return ( flags & ( ENABLED_BIT | VISIBLE_BIT ) ) == ( ENABLED_BIT | VISIBLE_BIT );
+    }
+
+    void show( bool doShow );
+
     /**
      * Fix position if parent has been resized.
      */
@@ -112,9 +126,6 @@ class Area
      * Move for `moveX` to the right and for `moveY` up.
      */
     void move( int moveX, int moveY );
-
-    void show( bool doShow );
-    void enable( bool doEnable );
 
     /**
      * Calculate global (x, y) for given relative rectangle coordinates/dimension.

@@ -449,7 +449,7 @@ StrategicArea::StrategicArea() :
   hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 ), taggedStr( -1 ),
   mouseW( 0.0f )
 {
-  flags = UPDATE_BIT | PINNED_BIT;
+  flags |= UPDATE_BIT | PINNED_BIT;
 }
 
 void StrategicArea::setOverlay( OverlayCallback* callback, Area* sender )

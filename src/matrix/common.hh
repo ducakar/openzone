@@ -44,4 +44,33 @@ enum Heading
 /// Bitwise AND with this mask is non-zero iff heading is either `EAST` or `WEST`.
 const int WEST_EAST_MASK = 0x01;
 
+inline Vec3 rotate( const Vec3& dim, Heading heading )
+{
+  return heading & WEST_EAST_MASK ? Vec3( dim.y, dim.x, dim.z ) : dim;
+}
+
+inline Bounds rotate( const Bounds& bb, Heading heading )
+{
+  Point p = bb.p();
+
+  switch( heading ) {
+    case NORTH: {
+      return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                     p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+    }
+    case WEST: {
+      return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                     p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+    }
+    case SOUTH: {
+      return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                     p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+    }
+    case EAST: {
+      return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                     p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+    }
+  }
+}
+
 }

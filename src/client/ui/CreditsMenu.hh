@@ -42,7 +42,7 @@ class CreditsMenu : public Area
     const int     stride;
     int           scroll;
     int           bias;
-    bool          isPaused;
+    int           direction;
 
   protected:
 

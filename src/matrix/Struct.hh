@@ -52,8 +52,6 @@ class Entity
       CLOSING
     };
 
-    Vec3               offset;
-
     const EntityClass* clazz;
     const Struct*      str;
 
@@ -63,6 +61,7 @@ class Entity
     float              ratio;
     float              time;
 
+    Vec3               offset;
     Vec3               velocity;
 
     void trigger();
@@ -163,8 +162,6 @@ class Struct : public Bounds
      * Rotate AABB::dim between structure and absolute coordinate system.
      */
     Vec3 swapDimCS( const Vec3& dim ) const;
-
-    static Bounds rotate( const Bounds& in, Heading heading );
 
     void destroy();
     void damage( float damage );

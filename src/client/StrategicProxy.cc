@@ -28,6 +28,7 @@
 #include <client/Input.hh>
 #include <client/ui/StrategicArea.hh>
 #include <client/ui/GalileoFrame.hh>
+#include <client/ui/BuildMenu.hh>
 #include <client/ui/UI.hh>
 
 namespace oz
@@ -65,6 +66,7 @@ void StrategicProxy::end()
 
   ui::mouse.doShow = true;
 
+  ui::ui.buildMenu->enable( false );
   ui::ui.strategicArea->enable( false );
 }
 
@@ -212,6 +214,8 @@ void StrategicProxy::read( InputStream* istream )
   isFree     = istream->readBool();
   isFreeFast = istream->readBool();
   isRTSFast  = istream->readBool();
+
+  ui::ui.buildMenu->enable( istream->readBool() );
 }
 
 void StrategicProxy::write( OutputStream* ostream ) const
@@ -223,6 +227,8 @@ void StrategicProxy::write( OutputStream* ostream ) const
   ostream->writeBool( isFree );
   ostream->writeBool( isFreeFast );
   ostream->writeBool( isRTSFast );
+
+  ostream->writeBool( ui::ui.buildMenu->isEnabled() );
 }
 
 }

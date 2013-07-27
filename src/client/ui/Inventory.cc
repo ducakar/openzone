@@ -222,15 +222,14 @@ void Inventory::onUpdate()
   if( camera.state != Camera::UNIT || !mouse.doShow || owner == nullptr ||
       ( owner->state & Bot::DEAD_BIT ) )
   {
-    if( !( flags & HIDDEN_BIT ) ) {
-      show( false );
-    }
+    show( false );
   }
-  else if( flags & HIDDEN_BIT ) {
+  else {
     show( true );
-  }
-  else if( other == nullptr ) {
-    scrollOther = 0;
+
+    if( other == nullptr ) {
+      scrollOther = 0;
+    }
   }
 }
 
@@ -324,7 +323,7 @@ Inventory::Inventory() :
   taggedItemIndex( -1 ), cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ),
   scrollOwner( 0 ), scrollOther( 0 )
 {
-  flags = UPDATE_BIT | HIDDEN_BIT | IGNORE_BIT;
+  flags |= UPDATE_BIT;
 
   for( int i = 0; i < COLS; ++i ) {
     ownerModels[i] = new ModelField( ownerItemCallback,

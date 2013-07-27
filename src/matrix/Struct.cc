@@ -625,30 +625,6 @@ Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
   }
 }
 
-Bounds Struct::rotate( const Bounds& in, Heading heading )
-{
-  Point p = in.p();
-
-  switch( heading ) {
-    case NORTH: {
-      return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
-                     p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
-    }
-    case WEST: {
-      return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
-                     p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
-    }
-    case SOUTH: {
-      return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
-                     p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
-    }
-    case EAST: {
-      return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
-                     p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
-    }
-  }
-}
-
 void Struct::destroy()
 {
   for( int i = 0; i < boundObjects.length(); ++i ) {
@@ -699,11 +675,11 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
 
       entity.clazz    = &bsp->entities[i];
       entity.str      = this;
-      entity.offset   = Vec3::ZERO;
       entity.key      = bsp->entities[i].key;
       entity.state    = Entity::CLOSED;
       entity.ratio    = 0.0f;
       entity.time     = 0.0f;
+      entity.offset   = Vec3::ZERO;
       entity.velocity = Vec3::ZERO;
     }
   }
@@ -733,13 +709,13 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
     for( int i = 0; i < entities.length(); ++i ) {
       Entity& entity = entities[i];
 
-      entity.offset = istream->readVec3();
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
       entity.key    = istream->readInt();
       entity.state  = Entity::State( istream->readInt() );
       entity.ratio  = istream->readFloat();
       entity.time   = istream->readFloat();
+      entity.offset = istream->readVec3();
 
       if( entity.state == Entity::OPENING ) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
@@ -790,17 +766,16 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
     const JSON& entitiesJSON = json["entities"];
 
     for( int i = 0; i < entities.length(); ++i ) {
-      Entity& entity = entities[i];
-
       const JSON& entityJSON = entitiesJSON[i];
+      Entity&     entity     = entities[i];
 
-      entity.offset = entityJSON.asVec3();
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
       entity.key    = entityJSON.asInt();
       entity.state  = Entity::State( entityJSON.asInt() );
       entity.ratio  = entityJSON.asFloat();
       entity.time   = entityJSON.asFloat();
+      entity.offset = entityJSON.asVec3();
 
       if( entity.state == Entity::OPENING ) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
@@ -842,11 +817,11 @@ void Struct::write( OutputStream* ostream ) const
   ostream->writeFloat( demolishing );
 
   for( int i = 0; i < entities.length(); ++i ) {
-    ostream->writeVec3( entities[i].offset );
     ostream->writeInt( entities[i].key );
     ostream->writeInt( entities[i].state );
     ostream->writeFloat( entities[i].ratio );
     ostream->writeFloat( entities[i].time );
+    ostream->writeVec3( entities[i].offset );
   }
 
   ostream->writeInt( boundObjects.length() );
@@ -877,11 +852,11 @@ JSON Struct::write() const
   for( int i = 0; i < entities.length(); ++i ) {
     JSON& entityJSON = entitiesJSON.add( JSON::OBJECT);
 
-    entityJSON.add( "offset", entities[i].offset );
     entityJSON.add( "key", entities[i].key );
     entityJSON.add( "state", entities[i].state );
     entityJSON.add( "ratio", entities[i].ratio );
     entityJSON.add( "time", entities[i].time );
+    entityJSON.add( "offset", entities[i].offset );
   }
 
   JSON& boundObjectsJSON = json.add( "boundObjects", JSON::ARRAY );

@@ -65,17 +65,17 @@ void CreditsMenu::onReposition()
 
 void CreditsMenu::onUpdate()
 {
-  if( isPaused ) {
+  if( direction == 0 ) {
     return;
   }
 
-  ++bias;
+  bias += direction;
 
-  if( bias == stride ) {
-    int nEntries = ( labels.length() + lines.length() );
+  if( bias < 0 || bias >= stride ) {
+    int nEntries = labels.length() + lines.length();
 
-    scroll = ( scroll + 1 ) % nEntries;
-    bias   = 0;
+    scroll = ( scroll + direction + nEntries ) % nEntries;
+    bias   = direction < 0 ? bias + stride - 1 : 0;
 
     for( int i = 0; i < labels.length(); ++i ) {
       int line = ( scroll + i ) % nEntries;
@@ -94,10 +94,13 @@ bool CreditsMenu::onMouseEvent()
 {
   if( mouse.x < width - 240 ) {
     if( input.leftReleased ) {
-      isPaused = !isPaused;
+      direction = !direction;
     }
-    else if( input.mouseW != 0 ) {
-      isPaused = input.mouseW >= 0;
+    else if( input.mouseW < 0 ) {
+      direction = +1;
+    }
+    else if( input.mouseW > 0 ) {
+      direction = -1;
     }
   }
 
@@ -134,9 +137,9 @@ void CreditsMenu::onDraw()
 
 CreditsMenu::CreditsMenu() :
   Area( camera.width, camera.height ),
-  stride( style.fonts[Font::SANS].height ), scroll( 0 ), bias( 0 ), isPaused( false )
+  stride( style.fonts[Font::SANS].height ), scroll( 0 ), bias( 0 ), direction( 1 )
 {
-  flags = UPDATE_BIT;
+  flags |= UPDATE_BIT;
 
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );

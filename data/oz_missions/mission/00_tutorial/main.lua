@@ -25,9 +25,6 @@
  * Tutorial mission.
 ]]--
 
-function onUpdate()
-end
-
 function onCreate()
   ozTerraLoad( "sample" )
 
@@ -324,5 +321,6 @@ function onCreate()
 
   ozBindObj( me )
   ozCameraAllowReincarnation( true )
+  ozCameraAddSwitchableUnit( me )
   ozCameraSwitchTo( me )
 end

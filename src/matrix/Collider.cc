@@ -144,6 +144,10 @@ bool Collider::overlapsAABBNode( int nodeIndex )
 
 bool Collider::overlapsAABBEntities()
 {
+  if( str->entities.isEmpty() ) {
+    return false;
+  }
+
   Point  originalStartPos = startPos;
   Bounds localTrace       = str->toStructCS( trace );
 
@@ -538,6 +542,10 @@ void Collider::trimAABBNode( int nodeIndex )
 
 void Collider::trimAABBEntities()
 {
+  if( str->entities.isEmpty() ) {
+    return;
+  }
+
   Point  originalStartPos = startPos;
   Point  originalEndPos   = endPos;
   Bounds localTrace       = str->toStructCS( trace );

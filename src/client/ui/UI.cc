@@ -48,8 +48,8 @@ namespace ui
 {
 
 UI::UI() :
-  fps( 0.0f ), fpsLabel( nullptr ), isFreelook( false ), showFPS( false ), showBuild( false ),
-  showDebug( false ), doShow( true ),
+  fps( 0.0f ), fpsLabel( nullptr ), isFreelook( false ), showFPS( false ), showDebug( false ),
+  doShow( true ),
   root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ), strategicArea( nullptr ),
   questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ), inventory( nullptr ),
   buildMenu( nullptr ), debugFrame( nullptr )
@@ -145,7 +145,7 @@ void UI::load()
   musicPlayer   = new MusicPlayer();
   inventory     = new Inventory();
   infoFrame     = new InfoFrame();
-  buildMenu     = showBuild ? new BuildMenu() : nullptr;
+  buildMenu     = new BuildMenu();
   debugFrame    = showDebug ? new DebugFrame() : nullptr;
 
   root->add( hudArea, 0, 0 );
@@ -155,10 +155,8 @@ void UI::load()
   root->add( musicPlayer, 8, -16 - galileoFrame->height );
   root->add( inventory, Area::CENTRE, 8 );
   root->add( infoFrame, -8, -8 );
+  root->add( buildMenu, -8, -8 );
 
-  if( showBuild ) {
-    root->add( buildMenu, 8, -24 - galileoFrame->height - musicPlayer->height );
-  }
   if( showDebug ) {
     root->add( debugFrame, Area::CENTRE, -16 - questFrame->height );
   }
@@ -167,6 +165,7 @@ void UI::load()
   strategicArea->enable( false );
   inventory->enable( false );
   infoFrame->enable( false );
+  buildMenu->enable( false );
 
   loadingScreen->raise();
 }
@@ -216,7 +215,6 @@ void UI::init()
   fps        = 1.0f / Timer::TICK_TIME;
   isFreelook = false;
   showFPS    = config.include( "ui.showFPS",   false ).asBool();
-  showBuild  = config.include( "ui.showBuild", false ).asBool();
   showDebug  = config.include( "ui.showDebug", false ).asBool();
   doShow     = true;
 

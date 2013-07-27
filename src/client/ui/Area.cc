@@ -36,8 +36,8 @@ namespace ui
 {
 
 Area::Area( int width_, int height_ ) :
-  flags( 0 ), parent( nullptr ), x( 0 ), y( 0 ), width( width_ ), height( height_ ),
-  defaultX( 0 ), defaultY( 0 )
+  flags( ENABLED_BIT | VISIBLE_BIT ), parent( nullptr ),
+  x( 0 ), y( 0 ), width( width_ ), height( height_ ), defaultX( 0 ), defaultY( 0 )
 {}
 
 Area::~Area()
@@ -82,7 +82,7 @@ void Area::move( int moveX, int moveY )
 void Area::updateChildren()
 {
   foreach( child, children.iter() ) {
-    if( ( child->flags & ( UPDATE_BIT | DISABLED_BIT ) ) == UPDATE_BIT ) {
+    if( ( child->flags & UPDATE_BIT ) && child->isEnabled() ) {
       child->onUpdate();
     }
 
@@ -108,7 +108,7 @@ bool Area::passMouseEvents()
     {
       // If event is passed to a child, we won't handle it on parent. Of course we assume
       // children do not overlap, so event can only be passed to one of them.
-      if( !( child->flags & ( IGNORE_BIT | DISABLED_BIT ) ) && child->onMouseEvent() ) {
+      if( child->isVisible() && child->onMouseEvent() ) {
         return true;
       }
     }
@@ -123,7 +123,7 @@ bool Area::passKeyEvents()
     Area* child = i;
     ++i;
 
-    if( !( child->flags & ( IGNORE_BIT | DISABLED_BIT ) ) ) {
+    if( child->isVisible() ) {
       child->onKeyEvent();
     }
   }
@@ -135,7 +135,7 @@ void Area::drawChildren()
 {
   // Render in opposite order; last added child (the first one in the list) should be rendered last.
   for( Area* child = children.last(); child != nullptr; child = child->prev[0] ) {
-    if( !( child->flags & ( HIDDEN_BIT | DISABLED_BIT ) ) ) {
+    if( child->isVisible() ) {
       child->onDraw();
     }
   }
@@ -163,46 +163,56 @@ bool Area::onKeyEvent()
 void Area::onDraw()
 {}
 
-void Area::show( bool doShow )
+void Area::enable( bool doEnable )
 {
-  if( flags & DISABLED_BIT ) {
+  bool isEnabled = flags & ENABLED_BIT;
+
+  if( doEnable == isEnabled ) {
     return;
   }
 
-  bool isVisible = !( flags & HIDDEN_BIT );
+  if( doEnable ) {
+    flags |= ENABLED_BIT;
+  }
+  else {
+    flags &= ~ENABLED_BIT;
+  }
+
+  if( flags & VISIBLE_BIT ) {
+    foreach( child, children.iter() ) {
+      if( child->isVisible() ) {
+        child->onVisibilityChange( doEnable );
+      }
+    }
+
+    onVisibilityChange( doEnable );
+  }
+}
+
+void Area::show( bool doShow )
+{
+  bool isVisible = flags & VISIBLE_BIT;
 
   if( doShow == isVisible ) {
     return;
   }
 
   if( doShow ) {
-    flags &= ~( IGNORE_BIT | HIDDEN_BIT );
+    flags |= VISIBLE_BIT;
   }
   else {
-    flags |= IGNORE_BIT | HIDDEN_BIT;
+    flags &= ~VISIBLE_BIT;
   }
 
-  foreach( child, children.iter() ) {
-    child->onVisibilityChange( doShow );
-  }
-  onVisibilityChange( doShow );
-}
+  if( flags & ENABLED_BIT ) {
+    foreach( child, children.iter() ) {
+      if( child->isVisible() ) {
+        child->onVisibilityChange( doShow );
+      }
+    }
 
-void Area::enable( bool doEnable )
-{
-  if( doEnable ) {
-    flags &= ~DISABLED_BIT;
+    onVisibilityChange( doShow );
   }
-  else {
-    flags |= DISABLED_BIT;
-  }
-
-  bool doShow = doEnable && !( flags & HIDDEN_BIT );
-
-  foreach( child, children.iter() ) {
-    child->onVisibilityChange( doShow );
-  }
-  onVisibilityChange( doShow );
 }
 
 Pair<int> Area::align( int localX, int localY, int width, int height ) const

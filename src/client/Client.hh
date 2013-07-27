@@ -57,8 +57,8 @@ class Client
     Stage* stage;
     int    initFlags;
 
-    int    desiredWidth;
-    int    desiredHeight;
+    int    windowWidth;
+    int    windowHeight;
     int    screenWidth;
     int    screenHeight;
 

@@ -283,21 +283,21 @@ int Client::init( int argc, char** argv )
   config["dir.config"];
   config["dir.local"];
 
-  desiredWidth    = config.include( "window.desiredWidth",  1280 ).asInt();
-  desiredHeight   = config.include( "window.desiredHeight", 720  ).asInt();
-  screenHeight    = config.include( "window.screenWidth",   0    ).asInt();
-  screenHeight    = config.include( "window.screenHeight",  0    ).asInt();
+  windowWidth     = config.include( "window.windowWidth",  1280 ).asInt();
+  windowHeight    = config.include( "window.windowHeight", 720  ).asInt();
+  screenWidth     = config.include( "window.screenWidth",  0    ).asInt();
+  screenHeight    = config.include( "window.screenHeight", 0    ).asInt();
 
-  desiredWidth    = desiredWidth  == 0 ? Window::desktopWidth()  : desiredWidth;
-  desiredHeight   = desiredHeight == 0 ? Window::desktopHeight() : desiredHeight;
+  windowWidth     = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
+  windowHeight    = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
   screenWidth     = screenWidth   == 0 ? Window::desktopWidth()  : screenWidth;
   screenHeight    = screenHeight  == 0 ? Window::desktopHeight() : screenHeight;
 
   bool fullscreen = config.include( "window.fullscreen",    true ).asBool();
 
   Window::create( "OpenZone " OZ_VERSION,
-                  fullscreen ? screenWidth  : desiredWidth,
-                  fullscreen ? screenHeight : desiredHeight,
+                  fullscreen ? screenWidth  : windowWidth,
+                  fullscreen ? screenHeight : windowHeight,
                   fullscreen );
   initFlags |= INIT_WINDOW;
 
@@ -614,7 +614,7 @@ int Client::main()
             }
             else  {
               if( Window::isFullscreen() ) {
-                Window::resize( desiredWidth, desiredHeight, false );
+                Window::resize( windowWidth, windowHeight, false );
               }
               else {
                 Window::resize( screenWidth, screenHeight, true );

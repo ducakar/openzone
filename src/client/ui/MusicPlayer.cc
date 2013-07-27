@@ -122,12 +122,11 @@ void MusicPlayer::onUpdate()
       title.setText( " " );
       sound.stopMusic();
     }
-    if( !( flags & HIDDEN_BIT ) ) {
-      show( false );
-    }
+
+    show( false );
     return;
   }
-  else if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
+  else if( mouse.doShow ) {
     show( true );
   }
 
@@ -165,7 +164,7 @@ MusicPlayer::MusicPlayer() :
   volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "5" ),
   currentTrack( 0 ), volume( 5 ), isPlaying( false )
 {
-  flags = UPDATE_BIT;
+  flags |= UPDATE_BIT;
 
   if( liber.musicTracks.length() > 0 ) {
     trackLabel.setText( "1" );
