@@ -14,7 +14,7 @@
 #   NaCl port. If `strip` is passed as the second option, binaries are stripped too.
 #
 
-defaultPlatform=Linux-x86_64-Clang
+defaultPlatform=Linux-`uname -m`-Clang
 
 nacl86Prefix="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
 naclARMPrefix="$NACL_SDK_ROOT/toolchain/linux_arm_newlib"

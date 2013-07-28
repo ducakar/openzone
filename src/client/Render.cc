@@ -445,13 +445,15 @@ void Render::drawOrbis()
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
     }
     else {
-      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, mainFrame );
-      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, 0 );
-
-      glBlitFramebuffer( 0, 0, frameWidth, frameHeight, 0, 0, windowWidth, windowHeight,
-                         GL_COLOR_BUFFER_BIT, scaleFilter );
-
       glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+
+      shader.program( shader.plain );
+      tf.applyCamera();
+      shape.colour( 1.0f, 1.0f, 1.0f );
+
+      glBindTexture( GL_TEXTURE_2D, colourBuffer );
+      shape.fill( 0, windowHeight, windowWidth, -windowHeight );
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
     }
 
 #endif
@@ -541,7 +543,7 @@ void Render::resize()
     glDeleteRenderbuffersEXT( 1, &depthBuffer );
   }
   if( minGlowFrame != 0 ) {
-    glDeleteFramebuffers( 1, &minGlowFrame );
+    glDeleteFramebuffersEXT( 1, &minGlowFrame );
     glDeleteTextures( 1, &minGlowBuffer );
     glDeleteTextures( 1, &glowBuffer );
   }
@@ -747,7 +749,11 @@ void Render::init()
     glGetError();
   };
 
-  DArray<String> extensions  = String::trim( sExtensions ).split( ' ' );
+  if( vendor == nullptr ) {
+    OZ_ERROR( "OpenGL failed to initialise" );
+  }
+
+  DArray<String> extensions = String::trim( sExtensions ).split( ' ' );
 
   Log::println( "OpenGL vendor: %s", vendor );
   Log::println( "OpenGL renderer: %s", renderer );
@@ -821,6 +827,20 @@ void Render::init()
   };
   EnumMap<GLenum> scaleFilterMap( SCALE_FILTER_MAP );
 
+  static const EnumName COLLATION_MAP[] = {
+    { Mesh::DEPTH_MAJOR, "DEPTH_MAJOR" },
+    { Mesh::MESH_MAJOR,  "MESH_MAJOR"  }
+  };
+  EnumMap<Mesh::Collation> collationMap( COLLATION_MAP );
+
+#ifdef __native_client__
+  const char* sCollation = config.include( "render.collation", "MESH_MAJOR" ).asString();
+#else
+  const char* sCollation = config.include( "render.collation", "DEPTH_MAJOR" ).asString();
+#endif
+  Mesh::setCollation( collationMap[ sCollation ] );
+
+  isOffscreen     = config.include( "render.forceFBO",    false ).asBool();
   doPostprocess   = config.include( "render.postprocess", false ).asBool();
   scale           = config.include( "render.scale",       1.0f ).asFloat();
   scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).asString() ];
@@ -832,11 +852,13 @@ void Render::init()
 #ifdef GL_ES_VERSION_2_0
   doPostprocess   = false;
 #endif
-  isOffscreen     = doPostprocess || scale != 1.0f;
+  isOffscreen     = isOffscreen || doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;
 
   mainFrame       = 0;
+#ifndef GL_ES_VERSION_2_0
   minGlowBuffer   = 0;
+#endif
 
   resize();
 
@@ -872,11 +894,11 @@ void Render::destroy()
     {
 #ifdef GL_ES_VERSION_2_0
       glDeleteFramebuffers( 1, &mainFrame );
-      glDeleteTextures( 1, &glowBuffer );
       glDeleteTextures( 1, &colourBuffer );
       glDeleteRenderbuffers( 1, &depthBuffer );
 #else
       glDeleteFramebuffersEXT( 1, &mainFrame );
+      glDeleteTextures( 1, &glowBuffer );
       glDeleteTextures( 1, &colourBuffer );
       glDeleteRenderbuffersEXT( 1, &depthBuffer );
 #endif

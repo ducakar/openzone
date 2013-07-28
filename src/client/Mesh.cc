@@ -64,6 +64,7 @@ Set<Mesh*>           Mesh::loadedMeshes;
 List<Mesh::Instance> Mesh::instances[2];
 Vertex*              Mesh::vertexAnimBuffer       = nullptr;
 int                  Mesh::vertexAnimBufferLength = 0;
+Mesh::Collation      Mesh::collation              = DEPTH_MAJOR;
 
 void Mesh::animate( const Instance* instance )
 {
@@ -161,24 +162,69 @@ void Mesh::draw( const Instance* instance, int mask )
     }
   }
 }
-#if 0
+
+void Mesh::setCollation( Collation collation_ )
+{
+  collation = collation_;
+}
+
 void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
 {
-  foreach( i, loadedMeshes.citer() ) {
-    Mesh* mesh = *i;
+  if( collation == MESH_MAJOR ) {
+    foreach( i, loadedMeshes.citer() ) {
+      Mesh* mesh = *i;
 
-    if( mesh->instances[queue].isEmpty() ) {
-      continue;
+      if( mesh->meshInstances[queue].isEmpty() ) {
+        continue;
+      }
+
+      glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
+
+      Vertex::setFormat();
+
+      shader.program( mesh->shaderId );
+
+      foreach( instance, mesh->meshInstances[queue].citer() ) {
+        // HACK This is not a nice way to draw non-transparent parts with alpha < 1.
+        int instanceMask = mask;
+
+        if( instance->colour.w.w != 1.0f ) {
+          if( mask & ALPHA_BIT ) {
+            instanceMask |= SOLID_BIT;
+          }
+          else {
+            continue;
+          }
+        }
+
+        if( !( mesh->flags & instanceMask ) ) {
+          continue;
+        }
+
+        if( mesh->nFrames != 0 ) {
+          mesh->animate( instance );
+        }
+
+        mesh->draw( instance, instanceMask );
+      }
     }
+  }
+  else {
+    Mesh* mesh = nullptr;
 
-    glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
+    foreach( instance, instances[queue].citer() ) {
+      if( instance->mesh != mesh ) {
+        mesh = instance->mesh;
 
-    Vertex::setFormat();
+        glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
 
-    shader.program( mesh->shaderId );
+        Vertex::setFormat();
 
-    foreach( instance, mesh->instances[queue].citer() ) {
+        shader.program( mesh->shaderId );
+      }
+
       // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
       int instanceMask = mask;
 
@@ -215,65 +261,18 @@ void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
-#endif
-void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
-{
-  Mesh* mesh = nullptr;
-
-  foreach( instance, instances[queue].citer() ) {
-    if( instance->mesh != mesh ) {
-      mesh = instance->mesh;
-
-      glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
-
-      Vertex::setFormat();
-
-      shader.program( mesh->shaderId );
-    }
-
-    // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
-    int instanceMask = mask;
-
-    if( instance->colour.w.w != 1.0f ) {
-      if( mask & ALPHA_BIT ) {
-        instanceMask |= SOLID_BIT;
-      }
-      else {
-        continue;
-      }
-    }
-
-    if( !( mesh->flags & instanceMask ) ) {
-      continue;
-    }
-
-    if( mesh->nFrames != 0 ) {
-      mesh->animate( instance );
-    }
-
-    mesh->draw( instance, instanceMask );
-  }
-
-  glActiveTexture( GL_TEXTURE2 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
-  glActiveTexture( GL_TEXTURE1 );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
-
-  glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-}
 
 void Mesh::clearScheduled( Mesh::QueueType queue )
 {
-  foreach( i, loadedMeshes.citer() ) {
-    Mesh* mesh = *i;
+  if( collation == MESH_MAJOR ) {
+    foreach( i, loadedMeshes.citer() ) {
+      Mesh* mesh = *i;
 
-    mesh->instances[queue].clear();
+      mesh->meshInstances[queue].clear();
+    }
+  }
+  else {
+    instances[queue].clear();
   }
 }
 
@@ -284,6 +283,9 @@ void Mesh::deallocate()
   delete[] vertexAnimBuffer;
   vertexAnimBuffer = nullptr;
   vertexAnimBufferLength = 0;
+
+  instances[SCENE_QUEUE].deallocate();
+  instances[OVERLAY_QUEUE].deallocate();
 }
 
 Mesh::Mesh() :
@@ -419,6 +421,7 @@ void Mesh::load( uint usage )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   if( nFrames != 0 ) {
+#ifndef GL_ES_VERSION_2_0
     if( shader.hasVertexTexture ) {
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
@@ -427,13 +430,14 @@ void Mesh::load( uint usage )
       glBindTexture( GL_TEXTURE_2D, animationTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, 2 * nFrames, 0, GL_RGB, GL_FLOAT,
-                    istream.forward( vertexBufferSize + normalBufferSize ) );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
+                    GL_FLOAT, istream.forward( vertexBufferSize + normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       OZ_GL_CHECK_ERROR();
     }
     else {
+#endif
       vertices  = new Vertex[nVertices];
       positions = new Point[nFramePositions * nFrames];
       normals   = new Vec3[nFramePositions * nFrames];
@@ -453,7 +457,9 @@ void Mesh::load( uint usage )
         vertexAnimBuffer = new Vertex[nVertices];
         vertexAnimBufferLength = nVertices;
       }
+#ifndef GL_ES_VERSION_2_0
     }
+#endif
   }
 
   componentIndices.resize( nComponents + 1 );

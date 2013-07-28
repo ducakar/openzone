@@ -40,14 +40,6 @@
 # include <SDL_opengl.h>
 #endif
 
-// Floating-point texture formats.
-#ifndef GL_VERSION_3_0
-# define GL_RGBA32F                        0x8814
-# define GL_RGB32F                         0x8815
-# define GL_RGBA16F                        0x881A
-# define GL_RGB16F                         0x881B
-#endif
-
 // S3 texture compression formats.
 #ifndef GL_EXT_texture_compression_s3tc
 # define GL_EXT_texture_compression_s3tc

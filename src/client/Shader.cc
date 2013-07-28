@@ -110,7 +110,7 @@ void Transform::setColour( float r, float g, float b, float a ) const
 
 Transform tf;
 
-const int Shader::SAMPLER_MAP[] = { 0, 1, 2 };
+const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3 };
 char      Shader::logBuffer[LOG_BUFFER_SIZE];
 String    Shader::defines;
 
@@ -301,7 +301,7 @@ void Shader::init()
   doEnvMap         = config.include( "shader.envMap",        true  ).asBool();
   doPostprocess    = config["render.postprocess"].asBool();
 
-  medium           = 0;
+  medium = 0;
 
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)

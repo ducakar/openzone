@@ -88,11 +88,15 @@ class Render
     uint            scaleFilter;
 
     uint            mainFrame;
+#ifndef GL_ES_VERSION_2_0
     uint            minGlowFrame;
+#endif
     uint            depthBuffer;
     uint            colourBuffer;
+#ifndef GL_ES_VERSION_2_0
     uint            glowBuffer;
     uint            minGlowBuffer;
+#endif
 
   public:
 

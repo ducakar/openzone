@@ -65,6 +65,12 @@ class Mesh
     static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
     static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
 
+    enum Collation
+    {
+      DEPTH_MAJOR,
+      MESH_MAJOR
+    };
+
     enum QueueType
     {
       SCENE_QUEUE,
@@ -102,6 +108,7 @@ class Mesh
 
     static Vertex*        vertexAnimBuffer;
     static int            vertexAnimBufferLength;
+    static Collation      collation;
 
     uint                  vbo;
     uint                  ibo;
@@ -124,6 +131,7 @@ class Mesh
     Point*                positions;
     Vec3*                 normals;
 
+    List<Instance>        meshInstances[2];
     PreloadData*          preloadData;
 
   public:
@@ -136,6 +144,8 @@ class Mesh
     void draw( const Instance* instance, int mask );
 
   public:
+
+    static void setCollation( Collation collation );
 
     static void drawScheduled( Mesh::QueueType queue, int mask );
     static void clearScheduled( Mesh::QueueType queue );
@@ -157,19 +167,24 @@ class Mesh
 
     void schedule( int component, QueueType queue )
     {
-      instances[queue].add( { this, tf.model, tf.colour, component, 0, 0, 0.0f } );
+      List<Instance>& list = collation == MESH_MAJOR ? meshInstances[queue] : instances[queue];
+
+      list.add( { this, tf.model, tf.colour, component, 0, 0, 0.0f } );
     }
 
     void scheduleFrame( int component, int frame, QueueType queue )
     {
-      instances[queue].add( { this, tf.model, tf.colour, component, frame, 0, 0.0f } );
+      List<Instance>& list = collation == MESH_MAJOR ? meshInstances[queue] : instances[queue];
+
+      list.add( { this, tf.model, tf.colour, component, frame, 0, 0.0f } );
     }
 
     void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation,
                            QueueType queue )
     {
-      instances[queue].add( { this, tf.model, tf.colour, component,
-                              firstFrame, secondFrame, interpolation } );
+      List<Instance>& list = collation == MESH_MAJOR ? meshInstances[queue] : instances[queue];
+
+      list.add( { this, tf.model, tf.colour, component, firstFrame, secondFrame, interpolation } );
     }
 
     const File* preload( const char* path );
