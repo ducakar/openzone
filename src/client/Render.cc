@@ -53,7 +53,7 @@ const float Render::LAVA_VISIBILITY        = 4.0f;
 const float Render::WIND_FACTOR            = 0.0008f;
 const float Render::WIND_PHI_INC           = 0.04f;
 
-const int   Render::GLOW_MINIFICATION      = 6;
+const int   Render::GLOW_MINIFICATION      = 4;
 
 const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 1.00f );
 const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.20f, 0.50f, 1.00f );

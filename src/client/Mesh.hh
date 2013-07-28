@@ -75,7 +75,6 @@ class Mesh
 
     struct Part
     {
-      uint mode;
       int  flags;
       int  texture;
 
@@ -85,60 +84,51 @@ class Mesh
 
     struct Instance
     {
+      Mesh* mesh;
       Mat44 transform;
       Mat44 colour;
       int   component;
       int   firstFrame;
       int   secondFrame;
       float interpolation;
-
-      OZ_ALWAYS_INLINE
-      explicit Instance() = default;
-
-      OZ_ALWAYS_INLINE
-      explicit Instance( const Mat44& transform_, Mat44 colour_, int component_,
-                         int firstFrame_, int secondFrame_, float interpolation_ ) :
-        transform( transform_ ), colour( colour_ ), component( component_ ),
-        firstFrame( firstFrame_ ), secondFrame( secondFrame_ ), interpolation( interpolation_ )
-      {}
     };
 
     struct PreloadData;
 
   private:
 
-    static Set<Mesh*> loadedMeshes;
+    static Set<Mesh*>     loadedMeshes;
+    static List<Instance> instances[2];
 
-    static Vertex*    vertexAnimBuffer;
-    static int        vertexAnimBufferLength;
+    static Vertex*        vertexAnimBuffer;
+    static int            vertexAnimBufferLength;
 
-    uint              vbo;
-    uint              ibo;
-    int               shaderId;
+    uint                  vbo;
+    uint                  ibo;
+    int                   shaderId;
 
-    int               flags;
-    DArray<Texture>   textures;
-    DArray<Part>      parts;
-    DArray<int>       componentIndices;
+    int                   flags;
+    DArray<Texture>       textures;
+    DArray<Part>          parts;
+    DArray<int>           componentIndices;
 
-    uint              animationTexId;
+    uint                  animationTexId;
 
-    int               nTextures;
-    int               nVertices;
-    int               nIndices;
-    int               nFrames;
-    int               nFramePositions;
+    int                   nTextures;
+    int                   nVertices;
+    int                   nIndices;
+    int                   nFrames;
+    int                   nFramePositions;
 
-    Vertex*           vertices;
-    Point*            positions;
-    Vec3*             normals;
+    Vertex*               vertices;
+    Point*                positions;
+    Vec3*                 normals;
 
-    List<Instance>    instances[2];
-    PreloadData*      preloadData;
+    PreloadData*          preloadData;
 
   public:
 
-    Vec3              dim;
+    Vec3                  dim;
 
   private:
 
@@ -167,19 +157,19 @@ class Mesh
 
     void schedule( int component, QueueType queue )
     {
-      instances[queue].add( Instance( tf.model, tf.colour, component, 0, 0, 0.0f ) );
+      instances[queue].add( { this, tf.model, tf.colour, component, 0, 0, 0.0f } );
     }
 
     void scheduleFrame( int component, int frame, QueueType queue )
     {
-      instances[queue].add( Instance( tf.model, tf.colour, component, frame, 0, 0.0f ) );
+      instances[queue].add( { this, tf.model, tf.colour, component, frame, 0, 0.0f } );
     }
 
     void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation,
                            QueueType queue )
     {
-      instances[queue].add( Instance( tf.model, tf.colour, component,
-                                      firstFrame, secondFrame, interpolation ) );
+      instances[queue].add( { this, tf.model, tf.colour, component,
+                              firstFrame, secondFrame, interpolation } );
     }
 
     const File* preload( const char* path );

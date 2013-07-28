@@ -139,7 +139,7 @@ void OBJ::readFace( char* pos, int part )
       if( sscanf( pos, "%5d", &vertIndex ) != 1 ) {
         OZ_ERROR( "Invalid OBJ face specification ('v')" );
       }
-      face.vertices.add( FaceVertex( vertIndex - 1, -1, -1 ) );
+      face.vertices.add( { vertIndex - 1, -1, -1 } );
 
       pos = skipSpaces( end );
       end = readWord( pos );
@@ -152,7 +152,7 @@ void OBJ::readFace( char* pos, int part )
       if( sscanf( pos, "%5d/%5d", &vertIndex, &texCoordIndex ) != 2 ) {
         OZ_ERROR( "Invalid OBJ face specification ('v/t')" );
       }
-      face.vertices.add( FaceVertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
+      face.vertices.add( { vertIndex - 1, -1, texCoordIndex - 1 } );
 
       pos = skipSpaces( end );
       end = readWord( pos );
@@ -165,7 +165,7 @@ void OBJ::readFace( char* pos, int part )
       if( sscanf( pos, "%5d//%5d", &vertIndex, &normalIndex ) != 2 ) {
         OZ_ERROR( "Invalid OBJ face specification ('v//n')" );
       }
-      face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, -1 ) );
+      face.vertices.add( { vertIndex - 1, normalIndex - 1, -1 } );
 
       pos = skipSpaces( end );
       end = readWord( pos );
@@ -178,7 +178,7 @@ void OBJ::readFace( char* pos, int part )
       if( sscanf( pos, "%5d/%5d/%5d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
         OZ_ERROR( "Invalid OBJ face specification ('v/t/n')" );
       }
-      face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
+      face.vertices.add( { vertIndex - 1, normalIndex - 1, texCoordIndex - 1 } );
 
       pos = skipSpaces( end );
       end = readWord( pos );

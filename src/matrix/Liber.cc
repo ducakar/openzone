@@ -33,10 +33,6 @@
 namespace oz
 {
 
-Liber::Resource::Resource( const String& name_, const String& path_ ) :
-  name( name_ ), path( path_ )
-{}
-
 const FragPool* Liber::fragPool( const char* name ) const
 {
   const FragPool* value = fragPools.find( name );
@@ -207,7 +203,7 @@ void Liber::initShaders()
     Log::println( "%s", name.cstr() );
 
     shaderIndices.add( name, shadersList.length() );
-    shadersList.add( Resource( name, "" ) );
+    shadersList.add( { name, "" } );
   }
 
   shaders.resize( shadersList.length() );
@@ -246,7 +242,7 @@ void Liber::initTextures()
       Log::println( "%s", name.cstr() );
 
       textureIndices.add( name, texturesList.length() );
-      texturesList.add( Resource( name, "@tex/" + name ) );
+      texturesList.add( { name, "@tex/" + name } );
     }
   }
 
@@ -286,7 +282,7 @@ void Liber::initSounds()
       Log::println( "%s", name.cstr() );
 
       soundIndices.add( name, soundsList.length() );
-      soundsList.add( Resource( name, file->path() ) );
+      soundsList.add( { name, file->path() } );
     }
   }
 
@@ -317,7 +313,7 @@ void Liber::initCaela()
     Log::println( "%s", name.cstr() );
 
     caelumIndices.add( name, caelaList.length() );
-    caelaList.add( Resource( name, file->path() ) );
+    caelaList.add( { name, file->path() } );
   }
 
   caela.resize( caelaList.length() );
@@ -347,7 +343,7 @@ void Liber::initTerrae()
     Log::println( "%s", name.cstr() );
 
     terraIndices.add( name, terraeList.length() );
-    terraeList.add( Resource( name, file->path() ) );
+    terraeList.add( { name, file->path() } );
   }
 
   terrae.resize( terraeList.length() );
@@ -392,7 +388,7 @@ void Liber::initModels()
     }
 
     modelIndices.add( name, modelsList.length() );
-    modelsList.add( Resource( name, path ) );
+    modelsList.add( { name, path } );
   }
 
   models.resize( modelsList.length() );
@@ -422,7 +418,7 @@ void Liber::initNameLists()
     Log::println( "%s", name.cstr() );
 
     nameListIndices.add( name, nameListsList.length() );
-    nameListsList.add( Resource( name, file->path() ) );
+    nameListsList.add( { name, file->path() } );
   }
 
   nameLists.resize( nameListsList.length() );
@@ -668,7 +664,7 @@ void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList 
     {
       Log::println( "%s", file->path().cstr() );
 
-      musicTracksList->add( Resource( file->baseName(), file->path() ) );
+      musicTracksList->add( { file->baseName(), file->path() } );
     }
   }
 }

@@ -45,6 +45,7 @@
     * status bars under health bars
 - client
     * environment maps
+    * Mesh has 8-part IBO for each +/-x, +/-y, +/-z direction to reduce overdraw
     * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities
     * DDS format used for all textures, every texture is in its own file

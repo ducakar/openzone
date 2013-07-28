@@ -48,12 +48,6 @@ class OBJ
       // vertex texture coordinates in texCoords array
       int texCoord;
 
-      explicit FaceVertex() = default;
-
-      explicit FaceVertex( int pos_, int norm_, int texCoord_ ) :
-        position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
-      {}
-
       // lexicographical order
       bool operator == ( const FaceVertex& v ) const
       {

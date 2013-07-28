@@ -38,7 +38,10 @@ struct Vertex
   TexCoord texCoord;
   Vec3     normal;
 
-  bool operator == ( const Vertex& v ) const;
+  bool operator == ( const Vertex& v ) const
+  {
+    return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
+  }
 
   void write( OutputStream* ostream ) const;
 };
@@ -72,7 +75,6 @@ class Compiler
     struct Part
     {
       int          component;
-      PolyMode     mode;
 
       int          material;
       String       texture;
@@ -83,8 +85,8 @@ class Compiler
 
       bool operator == ( const Part& part ) const
       {
-        return component == part.component && mode == part.mode &&
-               material == part.material && texture.equals( part.texture );
+        return component == part.component && material == part.material &&
+               texture.equals( part.texture );
       }
     };
 

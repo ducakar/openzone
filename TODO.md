@@ -1,37 +1,38 @@
 0.4
 
-- TalkFrame
-- 6-direction-layered meshes
-
-0.5
-
-- new löök
 - matrix
-    * Vehicle: wheeled, tracked, submarine, mech warrior, orca
     * smooth/limited Vehicle rotation
 - nirvana
     * AI tasks
+- ui
+    * launch bar/menu bar
+    * RTS interface
+- client
+    * editor
+    * layout files
+    * decals
+    * particle model (smoke, fire ...)
+- missions
+    * RTS mission
+
+0.5
+
+- matrix
+    * Vehicle: wheeled, tracked, submarine, mech warrior, orca
+- nirvana
     * conversations
 - ui
-    * settings for icon sizes, bar colours, elements layout
     * keyboard control
     * options menu
     * tutorial tips
     * advanced HUD for mechanic units and vehicles
-    * RTS interface
-    * more advanced build menu for editor
     * conversations
 - client
-    * editor
-    * layout files
     * BSP rendering per partes
-    * decals
-    * particle model (smoke, fire ...)
     * animated textures
     * better sky, weather
 - missions
     * new tutorial missions
-    * RTS mission
 
 0.6
 

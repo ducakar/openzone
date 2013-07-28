@@ -40,9 +40,6 @@ class Liber
     {
       String name;
       String path;
-
-      explicit Resource() = default;
-      explicit Resource( const String& name, const String& path );
     };
 
   private:

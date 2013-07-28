@@ -25,6 +25,7 @@
 
 #include <client/Context.hh>
 #include <client/Terra.hh>
+#include <client/Camera.hh>
 
 namespace oz
 {
@@ -59,9 +60,10 @@ struct Mesh::PreloadData
   List<TexFiles> textures;
 };
 
-Set<Mesh*> Mesh::loadedMeshes;
-Vertex*    Mesh::vertexAnimBuffer       = nullptr;
-int        Mesh::vertexAnimBufferLength = 0;
+Set<Mesh*>           Mesh::loadedMeshes;
+List<Mesh::Instance> Mesh::instances[2];
+Vertex*              Mesh::vertexAnimBuffer       = nullptr;
+int                  Mesh::vertexAnimBufferLength = 0;
 
 void Mesh::animate( const Instance* instance )
 {
@@ -135,6 +137,9 @@ void Mesh::draw( const Instance* instance, int mask )
   int firstPart = 0;
   int pastPart  = parts.length();
 
+  Vec3 localDir = ~instance->transform * camera.at;
+  int  dir      = ( localDir.x < 0.0f ) | ( localDir.y < 0.0f ) << 1 | ( localDir.z < 0.0f ) << 2;
+
   if( instance->component >= 0 ) {
     firstPart = componentIndices[instance->component];
     pastPart  = componentIndices[instance->component + 1];
@@ -151,12 +156,12 @@ void Mesh::draw( const Instance* instance, int mask )
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, texture.masks );
 
-      glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( nullptr ) + part.firstIndex );
+      glDrawElements( GL_TRIANGLES, part.nIndices, GL_UNSIGNED_SHORT,
+                      static_cast<ushort*>( nullptr ) + part.firstIndex + dir * part.nIndices );
     }
   }
 }
-
+#if 0
 void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
 {
   foreach( i, loadedMeshes.citer() ) {
@@ -196,6 +201,58 @@ void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
 
       mesh->draw( instance, instanceMask );
     }
+  }
+
+  glActiveTexture( GL_TEXTURE2 );
+  glBindTexture( GL_TEXTURE_2D, 0 );
+
+  glActiveTexture( GL_TEXTURE1 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
+
+  glActiveTexture( GL_TEXTURE0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
+#endif
+void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
+{
+  Mesh* mesh = nullptr;
+
+  foreach( instance, instances[queue].citer() ) {
+    if( instance->mesh != mesh ) {
+      mesh = instance->mesh;
+
+      glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
+
+      Vertex::setFormat();
+
+      shader.program( mesh->shaderId );
+    }
+
+    // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
+    int instanceMask = mask;
+
+    if( instance->colour.w.w != 1.0f ) {
+      if( mask & ALPHA_BIT ) {
+        instanceMask |= SOLID_BIT;
+      }
+      else {
+        continue;
+      }
+    }
+
+    if( !( mesh->flags & instanceMask ) ) {
+      continue;
+    }
+
+    if( mesh->nFrames != 0 ) {
+      mesh->animate( instance );
+    }
+
+    mesh->draw( instance, instanceMask );
   }
 
   glActiveTexture( GL_TEXTURE2 );
@@ -346,8 +403,8 @@ void Mesh::load( uint usage )
     }
   }
 
-  int vboSize = nVertices * int( sizeof( Vertex ) );
-  int iboSize = nIndices  * int( sizeof( ushort ) );
+  int vboSize = nVertices  * int( sizeof( Vertex ) );
+  int iboSize = 8*nIndices * int( sizeof( ushort ) );
 
   const void* vertexBuffer = istream.forward( vboSize );
 
@@ -410,7 +467,6 @@ void Mesh::load( uint usage )
 
   for( int i = 0; i < nParts; ++i ) {
     parts[i].flags      = istream.readInt();
-    parts[i].mode       = istream.readUInt();
     parts[i].texture    = istream.readInt();
 
     parts[i].nIndices   = istream.readInt();

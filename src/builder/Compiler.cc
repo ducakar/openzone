@@ -30,10 +30,16 @@ namespace oz
 namespace builder
 {
 
-bool Vertex::operator == ( const Vertex& v ) const
+struct Triangle
 {
-  return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
-}
+  float depth;
+  int   index;
+
+  bool operator < ( const Triangle& t ) const
+  {
+    return depth < t.depth;
+  }
+};
 
 void Vertex::write( OutputStream* ostream ) const
 {
@@ -162,23 +168,6 @@ void Compiler::begin( PolyMode mode_ )
   vertNum = 0;
 
   part.component = componentId;
-
-  switch( mode ) {
-    case TRIANGLE_STRIP:
-    case TRIANGLE_FAN:
-    case TRIANGLES: {
-      part.mode = mode;
-      break;
-    }
-    case QUADS: {
-      part.mode = TRIANGLE_STRIP;
-      break;
-    }
-    case POLYGON: {
-      part.mode = TRIANGLES;
-      break;
-    }
-  }
 }
 
 void Compiler::end()
@@ -195,10 +184,20 @@ void Compiler::end()
   switch( mode ) {
     case TRIANGLE_STRIP: {
       hard_assert( vertNum >= 3 );
+
+      for( int i = 3; i < part.indices.length(); i += 3 ) {
+        part.indices.insert( i + 0, part.indices[i - 1] );
+        part.indices.insert( i + 1, part.indices[i - 2] );
+      }
       break;
     }
     case TRIANGLE_FAN: {
       hard_assert( vertNum >= 3 );
+
+      for( int i = 3; i < part.indices.length(); i += 3 ) {
+        part.indices.insert( i + 0, part.indices[0] );
+        part.indices.insert( i + 1, part.indices[i - 1] );
+      }
       break;
     }
     case TRIANGLES: {
@@ -208,15 +207,16 @@ void Compiler::end()
     case QUADS: {
       hard_assert( vertNum >= 4 && vertNum % 4 == 0 );
 
-      for( int i = 0; i < vertNum; i += 4 ) {
-        swap( part.indices[i + 2], part.indices[i + 3] );
+      for( int i = 0; i < part.indices.length(); i += 6 ) {
+        part.indices.insert( i + 3, part.indices[i + 2] );
+        part.indices.insert( i + 5, part.indices[i + 4] );
       }
       break;
     }
     case POLYGON: {
       hard_assert( vertNum >= 3 );
 
-      List<ushort> polyIndices = static_cast<List<ushort>&&>( part.indices );
+      List<ushort> polyIndices = static_cast< List<ushort>&& >( part.indices );
       part.indices.clear();
 
       int last[2] = { 0, 1 };
@@ -249,11 +249,6 @@ void Compiler::end()
     parts.add( part );
   }
   else {
-    if( part.mode == TRIANGLE_STRIP ) {
-      // reset triangle strip
-      parts[partIndex].indices.add( parts[partIndex].indices.last() );
-      parts[partIndex].indices.add( part.indices.first() );
-    }
     parts[partIndex].indices.addAll( part.indices.begin(), part.indices.length() );
   }
 
@@ -325,6 +320,7 @@ void Compiler::vertex( float x, float y, float z )
 
     if( caps & UNIQUE ) {
       index = vertices.include( vert );
+
       part.indices.add( ushort( index ) );
     }
     else {
@@ -404,12 +400,39 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
   for( int i = 0; i < parts.length(); ++i ) {
     textures.include( parts[i].texture );
 
-    parts[i].nIndices   = parts[i].indices.length();
     parts[i].firstIndex = nIndices;
+    parts[i].nIndices   = parts[i].indices.length();
 
-    indices.addAll( parts[i].indices.begin(), parts[i].indices.length() );
-    nIndices += parts[i].indices.length();
+    // Sort triangles per every (+/-x, +/-y, +/-z) direction.
+    List<ushort>   dirIndices[8];
+    List<Triangle> triangles;
 
+    for( int j = 0; j < 8; ++j ) {
+      Vec3 dir = Vec3( j & 1 ? -1.0f : +1.0f, j & 2 ? -1.0f : +1.0f, j & 4 ? -1.0f : +1.0f );
+
+      for( int k = 0; k < parts[i].indices.length(); k += 3 ) {
+        Vec3 centre = ( ( vertices[ parts[i].indices[k + 0] ].pos - Point::ORIGIN ) +
+                        ( vertices[ parts[i].indices[k + 1] ].pos - Point::ORIGIN ) +
+                        ( vertices[ parts[i].indices[k + 2] ].pos - Point::ORIGIN ) ) / 3.0f;
+
+        triangles.add( { centre * dir, k } );
+      }
+
+      triangles.sort();
+
+      for( int k = 0; k < triangles.length(); ++k ) {
+        dirIndices[j].add( parts[i].indices[ triangles[k].index + 0 ] );
+        dirIndices[j].add( parts[i].indices[ triangles[k].index + 1 ] );
+        dirIndices[j].add( parts[i].indices[ triangles[k].index + 2 ] );
+      }
+
+      hard_assert( dirIndices[j].length() == parts[i].indices.length() );
+
+      triangles.clear();
+      indices.addAll( dirIndices[j].begin(), dirIndices[j].length() );
+    }
+
+    nIndices   += 8 * parts[i].nIndices;
     nComponents = max( nComponents, parts[i].component + 1 );
   }
 
@@ -440,8 +463,10 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
     }
     vertex->write( os );
   }
-  foreach( index, indices.citer() ) {
-    os->writeUShort( *index );
+  for( int i = 0; i < 8; ++i ) {
+    foreach( index, indices.citer() ) {
+      os->writeUShort( *index );
+    }
   }
 
   if( nFrames != 0 ) {
@@ -458,29 +483,6 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
 
   foreach( part, parts.citer() ) {
     os->writeInt( part->component | part->material );
-
-    uint mode = 0;
-    switch( part->mode ) {
-      case TRIANGLE_STRIP: {
-        mode = GL_TRIANGLE_STRIP;
-        break;
-      }
-      case TRIANGLE_FAN: {
-        mode = GL_TRIANGLE_FAN;
-        break;
-      }
-      case TRIANGLES: {
-        mode = GL_TRIANGLES;
-        break;
-      }
-      case QUADS:
-      case POLYGON: {
-        hard_assert( false );
-        break;
-      }
-    }
-
-    os->writeUInt( mode );
     os->writeInt( textures.index( part->texture ) );
 
     os->writeInt( part->nIndices );

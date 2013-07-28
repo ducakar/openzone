@@ -64,6 +64,6 @@ void main()
 
   gl_FragData[0]     = applyFog( oz_ColourTransform * fragColour, dist );
 #ifdef OZ_POSTPROCESS
-  gl_FragData[1]     = vec4( specular, 1.0 );
+  gl_FragData[1]     = vec4( specular + emission, 1.0 );
 #endif
 }
