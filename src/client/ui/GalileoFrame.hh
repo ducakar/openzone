@@ -32,8 +32,6 @@ namespace client
 namespace ui
 {
 
-class QuestFrame;
-
 class GalileoFrame : public Frame
 {
   private:

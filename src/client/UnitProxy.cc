@@ -404,7 +404,8 @@ void UnitProxy::update()
     vehClazz = static_cast<const VehicleClass*>( veh->clazz );
 
     Mat44 rotMat = veh->rot;
-    rotMat.rotateX( Math::TAU / -4.0f );
+    // TODO integrate this rotation into pilotPos.
+    rotMat.rotateX( -Math::TAU / 4.0f );
 
     botEye = veh->p + rotMat * vehClazz->pilotPos;
   }

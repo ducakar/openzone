@@ -24,7 +24,6 @@
 #pragma once
 
 #include <common/LuaCommon.hh>
-
 #include <modules/Module.hh>
 
 namespace oz

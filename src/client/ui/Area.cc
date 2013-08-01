@@ -23,8 +23,7 @@
 
 #include <client/ui/Area.hh>
 
-#include <client/Camera.hh>
-#include <client/Shape.hh>
+#include <client/ui/Mouse.hh>
 
 #include <SDL_ttf.h>
 

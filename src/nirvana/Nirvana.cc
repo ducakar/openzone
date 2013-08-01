@@ -24,7 +24,6 @@
 #include <nirvana/Nirvana.hh>
 
 #include <matrix/Synapse.hh>
-#include <matrix/Matrix.hh>
 #include <matrix/Bot.hh>
 #include <nirvana/LuaNirvana.hh>
 #include <nirvana/Memo.hh>

@@ -350,7 +350,7 @@ class Math
      * True iff the number is not subnormal.
      */
     OZ_ALWAYS_INLINE
-    static bool isnormal( float x )
+    static bool isNormal( float x )
     {
       return __builtin_isnormal( x );
     }

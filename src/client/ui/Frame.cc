@@ -25,6 +25,7 @@
 
 #include <client/Input.hh>
 #include <client/Shape.hh>
+#include <client/ui/Mouse.hh>
 #include <client/ui/Style.hh>
 
 namespace oz

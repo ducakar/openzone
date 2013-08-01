@@ -23,8 +23,7 @@
 
 #pragma once
 
-#include <client/ui/Font.hh>
-#include <client/ui/Mouse.hh>
+#include <client/common.hh>
 
 namespace oz
 {

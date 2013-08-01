@@ -27,12 +27,10 @@
 #include <client/Shape.hh>
 #include <client/GameStage.hh>
 #include <client/MenuStage.hh>
-#include <client/BuildInfo.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/MissionMenu.hh>
 #include <client/ui/SettingsFrame.hh>
 #include <client/ui/CreditsMenu.hh>
-#include <client/ui/UI.hh>
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
 #elif defined( _WIN32 )

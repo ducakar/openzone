@@ -38,38 +38,74 @@ void VehicleClass::init( InputStream* is, const char* name )
 {
   DynamicClass::init( is, name );
 
-  type                   = Type( is->readInt() );
-  state                  = is->readInt();
+  type        = Type( is->readInt() );
+  state       = is->readInt();
+  fuel        = is->readFloat();
 
-  pilotPos               = is->readVec3();
+  pilotPos    = is->readVec3();
 
-  lookHMin               = is->readFloat();
-  lookHMax               = is->readFloat();
-  lookVMin               = is->readFloat();
-  lookVMax               = is->readFloat();
+  lookHMin    = is->readFloat();
+  lookHMax    = is->readFloat();
+  lookVMin    = is->readFloat();
+  lookVMax    = is->readFloat();
 
-  rotVelLimit            = is->readFloat();
+  rotVelLimit = is->readFloat();
 
-  moveMomentum           = is->readFloat();
-
-  hoverHeight            = is->readFloat();
-  hoverHeightStiffness   = is->readFloat();
-  hoverMomentumStiffness = is->readFloat();
-
-  enginePitchBias        = is->readFloat();
-  enginePitchRatio       = is->readFloat();
-  enginePitchLimit       = is->readFloat();
-
-  fuel                   = is->readFloat();
-  fuelConsumption        = is->readFloat();
-
-  nWeapons               = is->readInt();
+  nWeapons    = is->readInt();
 
   for( int i = 0; i < nWeapons; ++i ) {
     weaponTitles[i]        = lingua.get( is->readString() );
     onWeaponShot[i]        = is->readString();
     nWeaponRounds[i]       = is->readInt();
     weaponShotIntervals[i] = is->readFloat();
+  }
+
+  engine.consumption     = is->readFloat();
+  engine.idleConsumption = is->readFloat();
+  engine.pitchBias       = is->readFloat();
+  engine.pitchRatio      = is->readFloat();
+  engine.pitchLimit      = is->readFloat();
+
+  switch( type ) {
+    case TURRET: {
+      break;
+    }
+    case WHEELED: {
+      wheeled.moveMomentum = is->readFloat();
+      break;
+    }
+    case TRACKED: {
+      tracked.moveMomentum = is->readFloat();
+      break;
+    }
+    case MECH: {
+      mech.walkMomentum   = is->readFloat();
+      mech.runMomentum    = is->readFloat();
+
+      mech.stepWalkInc    = is->readFloat();
+      mech.stepRunInc     = is->readFloat();
+
+      mech.stairInc       = is->readFloat();
+      mech.stairMax       = is->readFloat();
+      mech.stairRateLimit = is->readFloat();
+      mech.stairRateSupp  = is->readFloat();
+      break;
+    }
+    case HOVER: {
+      hover.moveMomentum      = is->readFloat();
+      hover.height            = is->readFloat();
+      hover.heightStiffness   = is->readFloat();
+      hover.momentumStiffness = is->readFloat();
+      break;
+    }
+    case AIR: {
+      hover.moveMomentum = is->readFloat();
+      break;
+    }
+    case SUB: {
+      sub.moveMomentum = is->readFloat();
+      break;
+    }
   }
 }
 

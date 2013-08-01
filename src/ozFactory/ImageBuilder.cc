@@ -50,7 +50,6 @@ static const int DDSDCAPS_MIPMAP      = 0x00400000;
 static const int DDPF_ALPHAPIXELS     = 0x00000001;
 static const int DDPF_FOURCC          = 0x00000004;
 static const int DDPF_RGB             = 0x00000040;
-static const int DDPF_LUMINANCE       = 0x00020000;
 
 static const int ERROR_LENGTH         = 1024;
 

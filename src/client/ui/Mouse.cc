@@ -24,11 +24,10 @@
 #include <client/ui/Mouse.hh>
 
 #include <common/Timer.hh>
+#include <client/Shader.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
-#include <client/Context.hh>
 #include <client/Input.hh>
-#include <client/ui/Area.hh>
 
 namespace oz
 {

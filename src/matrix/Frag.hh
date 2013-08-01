@@ -29,7 +29,6 @@ namespace oz
 {
 
 struct Cell;
-struct Hit;
 
 class Frag
 {

@@ -24,7 +24,6 @@
 #include <client/ui/InfoFrame.hh>
 
 #include <common/Timer.hh>
-#include <nirvana/Memo.hh>
 #include <nirvana/Nirvana.hh>
 #include <client/Camera.hh>
 #include <client/ui/Style.hh>

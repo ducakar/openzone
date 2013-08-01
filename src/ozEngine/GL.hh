@@ -172,16 +172,16 @@ class GL
      *
      * This function is to be used in place of `glShaderSource()`/`glCompileShader()`.
      *
-     * If an `#include` directive is encountered in a file, the included file is inserted before
-     * the current one in the source files list passed to `glShaderSource()`. The line with
-     * `#include` directive is replaced by an empty line.
+     * If an include directive is encountered in a file, the included file is inserted before the
+     * current one in the source files list passed to `glShaderSource()`. The line with include
+     * directive is replaced by an empty line.
      *
-     * The given `defines` string should contain newline separated list of `#define` directives that
+     * The given `defines` string should contain newline separated list of define directives that
      * are processed before the rest of GLSL source. It is passed as the first entry in the source
      * files list to `glShaderSource()`.
      *
      * @param shader OpenGL shader id.
-     * @param defines a string containing #defines used during shader compilation.
+     * @param defines a string containing defines used during shader compilation.
      * @param file main source file.
      */
     static bool compileShaderFromFile( GLuint shader, const char* defines, const File& file );

@@ -26,8 +26,8 @@
 
 #include "Alloc.hh"
 
+#include "arrays.hh"
 #include "System.hh"
-#include "Log.hh"
 
 #include <cstdlib>
 #include <malloc.h>

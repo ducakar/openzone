@@ -23,8 +23,7 @@
 
 #include <client/Shape.hh>
 
-#include <client/Camera.hh>
-#include <client/Context.hh>
+#include <client/Shader.hh>
 
 #ifdef OZ_DYNAMICS
 # include <ozDynamics/ozDynamics.hh>

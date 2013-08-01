@@ -31,8 +31,6 @@
 #include "Map.hh"
 #include "Log.hh"
 
-#include <cstring>
-
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "oz::JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
 

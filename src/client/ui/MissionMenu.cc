@@ -24,10 +24,11 @@
 #include <client/ui/MissionMenu.hh>
 
 #include <client/Camera.hh>
+#include <client/Shader.hh>
 #include <client/Shape.hh>
-#include <client/Context.hh>
 #include <client/GameStage.hh>
 #include <client/Input.hh>
+#include <client/ui/Mouse.hh>
 #include <client/ui/Style.hh>
 
 namespace oz

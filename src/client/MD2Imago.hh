@@ -47,8 +47,14 @@ class MD2Imago : public Imago
 
   private:
 
-    explicit MD2Imago( const Object* obj ) :
-      Imago( obj ), anim( static_cast<const Bot*>( obj ) )
+    explicit MD2Imago( const Bot* bot ) :
+      Imago( bot ), anim( bot )
+    {
+      flags |= Imago::MD2MODEL_BIT;
+    }
+
+    explicit MD2Imago( const Vehicle* vehicle ) :
+      Imago( vehicle ), anim( vehicle )
     {
       flags |= Imago::MD2MODEL_BIT;
     }

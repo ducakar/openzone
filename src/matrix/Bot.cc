@@ -24,7 +24,6 @@
 #include <matrix/Bot.hh>
 
 #include <common/Timer.hh>
-#include <matrix/Liber.hh>
 #include <matrix/LuaMatrix.hh>
 #include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
@@ -379,6 +378,7 @@ void Bot::enter( int vehicle_ )
   camZ       = clazz->camZ;
   state     &= ~CROUCHING_BIT;
   step       = 0.0f;
+  stairRate  = 0.0f;
 
   releaseCargo();
 
@@ -426,6 +426,7 @@ void Bot::onUpdate()
   hard_assert( cargoObj  != static_cast<const Dynamic*>( this ) );
   hard_assert( weaponObj != static_cast<const Dynamic*>( this ) );
 
+  // Dead.
   if( life < clazz->life / 2.0f ) {
     if( life > 0.0f ) {
       if( !( state & DEAD_BIT ) ) {
@@ -487,7 +488,6 @@ void Bot::onUpdate()
 
       if( stamina < 0.0f ) {
         life += stamina * DROWNING_RATIO;
-        stamina = 0.0f;
 
         if( ( uint( index ) + uint( timer.ticks ) ) % Timer::TICKS_PER_SEC == 0 ) {
           addEvent( EVENT_DAMAGE, 1.0f );
@@ -765,13 +765,13 @@ void Bot::onUpdate()
       Vec3 desiredMomentum = move;
 
       if( ( state & ( CROUCHING_BIT | WALKING_BIT ) ) || cargo >= 0 ) {
-        step            += clazz->stepWalkInc;
         desiredMomentum *= clazz->walkMomentum;
+        step            += clazz->stepWalkInc;
       }
       else {
-        stamina         -= clazz->staminaRunDrain;
-        step            += clazz->stepRunInc;
         desiredMomentum *= clazz->runMomentum;
+        step            += clazz->stepRunInc;
+        stamina         -= clazz->staminaRunDrain;
       }
 
       if( flags & ON_SLICK_BIT ) {
@@ -795,6 +795,7 @@ void Bot::onUpdate()
         desiredMomentum *= clazz->airControl;
       }
 
+      // Stick to the ground when going downhill.
       if( ( flags & ( ON_FLOOR_BIT | IN_LIQUID_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
         float dot = desiredMomentum * floor;
 
@@ -1133,6 +1134,7 @@ void Bot::onUpdate()
   oldState   = state;
   instrument = -1;
   container  = -1;
+  stamina    = max( 0.0f, stamina );
 }
 
 float Bot::getStatus() const

@@ -23,8 +23,6 @@
 
 #include <client/SMM.hh>
 
-#include <client/Context.hh>
-
 namespace oz
 {
 namespace client

@@ -26,19 +26,20 @@
 #include <client/Client.hh>
 
 #include <common/Timer.hh>
+#include <common/Lingua.hh>
 #include <common/LuaCommon.hh>
-#include <client/Camera.hh>
-#include <client/MenuStage.hh>
-#include <client/GameStage.hh>
+#include <client/Network.hh>
+#include <client/Input.hh>
+#include <client/Context.hh>
 #include <client/Sound.hh>
 #include <client/Render.hh>
 #include <client/Loader.hh>
 #include <client/NaClUpdater.hh>
-#include <client/Input.hh>
-#include <client/Network.hh>
 #include <client/BuildInfo.hh>
+#include <client/MenuStage.hh>
+#include <client/GameStage.hh>
+#include <client/ui/UI.hh>
 
-#include <clocale>
 #include <unistd.h>
 #include <SDL.h>
 #include <SDL_ttf.h>

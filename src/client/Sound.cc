@@ -23,6 +23,7 @@
 
 #include <client/Sound.hh>
 
+#include <client/Context.hh>
 #include <client/Camera.hh>
 #include <client/eSpeak.hh>
 

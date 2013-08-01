@@ -85,7 +85,7 @@
 #ifdef _WIN32
 # define OZ_WEAK
 #else
-# define OZ_WEAK __attribute(( weak ))
+# define OZ_WEAK __attribute__(( weak ))
 #endif
 
 /**

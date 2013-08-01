@@ -27,6 +27,7 @@
 #include "Log.hh"
 
 #include "Alloc.hh"
+#include "Mat44.hh"
 
 #include <cstdio>
 #include <cstdlib>

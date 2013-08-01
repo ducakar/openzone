@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozEngine/ozFactory.hh
+ * @file ozFactory/ozFactory.hh
  *
  * Main public header for OpenZone Assets Builder Library.
  */

@@ -1,12 +1,12 @@
 {
   "base":               "Vehicle",
 
-  "title":              "hover tank",
+  "title":              "mech warrior",
 
   "state.hasEject":     true,
   "state.autoEject":    true,
 
-  "dim":                [ 1.39, 1.39, 0.79 ],
+  "dim":                [ 0.3, 0.3, 1.1 ],
 
   "life":               3000,
   "resistance":         200,
@@ -14,7 +14,7 @@
   "mass":               5000,
   "lift":               2.4,
 
-  "pilotPos":           [ 0, 0.5, 0.5 ],
+  "pilotPos":           [ 0, 0.7, 0 ],
   "rotVelLimit":        120,
 
   "fuel":               100,
@@ -41,23 +41,8 @@
     }
   ],
 
-  "engine":
-  {
-    "consumption":      0.02,
-    "idleConsumption":  0.02,
-    "pitchBias":        0.5,
-    "pitchRatio":       0.006,
-    "pitchLimit":       2
-  },
-
-  "hover":
-  {
-    "moveMomentum":     0.4,
-
-    "height":           2,
-    "heightStiffness":  40,
-    "momentumStiffness": 1600
-  },
+  "mech":
+  {},
 
   "nItems":             8,
 
@@ -70,8 +55,8 @@
   "fragPool":           "metal",
   "nFrags":             15,
 
-  "imagoType":          "SMMVehicle",
-  "imagoModel":         "tank",
+  "imagoType":          "MD2",
+  "imagoModel":         "droid",
 
   "audioType":          "Vehicle",
   "audioSounds":
@@ -81,7 +66,6 @@
     "hit":              "oz/hit_metal1",
     "land":             "oz/hit_metal1",
     "splash":           "free/splash2",
-    "engine":           "soundsnap/fan",
     "shot0":            "awesund/cg1",
     "shot1":            "awesund/flaunch",
     "shot2":            "awesund/cg2",

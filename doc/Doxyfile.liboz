@@ -110,7 +110,8 @@ INPUT                  = src/ozCore \
                          src/ozDynamics \
                          src/ozDynamics/collision \
                          src/ozDynamics/physics \
-                         src/ozEngine
+                         src/ozEngine \
+                         src/ozFactory
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.hh \
                          *.dox

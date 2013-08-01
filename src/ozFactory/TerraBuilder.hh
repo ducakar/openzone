@@ -40,6 +40,9 @@ class TerraBuilder
 {
   public:
 
+    /**
+     * Noise-producing modules for different layer of the terrain.
+     */
     enum Module
     {
       PLAINS,

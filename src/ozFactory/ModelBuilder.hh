@@ -57,6 +57,9 @@ class ModelBuilder
      */
     static bool isModel( const File& file );
 
+    /**
+     * Build a Collada (.dae) model into OpenZone (.ozModel) format.
+     */
     static bool buildModel( const File& file, OutputStream* ostream );
 
 };

@@ -27,6 +27,7 @@
 #include <matrix/Matrix.hh>
 #include <nirvana/Nirvana.hh>
 #include <modules/Modules.hh>
+#include <client/Context.hh>
 #include <client/Loader.hh>
 #include <client/Render.hh>
 #include <client/Sound.hh>
@@ -37,6 +38,7 @@
 #include <client/MenuStage.hh>
 #include <client/Input.hh>
 #include <client/ui/LoadingArea.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

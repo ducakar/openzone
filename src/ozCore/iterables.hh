@@ -55,7 +55,7 @@
  * @endcode
  */
 #define foreach( i, iterator ) \
-  for( auto i = iterator; i.isValid(); ++i )
+  for( decltype( iterator ) i = iterator; i.isValid(); ++i )
 
 namespace oz
 {

@@ -25,7 +25,6 @@
 
 #include <client/Shader.hh>
 
-#include <matrix/Liber.hh>
 #include <client/Camera.hh>
 
 #define OZ_REGISTER_UNIFORM( uniformVar, uniformName ) \
@@ -300,6 +299,10 @@ void Shader::init()
   isLowDetail      = config.include( "shader.lowDetail",     false ).asBool();
   doEnvMap         = config.include( "shader.envMap",        true  ).asBool();
   doPostprocess    = config["render.postprocess"].asBool();
+
+#ifdef GL_ES_VERSION_2_0
+  hasVertexTexture = false;
+#endif
 
   medium = 0;
 

@@ -54,8 +54,8 @@ void VehicleAudio::play( const Object* playAt )
 
   // engine sound
   if( vehicle->pilot >= 0 && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
-    float pitch = clazz->enginePitchBias +
-                  min( vehicle->momentum.sqN() * clazz->enginePitchRatio, clazz->enginePitchLimit );
+    float pitch = clazz->engine.pitchBias + min( vehicle->momentum.sqN() * clazz->engine.pitchRatio,
+                                                 clazz->engine.pitchLimit );
 
     playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch );
   }

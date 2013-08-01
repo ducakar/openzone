@@ -23,7 +23,7 @@
 
 #include <client/ui/QuestFrame.hh>
 
-#include <client/Camera.hh>
+#include <common/Lingua.hh>
 #include <client/ui/Style.hh>
 
 namespace oz

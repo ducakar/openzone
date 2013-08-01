@@ -25,8 +25,8 @@
 
 #include <client/Shape.hh>
 #include <client/Camera.hh>
-#include <client/Context.hh>
 #include <client/Input.hh>
+#include <client/ui/Mouse.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>
 

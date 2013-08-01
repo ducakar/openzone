@@ -105,7 +105,7 @@ void Class::fillObject( const char* className )
   life       = config["life"].get( 0.0f );
   resistance = config["resistance"].get( 100.0f );
 
-  if( life <= 0.0f || !Math::isnormal( life ) ) {
+  if( life <= 0.0f || !Math::isFinite( life ) ) {
     OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
               " set resistance to infinity (\"inf\").", className );
   }
@@ -460,7 +460,7 @@ void Class::fillBot( const char* className )
 
   stamina           = config["stamina"].get( 100.0f );
 
-  if( stamina <= 0.0f || !Math::isnormal( stamina ) ) {
+  if( stamina <= 0.0f || !Math::isFinite( stamina ) ) {
     OZ_ERROR( "%s: Invalid stamina value. Should be > 0 and finite. If you want infinite stamina"
               " rather set stamina*Drain variables to zero.", className );
   }
@@ -538,17 +538,45 @@ void Class::fillVehicle( const char* className )
     OZ_ERROR( "%s: Vehicle has state.autoEject but not state.hasEject.", className );
   }
 
-  static const EnumName VEHICLE_MAP[] = {
-    { VehicleClass::STATIC,  "STATIC"  },
-    { VehicleClass::WHEELED, "WHEELED" },
-    { VehicleClass::TRACKED, "TRACKED" },
-    { VehicleClass::MECH,    "MECH"    },
-    { VehicleClass::HOVER,   "HOVER"   },
-    { VehicleClass::AIR,     "AIR"     }
-  };
-  EnumMap<VehicleClass::Type> vehicleMap( VEHICLE_MAP );
+  bool isTypedetermined = false;
 
-  type     = vehicleMap[ config["type"].get( "" ) ];
+  if( config.contains( "turret" ) ) {
+    type = VehicleClass::TURRET;
+    isTypedetermined = true;
+  }
+  else if( !isTypedetermined && config.contains( "wheeled" ) ) {
+    type = VehicleClass::WHEELED;
+    isTypedetermined = true;
+  }
+  else if( !isTypedetermined && config.contains( "tracked" ) ) {
+    type = VehicleClass::TRACKED;
+    isTypedetermined = true;
+  }
+  else if( !isTypedetermined && config.contains( "mech" ) ) {
+    type = VehicleClass::MECH;
+    isTypedetermined = true;
+  }
+  else if( !isTypedetermined && config.contains( "hover" ) ) {
+    type = VehicleClass::HOVER;
+    isTypedetermined = true;
+  }
+  else if( !isTypedetermined && config.contains( "air" ) ) {
+    type = VehicleClass::AIR;
+    isTypedetermined = true;
+  }
+  else if( !isTypedetermined && config.contains( "sub" ) ) {
+    type = VehicleClass::SUB;
+    isTypedetermined = true;
+  }
+
+  if( !isTypedetermined ) {
+    OZ_ERROR( "%s: Vehicle configuration must contain exactly one of the objects 'turret',"
+              " 'wheeled', 'tracked', 'mech', 'hover', 'air', 'sub' that contains configuration for"
+              " the selected vehicle type.", className );
+  }
+
+  fuel     = config["fuel"].get( 100.0f );
+
   pilotPos = config["pilotPos"].get( Vec3::ZERO );
   lookHMin = config["lookHMin"].get( -120.0f );
   lookHMax = config["lookHMax"].get( +120.0f );
@@ -575,22 +603,9 @@ void Class::fillVehicle( const char* className )
   lookVMin = Math::rad( lookVMin );
   lookVMax = Math::rad( lookVMax );
 
-  rotVelLimit            = Math::rad( config["rotVelLimit"].get( 60.0f ) ) * Timer::TICK_TIME;
+  rotVelLimit = Math::rad( config["rotVelLimit"].get( 60.0f ) ) * Timer::TICK_TIME;
 
-  moveMomentum           = config["moveMomentum"].get( 2.0f );
-
-  hoverHeight            = config["hoverHeight"].get( 2.0f );
-  hoverHeightStiffness   = config["hoverHeightStiffness"].get( 40.0f );
-  hoverMomentumStiffness = config["hoverMomentumStiffness"].get( 160.0f );
-
-  enginePitchBias        = config["enginePitchBias"].get( 1.0f );
-  enginePitchRatio       = config["enginePitchRatio"].get( 0.001f );
-  enginePitchLimit       = config["enginePitchLimit"].get( 2.00f );
-
-  fuel                   = config["fuel"].get( 100.0f );
-  fuelConsumption        = config["fuelConsumption"].get( 0.0f ) * Timer::TICK_TIME;
-
-  if( fuel <= 0.0f || !Math::isnormal( fuel ) ) {
+  if( fuel <= 0.0f || !Math::isFinite( fuel ) ) {
     OZ_ERROR( "%s: Invalid fuel value. Should be > 0 and finite. If you want infinite fuel rather"
               " set fuelConsumption to zero.", className );
   }
@@ -624,6 +639,68 @@ void Class::fillVehicle( const char* className )
     }
 
     flags |= Object::LUA_BIT;
+  }
+
+  const JSON& engineConfig = config["engine"];
+
+  engineConsumption     = engineConfig["consumption"].get( 0.0f ) * Timer::TICK_TIME;
+  engineIdleConsumption = engineConfig["idleConsumption"].get( 0.0f ) * Timer::TICK_TIME;
+  enginePitchBias       = engineConfig["pitchBias"].get( 1.0f );
+  enginePitchRatio      = engineConfig["pitchRatio"].get( 0.001f );
+  enginePitchLimit      = engineConfig["pitchLimit"].get( 2.00f );
+
+  switch( type ) {
+    case VehicleClass::TURRET: {
+      break;
+    }
+    case VehicleClass::WHEELED: {
+      const JSON& wheeledConfig = config["wheeled"];
+
+      moveMomentum = wheeledConfig["moveMomentum"].get( 2.0f );
+      break;
+    }
+    case VehicleClass::TRACKED: {
+      const JSON& trackedConfig = config["tracked"];
+
+      moveMomentum = trackedConfig["moveMomentum"].get( 2.0f );
+      break;
+    }
+    case VehicleClass::MECH: {
+      const JSON& mechConfig = config["mech"];
+
+      walkMomentum   = mechConfig["walkMomentum"].get( 1.0f );
+      runMomentum    = mechConfig["runMomentum"].get( 2.0f );
+
+      stepWalkInc    = mechConfig["stepWalkInc"].get( 6.0f / 6.0f ) * Timer::TICK_TIME;
+      stepRunInc     = mechConfig["stepRunInc"].get( 10.0f / 6.0f ) * Timer::TICK_TIME;
+
+      stairInc       = mechConfig["stairInc"].get( 11.0f / 64.0f );
+      stairMax       = mechConfig["stairMax"].get( 22.0f / 64.0f );
+      stairRateLimit = mechConfig["stairRateLimit"].get( 0.15f );
+      stairRateSupp  = mechConfig["stairRateSupp"].get( 0.80f );
+      break;
+    }
+    case VehicleClass::HOVER: {
+      const JSON& hoverConfig = config["hover"];
+
+      moveMomentum           = hoverConfig["moveMomentum"].get( 2.0f );
+      hoverHeight            = hoverConfig["height"].get( 2.0f );
+      hoverHeightStiffness   = hoverConfig["heightStiffness"].get( 40.0f );
+      hoverMomentumStiffness = hoverConfig["momentumStiffness"].get( 160.0f );
+      break;
+    }
+    case VehicleClass::AIR: {
+      const JSON& airConfig = config["air"];
+
+      moveMomentum = airConfig["moveMomentum"].get( 2.0f );
+      break;
+    }
+    case VehicleClass::SUB: {
+      const JSON& subConfig = config["sub"];
+
+      moveMomentum = subConfig["moveMomentum"].get( 2.0f );
+      break;
+    }
   }
 }
 
@@ -757,6 +834,7 @@ void Class::writeVehicle( OutputStream* os )
 
   os->writeInt( type );
   os->writeInt( state );
+  os->writeFloat( fuel );
 
   os->writeVec3( pilotPos );
 
@@ -767,25 +845,62 @@ void Class::writeVehicle( OutputStream* os )
 
   os->writeFloat( rotVelLimit );
 
-  os->writeFloat( moveMomentum );
-
-  os->writeFloat( hoverHeight );
-  os->writeFloat( hoverHeightStiffness );
-  os->writeFloat( hoverMomentumStiffness );
-
-  os->writeFloat( enginePitchBias );
-  os->writeFloat( enginePitchRatio );
-  os->writeFloat( enginePitchLimit );
-
-  os->writeFloat( fuel );
-  os->writeFloat( fuelConsumption );
-
   os->writeInt( nWeapons );
+
   for( int i = 0; i < nWeapons; ++i ) {
     os->writeString( weaponTitles[i] );
     os->writeString( onWeaponShot[i] );
     os->writeInt( nWeaponRounds[i] );
     os->writeFloat( weaponShotIntervals[i] );
+  }
+
+  os->writeFloat( engineConsumption );
+  os->writeFloat( engineIdleConsumption );
+  os->writeFloat( enginePitchBias );
+  os->writeFloat( enginePitchRatio );
+  os->writeFloat( enginePitchLimit );
+
+  switch( type ) {
+    case VehicleClass::TURRET: {
+      break;
+    }
+    case VehicleClass::WHEELED: {
+      os->writeFloat( moveMomentum );
+      break;
+    }
+    case VehicleClass::TRACKED: {
+      os->writeFloat( moveMomentum );
+      break;
+    }
+    case VehicleClass::MECH: {
+      os->writeFloat( walkMomentum );
+      os->writeFloat( runMomentum );
+
+      os->writeFloat( stepWalkInc );
+      os->writeFloat( stepRunInc );
+
+      os->writeFloat( stairInc );
+      os->writeFloat( stairMax );
+      os->writeFloat( stairRateLimit );
+      os->writeFloat( stairRateSupp );
+      break;
+    }
+    case VehicleClass::HOVER: {
+      os->writeFloat( moveMomentum );
+
+      os->writeFloat( hoverHeight );
+      os->writeFloat( hoverHeightStiffness );
+      os->writeFloat( hoverMomentumStiffness );
+      break;
+    }
+    case VehicleClass::AIR: {
+      os->writeFloat( moveMomentum );
+      break;
+    }
+    case VehicleClass::SUB: {
+      os->writeFloat( moveMomentum );
+      break;
+    }
   }
 }
 

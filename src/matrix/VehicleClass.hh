@@ -36,16 +36,74 @@ class VehicleClass : public DynamicClass
 
     enum Type
     {
-      STATIC,
+      TURRET,
       WHEELED,
       TRACKED,
       MECH,
       HOVER,
-      AIR
+      AIR,
+      SUB
+    };
+
+    struct EngineSettings
+    {
+      float consumption;
+      float idleConsumption;
+
+      float pitchBias;
+      float pitchRatio;
+      float pitchLimit;
+    };
+
+    struct TurretSettings
+    {};
+
+    struct WheeledSettings
+    {
+      float moveMomentum;
+    };
+
+    struct TrackedSettings
+    {
+      float moveMomentum;
+    };
+
+    struct MechSettings
+    {
+      float walkMomentum;
+      float runMomentum;
+
+      float stepWalkInc;
+      float stepRunInc;
+
+      float stairInc;
+      float stairMax;
+      float stairRateLimit;
+      float stairRateSupp;
+    };
+
+    struct HoverSettings
+    {
+      float moveMomentum;
+
+      float height;
+      float heightStiffness;
+      float momentumStiffness;
+    };
+
+    struct AirSettings
+    {
+      float moveMomentum;
+    };
+
+    struct SubSettings
+    {
+      float moveMomentum;
     };
 
     Type   type;
     int    state;
+    float  fuel;
 
     Vec3   pilotPos;
 
@@ -56,24 +114,26 @@ class VehicleClass : public DynamicClass
 
     float  rotVelLimit;
 
-    float  moveMomentum;
-
-    float  hoverHeight;
-    float  hoverHeightStiffness;
-    float  hoverMomentumStiffness;
-
-    float  enginePitchBias;
-    float  enginePitchRatio;
-    float  enginePitchLimit;
-
-    float  fuel;
-    float  fuelConsumption;
-
     int    nWeapons;
     String weaponTitles[MAX_WEAPONS];
     String onWeaponShot[MAX_WEAPONS];
     int    nWeaponRounds[MAX_WEAPONS];
     float  weaponShotIntervals[MAX_WEAPONS];
+
+    EngineSettings engine;
+
+    union
+    {
+      TurretSettings  turret;
+      WheeledSettings wheeled;
+      TrackedSettings tracked;
+      MechSettings    mech;
+      HoverSettings   hover;
+      AirSettings     air;
+      SubSettings     sub;
+    };
+
+  public:
 
     static ObjectClass* createClass();
 

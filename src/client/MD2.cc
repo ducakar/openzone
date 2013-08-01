@@ -24,7 +24,6 @@
 #include <client/MD2.hh>
 
 #include <common/Timer.hh>
-#include <client/Context.hh>
 
 namespace oz
 {
@@ -60,75 +59,86 @@ const float MD2::AnimState::MIN_SHOT_INTERVAL_SYNC = 0.2f;
 
 MD2::AnimType MD2::AnimState::extractAnim()
 {
-  const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
+  // Vehicle.
+  if( vehicle != nullptr ) {
+    if( vehicle->state & Vehicle::MOVING_BIT ) {
+      return ANIM_RUN;
+    }
 
-  if( bot->state & Bot::DEAD_BIT ) {
-    if( ANIM_DEATH_FALLBACK <= currType && nextType <= ANIM_DEATH_FALLBACKSLOW ) {
+    return ANIM_STAND;
+  }
+  // Bot.
+  else {
+    const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
+
+    if( bot->state & Bot::DEAD_BIT ) {
+      if( ANIM_DEATH_FALLBACK <= currType && nextType <= ANIM_DEATH_FALLBACKSLOW ) {
+        return nextType;
+      }
+      else {
+        return AnimType( ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+      }
+    }
+    else if( bot->cell == nullptr ) {
+      return ANIM_CROUCH_STAND;
+    }
+    else if( bot->state & Bot::MOVING_BIT ) {
+      if( bot->state & Bot::CROUCHING_BIT ) {
+        return ANIM_CROUCH_WALK;
+      }
+      else {
+        return ANIM_RUN;
+      }
+    }
+    else if( ( bot->actions & Bot::ACTION_JUMP ) &&
+            !( bot->state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT ) ) )
+    {
+      return ANIM_JUMP;
+    }
+    else if( bot->cargo < 0 ) {
+      if( weapon != nullptr && ( prevAttack || weapon->shotTime != 0.0f ) ) {
+        prevAttack = weapon->shotTime != 0.0f;
+
+        return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
+      }
+      else if( prevAttack || bot->meleeTime != 0.0f ) {
+        prevAttack = bot->meleeTime != 0.0f;
+
+        return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
+      }
+      else if( bot->state & Bot::CROUCHING_BIT ) {
+        return ANIM_CROUCH_STAND;
+      }
+      else if( bot->state & Bot::GESTURE_MASK ) {
+        if( bot->state & Bot::GESTURE_POINT_BIT ) {
+          return ANIM_POINT;
+        }
+        else if( bot->state & Bot::GESTURE_FALL_BACK_BIT ) {
+          return ANIM_FALLBACK;
+        }
+        else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
+          return ANIM_SALUTE;
+        }
+        else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
+          return ANIM_WAVE;
+        }
+        else {
+          return ANIM_FLIP;
+        }
+      }
+    }
+
+    if( ANIM_FLIP <= currType && currType <= ANIM_POINT ) {
       return nextType;
     }
     else {
-      return AnimType( ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+      return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_STAND : ANIM_STAND;
     }
-  }
-  else if( bot->cell == nullptr ) {
-    return ANIM_CROUCH_STAND;
-  }
-  else if( bot->state & Bot::MOVING_BIT ) {
-    if( bot->state & Bot::CROUCHING_BIT ) {
-      return ANIM_CROUCH_WALK;
-    }
-    else {
-      return ANIM_RUN;
-    }
-  }
-  else if( ( bot->actions & Bot::ACTION_JUMP ) &&
-           !( bot->state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT ) ) )
-  {
-    return ANIM_JUMP;
-  }
-  else if( bot->cargo < 0 ) {
-    if( weapon != nullptr && ( prevAttack || weapon->shotTime != 0.0f ) ) {
-      prevAttack = weapon->shotTime != 0.0f;
-
-      return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
-    }
-    else if( prevAttack || bot->meleeTime != 0.0f ) {
-      prevAttack = bot->meleeTime != 0.0f;
-
-      return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
-    }
-    else if( bot->state & Bot::CROUCHING_BIT ) {
-      return ANIM_CROUCH_STAND;
-    }
-    else if( bot->state & Bot::GESTURE_MASK ) {
-      if( bot->state & Bot::GESTURE_POINT_BIT ) {
-        return ANIM_POINT;
-      }
-      else if( bot->state & Bot::GESTURE_FALL_BACK_BIT ) {
-        return ANIM_FALLBACK;
-      }
-      else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
-        return ANIM_SALUTE;
-      }
-      else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
-        return ANIM_WAVE;
-      }
-      else {
-        return ANIM_FLIP;
-      }
-    }
-  }
-
-  if( ANIM_FLIP <= currType && currType <= ANIM_POINT ) {
-    return nextType;
-  }
-  else {
-    return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_STAND : ANIM_STAND;
   }
 }
 
 MD2::AnimState::AnimState( const Bot* bot_ ) :
-  bot( bot_ ), currType( ANIM_STAND ), nextType( ANIM_STAND ),
+  bot( bot_ ), vehicle( nullptr ), currType( ANIM_STAND ), nextType( ANIM_STAND ),
   frameRatio( 0.0f ), prevAttack( false )
 {
   if( bot->state & Bot::DEAD_BIT ) {
@@ -136,6 +146,18 @@ MD2::AnimState::AnimState( const Bot* bot_ ) :
     nextType = currType;
   }
 
+  nextType = extractAnim();
+
+  setAnim();
+
+  currFrame = lastFrame;
+  nextFrame = lastFrame;
+}
+
+MD2::AnimState::AnimState( const Vehicle* vehicle_ ) :
+  bot( nullptr ), vehicle( vehicle_ ), currType( ANIM_STAND ), nextType( ANIM_STAND ),
+  frameRatio( 0.0f ), prevAttack( false )
+{
   nextType = extractAnim();
 
   setAnim();
@@ -158,37 +180,57 @@ void MD2::AnimState::advance()
 
   frameFreq = ANIM_LIST[inferredType].frameFreq;
 
-  if( inferredType == ANIM_RUN || inferredType == ANIM_CROUCH_WALK ) {
-    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+  // Vehicle.
+  if( vehicle != nullptr ) {
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( vehicle->clazz );
 
-    int   nFrames = lastFrame - firstFrame + 1;
-    float stepInc = clazz->stepRunInc;
+    if( clazz->type == VehicleClass::MECH &&
+        ( inferredType == ANIM_RUN || inferredType == ANIM_CROUCH_WALK ) )
+    {
+      int   nFrames = lastFrame - firstFrame + 1;
+      float stepInc = clazz->mech.stepRunInc;
 
-    if( ( bot->state & ( Bot::CROUCHING_BIT | Bot::WALKING_BIT ) ) || bot->cargo >= 0 ) {
-      stepInc = clazz->stepWalkInc;
+      if( vehicle->state ) {
+        stepInc = clazz->mech.stepWalkInc;
+      }
+
+      frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
     }
-
-    frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
   }
-  else if( ( inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK ) ) {
-    const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
-    float         shotInterval;
-
-    if( weapon == nullptr ) {
+  // Bot.
+  else {
+    if( inferredType == ANIM_RUN || inferredType == ANIM_CROUCH_WALK ) {
       const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-      shotInterval = clazz->meleeInterval;
+      int   nFrames = lastFrame - firstFrame + 1;
+      float stepInc = clazz->stepRunInc;
+
+      if( ( bot->state & ( Bot::CROUCHING_BIT | Bot::WALKING_BIT ) ) || bot->cargo >= 0 ) {
+        stepInc = clazz->stepWalkInc;
+      }
+
+      frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
     }
-    else {
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+    else if( ( inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK ) ) {
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
+      float         shotInterval;
 
-      shotInterval = clazz->shotInterval;
-    }
+      if( weapon == nullptr ) {
+        const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    if( shotInterval >= MIN_SHOT_INTERVAL_SYNC ) {
-      int nFrames = lastFrame - firstFrame + 1;
+        shotInterval = clazz->meleeInterval;
+      }
+      else {
+        const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
 
-      frameFreq = float( nFrames ) / shotInterval;
+        shotInterval = clazz->shotInterval;
+      }
+
+      if( shotInterval >= MIN_SHOT_INTERVAL_SYNC ) {
+        int nFrames = lastFrame - firstFrame + 1;
+
+        frameFreq = float( nFrames ) / shotInterval;
+      }
     }
   }
 

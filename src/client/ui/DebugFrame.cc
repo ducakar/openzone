@@ -23,8 +23,6 @@
 
 #include <client/ui/DebugFrame.hh>
 
-#include <matrix/Collider.hh>
-#include <matrix/Liber.hh>
 #include <client/Camera.hh>
 #include <client/ui/Style.hh>
 

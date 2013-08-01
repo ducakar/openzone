@@ -23,11 +23,9 @@
 
 #include <client/ui/SettingsFrame.hh>
 
-#include <client/Shape.hh>
-#include <client/Camera.hh>
+#include <common/Lingua.hh>
 #include <client/ui/Style.hh>
-#include <client/ui/MainMenu.hh>
-#include <client/ui/UI.hh>
+#include <client/ui/Button.hh>
 
 namespace oz
 {
@@ -53,8 +51,8 @@ SettingsFrame::SettingsFrame() :
   Frame( 400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
   message( 4, 24, 392, 8, Font::SANS, Area::ALIGN_NONE )
 {
-  x = ( camera.width  - width ) / 2;
-  y = ( camera.height - height ) / 2;
+  x = ( parent->width  - width ) / 2;
+  y = ( parent->height - height ) / 2;
 
   const String& configDirPath = config["dir.config"].asString();
 

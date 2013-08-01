@@ -23,7 +23,6 @@
 
 #include <common/luabase.hh>
 
-#include <nirvana/QuestList.hh>
 #include <client/Camera.hh>
 
 namespace oz

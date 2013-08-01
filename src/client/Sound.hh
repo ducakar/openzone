@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/Context.hh>
+#include <client/common.hh>
 
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS

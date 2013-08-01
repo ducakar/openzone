@@ -163,7 +163,7 @@ class HashSet
     static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
     {
       while( chainA != nullptr && chainB != nullptr ) {
-        if( chainA->key != chainB->key || chainA->value != chainB->value ) {
+        if( chainA->key != chainB->key ) {
           return false;
         }
 
@@ -182,7 +182,7 @@ class HashSet
       Elem* newChain = nullptr;
 
       while( chain != nullptr ) {
-        newChain = new( pool ) Elem( newChain, chain->key, chain->value );
+        newChain = new( pool ) Elem( newChain, chain->key );
         chain = chain->next;
       }
       return newChain;
@@ -196,22 +196,6 @@ class HashSet
       while( chain != nullptr ) {
         Elem* next = chain->next;
 
-        chain->~Elem();
-        pool.deallocate( chain );
-
-        chain = next;
-      }
-    }
-
-    /**
-     * Delete all elements and referenced objects in a given chain.
-     */
-    void freeChain( Elem* chain )
-    {
-      while( chain != nullptr ) {
-        Elem* next = chain->next;
-
-        delete chain->value;
         chain->~Elem();
         pool.deallocate( chain );
 
@@ -510,17 +494,6 @@ class HashSet
     {
       for( int i = 0; i < SIZE; ++i ) {
         clearChain( data[i] );
-        data[i] = nullptr;
-      }
-    }
-
-    /**
-     * Delete all objects referenced by element values and clear the hashtable.
-     */
-    void free()
-    {
-      for( int i = 0; i < SIZE; ++i ) {
-        freeChain( data[i] );
         data[i] = nullptr;
       }
     }

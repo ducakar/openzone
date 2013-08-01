@@ -25,14 +25,12 @@
 
 #include <client/Shape.hh>
 #include <client/Frustum.hh>
+#include <client/Camera.hh>
 #include <client/Caelum.hh>
 #include <client/Terra.hh>
 #include <client/Context.hh>
 
-#include <client/SMMImago.hh>
-#include <client/SMMVehicleImago.hh>
-#include <client/ExplosionImago.hh>
-#include <client/MD2WeaponImago.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {
@@ -818,6 +816,10 @@ void Render::init()
   if( hasS3TC ) {
     shader.hasS3TC = true;
   }
+
+#ifdef GL_ES_VERSION_2_0
+  config.include( "shader.vertexTexture", false );
+#endif
 
   GL::init();
 

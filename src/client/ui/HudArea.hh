@@ -27,7 +27,6 @@
 #include <client/ui/Label.hh>
 #include <client/ui/Bar.hh>
 #include <client/ui/ModelField.hh>
-#include <client/ui/Style.hh>
 
 namespace oz
 {

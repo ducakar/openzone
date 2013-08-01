@@ -27,6 +27,7 @@
 #include <client/Render.hh>
 #include <client/Sound.hh>
 #include <client/Input.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

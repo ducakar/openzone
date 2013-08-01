@@ -13,25 +13,31 @@
   "mass":               5000,
   "lift":               1.5,
 
-  "type":               "AIR",
-
   "pilotPos":           [ 0, 2.4, 0.1 ],
-
   "rotVelLimit":        60,
 
-  "moveMomentum":       0.8,
-
-  "enginePitchBias":    1,
-  "enginePitchRatio":   0.001,
-  "enginePitchLimit":   2,
-
   "fuel":               100,
-  "fuelConsumption":    0.08,
+
+  "engine":
+  {
+    "consumption":      0.08,
+    "idleConsumption":  0.08,
+    "pitchBias":        1,
+    "pitchRatio":       0.001,
+    "pitchLimit":       2
+  },
+
+  "air":
+  {
+    "moveMomentum":     0.8
+  },
 
   "nItems":             24,
 
   "attrib.galileo":     true,
   "attrib.musicPlayer": true,
+
+  "onDestroy":          "spawnSmallExplosion",
 
   "fragPool":           "metal",
   "nFrags":             20,

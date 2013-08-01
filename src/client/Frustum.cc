@@ -23,6 +23,8 @@
 
 #include <client/Frustum.hh>
 
+#include <client/Camera.hh>
+
 namespace oz
 {
 namespace client

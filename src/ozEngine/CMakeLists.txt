@@ -21,7 +21,6 @@ add_library( ozEngine
   AL.cc
   ALSource.cc
   ALStreamingBuffer.cc
-  common.cc
   Cursor.cc
   GL.cc
   GLTexture.cc

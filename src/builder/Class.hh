@@ -162,6 +162,7 @@ class Class
      */
 
     VehicleClass::Type type;
+    float              fuel;
 
     Vec3               pilotPos;
 
@@ -172,24 +173,23 @@ class Class
 
     float              rotVelLimit;
 
-    float              moveMomentum;
-
-    float              hoverHeight;
-    float              hoverHeightStiffness;
-    float              hoverMomentumStiffness;
-
-    float              enginePitchBias;
-    float              enginePitchRatio;
-    float              enginePitchLimit;
-
-    float              fuel;
-    float              fuelConsumption;
-
     int                nWeapons;
     String             weaponTitles[VehicleClass::MAX_WEAPONS];
     String             onWeaponShot[VehicleClass::MAX_WEAPONS];
     int                nWeaponRounds[VehicleClass::MAX_WEAPONS];
     float              weaponShotIntervals[VehicleClass::MAX_WEAPONS];
+
+    float              engineConsumption;
+    float              engineIdleConsumption;
+    float              enginePitchBias;
+    float              enginePitchRatio;
+    float              enginePitchLimit;
+
+    float              moveMomentum;
+
+    float              hoverHeight;
+    float              hoverHeightStiffness;
+    float              hoverMomentumStiffness;
 
   public:
 

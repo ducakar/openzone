@@ -23,8 +23,6 @@
 
 #include <client/ui/Font.hh>
 
-#include <client/Shader.hh>
-
 #include <SDL_ttf.h>
 
 namespace oz

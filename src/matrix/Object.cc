@@ -25,7 +25,6 @@
 
 #include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>
-#include <matrix/Bot.hh>
 
 namespace oz
 {

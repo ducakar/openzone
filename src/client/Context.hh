@@ -23,8 +23,6 @@
 
 #pragma once
 
-#include <matrix/Liber.hh>
-
 #include <client/Shader.hh>
 #include <client/BSP.hh>
 #include <client/BSPAudio.hh>
@@ -36,9 +34,6 @@ namespace oz
 {
 namespace client
 {
-
-class SMM;
-class MD2;
 
 class Context
 {

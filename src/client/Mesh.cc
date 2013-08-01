@@ -73,7 +73,7 @@ void Mesh::animate( const Instance* instance )
     glBindTexture( GL_TEXTURE_2D, animationTexId );
 
     glUniform3f( uniform.meshAnimation,
-                 float( instance->firstFrame ) / float( nFrames ),
+                 float( instance->firstFrame  ) / float( nFrames ),
                  float( instance->secondFrame ) / float( nFrames ),
                  instance->interpolation );
   }
@@ -421,8 +421,8 @@ void Mesh::load( uint usage )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   if( nFrames != 0 ) {
-#ifndef GL_ES_VERSION_2_0
     if( shader.hasVertexTexture ) {
+#ifndef GL_ES_VERSION_2_0
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
@@ -435,9 +435,9 @@ void Mesh::load( uint usage )
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       OZ_GL_CHECK_ERROR();
+#endif
     }
     else {
-#endif
       vertices  = new Vertex[nVertices];
       positions = new Point[nFramePositions * nFrames];
       normals   = new Vec3[nFramePositions * nFrames];
@@ -457,9 +457,7 @@ void Mesh::load( uint usage )
         vertexAnimBuffer = new Vertex[nVertices];
         vertexAnimBufferLength = nVertices;
       }
-#ifndef GL_ES_VERSION_2_0
     }
-#endif
   }
 
   componentIndices.resize( nComponents + 1 );

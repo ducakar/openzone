@@ -39,9 +39,7 @@
 namespace oz
 {
 
-static const int DDSD_PITCH_BIT       = 0x00000008;
 static const int DDSD_MIPMAPCOUNT_BIT = 0x00020000;
-static const int DDSD_LINEARSIZE_BIT  = 0x00080000;
 
 static const int DDPF_ALPHAPIXELS     = 0x00000001;
 static const int DDPF_FOURCC          = 0x00000004;

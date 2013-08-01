@@ -23,7 +23,6 @@
 
 #include <client/ui/Style.hh>
 
-#include <matrix/Liber.hh>
 #include <client/Context.hh>
 
 #define OZ_READ_COLOUR( var, r, g, b, a ) \

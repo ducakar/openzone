@@ -54,6 +54,18 @@
     "requires":         [ "droidTech" ]
   },
   {
+    "unit":             "hoverTank",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "unit":             "raptor",
+    "requires":         [ "droidTech" ]
+  },
+  {
+    "unit":             "mechWarrior",
+    "requires":         [ "droidTech" ]
+  },
+  {
     "unit":             "knight"
   },
   {

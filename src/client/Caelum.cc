@@ -23,9 +23,7 @@
 
 #include <client/Caelum.hh>
 
-#include <client/Context.hh>
-#include <client/Camera.hh>
-#include <client/Terra.hh>
+#include <client/Shader.hh>
 #include <client/Shape.hh>
 
 namespace oz

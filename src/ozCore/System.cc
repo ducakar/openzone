@@ -26,6 +26,7 @@
 
 #include "System.hh"
 
+#include "StackTrace.hh"
 #include "Math.hh"
 #include "Log.hh"
 
@@ -54,11 +55,10 @@
 # include <mmsystem.h>
 # define isatty( fd ) _isatty( fd )
 #else
-# include <cerrno>
 # include <ctime>
+# include <fcntl.h>
 # include <pthread.h>
 # include <unistd.h>
-# include <sys/fcntl.h>
 # ifndef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/soundcard.h>
@@ -66,6 +66,7 @@
 #  include <alsa/asoundlib.h>
 # endif
 # ifdef OZ_PULSE_BELL
+#  include <cerrno>
 #  include <pulse/simple.h>
 # endif
 #endif

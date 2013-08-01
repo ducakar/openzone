@@ -62,7 +62,7 @@ void BSP::load()
   waterFogColour = config["waterFogColour"].get( Vec4( 0.00f, 0.05f, 0.20f, 1.00f ) );
   lavaFogColour  = config["lavaFogColour"].get( Vec4( 0.30f, 0.20f, 0.00f, 1.00f ) );
 
-  if( life <= 0.0f || !Math::isnormal( life ) ) {
+  if( life <= 0.0f || !Math::isFinite( life ) ) {
     OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
               " set resistance to infinity (\"inf\" or \"INF\").", name.cstr() );
   }

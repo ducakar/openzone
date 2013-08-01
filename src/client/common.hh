@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <matrix/Liber.hh>
 #include <matrix/Collider.hh>
 #include <nirvana/common.hh>
 #include <modules/common.hh>

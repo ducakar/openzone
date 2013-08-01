@@ -47,6 +47,9 @@ class Vehicle : public Dynamic
     static const int   HAS_EJECT_BIT     = 0x0004;
     static const int   AUTO_EJECT_BIT    = 0x0008;
 
+    static const int   MOVING_BIT        = 0x0010;
+    static const int   WALKING_BIT       = 0x0020;
+
   protected:
 
     static const float ROT_DIFF_LIMIT;
@@ -72,6 +75,9 @@ class Vehicle : public Dynamic
     Mat44 rot;
     int   state, oldState;
     float fuel;
+
+    float step;
+    float stairRate;
 
     int   pilot;
 

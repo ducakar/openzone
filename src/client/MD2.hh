@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <matrix/Bot.hh>
+#include <matrix/Vehicle.hh>
 #include <client/SMM.hh>
 
 namespace oz
@@ -76,19 +76,20 @@ class MD2 : public SMM
 
         static const float MIN_SHOT_INTERVAL_SYNC;
 
-        const Bot* bot;
+        const Bot*     bot;
+        const Vehicle* vehicle;
 
-        AnimType   currType;
-        AnimType   nextType;
+        AnimType       currType;
+        AnimType       nextType;
 
-        int        firstFrame;
-        int        lastFrame;
-        int        currFrame;
-        int        nextFrame;
+        int            firstFrame;
+        int            lastFrame;
+        int            currFrame;
+        int            nextFrame;
 
-        float      frameFreq;
-        float      frameRatio;
-        bool       prevAttack;
+        float          frameFreq;
+        float          frameRatio;
+        bool           prevAttack;
 
         AnimType extractAnim();
         void setAnim();
@@ -96,6 +97,7 @@ class MD2 : public SMM
       public:
 
         explicit AnimState( const Bot* bot );
+        explicit AnimState( const Vehicle* vehicle );
 
         void advance();
     };

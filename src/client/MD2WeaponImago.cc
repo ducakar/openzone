@@ -23,8 +23,8 @@
 
 #include <client/MD2WeaponImago.hh>
 
-#include <client/Camera.hh>
 #include <client/Context.hh>
+#include <client/MD2Imago.hh>
 
 namespace oz
 {

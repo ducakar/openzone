@@ -25,7 +25,6 @@
 #include <ozEngine/ozEngine.hh>
 
 #include <SDL.h>
-#include <AL/alc.h>
 
 using namespace oz;
 

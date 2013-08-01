@@ -28,12 +28,19 @@
 
 #pragma once
 
-#include "StackTrace.hh"
 #include "String.hh"
-#include "Mat44.hh"
 
 namespace oz
 {
+
+class StackTrace;
+class Vec3;
+class Vec4;
+class Point;
+class Plane;
+class Quat;
+class Mat33;
+class Mat44;
 
 /**
  * %Log writing utility.

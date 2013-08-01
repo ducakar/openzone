@@ -24,9 +24,9 @@
 #include <client/ui/HudArea.hh>
 
 #include <matrix/Physics.hh>
+#include <client/Shader.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
-#include <client/Context.hh>
 
 namespace oz
 {

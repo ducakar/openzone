@@ -123,7 +123,107 @@ void Vehicle::trackedHandler()
 
 void Vehicle::mechHandler()
 {
-  // TODO Mech warrior handler.
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+  stairRate *= clazz->mech.stairRateSupp;
+
+  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  float hvsc[6];
+
+  Math::sincos( h, &hvsc[0], &hvsc[1] );
+  Math::sincos( v, &hvsc[2], &hvsc[3] );
+
+  hvsc[4] = hvsc[2] * hvsc[0];
+  hvsc[5] = hvsc[2] * hvsc[1];
+
+  Vec3 move = Vec3::ZERO;
+  state &= ~MOVING_BIT;
+
+  if( actions & Bot::ACTION_FORWARD ) {
+    move.x -= hvsc[0];
+    move.y += hvsc[1];
+  }
+  if( actions & Bot::ACTION_BACKWARD ) {
+    move.x += hvsc[0];
+    move.y -= hvsc[1];
+  }
+  if( actions & Bot::ACTION_RIGHT ) {
+    move.x += hvsc[1];
+    move.y += hvsc[0];
+  }
+  if( actions & Bot::ACTION_LEFT ) {
+    move.x -= hvsc[1];
+    move.y -= hvsc[0];
+  }
+
+  if( move == Vec3::ZERO ) {
+    step = 0.0f;
+  }
+  else {
+    flags &= ~DISABLED_BIT;
+    state |= MOVING_BIT;
+    move   = ~move;
+
+    // Stepping over obstacles (see Bot.cc).
+    if( stairRate <= clazz->mech.stairRateLimit ) {
+      // check if bot's gonna hit a stair in the next frame
+      Vec3 desiredMove = Bot::STEP_MOVE_AHEAD * move;
+
+      collider.translate( this, desiredMove );
+
+      if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
+        Vec3  normal    = collider.hit.normal;
+        float startDist = 2.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
+        float originalZ = p.z;
+
+        collider.translate( this, Vec3( 0.0f, 0.0f, clazz->mech.stairMax + 2.0f * EPSILON ) );
+
+        float maxRaise = collider.hit.ratio * clazz->mech.stairMax;
+
+        for( float raise = clazz->mech.stairInc; raise <= maxRaise; raise += clazz->mech.stairInc )
+        {
+          p.z += clazz->mech.stairInc;
+          collider.translate( this, desiredMove );
+
+          Vec3  testMove = desiredMove * collider.hit.ratio + Vec3( 0.0f, 0.0f, raise );
+          float endDist  = startDist + testMove * normal;
+
+          if( endDist < 0.0f ) {
+            momentum.z = max( momentum.z, 0.0f );
+            stairRate += raise*raise;
+            goto stepSucceeded;
+          }
+        }
+        p.z = originalZ;
+      }
+    }
+    stepSucceeded:
+
+    Vec3 desiredMomentum = lower < 0 && !( flags & ON_FLOOR_BIT ) ? Vec3::ZERO : move;
+
+    if( state & WALKING_BIT ) {
+      desiredMomentum *= clazz->mech.walkMomentum;
+      step            += clazz->mech.stepWalkInc;
+      fuel            -= clazz->engine.idleConsumption;
+    }
+    else {
+      desiredMomentum *= clazz->mech.runMomentum;
+      step            += clazz->mech.stepRunInc;
+      fuel            -= clazz->engine.consumption;
+    }
+
+    if( ( flags & ( ON_FLOOR_BIT | IN_LIQUID_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
+      float dot = desiredMomentum * floor;
+
+      if( dot > 0.0f ) {
+        desiredMomentum -= dot * floor;
+      }
+    }
+
+    momentum += desiredMomentum;
+    fuel      = max( 0.0f, fuel );
+    step      = Math::fmod( step, 1.0f );
+  }
 }
 
 void Vehicle::hoverHandler()
@@ -140,10 +240,10 @@ void Vehicle::hoverHandler()
   hvsc[5] = hvsc[2] * hvsc[1];
 
   // raycast for hover
-  float ratio = clamp( p.z / ( dim.z + clazz->hoverHeight ), 0.0f, 1.0f );
+  float ratio = clamp( p.z / ( dim.z + clazz->hover.height ), 0.0f, 1.0f );
   Vec3  floor = Vec3( 0.0f, 0.0f, 1.0f );
 
-  collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
+  collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hover.height ) );
 
   if( collider.hit.ratio < ratio ) {
     ratio = collider.hit.ratio;
@@ -172,7 +272,7 @@ void Vehicle::hoverHandler()
     move.y -= hvsc[0];
   }
 
-  momentum += move * clazz->moveMomentum;
+  momentum += move * clazz->hover.moveMomentum;
   momentum.x *= 1.0f - AIR_FRICTION;
   momentum.y *= 1.0f - AIR_FRICTION;
 
@@ -181,8 +281,8 @@ void Vehicle::hoverHandler()
     float groundMomentum = min<float>( velocity * floor, 0.0f );
     float tickRatio = ratio_1*ratio_1 * Timer::TICK_TIME;
 
-    momentum.z += clazz->hoverHeightStiffness * tickRatio;
-    momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
+    momentum.z += clazz->hover.heightStiffness * tickRatio;
+    momentum.z -= groundMomentum * clazz->hover.momentumStiffness * min( tickRatio / 4.0f, 1.0f );
   }
 }
 
@@ -216,7 +316,7 @@ void Vehicle::airHandler()
     move -= up;
   }
 
-  momentum   += move * clazz->moveMomentum;
+  momentum   += move * clazz->air.moveMomentum;
   momentum.z -= physics.gravity * Timer::TICK_TIME;
   momentum   *= 1.0f - AIR_FRICTION;
 }
@@ -323,10 +423,10 @@ void Vehicle::onUpdate()
     flags  &= ~DISABLED_BIT;
   }
 
-  rot = Mat44::rotationZXZ( h, v, w );
+  rot = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) : Mat44::rotationZXZ( h, v, w );
 
   if( pilot >= 0 && fuel > 0.0f ) {
-    fuel -= clazz->fuelConsumption;
+    fuel = max( 0.0f, fuel - clazz->engine.idleConsumption );
 
     ( this->*HANDLERS[clazz->type] )();
   }
@@ -394,6 +494,8 @@ float Vehicle::getStatus() const
 Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Heading heading ) :
   Dynamic( clazz_, index_, p_, heading )
 {
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
   h          = 0.0f;
   v          = Math::TAU / 4.0f;
   w          = 0.0f;
@@ -402,16 +504,20 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
   actions    = 0;
   oldActions = 0;
 
-  rot        = Mat44::rotationZXZ( h, v, w );
-  state      = clazz_->state;
-  oldState   = clazz_->state;
-  fuel       = clazz_->fuel;
+  rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
+                                                   Mat44::rotationZXZ( h, v, w );
+  state      = clazz->state;
+  oldState   = clazz->state;
+  fuel       = clazz->fuel;
+
+  step       = 0.0f;
+  stairRate  = 0.0f;
 
   pilot      = -1;
 
   weapon     = 0;
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    nRounds[i]  = clazz_->nWeaponRounds[i];
+    nRounds[i]  = clazz->nWeaponRounds[i];
     shotTime[i] = 0.0f;
   }
 }
@@ -419,6 +525,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
 Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
   Dynamic( clazz_, istream )
 {
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
   h          = istream->readFloat();
   v          = istream->readFloat();
   w          = istream->readFloat();
@@ -427,10 +535,14 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
   actions    = istream->readInt();
   oldActions = istream->readInt();
 
-  rot        = Mat44::rotationZXZ( h, v, w );
+  rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
+                                                   Mat44::rotationZXZ( h, v, w );
   state      = istream->readInt();
   oldState   = istream->readInt();
   fuel       = istream->readFloat();
+
+  step       = istream->readFloat();
+  stairRate  = istream->readFloat();
 
   pilot      = istream->readInt();
 
@@ -444,6 +556,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
 Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
   Dynamic( clazz_, json )
 {
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
   h          = json["h"].asFloat();
   v          = json["v"].asFloat();
   w          = json["w"].asFloat();
@@ -452,10 +566,14 @@ Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
   actions    = json["actions"].asInt();
   oldActions = json["oldActions"].asInt();
 
-  rot        = Mat44::rotationZXZ( h, v, w );
+  rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
+                                                   Mat44::rotationZXZ( h, v, w );
   state      = json["state"].asInt();
   oldState   = json["oldState"].asInt();
   fuel       = json["fuel"].asFloat();
+
+  step       = 0.0f;
+  stairRate  = 0.0f;
 
   pilot      = json["pilot"].asInt();
 
@@ -486,6 +604,9 @@ void Vehicle::write( OutputStream* ostream ) const
   ostream->writeInt( state );
   ostream->writeInt( oldState );
   ostream->writeFloat( fuel );
+
+  ostream->writeFloat( step );
+  ostream->writeFloat( stairRate );
 
   ostream->writeInt( pilot );
 

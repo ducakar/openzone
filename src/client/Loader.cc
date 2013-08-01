@@ -28,7 +28,6 @@
 #include <client/Terra.hh>
 #include <client/Caelum.hh>
 #include <client/SMM.hh>
-#include <client/MD2.hh>
 
 #include <SDL.h>
 
