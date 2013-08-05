@@ -940,7 +940,7 @@ namespace client
 {
 
 static oz::Space    space;
-static oz::Collider pcollider;
+static oz::Kollider pcollider;
 static oz::Physics  physics;
 
 void Render::drawDyn()

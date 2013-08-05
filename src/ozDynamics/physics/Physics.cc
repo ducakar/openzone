@@ -92,7 +92,7 @@ void Physics::update( float time )
         continue;
       }
 
-      Collider::Result result;
+      Kollider::Result result;
       if( collider->overlaps( body0, body1, &result ) ) {
         Point p = Math::mix( body0->p, body1->p, 0.5f );
 
@@ -131,7 +131,7 @@ void Physics::update( float time )
   }
 }
 
-void Physics::init( Space* space_, Collider* collider_ )
+void Physics::init( Space* space_, Kollider* collider_ )
 {
   space    = space_;
   collider = collider_;

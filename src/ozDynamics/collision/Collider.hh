@@ -33,7 +33,7 @@
 namespace oz
 {
 
-class Collider
+class Kollider
 {
   public:
 

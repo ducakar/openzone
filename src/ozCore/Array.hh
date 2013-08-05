@@ -263,11 +263,20 @@ class Array
     }
 
     /**
-     * Delete objects referenced by elements and set all elements to `nullptr`.
+     * Set all elements to their default values, i.e. `Elem()`.
+     */
+    void clear()
+    {
+      aFill<Elem, Elem>( data, COUNT, Elem() );
+    }
+
+    /**
+     * Delete all objects referenced by elements (must be pointers) and clear the array.
      */
     void free()
     {
       aFree<Elem>( data, COUNT );
+      clear();
     }
 
 };

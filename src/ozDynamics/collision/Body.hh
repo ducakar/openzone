@@ -74,7 +74,7 @@ class Body
      * Create uninitialised instance.
      */
     explicit Body() :
-      flags( 0 ), mask( ~0 ), bodyShape( nullptr )
+      flags( 0 ), mask( ~0 ), odeId( nullptr ), bodyShape( nullptr )
     {}
 
     virtual ~Body();

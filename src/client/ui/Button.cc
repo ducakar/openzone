@@ -51,8 +51,10 @@ bool Button::onMouseEvent()
   isHighlighted = true;
   isClicked     = wasClicked && ( input.buttons & Input::LEFT_BUTTON );
 
-  if( wasClicked && input.leftReleased && callback != nullptr ) {
-    callback( this );
+  if( wasClicked && input.leftReleased ) {
+    if( callback != nullptr ) {
+      callback( this );
+    }
   }
   else if( input.leftPressed ) {
     isClicked  = true;

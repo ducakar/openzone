@@ -407,7 +407,8 @@ void UnitProxy::update()
     // TODO integrate this rotation into pilotPos.
     rotMat.rotateX( -Math::TAU / 4.0f );
 
-    botEye = veh->p + rotMat * vehClazz->pilotPos;
+    botEye = vehClazz->type == VehicleClass::MECH ? veh->p + vehClazz->pilotPos :
+                                                    veh->p + rotMat * vehClazz->pilotPos;
   }
   else {
     float actualZ = bot->p.z + bot->camZ;

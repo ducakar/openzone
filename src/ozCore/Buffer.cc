@@ -128,7 +128,7 @@ Buffer Buffer::deflate( int level ) const
 
   zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
   zstream.avail_in  = uint( size );
-  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.begin() );
+  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.data );
   zstream.avail_out = uint( newSize );
 
   int ret = ::deflate( &zstream, Z_FINISH );
@@ -173,7 +173,7 @@ Buffer Buffer::inflate() const
 
   zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
   zstream.avail_in  = uint( size - 4 );
-  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.begin() );
+  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.data );
   zstream.avail_out = uint( newSize );
 
   int ret = ::inflate( &zstream, Z_FINISH );

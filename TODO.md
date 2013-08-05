@@ -2,6 +2,7 @@
 
 - matrix
     * smooth/limited Vehicle rotation
+    * Vehicle: tracked, submarine
 - nirvana
     * AI tasks
 - ui
@@ -18,7 +19,7 @@
 0.5
 
 - matrix
-    * Vehicle: wheeled, tracked, submarine, mech warrior, orca
+    * Vehicle: wheeled, orca
 - nirvana
     * conversations
 - ui

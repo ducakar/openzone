@@ -56,6 +56,7 @@ void StrategicProxy::begin()
   ui::mouse.doShow = true;
 
   ui::ui.strategicArea->enable( true );
+  ui::ui.buildMenu->enable( hasBuildMenu );
 
   desiredPos = camera.p;
 }
@@ -195,27 +196,29 @@ void StrategicProxy::update()
 
 void StrategicProxy::reset()
 {
-  h          = 0.0f;
-  v          = 0.0f;
-  desiredPos = Point::ORIGIN;
-  height     = DEFAULT_HEIGHT;
+  h            = 0.0f;
+  v            = 0.0f;
+  desiredPos   = Point::ORIGIN;
+  height       = DEFAULT_HEIGHT;
 
-  isFree     = false;
-  isFreeFast = true;
-  isRTSFast  = false;
+  isFree       = false;
+  isFreeFast   = true;
+  isRTSFast    = false;
+
+  hasBuildMenu = false;
 }
 
 void StrategicProxy::read( InputStream* istream )
 {
-  h          = istream->readFloat();
-  v          = istream->readFloat();
-  height     = istream->readFloat();
+  h            = istream->readFloat();
+  v            = istream->readFloat();
+  height       = istream->readFloat();
 
-  isFree     = istream->readBool();
-  isFreeFast = istream->readBool();
-  isRTSFast  = istream->readBool();
+  isFree       = istream->readBool();
+  isFreeFast   = istream->readBool();
+  isRTSFast    = istream->readBool();
 
-  ui::ui.buildMenu->enable( istream->readBool() );
+  hasBuildMenu = istream->readBool();
 }
 
 void StrategicProxy::write( OutputStream* ostream ) const
@@ -228,7 +231,7 @@ void StrategicProxy::write( OutputStream* ostream ) const
   ostream->writeBool( isFreeFast );
   ostream->writeBool( isRTSFast );
 
-  ostream->writeBool( ui::ui.buildMenu->isEnabled() );
+  ostream->writeBool( hasBuildMenu );
 }
 
 }

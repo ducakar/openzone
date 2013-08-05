@@ -28,6 +28,7 @@
 
 #include "System.hh"
 #include "Math.hh"
+#include "Alloc.hh"
 
 #include <cmath>
 #include <cstdio>
@@ -59,15 +60,37 @@ void String::ensureCapacity( int newCount )
     if( buffer != baseBuffer ) {
       free( buffer );
       buffer = baseBuffer;
+
+      --Alloc::count;
+      Alloc::amount -= size_t( count + 1 );
     }
   }
   else {
+    if( buffer == baseBuffer ) {
+      buffer = nullptr;
+
+      ++Alloc::count;
+      Alloc::amount += size_t( newCount + 1 );
+
+      ++Alloc::sumCount;
+      Alloc::sumAmount += size_t( newCount + 1 );
+    }
+    else {
+      Alloc::amount += size_t( newCount - count );
+
+      ++Alloc::sumCount;
+      Alloc::sumAmount += size_t( newCount + 1 );
+    }
+
     buffer = buffer == baseBuffer ? nullptr : buffer;
     buffer = static_cast<char*>( realloc( buffer, size_t( newCount + 1 ) ) );
 
     if( buffer == nullptr ) {
       OZ_ERROR( "oz::String: Allocation failed" );
     }
+
+    Alloc::maxCount  = max<int>( Alloc::count, Alloc::maxCount );
+    Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
   }
 
   count = newCount;
@@ -583,6 +606,9 @@ String::~String()
 {
   if( buffer != baseBuffer ) {
     free( buffer );
+
+    --Alloc::count;
+    Alloc::amount -= size_t( count + 1 );
   }
 }
 

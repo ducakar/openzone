@@ -84,7 +84,7 @@ void BuildMenu::overlayCallback( Area* area, const Vec3& ray )
     overlaps  = !strs.isEmpty() || !objs.isEmpty();
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 
-    // Check in ground in levelled enough.
+    // Check if ground is plain enough.
     float corners[][2] = {
       { bounds.mins.x, bounds.mins.y },
       { bounds.maxs.x, bounds.mins.y },
@@ -161,7 +161,7 @@ void BuildMenu::selectItems( Button* sender )
   buildMenu->title.setText( "%s", OZ_GETTEXT( "Items" ) );
 }
 
-void BuildMenu::startPlacement( ModelField* sender )
+void BuildMenu::startPlacement( ModelField* sender, bool isClicked )
 {
   if( sender->id < 0 ) {
     return;
@@ -178,7 +178,7 @@ void BuildMenu::startPlacement( ModelField* sender )
 
       buildMenu->title.setText( "%s", bsp->title.cstr() );
 
-      if( input.leftReleased && ui.strategicArea != nullptr ) {
+      if( isClicked && ui.strategicArea != nullptr ) {
         buildMenu->overlayBSP     = bsp;
         buildMenu->overlayClass   = nullptr;
         buildMenu->overlayHeading = NORTH;
@@ -192,7 +192,7 @@ void BuildMenu::startPlacement( ModelField* sender )
 
       buildMenu->title.setText( "%s", clazz->title.cstr() );
 
-      if( input.leftReleased && ui.strategicArea != nullptr ) {
+      if( isClicked && ui.strategicArea != nullptr ) {
         buildMenu->overlayBSP     = nullptr;
         buildMenu->overlayClass   = clazz;
         buildMenu->overlayHeading = NORTH;
@@ -206,7 +206,7 @@ void BuildMenu::startPlacement( ModelField* sender )
 
       buildMenu->title.setText( "%s", clazz->title.cstr() );
 
-      if( input.leftReleased && ui.strategicArea != nullptr ) {
+      if( isClicked && ui.strategicArea != nullptr ) {
         buildMenu->overlayBSP     = nullptr;
         buildMenu->overlayClass   = clazz;
         buildMenu->overlayHeading = NORTH;

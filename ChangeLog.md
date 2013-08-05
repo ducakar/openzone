@@ -35,6 +35,7 @@
     * TerraBuilder class generates random terrain heightmaps and corresponding textures
 - matrix
     * melee attack
+    * new vehicle types: turret, mech warrior
 - nirvana
     * Technology tree
 - ui

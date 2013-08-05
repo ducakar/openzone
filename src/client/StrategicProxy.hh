@@ -55,6 +55,8 @@ class StrategicProxy : public Proxy
     bool  isFreeFast;
     bool  isRTSFast;
 
+    bool  hasBuildMenu;
+
   public:
 
     void begin() override;

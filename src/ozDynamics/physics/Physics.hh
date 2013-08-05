@@ -39,7 +39,7 @@ class Physics
   private:
 
     Space*    space;
-    Collider* collider;
+    Kollider* collider;
 
   public:
 
@@ -48,7 +48,7 @@ class Physics
 
     void update( float time );
 
-    void init( Space* space, Collider* collider );
+    void init( Space* space, Kollider* collider );
     void destroy();
 
 };

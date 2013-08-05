@@ -506,19 +506,17 @@ class SList
     void clear()
     {
       // Ensure destruction of all elements.
-      for( int i = 0; i < count; ++i ) {
-        data[i] = Elem();
-      }
+      aFill<Elem, Elem>( data, count, Elem() );
       count = 0;
     }
 
     /**
-     * Delete all objects referenced by elements and clear the list.
+     * Delete all objects referenced by elements (must be pointers) and clear the list.
      */
     void free()
     {
       aFree<Elem>( data, count );
-      clear();
+      count = 0;
     }
 
 };

@@ -246,11 +246,11 @@ static int ozProfileGetBot( lua_State* l )
  * UI
  */
 
-static int ozUIShowBuild( lua_State* l )
+static int ozUIBuildMenu( lua_State* l )
 {
   ARG( 1 );
 
-  ui::ui.buildMenu->enable( l_tobool( 1 ) );
+  camera.strategic.hasBuildMenu = l_tobool( 1 );
   return 0;
 }
 

@@ -39,10 +39,8 @@ namespace ui
 const float StrategicArea::TAG_REACH_DIST     = 100.0f;
 const float StrategicArea::TAG_CLIP_DIST      = 0.1f;
 const float StrategicArea::TAG_CLIP_K         = 9.0f;
-// size in pixels
-const float StrategicArea::TAG_MIN_PIXEL_SIZE = 4.0f;
-// size in coefficient
-const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f;
+const float StrategicArea::TAG_MIN_PIXEL_SIZE = 4.0f; // size in pixels
+const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f; // size in coefficient
 
 bool StrategicArea::projectPoint( const Point& p, int* x, int* y ) const
 {
@@ -284,16 +282,20 @@ void StrategicArea::drawTagRect( const Span& span, const Struct* str, const Obje
 
 void StrategicArea::onVisibilityChange( bool )
 {
-  taggedStr = -1;
-  taggedObjs.clear();
+  clearOverlay();
 
-  hoverStr = -1;
-  hoverObj = -1;
-  hoverEnt = -1;
+  dragStartX = -1;
+  dragStartY = -1;
 
+  hoverStr   = -1;
+  hoverObj   = -1;
+  hoverEnt   = -1;
   dragObjs.clear();
 
-  mouseW   = 0.0f;
+  taggedStr  = -1;
+  taggedObjs.clear();
+
+  mouseW     = 0.0f;
 }
 
 void StrategicArea::onReposition()
@@ -308,10 +310,17 @@ void StrategicArea::onReposition()
 void StrategicArea::onUpdate()
 {
   if( !mouse.doShow ) {
-    mouseW = input.mouseW;
-
     clearOverlay();
+
+    dragStartX = -1;
+    dragStartY = -1;
+    mouseW     = input.mouseW;
     return;
+  }
+
+  if( !( ( input.buttons | input.oldButtons ) & Input::LEFT_BUTTON ) ) {
+    dragStartX = -1;
+    dragStartY = -1;
   }
 
   taggedStr = orbis.strIndex( taggedStr );
@@ -358,12 +367,17 @@ bool StrategicArea::onMouseEvent()
       dragStartY = -1;
 
       if( input.oldButtons & Input::LEFT_BUTTON ) {
-        if( hoverStr != -1 ) {
-          taggedStr = hoverStr;
-        }
+        taggedStr = taggedObjs.isEmpty() ? hoverStr : -1;
+
         if( hoverObj != -1 ) {
-          taggedObjs.include( hoverObj );
+          if( taggedObjs.contains( hoverObj ) ) {
+            taggedObjs.exclude( hoverObj );
+          }
+          else {
+            taggedObjs.include( hoverObj );
+          }
         }
+
         foreach( obj, dragObjs.citer() ) {
           taggedObjs.include( *obj );
         }

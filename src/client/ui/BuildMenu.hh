@@ -70,7 +70,7 @@ class BuildMenu : public Frame
     static void selectBuildings( Button* sender );
     static void selectUnits( Button* sender );
     static void selectItems( Button* sender );
-    static void startPlacement( ModelField* sender );
+    static void startPlacement( ModelField* sender, bool isClicked );
 
     bool onMouseEvent() override;
     void onDraw() override;

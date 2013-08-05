@@ -151,7 +151,7 @@ static void* allocate( AllocMode mode, size_t size )
   ++Alloc::sumCount;
   Alloc::sumAmount += size;
 
-  Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
+  Alloc::maxCount  = max<int>( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
   ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );

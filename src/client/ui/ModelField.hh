@@ -36,7 +36,7 @@ class ModelField : public Area
 {
   public:
 
-    typedef void Callback( ModelField* sender );
+    typedef void Callback( ModelField* sender, bool isClicked );
 
   private:
 

@@ -390,14 +390,13 @@ inline int aLastIndex( const Elem* array, int count, const Value& value )
 }
 
 /**
- * Delete objects referenced by elements and set all elements to `nullptr`.
+ * Delete objects referenced by the elements (must be pointers).
  */
 template <typename Elem>
 inline void aFree( Elem* array, int count )
 {
   for( int i = 0; i < count; ++i ) {
     delete array[i];
-    array[i] = nullptr;
   }
 }
 

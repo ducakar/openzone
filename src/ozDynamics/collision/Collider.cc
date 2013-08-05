@@ -29,14 +29,14 @@
 namespace oz
 {
 
-Collider::OverlapFunc* const Collider::dispatchMatrix[Shape::COMPOUND + 1][Shape::COMPOUND + 1] = {
+Kollider::OverlapFunc* const Kollider::dispatchMatrix[Shape::COMPOUND + 1][Shape::COMPOUND + 1] = {
   { boxBox,  boxCapsule,     boxPolytope,      boxCompound      },
   { nullptr, capsuleCapsule, capsulePolytope,  capsuleCompound  },
   { nullptr, nullptr,        polytopePolytope, polytopeCompound },
   { nullptr, nullptr,        nullptr,          compoundCompound }
 };
 
-bool Collider::boxBox( const Mat33& rot0, const Shape* box0_,
+bool Kollider::boxBox( const Mat33& rot0, const Shape* box0_,
                        const Mat33& rot1, const Shape* box1_,
                        const Vec3& relPos, Result* result )
 {
@@ -156,7 +156,7 @@ bool Collider::boxBox( const Mat33& rot0, const Shape* box0_,
   return true;
 }
 
-bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
+bool Kollider::boxCapsule( const Mat33& rot0, const Shape* box_,
                            const Mat33& rot1, const Shape* capsule_,
                            const Vec3& relPos, Result* result )
 {
@@ -174,7 +174,7 @@ bool Collider::boxCapsule( const Mat33& rot0, const Shape* box_,
   return false;
 }
 
-bool Collider::boxPolytope( const Mat33& rot0, const Shape* box_,
+bool Kollider::boxPolytope( const Mat33& rot0, const Shape* box_,
                             const Mat33& rot1, const Shape* polytope_,
                             const Vec3& relPos, Result* result )
 {
@@ -192,7 +192,7 @@ bool Collider::boxPolytope( const Mat33& rot0, const Shape* box_,
   return false;
 }
 
-bool Collider::boxCompound( const Mat33& rot0, const Shape* box_,
+bool Kollider::boxCompound( const Mat33& rot0, const Shape* box_,
                             const Mat33& rot1, const Shape* compound_,
                             const Vec3& relPos, Result* result )
 {
@@ -211,7 +211,7 @@ bool Collider::boxCompound( const Mat33& rot0, const Shape* box_,
   return overlaps;
 }
 
-bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
+bool Kollider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
                                const Mat33& rot1, const Shape* capsule1_,
                                const Vec3& relPos, Result* result )
 {
@@ -246,7 +246,7 @@ bool Collider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
   return false;
 }
 
-bool Collider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
+bool Kollider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
                                 const Mat33& rot1, const Shape* polytope_,
                                 const Vec3& relPos, Result* result )
 {
@@ -264,7 +264,7 @@ bool Collider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
   return false;
 }
 
-bool Collider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
+bool Kollider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
                                 const Mat33& rot1, const Shape* compound_,
                                 const Vec3& relPos, Result* result )
 {
@@ -290,7 +290,7 @@ bool Collider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
   return overlaps;
 }
 
-bool Collider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
+bool Kollider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
                                  const Mat33& rot1, const Shape* polytope1_,
                                  const Vec3& relPos, Result* result )
 {
@@ -308,7 +308,7 @@ bool Collider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
   return false;
 }
 
-bool Collider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
+bool Kollider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
                                  const Mat33& rot1, const Shape* compound_,
                                  const Vec3& relPos, Result* result )
 {
@@ -334,7 +334,7 @@ bool Collider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
   return overlaps;
 }
 
-bool Collider::compoundCompound( const Mat33& rot0, const Shape* compound0_,
+bool Kollider::compoundCompound( const Mat33& rot0, const Shape* compound0_,
                                  const Mat33& rot1, const Shape* compound1_,
                                  const Vec3& relPos, Result* result )
 {
@@ -373,7 +373,7 @@ bool Collider::compoundCompound( const Mat33& rot0, const Shape* compound0_,
   return overlaps;
 }
 
-bool Collider::overlaps( const Body* body0, const Body* body1, Result* result )
+bool Kollider::overlaps( const Body* body0, const Body* body1, Result* result )
 {
   Shape* shape0 = body0->shape();
   Shape* shape1 = body1->shape();

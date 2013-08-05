@@ -372,7 +372,7 @@ class DArray
     }
 
     /**
-     * Delete objects referenced by elements and clear the array.
+     * Delete all objects referenced by elements (must be pointers) and clear the array.
      */
     void free()
     {

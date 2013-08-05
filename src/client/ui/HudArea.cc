@@ -45,7 +45,7 @@ void HudArea::drawBotCrosshair()
 
   float delta  = max( 1.0f - abs( camera.unit.headRot.w ), 0.0f );
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( delta );
-  float life   = max( 2.0f * me->life / myClazz->life - 1.0f, 0.0f );
+  float life   = max( 0.0f, 2.0f * me->life / myClazz->life - 1.0f );
   Vec4  colour = Math::mix( Vec4( 1.00f, 0.50f, 0.25f, alpha ),
                             Vec4( 1.00f, 1.00f, 1.00f, alpha ),
                             life );
@@ -96,7 +96,7 @@ void HudArea::drawBotCrosshair()
     }
     else {
       if( obj->flags & Object::BOT_BIT ) {
-        life = max( 2.0f * obj->life / objClazz->life - 1.0f, 0.0f );
+        life = max( 0.0f, 2.0f * obj->life / objClazz->life - 1.0f );
       }
       else {
         life = obj->life / objClazz->life;
@@ -191,7 +191,7 @@ void HudArea::drawBotStatus()
   const Bot*      bot      = camera.botObj;
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float life    = 2.0f * bot->life / botClazz->life - 1.0f;
+  float life    = max( 0.0f, 2.0f * bot->life / botClazz->life - 1.0f );
   float stamina = bot->stamina / botClazz->stamina;
 
   botLife.draw( this, life );
@@ -247,8 +247,8 @@ void HudArea::drawVehicleStatus()
   vehicleModel->reposition();
   vehicleModel->y -= modelBiasY;
 
-  float hull = max( vehicle->life / vehClazz->life, 0.0f );
-  float fuel = max( vehicle->fuel / vehClazz->fuel, 0.0f );
+  float hull = vehicle->life / vehClazz->life;
+  float fuel = vehicle->fuel / vehClazz->fuel;
 
   vehicleHull.draw( this, hull );
   vehicleFuel.draw( this, fuel );

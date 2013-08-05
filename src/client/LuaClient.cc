@@ -593,7 +593,7 @@ void LuaClient::init()
    * UI
    */
 
-  IMPORT_FUNC( ozUIShowBuild );
+  IMPORT_FUNC( ozUIBuildMenu );
 
   importMatrixConstants( l );
   importNirvanaConstants( l );

@@ -14,10 +14,10 @@
   "mass":               5000,
   "lift":               2.4,
 
-  "pilotPos":           [ 0, 0.7, 0 ],
-  "rotVelLimit":        120,
-
   "fuel":               100,
+
+  "pilotPos":           [ 0, 0, 0.8 ],
+  "rotVelLimit":        120,
 
   "weapons":
   [
@@ -42,7 +42,9 @@
   ],
 
   "mech":
-  {},
+  {
+    "stairMax":         0.6875
+  },
 
   "nItems":             8,
 

@@ -50,7 +50,7 @@ function onCreate()
 
   init_stressTest()
 
-  ozUIShowBuild( true )
+  ozUIBuildMenu( true )
 end
 
 function init_sample()

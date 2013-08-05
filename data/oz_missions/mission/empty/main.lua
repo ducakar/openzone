@@ -33,5 +33,5 @@ function onCreate()
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 0 )
 
-  ozUIShowBuild( true )
+  ozUIBuildMenu( true )
 end

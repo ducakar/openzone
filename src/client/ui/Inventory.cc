@@ -37,7 +37,7 @@ namespace client
 namespace ui
 {
 
-void Inventory::ownerItemCallback( ModelField* sender )
+void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
 {
   Inventory*     inventory = static_cast<Inventory*>( sender->parent );
   const Object*  container = inventory->owner;
@@ -56,32 +56,34 @@ void Inventory::ownerItemCallback( ModelField* sender )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
-  if( input.leftReleased ) {
-    if( inventory->other != nullptr ) {
-      bot->invGive( item, inventory->other );
-      return;
+  if( isClicked ) {
+    if( input.leftReleased ) {
+      if( inventory->other != nullptr ) {
+        bot->invGive( item, inventory->other );
+        return;
+      }
+      else if( bot->cargo < 0 ) {
+        bot->invDrop( item );
+        return;
+      }
     }
-    else if( bot->cargo < 0 ) {
-      bot->invDrop( item );
-      return;
+    else if( input.rightReleased ) {
+      bot->invUse( item, container );
     }
-  }
-  else if( input.rightReleased ) {
-    bot->invUse( item, container );
-  }
-  else if( input.middleReleased ) {
-    if( bot->cargo < 0 && inventory->other == nullptr ) {
-      ui::mouse.doShow = false;
+    else if( input.middleReleased ) {
+      if( bot->cargo < 0 && inventory->other == nullptr ) {
+        ui::mouse.doShow = false;
 
-      bot->invGrab( item );
-      return;
+        bot->invGrab( item );
+        return;
+      }
     }
   }
 
   inventory->taggedItemIndex = item->index;
 }
 
-void Inventory::otherItemCallback( ModelField* sender )
+void Inventory::otherItemCallback( ModelField* sender, bool isClicked )
 {
   Inventory*     inventory = static_cast<Inventory*>( sender->parent );
   const Object*  container = inventory->other;
@@ -100,14 +102,16 @@ void Inventory::otherItemCallback( ModelField* sender )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
-  if( input.leftReleased ) {
-    bot->invTake( item, container );
-  }
-  else if( input.rightReleased ) {
-    bot->invUse( item, container );
-  }
-  else {
-    inventory->taggedItemIndex = item->index;
+  if( isClicked ) {
+    if( input.leftReleased ) {
+      bot->invTake( item, container );
+    }
+    else if( input.rightReleased ) {
+      bot->invUse( item, container );
+    }
+    else {
+      inventory->taggedItemIndex = item->index;
+    }
   }
 }
 
