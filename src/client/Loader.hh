@@ -61,17 +61,6 @@ class Loader
     static const uint BSPAUDIO_CLEAR_INTERVAL   = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 80 s)
     static const uint BSPAUDIO_CLEAR_LAG        = 80  * Timer::TICKS_PER_SEC;
 
-    struct ScreenshotInfo
-    {
-      char  path[256];
-      int   width;
-      int   height;
-      char* pixels;
-    };
-
-    static ScreenshotInfo screenshotInfo;
-
-    Thread screenshotThread;
     Thread preloadThread;
 
     Semaphore preloadMainSemaphore;
@@ -83,7 +72,6 @@ class Loader
 
   private:
 
-    static void screenshotMain( void* );
     static void preloadMain( void* );
 
     // clean unused imagines and handle screenshots

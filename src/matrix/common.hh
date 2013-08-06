@@ -51,24 +51,21 @@ inline Vec3 rotate( const Vec3& dim, Heading heading )
 
 inline Bounds rotate( const Bounds& bb, Heading heading )
 {
-  Point p = bb.p();
-
   switch( heading ) {
     case NORTH: {
-      return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                     p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+      return bb;
     }
     case WEST: {
-      return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                     p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      return Bounds( Point( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                     Point( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
     }
     case SOUTH: {
-      return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                     p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      return Bounds( Point( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                     Point( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
     }
     case EAST: {
-      return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                     p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+      return Bounds( Point( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                     Point( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
     }
   }
 }

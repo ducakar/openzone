@@ -84,19 +84,21 @@ void BuildMenu::overlayCallback( Area* area, const Vec3& ray )
     overlaps  = !strs.isEmpty() || !objs.isEmpty();
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 
-    // Check if ground is plain enough.
-    float corners[][2] = {
-      { bounds.mins.x, bounds.mins.y },
-      { bounds.maxs.x, bounds.mins.y },
-      { bounds.mins.x, bounds.maxs.y },
-      { bounds.maxs.x, bounds.maxs.y }
-    };
+    if( !overlaps ) {
+      // Check if ground is plain enough.
+      float corners[][2] = {
+        { bounds.mins.x, bounds.mins.y },
+        { bounds.maxs.x, bounds.mins.y },
+        { bounds.mins.x, bounds.maxs.y },
+        { bounds.maxs.x, bounds.maxs.y }
+      };
 
-    for( int i = 0; i < 4; ++i ) {
-      if( orbis.terra.height( corners[i][0], corners[i][1] ) < bounds.mins.z ) {
-        overlaps  = true;
-        tf.colour = OVERLAY_YELLOW;
-        break;
+      for( int i = 0; i < 4; ++i ) {
+        if( orbis.terra.height( corners[i][0], corners[i][1] ) < bounds.mins.z ) {
+          overlaps  = true;
+          tf.colour = OVERLAY_YELLOW;
+          break;
+        }
       }
     }
 

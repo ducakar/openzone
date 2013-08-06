@@ -59,7 +59,7 @@ else()
 endif()
 
 # libvorbisfile.
-target_link_libraries( ozEngine ${VORBISFILE_LIBRARIES} )
+target_link_libraries( ozEngine ${PNG_LIBRARY} ${VORBISFILE_LIBRARIES} )
 
 # Dependencies.
 if( PLATFORM_EMBEDDED )

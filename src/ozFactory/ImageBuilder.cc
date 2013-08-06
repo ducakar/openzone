@@ -157,18 +157,15 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
 
     if( compress ) {
 #ifdef OZ_NONFREE
-      FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
-      ubyte*    pixels  = FreeImage_GetBits( level32 );
-      int       size    = width * height * 4;
-      int       s3Size  = squish::GetStorageRequirements( width, height, squishFlags );
+      ubyte* pixels = FreeImage_GetBits( level );
+      int    size   = width * height * 4;
+      int    s3Size = squish::GetStorageRequirements( width, height, squishFlags );
 
       for( int i = 0; i < size; i += 4 ) {
         swap( pixels[i], pixels[i + 2] );
       }
 
       squish::CompressImage( pixels, width, height, ostream.forward( s3Size ), squishFlags );
-
-      FreeImage_Unload( level32 );
 #endif
     }
     else {
@@ -187,7 +184,6 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
   }
 
   bool success = destFile.write( ostream.begin(), ostream.tell() );
-
   if( !success ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Failed to write '%s'", destFile.path().cstr() );
     return false;

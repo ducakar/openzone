@@ -47,6 +47,7 @@ function build()
          "$prefix/libSDL-1.2.so.0" \
          "$prefix/libSDL_ttf-2.0.so.0" \
          "$prefix/liblua.so.5.2" \
+         "$prefix/libpng.so.3" \
          "$prefix/libfreeimage.so.3" \
          "$prefix/libnoise.so.1.0.0" \
          "$prefix/libassimp.so.3" \
@@ -69,6 +70,7 @@ function build()
          "$prefix/libphysfs.dll" \
          "$prefix/SDL.dll" \
          "$prefix/SDL_ttf.dll" \
+         "$prefix/libpng.dll" \
          "$prefix/lua52.dll" \
          "$prefix/libfreetype-6.dll" \
          "$prefix/libogg-0.dll" \

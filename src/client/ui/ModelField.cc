@@ -59,11 +59,6 @@ bool ModelField::onMouseEvent()
   isHighlighted = true;
   isClicked     = wasClicked && ( input.buttons & clickMask );
 
-  if( wasClicked && ~input.buttons & input.oldButtons & clickMask ) {
-    if( callback != nullptr ) {
-      callback( this, true );
-    }
-  }
   if( input.buttons & ~input.oldButtons & clickMask ) {
     isClicked  = true;
     wasClicked = true;
@@ -74,7 +69,7 @@ bool ModelField::onMouseEvent()
   }
 
   if( callback != nullptr ) {
-    callback( this, false );
+    callback( this, wasClicked && ~input.buttons & input.oldButtons & clickMask );
   }
   return true;
 }

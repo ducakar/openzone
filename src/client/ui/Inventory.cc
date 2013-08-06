@@ -56,6 +56,8 @@ void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
+  inventory->taggedItemIndex = item->index;
+
   if( isClicked ) {
     if( input.leftReleased ) {
       if( inventory->other != nullptr ) {
@@ -79,8 +81,6 @@ void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
       }
     }
   }
-
-  inventory->taggedItemIndex = item->index;
 }
 
 void Inventory::otherItemCallback( ModelField* sender, bool isClicked )
@@ -102,15 +102,14 @@ void Inventory::otherItemCallback( ModelField* sender, bool isClicked )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
+  inventory->taggedItemIndex = item->index;
+
   if( isClicked ) {
     if( input.leftReleased ) {
       bot->invTake( item, container );
     }
     else if( input.rightReleased ) {
       bot->invUse( item, container );
-    }
-    else {
-      inventory->taggedItemIndex = item->index;
     }
   }
 }
@@ -218,7 +217,6 @@ void Inventory::onVisibilityChange( bool )
 void Inventory::onUpdate()
 {
   updateReferences();
-
   taggedItemIndex = -1;
 
   height = HEADER_SIZE + ( other == nullptr ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
@@ -264,8 +262,6 @@ void Inventory::onDraw()
   const Object*      container      = other == nullptr ? owner : other;
   const ObjectClass* containerClazz = container->clazz;
   const Dynamic*     taggedItem     = static_cast<const Dynamic*>( orbis.obj( taggedItemIndex ) );
-
-  taggedItemIndex = taggedItem == nullptr ? -1 : taggedItemIndex;
 
   if( container->index != cachedContainerIndex ) {
     cachedContainerIndex = container->index;

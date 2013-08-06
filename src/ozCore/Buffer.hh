@@ -90,6 +90,16 @@ class Buffer
     Buffer& operator = ( Buffer&& b );
 
     /**
+     * True iff buffer sizes and contents are equal.
+     */
+    bool operator == ( const Buffer& b ) const;
+
+    /**
+     * False iff buffer sizes and contents are equal.
+     */
+    bool operator != ( const Buffer& b ) const;
+
+    /**
      * Constant reference to `i`-th byte.
      */
     OZ_ALWAYS_INLINE

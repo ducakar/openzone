@@ -26,6 +26,7 @@ development packages for the following libraries:
 - SDL_ttf
 - OpenGL 2.1 or OpenGL ES 2.0
 - OpenAL 1.1
+- libpng
 - libvorbis
 - FreeImage
 - libsquish (optional)
@@ -294,7 +295,7 @@ Legal
 
 OpenZone engine is licensed under GNU General Public License version 3 or (at your option) any later
 version. liboz library is a part of OpenZone engine but can also be distributed or modified under
-ZLIB licence.
+the zlib licence.
 
 Libraries that may be bundled with binary distributions of OpenZone come under different licences.
 See doc/README.html for details.

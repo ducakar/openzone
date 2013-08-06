@@ -100,6 +100,16 @@ Buffer& Buffer::operator = ( Buffer&& b )
   return *this;
 }
 
+bool Buffer::operator == ( const Buffer& b ) const
+{
+  return size == b.size && mCompare( data, b.data, size_t( size ) ) == 0;
+}
+
+bool Buffer::operator!=( const Buffer& b ) const
+{
+  return size != b.size || mCompare( data, b.data, size_t( size ) ) != 0;
+}
+
 String Buffer::toString() const
 {
   char*  buffer;
@@ -128,7 +138,7 @@ Buffer Buffer::deflate( int level ) const
 
   zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
   zstream.avail_in  = uint( size );
-  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.data );
+  zstream.next_out  = reinterpret_cast<ubyte*>( buffer.data + 4 );
   zstream.avail_out = uint( newSize );
 
   int ret = ::deflate( &zstream, Z_FINISH );
@@ -142,9 +152,9 @@ Buffer Buffer::deflate( int level ) const
 
     // Write size of the original data, ensure portability between little and big endian platforms.
 #if OZ_BYTE_ORDER == 4321
-    reinterpret_cast<int*>( buffer.end() )[-1] = Endian::bswap32( size );
+    *reinterpret_cast<int*>( buffer.begin() ) = Endian::bswap32( size );
 #else
-    reinterpret_cast<int*>( buffer.end() )[-1] = size;
+    *reinterpret_cast<int*>( buffer.begin() ) = size;
 #endif
   }
   return buffer;
@@ -164,14 +174,14 @@ Buffer Buffer::inflate() const
   }
 
 #if OZ_BYTE_ORDER == 4321
-  int newSize = Endian::bswap32( reinterpret_cast<int*>( data + size )[-1] );
+  int newSize = Endian::bswap32( *reinterpret_cast<int*>( data ) );
 #else
-  int newSize = reinterpret_cast<int*>( data + size )[-1];
+  int newSize = *reinterpret_cast<int*>( data );
 #endif
 
   buffer.allocate( newSize );
 
-  zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
+  zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data + 4 ) );
   zstream.avail_in  = uint( size - 4 );
   zstream.next_out  = reinterpret_cast<ubyte*>( buffer.data );
   zstream.avail_out = uint( newSize );

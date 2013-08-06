@@ -30,6 +30,8 @@
 #include "GL.hh"
 
 #include <SDL.h>
+#include <png.h>
+
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/instance.h>
@@ -40,6 +42,14 @@
 namespace oz
 {
 
+struct ScreenshotInfo
+{
+  File  file;
+  int   width;
+  int   height;
+  char* pixels;
+};
+
 #if defined( __native_client__ )
 static Semaphore       flushSemaphore;
 static pp::Graphics3D* context;
@@ -49,14 +59,49 @@ static SDL_Surface*    descriptor;
 static SDL_Window*     descriptor;
 static SDL_GLContext   context;
 #endif
+static Thread          screenshotThread;
 
-int  Window::screenWidth  = 0;
-int  Window::screenHeight = 0;
-int  Window::windowWidth  = 0;
-int  Window::windowHeight = 0;
-bool Window::fullscreen   = false;
-bool Window::windowFocus  = true;
-bool Window::windowGrab   = false;
+static void writeFunc( png_struct* png, ubyte* data, size_t size )
+{
+  OutputStream* ostream = static_cast<OutputStream*>( png_get_io_ptr( png ) );
+
+  ostream->writeChars( reinterpret_cast<const char*>( data ), int( size ) );
+}
+
+static void flushFunc( png_struct* )
+{}
+
+static void screenshotMain( void* data )
+{
+  const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>( data );
+
+  OutputStream ostream( 0 );
+
+  png_struct* png     = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
+  png_info*   pngInfo = png_create_info_struct( png );
+
+  png_set_IHDR( png, pngInfo, uint( info->width ), uint( info->height ), 8, PNG_COLOR_TYPE_RGB,
+                PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE );
+
+  png_set_write_fn( png, &ostream, writeFunc, flushFunc );
+  png_write_info( png, pngInfo );
+
+  int pitch = ( ( info->width * 3 + 3 ) / 4 ) * 4;
+
+  for( int i = info->height - 1; i >= 0; --i ) {
+    const char* row = &info->pixels[i * pitch];
+
+    png_write_row( png, reinterpret_cast<const ubyte*>( row ) );
+  }
+
+  png_write_end( png, pngInfo );
+  png_destroy_write_struct( &png, &pngInfo );
+
+  info->file.write( ostream.begin(), ostream.tell() );
+
+  delete[] info->pixels;
+  delete info;
+}
 
 #ifdef __native_client__
 
@@ -66,6 +111,14 @@ static void flushCompleteCallback( void*, int )
 }
 
 #endif
+
+int  Window::screenWidth  = 0;
+int  Window::screenHeight = 0;
+int  Window::windowWidth  = 0;
+int  Window::windowHeight = 0;
+bool Window::fullscreen   = false;
+bool Window::windowFocus  = true;
+bool Window::windowGrab   = false;
 
 void Window::measureScreen()
 {
@@ -144,6 +197,22 @@ void Window::swapBuffers()
 #else
   SDL_GL_SwapWindow( descriptor );
 #endif
+}
+
+void Window::screenshot( const File& file )
+{
+  if( screenshotThread.isValid() ) {
+    screenshotThread.join();
+  }
+
+  int pitch = ( ( windowWidth * 3 + 3 ) / 4 ) * 4;
+
+  ScreenshotInfo* info = new ScreenshotInfo {
+    file, windowWidth, windowHeight, new char[windowWidth * pitch]
+  };
+
+  glReadPixels( 0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels );
+  screenshotThread.start( "screenshot", Thread::JOINABLE, screenshotMain, info );
 }
 
 void Window::minimise()
@@ -393,6 +462,10 @@ void Window::destroy()
   }
 
 #endif
+
+  if( screenshotThread.isValid() ) {
+    screenshotThread.join();
+  }
 }
 
 }

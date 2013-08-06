@@ -36,37 +36,6 @@ namespace oz
 namespace client
 {
 
-Loader::ScreenshotInfo Loader::screenshotInfo;
-
-void Loader::screenshotMain( void* )
-{
-  // flip image
-  char* top    = screenshotInfo.pixels;
-  char* bottom = screenshotInfo.pixels + ( camera.height - 1 ) * camera.width * 3;
-
-  for( int i = 0; i < screenshotInfo.height / 2; ++i ) {
-    for( int j = 0; j < screenshotInfo.width; ++j ) {
-      swap( top[0], bottom[0] );
-      swap( top[1], bottom[1] );
-      swap( top[2], bottom[2] );
-
-      top    += 3;
-      bottom += 3;
-    }
-
-    bottom -= 2 * screenshotInfo.width * 3;
-  }
-
-  SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( screenshotInfo.pixels, screenshotInfo.width,
-                                                screenshotInfo.height, 24, screenshotInfo.width * 3,
-                                                0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 );
-
-  SDL_SaveBMP( surf, screenshotInfo.path );
-  SDL_FreeSurface( surf );
-
-  delete[] screenshotInfo.pixels;
-}
-
 void Loader::preloadMain( void* )
 {
   loader.preloadRun();
@@ -329,22 +298,12 @@ void Loader::preloadRun()
 
 void Loader::makeScreenshot()
 {
-  if( screenshotThread.isValid() ) {
-    screenshotThread.join();
-  }
-
-  snprintf( screenshotInfo.path, 256, "%s/screenshots/OpenZone %s.bmp",
+  char path[256];
+  snprintf( path, 256, "%s/screenshots/OpenZone %s.png",
             config["dir.config"].asString().cstr(), Time::local().toString().cstr() );
 
-  Log::println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
-
-  screenshotInfo.width  = camera.width;
-  screenshotInfo.height = camera.height;
-  screenshotInfo.pixels = new char[camera.width * camera.height * 3];
-
-  glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, screenshotInfo.pixels );
-
-  screenshotThread.start( "screenshot", Thread::JOINABLE, screenshotMain );
+  Log::println( "Screenshot to '%s' scheduled in background thread", path );
+  Window::screenshot( path );
 }
 
 void Loader::syncUpdate()
@@ -400,10 +359,6 @@ void Loader::destroy()
 
   preloadAuxSemaphore.destroy();
   preloadMainSemaphore.destroy();
-
-  if( screenshotThread.isValid() ) {
-    screenshotThread.join();
-  }
 }
 
 Loader loader;

@@ -148,6 +148,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDLK_LSHIFT;
 
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDLK_c;
+  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDLK_LCTRL;
   keyMap[KEY_JUMP][0]               = MOD_MASK    | SDLK_SPACE;
   keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDLK_x;
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDLK_x;
@@ -226,6 +227,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
 
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_C;
+  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_LCTRL;
   keyMap[KEY_JUMP][0]               = MOD_MASK    | SDL_SCANCODE_SPACE;
   keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDL_SCANCODE_X;
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDL_SCANCODE_X;
@@ -303,7 +305,8 @@ void Input::loadKeyMap( const JSON& keyConfig )
       }
 
       int mod = keyDesc[0] == '_' ? int( MOD_OFF_BIT ) :
-                keyDesc[0] == '!' ? int( MOD_ON_BIT ) : int( MOD_MASK );
+                keyDesc[0] == '^' ? int( MOD_ON_BIT ) :
+                                    int( MOD_MASK );
 
 #if SDL_MAJOR_VERSION < 2
 
@@ -351,7 +354,7 @@ JSON Input::keyMapToJSON() const
         String sdlName = SDL_GetScancodeName( SDL_Scancode( code ) );
 #endif
 
-        key.add( ( mod == MOD_OFF_BIT ? "_" : mod == MOD_ON_BIT ? "!" : "&" ) + sdlName );
+        key.add( ( mod == MOD_OFF_BIT ? "_" : mod == MOD_ON_BIT ? "^" : "&" ) + sdlName );
       }
     }
   }

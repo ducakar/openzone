@@ -136,6 +136,7 @@ else()
   find_package( OpenAL REQUIRED )
 endif()
 
+find_package( PNG REQUIRED )
 pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
