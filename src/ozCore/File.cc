@@ -925,7 +925,7 @@ bool File::mkdir( const char* path )
 
 bool File::cp( const File& file, const char* path )
 {
-  File destFile( path );
+  File destFile = path;
 
   if( destFile.type() == DIRECTORY ) {
     destFile = destFile.path() + "/" + file.name();

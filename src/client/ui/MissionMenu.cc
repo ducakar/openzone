@@ -69,7 +69,7 @@ void MissionMenu::loadMission( Button* sender )
   MissionMenu*   missionMenu = static_cast<MissionMenu*>( sender->parent );
 
   Stage::nextStage    = &gameStage;
-  gameStage.stateFile = File();
+  gameStage.stateFile = "";
   gameStage.mission   = missionMenu->missions[missionMenu->scroll + button->index].name;
 }
 
@@ -180,11 +180,11 @@ MissionMenu::MissionMenu() :
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );
 
-  File missionRootDir( "@mission" );
+  File missionRootDir = "@mission";
   DArray<File> missionDirs = missionRootDir.ls();
 
   foreach( missionDir, missionDirs.citer() ) {
-    File descriptionFile( missionDir->path() + "/description.json" );
+    File descriptionFile = missionDir->path() + "/description.json";
 
     JSON descriptionConfig;
     if( !descriptionConfig.load( descriptionFile ) ) {

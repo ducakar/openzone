@@ -17,8 +17,8 @@ BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  zlib-devel
 BuildRequires:  physfs-devel
 BuildRequires:  lua-devel
-BuildRequires:  SDL-devel
-BuildRequires:  SDL_ttf-devel
+BuildRequires:  SDL2-devel
+BuildRequires:  SDL2_ttf-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  openal-soft-devel
 BuildRequires:  libvorbis-devel

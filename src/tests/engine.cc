@@ -34,7 +34,7 @@ int main( int argc, char** argv )
   SDL_Init( SDL_INIT_VIDEO );
   Window::create( "Test", 100, 100, false );
 
-  File file( argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1] );
+  File file = argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1];
   Cursor cursor( file );
 
   if( !cursor.isLoaded() ) {

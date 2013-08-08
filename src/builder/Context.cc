@@ -207,7 +207,7 @@ static void writeDDS( FIBITMAP* image, const char* filePath )
     }
   }
 
-  File destFile( filePath );
+  File destFile = filePath;
   if( !destFile.write( ostream.begin(), ostream.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", filePath );
   }

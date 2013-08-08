@@ -55,15 +55,16 @@ MinGW32 is searched in `/usr/i486-mingw32` by default. You may change that in
 
 You may also want to set several options when configuring CMake build system:
 
-#### ozCore Library ####
+- `OZ_SHARED_LIBS`: Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries. This might
+  make sense once if some other applications may use OpenZone's libraries as well.
 
 - `OZ_PULSE_BELL`: Enable PulseAudio back-end for System::bell() on Linux and generic Unix ports.
   If enabled, PulseAudio is tried first to play the bell while the native sound system (ALSA on
   Linux or OSS on generic Unix port) is used as fall-back.
   `OFF` by default.
 
-- `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
-  memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
+- `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks. Stack trace for every memory
+  allocation performed via new operator is saved for later diagnostics. It detects new/delete
   mismatches and one can check for currently allocated memory chunks (and hence memory leaks).
   `OFF` by default.
 
@@ -73,36 +74,28 @@ You may also want to set several options when configuring CMake build system:
   vector components in OpenZone code.
   `OFF` by default.
 
-#### ozDynamics Library ####
-
 - `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library. Requires ODE (Open Dynamics Engine)
   compiled in single precision. If turned off, ozDynamics is built only partially. OpenZone does not
   need ozDynamics library to run, only a few headers are required to build OpenZone.
   `OFF` by default.
 
-#### OpenZone Engine ####
-
-- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster.
-  `OFF` by default.
-
-- `OZ_SDL2`: Use upcoming SDL 2.0 instead of stable SDL 1.2.
-  `OFF` by default, forced to `ON` on Android, forced to `OFF` on NaCl.
-
-- `OZ_NET`: Enable networking support (not imelemented yet). Requires SDL_net library.
-  `OFF` by default, forced to `OFF` on NaCl.
+- `OZ_SDL1`: Use SDL 1.2 instead of SDL 2.0.
+  `OFF` by default, forced to `OFF` on Android, forced to `ON` on NaCl.
 
 - `OZ_GL_ES`: Use OpenGL ES 2.0 API. Enabling this on Linux or Windows while using SDL 1.2 leads to
   a strange situation when SDL initialises OpenGL but rendering is done entirely through OpenGL ES.
   However, it seems to work on Linux at least.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
-#### ozBuild Tool ####
-
 - `OZ_NONFREE`: Enable support for building textures using S3 texture compression.
   Requires libsquish library.
   `OFF` by default.
 
-#### Packaging ####
+- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster.
+  `OFF` by default.
+
+- `OZ_NET`: Enable networking support (not implemented yet). Requires SDL_net library.
+  `OFF` by default, forced to `OFF` on NaCl.
 
 - `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
   from support directory, game data archives found in `share/openzone`, info files etc. This is

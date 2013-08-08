@@ -43,8 +43,8 @@ const float BSP::GLASS_SPECULAR     = 2.00f;
 
 void BSP::load()
 {
-  File configFile( String::str( "@baseq3/maps/%s.json", name.cstr() ) );
-  File bspFile( String::str( "@baseq3/maps/%s.bsp", name.cstr() ) );
+  File configFile = "@baseq3/maps/" + name + ".json";
+  File bspFile    = "@baseq3/maps/" + name + ".bsp";
 
   JSON config;
   if( !config.load( configFile ) ) {
@@ -972,7 +972,7 @@ void BSP::check() const
 
 void BSP::saveMatrix()
 {
-  File destFile( "bsp/" + name + ".ozBSP" );
+  File destFile = "bsp/" + name + ".ozBSP";
 
   Log::print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
 
@@ -1113,7 +1113,7 @@ void BSP::saveMatrix()
 
 void BSP::saveClient()
 {
-  File destFile( "bsp/" + name + ".ozcBSP" );
+  File destFile = "bsp/" + name + ".ozcBSP";
 
   compiler.beginMesh();
 

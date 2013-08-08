@@ -479,8 +479,8 @@ class Map
       --count;
 
       if( i == count ) {
-        // When removing the last element, no shift is performed, so its resources are not
-        // implicitly destroyed by a move operation.
+        // When removing the last element, no shift is performed, so it is not implicitly destroyed
+        // by the move operation.
         data[count] = Elem();
       }
       else {

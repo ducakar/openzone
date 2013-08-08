@@ -273,8 +273,8 @@ void OBJ::load()
 {
   Log::print( "Loading OBJ model '%s' ...", path.cstr() );
 
-  File modelFile( path + "/data.obj" );
-  File configFile( path + "/config.json" );
+  File modelFile = path + "/data.obj";
+  File configFile = path + "/config.json";
 
   int currentMaterial = 0;
 
@@ -358,7 +358,7 @@ void OBJ::save()
   String sDestDir = &path[1];
 
   File::mkdir( sDestDir );
-  File destFile( sDestDir + "/data.ozcSMM" );
+  File destFile = sDestDir + "/data.ozcSMM";
 
   compiler.beginMesh();
   compiler.enable( Compiler::UNIQUE );

@@ -28,7 +28,7 @@
 #include <client/Input.hh>
 #include <client/ui/StrategicArea.hh>
 #include <client/ui/GalileoFrame.hh>
-#include <client/ui/BuildMenu.hh>
+#include <client/ui/BuildFrame.hh>
 #include <client/ui/UI.hh>
 
 namespace oz
@@ -56,7 +56,7 @@ void StrategicProxy::begin()
   ui::mouse.doShow = true;
 
   ui::ui.strategicArea->enable( true );
-  ui::ui.buildMenu->enable( hasBuildMenu );
+  ui::ui.buildFrame->enable( hasBuildFrame );
 
   desiredPos = camera.p;
 }
@@ -67,7 +67,7 @@ void StrategicProxy::end()
 
   ui::mouse.doShow = true;
 
-  ui::ui.buildMenu->enable( false );
+  ui::ui.buildFrame->enable( false );
   ui::ui.strategicArea->enable( false );
 }
 
@@ -196,29 +196,29 @@ void StrategicProxy::update()
 
 void StrategicProxy::reset()
 {
-  h            = 0.0f;
-  v            = 0.0f;
-  desiredPos   = Point::ORIGIN;
-  height       = DEFAULT_HEIGHT;
+  h             = 0.0f;
+  v             = 0.0f;
+  desiredPos    = Point::ORIGIN;
+  height        = DEFAULT_HEIGHT;
 
-  isFree       = false;
-  isFreeFast   = true;
-  isRTSFast    = false;
+  isFree        = false;
+  isFreeFast    = true;
+  isRTSFast     = false;
 
-  hasBuildMenu = false;
+  hasBuildFrame = false;
 }
 
 void StrategicProxy::read( InputStream* istream )
 {
-  h            = istream->readFloat();
-  v            = istream->readFloat();
-  height       = istream->readFloat();
+  h             = istream->readFloat();
+  v             = istream->readFloat();
+  height        = istream->readFloat();
 
-  isFree       = istream->readBool();
-  isFreeFast   = istream->readBool();
-  isRTSFast    = istream->readBool();
+  isFree        = istream->readBool();
+  isFreeFast    = istream->readBool();
+  isRTSFast     = istream->readBool();
 
-  hasBuildMenu = istream->readBool();
+  hasBuildFrame = istream->readBool();
 }
 
 void StrategicProxy::write( OutputStream* ostream ) const
@@ -231,7 +231,7 @@ void StrategicProxy::write( OutputStream* ostream ) const
   ostream->writeBool( isFreeFast );
   ostream->writeBool( isRTSFast );
 
-  ostream->writeBool( hasBuildMenu );
+  ostream->writeBool( hasBuildFrame );
 }
 
 }

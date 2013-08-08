@@ -34,7 +34,7 @@ namespace builder
 
 void Terra::load()
 {
-  File configFile( "@terra/" + name + ".json" );
+  File configFile = "@terra/" + name + ".json";
 
   JSON config;
   if( !config.load( configFile ) ) {
@@ -216,7 +216,7 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
-  File destFile( "terra/" + name + ".ozmTerra" );
+  File destFile = "terra/" + name + ".ozmTerra";
 
   Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
@@ -241,7 +241,7 @@ void Terra::saveMatrix()
 
 void Terra::saveClient()
 {
-  File destFile( "terra/" + name + ".ozcTerra" );
+  File destFile = "terra/" + name + ".ozcTerra";
 
   Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   Log::indent();

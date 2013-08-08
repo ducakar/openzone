@@ -43,7 +43,7 @@ class GalileoFrame;
 class MusicPlayer;
 class Inventory;
 class InfoFrame;
-class BuildMenu;
+class BuildFrame;
 class DebugFrame;
 
 class UI
@@ -70,7 +70,7 @@ class UI
     MusicPlayer*   musicPlayer;
     Inventory*     inventory;
     InfoFrame*     infoFrame;
-    BuildMenu*     buildMenu;
+    BuildFrame*    buildFrame;
     DebugFrame*    debugFrame;
 
     explicit UI();

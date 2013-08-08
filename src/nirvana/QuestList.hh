@@ -51,6 +51,10 @@ class QuestList
     List<Quest> quests;
     int         activeQuest;
 
+  public:
+
+    QuestList();
+
     void add( const char* title, const char* description, const Point& place, Quest::State state );
     void remove( int index );
 

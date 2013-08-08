@@ -456,8 +456,8 @@ class List
       --count;
 
       if( i == count ) {
-        // When removing the last element, no shift is performed, so its resources are not
-        // implicitly destroyed by move operation.
+        // When removing the last element, no shift is performed, so it is not implicitly destroyed
+        // by the move operation.
         data[count] = Elem();
       }
       else {
@@ -477,8 +477,8 @@ class List
       --count;
 
       if( i == count ) {
-        // When removing the last element, move is probably a no-op, so its resources are not
-        // implicitly destroyed by move operation.
+        // When removing the last element, no shift is performed, so it is not implicitly destroyed
+        // by the move operation.
         data[count] = Elem();
       }
       else {

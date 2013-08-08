@@ -50,7 +50,7 @@ function onCreate()
 
   init_stressTest()
 
-  ozUIBuildMenu( true )
+  ozUIBuildFrame( true )
 end
 
 function init_sample()
@@ -73,12 +73,12 @@ function init_sample()
 
   --ozOrbisAddObj( "reaper", 145, -15, 73 )
 
-  ozOrbisAddObj( OZ_FORCE, "musicPlayer",                  cX - 8, cY - 4, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "galileo",                      cX - 7, cY - 4, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "nvGoggles",                    cX - 6, cY - 4, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "cvicek",                       cX - 8, cY - 2, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "firstAid",                     cX - 7, cY - 2, cZ - 6 )
-  ozOrbisAddObj( OZ_FORCE, "binoculars",                   cX - 6, cY - 2, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "musicPlayer",           cX - 8, cY - 4, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "galileo",               cX - 7, cY - 4, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "nvGoggles",             cX - 6, cY - 4, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "cvicek",                cX - 8, cY - 2, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "firstAid",              cX - 7, cY - 2, cZ - 6 )
+  ozOrbisAddObj( OZ_FORCE, "binoculars",            cX - 6, cY - 2, cZ - 6 )
   ozOrbisAddObj( OZ_FORCE, "droid$hyperblaster",    cX - 8, cY - 3, cZ - 6 )
   ozOrbisAddObj( OZ_FORCE, "droid$chaingun",        cX - 7, cY - 3, cZ - 6 )
   ozOrbisAddObj( OZ_FORCE, "droid$grenadeLauncher", cX - 6, cY - 3, cZ - 6 )

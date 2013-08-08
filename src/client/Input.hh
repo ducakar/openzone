@@ -103,6 +103,8 @@ class Input
       KEY_CHEAT_SKY_FORWARD,
       KEY_CHEAT_SKY_BACKWARD,
 
+      KEY_DELETE,
+
       KEY_QUICKSAVE,
       KEY_QUICKLOAD,
       KEY_AUTOLOAD,

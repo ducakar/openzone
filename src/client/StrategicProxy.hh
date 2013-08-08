@@ -55,7 +55,7 @@ class StrategicProxy : public Proxy
     bool  isFreeFast;
     bool  isRTSFast;
 
-    bool  hasBuildMenu;
+    bool  hasBuildFrame;
 
   public:
 

@@ -38,6 +38,7 @@
 #include <client/BuildInfo.hh>
 #include <client/MenuStage.hh>
 #include <client/GameStage.hh>
+#include <client/EditStage.hh>
 #include <client/ui/UI.hh>
 
 #include <unistd.h>
@@ -63,7 +64,6 @@ void Client::printUsage( const char* invocationName )
     "Usage:\n"
     "  %s [-v] [-l | -i <mission>] [-t <num>] [-L <lang>] [-p <prefix>]\n"
     "\n"
-    "  -v            Print verbose log messages to terminal.\n"
     "  -l            Skip main menu and load the last autosaved game.\n"
     "  -i <mission>  Skip main menu and start mission <mission>.\n"
     "  -e <layout>   Edit world <layout> file. Create a new one if non-existent.\n"
@@ -73,6 +73,7 @@ void Client::printUsage( const char* invocationName )
     "                'lingua/' directory inside game data archives.\n"
     "  -p <prefix>   Sets data directory to '<prefix>/share/openzone'.\n"
     "                Defaults to '%s'.\n"
+    "  -v            Print verbose log messages to terminal.\n"
     "\n",
     invocationName, OZ_INSTALL_PREFIX );
 }
@@ -92,12 +93,8 @@ int Client::init( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vli:e:t:L:p:h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "li:e:t:L:p:v" ) ) >= 0 ) {
     switch( opt ) {
-      case 'v': {
-        Log::showVerbose = true;
-        break;
-      }
       case 'l': {
         doAutoload = true;
         break;
@@ -130,6 +127,10 @@ int Client::init( int argc, char** argv )
         prefix = optarg;
         break;
       }
+      case 'v': {
+        Log::showVerbose = true;
+        break;
+      }
       default: {
         printUsage( invocationName );
         return EXIT_FAILURE;
@@ -138,6 +139,7 @@ int Client::init( int argc, char** argv )
   }
 
   File::init( File::TEMPORARY, 64*1024*1024 );
+  initFlags |= INIT_PHYSFS;
 
 #if defined( __ANDROID__ )
 
@@ -252,7 +254,7 @@ int Client::init( int argc, char** argv )
   // Clean up after previous versions.
   File::rm( configDir + "/client.rc" );
 
-  File configFile( configDir + "/client.json" );
+  File configFile = configDir + "/client.json";
   if( config.load( configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
@@ -330,7 +332,7 @@ int Client::init( int argc, char** argv )
   foreach( pkg, packages.citer() ) {
     Pepper::post( "data:" + *pkg );
 
-    File pkgFile( localDir + "/" + *pkg );
+    File pkgFile = localDir + "/" + *pkg;
 
     if( File::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
@@ -483,9 +485,13 @@ int Client::init( int argc, char** argv )
 
   Stage::nextStage = nullptr;
 
-  if( !mission.isEmpty() || !layoutFile.isEmpty() ) {
-    gameStage.layoutFile = File( layoutFile );
-    gameStage.mission    = mission;
+  if( !layoutFile.isEmpty() ) {
+    editStage.layoutFile = layoutFile;
+
+    stage = &editStage;
+  }
+  else if( !mission.isEmpty() ) {
+    gameStage.mission = mission;
 
     stage = &gameStage;
   }
@@ -536,7 +542,7 @@ void Client::shutdown()
     Window::destroy();
   }
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    File configFile( config["dir.config"].asString() + "/client.json" );
+    File configFile = config["dir.config"].asString() + "/client.json";
 
     config.exclude( "dir.config" );
     config.exclude( "dir.local" );
@@ -556,8 +562,9 @@ void Client::shutdown()
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
   }
-
-  File::destroy();
+  if( initFlags & INIT_PHYSFS ) {
+    File::destroy();
+  }
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Log::printMemorySummary();

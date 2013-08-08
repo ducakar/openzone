@@ -484,7 +484,7 @@ void LuaNirvana::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
-  File luaDir( "@lua/nirvana" );
+  File luaDir = "@lua/nirvana";
   DArray<File> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.citer() ) {

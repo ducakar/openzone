@@ -41,31 +41,7 @@ TechTree::Node* TechTree::findNode( const char* name )
 }
 
 void TechTree::update()
-{
-  if( allowedBuildings.isEmpty() ) {
-    foreach( node, nodes.citer() ) {
-      if( node->type == Node::BUILDING ) {
-        allowedBuildings.add( node->building );
-      }
-    }
-  }
-
-  if( allowedUnits.isEmpty() ) {
-    foreach( node, nodes.citer() ) {
-      if( node->type == Node::UNIT ) {
-        allowedUnits.add( node->unit );
-      }
-    }
-  }
-
-  if( allowedItems.isEmpty() ) {
-    foreach( node, nodes.citer() ) {
-      if( node->type == Node::ITEM ) {
-        allowedItems.add( node->item );
-      }
-    }
-  }
-}
+{}
 
 void TechTree::read( InputStream* istream )
 {
@@ -100,6 +76,7 @@ void TechTree::load()
     const char* building   = tech["building"].get( "" );
     const char* unit       = tech["unit"].get( "" );
     const char* item       = tech["item"].get( "" );
+    const char* object     = tech["object"].get( "" );
 
     if( !String::isEmpty( technology ) ) {
       node.type     = Node::TECHNOLOGY;
@@ -110,19 +87,33 @@ void TechTree::load()
       node.type     = Node::BUILDING;
       node.name     = building;
       node.building = liber.bsp( node.name );
+
+      allowedBuildings.add( node.building );
     }
     else if( !String::isEmpty( unit ) ) {
-      node.type = Node::UNIT;
-      node.name = unit;
-      node.unit = liber.objClass( node.name );
+      node.type   = Node::UNIT;
+      node.name   = unit;
+      node.object = liber.objClass( node.name );
+
+      allowedUnits.add( node.object );
     }
     else if( !String::isEmpty( item ) ) {
-      node.type = Node::ITEM;
-      node.name = item;
-      node.item = liber.objClass( node.name );
+      node.type   = Node::ITEM;
+      node.name   = item;
+      node.object = liber.objClass( node.name );
+
+      allowedItems.add( node.object );
+    }
+    else if( !String::isEmpty( object ) ) {
+      node.type   = Node::OBJECT;
+      node.name   = object;
+      node.object = liber.objClass( node.name );
+
+      allowedObjects.add( node.object );
     }
     else {
-      OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit' or 'item' defined" );
+      OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit', 'item' or 'object'"
+                " defined" );
     }
 
     node.title       = lingua.get( tech["title"].get( node.name ) );
@@ -162,6 +153,9 @@ void TechTree::unload()
 
   allowedItems.clear();
   allowedItems.deallocate();
+
+  allowedObjects.clear();
+  allowedObjects.deallocate();
 
   nodes.clear();
   nodes.deallocate();

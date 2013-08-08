@@ -29,7 +29,7 @@
 
 #include <client/Camera.hh>
 #include <client/Profile.hh>
-#include <client/ui/BuildMenu.hh>
+#include <client/ui/BuildFrame.hh>
 #include <client/ui/UI.hh>
 
 namespace oz
@@ -246,11 +246,11 @@ static int ozProfileGetBot( lua_State* l )
  * UI
  */
 
-static int ozUIBuildMenu( lua_State* l )
+static int ozUIBuildFrame( lua_State* l )
 {
   ARG( 1 );
 
-  camera.strategic.hasBuildMenu = l_tobool( 1 );
+  camera.strategic.hasBuildFrame = l_tobool( 1 );
   return 0;
 }
 

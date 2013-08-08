@@ -130,8 +130,6 @@ void Entity::staticHandler()
 
 void Entity::manualDoorHandler()
 {
-  time += Timer::TICK_TIME;
-
   switch( state ) {
     case CLOSED: {
       return;
@@ -142,7 +140,6 @@ void Entity::manualDoorHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -158,11 +155,9 @@ void Entity::manualDoorHandler()
 
         if( ratio == 1.0f ) {
           state = OPENED;
-          time  = 0.0f;
         }
         else {
           state    = OPENING;
-          time     = 0.0f;
           velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
@@ -173,7 +168,6 @@ void Entity::manualDoorHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -183,8 +177,6 @@ void Entity::manualDoorHandler()
 
 void Entity::autoDoorHandler()
 {
-  time += Timer::TICK_TIME;
-
   switch( state ) {
     case CLOSED: {
       if( ( timer.ticks + uint( str->index ) ) % 8 != 0 ) {
@@ -193,7 +185,6 @@ void Entity::autoDoorHandler()
 
       if( collider.overlaps( this, clazz->margin ) ) {
         state    = OPENING;
-        time     = 0.0f;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
@@ -204,12 +195,13 @@ void Entity::autoDoorHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
+      time += Timer::TICK_TIME;
+
       if( time > clazz->timeout ) {
         offset = Vec3::ZERO;
         time   = 0.0f;
@@ -231,11 +223,9 @@ void Entity::autoDoorHandler()
 
         if( ratio == 1.0f ) {
           state = OPENED;
-          time  = 0.0f;
         }
         else {
           state    = OPENING;
-          time     = 0.0f;
           velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
@@ -246,7 +236,6 @@ void Entity::autoDoorHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -256,10 +245,10 @@ void Entity::autoDoorHandler()
 
 void Entity::ignoringBlockHandler()
 {
-  time += Timer::TICK_TIME;
-
   switch( state ) {
     case CLOSED: {
+      time += Timer::TICK_TIME;
+
       if( time > clazz->timeout ) {
         state    = OPENING;
         time     = 0.0f;
@@ -273,12 +262,13 @@ void Entity::ignoringBlockHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
+      time += Timer::TICK_TIME;
+
       if( time > clazz->timeout ) {
         state    = CLOSING;
         time     = 0.0f;
@@ -292,7 +282,6 @@ void Entity::ignoringBlockHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -302,10 +291,10 @@ void Entity::ignoringBlockHandler()
 
 void Entity::crushingBlockHandler()
 {
-  time += Timer::TICK_TIME;
-
   switch( state ) {
     case CLOSED: {
+      time += Timer::TICK_TIME;
+
       if( time > clazz->timeout ) {
         state    = OPENING;
         time     = 0.0f;
@@ -353,12 +342,13 @@ void Entity::crushingBlockHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
+      time += Timer::TICK_TIME;
+
       if( time > clazz->timeout ) {
         state    = CLOSING;
         time     = 0.0f;
@@ -406,7 +396,6 @@ void Entity::crushingBlockHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -416,8 +405,6 @@ void Entity::crushingBlockHandler()
 
 void Entity::elevatorHandler()
 {
-  time += Timer::TICK_TIME;
-
   switch( state ) {
     case CLOSED: {
       return;
@@ -453,7 +440,6 @@ void Entity::elevatorHandler()
               ratio    = originalRatio;
               offset   = originalOffset;
               state    = ratio == 0.0f ? CLOSED : OPENED;
-              time     = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -463,7 +449,6 @@ void Entity::elevatorHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -502,7 +487,6 @@ void Entity::elevatorHandler()
               ratio    = originalRatio;
               offset   = originalOffset;
               state    = ratio == 1.0f ? OPENED : CLOSED;
-              time     = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -512,7 +496,6 @@ void Entity::elevatorHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
-        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -771,11 +754,11 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
 
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
-      entity.key    = entityJSON.asInt();
-      entity.state  = Entity::State( entityJSON.asInt() );
-      entity.ratio  = entityJSON.asFloat();
-      entity.time   = entityJSON.asFloat();
-      entity.offset = entityJSON.asVec3();
+      entity.key    = entityJSON["key"].asInt();
+      entity.state  = Entity::State( entityJSON["state"].asInt() );
+      entity.ratio  = entityJSON["ratio"].asFloat();
+      entity.time   = entityJSON["time"].asFloat();
+      entity.offset = entityJSON["offset"].asVec3();
 
       if( entity.state == Entity::OPENING ) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;

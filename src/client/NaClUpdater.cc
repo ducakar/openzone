@@ -78,7 +78,7 @@ void NaClUpdater::writeLocalManifest() const
     os.writeLong64( pkg->time );
   }
 
-  File localManifest( LOCAL_MANIFEST );
+  File localManifest = LOCAL_MANIFEST;
 
   if( !localManifest.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write local manifest" );
@@ -94,7 +94,7 @@ bool NaClUpdater::checkUpdates()
   localPackages.clear();
   remotePackages.clear();
 
-  File localManifest( LOCAL_MANIFEST );
+  File localManifest = LOCAL_MANIFEST;
 
   if( localManifest.map() ) {
     InputStream is = localManifest.inputStream( Endian::LITTLE );
@@ -134,7 +134,7 @@ void NaClUpdater::downloadUpdates()
   int packageNum      = 1;
 
   foreach( pkg, remotePackages.citer() ) {
-    File pkgFile( "/local/share/openzone/" + pkg->name );
+    File pkgFile = "/local/share/openzone/" + pkg->name;
 
     if( pkgFile.type() == File::REGULAR ) {
       long64 localTime = 0;
@@ -209,7 +209,7 @@ void NaClUpdater::downloadUpdates()
     }
 
     if( isOrphan ) {
-      File pkgFile( "/local/share/openzone/" + localPkg->name );
+      File pkgFile = "/local/share/openzone/" + localPkg->name;
 
       Log::print( "Deleting obsolete package '%s' ...", pkgFile.path().cstr() );
       if( File::rm( pkgFile.path() ) ) {

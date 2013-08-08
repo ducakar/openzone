@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/GameStage.hh
+ * @file client/EditStage.hh
  */
 
 #pragma once
@@ -31,18 +31,9 @@ namespace oz
 namespace client
 {
 
-class GameStage : public Stage
+class EditStage : public Stage
 {
   private:
-
-    long64        sleepMicros;
-    long64        loadingMicros;
-    long64        uiMicros;
-    long64        loaderMicros;
-    long64        soundMicros;
-    long64        renderMicros;
-    long64        matrixMicros;
-    long64        nirvanaMicros;
 
     Thread        auxThread;
     Semaphore     mainSemaphore;
@@ -53,15 +44,12 @@ class GameStage : public Stage
 
     Proxy* proxy;
 
-    File   autosaveFile;
-    File   quicksaveFile;
-    File   stateFile;
-    String mission;
+    File   layoutFile;
 
   private:
 
-    void read();
-    void write() const;
+    void readLayout();
+    void writeLayout() const;
 
     static void auxMain( void* );
     void auxRun();
@@ -80,7 +68,7 @@ class GameStage : public Stage
 
 };
 
-extern GameStage gameStage;
+extern EditStage editStage;
 
 }
 }

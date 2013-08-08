@@ -97,7 +97,7 @@ void Sound::soundMain( void* )
 
 void Sound::musicOpen( const char* path )
 {
-  File file( path );
+  File file = path;
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;

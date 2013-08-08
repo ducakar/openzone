@@ -216,7 +216,7 @@ inline void Struct::damage( float damage )
   damage -= resistance;
 
   if( damage > 0.0f ) {
-    life -= damage;
+    life = max( 0.0f, life - damage );
   }
 }
 

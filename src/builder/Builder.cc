@@ -137,7 +137,7 @@ void Builder::buildCaela()
   Log::indent();
 
   String srcDir = "@caelum";
-  File dir( srcDir );
+  File dir = srcDir;
   DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
@@ -163,7 +163,7 @@ void Builder::buildTerrae()
   Log::indent();
 
   String srcDir = "@terra";
-  File dir( srcDir );
+  File dir = srcDir;
   DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
@@ -188,7 +188,7 @@ void Builder::buildBSPs()
 
   String srcDir = "@baseq3/maps";
   String destDir = "bsp";
-  File dir( srcDir );
+  File dir = srcDir;
   DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
@@ -218,7 +218,7 @@ void Builder::buildBSPTextures()
 
   Set<String> usedDirs;
 
-  File dir( "@baseq3/textures" );
+  File dir = "@baseq3/textures";
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.citer() ) {
@@ -264,7 +264,7 @@ void Builder::buildBSPTextures()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    File subDir( "@" + *subDirPath );
+    File subDir = "@" + *subDirPath;
 
     DArray<File> texList = subDir.ls();
 
@@ -282,7 +282,7 @@ void Builder::buildBSPTextures()
         File::mkdir( "tex" );
         File::mkdir( "tex/" + subDir.name() );
 
-        File destFile( String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
+        File destFile = String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() );
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -317,7 +317,7 @@ void Builder::buildClasses( const String& pkgName )
   Log::indent();
 
   String dirName = "@class";
-  File dir( dirName );
+  File dir = dirName;
   DArray<File> dirList = dir.ls();
 
   OutputStream os( 0, Endian::LITTLE );
@@ -368,7 +368,7 @@ void Builder::buildClasses( const String& pkgName )
     headerStream.deallocate();
 
     File::mkdir( "class" );
-    File outFile( "class/" + pkgName + ".ozClasses" );
+    File outFile = "class/" + pkgName + ".ozClasses";
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
@@ -391,7 +391,7 @@ void Builder::buildFragPools( const String& pkgName )
   Log::indent();
 
   String dirName = "@frag";
-  File dir( dirName );
+  File dir = dirName;
   DArray<File> dirList = dir.ls();
 
   OutputStream os( 0, Endian::LITTLE );
@@ -412,7 +412,7 @@ void Builder::buildFragPools( const String& pkgName )
 
   if( os.tell() != 0 ) {
     File::mkdir( "frag" );
-    File outFile( "frag/" + pkgName + ".ozFragPools" );
+    File outFile = "frag/" + pkgName + ".ozFragPools";
 
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
@@ -438,7 +438,7 @@ void Builder::buildModels()
   Log::println( "Building used models {" );
   Log::indent();
 
-  File mdlDir( "@mdl" );
+  File mdlDir = "@mdl";
   DArray<File> dirList = mdlDir.ls();
 
   if( !dirList.isEmpty() ) {
@@ -464,7 +464,7 @@ void Builder::buildModels()
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        File destFile( &path[1] );
+        File destFile = &path[1];
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -516,7 +516,7 @@ void Builder::copySounds()
 
   Set<String> usedDirs;
 
-  File dir( "@snd" );
+  File dir = "@snd";
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.citer() ) {
@@ -558,7 +558,7 @@ void Builder::copySounds()
       File::mkdir( "snd" );
       File::mkdir( "snd/" + subDir->name() );
 
-      File destFile( &file->path()[1] );
+      File destFile = &file->path()[1];
       if( !destFile.write( file->read() ) ) {
         OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
@@ -568,7 +568,7 @@ void Builder::copySounds()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    File subDir( *subDirPath );
+    File subDir = *subDirPath;
     DArray<File> texList = subDir.ls();
 
     foreach( file, texList.citer() ) {
@@ -585,7 +585,7 @@ void Builder::copySounds()
         File::mkdir( "snd" );
         File::mkdir( "snd/" + subDir.name() );
 
-        File destFile( &path[1] );
+        File destFile = &path[1];
         if( !destFile.write( file->read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
@@ -621,7 +621,7 @@ void Builder::checkLua( const char* path )
   Log::println( "Checking Lua scripts in '%s' {", path );
   Log::indent();
 
-  File dir( path );
+  File dir = path;
   DArray<File> dirList = dir.ls();
 
   String sources;
@@ -669,7 +669,7 @@ void Builder::buildMissions()
     copyFiles( mission->path(), &mission->path()[1], "lua", false );
     copyFiles( mission->path(), &mission->path()[1], "json", false );
 
-    File srcFile( mission->path() + "/description.png" );
+    File srcFile = mission->path() + "/description.png";
     if( srcFile.type() == File::MISSING ) {
       continue;
     }
@@ -694,7 +694,7 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
   Log::println( "Packing archive {" );
   Log::indent();
 
-  File archive( String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
+  File archive = String::str( "../%s.%s", name, use7zip ? "7z" : "zip" );
 
   String cmdLine = use7zip ? String::str( "7z u -ms=off -mx=9 '%s' *", archive.path().cstr() ) :
                              String::str( "zip -ur %s '%s' *",

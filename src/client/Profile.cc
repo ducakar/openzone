@@ -37,7 +37,7 @@ namespace client
 
 void Profile::init()
 {
-  File profileFile( config["dir.config"].asString() + "/profile.json" );
+  File profileFile = config["dir.config"].asString() + "/profile.json";
 
   JSON profileConfig;
   bool configExists = profileConfig.load( profileFile );

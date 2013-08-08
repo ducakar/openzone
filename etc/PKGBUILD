@@ -7,7 +7,7 @@ pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('cmake' 'gcc-libs' 'physfs' 'luajit' 'mesa' 'sdl_ttf' 'libvorbis' 'openal' 'freeimage'
+makedepends=('cmake' 'gcc-libs' 'physfs' 'luajit' 'mesa' 'sdl2_ttf' 'libvorbis' 'openal' 'freeimage'
              'libsquish' 'libnoise' 'assimp')
 source=("https://github.com/downloads/ducakar/openzone/${pkgbase}-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/${pkgbase}-data-${pkgver}.tar.xz")
@@ -35,7 +35,7 @@ function package_liboz()
 {
   pkgdesc='OpenZone ozCore, ozDynamics, ozEngine and ozFactory libraries'
   license=('ZLIB')
-  depends=('gcc-libs' 'physfs' 'sdl_ttf' 'libgl' 'openal' 'libvorbis' 'freeimage' 'libnoise'
+  depends=('gcc-libs' 'physfs' 'sdl2_ttf' 'libgl' 'openal' 'libvorbis' 'freeimage' 'libnoise'
            'assimp')
 
   cd "${srcdir}/${pkgbase}-${pkgver}"

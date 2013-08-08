@@ -582,13 +582,27 @@ JSON Orbis::write() const
   json.add( "caelum", caelum.write() );
   json.add( "terra", terra.write() );
 
+  int nStructs = structs.length() - 1;
+  int nObjects = objects.length() - 1;
+  int nFrags   = frags.length() - 1;
+
+  while( structs[nStructs] == nullptr && nStructs > 0 ) {
+    --nStructs;
+  }
+  while( objects[nObjects] == nullptr && nObjects > 0 ) {
+    --nObjects;
+  }
+  while( frags[nFrags] == nullptr && nFrags > 0 ) {
+    --nFrags;
+  }
+
   Struct* str;
   Object* obj;
   Frag*   frag;
 
   JSON& structsJSON = json.add( "structs", JSON::ARRAY );
 
-  for( int i = 1; i < structs.length(); ++i ) {
+  for( int i = 1; i <= nStructs; ++i ) {
     str = structs[i];
 
     if( str == nullptr ) {
@@ -601,7 +615,7 @@ JSON Orbis::write() const
 
   JSON& objectsJSON = json.add( "objects", JSON::ARRAY );
 
-  for( int i = 1; i < objects.length(); ++i ) {
+  for( int i = 1; i <= nObjects; ++i ) {
     obj = objects[i];
 
     if( obj == nullptr ) {
@@ -615,7 +629,7 @@ JSON Orbis::write() const
 
   JSON& fragsJSON = json.add( "frags", JSON::ARRAY );
 
-  for( int i = 1; i < frags.length(); ++i ) {
+  for( int i = 1; i <= nFrags; ++i ) {
     frag = frags[i];
 
     if( frag == nullptr ) {

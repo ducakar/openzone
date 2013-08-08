@@ -98,34 +98,6 @@ void GameStage::write() const
   }
 }
 
-void GameStage::readLayout()
-{
-  Log::print( "Loading layout from '%s' ...", layoutFile.path().cstr() );
-
-  JSON json;
-  if( json.load( layoutFile ) ) {
-    OZ_ERROR( "Reading saved layout '%s' failed", layoutFile.path().cstr() );
-  }
-
-  Log::printEnd( " OK" );
-
-  matrix.read( json );
-}
-
-void GameStage::writeLayout() const
-{
-  JSON json = matrix.write();
-
-  Log::print( "Saving layout to %s ...", layoutFile.path().cstr() );
-
-  if( !json.save( layoutFile ) ) {
-    Log::printEnd( " Failed" );
-  }
-  else {
-    Log::printEnd( " OK" );
-  }
-}
-
 void GameStage::auxMain( void* )
 {
   gameStage.auxRun();
@@ -205,6 +177,7 @@ bool GameStage::update()
   if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
     stateFile = quicksaveFile;
     write();
+    stateFile = "";
   }
   if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
     quicksaveFile.stat();
@@ -219,18 +192,6 @@ bool GameStage::update()
 
     if( autosaveFile.type() == File::REGULAR ) {
       stateFile = autosaveFile;
-      Stage::nextStage = this;
-    }
-  }
-  if( input.keys[Input::KEY_SAVE_LAYOUT] && !input.oldKeys[Input::KEY_SAVE_LAYOUT] ) {
-    layoutFile = File( config["dir.config"].asString() + "/layouts/default.json" );
-    writeLayout();
-    layoutFile = File();
-  }
-  if( input.keys[Input::KEY_LOAD_LAYOUT] && !input.oldKeys[Input::KEY_LOAD_LAYOUT] ) {
-    layoutFile.stat();
-
-    if( layoutFile.type() == File::REGULAR ) {
       Stage::nextStage = this;
     }
   }
@@ -351,10 +312,7 @@ void GameStage::load()
 
   modules.load();
 
-  if( layoutFile.type() == File::REGULAR ) {
-    readLayout();
-  }
-  else if( stateFile.type() == File::REGULAR ) {
+  if( stateFile.type() == File::REGULAR ) {
     read();
   }
   else {
@@ -369,8 +327,7 @@ void GameStage::load()
     Log::println( "}" );
   }
 
-  stateFile  = File();
-  layoutFile = File();
+  stateFile = "";
 
   nirvana.sync();
   synapse.update();
@@ -391,14 +348,10 @@ void GameStage::load()
 
   loader.load();
 
-  Log::print( "Starting auxilary thread ..." );
-
   isAuxAlive = true;
   mainSemaphore.init( 1 );
   auxSemaphore.init( 0 );
   auxThread.start( "aux", Thread::JOINABLE, auxMain );
-
-  Log::printEnd( " OK" );
 
   ui::ui.showLoadingScreen( false );
 
@@ -423,14 +376,10 @@ void GameStage::unload()
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
 
-  Log::print( "Stopping auxilary thread ..." );
-
   isAuxAlive = false;
 
   auxSemaphore.post();
   auxThread.join();
-
-  Log::printEnd( " OK" );
 
   float sleepTime             = float( sleepMicros )                    * 1.0e-6f;
   float uiTime                = float( uiMicros )                       * 1.0e-6f;
@@ -455,10 +404,10 @@ void GameStage::unload()
   int   nFrameDrops           = int( timer.ticks - timer.nFrames );
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
-  if( stateFile.path().isEmpty() ) {
+  if( stateFile.isEmpty() ) {
     stateFile = autosaveFile;
     write();
-    stateFile = File();
+    stateFile = "";
   }
 
   modules.unload();
@@ -547,11 +496,10 @@ void GameStage::destroy()
   nirvana.destroy();
   matrix.destroy();
 
-  stateFile      = File();
-  layoutFile     = File();
-  mission        = "";
-  autosaveFile   = File();
-  quicksaveFile  = File();
+  stateFile     = "";
+  mission       = "";
+  autosaveFile  = "";
+  quicksaveFile = "";
 
   Log::unindent();
   Log::println( "}" );

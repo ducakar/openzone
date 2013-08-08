@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/ui/BuildMenu.hh
+ * @file client/ui/BuildFrame.hh
  */
 
 #pragma once
@@ -34,7 +34,7 @@ namespace client
 namespace ui
 {
 
-class BuildMenu : public Frame
+class BuildFrame : public Frame
 {
   private:
 
@@ -47,7 +47,8 @@ class BuildMenu : public Frame
     {
       BUILDINGS,
       UNITS,
-      ITEMS
+      ITEMS,
+      OBJECTS
     };
 
     Mode               mode;
@@ -70,6 +71,8 @@ class BuildMenu : public Frame
     static void selectBuildings( Button* sender );
     static void selectUnits( Button* sender );
     static void selectItems( Button* sender );
+    static void selectObjects( Button* sender );
+
     static void startPlacement( ModelField* sender, bool isClicked );
 
     bool onMouseEvent() override;
@@ -77,8 +80,7 @@ class BuildMenu : public Frame
 
   public:
 
-    explicit BuildMenu();
-    ~BuildMenu() override;
+    explicit BuildFrame();
 
 };
 

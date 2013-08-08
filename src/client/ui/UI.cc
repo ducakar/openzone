@@ -37,7 +37,7 @@
 #include <client/ui/MusicPlayer.hh>
 #include <client/ui/Inventory.hh>
 #include <client/ui/InfoFrame.hh>
-#include <client/ui/BuildMenu.hh>
+#include <client/ui/BuildFrame.hh>
 #include <client/ui/DebugFrame.hh>
 
 namespace oz
@@ -52,7 +52,7 @@ UI::UI() :
   doShow( true ),
   root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ), strategicArea( nullptr ),
   questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ), inventory( nullptr ),
-  buildMenu( nullptr ), debugFrame( nullptr )
+  buildFrame( nullptr ), debugFrame( nullptr )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -145,7 +145,7 @@ void UI::load()
   musicPlayer   = new MusicPlayer();
   inventory     = new Inventory();
   infoFrame     = new InfoFrame();
-  buildMenu     = new BuildMenu();
+  buildFrame    = new BuildFrame();
   debugFrame    = showDebug ? new DebugFrame() : nullptr;
 
   root->add( hudArea, 0, 0 );
@@ -155,7 +155,7 @@ void UI::load()
   root->add( musicPlayer, 8, -16 - galileoFrame->height );
   root->add( inventory, Area::CENTRE, 8 );
   root->add( infoFrame, -8, -8 );
-  root->add( buildMenu, -8, -8 );
+  root->add( buildFrame, -8, -8 );
 
   if( showDebug ) {
     root->add( debugFrame, Area::CENTRE, -16 - questFrame->height );
@@ -165,7 +165,7 @@ void UI::load()
   strategicArea->enable( false );
   inventory->enable( false );
   infoFrame->enable( false );
-  buildMenu->enable( false );
+  buildFrame->enable( false );
 
   loadingScreen->raise();
 }
@@ -176,9 +176,9 @@ void UI::unload()
     root->remove( debugFrame );
     debugFrame = nullptr;
   }
-  if( buildMenu != nullptr ) {
-    root->remove( buildMenu );
-    buildMenu = nullptr;
+  if( buildFrame != nullptr ) {
+    root->remove( buildFrame );
+    buildFrame = nullptr;
   }
   if( infoFrame != nullptr ) {
     root->remove( infoFrame );

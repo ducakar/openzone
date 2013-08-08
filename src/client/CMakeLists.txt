@@ -16,6 +16,7 @@ add_library( client STATIC
   Client.hh
   common.hh
   Context.hh
+  EditStage.hh
   eSpeak.hh
   ExplosionImago.hh
   FragPool.hh
@@ -61,6 +62,7 @@ add_library( client STATIC
   Client.cc
   common.cc
   Context.cc
+  EditStage.cc
   eSpeak.cc
   ExplosionImago.cc
   FragPool.cc
@@ -96,7 +98,7 @@ add_library( client STATIC
   VehicleAudio.cc
   ui/Area.hh
   ui/Bar.hh
-  ui/BuildMenu.hh
+  ui/BuildFrame.hh
   ui/Button.hh
   ui/CinematicText.hh
   ui/CreditsMenu.hh
@@ -123,7 +125,7 @@ add_library( client STATIC
   ui/UI.hh
   ui/Area.cc
   ui/Bar.cc
-  ui/BuildMenu.cc
+  ui/BuildFrame.cc
   ui/Button.cc
   ui/CinematicText.cc
   ui/CreditsMenu.cc
@@ -152,34 +154,3 @@ add_library( client STATIC
 )
 
 use_pch( client pch )
-
-# SDL.
-if( OZ_SDL2 )
-  if( OZ_NET )
-    target_link_libraries( client ${SDL2_NET_LIBRARIES} )
-  endif()
-  target_link_libraries( client ${SDL2_TTF_LIBRARIES} ${SDL2_LIBRARIES} )
-else()
-  if( OZ_NET )
-    target_link_libraries( client ${SDL_NET_LIBRARIES} )
-  endif()
-  target_link_libraries( client ${SDL_TTF_LIBRARIES} ${SDL_LIBRARIES} )
-endif()
-
-# OpenGL.
-if( OZ_GL_ES )
-  target_link_libraries( client ${GLES2_LIBRARIES} )
-else()
-  target_link_libraries( client ${OPENGL_gl_LIBRARY} )
-endif()
-
-# OpenAL.
-target_link_libraries( client ${OPENAL_LIBRARY} )
-
-# libvorbisfile.
-target_link_libraries( client ${VORBISFILE_LIBRARIES} )
-
-# Dependencies.
-if( PLATFORM_EMBEDDED )
-  target_link_libraries( client ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
-endif()

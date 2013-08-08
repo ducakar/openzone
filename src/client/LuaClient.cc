@@ -81,7 +81,7 @@ void LuaClient::create( const char* mission_ )
   Log::println( "Executing scripts for mission %s {", cs.mission.cstr() );
   Log::indent();
 
-  File missionDir( "@mission/" + cs.mission );
+  File missionDir = "@mission/" + cs.mission;
   DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
@@ -125,7 +125,7 @@ void LuaClient::read( InputStream* istream )
 
   Log::print( "Deserialising scripts for mission %s ...", cs.mission.cstr() );
 
-  File missionDir( "@mission/" + cs.mission );
+  File missionDir = "@mission/" + cs.mission;
   DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
@@ -593,7 +593,7 @@ void LuaClient::init()
    * UI
    */
 
-  IMPORT_FUNC( ozUIBuildMenu );
+  IMPORT_FUNC( ozUIBuildFrame );
 
   importMatrixConstants( l );
   importNirvanaConstants( l );

@@ -26,6 +26,10 @@
 namespace oz
 {
 
+QuestList::QuestList() :
+  activeQuest( -1 )
+{}
+
 void QuestList::add( const char* title, const char* description, const Point& place,
                      Quest::State state )
 {
@@ -82,14 +86,14 @@ void QuestList::write( OutputStream* ostream ) const
 }
 
 void QuestList::load()
-{
-  activeQuest = -1;
-}
+{}
 
 void QuestList::unload()
 {
   quests.clear();
   quests.deallocate();
+
+  activeQuest = -1;
 }
 
 QuestList questList;

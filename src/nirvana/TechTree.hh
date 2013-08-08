@@ -44,7 +44,8 @@ class TechTree
         TECHNOLOGY,
         BUILDING,
         UNIT,
-        ITEM
+        ITEM,
+        OBJECT
       };
 
       Type                   type;
@@ -56,8 +57,7 @@ class TechTree
       union
       {
         const BSP*           building;
-        const ObjectClass*   unit;
-        const ObjectClass*   item;
+        const ObjectClass*   object;
       };
       SList<Node*, MAX_DEPS> requires;
       float                  progress;
@@ -74,6 +74,7 @@ class TechTree
     List<const BSP*>         allowedBuildings;
     List<const ObjectClass*> allowedUnits;
     List<const ObjectClass*> allowedItems;
+    List<const ObjectClass*> allowedObjects;
 
     void update();
 

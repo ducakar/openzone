@@ -58,7 +58,7 @@ void Font::init( const char* name, int height_ )
 {
   height = height_;
 
-  File file( String::str( "@ui/font/%s.ttf", name ) );
+  File file = String::str( "@ui/font/%s.ttf", name );
 
   buffer = file.read();
   if( buffer.isEmpty() ) {

@@ -145,7 +145,7 @@ void Shader::loadProgram( int id )
 {
   const String& name = liber.shaders[id].name;
 
-  File configFile( "@glsl/" + name + ".json" );
+  File configFile = "@glsl/" + name + ".json";
   JSON programConfig;
 
   if( !programConfig.load( configFile ) ) {
@@ -390,14 +390,14 @@ void Shader::init()
     defines += "#define OZ_ENV_MAP\n";
   }
 
-  File file( "@glsl/header.glsl" );
+  File file = "@glsl/header.glsl";
   Buffer buffer = file.read();
 
   if( buffer.isEmpty() ) {
     OZ_ERROR( "'%s' read failed", file.path().cstr() );
   }
 
-  File dir( "@glsl" );
+  File dir = "@glsl";
   DArray<File> shaderFiles = dir.ls();
 
   foreach( file, shaderFiles.citer() ) {

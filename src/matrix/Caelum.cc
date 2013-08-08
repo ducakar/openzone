@@ -24,6 +24,7 @@
 #include <matrix/Caelum.hh>
 
 #include <common/Timer.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -31,7 +32,6 @@ namespace oz
 void Caelum::reset()
 {
   id      = -1;
-
   heading = 0.0f;
   period  = 86400.0f;
   time    = 0.0f;
@@ -60,6 +60,9 @@ void Caelum::write( OutputStream* ostream ) const
 
 void Caelum::read( const JSON& json )
 {
+  const char* name = json["name"].get( "" );
+
+  id      = String::isEmpty( name ) ? -1 : liber.caelumIndex( name );
   heading = json["heading"].get( 0.0f );
   period  = json["period"].get( 86400.0f );
   time    = json["time"].get( 0.0f );

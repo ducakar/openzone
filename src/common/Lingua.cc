@@ -75,7 +75,7 @@ bool Lingua::initMission( const char* mission )
 {
   clear();
 
-  File file( String::str( "@mission/%s/lingua/%s.mo", mission, language.cstr() ) );
+  File file = String::str( "@mission/%s/lingua/%s.mo", mission, language.cstr() );
   return catalogue.import( file );
 }
 
@@ -89,7 +89,7 @@ bool Lingua::init( const char* language_ )
   language = language_;
   catalogue.clear();
 
-  File dir( "@lingua/" + language );
+  File dir = "@lingua/" + language;
   if( dir.type() == File::MISSING ) {
     return false;
   }

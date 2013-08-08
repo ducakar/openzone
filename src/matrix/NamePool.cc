@@ -51,7 +51,7 @@ void NamePool::init()
   listPositions.add( names.length() );
 
   for( int i = 0; i < liber.nameLists.length(); ++i ) {
-    File file( liber.nameLists[i].path );
+    File file = liber.nameLists[i].path;
 
     if( file.type() != File::REGULAR ) {
       OZ_ERROR( "Reading '%s' failed", liber.nameLists[i].path.cstr() );

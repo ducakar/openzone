@@ -127,7 +127,7 @@ static void readClass( const File& file )
 
 static void readNirvana( const File& dir )
 {
-  File techFile( dir.path() + "/techTree.json" );
+  File techFile = dir.path() + "/techTree.json";
   JSON techConfig;
 
   if( techConfig.load( techFile ) ) {
@@ -350,7 +350,7 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
     os.writeLine( "msgstr \"\"" );
   }
 
-  File outFile( filePath );
+  File outFile = filePath;
 
   if( !outFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
@@ -383,7 +383,7 @@ int main( int argc, char** argv )
 
   String pkgName = pkgDir.substring( pkgDir.lastIndex( '/' ) + 1 );
 
-  File bspDir( pkgDir + "/baseq3/maps" );
+  File bspDir = pkgDir + "/baseq3/maps";
   DArray<File> files = bspDir.ls();
 
   foreach( file, files.citer() ) {
@@ -394,7 +394,7 @@ int main( int argc, char** argv )
     readBSP( *file );
   }
 
-  File classDir( pkgDir + "/class" );
+  File classDir = pkgDir + "/class";
   files = classDir.ls();
 
   foreach( file, files.citer() ) {
@@ -405,10 +405,10 @@ int main( int argc, char** argv )
     readClass( *file );
   }
 
-  File nirvanaDir( pkgDir + "/nirvana" );
+  File nirvanaDir = pkgDir + "/nirvana";
   readNirvana( nirvanaDir );
 
-  File creditsFile( pkgDir + "/credits/" + pkgName + ".txt" );
+  File creditsFile = pkgDir + "/credits/" + pkgName + ".txt";
   readCredits( creditsFile );
 
   if( !titles.isEmpty() ) {
@@ -425,7 +425,7 @@ int main( int argc, char** argv )
     Log::printEnd( " OK" );
   }
 
-  File missionsDir( pkgDir + "/mission" );
+  File missionsDir = pkgDir + "/mission";
   DArray<File> missions = missionsDir.ls();
 
   foreach( mission, missions.citer() ) {

@@ -275,7 +275,7 @@ bool ImageBuilder::convertToDDS( const File& file, int options, const char* dest
   FreeImage_FlipVertical( newDib );
   dib = newDib;
 
-  File destFile( destPath );
+  File destFile = destPath;
   if( destFile.type() == File::DIRECTORY ) {
     destFile = String::str( "%s/%s.dds", destPath, file.baseName().cstr() );
   }

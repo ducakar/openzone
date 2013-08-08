@@ -51,7 +51,7 @@ void Caelum::build( const char* name )
     OZ_ERROR( "Failed to build moon texture" );
   }
 
-  File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
+  File destFile = String::str( "caelum/%s.ozcCaelum", name );
 
   OutputStream os( 0, Endian::LITTLE );
 

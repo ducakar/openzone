@@ -9,8 +9,6 @@
     * launch bar/menu bar
     * RTS interface
 - client
-    * editor
-    * layout files
     * decals
     * particle model (smoke, fire ...)
 - missions

@@ -7,7 +7,7 @@ pkgdesc='Simple cross-platform FPS/RTS game engine'
 url="http://ducakar.github.com/openzone/"
 license=('GPL3' 'CCPL:by-nc-nd')
 arch=('i686' 'x86_64')
-depends=('libpulse' 'physfs' 'sdl_ttf' 'libgl' 'openal' 'freeimage' 'libnoise' 'assimp' 'luajit')
+depends=('libpulse' 'physfs' 'sdl2_ttf' 'libgl' 'openal' 'freeimage' 'libnoise' 'assimp' 'luajit')
 optdepends=('espeak: speech synthesis'
             'libmad: MP3 playing'
             'faad2: AAC playing'

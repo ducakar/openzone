@@ -51,7 +51,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildIcons()
 {
-  File dir( "@ui/icon" );
+  File dir = "@ui/icon";
 
   if( dir.type() != File::DIRECTORY ) {
     return;

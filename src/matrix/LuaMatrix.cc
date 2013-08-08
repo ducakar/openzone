@@ -426,7 +426,7 @@ void LuaMatrix::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
-  File luaDir( "@lua/matrix" );
+  File luaDir = "@lua/matrix";
   DArray<File> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.citer() ) {

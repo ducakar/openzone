@@ -115,7 +115,7 @@ void Mouse::init()
   wasShown = false;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
-    File file( String::str( "@ui/cur/%s", NAMES[i] ) );
+    File file = String::str( "@ui/cur/%s", NAMES[i] );
 
     if( !cursors[i].load( file ) ) {
       OZ_ERROR( "Cursor loading failed" );

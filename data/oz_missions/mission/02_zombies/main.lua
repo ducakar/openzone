@@ -79,5 +79,5 @@ function onCreate()
   ozCameraAddSwitchableUnit( oz_me )
   ozCameraSwitchTo( oz_me )
 
-  ozUIBuildMenu( true )
+  ozUIBuildFrame( true )
 end

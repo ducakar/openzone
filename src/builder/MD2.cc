@@ -202,8 +202,8 @@ void MD2::build( const char* path )
 {
   String sPath = path;
 
-  File modelFile( sPath + "/tris.md2" );
-  File configFile( sPath + "/config.json" );
+  File modelFile = sPath + "/tris.md2";
+  File configFile = sPath + "/config.json";
   String skinPath = sPath + "/skin";
 
   Log::println( "Prebuilding MD2 model '%s' {", path );
@@ -394,7 +394,7 @@ void MD2::build( const char* path )
 
     os.writeMat44( weaponTransfInv );
 
-    File destFile( sDestDir + "/data.ozcMD2" );
+    File destFile = sDestDir + "/data.ozcMD2";
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -405,7 +405,7 @@ void MD2::build( const char* path )
     Log::printEnd( " OK" );
   }
   else {
-    File destFile( sDestDir + "/data.ozcSMM" );
+    File destFile = sDestDir + "/data.ozcSMM";
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

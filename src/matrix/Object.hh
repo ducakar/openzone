@@ -304,7 +304,7 @@ class Object : public AABB
       damage -= resistance;
 
       if( damage > 0.0f ) {
-        life -= damage;
+        life = max( 0.0f, life - damage );
         addEvent( EVENT_DAMAGE, DAMAGE_BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
       }
     }

@@ -86,6 +86,8 @@ const char* const Input::KEY_NAMES[] = {
   "Fast forward sky (cheat)",
   "Fast backward sky (cheat)",
 
+  "Delete",
+
   "Quick save",
   "Quick load",
   "Save layout",
@@ -174,6 +176,8 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDLK_p;
   keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDLK_o;
 
+  keyMap[KEY_DELETE][0]             = MOD_OFF_BIT | SDLK_DELETE;
+
   keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | SDLK_F5;
   keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | SDLK_F7;
   keyMap[KEY_AUTOLOAD][0]           = MOD_OFF_BIT | SDLK_F8;
@@ -252,6 +256,8 @@ void Input::loadDefaultKeyMap()
 
   keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDL_SCANCODE_P;
   keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDL_SCANCODE_O;
+
+  keyMap[KEY_DELETE][0]             = MOD_OFF_BIT | SDL_SCANCODE_DELETE;
 
   keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | SDL_SCANCODE_F5;
   keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | SDL_SCANCODE_F7;
@@ -580,7 +586,7 @@ void Input::update()
 
 void Input::init()
 {
-  File configFile( config["dir.config"].asString() + "/input.json" );
+  File configFile = config["dir.config"].asString() + "/input.json";
 
   Log::print( "Initialising Input from '%s' ...", configFile.path().cstr() );
 
@@ -607,13 +613,11 @@ void Input::init()
 
   mSet( keyMap, 0, sizeof( keyMap ) );
 
-  if( configExists ) {
-    loadKeyMap( keyMapConfig );
+  if( keyMapConfig.isNull() ) {
+    loadDefaultKeyMap();
   }
   else {
-    Log::printRaw( " Non-existent or invalid, loading defaults ..." );
-
-    loadDefaultKeyMap();
+    loadKeyMap( keyMapConfig );
   }
 
   mouseX         = 0.0f;
@@ -677,7 +681,7 @@ void Input::destroy()
     return;
   }
 
-  File configFile( config["dir.config"].asString() + "/input.json" );
+  File configFile = config["dir.config"].asString() + "/input.json";
 
   Log::print( "Writing Input configuration to '%s' ...", configFile.path().cstr() );
 

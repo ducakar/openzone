@@ -52,7 +52,7 @@ void Terra::load( int id_ )
 
     Log::print( "Loading terrain '%s' ...", name.cstr() );
 
-    File file( path );
+    File file = path;
     InputStream is = file.inputStream( Endian::LITTLE );
 
     if( !is.isAvailable() ) {

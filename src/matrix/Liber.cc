@@ -190,7 +190,7 @@ void Liber::initShaders()
 
   List<Resource> shadersList;
 
-  File dir( "@glsl" );
+  File dir = "@glsl";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -220,7 +220,7 @@ void Liber::initTextures()
 
   List<Resource> texturesList;
 
-  File dir( "@tex" );
+  File dir = "@tex";
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.citer() ) {
@@ -260,7 +260,7 @@ void Liber::initSounds()
 
   List<Resource> soundsList;
 
-  File dir( "@snd" );
+  File dir = "@snd";
   DArray<File> dirList = dir.ls();
 
   foreach( subDir, dirList.citer() ) {
@@ -300,7 +300,7 @@ void Liber::initCaela()
 
   List<Resource> caelaList;
 
-  File dir( "@caelum" );
+  File dir = "@caelum";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -330,7 +330,7 @@ void Liber::initTerrae()
 
   List<Resource> terraeList;
 
-  File dir( "@terra" );
+  File dir = "@terra";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -360,7 +360,7 @@ void Liber::initModels()
 
   List<Resource> modelsList;
 
-  File dir( "@mdl" );
+  File dir = "@mdl";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -405,7 +405,7 @@ void Liber::initNameLists()
 
   List<Resource> nameListsList;
 
-  File dir( "@name" );
+  File dir = "@name";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -433,7 +433,7 @@ void Liber::initFragPools()
   Log::println( "Fragment pools (*.ozFragPools in 'frag') {" );
   Log::indent();
 
-  File dir( "@frag" );
+  File dir = "@frag";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -473,7 +473,7 @@ void Liber::initClasses()
   Log::println( "Object classes (*.ozClasses in 'class') {" );
   Log::indent();
 
-  File dir( "@class" );
+  File dir = "@class";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -629,7 +629,7 @@ void Liber::initBSPs()
   Log::println( "BSP structures (*.ozBSP, *.ozcBSP in 'bsp') {" );
   Log::indent();
 
-  File dir( "@bsp" );
+  File dir = "@bsp";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
@@ -652,7 +652,7 @@ void Liber::initBSPs()
 
 void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
 {
-  File dir( path );
+  File dir = path;
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
