@@ -93,7 +93,7 @@ int Client::init( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "li:e:t:L:p:v" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "li:e:t:L:p:vhH?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doAutoload = true;

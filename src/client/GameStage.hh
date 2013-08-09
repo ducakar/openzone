@@ -35,6 +35,7 @@ class GameStage : public Stage
 {
   private:
 
+    ulong64       startTicks;
     long64        sleepMicros;
     long64        loadingMicros;
     long64        uiMicros;

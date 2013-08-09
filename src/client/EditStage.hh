@@ -25,6 +25,7 @@
 
 #include <client/Stage.hh>
 #include <client/Proxy.hh>
+#include <client/ui/EditFrame.hh>
 
 namespace oz
 {
@@ -35,21 +36,22 @@ class EditStage : public Stage
 {
   private:
 
-    Thread        auxThread;
-    Semaphore     mainSemaphore;
-    Semaphore     auxSemaphore;
-    volatile bool isAuxAlive;
+    Thread         auxThread;
+    Semaphore      mainSemaphore;
+    Semaphore      auxSemaphore;
+    volatile bool  isAuxAlive;
 
   public:
 
-    Proxy* proxy;
+    Proxy*         proxy;
 
-    File   layoutFile;
+    ui::EditFrame* editFrame;
+    File           layoutFile;
 
   private:
 
-    void readLayout();
-    void writeLayout() const;
+    void read();
+    void write() const;
 
     static void auxMain( void* );
     void auxRun();

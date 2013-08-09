@@ -33,6 +33,24 @@ namespace oz
 static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
                "Orbis and terrain size mismatch" );
 
+static int popMinimal( List<int>* list )
+{
+  hard_assert( !list->isEmpty() );
+
+  int minimal  = 0;
+  int minValue = list->first();
+
+  for( int i = 1; i < list->length(); ++i ) {
+    if( ( *list )[i] < minValue ) {
+      minimal  = i;
+      minValue = ( *list )[i];
+    }
+  }
+
+  list->eraseUnordered( minimal );
+  return minValue;
+}
+
 bool Orbis::position( Struct* str )
 {
   Span span = getInters( *str, EPSILON );
@@ -148,7 +166,7 @@ Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
     structs.add( str );
   }
   else {
-    int index = strAvailableIndices.popLast();
+    int index = popMinimal( &strAvailableIndices );
 
     str = new Struct( bsp, index - 1, p, heading );
     structs[index] = str;
@@ -172,7 +190,7 @@ Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
     objects.add( obj );
   }
   else {
-    int index = objAvailableIndices.popLast();
+    int index = popMinimal( &objAvailableIndices );
 
     obj = clazz->create( index - 1, p, heading );
     objects[index] = obj;
@@ -200,7 +218,7 @@ Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
     frags.add( frag );
   }
   else {
-    int index = fragAvailableIndices.popLast();
+    int index = popMinimal( &fragAvailableIndices );
 
     frag = new Frag( pool, index - 1, p, velocity );
     frags[index] = frag;

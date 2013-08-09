@@ -43,7 +43,7 @@ namespace oz
 namespace client
 {
 
-void EditStage::readLayout()
+void EditStage::read()
 {
   Log::print( "Loading layout from '%s' ...", layoutFile.path().cstr() );
 
@@ -58,7 +58,7 @@ void EditStage::readLayout()
   matrix.read( json );
 }
 
-void EditStage::writeLayout() const
+void EditStage::write() const
 {
   JSON json = matrix.write();
 
@@ -126,13 +126,9 @@ bool EditStage::update()
    * UI and modules update, world may be updated from the main thread during this phase.
    */
 
-  if( input.keys[Input::KEY_QUIT] ) {
-    Stage::nextStage = &menuStage;
-  }
-
   if( input.keys[Input::KEY_SAVE_LAYOUT] && !input.oldKeys[Input::KEY_SAVE_LAYOUT] ) {
     layoutFile = File( config["dir.config"].asString() + "/layouts/default.json" );
-    writeLayout();
+    write();
     layoutFile = "";
   }
   if( input.keys[Input::KEY_LOAD_LAYOUT] && !input.oldKeys[Input::KEY_LOAD_LAYOUT] ) {
@@ -184,7 +180,7 @@ bool EditStage::update()
 
   camera.update();
 
-  return true;
+  return !input.keys[Input::KEY_QUIT];
 }
 
 void EditStage::present( bool isFull )
@@ -230,8 +226,11 @@ void EditStage::load()
   camera.setState( Camera::STRATEGIC );
   camera.strategic.hasBuildFrame = true;
 
+  editFrame = new ui::EditFrame();
+  ui::ui.root->add( editFrame, ui::Area::CENTRE, 8 );
+
   if( layoutFile.type() == File::REGULAR ) {
-    readLayout();
+    read();
   }
 
   synapse.update();
@@ -284,8 +283,11 @@ void EditStage::unload()
   auxThread.join();
 
   if( layoutFile.type() == File::REGULAR ) {
-    writeLayout();
+    write();
   }
+
+  ui::ui.root->remove( editFrame );
+  editFrame = nullptr;
 
   camera.reset();
 

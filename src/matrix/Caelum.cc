@@ -72,6 +72,7 @@ JSON Caelum::write() const
 {
   JSON json( JSON::OBJECT );
 
+  json.add( "name", liber.caela[id].name );
   json.add( "heading", heading );
   json.add( "period", period );
   json.add( "time", time );

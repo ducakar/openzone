@@ -31,6 +31,7 @@
 #include <client/Camera.hh>
 #include <client/SMM.hh>
 #include <client/Context.hh>
+#include <client/EditStage.hh>
 #include <client/ui/StrategicArea.hh>
 #include <client/ui/UI.hh>
 
@@ -207,7 +208,23 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
       buildFrame->overlayClass   = clazz;
       buildFrame->overlayHeading = NORTH;
 
-      ui.strategicArea->setOverlay( overlayCallback, buildFrame );
+      Object* container = camera.objectObj;
+
+      if( buildFrame->mode == ITEMS && container != nullptr && container->clazz->nItems != 0 &&
+          editStage.editFrame != nullptr && editStage.editFrame->isVisible() )
+      {
+        if( container->items.length() != container->clazz->nItems ) {
+          Dynamic* newItem = static_cast<Dynamic*>( synapse.add( clazz, Point::ORIGIN, NORTH, false ) );
+
+          newItem->parent = container->index;
+          container->items.add( newItem->index );
+
+          synapse.cut( newItem );
+        }
+      }
+      else {
+        ui.strategicArea->setOverlay( overlayCallback, buildFrame );
+      }
     }
   }
 }

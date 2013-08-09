@@ -470,7 +470,7 @@ struct JSON::Parser
 struct JSON::Formatter
 {
   static const int ALIGNMENT_COLUMN   = 32;
-  static const int SIGNIFICANT_DIGITS = 8;
+  static const int SIGNIFICANT_DIGITS = 12;
 
   OutputStream* ostream;
   const char*   lineEnd;

@@ -431,7 +431,7 @@ Vec3 Physics::handleObjMove()
     // Collision response.
     handleObjHit();
 
-    if( traceSplits >= 3 || dyn->life <= 0.0f ) {
+    if( traceSplits >= 3 || dyn->life == 0.0f ) {
       break;
     }
     ++traceSplits;

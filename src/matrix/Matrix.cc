@@ -70,10 +70,12 @@ void Matrix::update()
       continue;
     }
 
+    hard_assert( str->life >= 0.0f );
+
     if( str->demolishing >= 1.0f ) {
       synapse.remove( str );
     }
-    else if( str->life <= 0.0f && str->demolishing == 0.0f ) {
+    else if( str->life == 0.0f && str->demolishing == 0.0f ) {
       str->destroy();
     }
     else {
@@ -88,7 +90,9 @@ void Matrix::update()
       continue;
     }
 
-    if( obj->life <= 0.0f ) {
+    hard_assert( obj->life >= 0.0f );
+
+    if( obj->life == 0.0f ) {
       obj->destroy();
     }
     else {
@@ -152,6 +156,7 @@ void Matrix::read( InputStream* istream )
   Log::println( "Reading Matrix {" );
   Log::indent();
 
+  timer.ticks = istream->readULong64();
   orbis.read( istream );
   physics.gravity = istream->readFloat();
 
@@ -163,6 +168,7 @@ void Matrix::write( OutputStream* ostream ) const
 {
   Log::print( "Writing Matrix ..." );
 
+  ostream->writeULong64( timer.ticks );
   orbis.write( ostream );
   ostream->writeFloat( physics.gravity );
 

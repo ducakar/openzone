@@ -3,52 +3,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8"/>
 <title>OpenZone :: Readme</title>
-<style type="text/css">
-.centre {
-  text-align: center;
-}
-.config {
-  font-weight: bold;
-  font-family: monospace;
-}
-h2 {
-  margin-bottom: 4pt;
-}
-h3 {
-  margin-bottom: 4pt;
-}
-h4 {
-  margin-bottom: 4pt;
-}
-th {
-  text-align: left;
-  font-weight: bold;
-  padding-right: 10pt;
-}
-td {
-  padding-right: 10pt;
-}
-td.header {
-  font-weight: bold;
-}
-td.rowspace {
-  height: 10pt;
-}
-table.keys th {
-  text-align: right;
-  font-family: monospace;
-}
-table.args th {
-  font-family: monospace;
-}
-table.settings th {
-  font-family: monospace;
-}
-table.settings td {
-  padding-left: 20pt;
-  padding-bottom: 10pt;
-}
-</style>
+<link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
+<link href="style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
@@ -358,10 +314,10 @@ table.settings td {
 </table>
 
 <h2><a name="cmdline" href="#">Command Line</a></h2>
-<p class="config">
+<p><code>
     openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-L &lt;lang&gt;] [-p &lt;prefix&gt;]
-</p>
-<table class="args">
+</code></p>
+<table>
   <tr>
     <th>-v</th>
     <td>
@@ -607,8 +563,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Vertical screen resolution. If either <span class="settings">window.width</span> or
-      <span class="settings">window.height</span> is zero, desktop resolution is used.
+      Vertical screen resolution. If either <code>window.width</code> or <code>window.height</code>
+      is zero, desktop resolution is used.
     </td>
   </tr>
   <tr>
@@ -616,8 +572,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Horizontal screen resolution. If either <span class="settings">window.width</span> or
-      <span class="settings">window.height</span> is zero, desktop resolution is used.
+      Horizontal screen resolution. If either <code>window.width</code> or
+      <code>window.height</code> is zero, desktop resolution is used.
     </td>
   </tr>
 </table>
@@ -782,19 +738,19 @@ table.settings td {
   </li>
   <li>
     If you are using Gallium3D-based drivers and textures are (mostly) missing, set
-    <span class="config">shader.setSamplerIndices</span> to "false" in <a href="#dirs">
-    &lt;config&gt;</a>/client.json file.
+    <code>shader.setSamplerIndices</code> to "false" in
+    <a href="#dirs">&lt;config&gt;</a>/client.json file.
   </li>
   <li>
     If you are using AMD/ATI Catalyst driver and terrain looks white/grey, set
-    <span class="settings">shader.setSamplerIndices</span> to "true" in <a href="#dirs">
-    &lt;config&gt;</a>/client.json file.
+    <code>shader.setSamplerIndices</code> to "true" in
+    <a href="#dirs">&lt;config&gt;</a>/client.json file.
   </li>
   <li>
     If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2 models are missing
-    set <span class="settings">shader.vertexTexture</span> to "false" in <a href="#dirs">
-    &lt;config&gt;</a>/client.json file. Otherwise set it to "true" for better rendering
-    performance.
+    set <code>shader.vertexTexture</code> to "false" in
+    <a href="#dirs">&lt;config&gt;</a>/client.json file. Otherwise set it to "true" for better
+    rendering performance.
   </li>
 </ul>
 

@@ -69,12 +69,11 @@ const float WORLD_DIM = float( MAX_WORLD_COORD );
  * rounding error (half of `Math::FLOAT_EPS`).
  * Rounding errors made during collision query should only represent a small fraction of that since
  * calculations are performed in relative coordinates on hundreds of times smaller scale.
- * When we translate an object additional errors are introduces.
- * `position += collider.hit.ratio * move` can introduce at most
- * \f$ 2 \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
- * Sum of all those errors should be less than `|maxWorldCoord| * 3 * Math::FLOAT_EPS`.
+ * When we translate an object we can introduce additional
+ * \f$ \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
+ * Sum of all those errors should hence be less than `|maxWorldCoord| * 2 * Math::FLOAT_EPS`.
  */
-const float EPSILON = float( MAX_WORLD_COORD ) * 4.0f * Math::FLOAT_EPS;
+const float EPSILON = float( MAX_WORLD_COORD ) * 2.0f * Math::FLOAT_EPS;
 
 /**
  * 2D integer span.

@@ -326,13 +326,17 @@ void StrategicArea::onUpdate()
   taggedStr = orbis.strIndex( taggedStr );
 
   for( int i = 0; i < taggedObjs.length(); ) {
-    const Object* obj = orbis.obj( taggedObjs[i] );
+    Object* obj = orbis.obj( taggedObjs[i] );
 
     if( obj == nullptr || obj->cell == nullptr ) {
       taggedObjs.erase( i );
     }
     else {
       ++i;
+
+      if( taggedObjs.length() == 1 ) {
+        camera.setTaggedObj( obj );
+      }
     }
   }
 

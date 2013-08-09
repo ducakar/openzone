@@ -28,7 +28,6 @@
 #include <client/Camera.hh>
 #include <client/Input.hh>
 #include <client/ui/Mouse.hh>
-#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -62,11 +61,9 @@ void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
     if( input.leftReleased ) {
       if( inventory->other != nullptr ) {
         bot->invGive( item, inventory->other );
-        return;
       }
       else if( bot->cargo < 0 ) {
         bot->invDrop( item );
-        return;
       }
     }
     else if( input.rightReleased ) {
@@ -77,7 +74,6 @@ void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
         ui::mouse.doShow = false;
 
         bot->invGrab( item );
-        return;
       }
     }
   }
@@ -316,7 +312,7 @@ void Inventory::onDraw()
 }
 
 Inventory::Inventory() :
-  Frame( COLS*SLOT_SIZE + 2*PADDING_SIZE, SLOT_SIZE + FOOTER_SIZE, " " ),
+  Frame( COLS*SLOT_SIZE + 2*PADDING_SIZE, SINGLE_HEIGHT, " " ),
   owner( nullptr ), other( nullptr ),
   lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),

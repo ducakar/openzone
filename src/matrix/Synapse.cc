@@ -239,12 +239,7 @@ void Synapse::remove( Object* obj )
 
   removedObjects.add( obj->index );
 
-  if( obj->flags & Object::DYNAMIC_BIT ) {
-    if( obj->cell != nullptr ) {
-      orbis.unposition( obj );
-    }
-  }
-  else {
+  if( obj->cell != nullptr ) {
     collider.touchOverlaps( *obj, 4.0f * EPSILON );
     orbis.unposition( obj );
   }

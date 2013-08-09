@@ -3,52 +3,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8"/>
 <title>OpenZone :: Preberi</title>
-<style type="text/css">
-.centre {
-  text-align: center;
-}
-.config {
-  font-weight: bold;
-  font-family: monospace;
-}
-h2 {
-  margin-bottom: 4pt;
-}
-h3 {
-  margin-bottom: 4pt;
-}
-h4 {
-  margin-bottom: 4pt;
-}
-th {
-  text-align: left;
-  font-weight: bold;
-  padding-right: 10pt;
-}
-td {
-  padding-right: 10pt;
-}
-td.header {
-  font-weight: bold;
-}
-td.rowspace {
-  height: 10pt;
-}
-table.keys th {
-  text-align: right;
-  font-family: monospace;
-}
-table.args th {
-  font-family: monospace;
-}
-table.settings th {
-  font-family: monospace;
-}
-table.settings td {
-  padding-left: 20pt;
-  padding-bottom: 10pt;
-}
-</style>
+<link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
+<link href="style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
@@ -359,10 +315,10 @@ table.settings td {
 </table>
 
 <h2><a name="cmdline" href="#">Ukazna vrstica</a></h2>
-<p class="config">
+<p><code>
     openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-L &lt;jezik&gt;] [-p &lt;predpona&gt;]
-</p>
-<table class="args">
+</code></p>
+<table>
   <tr>
     <th>-v</th>
     <td>
@@ -609,8 +565,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Navpična ločljivost zaslona. Če je <span class="settings">window.width</span> ali
-      <span class="settings">window.height</span> enaka nič, se uporabi ločljivost namizja.
+      Navpična ločljivost zaslona. Če je <code>window.width</code> ali <code>window.height</code>
+      enaka nič, se uporabi ločljivost namizja.
     </td>
   </tr>
   <tr>
@@ -618,8 +574,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Vodoravna ločljivost zaslona. Če je <span class="settings">window.width</span> ali
-      <span class="settings">window.height</span> enaka nič, se uporabi ločljivost namizja.
+      Vodoravna ločljivost zaslona. Če je <code>window.width</code> ali <code>window.height</code>
+      enaka nič, se uporabi ločljivost namizja.
     </td>
   </tr>
 </table>
@@ -785,17 +741,17 @@ table.settings td {
   </li>
   <li>
     Če uporabljaš gonilnike osnovane na Gallium3D in teksture manjkajo, nastavi
-    <span class="config">shader.setSamplerIndices</span> na "false" v datoteki
+    <code>shader.setSamplerIndices</code> na "false" v datoteki
     <a href="#dirs">&lt;config&gt;</a>/client.json.
   </li>
   <li>
-    Če uporabljaš gonilnike AMD/ATI Catalyst in je teren bel/siv nastavi <span class="config">
-    shader.setSamplerIndices</span> na "true" v datoteki <a href="#dirs">&lt;config&gt;</a>
+    Če uporabljaš gonilnike AMD/ATI Catalyst in je teren bel/siv nastavi
+    <code>shader.setSamplerIndices</code> na "true" v datoteki <a href="#dirs">&lt;config&gt;</a>
     /client.json.
   </li>
   <li>
     Če imaš staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo
-    modeli MD2, nastavi <span class="config">shader.vertexTexture</span> na "false" v datoteki
+    modeli MD2, nastavi <code>shader.vertexTexture</code> na "false" v datoteki
     <a href="#dirs">&lt;config&gt;</a>/client.json, sicer pa na "true" za hitrejše izrisovanje.
   </li>
 </ul>

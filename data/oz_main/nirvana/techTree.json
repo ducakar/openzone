@@ -120,6 +120,9 @@
   {
     "item":             "goblin$axe"
   },
+  {
+    "item":             "bomb"
+  },
 
   {
     "object":           "serviceStation",

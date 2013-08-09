@@ -425,7 +425,7 @@ void Vehicle::onUpdate()
 
   rot = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) : Mat44::rotationZXZ( h, v, w );
 
-  if( pilot >= 0 && fuel > 0.0f ) {
+  if( pilot >= 0 && fuel != 0.0f ) {
     fuel = max( 0.0f, fuel - clazz->engine.idleConsumption );
 
     ( this->*HANDLERS[clazz->type] )();

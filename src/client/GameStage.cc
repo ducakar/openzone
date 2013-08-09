@@ -174,6 +174,10 @@ bool GameStage::update()
 
   beginMicros = Time::uclock();
 
+  if( input.keys[Input::KEY_QUIT] ) {
+    Stage::nextStage = &menuStage;
+  }
+
   if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
     stateFile = quicksaveFile;
     write();
@@ -194,10 +198,6 @@ bool GameStage::update()
       stateFile = autosaveFile;
       Stage::nextStage = this;
     }
-  }
-
-  if( input.keys[Input::KEY_QUIT] ) {
-    Stage::nextStage = &menuStage;
   }
 
   camera.prepare();
@@ -338,6 +338,8 @@ void GameStage::load()
   camera.prepare();
   camera.update();
 
+  startTicks = timer.ticks;
+
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
@@ -381,6 +383,7 @@ void GameStage::unload()
   auxSemaphore.post();
   auxThread.join();
 
+  float ticks                 = float( timer.ticks - startTicks );
   float sleepTime             = float( sleepMicros )                    * 1.0e-6f;
   float uiTime                = float( uiMicros )                       * 1.0e-6f;
   float loaderTime            = float( loaderMicros )                   * 1.0e-6f;
@@ -436,7 +439,7 @@ void GameStage::unload()
   Log::println( "game time             %8.2f s",    gameTime                                 );
   Log::println( "dropped time          %8.2f s",    droppedTime                              );
   Log::println( "optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                  );
-  Log::println( "tick rate in run time   %6.2f Hz", float( timer.ticks ) / runTime           );
+  Log::println( "tick rate in run time   %6.2f Hz", ticks / runTime                          );
   Log::println( "frame rate in run time  %6.2f Hz", float( timer.nFrames ) / runTime         );
   Log::println( "frame drop rate         %6.2f %%", frameDropRate * 100.0f                   );
   Log::println( "frame drops             %6d",      nFrameDrops                              );

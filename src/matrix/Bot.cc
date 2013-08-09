@@ -428,7 +428,7 @@ void Bot::onUpdate()
 
   // Dead.
   if( life < clazz->life / 2.0f ) {
-    if( life > 0.0f ) {
+    if( life != 0.0f ) {
       if( !( state & DEAD_BIT ) ) {
         kill();
       }
@@ -440,7 +440,7 @@ void Bot::onUpdate()
         life -= clazz->life * CORPSE_FADE_FACTOR * Timer::TICK_TIME;
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes
         // sounds and frags to fly around), that's why we just remove the object
-        if( life <= 0.0f ) {
+        if( life == 0.0f ) {
           flags |= DESTROYED_BIT;
         }
       }
@@ -489,7 +489,7 @@ void Bot::onUpdate()
       if( stamina < 0.0f ) {
         life += stamina * DROWNING_RATIO;
 
-        if( ( uint( index ) + uint( timer.ticks ) ) % Timer::TICKS_PER_SEC == 0 ) {
+        if( ( uint( timer.ticks ) + uint( index * 199999 ) ) % Timer::TICKS_PER_SEC == 0 ) {
           addEvent( EVENT_DAMAGE, 1.0f );
         }
       }
@@ -655,7 +655,7 @@ void Bot::onUpdate()
        * it hits a relatively horizontal surface (Physics::FLOOR_NORMAL_Z), proceed with climbing.
        */
       if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
-          !( state & LADDER_BIT ) && stamina > clazz->staminaClimbDrain )
+          !( state & LADDER_BIT ) && stamina >= clazz->staminaClimbDrain )
       {
         // check if bot's gonna hit a wall soon
         Vec3 desiredMove = CLIMB_MOVE_AHEAD * Vec3( move.x, move.y, 0.0f );

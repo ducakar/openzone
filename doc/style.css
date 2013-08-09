@@ -1,0 +1,54 @@
+* {
+  font-weight: normal;
+}
+body {
+  font-family: "Droid Sans Mono", sans-serif;
+  font-size: 10pt;
+  text-shadow: black 1px 1px 1px;
+  color: #ccffe6;
+  background-color: #0a100c;
+}
+a {
+  color: #40c0a0;
+}
+a:visited {
+  color: #308066;
+}
+h1 {
+  font-size: 2.5em;
+  text-align: center;
+}
+h2 {
+  margin-bottom: 4pt;
+}
+h3 {
+  margin-bottom: 4pt;
+}
+h4 {
+  margin-bottom: 4pt;
+}
+th {
+  text-align: left;
+  font-weight: bold;
+  padding-right: 10pt;
+}
+td {
+  padding-right: 10pt;
+}
+td.header {
+  font-weight: bold;
+}
+td.rowspace {
+  height: 10pt;
+}
+table.keys th {
+  text-align: right;
+  font-family: monospace;
+}
+table.settings td {
+  padding-left: 20pt;
+  padding-bottom: 10pt;
+}
+.centre {
+  text-align: center;
+}

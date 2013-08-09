@@ -53,7 +53,7 @@ class QuestList
 
   public:
 
-    QuestList();
+    explicit QuestList();
 
     void add( const char* title, const char* description, const Point& place, Quest::State state );
     void remove( int index );

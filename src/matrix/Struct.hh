@@ -223,7 +223,7 @@ inline void Struct::damage( float damage )
 OZ_ALWAYS_INLINE
 inline void Struct::update()
 {
-  if( !entities.isEmpty() || !boundObjects.isEmpty() || life <= 0.0f ) {
+  if( !entities.isEmpty() || !boundObjects.isEmpty() || life == 0.0f ) {
     onUpdate();
   }
 }

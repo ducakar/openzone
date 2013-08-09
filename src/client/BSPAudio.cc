@@ -125,7 +125,7 @@ BSPAudio::~BSPAudio()
 
 void BSPAudio::play( const Struct* str ) const
 {
-  if( str->life <= 0.0f && str->demolishing == 0.0f ) {
+  if( str->life == 0.0f && str->demolishing == 0.0f ) {
     int demolishSound = str->bsp->demolishSound;
 
     if( demolishSound >= 0 ) {

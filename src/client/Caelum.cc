@@ -125,6 +125,8 @@ void Caelum::draw()
                          ambientColour.z + diffuseColour.z,
                          1.0f );
 
+  sunColour = max( sunColour, caelumColour );
+
   tf.applyCamera();
   tf.apply();
   tf.setColour( tf.colour * sunColour );

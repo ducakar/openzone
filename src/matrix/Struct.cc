@@ -136,10 +136,12 @@ void Entity::manualDoorHandler()
     }
     case OPENING: {
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -148,6 +150,7 @@ void Entity::manualDoorHandler()
       return;
     }
     case CLOSING: {
+      time  += Timer::TICK_TIME;
       offset = Vec3::ZERO;
 
       if( collider.overlaps( this ) ) {
@@ -155,9 +158,11 @@ void Entity::manualDoorHandler()
 
         if( ratio == 1.0f ) {
           state = OPENED;
+          time  = 0.0f;
         }
         else {
           state    = OPENING;
+          time     = 0.0f;
           velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
@@ -168,6 +173,7 @@ void Entity::manualDoorHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -179,7 +185,7 @@ void Entity::autoDoorHandler()
 {
   switch( state ) {
     case CLOSED: {
-      if( ( timer.ticks + uint( str->index ) ) % 8 != 0 ) {
+      if( ( timer.ticks + uint( str->index * 199999 ) ) % ( Timer::TICKS_PER_SEC / 6 ) != 0 ) {
         return;
       }
 
@@ -191,10 +197,12 @@ void Entity::autoDoorHandler()
     }
     case OPENING: {
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -216,6 +224,7 @@ void Entity::autoDoorHandler()
       return;
     }
     case CLOSING: {
+      time  += Timer::TICK_TIME;
       offset = Vec3::ZERO;
 
       if( collider.overlaps( this, clazz->margin ) ) {
@@ -223,9 +232,11 @@ void Entity::autoDoorHandler()
 
         if( ratio == 1.0f ) {
           state = OPENED;
+          time  = 0.0f;
         }
         else {
           state    = OPENING;
+          time     = 0.0f;
           velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
@@ -236,6 +247,7 @@ void Entity::autoDoorHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -245,10 +257,10 @@ void Entity::autoDoorHandler()
 
 void Entity::ignoringBlockHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch( state ) {
     case CLOSED: {
-      time += Timer::TICK_TIME;
-
       if( time > clazz->timeout ) {
         state    = OPENING;
         time     = 0.0f;
@@ -262,13 +274,12 @@ void Entity::ignoringBlockHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      time += Timer::TICK_TIME;
-
       if( time > clazz->timeout ) {
         state    = CLOSING;
         time     = 0.0f;
@@ -282,6 +293,7 @@ void Entity::ignoringBlockHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -291,10 +303,10 @@ void Entity::ignoringBlockHandler()
 
 void Entity::crushingBlockHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch( state ) {
     case CLOSED: {
-      time += Timer::TICK_TIME;
-
       if( time > clazz->timeout ) {
         state    = OPENING;
         time     = 0.0f;
@@ -342,13 +354,12 @@ void Entity::crushingBlockHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      time += Timer::TICK_TIME;
-
       if( time > clazz->timeout ) {
         state    = CLOSING;
         time     = 0.0f;
@@ -396,6 +407,7 @@ void Entity::crushingBlockHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -410,12 +422,13 @@ void Entity::elevatorHandler()
       return;
     }
     case OPENING: {
-      float originalRatio = ratio;
-      Vec3 originalOffset = offset;
+      float originalRatio  = ratio;
+      Vec3  originalOffset = offset;
 
       Vec3 move = offset;
 
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
@@ -439,7 +452,9 @@ void Entity::elevatorHandler()
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio    = originalRatio;
               offset   = originalOffset;
+
               state    = ratio == 0.0f ? CLOSED : OPENED;
+              time     = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -449,6 +464,7 @@ void Entity::elevatorHandler()
 
       if( ratio == 1.0f ) {
         state    = OPENED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -457,12 +473,13 @@ void Entity::elevatorHandler()
       return;
     }
     case CLOSING: {
-      float originalRatio = ratio;
-      Vec3 originalOffset = offset;
+      float originalRatio  = ratio;
+      Vec3  originalOffset = offset;
 
       Vec3 move = offset;
 
       ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
@@ -486,7 +503,9 @@ void Entity::elevatorHandler()
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio    = originalRatio;
               offset   = originalOffset;
+
               state    = ratio == 1.0f ? OPENED : CLOSED;
+              time     = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -496,6 +515,7 @@ void Entity::elevatorHandler()
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
+        time     = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -550,7 +570,7 @@ void Struct::onUpdate()
     }
   }
 
-  if( life <= 0.0f ) {
+  if( life == 0.0f ) {
     onDemolish();
   }
   else {
