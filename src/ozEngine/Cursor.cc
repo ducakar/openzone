@@ -28,17 +28,19 @@
 
 #include "GL.hh"
 
+#include <SDL.h>
+
 namespace oz
 {
 
 Cursor::Cursor() :
-  images{}, nImages( 0 ), frame( 0 ), frameTime( 0 )
+  images{}, nImages( 0 ), frame( 0 ), lastFrame( -1 ), frameTime( 0 ), mode( OS )
 {}
 
-Cursor::Cursor( const oz::File& file, int size ) :
-  images{}, nImages( 0 ), frame( 0 ), frameTime( 0 )
+Cursor::Cursor( const File& file, Mode mode, int size ) :
+  images{}, nImages( 0 ), frame( 0 ), lastFrame( -1 ), frameTime( 0 ), mode( OS )
 {
-  load( file, size );
+  load( file, mode, size );
 }
 
 Cursor::~Cursor()
@@ -47,14 +49,16 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor( Cursor&& c ) :
-  nImages( c.nImages ), frame( c.frame ), frameTime( c.frameTime )
+  nImages( c.nImages ), frame( c.frame ), lastFrame( -1 ), frameTime( c.frameTime ), mode( c.mode )
 {
   aCopy<Image>( c.images, MAX_IMAGES, images );
 
   aFill<Image>( c.images, MAX_IMAGES, Image() );
   c.nImages   = 0;
   c.frame     = 0;
+  c.lastFrame = -1;
   c.frameTime = 0;
+  c.mode      = OS;
 }
 
 Cursor& Cursor::operator = ( Cursor&& c )
@@ -66,12 +70,16 @@ Cursor& Cursor::operator = ( Cursor&& c )
   aCopy<Image>( c.images, MAX_IMAGES, images );
   nImages   = c.nImages;
   frame     = c.frame;
+  lastFrame = c.lastFrame;
   frameTime = c.frameTime;
+  mode      = c.mode;
 
   aFill<Image>( c.images, MAX_IMAGES, Image() );
   c.nImages   = 0;
   c.frame     = 0;
+  c.lastFrame = -1;
   c.frameTime = 0;
+  c.mode      = OS;
 
   return *this;
 }
@@ -95,7 +103,16 @@ void Cursor::advance( int millis )
   frameTime  = frameTime % delay;
 }
 
-bool Cursor::load( const File& file, int size )
+void Cursor::updateOS()
+{
+  if( mode == OS && frame != lastFrame ) {
+    lastFrame = frame;
+
+    SDL_SetCursor( images[frame].sdlCursor );
+  }
+}
+
+bool Cursor::load( const File& file, Mode mode, int size )
 {
   InputStream istream = file.inputStream( Endian::LITTLE );
 
@@ -142,37 +159,49 @@ bool Cursor::load( const File& file, int size )
     image.hotspotLeft = istream.readInt();
     image.hotspotTop  = istream.readInt();
     image.delay       = istream.readInt();
+    image.sdlCursor   = nullptr;
 
     int size = image.width*image.height * 4;
 
     char* pixels = new char[size];
     istream.readChars( pixels, size );
 
-#ifdef GL_ES_VERSION_2_0
-    GLenum srcFormat = GL_RGBA;
+    if( mode == OS ) {
+      SDL_Surface* surface = SDL_CreateRGBSurfaceFrom( pixels, image.width, image.height, 32,
+                                                       image.width * 4, 0x00ff0000, 0x0000ff00,
+                                                       0x000000ff, 0xff000000 );
 
-    // BGRA -> RGBA
-    char* pixel = pixels;
-    for( int y = 0; y < image.height; ++y ) {
-      for( int x = 0; x < image.width; ++x ) {
-        swap( pixel[0], pixel[2] );
-        pixel += 4;
-      }
+      image.sdlCursor = SDL_CreateColorCursor( surface, image.hotspotLeft, image.hotspotTop );
+
+      SDL_FreeSurface( surface );
     }
+    else {
+#ifdef GL_ES_VERSION_2_0
+      GLenum srcFormat = GL_RGBA;
+
+      // BGRA -> RGBA
+      char* pixel = pixels;
+      for( int y = 0; y < image.height; ++y ) {
+        for( int x = 0; x < image.width; ++x ) {
+          swap( pixel[0], pixel[2] );
+          pixel += 4;
+        }
+      }
 #else
-    GLenum srcFormat = GL_BGRA;
+      GLenum srcFormat = GL_BGRA;
 #endif
 
-    glGenTextures( 1, &image.textureId );
-    glBindTexture( GL_TEXTURE_2D, image.textureId );
+      glGenTextures( 1, &image.textureId );
+      glBindTexture( GL_TEXTURE_2D, image.textureId );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, srcFormat,
-                  GL_UNSIGNED_BYTE, pixels );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, srcFormat,
+                    GL_UNSIGNED_BYTE, pixels );
+    }
 
     delete[] pixels;
 
@@ -189,13 +218,20 @@ void Cursor::destroy()
   }
 
   for( int i = 0; i < nImages; ++i ) {
-    glDeleteTextures( 1, &images[i].textureId );
+    if( mode == OS ) {
+      SDL_FreeCursor( images[i].sdlCursor );
+    }
+    else {
+      glDeleteTextures( 1, &images[i].textureId );
+    }
   }
 
   aFill<Image>( images, MAX_IMAGES, Image() );
   nImages   = 0;
   frame     = 0;
+  lastFrame = -1;
   frameTime = 0;
+  mode      = OS;
 }
 
 }

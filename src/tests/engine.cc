@@ -35,7 +35,9 @@ int main( int argc, char** argv )
   Window::create( "Test", 100, 100, false );
 
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1];
-  Cursor cursor( file );
+
+  GLTexture texture( "share/openzone/oz_base/ui/icon/use.dds" );
+  Cursor cursor( file, Cursor::OS );
 
   if( !cursor.isLoaded() ) {
     return EXIT_FAILURE;
@@ -53,11 +55,11 @@ int main( int argc, char** argv )
       isAlive = false;
     }
 
-    glClearColor( 0.2f, 0.2f, 0.2f, 0.0f );
+    glClearColor( 1.2f, 1.2f, 1.2f, 0.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glEnable( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
+    glBindTexture( GL_TEXTURE_2D, texture.id() );
 
     glBegin( GL_QUADS );
       glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
@@ -68,14 +70,14 @@ int main( int argc, char** argv )
 
     Window::swapBuffers();
     cursor.advance( 15 );
+    cursor.updateOS();
 
     Time::sleep( 10 );
   }
 
+  cursor.destroy();
+
   Window::destroy();
   SDL_Quit();
-
-  GLuint vs = glCreateShader( GL_VERTEX_SHADER );
-  GL::compileShaderFromFile( vs, "", "drek.glsl" );
   return 0;
 }

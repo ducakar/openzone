@@ -30,21 +30,39 @@
 
 #include "common.hh"
 
+struct SDL_Cursor;
+
 namespace oz
 {
 
 /**
- * X11 mouse cursor loader.
+ * Mouse cursor loader.
  *
- * It all images for an animated cursor have the same size, the same hotspot and the same animation
- * delay.
+ * There are two modes for rendering cursors. The first, your OS-provided cursor replaced by the
+ * current frame of this cursor with `SDL_SetCursor()` call. The secont, OpenGL textures are
+ * generated for each frame. You can retrieve OpenGL texture id for the current frame with
+ * `textureId()` call and render it via your UI render path.
+ *
+ * Cursor files must be in Xcursor format, which is the standard cursor format on Linux (or more
+ * accurately, on all X11 and Wayland systems).
  */
 class Cursor
 {
+  public:
+
+    /**
+     * Cursor render mode.
+     */
+    enum Mode
+    {
+      OS,
+      TEXTURE
+    };
+
   private:
 
     /// Maximum number of images.
-    static const int MAX_IMAGES = 16;
+    static const int MAX_IMAGES = 32;
 
     /**
      * Cursor image.
@@ -53,18 +71,25 @@ class Cursor
      */
     struct Image
     {
-      int  width;       ///< Image width.
-      int  height;      ///< Image height.
-      int  hotspotLeft; ///< Hotspot offset from the left.
-      int  hotspotTop;  ///< Hotspot offset from the top.
-      int  delay;       ///< Frame time in milliseconds.
-      uint textureId;   ///< GL texture id.
+      int width;               ///< Image width.
+      int height;              ///< Image height.
+      int hotspotLeft;         ///< Hotspot offset from the left.
+      int hotspotTop;          ///< Hotspot offset from the top.
+      int delay;               ///< Frame time in milliseconds.
+
+      union
+      {
+        SDL_Cursor* sdlCursor; ///< SDL cursor.
+        uint        textureId; ///< GL texture id.
+      };
     };
 
-    Image images[MAX_IMAGES]; ///< Cursor images.
-    int   nImages;            ///< Number of images.
-    int   frame;              ///< Current animation frame.
-    int   frameTime;          ///< Time in milliseconds of the current animation frame.
+    Image images[MAX_IMAGES];  ///< Cursor images.
+    int   nImages;             ///< Number of images.
+    int   frame;               ///< Current animation frame.
+    int   lastFrame;           ///< Last uploaded frame for OS cursor to avoid unnecessary updates.
+    int   frameTime;           ///< Time in milliseconds of the current animation frame.
+    Mode  mode;                ///< Render mode.
 
   public:
 
@@ -76,7 +101,7 @@ class Cursor
     /**
      * Create from file.
      */
-    explicit Cursor( const File& file, int size = -1 );
+    explicit Cursor( const File& file, Mode mode, int size = -1 );
 
     /**
      * Destructor, destroys textures if loaded.
@@ -138,7 +163,7 @@ class Cursor
      */
     uint textureId() const
     {
-      return images[frame].textureId;
+      return mode == OS ? 0 : images[frame].textureId;
     }
 
     /**
@@ -152,9 +177,14 @@ class Cursor
     void advance( int millis );
 
     /**
+     * Update OS cursor.
+     */
+    void updateOS();
+
+    /**
      * Load from file.
      */
-    bool load( const File& file, int size = -1 );
+    bool load( const File& file, Mode mode, int size = -1 );
 
     /**
      * Destroy textures if loaded.
