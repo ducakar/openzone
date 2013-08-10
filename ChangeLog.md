@@ -51,7 +51,7 @@
     * SMM models can be rendered at BSP entities
     * DDS format used for all textures, every texture is in its own file
     * switched over to ozEngine classes wherever possible
-    * layout files, can be edited in built-in editor (-e option) or loaded by mission scripts
+    * layout files, can be edited in built-in editor (-e option) or loaded by missions
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
     * Terrain can be generated based on config file settings

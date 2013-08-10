@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-07-21 04:35+0100\n"
+"PO-Revision-Date: 2013-08-10 02:06+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: en_GB\n"
@@ -10,54 +10,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 
-#: src/client/ui/CreditsMenu.cc:190
+#: src/client/ui/CreditsMenu.cc:193
 msgid "(See doc/README.html for individual copyrights and licences.)"
 msgstr "(See doc/README.html for individual copyrights and licences.)"
 
-#: src/client/ui/BuildMenu.cc:246
+#: src/client/ui/BuildFrame.cc:247
 msgid "B"
 msgstr "B"
 
-#: src/client/ui/CreditsMenu.cc:141 src/client/ui/MissionMenu.cc:179
+#: src/client/ui/CreditsMenu.cc:144 src/client/ui/MissionMenu.cc:180
 msgid "Back"
 msgstr "Back"
 
-#: src/client/ui/BuildMenu.cc:47 src/client/ui/BuildMenu.cc:221
-#: src/client/ui/BuildMenu.cc:240
+#: src/client/ui/BuildFrame.cc:148 src/client/ui/BuildFrame.cc:347
+#: src/client/ui/BuildFrame.cc:369
 msgid "Buildings"
 msgstr "Buildings"
 
-#: src/client/ui/SettingsFrame.cc:68
+#: src/client/ui/SettingsFrame.cc:66
 msgid "Close"
 msgstr "Close"
 
-#: src/client/ui/MainMenu.cc:130
+#: src/client/ui/MainMenu.cc:128
 msgid "Continue"
 msgstr "Continue"
 
-#: src/client/ui/MainMenu.cc:175
+#: src/client/ui/MainMenu.cc:173
 msgid "Credits"
 msgstr "Credits"
 
-#: src/client/ui/DebugFrame.cc:100
+#: src/client/ui/DebugFrame.cc:98
 msgid "Debug"
 msgstr "Debug"
 
-#: src/client/ui/MainMenu.cc:177
+#: src/client/ui/MainMenu.cc:175
 msgid "Exit"
 msgstr "Exit"
 
-#: src/client/ui/BuildMenu.cc:248
+#: src/client/ui/BuildFrame.cc:249
 msgid "I"
 msgstr "I"
 
-#: src/client/ui/BuildMenu.cc:63 src/client/ui/BuildMenu.cc:229
+#: src/client/ui/BuildFrame.cc:164 src/client/ui/BuildFrame.cc:355
 msgid "Items"
 msgstr "Items"
 
-#: src/client/ui/MainMenu.cc:113
+#: src/client/ui/MainMenu.cc:111
 msgid ""
 "Licensed under GNU GPL 3.0. Game data archives and libraries distributed "
 "with OpenZone are work of various authors and use separate licences. For "
@@ -69,11 +69,19 @@ msgstr ""
 "more details see doc/README.html and files named README.txt and COPYING.txt "
 "inside game data archives."
 
-#: src/client/GameStage.cc:318
+#: src/client/EditStage.cc:210 src/client/GameStage.cc:282
 msgid "Loading ..."
 msgstr "Loading ..."
 
-#: src/client/ui/MainMenu.cc:173
+#: src/client/ui/BuildFrame.cc:250
+msgid "M"
+msgstr "M"
+
+#: src/client/ui/BuildFrame.cc:172 src/client/ui/BuildFrame.cc:359
+msgid "Miscellaneous"
+msgstr "Miscellaneous"
+
+#: src/client/ui/MainMenu.cc:171
 msgid "Missions"
 msgstr "Missions"
 
@@ -81,7 +89,7 @@ msgstr "Missions"
 msgid "Music Player"
 msgstr "Music Player"
 
-#: src/client/ui/SettingsFrame.cc:62
+#: src/client/ui/SettingsFrame.cc:60
 msgid ""
 "NOT IMPLEMENTED.\n"
 "You can change your settings by manually editing the following files:"
@@ -93,39 +101,39 @@ msgstr ""
 msgid "No quest"
 msgstr "No quest"
 
-#: src/client/Profile.cc:56
+#: src/client/Profile.cc:55
 msgid "Player"
 msgstr "Player"
 
-#: src/client/ui/MainMenu.cc:135
+#: src/client/ui/MainMenu.cc:133
 msgid "Quickload"
 msgstr "Quickload"
 
-#: src/client/ui/MainMenu.cc:174 src/client/ui/SettingsFrame.cc:53
+#: src/client/ui/MainMenu.cc:172 src/client/ui/SettingsFrame.cc:51
 msgid "Settings"
 msgstr "Settings"
 
-#: src/client/GameStage.cc:414
+#: src/client/EditStage.cc:271 src/client/GameStage.cc:372
 msgid "Shutting down ..."
 msgstr "Shutting down ..."
 
-#: src/client/ui/CreditsMenu.cc:189
+#: src/client/ui/CreditsMenu.cc:192
 msgid "The following libraries may be bundled with the engine:"
 msgstr "The following libraries may be bundled with the engine:"
 
-#: src/client/ui/BuildMenu.cc:247
+#: src/client/ui/BuildFrame.cc:248
 msgid "U"
 msgstr "U"
 
-#: src/client/ui/BuildMenu.cc:55 src/client/ui/BuildMenu.cc:225
+#: src/client/ui/BuildFrame.cc:156 src/client/ui/BuildFrame.cc:351
 msgid "Units"
 msgstr "Units"
 
-#: src/client/ui/MainMenu.cc:176
+#: src/client/ui/MainMenu.cc:174
 msgid "Web"
 msgstr "Web"
 
-#: src/client/ui/CreditsMenu.cc:149
+#: src/client/ui/CreditsMenu.cc:152
 msgid "engine developer"
 msgstr "engine developer"
 
@@ -137,7 +145,7 @@ msgstr "failed"
 msgid "in progress"
 msgstr "in progress"
 
-#: src/client/ui/CreditsMenu.cc:164
+#: src/client/ui/CreditsMenu.cc:167
 msgid "package"
 msgstr "package"
 

@@ -21,7 +21,6 @@
 - nirvana
     * conversations
 - ui
-    * keyboard control
     * options menu
     * tutorial tips
     * advanced HUD for mechanic units and vehicles

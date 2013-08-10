@@ -95,9 +95,9 @@ void UnitProxy::end()
 
   ui::mouse.doShow = true;
 
-  ui::ui.hudArea->enable( false );
-  ui::ui.inventory->enable( false );
   ui::ui.infoFrame->enable( false );
+  ui::ui.inventory->enable( false );
+  ui::ui.hudArea->enable( false );
 }
 
 void UnitProxy::prepare()

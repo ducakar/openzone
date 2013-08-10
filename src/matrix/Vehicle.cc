@@ -637,7 +637,7 @@ JSON Vehicle::write() const
 
   json.add( "weapon", orbis.objIndex( weapon ) );
 
-  JSON& weaponsJSON = json.add( JSON::ARRAY );
+  JSON& weaponsJSON = json.add( "weapons", JSON::ARRAY );
 
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     JSON& weaponJSON = weaponsJSON.add( JSON::OBJECT );

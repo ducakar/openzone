@@ -147,25 +147,22 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
   ostream.writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
-    FIBITMAP* level = dib;
-
-    if( i != 0 ) {
-      width  = max( 1, width / 2 );
-      height = max( 1, height / 2 );
-      level  = FreeImage_Rescale( dib, width, height, FILTER_CATMULLROM );
-    }
+    FIBITMAP* level = i == 0 ? dib : FreeImage_Rescale( dib, width, height, FILTER_CATMULLROM );
 
     if( compress ) {
 #ifdef OZ_NONFREE
-      ubyte* pixels = FreeImage_GetBits( level );
-      int    size   = width * height * 4;
-      int    s3Size = squish::GetStorageRequirements( width, height, squishFlags );
+      FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
+      ubyte*    pixels  = FreeImage_GetBits( level32 );
+      int       size    = width * height * 4;
+      int       s3Size  = squish::GetStorageRequirements( width, height, squishFlags );
 
       for( int i = 0; i < size; i += 4 ) {
         swap( pixels[i], pixels[i + 2] );
       }
 
       squish::CompressImage( pixels, width, height, ostream.forward( s3Size ), squishFlags );
+
+      FreeImage_Unload( level32 );
 #endif
     }
     else {
@@ -177,6 +174,9 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
         pixels += pitch;
       }
     }
+
+    width  = max( 1, width / 2 );
+    height = max( 1, height / 2 );
 
     if( level != dib ) {
       FreeImage_Unload( level );

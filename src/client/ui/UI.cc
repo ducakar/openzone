@@ -163,6 +163,7 @@ void UI::load()
 
   hudArea->enable( false );
   strategicArea->enable( false );
+  questFrame->enable( false );
   inventory->enable( false );
   infoFrame->enable( false );
   buildFrame->enable( false );

@@ -37,6 +37,7 @@
 #include <client/Profile.hh>
 #include <client/MenuStage.hh>
 #include <client/Input.hh>
+#include <client/ui/QuestFrame.hh>
 #include <client/ui/LoadingArea.hh>
 #include <client/ui/UI.hh>
 
@@ -338,6 +339,8 @@ void GameStage::load()
   camera.prepare();
   camera.update();
 
+  ui::ui.questFrame->enable( true );
+
   startTicks = timer.ticks;
 
   ui::ui.showLoadingScreen( true );
@@ -414,6 +417,8 @@ void GameStage::unload()
   }
 
   modules.unload();
+
+  ui::ui.questFrame->enable( false );
 
   camera.reset();
 

@@ -169,7 +169,7 @@ void BuildFrame::selectObjects( Button* sender )
   BuildFrame* buildFrame = static_cast<BuildFrame*>( sender->parent );
 
   buildFrame->mode = OBJECTS;
-  buildFrame->title.setText( "%s", OZ_GETTEXT( "Objects" ) );
+  buildFrame->title.setText( "%s", OZ_GETTEXT( "Miscellaneous" ) );
 }
 
 void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
@@ -214,7 +214,9 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
           editStage.editFrame != nullptr && editStage.editFrame->isVisible() )
       {
         if( container->items.length() != container->clazz->nItems ) {
-          Dynamic* newItem = static_cast<Dynamic*>( synapse.add( clazz, Point::ORIGIN, NORTH, false ) );
+          Heading  heading = Heading( Math::rand( 4 ) );
+          Object*  newObj  = synapse.add( clazz, Point::ORIGIN, heading, false );
+          Dynamic* newItem = static_cast<Dynamic*>( newObj );
 
           newItem->parent = container->index;
           container->items.add( newItem->index );
@@ -226,6 +228,45 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
         ui.strategicArea->setOverlay( overlayCallback, buildFrame );
       }
     }
+  }
+}
+
+void BuildFrame::onReposition()
+{
+  children.free();
+  delete[] models;
+
+  rows   = ( camera.height - 320 ) / ( SLOT_SIZE + 2 );
+  height = HEADER_SIZE + 58 + rows * ( SLOT_SIZE + 2 );
+
+  Pair<int> pos = parent->align( defaultX, defaultY, width, height );
+
+  x = pos.x;
+  y = pos.y;
+
+  models = new ModelField*[rows * 3];
+
+  add( new Button( OZ_GETTEXT( "B" ), selectBuildings, 55, 18 ),   4, -HEADER_SIZE - 2 );
+  add( new Button( OZ_GETTEXT( "U" ), selectUnits,     55, 18 ),  63, -HEADER_SIZE - 2 );
+  add( new Button( OZ_GETTEXT( "I" ), selectItems,     55, 18 ), 122, -HEADER_SIZE - 2 );
+  add( new Button( OZ_GETTEXT( "M" ), selectObjects,   55, 18 ), 181, -HEADER_SIZE - 2 );
+
+  for( int i = 0; i < rows; ++i ) {
+    models[i*3 + 0] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
+    models[i*3 + 1] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
+    models[i*3 + 2] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
+
+    models[i*3 + 0]->id = i*3 + 0;
+    models[i*3 + 1]->id = i*3 + 1;
+    models[i*3 + 2]->id = i*3 + 2;
+
+    models[i*3 + 0]->show( false );
+    models[i*3 + 1]->show( false );
+    models[i*3 + 2]->show( false );
+
+    add( models[i*3 + 0],   4, -HEADER_SIZE - 40 - i * ( SLOT_SIZE + 2 ) );
+    add( models[i*3 + 1],  82, -HEADER_SIZE - 40 - i * ( SLOT_SIZE + 2 ) );
+    add( models[i*3 + 2], 160, -HEADER_SIZE - 40 - i * ( SLOT_SIZE + 2 ) );
   }
 }
 
@@ -260,7 +301,7 @@ void BuildFrame::onDraw()
   }
 
   if( mode == BUILDINGS ) {
-    for( int i = 0; i < 12; ++i ) {
+    for( int i = 0; i < rows * 3; ++i ) {
       int index = scroll * 3 + i;
 
       if( index < techTree.allowedBuildings.length() ) {
@@ -275,14 +316,14 @@ void BuildFrame::onDraw()
       }
     }
 
-    nScrollRows = max( 0, ( techTree.allowedBuildings.length() + 2 ) / 3 - 4 );
+    nScrollRows = max( 0, ( techTree.allowedBuildings.length() + 2 ) / 3 - rows );
   }
   else {
     const List<const ObjectClass*> allowed = mode == UNITS ? techTree.allowedUnits :
                                              mode == ITEMS ? techTree.allowedItems :
                                                              techTree.allowedObjects;
 
-    for( int i = 0; i < 12; ++i ) {
+    for( int i = 0; i < rows * 3; ++i ) {
       int index = scroll * 3 + i;
 
       if( index < allowed.length() ) {
@@ -297,7 +338,7 @@ void BuildFrame::onDraw()
       }
     }
 
-    nScrollRows = max( 0, ( allowed.length() + 2 ) / 3 - 4 );
+    nScrollRows = max( 0, ( allowed.length() + 2 ) / 3 - rows );
   }
 
   if( !isOverModel && wasOverModel ) {
@@ -317,7 +358,7 @@ void BuildFrame::onDraw()
         break;
       }
       case OBJECTS: {
-        title.setText( "%s", OZ_GETTEXT( "Objects" ) );
+        title.setText( "%s", OZ_GETTEXT( "Miscellaneous" ) );
       }
     }
   }
@@ -327,35 +368,17 @@ void BuildFrame::onDraw()
 }
 
 BuildFrame::BuildFrame() :
-  Frame( 240, 374, OZ_GETTEXT( "Buildings" ) ),
-  mode( BUILDINGS ), overlayBSP( nullptr ), overlayClass( nullptr ), overlayHeading( NORTH ),
-  nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
+  Frame( 240, 54, OZ_GETTEXT( "Buildings" ) ), mode( BUILDINGS ), models( nullptr ),
+  overlayBSP( nullptr ), overlayClass( nullptr ), overlayHeading( NORTH ),
+  rows( 0 ), nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
 {
   scrollUpTex.load( "@ui/icon/scrollUp.dds" );
   scrollDownTex.load( "@ui/icon/scrollDown.dds" );
+}
 
-  add( new Button( OZ_GETTEXT( "B" ), selectBuildings, 55, 18 ),   4, -HEADER_SIZE - 2 );
-  add( new Button( OZ_GETTEXT( "U" ), selectUnits,     55, 18 ),  63, -HEADER_SIZE - 2 );
-  add( new Button( OZ_GETTEXT( "I" ), selectItems,     55, 18 ), 122, -HEADER_SIZE - 2 );
-  add( new Button( OZ_GETTEXT( "O" ), selectObjects,   55, 18 ), 181, -HEADER_SIZE - 2 );
-
-  for( int i = 0; i < 4; ++i ) {
-    models[i*3 + 0] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
-    models[i*3 + 1] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
-    models[i*3 + 2] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
-
-    models[i*3 + 0]->id = i*3 + 0;
-    models[i*3 + 1]->id = i*3 + 1;
-    models[i*3 + 2]->id = i*3 + 2;
-
-    models[i*3 + 0]->show( false );
-    models[i*3 + 1]->show( false );
-    models[i*3 + 2]->show( false );
-
-    add( models[i*3 + 0],   4, 22 + ( 3 - i ) * 78 );
-    add( models[i*3 + 1],  82, 22 + ( 3 - i ) * 78 );
-    add( models[i*3 + 2], 160, 22 + ( 3 - i ) * 78 );
-  }
+BuildFrame::~BuildFrame()
+{
+  delete[] models;
 }
 
 }

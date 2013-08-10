@@ -25,6 +25,7 @@
 
 #include <client/LuaClient.hh>
 
+#include <matrix/Matrix.hh>
 #include <client/luaapi.hh>
 
 namespace oz
@@ -89,6 +90,22 @@ void LuaClient::create( const char* mission_ )
   }
   if( files.isEmpty() ) {
     OZ_ERROR( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
+  }
+
+  File layoutFile = missionDir.path() + "/layout.json";
+
+  if( layoutFile.type() == File::REGULAR ) {
+    Log::print( "Loading layout from '%s' ...", layoutFile.path().cstr() );
+
+    JSON json;
+    if( !json.load( layoutFile ) ) {
+      OZ_ERROR( "Reading saved layout '%s' failed", layoutFile.path().cstr() );
+    }
+    layoutFile.unmap();
+
+    Log::printEnd( " OK" );
+
+    matrix.read( json );
   }
 
   foreach( file, files.citer() ) {

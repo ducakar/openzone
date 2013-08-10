@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-07-21 04:34+0100\n"
+"PO-Revision-Date: 2013-08-10 02:08+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: en_GB\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: data/oz_main/class/goblin.json
 msgid "goblin"
@@ -111,6 +111,10 @@ msgstr "shell"
 #: data/oz_main/class/bauul.json
 msgid "bauul"
 msgstr "bauul"
+
+#: data/oz_main/class/mechWarrior.json
+msgid "mech warrior"
+msgstr "mech warrior"
 
 #: data/oz_main/class/droid.OOM-9.json
 msgid "droid OOM-9"

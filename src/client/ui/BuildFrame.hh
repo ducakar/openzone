@@ -54,12 +54,13 @@ class BuildFrame : public Frame
     Mode               mode;
     GLTexture          scrollUpTex;
     GLTexture          scrollDownTex;
-    ModelField*        models[12];
+    ModelField**       models;
 
     const oz::BSP*     overlayBSP;
     const ObjectClass* overlayClass;
     Heading            overlayHeading;
 
+    int                rows;
     int                nScrollRows;
     int                scroll;
     bool               isOverModel;
@@ -75,12 +76,14 @@ class BuildFrame : public Frame
 
     static void startPlacement( ModelField* sender, bool isClicked );
 
+    void onReposition() override;
     bool onMouseEvent() override;
     void onDraw() override;
 
   public:
 
     explicit BuildFrame();
+    ~BuildFrame() override;
 
 };
 

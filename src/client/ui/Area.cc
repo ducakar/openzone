@@ -217,10 +217,10 @@ void Area::show( bool doShow )
 Pair<int> Area::align( int localX, int localY, int width, int height ) const
 {
   return {
-    localX == CENTRE ? this->x + ( this->width - width ) / 2 :
-    localX < 0 ? this->x + this->width - width + localX : this->x + localX,
-    localY == CENTRE ? this->y + ( this->height - height ) / 2 :
-    localY < 0 ? this->y + this->height - height + localY : this->y + localY
+    localX == CENTRE ? x + ( this->width - width ) / 2 :
+    localX < 0 ? x + this->width - width + localX : x + localX,
+    localY == CENTRE ? y + ( this->height - height ) / 2 :
+    localY < 0 ? y + this->height - height + localY : y + localY
   };
 }
 
