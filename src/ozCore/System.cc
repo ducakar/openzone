@@ -30,12 +30,10 @@
 #include "Math.hh"
 #include "Log.hh"
 
-#include <climits>
 #include <clocale>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
-#include <exception>
 
 #if defined( __ANDROID__ )
 # include <android/log.h>

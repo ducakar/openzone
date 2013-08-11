@@ -23,10 +23,12 @@
 
 #include <common/Lingua.hh>
 
+#include <cstdlib>
+
 namespace oz
 {
 
-String Lingua::language;
+static String language;
 
 String Lingua::detectLanguage( const char* language_ )
 {

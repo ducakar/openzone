@@ -32,7 +32,7 @@ struct Cell;
 
 class Frag
 {
-  protected:
+  private:
 
     static const float DAMAGE_THRESHOLD;
 

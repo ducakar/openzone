@@ -89,6 +89,8 @@ extern OZ_DL_DECLARE( glUniformMatrix2fv           );
 extern OZ_DL_DECLARE( glUniformMatrix3fv           );
 extern OZ_DL_DECLARE( glUniformMatrix4fv           );
 
+extern OZ_DL_DECLARE( glDrawBuffers                );
+
 extern OZ_DL_DECLARE( glEnableVertexAttribArray    );
 extern OZ_DL_DECLARE( glVertexAttribPointer        );
 extern OZ_DL_DECLARE( glDrawRangeElements          );

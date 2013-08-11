@@ -56,6 +56,8 @@ void EditStage::read()
   Log::printEnd( " OK" );
 
   matrix.read( json );
+
+  json.clear( true );
 }
 
 void EditStage::write() const

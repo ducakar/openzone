@@ -48,18 +48,16 @@ class Lingua
 {
   private:
 
-    static String language;  ///< Language code (should match subdirectory in lingua).
-
-    Gettext catalogue;       ///< Gettext catalogue.
+    Gettext catalogue; ///< Gettext catalogue.
 
   public:
 
     /**
      * Check given language or, if `nullptr`/empty string, try to detect it.
      *
-     * If given `language` is a non-empty string, check if translations exist for that language,
-     * i.e. it checks for PhysicsFS directory `lingua/\<language\>/`. If translations exist
-     * `language` is returned, if don't, an empty string is returned.
+     * If the given `language` is a non-empty string, check if translations exist for that language,
+     * i.e. check for VFS directory `lingua/\<language\>/`. If translations exist `language` is
+     * returned, otherwise an empty string.
      *
      * If `language` is `nullptr` or en empty string, it tries to derive language from environment
      * variables (currently this only test Linux-specific variables LANGUAGE, LC_MESSAGES and LANG

@@ -31,7 +31,7 @@
 namespace oz
 {
 
-const Mat44 Struct::ROTATIONS[] =
+static const Mat44 ROTATIONS[] =
 {
   Mat44(  1.0f,  0.0f,  0.0f,  0.0f,
           0.0f,  1.0f,  0.0f,  0.0f,
@@ -690,11 +690,6 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
 
 Struct::Struct( const BSP* bsp_, InputStream* istream )
 {
-  mins        = istream->readPoint();
-  maxs        = istream->readPoint();
-  transf      = istream->readMat44();
-  invTransf   = istream->readMat44();
-
   bsp         = bsp_;
 
   p           = istream->readPoint();
@@ -705,6 +700,13 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   life        = istream->readFloat();
   resistance  = bsp->resistance;
   demolishing = istream->readFloat();
+
+  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
+
+  Bounds bb   = toAbsoluteCS( *bsp );
+  mins        = bb.mins;
+  maxs        = bb.maxs;
 
   if( bsp->nEntities != 0 ) {
     entities.resize( bsp->nEntities );
@@ -746,22 +748,23 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
 
 Struct::Struct( const BSP* bsp_, const JSON& json )
 {
-  mins        = json["mins"].asPoint();
-  maxs        = json["maxs"].asPoint();
-
   bsp         = bsp_;
 
   p           = json["p"].asPoint();
   heading     = Heading( json["heading"].asInt() );
-
-  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
 
   index       = json["index"].asInt();
 
   life        = json["life"].asFloat();
   resistance  = bsp->resistance;
   demolishing = json["demolishing"].asFloat();
+
+  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
+
+  Bounds bb   = toAbsoluteCS( *bsp );
+  mins        = bb.mins;
+  maxs        = bb.maxs;
 
   if( bsp->nEntities != 0 ) {
     entities.resize( bsp->nEntities );
@@ -806,11 +809,6 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
 
 void Struct::write( OutputStream* ostream ) const
 {
-  ostream->writePoint( mins );
-  ostream->writePoint( maxs );
-  ostream->writeMat44( transf );
-  ostream->writeMat44( invTransf );
-
   ostream->writePoint( p );
   ostream->writeInt( heading );
 
@@ -838,9 +836,6 @@ JSON Struct::write() const
   JSON json( JSON::OBJECT );
 
   json.add( "bsp", bsp->name );
-
-  json.add( "mins", mins );
-  json.add( "maxs", maxs );
 
   json.add( "p", p );
   json.add( "heading", heading );

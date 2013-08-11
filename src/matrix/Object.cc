@@ -205,9 +205,9 @@ JSON Object::write() const
   json.add( "flags", flags );
   json.add( "life", life );
 
-  JSON& itemsJSON = json.add( "items", JSON::ARRAY );
-
   if( clazz->nItems != 0 ) {
+    JSON& itemsJSON = json.add( "items", JSON::ARRAY );
+
     foreach( item, items.citer() ) {
       itemsJSON.add( orbis.objIndex( *item ) );
     }

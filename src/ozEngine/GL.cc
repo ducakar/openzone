@@ -67,6 +67,8 @@ OZ_DL_DEFINE( glUniformMatrix2fv           );
 OZ_DL_DEFINE( glUniformMatrix3fv           );
 OZ_DL_DEFINE( glUniformMatrix4fv           );
 
+OZ_DL_DEFINE( glDrawBuffers                );
+
 OZ_DL_DEFINE( glEnableVertexAttribArray    );
 OZ_DL_DEFINE( glVertexAttribPointer        );
 OZ_DL_DEFINE( glDrawRangeElements          );
@@ -404,6 +406,8 @@ void GL::init()
   OZ_DL_GLLOAD( glUniformMatrix2fv           );
   OZ_DL_GLLOAD( glUniformMatrix3fv           );
   OZ_DL_GLLOAD( glUniformMatrix4fv           );
+
+  OZ_DL_GLLOAD( glDrawBuffers                );
 
   OZ_DL_GLLOAD( glEnableVertexAttribArray    );
   OZ_DL_GLLOAD( glVertexAttribPointer        );

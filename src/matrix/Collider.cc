@@ -26,7 +26,7 @@
 namespace oz
 {
 
-const Vec3 Collider::NORMALS[] =
+static const Vec3 NORMALS[] =
 {
   Vec3( +1.0f,  0.0f,  0.0f ),
   Vec3( -1.0f,  0.0f,  0.0f ),

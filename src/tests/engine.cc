@@ -37,7 +37,7 @@ int main( int argc, char** argv )
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1];
 
   GLTexture texture( "share/openzone/oz_base/ui/icon/use.dds" );
-  Cursor cursor( file, Cursor::OS );
+  Cursor cursor( file, Cursor::SYSTEM );
 
   if( !cursor.isLoaded() ) {
     return EXIT_FAILURE;
@@ -70,7 +70,7 @@ int main( int argc, char** argv )
 
     Window::swapBuffers();
     cursor.advance( 15 );
-    cursor.updateOS();
+    cursor.updateSystem();
 
     Time::sleep( 10 );
   }

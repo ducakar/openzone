@@ -25,7 +25,7 @@
 
 #include <client/common.hh>
 
-#include <SDL.h>
+union SDL_Event;
 
 namespace oz
 {
@@ -115,79 +115,50 @@ class Input
       KEY_MAX
     };
 
-  private:
-
-    static const char* const KEY_NAMES[KEY_MAX];
-    static const char* const BACKEND;
-
-#if SDL_MAJOR_VERSION < 2
-
-    SDLKey modifier0;
-    SDLKey modifier1;
-
-    ubyte  sdlKeys[SDLK_LAST];
-    ubyte  sdlOldKeys[SDLK_LAST];
-    ubyte  sdlCurrKeys[SDLK_LAST];
-
-#else
-
-    SDL_Scancode modifier0;
-    SDL_Scancode modifier1;
-
-    ubyte  sdlKeys[SDL_NUM_SCANCODES];
-    ubyte  sdlOldKeys[SDL_NUM_SCANCODES];
-    ubyte  sdlCurrKeys[SDL_NUM_SCANCODES];
-
-#endif
-
-    int    keyMap[KEY_MAX][2];
-
-    bool   configExists;
-
   public:
 
-    float  mouseX;
-    float  mouseY;
-    float  mouseZ;
-    float  mouseW;
+    float mouseX;
+    float mouseY;
+    float mouseZ;
+    float mouseW;
 
-    char   buttons;
-    char   oldButtons;
-    char   currButtons;
+    char  buttons;
+    char  oldButtons;
+    char  currButtons;
 
-    bool   leftPressed;
-    bool   leftReleased;
-    bool   middlePressed;
-    bool   middleReleased;
-    bool   rightPressed;
-    bool   rightReleased;
-    bool   wheelUp;
-    bool   wheelDown;
+    bool  leftPressed;
+    bool  leftReleased;
+    bool  middlePressed;
+    bool  middleReleased;
+    bool  rightPressed;
+    bool  rightReleased;
+    bool  wheelUp;
+    bool  wheelDown;
 
-    float  lookX;
-    float  lookY;
-    float  moveX;
-    float  moveY;
+    float lookX;
+    float lookY;
+    float moveX;
+    float moveY;
 
-    bool   keys[KEY_MAX];
-    bool   oldKeys[KEY_MAX];
+    bool  keys[KEY_MAX];
+    bool  oldKeys[KEY_MAX];
 
-    bool   isKeyPressed;
-    bool   isKeyReleased;
+    bool  isKeyPressed;
+    bool  isKeyReleased;
 
-    float  mouseSensX;
-    float  mouseSensY;
-    float  mouseSensZ;
-    float  mouseSensW;
-    float  mouseAccelThreshold;
-    float  mouseMaxAccel;
-    float  mouseAccelC0;
-    float  mouseAccelC1;
-    float  mouseAccelC2;
-    float  mouseWheelStep;
+    float mouseSensX;
+    float mouseSensY;
+    float mouseSensZ;
+    float mouseSensW;
+    float mouseAccelThreshold;
+    float mouseMaxAccel;
+    float mouseAccelC0;
+    float mouseAccelC1;
+    float mouseAccelC2;
+    float mouseWheelStep;
 
-    float  keySensX;
-    float  keySensY;
+    float keySensX;
+    float keySensY;
 
   private:
 

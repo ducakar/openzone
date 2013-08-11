@@ -34,11 +34,11 @@ namespace oz
 {
 
 Cursor::Cursor() :
-  images{}, nImages( 0 ), frame( 0 ), lastFrame( -1 ), frameTime( 0 ), mode( OS )
+  images{}, nImages( 0 ), frame( 0 ), lastFrame( -1 ), frameTime( 0 ), mode( TEXTURE )
 {}
 
 Cursor::Cursor( const File& file, Mode mode, int size ) :
-  images{}, nImages( 0 ), frame( 0 ), lastFrame( -1 ), frameTime( 0 ), mode( OS )
+  images{}, nImages( 0 ), frame( 0 ), lastFrame( -1 ), frameTime( 0 ), mode( TEXTURE )
 {
   load( file, mode, size );
 }
@@ -58,7 +58,7 @@ Cursor::Cursor( Cursor&& c ) :
   c.frame     = 0;
   c.lastFrame = -1;
   c.frameTime = 0;
-  c.mode      = OS;
+  c.mode      = TEXTURE;
 }
 
 Cursor& Cursor::operator = ( Cursor&& c )
@@ -79,7 +79,7 @@ Cursor& Cursor::operator = ( Cursor&& c )
   c.frame     = 0;
   c.lastFrame = -1;
   c.frameTime = 0;
-  c.mode      = OS;
+  c.mode      = TEXTURE;
 
   return *this;
 }
@@ -103,17 +103,25 @@ void Cursor::advance( int millis )
   frameTime  = frameTime % delay;
 }
 
-void Cursor::updateOS()
+void Cursor::updateSystem()
 {
-  if( mode == OS && frame != lastFrame ) {
+  if( mode == SYSTEM && frame != lastFrame && nImages != 0 ) {
     lastFrame = frame;
 
     SDL_SetCursor( images[frame].sdlCursor );
   }
 }
 
-bool Cursor::load( const File& file, Mode mode, int size )
+bool Cursor::load( const File& file, Mode mode_, int size )
 {
+#if SDL_MAJOR_VERSION < 2
+  // SDL 1.2 only supports monochromatic cursors.
+  if( mode_ == SYSTEM ) {
+    mode = mode_;
+    return false;
+  }
+#endif
+
   InputStream istream = file.inputStream( Endian::LITTLE );
 
   // Implementation is based on specifications from xcursor(3) manual.
@@ -127,6 +135,7 @@ bool Cursor::load( const File& file, Mode mode, int size )
   nImages   = 0;
   frame     = 0;
   frameTime = 0;
+  mode      = mode_;
 
   for( int i = 0; i < nEntries && nImages < MAX_IMAGES; ++i ) {
     uint type     = istream.readUInt();
@@ -166,16 +175,7 @@ bool Cursor::load( const File& file, Mode mode, int size )
     char* pixels = new char[size];
     istream.readChars( pixels, size );
 
-    if( mode == OS ) {
-      SDL_Surface* surface = SDL_CreateRGBSurfaceFrom( pixels, image.width, image.height, 32,
-                                                       image.width * 4, 0x00ff0000, 0x0000ff00,
-                                                       0x000000ff, 0xff000000 );
-
-      image.sdlCursor = SDL_CreateColorCursor( surface, image.hotspotLeft, image.hotspotTop );
-
-      SDL_FreeSurface( surface );
-    }
-    else {
+    if( mode == TEXTURE ) {
 #ifdef GL_ES_VERSION_2_0
       GLenum srcFormat = GL_RGBA;
 
@@ -202,6 +202,17 @@ bool Cursor::load( const File& file, Mode mode, int size )
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, srcFormat,
                     GL_UNSIGNED_BYTE, pixels );
     }
+    else {
+#if SDL_MAJOR_VERSION >= 2
+      SDL_Surface* surface = SDL_CreateRGBSurfaceFrom( pixels, image.width, image.height, 32,
+                                                       image.width * 4, 0x00ff0000, 0x0000ff00,
+                                                       0x000000ff, 0xff000000 );
+
+      image.sdlCursor = SDL_CreateColorCursor( surface, image.hotspotLeft, image.hotspotTop );
+
+      SDL_FreeSurface( surface );
+#endif
+    }
 
     delete[] pixels;
 
@@ -218,11 +229,11 @@ void Cursor::destroy()
   }
 
   for( int i = 0; i < nImages; ++i ) {
-    if( mode == OS ) {
-      SDL_FreeCursor( images[i].sdlCursor );
+    if( mode == TEXTURE ) {
+      glDeleteTextures( 1, &images[i].textureId );
     }
     else {
-      glDeleteTextures( 1, &images[i].textureId );
+      SDL_FreeCursor( images[i].sdlCursor );
     }
   }
 
@@ -231,7 +242,7 @@ void Cursor::destroy()
   frame     = 0;
   lastFrame = -1;
   frameTime = 0;
-  mode      = OS;
+  mode      = TEXTURE;
 }
 
 }

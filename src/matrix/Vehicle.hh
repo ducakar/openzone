@@ -50,7 +50,7 @@ class Vehicle : public Dynamic
     static const int   MOVING_BIT        = 0x0010;
     static const int   WALKING_BIT       = 0x0020;
 
-  protected:
+  private:
 
     static const float ROT_DIFF_LIMIT;
     static const float ROT_VEL_DIFF_RATIO;
@@ -97,6 +97,8 @@ class Vehicle : public Dynamic
     void mechHandler();
     void hoverHandler();
     void airHandler();
+
+  protected:
 
     void onDestroy() override;
     bool onUse( Bot* user ) override;

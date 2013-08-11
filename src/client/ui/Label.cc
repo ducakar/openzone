@@ -28,6 +28,8 @@
 #include <client/ui/Area.hh>
 #include <client/ui/Style.hh>
 
+#include <cstdio>
+
 namespace oz
 {
 namespace client

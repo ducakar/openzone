@@ -26,12 +26,5 @@
 ]]--
 
 function onCreate()
-  ozTerraLoad( "random-0" )
-
-  ozCaelumLoad( "earth" )
-  ozCaelumSetHeading( math.pi / 8 )
-  ozCaelumSetPeriod( 3600 )
-  ozCaelumSetTime( 0 )
-
   ozUIBuildFrame( true )
 end

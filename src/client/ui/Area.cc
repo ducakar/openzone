@@ -25,8 +25,6 @@
 
 #include <client/ui/Mouse.hh>
 
-#include <SDL_ttf.h>
-
 namespace oz
 {
 namespace client

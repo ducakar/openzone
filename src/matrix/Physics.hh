@@ -91,7 +91,7 @@ class Physics
 
   public:
 
-    void  updateFrag( Frag* frag );
+    void updateFrag( Frag* frag );
     void updateObj( Dynamic* dyn );
 
 };

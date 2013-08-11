@@ -33,6 +33,35 @@ namespace oz
 static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
                "Orbis and terrain size mismatch" );
 
+/*
+ * Index reusing: when an entity is removed, there may still be references to it (from other
+ * models or from render or sound subsystems); that's why every cycle all references must
+ * be checked if the slot they're pointing at (all references should be indices of a slot
+ * in Orbis::structures/objects/fragments vectors). If the target slot is nullptr, the
+ * referenced entity doesn't exist any more, so reference must be cleared. To make sure all
+ * references can be checked that way, a full world update must pass before a slot is reused.
+ * Otherwise an entity may be removed and immediately after that another added into it's slot;
+ * when an another entity would retrieve the target entity via the reference: 1) it wouldn't get
+ * the expected entity but a new one; that may result in program crash if the new one is not of
+ * the same type, 2) it wouldn't detect the old entity has been removed/destroyed/whatever;
+ * that may pose a big problem to rendering and audio subsystems as those must clear
+ * models/audio objects of removed world objects.
+ */
+
+static int freeing;
+static int waiting;
+
+// [freeing]: vector for indices that are currently being freed
+// [waiting]: indices that have been freed previous cycle; those can be reused next time
+static List<int> strFreedIndices[2];
+static List<int> objFreedIndices[2];
+static List<int> fragFreedIndices[2];
+
+// indices of slots that can be reused
+static List<int> strAvailableIndices;
+static List<int> objAvailableIndices;
+static List<int> fragAvailableIndices;
+
 static int popMinimal( List<int>* list )
 {
   hard_assert( !list->isEmpty() );
@@ -712,8 +741,6 @@ void Orbis::unload()
   Vehicle::pool.free();
 
   Struct::pool.free();
-  Struct::overlappingObjs.clear();
-  Struct::overlappingObjs.deallocate();
 
   liber.freeBSPs();
 

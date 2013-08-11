@@ -91,6 +91,8 @@ class BotClass : public DynamicClass
     Mat44  nvColour;
     Mat44  injuryColour;
 
+  public:
+
     static ObjectClass* createClass();
 
     void init( InputStream* is, const char* name ) override;

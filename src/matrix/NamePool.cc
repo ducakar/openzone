@@ -28,7 +28,8 @@
 namespace oz
 {
 
-char NamePool::buffer[LINE_LENGTH];
+static List<String> names;
+static List<int>    listPositions;
 
 const String& NamePool::genName( int list ) const
 {

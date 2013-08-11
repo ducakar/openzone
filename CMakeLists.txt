@@ -156,7 +156,7 @@ if( NOT PLATFORM_EMBEDDED )
 
   find_library( NOISE_LIBRARY noise )
   mark_as_advanced( NOISE_LIBRARY )
-  if( NOT FREEIMAGE_LIBRARY )
+  if( NOT NOISE_LIBRARY )
     message( FATAL_ERROR "libnoise library is missing" )
   endif()
 

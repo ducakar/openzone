@@ -77,8 +77,6 @@ class Collider
 {
   private:
 
-    static const Vec3 NORMALS[];
-
     SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
     Span           span;
@@ -98,6 +96,13 @@ class Collider
 
     int            flags;
     float          margin;
+
+  public:
+
+    int            mask; /// Only objects whose `Object::flags` matches the mask are tested.
+    Hit            hit;  /// Collision feedback data.
+
+  private:
 
     /**
      * Return true if brush was already visited and mark it visited.
@@ -131,9 +136,6 @@ class Collider
     void getEntityOverlaps( List<Object*>* objects );
 
   public:
-
-    int mask; /// Only objects whose `Object::flags` matches that mask are collided against.
-    Hit hit;  /// Collision feedback data.
 
     explicit Collider();
 

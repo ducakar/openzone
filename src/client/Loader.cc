@@ -29,7 +29,7 @@
 #include <client/Caelum.hh>
 #include <client/SMM.hh>
 
-#include <SDL.h>
+#include <cstdio>
 
 namespace oz
 {

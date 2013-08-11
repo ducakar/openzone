@@ -26,8 +26,6 @@
 
 #include "unittest.hh"
 
-#include <climits>
-
 using namespace oz;
 
 static void test_String_parsing()

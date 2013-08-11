@@ -39,6 +39,8 @@ class WeaponClass : public DynamicClass
 
     String onShot;
 
+  public:
+
     static ObjectClass* createClass();
 
     void init( InputStream* is, const char* name ) override;

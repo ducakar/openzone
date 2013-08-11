@@ -106,6 +106,8 @@ void LuaClient::create( const char* mission_ )
     Log::printEnd( " OK" );
 
     matrix.read( json );
+
+    json.clear( true );
   }
 
   foreach( file, files.citer() ) {

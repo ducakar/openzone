@@ -61,7 +61,7 @@ class Timer
     float   frameTime;   ///< Game time from the last rendered frame.
 
     /**
-     * Default constructors, resets timer.
+     * Default constructor, resets timer.
      */
     explicit Timer();
 

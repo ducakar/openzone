@@ -30,15 +30,6 @@ namespace oz
 
 class NamePool
 {
-  private:
-
-    static const int LINE_LENGTH = 64;
-
-    static char  buffer[LINE_LENGTH];
-
-    List<String> names;
-    List<int>    listPositions;
-
   public:
 
     const String& genName( int list ) const;

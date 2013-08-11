@@ -33,6 +33,25 @@
 namespace oz
 {
 
+static HashMap<String, BSP, 64>                     bsps;
+static HashMap<String, ObjectClass::CreateFunc*, 8> baseClasses;
+static HashMap<String, ObjectClass*, 128>           objClasses;
+static HashMap<String, FragPool, 32>                fragPools;
+
+static HashMap<String, int, 64>                     shaderIndices;
+static HashMap<String, int, 256>                    textureIndices;
+static HashMap<String, int, 256>                    soundIndices;
+static HashMap<String, int, 16>                     caelumIndices;
+static HashMap<String, int, 16>                     terraIndices;
+static HashMap<String, int, 256>                    modelIndices;
+
+static HashMap<String, int, 16>                     nameListIndices;
+static HashMap<String, int, 64>                     musicTrackIndices;
+
+static HashMap<String, int, 8>                      deviceIndices;
+static HashMap<String, int, 16>                     imagoIndices;
+static HashMap<String, int, 8>                      audioIndices;
+
 const FragPool* Liber::fragPool( const char* name ) const
 {
   const FragPool* value = fragPools.find( name );

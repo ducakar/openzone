@@ -23,12 +23,14 @@
 
 #include <client/Input.hh>
 
+#include <SDL.h>
+
 namespace oz
 {
 namespace client
 {
 
-const char* const Input::KEY_NAMES[] = {
+static const char* const KEY_NAMES[] = {
   "None",
 
   "Alternate UI action",
@@ -98,10 +100,31 @@ const char* const Input::KEY_NAMES[] = {
 };
 
 #if SDL_MAJOR_VERSION < 2
-const char* const Input::BACKEND = "SDL1";
+
+static const char* const BACKEND = "SDL1";
+
+static SDLKey            modifier0;
+static SDLKey            modifier1;
+
+static ubyte             sdlKeys[SDLK_LAST];
+static ubyte             sdlOldKeys[SDLK_LAST];
+static ubyte             sdlCurrKeys[SDLK_LAST];
+
 #else
-const char* const Input::BACKEND = "SDL2";
+
+static const char* const BACKEND = "SDL2";
+
+static SDL_Scancode      modifier0;
+static SDL_Scancode      modifier1;
+
+static ubyte             sdlKeys[SDL_NUM_SCANCODES];
+static ubyte             sdlOldKeys[SDL_NUM_SCANCODES];
+static ubyte             sdlCurrKeys[SDL_NUM_SCANCODES];
+
 #endif
+
+static int               keyMap[Input::KEY_MAX][2];
+static bool              configExists = false;
 
 void Input::loadDefaultKeyMap()
 {

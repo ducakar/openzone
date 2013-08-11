@@ -61,44 +61,15 @@ class Orbis : public Bounds
     static const int DIM   = MAX_WORLD_COORD;
     static const int CELLS = 2 * DIM / Cell::SIZE;
 
-    Caelum                      caelum;
-    Terra                       terra;
-    Cell                        cells[CELLS][CELLS];
+    Caelum caelum;
+    Terra  terra;
+    Cell   cells[CELLS][CELLS];
 
   private:
 
     SList<Struct*, MAX_STRUCTS> structs;
     SList<Object*, MAX_OBJECTS> objects;
     SList<Frag*,   MAX_FRAGS>   frags;
-
-    /*
-     * Index reusing: when an entity is removed, there may still be references to it (from other
-     * models or from render or sound subsystems); that's why every cycle all references must
-     * be checked if the slot they're pointing at (all references should be indices of a slot
-     * in Orbis::structures/objects/fragments vectors). If the target slot is nullptr, the
-     * referenced entity doesn't exist any more, so reference must be cleared. To make sure all
-     * references can be checked that way, a full world update must pass before a slot is reused.
-     * Otherwise an entity may be removed and immediately after that another added into it's slot;
-     * when an another entity would retrieve the target entity via the reference: 1) it wouldn't get
-     * the expected entity but a new one; that may result in program crash if the new one is not of
-     * the same type, 2) it wouldn't detect the old entity has been removed/destroyed/whatever;
-     * that may pose a big problem to rendering and audio subsystems as those must clear
-     * models/audio objects of removed world objects.
-     */
-
-    int freeing;
-    int waiting;
-
-    // [freeing]: vector for indices that are currently being freed
-    // [waiting]: indices that have been freed previous cycle; those can be reused next time
-    List<int> strFreedIndices[2];
-    List<int> objFreedIndices[2];
-    List<int> fragFreedIndices[2];
-
-    // indices of slots that can be reused
-    List<int> strAvailableIndices;
-    List<int> objAvailableIndices;
-    List<int> fragAvailableIndices;
 
   private:
 
@@ -125,22 +96,13 @@ class Orbis : public Bounds
     void reposition( Frag* frag );
 
     OZ_ALWAYS_INLINE
-    int nStructs() const
-    {
-      return structs.length() - 1;
-    }
+    int nStructs() const;
 
     OZ_ALWAYS_INLINE
-    int nObjects() const
-    {
-      return objects.length() - 1;
-    }
+    int nObjects() const;
 
     OZ_ALWAYS_INLINE
-    int nFrags() const
-    {
-      return frags.length() - 1;
-    }
+    int nFrags() const;
 
     /**
      * Return structure at a given index, nullptr if index is -1.
@@ -225,6 +187,24 @@ class Orbis : public Bounds
 };
 
 extern Orbis orbis;
+
+OZ_ALWAYS_INLINE
+inline int Orbis::nStructs() const
+{
+  return structs.length() - 1;
+}
+
+OZ_ALWAYS_INLINE
+inline int Orbis::nObjects() const
+{
+  return objects.length() - 1;
+}
+
+OZ_ALWAYS_INLINE
+inline int Orbis::nFrags() const
+{
+  return frags.length() - 1;
+}
 
 OZ_ALWAYS_INLINE
 inline Struct* Orbis::str( int index ) const

@@ -38,8 +38,6 @@
 
 #include <client/eSpeak.hh>
 
-#include <SDL.h>
-
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
     int id = liber.imagoIndex( #name ); \

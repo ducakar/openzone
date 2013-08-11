@@ -27,6 +27,7 @@
 #include <matrix/BotClass.hh>
 #include <matrix/WeaponClass.hh>
 
+#include <cstdlib>
 #include <cwchar>
 #include <cwctype>
 

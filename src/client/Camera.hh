@@ -58,8 +58,6 @@ class Camera
 
     Proxy*    proxy;
 
-  public:
-
     // Rotation, magnification, position and velocity.
     Quat      rot;
     float     mag;

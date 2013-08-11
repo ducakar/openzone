@@ -38,10 +38,12 @@ namespace oz
 /**
  * Mouse cursor loader.
  *
- * There are two modes for rendering cursors. The first, your OS-provided cursor replaced by the
- * current frame of this cursor with `SDL_SetCursor()` call. The secont, OpenGL textures are
- * generated for each frame. You can retrieve OpenGL texture id for the current frame with
- * `textureId()` call and render it via your UI render path.
+ * There are two modes for rendering cursors. The first, OpenGL textures are generated for each
+ * frame. You can retrieve OpenGL texture id for the current frame with `textureId()` call and
+ * render it via your UI render path. The second, your OS-provided cursor replaced by the current
+ * frame of this cursor with `SDL_SetCursor()` call.
+ *
+ * Setting system cursor is only enabled when built against SDL 2.0.
  *
  * Cursor files must be in Xcursor format, which is the standard cursor format on Linux (or more
  * accurately, on all X11 and Wayland systems).
@@ -55,8 +57,8 @@ class Cursor
      */
     enum Mode
     {
-      OS,
-      TEXTURE
+      TEXTURE,
+      SYSTEM
     };
 
   private:
@@ -79,8 +81,8 @@ class Cursor
 
       union
       {
-        SDL_Cursor* sdlCursor; ///< SDL cursor.
         uint        textureId; ///< GL texture id.
+        SDL_Cursor* sdlCursor; ///< SDL cursor.
       };
     };
 
@@ -163,7 +165,7 @@ class Cursor
      */
     uint textureId() const
     {
-      return mode == OS ? 0 : images[frame].textureId;
+      return mode == SYSTEM ? 0 : images[frame].textureId;
     }
 
     /**
@@ -179,7 +181,7 @@ class Cursor
     /**
      * Update OS cursor.
      */
-    void updateOS();
+    void updateSystem();
 
     /**
      * Load from file.

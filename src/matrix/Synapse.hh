@@ -59,6 +59,8 @@ class Synapse
 
     Mode mode;
 
+  public:
+
     explicit Synapse();
 
     void use( Bot* user, Object* target );

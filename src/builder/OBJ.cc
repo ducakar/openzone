@@ -26,6 +26,7 @@
 #include <client/Context.hh>
 #include <builder/Compiler.hh>
 
+#include <cstdio>
 #include <sstream>
 
 namespace oz

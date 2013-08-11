@@ -26,6 +26,8 @@
 #include <client/Context.hh>
 #include <builder/Compiler.hh>
 
+#include <cstdio>
+
 namespace oz
 {
 namespace builder

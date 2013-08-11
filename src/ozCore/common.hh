@@ -36,6 +36,7 @@
 
 #include <cstdarg>
 #include <cstddef>
+#include <climits>
 #include <new>
 
 /**

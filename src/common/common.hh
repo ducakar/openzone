@@ -40,14 +40,6 @@
 # undef far
 #endif
 
-// Some standard C/C++ headers.
-#include <climits>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 namespace oz
 {
 

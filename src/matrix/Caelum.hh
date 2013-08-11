@@ -38,6 +38,8 @@ class Caelum
     float period;
     float time;
 
+  public:
+
     void reset();
     void update();
 

@@ -86,8 +86,6 @@ class Struct : public Bounds
 
   private:
 
-    static const Mat44 ROTATIONS[];
-
     static const Vec3  DESTRUCT_FRAG_VELOCITY;
     static const float DEMOLISH_SPEED;
 

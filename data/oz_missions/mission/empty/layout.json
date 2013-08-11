@@ -1,0 +1,13 @@
+{
+  "caelum":
+  {
+    "heading":                  22.5,
+    "name":                     "earth",
+    "period":                   3600,
+    "time":                     450
+  },
+  "terra":
+  {
+    "name":                     "random-0"
+  }
+}
