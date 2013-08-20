@@ -185,11 +185,9 @@ void Entity::autoDoorHandler()
 {
   switch( state ) {
     case CLOSED: {
-      if( ( timer.ticks + uint( str->index * 199999 ) ) % ( Timer::TICKS_PER_SEC / 6 ) != 0 ) {
-        return;
-      }
-
-      if( collider.overlaps( this, clazz->margin ) ) {
+      if( ( timer.ticks + uint( str->index * 1025 ) ) % ( Timer::TICKS_PER_SEC / 6 ) == 0 &&
+          collider.overlaps( this, clazz->margin ) )
+      {
         state    = OPENING;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }

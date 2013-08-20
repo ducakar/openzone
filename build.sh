@@ -1,17 +1,18 @@
 #!/bin/sh
 #
-# build.sh [clean | conf | build]
+# build.sh [clean | conf]
 #
-# This script configures and/or builds OpenZone for all supported platforms in the `build`
-# directory. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+# This script configures and/or builds OpenZone in the `build` directory for all platforms that are
+# uncommented in the beginning of this script. `ANDROID_NDK` and `NACL_SDK_ROOT` environment
+# variables must be set for Android and NaCl builds.
 #
-# The following commands may be given (`build` is assumed if none):
+# The following commands may be given:
 #
 # - `clean`: Delete all builds.
 # - `conf`: Delete all builds and configure (but not build) them anew.
-# - `build`: Configure (if necessary) and build all builds.
 # - `pnacl`: Run `pnacl-translate` to convert client `.pexe` to platform-dependent `.nexe`s.
-#
+# - (none): Configure (if necessary) and build all enabled builds.
+
 
 buildType=Debug
 platforms=(
@@ -93,7 +94,7 @@ case $1 in
   pnacl)
     pnacl
     ;;
-  build|*)
+  *)
     build 0
     ;;
 esac

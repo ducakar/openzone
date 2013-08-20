@@ -170,7 +170,7 @@ bool Cursor::load( const File& file, Mode mode_, int size )
     image.delay       = istream.readInt();
     image.sdlCursor   = nullptr;
 
-    int size = image.width*image.height * 4;
+    int size = image.width * image.height * 4;
 
     char* pixels = new char[size];
     istream.readChars( pixels, size );

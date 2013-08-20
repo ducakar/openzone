@@ -32,11 +32,13 @@ int main( int argc, char** argv )
 {
   System::init();
   SDL_Init( SDL_INIT_VIDEO );
-  Window::create( "Test", 100, 100, false );
+  Window::create( "Test", 600, 600, false );
 
-  File file = argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/half-busy" : argv[1];
+  File file = argc < 2 ? "/usr/share/icons/OpenZone_Black_Slim/cursors/wait" : argv[1];
 
   GLTexture texture( "share/openzone/oz_base/ui/icon/use.dds" );
+  texture.generateIdenticon( 600, String::strongHash( "Davorin" ),
+                             Vec4( 0.20f, 0.30f, 0.25f, 1.00f ) );
   Cursor cursor( file, Cursor::SYSTEM );
 
   if( !cursor.isLoaded() ) {
@@ -62,15 +64,20 @@ int main( int argc, char** argv )
     glBindTexture( GL_TEXTURE_2D, texture.id() );
 
     glBegin( GL_QUADS );
-      glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
-      glTexCoord2i( 1, 1 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height() );
-      glTexCoord2i( 1, 0 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 );
+//       glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
+//       glTexCoord2i( 1, 1 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height() );
+//       glTexCoord2i( 1, 0 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 );
+//       glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
+
+      glTexCoord2i( 0, 1 ); glVertex2d( -1, -1 );
+      glTexCoord2i( 1, 1 ); glVertex2d( +1, -1 );
+      glTexCoord2i( 1, 0 ); glVertex2d( +1, +1 );
       glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
     glEnd();
 
     Window::swapBuffers();
     cursor.advance( 15 );
-    cursor.updateSystem();
+//     cursor.updateSystem();
 
     Time::sleep( 10 );
   }

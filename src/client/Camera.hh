@@ -66,6 +66,7 @@ class Camera
 
     // Current rotation, magnification and position are smoothly changed to match desired ones.
     Quat      desiredRot;
+    Quat      shakedRot;
     float     desiredMag;
     Point     desiredPos;
     Point     oldPos;
@@ -120,6 +121,8 @@ class Camera
 
     State     state;
     State     newState;
+
+  public:
 
     void setState( State state_ )
     {
@@ -206,6 +209,8 @@ class Camera
       desiredPos = p_;
       oldPos     = p_;
     }
+
+    void shake( float intensity );
 
     void updateReferences();
 

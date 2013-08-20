@@ -53,7 +53,7 @@ void main()
   vec4  normal0       = texture2D( oz_Textures[2], vec2( iVertex, iNormal0 ) );
   vec4  normal1       = texture2D( oz_Textures[2], vec2( iVertex, iNormal1 ) );
   vec4  localPosition = vec4( mix( position0, position1, interpolation ).xyz, 1.0 );
-  vec4  localNormal   = vec4( mix( normal0,   normal1,   interpolation ).xyz, 0.0 );
+  vec4  localNormal   = vec4( normalize( mix( normal0, normal1, interpolation ).xyz ), 0.0 );
 
   gl_Position         = oz_ProjModelTransform * localPosition;
   exTexCoord          = inTexCoord;

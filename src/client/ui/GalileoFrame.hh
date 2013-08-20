@@ -54,12 +54,17 @@ class GalileoFrame : public Frame
 
   public:
 
-    bool isMaximised;
+    // World coordinate of a mouse click, NaN if no click.
+    float     clickX;
+    float     clickY;
+
+    bool      isMaximised;
 
   protected:
 
-    void onUpdate() override;
     void onReposition() override;
+    void onUpdate() override;
+    bool onMouseEvent() override;
     void onDraw() override;
 
   public:

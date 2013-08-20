@@ -115,6 +115,20 @@ class String
     }
 
     /**
+     * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
+     */
+    static int strongHash( const char* s )
+    {
+      int value = int( 2166136261 );
+
+      while( *s != '\0' ) {
+        value = ( value * 16777619 ) ^ *s;
+        ++s;
+      }
+      return value;
+    }
+
+    /**
      * First character or null character if an empty string.
      */
     OZ_ALWAYS_INLINE
@@ -734,6 +748,14 @@ class String
     bool isEmpty() const
     {
       return count == 0;
+    }
+
+    /**
+     * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
+     */
+    int strongHash() const
+    {
+      return strongHash( buffer );
     }
 
     /**

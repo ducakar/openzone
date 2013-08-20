@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# lib.sh [clean | build]
+# lib.sh [clean]
 #
 # Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64,
 # Linux-i686 and Windows-i686). Those are required to create standalone build (see OZ_STANDALONE
@@ -8,14 +8,14 @@
 # dependencies included).
 #
 # This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-bit (`lib32-*`)
-# and MinGW (`mingw32-*`) versions of all required libraries installed. Many of those packages must
+# and MinGW (`mingw32-*`) versions of all necessary libraries installed. Many of those packages must
 # be built from AUR.
 #
 # The following commands may be given (`build` is assumed if none):
 #
-# - `clean`: Delete directories for all platforms,
-# - `build`: Copy libraries for selected platforms into corresponding directories.
-#
+# - `clean`: Delete directories for all platforms.
+# - (none): Copy libraries for selected platforms into corresponding directories.
+
 
 platforms=(
   Linux-x86_64
@@ -47,7 +47,7 @@ function build()
          "$prefix/libSDL-1.2.so.0" \
          "$prefix/libSDL_ttf-2.0.so.0" \
          "$prefix/liblua.so.5.2" \
-         "$prefix/libpng.so.3" \
+         "$prefix/libpng16.so.16" \
          "$prefix/libfreeimage.so.3" \
          "$prefix/libnoise.so.1.0.0" \
          "$prefix/libassimp.so.3" \
@@ -70,13 +70,15 @@ function build()
          "$prefix/libphysfs.dll" \
          "$prefix/SDL.dll" \
          "$prefix/SDL_ttf.dll" \
-         "$prefix/libpng.dll" \
+         "$prefix/libpng16-16.dll" \
          "$prefix/lua52.dll" \
          "$prefix/libfreetype-6.dll" \
          "$prefix/libogg-0.dll" \
          "$prefix/libvorbis-0.dll" \
          "$prefix/libvorbisfile-3.dll" \
          "$prefix/FreeImage.dll" \
+         "$prefix/libnoise.dll" \
+         "$prefix/libassimp.dll" \
          "$outDir"
 
       chmod +x $outDir/*
@@ -89,7 +91,7 @@ case $1 in
   clean)
     clean
     ;;
-  build|*)
+  *)
     build
     ;;
 esac

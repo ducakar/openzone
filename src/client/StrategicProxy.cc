@@ -149,8 +149,14 @@ void StrategicProxy::update()
 
     float speed = ( isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED ) * Timer::TICK_TIME;
 
-    desiredPos += input.moveY * camera.at    * speed;
-    desiredPos += input.moveX * camera.right * speed;
+    if( !Math::isNaN( ui::ui.galileoFrame->clickX ) ) {
+      desiredPos.x = ui::ui.galileoFrame->clickX;
+      desiredPos.y = ui::ui.galileoFrame->clickY;
+    }
+    else {
+      desiredPos += input.moveY * camera.at    * speed;
+      desiredPos += input.moveX * camera.right * speed;
+    }
 
     if( input.keys[Input::KEY_MOVE_UP] ) {
       desiredPos.z += speed;
@@ -173,8 +179,14 @@ void StrategicProxy::update()
     float logHeight = Math::log( height );
     float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * Timer::TICK_TIME * logHeight;
 
-    desiredPos += input.moveY * up           * speed;
-    desiredPos += input.moveX * camera.right * speed;
+    if( !Math::isNaN( ui::ui.galileoFrame->clickX ) ) {
+      desiredPos.x = ui::ui.galileoFrame->clickX;
+      desiredPos.y = ui::ui.galileoFrame->clickY;
+    }
+    else {
+      desiredPos += input.moveY * up           * speed;
+      desiredPos += input.moveX * camera.right * speed;
+    }
 
     if( input.wheelDown || input.wheelUp ) {
       float wheelFactor = float( ui::ui.strategicArea->mouseW );

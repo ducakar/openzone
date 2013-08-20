@@ -27,7 +27,9 @@
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>
+#include <client/Input.hh>
 #include <client/ui/Style.hh>
+#include <client/ui/Mouse.hh>
 
 namespace oz
 {
@@ -51,11 +53,17 @@ void GalileoFrame::onReposition()
   maximisedHeight = maxSize;
 
   setMaximised( isMaximised );
+
+  clickX = Math::NaN;
+  clickY = Math::NaN;
 }
 
 void GalileoFrame::onUpdate()
 {
   const Bot* bot = camera.botObj;
+
+  clickX = Math::NaN;
+  clickY = Math::NaN;
 
   if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && ( bot == nullptr ||
         ( bot->state & Bot::DEAD_BIT ) || !bot->hasAttribute( ObjectClass::GALILEO_BIT ) ) ) )
@@ -66,6 +74,15 @@ void GalileoFrame::onUpdate()
   else {
     show( true );
   }
+}
+
+bool GalileoFrame::onMouseEvent()
+{
+  if( input.buttons ) {
+    clickX = -Orbis::DIM + float( mouse.x - x ) / float( width  ) * 2.0f * Orbis::DIM;
+    clickY = -Orbis::DIM + float( mouse.y - y ) / float( height ) * 2.0f * Orbis::DIM;
+  }
+  return true;
 }
 
 void GalileoFrame::onDraw()
@@ -124,7 +141,8 @@ void GalileoFrame::onDraw()
 }
 
 GalileoFrame::GalileoFrame() :
-  Frame( 240, 232 - HEADER_SIZE, "" ), colour( style.colours.galileoNormal ), isMaximised( false )
+  Frame( 240, 232 - HEADER_SIZE, "" ), colour( style.colours.galileoNormal ),
+  clickX( Math::NaN ), clickY( Math::NaN ), isMaximised( false )
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 

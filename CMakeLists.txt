@@ -177,7 +177,7 @@ mark_as_advanced( MINGW32_LIBRARY )
 #
 
 # Local libmad, faad and eSpeak headers.
-include_directories( SYSTEM include )
+include_directories( SYSTEM etc/include )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )

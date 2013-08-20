@@ -8,6 +8,7 @@
 - ui
     * launch bar/menu bar
     * RTS interface
+    * tutorial tips
 - client
     * decals
     * particle model (smoke, fire ...)
@@ -22,7 +23,6 @@
     * conversations
 - ui
     * options menu
-    * tutorial tips
     * advanced HUD for mechanic units and vehicles
     * conversations
 - client

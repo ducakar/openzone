@@ -265,14 +265,14 @@ inline int hash( int value )
 }
 
 /**
- * Hash function for strings, implements Bernstein's hash.
+ * Hash function for strings, (modified) Bernstein's hash.
  */
 inline int hash( const char* s )
 {
   int value = 5381;
 
   while( *s != '\0' ) {
-    value = value * 33 + *s;
+    value = ( value * 33 ) ^ *s;
     ++s;
   }
   return value;

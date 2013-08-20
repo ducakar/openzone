@@ -14,12 +14,11 @@ Building is currently supported under Linux. You can build Linux/Unix, Windows (
 Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
 supported platforms/toolchains. Only GCC >= 4.4 and LLVM/Clang >= 3.1 compilers are supported.
 
-For generic Linux builds, make sure you have all the dependencies installed. You need to install
-development packages for the following libraries:
+To build OpenZone from source, development packages for the following libraries are required:
 
 - ALSA (Linux only)
-- libpulse (Linux/Unix only)
-- PhysicsFS 2.0 or 2.1
+- libpulse (Linux/Unix only, optional)
+- PhysicsFS 2.0 or 2.1/development
 - ODE (optional)
 - Lua 5.1 or 5.2 or LuaJIT 2.0
 - SDL 1.2 or 2.0
@@ -60,7 +59,7 @@ You may also want to set several options when configuring CMake build system:
 
 - `OZ_PULSE_BELL`: Enable PulseAudio back-end for System::bell() on Linux and generic Unix ports.
   If enabled, PulseAudio is tried first to play the bell while the native sound system (ALSA on
-  Linux or OSS on generic Unix port) is used as fall-back.
+  Linux or OSS on generic Unix port) is only used as a fall-back.
   `OFF` by default.
 
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks. Stack trace for every memory
@@ -74,33 +73,31 @@ You may also want to set several options when configuring CMake build system:
   vector components in OpenZone code.
   `OFF` by default.
 
-- `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library. Requires ODE (Open Dynamics Engine)
-  compiled in single precision. If turned off, ozDynamics is built only partially. OpenZone does not
-  need ozDynamics library to run, only a few headers are required to build OpenZone.
+- `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library (ozDynamics). Requires ODE (Open Dynamics
+  Engine) compiled in single precision. ozDynamics is only my attempt to create a physics engine and
+  is not required by OpenZone.
   `OFF` by default.
 
 - `OZ_SDL1`: Use SDL 1.2 instead of SDL 2.0.
   `OFF` by default, forced to `OFF` on Android, forced to `ON` on NaCl.
 
-- `OZ_GL_ES`: Use OpenGL ES 2.0 API. Enabling this on Linux or Windows while using SDL 1.2 leads to
-  a strange situation when SDL initialises OpenGL but rendering is done entirely through OpenGL ES.
-  However, it seems to work on Linux at least.
+- `OZ_GL_ES`: Use OpenGL ES 2.0 API. Enabling this on Linux while using SDL 1.2 leads to a strange
+  situation when SDL initialises OpenGL but rendering is done entirely through OpenGL ES.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
-- `OZ_NONFREE`: Enable support for building textures using S3 texture compression.
-  Requires libsquish library.
+- `OZ_NONFREE`: Enable support for building textures using S3 texture compression. Requires
+  libsquish library.
   `OFF` by default.
 
 - `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster.
   `OFF` by default.
 
-- `OZ_NET`: Enable networking support (not implemented yet). Requires SDL_net library.
+- `OZ_NET`: Enable networking support. Not implemented yet. Requires SDL_net library.
   `OFF` by default, forced to `OFF` on NaCl.
 
-- `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
-  from support directory, game data archives found in `share/openzone`, info files etc. This is
-  intended if one wants to create all-in-one ZIP (or whatever) archive that can be unpacked and run
-  on any Linux distro or Windows without installation.
+- `OZ_STANDALONE`: This only affects behaviour of `make install`. It also installs dependencies from
+  `lib` directory, game data archives found in `share/openzone`, info files etc. This is intended
+  when one wants to create all-in-one ZIP archive that can be unpacked and run without installation.
   `OFF` by default, forced to `ON` on Windows, forced to `OFF` on Android and NaCl.
 
 Tools
@@ -167,17 +164,18 @@ this script.
 
 Additionally this scripts updates version numbers in various files.
 
-### `build.sh [clean | conf | build]` ###
+### `build.sh [clean | conf | pnacl]` ###
 
-This script configures and/or builds OpenZone for all supported platforms in the `build` directory.
-`ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+This script configures and/or builds OpenZone in the `build` directory for all platforms that are
+uncommented in the beginning of this script. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables
+must be set for Android and NaCl builds.
 
-The following commands may be given (`build` is assumed if none):
+The following commands may be given:
 
 - `clean`: Delete all builds.
 - `conf`: Delete all builds and configure (but not build) them anew.
-- `build`: Configure (if necessary) and build all builds.
 - `pnacl`: Run `pnacl-translate` to convert client `.pexe` to platform-dependent `.nexe`s.
+- (none): Configure (if necessary) and build all enabled builds.
 
 ### `capture.sh` ###
 
@@ -207,7 +205,7 @@ Cleans up temporary, intermediate and backup files from a source game data direc
 Creates `<basedata_dir>/<basename>.pot` template for localised messages catalogue. See `ozGettext`
 tool for more details. `<basename>` is package name (last directory name in `<basedata_dir>`).
 
-### `lib.sh [clean | build]` ###
+### `lib.sh [clean]` ###
 
 Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64,
 Linux-i686 and Windows-i686). Those are required to create standalone build (see OZ_STANDALONE cmake
@@ -215,13 +213,13 @@ option) that can be distributed in a ZIP archive (i.e. no installation required,
 included).
 
 This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-bit (`lib32-*`) and
-MinGW (`mingw32-*`) versions of all required libraries installed. Many of those packages must be
+MinGW (`mingw32-*`) versions of all necessary libraries installed. Many of those packages must be
 built from AUR.
 
 The following commands may be given (`build` is assumed if none):
 
 - `clean`: Delete directories for all platforms.
-- `build`: Copy libraries for selected platforms into corresponding directories.
+- (none): Copy libraries for selected platforms into corresponding directories.
 
 ### `package.sh {src | data | datasrc | boundle}` ###
 
@@ -235,7 +233,7 @@ One of the following commands must be given:
 - `boundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
   standalone builds and compiled game data packages found in `share/openzone`.
 
-### `ports.sh [clean | fetch | build]` ###
+### `ports.sh [clean | fetch]` ###
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
 all required libraries for NaCl and Android configurations that are not provided by SDKs.
@@ -247,7 +245,7 @@ The following commands may be given (`build` is assumed if none):
 - `buildclean`: Delete build directories. Downloaded sources and installed libraries are left
   intact.
 - `fetch`: Download sources into `ports/archives` directory.
-- `build`: Builds all libraries for all platforms.
+- (none): Builds all libraries for all platforms.
 
 ### `q3map2.sh <map_file>` ###
 

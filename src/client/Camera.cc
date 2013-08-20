@@ -53,6 +53,11 @@ StrategicProxy Camera::strategic;
 UnitProxy      Camera::unit;
 CinematicProxy Camera::cinematic;
 
+void Camera::shake( float intensity )
+{
+  shakedRot = Quat::rotationAxis( right, intensity );
+}
+
 void Camera::updateReferences()
 {
   objectObj  = orbis.obj( object );
@@ -81,7 +86,7 @@ void Camera::updateReferences()
 
 void Camera::align()
 {
-  rot      = ~Quat::slerp( rot, desiredRot, ROT_SMOOTHING_COEF );
+  rot      = ~Quat::slerp( rot, desiredRot * shakedRot, ROT_SMOOTHING_COEF );
   mag      = Math::mix( mag, desiredMag, SMOOTHING_COEF );
   p        = Math::mix( p, desiredPos, SMOOTHING_COEF );
   velocity = ( p - oldPos ) / Timer::TICK_TIME;
@@ -169,6 +174,7 @@ void Camera::reset()
   velocity   = Vec3::ZERO;
 
   desiredRot = Quat::ID;
+  shakedRot  = Quat::ID;
   desiredMag = 1.0f;
   desiredPos = Point::ORIGIN;
   oldPos     = Point::ORIGIN;

@@ -584,8 +584,7 @@ void Physics::updateObj( Dynamic* dyn_ )
         if( dyn->resistance <= LAVA_DAMAGE_ABSOLUTE ) {
           dyn->flags |= Object::ENABLE_BIT;
 
-          // 199999 is some large enough prime to introduce enough spread among indices.
-          if( ( uint( timer.ticks ) + uint( dyn->index * 199999 ) ) % LAVA_DAMAGE_INTERVAL == 0 ) {
+          if( ( uint( timer.ticks ) + uint( dyn->index * 1025 ) ) % LAVA_DAMAGE_INTERVAL == 0 ) {
             dyn->damage( max( LAVA_DAMAGE_ABSOLUTE, dyn->clazz->life * LAVA_DAMAGE_RATIO ) );
           }
         }

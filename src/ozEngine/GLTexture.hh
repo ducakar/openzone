@@ -128,6 +128,14 @@ class GLTexture
     bool load( const File& file, int bias = 0 );
 
     /**
+     * Generate square identicon.
+     *
+     * `size` is used as both width and height. For best result it should be a multiple of 12.
+     * It is meant for use in UI, so it uses `GL_LINEAR`/`GL_LINEAR` filters with no compression.
+     */
+    bool generateIdenticon( int size, int hash, const Vec4& backgroundColour );
+
+    /**
      * Unload texture from GPU if loaded.
      */
     void destroy();

@@ -12,7 +12,7 @@
 # - `buildclean`: Delete build directories. Downloaded sources and installed libraries are left
 #   intact.
 # - `fetch`: Download sources into `ports/archives` directory.
-# - `build`: Builds all libraries for all platforms.
+# - (none): Builds all libraries for all platforms.
 #
 
 platforms=(
@@ -698,7 +698,7 @@ case $1 in
   fetch)
     fetch
     ;;
-  build|*)
+  *)
     build
     ;;
 esac
