@@ -39,7 +39,7 @@ namespace oz
  * It is implemented as a wrapper for condition variable if a platform supports it since it should
  * yield a better performance.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Thread`
+ * @sa `oz::SpinLock`, `oz::Mutex`, `oz::CallOnce`, `oz::Thread`
  */
 class Semaphore
 {
@@ -95,6 +95,7 @@ class Semaphore
     /**
      * True iff initialised.
      */
+    OZ_ALWAYS_INLINE
     bool isValid() const
     {
       return descriptor != nullptr;

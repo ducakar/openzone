@@ -137,7 +137,9 @@ bool Semaphore::tryWait() const
 
 void Semaphore::init( int counter )
 {
-  hard_assert( descriptor == nullptr && counter >= 0 );
+  if( descriptor != nullptr ) {
+    OZ_ERROR( "oz::Semaphore: Semaphore is already initialised" );
+  }
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {

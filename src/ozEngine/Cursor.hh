@@ -174,14 +174,9 @@ class Cursor
     void reset();
 
     /**
-     * Advance animation.
+     * Advance animation and update the current texture id or the system cursor.
      */
-    void advance( int millis );
-
-    /**
-     * Update OS cursor.
-     */
-    void updateSystem();
+    void update( int millis );
 
     /**
      * Load from file.

@@ -36,7 +36,7 @@ namespace oz
 /**
  * %Mutex.
  *
- * @sa `oz::SpinLock`, `oz::Semaphore`, `oz::Thread`
+ * @sa `oz::SpinLock`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
  */
 class Mutex
 {
@@ -92,6 +92,7 @@ class Mutex
     /**
      * True iff initialised.
      */
+    OZ_ALWAYS_INLINE
     bool isValid() const
     {
       return descriptor != nullptr;

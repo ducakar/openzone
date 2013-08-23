@@ -41,6 +41,8 @@ class Camera
     static const float  MIN_DISTANCE;
     static const float  SMOOTHING_COEF;
     static const float  ROT_SMOOTHING_COEF;
+    static const float  EFFECT_DISTANCE;
+    static const Mat44  FLASH_COLOUR;
     static const Mat44  NV_COLOUR;
     static Proxy* const PROXIES[];
 
@@ -52,75 +54,100 @@ class Camera
       CINEMATIC
     };
 
+    struct Effect
+    {
+      int           id;
+      const Object* obj;
+    };
+
+  public:
+
     static StrategicProxy strategic;
     static UnitProxy      unit;
     static CinematicProxy cinematic;
 
-    Proxy*    proxy;
+    Proxy*        proxy;
 
     // Rotation, magnification, position and velocity.
-    Quat      rot;
-    float     mag;
-    Point     p;
-    Vec3      velocity;
+    Quat          rot;
+    float         mag;
+    Point         p;
+    Vec3          velocity;
 
     // Current rotation, magnification and position are smoothly changed to match desired ones.
-    Quat      desiredRot;
-    Quat      shakedRot;
-    float     desiredMag;
-    Point     desiredPos;
-    Point     oldPos;
+    Quat          desiredRot;
+    Quat          shakedRot;
+    float         desiredMag;
+    Point         desiredPos;
+    Point         oldPos;
 
     // Camera rotation change (from input).
-    float     relH;
-    float     relV;
+    float         relH;
+    float         relV;
 
     // Global rotation quaternion, matrix and it's inverse.
-    Mat44     rotMat;
-    Mat44     rotTMat;
+    Mat44         rotMat;
+    Mat44         rotTMat;
 
     // Global colour transformation.
-    Mat44     colour;
+    Mat44         colour;
+    Mat44         baseColour;
+    Mat44         nvColour;
 
-    Mat44     baseColour;
-    Mat44     nvColour;
+    Vec3          right;
+    Vec3          up;
+    Vec3          at;
 
-    Vec3      right;
-    Vec3      up;
-    Vec3      at;
+    int           width;
+    int           height;
+    int           centreX;
+    int           centreY;
 
-    int       width;
-    int       height;
-    int       centreX;
-    int       centreY;
+    float         coeff;
+    float         aspect;
+    float         vertPlane;
+    float         horizPlane;
+    float         maxDist;
 
-    float     coeff;
-    float     aspect;
-    float     vertPlane;
-    float     horizPlane;
-    float     maxDist;
+    int           object;
+    Object*       objectObj;
 
-    int       object;
-    Object*   objectObj;
+    int           entity;
+    Entity*       entityObj;
 
-    int       entity;
-    Entity*   entityObj;
+    int           bot;
+    Bot*          botObj;
 
-    int       bot;
-    Bot*      botObj;
+    int           vehicle;
+    Vehicle*      vehicleObj;
 
-    int       vehicle;
-    Vehicle*  vehicleObj;
+    List<int>     switchableUnits;
 
-    List<int> switchableUnits;
+    bool          isFixedAspect;
+    bool          allowReincarnation;
+    bool          nightVision;
+    bool          isExternal;
 
-    bool      isFixedAspect;
-    bool      allowReincarnation;
-    bool      nightVision;
-    bool      isExternal;
+    State         state;
+    State         newState;
 
-    State     state;
-    State     newState;
+  private:
+
+    List<Effect>  effects;
+
+    Thread        effectsThread;
+
+    Semaphore     effectsMainSemaphore;
+    Semaphore     effectsAuxSemaphore;
+
+    volatile bool areEffectsAlive;
+
+  private:
+
+    static void effectsMain( void* );
+
+    void cellEffects( int cellX, int cellY );
+    void effectsRun();
 
   public:
 
@@ -219,6 +246,9 @@ class Camera
      */
     void align();
 
+    void updateEffects();
+    void syncEffects();
+
     /**
      * Process input.
      *
@@ -237,9 +267,13 @@ class Camera
     void reset();
 
     void read( InputStream* istream );
+    void read( const JSON& json );
+
     void write( OutputStream* ostream ) const;
+    JSON write() const;
 
     void init();
+    void destroy();
 
 };
 

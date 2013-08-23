@@ -62,6 +62,7 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_ENTITY_CLOSED",               Entity::CLOSED );
   registerLuaConstant( l, "OZ_ENTITY_OPENED",               Entity::OPENED );
 
+  registerLuaConstant( l, "OZ_EVENT_FLASH",                 Object::EVENT_FLASH );
   registerLuaConstant( l, "OZ_EVENT_SHAKE",                 Object::EVENT_SHAKE );
   registerLuaConstant( l, "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
   registerLuaConstant( l, "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );

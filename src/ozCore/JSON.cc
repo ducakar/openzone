@@ -794,7 +794,7 @@ JSON::JSON( const Quat& q ) :
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
-  for( int i = 0; i < 3; ++i ) {
+  for( int i = 0; i < 4; ++i ) {
     list.add( JSON( new NumberData( q[i] ), NUMBER ) );
   }
 }
@@ -939,10 +939,16 @@ int JSON::length() const
       return -1;
     }
     case ARRAY: {
-      return static_cast<const ArrayData*>( data )->list.length();
+      const ArrayData* arrayData = static_cast<const ArrayData*>( data );
+
+      wasAccessed = true;
+      return arrayData->list.length();
     }
     case OBJECT: {
-      return static_cast<const ObjectData*>( data )->table.length();
+      const ObjectData* objectData = static_cast<const ObjectData*>( data );
+
+      wasAccessed = true;
+      return objectData->table.length();
     }
   }
 }
@@ -954,10 +960,16 @@ int JSON::isEmpty() const
       return true;
     }
     case ARRAY: {
-      return static_cast<const ArrayData*>( data )->list.isEmpty();
+      const ArrayData* arrayData = static_cast<const ArrayData*>( data );
+
+      wasAccessed = true;
+      return arrayData->list.isEmpty();
     }
     case OBJECT: {
-      return static_cast<const ObjectData*>( data )->table.isEmpty();
+      const ObjectData* objectData = static_cast<const ObjectData*>( data );
+
+      wasAccessed = true;
+      return objectData->table.isEmpty();
     }
   }
 }

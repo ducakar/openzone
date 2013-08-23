@@ -164,17 +164,6 @@ void Matrix::read( InputStream* istream )
   Log::println( "}" );
 }
 
-void Matrix::write( OutputStream* ostream ) const
-{
-  Log::print( "Writing Matrix ..." );
-
-  ostream->writeULong64( timer.ticks );
-  orbis.write( ostream );
-  ostream->writeFloat( physics.gravity );
-
-  Log::printEnd( " OK" );
-}
-
 void Matrix::read( const JSON& json )
 {
   Log::println( "Reading Matrix {" );
@@ -184,6 +173,17 @@ void Matrix::read( const JSON& json )
 
   Log::unindent();
   Log::println( "}" );
+}
+
+void Matrix::write( OutputStream* ostream ) const
+{
+  Log::print( "Writing Matrix ..." );
+
+  ostream->writeULong64( timer.ticks );
+  orbis.write( ostream );
+  ostream->writeFloat( physics.gravity );
+
+  Log::printEnd( " OK" );
 }
 
 JSON Matrix::write() const

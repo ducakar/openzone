@@ -37,6 +37,11 @@ const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
 const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
+const float  Camera::EFFECT_DISTANCE    = 192.0f;
+const Mat44  Camera::FLASH_COLOUR       = Mat44( 1.00f, 1.00f, 1.00f, 0.00f,
+                                                 1.00f, 1.00f, 1.00f, 0.00f,
+                                                 1.00f, 1.00f, 1.00f, 0.00f,
+                                                 0.00f, 0.00f, 0.00f, 1.00f );
 const Mat44  Camera::NV_COLOUR          = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.25f, 2.00f, 0.25f, 0.00f,
@@ -52,6 +57,53 @@ Proxy* const Camera::PROXIES[] = {
 StrategicProxy Camera::strategic;
 UnitProxy      Camera::unit;
 CinematicProxy Camera::cinematic;
+
+void Camera::effectsMain( void* )
+{
+  camera.effectsRun();
+}
+
+void Camera::cellEffects( int cellX, int cellY )
+{
+  const Cell& cell = orbis.cells[cellX][cellY];
+
+  foreach( obj, cell.objects.citer() ) {
+    float radius = EFFECT_DISTANCE + obj->dim.fastN();
+
+    if( ( obj->p - camera.p ).sqN() > radius*radius ) {
+      continue;
+    }
+
+    foreach( event, obj->events.citer() ) {
+      if( event->id < 0 ) {
+        effects.add( { event->id, obj } );
+      }
+    }
+  }
+}
+
+void Camera::effectsRun()
+{
+  effectsAuxSemaphore.wait();
+
+  while( areEffectsAlive ) {
+    Span span = orbis.getInters( camera.p, EFFECT_DISTANCE + Math::sqrt( 3.0f ) * Object::MAX_DIM );
+
+    for( int x = span.minX ; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        cellEffects( x, y );
+      }
+    }
+
+    if( !effects.isEmpty() ) {
+      System::bell();
+    }
+    effects.clear();
+
+    effectsMainSemaphore.post();
+    effectsAuxSemaphore.wait();
+  }
+}
 
 void Camera::shake( float intensity )
 {
@@ -98,6 +150,16 @@ void Camera::align()
   right    = +rotMat.x.vec3();
   up       = +rotMat.y.vec3();
   at       = -rotMat.z.vec3();
+}
+
+void Camera::updateEffects()
+{
+  effectsAuxSemaphore.post();
+}
+
+void Camera::syncEffects()
+{
+  effectsMainSemaphore.wait();
 }
 
 void Camera::prepare()
@@ -274,14 +336,27 @@ void Camera::read( InputStream* istream )
   strategic.read( istream );
   unit.read( istream );
   cinematic.read( istream );
+}
 
-  proxy = PROXIES[newState];
+void Camera::read( const JSON& json )
+{
+  p          = json["position"].get( Point::ORIGIN );
+  rot        = json["rotation"].get( Quat::ID );
 
-  if( proxy != nullptr ) {
-    proxy->begin();
-  }
+  desiredRot = rot;
+  desiredPos = p;
+  oldPos     = p;
 
-  state = newState;
+  bot        = json["bot"].get( -1 );
+  botObj     = static_cast<Bot*>( orbis.obj( bot ) );
+  vehicle    = botObj == nullptr ? -1 : botObj->parent;
+  vehicleObj = static_cast<Vehicle*>( orbis.obj( vehicle ) );
+
+  state     = NONE;
+  newState  = State( json["state"].get( STRATEGIC ) );
+
+  strategic.read( json["strategic"] );
+  unit.read( json["unit"] );
 }
 
 void Camera::write( OutputStream* ostream ) const
@@ -316,6 +391,21 @@ void Camera::write( OutputStream* ostream ) const
   cinematic.write( ostream );
 }
 
+JSON Camera::write() const
+{
+  JSON json( JSON::OBJECT );
+
+  json.add( "position", p );
+  json.add( "rotation", rot );
+  json.add( "bot", bot );
+  json.add( "state", state );
+
+  json.add( "strategic", strategic.write() );
+  json.add( "unit", unit.write() );
+
+  return json;
+}
+
 void Camera::init()
 {
   width         = Window::width();
@@ -329,10 +419,27 @@ void Camera::init()
   aspect        = isFixedAspect ? aspect : float( width ) / float( height );
   coeff         = Math::tan( angle / 2.0f );
 
-  state    = NONE;
-  newState = NONE;
-
   reset();
+
+  areEffectsAlive = true;
+
+  effectsMainSemaphore.init();
+  effectsAuxSemaphore.init();
+
+  effectsThread.start( "effects", Thread::JOINABLE, effectsMain );
+}
+
+void Camera::destroy()
+{
+  areEffectsAlive = false;
+
+  effectsAuxSemaphore.post();
+  effectsThread.join();
+
+  effectsAuxSemaphore.destroy();
+  effectsMainSemaphore.destroy();
+
+  effects.deallocate();
 }
 
 Camera camera;

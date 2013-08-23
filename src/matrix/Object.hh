@@ -187,6 +187,7 @@ class Object : public AABB
      */
 
     // Non-negative events are for sounds, negative for other effects.
+    static const int EVENT_FLASH      = -2;
     static const int EVENT_SHAKE      = -1;
     // EVENT_CREATE must be invoked manually
     static const int EVENT_CREATE     = 0;

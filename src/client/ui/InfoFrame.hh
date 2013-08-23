@@ -28,6 +28,9 @@
 
 namespace oz
 {
+
+class Device;
+
 namespace client
 {
 namespace ui
@@ -37,16 +40,17 @@ class InfoFrame : public Frame
 {
   private:
 
-    static const uint REFRESH_INTERVAL = 200;
+    Text text;
+    int  lastId;
 
-    Text    text;
-    int     lastId;
-    ulong64 lastTicks;
+  private:
+
+    const Device* const* updateReferences();
 
   protected:
 
     void onVisibilityChange( bool doShow ) override;
-    bool onMouseEvent() override;
+    void onUpdate() override;
     void onDraw() override;
 
   public:

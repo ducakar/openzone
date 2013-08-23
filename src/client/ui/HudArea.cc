@@ -70,12 +70,7 @@ void HudArea::drawBotCrosshair()
     }
 
     if( ent != nullptr ) {
-      if( lastEntityId != camera.entity ) {
-        lastEntityId = camera.entity;
-
-        title.set( descTextX, descTextY, "%s", entClazz->title.cstr() );
-      }
-
+      title.set( descTextX, descTextY, "%s", entClazz->title.cstr() );
       title.draw( this );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -109,15 +104,10 @@ void HudArea::drawBotCrosshair()
         taggedStatus.draw( this, healthBarX, healthBarY + 7, ICON_SIZE + 16, 8, status );
       }
 
-      if( lastObjectId != camera.object ) {
-        lastObjectId = camera.object;
+      String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
+                      bot->name + " (" + objClazz->title + ")" : objClazz->title;
 
-        String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-                        bot->name + " (" + objClazz->title + ")" : objClazz->title;
-
-        title.set( descTextX, descTextY, "%s", sTitle.cstr() );
-      }
-
+      title.set( descTextX, descTextY, "%s", sTitle.cstr() );
       title.draw( this );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -209,19 +199,13 @@ void HudArea::drawBotStatus()
     weaponName.setPosition( pos.x + 4, pos.y + 2 );
     weaponRounds.setPosition( pos.x + style.botWeapon.w - 4, pos.y + 2 );
 
-    if( lastWeaponId != bot->weapon ) {
-      lastWeaponId = bot->weapon;
-      weaponName.setText( "%s", weaponObj->clazz->title.cstr() );
-    }
-    if( lastWeaponRounds != weaponObj->nRounds ) {
-      lastWeaponRounds = weaponObj->nRounds;
+    weaponName.setText( "%s", weaponObj->clazz->title.cstr() );
 
-      if( weaponObj->nRounds < 0 ) {
-        weaponRounds.setText( "∞" );
-      }
-      else {
-        weaponRounds.setText( "%d", weaponObj->nRounds );
-      }
+    if( weaponObj->nRounds < 0 ) {
+      weaponRounds.setText( "∞" );
+    }
+    else {
+      weaponRounds.setText( "%d", weaponObj->nRounds );
     }
 
     weaponName.draw( this );
@@ -269,25 +253,18 @@ void HudArea::drawVehicleStatus()
     nameLabel.setPosition( pos.x + 2, pos.y + 2 );
     roundsLabel.setPosition( pos.x + areaStyle.w - 4, pos.y + 2 );
 
-    if( lastVehicleId != bot->parent ) {
-      nameLabel.setText( "%s", vehClazz->weaponTitles[i].cstr() );
-    }
-    if( lastVehicleWeaponRounds[labelIndex] != vehicle->nRounds[i] ) {
-      lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
+    nameLabel.setText( "%s", vehClazz->weaponTitles[i].cstr() );
 
-      if( vehicle->nRounds[i] < 0 ) {
-        roundsLabel.setText( "∞" );
-      }
-      else {
-        roundsLabel.setText( "%d", vehicle->nRounds[i] );
-      }
+    if( vehicle->nRounds[i] < 0 ) {
+      roundsLabel.setText( "∞" );
+    }
+    else {
+      roundsLabel.setText( "%d", vehicle->nRounds[i] );
     }
 
     nameLabel.draw( this );
     roundsLabel.draw( this );
   }
-
-  lastVehicleId = bot->parent;
 }
 
 void HudArea::onReposition()
@@ -308,38 +285,7 @@ void HudArea::onReposition()
   descTextX    = width / 2;
   descTextY    = crossIconY + ICON_SIZE + 36;
 
-  lastObjectId = -1;
-  lastEntityId = -1;
-
   title.set( descTextX, descTextY, " " );
-}
-
-void HudArea::onVisibilityChange( bool )
-{
-  lastObjectId  = -1;
-  lastEntityId  = -1;
-  lastWeaponId  = -1;
-  lastVehicleId = -1;
-}
-
-void HudArea::onUpdate()
-{
-  const Bot* bot = camera.botObj;
-
-  // we need this is onUpdate() rather than in onDraw() for the rare case if an object is replaced
-  // by a new one with the same id (onDraw() may not be called each frame and may miss this switch)
-  if( camera.object != lastObjectId ) {
-    lastObjectId = -1;
-  }
-  if( camera.entity != lastEntityId ) {
-    lastEntityId = -1;
-  }
-  if( camera.state != Camera::UNIT || camera.bot < 0 ) {
-    lastWeaponId = -1;
-  }
-  else if( orbis.obj( bot->parent ) == nullptr ) {
-    lastVehicleId = -1;
-  }
 }
 
 bool HudArea::onMouseEvent()
@@ -370,19 +316,13 @@ HudArea::HudArea() :
   botStamina( &style.botStamina ),
   vehicleHull( &style.vehicleHull ),
   vehicleFuel( &style.vehicleFuel ),
-  vehicleModel( nullptr ),
-  lastObjectId( -1 ),
-  lastEntityId( -1 ),
-  lastWeaponId( -1 ),
-  lastWeaponRounds( -1 ),
-  lastVehicleId( -1 )
+  vehicleModel( nullptr )
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
-    lastVehicleWeaponRounds[i] = -1;
-    vehicleWeaponNames[i]      = Label( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
-    vehicleWeaponRounds[i]     = Label( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
+    vehicleWeaponNames[i]  = Label( 0, 0, ALIGN_LEFT, Font::LARGE, " " );
+    vehicleWeaponRounds[i] = Label( 0, 0, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
   vehicleModel = new ModelField( nullptr, style.vehicleField.w, style.vehicleField.h );

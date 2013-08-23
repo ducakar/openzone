@@ -90,7 +90,7 @@ void Cursor::reset()
   frameTime = 0;
 }
 
-void Cursor::advance( int millis )
+void Cursor::update( int millis )
 {
   if( nImages == 0 ) {
     return;
@@ -101,10 +101,7 @@ void Cursor::advance( int millis )
   frameTime += millis;
   frame      = ( frame + frameTime / delay ) % nImages;
   frameTime  = frameTime % delay;
-}
 
-void Cursor::updateSystem()
-{
   if( mode == SYSTEM && frame != lastFrame && nImages != 0 ) {
     lastFrame = frame;
 

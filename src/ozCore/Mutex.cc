@@ -43,7 +43,7 @@ namespace oz
 
 struct Mutex::Descriptor
 {
-  HANDLE mutex;
+  CRITICAL_SECTION criticalSection;
 };
 
 #else
@@ -60,7 +60,7 @@ void Mutex::lock() const
   hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
-  WaitForSingleObject( descriptor->mutex, INFINITE );
+  EnterCriticalSection( &descriptor->criticalSection );
 #else
   pthread_mutex_lock( &descriptor->mutex );
 #endif
@@ -71,7 +71,7 @@ bool Mutex::tryLock() const
   hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
-  return WaitForSingleObject( descriptor->mutex, 0 ) == WAIT_OBJECT_0;
+  return TryEnterCriticalSection( &descriptor->criticalSection );
 #else
   return pthread_mutex_trylock( &descriptor->mutex ) == 0;
 #endif
@@ -82,7 +82,7 @@ void Mutex::unlock() const
   hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
-  ReleaseMutex( descriptor->mutex );
+  LeaveCriticalSection( &descriptor->criticalSection );
 #else
   pthread_mutex_unlock( &descriptor->mutex );
 #endif
@@ -90,7 +90,9 @@ void Mutex::unlock() const
 
 void Mutex::init()
 {
-  hard_assert( descriptor == nullptr );
+  if( descriptor != nullptr ) {
+    OZ_ERROR( "oz::Mutex: Mutex is already initialised" );
+  }
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {
@@ -98,18 +100,11 @@ void Mutex::init()
   }
 
 #ifdef _WIN32
-
-  descriptor->mutex = CreateMutex( nullptr, false, nullptr );
-  if( descriptor->mutex == nullptr ) {
-    OZ_ERROR( "oz::Mutex: Mutex creation failed" );
-  }
-
+  InitializeCriticalSection( &descriptor->criticalSection );
 #else
-
   if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
     OZ_ERROR( "oz::Mutex: Mutex creation failed" );
   }
-
 #endif
 }
 
@@ -120,7 +115,7 @@ void Mutex::destroy()
   }
 
 #ifdef _WIN32
-  CloseHandle( descriptor->mutex );
+  DeleteCriticalSection( &descriptor->criticalSection );
 #else
   pthread_mutex_destroy( &descriptor->mutex );
 #endif

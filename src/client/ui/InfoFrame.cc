@@ -35,37 +35,41 @@ namespace client
 namespace ui
 {
 
-void InfoFrame::onVisibilityChange( bool )
-{
-  lastId = -1;
-}
-
-bool InfoFrame::onMouseEvent()
-{
-  if( camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0 ||
-      !nirvana.devices.contains( camera.object ) )
-  {
-    return false;
-  }
-  return true;
-}
-
-void InfoFrame::onDraw()
+const Device* const* InfoFrame::updateReferences()
 {
   if( camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0 ) {
     lastId = -1;
-    return;
+    return nullptr;
   }
 
   const Device* const* device = nirvana.devices.find( camera.object );
   if( device == nullptr ) {
     lastId = -1;
+  }
+  return device;
+}
+
+void InfoFrame::onVisibilityChange( bool )
+{
+  lastId = -1;
+}
+
+void InfoFrame::onUpdate()
+{
+  const Device* const* device = updateReferences();
+
+  show( device != nullptr );
+}
+
+void InfoFrame::onDraw()
+{
+  const Device* const* device = updateReferences();
+  if( device == nullptr ) {
     return;
   }
 
   if( lastId != camera.object ) {
     lastId = camera.object;
-    lastTicks = timer.ticks;
 
     const Bot* tagged = static_cast<const Bot*>( camera.objectObj );
 
@@ -84,8 +88,8 @@ void InfoFrame::onDraw()
 }
 
 InfoFrame::InfoFrame() :
-  Frame( 360, 12 + 24 * style.fonts[Font::SANS].height, "" ),
-  text( 6, 4, 348, 24, Font::SANS, Area::ALIGN_NONE ), lastId( -1 )
+  Frame( 320, 12 + 30 * style.fonts[Font::SANS].height, "" ),
+  text( 6, 4, 308, 30, Font::SANS, Area::ALIGN_NONE ), lastId( -1 )
 {
   flags |= PINNED_BIT;
 }

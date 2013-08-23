@@ -244,6 +244,7 @@ void GameStage::present( bool isFull )
   uint currentMicros;
 
   sound.play();
+  camera.updateEffects();
 
   currentMicros = Time::uclock();
   soundMicros += currentMicros - beginMicros;
@@ -259,6 +260,7 @@ void GameStage::present( bool isFull )
   }
 
   render.update();
+  camera.syncEffects();
   sound.sync();
 
   currentMicros = Time::uclock();

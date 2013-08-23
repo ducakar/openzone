@@ -285,6 +285,9 @@ void CinematicProxy::read( InputStream* istream )
   }
 }
 
+void CinematicProxy::read( const JSON& )
+{}
+
 void CinematicProxy::write( OutputStream* ostream ) const
 {
   ostream->writeQuat( beginRot );
@@ -311,6 +314,11 @@ void CinematicProxy::write( OutputStream* ostream ) const
     ostream->writeFloat( step.time );
     ostream->writeInt( step.endState );
   }
+}
+
+JSON CinematicProxy::write() const
+{
+  return JSON();
 }
 
 }

@@ -48,6 +48,7 @@ class Label
     int        width;
     int        height;
 
+    int        lastHash;
     uint       texId;
 
   public:

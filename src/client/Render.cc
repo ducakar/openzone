@@ -911,6 +911,7 @@ void Render::destroy()
   }
 
   ui::ui.destroy();
+  camera.destroy();
   shape.destroy();
   shader.destroy();
 

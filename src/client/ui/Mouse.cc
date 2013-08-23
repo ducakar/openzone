@@ -93,7 +93,7 @@ void Mouse::draw()
                 cursor.width(), cursor.height() );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
-    cursor.advance( timer.frameMicros / 1000 );
+    cursor.update( timer.frameMicros / 1000 );
   }
 
   oldIcon  = icon;

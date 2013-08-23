@@ -463,6 +463,75 @@ void Orbis::read( InputStream* istream )
   }
 }
 
+void Orbis::read( const JSON& json )
+{
+  hard_assert( structs.length() == 1 && objects.length() == 1 && frags.length() == 1 );
+
+  caelum.read( json["caelum"] );
+  terra.read( json["terra"] );
+
+  String bspName;
+  String className;
+  String poolName;
+
+  const JSON& structsJSON = json["structs"];
+
+  foreach( i, structsJSON.arrayCIter() ) {
+    Struct* str = nullptr;
+
+    if( !i->isEmpty() ) {
+      bspName = ( *i )["bsp"].asString();
+
+      const BSP* bsp = liber.bsp( bspName );
+      const_cast<BSP*>( bsp )->request();
+
+      str = new Struct( bsp, *i );
+      position( str );
+    }
+    structs.add( str );
+  }
+
+  const JSON& objectsJSON = json["objects"];
+
+  foreach( i, objectsJSON.arrayCIter() ) {
+    Object* obj = nullptr;
+
+    if( !i->isEmpty() ) {
+      className = ( *i )["class"].asString();
+
+      const ObjectClass* clazz = liber.objClass( className );
+
+      obj = clazz->create( *i );
+
+      bool isCut = ( *i )["isCut"].asBool();
+      if( !isCut ) {
+        position( obj );
+      }
+
+      if( obj->flags & Object::LUA_BIT ) {
+        luaMatrix.registerObject( obj->index );
+      }
+    }
+    objects.add( obj );
+  }
+
+  const JSON& fragsJSON = json["frags"];
+
+  foreach( i, fragsJSON.arrayCIter() ) {
+    Frag* frag = nullptr;
+
+    if( !i->isEmpty() ) {
+      poolName = ( *i )["pool"].asString();
+
+      const FragPool* pool = liber.fragPool( poolName );
+
+      frag = new Frag( pool, *i );
+      position( frag );
+    }
+    frags.add( frag );
+  }
+}
+
 void Orbis::write( OutputStream* ostream ) const
 {
   luaMatrix.write( ostream );
@@ -550,75 +619,6 @@ void Orbis::write( OutputStream* ostream ) const
   ostream->writeInt( fragAvailableIndices.length() );
   foreach( i, fragAvailableIndices.citer() ) {
     ostream->writeInt( *i );
-  }
-}
-
-void Orbis::read( const JSON& json )
-{
-  hard_assert( structs.length() == 1 && objects.length() == 1 && frags.length() == 1 );
-
-  caelum.read( json["caelum"] );
-  terra.read( json["terra"] );
-
-  String bspName;
-  String className;
-  String poolName;
-
-  const JSON& structsJSON = json["structs"];
-
-  foreach( i, structsJSON.arrayCIter() ) {
-    Struct* str = nullptr;
-
-    if( !i->isEmpty() ) {
-      bspName = ( *i )["bsp"].asString();
-
-      const BSP* bsp = liber.bsp( bspName );
-      const_cast<BSP*>( bsp )->request();
-
-      str = new Struct( bsp, *i );
-      position( str );
-    }
-    structs.add( str );
-  }
-
-  const JSON& objectsJSON = json["objects"];
-
-  foreach( i, objectsJSON.arrayCIter() ) {
-    Object* obj = nullptr;
-
-    if( !i->isEmpty() ) {
-      className = ( *i )["class"].asString();
-
-      const ObjectClass* clazz = liber.objClass( className );
-
-      obj = clazz->create( *i );
-
-      bool isCut = ( *i )["isCut"].asBool();
-      if( !isCut ) {
-        position( obj );
-      }
-
-      if( obj->flags & Object::LUA_BIT ) {
-        luaMatrix.registerObject( obj->index );
-      }
-    }
-    objects.add( obj );
-  }
-
-  const JSON& fragsJSON = json["frags"];
-
-  foreach( i, fragsJSON.arrayCIter() ) {
-    Frag* frag = nullptr;
-
-    if( !i->isEmpty() ) {
-      poolName = ( *i )["pool"].asString();
-
-      const FragPool* pool = liber.fragPool( poolName );
-
-      frag = new Frag( pool, *i );
-      position( frag );
-    }
-    frags.add( frag );
   }
 }
 

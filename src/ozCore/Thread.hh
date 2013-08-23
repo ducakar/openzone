@@ -36,7 +36,7 @@ namespace oz
 /**
  * %Thread.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`
+ * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::CallOnce`
  */
 class Thread
 {
@@ -114,6 +114,7 @@ class Thread
     /**
      * True iff a joinable thread has been started but not yet joined.
      */
+    OZ_ALWAYS_INLINE
     bool isValid() const
     {
       return descriptor != nullptr;
@@ -122,10 +123,10 @@ class Thread
     /**
      * Create a new thread and run it.
      *
-     * Detached thread is not attached to the Thread object so it can be immediately used to start
-     * another thread. %Thread's resources are released automatically when it finishes.
+     * Detached thread is not attached to the `Thread` object so it can be immediately used to start
+     * another thread. The thread's resources are released automatically when it finishes.
      *
-     * When a new joinable thread is started it is attached to the Thread object that started it.
+     * When a new joinable thread is started it is attached to the `Thread` object that started it.
      * `join()` should be called later to ensure thread's termination and to release its resources.
      *
      * @note

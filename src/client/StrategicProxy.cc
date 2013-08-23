@@ -233,6 +233,15 @@ void StrategicProxy::read( InputStream* istream )
   hasBuildFrame = istream->readBool();
 }
 
+void StrategicProxy::read( const JSON& json )
+{
+  h      = json["h"].get( 0.0f );
+  v      = json["v"].get( 0.0f );
+  height = json["height"].get( DEFAULT_HEIGHT );
+
+  isFree = json["isFree"].get( false );
+}
+
 void StrategicProxy::write( OutputStream* ostream ) const
 {
   ostream->writeFloat( h );
@@ -244,6 +253,19 @@ void StrategicProxy::write( OutputStream* ostream ) const
   ostream->writeBool( isRTSFast );
 
   ostream->writeBool( hasBuildFrame );
+}
+
+JSON StrategicProxy::write() const
+{
+  JSON json( JSON::OBJECT );
+
+  json.add( "h", h );
+  json.add( "v", v );
+  json.add( "height", height );
+
+  json.add( "isFree", isFree );
+
+  return json;
 }
 
 }

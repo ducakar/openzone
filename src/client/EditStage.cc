@@ -55,14 +55,18 @@ void EditStage::read()
 
   Log::printEnd( " OK" );
 
-  matrix.read( json );
+  matrix.read( json["matrix"] );
+  camera.read( json["camera"] );
 
   json.clear( true );
 }
 
 void EditStage::write() const
 {
-  JSON json = matrix.write();
+  JSON json( JSON::OBJECT );
+
+  json.add( "matrix", matrix.write() );
+  json.add( "camera", camera.write() );
 
   Log::print( "Saving layout to %s ...", layoutFile.path().cstr() );
 
@@ -188,6 +192,7 @@ bool EditStage::update()
 void EditStage::present( bool isFull )
 {
   sound.play();
+  camera.updateEffects();
 
   if( isFull ) {
     render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
@@ -195,6 +200,7 @@ void EditStage::present( bool isFull )
   }
 
   render.update();
+  camera.syncEffects();
   sound.sync();
 }
 

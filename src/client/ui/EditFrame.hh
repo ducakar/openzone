@@ -59,9 +59,6 @@ class EditFrame : public Frame
     Label       itemDesc;
 
     int         taggedItemIndex;
-    int         cachedContainerIndex;
-    int         cachedTaggedItemIndex;
-
     int         scrollOwner;
 
   private:

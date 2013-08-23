@@ -61,14 +61,6 @@ class HudArea : public Area
 
     ModelField* vehicleModel;
 
-    // cache last ids so we know when to re-generate labels
-    int         lastObjectId;
-    int         lastEntityId;
-    int         lastWeaponId;
-    int         lastWeaponRounds;
-    int         lastVehicleId;
-    int         lastVehicleWeaponRounds[Vehicle::MAX_WEAPONS];
-
     GLTexture   crossTex;
     GLTexture   useTex;
     GLTexture   deviceTex;
@@ -100,9 +92,7 @@ class HudArea : public Area
 
   protected:
 
-    void onVisibilityChange( bool doShow ) override;
     void onReposition() override;
-    void onUpdate() override;
     bool onMouseEvent() override;
     void onDraw() override;
 

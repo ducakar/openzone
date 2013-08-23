@@ -83,7 +83,7 @@ static inline short madFixedToShort( mad_fixed_t f )
   }
 }
 
-const float Sound::MAX_DISTANCE = 192.0f;
+const float Sound::SOUND_DISTANCE = 192.0f;
 
 void Sound::musicMain( void* )
 {
@@ -469,7 +469,11 @@ void Sound::playCell( int cellX, int cellY )
       playedStructs.set( strIndex );
 
       const Struct* str = orbis.str( strIndex );
-      context.playBSP( str );
+      float radius = SOUND_DISTANCE + str->dim().fastN();
+
+      if( ( str->p - camera.p ).sqN() <= radius*radius ) {
+        context.playBSP( str );
+      }
     }
   }
 
@@ -477,7 +481,11 @@ void Sound::playCell( int cellX, int cellY )
 
   foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
-      context.playAudio( obj, obj );
+      float radius = SOUND_DISTANCE + obj->dim.fastN();
+
+      if( ( obj->p - camera.p ).sqN() <= radius*radius ) {
+        context.playAudio( obj, obj );
+      }
     }
   }
 
@@ -586,7 +594,7 @@ void Sound::soundRun()
     }
     playedStructs.clearAll();
 
-    Span span = orbis.getInters( camera.p, MAX_DISTANCE + Object::MAX_DIM );
+    Span span = orbis.getInters( camera.p, SOUND_DISTANCE + Math::sqrt( 3.0f ) * Object::MAX_DIM );
 
     for( int x = span.minX ; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {

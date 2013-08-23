@@ -76,8 +76,7 @@ int main( int argc, char** argv )
     glEnd();
 
     Window::swapBuffers();
-    cursor.advance( 15 );
-//     cursor.updateSystem();
+    cursor.update( 15 );
 
     Time::sleep( 10 );
   }

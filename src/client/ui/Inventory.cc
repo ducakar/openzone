@@ -191,20 +191,13 @@ void Inventory::drawComponent( int height, const Object* container, const Dynami
   }
   noIcon:
 
-  if( taggedItemIndex != cachedTaggedItemIndex ) {
-    cachedTaggedItemIndex = taggedItem->index;
-
-    itemDesc.setText( "%s", taggedClazz->title.cstr() );
-  }
-
-  itemDesc.setPosition( -ICON_SIZE - 8, height - FOOTER_SIZE / 2 );
+  itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, "%s", taggedClazz->title.cstr() );
   itemDesc.draw( this );
 }
 
 void Inventory::onVisibilityChange( bool )
 {
-  cachedContainerIndex  = -1;
-  cachedTaggedItemIndex = -1;
+  height = HEADER_SIZE + ( other == nullptr ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
 
   scrollOwner = 0;
   scrollOther = 0;
@@ -214,8 +207,6 @@ void Inventory::onUpdate()
 {
   updateReferences();
   taggedItemIndex = -1;
-
-  height = HEADER_SIZE + ( other == nullptr ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
 
   if( camera.state != Camera::UNIT || !mouse.doShow || owner == nullptr ||
       ( owner->state & Bot::DEAD_BIT ) )
@@ -251,6 +242,8 @@ void Inventory::onDraw()
 {
   updateReferences();
 
+  height = HEADER_SIZE + ( other == nullptr ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
+
   if( owner == nullptr ) {
     return;
   }
@@ -259,17 +252,13 @@ void Inventory::onDraw()
   const ObjectClass* containerClazz = container->clazz;
   const Dynamic*     taggedItem     = static_cast<const Dynamic*>( orbis.obj( taggedItemIndex ) );
 
-  if( container->index != cachedContainerIndex ) {
-    cachedContainerIndex = container->index;
+  if( container->flags & Object::BOT_BIT ) {
+    const Bot* bot = static_cast<const Bot*>( container );
 
-    if( container->flags & Object::BOT_BIT ) {
-      const Bot* bot = static_cast<const Bot*>( container );
-
-      title.setText( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
-    }
-    else {
-      title.setText( "%s", containerClazz->title.cstr() );
-    }
+    title.setText( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
+  }
+  else {
+    title.setText( "%s", containerClazz->title.cstr() );
   }
 
   for( int i = 0; i < COLS; ++i ) {
@@ -316,8 +305,7 @@ Inventory::Inventory() :
   owner( nullptr ), other( nullptr ),
   lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-  taggedItemIndex( -1 ), cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ),
-  scrollOwner( 0 ), scrollOther( 0 )
+  taggedItemIndex( -1 ), scrollOwner( 0 ), scrollOther( 0 )
 {
   flags |= UPDATE_BIT;
 

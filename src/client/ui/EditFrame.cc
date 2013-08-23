@@ -118,21 +118,13 @@ void EditFrame::drawComponent( int height, const Object* container, const Dynami
     statusBar.draw( this, x + width - 52, y + height + SLOT_SIZE + 1, 50, 8, status );
   }
 
-  if( taggedItemIndex != cachedTaggedItemIndex ) {
-    cachedTaggedItemIndex = taggedItem->index;
-
-    itemDesc.setText( "#%d %s", taggedItem->index, taggedClazz->title.cstr() );
-  }
-
   itemDesc.setPosition( -ICON_SIZE - 8, height - FOOTER_SIZE / 2 );
+  itemDesc.setText( "#%d %s", taggedItem->index, taggedClazz->title.cstr() );
   itemDesc.draw( this );
 }
 
 void EditFrame::onVisibilityChange( bool )
 {
-  cachedContainerIndex  = -1;
-  cachedTaggedItemIndex = -1;
-
   scrollOwner = 0;
 }
 
@@ -141,7 +133,7 @@ void EditFrame::onUpdate()
   updateReferences();
   taggedItemIndex = -1;
 
-  show( owner != nullptr );
+  show( mouse.doShow && owner != nullptr );
 }
 
 bool EditFrame::onMouseEvent()
@@ -168,17 +160,13 @@ void EditFrame::onDraw()
   const ObjectClass* containerClazz = container->clazz;
   const Dynamic*     taggedItem     = static_cast<const Dynamic*>( orbis.obj( taggedItemIndex ) );
 
-  if( container->index != cachedContainerIndex ) {
-    cachedContainerIndex = container->index;
+  if( container->flags & Object::BOT_BIT ) {
+    const Bot* bot = static_cast<const Bot*>( container );
 
-    if( container->flags & Object::BOT_BIT ) {
-      const Bot* bot = static_cast<const Bot*>( container );
-
-      title.setText( "#%d %s (%s)", bot->index, bot->name.cstr(), containerClazz->title.cstr() );
-    }
-    else {
-      title.setText( "#%d %s", container->index, containerClazz->title.cstr() );
-    }
+    title.setText( "#%d %s (%s)", bot->index, bot->name.cstr(), containerClazz->title.cstr() );
+  }
+  else {
+    title.setText( "#%d %s", container->index, containerClazz->title.cstr() );
   }
 
   for( int i = 0; i < COLS; ++i ) {
@@ -206,8 +194,7 @@ EditFrame::EditFrame() :
   owner( nullptr ),
   lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-  taggedItemIndex( -1 ), cachedContainerIndex( -1 ), cachedTaggedItemIndex( -1 ),
-  scrollOwner( 0 )
+  taggedItemIndex( -1 ), scrollOwner( 0 )
 {
   flags |= UPDATE_BIT;
 

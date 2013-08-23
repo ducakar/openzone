@@ -96,6 +96,7 @@
 #include "SpinLock.hh"
 #include "Mutex.hh"
 #include "Semaphore.hh"
+#include "CallOnce.hh"
 #include "Thread.hh"
 
 /*
@@ -110,9 +111,10 @@
 /*
  * Utilities.
  */
-#include "Log.hh"
 #include "Time.hh"
-#include "SharedLib.hh"
+#include "Profiler.hh"
 #include "EnumMap.hh"
-#include "JSON.hh"
+#include "Log.hh"
+#include "SharedLib.hh"
 #include "Gettext.hh"
+#include "JSON.hh"

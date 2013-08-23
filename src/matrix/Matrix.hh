@@ -48,9 +48,9 @@ class Matrix
     void update();
 
     void read( InputStream* istream );
-    void write( OutputStream* ostream ) const;
-
     void read( const JSON& json );
+
+    void write( OutputStream* ostream ) const;
     JSON write() const;
 
     void load();

@@ -105,7 +105,8 @@ void LuaClient::create( const char* mission_ )
 
     Log::printEnd( " OK" );
 
-    matrix.read( json );
+    matrix.read( json["matrix"] );
+    camera.read( json["camera"] );
 
     json.clear( true );
   }

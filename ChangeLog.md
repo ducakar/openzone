@@ -14,12 +14,14 @@
     * new Mat33 class
     * SIMD support for linear algebra classes
     * new SpinLock class
+    * new CallOnce class
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
     * Buffer supports zlib comression
     * PFile class merged into File class (VFS paths begin with '@')
-    * new SharedLib class for run-time linking
     * new EnumMap class
+    * new SharedLib class for run-time linking
+    * new Profiler class
     * new Gettext class for gettext translations
 - ozDynamics: new rigid body dynamics library
     * collision
@@ -52,6 +54,7 @@
     * DDS format used for all textures, every texture is in its own file
     * switched over to ozEngine classes wherever possible
     * layout files, can be edited in built-in editor (-e option) or loaded by missions
+    * camera flash and shake effects, camera has an auxiliary thread for event extraction
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
     * Terrain can be generated based on config file settings

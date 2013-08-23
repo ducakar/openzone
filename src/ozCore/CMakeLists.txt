@@ -9,6 +9,7 @@ add_library( ozCore
   arrays.hh
   Bitset.hh
   Buffer.hh
+  CallOnce.hh
   Chain.hh
   clearmacros.hh
   common.hh
@@ -36,6 +37,7 @@ add_library( ozCore
   Plane.hh
   Point.hh
   Pool.hh
+  Profiler.hh
   Quat.hh
   SBitset.hh
   Semaphore.hh
@@ -53,6 +55,7 @@ add_library( ozCore
   Vec4.hh
   Alloc.cc
   Buffer.cc
+  CallOnce.cc
   common.cc
   File.cc
   Gettext.cc
@@ -63,6 +66,7 @@ add_library( ozCore
   Math.cc
   Mutex.cc
   Point.cc
+  Profiler.cc
   Quat.cc
   Semaphore.cc
   SharedLib.cc

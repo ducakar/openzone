@@ -566,6 +566,20 @@ void Client::shutdown()
     File::destroy();
   }
 
+  if( Profiler::citer().isValid() ) {
+    Log::println( "Profiler statistics {" );
+    Log::indent();
+
+    foreach( i, Profiler::citer() ) {
+      Log::println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
+    }
+
+    Profiler::clear();
+
+    Log::unindent();
+    Log::println( "}" );
+  }
+
   if( initFlags & INIT_MAIN_LOOP ) {
     Log::printMemorySummary();
     Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );

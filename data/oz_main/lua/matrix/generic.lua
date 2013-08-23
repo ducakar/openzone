@@ -70,10 +70,13 @@ function meleeAttack( l )
 end
 
 function spawnSmallExplosion( l )
+  ozObjAddEvent( OZ_EVENT_SHAKE, 0.5 )
   ozOrbisAddObj( OZ_FORCE, "smallExplosion", ozObjGetPos() )
 end
 
 function spawnBigExplosion( l )
+  ozObjAddEvent( OZ_EVENT_FLASH, 0.5 )
+  ozObjAddEvent( OZ_EVENT_SHAKE, 1.0 )
   ozOrbisAddObj( OZ_FORCE, "bigExplosion", ozObjGetPos() )
 end
 

@@ -61,20 +61,24 @@ static void initName()
 {
 #ifdef _WIN32
 
+  if( isNameInitialised ) {
+    return;
+  }
+
   if( __sync_lock_test_and_set( &onceLock, 1 ) != 0 ) {
     while( onceLock != 0 );
   }
+  else {
+    if( !isNameInitialised ) {
+      nameKey = TlsAlloc();
 
-  if( !isNameInitialised ) {
-    nameKey = TlsAlloc();
-
-    if( nameKey == TLS_OUT_OF_INDEXES ) {
-      OZ_ERROR( "oz::Thread: Name key creation failed" );
+      if( nameKey == TLS_OUT_OF_INDEXES ) {
+        OZ_ERROR( "oz::Thread: Name key creation failed" );
+      }
+      isNameInitialised = true;
     }
-    isNameInitialised = true;
+    __sync_lock_release( &onceLock );
   }
-
-  __sync_lock_release( &onceLock );
 
 #else
 
@@ -201,7 +205,9 @@ const char* Thread::name()
 
 void Thread::start( const char* name, Type type, Main* main, void* data )
 {
-  hard_assert( descriptor == nullptr );
+  if( descriptor != nullptr ) {
+    OZ_ERROR( "oz::Thread: Thread is already started" );
+  }
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {

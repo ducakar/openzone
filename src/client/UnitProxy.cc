@@ -603,9 +603,23 @@ void UnitProxy::read( InputStream* istream )
   isExternal = istream->readBool();
 }
 
+void UnitProxy::read( const JSON& json )
+{
+  isExternal = json["isExternal"].get( false );
+}
+
 void UnitProxy::write( OutputStream* ostream ) const
 {
   ostream->writeBool( isExternal );
+}
+
+JSON UnitProxy::write() const
+{
+  JSON json( JSON::OBJECT );
+
+  json.add( "isExternal", isExternal );
+
+  return json;
 }
 
 }
