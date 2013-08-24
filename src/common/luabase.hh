@@ -116,7 +116,7 @@
  * indices.
  */
 #define STR_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.nStructs() ) ) { \
+  if( uint( index ) >= uint( Orbis::MAX_STRUCTS ) ) { \
     ERROR( "Invalid structure index (out of range)" ); \
   } \
   Struct* str = orbis.str( index ); \
@@ -179,7 +179,7 @@
  * indices.
  */
 #define OBJ_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.nObjects() ) ) { \
+  if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) { \
     ERROR( "Invalid object index (out of range)" ); \
   } \
   Object* obj = orbis.obj( index ); \
@@ -193,7 +193,7 @@
  * or objects that are not items.
  */
 #define ITEM_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.nObjects() ) ) { \
+  if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) { \
     ERROR( "Invalid item index (out of range)" ); \
   } \
   Dynamic* item = static_cast<Dynamic*>( orbis.obj( index ) ); \
@@ -210,7 +210,7 @@
  * or objects that are not bots.
  */
 #define BOT_INDEX( index ) \
-  if( uint( index ) >= uint( orbis.nObjects() ) ) { \
+  if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) { \
     ERROR( "Invalid bot index (out of range)" ); \
   } \
   Bot* bot = static_cast<Bot*>( orbis.obj( index ) ); \

@@ -132,12 +132,12 @@ bool EditStage::update()
    * UI and modules update, world may be updated from the main thread during this phase.
    */
 
-  if( input.keys[Input::KEY_SAVE_LAYOUT] && !input.oldKeys[Input::KEY_SAVE_LAYOUT] ) {
-    layoutFile = File( config["dir.config"].asString() + "/layouts/default.json" );
-    write();
-    layoutFile = "";
+  if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
+    if( !layoutFile.isEmpty() ) {
+      write();
+    }
   }
-  if( input.keys[Input::KEY_LOAD_LAYOUT] && !input.oldKeys[Input::KEY_LOAD_LAYOUT] ) {
+  if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
     layoutFile.stat();
 
     if( layoutFile.type() == File::REGULAR ) {
@@ -192,15 +192,7 @@ bool EditStage::update()
 void EditStage::present( bool isFull )
 {
   sound.play();
-  camera.updateEffects();
-
-  if( isFull ) {
-    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-    render.swap();
-  }
-
-  render.update();
-  camera.syncEffects();
+  render.update( isFull ? Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT : 0 );
   sound.sync();
 }
 
@@ -218,9 +210,7 @@ void EditStage::load()
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
-  render.draw( Render::DRAW_UI_BIT );
-  render.draw( Render::DRAW_UI_BIT );
-  render.swap();
+  render.update( Render::DRAW_UI_BIT );
 
   timer.reset();
 
@@ -251,10 +241,9 @@ void EditStage::load()
 
   ui::ui.showLoadingScreen( true );
 
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  render.update( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   loader.syncUpdate();
   sound.play();
-  render.swap();
   sound.sync();
 
   loader.load();
@@ -281,18 +270,12 @@ void EditStage::unload()
 
   loader.unload();
 
-  render.draw( Render::DRAW_UI_BIT );
-  render.draw( Render::DRAW_UI_BIT );
-  render.swap();
+  render.update( Render::DRAW_UI_BIT );
 
   isAuxAlive = false;
 
   auxSemaphore.post();
   auxThread.join();
-
-  if( layoutFile.type() == File::REGULAR ) {
-    write();
-  }
 
   ui::ui.root->remove( editFrame );
   editFrame = nullptr;

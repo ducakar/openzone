@@ -41,9 +41,9 @@ class Camera
     static const float  MIN_DISTANCE;
     static const float  SMOOTHING_COEF;
     static const float  ROT_SMOOTHING_COEF;
-    static const float  EFFECT_DISTANCE;
-    static const Mat44  FLASH_COLOUR;
+    static const float  FLASH_SUPPRESSION;
     static const Mat44  NV_COLOUR;
+    static const Mat44  FLASH_COLOUR;
     static Proxy* const PROXIES[];
 
     enum State
@@ -52,12 +52,6 @@ class Camera
       STRATEGIC,
       UNIT,
       CINEMATIC
-    };
-
-    struct Effect
-    {
-      int           id;
-      const Object* obj;
     };
 
   public:
@@ -93,6 +87,7 @@ class Camera
     Mat44         colour;
     Mat44         baseColour;
     Mat44         nvColour;
+    Mat44         flashColour;
 
     Vec3          right;
     Vec3          up;
@@ -130,24 +125,6 @@ class Camera
 
     State         state;
     State         newState;
-
-  private:
-
-    List<Effect>  effects;
-
-    Thread        effectsThread;
-
-    Semaphore     effectsMainSemaphore;
-    Semaphore     effectsAuxSemaphore;
-
-    volatile bool areEffectsAlive;
-
-  private:
-
-    static void effectsMain( void* );
-
-    void cellEffects( int cellX, int cellY );
-    void effectsRun();
 
   public:
 
@@ -237,6 +214,7 @@ class Camera
       oldPos     = p_;
     }
 
+    void flash( float intensity );
     void shake( float intensity );
 
     void updateReferences();
@@ -245,9 +223,6 @@ class Camera
      * Re-calculate rotation quaternion, matrices and `at`, `up`, `left` vectors.
      */
     void align();
-
-    void updateEffects();
-    void syncEffects();
 
     /**
      * Process input.

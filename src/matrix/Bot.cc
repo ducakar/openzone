@@ -460,14 +460,7 @@ void Bot::onUpdate()
   stamina   = min( stamina + clazz->staminaGain, clazz->stamina );
   meleeTime = max( meleeTime - Timer::TICK_TIME, 0.0f );
 
-  if( parent >= 0 ) {
-    Object* vehicle = orbis.obj( parent );
-
-    if( vehicle == nullptr ) {
-      exit();
-    }
-  }
-  else {
+  if( parent < 0 ) {
     /*
      * STATE
      */

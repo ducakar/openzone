@@ -16,7 +16,6 @@
 # - `clean`: Delete directories for all platforms.
 # - (none): Copy libraries for selected platforms into corresponding directories.
 
-
 platforms=(
   Linux-x86_64
   Linux-i686

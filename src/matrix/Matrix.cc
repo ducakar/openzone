@@ -117,14 +117,18 @@ void Matrix::update()
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
         hard_assert( ( dyn->parent >= 0 ) == ( dyn->cell == nullptr ) );
-        hard_assert( dyn->parent == -1 || orbis.obj( dyn->parent ) != nullptr );
 
-        if( dyn->cell != nullptr ) {
+        if( dyn->cell == nullptr ) {
+          if( orbis.obj( dyn->parent ) == nullptr ) {
+            synapse.remove( dyn );
+          }
+        }
+        else {
           physics.updateObj( dyn );
 
           // remove on velocity overflow
           if( dyn->velocity.sqN() > MAX_VELOCITY2 ) {
-            synapse.remove( obj );
+            synapse.remove( dyn );
           }
         }
       }

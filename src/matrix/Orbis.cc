@@ -62,24 +62,6 @@ static List<int> strAvailableIndices;
 static List<int> objAvailableIndices;
 static List<int> fragAvailableIndices;
 
-static int popMinimal( List<int>* list )
-{
-  hard_assert( !list->isEmpty() );
-
-  int minimal  = 0;
-  int minValue = list->first();
-
-  for( int i = 1; i < list->length(); ++i ) {
-    if( ( *list )[i] < minValue ) {
-      minimal  = i;
-      minValue = ( *list )[i];
-    }
-  }
-
-  list->eraseUnordered( minimal );
-  return minValue;
-}
-
 bool Orbis::position( Struct* str )
 {
   Span span = getInters( *str, EPSILON );
@@ -183,76 +165,70 @@ Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
   const_cast<BSP*>( bsp )->request();
 
   Struct* str;
+  int     index;
 
   if( strAvailableIndices.isEmpty() ) {
-    int index = structs.length();
-
-    if( index == MAX_STRUCTS ) {
+    if( strLength == MAX_STRUCTS ) {
       return nullptr;
     }
 
-    str = new Struct( bsp, index - 1, p, heading );
-    structs.add( str );
+    index = strLength;
+    ++strLength;
   }
   else {
-    int index = popMinimal( &strAvailableIndices );
-
-    str = new Struct( bsp, index - 1, p, heading );
-    structs[index] = str;
+    index = strAvailableIndices.popLast();
   }
 
+  str = new Struct( bsp, index, p, heading );
+  structs[1 + index] = str;
   return str;
 }
 
 Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
 {
   Object* obj;
+  int     index;
 
   if( objAvailableIndices.isEmpty() ) {
-    int index = objects.length();
-
-    if( index == MAX_OBJECTS ) {
+    if( objLength == MAX_OBJECTS ) {
       return nullptr;
     }
 
-    obj = clazz->create( index - 1, p, heading );
-    objects.add( obj );
+    index = objLength;
+    ++objLength;
   }
   else {
-    int index = popMinimal( &objAvailableIndices );
-
-    obj = clazz->create( index - 1, p, heading );
-    objects[index] = obj;
+    index = objAvailableIndices.popLast();
   }
+
+  obj = clazz->create( index, p, heading );
+  objects[1 + index] = obj;
 
   if( obj->flags & Object::LUA_BIT ) {
     luaMatrix.registerObject( obj->index );
   }
-
   return obj;
 }
 
 Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 {
   Frag* frag;
+  int   index;
 
   if( fragAvailableIndices.isEmpty() ) {
-    int index = frags.length();
-
-    if( index == MAX_FRAGS ) {
+    if( fragLength == MAX_FRAGS ) {
       return nullptr;
     }
 
-    frag = new Frag( pool, index - 1, p, velocity );
-    frags.add( frag );
+    index = fragLength;
+    ++fragLength;
   }
   else {
-    int index = popMinimal( &fragAvailableIndices );
-
-    frag = new Frag( pool, index - 1, p, velocity );
-    frags[index] = frag;
+    index = fragAvailableIndices.popLast();
   }
 
+  frag = new Frag( pool, index, p, velocity );
+  frags[1 + index] = frag;
   return frag;
 }
 
@@ -276,6 +252,7 @@ void Orbis::remove( Object* obj )
   if( obj->flags & Object::LUA_BIT ) {
     luaMatrix.unregisterObject( obj->index );
   }
+
   objFreedIndices[freeing].add( 1 + obj->index );
   objects[1 + obj->index] = nullptr;
 
@@ -363,8 +340,6 @@ void Orbis::update()
 
 void Orbis::read( InputStream* istream )
 {
-  hard_assert( structs.length() == 1 && objects.length() == 1 && frags.length() == 1 );
-
   luaMatrix.read( istream );
 
   caelum.read( istream );
@@ -375,51 +350,43 @@ void Orbis::read( InputStream* istream )
   int nFrags   = istream->readInt();
 
   for( int i = 0; i < nStructs; ++i ) {
-    Struct* str = nullptr;
+    const char* name = istream->readString();
+    const BSP*  bsp  = liber.bsp( name );
 
-    const char* bspName = istream->readString();
+    const_cast<BSP*>( bsp )->request();
 
-    if( !String::isEmpty( bspName ) ) {
-      const BSP* bsp = liber.bsp( bspName );
-      const_cast<BSP*>( bsp )->request();
+    Struct* str = new Struct( bsp, istream );
 
-      str = new Struct( bsp, istream );
-      position( str );
-    }
-    structs.add( str );
+    position( str );
+    structs[1 + str->index] = str;
   }
+
   for( int i = 0; i < nObjects; ++i ) {
-    Object* obj = nullptr;
+    const char*        name  = istream->readString();
+    const ObjectClass* clazz = liber.objClass( name );
+    Object*            obj   = clazz->create( istream );
+    const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
 
-    const char* className = istream->readString();
+    // No need to register objects since Lua state is being deserialised.
 
-    if( !String::isEmpty( className ) ) {
-      const ObjectClass* clazz = liber.objClass( className );
-
-      obj = clazz->create( istream );
-
-      bool isCut = istream->readBool();
-      if( !isCut ) {
-        position( obj );
-      }
-
-      // No need to register objects since Lua state is being deserialised.
+    if( !( obj->flags & Object::DYNAMIC_BIT ) || dyn->parent < 0 ) {
+      position( obj );
     }
-    objects.add( obj );
+    objects[1 + obj->index] = obj;
   }
+
   for( int i = 0; i < nFrags; ++i ) {
-    Frag* frag = nullptr;
+    const char*     name = istream->readString();
+    const FragPool* pool = liber.fragPool( name );
+    Frag*           frag = new Frag( pool, istream );
 
-    const char* poolName = istream->readString();
-
-    if( !String::isEmpty( poolName ) ) {
-      const FragPool* pool = liber.fragPool( poolName );
-
-      frag = new Frag( pool, istream );
-      position( frag );
-    }
-    frags.add( frag );
+    position( frag );
+    frags[1 + frag->index] = frag;
   }
+
+  strLength  = istream->readInt();
+  objLength  = istream->readInt();
+  fragLength = istream->readInt();
 
   int n;
 
@@ -465,70 +432,78 @@ void Orbis::read( InputStream* istream )
 
 void Orbis::read( const JSON& json )
 {
-  hard_assert( structs.length() == 1 && objects.length() == 1 && frags.length() == 1 );
-
   caelum.read( json["caelum"] );
   terra.read( json["terra"] );
-
-  String bspName;
-  String className;
-  String poolName;
 
   const JSON& structsJSON = json["structs"];
 
   foreach( i, structsJSON.arrayCIter() ) {
-    Struct* str = nullptr;
+    String name    = ( *i )["bsp"].asString();
+    const BSP* bsp = liber.bsp( name );
 
-    if( !i->isEmpty() ) {
-      bspName = ( *i )["bsp"].asString();
+    const_cast<BSP*>( bsp )->request();
 
-      const BSP* bsp = liber.bsp( bspName );
-      const_cast<BSP*>( bsp )->request();
+    Struct* str = new Struct( bsp, *i );
 
-      str = new Struct( bsp, *i );
-      position( str );
-    }
-    structs.add( str );
+    position( str );
+    structs[1 + str->index] = str;
+
+    strLength = max( strLength, 1 + str->index );
   }
 
   const JSON& objectsJSON = json["objects"];
 
   foreach( i, objectsJSON.arrayCIter() ) {
-    Object* obj = nullptr;
+    String             name  = ( *i )["class"].asString();
+    const ObjectClass* clazz = liber.objClass( name );
+    Object*            obj   = clazz->create( *i );
+    Dynamic*           dyn   = static_cast<Dynamic*>( obj );
 
-    if( !i->isEmpty() ) {
-      className = ( *i )["class"].asString();
-
-      const ObjectClass* clazz = liber.objClass( className );
-
-      obj = clazz->create( *i );
-
-      bool isCut = ( *i )["isCut"].asBool();
-      if( !isCut ) {
-        position( obj );
-      }
-
-      if( obj->flags & Object::LUA_BIT ) {
-        luaMatrix.registerObject( obj->index );
-      }
+    if( obj->flags & Object::LUA_BIT ) {
+      luaMatrix.registerObject( obj->index );
     }
-    objects.add( obj );
+
+    if( !( obj->flags & Object::DYNAMIC_BIT ) || dyn->parent < 0 ) {
+      position( obj );
+    }
+    objects[1 + obj->index] = obj;
+
+    objLength = max( objLength, 1 + obj->index );
   }
 
   const JSON& fragsJSON = json["frags"];
 
   foreach( i, fragsJSON.arrayCIter() ) {
-    Frag* frag = nullptr;
+    String          name = ( *i )["pool"].asString();
+    const FragPool* pool = liber.fragPool( name );
+    Frag*           frag = new Frag( pool, *i );
 
-    if( !i->isEmpty() ) {
-      poolName = ( *i )["pool"].asString();
+    position( frag );
+    frags[1 + frag->index] = frag;
 
-      const FragPool* pool = liber.fragPool( poolName );
+    fragLength = max( fragLength, 1 + frag->index );
+  }
 
-      frag = new Frag( pool, *i );
-      position( frag );
+  for( int i = 0; i < strLength; ++i ) {
+    Struct* str = structs[1 + i];
+
+    if( str == nullptr ) {
+      strAvailableIndices.add( i );
     }
-    frags.add( frag );
+  }
+  for( int i = 0; i < objLength; ++i ) {
+    Object* obj = objects[1 + i];
+
+    if( obj == nullptr ) {
+      objAvailableIndices.add( i );
+    }
+  }
+  for( int i = 0; i < fragLength; ++i ) {
+    Frag* frag = frags[1 + i];
+
+    if( frag == nullptr ) {
+      fragAvailableIndices.add( i );
+    }
   }
 }
 
@@ -539,48 +514,58 @@ void Orbis::write( OutputStream* ostream ) const
   caelum.write( ostream );
   terra.write( ostream );
 
-  ostream->writeInt( structs.length() - 1 );
-  ostream->writeInt( objects.length() - 1 );
-  ostream->writeInt( frags.length() - 1 );
+  int nStructs = strLength;
+  int nObjects = objLength;
+  int nFrags   = fragLength;
 
-  Struct* str;
-  Object* obj;
-  Frag*   frag;
-
-  for( int i = 1; i < structs.length(); ++i ) {
-    str = structs[i];
-
-    if( str == nullptr ) {
-      ostream->writeString( "" );
+  for( int i = 0; i < strLength; ++i ) {
+    if( structs[1 + i] == nullptr ) {
+      --nStructs;
     }
-    else {
+  }
+  for( int i = 0; i < objLength; ++i ) {
+    if( objects[1 + i] == nullptr ) {
+      --nObjects;
+    }
+  }
+  for( int i = 0; i < fragLength; ++i ) {
+    if( frags[1 + i] == nullptr ) {
+      --nFrags;
+    }
+  }
+
+  ostream->writeInt( nStructs );
+  ostream->writeInt( nObjects );
+  ostream->writeInt( nFrags );
+
+  for( int i = 0; i < strLength; ++i ) {
+    Struct* str = structs[1 + i];
+
+    if( str != nullptr ) {
       ostream->writeString( str->bsp->name );
       str->write( ostream );
     }
   }
-  for( int i = 1; i < objects.length(); ++i ) {
-    obj = objects[i];
+  for( int i = 0; i < objLength; ++i ) {
+    Object* obj = objects[1 + i];
 
-    if( obj == nullptr ) {
-      ostream->writeString( "" );
-    }
-    else {
+    if( obj != nullptr ) {
       ostream->writeString( obj->clazz->name );
       obj->write( ostream );
-      ostream->writeBool( obj->cell == nullptr );
     }
   }
-  for( int i = 1; i < frags.length(); ++i ) {
-    frag = frags[i];
+  for( int i = 0; i < fragLength; ++i ) {
+    Frag* frag = frags[1 + i];
 
-    if( frag == nullptr ) {
-      ostream->writeString( "" );
-    }
-    else {
+    if( frag != nullptr ) {
       ostream->writeString( frag->pool->name );
       frag->write( ostream );
     }
   }
+
+  ostream->writeInt( strLength );
+  ostream->writeInt( objLength );
+  ostream->writeInt( fragLength );
 
   ostream->writeInt( strFreedIndices[freeing].length() );
   foreach( i, strFreedIndices[freeing].citer() ) {
@@ -629,60 +614,32 @@ JSON Orbis::write() const
   json.add( "caelum", caelum.write() );
   json.add( "terra", terra.write() );
 
-  int nStructs = structs.length() - 1;
-  int nObjects = objects.length() - 1;
-  int nFrags   = frags.length() - 1;
-
-  while( structs[nStructs] == nullptr && nStructs > 0 ) {
-    --nStructs;
-  }
-  while( objects[nObjects] == nullptr && nObjects > 0 ) {
-    --nObjects;
-  }
-  while( frags[nFrags] == nullptr && nFrags > 0 ) {
-    --nFrags;
-  }
-
-  Struct* str;
-  Object* obj;
-  Frag*   frag;
-
   JSON& structsJSON = json.add( "structs", JSON::ARRAY );
 
-  for( int i = 1; i <= nStructs; ++i ) {
-    str = structs[i];
+  for( int i = 0; i < strLength; ++i ) {
+    Struct* str = structs[1 + i];
 
-    if( str == nullptr ) {
-      structsJSON.add( JSON::OBJECT );
-    }
-    else {
+    if( str != nullptr ) {
       structsJSON.add( str->write() );
     }
   }
 
   JSON& objectsJSON = json.add( "objects", JSON::ARRAY );
 
-  for( int i = 1; i <= nObjects; ++i ) {
-    obj = objects[i];
+  for( int i = 0; i < objLength; ++i ) {
+    Object* obj = objects[1 + i];
 
-    if( obj == nullptr ) {
-      objectsJSON.add( JSON::OBJECT );
-    }
-    else {
-      JSON& objectJSON = objectsJSON.add( obj->write() );
-      objectJSON.add( "isCut", obj->cell == nullptr );
+    if( obj != nullptr ) {
+      objectsJSON.add( obj->write() );
     }
   }
 
   JSON& fragsJSON = json.add( "frags", JSON::ARRAY );
 
-  for( int i = 1; i <= nFrags; ++i ) {
-    frag = frags[i];
+  for( int i = 0; i < fragLength; ++i ) {
+    Frag* frag = frags[1 + i];
 
-    if( frag == nullptr ) {
-      fragsJSON.add( JSON::OBJECT );
-    }
-    else {
+    if( frag != nullptr ) {
       fragsJSON.add( frag->write() );
     }
   }
@@ -724,9 +681,13 @@ void Orbis::unload()
   objects.free();
   structs.free();
 
-  structs.add( nullptr );
-  objects.add( nullptr );
-  frags.add( nullptr );
+  aFill( structs.begin(), 1 + MAX_STRUCTS, nullptr );
+  aFill( objects.begin(), 1 + MAX_OBJECTS, nullptr );
+  aFill( frags.begin(), 1 + MAX_FRAGS, nullptr );
+
+  strLength  = 0;
+  objLength  = 0;
+  fragLength = 0;
 
   terra.reset();
   caelum.reset();
@@ -779,9 +740,13 @@ void Orbis::init()
   terra.init();
   terra.reset();
 
-  structs.add( nullptr );
-  objects.add( nullptr );
-  frags.add( nullptr );
+  aFill( structs.begin(), 1 + MAX_STRUCTS, nullptr );
+  aFill( objects.begin(), 1 + MAX_OBJECTS, nullptr );
+  aFill( frags.begin(), 1 + MAX_FRAGS, nullptr );
+
+  strLength  = 0;
+  objLength  = 0;
+  fragLength = 0;
 
   Log::printEnd( " OK" );
 }

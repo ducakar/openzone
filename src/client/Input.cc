@@ -92,8 +92,6 @@ static const char* const KEY_NAMES[] = {
 
   "Quick save",
   "Quick load",
-  "Save layout",
-  "Load layout",
   "Auto load",
 
   "Quit"
@@ -204,8 +202,6 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | SDLK_F5;
   keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | SDLK_F7;
   keyMap[KEY_AUTOLOAD][0]           = MOD_OFF_BIT | SDLK_F8;
-  keyMap[KEY_SAVE_LAYOUT][0]        = MOD_ON_BIT  | SDLK_F5;
-  keyMap[KEY_LOAD_LAYOUT][0]        = MOD_ON_BIT  | SDLK_F7;
   keyMap[KEY_QUIT][0]               = MOD_MASK    | SDLK_F10;
   keyMap[KEY_QUIT][1]               = MOD_MASK    | SDLK_ESCAPE;
 
@@ -285,8 +281,6 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | SDL_SCANCODE_F5;
   keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | SDL_SCANCODE_F7;
   keyMap[KEY_AUTOLOAD][0]           = MOD_OFF_BIT | SDL_SCANCODE_F8;
-  keyMap[KEY_SAVE_LAYOUT][0]        = MOD_ON_BIT  | SDL_SCANCODE_F5;
-  keyMap[KEY_LOAD_LAYOUT][0]        = MOD_ON_BIT  | SDL_SCANCODE_F7;
   keyMap[KEY_QUIT][0]               = MOD_MASK    | SDL_SCANCODE_F10;
   keyMap[KEY_QUIT][1]               = MOD_MASK    | SDL_SCANCODE_ESCAPE;
 

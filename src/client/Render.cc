@@ -43,6 +43,7 @@ const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
 const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
 const float Render::CELL_RADIUS            =
   ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
+const float Render::EFFECTS_DISTANCE       = 192.0f;
 
 const float Render::NIGHT_FOG_COEFF        = 2.0f;
 const float Render::NIGHT_FOG_DIST         = 0.3f;
@@ -87,6 +88,59 @@ struct Render::DrawEntry
     return distance < de.distance;
   }
 };
+
+struct Render::Effect
+{
+  int           id;
+  const Object* obj;
+};
+
+void Render::effectsMain( void* )
+{
+  render.effectsRun();
+}
+
+void Render::cellEffects( int cellX, int cellY )
+{
+  const Cell& cell = orbis.cells[cellX][cellY];
+
+  foreach( obj, cell.objects.citer() ) {
+    float radius = EFFECTS_DISTANCE + obj->dim.fastN();
+
+    if( ( obj->p - camera.p ).sqN() > radius*radius ) {
+      continue;
+    }
+
+    foreach( event, obj->events.citer() ) {
+      if( event->id < 0 ) {
+        effects.add( { event->id, obj } );
+      }
+    }
+  }
+}
+
+void Render::effectsRun()
+{
+  effectsAuxSemaphore.wait();
+
+  while( areEffectsAlive ) {
+    Span span = orbis.getInters( camera.p, EFFECTS_DISTANCE + Math::sqrt( 3.0f ) * Object::MAX_DIM );
+
+    for( int x = span.minX ; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        cellEffects( x, y );
+      }
+    }
+
+    if( !effects.isEmpty() ) {
+      camera.flash( 0.5f );
+    }
+    effects.clear();
+
+    effectsMainSemaphore.post();
+    effectsAuxSemaphore.wait();
+  }
+}
 
 void Render::scheduleCell( int cellX, int cellY )
 {
@@ -176,7 +230,7 @@ void Render::prepareDraw()
     shader.fogColour.z *= colourRatio;
   }
 
-  tf.colour        = camera.colour;
+  tf.colour        = camera.colour * camera.flashColour;
   shader.fogColour = tf.colour * shader.fogColour;
 
   windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
@@ -474,23 +528,6 @@ void Render::drawUI()
   uiMicros += Time::uclock() - beginMicros;
 }
 
-void Render::draw( int flags_ )
-{
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
-
-  flags = flags_;
-
-  if( render.flags & DRAW_ORBIS_BIT ) {
-    render.drawOrbis();
-  }
-
-  if( render.flags & DRAW_UI_BIT ) {
-    render.drawUI();
-  }
-}
-
 void Render::swap()
 {
 #ifdef __native_client__
@@ -504,8 +541,24 @@ void Render::swap()
   swapMicros += Time::uclock() - beginMicros;
 }
 
-void Render::update()
+void Render::update( int flags )
 {
+#ifdef __native_client__
+  hard_assert( !Pepper::isMainThread() );
+#endif
+
+  if( flags & DRAW_ORBIS_BIT ) {
+    effectsAuxSemaphore.post();
+    drawOrbis();
+    effectsMainSemaphore.wait();
+  }
+  if( flags & DRAW_UI_BIT ) {
+    drawUI();
+  }
+  if( flags != 0 ) {
+    swap();
+  }
+
   Mesh::clearScheduled( Mesh::SCENE_QUEUE );
   Mesh::clearScheduled( Mesh::OVERLAY_QUEUE );
 }
@@ -666,6 +719,13 @@ void Render::load()
 
   ui::ui.load();
 
+  areEffectsAlive = true;
+
+  effectsMainSemaphore.init();
+  effectsAuxSemaphore.init();
+
+  effectsThread.start( "effects", Thread::JOINABLE, effectsMain );
+
   structs.allocate( 64 );
   objects.allocate( 8192 );
 
@@ -709,6 +769,16 @@ void Render::unload()
 
   objects.clear();
   objects.deallocate();
+
+  areEffectsAlive = false;
+
+  effectsAuxSemaphore.post();
+  effectsThread.join();
+
+  effectsAuxSemaphore.destroy();
+  effectsMainSemaphore.destroy();
+
+  effects.deallocate();
 
   ui::ui.unload();
 

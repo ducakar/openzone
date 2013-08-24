@@ -49,17 +49,14 @@ class Orbis : public Bounds
 {
   friend class Synapse;
 
-  private:
-
-    static const int MAX_STRUCTS = 1 << 14;
-    static const int MAX_OBJECTS = 1 << 16;
-    static const int MAX_FRAGS   = 1 << 14;
-
   public:
 
     // # of cells on each (x, y) axis
-    static const int DIM   = MAX_WORLD_COORD;
-    static const int CELLS = 2 * DIM / Cell::SIZE;
+    static const int DIM         = MAX_WORLD_COORD;
+    static const int CELLS       = 2 * DIM / Cell::SIZE;
+    static const int MAX_STRUCTS = ( 1 << 12 ) - 1;
+    static const int MAX_OBJECTS = ( 1 << 16 ) - 1;
+    static const int MAX_FRAGS   = ( 1 << 14 ) - 1;
 
     Caelum caelum;
     Terra  terra;
@@ -67,9 +64,13 @@ class Orbis : public Bounds
 
   private:
 
-    SList<Struct*, MAX_STRUCTS> structs;
-    SList<Object*, MAX_OBJECTS> objects;
-    SList<Frag*,   MAX_FRAGS>   frags;
+    Array<Struct*, 1 + MAX_STRUCTS> structs;
+    Array<Object*, 1 + MAX_OBJECTS> objects;
+    Array<Frag*,   1 + MAX_FRAGS>   frags;
+
+    int strLength;
+    int objLength;
+    int fragLength;
 
   private:
 
@@ -191,19 +192,19 @@ extern Orbis orbis;
 OZ_ALWAYS_INLINE
 inline int Orbis::nStructs() const
 {
-  return structs.length() - 1;
+  return strLength;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::nObjects() const
 {
-  return objects.length() - 1;
+  return objLength;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::nFrags() const
 {
-  return frags.length() - 1;
+  return fragLength;
 }
 
 OZ_ALWAYS_INLINE

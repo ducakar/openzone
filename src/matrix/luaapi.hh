@@ -215,7 +215,7 @@ static int ozOrbisOverlaps( lua_State* l )
   if( l_gettop() == 8 ) {
     int index = l_toint( 8 );
 
-    if( uint( index ) >= uint( orbis.nObjects() ) ) {
+    if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) {
       ERROR( "Invalid excluded object index (out of range)" );
     }
 
@@ -392,7 +392,7 @@ static int ozBindStr( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.nStructs() ) ) {
+  if( uint( index ) >= uint( Orbis::MAX_STRUCTS ) ) {
     ms.str = nullptr;
   }
   else {
@@ -1127,7 +1127,7 @@ static int ozBindObj( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.nObjects() ) ) {
+  if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) {
     ms.obj = nullptr;
   }
   else {
@@ -2391,7 +2391,7 @@ static int ozFragBindIndex( lua_State* l )
   ARG( 1 );
 
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.nFrags() ) ) {
+  if( uint( index ) >= uint( Orbis::MAX_FRAGS ) ) {
     ms.frag = nullptr;
   }
   else {

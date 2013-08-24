@@ -576,15 +576,10 @@ static int ozNirvanaRemoveDevice( lua_State* l )
 
 static int ozNirvanaAddMemo( lua_State* l )
 {
-  ARG( 2 );
-
   int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.nObjects() ) ) {
-    ERROR( "invalid object index" );
-  }
-  if( orbis.obj( index ) == nullptr ) {
-    ERROR( "object is null" );
-  }
+
+  ARG( 2 );
+  OBJ_INDEX( index );
 
   if( nirvana.devices.contains( index ) ) {
     ERROR( "object already has a device" );

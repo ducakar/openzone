@@ -473,7 +473,6 @@ int Client::init( int argc, char** argv )
 
   initFlags |= INIT_RENDER;
   render.init();
-  render.swap();
 
   initFlags |= INIT_STAGE_INIT;
   menuStage.init();

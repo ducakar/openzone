@@ -139,13 +139,13 @@ struct MainCall
     else {
       struct CallbackWrapper
       {
-        Method func;
+        Method method;
 
         static void callback( void* data, int )
         {
           const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
 
-          cw->func();
+          cw->method();
           Pepper::mainCallSemaphore.post();
         }
       };

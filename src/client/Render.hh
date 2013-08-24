@@ -43,6 +43,7 @@ class Render
     static const float OBJECT_VISIBILITY_COEF;
     static const float FRAG_VISIBILITY_RANGE2;
     static const float CELL_RADIUS;
+    static const float EFFECTS_DISTANCE;
 
     static const float NIGHT_FOG_COEFF;
     static const float NIGHT_FOG_DIST;
@@ -60,6 +61,7 @@ class Render
     static const Vec4  NONSOLID_AABB;
 
     struct DrawEntry;
+    struct Effect;
 
     Bitset          drawnStructs;
 
@@ -68,8 +70,6 @@ class Render
 
     float           visibilityRange;
     float           visibility;
-
-    int             flags;
 
     bool            showBounds;
     bool            showAim;
@@ -97,6 +97,15 @@ class Render
     uint            minGlowBuffer;
 #endif
 
+    List<Effect>    effects;
+
+    Thread          effectsThread;
+
+    Semaphore       effectsMainSemaphore;
+    Semaphore       effectsAuxSemaphore;
+
+    volatile bool   areEffectsAlive;
+
   public:
 
     ulong64         prepareMicros;
@@ -110,11 +119,10 @@ class Render
 
   private:
 
-#ifdef OZ_DYNAMICS
-    void drawDyn();
-    void loadDyn();
-    void unloadDyn();
-#endif
+    static void effectsMain( void* );
+
+    void cellEffects( int cellX, int cellY );
+    void effectsRun();
 
     void scheduleCell( int cellX, int cellY );
     void prepareDraw();
@@ -122,13 +130,11 @@ class Render
 
     void drawUI();
     void drawOrbis();
+    void swap();
 
   public:
 
-    void draw( int flags );
-    void swap();
-    void update();
-
+    void update( int flags );
     void resize();
 
     void load();
@@ -136,6 +142,12 @@ class Render
 
     void init();
     void destroy();
+
+#ifdef OZ_DYNAMICS
+    void drawDyn();
+    void loadDyn();
+    void unloadDyn();
+#endif
 
 };
 

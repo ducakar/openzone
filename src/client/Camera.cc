@@ -37,14 +37,14 @@ const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
 const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
-const float  Camera::EFFECT_DISTANCE    = 192.0f;
-const Mat44  Camera::FLASH_COLOUR       = Mat44( 1.00f, 1.00f, 1.00f, 0.00f,
-                                                 1.00f, 1.00f, 1.00f, 0.00f,
-                                                 1.00f, 1.00f, 1.00f, 0.00f,
-                                                 0.00f, 0.00f, 0.00f, 1.00f );
+const float  Camera::FLASH_SUPPRESSION  = 0.75f;
 const Mat44  Camera::NV_COLOUR          = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.25f, 2.00f, 0.25f, 0.00f,
+                                                 0.00f, 0.00f, 0.00f, 1.00f );
+const Mat44  Camera::FLASH_COLOUR       = Mat44( 2.50f, 1.00f, 1.00f, 0.00f,
+                                                 1.00f, 2.50f, 1.00f, 0.00f,
+                                                 1.00f, 1.00f, 2.50f, 0.00f,
                                                  0.00f, 0.00f, 0.00f, 1.00f );
 
 Proxy* const Camera::PROXIES[] = {
@@ -58,51 +58,9 @@ StrategicProxy Camera::strategic;
 UnitProxy      Camera::unit;
 CinematicProxy Camera::cinematic;
 
-void Camera::effectsMain( void* )
+void Camera::flash( float intensity )
 {
-  camera.effectsRun();
-}
-
-void Camera::cellEffects( int cellX, int cellY )
-{
-  const Cell& cell = orbis.cells[cellX][cellY];
-
-  foreach( obj, cell.objects.citer() ) {
-    float radius = EFFECT_DISTANCE + obj->dim.fastN();
-
-    if( ( obj->p - camera.p ).sqN() > radius*radius ) {
-      continue;
-    }
-
-    foreach( event, obj->events.citer() ) {
-      if( event->id < 0 ) {
-        effects.add( { event->id, obj } );
-      }
-    }
-  }
-}
-
-void Camera::effectsRun()
-{
-  effectsAuxSemaphore.wait();
-
-  while( areEffectsAlive ) {
-    Span span = orbis.getInters( camera.p, EFFECT_DISTANCE + Math::sqrt( 3.0f ) * Object::MAX_DIM );
-
-    for( int x = span.minX ; x <= span.maxX; ++x ) {
-      for( int y = span.minY; y <= span.maxY; ++y ) {
-        cellEffects( x, y );
-      }
-    }
-
-    if( !effects.isEmpty() ) {
-      System::bell();
-    }
-    effects.clear();
-
-    effectsMainSemaphore.post();
-    effectsAuxSemaphore.wait();
-  }
+  flashColour = Math::mix( Mat44::ID, FLASH_COLOUR, intensity );
 }
 
 void Camera::shake( float intensity )
@@ -150,16 +108,6 @@ void Camera::align()
   right    = +rotMat.x.vec3();
   up       = +rotMat.y.vec3();
   at       = -rotMat.z.vec3();
-}
-
-void Camera::updateEffects()
-{
-  effectsAuxSemaphore.post();
-}
-
-void Camera::syncEffects()
-{
-  effectsMainSemaphore.wait();
 }
 
 void Camera::prepare()
@@ -224,45 +172,47 @@ void Camera::update()
     proxy->update();
   }
 
-  horizPlane = coeff * mag * MIN_DISTANCE;
-  vertPlane  = aspect * horizPlane;
+  horizPlane  = coeff * mag * MIN_DISTANCE;
+  vertPlane   = aspect * horizPlane;
+  flashColour = Math::mix( Mat44::ID, flashColour, FLASH_SUPPRESSION );
 }
 
 void Camera::reset()
 {
-  rot        = Quat::ID;
-  mag        = 1.0f;
-  p          = Point::ORIGIN;
-  velocity   = Vec3::ZERO;
+  rot         = Quat::ID;
+  mag         = 1.0f;
+  p           = Point::ORIGIN;
+  velocity    = Vec3::ZERO;
 
-  desiredRot = Quat::ID;
-  shakedRot  = Quat::ID;
-  desiredMag = 1.0f;
-  desiredPos = Point::ORIGIN;
-  oldPos     = Point::ORIGIN;
+  desiredRot  = Quat::ID;
+  shakedRot   = Quat::ID;
+  desiredMag  = 1.0f;
+  desiredPos  = Point::ORIGIN;
+  oldPos      = Point::ORIGIN;
 
-  relH       = 0.0f;
-  relV       = 0.0f;
+  relH        = 0.0f;
+  relV        = 0.0f;
 
-  rotMat     = Mat44::rotation( rot );
-  rotTMat    = ~rotTMat;
+  rotMat      = Mat44::rotation( rot );
+  rotTMat     = ~rotTMat;
 
-  colour     = Mat44::ID;
-  baseColour = Mat44::ID;
-  nvColour   = NV_COLOUR;
+  colour      = Mat44::ID;
+  baseColour  = Mat44::ID;
+  nvColour    = NV_COLOUR;
+  flashColour = Mat44::ID;
 
-  right      = rotMat.x.vec3();
-  up         = rotMat.y.vec3();
-  at         = -rotMat.z.vec3();
+  right       = rotMat.x.vec3();
+  up          = rotMat.y.vec3();
+  at          = -rotMat.z.vec3();
 
-  object     = -1;
-  objectObj  = nullptr;
-  entity     = -1;
-  entityObj  = nullptr;
-  bot        = -1;
-  botObj     = nullptr;
-  vehicle    = -1;
-  vehicleObj = nullptr;
+  object      = -1;
+  objectObj   = nullptr;
+  entity      = -1;
+  entityObj   = nullptr;
+  bot         = -1;
+  botObj      = nullptr;
+  vehicle     = -1;
+  vehicleObj  = nullptr;
 
   switchableUnits.clear();
   switchableUnits.deallocate();
@@ -420,27 +370,10 @@ void Camera::init()
   coeff         = Math::tan( angle / 2.0f );
 
   reset();
-
-  areEffectsAlive = true;
-
-  effectsMainSemaphore.init();
-  effectsAuxSemaphore.init();
-
-  effectsThread.start( "effects", Thread::JOINABLE, effectsMain );
 }
 
 void Camera::destroy()
-{
-  areEffectsAlive = false;
-
-  effectsAuxSemaphore.post();
-  effectsThread.join();
-
-  effectsAuxSemaphore.destroy();
-  effectsMainSemaphore.destroy();
-
-  effects.deallocate();
-}
+{}
 
 Camera camera;
 
