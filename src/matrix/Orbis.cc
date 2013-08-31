@@ -69,6 +69,7 @@ bool Orbis::position( Struct* str )
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
       if( cells[x][y].structs.length() == cells[x][y].structs.capacity() ) {
+        soft_assert( false );
         return false;
       }
     }
@@ -169,6 +170,7 @@ Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
 
   if( strAvailableIndices.isEmpty() ) {
     if( strLength == MAX_STRUCTS ) {
+      soft_assert( false );
       return nullptr;
     }
 
@@ -191,6 +193,7 @@ Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
 
   if( objAvailableIndices.isEmpty() ) {
     if( objLength == MAX_OBJECTS ) {
+      soft_assert( false );
       return nullptr;
     }
 
@@ -217,6 +220,7 @@ Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 
   if( fragAvailableIndices.isEmpty() ) {
     if( fragLength == MAX_FRAGS ) {
+      soft_assert( false );
       return nullptr;
     }
 
@@ -236,7 +240,7 @@ void Orbis::remove( Struct* str )
 {
   hard_assert( str->index >= 0 );
 
-  strFreedIndices[freeing].add( 1 + str->index );
+  strFreedIndices[freeing].add( str->index );
   structs[1 + str->index] = nullptr;
 
   const_cast<BSP*>( str->bsp )->release();
@@ -246,14 +250,13 @@ void Orbis::remove( Struct* str )
 
 void Orbis::remove( Object* obj )
 {
-  hard_assert( obj->index >= 0 );
-  hard_assert( obj->cell == nullptr );
+  hard_assert( obj->index >= 0 && obj->cell == nullptr );
 
   if( obj->flags & Object::LUA_BIT ) {
     luaMatrix.unregisterObject( obj->index );
   }
 
-  objFreedIndices[freeing].add( 1 + obj->index );
+  objFreedIndices[freeing].add( obj->index );
   objects[1 + obj->index] = nullptr;
 
   delete obj;
@@ -261,10 +264,9 @@ void Orbis::remove( Object* obj )
 
 void Orbis::remove( Frag* frag )
 {
-  hard_assert( frag->index >= 0 );
-  hard_assert( frag->cell == nullptr );
+  hard_assert( frag->index >= 0 && frag->cell == nullptr );
 
-  fragFreedIndices[freeing].add( 1 + frag->index );
+  fragFreedIndices[freeing].add( frag->index );
   frags[1 + frag->index] = nullptr;
 
   delete frag;
@@ -514,25 +516,10 @@ void Orbis::write( OutputStream* ostream ) const
   caelum.write( ostream );
   terra.write( ostream );
 
-  int nStructs = strLength;
-  int nObjects = objLength;
-  int nFrags   = fragLength;
-
-  for( int i = 0; i < strLength; ++i ) {
-    if( structs[1 + i] == nullptr ) {
-      --nStructs;
-    }
-  }
-  for( int i = 0; i < objLength; ++i ) {
-    if( objects[1 + i] == nullptr ) {
-      --nObjects;
-    }
-  }
-  for( int i = 0; i < fragLength; ++i ) {
-    if( frags[1 + i] == nullptr ) {
-      --nFrags;
-    }
-  }
+  int nStructs = Struct::pool.length();
+  int nObjects = Object::pool.length() + Dynamic::pool.length() + Weapon::pool.length() +
+                 Bot::pool.length() + Vehicle::pool.length();
+  int nFrags   = Frag::mpool.length();
 
   ostream->writeInt( nStructs );
   ostream->writeInt( nObjects );
@@ -663,9 +650,9 @@ void Orbis::load()
 
 void Orbis::unload()
 {
-  for( int i = 0; i < objects.length(); ++i ) {
-    if( objects[i] != nullptr && ( objects[i]->flags & Object::LUA_BIT ) ) {
-      luaMatrix.unregisterObject( i - 1 );
+  for( int i = 0; i < objLength; ++i ) {
+    if( objects[1 + i] != nullptr && ( objects[1 + i]->flags & Object::LUA_BIT ) ) {
+      luaMatrix.unregisterObject( i );
     }
   }
 
@@ -677,13 +664,14 @@ void Orbis::unload()
     }
   }
 
-  frags.free();
-  objects.free();
-  structs.free();
+  hard_assert( structs[0] == nullptr && objects[0] == nullptr && frags[0] == nullptr );
 
-  aFill( structs.begin(), 1 + MAX_STRUCTS, nullptr );
-  aFill( objects.begin(), 1 + MAX_OBJECTS, nullptr );
-  aFill( frags.begin(), 1 + MAX_FRAGS, nullptr );
+  aFree( &frags[1], MAX_FRAGS );
+  aFill( &frags[1], MAX_FRAGS, nullptr );
+  aFree( &objects[1], MAX_OBJECTS );
+  aFill( &objects[1], MAX_OBJECTS, nullptr );
+  aFree( &structs[1], MAX_STRUCTS );
+  aFill( &structs[1], MAX_STRUCTS, nullptr );
 
   strLength  = 0;
   objLength  = 0;
@@ -740,9 +728,9 @@ void Orbis::init()
   terra.init();
   terra.reset();
 
-  aFill( structs.begin(), 1 + MAX_STRUCTS, nullptr );
-  aFill( objects.begin(), 1 + MAX_OBJECTS, nullptr );
-  aFill( frags.begin(), 1 + MAX_FRAGS, nullptr );
+  aFill( structs, 1 + MAX_STRUCTS, nullptr );
+  aFill( objects, 1 + MAX_OBJECTS, nullptr );
+  aFill( frags, 1 + MAX_FRAGS, nullptr );
 
   strLength  = 0;
   objLength  = 0;

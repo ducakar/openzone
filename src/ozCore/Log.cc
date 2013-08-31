@@ -27,7 +27,6 @@
 #include "Log.hh"
 
 #include "Alloc.hh"
-#include "Mat44.hh"
 
 #include <cstdio>
 #include <cstdlib>
@@ -260,7 +259,7 @@ void Log::println()
 
 void Log::printTrace( const StackTrace& st )
 {
-  const char* threadName = st.threadName == nullptr ? "?" : st.threadName;
+  const char* threadName = String::isEmpty( st.threadName ) ? "?" : st.threadName;
 
   if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( "  thread: ", stdout );
@@ -371,6 +370,8 @@ bool Log::printMemoryLeaks()
 
 bool Log::init( const char* filePath_, bool clearFile )
 {
+  destroy();
+
   indentLevel = 0;
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
@@ -382,22 +383,14 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 #else
 
-  if( filePath_ == nullptr ) {
-    filePath[0] = '\0';
-  }
-  else {
+  if( filePath_ != nullptr ) {
     strncpy( filePath, filePath_, 256 );
     filePath[255] = '\0';
   }
 
-  if( file != nullptr ) {
-    fclose( file );
-    file = nullptr;
-  }
   if( filePath[0] != '\0' ) {
     file = fopen( filePath, clearFile ? "w" : "a" );
   }
-
   return file != nullptr;
 
 #endif
@@ -411,6 +404,8 @@ void Log::destroy()
     fclose( file );
     file = nullptr;
   }
+
+  filePath[0] = '\0';
 
 #endif
 }

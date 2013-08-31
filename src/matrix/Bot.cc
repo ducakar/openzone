@@ -113,8 +113,7 @@ bool Bot::trigger( const Entity* entity )
   if( entity->key >= 0 && entity->clazz->target >= 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TRIGGER;
-    instrument = entity->str->index * Struct::MAX_ENTITIES +
-                 int( entity - entity->str->entities.begin() );
+    instrument = entity->index();
     container  = -1;
 
     return true;
@@ -129,8 +128,7 @@ bool Bot::lock( const Entity* entity )
   if( entity->key != 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_LOCK;
-    instrument = entity->str->index * Struct::MAX_ENTITIES +
-                 int( entity - entity->str->entities.begin() );
+    instrument = entity->index();
     container  = -1;
 
     return true;
@@ -976,21 +974,14 @@ void Bot::onUpdate()
     }
     else if( parent < 0 ) { // not applicable in vehicles
       if( actions & ~oldActions & ( ACTION_TRIGGER | ACTION_LOCK ) ) {
-        int strIndex = instrument / Struct::MAX_ENTITIES;
-        int entIndex = instrument % Struct::MAX_ENTITIES;
+        Entity* ent = orbis.ent( instrument);
 
-        Struct* str = orbis.str( strIndex );
-
-        if( str != nullptr ) {
-          Entity* ent = &str->entities[entIndex];
-
-          if( canReach( ent ) ) {
-            if( actions & ~oldActions & ACTION_TRIGGER ) {
-              synapse.trigger( ent );
-            }
-            else {
-              synapse.lock( this, ent );
-            }
+        if( canReach( ent ) ) {
+          if( actions & ~oldActions & ACTION_TRIGGER ) {
+            synapse.trigger( ent );
+          }
+          else {
+            synapse.lock( this, ent );
           }
         }
       }

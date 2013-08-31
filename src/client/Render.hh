@@ -63,59 +63,59 @@ class Render
     struct DrawEntry;
     struct Effect;
 
-    Bitset          drawnStructs;
+    SBitset<Orbis::MAX_STRUCTS> drawnStructs;
 
-    List<DrawEntry> structs;
-    List<DrawEntry> objects;
+    List<DrawEntry>             structs;
+    List<DrawEntry>             objects;
 
-    float           visibilityRange;
-    float           visibility;
+    float                       visibilityRange;
+    float                       visibility;
 
-    bool            showBounds;
-    bool            showAim;
+    bool                        showBounds;
+    bool                        showAim;
 
-    bool            isOffscreen;
-    bool            doPostprocess;
+    bool                        isOffscreen;
+    bool                        doPostprocess;
 
-    float           windPhi;
+    float                       windPhi;
 
-    int             windowWidth;
-    int             windowHeight;
-    int             frameWidth;
-    int             frameHeight;
-    float           scale;
-    uint            scaleFilter;
+    int                         windowWidth;
+    int                         windowHeight;
+    int                         frameWidth;
+    int                         frameHeight;
+    float                       scale;
+    uint                        scaleFilter;
 
-    uint            mainFrame;
+    uint                        mainFrame;
 #ifndef GL_ES_VERSION_2_0
-    uint            minGlowFrame;
+    uint                        minGlowFrame;
 #endif
-    uint            depthBuffer;
-    uint            colourBuffer;
+    uint                        depthBuffer;
+    uint                        colourBuffer;
 #ifndef GL_ES_VERSION_2_0
-    uint            glowBuffer;
-    uint            minGlowBuffer;
+    uint                        glowBuffer;
+    uint                        minGlowBuffer;
 #endif
 
-    List<Effect>    effects;
+    List<Effect>                effects;
 
-    Thread          effectsThread;
+    Thread                      effectsThread;
 
-    Semaphore       effectsMainSemaphore;
-    Semaphore       effectsAuxSemaphore;
+    Semaphore                   effectsMainSemaphore;
+    Semaphore                   effectsAuxSemaphore;
 
-    volatile bool   areEffectsAlive;
+    volatile bool               areEffectsAlive;
 
   public:
 
-    ulong64         prepareMicros;
-    ulong64         caelumMicros;
-    ulong64         terraMicros;
-    ulong64         meshesMicros;
-    ulong64         miscMicros;
-    ulong64         postprocessMicros;
-    ulong64         uiMicros;
-    ulong64         swapMicros;
+    ulong64                     prepareMicros;
+    ulong64                     caelumMicros;
+    ulong64                     terraMicros;
+    ulong64                     meshesMicros;
+    ulong64                     miscMicros;
+    ulong64                     postprocessMicros;
+    ulong64                     uiMicros;
+    ulong64                     swapMicros;
 
   private:
 

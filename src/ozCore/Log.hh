@@ -28,19 +28,12 @@
 
 #pragma once
 
+#include "StackTrace.hh"
 #include "String.hh"
+#include "Mat44.hh"
 
 namespace oz
 {
-
-class StackTrace;
-class Vec3;
-class Vec4;
-class Point;
-class Plane;
-class Quat;
-class Mat33;
-class Mat44;
 
 /**
  * %Log writing utility.
@@ -137,7 +130,7 @@ class Log
     static void println();
 
     /**
-     * Print current thread's name and stack trace.
+     * Print stored thread's name and stack trace.
      */
     static void printTrace( const StackTrace& st );
 

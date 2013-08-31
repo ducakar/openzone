@@ -184,19 +184,16 @@ bool Physics::handleObjFriction()
 
     if( dyn->lower >= 0 ) {
       if( dyn->flags & Object::ON_FLOOR_BIT ) {
-        int structIndex = dyn->lower / Struct::MAX_ENTITIES;
-        int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
+        const Entity* ent = orbis.ent( dyn->lower );
 
-        const Entity& entity = orbis.str( structIndex )->entities[entityIndex];
-
-        if( entity.velocity != Vec3::ZERO ) {
+        if( ent->velocity != Vec3::ZERO ) {
           isLowerStill = false;
 
-          deltaVelX -= entity.velocity.x;
-          deltaVelY -= entity.velocity.y;
+          deltaVelX -= ent->velocity.x;
+          deltaVelY -= ent->velocity.y;
 
           // Push a little into entity if e.g. on an elevator going down.
-          if( entity.velocity.z < 0.0f && !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
+          if( ent->velocity.z < 0.0f && !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
             systemMom += ENTITY_BOND_G_RATIO * gravity;
           }
         }
@@ -383,18 +380,7 @@ void Physics::handleObjHit()
       dyn->flags |= Object::ON_FLOOR_BIT;
       dyn->flags |= hit.material & Material::SLICK_BIT ? Object::ON_SLICK_BIT : 0;
       dyn->floor  = hit.normal;
-
-      if( hit.entity == nullptr ) {
-        dyn->lower = -1;
-      }
-      else {
-        int structIndex = hit.str->index;
-        int entityIndex = int( hit.entity - hit.str->entities.begin() );
-
-        hard_assert( uint( entityIndex ) < uint( Struct::MAX_ENTITIES ) );
-
-        dyn->lower = structIndex * Struct::MAX_ENTITIES + entityIndex;
-      }
+      dyn->lower  = hit.entity == nullptr ? -1 : hit.entity->index();
     }
   }
 }
@@ -522,21 +508,14 @@ void Physics::updateObj( Dynamic* dyn_ )
 
   if( dyn->lower >= 0 ) {
     if( dyn->flags & Object::ON_FLOOR_BIT ) {
-      int structIndex = dyn->lower / Struct::MAX_ENTITIES;
-      int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
+      const Entity* ent = orbis.ent( dyn->lower );
 
-      const Struct* str = orbis.str( structIndex );
-
-      if( str == nullptr ) {
+      if( ent == nullptr ) {
         dyn->flags &= ~Object::DISABLED_BIT;
         dyn->lower  = -1;
       }
-      else {
-        const Entity& entity = str->entities[entityIndex];
-
-        if( entity.state == Entity::OPENING || entity.state == Entity::CLOSING ) {
-          dyn->flags &= ~Object::DISABLED_BIT;
-        }
+      else if( ent->state == Entity::OPENING || ent->state == Entity::CLOSING ) {
+        dyn->flags &= ~Object::DISABLED_BIT;
       }
     }
     else {

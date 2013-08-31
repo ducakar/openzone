@@ -578,7 +578,6 @@ void Client::shutdown()
     Log::unindent();
     Log::println( "}" );
   }
-
   if( initFlags & INIT_MAIN_LOOP ) {
     Log::printMemorySummary();
     Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );

@@ -78,8 +78,7 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
   const Struct* str      = entity->str;
-  int           key      = str->index * Struct::MAX_ENTITIES +
-                           int( entity - str->entities.begin() );
+  int           key      = entity->index();
   Point         p        = str->toAbsoluteCS( entity->clazz->p() + entity->offset );
   Vec3          velocity = str->toAbsoluteCS( entity->velocity );
 

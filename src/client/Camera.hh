@@ -141,17 +141,8 @@ class Camera
 
     void setTaggedEnt( Entity* ent )
     {
+      entity    = ent == nullptr ? -1 : ent->index();
       entityObj = ent;
-
-      if( ent == nullptr ) {
-        entity = -1;
-      }
-      else {
-        int strIndex = ent->str->index;
-        int entIndex = int( ent - ent->str->entities.begin() );
-
-        entity = strIndex * Struct::MAX_ENTITIES + entIndex;
-      }
     }
 
     void setBot( Bot* botObj_ )

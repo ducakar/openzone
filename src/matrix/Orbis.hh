@@ -54,23 +54,23 @@ class Orbis : public Bounds
     // # of cells on each (x, y) axis
     static const int DIM         = MAX_WORLD_COORD;
     static const int CELLS       = 2 * DIM / Cell::SIZE;
-    static const int MAX_STRUCTS = ( 1 << 12 ) - 1;
-    static const int MAX_OBJECTS = ( 1 << 16 ) - 1;
-    static const int MAX_FRAGS   = ( 1 << 14 ) - 1;
+    static const int MAX_STRUCTS = ( 1 << 10 ) - 1;
+    static const int MAX_OBJECTS = ( 1 << 15 ) - 1;
+    static const int MAX_FRAGS   = ( 1 << 12 ) - 1;
 
-    Caelum caelum;
-    Terra  terra;
-    Cell   cells[CELLS][CELLS];
+    Caelum  caelum;
+    Terra   terra;
+    Cell    cells[CELLS][CELLS];
 
   private:
 
-    Array<Struct*, 1 + MAX_STRUCTS> structs;
-    Array<Object*, 1 + MAX_OBJECTS> objects;
-    Array<Frag*,   1 + MAX_FRAGS>   frags;
+    Struct* structs[1 + MAX_STRUCTS];
+    Object* objects[1 + MAX_OBJECTS];
+    Frag*   frags[1 + MAX_FRAGS];
 
-    int strLength;
-    int objLength;
-    int fragLength;
+    int     strLength;
+    int     objLength;
+    int     fragLength;
 
   private:
 
@@ -96,61 +96,48 @@ class Orbis : public Bounds
     void reposition( Object* obj );
     void reposition( Frag* frag );
 
-    OZ_ALWAYS_INLINE
     int nStructs() const;
-
-    OZ_ALWAYS_INLINE
     int nObjects() const;
-
-    OZ_ALWAYS_INLINE
     int nFrags() const;
 
     /**
      * Return structure at a given index, nullptr if index is -1.
      */
-    OZ_ALWAYS_INLINE
     Struct* str( int index ) const;
 
     /**
      * Return entity with a given index, nullptr if index is -1 or structure does not exist.
      */
-    OZ_ALWAYS_INLINE
     Entity* ent( int index ) const;
 
     /**
      * Return object at a given index, nullptr if index is -1.
      */
-    OZ_ALWAYS_INLINE
     Object* obj( int index ) const;
 
     /**
      * Return fragment at a given index, nullptr if index is -1.
      */
-    OZ_ALWAYS_INLINE
     Frag* frag( int index ) const;
 
     /**
      * Adjust structure index; return -1 if non-existent, original index otherwise.
      */
-    OZ_ALWAYS_INLINE
     int strIndex( int index ) const;
 
     /**
      * Adjust entity index; return -1 if structure does not exist, original index otherwise.
      */
-    OZ_ALWAYS_INLINE
     int entIndex( int index ) const;
 
     /**
      * Adjust object index; return -1 if non-existent, original index otherwise.
      */
-    OZ_ALWAYS_INLINE
     int objIndex( int index ) const;
 
     /**
      * Adjust fragment index; return -1 if non-existent, original index otherwise.
      */
-    OZ_ALWAYS_INLINE
     int fragIndex( int index ) const;
 
     // get pointer to the cell the point is in
@@ -210,63 +197,78 @@ inline int Orbis::nFrags() const
 OZ_ALWAYS_INLINE
 inline Struct* Orbis::str( int index ) const
 {
+  hard_assert( uint( 1 + index ) <= uint( MAX_STRUCTS ) );
+
   return structs[1 + index];
 }
 
 OZ_ALWAYS_INLINE
 inline Entity* Orbis::ent( int index ) const
 {
-  if( index < 0 ) {
-    return nullptr;
-  }
+  hard_assert( uint( 1 + index ) <= uint( MAX_STRUCTS * Struct::MAX_ENTITIES ) );
 
-  Struct* str = structs[1 + index / Struct::MAX_ENTITIES];
+  int     strIndex = index >> Struct::MAX_ENT_SHIFT;
+  Struct* str      = structs[1 + strIndex];
+
   if( str == nullptr ) {
     return nullptr;
   }
   else {
-    return &str->entities[index % Struct::MAX_ENTITIES];
+    int     entIndex = index & ( Struct::MAX_ENTITIES - 1 );
+    Entity* entity   = &str->entities[entIndex];
+
+    return entity;
   }
 }
 
 OZ_ALWAYS_INLINE
 inline Object* Orbis::obj( int index ) const
 {
+  hard_assert( uint( 1 + index ) <= uint( MAX_OBJECTS ) );
+
   return objects[1 + index];
 }
 
 OZ_ALWAYS_INLINE
 inline Frag* Orbis::frag( int index ) const
 {
+  hard_assert( uint( 1 + index ) <= uint( MAX_FRAGS ) );
+
   return frags[1 + index];
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::strIndex( int index ) const
 {
+  hard_assert( uint( 1 + index ) <= uint( MAX_STRUCTS ) );
+
   return structs[1 + index] == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::entIndex( int index ) const
 {
-  if( index < 0 ) {
-    return -1;
-  }
+  hard_assert( uint( 1 + index ) <= uint( MAX_STRUCTS * Struct::MAX_ENTITIES ) );
 
-  Struct* str = structs[1 + index / Struct::MAX_ENTITIES];
+  int     strIndex = index >> Struct::MAX_ENT_SHIFT;
+  Struct* str      = structs[1 + strIndex];
+
   return str == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::objIndex( int index ) const
 {
+  hard_assert( uint( 1 + index ) <= uint( MAX_OBJECTS ) );
+
   return objects[1 + index] == nullptr ? -1 : index;
 }
 
 OZ_ALWAYS_INLINE
 inline int Orbis::fragIndex( int index ) const
 {
+  hard_assert( uint( 1 + index ) <= uint( MAX_FRAGS ) );
+
   return frags[1 + index] == nullptr ? -1 : index;
 }
 

@@ -128,7 +128,7 @@ void StrategicArea::collectHovers()
       hoverStr = str->index;
 
       if( ent != nullptr ) {
-        hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
+        hoverEnt = ent->index();
       }
     }
     else if( obj != nullptr ) {

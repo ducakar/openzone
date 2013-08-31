@@ -39,8 +39,6 @@
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
-# include <unistd.h>
-# define _Exit( code ) _exit( code )
 #elif defined( __native_client__ )
 # include <ctime>
 # include <ppapi/cpp/audio.h>
@@ -56,7 +54,6 @@
 # include <ctime>
 # include <fcntl.h>
 # include <pthread.h>
-# include <unistd.h>
 # ifndef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/soundcard.h>
@@ -549,7 +546,7 @@ static void abort( bool doHalt )
 #endif
 
   waitBell();
-  _Exit( EXIT_FAILURE );
+  ::abort();
 }
 
 const int     System::HANDLERS_BIT;

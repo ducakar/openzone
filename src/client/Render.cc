@@ -245,10 +245,6 @@ void Render::prepareDraw()
   caelum.update();
 
   // drawnStructs
-  if( drawnStructs.length() < orbis.nStructs() ) {
-    drawnStructs.deallocate();
-    drawnStructs.allocate( orbis.nStructs() );
-  }
   drawnStructs.clearAll();
 
   float minXCentre = float( ( span.minX - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2 );
@@ -761,8 +757,6 @@ void Render::unload()
   {
     glFinish();
   };
-
-  drawnStructs.deallocate();
 
   structs.clear();
   structs.deallocate();

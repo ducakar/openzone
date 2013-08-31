@@ -27,6 +27,7 @@
 #include "Thread.hh"
 
 #include "System.hh"
+#include "StackTrace.hh"
 
 #include <cstdlib>
 #include <cstring>
@@ -45,8 +46,6 @@
 
 namespace oz
 {
-
-static const int NAME_LENGTH = 15;
 
 #ifdef _WIN32
 static DWORD          nameKey;
@@ -117,7 +116,7 @@ struct Thread::Descriptor
   Thread::Main* main;
   void*         data;
   Type          type;
-  char          name[NAME_LENGTH + 1];
+  char          name[StackTrace::NAME_LENGTH + 1];
 
 #ifdef _WIN32
   static DWORD WINAPI threadMain( void* data );
@@ -218,8 +217,8 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
   descriptor->data = data;
   descriptor->type = type;
 
-  strncpy( descriptor->name, name, NAME_LENGTH );
-  descriptor->name[NAME_LENGTH] = '\0';
+  strncpy( descriptor->name, name, StackTrace::NAME_LENGTH );
+  descriptor->name[StackTrace::NAME_LENGTH] = '\0';
 
 #ifdef _WIN32
 

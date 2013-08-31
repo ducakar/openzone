@@ -81,8 +81,8 @@ void Entity::trigger()
     hard_assert( time == 0.0f );
   }
 
-  int strIndex = clazz->target / Struct::MAX_ENTITIES;
-  int entIndex = clazz->target % Struct::MAX_ENTITIES;
+  int strIndex = clazz->target >> Struct::MAX_ENT_SHIFT;
+  int entIndex = clazz->target & ( Struct::MAX_ENTITIES - 1 );
 
   Struct* targetStr = orbis.str( strIndex );
 

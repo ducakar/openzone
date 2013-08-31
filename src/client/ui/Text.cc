@@ -28,7 +28,8 @@
 #include <cstdio>
 #include <cstring>
 
-#if defined( __ANDROID__ ) || defined(  _WIN32 )
+#ifndef _GNU_SOURCE
+
 static char* strchrnul( const char* s, int c )
 {
   while( *s != c && *s != '\0' ) {
@@ -36,6 +37,7 @@ static char* strchrnul( const char* s, int c )
   }
   return const_cast<char*>( s );
 }
+
 #endif
 
 namespace oz

@@ -588,10 +588,6 @@ void Sound::soundRun()
     alListenerfv( AL_POSITION, camera.p );
     alListenerfv( AL_VELOCITY, camera.velocity );
 
-    if( playedStructs.length() < orbis.nStructs() ) {
-      playedStructs.deallocate();
-      playedStructs.allocate( orbis.nStructs() );
-    }
     playedStructs.clearAll();
 
     Span span = orbis.getInters( camera.p, SOUND_DISTANCE + Math::sqrt( 3.0f ) * Object::MAX_DIM );
@@ -857,8 +853,6 @@ void Sound::destroy()
   soundMainSemaphore.destroy();
   musicAuxSemaphore.destroy();
   musicMainSemaphore.destroy();
-
-  playedStructs.deallocate();
 
   if( soundContext != nullptr ) {
     alSourceStop( musicSource );

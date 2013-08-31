@@ -55,60 +55,60 @@ class Sound
       AAC
     };
 
-    ALCdevice*     soundDevice;
-    ALCcontext*    soundContext;
+    ALCdevice*                  soundDevice;
+    ALCcontext*                 soundContext;
 
-    SharedLib      libeSpeak;
-    SharedLib      libMad;
-    SharedLib      libFaad;
+    SharedLib                   libeSpeak;
+    SharedLib                   libMad;
+    SharedLib                   libFaad;
 
-    Bitset         playedStructs;
-    float          volume;
+    SBitset<Orbis::MAX_STRUCTS> playedStructs;
+    float                       volume;
 
-    StreamType     musicStreamType;
+    StreamType                  musicStreamType;
 
-    int            musicRate;
-    int            musicChannels;
-    int            musicFormat;
-    uint           musicSource;
-    uint           musicBufferIds[2];
-    int            musicBuffersQueued;
-    char           musicBuffer[MUSIC_BUFFER_SIZE];
-    ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
+    int                         musicRate;
+    int                         musicChannels;
+    int                         musicFormat;
+    uint                        musicSource;
+    uint                        musicBufferIds[2];
+    int                         musicBuffersQueued;
+    char                        musicBuffer[MUSIC_BUFFER_SIZE];
+    ubyte                       musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
 
-    PHYSFS_File*   musicFile;
+    PHYSFS_File*                musicFile;
 
-    OggVorbis_File oggStream;
+    OggVorbis_File              oggStream;
 
-    mad_stream     madStream;
-    mad_frame      madFrame;
-    mad_synth      madSynth;
+    mad_stream                  madStream;
+    mad_frame                   madFrame;
+    mad_synth                   madSynth;
 
-    int            madWrittenSamples;
-    int            madFrameSamples;
+    int                         madWrittenSamples;
+    int                         madFrameSamples;
 
-    NeAACDecHandle aacDecoder;
+    NeAACDecHandle              aacDecoder;
 
-    char*          aacOutputBuffer;
-    int            aacWrittenBytes;
-    int            aacBufferBytes;
-    size_t         aacInputBytes;
+    char*                       aacOutputBuffer;
+    int                         aacWrittenBytes;
+    int                         aacBufferBytes;
+    size_t                      aacInputBytes;
 
     // Music track id to switch to, -1 to do nothing, -2 stop playing.
-    int            selectedTrack;
-    volatile int   streamedTrack;
-    volatile int   streamedBytes;
+    int                         selectedTrack;
+    volatile int                streamedTrack;
+    volatile int                streamedBytes;
 
-    Thread         musicThread;
-    Thread         soundThread;
+    Thread                      musicThread;
+    Thread                      soundThread;
 
-    Semaphore      musicMainSemaphore;
-    Semaphore      musicAuxSemaphore;
-    Semaphore      soundMainSemaphore;
-    Semaphore      soundAuxSemaphore;
+    Semaphore                   musicMainSemaphore;
+    Semaphore                   musicAuxSemaphore;
+    Semaphore                   soundMainSemaphore;
+    Semaphore                   soundAuxSemaphore;
 
-    volatile bool  isMusicAlive;
-    volatile bool  isSoundAlive;
+    volatile bool               isMusicAlive;
+    volatile bool               isSoundAlive;
 
   private:
 

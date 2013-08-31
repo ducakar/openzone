@@ -64,6 +64,9 @@ class Entity
     Vec3               offset;
     Vec3               velocity;
 
+  public:
+
+    int index() const;
     void trigger();
     void lock( Bot* user );
 
@@ -82,7 +85,8 @@ class Struct : public Bounds
 {
   public:
 
-    static const int MAX_ENTITIES = 128;
+    static const int MAX_ENT_SHIFT = 16;
+    static const int MAX_ENTITIES  = 1 << MAX_ENT_SHIFT;
 
   private:
 
@@ -177,6 +181,12 @@ class Struct : public Bounds
     OZ_STATIC_POOL_ALLOC( pool )
 
 };
+
+OZ_ALWAYS_INLINE
+inline int Entity::index() const
+{
+  return ( str->index << Struct::MAX_ENT_SHIFT ) | int( this - str->entities.begin() );
+}
 
 OZ_ALWAYS_INLINE
 inline Vec3 Struct::toAbsoluteCS( const Vec3& v ) const

@@ -208,18 +208,8 @@ void Inventory::onUpdate()
   updateReferences();
   taggedItemIndex = -1;
 
-  if( camera.state != Camera::UNIT || !mouse.doShow || owner == nullptr ||
-      ( owner->state & Bot::DEAD_BIT ) )
-  {
-    show( false );
-  }
-  else {
-    show( true );
-
-    if( other == nullptr ) {
-      scrollOther = 0;
-    }
-  }
+  show( camera.state == Camera::UNIT && mouse.doShow && owner != nullptr &&
+        !( owner->state & Bot::DEAD_BIT ) );
 }
 
 bool Inventory::onMouseEvent()

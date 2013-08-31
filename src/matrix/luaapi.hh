@@ -536,7 +536,7 @@ static int ozStrSetResistance( lua_State* l )
   ARG( 1 );
   STR();
 
-  ms.str->resistance = l_tofloat( 1 );
+  ms.str->resistance = max( 0.0f, l_tofloat( 1 ) );
   return 0;
 }
 
@@ -1347,7 +1347,7 @@ static int ozObjSetResistance( lua_State* l )
   ARG( 1 );
   OBJ();
 
-  ms.obj->resistance = l_tofloat( 1 );
+  ms.obj->resistance = max( 0.0f, l_tofloat( 1 ) );
   return 0;
 }
 

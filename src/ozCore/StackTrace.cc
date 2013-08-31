@@ -45,7 +45,14 @@ const int StackTrace::MAX_FRAMES;
 
 StackTrace StackTrace::current( int )
 {
-  return { Thread::name(), 0, {} };
+  const char* name = Thread::name();
+
+  StackTrace st = { {}, 0, {} };
+
+  if( name != nullptr ) {
+    strncpy( st.threadName, name, NAME_LENGTH );
+  }
+  return st;
 }
 
 char** StackTrace::symbols() const
@@ -62,13 +69,16 @@ StackTrace StackTrace::current( int nSkippedFrames )
 {
   hard_assert( nSkippedFrames >= 0 );
 
-  void* framesBuffer[StackTrace::MAX_FRAMES + 4];
-  int nFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
+  void*       framesBuffer[StackTrace::MAX_FRAMES + 4];
+  const char* name            = Thread::name();
+  int         nBufferedFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
+  int         nFrames         = min<int>( nBufferedFrames - 1 - nSkippedFrames, MAX_FRAMES );
 
-  StackTrace st;
-  st.threadName = Thread::name();
-  st.nFrames    = min<int>( nFrames - 1 - nSkippedFrames, MAX_FRAMES );
+  StackTrace st = { {}, nFrames, {} };
 
+  if( name != nullptr ) {
+    strncpy( st.threadName, name, NAME_LENGTH );
+  }
   aCopy<void*>( framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames );
   return st;
 }
