@@ -183,6 +183,8 @@ class Buffer
     /**
      * Compress using deflate algorithm.
      *
+     * An empty buffer is returned on an error.
+     *
      * @param level compression level: -1 (default), 0 (no compression) or 1...9 (1 - best speed,
      *        9 - best compression).
      */

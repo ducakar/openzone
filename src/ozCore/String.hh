@@ -119,13 +119,13 @@ class String
      */
     static int strongHash( const char* s )
     {
-      int value = int( 2166136261 );
+      uint value = 2166136261;
 
       while( *s != '\0' ) {
-        value = ( value * 16777619 ) ^ *s;
+        value = ( value * 16777619 ) ^ uint( *s );
         ++s;
       }
-      return value;
+      return int( value );
     }
 
     /**

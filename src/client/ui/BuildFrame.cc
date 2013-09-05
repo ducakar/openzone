@@ -24,7 +24,7 @@
 #include <client/ui/BuildFrame.hh>
 
 #include <matrix/Synapse.hh>
-#include <nirvana/TechTree.hh>
+#include <nirvana/TechGraph.hh>
 #include <client/Input.hh>
 #include <client/Shape.hh>
 #include <client/Shader.hh>
@@ -184,7 +184,7 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
   buildFrame->wasOverModel = true;
 
   if( buildFrame->mode == BUILDINGS ) {
-    const oz::BSP* bsp = techTree.allowedBuildings[sender->id];
+    const oz::BSP* bsp = techGraph.allowedBuildings[sender->id];
 
     buildFrame->title.setText( "%s", bsp->title.cstr() );
 
@@ -197,9 +197,9 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
     }
   }
   else {
-    const ObjectClass* clazz = buildFrame->mode == UNITS ? techTree.allowedUnits[sender->id] :
-                               buildFrame->mode == ITEMS ? techTree.allowedItems[sender->id] :
-                                                           techTree.allowedObjects[sender->id];
+    const ObjectClass* clazz = buildFrame->mode == UNITS ? techGraph.allowedUnits[sender->id] :
+                               buildFrame->mode == ITEMS ? techGraph.allowedItems[sender->id] :
+                                                           techGraph.allowedObjects[sender->id];
 
     buildFrame->title.setText( "%s", clazz->title.cstr() );
 
@@ -304,8 +304,8 @@ void BuildFrame::onDraw()
     for( int i = 0; i < rows * 3; ++i ) {
       int index = scroll * 3 + i;
 
-      if( index < techTree.allowedBuildings.length() ) {
-        models[i]->setModel( techTree.allowedBuildings[index] );
+      if( index < techGraph.allowedBuildings.length() ) {
+        models[i]->setModel( techGraph.allowedBuildings[index] );
         models[i]->show( true );
         models[i]->id = index;
       }
@@ -316,12 +316,12 @@ void BuildFrame::onDraw()
       }
     }
 
-    nScrollRows = max( 0, ( techTree.allowedBuildings.length() + 2 ) / 3 - rows );
+    nScrollRows = max( 0, ( techGraph.allowedBuildings.length() + 2 ) / 3 - rows );
   }
   else {
-    const List<const ObjectClass*> allowed = mode == UNITS ? techTree.allowedUnits :
-                                             mode == ITEMS ? techTree.allowedItems :
-                                                             techTree.allowedObjects;
+    const List<const ObjectClass*> allowed = mode == UNITS ? techGraph.allowedUnits :
+                                             mode == ITEMS ? techGraph.allowedItems :
+                                                             techGraph.allowedObjects;
 
     for( int i = 0; i < rows * 3; ++i ) {
       int index = scroll * 3 + i;

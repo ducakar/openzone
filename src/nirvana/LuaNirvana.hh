@@ -26,7 +26,7 @@
 #pragma once
 
 #include <common/LuaCommon.hh>
-#include <nirvana/common.hh>
+#include <nirvana/Mind.hh>
 
 namespace oz
 {
@@ -35,7 +35,7 @@ class LuaNirvana : public LuaCommon
 {
   public:
 
-    bool mindCall( const char* functionName, Bot* self );
+    bool mindCall( const char* functionName, Mind* mind, Bot* self );
 
     void registerMind( int botIndex );
     void unregisterMind( int botIndex );

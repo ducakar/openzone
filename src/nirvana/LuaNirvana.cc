@@ -33,17 +33,19 @@ namespace oz
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
 static LuaNirvana& lua = luaNirvana;
 
-bool LuaNirvana::mindCall( const char* functionName, Bot* self_ )
+bool LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
 {
-  ms.self        = self_;
-  ms.obj         = self_;
+  hard_assert( l_gettop() == 1 && mind != nullptr && self != nullptr );
+
+  ms.self        = self;
+  ms.obj         = self;
   ms.str         = nullptr;
   ms.objIndex    = 0;
   ms.strIndex    = 0;
-  ns.self        = self_;
+  ns.self        = self;
+  ns.mind        = mind;
+  ns.device      = nullptr;
   ns.forceUpdate = false;
-
-  hard_assert( l_gettop() == 1 && ms.self != nullptr );
 
   l_getglobal( functionName );
   l_rawgeti( 1, ms.self->index );
@@ -464,11 +466,27 @@ void LuaNirvana::init()
   IMPORT_FUNC( ozSelfBindOverlaps );
 
   /*
+   * Mind
+   */
+
+  IMPORT_FUNC( ozMindGetSide );
+  IMPORT_FUNC( ozMindSetSide );
+
+  /*
    * QuestList
    */
 
   IMPORT_FUNC( ozQuestAdd );
   IMPORT_FUNC( ozQuestEnd );
+
+  /*
+   * TechGraph
+   */
+
+  IMPORT_FUNC( ozTechEnable );
+  IMPORT_FUNC( ozTechDisable );
+  IMPORT_FUNC( ozTechEnableAll );
+  IMPORT_FUNC( ozTechDisableAll );
 
   /*
    * Nirvana

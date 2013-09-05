@@ -127,7 +127,7 @@ static void readClass( const File& file )
 
 static void readNirvana( const File& dir )
 {
-  File techFile = dir.path() + "/techTree.json";
+  File techFile = dir.path() + "/techGraph.json";
   JSON techConfig;
 
   if( techConfig.load( techFile ) ) {

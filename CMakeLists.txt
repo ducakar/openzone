@@ -203,6 +203,8 @@ endif()
 # set( flags "${flags} -fsanitize=address" )
 # ThreadSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
 # set( flags "${flags} -fsanitize=thread -fpie -fPIC" )
+# Undefined behaviour (GCC 4.9+, LLVM/Clang 3.3+)
+# set( flags "${flags} -fsanitize=undefined" )
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )

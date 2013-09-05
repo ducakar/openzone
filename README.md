@@ -57,20 +57,20 @@ You may also want to set several options when configuring CMake build system:
 - `OZ_SHARED_LIBS`: Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries. This might
   make sense once if some other applications may use OpenZone's libraries as well.
 
-- `OZ_PULSE_BELL`: Enable PulseAudio back-end for System::bell() on Linux and generic Unix ports.
+- `OZ_PULSE_BELL`: Enable PulseAudio back-end for `System::bell()` on Linux and generic Unix ports.
   If enabled, PulseAudio is tried first to play the bell while the native sound system (ALSA on
-  Linux or OSS on generic Unix port) is only used as a fall-back.
+  Linux or OSS on generic Unix port) is used only as a fall-back.
   `OFF` by default.
 
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks. Stack trace for every memory
   allocation performed via new operator is saved for later diagnostics. It detects new/delete
-  mismatches and one can check for currently allocated memory chunks (and hence memory leaks).
+  mismatches and can be used to find memory leaks.
   `OFF` by default.
 
 - `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
   Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementation since
-  Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are plenty of accesses to
-  vector components in OpenZone code.
+  `Vec3` and `Point` become larger (4 floats v. 3 floats) and there are plenty of accesses to vector
+  components in OpenZone code (it wasn't written with SIMD in mind).
   `OFF` by default.
 
 - `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library (ozDynamics). Requires ODE (Open Dynamics
@@ -289,9 +289,9 @@ version. liboz library is a part of OpenZone engine but can also be distributed 
 the zlib licence.
 
 Libraries that may be bundled with binary distributions of OpenZone come under different licences.
-See doc/README.html for details.
+See `doc/README.html` for details.
 
 Game data are obtained from various sources and covered by many different licences. See individual
-README.txt and COPYING.txt files inside game data archives for details.
+`README.txt` and `COPYING.txt` files inside game data archives for details.
 
 This program comes with ABSOLUTELY NO WARRANTY.

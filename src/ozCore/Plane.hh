@@ -94,7 +94,7 @@ class Plane
     }
 
     /**
-     * Projection of a vector to the plane's normal.
+     * Projection of a vector to a plane's normal.
      */
     OZ_ALWAYS_INLINE
     friend scalar operator * ( const Vec3& v, const Plane& plane )
@@ -107,7 +107,7 @@ class Plane
     }
 
     /**
-     * Distance between a point and the plane.
+     * Distance between a point and a plane.
      */
     OZ_ALWAYS_INLINE
     friend scalar operator * ( const Point& p, const Plane& plane )

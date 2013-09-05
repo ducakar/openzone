@@ -29,10 +29,8 @@
 namespace oz
 {
 
-Pool<Mind, 1024> Mind::pool;
-
 Mind::Mind( int bot_ ) :
-  flags( 0 ), bot( bot_ )
+  bot( bot_ ), flags( 0 ), side( 0 )
 {
   luaNirvana.registerMind( bot );
 }
@@ -41,6 +39,7 @@ Mind::Mind( int bot_, InputStream* istream ) :
   bot( bot_ )
 {
   flags = istream->readInt();
+  side  = istream->readInt();
 }
 
 Mind::~Mind()
@@ -58,7 +57,7 @@ void Mind::update()
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 
-    if( luaNirvana.mindCall( botObj->mindFunc, botObj ) ) {
+    if( luaNirvana.mindCall( botObj->mindFunc, this, botObj ) ) {
       flags |= FORCE_UPDATE_BIT;
     }
   }
@@ -67,6 +66,7 @@ void Mind::update()
 void Mind::write( OutputStream* ostream ) const
 {
   ostream->writeInt( flags );
+  ostream->writeInt( side );
 }
 
 }

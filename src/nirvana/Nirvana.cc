@@ -27,8 +27,8 @@
 #include <matrix/Bot.hh>
 #include <nirvana/LuaNirvana.hh>
 #include <nirvana/Memo.hh>
-#include <nirvana/TechTree.hh>
 #include <nirvana/QuestList.hh>
+#include <nirvana/TechGraph.hh>
 
 #define OZ_REGISTER_DEVICE( name ) \
   deviceClasses.add( #name, &name::create )
@@ -41,14 +41,13 @@ void Nirvana::sync()
   // remove devices and minds of removed objects
   foreach( i, synapse.removedObjects.citer() ) {
     const Device* const* device = devices.find( *i );
-    const Mind* const* mind = minds.find( *i );
+    const Mind* mind = minds.find( *i );
 
     if( device != nullptr ) {
       delete *device;
       devices.exclude( *i );
     }
     if( mind != nullptr ) {
-      delete *mind;
       minds.exclude( *i );
     }
   }
@@ -57,7 +56,7 @@ void Nirvana::sync()
     const Object* obj = orbis.obj( *i );
 
     if( obj != nullptr && ( obj->flags & Object::BOT_BIT ) ) {
-      minds.add( obj->index, new Mind( obj->index ) );
+      minds.add( obj->index, Mind( obj->index ) );
     }
   }
 }
@@ -65,22 +64,22 @@ void Nirvana::sync()
 void Nirvana::update()
 {
   int count = 0;
-  foreach( i, minds.citer() ) {
-    Mind* mind = i->value;
+  foreach( i, minds.iter() ) {
+    Mind& mind = i->value;
 
-    const Bot* bot = static_cast<const Bot*>( orbis.obj( mind->bot ) );
+    const Bot* bot = static_cast<const Bot*>( orbis.obj( mind.bot ) );
     hard_assert( bot != nullptr && ( bot->flags & Object::BOT_BIT ) );
 
     if( !( bot->state & Bot::PLAYER_BIT ) &&
-        ( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )
+        ( ( mind.flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )
     {
-      mind->update();
+      mind.update();
     }
     ++count;
   }
   updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
 
-  techTree.update();
+  techGraph.update();
 }
 
 void Nirvana::read( InputStream* istream )
@@ -109,11 +108,11 @@ void Nirvana::read( InputStream* istream )
   for( int i = 0; i < nMinds; ++i ) {
     int index = istream->readInt();
 
-    minds.add( index, new Mind( index, istream ) );
+    minds.add( index, Mind( index, istream ) );
   }
 
-  techTree.read( istream );
   questList.read( istream );
+  techGraph.read( istream );
 
   Log::printEnd( " OK" );
 }
@@ -134,12 +133,12 @@ void Nirvana::write( OutputStream* ostream ) const
     device->value->write( ostream );
   }
   foreach( mind, minds.citer() ) {
-    ostream->writeInt( mind->value->bot );
-    mind->value->write( ostream );
+    ostream->writeInt( mind->value.bot );
+    mind->value.write( ostream );
   }
 
-  techTree.write( ostream );
   questList.write( ostream );
+  techGraph.write( ostream );
 
   Log::printEnd( " OK" );
 }
@@ -148,8 +147,8 @@ void Nirvana::load()
 {
   Log::print( "Loading Nirvana ..." );
 
-  techTree.load();
   questList.load();
+  techGraph.load();
 
   Log::printEnd( " OK" );
 }
@@ -161,14 +160,13 @@ void Nirvana::unload()
   devices.free();
   devices.deallocate();
 
-  minds.free();
+  minds.clear();
   minds.deallocate();
 
   Memo::pool.free();
-  Mind::pool.free();
 
-  techTree.unload();
   questList.unload();
+  techGraph.unload();
 
   Log::printEnd( " OK" );
 }

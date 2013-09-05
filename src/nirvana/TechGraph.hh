@@ -18,7 +18,7 @@
  */
 
 /**
- * @file nirvana/TechTree.hh
+ * @file nirvana/TechGraph.hh
  */
 
 #pragma once
@@ -31,7 +31,7 @@
 namespace oz
 {
 
-class TechTree
+class TechGraph
 {
   public:
 
@@ -67,14 +67,24 @@ class TechTree
 
     List<Node> nodes;
 
-    Node* findNode( const char* name );
-
   public:
 
     List<const BSP*>         allowedBuildings;
     List<const ObjectClass*> allowedUnits;
     List<const ObjectClass*> allowedItems;
     List<const ObjectClass*> allowedObjects;
+
+  private:
+
+    Node* findNode( const char* name );
+
+  public:
+
+    bool enable( const char* technology );
+    bool disable( const char* technology );
+
+    void enableAll();
+    void disableAll();
 
     void update();
 
@@ -86,6 +96,6 @@ class TechTree
 
 };
 
-extern TechTree techTree;
+extern TechGraph techGraph;
 
 }

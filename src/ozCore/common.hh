@@ -269,13 +269,13 @@ inline int hash( int value )
  */
 inline int hash( const char* s )
 {
-  int value = 5381;
+  uint value = 5381;
 
   while( *s != '\0' ) {
-    value = ( value * 33 ) ^ *s;
+    value = ( value * 33 ) ^ uint( *s );
     ++s;
   }
-  return value;
+  return int( value );
 }
 
 }

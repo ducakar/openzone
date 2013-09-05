@@ -27,6 +27,7 @@
 #include "Log.hh"
 
 #include "Alloc.hh"
+#include "Profiler.hh"
 
 #include <cstdio>
 #include <cstdlib>
@@ -324,10 +325,14 @@ void Log::printSignal( int sigNum )
   }
 }
 
-void Log::printMemorySummary()
+bool Log::printMemorySummary()
 {
+  if( !Alloc::OVERLOADS_NEW_AND_DELETE ) {
+    return false;
+  }
+
   println( "Alloc summary {" );
-  ++indentLevel;
+  indent();
 
   println( "current chunks     %d", Alloc::count );
   println( "current amount     %.2f MiB (%lu B)",
@@ -339,8 +344,10 @@ void Log::printMemorySummary()
   println( "cumulative amount  %.2f MiB (%lu B)",
                 float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::sumAmount ) );
 
-  --indentLevel;
+  unindent();
   println( "}" );
+
+  return true;
 }
 
 bool Log::printMemoryLeaks()
@@ -348,24 +355,43 @@ bool Log::printMemoryLeaks()
   bool hasOutput = false;
 
   foreach( ci, Alloc::objectCIter() ) {
-    Log::println( "Leaked object at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
-    Log::indent();
-    Log::printTrace( ci->stackTrace );
-    Log::unindent();
+    println( "Leaked object at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
+    indent();
+    printTrace( ci->stackTrace );
+    unindent();
 
     hasOutput = true;
   }
 
   foreach( ci, Alloc::arrayCIter() ) {
-    Log::println( "Leaked array at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
-    Log::indent();
-    Log::printTrace( ci->stackTrace );
-    Log::unindent();
+    println( "Leaked array at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
+    indent();
+    printTrace( ci->stackTrace );
+    unindent();
 
     hasOutput = true;
   }
 
   return hasOutput;
+}
+
+bool Log::printProfilerStatistics()
+{
+  if( !Profiler::citer().isValid() ) {
+    return false;
+  }
+
+  println( "Profiler statistics {" );
+  indent();
+
+  foreach( i, Profiler::citer() ) {
+    println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
+  }
+
+  unindent();
+  println( "}" );
+
+  return true;
 }
 
 bool Log::init( const char* filePath_, bool clearFile )

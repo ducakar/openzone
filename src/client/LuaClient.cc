@@ -575,11 +575,11 @@ void LuaClient::init()
   IGNORE_FUNC( ozSelfBindOverlaps );
 
   /*
-   * Nirvana
+   * Mind
    */
 
-  IMPORT_FUNC( ozNirvanaRemoveDevice );
-  IMPORT_FUNC( ozNirvanaAddMemo );
+  IGNORE_FUNC( ozMindGetSide );
+  IGNORE_FUNC( ozMindSetSide );
 
   /*
    * QuestList
@@ -587,6 +587,22 @@ void LuaClient::init()
 
   IMPORT_FUNC( ozQuestAdd );
   IMPORT_FUNC( ozQuestEnd );
+
+  /*
+   * TechGraph
+   */
+
+  IMPORT_FUNC( ozTechEnable );
+  IMPORT_FUNC( ozTechDisable );
+  IMPORT_FUNC( ozTechEnableAll );
+  IMPORT_FUNC( ozTechDisableAll );
+
+  /*
+   * Nirvana
+   */
+
+  IMPORT_FUNC( ozNirvanaRemoveDevice );
+  IMPORT_FUNC( ozNirvanaAddMemo );
 
   /*
    * Camera

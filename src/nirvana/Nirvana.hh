@@ -45,7 +45,7 @@ class Nirvana
     HashMap<String, Device::CreateFunc*, 32> deviceClasses;
 
     HashMap<int, Device*, 4096> devices;
-    HashMap<int, Mind*, 4096>   minds;
+    HashMap<int, Mind, 4096>    minds;
 
     void sync();
     void update();

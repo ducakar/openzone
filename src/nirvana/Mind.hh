@@ -34,13 +34,14 @@ class Mind
 
     static const int FORCE_UPDATE_BIT = 0x00000001;
 
-    static Pool<Mind, 1024> pool;
-
     Mind* prev[1];
     Mind* next[1];
 
-    int flags;
     int bot;
+    int flags;
+    int side;
+
+  public:
 
     explicit Mind( int bot );
     explicit Mind( int bot, InputStream* istream );
@@ -49,8 +50,6 @@ class Mind
     void update();
 
     void write( OutputStream* ostream ) const;
-
-    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

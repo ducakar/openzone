@@ -28,7 +28,7 @@
 #include <matrix/luaapi.hh>
 
 #include <nirvana/Memo.hh>
-#include <nirvana/TechTree.hh>
+#include <nirvana/TechGraph.hh>
 #include <nirvana/QuestList.hh>
 #include <nirvana/Nirvana.hh>
 
@@ -37,7 +37,9 @@ namespace oz
 
 struct NirvanaLuaState
 {
-  Bot* self;
+  Bot*    self;
+  Mind*   mind;
+  Device* device;
 
   bool forceUpdate;
 };
@@ -519,8 +521,24 @@ static int ozSelfBindOverlaps( lua_State* l )
 }
 
 /*
- * TechTree
+ * Mind
  */
+
+static int ozMindGetSide( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushint( ns.mind->side );
+  return 1;
+}
+
+static int ozMindSetSide( lua_State* l )
+{
+  ARG( 1 );
+
+  ns.mind->side = l_toint( 1 );
+  return 0;
+}
 
 /*
  * QuestList
@@ -549,6 +567,46 @@ static int ozQuestEnd( lua_State* l )
   }
 
   questList.quests[id].state = l_tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
+  return 0;
+}
+
+/*
+ * TechGraph
+ */
+
+static int ozTechEnable( lua_State* l )
+{
+  ARG( 1 );
+
+  const char* technology = l_tostring( 1 );
+
+  l_pushbool( techGraph.enable( technology ) );
+  return 1;
+}
+
+static int ozTechDisable( lua_State* l )
+{
+  ARG( 1 );
+
+  const char* technology = l_tostring( 1 );
+
+  l_pushbool( techGraph.disable( technology ) );
+  return 1;
+}
+
+static int ozTechEnableAll( lua_State* l )
+{
+  ARG( 0 );
+
+  techGraph.enableAll();
+  return 0;
+}
+
+static int ozTechDisableAll( lua_State* l )
+{
+  ARG( 0 );
+
+  techGraph.disableAll();
   return 0;
 }
 

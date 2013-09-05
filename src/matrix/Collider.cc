@@ -182,7 +182,7 @@ bool Collider::overlapsAABBOrbis()
     return true;
   }
 
-  SList<int, 24> visitedStructs;
+  SList<int, 16> visitedStructs;
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -193,6 +193,10 @@ bool Collider::overlapsAABBOrbis()
 
         if( !trace.overlaps( *str ) || visitedStructs.contains( cell.structs[i] ) ) {
           continue;
+        }
+
+        if( visitedStructs.length() == visitedStructs.capacity() ) {
+          visitedStructs.popFirst();
         }
 
         visitedStructs.add( cell.structs[i] );
@@ -673,7 +677,7 @@ void Collider::trimAABBOrbis()
     trimAABBVoid();
   }
 
-  SList<int, 24> visitedStructs;
+  SList<int, 16> visitedStructs;
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -684,6 +688,10 @@ void Collider::trimAABBOrbis()
 
         if( !trace.overlaps( *str ) || visitedStructs.contains( cell.structs[i] ) ) {
           continue;
+        }
+
+        if( visitedStructs.length() == visitedStructs.capacity() ) {
+          visitedStructs.popFirst();
         }
 
         visitedStructs.add( cell.structs[i] );

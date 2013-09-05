@@ -145,18 +145,34 @@ class Log
     /**
      * Print summary about memory usage (`Alloc`'s -`count` and -`size` fields).
      *
+     * If new and delete operators were not overloaded (`Alloc::OVERLOADS_NEW_AND_DELETE` is false),
+     * nothing is printed.
+     *
+     * @return true iff summary was printed.
+     *
      * @sa `oz::Alloc`
      */
-    static void printMemorySummary();
+    static bool printMemorySummary();
 
     /**
      * Print memory chunks allocated via `new` and `new[]` operators, tracked by `Alloc` class.
      *
-     * @return true iff there is any allocated memory chunk.
+     * @return true iff there is still any memory chunk allocated (i.e. something was printed).
      *
      * @sa `oz::Alloc`
      */
     static bool printMemoryLeaks();
+
+    /**
+     * Print `Profiler` statistics.
+     *
+     * If there's no statistics accumulated by profiler, nothing is printed.
+     *
+     * @return true iff there was any statistics printed.
+     *
+     * @sa `oz::Profiler`
+     */
+    static bool printProfilerStatistics();
 
     /**
      * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other

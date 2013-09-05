@@ -565,23 +565,12 @@ void Client::shutdown()
     File::destroy();
   }
 
-  if( Profiler::citer().isValid() ) {
-    Log::println( "Profiler statistics {" );
-    Log::indent();
+  Log::printProfilerStatistics();
+  Profiler::clear();
 
-    foreach( i, Profiler::citer() ) {
-      Log::println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
-    }
+  Log::printMemorySummary();
 
-    Profiler::clear();
-
-    Log::unindent();
-    Log::println( "}" );
-  }
-  if( initFlags & INIT_MAIN_LOOP ) {
-    Log::printMemorySummary();
-    Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );
-  }
+  Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );
 }
 
 int Client::main()

@@ -1009,6 +1009,11 @@ int Builder::main( int argc, char** argv )
   FreeImage_DeInitialise();
   File::destroy();
 
+  Log::printProfilerStatistics();
+  Profiler::clear();
+
+  Log::printMemorySummary();
+
   return EXIT_SUCCESS;
 }
 

@@ -152,9 +152,9 @@ Buffer Buffer::deflate( int level ) const
 
     // Write size of the original data, ensure portability between little and big endian platforms.
 #if OZ_BYTE_ORDER == 4321
-    *reinterpret_cast<int*>( buffer.begin() ) = Endian::bswap32( size );
+    *reinterpret_cast<int*>( buffer.data ) = Endian::bswap32( size );
 #else
-    *reinterpret_cast<int*>( buffer.begin() ) = size;
+    *reinterpret_cast<int*>( buffer.data ) = size;
 #endif
   }
   return buffer;

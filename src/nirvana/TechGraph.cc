@@ -18,10 +18,10 @@
  */
 
 /**
- * @file nirvana/TechTree.cc
+ * @file nirvana/TechGraph.cc
  */
 
-#include <nirvana/TechTree.hh>
+#include <nirvana/TechGraph.hh>
 
 #include <matrix/Liber.hh>
 #include <common/Lingua.hh>
@@ -29,7 +29,7 @@
 namespace oz
 {
 
-TechTree::Node* TechTree::findNode( const char* name )
+TechGraph::Node* TechGraph::findNode( const char* name )
 {
   foreach( node, nodes.iter() ) {
     if( node->name.equals( name ) ) {
@@ -37,29 +37,78 @@ TechTree::Node* TechTree::findNode( const char* name )
     }
   }
 
-  OZ_ERROR( "Invalid TechTree node reference '%s'", name );
+  OZ_ERROR( "Invalid TechGraph node reference '%s'", name );
 }
 
-void TechTree::update()
+bool TechGraph::enable( const char* technology )
+{
+  return false;
+}
+
+bool TechGraph::disable( const char* technology )
+{
+  return false;
+}
+
+void TechGraph::enableAll()
+{
+  foreach( node, nodes.iter() ) {
+    node->progress = 1.0f;
+
+    if( node->type == Node::BUILDING ) {
+      allowedBuildings.add( node->building );
+    }
+    else if( node->type == Node::UNIT ) {
+      allowedUnits.add( node->object );
+    }
+    else if( node->type == Node::ITEM ) {
+      allowedItems.add( node->object );
+    }
+    else if( node->type == Node::OBJECT ) {
+      allowedObjects.add( node->object );
+    }
+  }
+}
+
+void TechGraph::disableAll()
+{
+  foreach( node, nodes.iter() ) {
+    node->progress = 0.0f;
+  }
+
+  allowedBuildings.clear();
+  allowedBuildings.deallocate();
+
+  allowedUnits.clear();
+  allowedUnits.deallocate();
+
+  allowedItems.clear();
+  allowedItems.deallocate();
+
+  allowedObjects.clear();
+  allowedObjects.deallocate();
+}
+
+void TechGraph::update()
 {}
 
-void TechTree::read( InputStream* istream )
+void TechGraph::read( InputStream* istream )
 {
   foreach( node, nodes.iter() ) {
     node->progress = istream->readFloat();
   }
 }
 
-void TechTree::write( OutputStream* ostream ) const
+void TechGraph::write( OutputStream* ostream ) const
 {
   foreach( node, nodes.citer() ) {
     ostream->writeFloat( node->progress );
   }
 }
 
-void TechTree::load()
+void TechGraph::load()
 {
-  File configFile = "@nirvana/techTree.json";
+  File configFile = "@nirvana/techGraph.json";
   JSON config;
   if( !config.load( configFile ) ) {
     return;
@@ -87,29 +136,21 @@ void TechTree::load()
       node.type     = Node::BUILDING;
       node.name     = building;
       node.building = liber.bsp( node.name );
-
-      allowedBuildings.add( node.building );
     }
     else if( !String::isEmpty( unit ) ) {
       node.type   = Node::UNIT;
       node.name   = unit;
       node.object = liber.objClass( node.name );
-
-      allowedUnits.add( node.object );
     }
     else if( !String::isEmpty( item ) ) {
       node.type   = Node::ITEM;
       node.name   = item;
       node.object = liber.objClass( node.name );
-
-      allowedItems.add( node.object );
     }
     else if( !String::isEmpty( object ) ) {
       node.type   = Node::OBJECT;
       node.name   = object;
       node.object = liber.objClass( node.name );
-
-      allowedObjects.add( node.object );
     }
     else {
       OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit', 'item' or 'object'"
@@ -143,7 +184,7 @@ void TechTree::load()
   config.clear( true );
 }
 
-void TechTree::unload()
+void TechGraph::unload()
 {
   allowedBuildings.clear();
   allowedBuildings.deallocate();
@@ -161,6 +202,6 @@ void TechTree::unload()
   nodes.deallocate();
 }
 
-TechTree techTree;
+TechGraph techGraph;
 
 }
