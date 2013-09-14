@@ -156,21 +156,21 @@ class File
     }
 
     /**
-     * %File type.
-     */
-    OZ_ALWAYS_INLINE
-    Type type() const
-    {
-      return fileType;
-    }
-
-    /**
      * True iff VFS file path.
      */
     OZ_ALWAYS_INLINE
     bool isVirtual() const
     {
       return filePath.fileIsVirtual();
+    }
+
+    /**
+     * %File type.
+     */
+    OZ_ALWAYS_INLINE
+    Type type() const
+    {
+      return fileType;
     }
 
     /**

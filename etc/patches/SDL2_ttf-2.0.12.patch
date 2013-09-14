@@ -1,17 +1,6 @@
-diff -r e68c3eb54b66 Makefile.in
---- a/Makefile.in	Tue Jun 11 00:08:37 2013 -0700
-+++ b/Makefile.in	Sun Jun 16 19:09:21 2013 +0200
-@@ -55,7 +55,6 @@
- POST_UNINSTALL = :
- build_triplet = @build@
- host_triplet = @host@
--noinst_PROGRAMS = showfont$(EXEEXT) glfont$(EXEEXT)
- subdir = .
- DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
- 	$(top_srcdir)/configure $(am__configure_deps) \
-diff -r e68c3eb54b66 config.sub
---- a/config.sub	Tue Jun 11 00:08:37 2013 -0700
-+++ b/config.sub	Sun Jun 16 19:09:21 2013 +0200
+diff -Naur SDL2_ttf-2.0.12.orig/config.sub SDL2_ttf-2.0.12/config.sub
+--- SDL2_ttf-2.0.12.orig/config.sub	2013-08-10 19:42:03.000000000 +0200
++++ SDL2_ttf-2.0.12/config.sub	2013-09-11 16:50:58.007491925 +0200
 @@ -237,6 +237,18 @@
  		basic_machine=m68k-atari
  		os=-mint
@@ -52,3 +41,14 @@ diff -r e68c3eb54b66 config.sub
  	# Remember, each alternative MUST END IN *, to match a version number.
  		;;
  	-qnx*)
+diff -Naur SDL2_ttf-2.0.12.orig/Makefile.in SDL2_ttf-2.0.12/Makefile.in
+--- SDL2_ttf-2.0.12.orig/Makefile.in	2013-08-10 19:42:09.000000000 +0200
++++ SDL2_ttf-2.0.12/Makefile.in	2013-09-11 16:50:58.007491925 +0200
+@@ -55,7 +55,6 @@
+ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+-noinst_PROGRAMS = showfont$(EXEEXT) glfont$(EXEEXT)
+ subdir = .
+ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+ 	$(top_srcdir)/configure $(am__configure_deps) \

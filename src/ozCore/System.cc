@@ -35,7 +35,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined( __ANDROID__ )
+#if defined( EMSCRIPTEN )
+# include <SDL.h>
+#elif defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
@@ -240,7 +242,14 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   }
 }
 
-#if defined( __ANDROID__ )
+#if defined( EMSCRIPTEN )
+
+static void bellMain()
+{
+  static_cast<void>( genBellSamples );
+}
+
+#elif defined( __ANDROID__ )
 
 static void* bellMain( void* )
 {
@@ -248,6 +257,8 @@ static void* bellMain( void* )
 
   // TODO: Implement bell for OpenSL ES.
   __android_log_write( ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n" );
+
+  __sync_lock_release( &bellLock );
   return nullptr;
 }
 
@@ -483,14 +494,17 @@ static void waitBell()
   }
 #endif
 
+#ifndef EMSCRIPTEN
   while( __sync_lock_test_and_set( &bellLock, 1 ) != 0 ) {
-#ifdef _WIN32
+# ifdef _WIN32
     Sleep( 10 );
-#else
+# else
     nanosleep( &TIMESPEC_10MS, nullptr );
-#endif
+# endif
   }
   __sync_lock_release( &bellLock );
+
+#endif
 }
 
 // Wait bell to finish playing on (normal) process termination.
@@ -518,7 +532,12 @@ static void abort( bool doHalt )
     crashHandler();
   }
 
-#if defined( __ANDROID__ )
+#if defined( EMSCRIPTEN )
+
+  static_cast<void>( doHalt );
+  fputs( "ABORTED\n", stderr );
+
+#elif defined( __ANDROID__ )
 
   static_cast<void>( doHalt );
   __android_log_write( ANDROID_LOG_FATAL, "oz", "ABORTED\n"  );
@@ -575,7 +594,13 @@ bool System::isInstrumented()
 
 void System::bell()
 {
-#ifdef _WIN32
+#if defined( EMSCRIPTEN )
+
+  static_cast<void>( bellLock );
+
+  bellMain();
+
+#elif defined( _WIN32 )
 
   if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );

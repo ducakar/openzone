@@ -26,12 +26,17 @@
 
 #include "StackTrace.hh"
 
+#if !defined( __GLIBC__ ) || defined( EMSCRIPTEN )
+# define OZ_DISABLE_STACK_TRACE
+#endif
+
 #include "arrays.hh"
 #include "Thread.hh"
 
-#if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
+#include <cstring>
+
+#ifndef OZ_DISABLE_STACK_TRACE
 # include <cstdlib>
-# include <cstring>
 # include <cxxabi.h>
 # include <execinfo.h>
 #endif
@@ -41,11 +46,15 @@ namespace oz
 
 const int StackTrace::MAX_FRAMES;
 
-#if !defined( __GLIBC__ ) && !defined( _LIBCPP_VERSION )
+#ifdef OZ_DISABLE_STACK_TRACE
 
 StackTrace StackTrace::current( int )
 {
+#ifdef EMSCRIPTEN
+  const char* name = "main";
+#else
   const char* name = Thread::name();
+#endif
 
   StackTrace st = { {}, 0, {} };
 

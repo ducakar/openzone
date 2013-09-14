@@ -42,7 +42,9 @@ if( PLATFORM_EMBEDDED )
   set( OZ_STANDALONE OFF )
 endif()
 
-if( NACL )
+if( EMSCRIPTEN )
+  set( OZ_SDL1 ON )
+elseif( NACL )
   set( OZ_SDL1 )
   set( OZ_NET OFF )
 elseif( WIN32 )
@@ -92,9 +94,10 @@ else()
   pkg_check_modules( LUA REQUIRED lua )
 endif()
 
-if( EMSCRIPTEN )
-elseif( OZ_SDL1 )
-  pkg_check_modules( SDL REQUIRED sdl )
+if( OZ_SDL1 )
+  if( NOT EMSCRIPTEN )
+    pkg_check_modules( SDL REQUIRED sdl )
+  endif()
   pkg_check_modules( SDL_TTF REQUIRED SDL_ttf )
   if( OZ_NET )
     pkg_check_modules( SDL_NET REQUIRED SDL_net )
@@ -102,7 +105,10 @@ elseif( OZ_SDL1 )
 
   include_directories( SYSTEM ${SDL_INCLUDE_DIRS} )
 else()
-  pkg_check_modules( SDL2 REQUIRED sdl2 )
+  if( NOT EMSCRIPTEN )
+    pkg_check_modules( SDL2 REQUIRED sdl2 )
+  endif()
+
   pkg_check_modules( SDL2_TTF REQUIRED SDL2_ttf )
   if( OZ_NET )
     pkg_check_modules( SDL2_NET REQUIRED SDL2_net )
@@ -111,7 +117,8 @@ else()
   include_directories( SYSTEM ${SDL2_INCLUDE_DIRS} )
 endif()
 
-if( OZ_GL_ES )
+if( EMSCRIPTEN )
+elseif( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
   # platform directory, no need to explicitly check existence or to detect library names.
   if( ANDROID )
@@ -134,15 +141,15 @@ else()
   find_package( OpenAL REQUIRED )
 endif()
 
-find_package( PNG REQUIRED )
+pkg_check_modules( PNG REQUIRED libpng )
 pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.
 if( PLATFORM_EMBEDDED )
-  find_package( Freetype REQUIRED )           # required by SDL_ttf
-  pkg_check_modules( OGG REQUIRED ogg )       # required by vorbisfile
-  pkg_check_modules( VORBIS REQUIRED vorbis ) # required by vorbisfile
+  pkg_check_modules( FREETYLE REQUIRED freetype2 ) # required by SDL_ttf
+  pkg_check_modules( OGG REQUIRED ogg )            # required by vorbisfile
+  pkg_check_modules( VORBIS REQUIRED vorbis )      # required by vorbisfile
 endif()
 
 if( NOT PLATFORM_EMBEDDED )

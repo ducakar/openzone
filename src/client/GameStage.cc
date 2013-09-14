@@ -52,13 +52,19 @@ void GameStage::read()
 {
   Log::print( "Loading state from '%s' ...", stateFile.path().cstr() );
 
-  if( !stateFile.map() ) {
+  Buffer buffer = stateFile.read();
+  if( buffer.isEmpty() ) {
     OZ_ERROR( "Reading saved state '%s' failed", stateFile.path().cstr() );
+  }
+
+  buffer = buffer.inflate();
+  if( buffer.isEmpty() ) {
+    OZ_ERROR( "Decompressing saved state '%s' failed", stateFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );
 
-  InputStream istream = stateFile.inputStream( Endian::LITTLE );
+  InputStream istream = buffer.inputStream( Endian::LITTLE );
 
   matrix.read( &istream );
   nirvana.read( &istream );
@@ -73,8 +79,6 @@ void GameStage::read()
 
   Log::unindent();
   Log::println( "}" );
-
-  stateFile.unmap();
 }
 
 void GameStage::write() const
@@ -91,7 +95,10 @@ void GameStage::write() const
 
   Log::print( "Saving state to %s ...", stateFile.path().cstr() );
 
-  if( !stateFile.write( ostream.begin(), ostream.tell() ) ) {
+  Buffer buffer( ostream.begin(), ostream.tell() );
+  buffer = buffer.deflate( 1 );
+
+  if( !stateFile.write( buffer ) ) {
     Log::printEnd( " Failed" );
   }
   else {

@@ -24,6 +24,8 @@
  * @file ozCore/Mutex.cc
  */
 
+#ifndef EMSCRIPTEN
+
 #include "Mutex.hh"
 
 #include "System.hh"
@@ -125,3 +127,5 @@ void Mutex::destroy()
 }
 
 }
+
+#endif // EMSCRIPTEN

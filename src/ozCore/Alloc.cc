@@ -32,18 +32,18 @@
 #include <cstdlib>
 #include <malloc.h>
 
-#if defined( __SANITIZE_ADDRESS__ )
-# define OZ_ADDRESS_SANITIZER
+#if defined( EMSCRIPTEN ) || defined( __SANITIZE_ADDRESS__ )
+# define OZ_DISABLE_ALLOC
 #elif defined( has_feature )
 # if has_feature( address_sanitizer )
-#  define OZ_ADDRESS_SANITIZER
+#  define OZ_DISABLE_ALLOC
 # endif
 #endif
 
 namespace oz
 {
 
-#ifndef OZ_ADDRESS_SANITIZER
+#ifndef OZ_DISABLE_ALLOC
 
 enum AllocMode
 {
@@ -239,7 +239,7 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 
 }
 
-#ifndef OZ_ADDRESS_SANITIZER
+#ifndef OZ_DISABLE_ALLOC
 
 using namespace oz;
 

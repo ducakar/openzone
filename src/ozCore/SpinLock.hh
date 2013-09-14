@@ -28,6 +28,8 @@
 
 #pragma once
 
+#ifndef EMSCRIPTEN
+
 #include "common.hh"
 
 namespace oz
@@ -116,3 +118,5 @@ class SpinLock
 };
 
 }
+
+#endif // EMSCRIPTEN

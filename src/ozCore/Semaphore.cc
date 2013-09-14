@@ -24,6 +24,8 @@
  * @file ozCore/Semaphore.cc
  */
 
+#ifndef EMSCRIPTEN
+
 #include "Semaphore.hh"
 
 #include "System.hh"
@@ -185,3 +187,5 @@ void Semaphore::destroy()
 }
 
 }
+
+#endif // EMSCRIPTEN

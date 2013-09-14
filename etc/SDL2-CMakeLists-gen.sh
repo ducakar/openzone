@@ -26,7 +26,7 @@ set( sources
         src/audio/dummy/*.c \
         src/atomic/SDL_atomic.c \
         src/atomic/SDL_spinlock.c \
-        src/core/android/*.cpp \
+        src/core/android/*.c \
         src/cpuinfo/*.c \
         src/events/*.c \
         src/file/*.c \
@@ -58,5 +58,5 @@ install( PROGRAMS \${CMAKE_CURRENT_BINARY_DIR}/sdl2-config DESTINATION bin )
 EOF
 
 sed -r 's|Java_org_libsdl_app_|Java_com_github_ducakar_openzone_|g' -i \
-    src/core/android/SDL_android.cpp \
-    src/main/android/SDL_android_main.cpp
+    src/core/android/SDL_android.c \
+    src/main/android/SDL_android_main.c

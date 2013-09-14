@@ -30,7 +30,7 @@ using namespace oz;
 static void usage()
 {
   Log::printRaw(
-    "Usage: ozDDS [-c] [-m] <inputImage> [outputDir]\n"
+    "Usage: ozDDS [-C] [-M] <inputImage> [outputDir]\n"
     "\t-C\tUse S3 texture compression\n"
     "\t-M\tGenerate mipmaps\n"
   );
@@ -66,8 +66,9 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if( !ImageBuilder::convertToDDS( argv[optind], ddsOptions, nArgs == 1 ? "." : argv[optind + 1] ) )
-  {
+  const char* destPath = nArgs == 1 ? "." : argv[optind + 1];
+
+  if( !ImageBuilder::convertToDDS( argv[optind], ddsOptions, destPath ) ) {
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

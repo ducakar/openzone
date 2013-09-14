@@ -26,7 +26,7 @@
 
 #include "SharedLib.hh"
 
-#if defined( __native_client__ )
+#if defined( EMSCRIPTEN ) || defined( __native_client__ )
 #elif defined( _WIN32 )
 # include <windows.h>
 #else
@@ -36,7 +36,7 @@
 namespace oz
 {
 
-#ifdef __native_client__
+#if defined( EMSCRIPTEN ) || defined( __native_client__ )
 
 const bool SharedLib::IS_SUPPORTED = false;
 
