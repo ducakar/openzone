@@ -1359,10 +1359,6 @@ static int ozObjAddEvent( lua_State* l )
   int   id        = l_toint( 1 );
   float intensity = l_tofloat( 2 );
 
-  if( id >= 0 && intensity < 0.0f ) {
-    ERROR( "Event intensity for sounds (eventId >= 0) must be be >= 0.0" );
-  }
-
   ms.obj->addEvent( id, intensity );
   return 0;
 }

@@ -216,9 +216,7 @@ class Object : public AABB
         OZ_ALWAYS_INLINE
         explicit Event( int id_, float intensity_ ) :
           id( id_ ), intensity( intensity_ )
-        {
-          hard_assert( intensity >= 0.0f );
-        }
+        {}
 
         OZ_STATIC_POOL_ALLOC( pool )
 

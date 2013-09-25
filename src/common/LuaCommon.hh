@@ -55,14 +55,27 @@ class LuaCommon
   protected:
 
     /**
-     * Read serialised Lua variable and push it on global stack (recursively for tables).
+     * Read serialised %Lua value and push it on the stack (recursively for tables).
+     *
+     * @return Should always return true. This return value is only used for internal recursive
+     *         calls to detect end of a table.
      */
-    bool readVariable( InputStream* istream );
+    bool readValue( InputStream* istream );
 
     /**
-     * Serialise Lua variable at the top of the stack (recursively for tables).
+     * Read %Lua value from a %JSON value and push it on the stack (recursively for tables).
      */
-    void writeVariable( OutputStream* stream );
+    void readValue( const JSON& json );
+
+    /**
+     * Serialise %Lua value at the top of the stack (recursively for tables).
+     */
+    void writeValue( OutputStream* stream );
+
+    /**
+     * Return %Lua value at the top of the stack (recursively for tables) as a %JSON value.
+     */
+    JSON writeValue();
 
     /**
      * Common initialisation for Lua classes.

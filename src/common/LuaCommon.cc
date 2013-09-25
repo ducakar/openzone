@@ -31,7 +31,7 @@ namespace oz
 int  LuaCommon::randomSeed       = 0;
 bool LuaCommon::isRandomSeedTime = true;
 
-bool LuaCommon::readVariable( InputStream* istream )
+bool LuaCommon::readValue( InputStream* istream )
 {
   char ch = istream->readChar();
 
@@ -59,8 +59,8 @@ bool LuaCommon::readVariable( InputStream* istream )
     case '[': {
       l_newtable();
 
-      while( readVariable( istream ) ) { // key
-        readVariable( istream ); // value
+      while( readValue( istream ) ) { // key
+        readValue( istream ); // value
 
         l_rawset( -3 );
       }
@@ -75,7 +75,52 @@ bool LuaCommon::readVariable( InputStream* istream )
   }
 }
 
-void LuaCommon::writeVariable( OutputStream* ostream )
+void LuaCommon::readValue( const JSON& json )
+{
+  switch( json.type() ) {
+    case JSON::NIL: {
+      l_pushnil();
+      break;
+    }
+    case JSON::BOOLEAN: {
+      l_pushbool( json.asBool() );
+      break;
+    }
+    case JSON::NUMBER: {
+      l_pushdouble( json.asDouble() );
+      break;
+    }
+    case JSON::STRING: {
+      l_pushstring( json.asString() );
+      break;
+    }
+    case JSON::ARRAY: {
+      l_newtable();
+
+      int index = 0;
+      foreach( i, json.arrayCIter() ) {
+        readValue( *i );
+
+        l_rawseti( -2, index );
+        ++index;
+      }
+      break;
+    }
+    case JSON::OBJECT: {
+      l_newtable();
+
+      foreach( i, json.objectCIter() ) {
+        l_pushstring( i->key );
+        readValue( i->value );
+
+        l_rawset( -3 );
+      }
+      break;
+    }
+  }
+}
+
+void LuaCommon::writeValue( OutputStream* ostream )
 {
   int type = l_type( -1 );
 
@@ -105,17 +150,58 @@ void LuaCommon::writeVariable( OutputStream* ostream )
       while( l_next( -2 ) != 0 ) {
         // key
         l_pushvalue( -2 );
-        writeVariable( ostream );
+        writeValue( ostream );
         l_pop( 1 );
 
         // value
-        writeVariable( ostream );
+        writeValue( ostream );
 
         l_pop( 1 );
       }
 
       ostream->writeChar( ']' );
       break;
+    }
+    default: {
+      OZ_ERROR( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
+                " LUA_TSTRING and LUA_TTABLE data types" );
+    }
+  }
+}
+
+JSON LuaCommon::writeValue()
+{
+  int type = l_type( -1 );
+
+  switch( type ) {
+    case LUA_TNIL: {
+      return JSON( JSON::NIL );
+    }
+    case LUA_TBOOLEAN: {
+      return JSON( l_tobool( -1 ) );
+    }
+    case LUA_TNUMBER: {
+      return JSON( l_todouble( -1 ) );
+    }
+    case LUA_TSTRING: {
+      return JSON( l_tostring( -1 ) );
+    }
+    case LUA_TTABLE: {
+      JSON json( JSON::OBJECT );
+
+      l_pushnil();
+      while( l_next( -2 ) != 0 ) {
+        // key
+        l_pushvalue( -2 );
+        String key = l_tostring( -1 );
+        l_pop( 1 );
+
+        // value
+        json.add( key, writeValue() );
+        l_pop( 1 );
+      }
+
+      return json;
     }
     default: {
       OZ_ERROR( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
@@ -134,13 +220,16 @@ void LuaCommon::initCommon( const char* componentName )
   }
 
 #if LUA_VERSION_NUM < 502
+  lua_pushcfunction( l, luaopen_base );
   lua_pushcfunction( l, luaopen_table );
   lua_pushcfunction( l, luaopen_string );
   lua_pushcfunction( l, luaopen_math );
   lua_pcall( l, 0, 0, 0 );
   lua_pcall( l, 0, 0, 0 );
   lua_pcall( l, 0, 0, 0 );
+  lua_pcall( l, 0, 0, 0 );
 #else
+  luaL_requiref( l, "",              luaopen_base,   true );
   luaL_requiref( l, LUA_TABLIBNAME,  luaopen_table,  true );
   luaL_requiref( l, LUA_STRLIBNAME,  luaopen_string, true );
   luaL_requiref( l, LUA_MATHLIBNAME, luaopen_math,   true );

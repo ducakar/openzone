@@ -65,9 +65,9 @@ void Font::init( const char* name, int height_ )
     OZ_ERROR( "Failed to read font file '%s'", file.path().cstr() );
   }
 
-  InputStream istream = buffer.inputStream();
+  SDL_RWops* rwOps = SDL_RWFromConstMem( buffer.begin(), buffer.length() );
 
-  handle = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true, height );
+  handle = TTF_OpenFontRW( rwOps, true, height );
   if( handle == nullptr ) {
     OZ_ERROR( "%s", TTF_GetError() );
   }
@@ -77,6 +77,7 @@ void Font::destroy()
 {
   if( handle != nullptr ) {
     TTF_CloseFont( handle );
+    handle = nullptr;
   }
 
   buffer.deallocate();

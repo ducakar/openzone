@@ -90,7 +90,7 @@ void Pepper::push( const char* message )
 
 void Pepper::init()
 {
-  mainCallSemaphore.init();
+  MainCall::semaphore.init();
 
   core = pp::Module::Get()->core();
 }
@@ -100,7 +100,7 @@ void Pepper::destroy()
   messageQueue.clear();
   messageQueue.deallocate();
 
-  mainCallSemaphore.destroy();
+  MainCall::semaphore.destroy();
 }
 
 }

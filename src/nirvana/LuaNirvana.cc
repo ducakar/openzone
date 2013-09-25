@@ -86,7 +86,7 @@ void LuaNirvana::read( InputStream* istream )
   int index = istream->readInt();
 
   while( index >= 0 ) {
-    readVariable( istream );
+    readValue( istream );
 
     l_rawseti( 1, index );
 
@@ -104,7 +104,7 @@ void LuaNirvana::write( OutputStream* ostream )
     hard_assert( l_type( -1 ) == LUA_TTABLE );
 
     ostream->writeInt( l_toint( -2 ) );
-    writeVariable( ostream );
+    writeValue( ostream );
 
     l_pop( 1 );
   }

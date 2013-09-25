@@ -170,7 +170,7 @@ void LuaClient::read( InputStream* istream )
   const char* name = istream->readString();
 
   while( !String::isEmpty( name ) ) {
-    readVariable( istream );
+    readValue( istream );
 
     l_setglobal( name );
 
@@ -190,6 +190,7 @@ void LuaClient::write( OutputStream* ostream )
   l_pushglobaltable();
 #endif
   l_pushnil();
+
 #if LUA_VERSION_NUM >= 502
   while( l_next( -2 ) != 0 ) {
 #else
@@ -201,11 +202,12 @@ void LuaClient::write( OutputStream* ostream )
     if( name[0] == 'o' && name[1] == 'z' && name[2] == '_' ) {
       ostream->writeString( name );
 
-      writeVariable( ostream );
+      writeValue( ostream );
     }
 
     l_pop( 1 );
   }
+
 #if LUA_VERSION_NUM >= 502
   l_pop( 1 );
 #endif

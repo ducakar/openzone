@@ -51,18 +51,15 @@ class Pepper
      */
     typedef void Callback( void*, int );
 
-    static Semaphore mainCallSemaphore; ///< Semaphore for use in conjunction with `OZ_MAIN_CALL`
-                                        ///< and `OZ_STATIC_MAIN_CALL` macros.
+    static int   width;    ///< Module area width.
+    static int   height;   ///< Module area height.
 
-    static int       width;             ///< Module area width.
-    static int       height;            ///< Module area height.
+    static float moveX;    ///< Mouse X axis.
+    static float moveY;    ///< Mouse Y axis.
+    static float moveZ;    ///< Mouse wheel (horizontal scroll).
+    static float moveW;    ///< Mouse wheel (vertical scroll).
 
-    static float     moveX;             ///< Mouse X axis.
-    static float     moveY;             ///< Mouse Y axis.
-    static float     moveZ;             ///< Mouse wheel (horizontal scroll).
-    static float     moveW;             ///< Mouse wheel (vertical scroll).
-
-    static bool      hasFocus;          ///< True iff focused and mouse is captured.
+    static bool  hasFocus; ///< True iff focused and mouse is captured.
 
     /**
      * Forbid instances.
@@ -125,47 +122,59 @@ class Pepper
  *
  * On platforms other than NaCl the lambda function is called immediately.
  */
-struct MainCall
+class MainCall
 {
-  /**
-   * Call a method without parameters on the main thread and wait for it to finish.
-   */
-  template <typename Method>
-  void operator << ( Method method ) const
-  {
-    if( Pepper::isMainThread() ) {
-      method();
-    }
-    else {
-      struct CallbackWrapper
-      {
-        Method method;
+  friend class Pepper;
 
-        static void callback( void* data, int )
+  private:
+
+    static Semaphore semaphore; ///< Semaphore for synchronising calls.
+
+  public:
+
+    /**
+    * Call a method without parameters on the main thread and wait for it to finish.
+    */
+    template <typename Method>
+    void operator << ( Method method ) const
+    {
+      if( Pepper::isMainThread() ) {
+        method();
+      }
+      else {
+        struct CallbackWrapper
         {
-          const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+          Method method;
 
-          cw->method();
-          Pepper::mainCallSemaphore.post();
-        }
-      };
-      CallbackWrapper callbackWrapper = { method };
+          static void callback( void* data, int )
+          {
+            const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
 
-      Pepper::mainCall( CallbackWrapper::callback, &callbackWrapper );
-      Pepper::mainCallSemaphore.wait();
+            cw->method();
+            semaphore.post();
+          }
+        };
+        CallbackWrapper callbackWrapper = { method };
+
+        Pepper::mainCall( CallbackWrapper::callback, &callbackWrapper );
+        semaphore.wait();
+      }
     }
-  }
+
 };
 
 #else
 
-struct MainCall
+class MainCall
 {
-  template <typename Method>
-  void operator << ( Method method ) const
-  {
-    method();
-  }
+  public:
+
+    template <typename Method>
+    void operator << ( Method method ) const
+    {
+      method();
+    }
+
 };
 
 #endif

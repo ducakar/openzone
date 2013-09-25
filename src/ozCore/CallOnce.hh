@@ -28,6 +28,8 @@
 
 #pragma once
 
+#ifndef EMSCRIPTEN
+
 #include "common.hh"
 
 namespace oz
@@ -93,3 +95,5 @@ class CallOnce
 };
 
 }
+
+#endif // EMSCRIPTEN

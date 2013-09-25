@@ -285,8 +285,9 @@ Legal
 -----
 
 OpenZone engine is licensed under GNU General Public License version 3 or (at your option) any later
-version. liboz library is a part of OpenZone engine but can also be distributed or modified under
-the zlib licence.
+version (see `COPYING` file). liboz library (`src/ozCore`, `src/ozDynamics`, `src/ozEngine` and
+`src/ozFactory` directories) is a part of OpenZone engine but can also be distributed or modified
+separately under the zlib licence (see `src/ozCore/COPYING`).
 
 Libraries that may be bundled with binary distributions of OpenZone come under different licences.
 See `doc/README.html` for details.

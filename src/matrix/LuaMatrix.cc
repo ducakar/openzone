@@ -70,8 +70,8 @@ bool LuaMatrix::objectCall( const char* functionName, Object* self_, Bot* user_ 
 
 void LuaMatrix::registerObject( int index )
 {
-  // we cannot depend that ozLocalData exists at index 1 as this function can be called via a
-  // script creating an object
+  // We cannot assume that `ozLocalData` exists at index 1 as this function may be called from a
+  // handler script creating an object.
   l_getglobal( "ozLocalData" );
   l_newtable();
   l_rawseti( -2, index );
@@ -80,8 +80,8 @@ void LuaMatrix::registerObject( int index )
 
 void LuaMatrix::unregisterObject( int index )
 {
-  // we cannot depend that ozLocalData exists at index 1 as this function can be called via a
-  // script creating an object
+  // We cannot assume that `ozLocalData` exists at index 1 as this function may be called from a
+  // handler script creating an object.
   l_getglobal( "ozLocalData" );
   l_pushnil();
   l_rawseti( -2, index );
@@ -97,7 +97,7 @@ void LuaMatrix::read( InputStream* istream )
   int index = istream->readInt();
 
   while( index >= 0 ) {
-    readVariable( istream );
+    readValue( istream );
 
     l_rawseti( 1, index );
 
@@ -115,7 +115,7 @@ void LuaMatrix::write( OutputStream* ostream )
     hard_assert( l_type( -1 ) == LUA_TTABLE );
 
     ostream->writeInt( l_toint( -2 ) );
-    writeVariable( ostream );
+    writeValue( ostream );
 
     l_pop( 1 );
   }

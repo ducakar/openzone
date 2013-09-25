@@ -61,12 +61,14 @@ void BotAudio::play( const Object* playAt )
   foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
-    if( event->id >= 0 && sounds[event->id] >= 0 && recent[event->id] == 0 ) {
-      hard_assert( 0.0f <= event->intensity );
-
-      recent[event->id] = RECENT_TICKS;
-
-      if( !( bot->state & Bot::DEAD_BIT ) || event->id == Bot::EVENT_DEATH ) {
+    if( event->id >= 0 && sounds[event->id] >= 0 &&
+        ( !( bot->state & Bot::DEAD_BIT ) || event->id == Bot::EVENT_DEATH ) )
+    {
+      if( event->intensity < 0.0f ) {
+        playContSound( sounds[event->id], -event->intensity, playAt );
+      }
+      else if( recent[event->id] == 0 ) {
+        recent[event->id] = RECENT_TICKS;
         playSound( sounds[event->id], event->intensity, playAt );
       }
     }

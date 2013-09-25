@@ -59,7 +59,6 @@ int main()
 
   char* data = TerraBuilder::generateImage( width, height );
   ImageBuilder::createDDS( data, width, height, 24, 0, "drek.dds" );
-  delete[] data;
 
   Log() << "populate time: " << ( Time::clock() - t0 ) << " ms";
 
@@ -79,6 +78,8 @@ int main()
 
   Log() << "b0 == b2: " << ( mCompare( b0.begin(), b2.begin(), size_t( b0.length() ) ) == 0 );
   Log() << "b1 == b3: " << ( mCompare( b1.begin(), b3.begin(), size_t( b1.length() ) ) == 0 );
+
+  delete[] data;
 
   bool      isAlive = true;
   SDL_Event event;

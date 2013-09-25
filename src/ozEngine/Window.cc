@@ -173,29 +173,39 @@ void Window::warpMouse()
   }
 
 #ifdef __native_client__
+
   Pepper::moveX = 0.0f;
   Pepper::moveY = 0.0f;
   Pepper::moveZ = 0.0f;
   Pepper::moveW = 0.0f;
+
 #elif SDL_MAJOR_VERSION >= 2
+
   SDL_WarpMouseInWindow( descriptor, windowWidth / 2, windowHeight / 2 );
   SDL_PumpEvents();
   SDL_GetRelativeMouseState( nullptr, nullptr );
+
 #endif
 }
 
 void Window::swapBuffers()
 {
 #if defined( __native_client__ )
+
   MainCall() << []()
   {
     context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
   };
   flushSemaphore.wait();
+
 #elif SDL_MAJOR_VERSION < 2
+
   SDL_GL_SwapBuffers();
+
 #else
+
   SDL_GL_SwapWindow( descriptor );
+
 #endif
 }
 
@@ -205,11 +215,10 @@ void Window::screenshot( const File& file )
     screenshotThread.join();
   }
 
-  int pitch = ( ( windowWidth * 3 + 3 ) / 4 ) * 4;
+  int   pitch  = ( ( windowWidth * 3 + 3 ) / 4 ) * 4;
+  char* pixels = new char[windowWidth * pitch];
 
-  ScreenshotInfo* info = new ScreenshotInfo {
-    file, windowWidth, windowHeight, new char[windowWidth * pitch]
-  };
+  ScreenshotInfo* info = new ScreenshotInfo { file, windowWidth, windowHeight, pixels };
 
   glReadPixels( 0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels );
   screenshotThread.start( "screenshot", Thread::JOINABLE, screenshotMain, info );
@@ -321,7 +330,6 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
   {
     glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
 
-    // Array initialiser cannot be nested inside a macro parameter.
     int attribs[] = {
       PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
       PP_GRAPHICS3DATTRIB_WIDTH, windowWidth,
