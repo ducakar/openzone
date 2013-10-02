@@ -72,11 +72,12 @@ JSON Caelum::write() const
 {
   JSON json( JSON::OBJECT );
 
-  json.add( "name", liber.caela[id].name );
-  json.add( "heading", Math::deg( heading ) );
-  json.add( "period", period );
-  json.add( "time", time );
-
+  if( id >= 0 ) {
+    json.add( "name", liber.caela[id].name );
+    json.add( "heading", Math::deg( heading ) );
+    json.add( "period", period );
+    json.add( "time", time );
+  }
   return json;
 }
 

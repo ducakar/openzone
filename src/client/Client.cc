@@ -143,82 +143,44 @@ int Client::init( int argc, char** argv )
 
 #if defined( __ANDROID__ )
 
-  String configDir = OZ_ANDROID_ROOT "/config/openzone";
-  String localDir  = OZ_ANDROID_ROOT "/local/share/openzone";
-  String musicDir  = OZ_ANDROID_ROOT "/music";
-
-  File::mkdir( OZ_ANDROID_ROOT "/config" );
-  File::mkdir( OZ_ANDROID_ROOT "/local" );
-  File::mkdir( OZ_ANDROID_ROOT "/local/share" );
-
-#elif defined( __native_client__ )
-
-  String configDir = "/config/openzone";
-  String localDir  = "/local/share/openzone";
-  String musicDir  = "/music";
-
-  File::mkdir( "/config" );
-  File::mkdir( "/local" );
-  File::mkdir( "/local/share" );
-
-#elif defined( _WIN32 )
-
-  char configRoot[MAX_PATH];
-  char localRoot[MAX_PATH];
-  char musicRoot[MAX_PATH];
-
-  if( !SHGetSpecialFolderPath( nullptr, configRoot, CSIDL_APPDATA, false ) ) {
-    OZ_ERROR( "Failed to obtain APPDATA directory" );
-  }
-  if( !SHGetSpecialFolderPath( nullptr, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
-    OZ_ERROR( "Failed to obtain LOCAL_APPDATA directory" );
-  }
-  if( !SHGetSpecialFolderPath( nullptr, musicRoot, CSIDL_MYMUSIC, false ) ) {
-    OZ_ERROR( "Failed to obtain MYMUSIC directory" );
-  }
-
-  String configDir = String( configRoot, "\\openzone" );
-  String localDir  = String( localRoot, "\\openzone" );
-  String musicDir  = String( musicRoot, "\\OpenZone" );
+  String configDir   = OZ_ANDROID_ROOT "/config";
+  String localDir    = OZ_ANDROID_ROOT "/data";
+  String picturesDir = "";
+  String musicDir    = "";
 
 #else
 
-  const char* home       = SDL_getenv( "HOME" );
-  const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
-  const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
-  const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
+  const char* configBase   = File::userDirectory( File::CONFIG );
+  const char* dataBase     = File::userDirectory( File::DATA );
+  const char* musicBase    = File::userDirectory( File::MUSIC );
+  const char* picturesBase = File::userDirectory( File::PICTURES );
 
-  if( home == nullptr ) {
-    OZ_ERROR( "Cannot determine user home directory from environment" );
-  }
+  File::mkdir( configBase );
+  File::mkdir( dataBase );
 
-  String configDir = configRoot == nullptr ? String( home, "/.config/openzone" ) :
-                                             String( configRoot, "/openzone" );
-
-  String localDir = localRoot == nullptr ? String( home, "/.local/share/openzone" ) :
-                                           String( localRoot, "/openzone" );
-
-  String musicDir = musicRoot == nullptr ? String( home, "/Music/OpenZone" ) :
-                                           String( musicRoot, "/OpenZone" );
+  String configDir   = String( configBase, "/openzone" );
+  String dataDir     = String( dataBase, "/openzone" );
+  String musicDir    = String::isEmpty( musicBase ) ? String() :
+                                                      String( musicBase, "/OpenZone" );
+  String picturesDir = String::isEmpty( picturesBase ) ? String() :
+                                                         String( picturesBase, "/OpenZone" );
 
 #endif
 
   if( File::mkdir( configDir ) ) {
     Log::println( "Profile directory '%s' created", configDir.cstr() );
   }
-  if( File::mkdir( configDir + "/saves" ) ) {
-    Log::println( "Directory for saved games '%s/saves' created", configDir.cstr() );
+  if( File::mkdir( dataDir ) ) {
+    Log::println( "Directory for per-user content '%s' created", dataDir.cstr() );
   }
-  if( File::mkdir( configDir + "/layouts" ) ) {
-    Log::println( "Directory for layouts '%s/layouts' created", configDir.cstr() );
+  if( File::mkdir( dataDir + "/state" ) ) {
+    Log::println( "Directory for saved games '%s/saves' created", dataDir.cstr() );
   }
-  if( File::mkdir( configDir + "/screenshots" ) ) {
-    Log::println( "Directory for screenshots '%s/screenshots' created", configDir.cstr() );
+  if( File::mkdir( dataDir + "/layout" ) ) {
+    Log::println( "Directory for layouts '%s/layout' created", dataDir.cstr() );
   }
 
-  if( File::mkdir( localDir ) ) {
-    Log::println( "Directory for per-user content '%s' created", localDir.cstr() );
-  }
+  File::mountLocal( dataDir );
 
   if( Log::init( configDir + "/client.log", true ) ) {
     Log::println( "Log file '%s'", Log::logFile() );
@@ -280,11 +242,15 @@ int Client::init( int argc, char** argv )
   }
 
   config.add( "dir.config", configDir );
-  config.add( "dir.local", localDir );
+  config.add( "dir.data", dataDir );
+  config.include( "dir.pictures", picturesDir );
+  config.include( "dir.music", musicDir );
 
   // tag variables as used
   config["dir.config"];
-  config["dir.local"];
+  config["dir.data"];
+  config["dir.music"];
+  config["dir.pictures"];
 
   windowWidth     = config.include( "window.windowWidth",  1280 ).asInt();
   windowHeight    = config.include( "window.windowHeight", 720  ).asInt();
@@ -293,8 +259,8 @@ int Client::init( int argc, char** argv )
 
   windowWidth     = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
   windowHeight    = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
-  screenWidth     = screenWidth   == 0 ? Window::desktopWidth()  : screenWidth;
-  screenHeight    = screenHeight  == 0 ? Window::desktopHeight() : screenHeight;
+  screenWidth     = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
+  screenHeight    = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
 
   bool fullscreen = config.include( "window.fullscreen",    true ).asBool();
 
@@ -316,7 +282,7 @@ int Client::init( int argc, char** argv )
     prefix = config.include( "dir.prefix", OZ_INSTALL_PREFIX ).asString();
   }
 
-  String dataDir = prefix + "/share/openzone";
+  String globalDataDir = prefix + "/share/openzone";
 
 #ifdef __native_client__
 
@@ -347,16 +313,16 @@ int Client::init( int argc, char** argv )
 
 #else
 
-  const char* userMusicPath = config.include( "dir.music", musicDir ).asString();
+  const char* userMusicPath = config["dir.music"].asString();
 
   if( File::mount( userMusicPath, "/userMusic", true ) ) {
     Log::println( "%s [mounted on /userMusic]", userMusicPath );
   }
 
-  if( File::mount( localDir, nullptr, true ) ) {
-    Log::println( "%s", localDir.cstr() );
+  if( File::mount( dataDir, nullptr, true ) ) {
+    Log::println( "%s", dataDir.cstr() );
 
-    DArray<File> list = File( localDir ).ls();
+    DArray<File> list = File( dataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
@@ -369,10 +335,10 @@ int Client::init( int argc, char** argv )
     }
   }
 
-  if( File::mount( dataDir, nullptr, true ) ) {
-    Log::println( "%s", dataDir.cstr() );
+  if( File::mount( globalDataDir, nullptr, true ) ) {
+    Log::println( "%s", globalDataDir.cstr() );
 
-    DArray<File> list = File( dataDir ).ls();
+    DArray<File> list = File( globalDataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
@@ -544,7 +510,7 @@ void Client::shutdown()
     File configFile = config["dir.config"].asString() + "/client.json";
 
     config.exclude( "dir.config" );
-    config.exclude( "dir.local" );
+    config.exclude( "dir.data" );
 
     Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
 

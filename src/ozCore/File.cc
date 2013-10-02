@@ -26,6 +26,8 @@
 
 #include "File.hh"
 
+#include "HashMap.hh"
+
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>
 # include <ppapi/c/ppb_file_io.h>
@@ -38,7 +40,9 @@
 # include <ppapi/cpp/dev/directory_reader_dev.h>
 #elif defined( _WIN32 )
 # include <windows.h>
+# include <shlobj.h>
 #else
+# include <cstdlib>
 # include <dirent.h>
 # include <fcntl.h>
 # include <sys/mman.h>
@@ -68,11 +72,143 @@ namespace oz
 static pp::Core*      ppCore = nullptr;
 static pp::FileSystem ppFileSystem;
 #endif
+static String         specialDir[File::VIDEOS + 1];
 
 static bool operator < ( const File& a, const File& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }
+
+#if defined( __native_client__ )
+
+static void initSpecialDirs()
+{
+  specialDir[HOME]   = "/";
+  specialDir[CONFIG] = "/config";
+  specialDir[DATA]   = "/data";
+
+  mkdir( "/config" );
+  mkdir( "/data" );
+}
+
+#elif defined( _WIN32 )
+
+static void setSpecialDir( File::UserDirectory dir, int csidl )
+{
+  char path[MAX_PATH];
+  path[0] = '\0';
+
+  SHGetSpecialFolderPath( nullptr, path, csidl, false );
+  specialDir[dir] = path;
+}
+
+static void initSpecialDirs()
+{
+  setSpecialDir( File::HOME,      CSIDL_PROFILE          );
+  setSpecialDir( File::CONFIG,    CSIDL_APPDATA          );
+  setSpecialDir( File::DATA,      CSIDL_LOCAL_APPDATA    );
+  setSpecialDir( File::DESKTOP,   CSIDL_DESKTOPDIRECTORY );
+  setSpecialDir( File::DOCUMENTS, CSIDL_PERSONAL         );
+  setSpecialDir( File::DOWNLOAD,  CSIDL_PERSONAL         );
+  setSpecialDir( File::MUSIC,     CSIDL_MYMUSIC          );
+  setSpecialDir( File::PICTURES,  CSIDL_MYPICTURES       );
+  setSpecialDir( File::VIDEOS,    CSIDL_MYVIDEO          );
+}
+
+#else
+
+static void setSpecialDir( File::UserDirectory dir, const char* name,
+                           HashMap<String, String>* vars )
+{
+  const char* value = getenv( name );
+
+  if( value == nullptr && vars != nullptr ) {
+    const String* defValue = vars->find( name );
+
+    if( defValue == nullptr ) {
+      specialDir[dir] = "";
+      return;
+    }
+
+    value = defValue->cstr();
+  }
+
+  specialDir[dir] = value;
+}
+
+static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
+{
+  InputStream istream = file.inputStream();
+
+  String line;
+  while( istream.isAvailable() ) {
+    line = istream.readLine();
+
+    if( line[0] == '#' ) {
+      continue;
+    }
+
+    int equal      = line.index( '=' );
+    int firstQuote = line.index( '"' );
+    int lastQuote  = line.lastIndex( '"' );
+
+    if( equal <= 0 || firstQuote <= equal || lastQuote <= firstQuote ) {
+      continue;
+    }
+
+    String name = line.substring( 0, equal ).trim();
+    String path = line.substring( firstQuote + 1, lastQuote );
+
+    if( !name.beginsWith( "XDG_" ) || !name.endsWith( "_DIR" ) ) {
+      continue;
+    }
+
+    if( path.beginsWith( "$HOME" ) ) {
+      path = specialDir[File::HOME] + path.substring( 5 );
+    }
+
+    vars->add( name, path );
+  }
+}
+
+static void initSpecialDirs()
+{
+  setSpecialDir( File::HOME, "HOME", nullptr );
+
+  if( specialDir[File::HOME].isEmpty() ) {
+    OZ_ERROR( "oz::File: Unable to determine home directory: HOME environment variable not set" );
+  }
+
+  HashMap<String, String> vars;
+
+  // Default locations.
+  vars.add( "XDG_CONFIG_HOME",   specialDir[File::HOME] + "/.config"      );
+  vars.add( "XDG_DATA_HOME",     specialDir[File::HOME] + "/.local/share" );
+  vars.add( "XDG_DESKTOP_DIR",   specialDir[File::HOME] + "/Desktop"      );
+  vars.add( "XDG_DOCUMENTS_DIR", specialDir[File::HOME] + "/Documents"    );
+  vars.add( "XDG_DOWNLOAD_DIR",  specialDir[File::HOME] + "/Download"     );
+  vars.add( "XDG_MUSIC_DIR",     specialDir[File::HOME] + "/Music"        );
+  vars.add( "XDG_PICTURES_DIR",  specialDir[File::HOME] + "/Pictures"     );
+  vars.add( "XDG_VIDEOS_DIR",    specialDir[File::HOME] + "/Videos"       );
+
+  // Override default locations with global settings, if exist.
+  loadXDGSettings( "/etc/xdg/user", &vars );
+
+  // Override default locations with user settings, if exist.
+  loadXDGSettings( *vars.find( "XDG_CONFIG_HOME" ) + "/user-dirs.dirs", &vars );
+
+  // Finally set special directories, environment variables again override default values.
+  setSpecialDir( File::CONFIG,    "XDG_CONFIG_HOME",   &vars );
+  setSpecialDir( File::DATA,      "XDG_DATA_HOME",     &vars );
+  setSpecialDir( File::DESKTOP,   "XDG_DESKTOP_DIR",   &vars );
+  setSpecialDir( File::DOCUMENTS, "XDG_DOCUMENTS_DIR", &vars );
+  setSpecialDir( File::DOWNLOAD,  "XDG_DOWNLOAD_DIR",  &vars );
+  setSpecialDir( File::MUSIC,     "XDG_MUSIC_DIR",     &vars );
+  setSpecialDir( File::PICTURES,  "XDG_PICTURES_DIR",  &vars );
+  setSpecialDir( File::VIDEOS,    "XDG_VIDEOS_DIR",    &vars );
+}
+
+#endif
 
 OZ_HIDDEN
 File::File( const String& path, File::Type type, int size, long64 time ) :
@@ -509,7 +645,7 @@ bool File::write( const char* buffer, int size ) const
       return false;
     }
 
-    int result = int( PHYSFS_writeBytes( file, data, ulong64( size ) ) );
+    int result = int( PHYSFS_writeBytes( file, buffer, ulong64( size ) ) );
     PHYSFS_close( file );
 
     return result == size;
@@ -985,6 +1121,15 @@ bool File::mountLocal( const char* path, bool append )
   return true;
 }
 
+const char* File::userDirectory( File::UserDirectory directory )
+{
+  if( directory < HOME || VIDEOS < directory ) {
+    return nullptr;
+  }
+
+  return specialDir[directory];
+}
+
 void File::init( NaClFileSystem naclFileSystem, int naclSize )
 {
   static_cast<void>( naclFileSystem );
@@ -1014,6 +1159,8 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
 
 #endif
 
+  initSpecialDirs();
+
   if( PHYSFS_init( nullptr ) == 0 ) {
     OZ_ERROR( "oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
   }
@@ -1022,6 +1169,10 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
 void File::destroy()
 {
   PHYSFS_deinit();
+
+  for( int i = HOME; i <= VIDEOS; ++i ) {
+    specialDir[i] = "";
+  }
 }
 
 }

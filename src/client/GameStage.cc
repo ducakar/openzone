@@ -100,6 +100,7 @@ void GameStage::write() const
 
   if( !stateFile.write( buffer ) ) {
     Log::printEnd( " Failed" );
+    System::bell();
   }
   else {
     Log::printEnd( " OK" );
@@ -478,8 +479,8 @@ void GameStage::init()
   Log::println( "Initialising GameStage {" );
   Log::indent();
 
-  autosaveFile  = File( config["dir.config"].asString() + "/saves/autosave.ozState" );
-  quicksaveFile = File( config["dir.config"].asString() + "/saves/quicksave.ozState" );
+  autosaveFile  = "@state/autosave.ozState";
+  quicksaveFile = "@state/quicksave.ozState";
 
   matrix.init();
   nirvana.init();

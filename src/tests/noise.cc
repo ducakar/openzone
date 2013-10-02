@@ -40,7 +40,7 @@ struct Colour
 static const int width  = 1024;
 static const int height = 1024;
 
-int main()
+int main( int, char** )
 {
   System::init();
   SDL_Init( SDL_INIT_VIDEO );

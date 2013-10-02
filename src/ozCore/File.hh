@@ -57,6 +57,22 @@ class File
     };
 
     /**
+     * Special user directories.
+     */
+    enum UserDirectory
+    {
+      HOME,      ///< User's home/profile directory
+      CONFIG,    ///< Directory for configuration (i.e. `~/.config`).
+      DATA,      ///< Directory for program data (i.e. `~/.local/share`).
+      DESKTOP,
+      DOCUMENTS,
+      DOWNLOAD,
+      MUSIC,
+      PICTURES,
+      VIDEOS
+    };
+
+    /**
      * NaCl file system type.
      */
     enum NaClFileSystem
@@ -415,9 +431,17 @@ class File
     static bool mountLocal( const char* path, bool append = false );
 
     /**
+     * Return requested special user directory or `nullptr` for an invalid enum.
+     *
+     * File system initialisation must be performed before using this function on all platforms.
+     */
+    static const char* userDirectory( UserDirectory directory );
+
+    /**
      * Initialise NaCl native file system and VFS.
      *
-     * On platforms other than NaCl, native file system does not need to be (de)initialised.
+     * On platforms other than NaCl native file system does not need any other initialisation but
+     * determining special directories.
      *
      * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
      * @param naclSize NaCl file system size.
@@ -430,7 +454,7 @@ class File
     static void init( NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0 );
 
     /**
-     * Deinitialise VFS.
+     * Deinitialise file systems.
      */
     static void destroy();
 

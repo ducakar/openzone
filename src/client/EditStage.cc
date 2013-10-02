@@ -72,6 +72,7 @@ void EditStage::write() const
 
   if( !json.save( layoutFile ) ) {
     Log::printEnd( " Failed" );
+    System::bell();
   }
   else {
     Log::printEnd( " OK" );
