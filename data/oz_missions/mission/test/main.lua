@@ -51,6 +51,8 @@ function onCreate()
   init_stressTest()
 
   ozUIBuildFrame( true )
+
+  ozPersistent.oz_testRun = true
 end
 
 function init_sample()

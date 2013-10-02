@@ -210,6 +210,29 @@ JSON LuaCommon::writeValue()
   }
 }
 
+void LuaCommon::loadDir( const File& dir )
+{
+  DArray<File> luaFiles = dir.ls();
+
+  foreach( file, luaFiles.citer() ) {
+    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
+      continue;
+    }
+
+    InputStream is = file->inputStream();
+
+    if( !is.isAvailable() ) {
+      continue;
+    }
+
+    if( l_dobuffer( is.begin(), is.available(), file->path() ) != 0 ) {
+      const char* errorMessage = l_tostring( -1 );
+
+      OZ_ERROR( "Lua error: %s", errorMessage );
+    }
+  }
+}
+
 void LuaCommon::initCommon( const char* componentName )
 {
   ls.envName = componentName;
@@ -245,6 +268,8 @@ void LuaCommon::initCommon( const char* componentName )
 
   IGNORE_FUNC( ozError );
   IGNORE_FUNC( ozPrintln );
+
+  loadDir( "@lua/common" );
 }
 
 void LuaCommon::freeCommon()

@@ -31,17 +31,6 @@ int main()
 {
   System::init();
   File::init();
-
-  Log() << File::userDirectory( File::HOME );
-  Log() << File::userDirectory( File::DATA );
-  Log() << File::userDirectory( File::CONFIG );
-  Log() << File::userDirectory( File::DESKTOP );
-  Log() << File::userDirectory( File::DOCUMENTS );
-  Log() << File::userDirectory( File::DOWNLOAD );
-  Log() << File::userDirectory( File::MUSIC );
-  Log() << File::userDirectory( File::PICTURES );
-  Log() << File::userDirectory( File::VIDEOS );
-
   File::destroy();
   return 0;
 }

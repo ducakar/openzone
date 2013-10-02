@@ -36,6 +36,25 @@ namespace oz
 namespace client
 {
 
+void Profile::save()
+{
+  File profileFile = config["dir.config"].asString() + "/profile.json";
+  JSON profileConfig( JSON::OBJECT );
+
+  profileConfig.add( "name", name );
+  profileConfig.add( "class", clazz->name );
+
+  JSON& itemsConfig = profileConfig.add( "items", JSON::ARRAY );
+
+  foreach( item, items.citer() ) {
+    itemsConfig.add( ( *item )->name );
+  }
+
+  profileConfig.add( "weaponItem", weaponItem );
+  profileConfig.add( "persistent", persistent );
+  profileConfig.save( profileFile );
+}
+
 void Profile::init()
 {
   File profileFile = config["dir.config"].asString() + "/profile.json";
@@ -80,7 +99,6 @@ void Profile::init()
   if( !configExists ) {
     profileConfig.add( "name", name );
     profileConfig.add( "class", "beast" );
-    profileConfig.add( "weaponItem", 0 );
 
     JSON& itemsConfig = profileConfig.add( "items", JSON::ARRAY );
 
@@ -90,6 +108,8 @@ void Profile::init()
     itemsConfig.add( "galileo" );
     itemsConfig.add( "musicPlayer" );
     itemsConfig.add( "cvicek" );
+
+    profileConfig.add( "weaponItem", 0 );
   }
 
   const char*        sClazz   = profileConfig["class"].asString();
@@ -135,15 +155,17 @@ void Profile::init()
     }
   }
 
-  if( !configExists ) {
-    profileConfig.save( profileFile );
-  }
+  persistent = profileConfig["persistent"];
 
-  profileConfig.clear( true );
+  if( persistent.type() != JSON::OBJECT ) {
+    persistent = JSON( JSON::OBJECT );
+  }
 }
 
 void Profile::destroy()
 {
+  save();
+
   items.clear();
   items.deallocate();
 }

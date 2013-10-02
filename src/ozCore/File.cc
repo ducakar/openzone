@@ -651,7 +651,7 @@ bool File::write( const char* buffer, int size ) const
     return result == size;
   }
   else if( data != nullptr ) {
-    return false;
+    OZ_ERROR( "oz::File: Writing to a memory mapped file '%s'", filePath.cstr() );
   }
   else {
 #if defined( __native_client__ )

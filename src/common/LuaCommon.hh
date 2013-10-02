@@ -78,6 +78,11 @@ class LuaCommon
     JSON writeValue();
 
     /**
+     * Load all `*.lua` files in a directory.
+     */
+    void loadDir( const File& dir );
+
+    /**
      * Common initialisation for Lua classes.
      */
     void initCommon( const char* componentName );

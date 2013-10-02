@@ -20,14 +20,10 @@
 ]]--
 
 --[[
- * nirvana/minds_cvicek.lua
+ * lua/nirvana/oz_missions.lua
  *
  * AIs for cvicek mission.
 ]]--
-
-function test()
-  print( ozLocalData[69].ticks )
-end
 
 function beast_nervous( l )
   if math.random( 100 ) == 1 then

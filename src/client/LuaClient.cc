@@ -111,18 +111,7 @@ void LuaClient::create( const char* mission_ )
     json.clear( true );
   }
 
-  foreach( file, files.citer() ) {
-    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
-      continue;
-    }
-
-    Buffer buffer = file->read();
-
-    if( !buffer.isEmpty() && l_dobuffer( buffer.begin(), buffer.length(), file->path() ) != 0 ) {
-      OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
-    }
-  }
-
+  loadDir( missionDir );
   staticCall( "onCreate" );
 
   Log::unindent();
@@ -637,6 +626,10 @@ void LuaClient::init()
   importNirvanaConstants( l );
   importClientConstants( l );
 
+  // Import profile persistance.
+  readValue( profile.persistent );
+  l_setglobal( "ozPersistent" );
+
   hard_assert( l_gettop() == 0 );
 
   Log::printEnd( " OK" );
@@ -649,6 +642,9 @@ void LuaClient::destroy()
   }
 
   Log::print( "Destroying Client Lua ..." );
+
+  l_getglobal( "ozPersistent" );
+  profile.persistent = writeValue();
 
   ms.structs.clear();
   ms.structs.deallocate();

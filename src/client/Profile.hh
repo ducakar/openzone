@@ -40,6 +40,12 @@ class Profile
     const BotClass*           clazz;
     List<const DynamicClass*> items;
     int                       weaponItem;
+    JSON                      persistent;
+
+  public:
+
+    void load();
+    void save();
 
     void init();
     void destroy();

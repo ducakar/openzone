@@ -803,7 +803,7 @@ void Bot::onUpdate()
      * ATTACK & GESTURES
      */
 
-    if( !( state & MOVING_BIT ) && cargo < 0 &&
+    if( cargo < 0 &&
         ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT ) ) ) )
     {
       if( actions & ACTION_ATTACK ) {

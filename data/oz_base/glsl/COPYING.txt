@@ -1,5 +1,0 @@
-Content of this directory is part of Openzone engine.
-
-Copyright © 2002-2013 Davorin Učakar
-Author:  Davorin Učakar
-Licence: GNU GPLv3+

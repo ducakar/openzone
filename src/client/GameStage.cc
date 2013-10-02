@@ -416,6 +416,7 @@ void GameStage::unload()
   }
 
   modules.unload();
+  profile.save();
 
   ui::ui.questFrame->enable( false );
 

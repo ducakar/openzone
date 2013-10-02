@@ -502,20 +502,7 @@ void LuaNirvana::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
-  File luaDir = "@lua/nirvana";
-  DArray<File> luaFiles = luaDir.ls();
-
-  foreach( file, luaFiles.citer() ) {
-    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
-      continue;
-    }
-
-    InputStream is = file->inputStream();
-
-    if( !is.isAvailable() || l_dobuffer( is.begin(), is.available(), file->path() ) != 0 ) {
-      OZ_ERROR( "Nirvana Lua script error" );
-    }
-  }
+  loadDir( "@lua/nirvana" );
 
   hard_assert( l_gettop() == 1 );
 
