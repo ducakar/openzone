@@ -215,7 +215,8 @@ class Class
 
   public:
 
-    void build( OutputStream* os, const char* className );
+    void buildObjClass( OutputStream* os, const char* className );
+    void buildFragPool( OutputStream* os, const char* poolName );
     void destroy();
 
 };

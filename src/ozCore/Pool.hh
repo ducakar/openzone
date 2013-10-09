@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Pool.hh
  *
- * `Pool` class template
+ * `Pool` class template.
  */
 
 #pragma once

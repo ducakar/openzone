@@ -43,6 +43,7 @@ static HashMap<String, int, 256>                    textureIndices;
 static HashMap<String, int, 256>                    soundIndices;
 static HashMap<String, int, 16>                     caelumIndices;
 static HashMap<String, int, 16>                     terraIndices;
+static HashMap<String, int, 64>                     partIndices;
 static HashMap<String, int, 256>                    modelIndices;
 
 static HashMap<String, int, 16>                     nameListIndices;
@@ -52,12 +53,12 @@ static HashMap<String, int, 8>                      deviceIndices;
 static HashMap<String, int, 16>                     imagoIndices;
 static HashMap<String, int, 8>                      audioIndices;
 
-const FragPool* Liber::fragPool( const char* name ) const
+const BSP* Liber::bsp( const char* name ) const
 {
-  const FragPool* value = fragPools.find( name );
+  const BSP* value = bsps.find( name );
 
   if( value == nullptr ) {
-    OZ_ERROR( "Invalid fragment pool requested '%s'", name );
+    OZ_ERROR( "Invalid BSP requested '%s'", name );
   }
   return value;
 }
@@ -72,12 +73,12 @@ const ObjectClass* Liber::objClass( const char* name ) const
   return *value;
 }
 
-const BSP* Liber::bsp( const char* name ) const
+const FragPool* Liber::fragPool( const char* name ) const
 {
-  const BSP* value = bsps.find( name );
+  const FragPool* value = fragPools.find( name );
 
   if( value == nullptr ) {
-    OZ_ERROR( "Invalid BSP requested '%s'", name );
+    OZ_ERROR( "Invalid fragment pool requested '%s'", name );
   }
   return value;
 }
@@ -128,6 +129,16 @@ int Liber::terraIndex( const char* name ) const
 
   if( value == nullptr ) {
     OZ_ERROR( "Invalid terra index requested '%s'", name );
+  }
+  return *value;
+}
+
+int Liber::partIndex( const char* name ) const
+{
+  const int* value = partIndices.find( name );
+
+  if( value == nullptr ) {
+    OZ_ERROR( "Invalid particle index requested '%s'", name );
   }
   return *value;
 }
@@ -367,6 +378,36 @@ void Liber::initTerrae()
 
   terrae.resize( terraeList.length() );
   aMove<Resource>( terraeList.begin(), terraeList.length(), terrae.begin() );
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Liber::initParticles()
+{
+  Log::println( "Particle classes (*.json in 'part') {" );
+  Log::indent();
+
+  List<Resource> partList;
+
+  File dir = "@part";
+  DArray<File> dirList = dir.ls();
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "json" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    Log::println( "%s", name.cstr() );
+
+    partIndices.add( name, partList.length() );
+    partList.add( { name, file->path() } );
+  }
+
+  shaders.resize( partList.length() );
+  aMove<Resource>( partList.begin(), partList.length(), shaders.begin() );
 
   Log::unindent();
   Log::println( "}" );

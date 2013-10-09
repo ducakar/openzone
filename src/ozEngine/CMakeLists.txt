@@ -66,7 +66,7 @@ target_link_libraries( ozEngine ${VORBISFILE_LIBRARIES} )
 
 # Dependencies.
 if( PLATFORM_EMBEDDED )
-  target_link_libraries( ozEngine ${FREETYPE_LIBRARY} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
+  target_link_libraries( ozEngine ${FREETYPE_LIBRARIES} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES} )
 endif()
 
 set_target_properties( ozEngine PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )

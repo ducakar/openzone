@@ -52,5 +52,3 @@ set( FREETYPE_INCLUDE_DIRS                    "${PLATFORM_PORTS_PREFIX}/usr/incl
 # Dummy for Emscripten.
 set( SDL_INCLUDE_DIRS                         "${PLATFORM_PREFIX}/system/include/SDL" )
 set( SDL_LIBRARIES                            "" )
-
-message( "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}" )

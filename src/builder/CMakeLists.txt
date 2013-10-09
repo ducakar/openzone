@@ -13,7 +13,6 @@ add_library( builder STATIC
   common.hh
   Compiler.hh
   Context.hh
-  FragPool.hh
   MD2.hh
   MD3.hh
   OBJ.hh
@@ -26,7 +25,6 @@ add_library( builder STATIC
   common.cc
   Compiler.cc
   Context.cc
-  FragPool.cc
   MD2.cc
   MD3.cc
   OBJ.cc

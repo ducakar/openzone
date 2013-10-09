@@ -25,9 +25,6 @@
 
 #include <nirvana/common.hh>
 
-// Stupid Windows headers.
-#undef TECHNOLOGY
-
 namespace oz
 {
 

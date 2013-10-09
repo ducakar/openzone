@@ -17,20 +17,21 @@ supported platforms/toolchains. Only GCC >= 4.4 and LLVM/Clang >= 3.1 compilers 
 To build OpenZone from source, development packages for the following libraries are required:
 
 - ALSA (Linux only)
+- Assimp
+- FreeImage
+- libnoise
+- libpng
 - libpulse (Linux/Unix only, optional)
-- PhysicsFS 2.0 or 2.1/development
-- ODE (optional)
+- libsquish (optional)
+- libvorbis
 - Lua 5.1 or 5.2 or LuaJIT 2.0
+- ODE (optional)
+- OpenAL 1.1
+- OpenGL 2.1 or OpenGL ES 2.0
+- PhysicsFS 2.0 or 2.1/dev
 - SDL 1.2 or 2.0
 - SDL_ttf
-- OpenGL 2.1 or OpenGL ES 2.0
-- OpenAL 1.1
-- libpng
-- libvorbis
-- FreeImage
-- libsquish (optional)
-- Assimp
-- libnoise
+- zlib
 
 You can then use generic steps for building CMake projects:
 

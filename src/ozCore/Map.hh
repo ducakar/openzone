@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Map.hh
  *
- * `Map` class template
+ * `Map` class template.
  */
 
 #pragma once

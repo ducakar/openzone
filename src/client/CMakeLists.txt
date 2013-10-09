@@ -36,6 +36,7 @@ add_library( client STATIC
   NaClUpdater.hh
   Network.hh
   openzone.hh
+  PartClass.hh
   Profile.hh
   Proxy.hh
   Render.hh
@@ -81,6 +82,7 @@ add_library( client STATIC
   NaClDownloader.cc
   NaClUpdater.cc
   Network.cc
+  PartClass.cc
   Profile.cc
   Proxy.cc
   Render.cc

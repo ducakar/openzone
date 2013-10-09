@@ -47,6 +47,7 @@ class Liber
     DArray<Resource> sounds;
     DArray<Resource> caela;
     DArray<Resource> terrae;
+    DArray<Resource> parts;
     DArray<Resource> models;
     DArray<Resource> nameLists;
     DArray<Resource> musicTracks;
@@ -60,15 +61,16 @@ class Liber
     bool             mapMP3s;
     bool             mapAACs;
 
-    const FragPool*    fragPool( const char* name ) const;
-    const ObjectClass* objClass( const char* name ) const;
     const BSP*         bsp( const char* name ) const;
+    const ObjectClass* objClass( const char* name ) const;
+    const FragPool*    fragPool( const char* name ) const;
 
     int shaderIndex( const char* name ) const;
     int textureIndex( const char* name ) const;
     int soundIndex( const char* name ) const;
     int caelumIndex( const char* name ) const;
     int terraIndex( const char* name ) const;
+    int partIndex( const char* name ) const;
     int modelIndex( const char* name ) const;
 
     int nameListIndex( const char* name ) const;
@@ -87,6 +89,7 @@ class Liber
     void initSounds();
     void initCaela();
     void initTerrae();
+    void initParticles();
     void initModels();
     void initNameLists();
     void initFragPools();

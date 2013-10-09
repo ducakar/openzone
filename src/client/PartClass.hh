@@ -18,27 +18,43 @@
  */
 
 /**
- * @file builder/FragPool.hh
+ * @file client/PartClass.hh
  */
 
 #pragma once
 
-#include <builder/common.hh>
+#include <client/common.hh>
 
 namespace oz
 {
-namespace builder
+namespace client
 {
 
-class FragPool
+class PartClass
 {
   public:
 
-    void build( OutputStream* os, const char* className );
+    static const int UPDATED_BIT = 0x01;
+    static const int LOADED_BIT  = 0x02;
+
+  public:
+
+    int   flags;
+
+    int   nParts;
+    Vec3  velocity;
+    float velocitySpread;
+    int   texId;
+    int   endTexId;
+
+  public:
+
+    explicit PartClass( InputStream* istream );
+    ~PartClass();
+
+    void load();
 
 };
-
-extern FragPool fragPool;
 
 }
 }

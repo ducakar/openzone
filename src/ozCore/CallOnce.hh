@@ -62,12 +62,12 @@ class CallOnce
     {}
 
     /**
-     * Copying or moving is not possible for embedded spin lock.
+     * Copying or moving is not possible for the embedded spin lock.
      */
     CallOnce( const CallOnce& ) = delete;
 
     /**
-     * Copying or moving is not possible for embedded spin lock.
+     * Copying or moving is not possible for the embedded spin lock.
      */
     CallOnce& operator = ( CallOnce& ) = delete;
 

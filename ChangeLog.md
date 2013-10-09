@@ -17,8 +17,9 @@
     * new CallOnce class
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
-    * Buffer supports zlib comression
+    * Buffer supports zlib compression
     * PFile class merged into File class (VFS paths begin with '@')
+    * File class determines special user directories (home, settings, documents directory etc.)
     * new EnumMap class
     * new SharedLib class for run-time linking
     * new Profiler class
@@ -35,11 +36,14 @@
     * ImageBuilder class for building DDS textures
     * ModelBuilder class for building OpenZone models using Assimp library
     * TerraBuilder class generates random terrain heightmaps and corresponding textures
+- common
+    * common Lua scripts included by all VMs
+    * Lua <-> JSON value interoperability
 - matrix
     * melee attack
     * new vehicle types: turret, mech warrior
 - nirvana
-    * Technology tree
+    * Technology graph
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
     * UI sounds
@@ -55,6 +59,8 @@
     * switched over to ozEngine classes wherever possible
     * layout files, can be edited in built-in editor (-e option) or loaded by missions
     * camera flash and shake effects, camera has an auxiliary thread for event extraction
+    * ozState file compression
+    * ozPersistent table in Lua scripts for persistence across missions and load/save
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
     * Terrain can be generated based on config file settings
@@ -100,7 +106,7 @@
     * better Win32 support, POSIX API replaced with Win32 API where possible
     * ported to NaCl
     * fully documented
-    * ZLIB licence
+    * zlib licence
 - common
     * new layer, split from matrix
     * Span and Timer classes moved to common from matrix

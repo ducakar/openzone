@@ -36,8 +36,7 @@
 # include <ppapi/cpp/file_io.h>
 # include <ppapi/cpp/file_ref.h>
 # include <ppapi/cpp/file_system.h>
-# include <ppapi/cpp/dev/directory_entry_dev.h>
-# include <ppapi/cpp/dev/directory_reader_dev.h>
+# include <ppapi/cpp/directory_entry.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <shlobj.h>
@@ -83,12 +82,12 @@ static bool operator < ( const File& a, const File& b )
 
 static void initSpecialDirs()
 {
-  specialDir[HOME]   = "/";
-  specialDir[CONFIG] = "/config";
-  specialDir[DATA]   = "/data";
+  specialDir[File::HOME]   = "/";
+  specialDir[File::CONFIG] = "/config";
+  specialDir[File::DATA]   = "/data";
 
-  mkdir( "/config" );
-  mkdir( "/data" );
+  File::mkdir( "/config" );
+  File::mkdir( "/data" );
 }
 
 #elif defined( _WIN32 )
@@ -864,14 +863,16 @@ DArray<File> File::ls() const
   else {
 #if defined( __native_client__ )
 
-    typedef std::vector<pp::DirectoryEntry_Dev> EntryList;
+    typedef std::vector<pp::DirectoryEntry>                 EntryList;
+    typedef pp::CompletionCallbackWithOutput<EntryList>     CallbackWithOutput;
+    typedef CallbackWithOutput::BaseType::OutputStorageType EntryListStorage;
 
-    pp::FileRef                                     file( ppFileSystem, filePath );
-    pp::DirectoryReader_Dev                         dirReader( file );
-    pp::DirectoryEntryArrayOutputAdapterWithStorage entryArray;
+    pp::FileRef        file( ppFileSystem, filePath );
+    EntryListStorage   entryStorage;
+    CallbackWithOutput callback( &entryStorage );
 
-    dirReader.ReadEntries( pp::CompletionCallbackWithOutput<EntryList>( &entryArray ) );
-    EntryList& entries = entryArray.output();
+    file.ReadDirectoryEntries( callback );
+    EntryList& entries = entryStorage.output();
 
     // Count entries first.
     int count = 0;

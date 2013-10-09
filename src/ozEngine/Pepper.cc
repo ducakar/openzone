@@ -40,8 +40,6 @@ static SpinLock     messageLock;
 static List<String> messageQueue;
 static pp::Core*    core;
 
-Semaphore Pepper::mainCallSemaphore;
-
 int       Pepper::width    = 0;
 int       Pepper::height   = 0;
 
@@ -102,6 +100,8 @@ void Pepper::destroy()
 
   MainCall::semaphore.destroy();
 }
+
+Semaphore MainCall::semaphore;
 
 }
 

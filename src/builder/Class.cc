@@ -904,7 +904,7 @@ void Class::writeVehicle( OutputStream* os )
   }
 }
 
-void Class::build( OutputStream* os, const char* className )
+void Class::buildObjClass( OutputStream* os, const char* className )
 {
   File configFile = String::str( "@class/%s.json", className );
 
@@ -936,6 +936,80 @@ void Class::build( OutputStream* os, const char* className )
   else if( baseClass.equals( "Vehicle" ) ) {
     fillVehicle( className );
     writeVehicle( os );
+  }
+
+  config.clear( true );
+}
+
+void Class::buildFragPool( OutputStream* os, const char* poolName )
+{
+  File configFile = String::str( "@frag/%s.json", poolName );
+
+  JSON config;
+  if( !config.load( configFile ) ) {
+    OZ_ERROR( "Failed to load '%s'", configFile.path().cstr() );
+  }
+
+  int flags = 0;
+
+  SET_FLAG( oz::FragPool::FADEOUT_BIT, "flag.fadeout", true );
+
+  float velocitySpread = config["velocitySpread"].get( 4.0f );
+
+  if( velocitySpread < 0.0f ) {
+    OZ_ERROR( "%s: Frag velocitySpread must be >= 0.0", poolName );
+  }
+
+  float life       = config["life"].get( 4.0f );
+  float lifeSpread = config["lifeSpread"].get( 1.0f );
+  float mass       = config["mass"].get( 0.0f );
+  float elasticity = config["elasticity"].get( 0.5f );
+
+  if( life <= 0.0f ) {
+    OZ_ERROR( "%s: Frag life must be > 0.0", poolName );
+  }
+  if( lifeSpread < 0.0f ) {
+    OZ_ERROR( "%s: Frag lifeSpread must be >= 0.0", poolName );
+  }
+  if( mass < 0.0f ) {
+    OZ_ERROR( "%s: Frag mass must be >= 0.0", poolName );
+  }
+  if( elasticity < 0.0f || 1.0f < elasticity ) {
+    OZ_ERROR( "%s: Frag elasticity must lie on interval [0, 1]", poolName );
+  }
+
+  const JSON& modelsConfig = config["models"];
+  int nModels = modelsConfig.length();
+
+  List<String> models;
+
+  for( int i = 0; i < nModels; ++i ) {
+    const char* modelName = modelsConfig[i].get( "" );
+
+    if( String::isEmpty( modelName ) ) {
+      OZ_ERROR( "%s: Empty name for model #%d", poolName, i );
+    }
+
+    models.add( modelName );
+
+    context.usedModels.include( modelName, String( poolName ) + " (Object class)" );
+  }
+
+  os->writeString( poolName );
+
+  os->writeInt( flags );
+
+  os->writeFloat( velocitySpread );
+
+  os->writeFloat( life );
+  os->writeFloat( lifeSpread );
+
+  os->writeFloat( mass );
+  os->writeFloat( elasticity );
+
+  os->writeInt( models.length() );
+  foreach( i, models.citer() ) {
+    os->writeString( *i );
   }
 
   config.clear( true );

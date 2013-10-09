@@ -37,8 +37,7 @@ namespace oz
  * Translation catalogue database.
  *
  * It reads messages from GNU gettext binary (*.mo) catalogues and allows merging of multiple
- * catalogues into one catalogue. The catalogue info string (translation for "") is discarded, it
- * always translates to "".
+ * catalogues into one.
  */
 class Gettext
 {
@@ -107,8 +106,8 @@ class Gettext
      * Obtain translation from the catalogue.
      *
      * If translation for a given string does not exist that string itself is returned. An empty
-     * string is always translated into an empty string -- use `catalogueInfos()` to get catalogue
-     * descriptions.
+     * string is always translated to an empty string -- use `catalogueDescriptions()` to get
+     * catalogue descriptions.
      */
     const char* get( const char* message ) const;
 
@@ -125,7 +124,7 @@ class Gettext
      * override the earlier one in the hashtable making the old one inaccessible.
      *
      * Empty strings (storage for catalogue descriptions) are never included in the hashtable, use
-     * `catalogueInfos()` to obtain those.
+     * `catalogueDescriptions()` to obtain those.
      */
     bool import( const File& file );
 

@@ -30,7 +30,6 @@
 #include <builder/Terra.hh>
 #include <builder/BSP.hh>
 #include <builder/Class.hh>
-#include <builder/FragPool.hh>
 #include <builder/OBJ.hh>
 #include <builder/MD2.hh>
 #include <builder/MD3.hh>
@@ -65,6 +64,7 @@ void Builder::printUsage( const char* invocationName )
     "  -e         Build textures referenced by terrae and BSPs.\n"
     "  -a         Copy object class definitions.\n"
     "  -f         Copy fragment pool definitions.\n"
+    "  -p         Copy particle class definitions.\n"
     "  -m         Build models.\n"
     "  -s         Copy referenced sounds (by UI, BSPs and object classes).\n"
     "  -n         Copy name lists.\n"
@@ -331,7 +331,7 @@ void Builder::buildClasses( const String& pkgName )
 
     Log::print( "%s ...", name.cstr() );
 
-    clazz.build( &os, name );
+    clazz.buildObjClass( &os, name );
 
     Log::printEnd( " OK" );
   }
@@ -405,7 +405,7 @@ void Builder::buildFragPools( const String& pkgName )
 
     Log::print( "%s ...", name.cstr() );
 
-    fragPool.build( &os, name );
+    clazz.buildFragPool( &os, name );
 
     Log::printEnd( " OK" );
   }
@@ -737,6 +737,7 @@ int Builder::main( int argc, char** argv )
   bool doTextures     = false;
   bool doClasses      = false;
   bool doFrags        = false;
+  bool doParticles    = false;
   bool doModels       = false;
   bool doSounds       = false;
   bool doNames        = false;
@@ -753,7 +754,7 @@ int Builder::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbeafmsnxvoriARCZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbeafpmsnxvoriARCZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -783,20 +784,24 @@ int Builder::main( int argc, char** argv )
         doTextures = true;
         break;
       }
-      case 'm': {
-        doModels = true;
-        break;
-      }
-      case 's': {
-        doSounds = true;
-        break;
-      }
       case 'a': {
         doClasses = true;
         break;
       }
       case 'f': {
         doFrags = true;
+        break;
+      }
+      case 'p': {
+        doParticles = true;
+        break;
+      }
+      case 'm': {
+        doModels = true;
+        break;
+      }
+      case 's': {
+        doSounds = true;
         break;
       }
       case 'n': {
@@ -824,23 +829,24 @@ int Builder::main( int argc, char** argv )
         break;
       }
       case 'A': {
-        doCat      = true;
-        doUI       = true;
-        doShaders  = true;
-        doCaela    = true;
-        doTerrae   = true;
-        doBSPs     = true;
-        doTextures = true;
-        doClasses  = true;
-        doFrags    = true;
-        doModels   = true;
-        doSounds   = true;
-        doNames    = true;
-        doLua      = true;
-        doNirvana  = true;
-        doModules  = true;
-        doMusic    = true;
-        doMissions = true;
+        doCat       = true;
+        doUI        = true;
+        doShaders   = true;
+        doCaela     = true;
+        doTerrae    = true;
+        doBSPs      = true;
+        doTextures  = true;
+        doClasses   = true;
+        doFrags     = true;
+        doParticles = true;
+        doModels    = true;
+        doSounds    = true;
+        doNames     = true;
+        doLua       = true;
+        doNirvana   = true;
+        doModules   = true;
+        doMusic     = true;
+        doMissions  = true;
         break;
       }
       case 'R': {
@@ -967,6 +973,9 @@ int Builder::main( int argc, char** argv )
   if( doFrags ) {
     buildFragPools( pkgName );
     copyFiles( "@frag", "frag", "txt", false );
+  }
+  if( doParticles ) {
+    copyFiles( "@part", "part", "json", false );
   }
   if( doModels ) {
     buildModels();

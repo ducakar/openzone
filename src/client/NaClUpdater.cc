@@ -111,7 +111,7 @@ bool NaClUpdater::checkUpdates()
   while( !downloader.isComplete() );
 
   OutputStream os = downloader.take();
-  InputStream  is = os.inputStream( Endian::LITTLE );
+  InputStream  is = os.inputStream();
 
   is.rewind();
 

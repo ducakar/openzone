@@ -23,7 +23,7 @@
 /**
  * @file ozCore/SList.hh
  *
- * `SList` class template
+ * `SList` class template.
  */
 
 #pragma once

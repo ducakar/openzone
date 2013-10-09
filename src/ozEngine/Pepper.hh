@@ -133,8 +133,8 @@ class MainCall
   public:
 
     /**
-    * Call a method without parameters on the main thread and wait for it to finish.
-    */
+     * Call a method without parameters on the main thread and wait for it to finish.
+     */
     template <typename Method>
     void operator << ( Method method ) const
     {

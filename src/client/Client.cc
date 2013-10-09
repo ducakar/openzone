@@ -48,9 +48,6 @@
 #if defined( __native_client__ )
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
-#elif defined( _WIN32 )
-# undef WIN32_LEAN_AND_MEAN
-# include <shlobj.h>
 #endif
 
 namespace oz
@@ -298,7 +295,7 @@ int Client::init( int argc, char** argv )
   foreach( pkg, packages.citer() ) {
     Pepper::post( "data:" + *pkg );
 
-    File pkgFile = localDir + "/" + *pkg;
+    File pkgFile = dataDir + "/" + *pkg;
 
     if( File::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
@@ -689,11 +686,11 @@ int Client::main()
 
 #ifdef __native_client__
 
-    if( Pepper::width != window.width || Pepper::height != window.height ) {
-      window.resize();
+    if( Pepper::width != Window::width() || Pepper::height != Window::height() ) {
+      Window::resize( Pepper::width, Pepper::height );
     }
-    if( window.hasFocus != Pepper::hasFocus ) {
-      window.hasFocus = Pepper::hasFocus;
+    if( Window::hasFocus() != Pepper::hasFocus ) {
+      Window::setFocus( Pepper::hasFocus );
       input.reset();
     }
     for( String message = Pepper::pop(); !message.isEmpty(); message = Pepper::pop() ) {

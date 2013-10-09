@@ -23,7 +23,7 @@
 /**
  * @file ozCore/List.hh
  *
- * `List` class template
+ * `List` class template.
  */
 
 #pragma once

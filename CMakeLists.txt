@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION 0.3.82 )
+set( OZ_VERSION 0.3.83 )
 
 option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
 option( OZ_PULSE_BELL "Enable PulseAudio backend for System::bell()." OFF )
@@ -45,7 +45,7 @@ endif()
 if( EMSCRIPTEN )
   set( OZ_SDL1 ON )
 elseif( NACL )
-  set( OZ_SDL1 )
+  set( OZ_SDL1 ON )
   set( OZ_NET OFF )
 elseif( WIN32 )
   set( OZ_STANDALONE ON )
@@ -122,11 +122,9 @@ elseif( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
   # platform directory, no need to explicitly check existence or to detect library names.
   if( ANDROID )
-    find_library( GLES2_LIBRARIES GLESv2 )
-    mark_as_advanced( GLES2_LIBRARIES )
+    set( GLES2_LIBRARIES GLESv2 )
   elseif( NACL )
-    find_library( GLES2_LIBRARIES ppapi_gles2 )
-    mark_as_advanced( GLES2_LIBRARIES )
+    set( GLES2_LIBRARIES ppapi_gles2 )
   else()
     pkg_check_modules( GLES2 REQUIRED glesv2 )
   endif()
@@ -147,7 +145,7 @@ pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.
 if( PLATFORM_EMBEDDED )
-  pkg_check_modules( FREETYLE REQUIRED freetype2 ) # required by SDL_ttf
+  pkg_check_modules( FREETYPE REQUIRED freetype2 ) # required by SDL_ttf
   pkg_check_modules( OGG REQUIRED ogg )            # required by vorbisfile
   pkg_check_modules( VORBIS REQUIRED vorbis )      # required by vorbisfile
 endif()

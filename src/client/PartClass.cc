@@ -18,40 +18,43 @@
  */
 
 /**
- * @file client/ParticleGen.hh
+ * @file client/PartClass.cc
  */
 
-#pragma once
+#include <client/PartClass.hh>
 
-#include <client/Imago.hh>
+#include <client/Context.hh>
 
 namespace oz
 {
 namespace client
 {
 
-class ParticleGen
+PartClass::PartClass( InputStream* istream ) :
+  flags( 0 )
 {
-  private:
+  nParts         = istream->readInt();
+  velocity       = istream->readVec3();
+  velocitySpread = istream->readFloat();
+  texId          = liber.textureIndex( istream->readString() );
+  endTexId       = liber.textureIndex( istream->readString() );
+}
 
-    struct Particle
-    {
-      Vec3  p;
-      Vec3  velocity;
-      Vec3  colour;
-      float lifeTime;
-    };
+PartClass::~PartClass()
+{
+  if( flags & LOADED_BIT ) {
+    context.releaseTexture( texId );
+    context.releaseTexture( endTexId );
+  }
+}
 
-    DArray<Particle>* particles;
-    float             particlesPerTick;
+void PartClass::load()
+{
+  context.requestTexture( texId );
+  context.requestTexture( endTexId );
 
-    void createSpark( int i );
-
-  public:
-
-
-
-};
+  flags |= LOADED_BIT;
+}
 
 }
 }

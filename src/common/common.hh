@@ -34,10 +34,11 @@
 #ifdef _WIN32
 # include <windows.h>
 // Fix M$ crap from Windows headers.
-# undef ERROR
-# undef PLANES
 # undef near
 # undef far
+# undef ERROR
+# undef PLANES
+# undef TECHNOLOGY
 #endif
 
 namespace oz

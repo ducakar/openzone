@@ -23,7 +23,7 @@
 /**
  * @file ozCore/DArray.hh
  *
- * `DArray` class template
+ * `DArray` class template.
  */
 
 #pragma once

@@ -23,3 +23,4 @@ set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
 
 include_directories( SYSTEM $ENV{NACL_SDK_ROOT}/include )
+link_directories( $ENV{NACL_SDK_ROOT}/lib/newlib_arm/Release )

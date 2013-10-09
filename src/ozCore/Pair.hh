@@ -23,7 +23,7 @@
 /**
  * @file ozCore/Pair.hh
  *
- * `Pair` class template
+ * `Pair` class template.
  */
 
 #pragma once
