@@ -107,7 +107,7 @@ void MainMenu::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  copyright.resize( width - 280 );
+  copyright.setWidth( width - 280 );
   copyright.setText( "OpenZone © 2002-2013 Davorin Učakar. %s",
                      OZ_GETTEXT( "Licensed under GNU GPL 3.0. Game data archives and libraries"
                                  " distributed with OpenZone are work of various authors and use"
@@ -164,7 +164,7 @@ void MainMenu::onDraw()
 
 MainMenu::MainMenu() :
   Area( camera.width, camera.height ),
-  copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE ),
+  copyright( 20, 10, 360, Area::ALIGN_NONE, Font::SMALL, "" ),
   title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION )
 {
   flags |= UPDATE_BIT;

@@ -182,6 +182,8 @@ void TechGraph::load()
   }
 
   config.clear( true );
+
+  enableAll();
 }
 
 void TechGraph::unload()

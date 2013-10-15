@@ -23,22 +23,12 @@
 
 #include <client/ui/Text.hh>
 
+#include <client/Shader.hh>
+#include <client/Shape.hh>
+#include <client/ui/Area.hh>
 #include <client/ui/Style.hh>
 
 #include <cstdio>
-#include <cstring>
-
-#ifndef _GNU_SOURCE
-
-static char* strchrnul( const char* s, int c )
-{
-  while( *s != c && *s != '\0' ) {
-    ++s;
-  }
-  return const_cast<char*>( s );
-}
-
-#endif
 
 namespace oz
 {
@@ -47,97 +37,199 @@ namespace client
 namespace ui
 {
 
-char Text::buffer[2048];
+static const int EMPTY_HASH = hash( "" );
 
-Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_, int alignment ) :
-  x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( &style.fonts[font_] )
+void Text::realign()
 {
-  labels = new Label[nLines];
+  texX = x;
+  texY = y;
 
-  for( int i = 0; i < nLines; ++i ) {
-    labels[i] = Label( x, y + ( nLines - i - 1 ) * font->height, alignment, font_, " " );
+  if( align & Area::ALIGN_RIGHT ) {
+    texX -= texWidth;
   }
+  else if( align & Area::ALIGN_HCENTRE ) {
+    texX -= texWidth / 2;
+  }
+
+  if( align & Area::ALIGN_TOP ) {
+    texY -= texHeight;
+  }
+  else if( align & Area::ALIGN_VCENTRE ) {
+    texY -= texHeight / 2;
+  }
+}
+
+void Text::setTextv( const char* s, va_list ap )
+{
+  hard_assert( s != nullptr );
+
+  char buffer[1024];
+  vsnprintf( buffer, 1024, s, ap );
+  buffer[1023] = '\0';
+
+  if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
+    clear();
+  }
+  else {
+    int newHash = hash( buffer );
+
+    if( newHash != lastHash ) {
+      if( texId == 0 ) {
+        glGenTextures( 1, &texId );
+      }
+
+      glBindTexture( GL_TEXTURE_2D, texId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+      texWidth = width;
+      style.fonts[font].upload( buffer, &texWidth, &texHeight );
+
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+      realign();
+    }
+  }
+}
+
+Text::Text() :
+  x( 0 ), y( 0 ), width( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ),
+  texX( 0 ), texY( 0 ), texWidth( 0 ), texHeight( 0 ), lastHash( EMPTY_HASH ), texId( 0 )
+{}
+
+Text::Text( int x_, int y_, int width_, int align_, Font::Type font_, const char* s, ... ) :
+  x( x_ ), y( y_ ), width( width_ ), align( align_ ), font( font_ ),
+  texX( 0 ), texY( 0 ), texWidth( 0 ), texHeight( 0 ), lastHash( EMPTY_HASH ), texId( 0 )
+{
+  va_list ap;
+  va_start( ap, s );
+  setTextv( s, ap );
+  va_end( ap );
 }
 
 Text::~Text()
 {
-  delete[] labels;
+  clear();
 }
 
-void Text::resize( int width_ )
+Text::Text( Text&& l ) :
+  x( l.x ), y( l.y ), width( l.width ), align( l.align ), font( l.font ),
+  texX( l.texX ), texY( l.texY ), texWidth( l.texWidth ), texHeight( l.texHeight ),
+  lastHash( l.lastHash ), texId( l.texId )
+{
+  l.x         = 0;
+  l.y         = 0;
+  l.width     = 0;
+  l.align     = Area::ALIGN_NONE;
+  l.font      = Font::MONO;
+  l.texX      = 0;
+  l.texY      = 0;
+  l.texWidth  = 0;
+  l.texHeight = 0;
+  l.lastHash  = EMPTY_HASH;
+  l.texId     = 0;
+}
+
+Text& Text::operator = ( Text&& l )
+{
+  if( &l == this ) {
+    return *this;
+  }
+
+  clear();
+
+  x         = l.x;
+  y         = l.y;
+  width     = l.width;
+  align     = l.align;
+  font      = l.font;
+  texX      = l.texX;
+  texY      = l.texY;
+  texWidth  = l.texWidth;
+  texHeight = l.texHeight;
+  lastHash  = l.lastHash;
+  texId     = l.texId;
+
+  l.x         = 0;
+  l.y         = 0;
+  l.width     = 0;
+  l.align     = Area::ALIGN_NONE;
+  l.font      = Font::MONO;
+  l.texX      = 0;
+  l.texY      = 0;
+  l.texWidth  = 0;
+  l.texHeight = 0;
+  l.lastHash  = EMPTY_HASH;
+  l.texId     = 0;
+
+  return *this;
+}
+
+void Text::setPosition( int x_, int y_ )
+{
+  x = x_;
+  y = y_;
+
+  realign();
+}
+
+void Text::setWidth( int width_ )
 {
   width = width_;
+
+  realign();
+}
+
+void Text::setAlign( int align_ )
+{
+  align = align_;
+
+  realign();
+}
+
+void Text::setFont( Font::Type font_ )
+{
+  font = font_;
 }
 
 void Text::setText( const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
-  vsnprintf( buffer, 2048, s, ap );
+  setTextv( s, ap );
   va_end( ap );
+}
 
-  int line = 0;
-
-  char* pos = buffer;
-  char* end = min( strchrnul( buffer, ' ' ), strchrnul( buffer, '\n' ) );
-
-  while( *end != '\0' && line < nLines - 1 ) {
-    char* next;
-
-    while( *end == ' ' ) {
-      next = min( strchrnul( end + 1, ' ' ), strchrnul( end + 1, '\n' ) );
-
-      char ch = *next;
-      *next = '\0';
-
-      int w = font->sizeOf( pos );
-
-      *next = ch;
-
-      if( w > width ) {
-        break;
-      }
-
-      end = next;
-    }
-
-    if( *end == '\0' ) {
-      break;
-    }
-
-    char ch = *end;
-    *end = '\0';
-
-    labels[line].setText( "%s", pos );
-
-    *end = ch;
-
-    pos = end + 1;
-    end = min( strchrnul( pos, ' ' ), strchrnul( pos, '\n' ) );
-
-    ++line;
+void Text::draw( const Area* area )
+{
+  if( texId == 0 ) {
+    return;
   }
 
-  labels[line].setText( "%s", pos );
-  ++line;
+  int posX = area->x + ( x < 0 ? area->width  + texX : texX );
+  int posY = area->y + ( y < 0 ? area->height + texY : texY );
 
-  while( line < nLines ) {
-    labels[line].setText( " " );
-    ++line;
-  }
+  glBindTexture( GL_TEXTURE_2D, texId );
+
+  shape.colour( style.colours.textBackground );
+  shape.fill( posX + 1, posY - 1, texWidth, texHeight );
+  shape.colour( style.colours.text );
+  shape.fill( posX, posY, texWidth, texHeight );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 }
 
 void Text::clear()
 {
-  for( int i = 0; i < nLines; ++i ) {
-    labels[i].clear();
-  }
-}
+  if( texId != 0 ) {
+    glDeleteTextures( 1, &texId );
 
-void Text::draw( const Area* area ) const
-{
-  for( int i = 0; i < nLines; ++i ) {
-    labels[i].draw( area );
+    texX      = 0;
+    texY      = 0;
+    texWidth  = 0;
+    texHeight = 0;
+    lastHash  = EMPTY_HASH;
+    texId     = 0;
   }
 }
 

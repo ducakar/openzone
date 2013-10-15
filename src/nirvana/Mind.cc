@@ -29,6 +29,10 @@
 namespace oz
 {
 
+Mind::Mind() :
+  bot( -1 ), flags( 0 ), side( 0 )
+{}
+
 Mind::Mind( int bot_ ) :
   bot( bot_ ), flags( 0 ), side( 0 )
 {
@@ -44,7 +48,34 @@ Mind::Mind( int bot_, InputStream* istream ) :
 
 Mind::~Mind()
 {
-  luaNirvana.unregisterMind( bot );
+  if( bot >= 0 ) {
+    luaNirvana.unregisterMind( bot );
+  }
+}
+
+Mind::Mind( Mind&& m ) :
+  bot( m.bot ), flags( m.flags ), side( m.side )
+{
+  m.bot   = -1;
+  m.flags = 0;
+  m.side  = 0;
+}
+
+Mind& Mind::operator = ( Mind&& m )
+{
+  if( &m == this ) {
+    return *this;
+  }
+
+  bot   = m.bot;
+  flags = m.flags;
+  side  = m.side;
+
+  m.bot   = -1;
+  m.flags = 0;
+  m.side  = 0;
+
+  return *this;
 }
 
 void Mind::update()

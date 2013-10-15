@@ -87,7 +87,7 @@ void MissionMenu::onReposition()
   imageWidth  = width - 280;
   imageHeight = height - 20 - imageY;
 
-  description.resize( width - 320 );
+  description.setWidth( width - 320 );
 
   if( selection != -1 ) {
     description.setText( "%s", missions[selection].description.cstr() );
@@ -174,7 +174,7 @@ void MissionMenu::onDraw()
 
 MissionMenu::MissionMenu() :
   Area( camera.width, camera.height ),
-  description( 40, 80, camera.width - 320, 8, Font::SANS, ALIGN_NONE ),
+  description( 40, 190, camera.width - 320, ALIGN_TOP, Font::SANS, "" ),
   imageId( 0 )
 {
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );

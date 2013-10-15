@@ -130,6 +130,7 @@ void Label::vset( int x, int y, const char* s, va_list ap )
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
+      width = -1;
       style.fonts[font].upload( buffer, &width, &height );
 
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );

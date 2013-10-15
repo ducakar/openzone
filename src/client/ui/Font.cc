@@ -34,24 +34,36 @@ namespace ui
 
 static const SDL_Colour SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
-int Font::sizeOf( const char* s ) const
+void Font::sizeOf( const char* s, int* width, int* height ) const
 {
-  int width;
-  TTF_SizeUTF8( handle, s, &width, nullptr );
-  return width;
+  TTF_SizeUTF8( handle, s, width, height );
 }
 
 void Font::upload( const char* s, int* width, int* height ) const
 {
-  SDL_Surface* textSurface = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
+  SDL_Surface* surf = nullptr;
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textSurface->w, textSurface->h, 0, GL_RGBA,
-                GL_UNSIGNED_BYTE, textSurface->pixels );
+  if( width != nullptr && *width > 0 ) {
+    surf = TTF_RenderUTF8_Blended_Wrapped( handle, s, SDL_COLOUR_WHITE, uint( *width ) );
+  }
+  else {
+    surf = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
+  }
+  if( surf == nullptr ) {
+    OZ_ERROR( "Failed to generate texture from text: %s", s );
+  }
 
-  *width  = textSurface->w;
-  *height = textSurface->h;
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, surf->w, surf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                surf->pixels );
 
-  SDL_FreeSurface( textSurface );
+  if( width != nullptr ) {
+    *width = surf->w;
+  }
+  if( height != nullptr ) {
+    *height = surf->h;
+  }
+
+  SDL_FreeSurface( surf );
 }
 
 void Font::init( const char* name, int height_ )

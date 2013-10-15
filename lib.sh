@@ -43,8 +43,8 @@ function build()
       mkdir -p $outDir
 
       cp "$prefix/libphysfs.so.1" \
-         "$prefix/libSDL-1.2.so.0" \
-         "$prefix/libSDL_ttf-2.0.so.0" \
+         "$prefix/libSDL2-2.0.so.0" \
+         "$prefix/libSDL2_ttf-2.0.so.0" \
          "$prefix/liblua.so.5.2" \
          "$prefix/libpng16.so.16" \
          "$prefix/libfreeimage.so.3" \

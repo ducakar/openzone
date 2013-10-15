@@ -43,9 +43,13 @@ class Mind
 
   public:
 
+    explicit Mind();
     explicit Mind( int bot );
     explicit Mind( int bot, InputStream* istream );
     ~Mind();
+
+    Mind( Mind&& m );
+    Mind& operator = ( Mind&& m );
 
     void update();
 

@@ -35,10 +35,10 @@ namespace ui
 void CinematicText::onReposition()
 {
   x     = camera.width / 8;
-  y     = 40;
+  y     = camera.height / 12;
   width = ( camera.width * 3 ) / 4;
 
-  text.resize( width );
+  text.setWidth( width );
 }
 
 void CinematicText::onDraw()
@@ -47,7 +47,7 @@ void CinematicText::onDraw()
 }
 
 CinematicText::CinematicText() :
-  Area( 600, 400 ), text( 0, 0, 600, 8, Font::TITLE, Area::ALIGN_NONE )
+  Area( 600, 400 ), text( 0, 0, 600, Area::ALIGN_NONE, Font::TITLE, "" )
 {
   flags |= PINNED_BIT;
 }

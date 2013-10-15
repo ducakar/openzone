@@ -49,7 +49,7 @@ void SettingsFrame::onDraw()
 
 SettingsFrame::SettingsFrame() :
   Frame( 400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
-  message( 4, 24, 392, 8, Font::SANS, Area::ALIGN_NONE )
+  message( 4, 24, -HEADER_SIZE - 4, Area::ALIGN_NONE, Font::SANS, "" )
 {
   x = ( parent->width  - width ) / 2;
   y = ( parent->height - height ) / 2;

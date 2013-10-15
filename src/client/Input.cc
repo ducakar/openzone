@@ -532,7 +532,7 @@ void Input::update()
     // server mouse acceleration as closely as possible.
     float move2  = max( mouseX*mouseX + mouseY*mouseY - mouseAccelThreshold, 0.0f );
     float move   = Math::fastSqrt( move2 );
-    float factor = min( mouseAccelC0 + mouseAccelC1 * move + mouseAccelC2 * move2, mouseMaxAccel );
+    float factor = mouseAccelC0 + min( mouseAccelC1 * move + mouseAccelC2 * move2, mouseMaxAccel );
 
     mouseX *= factor;
     mouseY *= factor;
@@ -672,8 +672,8 @@ void Input::init()
   mouseSensW          = mouseConfig["sensitivity.w"].get( 2.0f );
 
   mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
-  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 2.0f );
-  mouseAccelC0        = mouseConfig["acceleration.c0"].get( 1.0f );
+  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 2.0f ) - 1.0f;
+  mouseAccelC0        = mouseConfig["acceleration.c0"].get( 0.4f );
   mouseAccelC1        = mouseConfig["acceleration.c1"].get( 0.0f );
   mouseAccelC2        = mouseConfig["acceleration.c2"].get( 0.0004f );
   mouseWheelStep      = mouseConfig["wheelStep"].get( 3.0f );
@@ -716,7 +716,7 @@ void Input::destroy()
   mouseConfig.add( "sensitivity.z",          mouseSensZ );
   mouseConfig.add( "sensitivity.w",          mouseSensW );
   mouseConfig.add( "acceleration.threshold", mouseAccelThreshold );
-  mouseConfig.add( "acceleration.max",       mouseMaxAccel );
+  mouseConfig.add( "acceleration.max",       mouseMaxAccel + 1.0f );
   mouseConfig.add( "acceleration.c0",        mouseAccelC0 );
   mouseConfig.add( "acceleration.c1",        mouseAccelC1 );
   mouseConfig.add( "acceleration.c2",        mouseAccelC2 );

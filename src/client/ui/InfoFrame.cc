@@ -89,7 +89,7 @@ void InfoFrame::onDraw()
 
 InfoFrame::InfoFrame() :
   Frame( 320, 12 + 30 * style.fonts[Font::SANS].height, "" ),
-  text( 6, 4, 308, 30, Font::SANS, Area::ALIGN_NONE ), lastId( -1 )
+  text( 6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, Font::SANS, "" ), lastId( -1 )
 {
   flags |= PINNED_BIT;
 }

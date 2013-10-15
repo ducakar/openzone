@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/ui/Label.hh>
+#include <client/ui/Font.hh>
 
 namespace oz
 {
@@ -32,33 +32,58 @@ namespace client
 namespace ui
 {
 
+class Area;
+
 class Text
 {
   private:
 
-    int    x;
-    int    y;
-    int    width;
-    int    nLines;
+    int        x;
+    int        y;
+    int        width;
+    int        align;
+    Font::Type font;
 
-    Font*  font;
-    Label* labels;
+    int        texX;
+    int        texY;
+    int        texWidth;
+    int        texHeight;
+    int        lastHash;
+    uint       texId;
 
-    static char buffer[2048];
+  private:
+
+    void realign();
+
+    OZ_PRINTF_FORMAT( 2, 0 )
+    void setTextv( const char* s, va_list ap );
 
   public:
 
-    explicit Text( int x, int y, int width, int nLines, Font::Type font, int alignment );
+    explicit Text();
+
+    OZ_PRINTF_FORMAT( 7, 8 )
+    explicit Text( int x, int y, int height, int align, Font::Type font, const char* s, ... );
+
     ~Text();
 
-    void resize( int width );
+    Text( const Text& ) = delete;
+    Text( Text&& l );
+
+    Text& operator = ( const Text& ) = delete;
+    Text& operator = ( Text&& l );
+
+    void setPosition( int x, int y );
+    void setWidth( int width );
+    void setAlign( int align );
+    void setFont( Font::Type font ); // Changes are applied next time the text is set.
 
     OZ_PRINTF_FORMAT( 2, 3 )
     void setText( const char* s, ... );
 
-    void clear();
+    void draw( const Area* area );
 
-    void draw( const Area* area ) const;
+    void clear();
 
 };
 

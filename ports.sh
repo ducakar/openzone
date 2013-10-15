@@ -687,7 +687,7 @@ function build()
   setup_ndk_ARM     && build_sdl2_ttf
   setup_ndk_ARMv7a  && build_sdl2_ttf
   setup_ndk_MIPS    && build_sdl2_ttf
-  setup_emscripten  && build_sdl_ttf
+  setup_emscripten  && build_sdl2_ttf
 }
 
 case $1 in

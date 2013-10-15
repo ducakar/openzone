@@ -131,7 +131,7 @@ void QuestFrame::onDraw()
 
 QuestFrame::QuestFrame() :
   Frame( 500, 2, OZ_GETTEXT( "No quest" ) ),
-  description( 6, 4, 488, 16, Font::SANS, Area::ALIGN_NONE ),
+  description( 6, -HEADER_SIZE - 4, 488, Area::ALIGN_TOP, Font::SANS, "" ),
   contentHeight( 8 + 16 * style.fonts[Font::SANS].height ),
   isOpened( false ), lastQuest( -1 ), lastState( Quest::NONE )
 {

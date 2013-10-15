@@ -24,6 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
+#include <client/ui/Label.hh>
 #include <client/ui/Text.hh>
 
 namespace oz

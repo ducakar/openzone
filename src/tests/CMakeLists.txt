@@ -18,8 +18,11 @@ endif()
 add_executable( quicksort quicksort.cc )
 target_link_libraries( quicksort ozCore )
 
+add_executable( sdlEmu sdlEmu.cc )
+target_link_libraries( sdlEmu ozCore ozEngine )
+
 add_executable( simd simd.cc )
 target_link_libraries( simd ozCore )
 
 add_executable( test test.cc )
-target_link_libraries( test ozCore SDL_ttf )
+target_link_libraries( test ozCore ozFactory )
