@@ -435,7 +435,7 @@ void Bot::onUpdate()
           dim = clazz->corpseDim;
         }
 
-        life -= clazz->life * CORPSE_FADE_FACTOR * Timer::TICK_TIME;
+        life = max( life - clazz->life * CORPSE_FADE_FACTOR * Timer::TICK_TIME, 0.0f );
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes
         // sounds and frags to fly around), that's why we just remove the object
         if( life == 0.0f ) {

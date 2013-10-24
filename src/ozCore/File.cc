@@ -41,6 +41,7 @@
 # include <windows.h>
 # include <shlobj.h>
 #else
+# include <cstdio>
 # include <cstdlib>
 # include <dirent.h>
 # include <fcntl.h>
@@ -71,7 +72,8 @@ namespace oz
 static pp::Core*      ppCore = nullptr;
 static pp::FileSystem ppFileSystem;
 #endif
-static String         specialDir[File::VIDEOS + 1];
+static String         specialDirs[File::VIDEOS + 1];
+static String         exePath;
 
 static bool operator < ( const File& a, const File& b )
 {
@@ -90,6 +92,11 @@ static void initSpecialDirs()
   File::mkdir( "/data" );
 }
 
+static void initExecutablePath()
+{
+  exePath = "/";
+}
+
 #elif defined( _WIN32 )
 
 static void setSpecialDir( File::UserDirectory dir, int csidl )
@@ -98,7 +105,12 @@ static void setSpecialDir( File::UserDirectory dir, int csidl )
   path[0] = '\0';
 
   SHGetSpecialFolderPath( nullptr, path, csidl, false );
-  specialDir[dir] = path;
+
+  for( int i = 0; i < MAX_PATH && path[i] != '\0'; ++i ) {
+    path[i] = path[i] == '\\' ? '/' : path[i];
+  }
+
+  specialDirs[dir] = path;
 }
 
 static void initSpecialDirs()
@@ -114,6 +126,20 @@ static void initSpecialDirs()
   setSpecialDir( File::VIDEOS,    CSIDL_MYVIDEO          );
 }
 
+static void initExecutablePath()
+{
+  char path[MAX_PATH];
+
+  HMODULE module = GetModuleHandle( nullptr );
+  int     length = GetModuleFileName( module, path, MAX_PATH );
+
+  for( int i = 0; i < length; ++i ) {
+    path[i] = path[i] == '\\' ? '/' : path[i];
+  }
+
+  exePath = length == 0 || length == MAX_PATH ? String() : String( path, length );
+}
+
 #else
 
 static void setSpecialDir( File::UserDirectory dir, const char* name,
@@ -125,14 +151,14 @@ static void setSpecialDir( File::UserDirectory dir, const char* name,
     const String* defValue = vars->find( name );
 
     if( defValue == nullptr ) {
-      specialDir[dir] = "";
+      specialDirs[dir] = "";
       return;
     }
 
     value = defValue->cstr();
   }
 
-  specialDir[dir] = value;
+  specialDirs[dir] = value;
 }
 
 static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
@@ -163,7 +189,7 @@ static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
     }
 
     if( path.beginsWith( "$HOME" ) ) {
-      path = specialDir[File::HOME] + path.substring( 5 );
+      path = specialDirs[File::HOME] + path.substring( 5 );
     }
 
     vars->add( name, path );
@@ -174,21 +200,21 @@ static void initSpecialDirs()
 {
   setSpecialDir( File::HOME, "HOME", nullptr );
 
-  if( specialDir[File::HOME].isEmpty() ) {
+  if( specialDirs[File::HOME].isEmpty() ) {
     OZ_ERROR( "oz::File: Unable to determine home directory: HOME environment variable not set" );
   }
 
   HashMap<String, String> vars;
 
   // Default locations.
-  vars.add( "XDG_CONFIG_HOME",   specialDir[File::HOME] + "/.config"      );
-  vars.add( "XDG_DATA_HOME",     specialDir[File::HOME] + "/.local/share" );
-  vars.add( "XDG_DESKTOP_DIR",   specialDir[File::HOME] + "/Desktop"      );
-  vars.add( "XDG_DOCUMENTS_DIR", specialDir[File::HOME] + "/Documents"    );
-  vars.add( "XDG_DOWNLOAD_DIR",  specialDir[File::HOME] + "/Download"     );
-  vars.add( "XDG_MUSIC_DIR",     specialDir[File::HOME] + "/Music"        );
-  vars.add( "XDG_PICTURES_DIR",  specialDir[File::HOME] + "/Pictures"     );
-  vars.add( "XDG_VIDEOS_DIR",    specialDir[File::HOME] + "/Videos"       );
+  vars.add( "XDG_CONFIG_HOME",   specialDirs[File::HOME] + "/.config"      );
+  vars.add( "XDG_DATA_HOME",     specialDirs[File::HOME] + "/.local/share" );
+  vars.add( "XDG_DESKTOP_DIR",   specialDirs[File::HOME] + "/Desktop"      );
+  vars.add( "XDG_DOCUMENTS_DIR", specialDirs[File::HOME] + "/Documents"    );
+  vars.add( "XDG_DOWNLOAD_DIR",  specialDirs[File::HOME] + "/Download"     );
+  vars.add( "XDG_MUSIC_DIR",     specialDirs[File::HOME] + "/Music"        );
+  vars.add( "XDG_PICTURES_DIR",  specialDirs[File::HOME] + "/Pictures"     );
+  vars.add( "XDG_VIDEOS_DIR",    specialDirs[File::HOME] + "/Videos"       );
 
   // Override default locations with global settings, if exist.
   loadXDGSettings( "/etc/xdg/user", &vars );
@@ -205,6 +231,19 @@ static void initSpecialDirs()
   setSpecialDir( File::MUSIC,     "XDG_MUSIC_DIR",     &vars );
   setSpecialDir( File::PICTURES,  "XDG_PICTURES_DIR",  &vars );
   setSpecialDir( File::VIDEOS,    "XDG_VIDEOS_DIR",    &vars );
+}
+
+static void initExecutablePath()
+{
+  char pidPathBuffer[PATH_MAX];
+  char exePathBuffer[PATH_MAX];
+
+  pid_t pid = getpid();
+  snprintf( pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid );
+
+  ptrdiff_t length = readlink( pidPathBuffer, exePathBuffer, PATH_MAX );
+
+  exePath = length < 0 ? String() : String( exePathBuffer, int( length ) );
 }
 
 #endif
@@ -961,7 +1000,7 @@ DArray<File> File::ls() const
       return array;
     }
 
-    char    entityBuffer[ offsetof( dirent, d_name ) + 256 ];
+    char    entityBuffer[ offsetof( dirent, d_name ) + NAME_MAX + 1 ];
     dirent* entityData = reinterpret_cast<dirent*>( entityBuffer );
     dirent* entity;
 
@@ -1024,8 +1063,8 @@ String File::cwd()
 
 #else
 
-  char buffer[256];
-  bool hasFailed = getcwd( buffer, 256 ) == nullptr;
+  char buffer[PATH_MAX];
+  bool hasFailed = getcwd( buffer, PATH_MAX ) == nullptr;
   return hasFailed ? "" : buffer;
 
 #endif
@@ -1122,13 +1161,18 @@ bool File::mountLocal( const char* path, bool append )
   return true;
 }
 
-const char* File::userDirectory( File::UserDirectory directory )
+const String& File::userDirectory( File::UserDirectory directory )
 {
   if( directory < HOME || VIDEOS < directory ) {
-    return nullptr;
+    return String::EMPTY;
   }
 
-  return specialDir[directory];
+  return specialDirs[directory];
+}
+
+const String& File::executablePath()
+{
+  return exePath;
 }
 
 void File::init( NaClFileSystem naclFileSystem, int naclSize )
@@ -1161,6 +1205,7 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
 #endif
 
   initSpecialDirs();
+  initExecutablePath();
 
   if( PHYSFS_init( nullptr ) == 0 ) {
     OZ_ERROR( "oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
@@ -1172,8 +1217,9 @@ void File::destroy()
   PHYSFS_deinit();
 
   for( int i = HOME; i <= VIDEOS; ++i ) {
-    specialDir[i] = "";
+    specialDirs[i] = "";
   }
+  exePath = "";
 }
 
 }

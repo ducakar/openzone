@@ -626,9 +626,14 @@ class Quat : public VectorBase4
     }
 
     /**
-     * Approximate spherical linear interpolation between two rotations.
+     * Spherical linear interpolation between two orientations.
      */
-    static Quat slerp( const Quat& a, const Quat& b, float t )
+    static Quat slerp( const Quat& a, const Quat& b, float t );
+
+    /**
+     * Approximate but much faster spherical linear interpolation between two orientations.
+     */
+    static Quat fastSlerp( const Quat& a, const Quat& b, float t )
     {
       hard_assert( 0.0f <= t && t <= 1.0f );
 

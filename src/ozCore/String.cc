@@ -44,6 +44,8 @@ namespace oz
 
 static const int LOCAL_BUFFER_SIZE = 4096;
 
+const String String::EMPTY;
+
 OZ_HIDDEN
 String::String( int count_, int ) :
   buffer( baseBuffer ), count( 0 )

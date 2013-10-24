@@ -64,6 +64,7 @@ class Inventory : public Frame
     Label          itemDesc;
 
     int            taggedItemIndex;
+    bool           taggedOwnerComponent;
 
     int            scrollOwner;
     int            scrollOther;

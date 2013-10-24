@@ -27,6 +27,8 @@
 
 using namespace oz;
 
+#if 0
+
 static const char* rwError = "";
 
 static Sint64 rwSize( struct SDL_RWops* context )
@@ -78,7 +80,7 @@ static size_t rwRead( struct SDL_RWops* context, void* ptr, size_t size, size_t 
     nBytes = maxnum * size;
   }
 
-  memcpy( ptr, context->hidden.mem.here, nBytes );
+  mCopy( ptr, context->hidden.mem.here, nBytes );
   context->hidden.mem.here += nBytes;
 
   return maxnum;
@@ -122,6 +124,8 @@ SDL_RWops* SDL_RWFromConstMem( const void* mem, int size )
 
   return rwOps;
 }
+
+#endif
 
 int main()
 {

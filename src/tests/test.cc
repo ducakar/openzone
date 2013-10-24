@@ -32,11 +32,6 @@ int main()
   System::init();
   File::init();
 
-  OutputStream ostream( 0 );
-  if( !ModelBuilder::buildModel( "/home/davorin/monkey.dae", &ostream ) ) {
-    Log() << ModelBuilder::getError();
-  }
-
   File::destroy();
   return 0;
 }

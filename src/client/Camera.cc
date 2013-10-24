@@ -96,7 +96,7 @@ void Camera::updateReferences()
 
 void Camera::align()
 {
-  rot      = ~Quat::slerp( rot, desiredRot * shakedRot, ROT_SMOOTHING_COEF );
+  rot      = ~Quat::fastSlerp( rot, desiredRot * shakedRot, ROT_SMOOTHING_COEF );
   mag      = Math::mix( mag, desiredMag, SMOOTHING_COEF );
   p        = Math::mix( p, desiredPos, SMOOTHING_COEF );
   velocity = ( p - oldPos ) / Timer::TICK_TIME;

@@ -222,7 +222,7 @@ The following commands may be given (`build` is assumed if none):
 - `clean`: Delete directories for all platforms.
 - (none): Copy libraries for selected platforms into corresponding directories.
 
-### `package.sh {src | data | datasrc | boundle}` ###
+### `package.sh {src | data | datasrc | bundle}` ###
 
 One of the following commands must be given:
 
@@ -231,7 +231,7 @@ One of the following commands must be given:
   `share/openzone` directory are included.
 - `datasrc`: Create source data archive `openzone-datasrc-<version>.tar.xz`. All source data
   packages found in `data` directory are included.
-- `boundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
+- `bundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
   standalone builds and compiled game data packages found in `share/openzone`.
 
 ### `ports.sh [clean | fetch]` ###

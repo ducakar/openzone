@@ -68,11 +68,12 @@ void Client::printUsage( const char* invocationName )
     "                use 42 as the random seed. Useful for benchmarking.\n"
     "  -L <lang>     Use language <lang>. Should match a subdirectory name in\n"
     "                'lingua/' directory inside game data archives.\n"
-    "  -p <prefix>   Sets data directory to '<prefix>/share/openzone'.\n"
+    "                Defaults to 'en'.\n"
+    "  -p <prefix>   Set global data directory to '<prefix>/share/openzone'.\n"
     "                Defaults to '%s'.\n"
     "  -v            Print verbose log messages to terminal.\n"
     "\n",
-    invocationName, OZ_INSTALL_PREFIX );
+    invocationName, OZ_PREFIX );
 }
 
 int Client::init( int argc, char** argv )
@@ -81,12 +82,13 @@ int Client::init( int argc, char** argv )
   isBenchmark   = false;
   benchmarkTime = 0.0f;
 
-  String invocationName = String::fileBaseName( argv[0] );
-  String prefix;
-  String language;
-  String mission;
-  String layoutFile;
-  bool   doAutoload = false;
+  String executablePath = File::executablePath();
+  String invocationName = executablePath.fileName();
+  String prefixDir      = String::isEmpty( OZ_PREFIX ) ? executablePath.fileDirectory() : OZ_PREFIX;
+  String language       = "en";
+  String mission        = "";
+  String layoutFile     = "";
+  bool   doAutoload     = false;
 
   optind = 1;
   int opt;
@@ -121,7 +123,7 @@ int Client::init( int argc, char** argv )
         break;
       }
       case 'p': {
-        prefix = optarg;
+        prefixDir = optarg;
         break;
       }
       case 'v': {
@@ -210,9 +212,23 @@ int Client::init( int argc, char** argv )
   }
   initFlags |= INIT_SDL_TTF;
 
-  // Clean up after previous versions.
+  // Clean up after previous versions. Be evil. Delete saved games and screenshots.
+  File saveDir       = configDir + "/saves";
+  File screenshotDir = configDir + "/screenshots";
+
+  DArray<File> saveFiles = saveDir.ls();
+  foreach( file, saveFiles.citer() ) {
+    File::rm( file->path() );
+  }
+
+  DArray<File> screenshotFiles = screenshotDir.ls();
+  foreach( file, screenshotFiles.citer() ) {
+    File::rm( file->path() );
+  }
+
   File::rm( configDir + "/client.rc" );
 
+  // Load configuration.
   File configFile = configDir + "/client.json";
   if( config.load( configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
@@ -242,12 +258,14 @@ int Client::init( int argc, char** argv )
   config.add( "dir.data", dataDir );
   config.include( "dir.pictures", picturesDir );
   config.include( "dir.music", musicDir );
+  config.include( "dir.prefix", prefixDir );
 
   // tag variables as used
   config["dir.config"];
   config["dir.data"];
   config["dir.music"];
   config["dir.pictures"];
+  config["dir.prefix"];
 
   windowWidth     = config.include( "window.windowWidth",  1280 ).asInt();
   windowHeight    = config.include( "window.windowHeight", 720  ).asInt();
@@ -273,13 +291,7 @@ int Client::init( int argc, char** argv )
   network.init();
   initFlags |= INIT_NETWORK;
 
-  config["dir.prefix"];
-
-  if( prefix.isEmpty() ) {
-    prefix = config.include( "dir.prefix", OZ_INSTALL_PREFIX ).asString();
-  }
-
-  String globalDataDir = prefix + "/share/openzone";
+  String globalDataDir = config["dir.prefix"].asString() + "/share/openzone";
 
 #ifdef __native_client__
 

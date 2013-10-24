@@ -26,8 +26,8 @@
 // Version.
 #define OZ_VERSION "@OZ_VERSION@"
 
-// Default data directory.
-#define OZ_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+// Default root path (e.g. '/usr' on Linux or '.' for standalone).
+#define OZ_PREFIX "@OZ_PREFIX@"
 
 // Enable networking.
 #cmakedefine OZ_NET

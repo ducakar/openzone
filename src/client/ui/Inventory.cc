@@ -55,7 +55,8 @@ void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
-  inventory->taggedItemIndex = item->index;
+  inventory->taggedItemIndex      = item->index;
+  inventory->taggedOwnerComponent = true;
 
   if( isClicked ) {
     if( input.leftReleased ) {
@@ -98,7 +99,8 @@ void Inventory::otherItemCallback( ModelField* sender, bool isClicked )
 
   hard_assert( inventory->taggedItemIndex == -1 );
 
-  inventory->taggedItemIndex = item->index;
+  inventory->taggedItemIndex      = item->index;
+  inventory->taggedOwnerComponent = false;
 
   if( isClicked ) {
     if( input.leftReleased ) {
@@ -159,7 +161,9 @@ void Inventory::drawComponent( int height, const Object* container, const Dynami
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
-  if( taggedItem == nullptr || taggedItem->parent != container->index ) {
+  if( taggedItem == nullptr || taggedItem->parent != container->index ||
+      taggedOwnerComponent != ( container == owner ) )
+  {
     return;
   }
 
@@ -206,7 +210,8 @@ void Inventory::onVisibilityChange( bool )
 void Inventory::onUpdate()
 {
   updateReferences();
-  taggedItemIndex = -1;
+  taggedItemIndex      = -1;
+  taggedOwnerComponent = true;
 
   show( camera.state == Camera::UNIT && mouse.doShow && owner != nullptr &&
         !( owner->state & Bot::DEAD_BIT ) );
@@ -295,7 +300,7 @@ Inventory::Inventory() :
   owner( nullptr ), other( nullptr ),
   lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-  taggedItemIndex( -1 ), scrollOwner( 0 ), scrollOther( 0 )
+  taggedItemIndex( -1 ), taggedOwnerComponent( true ), scrollOwner( 0 ), scrollOther( 0 )
 {
   flags |= UPDATE_BIT;
 

@@ -52,10 +52,12 @@ elseif( WIN32 )
 endif()
 
 if( OZ_STANDALONE )
-  set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
-  set( CMAKE_INSTALL_RPATH "\\\${ORIGIN}/../../lib/${OZ_PLATFORM_NAME}" )
+  set( OZ_PREFIX "" )
   set( OZ_BINARY_SUBDIR "/${OZ_PLATFORM_NAME}" )
+  set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
+  set( CMAKE_INSTALL_RPATH "$ORIGIN/../../lib${OZ_BINARY_SUBDIR}" )
 else()
+  set( OZ_PREFIX "${CMAKE_INSTALL_PREFIX}" )
   set( OZ_BINARY_SUBDIR "" )
 endif()
 
@@ -218,8 +220,8 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "${flags} -Wno-float-equal -Wno-global-constructors -Wno-exit-time-destructors" )
 else()
   set( flags "${flags} -Wall -Wextra -Wconversion -Wcast-align -Winit-self -Wlogical-op -Wundef" )
-  set( flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual" )
-  set( flags "${flags} -Wformat=2 -Wmissing-format-attribute -Winvalid-pch" )
+  set( flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2" )
+  set( flags "${flags} -Wno-format-zero-length -Wmissing-format-attribute -Winvalid-pch" )
 
   # set( flags "${flags} -Wsuggest-attribute=noreturn" )
   # set( flags "${flags} -Wzero-as-null-pointer-constant" )
@@ -269,7 +271,7 @@ add_subdirectory( src )
 # Data files
 #
 
-# READMEs, launchers and libraries for standalone packages
+# Documentation, game data and libraries for a standalone package.
 if( OZ_STANDALONE )
   file( GLOB readmes doc/*.html )
   file( GLOB dataFiles share/openzone/*.zip )
@@ -279,15 +281,7 @@ if( OZ_STANDALONE )
   install( FILES ${readmes} DESTINATION . )
   install( DIRECTORY doc/licences DESTINATION . )
 
-  if( WIN32 )
-    file( GLOB winLaunchers etc/launchers/*.bat )
-
-    install( PROGRAMS ${winLaunchers} DESTINATION . )
-    install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION bin USE_SOURCE_PERMISSIONS )
-  else()
-    install( PROGRAMS etc/launchers/openzone.sh DESTINATION . )
-    install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION lib USE_SOURCE_PERMISSIONS )
-  endif()
+  install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION lib USE_SOURCE_PERMISSIONS )
 endif()
 
 #

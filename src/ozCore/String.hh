@@ -50,6 +50,13 @@ class String
     /// Size of static buffer.
     static const int BUFFER_SIZE = 48 - sizeof( char* ) - sizeof( int );
 
+  public:
+
+    /// Empty string. Useful when a function needs to return a reference to an empty string.
+    static const String EMPTY;
+
+  private:
+
     char* buffer;                  ///< Pointer to the current buffer.
     int   count;                   ///< Length in bytes without the terminating null character.
     char  baseBuffer[BUFFER_SIZE]; ///< Static buffer.

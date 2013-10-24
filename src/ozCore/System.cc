@@ -708,6 +708,7 @@ void System::init( int flags, CrashHandler* crashHandler_ )
 
 #if !defined( EMSCRIPTEN ) && !defined( __ANDROID__ ) && !defined( __native_client__ ) && \
     !defined( _WIN32 )
+
   int fd = open( "/", O_RDONLY );
   close( fd );
 
@@ -716,6 +717,7 @@ void System::init( int flags, CrashHandler* crashHandler_ )
   if( initFlags & LOCALE_BIT ) {
     setlocale( LC_ALL, "" );
   }
+
 #endif
 
   if( initFlags & HANDLERS_BIT ) {

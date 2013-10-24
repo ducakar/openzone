@@ -192,7 +192,7 @@ void CinematicProxy::update()
 
   float t = step.time == 0.0f ? 1.0f : min( stepTime / step.time, 1.0f );
 
-  camera.smoothRotateTo( Quat::slerp( beginRot, step.rot, t ) );
+  camera.smoothRotateTo( Quat::fastSlerp( beginRot, step.rot, t ) );
   camera.smoothMoveTo( Math::mix( beginPos, step.p, t ) );
   camera.colour = Math::mix( beginColour, step.colour, t );
   camera.align();

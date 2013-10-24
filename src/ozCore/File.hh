@@ -94,7 +94,7 @@ class File
     /**
      * Internal constructor.
      */
-    File( const String& path, Type type, int size, long64 time );
+    explicit File( const String& path, Type type, int size, long64 time );
 
   public:
 
@@ -435,13 +435,17 @@ class File
      *
      * File system initialisation must be performed before using this function on all platforms.
      */
-    static const char* userDirectory( UserDirectory directory );
+    static const String& userDirectory( UserDirectory directory );
 
     /**
-     * Initialise NaCl native file system and VFS.
+     * Get executable file path.
      *
-     * On platforms other than NaCl native file system does not need any other initialisation but
-     * determining special directories.
+     * On NaCl or on an error, an empty string is returned.
+     */
+    static const String& executablePath();
+
+    /**
+     * Initialise VFS and NaCl file system, determine user directories and executable path.
      *
      * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
      * @param naclSize NaCl file system size.

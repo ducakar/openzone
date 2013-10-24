@@ -32,4 +32,24 @@ namespace oz
 const Quat Quat::ZERO = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
 const Quat Quat::ID   = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
 
+Quat Quat::slerp( const Quat& a, const Quat& b, float t )
+{
+  hard_assert( 0.0f <= t && t <= 1.0f );
+
+  float cosTheta  = a.w*b.w + a.x*b.x + a.y*b.y + a.z*b.z;
+  float sinTheta2 = 1.0f - cosTheta*cosTheta;
+
+  if( sinTheta2 <= 0.0f ) {
+    return a;
+  }
+
+  float sinThetaInv = 1.0f / Math::sqrt( sinTheta2 );
+  float theta       = Math::acos( cosTheta );
+  float c1          = Math::sin( ( 1 - t ) * theta ) * sinThetaInv;
+  float c2          = Math::sin( t * theta ) * sinThetaInv;
+  Quat  q           = cosTheta < 0.0f ? c1*a - c2*b : c1*a + c2*b;
+
+  return ~q;
+}
+
 }
