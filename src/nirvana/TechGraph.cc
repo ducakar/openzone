@@ -40,12 +40,12 @@ TechGraph::Node* TechGraph::findNode( const char* name )
   OZ_ERROR( "Invalid TechGraph node reference '%s'", name );
 }
 
-bool TechGraph::enable( const char* technology )
+bool TechGraph::enable( const char* )
 {
   return false;
 }
 
-bool TechGraph::disable( const char* technology )
+bool TechGraph::disable( const char* )
 {
   return false;
 }

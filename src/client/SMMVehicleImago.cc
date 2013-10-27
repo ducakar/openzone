@@ -72,7 +72,7 @@ void SMMVehicleImago::draw( const Imago* )
     tf.pop();
   }
 
-  smm->schedule( -1, Mesh::SCENE_QUEUE );
+  smm->schedule( -1, Model::SCENE_QUEUE );
 }
 
 }

@@ -60,14 +60,14 @@ void MD2WeaponImago::draw( const Imago* parent )
     tf.model = Mat44::translation( obj->p - Point::ORIGIN );
     tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
 
-    md2->scheduleFrame( 0, Mesh::SCENE_QUEUE );
+    md2->scheduleFrame( 0, Model::SCENE_QUEUE );
   }
   else if( parent->flags & Imago::MD2MODEL_BIT ) {
     const MD2Imago* parentImago = static_cast<const MD2Imago*>( parent );
 
     tf.model = tf.model * md2->weaponTransf;
 
-    md2->scheduleAnim( &parentImago->anim, Mesh::SCENE_QUEUE );
+    md2->scheduleAnim( &parentImago->anim, Model::SCENE_QUEUE );
   }
 }
 

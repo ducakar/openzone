@@ -480,7 +480,7 @@ void Context::drawBSP( const Struct* str )
   BSP* bsp = requestBSP( str->bsp );
 
   if( bsp->isLoaded() ) {
-    bsp->schedule( str, Mesh::SCENE_QUEUE );
+    bsp->schedule( str, Model::SCENE_QUEUE );
   }
 }
 
@@ -699,7 +699,7 @@ void Context::unload()
   MD2Imago::pool.free();
   MD2WeaponImago::pool.free();
 
-  Mesh::deallocate();
+  Model::deallocate();
 
   while( !sources.isEmpty() ) {
     removeSource( sources.first(), nullptr );

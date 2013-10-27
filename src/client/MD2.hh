@@ -116,14 +116,14 @@ class MD2 : public SMM
 
     static SMM* create( int id );
 
-    void scheduleFrame( int frame, Mesh::QueueType queue )
+    void scheduleFrame( int frame, Model::QueueType queue )
     {
-      mesh.scheduleFrame( -1, frame, queue );
+      model.scheduleFrame( -1, frame, queue );
     }
 
-    void scheduleAnim( const AnimState* anim, Mesh::QueueType queue )
+    void scheduleAnim( const AnimState* anim, Model::QueueType queue )
     {
-      mesh.scheduleAnimated( -1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
+      model.scheduleAnimated( -1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
     }
 
     void preload() override;

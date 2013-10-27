@@ -18,64 +18,28 @@
  */
 
 /**
- * @file client/SMM.hh
- *
- * Single mesh model.
- *
- * Common model format that all simple models are compiled to.
+ * @file builder/AssImp.hh
  */
 
 #pragma once
 
+#include <builder/common.hh>
 #include <client/Model.hh>
 
 namespace oz
 {
-namespace client
+namespace builder
 {
 
-class SMM
+class AssImp
 {
   public:
 
-    typedef SMM* CreateFunc( int id );
-
-  protected:
-
-    int   id;
-    Model model;
-
-    explicit SMM( int id );
-
-  public:
-
-    static SMM* create( int id );
-    virtual ~SMM();
-
-    Vec3 dim() const
-    {
-      return model.dim;
-    }
-
-    bool isPreloaded() const
-    {
-      return model.isPreloaded();
-    }
-
-    bool isLoaded() const
-    {
-      return model.isLoaded();
-    }
-
-    void schedule( int component, Model::QueueType queue )
-    {
-      model.schedule( component, queue );
-    }
-
-    virtual void preload();
-    virtual void load();
+    void build( const char* path );
 
 };
+
+extern AssImp assImp;
 
 }
 }

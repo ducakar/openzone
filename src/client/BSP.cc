@@ -41,7 +41,7 @@ BSP::BSP( const oz::BSP* bsp_ ) :
 
 BSP::~BSP()
 {
-  mesh.unload();
+  model.unload();
 
   if( bsp != nullptr ) {
     foreach( model, bsp->models.citer() ) {
@@ -50,7 +50,7 @@ BSP::~BSP()
   }
 }
 
-void BSP::schedule( const Struct* str, Mesh::QueueType queue )
+void BSP::schedule( const Struct* str, Model::QueueType queue )
 {
   if( str != nullptr ) {
     tf.model = Mat44::translation( str->p - Point::ORIGIN );
@@ -62,7 +62,7 @@ void BSP::schedule( const Struct* str, Mesh::QueueType queue )
       tf.push();
       tf.model.translate( entity.offset );
 
-      mesh.schedule( i + 1, queue );
+      model.schedule( i + 1, queue );
 
       if( entity.clazz->model != -1 ) {
         SMM* smm = context.smms[entity.clazz->model].handle;
@@ -78,12 +78,12 @@ void BSP::schedule( const Struct* str, Mesh::QueueType queue )
     }
   }
 
-  mesh.schedule( 0, queue );
+  model.schedule( 0, queue );
 }
 
 void BSP::preload()
 {
-  const File* file = mesh.preload( "@bsp/" + bsp->name + ".ozcBSP" );
+  const File* file = model.preload( "@bsp/" + bsp->name + ".ozcBSP" );
   InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
@@ -93,7 +93,7 @@ void BSP::preload()
 
 void BSP::load()
 {
-  mesh.load( GL_STATIC_DRAW );
+  model.load( GL_STATIC_DRAW );
 }
 
 }

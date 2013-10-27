@@ -25,7 +25,7 @@
 
 #include <builder/common.hh>
 
-#include <client/Mesh.hh>
+#include <client/Model.hh>
 
 namespace oz
 {
@@ -69,28 +69,27 @@ class Compiler
 
   private:
 
-    static const int MESH_BIT = 0x00000001;
-    static const int PART_BIT = 0x00000002;
+    static const int MODEL_BIT = 0x00000001;
+    static const int MESH_BIT  = 0x00000002;
 
-    struct Part
+    struct Mesh
     {
       int          component;
-
-      int          material;
+      int          flags;
       String       texture;
 
       int          firstIndex;
       int          nIndices;
       List<ushort> indices;
 
-      bool operator == ( const Part& part ) const
+      bool operator == ( const Mesh& mesh ) const
       {
-        return component == part.component && material == part.material &&
-               texture.equals( part.texture );
+        return component == mesh.component && flags == mesh.flags &&
+               texture.equals( mesh.texture );
       }
     };
 
-    List<Part>    parts;
+    List<Mesh>    meshes;
     List<Vertex>  vertices;
     DArray<Point> positions;
     DArray<Vec3>  normals;
@@ -98,7 +97,7 @@ class Compiler
     Bounds        bounds;
 
     Vertex        vert;
-    Part          part;
+    Mesh          mesh;
 
     int           caps;
     int           flags;
@@ -115,8 +114,8 @@ class Compiler
     void enable( Capability cap );
     void disable( Capability cap );
 
-    void beginMesh();
-    void endMesh();
+    void beginModel();
+    void endModel();
 
     void anim( int nFrames, int nPositions );
     void component( int id );
@@ -141,8 +140,8 @@ class Compiler
     void animPositions( const float* positions );
     void animNormals( const float* normals );
 
-    void writeMesh( OutputStream* os, bool globalTextures = false );
-    void buildMeshTextures( const char* destDir );
+    void writeModel( OutputStream* os, bool globalTextures = false );
+    void buildModelTextures( const char* destDir );
 
     void init();
     void destroy();

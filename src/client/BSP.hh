@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/Mesh.hh>
+#include <client/Model.hh>
 
 namespace oz
 {
@@ -35,7 +35,7 @@ class BSP
   private:
 
     const oz::BSP* bsp;
-    Mesh           mesh;
+    Model          model;
 
   public:
 
@@ -49,20 +49,20 @@ class BSP
 
     Vec3 dim() const
     {
-      return mesh.dim;
+      return model.dim;
     }
 
     bool isPreloaded() const
     {
-      return mesh.isPreloaded();
+      return model.isPreloaded();
     }
 
     bool isLoaded() const
     {
-      return mesh.isLoaded();
+      return model.isLoaded();
     }
 
-    void schedule( const Struct* str, Mesh::QueueType queue );
+    void schedule( const Struct* str, Model::QueueType queue );
 
     void preload();
     void load();

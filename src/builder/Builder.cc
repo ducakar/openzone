@@ -30,7 +30,7 @@
 #include <builder/Terra.hh>
 #include <builder/BSP.hh>
 #include <builder/Class.hh>
-#include <builder/OBJ.hh>
+#include <builder/AssImp.hh>
 #include <builder/MD2.hh>
 #include <builder/MD3.hh>
 
@@ -475,7 +475,7 @@ void Builder::buildModels()
     }
 
     if( File( dir->path() + "/data.obj" ).type() != File::MISSING ) {
-      obj.build( dir->path() );
+      assImp.build( dir->path() );
     }
     else if( File( dir->path() + "/tris.md2" ).type() != File::MISSING ) {
       md2.build( dir->path() );

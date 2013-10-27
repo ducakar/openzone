@@ -445,7 +445,7 @@ class String
     /**
      * Create an empty string.
      */
-    String() :
+    explicit String() :
       buffer( baseBuffer ), count( 0 )
     {
       buffer[0] = '\0';
@@ -457,7 +457,7 @@ class String
      * @param s C string.
      * @param count length in bytes without the terminating null character.
      */
-    String( const char* s, int count );
+    explicit String( const char* s, int count );
 
     /**
      * Create string form a given C string (nullptr is permitted, equals "").
@@ -467,7 +467,7 @@ class String
     /**
      * Create string by concatenating given two C strings.
      */
-    String( const char* s, const char* t );
+    explicit String( const char* s, const char* t );
 
     /**
      * Create either "true" or "false" string.

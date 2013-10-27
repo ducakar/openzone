@@ -103,7 +103,7 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
       }
     }
 
-    bspModel->schedule( nullptr, Mesh::OVERLAY_QUEUE );
+    bspModel->schedule( nullptr, Model::OVERLAY_QUEUE );
   }
   else {
     Vec3 dim   = clazz->dim + Vec3( 2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON );
@@ -113,7 +113,7 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
     overlaps  = collider.overlaps( bb );
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 
-    model->schedule( -1, Mesh::OVERLAY_QUEUE );
+    model->schedule( -1, Model::OVERLAY_QUEUE );
     context.releaseModel( clazz->imagoModel );
   }
 

@@ -13,13 +13,12 @@
     * String: construction from numbers, new number parsing functions
     * new Mat33 class
     * SIMD support for linear algebra classes
-    * new SpinLock class
-    * new CallOnce class
+    * new SpinLock and CallOnce classes added for threading
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
     * Buffer supports zlib compression
+    * File class determines special user directories and executable path
     * PFile class merged into File class (VFS paths begin with '@')
-    * File class determines special user directories (home, settings, documents directory etc.)
     * new EnumMap class
     * new SharedLib class for run-time linking
     * new Profiler class
@@ -37,6 +36,7 @@
     * ModelBuilder class for building OpenZone models using Assimp library
     * TerraBuilder class generates random terrain heightmaps and corresponding textures
 - common
+    * common Lua functionality split into LuaCommon which is base for LuaMatrix, LuaNirvana ...
     * common Lua scripts included by all VMs
     * Lua <-> JSON value interoperability
 - matrix
@@ -66,6 +66,7 @@
     * Terrain can be generated based on config file settings
 - general
     * builds on Android (i686, ARM, ARMv7a, MIPS)
+    * common, matrix and nirvana sub-namespaces removed
     * LuaJIT can be optionally used instead of official Lua
 
 0.3.1

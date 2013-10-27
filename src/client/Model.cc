@@ -18,10 +18,10 @@
  */
 
 /**
- * @file client/Mesh.cc
+ * @file client/Model.cc
  */
 
-#include <client/Mesh.hh>
+#include <client/Model.hh>
 
 #include <client/Context.hh>
 #include <client/Terra.hh>
@@ -47,7 +47,7 @@ void Vertex::setFormat()
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 }
 
-struct Mesh::PreloadData
+struct Model::PreloadData
 {
   struct TexFiles
   {
@@ -60,13 +60,13 @@ struct Mesh::PreloadData
   List<TexFiles> textures;
 };
 
-Set<Mesh*>           Mesh::loadedMeshes;
-List<Mesh::Instance> Mesh::instances[2];
-Vertex*              Mesh::vertexAnimBuffer       = nullptr;
-int                  Mesh::vertexAnimBufferLength = 0;
-Mesh::Collation      Mesh::collation              = DEPTH_MAJOR;
+Set<Model*>           Model::loadedModels;
+List<Model::Instance> Model::instances[2];
+Vertex*               Model::vertexAnimBuffer       = nullptr;
+int                   Model::vertexAnimBufferLength = 0;
+Model::Collation      Model::collation              = DEPTH_MAJOR;
 
-void Mesh::animate( const Instance* instance )
+void Model::animate( const Instance* instance )
 {
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE2 );
@@ -127,7 +127,7 @@ void Mesh::animate( const Instance* instance )
   }
 }
 
-void Mesh::draw( const Instance* instance, int mask )
+void Model::draw( const Instance* instance, int mask )
 {
   tf.model = instance->transform;
   tf.apply();
@@ -135,57 +135,57 @@ void Mesh::draw( const Instance* instance, int mask )
   tf.colour = instance->colour;
   tf.applyColour();
 
-  int firstPart = 0;
-  int pastPart  = parts.length();
+  int firstMesh = 0;
+  int pastMesh  = meshes.length();
 
   Vec3 localDir = ~instance->transform * camera.at;
   int  dir      = ( localDir.x < 0.0f ) | ( localDir.y < 0.0f ) << 1 | ( localDir.z < 0.0f ) << 2;
 
   if( instance->component >= 0 ) {
-    firstPart = componentIndices[instance->component];
-    pastPart  = componentIndices[instance->component + 1];
+    firstMesh = componentIndices[instance->component];
+    pastMesh  = componentIndices[instance->component + 1];
   }
 
-  for( int i = firstPart; i < pastPart; ++i ) {
-    const Part& part = parts[i];
+  for( int i = firstMesh; i < pastMesh; ++i ) {
+    const Mesh& mesh = meshes[i];
 
-    if( part.flags & mask ) {
-      const Texture& texture = textures[part.texture];
+    if( mesh.flags & mask ) {
+      const Texture& texture = textures[mesh.texture];
 
       glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, texture.masks );
 
-      glDrawElements( GL_TRIANGLES, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( nullptr ) + part.firstIndex + dir * part.nIndices );
+      glDrawElements( GL_TRIANGLES, mesh.nIndices, GL_UNSIGNED_SHORT,
+                      static_cast<ushort*>( nullptr ) + dir * nIndices + mesh.firstIndex );
     }
   }
 }
 
-void Mesh::setCollation( Collation collation_ )
+void Model::setCollation( Collation collation_ )
 {
   collation = collation_;
 }
 
-void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
+void Model::drawScheduled( QueueType queue, int mask )
 {
-  if( collation == MESH_MAJOR ) {
-    foreach( i, loadedMeshes.citer() ) {
-      Mesh* mesh = *i;
+  if( collation == MODEL_MAJOR ) {
+    foreach( i, loadedModels.citer() ) {
+      Model* model = *i;
 
-      if( mesh->meshInstances[queue].isEmpty() ) {
+      if( model->modelInstances[queue].isEmpty() ) {
         continue;
       }
 
-      glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
+      glBindBuffer( GL_ARRAY_BUFFER, model->vbo );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, model->ibo );
 
       Vertex::setFormat();
 
-      shader.program( mesh->shaderId );
+      shader.program( model->shaderId );
 
-      foreach( instance, mesh->meshInstances[queue].citer() ) {
+      foreach( instance, model->modelInstances[queue].citer() ) {
         // HACK This is not a nice way to draw non-transparent parts with alpha < 1.
         int instanceMask = mask;
 
@@ -198,31 +198,31 @@ void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
           }
         }
 
-        if( !( mesh->flags & instanceMask ) ) {
+        if( !( model->flags & instanceMask ) ) {
           continue;
         }
 
-        if( mesh->nFrames != 0 ) {
-          mesh->animate( instance );
+        if( model->nFrames != 0 ) {
+          model->animate( instance );
         }
 
-        mesh->draw( instance, instanceMask );
+        model->draw( instance, instanceMask );
       }
     }
   }
   else {
-    Mesh* mesh = nullptr;
+    Model* model = nullptr;
 
     foreach( instance, instances[queue].citer() ) {
-      if( instance->mesh != mesh ) {
-        mesh = instance->mesh;
+      if( instance->model != model ) {
+        model = instance->model;
 
-        glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
+        glBindBuffer( GL_ARRAY_BUFFER, model->vbo );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, model->ibo );
 
         Vertex::setFormat();
 
-        shader.program( mesh->shaderId );
+        shader.program( model->shaderId );
       }
 
       // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
@@ -237,15 +237,15 @@ void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
         }
       }
 
-      if( !( mesh->flags & instanceMask ) ) {
+      if( !( model->flags & instanceMask ) ) {
         continue;
       }
 
-      if( mesh->nFrames != 0 ) {
-        mesh->animate( instance );
+      if( model->nFrames != 0 ) {
+        model->animate( instance );
       }
 
-      mesh->draw( instance, instanceMask );
+      model->draw( instance, instanceMask );
     }
   }
 
@@ -262,13 +262,13 @@ void Mesh::drawScheduled( Mesh::QueueType queue, int mask )
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Mesh::clearScheduled( Mesh::QueueType queue )
+void Model::clearScheduled( QueueType queue )
 {
-  if( collation == MESH_MAJOR ) {
-    foreach( i, loadedMeshes.citer() ) {
-      Mesh* mesh = *i;
+  if( collation == MODEL_MAJOR ) {
+    foreach( i, loadedModels.citer() ) {
+      Model* model = *i;
 
-      mesh->meshInstances[queue].clear();
+      model->modelInstances[queue].clear();
     }
   }
   else {
@@ -276,9 +276,9 @@ void Mesh::clearScheduled( Mesh::QueueType queue )
   }
 }
 
-void Mesh::deallocate()
+void Model::deallocate()
 {
-  loadedMeshes.deallocate();
+  loadedModels.deallocate();
 
   delete[] vertexAnimBuffer;
   vertexAnimBuffer = nullptr;
@@ -288,19 +288,19 @@ void Mesh::deallocate()
   instances[OVERLAY_QUEUE].deallocate();
 }
 
-Mesh::Mesh() :
+Model::Model() :
   vbo( 0 ), ibo( 0 ), animationTexId( 0 ),
   nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFrames( 0 ), nFramePositions( 0 ),
   vertices( nullptr ), positions( nullptr ), normals( nullptr ),
   preloadData( nullptr ), dim( Vec3::ONE )
 {}
 
-Mesh::~Mesh()
+Model::~Model()
 {
   unload();
 }
 
-const File* Mesh::preload( const char* path )
+const File* Model::preload( const char* path )
 {
   hard_assert( preloadData == nullptr );
 
@@ -336,7 +336,7 @@ const File* Mesh::preload( const char* path )
 
         texFiles.diffuse = name + ".dds";
         texFiles.masks   = name + "_m.dds";
-        texFiles.normals = name + "_n.dds";
+//         texFiles.normals = name + "_n.dds";
 
         if( !texFiles.diffuse.map() ) {
           OZ_ERROR( "Failed to map '%s'", texFiles.diffuse.path().cstr() );
@@ -351,14 +351,14 @@ const File* Mesh::preload( const char* path )
   return &preloadData->modelFile;
 }
 
-void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
+void Model::upload( const Vertex* vertices, int nVertices, uint usage ) const
 {
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Mesh::load( uint usage )
+void Model::load( uint usage )
 {
   flags = 0;
 
@@ -375,7 +375,7 @@ void Mesh::load( uint usage )
   istream.readInt();
 
   int nComponents = istream.readInt();
-  int nParts      = istream.readInt();
+  int nMeshes     = istream.readInt();
 
   liber.shaderIndex( istream.readString() );
 
@@ -461,22 +461,22 @@ void Mesh::load( uint usage )
   }
 
   componentIndices.resize( nComponents + 1 );
-  parts.resize( nParts );
+  meshes.resize( nMeshes );
 
   int lastComponent = 0;
   if( nComponents != 0 ) {
     componentIndices[0] = 0;
-    componentIndices[nComponents] = nParts;
+    componentIndices[nComponents] = nMeshes;
   }
 
-  for( int i = 0; i < nParts; ++i ) {
-    parts[i].flags      = istream.readInt();
-    parts[i].texture    = istream.readInt();
+  for( int i = 0; i < nMeshes; ++i ) {
+    meshes[i].flags      = istream.readInt();
+    meshes[i].texture    = istream.readInt();
 
-    parts[i].nIndices   = istream.readInt();
-    parts[i].firstIndex = istream.readInt();
+    meshes[i].nIndices   = istream.readInt();
+    meshes[i].firstIndex = istream.readInt();
 
-    int j = parts[i].flags & COMPONENT_MASK;
+    int j = meshes[i].flags & COMPONENT_MASK;
     if( j != lastComponent ) {
       hard_assert( j == lastComponent + 1 && j < nComponents );
 
@@ -484,12 +484,12 @@ void Mesh::load( uint usage )
       lastComponent = j;
     }
 
-    flags |= parts[i].flags & ( SOLID_BIT | ALPHA_BIT );
+    flags |= meshes[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
 
   hard_assert( nComponents == 0 || lastComponent == nComponents - 1 );
 
-  loadedMeshes.add( this );
+  loadedModels.add( this );
 
   delete preloadData;
   preloadData = nullptr;
@@ -497,7 +497,7 @@ void Mesh::load( uint usage )
   OZ_GL_CHECK_ERROR();
 }
 
-void Mesh::unload()
+void Model::unload()
 {
   if( preloadData != nullptr ) {
     delete preloadData;
@@ -518,7 +518,7 @@ void Mesh::unload()
   }
 
   componentIndices.clear();
-  parts.clear();
+  meshes.clear();
   textures.clear();
 
   if( nFrames != 0 ) {
@@ -538,7 +538,7 @@ void Mesh::unload()
   ibo = 0;
   vbo = 0;
 
-  loadedMeshes.exclude( this );
+  loadedModels.exclude( this );
 
   OZ_GL_CHECK_ERROR();
 }

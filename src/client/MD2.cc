@@ -282,7 +282,7 @@ SMM* MD2::create( int id )
 
 void MD2::preload()
 {
-  const File* file = mesh.preload( liber.models[id].path );
+  const File* file = model.preload( liber.models[id].path );
   InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - int( sizeof( float[16] ) ) );
@@ -291,7 +291,7 @@ void MD2::preload()
 
 void MD2::load()
 {
-  mesh.load( shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
+  model.load( shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
 }
 
 }

@@ -42,12 +42,12 @@ SMM::~SMM()
 
 void SMM::preload()
 {
-  mesh.preload( liber.models[id].path );
+  model.preload( liber.models[id].path );
 }
 
 void SMM::load()
 {
-  mesh.load( GL_STATIC_DRAW );
+  model.load( GL_STATIC_DRAW );
 }
 
 }

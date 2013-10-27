@@ -67,7 +67,7 @@ void ExplosionImago::draw( const Imago* )
 
   tf.colour.w.w = alpha*alpha;
 
-  smm->schedule( -1, Mesh::SCENE_QUEUE );
+  smm->schedule( -1, Model::SCENE_QUEUE );
 
   tf.colour.w.w = 1.0f;
 }

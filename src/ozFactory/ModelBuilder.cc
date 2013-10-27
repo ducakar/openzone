@@ -24,6 +24,8 @@
  * @file ozFactory/ModelBuilder.cc
  */
 
+#if 0
+
 #include "ModelBuilder.hh"
 
 #include <assimp/Importer.hpp>
@@ -36,22 +38,51 @@ namespace oz
 {
 
 static const int ERROR_LENGTH = 1024;
+static const Vec3 DIRS[] = {
+  Vec3( +1.0f, +1.0f, +1.0f ),
+  Vec3( -1.0f, +1.0f, +1.0f ),
+  Vec3( +1.0f, -1.0f, +1.0f ),
+  Vec3( -1.0f, -1.0f, +1.0f ),
+  Vec3( +1.0f, +1.0f, -1.0f ),
+  Vec3( -1.0f, +1.0f, -1.0f ),
+  Vec3( +1.0f, -1.0f, -1.0f ),
+  Vec3( -1.0f, -1.0f, -1.0f )
+};
 
 struct Vertex
 {
   Point p;
   Vec3  n;
-  float s;
-  float t;
+  float u;
+  float v;
+};
 
-  OZ_HIDDEN
-  void write( OutputStream* ostream ) const
+struct AnimVertex
+{
+  Point p;
+  Vec3  n;
+};
+
+struct Triangle
+{
+  float depth;
+  int   index;
+
+  bool operator < ( const Triangle& t )
   {
-    ostream->writePoint( p );
-    ostream->writeFloat( s );
-    ostream->writeFloat( t );
-    ostream->writeVec3( n );
+    return depth < t.depth;
   }
+};
+
+struct Mesh
+{
+  int firstIndex;
+  int nIndices;
+
+  int firstAnimVertex;
+  int nAnimVertices;
+
+  int material;
 };
 
 struct Material
@@ -60,13 +91,100 @@ struct Material
   float  alpha;
 };
 
-struct Mesh
+struct Anim
 {
-  int firstIndex;
-  int nIndices;
+  enum Behaviour
+  {
+    DEFAULT,
+    NEAREST,
+    LINEAR
+  };
 
-  int material;
+  struct Key
+  {
+    float time;
+    Vec3  scale;
+    Quat  rot;
+    Vec3  transl;
+  };
+
+  int       firstKey;
+  int       nKeys;
+  Behaviour behaviour;
+
+  Mat44 interpolate( float time ) const;
 };
+
+struct Light
+{
+  enum Type
+  {
+    DIRECTIONAL,
+    POINT,
+    SPOT
+  };
+
+  Point p;
+  Vec3  dir;
+  float coneCoeff[2];
+  float attenuation[3];
+  Vec3  colour;
+  Type  type;
+};
+
+struct Node
+{
+  String      name;
+  Mat44       transf;
+  DArray<int> meshes;
+  DArray<int> children;
+};
+
+static List<Vertex>     vertices;
+static List<AnimVertex> animVertices;
+static List<ushort>     indices;
+static List<Triangle>   triangles[8];
+static List<Mesh>       meshes;
+static List<Material>   materials;
+static List<Anim::Key>  animKeys;
+static List<Anim>       anims;
+static List<Light>      lights;
+static List<Node>       nodes;
+
+static int readNode( const aiNode* origNode )
+{
+  nodes.add();
+
+  int   nodeId = nodes.length() - 1;
+  Node& node   = nodes.last();
+
+  node.name = origNode->mName.C_Str();
+  node.transf = ~Mat44( origNode->mTransformation[0] );
+  node.meshes.resize( int( origNode->mNumMeshes ) );
+  node.children.resize( int( origNode->mNumChildren ) );
+
+  Log() << origNode->mName.C_Str();
+  Log() << node.transf;
+  Log() << node.children.length() << " :: " << node.meshes.length();
+
+  for( int i = 0; i < int( origNode->mNumMeshes ); ++i ) {
+    node.meshes[i] = int( origNode->mMeshes[i] );
+  }
+  for( int i = 0; i < int( origNode->mNumChildren ); ++i ) {
+    node.children[i] = readNode( origNode->mChildren[i] );
+  }
+  return nodeId;
+}
+
+static int findNode( const char* name )
+{
+  for( int i = 0; i < nodes.length(); ++i ) {
+    if( nodes[i].name.equals( name ) ) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 static char             errorBuffer[ERROR_LENGTH] = {};
 static Assimp::Importer importer;
@@ -98,14 +216,12 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
                                             aiProcess_JoinIdenticalVertices |
                                             aiProcess_Triangulate |
                                             aiProcess_GenNormals |
-                                            aiProcess_PreTransformVertices |
                                             aiProcess_ValidateDataStructure |
                                             aiProcess_ImproveCacheLocality |
                                             aiProcess_RemoveRedundantMaterials |
                                             aiProcess_FindInvalidData |
                                             aiProcess_FindInstances |
-                                            aiProcess_OptimizeMeshes |
-                                            aiProcess_OptimizeGraph );
+                                            aiProcess_OptimizeMeshes );
   if( scene == nullptr ) {
     return false;
   }
@@ -119,21 +235,16 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
     return false;
   }
 
-  List<Vertex>   vertices;
-  List<ushort>   indices;
-  List<Material> materials;
-  List<Mesh>     meshes;
-
   for( uint i = 0; i < scene->mNumMeshes; ++i ) {
-    const aiMesh* mesh = scene->mMeshes[i];
+    const aiMesh*     mesh      = scene->mMeshes[i];
+    const aiVector3D* positions = mesh->mVertices;
+    const aiVector3D* normals   = mesh->mNormals;
+    const aiVector3D* texCoords = mesh->mTextureCoords[0];
 
     int firstVertex = vertices.length();
+    int firstIndex  = indices.length();
 
     for( uint j = 0; j < mesh->mNumVertices; ++j ) {
-      const aiVector3D* positions = mesh->mVertices;
-      const aiVector3D* normals   = mesh->mNormals;
-      const aiVector3D* texCoords = mesh->mTextureCoords[0];
-
       vertices.add( {
         Point( positions[j].x, positions[j].y, positions[j].z ),
         Vec3( normals[j].x, normals[j].y, normals[j].z ),
@@ -142,24 +253,25 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
       } );
     }
 
-    int firstIndex = indices.length();
-
     for( uint j = 0; j < mesh->mNumFaces; ++j ) {
       const aiFace& face = mesh->mFaces[j];
 
       hard_assert( face.mNumIndices == 3 );
 
-      indices.add( ushort( firstVertex + int( face.mIndices[0] ) ) );
-      indices.add( ushort( firstVertex + int( face.mIndices[1] ) ) );
-      indices.add( ushort( firstVertex + int( face.mIndices[2] ) ) );
+      Vec3 a      = vertices[ firstVertex + int( face.mIndices[0] ) ].p - Point::ORIGIN;
+      Vec3 b      = vertices[ firstVertex + int( face.mIndices[1] ) ].p - Point::ORIGIN;
+      Vec3 c      = vertices[ firstVertex + int( face.mIndices[2] ) ].p - Point::ORIGIN;
+      Vec3 centre = ( a + b + c ) / 3.0f;
+
+      for( int k = 0; k < 8; ++k ) {
+        triangles[k].add( { centre * DIRS[k], int( j ) } );
+      }
     }
 
     int nIndices = indices.length() - firstIndex;
     int material = int( mesh->mMaterialIndex );
 
-    Log() << material;
-
-    meshes.add( { firstIndex, nIndices, material } );
+    meshes.add( { firstIndex, nIndices, 0, 0, material } );
   }
 
   for( uint i = 0; i < scene->mNumMaterials; ++i ) {
@@ -175,42 +287,119 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
 
     materials.add( { String::fileBaseName( path.C_Str() ), alpha } );
 
-    Log() << String::fileBaseName( path.C_Str() );
+    Log() << i << " texure: " << path.C_Str();
   }
+
+  for( uint i = 0; i < scene->mNumAnimations; ++i ) {
+    const aiAnimation* anim = scene->mAnimations[i];
+
+    for( uint j = 0; j < anim->mNumChannels; ++j ) {
+      const aiNodeAnim* nodeAnim = anim->mChannels[j];
+
+      for( double t = 0.0; t < anim->mDuration; ) {
+
+
+      }
+    }
+  }
+
+  for( uint i = 0; i < scene->mNumLights; ++i ) {
+    const aiLight* light = scene->mLights[i];
+
+    lights.add( {
+      Point( light->mPosition.x, light->mPosition.y, light->mPosition.z ),
+      Vec3( light->mDirection.x, light->mDirection.y, light->mDirection.z ),
+      { Math::tan( light->mAngleInnerCone / 2.0f ), Math::tan( light->mAngleOuterCone / 2.0f ) },
+      { light->mAttenuationConstant, light->mAttenuationLinear, light->mAttenuationQuadratic },
+      Vec3( light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b ),
+      Light::Type( light->mType - 1 )
+    } );
+  }
+
+  readNode( scene->mRootNode );
 
   ostream->writeInt( vertices.length() );
   ostream->writeInt( indices.length() );
+  ostream->writeInt( meshes.length() );
+  ostream->writeInt( materials.length() );
+  ostream->writeInt( animKeys.length() );
+  ostream->writeInt( anims.length() );
+  ostream->writeInt( lights.length() );
+  ostream->writeInt( nodes.length() );
+
+  Log() << vertices.length() << " vertices";
+  Log() << indices.length() << " indices";
+  Log() << meshes.length() << " meshes";
+  Log() << materials.length() << " materials";
+  Log() << animKeys.length() << " animKeys";
+  Log() << anims.length() << " anims";
+  Log() << lights.length() << " lights";
+  Log() << nodes.length() << " nodes";
 
   for( int i = 0; i < vertices.length(); ++i ) {
-    vertices[i].write( ostream );
+    ostream->writePoint( vertices[i].p );
+    ostream->writeVec3( vertices[i].n );
+    ostream->writeFloat( vertices[i].u );
+    ostream->writeFloat( vertices[i].v );
   }
   for( int i = 0; i < indices.length(); ++i ) {
     ostream->writeUShort( indices[i] );
   }
 
-  ostream->writeInt( 0 );
-  ostream->writeString( "mesh" );
-  ostream->writeInt( 1 );
-  ostream->writeString( "openzone/_Drkalisce" );
-
-//   for( int i = 0; i < materials.length(); ++i ) {
-//     ostream->writeString( materials[i].texture );
-//     ostream->writeFloat( materials[i].alpha );
-//   }
-
-  ostream->writeInt( 1 );
-  ostream->writeInt( meshes.length() );
-
   for( int i = 0; i < meshes.length(); ++i ) {
-    ostream->writeInt( 512 );
-    ostream->writeUInt( GL_TRIANGLES );
-    ostream->writeInt( 0 );
-
     ostream->writeInt( meshes[i].nIndices );
     ostream->writeInt( meshes[i].firstIndex );
   }
+
+  for( int i = 0; i < materials.length(); ++i ) {
+    ostream->writeString( materials[i].texture );
+    ostream->writeFloat( materials[i].alpha );
+  }
+
+  for( int i = 0; i < lights.length(); ++i ) {
+    ostream->writePoint( lights[i].p );
+    ostream->writeVec3( lights[i].dir );
+    ostream->writeFloat( lights[i].coneCoeff[0] ),
+    ostream->writeFloat( lights[i].coneCoeff[1] ),
+    ostream->writeFloat( lights[i].attenuation[0] );
+    ostream->writeFloat( lights[i].attenuation[1] );
+    ostream->writeFloat( lights[i].attenuation[2] );
+    ostream->writeVec3( lights[i].colour );
+    ostream->writeInt( lights[i].type );
+  }
+
+  vertices.clear();
+  vertices.deallocate();
+
+  indices.clear();
+  indices.deallocate();
+
+  for( int i = 0; i < 8; ++i ) {
+    triangles[i].clear();
+    triangles[i].deallocate();
+  }
+
+  meshes.clear();
+  meshes.deallocate();
+
+  materials.clear();
+  materials.deallocate();
+
+  animKeys.clear();
+  animKeys.deallocate();
+
+  anims.clear();
+  anims.deallocate();
+
+  lights.clear();
+  lights.deallocate();
+
+  nodes.clear();
+  nodes.deallocate();
 
   return true;
 }
 
 }
+
+#endif

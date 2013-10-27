@@ -1115,7 +1115,7 @@ void BSP::saveClient()
 {
   File destFile = "bsp/" + name + ".ozcBSP";
 
-  compiler.beginMesh();
+  compiler.beginModel();
 
   compiler.enable( Compiler::UNIQUE );
   compiler.enable( Compiler::CLOCKWISE );
@@ -1167,11 +1167,11 @@ void BSP::saveClient()
     }
   }
 
-  compiler.endMesh();
+  compiler.endModel();
 
   OutputStream os( 0, Endian::LITTLE );
 
-  compiler.writeMesh( &os, true );
+  compiler.writeModel( &os, true );
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );
 

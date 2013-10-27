@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/Mesh.hh
+ * @file client/Model.hh
  */
 
 #pragma once
@@ -52,14 +52,14 @@ struct Texture
   {}
 };
 
-class Mesh
+class Model
 {
   public:
 
-    static const int COMPONENT_MASK  = 0x00ff; ///< Mask to get number of mesh components.
+    static const int COMPONENT_MASK  = 0x00ff; ///< Mask to get number of model components.
     static const int EMBEDED_TEX_BIT = 0x0100; ///< Textures are embedded into SMM file.
-    static const int SOLID_BIT       = 0x0200; ///< Mesh component is not transparent.
-    static const int ALPHA_BIT       = 0x0400; ///< Mesh component is transparent.
+    static const int SOLID_BIT       = 0x0200; ///< Component is opaque.
+    static const int ALPHA_BIT       = 0x0400; ///< Component is transparent.
 
     static const int DIFFUSE_BIT     = 0x1000; ///< Texture has base per-pixel colours.
     static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
@@ -68,7 +68,7 @@ class Mesh
     enum Collation
     {
       DEPTH_MAJOR,
-      MESH_MAJOR
+      MODEL_MAJOR
     };
 
     enum QueueType
@@ -79,7 +79,7 @@ class Mesh
 
   private:
 
-    struct Part
+    struct Mesh
     {
       int  flags;
       int  texture;
@@ -90,20 +90,20 @@ class Mesh
 
     struct Instance
     {
-      Mesh* mesh;
-      Mat44 transform;
-      Mat44 colour;
-      int   component;
-      int   firstFrame;
-      int   secondFrame;
-      float interpolation;
+      Model* model;
+      Mat44  transform;
+      Mat44  colour;
+      int    component;
+      int    firstFrame;
+      int    secondFrame;
+      float  interpolation;
     };
 
     struct PreloadData;
 
   private:
 
-    static Set<Mesh*>     loadedMeshes;
+    static Set<Model*>    loadedModels;
     static List<Instance> instances[2];
 
     static Vertex*        vertexAnimBuffer;
@@ -116,7 +116,7 @@ class Mesh
 
     int                   flags;
     DArray<Texture>       textures;
-    DArray<Part>          parts;
+    DArray<Mesh>          meshes;
     DArray<int>           componentIndices;
 
     uint                  animationTexId;
@@ -131,7 +131,7 @@ class Mesh
     Point*                positions;
     Vec3*                 normals;
 
-    List<Instance>        meshInstances[2];
+    List<Instance>        modelInstances[2];
     PreloadData*          preloadData;
 
   public:
@@ -147,13 +147,13 @@ class Mesh
 
     static void setCollation( Collation collation );
 
-    static void drawScheduled( Mesh::QueueType queue, int mask );
-    static void clearScheduled( Mesh::QueueType queue );
+    static void drawScheduled( QueueType queue, int mask );
+    static void clearScheduled( QueueType queue );
 
     static void deallocate();
 
-    explicit Mesh();
-    ~Mesh();
+    explicit Model();
+    ~Model();
 
     bool isPreloaded() const
     {
@@ -162,19 +162,19 @@ class Mesh
 
     bool isLoaded() const
     {
-      return !parts.isEmpty();
+      return !meshes.isEmpty();
     }
 
     void schedule( int component, QueueType queue )
     {
-      List<Instance>& list = collation == MESH_MAJOR ? meshInstances[queue] : instances[queue];
+      List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
 
       list.add( { this, tf.model, tf.colour, component, 0, 0, 0.0f } );
     }
 
     void scheduleFrame( int component, int frame, QueueType queue )
     {
-      List<Instance>& list = collation == MESH_MAJOR ? meshInstances[queue] : instances[queue];
+      List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
 
       list.add( { this, tf.model, tf.colour, component, frame, 0, 0.0f } );
     }
@@ -182,7 +182,7 @@ class Mesh
     void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation,
                            QueueType queue )
     {
-      List<Instance>& list = collation == MESH_MAJOR ? meshInstances[queue] : instances[queue];
+      List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
 
       list.add( { this, tf.model, tf.colour, component, firstFrame, secondFrame, interpolation } );
     }

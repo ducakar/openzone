@@ -85,7 +85,7 @@ int Client::init( int argc, char** argv )
   String executablePath = File::executablePath();
   String invocationName = executablePath.fileName();
   String prefixDir      = String::isEmpty( OZ_PREFIX ) ? executablePath.fileDirectory() : OZ_PREFIX;
-  String language       = "en";
+  String language       = "";
   String mission        = "";
   String layoutFile     = "";
   bool   doAutoload     = false;

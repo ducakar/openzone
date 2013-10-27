@@ -6,6 +6,7 @@ endif()
 
 add_library( builder STATIC
 #BEGIN SOURCES
+  AssImp.hh
   BSP.hh
   Builder.hh
   Caelum.hh
@@ -15,9 +16,9 @@ add_library( builder STATIC
   Context.hh
   MD2.hh
   MD3.hh
-  OBJ.hh
   Terra.hh
   UI.hh
+  AssImp.cc
   BSP.cc
   Builder.cc
   Caelum.cc
@@ -27,7 +28,6 @@ add_library( builder STATIC
   Context.cc
   MD2.cc
   MD3.cc
-  OBJ.cc
   Terra.cc
   UI.cc
 #END SOURCES

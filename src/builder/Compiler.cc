@@ -30,6 +30,17 @@ namespace oz
 namespace builder
 {
 
+static const Vec3 DIRS[] = {
+  Vec3( +1.0f, +1.0f, +1.0f ),
+  Vec3( -1.0f, +1.0f, +1.0f ),
+  Vec3( +1.0f, -1.0f, +1.0f ),
+  Vec3( -1.0f, -1.0f, +1.0f ),
+  Vec3( +1.0f, +1.0f, -1.0f ),
+  Vec3( -1.0f, +1.0f, -1.0f ),
+  Vec3( +1.0f, -1.0f, -1.0f ),
+  Vec3( -1.0f, -1.0f, -1.0f )
+};
+
 struct Triangle
 {
   float depth;
@@ -65,12 +76,12 @@ void Compiler::disable( Capability cap )
   caps &= ~cap;
 }
 
-void Compiler::beginMesh()
+void Compiler::beginModel()
 {
+  hard_assert( !( flags & MODEL_BIT ) );
   hard_assert( !( flags & MESH_BIT ) );
-  hard_assert( !( flags & PART_BIT ) );
 
-  parts.clear();
+  meshes.clear();
   vertices.clear();
   positions.clear();
   normals.clear();
@@ -82,12 +93,12 @@ void Compiler::beginMesh()
   vert.texCoord   = TexCoord( 0.0f, 0.0f );
   vert.normal     = Vec3::ZERO;
 
-  part.component  = 0;
-  part.material   = Mesh::SOLID_BIT;
-  part.texture    = "";
+  mesh.component  = 0;
+  mesh.flags      = Model::SOLID_BIT;
+  mesh.texture    = "";
 
   caps            = 0;
-  flags          |= MESH_BIT;
+  flags          |= MODEL_BIT;
   componentId     = 0;
   mode            = TRIANGLES;
   shaderName      = "mesh";
@@ -96,18 +107,18 @@ void Compiler::beginMesh()
   nFramePositions = 0;
 }
 
-void Compiler::endMesh()
+void Compiler::endModel()
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
-  flags &= ~MESH_BIT;
+  flags &= ~MODEL_BIT;
 }
 
 void Compiler::anim( int nFrames_, int nFramePositions_ )
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
   if( nFrames <= 1 ) {
     nFrames         = 0;
@@ -123,8 +134,8 @@ void Compiler::anim( int nFrames_, int nFramePositions_ )
 
 void Compiler::component( int id )
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
   if( id != componentId && id != componentId + 1 ) {
     OZ_ERROR( "Non-consecutive components %d and %d\n", componentId, id );
@@ -135,68 +146,68 @@ void Compiler::component( int id )
 
 void Compiler::blend( bool doBlend )
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
-  part.material = doBlend ? int( Mesh::ALPHA_BIT ) : int( Mesh::SOLID_BIT );
+  mesh.flags = doBlend ? int( Model::ALPHA_BIT ) : int( Model::SOLID_BIT );
 }
 
 void Compiler::shader( const char* shaderName_ )
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
   shaderName = shaderName_;
 }
 
 void Compiler::texture( const char* texture )
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
-  part.texture = texture;
+  mesh.texture = texture;
 }
 
 void Compiler::begin( PolyMode mode_ )
 {
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( flags & MODEL_BIT );
+  hard_assert( !( flags & MESH_BIT ) );
 
-  flags |= PART_BIT;
+  flags |= MESH_BIT;
 
   mode = mode_;
   vertNum = 0;
 
-  part.component = componentId;
+  mesh.component = componentId;
 }
 
 void Compiler::end()
 {
+  hard_assert( flags & MODEL_BIT );
   hard_assert( flags & MESH_BIT );
-  hard_assert( flags & PART_BIT );
 
-  flags &= ~PART_BIT;
+  flags &= ~MESH_BIT;
 
   if( caps & CLOCKWISE ) {
-    part.indices.reverse();
+    mesh.indices.reverse();
   }
 
   switch( mode ) {
     case TRIANGLE_STRIP: {
       hard_assert( vertNum >= 3 );
 
-      for( int i = 3; i < part.indices.length(); i += 3 ) {
-        part.indices.insert( i + 0, part.indices[i - 1] );
-        part.indices.insert( i + 1, part.indices[i - 2] );
+      for( int i = 3; i < mesh.indices.length(); i += 3 ) {
+        mesh.indices.insert( i + 0, mesh.indices[i - 1] );
+        mesh.indices.insert( i + 1, mesh.indices[i - 2] );
       }
       break;
     }
     case TRIANGLE_FAN: {
       hard_assert( vertNum >= 3 );
 
-      for( int i = 3; i < part.indices.length(); i += 3 ) {
-        part.indices.insert( i + 0, part.indices[0] );
-        part.indices.insert( i + 1, part.indices[i - 1] );
+      for( int i = 3; i < mesh.indices.length(); i += 3 ) {
+        mesh.indices.insert( i + 0, mesh.indices[0] );
+        mesh.indices.insert( i + 1, mesh.indices[i - 1] );
       }
       break;
     }
@@ -207,17 +218,17 @@ void Compiler::end()
     case QUADS: {
       hard_assert( vertNum >= 4 && vertNum % 4 == 0 );
 
-      for( int i = 0; i < part.indices.length(); i += 6 ) {
-        part.indices.insert( i + 3, part.indices[i + 2] );
-        part.indices.insert( i + 5, part.indices[i + 4] );
+      for( int i = 0; i < mesh.indices.length(); i += 6 ) {
+        mesh.indices.insert( i + 3, mesh.indices[i + 2] );
+        mesh.indices.insert( i + 5, mesh.indices[i + 4] );
       }
       break;
     }
     case POLYGON: {
       hard_assert( vertNum >= 3 );
 
-      List<ushort> polyIndices = static_cast< List<ushort>&& >( part.indices );
-      part.indices.clear();
+      List<ushort> polyIndices = static_cast< List<ushort>&& >( mesh.indices );
+      mesh.indices.clear();
 
       int last[2] = { 0, 1 };
 
@@ -225,16 +236,16 @@ void Compiler::end()
         int j = ( i + 3 ) / 2;
 
         if( i & 1 ) {
-          part.indices.add( polyIndices[ last[0] ] );
-          part.indices.add( polyIndices[ last[1] ] );
-          part.indices.add( polyIndices[j] );
+          mesh.indices.add( polyIndices[ last[0] ] );
+          mesh.indices.add( polyIndices[ last[1] ] );
+          mesh.indices.add( polyIndices[j] );
 
           last[1] = j;
         }
         else {
-          part.indices.add( polyIndices[ last[0] ] );
-          part.indices.add( polyIndices[ last[1] ] );
-          part.indices.add( polyIndices[vertNum - j] );
+          mesh.indices.add( polyIndices[ last[0] ] );
+          mesh.indices.add( polyIndices[ last[1] ] );
+          mesh.indices.add( polyIndices[vertNum - j] );
 
           last[0] = vertNum - j;
         }
@@ -243,21 +254,21 @@ void Compiler::end()
     }
   }
 
-  int partIndex = parts.index( part );
+  int meshIndex = meshes.index( mesh );
 
-  if( partIndex < 0 ) {
-    parts.add( part );
+  if( meshIndex < 0 ) {
+    meshes.add( mesh );
   }
   else {
-    parts[partIndex].indices.addAll( part.indices.begin(), part.indices.length() );
+    meshes[meshIndex].indices.addAll( mesh.indices.begin(), mesh.indices.length() );
   }
 
-  part.indices.clear();
+  mesh.indices.clear();
 }
 
 void Compiler::texCoord( float u, float v )
 {
-  hard_assert( flags & MESH_BIT );
+  hard_assert( flags & MODEL_BIT );
 
   vert.texCoord[0] = u;
   vert.texCoord[1] = v;
@@ -270,7 +281,7 @@ void Compiler::texCoord( const float* v )
 
 void Compiler::normal( float nx, float ny, float nz )
 {
-  hard_assert( flags & MESH_BIT );
+  hard_assert( flags & MODEL_BIT );
   hard_assert( nFrames == 0 );
 
   vert.normal.x = nx;
@@ -285,7 +296,7 @@ void Compiler::normal( const float* v )
 
 void Compiler::vertex( float x, float y, float z )
 {
-  hard_assert( flags & MESH_BIT );
+  hard_assert( flags & MODEL_BIT );
   hard_assert( nFrames == 0 || ( y == 0.0f && z == 0.0f ) );
 
   if( nFrames == 0 ) {
@@ -302,7 +313,7 @@ void Compiler::vertex( float x, float y, float z )
   vert.pos.y = y;
   vert.pos.z = z;
 
-  if( !( flags & PART_BIT ) ) {
+  if( !( flags & MESH_BIT ) ) {
     vertices.add( vert );
   }
   else {
@@ -313,7 +324,7 @@ void Compiler::vertex( float x, float y, float z )
     }
 
     if( doRestart ) {
-      part.indices.add( part.indices.last() );
+      mesh.indices.add( mesh.indices.last() );
     }
 
     int index;
@@ -321,17 +332,17 @@ void Compiler::vertex( float x, float y, float z )
     if( caps & UNIQUE ) {
       index = vertices.include( vert );
 
-      part.indices.add( ushort( index ) );
+      mesh.indices.add( ushort( index ) );
     }
     else {
       index = vertices.length();
 
       vertices.add( vert );
-      part.indices.add( ushort( index ) );
+      mesh.indices.add( ushort( index ) );
     }
 
     if( doRestart ) {
-      part.indices.add( ushort( index ) );
+      mesh.indices.add( ushort( index ) );
     }
 
     ++vertNum;
@@ -383,57 +394,50 @@ void Compiler::animNormals( const float* normals_ )
   }
 }
 
-void Compiler::writeMesh( OutputStream* os, bool globalTextures )
+void Compiler::writeModel( OutputStream* os, bool globalTextures )
 {
-  hard_assert( !( flags & MESH_BIT ) && !( flags & PART_BIT ) );
-  hard_assert( parts.length() > 0 && vertices.length() > 0 );
+  hard_assert( !( flags & MODEL_BIT ) && !( flags & MESH_BIT ) );
+  hard_assert( meshes.length() > 0 && vertices.length() > 0 );
   hard_assert( positions.length() == normals.length() );
 
   Log::print( "Writing mesh ..." );
 
-  List<String> textures;
-  List<ushort> indices;
+  List<String>   textures;
+  List<Triangle> triangles;
+  List<ushort>   indices[8];
 
   int nIndices    = 0;
   int nComponents = 0;
 
-  for( int i = 0; i < parts.length(); ++i ) {
-    textures.include( parts[i].texture );
+  for( int i = 0; i < meshes.length(); ++i ) {
+    textures.include( meshes[i].texture );
 
-    parts[i].firstIndex = nIndices;
-    parts[i].nIndices   = parts[i].indices.length();
+    meshes[i].firstIndex = nIndices;
+    meshes[i].nIndices   = meshes[i].indices.length();
 
-    // Sort triangles per every (+/-x, +/-y, +/-z) direction.
-    List<ushort>   dirIndices[8];
-    List<Triangle> triangles;
-
+    // Sort triangles for every (+/-x, +/-y, +/-z) direction.
     for( int j = 0; j < 8; ++j ) {
-      Vec3 dir = Vec3( j & 1 ? -1.0f : +1.0f, j & 2 ? -1.0f : +1.0f, j & 4 ? -1.0f : +1.0f );
+      for( int k = 0; k < meshes[i].indices.length(); k += 3 ) {
+        Vec3 centre = ( ( vertices[ meshes[i].indices[k + 0] ].pos - Point::ORIGIN ) +
+                        ( vertices[ meshes[i].indices[k + 1] ].pos - Point::ORIGIN ) +
+                        ( vertices[ meshes[i].indices[k + 2] ].pos - Point::ORIGIN ) ) / 3.0f;
 
-      for( int k = 0; k < parts[i].indices.length(); k += 3 ) {
-        Vec3 centre = ( ( vertices[ parts[i].indices[k + 0] ].pos - Point::ORIGIN ) +
-                        ( vertices[ parts[i].indices[k + 1] ].pos - Point::ORIGIN ) +
-                        ( vertices[ parts[i].indices[k + 2] ].pos - Point::ORIGIN ) ) / 3.0f;
-
-        triangles.add( { centre * dir, k } );
+        triangles.add( { centre * DIRS[j], k } );
       }
 
       triangles.sort();
 
       for( int k = 0; k < triangles.length(); ++k ) {
-        dirIndices[j].add( parts[i].indices[ triangles[k].index + 0 ] );
-        dirIndices[j].add( parts[i].indices[ triangles[k].index + 1 ] );
-        dirIndices[j].add( parts[i].indices[ triangles[k].index + 2 ] );
+        indices[j].add( meshes[i].indices[ triangles[k].index + 0 ] );
+        indices[j].add( meshes[i].indices[ triangles[k].index + 1 ] );
+        indices[j].add( meshes[i].indices[ triangles[k].index + 2 ] );
       }
 
-      hard_assert( dirIndices[j].length() == parts[i].indices.length() );
-
       triangles.clear();
-      indices.addAll( dirIndices[j].begin(), dirIndices[j].length() );
     }
 
-    nIndices   += 8 * parts[i].nIndices;
-    nComponents = max( nComponents, parts[i].component + 1 );
+    nIndices   += meshes[i].nIndices;
+    nComponents = max( nComponents, meshes[i].component + 1 );
   }
 
   if( nComponents == 0 ) {
@@ -444,12 +448,12 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
 
   os->writeInt( globalTextures ? ~textures.length() : textures.length() );
   os->writeInt( vertices.length() );
-  os->writeInt( indices.length() );
+  os->writeInt( nIndices );
   os->writeInt( nFrames );
   os->writeInt( nFramePositions );
 
   os->writeInt( nComponents );
-  os->writeInt( parts.length() );
+  os->writeInt( meshes.length() );
 
   os->writeString( shaderName );
 
@@ -464,7 +468,7 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
     vertex->write( os );
   }
   for( int i = 0; i < 8; ++i ) {
-    foreach( index, indices.citer() ) {
+    foreach( index, indices[i].citer() ) {
       os->writeUShort( *index );
     }
   }
@@ -481,27 +485,27 @@ void Compiler::writeMesh( OutputStream* os, bool globalTextures )
     }
   }
 
-  foreach( part, parts.citer() ) {
-    os->writeInt( part->component | part->material );
-    os->writeInt( textures.index( part->texture ) );
+  foreach( mesh, meshes.citer() ) {
+    os->writeInt( mesh->component | mesh->flags );
+    os->writeInt( textures.index( mesh->texture ) );
 
-    os->writeInt( part->nIndices );
-    os->writeInt( part->firstIndex );
+    os->writeInt( mesh->nIndices );
+    os->writeInt( mesh->firstIndex );
   }
 
   Log::printEnd( " OK" );
 }
 
-void Compiler::buildMeshTextures( const char* destDir )
+void Compiler::buildModelTextures( const char* destDir )
 {
   List<String> textures;
 
-  for( int i = 0; i < parts.length(); ++i ) {
-    textures.include( parts[i].texture );
+  for( int i = 0; i < meshes.length(); ++i ) {
+    textures.include( meshes[i].texture );
   }
 
   for( int i = 0; i < textures.length(); ++i ) {
-    context.buildTexture( textures[i], destDir + ( "/" + textures[i].fileName() ) );
+    context.buildTexture( textures[i], String( destDir, "/" ) + textures[i].fileName() );
   }
 }
 
@@ -510,12 +514,12 @@ void Compiler::init()
 
 void Compiler::destroy()
 {
-  parts.clear();
-  parts.deallocate();
+  meshes.clear();
+  meshes.deallocate();
 
-  part.texture = "";
-  part.indices.clear();
-  part.indices.deallocate();
+  mesh.texture = "";
+  mesh.indices.clear();
+  mesh.indices.deallocate();
 
   vertices.clear();
   vertices.deallocate();

@@ -299,7 +299,7 @@ void MD3::save()
 {
   OutputStream os( 0, Endian::LITTLE );
 
-  compiler.beginMesh();
+  compiler.beginModel();
 
   compiler.enable( Compiler::UNIQUE );
   compiler.enable( Compiler::CLOCKWISE );
@@ -356,13 +356,13 @@ void MD3::save()
 //     }
   }
 
-  compiler.endMesh();
+  compiler.endModel();
 
   String sDestDir = &sPath[1];
   File::mkdir( sPath );
 
-  compiler.writeMesh( &os );
-  compiler.buildMeshTextures( sDestDir );
+  compiler.writeModel( &os );
+  compiler.buildModelTextures( sDestDir );
 
   if( frame < 0 ) {
     File destFile = sDestDir + "/data.ozcMD3";

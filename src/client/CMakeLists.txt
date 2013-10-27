@@ -31,7 +31,7 @@ add_library( client STATIC
   MD2Imago.hh
   MD2WeaponImago.hh
   MenuStage.hh
-  Mesh.hh
+  Model.hh
   NaClDownloader.hh
   NaClUpdater.hh
   Network.hh
@@ -78,7 +78,7 @@ add_library( client STATIC
   MD2Imago.cc
   MD2WeaponImago.cc
   MenuStage.cc
-  Mesh.cc
+  Model.cc
   NaClDownloader.cc
   NaClUpdater.cc
   Network.cc

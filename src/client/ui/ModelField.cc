@@ -117,12 +117,12 @@ void ModelField::onDraw()
 
     if( bsp != nullptr ) {
       if( bspModel->isLoaded() ) {
-        bspModel->schedule( nullptr, Mesh::SCENE_QUEUE );
+        bspModel->schedule( nullptr, Model::SCENE_QUEUE );
       }
     }
     else {
       if( smmModel->isLoaded() ) {
-        smmModel->schedule( -1, Mesh::SCENE_QUEUE );
+        smmModel->schedule( -1, Model::SCENE_QUEUE );
       }
       context.releaseModel( model );
     }
@@ -131,8 +131,8 @@ void ModelField::onDraw()
 
     glEnable( GL_DEPTH_TEST );
 
-    Mesh::drawScheduled( Mesh::SCENE_QUEUE, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
-    Mesh::clearScheduled( Mesh::SCENE_QUEUE );
+    Model::drawScheduled( Model::SCENE_QUEUE, Model::SOLID_BIT | Model::ALPHA_BIT );
+    Model::clearScheduled( Model::SCENE_QUEUE );
 
     glDisable( GL_DEPTH_TEST );
 

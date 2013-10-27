@@ -329,7 +329,7 @@ void Render::drawGeometry()
   caelumMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Mesh::drawScheduled( Mesh::SCENE_QUEUE, Mesh::SOLID_BIT );
+  Model::drawScheduled( Model::SCENE_QUEUE, Model::SOLID_BIT );
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
@@ -347,15 +347,15 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Mesh::drawScheduled( Mesh::SCENE_QUEUE, Mesh::ALPHA_BIT );
-  Mesh::clearScheduled( Mesh::SCENE_QUEUE );
+  Model::drawScheduled( Model::SCENE_QUEUE, Model::ALPHA_BIT );
+  Model::clearScheduled( Model::SCENE_QUEUE );
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Mesh::drawScheduled( Mesh::OVERLAY_QUEUE, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
-  Mesh::clearScheduled( Mesh::OVERLAY_QUEUE );
+  Model::drawScheduled( Model::OVERLAY_QUEUE, Model::SOLID_BIT | Model::ALPHA_BIT );
+  Model::clearScheduled( Model::OVERLAY_QUEUE );
 
   shape.bind();
   shader.program( shader.plain );
@@ -555,8 +555,8 @@ void Render::update( int flags )
     swap();
   }
 
-  Mesh::clearScheduled( Mesh::SCENE_QUEUE );
-  Mesh::clearScheduled( Mesh::OVERLAY_QUEUE );
+  Model::clearScheduled( Model::SCENE_QUEUE );
+  Model::clearScheduled( Model::OVERLAY_QUEUE );
 }
 
 void Render::resize()
@@ -895,17 +895,17 @@ void Render::init()
   EnumMap<GLenum> scaleFilterMap( SCALE_FILTER_MAP );
 
   static const EnumName COLLATION_MAP[] = {
-    { Mesh::DEPTH_MAJOR, "DEPTH_MAJOR" },
-    { Mesh::MESH_MAJOR,  "MESH_MAJOR"  }
+    { Model::DEPTH_MAJOR, "DEPTH_MAJOR" },
+    { Model::MODEL_MAJOR, "MODEL_MAJOR"  }
   };
-  EnumMap<Mesh::Collation> collationMap( COLLATION_MAP );
+  EnumMap<Model::Collation> collationMap( COLLATION_MAP );
 
 #ifdef __native_client__
-  const char* sCollation = config.include( "render.collation", "MESH_MAJOR" ).asString();
+  const char* sCollation = config.include( "render.collation", "MODEL_MAJOR" ).asString();
 #else
   const char* sCollation = config.include( "render.collation", "DEPTH_MAJOR" ).asString();
 #endif
-  Mesh::setCollation( collationMap[ sCollation ] );
+  Model::setCollation( collationMap[ sCollation ] );
 
   isOffscreen     = config.include( "render.forceFBO",    false ).asBool();
   doPostprocess   = config.include( "render.postprocess", false ).asBool();

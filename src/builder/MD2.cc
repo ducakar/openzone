@@ -339,7 +339,7 @@ void MD2::build( const char* path )
     triangles[i].texCoords[2] = is.readShort();
   }
 
-  compiler.beginMesh();
+  compiler.beginModel();
   compiler.enable( Compiler::UNIQUE );
   compiler.enable( Compiler::CLOCKWISE );
 
@@ -370,7 +370,7 @@ void MD2::build( const char* path )
   }
 
   compiler.end();
-  compiler.endMesh();
+  compiler.endModel();
 
   texCoords.clear();
   triangles.clear();
@@ -382,8 +382,8 @@ void MD2::build( const char* path )
 
   OutputStream os( 0, Endian::LITTLE );
 
-  compiler.writeMesh( &os );
-  compiler.buildMeshTextures( sDestDir );
+  compiler.writeModel( &os );
+  compiler.buildModelTextures( sDestDir );
 
   if( header.nFrames != 1 ) {
     Mat44 weaponTransfInv = Mat44::ID;
