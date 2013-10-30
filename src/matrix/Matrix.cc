@@ -181,24 +181,14 @@ void Matrix::read( const JSON& json )
 
 void Matrix::write( OutputStream* ostream ) const
 {
-  Log::print( "Writing Matrix ..." );
-
   ostream->writeULong64( timer.ticks );
   orbis.write( ostream );
   ostream->writeFloat( physics.gravity );
-
-  Log::printEnd( " OK" );
 }
 
 JSON Matrix::write() const
 {
-  Log::print( "Writing Matrix ..." );
-
-  JSON json = orbis.write();
-
-  Log::printEnd( " OK" );
-
-  return json;
+  return orbis.write();
 }
 
 void Matrix::load()

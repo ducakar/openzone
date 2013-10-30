@@ -119,8 +119,6 @@ void Nirvana::read( InputStream* istream )
 
 void Nirvana::write( OutputStream* ostream ) const
 {
-  Log::print( "Writing Nirvana ..." );
-
   luaNirvana.write( ostream );
 
   ostream->writeInt( devices.length() );
@@ -139,8 +137,6 @@ void Nirvana::write( OutputStream* ostream ) const
 
   questList.write( ostream );
   techGraph.write( ostream );
-
-  Log::printEnd( " OK" );
 }
 
 void Nirvana::load()

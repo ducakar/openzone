@@ -35,6 +35,9 @@ class GameStage : public Stage
 {
   private:
 
+    // 5 min.
+    static const uint AUTOSAVE_INTERVAL;
+
     ulong64       startTicks;
     long64        sleepMicros;
     long64        loadingMicros;
@@ -45,6 +48,12 @@ class GameStage : public Stage
     long64        matrixMicros;
     long64        nirvanaMicros;
 
+    uint          autosaveTicks;
+
+    OutputStream  saveStream;
+    File          saveFile;
+    Thread        saveThread;
+
     Thread        auxThread;
     Semaphore     mainSemaphore;
     Semaphore     auxSemaphore;
@@ -52,17 +61,19 @@ class GameStage : public Stage
 
   public:
 
-    Proxy* proxy;
+    Proxy*        proxy;
 
-    File   autosaveFile;
-    File   quicksaveFile;
-    File   stateFile;
-    String mission;
+    File          autosaveFile;
+    File          quicksaveFile;
+    File          stateFile;
+    String        mission;
 
   private:
 
+    static void saveMain( void* );
+
     void read();
-    void write() const;
+    void write();
 
     static void auxMain( void* );
     void auxRun();

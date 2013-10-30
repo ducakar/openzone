@@ -14,5 +14,5 @@ dir=$1
 
 echo "rm -vf "$dir"/baseq3/maps/*{autosave.map,.bak,.prt,.srf}"
 rm -vf "$dir"/baseq3/maps/*{autosave.map,.bak,.prt,.srf,autosave.bsp}
-echo "rm -vf $dir/mdl/*.{blend1,blend2}"
-rm -vf "$dir"/mdl/*.{blend1,blend2}
+echo "rm -vf $dir/mdl/*/*.blend?"
+rm -vf "$dir"/mdl/*/*.blend?

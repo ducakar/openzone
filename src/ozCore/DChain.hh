@@ -349,8 +349,7 @@ class DChain
     /**
      * Bind an element to the beginning of the chain.
      *
-     * For efficiency reasons, elements are added to the beginning of a chain in contrast with array
-     * chain.
+     * For efficiency reasons, elements are added to the beginning of a chain.
      */
     void add( Elem* e )
     {

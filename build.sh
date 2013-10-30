@@ -43,7 +43,7 @@ function clean()
   for platform in ${platforms[@]}; do
     rm -rf build/$platform
   done
-  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,boundle}
+  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,bundle}
 }
 
 function build()

@@ -48,8 +48,35 @@ namespace client
 
 using modules::modules;
 
+const uint GameStage::AUTOSAVE_INTERVAL = 300 * Timer::TICKS_PER_SEC;
+
+void GameStage::saveMain( void* )
+{
+  Log::print( "Saving state to %s ...", gameStage.saveFile.path().cstr() );
+
+  Buffer buffer( gameStage.saveStream.begin(), gameStage.saveStream.tell() );
+  buffer = buffer.deflate( -1 );
+
+  if( !gameStage.saveFile.write( buffer ) ) {
+    Log::printEnd( " Failed" );
+    System::bell();
+  }
+  else {
+    Log::printEnd( " OK" );
+  }
+
+  buffer.deallocate();
+
+  gameStage.saveStream.deallocate();
+  gameStage.saveFile = "";
+}
+
 void GameStage::read()
 {
+  if( saveThread.isValid() ) {
+    saveThread.join();
+  }
+
   Log::print( "Loading state from '%s' ...", stateFile.path().cstr() );
 
   Buffer buffer = stateFile.read();
@@ -81,30 +108,22 @@ void GameStage::read()
   Log::println( "}" );
 }
 
-void GameStage::write() const
+void GameStage::write()
 {
-  OutputStream ostream( 0, Endian::LITTLE );
-
-  matrix.write( &ostream );
-  nirvana.write( &ostream );
-
-  camera.write( &ostream );
-  modules.write( &ostream );
-
-  luaClient.write( &ostream );
-
-  Log::print( "Saving state to %s ...", stateFile.path().cstr() );
-
-  Buffer buffer( ostream.begin(), ostream.tell() );
-  buffer = buffer.deflate( 1 );
-
-  if( !stateFile.write( buffer ) ) {
-    Log::printEnd( " Failed" );
-    System::bell();
+  if( saveThread.isValid() ) {
+    saveThread.join();
   }
-  else {
-    Log::printEnd( " OK" );
-  }
+
+  matrix.write( &saveStream );
+  nirvana.write( &saveStream );
+
+  camera.write( &saveStream );
+  modules.write( &saveStream );
+
+  luaClient.write( &saveStream );
+
+  saveFile = stateFile;
+  saveThread.start( "save", Thread::JOINABLE, saveMain );
 }
 
 void GameStage::auxMain( void* )
@@ -185,6 +204,16 @@ bool GameStage::update()
 
   if( input.keys[Input::KEY_QUIT] ) {
     Stage::nextStage = &menuStage;
+  }
+
+  ++autosaveTicks;
+
+  if( autosaveTicks > AUTOSAVE_INTERVAL ) {
+    autosaveTicks = 0;
+
+    stateFile = autosaveFile;
+    write();
+    stateFile = "";
   }
 
   if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
@@ -362,6 +391,7 @@ void GameStage::load()
   ui::ui.showLoadingScreen( false );
 
   loadingMicros = Time::uclock() - loadingMicros;
+  autosaveTicks = 0;
 
   Log::unindent();
   Log::println( "}" );
@@ -412,6 +442,7 @@ void GameStage::unload()
   if( stateFile.isEmpty() ) {
     stateFile = autosaveFile;
     write();
+    saveThread.join();
     stateFile = "";
   }
 
@@ -489,6 +520,8 @@ void GameStage::init()
   profile.init();
   modules.init();
 
+  saveStream = OutputStream( 0, Endian::LITTLE );
+
   Log::unindent();
   Log::println( "}" );
 }
@@ -497,6 +530,10 @@ void GameStage::destroy()
 {
   Log::println( "Destroying GameStage {" );
   Log::indent();
+
+  if( saveThread.isValid() ) {
+    saveThread.join();
+  }
 
   modules.destroy();
   profile.destroy();

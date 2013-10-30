@@ -360,8 +360,7 @@ class Chain
     /**
      * Bind an element to the beginning of the chain.
      *
-     * For efficiency reasons, elements are added to the beginning of a chain in contrast with array
-     * lists.
+     * For efficiency reasons, elements are added to the beginning of a chain.
      */
     void add( Elem* e )
     {
@@ -393,8 +392,7 @@ class Chain
     /**
      * Unbind a given element from the chain.
      *
-     * Because this chain is not a double-linked, one have to provide pointer to the preceding
-     * element.
+     * Because this chain is not double-linked, a pointer to the preceding element must be provided.
      */
     void erase( Elem* e, Elem* prev )
     {
