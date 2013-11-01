@@ -47,19 +47,39 @@ void LuaClient::staticCall( const char* functionName )
 
   l_getglobal( functionName );
 
-  if( l_type( 1 ) == LUA_TNIL ) {
+  if( l_pcall( 0, 0 ) != LUA_OK ) {
+    Log::println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
+    System::bell();
+
     l_pop( 1 );
   }
-  else {
-    l_pcall( 0, 0 );
 
-    if( l_gettop() != 0 ) {
-      Log::println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
-      System::bell();
+  hard_assert( l_gettop() == 0 );
+}
 
-      l_pop( 1 );
-    }
+float LuaClient::staticExec( const char* code )
+{
+  ms.obj      = nullptr;
+  ms.str      = nullptr;
+  ms.frag     = nullptr;
+  ms.objIndex = 0;
+  ms.strIndex = 0;
+
+  float retValue = 0.0f;
+
+  if( l_dostring( code ) != LUA_OK ) {
+    Log::println( "Lua[C]: %s", l_tostring( -1 ) );
+    System::bell();
+
+    l_pop( 1 );
   }
+  else if( l_gettop() == 1 ) {
+    retValue = l_tofloat( 1 );
+
+    l_pop( 1 );
+  }
+
+  return retValue;
 }
 
 void LuaClient::update()
@@ -449,6 +469,7 @@ void LuaClient::init()
   IMPORT_FUNC( ozBotCanReachObj );
 
   IMPORT_FUNC( ozBotAction );
+  IMPORT_FUNC( ozBotClearActions );
 
   IMPORT_FUNC( ozBotHeal );
   IMPORT_FUNC( ozBotRearm );
@@ -558,6 +579,7 @@ void LuaClient::init()
   IGNORE_FUNC( ozSelfCanReachObj );
 
   IGNORE_FUNC( ozSelfAction );
+  IGNORE_FUNC( ozSelfClearActions );
 
   IGNORE_FUNC( ozSelfBindItems );
   IGNORE_FUNC( ozSelfBindItem );
@@ -602,9 +624,10 @@ void LuaClient::init()
   IMPORT_FUNC( ozCameraMoveTo );
   IMPORT_FUNC( ozCameraWarpTo );
 
-  IMPORT_FUNC( ozCameraAddSwitchableUnit );
-  IMPORT_FUNC( ozCameraClearSwitchableUnits );
-  IMPORT_FUNC( ozCameraSwitchTo );
+  IMPORT_FUNC( ozCameraGetBot );
+  IMPORT_FUNC( ozCameraSetBot );
+  IMPORT_FUNC( ozCameraAddSwitchableBot );
+  IMPORT_FUNC( ozCameraClearSwitchableBots );
   IMPORT_FUNC( ozCameraAllowReincarnation );
   IMPORT_FUNC( ozCameraSetState );
   IMPORT_FUNC( ozCameraExecuteSequence );

@@ -48,7 +48,7 @@ namespace client
 
 using modules::modules;
 
-const uint GameStage::AUTOSAVE_INTERVAL = 300 * Timer::TICKS_PER_SEC;
+const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
 
 void GameStage::saveMain( void* )
 {

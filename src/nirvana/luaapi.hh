@@ -432,6 +432,14 @@ static int ozSelfAction( lua_State* l )
   return 0;
 }
 
+static int ozSelfClearActions( lua_State* l )
+{
+  ARG( 0 );
+
+  ns.self->actions = 0;
+  return 0;
+}
+
 static int ozSelfBindItems( lua_State* l )
 {
   ARG( 0 );

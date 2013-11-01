@@ -49,14 +49,15 @@ bool LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
 
   l_getglobal( functionName );
   l_rawgeti( 1, ms.self->index );
-  l_pcall( 1, 0 );
 
-  if( l_gettop() != 1 ) {
+  if( l_pcall( 1, 0 ) != LUA_OK ) {
     Log::println( "Lua[N] in %s(self = %d): %s", functionName, ms.self->index, l_tostring( -1 ) );
     System::bell();
 
     l_pop( 1 );
   }
+
+  hard_assert( l_gettop() == 1 );
 
   return ns.forceUpdate;
 }
@@ -353,6 +354,7 @@ void LuaNirvana::init()
   IMPORT_FUNC( ozBotCanReachObj );
 
   IGNORE_FUNC( ozBotAction );
+  IGNORE_FUNC( ozBotClearActions );
 
   IGNORE_FUNC( ozBotHeal );
   IGNORE_FUNC( ozBotRearm );
@@ -458,6 +460,7 @@ void LuaNirvana::init()
   IMPORT_FUNC( ozSelfCanReachObj );
 
   IMPORT_FUNC( ozSelfAction );
+  IMPORT_FUNC( ozSelfClearActions );
 
   IMPORT_FUNC( ozSelfBindItems );
   IMPORT_FUNC( ozSelfBindItem );

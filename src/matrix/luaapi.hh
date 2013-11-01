@@ -2192,6 +2192,16 @@ static int ozBotAction( lua_State* l )
   return 0;
 }
 
+static int ozBotClearActions( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+  OBJ_BOT();
+
+  bot->actions = 0;
+  return 0;
+}
+
 static int ozBotHeal( lua_State* l )
 {
   ARG( 0 );

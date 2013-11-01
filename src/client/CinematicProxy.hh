@@ -49,8 +49,8 @@ class CinematicProxy : public Proxy
       Point  p;
       Mat44  colour;
 
+      String code;
       int    track;
-
       String title;
 
       float  time;
@@ -72,10 +72,6 @@ class CinematicProxy : public Proxy
     ui::CinematicText* cinematicText;
 
   public:
-
-    void addStateSwitch( int endState );
-    void addTransform( const Quat& rot, const Point& p, const Mat44& colour, int track,
-                       const char* title, float time );
 
     void executeSequence( const char* path, const Lingua* lingua );
 

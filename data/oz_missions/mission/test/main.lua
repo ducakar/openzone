@@ -41,8 +41,8 @@ function onCreate()
 
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
   --local me = ozOrbisAddPlayer( OZ_FORCE, 2000, 2002, 100, OZ_SOUTH )
-  ozCameraAddSwitchableUnit( me )
-  ozCameraSwitchTo( me )
+  ozCameraAddSwitchableBot( me )
+  ozCameraSetBot( me )
 
   init_sample()
 
@@ -53,6 +53,8 @@ function onCreate()
   ozUIBuildFrame( true )
 
   ozPersistent.oz_testRun = true
+
+  ozCameraExecuteSequence( "intro" )
 end
 
 function init_sample()
@@ -70,8 +72,8 @@ function init_sample()
                           "essentials.\n\n        -- Hubert Kirrman" )
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
-  ozCameraAddSwitchableUnit( cyborg )
-  ozCameraAddSwitchableUnit( droid )
+  ozCameraAddSwitchableBot( cyborg )
+  ozCameraAddSwitchableBot( droid )
 
   --ozOrbisAddObj( "reaper", 145, -15, 73 )
 

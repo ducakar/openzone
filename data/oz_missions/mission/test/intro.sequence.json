@@ -1,0 +1,17 @@
+[
+  {
+    "pos":              [ 137, -8, 73.5 ],
+    "rot":              [ 0, 75, 0 ]
+  },
+  {
+    "exec":             "ozBindObj( 0 ) ozBotAction( OZ_ACTION_SALUTE )",
+    "time":             1
+  },
+  {
+    "exec":             "ozBindObj( 0 ) ozBotClearActions()",
+    "time":             1.5
+  },
+  {
+    "state":            "UNIT"
+  }
+]

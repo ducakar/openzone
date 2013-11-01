@@ -164,26 +164,15 @@ static int ozCameraWarpTo( lua_State* l )
   return 0;
 }
 
-static int ozCameraAddSwitchableUnit( lua_State* l )
+static int ozCameraGetBot( lua_State* l )
 {
-  ARG( 1 );
-  BOT_INDEX( l_toint( 1 ) );
+  ARG( 0 );
 
-  camera.switchableUnits.add( bot->index );
-  return 0;
+  l_pushint( camera.bot );
+  return 1;
 }
 
-static int ozCameraClearSwitchableUnits( lua_State* l )
-{
-  ARG( 1 );
-  BOT_INDEX( l_toint( 1 ) );
-
-  camera.switchableUnits.clear();
-  camera.switchableUnits.deallocate();
-  return 0;
-}
-
-static int ozCameraSwitchTo( lua_State* l )
+static int ozCameraSetBot( lua_State* l )
 {
   ARG( 1 );
   BOT_INDEX( l_toint( 1 ) );
@@ -192,6 +181,25 @@ static int ozCameraSwitchTo( lua_State* l )
   camera.moveTo( Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ ) );
   camera.setBot( bot );
   camera.setState( Camera::UNIT );
+  return 0;
+}
+
+static int ozCameraAddSwitchableBot( lua_State* l )
+{
+  ARG( 1 );
+  BOT_INDEX( l_toint( 1 ) );
+
+  camera.switchableUnits.add( bot->index );
+  return 0;
+}
+
+static int ozCameraClearSwitchableBots( lua_State* l )
+{
+  ARG( 1 );
+  BOT_INDEX( l_toint( 1 ) );
+
+  camera.switchableUnits.clear();
+  camera.switchableUnits.deallocate();
   return 0;
 }
 

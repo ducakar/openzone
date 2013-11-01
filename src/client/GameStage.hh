@@ -35,7 +35,7 @@ class GameStage : public Stage
 {
   private:
 
-    // 5 min.
+    // 2.5 min.
     static const uint AUTOSAVE_INTERVAL;
 
     ulong64       startTicks;

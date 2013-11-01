@@ -321,6 +321,6 @@ function onCreate()
 
   ozBindObj( me )
   ozCameraAllowReincarnation( true )
-  ozCameraAddSwitchableUnit( me )
-  ozCameraSwitchTo( me )
+  ozCameraAddSwitchableBot( me )
+  ozCameraSetBot( me )
 end

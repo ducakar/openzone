@@ -41,6 +41,8 @@ class LuaClient : public LuaCommon
 
   public:
 
+    float staticExec( const char* code );
+
     void update();
     void create( const char* missionPath );
 

@@ -73,18 +73,18 @@ static void readBSP( const File& file )
     titles.include( description, file.path() );
   }
 
-  const JSON& models = config["models"];
-  int nModels = models.length();
+  const JSON& entities = config["entities"];
+  int nEntities = entities.length();
 
-  if( !models.isNull() && models.type() != JSON::ARRAY ) {
-    OZ_ERROR( "'models' entry in '%s' is not an array", file.path().cstr() );
+  if( !entities.isNull() && entities.type() != JSON::ARRAY ) {
+    OZ_ERROR( "'entities' entry in '%s' is not an array", file.path().cstr() );
   }
 
-  for( int i = 0; i < nModels; ++i ) {
-    const char* modelTitle = models[i]["title"].get( "" );
+  for( int i = 0; i < nEntities; ++i ) {
+    const char* entityTitle = entities[i]["title"].get( "" );
 
-    if( !String::isEmpty( modelTitle ) ) {
-      titles.include( modelTitle, file.path() );
+    if( !String::isEmpty( entityTitle ) ) {
+      titles.include( entityTitle, file.path() );
     }
   }
 

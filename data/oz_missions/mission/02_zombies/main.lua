@@ -76,8 +76,8 @@ function onCreate()
   end
 
 --   ozCameraAllowReincarnation( false )
-  ozCameraAddSwitchableUnit( oz_me )
-  ozCameraSwitchTo( oz_me )
+  ozCameraAddSwitchableBot( oz_me )
+  ozCameraSetBot( oz_me )
 
   ozUIBuildFrame( true )
 end

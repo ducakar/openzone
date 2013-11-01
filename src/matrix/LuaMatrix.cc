@@ -45,24 +45,21 @@ bool LuaMatrix::objectCall( const char* functionName, Object* self_, Bot* user_ 
 
   hard_assert( l_gettop() == 1 && ms.self != nullptr );
 
-  l_getglobal( functionName );
-  l_rawgeti( 1, ms.self->index );
-  l_pcall( 1, 1 );
-
   bool success = true;
 
-  if( l_gettop() == 2 ) {
-    if( l_type( 2 ) == LUA_TSTRING ) {
-      Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
-                    ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
-      System::bell();
-    }
-    else {
-      success = l_tobool( 2 );
-    }
-    l_settop( 1 );
+  l_getglobal( functionName );
+  l_rawgeti( 1, ms.self->index );
+
+  if( l_pcall( 1, 1 ) != LUA_OK ) {
+    Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
+                  ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
+    System::bell();
   }
-  hard_assert( l_gettop() == 1 );
+  else {
+    success = l_tobool( 2 );
+  }
+
+  l_settop( 1 );
 
   objectStatus = ms.status;
   return success;
@@ -358,6 +355,7 @@ void LuaMatrix::init()
   IMPORT_FUNC( ozBotAddStamina );
 
   IMPORT_FUNC( ozBotAction );
+  IMPORT_FUNC( ozBotClearActions );
 
   IMPORT_FUNC( ozBotHeal );
   IMPORT_FUNC( ozBotRearm );

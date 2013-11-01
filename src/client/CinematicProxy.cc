@@ -24,6 +24,7 @@
 #include <client/CinematicProxy.hh>
 
 #include <common/Timer.hh>
+#include <client/LuaClient.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>
 #include <client/ui/GalileoFrame.hh>
@@ -34,19 +35,6 @@ namespace oz
 {
 namespace client
 {
-
-void CinematicProxy::addStateSwitch( int endState )
-{
-  Step step = { Quat::ID, Point::ORIGIN, Mat44::ID, -1, nullptr, 0.0f, endState };
-  steps.add( step );
-}
-
-void CinematicProxy::addTransform( const Quat& rot, const Point& p, const Mat44& colour, int track,
-                                   const char* title, float time )
-{
-  Step step = { rot, p, colour, track, title, time, Camera::CINEMATIC };
-  steps.add( step );
-}
 
 void CinematicProxy::executeSequence( const char* path, const Lingua* missionLingua )
 {
@@ -62,7 +50,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
     return;
   }
 
-  Step step = { camera.rot, camera.p, camera.colour, -1, nullptr, 0.0f, Camera::CINEMATIC };
+  Step step = { camera.rot, camera.p, camera.colour, "", -1, nullptr, 0.0f, Camera::CINEMATIC };
 
   steps.allocate( nSteps );
 
@@ -86,6 +74,14 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
 
     if( !colourArray.isNull() ) {
       step.colour = colourArray.asMat44();
+    }
+
+    const JSON& execConfig = stepConfig["exec"];
+    if( execConfig.isNull() ) {
+      step.code = "";
+    }
+    else {
+      step.code = execConfig.asString();
     }
 
     const JSON& trackConfig = stepConfig["track"];
@@ -222,6 +218,10 @@ void CinematicProxy::update()
     steps.popFirst();
   }
   else if( t == 0.0f ) {
+    if( !step.code.isEmpty() ) {
+      luaClient.staticExec( step.code );
+    }
+
     if( step.track == -2 ) {
       sound.stopMusic();
     }
