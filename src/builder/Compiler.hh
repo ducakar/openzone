@@ -32,20 +32,6 @@ namespace oz
 namespace builder
 {
 
-struct Vertex
-{
-  Point    pos;
-  TexCoord texCoord;
-  Vec3     normal;
-
-  bool operator == ( const Vertex& v ) const
-  {
-    return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
-  }
-
-  void write( OutputStream* ostream ) const;
-};
-
 class Compiler
 {
   public:
@@ -67,48 +53,6 @@ class Compiler
       CLOCKWISE = 0x08
     };
 
-  private:
-
-    static const int MODEL_BIT = 0x00000001;
-    static const int MESH_BIT  = 0x00000002;
-
-    struct Mesh
-    {
-      int          component;
-      int          flags;
-      String       texture;
-
-      int          firstIndex;
-      int          nIndices;
-      List<ushort> indices;
-
-      bool operator == ( const Mesh& mesh ) const
-      {
-        return component == mesh.component && flags == mesh.flags &&
-               texture.equals( mesh.texture );
-      }
-    };
-
-    List<Mesh>    meshes;
-    List<Vertex>  vertices;
-    DArray<Point> positions;
-    DArray<Vec3>  normals;
-
-    Bounds        bounds;
-
-    Vertex        vert;
-    Mesh          mesh;
-
-    int           caps;
-    int           flags;
-    int           componentId;
-    PolyMode      mode;
-    String        shaderName;
-    int           vertNum;
-
-    int           nFrames;
-    int           nFramePositions;
-
   public:
 
     void enable( Capability cap );
@@ -117,14 +61,17 @@ class Compiler
     void beginModel();
     void endModel();
 
-    void anim( int nFrames, int nPositions );
-    void component( int id );
-    void blend( bool doBlend );
     void shader( const char* shaderName );
-    void texture( const char* texture );
 
-    void begin( PolyMode mode );
-    void end();
+    void anim( int nFrames, int nPositions );
+    void animPositions( const float* positions );
+    void animNormals( const float* normals );
+
+    void beginMesh( PolyMode mode );
+    int endMesh();
+
+    void texture( const char* texture );
+    void blend( bool doBlend );
 
     void texCoord( float u, float v );
     void texCoord( const float* v );
@@ -137,8 +84,11 @@ class Compiler
 
     void animVertex( int i );
 
-    void animPositions( const float* positions );
-    void animNormals( const float* normals );
+    void beginNode();
+    void endNode();
+
+    void transform( const Mat44& t );
+    void bindMesh( int id );
 
     void writeModel( OutputStream* os, bool globalTextures = false );
     void buildModelTextures( const char* destDir );

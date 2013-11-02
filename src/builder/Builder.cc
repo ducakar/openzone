@@ -474,10 +474,14 @@ void Builder::buildModels()
       }
     }
 
-    if( File( dir->path() + "/data.obj" ).type() != File::MISSING ) {
+    File daeFile = dir->path() + "/data.dae";
+    File objFile = dir->path() + "/data.obj";
+    File md2File = dir->path() + "/tris.md2";
+
+    if( daeFile.type() == File::REGULAR || objFile.type() == File::REGULAR ) {
       assImp.build( dir->path() );
     }
-    else if( File( dir->path() + "/tris.md2" ).type() != File::MISSING ) {
+    else if( md2File.type() == File::REGULAR ) {
       md2.build( dir->path() );
     }
     else {

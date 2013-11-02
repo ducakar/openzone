@@ -23,8 +23,8 @@
 
 #include <client/Model.hh>
 
-#include <client/Context.hh>
 #include <client/Terra.hh>
+#include <client/Context.hh>
 #include <client/Camera.hh>
 
 namespace oz
@@ -38,13 +38,13 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
-  glEnableVertexAttribArray( Attrib::TEXCOORD );
-  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
-                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
-
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
+
+  glEnableVertexAttribArray( Attrib::TEXCOORD );
+  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 }
 
 struct Model::PreloadData
@@ -127,30 +127,18 @@ void Model::animate( const Instance* instance )
   }
 }
 
-void Model::draw( const Instance* instance, int mask )
+void Model::drawNode( const Node* node, int dir, int mask )
 {
-  tf.model = instance->transform;
-  tf.apply();
+  tf.push();
+  tf.model = tf.model * node->transf;
 
-  tf.colour = instance->colour;
-  tf.applyColour();
-
-  int firstMesh = 0;
-  int pastMesh  = meshes.length();
-
-  Vec3 localDir = ~instance->transform * camera.at;
-  int  dir      = ( localDir.x < 0.0f ) | ( localDir.y < 0.0f ) << 1 | ( localDir.z < 0.0f ) << 2;
-
-  if( instance->component >= 0 ) {
-    firstMesh = componentIndices[instance->component];
-    pastMesh  = componentIndices[instance->component + 1];
-  }
-
-  for( int i = firstMesh; i < pastMesh; ++i ) {
-    const Mesh& mesh = meshes[i];
+  if( node->mesh >= 0 ) {
+    const Mesh& mesh = meshes[node->mesh];
 
     if( mesh.flags & mask ) {
       const Texture& texture = textures[mesh.texture];
+
+      tf.apply();
 
       glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, texture.diffuse );
@@ -161,6 +149,24 @@ void Model::draw( const Instance* instance, int mask )
                       static_cast<ushort*>( nullptr ) + dir * nIndices + mesh.firstIndex );
     }
   }
+
+  for( int i = 0; i < node->nChildren; ++i ) {
+    drawNode( &nodes[node->firstChild + i], dir, mask );
+  }
+
+  tf.pop();
+}
+
+void Model::draw( const Instance* instance, int mask )
+{
+  tf.model  = instance->transf;
+  tf.colour = instance->colour;
+  tf.applyColour();
+
+  Vec3 localDir = ~instance->transf * camera.at;
+  int  dir      = ( localDir.x < 0.0f ) | ( localDir.y < 0.0f ) << 1 | ( localDir.z < 0.0f ) << 2;
+
+  drawNode( &nodes[instance->node], dir, mask );
 }
 
 void Model::setCollation( Collation collation_ )
@@ -314,6 +320,7 @@ const File* Model::preload( const char* path )
   InputStream istream = preloadData->modelFile.inputStream( Endian::LITTLE );
 
   dim             = istream.readVec3();
+  shaderId        = liber.shaderIndex( istream.readString() );
   nTextures       = istream.readInt();
   nVertices       = istream.readInt();
   nIndices        = istream.readInt();
@@ -322,8 +329,6 @@ const File* Model::preload( const char* path )
 
   istream.readInt();
   istream.readInt();
-
-  shaderId = liber.shaderIndex( istream.readString() );
 
   if( nTextures > 0 ) {
     for( int i = 0; i < nTextures; ++i ) {
@@ -368,16 +373,15 @@ void Model::load( uint usage )
   OZ_GL_CHECK_ERROR();
 
   istream.readVec3();
+  istream.readString();
   istream.readInt();
   istream.readInt();
   istream.readInt();
   istream.readInt();
   istream.readInt();
 
-  int nComponents = istream.readInt();
-  int nMeshes     = istream.readInt();
-
-  liber.shaderIndex( istream.readString() );
+  int nMeshes = istream.readInt();
+  int nNodes  = istream.readInt();
 
   if( nTextures < 0 ) {
     nTextures = ~nTextures;
@@ -460,14 +464,7 @@ void Model::load( uint usage )
     }
   }
 
-  componentIndices.resize( nComponents + 1 );
   meshes.resize( nMeshes );
-
-  int lastComponent = 0;
-  if( nComponents != 0 ) {
-    componentIndices[0] = 0;
-    componentIndices[nComponents] = nMeshes;
-  }
 
   for( int i = 0; i < nMeshes; ++i ) {
     meshes[i].flags      = istream.readInt();
@@ -476,18 +473,17 @@ void Model::load( uint usage )
     meshes[i].nIndices   = istream.readInt();
     meshes[i].firstIndex = istream.readInt();
 
-    int j = meshes[i].flags & COMPONENT_MASK;
-    if( j != lastComponent ) {
-      hard_assert( j == lastComponent + 1 && j < nComponents );
-
-      componentIndices[j] = i;
-      lastComponent = j;
-    }
-
     flags |= meshes[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
 
-  hard_assert( nComponents == 0 || lastComponent == nComponents - 1 );
+  nodes.resize( nNodes );
+
+  for( int i = 0; i < nNodes; ++i ) {
+    nodes[i].transf     = istream.readMat44();
+    nodes[i].firstChild = istream.readInt();
+    nodes[i].nChildren  = istream.readInt();
+    nodes[i].mesh       = istream.readInt();
+  }
 
   loadedModels.add( this );
 
@@ -517,7 +513,7 @@ void Model::unload()
     }
   }
 
-  componentIndices.clear();
+  nodes.clear();
   meshes.clear();
   textures.clear();
 

@@ -246,9 +246,8 @@ void MD3::buildMesh( const char* name, int frame )
     is.rewind();
     is.forward( surfaceStart + surface.offEnd );
 
+    compiler.beginMesh( Compiler::TRIANGLES );
     compiler.texture( sPath + "/" + texture );
-
-    compiler.begin( Compiler::TRIANGLES );
 
     for( int j = 0; j < surfaceTriangles.length(); ++j ) {
       for( int k = 0; k < 3; ++k ) {
@@ -261,7 +260,11 @@ void MD3::buildMesh( const char* name, int frame )
       }
     }
 
-    compiler.end();
+    int meshId = compiler.endMesh();
+
+    compiler.beginNode();
+    compiler.bindMesh( meshId );
+    compiler.endNode();
 
     indexBase += surface.nVertices;
   }
@@ -330,13 +333,8 @@ void MD3::save()
 //     buildMesh( "head", 0 );
 //   }
   else {
-    compiler.component( 0 );
     buildMesh( "lower", frame );
-
-    compiler.component( 1 );
     buildMesh( "upper", frame );
-
-    compiler.component( 2 );
     buildMesh( "head", 0 );
 
     os.writeInt( nLowerFrames );
@@ -376,7 +374,7 @@ void MD3::save()
     Log::printEnd( " OK" );
   }
   else {
-    File destFile = sDestDir + "/data.ozcSMM";
+    File destFile = sDestDir + "/data.ozcModel";
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

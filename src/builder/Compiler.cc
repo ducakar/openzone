@@ -41,29 +41,149 @@ static const Vec3 DIRS[] = {
   Vec3( -1.0f, -1.0f, -1.0f )
 };
 
+static const int MODEL_BIT = 0x01;
+static const int MESH_BIT  = 0x02;
+static const int NODE_BIT  = 0x04;
+
+struct Vertex
+{
+  Point    pos;
+  Vec3     normal;
+  TexCoord texCoord;
+
+  OZ_HIDDEN
+  bool operator == ( const Vertex& v ) const
+  {
+    return pos == v.pos && normal == v.normal && texCoord == v.texCoord;
+  }
+
+  OZ_HIDDEN
+  void write( OutputStream* ostream ) const;
+};
+
 struct Triangle
 {
   float depth;
   int   index;
 
+  OZ_HIDDEN
   bool operator < ( const Triangle& t ) const
   {
     return depth < t.depth;
   }
 };
 
+struct Mesh
+{
+  int          flags;
+  String       texture;
+
+  int          firstIndex;
+  int          nIndices;
+  List<ushort> indices;
+};
+
+struct Node
+{
+  static Pool<Node> pool;
+
+  Mat44       transf;
+  int         mesh;
+
+  Node*       parent;
+  List<Node*> children;
+
+  Node*       prev[1];
+  Node*       next[1];
+
+  int         firstChild;
+  int         nChildren;
+
+  OZ_HIDDEN
+  explicit Node( Node* parent_ = nullptr ) :
+    transf( Mat44::ID ), mesh( -1 ), parent( parent_ )
+  {}
+
+  OZ_HIDDEN
+  ~Node()
+  {
+    children.free();
+  }
+
+  OZ_STATIC_POOL_ALLOC( pool )
+};
+
+Pool<Node>                Node::pool;
+
+static DArray<Point>      positions;
+static DArray<Vec3>       normals;
+static List<Vertex>       vertices;
+static List<Mesh>         meshes;
+static List<Node*>        nodes;
+
+static Bounds             bounds;
+
+static Vertex             vert;
+static Mesh               mesh;
+static Node               root;
+static Node*              node;
+
+static int                envFlags;
+static int                caps;
+static String             shaderName;
+static int                nFrames;
+static int                nFramePositions;
+static Compiler::PolyMode mode;
+static int                vertNum;
+
+OZ_HIDDEN
 void Vertex::write( OutputStream* ostream ) const
 {
-  ostream->writeFloat( pos.x );
-  ostream->writeFloat( pos.y );
-  ostream->writeFloat( pos.z );
-
+  ostream->writePoint( pos );
+  ostream->writeVec3( normal );
   ostream->writeFloat( texCoord.u );
   ostream->writeFloat( texCoord.v );
+}
 
-  ostream->writeFloat( normal.x );
-  ostream->writeFloat( normal.y );
-  ostream->writeFloat( normal.z );
+static void calculateBounds( const Node* node, const Mat44& transf )
+{
+  Mat44 nodeTransf = transf * node->transf;
+
+  if( node->mesh >= 0 ) {
+    const Mesh& mesh = meshes[node->mesh];
+
+    foreach( index, mesh.indices.citer() ) {
+      Point pos = vertices[*index].pos;
+
+      if( nFrames != 0 ) {
+        pos = positions[ int( pos.x ) ];
+      }
+
+      pos = nodeTransf * pos;
+
+      bounds.mins = min( bounds.mins, pos );
+      bounds.maxs = max( bounds.maxs, pos );
+    }
+  }
+
+  foreach( child, node->children.citer() ) {
+    calculateBounds( *child, nodeTransf );
+  }
+}
+
+static void storeNode( Node* node, int depth )
+{
+  if( depth != 0 ) {
+    foreach( child, node->children.citer() ) {
+      storeNode( *child, depth - 1 );
+    }
+  }
+  else {
+    node->firstChild = nodes.length();
+    node->nChildren  = node->children.length();
+
+    nodes.addAll( node->children.begin(), node->children.length() );
+  }
 }
 
 void Compiler::enable( Capability cap )
@@ -78,13 +198,14 @@ void Compiler::disable( Capability cap )
 
 void Compiler::beginModel()
 {
-  hard_assert( !( flags & MODEL_BIT ) );
-  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( envFlags == 0 );
 
-  meshes.clear();
-  vertices.clear();
   positions.clear();
   normals.clear();
+  vertices.clear();
+  meshes.clear();
+  nodes.clear();
+  root.children.free();
 
   bounds.mins     = Point( +Math::INF, +Math::INF, +Math::INF );
   bounds.maxs     = Point( -Math::INF, -Math::INF, -Math::INF );
@@ -93,13 +214,14 @@ void Compiler::beginModel()
   vert.texCoord   = TexCoord( 0.0f, 0.0f );
   vert.normal     = Vec3::ZERO;
 
-  mesh.component  = 0;
   mesh.flags      = Model::SOLID_BIT;
   mesh.texture    = "";
 
+  root            = Node( nullptr );
+  node            = &root;
+
+  envFlags        = MODEL_BIT;
   caps            = 0;
-  flags          |= MODEL_BIT;
-  componentId     = 0;
   mode            = TRIANGLES;
   shaderName      = "mesh";
   vertNum         = 0;
@@ -109,16 +231,22 @@ void Compiler::beginModel()
 
 void Compiler::endModel()
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( envFlags == MODEL_BIT );
+  envFlags = 0;
 
-  flags &= ~MODEL_BIT;
+  calculateBounds( &root, Mat44::ID );
+}
+
+void Compiler::shader( const char* shaderName_ )
+{
+  hard_assert( envFlags == MODEL_BIT );
+
+  shaderName = shaderName_;
 }
 
 void Compiler::anim( int nFrames_, int nFramePositions_ )
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( envFlags == MODEL_BIT );
 
   if( nFrames <= 1 ) {
     nFrames         = 0;
@@ -132,61 +260,46 @@ void Compiler::anim( int nFrames_, int nFramePositions_ )
   normals.resize( nFrames * nFramePositions );
 }
 
-void Compiler::component( int id )
+void Compiler::animPositions( const float* positions_ )
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( envFlags == MODEL_BIT );
+  hard_assert( nFrames != 0 );
 
-  if( id != componentId && id != componentId + 1 ) {
-    OZ_ERROR( "Non-consecutive components %d and %d\n", componentId, id );
+  for( int i = 0; i < positions.length(); ++i ) {
+    positions[i].x = *positions_++;
+    positions[i].y = *positions_++;
+    positions[i].z = *positions_++;
   }
-
-  componentId = id;
 }
 
-void Compiler::blend( bool doBlend )
+void Compiler::animNormals( const float* normals_ )
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( envFlags == MODEL_BIT );
+  hard_assert( nFrames != 0 );
 
-  mesh.flags = doBlend ? int( Model::ALPHA_BIT ) : int( Model::SOLID_BIT );
+  for( int i = 0; i < normals.length(); ++i ) {
+    normals[i].x = *normals_++;
+    normals[i].y = *normals_++;
+    normals[i].z = *normals_++;
+  }
 }
 
-void Compiler::shader( const char* shaderName_ )
+void Compiler::beginMesh( PolyMode mode_ )
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( envFlags & MODEL_BIT );
+  envFlags |= MESH_BIT;
 
-  shaderName = shaderName_;
-}
-
-void Compiler::texture( const char* texture )
-{
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
-
-  mesh.texture = texture;
-}
-
-void Compiler::begin( PolyMode mode_ )
-{
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( !( flags & MESH_BIT ) );
-
-  flags |= MESH_BIT;
-
-  mode = mode_;
+  mode    = mode_;
   vertNum = 0;
 
-  mesh.component = componentId;
+  mesh.flags   = Model::SOLID_BIT;
+  mesh.texture = "";
 }
 
-void Compiler::end()
+int Compiler::endMesh()
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( flags & MESH_BIT );
-
-  flags &= ~MESH_BIT;
+  hard_assert( envFlags & MESH_BIT );
+  envFlags &= ~MESH_BIT;
 
   if( caps & CLOCKWISE ) {
     mesh.indices.reverse();
@@ -254,21 +367,31 @@ void Compiler::end()
     }
   }
 
-  int meshIndex = meshes.index( mesh );
+  int index = meshes.length();
 
-  if( meshIndex < 0 ) {
-    meshes.add( mesh );
-  }
-  else {
-    meshes[meshIndex].indices.addAll( mesh.indices.begin(), mesh.indices.length() );
-  }
-
+  meshes.add( mesh );
   mesh.indices.clear();
+
+  return index;
+}
+
+void Compiler::texture( const char* texture )
+{
+  hard_assert( envFlags & MESH_BIT );
+
+  mesh.texture = texture;
+}
+
+void Compiler::blend( bool doBlend )
+{
+  hard_assert( envFlags & MESH_BIT );
+
+  mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
 }
 
 void Compiler::texCoord( float u, float v )
 {
-  hard_assert( flags & MODEL_BIT );
+  hard_assert( envFlags & MESH_BIT );
 
   vert.texCoord[0] = u;
   vert.texCoord[1] = v;
@@ -281,8 +404,7 @@ void Compiler::texCoord( const float* v )
 
 void Compiler::normal( float nx, float ny, float nz )
 {
-  hard_assert( flags & MODEL_BIT );
-  hard_assert( nFrames == 0 );
+  hard_assert( envFlags & MESH_BIT );
 
   vert.normal.x = nx;
   vert.normal.y = ny;
@@ -296,57 +418,42 @@ void Compiler::normal( const float* v )
 
 void Compiler::vertex( float x, float y, float z )
 {
-  hard_assert( flags & MODEL_BIT );
+  hard_assert( envFlags & MESH_BIT );
   hard_assert( nFrames == 0 || ( y == 0.0f && z == 0.0f ) );
-
-  if( nFrames == 0 ) {
-    bounds.mins.x = min( bounds.mins.x, x );
-    bounds.mins.y = min( bounds.mins.y, y );
-    bounds.mins.z = min( bounds.mins.z, z );
-
-    bounds.maxs.x = max( bounds.maxs.x, x );
-    bounds.maxs.y = max( bounds.maxs.y, y );
-    bounds.maxs.z = max( bounds.maxs.z, z );
-  }
 
   vert.pos.x = x;
   vert.pos.y = y;
   vert.pos.z = z;
 
-  if( !( flags & MESH_BIT ) ) {
-    vertices.add( vert );
+  bool doRestart = false;
+
+  if( mode == QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
+    doRestart = true;
+  }
+
+  if( doRestart ) {
+    mesh.indices.add( mesh.indices.last() );
+  }
+
+  int index;
+
+  if( caps & UNIQUE ) {
+    index = vertices.include( vert );
+
+    mesh.indices.add( ushort( index ) );
   }
   else {
-    bool doRestart = false;
+    index = vertices.length();
 
-    if( mode == QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
-      doRestart = true;
-    }
-
-    if( doRestart ) {
-      mesh.indices.add( mesh.indices.last() );
-    }
-
-    int index;
-
-    if( caps & UNIQUE ) {
-      index = vertices.include( vert );
-
-      mesh.indices.add( ushort( index ) );
-    }
-    else {
-      index = vertices.length();
-
-      vertices.add( vert );
-      mesh.indices.add( ushort( index ) );
-    }
-
-    if( doRestart ) {
-      mesh.indices.add( ushort( index ) );
-    }
-
-    ++vertNum;
+    vertices.add( vert );
+    mesh.indices.add( ushort( index ) );
   }
+
+  if( doRestart ) {
+    mesh.indices.add( ushort( index ) );
+  }
+
+  ++vertNum;
 }
 
 void Compiler::vertex( const float* v )
@@ -356,47 +463,54 @@ void Compiler::vertex( const float* v )
 
 void Compiler::animVertex( int i )
 {
-  hard_assert( nFrames != 0 );
+  hard_assert( envFlags & MESH_BIT );
   hard_assert( nFrames > 1 && uint( i ) < uint( positions.length() ) );
+
+  mesh.flags |= Model::ANIMATED_BIT;
 
   vertex( float( i ), 0.0f, 0.0f );
 }
 
-void Compiler::animPositions( const float* positions_ )
+void Compiler::beginNode()
 {
-  hard_assert( nFrames != 0 );
+  hard_assert( ( envFlags & MODEL_BIT ) && !( envFlags & MESH_BIT ) );
+  envFlags |= NODE_BIT;
 
-  for( int i = 0; i < positions.length(); ++i ) {
-    positions[i].x = *positions_++;
-    positions[i].y = *positions_++;
-    positions[i].z = *positions_++;
+  Node* newNode = new Node( node );
 
-    if( i < nFramePositions ) {
-      bounds.mins.x = min( bounds.mins.x, positions[i].x );
-      bounds.mins.y = min( bounds.mins.y, positions[i].y );
-      bounds.mins.z = min( bounds.mins.z, positions[i].z );
+  node->children.add( newNode );
+  node = newNode;
+}
 
-      bounds.maxs.x = max( bounds.maxs.x, positions[i].x );
-      bounds.maxs.y = max( bounds.maxs.y, positions[i].y );
-      bounds.maxs.z = max( bounds.maxs.z, positions[i].z );
-    }
+void Compiler::endNode()
+{
+  hard_assert( envFlags & NODE_BIT );
+  hard_assert( node != &root );
+
+  node = node->parent;
+
+  if( node == &root ) {
+    envFlags &= ~NODE_BIT;
   }
 }
 
-void Compiler::animNormals( const float* normals_ )
+void Compiler::transform( const Mat44& t )
 {
-  hard_assert( nFrames != 0 );
+  hard_assert( envFlags & NODE_BIT );
 
-  for( int i = 0; i < normals.length(); ++i ) {
-    normals[i].x = *normals_++;
-    normals[i].y = *normals_++;
-    normals[i].z = *normals_++;
-  }
+  node->transf = t;
+}
+
+void Compiler::bindMesh( int id )
+{
+  hard_assert( envFlags & NODE_BIT );
+
+  node->mesh = id;
 }
 
 void Compiler::writeModel( OutputStream* os, bool globalTextures )
 {
-  hard_assert( !( flags & MODEL_BIT ) && !( flags & MESH_BIT ) );
+  hard_assert( envFlags == 0 );
   hard_assert( meshes.length() > 0 && vertices.length() > 0 );
   hard_assert( positions.length() == normals.length() );
 
@@ -406,8 +520,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   List<Triangle> triangles;
   List<ushort>   indices[8];
 
-  int nIndices    = 0;
-  int nComponents = 0;
+  int nIndices = 0;
 
   for( int i = 0; i < meshes.length(); ++i ) {
     textures.include( meshes[i].texture );
@@ -436,26 +549,28 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
       triangles.clear();
     }
 
-    nIndices   += meshes[i].nIndices;
-    nComponents = max( nComponents, meshes[i].component + 1 );
+    nIndices += meshes[i].nIndices;
   }
 
-  if( nComponents == 0 ) {
-    OZ_ERROR( "Model should have at least one component" );
+  int nNodes = -1;
+
+  for( int i = 0; nNodes != nodes.length(); ++i ) {
+    nNodes = nodes.length();
+
+    storeNode( &root, i );
   }
 
   os->writeVec3( bounds.dim() );
 
+  os->writeString( shaderName );
   os->writeInt( globalTextures ? ~textures.length() : textures.length() );
   os->writeInt( vertices.length() );
   os->writeInt( nIndices );
   os->writeInt( nFrames );
   os->writeInt( nFramePositions );
 
-  os->writeInt( nComponents );
   os->writeInt( meshes.length() );
-
-  os->writeString( shaderName );
+  os->writeInt( Node::pool.length() );
 
   foreach( texture, textures.citer() ) {
     os->writeString( *texture );
@@ -486,11 +601,20 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   }
 
   foreach( mesh, meshes.citer() ) {
-    os->writeInt( mesh->component | mesh->flags );
+    os->writeInt( mesh->flags );
     os->writeInt( textures.index( mesh->texture ) );
 
     os->writeInt( mesh->nIndices );
     os->writeInt( mesh->firstIndex );
+  }
+
+  foreach( i, nodes.citer() ) {
+    const Node* node = *i;
+
+    os->writeMat44( node->transf );
+    os->writeInt( node->firstChild );
+    os->writeInt( node->nChildren );
+    os->writeInt( node->mesh );
   }
 
   Log::printEnd( " OK" );
@@ -498,6 +622,8 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
 
 void Compiler::buildModelTextures( const char* destDir )
 {
+  hard_assert( envFlags == 0 );
+
   List<String> textures;
 
   for( int i = 0; i < meshes.length(); ++i ) {
@@ -514,18 +640,24 @@ void Compiler::init()
 
 void Compiler::destroy()
 {
+  positions.clear();
+  normals.clear();
+
+  vertices.clear();
+  vertices.deallocate();
+
   meshes.clear();
   meshes.deallocate();
+
+  nodes.clear();
+  nodes.deallocate();
 
   mesh.texture = "";
   mesh.indices.clear();
   mesh.indices.deallocate();
 
-  vertices.clear();
-  vertices.deallocate();
-
-  positions.clear();
-  normals.clear();
+  root.children.free();
+  Node::pool.free();
 }
 
 Compiler compiler;

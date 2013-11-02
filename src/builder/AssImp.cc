@@ -76,58 +76,30 @@ struct Light
   Type  type;
 };
 
-struct Node
-{
-  String      name;
-  Mat44       transf;
-  DArray<int> meshes;
-  DArray<int> children;
-};
-
 static List<Material>   materials;
 static List<Anim::Key>  animKeys;
 static List<Anim>       anims;
 static List<Light>      lights;
-static List<Node>       nodes;
 static Assimp::Importer importer;
 
-static int readNode( const aiNode* origNode )
+static void readNode( const aiNode* node )
 {
-  nodes.add();
+  hard_assert( node->mNumMeshes <= 1 );
 
-  int   nodeId = nodes.length() - 1;
-  Node& node   = nodes.last();
+  Mat44 transf = ~Mat44( node->mTransformation[0] );
 
-  node.name = origNode->mName.C_Str();
-  node.transf = ~Mat44( origNode->mTransformation[0] );
-  node.meshes.resize( int( origNode->mNumMeshes ) );
-  node.children.resize( int( origNode->mNumChildren ) );
+  compiler.beginNode();
+  compiler.transform( transf );
 
-  Log() << origNode->mName.C_Str();
-  Log() << node.transf;
-  Log() << node.children.length() << " :: " << node.meshes.length();
-
-  for( int i = 0; i < int( origNode->mNumMeshes ); ++i ) {
-    node.meshes[i] = int( origNode->mMeshes[i] );
+  if( node->mNumMeshes != 0 ) {
+    compiler.bindMesh( int( node->mMeshes[0] ) );
   }
-  for( int i = 0; i < int( origNode->mNumChildren ); ++i ) {
-    int childId = readNode( origNode->mChildren[i] );
 
-    // Nodes vector may reallocate storage, re-reference node.
-    Node& node = nodes[nodeId];
-    node.children[i] = childId;
+  for( int i = 0; i < int( node->mNumChildren ); ++i ) {
+    readNode( node->mChildren[i] );
   }
-  return nodeId;
-}
 
-static int findNode( const char* name )
-{
-  for( int i = 0; i < nodes.length(); ++i ) {
-    if( nodes[i].name.equals( name ) ) {
-      return i;
-    }
-  }
-  return -1;
+  compiler.endNode();
 }
 
 void AssImp::build( const char* path )
@@ -136,7 +108,7 @@ void AssImp::build( const char* path )
   Log::indent();
 
   File   modelFile = String( path, "/data.dae" );
-  File   outFile   = String( &path[1], "/data.ozcSMM" );
+  File   outFile   = String( &path[1], "/data.ozcModel" );
   String basePath  = String( path, "/" );
 
   if( modelFile.type() == File::MISSING ) {
@@ -160,7 +132,7 @@ void AssImp::build( const char* path )
                                             aiProcess_FindInstances |
                                             aiProcess_OptimizeMeshes );
   if( scene == nullptr ) {
-    OZ_ERROR( "Error loading '%s': Failed to load scene", modelFile.path().cstr() );
+    OZ_ERROR( "Error loading '%s': %s", modelFile.path().cstr(), importer.GetErrorString() );
   }
 
   if( !scene->HasMeshes() ) {
@@ -187,10 +159,9 @@ void AssImp::build( const char* path )
     float alpha = 1.0f;
     material->Get<float>( AI_MATKEY_OPACITY, alpha );
 
+    compiler.beginMesh( Compiler::TRIANGLES );
     compiler.texture( basePath + String::fileBaseName( texture.C_Str() ) );
     compiler.blend( alpha != 1.0f );
-
-    compiler.begin( Compiler::TRIANGLES );
 
     for( uint j = 0; j < mesh->mNumFaces; ++j ) {
       const aiFace& face = mesh->mFaces[j];
@@ -208,10 +179,8 @@ void AssImp::build( const char* path )
       }
     }
 
-    compiler.end();
+    compiler.endMesh();
   }
-
-  compiler.endModel();
 
   for( uint i = 0; i < scene->mNumAnimations; ++i ) {
     const aiAnimation* anim = scene->mAnimations[i];
@@ -239,7 +208,11 @@ void AssImp::build( const char* path )
     } );
   }
 
-  readNode( scene->mRootNode );
+  for( uint i = 0; i < scene->mRootNode->mNumChildren; ++i ) {
+    readNode( scene->mRootNode->mChildren[i] );
+  }
+
+  compiler.endModel();
 
   OutputStream os( 0, Endian::LITTLE );
 

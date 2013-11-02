@@ -122,7 +122,7 @@ void ModelField::onDraw()
     }
     else {
       if( smmModel->isLoaded() ) {
-        smmModel->schedule( -1, Model::SCENE_QUEUE );
+        smmModel->schedule( 0, Model::SCENE_QUEUE );
       }
       context.releaseModel( model );
     }

@@ -104,7 +104,7 @@ void Caelum::build( const char* name )
     os.writeUShort( ushort( i * 4 + 2 ) );
   }
 
-  Log::print( "Dumping into '%s' ...", destFile.path().cstr() );
+  Log::print( "Writing into '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );

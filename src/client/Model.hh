@@ -33,8 +33,8 @@ namespace client
 struct Vertex
 {
   float pos[3];
-  float texCoord[2];
   float normal[3];
+  float texCoord[2];
 
   static void setFormat();
 };
@@ -56,14 +56,14 @@ class Model
 {
   public:
 
-    static const int COMPONENT_MASK  = 0x00ff; ///< Mask to get number of model components.
-    static const int EMBEDED_TEX_BIT = 0x0100; ///< Textures are embedded into SMM file.
-    static const int SOLID_BIT       = 0x0200; ///< Component is opaque.
-    static const int ALPHA_BIT       = 0x0400; ///< Component is transparent.
+    static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into SMM file.
+    static const int ANIMATED_BIT    = 0x02; ///< Mesh is animated per-vertex.
+    static const int SOLID_BIT       = 0x04; ///< Mesh is opaque.
+    static const int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
 
-    static const int DIFFUSE_BIT     = 0x1000; ///< Texture has base per-pixel colours.
-    static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
-    static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
+    static const int DIFFUSE_BIT     = 0x10; ///< Texture has base per-pixel colours.
+    static const int MASKS_BIT       = 0x20; ///< Texture has specular and emission masks.
+    static const int NORMALS_BIT     = 0x40; ///< Texture has normal map.
 
     enum Collation
     {
@@ -81,19 +81,28 @@ class Model
 
     struct Mesh
     {
-      int  flags;
-      int  texture;
+      int flags;
+      int texture;
 
-      int  nIndices;
-      int  firstIndex;
+      int nIndices;
+      int firstIndex;
+    };
+
+    struct Node
+    {
+      Mat44 transf;
+      int   firstChild;
+      int   nChildren;
+      int   mesh;
     };
 
     struct Instance
     {
       Model* model;
-      Mat44  transform;
+      Mat44  transf;
       Mat44  colour;
-      int    component;
+
+      int    node;
       int    firstFrame;
       int    secondFrame;
       float  interpolation;
@@ -110,16 +119,15 @@ class Model
     static int            vertexAnimBufferLength;
     static Collation      collation;
 
+    int                   flags;
     uint                  vbo;
     uint                  ibo;
     int                   shaderId;
+    uint                  animationTexId;
 
-    int                   flags;
     DArray<Texture>       textures;
     DArray<Mesh>          meshes;
-    DArray<int>           componentIndices;
-
-    uint                  animationTexId;
+    DArray<Node>          nodes;
 
     int                   nTextures;
     int                   nVertices;
@@ -141,6 +149,7 @@ class Model
   private:
 
     void animate( const Instance* instance );
+    void drawNode( const Node* node, int dir, int mask );
     void draw( const Instance* instance, int mask );
 
   public:
@@ -165,26 +174,26 @@ class Model
       return !meshes.isEmpty();
     }
 
-    void schedule( int component, QueueType queue )
+    void schedule( int mesh, QueueType queue )
     {
       List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
 
-      list.add( { this, tf.model, tf.colour, component, 0, 0, 0.0f } );
+      list.add( { this, tf.model, tf.colour, mesh, 0, 0, 0.0f } );
     }
 
-    void scheduleFrame( int component, int frame, QueueType queue )
+    void scheduleFrame( int mesh, int frame, QueueType queue )
     {
       List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
 
-      list.add( { this, tf.model, tf.colour, component, frame, 0, 0.0f } );
+      list.add( { this, tf.model, tf.colour, mesh, frame, 0, 0.0f } );
     }
 
-    void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation,
+    void scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
                            QueueType queue )
     {
       List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
 
-      list.add( { this, tf.model, tf.colour, component, firstFrame, secondFrame, interpolation } );
+      list.add( { this, tf.model, tf.colour, mesh, firstFrame, secondFrame, interpolation } );
     }
 
     const File* preload( const char* path );

@@ -355,7 +355,7 @@ void Liber::initCaela()
 
 void Liber::initTerrae()
 {
-  Log::println( "Terrae (*.ozmTerra, *.ozcTerra in 'terra') {" );
+  Log::println( "Terrae (*.ozTerra, *.ozcTerra in 'terra') {" );
   Log::indent();
 
   List<Resource> terraeList;
@@ -364,7 +364,7 @@ void Liber::initTerrae()
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozmTerra" ) ) {
+    if( !file->hasExtension( "ozTerra" ) ) {
       continue;
     }
 
@@ -415,7 +415,7 @@ void Liber::initParticles()
 
 void Liber::initModels()
 {
-  Log::println( "Models (directories in 'mdl') {" );
+  Log::println( "Models (*/data.ozcModel in 'mdl') {" );
   Log::indent();
 
   List<Resource> modelsList;
@@ -429,15 +429,9 @@ void Liber::initModels()
     }
 
     String name = file->name();
-    String path;
+    String path = file->path() + "/data.ozcModel";
 
-    if( File( file->path() + "/data.ozcSMM" ).type() == File::REGULAR ) {
-      path = file->path() + "/data.ozcSMM";
-    }
-    else if( File( file->path() + "/data.ozcMD2" ).type() == File::REGULAR ) {
-      path = file->path() + "/data.ozcMD2";
-    }
-    else {
+    if( File( path ).type() != File::REGULAR ) {
       OZ_ERROR( "Invalid model '%s'", name.cstr() );
     }
 
@@ -686,7 +680,7 @@ void Liber::initClasses()
 
 void Liber::initBSPs()
 {
-  Log::println( "BSP structures (*.ozBSP, *.ozcBSP in 'bsp') {" );
+  Log::println( "BSP structures (*.ozBSP, *.ozcModel in 'bsp') {" );
   Log::indent();
 
   File dir = "@bsp";

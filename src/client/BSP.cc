@@ -83,7 +83,7 @@ void BSP::schedule( const Struct* str, Model::QueueType queue )
 
 void BSP::preload()
 {
-  const File* file = model.preload( "@bsp/" + bsp->name + ".ozcBSP" );
+  const File* file = model.preload( "@bsp/" + bsp->name + ".ozcModel" );
   InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );

@@ -266,21 +266,20 @@ void MD2::build( const char* path )
   if( config["forceStatic"].get( false ) ) {
     header.nFrames = 1;
   }
-  String shaderName   = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
-  float  scale        = config["scale"].get( 0.04f );
-
-  Vec3 translation       = config["translate"].get( Vec3::ZERO );
-  Vec3 jumpTranslation   = config["jumpTranslate"].get( Vec3::ZERO );
-  Vec3 weaponTranslation = config["weaponTranslate"].get( Vec3::ZERO );
-  Vec3 weaponRotation    = config["weaponRotate"].get( Vec3::ZERO );
+  String shaderName      = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
+  float  scale           = config["scale"].get( 0.04f );
+  Vec3   translation     = config["translate"].get( Vec3::ZERO );
+  Vec3   jumpTranslation = config["jumpTranslate"].get( Vec3::ZERO );
+  Vec3   freeTranslation = config["weaponTranslate"].get( Vec3::ZERO );
+  Vec3   freeRotation    = config["weaponRotate"].get( Vec3::ZERO );
 
   config.clear( true );
 
-  Mat44 weaponTransf = Mat44::ID;
-  weaponTransf.translate( weaponTranslation );
-  weaponTransf.rotateY( Math::rad( weaponRotation.y ) );
-  weaponTransf.rotateX( Math::rad( weaponRotation.x ) );
-  weaponTransf.rotateZ( Math::rad( weaponRotation.z ) );
+  Mat44 freeTransf = Mat44::ID;
+  freeTransf.translate( freeTranslation );
+  freeTransf.rotateY( Math::rad( freeRotation.y ) );
+  freeTransf.rotateX( Math::rad( freeRotation.x ) );
+  freeTransf.rotateZ( Math::rad( freeRotation.z ) );
 
   DArray<TexCoord>    texCoords( header.nTexCoords );
   DArray<MD2Triangle> triangles( header.nTriangles );
@@ -314,8 +313,6 @@ void MD2::build( const char* path )
       {
         position += jumpTranslation;
       }
-
-      position = weaponTransf * position;
     }
   }
 
@@ -340,8 +337,10 @@ void MD2::build( const char* path )
   }
 
   compiler.beginModel();
+
   compiler.enable( Compiler::UNIQUE );
   compiler.enable( Compiler::CLOCKWISE );
+  compiler.shader( shaderName );
 
   if( header.nFrames != 1 ) {
     compiler.anim( header.nFrames, header.nFramePositions );
@@ -349,10 +348,8 @@ void MD2::build( const char* path )
     compiler.animNormals( normals[0] );
   }
 
-  compiler.shader( shaderName );
+  compiler.beginMesh( Compiler::TRIANGLES );
   compiler.texture( skinPath );
-
-  compiler.begin( Compiler::TRIANGLES );
 
   for( int i = 0; i < header.nTriangles; ++i ) {
     for( int j = 0; j < 3; ++j ) {
@@ -369,7 +366,17 @@ void MD2::build( const char* path )
     }
   }
 
-  compiler.end();
+  compiler.endMesh();
+
+  compiler.beginNode();
+  compiler.transform( freeTransf );
+  compiler.bindMesh( 0 );
+  compiler.endNode();
+
+  compiler.beginNode();
+  compiler.bindMesh( 0 );
+  compiler.endNode();
+
   compiler.endModel();
 
   texCoords.clear();
@@ -385,36 +392,15 @@ void MD2::build( const char* path )
   compiler.writeModel( &os );
   compiler.buildModelTextures( sDestDir );
 
-  if( header.nFrames != 1 ) {
-    Mat44 weaponTransfInv = Mat44::ID;
-    weaponTransfInv.rotateZ( Math::rad( -weaponRotation.z ) );
-    weaponTransfInv.rotateX( Math::rad( -weaponRotation.x ) );
-    weaponTransfInv.rotateY( Math::rad( -weaponRotation.y ) );
-    weaponTransfInv.translate( -weaponTranslation );
+  File destFile = sDestDir + "/data.ozcModel";
 
-    os.writeMat44( weaponTransfInv );
+  Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    File destFile = sDestDir + "/data.ozcMD2";
-
-    Log::print( "Writing to '%s' ...", destFile.path().cstr() );
-
-    if( !destFile.write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
-    }
-
-    Log::printEnd( " OK" );
+  if( !destFile.write( os.begin(), os.tell() ) ) {
+    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
-  else {
-    File destFile = sDestDir + "/data.ozcSMM";
 
-    Log::print( "Writing to '%s' ...", destFile.path().cstr() );
-
-    if( !destFile.write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
-    }
-
-    Log::printEnd( " OK" );
-  }
+  Log::printEnd( " OK" );
 
   Log::unindent();
   Log::println( "}" );

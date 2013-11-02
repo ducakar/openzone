@@ -67,9 +67,9 @@ class SMM
       return model.isLoaded();
     }
 
-    void schedule( int component, Model::QueueType queue )
+    void schedule( int node, Model::QueueType queue )
     {
-      model.schedule( component, queue );
+      model.schedule( node, queue );
     }
 
     virtual void preload();

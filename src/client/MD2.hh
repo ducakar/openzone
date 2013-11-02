@@ -104,10 +104,6 @@ class MD2 : public SMM
 
     static const AnimInfo ANIM_LIST[];
 
-  public:
-
-    Mat44 weaponTransf;
-
   private:
 
     explicit MD2( int id );
@@ -116,14 +112,9 @@ class MD2 : public SMM
 
     static SMM* create( int id );
 
-    void scheduleFrame( int frame, Model::QueueType queue )
-    {
-      model.scheduleFrame( -1, frame, queue );
-    }
-
     void scheduleAnim( const AnimState* anim, Model::QueueType queue )
     {
-      model.scheduleAnimated( -1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
+      model.scheduleAnimated( 1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
     }
 
     void preload() override;

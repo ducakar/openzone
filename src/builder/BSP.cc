@@ -974,7 +974,7 @@ void BSP::saveMatrix()
 {
   File destFile = "bsp/" + name + ".ozBSP";
 
-  Log::print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
+  Log::print( "Writing BSP structure to '%s' ...", destFile.path().cstr() );
 
   Set<String> usedModels;
   Set<String> usedSounds;
@@ -1113,7 +1113,7 @@ void BSP::saveMatrix()
 
 void BSP::saveClient()
 {
-  File destFile = "bsp/" + name + ".ozcBSP";
+  File destFile = "bsp/" + name + ".ozcModel";
 
   compiler.beginModel();
 
@@ -1121,29 +1121,34 @@ void BSP::saveClient()
   compiler.enable( Compiler::CLOCKWISE );
 
   for( int i = 0; i < models.length() + 1; ++i ) {
-    compiler.component( i );
+    compiler.beginNode();
+
+    int lastTexture = faces[ modelFaces[i].firstFace ].texture;
 
     for( int j = 0; j < modelFaces[i].nFaces; ++j ) {
       const Face&    face = faces[ modelFaces[i].firstFace + j ];
       const Texture& tex  = textures[face.texture];
 
+      if( face.texture != lastTexture ) {
+        lastTexture = face.texture;
+
+        int meshId = compiler.endMesh();
+
+        compiler.beginNode();
+        compiler.bindMesh( meshId );
+        compiler.endNode();
+      }
+
       if( tex.name.isEmpty() ) {
-        OZ_ERROR( "BSP has a visible face without texture" );
+        OZ_ERROR( "BSP has a visible face without a texture" );
       }
-
-      if( tex.type & QBSP_ALPHA_TYPE_BIT ) {
-        compiler.blend( true );
-      }
-      else {
-        compiler.blend( false );
-      }
-
       if( !tex.name.beginsWith( "@sea:" ) ) {
         context.usedTextures.include( tex.name, name + " (BSP)" );
       }
 
+      compiler.beginMesh( Compiler::TRIANGLES );
       compiler.texture( tex.name );
-      compiler.begin( Compiler::TRIANGLES );
+      compiler.blend( tex.type & QBSP_ALPHA_TYPE_BIT );
 
       for( int k = 0; k < face.nIndices; ++k ) {
         const Vertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
@@ -1162,9 +1167,15 @@ void BSP::saveClient()
           compiler.vertex( vertex.pos );
         }
       }
-
-      compiler.end();
     }
+
+    int meshId = compiler.endMesh();
+
+    compiler.beginNode();
+    compiler.bindMesh( meshId );
+    compiler.endNode();
+
+    compiler.endNode();
   }
 
   compiler.endModel();
@@ -1175,7 +1186,7 @@ void BSP::saveClient()
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );
 
-  Log::print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
+  Log::print( "Writing BSP model to '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.tell() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );

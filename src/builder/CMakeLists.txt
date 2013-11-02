@@ -39,4 +39,4 @@ if( OZ_NONFREE )
   target_link_libraries( builder ${SQUISH_LIBRARY} )
 endif()
 
-target_link_libraries( builder ${FREEIMAGE_LIBRARY} )
+target_link_libraries( builder ${FREEIMAGE_LIBRARY} ${ASSIMP_LIBRARIES} )

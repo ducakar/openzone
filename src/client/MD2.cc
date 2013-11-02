@@ -286,7 +286,6 @@ void MD2::preload()
   InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - int( sizeof( float[16] ) ) );
-  weaponTransf = is.readMat44();
 }
 
 void MD2::load()

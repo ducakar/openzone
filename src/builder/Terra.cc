@@ -216,9 +216,9 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
-  File destFile = "terra/" + name + ".ozmTerra";
+  File destFile = "terra/" + name + ".ozTerra";
 
-  Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
+  Log::print( "Writing terrain structure to '%s' ...", destFile.path().cstr() );
 
   OutputStream os( 0, Endian::LITTLE );
 
