@@ -187,13 +187,15 @@ bool Physics::handleObjFriction()
         const Entity* ent = orbis.ent( dyn->lower );
 
         if( ent->velocity != Vec3::ZERO ) {
+          Vec3 entVelocity = ent->str->toAbsoluteCS( ent->velocity );
+
           isLowerStill = false;
 
-          deltaVelX -= ent->velocity.x;
-          deltaVelY -= ent->velocity.y;
+          deltaVelX -= entVelocity.x;
+          deltaVelY -= entVelocity.y;
 
           // Push a little into entity if e.g. on an elevator going down.
-          if( ent->velocity.z < 0.0f && !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
+          if( entVelocity.z < 0.0f && !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
             systemMom += ENTITY_BOND_G_RATIO * gravity;
           }
         }

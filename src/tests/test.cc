@@ -31,7 +31,6 @@ int main()
 {
   System::init();
   File::init();
-
   File::destroy();
   return 0;
 }

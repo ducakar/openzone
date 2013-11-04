@@ -324,10 +324,12 @@ void Orbis::reposition( Frag* frag )
 
 void Orbis::update()
 {
-  strAvailableIndices.addAll( strFreedIndices[waiting].begin(), strFreedIndices[waiting].length() );
+  strAvailableIndices.takeAll( strFreedIndices[waiting].begin(),
+                               strFreedIndices[waiting].length() );
   strFreedIndices[waiting].clear();
 
-  objAvailableIndices.addAll( objFreedIndices[waiting].begin(), objFreedIndices[waiting].length() );
+  objAvailableIndices.takeAll( objFreedIndices[waiting].begin(),
+                               objFreedIndices[waiting].length() );
   objFreedIndices[waiting].clear();
 
   fragAvailableIndices.addAll( fragFreedIndices[waiting].begin(),

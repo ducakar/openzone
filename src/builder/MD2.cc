@@ -348,8 +348,9 @@ void MD2::build( const char* path )
     compiler.animNormals( normals[0] );
   }
 
-  compiler.beginMesh( Compiler::TRIANGLES );
+  compiler.beginMesh();
   compiler.texture( skinPath );
+  compiler.begin( Compiler::TRIANGLES );
 
   for( int i = 0; i < header.nTriangles; ++i ) {
     for( int j = 0; j < 3; ++j ) {
@@ -366,6 +367,7 @@ void MD2::build( const char* path )
     }
   }
 
+  compiler.end();
   compiler.endMesh();
 
   compiler.beginNode();

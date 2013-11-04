@@ -84,22 +84,34 @@ static Assimp::Importer importer;
 
 static void readNode( const aiNode* node )
 {
-  hard_assert( node->mNumMeshes <= 1 );
-
   Mat44 transf = ~Mat44( node->mTransformation[0] );
 
-  compiler.beginNode();
+  Log::println( "+ %s", node->mName.C_Str() );
+  Log() << transf;
+  Log::indent();
+
+  compiler.beginNode( node->mName.C_Str() );
   compiler.transform( transf );
 
   if( node->mNumMeshes != 0 ) {
     compiler.bindMesh( int( node->mMeshes[0] ) );
+
+    if( node->mNumMeshes > 1 ) {
+      for( uint i = 1; i < node->mNumMeshes; ++i ) {
+        compiler.beginNode();
+        compiler.bindMesh( int( node->mMeshes[i] ) );
+        compiler.endNode();
+      }
+    }
   }
 
-  for( int i = 0; i < int( node->mNumChildren ); ++i ) {
+  for( uint i = 0; i < node->mNumChildren; ++i ) {
     readNode( node->mChildren[i] );
   }
 
   compiler.endNode();
+
+  Log::unindent();
 }
 
 void AssImp::build( const char* path )
@@ -107,12 +119,14 @@ void AssImp::build( const char* path )
   Log::println( "Prebuilding Collada model '%s' {", path );
   Log::indent();
 
-  File   modelFile = String( path, "/data.dae" );
+  importer.SetPropertyString( AI_CONFIG_PP_OG_EXCLUDE_LIST, "_collider _partGen" );
+
+  File   modelFile = String( path, "/data.obj" );
   File   outFile   = String( &path[1], "/data.ozcModel" );
   String basePath  = String( path, "/" );
 
   if( modelFile.type() == File::MISSING ) {
-    modelFile = String( path, "/data.obj" );
+    modelFile = String( path, "/data.dae" );
   }
 
   InputStream istream = modelFile.inputStream();
@@ -123,14 +137,14 @@ void AssImp::build( const char* path )
 
   const aiScene* scene = importer.ReadFile( modelFile.realPath(),
                                             aiProcess_JoinIdenticalVertices |
-                                            aiProcess_Triangulate |
                                             aiProcess_GenNormals |
                                             aiProcess_ValidateDataStructure |
                                             aiProcess_ImproveCacheLocality |
                                             aiProcess_RemoveRedundantMaterials |
                                             aiProcess_FindInvalidData |
                                             aiProcess_FindInstances |
-                                            aiProcess_OptimizeMeshes );
+                                            aiProcess_OptimizeMeshes |
+                                            aiProcess_OptimizeGraph );
   if( scene == nullptr ) {
     OZ_ERROR( "Error loading '%s': %s", modelFile.path().cstr(), importer.GetErrorString() );
   }
@@ -151,24 +165,29 @@ void AssImp::build( const char* path )
     const aiVector3D* normals   = mesh->mNormals;
     const aiVector3D* texCoords = mesh->mTextureCoords[0];
 
-    aiString texture;
+    aiString textureName;
     if( material->GetTextureCount( aiTextureType_DIFFUSE ) != 0 ) {
-      material->GetTexture( aiTextureType_DIFFUSE, 0, &texture );
+      material->GetTexture( aiTextureType_DIFFUSE, 0, &textureName );
+    }
+
+    String texturePath = "";
+    if( textureName.length != 0 ) {
+      texturePath = basePath + String::fileBaseName( textureName.C_Str() );
     }
 
     float alpha = 1.0f;
     material->Get<float>( AI_MATKEY_OPACITY, alpha );
 
-    compiler.beginMesh( Compiler::TRIANGLES );
-    compiler.texture( basePath + String::fileBaseName( texture.C_Str() ) );
+    compiler.beginMesh();
+    compiler.texture( texturePath );
     compiler.blend( alpha != 1.0f );
 
     for( uint j = 0; j < mesh->mNumFaces; ++j ) {
       const aiFace& face = mesh->mFaces[j];
 
-      hard_assert( face.mNumIndices == 3 );
+      compiler.begin( Compiler::POLYGON );
 
-      for( uint k = 0; k < 3; ++k ) {
+      for( uint k = 0; k < face.mNumIndices; ++k ) {
         uint index = face.mIndices[k];
 
         if( texCoords != nullptr ) {
@@ -177,10 +196,22 @@ void AssImp::build( const char* path )
         compiler.normal( normals[index].x, normals[index].y, normals[index].z );
         compiler.vertex( positions[index].x, positions[index].y, positions[index].z );
       }
+
+      compiler.end();
     }
 
     compiler.endMesh();
   }
+
+  // Fix Z <-> -Y axis swap.
+  aiMatrix4x4 zySwap = aiMatrix4x4( 1.0f, 0.0f,  0.0f, 0.0f,
+                                    0.0f, 0.0f, -1.0f, 0.0f,
+                                    0.0f, 1.0f,  0.0f, 0.0f,
+                                    0.0f, 0.0f,  0.0f, 1.0f );
+
+  scene->mRootNode->mTransformation = zySwap * scene->mRootNode->mTransformation;
+
+  readNode( scene->mRootNode );
 
   for( uint i = 0; i < scene->mNumAnimations; ++i ) {
     const aiAnimation* anim = scene->mAnimations[i];
@@ -206,10 +237,6 @@ void AssImp::build( const char* path )
       Vec3( light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b ),
       Light::Type( light->mType - 1 )
     } );
-  }
-
-  for( uint i = 0; i < scene->mRootNode->mNumChildren; ++i ) {
-    readNode( scene->mRootNode->mChildren[i] );
   }
 
   compiler.endModel();

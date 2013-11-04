@@ -322,7 +322,7 @@ void Entity::crushingBlockHandler()
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move + 4.0f*EPSILON * ~clazz->move;
+        move = offset - move + 2.0f*EPSILON * clazz->move.fastUnit();
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -336,8 +336,8 @@ void Entity::crushingBlockHandler()
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
               dyn->p        += dynMove;
-              dyn->momentum += velDelta;
               dyn->velocity += velDelta;
+              dyn->momentum += velDelta;
               dyn->flags    &= ~Object::DISABLED_BIT;
               dyn->flags    |= Object::ENABLE_BIT;
 
@@ -375,7 +375,7 @@ void Entity::crushingBlockHandler()
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move - 4.0f*EPSILON * ~clazz->move;
+        move = offset - move - 2.0f*EPSILON * clazz->move.fastUnit();
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -389,8 +389,8 @@ void Entity::crushingBlockHandler()
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
               dyn->p        += dynMove;
-              dyn->momentum += velDelta;
               dyn->velocity += velDelta;
+              dyn->momentum += velDelta;
               dyn->flags    &= ~Object::DISABLED_BIT;
               dyn->flags    |= Object::ENABLE_BIT;
 
@@ -433,7 +433,7 @@ void Entity::elevatorHandler()
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move + EPSILON * ~clazz->move;
+        move = offset - move + 2.0f*EPSILON * clazz->move.fastUnit();
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -484,7 +484,7 @@ void Entity::elevatorHandler()
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move - EPSILON * ~clazz->move;
+        move = offset - move - 2.0f*EPSILON * clazz->move.fastUnit();
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {

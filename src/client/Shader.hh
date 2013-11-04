@@ -111,7 +111,10 @@ struct Attrib
   {
     POSITION,
     TEXCOORD,
-    NORMAL
+    NORMAL,
+    TANGENT,
+    BINORMAL,
+    COLOUR
   };
 };
 

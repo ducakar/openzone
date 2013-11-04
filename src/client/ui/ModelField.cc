@@ -131,7 +131,8 @@ void ModelField::onDraw()
 
     glEnable( GL_DEPTH_TEST );
 
-    Model::drawScheduled( Model::SCENE_QUEUE, Model::SOLID_BIT | Model::ALPHA_BIT );
+    Model::drawScheduled( Model::SCENE_QUEUE, Model::SOLID_BIT );
+    Model::drawScheduled( Model::SCENE_QUEUE, Model::ALPHA_BIT );
     Model::clearScheduled( Model::SCENE_QUEUE );
 
     glDisable( GL_DEPTH_TEST );

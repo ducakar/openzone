@@ -246,8 +246,9 @@ void MD3::buildMesh( const char* name, int frame )
     is.rewind();
     is.forward( surfaceStart + surface.offEnd );
 
-    compiler.beginMesh( Compiler::TRIANGLES );
+    compiler.beginMesh();
     compiler.texture( sPath + "/" + texture );
+    compiler.begin( Compiler::TRIANGLES );
 
     for( int j = 0; j < surfaceTriangles.length(); ++j ) {
       for( int k = 0; k < 3; ++k ) {
@@ -260,6 +261,7 @@ void MD3::buildMesh( const char* name, int frame )
       }
     }
 
+    compiler.end();
     int meshId = compiler.endMesh();
 
     compiler.beginNode();

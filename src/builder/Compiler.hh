@@ -38,10 +38,7 @@ class Compiler
 
     enum PolyMode
     {
-      TRIANGLE_STRIP,
-      TRIANGLE_FAN,
       TRIANGLES,
-      QUADS,
       POLYGON
     };
 
@@ -67,28 +64,35 @@ class Compiler
     void animPositions( const float* positions );
     void animNormals( const float* normals );
 
-    void beginMesh( PolyMode mode );
+    void beginNode( const char* name = "" );
+    void endNode();
+
+    void transform( const Mat44& t );
+    void bindMesh( int id );
+
+    void beginMesh();
     int endMesh();
 
     void texture( const char* texture );
     void blend( bool doBlend );
 
+    void begin( PolyMode mode );
+    void end();
+
+    void colour( float r, float g, float b );
+    void colour( ubyte r, ubyte g, ubyte b );
+    void colour( const float* v );
+
     void texCoord( float u, float v );
     void texCoord( const float* v );
 
-    void normal( float nx, float ny, float nz );
+    void normal( float x, float y, float z );
     void normal( const float* v );
 
     void vertex( float x, float y, float z );
     void vertex( const float* v );
 
     void animVertex( int i );
-
-    void beginNode();
-    void endNode();
-
-    void transform( const Mat44& t );
-    void bindMesh( int id );
 
     void writeModel( OutputStream* os, bool globalTextures = false );
     void buildModelTextures( const char* destDir );

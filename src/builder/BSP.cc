@@ -1129,16 +1129,6 @@ void BSP::saveClient()
       const Face&    face = faces[ modelFaces[i].firstFace + j ];
       const Texture& tex  = textures[face.texture];
 
-      if( face.texture != lastTexture ) {
-        lastTexture = face.texture;
-
-        int meshId = compiler.endMesh();
-
-        compiler.beginNode();
-        compiler.bindMesh( meshId );
-        compiler.endNode();
-      }
-
       if( tex.name.isEmpty() ) {
         OZ_ERROR( "BSP has a visible face without a texture" );
       }
@@ -1146,9 +1136,22 @@ void BSP::saveClient()
         context.usedTextures.include( tex.name, name + " (BSP)" );
       }
 
-      compiler.beginMesh( Compiler::TRIANGLES );
-      compiler.texture( tex.name );
-      compiler.blend( tex.type & QBSP_ALPHA_TYPE_BIT );
+      if( face.texture != lastTexture ) {
+        int meshId = compiler.endMesh();
+
+        compiler.beginNode();
+        compiler.bindMesh( meshId );
+        compiler.endNode();
+      }
+      if( face.texture != lastTexture || j == 0 ) {
+        lastTexture = face.texture;
+
+        compiler.beginMesh();
+        compiler.texture( tex.name );
+        compiler.blend( tex.type & QBSP_ALPHA_TYPE_BIT );
+      }
+
+      compiler.begin( Compiler::TRIANGLES );
 
       for( int k = 0; k < face.nIndices; ++k ) {
         const Vertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
@@ -1167,6 +1170,8 @@ void BSP::saveClient()
           compiler.vertex( vertex.pos );
         }
       }
+
+      compiler.end();
     }
 
     int meshId = compiler.endMesh();

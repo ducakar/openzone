@@ -38,13 +38,25 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
+  glEnableVertexAttribArray( Attrib::TEXCOORD );
+  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
+
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 
-  glEnableVertexAttribArray( Attrib::TEXCOORD );
-  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
-                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
+//   glEnableVertexAttribArray( Attrib::TANGENT );
+//   glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+//                          static_cast<char*>( nullptr ) + offsetof( Vertex, tangent ) );
+//
+//   glEnableVertexAttribArray( Attrib::BINORMAL );
+//   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+//                          static_cast<char*>( nullptr ) + offsetof( Vertex, binormal ) );
+//
+//   glEnableVertexAttribArray( Attrib::COLOUR );
+//   glVertexAttribPointer( Attrib::COLOUR, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+//                          static_cast<char*>( nullptr ) + offsetof( Vertex, colour ) );
 }
 
 struct Model::PreloadData
