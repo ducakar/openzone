@@ -74,6 +74,11 @@ static const char* const KEY_NAMES[] = {
   "Fire weapon",
   "Next vehicle weapon",
 
+  "Weapon 1",
+  "Weapon 2",
+  "Weapon 3",
+  "Weapon 4",
+
   "'Point' gesture",
   "'Fall back' gesture",
   "'Salute' gesture",
@@ -182,6 +187,11 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_THROW][0]              = MOD_ON_BIT  | SDLK_r;
   keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | SDLK_q;
 
+  keyMap[KEY_WEAPON_1][0]           = MOD_OFF_BIT | SDLK_1;
+  keyMap[KEY_WEAPON_2][0]           = MOD_OFF_BIT | SDLK_2;
+  keyMap[KEY_WEAPON_3][0]           = MOD_OFF_BIT | SDLK_3;
+  keyMap[KEY_WEAPON_4][0]           = MOD_OFF_BIT | SDLK_4;
+
   keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDLK_g;
   keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDLK_h;
   keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDLK_j;
@@ -260,6 +270,11 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_GRAB][0]               = MOD_ON_BIT  | SDL_SCANCODE_F;
   keyMap[KEY_THROW][0]              = MOD_ON_BIT  | SDL_SCANCODE_R;
   keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | SDL_SCANCODE_Q;
+
+  keyMap[KEY_WEAPON_1][0]           = MOD_OFF_BIT | SDL_SCANCODE_1;
+  keyMap[KEY_WEAPON_2][0]           = MOD_OFF_BIT | SDL_SCANCODE_2;
+  keyMap[KEY_WEAPON_3][0]           = MOD_OFF_BIT | SDL_SCANCODE_3;
+  keyMap[KEY_WEAPON_4][0]           = MOD_OFF_BIT | SDL_SCANCODE_4;
 
   keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDL_SCANCODE_G;
   keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDL_SCANCODE_H;

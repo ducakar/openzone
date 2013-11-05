@@ -216,7 +216,7 @@ bool Bot::invUse( const Dynamic* item, const Object* source )
   hard_assert( item != nullptr && source != nullptr );
 
   if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
-      canReach( source ) )
+      ( source == this || canReach( source ) ) )
   {
     if( ( item->flags & WEAPON_BIT ) && !canEquip( static_cast<const Weapon*>( item ) ) ) {
       return false;
@@ -234,7 +234,7 @@ bool Bot::invUse( const Dynamic* item, const Object* source )
 
 bool Bot::invTake( const Dynamic* item, const Object* source )
 {
-  hard_assert( item != nullptr && source != nullptr );
+  hard_assert( item != nullptr && source != nullptr && source != this );
 
   if( source->items.contains( item->index ) && canReach( source ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -249,7 +249,7 @@ bool Bot::invTake( const Dynamic* item, const Object* source )
 
 bool Bot::invGive( const Dynamic* item, const Object* target )
 {
-  hard_assert( item != nullptr && target != nullptr );
+  hard_assert( item != nullptr && target != nullptr && target != this );
 
   if( items.contains( item->index ) && canReach( target ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;

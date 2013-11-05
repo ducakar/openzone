@@ -376,6 +376,7 @@ void MD2::build( const char* path )
   compiler.endNode();
 
   compiler.beginNode();
+  compiler.includeBounds( false );
   compiler.bindMesh( 0 );
   compiler.endNode();
 

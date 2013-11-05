@@ -11,6 +11,7 @@
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
     * String: construction from numbers, new number parsing functions
+    * exact SLERP implementation in Quat
     * new Mat33 class
     * SIMD support for linear algebra classes
     * new SpinLock and CallOnce classes added for threading
@@ -31,6 +32,7 @@
     * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader, Vorbis streamer
     * Window class based on client::Window
     * Pepper class based on client::NaClPlatform
+    * Shader compilation utility, understands #include directive
 - ozFactory: new builder building blocks library
     * ImageBuilder class for building DDS textures
     * ModelBuilder class for building OpenZone models using Assimp library
@@ -40,6 +42,8 @@
     * common Lua scripts included by all VMs
     * Lua <-> JSON value interoperability
 - matrix
+    * Orbis: 1-based lists internally, proxy functions for accessing objects per index
+    * negative Object::Event intensities for continuous sounds
     * melee attack
     * new vehicle types: turret, mech warrior
 - nirvana
@@ -47,23 +51,29 @@
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
     * UI sounds
+    * buttons triggered on release
+    * new ModelField, for rendering models in UI
     * new BuildMenu, unit/building placement
     * StrategicArea group selection
     * status bars under health bars
 - client
+    * Mesh -> Model, tree-based model hierarchy
+    * Models have 8-part IBO for each +/-x, +/-y, +/-z direction to reduce overdraw
     * environment maps
-    * Mesh has 8-part IBO for each +/-x, +/-y, +/-z direction to reduce overdraw
-    * text-to-speech using eSpeak library
     * SMM models can be rendered at BSP entities
     * DDS format used for all textures, every texture is in its own file
     * switched over to ozEngine classes wherever possible
     * layout files, can be edited in built-in editor (-e option) or loaded by missions
     * camera flash and shake effects, camera has an auxiliary thread for event extraction
+    * switching weapons with number keys
+    * text-to-speech using eSpeak library
     * ozState file compression
     * ozPersistent table in Lua scripts for persistence across missions and load/save
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
     * Terrain can be generated based on config file settings
+    * Asset Importer integration, can build Collada models
+    * major Compiler updates for tree-based models
 - general
     * builds on Android (i686, ARM, ARMv7a, MIPS)
     * common, matrix and nirvana sub-namespaces removed

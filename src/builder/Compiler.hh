@@ -68,6 +68,7 @@ class Compiler
     void endNode();
 
     void transform( const Mat44& t );
+    void includeBounds( bool value );
     void bindMesh( int id );
     void bindLight( int id );
 

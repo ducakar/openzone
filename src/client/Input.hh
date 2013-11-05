@@ -89,6 +89,11 @@ class Input
       KEY_FIRE,
       KEY_NEXT_WEAPON,
 
+      KEY_WEAPON_1,
+      KEY_WEAPON_2,
+      KEY_WEAPON_3,
+      KEY_WEAPON_4,
+
       KEY_GESTURE_POINT,
       KEY_GESTURE_BACK,
       KEY_GESTURE_SALUTE,

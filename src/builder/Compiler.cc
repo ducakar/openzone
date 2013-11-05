@@ -109,6 +109,8 @@ struct Node
   int         mesh;
   String      name;
 
+  bool        includeBounds;
+
   Node*       parent;
   List<Node*> children;
 
@@ -117,7 +119,7 @@ struct Node
 
   OZ_HIDDEN
   explicit Node( const char* name_ = "", Node* parent_ = nullptr ) :
-    transf( Mat44::ID ), mesh( -1 ), name( name_ ), parent( parent_ )
+    transf( Mat44::ID ), mesh( -1 ), name( name_ ), includeBounds( true ), parent( parent_ )
   {}
 
   OZ_HIDDEN
@@ -164,11 +166,11 @@ void Vertex::write( OutputStream* ostream ) const
   ostream->writeVec3( normal );
 }
 
-static void calculateBounds( const Node* node, const Mat44& transf )
+static void calculateBounds( const Node* node, const Mat44& parentTransf )
 {
-  Mat44 nodeTransf = transf * node->transf;
+  Mat44 transf = parentTransf * node->transf;
 
-  if( node->mesh >= 0 ) {
+  if( node->includeBounds && node->mesh >= 0 ) {
     const Mesh& mesh = meshes[node->mesh];
 
     foreach( index, mesh.indices.citer() ) {
@@ -178,7 +180,7 @@ static void calculateBounds( const Node* node, const Mat44& transf )
         pos = positions[ int( pos.x ) ];
       }
 
-      pos = nodeTransf * pos;
+      pos = transf * pos;
 
       bounds.mins = min( bounds.mins, pos );
       bounds.maxs = max( bounds.maxs, pos );
@@ -186,7 +188,7 @@ static void calculateBounds( const Node* node, const Mat44& transf )
   }
 
   foreach( child, node->children.citer() ) {
-    calculateBounds( *child, nodeTransf );
+    calculateBounds( *child, transf );
   }
 }
 
@@ -332,6 +334,13 @@ void Compiler::transform( const Mat44& t )
   hard_assert( environment == MODEL && node != &root );
 
   node->transf = t;
+}
+
+void Compiler::includeBounds( bool value )
+{
+  hard_assert( environment == MODEL && node != &root );
+
+  node->includeBounds = value;
 }
 
 void Compiler::bindMesh( int id )

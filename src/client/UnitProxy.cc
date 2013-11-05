@@ -280,6 +280,37 @@ void UnitProxy::prepare()
     }
   }
 
+  int weaponIndex = -1;
+
+  if( input.keys[Input::KEY_WEAPON_1] && !input.oldKeys[Input::KEY_WEAPON_1] ) {
+    weaponIndex = 0;
+  }
+  if( input.keys[Input::KEY_WEAPON_2] && !input.oldKeys[Input::KEY_WEAPON_2] ) {
+    weaponIndex = 1;
+  }
+  if( input.keys[Input::KEY_WEAPON_3] && !input.oldKeys[Input::KEY_WEAPON_3] ) {
+    weaponIndex = 2;
+  }
+  if( input.keys[Input::KEY_WEAPON_4] && !input.oldKeys[Input::KEY_WEAPON_4] ) {
+    weaponIndex = 3;
+  }
+
+  if( weaponIndex >= 0 ) {
+    for( int i = 0, index = 0; i < bot->items.length(); ++i ) {
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->items[i] ) );
+
+      if( weapon != nullptr && weapon->flags & Object::WEAPON_BIT ) {
+        if( index == weaponIndex ) {
+          bot->invUse( weapon, bot );
+          break;
+        }
+        else {
+          ++index;
+        }
+      }
+    }
+  }
+
   if( input.keys[Input::KEY_GESTURE_POINT] ) {
     bot->actions |= Bot::ACTION_POINT;
   }
