@@ -75,7 +75,6 @@ class Render
     bool                        showAim;
 
     bool                        isOffscreen;
-    bool                        doPostprocess;
 
     float                       windPhi;
 

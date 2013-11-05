@@ -69,6 +69,7 @@ class Compiler
 
     void transform( const Mat44& t );
     void bindMesh( int id );
+    void bindLight( int id );
 
     void beginMesh();
     int endMesh();
@@ -78,10 +79,6 @@ class Compiler
 
     void begin( PolyMode mode );
     void end();
-
-    void colour( float r, float g, float b );
-    void colour( ubyte r, ubyte g, ubyte b );
-    void colour( const float* v );
 
     void texCoord( float u, float v );
     void texCoord( const float* v );
@@ -93,6 +90,15 @@ class Compiler
     void vertex( const float* v );
 
     void animVertex( int i );
+
+    void beginLight( Light::Type type );
+    int endLight();
+
+    void position( float x, float y, float z );
+    void direction( float x, float y, float z );
+    void colour( float r, float g, float b );
+    void attenuation( float constant, float linear, float quadratic );
+    void coneAngles( float inner, float outer );
 
     void writeModel( OutputStream* os, bool globalTextures = false );
     void buildModelTextures( const char* destDir );

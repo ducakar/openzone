@@ -166,26 +166,28 @@ class Shader
 
   public:
 
-    int   plain;
-    int   mesh;
-    int   postprocess;
+    int  plain;
+    int  mesh;
+    int  postprocess;
 
-    int   activeProgram;
+    int  activeProgram;
 
-    Vec4  fogColour;
+    Vec4 fogColour;
 
-    uint  defaultTexture;
-    uint  defaultMasks;
-    uint  defaultNormals;
-    uint  noiseTexture;
+    uint defaultTexture;
+    uint defaultMasks;
+    uint defaultNormals;
+    uint noiseTexture;
 
-    int   medium;
-    bool  hasS3TC;
-    bool  hasVertexTexture;
-    bool  setSamplerMap;
-    bool  isLowDetail;
-    bool  doEnvMap;
-    bool  doPostprocess;
+    int  medium;
+    bool hasS3TC;
+    bool hasVertexTexture;
+    bool setSamplerMap;
+    bool isLowDetail;
+    bool doEnvMap;
+    bool doBumpMap;
+    bool doPostprocess;
+    bool nLights;
 
     explicit Shader();
 

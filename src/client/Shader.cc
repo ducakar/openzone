@@ -301,10 +301,13 @@ void Shader::init()
   setSamplerMap    = config.include( "shader.setSamplerMap", true  ).asBool();
   isLowDetail      = config.include( "shader.lowDetail",     false ).asBool();
   doEnvMap         = config.include( "shader.envMap",        true  ).asBool();
-  doPostprocess    = config["render.postprocess"].asBool();
+  doBumpMap        = config.include( "shader.bumpMap",       true  ).asBool();
+  doPostprocess    = config.include( "shader.postprocess",   false ).asBool();
+  nLights          = config.include( "shader.nLights",       4     ).asInt();
 
 #ifdef GL_ES_VERSION_2_0
   hasVertexTexture = false;
+  doPostprocess    = false;
 #endif
 
   medium = 0;

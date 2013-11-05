@@ -41,12 +41,15 @@ static const Vec3 DIRS[] = {
   Vec3( -1.0f, -1.0f, -1.0f )
 };
 
+struct Node;
+
 enum Environment
 {
   NONE,
   MODEL,
   MESH,
-  POLY
+  POLY,
+  LIGHT
 };
 
 struct Vertex
@@ -91,13 +94,20 @@ struct Mesh
   List<ushort> indices;
 };
 
+struct Light : client::Light
+{
+  Node* node;
+};
+
 struct Node
 {
   static Pool<Node> pool;
 
-  String      name;
   Mat44       transf;
+  int         firstChild;
+  int         nChildren;
   int         mesh;
+  String      name;
 
   Node*       parent;
   List<Node*> children;
@@ -105,12 +115,9 @@ struct Node
   Node*       prev[1];
   Node*       next[1];
 
-  int         firstChild;
-  int         nChildren;
-
   OZ_HIDDEN
   explicit Node( const char* name_ = "", Node* parent_ = nullptr ) :
-    name( name_ ), transf( Mat44::ID ), mesh( -1 ), parent( parent_ )
+    transf( Mat44::ID ), mesh( -1 ), name( name_ ), parent( parent_ )
   {}
 
   OZ_HIDDEN
@@ -128,12 +135,14 @@ static DArray<Point>      positions;
 static DArray<Vec3>       normals;
 static List<Vertex>       vertices;
 static List<Mesh>         meshes;
+static List<Light>        lights;
 static List<Node*>        nodes;
 
 static Bounds             bounds;
 
 static Vertex             vert;
 static Mesh               mesh;
+static Light              light;
 static Node               root;
 static Node*              node;
 
@@ -214,25 +223,36 @@ void Compiler::beginModel()
   normals.clear();
   vertices.clear();
   meshes.clear();
+  lights.clear();
   nodes.clear();
   root.children.free();
 
-  bounds.mins     = Point( +Math::INF, +Math::INF, +Math::INF );
-  bounds.maxs     = Point( -Math::INF, -Math::INF, -Math::INF );
+  bounds.mins          = Point( +Math::INF, +Math::INF, +Math::INF );
+  bounds.maxs          = Point( -Math::INF, -Math::INF, -Math::INF );
 
-  mesh.flags      = Model::SOLID_BIT;
-  mesh.texture    = "";
+  mesh.flags           = Model::SOLID_BIT;
+  mesh.texture         = "";
 
-  root            = Node( nullptr );
-  node            = &root;
+  light.pos            = Point::ORIGIN;
+  light.dir            = Vec3::ZERO;
+  light.colour         = Vec3::ZERO;
+  light.coneCoeff[0]   = 0.0f;
+  light.coneCoeff[1]   = 0.0f;
+  light.attenuation[0] = 0.0f;
+  light.attenuation[1] = 0.0f;
+  light.attenuation[2] = 0.0f;
+  light.type           = Light::POINT;
 
-  environment     = MODEL;
-  caps            = 0;
-  mode            = TRIANGLES;
-  shaderName      = "mesh";
-  vertNum         = 0;
-  nFrames         = 0;
-  nFramePositions = 0;
+  root                 = Node( nullptr );
+  node                 = &root;
+
+  environment          = MODEL;
+  caps                 = 0;
+  mode                 = TRIANGLES;
+  shaderName           = "mesh";
+  vertNum              = 0;
+  nFrames              = 0;
+  nFramePositions      = 0;
 }
 
 void Compiler::endModel()
@@ -321,6 +341,13 @@ void Compiler::bindMesh( int id )
   node->mesh = id;
 }
 
+void Compiler::bindLight( int id )
+{
+  hard_assert( environment == MODEL && node != &root );
+
+  lights[id].node = node;
+}
+
 void Compiler::beginMesh()
 {
   hard_assert( environment == MODEL );
@@ -335,12 +362,10 @@ int Compiler::endMesh()
   hard_assert( environment == MESH );
   environment = MODEL;
 
-  int index = meshes.length();
-
   meshes.add( mesh );
   mesh.indices.clear();
 
-  return index;
+  return meshes.length() - 1;
 }
 
 void Compiler::begin( Compiler::PolyMode mode_ )
@@ -380,23 +405,25 @@ void Compiler::end()
       hard_assert( vertNum >= 3 );
 
       int last[2] = { 0, 1 };
+      int top     = vertNum - 1;
+      int bottom  = 2;
 
-      for( int i = 0; i < vertNum / 2; ++i ) {
-        int j = ( i + 3 ) / 2;
-
+      for( int i = 0; bottom <= top; ++i ) {
         if( i & 1 ) {
           mesh.indices.add( polyIndices[ last[0] ] );
           mesh.indices.add( polyIndices[ last[1] ] );
-          mesh.indices.add( polyIndices[j] );
+          mesh.indices.add( polyIndices[bottom] );
 
-          last[1] = j;
+          last[1] = bottom;
+          ++bottom;
         }
         else {
           mesh.indices.add( polyIndices[ last[0] ] );
           mesh.indices.add( polyIndices[ last[1] ] );
-          mesh.indices.add( polyIndices[vertNum - j] );
+          mesh.indices.add( polyIndices[top] );
 
-          last[0] = vertNum - j;
+          last[0] = top;
+          --top;
         }
       }
       break;
@@ -481,9 +508,68 @@ void Compiler::animVertex( int i )
   hard_assert( environment == POLY );
   hard_assert( nFrames > 1 && uint( i ) < uint( positions.length() ) );
 
-  mesh.flags |= Model::ANIMATED_BIT;
-
   vertex( float( i ), 0.0f, 0.0f );
+}
+
+void Compiler::beginLight( Light::Type type )
+{
+  hard_assert( environment == MODEL );
+  environment = LIGHT;
+
+  light.type = type;
+}
+
+int Compiler::endLight()
+{
+  hard_assert( environment == LIGHT );
+  environment = MODEL;
+
+  lights.add( light );
+  return lights.length() - 1;
+}
+
+void Compiler::position( float x, float y, float z )
+{
+  hard_assert( environment == LIGHT );
+
+  light.pos.x = x;
+  light.pos.y = y;
+  light.pos.z = z;
+}
+
+void Compiler::direction( float x, float y, float z )
+{
+  hard_assert( environment == LIGHT );
+
+  light.dir.x = x;
+  light.dir.y = y;
+  light.dir.z = z;
+}
+
+void Compiler::colour( float r, float g, float b )
+{
+  hard_assert( environment == LIGHT );
+
+  light.colour.x = r;
+  light.colour.y = g;
+  light.colour.z = b;
+}
+
+void Compiler::attenuation( float constant, float linear, float quadratic )
+{
+  hard_assert( environment == LIGHT );
+
+  light.attenuation[0] = constant;
+  light.attenuation[1] = linear;
+  light.attenuation[2] = quadratic;
+}
+
+void Compiler::coneAngles( float inner, float outer )
+{
+  hard_assert( environment == LIGHT );
+
+  light.coneCoeff[0] = Math::tan( inner / 2.0f );
+  light.coneCoeff[1] = Math::tan( outer / 2.0f );
 }
 
 void Compiler::writeModel( OutputStream* os, bool globalTextures )
@@ -548,6 +634,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   os->writeInt( nFramePositions );
 
   os->writeInt( meshes.length() );
+  os->writeInt( lights.length() );
   os->writeInt( Node::pool.length() );
 
   foreach( texture, textures.citer() ) {
@@ -586,13 +673,35 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     os->writeInt( mesh->firstIndex );
   }
 
+  foreach( light, lights.citer() ) {
+    hard_assert( nodes.index( light->node ) != -1 );
+
+    os->writeInt( nodes.index( light->node ) );
+    os->writeInt( light->type );
+
+    os->writePoint( light->pos );
+    os->writeVec3( light->dir );
+    os->writeVec3( light->colour );
+
+    os->writeFloat( light->attenuation[0] );
+    os->writeFloat( light->attenuation[1] );
+    os->writeFloat( light->attenuation[2] );
+
+    os->writeFloat( light->coneCoeff[0] );
+    os->writeFloat( light->coneCoeff[1] );
+  }
+
   foreach( i, nodes.citer() ) {
     const Node* node = *i;
 
     os->writeMat44( node->transf );
+    os->writeInt( node->mesh );
+
+    os->writeInt( nodes.index( node->parent ) );
     os->writeInt( node->firstChild );
     os->writeInt( node->nChildren );
-    os->writeInt( node->mesh );
+
+    os->writeString( node->name );
   }
 
   Log::printEnd( " OK" );
@@ -626,6 +735,9 @@ void Compiler::destroy()
 
   meshes.clear();
   meshes.deallocate();
+
+  lights.clear();
+  lights.deallocate();
 
   nodes.clear();
   nodes.deallocate();

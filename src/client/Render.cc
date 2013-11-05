@@ -464,7 +464,7 @@ void Render::drawOrbis()
 
 #else
 
-    if( doPostprocess ) {
+    if( shader.doPostprocess ) {
       // Scale glow buffer down.
       glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, minGlowFrame );
 
@@ -627,7 +627,7 @@ void Render::resize()
 
 #ifndef GL_ES_VERSION_2_0
 
-  if( doPostprocess ) {
+  if( shader.doPostprocess ) {
     glGenTextures( 1, &glowBuffer );
     glBindTexture( GL_TEXTURE_2D, glowBuffer );
 
@@ -679,7 +679,7 @@ void Render::resize()
                                 depthBuffer );
   glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
                              colourBuffer, 0 );
-  if( doPostprocess ) {
+  if( shader.doPostprocess ) {
     glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
                                glowBuffer, 0 );
   }
@@ -688,7 +688,7 @@ void Render::resize()
     OZ_ERROR( "Main framebuffer creation failed" );
   }
 
-  if( doPostprocess ) {
+  if( shader.doPostprocess ) {
     glGenFramebuffersEXT( 1, &minGlowFrame );
     glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, minGlowFrame );
 
@@ -887,6 +887,8 @@ void Render::init()
 #endif
 
   GL::init();
+  shader.init();
+  shape.init();
 
   static const EnumName SCALE_FILTER_MAP[] = {
     { GL_LINEAR,  "LINEAR"  },
@@ -908,7 +910,6 @@ void Render::init()
   Model::setCollation( collationMap[ sCollation ] );
 
   isOffscreen     = config.include( "render.forceFBO",    false ).asBool();
-  doPostprocess   = config.include( "render.postprocess", false ).asBool();
   scale           = config.include( "render.scale",       1.0f ).asFloat();
   scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).asString() ];
 
@@ -916,10 +917,7 @@ void Render::init()
   showBounds      = config.include( "render.showBounds",  false ).asBool();
   showAim         = config.include( "render.showAim",     false ).asBool();
 
-#ifdef GL_ES_VERSION_2_0
-  doPostprocess   = false;
-#endif
-  isOffscreen     = isOffscreen || doPostprocess || scale != 1.0f;
+  isOffscreen     = isOffscreen || shader.doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;
 
   mainFrame       = 0;
@@ -936,8 +934,6 @@ void Render::init()
     glEnable( GL_BLEND );
   };
 
-  shader.init();
-  shape.init();
   camera.init();
   ui::ui.init();
 

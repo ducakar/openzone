@@ -54,12 +54,31 @@ struct Texture
   {}
 };
 
+struct Light
+{
+  enum Type
+  {
+    DIRECTIONAL,
+    POINT,
+    SPOT
+  };
+
+  int   node;
+  Type  type;
+
+  Point pos;
+  Vec3  dir;
+  Vec3  colour;
+  float attenuation[3];
+  float coneCoeff[2];
+};
+
 class Model
 {
   public:
 
     static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into SMM file.
-    static const int ANIMATED_BIT    = 0x02; ///< Mesh is animated per-vertex.
+
     static const int SOLID_BIT       = 0x04; ///< Mesh is opaque.
     static const int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
 
@@ -92,10 +111,12 @@ class Model
 
     struct Node
     {
-      Mat44 transf;
-      int   firstChild;
-      int   nChildren;
-      int   mesh;
+      Mat44  transf;
+      int    parent;
+      int    firstChild;
+      int    nChildren;
+      int    mesh;
+      String name;
     };
 
     struct Instance
@@ -110,45 +131,56 @@ class Model
       float  interpolation;
     };
 
+    struct LightEntry
+    {
+      const Light* light;
+      Mat44        transf;
+      float        weight;
+    };
+
     struct PreloadData;
 
   private:
 
-    static Set<Model*>    loadedModels;
-    static List<Instance> instances[2];
+    static Set<Model*>      loadedModels;
+    static List<Instance>   instances[2];
+    static List<LightEntry> sceneLights;
 
-    static Vertex*        vertexAnimBuffer;
-    static int            vertexAnimBufferLength;
-    static Collation      collation;
+    static Vertex*          vertexAnimBuffer;
+    static int              vertexAnimBufferLength;
+    static Collation        collation;
 
-    int                   flags;
-    uint                  vbo;
-    uint                  ibo;
-    int                   shaderId;
-    uint                  animationTexId;
+    int                     flags;
+    uint                    vbo;
+    uint                    ibo;
+    int                     shaderId;
+    uint                    animationTexId;
 
-    DArray<Texture>       textures;
-    DArray<Mesh>          meshes;
-    DArray<Node>          nodes;
+    DArray<Texture>         textures;
+    DArray<Mesh>            meshes;
+    DArray<Light>           lights;
+    DArray<Node>            nodes;
 
-    int                   nTextures;
-    int                   nVertices;
-    int                   nIndices;
-    int                   nFrames;
-    int                   nFramePositions;
+    int                     nTextures;
+    int                     nVertices;
+    int                     nIndices;
+    int                     nFrames;
+    int                     nFramePositions;
 
-    Vertex*               vertices;
-    Point*                positions;
-    Vec3*                 normals;
+    Vertex*                 vertices;
+    Point*                  positions;
+    Vec3*                   normals;
 
-    List<Instance>        modelInstances[2];
-    PreloadData*          preloadData;
+    List<Instance>          modelInstances[2];
+    PreloadData*            preloadData;
 
   public:
 
-    Vec3                  dim;
+    Vec3                    dim;
 
   private:
+
+    void addSceneLights();
 
     void animate( const Instance* instance );
     void drawNode( const Node* node, int dir, int mask );
@@ -176,27 +208,12 @@ class Model
       return !meshes.isEmpty();
     }
 
-    void schedule( int mesh, QueueType queue )
-    {
-      List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
+    int findNode( const char* name ) const;
 
-      list.add( { this, tf.model, tf.colour, mesh, 0, 0, 0.0f } );
-    }
-
-    void scheduleFrame( int mesh, int frame, QueueType queue )
-    {
-      List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
-
-      list.add( { this, tf.model, tf.colour, mesh, frame, 0, 0.0f } );
-    }
-
+    void schedule( int mesh, QueueType queue );
+    void scheduleFrame( int mesh, int frame, QueueType queue );
     void scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
-                           QueueType queue )
-    {
-      List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
-
-      list.add( { this, tf.model, tf.colour, mesh, firstFrame, secondFrame, interpolation } );
-    }
+                           QueueType queue );
 
     const File* preload( const char* path );
     void upload( const Vertex* vertices, int nVertices, uint usage ) const;

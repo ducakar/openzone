@@ -113,7 +113,7 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
     overlaps  = collider.overlaps( bb );
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 
-    model->schedule( -1, Model::OVERLAY_QUEUE );
+    model->schedule( 0, Model::OVERLAY_QUEUE );
     context.releaseModel( clazz->imagoModel );
   }
 

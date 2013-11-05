@@ -59,34 +59,17 @@ struct Anim
   Mat44 interpolate( float time ) const;
 };
 
-struct Light
-{
-  enum Type
-  {
-    DIRECTIONAL,
-    POINT,
-    SPOT
-  };
-
-  Point p;
-  Vec3  dir;
-  float coneCoeff[2];
-  float attenuation[3];
-  Vec3  colour;
-  Type  type;
-};
-
 static List<Material>   materials;
 static List<Anim::Key>  animKeys;
 static List<Anim>       anims;
-static List<Light>      lights;
 static Assimp::Importer importer;
+static const aiScene*   scene;
 
 static void readNode( const aiNode* node )
 {
   Mat44 transf = ~Mat44( node->mTransformation[0] );
 
-  Log::println( "+ %s", node->mName.C_Str() );
+  Log::print( "+ %s  ", node->mName.C_Str() );
   Log() << transf;
   Log::indent();
 
@@ -105,6 +88,15 @@ static void readNode( const aiNode* node )
     }
   }
 
+  for( uint i = 0; i < scene->mNumLights; ++i ) {
+    aiLight* light = scene->mLights[i];
+
+    if( String::equals( light->mName.C_Str(), node->mName.C_Str() ) ) {
+      compiler.bindLight( int( i ) );
+      Log::println( "- light" );
+    }
+  }
+
   for( uint i = 0; i < node->mNumChildren; ++i ) {
     readNode( node->mChildren[i] );
   }
@@ -118,8 +110,6 @@ void AssImp::build( const char* path )
 {
   Log::println( "Prebuilding Collada model '%s' {", path );
   Log::indent();
-
-  importer.SetPropertyString( AI_CONFIG_PP_OG_EXCLUDE_LIST, "_collider _partGen" );
 
   File   modelFile = String( path, "/data.obj" );
   File   outFile   = String( &path[1], "/data.ozcModel" );
@@ -135,16 +125,15 @@ void AssImp::build( const char* path )
     OZ_ERROR( "Failed to read '%s' (.dae and .obj extensions probed)", path );
   }
 
-  const aiScene* scene = importer.ReadFile( modelFile.realPath(),
-                                            aiProcess_JoinIdenticalVertices |
-                                            aiProcess_GenNormals |
-                                            aiProcess_ValidateDataStructure |
-                                            aiProcess_ImproveCacheLocality |
-                                            aiProcess_RemoveRedundantMaterials |
-                                            aiProcess_FindInvalidData |
-                                            aiProcess_FindInstances |
-                                            aiProcess_OptimizeMeshes |
-                                            aiProcess_OptimizeGraph );
+  scene = importer.ReadFile( modelFile.realPath(),
+                             aiProcess_JoinIdenticalVertices |
+                             aiProcess_GenNormals |
+                             aiProcess_ValidateDataStructure |
+                             aiProcess_ImproveCacheLocality |
+                             aiProcess_RemoveRedundantMaterials |
+                             aiProcess_FindInvalidData |
+                             aiProcess_FindInstances |
+                             aiProcess_OptimizeMeshes );
   if( scene == nullptr ) {
     OZ_ERROR( "Error loading '%s': %s", modelFile.path().cstr(), importer.GetErrorString() );
   }
@@ -203,15 +192,24 @@ void AssImp::build( const char* path )
     compiler.endMesh();
   }
 
-  // Fix Z <-> -Y axis swap.
-  aiMatrix4x4 zySwap = aiMatrix4x4( 1.0f, 0.0f,  0.0f, 0.0f,
-                                    0.0f, 0.0f, -1.0f, 0.0f,
-                                    0.0f, 1.0f,  0.0f, 0.0f,
-                                    0.0f, 0.0f,  0.0f, 1.0f );
+  for( uint i = 0; i < scene->mNumLights; ++i ) {
+    const aiLight* light = scene->mLights[i];
 
-  scene->mRootNode->mTransformation = zySwap * scene->mRootNode->mTransformation;
+    compiler.beginLight( Light::Type( light->mType - 1 ) );
 
-  readNode( scene->mRootNode );
+    compiler.position( light->mPosition.x, light->mPosition.y, light->mPosition.z );
+    compiler.direction( light->mDirection.x, light->mDirection.y, light->mDirection.z );
+    compiler.colour( light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b );
+    compiler.attenuation( light->mAttenuationConstant, light->mAttenuationLinear,
+                          light->mAttenuationQuadratic );
+    compiler.coneAngles( light->mAngleInnerCone, light->mAngleOuterCone );
+
+    compiler.endLight();
+  }
+
+  for( uint i = 0; i < scene->mRootNode->mNumChildren; ++i ) {
+    readNode( scene->mRootNode->mChildren[i] );
+  }
 
   for( uint i = 0; i < scene->mNumAnimations; ++i ) {
     const aiAnimation* anim = scene->mAnimations[i];
@@ -226,20 +224,9 @@ void AssImp::build( const char* path )
     }
   }
 
-  for( uint i = 0; i < scene->mNumLights; ++i ) {
-    const aiLight* light = scene->mLights[i];
-
-    lights.add( {
-      Point( light->mPosition.x, light->mPosition.y, light->mPosition.z ),
-      Vec3( light->mDirection.x, light->mDirection.y, light->mDirection.z ),
-      { Math::tan( light->mAngleInnerCone / 2.0f ), Math::tan( light->mAngleOuterCone / 2.0f ) },
-      { light->mAttenuationConstant, light->mAttenuationLinear, light->mAttenuationQuadratic },
-      Vec3( light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b ),
-      Light::Type( light->mType - 1 )
-    } );
-  }
-
   compiler.endModel();
+
+  scene = nullptr;
 
   OutputStream os( 0, Endian::LITTLE );
 

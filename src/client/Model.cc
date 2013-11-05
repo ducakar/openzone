@@ -72,11 +72,27 @@ struct Model::PreloadData
   List<TexFiles> textures;
 };
 
-Set<Model*>           Model::loadedModels;
-List<Model::Instance> Model::instances[2];
-Vertex*               Model::vertexAnimBuffer       = nullptr;
-int                   Model::vertexAnimBufferLength = 0;
-Model::Collation      Model::collation              = DEPTH_MAJOR;
+Set<Model*>             Model::loadedModels;
+List<Model::Instance>   Model::instances[2];
+List<Model::LightEntry> Model::sceneLights;
+Vertex*                 Model::vertexAnimBuffer       = nullptr;
+int                     Model::vertexAnimBufferLength = 0;
+Model::Collation        Model::collation              = DEPTH_MAJOR;
+
+void Model::addSceneLights()
+{
+  foreach( light, lights.citer() ) {
+    const Node* node = &nodes[light->node];
+    Mat44 transf = node->transf;
+
+    while( node->parent >= 0 ) {
+      node   = &nodes[node->parent];
+      transf = node->transf * transf;
+    }
+
+    sceneLights.add( { light, transf, 0.0f } );
+  }
+}
 
 void Model::animate( const Instance* instance )
 {
@@ -292,6 +308,8 @@ void Model::clearScheduled( QueueType queue )
   else {
     instances[queue].clear();
   }
+
+  sceneLights.clear();
 }
 
 void Model::deallocate()
@@ -304,6 +322,8 @@ void Model::deallocate()
 
   instances[SCENE_QUEUE].deallocate();
   instances[OVERLAY_QUEUE].deallocate();
+
+  sceneLights.deallocate();
 }
 
 Model::Model() :
@@ -316,6 +336,50 @@ Model::Model() :
 Model::~Model()
 {
   unload();
+}
+
+int Model::findNode( const char* name ) const
+{
+  for( int i = 0; i < nodes.length(); ++i ) {
+    if( nodes[i].name.equals( name ) ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void Model::schedule( int mesh, QueueType queue )
+{
+  List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
+
+  if( shader.nLights != 0 && lights.isEmpty() != 0 ) {
+    addSceneLights();
+  }
+
+  list.add( { this, tf.model, tf.colour, mesh, 0, 0, 0.0f } );
+}
+
+void Model::scheduleFrame( int mesh, int frame, QueueType queue )
+{
+  List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
+
+  if( shader.nLights != 0 && lights.isEmpty() != 0 ) {
+    addSceneLights();
+  }
+
+  list.add( { this, tf.model, tf.colour, mesh, frame, 0, 0.0f } );
+}
+
+void Model::scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
+                              QueueType queue )
+{
+  List<Instance>& list = collation == MODEL_MAJOR ? modelInstances[queue] : instances[queue];
+
+  if( shader.nLights != 0 && lights.isEmpty() != 0 ) {
+    addSceneLights();
+  }
+
+  list.add( { this, tf.model, tf.colour, mesh, firstFrame, secondFrame, interpolation } );
 }
 
 const File* Model::preload( const char* path )
@@ -341,8 +405,9 @@ const File* Model::preload( const char* path )
 
   istream.readInt();
   istream.readInt();
+  istream.readInt();
 
-  if( nTextures > 0 ) {
+  if( nTextures >= 0 ) {
     for( int i = 0; i < nTextures; ++i ) {
       const String& name = istream.readString();
 
@@ -393,6 +458,7 @@ void Model::load( uint usage )
   istream.readInt();
 
   int nMeshes = istream.readInt();
+  int nLights = istream.readInt();
   int nNodes  = istream.readInt();
 
   if( nTextures < 0 ) {
@@ -488,13 +554,35 @@ void Model::load( uint usage )
     flags |= meshes[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
 
+  lights.resize( nLights );
+
+  for( int i = 0; i < nLights; ++i ) {
+    lights[i].node           = istream.readInt();
+    lights[i].type           = Light::Type( istream.readInt() );
+
+    lights[i].pos            = istream.readPoint();
+    lights[i].dir            = istream.readVec3();
+    lights[i].colour         = istream.readVec3();
+
+    lights[i].attenuation[0] = istream.readFloat();
+    lights[i].attenuation[1] = istream.readFloat();
+    lights[i].attenuation[2] = istream.readFloat();
+
+    lights[i].coneCoeff[0]   = istream.readFloat();
+    lights[i].coneCoeff[1]   = istream.readFloat();
+  }
+
   nodes.resize( nNodes );
 
   for( int i = 0; i < nNodes; ++i ) {
     nodes[i].transf     = istream.readMat44();
+    nodes[i].mesh       = istream.readInt();
+
+    nodes[i].parent     = istream.readInt();
     nodes[i].firstChild = istream.readInt();
     nodes[i].nChildren  = istream.readInt();
-    nodes[i].mesh       = istream.readInt();
+
+    nodes[i].name       = istream.readString();
   }
 
   loadedModels.add( this );
