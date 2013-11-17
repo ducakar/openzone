@@ -105,46 +105,46 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
   }
 #endif
 
-  OutputStream ostream( 0, Endian::LITTLE );
+  OutputStream os( 0, Endian::LITTLE );
 
   // Header beginning.
-  ostream.writeChars( "DDS ", 4 );
-  ostream.writeInt( 124 );
-  ostream.writeInt( flags );
-  ostream.writeInt( height );
-  ostream.writeInt( width );
-  ostream.writeInt( pitchOrLinSize );
-  ostream.writeInt( 0 );
-  ostream.writeInt( nMipmaps );
+  os.writeChars( "DDS ", 4 );
+  os.writeInt( 124 );
+  os.writeInt( flags );
+  os.writeInt( height );
+  os.writeInt( width );
+  os.writeInt( pitchOrLinSize );
+  os.writeInt( 0 );
+  os.writeInt( nMipmaps );
 
   // Reserved int[11].
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
 
   // Pixel format.
-  ostream.writeInt( 32 );
-  ostream.writeInt( pixelFlags );
-  ostream.writeChars( compression, 4 );
-  ostream.writeInt( bpp );
-  ostream.writeUInt( 0x00ff0000 );
-  ostream.writeUInt( 0x0000ff00 );
-  ostream.writeUInt( 0x000000ff );
-  ostream.writeUInt( 0xff000000 );
+  os.writeInt( 32 );
+  os.writeInt( pixelFlags );
+  os.writeChars( compression, 4 );
+  os.writeInt( bpp );
+  os.writeUInt( 0x00ff0000 );
+  os.writeUInt( 0x0000ff00 );
+  os.writeUInt( 0x000000ff );
+  os.writeUInt( 0xff000000 );
 
-  ostream.writeInt( caps );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
-  ostream.writeInt( 0 );
+  os.writeInt( caps );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
+  os.writeInt( 0 );
 
   for( int i = 0; i < nMipmaps; ++i ) {
     FIBITMAP* level = i == 0 ? dib : FreeImage_Rescale( dib, width, height, FILTER_CATMULLROM );
@@ -160,7 +160,7 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
         swap( pixels[i], pixels[i + 2] );
       }
 
-      squish::CompressImage( pixels, width, height, ostream.forward( s3Size ), squishFlags );
+      squish::CompressImage( pixels, width, height, os.forward( s3Size ), squishFlags );
 
       FreeImage_Unload( level32 );
 #endif
@@ -170,7 +170,7 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
       int         pitch  = int( FreeImage_GetPitch( level ) );
 
       for( int i = 0; i < height; ++i ) {
-        ostream.writeChars( pixels, width * bpp / 8 );
+        os.writeChars( pixels, width * bpp / 8 );
         pixels += pitch;
       }
     }
@@ -183,7 +183,7 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
     }
   }
 
-  bool success = destFile.write( ostream.begin(), ostream.tell() );
+  bool success = destFile.write( os.begin(), os.tell() );
   if( !success ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Failed to write '%s'", destFile.path().cstr() );
     return false;
@@ -200,12 +200,11 @@ bool ImageBuilder::isImage( const File& file )
 {
   errorBuffer[0] = '\0';
 
-  InputStream istream = file.inputStream();
+  InputStream is        = file.inputStream();
+  ubyte*      dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( is.begin() ) );
 
-  ubyte* dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
-
-  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
-  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( is.capacity() ) );
+  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, is.capacity() );
 
   FreeImage_CloseMemory( memoryIO );
   return format != FIF_UNKNOWN;
@@ -255,10 +254,10 @@ bool ImageBuilder::convertToDDS( const File& file, int options, const char* dest
     return File::cp( file, destPath );
   }
 
-  InputStream       istream   = file.inputStream();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( istream.begin() ) );
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( istream.capacity() ) );
-  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, istream.capacity() );
+  InputStream       is        = file.inputStream();
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( is.begin() ) );
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( is.capacity() ) );
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, is.capacity() );
   FIBITMAP*         dib       = FreeImage_LoadFromMemory( format, memoryIO );
 
   FreeImage_CloseMemory( memoryIO );

@@ -282,10 +282,7 @@ SMM* MD2::create( int id )
 
 void MD2::preload()
 {
-  const File* file = model.preload( liber.models[id].path );
-  InputStream is   = file->inputStream( Endian::LITTLE );
-
-  is.seek( is.available() - int( sizeof( float[16] ) ) );
+  model.preload( liber.models[id].path );
 }
 
 void MD2::load()

@@ -35,7 +35,7 @@ namespace builder
 /**
  * BSP builder.
  *
- * Reads Quake 3 BSP & configuration file and prebuilds both matrix (.ozBSP) and client (.ozcBSP)
+ * Reads Quake 3 BSP & configuration file and prebuilds both matrix (.ozBSP) and client (.ozcModel)
  * BSPs. It also strips bounding shell and performs some BSP optimisation.
  */
 class BSP : public Bounds
@@ -265,37 +265,37 @@ class BSP : public Bounds
       Heading heading;
     };
 
-    String               name;
-    String               title;
-    String               description;
+    String                 name;
+    String                 title;
+    String                 description;
 
-    float                life;
-    float                resistance;
+    float                  life;
+    float                  resistance;
 
-    DArray<Texture>      textures;
-    List<Plane>          planes;
-    List<oz::BSP::Node>  nodes;
-    List<oz::BSP::Leaf>  leaves;
-    List<int>            leafBrushes;
-    DArray<Model>        models;
-    List<oz::BSP::Brush> brushes;
-    List<int>            brushSides;
-    DArray<ModelFaces>   modelFaces;
-    DArray<Vertex>       vertices;
-    DArray<int>          indices;
-    List<Face>           faces;
+    DArray<Texture>        textures;
+    List<Plane>            planes;
+    List<oz::BSP::Node>    nodes;
+    List<oz::BSP::Leaf>    leaves;
+    List<int>              leafBrushes;
+    DArray<Model>          models;
+    List<oz::BSP::Brush>   brushes;
+    List<int>              brushSides;
+    DArray<ModelFaces>     modelFaces;
+    DArray<client::Vertex> vertices;
+    DArray<int>            indices;
+    List<Face>             faces;
 
-    String               fragPool;
-    int                  nFrags;
+    String                 fragPool;
+    int                    nFrags;
 
-    String               demolishSound;
+    String                 demolishSound;
 
-    float                groundOffset;
+    float                  groundOffset;
 
-    List<BoundObject>    boundObjects;
+    List<BoundObject>      boundObjects;
 
-    Vec4                 waterFogColour;
-    Vec4                 lavaFogColour;
+    Vec4                   waterFogColour;
+    Vec4                   lavaFogColour;
 
     void load();
     void optimise();

@@ -94,19 +94,6 @@ void Loader::cleanupRender()
     }
   }
 
-  if( tick % IMAGOCLASS_CLEAR_INTERVAL == IMAGOCLASS_CLEAR_LAG ) {
-    for( int i = 0; i < liber.models.length(); ++i ) {
-      Context::Resource<SMM*>& smm = context.smms[i];
-
-      if( smm.nUsers == 0 ) {
-        delete smm.handle;
-
-        smm.handle = nullptr;
-        smm.nUsers = -1;
-      }
-    }
-  }
-
   if( tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG ) {
     // remove unused BSPs
     for( int i = 0; i < liber.nBSPs; ++i ) {
@@ -121,6 +108,24 @@ void Loader::cleanupRender()
         bsp.handle = nullptr;
         bsp.nUsers = -1;
       }
+    }
+  }
+
+  if( tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG ) {
+    for( int i = 0; i < liber.models.length(); ++i ) {
+      Context::Resource<SMM*>& model = context.models[i];
+
+      if( model.nUsers == 0 ) {
+        delete model.handle;
+
+        model.handle = nullptr;
+        model.nUsers = -1;
+      }
+    }
+  }
+
+  if( tick % PARTICLE_CLEAR_INTERVAL == PARTICLE_CLEAR_LAG ) {
+    for( int i = 0; i < liber.parts.length(); ++i ) {
     }
   }
 
@@ -141,6 +146,60 @@ void Loader::cleanupSound()
     if( orbis.obj( audio->key ) == nullptr ) {
       delete audio->value;
       context.audios.exclude( audio->key );
+    }
+  }
+
+  if( tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG ) {
+    // remove unused BSPAudios
+    for( int i = 0; i < liber.nBSPs; ++i ) {
+      Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
+
+      if( bspAudio.nUsers != 0 ) {
+        bspAudio.nUsers = 0;
+      }
+      else {
+        delete bspAudio.handle;
+
+        bspAudio.handle = nullptr;
+        bspAudio.nUsers = -1;
+      }
+    }
+  }
+
+  if( tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG ) {
+    // remove unused Audio objects
+    for( auto i = context.audios.citer(); i.isValid(); ) {
+      auto audio = i;
+      ++i;
+
+      if( audio->value->flags & Audio::UPDATED_BIT ) {
+        audio->value->flags &= ~Audio::UPDATED_BIT ;
+      }
+      else {
+        delete audio->value;
+        context.audios.exclude( audio->key );
+      }
+    }
+  }
+
+  if( tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG ) {
+    // remove stopped sources of non-continous sounds
+    Context::Source* prev = nullptr;
+    Context::Source* src  = context.sources.first();
+
+    while( src != nullptr ) {
+      Context::Source* next = src->next[0];
+
+      ALint value;
+      alGetSourcei( src->id, AL_SOURCE_STATE, &value );
+
+      if( value != AL_PLAYING ) {
+        context.removeSource( src, prev );
+      }
+      else {
+        prev = src;
+      }
+      src = next;
     }
   }
 
@@ -177,60 +236,6 @@ void Loader::cleanupSound()
     }
   }
 
-  if( tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG ) {
-    // remove stopped sources of non-continous sounds
-    Context::Source* prev = nullptr;
-    Context::Source* src  = context.sources.first();
-
-    while( src != nullptr ) {
-      Context::Source* next = src->next[0];
-
-      ALint value;
-      alGetSourcei( src->id, AL_SOURCE_STATE, &value );
-
-      if( value != AL_PLAYING ) {
-        context.removeSource( src, prev );
-      }
-      else {
-        prev = src;
-      }
-      src = next;
-    }
-  }
-
-  if( tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG ) {
-    // remove unused Audio objects
-    for( auto i = context.audios.citer(); i.isValid(); ) {
-      auto audio = i;
-      ++i;
-
-      if( audio->value->flags & Audio::UPDATED_BIT ) {
-        audio->value->flags &= ~Audio::UPDATED_BIT ;
-      }
-      else {
-        delete audio->value;
-        context.audios.exclude( audio->key );
-      }
-    }
-  }
-
-  if( tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG ) {
-    // remove unused BSPAudios
-    for( int i = 0; i < liber.nBSPs; ++i ) {
-      Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
-
-      if( bspAudio.nUsers != 0 ) {
-        bspAudio.nUsers = 0;
-      }
-      else {
-        delete bspAudio.handle;
-
-        bspAudio.handle = nullptr;
-        bspAudio.nUsers = -1;
-      }
-    }
-  }
-
   OZ_AL_CHECK_ERROR();
 }
 
@@ -245,10 +250,10 @@ void Loader::preloadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    SMM* smm = context.smms[i].handle;
+    SMM* model = context.models[i].handle;
 
-    if( smm != nullptr && !smm->isPreloaded() ) {
-      smm->preload();
+    if( model != nullptr && !model->isPreloaded() ) {
+      model->preload();
     }
   }
 }
@@ -275,10 +280,10 @@ void Loader::uploadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    SMM* smm = context.smms[i].handle;
+    SMM* model = context.models[i].handle;
 
-    if( smm != nullptr && !smm->isLoaded() && smm->isPreloaded() ) {
-      smm->load();
+    if( model != nullptr && !model->isLoaded() && model->isPreloaded() ) {
+      model->load();
       return;
     }
   }

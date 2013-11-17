@@ -155,7 +155,7 @@ function init_stressTest()
     end
   end
 
-  for i = 1, 1000 do
+  for i = 1, 400 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )
@@ -165,7 +165,7 @@ function init_stressTest()
     end
   end
 
-  for i = 1, 1000 do
+  for i = 1, 400 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )

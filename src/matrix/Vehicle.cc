@@ -522,34 +522,34 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
   }
 }
 
-Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
-  Dynamic( clazz_, istream )
+Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* is ) :
+  Dynamic( clazz_, is )
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  h          = istream->readFloat();
-  v          = istream->readFloat();
-  w          = istream->readFloat();
-  rotVelH    = istream->readFloat();
-  rotVelV    = istream->readFloat();
-  actions    = istream->readInt();
-  oldActions = istream->readInt();
+  h          = is->readFloat();
+  v          = is->readFloat();
+  w          = is->readFloat();
+  rotVelH    = is->readFloat();
+  rotVelV    = is->readFloat();
+  actions    = is->readInt();
+  oldActions = is->readInt();
 
   rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
                                                    Mat44::rotationZXZ( h, v, w );
-  state      = istream->readInt();
-  oldState   = istream->readInt();
-  fuel       = istream->readFloat();
+  state      = is->readInt();
+  oldState   = is->readInt();
+  fuel       = is->readFloat();
 
-  step       = istream->readFloat();
-  stairRate  = istream->readFloat();
+  step       = is->readFloat();
+  stairRate  = is->readFloat();
 
-  pilot      = istream->readInt();
+  pilot      = is->readInt();
 
-  weapon     = istream->readInt();
+  weapon     = is->readInt();
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    nRounds[i]  = istream->readInt();
-    shotTime[i] = istream->readFloat();
+    nRounds[i]  = is->readInt();
+    shotTime[i] = is->readFloat();
   }
 }
 
@@ -589,31 +589,31 @@ Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
   }
 }
 
-void Vehicle::write( OutputStream* ostream ) const
+void Vehicle::write( OutputStream* os ) const
 {
-  Dynamic::write( ostream );
+  Dynamic::write( os );
 
-  ostream->writeFloat( h );
-  ostream->writeFloat( v );
-  ostream->writeFloat( w );
-  ostream->writeFloat( rotVelH );
-  ostream->writeFloat( rotVelV );
-  ostream->writeInt( actions );
-  ostream->writeInt( oldActions );
+  os->writeFloat( h );
+  os->writeFloat( v );
+  os->writeFloat( w );
+  os->writeFloat( rotVelH );
+  os->writeFloat( rotVelV );
+  os->writeInt( actions );
+  os->writeInt( oldActions );
 
-  ostream->writeInt( state );
-  ostream->writeInt( oldState );
-  ostream->writeFloat( fuel );
+  os->writeInt( state );
+  os->writeInt( oldState );
+  os->writeFloat( fuel );
 
-  ostream->writeFloat( step );
-  ostream->writeFloat( stairRate );
+  os->writeFloat( step );
+  os->writeFloat( stairRate );
 
-  ostream->writeInt( pilot );
+  os->writeInt( pilot );
 
-  ostream->writeInt( weapon );
+  os->writeInt( weapon );
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    ostream->writeInt( nRounds[i] );
-    ostream->writeFloat( shotTime[i] );
+    os->writeInt( nRounds[i] );
+    os->writeFloat( shotTime[i] );
   }
 }
 

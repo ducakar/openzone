@@ -92,17 +92,17 @@ void TechGraph::disableAll()
 void TechGraph::update()
 {}
 
-void TechGraph::read( InputStream* istream )
+void TechGraph::read( InputStream* is )
 {
   foreach( node, nodes.iter() ) {
-    node->progress = istream->readFloat();
+    node->progress = is->readFloat();
   }
 }
 
-void TechGraph::write( OutputStream* ostream ) const
+void TechGraph::write( OutputStream* os ) const
 {
   foreach( node, nodes.citer() ) {
-    ostream->writeFloat( node->progress );
+    os->writeFloat( node->progress );
   }
 }
 

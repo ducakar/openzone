@@ -43,8 +43,8 @@ class Caelum
     void reset();
     void update();
 
-    void read( InputStream* istream );
-    void write( OutputStream* ostream ) const;
+    void read( InputStream* is );
+    void write( OutputStream* os ) const;
 
     void read( const JSON& json );
     JSON write() const;

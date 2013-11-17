@@ -33,21 +33,11 @@ namespace client
 
 BSP::BSP( const oz::BSP* bsp_ ) :
   bsp( bsp_ )
-{
-  foreach( model, bsp->models.citer() ) {
-    context.requestModel( *model );
-  }
-}
+{}
 
 BSP::~BSP()
 {
   model.unload();
-
-  if( bsp != nullptr ) {
-    foreach( model, bsp->models.citer() ) {
-      context.releaseModel( *model );
-    }
-  }
 }
 
 void BSP::schedule( const Struct* str, Model::QueueType queue )
@@ -65,13 +55,15 @@ void BSP::schedule( const Struct* str, Model::QueueType queue )
       model.schedule( i + 1, queue );
 
       if( entity.clazz->model != -1 ) {
-        SMM* smm = context.smms[entity.clazz->model].handle;
+        SMM* model = context.requestModel( entity.clazz->model );;
 
-        if( smm != nullptr && smm->isLoaded() ) {
+        if( model != nullptr && model->isLoaded() ) {
           tf.model = tf.model * entity.clazz->modelTransf;
 
-          smm->schedule( 0, queue );
+          model->schedule( 0, queue );
         }
+
+        context.releaseModel( entity.clazz->model );
       }
 
       tf.pop();

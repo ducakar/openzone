@@ -131,13 +131,7 @@ class Model
       float  interpolation;
     };
 
-    struct LightEntry
-    {
-      const Light* light;
-      Mat44        transf;
-      float        weight;
-    };
-
+    struct LightEntry;
     struct PreloadData;
 
   private:

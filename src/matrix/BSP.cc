@@ -60,12 +60,6 @@ void BSP::load()
   // nFrags
   is.readInt();
 
-  // models
-  int nModels = is.readInt();
-  for( int i = 0; i < nModels; ++i ) {
-    is.readString();
-  }
-
   // sound samples
   int nSounds = is.readInt();
   for( int i = 0; i < nSounds; ++i ) {
@@ -270,11 +264,6 @@ BSP::BSP( const char* name_, int id_ ) :
   String sFragPool = is.readString();
   fragPool         = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
   nFrags           = is.readInt();
-
-  models.resize( is.readInt() );
-  for( int i = 0; i < models.length(); ++i ) {
-    models[i] = liber.modelIndex( is.readString() );
-  }
 
   sounds.resize( is.readInt() );
   for( int i = 0; i < sounds.length(); ++i ) {

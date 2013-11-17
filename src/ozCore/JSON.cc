@@ -91,7 +91,7 @@ struct JSON::ObjectData : JSON::Data
 };
 
 JSON::ObjectCIterator::ObjectCIterator( const ObjectData* data ) :
-  IteratorBase<const HashMap<String, JSON>::Elem>( nullptr ), objectIter( data->table.citer() )
+  IteratorBase< const HashMap<String, JSON>::Elem >( nullptr ), objectIter( data->table.citer() )
 {
   elem = objectIter;
 }
@@ -104,7 +104,7 @@ JSON::ObjectCIterator& JSON::ObjectCIterator::operator ++ ()
 }
 
 JSON::ObjectIterator::ObjectIterator( ObjectData* data ) :
-  IteratorBase<HashMap<String, JSON>::Elem>( nullptr ), objectIter( data->table.iter() )
+  IteratorBase< HashMap<String, JSON>::Elem >( nullptr ), objectIter( data->table.iter() )
 {
   elem = objectIter;
 }
@@ -127,7 +127,7 @@ struct JSON::Parser
 
   struct Position
   {
-    InputStream* istream;
+    InputStream* is;
     const char*  path;
     int          line;
     int          column;
@@ -137,7 +137,7 @@ struct JSON::Parser
     OZ_HIDDEN
     char readChar()
     {
-      if( !istream->isAvailable() ) {
+      if( !is->isAvailable() ) {
         const Position& pos = *this;
         OZ_PARSE_ERROR( 0, "Unexpected end of file" );
       }
@@ -145,7 +145,7 @@ struct JSON::Parser
       oldLine   = line;
       oldColumn = column;
 
-      char ch = istream->readChar();
+      char ch = is->readChar();
 
       if( ch == '\n' ) {
         ++line;
@@ -162,7 +162,7 @@ struct JSON::Parser
     {
       hard_assert( line != oldLine || column != oldColumn );
 
-      istream->set( istream->pos() - 1 );
+      is->set( is->pos() - 1 );
 
       line   = oldLine;
       column = oldColumn;
@@ -200,9 +200,9 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  static JSON parse( InputStream* istream, const char* path )
+  static JSON parse( InputStream* is, const char* path )
   {
-    Parser parser( istream, path );
+    Parser parser( is, path );
 
     JSON root = parser.parseValue();
 
@@ -211,8 +211,8 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  explicit Parser( InputStream* istream, const char* path ) :
-    pos( { istream, path, 1, 0, 1, 0 } )
+  explicit Parser( InputStream* is, const char* path ) :
+    pos( { is, path, 1, 0, 1, 0 } )
   {}
 
   OZ_HIDDEN
@@ -310,7 +310,7 @@ struct JSON::Parser
 
       chars.add( ch );
     }
-    while( pos.istream->isAvailable() );
+    while( pos.is->isAvailable() );
 
     if( ch != '"' ) {
       OZ_PARSE_ERROR( 0, "End of file while looking for end of string (Is ending \" missing?)" );
@@ -327,7 +327,7 @@ struct JSON::Parser
 
     switch( ch ) {
       case 'n': {
-        if( pos.istream->available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
+        if( pos.is->available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
             pos.readChar() != 'l' )
         {
           OZ_PARSE_ERROR( -3, "Unknown value type" );
@@ -336,7 +336,7 @@ struct JSON::Parser
         return JSON( nullptr, NIL );
       }
       case 'f': {
-        if( pos.istream->available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
+        if( pos.is->available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
             pos.readChar() != 's' || pos.readChar() != 'e' )
         {
           OZ_PARSE_ERROR( -4, "Unknown value type" );
@@ -345,7 +345,7 @@ struct JSON::Parser
         return JSON( new BooleanData( false ), BOOLEAN );
       }
       case 't': {
-        if( pos.istream->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
+        if( pos.is->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
             pos.readChar() != 'e' )
         {
           OZ_PARSE_ERROR( -3, "Unknown value type" );
@@ -357,7 +357,7 @@ struct JSON::Parser
         SList<char, 32> chars;
         chars.add( ch );
 
-        while( pos.istream->isAvailable() ) {
+        while( pos.is->isAvailable() ) {
           ch = pos.readChar();
 
           if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
@@ -457,7 +457,7 @@ struct JSON::Parser
   OZ_HIDDEN
   void finish()
   {
-    while( pos.istream->isAvailable() ) {
+    while( pos.is->isAvailable() ) {
       char ch = pos.readChar();
 
       if( !String::isBlank( ch ) ) {
@@ -472,7 +472,7 @@ struct JSON::Formatter
   static const int ALIGNMENT_COLUMN   = 32;
   static const int SIGNIFICANT_DIGITS = 12;
 
-  OutputStream* ostream;
+  OutputStream* os;
   const char*   lineEnd;
   int           lineEndLength;
   int           indentLevel;
@@ -482,55 +482,55 @@ struct JSON::Formatter
   {
     int length = string.length() + 2;
 
-    ostream->writeChar( '"' );
+    os->writeChar( '"' );
 
     for( int i = 0; i < string.length(); ++i ) {
       char ch = string[i];
 
       switch( ch ) {
         case '\\': {
-          ostream->writeChars( "\\\\", 2 );
+          os->writeChars( "\\\\", 2 );
           ++length;
           break;
         }
         case '"': {
-          ostream->writeChars( "\\\"", 2 );
+          os->writeChars( "\\\"", 2 );
           ++length;
           break;
         }
         case '\b': {
-          ostream->writeChars( "\\b", 2 );
+          os->writeChars( "\\b", 2 );
           ++length;
           break;
         }
         case '\f': {
-          ostream->writeChars( "\\f", 2 );
+          os->writeChars( "\\f", 2 );
           ++length;
           break;
         }
         case '\n': {
-          ostream->writeChars( "\\n", 2 );
+          os->writeChars( "\\n", 2 );
           ++length;
           break;
         }
         case '\r': {
-          ostream->writeChars( "\\r", 2 );
+          os->writeChars( "\\r", 2 );
           ++length;
           break;
         }
         case '\t': {
-          ostream->writeChars( "\\t", 2 );
+          os->writeChars( "\\t", 2 );
           ++length;
           break;
         }
         default: {
-          ostream->writeChar( ch );
+            os->writeChar( ch );
           break;
         }
       }
     }
 
-    ostream->writeChar( '"' );
+    os->writeChar( '"' );
 
     return length;
   }
@@ -540,17 +540,17 @@ struct JSON::Formatter
   {
     switch( value.valueType ) {
       case NIL: {
-        ostream->writeChars( "null", 4 );
+        os->writeChars( "null", 4 );
         break;
       }
       case BOOLEAN: {
         const BooleanData* booleanData = static_cast<const BooleanData*>( value.data );
 
         if( booleanData->value ) {
-          ostream->writeChars( "true", 4 );
+          os->writeChars( "true", 4 );
         }
         else {
-          ostream->writeChars( "false", 5 );
+          os->writeChars( "false", 5 );
         }
         break;
       }
@@ -558,7 +558,7 @@ struct JSON::Formatter
         const NumberData* numberData = static_cast<const NumberData*>( value.data );
 
         String s = String( numberData->value, SIGNIFICANT_DIGITS );
-        ostream->writeChars( s, s.length() );
+        os->writeChars( s, s.length() );
         break;
       }
       case STRING: {
@@ -584,36 +584,36 @@ struct JSON::Formatter
     const List<JSON>& list = static_cast<const ArrayData*>( value.data )->list;
 
     if( list.isEmpty() ) {
-      ostream->writeChars( "[]", 2 );
+      os->writeChars( "[]", 2 );
       return;
     }
 
-    ostream->writeChar( '[' );
-    ostream->writeChars( lineEnd, lineEndLength );
+    os->writeChar( '[' );
+    os->writeChars( lineEnd, lineEndLength );
 
     ++indentLevel;
 
     for( int i = 0; i < list.length(); ++i ) {
       if( i != 0 ) {
-        ostream->writeChar( ',' );
-        ostream->writeChars( lineEnd, lineEndLength );
+        os->writeChar( ',' );
+        os->writeChars( lineEnd, lineEndLength );
       }
 
       for( int j = 0; j < indentLevel; ++j ) {
-        ostream->writeChars( "  ", 2 );
+        os->writeChars( "  ", 2 );
       }
 
       writeValue( list[i] );
     }
 
-    ostream->writeChars( lineEnd, lineEndLength );
+    os->writeChars( lineEnd, lineEndLength );
 
     --indentLevel;
     for( int j = 0; j < indentLevel; ++j ) {
-      ostream->writeChars( "  ", 2 );
+      os->writeChars( "  ", 2 );
     }
 
-    ostream->writeChar( ']' );
+    os->writeChar( ']' );
   }
 
   OZ_HIDDEN
@@ -622,12 +622,12 @@ struct JSON::Formatter
     const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value.data )->table;
 
     if( table.isEmpty() ) {
-      ostream->writeChars( "{}", 2 );
+      os->writeChars( "{}", 2 );
       return;
     }
 
-    ostream->writeChar( '{' );
-    ostream->writeChars( lineEnd, lineEndLength );
+    os->writeChar( '{' );
+    os->writeChars( lineEnd, lineEndLength );
 
     ++indentLevel;
 
@@ -639,25 +639,25 @@ struct JSON::Formatter
 
     for( int i = 0; i < sortedEntries.length(); ++i ) {
       if( i != 0 ) {
-        ostream->writeChar( ',' );
-        ostream->writeChars( lineEnd, lineEndLength );
+        os->writeChar( ',' );
+        os->writeChars( lineEnd, lineEndLength );
       }
 
       for( int j = 0; j < indentLevel; ++j ) {
-        ostream->writeChars( "  ", 2 );
+        os->writeChars( "  ", 2 );
       }
 
       const String& entryKey   = sortedEntries[i].key;
       const JSON*   entryValue = sortedEntries[i].value;
 
       int keyLength = writeString( entryKey );
-      ostream->writeChar( ':' );
+      os->writeChar( ':' );
 
       if( entryValue->valueType == ARRAY || entryValue->valueType == OBJECT ) {
-        ostream->writeChars( lineEnd, lineEndLength );
+        os->writeChars( lineEnd, lineEndLength );
 
         for( int j = 0; j < indentLevel; ++j ) {
-          ostream->writeChars( "  ", 2 );
+          os->writeChars( "  ", 2 );
         }
       }
       else {
@@ -665,7 +665,7 @@ struct JSON::Formatter
 
         // Align to 24-th column.
         for( int j = column; j < ALIGNMENT_COLUMN; ++j ) {
-          ostream->writeChar( ' ' );
+          os->writeChar( ' ' );
         }
       }
 
@@ -675,14 +675,14 @@ struct JSON::Formatter
     sortedEntries.clear();
     sortedEntries.deallocate();
 
-    ostream->writeChars( lineEnd, lineEndLength );
+    os->writeChars( lineEnd, lineEndLength );
 
     --indentLevel;
     for( int j = 0; j < indentLevel; ++j ) {
-      ostream->writeChars( "  ", 2 );
+      os->writeChars( "  ", 2 );
     }
 
-    ostream->writeChar( '}' );
+    os->writeChar( '}' );
   }
 };
 
@@ -2060,36 +2060,36 @@ String JSON::toString() const
 
 String JSON::toFormattedString( const char* lineEnd ) const
 {
-  OutputStream ostream( 0 );
-  Formatter formatter = { &ostream, lineEnd, String::length( lineEnd ), 0 };
+  OutputStream os( 0 );
+  Formatter formatter = { &os, lineEnd, String::length( lineEnd ), 0 };
 
   formatter.writeValue( *this );
-  ostream.writeChars( lineEnd, formatter.lineEndLength );
+  os.writeChars( lineEnd, formatter.lineEndLength );
 
-  return String( ostream.begin(), ostream.tell() );
+  return String( os.begin(), os.tell() );
 }
 
 bool JSON::load( const File& file )
 {
-  InputStream istream = file.inputStream();
+  InputStream is = file.inputStream();
 
-  if( !istream.isAvailable() ) {
+  if( !is.isAvailable() ) {
     return false;
   }
 
-  *this = Parser::parse( &istream, file.path() );
+  *this = Parser::parse( &is, file.path() );
   return true;
 }
 
 bool JSON::save( const File& file, const char* lineEnd ) const
 {
-  OutputStream ostream( 0 );
-  Formatter formatter = { &ostream, lineEnd, String::length( lineEnd ), 0 };
+  OutputStream os( 0 );
+  Formatter formatter = { &os, lineEnd, String::length( lineEnd ), 0 };
 
   formatter.writeValue( *this );
-  ostream.writeChars( lineEnd, formatter.lineEndLength );
+  os.writeChars( lineEnd, formatter.lineEndLength );
 
-  return file.write( ostream.begin(), ostream.tell() );
+  return file.write( os.begin(), os.tell() );
 }
 
 }

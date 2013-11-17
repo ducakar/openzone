@@ -114,9 +114,9 @@ Object* VehicleClass::create( int index, const Point& pos, Heading heading ) con
   return new Vehicle( this, index, pos, heading );
 }
 
-Object* VehicleClass::create( InputStream* istream ) const
+Object* VehicleClass::create( InputStream* is ) const
 {
-  return new Vehicle( this, istream );
+  return new Vehicle( this, is );
 }
 
 Object* VehicleClass::create( const JSON& json ) const

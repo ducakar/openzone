@@ -39,11 +39,11 @@ Mind::Mind( int bot_ ) :
   luaNirvana.registerMind( bot );
 }
 
-Mind::Mind( int bot_, InputStream* istream ) :
+Mind::Mind( int bot_, InputStream* is ) :
   bot( bot_ )
 {
-  flags = istream->readInt();
-  side  = istream->readInt();
+  flags = is->readInt();
+  side  = is->readInt();
 }
 
 Mind::~Mind()
@@ -94,10 +94,10 @@ void Mind::update()
   }
 }
 
-void Mind::write( OutputStream* ostream ) const
+void Mind::write( OutputStream* os ) const
 {
-  ostream->writeInt( flags );
-  ostream->writeInt( side );
+  os->writeInt( flags );
+  os->writeInt( side );
 }
 
 }

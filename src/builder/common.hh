@@ -33,9 +33,6 @@ namespace oz
 namespace builder
 {
 
-using namespace oz::modules;
-using namespace oz::client;
-
 extern JSON config;
 
 }

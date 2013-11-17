@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION 0.3.83 )
+set( OZ_VERSION 0.3.84 )
 
 option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
 option( OZ_PULSE_BELL "Enable PulseAudio backend for System::bell()." OFF )
@@ -194,10 +194,8 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
   # Analyse only.
   # set( flags "${flags} --analyze -Qunused-arguments" )
-elseif( ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.5 )
-  set( flags "-std=gnu++0x" )
 else()
-  set( flags "-std=c++0x -pedantic -fstrict-enums" )
+  set( flags "-std=c++11 -pedantic -fstrict-enums" )
 endif()
 
 set( flags "${flags} -ffast-math -fvisibility-inlines-hidden" )

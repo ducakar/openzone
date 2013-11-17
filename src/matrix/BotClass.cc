@@ -104,9 +104,9 @@ Object* BotClass::create( int index, const Point& pos, Heading heading ) const
   return new Bot( this, index, pos, heading );
 }
 
-Object* BotClass::create( InputStream* istream ) const
+Object* BotClass::create( InputStream* is ) const
 {
-  return new Bot( this, istream );
+  return new Bot( this, is );
 }
 
 Object* BotClass::create( const JSON& json ) const

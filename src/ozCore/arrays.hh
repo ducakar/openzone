@@ -94,40 +94,6 @@ class ArrayIterator : public IteratorBase<Elem>
 
 };
 
-#if defined( OZ_GCC ) && OZ_GCC < 407
-
-template <typename Elem>
-class CIterator : public ArrayIterator<const Elem>
-{
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit CIterator() = default;
-
-    OZ_ALWAYS_INLINE
-    explicit CIterator( const Elem* first, const Elem* past ) :
-      ArrayIterator<const Elem>( first, past )
-    {}
-
-};
-
-template <typename Elem>
-class Iterator : public ArrayIterator<Elem>
-{
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Iterator() = default;
-
-    OZ_ALWAYS_INLINE
-    explicit Iterator( Elem* first, Elem* past ) :
-      ArrayIterator<Elem>( first, past )
-    {}
-
-};
-
-#else
-
 /**
  * %Array iterator with constant access to elements.
  */
@@ -139,8 +105,6 @@ using CIterator = ArrayIterator<const Elem>;
  */
 template <typename Elem>
 using Iterator = ArrayIterator<Elem>;
-
-#endif
 
 /**
  * Create array iterator with constant element access.
@@ -401,7 +365,7 @@ inline void aFree( Elem* array, int count )
 }
 
 /**
- * Reallocate array moving the elements.
+ * Reallocate array moving its elements.
  *
  * Allocate a new array of `newCount` elements, move first `min( count, newCount )` elements of the
  * source array to the newly created one and delete the source array. Similar to `realloc()`,

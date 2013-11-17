@@ -85,8 +85,8 @@ class TechGraph
 
     void update();
 
-    void read( InputStream* istream );
-    void write( OutputStream* ostream ) const;
+    void read( InputStream* is );
+    void write( OutputStream* os ) const;
 
     void load();
     void unload();

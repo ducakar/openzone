@@ -92,7 +92,7 @@ class Compiler
 
     void animVertex( int i );
 
-    void beginLight( Light::Type type );
+    void beginLight( client::Light::Type type );
     int endLight();
 
     void position( float x, float y, float z );

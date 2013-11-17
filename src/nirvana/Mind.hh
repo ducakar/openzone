@@ -45,7 +45,7 @@ class Mind
 
     explicit Mind();
     explicit Mind( int bot );
-    explicit Mind( int bot, InputStream* istream );
+    explicit Mind( int bot, InputStream* is );
     ~Mind();
 
     Mind( Mind&& m );
@@ -53,7 +53,7 @@ class Mind
 
     void update();
 
-    void write( OutputStream* ostream ) const;
+    void write( OutputStream* os ) const;
 
 };
 

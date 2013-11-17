@@ -201,13 +201,13 @@ bool ModelBuilder::isModel( const File& file )
   return importer.IsExtensionSupported( file.extension() );
 }
 
-bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
+bool ModelBuilder::buildModel( const File& file, OutputStream* os )
 {
   errorBuffer[0] = '\0';
 
-  InputStream istream = file.inputStream();
+  InputStream is = file.inputStream();
 
-  if( !istream.isAvailable() ) {
+  if( !is.isAvailable() ) {
     snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr() );
     return false;
   }
@@ -318,14 +318,14 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
 
   readNode( scene->mRootNode );
 
-  ostream->writeInt( vertices.length() );
-  ostream->writeInt( indices.length() );
-  ostream->writeInt( meshes.length() );
-  ostream->writeInt( materials.length() );
-  ostream->writeInt( animKeys.length() );
-  ostream->writeInt( anims.length() );
-  ostream->writeInt( lights.length() );
-  ostream->writeInt( nodes.length() );
+  os->writeInt( vertices.length() );
+  os->writeInt( indices.length() );
+  os->writeInt( meshes.length() );
+  os->writeInt( materials.length() );
+  os->writeInt( animKeys.length() );
+  os->writeInt( anims.length() );
+  os->writeInt( lights.length() );
+  os->writeInt( nodes.length() );
 
   Log() << vertices.length() << " vertices";
   Log() << indices.length() << " indices";
@@ -337,35 +337,35 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* ostream )
   Log() << nodes.length() << " nodes";
 
   for( int i = 0; i < vertices.length(); ++i ) {
-    ostream->writePoint( vertices[i].p );
-    ostream->writeVec3( vertices[i].n );
-    ostream->writeFloat( vertices[i].u );
-    ostream->writeFloat( vertices[i].v );
+    os->writePoint( vertices[i].p );
+    os->writeVec3( vertices[i].n );
+    os->writeFloat( vertices[i].u );
+    os->writeFloat( vertices[i].v );
   }
   for( int i = 0; i < indices.length(); ++i ) {
-    ostream->writeUShort( indices[i] );
+    os->writeUShort( indices[i] );
   }
 
   for( int i = 0; i < meshes.length(); ++i ) {
-    ostream->writeInt( meshes[i].nIndices );
-    ostream->writeInt( meshes[i].firstIndex );
+    os->writeInt( meshes[i].nIndices );
+    os->writeInt( meshes[i].firstIndex );
   }
 
   for( int i = 0; i < materials.length(); ++i ) {
-    ostream->writeString( materials[i].texture );
-    ostream->writeFloat( materials[i].alpha );
+    os->writeString( materials[i].texture );
+    os->writeFloat( materials[i].alpha );
   }
 
   for( int i = 0; i < lights.length(); ++i ) {
-    ostream->writePoint( lights[i].p );
-    ostream->writeVec3( lights[i].dir );
-    ostream->writeFloat( lights[i].coneCoeff[0] ),
-    ostream->writeFloat( lights[i].coneCoeff[1] ),
-    ostream->writeFloat( lights[i].attenuation[0] );
-    ostream->writeFloat( lights[i].attenuation[1] );
-    ostream->writeFloat( lights[i].attenuation[2] );
-    ostream->writeVec3( lights[i].colour );
-    ostream->writeInt( lights[i].type );
+    os->writePoint( lights[i].p );
+    os->writeVec3( lights[i].dir );
+    os->writeFloat( lights[i].coneCoeff[0] ),
+    os->writeFloat( lights[i].coneCoeff[1] ),
+    os->writeFloat( lights[i].attenuation[0] );
+    os->writeFloat( lights[i].attenuation[1] );
+    os->writeFloat( lights[i].attenuation[2] );
+    os->writeVec3( lights[i].colour );
+    os->writeInt( lights[i].type );
   }
 
   vertices.clear();

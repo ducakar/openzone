@@ -176,6 +176,16 @@ class Buffer
     }
 
     /**
+     * Create an `InputStream` object for reading binary data from the buffer.
+     */
+    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
+
+    /**
+     * Create an `OutputStream` object for writing binary data into the buffer.
+     */
+    OutputStream outputStream( Endian::Order order = Endian::NATIVE );
+
+    /**
      * Create a string from the buffer contents. Terminating null byte is always appended.
      */
     String toString() const;
@@ -211,16 +221,6 @@ class Buffer
      * Deallocate storage.
      */
     void deallocate();
-
-    /**
-     * Create an `InputStream` object for reading binary data from the buffer.
-     */
-    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
-
-    /**
-     * Create an `OutputStream` object for writing binary data into the buffer.
-     */
-    OutputStream outputStream( Endian::Order order = Endian::NATIVE );
 
 };
 

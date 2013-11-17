@@ -113,14 +113,14 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point& p_, Heading 
   }
 }
 
-Object::Object( const ObjectClass* clazz_, InputStream* istream )
+Object::Object( const ObjectClass* clazz_, InputStream* is )
 {
-  p          = istream->readPoint();
+  p          = is->readPoint();
   dim        = clazz_->dim;
   cell       = nullptr;
-  index      = istream->readInt();
-  flags      = istream->readInt();
-  life       = istream->readFloat();
+  index      = is->readInt();
+  flags      = is->readInt();
+  life       = is->readFloat();
   resistance = clazz_->resistance;
   clazz      = clazz_;
 
@@ -128,10 +128,10 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
     swap( dim.x, dim.y );
   }
 
-  int nEvents = istream->readInt();
+  int nEvents = is->readInt();
   for( int i = 0; i < nEvents; ++i ) {
-    int   id        = istream->readInt();
-    float intensity = istream->readFloat();
+    int   id        = is->readInt();
+    float intensity = is->readFloat();
 
     addEvent( id, intensity );
   }
@@ -139,9 +139,9 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
   if( clazz->nItems != 0 ) {
     items.allocate( clazz->nItems );
 
-    int nItems = istream->readInt();
+    int nItems = is->readInt();
     for( int i = 0; i < nItems; ++i ) {
-      items.add( istream->readInt() );
+      items.add( is->readInt() );
     }
   }
 }
@@ -173,23 +173,23 @@ Object::Object( const ObjectClass* clazz_, const JSON& json )
   }
 }
 
-void Object::write( OutputStream* ostream ) const
+void Object::write( OutputStream* os ) const
 {
-  ostream->writePoint( p );
-  ostream->writeInt( index );
-  ostream->writeInt( flags );
-  ostream->writeFloat( life );
+  os->writePoint( p );
+  os->writeInt( index );
+  os->writeInt( flags );
+  os->writeFloat( life );
 
-  ostream->writeInt( events.length() );
+  os->writeInt( events.length() );
   foreach( event, events.citer() ) {
-    ostream->writeInt( event->id );
-    ostream->writeFloat( event->intensity );
+    os->writeInt( event->id );
+    os->writeFloat( event->intensity );
   }
 
   if( clazz->nItems != 0 ) {
-    ostream->writeInt( items.length() );
+    os->writeInt( items.length() );
     foreach( item, items.citer() ) {
-      ostream->writeInt( *item );
+      os->writeInt( *item );
     }
   }
 }

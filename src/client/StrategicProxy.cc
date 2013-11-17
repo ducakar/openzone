@@ -220,17 +220,17 @@ void StrategicProxy::reset()
   hasBuildFrame = false;
 }
 
-void StrategicProxy::read( InputStream* istream )
+void StrategicProxy::read( InputStream* is )
 {
-  h             = istream->readFloat();
-  v             = istream->readFloat();
-  height        = istream->readFloat();
+  h             = is->readFloat();
+  v             = is->readFloat();
+  height        = is->readFloat();
 
-  isFree        = istream->readBool();
-  isFreeFast    = istream->readBool();
-  isRTSFast     = istream->readBool();
+  isFree        = is->readBool();
+  isFreeFast    = is->readBool();
+  isRTSFast     = is->readBool();
 
-  hasBuildFrame = istream->readBool();
+  hasBuildFrame = is->readBool();
 }
 
 void StrategicProxy::read( const JSON& json )
@@ -242,17 +242,17 @@ void StrategicProxy::read( const JSON& json )
   isFree = json["isFree"].get( false );
 }
 
-void StrategicProxy::write( OutputStream* ostream ) const
+void StrategicProxy::write( OutputStream* os ) const
 {
-  ostream->writeFloat( h );
-  ostream->writeFloat( v );
-  ostream->writeFloat( height );
+  os->writeFloat( h );
+  os->writeFloat( v );
+  os->writeFloat( height );
 
-  ostream->writeBool( isFree );
-  ostream->writeBool( isFreeFast );
-  ostream->writeBool( isRTSFast );
+  os->writeBool( isFree );
+  os->writeBool( isFreeFast );
+  os->writeBool( isRTSFast );
 
-  ostream->writeBool( hasBuildFrame );
+  os->writeBool( hasBuildFrame );
 }
 
 JSON StrategicProxy::write() const

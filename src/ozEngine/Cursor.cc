@@ -119,15 +119,15 @@ bool Cursor::load( const File& file, Mode mode_, int size )
   }
 #endif
 
-  InputStream istream = file.inputStream( Endian::LITTLE );
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   // Implementation is based on specifications from xcursor(3) manual.
-  if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "Xcur" ) ) {
+  if( !is.isAvailable() || !String::beginsWith( is.begin(), "Xcur" ) ) {
     return false;
   }
 
-  istream.seek( 12 );
-  int nEntries = istream.readInt();
+  is.seek( 12 );
+  int nEntries = is.readInt();
 
   nImages   = 0;
   frame     = 0;
@@ -135,9 +135,9 @@ bool Cursor::load( const File& file, Mode mode_, int size )
   mode      = mode_;
 
   for( int i = 0; i < nEntries && nImages < MAX_IMAGES; ++i ) {
-    uint type     = istream.readUInt();
-    int  subtype  = istream.readInt();
-    int  position = istream.readInt();
+    uint type     = is.readUInt();
+    int  subtype  = is.readInt();
+    int  position = is.readInt();
 
     if( type != 0xfffd0002 ) {
       continue;
@@ -149,28 +149,28 @@ bool Cursor::load( const File& file, Mode mode_, int size )
       continue;
     }
 
-    int tablePos = istream.tell();
-    istream.seek( position );
+    int tablePos = is.tell();
+    is.seek( position );
 
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
 
     Image& image = images[nImages];
     ++nImages;
 
-    image.width       = istream.readInt();
-    image.height      = istream.readInt();
-    image.hotspotLeft = istream.readInt();
-    image.hotspotTop  = istream.readInt();
-    image.delay       = istream.readInt();
+    image.width       = is.readInt();
+    image.height      = is.readInt();
+    image.hotspotLeft = is.readInt();
+    image.hotspotTop  = is.readInt();
+    image.delay       = is.readInt();
     image.sdlCursor   = nullptr;
 
     int size = image.width * image.height * 4;
 
     char* pixels = new char[size];
-    istream.readChars( pixels, size );
+    is.readChars( pixels, size );
 
     if( mode == TEXTURE ) {
 #ifdef GL_ES_VERSION_2_0
@@ -213,7 +213,7 @@ bool Cursor::load( const File& file, Mode mode_, int size )
 
     delete[] pixels;
 
-    istream.seek( tablePos );
+    is.seek( tablePos );
   }
 
   return nImages != 0;

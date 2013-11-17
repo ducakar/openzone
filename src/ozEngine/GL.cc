@@ -169,25 +169,25 @@ void GL::checkError( const char* function, const char* file, int line )
 
 int GL::textureDataFromFile( const File& file, int bias, GLenum target )
 {
-  InputStream istream = file.inputStream( Endian::LITTLE );
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   // Implementation is based on specifications from
   // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
-  if( !istream.isAvailable() || !String::beginsWith( istream.begin(), "DDS " ) ) {
+  if( !is.isAvailable() || !String::beginsWith( is.begin(), "DDS " ) ) {
     return 0;
   }
 
-  istream.readInt();
-  istream.readInt();
+  is.readInt();
+  is.readInt();
 
-  int flags  = istream.readInt();
-  int height = istream.readInt();
-  int width  = istream.readInt();
-  int pitch  = istream.readInt();
+  int flags  = is.readInt();
+  int height = is.readInt();
+  int width  = is.readInt();
+  int pitch  = is.readInt();
 
-  istream.readInt();
+  is.readInt();
 
-  int nMipmaps = istream.readInt();
+  int nMipmaps = is.readInt();
 
   if( !( flags & DDSD_MIPMAPCOUNT_BIT ) ) {
     nMipmaps = 1;
@@ -196,15 +196,15 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
   hard_assert( nMipmaps >= 1 );
   bias = min( bias, nMipmaps - 1 );
 
-  istream.seek( 4 + 76 );
+  is.seek( 4 + 76 );
 
-  int pixelFlags = istream.readInt();
+  int pixelFlags = is.readInt();
   int blockSize  = 1;
 
   char formatFourCC[4];
-  istream.readChars( formatFourCC, 4 );
+  is.readChars( formatFourCC, 4 );
 
-  int    bpp = istream.readInt();
+  int    bpp = is.readInt();
   GLenum format;
   GLint  internalFormat;
 
@@ -241,7 +241,7 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
     return 0;
   }
 
-  istream.seek( 4 + 124 );
+  is.seek( 4 + 124 );
 
   int mipmapWidth  = width;
   int mipmapHeight = height;
@@ -265,7 +265,7 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
 
   for( int i = 0; i < nMipmaps; ++i ) {
     if( pixelFlags & DDPF_FOURCC ) {
-      const char* data = istream.forward( mipmapS3Size );
+      const char* data = is.forward( mipmapS3Size );
 
       if( i >= bias ) {
         glCompressedTexImage2D( target, i - bias, format, mipmapWidth, mipmapHeight, 0,
@@ -279,14 +279,14 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
       int   pixelSize   = bpp / 8;
 
       if( i < bias ) {
-        istream.forward( mipmapWidth * mipmapHeight * pixelSize );
+        is.forward( mipmapWidth * mipmapHeight * pixelSize );
       }
       else {
         for( int y = 0; y < mipmapHeight; ++y ) {
           char* pixels    = &data[y * mipmapPitch];
           int   lineWidth = mipmapWidth * pixelSize;
 
-          mCopy( pixels, istream.forward( lineWidth ), size_t( lineWidth ) );
+          mCopy( pixels, is.forward( lineWidth ), size_t( lineWidth ) );
 
 #ifdef GL_ES_VERSION_2_0
           // BGR(A) -> RGB(A).
@@ -308,26 +308,26 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
     mipmapS3Size = ( ( mipmapWidth + 3 ) / 4 ) * ( ( mipmapHeight + 3 ) / 4 ) * blockSize;
   }
 
-  hard_assert( !istream.isAvailable() );
+  hard_assert( !is.isAvailable() );
 
   return nMipmaps - bias;
 }
 
-static bool readShaderFile( const File& file, OutputStream* ostream, List<int>* fileOffsets )
+static bool readShaderFile( const File& file, OutputStream* os, List<int>* fileOffsets )
 {
   Buffer buffer = file.read();
   if( buffer.isEmpty() ) {
     return false;
   }
 
-  InputStream  istream = buffer.inputStream();
-  OutputStream cstream( 0 ); // Clean file contents, without #include directives.
+  InputStream  is = buffer.inputStream();
+  OutputStream cs( 0 ); // Clean file contents, without #include directives.
 
-  while( istream.isAvailable() ) {
-    String line = istream.readLine();
+  while( is.isAvailable() ) {
+    String line = is.readLine();
 
     if( !line.beginsWith( "#include" ) ) {
-      cstream.writeChars( line, line.length() );
+      cs.writeChars( line, line.length() );
     }
     else {
       // Insert included file BEFORE the current one (not at the position of #include directive).
@@ -339,25 +339,25 @@ static bool readShaderFile( const File& file, OutputStream* ostream, List<int>* 
         String fileName    = line.substring( startQuote + 1, endQuote );
         File   includeFile = dirName.isEmpty() ? fileName : dirName + "/" + fileName;
 
-        if( !readShaderFile( includeFile, ostream, fileOffsets ) ) {
+        if( !readShaderFile( includeFile, os, fileOffsets ) ) {
           return false;
         }
       }
     }
-    cstream.writeChar( '\n' );
+    cs.writeChar( '\n' );
   }
 
-  fileOffsets->add( ostream->tell() );
-  ostream->writeChars( cstream.begin(), cstream.tell() );
+  fileOffsets->add( os->tell() );
+  os->writeChars( cs.begin(), cs.tell() );
   return true;
 }
 
 bool GL::compileShaderFromFile( GLuint shader, const char* defines, const File& file )
 {
-  OutputStream ostream( 0 );
+  OutputStream os( 0 );
   List<int>    fileOffsets;
 
-  if( !readShaderFile( file, &ostream, &fileOffsets ) ) {
+  if( !readShaderFile( file, &os, &fileOffsets ) ) {
     return false;
   }
 
@@ -368,8 +368,8 @@ bool GL::compileShaderFromFile( GLuint shader, const char* defines, const File& 
   fileLengths.add( String::length( defines ) );
 
   for( int i = 0; i < fileOffsets.length(); ++i ) {
-    fileContents.add( ostream.begin() + fileOffsets[i] );
-    fileLengths.add( i == fileOffsets.length() - 1 ? ostream.tell() - fileOffsets[i] :
+    fileContents.add( os.begin() + fileOffsets[i] );
+    fileLengths.add( i == fileOffsets.length() - 1 ? os.tell() - fileOffsets[i] :
                                                      fileOffsets[i + 1] - fileOffsets[i] );
   }
 

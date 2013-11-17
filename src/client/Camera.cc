@@ -234,11 +234,11 @@ void Camera::reset()
   }
 }
 
-void Camera::read( InputStream* istream )
+void Camera::read( InputStream* is )
 {
-  rot        = istream->readQuat();
-  mag        = istream->readFloat();
-  p          = istream->readPoint();
+  rot        = is->readQuat();
+  mag        = is->readFloat();
+  p          = is->readPoint();
   velocity   = Vec3::ZERO;
 
   desiredRot = rot;
@@ -246,15 +246,15 @@ void Camera::read( InputStream* istream )
   desiredPos = p;
   oldPos     = p;
 
-  relH       = istream->readFloat();
-  relV       = istream->readFloat();
+  relH       = is->readFloat();
+  relV       = is->readFloat();
 
   rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotMat;
 
-  colour     = istream->readMat44();
-  baseColour = istream->readMat44();
-  nvColour   = istream->readMat44();
+  colour     = is->readMat44();
+  baseColour = is->readMat44();
+  nvColour   = is->readMat44();
 
   right      = rotMat.x.vec3();
   up         = rotMat.y.vec3();
@@ -264,28 +264,28 @@ void Camera::read( InputStream* istream )
   objectObj  = nullptr;
   entity     = -1;
   entityObj  = nullptr;
-  bot        = istream->readInt();
+  bot        = is->readInt();
   botObj     = static_cast<Bot*>( orbis.obj( bot ) );
-  vehicle    = istream->readInt();
+  vehicle    = is->readInt();
   vehicleObj = static_cast<Vehicle*>( orbis.obj( vehicle ) );
 
   hard_assert( switchableUnits.isEmpty() );
 
-  int nSwitchableUnits = istream->readInt();
+  int nSwitchableUnits = is->readInt();
   for( int i = 0; i < nSwitchableUnits; ++i ) {
-    switchableUnits.add( istream->readInt() );
+    switchableUnits.add( is->readInt() );
   }
 
-  allowReincarnation = istream->readBool();
-  nightVision        = istream->readBool();
-  isExternal         = istream->readBool();
+  allowReincarnation = is->readBool();
+  nightVision        = is->readBool();
+  isExternal         = is->readBool();
 
   state     = NONE;
-  newState  = State( istream->readInt() );
+  newState  = State( is->readInt() );
 
-  strategic.read( istream );
-  unit.read( istream );
-  cinematic.read( istream );
+  strategic.read( is );
+  unit.read( is );
+  cinematic.read( is );
 }
 
 void Camera::read( const JSON& json )
@@ -309,36 +309,36 @@ void Camera::read( const JSON& json )
   unit.read( json["unit"] );
 }
 
-void Camera::write( OutputStream* ostream ) const
+void Camera::write( OutputStream* os ) const
 {
-  ostream->writeQuat( desiredRot );
-  ostream->writeFloat( desiredMag );
-  ostream->writePoint( desiredPos );
+  os->writeQuat( desiredRot );
+  os->writeFloat( desiredMag );
+  os->writePoint( desiredPos );
 
-  ostream->writeFloat( relH );
-  ostream->writeFloat( relV );
+  os->writeFloat( relH );
+  os->writeFloat( relV );
 
-  ostream->writeMat44( colour );
-  ostream->writeMat44( baseColour );
-  ostream->writeMat44( nvColour );
+  os->writeMat44( colour );
+  os->writeMat44( baseColour );
+  os->writeMat44( nvColour );
 
-  ostream->writeInt( bot );
-  ostream->writeInt( vehicle );
+  os->writeInt( bot );
+  os->writeInt( vehicle );
 
-  ostream->writeInt( switchableUnits.length() );
+  os->writeInt( switchableUnits.length() );
   for( int i = 0; i < switchableUnits.length(); ++i ) {
-    ostream->writeInt( switchableUnits[i] );
+    os->writeInt( switchableUnits[i] );
   }
 
-  ostream->writeBool( allowReincarnation );
-  ostream->writeBool( nightVision );
-  ostream->writeBool( isExternal );
+  os->writeBool( allowReincarnation );
+  os->writeBool( nightVision );
+  os->writeBool( isExternal );
 
-  ostream->writeInt( state );
+  os->writeInt( state );
 
-  strategic.write( ostream );
-  unit.write( ostream );
-  cinematic.write( ostream );
+  strategic.write( os );
+  unit.write( os );
+  cinematic.write( os );
 }
 
 JSON Camera::write() const

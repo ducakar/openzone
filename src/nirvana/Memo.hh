@@ -38,7 +38,7 @@ class Memo : public Device
 
     static Pool<Memo, 1024> pool;
 
-    static Device* create( int id, InputStream* istream );
+    static Device* create( int id, InputStream* is );
 
     explicit Memo( const char* text );
 
@@ -46,7 +46,7 @@ class Memo : public Device
 
     const char* getMemo() const override;
 
-    void write( OutputStream* ostream ) const override;
+    void write( OutputStream* os ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

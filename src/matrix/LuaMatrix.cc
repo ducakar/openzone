@@ -85,24 +85,24 @@ void LuaMatrix::unregisterObject( int index )
   l_pop( 1 );
 }
 
-void LuaMatrix::read( InputStream* istream )
+void LuaMatrix::read( InputStream* is )
 {
   hard_assert( l_gettop() == 1 );
   hard_assert( ( l_pushnil(), true ) );
   hard_assert( !l_next( 1 ) );
 
-  int index = istream->readInt();
+  int index = is->readInt();
 
   while( index >= 0 ) {
-    readValue( istream );
+    readValue( is );
 
     l_rawseti( 1, index );
 
-    index = istream->readInt();
+    index = is->readInt();
   }
 }
 
-void LuaMatrix::write( OutputStream* ostream )
+void LuaMatrix::write( OutputStream* os )
 {
   hard_assert( l_gettop() == 1 );
 
@@ -111,13 +111,13 @@ void LuaMatrix::write( OutputStream* ostream )
     hard_assert( l_type( -2 ) == LUA_TNUMBER );
     hard_assert( l_type( -1 ) == LUA_TTABLE );
 
-    ostream->writeInt( l_toint( -2 ) );
-    writeValue( ostream );
+    os->writeInt( l_toint( -2 ) );
+    writeValue( os );
 
     l_pop( 1 );
   }
 
-  ostream->writeInt( -1 );
+  os->writeInt( -1 );
 }
 
 void LuaMatrix::init()

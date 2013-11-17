@@ -110,6 +110,16 @@ bool Buffer::operator!=( const Buffer& b ) const
   return size != b.size || mCompare( data, b.data, size_t( size ) ) != 0;
 }
 
+InputStream Buffer::inputStream( Endian::Order order ) const
+{
+  return InputStream( data, data + size, order );
+}
+
+OutputStream Buffer::outputStream( Endian::Order order )
+{
+  return OutputStream( data, data + size, order );
+}
+
 String Buffer::toString() const
 {
   char*  buffer;
@@ -225,16 +235,6 @@ void Buffer::deallocate()
 
   data = nullptr;
   size = 0;
-}
-
-InputStream Buffer::inputStream( Endian::Order order ) const
-{
-  return InputStream( data, data + size, order );
-}
-
-OutputStream Buffer::outputStream( Endian::Order order )
-{
-  return OutputStream( data, data + size, order );
 }
 
 }

@@ -30,23 +30,21 @@ namespace oz
 namespace client
 {
 
-PartClass::PartClass( InputStream* istream ) :
-  flags( 0 )
+bool PartClass::isLoaded() const
 {
-  nParts         = istream->readInt();
-  velocity       = istream->readVec3();
-  velocitySpread = istream->readFloat();
-  texId          = liber.textureIndex( istream->readString() );
-  endTexId       = liber.textureIndex( istream->readString() );
+  return false;
 }
 
-PartClass::~PartClass()
-{
-  if( flags & LOADED_BIT ) {
-    context.releaseTexture( texId );
-    context.releaseTexture( endTexId );
-  }
-}
+// void PartClass::init( InputStream* is )
+// {
+//   flags          = 0;
+//
+//   nParts         = is->readInt();
+//   velocity       = is->readVec3();
+//   velocitySpread = is->readFloat();
+//   texId          = liber.textureIndex( is->readString() );
+//   endTexId       = liber.textureIndex( is->readString() );
+// }
 
 void PartClass::load()
 {
@@ -54,6 +52,14 @@ void PartClass::load()
   context.requestTexture( endTexId );
 
   flags |= LOADED_BIT;
+}
+
+void PartClass::unload()
+{
+  if( flags & LOADED_BIT ) {
+    context.releaseTexture( texId );
+    context.releaseTexture( endTexId );
+  }
 }
 
 }

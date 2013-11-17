@@ -31,9 +31,9 @@ namespace oz
 int  LuaCommon::randomSeed       = 0;
 bool LuaCommon::isRandomSeedTime = true;
 
-bool LuaCommon::readValue( InputStream* istream )
+bool LuaCommon::readValue( InputStream* is )
 {
-  char ch = istream->readChar();
+  char ch = is->readChar();
 
   switch( ch ) {
     case 'N': {
@@ -49,18 +49,18 @@ bool LuaCommon::readValue( InputStream* istream )
       return true;
     }
     case 'n': {
-      l_pushdouble( istream->readDouble() );
+      l_pushdouble( is->readDouble() );
       return true;
     }
     case 's': {
-      l_pushstring( istream->readString() );
+      l_pushstring( is->readString() );
       return true;
     }
     case '[': {
       l_newtable();
 
-      while( readValue( istream ) ) { // key
-        readValue( istream ); // value
+      while( readValue( is ) ) { // key
+        readValue( is ); // value
 
         l_rawset( -3 );
       }
@@ -120,46 +120,46 @@ void LuaCommon::readValue( const JSON& json )
   }
 }
 
-void LuaCommon::writeValue( OutputStream* ostream )
+void LuaCommon::writeValue( OutputStream* os )
 {
   int type = l_type( -1 );
 
   switch( type ) {
     case LUA_TNIL: {
-      ostream->writeChar( 'N' );
+      os->writeChar( 'N' );
       break;
     }
     case LUA_TBOOLEAN: {
-      ostream->writeChar( l_tobool( -1 ) ? 'T' : 'F' );
+      os->writeChar( l_tobool( -1 ) ? 'T' : 'F' );
       break;
     }
     case LUA_TNUMBER: {
-      ostream->writeChar( 'n' );
-      ostream->writeDouble( l_todouble( -1 ) );
+      os->writeChar( 'n' );
+      os->writeDouble( l_todouble( -1 ) );
       break;
     }
     case LUA_TSTRING: {
-      ostream->writeChar( 's' );
-      ostream->writeString( l_tostring( -1 ) );
+      os->writeChar( 's' );
+      os->writeString( l_tostring( -1 ) );
       break;
     }
     case LUA_TTABLE: {
-      ostream->writeChar( '[' );
+      os->writeChar( '[' );
 
       l_pushnil();
       while( l_next( -2 ) != 0 ) {
         // key
         l_pushvalue( -2 );
-        writeValue( ostream );
+        writeValue( os );
         l_pop( 1 );
 
         // value
-        writeValue( ostream );
+        writeValue( os );
 
         l_pop( 1 );
       }
 
-      ostream->writeChar( ']' );
+      os->writeChar( ']' );
       break;
     }
     default: {

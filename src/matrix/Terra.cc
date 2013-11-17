@@ -100,19 +100,19 @@ void Terra::init()
   }
 }
 
-void Terra::read( InputStream* istream )
+void Terra::read( InputStream* is )
 {
-  const char* name = istream->readString();
+  const char* name = is->readString();
   int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
 
   load( id );
 }
 
-void Terra::write( OutputStream* ostream ) const
+void Terra::write( OutputStream* os ) const
 {
   const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
 
-  ostream->writeString( name );
+  os->writeString( name );
 }
 
 void Terra::read( const JSON& json )

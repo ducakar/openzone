@@ -297,7 +297,7 @@ class File
      *
      * @return true iff read operation succeeded (it is not necessary the whole file was read).
      */
-    bool read( OutputStream* ostream ) const;
+    bool read( OutputStream* os ) const;
 
     /**
      * Read file into a buffer.

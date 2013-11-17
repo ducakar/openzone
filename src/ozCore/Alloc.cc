@@ -241,18 +241,16 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 
 #ifndef OZ_DISABLE_ALLOC
 
-using namespace oz;
-
 OZ_WEAK
 void* operator new ( size_t size )
 {
-  return allocate( OBJECT, size );
+  return oz::allocate( oz::OBJECT, size );
 }
 
 OZ_WEAK
 void* operator new[] ( size_t size )
 {
-  return allocate( ARRAY, size );
+  return oz::allocate( oz::ARRAY, size );
 }
 
 OZ_WEAK
@@ -261,7 +259,7 @@ void operator delete ( void* ptr ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( OBJECT, ptr );
+  oz::deallocate( oz::OBJECT, ptr );
 }
 
 OZ_WEAK
@@ -270,19 +268,19 @@ void operator delete[] ( void* ptr ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( ARRAY, ptr );
+  oz::deallocate( oz::ARRAY, ptr );
 }
 
 OZ_WEAK
 void* operator new ( size_t size, const std::nothrow_t& ) noexcept
 {
-  return allocate( OBJECT, size );
+  return oz::allocate( oz::OBJECT, size );
 }
 
 OZ_WEAK
 void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
 {
-  return allocate( ARRAY, size );
+  return oz::allocate( oz::ARRAY, size );
 }
 
 OZ_WEAK
@@ -291,7 +289,7 @@ void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( OBJECT, ptr );
+  oz::deallocate( oz::OBJECT, ptr );
 }
 
 OZ_WEAK
@@ -300,7 +298,7 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == nullptr ) {
     return;
   }
-  deallocate( ARRAY, ptr );
+  oz::deallocate( oz::ARRAY, ptr );
 }
 
 #endif

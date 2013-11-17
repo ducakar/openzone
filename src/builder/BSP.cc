@@ -98,7 +98,7 @@ void BSP::load()
   int version = is.readInt();
 
   if( id[0] != 'I' || id[1] != 'B' || id[2] != 'S' || id[3] != 'P' || version != 46 ) {
-    OZ_ERROR( "Wrong Quake 3 BSP format" );
+    OZ_ERROR( "Not a Quake 3 BSP format" );
   }
 
   DArray<QBSPLump> lumps( QBSPLump::MAX );
@@ -976,13 +976,9 @@ void BSP::saveMatrix()
 
   Log::print( "Writing BSP structure to '%s' ...", destFile.path().cstr() );
 
-  Set<String> usedModels;
   Set<String> usedSounds;
 
   foreach( model, models.citer() ) {
-    if( !model->modelName.isEmpty() ) {
-      usedModels.include( model->modelName );
-    }
     if( !model->openSound.isEmpty() ) {
       usedSounds.include( model->openSound );
     }
@@ -1010,13 +1006,6 @@ void BSP::saveMatrix()
 
   os.writeString( fragPool );
   os.writeInt( nFrags );
-
-  os.writeInt( usedModels.length() );
-  foreach( model, usedModels.citer() ) {
-    os.writeString( *model );
-  }
-  usedModels.clear();
-  usedModels.deallocate();
 
   os.writeInt( usedSounds.length() );
   foreach( sound, usedSounds.citer() ) {
@@ -1154,20 +1143,20 @@ void BSP::saveClient()
       compiler.begin( Compiler::TRIANGLES );
 
       for( int k = 0; k < face.nIndices; ++k ) {
-        const Vertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+        const client::Vertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
-        compiler.texCoord( vertex.texCoord );
-        compiler.normal( vertex.normal );
-        compiler.vertex( vertex.pos );
+        compiler.texCoord( v.texCoord );
+        compiler.normal( v.normal );
+        compiler.vertex( v.pos );
       }
 
       if( textures[face.texture].type & QBSP_WATER_TYPE_BIT ) {
         for( int k = face.nIndices - 1; k >= 0; --k ) {
-          const Vertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+          const client::Vertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
-          compiler.texCoord( vertex.texCoord );
-          compiler.normal( -vertex.normal[0], -vertex.normal[1], -vertex.normal[2] );
-          compiler.vertex( vertex.pos );
+          compiler.texCoord( v.texCoord );
+          compiler.normal( -v.normal[0], -v.normal[1], -v.normal[2] );
+          compiler.vertex( v.pos );
         }
       }
 

@@ -82,20 +82,20 @@ void Nirvana::update()
   techGraph.update();
 }
 
-void Nirvana::read( InputStream* istream )
+void Nirvana::read( InputStream* is )
 {
   Log::print( "Reading Nirvana ..." );
 
-  luaNirvana.read( istream );
+  luaNirvana.read( is );
 
   String typeName;
 
-  int nDevices = istream->readInt();
-  int nMinds   = istream->readInt();
+  int nDevices = is->readInt();
+  int nMinds   = is->readInt();
 
   for( int i = 0; i < nDevices; ++i ) {
-    int index   = istream->readInt();
-    String type = istream->readString();
+    int index   = is->readInt();
+    String type = is->readString();
 
     Device::CreateFunc* const* func = deviceClasses.find( type );
 
@@ -103,40 +103,40 @@ void Nirvana::read( InputStream* istream )
       OZ_ERROR( "Invalid device type '%s'", type.cstr() );
     }
 
-    devices.add( index, ( *func )( index, istream ) );
+    devices.add( index, ( *func )( index, is ) );
   }
   for( int i = 0; i < nMinds; ++i ) {
-    int index = istream->readInt();
+    int index = is->readInt();
 
-    minds.add( index, Mind( index, istream ) );
+    minds.add( index, Mind( index, is ) );
   }
 
-  questList.read( istream );
-  techGraph.read( istream );
+  questList.read( is );
+  techGraph.read( is );
 
   Log::printEnd( " OK" );
 }
 
-void Nirvana::write( OutputStream* ostream ) const
+void Nirvana::write( OutputStream* os ) const
 {
-  luaNirvana.write( ostream );
+  luaNirvana.write( os );
 
-  ostream->writeInt( devices.length() );
-  ostream->writeInt( minds.length() );
+  os->writeInt( devices.length() );
+  os->writeInt( minds.length() );
 
   foreach( device, devices.citer() ) {
-    ostream->writeInt( device->key );
-    ostream->writeString( device->value->type() );
+    os->writeInt( device->key );
+    os->writeString( device->value->type() );
 
-    device->value->write( ostream );
+    device->value->write( os );
   }
   foreach( mind, minds.citer() ) {
-    ostream->writeInt( mind->value.bot );
-    mind->value.write( ostream );
+    os->writeInt( mind->value.bot );
+    mind->value.write( os );
   }
 
-  questList.write( ostream );
-  techGraph.write( ostream );
+  questList.write( os );
+  techGraph.write( os );
 }
 
 void Nirvana::load()

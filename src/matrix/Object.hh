@@ -339,14 +339,14 @@ class Object : public AABB
   public:
 
     explicit Object( const ObjectClass* clazz, int index, const Point& p, Heading heading );
-    explicit Object( const ObjectClass* clazz, InputStream* istream );
+    explicit Object( const ObjectClass* clazz, InputStream* is );
     explicit Object( const ObjectClass* clazz, const JSON& json );
 
-    virtual void write( OutputStream* ostream ) const;
+    virtual void write( OutputStream* os ) const;
     virtual JSON write() const;
 
-    virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( OutputStream* ostream ) const;
+    virtual void readUpdate( InputStream* is );
+    virtual void writeUpdate( OutputStream* os ) const;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

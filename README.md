@@ -5,14 +5,18 @@ OpenZone
 
 Simple cross-platform FPS/RTS game engine. http://ducakar.github.io/openzone/.
 
-This README file is intended for developers only. See `doc/README.html` if you are an end-user.
+Running
+-------
+
+For standalone packages, run `bin/<platform>/openzone` executable to start the game, where
+`<platform>` is your operation system and processor combination.
 
 Building
 --------
 
 Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
 Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
-supported platforms/toolchains. Only GCC >= 4.4 and LLVM/Clang >= 3.1 compilers are supported.
+supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.1 compilers are supported.
 
 To build OpenZone from source, development packages for the following libraries are required:
 

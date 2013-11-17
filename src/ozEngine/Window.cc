@@ -63,9 +63,9 @@ static Thread          screenshotThread;
 
 static void writeFunc( png_struct* png, ubyte* data, size_t size )
 {
-  OutputStream* ostream = static_cast<OutputStream*>( png_get_io_ptr( png ) );
+  OutputStream* os = static_cast<OutputStream*>( png_get_io_ptr( png ) );
 
-  ostream->writeChars( reinterpret_cast<const char*>( data ), int( size ) );
+  os->writeChars( reinterpret_cast<const char*>( data ), int( size ) );
 }
 
 static void flushFunc( png_struct* )
@@ -75,7 +75,7 @@ static void screenshotMain( void* data )
 {
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>( data );
 
-  OutputStream ostream( 0 );
+  OutputStream os( 0 );
 
   png_struct* png     = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
   png_info*   pngInfo = png_create_info_struct( png );
@@ -83,7 +83,7 @@ static void screenshotMain( void* data )
   png_set_IHDR( png, pngInfo, uint( info->width ), uint( info->height ), 8, PNG_COLOR_TYPE_RGB,
                 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE );
 
-  png_set_write_fn( png, &ostream, writeFunc, flushFunc );
+  png_set_write_fn( png, &os, writeFunc, flushFunc );
   png_write_info( png, pngInfo );
 
   int pitch = ( ( info->width * 3 + 3 ) / 4 ) * 4;
@@ -97,7 +97,7 @@ static void screenshotMain( void* data )
   png_write_end( png, pngInfo );
   png_destroy_write_struct( &png, &pngInfo );
 
-  info->file.write( ostream.begin(), ostream.tell() );
+  info->file.write( os.begin(), os.tell() );
 
   delete[] info->pixels;
   delete info;

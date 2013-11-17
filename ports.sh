@@ -16,10 +16,7 @@
 #
 
 platforms=(
-#   NaCl-x86_64
-#   NaCl-i686
-#   NaCl-ARM
-#   PNaCl
+  PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a
@@ -33,9 +30,7 @@ projectDir=`pwd`
 topDir="$projectDir/ports"
 originalPath="$PATH"
 
-nacl86Prefix="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
-naclARMPrefix="$NACL_SDK_ROOT/toolchain/linux_arm_newlib"
-pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
+pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_pnacl"
 
 ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.7/prebuilt/linux-x86_64"
 ndkX86Platform="$ANDROID_NDK/platforms/android-14/arch-x86"
@@ -59,90 +54,6 @@ function msg()
   echo -ne "\e[0m"
 }
 
-function setup_nacl_x86_64()
-{
-  platform="NaCl-x86_64"                                  # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="x86_64-nacl"                                   # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$nacl86Prefix"                               # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="-isystem $NACL_SDK_ROOT/include -isystem $buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math -msse3"
-  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
-
-function setup_nacl_i686()
-{
-  platform="NaCl-i686"                                    # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="i686-nacl"                                     # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$nacl86Prefix"                               # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="-isystem $NACL_SDK_ROOT/include -isystem $buildDir/usr/include"
-  export CFLAGS="-O3 -ffast-math -msse3 -mfpmath=sse -fomit-frame-pointer"
-  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
-
-function setup_nacl_ARM()
-{
-  platform="NaCl-ARM"                                     # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="arm-nacl"                                      # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$naclARMPrefix"                              # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="-isystem $NACL_SDK_ROOT/include -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast"
-  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
-
 function setup_pnacl()
 {
   platform="PNaCl"                                        # Platform name.
@@ -153,17 +64,17 @@ function setup_pnacl()
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export -n CPP
-  export CC="$toolsroot/bin/$triplet-clang"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
+  export CC="$toolsroot/bin64/$triplet-clang"
+  export AR="$toolsroot/bin64/$triplet-ar"
+  export RANLIB="$toolsroot/bin64/$triplet-ranlib"
+  export STRIP="$toolsroot/bin64/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
+  export PATH="$toolsroot/bin64:$originalPath"
 
-  export CPPFLAGS="-I$NACL_SDK_ROOT/include -I$buildDir/usr/include"
+  export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/include"
   export CFLAGS="-O4 -ffast-math"
-  export LDFLAGS="-L$buildDir/usr/lib -lnosys"
+  export LDFLAGS="-L$buildDir/usr/lib -L$NACL_SDK_ROOT/lib/pnacl/Release -lnosys"
 
   for p in ${platforms[@]}; do
     [[ $p == $platform ]] && return 0
@@ -374,7 +285,7 @@ function fetch()
   download 'http://www.libsdl.org/release/SDL-1.2.15.tar.gz'
 
   # SDL2
-  download 'http://www.libsdl.org/release/SDL2-2.0.0.tar.gz'
+  download 'http://www.libsdl.org/release/SDL2-2.0.1.tar.gz'
 
   # SDL_ttf
   download 'http://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-2.0.11.tar.gz'
@@ -446,7 +357,11 @@ function build_zlib()
 {
   prepare zlib-1.2.8 zlib-1.2.8.tar.xz || return
 
-  CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts" ./configure --prefix=/usr --static
+  if [[ $platform == PNaCl ]]; then
+    CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts" ./configure --prefix=/usr --static
+  else
+    ./configure --prefix=/usr --static
+  fi
 
   make -j4 || return 1
   make install DESTDIR="$buildDir"
@@ -533,22 +448,20 @@ function build_sdl()
   applyPatches SDL-1.2.15.patch
 
   ./autogen.sh
-  case $triplet in
-    *nacl)
-      # Assembly causes NaCl validity check to fail when .nexe is loading.
-      autotoolsBuild --disable-pthread-sem --disable-assembly
-      ;;
-    *)
-      autotoolsBuild
-      ;;
-  esac
+
+  if [[ $platform == PNaCl ]]; then
+    CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/ports/include" autotoolsBuild \
+      --disable-pthread-sem --disable-assembly
+  else
+    autotoolsBuild
+  fi
 
   finish
 }
 
 function build_sdl2()
 {
-  prepare SDL2-2.0.0 SDL2-2.0.0.tar.gz || return
+  prepare SDL2-2.0.1 SDL2-2.0.1.tar.gz || return
   applyPatches SDL2-2.0.0.patch
 
   buildDir="$buildDir" "$projectDir/etc/SDL2-CMakeLists-gen.sh"
@@ -586,16 +499,10 @@ function build_sdl2_ttf()
 function build()
 {
   # zlib
-  setup_nacl_x86_64 && build_zlib
-  setup_nacl_i686   && build_zlib
-  setup_nacl_ARM    && build_zlib
   setup_pnacl       && build_zlib
   setup_emscripten  && build_zlib
 
   # libpng
-  setup_nacl_x86_64 && build_libpng
-  setup_nacl_i686   && build_libpng
-  setup_nacl_ARM    && build_libpng
   setup_pnacl       && build_libpng
   setup_ndk_i686    && build_libpng
   setup_ndk_ARM     && build_libpng
@@ -604,9 +511,6 @@ function build()
   setup_emscripten  && build_libpng
 
   # libogg
-  setup_nacl_x86_64 && build_libogg
-  setup_nacl_i686   && build_libogg
-  setup_nacl_ARM    && build_libogg
   setup_pnacl       && build_libogg
   setup_ndk_i686    && build_libogg
   setup_ndk_ARM     && build_libogg
@@ -615,9 +519,6 @@ function build()
   setup_emscripten  && build_libogg
 
   # libvorbis
-  setup_nacl_x86_64 && build_libvorbis
-  setup_nacl_i686   && build_libvorbis
-  setup_nacl_ARM    && build_libvorbis
   setup_pnacl       && build_libvorbis
   setup_ndk_i686    && build_libvorbis
   setup_ndk_ARM     && build_libvorbis
@@ -626,9 +527,6 @@ function build()
   setup_emscripten  && build_libvorbis
 
   # FreeType
-  setup_nacl_x86_64 && build_freetype
-  setup_nacl_i686   && build_freetype
-  setup_nacl_ARM    && build_freetype
   setup_pnacl       && build_freetype
   setup_ndk_i686    && build_freetype
   setup_ndk_ARM     && build_freetype
@@ -637,9 +535,6 @@ function build()
   setup_emscripten  && build_freetype
 
   # PhysicsFS
-  setup_nacl_x86_64 && build_physfs
-  setup_nacl_i686   && build_physfs
-  setup_nacl_ARM    && build_physfs
   setup_pnacl       && build_physfs
   setup_ndk_i686    && build_physfs
   setup_ndk_ARM     && build_physfs
@@ -648,9 +543,6 @@ function build()
   setup_emscripten  && build_physfs
 
   # Lua
-  setup_nacl_x86_64 && build_lua
-  setup_nacl_i686   && build_lua
-  setup_nacl_ARM    && build_lua
   setup_pnacl       && build_lua
   setup_ndk_i686    && build_lua
   setup_ndk_ARM     && build_lua
@@ -659,9 +551,6 @@ function build()
   setup_emscripten  && build_lua
 
   # OpenAL Soft
-  setup_nacl_x86_64 && build_openal
-  setup_nacl_i686   && build_openal
-  setup_nacl_ARM    && build_openal
   setup_pnacl       && build_openal
   setup_ndk_i686    && build_openal
   setup_ndk_ARM     && build_openal
@@ -669,9 +558,6 @@ function build()
   setup_ndk_MIPS    && build_openal
 
   # SDL
-  setup_nacl_x86_64 && build_sdl
-  setup_nacl_i686   && build_sdl
-  setup_nacl_ARM    && build_sdl
   setup_pnacl       && build_sdl
   setup_ndk_i686    && build_sdl2
   setup_ndk_ARM     && build_sdl2
@@ -679,9 +565,6 @@ function build()
   setup_ndk_MIPS    && build_sdl2
 
   # SDL_ttf
-  setup_nacl_x86_64 && build_sdl_ttf
-  setup_nacl_i686   && build_sdl_ttf
-  setup_nacl_ARM    && build_sdl_ttf
   setup_pnacl       && build_sdl_ttf
   setup_ndk_i686    && build_sdl2_ttf
   setup_ndk_ARM     && build_sdl2_ttf

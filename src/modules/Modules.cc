@@ -40,17 +40,17 @@ void Modules::update()
   }
 }
 
-void Modules::read( InputStream* istream )
+void Modules::read( InputStream* is )
 {
   for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->read( istream );
+    modules[i]->read( is );
   }
 }
 
-void Modules::write( OutputStream* ostream ) const
+void Modules::write( OutputStream* os ) const
 {
   for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->write( ostream );
+    modules[i]->write( os );
   }
 }
 

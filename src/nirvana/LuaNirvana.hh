@@ -40,8 +40,8 @@ class LuaNirvana : public LuaCommon
     void registerMind( int botIndex );
     void unregisterMind( int botIndex );
 
-    void read( InputStream* istream );
-    void write( OutputStream* ostream );
+    void read( InputStream* is );
+    void write( OutputStream* os );
 
     void init();
     void destroy();

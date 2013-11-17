@@ -273,7 +273,7 @@ void Context::releaseSpeakSource()
 
 Context::Context() :
   imagoClasses( nullptr ), audioClasses( nullptr ), textures( nullptr ), sounds( nullptr ),
-  bsps( nullptr ), smms( nullptr )
+  bsps( nullptr ), models( nullptr )
 {}
 
 Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
@@ -498,17 +498,19 @@ void Context::playBSP( const Struct* str )
   resource.handle->play( str );
 }
 
+SMM* Context::getModel( int id )
+{
+  Resource<SMM*>& resource = models[id];
+
+  return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
+}
+
 SMM* Context::requestModel( int id )
 {
-  Resource<SMM*>& resource = smms[id];
+  Resource<SMM*>& resource = models[id];
 
   if( resource.nUsers < 0 ) {
-    if( liber.models[id].path.endsWith( "MD2" ) ) {
-      resource.handle = MD2::create( id );
-    }
-    else {
-      resource.handle = SMM::create( id );
-    }
+    resource.handle = SMM::create( id );
     resource.nUsers = 1;
   }
 
@@ -518,9 +520,38 @@ SMM* Context::requestModel( int id )
 
 void Context::releaseModel( int id )
 {
-  Resource<SMM*>& resource = smms[id];
+  Resource<SMM*>& resource = models[id];
 
   hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
+
+  --resource.nUsers;
+}
+
+PartClass* Context::getPartClass( int id )
+{
+  Resource<PartClass>& resource = partClasses[id];
+
+  return &resource.handle;
+}
+
+PartClass* Context::requestPartClass( int id )
+{
+  Resource<PartClass>& resource = partClasses[id];
+
+  if( resource.nUsers < 0 ) {
+//     resource.handle.preload();
+    resource.nUsers = 1;
+  }
+
+  ++resource.nUsers;
+  return &resource.handle;
+}
+
+void Context::releasePartClass( int id )
+{
+  Resource<PartClass>& resource = partClasses[id];
+
+  hard_assert( resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -577,10 +608,13 @@ void Context::updateLoad()
     nFragPools += fragPools[i] != nullptr;
   }
 
+  maxFragPools          = max( maxFragPools,          nFragPools );
+
   maxImagines           = max( maxImagines,           imagines.length() );
   maxAudios             = max( maxAudios,             audios.length() );
   maxSources            = max( maxSources,            Source::pool.length() );
   maxContSources        = max( maxContSources,        contSources.length() );
+  maxPartGens           = max( maxPartGens,           partGens.length() );
 
   maxSMMImagines        = max( maxSMMImagines,        SMMImago::pool.length() );
   maxSMMVehicleImagines = max( maxSMMVehicleImagines, SMMVehicleImago::pool.length() );
@@ -591,8 +625,6 @@ void Context::updateLoad()
   maxBasicAudios        = max( maxBasicAudios,        BasicAudio::pool.length() );
   maxBotAudios          = max( maxBotAudios,          BotAudio::pool.length() );
   maxVehicleAudios      = max( maxVehicleAudios,      VehicleAudio::pool.length() );
-
-  maxFragPools          = max( maxFragPools,          nFragPools );
 }
 
 void Context::load()
@@ -633,19 +665,20 @@ void Context::unload()
 
   Log::println( "Peak instances {" );
   Log::indent();
-  Log::println( "%6d  imago objects",          maxImagines );
-  Log::println( "%6d  audio objects",          maxAudios );
-  Log::println( "%6d  non-continuous sources", maxSources );
-  Log::println( "%6d  continuous sources",     maxContSources );
-  Log::println( "%6d  SMM imagines",           maxSMMImagines );
-  Log::println( "%6d  SMMVehicle imagines",    maxSMMVehicleImagines );
-  Log::println( "%6d  Explosion imagines",     maxExplosionImagines );
-  Log::println( "%6d  MD2 imagines",           maxMD2Imagines );
-  Log::println( "%6d  MD2Weapon imagines",     maxMD2WeaponImagines );
-  Log::println( "%6d  Basic audios",           maxBasicAudios );
-  Log::println( "%6d  Bot audios",             maxBotAudios );
-  Log::println( "%6d  Vehicle audios",         maxVehicleAudios );
-  Log::println( "%6d  fragment pools",         maxFragPools );
+  Log::println( "%6d  fragment pools",      maxFragPools );
+  Log::println( "%6d  imago objects",       maxImagines );
+  Log::println( "%6d  audio objects",       maxAudios );
+  Log::println( "%6d  one-time sources",    maxSources );
+  Log::println( "%6d  continuous sources",  maxContSources );
+  Log::println( "%6d  particle generators", maxPartGens );
+  Log::println( "%6d  SMM imagines",        maxSMMImagines );
+  Log::println( "%6d  SMMVehicle imagines", maxSMMVehicleImagines );
+  Log::println( "%6d  Explosion imagines",  maxExplosionImagines );
+  Log::println( "%6d  MD2 imagines",        maxMD2Imagines );
+  Log::println( "%6d  MD2Weapon imagines",  maxMD2WeaponImagines );
+  Log::println( "%6d  Basic audios",        maxBasicAudios );
+  Log::println( "%6d  Bot audios",          maxBotAudios );
+  Log::println( "%6d  Vehicle audios",      maxVehicleAudios );
   Log::unindent();
   Log::println( "}" );
 
@@ -688,9 +721,9 @@ void Context::unload()
     bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < liber.models.length(); ++i ) {
-    delete smms[i].handle;
-    smms[i].handle = nullptr;
-    smms[i].nUsers = -1;
+    delete models[i].handle;
+    models[i].handle = nullptr;
+    models[i].nUsers = -1;
   }
 
   SMMImago::pool.free();
@@ -771,18 +804,20 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-  int nTextures = liber.textures.length();
-  int nSounds   = liber.sounds.length();
-  int nBSPs     = liber.nBSPs;
-  int nModels   = liber.models.length();
+  int nTextures    = liber.textures.length();
+  int nSounds      = liber.sounds.length();
+  int nBSPs        = liber.nBSPs;
+  int nModels      = liber.models.length();
+  int nPartClasses = liber.parts.length();
 
-  textures  = nTextures == 0 ? nullptr : new Resource<Texture>[nTextures];
-  sounds    = nSounds   == 0 ? nullptr : new Resource<uint>[nSounds];
+  textures    = nTextures    == 0 ? nullptr : new Resource<Texture>[nTextures];
+  sounds      = nSounds      == 0 ? nullptr : new Resource<uint>[nSounds];
 
-  bsps      = nBSPs     == 0 ? nullptr : new Resource<BSP*>[nBSPs];
-  bspAudios = nBSPs     == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
+  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSP*>[nBSPs];
+  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
 
-  smms      = nModels   == 0 ? nullptr : new Resource<SMM*>[nModels];
+  models      = nModels      == 0 ? nullptr : new Resource<SMM*>[nModels];
+  partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses];
 
   for( int i = 0; i < nTextures; ++i ) {
     textures[i].nUsers = -1;
@@ -798,8 +833,12 @@ void Context::init()
     bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < nModels; ++i ) {
-    smms[i].handle = nullptr;
-    smms[i].nUsers = -1;
+    models[i].handle = nullptr;
+    models[i].nUsers = -1;
+  }
+  for( int i = 0; i < nPartClasses; ++i ) {
+    partClasses[i].handle.unload();
+    partClasses[i].nUsers = -1;
   }
 
   speakSource.mutex.init();
@@ -823,7 +862,8 @@ void Context::destroy()
   delete[] bsps;
   delete[] bspAudios;
 
-  delete[] smms;
+  delete[] models;
+  delete[] partClasses;
 
   imagoClasses = nullptr;
   audioClasses = nullptr;
@@ -835,7 +875,8 @@ void Context::destroy()
   bsps         = nullptr;
   bspAudios    = nullptr;
 
-  smms         = nullptr;
+  models       = nullptr;
+  partClasses  = nullptr;
 
   Log::printEnd( " OK" );
 }

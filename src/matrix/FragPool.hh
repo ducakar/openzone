@@ -60,7 +60,7 @@ class FragPool
     explicit FragPool( InputStream* is, const char* name, int id );
 
     Frag* create( int index, const Point& pos, const Vec3& velocity ) const;
-    Frag* create( InputStream* istream ) const;
+    Frag* create( InputStream* is ) const;
 
 };
 

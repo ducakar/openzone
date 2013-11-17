@@ -18,43 +18,38 @@
  */
 
 /**
- * @file client/LuaClient.hh
- *
- * Lua scripting engine for client
+ * @file client/PartGen.cc
  */
 
-#pragma once
+#include <client/PartGen.hh>
 
-#include <common/LuaCommon.hh>
-#include <client/common.hh>
+#include <client/Shader.hh>
+#include <client/Shape.hh>
+#include <client/Camera.hh>
 
 namespace oz
 {
 namespace client
 {
 
-class LuaClient : public LuaCommon
+struct PartGen::Part
 {
-  private:
-
-    void staticCall( const char* functionName );
-
-  public:
-
-    float staticExec( const char* code );
-
-    void update();
-    void create( const char* missionPath );
-
-    void read( InputStream* is );
-    void write( OutputStream* os );
-
-    void init();
-    void destroy();
-
+  Vec3 p;
+  Vec3 velocity;
 };
 
-extern LuaClient luaClient;
+void PartGen::draw( const Instance* instance )
+{
+  Point origin = instance->transf.z.point();
+
+  tf.model = camera.rotMat;
+
+  foreach( part, parts.citer() ) {
+    tf.model.z = Vec4( origin + part->p );
+
+    shape.quad( 1.0f, 1.0f );
+  }
+}
 
 }
 }

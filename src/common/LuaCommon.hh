@@ -46,7 +46,7 @@ class LuaCommon
     typedef int APIFunc( lua_State* );
 
     static int  randomSeed;       ///< Random seed for Lua environments.
-    static bool isRandomSeedTime; ///< True iff current time (`Time::time()`) should be seed.
+    static bool isRandomSeedTime; ///< True iff `Time::time()` should be as a seed.
 
   protected:
 
@@ -60,7 +60,7 @@ class LuaCommon
      * @return Should always return true. This return value is only used for internal recursive
      *         calls to detect end of a table.
      */
-    bool readValue( InputStream* istream );
+    bool readValue( InputStream* is );
 
     /**
      * Read %Lua value from a %JSON value and push it on the stack (recursively for tables).
@@ -70,7 +70,7 @@ class LuaCommon
     /**
      * Serialise %Lua value at the top of the stack (recursively for tables).
      */
-    void writeValue( OutputStream* stream );
+    void writeValue( OutputStream* os );
 
     /**
      * Return %Lua value at the top of the stack (recursively for tables) as a %JSON value.

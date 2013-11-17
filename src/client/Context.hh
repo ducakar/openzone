@@ -29,6 +29,7 @@
 #include <client/Imago.hh>
 #include <client/Audio.hh>
 #include <client/FragPool.hh>
+#include <client/PartGen.hh>
 
 namespace oz
 {
@@ -40,6 +41,7 @@ class Context
   friend class Loader;
   friend class BSP;
   friend class BSPAudio;
+  friend class Model;
   friend class Audio;
   friend class Render;
   friend class Sound;
@@ -92,7 +94,7 @@ class Context
       int           nSamples;
 
       volatile int  owner;
-      volatile bool isAlive;                  ///< Set to false to terminate source prematurely.
+      volatile bool isAlive;        // Set to false to terminate source before it finished.
       Mutex         mutex;
       Thread        thread;
 
@@ -104,26 +106,32 @@ class Context
 
     Imago::CreateFunc**        imagoClasses;
     Audio::CreateFunc**        audioClasses;
+    FragPool**                 fragPools;
 
     Resource<Texture>*         textures;
     Resource<uint>*            sounds;
 
-    Chain<Source>              sources;         // non-looping sources
-    HashMap<int, ContSource>   contSources;     // looping sources
+    Chain<Source>              sources;               // Non-looping sources.
+    HashMap<int, ContSource>   contSources;           // Looping sources.
+
+    Chain<PartGen>             partGens;
 
     Resource<BSP*>*            bsps;
     Resource<BSPAudio*>*       bspAudios;
 
-    Resource<SMM*>*            smms;
+    Resource<SMM*>*            models;
+    Resource<PartClass>*       partClasses;
 
-    HashMap<int, Imago*, 8192> imagines;        // currently loaded graphics models
-    HashMap<int, Audio*, 4096> audios;          // currently loaded audio models
-    FragPool**                 fragPools;       // frag pool representations
+    HashMap<int, Imago*, 8192> imagines;              // Currently loaded graphics models.
+    HashMap<int, Audio*, 4096> audios;                // Currently loaded audio models.
+
+    int                        maxFragPools;
 
     int                        maxImagines;
     int                        maxAudios;
     int                        maxSources;
     int                        maxContSources;
+    int                        maxPartGens;
 
     int                        maxSMMImagines;
     int                        maxSMMVehicleImagines;
@@ -135,9 +143,7 @@ class Context
     int                        maxBotAudios;
     int                        maxVehicleAudios;
 
-    int                        maxFragPools;
-
-    static int                 speakSampleRate; // Set from Sound class.
+    static int                 speakSampleRate;       // Set from Sound class.
     static SpeakSource         speakSource;
 
   public:
@@ -157,6 +163,9 @@ class Context
 
     uint requestSpeakSource( const char* text, int owner );
     void releaseSpeakSource();
+
+    PartGen* addPartGen();
+    void removePartGen( PartGen* partGen );
 
   public:
 
@@ -183,12 +192,16 @@ class Context
     void drawBSP( const Struct* str );
     void playBSP( const Struct* str );
 
+    SMM* getModel( int id );
     SMM* requestModel( int id );
     void releaseModel( int id );
 
+    PartClass* getPartClass( int id );
+    PartClass* requestPartClass( int id );
+    void releasePartClass( int id );
+
     void drawImago( const Object* obj, const Imago* parent );
     void playAudio( const Object* obj, const Object* parent );
-
     void drawFrag( const Frag* frag );
 
     void updateLoad();

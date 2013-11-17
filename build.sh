@@ -20,23 +20,14 @@ platforms=(
 #   Linux-x86_64-Clang
 #   Linux-i686
 #   Linux-i686-Clang
-#   FreeBSD-x86_64-Clang
-#   FreeBSD-x86_64-GCC
-#   FreeBSD-i686-Clang
-#   FreeBSD-i686-GCC
 #   Windows-i686
-#   NaCl-x86_64
-#   NaCl-i686
-#   NaCl-ARM
-#   PNaCl
+  PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a
 #   Android14-MIPS
 #   Emscripten
 )
-
-pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
 
 function clean()
 {
@@ -74,24 +65,12 @@ function build()
   done
 }
 
-function pnacl()
-{
-  for arch in x86_64 i686 arm; do
-    echo "Building openzone.$arch.nexe"
-    "$pnaclPrefix/bin64/pnacl-translate" -arch $arch -o build/PNaCl/src/tools/openzone.$arch.nexe \
-                                         build/PNaCl/src/tools/openzone.pexe
-  done
-}
-
 case $1 in
   clean)
     clean
     ;;
   conf)
     build 1
-    ;;
-  pnacl)
-    pnacl
     ;;
   *)
     build 0

@@ -97,9 +97,9 @@ Object* ObjectClass::create( int index, const Point& pos, Heading heading ) cons
   return new Object( this, index, pos, heading );
 }
 
-Object* ObjectClass::create( InputStream* istream ) const
+Object* ObjectClass::create( InputStream* is ) const
 {
-  return new Object( this, istream );
+  return new Object( this, is );
 }
 
 Object* ObjectClass::create( const JSON& json ) const

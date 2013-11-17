@@ -151,35 +151,35 @@ DArray<const char*> Gettext::catalogueDescriptions() const
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import( const File& file )
 {
-  InputStream istream = file.inputStream();
+  InputStream is = file.inputStream();
 
-  if( !istream.isAvailable() ) {
+  if( !is.isAvailable() ) {
     return false;
   }
 
   // Header.
-  uint magic = istream.readUInt();
+  uint magic = is.readUInt();
   if( magic != GETTEXT_MAGIC ) {
     if( Endian::bswap32( magic ) == GETTEXT_MAGIC ) {
-      istream.setEndian( Endian::Order( !istream.endian() ) );
+      is.setEndian( Endian::Order( !is.endian() ) );
     }
     else {
       return false;
     }
   }
 
-  istream.readInt();
-  int nNewMessages = istream.readInt();
+  is.readInt();
+  int nNewMessages = is.readInt();
   if( nNewMessages <= 0 || nNewMessages > MAX_MESSAGES ) {
     return nNewMessages == 0;
   }
 
-  int originalsOffset    = istream.readInt();
-  int translationsOffset = istream.readInt();
-  int hashtableOffset    = istream.readInt();
-  int hashtableSize      = istream.readInt();
+  int originalsOffset    = is.readInt();
+  int translationsOffset = is.readInt();
+  int hashtableOffset    = is.readInt();
+  int hashtableSize      = is.readInt();
   int stringsOffset      = hashtableOffset + hashtableSize;
-  int newStringsSize     = istream.capacity() - stringsOffset;
+  int newStringsSize     = is.capacity() - stringsOffset;
 
   // Expand messages and strings arrays.
   messages = aReallocate<Message>( messages, nMessages, nMessages + nNewMessages );
@@ -187,16 +187,16 @@ bool Gettext::import( const File& file )
 
   // Add new message entries.
   for( int i = 0; i < nNewMessages; ++i ) {
-    istream.seek( originalsOffset + i * 8 + 4 );
-    messages[nMessages + i].original = stringsSize + ( istream.readInt() - stringsOffset );
+    is.seek( originalsOffset + i * 8 + 4 );
+    messages[nMessages + i].original = stringsSize + ( is.readInt() - stringsOffset );
 
-    istream.seek( translationsOffset + i * 8 + 4 );
-    messages[nMessages + i].translation = stringsSize + ( istream.readInt() - stringsOffset );
+    is.seek( translationsOffset + i * 8 + 4 );
+    messages[nMessages + i].translation = stringsSize + ( is.readInt() - stringsOffset );
   }
 
   // Add new strings.
-  istream.seek( stringsOffset );
-  mCopy( strings + stringsSize, istream.forward( newStringsSize ), size_t( newStringsSize ) );
+  is.seek( stringsOffset );
+  mCopy( strings + stringsSize, is.forward( newStringsSize ), size_t( newStringsSize ) );
 
   nMessages   += nNewMessages;
   stringsSize += newStringsSize;

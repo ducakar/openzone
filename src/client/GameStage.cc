@@ -91,18 +91,18 @@ void GameStage::read()
 
   Log::printEnd( " OK" );
 
-  InputStream istream = buffer.inputStream( Endian::LITTLE );
+  InputStream is = buffer.inputStream( Endian::LITTLE );
 
-  matrix.read( &istream );
-  nirvana.read( &istream );
+  matrix.read( &is );
+  nirvana.read( &is );
 
   Log::println( "Reading Client {" );
   Log::indent();
 
-  camera.read( &istream );
-  modules.read( &istream );
+  camera.read( &is );
+  modules.read( &is );
 
-  luaClient.read( &istream );
+  luaClient.read( &is );
 
   Log::unindent();
   Log::println( "}" );

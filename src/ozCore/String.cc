@@ -495,7 +495,7 @@ String::String( double d, int nDigits ) :
 
   nDigits = clamp( nDigits, 1, 16 );
 
-  union DoubleBits
+  union DoubleToBits
   {
     double  value;
     ulong64 bits;

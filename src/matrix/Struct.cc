@@ -686,18 +686,18 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   }
 }
 
-Struct::Struct( const BSP* bsp_, InputStream* istream )
+Struct::Struct( const BSP* bsp_, InputStream* is )
 {
   bsp         = bsp_;
 
-  p           = istream->readPoint();
-  heading     = Heading( istream->readInt() );
+  p           = is->readPoint();
+  heading     = Heading( is->readInt() );
 
-  index       = istream->readInt();
+  index       = is->readInt();
 
-  life        = istream->readFloat();
+  life        = is->readFloat();
   resistance  = bsp->resistance;
-  demolishing = istream->readFloat();
+  demolishing = is->readFloat();
 
   transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
   invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
@@ -714,11 +714,11 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
 
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
-      entity.key    = istream->readInt();
-      entity.state  = Entity::State( istream->readInt() );
-      entity.ratio  = istream->readFloat();
-      entity.time   = istream->readFloat();
-      entity.offset = istream->readVec3();
+      entity.key    = is->readInt();
+      entity.state  = Entity::State( is->readInt() );
+      entity.ratio  = is->readFloat();
+      entity.time   = is->readFloat();
+      entity.offset = is->readVec3();
 
       if( entity.state == Entity::OPENING ) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
@@ -732,14 +732,14 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
     }
   }
 
-  int nBoundObjects = istream->readInt();
+  int nBoundObjects = is->readInt();
   hard_assert( nBoundObjects <= bsp->nBoundObjects );
 
   if( bsp->nBoundObjects != 0 ) {
     boundObjects.allocate( bsp->nBoundObjects );
 
     for( int i = 0; i < nBoundObjects; ++i ) {
-      boundObjects.add( istream->readInt() );
+      boundObjects.add( is->readInt() );
     }
   }
 }
@@ -805,27 +805,27 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
   }
 }
 
-void Struct::write( OutputStream* ostream ) const
+void Struct::write( OutputStream* os ) const
 {
-  ostream->writePoint( p );
-  ostream->writeInt( heading );
+  os->writePoint( p );
+  os->writeInt( heading );
 
-  ostream->writeInt( index );
+  os->writeInt( index );
 
-  ostream->writeFloat( life );
-  ostream->writeFloat( demolishing );
+  os->writeFloat( life );
+  os->writeFloat( demolishing );
 
   for( int i = 0; i < entities.length(); ++i ) {
-    ostream->writeInt( entities[i].key );
-    ostream->writeInt( entities[i].state );
-    ostream->writeFloat( entities[i].ratio );
-    ostream->writeFloat( entities[i].time );
-    ostream->writeVec3( entities[i].offset );
+    os->writeInt( entities[i].key );
+    os->writeInt( entities[i].state );
+    os->writeFloat( entities[i].ratio );
+    os->writeFloat( entities[i].time );
+    os->writeVec3( entities[i].offset );
   }
 
-  ostream->writeInt( boundObjects.length() );
+  os->writeInt( boundObjects.length() );
   for( int i = 0; i < boundObjects.length(); ++i ) {
-    ostream->writeInt( boundObjects[i] );
+    os->writeInt( boundObjects[i] );
   }
 }
 

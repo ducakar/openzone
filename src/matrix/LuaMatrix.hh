@@ -46,8 +46,8 @@ class LuaMatrix : public LuaCommon
     void registerObject( int index );
     void unregisterObject( int index );
 
-    void read( InputStream* istream );
-    void write( OutputStream* ostream );
+    void read( InputStream* is );
+    void write( OutputStream* os );
 
     void init();
     void destroy();

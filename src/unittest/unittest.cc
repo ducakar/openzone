@@ -43,7 +43,7 @@ static int nacl_main()
 int main()
 #endif
 {
-  Log() << "Unittest began";
+  Log() << "Unittest has begun";
 
   System::init();
   Math::seed( 42 );

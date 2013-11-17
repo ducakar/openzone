@@ -79,10 +79,10 @@ class UnitProxy : public Proxy
 
     void reset() override;
 
-    void read( InputStream* istream ) override;
+    void read( InputStream* is ) override;
     void read( const JSON& json ) override;
 
-    void write( OutputStream* ostream ) const override;
+    void write( OutputStream* os ) const override;
     JSON write() const override;
 
 };

@@ -69,7 +69,7 @@ static void readNode( const aiNode* node )
 {
   Mat44 transf = ~Mat44( node->mTransformation[0] );
 
-  Log::print( "+ %s  ", node->mName.C_Str() );
+  Log::print( "+ %s ", node->mName.C_Str() );
   Log() << transf;
   Log::indent();
 
@@ -119,9 +119,9 @@ void AssImp::build( const char* path )
     modelFile = String( path, "/data.dae" );
   }
 
-  InputStream istream = modelFile.inputStream();
+  InputStream is = modelFile.inputStream();
 
-  if( !istream.isAvailable() ) {
+  if( !is.isAvailable() ) {
     OZ_ERROR( "Failed to read '%s' (.dae and .obj extensions probed)", path );
   }
 
@@ -195,7 +195,7 @@ void AssImp::build( const char* path )
   for( uint i = 0; i < scene->mNumLights; ++i ) {
     const aiLight* light = scene->mLights[i];
 
-    compiler.beginLight( Light::Type( light->mType - 1 ) );
+    compiler.beginLight( client::Light::Type( light->mType - 1 ) );
 
     compiler.position( light->mPosition.x, light->mPosition.y, light->mPosition.z );
     compiler.direction( light->mDirection.x, light->mDirection.y, light->mDirection.z );

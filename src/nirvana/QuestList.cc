@@ -54,35 +54,35 @@ void QuestList::remove( int index )
   }
 }
 
-void QuestList::read( InputStream* istream )
+void QuestList::read( InputStream* is )
 {
-  int nQuests = istream->readInt();
+  int nQuests = is->readInt();
 
   for( int i = 0; i < nQuests; ++i ) {
     quests.add();
     Quest& quest = quests.last();
 
-    quest.title       = istream->readString();
-    quest.description = istream->readString();
-    quest.place       = istream->readPoint();
-    quest.state       = Quest::State( istream->readInt() );
+    quest.title       = is->readString();
+    quest.description = is->readString();
+    quest.place       = is->readPoint();
+    quest.state       = Quest::State( is->readInt() );
   }
 
-  activeQuest = istream->readInt();
+  activeQuest = is->readInt();
 }
 
-void QuestList::write( OutputStream* ostream ) const
+void QuestList::write( OutputStream* os ) const
 {
-  ostream->writeInt( quests.length() );
+  os->writeInt( quests.length() );
 
   foreach( quest, quests.citer() ) {
-    ostream->writeString( quest->title );
-    ostream->writeString( quest->description );
-    ostream->writePoint( quest->place );
-    ostream->writeInt( quest->state );
+    os->writeString( quest->title );
+    os->writeString( quest->description );
+    os->writePoint( quest->place );
+    os->writeInt( quest->state );
   }
 
-  ostream->writeInt( activeQuest );
+  os->writeInt( activeQuest );
 }
 
 void QuestList::load()

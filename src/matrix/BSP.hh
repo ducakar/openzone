@@ -47,7 +47,7 @@ struct EntityClass : Bounds
 
   String title;       ///< %Entity title.
 
-  Vec3   move;        ///< Move vector (destination - original position), in %BSP
+  Vec3   move;        ///< Move vector (destination - original position), in %BSP.
                       ///< coordinate system.
 
   BSP*   bsp;         ///< Pointer to the parent %BSP.
@@ -63,7 +63,7 @@ struct EntityClass : Bounds
   int    target;      ///< Target model index for triggers, -1 otherwise.
   int    key;         ///< Default key code or 0 if door is unlocked by default.
 
-  int    openSound;   ///< Open sound sample, played when an entity starts moving or - for static
+  int    openSound;   ///< Open sound sample, played when an entity starts moving or - for static.
                       ///< entities - when activated (as a trigger not as a target).
   int    closeSound;  ///< Close sound sample, played when an entity stops moving.
   int    frictSound;  ///< Friction sound sample, played while the entity is moving.
@@ -147,7 +147,6 @@ class BSP : public Bounds
     const FragPool* fragPool;
     int             nFrags;
 
-    DArray<int>     models;        ///< Set of used entity models.
     DArray<int>     sounds;        ///< Set of used sound samples.
     int             demolishSound;
     float           groundOffset;  ///< Centre offset from ground when placing a building.

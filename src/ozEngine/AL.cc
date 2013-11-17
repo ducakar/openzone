@@ -39,31 +39,31 @@ namespace oz
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 {
-  InputStream* istream = static_cast<InputStream*>( handle );
+  InputStream* is = static_cast<InputStream*>( handle );
 
   int blockSize = int( size );
-  int nBlocks   = min( int( n ), istream->available() / blockSize );
+  int nBlocks   = min( int( n ), is->available() / blockSize );
 
-  istream->readChars( static_cast<char*>( buffer ), nBlocks * blockSize );
+  is->readChars( static_cast<char*>( buffer ), nBlocks * blockSize );
   return size_t( nBlocks );
 }
 
 static int vorbisSeek( void* handle, ogg_int64_t offset, int whence )
 {
-  InputStream* istream = static_cast<InputStream*>( handle );
+  InputStream* is = static_cast<InputStream*>( handle );
 
-  const char* origin = whence == SEEK_CUR ? istream->pos() :
-                       whence == SEEK_END ? istream->end() : istream->begin();
+  const char* origin = whence == SEEK_CUR ? is->pos() :
+                       whence == SEEK_END ? is->end() : is->begin();
 
-  istream->set( origin + offset );
+  is->set( origin + offset );
   return 0;
 }
 
 static long vorbisTell( void* handle )
 {
-  InputStream* istream = static_cast<InputStream*>( handle );
+  InputStream* is = static_cast<InputStream*>( handle );
 
-  return long( istream->tell() );
+  return long( is->tell() );
 }
 
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbisTell };
@@ -105,7 +105,7 @@ struct AL::Streamer::Data
   ALenum         format;
   ALsizei        rate;
   Buffer         fileBuffer;
-  InputStream    istream;
+  InputStream    is;
   char           samples[BUFFER_SIZE];
 
   explicit Data() :
@@ -246,7 +246,7 @@ bool AL::Streamer::open( const File& file )
 
   data             = new Data();
   data->fileBuffer = file.read();
-  data->istream    = data->fileBuffer.inputStream();
+  data->is         = data->fileBuffer.inputStream();
 
   if( data->fileBuffer.isEmpty() ) {
     delete data;
@@ -254,7 +254,7 @@ bool AL::Streamer::open( const File& file )
     return false;
   }
 
-  if( ov_open_callbacks( &data->istream, &data->ovFile, nullptr, 0, VORBIS_CALLBACKS ) != 0 ) {
+  if( ov_open_callbacks( &data->is, &data->ovFile, nullptr, 0, VORBIS_CALLBACKS ) != 0 ) {
     delete data;
     data = nullptr;
     return false;
@@ -365,43 +365,43 @@ void AL::checkError( const char* function, const char* file, int line )
 
 bool AL::bufferDataFromFile( ALuint buffer, const File &file )
 {
-  InputStream istream = file.inputStream( Endian::LITTLE );
+  InputStream is = file.inputStream( Endian::LITTLE );
 
-  if( !istream.isAvailable() ) {
+  if( !is.isAvailable() ) {
     return false;
   }
 
   // WAVE loader is implemented according to specification found in
   // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/.
-  if( istream.capacity() >= 44 &&
-      String::beginsWith( istream.begin(), "RIFF" ) &&
-      String::beginsWith( istream.begin() + 8, "WAVE" ) )
+  if( is.capacity() >= 44 &&
+      String::beginsWith( is.begin(), "RIFF" ) &&
+      String::beginsWith( is.begin() + 8, "WAVE" ) )
   {
-    istream.seek( 22 );
-    int nChannels = int( istream.readShort() );
-    int rate      = istream.readInt();
+    is.seek( 22 );
+    int nChannels = int( is.readShort() );
+    int rate      = is.readInt();
 
-    istream.seek( 34 );
-    int bits = int( istream.readShort() );
+    is.seek( 34 );
+    int bits = int( is.readShort() );
 
-    istream.seek( 36 );
+    is.seek( 36 );
 
-    const char* chunkName = istream.pos();
-    istream.readInt();
+    const char* chunkName = is.pos();
+    is.readInt();
 
-    int size = istream.readInt();
+    int size = is.readInt();
 
     while( !String::beginsWith( chunkName, "data" ) ) {
-      istream.forward( size );
+      is.forward( size );
 
-      if( !istream.isAvailable() ) {
+      if( !is.isAvailable() ) {
         return false;
       }
 
-      chunkName = istream.pos();
-      istream.readInt();
+      chunkName = is.pos();
+      is.readInt();
 
-      size = istream.readInt();
+      size = is.readInt();
     }
 
     if( ( nChannels != 1 && nChannels != 2 ) || ( bits != 8 && bits != 16 ) ) {
@@ -411,9 +411,9 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
     ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8   : AL_FORMAT_MONO16 :
                                      bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
 
-    size = min( size, istream.available() );
+    size = min( size, is.available() );
 
-    const char* data = istream.forward( size );
+    const char* data = is.forward( size );
 
 #if OZ_BYTE_ORDER == 4321
 
@@ -447,7 +447,7 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
   }
   else {
     OggVorbis_File ovStream;
-    if( ov_open_callbacks( &istream, &ovStream, nullptr, 0, VORBIS_CALLBACKS ) < 0 ) {
+    if( ov_open_callbacks( &is, &ovStream, nullptr, 0, VORBIS_CALLBACKS ) < 0 ) {
       return false;
     }
 

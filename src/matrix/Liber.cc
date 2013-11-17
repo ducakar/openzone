@@ -406,8 +406,8 @@ void Liber::initParticles()
     partList.add( { name, file->path() } );
   }
 
-  shaders.resize( partList.length() );
-  aMove<Resource>( partList.begin(), partList.length(), shaders.begin() );
+  parts.resize( partList.length() );
+  aMove<Resource>( partList.begin(), partList.length(), parts.begin() );
 
   Log::unindent();
   Log::println( "}" );

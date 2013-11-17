@@ -255,31 +255,31 @@ void CinematicProxy::reset()
   steps.deallocate();
 }
 
-void CinematicProxy::read( InputStream* istream )
+void CinematicProxy::read( InputStream* is )
 {
-  beginRot    = istream->readQuat();
-  beginPos    = istream->readPoint();
-  beginColour = istream->readMat44();
+  beginRot    = is->readQuat();
+  beginPos    = is->readPoint();
+  beginColour = is->readMat44();
 
-  title       = istream->readString();
-  nTitleChars = istream->readInt();
+  title       = is->readString();
+  nTitleChars = is->readInt();
 
-  stepTime    = istream->readFloat();
-  prevState   = istream->readInt();
+  stepTime    = is->readFloat();
+  prevState   = is->readInt();
 
-  int nSteps = istream->readInt();
+  int nSteps = is->readInt();
   for( int i = 0; i < nSteps; ++i ) {
     Step step;
 
-    step.rot      = istream->readQuat();
-    step.p        = istream->readPoint();
-    step.colour   = istream->readMat44();
+    step.rot      = is->readQuat();
+    step.p        = is->readPoint();
+    step.colour   = is->readMat44();
 
-    step.track    = istream->readInt();
-    step.title    = istream->readString();
+    step.track    = is->readInt();
+    step.title    = is->readString();
 
-    step.time     = istream->readFloat();
-    step.endState = istream->readInt();
+    step.time     = is->readFloat();
+    step.endState = is->readInt();
 
     steps.add( step );
   }
@@ -288,31 +288,31 @@ void CinematicProxy::read( InputStream* istream )
 void CinematicProxy::read( const JSON& )
 {}
 
-void CinematicProxy::write( OutputStream* ostream ) const
+void CinematicProxy::write( OutputStream* os ) const
 {
-  ostream->writeQuat( beginRot );
-  ostream->writePoint( beginPos );
-  ostream->writeMat44( beginColour );
+  os->writeQuat( beginRot );
+  os->writePoint( beginPos );
+  os->writeMat44( beginColour );
 
-  ostream->writeString( title );
-  ostream->writeInt( nTitleChars );
+  os->writeString( title );
+  os->writeInt( nTitleChars );
 
-  ostream->writeFloat( stepTime );
-  ostream->writeInt( prevState );
+  os->writeFloat( stepTime );
+  os->writeInt( prevState );
 
-  ostream->writeInt( steps.length() );
+  os->writeInt( steps.length() );
   for( int i = 0; i < steps.length(); ++i ) {
     const Step& step = steps[i];
 
-    ostream->writeQuat( step.rot );
-    ostream->writePoint( step.p );
-    ostream->writeMat44( step.colour );
+    os->writeQuat( step.rot );
+    os->writePoint( step.p );
+    os->writeMat44( step.colour );
 
-    ostream->writeInt( step.track );
-    ostream->writeString( step.title );
+    os->writeInt( step.track );
+    os->writeString( step.title );
 
-    ostream->writeFloat( step.time );
-    ostream->writeInt( step.endState );
+    os->writeFloat( step.time );
+    os->writeInt( step.endState );
   }
 }
 

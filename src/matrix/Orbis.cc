@@ -342,33 +342,33 @@ void Orbis::update()
   caelum.update();
 }
 
-void Orbis::read( InputStream* istream )
+void Orbis::read( InputStream* is )
 {
-  luaMatrix.read( istream );
+  luaMatrix.read( is );
 
-  caelum.read( istream );
-  terra.read( istream );
+  caelum.read( is );
+  terra.read( is );
 
-  int nStructs = istream->readInt();
-  int nObjects = istream->readInt();
-  int nFrags   = istream->readInt();
+  int nStructs = is->readInt();
+  int nObjects = is->readInt();
+  int nFrags   = is->readInt();
 
   for( int i = 0; i < nStructs; ++i ) {
-    const char* name = istream->readString();
+    const char* name = is->readString();
     const BSP*  bsp  = liber.bsp( name );
 
     const_cast<BSP*>( bsp )->request();
 
-    Struct* str = new Struct( bsp, istream );
+    Struct* str = new Struct( bsp, is );
 
     position( str );
     structs[1 + str->index] = str;
   }
 
   for( int i = 0; i < nObjects; ++i ) {
-    const char*        name  = istream->readString();
+    const char*        name  = is->readString();
     const ObjectClass* clazz = liber.objClass( name );
-    Object*            obj   = clazz->create( istream );
+    Object*            obj   = clazz->create( is );
     const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
 
     // No need to register objects since Lua state is being deserialised.
@@ -380,57 +380,57 @@ void Orbis::read( InputStream* istream )
   }
 
   for( int i = 0; i < nFrags; ++i ) {
-    const char*     name = istream->readString();
+    const char*     name = is->readString();
     const FragPool* pool = liber.fragPool( name );
-    Frag*           frag = new Frag( pool, istream );
+    Frag*           frag = new Frag( pool, is );
 
     position( frag );
     frags[1 + frag->index] = frag;
   }
 
-  strLength  = istream->readInt();
-  objLength  = istream->readInt();
-  fragLength = istream->readInt();
+  strLength  = is->readInt();
+  objLength  = is->readInt();
+  fragLength = is->readInt();
 
   int n;
 
-  n = istream->readInt();
+  n = is->readInt();
   for( int i = 0; i < n; ++i ) {
-    strFreedIndices[freeing].add( istream->readInt() );
+    strFreedIndices[freeing].add( is->readInt() );
   }
-  n = istream->readInt();
+  n = is->readInt();
   for( int i = 0; i < n; ++i ) {
-    objFreedIndices[freeing].add( istream->readInt() );
+    objFreedIndices[freeing].add( is->readInt() );
   }
-  n = istream->readInt();
+  n = is->readInt();
   for( int i = 0; i < n; ++i ) {
-    fragFreedIndices[freeing].add( istream->readInt() );
-  }
-
-  n = istream->readInt();
-  for( int i = 0; i < n; ++i ) {
-    strFreedIndices[waiting].add( istream->readInt() );
-  }
-  n = istream->readInt();
-  for( int i = 0; i < n; ++i ) {
-    objFreedIndices[waiting].add( istream->readInt() );
-  }
-  n = istream->readInt();
-  for( int i = 0; i < n; ++i ) {
-    fragFreedIndices[waiting].add( istream->readInt() );
+    fragFreedIndices[freeing].add( is->readInt() );
   }
 
-  n = istream->readInt();
+  n = is->readInt();
   for( int i = 0; i < n; ++i ) {
-    strAvailableIndices.add( istream->readInt() );
+    strFreedIndices[waiting].add( is->readInt() );
   }
-  n = istream->readInt();
+  n = is->readInt();
   for( int i = 0; i < n; ++i ) {
-    objAvailableIndices.add( istream->readInt() );
+    objFreedIndices[waiting].add( is->readInt() );
   }
-  n = istream->readInt();
+  n = is->readInt();
   for( int i = 0; i < n; ++i ) {
-    fragAvailableIndices.add( istream->readInt() );
+    fragFreedIndices[waiting].add( is->readInt() );
+  }
+
+  n = is->readInt();
+  for( int i = 0; i < n; ++i ) {
+    strAvailableIndices.add( is->readInt() );
+  }
+  n = is->readInt();
+  for( int i = 0; i < n; ++i ) {
+    objAvailableIndices.add( is->readInt() );
+  }
+  n = is->readInt();
+  for( int i = 0; i < n; ++i ) {
+    fragAvailableIndices.add( is->readInt() );
   }
 }
 
@@ -511,88 +511,88 @@ void Orbis::read( const JSON& json )
   }
 }
 
-void Orbis::write( OutputStream* ostream ) const
+void Orbis::write( OutputStream* os ) const
 {
-  luaMatrix.write( ostream );
+  luaMatrix.write( os );
 
-  caelum.write( ostream );
-  terra.write( ostream );
+  caelum.write( os );
+  terra.write( os );
 
   int nStructs = Struct::pool.length();
   int nObjects = Object::pool.length() + Dynamic::pool.length() + Weapon::pool.length() +
                  Bot::pool.length() + Vehicle::pool.length();
   int nFrags   = Frag::mpool.length();
 
-  ostream->writeInt( nStructs );
-  ostream->writeInt( nObjects );
-  ostream->writeInt( nFrags );
+  os->writeInt( nStructs );
+  os->writeInt( nObjects );
+  os->writeInt( nFrags );
 
   for( int i = 0; i < strLength; ++i ) {
     Struct* str = structs[1 + i];
 
     if( str != nullptr ) {
-      ostream->writeString( str->bsp->name );
-      str->write( ostream );
+      os->writeString( str->bsp->name );
+      str->write( os );
     }
   }
   for( int i = 0; i < objLength; ++i ) {
     Object* obj = objects[1 + i];
 
     if( obj != nullptr ) {
-      ostream->writeString( obj->clazz->name );
-      obj->write( ostream );
+      os->writeString( obj->clazz->name );
+      obj->write( os );
     }
   }
   for( int i = 0; i < fragLength; ++i ) {
     Frag* frag = frags[1 + i];
 
     if( frag != nullptr ) {
-      ostream->writeString( frag->pool->name );
-      frag->write( ostream );
+      os->writeString( frag->pool->name );
+      frag->write( os );
     }
   }
 
-  ostream->writeInt( strLength );
-  ostream->writeInt( objLength );
-  ostream->writeInt( fragLength );
+  os->writeInt( strLength );
+  os->writeInt( objLength );
+  os->writeInt( fragLength );
 
-  ostream->writeInt( strFreedIndices[freeing].length() );
+  os->writeInt( strFreedIndices[freeing].length() );
   foreach( i, strFreedIndices[freeing].citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
-  ostream->writeInt( objFreedIndices[freeing].length() );
+  os->writeInt( objFreedIndices[freeing].length() );
   foreach( i, objFreedIndices[freeing].citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
-  ostream->writeInt( fragFreedIndices[freeing].length() );
+  os->writeInt( fragFreedIndices[freeing].length() );
   foreach( i, fragFreedIndices[freeing].citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
 
-  ostream->writeInt( strFreedIndices[waiting].length() );
+  os->writeInt( strFreedIndices[waiting].length() );
   foreach( i, strFreedIndices[waiting].citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
-  ostream->writeInt( objFreedIndices[waiting].length() );
+  os->writeInt( objFreedIndices[waiting].length() );
   foreach( i, objFreedIndices[waiting].citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
-  ostream->writeInt( fragFreedIndices[waiting].length() );
+  os->writeInt( fragFreedIndices[waiting].length() );
   foreach( i, fragFreedIndices[waiting].citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
 
-  ostream->writeInt( strAvailableIndices.length() );
+  os->writeInt( strAvailableIndices.length() );
   foreach( i, strAvailableIndices.citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
-  ostream->writeInt( objAvailableIndices.length() );
+  os->writeInt( objAvailableIndices.length() );
   foreach( i, objAvailableIndices.citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
-  ostream->writeInt( fragAvailableIndices.length() );
+  os->writeInt( fragAvailableIndices.length() );
   foreach( i, fragAvailableIndices.citer() ) {
-    ostream->writeInt( *i );
+    os->writeInt( *i );
   }
 }
 

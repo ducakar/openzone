@@ -18,43 +18,63 @@
  */
 
 /**
- * @file client/LuaClient.hh
- *
- * Lua scripting engine for client
+ * @file client/PartGen.hh
  */
 
 #pragma once
 
-#include <common/LuaCommon.hh>
-#include <client/common.hh>
+#include <client/PartClass.hh>
 
 namespace oz
 {
 namespace client
 {
 
-class LuaClient : public LuaCommon
+class PartGen
 {
-  private:
-
-    void staticCall( const char* functionName );
+  friend class Chain<PartGen>;
 
   public:
 
-    float staticExec( const char* code );
+    static const int UPDATED_BIT = 0x01;
 
-    void update();
-    void create( const char* missionPath );
+  private:
 
-    void read( InputStream* is );
-    void write( OutputStream* os );
+    struct Instance
+    {
+      PartGen* source;
+      Mat44    transf;
+    };
 
-    void init();
-    void destroy();
+    struct Part;
+
+  private:
+
+    static List<Instance> instances;
+
+    PartGen*              next[1];
+
+    PartClass*            clazz;
+    DArray<Part>          parts;
+    int                   flags;
+
+  private:
+
+    void draw( const Instance* instance );
+
+  public:
+
+    static void drawScheduled();
+    static void clearScheduled();
+
+    static void dellocate();
+
+    explicit PartGen( InputStream* is );
+    ~PartGen();
+
+    void schedule();
 
 };
-
-extern LuaClient luaClient;
 
 }
 }

@@ -869,7 +869,7 @@ void Bot::onUpdate()
     }
 
     /*
-     * GRAB MOVEMENT
+     * CARGO MOVEMENT
      */
 
     if( cargo >= 0 ) {
@@ -884,10 +884,10 @@ void Bot::onUpdate()
         cargoObj = nullptr;
       }
       else {
-        // keep constant length of xy projection of handle
+        // Keep constant length of XY projection of the handle.
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * grabHandle;
-        // bottom of the object cannot be raised over the player AABB, neither can be lowered
-        // under the player (in the latter case one can lift himself with the lower object)
+        // Bottom of the object cannot be raised over the player's AABB, neither can be lowered
+        // under the player (in the latter case one can lift himself with the lower object).
         handle.z    = min( handle.z, dim.z - camZ );
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - cargoObj->p;
 
@@ -1155,33 +1155,33 @@ Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) 
   mindFunc   = clazz_->mindFunc;
 }
 
-Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
-  Dynamic( clazz_, istream )
+Bot::Bot( const BotClass* clazz_, InputStream* is ) :
+  Dynamic( clazz_, is )
 {
-  dim        = istream->readVec3();
+  dim        = is->readVec3();
 
-  h          = istream->readFloat();
-  v          = istream->readFloat();
-  actions    = istream->readInt();
-  oldActions = istream->readInt();
-  instrument = istream->readInt();
-  container  = istream->readInt();
+  h          = is->readFloat();
+  v          = is->readFloat();
+  actions    = is->readInt();
+  oldActions = is->readInt();
+  instrument = is->readInt();
+  container  = is->readInt();
 
-  state      = istream->readInt();
-  oldState   = istream->readInt();
-  stamina    = istream->readFloat();
-  step       = istream->readFloat();
-  stairRate  = istream->readFloat();
+  state      = is->readInt();
+  oldState   = is->readInt();
+  stamina    = is->readFloat();
+  step       = is->readFloat();
+  stairRate  = is->readFloat();
 
-  cargo      = istream->readInt();
-  weapon     = istream->readInt();
-  grabHandle = istream->readFloat();
-  meleeTime  = istream->readFloat();
+  cargo      = is->readInt();
+  weapon     = is->readInt();
+  grabHandle = is->readFloat();
+  meleeTime  = is->readFloat();
 
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
-  name       = istream->readString();
-  mindFunc   = istream->readString();
+  name       = is->readString();
+  mindFunc   = is->readString();
 
   if( state & DEAD_BIT ) {
     resistance = Math::INF;
@@ -1221,32 +1221,32 @@ Bot::Bot( const BotClass* clazz_, const JSON& json ) :
   }
 }
 
-void Bot::write( OutputStream* ostream ) const
+void Bot::write( OutputStream* os ) const
 {
-  Dynamic::write( ostream );
+  Dynamic::write( os );
 
-  ostream->writeVec3( dim );
+  os->writeVec3( dim );
 
-  ostream->writeFloat( h );
-  ostream->writeFloat( v );
-  ostream->writeInt( actions );
-  ostream->writeInt( oldActions );
-  ostream->writeInt( instrument );
-  ostream->writeInt( container );
+  os->writeFloat( h );
+  os->writeFloat( v );
+  os->writeInt( actions );
+  os->writeInt( oldActions );
+  os->writeInt( instrument );
+  os->writeInt( container );
 
-  ostream->writeInt( state );
-  ostream->writeInt( oldState );
-  ostream->writeFloat( stamina );
-  ostream->writeFloat( step );
-  ostream->writeFloat( stairRate );
+  os->writeInt( state );
+  os->writeInt( oldState );
+  os->writeFloat( stamina );
+  os->writeFloat( step );
+  os->writeFloat( stairRate );
 
-  ostream->writeInt( cargo );
-  ostream->writeInt( weapon );
-  ostream->writeFloat( grabHandle );
-  ostream->writeFloat( meleeTime );
+  os->writeInt( cargo );
+  os->writeInt( weapon );
+  os->writeFloat( grabHandle );
+  os->writeFloat( meleeTime );
 
-  ostream->writeString( name );
-  ostream->writeString( mindFunc );
+  os->writeString( name );
+  os->writeString( mindFunc );
 }
 
 JSON Bot::write() const

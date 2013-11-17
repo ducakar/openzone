@@ -41,7 +41,6 @@ int SDL_main( int argc, char **argv );
 #endif
 
 using namespace oz;
-using namespace oz::client;
 
 static void crashHandler()
 {

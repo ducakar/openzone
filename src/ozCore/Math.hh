@@ -43,26 +43,29 @@ class Math
     /// Floating point epsilon.
     static constexpr float FLOAT_EPS = __FLT_EPSILON__;
 
-#if defined( OZ_GCC ) && OZ_GCC < 406
-
-    static constexpr float NaN = 0.0f / 0.0f;
-    static constexpr float INF = 1.0f / 0.0f;
-
-#else
-
     /// Not a number.
     static constexpr float NaN = __builtin_nanf( "" );
 
     /// \f$ +\infty \f$.
     static constexpr float INF = __builtin_inff();
 
-#endif
-
     /// \f$ e \f$.
     static constexpr float E = 2.718281828459045f;
 
     /// \f$ 2\pi \f$.
     static constexpr float TAU = 6.283185307179586f;
+
+    union FloatToBits
+    {
+      float value;
+      uint  bits;
+    };
+
+    union BitsToFloat
+    {
+      uint  bits;
+      float value;
+    };
 
   public:
 
@@ -399,12 +402,7 @@ class Math
     OZ_ALWAYS_INLINE
     static uint toBits( float x )
     {
-      union FloatToBits
-      {
-        float value;
-        uint  bits;
-      }
-      fb = { x };
+      FloatToBits fb = { x };
       return fb.bits;
     }
 
@@ -414,50 +412,35 @@ class Math
     OZ_ALWAYS_INLINE
     static float fromBits( uint b )
     {
-      union BitsToFloat
-      {
-        uint  bits;
-        float value;
-      }
-      bf = { b };
+      BitsToFloat bf = { b };
       return bf.value;
     }
 
     /**
-     * Fast square root (using algorithm form Quake).
+     * Fast square root (using improved algorithm from Quake).
      */
     OZ_ALWAYS_INLINE
     static float fastSqrt( float x )
     {
       hard_assert( x >= 0.0f );
 
-      union FloatBits
-      {
-        float value;
-        uint  bits;
-      }
-      fb = { x };
+      FloatToBits fb = { x };
 
-      fb.bits = 0x5f3759df - ( fb.bits >> 1 );
+      fb.bits = 0x5f375a86 - ( fb.bits >> 1 );
       return x * fb.value * ( 1.5f - 0.5f * x * fb.value*fb.value );
     }
 
     /**
-     * Fast inverse square root (using algorithm form Quake).
+     * Fast inverse square root (using improved algorithm from Quake).
      */
     OZ_ALWAYS_INLINE
     static float fastInvSqrt( float x )
     {
       hard_assert( x > 0.0f );
 
-      union FloatBits
-      {
-        float value;
-        uint  bits;
-      }
-      fb = { x };
+      FloatToBits fb = { x };
 
-      fb.bits = 0x5f3759df - ( fb.bits >> 1 );
+      fb.bits = 0x5f375a86 - ( fb.bits >> 1 );
       return fb.value * ( 1.5f - 0.5f * x * fb.value*fb.value );
     }
 

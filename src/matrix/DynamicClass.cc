@@ -46,9 +46,9 @@ Object* DynamicClass::create( int index, const Point& pos, Heading heading ) con
   return new Dynamic( this, index, pos, heading );
 }
 
-Object* DynamicClass::create( InputStream* istream ) const
+Object* DynamicClass::create( InputStream* is ) const
 {
-  return new Dynamic( this, istream );
+  return new Dynamic( this, is );
 }
 
 Object* DynamicClass::create( const JSON& json ) const

@@ -499,7 +499,7 @@ void Class::fillBot( const char* className )
   const JSON& injuryColourConfig = config["injuryColour"];
 
   baseColour   = baseColourConfig.get( Mat44::ID );
-  nvColour     = nvColourConfig.get( Camera::NV_COLOUR );
+  nvColour     = nvColourConfig.get( client::Camera::NV_COLOUR );
   injuryColour = injuryColourConfig.get( INJURY_COLOUR );
 }
 

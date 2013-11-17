@@ -59,6 +59,13 @@ void Vertex::setFormat()
 //                          static_cast<char*>( nullptr ) + offsetof( Vertex, colour ) );
 }
 
+struct Model::LightEntry
+{
+  const Light* light;
+  Mat44        transf;
+  float        weight;
+};
+
 struct Model::PreloadData
 {
   struct TexFiles
@@ -393,23 +400,23 @@ const File* Model::preload( const char* path )
     OZ_ERROR( "Failed to map '%s'", path );
   }
 
-  InputStream istream = preloadData->modelFile.inputStream( Endian::LITTLE );
+  InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
 
-  dim             = istream.readVec3();
-  shaderId        = liber.shaderIndex( istream.readString() );
-  nTextures       = istream.readInt();
-  nVertices       = istream.readInt();
-  nIndices        = istream.readInt();
-  nFrames         = istream.readInt();
-  nFramePositions = istream.readInt();
+  dim             = is.readVec3();
+  shaderId        = liber.shaderIndex( is.readString() );
+  nTextures       = is.readInt();
+  nVertices       = is.readInt();
+  nIndices        = is.readInt();
+  nFrames         = is.readInt();
+  nFramePositions = is.readInt();
 
-  istream.readInt();
-  istream.readInt();
-  istream.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
 
   if( nTextures >= 0 ) {
     for( int i = 0; i < nTextures; ++i ) {
-      const String& name = istream.readString();
+      const String& name = is.readString();
 
       preloadData->textures.add();
 
@@ -445,21 +452,21 @@ void Model::load( uint usage )
   flags = 0;
 
   hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
-  InputStream istream = preloadData->modelFile.inputStream( Endian::LITTLE );
+  InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
 
   OZ_GL_CHECK_ERROR();
 
-  istream.readVec3();
-  istream.readString();
-  istream.readInt();
-  istream.readInt();
-  istream.readInt();
-  istream.readInt();
-  istream.readInt();
+  is.readVec3();
+  is.readString();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
 
-  int nMeshes = istream.readInt();
-  int nLights = istream.readInt();
-  int nNodes  = istream.readInt();
+  int nMeshes = is.readInt();
+  int nLights = is.readInt();
+  int nNodes  = is.readInt();
 
   if( nTextures < 0 ) {
     nTextures = ~nTextures;
@@ -467,7 +474,7 @@ void Model::load( uint usage )
     textures.resize( nTextures );
 
     for( int i = 0; i < nTextures; ++i ) {
-      const String& name = istream.readString();
+      const String& name = is.readString();
 
       int id = name.isEmpty()             ? -1 :
                name.beginsWith( "@sea:" ) ? terra.liquidTexId : liber.textureIndex( name );
@@ -479,7 +486,7 @@ void Model::load( uint usage )
     textures.resize( nTextures );
 
     for( int i = 0; i < nTextures; ++i ) {
-      istream.readString();
+      is.readString();
 
       textures[i] = context.loadTexture( preloadData->textures[i].diffuse,
                                          preloadData->textures[i].masks,
@@ -490,7 +497,7 @@ void Model::load( uint usage )
   int vboSize = nVertices  * int( sizeof( Vertex ) );
   int iboSize = 8*nIndices * int( sizeof( ushort ) );
 
-  const void* vertexBuffer = istream.forward( vboSize );
+  const void* vertexBuffer = is.forward( vboSize );
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -499,7 +506,7 @@ void Model::load( uint usage )
 
   glGenBuffers( 1, &ibo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream.forward( iboSize ), GL_STATIC_DRAW );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   if( nFrames != 0 ) {
@@ -513,7 +520,7 @@ void Model::load( uint usage )
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
-                    GL_FLOAT, istream.forward( vertexBufferSize + normalBufferSize ) );
+                    GL_FLOAT, is.forward( vertexBufferSize + normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       OZ_GL_CHECK_ERROR();
@@ -525,10 +532,10 @@ void Model::load( uint usage )
       normals   = new Vec3[nFramePositions * nFrames];
 
       for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-        positions[i] = istream.readPoint();
+        positions[i] = is.readPoint();
       }
       for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-        normals[i] = istream.readVec3();
+        normals[i] = is.readVec3();
       }
 
       mCopy( vertices, vertexBuffer, size_t( nVertices ) * sizeof( Vertex ) );
@@ -545,11 +552,11 @@ void Model::load( uint usage )
   meshes.resize( nMeshes );
 
   for( int i = 0; i < nMeshes; ++i ) {
-    meshes[i].flags      = istream.readInt();
-    meshes[i].texture    = istream.readInt();
+    meshes[i].flags      = is.readInt();
+    meshes[i].texture    = is.readInt();
 
-    meshes[i].nIndices   = istream.readInt();
-    meshes[i].firstIndex = istream.readInt();
+    meshes[i].nIndices   = is.readInt();
+    meshes[i].firstIndex = is.readInt();
 
     flags |= meshes[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
@@ -557,32 +564,32 @@ void Model::load( uint usage )
   lights.resize( nLights );
 
   for( int i = 0; i < nLights; ++i ) {
-    lights[i].node           = istream.readInt();
-    lights[i].type           = Light::Type( istream.readInt() );
+    lights[i].node           = is.readInt();
+    lights[i].type           = Light::Type( is.readInt() );
 
-    lights[i].pos            = istream.readPoint();
-    lights[i].dir            = istream.readVec3();
-    lights[i].colour         = istream.readVec3();
+    lights[i].pos            = is.readPoint();
+    lights[i].dir            = is.readVec3();
+    lights[i].colour         = is.readVec3();
 
-    lights[i].attenuation[0] = istream.readFloat();
-    lights[i].attenuation[1] = istream.readFloat();
-    lights[i].attenuation[2] = istream.readFloat();
+    lights[i].attenuation[0] = is.readFloat();
+    lights[i].attenuation[1] = is.readFloat();
+    lights[i].attenuation[2] = is.readFloat();
 
-    lights[i].coneCoeff[0]   = istream.readFloat();
-    lights[i].coneCoeff[1]   = istream.readFloat();
+    lights[i].coneCoeff[0]   = is.readFloat();
+    lights[i].coneCoeff[1]   = is.readFloat();
   }
 
   nodes.resize( nNodes );
 
   for( int i = 0; i < nNodes; ++i ) {
-    nodes[i].transf     = istream.readMat44();
-    nodes[i].mesh       = istream.readInt();
+    nodes[i].transf     = is.readMat44();
+    nodes[i].mesh       = is.readInt();
 
-    nodes[i].parent     = istream.readInt();
-    nodes[i].firstChild = istream.readInt();
-    nodes[i].nChildren  = istream.readInt();
+    nodes[i].parent     = is.readInt();
+    nodes[i].firstChild = is.readInt();
+    nodes[i].nChildren  = is.readInt();
 
-    nodes[i].name       = istream.readString();
+    nodes[i].name       = is.readString();
   }
 
   loadedModels.add( this );

@@ -9,7 +9,7 @@ add_executable( unittest
   unittest.cc
 #END SOURCES
 )
-target_link_libraries( unittest ozCore )
+target_link_libraries( unittest client modules nirvana matrix common ozEngine ozCore )
 
 if( NACL )
   add_custom_command( OUTPUT unittest.nmf unittest.html
@@ -20,6 +20,7 @@ if( NACL )
 
   add_dependencies( unittest unittest_files )
   set_target_properties( unittest PROPERTIES OUTPUT_NAME unittest${PLATFORM_EXE_SUFFIX} )
+  pnacl_finalise( unittest )
 endif()
 
 add_test( unittest unittest )

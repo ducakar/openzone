@@ -138,11 +138,11 @@ void LuaClient::create( const char* mission_ )
   Log::println( "}" );
 }
 
-void LuaClient::read( InputStream* istream )
+void LuaClient::read( InputStream* is )
 {
   hard_assert( l_gettop() == 0 );
 
-  cs.mission = istream->readString();
+  cs.mission = is->readString();
 
   Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
   if( cs.missionLingua.initMission( cs.mission ) ) {
@@ -176,24 +176,24 @@ void LuaClient::read( InputStream* istream )
     }
   }
 
-  const char* name = istream->readString();
+  const char* name = is->readString();
 
   while( !String::isEmpty( name ) ) {
-    readValue( istream );
+    readValue( is );
 
     l_setglobal( name );
 
-    name = istream->readString();
+    name = is->readString();
   }
 
   Log::printEnd( " OK" );
 }
 
-void LuaClient::write( OutputStream* ostream )
+void LuaClient::write( OutputStream* os )
 {
   hard_assert( l_gettop() == 0 );
 
-  ostream->writeString( cs.mission );
+  os->writeString( cs.mission );
 
 #if LUA_VERSION_NUM >= 502
   l_pushglobaltable();
@@ -209,9 +209,9 @@ void LuaClient::write( OutputStream* ostream )
 
     const char* name = l_tostring( -2 );
     if( name[0] == 'o' && name[1] == 'z' && name[2] == '_' ) {
-      ostream->writeString( name );
+      os->writeString( name );
 
-      writeValue( ostream );
+      writeValue( os );
     }
 
     l_pop( 1 );
@@ -221,7 +221,7 @@ void LuaClient::write( OutputStream* ostream )
   l_pop( 1 );
 #endif
 
-  ostream->writeString( "" );
+  os->writeString( "" );
 }
 
 void LuaClient::init()

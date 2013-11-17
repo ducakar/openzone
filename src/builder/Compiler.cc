@@ -54,12 +54,12 @@ enum Environment
 
 struct Vertex
 {
-  Point    pos;
-  TexCoord texCoord;
-  Vec3     normal;
-  Vec3     tangent;
-  Vec3     binormal;
-  Vec3     colour;
+  Point            pos;
+  client::TexCoord texCoord;
+  Vec3             normal;
+  Vec3             tangent;
+  Vec3             binormal;
+  Vec3             colour;
 
   OZ_HIDDEN
   bool operator == ( const Vertex& v ) const
@@ -69,7 +69,7 @@ struct Vertex
   }
 
   OZ_HIDDEN
-  void write( OutputStream* ostream ) const;
+  void write( OutputStream* os ) const;
 };
 
 struct Triangle
@@ -158,12 +158,12 @@ static int                vertNum;
 static List<ushort>       polyIndices;
 
 OZ_HIDDEN
-void Vertex::write( OutputStream* ostream ) const
+void Vertex::write( OutputStream* os ) const
 {
-  ostream->writePoint( pos );
-  ostream->writeFloat( texCoord.u );
-  ostream->writeFloat( texCoord.v );
-  ostream->writeVec3( normal );
+  os->writePoint( pos );
+  os->writeFloat( texCoord.u );
+  os->writeFloat( texCoord.v );
+  os->writeVec3( normal );
 }
 
 static void calculateBounds( const Node* node, const Mat44& parentTransf )
@@ -232,7 +232,7 @@ void Compiler::beginModel()
   bounds.mins          = Point( +Math::INF, +Math::INF, +Math::INF );
   bounds.maxs          = Point( -Math::INF, -Math::INF, -Math::INF );
 
-  mesh.flags           = Model::SOLID_BIT;
+  mesh.flags           = client::Model::SOLID_BIT;
   mesh.texture         = "";
 
   light.pos            = Point::ORIGIN;
@@ -362,7 +362,7 @@ void Compiler::beginMesh()
   hard_assert( environment == MODEL );
   environment = MESH;
 
-  mesh.flags   = Model::SOLID_BIT;
+  mesh.flags   = client::Model::SOLID_BIT;
   mesh.texture = "";
 }
 
@@ -383,7 +383,7 @@ void Compiler::begin( Compiler::PolyMode mode_ )
   environment = POLY;
 
   vert.pos        = Point::ORIGIN;
-  vert.texCoord   = TexCoord( 0.0f, 0.0f );
+  vert.texCoord   = client::TexCoord( 0.0f, 0.0f );
   vert.normal     = Vec3::ZERO;
   vert.tangent    = Vec3::ZERO;
   vert.binormal   = Vec3::ZERO;
@@ -451,7 +451,7 @@ void Compiler::blend( bool doBlend )
 {
   hard_assert( environment == MESH );
 
-  mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
+  mesh.flags = doBlend ? client::Model::ALPHA_BIT : client::Model::SOLID_BIT;
 }
 
 void Compiler::texCoord( float u, float v )

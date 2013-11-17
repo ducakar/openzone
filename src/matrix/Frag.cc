@@ -43,15 +43,15 @@ Frag::Frag( const FragPool* pool_, int index_, const Point& p_, const Vec3& velo
   elasticity = pool->elasticity;
 }
 
-Frag::Frag( const FragPool* pool_, InputStream* istream )
+Frag::Frag( const FragPool* pool_, InputStream* is )
 {
   cell       = nullptr;
-  index      = istream->readInt();
+  index      = is->readInt();
   poolId     = pool_->id;
   pool       = pool_;
-  p          = istream->readPoint();
-  velocity   = istream->readVec3();
-  life       = istream->readFloat();
+  p          = is->readPoint();
+  velocity   = is->readVec3();
+  life       = is->readFloat();
   mass       = pool->mass;
   elasticity = pool->elasticity;
 }
@@ -69,12 +69,12 @@ Frag::Frag( const FragPool* pool_, const JSON& json )
   elasticity = pool->elasticity;
 }
 
-void Frag::write( OutputStream* ostream ) const
+void Frag::write( OutputStream* os ) const
 {
-  ostream->writeInt( index );
-  ostream->writePoint( p );
-  ostream->writeVec3( velocity );
-  ostream->writeFloat( life );
+  os->writeInt( index );
+  os->writePoint( p );
+  os->writeVec3( velocity );
+  os->writeFloat( life );
 }
 
 JSON Frag::write() const

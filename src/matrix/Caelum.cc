@@ -42,20 +42,20 @@ void Caelum::update()
   time = Math::fmod( time + Timer::TICK_TIME, period );
 }
 
-void Caelum::read( InputStream* istream )
+void Caelum::read( InputStream* is )
 {
-  id      = istream->readInt();
-  heading = istream->readFloat();
-  period  = istream->readFloat();
-  time    = istream->readFloat();
+  id      = is->readInt();
+  heading = is->readFloat();
+  period  = is->readFloat();
+  time    = is->readFloat();
 }
 
-void Caelum::write( OutputStream* ostream ) const
+void Caelum::write( OutputStream* os ) const
 {
-  ostream->writeInt( id );
-  ostream->writeFloat( heading );
-  ostream->writeFloat( period );
-  ostream->writeFloat( time );
+  os->writeInt( id );
+  os->writeFloat( heading );
+  os->writeFloat( period );
+  os->writeFloat( time );
 }
 
 void Caelum::read( const JSON& json )

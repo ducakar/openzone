@@ -15,10 +15,7 @@
 #
 
 defaultPlatform=Linux-`uname -m`-Clang
-
-nacl86Prefix="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
-naclARMPrefix="$NACL_SDK_ROOT/toolchain/linux_arm_newlib"
-pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_x86_pnacl/newlib"
+pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_pnacl"
 
 function run_nacl()
 {
@@ -26,26 +23,15 @@ function run_nacl()
 
   # Just create symlinks instead of copying.
   for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
-           build/NaCl-*/src/tools/openzone.*.nexe build/PNaCl/src/tools/openzone.pexe \
-           etc/nacl/openzone.nmf etc/nacl/openzone.??.html doc
+           build/PNaCl/src/tools/openzone.pexe etc/nacl/openzone.nmf \
+           etc/nacl/openzone.??.html doc
   do
     [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
   done
 
   # Strip binaries if `strip` option is given.
-  if [[ $arg == strip ]]; then
-    if [[ -e build/NaCl-test/openzone.x86_64.nexe ]]; then
-      "$nacl86Prefix/bin/x86_64-nacl-strip" build/NaCl-test/openzone.x86_64.nexe
-    fi
-    if [[ -e build/NaCl-test/openzone.i686.nexe ]]; then
-      "$nacl86Prefix/bin/i686-nacl-strip" build/NaCl-test/openzone.i686.nexe
-    fi
-    if [[ -e build/NaCl-test/openzone.ARM.nexe ]]; then
-      "$naclARMPrefix/bin/arm-nacl-strip" build/NaCl-test/openzone.ARM.nexe
-    fi
-    if [[ -e build/NaCl-test/openzone.pexe ]]; then
-      "$pnaclPrefix/bin64/pnacl-strip" build/NaCl-test/openzone.pexe
-    fi
+  if [[ $arg == strip && -e build/NaCl-test/openzone.pexe ]]; then
+    "$pnaclPrefix/bin64/pnacl-strip" build/NaCl-test/openzone.pexe
   fi
 
   cd build/NaCl-test
@@ -53,7 +39,7 @@ function run_nacl()
   serverPID=$!
 
   sleep 3
-  chromium --user-data-dir="$HOME/.config/chromium-test" \
+  chromium --user-data-dir="$HOME/.config/chromium-test" --enable-pnacl \
            http://localhost:8000/openzone.sl.html || true
 
   kill $serverPID

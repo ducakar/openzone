@@ -6,7 +6,7 @@ set( PCH_DISABLE                ON )
 set( PLATFORM_EMBEDDED          ON )
 set( PLATFORM_NAME              "PNaCl" )
 set( PLATFORM_TRIPLET           "pnacl" )
-set( PLATFORM_PREFIX            "$ENV{NACL_SDK_ROOT}/toolchain/linux_x86_pnacl/newlib" )
+set( PLATFORM_PREFIX            "$ENV{NACL_SDK_ROOT}/toolchain/linux_pnacl" )
 set( PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/PNaCl" )
 set( PLATFORM_EXE_SUFFIX        ".pexe" )
 
@@ -29,6 +29,12 @@ set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
 set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
+
+macro( pnacl_finalise _target )
+  add_custom_command( TARGET ${_target}
+    POST_BUILD COMMAND "${PLATFORM_PREFIX}/bin64/${PLATFORM_TRIPLET}-finalize"
+                       "$<TARGET_FILE:${_target}>" )
+endmacro()
 
 include_directories( SYSTEM $ENV{NACL_SDK_ROOT}/include )
 link_directories( $ENV{NACL_SDK_ROOT}/lib/pnacl/Release )

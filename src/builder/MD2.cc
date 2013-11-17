@@ -281,10 +281,10 @@ void MD2::build( const char* path )
   freeTransf.rotateX( Math::rad( freeRotation.x ) );
   freeTransf.rotateZ( Math::rad( freeRotation.z ) );
 
-  DArray<TexCoord>    texCoords( header.nTexCoords );
-  DArray<MD2Triangle> triangles( header.nTriangles );
-  DArray<Vec3>        normals( header.nFrames * header.nFramePositions );
-  DArray<Point>       positions( header.nFrames * header.nFramePositions );
+  DArray<client::TexCoord> texCoords( header.nTexCoords );
+  DArray<MD2Triangle>      triangles( header.nTriangles );
+  DArray<Vec3>             normals( header.nFrames * header.nFramePositions );
+  DArray<Point>            positions( header.nFrames * header.nFramePositions );
 
   is.rewind();
   is.forward( header.offFrames );

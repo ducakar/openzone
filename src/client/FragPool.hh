@@ -50,6 +50,8 @@ class FragPool
 
     int flags;
 
+  public:
+
     explicit FragPool( const oz::FragPool* pool );
     ~FragPool();
 

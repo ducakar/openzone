@@ -37,7 +37,7 @@ class Task
     static const int ACTIVE_BIT = 0x00000001;
 
     typedef Task* CreateFunc( const Task* parent );
-    typedef Task* ReadFunc( InputStream* istream, const Task* parent );
+    typedef Task* ReadFunc( InputStream* is, const Task* parent );
 
     Task*       prev[1];
     Task*       next[1];
@@ -53,7 +53,7 @@ class Task
   public:
 
     static Task* create( const Task* parent );
-    static Task* read( InputStream* istream, const Task* parent );
+    static Task* read( InputStream* is, const Task* parent );
 
     explicit Task( Mind* mind_, Task* parent_ ) :
       flags( 0 ), mind( mind_ ), parent( parent_ )
@@ -87,7 +87,7 @@ class Task
 
   public:
 
-    virtual void write( OutputStream* ostream ) const;
+    virtual void write( OutputStream* os ) const;
 
 };
 

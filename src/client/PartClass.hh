@@ -49,10 +49,14 @@ class PartClass
 
   public:
 
-    explicit PartClass( InputStream* istream );
-    ~PartClass();
+    bool isPreloaded() const;
+    bool isLoaded() const;
 
+    void schedule();
+
+    void preload();
     void load();
+    void unload();
 
 };
 

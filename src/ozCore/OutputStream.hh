@@ -82,35 +82,35 @@ class OutputStream
     /**
      * Copy constructor, copies buffer if source stream is buffered.
      */
-    OutputStream( const OutputStream& s ) :
-      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ),
-      order( s.order ), buffered( s.buffered )
+    OutputStream( const OutputStream& os ) :
+      streamPos( os.streamPos ), streamBegin( os.streamBegin ), streamEnd( os.streamEnd ),
+      order( os.order ), buffered( os.buffered )
     {
-      if( s.buffered ) {
-        int length = int( s.streamPos - s.streamBegin );
-        int size   = int( s.streamEnd - s.streamBegin );
+      if( os.buffered ) {
+        int length = int( os.streamPos - os.streamBegin );
+        int size   = int( os.streamEnd - os.streamBegin );
 
         streamBegin = size == 0 ? nullptr : new char[size];
         streamEnd   = streamBegin + size;
         streamPos   = streamBegin + length;
 
-        mCopy( streamBegin, s.streamBegin, size_t( size ) );
+        mCopy( streamBegin, os.streamBegin, size_t( size ) );
       }
     }
 
     /**
      * Move constructor, moves buffer if source stream is buffered.
      */
-    OutputStream( OutputStream&& s ) :
-      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ),
-      order( s.order ), buffered( s.buffered )
+    OutputStream( OutputStream&& os ) :
+      streamPos( os.streamPos ), streamBegin( os.streamBegin ), streamEnd( os.streamEnd ),
+      order( os.order ), buffered( os.buffered )
     {
-      if( s.buffered ) {
-        s.streamPos   = nullptr;
-        s.streamBegin = nullptr;
-        s.streamEnd   = nullptr;
-        s.order       = Endian::NATIVE;
-        s.buffered    = false;
+      if( os.buffered ) {
+        os.streamPos   = nullptr;
+        os.streamBegin = nullptr;
+        os.streamEnd   = nullptr;
+        os.order       = Endian::NATIVE;
+        os.buffered    = false;
       }
     }
 
@@ -119,15 +119,15 @@ class OutputStream
      *
      * Existing storage is reused if its size matches.
      */
-    OutputStream& operator = ( const OutputStream& s )
+    OutputStream& operator = ( const OutputStream& os )
     {
-      if( &s == this ) {
+      if( &os == this ) {
         return *this;
       }
 
-      if( s.buffered ) {
-        int  length      = int( s.streamPos - s.streamBegin );
-        int  size        = int( s.streamEnd - s.streamBegin );
+      if( os.buffered ) {
+        int  length      = int( os.streamPos - os.streamBegin );
+        int  size        = int( os.streamEnd - os.streamBegin );
         bool sizeMatches = int( streamEnd - streamBegin ) == size;
 
         if( buffered && !sizeMatches ) {
@@ -139,21 +139,21 @@ class OutputStream
         }
 
         streamPos = streamBegin + length;
-        order     = s.order;
-        buffered  = s.buffered;
+        order     = os.order;
+        buffered  = os.buffered;
 
-        mCopy( streamBegin, s.streamBegin, size_t( size ) );
+        mCopy( streamBegin, os.streamBegin, size_t( size ) );
       }
       else {
         if( buffered ) {
           delete[] streamBegin;
         }
 
-        streamPos   = s.streamPos;
-        streamBegin = s.streamBegin;
-        streamEnd   = s.streamEnd;
-        order       = s.order;
-        buffered    = s.buffered;
+        streamPos   = os.streamPos;
+        streamBegin = os.streamBegin;
+        streamEnd   = os.streamEnd;
+        order       = os.order;
+        buffered    = os.buffered;
       }
 
       return *this;
@@ -162,9 +162,9 @@ class OutputStream
     /**
      * Move operator, moves buffer if source stream is buffered.
      */
-    OutputStream& operator = ( OutputStream&& s )
+    OutputStream& operator = ( OutputStream&& os )
     {
-      if( &s == this ) {
+      if( &os == this ) {
         return *this;
       }
 
@@ -172,18 +172,18 @@ class OutputStream
         delete[] streamBegin;
       }
 
-      streamPos   = s.streamPos;
-      streamBegin = s.streamBegin;
-      streamEnd   = s.streamEnd;
-      order       = s.order;
-      buffered    = s.buffered;
+      streamPos   = os.streamPos;
+      streamBegin = os.streamBegin;
+      streamEnd   = os.streamEnd;
+      order       = os.order;
+      buffered    = os.buffered;
 
-      if( s.buffered ) {
-        s.streamPos   = nullptr;
-        s.streamBegin = nullptr;
-        s.streamEnd   = nullptr;
-        s.order       = Endian::NATIVE;
-        s.buffered    = false;
+      if( os.buffered ) {
+        os.streamPos   = nullptr;
+        os.streamBegin = nullptr;
+        os.streamEnd   = nullptr;
+        os.order       = Endian::NATIVE;
+        os.buffered    = false;
       }
 
       return *this;
@@ -194,10 +194,10 @@ class OutputStream
      */
     InputStream inputStream() const
     {
-      InputStream istream( streamBegin, streamEnd, order );
+      InputStream is( streamBegin, streamEnd, order );
 
-      istream.set( streamPos );
-      return istream;
+      is.set( streamPos );
+      return is;
     }
 
     /**

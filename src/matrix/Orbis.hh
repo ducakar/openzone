@@ -160,10 +160,10 @@ class Orbis : public Bounds
 
     void update();
 
-    void read( InputStream* istream );
+    void read( InputStream* is );
     void read( const JSON& json );
 
-    void write( OutputStream* ostream ) const;
+    void write( OutputStream* os ) const;
     JSON write() const;
 
     void load();

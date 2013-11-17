@@ -33,7 +33,7 @@
 
 #define OZ_CHECK( cond ) \
   if( !( cond ) ) { \
-    oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "  Check '%s' failed", #cond ); \
+    oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "Check '%s' failed", #cond ); \
   }
 
 // FIXME Add a space after ellipsis once KDevelop gets that bug fixed.

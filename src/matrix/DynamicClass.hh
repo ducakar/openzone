@@ -42,7 +42,7 @@ class DynamicClass : public ObjectClass
     void init( InputStream* is, const char* name ) override;
 
     Object* create( int index, const Point& pos, Heading heading ) const override;
-    Object* create( InputStream* istream ) const override;
+    Object* create( InputStream* is ) const override;
     Object* create( const JSON& json ) const override;
 
 };

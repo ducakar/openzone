@@ -23,7 +23,7 @@
  * Dummy txc_dxtn library.
  *
  * We don't need full S3TC support, only ability to upload compressed textures. However, when Mesa
- * doesn't find libtxc_dxtn library, if disables all S3TC-related stuff, including those things that
+ * doesn't find libtxc_dxtn library, it disables all S3TC-related stuff, including those things that
  * could work without libtxc_dxtn.
  *
  * This dummy txc_dxtn library should be put into `LD_LIBRARY_PATH` when starting OpenZone on a

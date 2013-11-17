@@ -155,14 +155,14 @@ void Matrix::update()
   orbis.update();
 }
 
-void Matrix::read( InputStream* istream )
+void Matrix::read( InputStream* is )
 {
   Log::println( "Reading Matrix {" );
   Log::indent();
 
-  timer.ticks = istream->readULong64();
-  orbis.read( istream );
-  physics.gravity = istream->readFloat();
+  timer.ticks = is->readULong64();
+  orbis.read( is );
+  physics.gravity = is->readFloat();
 
   Log::unindent();
   Log::println( "}" );
@@ -179,11 +179,11 @@ void Matrix::read( const JSON& json )
   Log::println( "}" );
 }
 
-void Matrix::write( OutputStream* ostream ) const
+void Matrix::write( OutputStream* os ) const
 {
-  ostream->writeULong64( timer.ticks );
-  orbis.write( ostream );
-  ostream->writeFloat( physics.gravity );
+  os->writeULong64( timer.ticks );
+  orbis.write( os );
+  os->writeFloat( physics.gravity );
 }
 
 JSON Matrix::write() const

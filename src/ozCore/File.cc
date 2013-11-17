@@ -84,9 +84,9 @@ static bool operator < ( const File& a, const File& b )
 
 static void initSpecialDirs()
 {
-  specialDir[File::HOME]   = "/";
-  specialDir[File::CONFIG] = "/config";
-  specialDir[File::DATA]   = "/data";
+  specialDirs[File::HOME]   = "/";
+  specialDirs[File::CONFIG] = "/config";
+  specialDirs[File::DATA]   = "/data";
 
   File::mkdir( "/config" );
   File::mkdir( "/data" );
@@ -163,11 +163,11 @@ static void setSpecialDir( File::UserDirectory dir, const char* name,
 
 static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
 {
-  InputStream istream = file.inputStream();
+  InputStream is = file.inputStream();
 
   String line;
-  while( istream.isAvailable() ) {
-    line = istream.readLine();
+  while( is.isAvailable() ) {
+    line = is.readLine();
 
     if( line[0] == '#' ) {
       continue;
@@ -635,13 +635,13 @@ bool File::read( char* buffer, int* size ) const
   }
 }
 
-bool File::read( OutputStream* ostream ) const
+bool File::read( OutputStream* os ) const
 {
   int   size   = fileSize;
-  char* buffer = ostream->forward( fileSize );
+  char* buffer = os->forward( fileSize );
   bool  result = read( buffer, &size );
 
-  ostream->set( buffer + size );
+  os->set( buffer + size );
   return result;
 }
 
@@ -1107,8 +1107,8 @@ bool File::cp( const File& file, const char* path )
     destFile = destFile.path() + "/" + file.name();
   }
 
-  InputStream istream = file.inputStream();
-  return !istream.isAvailable() ? false : destFile.write( istream.begin(), istream.available() );
+  InputStream is = file.inputStream();
+  return !is.isAvailable() ? false : destFile.write( is.begin(), is.available() );
 }
 
 bool File::rm( const File& file )
