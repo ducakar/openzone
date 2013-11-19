@@ -21,14 +21,53 @@
  */
 
 /**
- * @file ozEngine/Pepper.hh
+ * @file ozCore/Pepper.hh
  *
  * `Pepper` class.
  */
 
 #pragma once
 
-#include "common.hh"
+#include "String.hh"
+#include "Semaphore.hh"
+
+#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
+
+/**
+ * @def OZ_NACL_ENTRY_POINT
+ * Implement `CreateModule()` entry point for a NaCl application.
+ *
+ * This macro has no effect for platforms other than NaCl.
+ */
+#define OZ_NACL_ENTRY_POINT() \
+  namespace pp \
+  { \
+    pp::Module* CreateModule(); \
+    pp::Module* CreateModule() { return oz::Pepper::createModule(); } \
+  }
+
+namespace pp
+{
+
+class Module;
+class Instance;
+
+}
+
+/**
+ * Main function (entry point) for NaCl applications.
+ *
+ * For a NaCl application, you must implement this function and put `OZ_NACL_ENTRY_POINT()` macro in
+ * a `.cc` file (out of any namespace). It is run in a new thread named "naclMain". An empty string
+ * is passed as argument zero (i.e. `argc = 1` and `argv = { "" }`).
+ */
+int naclMain( int argc, char** argv );
+
+#else
+
+#define OZ_NACL_ENTRY_POINT()
+
+#endif
 
 namespace oz
 {
@@ -44,6 +83,18 @@ namespace oz
  */
 class Pepper
 {
+  private:
+
+    /**
+     * Internal `pp::Instance` implementation.
+     */
+    class Instance;
+
+    /**
+     * Internal `pp::Module` implementation.
+     */
+    class Module;
+
   public:
 
     /**
@@ -61,6 +112,8 @@ class Pepper
 
     static bool  hasFocus; ///< True iff focused and mouse is captured.
 
+  public:
+
     /**
      * Forbid instances.
      */
@@ -75,6 +128,11 @@ class Pepper
      * Execute asynchronous callback on the module's main thread.
      */
     static void mainCall( Callback* callback, void* data );
+
+    /**
+     * Return `pp::Instance` for application or `nullptr` if not created.
+     */
+    static pp::Instance* instance();
 
     /**
      * Post a message to JavaScript running on the page.
@@ -92,14 +150,9 @@ class Pepper
     static void push( const char* message );
 
     /**
-     * Initialise `Pepper` class.
+     * Create PPAPI module instance.
      */
-    static void init();
-
-    /**
-     * Deinitialise `Pepper` class.
-     */
-    static void destroy();
+    static pp::Module* createModule();
 
 };
 

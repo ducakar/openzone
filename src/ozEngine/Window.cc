@@ -26,7 +26,6 @@
 
 #include "Window.hh"
 
-#include "Pepper.hh"
 #include "GL.hh"
 
 #include <SDL.h>
@@ -337,12 +336,12 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
       PP_GRAPHICS3DATTRIB_NONE
     };
 
-    context = new pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
+    context = new pp::Graphics3D( Pepper::instance(), pp::Graphics3D(), attribs );
 
     if( context->is_null() ) {
       Log::printEnd( "Failed to create OpenGL context" );
     }
-    else if( !System::instance->BindGraphics( *context ) ) {
+    else if( !Pepper::instance()->BindGraphics( *context ) ) {
       Log::printEnd( "Failed to bind Graphics3D" );
     }
     else {

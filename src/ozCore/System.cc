@@ -29,6 +29,7 @@
 #include "StackTrace.hh"
 #include "Math.hh"
 #include "Log.hh"
+#include "Pepper.hh"
 
 #include <clocale>
 #include <csignal>
@@ -281,7 +282,9 @@ static void bellCallback( void* buffer, uint, void* info_ )
 
 static void* bellMain( void* )
 {
-  if( System::instance == nullptr ) {
+  pp::Instance* ppInstance = Pepper::instance();
+
+  if( ppInstance == nullptr ) {
     return nullptr;
   }
 
@@ -296,11 +299,11 @@ static void* bellMain( void* )
     return nullptr;
   }
 
-  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( System::instance );
-  uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
-  pp::AudioConfig config( System::instance, rate, nFrameSamples );
+  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( ppInstance );
+  uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( ppInstance, rate, 4096 );
+  pp::AudioConfig config( ppInstance, rate, nFrameSamples );
 
-  info->audio         = new( audio ) pp::Audio( System::instance, config, bellCallback, info );
+  info->audio         = new( audio ) pp::Audio( ppInstance, config, bellCallback, info );
   info->rate          = rate;
   info->nFrameSamples = int( nFrameSamples );
   info->nSamples      = Math::lround( BELL_TIME * float( rate ) );
@@ -568,12 +571,11 @@ static void abort( bool doHalt )
   ::abort();
 }
 
-const int     System::HANDLERS_BIT;
-const int     System::HALT_BIT;
-const int     System::LOCALE_BIT;
+const int System::HANDLERS_BIT;
+const int System::HALT_BIT;
+const int System::LOCALE_BIT;
 
-void*         System::javaVM   = nullptr;
-pp::Instance* System::instance = nullptr;
+void*     System::javaVM = nullptr;
 
 void System::trap()
 {

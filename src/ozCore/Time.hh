@@ -83,7 +83,7 @@ class Time
     static long64 time();
 
     /**
-     * Get seconds from epoch for the broken-down time.
+     * Get seconds from epoch for the broken-down time representation.
      */
     long64 toEpoch() const;
 

@@ -46,14 +46,6 @@
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
-// Forward declaration for NaCl module instance.
-namespace pp
-{
-
-class Instance;
-
-}
-
 namespace oz
 {
 
@@ -83,8 +75,7 @@ class System
     /// Type for crash handler function passed to `System::init()`.
     typedef void CrashHandler();
 
-    static void*         javaVM;   ///< Java VM descriptor.
-    static pp::Instance* instance; ///< NaCl instance.
+    static void* javaVM; ///< Java VM descriptor.
 
   public:
 

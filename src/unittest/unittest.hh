@@ -26,11 +26,6 @@
 
 #include <ozCore/ozCore.hh>
 
-#ifdef __native_client__
-# include <ppapi/cpp/module.h>
-# include <ppapi/cpp/instance.h>
-#endif
-
 #define OZ_CHECK( cond ) \
   if( !( cond ) ) { \
     oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "Check '%s' failed", #cond ); \
@@ -164,44 +159,4 @@ void test_Alloc();
 
 void test_String();
 
-#ifdef __native_client__
-
-class MainInstance : public pp::Instance
-{
-  private:
-
-    oz::Thread mainThread;
-
-    static void mainThreadMain( void* );
-
-  public:
-
-    explicit MainInstance( PP_Instance instance );
-    ~MainInstance();
-
-    bool Init( uint32_t argc, const char** argn, const char** argv ) override;
-    void DidChangeView( const pp::View& view ) override;
-    void DidChangeView( const pp::Rect& position, const pp::Rect& clip ) override;
-
-};
-
-class MainModule : public pp::Module
-{
-  public:
-
-    pp::Instance* CreateInstance( PP_Instance instance ) override;
-
-};
-
-namespace pp
-{
-
-pp::Module* CreateModule();
-
-}
-
-#else // __native_client__
-
 int main();
-
-#endif // __native_client__

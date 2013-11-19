@@ -27,6 +27,7 @@
 #include "File.hh"
 
 #include "HashMap.hh"
+#include "Pepper.hh"
 
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>
@@ -443,7 +444,7 @@ bool File::stat()
     }
 
     pp::FileRef file( ppFileSystem, filePath );
-    pp::FileIO  fio( System::instance );
+    pp::FileIO  fio( Pepper::instance() );
     PP_FileInfo info;
 
     if( fio.Open( file, 0, pp::BlockUntilComplete() ) == PP_OK &&
@@ -574,7 +575,7 @@ bool File::read( char* buffer, int* size ) const
 #if defined( __native_client__ )
 
     pp::FileRef file( ppFileSystem, filePath );
-    pp::FileIO  fio( System::instance );
+    pp::FileIO  fio( Pepper::instance() );
 
     if( fio.Open( file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete() ) != PP_OK ) {
       *size = 0;
@@ -695,7 +696,7 @@ bool File::write( const char* buffer, int size ) const
 #if defined( __native_client__ )
 
     pp::FileRef file( ppFileSystem, filePath );
-    pp::FileIO  fio( System::instance );
+    pp::FileIO  fio( Pepper::instance() );
 
     if( fio.Open( file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
                   pp::BlockUntilComplete() ) != PP_OK )
@@ -1182,25 +1183,31 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
 
 #ifdef __native_client__
 
-  ppCore = pp::Module::Get()->core();
+  pp::Instance* ppInstance = Pepper::instance();
+  pp::Module*   ppModule   = pp::Module::Get();
+
+  if( ppInstance == nullptr ) {
+    OZ_ERROR( "oz::File: NaCl instance is nullptr (was oz::Pepper::createModule called?)" );
+  }
 
   PP_FileSystemType naclType = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
                                                               PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
-  ppFileSystem = pp::FileSystem( System::instance, naclType );
+  ppCore       = ppModule->core();
+  ppFileSystem = pp::FileSystem( ppInstance, naclType );
 
   if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
     OZ_ERROR( "oz::File: Local NaCl file system open failed" );
   }
-  if( System::instance == nullptr ) {
+  if( ppInstance == nullptr ) {
     OZ_ERROR( "oz::File: System::instance must be set prior to NaCl file system initialisation" );
   }
   if( ppCore->IsMainThread() ) {
     OZ_ERROR( "oz::File: PhysicsFS cannot be initialised from the main NaCl thread" );
   }
 
-  PHYSFS_NACL_init( System::instance->pp_instance(), pp::Module::Get()->get_browser_interface(),
-                    naclType, naclSize );
+  PHYSFS_NACL_init( ppInstance->pp_instance(), ppModule->get_browser_interface(), naclType,
+                    naclSize );
 
 #endif
 

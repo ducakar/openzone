@@ -119,12 +119,12 @@ void NaClDownloader::begin( const char* url_ )
 
   MainCall() << [&]()
   {
-    pp::URLRequestInfo request( System::instance );
+    pp::URLRequestInfo request( Pepper::instance() );
     request.SetURL( url );
     request.SetMethod( "GET" );
     request.SetRecordDownloadProgress( true );
 
-    loader = new pp::URLLoader( System::instance );
+    loader = new pp::URLLoader( Pepper::instance() );
     if( loader == nullptr ) {
       semaphore.post();
       return;

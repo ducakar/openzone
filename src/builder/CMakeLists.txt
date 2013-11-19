@@ -1,8 +1,8 @@
-configure_file( config.hh.in config.hh @ONLY )
-
 if( PLATFORM_EMBEDDED )
   return()
 endif()
+
+configure_file( config.hh.in config.hh @ONLY )
 
 add_library( builder STATIC
 #BEGIN SOURCES

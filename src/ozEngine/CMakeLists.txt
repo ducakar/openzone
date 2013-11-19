@@ -14,7 +14,6 @@ add_library( ozEngine
   GLTexture.hh
   ozEngine.hh
   pch.hh
-  Pepper.hh
   Shader.hh
   Window.hh
   ALBuffer.cc
@@ -24,7 +23,6 @@ add_library( ozEngine
   Cursor.cc
   GL.cc
   GLTexture.cc
-  Pepper.cc
   Shader.cc
   Window.cc
 #END SOURCES

@@ -38,7 +38,7 @@ bool Foo::allowEqualsOp = true;
 bool Foo::allowLessOp   = true;
 
 #ifdef __native_client__
-static int nacl_main()
+int naclMain( int, char** )
 #else
 int main()
 #endif
@@ -57,59 +57,8 @@ int main()
   test_String();
 
   Log() << ( hasPassed ? "Unittest PASSED" : "Unittest FAILED" );
+
   return EXIT_SUCCESS;
 }
 
-#ifdef __native_client__
-
-void MainInstance::mainThreadMain( void* )
-{
-  nacl_main();
-}
-
-MainInstance::MainInstance( PP_Instance instance_ ) :
-  pp::Instance( instance_ )
-{
-  System::instance = this;
-}
-
-MainInstance::~MainInstance()
-{
-  if( mainThread.isValid() ) {
-    mainThread.join();
-  }
-}
-
-bool MainInstance::Init( uint32_t, const char**, const char** )
-{
-  return true;
-}
-
-void MainInstance::DidChangeView( const pp::View& )
-{
-  if( !mainThread.isValid() ) {
-    mainThread.start( "main", Thread::JOINABLE, mainThreadMain );
-  }
-}
-
-void MainInstance::DidChangeView( const pp::Rect&, const pp::Rect& )
-{
-  PP_NOTREACHED();
-}
-
-pp::Instance* MainModule::CreateInstance( PP_Instance instance )
-{
-  return new MainInstance( instance );
-}
-
-namespace pp
-{
-
-pp::Module* CreateModule()
-{
-  return new MainModule();
-}
-
-}
-
-#endif
+OZ_NACL_ENTRY_POINT()

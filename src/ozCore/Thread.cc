@@ -30,6 +30,7 @@
 
 #include "System.hh"
 #include "StackTrace.hh"
+#include "Pepper.hh"
 
 #include <cstdlib>
 #include <cstring>
@@ -170,11 +171,14 @@ void* Thread::Descriptor::threadMain( void* data )
 
 #elif defined( __native_client__ )
 
-  if( System::instance == nullptr ) {
-    OZ_ERROR( "oz::Thread: System::instance must be set before starting new threads" );
+  pp::Instance* ppInstance = Pepper::instance();
+
+  if( ppInstance == nullptr ) {
+    OZ_ERROR( "oz::Thread: NaCl application instance must be created via oz::Pepper::createModule()"
+              " before starting any new threads" );
   }
 
-  pp::MessageLoop messageLoop( System::instance );
+  pp::MessageLoop messageLoop( ppInstance );
   messageLoop.AttachToCurrentThread();
 
 #endif

@@ -34,6 +34,7 @@ add_library( ozCore
   OutputStream.hh
   ozCore.hh
   Pair.hh
+  Pepper.hh
   Plane.hh
   Point.hh
   Pool.hh
@@ -65,6 +66,7 @@ add_library( ozCore
   Mat44.cc
   Math.cc
   Mutex.cc
+  Pepper.cc
   Point.cc
   Profiler.cc
   Quat.cc

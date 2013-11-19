@@ -118,3 +118,8 @@
 #include "SharedLib.hh"
 #include "Gettext.hh"
 #include "JSON.hh"
+
+/*
+ * Platform support.
+ */
+#include "Pepper.hh"
