@@ -23,6 +23,7 @@ add_library( ozCore
   HashSet.hh
   InputStream.hh
   iterables.hh
+  Java.hh
   JSON.hh
   List.hh
   Log.hh
@@ -60,6 +61,7 @@ add_library( ozCore
   common.cc
   File.cc
   Gettext.cc
+  Java.cc
   JSON.cc
   Log.cc
   Mat33.cc

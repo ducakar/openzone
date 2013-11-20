@@ -29,6 +29,7 @@
 #include "StackTrace.hh"
 #include "Math.hh"
 #include "Log.hh"
+#include "Java.hh"
 #include "Pepper.hh"
 
 #include <clocale>
@@ -574,8 +575,6 @@ static void abort( bool doHalt )
 const int System::HANDLERS_BIT;
 const int System::HALT_BIT;
 const int System::LOCALE_BIT;
-
-void*     System::javaVM = nullptr;
 
 void System::trap()
 {

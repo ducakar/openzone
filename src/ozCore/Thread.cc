@@ -30,6 +30,7 @@
 
 #include "System.hh"
 #include "StackTrace.hh"
+#include "Java.hh"
 #include "Pepper.hh"
 
 #include <cstdlib>
@@ -160,14 +161,12 @@ void* Thread::Descriptor::threadMain( void* data )
 
 #if defined( __ANDROID__ )
 
-  if( System::javaVM == nullptr ) {
-    OZ_ERROR( "oz::Thread: System::javaVM must be set before starting new threads" );
+  JavaVM* javaVM = Java::vm();
+
+  if( javaVM != nullptr ) {
+    void* jniEnv = nullptr;
+    javaVM->AttachCurrentThread( &jniEnv, nullptr );
   }
-
-  JNIEnv* jniEnv = nullptr;
-  JavaVM* javaVM = static_cast<JavaVM*>( System::javaVM );
-
-  javaVM->AttachCurrentThread( &jniEnv, nullptr );
 
 #elif defined( __native_client__ )
 
@@ -187,7 +186,11 @@ void* Thread::Descriptor::threadMain( void* data )
   descriptor->main( descriptor->data );
 
 #ifdef __ANDROID__
-  javaVM->DetachCurrentThread();
+
+  if( javaVM != nullptr ) {
+    javaVM->DetachCurrentThread();
+  }
+
 #endif
 
   if( descriptor->type == DETACHED ) {

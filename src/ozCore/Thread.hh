@@ -132,7 +132,8 @@ class Thread
      * `join()` should be called later to ensure thread's termination and to release its resources.
      *
      * @note
-     * On Android `System::javaVM` must be set prior to invoking this method.
+     * On Android, thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
+     * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
      *
      * @param name thread name (copied to an internal buffer).
      * @param type `DETACHED` or `JOINABLE`.

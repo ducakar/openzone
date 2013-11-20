@@ -75,8 +75,6 @@ class System
     /// Type for crash handler function passed to `System::init()`.
     typedef void CrashHandler();
 
-    static void* javaVM; ///< Java VM descriptor.
-
   public:
 
     /**

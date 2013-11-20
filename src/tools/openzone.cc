@@ -27,13 +27,7 @@
 
 #include <SDL.h>
 
-#if defined( __ANDROID__ )
-# include <jni.h>
-extern "C"
-void SDL_Android_Init( JNIEnv* env, jclass clazz );
-extern "C"
-void Java_com_github_ducakar_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz );
-#elif defined( __native_client__ )
+#if defined( __native_client__ )
 # include <SDL_nacl.h>
 #elif defined( _WIN32 )
 extern "C"
@@ -51,7 +45,7 @@ static void crashHandler()
 }
 
 #if defined( __ANDROID__ )
-void Java_com_github_ducakar_openzone_SDLActivity_nativeInit( JNIEnv* env, jclass clazz )
+int javaMain( int argc, char** argv )
 #elif defined( __native_client__ )
 int naclMain( int argc, char** argv )
 #elif defined( _WIN32 )
@@ -60,12 +54,6 @@ int SDL_main( int argc, char** argv )
 int main( int argc, char** argv )
 #endif
 {
-#if defined( __ANDROID__ )
-  JavaVM* javaVM;
-  env->GetJavaVM( &javaVM );
-  System::javaVM = javaVM;
-#endif
-
   System::init( System::DEFAULT_MASK, &crashHandler );
 
   int exitCode = EXIT_FAILURE;
@@ -76,16 +64,8 @@ int main( int argc, char** argv )
                  "This is free software, and you are welcome to redistribute it\n"
                  "under certain conditions; See COPYING file for details.\n\n" );
 
-#if defined( __ANDROID__ )
-  SDL_Android_Init( env, clazz );
-#elif defined( __native_client__ )
+#ifdef __native_client__
   Pepper::post( "init:" );
-#endif
-
-#if defined( __ANDROID__ )
-  int   argc    = 1;
-  char  argv0[] = "openzone";
-  char* argv[]  = { argv0, nullptr };
 #endif
 
   exitCode = client::client.init( argc, argv );
@@ -110,11 +90,8 @@ int main( int argc, char** argv )
   Pepper::post( "quit:" );
 #endif
 
-#if defined( __ANDROID__ )
-  static_cast<void>( exitCode );
-#else
   return exitCode;
-#endif
 }
 
+OZ_JAVA_ENTRY_POINT( Java_com_github_ducakar_openzone_SDLActivity_nativeInit )
 OZ_NACL_ENTRY_POINT()

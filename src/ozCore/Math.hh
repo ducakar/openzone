@@ -55,16 +55,22 @@ class Math
     /// \f$ 2\pi \f$.
     static constexpr float TAU = 6.283185307179586f;
 
+    /**
+     * Union for accessing a bitwise representation of a float value.
+     */
     union FloatToBits
     {
-      float value;
-      uint  bits;
+      float value; ///< Float value.
+      uint  bits;  ///< Bits.
     };
 
+    /**
+     * Union for obtaining a float value represented by a bit stream.
+     */
     union BitsToFloat
     {
-      uint  bits;
-      float value;
+      uint  bits;  ///< Bits.
+      float value; ///< Float value.
     };
 
   public:

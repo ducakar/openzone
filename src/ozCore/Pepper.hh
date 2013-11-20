@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozCore - OpenZone Core Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -77,9 +77,10 @@ namespace oz
 /**
  * High-level interface to NaCl %Pepper API (PPAPI).
  *
- * It provides facilities for invoking code on the main thread, passing messages between application
- * and JavaScript on the web page and feedback information about module's geometry and mouse
- * movement since the latter is not implemented in NaCl SDL port.
+ * It provides NaCl module and instance creation and event main loop, facilities for invoking code
+ * on the main thread, passing messages between application and JavaScript on the web page and
+ * feedback information about module's geometry and mouse movement since the latter is not
+ * implemented in the NaCl port of SDL.
  */
 class Pepper
 {
@@ -130,7 +131,7 @@ class Pepper
     static void mainCall( Callback* callback, void* data );
 
     /**
-     * Return `pp::Instance` for application or `nullptr` if not created.
+     * Return `pp::Instance` for a NaCl application or `nullptr` if not created.
      */
     static pp::Instance* instance();
 
@@ -187,6 +188,8 @@ class MainCall
 
     /**
      * Call a method without parameters on the main thread and wait for it to finish.
+     *
+     * The method can also be a lambda with captures.
      */
     template <typename Method>
     void operator << ( Method method ) const

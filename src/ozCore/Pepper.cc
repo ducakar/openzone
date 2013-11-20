@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozCore - OpenZone Core Library.
  *
  * Copyright © 2002-2013 Davorin Učakar
  *
@@ -41,7 +41,10 @@
 #include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/mouse_lock.h>
 
+extern "C"
 void SDL_NACL_SetInstance( PP_Instance, int, int );
+
+extern "C"
 void SDL_NACL_PushEvent( const pp::InputEvent& );
 
 OZ_WEAK

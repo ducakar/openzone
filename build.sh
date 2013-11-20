@@ -10,7 +10,6 @@
 #
 # - `clean`: Delete all builds.
 # - `conf`: Delete all builds and configure (but not build) them anew.
-# - `pnacl`: Run `pnacl-translate` to convert client `.pexe` to platform-dependent `.nexe`s.
 # - (none): Configure (if necessary) and build all enabled builds.
 
 buildType=Debug
