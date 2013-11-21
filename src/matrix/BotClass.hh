@@ -32,6 +32,9 @@ class BotClass : public DynamicClass
 {
   public:
 
+    static const Mat44 INJURY_COLOUR;
+    static const Mat44 NV_COLOUR;
+
     int    state;
 
     Vec3   crouchDim;
@@ -88,14 +91,14 @@ class BotClass : public DynamicClass
     float  bobSwimAmplitude;
 
     Mat44  baseColour;
-    Mat44  nvColour;
     Mat44  injuryColour;
+    Mat44  nvColour;
 
   public:
 
     static ObjectClass* createClass();
 
-    void init( InputStream* is, const char* name ) override;
+    void init( const JSON& config, const char* name ) override;
 
     Object* create( int index, const Point& pos, Heading heading ) const override;
     Object* create( InputStream* is ) const override;

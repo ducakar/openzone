@@ -281,8 +281,7 @@ static int ozCaelumLoad( lua_State* l )
 {
   ARG( 1 );
 
-  const char* name = l_tostring( 1 );
-  int id = String::isEmpty( name ) ? -1 : liber.caelumIndex( name );
+  int id = liber.caelumIndex( l_tostring( 1 ) );
 
   orbis.caelum.id = id;
   return 0;
@@ -365,8 +364,7 @@ static int ozTerraLoad( lua_State* l )
 {
   ARG( 1 );
 
-  const char* name = l_tostring( 1 );
-  int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
+  int id = liber.terraIndex( l_tostring( 1 ) );
 
   orbis.terra.load( id );
   return 0;

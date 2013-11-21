@@ -85,6 +85,10 @@ const FragPool* Liber::fragPool( const char* name ) const
 
 int Liber::shaderIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = shaderIndices.find( name );
 
   if( value == nullptr ) {
@@ -95,6 +99,10 @@ int Liber::shaderIndex( const char* name ) const
 
 int Liber::textureIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = textureIndices.find( name );
 
   if( value == nullptr ) {
@@ -105,6 +113,10 @@ int Liber::textureIndex( const char* name ) const
 
 int Liber::soundIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = soundIndices.find( name );
 
   if( value == nullptr ) {
@@ -115,6 +127,10 @@ int Liber::soundIndex( const char* name ) const
 
 int Liber::caelumIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = caelumIndices.find( name );
 
   if( value == nullptr ) {
@@ -125,6 +141,10 @@ int Liber::caelumIndex( const char* name ) const
 
 int Liber::terraIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = terraIndices.find( name );
 
   if( value == nullptr ) {
@@ -135,6 +155,10 @@ int Liber::terraIndex( const char* name ) const
 
 int Liber::partIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = partIndices.find( name );
 
   if( value == nullptr ) {
@@ -145,6 +169,10 @@ int Liber::partIndex( const char* name ) const
 
 int Liber::modelIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = modelIndices.find( name );
 
   if( value == nullptr ) {
@@ -155,6 +183,10 @@ int Liber::modelIndex( const char* name ) const
 
 int Liber::nameListIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = nameListIndices.find( name );
 
   if( value == nullptr ) {
@@ -165,6 +197,10 @@ int Liber::nameListIndex( const char* name ) const
 
 int Liber::musicTrackIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = musicTrackIndices.find( name );
 
   if( value == nullptr ) {
@@ -175,6 +211,10 @@ int Liber::musicTrackIndex( const char* name ) const
 
 int Liber::deviceIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = deviceIndices.find( name );
 
   if( value == nullptr ) {
@@ -185,6 +225,10 @@ int Liber::deviceIndex( const char* name ) const
 
 int Liber::imagoIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = imagoIndices.find( name );
 
   if( value == nullptr ) {
@@ -195,6 +239,10 @@ int Liber::imagoIndex( const char* name ) const
 
 int Liber::audioIndex( const char* name ) const
 {
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
   const int* value = audioIndices.find( name );
 
   if( value == nullptr ) {
@@ -484,30 +532,31 @@ void Liber::initNameLists()
 
 void Liber::initFragPools()
 {
-  Log::println( "Fragment pools (*.ozFragPools in 'frag') {" );
+  Log::println( "Fragment pools (*.json in 'frag') {" );
   Log::indent();
 
   File dir = "@frag";
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozFragPools" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
-    InputStream is = file->inputStream( Endian::LITTLE );
+    String name = file->baseName();
 
-    if( !is.isAvailable() ) {
+    Log::println( "%s", name.cstr() );
+
+    JSON config;
+    if( !config.load( *file ) ) {
       OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
     }
 
-    while( is.isAvailable() ) {
-      const char* name = is.readString();
+    fragPools.add( name, FragPool( config, name, fragPools.length() ) );
 
-      Log::println( "%s", name );
-
-      fragPools.add( name, FragPool( &is, name, fragPools.length() ) );
-    }
+    Log::showVerbose = true;
+    config.clear( true );
+    Log::showVerbose = false;
   }
 
   nFragPools = fragPools.length();
@@ -524,74 +573,55 @@ void Liber::initClasses()
   OZ_REGISTER_BASECLASS( Bot );
   OZ_REGISTER_BASECLASS( Vehicle );
 
-  Log::println( "Object classes (*.ozClasses in 'class') {" );
+  Log::println( "Object classes (*.json in 'class') {" );
   Log::indent();
 
   File dir = "@class";
   DArray<File> dirList = dir.ls();
 
+  // First we only add class instances, we don't initialise them as each class may have references
+  // to other classes that haven't been created yet.
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozClasses" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
-    InputStream is = file->inputStream( Endian::LITTLE );
-
-    if( !is.isAvailable() ) {
+    JSON config;
+    if( !config.load( *file ) ) {
       OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
     }
 
-    int nClasses  = is.readInt();
-    int nDevices  = is.readInt();
-    int nImagines = is.readInt();
-    int nAudios   = is.readInt();
+    String name = file->baseName();
+    const String& base = config["base"].asString();
 
-    for( int i = 0; i < nClasses; ++i ) {
-      const char* name = is.readString();
-      const char* base = is.readString();
-
-      if( objClasses.contains( name ) ) {
-        OZ_ERROR( "Duplicated class '%s'", name );
-      }
-
-      if( String::isEmpty( base ) ) {
-        OZ_ERROR( "%s: 'base' missing in class description", name );
-      }
-
-      ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
-      if( createFunc == nullptr ) {
-        OZ_ERROR( "%s: Invalid class base '%s'", name, base );
-      }
-
-      // First we only add class instances, we don't initialise them as each class may have
-      // references to other classes that have not been created yet.
-      objClasses.add( name, ( *createFunc )() );
+    if( objClasses.contains( name ) ) {
+      OZ_ERROR( "Duplicated class '%s'", name.cstr() );
     }
 
-    // Map integer indices to all referenced Device, Imago and Audio classes.
-    for( int i = 0; i < nDevices; ++i ) {
-      const char* sDevice = is.readString();
-
-      if( !String::isEmpty( sDevice ) ) {
-        deviceIndices.include( sDevice, deviceIndices.length() );
-      }
+    if( String::isEmpty( base ) ) {
+      OZ_ERROR( "%s: 'base' missing in class description", name.cstr() );
     }
 
-    for( int i = 0; i < nImagines; ++i ) {
-      const char* sImago = is.readString();
-
-      if( !String::isEmpty( sImago ) ) {
-        imagoIndices.include( sImago, imagoIndices.length() );
-      }
+    ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
+    if( createFunc == nullptr ) {
+      OZ_ERROR( "%s: Invalid class base '%s'", name.cstr(), base.cstr() );
     }
 
-    for( int i = 0; i < nAudios; ++i ) {
-      const char* sAudio = is.readString();
+    const String& deviceType = config["deviceType"].get( "" );
+    const String& imagoType  = config["imagoType"].get( "" );
+    const String& audioType  = config["audioType"].get( "" );
 
-      if( !String::isEmpty( sAudio ) ) {
-        audioIndices.include( sAudio, audioIndices.length() );
-      }
+    if( !deviceType.isEmpty() ) {
+      deviceIndices.include( deviceType, deviceIndices.length() );
     }
+    if( !imagoType.isEmpty() ) {
+      imagoIndices.include( imagoType, imagoIndices.length() );
+    }
+    if( !audioType.isEmpty() ) {
+      audioIndices.include( audioType, audioIndices.length() );
+    }
+
+    objClasses.add( name, ( *createFunc )() );
   }
 
   nDeviceClasses = deviceIndices.length();
@@ -599,40 +629,27 @@ void Liber::initClasses()
   nAudioClasses  = audioIndices.length();
 
   // Initialise all classes.
-  foreach( file, dirList.citer() ) {
-    if( file->type() != File::REGULAR || !file->hasExtension( "ozClasses" ) ) {
-      continue;
+  foreach( classIter, objClasses.citer() ) {
+    const String& name  = classIter->key;
+    ObjectClass*  clazz = classIter->value;
+
+    Log::print( "%s ...", name.cstr() );
+
+    File file = "@class/" + name + ".json";
+    JSON config;
+    if( !config.load( file ) ) {
+      OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
     }
 
-    InputStream is = file->inputStream( Endian::LITTLE );
+    clazz->init( config, name );
 
-    int nClasses  = is.readInt();
-    int nDevices  = is.readInt();
-    int nImagines = is.readInt();
-    int nAudios   = is.readInt();
-
-    int nStrings  = nClasses * 2 + nDevices + nImagines + nAudios;
-
-    // Forward to class data.
-    for( int i = 0; i < nStrings; ++i ) {
-      is.readString();
-    }
-
-    for( int i = 0; i < nClasses; ++i ) {
-      const char* name = is.readString();
-
-      Log::println( "%s", name );
-
-      ObjectClass* const* clazz = objClasses.find( name );
-      if( clazz == nullptr ) {
-        OZ_ERROR( "Class '%s' body missing in corrupted class file '%s'",
-                  name, file->path().cstr() );
-      }
-
-      ( *clazz )->init( &is, name );
-    }
+    Log::showVerbose = true;
+    config["base"];
+    config.clear( true );
+    Log::showVerbose = false;
   }
 
+  // Sanity checks.
   foreach( classIter, objClasses.citer() ) {
     ObjectClass* objClazz = classIter->value;
 
@@ -672,6 +689,8 @@ void Liber::initClasses()
         }
       }
     }
+
+    Log::printEnd( " OK" );
   }
 
   Log::unindent();

@@ -60,9 +60,7 @@ void Caelum::write( OutputStream* os ) const
 
 void Caelum::read( const JSON& json )
 {
-  const char* name = json["name"].get( "" );
-
-  id      = String::isEmpty( name ) ? -1 : liber.caelumIndex( name );
+  id      = liber.caelumIndex( json["name"].get( "" ) );
   heading = Math::rad( json["heading"].get( 0.0f ) );
   period  = json["period"].get( 86400.0f );
   time    = json["time"].get( 0.0f );

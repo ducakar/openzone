@@ -38,10 +38,6 @@ const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
 const float  Camera::FLASH_SUPPRESSION  = 0.75f;
-const Mat44  Camera::NV_COLOUR          = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
-                                                 0.25f, 2.00f, 0.25f, 0.00f,
-                                                 0.25f, 2.00f, 0.25f, 0.00f,
-                                                 0.00f, 0.00f, 0.00f, 1.00f );
 const Mat44  Camera::FLASH_COLOUR       = Mat44( 2.50f, 1.00f, 1.00f, 0.00f,
                                                  1.00f, 2.50f, 1.00f, 0.00f,
                                                  1.00f, 1.00f, 2.50f, 0.00f,
@@ -198,7 +194,7 @@ void Camera::reset()
 
   colour      = Mat44::ID;
   baseColour  = Mat44::ID;
-  nvColour    = NV_COLOUR;
+  nvColour    = BotClass::NV_COLOUR;
   flashColour = Mat44::ID;
 
   right       = rotMat.x.vec3();

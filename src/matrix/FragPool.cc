@@ -29,26 +29,48 @@
 namespace oz
 {
 
-FragPool::FragPool( InputStream* is, const char* name_, int id_ ) :
+FragPool::FragPool( const JSON& config, const char* name_, int id_ ) :
   name( name_ ), id( id_ )
 {
-  flags          = is->readInt();
+  flags = 0;
 
-  velocitySpread = is->readFloat();
+  OZ_CLASS_FLAG( oz::FragPool::FADEOUT_BIT, "flag.fadeout", true );
 
-  life           = is->readFloat();
-  lifeSpread     = is->readFloat();
+  velocitySpread = config["velocitySpread"].get( 4.0f );
 
-  mass           = is->readFloat();
-  elasticity     = is->readFloat();
+  if( velocitySpread < 0.0f ) {
+    OZ_ERROR( "%s: Frag velocitySpread must be >= 0.0", name_ );
+  }
 
-  int nModels    = is->readInt();
-  models.allocate( nModels );
+  life       = config["life"].get( 4.0f );
+  lifeSpread = config["lifeSpread"].get( 1.0f );
+  mass       = config["mass"].get( 0.0f );
+  elasticity = config["elasticity"].get( 0.5f );
+
+  if( life <= 0.0f ) {
+    OZ_ERROR( "%s: Frag life must be > 0.0", name_ );
+  }
+  if( lifeSpread < 0.0f ) {
+    OZ_ERROR( "%s: Frag lifeSpread must be >= 0.0", name_ );
+  }
+  if( mass < 0.0f ) {
+    OZ_ERROR( "%s: Frag mass must be >= 0.0", name_ );
+  }
+  if( elasticity < 0.0f || 1.0f < elasticity ) {
+    OZ_ERROR( "%s: Frag elasticity must lie on interval [0, 1]", name_ );
+  }
+
+  const JSON& modelsConfig = config["models"];
+  int nModels = modelsConfig.length();
 
   for( int i = 0; i < nModels; ++i ) {
-    const char* sModel = is->readString();
+    const char* modelName = modelsConfig[i].get( "" );
 
-    models.add( liber.modelIndex( sModel ) );
+    if( String::isEmpty( modelName ) ) {
+      OZ_ERROR( "%s: Empty name for model #%d", name_, i );
+    }
+
+    models.add( liber.modelIndex( modelName ) );
   }
 }
 

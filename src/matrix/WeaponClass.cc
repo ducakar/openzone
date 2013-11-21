@@ -24,6 +24,7 @@
 #include <matrix/WeaponClass.hh>
 
 #include <matrix/Weapon.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -33,16 +34,38 @@ ObjectClass* WeaponClass::createClass()
   return new WeaponClass();
 }
 
-void WeaponClass::init( InputStream* is, const char* name )
+void WeaponClass::init( const JSON& config, const char* name_ )
 {
-  DynamicClass::init( is, name );
+  DynamicClass::init( config, name_ );
 
-  userBase     = is->readString();
+  flags |= Object::WEAPON_BIT | Object::ITEM_BIT | Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT |
+           Object::STATUS_FUNC_BIT;
 
-  nRounds      = is->readInt();
-  shotInterval = is->readFloat();
+  if( audioType >= 0 ) {
+    const JSON& soundsConfig = config["audioSounds"];
 
-  onShot       = is->readString();
+    const char* sEventShotEmpty = soundsConfig["shotEmpty"].get( "" );
+    const char* sEventShot      = soundsConfig["shot"     ].get( "" );
+
+    audioSounds[Weapon::EVENT_SHOT_EMPTY] = liber.soundIndex( sEventShotEmpty );
+    audioSounds[Weapon::EVENT_SHOT]       = liber.soundIndex( sEventShot      );
+  }
+
+  int dollar = name.index( '$' );
+  if( dollar < 0 ) {
+    OZ_ERROR( "%s: Weapon name should be of the form botPrefix$weaponName", name_ );
+  }
+
+  userBase     = name.substring( 0, dollar );
+
+  nRounds      = config["nRounds"].get( -1 );
+  shotInterval = config["shotInterval"].get( 0.5f );
+
+  onShot       = config["onShot"].get( "" );
+
+  if( !String::isEmpty( onShot ) ) {
+    flags |= Object::LUA_BIT;
+  }
 }
 
 Object* WeaponClass::create( int index, const Point& pos, Heading heading ) const

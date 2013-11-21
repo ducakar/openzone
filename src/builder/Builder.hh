@@ -44,8 +44,8 @@ class Builder
     void buildTerrae();
     void buildBSPs();
     void buildBSPTextures();
-    void buildClasses( const String& pkgName );
-    void buildFragPools( const String& pkgName );
+    void buildClasses();
+    void buildFragPools();
     void buildModels();
     void copySounds();
     void buildModules();

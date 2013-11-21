@@ -187,19 +187,19 @@ class Object : public AABB
      */
 
     // Non-negative events are for sounds, negative for other effects.
-    static const int EVENT_FLASH      = -2;
-    static const int EVENT_SHAKE      = -1;
-    // EVENT_CREATE must be invoked manually
-    static const int EVENT_CREATE     = 0;
-    static const int EVENT_DESTROY    = 1;
-    static const int EVENT_DAMAGE     = 2;
-    static const int EVENT_HIT        = 3;
-    static const int EVENT_LAND       = 4;
-    static const int EVENT_SPLASH     = 5;
-    // EVENT_FRICTING is not in use, it only reserves a slot for friction sound
-    static const int EVENT_FRICTING   = 6;
-    static const int EVENT_USE        = 7;
-    static const int EVENT_USE_FAILED = 8;
+    static const int EVENT_FLASH    = -2;
+    static const int EVENT_SHAKE    = -1;
+    // EVENT_CREATE must be invoked manually.
+    static const int EVENT_CREATE   = 0;
+    static const int EVENT_DESTROY  = 1;
+    static const int EVENT_DAMAGE   = 2;
+    static const int EVENT_HIT      = 3;
+    static const int EVENT_LAND     = 4;
+    static const int EVENT_SPLASH   = 5;
+    // EVENT_FRICTING is not in use, it only reserves a slot for friction sound.
+    static const int EVENT_FRICTING = 6;
+    static const int EVENT_USE      = 7;
+    static const int EVENT_FAILED   = 8;
 
     class Event
     {
@@ -315,7 +315,8 @@ class Object : public AABB
     {
       if( flags & USE_FUNC_BIT ) {
         bool success = onUse( user );
-        addEvent( EVENT_USE_FAILED - success, 1.0f );
+
+        addEvent( EVENT_FAILED - success, 1.0f );
       }
     }
 

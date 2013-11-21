@@ -42,7 +42,6 @@ class Camera
     static const float  SMOOTHING_COEF;
     static const float  ROT_SMOOTHING_COEF;
     static const float  FLASH_SUPPRESSION;
-    static const Mat44  NV_COLOUR;
     static const Mat44  FLASH_COLOUR;
     static Proxy* const PROXIES[];
 

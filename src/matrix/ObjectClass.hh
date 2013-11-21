@@ -25,6 +25,21 @@
 
 #include <matrix/common.hh>
 
+#define OZ_CLASS_ATTRIB( attribBit, varName, defValue ) \
+  if( config[varName].get( defValue ) ) { \
+    attributes |= attribBit; \
+  }
+
+#define OZ_CLASS_FLAG( flagBit, varName, defValue ) \
+  if( config[varName].get( defValue ) ) { \
+    flags |= flagBit; \
+  }
+
+#define OZ_CLASS_STATE( stateBit, varName, defValue ) \
+  if( config[varName].get( defValue ) ) { \
+    state |= stateBit; \
+  }
+
 namespace oz
 {
 
@@ -83,7 +98,7 @@ class ObjectClass
 
     static ObjectClass* createClass();
 
-    virtual void init( InputStream* is, const char* name );
+    virtual void init( const JSON& config, const char* name );
 
     virtual Object* create( int index, const Point& pos, Heading heading ) const;
     virtual Object* create( InputStream* is ) const;

@@ -212,11 +212,8 @@ void Terra::load()
     }
   }
 
-  String sDetail  = is.readString();
-  String sLiquid  = is.readString();
-
-  detailTexId     = sDetail.isEmpty() ? -1 : liber.textureIndex( sDetail );
-  liquidTexId     = sLiquid.isEmpty() ? -1 : liber.textureIndex( sLiquid );
+  detailTexId     = liber.textureIndex( is.readString() );
+  liquidTexId     = liber.textureIndex( is.readString() );
   liquidFogColour = is.readVec4();
 
   detailTex       = context.requestTexture( detailTexId );

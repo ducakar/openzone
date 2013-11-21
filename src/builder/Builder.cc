@@ -62,9 +62,9 @@ void Builder::printUsage( const char* invocationName )
     "  -t         Build terrae (terrains).\n"
     "  -b         Compile maps into BSPs.\n"
     "  -e         Build textures referenced by terrae and BSPs.\n"
-    "  -a         Copy object class definitions.\n"
-    "  -f         Copy fragment pool definitions.\n"
-    "  -p         Copy particle class definitions.\n"
+    "  -a         Scan and copy object class definitions.\n"
+    "  -f         Scan and copy fragment pool definitions.\n"
+    "  -p         Scan and copy particle class definitions.\n"
     "  -m         Build models.\n"
     "  -s         Copy referenced sounds (by UI, BSPs and object classes).\n"
     "  -n         Copy name lists.\n"
@@ -311,17 +311,17 @@ void Builder::buildBSPTextures()
   Log::println( "}" );
 }
 
-void Builder::buildClasses( const String& pkgName )
+void Builder::buildClasses()
 {
-  Log::println( "Building object classes {" );
+  copyFiles( "@class", "class", "json", false );
+
+  Log::println( "Scanning object classes {" );
   Log::indent();
 
   String dirName = "@class";
   File dir = dirName;
   DArray<File> dirList = dir.ls();
 
-  OutputStream os( 0, Endian::LITTLE );
-
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {
       continue;
@@ -331,71 +331,26 @@ void Builder::buildClasses( const String& pkgName )
 
     Log::print( "%s ...", name.cstr() );
 
-    clazz.buildObjClass( &os, name );
+    clazz.scanObjClass( name );
 
     Log::printEnd( " OK" );
   }
-
-  if( !clazz.names.isEmpty() ) {
-    OutputStream headerStream( 0, Endian::LITTLE );
-
-    headerStream.writeInt( clazz.names.length() );
-    headerStream.writeInt( clazz.devices.length() );
-    headerStream.writeInt( clazz.imagines.length() );
-    headerStream.writeInt( clazz.audios.length() );
-
-    for( int i = 0; i < clazz.names.length(); ++i ) {
-      headerStream.writeString( clazz.names[i] );
-      headerStream.writeString( clazz.bases[i] );
-    }
-    foreach( device, clazz.devices.citer() ) {
-      headerStream.writeString( *device );
-    }
-    foreach( imago, clazz.imagines.citer() ) {
-      headerStream.writeString( *imago );
-    }
-    foreach( audio, clazz.audios.citer() ) {
-      headerStream.writeString( *audio );
-    }
-
-    int headerSize = headerStream.tell();
-    int bodySize   = os.tell();
-
-    os.forward( headerSize );
-    mMove( os.begin() + headerSize, os.begin(), size_t( bodySize ) );
-    mCopy( os.begin(), headerStream.begin(), size_t( headerSize ) );
-
-    headerStream.deallocate();
-
-    File::mkdir( "class" );
-    File outFile = "class/" + pkgName + ".ozClasses";
-
-    Log::print( "Writing to '%s' ...", outFile.path().cstr() );
-
-    if( !outFile.write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Failed to write object class file '%s'", outFile.path().cstr() );
-    }
-
-    Log::printEnd( " OK" );
-  }
-
-  clazz.destroy();
 
   Log::unindent();
   Log::println( "}" );
 }
 
-void Builder::buildFragPools( const String& pkgName )
+void Builder::buildFragPools()
 {
-  Log::println( "Building fragment pools {" );
+  copyFiles( "@frag", "frag", "json", false );
+
+  Log::println( "Scanning fragment pools {" );
   Log::indent();
 
   String dirName = "@frag";
   File dir = dirName;
   DArray<File> dirList = dir.ls();
 
-  OutputStream os( 0, Endian::LITTLE );
-
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "json" ) ) {
       continue;
@@ -405,25 +360,10 @@ void Builder::buildFragPools( const String& pkgName )
 
     Log::print( "%s ...", name.cstr() );
 
-    clazz.buildFragPool( &os, name );
+    clazz.scanFragPool( name );
 
     Log::printEnd( " OK" );
   }
-
-  if( os.tell() != 0 ) {
-    File::mkdir( "frag" );
-    File outFile = "frag/" + pkgName + ".ozFragPools";
-
-    Log::print( "Writing to '%s' ...", outFile.path().cstr() );
-
-    if( !outFile.write( os.begin(), os.tell() ) ) {
-      OZ_ERROR( "Failed to write fragment pool file '%s'", outFile.path().cstr() );
-    }
-
-    Log::printEnd( " OK" );
-  }
-
-  clazz.destroy();
 
   Log::unindent();
   Log::println( "}" );
@@ -971,12 +911,10 @@ int Builder::main( int argc, char** argv )
     buildBSPTextures();
   }
   if( doClasses ) {
-    buildClasses( pkgName );
-    copyFiles( "@class", "class", "txt", false );
+    buildClasses();
   }
   if( doFrags ) {
-    buildFragPools( pkgName );
-    copyFiles( "@frag", "frag", "txt", false );
+    buildFragPools();
   }
   if( doParticles ) {
     copyFiles( "@part", "part", "json", false );

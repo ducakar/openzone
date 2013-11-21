@@ -104,7 +104,7 @@ void BotAudio::play( const Object* playAt )
       else if( recent[Object::EVENT_FRICTING] != 0 ) {
         hard_assert( bot->depth >= 0.0f );
 
-        int sample = bot->depth != 0.0f ? int( Bot::EVENT_WATERSTEP ) : int( Bot::EVENT_STEP );
+        int sample = bot->depth != 0.0f ? int( Bot::EVENT_WATER_STEP ) : int( Bot::EVENT_STEP );
         if( sounds[sample] >= 0 ) {
           playSound( sounds[sample], 1.0f, bot );
         }

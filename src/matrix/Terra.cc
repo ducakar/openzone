@@ -102,8 +102,7 @@ void Terra::init()
 
 void Terra::read( InputStream* is )
 {
-  const char* name = is->readString();
-  int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
+  int id = liber.terraIndex( is->readString() );
 
   load( id );
 }
@@ -117,8 +116,7 @@ void Terra::write( OutputStream* os ) const
 
 void Terra::read( const JSON& json )
 {
-  const char* name = json["name"].get( "" );
-  int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
+  int id = liber.terraIndex( json["name"].get( "" ) );
 
   load( id );
 }

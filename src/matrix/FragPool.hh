@@ -34,8 +34,6 @@ class FragPool
 {
   public:
 
-    static const int MAX_MODELS = 100;
-
     // OR'ed to the client::FragPoo::flags, so we must assure bits don't overlap
     static const int FADEOUT_BIT = 0x0100;
 
@@ -57,7 +55,7 @@ class FragPool
 
   public:
 
-    explicit FragPool( InputStream* is, const char* name, int id );
+    explicit FragPool( const JSON& config, const char* name, int id );
 
     Frag* create( int index, const Point& pos, const Vec3& velocity ) const;
     Frag* create( InputStream* is ) const;

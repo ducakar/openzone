@@ -137,7 +137,7 @@ class VehicleClass : public DynamicClass
 
     static ObjectClass* createClass();
 
-    void init( InputStream* is, const char* name ) override;
+    void init( const JSON& config, const char* name ) override;
 
     Object* create( int index, const Point& pos, Heading heading ) const override;
     Object* create( InputStream* is ) const override;

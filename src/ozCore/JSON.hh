@@ -340,7 +340,7 @@ class JSON
      *
      * If value is not either null or an object, `System::error()` is invoked.
      */
-    bool contains( const char* key );
+    bool contains( const char* key ) const;
 
     /**
      * Get boolean value.

@@ -69,7 +69,7 @@ class CallOnce
     /**
      * Copying or moving is not possible for the embedded spin lock.
      */
-    CallOnce& operator = ( CallOnce& ) = delete;
+    CallOnce& operator = ( const CallOnce& ) = delete;
 
     /**
      * True this object has already been used to call a method.

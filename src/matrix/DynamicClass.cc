@@ -24,6 +24,7 @@
 #include <matrix/DynamicClass.hh>
 
 #include <matrix/Dynamic.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -33,12 +34,35 @@ ObjectClass* DynamicClass::createClass()
   return new DynamicClass();
 }
 
-void DynamicClass::init( InputStream* is, const char* name )
+void DynamicClass::init( const JSON& config, const char* name_ )
 {
-  ObjectClass::init( is, name );
+  ObjectClass::init( config, name_ );
 
-  mass = is->readFloat();
-  lift = is->readFloat();
+  flags |= Object::DYNAMIC_BIT;
+
+  OZ_CLASS_FLAG( Object::ITEM_BIT, "flag.item", false );
+
+  if( audioType >= 0 ) {
+    const JSON& soundsConfig = config["audioSounds"];
+
+    const char* sEventLand     = soundsConfig["land"    ].get( "" );
+    const char* sEventSplash   = soundsConfig["splash"  ].get( "" );
+    const char* sEventFricting = soundsConfig["fricting"].get( "" );
+
+    audioSounds[Object::EVENT_LAND]     = liber.soundIndex( sEventLand     );
+    audioSounds[Object::EVENT_SPLASH]   = liber.soundIndex( sEventSplash   );
+    audioSounds[Object::EVENT_FRICTING] = liber.soundIndex( sEventFricting );
+  }
+
+  mass = config["mass"].get( 0.0f );
+  lift = config["lift"].get( -1.0f );
+
+  if( mass < 1.0f ) {
+    OZ_ERROR( "%s: Invalid object mass. Should be >= 1 kg.", name_ );
+  }
+  if( lift < 0.0f ) {
+    OZ_ERROR( "%s: Invalid object lift. Should be >= 0.", name_ );
+  }
 }
 
 Object* DynamicClass::create( int index, const Point& pos, Heading heading ) const

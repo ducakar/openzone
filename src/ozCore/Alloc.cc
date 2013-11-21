@@ -103,8 +103,6 @@ static void eraseChunkInfo( AllocMode mode, void* ptr )
     ci = ci->next;
   }
 
-  __sync_lock_release( &chunkInfoLock );
-
   // Check if allocated as a different kind (object/array)
   ci = firstChunkInfo[!mode];
 
@@ -114,6 +112,9 @@ static void eraseChunkInfo( AllocMode mode, void* ptr )
     }
     ci = ci->next;
   }
+
+  __sync_lock_release( &chunkInfoLock );
+
   if( ci == nullptr ) {
     OZ_ERROR( mode == OBJECT ? "oz::Alloc: Freeing object at %p that has not been allocated" :
                                "oz::Alloc: Freeing array at %p that has not been allocated", ptr );

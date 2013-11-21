@@ -46,6 +46,7 @@
     * negative Object::Event intensities for continuous sounds
     * melee attack
     * new vehicle types: turret, mech warrior
+    * reverted from binary stream to JSON format for object classes and fragment pools
 - nirvana
     * Technology graph
 - ui
@@ -129,6 +130,7 @@
       satnav, music player ...)
     * fragment pools: particle replacements; fragments can be configured like object classes, can
       have a graphic model assigned, etc.
+    * binary format is used for object classes and fragment pools
     * keys: object can have assigned a key value, so it can lock/unlock matching structure entities
     * lava: can be used both in structures and terrain instead of sea
     * objects can be rotated around z axis in 90° steps

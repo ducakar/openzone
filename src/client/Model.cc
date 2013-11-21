@@ -476,9 +476,7 @@ void Model::load( uint usage )
     for( int i = 0; i < nTextures; ++i ) {
       const String& name = is.readString();
 
-      int id = name.isEmpty()             ? -1 :
-               name.beginsWith( "@sea:" ) ? terra.liquidTexId : liber.textureIndex( name );
-
+      int id = name.beginsWith( "@sea:" ) ? terra.liquidTexId : liber.textureIndex( name );
       textures[i] = context.requestTexture( id );
     }
   }

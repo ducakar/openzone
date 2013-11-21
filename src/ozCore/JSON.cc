@@ -1065,7 +1065,7 @@ const JSON& JSON::operator [] ( const char* key ) const
   return *value;
 }
 
-bool JSON::contains( const char* key )
+bool JSON::contains( const char* key ) const
 {
   wasAccessed = true;
 

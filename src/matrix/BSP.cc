@@ -179,17 +179,11 @@ void BSP::load()
     entities[i].target      = is.readInt();
     entities[i].key         = is.readInt();
 
-    String sOpenSound       = is.readString();
-    String sCloseSound      = is.readString();
-    String sFrictSound      = is.readString();
+    entities[i].openSound   = liber.soundIndex( is.readString() );
+    entities[i].closeSound  = liber.soundIndex( is.readString() );
+    entities[i].frictSound  = liber.soundIndex( is.readString() );
 
-    entities[i].openSound   = sOpenSound.isEmpty()  ? -1 : liber.soundIndex( sOpenSound );
-    entities[i].closeSound  = sCloseSound.isEmpty() ? -1 : liber.soundIndex( sCloseSound );
-    entities[i].frictSound  = sFrictSound.isEmpty() ? -1 : liber.soundIndex( sFrictSound );
-
-    String sModel           = is.readString();
-
-    entities[i].model       = sModel.isEmpty() ? -1 : liber.modelIndex( sModel );
+    entities[i].model       = liber.modelIndex( is.readString() );
     entities[i].modelTransf = is.readMat44();
   }
   data += nEntities * int( sizeof( entities[0] ) );
@@ -270,9 +264,7 @@ BSP::BSP( const char* name_, int id_ ) :
     sounds[i] = liber.soundIndex( is.readString() );
   }
 
-  String sDemolishSound = is.readString();
-  demolishSound = sDemolishSound.isEmpty() ? -1 : liber.soundIndex( sDemolishSound );
-
+  demolishSound = liber.soundIndex( is.readString() );
   groundOffset  = is.readFloat();
 }
 

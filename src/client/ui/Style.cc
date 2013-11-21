@@ -31,7 +31,7 @@
 #define OZ_READ_SOUND( var, name_ ) \
   { \
     const char* name = soundsConfig[#var].get( name_ ); \
-    sounds.var = String::isEmpty( name ) ? -1 : liber.soundIndex( name ); \
+    sounds.var = liber.soundIndex( name ); \
   }
 
 #define OZ_READ_AREA( area, x_, y_, w_, h_ ) \
