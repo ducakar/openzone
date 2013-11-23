@@ -8,7 +8,7 @@
     "time":             1
   },
   {
-    "exec":             "ozBindObj( 0 ) ozBotClearActions()",
+    "exec":             "ozBindObj( 0 ) ozBotClearActions() ozUIBell()",
     "time":             1.5
   },
   {

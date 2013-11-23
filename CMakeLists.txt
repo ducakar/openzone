@@ -269,6 +269,12 @@ add_subdirectory( src )
 # Data files
 #
 
+# Application launcher and icon.
+if( NOT OZ_STANDALONE )
+  install( DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications ${CMAKE_SOURCE_DIR}/share/pixmaps
+           DESTINATION share )
+endif()
+
 # Documentation, game data and libraries for a standalone package.
 if( OZ_STANDALONE )
   file( GLOB readmes doc/*.html )

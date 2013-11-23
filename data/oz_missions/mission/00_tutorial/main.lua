@@ -25,6 +25,9 @@
  * Tutorial mission.
 ]]--
 
+function onUpdate()
+end
+
 function onCreate()
   ozTerraLoad( "sample" )
 

@@ -1944,7 +1944,9 @@ bool JSON::clear( bool warnUnused )
   if( warnUnused && !wasAccessed ) {
     Log::println( "oz::JSON: unused value: %s", toString().cstr() );
     System::bell();
-    hasUnused = true;
+
+    hasUnused  = true;
+    warnUnused = false;
   }
 
   switch( valueType ) {

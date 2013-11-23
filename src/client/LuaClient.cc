@@ -643,6 +643,7 @@ void LuaClient::init()
    * UI
    */
 
+  IMPORT_FUNC( ozUIBell );
   IMPORT_FUNC( ozUIBuildFrame );
 
   importMatrixConstants( l );

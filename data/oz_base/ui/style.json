@@ -22,6 +22,7 @@
     }
   },
   "sounds": {
+    "bell":             "sfxr/bell",
     "click":            "sfxr/click",
     "nextWeapon":       "free/itempick"
   }

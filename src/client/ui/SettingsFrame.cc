@@ -24,6 +24,7 @@
 #include <client/ui/SettingsFrame.hh>
 
 #include <common/Lingua.hh>
+#include <client/Camera.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>
 
@@ -51,11 +52,12 @@ SettingsFrame::SettingsFrame() :
   Frame( 400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
   message( 4, 24, -HEADER_SIZE - 4, Area::ALIGN_NONE, Font::SANS, "" )
 {
-  x = ( parent->width  - width ) / 2;
-  y = ( parent->height - height ) / 2;
+  x = ( camera.width - width ) / 2;
+  y = ( camera.height - height ) / 2;
 
   const String& configDirPath = config["dir.config"].asString();
 
+  message.setWidth( width - 8 );
   message.setText( "%s\n\n  %s\n  %s\n  %s",
                    OZ_GETTEXT( "NOT IMPLEMENTED.\nYou can change your settings by manually editing"
                                " the following files:" ),

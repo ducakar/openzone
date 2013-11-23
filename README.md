@@ -169,7 +169,7 @@ this script.
 
 Additionally this scripts updates version numbers in various files.
 
-### `build.sh [clean | conf | pnacl]` ###
+### `build.sh [clean | conf]` ###
 
 This script configures and/or builds OpenZone in the `build` directory for all platforms that are
 uncommented in the beginning of this script. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables

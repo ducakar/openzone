@@ -69,7 +69,7 @@ void CreditsMenu::onUpdate()
     return;
   }
 
-  bias += direction;
+  bias += direction * 2;
 
   if( bias < 0 || bias >= stride ) {
     int nEntries = labels.length() + lines.length();
@@ -197,6 +197,7 @@ CreditsMenu::CreditsMenu() :
   lines.add( "FreeType" );
   lines.add( "libnoise" );
   lines.add( "libogg" );
+  lines.add( "libpng" );
   lines.add( "libsquish" );
   lines.add( "libvorbis" );
   lines.add( "Lua" );

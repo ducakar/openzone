@@ -27,8 +27,10 @@
 
 #include <nirvana/luaapi.hh>
 
+#include <client/Context.hh>
 #include <client/Camera.hh>
 #include <client/Profile.hh>
+#include <client/ui/Style.hh>
 #include <client/ui/BuildFrame.hh>
 #include <client/ui/UI.hh>
 
@@ -253,6 +255,16 @@ static int ozProfileGetBot( lua_State* l )
 /*
  * UI
  */
+
+static int ozUIBell( lua_State* l )
+{
+  ARG( 0 );
+
+  if( ui::style.sounds.bell >= 0 ) {
+    context.playSample( ui::style.sounds.bell );
+  }
+  return 0;
+}
 
 static int ozUIBuildFrame( lua_State* l )
 {

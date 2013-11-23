@@ -25,6 +25,9 @@
  * Test world.
 ]]--
 
+function onUpdate()
+end
+
 function onCreate()
   ozTerraLoad( "sample" )
 

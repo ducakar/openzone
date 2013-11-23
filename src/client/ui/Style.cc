@@ -118,6 +118,7 @@ void Style::init()
 
   const JSON& soundsConfig = config["sounds"];
 
+  OZ_READ_SOUND( bell,              "" );
   OZ_READ_SOUND( click,             "" );
   OZ_READ_SOUND( nextWeapon,        "" );
 
@@ -194,6 +195,7 @@ void Style::init()
 
   config.clear( true );
 
+  context.requestSound( sounds.bell );
   context.requestSound( sounds.click );
   context.requestSound( sounds.nextWeapon );
 
@@ -204,6 +206,7 @@ void Style::destroy()
 {
   context.releaseSound( sounds.nextWeapon );
   context.releaseSound( sounds.click );
+  context.releaseSound( sounds.bell );
 
   for( int i = 0; i < Font::MAX; ++i ) {
     fonts[i].destroy();

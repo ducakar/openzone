@@ -59,6 +59,7 @@ class Style
 
     struct Sounds
     {
+      int bell;
       int click;
       int nextWeapon;
     };
