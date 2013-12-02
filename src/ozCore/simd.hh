@@ -167,9 +167,9 @@ class VectorBase3
       uint4  u4;
       struct
       {
-        float x; ///< X component.
-        float y; ///< Y component.
-        float z; ///< Z component.
+        float x;
+        float y;
+        float z;
       };
     };
 #else
@@ -231,10 +231,10 @@ class VectorBase4
       uint4  u4;
       struct
       {
-        float x; ///< X component.
-        float y; ///< Y component.
-        float z; ///< Z component.
-        float w; ///< W component.
+        float x;
+        float y;
+        float z;
+        float w;
       };
     };
 #else

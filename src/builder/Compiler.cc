@@ -168,7 +168,7 @@ void Vertex::write( OutputStream* os ) const
 
 static void calculateBounds( const Node* node, const Mat44& parentTransf )
 {
-  Mat44 transf = parentTransf * node->transf;
+  Mat44 transf = parentTransf ^ node->transf;
 
   if( node->includeBounds && node->mesh >= 0 ) {
     const Mesh& mesh = meshes[node->mesh];

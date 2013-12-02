@@ -40,27 +40,20 @@ class PartGen
 
   private:
 
-    struct Instance
-    {
-      PartGen* source;
-      Mat44    transf;
-    };
-
     struct Part;
 
   private:
 
-    static List<Instance> instances;
+    PartGen*     next[1];
 
-    PartGen*              next[1];
-
-    PartClass*            clazz;
-    DArray<Part>          parts;
-    int                   flags;
+    Mat44        transf;
+    PartClass*   clazz;
+    DArray<Part> parts;
+    int          flags;
 
   private:
 
-    void draw( const Instance* instance );
+    void draw() const;
 
   public:
 
@@ -72,6 +65,7 @@ class PartGen
     explicit PartGen( InputStream* is );
     ~PartGen();
 
+    void update();
     void schedule();
 
 };

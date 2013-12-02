@@ -28,8 +28,6 @@ option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
 #
 
 include( cmake/PCH.cmake )
-include( CheckCXXSourceCompiles )
-include( CheckCXXCompilerFlag )
 include( FindPkgConfig )
 
 set( OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )

@@ -98,8 +98,8 @@ class DChain
          * Create chain iterator, initially pointing to a given element.
          */
         OZ_ALWAYS_INLINE
-        explicit ChainIterator( IterElem* first ) :
-          IteratorBase<IterElem>( first )
+        explicit ChainIterator( const DChain& c ) :
+          IteratorBase<IterElem>( c.firstElem )
         {}
 
         /**
@@ -223,7 +223,7 @@ class DChain
     OZ_ALWAYS_INLINE
     CIterator citer() const
     {
-      return CIterator( firstElem );
+      return CIterator( *this );
     }
 
     /**
@@ -232,7 +232,7 @@ class DChain
     OZ_ALWAYS_INLINE
     Iterator iter()
     {
-      return Iterator( firstElem );
+      return Iterator( *this );
     }
 
     /**
@@ -241,7 +241,7 @@ class DChain
     OZ_ALWAYS_INLINE
     CIterator begin() const
     {
-      return CIterator( firstElem );
+      return CIterator( *this );
     }
 
     /**
@@ -250,7 +250,7 @@ class DChain
     OZ_ALWAYS_INLINE
     Iterator begin()
     {
-      return Iterator( firstElem );
+      return Iterator( *this );
     }
 
     /**

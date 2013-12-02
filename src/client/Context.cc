@@ -72,7 +72,7 @@ Context::SpeakSource  Context::speakSource;
 int Context::speakCallback( short int* samples, int nSamples, void* )
 {
   if( nSamples != 0 ) {
-    int maxSamples = 2 * SpeakSource::BUFFER_SIZE - speakSource.nSamples;
+    int maxSamples = SpeakSource::BUFFER_SIZE - speakSource.nSamples;
     if( nSamples > maxSamples ) {
       nSamples = maxSamples;
       Log::printRaw( "AL: Speak buffer overrun\n" );

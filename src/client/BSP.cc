@@ -58,7 +58,7 @@ void BSP::schedule( const Struct* str, Model::QueueType queue )
         SMM* model = context.requestModel( entity.clazz->model );;
 
         if( model != nullptr && model->isLoaded() ) {
-          tf.model = tf.model * entity.clazz->modelTransf;
+          tf.model = tf.model ^ entity.clazz->modelTransf;
 
           model->schedule( 0, queue );
         }

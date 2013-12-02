@@ -39,7 +39,6 @@
   "audioSounds":
   {
     "damage":           "ppm/pains",
-    "hit":              "oz/land",
     "land":             "oz/land",
     "splash":           "free/splash1",
     "step":             "openarena/boot4",

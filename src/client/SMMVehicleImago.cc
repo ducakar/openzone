@@ -58,7 +58,7 @@ void SMMVehicleImago::draw( const Imago* )
   const Vehicle*      veh   = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
-  tf.model = Mat44::translation( obj->p - Point::ORIGIN ) * veh->rot;
+  tf.model = Mat44::translation( obj->p - Point::ORIGIN ) ^ veh->rot;
   tf.model.rotateX( Math::TAU / -4.0f );
 
   const Bot* pilot = static_cast<const Bot*>( orbis.obj( veh->pilot ) );

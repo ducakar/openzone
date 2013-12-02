@@ -23,6 +23,8 @@
 
 #include <client/PartGen.hh>
 
+#include <common/Timer.hh>
+#include <matrix/Physics.hh>
 #include <client/Shader.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>
@@ -34,20 +36,42 @@ namespace client
 
 struct PartGen::Part
 {
-  Vec3 p;
-  Vec3 velocity;
+  Vec3  p;
+  Vec3  velocity;
+  float life;
 };
 
-void PartGen::draw( const Instance* instance )
+void PartGen::draw() const
 {
-  Point origin = instance->transf.z.point();
-
   tf.model = camera.rotMat;
 
-  foreach( part, parts.citer() ) {
-    tf.model.z = Vec4( origin + part->p );
+  for( const Part& part : parts ) {
+    tf.push();
+    tf.model.translate( part.p );
+    tf.model = tf.model ^ camera.rotTMat;
 
     shape.quad( 1.0f, 1.0f );
+
+    tf.pop();
+  }
+}
+
+void PartGen::update()
+{
+  for( Part& part : parts ) {
+    if( part.life <= 0.0f ) {
+      Vec3 localVel = clazz->velocity + Vec3( clazz->velocitySpread * Math::normalRand(),
+                                              clazz->velocitySpread * Math::normalRand(),
+                                              clazz->velocitySpread * Math::normalRand() );
+
+      part.p        = transf.w.vec3();
+      part.velocity = transf * localVel;
+    }
+
+    part.p          += part.velocity * timer.frameTime;
+    part.velocity.z += physics.gravity;
+    part.velocity   *= clazz->drag;
+    part.life       -= timer.frameTime;
   }
 }
 

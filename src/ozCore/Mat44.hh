@@ -298,7 +298,7 @@ class Mat44
     }
 
     /**
-     * Product, compositum of linear transformations.
+     * Product, composite of linear transformations.
      */
     OZ_ALWAYS_INLINE
     Mat44 operator * ( const Mat44& m ) const
@@ -405,6 +405,41 @@ class Mat44
     }
 
     /**
+     * Composite of affine transformations in 3D.
+     *
+     * This is a faster version of multiplication where the last row of both matrices is assumed to
+     * be [0, 0, 0, 1].
+     */
+    OZ_ALWAYS_INLINE
+    Mat44 operator ^ ( const Mat44& m ) const
+    {
+#ifdef OZ_SIMD_MATH
+      return Mat44( Vec4( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) + z.f4 * vFill( m.x.z ) ),
+                    Vec4( x.f4 * vFill( m.y.x ) + y.f4 * vFill( m.y.y ) + z.f4 * vFill( m.y.z ) ),
+                    Vec4( x.f4 * vFill( m.z.x ) + y.f4 * vFill( m.z.y ) + z.f4 * vFill( m.z.z ) ),
+                    Vec4( x.f4 * vFill( m.w.x ) + y.f4 * vFill( m.w.y ) +
+                          z.f4 * vFill( m.w.z ) + w.f4 ) );
+#else
+      return Mat44( Vec4( x.x * m.x.x + y.x * m.x.y + z.x * m.x.z,
+                          x.y * m.x.x + y.y * m.x.y + z.y * m.x.z,
+                          x.z * m.x.x + y.z * m.x.y + z.z * m.x.z,
+                          0.0f ),
+                    Vec4( x.x * m.y.x + y.x * m.y.y + z.x * m.y.z,
+                          x.y * m.y.x + y.y * m.y.y + z.y * m.y.z,
+                          x.z * m.y.x + y.z * m.y.y + z.z * m.y.z,
+                          0.0f ),
+                    Vec4( x.x * m.z.x + y.x * m.z.y + z.x * m.z.z,
+                          x.y * m.z.x + y.y * m.z.y + z.y * m.z.z,
+                          x.z * m.z.x + y.z * m.z.y + z.z * m.z.z,
+                          0.0f ),
+                    Vec4( x.x * m.w.x + y.x * m.w.y + z.x * m.w.z + w.x,
+                          x.y * m.w.x + y.y * m.w.y + z.y * m.w.z + w.y,
+                          x.z * m.w.x + y.z * m.w.y + z.z * m.w.z + w.z,
+                          1.0f ) );
+#endif
+    }
+
+    /**
      * Addition.
      */
     OZ_ALWAYS_INLINE
@@ -484,7 +519,7 @@ class Mat44
     OZ_ALWAYS_INLINE
     void rotate( const Quat& q )
     {
-      *this = *this * rotation( q );
+      *this = *this ^ rotation( q );
     }
 
     /**

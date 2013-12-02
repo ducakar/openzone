@@ -85,64 +85,12 @@ class JSON
     /**
      * %Iterator for %JSON objects with constant access to elements.
      */
-    class ObjectCIterator : public IteratorBase<const HashMap<String, JSON>::Elem>
-    {
-      private:
-
-        HashMap<String, JSON>::CIterator objectIter; ///< `HashMap` iterator used internally.
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        explicit ObjectCIterator() :
-          IteratorBase<const HashMap<String, JSON>::Elem>( nullptr )
-        {}
-
-        /**
-         * Create iterator for a given %JSON object's data (used internally).
-         */
-        explicit ObjectCIterator( const ObjectData* data );
-
-        /**
-         * Advance to the next element.
-         */
-        ObjectCIterator& operator ++ ();
-
-    };
+    typedef HashMap<String, JSON>::CIterator ObjectCIterator;
 
     /**
      * %Iterator for %JSON objects with non-constant access to elements.
      */
-    class ObjectIterator : public IteratorBase<HashMap<String, JSON>::Elem>
-    {
-      private:
-
-        HashMap<String, JSON>::Iterator objectIter; ///< `HashMap` iterator used internally.
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        explicit ObjectIterator() :
-          IteratorBase<HashMap<String, JSON>::Elem>( nullptr )
-        {}
-
-        /**
-         * Create iterator for a given %JSON object's data (used internally).
-         */
-        explicit ObjectIterator( ObjectData* data );
-
-        /**
-         * Advance to the next element.
-         */
-        ObjectIterator& operator ++ ();
-
-    };
+    typedef HashMap<String, JSON>::Iterator ObjectIterator;
 
   private:
 

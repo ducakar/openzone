@@ -40,10 +40,12 @@ class PartClass
   public:
 
     int   flags;
-
     int   nParts;
+
     Vec3  velocity;
     float velocitySpread;
+    float drag;
+
     int   texId;
     int   endTexId;
 

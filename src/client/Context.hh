@@ -86,7 +86,7 @@ class Context
 
     struct SpeakSource
     {
-      static const int BUFFER_SIZE = 22050;
+      static const int BUFFER_SIZE = 44100;
 
       uint          id;
       uint          bufferIds[2];
@@ -94,12 +94,12 @@ class Context
       int           nSamples;
 
       volatile int  owner;
-      volatile bool isAlive;        // Set to false to terminate source before it finished.
+      volatile bool isAlive;        // Set to false to terminate source before it finishes.
       Mutex         mutex;
       Thread        thread;
 
       String        text;
-      short         samples[2 * BUFFER_SIZE];
+      short         samples[BUFFER_SIZE];
     };
 
   private:

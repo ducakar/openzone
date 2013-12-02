@@ -1,0 +1,2258 @@
+diff --git a/src/ozCore/Array.hh b/src/ozCore/Array.hh
+index 2c55e2a..be004f3 100644
+--- a/src/ozCore/Array.hh
++++ b/src/ozCore/Array.hh
+@@ -48,14 +48,19 @@ class Array
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+-    typedef ArrayIterator<const Elem> CIterator;
++    typedef const Elem* CIterator;
+ 
+     /**
+      * %Iterator with non-constant access to elements.
+      */
+-    typedef ArrayIterator<Elem> Iterator;
++    typedef Elem* Iterator;
+ 
+   private:
+ 
+@@ -93,25 +98,7 @@ class Array
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data, data + COUNT );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data, data + COUNT );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* begin() const
+@@ -120,7 +107,7 @@ class Array
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* begin()
+@@ -129,7 +116,7 @@ class Array
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* end() const
+@@ -138,7 +125,7 @@ class Array
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* end()
+diff --git a/src/ozCore/Chain.hh b/src/ozCore/Chain.hh
+index 0d51d32..892fcec 100644
+--- a/src/ozCore/Chain.hh
++++ b/src/ozCore/Chain.hh
+@@ -117,6 +117,11 @@ class Chain
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+     typedef ChainIterator<const Elem> CIterator;
+@@ -210,25 +215,7 @@ class Chain
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( firstElem );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( firstElem );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator begin() const
+@@ -237,7 +224,7 @@ class Chain
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator begin()
+@@ -246,7 +233,7 @@ class Chain
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator end() const
+@@ -255,7 +242,7 @@ class Chain
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator end()
+diff --git a/src/ozCore/DArray.hh b/src/ozCore/DArray.hh
+index 0a0c974..325b013 100644
+--- a/src/ozCore/DArray.hh
++++ b/src/ozCore/DArray.hh
+@@ -47,14 +47,19 @@ class DArray
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+-    typedef ArrayIterator<const Elem> CIterator;
++    typedef const Elem* CIterator;
+ 
+     /**
+      * %Iterator with non-constant access to elements.
+      */
+-    typedef ArrayIterator<Elem> Iterator;
++    typedef Elem* Iterator;
+ 
+   private:
+ 
+@@ -166,25 +171,7 @@ class DArray
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data, data + count );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data, data + count );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* begin() const
+@@ -193,7 +180,7 @@ class DArray
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* begin()
+@@ -202,7 +189,7 @@ class DArray
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* end() const
+@@ -211,7 +198,7 @@ class DArray
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* end()
+diff --git a/src/ozCore/DChain.hh b/src/ozCore/DChain.hh
+index 79ec3a2..c450773 100644
+--- a/src/ozCore/DChain.hh
++++ b/src/ozCore/DChain.hh
+@@ -119,6 +119,11 @@ class DChain
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+     typedef ChainIterator<const Elem> CIterator;
+@@ -218,25 +223,7 @@ class DChain
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( firstElem );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( firstElem );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator begin() const
+@@ -245,7 +232,7 @@ class DChain
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator begin()
+@@ -254,7 +241,7 @@ class DChain
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator end() const
+@@ -263,7 +250,7 @@ class DChain
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator end()
+diff --git a/src/ozCore/HashMap.hh b/src/ozCore/HashMap.hh
+index d75955e..0e2dd04 100644
+--- a/src/ozCore/HashMap.hh
++++ b/src/ozCore/HashMap.hh
+@@ -145,6 +145,11 @@ class HashMap
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+     typedef HashIterator<const Elem> CIterator;
+@@ -328,25 +333,7 @@ class HashMap
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator begin() const
+@@ -355,7 +342,7 @@ class HashMap
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator begin()
+@@ -364,7 +351,7 @@ class HashMap
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator end() const
+@@ -373,7 +360,7 @@ class HashMap
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator end()
+diff --git a/src/ozCore/HashSet.hh b/src/ozCore/HashSet.hh
+index 318dc67..27123ac 100644
+--- a/src/ozCore/HashSet.hh
++++ b/src/ozCore/HashSet.hh
+@@ -143,6 +143,11 @@ class HashSet
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+     typedef HashIterator<const Elem> CIterator;
+@@ -310,25 +315,7 @@ class HashSet
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator begin() const
+@@ -337,7 +324,7 @@ class HashSet
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator begin()
+@@ -346,7 +333,7 @@ class HashSet
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     CIterator end() const
+@@ -355,7 +342,7 @@ class HashSet
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Iterator end()
+diff --git a/src/ozCore/JSON.cc b/src/ozCore/JSON.cc
+index 8c5450b..1ea51e8 100644
+--- a/src/ozCore/JSON.cc
++++ b/src/ozCore/JSON.cc
+@@ -26,7 +26,6 @@
+ 
+ #include "JSON.hh"
+ 
+-#include "List.hh"
+ #include "SList.hh"
+ #include "Map.hh"
+ #include "Log.hh"
+@@ -90,32 +89,6 @@ struct JSON::ObjectData : JSON::Data
+   HashMap<String, JSON> table;
+ };
+ 
+-JSON::ObjectCIterator::ObjectCIterator( const ObjectData* data ) :
+-  IteratorBase< const HashMap<String, JSON>::Elem >( nullptr ), objectIter( data->table.citer() )
+-{
+-  elem = objectIter;
+-}
+-
+-JSON::ObjectCIterator& JSON::ObjectCIterator::operator ++ ()
+-{
+-  ++objectIter;
+-  elem = objectIter;
+-  return *this;
+-}
+-
+-JSON::ObjectIterator::ObjectIterator( ObjectData* data ) :
+-  IteratorBase< HashMap<String, JSON>::Elem >( nullptr ), objectIter( data->table.iter() )
+-{
+-  elem = objectIter;
+-}
+-
+-JSON::ObjectIterator& JSON::ObjectIterator::operator ++ ()
+-{
+-  ++objectIter;
+-  elem = objectIter;
+-  return *this;
+-}
+-
+ struct JSON::Parser
+ {
+   enum BlanksMode
+@@ -183,16 +156,16 @@ struct JSON::Parser
+       case ARRAY: {
+         List<JSON>& list = static_cast<ArrayData*>( value->data )->list;
+ 
+-        foreach( i, list.iter() ) {
+-          setAccessed( i );
++        for( JSON& i : list ) {
++          setAccessed( &i );
+         }
+         break;
+       }
+       case OBJECT: {
+         HashMap<String, JSON>& table = static_cast<ObjectData*>( value->data )->table;
+ 
+-        foreach( i, table.iter() ) {
+-          setAccessed( &i->value );
++        for( auto& i : table ) {
++          setAccessed( &i.value );
+         }
+         break;
+       }
+@@ -633,8 +606,8 @@ struct JSON::Formatter
+ 
+     Map<String, const JSON*> sortedEntries;
+ 
+-    foreach( entry, table.citer() ) {
+-      sortedEntries.add( entry->key, &entry->value );
++    for( auto& entry : table ) {
++      sortedEntries.add( entry.key, &entry.value );
+     }
+ 
+     for( int i = 0; i < sortedEntries.length(); ++i ) {
+@@ -974,51 +947,51 @@ int JSON::isEmpty() const
+   }
+ }
+ 
+-JSON::ArrayCIterator JSON::arrayCIter() const
++CIteratorAdapter< List<JSON> > JSON::arrayElements() const
+ {
+   if( valueType == ARRAY ) {
+     const ArrayData* arrayData = static_cast<const ArrayData*>( data );
+ 
+-    return ArrayCIterator( arrayData->list.begin(), arrayData->list.end() );
++    return CIteratorAdapter< List<JSON> >( &arrayData->list );
+   }
+   else {
+-    return ArrayCIterator();
++    return CIteratorAdapter< List<JSON> >();
+   }
+ }
+ 
+-JSON::ArrayIterator JSON::arrayIter()
++IteratorAdapter< List<JSON> > JSON::arrayElements()
+ {
+   if( valueType == ARRAY ) {
+     ArrayData* arrayData = static_cast<ArrayData*>( data );
+ 
+-    return ArrayIterator( arrayData->list.begin(), arrayData->list.end() );
++    return IteratorAdapter< List<JSON> >( &arrayData->list );
+   }
+   else {
+-    return ArrayIterator();
++    return IteratorAdapter< List<JSON> >();
+   }
+ }
+ 
+-JSON::ObjectCIterator JSON::objectCIter() const
++CIteratorAdapter< HashMap<String, JSON> > JSON::objectElements() const
+ {
+   if( valueType == OBJECT ) {
+     const ObjectData* objectData = static_cast<const ObjectData*>( data );
+ 
+-    return ObjectCIterator( objectData );
++    return CIteratorAdapter< HashMap<String, JSON> >( &objectData->table );
+   }
+   else {
+-    return ObjectCIterator();
++    return CIteratorAdapter< HashMap<String, JSON> >();
+   }
+ }
+ 
+-JSON::ObjectIterator JSON::objectIter()
++IteratorAdapter< HashMap<String, JSON> > JSON::objectElements()
+ {
+   if( valueType == OBJECT ) {
+     ObjectData* objectData = static_cast<ObjectData*>( data );
+ 
+-    return ObjectIterator( objectData );
++    return IteratorAdapter< HashMap<String, JSON> >( &objectData->table );
+   }
+   else {
+-    return ObjectIterator();
++    return IteratorAdapter< HashMap<String, JSON> >();
+   }
+ }
+ 
+@@ -1970,8 +1943,8 @@ bool JSON::clear( bool warnUnused )
+       ArrayData* arrayData = static_cast<ArrayData*>( data );
+ 
+       if( warnUnused ) {
+-        foreach( i, arrayData->list.iter() ) {
+-          hasUnused |= i->clear( true );
++        for( JSON& i : arrayData->list ) {
++          hasUnused |= i.clear( true );
+         }
+       }
+ 
+@@ -1982,8 +1955,8 @@ bool JSON::clear( bool warnUnused )
+       ObjectData* objectData = static_cast<ObjectData*>( data );
+ 
+       if( warnUnused ) {
+-        foreach( i, objectData->table.iter() ) {
+-          hasUnused |= i->value.clear( true );
++        for( auto& i : objectData->table ) {
++          hasUnused |= i.value.clear( true );
+         }
+       }
+ 
+@@ -2049,9 +2022,9 @@ String JSON::toString() const
+       String s = "{ ";
+ 
+       bool isFirst = true;
+-      foreach( i, table.citer() ) {
++      for( const auto& i : table ) {
+         s += String::str( isFirst ? "\"%s\": %s" : ", \"%s\": %s",
+-                          i->key.cstr(), i->value.toString().cstr() );
++                          i.key.cstr(), i.value.toString().cstr() );
+         isFirst = false;
+       }
+ 
+diff --git a/src/ozCore/JSON.hh b/src/ozCore/JSON.hh
+index da447e5..1f017eb 100644
+--- a/src/ozCore/JSON.hh
++++ b/src/ozCore/JSON.hh
+@@ -28,6 +28,7 @@
+ 
+ #pragma once
+ 
++#include "List.hh"
+ #include "HashMap.hh"
+ #include "File.hh"
+ 
+@@ -70,80 +71,6 @@ class JSON
+     struct Parser;
+     struct Formatter;
+ 
+-  public:
+-
+-    /**
+-     * %Iterator for %JSON arrays with constant access to elements.
+-     */
+-    typedef oz::ArrayIterator<const JSON> ArrayCIterator;
+-
+-    /**
+-     * %Iterator for %JSON arrays with non-constant access to elements.
+-     */
+-    typedef oz::ArrayIterator<JSON> ArrayIterator;
+-
+-    /**
+-     * %Iterator for %JSON objects with constant access to elements.
+-     */
+-    class ObjectCIterator : public IteratorBase<const HashMap<String, JSON>::Elem>
+-    {
+-      private:
+-
+-        HashMap<String, JSON>::CIterator objectIter; ///< `HashMap` iterator used internally.
+-
+-      public:
+-
+-        /**
+-         * Default constructor, creates an invalid iterator.
+-         */
+-        OZ_ALWAYS_INLINE
+-        explicit ObjectCIterator() :
+-          IteratorBase<const HashMap<String, JSON>::Elem>( nullptr )
+-        {}
+-
+-        /**
+-         * Create iterator for a given %JSON object's data (used internally).
+-         */
+-        explicit ObjectCIterator( const ObjectData* data );
+-
+-        /**
+-         * Advance to the next element.
+-         */
+-        ObjectCIterator& operator ++ ();
+-
+-    };
+-
+-    /**
+-     * %Iterator for %JSON objects with non-constant access to elements.
+-     */
+-    class ObjectIterator : public IteratorBase<HashMap<String, JSON>::Elem>
+-    {
+-      private:
+-
+-        HashMap<String, JSON>::Iterator objectIter; ///< `HashMap` iterator used internally.
+-
+-      public:
+-
+-        /**
+-         * Default constructor, creates an invalid iterator.
+-         */
+-        OZ_ALWAYS_INLINE
+-        explicit ObjectIterator() :
+-          IteratorBase<HashMap<String, JSON>::Elem>( nullptr )
+-        {}
+-
+-        /**
+-         * Create iterator for a given %JSON object's data (used internally).
+-         */
+-        explicit ObjectIterator( ObjectData* data );
+-
+-        /**
+-         * Advance to the next element.
+-         */
+-        ObjectIterator& operator ++ ();
+-
+-    };
+-
+   private:
+ 
+     /// A null value instance, required by `operator []`.
+@@ -292,32 +219,32 @@ class JSON
+     int isEmpty() const;
+ 
+     /**
+-     * %JSON array iterator with constant access.
++     * %JSON array iterator adapter with constant access.
+      *
+-     * An invalid iterator is returned if the %JSON element is not an array.
++     * An empty container adapter is returned if the %JSON element is not an array.
+      */
+-    ArrayCIterator arrayCIter() const;
++    CIteratorAdapter< List<JSON> > arrayElements() const;
+ 
+     /**
+      * %JSON array iterator with non-constant access.
+      *
+-     * An invalid iterator is returned if the %JSON element is not an array.
++     * An empty container adapter is returned if the %JSON element is not an array.
+      */
+-    ArrayIterator arrayIter();
++    IteratorAdapter< List<JSON> > arrayElements();
+ 
+     /**
+-     * %JSON object iterator with constant access.
++     * %JSON object iterator adapter with constant access.
+      *
+-     * An invalid iterator is returned if the %JSON element is not an object.
++     * An empty container adapter is returned if the %JSON element is not an object.
+      */
+-    ObjectCIterator objectCIter() const;
++    CIteratorAdapter< HashMap<String, JSON> > objectElements() const;
+ 
+     /**
+-     * %JSON object iterator with non-constant access.
++     * %JSON object iterator adapter with non-constant access.
+      *
+-     * An invalid iterator is returned if the %JSON element is not an object.
++     * An empty container adapter is returned if the %JSON element is not an object.
+      */
+-    ObjectIterator objectIter();
++    IteratorAdapter< HashMap<String, JSON> > objectElements();
+ 
+     /**
+      * Returns value at position `i` in an array.
+diff --git a/src/ozCore/List.hh b/src/ozCore/List.hh
+index d182fc4..8317265 100644
+--- a/src/ozCore/List.hh
++++ b/src/ozCore/List.hh
+@@ -56,14 +56,19 @@ class List
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+-    typedef ArrayIterator<const Elem> CIterator;
++    typedef const Elem* CIterator;
+ 
+     /**
+      * %Iterator with non-constant access to elements.
+      */
+-    typedef ArrayIterator<Elem> Iterator;
++    typedef Elem* Iterator;
+ 
+   private:
+ 
+@@ -194,25 +199,7 @@ class List
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data, data + count );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data, data + count );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* begin() const
+@@ -221,7 +208,7 @@ class List
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* begin()
+@@ -230,7 +217,7 @@ class List
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* end() const
+@@ -239,7 +226,7 @@ class List
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* end()
+diff --git a/src/ozCore/Log.cc b/src/ozCore/Log.cc
+index bc2d6f7..7cf56cf 100644
+--- a/src/ozCore/Log.cc
++++ b/src/ozCore/Log.cc
+@@ -354,6 +354,7 @@ bool Log::printMemoryLeaks()
+ {
+   bool hasOutput = false;
+ 
++#if 0
+   foreach( ci, Alloc::objectCIter() ) {
+     println( "Leaked object at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
+     indent();
+@@ -371,21 +372,23 @@ bool Log::printMemoryLeaks()
+ 
+     hasOutput = true;
+   }
+-
++#endif
+   return hasOutput;
+ }
+ 
+ bool Log::printProfilerStatistics()
+ {
+-  if( !Profiler::citer().isValid() ) {
++  auto times = Profiler::times();
++
++  if( times.begin() == times.end() ) {
+     return false;
+   }
+ 
+   println( "Profiler statistics {" );
+   indent();
+ 
+-  foreach( i, Profiler::citer() ) {
+-    println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
++  for( auto& i : times ) {
++    println( "%.6f s\t %s", double( i.value ) / 1e6, i.key.cstr() );
+   }
+ 
+   unindent();
+diff --git a/src/ozCore/Map.hh b/src/ozCore/Map.hh
+index c2b92de..bb252c0 100644
+--- a/src/ozCore/Map.hh
++++ b/src/ozCore/Map.hh
+@@ -82,14 +82,19 @@ class Map
+     };
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+-    typedef ArrayIterator<const Elem> CIterator;
++    typedef const Elem* CIterator;
+ 
+     /**
+      * %Iterator with non-constant access to elements.
+      */
+-    typedef ArrayIterator<Elem> Iterator;
++    typedef Elem* Iterator;
+ 
+   private:
+ 
+@@ -220,25 +225,7 @@ class Map
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data, data + count );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data, data + count );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* begin() const
+@@ -247,7 +234,7 @@ class Map
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* begin()
+@@ -256,7 +243,7 @@ class Map
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* end() const
+@@ -265,7 +252,7 @@ class Map
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* end()
+diff --git a/src/ozCore/Profiler.cc b/src/ozCore/Profiler.cc
+index c8efe7b..fd0753d 100644
+--- a/src/ozCore/Profiler.cc
++++ b/src/ozCore/Profiler.cc
+@@ -31,9 +31,9 @@ namespace oz
+ 
+ static HashMap<String, ulong64> profileTimes;
+ 
+-Profiler::CIterator Profiler::citer()
++const CIteratorAdapter< HashMap<String, ulong64> > Profiler::times()
+ {
+-  return profileTimes.citer();
++  return CIteratorAdapter< HashMap<String, ulong64> >( &profileTimes );
+ }
+ 
+ void Profiler::add( const char* key, uint micros )
+diff --git a/src/ozCore/Profiler.hh b/src/ozCore/Profiler.hh
+index 7eed702..0ba62ea 100644
+--- a/src/ozCore/Profiler.hh
++++ b/src/ozCore/Profiler.hh
+@@ -61,16 +61,9 @@ class Profiler
+   public:
+ 
+     /**
+-     * Constant iterator for accumulated times.
++     * Adapter for iterating over accumulated times.
+      */
+-    typedef HashMap<String, ulong64>::CIterator CIterator;
+-
+-  public:
+-
+-    /**
+-     * Return constant iterator for accumulated times.
+-     */
+-    static CIterator citer();
++    static const CIteratorAdapter< HashMap<String, ulong64> > times();
+ 
+     /**
+      * Add a time in microseconds to a named sum.
+diff --git a/src/ozCore/SList.hh b/src/ozCore/SList.hh
+index 6ced8cc..78bcaa3 100644
+--- a/src/ozCore/SList.hh
++++ b/src/ozCore/SList.hh
+@@ -50,14 +50,19 @@ class SList
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+-    typedef ArrayIterator<const Elem> CIterator;
++    typedef const Elem* CIterator;
+ 
+     /**
+      * %Iterator with non-constant access to elements.
+      */
+-    typedef ArrayIterator<Elem> Iterator;
++    typedef Elem* Iterator;
+ 
+   private:
+ 
+@@ -90,25 +95,7 @@ class SList
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data, data + count );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data, data + count );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* begin() const
+@@ -117,7 +104,7 @@ class SList
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* begin()
+@@ -126,7 +113,7 @@ class SList
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* end() const
+@@ -135,7 +122,7 @@ class SList
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* end()
+diff --git a/src/ozCore/Set.hh b/src/ozCore/Set.hh
+index 32a88fc..4f992c9 100644
+--- a/src/ozCore/Set.hh
++++ b/src/ozCore/Set.hh
+@@ -59,14 +59,19 @@ class Set
+   public:
+ 
+     /**
++     * Element type.
++     */
++    typedef Elem ElemType;
++
++    /**
+      * %Iterator with constant access to elements.
+      */
+-    typedef ArrayIterator<const Elem> CIterator;
++    typedef const Elem* CIterator;
+ 
+     /**
+      * %Iterator with non-constant access to elements.
+      */
+-    typedef ArrayIterator<Elem> Iterator;
++    typedef Elem* Iterator;
+ 
+   private:
+ 
+@@ -197,25 +202,7 @@ class Set
+     }
+ 
+     /**
+-     * %Iterator with constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    CIterator citer() const
+-    {
+-      return CIterator( data, data + count );
+-    }
+-
+-    /**
+-     * %Iterator with non-constant access, initially points to the first element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    Iterator iter()
+-    {
+-      return Iterator( data, data + count );
+-    }
+-
+-    /**
+-     * STL-compatible constant begin iterator.
++     * Constant begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* begin() const
+@@ -224,7 +211,7 @@ class Set
+     }
+ 
+     /**
+-     * STL-compatible begin iterator.
++     * Begin iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* begin()
+@@ -233,7 +220,7 @@ class Set
+     }
+ 
+     /**
+-     * STL-compatible constant end iterator.
++     * Constant end iterator.
+      */
+     OZ_ALWAYS_INLINE
+     const Elem* end() const
+@@ -242,7 +229,7 @@ class Set
+     }
+ 
+     /**
+-     * STL-compatible end iterator.
++     * End iterator.
+      */
+     OZ_ALWAYS_INLINE
+     Elem* end()
+diff --git a/src/ozCore/System.hh b/src/ozCore/System.hh
+index 7bbcbd5..4f34c74 100644
+--- a/src/ozCore/System.hh
++++ b/src/ozCore/System.hh
+@@ -34,16 +34,14 @@
+  * @def OZ_WARNING
+  * Wrapper for `System::warning()`, filling in the current function, file and line parameters.
+  */
+-// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
+-#define OZ_WARNING( ...) \
++#define OZ_WARNING( ... ) \
+   oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
+ 
+ /**
+  * @def OZ_ERROR
+  * Wrapper for `System::error()`, filling in the current function, file and line parameters.
+  */
+-// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
+-#define OZ_ERROR( ...) \
++#define OZ_ERROR( ... ) \
+   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
+ 
+ namespace oz
+diff --git a/src/ozCore/arrays.hh b/src/ozCore/arrays.hh
+index 77ae822..3ca236a 100644
+--- a/src/ozCore/arrays.hh
++++ b/src/ozCore/arrays.hh
+@@ -36,114 +36,55 @@ namespace oz
+ {
+ 
+ /**
+- * %Array iterator.
+  *
+- * It should not be used directly but appropriate iterator types should be typedef'd to it.
+  */
+ template <typename Elem>
+-class ArrayIterator : public IteratorBase<Elem>
++struct ArrayIteratorAdapter
+ {
+-  protected:
+-
+-    using IteratorBase<Elem>::elem;
+-
+-    /// Successor of the last element, used to determine when the iterator becomes invalid.
+-    const Elem* past;
+-
+-  public:
+-
+-    /**
+-     * Default constructor, creates an invalid iterator.
+-     */
+-    OZ_ALWAYS_INLINE
+-    explicit ArrayIterator() :
+-      IteratorBase<Elem>( nullptr ), past( nullptr )
+-    {}
+-
+-    /**
+-     * %Array iterator.
+-     *
+-     * @param first first array element.
+-     * @param past_ successor of the last element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    explicit ArrayIterator( Elem* first, Elem* past_ ) :
+-      IteratorBase<Elem>( first ), past( past_ )
+-    {}
+-
+-    /**
+-     * True as long as iterator has not passed all array elements.
+-     */
+-    OZ_ALWAYS_INLINE
+-    bool isValid() const
+-    {
+-      return elem != past;
+-    }
+-
+-    /**
+-     * Advance to the next element.
+-     */
+-    OZ_ALWAYS_INLINE
+-    ArrayIterator& operator ++ ()
+-    {
+-      hard_assert( elem != past );
++  typedef Elem ElemType;
+ 
+-      ++elem;
+-      return *this;
+-    }
++  Elem* array;
++  int   count;
+ 
+-};
++  const Elem* begin() const
++  {
++    return array;
++  }
+ 
+-/**
+- * %Array iterator with constant access to elements.
+- */
+-template <typename Elem>
+-using CIterator = ArrayIterator<const Elem>;
++  Elem* begin()
++  {
++    return array;
++  }
+ 
+-/**
+- * %Array iterator with non-constant access to elements.
+- */
+-template <typename Elem>
+-using Iterator = ArrayIterator<Elem>;
++  const Elem* end() const
++  {
++    return array + count;
++  }
+ 
+-/**
+- * Create array iterator with constant element access.
+- */
+-template <typename Elem>
+-OZ_ALWAYS_INLINE
+-inline CIterator<Elem> citer( const Elem* array, int count )
+-{
+-  return CIterator<Elem>( array, array + count );
+-}
++  Elem* end()
++  {
++    return array + count;
++  }
++};
+ 
+ /**
+- * Create array iterator with non-constant element access.
++ * Create array iterator adapter to provide `begin()` and `end()` member functions.
+  */
+ template <typename Elem>
+ OZ_ALWAYS_INLINE
+-inline Iterator<Elem> iter( Elem* array, int count )
+-{
+-  return Iterator<Elem>( array, array + count );
+-}
+-
+-/**
+- * Create static array iterator with element constant access.
+- */
+-template <typename Elem, int COUNT>
+-OZ_ALWAYS_INLINE
+-inline CIterator<Elem> citer( const Elem ( & array )[COUNT] )
++inline ArrayIteratorAdapter<Elem> iter( Elem* array, int count )
+ {
+-  return CIterator<Elem>( array, array + COUNT );
++  return { array, count };
+ }
+ 
+ /**
+- * Create static array iterator with non-constant element access.
++ * Create static array iterator adapter to provide `begin()` and `end()` member functions.
+  */
+ template <typename Elem, int COUNT>
+ OZ_ALWAYS_INLINE
+-inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
++inline ArrayIteratorAdapter<Elem> iter( Elem ( & array )[COUNT] )
+ {
+-  return Iterator<Elem>( array, array + COUNT );
++  return { array, COUNT };
+ }
+ 
+ /**
+diff --git a/src/ozCore/clearmacros.hh b/src/ozCore/clearmacros.hh
+index a78f73b..fb3074b 100644
+--- a/src/ozCore/clearmacros.hh
++++ b/src/ozCore/clearmacros.hh
+@@ -25,16 +25,15 @@
+  *
+  * This header clears ozCore macros that might interfere with other libraries.
+  *
+- * It undefines `soft_assert()`, `hard_assert()`, `foreach()`, `float4()` and `uint4()` and macros
+- * that might be defined for older GCC versions only to ensure for C++11 compatibility. It is not
+- * included by `\<oz/oz.hh\>`, one should include it before headers that might conflict with liboz.
++ * It undefines `soft_assert()`, `hard_assert()`, `float4()` and `uint4()` and macros that might be
++ * defined for older GCC versions only to ensure for C++11 compatibility. It is not included by
++ * `\<ozCore/ozCore.hh\>`, one should include it before headers that might conflict with liboz.
+  */
+ 
+ #pragma once
+ 
+ #undef soft_assert
+ #undef hard_assert
+-#undef foreach
+ #undef vShuffle
+ 
+ // Might be defined in `config.hh` for C++11 compatibility when using older GCC versions.
+diff --git a/src/ozCore/common.hh b/src/ozCore/common.hh
+index 9b9426b..e7371d1 100644
+--- a/src/ozCore/common.hh
++++ b/src/ozCore/common.hh
+@@ -26,8 +26,8 @@
+  * Essential includes, macros, types and templates.
+  *
+  * You may want to add `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`, `ulong`, `long64`,
+- * `ulong64`, `foreach`, `float4` and `uint4` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or
+- * global `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart editors.
++ * `ulong64`, `float4` and `uint4` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or global
++ * `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart editors.
+  */
+ 
+ #pragma once
+@@ -175,6 +175,21 @@ typedef long long long64;
+  */
+ typedef unsigned long long ulong64;
+ 
++/**
++ * Helper struct to strip references from types.
++ */
++template <typename Type>
++struct StripRef
++{
++  typedef Type BareType;
++};
++
++template <typename Type>
++struct StripRef<Type&>
++{
++  typedef Type BareType;
++};
++
+ static_assert( sizeof( char   ) == 1, "sizeof( char ) should be 1" );
+ static_assert( sizeof( short  ) == 2, "sizeof( short ) should be 2" );
+ static_assert( sizeof( int    ) == 4, "sizeof( int ) should be 4" );
+diff --git a/src/ozCore/iterables.hh b/src/ozCore/iterables.hh
+index 5612384..f675566 100644
+--- a/src/ozCore/iterables.hh
++++ b/src/ozCore/iterables.hh
+@@ -35,28 +35,6 @@
+ 
+ #include "common.hh"
+ 
+-/**
+- * @def foreach
+- * Macro to shorten common foreach loops.
+- *
+- * It can be used like
+- * @code
+- * List<int> l;
+- * foreach( i, l.citer() ) {
+- *   printf( "%d ", *i );
+- * }
+- * @endcode
+- * to replace a longer piece of code, like:
+- * @code
+- * List<int> l;
+- * for( auto i = l.citer(); i.isValid(); ++i )
+- *   printf( "%d ", *i );
+- * }
+- * @endcode
+- */
+-#define foreach( i, iterator ) \
+-  for( auto i = iterator; i.isValid(); ++i )
+-
+ namespace oz
+ {
+ 
+@@ -70,13 +48,6 @@ namespace oz
+ template <typename Elem>
+ class IteratorBase
+ {
+-  public:
+-
+-    /**
+-     * Element type.
+-     */
+-    typedef Elem ElemType;
+-
+   protected:
+ 
+     /**
+@@ -115,15 +86,6 @@ class IteratorBase
+     }
+ 
+     /**
+-     * True as long as iterator has not passed all elements.
+-     */
+-    OZ_ALWAYS_INLINE
+-    bool isValid() const
+-    {
+-      return elem != nullptr;
+-    }
+-
+-    /**
+      * Pointer to the current element.
+      */
+     OZ_ALWAYS_INLINE
+@@ -158,163 +120,358 @@ class IteratorBase
+ };
+ 
+ /**
+- * Iterator with constant element access for a container (same as `container.citer()`).
++ * Adapter (constant) for iterating over an internal container without exposing it.
++ *
++ * This class acts as a fake container that can be passed to functions that work with container or
++ * to a range-based for loop.
+  */
+ template <class Container>
+-OZ_ALWAYS_INLINE
+-inline typename Container::CIterator citer( const Container& container )
++class CIteratorAdapter
+ {
+-  return container.citer();
+-}
++  public:
++
++    /**
++     * Element type of the underlaying container.
++     */
++    typedef typename Container::ElemType ElemType;
++
++    /**
++     * Constant iterator type of the underlaying container.
++     */
++    typedef typename Container::CIterator CIterator;
++
++  private:
++
++    const Container* container; ///< Pointer to the underlaying container.
++
++  public:
++
++    /**
++     * Create an instance for a given container.
++     */
++    OZ_ALWAYS_INLINE
++    explicit CIteratorAdapter( const Container* container_ = nullptr ) :
++      container( container_ )
++    {}
++
++    /**
++     * Constant begin iterator.
++     */
++    OZ_ALWAYS_INLINE
++    CIterator begin() const
++    {
++      return container == nullptr ? CIterator() : container->begin();
++    }
++
++    /**
++     * Constant end iterator.
++     */
++    OZ_ALWAYS_INLINE
++    CIterator end() const
++    {
++      return container == nullptr ? CIterator() : container->end();
++    }
++
++};
+ 
+ /**
+- * Iterator with non-constant element access for a container (same as `container.iter()`).
++ * Adapter (non-constant) for iterating over an internal container without exposing it.
++ *
++ * This class acts as a fake container that can be passed to functions that work with container or
++ * to a range-based for loop.
+  */
+ template <class Container>
+-OZ_ALWAYS_INLINE
+-inline typename Container::Iterator iter( Container& container )
++class IteratorAdapter
+ {
+-  return container.iter();
++  public:
++
++    /**
++     * Element type of the underlaying container.
++     */
++    typedef typename Container::ElemType ElemType;
++
++    /**
++     * Constant iterator type of the underlaying container.
++     */
++    typedef typename Container::CIterator CIterator;
++
++    /**
++     * %Iterator type of the underlaying container.
++     */
++    typedef typename Container::Iterator Iterator;
++
++  private:
++
++    Container* container; ///< Pointer to the underlaying container.
++
++  public:
++
++    /**
++     * Create an instance for a given container.
++     */
++    OZ_ALWAYS_INLINE
++    explicit IteratorAdapter( Container* container_ = nullptr ) :
++      container( container_ )
++    {}
++
++    /**
++     * Constant begin iterator.
++     */
++    OZ_ALWAYS_INLINE
++    CIterator begin() const
++    {
++      return container == nullptr ? CIterator() : container->begin();
++    }
++
++    /**
++     * Begin iterator.
++     */
++    OZ_ALWAYS_INLINE
++    Iterator begin()
++    {
++      return container == nullptr ? Iterator() : container->begin();
++    }
++
++    /**
++     * Constant end iterator.
++     */
++    OZ_ALWAYS_INLINE
++    CIterator end() const
++    {
++      return container == nullptr ? CIterator() : container->end();
++    }
++
++    /**
++     * End iterator.
++     */
++    OZ_ALWAYS_INLINE
++    Iterator end()
++    {
++      return container == nullptr ? Iterator() : container->end();
++    }
++
++};
++
++/**
++ * A no-op for iterable containers, just forwards the parameter.
++ *
++ * Overload for arrays constructs an adapter class that provides `begin()` and `end()` functions and
++ * `ElemType` type definition.
++ */
++template <class Container>
++inline Container&& iter( Container&& container )
++{
++  return static_cast<Container&&>( container );
+ }
+ 
+ /**
+  * Count elements.
+  */
+-template <class CIterator>
+-inline int iLength( CIterator iter )
++template <class Container>
++inline int iLength( const Container& container )
+ {
++  auto first = container.begin();
++  auto last  = container.end();
++
+   int count = 0;
+ 
+-  while( iter.isValid() ) {
++  while( first != last ) {
+     ++count;
+-    ++iter;
++    ++first;
+   }
+   return count;
+ }
+ 
+ /**
+- * Copy all elements from `srcIter` to `destIter`.
++ * Copy all elements from `srcContainer` to `destContainer`.
+  */
+-template <class CIteratorA, class IteratorB>
+-inline void iCopy( CIteratorA srcIter, IteratorB destIter )
++template <class ContainerA, class ContainerB>
++inline void iCopy( const ContainerA& srcContainer, ContainerB&& destContainer )
+ {
+-  while( srcIter.isValid() ) {
+-    hard_assert( destIter.isValid() );
++  auto firstA = srcContainer.begin();
++  auto lastA  = srcContainer.end();
++  auto firstB = destContainer.begin();
++  auto lastB  = destContainer.end();
++
++  while( firstA != lastA ) {
++    hard_assert( firstB != lastB );
+ 
+-    *destIter = *srcIter;
++    *firstB = *firstA;
+ 
+-    ++srcIter;
+-    ++destIter;
++    ++firstA;
++    ++firstB;
+   }
+ }
+ 
+ /**
+- * Move all elements from `srcIter` to `destIter`.
++ * Move all elements from `srcContainer` to `destContainer`.
+  */
+-template <class IteratorA, class IteratorB>
+-inline void iMove( IteratorA srcIter, IteratorB destIter )
++template <class ContainerA, class ContainerB>
++inline void iMove( ContainerA&& srcContainer, ContainerB&& destContainer )
+ {
+-  typedef typename IteratorB::ElemType ElemB;
++  typedef typename StripRef<ContainerB>::BareType::ElemType ElemB;
+ 
+-  while( srcIter.isValid() ) {
+-    hard_assert( destIter.isValid() );
++  auto firstA = srcContainer.begin();
++  auto lastA  = srcContainer.end();
++  auto firstB = destContainer.begin();
++  auto lastB  = destContainer.end();
+ 
+-    *destIter = static_cast<ElemB&&>( *srcIter );
++  while( firstA != lastA ) {
++    hard_assert( firstB != lastB );
+ 
+-    ++srcIter;
+-    ++destIter;
++    *firstB = static_cast<ElemB&&>( *firstA );
++
++    ++firstA;
++    ++firstB;
+   }
+ }
+ 
+ /**
+  * %Set elements to a given value.
+  */
+-template <class Iterator, typename Value = typename Iterator::ElemType>
+-inline void iFill( Iterator iter, const Value& value )
++template <class Container, typename Value = typename Container::ElemType>
++inline void iFill( Container&& container, const Value& value )
+ {
+-  while( iter.isValid() ) {
+-    *iter = value;
++  auto first = container.begin();
++  auto last  = container.end();
++
++  while( first != last ) {
++    *first = value;
+ 
+-    ++iter;
++    ++first;
+   }
+ }
+ 
+ /**
+  * Swap element of two same-length containers.
+  */
+-template <class IteratorA, class IteratorB>
+-inline void iSwap( IteratorA iterA, IteratorB iterB )
++template <class ContainerA, class ContainerB>
++inline void iSwap( ContainerA&& containerA, ContainerB&& containerB )
+ {
+-  typedef typename IteratorA::ElemType ElemA;
+-  typedef typename IteratorB::ElemType ElemB;
++  typedef typename StripRef<ContainerA>::BareType::ElemType ElemA;
++  typedef typename StripRef<ContainerB>::BareType::ElemType ElemB;
+ 
+-  while( iterA.isValid() ) {
+-    hard_assert( iterB.isValid() );
++  auto firstA = containerA.begin();
++  auto lastA  = containerA.end();
++  auto firstB = containerB.begin();
++  auto lastB  = containerB.end();
+ 
+-    ElemA t = static_cast<ElemA&&>( *iterA );
+-    *iterA = static_cast<ElemB&&>( *iterB );
+-    *iterB = static_cast<ElemA&&>( t );
++  while( firstA != lastA ) {
++    hard_assert( firstB != lastB );
+ 
+-    ++iterA;
+-    ++iterB;
++    ElemA t = static_cast<ElemA&&>( *firstA );
++    *firstA = static_cast<ElemB&&>( *firstB );
++    *firstB = static_cast<ElemA&&>( t );
++
++    ++firstA;
++    ++firstB;
+   }
+ 
+-  hard_assert( !iterB.isValid() );
++  hard_assert( firstB == lastB );
+ }
+ 
+ /**
+  * True iff same length and respective elements are equal.
+  */
+-template <class CIteratorA, class CIteratorB>
+-inline bool iEquals( CIteratorA iterA, CIteratorB iterB )
++template <class ContainerA, class ContainerB>
++inline bool iEquals( const ContainerA& containerA, const ContainerB& containerB )
+ {
+-  hard_assert( static_cast<void*>( &iterA ) != static_cast<void*>( &iterB ) );
+-
+-  while( iterA.isValid() && iterB.isValid() && *iterA == *iterB ) {
+-    ++iterA;
+-    ++iterB;
++  auto firstA = containerA.begin();
++  auto lastA  = containerA.end();
++  auto firstB = containerB.begin();
++  auto lastB  = containerB.end();
++
++  while( firstA != lastA && firstB != lastB && *firstA == *firstB ) {
++    ++firstA;
++    ++firstB;
+   }
+-  return !iterA.isValid() && !iterB.isValid();
++  return firstA == lastA && firstB == lastB;
+ }
+ 
+ /**
+  * True iff a given value is found in a container.
+  */
+-template <class CIterator, typename Value = typename CIterator::ElemType>
+-inline bool iContains( CIterator iter, const Value& value )
++template <class Container, typename Value = typename Container::ElemType>
++inline bool iContains( const Container& container, const Value& value )
+ {
+-  while( iter.isValid() && !( *iter == value ) ) {
+-    ++iter;
++  auto first = container.begin();
++  auto last  = container.end();
++
++  while( first != last && !( *first == value ) ) {
++    ++first;
+   }
+-  return iter.isValid();
++  return first != last;
+ }
+ 
+ /**
+- * %Iterator for the first occurrence or an invalid iterator if not found.
++ * Constant pointer to the first occurrence or an end pointer if not found.
+  */
+-template <class Iterator, typename Value = typename Iterator::ElemType>
+-inline Iterator iFind( Iterator iter, const Value& value )
++template <class Container, typename Value = typename Container::ElemType>
++inline const typename Container::ElemType* iFind( const Container& container, const Value& value )
+ {
+-  while( iter.isValid() && !( *iter == value ) ) {
+-    ++iter;
++  auto first = container.begin();
++  auto last  = container.end();
++
++  while( first != last && !( *first == value ) ) {
++    ++first;
+   }
+-  return iter;
++  return first;
+ }
+ 
+ /**
+- * %Iterator for the last occurrence or an invalid iterator if not found.
++ * Pointer to the first occurrence or an end pointer if not found.
+  */
+-template <class Iterator, typename Value = typename Iterator::ElemType>
+-inline Iterator iFindLast( Iterator iter, const Value& value )
++template <class Container, typename Value = typename Container::ElemType>
++inline typename StripRef<Container>::BareType::ElemType* iFind( Container&& container,
++                                                                const Value& value )
+ {
+-  Iterator lastOccurence;
++  auto first = container.begin();
++  auto last  = container.end();
+ 
+-  while( iter.isValid() ) {
+-    if( *iter == value ) {
+-      lastOccurence = iter;
++  while( first != last && !( *first == value ) ) {
++    ++first;
++  }
++  return first;
++}
++
++/**
++ * Constant pointer to the last occurrence or an end pointer if not found.
++ */
++template <class Container, typename Value = typename Container::ElemType>
++inline const typename Container::ElemType* iFindLast( const Container& container,
++                                                      const Value& value )
++{
++  auto first         = container.begin();
++  auto last          = container.end();
++  auto lastOccurence = container.end();
++
++  while( first != last ) {
++    if( *first == value ) {
++      lastOccurence = first;
+     }
+ 
+-    ++iter;
++    ++first;
++  }
++  return lastOccurence;
++}
++
++/**
++ * Pointer to the last occurrence or an end pointer if not found.
++ */
++template <class Container, typename Value = typename Container::ElemType>
++inline typename StripRef<Container>::BareType::ElemType* iFindLast( Container&& container,
++                                                                    const Value& value )
++{
++  auto first         = container.begin();
++  auto last          = container.end();
++  auto lastOccurence = container.end();
++
++  while( first != last ) {
++    if( *first == value ) {
++      lastOccurence = first;
++    }
++
++    ++first;
+   }
+   return lastOccurence;
+ }
+@@ -322,33 +479,37 @@ inline Iterator iFindLast( Iterator iter, const Value& value )
+ /**
+  * Index of the first occurrence of the value or -1 if not found.
+  */
+-template <class CIterator, typename Value = typename CIterator::ElemType>
+-inline int iIndex( CIterator iter, const Value& value )
++template <class Container, typename Value = typename Container::ElemType>
++inline int iIndex( const Container& container, const Value& value )
+ {
+-  int index = 0;
++  auto first = container.begin();
++  auto last  = container.end();
++  int  index = 0;
+ 
+-  while( iter.isValid() && !( *iter == value ) ) {
+-    ++iter;
++  while( first != last && !( *first == value ) ) {
++    ++first;
+     ++index;
+   }
+-  return !iter.isValid() ? -1 : index;
++  return first == last ? -1 : index;
+ }
+ 
+ /**
+  * Index of the last occurrence of the value or -1 if not found.
+  */
+-template <class CIterator, typename Value = typename CIterator::ElemType>
+-inline int iLastIndex( CIterator iter, const Value& value )
++template <class Container, typename Value = typename Container::ElemType>
++inline int iLastIndex( const Container& container, const Value& value )
+ {
+-  int index = 0;
+-  int lastIndex = -1;
++  auto first     = container.begin();
++  auto last      = container.end();
++  int  index     = 0;
++  int  lastIndex = -1;
+ 
+-  while( iter.isValid() ) {
+-    if( *iter == value ) {
++  while( first != last ) {
++    if( *first == value ) {
+       lastIndex = index;
+     }
+ 
+-    ++iter;
++    ++first;
+     ++index;
+   }
+   return lastIndex;
+@@ -357,14 +518,17 @@ inline int iLastIndex( CIterator iter, const Value& value )
+ /**
+  * Delete objects referenced by elements and set all elements to `nullptr`.
+  */
+-template <class Iterator>
+-inline void iFree( Iterator iter )
++template <class Container>
++inline void iFree( Container&& container )
+ {
+-  typedef typename Iterator::ElemType Elem;
++  typedef typename StripRef<Container>::BareType::ElemType Elem;
++
++  auto first = container.begin();
++  auto last  = container.end();
+ 
+-  while( iter.isValid() ) {
+-    Elem& elem = *iter;
+-    ++iter;
++  while( first != last ) {
++    Elem& elem = *first;
++    ++first;
+ 
+     delete elem;
+     elem = nullptr;
+diff --git a/src/unittest/arrays.cc b/src/unittest/arrays.cc
+index d3ae457..be8b926 100644
+--- a/src/unittest/arrays.cc
++++ b/src/unittest/arrays.cc
+@@ -32,8 +32,8 @@ void test_arrays()
+ {
+   Log() << "+ arrays";
+ 
+-  CIterator<Foo> ici;
+-  Iterator<Foo>  ii;
++//  CIterator<Foo> ici;
++//  Iterator<Foo>  ii;
+ 
+   Foo a[4] = { 1, 2, 3, 2 };
+   Foo b[4];
+@@ -71,7 +71,7 @@ void test_arrays()
+   aCopy( b, 4, a );
+   aCopy( b, 0, a );
+   OZ_CHECK( aEquals( a, 4, b ) );
+-  OZ_CHECK( iEquals( citer( a ), citer( b ) ) );
++  OZ_CHECK( iEquals( iter( a ), iter( b ) ) );
+ 
+   aCopyBackward( a, 4, b );
+   aCopyBackward( a, 0, b );
+@@ -126,8 +126,8 @@ void test_arrays()
+   OZ_CHECK_CONTENTS( a, 2, 3, 2, 1 );
+ 
+   Foo** c = new Foo*[5];
+-  foreach( i, iter( c, 5 ) ) {
+-    *i = new Foo();
++  for( Foo*& i : iter( c, 5 ) ) {
++    i = new Foo();
+   }
+   aFree( c, 5 );
+   delete[] c;
+diff --git a/src/unittest/iterables.cc b/src/unittest/iterables.cc
+index 6debea9..34e9459 100644
+--- a/src/unittest/iterables.cc
++++ b/src/unittest/iterables.cc
+@@ -51,9 +51,28 @@ void test_iterables()
+   HashSet<Foo>::CIterator      ichs;
+   HashSet<Foo>::Iterator       ihs;
+   HashMap<Foo, Foo>::CIterator ichm;
+-  HashMap<Foo, Foo>::Iterator  ihtm;
+-
+-  List<Foo*>::Iterator         invalid;
++  HashMap<Foo, Foo>::Iterator  ihm;
++
++  static_cast<void>( icl  );
++  static_cast<void>( il   );
++  static_cast<void>( icdl );
++  static_cast<void>( idl  );
++  static_cast<void>( ica  );
++  static_cast<void>( ia   );
++  static_cast<void>( icda );
++  static_cast<void>( ida  );
++  static_cast<void>( icv  );
++  static_cast<void>( iv   );
++  static_cast<void>( icsv );
++  static_cast<void>( isv  );
++  static_cast<void>( ics  );
++  static_cast<void>( is   );
++  static_cast<void>( icm  );
++  static_cast<void>( im   );
++  static_cast<void>( ichs );
++  static_cast<void>( ihs  );
++  static_cast<void>( ichm );
++  static_cast<void>( ihm  );
+ 
+   DChain<Foo> l;
+   List<Foo> v;
+@@ -68,134 +87,126 @@ void test_iterables()
+   v.add( 0 );
+   v.add( 0 );
+ 
+-  iMove( l.iter(), v.iter() );
+-  iMove( l.iter(), iter( l ) );
+-  iMove( invalid, invalid );
+-  foreach( i, l.citer() ) {
+-    OZ_CHECK( *i == -1 );
++  iMove( l, v );
++  iMove( l, l );
++  for( const Foo& i : l ) {
++    OZ_CHECK( i == -1 );
+   }
+   OZ_CHECK_CONTENTS( v, 1, 2, 3, 2 );
+-  OZ_CHECK( !iEquals( l.citer(), v.citer() ) );
+-  OZ_CHECK( iEquals( citer( l ), citer( l ) ) );
++  OZ_CHECK( !iEquals( l, v ) );
++  OZ_CHECK( iEquals( l, l ) );
+ 
+-  iFill( l.iter(), 0 );
+-  iFill( invalid, static_cast<Foo*>( nullptr ) );
++  iFill( l, 0 );
+   OZ_CHECK_CONTENTS( l, 0, 0, 0, 0 );
+ 
+-  iSwap( l.iter(), v.iter() );
++  iSwap( l, v );
+   OZ_CHECK_CONTENTS( l, 1, 2, 3, 2 );
+   OZ_CHECK_CONTENTS( v, 0, 0, 0, 0 );
+-  iSwap( v.iter(), l.iter() );
++  iSwap( v, l );
+ 
+-  iCopy( v.citer(), l.iter() );
+-  iCopy( invalid, invalid );
+-  OZ_CHECK( iEquals( l.citer(), v.citer() ) );
++  iCopy( v, l );
++  OZ_CHECK( iEquals( l, v ) );
+ 
+-  iCopy( l.citer(), l.iter() );
+-  OZ_CHECK( iEquals( citer( l ), v.citer() ) );
++  iCopy( l, l );
++  OZ_CHECK( iEquals( l, v ) );
+ 
+   v.add();
+-  OZ_CHECK( !iEquals( l.citer(), citer( v ) ) );
++  OZ_CHECK( !iEquals( l, v ) );
+ 
+   v.erase();
+-  OZ_CHECK( iEquals( citer( l ), citer( v ) ) );
+-
+-  OZ_CHECK( !iContains( l.citer(), 0 ) );
+-  OZ_CHECK( !iContains( v.citer(), 0 ) );
+-  OZ_CHECK( iContains( l.citer(), 1 ) );
+-  OZ_CHECK( iContains( v.citer(), 1 ) );
+-  OZ_CHECK( iContains( l.citer(), 2 ) );
+-  OZ_CHECK( iContains( v.citer(), 2 ) );
+-  OZ_CHECK( iContains( l.citer(), 3 ) );
+-  OZ_CHECK( iContains( v.citer(), 3 ) );
+-  OZ_CHECK( !iContains( invalid, static_cast<Foo*>( nullptr ) ) );
+-
+-  OZ_CHECK( !iFind( l.citer(), 0 ).isValid() );
+-  OZ_CHECK( !iFind( v.citer(), 0 ).isValid() );
+-  OZ_CHECK( !iFind( invalid, static_cast<Foo*>( nullptr ) ).isValid() );
+-
+-  auto li = l.citer();
+-  auto vi = v.citer();
+-  OZ_CHECK( iFind( l.citer(), 1 ) == li );
+-  OZ_CHECK( iFind( v.citer(), 1 ) == vi );
++  OZ_CHECK( iEquals( l, v ) );
++
++  OZ_CHECK( !iContains( l, 0 ) );
++  OZ_CHECK( !iContains( v, 0 ) );
++  OZ_CHECK( iContains( l, 1 ) );
++  OZ_CHECK( iContains( v, 1 ) );
++  OZ_CHECK( iContains( l, 2 ) );
++  OZ_CHECK( iContains( v, 2 ) );
++  OZ_CHECK( iContains( l, 3 ) );
++  OZ_CHECK( iContains( v, 3 ) );
++
++  OZ_CHECK( iFind( l, 0 ) == l.end() );
++  OZ_CHECK( iFind( v, 0 ) == v.end() );
++
++  auto li = l.begin();
++  auto vi = v.begin();
++  OZ_CHECK( iFind( l, 1 ) == li );
++  OZ_CHECK( iFind( v, 1 ) == vi );
+ 
+   ++li;
+   ++vi;
+-  OZ_CHECK( iFind( l.citer(), 2 ) == li );
+-  OZ_CHECK( iFind( v.citer(), 2 ) == vi );
++  OZ_CHECK( iFind( l, 2 ) == li );
++  OZ_CHECK( iFind( v, 2 ) == vi );
+ 
+   ++li;
+   ++vi;
+-  OZ_CHECK( iFind( l.citer(), 3 ) == li );
+-  OZ_CHECK( iFind( v.citer(), 3 ) == vi );
++  OZ_CHECK( iFind( l, 3 ) == li );
++  OZ_CHECK( iFind( v, 3 ) == vi );
+ 
+-  OZ_CHECK( !iFindLast( l.citer(), 0 ).isValid() );
+-  OZ_CHECK( !iFindLast( v.citer(), 0 ).isValid() );
+-  OZ_CHECK( !iFindLast( invalid, static_cast<Foo*>( nullptr ) ).isValid() );
++  OZ_CHECK( iFindLast( l, 0 ) == l.end() );
++  OZ_CHECK( iFindLast( v, 0 ) == v.end() );
+ 
+-  li = l.citer();
+-  vi = v.citer();
+-  OZ_CHECK( iFindLast( l.citer(), 1 ) == li );
+-  OZ_CHECK( iFindLast( v.citer(), 1 ) == vi );
++  li = l.begin();
++  vi = v.begin();
++  OZ_CHECK( iFindLast( l, 1 ) == li );
++  OZ_CHECK( iFindLast( v, 1 ) == vi );
+ 
+   ++li;
+   ++vi;
+   ++li;
+   ++vi;
+-  OZ_CHECK( iFindLast( l.citer(), 3 ) == li );
+-  OZ_CHECK( iFindLast( v.citer(), 3 ) == vi );
++  OZ_CHECK( iFindLast( l, 3 ) == li );
++  OZ_CHECK( iFindLast( v, 3 ) == vi );
+ 
+   ++li;
+   ++vi;
+-  OZ_CHECK( iFindLast( l.citer(), 2 ) == li );
+-  OZ_CHECK( iFindLast( v.citer(), 2 ) == vi );
+-
+-  OZ_CHECK( iIndex( l.citer(), 0 ) == -1 );
+-  OZ_CHECK( iIndex( v.citer(), 0 ) == -1 );
+-  OZ_CHECK( iIndex( l.citer(), 1 ) == 0 );
+-  OZ_CHECK( iIndex( v.citer(), 1 ) == 0 );
+-  OZ_CHECK( iIndex( l.citer(), 2 ) == 1 );
+-  OZ_CHECK( iIndex( v.citer(), 2 ) == 1 );
+-  OZ_CHECK( iIndex( l.citer(), 3 ) == 2 );
+-  OZ_CHECK( iIndex( v.citer(), 3 ) == 2 );
+-  OZ_CHECK( iIndex( invalid, static_cast<Foo*>( nullptr ) ) == -1 );
+-
+-  OZ_CHECK( iLastIndex( l.citer(), 0 ) == -1 );
+-  OZ_CHECK( iLastIndex( v.citer(), 0 ) == -1 );
+-  OZ_CHECK( iLastIndex( l.citer(), 1 ) == 0 );
+-  OZ_CHECK( iLastIndex( v.citer(), 1 ) == 0 );
+-  OZ_CHECK( iLastIndex( l.citer(), 2 ) == 3 );
+-  OZ_CHECK( iLastIndex( v.citer(), 2 ) == 3 );
+-  OZ_CHECK( iLastIndex( l.citer(), 3 ) == 2 );
+-  OZ_CHECK( iLastIndex( v.citer(), 3 ) == 2 );
+-  OZ_CHECK( iLastIndex( invalid, static_cast<Foo*>( nullptr ) ) == -1 );
++  OZ_CHECK( iFindLast( l, 2 ) == li );
++  OZ_CHECK( iFindLast( v, 2 ) == vi );
++
++  OZ_CHECK( iIndex( l, 0 ) == -1 );
++  OZ_CHECK( iIndex( v, 0 ) == -1 );
++  OZ_CHECK( iIndex( l, 1 ) == 0 );
++  OZ_CHECK( iIndex( v, 1 ) == 0 );
++  OZ_CHECK( iIndex( l, 2 ) == 1 );
++  OZ_CHECK( iIndex( v, 2 ) == 1 );
++  OZ_CHECK( iIndex( l, 3 ) == 2 );
++  OZ_CHECK( iIndex( v, 3 ) == 2 );
++
++  OZ_CHECK( iLastIndex( l, 0 ) == -1 );
++  OZ_CHECK( iLastIndex( v, 0 ) == -1 );
++  OZ_CHECK( iLastIndex( l, 1 ) == 0 );
++  OZ_CHECK( iLastIndex( v, 1 ) == 0 );
++  OZ_CHECK( iLastIndex( l, 2 ) == 3 );
++  OZ_CHECK( iLastIndex( v, 2 ) == 3 );
++  OZ_CHECK( iLastIndex( l, 3 ) == 2 );
++  OZ_CHECK( iLastIndex( v, 3 ) == 2 );
+ 
+   List<Foo*> pv;
+   pv.add( new Foo( 1 ) );
+   pv.add( new Foo( 2 ) );
+ 
+-  iFree( pv.iter() );
+-  iFree( invalid );
++  iFree( pv );
+   OZ_CHECK_CONTENTS( pv, nullptr, nullptr );
+ 
+   l.free();
+ 
+-  OZ_CHECK( !iEquals( l.citer(), v.citer() ) );
+-  OZ_CHECK( !iEquals( v.citer(), l.citer() ) );
++  OZ_CHECK( !iEquals( l, v ) );
++  OZ_CHECK( !iEquals( v, l ) );
+ 
+   v.clear();
+   v.deallocate();
+ 
+-  iCopy( v.citer(), l.iter() );
+-  iMove( v.iter(), l.iter() );
+-  iFill( l.iter(), 0 );
++  iCopy( v, l );
++  iMove( v, l );
++  iFill( l, 0 );
+ 
+-  OZ_CHECK( iEquals( l.citer(), v.citer() ) );
+-  OZ_CHECK( !iContains( l.citer(), 0 ) );
+-  OZ_CHECK( !iFind( l.citer(), 0 ).isValid() );
+-  OZ_CHECK( !iFindLast( l.citer(), 0 ).isValid() );
+-  OZ_CHECK( iIndex( l.citer(), 0 ) == -1 );
+-  OZ_CHECK( iLastIndex( l.citer(), 0 ) == -1 );
++  OZ_CHECK( iEquals( l, v ) );
++  OZ_CHECK( !iContains( l, 0 ) );
++  OZ_CHECK( iFind( l, 0 ) == l.end() );
++  OZ_CHECK( iFindLast( l, 0 ) == l.end() );
++  OZ_CHECK( iIndex( l, 0 ) == -1 );
++  OZ_CHECK( iLastIndex( l, 0 ) == -1 );
+ 
+-  iFree( pv.iter() );
++  iFill( iter( v ), 10 );
++  iFree( pv );
+ }
+diff --git a/src/unittest/unittest.hh b/src/unittest/unittest.hh
+index 65925db..a0a2d4e 100644
+--- a/src/unittest/unittest.hh
++++ b/src/unittest/unittest.hh
+@@ -31,13 +31,11 @@
+     oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "Check '%s' failed", #cond ); \
+   }
+ 
+-// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
+-#define OZ_CHECK_CONTENTS( container, ...) \
++#define OZ_CHECK_CONTENTS( container, ... ) \
+   { \
+-    auto i = citer( container ); \
+-    typedef decltype( i ) CIterator; \
+-    CIterator::ElemType array[] = { __VA_ARGS__ }; \
+-    OZ_CHECK( iEquals( i, citer( array ) ) ); \
++    decltype( iter( container ) ) iterableContainer = iter( container ); \
++    typename StripRef< decltype( iterableContainer ) >::BareType::ElemType array[] = { __VA_ARGS__ }; \
++    OZ_CHECK( iEquals( iterableContainer, iter( array ) ) ); \
+   }
+ 
+ extern bool hasPassed;

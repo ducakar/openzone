@@ -94,7 +94,7 @@ void Model::addSceneLights()
 
     while( node->parent >= 0 ) {
       node   = &nodes[node->parent];
-      transf = node->transf * transf;
+      transf = node->transf ^ transf;
     }
 
     sceneLights.add( { light, transf, 0.0f } );
@@ -165,7 +165,7 @@ void Model::animate( const Instance* instance )
 void Model::drawNode( const Node* node, int dir, int mask )
 {
   tf.push();
-  tf.model = tf.model * node->transf;
+  tf.model = tf.model ^ node->transf;
 
   if( node->mesh >= 0 ) {
     const Mesh& mesh = meshes[node->mesh];

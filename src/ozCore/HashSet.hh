@@ -103,11 +103,9 @@ class HashSet
 
         /**
          * Create hashtable iterator, initially pointing to the first hashtable element.
-         *
-         * @param data_ internal array of linked lists of a hastable.
          */
-        explicit HashIterator( IterElem* const* data_ ) :
-          IteratorBase<IterElem>( data_[0] ), data( data_ ), index( 0 )
+        explicit HashIterator( const HashSet& hs ) :
+          IteratorBase<IterElem>( hs.data[0] ), data( hs.data ), index( 0 )
         {
           while( elem == nullptr && index < SIZE - 1 ) {
             ++index;
@@ -315,7 +313,7 @@ class HashSet
     OZ_ALWAYS_INLINE
     CIterator citer() const
     {
-      return CIterator( data );
+      return CIterator( *this );
     }
 
     /**
@@ -324,7 +322,7 @@ class HashSet
     OZ_ALWAYS_INLINE
     Iterator iter()
     {
-      return Iterator( data );
+      return Iterator( *this );
     }
 
     /**
@@ -333,7 +331,7 @@ class HashSet
     OZ_ALWAYS_INLINE
     CIterator begin() const
     {
-      return CIterator( data );
+      return CIterator( *this );
     }
 
     /**
@@ -342,7 +340,7 @@ class HashSet
     OZ_ALWAYS_INLINE
     Iterator begin()
     {
-      return Iterator( data );
+      return Iterator( *this );
     }
 
     /**

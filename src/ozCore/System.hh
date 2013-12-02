@@ -34,16 +34,14 @@
  * @def OZ_WARNING
  * Wrapper for `System::warning()`, filling in the current function, file and line parameters.
  */
-// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
-#define OZ_WARNING( ...) \
+#define OZ_WARNING( ... ) \
   oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
 /**
  * @def OZ_ERROR
  * Wrapper for `System::error()`, filling in the current function, file and line parameters.
  */
-// FIXME Add a space after ellipsis once KDevelop gets that bug fixed.
-#define OZ_ERROR( ...) \
+#define OZ_ERROR( ... ) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
 namespace oz

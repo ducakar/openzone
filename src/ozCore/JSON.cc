@@ -90,32 +90,6 @@ struct JSON::ObjectData : JSON::Data
   HashMap<String, JSON> table;
 };
 
-JSON::ObjectCIterator::ObjectCIterator( const ObjectData* data ) :
-  IteratorBase< const HashMap<String, JSON>::Elem >( nullptr ), objectIter( data->table.citer() )
-{
-  elem = objectIter;
-}
-
-JSON::ObjectCIterator& JSON::ObjectCIterator::operator ++ ()
-{
-  ++objectIter;
-  elem = objectIter;
-  return *this;
-}
-
-JSON::ObjectIterator::ObjectIterator( ObjectData* data ) :
-  IteratorBase< HashMap<String, JSON>::Elem >( nullptr ), objectIter( data->table.iter() )
-{
-  elem = objectIter;
-}
-
-JSON::ObjectIterator& JSON::ObjectIterator::operator ++ ()
-{
-  ++objectIter;
-  elem = objectIter;
-  return *this;
-}
-
 struct JSON::Parser
 {
   enum BlanksMode
@@ -1003,7 +977,7 @@ JSON::ObjectCIterator JSON::objectCIter() const
   if( valueType == OBJECT ) {
     const ObjectData* objectData = static_cast<const ObjectData*>( data );
 
-    return ObjectCIterator( objectData );
+    return ObjectCIterator( objectData->table );
   }
   else {
     return ObjectCIterator();
@@ -1015,7 +989,7 @@ JSON::ObjectIterator JSON::objectIter()
   if( valueType == OBJECT ) {
     ObjectData* objectData = static_cast<ObjectData*>( data );
 
-    return ObjectIterator( objectData );
+    return ObjectIterator( objectData->table );
   }
   else {
     return ObjectIterator();

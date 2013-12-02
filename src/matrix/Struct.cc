@@ -659,8 +659,8 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   resistance  = bsp->resistance;
   demolishing = 0.0f;
 
-  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
+  transf      = Mat44::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat44::translation( Point::ORIGIN - p );
 
   hard_assert( transf.det() != 0.0f );
 
@@ -699,8 +699,8 @@ Struct::Struct( const BSP* bsp_, InputStream* is )
   resistance  = bsp->resistance;
   demolishing = is->readFloat();
 
-  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
+  transf      = Mat44::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat44::translation( Point::ORIGIN - p );
 
   Bounds bb   = toAbsoluteCS( *bsp );
   mins        = bb.mins;
@@ -757,8 +757,8 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
   resistance  = bsp->resistance;
   demolishing = json["demolishing"].asFloat();
 
-  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
+  transf      = Mat44::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat44::translation( Point::ORIGIN - p );
 
   Bounds bb   = toAbsoluteCS( *bsp );
   mins        = bb.mins;

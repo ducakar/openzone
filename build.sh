@@ -20,7 +20,7 @@ platforms=(
 #   Linux-i686
 #   Linux-i686-Clang
 #   Windows-i686
-  PNaCl
+#   PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a
