@@ -240,12 +240,7 @@ class InputStream
     /**
      * Read an array of characters.
      */
-    OZ_ALWAYS_INLINE
-    void readChars( char* array, int count )
-    {
-      const char* data = forward( count * int( sizeof( char ) ) );
-      mCopy( array, data, size_t( count ) );
-    }
+    void readChars( char* array, int count );
 
     /**
      * Read byte.
@@ -442,20 +437,7 @@ class InputStream
     /**
      * Read string.
      */
-    const char* readString()
-    {
-      const char* begin = streamPos;
-
-      while( streamPos < streamEnd && *streamPos != '\0' ) {
-        ++streamPos;
-      }
-      if( streamPos == streamEnd ) {
-        OZ_ERROR( "oz::InputStream: Buffer overrun while looking for the end of a string." );
-      }
-
-      ++streamPos;
-      return begin;
-    }
+    const char* readString();
 
     /**
      * Read 3D vector.
@@ -586,80 +568,24 @@ class InputStream
     /**
      * Read 3x3 matrix.
      */
-    OZ_ALWAYS_INLINE
-    Mat33 readMat33()
-    {
-      const char* data = forward( int( sizeof( float[9] ) ) );
-
-      Mat33 m;
-      float* values = m;
-
-      if( order == Endian::NATIVE ) {
-        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-          *values = value.value;
-        }
-      }
-      else {
-        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-          *values = value.value;
-        }
-      }
-
-      return m;
-    }
+    Mat33 readMat33();
 
     /**
      * Read 4x4 matrix.
      */
-    OZ_ALWAYS_INLINE
-    Mat44 readMat44()
-    {
-      const char* data = forward( int( sizeof( float[16] ) ) );
+    Mat44 readMat44();
 
-      Mat44 m;
-      float* values = m;
-
-      if( order == Endian::NATIVE ) {
-        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-          *values = value.value;
-        }
-      }
-      else {
-        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-          *values = value.value;
-        }
-      }
-
-      return m;
-    }
+    /**
+     * Fill bitset with data from a stream.
+     */
+    void readBitset( ulong* bitset, int bits );
 
     /**
      * Read a line.
      *
      * Line delimiter is read but not included in the returned string.
      */
-    String readLine()
-    {
-      const char* begin = streamPos;
-
-      while( streamPos < streamEnd && *streamPos != '\n' && *streamPos != '\r' ) {
-        ++streamPos;
-      }
-
-      int length = int( streamPos - begin );
-
-      streamPos += ( streamPos < streamEnd ) +
-                   ( streamPos < streamEnd - 1 && streamPos[0] == '\r' && streamPos[1] == '\n' );
-      return String( begin, length );
-    }
+    String readLine();
 
 };
 

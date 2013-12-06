@@ -71,7 +71,15 @@ class Map
       public:
 
         /**
-         * Less-than operator required for `aBisection`.
+         * Less-than operator required for `aSort()`.
+         */
+        bool operator < ( const Elem& e ) const
+        {
+          return key < e.key;
+        }
+
+        /**
+         * Less-than operator required for `aBisection()`.
          */
         OZ_ALWAYS_INLINE
         friend bool operator < ( const Key& key, const Elem& e )
@@ -128,6 +136,16 @@ class Map
     explicit Map( int capacity = 0 ) :
       data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
     {}
+
+    /**
+     * Initialise from an initialiser list.
+     */
+    Map( InitialiserList<Elem> l ) :
+      data( new Elem[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
+    {
+      aCopy<Elem>( l.begin(), int( l.size() ), data );
+      aSort<Elem>( data, count );
+    }
 
     /**
      * Destructor.

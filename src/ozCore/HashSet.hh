@@ -211,6 +211,17 @@ class HashSet
     {}
 
     /**
+     * Initialise from an initialiser list.
+     */
+    HashSet( InitialiserList<Key> l ) :
+      data{}
+    {
+      for( const Key& key : l ) {
+        add( key );
+      }
+    }
+
+    /**
      * Destructor.
      */
     ~HashSet()

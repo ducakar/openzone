@@ -37,6 +37,7 @@
 #include <cstdarg>
 #include <cstddef>
 #include <climits>
+#include <initializer_list>
 #include <new>
 
 /**
@@ -80,6 +81,12 @@
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
 /**
+ * @def OZ_SIZEOF_LONG
+ * Size of `long` type.
+ */
+#define OZ_SIZEOF_LONG __SIZEOF_LONG__
+
+/**
  * @def OZ_WEAK
  * Compiler-specific attribute specifying a weak symbol.
  */
@@ -119,12 +126,6 @@
 namespace oz
 {
 
-// These three types are also defined afterwards (which is completely unnecessary) as a workaround
-// for a QtCreator bug and to provide Doxygen documentation.
-using std::nullptr_t;
-using std::size_t;
-using std::ptrdiff_t;
-
 /**
  * Null pointer type.
  */
@@ -139,6 +140,12 @@ typedef std::size_t size_t;
  * Platform-dependent signed integer type for memory offsets and pointer differences.
  */
 typedef std::ptrdiff_t ptrdiff_t;
+
+/**
+ * Initialiser list.
+ */
+template <typename Elem>
+using InitialiserList = std::initializer_list<Elem>;
 
 /**
  * Signed byte.

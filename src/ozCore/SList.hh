@@ -74,6 +74,17 @@ class SList
     {}
 
     /**
+     * Initialise from an initialiser list.
+     */
+    SList( InitialiserList<Elem> l ) :
+      count( int( l.size() ) )
+    {
+      hard_assert( l.size() <= SIZE );
+
+      aCopy<Elem>( l.begin(), int( l.size() ), data );
+    }
+
+    /**
      * True iff respective elements are equal.
      */
     bool operator == ( const SList& l ) const

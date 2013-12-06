@@ -43,7 +43,7 @@ struct Cell
 
 /**
  * Matrix data structure for world (terrain, all structures and objects in the world).
- * The world should not be manipulated directly; use Synapse instead.
+ * The world should not be manipulated directly; use `Synapse` class instead.
  */
 class Orbis : public Bounds
 {
@@ -68,10 +68,6 @@ class Orbis : public Bounds
     Object* objects[1 + MAX_OBJECTS];
     Frag*   frags[1 + MAX_FRAGS];
 
-    int     strLength;
-    int     objLength;
-    int     fragLength;
-
   private:
 
     bool position( Struct* str );
@@ -95,10 +91,6 @@ class Orbis : public Bounds
 
     void reposition( Object* obj );
     void reposition( Frag* frag );
-
-    int nStructs() const;
-    int nObjects() const;
-    int nFrags() const;
 
     /**
      * Return structure at a given index, nullptr if index is -1.
@@ -175,24 +167,6 @@ class Orbis : public Bounds
 };
 
 extern Orbis orbis;
-
-OZ_ALWAYS_INLINE
-inline int Orbis::nStructs() const
-{
-  return strLength;
-}
-
-OZ_ALWAYS_INLINE
-inline int Orbis::nObjects() const
-{
-  return objLength;
-}
-
-OZ_ALWAYS_INLINE
-inline int Orbis::nFrags() const
-{
-  return fragLength;
-}
 
 OZ_ALWAYS_INLINE
 inline Struct* Orbis::str( int index ) const

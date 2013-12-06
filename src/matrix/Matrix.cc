@@ -47,7 +47,7 @@ void Matrix::update()
   maxVehicles = max( maxVehicles, Vehicle::pool.length() );
   maxFrags    = max( maxFrags,    Frag::mpool.length() );
 
-  for( int i = 0; i < orbis.nObjects(); ++i ) {
+  for( int i = 0; i < Orbis::MAX_OBJECTS; ++i ) {
     Object* obj = orbis.obj( i );
 
     if( obj != nullptr ) {
@@ -63,7 +63,7 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.nStructs(); ++i ) {
+  for( int i = 0; i < Orbis::MAX_STRUCTS; ++i ) {
     Struct* str = orbis.str( i );
 
     if( str == nullptr ) {
@@ -83,7 +83,7 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.nObjects(); ++i ) {
+  for( int i = 0; i < Orbis::MAX_OBJECTS; ++i ) {
     Object* obj = orbis.obj( i );
 
     if( obj == nullptr ) {
@@ -135,7 +135,7 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.nFrags(); ++i ) {
+  for( int i = 0; i < Orbis::MAX_FRAGS; ++i ) {
     Frag* frag = orbis.frag( i );
 
     if( frag == nullptr ) {

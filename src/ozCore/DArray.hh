@@ -80,6 +80,15 @@ class DArray
     }
 
     /**
+     * Initialise from an initialiser list.
+     */
+    DArray( InitialiserList<Elem> l ) :
+      data( new Elem[ l.size() ] ), count( int( l.size() ) )
+    {
+      aCopy<Elem>( l.begin(), int( l.size() ), data );
+    }
+
+    /**
      * Destructor.
      */
     ~DArray()

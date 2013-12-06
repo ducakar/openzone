@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Pool.hh"
+#include "Pair.hh"
 
 namespace oz
 {
@@ -227,6 +228,17 @@ class HashMap
     explicit HashMap() :
       data{}
     {}
+
+    /**
+     * Initialise from an initialiser list.
+     */
+    HashMap( InitialiserList< Pair<Key, Value> > l ) :
+      data{}
+    {
+      for( const Pair<Key, Value>& e : l ) {
+        add( e.x, e.y );
+      }
+    }
 
     /**
      * Destructor.

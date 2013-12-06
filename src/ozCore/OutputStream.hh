@@ -82,21 +82,7 @@ class OutputStream
     /**
      * Copy constructor, copies buffer if source stream is buffered.
      */
-    OutputStream( const OutputStream& os ) :
-      streamPos( os.streamPos ), streamBegin( os.streamBegin ), streamEnd( os.streamEnd ),
-      order( os.order ), buffered( os.buffered )
-    {
-      if( os.buffered ) {
-        int length = int( os.streamPos - os.streamBegin );
-        int size   = int( os.streamEnd - os.streamBegin );
-
-        streamBegin = size == 0 ? nullptr : new char[size];
-        streamEnd   = streamBegin + size;
-        streamPos   = streamBegin + length;
-
-        mCopy( streamBegin, os.streamBegin, size_t( size ) );
-      }
-    }
+    OutputStream( const OutputStream& os );
 
     /**
      * Move constructor, moves buffer if source stream is buffered.
@@ -119,45 +105,7 @@ class OutputStream
      *
      * Existing storage is reused if its size matches.
      */
-    OutputStream& operator = ( const OutputStream& os )
-    {
-      if( &os == this ) {
-        return *this;
-      }
-
-      if( os.buffered ) {
-        int  length      = int( os.streamPos - os.streamBegin );
-        int  size        = int( os.streamEnd - os.streamBegin );
-        bool sizeMatches = int( streamEnd - streamBegin ) == size;
-
-        if( buffered && !sizeMatches ) {
-          delete[] streamBegin;
-        }
-        if( !buffered || !sizeMatches ) {
-          streamBegin = new char[size];
-          streamEnd   = streamBegin + size;
-        }
-
-        streamPos = streamBegin + length;
-        order     = os.order;
-        buffered  = os.buffered;
-
-        mCopy( streamBegin, os.streamBegin, size_t( size ) );
-      }
-      else {
-        if( buffered ) {
-          delete[] streamBegin;
-        }
-
-        streamPos   = os.streamPos;
-        streamBegin = os.streamBegin;
-        streamEnd   = os.streamEnd;
-        order       = os.order;
-        buffered    = os.buffered;
-      }
-
-      return *this;
-    }
+    OutputStream& operator = ( const OutputStream& os );
 
     /**
      * Move operator, moves buffer if source stream is buffered.
@@ -384,39 +332,7 @@ class OutputStream
      *
      * @return Pointer to the beginning of the skipped bytes.
      */
-    OZ_ALWAYS_INLINE
-    char* forward( int count )
-    {
-      char* oldPos = streamPos;
-      streamPos += count;
-
-      if( streamPos > streamEnd ) {
-        if( buffered ) {
-          int length  = int( streamPos - streamBegin );
-          int size    = int( streamEnd - streamBegin );
-          int reqSize = length + count;
-          int newSize = size == 0 ? GRANULARITY : 2 * size;
-
-          if( newSize < 0 || reqSize < 0 ) {
-            OZ_ERROR( "oz::OutputStream: Capacity overflow" );
-          }
-          else if( newSize < reqSize ) {
-            newSize = ( reqSize + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
-          }
-
-          streamBegin  = aReallocate<char>( streamBegin, size, newSize );
-          streamEnd    = streamBegin + newSize;
-          streamPos    = streamBegin + length;
-          oldPos = streamPos - count;
-        }
-        else {
-          OZ_ERROR( "oz::OutputStream: Overrun for %d B during a read or write of %d B",
-                    int( streamPos - streamEnd ), count );
-        }
-      }
-
-      return oldPos;
-    }
+    char* forward( int count );
 
     /**
      * Read boolean.
@@ -461,22 +377,12 @@ class OutputStream
     /**
      * Read an array of characters.
      */
-    OZ_ALWAYS_INLINE
-    void readChars( char* array, int count )
-    {
-      const char* data = forward( count * int( sizeof( char ) ) );
-      mCopy( array, data, size_t( count ) );
-    }
+    void readChars( char* array, int count );
 
     /**
      * Write an array of characters.
      */
-    OZ_ALWAYS_INLINE
-    void writeChars( const char* array, int count )
-    {
-      char* data = forward( count * int( sizeof( char ) ) );
-      mCopy( data, array, size_t( count ) );
-    }
+    void writeChars( const char* array, int count );
 
     /**
      * Read byte.
@@ -901,42 +807,17 @@ class OutputStream
     /**
      * Read string.
      */
-    const char* readString()
-    {
-      const char* begin = streamPos;
-
-      while( streamPos < streamEnd && *streamPos != '\0' ) {
-        ++streamPos;
-      }
-      if( streamPos == streamEnd ) {
-        OZ_ERROR( "oz::OutputStream: Buffer overrun while looking for the end of a string." );
-      }
-
-      ++streamPos;
-      return begin;
-    }
+    const char* readString();
 
     /**
      * Write string.
      */
-    void writeString( const String& s )
-    {
-      int   size = s.length() + 1;
-      char* data = forward( size );
-
-      mCopy( data, s.cstr(), size_t( size ) );
-    }
+    void writeString( const String& s );
 
     /**
      * Write C string.
      */
-    void writeString( const char* s )
-    {
-      int   size = String::length( s ) + 1;
-      char* data = forward( size );
-
-      mCopy( data, s, size_t( size ) );
-    }
+    void writeString( const char* s );
 
     /**
      * Read 3D vector.
@@ -1304,168 +1185,49 @@ class OutputStream
     /**
      * Read 3x3 matrix.
      */
-    OZ_ALWAYS_INLINE
-    Mat33 readMat33()
-    {
-      const char* data = forward( int( sizeof( float[9] ) ) );
-
-      Mat33 m;
-      float* values = m;
-
-      if( order == Endian::NATIVE ) {
-        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-          *values = value.value;
-        }
-      }
-      else {
-        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-          *values = value.value;
-        }
-      }
-
-      return m;
-    }
+    Mat33 readMat33();
 
     /**
      * Write 3x3 matrix.
      */
-    OZ_ALWAYS_INLINE
-    void writeMat33( const Mat44& m )
-    {
-      char* data = forward( int( sizeof( float[9] ) ) );
-      const float* values = m;
-
-      if( order == Endian::NATIVE ) {
-        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::FloatToBytes value = { *values };
-
-          data[0] = value.data[0];
-          data[1] = value.data[1];
-          data[2] = value.data[2];
-          data[3] = value.data[3];
-        }
-      }
-      else {
-        for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-          Endian::FloatToBytes value = { *values };
-
-          data[0] = value.data[3];
-          data[1] = value.data[2];
-          data[2] = value.data[1];
-          data[3] = value.data[0];
-        }
-      }
-    }
+    void writeMat33( const Mat44& m );
 
     /**
      * Read 4x4 matrix.
      */
-    OZ_ALWAYS_INLINE
-    Mat44 readMat44()
-    {
-      const char* data = forward( int( sizeof( float[16] ) ) );
-
-      Mat44 m;
-      float* values = m;
-
-      if( order == Endian::NATIVE ) {
-        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-          *values = value.value;
-        }
-      }
-      else {
-        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-          *values = value.value;
-        }
-      }
-
-      return m;
-    }
+    Mat44 readMat44();
 
     /**
      * Write 4x4 matrix.
      */
-    OZ_ALWAYS_INLINE
-    void writeMat44( const Mat44& m )
-    {
-      char* data = forward( int( sizeof( float[16] ) ) );
-      const float* values = m;
+    void writeMat44( const Mat44& m );
 
-      if( order == Endian::NATIVE ) {
-        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::FloatToBytes value = { *values };
+    /**
+     * Fill bitset with data from a stream.
+     */
+    void readBitset( ulong* bitset, int nBits );
 
-          data[0] = value.data[0];
-          data[1] = value.data[1];
-          data[2] = value.data[2];
-          data[3] = value.data[3];
-        }
-      }
-      else {
-        for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-          Endian::FloatToBytes value = { *values };
-
-          data[0] = value.data[3];
-          data[1] = value.data[2];
-          data[2] = value.data[1];
-          data[3] = value.data[0];
-        }
-      }
-    }
+    /**
+     * Write bitset data.
+     */
+    void writeBitset( const ulong* bitset, int nBits );
 
     /**
      * Read a line.
      *
      * Line delimiter is read but not included in the returned string.
      */
-    String readLine()
-    {
-      const char* begin = streamPos;
-
-      while( streamPos < streamEnd && *streamPos != '\n' && *streamPos != '\r' ) {
-        ++streamPos;
-      }
-
-      int length = int( streamPos - begin );
-
-      streamPos += ( streamPos < streamEnd ) +
-                   ( streamPos < streamEnd - 1 && streamPos[0] == '\r' && streamPos[1] == '\n' );
-      return String( begin, length );
-    }
+    String readLine();
 
     /**
      * Write a line replacing terminating null byte with UNIX newline.
      */
-    OZ_ALWAYS_INLINE
-    void writeLine( const String& s )
-    {
-      int   length = s.length();
-      char* data   = forward( length + 1 );
-
-      mCopy( data, s, size_t( length ) );
-      data[length] = '\n';
-    }
+    void writeLine( const String& s );
 
     /**
      * Write a line replacing terminating null byte with UNIX newline.
      */
-    OZ_ALWAYS_INLINE
-    void writeLine( const char* s )
-    {
-      int   length = String::length( s );
-      char* data   = forward( length + 1 );
-
-      mCopy( data, s, size_t( length ) );
-      data[length] = '\n';
-    }
+    void writeLine( const char* s );
 
     /**
      * Deallocate internal buffer if stream is buffered.

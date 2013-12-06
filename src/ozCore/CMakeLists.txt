@@ -61,6 +61,7 @@ add_library( ozCore
   common.cc
   File.cc
   Gettext.cc
+  InputStream.cc
   Java.cc
   JSON.cc
   Log.cc
@@ -68,6 +69,7 @@ add_library( ozCore
   Mat44.cc
   Math.cc
   Mutex.cc
+  OutputStream.cc
   Pepper.cc
   Point.cc
   Profiler.cc

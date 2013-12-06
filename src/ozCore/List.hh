@@ -104,6 +104,15 @@ class List
     {}
 
     /**
+     * Initialise from an initialiser list.
+     */
+    List( InitialiserList<Elem> l ) :
+      data( new Elem[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
+    {
+      aCopy<Elem>( l.begin(), int( l.size() ), data );
+    }
+
+    /**
      * Destructor.
      */
     ~List()

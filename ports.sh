@@ -266,7 +266,7 @@ function fetch()
   download 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz'
 
   # FreeType
-  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.5.0/freetype-2.5.0.1.tar.bz2'
+  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.5.1/freetype-2.5.1.tar.bz2'
 
   # PhysicsFS 2.1
   cd "$topDir/archives"
@@ -403,7 +403,7 @@ function build_libvorbis()
 
 function build_freetype()
 {
-  prepare freetype-2.5.0.1 freetype-2.5.0.1.tar.bz2 || return
+  prepare freetype-2.5.1 freetype-2.5.1.tar.bz2 || return
   applyPatches freetype-2.5.0.1.patch
 
   autotoolsBuild --without-bzip2

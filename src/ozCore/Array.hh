@@ -77,6 +77,16 @@ class Array
     }
 
     /**
+     * Initialise from an initialiser list.
+     */
+    Array( InitialiserList<Elem> l )
+    {
+      hard_assert( l.size() == COUNT );
+
+      aCopy<Elem>( l.begin(), int( l.size() ), data );
+    }
+
+    /**
      * True iff respective elements are equal.
      */
     bool operator == ( const Array& a ) const

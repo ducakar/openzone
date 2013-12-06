@@ -34,33 +34,28 @@ static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
                "Orbis and terrain size mismatch" );
 
 /*
- * Index reusing: when an entity is removed, there may still be references to it (from other
- * models or from render or sound subsystems); that's why every cycle all references must
- * be checked if the slot they're pointing at (all references should be indices of a slot
- * in Orbis::structures/objects/fragments vectors). If the target slot is nullptr, the
- * referenced entity doesn't exist any more, so reference must be cleared. To make sure all
- * references can be checked that way, a full world update must pass before a slot is reused.
- * Otherwise an entity may be removed and immediately after that another added into it's slot;
- * when an another entity would retrieve the target entity via the reference: 1) it wouldn't get
- * the expected entity but a new one; that may result in program crash if the new one is not of
- * the same type, 2) it wouldn't detect the old entity has been removed/destroyed/whatever;
- * that may pose a big problem to rendering and audio subsystems as those must clear
- * models/audio objects of removed world objects.
+ * Index reusing: when an entity (structure, object or fragment) is removed, there may still be
+ * references to it from other entities or from render or sound subsystems; that's why every cycle
+ * all references must be checked if the target still exists. To make sure all references can be
+ * checked, one full world update must pass before a slot is reused. Otherwise an entity may be
+ * removed and immediately after that another added into it's slot which might end in an inexpected
+ * behaviour or even a crash if the new entity doesn't have the same type.
+ *
+ * To ensure that one full update passes between the updates we tag slots as 'freeing' when they are
+ * freed and 'waiting' in the next world update. In the update after 'waiting' state they can be
+ * reused again.
  */
 
-static int freeing;
-static int waiting;
+static int freeing = 0;
+static int waiting = 1;
 
-// [freeing]: vector for indices that are currently being freed
-// [waiting]: indices that have been freed previous cycle; those can be reused next time
-static List<int> strFreedIndices[2];
-static List<int> objFreedIndices[2];
-static List<int> fragFreedIndices[2];
+static int lastStructIndex = -1;
+static int lastObjectIndex = -1;
+static int lastFragIndex   = -1;
 
-// indices of slots that can be reused
-static List<int> strAvailableIndices;
-static List<int> objAvailableIndices;
-static List<int> fragAvailableIndices;
+static SBitset<Orbis::MAX_STRUCTS> pendingStructs[2];
+static SBitset<Orbis::MAX_OBJECTS> pendingObjects[2];
+static SBitset<Orbis::MAX_FRAGS>   pendingFrags[2];
 
 bool Orbis::position( Struct* str )
 {
@@ -163,76 +158,76 @@ void Orbis::unposition( Frag* frag )
 
 Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
 {
-  const_cast<BSP*>( bsp )->request();
+  int index = lastStructIndex + 1;
 
-  Struct* str;
-  int     index;
-
-  if( strAvailableIndices.isEmpty() ) {
-    if( strLength == MAX_STRUCTS ) {
+  while( structs[1 + index] != nullptr || pendingStructs[0].get( index ) ||
+         pendingStructs[1].get( index ) )
+  {
+    if( index == lastStructIndex ) {
+      // We have wrapped around => no slots available.
       soft_assert( false );
       return nullptr;
     }
 
-    index = strLength;
-    ++strLength;
-  }
-  else {
-    index = strAvailableIndices.popLast();
+    index = ( index + 1 ) % MAX_STRUCTS;
   }
 
-  str = new Struct( bsp, index, p, heading );
+  const_cast<BSP*>( bsp )->request();
+
+  Struct* str = new Struct( bsp, index, p, heading );
   structs[1 + index] = str;
+
+  lastStructIndex = index;
   return str;
 }
 
 Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
 {
-  Object* obj;
-  int     index;
+  int index = lastObjectIndex + 1;
 
-  if( objAvailableIndices.isEmpty() ) {
-    if( objLength == MAX_OBJECTS ) {
+  while( objects[1 + index] != nullptr || pendingObjects[0].get( index ) ||
+         pendingObjects[1].get( index ) )
+  {
+    if( index == lastObjectIndex ) {
+      // We have wrapped around => no slots available.
       soft_assert( false );
       return nullptr;
     }
 
-    index = objLength;
-    ++objLength;
-  }
-  else {
-    index = objAvailableIndices.popLast();
+    index = ( index + 1 ) % MAX_OBJECTS;
   }
 
-  obj = clazz->create( index, p, heading );
+  Object* obj = clazz->create( index, p, heading );
   objects[1 + index] = obj;
 
   if( obj->flags & Object::LUA_BIT ) {
-    luaMatrix.registerObject( obj->index );
+    luaMatrix.registerObject( index );
   }
+
+  lastObjectIndex = index;
   return obj;
 }
 
 Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 {
-  Frag* frag;
-  int   index;
+  int index = lastFragIndex + 1;
 
-  if( fragAvailableIndices.isEmpty() ) {
-    if( fragLength == MAX_FRAGS ) {
+  while( frags[1 + index] != nullptr || pendingFrags[0].get( index ) ||
+         pendingFrags[1].get( index ) )
+  {
+    if( index == lastFragIndex ) {
+      // We have wrapped around => no slots available.
       soft_assert( false );
       return nullptr;
     }
 
-    index = fragLength;
-    ++fragLength;
-  }
-  else {
-    index = fragAvailableIndices.popLast();
+    index = ( index + 1 ) % MAX_FRAGS;
   }
 
-  frag = new Frag( pool, index, p, velocity );
+  Frag* frag = new Frag( pool, index, p, velocity );
   frags[1 + index] = frag;
+
+  lastFragIndex = index;
   return frag;
 }
 
@@ -240,7 +235,7 @@ void Orbis::remove( Struct* str )
 {
   hard_assert( str->index >= 0 );
 
-  strFreedIndices[freeing].add( str->index );
+  pendingStructs[freeing].set( str->index );
   structs[1 + str->index] = nullptr;
 
   const_cast<BSP*>( str->bsp )->release();
@@ -256,7 +251,7 @@ void Orbis::remove( Object* obj )
     luaMatrix.unregisterObject( obj->index );
   }
 
-  objFreedIndices[freeing].add( obj->index );
+  pendingObjects[freeing].set( obj->index );
   objects[1 + obj->index] = nullptr;
 
   delete obj;
@@ -266,7 +261,7 @@ void Orbis::remove( Frag* frag )
 {
   hard_assert( frag->index >= 0 && frag->cell == nullptr );
 
-  fragFreedIndices[freeing].add( frag->index );
+  pendingFrags[freeing].set( frag->index );
   frags[1 + frag->index] = nullptr;
 
   delete frag;
@@ -324,17 +319,9 @@ void Orbis::reposition( Frag* frag )
 
 void Orbis::update()
 {
-  strAvailableIndices.takeAll( strFreedIndices[waiting].begin(),
-                               strFreedIndices[waiting].length() );
-  strFreedIndices[waiting].clear();
-
-  objAvailableIndices.takeAll( objFreedIndices[waiting].begin(),
-                               objFreedIndices[waiting].length() );
-  objFreedIndices[waiting].clear();
-
-  fragAvailableIndices.addAll( fragFreedIndices[waiting].begin(),
-                               fragFreedIndices[waiting].length() );
-  fragFreedIndices[waiting].clear();
+  pendingStructs[waiting].clearAll();
+  pendingObjects[waiting].clearAll();
+  pendingFrags[waiting].clearAll();
 
   freeing = !freeing;
   waiting = !waiting;
@@ -388,50 +375,16 @@ void Orbis::read( InputStream* is )
     frags[1 + frag->index] = frag;
   }
 
-  strLength  = is->readInt();
-  objLength  = is->readInt();
-  fragLength = is->readInt();
+  lastStructIndex = is->readInt();
+  lastObjectIndex = is->readInt();
+  lastFragIndex   = is->readInt();
 
-  int n;
-
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    strFreedIndices[freeing].add( is->readInt() );
-  }
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    objFreedIndices[freeing].add( is->readInt() );
-  }
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    fragFreedIndices[freeing].add( is->readInt() );
-  }
-
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    strFreedIndices[waiting].add( is->readInt() );
-  }
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    objFreedIndices[waiting].add( is->readInt() );
-  }
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    fragFreedIndices[waiting].add( is->readInt() );
-  }
-
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    strAvailableIndices.add( is->readInt() );
-  }
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    objAvailableIndices.add( is->readInt() );
-  }
-  n = is->readInt();
-  for( int i = 0; i < n; ++i ) {
-    fragAvailableIndices.add( is->readInt() );
-  }
+  is->readBitset( pendingStructs[freeing], pendingStructs[freeing].length() );
+  is->readBitset( pendingStructs[waiting], pendingStructs[waiting].length() );
+  is->readBitset( pendingObjects[freeing], pendingObjects[freeing].length() );
+  is->readBitset( pendingObjects[waiting], pendingObjects[waiting].length() );
+  is->readBitset( pendingFrags[freeing], pendingFrags[freeing].length() );
+  is->readBitset( pendingFrags[waiting], pendingFrags[waiting].length() );
 }
 
 void Orbis::read( const JSON& json )
@@ -451,8 +404,6 @@ void Orbis::read( const JSON& json )
 
     position( str );
     structs[1 + str->index] = str;
-
-    strLength = max( strLength, 1 + str->index );
   }
 
   const JSON& objectsJSON = json["objects"];
@@ -471,8 +422,6 @@ void Orbis::read( const JSON& json )
       position( obj );
     }
     objects[1 + obj->index] = obj;
-
-    objLength = max( objLength, 1 + obj->index );
   }
 
   const JSON& fragsJSON = json["frags"];
@@ -484,30 +433,6 @@ void Orbis::read( const JSON& json )
 
     position( frag );
     frags[1 + frag->index] = frag;
-
-    fragLength = max( fragLength, 1 + frag->index );
-  }
-
-  for( int i = 0; i < strLength; ++i ) {
-    Struct* str = structs[1 + i];
-
-    if( str == nullptr ) {
-      strAvailableIndices.add( i );
-    }
-  }
-  for( int i = 0; i < objLength; ++i ) {
-    Object* obj = objects[1 + i];
-
-    if( obj == nullptr ) {
-      objAvailableIndices.add( i );
-    }
-  }
-  for( int i = 0; i < fragLength; ++i ) {
-    Frag* frag = frags[1 + i];
-
-    if( frag == nullptr ) {
-      fragAvailableIndices.add( i );
-    }
   }
 }
 
@@ -527,7 +452,7 @@ void Orbis::write( OutputStream* os ) const
   os->writeInt( nObjects );
   os->writeInt( nFrags );
 
-  for( int i = 0; i < strLength; ++i ) {
+  for( int i = 0; i < MAX_STRUCTS; ++i ) {
     Struct* str = structs[1 + i];
 
     if( str != nullptr ) {
@@ -535,7 +460,7 @@ void Orbis::write( OutputStream* os ) const
       str->write( os );
     }
   }
-  for( int i = 0; i < objLength; ++i ) {
+  for( int i = 0; i < MAX_OBJECTS; ++i ) {
     Object* obj = objects[1 + i];
 
     if( obj != nullptr ) {
@@ -543,7 +468,7 @@ void Orbis::write( OutputStream* os ) const
       obj->write( os );
     }
   }
-  for( int i = 0; i < fragLength; ++i ) {
+  for( int i = 0; i < MAX_FRAGS; ++i ) {
     Frag* frag = frags[1 + i];
 
     if( frag != nullptr ) {
@@ -552,48 +477,16 @@ void Orbis::write( OutputStream* os ) const
     }
   }
 
-  os->writeInt( strLength );
-  os->writeInt( objLength );
-  os->writeInt( fragLength );
+  os->writeInt( lastStructIndex );
+  os->writeInt( lastObjectIndex );
+  os->writeInt( lastFragIndex );
 
-  os->writeInt( strFreedIndices[freeing].length() );
-  foreach( i, strFreedIndices[freeing].citer() ) {
-    os->writeInt( *i );
-  }
-  os->writeInt( objFreedIndices[freeing].length() );
-  foreach( i, objFreedIndices[freeing].citer() ) {
-    os->writeInt( *i );
-  }
-  os->writeInt( fragFreedIndices[freeing].length() );
-  foreach( i, fragFreedIndices[freeing].citer() ) {
-    os->writeInt( *i );
-  }
-
-  os->writeInt( strFreedIndices[waiting].length() );
-  foreach( i, strFreedIndices[waiting].citer() ) {
-    os->writeInt( *i );
-  }
-  os->writeInt( objFreedIndices[waiting].length() );
-  foreach( i, objFreedIndices[waiting].citer() ) {
-    os->writeInt( *i );
-  }
-  os->writeInt( fragFreedIndices[waiting].length() );
-  foreach( i, fragFreedIndices[waiting].citer() ) {
-    os->writeInt( *i );
-  }
-
-  os->writeInt( strAvailableIndices.length() );
-  foreach( i, strAvailableIndices.citer() ) {
-    os->writeInt( *i );
-  }
-  os->writeInt( objAvailableIndices.length() );
-  foreach( i, objAvailableIndices.citer() ) {
-    os->writeInt( *i );
-  }
-  os->writeInt( fragAvailableIndices.length() );
-  foreach( i, fragAvailableIndices.citer() ) {
-    os->writeInt( *i );
-  }
+  os->writeBitset( pendingStructs[freeing], pendingStructs[freeing].length() );
+  os->writeBitset( pendingStructs[waiting], pendingStructs[waiting].length() );
+  os->writeBitset( pendingObjects[freeing], pendingObjects[freeing].length() );
+  os->writeBitset( pendingObjects[waiting], pendingObjects[waiting].length() );
+  os->writeBitset( pendingFrags[freeing], pendingFrags[freeing].length() );
+  os->writeBitset( pendingFrags[waiting], pendingFrags[waiting].length() );
 }
 
 JSON Orbis::write() const
@@ -605,7 +498,7 @@ JSON Orbis::write() const
 
   JSON& structsJSON = json.add( "structs", JSON::ARRAY );
 
-  for( int i = 0; i < strLength; ++i ) {
+  for( int i = 0; i < MAX_STRUCTS; ++i ) {
     Struct* str = structs[1 + i];
 
     if( str != nullptr ) {
@@ -615,7 +508,7 @@ JSON Orbis::write() const
 
   JSON& objectsJSON = json.add( "objects", JSON::ARRAY );
 
-  for( int i = 0; i < objLength; ++i ) {
+  for( int i = 0; i < MAX_OBJECTS; ++i ) {
     Object* obj = objects[1 + i];
 
     if( obj != nullptr ) {
@@ -625,7 +518,7 @@ JSON Orbis::write() const
 
   JSON& fragsJSON = json.add( "frags", JSON::ARRAY );
 
-  for( int i = 0; i < fragLength; ++i ) {
+  for( int i = 0; i < MAX_FRAGS; ++i ) {
     Frag* frag = frags[1 + i];
 
     if( frag != nullptr ) {
@@ -637,22 +530,11 @@ JSON Orbis::write() const
 }
 
 void Orbis::load()
-{
-  strFreedIndices[0].allocate( 4 );
-  strFreedIndices[1].allocate( 4 );
-  objFreedIndices[0].allocate( 64 );
-  objFreedIndices[1].allocate( 64 );
-  fragFreedIndices[0].allocate( 128 );
-  fragFreedIndices[1].allocate( 128 );
-
-  strAvailableIndices.allocate( 16 );
-  objAvailableIndices.allocate( 256 );
-  fragAvailableIndices.allocate( 512 );
-}
+{}
 
 void Orbis::unload()
 {
-  for( int i = 0; i < objLength; ++i ) {
+  for( int i = 0; i < MAX_OBJECTS; ++i ) {
     if( objects[1 + i] != nullptr && ( objects[1 + i]->flags & Object::LUA_BIT ) ) {
       luaMatrix.unregisterObject( i );
     }
@@ -675,10 +557,6 @@ void Orbis::unload()
   aFree( &structs[1], MAX_STRUCTS );
   aFill( &structs[1], MAX_STRUCTS, nullptr );
 
-  strLength  = 0;
-  objLength  = 0;
-  fragLength = 0;
-
   terra.reset();
   caelum.reset();
 
@@ -695,33 +573,21 @@ void Orbis::unload()
 
   liber.freeBSPs();
 
-  fragFreedIndices[0].clear();
-  fragFreedIndices[0].deallocate();
-  fragFreedIndices[1].clear();
-  fragFreedIndices[1].deallocate();
-  objFreedIndices[0].clear();
-  objFreedIndices[0].deallocate();
-  objFreedIndices[1].clear();
-  objFreedIndices[1].deallocate();
-  strFreedIndices[0].clear();
-  strFreedIndices[0].deallocate();
-  strFreedIndices[1].clear();
-  strFreedIndices[1].deallocate();
+  lastStructIndex = -1;
+  lastObjectIndex = -1;
+  lastFragIndex   = -1;
 
-  fragAvailableIndices.clear();
-  fragAvailableIndices.deallocate();
-  objAvailableIndices.clear();
-  objAvailableIndices.deallocate();
-  strAvailableIndices.clear();
-  strAvailableIndices.deallocate();
+  pendingStructs[0].clearAll();
+  pendingStructs[1].clearAll();
+  pendingObjects[0].clearAll();
+  pendingObjects[1].clearAll();
+  pendingFrags[0].clearAll();
+  pendingFrags[1].clearAll();
 }
 
 void Orbis::init()
 {
   Log::print( "Initialising Orbis ..." );
-
-  freeing = 0;
-  waiting = 1;
 
   mins = Point( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
   maxs = Point( +Orbis::DIM, +Orbis::DIM, +Orbis::DIM );
@@ -729,14 +595,6 @@ void Orbis::init()
   caelum.reset();
   terra.init();
   terra.reset();
-
-  aFill( structs, 1 + MAX_STRUCTS, nullptr );
-  aFill( objects, 1 + MAX_OBJECTS, nullptr );
-  aFill( frags, 1 + MAX_FRAGS, nullptr );
-
-  strLength  = 0;
-  objLength  = 0;
-  fragLength = 0;
 
   Log::printEnd( " OK" );
 }
