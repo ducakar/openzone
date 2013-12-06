@@ -38,24 +38,24 @@ namespace ui
 
 class InfoFrame : public Frame
 {
-  private:
+private:
 
-    Text text;
-    int  lastId;
+  Text text;
+  int  lastId;
 
-  private:
+private:
 
-    const Device* const* updateReferences();
+  const Device* const* updateReferences();
 
-  protected:
+protected:
 
-    void onVisibilityChange( bool doShow ) override;
-    void onUpdate() override;
-    void onDraw() override;
+  void onVisibilityChange( bool doShow ) override;
+  void onUpdate() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit InfoFrame();
+  explicit InfoFrame();
 
 };
 

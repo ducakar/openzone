@@ -32,13 +32,13 @@ namespace builder
 
 class UI
 {
-  private:
+private:
 
-    static const char* const ICON_NAMES[];
+  static const char* const ICON_NAMES[];
 
-  public:
+public:
 
-    static void buildIcons();
+  static void buildIcons();
 
 };
 

@@ -32,33 +32,33 @@ namespace client
 
 class PartClass
 {
-  public:
+public:
 
-    static const int UPDATED_BIT = 0x01;
-    static const int LOADED_BIT  = 0x02;
+  static const int UPDATED_BIT = 0x01;
+  static const int LOADED_BIT  = 0x02;
 
-  public:
+public:
 
-    int   flags;
-    int   nParts;
+  int   flags;
+  int   nParts;
 
-    Vec3  velocity;
-    float velocitySpread;
-    float drag;
+  Vec3  velocity;
+  float velocitySpread;
+  float drag;
 
-    int   texId;
-    int   endTexId;
+  int   texId;
+  int   endTexId;
 
-  public:
+public:
 
-    bool isPreloaded() const;
-    bool isLoaded() const;
+  bool isPreloaded() const;
+  bool isLoaded() const;
 
-    void schedule();
+  void schedule();
 
-    void preload();
-    void load();
-    void unload();
+  void preload();
+  void load();
+  void unload();
 
 };
 

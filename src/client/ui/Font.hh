@@ -37,44 +37,44 @@ namespace ui
 
 class Font
 {
-  public:
+public:
 
-    enum Type
-    {
-      MONO,
-      SANS,
-      SMALL,
-      LARGE,
-      TITLE,
-      MAX
-    };
+  enum Type
+  {
+    MONO,
+    SANS,
+    SMALL,
+    LARGE,
+    TITLE,
+    MAX
+  };
 
-  private:
+private:
 
-    Buffer    buffer;
-    TTF_Font* handle;
+  Buffer    buffer;
+  TTF_Font* handle;
 
-  public:
+public:
 
-    int height;
+  int height;
 
-  public:
+public:
 
-    /**
-     * Report size of a texture the would contain the given text in one line.
-     */
-    void sizeOf( const char* s, int* width = nullptr, int* height = nullptr ) const;
+  /**
+   * Report size of a texture the would contain the given text in one line.
+   */
+  void sizeOf( const char* s, int* width = nullptr, int* height = nullptr ) const;
 
-    /**
-     * Generate texture data for the given text and upload it via `glTexImage2D`.
-     *
-     * `*width` and `*height` are set to the final texture size if not null. `*width` is also an
-     * input parameter; if it is > 0, the text is wrapped to `*width` pixels.
-     */
-    void upload( const char* s, int* width = nullptr, int* height = nullptr ) const;
+  /**
+   * Generate texture data for the given text and upload it via `glTexImage2D`.
+   *
+   * `*width` and `*height` are set to the final texture size if not null. `*width` is also an
+   * input parameter; if it is > 0, the text is wrapped to `*width` pixels.
+   */
+  void upload( const char* s, int* width = nullptr, int* height = nullptr ) const;
 
-    void init( const char* name, int height );
-    void destroy();
+  void init( const char* name, int height );
+  void destroy();
 
 };
 

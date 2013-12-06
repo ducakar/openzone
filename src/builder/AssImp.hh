@@ -33,9 +33,9 @@ namespace builder
 
 class AssImp
 {
-  public:
+public:
 
-    void build( const char* path );
+  void build( const char* path );
 
 };
 

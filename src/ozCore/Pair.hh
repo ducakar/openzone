@@ -41,30 +41,30 @@ namespace oz
 template <typename ValueX, typename ValueY = ValueX>
 class Pair
 {
-  public:
+public:
 
-    ValueX x; ///< First element.
-    ValueY y; ///< Second element.
+  ValueX x; ///< First element.
+  ValueY y; ///< Second element.
 
-  public:
+public:
 
-    /**
-     * Per-member equality operator.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator == ( const Pair& p ) const
-    {
-      return x == p.x && y == p.y;
-    }
+  /**
+   * Per-member equality operator.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == ( const Pair& p ) const
+  {
+    return x == p.x && y == p.y;
+  }
 
-    /**
-     * Per-member inequality operator.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator != ( const Pair& p ) const
-    {
-      return !( x == p.x ) || !( y == p.y );
-    }
+  /**
+   * Per-member inequality operator.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != ( const Pair& p ) const
+  {
+    return !( x == p.x ) || !( y == p.y );
+  }
 
 };
 

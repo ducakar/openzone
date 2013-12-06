@@ -34,23 +34,23 @@ namespace ui
 
 class DebugFrame : public Frame
 {
-  private:
+private:
 
-    Label camPosRot;
-    Label botPosRot;
-    Label botVelMom;
-    Label botFlagsState;
-    Label tagPos;
-    Label tagVelMom;
-    Label tagFlags;
+  Label camPosRot;
+  Label botPosRot;
+  Label botVelMom;
+  Label botFlagsState;
+  Label tagPos;
+  Label tagVelMom;
+  Label tagFlags;
 
-  protected:
+protected:
 
-    void onDraw() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit DebugFrame();
+  explicit DebugFrame();
 
 };
 

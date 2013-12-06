@@ -40,273 +40,273 @@ namespace builder
  */
 class BSP : public Bounds
 {
-  private:
+private:
 
-    static const float DEFAULT_SCALE;
-    static const float DEFAULT_LIFE;
-    static const float DEFAULT_RESISTANCE;
-    static const float DEFAULT_MARGIN;
+  static const float DEFAULT_SCALE;
+  static const float DEFAULT_LIFE;
+  static const float DEFAULT_RESISTANCE;
+  static const float DEFAULT_MARGIN;
 
-    static const float LIQUID_ALPHA;
-    static const float LIQUID_SPECULAR;
-    static const float GLASS_ALPHA;
-    static const float GLASS_SPECULAR;
+  static const float LIQUID_ALPHA;
+  static const float LIQUID_SPECULAR;
+  static const float GLASS_ALPHA;
+  static const float GLASS_SPECULAR;
 
-    // Quake
-    static const int   QBSP_SLICK_FLAG_BIT    = 0x00000002;
-    static const int   QBSP_LADDER_FLAG_BIT   = 0x00000008;
-    static const int   QBSP_NONSOLID_FLAG_BIT = 0x00004000;
-    static const int   QBSP_LAVA_TYPE_BIT     = 0x00000008;
-    static const int   QBSP_SEA_TYPE_BIT      = 0x00000010;
-    static const int   QBSP_WATER_TYPE_BIT    = 0x00000020;
-    static const int   QBSP_AIR_TYPE_BIT      = 0x00200000;
-    static const int   QBSP_ALPHA_TYPE_BIT    = 0x20000000;
+  // Quake
+  static const int   QBSP_SLICK_FLAG_BIT    = 0x00000002;
+  static const int   QBSP_LADDER_FLAG_BIT   = 0x00000008;
+  static const int   QBSP_NONSOLID_FLAG_BIT = 0x00004000;
+  static const int   QBSP_LAVA_TYPE_BIT     = 0x00000008;
+  static const int   QBSP_SEA_TYPE_BIT      = 0x00000010;
+  static const int   QBSP_WATER_TYPE_BIT    = 0x00000020;
+  static const int   QBSP_AIR_TYPE_BIT      = 0x00200000;
+  static const int   QBSP_ALPHA_TYPE_BIT    = 0x20000000;
 
-    static const int   QBSP_LIGHTMAP_DIM      = 128;
-    static const int   QBSP_LIGHTMAP_BPP      = 3;
-    static const int   QBSP_LIGHTMAP_SIZE     = QBSP_LIGHTMAP_DIM * QBSP_LIGHTMAP_DIM *
-                                                QBSP_LIGHTMAP_BPP;
+  static const int   QBSP_LIGHTMAP_DIM      = 128;
+  static const int   QBSP_LIGHTMAP_BPP      = 3;
+  static const int   QBSP_LIGHTMAP_SIZE     = QBSP_LIGHTMAP_DIM * QBSP_LIGHTMAP_DIM *
+                                              QBSP_LIGHTMAP_BPP;
 
-    // Data structure for Quake 3 BSP lump entry.
-    struct QBSPLump
+  // Data structure for Quake 3 BSP lump entry.
+  struct QBSPLump
+  {
+    enum Lumps
     {
-      enum Lumps
-      {
-        ENTITIES,
-        TEXTURES,
-        PLANES,
-        NODES,
-        LEAFS,
-        LEAFFACES,
-        LEAFBRUSHES,
-        MODELS,
-        BRUSHES,
-        BRUSHSIDES,
-        VERTICES,
-        INDICES,
-        SHADERS,
-        FACES,
-        LIGHTMAPS,
-        LIGHTVOLUMES,
-        VISUALDATA,
-        MAX
-      };
-
-      int offset;
-      int length;
+      ENTITIES,
+      TEXTURES,
+      PLANES,
+      NODES,
+      LEAFS,
+      LEAFFACES,
+      LEAFBRUSHES,
+      MODELS,
+      BRUSHES,
+      BRUSHSIDES,
+      VERTICES,
+      INDICES,
+      SHADERS,
+      FACES,
+      LIGHTMAPS,
+      LIGHTVOLUMES,
+      VISUALDATA,
+      MAX
     };
 
-    // Data structure for Quake 3 BSP texture entry.
-    struct QBSPTexture
-    {
-      char name[64];
-      int  flags;
-      int  type;
-    };
+    int offset;
+    int length;
+  };
 
-    // Data structure for Quake 3 BSP plane entry.
-    struct QBSPPlane
-    {
-      float normal[3];
-      float distance;
-    };
+  // Data structure for Quake 3 BSP texture entry.
+  struct QBSPTexture
+  {
+    char name[64];
+    int  flags;
+    int  type;
+  };
 
-    // Data structure for Quake 3 BSP node entry.
-    struct QBSPNode
-    {
-      int plane;
+  // Data structure for Quake 3 BSP plane entry.
+  struct QBSPPlane
+  {
+    float normal[3];
+    float distance;
+  };
 
-      int front;
-      int back;
+  // Data structure for Quake 3 BSP node entry.
+  struct QBSPNode
+  {
+    int plane;
 
-      int bb[2][3];
-    };
+    int front;
+    int back;
 
-    // Data structure for Quake 3 BSP leaf (node) entry.
-    struct QBSPLeaf
-    {
-      int cluster;
-      int area;
+    int bb[2][3];
+  };
 
-      int bb[2][3];
+  // Data structure for Quake 3 BSP leaf (node) entry.
+  struct QBSPLeaf
+  {
+    int cluster;
+    int area;
 
-      int firstFace;
-      int nFaces;
+    int bb[2][3];
 
-      int firstBrush;
-      int nBrushes;
-    };
+    int firstFace;
+    int nFaces;
 
-    // Data structure for Quake 3 BSP model entry.
-    struct QBSPModel
-    {
-      float bb[2][3];
+    int firstBrush;
+    int nBrushes;
+  };
 
-      int   firstFace;
-      int   nFaces;
+  // Data structure for Quake 3 BSP model entry.
+  struct QBSPModel
+  {
+    float bb[2][3];
 
-      int   firstBrush;
-      int   nBrushes;
-    };
+    int   firstFace;
+    int   nFaces;
 
-    // Data structure for Quake 3 BSP brush entry.
-    struct QBSPBrush
-    {
-      int firstSide;
-      int nSides;
-      int texture;
-    };
+    int   firstBrush;
+    int   nBrushes;
+  };
 
-    // Data structure for Quake 3 BSP bush side entry.
-    struct QBSPBrushSide
-    {
-      int plane;
-      int texture;
-    };
+  // Data structure for Quake 3 BSP brush entry.
+  struct QBSPBrush
+  {
+    int firstSide;
+    int nSides;
+    int texture;
+  };
 
-    // Vertex in Quake 3 BSP.
-    struct QBSPVertex
-    {
-      float p[3];
-      float texCoord[2];
-      float lightmapCoord[2];
-      float normal[3];
-      char  colour[4];
-    };
+  // Data structure for Quake 3 BSP bush side entry.
+  struct QBSPBrushSide
+  {
+    int plane;
+    int texture;
+  };
 
-    // Face in Quake 3 BSP.
-    struct QBSPFace
-    {
-      int   texture;
-      int   effect;
-      int   type;
+  // Vertex in Quake 3 BSP.
+  struct QBSPVertex
+  {
+    float p[3];
+    float texCoord[2];
+    float lightmapCoord[2];
+    float normal[3];
+    char  colour[4];
+  };
 
-      int   firstVertex;
-      int   nVertices;
+  // Face in Quake 3 BSP.
+  struct QBSPFace
+  {
+    int   texture;
+    int   effect;
+    int   type;
 
-      int   firstIndex;
-      int   nIndices;
+    int   firstVertex;
+    int   nVertices;
 
-      int   lightmap;
-      int   lightmapCorner[2];
-      int   lightmapSize[2];
+    int   firstIndex;
+    int   nIndices;
 
-      float lightmapPos[3];
-      float lightmapVecs[2][3];
+    int   lightmap;
+    int   lightmapCorner[2];
+    int   lightmapSize[2];
 
-      float normal[3];
+    float lightmapPos[3];
+    float lightmapVecs[2][3];
 
-      int   size[2];
-    };
+    float normal[3];
 
-    // Temporary structure for textures.
-    struct Texture
-    {
-      String name;
-      int    flags;
-      int    type;
-    };
+    int   size[2];
+  };
 
-    // Temporary structure to hold per-model face indices.
-    struct ModelFaces
-    {
-      int firstFace;
-      int nFaces;
-    };
+  // Temporary structure for textures.
+  struct Texture
+  {
+    String name;
+    int    flags;
+    int    type;
+  };
 
-    // Temporary structure for face.
-    struct Face
-    {
-      int  texture;
+  // Temporary structure to hold per-model face indices.
+  struct ModelFaces
+  {
+    int firstFace;
+    int nFaces;
+  };
 
-      int  firstVertex;
-      int  nVertices;
+  // Temporary structure for face.
+  struct Face
+  {
+    int  texture;
 
-      int  firstIndex;
-      int  nIndices;
+    int  firstVertex;
+    int  nVertices;
 
-      Vec3 normal;
-    };
+    int  firstIndex;
+    int  nIndices;
 
-    // Temporary structure for BSP entity (EntityClass).
-    struct Model : Bounds
-    {
-      String            title;
+    Vec3 normal;
+  };
 
-      Vec3              move;
+  // Temporary structure for BSP entity (EntityClass).
+  struct Model : Bounds
+  {
+    String            title;
 
-      BSP*              bsp;
+    Vec3              move;
 
-      int               firstBrush;
-      int               nBrushes;
+    BSP*              bsp;
 
-      EntityClass::Type type;
+    int               firstBrush;
+    int               nBrushes;
 
-      float             margin;
-      float             timeout;
-      float             ratioInc;
+    EntityClass::Type type;
 
-      int               target;
-      int               key;
+    float             margin;
+    float             timeout;
+    float             ratioInc;
 
-      String            openSound;
-      String            closeSound;
-      String            frictSound;
+    int               target;
+    int               key;
 
-      String            modelName;
-      Mat44             modelTransf;
-    };
+    String            openSound;
+    String            closeSound;
+    String            frictSound;
 
-    // Temporary structure for bound objects.
-    struct BoundObject
-    {
-      String  clazz;
-      Point   pos;
-      Heading heading;
-    };
+    String            modelName;
+    Mat44             modelTransf;
+  };
 
-    String                 name;
-    String                 title;
-    String                 description;
+  // Temporary structure for bound objects.
+  struct BoundObject
+  {
+    String  clazz;
+    Point   pos;
+    Heading heading;
+  };
 
-    float                  life;
-    float                  resistance;
+  String                 name;
+  String                 title;
+  String                 description;
 
-    DArray<Texture>        textures;
-    List<Plane>            planes;
-    List<oz::BSP::Node>    nodes;
-    List<oz::BSP::Leaf>    leaves;
-    List<int>              leafBrushes;
-    DArray<Model>          models;
-    List<oz::BSP::Brush>   brushes;
-    List<int>              brushSides;
-    DArray<ModelFaces>     modelFaces;
-    DArray<client::Vertex> vertices;
-    DArray<int>            indices;
-    List<Face>             faces;
+  float                  life;
+  float                  resistance;
 
-    String                 fragPool;
-    int                    nFrags;
+  DArray<Texture>        textures;
+  List<Plane>            planes;
+  List<oz::BSP::Node>    nodes;
+  List<oz::BSP::Leaf>    leaves;
+  List<int>              leafBrushes;
+  DArray<Model>          models;
+  List<oz::BSP::Brush>   brushes;
+  List<int>              brushSides;
+  DArray<ModelFaces>     modelFaces;
+  DArray<client::Vertex> vertices;
+  DArray<int>            indices;
+  List<Face>             faces;
 
-    String                 demolishSound;
+  String                 fragPool;
+  int                    nFrags;
 
-    float                  groundOffset;
+  String                 demolishSound;
 
-    List<BoundObject>      boundObjects;
+  float                  groundOffset;
 
-    Vec4                   waterFogColour;
-    Vec4                   lavaFogColour;
+  List<BoundObject>      boundObjects;
 
-    void load();
-    void optimise();
-    void check() const;
-    void saveMatrix();
-    void saveClient();
+  Vec4                   waterFogColour;
+  Vec4                   lavaFogColour;
 
-  public:
+  void load();
+  void optimise();
+  void check() const;
+  void saveMatrix();
+  void saveClient();
 
-    // create ozBSP from a Quake 3 QBSP and optimise it
-    void build( const char* name );
+public:
+
+  // create ozBSP from a Quake 3 QBSP and optimise it
+  void build( const char* name );
 
 };
 

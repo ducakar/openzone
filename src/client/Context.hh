@@ -46,174 +46,174 @@ class Context
   friend class Render;
   friend class Sound;
 
-  private:
+private:
 
-    // default audio format
-    static const uint INVALID_SOURCE = ~0u;
+  // default audio format
+  static const uint INVALID_SOURCE = ~0u;
 
-    template <typename Type>
-    struct Resource
-    {
-      Type handle;
-      int  nUsers; ///< Number of users or -1 if not loaded.
-    };
+  template <typename Type>
+  struct Resource
+  {
+    Type handle;
+    int  nUsers; ///< Number of users or -1 if not loaded.
+  };
 
-    struct Source
-    {
-      uint    id;
-      int     sound;
-      Source* next[1];
+  struct Source
+  {
+    uint    id;
+    int     sound;
+    Source* next[1];
 
-      explicit Source( uint sourceId, int sound_ ) :
-        id( sourceId ), sound( sound_ )
-      {}
+    explicit Source( uint sourceId, int sound_ ) :
+      id( sourceId ), sound( sound_ )
+    {}
 
-      static Pool<Source> pool;
+    static Pool<Source> pool;
 
-      OZ_STATIC_POOL_ALLOC( pool )
-    };
+    OZ_STATIC_POOL_ALLOC( pool )
+  };
 
-    struct ContSource
-    {
-      uint id;
-      int  sound;
-      bool isUpdated;
+  struct ContSource
+  {
+    uint id;
+    int  sound;
+    bool isUpdated;
 
-      explicit ContSource( uint sourceId, int sound_ ) :
-        id( sourceId ), sound( sound_ ), isUpdated( true )
-      {}
-    };
+    explicit ContSource( uint sourceId, int sound_ ) :
+      id( sourceId ), sound( sound_ ), isUpdated( true )
+    {}
+  };
 
-    struct SpeakSource
-    {
-      static const int BUFFER_SIZE = 44100;
+  struct SpeakSource
+  {
+    static const int BUFFER_SIZE = 44100;
 
-      uint          id;
-      uint          bufferIds[2];
-      int           nQueuedBuffers;
-      int           nSamples;
+    uint          id;
+    uint          bufferIds[2];
+    int           nQueuedBuffers;
+    int           nSamples;
 
-      volatile int  owner;
-      volatile bool isAlive;        // Set to false to terminate source before it finishes.
-      Mutex         mutex;
-      Thread        thread;
+    volatile int  owner;
+    volatile bool isAlive;        // Set to false to terminate source before it finishes.
+    Mutex         mutex;
+    Thread        thread;
 
-      String        text;
-      short         samples[BUFFER_SIZE];
-    };
+    String        text;
+    short         samples[BUFFER_SIZE];
+  };
 
-  private:
+private:
 
-    Imago::CreateFunc**        imagoClasses;
-    Audio::CreateFunc**        audioClasses;
-    FragPool**                 fragPools;
+  Imago::CreateFunc**        imagoClasses;
+  Audio::CreateFunc**        audioClasses;
+  FragPool**                 fragPools;
 
-    Resource<Texture>*         textures;
-    Resource<uint>*            sounds;
+  Resource<Texture>*         textures;
+  Resource<uint>*            sounds;
 
-    Chain<Source>              sources;               // Non-looping sources.
-    HashMap<int, ContSource>   contSources;           // Looping sources.
+  Chain<Source>              sources;               // Non-looping sources.
+  HashMap<int, ContSource>   contSources;           // Looping sources.
 
-    Chain<PartGen>             partGens;
+  Chain<PartGen>             partGens;
 
-    Resource<BSP*>*            bsps;
-    Resource<BSPAudio*>*       bspAudios;
+  Resource<BSP*>*            bsps;
+  Resource<BSPAudio*>*       bspAudios;
 
-    Resource<SMM*>*            models;
-    Resource<PartClass>*       partClasses;
+  Resource<SMM*>*            models;
+  Resource<PartClass>*       partClasses;
 
-    HashMap<int, Imago*, 8192> imagines;              // Currently loaded graphics models.
-    HashMap<int, Audio*, 4096> audios;                // Currently loaded audio models.
+  HashMap<int, Imago*, 8192> imagines;              // Currently loaded graphics models.
+  HashMap<int, Audio*, 4096> audios;                // Currently loaded audio models.
 
-    int                        maxFragPools;
+  int                        maxFragPools;
 
-    int                        maxImagines;
-    int                        maxAudios;
-    int                        maxSources;
-    int                        maxContSources;
-    int                        maxPartGens;
+  int                        maxImagines;
+  int                        maxAudios;
+  int                        maxSources;
+  int                        maxContSources;
+  int                        maxPartGens;
 
-    int                        maxSMMImagines;
-    int                        maxSMMVehicleImagines;
-    int                        maxExplosionImagines;
-    int                        maxMD2Imagines;
-    int                        maxMD2WeaponImagines;
+  int                        maxSMMImagines;
+  int                        maxSMMVehicleImagines;
+  int                        maxExplosionImagines;
+  int                        maxMD2Imagines;
+  int                        maxMD2WeaponImagines;
 
-    int                        maxBasicAudios;
-    int                        maxBotAudios;
-    int                        maxVehicleAudios;
+  int                        maxBasicAudios;
+  int                        maxBotAudios;
+  int                        maxVehicleAudios;
 
-    static int                 speakSampleRate;       // Set from Sound class.
-    static SpeakSource         speakSource;
+  static int                 speakSampleRate;       // Set from Sound class.
+  static SpeakSource         speakSource;
 
-  public:
+public:
 
-    int                        textureLod;
+  int                        textureLod;
 
-  private:
+private:
 
-    static int speakCallback( short int* samples, int nSamples, void* );
-    static void speakMain( void* );
+  static int speakCallback( short int* samples, int nSamples, void* );
+  static void speakMain( void* );
 
-    uint addSource( int sound );
-    void removeSource( Source* source, Source* prev );
+  uint addSource( int sound );
+  void removeSource( Source* source, Source* prev );
 
-    uint addContSource( int sound, int key );
-    void removeContSource( ContSource* contSource, int key );
+  uint addContSource( int sound, int key );
+  void removeContSource( ContSource* contSource, int key );
 
-    uint requestSpeakSource( const char* text, int owner );
-    void releaseSpeakSource();
+  uint requestSpeakSource( const char* text, int owner );
+  void releaseSpeakSource();
 
-    PartGen* addPartGen();
-    void removePartGen( PartGen* partGen );
+  PartGen* addPartGen();
+  void removePartGen( PartGen* partGen );
 
-  public:
+public:
 
-    explicit Context();
+  explicit Context();
 
-    static Texture loadTexture( const File& diffuseFile, const File& masksFile,
-                                const File& normalsFile );
-    static Texture loadTexture( const char* basePath );
-    static void unloadTexture( const Texture* texture );
+  static Texture loadTexture( const File& diffuseFile, const File& masksFile,
+                              const File& normalsFile );
+  static Texture loadTexture( const char* basePath );
+  static void unloadTexture( const Texture* texture );
 
-    Texture requestTexture( int id );
-    void releaseTexture( int id );
+  Texture requestTexture( int id );
+  void releaseTexture( int id );
 
-    uint requestSound( int id );
-    void releaseSound( int id );
-    void freeSound( int id );
+  uint requestSound( int id );
+  void releaseSound( int id );
+  void freeSound( int id );
 
-    // Play sample without 3D effects.
-    void playSample( int id );
+  // Play sample without 3D effects.
+  void playSample( int id );
 
-    BSP* getBSP( const oz::BSP* bsp );
-    BSP* requestBSP( const oz::BSP* bsp );
+  BSP* getBSP( const oz::BSP* bsp );
+  BSP* requestBSP( const oz::BSP* bsp );
 
-    void drawBSP( const Struct* str );
-    void playBSP( const Struct* str );
+  void drawBSP( const Struct* str );
+  void playBSP( const Struct* str );
 
-    SMM* getModel( int id );
-    SMM* requestModel( int id );
-    void releaseModel( int id );
+  SMM* getModel( int id );
+  SMM* requestModel( int id );
+  void releaseModel( int id );
 
-    PartClass* getPartClass( int id );
-    PartClass* requestPartClass( int id );
-    void releasePartClass( int id );
+  PartClass* getPartClass( int id );
+  PartClass* requestPartClass( int id );
+  void releasePartClass( int id );
 
-    void drawImago( const Object* obj, const Imago* parent );
-    void playAudio( const Object* obj, const Object* parent );
-    void drawFrag( const Frag* frag );
+  void drawImago( const Object* obj, const Imago* parent );
+  void playAudio( const Object* obj, const Object* parent );
+  void drawFrag( const Frag* frag );
 
-    void updateLoad();
+  void updateLoad();
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    // Used to remove UI sounds and sources.
-    void clearSounds();
+  // Used to remove UI sounds and sources.
+  void clearSounds();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

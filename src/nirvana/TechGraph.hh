@@ -30,66 +30,66 @@ namespace oz
 
 class TechGraph
 {
-  public:
+public:
 
-    struct Node
+  struct Node
+  {
+    static const int MAX_DEPS = 8;
+
+    enum Type
     {
-      static const int MAX_DEPS = 8;
-
-      enum Type
-      {
-        TECHNOLOGY,
-        BUILDING,
-        UNIT,
-        ITEM,
-        OBJECT
-      };
-
-      Type                   type;
-      int                    price;
-      float                  time;
-      String                 name;
-      String                 title;
-      String                 description;
-      union
-      {
-        const BSP*           building;
-        const ObjectClass*   object;
-      };
-      SList<Node*, MAX_DEPS> requires;
-      float                  progress;
+      TECHNOLOGY,
+      BUILDING,
+      UNIT,
+      ITEM,
+      OBJECT
     };
 
-  private:
+    Type                   type;
+    int                    price;
+    float                  time;
+    String                 name;
+    String                 title;
+    String                 description;
+    union
+    {
+      const BSP*           building;
+      const ObjectClass*   object;
+    };
+    SList<Node*, MAX_DEPS> requires;
+    float                  progress;
+  };
 
-    List<Node> nodes;
+private:
 
-  public:
+  List<Node> nodes;
 
-    List<const BSP*>         allowedBuildings;
-    List<const ObjectClass*> allowedUnits;
-    List<const ObjectClass*> allowedItems;
-    List<const ObjectClass*> allowedObjects;
+public:
 
-  private:
+  List<const BSP*>         allowedBuildings;
+  List<const ObjectClass*> allowedUnits;
+  List<const ObjectClass*> allowedItems;
+  List<const ObjectClass*> allowedObjects;
 
-    Node* findNode( const char* name );
+private:
 
-  public:
+  Node* findNode( const char* name );
 
-    bool enable( const char* technology );
-    bool disable( const char* technology );
+public:
 
-    void enableAll();
-    void disableAll();
+  bool enable( const char* technology );
+  bool disable( const char* technology );
 
-    void update();
+  void enableAll();
+  void disableAll();
 
-    void read( InputStream* is );
-    void write( OutputStream* os ) const;
+  void update();
 
-    void load();
-    void unload();
+  void read( InputStream* is );
+  void write( OutputStream* os ) const;
+
+  void load();
+  void unload();
 
 };
 

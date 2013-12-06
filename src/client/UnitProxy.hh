@@ -32,58 +32,58 @@ namespace client
 
 class UnitProxy : public Proxy
 {
-  private:
+private:
 
-    static const float CAMERA_Z_SMOOTHING;
-    static const float CAMERA_Z_TOLERANCE;
-    static const float EXTERNAL_CAM_DIST;
-    // leave this much space between obstacle and camera, if camera is brought closer to the eyes
-    // because of an obstacle
-    static const float EXTERNAL_CAM_CLIP_DIST;
-    static const float SHOULDER_CAM_RIGHT;
-    static const float SHOULDER_CAM_UP;
-    static const float VEHICLE_CAM_UP_FACTOR;
-    static const float BOB_SUPPRESSION_COEF;
-    static const float BINOCULARS_MAGNIFICATION;
-    static const float INJURY_SUPPRESSION_COEF;
-    static const float INJURY_CLAMP;
-    static const float DEATH_CAM_DIST;
+  static const float CAMERA_Z_SMOOTHING;
+  static const float CAMERA_Z_TOLERANCE;
+  static const float EXTERNAL_CAM_DIST;
+  static const float EXTERNAL_CAM_CLIP_DIST; // Leave this much space between obstacle and camera
+                                             // if camera is brought closer to the eyes because of
+                                             // an obstacle.
+  static const float SHOULDER_CAM_RIGHT;
+  static const float SHOULDER_CAM_UP;
+  static const float VEHICLE_CAM_UP_FACTOR;
+  static const float BOB_SUPPRESSION_COEF;
+  static const float BINOCULARS_MAGNIFICATION;
+  static const float INJURY_SUPPRESSION_COEF;
+  static const float INJURY_CLAMP;
+  static const float DEATH_CAM_DIST;
 
-  public:
+public:
 
-    Quat  baseRot;
-    Quat  headRot;
-    float headH;
-    float headV;
+  Quat  baseRot;
+  Quat  headRot;
+  float headH;
+  float headV;
 
-  private:
+private:
 
-    Point botEye;
-    float bobTheta;
-    float bobBias;
+  Point botEye;
+  float bobTheta;
+  float bobBias;
 
-    float injuryRatio;
+  float injuryRatio;
 
-    int   oldBot;
+  int   oldBot;
 
-    bool  isExternal;
-    bool  isFreelook;
+  bool  isExternal;
+  bool  isFreelook;
 
-  public:
+public:
 
-    void begin() override;
-    void end() override;
+  void begin() override;
+  void end() override;
 
-    void prepare() override;
-    void update() override;
+  void prepare() override;
+  void update() override;
 
-    void reset() override;
+  void reset() override;
 
-    void read( InputStream* is ) override;
-    void read( const JSON& json ) override;
+  void read( InputStream* is ) override;
+  void read( const JSON& json ) override;
 
-    void write( OutputStream* os ) const override;
-    JSON write() const override;
+  void write( OutputStream* os ) const override;
+  JSON write() const override;
 
 };
 

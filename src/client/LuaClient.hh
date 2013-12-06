@@ -35,22 +35,22 @@ namespace client
 
 class LuaClient : public LuaCommon
 {
-  private:
+private:
 
-    void staticCall( const char* functionName );
+  void staticCall( const char* functionName );
 
-  public:
+public:
 
-    float staticExec( const char* code );
+  float staticExec( const char* code );
 
-    void update();
-    void create( const char* missionPath );
+  void update();
+  void create( const char* missionPath );
 
-    void read( InputStream* is );
-    void write( OutputStream* os );
+  void read( InputStream* is );
+  void write( OutputStream* os );
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

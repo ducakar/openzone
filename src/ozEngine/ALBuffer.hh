@@ -38,99 +38,99 @@ namespace oz
  */
 class ALBuffer
 {
-  private:
+private:
 
-    ALuint bufferId; ///< OpenAL buffer id, 0 if not loaded.
+  ALuint bufferId; ///< OpenAL buffer id, 0 if not loaded.
 
-  public:
+public:
 
-    /**
-     * Create an empty instance (no OpenAL buffer is created).
-     */
-    explicit ALBuffer();
+  /**
+   * Create an empty instance (no OpenAL buffer is created).
+   */
+  explicit ALBuffer();
 
-    /**
-     * Create a new buffer from a given file. Same as the default constructor plus `load()`.
-     */
-    explicit ALBuffer( const File& file );
+  /**
+   * Create a new buffer from a given file. Same as the default constructor plus `load()`.
+   */
+  explicit ALBuffer( const File& file );
 
-    /**
-     * Destructor, destroys OpenAL buffer if created.
-     */
-    ~ALBuffer();
+  /**
+   * Destructor, destroys OpenAL buffer if created.
+   */
+  ~ALBuffer();
 
-    /**
-     * Move constructor.
-     */
-    ALBuffer( ALBuffer&& b ) :
-      bufferId( b.bufferId )
-    {
-      b.bufferId = 0;
-    }
+  /**
+   * Move constructor.
+   */
+  ALBuffer( ALBuffer&& b ) :
+    bufferId( b.bufferId )
+  {
+    b.bufferId = 0;
+  }
 
-    /**
-     * Move operator.
-     */
-    ALBuffer& operator = ( ALBuffer&& b )
-    {
-      if( &b == this ) {
-        return *this;
-      }
-
-      bufferId   = b.bufferId;
-      b.bufferId = 0;
-
+  /**
+   * Move operator.
+   */
+  ALBuffer& operator = ( ALBuffer&& b )
+  {
+    if( &b == this ) {
       return *this;
     }
 
-    /**
-     * Get OpenAL buffer id.
-     */
-    ALuint id() const
-    {
-      return bufferId;
-    }
+    bufferId   = b.bufferId;
+    b.bufferId = 0;
 
-    /**
-     * True iff loaded.
-     */
-    bool isLoaded() const
-    {
-      return bufferId != 0;
-    }
+    return *this;
+  }
 
-    /**
-     * Create a new OpenAL source for this buffer.
-     *
-     * If the buffer does not exist, this returns an uninitialised `ALSource`.
-     */
-    ALSource createSource() const;
+  /**
+   * Get OpenAL buffer id.
+   */
+  ALuint id() const
+  {
+    return bufferId;
+  }
 
-    /**
-     * Create a new uninitialised OpenAL buffer.
-     *
-     * This is a NOP if the buffer already exists.
-     */
-    bool create();
+  /**
+   * True iff loaded.
+   */
+  bool isLoaded() const
+  {
+    return bufferId != 0;
+  }
 
-    /**
-     * Create a new buffer if necessary and load data from a given WAVE or Ogg Vorbis file.
-     *
-     * If the buffer already exists, its contents is replaced by the new data. On loading failure,
-     * buffer is destroyed.
-     *
-     * @note
-     * OpenAL error is generated if a buffer contents is changed while some source plays it.
-     */
-    bool load( const File& file );
+  /**
+   * Create a new OpenAL source for this buffer.
+   *
+   * If the buffer does not exist, this returns an uninitialised `ALSource`.
+   */
+  ALSource createSource() const;
 
-    /**
-     * Destroy OpenAL buffer if created.
-     *
-     * @note
-     * OpenAL error is generated if a buffer is deleted while some source is still bound to it.
-     */
-    void destroy();
+  /**
+   * Create a new uninitialised OpenAL buffer.
+   *
+   * This is a NOP if the buffer already exists.
+   */
+  bool create();
+
+  /**
+   * Create a new buffer if necessary and load data from a given WAVE or Ogg Vorbis file.
+   *
+   * If the buffer already exists, its contents is replaced by the new data. On loading failure,
+   * buffer is destroyed.
+   *
+   * @note
+   * OpenAL error is generated if a buffer contents is changed while some source plays it.
+   */
+  bool load( const File& file );
+
+  /**
+   * Destroy OpenAL buffer if created.
+   *
+   * @note
+   * OpenAL error is generated if a buffer is deleted while some source is still bound to it.
+   */
+  void destroy();
 
 };
 

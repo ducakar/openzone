@@ -32,24 +32,24 @@ namespace modules
 
 class Modules
 {
-  private:
+private:
 
-    List<Module*> modules;
+  List<Module*> modules;
 
-  public:
+public:
 
-    void update();
+  void update();
 
-    void read( InputStream* is );
-    void write( OutputStream* os ) const;
+  void read( InputStream* is );
+  void write( OutputStream* os ) const;
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    void registerLua() const;
+  void registerLua() const;
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

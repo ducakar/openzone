@@ -35,23 +35,23 @@ namespace ui
 
 class Frame : public Area
 {
-  public:
+public:
 
-    static const int HEADER_SIZE = 22;
+  static const int HEADER_SIZE = 22;
 
-  protected:
+protected:
 
-    Label title;
+  Label title;
 
-  protected:
+protected:
 
-    bool onMouseEvent() override;
-    bool onKeyEvent() override;
-    void onDraw() override;
+  bool onMouseEvent() override;
+  bool onKeyEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit Frame( int width, int height, const char* text );
+  explicit Frame( int width, int height, const char* text );
 
 };
 

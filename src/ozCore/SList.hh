@@ -47,490 +47,490 @@ class SList
 {
   static_assert( SIZE > 0, "SList size must be at least 1" );
 
-  public:
+public:
 
-    /**
-     * %Iterator with constant access to elements.
-     */
-    typedef ArrayIterator<const Elem> CIterator;
+  /**
+   * %Iterator with constant access to elements.
+   */
+  typedef ArrayIterator<const Elem> CIterator;
 
-    /**
-     * %Iterator with non-constant access to elements.
-     */
-    typedef ArrayIterator<Elem> Iterator;
+  /**
+   * %Iterator with non-constant access to elements.
+   */
+  typedef ArrayIterator<Elem> Iterator;
 
-  private:
+private:
 
-    Elem data[SIZE]; ///< Element storage.
-    int  count;      ///< Number of elements.
+  Elem data[SIZE]; ///< Element storage.
+  int  count;      ///< Number of elements.
 
-  public:
+public:
 
-    /**
-     * Create an empty list with capacity SIZE.
-     */
-    explicit SList() :
-      count( 0 )
-    {}
+  /**
+   * Create an empty list with capacity SIZE.
+   */
+  explicit SList() :
+    count( 0 )
+  {}
 
-    /**
-     * Initialise from an initialiser list.
-     */
-    SList( InitialiserList<Elem> l ) :
-      count( int( l.size() ) )
-    {
-      hard_assert( l.size() <= SIZE );
+  /**
+   * Initialise from an initialiser list.
+   */
+  SList( InitialiserList<Elem> l ) :
+    count( int( l.size() ) )
+  {
+    hard_assert( l.size() <= SIZE );
 
-      aCopy<Elem>( l.begin(), int( l.size() ), data );
-    }
+    aCopy<Elem>( l.begin(), int( l.size() ), data );
+  }
 
-    /**
-     * True iff respective elements are equal.
-     */
-    bool operator == ( const SList& l ) const
-    {
-      return count == l.count && aEquals<Elem>( data, count, l.data );
-    }
+  /**
+   * True iff respective elements are equal.
+   */
+  bool operator == ( const SList& l ) const
+  {
+    return count == l.count && aEquals<Elem>( data, count, l.data );
+  }
 
-    /**
-     * False iff respective elements are equal.
-     */
-    bool operator != ( const SList& l ) const
-    {
-      return count != l.count || !aEquals<Elem>( data, count, l.data );
-    }
+  /**
+   * False iff respective elements are equal.
+   */
+  bool operator != ( const SList& l ) const
+  {
+    return count != l.count || !aEquals<Elem>( data, count, l.data );
+  }
 
-    /**
-     * %Iterator with constant access, initially points to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator citer() const
-    {
-      return CIterator( data, data + count );
-    }
+  /**
+   * %Iterator with constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator citer() const
+  {
+    return CIterator( data, data + count );
+  }
 
-    /**
-     * %Iterator with non-constant access, initially points to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    Iterator iter()
-    {
-      return Iterator( data, data + count );
-    }
+  /**
+   * %Iterator with non-constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator iter()
+  {
+    return Iterator( data, data + count );
+  }
 
-    /**
-     * STL-compatible constant begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* begin() const
-    {
-      return data;
-    }
+  /**
+   * STL-compatible constant begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* begin() const
+  {
+    return data;
+  }
 
-    /**
-     * STL-compatible begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* begin()
-    {
-      return data;
-    }
+  /**
+   * STL-compatible begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* begin()
+  {
+    return data;
+  }
 
-    /**
-     * STL-compatible constant end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* end() const
-    {
-      return data + count;
-    }
+  /**
+   * STL-compatible constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* end() const
+  {
+    return data + count;
+  }
 
-    /**
-     * STL-compatible end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* end()
-    {
-      return data + count;
-    }
+  /**
+   * STL-compatible end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* end()
+  {
+    return data + count;
+  }
 
-    /**
-     * Number of elements.
-     */
-    OZ_ALWAYS_INLINE
-    int length() const
-    {
-      return count;
-    }
+  /**
+   * Number of elements.
+   */
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return count;
+  }
 
-    /**
-     * True iff empty.
-     */
-    OZ_ALWAYS_INLINE
-    bool isEmpty() const
-    {
-      return count == 0;
-    }
+  /**
+   * True iff empty.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return count == 0;
+  }
 
-    /**
-     * Size of storage.
-     */
-    OZ_ALWAYS_INLINE
-    int capacity() const
-    {
-      return SIZE;
-    }
+  /**
+   * Size of storage.
+   */
+  OZ_ALWAYS_INLINE
+  int capacity() const
+  {
+    return SIZE;
+  }
 
-    /**
-     * Constant reference to the `i`-th element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& operator [] ( int i ) const
-    {
-      hard_assert( uint( i ) < uint( count ) );
+  /**
+   * Constant reference to the `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& operator [] ( int i ) const
+  {
+    hard_assert( uint( i ) < uint( count ) );
 
-      return data[i];
-    }
+    return data[i];
+  }
 
-    /**
-     * Reference to the `i`-th element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& operator [] ( int i )
-    {
-      hard_assert( uint( i ) < uint( count ) );
+  /**
+   * Reference to the `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& operator [] ( int i )
+  {
+    hard_assert( uint( i ) < uint( count ) );
 
-      return data[i];
-    }
+    return data[i];
+  }
 
-    /**
-     * Constant reference to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& first() const
-    {
-      hard_assert( count != 0 );
+  /**
+   * Constant reference to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& first() const
+  {
+    hard_assert( count != 0 );
 
-      return data[0];
-    }
+    return data[0];
+  }
 
-    /**
-     * Reference to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& first()
-    {
-      hard_assert( count != 0 );
+  /**
+   * Reference to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& first()
+  {
+    hard_assert( count != 0 );
 
-      return data[0];
-    }
+    return data[0];
+  }
 
-    /**
-     * Constant reference to the last element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& last() const
-    {
-      hard_assert( count != 0 );
+  /**
+   * Constant reference to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& last() const
+  {
+    hard_assert( count != 0 );
 
-      return data[count - 1];
-    }
+    return data[count - 1];
+  }
 
-    /**
-     * Reference to the last element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& last()
-    {
-      hard_assert( count != 0 );
+  /**
+   * Reference to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& last()
+  {
+    hard_assert( count != 0 );
 
-      return data[count - 1];
-    }
+    return data[count - 1];
+  }
 
-    /**
-     * True iff a given value is found in the list.
-     */
-    bool contains( const Elem& e ) const
-    {
-      return aContains<Elem, Elem>( data, count, e );
-    }
+  /**
+   * True iff a given value is found in the list.
+   */
+  bool contains( const Elem& e ) const
+  {
+    return aContains<Elem, Elem>( data, count, e );
+  }
 
-    /**
-     * Index of the first occurrence of the value or -1 if not found.
-     */
-    int index( const Elem& e ) const
-    {
-      return aIndex<Elem, Elem>( data, count, e );
-    }
+  /**
+   * Index of the first occurrence of the value or -1 if not found.
+   */
+  int index( const Elem& e ) const
+  {
+    return aIndex<Elem, Elem>( data, count, e );
+  }
 
-    /**
-     * Index of the last occurrence of the value or -1 if not found.
-     */
-    int lastIndex( const Elem& e ) const
-    {
-      return aLastIndex<Elem, Elem>( data, count, e );
-    }
+  /**
+   * Index of the last occurrence of the value or -1 if not found.
+   */
+  int lastIndex( const Elem& e ) const
+  {
+    return aLastIndex<Elem, Elem>( data, count, e );
+  }
 
-    /**
-     * Add an element to the end.
-     */
-    template <typename Elem_ = Elem>
-    void add( Elem_&& e = Elem() )
-    {
-      pushLast<Elem_>( static_cast<Elem_&&>( e ) );
-    }
+  /**
+   * Add an element to the end.
+   */
+  template <typename Elem_ = Elem>
+  void add( Elem_&& e = Elem() )
+  {
+    pushLast<Elem_>( static_cast<Elem_&&>( e ) );
+  }
 
-    /**
-     * Add (copy) elements from a given array to the end.
-     */
-    void addAll( const Elem* array, int arrayCount )
-    {
-      int newCount = count + arrayCount;
+  /**
+   * Add (copy) elements from a given array to the end.
+   */
+  void addAll( const Elem* array, int arrayCount )
+  {
+    int newCount = count + arrayCount;
 
-      hard_assert( uint( newCount ) <= uint( SIZE ) );
+    hard_assert( uint( newCount ) <= uint( SIZE ) );
 
-      aCopy<Elem>( array, arrayCount, data + count );
-      count = newCount;
-    }
+    aCopy<Elem>( array, arrayCount, data + count );
+    count = newCount;
+  }
 
-    /**
-     * Add (move) elements from a given array to the end.
-     */
-    void takeAll( Elem* array, int arrayCount )
-    {
-      int newCount = count + arrayCount;
+  /**
+   * Add (move) elements from a given array to the end.
+   */
+  void takeAll( Elem* array, int arrayCount )
+  {
+    int newCount = count + arrayCount;
 
-      hard_assert( uint( newCount ) <= uint( SIZE ) );
+    hard_assert( uint( newCount ) <= uint( SIZE ) );
 
-      aMove<Elem>( array, arrayCount, data + count );
-      count = newCount;
-    }
+    aMove<Elem>( array, arrayCount, data + count );
+    count = newCount;
+  }
 
-    /**
-     * Add an element to the end if there is no equal element in the list.
-     *
-     * @return Position of the inserted or the existing equal element.
-     */
-    template <typename Elem_ = Elem>
-    int include( Elem_&& e )
-    {
-      int i = aIndex<Elem, Elem>( data, count, e );
+  /**
+   * Add an element to the end if there is no equal element in the list.
+   *
+   * @return Position of the inserted or the existing equal element.
+   */
+  template <typename Elem_ = Elem>
+  int include( Elem_&& e )
+  {
+    int i = aIndex<Elem, Elem>( data, count, e );
 
-      if( i < 0 ) {
-        hard_assert( uint( count ) < uint( SIZE ) );
-
-        data[count] = static_cast<Elem_&&>( e );
-        i = count;
-        ++count;
-      }
-      return i;
-    }
-
-    /**
-     * Insert an element at a given position.
-     *
-     * All later elements are shifted to make the gap.
-     */
-    template <typename Elem_ = Elem>
-    void insert( int i, Elem_&& e )
-    {
-      hard_assert( uint( i ) <= uint( count ) );
-      hard_assert( uint( count ) < uint( SIZE ) );
-
-      aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
-      data[i] = static_cast<Elem_&&>( e );
-      ++count;
-    }
-
-    /**
-     * Remove the last element.
-     */
-    void erase()
-    {
-      popLast();
-    }
-
-    /**
-     * Remove the element at a given position.
-     *
-     * All later elements are shifted to fill the gap.
-     */
-    void erase( int i )
-    {
-      hard_assert( uint( i ) < uint( count ) );
-
-      --count;
-
-      if( i == count ) {
-        // When removing the last element, no shift is performed, so it is not implicitly destroyed
-        // by the move operation.
-        data[count] = Elem();
-      }
-      else {
-        aMove<Elem>( data + i + 1, count - i, data + i );
-      }
-    }
-
-    /**
-     * Remove the element at a given position from an unordered list.
-     *
-     * The last element is moved to its place.
-     */
-    void eraseUnordered( int i )
-    {
-      hard_assert( uint( i ) < uint( count ) );
-
-      --count;
-
-      if( i == count ) {
-        // When removing the last element, no shift is performed, so it is not implicitly destroyed
-        // by the move operation.
-        data[count] = Elem();
-      }
-      else {
-        data[i] = static_cast<Elem&&>( data[count] );
-      }
-    }
-
-    /**
-     * Find and remove the first element with a given value.
-     *
-     * @return Index of the removed element or -1 if not found.
-     */
-    int exclude( const Elem& e )
-    {
-      int i = aIndex<Elem, Elem>( data, count, e );
-
-      if( i >= 0 ) {
-        erase( i );
-      }
-      return i;
-    }
-
-    /**
-     * Find and remove the first element with a given value from an unordered list.
-     *
-     * The last element is moved to its place.
-     *
-     * @return Index of the removed element or -1 if not found.
-     */
-    int excludeUnordered( const Elem& e )
-    {
-      int i = aIndex<Elem, Elem>( data, count, e );
-
-      if( i >= 0 ) {
-        eraseUnordered( i );
-      }
-      return i;
-    }
-
-    /**
-     * Add an element to the beginning.
-     *
-     * All elements are shifted to make a gap.
-     */
-    template <typename Elem_ = Elem>
-    void pushFirst( Elem_&& e )
-    {
-      hard_assert( uint( count ) < uint( SIZE ) );
-
-      aMoveBackward<Elem>( data, count, data + 1 );
-      data[0] = static_cast<Elem_&&>( e );
-      ++count;
-    }
-
-    /**
-     * Add an element to the end.
-     */
-    template <typename Elem_ = Elem>
-    void pushLast( Elem_&& e )
-    {
+    if( i < 0 ) {
       hard_assert( uint( count ) < uint( SIZE ) );
 
       data[count] = static_cast<Elem_&&>( e );
+      i = count;
       ++count;
     }
+    return i;
+  }
 
-    /**
-     * Remove the first element.
-     *
-     * All elements are shifted to fill the gap.
-     *
-     * @return Value of the removed element.
-     */
-    Elem popFirst()
-    {
-      Elem e = static_cast<Elem&&>( data[0] );
+  /**
+   * Insert an element at a given position.
+   *
+   * All later elements are shifted to make the gap.
+   */
+  template <typename Elem_ = Elem>
+  void insert( int i, Elem_&& e )
+  {
+    hard_assert( uint( i ) <= uint( count ) );
+    hard_assert( uint( count ) < uint( SIZE ) );
 
-      --count;
-      aMove<Elem>( data + 1, count, data );
-      return e;
+    aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
+    data[i] = static_cast<Elem_&&>( e );
+    ++count;
+  }
+
+  /**
+   * Remove the last element.
+   */
+  void erase()
+  {
+    popLast();
+  }
+
+  /**
+   * Remove the element at a given position.
+   *
+   * All later elements are shifted to fill the gap.
+   */
+  void erase( int i )
+  {
+    hard_assert( uint( i ) < uint( count ) );
+
+    --count;
+
+    if( i == count ) {
+      // When removing the last element, no shift is performed, so it is not implicitly destroyed by
+      // the move operation.
+      data[count] = Elem();
     }
-
-    /**
-     * Remove the last element.
-     *
-     * @return Value of the removed element.
-     */
-    Elem popLast()
-    {
-      hard_assert( count != 0 );
-
-      --count;
-      return static_cast<Elem&&>( data[count] );
+    else {
+      aMove<Elem>( data + i + 1, count - i, data + i );
     }
+  }
 
-    /**
-     * Reverse elements.
-     */
-    void reverse()
-    {
-      aReverse<Elem>( data, count );
+  /**
+   * Remove the element at a given position from an unordered list.
+   *
+   * The last element is moved to its place.
+   */
+  void eraseUnordered( int i )
+  {
+    hard_assert( uint( i ) < uint( count ) );
+
+    --count;
+
+    if( i == count ) {
+      // When removing the last element, no shift is performed, so it is not implicitly destroyed by
+      // the move operation.
+      data[count] = Elem();
     }
-
-    /**
-     * Sort elements with quicksort.
-     */
-    void sort()
-    {
-      aSort<Elem>( data, count );
+    else {
+      data[i] = static_cast<Elem&&>( data[count] );
     }
+  }
 
-    /**
-     * Resize the list to the specified number of elements.
-     */
-    void resize( int newCount )
-    {
-      if( newCount > count ) {
-        hard_assert( newCount <= SIZE );
+  /**
+   * Find and remove the first element with a given value.
+   *
+   * @return Index of the removed element or -1 if not found.
+   */
+  int exclude( const Elem& e )
+  {
+    int i = aIndex<Elem, Elem>( data, count, e );
+
+    if( i >= 0 ) {
+      erase( i );
+    }
+    return i;
+  }
+
+  /**
+   * Find and remove the first element with a given value from an unordered list.
+   *
+   * The last element is moved to its place.
+   *
+   * @return Index of the removed element or -1 if not found.
+   */
+  int excludeUnordered( const Elem& e )
+  {
+    int i = aIndex<Elem, Elem>( data, count, e );
+
+    if( i >= 0 ) {
+      eraseUnordered( i );
+    }
+    return i;
+  }
+
+  /**
+   * Add an element to the beginning.
+   *
+   * All elements are shifted to make a gap.
+   */
+  template <typename Elem_ = Elem>
+  void pushFirst( Elem_&& e )
+  {
+    hard_assert( uint( count ) < uint( SIZE ) );
+
+    aMoveBackward<Elem>( data, count, data + 1 );
+    data[0] = static_cast<Elem_&&>( e );
+    ++count;
+  }
+
+  /**
+   * Add an element to the end.
+   */
+  template <typename Elem_ = Elem>
+  void pushLast( Elem_&& e )
+  {
+    hard_assert( uint( count ) < uint( SIZE ) );
+
+    data[count] = static_cast<Elem_&&>( e );
+    ++count;
+  }
+
+  /**
+   * Remove the first element.
+   *
+   * All elements are shifted to fill the gap.
+   *
+   * @return Value of the removed element.
+   */
+  Elem popFirst()
+  {
+    Elem e = static_cast<Elem&&>( data[0] );
+
+    --count;
+    aMove<Elem>( data + 1, count, data );
+    return e;
+  }
+
+  /**
+   * Remove the last element.
+   *
+   * @return Value of the removed element.
+   */
+  Elem popLast()
+  {
+    hard_assert( count != 0 );
+
+    --count;
+    return static_cast<Elem&&>( data[count] );
+  }
+
+  /**
+   * Reverse elements.
+   */
+  void reverse()
+  {
+    aReverse<Elem>( data, count );
+  }
+
+  /**
+   * Sort elements with quicksort.
+   */
+  void sort()
+  {
+    aSort<Elem>( data, count );
+  }
+
+  /**
+   * Resize the list to the specified number of elements.
+   */
+  void resize( int newCount )
+  {
+    if( newCount > count ) {
+      hard_assert( newCount <= SIZE );
+    }
+    else {
+      // Ensure destruction of removed elements.
+      for( int i = newCount; i < count; ++i ) {
+        data[i] = Elem();
       }
-      else {
-        // Ensure destruction of removed elements.
-        for( int i = newCount; i < count; ++i ) {
-          data[i] = Elem();
-        }
-      }
-      count = newCount;
     }
+    count = newCount;
+  }
 
-    /**
-     * Clear the list.
-     */
-    void clear()
-    {
-      // Ensure destruction of all elements.
-      aFill<Elem, Elem>( data, count, Elem() );
-      count = 0;
-    }
+  /**
+   * Clear the list.
+   */
+  void clear()
+  {
+    // Ensure destruction of all elements.
+    aFill<Elem, Elem>( data, count, Elem() );
+    count = 0;
+  }
 
-    /**
-     * Delete all objects referenced by elements (must be pointers) and clear the list.
-     */
-    void free()
-    {
-      aFree<Elem>( data, count );
-      count = 0;
-    }
+  /**
+   * Delete all objects referenced by elements (must be pointers) and clear the list.
+   */
+  void free()
+  {
+    aFree<Elem>( data, count );
+    count = 0;
+  }
 
 };
 

@@ -32,22 +32,22 @@ namespace client
 
 class BSPAudio
 {
-  private:
+private:
 
-    const oz::BSP* bsp;
+  const oz::BSP* bsp;
 
-  private:
+private:
 
-    void playDemolish( const Struct* str, int sound ) const;
-    void playSound( const Entity* entity, int sound ) const;
-    void playContSound( const Entity* entity, int sound ) const;
+  void playDemolish( const Struct* str, int sound ) const;
+  void playSound( const Entity* entity, int sound ) const;
+  void playContSound( const Entity* entity, int sound ) const;
 
-  public:
+public:
 
-    explicit BSPAudio( const oz::BSP* bsp );
-    ~BSPAudio();
+  explicit BSPAudio( const oz::BSP* bsp );
+  ~BSPAudio();
 
-    void play( const Struct* str ) const;
+  void play( const Struct* str ) const;
 
 };
 

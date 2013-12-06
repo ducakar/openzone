@@ -31,39 +31,38 @@ namespace oz
 
 class Dynamic : public Object
 {
-  public:
+public:
 
-    static Pool<Dynamic, 4096> pool; ///< Memory pool.
+  static Pool<Dynamic, 4096> pool; ///< Memory pool.
 
-    Vec3  velocity;
-    Vec3  momentum; ///< Desired velocity
-    Vec3  floor;    ///< Floor normal.
+  Vec3  velocity;
+  Vec3  momentum; ///< Desired velocity
+  Vec3  floor;    ///< Floor normal.
 
-    int   parent;   ///< Index of container object or -1 if object in positioned in the world.
-    int   lower;    ///< Index of structure entity or object below this object, -1 otherwise.
-    float depth;    ///< Depth of object's lower bound when intersecting liquid, 0 otherwise.
+  int   parent;   ///< Index of container object or -1 if object in positioned in the world.
+  int   lower;    ///< Index of structure entity or object below this object, -1 otherwise.
+  float depth;    ///< Depth of object's lower bound when intersecting liquid, 0 otherwise.
 
-    float mass;     ///< Mass.
-    float lift;     ///< Lift / weight (water only, for lava Physics::LAVA_LIFT is used).
+  float mass;     ///< Mass.
+  float lift;     ///< Lift / weight (water only, for lava Physics::LAVA_LIFT is used).
 
-  protected:
+protected:
 
-    void onDestroy() override;
+  void onDestroy() override;
 
-  public:
+public:
 
-    explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
-    explicit Dynamic( const DynamicClass* clazz, InputStream* is );
-    explicit Dynamic( const DynamicClass* clazz, const JSON& json );
+  explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
+  explicit Dynamic( const DynamicClass* clazz, InputStream* is );
+  explicit Dynamic( const DynamicClass* clazz, const JSON& json );
 
-    void write( OutputStream* os ) const override;
-    JSON write() const override;
+  void write( OutputStream* os ) const override;
+  JSON write() const override;
 
-    void readUpdate( InputStream* is ) override;
-    void writeUpdate( OutputStream* os ) const override;
+  void readUpdate( InputStream* is ) override;
+  void writeUpdate( OutputStream* os ) const override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

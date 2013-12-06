@@ -34,33 +34,33 @@ namespace client
 
 class Imago
 {
-  public:
+public:
 
-    typedef Imago* CreateFunc( const Object* object );
+  typedef Imago* CreateFunc( const Object* object );
 
-    static const int UPDATED_BIT  = 0x00000001;
-    static const int MD2MODEL_BIT = 0x00000002;
+  static const int UPDATED_BIT  = 0x00000001;
+  static const int MD2MODEL_BIT = 0x00000002;
 
-  protected:
+protected:
 
-    const Object*      obj;
-    const ObjectClass* clazz;
+  const Object*      obj;
+  const ObjectClass* clazz;
 
-  public:
+public:
 
-    int flags;
+  int flags;
 
-  protected:
+protected:
 
-    explicit Imago( const Object* obj_ ) :
-      obj( obj_ ), clazz( obj_->clazz ), flags( 0 )
-    {}
+  explicit Imago( const Object* obj_ ) :
+    obj( obj_ ), clazz( obj_->clazz ), flags( 0 )
+  {}
 
-  public:
+public:
 
-    virtual ~Imago();
+  virtual ~Imago();
 
-    virtual void draw( const Imago* parent ) = 0;
+  virtual void draw( const Imago* parent ) = 0;
 
 };
 

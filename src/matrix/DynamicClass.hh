@@ -30,20 +30,20 @@ namespace oz
 
 class DynamicClass : public ObjectClass
 {
-  public:
+public:
 
-    float mass;
-    float lift;
+  float mass;
+  float lift;
 
-  public:
+public:
 
-    static ObjectClass* createClass();
+  static ObjectClass* createClass();
 
-    void init( const JSON& config, const char* name ) override;
+  void init( const JSON& config, const char* name ) override;
 
-    Object* create( int index, const Point& pos, Heading heading ) const override;
-    Object* create( InputStream* is ) const override;
-    Object* create( const JSON& json ) const override;
+  Object* create( int index, const Point& pos, Heading heading ) const override;
+  Object* create( InputStream* is ) const override;
+  Object* create( const JSON& json ) const override;
 
 };
 

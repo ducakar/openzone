@@ -35,40 +35,40 @@ namespace oz
 
 class Shape
 {
-  public:
+public:
 
-    /// Margin used for calculation of axis-aligned bounding boxes.
-    static constexpr float MARGIN = 0.01f;
+  /// Margin used for calculation of axis-aligned bounding boxes.
+  static constexpr float MARGIN = 0.01f;
 
-    /**
-     * Shape types.
-     */
-    enum Type
-    {
-      BOX,
-      CAPSULE,
-      POLYTOPE,
-      COMPOUND
-    };
+  /**
+   * Shape types.
+   */
+  enum Type
+  {
+    BOX,
+    CAPSULE,
+    POLYTOPE,
+    COMPOUND
+  };
 
-  public:
+public:
 
-    Type type;   ///< Shape type.
-    int  nUsers; ///< Reference counter.
+  Type type;   ///< Shape type.
+  int  nUsers; ///< Reference counter.
 
-  public:
+public:
 
-    OZ_ALWAYS_INLINE
-    explicit Shape( Type type_ ) :
-      type( type_ ), nUsers( 0 )
-    {}
+  OZ_ALWAYS_INLINE
+  explicit Shape( Type type_ ) :
+    type( type_ ), nUsers( 0 )
+  {}
 
-    virtual ~Shape();
+  virtual ~Shape();
 
-    /**
-     * Calculate axis-aligned bounding box for the shape in absolute coordinates.
-     */
-    virtual Bounds getBounds( const Point& pos, const Mat33& rot ) const = 0;
+  /**
+   * Calculate axis-aligned bounding box for the shape in absolute coordinates.
+   */
+  virtual Bounds getBounds( const Point& pos, const Mat33& rot ) const = 0;
 
 };
 

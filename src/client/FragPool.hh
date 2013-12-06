@@ -34,28 +34,28 @@ class SMM;
 
 class FragPool
 {
-  public:
+public:
 
-    static const int   UPDATED_BIT = 0x01;
-    static const int   FADEOUT_BIT = oz::FragPool::FADEOUT_BIT;
-    static const float FRAG_RADIUS;
+  static const int   UPDATED_BIT = 0x01;
+  static const int   FADEOUT_BIT = oz::FragPool::FADEOUT_BIT;
+  static const float FRAG_RADIUS;
 
-  private:
+private:
 
-    const oz::FragPool* pool;
+  const oz::FragPool* pool;
 
-    List<SMM*> models;
+  List<SMM*> models;
 
-  public:
+public:
 
-    int flags;
+  int flags;
 
-  public:
+public:
 
-    explicit FragPool( const oz::FragPool* pool );
-    ~FragPool();
+  explicit FragPool( const oz::FragPool* pool );
+  ~FragPool();
 
-    void draw( const Frag* frag );
+  void draw( const Frag* frag );
 
 };
 

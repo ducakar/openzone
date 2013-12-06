@@ -34,39 +34,39 @@ namespace client
 
 class Audio
 {
-  public:
+public:
 
-    static const int UPDATED_BIT = 0x00000001;
+  static const int UPDATED_BIT = 0x00000001;
 
-    static const float REFERENCE_DISTANCE;
-    static const float ROLLOFF_FACTOR;
-    static const float COCKPIT_GAIN_FACTOR;
-    static const float COCKPIT_PITCH_FACTOR;
+  static const float REFERENCE_DISTANCE;
+  static const float ROLLOFF_FACTOR;
+  static const float COCKPIT_GAIN_FACTOR;
+  static const float COCKPIT_PITCH_FACTOR;
 
-  public:
+public:
 
-    typedef Audio* CreateFunc( const Object* object );
+  typedef Audio* CreateFunc( const Object* object );
 
-  protected:
+protected:
 
-    // obj: source object of the effect, parent: object at which the effect is played
-    // obj != parent: e.g. an object obj in the inventory of bot parent plays a sound
-    void playSound( int sound, float volume, const Object* parent ) const;
-    void playContSound( int sound, float volume, const Object* parent ) const;
-    bool playSpeak( const char* text, float volume, const Object* parent ) const;
-    void playEngineSound( int sound, float volume, float pitch ) const;
+  // obj: source object of the effect, parent: object at which the effect is played
+  // obj != parent: e.g. an object obj in the inventory of bot parent plays a sound
+  void playSound( int sound, float volume, const Object* parent ) const;
+  void playContSound( int sound, float volume, const Object* parent ) const;
+  bool playSpeak( const char* text, float volume, const Object* parent ) const;
+  void playEngineSound( int sound, float volume, float pitch ) const;
 
-    explicit Audio( const Object* obj );
+  explicit Audio( const Object* obj );
 
-  public:
+public:
 
-    const Object*      obj;
-    const ObjectClass* clazz;
-    int                flags;
+  const Object*      obj;
+  const ObjectClass* clazz;
+  int                flags;
 
-    virtual ~Audio();
+  virtual ~Audio();
 
-    virtual void play( const Object* playAt ) = 0;
+  virtual void play( const Object* playAt ) = 0;
 
 };
 

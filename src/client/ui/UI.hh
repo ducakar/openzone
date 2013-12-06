@@ -48,43 +48,43 @@ class DebugFrame;
 
 class UI
 {
-  private:
+private:
 
-    float          fps;
-    Label*         fpsLabel;
+  float          fps;
+  Label*         fpsLabel;
 
-    bool           isFreelook;
-    bool           showFPS;
-    bool           showDebug;
+  bool           isFreelook;
+  bool           showFPS;
+  bool           showDebug;
 
-  public:
+public:
 
-    bool           doShow;
+  bool           doShow;
 
-    Area*          root;
-    LoadingArea*   loadingScreen;
-    HudArea*       hudArea;
-    StrategicArea* strategicArea;
-    QuestFrame*    questFrame;
-    GalileoFrame*  galileoFrame;
-    MusicPlayer*   musicPlayer;
-    Inventory*     inventory;
-    InfoFrame*     infoFrame;
-    BuildFrame*    buildFrame;
-    DebugFrame*    debugFrame;
+  Area*          root;
+  LoadingArea*   loadingScreen;
+  HudArea*       hudArea;
+  StrategicArea* strategicArea;
+  QuestFrame*    questFrame;
+  GalileoFrame*  galileoFrame;
+  MusicPlayer*   musicPlayer;
+  Inventory*     inventory;
+  InfoFrame*     infoFrame;
+  BuildFrame*    buildFrame;
+  DebugFrame*    debugFrame;
 
-    explicit UI();
+  explicit UI();
 
-    void showLoadingScreen( bool doShow );
+  void showLoadingScreen( bool doShow );
 
-    void update();
-    void draw();
+  void update();
+  void draw();
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

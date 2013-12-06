@@ -32,120 +32,120 @@ namespace client
 
 class Render
 {
-  public:
+public:
 
-    static const int DRAW_UI_BIT    = 0x01;
-    static const int DRAW_ORBIS_BIT = 0x02;
+  static const int DRAW_UI_BIT    = 0x01;
+  static const int DRAW_ORBIS_BIT = 0x02;
 
-  private:
+private:
 
-    static const float WIDE_CULL_FACTOR;
-    static const float OBJECT_VISIBILITY_COEF;
-    static const float FRAG_VISIBILITY_RANGE2;
-    static const float CELL_RADIUS;
-    static const float EFFECTS_DISTANCE;
+  static const float WIDE_CULL_FACTOR;
+  static const float OBJECT_VISIBILITY_COEF;
+  static const float FRAG_VISIBILITY_RANGE2;
+  static const float CELL_RADIUS;
+  static const float EFFECTS_DISTANCE;
 
-    static const float NIGHT_FOG_COEFF;
-    static const float NIGHT_FOG_DIST;
-    static const float WATER_VISIBILITY;
-    static const float LAVA_VISIBILITY;
+  static const float NIGHT_FOG_COEFF;
+  static const float NIGHT_FOG_DIST;
+  static const float WATER_VISIBILITY;
+  static const float LAVA_VISIBILITY;
 
-    static const float WIND_FACTOR;
-    static const float WIND_PHI_INC;
+  static const float WIND_FACTOR;
+  static const float WIND_PHI_INC;
 
-    static const int   GLOW_MINIFICATION;
+  static const int   GLOW_MINIFICATION;
 
-    static const Vec4  STRUCT_AABB;
-    static const Vec4  ENTITY_AABB;
-    static const Vec4  SOLID_AABB;
-    static const Vec4  NONSOLID_AABB;
+  static const Vec4  STRUCT_AABB;
+  static const Vec4  ENTITY_AABB;
+  static const Vec4  SOLID_AABB;
+  static const Vec4  NONSOLID_AABB;
 
-    struct DrawEntry;
-    struct Effect;
+  struct DrawEntry;
+  struct Effect;
 
-    SBitset<Orbis::MAX_STRUCTS> drawnStructs;
+  SBitset<Orbis::MAX_STRUCTS> drawnStructs;
 
-    List<DrawEntry>             structs;
-    List<DrawEntry>             objects;
+  List<DrawEntry>             structs;
+  List<DrawEntry>             objects;
 
-    float                       visibilityRange;
-    float                       visibility;
+  float                       visibilityRange;
+  float                       visibility;
 
-    bool                        showBounds;
-    bool                        showAim;
+  bool                        showBounds;
+  bool                        showAim;
 
-    bool                        isOffscreen;
+  bool                        isOffscreen;
 
-    float                       windPhi;
+  float                       windPhi;
 
-    int                         windowWidth;
-    int                         windowHeight;
-    int                         frameWidth;
-    int                         frameHeight;
-    float                       scale;
-    uint                        scaleFilter;
+  int                         windowWidth;
+  int                         windowHeight;
+  int                         frameWidth;
+  int                         frameHeight;
+  float                       scale;
+  uint                        scaleFilter;
 
-    uint                        mainFrame;
+  uint                        mainFrame;
 #ifndef GL_ES_VERSION_2_0
-    uint                        minGlowFrame;
+  uint                        minGlowFrame;
 #endif
-    uint                        depthBuffer;
-    uint                        colourBuffer;
+  uint                        depthBuffer;
+  uint                        colourBuffer;
 #ifndef GL_ES_VERSION_2_0
-    uint                        glowBuffer;
-    uint                        minGlowBuffer;
+  uint                        glowBuffer;
+  uint                        minGlowBuffer;
 #endif
 
-    List<Effect>                effects;
+  List<Effect>                effects;
 
-    Thread                      effectsThread;
+  Thread                      effectsThread;
 
-    Semaphore                   effectsMainSemaphore;
-    Semaphore                   effectsAuxSemaphore;
+  Semaphore                   effectsMainSemaphore;
+  Semaphore                   effectsAuxSemaphore;
 
-    volatile bool               areEffectsAlive;
+  volatile bool               areEffectsAlive;
 
-  public:
+public:
 
-    ulong64                     prepareMicros;
-    ulong64                     caelumMicros;
-    ulong64                     terraMicros;
-    ulong64                     meshesMicros;
-    ulong64                     miscMicros;
-    ulong64                     postprocessMicros;
-    ulong64                     uiMicros;
-    ulong64                     swapMicros;
+  ulong64                     prepareMicros;
+  ulong64                     caelumMicros;
+  ulong64                     terraMicros;
+  ulong64                     meshesMicros;
+  ulong64                     miscMicros;
+  ulong64                     postprocessMicros;
+  ulong64                     uiMicros;
+  ulong64                     swapMicros;
 
-  private:
+private:
 
-    static void effectsMain( void* );
+  static void effectsMain( void* );
 
-    void cellEffects( int cellX, int cellY );
-    void effectsRun();
+  void cellEffects( int cellX, int cellY );
+  void effectsRun();
 
-    void scheduleCell( int cellX, int cellY );
-    void prepareDraw();
-    void drawGeometry();
+  void scheduleCell( int cellX, int cellY );
+  void prepareDraw();
+  void drawGeometry();
 
-    void drawUI();
-    void drawOrbis();
-    void swap();
+  void drawUI();
+  void drawOrbis();
+  void swap();
 
-  public:
+public:
 
-    void update( int flags );
-    void resize();
+  void update( int flags );
+  void resize();
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 #ifdef OZ_DYNAMICS
-    void drawDyn();
-    void loadDyn();
-    void unloadDyn();
+  void drawDyn();
+  void loadDyn();
+  void unloadDyn();
 #endif
 
 };

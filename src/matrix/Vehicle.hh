@@ -31,94 +31,93 @@ namespace oz
 
 class Vehicle : public Dynamic
 {
-  public:
+public:
 
-    static const int   MAX_WEAPONS       = 4;
+  static const int   MAX_WEAPONS       = 4;
 
-    // not in use, used to reserve a slot for engine sound sample
-    static const int   EVENT_ENGINE      = 9;
-    static const int   EVENT_SHOT0       = 10;
-    static const int   EVENT_SHOT1       = 11;
-    static const int   EVENT_SHOT2       = 12;
-    static const int   EVENT_SHOT3       = 13;
-    static const int   EVENT_SHOT_EMPTY  = 14;
+  // not in use, used to reserve a slot for engine sound sample
+  static const int   EVENT_ENGINE      = 9;
+  static const int   EVENT_SHOT0       = 10;
+  static const int   EVENT_SHOT1       = 11;
+  static const int   EVENT_SHOT2       = 12;
+  static const int   EVENT_SHOT3       = 13;
+  static const int   EVENT_SHOT_EMPTY  = 14;
 
-    static const int   CREW_VISIBLE_BIT  = 0x0001;
-    static const int   HAS_EJECT_BIT     = 0x0004;
-    static const int   AUTO_EJECT_BIT    = 0x0008;
+  static const int   CREW_VISIBLE_BIT  = 0x0001;
+  static const int   HAS_EJECT_BIT     = 0x0004;
+  static const int   AUTO_EJECT_BIT    = 0x0008;
 
-    static const int   MOVING_BIT        = 0x0010;
-    static const int   WALKING_BIT       = 0x0020;
+  static const int   MOVING_BIT        = 0x0010;
+  static const int   WALKING_BIT       = 0x0020;
 
-  private:
+private:
 
-    static const float ROT_DIFF_LIMIT;
-    static const float ROT_VEL_DIFF_RATIO;
-    static const float AIR_FRICTION;
-    static const float EXIT_EPSILON;
-    static const float EXIT_MOMENTUM;
-    static const float EJECT_EPSILON;
-    static const float EJECT_MOMENTUM;
+  static const float ROT_DIFF_LIMIT;
+  static const float ROT_VEL_DIFF_RATIO;
+  static const float AIR_FRICTION;
+  static const float EXIT_EPSILON;
+  static const float EXIT_MOMENTUM;
+  static const float EJECT_EPSILON;
+  static const float EJECT_MOMENTUM;
 
-    typedef void ( Vehicle::* Handler )();
+  typedef void ( Vehicle::* Handler )();
 
-    static const Handler HANDLERS[];
+  static const Handler HANDLERS[];
 
-  public:
+public:
 
-    static Pool<Vehicle, 256> pool;
+  static Pool<Vehicle, 256> pool;
 
-    float h, v, w;
-    float rotVelH, rotVelV;
-    int   actions, oldActions;
+  float h, v, w;
+  float rotVelH, rotVelV;
+  int   actions, oldActions;
 
-    Mat44 rot;
-    int   state, oldState;
-    float fuel;
+  Mat44 rot;
+  int   state, oldState;
+  float fuel;
 
-    float step;
-    float stairRate;
+  float step;
+  float stairRate;
 
-    int   pilot;
+  int   pilot;
 
-    int   weapon;
-    int   nRounds[MAX_WEAPONS];
-    float shotTime[MAX_WEAPONS];
+  int   weapon;
+  int   nRounds[MAX_WEAPONS];
+  float shotTime[MAX_WEAPONS];
 
-  public:
+public:
 
-    void exit();
-    void eject();
-    void service();
+  void exit();
+  void eject();
+  void service();
 
-    void staticHandler();
-    void wheeledHandler();
-    void trackedHandler();
-    void mechHandler();
-    void hoverHandler();
-    void airHandler();
+  void staticHandler();
+  void wheeledHandler();
+  void trackedHandler();
+  void mechHandler();
+  void hoverHandler();
+  void airHandler();
 
-  protected:
+protected:
 
-    void onDestroy() override;
-    bool onUse( Bot* user ) override;
-    void onUpdate() override;
-    float getStatus() const override;
+  void onDestroy() override;
+  bool onUse( Bot* user ) override;
+  void onUpdate() override;
+  float getStatus() const override;
 
-  public:
+public:
 
-    explicit Vehicle( const VehicleClass* clazz, int index, const Point& p, Heading heading );
-    explicit Vehicle( const VehicleClass* clazz, InputStream* is );
-    explicit Vehicle( const VehicleClass* clazz, const JSON& json );
+  explicit Vehicle( const VehicleClass* clazz, int index, const Point& p, Heading heading );
+  explicit Vehicle( const VehicleClass* clazz, InputStream* is );
+  explicit Vehicle( const VehicleClass* clazz, const JSON& json );
 
-    void write( OutputStream* os ) const override;
-    JSON write() const override;
+  void write( OutputStream* os ) const override;
+  JSON write() const override;
 
-    void readUpdate( InputStream* is ) override;
-    void writeUpdate( OutputStream* os ) const override;
+  void readUpdate( InputStream* is ) override;
+  void writeUpdate( OutputStream* os ) const override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

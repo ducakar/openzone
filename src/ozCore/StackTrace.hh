@@ -41,34 +41,34 @@ namespace oz
  */
 class StackTrace
 {
-  public:
+public:
 
-    /// Maximum number of stack frames.
-    static const int MAX_FRAMES = 32;
+  /// Maximum number of stack frames.
+  static const int MAX_FRAMES = 32;
 
-    /// Maximum length for a thread name.
-    static const int NAME_LENGTH = 15;
+  /// Maximum length for a thread name.
+  static const int NAME_LENGTH = 15;
 
-    char  threadName[NAME_LENGTH + 1]; ///< Current thread name (if started via `Thread::start()`).
-    int   nFrames;                     ///< Number of stack frames.
-    void* frames[MAX_FRAMES];          ///< Pointers to stack frames.
+  char  threadName[NAME_LENGTH + 1]; ///< Current thread name (if started via `Thread::start()`).
+  int   nFrames;                     ///< Number of stack frames.
+  void* frames[MAX_FRAMES];          ///< Pointers to stack frames.
 
-  public:
+public:
 
-    /**
-     * Generate `StackTrace` class containing data about the current stack and thread.
-     *
-     * @param nSkippedFrames number of stack frames to skip (must be >= 0).
-     */
-    static StackTrace current( int nSkippedFrames );
+  /**
+   * Generate `StackTrace` class containing data about the current stack and thread.
+   *
+   * @param nSkippedFrames number of stack frames to skip (must be >= 0).
+   */
+  static StackTrace current( int nSkippedFrames );
 
-    /**
-     * Return string table for stack frames.
-     *
-     * Beginning of the returned table contains pointers to string entries in stack trace, same as
-     * with `backtrace_symbols()` call from glibc. The table must be freed by caller with `free()`.
-     */
-    char** symbols() const;
+  /**
+   * Return string table for stack frames.
+   *
+   * Beginning of the returned table contains pointers to string entries in stack trace, same as
+   * with `backtrace_symbols()` call from glibc. The table must be freed by caller with `free()`.
+   */
+  char** symbols() const;
 
 };
 

@@ -35,19 +35,19 @@ namespace ui
 
 class TalkFrame : public Frame
 {
-  private:
+private:
 
-    Text  text;
-    Label answers[8];
+  Text  text;
+  Label answers[8];
 
-  protected:
+protected:
 
-    bool onMouseEvent() override;
-    void onDraw() override;
+  bool onMouseEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit TalkFrame();
+  explicit TalkFrame();
 
 };
 

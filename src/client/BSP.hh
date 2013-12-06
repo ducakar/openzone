@@ -32,40 +32,40 @@ namespace client
 
 class BSP
 {
-  private:
+private:
 
-    const oz::BSP* bsp;
-    Model          model;
+  const oz::BSP* bsp;
+  Model          model;
 
-  public:
+public:
 
-    Vec4 waterFogColour;
-    Vec4 lavaFogColour;
+  Vec4 waterFogColour;
+  Vec4 lavaFogColour;
 
-  public:
+public:
 
-    explicit BSP( const oz::BSP* bsp );
-    ~BSP();
+  explicit BSP( const oz::BSP* bsp );
+  ~BSP();
 
-    Vec3 dim() const
-    {
-      return model.dim;
-    }
+  Vec3 dim() const
+  {
+    return model.dim;
+  }
 
-    bool isPreloaded() const
-    {
-      return model.isPreloaded();
-    }
+  bool isPreloaded() const
+  {
+    return model.isPreloaded();
+  }
 
-    bool isLoaded() const
-    {
-      return model.isLoaded();
-    }
+  bool isLoaded() const
+  {
+    return model.isLoaded();
+  }
 
-    void schedule( const Struct* str, Model::QueueType queue );
+  void schedule( const Struct* str, Model::QueueType queue );
 
-    void preload();
-    void load();
+  void preload();
+  void load();
 
 };
 

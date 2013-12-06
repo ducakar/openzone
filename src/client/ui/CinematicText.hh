@@ -35,20 +35,20 @@ namespace ui
 
 class CinematicText : public Area
 {
-  private:
+private:
 
-    Text text;
+  Text text;
 
-  protected:
+protected:
 
-    void onReposition() override;
-    void onDraw() override;
+  void onReposition() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit CinematicText();
+  explicit CinematicText();
 
-    void set( const char* title );
+  void set( const char* title );
 
 };
 

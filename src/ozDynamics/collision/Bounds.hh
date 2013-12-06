@@ -38,267 +38,267 @@ namespace oz
  */
 class Bounds
 {
-  public:
+public:
 
-    Point mins; ///< Minimums.
-    Point maxs; ///< Maximums.
+  Point mins; ///< Minimums.
+  Point maxs; ///< Maximums.
 
-  public:
+public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Bounds() = default;
+  /**
+   * Create uninitialised instance.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds() = default;
 
-    /**
-     * Create from a given minimal and maximal point.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Bounds( const Point& mins_, const Point& maxs_ ) :
-      mins( mins_ ), maxs( maxs_ )
-    {}
+  /**
+   * Create from a given minimal and maximal point.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds( const Point& mins_, const Point& maxs_ ) :
+    mins( mins_ ), maxs( maxs_ )
+  {}
 
-    /**
-     * Create `Bounds` enlarged for a given margin `eps`.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Bounds( const Bounds& b, float eps ) :
-      mins( b.mins - Vec3( eps, eps, eps ) ), maxs( b.maxs + Vec3( eps, eps, eps ) )
-    {}
+  /**
+   * Create `Bounds` enlarged for a given margin `eps`.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds( const Bounds& b, float eps ) :
+    mins( b.mins - Vec3( eps, eps, eps ) ), maxs( b.maxs + Vec3( eps, eps, eps ) )
+  {}
 
-    /**
-     * Create `Bounds` that describes the same set as the given `AABB`.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Bounds( const AABB& a, float eps = 0.0f )
-    {
-      Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
+  /**
+   * Create `Bounds` that describes the same set as the given `AABB`.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds( const AABB& a, float eps = 0.0f )
+  {
+    Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
 
-      mins = a.p - epsDim;
-      maxs = a.p + epsDim;
+    mins = a.p - epsDim;
+    maxs = a.p + epsDim;
+  }
+
+  /**
+   * Create `Bounds` that cover the trace described by the given point move.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds( const Point& p, const Vec3& move, float eps = 0.0f )
+  {
+    Vec3 epsDim = Vec3( eps, eps, eps );
+
+    mins = p - epsDim;
+    maxs = p + epsDim;
+
+    if( move.x < 0.0f ) {
+      mins.x += move.x;
     }
-
-    /**
-     * Create `Bounds` that cover the trace described by the given point move.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Bounds( const Point& p, const Vec3& move, float eps = 0.0f )
-    {
-      Vec3 epsDim = Vec3( eps, eps, eps );
-
-      mins = p - epsDim;
-      maxs = p + epsDim;
-
-      if( move.x < 0.0f ) {
-        mins.x += move.x;
-      }
-      else {
-        maxs.x += move.x;
-      }
-      if( move.y < 0.0f ) {
-        mins.y += move.y;
-      }
-      else {
-        maxs.y += move.y;
-      }
-      if( move.z < 0.0f ) {
-        mins.z += move.z;
-      }
-      else {
-        maxs.z += move.z;
-      }
+    else {
+      maxs.x += move.x;
     }
-
-    /**
-     * Create `Bounds` that cover the trace described by the given `AABB` move.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Bounds( const AABB& a, const Vec3& move, float eps = 0.0f )
-    {
-      Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
-
-      mins = a.p - epsDim;
-      maxs = a.p + epsDim;
-
-      if( move.x < 0.0f ) {
-        mins.x += move.x;
-      }
-      else {
-        maxs.x += move.x;
-      }
-      if( move.y < 0.0f ) {
-        mins.y += move.y;
-      }
-      else {
-        maxs.y += move.y;
-      }
-      if( move.z < 0.0f ) {
-        mins.z += move.z;
-      }
-      else {
-        maxs.z += move.z;
-      }
+    if( move.y < 0.0f ) {
+      mins.y += move.y;
     }
-
-    /**
-     * Compute centre point.
-     */
-    Point p() const
-    {
-      return Math::mix<Point>( mins, maxs, 0.5f );
+    else {
+      maxs.y += move.y;
     }
-
-    /**
-     * Compute extents from centre (same as `dim` member in `AABB`).
-     */
-    Vec3 dim( float eps = 0.0f ) const
-    {
-      return 0.5f * ( maxs - mins ) + Vec3( eps, eps, eps );
+    if( move.z < 0.0f ) {
+      mins.z += move.z;
     }
-
-    /**
-     * Create `AABB` that describes the same set as this `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    AABB toAABB( float eps = 0.0f ) const
-    {
-      return AABB( p(), dim( eps ) );
+    else {
+      maxs.z += move.z;
     }
+  }
 
-    /**
-     * Translated `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    Bounds operator + ( const Vec3& v ) const
-    {
-      return Bounds( mins + v, maxs + v );
+  /**
+   * Create `Bounds` that cover the trace described by the given `AABB` move.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds( const AABB& a, const Vec3& move, float eps = 0.0f )
+  {
+    Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
+
+    mins = a.p - epsDim;
+    maxs = a.p + epsDim;
+
+    if( move.x < 0.0f ) {
+      mins.x += move.x;
     }
-
-    /**
-     * Translated `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    Bounds operator - ( const Vec3& v ) const
-    {
-      return Bounds( mins - v, maxs - v );
+    else {
+      maxs.x += move.x;
     }
-
-    /**
-     * `Bounds` that covers union of two `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    Bounds operator | ( const Bounds& b ) const
-    {
-      return Bounds( min( mins, b.mins ), max( maxs, b.maxs ) );
+    if( move.y < 0.0f ) {
+      mins.y += move.y;
     }
-
-    /**
-     * Translate `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    Bounds& operator += ( const Vec3& v )
-    {
-      mins += v;
-      maxs += v;
-      return *this;
+    else {
+      maxs.y += move.y;
     }
-
-    /**
-     * Translate `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    Bounds& operator -= ( const Vec3& v )
-    {
-      mins -= v;
-      maxs -= v;
-      return *this;
+    if( move.z < 0.0f ) {
+      mins.z += move.z;
     }
-
-    /**
-     * Extend `Bounds` to cover union of both `Bounds`.
-     */
-    OZ_ALWAYS_INLINE
-    Bounds& operator |= ( const Bounds& b )
-    {
-      mins = min( mins, b.mins );
-      maxs = max( maxs, b.maxs );
-      return *this;
+    else {
+      maxs.z += move.z;
     }
+  }
 
-    /**
-     * True iff a given point is inside this `Bounds`.
-     *
-     * @param p point.
-     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool includes( const Point& p, float eps = 0.0f ) const
-    {
-      return mins.x - eps <= p.x && p.x <= maxs.x + eps &&
-             mins.y - eps <= p.y && p.y <= maxs.y + eps &&
-             mins.z - eps <= p.z && p.z <= maxs.z + eps;
-    }
+  /**
+   * Compute centre point.
+   */
+  Point p() const
+  {
+    return Math::mix<Point>( mins, maxs, 0.5f );
+  }
 
-    /**
-     * True iff a given `AABB` is inside this `Bounds`.
-     *
-     * @param a AABB.
-     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool includes( const AABB& a, float eps = 0.0f ) const
-    {
-      Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
+  /**
+   * Compute extents from centre (same as `dim` member in `AABB`).
+   */
+  Vec3 dim( float eps = 0.0f ) const
+  {
+    return 0.5f * ( maxs - mins ) + Vec3( eps, eps, eps );
+  }
 
-      return mins.x <= a.p.x - epsDim.x && a.p.x + epsDim.x <= maxs.x &&
-             mins.y <= a.p.y - epsDim.y && a.p.y + epsDim.y <= maxs.y &&
-             mins.z <= a.p.z - epsDim.z && a.p.z + epsDim.z <= maxs.z;
-    }
+  /**
+   * Create `AABB` that describes the same set as this `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  AABB toAABB( float eps = 0.0f ) const
+  {
+    return AABB( p(), dim( eps ) );
+  }
 
-    /**
-     * True iff a given `AABB` overlaps with this `Bounds`.
-     *
-     * @param a AABB.
-     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool overlaps( const AABB& a, float eps = 0.0f ) const
-    {
-      Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
+  /**
+   * Translated `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  Bounds operator + ( const Vec3& v ) const
+  {
+    return Bounds( mins + v, maxs + v );
+  }
 
-      return mins.x <= a.p.x + epsDim.x && a.p.x - epsDim.x <= maxs.x &&
-             mins.y <= a.p.y + epsDim.y && a.p.y - epsDim.y <= maxs.y &&
-             mins.z <= a.p.z + epsDim.z && a.p.z - epsDim.z <= maxs.z;
-    }
+  /**
+   * Translated `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  Bounds operator - ( const Vec3& v ) const
+  {
+    return Bounds( mins - v, maxs - v );
+  }
 
-    /**
-     * True iff a given `Bounds` is inside this `Bounds`.
-     *
-     * @param b other `Bounds`.
-     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool includes( const Bounds& b, float eps = 0.0f ) const
-    {
-      return mins.x - eps <= b.mins.x && b.maxs.x <= maxs.x + eps &&
-             mins.y - eps <= b.mins.y && b.maxs.y <= maxs.y + eps &&
-             mins.z - eps <= b.mins.z && b.maxs.z <= maxs.z + eps;
-    }
+  /**
+   * `Bounds` that covers union of two `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  Bounds operator | ( const Bounds& b ) const
+  {
+    return Bounds( min( mins, b.mins ), max( maxs, b.maxs ) );
+  }
 
-    /**
-     * True iff a given `Bounds` overlaps with this `Bounds`.
-     *
-     * @param b other `Bounds`.
-     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool overlaps( const Bounds& b, float eps = 0.0f ) const
-    {
-      return mins.x - eps <= b.maxs.x && b.mins.x <= maxs.x + eps &&
-             mins.y - eps <= b.maxs.y && b.mins.y <= maxs.y + eps &&
-             mins.z - eps <= b.maxs.z && b.mins.z <= maxs.z + eps;
-    }
+  /**
+   * Translate `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  Bounds& operator += ( const Vec3& v )
+  {
+    mins += v;
+    maxs += v;
+    return *this;
+  }
+
+  /**
+   * Translate `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  Bounds& operator -= ( const Vec3& v )
+  {
+    mins -= v;
+    maxs -= v;
+    return *this;
+  }
+
+  /**
+   * Extend `Bounds` to cover union of both `Bounds`.
+   */
+  OZ_ALWAYS_INLINE
+  Bounds& operator |= ( const Bounds& b )
+  {
+    mins = min( mins, b.mins );
+    maxs = max( maxs, b.maxs );
+    return *this;
+  }
+
+  /**
+   * True iff a given point is inside this `Bounds`.
+   *
+   * @param p point.
+   * @param eps margin for which this `Bounds` are enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool includes( const Point& p, float eps = 0.0f ) const
+  {
+    return mins.x - eps <= p.x && p.x <= maxs.x + eps &&
+           mins.y - eps <= p.y && p.y <= maxs.y + eps &&
+           mins.z - eps <= p.z && p.z <= maxs.z + eps;
+  }
+
+  /**
+   * True iff a given `AABB` is inside this `Bounds`.
+   *
+   * @param a AABB.
+   * @param eps margin for which this `Bounds` are enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool includes( const AABB& a, float eps = 0.0f ) const
+  {
+    Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
+
+    return mins.x <= a.p.x - epsDim.x && a.p.x + epsDim.x <= maxs.x &&
+           mins.y <= a.p.y - epsDim.y && a.p.y + epsDim.y <= maxs.y &&
+           mins.z <= a.p.z - epsDim.z && a.p.z + epsDim.z <= maxs.z;
+  }
+
+  /**
+   * True iff a given `AABB` overlaps with this `Bounds`.
+   *
+   * @param a AABB.
+   * @param eps margin for which this `Bounds` are enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool overlaps( const AABB& a, float eps = 0.0f ) const
+  {
+    Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
+
+    return mins.x <= a.p.x + epsDim.x && a.p.x - epsDim.x <= maxs.x &&
+           mins.y <= a.p.y + epsDim.y && a.p.y - epsDim.y <= maxs.y &&
+           mins.z <= a.p.z + epsDim.z && a.p.z - epsDim.z <= maxs.z;
+  }
+
+  /**
+   * True iff a given `Bounds` is inside this `Bounds`.
+   *
+   * @param b other `Bounds`.
+   * @param eps margin for which this `Bounds` are enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool includes( const Bounds& b, float eps = 0.0f ) const
+  {
+    return mins.x - eps <= b.mins.x && b.maxs.x <= maxs.x + eps &&
+           mins.y - eps <= b.mins.y && b.maxs.y <= maxs.y + eps &&
+           mins.z - eps <= b.mins.z && b.maxs.z <= maxs.z + eps;
+  }
+
+  /**
+   * True iff a given `Bounds` overlaps with this `Bounds`.
+   *
+   * @param b other `Bounds`.
+   * @param eps margin for which this `Bounds` are enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool overlaps( const Bounds& b, float eps = 0.0f ) const
+  {
+    return mins.x - eps <= b.maxs.x && b.mins.x <= maxs.x + eps &&
+           mins.y - eps <= b.maxs.y && b.mins.y <= maxs.y + eps &&
+           mins.z - eps <= b.maxs.z && b.mins.z <= maxs.z + eps;
+  }
 
 };
 

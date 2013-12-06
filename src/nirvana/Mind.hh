@@ -30,30 +30,30 @@ namespace oz
 
 class Mind
 {
-  public:
+public:
 
-    static const int FORCE_UPDATE_BIT = 0x00000001;
+  static const int FORCE_UPDATE_BIT = 0x00000001;
 
-    Mind* prev[1];
-    Mind* next[1];
+  Mind* prev[1];
+  Mind* next[1];
 
-    int bot;
-    int flags;
-    int side;
+  int bot;
+  int flags;
+  int side;
 
-  public:
+public:
 
-    explicit Mind();
-    explicit Mind( int bot );
-    explicit Mind( int bot, InputStream* is );
-    ~Mind();
+  explicit Mind();
+  explicit Mind( int bot );
+  explicit Mind( int bot, InputStream* is );
+  ~Mind();
 
-    Mind( Mind&& m );
-    Mind& operator = ( Mind&& m );
+  Mind( Mind&& m );
+  Mind& operator = ( Mind&& m );
 
-    void update();
+  void update();
 
-    void write( OutputStream* os ) const;
+  void write( OutputStream* os ) const;
 
 };
 

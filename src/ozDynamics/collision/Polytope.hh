@@ -38,23 +38,22 @@ namespace oz
  */
 class Polytope : public Shape
 {
-  public:
+public:
 
-    static Pool<Polytope> pool; ///< Memory pool.
+  static Pool<Polytope> pool; ///< Memory pool.
 
-  public:
+public:
 
-    OZ_ALWAYS_INLINE
-    explicit Polytope() :
-      Shape( POLYTOPE )
-    {}
+  OZ_ALWAYS_INLINE
+  explicit Polytope() :
+    Shape( POLYTOPE )
+  {}
 
-    ~Polytope() override;
+  ~Polytope() override;
 
-    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+  Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

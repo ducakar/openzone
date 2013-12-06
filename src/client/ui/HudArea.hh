@@ -39,66 +39,66 @@ class HudArea : public Area
 {
   friend class UI;
 
-  private:
+private:
 
-    static const int   ICON_SIZE    = 32;
-    static const int   VEHICLE_SIZE = 180;
-    static const float VEHICLE_DIM;
-    static const float CROSS_FADE_COEFF;
+  static const int   ICON_SIZE    = 32;
+  static const int   VEHICLE_SIZE = 180;
+  static const float VEHICLE_DIM;
+  static const float CROSS_FADE_COEFF;
 
-    Label       title;
-    Label       weaponName;
-    Label       weaponRounds;
-    Label       vehicleWeaponNames[Vehicle::MAX_WEAPONS];
-    Label       vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+  Label       title;
+  Label       weaponName;
+  Label       weaponRounds;
+  Label       vehicleWeaponNames[Vehicle::MAX_WEAPONS];
+  Label       vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
 
-    Bar         taggedLife;
-    Bar         taggedStatus;
-    Bar         botLife;
-    Bar         botStamina;
-    Bar         vehicleHull;
-    Bar         vehicleFuel;
+  Bar         taggedLife;
+  Bar         taggedStatus;
+  Bar         botLife;
+  Bar         botStamina;
+  Bar         vehicleHull;
+  Bar         vehicleFuel;
 
-    ModelField* vehicleModel;
+  ModelField* vehicleModel;
 
-    GLTexture   crossTex;
-    GLTexture   useTex;
-    GLTexture   deviceTex;
-    GLTexture   equipTex;
-    GLTexture   mountTex;
-    GLTexture   takeTex;
-    GLTexture   browseTex;
-    GLTexture   liftTex;
-    GLTexture   grabTex;
-    GLTexture   lockedTex;
-    GLTexture   unlockedTex;
+  GLTexture   crossTex;
+  GLTexture   useTex;
+  GLTexture   deviceTex;
+  GLTexture   equipTex;
+  GLTexture   mountTex;
+  GLTexture   takeTex;
+  GLTexture   browseTex;
+  GLTexture   liftTex;
+  GLTexture   grabTex;
+  GLTexture   lockedTex;
+  GLTexture   unlockedTex;
 
-    int         descTextX;
-    int         descTextY;
-    int         healthBarX;
-    int         healthBarY;
-    int         crossIconX;
-    int         crossIconY;
-    int         leftIconX;
-    int         leftIconY;
-    int         rightIconX;
-    int         rightIconY;
-    int         bottomIconX;
-    int         bottomIconY;
+  int         descTextX;
+  int         descTextY;
+  int         healthBarX;
+  int         healthBarY;
+  int         crossIconX;
+  int         crossIconY;
+  int         leftIconX;
+  int         leftIconY;
+  int         rightIconX;
+  int         rightIconY;
+  int         bottomIconX;
+  int         bottomIconY;
 
-    void drawBotCrosshair();
-    void drawBotStatus();
-    void drawVehicleStatus();
+  void drawBotCrosshair();
+  void drawBotStatus();
+  void drawVehicleStatus();
 
-  protected:
+protected:
 
-    void onReposition() override;
-    bool onMouseEvent() override;
-    void onDraw() override;
+  void onReposition() override;
+  bool onMouseEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit HudArea();
+  explicit HudArea();
 
 };
 

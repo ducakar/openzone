@@ -30,12 +30,12 @@ namespace oz
 
 class NamePool
 {
-  public:
+public:
 
-    const String& genName( int list ) const;
+  const String& genName( int list ) const;
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

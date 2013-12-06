@@ -33,39 +33,39 @@ namespace builder
 
 class Terra
 {
-  private:
+private:
 
-    // Some "shortcuts".
-    typedef oz::Terra::Quad Quad;
+  // Some "shortcuts".
+  typedef oz::Terra::Quad Quad;
 
-    static const int DIM        = oz::Terra::DIM;
-    static const int VERTS      = oz::Terra::VERTS;
-    static const int QUADS      = oz::Terra::QUADS;
-    static const int TILES      = client::Terra::TILES;
-    static const int TILE_QUADS = client::Terra::TILE_QUADS;
+  static const int DIM        = oz::Terra::DIM;
+  static const int VERTS      = oz::Terra::VERTS;
+  static const int QUADS      = oz::Terra::QUADS;
+  static const int TILES      = client::Terra::TILES;
+  static const int TILE_QUADS = client::Terra::TILE_QUADS;
 
-  private:
+private:
 
-    Quad   quads[VERTS][VERTS];
+  Quad   quads[VERTS][VERTS];
 
-    String name;
+  String name;
 
-    int    liquid;
-    Vec4   liquidColour;
+  int    liquid;
+  Vec4   liquidColour;
 
-    String detailTex;
-    String liquidTex;
-    String map;
+  String detailTex;
+  String liquidTex;
+  String map;
 
-  private:
+private:
 
-    void load();
-    void saveMatrix();
-    void saveClient();
+  void load();
+  void saveMatrix();
+  void saveClient();
 
-  public:
+public:
 
-    void build( const char* name );
+  void build( const char* name );
 
 };
 

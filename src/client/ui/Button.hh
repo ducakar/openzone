@@ -35,31 +35,31 @@ namespace ui
 
 class Button : public Area
 {
-  public:
+public:
 
-    typedef void Callback( Button* sender );
+  typedef void Callback( Button* sender );
 
-  private:
+private:
 
-    Label     label;
-    Callback* callback;
+  Label     label;
+  Callback* callback;
 
-    bool      isHighlighted;
-    bool      isClicked;
-    bool      wasClicked;
+  bool      isHighlighted;
+  bool      isClicked;
+  bool      wasClicked;
 
-  protected:
+protected:
 
-    void onVisibilityChange( bool doShow ) override;
-    bool onMouseEvent() override;
-    void onDraw() override;
+  void onVisibilityChange( bool doShow ) override;
+  bool onMouseEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit Button( const char* text, Callback* callback, int width, int height );
+  explicit Button( const char* text, Callback* callback, int width, int height );
 
-    void setLabel( const char* text );
-    void setCallback( Callback* callback );
+  void setLabel( const char* text );
+  void setCallback( Callback* callback );
 
 };
 

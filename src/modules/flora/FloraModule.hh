@@ -33,37 +33,37 @@ namespace modules
 
 class FloraModule : public Module
 {
-  private:
+private:
 
-    static const float DENSITY;
-    static const float SPACING;
-    static const float TREE_DEPTH;
+  static const float DENSITY;
+  static const float SPACING;
+  static const float TREE_DEPTH;
 
-    // plants/m2
-    float density;
-    // dim * SPACING
-    float spacing;
-    int   number;
+  // plants/m2
+  float density;
+  // dim * SPACING
+  float spacing;
+  int   number;
 
-    void addTree( float x, float y );
-    void addPlant( const char* type, float x, float y );
+  void addTree( float x, float y );
+  void addPlant( const char* type, float x, float y );
 
-  public:
+public:
 
-    void seed();
+  void seed();
 
-    void load() override;
+  void load() override;
 
-    void registerLua() const override;
+  void registerLua() const override;
 
-  private:
+private:
 
-    static int ozFloraGetDensity( lua_State* );
-    static int ozFloraSetDensity( lua_State* );
-    static int ozFloraGetSpacing( lua_State* );
-    static int ozFloraSetSpacing( lua_State* );
-    static int ozFloraGetNumber( lua_State* );
-    static int ozFloraSeed( lua_State* );
+  static int ozFloraGetDensity( lua_State* );
+  static int ozFloraSetDensity( lua_State* );
+  static int ozFloraGetSpacing( lua_State* );
+  static int ozFloraSetSpacing( lua_State* );
+  static int ozFloraGetNumber( lua_State* );
+  static int ozFloraSeed( lua_State* );
 
 };
 

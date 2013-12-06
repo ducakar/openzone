@@ -30,118 +30,118 @@ namespace oz
 
 class VehicleClass : public DynamicClass
 {
-  public:
+public:
 
-    static const int MAX_WEAPONS = 4;
+  static const int MAX_WEAPONS = 4;
 
-    enum Type
-    {
-      TURRET,
-      WHEELED,
-      TRACKED,
-      MECH,
-      HOVER,
-      AIR,
-      SUB
-    };
+  enum Type
+  {
+    TURRET,
+    WHEELED,
+    TRACKED,
+    MECH,
+    HOVER,
+    AIR,
+    SUB
+  };
 
-    struct EngineSettings
-    {
-      float consumption;
-      float idleConsumption;
+  struct EngineSettings
+  {
+    float consumption;
+    float idleConsumption;
 
-      float pitchBias;
-      float pitchRatio;
-      float pitchLimit;
-    };
+    float pitchBias;
+    float pitchRatio;
+    float pitchLimit;
+  };
 
-    struct TurretSettings
-    {};
+  struct TurretSettings
+  {};
 
-    struct WheeledSettings
-    {
-      float moveMomentum;
-    };
+  struct WheeledSettings
+  {
+    float moveMomentum;
+  };
 
-    struct TrackedSettings
-    {
-      float moveMomentum;
-    };
+  struct TrackedSettings
+  {
+    float moveMomentum;
+  };
 
-    struct MechSettings
-    {
-      float walkMomentum;
-      float runMomentum;
+  struct MechSettings
+  {
+    float walkMomentum;
+    float runMomentum;
 
-      float stepWalkInc;
-      float stepRunInc;
+    float stepWalkInc;
+    float stepRunInc;
 
-      float stairInc;
-      float stairMax;
-      float stairRateLimit;
-      float stairRateSupp;
-    };
+    float stairInc;
+    float stairMax;
+    float stairRateLimit;
+    float stairRateSupp;
+  };
 
-    struct HoverSettings
-    {
-      float moveMomentum;
+  struct HoverSettings
+  {
+    float moveMomentum;
 
-      float height;
-      float heightStiffness;
-      float momentumStiffness;
-    };
+    float height;
+    float heightStiffness;
+    float momentumStiffness;
+  };
 
-    struct AirSettings
-    {
-      float moveMomentum;
-    };
+  struct AirSettings
+  {
+    float moveMomentum;
+  };
 
-    struct SubSettings
-    {
-      float moveMomentum;
-    };
+  struct SubSettings
+  {
+    float moveMomentum;
+  };
 
-    Type   type;
-    int    state;
-    float  fuel;
+  Type   type;
+  int    state;
+  float  fuel;
 
-    Vec3   pilotPos;
+  Vec3   pilotPos;
 
-    float  lookHMin;
-    float  lookHMax;
-    float  lookVMin;
-    float  lookVMax;
+  float  lookHMin;
+  float  lookHMax;
+  float  lookVMin;
+  float  lookVMax;
 
-    float  rotVelLimit;
+  float  rotVelLimit;
 
-    int    nWeapons;
-    String weaponTitles[MAX_WEAPONS];
-    String onWeaponShot[MAX_WEAPONS];
-    int    nWeaponRounds[MAX_WEAPONS];
-    float  weaponShotIntervals[MAX_WEAPONS];
+  int    nWeapons;
+  String weaponTitles[MAX_WEAPONS];
+  String onWeaponShot[MAX_WEAPONS];
+  int    nWeaponRounds[MAX_WEAPONS];
+  float  weaponShotIntervals[MAX_WEAPONS];
 
-    EngineSettings engine;
+  EngineSettings engine;
 
-    union
-    {
-      TurretSettings  turret;
-      WheeledSettings wheeled;
-      TrackedSettings tracked;
-      MechSettings    mech;
-      HoverSettings   hover;
-      AirSettings     air;
-      SubSettings     sub;
-    };
+  union
+  {
+    TurretSettings  turret;
+    WheeledSettings wheeled;
+    TrackedSettings tracked;
+    MechSettings    mech;
+    HoverSettings   hover;
+    AirSettings     air;
+    SubSettings     sub;
+  };
 
-  public:
+public:
 
-    static ObjectClass* createClass();
+  static ObjectClass* createClass();
 
-    void init( const JSON& config, const char* name ) override;
+  void init( const JSON& config, const char* name ) override;
 
-    Object* create( int index, const Point& pos, Heading heading ) const override;
-    Object* create( InputStream* is ) const override;
-    Object* create( const JSON& json ) const override;
+  Object* create( int index, const Point& pos, Heading heading ) const override;
+  Object* create( InputStream* is ) const override;
+  Object* create( const JSON& json ) const override;
 
 };
 

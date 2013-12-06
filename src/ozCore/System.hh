@@ -52,120 +52,119 @@ namespace oz
  */
 class System
 {
-  public:
+public:
 
-    /// Install signal and exception handlers.
-    static const int HANDLERS_BIT = 0x01;
+  /// Install signal and exception handlers.
+  static const int HANDLERS_BIT = 0x01;
 
-    /// If running from a terminal, the handlers wait for Enter before termination.
-    static const int HALT_BIT = 0x02;
+  /// If running from a terminal, the handlers wait for Enter before termination.
+  static const int HALT_BIT = 0x02;
 
-    /// %Set system locale.
-    static const int LOCALE_BIT = 0x04;
+  /// %Set system locale.
+  static const int LOCALE_BIT = 0x04;
 
-    /// Default set of bits.
+  /// Default set of bits.
 #ifdef NDEBUG
-    static const int DEFAULT_MASK = HANDLERS_BIT | LOCALE_BIT;
+  static const int DEFAULT_MASK = HANDLERS_BIT | LOCALE_BIT;
 #else
-    static const int DEFAULT_MASK = HANDLERS_BIT | HALT_BIT | LOCALE_BIT;
+  static const int DEFAULT_MASK = HANDLERS_BIT | HALT_BIT | LOCALE_BIT;
 #endif
 
-    /// Type for crash handler function passed to `System::init()`.
-    typedef void CrashHandler();
+  /// Type for crash handler function passed to `System::init()`.
+  typedef void CrashHandler();
 
-  public:
+public:
 
-    /**
-     * Forbid instances.
-     */
-    explicit System() = delete;
+  /**
+   * Forbid instances.
+   */
+  explicit System() = delete;
 
-    /**
-     * Trigger a breakpoint.
-     *
-     * It raises `SIGTRAP` on Linux or calls `DebugBreak()` on Windows.
-     */
-    static void trap();
+  /**
+   * Trigger a breakpoint.
+   *
+   * It raises `SIGTRAP` on Linux or calls `DebugBreak()` on Windows.
+   */
+  static void trap();
 
-    /**
-     * Report if a debugger was attached when `init()` was called.
-     *
-     * Currently this only works for gdb. The check is performed by comparing a dummy file
-     * descriptor number, so the check may return false positive if one opens a file before `init()`
-     * is called.
-     */
-    static bool isInstrumented();
+  /**
+   * Report if a debugger was attached when `init()` was called.
+   *
+   * Currently this only works for gdb. The check is performed by comparing a dummy file descriptor
+   * number, so the check may return false positive if one opens a file before `init()` is called.
+   */
+  static bool isInstrumented();
 
-    /**
-     * Play a sound alert.
-     *
-     * Sine wave with decreasing volume lasting ~0.3 s is played asynchronously through platform's
-     * native sound system (PulseAudio and ALSA/OSS as fallback on Linux/Unix, `PlaySound` system
-     * call on Windows, Pepper API on NaCl).
-     *
-     * On NaCl, `System::instance` and `System::core` must be set for bell to work.
-     */
-    static void bell();
+  /**
+   * Play a sound alert.
+   *
+   * Sine wave with decreasing volume lasting ~0.3 s is played asynchronously through platform's
+   * native sound system (PulseAudio and ALSA/OSS as fallback on Linux/Unix, `PlaySound` system call
+   * on Windows, Pepper API on NaCl).
+   *
+   * On NaCl, `System::instance` and `System::core` must be set for bell to work.
+   */
+  static void bell();
 
-    /**
-     * Print warning message.
-     *
-     * This function first triggers breakpoint with `System::trap()`, prints error message, file
-     * location and stack trace (skipping `nSkippedFrames` stack frames relative to the caller) to
-     * log and plays a bell.
-     *
-     * You will probably want to use `OZ_WARNING` macro instead to fill in the current function,
-     * file and line for you.
-     */
-    OZ_PRINTF_FORMAT( 5, 6 )
-    static void warning( const char* function, const char* file, int line, int nSkippedFrames,
-                         const char* msg, ... );
-
-    /**
-     * Print error message and halt the program.
-     *
-     * Same as `System::warning()` but also aborts the application. If running from a terminal and
-     * `HALT_BIT` was passed to `System::init()` initialisation, it halts before aborting so one can
-     * attach a debugger.
-     *
-     * You will probably want to use `OZ_ERROR` macro instead to fill in the current function, file
-     * and line for you.
-     */
-    OZ_NORETURN
-    OZ_PRINTF_FORMAT( 5, 6 )
-    static void error( const char* function, const char* file, int line, int nSkippedFrames,
+  /**
+   * Print warning message.
+   *
+   * This function first triggers breakpoint with `System::trap()`, prints error message, file
+   * location and stack trace (skipping `nSkippedFrames` stack frames relative to the caller) to log
+   * and plays a bell.
+   *
+   * You will probably want to use `OZ_WARNING` macro instead to fill in the current function, file
+   * and line for you.
+   */
+  OZ_PRINTF_FORMAT( 5, 6 )
+  static void warning( const char* function, const char* file, int line, int nSkippedFrames,
                        const char* msg, ... );
 
-    /**
-     * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
-     *
-     * Signal handlers must be set up for each thread in a process separately. `System::init()`
-     * method sets them up for the caller thread only, for other threads this method should be used
-     * unless created with `Thread::start()`, which calls this method implicitly.
-     *
-     * If `HANDLERS_BIT` hasn't been passed to `System::init()` this method is a NOP.
-     */
-    static void threadInit();
+  /**
+   * Print error message and halt the program.
+   *
+   * Same as `System::warning()` but also aborts the application. If running from a terminal and
+   * `HALT_BIT` was passed to `System::init()` initialisation, it halts before aborting so one can
+   * attach a debugger.
+   *
+   * You will probably want to use `OZ_ERROR` macro instead to fill in the current function, file
+   * and line for you.
+   */
+  OZ_NORETURN
+  OZ_PRINTF_FORMAT( 5, 6 )
+  static void error( const char* function, const char* file, int line, int nSkippedFrames,
+                     const char* msg, ... );
 
-    /**
-     * Initialise `System` features.
-     *
-     * @param flags is a bitwise OR of the following bits:
-     * - `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
-     *   which print diagnostics and abort the program (similar to `System::error()` method).
-     *   Additionally, install handlers for exception violations (`std::terminate()` and
-     *   `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
-     * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter
-     *   before terminating process via `System::abort()`, so one have time to attach a debugger.
-     *   This option has no effect on Android and NaCl.
-     * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
-     *   This option has no effect on Android and NaCl.
-     *
-     * @param crashHandler user-provided method called when the application is aborted by a signal/
-     *        exception handler or `System::error()`. If non-null, it is invoked after the stack
-     *        trace is printed.
-     */
-    static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );
+  /**
+   * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
+   *
+   * Signal handlers must be set up for each thread in a process separately. `System::init()` method
+   * sets them up for the caller thread only, for other threads this method should be used unless
+   * created with `Thread::start()`, which calls this method implicitly.
+   *
+   * If `HANDLERS_BIT` hasn't been passed to `System::init()` this method is a NOP.
+   */
+  static void threadInit();
+
+  /**
+   * Initialise `System` features.
+   *
+   * @param flags is a bitwise OR of the following bits:
+   * - `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
+   *   which print diagnostics and abort the program (similar to `System::error()` method).
+   *   Additionally, install handlers for exception violations (`std::terminate()` and
+   *   `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
+   * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
+   *   terminating the process via `System::abort()`, so one have time to attach a debugger.
+   *   This option has no effect on Android and NaCl.
+   * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
+   *   This option has no effect on Android and NaCl.
+   *
+   * @param crashHandler user-provided method called when the application is aborted by a signal/
+   *        exception handler or `System::error()`. If non-null, it is invoked after the stack trace
+   *        is printed.
+   */
+  static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );
 
 };
 

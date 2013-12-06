@@ -32,60 +32,59 @@ namespace client
 
 class Caelum
 {
-  public:
+public:
 
-    static const int   MAX_STARS = 2048;
+  static const int   MAX_STARS = 2048;
+  static const Vec4  GLOBAL_AMBIENT_COLOUR;
 
-    static const Vec4  GLOBAL_AMBIENT_COLOUR;
+private:
 
-  private:
+  static const float DAY_BIAS;
+  static const float AMBIENT_COEF;
 
-    static const float DAY_BIAS;
-    static const float AMBIENT_COEF;
+  static const float RED_COEF;
+  static const float GREEN_COEF;
+  static const float BLUE_COEF;
 
-    static const float RED_COEF;
-    static const float GREEN_COEF;
-    static const float BLUE_COEF;
+  static const Vec4  DAY_COLOUR;
+  static const Vec4  NIGHT_COLOUR;
+  static const Vec4  STARS_COLOUR;
 
-    static const Vec4  DAY_COLOUR;
-    static const Vec4  NIGHT_COLOUR;
-    static const Vec4  STARS_COLOUR;
+  uint  vbo;
+  uint  ibo;
 
-    uint  vbo;
-    uint  ibo;
+  uint  sunTexId;
+  uint  moonTexId;
 
-    uint  sunTexId;
-    uint  moonTexId;
+  int   starShaderId;
+  int   celestialShaderId;
 
-    int   starShaderId;
-    int   celestialShaderId;
+public:
 
-  public:
+  float angle;
+  float ratio;
+  Vec3  originalLightDir;
+  Vec3  axis;
 
-    float angle;
-    float ratio;
-    Vec3  originalLightDir;
-    Vec3  axis;
+  Vec3  lightDir;
 
-    Vec3  lightDir;
+  Vec4  diffuseColour;
+  Vec4  ambientColour;
+  Vec4  caelumColour;
+  Vec4  nightColour;
+  float nightLuminance;
 
-    Vec4  diffuseColour;
-    Vec4  ambientColour;
-    Vec4  caelumColour;
-    Vec4  nightColour;
-    float nightLuminance;
+  int   id;
 
-    int   id;
+public:
 
-  public:
+  explicit Caelum();
 
-    explicit Caelum();
+  void update();
+  void draw();
 
-    void update();
-    void draw();
-
-    void load();
-    void unload();
+  void load();
+  void unload();
 
 };
 

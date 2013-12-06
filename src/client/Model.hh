@@ -75,144 +75,144 @@ struct Light
 
 class Model
 {
-  public:
+public:
 
-    static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into SMM file.
+  static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into SMM file.
 
-    static const int SOLID_BIT       = 0x04; ///< Mesh is opaque.
-    static const int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
+  static const int SOLID_BIT       = 0x04; ///< Mesh is opaque.
+  static const int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
 
-    static const int DIFFUSE_BIT     = 0x10; ///< Texture has base per-pixel colours.
-    static const int MASKS_BIT       = 0x20; ///< Texture has specular and emission masks.
-    static const int NORMALS_BIT     = 0x40; ///< Texture has normal map.
+  static const int DIFFUSE_BIT     = 0x10; ///< Texture has base per-pixel colours.
+  static const int MASKS_BIT       = 0x20; ///< Texture has specular and emission masks.
+  static const int NORMALS_BIT     = 0x40; ///< Texture has normal map.
 
-    enum Collation
-    {
-      DEPTH_MAJOR,
-      MODEL_MAJOR
-    };
+  enum Collation
+  {
+    DEPTH_MAJOR,
+    MODEL_MAJOR
+  };
 
-    enum QueueType
-    {
-      SCENE_QUEUE,
-      OVERLAY_QUEUE
-    };
+  enum QueueType
+  {
+    SCENE_QUEUE,
+    OVERLAY_QUEUE
+  };
 
-  private:
+private:
 
-    struct Mesh
-    {
-      int flags;
-      int texture;
+  struct Mesh
+  {
+    int flags;
+    int texture;
 
-      int nIndices;
-      int firstIndex;
-    };
+    int nIndices;
+    int firstIndex;
+  };
 
-    struct Node
-    {
-      Mat44  transf;
-      int    parent;
-      int    firstChild;
-      int    nChildren;
-      int    mesh;
-      String name;
-    };
+  struct Node
+  {
+    Mat44  transf;
+    int    parent;
+    int    firstChild;
+    int    nChildren;
+    int    mesh;
+    String name;
+  };
 
-    struct Instance
-    {
-      Model* model;
-      Mat44  transf;
-      Mat44  colour;
+  struct Instance
+  {
+    Model* model;
+    Mat44  transf;
+    Mat44  colour;
 
-      int    node;
-      int    firstFrame;
-      int    secondFrame;
-      float  interpolation;
-    };
+    int    node;
+    int    firstFrame;
+    int    secondFrame;
+    float  interpolation;
+  };
 
-    struct LightEntry;
-    struct PreloadData;
+  struct LightEntry;
+  struct PreloadData;
 
-  private:
+private:
 
-    static Set<Model*>      loadedModels;
-    static List<Instance>   instances[2];
-    static List<LightEntry> sceneLights;
+  static Set<Model*>      loadedModels;
+  static List<Instance>   instances[2];
+  static List<LightEntry> sceneLights;
 
-    static Vertex*          vertexAnimBuffer;
-    static int              vertexAnimBufferLength;
-    static Collation        collation;
+  static Vertex*          vertexAnimBuffer;
+  static int              vertexAnimBufferLength;
+  static Collation        collation;
 
-    int                     flags;
-    uint                    vbo;
-    uint                    ibo;
-    int                     shaderId;
-    uint                    animationTexId;
+  int                     flags;
+  uint                    vbo;
+  uint                    ibo;
+  int                     shaderId;
+  uint                    animationTexId;
 
-    DArray<Texture>         textures;
-    DArray<Mesh>            meshes;
-    DArray<Light>           lights;
-    DArray<Node>            nodes;
+  DArray<Texture>         textures;
+  DArray<Mesh>            meshes;
+  DArray<Light>           lights;
+  DArray<Node>            nodes;
 
-    int                     nTextures;
-    int                     nVertices;
-    int                     nIndices;
-    int                     nFrames;
-    int                     nFramePositions;
+  int                     nTextures;
+  int                     nVertices;
+  int                     nIndices;
+  int                     nFrames;
+  int                     nFramePositions;
 
-    Vertex*                 vertices;
-    Point*                  positions;
-    Vec3*                   normals;
+  Vertex*                 vertices;
+  Point*                  positions;
+  Vec3*                   normals;
 
-    List<Instance>          modelInstances[2];
-    PreloadData*            preloadData;
+  List<Instance>          modelInstances[2];
+  PreloadData*            preloadData;
 
-  public:
+public:
 
-    Vec3                    dim;
+  Vec3                    dim;
 
-  private:
+private:
 
-    void addSceneLights();
+  void addSceneLights();
 
-    void animate( const Instance* instance );
-    void drawNode( const Node* node, int dir, int mask );
-    void draw( const Instance* instance, int mask );
+  void animate( const Instance* instance );
+  void drawNode( const Node* node, int dir, int mask );
+  void draw( const Instance* instance, int mask );
 
-  public:
+public:
 
-    static void setCollation( Collation collation );
+  static void setCollation( Collation collation );
 
-    static void drawScheduled( QueueType queue, int mask );
-    static void clearScheduled( QueueType queue );
+  static void drawScheduled( QueueType queue, int mask );
+  static void clearScheduled( QueueType queue );
 
-    static void deallocate();
+  static void deallocate();
 
-    explicit Model();
-    ~Model();
+  explicit Model();
+  ~Model();
 
-    bool isPreloaded() const
-    {
-      return preloadData != nullptr;
-    }
+  bool isPreloaded() const
+  {
+    return preloadData != nullptr;
+  }
 
-    bool isLoaded() const
-    {
-      return !meshes.isEmpty();
-    }
+  bool isLoaded() const
+  {
+    return !meshes.isEmpty();
+  }
 
-    int findNode( const char* name ) const;
+  int findNode( const char* name ) const;
 
-    void schedule( int mesh, QueueType queue );
-    void scheduleFrame( int mesh, int frame, QueueType queue );
-    void scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
-                           QueueType queue );
+  void schedule( int mesh, QueueType queue );
+  void scheduleFrame( int mesh, int frame, QueueType queue );
+  void scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
+                         QueueType queue );
 
-    const File* preload( const char* path );
-    void upload( const Vertex* vertices, int nVertices, uint usage ) const;
-    void load( uint usage );
-    void unload();
+  const File* preload( const char* path );
+  void upload( const Vertex* vertices, int nVertices, uint usage ) const;
+  void load( uint usage );
+  void unload();
 
 };
 

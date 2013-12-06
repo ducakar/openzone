@@ -38,30 +38,29 @@ namespace oz
  */
 class Box : public Shape
 {
-  public:
+public:
 
-    static Pool<Box> pool; ///< Memory pool.
+  static Pool<Box> pool; ///< Memory pool.
 
-    Vec3 ext;              ///< Extents.
+  Vec3 ext;              ///< Extents.
 
-  public:
+public:
 
-    OZ_ALWAYS_INLINE
-    explicit Box() :
-      Shape( BOX )
-    {}
+  OZ_ALWAYS_INLINE
+  explicit Box() :
+    Shape( BOX )
+  {}
 
-    OZ_ALWAYS_INLINE
-    explicit Box( const Vec3& ext_ ) :
-      Shape( BOX ), ext( ext_ )
-    {}
+  OZ_ALWAYS_INLINE
+  explicit Box( const Vec3& ext_ ) :
+    Shape( BOX ), ext( ext_ )
+  {}
 
-    ~Box() override;
+  ~Box() override;
 
-    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+  Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

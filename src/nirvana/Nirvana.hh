@@ -31,33 +31,32 @@ namespace oz
 
 class Nirvana
 {
-  private:
+private:
 
-    // mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was
-    // added to the list)
-    // to force update, set Mind::FORCE_UPDATE_BIT
-    static const int UPDATE_INTERVAL = 32;
+  // Mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was added
+  // to the list). To force update, set Mind::FORCE_UPDATE_BIT.
+  static const int UPDATE_INTERVAL = 32;
 
-    int updateModulo;
+  int updateModulo;
 
-  public:
+public:
 
-    HashMap<String, Device::CreateFunc*, 32> deviceClasses;
+  HashMap<String, Device::CreateFunc*, 32> deviceClasses;
 
-    HashMap<int, Device*, 4096> devices;
-    HashMap<int, Mind, 4096>    minds;
+  HashMap<int, Device*, 4096> devices;
+  HashMap<int, Mind, 4096>    minds;
 
-    void sync();
-    void update();
+  void sync();
+  void update();
 
-    void read( InputStream* is );
-    void write( OutputStream* os ) const;
+  void read( InputStream* is );
+  void write( OutputStream* os ) const;
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

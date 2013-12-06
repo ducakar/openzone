@@ -32,49 +32,49 @@ namespace client
 
 class Terra
 {
-  public:
+public:
 
-    static const int   TILE_QUADS    = 32;
-    static const int   TILES         = oz::Terra::QUADS / TILE_QUADS;
+  static const int   TILE_QUADS    = 32;
+  static const int   TILES         = oz::Terra::QUADS / TILE_QUADS;
 
-  private:
+private:
 
-    static const int   TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
-    static const int   TILE_INDICES  = TILE_QUADS * ( TILE_QUADS + 1 ) * 2 + ( TILE_QUADS - 1 ) * 2;
-    static const int   TILE_VERTICES = ( TILE_QUADS + 1 ) * ( TILE_QUADS + 1 );
+  static const int   TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
+  static const int   TILE_INDICES  = TILE_QUADS * ( TILE_QUADS + 1 ) * 2 + ( TILE_QUADS - 1 ) * 2;
+  static const int   TILE_VERTICES = ( TILE_QUADS + 1 ) * ( TILE_QUADS + 1 );
 
-    static const float WAVE_BIAS_INC;
+  static const float WAVE_BIAS_INC;
 
-    uint    vbos[TILES][TILES];
-    uint    ibo;
+  uint    vbos[TILES][TILES];
+  uint    ibo;
 
-    int     detailTexId;
-    int     landShaderId;
-    int     liquidShaderId;
+  int     detailTexId;
+  int     landShaderId;
+  int     liquidShaderId;
 
-    Texture detailTex;
-    Texture liquidTex;
-    GLuint  mapTex;
+  Texture detailTex;
+  Texture liquidTex;
+  GLuint  mapTex;
 
-    float   waveBias;
+  float   waveBias;
 
-    Span    span;
-    SBitset<TILES * TILES> liquidTiles;
+  Span    span;
+  SBitset<TILES * TILES> liquidTiles;
 
-  public:
+public:
 
-    int  id;
+  int  id;
 
-    int  liquidTexId;
-    Vec4 liquidFogColour;
+  int  liquidTexId;
+  Vec4 liquidFogColour;
 
-    explicit Terra();
+  explicit Terra();
 
-    void draw();
-    void drawLiquid();
+  void draw();
+  void drawLiquid();
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
 };
 

@@ -48,61 +48,61 @@ class FragPool;
 
 class ObjectClass
 {
-  public:
+public:
 
-    static const int MAX_SOUNDS       = 32;
+  static const int MAX_SOUNDS       = 32;
 
-    static const int NIGHT_VISION_BIT = 0x01;
-    static const int BINOCULARS_BIT   = 0x02;
-    static const int GALILEO_BIT      = 0x04;
-    static const int MUSIC_PLAYER_BIT = 0x08;
-    static const int SUICIDE_BIT      = 0x10;
+  static const int NIGHT_VISION_BIT = 0x01;
+  static const int BINOCULARS_BIT   = 0x02;
+  static const int GALILEO_BIT      = 0x04;
+  static const int MUSIC_PLAYER_BIT = 0x08;
+  static const int SUICIDE_BIT      = 0x10;
 
-    typedef ObjectClass* CreateFunc();
+  typedef ObjectClass* CreateFunc();
 
-    String                   name;
-    String                   title;
-    String                   description;
+  String                   name;
+  String                   title;
+  String                   description;
 
-    Vec3                     dim;
-    int                      flags;
-    float                    life;
-    float                    resistance;
+  Vec3                     dim;
+  int                      flags;
+  float                    life;
+  float                    resistance;
 
-    int                      attributes;
-    int                      key;
-    int                      cost;
+  int                      attributes;
+  int                      key;
+  int                      cost;
 
-    int                      nItems;
-    List<const ObjectClass*> defaultItems;
+  int                      nItems;
+  List<const ObjectClass*> defaultItems;
 
-    int                      nFrags;
-    const FragPool*          fragPool;
+  int                      nFrags;
+  const FragPool*          fragPool;
 
-    int                      deviceType;
+  int                      deviceType;
 
-    int                      imagoType;
-    int                      imagoModel;
+  int                      imagoType;
+  int                      imagoModel;
 
-    int                      audioType;
-    int                      audioSounds[MAX_SOUNDS];
+  int                      audioType;
+  int                      audioSounds[MAX_SOUNDS];
 
-    String                   onDestroy;
-    String                   onUse;
-    String                   onUpdate;
-    String                   getStatus;
+  String                   onDestroy;
+  String                   onUse;
+  String                   onUpdate;
+  String                   getStatus;
 
-  public:
+public:
 
-    virtual ~ObjectClass();
+  virtual ~ObjectClass();
 
-    static ObjectClass* createClass();
+  static ObjectClass* createClass();
 
-    virtual void init( const JSON& config, const char* name );
+  virtual void init( const JSON& config, const char* name );
 
-    virtual Object* create( int index, const Point& pos, Heading heading ) const;
-    virtual Object* create( InputStream* is ) const;
-    virtual Object* create( const JSON& json ) const;
+  virtual Object* create( int index, const Point& pos, Heading heading ) const;
+  virtual Object* create( InputStream* is ) const;
+  virtual Object* create( const JSON& json ) const;
 
 };
 

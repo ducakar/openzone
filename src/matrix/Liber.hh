@@ -34,74 +34,74 @@ namespace oz
  */
 class Liber
 {
-  public:
+public:
 
-    struct Resource
-    {
-      String name;
-      String path;
-    };
+  struct Resource
+  {
+    String name;
+    String path;
+  };
 
-    DArray<Resource> shaders;
-    DArray<Resource> textures;
-    DArray<Resource> sounds;
-    DArray<Resource> caela;
-    DArray<Resource> terrae;
-    DArray<Resource> parts;
-    DArray<Resource> models;
-    DArray<Resource> nameLists;
-    DArray<Resource> musicTracks;
+  DArray<Resource> shaders;
+  DArray<Resource> textures;
+  DArray<Resource> sounds;
+  DArray<Resource> caela;
+  DArray<Resource> terrae;
+  DArray<Resource> parts;
+  DArray<Resource> models;
+  DArray<Resource> nameLists;
+  DArray<Resource> musicTracks;
 
-    int              nBSPs;
-    int              nFragPools;
-    int              nDeviceClasses;
-    int              nImagoClasses;
-    int              nAudioClasses;
+  int              nBSPs;
+  int              nFragPools;
+  int              nDeviceClasses;
+  int              nImagoClasses;
+  int              nAudioClasses;
 
-    bool             mapMP3s;
-    bool             mapAACs;
+  bool             mapMP3s;
+  bool             mapAACs;
 
-    const BSP*         bsp( const char* name ) const;
-    const ObjectClass* objClass( const char* name ) const;
-    const FragPool*    fragPool( const char* name ) const;
+  const BSP*         bsp( const char* name ) const;
+  const ObjectClass* objClass( const char* name ) const;
+  const FragPool*    fragPool( const char* name ) const;
 
-    int shaderIndex( const char* name ) const;
-    int textureIndex( const char* name ) const;
-    int soundIndex( const char* name ) const;
-    int caelumIndex( const char* name ) const;
-    int terraIndex( const char* name ) const;
-    int partIndex( const char* name ) const;
-    int modelIndex( const char* name ) const;
+  int shaderIndex( const char* name ) const;
+  int textureIndex( const char* name ) const;
+  int soundIndex( const char* name ) const;
+  int caelumIndex( const char* name ) const;
+  int terraIndex( const char* name ) const;
+  int partIndex( const char* name ) const;
+  int modelIndex( const char* name ) const;
 
-    int nameListIndex( const char* name ) const;
-    int musicTrackIndex( const char* name ) const;
+  int nameListIndex( const char* name ) const;
+  int musicTrackIndex( const char* name ) const;
 
-    int deviceIndex( const char* name ) const;
-    int imagoIndex( const char* name ) const;
-    int audioIndex( const char* name ) const;
+  int deviceIndex( const char* name ) const;
+  int imagoIndex( const char* name ) const;
+  int audioIndex( const char* name ) const;
 
-    void freeBSPs();
+  void freeBSPs();
 
-  private:
+private:
 
-    void initShaders();
-    void initTextures();
-    void initSounds();
-    void initCaela();
-    void initTerrae();
-    void initParticles();
-    void initModels();
-    void initNameLists();
-    void initFragPools();
-    void initClasses();
-    void initBSPs();
-    void initMusicRecurse( const char* path, List<Resource>* musicTracksList );
-    void initMusic( const char* userMusicPath );
+  void initShaders();
+  void initTextures();
+  void initSounds();
+  void initCaela();
+  void initTerrae();
+  void initParticles();
+  void initModels();
+  void initNameLists();
+  void initFragPools();
+  void initClasses();
+  void initBSPs();
+  void initMusicRecurse( const char* path, List<Resource>* musicTracksList );
+  void initMusic( const char* userMusicPath );
 
-  public:
+public:
 
-    void init( const char* userMusicPath );
-    void destroy();
+  void init( const char* userMusicPath );
+  void destroy();
 
 };
 

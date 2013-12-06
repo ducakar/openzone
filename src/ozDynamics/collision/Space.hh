@@ -39,16 +39,16 @@ namespace oz
 
 class Space
 {
-  public:
+public:
 
-    static const int MAX_BODIES = 1 << 16;
+  static const int MAX_BODIES = 1 << 16;
 
-    SList<Body*, MAX_BODIES> bodies;
+  SList<Body*, MAX_BODIES> bodies;
 
-  public:
+public:
 
-    void clear();
-    static void deallocate();
+  void clear();
+  static void deallocate();
 
 };
 

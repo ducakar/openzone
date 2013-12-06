@@ -36,50 +36,49 @@ namespace ui
 
 class EditFrame : public Frame
 {
-  private:
+private:
 
-    static const int COLS          = 8;
-    static const int PADDING_SIZE  = 1;
-    static const int FOOTER_SIZE   = 32;
-    static const int ICON_SIZE     = 32;
-    static const int SLOT_SIZE     = 68;
-    static const int SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
-    static const int SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
+  static const int COLS          = 8;
+  static const int PADDING_SIZE  = 1;
+  static const int FOOTER_SIZE   = 32;
+  static const int ICON_SIZE     = 32;
+  static const int SLOT_SIZE     = 68;
+  static const int SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
+  static const int SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
 
-    Object*     owner;
+  Object*     owner;
 
-    Bar         lifeBar;
-    Bar         statusBar;
+  Bar         lifeBar;
+  Bar         statusBar;
 
-    ModelField* ownerModels[COLS];
+  ModelField* ownerModels[COLS];
 
-    GLTexture   scrollUpTex;
-    GLTexture   scrollDownTex;
+  GLTexture   scrollUpTex;
+  GLTexture   scrollDownTex;
 
-    Label       itemDesc;
+  Label       itemDesc;
 
-    int         taggedItemIndex;
-    int         scrollOwner;
+  int         taggedItemIndex;
+  int         scrollOwner;
 
-  private:
+private:
 
-    static void itemCallback( ModelField* sender, bool isClicked );
+  static void itemCallback( ModelField* sender, bool isClicked );
 
-    void updateReferences();
-    void handleScroll( const Object* container, int* scroll );
-    void drawComponent( int height, const Object* container, const Dynamic* taggedItem,
-                        int scroll );
+  void updateReferences();
+  void handleScroll( const Object* container, int* scroll );
+  void drawComponent( int height, const Object* container, const Dynamic* taggedItem, int scroll );
 
-  protected:
+protected:
 
-    void onVisibilityChange( bool doShow ) override;
-    bool onMouseEvent() override;
-    void onUpdate() override;
-    void onDraw() override;
+  void onVisibilityChange( bool doShow ) override;
+  bool onMouseEvent() override;
+  void onUpdate() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit EditFrame();
+  explicit EditFrame();
 
 };
 

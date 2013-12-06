@@ -10,6 +10,10 @@ endif()
 add_executable( foreach foreach.cc )
 target_link_libraries( foreach ozCore )
 
+include_directories( SYSTEM /usr/include/mono-2.0 )
+add_executable( mono mono.cc )
+target_link_libraries( mono -lmono-2.0 ozCore )
+
 if( NOT OZ_GL_ES )
   add_executable( noise noise.cc )
   target_link_libraries( noise ozCore ozEngine ozFactory )

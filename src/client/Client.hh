@@ -36,43 +36,43 @@ namespace client
 
 class Client
 {
-  private:
+private:
 
-    static const int INIT_PHYSFS     = 0x0001;
-    static const int INIT_SDL        = 0x0002;
-    static const int INIT_SDL_TTF    = 0x0004;
-    static const int INIT_CONFIG     = 0x0008;
-    static const int INIT_WINDOW     = 0x0010;
-    static const int INIT_INPUT      = 0x0020;
-    static const int INIT_NETWORK    = 0x0040;
-    static const int INIT_LINGUA     = 0x0080;
-    static const int INIT_LIBRARY    = 0x0100;
-    static const int INIT_CONTEXT    = 0x0200;
-    static const int INIT_RENDER     = 0x0400;
-    static const int INIT_AUDIO      = 0x0800;
-    static const int INIT_STAGE_INIT = 0x1000;
-    static const int INIT_STAGE_LOAD = 0x2000;
-    static const int INIT_MAIN_LOOP  = 0x4000;
+  static const int INIT_PHYSFS     = 0x0001;
+  static const int INIT_SDL        = 0x0002;
+  static const int INIT_SDL_TTF    = 0x0004;
+  static const int INIT_CONFIG     = 0x0008;
+  static const int INIT_WINDOW     = 0x0010;
+  static const int INIT_INPUT      = 0x0020;
+  static const int INIT_NETWORK    = 0x0040;
+  static const int INIT_LINGUA     = 0x0080;
+  static const int INIT_LIBRARY    = 0x0100;
+  static const int INIT_CONTEXT    = 0x0200;
+  static const int INIT_RENDER     = 0x0400;
+  static const int INIT_AUDIO      = 0x0800;
+  static const int INIT_STAGE_INIT = 0x1000;
+  static const int INIT_STAGE_LOAD = 0x2000;
+  static const int INIT_MAIN_LOOP  = 0x4000;
 
-    Stage* stage;
-    int    initFlags;
+  Stage* stage;
+  int    initFlags;
 
-    int    windowWidth;
-    int    windowHeight;
-    int    screenWidth;
-    int    screenHeight;
+  int    windowWidth;
+  int    windowHeight;
+  int    screenWidth;
+  int    screenHeight;
 
-    float  benchmarkTime;
-    bool   isBenchmark;
+  float  benchmarkTime;
+  bool   isBenchmark;
 
-    void printUsage( const char* invocationName );
+  void printUsage( const char* invocationName );
 
-  public:
+public:
 
-    int init( int argc, char** argv );
-    void shutdown();
+  int init( int argc, char** argv );
+  void shutdown();
 
-    int main();
+  int main();
 
 };
 

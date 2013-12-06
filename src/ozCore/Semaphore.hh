@@ -45,101 +45,101 @@ namespace oz
  */
 class Semaphore
 {
-  private:
+private:
 
-    struct Descriptor;
+  struct Descriptor;
 
-    Descriptor* descriptor; ///< %Semaphore descriptor.
+  Descriptor* descriptor; ///< %Semaphore descriptor.
 
-  public:
+public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    explicit Semaphore() :
-      descriptor( nullptr )
-    {}
+  /**
+   * Create uninitialised instance.
+   */
+  explicit Semaphore() :
+    descriptor( nullptr )
+  {}
 
-    /**
-     * Destructor, destroys semaphore if initialised.
-     */
-    ~Semaphore()
-    {
-      if( descriptor != nullptr ) {
-        destroy();
-      }
+  /**
+   * Destructor, destroys semaphore if initialised.
+   */
+  ~Semaphore()
+  {
+    if( descriptor != nullptr ) {
+      destroy();
     }
+  }
 
-    /**
-     * Move constructor.
-     */
-    Semaphore( Semaphore&& b ) :
-      descriptor( b.descriptor )
-    {
-      b.descriptor = nullptr;
-    }
+  /**
+   * Move constructor.
+   */
+  Semaphore( Semaphore&& b ) :
+    descriptor( b.descriptor )
+  {
+    b.descriptor = nullptr;
+  }
 
-    /**
-     * Move operator.
-     */
-    Semaphore& operator = ( Semaphore&& b )
-    {
-      if( &b == this ) {
-        return *this;
-      }
-
-      descriptor   = b.descriptor;
-      b.descriptor = nullptr;
-
+  /**
+   * Move operator.
+   */
+  Semaphore& operator = ( Semaphore&& b )
+  {
+    if( &b == this ) {
       return *this;
     }
 
-    /**
-     * True iff initialised.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return descriptor != nullptr;
-    }
+    descriptor   = b.descriptor;
+    b.descriptor = nullptr;
 
-    /**
-     * Get current counter value.
-     */
-    int counter() const;
+    return *this;
+  }
 
-    /**
-     * Atomically increment counter and signal waiting threads.
-     */
-    void post() const;
+  /**
+   * True iff initialised.
+   */
+  OZ_ALWAYS_INLINE
+  bool isValid() const
+  {
+    return descriptor != nullptr;
+  }
 
-    /**
-     * Wait until counter becomes positive. Then atomically decrement it and resume.
-     */
-    void wait() const;
+  /**
+   * Get current counter value.
+   */
+  int counter() const;
 
-    /**
-     * Atomically check if counter is positive and decrement it if it is.
-     *
-     * @return True iff counter was decremented.
-     */
-    bool tryWait() const;
+  /**
+   * Atomically increment counter and signal waiting threads.
+   */
+  void post() const;
 
-    /**
-     * Initialise semaphore.
-     *
-     * Initialising an already initialised semaphore is an error.
-     *
-     * @param counter initial counter value.
-     */
-    void init( int counter = 0 );
+  /**
+   * Wait until counter becomes positive. Then atomically decrement it and resume.
+   */
+  void wait() const;
 
-    /**
-     * Destroy semaphore and release resources.
-     *
-     * Destroying uninitialised semaphore is a legal NOP.
-     */
-    void destroy();
+  /**
+   * Atomically check if counter is positive and decrement it if it is.
+   *
+   * @return True iff counter was decremented.
+   */
+  bool tryWait() const;
+
+  /**
+   * Initialise semaphore.
+   *
+   * Initialising an already initialised semaphore is an error.
+   *
+   * @param counter initial counter value.
+   */
+  void init( int counter = 0 );
+
+  /**
+   * Destroy semaphore and release resources.
+   *
+   * Destroying uninitialised semaphore is a legal NOP.
+   */
+  void destroy();
 
 };
 

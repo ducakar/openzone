@@ -317,14 +317,20 @@ void Orbis::reposition( Frag* frag )
   }
 }
 
+void Orbis::resetLastIndices()
+{
+  lastStructIndex = -1;
+  lastObjectIndex = -1;
+  lastFragIndex   = -1;
+}
+
 void Orbis::update()
 {
   pendingStructs[waiting].clearAll();
   pendingObjects[waiting].clearAll();
   pendingFrags[waiting].clearAll();
 
-  freeing = !freeing;
-  waiting = !waiting;
+  swap( freeing, waiting );
 
   caelum.update();
 }

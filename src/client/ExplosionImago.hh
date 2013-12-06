@@ -33,29 +33,28 @@ namespace client
 
 class ExplosionImago : public Imago
 {
-  protected:
+protected:
 
-    static int modelId;
+  static int modelId;
 
-    SMM* smm;
-    uint startMicros;
+  SMM* smm;
+  uint startMicros;
 
-    explicit ExplosionImago( const Object* obj ) :
-      Imago( obj )
-    {}
+  explicit ExplosionImago( const Object* obj ) :
+    Imago( obj )
+  {}
 
-    ~ExplosionImago() override;
+  ~ExplosionImago() override;
 
-  public:
+public:
 
-    static Pool<ExplosionImago, 64> pool;
+  static Pool<ExplosionImago, 64> pool;
 
-    static Imago* create( const Object* obj );
+  static Imago* create( const Object* obj );
 
-    void draw( const Imago* parent ) override;
+  void draw( const Imago* parent ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

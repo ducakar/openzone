@@ -37,16 +37,16 @@ class LoadingArea : public Area
 {
   friend class UI;
 
-  protected:
+protected:
 
-    void onReposition() override;
-    void onDraw() override;
+  void onReposition() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    Label status;
+  Label status;
 
-    explicit LoadingArea();
+  explicit LoadingArea();
 
 };
 

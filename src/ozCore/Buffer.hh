@@ -40,187 +40,187 @@ namespace oz
  */
 class Buffer
 {
-  private:
+private:
 
-    char* data; ///< Storage.
-    int   size; ///< Data length in bytes.
+  char* data; ///< Storage.
+  int   size; ///< Data length in bytes.
 
-  public:
+public:
 
-    /**
-     * Create an uninitialised buffer of size `size`.
-     */
-    explicit Buffer( int size = 0 );
+  /**
+   * Create an uninitialised buffer of size `size`.
+   */
+  explicit Buffer( int size = 0 );
 
-    /**
-     * Create a buffer of size `size` and copy `data` into it.
-     */
-    explicit Buffer( const char* data, int size );
+  /**
+   * Create a buffer of size `size` and copy `data` into it.
+   */
+  explicit Buffer( const char* data, int size );
 
-    /**
-     * Create a buffer containing a given string (without the terminating null character).
-     */
-    explicit Buffer( const String& s );
+  /**
+   * Create a buffer containing a given string (without the terminating null character).
+   */
+  explicit Buffer( const String& s );
 
-    /**
-     * Destructor.
-     */
-    ~Buffer();
+  /**
+   * Destructor.
+   */
+  ~Buffer();
 
-    /**
-     * Copy constructor, copies data.
-     */
-    Buffer( const Buffer& b );
+  /**
+   * Copy constructor, copies data.
+   */
+  Buffer( const Buffer& b );
 
-    /**
-     * Move constructor, moves data storage.
-     */
-    Buffer( Buffer&& b );
+  /**
+   * Move constructor, moves data storage.
+   */
+  Buffer( Buffer&& b );
 
-    /**
-     * Copy operator, copies data.
-     *
-     * Existing storage is reused if it suffices.
-     */
-    Buffer& operator = ( const Buffer& b );
+  /**
+   * Copy operator, copies data.
+   *
+   * Existing storage is reused if it suffices.
+   */
+  Buffer& operator = ( const Buffer& b );
 
-    /**
-     * Move operator, moves data storage.
-     */
-    Buffer& operator = ( Buffer&& b );
+  /**
+   * Move operator, moves data storage.
+   */
+  Buffer& operator = ( Buffer&& b );
 
-    /**
-     * True iff buffer sizes and contents are equal.
-     */
-    bool operator == ( const Buffer& b ) const;
+  /**
+   * True iff buffer sizes and contents are equal.
+   */
+  bool operator == ( const Buffer& b ) const;
 
-    /**
-     * False iff buffer sizes and contents are equal.
-     */
-    bool operator != ( const Buffer& b ) const;
+  /**
+   * False iff buffer sizes and contents are equal.
+   */
+  bool operator != ( const Buffer& b ) const;
 
-    /**
-     * Constant reference to `i`-th byte.
-     */
-    OZ_ALWAYS_INLINE
-    const char& operator [] ( int i ) const
-    {
-      hard_assert( uint( i ) < uint( size ) );
+  /**
+   * Constant reference to `i`-th byte.
+   */
+  OZ_ALWAYS_INLINE
+  const char& operator [] ( int i ) const
+  {
+    hard_assert( uint( i ) < uint( size ) );
 
-      return data[i];
-    }
+    return data[i];
+  }
 
-    /**
-     * Reference to `i`-th byte.
-     */
-    OZ_ALWAYS_INLINE
-    char& operator [] ( int i )
-    {
-      hard_assert( uint( i ) < uint( size ) );
+  /**
+   * Reference to `i`-th byte.
+   */
+  OZ_ALWAYS_INLINE
+  char& operator [] ( int i )
+  {
+    hard_assert( uint( i ) < uint( size ) );
 
-      return data[i];
-    }
+    return data[i];
+  }
 
-    /**
-     * Constant pointer to the beginning of the buffer.
-     */
-    OZ_ALWAYS_INLINE
-    const char* begin() const
-    {
-      return data;
-    }
+  /**
+   * Constant pointer to the beginning of the buffer.
+   */
+  OZ_ALWAYS_INLINE
+  const char* begin() const
+  {
+    return data;
+  }
 
-    /**
-     * Pointer to the beginning of the buffer.
-     */
-    OZ_ALWAYS_INLINE
-    char* begin()
-    {
-      return data;
-    }
+  /**
+   * Pointer to the beginning of the buffer.
+   */
+  OZ_ALWAYS_INLINE
+  char* begin()
+  {
+    return data;
+  }
 
-    /**
-     * Constant pointer to the end of the buffer.
-     */
-    OZ_ALWAYS_INLINE
-    const char* end() const
-    {
-      return data + size;
-    }
+  /**
+   * Constant pointer to the end of the buffer.
+   */
+  OZ_ALWAYS_INLINE
+  const char* end() const
+  {
+    return data + size;
+  }
 
-    /**
-     * Pointer to the end of the buffer.
-     */
-    OZ_ALWAYS_INLINE
-    char* end()
-    {
-      return data + size;
-    }
+  /**
+   * Pointer to the end of the buffer.
+   */
+  OZ_ALWAYS_INLINE
+  char* end()
+  {
+    return data + size;
+  }
 
-    /**
-     * %Buffer size in bytes.
-     */
-    OZ_ALWAYS_INLINE
-    int length() const
-    {
-      return size;
-    }
+  /**
+   * %Buffer size in bytes.
+   */
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return size;
+  }
 
-    /**
-     * True iff buffer size is 0 (and no resources allocated).
-     */
-    OZ_ALWAYS_INLINE
-    bool isEmpty() const
-    {
-      return size == 0;
-    }
+  /**
+   * True iff buffer size is 0 (and no resources allocated).
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return size == 0;
+  }
 
-    /**
-     * Create an `InputStream` object for reading binary data from the buffer.
-     */
-    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
+  /**
+   * Create an `InputStream` object for reading binary data from the buffer.
+   */
+  InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
-    /**
-     * Create an `OutputStream` object for writing binary data into the buffer.
-     */
-    OutputStream outputStream( Endian::Order order = Endian::NATIVE );
+  /**
+   * Create an `OutputStream` object for writing binary data into the buffer.
+   */
+  OutputStream outputStream( Endian::Order order = Endian::NATIVE );
 
-    /**
-     * Create a string from the buffer contents. Terminating null byte is always appended.
-     */
-    String toString() const;
+  /**
+   * Create a string from the buffer contents. Terminating null byte is always appended.
+   */
+  String toString() const;
 
-    /**
-     * Compress using deflate algorithm.
-     *
-     * An empty buffer is returned on an error.
-     *
-     * @param level compression level: -1 (default), 0 (no compression) or 1...9 (1 - best speed,
-     *        9 - best compression).
-     */
-    Buffer deflate( int level = -1 ) const;
+  /**
+   * Compress using deflate algorithm.
+   *
+   * An empty buffer is returned on an error.
+   *
+   * @param level compression level: -1 (default), 0 (no compression) or 1...9 (1 - best speed,
+   *        9 - best compression).
+   */
+  Buffer deflate( int level = -1 ) const;
 
-    /**
-     * Uncompress using inflate algorithm.
-     *
-     * An empty buffer is returned on an error.
-     */
-    Buffer inflate() const;
+  /**
+   * Uncompress using inflate algorithm.
+   *
+   * An empty buffer is returned on an error.
+   */
+  Buffer inflate() const;
 
-    /**
-     * Resize the buffer.
-     */
-    void resize( int newSize );
+  /**
+   * Resize the buffer.
+   */
+  void resize( int newSize );
 
-    /**
-     * For an empty buffer, allocate new storage of `newSize` bytes.
-     */
-    void allocate( int newSize );
+  /**
+   * For an empty buffer, allocate new storage of `newSize` bytes.
+   */
+  void allocate( int newSize );
 
-    /**
-     * Deallocate storage.
-     */
-    void deallocate();
+  /**
+   * Deallocate storage.
+   */
+  void deallocate();
 
 };
 

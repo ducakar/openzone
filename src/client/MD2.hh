@@ -33,92 +33,93 @@ namespace client
 
 class MD2 : public SMM
 {
-  public:
+public:
 
-    enum AnimType
-    {
-      ANIM_NONE = -1,
-      ANIM_STAND,
-      ANIM_RUN,
-      ANIM_ATTACK,
-      ANIM_PAIN_A,
-      ANIM_PAIN_B,
-      ANIM_PAIN_C,
-      ANIM_JUMP,
-      ANIM_FLIP,
-      ANIM_SALUTE,
-      ANIM_WAVE,
-      ANIM_FALLBACK,
-      ANIM_POINT,
-      ANIM_CROUCH_STAND,
-      ANIM_CROUCH_WALK,
-      ANIM_CROUCH_ATTACK,
-      ANIM_CROUCH_PAIN,
-      ANIM_CROUCH_DEATH,
-      ANIM_DEATH_FALLBACK,
-      ANIM_DEATH_FALLFORWARD,
-      ANIM_DEATH_FALLBACKSLOW
-    };
+  enum AnimType
+  {
+    ANIM_NONE = -1,
+    ANIM_STAND,
+    ANIM_RUN,
+    ANIM_ATTACK,
+    ANIM_PAIN_A,
+    ANIM_PAIN_B,
+    ANIM_PAIN_C,
+    ANIM_JUMP,
+    ANIM_FLIP,
+    ANIM_SALUTE,
+    ANIM_WAVE,
+    ANIM_FALLBACK,
+    ANIM_POINT,
+    ANIM_CROUCH_STAND,
+    ANIM_CROUCH_WALK,
+    ANIM_CROUCH_ATTACK,
+    ANIM_CROUCH_PAIN,
+    ANIM_CROUCH_DEATH,
+    ANIM_DEATH_FALLBACK,
+    ANIM_DEATH_FALLFORWARD,
+    ANIM_DEATH_FALLBACKSLOW
+  };
 
-    struct AnimInfo
-    {
-      int      firstFrame;
-      int      lastFrame;
-      float    frameFreq;
-      AnimType nextType;
-    };
+  struct AnimInfo
+  {
+    int      firstFrame;
+    int      lastFrame;
+    float    frameFreq;
+    AnimType nextType;
+  };
 
-    class AnimState
-    {
-      friend class MD2;
-
-      private:
-
-        static const float MIN_SHOT_INTERVAL_SYNC;
-
-        const Bot*     bot;
-        const Vehicle* vehicle;
-
-        AnimType       currType;
-        AnimType       nextType;
-
-        int            firstFrame;
-        int            lastFrame;
-        int            currFrame;
-        int            nextFrame;
-
-        float          frameFreq;
-        float          frameRatio;
-        bool           prevAttack;
-
-        AnimType extractAnim();
-        void setAnim();
-
-      public:
-
-        explicit AnimState( const Bot* bot );
-        explicit AnimState( const Vehicle* vehicle );
-
-        void advance();
-    };
-
-    static const AnimInfo ANIM_LIST[];
+  class AnimState
+  {
+    friend class MD2;
 
   private:
 
-    explicit MD2( int id );
+    static const float MIN_SHOT_INTERVAL_SYNC;
+
+    const Bot*     bot;
+    const Vehicle* vehicle;
+
+    AnimType       currType;
+    AnimType       nextType;
+
+    int            firstFrame;
+    int            lastFrame;
+    int            currFrame;
+    int            nextFrame;
+
+    float          frameFreq;
+    float          frameRatio;
+    bool           prevAttack;
+
+    AnimType extractAnim();
+    void setAnim();
 
   public:
 
-    static SMM* create( int id );
+    explicit AnimState( const Bot* bot );
+    explicit AnimState( const Vehicle* vehicle );
 
-    void scheduleAnim( const AnimState* anim, Model::QueueType queue )
-    {
-      model.scheduleAnimated( 1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
-    }
+    void advance();
 
-    void preload() override;
-    void load() override;
+  };
+
+  static const AnimInfo ANIM_LIST[];
+
+private:
+
+  explicit MD2( int id );
+
+public:
+
+  static SMM* create( int id );
+
+  void scheduleAnim( const AnimState* anim, Model::QueueType queue )
+  {
+    model.scheduleAnimated( 1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
+  }
+
+  void preload() override;
+  void load() override;
 
 };
 

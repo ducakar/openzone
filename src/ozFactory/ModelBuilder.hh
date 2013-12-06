@@ -40,27 +40,27 @@ namespace oz
  */
 class ModelBuilder
 {
-  public:
+public:
 
-    /**
-     * Forbid instances.
-     */
-    explicit ModelBuilder() = delete;
+  /**
+   * Forbid instances.
+   */
+  explicit ModelBuilder() = delete;
 
-    /**
-     * Get the last error string from Assimp.
-     */
-    static const char* getError();
+  /**
+   * Get the last error string from Assimp.
+   */
+  static const char* getError();
 
-    /**
-     * True iff the given 3D model format is supported by Assimp (only file extension is checked).
-     */
-    static bool isModel( const File& file );
+  /**
+   * True iff the given 3D model format is supported by Assimp (only file extension is checked).
+   */
+  static bool isModel( const File& file );
 
-    /**
-     * Build a Collada (.dae) model into OpenZone (.ozModel) format.
-     */
-    static bool buildModel( const File& file, OutputStream* os );
+  /**
+   * Build a Collada (.dae) model into OpenZone (.ozModel) format.
+   */
+  static bool buildModel( const File& file, OutputStream* os );
 
 };
 

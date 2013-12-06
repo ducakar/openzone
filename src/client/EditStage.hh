@@ -34,39 +34,39 @@ namespace client
 
 class EditStage : public Stage
 {
-  private:
+private:
 
-    Thread         auxThread;
-    Semaphore      mainSemaphore;
-    Semaphore      auxSemaphore;
-    volatile bool  isAuxAlive;
+  Thread         auxThread;
+  Semaphore      mainSemaphore;
+  Semaphore      auxSemaphore;
+  volatile bool  isAuxAlive;
 
-  public:
+public:
 
-    Proxy*         proxy;
+  Proxy*         proxy;
 
-    ui::EditFrame* editFrame;
-    File           layoutFile;
+  ui::EditFrame* editFrame;
+  File           layoutFile;
 
-  private:
+private:
 
-    void read();
-    void write() const;
+  void read();
+  void write() const;
 
-    static void auxMain( void* );
-    void auxRun();
+  static void auxMain( void* );
+  void auxRun();
 
-  public:
+public:
 
-    bool update() override;
-    void present( bool isFull ) override;
-    void wait( uint micros ) override;
+  bool update() override;
+  void present( bool isFull ) override;
+  void wait( uint micros ) override;
 
-    void load() override;
-    void unload() override;
+  void load() override;
+  void unload() override;
 
-    void init() override;
-    void destroy() override;
+  void init() override;
+  void destroy() override;
 
 };
 

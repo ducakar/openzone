@@ -32,16 +32,16 @@
 
 namespace oz
 {
-
+#if 0
 class Shaders
 {
-  public:
+public:
 
-    int load( const char* path );
+  int load( const char* path );
 
-    bool init();
-    void destroy();
+  bool init();
+  void destroy();
 
 };
-
+#endif
 }

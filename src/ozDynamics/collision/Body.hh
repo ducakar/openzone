@@ -41,75 +41,74 @@ namespace oz
  */
 class Body
 {
-  public:
+public:
 
-    /// Body is of `DBody` class.
-    static const int DYNAMIC_BIT = 0x01;
+  /// Body is of `DBody` class.
+  static const int DYNAMIC_BIT = 0x01;
 
-  public:
+public:
 
-    static Pool<Body> pool;  ///< Memory pool.
+  static Pool<Body> pool;  ///< Memory pool.
 
-    Body*   prev[3];         ///< Previous bodies in linked lists used in spatial structures.
-    Body*   next[3];         ///< Next bodies in linked lists used in spatial structures.
+  Body*   prev[3];         ///< Previous bodies in linked lists used in spatial structures.
+  Body*   next[3];         ///< Next bodies in linked lists used in spatial structures.
 
-    Bounds  bb;              ///< Cached axis-aligned bounding box in absolute coordinates.
+  Bounds  bb;              ///< Cached axis-aligned bounding box in absolute coordinates.
 
-    Point   p;               ///< Position.
-    Quat    o;               ///< Orientation.
-    Mat33   oMat;            ///< Cached orientation matrix.
+  Point   p;               ///< Position.
+  Quat    o;               ///< Orientation.
+  Mat33   oMat;            ///< Cached orientation matrix.
 
-    int     flags;           ///< Flags.
-    int     mask;            ///< Collision bitmask.
+  int     flags;           ///< Flags.
+  int     mask;            ///< Collision bitmask.
 
-    dxBody* odeId;           ///< ODE dBodyID.
+  dxBody* odeId;           ///< ODE dBodyID.
 
-  private:
+private:
 
-    Shape*  bodyShape;       ///< Collision shape.
+  Shape*  bodyShape;       ///< Collision shape.
 
-  public:
+public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    explicit Body() :
-      flags( 0 ), mask( ~0 ), odeId( nullptr ), bodyShape( nullptr )
-    {}
+  /**
+   * Create uninitialised instance.
+   */
+  explicit Body() :
+    flags( 0 ), mask( ~0 ), odeId( nullptr ), bodyShape( nullptr )
+  {}
 
-    virtual ~Body();
+  virtual ~Body();
 
-    OZ_ALWAYS_INLINE
-    Shape* shape() const
-    {
-      return bodyShape;
+  OZ_ALWAYS_INLINE
+  Shape* shape() const
+  {
+    return bodyShape;
+  }
+
+  void setShape( Shape* shape )
+  {
+    if( bodyShape != nullptr ) {
+      --bodyShape->nUsers;
     }
 
-    void setShape( Shape* shape )
-    {
-      if( bodyShape != nullptr ) {
-        --bodyShape->nUsers;
-      }
+    bodyShape = shape;
 
-      bodyShape = shape;
-
-      if( bodyShape != nullptr ) {
-        ++bodyShape->nUsers;
-      }
+    if( bodyShape != nullptr ) {
+      ++bodyShape->nUsers;
     }
+  }
 
-    /**
-     * Normalise rotation quaternion and update cached rotation matrix and bounding box.
-     */
-    void update()
-    {
-      o    = ~o;
-      oMat = Mat33::rotation( o );
-      bb   = bodyShape == nullptr ? Bounds( p, p ) : bodyShape->getBounds( p, oMat );
-    }
+  /**
+   * Normalise rotation quaternion and update cached rotation matrix and bounding box.
+   */
+  void update()
+  {
+    o    = ~o;
+    oMat = Mat33::rotation( o );
+    bb   = bodyShape == nullptr ? Bounds( p, p ) : bodyShape->getBounds( p, oMat );
+  }
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

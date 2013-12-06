@@ -34,60 +34,60 @@ namespace client
 
 class CinematicProxy : public Proxy
 {
-  private:
+private:
 
-    struct Step
+  struct Step
+  {
+    enum Type
     {
-      enum Type
-      {
-        SWITCH,
-        WAIT,
-        MOVE
-      };
-
-      Quat   rot;
-      Point  p;
-      Mat44  colour;
-
-      String code;
-      int    track;
-      String title;
-
-      float  time;
-      int    endState;
+      SWITCH,
+      WAIT,
+      MOVE
     };
 
-    List<Step> steps;
+    Quat   rot;
+    Point  p;
+    Mat44  colour;
 
-    Quat       beginRot;
-    Point      beginPos;
-    Mat44      beginColour;
+    String code;
+    int    track;
+    String title;
 
-    String     title;
-    int        nTitleChars;
+    float  time;
+    int    endState;
+  };
 
-    float      stepTime;
-    int        prevState;
+  List<Step> steps;
 
-    ui::CinematicText* cinematicText;
+  Quat       beginRot;
+  Point      beginPos;
+  Mat44      beginColour;
 
-  public:
+  String     title;
+  int        nTitleChars;
 
-    void executeSequence( const char* path, const Lingua* lingua );
+  float      stepTime;
+  int        prevState;
 
-    void begin() override;
-    void end() override;
+  ui::CinematicText* cinematicText;
 
-    void prepare() override;
-    void update() override;
+public:
 
-    void reset() override;
+  void executeSequence( const char* path, const Lingua* lingua );
 
-    void read( InputStream* is ) override;
-    void read( const JSON& json ) override;
+  void begin() override;
+  void end() override;
 
-    void write( OutputStream* os ) const override;
-    JSON write() const override;
+  void prepare() override;
+  void update() override;
+
+  void reset() override;
+
+  void read( InputStream* is ) override;
+  void read( const JSON& json ) override;
+
+  void write( OutputStream* os ) const override;
+  JSON write() const override;
 
 };
 

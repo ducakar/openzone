@@ -70,90 +70,90 @@ namespace oz
 template <typename Elem>
 class IteratorBase
 {
-  public:
+public:
 
-    /**
-     * Element type.
-     */
-    typedef Elem ElemType;
+  /**
+   * Element type.
+   */
+  typedef Elem ElemType;
 
-  protected:
+protected:
 
-    /**
-     * Element which iterator is currently positioned at.
-     */
-    Elem* elem;
+  /**
+   * Element which iterator is currently positioned at.
+   */
+  Elem* elem;
 
-  protected:
+protected:
 
-    /**
-     * Create an iterator pointing to a given element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit IteratorBase( Elem* first ) :
-      elem( first )
-    {}
+  /**
+   * Create an iterator pointing to a given element.
+   */
+  OZ_ALWAYS_INLINE
+  explicit IteratorBase( Elem* first ) :
+    elem( first )
+  {}
 
-  public:
+public:
 
-    /**
-     * True iff iterators point to the same element.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator == ( const IteratorBase& i ) const
-    {
-      return elem == i.elem;
-    }
+  /**
+   * True iff iterators point to the same element.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == ( const IteratorBase& i ) const
+  {
+    return elem == i.elem;
+  }
 
-    /**
-     * False iff iterators point to the same element.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator != ( const IteratorBase& i ) const
-    {
-      return elem != i.elem;
-    }
+  /**
+   * False iff iterators point to the same element.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != ( const IteratorBase& i ) const
+  {
+    return elem != i.elem;
+  }
 
-    /**
-     * True as long as iterator has not passed all elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return elem != nullptr;
-    }
+  /**
+   * True as long as iterator has not passed all elements.
+   */
+  OZ_ALWAYS_INLINE
+  bool isValid() const
+  {
+    return elem != nullptr;
+  }
 
-    /**
-     * Pointer to the current element.
-     */
-    OZ_ALWAYS_INLINE
-    operator Elem* () const
-    {
-      return elem;
-    }
+  /**
+   * Pointer to the current element.
+   */
+  OZ_ALWAYS_INLINE
+  operator Elem* () const
+  {
+    return elem;
+  }
 
-    /**
-     * Reference to the current element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& operator * () const
-    {
-      return *elem;
-    }
+  /**
+   * Reference to the current element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& operator * () const
+  {
+    return *elem;
+  }
 
-    /**
-     * Access to the current element's member.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* operator -> () const
-    {
-      return elem;
-    }
+  /**
+   * Access to the current element's member.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* operator -> () const
+  {
+    return elem;
+  }
 
-    /**
-     * Advance to the next element, should be implemented in derived classes.
-     */
-    IteratorBase& operator ++ () = delete;
+  /**
+   * Advance to the next element, should be implemented in derived classes.
+   */
+  IteratorBase& operator ++ () = delete;
 
 };
 

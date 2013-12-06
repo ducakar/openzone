@@ -38,28 +38,27 @@ namespace oz
  */
 class DBody : public Body
 {
-  public:
+public:
 
-    static Pool<DBody> pool; ///< Memory pool.
+  static Pool<DBody> pool; ///< Memory pool.
 
-    Vec3    mass;            ///< Mass.
-    Vec3    lift;            ///< Lift.
-    Mat33   inertia;         ///< Inertia.
+  Vec3    mass;            ///< Mass.
+  Vec3    lift;            ///< Lift.
+  Mat33   inertia;         ///< Inertia.
 
-    Vec3    velocity;        ///< Velocity.
-    Vec3    rotVelocity;     ///< Rotational velocity.
+  Vec3    velocity;        ///< Velocity.
+  Vec3    rotVelocity;     ///< Rotational velocity.
 
-  public:
+public:
 
-    explicit DBody() : Body()
-    {
-      flags = DYNAMIC_BIT;
-    }
+  explicit DBody() : Body()
+  {
+    flags = DYNAMIC_BIT;
+  }
 
-    ~DBody() override;
+  ~DBody() override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

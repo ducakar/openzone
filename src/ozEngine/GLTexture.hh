@@ -38,107 +38,107 @@ namespace oz
  */
 class GLTexture
 {
-  private:
+private:
 
-    GLuint textureId;      ///< OpenGL texture id.
-    int    textureMipmaps; ///< True iff mipmaps have been are loaded from file.
+  GLuint textureId;      ///< OpenGL texture id.
+  int    textureMipmaps; ///< True iff mipmaps have been are loaded from file.
 
-  public:
+public:
 
-    /**
-     * Create an empty instance (no OpenGL texture is created).
-     */
-    explicit GLTexture();
+  /**
+   * Create an empty instance (no OpenGL texture is created).
+   */
+  explicit GLTexture();
 
-    /**
-     * Load a DDS texture from a file.
-     */
-    explicit GLTexture( const File& file );
+  /**
+   * Load a DDS texture from a file.
+   */
+  explicit GLTexture( const File& file );
 
-    /**
-     * Destructor, unloads texture from GPU if loaded.
-     */
-    ~GLTexture();
+  /**
+   * Destructor, unloads texture from GPU if loaded.
+   */
+  ~GLTexture();
 
-    /**
-     * Move constructor.
-     */
-    GLTexture( GLTexture&& t ) :
-      textureId( t.textureId ), textureMipmaps( t.textureMipmaps )
-    {
-      t.textureId      = 0;
-      t.textureMipmaps = 0;
-    }
+  /**
+   * Move constructor.
+   */
+  GLTexture( GLTexture&& t ) :
+    textureId( t.textureId ), textureMipmaps( t.textureMipmaps )
+  {
+    t.textureId      = 0;
+    t.textureMipmaps = 0;
+  }
 
-    /**
-     * Move operator.
-     */
-    GLTexture& operator = ( GLTexture&& t )
-    {
-      if( &t == this ) {
-        return *this;
-      }
-
-      textureId        = t.textureId;
-      textureMipmaps   = t.textureMipmaps;
-
-      t.textureId      = 0;
-      t.textureMipmaps = 0;
-
+  /**
+   * Move operator.
+   */
+  GLTexture& operator = ( GLTexture&& t )
+  {
+    if( &t == this ) {
       return *this;
     }
 
-    /**
-     * OpenGL texture id.
-     */
-    GLuint id() const
-    {
-      return textureId;
-    }
+    textureId        = t.textureId;
+    textureMipmaps   = t.textureMipmaps;
 
-    /**
-     * True iff loaded.
-     */
-    bool isLoaded() const
-    {
-      return textureId != 0;
-    }
+    t.textureId      = 0;
+    t.textureMipmaps = 0;
 
-    /**
-     * True iff mipmaps have been loaded.
-     */
-    bool hasMipmaps() const
-    {
-      return textureMipmaps;
-    }
+    return *this;
+  }
 
-    /**
-     * Create a new uninitialised OpenGL texture.
-     *
-     * This is a NOP if the texture already exists.
-     */
-    bool create();
+  /**
+   * OpenGL texture id.
+   */
+  GLuint id() const
+  {
+    return textureId;
+  }
 
-    /**
-     * Create a new texture and load its data from a DDS file.
-     *
-     * If the texture already exists, it is destroyed and re-created. On loading failure, texture is
-     * deleted.
-     */
-    bool load( const File& file, int bias = 0 );
+  /**
+   * True iff loaded.
+   */
+  bool isLoaded() const
+  {
+    return textureId != 0;
+  }
 
-    /**
-     * Generate square identicon.
-     *
-     * `size` is used as both width and height. For best result it should be a multiple of 12.
-     * It is meant for use in UI, so it uses `GL_LINEAR`/`GL_LINEAR` filters with no compression.
-     */
-    bool generateIdenticon( int size, int hash, const Vec4& backgroundColour );
+  /**
+   * True iff mipmaps have been loaded.
+   */
+  bool hasMipmaps() const
+  {
+    return textureMipmaps;
+  }
 
-    /**
-     * Unload texture from GPU if loaded.
-     */
-    void destroy();
+  /**
+   * Create a new uninitialised OpenGL texture.
+   *
+   * This is a NOP if the texture already exists.
+   */
+  bool create();
+
+  /**
+   * Create a new texture and load its data from a DDS file.
+   *
+   * If the texture already exists, it is destroyed and re-created. On loading failure, texture is
+   * deleted.
+   */
+  bool load( const File& file, int bias = 0 );
+
+  /**
+   * Generate square identicon.
+   *
+   * `size` is used as both width and height. For best result it should be a multiple of 12.
+   * It is meant for use in UI, so it uses `GL_LINEAR`/`GL_LINEAR` filters with no compression.
+   */
+  bool generateIdenticon( int size, int hash, const Vec4& backgroundColour );
+
+  /**
+   * Unload texture from GPU if loaded.
+   */
+  void destroy();
 
 };
 

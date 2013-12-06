@@ -34,78 +34,78 @@ namespace builder
 
 class Compiler
 {
-  public:
+public:
 
-    enum PolyMode
-    {
-      TRIANGLES,
-      POLYGON
-    };
+  enum PolyMode
+  {
+    TRIANGLES,
+    POLYGON
+  };
 
-    enum Capability
-    {
-      UNIQUE    = 0x01,
-      BUMPMAP   = 0x02,
-      BLEND     = 0x04,
-      CLOCKWISE = 0x08
-    };
+  enum Capability
+  {
+    UNIQUE    = 0x01,
+    BUMPMAP   = 0x02,
+    BLEND     = 0x04,
+    CLOCKWISE = 0x08
+  };
 
-  public:
+public:
 
-    void enable( Capability cap );
-    void disable( Capability cap );
+  void enable( Capability cap );
+  void disable( Capability cap );
 
-    void beginModel();
-    void endModel();
+  void beginModel();
+  void endModel();
 
-    void shader( const char* shaderName );
+  void shader( const char* shaderName );
 
-    void anim( int nFrames, int nPositions );
-    void animPositions( const float* positions );
-    void animNormals( const float* normals );
+  void anim( int nFrames, int nPositions );
+  void animPositions( const float* positions );
+  void animNormals( const float* normals );
 
-    void beginNode( const char* name = "" );
-    void endNode();
+  void beginNode( const char* name = "" );
+  void endNode();
 
-    void transform( const Mat44& t );
-    void includeBounds( bool value );
-    void bindMesh( int id );
-    void bindLight( int id );
+  void transform( const Mat44& t );
+  void includeBounds( bool value );
+  void bindMesh( int id );
+  void bindLight( int id );
 
-    void beginMesh();
-    int endMesh();
+  void beginMesh();
+  int endMesh();
 
-    void texture( const char* texture );
-    void blend( bool doBlend );
+  void texture( const char* texture );
+  void blend( bool doBlend );
 
-    void begin( PolyMode mode );
-    void end();
+  void begin( PolyMode mode );
+  void end();
 
-    void texCoord( float u, float v );
-    void texCoord( const float* v );
+  void texCoord( float u, float v );
+  void texCoord( const float* v );
 
-    void normal( float x, float y, float z );
-    void normal( const float* v );
+  void normal( float x, float y, float z );
+  void normal( const float* v );
 
-    void vertex( float x, float y, float z );
-    void vertex( const float* v );
+  void vertex( float x, float y, float z );
+  void vertex( const float* v );
 
-    void animVertex( int i );
+  void animVertex( int i );
 
-    void beginLight( client::Light::Type type );
-    int endLight();
+  void beginLight( client::Light::Type type );
+  int endLight();
 
-    void position( float x, float y, float z );
-    void direction( float x, float y, float z );
-    void colour( float r, float g, float b );
-    void attenuation( float constant, float linear, float quadratic );
-    void coneAngles( float inner, float outer );
+  void position( float x, float y, float z );
+  void direction( float x, float y, float z );
+  void colour( float r, float g, float b );
+  void attenuation( float constant, float linear, float quadratic );
+  void coneAngles( float inner, float outer );
 
-    void writeModel( OutputStream* os, bool globalTextures = false );
-    void buildModelTextures( const char* destDir );
+  void writeModel( OutputStream* os, bool globalTextures = false );
+  void buildModelTextures( const char* destDir );
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

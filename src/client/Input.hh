@@ -34,151 +34,151 @@ namespace client
 
 class Input
 {
-  public:
+public:
 
-    static const int LEFT_BUTTON   = 0x01;
-    static const int MIDDLE_BUTTON = 0x02;
-    static const int RIGHT_BUTTON  = 0x04;
+  static const int LEFT_BUTTON   = 0x01;
+  static const int MIDDLE_BUTTON = 0x02;
+  static const int RIGHT_BUTTON  = 0x04;
 
-    static const int MOD_OFF_BIT   = 0x10000000;
-    static const int MOD_ON_BIT    = 0x20000000;
-    static const int MOD_MASK      = 0x30000000;
+  static const int MOD_OFF_BIT   = 0x10000000;
+  static const int MOD_ON_BIT    = 0x20000000;
+  static const int MOD_MASK      = 0x30000000;
 
-    enum Key
-    {
-      KEY_NONE,
+  enum Key
+  {
+    KEY_NONE,
 
-      KEY_UI_ALT,
-      KEY_UI_TOGGLE,
+    KEY_UI_ALT,
+    KEY_UI_TOGGLE,
 
-      KEY_DIR_1,
-      KEY_DIR_2,
-      KEY_DIR_3,
-      KEY_DIR_4,
-      KEY_DIR_6,
-      KEY_DIR_7,
-      KEY_DIR_8,
-      KEY_DIR_9,
+    KEY_DIR_1,
+    KEY_DIR_2,
+    KEY_DIR_3,
+    KEY_DIR_4,
+    KEY_DIR_6,
+    KEY_DIR_7,
+    KEY_DIR_8,
+    KEY_DIR_9,
 
-      KEY_NV_TOGGLE,
-      KEY_BINOCULARS_TOGGLE,
-      KEY_MAP_TOGGLE,
+    KEY_NV_TOGGLE,
+    KEY_BINOCULARS_TOGGLE,
+    KEY_MAP_TOGGLE,
 
-      KEY_CAMERA_TOGGLE,
-      KEY_FREELOOK_TOGGLE,
+    KEY_CAMERA_TOGGLE,
+    KEY_FREELOOK_TOGGLE,
 
-      KEY_TURN_LEFT,
-      KEY_TURN_RIGHT,
-      KEY_MOVE_RIGHT,
-      KEY_MOVE_LEFT,
-      KEY_MOVE_FORWARD,
-      KEY_MOVE_BACKWARD,
-      KEY_MOVE_UP,
-      KEY_MOVE_DOWN,
-      KEY_SPEED_TOGGLE,
+    KEY_TURN_LEFT,
+    KEY_TURN_RIGHT,
+    KEY_MOVE_RIGHT,
+    KEY_MOVE_LEFT,
+    KEY_MOVE_FORWARD,
+    KEY_MOVE_BACKWARD,
+    KEY_MOVE_UP,
+    KEY_MOVE_DOWN,
+    KEY_SPEED_TOGGLE,
 
-      KEY_CROUCH_TOGGLE,
-      KEY_JUMP,
-      KEY_EXIT,
-      KEY_EJECT,
-      KEY_SUICIDE,
-      KEY_ACTIVATE,
-      KEY_GRAB,
-      KEY_THROW,
-      KEY_PICK_UP,
-      KEY_FIRE,
-      KEY_NEXT_WEAPON,
+    KEY_CROUCH_TOGGLE,
+    KEY_JUMP,
+    KEY_EXIT,
+    KEY_EJECT,
+    KEY_SUICIDE,
+    KEY_ACTIVATE,
+    KEY_GRAB,
+    KEY_THROW,
+    KEY_PICK_UP,
+    KEY_FIRE,
+    KEY_NEXT_WEAPON,
 
-      KEY_WEAPON_1,
-      KEY_WEAPON_2,
-      KEY_WEAPON_3,
-      KEY_WEAPON_4,
+    KEY_WEAPON_1,
+    KEY_WEAPON_2,
+    KEY_WEAPON_3,
+    KEY_WEAPON_4,
 
-      KEY_GESTURE_POINT,
-      KEY_GESTURE_BACK,
-      KEY_GESTURE_SALUTE,
-      KEY_GESTURE_WAVE,
-      KEY_GESTURE_FLIP,
+    KEY_GESTURE_POINT,
+    KEY_GESTURE_BACK,
+    KEY_GESTURE_SALUTE,
+    KEY_GESTURE_WAVE,
+    KEY_GESTURE_FLIP,
 
-      KEY_SWITCH_TO_UNIT,
-      KEY_CYCLE_UNITS,
+    KEY_SWITCH_TO_UNIT,
+    KEY_CYCLE_UNITS,
 
-      KEY_GROUP_SELECT,
+    KEY_GROUP_SELECT,
 
-      KEY_CHEAT_SKY_FORWARD,
-      KEY_CHEAT_SKY_BACKWARD,
+    KEY_CHEAT_SKY_FORWARD,
+    KEY_CHEAT_SKY_BACKWARD,
 
-      KEY_DELETE,
+    KEY_DELETE,
 
-      KEY_QUICKSAVE,
-      KEY_QUICKLOAD,
-      KEY_AUTOLOAD,
-      KEY_QUIT,
+    KEY_QUICKSAVE,
+    KEY_QUICKLOAD,
+    KEY_AUTOLOAD,
+    KEY_QUIT,
 
-      KEY_MAX
-    };
+    KEY_MAX
+  };
 
-  public:
+public:
 
-    float mouseX;
-    float mouseY;
-    float mouseZ;
-    float mouseW;
+  float mouseX;
+  float mouseY;
+  float mouseZ;
+  float mouseW;
 
-    char  buttons;
-    char  oldButtons;
-    char  currButtons;
+  char  buttons;
+  char  oldButtons;
+  char  currButtons;
 
-    bool  leftPressed;
-    bool  leftReleased;
-    bool  middlePressed;
-    bool  middleReleased;
-    bool  rightPressed;
-    bool  rightReleased;
-    bool  wheelUp;
-    bool  wheelDown;
+  bool  leftPressed;
+  bool  leftReleased;
+  bool  middlePressed;
+  bool  middleReleased;
+  bool  rightPressed;
+  bool  rightReleased;
+  bool  wheelUp;
+  bool  wheelDown;
 
-    float lookX;
-    float lookY;
-    float moveX;
-    float moveY;
+  float lookX;
+  float lookY;
+  float moveX;
+  float moveY;
 
-    bool  keys[KEY_MAX];
-    bool  oldKeys[KEY_MAX];
+  bool  keys[KEY_MAX];
+  bool  oldKeys[KEY_MAX];
 
-    bool  isKeyPressed;
-    bool  isKeyReleased;
+  bool  isKeyPressed;
+  bool  isKeyReleased;
 
-    float mouseSensX;
-    float mouseSensY;
-    float mouseSensZ;
-    float mouseSensW;
-    float mouseAccelThreshold;
-    float mouseMaxAccel;
-    float mouseAccelC0;
-    float mouseAccelC1;
-    float mouseAccelC2;
-    float mouseWheelStep;
+  float mouseSensX;
+  float mouseSensY;
+  float mouseSensZ;
+  float mouseSensW;
+  float mouseAccelThreshold;
+  float mouseMaxAccel;
+  float mouseAccelC0;
+  float mouseAccelC1;
+  float mouseAccelC2;
+  float mouseWheelStep;
 
-    float keySensX;
-    float keySensY;
+  float keySensX;
+  float keySensY;
 
-  private:
+private:
 
-    void loadDefaultKeyMap();
-    void loadKeyMap( const JSON& keyConfig );
-    JSON keyMapToJSON() const;
+  void loadDefaultKeyMap();
+  void loadKeyMap( const JSON& keyConfig );
+  JSON keyMapToJSON() const;
 
-  public:
+public:
 
-    void readEvent( SDL_Event* event );
+  void readEvent( SDL_Event* event );
 
-    void reset();
-    void prepare();
-    void update();
+  void reset();
+  void prepare();
+  void update();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

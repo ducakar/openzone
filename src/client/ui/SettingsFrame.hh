@@ -35,17 +35,17 @@ namespace ui
 
 class SettingsFrame : public Frame
 {
-  private:
+private:
 
-    Text message;
+  Text message;
 
-  protected:
+protected:
 
-    void onDraw() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit SettingsFrame();
+  explicit SettingsFrame();
 
 };
 

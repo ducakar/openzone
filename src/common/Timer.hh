@@ -35,60 +35,60 @@ namespace oz
  */
 class Timer
 {
-  public:
+public:
 
-    /// Number of ticks (game updates) per second.
-    static const uint TICKS_PER_SEC = 60;
+  /// Number of ticks (game updates) per second.
+  static const uint TICKS_PER_SEC = 60;
 
-    /// Length of one tick in microseconds.
-    static const uint TICK_MICROS = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
+  /// Length of one tick in microseconds.
+  static const uint TICK_MICROS = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
-    /// Length of one tick in milliseconds.
-    static const uint TICK_MILLIS = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
+  /// Length of one tick in milliseconds.
+  static const uint TICK_MILLIS = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
-    /// Length of one tick in seconds.
-    static constexpr float TICK_TIME = 1.0f / 60.0f;
+  /// Length of one tick in seconds.
+  static constexpr float TICK_TIME = 1.0f / 60.0f;
 
-    ulong64 runMicros;   ///< Run time (game time plus dropped time).
+  ulong64 runMicros;   ///< Run time (game time plus dropped time).
 
-    ulong64 ticks;       ///< Ticks from the start of the game.
-    ulong64 micros;      ///< Microseconds from the start of the game.
-    float   time;        ///< %Time from the start of the game is seconds.
+  ulong64 ticks;       ///< Ticks from the start of the game.
+  ulong64 micros;      ///< Microseconds from the start of the game.
+  float   time;        ///< %Time from the start of the game is seconds.
 
-    ulong64 nFrames;     ///< Number of rendered frames from the start of the game.
-    uint    frameTicks;  ///< Ticks from the last rendered frame.
-    uint    frameMicros; ///< Microseconds of game time from the last rendered frame.
-    float   frameTime;   ///< Game time from the last rendered frame.
+  ulong64 nFrames;     ///< Number of rendered frames from the start of the game.
+  uint    frameTicks;  ///< Ticks from the last rendered frame.
+  uint    frameMicros; ///< Microseconds of game time from the last rendered frame.
+  float   frameTime;   ///< Game time from the last rendered frame.
 
-    /**
-     * Default constructor, resets timer.
-     */
-    explicit Timer();
+  /**
+   * Default constructor, resets timer.
+   */
+  explicit Timer();
 
-    /**
-     * Reset all timer counters to zero.
-     */
-    void reset();
+  /**
+   * Reset all timer counters to zero.
+   */
+  void reset();
 
-    /**
-     * Add one tick to the counters.
-     */
-    void tick();
+  /**
+   * Add one tick to the counters.
+   */
+  void tick();
 
-    /**
-     * Add one frame to the counters and reset frame counters.
-     */
-    void frame();
+  /**
+   * Add one frame to the counters and reset frame counters.
+   */
+  void frame();
 
-    /**
-     * Drop time.
-     *
-     * On some occasions (e.g. when game freezes for a moment because of loading) time has to be
-     * dropped, otherwise main loop will strive to catch up and compensate that time with shorter
-     * ticks. That would results in a period after each "freeze" during which simulation will run
-     * faster than in real time.
-     */
-    void drop( uint micros );
+  /**
+   * Drop time.
+   *
+   * On some occasions (e.g. when game freezes for a moment because of loading) time has to be
+   * dropped, otherwise main loop will strive to catch up and compensate that time with shorter
+   * ticks. That would results in a period after each "freeze" during which simulation will run
+   * faster than in real time.
+   */
+  void drop( uint micros );
 
 };
 

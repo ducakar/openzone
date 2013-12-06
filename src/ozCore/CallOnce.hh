@@ -42,55 +42,55 @@ namespace oz
  */
 class CallOnce
 {
-  public:
+public:
 
-    /// %Method type.
-    typedef void Method();
+  /// %Method type.
+  typedef void Method();
 
-  private:
+private:
 
-    volatile int  onceLock;        ///< Spin lock.
-    volatile bool wasMethodCalled; ///< Whether the method was already called.
+  volatile int  onceLock;        ///< Spin lock.
+  volatile bool wasMethodCalled; ///< Whether the method was already called.
 
-  public:
+public:
 
-    /**
-     * Create a new instance.
-     */
-    explicit CallOnce() :
-      onceLock( 0 ), wasMethodCalled( false )
-    {}
+  /**
+   * Create a new instance.
+   */
+  explicit CallOnce() :
+    onceLock( 0 ), wasMethodCalled( false )
+  {}
 
-    /**
-     * Copying or moving is not possible for the embedded spin lock.
-     */
-    CallOnce( const CallOnce& ) = delete;
+  /**
+   * Copying or moving is not possible for the embedded spin lock.
+   */
+  CallOnce( const CallOnce& ) = delete;
 
-    /**
-     * Copying or moving is not possible for the embedded spin lock.
-     */
-    CallOnce& operator = ( const CallOnce& ) = delete;
+  /**
+   * Copying or moving is not possible for the embedded spin lock.
+   */
+  CallOnce& operator = ( const CallOnce& ) = delete;
 
-    /**
-     * True this object has already been used to call a method.
-     */
-    OZ_ALWAYS_INLINE
-    bool wasCalled() const
-    {
-      return wasMethodCalled;
-    }
+  /**
+   * True this object has already been used to call a method.
+   */
+  OZ_ALWAYS_INLINE
+  bool wasCalled() const
+  {
+    return wasMethodCalled;
+  }
 
-    /**
-     * Call method if this is the first call on this object.
-     *
-     * The `call()` method only executes the given method first time it is called on this object.
-     * Internal locking mechanism prevents race conditions when this is done from two threads
-     * simultaneously.
-     *
-     * If `method` is null, this object is just set as used, as if it would have already called a
-     * method.
-     */
-    void call( Method* method );
+  /**
+   * Call method if this is the first call on this object.
+   *
+   * The `call()` method only executes the given method first time it is called on this object.
+   * Internal locking mechanism prevents race conditions when this is done from two threads
+   * simultaneously.
+   *
+   * If `method` is null, this object is just set as used, as if it would have already called a
+   * method.
+   */
+  void call( Method* method );
 
 };
 

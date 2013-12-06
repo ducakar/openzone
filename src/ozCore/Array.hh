@@ -45,249 +45,249 @@ class Array
 {
   static_assert( COUNT > 0, "Array size must be at least 1" );
 
-  public:
+public:
 
-    /**
-     * %Iterator with constant access to elements.
-     */
-    typedef ArrayIterator<const Elem> CIterator;
+  /**
+   * %Iterator with constant access to elements.
+   */
+  typedef ArrayIterator<const Elem> CIterator;
 
-    /**
-     * %Iterator with non-constant access to elements.
-     */
-    typedef ArrayIterator<Elem> Iterator;
+  /**
+   * %Iterator with non-constant access to elements.
+   */
+  typedef ArrayIterator<Elem> Iterator;
 
-  private:
+private:
 
-    Elem data[COUNT]; ///< %Array of elements.
+  Elem data[COUNT]; ///< %Array of elements.
 
-  public:
+public:
 
-    /**
-     * Create uninitialised array.
-     */
-    explicit Array() = default;
+  /**
+   * Create uninitialised array.
+   */
+  explicit Array() = default;
 
-    /**
-     * Initialise form a C++ array.
-     */
-    explicit Array( const Elem* array )
-    {
-      aCopy<Elem>( array, COUNT, data );
-    }
+  /**
+   * Initialise form a C++ array.
+   */
+  explicit Array( const Elem* array )
+  {
+    aCopy<Elem>( array, COUNT, data );
+  }
 
-    /**
-     * Initialise from an initialiser list.
-     */
-    Array( InitialiserList<Elem> l )
-    {
-      hard_assert( l.size() == COUNT );
+  /**
+   * Initialise from an initialiser list.
+   */
+  Array( InitialiserList<Elem> l )
+  {
+    hard_assert( l.size() == COUNT );
 
-      aCopy<Elem>( l.begin(), int( l.size() ), data );
-    }
+    aCopy<Elem>( l.begin(), int( l.size() ), data );
+  }
 
-    /**
-     * True iff respective elements are equal.
-     */
-    bool operator == ( const Array& a ) const
-    {
-      return aEquals<Elem>( data, COUNT, a.data );
-    }
+  /**
+   * True iff respective elements are equal.
+   */
+  bool operator == ( const Array& a ) const
+  {
+    return aEquals<Elem>( data, COUNT, a.data );
+  }
 
-    /**
-     * False iff respective elements are equal.
-     */
-    bool operator != ( const Array& a ) const
-    {
-      return !aEquals<Elem>( data, COUNT, a.data );
-    }
+  /**
+   * False iff respective elements are equal.
+   */
+  bool operator != ( const Array& a ) const
+  {
+    return !aEquals<Elem>( data, COUNT, a.data );
+  }
 
-    /**
-     * %Iterator with constant access, initially points to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator citer() const
-    {
-      return CIterator( data, data + COUNT );
-    }
+  /**
+   * %Iterator with constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator citer() const
+  {
+    return CIterator( data, data + COUNT );
+  }
 
-    /**
-     * %Iterator with non-constant access, initially points to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    Iterator iter()
-    {
-      return Iterator( data, data + COUNT );
-    }
+  /**
+   * %Iterator with non-constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator iter()
+  {
+    return Iterator( data, data + COUNT );
+  }
 
-    /**
-     * STL-compatible constant begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* begin() const
-    {
-      return data;
-    }
+  /**
+   * STL-compatible constant begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* begin() const
+  {
+    return data;
+  }
 
-    /**
-     * STL-compatible begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* begin()
-    {
-      return data;
-    }
+  /**
+   * STL-compatible begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* begin()
+  {
+    return data;
+  }
 
-    /**
-     * STL-compatible constant end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* end() const
-    {
-      return data + COUNT;
-    }
+  /**
+   * STL-compatible constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* end() const
+  {
+    return data + COUNT;
+  }
 
-    /**
-     * STL-compatible end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* end()
-    {
-      return data + COUNT;
-    }
+  /**
+   * STL-compatible end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* end()
+  {
+    return data + COUNT;
+  }
 
-    /**
-     * Number of elements.
-     */
-    OZ_ALWAYS_INLINE
-    int length() const
-    {
-      return COUNT;
-    }
+  /**
+   * Number of elements.
+   */
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return COUNT;
+  }
 
-    /**
-     * Always false since static array cannot have zero elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isEmpty() const
-    {
-      return false;
-    }
+  /**
+   * Always false since static array cannot have zero elements.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return false;
+  }
 
-    /**
-     * Constant reference to the `i`-th element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& operator [] ( int i ) const
-    {
-      hard_assert( uint( i ) < uint( COUNT ) );
+  /**
+   * Constant reference to the `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& operator [] ( int i ) const
+  {
+    hard_assert( uint( i ) < uint( COUNT ) );
 
-      return data[i];
-    }
+    return data[i];
+  }
 
-    /**
-     * Reference the `i`-th element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& operator [] ( int i )
-    {
-      hard_assert( uint( i ) < uint( COUNT ) );
+  /**
+   * Reference the `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& operator [] ( int i )
+  {
+    hard_assert( uint( i ) < uint( COUNT ) );
 
-      return data[i];
-    }
+    return data[i];
+  }
 
-    /**
-     * Constant reference to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& first() const
-    {
-      return data[0];
-    }
+  /**
+   * Constant reference to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& first() const
+  {
+    return data[0];
+  }
 
-    /**
-     * Reference to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& first()
-    {
-      return data[0];
-    }
+  /**
+   * Reference to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& first()
+  {
+    return data[0];
+  }
 
-    /**
-     * Constant reference to the last element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& last() const
-    {
-      return data[COUNT - 1];
-    }
+  /**
+   * Constant reference to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& last() const
+  {
+    return data[COUNT - 1];
+  }
 
-    /**
-     * Reference to the last element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem& last()
-    {
-      return data[COUNT - 1];
-    }
+  /**
+   * Reference to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& last()
+  {
+    return data[COUNT - 1];
+  }
 
-    /**
-     * True iff a given value is found in the array.
-     */
-    bool contains( const Elem& e ) const
-    {
-      return aContains<Elem, Elem>( data, COUNT, e );
-    }
+  /**
+   * True iff a given value is found in the array.
+   */
+  bool contains( const Elem& e ) const
+  {
+    return aContains<Elem, Elem>( data, COUNT, e );
+  }
 
-    /**
-     * Index of the first occurrence of the value or -1 if not found.
-     */
-    int index( const Elem& e ) const
-    {
-      return aIndex<Elem, Elem>( data, COUNT, e );
-    }
+  /**
+   * Index of the first occurrence of the value or -1 if not found.
+   */
+  int index( const Elem& e ) const
+  {
+    return aIndex<Elem, Elem>( data, COUNT, e );
+  }
 
-    /**
-     * Index of the last occurrence of the value or -1 if not found.
-     */
-    int lastIndex( const Elem& e ) const
-    {
-      return aLastIndex<Elem, Elem>( data, COUNT, e );
-    }
+  /**
+   * Index of the last occurrence of the value or -1 if not found.
+   */
+  int lastIndex( const Elem& e ) const
+  {
+    return aLastIndex<Elem, Elem>( data, COUNT, e );
+  }
 
-    /**
-     * Reverse elements.
-     */
-    void reverse()
-    {
-      aReverse<Elem>( data, COUNT );
-    }
+  /**
+   * Reverse elements.
+   */
+  void reverse()
+  {
+    aReverse<Elem>( data, COUNT );
+  }
 
-    /**
-     * Sort elements with quicksort.
-     */
-    void sort()
-    {
-      aSort<Elem>( data, COUNT );
-    }
+  /**
+   * Sort elements with quicksort.
+   */
+  void sort()
+  {
+    aSort<Elem>( data, COUNT );
+  }
 
-    /**
-     * Set all elements to their default values, i.e. `Elem()`.
-     */
-    void clear()
-    {
-      aFill<Elem, Elem>( data, COUNT, Elem() );
-    }
+  /**
+   * Set all elements to their default values, i.e. `Elem()`.
+   */
+  void clear()
+  {
+    aFill<Elem, Elem>( data, COUNT, Elem() );
+  }
 
-    /**
-     * Delete all objects referenced by elements (must be pointers) and clear the array.
-     */
-    void free()
-    {
-      aFree<Elem>( data, COUNT );
-      clear();
-    }
+  /**
+   * Delete all objects referenced by elements (must be pointers) and clear the array.
+   */
+  void free()
+  {
+    aFree<Elem>( data, COUNT );
+    clear();
+  }
 
 };
 

@@ -28,34 +28,31 @@
 namespace oz
 {
 
-class BuildInfo
+struct BuildInfo
 {
-  public:
+  /// Data and time.
+  static const char* const TIME;
 
-    /// Data and time.
-    static const char* const TIME;
+  /// Host system.
+  static const char* const HOST;
 
-    /// Host system.
-    static const char* const HOST;
+  /// Target architecture.
+  static const char* const HOST_ARCH;
 
-    /// Target architecture.
-    static const char* const HOST_ARCH;
+  /// Target architecture.
+  static const char* const TARGET_ARCH;
 
-    /// Target architecture.
-    static const char* const TARGET_ARCH;
+  /// Build configuration.
+  static const char* const BUILD_TYPE;
 
-    /// Build configuration.
-    static const char* const BUILD_TYPE;
+  /// Compiler executable and version.
+  static const char* const COMPILER;
 
-    /// Compiler executable and version.
-    static const char* const COMPILER;
+  /// Compiler flags.
+  static const char* const CXX_FLAGS;
 
-    /// Compiler flags.
-    static const char* const CXX_FLAGS;
-
-    /// Configuration options.
-    static const char* const CONFIG;
-
+  /// Configuration options.
+  static const char* const CONFIG;
 };
 
 }

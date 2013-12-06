@@ -32,55 +32,55 @@ namespace oz
 
 class Terra
 {
-  public:
+public:
 
-    //
-    // 0. triangle -- upper left
-    // 1. triangle -- lower right
-    //
-    //    |  ...  |         D        C
-    //    +---+---+-         o----->o
-    //    |1 /|1 /|          |      ^
-    //    | / | / |          |      |
-    //    |/ 0|/ 0|          |      |
-    //    +---+---+- ...     v      |
-    //    |1 /|1 /|          o<-----o
-    //    | / | / |         A        B
-    //    |/ 0|/ 0|
-    //  (0,0)
-    //
-    struct Quad
-    {
-      static const int SIZE = 8;        ///< Integer size of a terrain quad.
-      static const int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
+  //
+  // 0. triangle -- upper left
+  // 1. triangle -- lower right
+  //
+  //    |  ...  |         D        C
+  //    +---+---+-         o----->o
+  //    |1 /|1 /|          |      ^
+  //    | / | / |          |      |
+  //    |/ 0|/ 0|          |      |
+  //    +---+---+- ...     v      |
+  //    |1 /|1 /|          o<-----o
+  //    | / | / |         A        B
+  //    |/ 0|/ 0|
+  //  (0,0)
+  //
+  struct Quad
+  {
+    static const int SIZE = 8;        ///< Integer size of a terrain quad.
+    static const int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
 
-      Point vertex;
-      Vec3  triNormal[2];
-    };
+    Point vertex;
+    Vec3  triNormal[2];
+  };
 
-    // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
-    static const int QUADS = 2 * MAX_WORLD_COORD / Quad::SIZE;
-    static const int VERTS = QUADS + 1;
-    static const int DIM   = QUADS * Quad::DIM;
+  // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
+  static const int QUADS = 2 * MAX_WORLD_COORD / Quad::SIZE;
+  static const int VERTS = QUADS + 1;
+  static const int DIM   = QUADS * Quad::DIM;
 
-    Quad quads[VERTS][VERTS]; ///< Vertices and triangle normals.
-    int  liquid;              ///< Either `matrix::Medium::GLOBAL_WATER_BIT` or
-                              ///< `matrix::Medium::GLOBAL_LAVA_BIT`
-    int  id;
+  Quad quads[VERTS][VERTS]; ///< Vertices and triangle normals.
+  int  liquid;              ///< Either `matrix::Medium::GLOBAL_WATER_BIT` or
+                            ///< `matrix::Medium::GLOBAL_LAVA_BIT`
+  int  id;
 
-    Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
-    Pair<int> getIndices( float x, float y ) const;
-    float height( float x, float y ) const;
+  Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
+  Pair<int> getIndices( float x, float y ) const;
+  float height( float x, float y ) const;
 
-    void reset();
-    void load( int id );
-    void init();
+  void reset();
+  void load( int id );
+  void init();
 
-    void read( InputStream* is );
-    void write( OutputStream* os ) const;
+  void read( InputStream* is );
+  void write( OutputStream* os ) const;
 
-    void read( const JSON& json );
-    JSON write() const;
+  void read( const JSON& json );
+  JSON write() const;
 
 };
 

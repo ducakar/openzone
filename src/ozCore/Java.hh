@@ -72,24 +72,24 @@ namespace oz
  */
 class Java
 {
-  public:
+public:
 
-    /**
-     * Forbid instances.
-     */
-    explicit Java() = delete;
+  /**
+   * Forbid instances.
+   */
+  explicit Java() = delete;
 
-    /**
-     * Return Java VM handle or `nullptr` if not initialised.
-     *
-     * Application must use `OZ_JAVA_ENTRY_POINT()` to initialise this handle.
-     */
-    static JavaVM* vm();
+  /**
+   * Return Java VM handle or `nullptr` if not initialised.
+   *
+   * Application must use `OZ_JAVA_ENTRY_POINT()` to initialise this handle.
+   */
+  static JavaVM* vm();
 
-    /**
-     * Helper method for `OZ_JAVA_ENTRY_POINT()` macro.
-     */
-    static void application( void* env, void* clazz );
+  /**
+   * Helper method for `OZ_JAVA_ENTRY_POINT()` macro.
+   */
+  static void application( void* env, void* clazz );
 
 };
 

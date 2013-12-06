@@ -32,26 +32,25 @@ namespace client
 
 class BotAudio : public BasicAudio
 {
-  private:
+private:
 
-    static const float FOOTSTEP_DISTANCE_SQ;
+  static const float FOOTSTEP_DISTANCE_SQ;
 
-    int prevStep;
+  int prevStep;
 
-  protected:
+protected:
 
-    explicit BotAudio( const Object* obj );
+  explicit BotAudio( const Object* obj );
 
-  public:
+public:
 
-    static Pool<BotAudio, 256> pool;
+  static Pool<BotAudio, 256> pool;
 
-    static Audio* create( const Object* obj );
+  static Audio* create( const Object* obj );
 
-    void play( const Object* playAt ) override;
+  void play( const Object* playAt ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

@@ -35,42 +35,41 @@ class MD2Imago : public Imago
 {
   friend class MD2WeaponImago;
 
-  private:
+private:
 
-    static const float TURN_SMOOTHING_COEF;
+  static const float TURN_SMOOTHING_COEF;
 
-  private:
+private:
 
-    MD2*           md2;
-    float          h;
-    MD2::AnimState anim;
+  MD2*           md2;
+  float          h;
+  MD2::AnimState anim;
 
-  private:
+private:
 
-    explicit MD2Imago( const Bot* bot ) :
-      Imago( bot ), anim( bot )
-    {
-      flags |= Imago::MD2MODEL_BIT;
-    }
+  explicit MD2Imago( const Bot* bot ) :
+    Imago( bot ), anim( bot )
+  {
+    flags |= Imago::MD2MODEL_BIT;
+  }
 
-    explicit MD2Imago( const Vehicle* vehicle ) :
-      Imago( vehicle ), anim( vehicle )
-    {
-      flags |= Imago::MD2MODEL_BIT;
-    }
+  explicit MD2Imago( const Vehicle* vehicle ) :
+    Imago( vehicle ), anim( vehicle )
+  {
+    flags |= Imago::MD2MODEL_BIT;
+  }
 
-    ~MD2Imago() override;
+  ~MD2Imago() override;
 
-  public:
+public:
 
-    static Pool<MD2Imago, 256> pool;
+  static Pool<MD2Imago, 256> pool;
 
-    static Imago* create( const Object* obj );
+  static Imago* create( const Object* obj );
 
-    void draw( const Imago* parent ) override;
+  void draw( const Imago* parent ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

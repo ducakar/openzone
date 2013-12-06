@@ -36,54 +36,54 @@ namespace ui
 
 class BuildFrame : public Frame
 {
-  private:
+private:
 
-    static const int   SLOT_SIZE      = 76;
-    static const Mat44 OVERLAY_GREEN;
-    static const Mat44 OVERLAY_YELLOW;
-    static const Mat44 OVERLAY_RED;
+  static const int   SLOT_SIZE      = 76;
+  static const Mat44 OVERLAY_GREEN;
+  static const Mat44 OVERLAY_YELLOW;
+  static const Mat44 OVERLAY_RED;
 
-    enum Mode
-    {
-      BUILDINGS,
-      UNITS,
-      ITEMS,
-      OBJECTS
-    };
+  enum Mode
+  {
+    BUILDINGS,
+    UNITS,
+    ITEMS,
+    OBJECTS
+  };
 
-    Mode               mode;
-    GLTexture          scrollUpTex;
-    GLTexture          scrollDownTex;
-    ModelField**       models;
+  Mode               mode;
+  GLTexture          scrollUpTex;
+  GLTexture          scrollDownTex;
+  ModelField**       models;
 
-    const oz::BSP*     overlayBSP;
-    const ObjectClass* overlayClass;
-    Heading            overlayHeading;
+  const oz::BSP*     overlayBSP;
+  const ObjectClass* overlayClass;
+  Heading            overlayHeading;
 
-    int                rows;
-    int                nScrollRows;
-    int                scroll;
-    bool               isOverModel;
-    bool               wasOverModel;
+  int                rows;
+  int                nScrollRows;
+  int                scroll;
+  bool               isOverModel;
+  bool               wasOverModel;
 
-  private:
+private:
 
-    static void overlayCallback( Area* area, const Vec3& ray );
-    static void selectBuildings( Button* sender );
-    static void selectUnits( Button* sender );
-    static void selectItems( Button* sender );
-    static void selectObjects( Button* sender );
+  static void overlayCallback( Area* area, const Vec3& ray );
+  static void selectBuildings( Button* sender );
+  static void selectUnits( Button* sender );
+  static void selectItems( Button* sender );
+  static void selectObjects( Button* sender );
 
-    static void startPlacement( ModelField* sender, bool isClicked );
+  static void startPlacement( ModelField* sender, bool isClicked );
 
-    void onReposition() override;
-    bool onMouseEvent() override;
-    void onDraw() override;
+  void onReposition() override;
+  bool onMouseEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit BuildFrame();
-    ~BuildFrame() override;
+  explicit BuildFrame();
+  ~BuildFrame() override;
 
 };
 

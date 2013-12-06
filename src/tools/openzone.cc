@@ -21,8 +21,6 @@
  * @file client/openzone.cc
  */
 
-#include <client/openzone.hh>
-
 #include <client/Client.hh>
 
 #include <SDL.h>

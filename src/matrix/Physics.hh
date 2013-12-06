@@ -32,67 +32,67 @@ namespace oz
 
 class Physics
 {
-  public:
+public:
 
-    static const float FLOOR_NORMAL_Z;
-    static const float MOVE_BOUNCE;
-    static const float MAX_HIT_MASS;
-    static const float ENTITY_BOND_G_RATIO;
-    static const float SIDE_PUSH_RATIO;
+  static const float FLOOR_NORMAL_Z;
+  static const float MOVE_BOUNCE;
+  static const float MAX_HIT_MASS;
+  static const float ENTITY_BOND_G_RATIO;
+  static const float SIDE_PUSH_RATIO;
 
-    static const float HIT_THRESHOLD;
-    static const float HIT_INTENSITY_COEF;
-    static const float HIT_ENERGY_COEF;
-    static const float SPLASH_THRESHOLD;
-    static const float SPLASH_INTENSITY_COEF;
+  static const float HIT_THRESHOLD;
+  static const float HIT_INTENSITY_COEF;
+  static const float HIT_ENERGY_COEF;
+  static const float SPLASH_THRESHOLD;
+  static const float SPLASH_INTENSITY_COEF;
 
-    static const float WEIGHT_DAMAGE_THRESHOLD;
-    static const float WEIGHT_DAMAGE_FACTOR;
-    static const float SLIDE_DAMAGE_THRESHOLD;
-    static const float SLIDE_DAMAGE_COEF;
+  static const float WEIGHT_DAMAGE_THRESHOLD;
+  static const float WEIGHT_DAMAGE_FACTOR;
+  static const float SLIDE_DAMAGE_THRESHOLD;
+  static const float SLIDE_DAMAGE_COEF;
 
-    static const float STICK_VELOCITY;
-    static const float SLICK_STICK_VELOCITY;
-    static const float FLOATING_STICK_VELOCITY;
-    static const float WATER_FRICTION;
-    static const float LADDER_FRICTION;
-    static const float FLOOR_FRICTION_COEF;
-    static const float SLICK_FRICTION_COEF;
+  static const float STICK_VELOCITY;
+  static const float SLICK_STICK_VELOCITY;
+  static const float FLOATING_STICK_VELOCITY;
+  static const float WATER_FRICTION;
+  static const float LADDER_FRICTION;
+  static const float FLOOR_FRICTION_COEF;
+  static const float SLICK_FRICTION_COEF;
 
-    static const float LAVA_LIFT;
-    static const float LAVA_DAMAGE_ABSOLUTE;
-    static const float LAVA_DAMAGE_RATIO;
-    static const int   LAVA_DAMAGE_INTERVAL;
+  static const float LAVA_LIFT;
+  static const float LAVA_DAMAGE_ABSOLUTE;
+  static const float LAVA_DAMAGE_RATIO;
+  static const int   LAVA_DAMAGE_INTERVAL;
 
-    static const float FRAG_HIT_VELOCITY2;
-    static const float FRAG_DESTROY_VELOCITY2;
-    static const float FRAG_DAMAGE_COEF;
-    static const float FRAG_FIXED_DAMAGE;
+  static const float FRAG_HIT_VELOCITY2;
+  static const float FRAG_DESTROY_VELOCITY2;
+  static const float FRAG_DAMAGE_COEF;
+  static const float FRAG_FIXED_DAMAGE;
 
-  private:
+private:
 
-    Dynamic* dyn;
-    Frag*    frag;
-    Vec3     move;
-    Vec3     lastNormals[2];
+  Dynamic* dyn;
+  Frag*    frag;
+  Vec3     move;
+  Vec3     lastNormals[2];
 
-  public:
+public:
 
-    float    gravity;
+  float    gravity;
 
-  private:
+private:
 
-    void handleFragHit();
-    void handleFragMove();
+  void handleFragHit();
+  void handleFragMove();
 
-    bool handleObjFriction();
-    void handleObjHit();
-    Vec3 handleObjMove();
+  bool handleObjFriction();
+  void handleObjHit();
+  Vec3 handleObjMove();
 
-  public:
+public:
 
-    void updateFrag( Frag* frag );
-    void updateObj( Dynamic* dyn );
+  void updateFrag( Frag* frag );
+  void updateObj( Dynamic* dyn );
 
 };
 

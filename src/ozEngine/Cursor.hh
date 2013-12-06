@@ -50,143 +50,143 @@ namespace oz
  */
 class Cursor
 {
-  public:
+public:
 
-    /**
-     * Cursor render mode.
-     */
-    enum Mode
+  /**
+   * Cursor render mode.
+   */
+  enum Mode
+  {
+    TEXTURE,
+    SYSTEM
+  };
+
+private:
+
+  /// Maximum number of images.
+  static const int MAX_IMAGES = 32;
+
+  /**
+   * Cursor image.
+   *
+   * For animated cursors there may are multiple images, one for each animation frame.
+   */
+  struct Image
+  {
+    int width;               ///< Image width.
+    int height;              ///< Image height.
+    int hotspotLeft;         ///< Hotspot offset from the left.
+    int hotspotTop;          ///< Hotspot offset from the top.
+    int delay;               ///< Frame time in milliseconds.
+
+    union
     {
-      TEXTURE,
-      SYSTEM
+      uint        textureId; ///< GL texture id.
+      SDL_Cursor* sdlCursor; ///< SDL cursor.
     };
+  };
 
-  private:
+  Image images[MAX_IMAGES];  ///< Cursor images.
+  int   nImages;             ///< Number of images.
+  int   frame;               ///< Current animation frame.
+  int   lastFrame;           ///< Last uploaded frame for OS cursor to avoid unnecessary updates.
+  int   frameTime;           ///< Time in milliseconds of the current animation frame.
+  Mode  mode;                ///< Render mode.
 
-    /// Maximum number of images.
-    static const int MAX_IMAGES = 32;
+public:
 
-    /**
-     * Cursor image.
-     *
-     * For animated cursors there may are multiple images, one for each animation frame.
-     */
-    struct Image
-    {
-      int width;               ///< Image width.
-      int height;              ///< Image height.
-      int hotspotLeft;         ///< Hotspot offset from the left.
-      int hotspotTop;          ///< Hotspot offset from the top.
-      int delay;               ///< Frame time in milliseconds.
+  /**
+   * Create an empty instance.
+   */
+  explicit Cursor();
 
-      union
-      {
-        uint        textureId; ///< GL texture id.
-        SDL_Cursor* sdlCursor; ///< SDL cursor.
-      };
-    };
+  /**
+   * Create from file.
+   */
+  explicit Cursor( const File& file, Mode mode, int size = -1 );
 
-    Image images[MAX_IMAGES];  ///< Cursor images.
-    int   nImages;             ///< Number of images.
-    int   frame;               ///< Current animation frame.
-    int   lastFrame;           ///< Last uploaded frame for OS cursor to avoid unnecessary updates.
-    int   frameTime;           ///< Time in milliseconds of the current animation frame.
-    Mode  mode;                ///< Render mode.
+  /**
+   * Destructor, destroys textures if loaded.
+   */
+  ~Cursor();
 
-  public:
+  /**
+   * Move constructor.
+   */
+  Cursor( Cursor&& c );
 
-    /**
-     * Create an empty instance.
-     */
-    explicit Cursor();
+  /**
+   * Move operator.
+   */
+  Cursor& operator = ( Cursor&& c );
 
-    /**
-     * Create from file.
-     */
-    explicit Cursor( const File& file, Mode mode, int size = -1 );
+  /**
+   * True iff loaded.
+   */
+  bool isLoaded() const
+  {
+    return nImages != 0;
+  }
 
-    /**
-     * Destructor, destroys textures if loaded.
-     */
-    ~Cursor();
+  /**
+   * Hotspot offset from the left.
+   */
+  int hotspotLeft() const
+  {
+    return images[frame].hotspotLeft;
+  }
 
-    /**
-     * Move constructor.
-     */
-    Cursor( Cursor&& c );
+  /**
+   * Hotspot offset from the top.
+   */
+  int hotspotTop() const
+  {
+    return images[frame].hotspotTop;
+  }
 
-    /**
-     * Move operator.
-     */
-    Cursor& operator = ( Cursor&& c );
+  /**
+   * Cursor image width.
+   */
+  int width() const
+  {
+    return images[frame].width;
+  }
 
-    /**
-     * True iff loaded.
-     */
-    bool isLoaded() const
-    {
-      return nImages != 0;
-    }
+  /**
+   * Cursor image height.
+   */
+  int height() const
+  {
+    return images[frame].height;
+  }
 
-    /**
-     * Hotspot offset from the left.
-     */
-    int hotspotLeft() const
-    {
-      return images[frame].hotspotLeft;
-    }
+  /**
+   * GL texture id for the current frame.
+   */
+  uint textureId() const
+  {
+    return mode == SYSTEM ? 0 : images[frame].textureId;
+  }
 
-    /**
-     * Hotspot offset from the top.
-     */
-    int hotspotTop() const
-    {
-      return images[frame].hotspotTop;
-    }
+  /**
+   * Reset animation.
+   */
+  void reset();
 
-    /**
-     * Cursor image width.
-     */
-    int width() const
-    {
-      return images[frame].width;
-    }
+  /**
+   * Advance animation and update the current texture id or the system cursor.
+   */
+  void update( int millis );
 
-    /**
-     * Cursor image height.
-     */
-    int height() const
-    {
-      return images[frame].height;
-    }
+  /**
+   * Load from file.
+   */
+  bool load( const File& file, Mode mode, int size = -1 );
 
-    /**
-     * GL texture id for the current frame.
-     */
-    uint textureId() const
-    {
-      return mode == SYSTEM ? 0 : images[frame].textureId;
-    }
-
-    /**
-     * Reset animation.
-     */
-    void reset();
-
-    /**
-     * Advance animation and update the current texture id or the system cursor.
-     */
-    void update( int millis );
-
-    /**
-     * Load from file.
-     */
-    bool load( const File& file, Mode mode, int size = -1 );
-
-    /**
-     * Destroy textures if loaded.
-     */
-    void destroy();
+  /**
+   * Destroy textures if loaded.
+   */
+  void destroy();
 
 };
 

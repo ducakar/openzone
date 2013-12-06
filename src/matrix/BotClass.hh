@@ -30,79 +30,79 @@ namespace oz
 
 class BotClass : public DynamicClass
 {
-  public:
+public:
 
-    static const Mat44 INJURY_COLOUR;
-    static const Mat44 NV_COLOUR;
+  static const Mat44 INJURY_COLOUR;
+  static const Mat44 NV_COLOUR;
 
-    int    state;
+  int    state;
 
-    Vec3   crouchDim;
-    Vec3   corpseDim;
+  Vec3   crouchDim;
+  Vec3   corpseDim;
 
-    float  camZ;
-    float  crouchCamZ;
+  float  camZ;
+  float  crouchCamZ;
 
-    float  walkMomentum;
-    float  runMomentum;
-    float  jumpMomentum;
+  float  walkMomentum;
+  float  runMomentum;
+  float  jumpMomentum;
 
-    float  airControl;
-    float  ladderControl;
-    float  waterControl;
-    float  slickControl;
+  float  airControl;
+  float  ladderControl;
+  float  waterControl;
+  float  slickControl;
 
-    float  stepWalkInc;
-    float  stepRunInc;
+  float  stepWalkInc;
+  float  stepRunInc;
 
-    float  stairInc;
-    float  stairMax;
-    float  stairRateLimit;
-    float  stairRateSupp;
+  float  stairInc;
+  float  stairMax;
+  float  stairRateLimit;
+  float  stairRateSupp;
 
-    float  climbInc;
-    float  climbMax;
-    float  climbMomentum;
+  float  climbInc;
+  float  climbMax;
+  float  climbMomentum;
 
-    float  stamina;
-    float  staminaGain;
-    float  staminaRunDrain;
-    float  staminaWaterDrain;
-    float  staminaClimbDrain;
-    float  staminaJumpDrain;
-    float  staminaThrowDrain;
+  float  stamina;
+  float  staminaGain;
+  float  staminaRunDrain;
+  float  staminaWaterDrain;
+  float  staminaClimbDrain;
+  float  staminaJumpDrain;
+  float  staminaThrowDrain;
 
-    float  regeneration;
+  float  regeneration;
 
-    float  reachDist;
-    float  grabWeight;
-    float  throwMomentum;
+  float  reachDist;
+  float  grabWeight;
+  float  throwMomentum;
 
-    int    weaponItem;
-    float  meleeInterval;
-    String onMelee;
+  int    weaponItem;
+  float  meleeInterval;
+  String onMelee;
 
-    int    nameList;
+  int    nameList;
 
-    String mindFunc;
+  String mindFunc;
 
-    float  bobRotation;
-    float  bobAmplitude;
-    float  bobSwimAmplitude;
+  float  bobRotation;
+  float  bobAmplitude;
+  float  bobSwimAmplitude;
 
-    Mat44  baseColour;
-    Mat44  injuryColour;
-    Mat44  nvColour;
+  Mat44  baseColour;
+  Mat44  injuryColour;
+  Mat44  nvColour;
 
-  public:
+public:
 
-    static ObjectClass* createClass();
+  static ObjectClass* createClass();
 
-    void init( const JSON& config, const char* name ) override;
+  void init( const JSON& config, const char* name ) override;
 
-    Object* create( int index, const Point& pos, Heading heading ) const override;
-    Object* create( InputStream* is ) const override;
-    Object* create( const JSON& json ) const override;
+  Object* create( int index, const Point& pos, Heading heading ) const override;
+  Object* create( InputStream* is ) const override;
+  Object* create( const JSON& json ) const override;
 
 };
 

@@ -38,73 +38,73 @@ namespace oz
  */
 class ALSource
 {
-  private:
+private:
 
-    ALuint sourceId; ///< OpenAL source id, 0 if not created.
+  ALuint sourceId; ///< OpenAL source id, 0 if not created.
 
-  public:
+public:
 
-    /**
-     * Create an empty instance (no OpenAL source is created).
-     */
-    explicit ALSource();
+  /**
+   * Create an empty instance (no OpenAL source is created).
+   */
+  explicit ALSource();
 
-    /**
-     * Destructor, destroys OpenAL source if created.
-     */
-    ~ALSource();
+  /**
+   * Destructor, destroys OpenAL source if created.
+   */
+  ~ALSource();
 
-    /**
-     * Move constructor.
-     */
-    ALSource( ALSource&& s ) :
-      sourceId( s.sourceId )
-    {
-      s.sourceId = 0;
-    }
+  /**
+   * Move constructor.
+   */
+  ALSource( ALSource&& s ) :
+    sourceId( s.sourceId )
+  {
+    s.sourceId = 0;
+  }
 
-    /**
-     * Move operator.
-     */
-    ALSource& operator = ( ALSource&& s )
-    {
-      if( &s == this ) {
-        return *this;
-      }
-
-      destroy();
-
-      sourceId   = s.sourceId;
-      s.sourceId = 0;
-
+  /**
+   * Move operator.
+   */
+  ALSource& operator = ( ALSource&& s )
+  {
+    if( &s == this ) {
       return *this;
     }
 
-    /**
-     * Get OpenAL source id.
-     */
-    ALuint id() const
-    {
-      return sourceId;
-    }
+    destroy();
 
-    /**
-     * True iff created.
-     */
-    bool isCreated() const
-    {
-      return sourceId != 0;
-    }
+    sourceId   = s.sourceId;
+    s.sourceId = 0;
 
-    /**
-     * Create a new uninitialised OpenAL source.
-     */
-    bool create();
+    return *this;
+  }
 
-    /**
-     * Destroy OpenAL source if created.
-     */
-    void destroy();
+  /**
+   * Get OpenAL source id.
+   */
+  ALuint id() const
+  {
+    return sourceId;
+  }
+
+  /**
+   * True iff created.
+   */
+  bool isCreated() const
+  {
+    return sourceId != 0;
+  }
+
+  /**
+   * Create a new uninitialised OpenAL source.
+   */
+  bool create();
+
+  /**
+   * Destroy OpenAL source if created.
+   */
+  void destroy();
 
 };
 

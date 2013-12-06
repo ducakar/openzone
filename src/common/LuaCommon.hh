@@ -38,86 +38,86 @@ namespace oz
  */
 class LuaCommon
 {
-  public:
+public:
 
-    /**
-     * Lua C API.
-     */
-    typedef int APIFunc( lua_State* );
+  /**
+   * Lua C API.
+   */
+  typedef int APIFunc( lua_State* );
 
-    static int  randomSeed;       ///< Random seed for Lua environments.
-    static bool isRandomSeedTime; ///< True iff `Time::time()` should be as a seed.
+  static int  randomSeed;       ///< Random seed for Lua environments.
+  static bool isRandomSeedTime; ///< True iff `Time::time()` should be as a seed.
 
-  protected:
+protected:
 
-    lua_State* l;                 ///< Lua state descriptor.
+  lua_State* l;                 ///< Lua state descriptor.
 
-  protected:
+protected:
 
-    /**
-     * Read serialised %Lua value and push it on the stack (recursively for tables).
-     *
-     * @return Should always return true. This return value is only used for internal recursive
-     *         calls to detect end of a table.
-     */
-    bool readValue( InputStream* is );
+  /**
+   * Read serialised %Lua value and push it on the stack (recursively for tables).
+   *
+   * @return Should always return true. This return value is only used for internal recursive calls
+   *         to detect end of a table.
+   */
+  bool readValue( InputStream* is );
 
-    /**
-     * Read %Lua value from a %JSON value and push it on the stack (recursively for tables).
-     */
-    void readValue( const JSON& json );
+  /**
+   * Read %Lua value from a %JSON value and push it on the stack (recursively for tables).
+   */
+  void readValue( const JSON& json );
 
-    /**
-     * Serialise %Lua value at the top of the stack (recursively for tables).
-     */
-    void writeValue( OutputStream* os );
+  /**
+   * Serialise %Lua value at the top of the stack (recursively for tables).
+   */
+  void writeValue( OutputStream* os );
 
-    /**
-     * Return %Lua value at the top of the stack (recursively for tables) as a %JSON value.
-     */
-    JSON writeValue();
+  /**
+   * Return %Lua value at the top of the stack (recursively for tables) as a %JSON value.
+   */
+  JSON writeValue();
 
-    /**
-     * Load all `*.lua` files in a directory.
-     */
-    void loadDir( const File& dir );
+  /**
+   * Load all `*.lua` files in a directory.
+   */
+  void loadDir( const File& dir );
 
-    /**
-     * Common initialisation for Lua classes.
-     */
-    void initCommon( const char* componentName );
+  /**
+   * Common initialisation for Lua classes.
+   */
+  void initCommon( const char* componentName );
 
-    /**
-     * Common clean-up for Lua classes.
-     */
-    void freeCommon();
+  /**
+   * Common clean-up for Lua classes.
+   */
+  void freeCommon();
 
-  public:
+public:
 
-    /**
-     * Register Lua API function to the Lua state.
-     */
-    void registerFunction( const char* name, APIFunc func );
+  /**
+   * Register Lua API function to the Lua state.
+   */
+  void registerFunction( const char* name, APIFunc func );
 
-    /**
-     * Import global variable into the Lua state.
-     */
-    void registerConstant( const char* name, bool value );
+  /**
+   * Import global variable into the Lua state.
+   */
+  void registerConstant( const char* name, bool value );
 
-    /**
-     * Import global variable into the Lua state.
-     */
-    void registerConstant( const char* name, int value );
+  /**
+   * Import global variable into the Lua state.
+   */
+  void registerConstant( const char* name, int value );
 
-    /**
-     * Import global variable into the Lua state.
-     */
-    void registerConstant( const char* name, float value );
+  /**
+   * Import global variable into the Lua state.
+   */
+  void registerConstant( const char* name, float value );
 
-    /**
-     * Import global variable into the Lua state.
-     */
-    void registerConstant( const char* name, const char* value );
+  /**
+   * Import global variable into the Lua state.
+   */
+  void registerConstant( const char* name, const char* value );
 
 };
 

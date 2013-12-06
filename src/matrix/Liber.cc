@@ -647,6 +647,8 @@ void Liber::initClasses()
     config["base"];
     config.clear( true );
     Log::showVerbose = false;
+
+    Log::printEnd( " OK" );
   }
 
   // Sanity checks.
@@ -689,8 +691,6 @@ void Liber::initClasses()
         }
       }
     }
-
-    Log::printEnd( " OK" );
   }
 
   Log::unindent();

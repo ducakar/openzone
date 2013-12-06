@@ -39,118 +39,118 @@ struct MD3Tag;
  */
 class MD3
 {
-  private:
+private:
 
-    struct MD3Header
-    {
-      char id[4];
-      int  version;
-      char fileName[64];
-      int  flags;
+  struct MD3Header
+  {
+    char id[4];
+    int  version;
+    char fileName[64];
+    int  flags;
 
-      int  nFrames;
-      int  nTags;
-      int  nSurfaces;
-      int  nSkins;
+    int  nFrames;
+    int  nTags;
+    int  nSurfaces;
+    int  nSkins;
 
-      int  offFrames;
-      int  offTags;
-      int  offSurfaces;
-      int  offEnd;
-    };
+    int  offFrames;
+    int  offTags;
+    int  offSurfaces;
+    int  offEnd;
+  };
 
-    struct MD3Frame
-    {
-      float mins[3];
-      float maxs[3];
-      float pos[3];
-      float radius;
-      char  name[16];
-    };
+  struct MD3Frame
+  {
+    float mins[3];
+    float maxs[3];
+    float pos[3];
+    float radius;
+    char  name[16];
+  };
 
-    struct MD3Tag
-    {
-      char  name[64];
-      float pos[3];
-      float rot[9];
-    };
+  struct MD3Tag
+  {
+    char  name[64];
+    float pos[3];
+    float rot[9];
+  };
 
-    struct MD3Surface
-    {
-      int  id;
-      char name[64];
-      int  flags;
+  struct MD3Surface
+  {
+    int  id;
+    char name[64];
+    int  flags;
 
-      int  nFrames;
-      int  nShaders;
-      int  nVertices;
-      int  nTriangles;
+    int  nFrames;
+    int  nShaders;
+    int  nVertices;
+    int  nTriangles;
 
-      int  offTriangles;
-      int  offShaders;
-      int  offTexCoords;
-      int  offVertices;
-      int  offEnd;
-    };
+    int  offTriangles;
+    int  offShaders;
+    int  offTexCoords;
+    int  offVertices;
+    int  offEnd;
+  };
 
-    struct MD3Triangle
-    {
-      int vertices[3];
-    };
+  struct MD3Triangle
+  {
+    int vertices[3];
+  };
 
-    struct MD3Shader
-    {
-      char name[64];
-      int  index;
-    };
+  struct MD3Shader
+  {
+    char name[64];
+    int  index;
+  };
 
-    struct MD3TexCoord
-    {
-      float s;
-      float t;
-    };
+  struct MD3TexCoord
+  {
+    float s;
+    float t;
+  };
 
-    struct MD3Vertex
-    {
-      short pos[3];
-      ubyte normal[2];
-    };
+  struct MD3Vertex
+  {
+    short pos[3];
+    ubyte normal[2];
+  };
 
-    enum Part
-    {
-      LEGS,
-      TORSO,
-      HEAD
-    };
+  enum Part
+  {
+    LEGS,
+    TORSO,
+    HEAD
+  };
 
 //     client::MD3::AnimInfo legsAnimList[client::MD3::LEGS_ANIM_MAX];
 //     client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
 //     client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
 
-    String   sPath;
+  String   sPath;
 
-    float    scale;
-    String   skin;
-    String   masks;
-    String   model;
-    int      frame;
-    int      lowerFrame;
-    int      upperFrame;
-    String   shaderName;
+  float    scale;
+  String   skin;
+  String   masks;
+  String   model;
+  int      frame;
+  int      lowerFrame;
+  int      upperFrame;
+  String   shaderName;
 
-    int      nLowerFrames;
-    int      nUpperFrames;
-    Mat44    meshTransf;
+  int      nLowerFrames;
+  int      nUpperFrames;
+  Mat44    meshTransf;
 
-    void readAnimData();
-    void buildMesh( const char* name, int frame );
+  void readAnimData();
+  void buildMesh( const char* name, int frame );
 
-    void load();
-    void save();
+  void load();
+  void save();
 
-  public:
+public:
 
-    void build( const char* path );
+  void build( const char* path );
 
 };
 

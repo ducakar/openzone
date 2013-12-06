@@ -34,39 +34,39 @@ class PartGen
 {
   friend class Chain<PartGen>;
 
-  public:
+public:
 
-    static const int UPDATED_BIT = 0x01;
+  static const int UPDATED_BIT = 0x01;
 
-  private:
+private:
 
-    struct Part;
+  struct Part;
 
-  private:
+private:
 
-    PartGen*     next[1];
+  PartGen*     next[1];
 
-    Mat44        transf;
-    PartClass*   clazz;
-    DArray<Part> parts;
-    int          flags;
+  Mat44        transf;
+  PartClass*   clazz;
+  DArray<Part> parts;
+  int          flags;
 
-  private:
+private:
 
-    void draw() const;
+  void draw() const;
 
-  public:
+public:
 
-    static void drawScheduled();
-    static void clearScheduled();
+  static void drawScheduled();
+  static void clearScheduled();
 
-    static void dellocate();
+  static void dellocate();
 
-    explicit PartGen( InputStream* is );
-    ~PartGen();
+  explicit PartGen( InputStream* is );
+  ~PartGen();
 
-    void update();
-    void schedule();
+  void update();
+  void schedule();
 
 };
 

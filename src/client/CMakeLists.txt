@@ -35,7 +35,6 @@ add_library( client STATIC
   NaClDownloader.hh
   NaClUpdater.hh
   Network.hh
-  openzone.hh
   PartClass.hh
   PartGen.hh
   Profile.hh

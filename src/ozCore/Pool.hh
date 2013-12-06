@@ -94,200 +94,200 @@ class Pool
 {
   static_assert( BLOCK_SIZE > 0, "Pool block size must be at least 1" );
 
-  private:
+private:
+
+  /**
+   * %Slot that occupies memory for an object.
+   */
+  union Slot
+  {
+    char  content[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
+    Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
+  };
+
+  /**
+   * Memory block.
+   *
+   * `Block` is an array that can hold up to `BLOCK_SIZE` elements. When we run out of space we
+   * simply allocate another block. Once a block is allocated it cannot be freed any more unless the
+   * pool is empty. That would be rarely possible due to fragmentation anyway.
+   */
+  struct Block
+  {
+    Slot   data[BLOCK_SIZE]; ///< Slots.
+    Block* next;             ///< Pointer to the next block.
 
     /**
-     * %Slot that occupies memory for an object.
+     * Create a new block and bind its slots into a linked list.
      */
-    union Slot
+    explicit Block( Block* next_ ) :
+      next( next_ )
     {
-      char  content[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
-      Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
-    };
-
-    /**
-     * Memory block.
-     *
-     * `Block` is an array that can hold up to `BLOCK_SIZE` elements. When we run out of space we
-     * simply allocate another block. Once a block is allocated it cannot be freed any more unless
-     * Pool is empty. That would be rarely possible due to fragmentation anyway.
-     */
-    struct Block
-    {
-      Slot   data[BLOCK_SIZE]; ///< Slots.
-      Block* next;             ///< Pointer to the next block.
-
-      /**
-       * Create a new block and bind its slots into a linked list.
-       */
-      explicit Block( Block* next_ ) :
-        next( next_ )
-      {
-        for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
-          data[i].nextSlot = &data[i + 1];
-        }
-        data[BLOCK_SIZE - 1].nextSlot = nullptr;
+      for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
+        data[i].nextSlot = &data[i + 1];
       }
-    };
-
-    Block* firstBlock; ///< Linked list of the allocated blocks.
-    Slot*  freeSlot;   ///< Linked list of free slots or `nullptr` if none.
-    int    count;      ///< Number of occupied slots in the pool.
-    int    size;       ///< Capacity.
-
-  public:
-
-    /**
-     * Create an empty pool, storage is allocated when the first allocation is made.
-     */
-    explicit Pool() :
-      firstBlock( nullptr ), freeSlot( nullptr ), count( 0 ), size( 0 )
-    {}
-
-    /**
-     * Destructor.
-     */
-    ~Pool()
-    {
-      free();
+      data[BLOCK_SIZE - 1].nextSlot = nullptr;
     }
+  };
 
-    /**
-     * Move constructor, moves storage.
-     */
-    Pool( Pool&& p ) :
-      firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), count( p.count ), size( p.size )
-    {
-      p.firstBlock = nullptr;
-      p.freeSlot   = nullptr;
-      p.count      = 0;
-      p.size       = 0;
-    }
+  Block* firstBlock; ///< Linked list of the allocated blocks.
+  Slot*  freeSlot;   ///< Linked list of free slots or `nullptr` if none.
+  int    count;      ///< Number of occupied slots in the pool.
+  int    size;       ///< Capacity.
 
-    /**
-     * Move operator, moves storage.
-     */
-    Pool& operator = ( Pool&& p )
-    {
-      if( &p == this ) {
-        return *this;
-      }
+public:
 
-      hard_assert( count == 0 );
+  /**
+   * Create an empty pool, storage is allocated when the first allocation is made.
+   */
+  explicit Pool() :
+    firstBlock( nullptr ), freeSlot( nullptr ), count( 0 ), size( 0 )
+  {}
 
-      free();
+  /**
+   * Destructor.
+   */
+  ~Pool()
+  {
+    free();
+  }
 
-      firstBlock   = p.firstBlock;
-      freeSlot     = p.freeSlot;
-      count        = p.count;
-      size         = p.size;
+  /**
+   * Move constructor, moves storage.
+   */
+  Pool( Pool&& p ) :
+    firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), count( p.count ), size( p.size )
+  {
+    p.firstBlock = nullptr;
+    p.freeSlot   = nullptr;
+    p.count      = 0;
+    p.size       = 0;
+  }
 
-      p.firstBlock = nullptr;
-      p.freeSlot   = nullptr;
-      p.count      = 0;
-      p.size       = 0;
-
+  /**
+   * Move operator, moves storage.
+   */
+  Pool& operator = ( Pool&& p )
+  {
+    if( &p == this ) {
       return *this;
     }
 
-    /**
-     * Allocate a new object.
-     */
-    void* allocate()
-    {
-      ++count;
+    hard_assert( count == 0 );
 
-      if( freeSlot == nullptr ) {
-        firstBlock = new Block( firstBlock );
-        freeSlot   = &firstBlock->data[1];
-        size      += BLOCK_SIZE;
+    free();
 
-        return firstBlock->data[0].content;
-      }
-      else {
-        Slot* slot = freeSlot;
+    firstBlock   = p.firstBlock;
+    freeSlot     = p.freeSlot;
+    count        = p.count;
+    size         = p.size;
 
-        freeSlot = slot->nextSlot;
-        return slot;
-      }
+    p.firstBlock = nullptr;
+    p.freeSlot   = nullptr;
+    p.count      = 0;
+    p.size       = 0;
+
+    return *this;
+  }
+
+  /**
+   * Allocate a new object.
+   */
+  void* allocate()
+  {
+    ++count;
+
+    if( freeSlot == nullptr ) {
+      firstBlock = new Block( firstBlock );
+      freeSlot   = &firstBlock->data[1];
+      size      += BLOCK_SIZE;
+
+      return firstBlock->data[0].content;
     }
+    else {
+      Slot* slot = freeSlot;
 
-    /**
-     * Free a given object.
-     */
-    void deallocate( void* ptr )
-    {
-      hard_assert( count != 0 );
+      freeSlot = slot->nextSlot;
+      return slot;
+    }
+  }
 
-      Slot* slot = static_cast<Slot*>( ptr );
+  /**
+   * Free a given object.
+   */
+  void deallocate( void* ptr )
+  {
+    hard_assert( count != 0 );
+
+    Slot* slot = static_cast<Slot*>( ptr );
 
 #ifndef NDEBUG
-      mSet( slot, 0xee, sizeof( Slot ) );
+    mSet( slot, 0xee, sizeof( Slot ) );
 #endif
 
-      slot->nextSlot = freeSlot;
-      freeSlot = slot;
-      --count;
+    slot->nextSlot = freeSlot;
+    freeSlot = slot;
+    --count;
+  }
+
+  /**
+   * Number of used slots in the pool.
+   */
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return count;
+  }
+
+  /**
+   * True iff no slots are used.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return count == 0;
+  }
+
+  /**
+   * Number of allocated slots.
+   */
+  OZ_ALWAYS_INLINE
+  int capacity() const
+  {
+    return size;
+  }
+
+  /**
+   * Deallocate the storage.
+   *
+   * In the case the pool is not empty it is still cleared but memory is not deallocated. This
+   * memory leak is intended to prevent potential crashes and it only happens if you already have
+   * a memory leak in your program.
+   */
+  void free()
+  {
+    if( firstBlock == nullptr ) {
+      return;
     }
 
-    /**
-     * Number of used slots in the pool.
-     */
-    OZ_ALWAYS_INLINE
-    int length() const
-    {
-      return count;
-    }
+    soft_assert( count == 0 );
 
-    /**
-     * True iff no slots are used.
-     */
-    OZ_ALWAYS_INLINE
-    bool isEmpty() const
-    {
-      return count == 0;
-    }
+    if( count == 0 ) {
+      Block* block = firstBlock;
 
-    /**
-     * Number of allocated slots.
-     */
-    OZ_ALWAYS_INLINE
-    int capacity() const
-    {
-      return size;
-    }
+      while( block != nullptr ) {
+        Block* next = block->next;
+        delete block;
 
-    /**
-     * Deallocate the storage.
-     *
-     * In the case the pool is not empty it is still cleared but memory is not deallocated. This
-     * memory leak is intended to prevent potential crashes and it only happens if you already have
-     * a memory leak in your program.
-     */
-    void free()
-    {
-      if( firstBlock == nullptr ) {
-        return;
+        block = next;
       }
-
-      soft_assert( count == 0 );
-
-      if( count == 0 ) {
-        Block* block = firstBlock;
-
-        while( block != nullptr ) {
-          Block* next = block->next;
-          delete block;
-
-          block = next;
-        }
-      }
-
-      firstBlock = nullptr;
-      freeSlot   = nullptr;
-      count      = 0;
-      size       = 0;
     }
+
+    firstBlock = nullptr;
+    freeSlot   = nullptr;
+    count      = 0;
+    size       = 0;
+  }
 
 };
 

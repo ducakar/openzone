@@ -32,22 +32,21 @@ namespace client
 
 class VehicleAudio : public BasicAudio
 {
-  protected:
+protected:
 
-    explicit VehicleAudio( const Object* obj ) :
-      BasicAudio( obj )
-    {}
+  explicit VehicleAudio( const Object* obj ) :
+    BasicAudio( obj )
+  {}
 
-  public:
+public:
 
-    static Pool<VehicleAudio, 256> pool;
+  static Pool<VehicleAudio, 256> pool;
 
-    static Audio* create( const Object* obj );
+  static Audio* create( const Object* obj );
 
-    void play( const Object* ) override;
+  void play( const Object* ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

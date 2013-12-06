@@ -35,22 +35,22 @@ class Bot;
 
 class LuaMatrix : public LuaCommon
 {
-  public:
+public:
 
-    float objectStatus;
+  float objectStatus;
 
-  public:
+public:
 
-    bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
+  bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
 
-    void registerObject( int index );
-    void unregisterObject( int index );
+  void registerObject( int index );
+  void unregisterObject( int index );
 
-    void read( InputStream* is );
-    void write( OutputStream* os );
+  void read( InputStream* is );
+  void write( OutputStream* os );
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

@@ -34,28 +34,28 @@ namespace builder
 
 class Builder
 {
-  private:
+private:
 
-    void printUsage( const char* invocationName );
+  void printUsage( const char* invocationName );
 
-    void copyFiles( const File& srcDir, const File& destDir, const char* ext, bool recurse );
+  void copyFiles( const File& srcDir, const File& destDir, const char* ext, bool recurse );
 
-    void buildCaela();
-    void buildTerrae();
-    void buildBSPs();
-    void buildBSPTextures();
-    void buildClasses();
-    void buildFragPools();
-    void buildModels();
-    void copySounds();
-    void buildModules();
-    void checkLua( const char* path );
-    void buildMissions();
-    void packArchive( const char* name, bool useCompresion, bool use7zip );
+  void buildCaela();
+  void buildTerrae();
+  void buildBSPs();
+  void buildBSPTextures();
+  void buildClasses();
+  void buildFragPools();
+  void buildModels();
+  void copySounds();
+  void buildModules();
+  void checkLua( const char* path );
+  void buildMissions();
+  void packArchive( const char* name, bool useCompresion, bool use7zip );
 
-  public:
+public:
 
-    int main( int argc, char** argv );
+  int main( int argc, char** argv );
 
 };
 

@@ -42,78 +42,78 @@ namespace oz
  */
 class SpinLock
 {
-  private:
+private:
 
-    volatile int value; ///< 0 - unlocked, 1 - locked.
+  volatile int value; ///< 0 - unlocked, 1 - locked.
 
-  public:
+public:
 
-    /**
-     * Create new instance.
-     */
-    OZ_ALWAYS_INLINE
-    explicit SpinLock() :
-      value( 0 )
-    {}
+  /**
+   * Create new instance.
+   */
+  OZ_ALWAYS_INLINE
+  explicit SpinLock() :
+    value( 0 )
+  {}
 
-    /**
-     * Destructor.
-     */
-    OZ_ALWAYS_INLINE
-    ~SpinLock()
-    {
-      hard_assert( value == 0 );
+  /**
+   * Destructor.
+   */
+  OZ_ALWAYS_INLINE
+  ~SpinLock()
+  {
+    hard_assert( value == 0 );
+  }
+
+  /**
+   * Copying or moving is not possible.
+   */
+  SpinLock( const SpinLock& ) = delete;
+
+  /**
+   * Copying or moving is not possible.
+   */
+  SpinLock& operator = ( const SpinLock& ) = delete;
+
+  /**
+   * True iff locked.
+   */
+  OZ_ALWAYS_INLINE
+  bool isLocked() const
+  {
+    return value != 0;
+  }
+
+  /**
+   * Loop performing a lock operation until it switches from an unlocked to a locked state.
+   */
+  OZ_ALWAYS_INLINE
+  void lock()
+  {
+    while( __sync_lock_test_and_set( &value, 1 ) != 0 ) {
+      while( value != 0 );
     }
+  }
 
-    /**
-     * Copying or moving is not possible.
-     */
-    SpinLock( const SpinLock& ) = delete;
+  /**
+   * Atomically lock and check if it has already been locked.
+   *
+   * @return True iff it was unlocked.
+   */
+  OZ_ALWAYS_INLINE
+  bool tryLock()
+  {
+    return __sync_lock_test_and_set( &value, 1 ) == 0;
+  }
 
-    /**
-     * Copying or moving is not possible.
-     */
-    SpinLock& operator = ( const SpinLock& ) = delete;
-
-    /**
-     * True iff locked.
-     */
-    OZ_ALWAYS_INLINE
-    bool isLocked() const
-    {
-      return value != 0;
-    }
-
-    /**
-     * Loop performing a lock operation until it switches from an unlocked to a locked state.
-     */
-    OZ_ALWAYS_INLINE
-    void lock()
-    {
-      while( __sync_lock_test_and_set( &value, 1 ) != 0 ) {
-        while( value != 0 );
-      }
-    }
-
-    /**
-     * Atomically lock and check if it has already been locked.
-     *
-     * @return True iff it was unlocked.
-     */
-    OZ_ALWAYS_INLINE
-    bool tryLock()
-    {
-      return __sync_lock_test_and_set( &value, 1 ) == 0;
-    }
-
-    /**
-     * Unlock.
-     */
-    OZ_ALWAYS_INLINE
-    void unlock()
-    {
-      __sync_lock_release( &value );
-    }
+  /**
+   * Unlock.
+   */
+  OZ_ALWAYS_INLINE
+  void unlock()
+  {
+    __sync_lock_release( &value );
+  }
 
 };
 

@@ -64,85 +64,85 @@ namespace oz
  */
 class SharedLib
 {
-  public:
+public:
 
-    /**
-     * True iff platform supports dynamic linking.
-     */
-    static const bool IS_SUPPORTED;
+  /**
+   * True iff platform supports dynamic linking.
+   */
+  static const bool IS_SUPPORTED;
 
-    /**
-     * Generic method type to avoid casts between pointer-to-function and pointer-to-object.
-     */
-    typedef void Method();
+  /**
+   * Generic method type to avoid casts between pointer-to-function and pointer-to-object.
+   */
+  typedef void Method();
 
-  private:
+private:
 
-    void* handle; ///< Internal library handle.
+  void* handle; ///< Internal library handle.
 
-  public:
+public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    explicit SharedLib() :
-      handle( nullptr )
-    {}
+  /**
+   * Create uninitialised instance.
+   */
+  explicit SharedLib() :
+    handle( nullptr )
+  {}
 
-    /**
-     * Destructor, closes the library if opened.
-     */
-    ~SharedLib()
-    {
-      close();
-    }
+  /**
+   * Destructor, closes the library if opened.
+   */
+  ~SharedLib()
+  {
+    close();
+  }
 
-    /**
-     * Move constructor.
-     */
-    SharedLib( SharedLib&& l ) :
-      handle( l.handle )
-    {
-      l.handle = nullptr;
-    }
+  /**
+   * Move constructor.
+   */
+  SharedLib( SharedLib&& l ) :
+    handle( l.handle )
+  {
+    l.handle = nullptr;
+  }
 
-    /**
-     * Move operator.
-     */
-    SharedLib& operator = ( SharedLib&& l )
-    {
-      if( &l == this ) {
-        return *this;
-      }
-
-      handle   = l.handle;
-      l.handle = nullptr;
-
+  /**
+   * Move operator.
+   */
+  SharedLib& operator = ( SharedLib&& l )
+  {
+    if( &l == this ) {
       return *this;
     }
 
-    /**
-     * True iff successfully opened.
-     */
-    bool isOpened() const
-    {
-      return handle != nullptr;
-    }
+    handle   = l.handle;
+    l.handle = nullptr;
 
-    /**
-     * Obtain a pointer to the requested function from thr library (`nullptr` on error).
-     */
-    Method* get( const char* symbol ) const;
+    return *this;
+  }
 
-    /**
-     * Open a shared library with a given (file) name.
-     */
-    bool open( const char* name );
+  /**
+   * True iff successfully opened.
+   */
+  bool isOpened() const
+  {
+    return handle != nullptr;
+  }
 
-    /**
-     * Close the library if opened.
-     */
-    void close();
+  /**
+   * Obtain a pointer to the requested function from thr library (`nullptr` on error).
+   */
+  Method* get( const char* symbol ) const;
+
+  /**
+   * Open a shared library with a given (file) name.
+   */
+  bool open( const char* name );
+
+  /**
+   * Close the library if opened.
+   */
+  void close();
 
 };
 

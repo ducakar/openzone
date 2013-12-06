@@ -36,22 +36,22 @@ namespace ui
 
 class MainMenu : public Area
 {
-  private:
+private:
 
-    Text  copyright;
-    Label title;
+  Text  copyright;
+  Label title;
 
-  protected:
+protected:
 
-    void onReposition() override;
-    void onUpdate() override;
-    bool onMouseEvent() override;
-    bool onKeyEvent() override;
-    void onDraw() override;
+  void onReposition() override;
+  void onUpdate() override;
+  bool onMouseEvent() override;
+  bool onKeyEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit MainMenu();
+  explicit MainMenu();
 
 };
 

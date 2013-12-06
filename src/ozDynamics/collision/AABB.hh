@@ -38,117 +38,117 @@ namespace oz
  */
 class AABB
 {
-  public:
+public:
 
-    Point p;   ///< Position of centre.
-    Vec3  dim; ///< Extents (dimension halves).
+  Point p;   ///< Position of centre.
+  Vec3  dim; ///< Extents (dimension halves).
 
-  public:
+public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    OZ_ALWAYS_INLINE
-    explicit AABB() = default;
+  /**
+   * Create uninitialised instance.
+   */
+  OZ_ALWAYS_INLINE
+  explicit AABB() = default;
 
-    /**
-     * Create `AABB` with a given centre and extents.
-     */
-    OZ_ALWAYS_INLINE
-    explicit AABB( const Point& p_, const Vec3& dim_ ) :
-      p( p_ ), dim( dim_ )
-    {}
+  /**
+   * Create `AABB` with a given centre and extents.
+   */
+  OZ_ALWAYS_INLINE
+  explicit AABB( const Point& p_, const Vec3& dim_ ) :
+    p( p_ ), dim( dim_ )
+  {}
 
-    /**
-     * Create `AABB` enlarged for margin `eps` (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    explicit AABB( const AABB& a, float eps ) :
-      p( a.p ), dim( a.dim + Vec3( eps, eps, eps ) )
-    {}
+  /**
+   * Create `AABB` enlarged for margin `eps` (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  explicit AABB( const AABB& a, float eps ) :
+    p( a.p ), dim( a.dim + Vec3( eps, eps, eps ) )
+  {}
 
-    /**
-     * Translated `AABB`.
-     */
-    OZ_ALWAYS_INLINE
-    AABB operator + ( const Vec3& v ) const
-    {
-      return AABB( p + v, dim );
-    }
+  /**
+   * Translated `AABB`.
+   */
+  OZ_ALWAYS_INLINE
+  AABB operator + ( const Vec3& v ) const
+  {
+    return AABB( p + v, dim );
+  }
 
-    /**
-     * Translated `AABB`.
-     */
-    OZ_ALWAYS_INLINE
-    AABB operator - ( const Vec3& v ) const
-    {
-      return AABB( p - v, dim );
-    }
+  /**
+   * Translated `AABB`.
+   */
+  OZ_ALWAYS_INLINE
+  AABB operator - ( const Vec3& v ) const
+  {
+    return AABB( p - v, dim );
+  }
 
-    /**
-     * Translate `AABB`.
-     */
-    OZ_ALWAYS_INLINE
-    AABB& operator += ( const Vec3& v )
-    {
-      p += v;
-      return *this;
-    }
+  /**
+   * Translate `AABB`.
+   */
+  OZ_ALWAYS_INLINE
+  AABB& operator += ( const Vec3& v )
+  {
+    p += v;
+    return *this;
+  }
 
-    /**
-     * Translate `AABB`.
-     */
-    OZ_ALWAYS_INLINE
-    AABB& operator -= ( const Vec3& v )
-    {
-      p -= v;
-      return *this;
-    }
+  /**
+   * Translate `AABB`.
+   */
+  OZ_ALWAYS_INLINE
+  AABB& operator -= ( const Vec3& v )
+  {
+    p -= v;
+    return *this;
+  }
 
-    /**
-     * True iff a given point is inside this `AABB`.
-     *
-     * @param point point.
-     * @param eps margin for which this `AABB` is enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool includes( const Point& point, float eps = 0.0f ) const
-    {
-      Vec3 relPos = abs( point - p );
-      Vec3 sumDim = dim + Vec3( eps, eps, eps );
+  /**
+   * True iff a given point is inside this `AABB`.
+   *
+   * @param point point.
+   * @param eps margin for which this `AABB` is enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool includes( const Point& point, float eps = 0.0f ) const
+  {
+    Vec3 relPos = abs( point - p );
+    Vec3 sumDim = dim + Vec3( eps, eps, eps );
 
-      return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
-    }
+    return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
+  }
 
-    /**
-     * True iff a given `AABB` is inside this `AABB`.
-     *
-     * @param a other AABB.
-     * @param eps margin for which this `AABB` is enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool includes( const AABB& a, float eps = 0.0f ) const
-    {
-      Vec3 relPos = abs( a.p - p );
-      Vec3 sumDim = abs( dim - a.dim ) + Vec3( eps, eps, eps );
+  /**
+   * True iff a given `AABB` is inside this `AABB`.
+   *
+   * @param a other AABB.
+   * @param eps margin for which this `AABB` is enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool includes( const AABB& a, float eps = 0.0f ) const
+  {
+    Vec3 relPos = abs( a.p - p );
+    Vec3 sumDim = abs( dim - a.dim ) + Vec3( eps, eps, eps );
 
-      return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
-    }
+    return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
+  }
 
-    /**
-     * True iff a given `AABB` overlaps with this `AABB`.
-     *
-     * @param a other AABB.
-     * @param eps margin for which this `AABB` is enlarged (can also be negative).
-     */
-    OZ_ALWAYS_INLINE
-    bool overlaps( const AABB& a, float eps = 0.0f ) const
-    {
-      Vec3 relPos = abs( a.p - p );
-      Vec3 sumDim = dim + a.dim + Vec3( eps, eps, eps );
+  /**
+   * True iff a given `AABB` overlaps with this `AABB`.
+   *
+   * @param a other AABB.
+   * @param eps margin for which this `AABB` is enlarged (can also be negative).
+   */
+  OZ_ALWAYS_INLINE
+  bool overlaps( const AABB& a, float eps = 0.0f ) const
+  {
+    Vec3 relPos = abs( a.p - p );
+    Vec3 sumDim = dim + a.dim + Vec3( eps, eps, eps );
 
-      return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
-    }
+    return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
+  }
 
 };
 

@@ -32,62 +32,62 @@ class Mind;
 
 class Task
 {
-  public:
+public:
 
-    static const int ACTIVE_BIT = 0x00000001;
+  static const int ACTIVE_BIT = 0x00000001;
 
-    typedef Task* CreateFunc( const Task* parent );
-    typedef Task* ReadFunc( InputStream* is, const Task* parent );
+  typedef Task* CreateFunc( const Task* parent );
+  typedef Task* ReadFunc( InputStream* is, const Task* parent );
 
-    Task*       prev[1];
-    Task*       next[1];
+  Task*       prev[1];
+  Task*       next[1];
 
-    int         flags;
+  int         flags;
 
-  private:
+private:
 
-    Mind*        mind;
-    Task*        parent;
-    DChain<Task> children;
+  Mind*        mind;
+  Task*        parent;
+  DChain<Task> children;
 
-  public:
+public:
 
-    static Task* create( const Task* parent );
-    static Task* read( InputStream* is, const Task* parent );
+  static Task* create( const Task* parent );
+  static Task* read( InputStream* is, const Task* parent );
 
-    explicit Task( Mind* mind_, Task* parent_ ) :
-      flags( 0 ), mind( mind_ ), parent( parent_ )
-    {}
+  explicit Task( Mind* mind_, Task* parent_ ) :
+    flags( 0 ), mind( mind_ ), parent( parent_ )
+  {}
 
-    virtual ~Task();
+  virtual ~Task();
 
-    virtual const char* type() const = 0;
+  virtual const char* type() const = 0;
 
-    void addChild( Task* child )
-    {
-      children.pushLast( child );
-    }
+  void addChild( Task* child )
+  {
+    children.pushLast( child );
+  }
 
-    void update()
-    {
-      if( onUpdate() ) {
-        while( children.first() != nullptr && !( children.first()->flags & ACTIVE_BIT ) ) {
-          delete children.popFirst();
-        }
-        if( children.first() != nullptr ) {
-          children.first()->update();
-        }
+  void update()
+  {
+    if( onUpdate() ) {
+      while( children.first() != nullptr && !( children.first()->flags & ACTIVE_BIT ) ) {
+        delete children.popFirst();
+      }
+      if( children.first() != nullptr ) {
+        children.first()->update();
       }
     }
+  }
 
-  protected:
+protected:
 
-    // return true if children should be updated too
-    virtual bool onUpdate() = 0;
+  // return true if children should be updated too
+  virtual bool onUpdate() = 0;
 
-  public:
+public:
 
-    virtual void write( OutputStream* os ) const;
+  virtual void write( OutputStream* os ) const;
 
 };
 

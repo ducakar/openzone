@@ -70,390 +70,390 @@ namespace oz
 template <class Elem, int INDEX = 0>
 class Chain
 {
+private:
+
+  /**
+   * %Chain iterator.
+   */
+  template <class IterElem>
+  class ChainIterator : public IteratorBase<IterElem>
+  {
   private:
 
-    /**
-     * %Chain iterator.
-     */
-    template <class IterElem>
-    class ChainIterator : public IteratorBase<IterElem>
-    {
-      private:
-
-        using IteratorBase<IterElem>::elem;
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        explicit ChainIterator() :
-          IteratorBase<IterElem>( nullptr )
-        {}
-
-        /**
-         * Create chain iterator, initially pointing to a given element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit ChainIterator( const Chain& c ) :
-          IteratorBase<IterElem>( c.firstElem )
-        {}
-
-        /**
-         * Advance to the next element.
-         */
-        OZ_ALWAYS_INLINE
-        ChainIterator& operator ++ ()
-        {
-          hard_assert( elem != nullptr );
-
-          elem = elem->next[INDEX];
-          return *this;
-        }
-
-    };
+    using IteratorBase<IterElem>::elem;
 
   public:
 
     /**
-     * %Iterator with constant access to elements.
+     * Default constructor, creates an invalid iterator.
      */
-    typedef ChainIterator<const Elem> CIterator;
-
-    /**
-     * %Iterator with non-constant access to elements.
-     */
-    typedef ChainIterator<Elem> Iterator;
-
-  private:
-
-    Elem* firstElem; ///< Pointer to the first element in the chain.
-
-  public:
-
-    /**
-     * Create an empty chain.
-     */
-    explicit Chain() :
-      firstElem( nullptr )
+    OZ_ALWAYS_INLINE
+    explicit ChainIterator() :
+      IteratorBase<IterElem>( nullptr )
     {}
 
     /**
-     * Move constructor, rebinds elements to the new chain.
+     * Create chain iterator, initially pointing to a given element.
      */
-    Chain( Chain&& c ) :
-      firstElem( c.firstElem )
-    {
-      c.firstElem = nullptr;
-    }
+    OZ_ALWAYS_INLINE
+    explicit ChainIterator( const Chain& c ) :
+      IteratorBase<IterElem>( c.firstElem )
+    {}
 
     /**
-     * Move operator, rebinds elements to the destination chain.
+     * Advance to the next element.
      */
-    Chain& operator = ( Chain&& c )
+    OZ_ALWAYS_INLINE
+    ChainIterator& operator ++ ()
     {
-      if( &c == this ) {
-        return *this;
-      }
+      hard_assert( elem != nullptr );
 
-      firstElem   = c.firstElem;
-
-      c.firstElem = nullptr;
-
+      elem = elem->next[INDEX];
       return *this;
     }
 
-    /**
-     * Create a copy of the chain and all its elements.
-     */
-    Chain clone() const
-    {
-      Chain clone;
+  };
 
-      Elem* original = firstElem;
-      Elem* prevCopy = nullptr;
+public:
 
-      while( original != nullptr ) {
-        Elem* copy = new Elem( *original );
+  /**
+   * %Iterator with constant access to elements.
+   */
+  typedef ChainIterator<const Elem> CIterator;
 
-        if( prevCopy == nullptr ) {
-          clone.firstElem = copy;
-        }
-        else {
-          prevCopy->next[INDEX] = copy;
-        }
+  /**
+   * %Iterator with non-constant access to elements.
+   */
+  typedef ChainIterator<Elem> Iterator;
 
-        original = original->next[INDEX];
-        prevCopy = copy;
-      }
+private:
 
-      return clone;
+  Elem* firstElem; ///< Pointer to the first element in the chain.
+
+public:
+
+  /**
+   * Create an empty chain.
+   */
+  explicit Chain() :
+    firstElem( nullptr )
+  {}
+
+  /**
+   * Move constructor, rebinds elements to the new chain.
+   */
+  Chain( Chain&& c ) :
+    firstElem( c.firstElem )
+  {
+    c.firstElem = nullptr;
+  }
+
+  /**
+   * Move operator, rebinds elements to the destination chain.
+   */
+  Chain& operator = ( Chain&& c )
+  {
+    if( &c == this ) {
+      return *this;
     }
 
-    /**
-     * True iff same size and respective elements are equal.
-     *
-     * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
-     * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
-     */
-    bool equals( const Chain& c ) const
-    {
-      Elem* e1 = firstElem;
-      Elem* e2 = c.firstElem;
+    firstElem   = c.firstElem;
 
-      while( e1 != nullptr && e2 != nullptr && *e1 == *e2 ) {
-        e1 = e1->next[INDEX];
-        e2 = e2->next[INDEX];
-      }
-      return e1 == e2;
-    }
+    c.firstElem = nullptr;
 
-    /**
-     * %Iterator with constant access, initially points to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator citer() const
-    {
-      return CIterator( *this );
-    }
+    return *this;
+  }
 
-    /**
-     * %Iterator with non-constant access, initially points to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    Iterator iter()
-    {
-      return Iterator( *this );
-    }
+  /**
+   * Create a copy of the chain and all its elements.
+   */
+  Chain clone() const
+  {
+    Chain clone;
 
-    /**
-     * STL-compatible constant begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator begin() const
-    {
-      return CIterator( *this );
-    }
+    Elem* original = firstElem;
+    Elem* prevCopy = nullptr;
 
-    /**
-     * STL-compatible begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Iterator begin()
-    {
-      return Iterator( *this );
-    }
+    while( original != nullptr ) {
+      Elem* copy = new Elem( *original );
 
-    /**
-     * STL-compatible constant end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator end() const
-    {
-      return CIterator();
-    }
-
-    /**
-     * STL-compatible end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Iterator end()
-    {
-      return Iterator();
-    }
-
-    /**
-     * Iterate through the chain and count elements.
-     */
-    int length() const
-    {
-      int i = 0;
-      Elem* p = firstElem;
-
-      while( p != nullptr ) {
-        p = p->next[INDEX];
-        ++i;
-      }
-      return i;
-    }
-
-    /**
-     * True iff the chain has no elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isEmpty() const
-    {
-      return firstElem == nullptr;
-    }
-
-    /**
-     * Pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* first() const
-    {
-      return firstElem;
-    }
-
-    /**
-     * Pointer to the last element.
-     */
-    Elem* last() const
-    {
-      Elem* last = firstElem;
-
-      while( last != nullptr ) {
-        last = last->next[INDEX];
-      }
-      return last;
-    }
-
-    /**
-     * Pointer to the element before a given one.
-     */
-    Elem* before( const Elem* e ) const
-    {
-      Elem* current = firstElem;
-      Elem* before = nullptr;
-
-      while( current != e ) {
-        before = current;
-        current = current->next[INDEX];
-      }
-      return before;
-    }
-
-    /**
-     * True iff a given element is in the chain.
-     */
-    bool has( const Elem* e ) const
-    {
-      hard_assert( e != nullptr );
-
-      Elem* p = firstElem;
-
-      while( p != nullptr && p != e ) {
-        p = p->next[INDEX];
-      }
-      return p != nullptr;
-    }
-
-    /**
-     * True iff an element equal to a given one is in the chain.
-     *
-     * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
-     * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
-     */
-    bool contains( const Elem* e ) const
-    {
-      hard_assert( e != nullptr );
-
-      Elem* p = firstElem;
-
-      while( p != nullptr && !( *p == *e ) ) {
-        p = p->next[INDEX];
-      }
-      return p != nullptr;
-    }
-
-    /**
-     * Bind an element to the beginning of the chain.
-     *
-     * For efficiency reasons, elements are added to the beginning of a chain.
-     */
-    void add( Elem* e )
-    {
-      pushFirst( e );
-    }
-
-    /**
-     * Bind an element after some given element in the chain.
-     */
-    void insertAfter( Elem* e, Elem* p )
-    {
-      hard_assert( e != nullptr && p != nullptr );
-
-      e->next[INDEX] = p->next[INDEX];
-      p->next[INDEX] = e;
-    }
-
-    /**
-     * Unbind the first element from the chain.
-     *
-     * To keep LIFO behaviour for `add()` and `erase()` methods like in array lists, the first
-     * element is removed instead of the last one.
-     */
-    void erase()
-    {
-      popFirst();
-    }
-
-    /**
-     * Unbind a given element from the chain.
-     *
-     * Because this chain is not double-linked, a pointer to the preceding element must be provided.
-     */
-    void erase( Elem* e, Elem* prev )
-    {
-      hard_assert( prev == nullptr || prev->next[INDEX] == e );
-
-      if( prev == nullptr ) {
-        firstElem = e->next[INDEX];
+      if( prevCopy == nullptr ) {
+        clone.firstElem = copy;
       }
       else {
-        prev->next[INDEX] = e->next[INDEX];
-      }
-    }
-
-    /**
-     * Bind an element to the beginning of the chain.
-     */
-    void pushFirst( Elem* e )
-    {
-      hard_assert( e != nullptr );
-
-      e->next[INDEX] = firstElem;
-      firstElem = e;
-    }
-
-    /**
-     * Unbind the first element from the chain.
-     */
-    Elem* popFirst()
-    {
-      hard_assert( firstElem != nullptr );
-
-      Elem* e = firstElem;
-
-      firstElem = firstElem->next[INDEX];
-      return e;
-    }
-
-    /**
-     * Empty the chain but do not delete the elements.
-     */
-    void clear()
-    {
-      firstElem = nullptr;
-    }
-
-    /**
-     * Empty the chain and delete all elements.
-     */
-    void free()
-    {
-      Elem* p = firstElem;
-
-      while( p != nullptr ) {
-        Elem* next = p->next[INDEX];
-
-        delete p;
-        p = next;
+        prevCopy->next[INDEX] = copy;
       }
 
-      firstElem = nullptr;
+      original = original->next[INDEX];
+      prevCopy = copy;
     }
+
+    return clone;
+  }
+
+  /**
+   * True iff same size and respective elements are equal.
+   *
+   * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
+   * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
+   */
+  bool equals( const Chain& c ) const
+  {
+    Elem* e1 = firstElem;
+    Elem* e2 = c.firstElem;
+
+    while( e1 != nullptr && e2 != nullptr && *e1 == *e2 ) {
+      e1 = e1->next[INDEX];
+      e2 = e2->next[INDEX];
+    }
+    return e1 == e2;
+  }
+
+  /**
+   * %Iterator with constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator citer() const
+  {
+    return CIterator( *this );
+  }
+
+  /**
+   * %Iterator with non-constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator iter()
+  {
+    return Iterator( *this );
+  }
+
+  /**
+   * STL-compatible constant begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator begin() const
+  {
+    return CIterator( *this );
+  }
+
+  /**
+   * STL-compatible begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator begin()
+  {
+    return Iterator( *this );
+  }
+
+  /**
+   * STL-compatible constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator end() const
+  {
+    return CIterator();
+  }
+
+  /**
+   * STL-compatible end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator end()
+  {
+    return Iterator();
+  }
+
+  /**
+   * Iterate through the chain and count elements.
+   */
+  int length() const
+  {
+    int i = 0;
+    Elem* p = firstElem;
+
+    while( p != nullptr ) {
+      p = p->next[INDEX];
+      ++i;
+    }
+    return i;
+  }
+
+  /**
+   * True iff the chain has no elements.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return firstElem == nullptr;
+  }
+
+  /**
+   * Pointer to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* first() const
+  {
+    return firstElem;
+  }
+
+  /**
+   * Pointer to the last element.
+   */
+  Elem* last() const
+  {
+    Elem* last = firstElem;
+
+    while( last != nullptr ) {
+      last = last->next[INDEX];
+    }
+    return last;
+  }
+
+  /**
+   * Pointer to the element before a given one.
+   */
+  Elem* before( const Elem* e ) const
+  {
+    Elem* current = firstElem;
+    Elem* before = nullptr;
+
+    while( current != e ) {
+      before = current;
+      current = current->next[INDEX];
+    }
+    return before;
+  }
+
+  /**
+   * True iff a given element is in the chain.
+   */
+  bool has( const Elem* e ) const
+  {
+    hard_assert( e != nullptr );
+
+    Elem* p = firstElem;
+
+    while( p != nullptr && p != e ) {
+      p = p->next[INDEX];
+    }
+    return p != nullptr;
+  }
+
+  /**
+   * True iff an element equal to a given one is in the chain.
+   *
+   * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
+   * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
+   */
+  bool contains( const Elem* e ) const
+  {
+    hard_assert( e != nullptr );
+
+    Elem* p = firstElem;
+
+    while( p != nullptr && !( *p == *e ) ) {
+      p = p->next[INDEX];
+    }
+    return p != nullptr;
+  }
+
+  /**
+   * Bind an element to the beginning of the chain.
+   *
+   * For efficiency reasons, elements are added to the beginning of a chain.
+   */
+  void add( Elem* e )
+  {
+    pushFirst( e );
+  }
+
+  /**
+   * Bind an element after some given element in the chain.
+   */
+  void insertAfter( Elem* e, Elem* p )
+  {
+    hard_assert( e != nullptr && p != nullptr );
+
+    e->next[INDEX] = p->next[INDEX];
+    p->next[INDEX] = e;
+  }
+
+  /**
+   * Unbind the first element from the chain.
+   *
+   * To keep LIFO behaviour for `add()` and `erase()` methods like in array lists, the first element
+   * is removed instead of the last one.
+   */
+  void erase()
+  {
+    popFirst();
+  }
+
+  /**
+   * Unbind a given element from the chain.
+   *
+   * Because this chain is not double-linked, a pointer to the preceding element must be provided.
+   */
+  void erase( Elem* e, Elem* prev )
+  {
+    hard_assert( prev == nullptr || prev->next[INDEX] == e );
+
+    if( prev == nullptr ) {
+      firstElem = e->next[INDEX];
+    }
+    else {
+      prev->next[INDEX] = e->next[INDEX];
+    }
+  }
+
+  /**
+   * Bind an element to the beginning of the chain.
+   */
+  void pushFirst( Elem* e )
+  {
+    hard_assert( e != nullptr );
+
+    e->next[INDEX] = firstElem;
+    firstElem = e;
+  }
+
+  /**
+   * Unbind the first element from the chain.
+   */
+  Elem* popFirst()
+  {
+    hard_assert( firstElem != nullptr );
+
+    Elem* e = firstElem;
+
+    firstElem = firstElem->next[INDEX];
+    return e;
+  }
+
+  /**
+   * Empty the chain but do not delete the elements.
+   */
+  void clear()
+  {
+    firstElem = nullptr;
+  }
+
+  /**
+   * Empty the chain and delete all elements.
+   */
+  void free()
+  {
+    Elem* p = firstElem;
+
+    while( p != nullptr ) {
+      Elem* next = p->next[INDEX];
+
+      delete p;
+      p = next;
+    }
+
+    firstElem = nullptr;
+  }
 
 };
 

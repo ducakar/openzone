@@ -41,75 +41,75 @@ namespace oz
  */
 class ImageBuilder
 {
-  public:
+public:
 
-    /**
-     * Enable generation of mipmaps for a texture.
-     */
-    static const int MIPMAPS_BIT = 0x01;
+  /**
+   * Enable generation of mipmaps for a texture.
+   */
+  static const int MIPMAPS_BIT = 0x01;
 
-    /**
-     * Enable texture compression.
-     */
-    static const int COMPRESSION_BIT = 0x02;
+  /**
+   * Enable texture compression.
+   */
+  static const int COMPRESSION_BIT = 0x02;
 
-  public:
+public:
 
-    /**
-     * Forbid instances.
-     */
-    explicit ImageBuilder() = delete;
+  /**
+   * Forbid instances.
+   */
+  explicit ImageBuilder() = delete;
 
-    /**
-     * Get the last error string from `buildDDS()`.
-     */
-    static const char* getError();
+  /**
+   * Get the last error string from `buildDDS()`.
+   */
+  static const char* getError();
 
-    /**
-     * True iff the given file contains an image according to FreeImage.
-     */
-    static bool isImage( const File& file );
+  /**
+   * True iff the given file contains an image according to FreeImage.
+   */
+  static bool isImage( const File& file );
 
-    /**
-     * Convert a given image to DDS format and optionally compress it and create mipmaps.
-     *
-     * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
-     * - `MIPMAPS_BIT` enables generation of mipmaps.
-     * - `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an
-     *   alpha channel and DXT5 for images with an alpha channel. Texture compression is enabled
-     *   only if `OZ_NONFREE` is enabled on ozEngine build.
-     *
-     * Input image should not use 32-bit bundary for line alignment and should be in RGB or RGBA
-     * format (OpenGL GL_RGB or GL_RGBA).
-     *
-     * @note
-     * The highest possible quality settings are used for compression and mipmap scaling, so this
-     * might take a long time for a large image.
-     *
-     * @param data input image pixels.
-     * @param width image width.
-     * @param height image height.
-     * @param bpp bits-per-pixel.
-     * @param options bit-mask to control mipmap generation and compression.
-     * @param destFile output file.
-     */
-    static bool createDDS( const void* data, int width, int height, int bpp, int options,
-                           const File& destFile );
+  /**
+   * Convert a given image to DDS format and optionally compress it and create mipmaps.
+   *
+   * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
+   * - `MIPMAPS_BIT` enables generation of mipmaps.
+   * - `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an alpha
+   *   channel and DXT5 for images with an alpha channel. Texture compression is enabled only if
+   *   `OZ_NONFREE` is enabled on ozEngine build.
+   *
+   * Input image should not use 32-bit bundary for line alignment and should be in RGB or RGBA
+   * format (OpenGL GL_RGB or GL_RGBA).
+   *
+   * @note
+   * The highest possible quality settings are used for compression and mipmap scaling, so this
+   * might take a long time for a large image.
+   *
+   * @param data input image pixels.
+   * @param width image width.
+   * @param height image height.
+   * @param bpp bits-per-pixel.
+   * @param options bit-mask to control mipmap generation and compression.
+   * @param destFile output file.
+   */
+  static bool createDDS( const void* data, int width, int height, int bpp, int options,
+                         const File& destFile );
 
-    /**
-     * Convert a given image to DDS format, similar to `buildDDS()`.
-     *
-     * Freeimage library is used for reading a file, so most of image file formats are supported.
-     * If the input file is a valid DDS, it is only copied.
-     *
-     * @param file input image file.
-     * @param options bit-mask to control mipmap generation and compression.
-     * @param destPath output file or directory (in the latter case output file has the same base
-     *        name as the input file but "dds" extension).
-     *
-     * @sa `buildDDS()`
-     */
-    static bool convertToDDS( const File& file, int options, const char* destPath );
+  /**
+   * Convert a given image to DDS format, similar to `buildDDS()`.
+   *
+   * Freeimage library is used for reading a file, so most of image file formats are supported.
+   * If the input file is a valid DDS, it is only copied.
+   *
+   * @param file input image file.
+   * @param options bit-mask to control mipmap generation and compression.
+   * @param destPath output file or directory (in the latter case output file has the same base
+   *        name as the input file but "dds" extension).
+   *
+   * @sa `buildDDS()`
+   */
+  static bool convertToDDS( const File& file, int options, const char* destPath );
 
 };
 

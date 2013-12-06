@@ -30,34 +30,34 @@ namespace oz
 
 class Matrix
 {
-  private:
+private:
 
-    static const float MAX_VELOCITY2;
+  static const float MAX_VELOCITY2;
 
-    int maxStructs;
-    int maxEvents;
-    int maxObjects;
-    int maxDynamics;
-    int maxWeapons;
-    int maxBots;
-    int maxVehicles;
-    int maxFrags;
+  int maxStructs;
+  int maxEvents;
+  int maxObjects;
+  int maxDynamics;
+  int maxWeapons;
+  int maxBots;
+  int maxVehicles;
+  int maxFrags;
 
-  public:
+public:
 
-    void update();
+  void update();
 
-    void read( InputStream* is );
-    void read( const JSON& json );
+  void read( InputStream* is );
+  void read( const JSON& json );
 
-    void write( OutputStream* os ) const;
-    JSON write() const;
+  void write( OutputStream* os ) const;
+  JSON write() const;
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

@@ -67,26 +67,26 @@ static pp::Instance* ppInstance = nullptr;
 
 class Pepper::Instance : public pp::Instance, public pp::MouseLock
 {
-  private:
+private:
 
-    pp::Fullscreen fullscreen;
+  pp::Fullscreen fullscreen;
 
-  private:
+private:
 
-    static void mainThreadMain( void* );
-    static void onMouseLocked( void*, int result );
+  static void mainThreadMain( void* );
+  static void onMouseLocked( void*, int result );
 
-    bool Init( uint32_t argc, const char** argn, const char** argv ) override;
-    void DidChangeView( const pp::View& view ) override;
-    void DidChangeView( const pp::Rect& position, const pp::Rect& clip ) override;
-    void HandleMessage( const pp::Var& message ) override;
-    bool HandleInputEvent( const pp::InputEvent& event ) override;
-    void MouseLockLost() override;
+  bool Init( uint32_t argc, const char** argn, const char** argv ) override;
+  void DidChangeView( const pp::View& view ) override;
+  void DidChangeView( const pp::Rect& position, const pp::Rect& clip ) override;
+  void HandleMessage( const pp::Var& message ) override;
+  bool HandleInputEvent( const pp::InputEvent& event ) override;
+  void MouseLockLost() override;
 
-  public:
+public:
 
-    explicit Instance( PP_Instance instance );
-    ~Instance() override;
+  explicit Instance( PP_Instance instance );
+  ~Instance() override;
 
 };
 
@@ -217,9 +217,9 @@ void Pepper::Instance::MouseLockLost()
 
 class Pepper::Module : public pp::Module
 {
-  public:
+public:
 
-    pp::Instance* CreateInstance( PP_Instance instance ) override;
+  pp::Instance* CreateInstance( PP_Instance instance ) override;
 
 };
 

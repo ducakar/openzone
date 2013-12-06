@@ -40,413 +40,413 @@ namespace oz
  */
 class Vec4 : public VectorBase4
 {
-  public:
+public:
 
-    /// Zero vector, [0, 0, 0, 0].
-    static const Vec4 ZERO;
+  /// Zero vector, [0, 0, 0, 0].
+  static const Vec4 ZERO;
 
-    /// Vector of ones, [1, 1, 1, 1].
-    static const Vec4 ONE;
+  /// Vector of ones, [1, 1, 1, 1].
+  static const Vec4 ONE;
 
-    /// Equivalent to origin point or identity quaternion, [0, 0, 0, 1].
-    static const Vec4 ID;
+  /// Equivalent to origin point or identity quaternion, [0, 0, 0, 1].
+  static const Vec4 ID;
 
-  public:
+public:
 
-    /**
-     * Create an uninitialised instance.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4() = default;
+  /**
+   * Create an uninitialised instance.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4() = default;
 
 #ifdef OZ_SIMD_MATH
 
-    /**
-     * Create from a float SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4( float4 f4 ) :
-      VectorBase4( f4 )
-    {}
+  /**
+   * Create from a float SIMD vector.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4( float4 f4 ) :
+    VectorBase4( f4 )
+  {}
 
-    /**
-     * Create from an uint SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4( uint4 u4 ) :
-      VectorBase4( u4 )
-    {}
+  /**
+   * Create from an uint SIMD vector.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4( uint4 u4 ) :
+    VectorBase4( u4 )
+  {}
 
 #endif
 
-    /**
-     * Create a vector with given components.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4( float x, float y, float z, float w ) :
-      VectorBase4( x, y, z, w )
-    {}
+  /**
+   * Create a vector with given components.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4( float x, float y, float z, float w ) :
+    VectorBase4( x, y, z, w )
+  {}
 
-    /**
-     * Create from an array of 4 floats.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4( const float* v ) :
-      VectorBase4( v[0], v[1], v[2], v[3] )
-    {}
+  /**
+   * Create from an array of 4 floats.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4( const float* v ) :
+    VectorBase4( v[0], v[1], v[2], v[3] )
+  {}
 
-    /**
-     * Create vector from a 3D vector (the additional component is zero).
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4( const Vec3& v ) :
+  /**
+   * Create vector from a 3D vector (the additional component is zero).
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4( const Vec3& v ) :
 #ifdef OZ_SIMD_MATH
-      VectorBase4( v.f4 )
+    VectorBase4( v.f4 )
 #else
-      VectorBase4( v.x, v.y, v.z, 0.0f )
+    VectorBase4( v.x, v.y, v.z, 0.0f )
 #endif
-    {}
+  {}
 
-    /**
-     * Create vector from a point (the additional component is one).
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec4( const Point& p ) :
+  /**
+   * Create vector from a point (the additional component is one).
+   */
+  OZ_ALWAYS_INLINE
+  explicit Vec4( const Point& p ) :
 #ifdef OZ_SIMD_MATH
-      VectorBase4( p.f4 )
+    VectorBase4( p.f4 )
 #else
-      VectorBase4( p.x, p.y, p.z, 1.0f )
+    VectorBase4( p.x, p.y, p.z, 1.0f )
 #endif
-    {}
+  {}
 
-    /**
-     * Equality.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator == ( const Vec4& v ) const
-    {
-      return x == v.x && y == v.y && z == v.z && w == v.w;
-    }
+  /**
+   * Equality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == ( const Vec4& v ) const
+  {
+    return x == v.x && y == v.y && z == v.z && w == v.w;
+  }
 
-    /**
-     * Inequality.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator != ( const Vec4& v ) const
-    {
-      return x != v.x || y != v.y || z != v.z || w != v.w;
-    }
+  /**
+   * Inequality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != ( const Vec4& v ) const
+  {
+    return x != v.x || y != v.y || z != v.z || w != v.w;
+  }
 
-    /**
-     * Constant float pointer to the members.
-     */
-    OZ_ALWAYS_INLINE
-    operator const float* () const
-    {
-      return &x;
-    }
+  /**
+   * Constant float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator const float* () const
+  {
+    return &x;
+  }
 
-    /**
-     * Float pointer to the members.
-     */
-    OZ_ALWAYS_INLINE
-    operator float* ()
-    {
-      return &x;
-    }
+  /**
+   * Float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator float* ()
+  {
+    return &x;
+  }
 
-    /**
-     * Constant reference to the `i`-th member.
-     */
-    OZ_ALWAYS_INLINE
-    const float& operator [] ( int i ) const
-    {
-      return ( &x )[i];
-    }
+  /**
+   * Constant reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  const float& operator [] ( int i ) const
+  {
+    return ( &x )[i];
+  }
 
-    /**
-     * Reference to the `i`-th member.
-     */
-    OZ_ALWAYS_INLINE
-    float& operator [] ( int i )
-    {
-      return ( &x )[i];
-    }
+  /**
+   * Reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  float& operator [] ( int i )
+  {
+    return ( &x )[i];
+  }
 
-    /**
-     * Return the 3D vector this vector represents (last component should be 0).
-     */
-    Vec3 vec3() const
-    {
+  /**
+   * Return the 3D vector this vector represents (last component should be 0).
+   */
+  Vec3 vec3() const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec3( f4 );
+    return Vec3( f4 );
 #else
-      hard_assert( w == 0.0f );
+    hard_assert( w == 0.0f );
 
-      return Vec3( x, y, z );
+    return Vec3( x, y, z );
 #endif
-    }
+  }
 
-    /**
-     * Return the point vector represents (last component should be 1).
-     */
-    Point point() const
-    {
+  /**
+   * Return the point vector represents (last component should be 1).
+   */
+  Point point() const
+  {
 #ifdef OZ_SIMD_MATH
-      return Point( f4 );
+    return Point( f4 );
 #else
-      hard_assert( w == 1.0f );
+    hard_assert( w == 1.0f );
 
-      return Point( x, y, z );
+    return Point( x, y, z );
 #endif
-    }
+  }
 
-    /**
-     * Norm.
-     */
-    OZ_ALWAYS_INLINE
-    float operator ! () const
-    {
+  /**
+   * Norm.
+   */
+  OZ_ALWAYS_INLINE
+  float operator ! () const
+  {
 #ifdef OZ_SIMD_MATH
-      return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+    return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
 #else
-      return Math::sqrt( x*x + y*y + z*z + w*w );
+    return Math::sqrt( x*x + y*y + z*z + w*w );
 #endif
-    }
+  }
 
-    /**
-     * Approximate norm.
-     */
-    OZ_ALWAYS_INLINE
-    float fastN() const
-    {
+  /**
+   * Approximate norm.
+   */
+  OZ_ALWAYS_INLINE
+  float fastN() const
+  {
 #ifdef OZ_SIMD_MATH
-      return Math::fastSqrt( vFirst( vDot( f4, f4 ) ) );
+    return Math::fastSqrt( vFirst( vDot( f4, f4 ) ) );
 #else
-      return Math::fastSqrt( x*x + y*y + z*z + w*w );
+    return Math::fastSqrt( x*x + y*y + z*z + w*w );
 #endif
-    }
+  }
 
-    /**
-     * Squared norm.
-     */
-    OZ_ALWAYS_INLINE
-    scalar sqN() const
-    {
+  /**
+   * Squared norm.
+   */
+  OZ_ALWAYS_INLINE
+  scalar sqN() const
+  {
 #ifdef OZ_SIMD_MATH
-      return vDot( f4, f4 );
+    return vDot( f4, f4 );
 #else
-      return x*x + y*y + z*z + w*w;
+    return x*x + y*y + z*z + w*w;
 #endif
-    }
+  }
 
-    /**
-     * Unit vector.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator ~ () const
-    {
+  /**
+   * Unit vector.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator ~ () const
+  {
 #ifdef OZ_SIMD_MATH
-      scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-      return Vec4( f4 * s.f4 );
+    scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+    return Vec4( f4 * s.f4 );
 #else
-      hard_assert( x*x + y*y + z*z + w*w > 0.0f );
+    hard_assert( x*x + y*y + z*z + w*w > 0.0f );
 
-      float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-      return Vec4( x * k, y * k, z * k, w * k );
+    float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
+    return Vec4( x * k, y * k, z * k, w * k );
 #endif
-    }
+  }
 
-    /**
-     * Approximate unit vector.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 fastUnit() const
-    {
+  /**
+   * Approximate unit vector.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 fastUnit() const
+  {
 #ifdef OZ_SIMD_MATH
-      scalar s = Math::fastInvSqrt( vFirst( vDot( f4, f4 ) ) );
-      return Vec4( f4 * s.f4 );
+    scalar s = Math::fastInvSqrt( vFirst( vDot( f4, f4 ) ) );
+    return Vec4( f4 * s.f4 );
 #else
-      hard_assert( x*x + y*y + z*z + w*w > 0.0f );
+    hard_assert( x*x + y*y + z*z + w*w > 0.0f );
 
-      float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-      return Vec4( x * k, y * k, z * k, w * k );
+    float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
+    return Vec4( x * k, y * k, z * k, w * k );
 #endif
-    }
+  }
 
-    /**
-     * Original vector.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator + () const
-    {
-      return *this;
-    }
+  /**
+   * Original vector.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator + () const
+  {
+    return *this;
+  }
 
-    /**
-     * Opposite vector.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator - () const
-    {
+  /**
+   * Opposite vector.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator - () const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec4( -f4 );
+    return Vec4( -f4 );
 #else
-      return Vec4( -x, -y, -z, -w );
+    return Vec4( -x, -y, -z, -w );
 #endif
-    }
+  }
 
-    /**
-     * Sum.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator + ( const Vec4& v ) const
-    {
+  /**
+   * Sum.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator + ( const Vec4& v ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec4( f4 + v.f4 );
+    return Vec4( f4 + v.f4 );
 #else
-      return Vec4( x + v.x, y + v.y, z + v.z, w + v.w );
+    return Vec4( x + v.x, y + v.y, z + v.z, w + v.w );
 #endif
-    }
+  }
 
-    /**
-     * Difference.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator - ( const Vec4& v ) const
-    {
+  /**
+   * Difference.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator - ( const Vec4& v ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec4( f4 - v.f4 );
+    return Vec4( f4 - v.f4 );
 #else
-      return Vec4( x - v.x, y - v.y, z - v.z, w - v.w );
+    return Vec4( x - v.x, y - v.y, z - v.z, w - v.w );
 #endif
-    }
+  }
 
-    /**
-     * Vector multiplied by a scalar.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator * ( scalar s ) const
-    {
+  /**
+   * Vector multiplied by a scalar.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator * ( scalar s ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec4( f4 * s.f4 );
+    return Vec4( f4 * s.f4 );
 #else
-      return Vec4( x * s, y * s, z * s, w * s );
+    return Vec4( x * s, y * s, z * s, w * s );
 #endif
-    }
+  }
 
-    /**
-     * Vector multiplied by a scalar.
-     */
-    OZ_ALWAYS_INLINE
-    friend Vec4 operator * ( scalar s, const Vec4& v )
-    {
+  /**
+   * Vector multiplied by a scalar.
+   */
+  OZ_ALWAYS_INLINE
+  friend Vec4 operator * ( scalar s, const Vec4& v )
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec4( s.f4 * v.f4 );
+    return Vec4( s.f4 * v.f4 );
 #else
-      return Vec4( s * v.x, s * v.y, s * v.z, s * v.w );
+    return Vec4( s * v.x, s * v.y, s * v.z, s * v.w );
 #endif
-    }
+  }
 
-    /**
-     * Vector divided by a scalar.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4 operator / ( scalar s ) const
-    {
+  /**
+   * Vector divided by a scalar.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4 operator / ( scalar s ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec4( f4 / s.f4 );
+    return Vec4( f4 / s.f4 );
 #else
-      hard_assert( s != 0.0f );
+    hard_assert( s != 0.0f );
 
-      s = 1.0f / s;
-      return Vec4( x * s, y * s, z * s, w * s );
+    s = 1.0f / s;
+    return Vec4( x * s, y * s, z * s, w * s );
 #endif
-    }
+  }
 
-    /**
-     * Addition.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4& operator += ( const Vec4& v )
-    {
+  /**
+   * Addition.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4& operator += ( const Vec4& v )
+  {
 #ifdef OZ_SIMD_MATH
-      f4 += v.f4;
+    f4 += v.f4;
 #else
-      x += v.x;
-      y += v.y;
-      z += v.z;
-      w += v.w;
+    x += v.x;
+    y += v.y;
+    z += v.z;
+    w += v.w;
 #endif
-      return *this;
-    }
+    return *this;
+  }
 
-    /**
-     * Subtraction.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4& operator -= ( const Vec4& v )
-    {
+  /**
+   * Subtraction.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4& operator -= ( const Vec4& v )
+  {
 #ifdef OZ_SIMD_MATH
-      f4 -= v.f4;
+    f4 -= v.f4;
 #else
-      x -= v.x;
-      y -= v.y;
-      z -= v.z;
-      w -= v.w;
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
+    w -= v.w;
 #endif
-      return *this;
-    }
+    return *this;
+  }
 
-    /**
-     * Multiplication by a scalar.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4& operator *= ( scalar s )
-    {
+  /**
+   * Multiplication by a scalar.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4& operator *= ( scalar s )
+  {
 #ifdef OZ_SIMD_MATH
-      f4 *= s.f4;
+    f4 *= s.f4;
 #else
-      x *= s;
-      y *= s;
-      z *= s;
-      w *= s;
+    x *= s;
+    y *= s;
+    z *= s;
+    w *= s;
 #endif
-      return *this;
-    }
+    return *this;
+  }
 
-    /**
-     * Division by a scalar.
-     */
-    OZ_ALWAYS_INLINE
-    Vec4& operator /= ( scalar s )
-    {
+  /**
+   * Division by a scalar.
+   */
+  OZ_ALWAYS_INLINE
+  Vec4& operator /= ( scalar s )
+  {
 #ifdef OZ_SIMD_MATH
-      f4 /= s.f4;
+    f4 /= s.f4;
 #else
-      hard_assert( s != 0.0f );
+    hard_assert( s != 0.0f );
 
-      s  = 1.0f / s;
-      x *= s;
-      y *= s;
-      z *= s;
-      w *= s;
+    s  = 1.0f / s;
+    x *= s;
+    y *= s;
+    z *= s;
+    w *= s;
 #endif
-      return *this;
-    }
+    return *this;
+  }
 
-    /**
-     * Scalar product.
-     */
-    OZ_ALWAYS_INLINE
-    scalar operator * ( const Vec4& v ) const
-    {
+  /**
+   * Scalar product.
+   */
+  OZ_ALWAYS_INLINE
+  scalar operator * ( const Vec4& v ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return vDot( f4, v.f4 );
+    return vDot( f4, v.f4 );
 #else
-      return x*v.x + y*v.y + z*v.z + w*v.w;
+    return x*v.x + y*v.y + z*v.z + w*v.w;
 #endif
-    }
+  }
 
 };
 

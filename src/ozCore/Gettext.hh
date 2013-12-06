@@ -41,97 +41,97 @@ namespace oz
  */
 class Gettext
 {
-  private:
+private:
 
-    struct Message;
+  struct Message;
 
-    Message** table;       ///< Message hashtable.
-    Message*  messages;    ///< Messages.
-    char*     strings;     ///< Strings buffer.
-    int       nBuckets;    ///< Number of hashtable buckets.
-    int       nMessages;   ///< Size of hashtable.
-    int       stringsSize; ///< Size of `strings` array.
+  Message** table;       ///< Message hashtable.
+  Message*  messages;    ///< Messages.
+  char*     strings;     ///< Strings buffer.
+  int       nBuckets;    ///< Number of hashtable buckets.
+  int       nMessages;   ///< Size of hashtable.
+  int       stringsSize; ///< Size of `strings` array.
 
-  public:
+public:
 
-    /**
-     * Default constructor, creates an empty instance.
-     */
-    explicit Gettext();
+  /**
+   * Default constructor, creates an empty instance.
+   */
+  explicit Gettext();
 
-    /**
-     * Create a new instance and import translations from a given file.
-     */
-    explicit Gettext( const File& file );
+  /**
+   * Create a new instance and import translations from a given file.
+   */
+  explicit Gettext( const File& file );
 
-    /**
-     * Destructor.
-     */
-    ~Gettext();
+  /**
+   * Destructor.
+   */
+  ~Gettext();
 
-    /**
-     * Move constructor.
-     */
-    Gettext( Gettext&& gt );
+  /**
+   * Move constructor.
+   */
+  Gettext( Gettext&& gt );
 
-    /**
-     * Move operator.
-     */
-    Gettext& operator = ( Gettext&& gt );
+  /**
+   * Move operator.
+   */
+  Gettext& operator = ( Gettext&& gt );
 
-    /**
-     * Number of messages it contains.
-     */
-    OZ_ALWAYS_INLINE
-    int length() const
-    {
-      return nMessages;
-    }
+  /**
+   * Number of messages it contains.
+   */
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return nMessages;
+  }
 
-    /**
-     * True iff it contains no messages.
-     */
-    OZ_ALWAYS_INLINE
-    bool isEmpty() const
-    {
-      return nMessages == 0;
-    }
+  /**
+   * True iff it contains no messages.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return nMessages == 0;
+  }
 
-    /**
-     * Check whether the catalogue contains a given translation.
-     */
-    bool contains( const char* message ) const;
+  /**
+   * Check whether the catalogue contains a given translation.
+   */
+  bool contains( const char* message ) const;
 
-    /**
-     * Obtain translation from the catalogue.
-     *
-     * If translation for a given string does not exist that string itself is returned. An empty
-     * string is always translated to an empty string -- use `catalogueDescriptions()` to get
-     * catalogue descriptions.
-     */
-    const char* get( const char* message ) const;
+  /**
+   * Obtain translation from the catalogue.
+   *
+   * If translation for a given string does not exist that string itself is returned. An empty
+   * string is always translated to an empty string -- use `catalogueDescriptions()` to get
+   * catalogue descriptions.
+   */
+  const char* get( const char* message ) const;
 
-    /**
-     * Obtain descriptions of all .mo catalogues that have been merged into this catalogue.
-     */
-    DArray<const char*> catalogueDescriptions() const;
+  /**
+   * Obtain descriptions of all .mo catalogues that have been merged into this catalogue.
+   */
+  DArray<const char*> catalogueDescriptions() const;
 
-    /**
-     * Import messages from GNU gettext binary .mo file.
-     *
-     * Existing messages are kept in the catalogue. There is no checking for duplicates, so both
-     * copies will be kept in the final catalogue. However, the later added copy should always
-     * override the earlier one in the hashtable making the old one inaccessible.
-     *
-     * Empty strings (storage for catalogue descriptions) are never included in the hashtable, use
-     * `catalogueDescriptions()` to obtain those.
-     */
-    bool import( const File& file );
+  /**
+   * Import messages from GNU gettext binary .mo file.
+   *
+   * Existing messages are kept in the catalogue. There is no checking for duplicates, so both
+   * copies will be kept in the final catalogue. However, the later added copy should always
+   * override the earlier one in the hashtable making the old one inaccessible.
+   *
+   * Empty strings (storage for catalogue descriptions) are never included in the hashtable, use
+   * `catalogueDescriptions()` to obtain those.
+   */
+  bool import( const File& file );
 
-    /**
-     * Clear catalogue.
-     */
-    void clear();
+  /**
+   * Clear catalogue.
+   */
+  void clear();
 
 };
 

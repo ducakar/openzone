@@ -38,156 +38,156 @@ namespace oz
  */
 class Window
 {
-  private:
+private:
 
-    static int  screenWidth;  ///< Screen width (desktop resolution).
-    static int  screenHeight; ///< Screen height (desktop resolution).
-    static int  windowWidth;  ///< Window inner width.
-    static int  windowHeight; ///< Window inner height.
-    static bool fullscreen;   ///< True iff in full screen mode;
-    static bool windowFocus;  ///< True iff window has (input) focus.
-    static bool windowGrab;   ///< True iff window has exclusive input grab.
+  static int  screenWidth;  ///< Screen width (desktop resolution).
+  static int  screenHeight; ///< Screen height (desktop resolution).
+  static int  windowWidth;  ///< Window inner width.
+  static int  windowHeight; ///< Window inner height.
+  static bool fullscreen;   ///< True iff in full screen mode;
+  static bool windowFocus;  ///< True iff window has (input) focus.
+  static bool windowGrab;   ///< True iff window has exclusive input grab.
 
-  private:
+private:
 
-    /**
-     * Obtain screen (desktop) width and height.
-     */
-    static void measureScreen();
+  /**
+   * Obtain screen (desktop) width and height.
+   */
+  static void measureScreen();
 
-  public:
+public:
 
-    /**
-     * Forbid instances.
-     */
-    explicit Window() = delete;
+  /**
+   * Forbid instances.
+   */
+  explicit Window() = delete;
 
-    /**
-     * True the window is created.
-     */
-    static bool isCreated();
+  /**
+   * True the window is created.
+   */
+  static bool isCreated();
 
-    /**
-     * Desktop width.
-     */
-    static int desktopWidth()
-    {
-      if( screenWidth == 0 ) {
-        measureScreen();
-      }
-      return screenWidth;
+  /**
+   * Desktop width.
+   */
+  static int desktopWidth()
+  {
+    if( screenWidth == 0 ) {
+      measureScreen();
     }
+    return screenWidth;
+  }
 
-    /**
-     * Desktop height.
-     */
-    static int desktopHeight()
-    {
-      if( screenHeight == 0 ) {
-        measureScreen();
-      }
-      return screenHeight;
+  /**
+   * Desktop height.
+   */
+  static int desktopHeight()
+  {
+    if( screenHeight == 0 ) {
+      measureScreen();
     }
+    return screenHeight;
+  }
 
-    /**
-     * Window width.
-     */
-    static int width()
-    {
-      return windowWidth;
-    }
+  /**
+   * Window width.
+   */
+  static int width()
+  {
+    return windowWidth;
+  }
 
-    /**
-     * Window height.
-     */
-    static int height()
-    {
-      return windowHeight;
-    }
+  /**
+   * Window height.
+   */
+  static int height()
+  {
+    return windowHeight;
+  }
 
-    /**
-     * True iff in fullscreen mode.
-     */
-    static bool isFullscreen()
-    {
-      return fullscreen;
-    }
+  /**
+   * True iff in fullscreen mode.
+   */
+  static bool isFullscreen()
+  {
+    return fullscreen;
+  }
 
-    /**
-     * True iff the window has focus (must be set by `setFocus()`).
-     */
-    static bool hasFocus()
-    {
-      return windowFocus;
-    }
+  /**
+   * True iff the window has focus (must be set by `setFocus()`).
+   */
+  static bool hasFocus()
+  {
+    return windowFocus;
+  }
 
-    /**
-     * Set whether window has focus.
-     */
-    static void setFocus( bool focus )
-    {
-      windowFocus = focus;
-    }
+  /**
+   * Set whether window has focus.
+   */
+  static void setFocus( bool focus )
+  {
+    windowFocus = focus;
+  }
 
-    /**
-     * True iff the window has input grab.
-     */
-    static bool hasGrab()
-    {
-      return windowGrab;
-    }
+  /**
+   * True iff the window has input grab.
+   */
+  static bool hasGrab()
+  {
+    return windowGrab;
+  }
 
-    /**
-     * Toggle input grab.
-     */
-    static void setGrab( bool grab );
+  /**
+   * Toggle input grab.
+   */
+  static void setGrab( bool grab );
 
-    /**
-     * Warp mouse cursor to the centre of the window.
-     */
-    static void warpMouse();
+  /**
+   * Warp mouse cursor to the centre of the window.
+   */
+  static void warpMouse();
 
-    /**
-     * Swap OpenGL buffers.
-     */
-    static void swapBuffers();
+  /**
+   * Swap OpenGL buffers.
+   */
+  static void swapBuffers();
 
-    /**
-     * Save screenshot in a PNG file.
-     *
-     * Creation of PNG is performed on a background thread as the best compression is used and it
-     * may take some time. Only one screenshot thread at a time is possible, so making two
-     * screenshots in a short time will block the second call until the first screenshot is written.
-     */
-    static void screenshot( const File& file );
+  /**
+   * Save screenshot in a PNG file.
+   *
+   * Creation of PNG is performed on a background thread as the best compression is used and it may
+   * take some time. Only one screenshot thread at a time is possible, so making two screenshots in
+   * a short time will block the second call until the first screenshot is written.
+   */
+  static void screenshot( const File& file );
 
-    /**
-     * Minimise window.
-     */
-    static void minimise();
+  /**
+   * Minimise window.
+   */
+  static void minimise();
 
-    /**
-     * Resize window and/or toggle full-screen mode.
-     *
-     * If width (or height) is 0, desktop width (or height) is used.
-     * On error, window is destroyed.
-     */
-    static bool resize( int newWidth, int newHeight, bool fullscreen = false );
+  /**
+   * Resize window and/or toggle full-screen mode.
+   *
+   * If width (or height) is 0, desktop width (or height) is used.
+   * On error, window is destroyed.
+   */
+  static bool resize( int newWidth, int newHeight, bool fullscreen = false );
 
-    /**
-     * Create the window.
-     *
-     * If width (or height) is 0, desktop width (or height) is used.
-     * Invoking this function when the window is already created is an error.
-     */
-    static bool create( const char* title, int width, int height, bool fullscreen = false );
+  /**
+   * Create the window.
+   *
+   * If width (or height) is 0, desktop width (or height) is used.
+   * Invoking this function when the window is already created is an error.
+   */
+  static bool create( const char* title, int width, int height, bool fullscreen = false );
 
-    /**
-     * Destroy the window.
-     *
-     * Destroying a non-existent window is a legal NOP.
-     */
-    static void destroy();
+  /**
+   * Destroy the window.
+   *
+   * Destroying a non-existent window is a legal NOP.
+   */
+  static void destroy();
 
 };
 

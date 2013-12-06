@@ -36,150 +36,149 @@ class Entity
 {
   friend class Struct;
 
-  private:
+private:
 
-    typedef void ( Entity::* Handler )();
+  typedef void ( Entity::* Handler )();
 
-    static const Handler HANDLERS[];
+  static const Handler HANDLERS[];
 
-  public:
+public:
 
-    enum State
-    {
-      CLOSED,
-      OPENING,
-      OPENED,
-      CLOSING
-    };
+  enum State
+  {
+    CLOSED,
+    OPENING,
+    OPENED,
+    CLOSING
+  };
 
-    const EntityClass* clazz;
-    const Struct*      str;
+  const EntityClass* clazz;
+  const Struct*      str;
 
-    int                key;
+  int                key;
 
-    State              state;
-    float              ratio;
-    float              time;
+  State              state;
+  float              ratio;
+  float              time;
 
-    Vec3               offset;
-    Vec3               velocity;
+  Vec3               offset;
+  Vec3               velocity;
 
-  public:
+public:
 
-    int index() const;
-    void trigger();
-    void lock( Bot* user );
+  int index() const;
+  void trigger();
+  void lock( Bot* user );
 
-  private:
+private:
 
-    void staticHandler();
-    void manualDoorHandler();
-    void autoDoorHandler();
-    void ignoringBlockHandler();
-    void crushingBlockHandler();
-    void elevatorHandler();
+  void staticHandler();
+  void manualDoorHandler();
+  void autoDoorHandler();
+  void ignoringBlockHandler();
+  void crushingBlockHandler();
+  void elevatorHandler();
 
 };
 
 class Struct : public Bounds
 {
-  public:
+private:
 
-    static const int MAX_ENT_SHIFT = 16;
-    static const int MAX_ENTITIES  = 1 << MAX_ENT_SHIFT;
+  static const Vec3  DESTRUCT_FRAG_VELOCITY;
+  static const float DEMOLISH_SPEED;
 
-  private:
+public:
 
-    static const Vec3  DESTRUCT_FRAG_VELOCITY;
-    static const float DEMOLISH_SPEED;
+  static const int MAX_ENT_SHIFT = 16;
+  static const int MAX_ENTITIES  = 1 << MAX_ENT_SHIFT;
 
-  public:
+public:
 
-    static List<Object*> overlappingObjs;
-    static Pool<Struct>  pool;
+  static List<Object*> overlappingObjs;
+  static Pool<Struct>  pool;
 
-  private:
+private:
 
-    Mat44          transf;
-    Mat44          invTransf;
+  Mat44          transf;
+  Mat44          invTransf;
 
-  public:
+public:
 
-    const BSP*     bsp;
+  const BSP*     bsp;
 
-    Point          p;
-    Heading        heading;
+  Point          p;
+  Heading        heading;
 
-    int            index;
+  int            index;
 
-    float          life;
-    float          resistance;
-    float          demolishing;
+  float          life;
+  float          resistance;
+  float          demolishing;
 
-    DArray<Entity> entities;
-    List<int>      boundObjects;
+  DArray<Entity> entities;
+  List<int>      boundObjects;
 
-  private:
+private:
 
-    void onDemolish();
-    void onUpdate();
+  void onDemolish();
+  void onUpdate();
 
-  public:
+public:
 
-    // no copying
-    Struct( const Struct& ) = delete;
-    Struct& operator = ( const Struct& ) = delete;
+  // no copying
+  Struct( const Struct& ) = delete;
+  Struct& operator = ( const Struct& ) = delete;
 
-    /**
-     * Rotate vector from structure coordinate system to absolute coordinate system.
-     */
-    Vec3 toAbsoluteCS( const Vec3& v ) const;
+  /**
+   * Rotate vector from structure coordinate system to absolute coordinate system.
+   */
+  Vec3 toAbsoluteCS( const Vec3& v ) const;
 
-    /**
-     * Rotate vector from absolute coordinate system to structure coordinate system.
-     */
-    Vec3 toStructCS( const Vec3& v ) const;
+  /**
+   * Rotate vector from absolute coordinate system to structure coordinate system.
+   */
+  Vec3 toStructCS( const Vec3& v ) const;
 
-    /**
-     * Rotate point from structure coordinate system to absolute coordinate system.
-     */
-    Point toAbsoluteCS( const Point& point ) const;
+  /**
+   * Rotate point from structure coordinate system to absolute coordinate system.
+   */
+  Point toAbsoluteCS( const Point& point ) const;
 
-    /**
-     * Rotate point from absolute coordinate system to structure coordinate system.
-     */
-    Point toStructCS( const Point& point ) const;
+  /**
+   * Rotate point from absolute coordinate system to structure coordinate system.
+   */
+  Point toStructCS( const Point& point ) const;
 
-    /**
-     * Rotate Bounds from structure coordinate system to absolute coordinate system.
-     */
-    Bounds toAbsoluteCS( const Bounds& bb ) const;
+  /**
+   * Rotate Bounds from structure coordinate system to absolute coordinate system.
+   */
+  Bounds toAbsoluteCS( const Bounds& bb ) const;
 
-    /**
-     * Rotate Bounds from absolute coordinate system to structure coordinate system.
-     */
-    Bounds toStructCS( const Bounds& bb ) const;
+  /**
+   * Rotate Bounds from absolute coordinate system to structure coordinate system.
+   */
+  Bounds toStructCS( const Bounds& bb ) const;
 
-    /**
-     * Rotate AABB::dim between structure and absolute coordinate system.
-     */
-    Vec3 swapDimCS( const Vec3& dim ) const;
+  /**
+   * Rotate AABB::dim between structure and absolute coordinate system.
+   */
+  Vec3 swapDimCS( const Vec3& dim ) const;
 
-    void destroy();
-    void damage( float damage );
-    void update();
+  void destroy();
+  void damage( float damage );
+  void update();
 
-  public:
+public:
 
-    explicit Struct( const BSP* bsp, int index, const Point& p, Heading heading );
-    explicit Struct( const BSP* bsp, InputStream* is );
-    explicit Struct( const BSP* bsp, const JSON& json );
+  explicit Struct( const BSP* bsp, int index, const Point& p, Heading heading );
+  explicit Struct( const BSP* bsp, InputStream* is );
+  explicit Struct( const BSP* bsp, const JSON& json );
 
-    void write( OutputStream* os ) const;
-    JSON write() const;
+  void write( OutputStream* os ) const;
+  JSON write() const;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 OZ_ALWAYS_INLINE

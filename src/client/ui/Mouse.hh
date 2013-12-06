@@ -34,43 +34,43 @@ namespace ui
 
 class Mouse
 {
-  public:
+public:
 
-    enum Icon
-    {
-      ARROW,
-      TEXT,
-      HAND,
-      OPENHAND,
-      CLOSEDHAND,
-      SCROLL,
-      CURSORS_MAX
-    };
+  enum Icon
+  {
+    ARROW,
+    TEXT,
+    HAND,
+    OPENHAND,
+    CLOSEDHAND,
+    SCROLL,
+    CURSORS_MAX
+  };
 
-    static const char* const NAMES[CURSORS_MAX];
+  static const char* const NAMES[CURSORS_MAX];
 
-  private:
+private:
 
-    Cursor cursors[CURSORS_MAX];
-    Icon   oldIcon;
-    bool   wasShown;
+  Cursor cursors[CURSORS_MAX];
+  Icon   oldIcon;
+  bool   wasShown;
 
-  public:
+public:
 
-    int  x;
-    int  y;
-    int  dx;
-    int  dy;
+  int  x;
+  int  y;
+  int  dx;
+  int  dy;
 
-    Icon icon;
-    bool doShow;
+  Icon icon;
+  bool doShow;
 
-    void update();
+  void update();
 
-    void draw();
+  void draw();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

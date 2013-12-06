@@ -84,76 +84,76 @@ namespace oz
  */
 class Pepper
 {
-  private:
+private:
 
-    /**
-     * Internal `pp::Instance` implementation.
-     */
-    class Instance;
+  /**
+   * Internal `pp::Instance` implementation.
+   */
+  class Instance;
 
-    /**
-     * Internal `pp::Module` implementation.
-     */
-    class Module;
+  /**
+   * Internal `pp::Module` implementation.
+   */
+  class Module;
 
-  public:
+public:
 
-    /**
-     * PPAPI callback type.
-     */
-    typedef void Callback( void*, int );
+  /**
+   * PPAPI callback type.
+   */
+  typedef void Callback( void*, int );
 
-    static int   width;    ///< Module area width.
-    static int   height;   ///< Module area height.
+  static int   width;    ///< Module area width.
+  static int   height;   ///< Module area height.
 
-    static float moveX;    ///< Mouse X axis.
-    static float moveY;    ///< Mouse Y axis.
-    static float moveZ;    ///< Mouse wheel (horizontal scroll).
-    static float moveW;    ///< Mouse wheel (vertical scroll).
+  static float moveX;    ///< Mouse X axis.
+  static float moveY;    ///< Mouse Y axis.
+  static float moveZ;    ///< Mouse wheel (horizontal scroll).
+  static float moveW;    ///< Mouse wheel (vertical scroll).
 
-    static bool  hasFocus; ///< True iff focused and mouse is captured.
+  static bool  hasFocus; ///< True iff focused and mouse is captured.
 
-  public:
+public:
 
-    /**
-     * Forbid instances.
-     */
-    explicit Pepper() = delete;
+  /**
+   * Forbid instances.
+   */
+  explicit Pepper() = delete;
 
-    /**
-     * True iff called on the module's main thread.
-     */
-    static bool isMainThread();
+  /**
+   * True iff called on the module's main thread.
+   */
+  static bool isMainThread();
 
-    /**
-     * Execute asynchronous callback on the module's main thread.
-     */
-    static void mainCall( Callback* callback, void* data );
+  /**
+   * Execute asynchronous callback on the module's main thread.
+   */
+  static void mainCall( Callback* callback, void* data );
 
-    /**
-     * Return `pp::Instance` for a NaCl application or `nullptr` if not created.
-     */
-    static pp::Instance* instance();
+  /**
+   * Return `pp::Instance` for a NaCl application or `nullptr` if not created.
+   */
+  static pp::Instance* instance();
 
-    /**
-     * Post a message to JavaScript running on the page.
-     */
-    static void post( const char* message );
+  /**
+   * Post a message to JavaScript running on the page.
+   */
+  static void post( const char* message );
 
-    /**
-     * Pop next message from the incoming messages queue.
-     */
-    static String pop();
+  /**
+   * Pop next message from the incoming messages queue.
+   */
+  static String pop();
 
-    /**
-     * Push message to the incoming messages queue.
-     */
-    static void push( const char* message );
+  /**
+   * Push message to the incoming messages queue.
+   */
+  static void push( const char* message );
 
-    /**
-     * Create PPAPI module instance.
-     */
-    static pp::Module* createModule();
+  /**
+   * Create PPAPI module instance.
+   */
+  static pp::Module* createModule();
 
 };
 
@@ -180,42 +180,42 @@ class MainCall
 {
   friend class Pepper;
 
-  private:
+private:
 
-    static Semaphore semaphore; ///< Semaphore for synchronising calls.
+  static Semaphore semaphore; ///< Semaphore for synchronising calls.
 
-  public:
+public:
 
-    /**
-     * Call a method without parameters on the main thread and wait for it to finish.
-     *
-     * The method can also be a lambda with captures.
-     */
-    template <typename Method>
-    void operator << ( Method method ) const
-    {
-      if( Pepper::isMainThread() ) {
-        method();
-      }
-      else {
-        struct CallbackWrapper
-        {
-          Method method;
-
-          static void callback( void* data, int )
-          {
-            const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
-
-            cw->method();
-            semaphore.post();
-          }
-        };
-        CallbackWrapper callbackWrapper = { method };
-
-        Pepper::mainCall( CallbackWrapper::callback, &callbackWrapper );
-        semaphore.wait();
-      }
+  /**
+   * Call a method without parameters on the main thread and wait for it to finish.
+   *
+   * The method can also be a lambda with captures.
+   */
+  template <typename Method>
+  void operator << ( Method method ) const
+  {
+    if( Pepper::isMainThread() ) {
+      method();
     }
+    else {
+      struct CallbackWrapper
+      {
+        Method method;
+
+        static void callback( void* data, int )
+        {
+          const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+
+          cw->method();
+          semaphore.post();
+        }
+      };
+      CallbackWrapper callbackWrapper = { method };
+
+      Pepper::mainCall( CallbackWrapper::callback, &callbackWrapper );
+      semaphore.wait();
+    }
+  }
 
 };
 
@@ -223,13 +223,13 @@ class MainCall
 
 class MainCall
 {
-  public:
+public:
 
-    template <typename Method>
-    void operator << ( Method method ) const
-    {
-      method();
-    }
+  template <typename Method>
+  void operator << ( Method method ) const
+  {
+    method();
+  }
 
 };
 

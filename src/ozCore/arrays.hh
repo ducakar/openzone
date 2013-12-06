@@ -43,54 +43,54 @@ namespace oz
 template <typename Elem>
 class ArrayIterator : public IteratorBase<Elem>
 {
-  protected:
+protected:
 
-    using IteratorBase<Elem>::elem;
+  using IteratorBase<Elem>::elem;
 
-    /// Successor of the last element, used to determine when the iterator becomes invalid.
-    const Elem* past;
+  /// Successor of the last element, used to determine when the iterator becomes invalid.
+  const Elem* past;
 
-  public:
+public:
 
-    /**
-     * Default constructor, creates an invalid iterator.
-     */
-    OZ_ALWAYS_INLINE
-    explicit ArrayIterator() :
-      IteratorBase<Elem>( nullptr ), past( nullptr )
-    {}
+  /**
+   * Default constructor, creates an invalid iterator.
+   */
+  OZ_ALWAYS_INLINE
+  explicit ArrayIterator() :
+    IteratorBase<Elem>( nullptr ), past( nullptr )
+  {}
 
-    /**
-     * %Array iterator.
-     *
-     * @param first first array element.
-     * @param past_ successor of the last element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit ArrayIterator( Elem* first, Elem* past_ ) :
-      IteratorBase<Elem>( first ), past( past_ )
-    {}
+  /**
+   * %Array iterator.
+   *
+   * @param first first array element.
+   * @param past_ successor of the last element.
+   */
+  OZ_ALWAYS_INLINE
+  explicit ArrayIterator( Elem* first, Elem* past_ ) :
+    IteratorBase<Elem>( first ), past( past_ )
+  {}
 
-    /**
-     * True as long as iterator has not passed all array elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return elem != past;
-    }
+  /**
+   * True as long as iterator has not passed all array elements.
+   */
+  OZ_ALWAYS_INLINE
+  bool isValid() const
+  {
+    return elem != past;
+  }
 
-    /**
-     * Advance to the next element.
-     */
-    OZ_ALWAYS_INLINE
-    ArrayIterator& operator ++ ()
-    {
-      hard_assert( elem != past );
+  /**
+   * Advance to the next element.
+   */
+  OZ_ALWAYS_INLINE
+  ArrayIterator& operator ++ ()
+  {
+    hard_assert( elem != past );
 
-      ++elem;
-      return *this;
-    }
+    ++elem;
+    return *this;
+  }
 
 };
 

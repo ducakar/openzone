@@ -33,18 +33,18 @@ namespace oz
 
 class LuaNirvana : public LuaCommon
 {
-  public:
+public:
 
-    bool mindCall( const char* functionName, Mind* mind, Bot* self );
+  bool mindCall( const char* functionName, Mind* mind, Bot* self );
 
-    void registerMind( int botIndex );
-    void unregisterMind( int botIndex );
+  void registerMind( int botIndex );
+  void unregisterMind( int botIndex );
 
-    void read( InputStream* is );
-    void write( OutputStream* os );
+  void read( InputStream* is );
+  void write( OutputStream* os );
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

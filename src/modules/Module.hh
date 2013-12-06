@@ -32,22 +32,22 @@ namespace modules
 
 class Module
 {
-  public:
+public:
 
-    virtual ~Module();
+  virtual ~Module();
 
-    virtual void update();
+  virtual void update();
 
-    virtual void load();
-    virtual void unload();
+  virtual void load();
+  virtual void unload();
 
-    virtual void registerLua() const;
+  virtual void registerLua() const;
 
-    virtual void init();
-    virtual void destroy();
+  virtual void init();
+  virtual void destroy();
 
-    virtual void read( InputStream* );
-    virtual void write( OutputStream* ) const;
+  virtual void read( InputStream* );
+  virtual void write( OutputStream* ) const;
 
 };
 

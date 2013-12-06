@@ -40,194 +40,194 @@ namespace oz
  */
 class Point : public VectorBase3
 {
-  public:
+public:
 
-    /// Origin, [0, 0, 0].
-    static const Point ORIGIN;
+  /// Origin, [0, 0, 0].
+  static const Point ORIGIN;
 
-  public:
+public:
 
-    /**
-     * Create an uninitialised instance.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Point() = default;
+  /**
+   * Create an uninitialised instance.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Point() = default;
 
 #ifdef OZ_SIMD_MATH
 
-    /**
-     * Create form a float SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Point( float4 f4 ) :
-      VectorBase3( f4 )
-    {}
+  /**
+   * Create form a float SIMD vector.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Point( float4 f4 ) :
+    VectorBase3( f4 )
+  {}
 
-    /**
-     * Create from an uint SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Point( uint4 u4 ) :
-      VectorBase3( u4 )
-    {}
+  /**
+   * Create from an uint SIMD vector.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Point( uint4 u4 ) :
+    VectorBase3( u4 )
+  {}
 
 #endif
 
-    /**
-     * Create a point with given coordinates.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Point( float x, float y, float z ) :
-      VectorBase3( x, y, z, 1.0f )
-    {}
+  /**
+   * Create a point with given coordinates.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Point( float x, float y, float z ) :
+    VectorBase3( x, y, z, 1.0f )
+  {}
 
-    /**
-     * Create from an array of 3 floats.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Point( const float* v ) :
-      VectorBase3( v[0], v[1], v[2], 1.0f )
-    {}
+  /**
+   * Create from an array of 3 floats.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Point( const float* v ) :
+    VectorBase3( v[0], v[1], v[2], 1.0f )
+  {}
 
-    /**
-     * Equality.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator == ( const Point& p ) const
-    {
-      return x == p.x && y == p.y && z == p.z;
-    }
+  /**
+   * Equality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == ( const Point& p ) const
+  {
+    return x == p.x && y == p.y && z == p.z;
+  }
 
-    /**
-     * Inequality.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator != ( const Point& p ) const
-    {
-      return x != p.x || y != p.y || z != p.z;
-    }
+  /**
+   * Inequality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != ( const Point& p ) const
+  {
+    return x != p.x || y != p.y || z != p.z;
+  }
 
-    /**
-     * Constant float pointer to the members.
-     */
-    OZ_ALWAYS_INLINE
-    operator const float* () const
-    {
-      return &x;
-    }
+  /**
+   * Constant float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator const float* () const
+  {
+    return &x;
+  }
 
-    /**
-     * Float pointer to the members.
-     */
-    OZ_ALWAYS_INLINE
-    operator float* ()
-    {
-      return &x;
-    }
+  /**
+   * Float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator float* ()
+  {
+    return &x;
+  }
 
-    /**
-     * Constant reference to the `i`-th member.
-     */
-    OZ_ALWAYS_INLINE
-    const float& operator [] ( int i ) const
-    {
-      return ( &x )[i];
-    }
+  /**
+   * Constant reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  const float& operator [] ( int i ) const
+  {
+    return ( &x )[i];
+  }
 
-    /**
-     * Reference to the `i`-th member.
-     */
-    OZ_ALWAYS_INLINE
-    float& operator [] ( int i )
-    {
-      return ( &x )[i];
-    }
+  /**
+   * Reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  float& operator [] ( int i )
+  {
+    return ( &x )[i];
+  }
 
-    /**
-     * Point translated for `v`.
-     */
-    OZ_ALWAYS_INLINE
-    Point operator + ( const Vec3& v ) const
-    {
+  /**
+   * Point translated for `v`.
+   */
+  OZ_ALWAYS_INLINE
+  Point operator + ( const Vec3& v ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Point( f4 + v.f4 );
+    return Point( f4 + v.f4 );
 #else
-      return Point( x + v.x, y + v.y, z + v.z );
+    return Point( x + v.x, y + v.y, z + v.z );
 #endif
-    }
+  }
 
-    /**
-     * Point translated for `-v`.
-     */
-    OZ_ALWAYS_INLINE
-    Point operator - ( const Vec3& v ) const
-    {
+  /**
+   * Point translated for `-v`.
+   */
+  OZ_ALWAYS_INLINE
+  Point operator - ( const Vec3& v ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Point( f4 - v.f4 );
+    return Point( f4 - v.f4 );
 #else
-      return Point( x - v.x, y - v.y, z - v.z );
+    return Point( x - v.x, y - v.y, z - v.z );
 #endif
-    }
+  }
 
-    /**
-     * Difference of two points.
-     */
-    OZ_ALWAYS_INLINE
-    Vec3 operator - ( const Point& p ) const
-    {
+  /**
+   * Difference of two points.
+   */
+  OZ_ALWAYS_INLINE
+  Vec3 operator - ( const Point& p ) const
+  {
 #ifdef OZ_SIMD_MATH
-      return Vec3( f4 - p.f4 );
+    return Vec3( f4 - p.f4 );
 #else
-      return Vec3( x - p.x, y - p.y, z - p.z );
+    return Vec3( x - p.x, y - p.y, z - p.z );
 #endif
-    }
+  }
 
-    /**
-     * Translate for `v`.
-     */
-    OZ_ALWAYS_INLINE
-    Point& operator += ( const Vec3& v )
-    {
+  /**
+   * Translate for `v`.
+   */
+  OZ_ALWAYS_INLINE
+  Point& operator += ( const Vec3& v )
+  {
 #ifdef OZ_SIMD_MATH
-      f4 += v.f4;
+    f4 += v.f4;
 #else
-      x += v.x;
-      y += v.y;
-      z += v.z;
+    x += v.x;
+    y += v.y;
+    z += v.z;
 #endif
-      return *this;
-    }
+    return *this;
+  }
 
-    /**
-     * Translate for `-v`.
-     */
-    OZ_ALWAYS_INLINE
-    Point& operator -= ( const Vec3& v )
-    {
+  /**
+   * Translate for `-v`.
+   */
+  OZ_ALWAYS_INLINE
+  Point& operator -= ( const Vec3& v )
+  {
 #ifdef OZ_SIMD_MATH
-      f4 -= v.f4;
+    f4 -= v.f4;
 #else
-      x -= v.x;
-      y -= v.y;
-      z -= v.z;
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
 #endif
-      return *this;
-    }
+    return *this;
+  }
 
-    /**
-     * Projection of the point to a given vector.
-     */
-    OZ_ALWAYS_INLINE
+  /**
+   * Projection of the point to a given vector.
+   */
+  OZ_ALWAYS_INLINE
 #ifdef OZ_SIMD_MATH
-    scalar operator * ( const Vec3& v ) const
-    {
-      return vDot( f4, v.f4 );
-    }
+  scalar operator * ( const Vec3& v ) const
+  {
+    return vDot( f4, v.f4 );
+  }
 #else
-    float operator * ( const Vec3& v ) const
-    {
-      return x*v.x + y*v.y + z*v.z;
-    }
+  float operator * ( const Vec3& v ) const
+  {
+    return x*v.x + y*v.y + z*v.z;
+  }
 #endif
 
 };

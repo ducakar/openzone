@@ -46,23 +46,23 @@ struct Quest
 
 class QuestList
 {
-  public:
+public:
 
-    List<Quest> quests;
-    int         activeQuest;
+  List<Quest> quests;
+  int         activeQuest;
 
-  public:
+public:
 
-    explicit QuestList();
+  explicit QuestList();
 
-    void add( const char* title, const char* description, const Point& place, Quest::State state );
-    void remove( int index );
+  void add( const char* title, const char* description, const Point& place, Quest::State state );
+  void remove( int index );
 
-    void read( InputStream* is );
-    void write( OutputStream* os ) const;
+  void read( InputStream* is );
+  void write( OutputStream* os ) const;
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
 };
 

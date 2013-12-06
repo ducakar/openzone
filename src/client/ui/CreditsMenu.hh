@@ -35,26 +35,26 @@ namespace ui
 
 class CreditsMenu : public Area
 {
-  private:
+private:
 
-    List<String>  lines;
-    DArray<Label> labels;
-    const int     stride;
-    int           scroll;
-    int           bias;
-    int           direction;
+  List<String>  lines;
+  DArray<Label> labels;
+  const int     stride;
+  int           scroll;
+  int           bias;
+  int           direction;
 
-  protected:
+protected:
 
-    void onReposition() override;
-    void onUpdate() override;
-    bool onMouseEvent() override;
-    bool onKeyEvent() override;
-    void onDraw() override;
+  void onReposition() override;
+  void onUpdate() override;
+  bool onMouseEvent() override;
+  bool onKeyEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit CreditsMenu();
+  explicit CreditsMenu();
 
 };
 

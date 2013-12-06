@@ -70,92 +70,92 @@ struct EnumName
 template <class Enum>
 class EnumMap
 {
-  private:
+private:
 
-    const EnumName* entries;  ///< %Map entries.
-    int             nEntries; ///< Number of map entries.
+  const EnumName* entries;  ///< %Map entries.
+  int             nEntries; ///< Number of map entries.
 
-  public:
+public:
 
-    /**
-     * Create enumerator mapping from an array.
-     */
-    template <int COUNT>
-    explicit EnumMap( const EnumName ( & map )[COUNT] ) :
-      entries( map ), nEntries( COUNT )
-    {
-      static_assert( COUNT > 0, "oz::EnumMap: Map array is empty" );
-    }
+  /**
+   * Create enumerator mapping from an array.
+   */
+  template <int COUNT>
+  explicit EnumMap( const EnumName ( & map )[COUNT] ) :
+    entries( map ), nEntries( COUNT )
+  {
+    static_assert( COUNT > 0, "oz::EnumMap: Map array is empty" );
+  }
 
-    /**
-     * Return first enumerator value in the map.
-     */
-    Enum defaultValue() const
-    {
-      return Enum( entries[0].value );
-    }
+  /**
+   * Return first enumerator value in the map.
+   */
+  Enum defaultValue() const
+  {
+    return Enum( entries[0].value );
+  }
 
-    /**
-     * Return first name in the map.
-     */
-    const char* defaultName() const
-    {
-      return entries[0].name;
-    }
+  /**
+   * Return first name in the map.
+   */
+  const char* defaultName() const
+  {
+    return entries[0].name;
+  }
 
-    /**
-     * True iff a given enumerator value exists in the map.
-     */
-    bool has( Enum value ) const
-    {
-      for( int i = 0; i < nEntries; ++i ) {
-        if( entries[i].value == value ) {
-          return true;
-        }
+  /**
+   * True iff a given enumerator value exists in the map.
+   */
+  bool has( Enum value ) const
+  {
+    for( int i = 0; i < nEntries; ++i ) {
+      if( entries[i].value == value ) {
+        return true;
       }
-      return false;
     }
+    return false;
+  }
 
-    /**
-     * True iff a given name exists in the map.
-     */
-    bool has( const char* name ) const
-    {
-      for( int i = 0; i < nEntries; ++i ) {
-        if( String::equals( entries[i].name, name ) ) {
-          return true;
-        }
+  /**
+   * True iff a given name exists in the map.
+   */
+  bool has( const char* name ) const
+  {
+    for( int i = 0; i < nEntries; ++i ) {
+      if( String::equals( entries[i].name, name ) ) {
+        return true;
       }
-      return false;
     }
+    return false;
+  }
 
-    /**
-     * Return name for a enumerator value or invoke `System::error()` on an invalid value.
-     */
-    const char* operator [] ( Enum value ) const
-    {
-      for( int i = 0; i < nEntries; ++i ) {
-        if( entries[i].value == value ) {
-          return entries[i].name;
-        }
+  /**
+   * Return name for a enumerator value or invoke `System::error()` on an invalid value.
+   */
+  const char* operator [] ( Enum value ) const
+  {
+    for( int i = 0; i < nEntries; ++i ) {
+      if( entries[i].value == value ) {
+        return entries[i].name;
       }
-
-      OZ_ERROR( "oz::EnumMap: Invalid value %d", value );
     }
 
-    /**
-     * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
-     */
-    Enum operator[] ( const char* name ) const
-    {
-      for( int i = 0; i < nEntries; ++i ) {
-        if( String::equals( entries[i].name, name ) ) {
-          return Enum( entries[i].value );
-        }
+    OZ_ERROR( "oz::EnumMap: Invalid value %d", value );
+  }
+
+  /**
+   * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
+   */
+  Enum operator[] ( const char* name ) const
+  {
+    for( int i = 0; i < nEntries; ++i ) {
+      if( String::equals( entries[i].name, name ) ) {
+        return Enum( entries[i].value );
       }
-
-      OZ_ERROR( "oz::EnumMap: Invalid name '%s'", name );
     }
+
+    OZ_ERROR( "oz::EnumMap: Invalid name '%s'", name );
+  }
 
 };
 

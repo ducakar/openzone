@@ -34,78 +34,78 @@ namespace ui
 
 class Style
 {
-  public:
+public:
 
-    struct Colours
-    {
-      Vec4 text;
-      Vec4 textBackground;
+  struct Colours
+  {
+    Vec4 text;
+    Vec4 textBackground;
 
-      Vec4 button;
-      Vec4 buttonHover;
-      Vec4 buttonClicked;
+    Vec4 button;
+    Vec4 buttonHover;
+    Vec4 buttonClicked;
 
-      Vec4 tile;
-      Vec4 tileHover;
+    Vec4 tile;
+    Vec4 tileHover;
 
-      Vec4 frame;
-      Vec4 background;
+    Vec4 frame;
+    Vec4 background;
 
-      Vec4 galileoNormal;
-      Vec4 galileoMaximised;
+    Vec4 galileoNormal;
+    Vec4 galileoMaximised;
 
-      Vec4 menuStrip;
-    };
+    Vec4 menuStrip;
+  };
 
-    struct Sounds
-    {
-      int bell;
-      int click;
-      int nextWeapon;
-    };
+  struct Sounds
+  {
+    int bell;
+    int click;
+    int nextWeapon;
+  };
 
-    struct Area
-    {
-      int x;
-      int y;
-      int w;
-      int h;
-    };
+  struct Area
+  {
+    int x;
+    int y;
+    int w;
+    int h;
+  };
 
-    struct Bar : Area
-    {
-      Vec4 border;
-      Vec4 background;
-      Vec4 minColour;
-      Vec4 maxColour;
-    };
+  struct Bar : Area
+  {
+    Vec4 border;
+    Vec4 background;
+    Vec4 minColour;
+    Vec4 maxColour;
+  };
 
-  public:
+public:
 
-    Font    fonts[Font::MAX];
-    Colours colours;
-    Sounds  sounds;
-    int     iconSize;
+  Font    fonts[Font::MAX];
+  Colours colours;
+  Sounds  sounds;
+  int     iconSize;
 
-    Bar     taggedLife;
-    Bar     taggedStatus;
-    Bar     botLife;
-    Bar     botStamina;
-    Bar     botWeapon;
-    Bar     vehicleHull;
-    Bar     vehicleFuel;
-    Area    vehicleWeapon[4];
-    Area    vehicleField;
+  Bar     taggedLife;
+  Bar     taggedStatus;
+  Bar     botLife;
+  Bar     botStamina;
+  Bar     botWeapon;
+  Bar     vehicleHull;
+  Bar     vehicleFuel;
+  Area    vehicleWeapon[4];
+  Area    vehicleField;
 
-    Bar     selectedLife;
-    Bar     selectedStatus;
-    Bar     hoverLife;
-    Bar     hoverStatus;
+  Bar     selectedLife;
+  Bar     selectedStatus;
+  Bar     hoverLife;
+  Bar     hoverStatus;
 
-  public:
+public:
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

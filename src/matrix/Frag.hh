@@ -32,60 +32,60 @@ struct Cell;
 
 class Frag
 {
-  private:
+private:
 
-    static const float DAMAGE_THRESHOLD;
+  static const float DAMAGE_THRESHOLD;
 
-  public:
+public:
 
-    static Pool<Frag, 2048> mpool;
+  static Pool<Frag, 2048> mpool;
 
-    /*
-     *  FIELDS
-     */
+  /*
+   *  FIELDS
+   */
 
-    Frag*           prev[1];
-    Frag*           next[1];
+  Frag*           prev[1];
+  Frag*           next[1];
 
-    Cell*           cell;
-    int             index;         // position in world.objects vector
+  Cell*           cell;
+  int             index;         // position in world.objects vector
 
-    int             poolId;
-    const FragPool* pool;
+  int             poolId;
+  const FragPool* pool;
 
-    Point           p;
-    Vec3            velocity;
+  Point           p;
+  Vec3            velocity;
 
-    float           life;
-    float           mass;
-    float           elasticity;
+  float           life;
+  float           mass;
+  float           elasticity;
 
-    // no copying
-    Frag( const Frag& ) = delete;
-    Frag& operator = ( const Frag& ) = delete;
+  // no copying
+  Frag( const Frag& ) = delete;
+  Frag& operator = ( const Frag& ) = delete;
 
-    void damage( float damage )
-    {
-      damage -= DAMAGE_THRESHOLD;
+  void damage( float damage )
+  {
+    damage -= DAMAGE_THRESHOLD;
 
-      if( damage > 0.0f ) {
-        life = 0.0f;
-      }
+    if( damage > 0.0f ) {
+      life = 0.0f;
     }
+  }
 
-  public:
+public:
 
-    explicit Frag( const FragPool* pool, int index, const Point& p, const Vec3& velocity );
-    explicit Frag( const FragPool* pool, InputStream* is );
-    explicit Frag( const FragPool* pool, const JSON& json );
+  explicit Frag( const FragPool* pool, int index, const Point& p, const Vec3& velocity );
+  explicit Frag( const FragPool* pool, InputStream* is );
+  explicit Frag( const FragPool* pool, const JSON& json );
 
-    void write( OutputStream* os ) const;
-    JSON write() const;
+  void write( OutputStream* os ) const;
+  JSON write() const;
 
-    void readUpdate( InputStream* is );
-    void writeUpdate( OutputStream* os );
+  void readUpdate( InputStream* is );
+  void writeUpdate( OutputStream* os );
 
-    OZ_STATIC_POOL_ALLOC( mpool )
+  OZ_STATIC_POOL_ALLOC( mpool )
 
 };
 

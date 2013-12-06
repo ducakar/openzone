@@ -30,7 +30,7 @@
 
 namespace oz
 {
-
+#if 0
 enum Type
 {
   POSITION,
@@ -171,5 +171,5 @@ void Shaders::destroy()
   programs.clear();
   programs.deallocate();
 }
-
+#endif
 }

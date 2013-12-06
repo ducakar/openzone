@@ -35,31 +35,31 @@ namespace ui
 
 class MusicPlayer : public Frame
 {
-  private:
+private:
 
-    Label title;
-    Label trackLabel;
-    Label volumeLabel;
-    int   currentTrack;
-    int   volume;
-    bool  isPlaying;
+  Label title;
+  Label trackLabel;
+  Label volumeLabel;
+  int   currentTrack;
+  int   volume;
+  bool  isPlaying;
 
-    static void prevTrack( Button* sender );
-    static void nextTrack( Button* sender );
-    static void playTrack( Button* sender );
-    static void stopTrack( Button* sender );
-    static void volumeDown( Button* sender );
-    static void volumeUp( Button* sender );
+  static void prevTrack( Button* sender );
+  static void nextTrack( Button* sender );
+  static void playTrack( Button* sender );
+  static void stopTrack( Button* sender );
+  static void volumeDown( Button* sender );
+  static void volumeUp( Button* sender );
 
-  protected:
+protected:
 
-    void onUpdate() override;
-    void onDraw() override;
+  void onUpdate() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit MusicPlayer();
-    ~MusicPlayer() override;
+  explicit MusicPlayer();
+  ~MusicPlayer() override;
 
 };
 

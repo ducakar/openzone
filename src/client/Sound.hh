@@ -41,110 +41,110 @@ namespace client
 
 class Sound
 {
-  private:
+private:
 
-    static const int   MUSIC_BUFFER_SIZE       = 64 * 1024;
-    static const int   MUSIC_INPUT_BUFFER_SIZE = 16 * 1024;
-    static const float SOUND_DISTANCE;
+  static const int   MUSIC_BUFFER_SIZE       = 64 * 1024;
+  static const int   MUSIC_INPUT_BUFFER_SIZE = 16 * 1024;
+  static const float SOUND_DISTANCE;
 
-    enum StreamType
-    {
-      NONE,
-      OGG,
-      MP3,
-      AAC
-    };
+  enum StreamType
+  {
+    NONE,
+    OGG,
+    MP3,
+    AAC
+  };
 
-    ALCdevice*                  soundDevice;
-    ALCcontext*                 soundContext;
+  ALCdevice*                  soundDevice;
+  ALCcontext*                 soundContext;
 
-    SharedLib                   libeSpeak;
-    SharedLib                   libMad;
-    SharedLib                   libFaad;
+  SharedLib                   libeSpeak;
+  SharedLib                   libMad;
+  SharedLib                   libFaad;
 
-    SBitset<Orbis::MAX_STRUCTS> playedStructs;
-    float                       volume;
+  SBitset<Orbis::MAX_STRUCTS> playedStructs;
+  float                       volume;
 
-    StreamType                  musicStreamType;
+  StreamType                  musicStreamType;
 
-    int                         musicRate;
-    int                         musicChannels;
-    int                         musicFormat;
-    uint                        musicSource;
-    uint                        musicBufferIds[2];
-    int                         musicBuffersQueued;
-    char                        musicBuffer[MUSIC_BUFFER_SIZE];
-    ubyte                       musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
+  int                         musicRate;
+  int                         musicChannels;
+  int                         musicFormat;
+  uint                        musicSource;
+  uint                        musicBufferIds[2];
+  int                         musicBuffersQueued;
+  char                        musicBuffer[MUSIC_BUFFER_SIZE];
+  ubyte                       musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
 
-    PHYSFS_File*                musicFile;
+  PHYSFS_File*                musicFile;
 
-    OggVorbis_File              oggStream;
+  OggVorbis_File              oggStream;
 
-    mad_stream                  madStream;
-    mad_frame                   madFrame;
-    mad_synth                   madSynth;
+  mad_stream                  madStream;
+  mad_frame                   madFrame;
+  mad_synth                   madSynth;
 
-    int                         madWrittenSamples;
-    int                         madFrameSamples;
+  int                         madWrittenSamples;
+  int                         madFrameSamples;
 
-    NeAACDecHandle              aacDecoder;
+  NeAACDecHandle              aacDecoder;
 
-    char*                       aacOutputBuffer;
-    int                         aacWrittenBytes;
-    int                         aacBufferBytes;
-    size_t                      aacInputBytes;
+  char*                       aacOutputBuffer;
+  int                         aacWrittenBytes;
+  int                         aacBufferBytes;
+  size_t                      aacInputBytes;
 
-    // Music track id to switch to, -1 to do nothing, -2 stop playing.
-    int                         selectedTrack;
-    volatile int                streamedTrack;
-    volatile int                streamedBytes;
+  // Music track id to switch to, -1 to do nothing, -2 stop playing.
+  int                         selectedTrack;
+  volatile int                streamedTrack;
+  volatile int                streamedBytes;
 
-    Thread                      musicThread;
-    Thread                      soundThread;
+  Thread                      musicThread;
+  Thread                      soundThread;
 
-    Semaphore                   musicMainSemaphore;
-    Semaphore                   musicAuxSemaphore;
-    Semaphore                   soundMainSemaphore;
-    Semaphore                   soundAuxSemaphore;
+  Semaphore                   musicMainSemaphore;
+  Semaphore                   musicAuxSemaphore;
+  Semaphore                   soundMainSemaphore;
+  Semaphore                   soundAuxSemaphore;
 
-    volatile bool               isMusicAlive;
-    volatile bool               isSoundAlive;
+  volatile bool               isMusicAlive;
+  volatile bool               isSoundAlive;
 
-  private:
+private:
 
-    static void musicMain( void* );
-    static void soundMain( void* );
+  static void musicMain( void* );
+  static void soundMain( void* );
 
-    void musicOpen( const char* path );
-    void musicClear();
-    int  musicDecode();
-    void musicRun();
+  void musicOpen( const char* path );
+  void musicClear();
+  int  musicDecode();
+  void musicRun();
 
-    void playCell( int cellX, int cellY );
-    void updateMusic();
-    void soundRun();
+  void playCell( int cellX, int cellY );
+  void updateMusic();
+  void soundRun();
 
-  public:
+public:
 
-    void setVolume( float volume );
-    void setMusicVolume( float volume ) const;
+  void setVolume( float volume );
+  void setMusicVolume( float volume ) const;
 
-    bool isMusicPlaying() const;
-    int  getCurrentTrack() const;
+  bool isMusicPlaying() const;
+  int  getCurrentTrack() const;
 
-    void playMusic( int track );
-    void stopMusic();
+  void playMusic( int track );
+  void stopMusic();
 
-    void resume() const;
-    void suspend() const;
+  void resume() const;
+  void suspend() const;
 
-    void play();
-    void sync();
+  void play();
+  void sync();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
-    void initLibs();
+  void initLibs();
 
 };
 

@@ -32,22 +32,22 @@ namespace builder
 
 class Context
 {
-  public:
+public:
 
-    HashMap<String, String> usedTextures;
-    HashMap<String, String> usedSounds;
-    HashMap<String, String> usedModels;
+  HashMap<String, String> usedTextures;
+  HashMap<String, String> usedSounds;
+  HashMap<String, String> usedModels;
 
-    bool bumpmap;
-    bool useS3TC;
+  bool bumpmap;
+  bool useS3TC;
 
-  public:
+public:
 
-    bool isBaseTexture( const char* path );
-    void buildTexture( const char* path, const char* destPath );
+  bool isBaseTexture( const char* path );
+  void buildTexture( const char* path, const char* destPath );
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

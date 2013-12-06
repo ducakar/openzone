@@ -31,39 +31,38 @@ namespace oz
 
 class Weapon : public Dynamic
 {
-  public:
+public:
 
-    static const int EVENT_SHOT_EMPTY = 9;
-    static const int EVENT_SHOT       = 10;
+  static const int EVENT_SHOT_EMPTY = 9;
+  static const int EVENT_SHOT       = 10;
 
-    static Pool<Weapon, 2048> pool;
+  static Pool<Weapon, 2048> pool;
 
-    // -1: unlimited
-    int   nRounds;
-    float shotTime;
+  // -1: unlimited
+  int   nRounds;
+  float shotTime;
 
-    void trigger( Bot* user );
+  void trigger( Bot* user );
 
-  protected:
+protected:
 
-    bool onUse( Bot* user ) override;
-    void onUpdate() override;
-    float getStatus() const override;
+  bool onUse( Bot* user ) override;
+  void onUpdate() override;
+  float getStatus() const override;
 
-  public:
+public:
 
-    explicit Weapon( const WeaponClass* clazz, int index, const Point& p, Heading heading );
-    explicit Weapon( const WeaponClass* clazz, InputStream* is );
-    explicit Weapon( const WeaponClass* clazz, const JSON& json );
+  explicit Weapon( const WeaponClass* clazz, int index, const Point& p, Heading heading );
+  explicit Weapon( const WeaponClass* clazz, InputStream* is );
+  explicit Weapon( const WeaponClass* clazz, const JSON& json );
 
-    void write( OutputStream* os ) const override;
-    JSON write() const override;
+  void write( OutputStream* os ) const override;
+  JSON write() const override;
 
-    void readUpdate( InputStream* is ) override;
-    void writeUpdate( OutputStream* os ) const override;
+  void readUpdate( InputStream* is ) override;
+  void writeUpdate( OutputStream* os ) const override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

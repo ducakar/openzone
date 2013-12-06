@@ -30,24 +30,24 @@ namespace oz
 
 class Caelum
 {
-  public:
+public:
 
-    int   id;
+  int   id;
 
-    float heading;
-    float period;
-    float time;
+  float heading;
+  float period;
+  float time;
 
-  public:
+public:
 
-    void reset();
-    void update();
+  void reset();
+  void update();
 
-    void read( InputStream* is );
-    void write( OutputStream* os ) const;
+  void read( InputStream* is );
+  void write( OutputStream* os ) const;
 
-    void read( const JSON& json );
-    JSON write() const;
+  void read( const JSON& json );
+  JSON write() const;
 
 };
 

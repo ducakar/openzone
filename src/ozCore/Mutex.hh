@@ -42,103 +42,103 @@ namespace oz
  */
 class Mutex
 {
-  private:
+private:
 
-    struct Descriptor;
+  struct Descriptor;
 
-    Descriptor* descriptor; ///< %Mutex descriptor.
+  Descriptor* descriptor; ///< %Mutex descriptor.
 
-  public:
+public:
 
-    /**
-     * Create uninitialised instance.
-     */
-    explicit Mutex() :
-      descriptor( nullptr )
-    {}
+  /**
+   * Create uninitialised instance.
+   */
+  explicit Mutex() :
+    descriptor( nullptr )
+  {}
 
-    /**
-     * Destructor, destroys mutex if initialised.
-     */
-    ~Mutex()
-    {
-      if( descriptor != nullptr ) {
-        destroy();
-      }
+  /**
+   * Destructor, destroys mutex if initialised.
+   */
+  ~Mutex()
+  {
+    if( descriptor != nullptr ) {
+      destroy();
     }
+  }
 
-    /**
-     * Move constructor.
-     */
-    Mutex( Mutex&& m ) :
-      descriptor( m.descriptor )
-    {
-      m.descriptor = nullptr;
-    }
+  /**
+   * Move constructor.
+   */
+  Mutex( Mutex&& m ) :
+    descriptor( m.descriptor )
+  {
+    m.descriptor = nullptr;
+  }
 
-    /**
-     * Move operator.
-     */
-    Mutex& operator = ( Mutex&& m )
-    {
-      if( &m == this ) {
-        return *this;
-      }
-
-      descriptor   = m.descriptor;
-      m.descriptor = nullptr;
-
+  /**
+   * Move operator.
+   */
+  Mutex& operator = ( Mutex&& m )
+  {
+    if( &m == this ) {
       return *this;
     }
 
-    /**
-     * True iff initialised.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return descriptor != nullptr;
-    }
+    descriptor   = m.descriptor;
+    m.descriptor = nullptr;
 
-    /**
-     * Wait until lock is obtained.
-     *
-     * @note
-     * Locking a mutex that is already locked by the current thread results in undefined behaviour.
-     */
-    void lock() const;
+    return *this;
+  }
 
-    /**
-     * Lock if not already locked.
-     *
-     * @note
-     * Locking a mutex that is already locked by the current thread results in undefined behaviour.
-     *
-     * @return True on success.
-     */
-    bool tryLock() const;
+  /**
+   * True iff initialised.
+   */
+  OZ_ALWAYS_INLINE
+  bool isValid() const
+  {
+    return descriptor != nullptr;
+  }
 
-    /**
-     * Unlock.
-     *
-     * @note
-     * Unlocking an unlocked mutex results in undefined behaviour.
-     */
-    void unlock() const;
+  /**
+   * Wait until lock is obtained.
+   *
+   * @note
+   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
+   */
+  void lock() const;
 
-    /**
-     * Initialise mutex.
-     *
-     * Initialising an already initialised mutex is an error.
-     */
-    void init();
+  /**
+   * Lock if not already locked.
+   *
+   * @note
+   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
+   *
+   * @return True on success.
+   */
+  bool tryLock() const;
 
-    /**
-     * Destroy mutex and release resources.
-     *
-     * Destroying uninitialised mutex is a legal NOP.
-     */
-    void destroy();
+  /**
+   * Unlock.
+   *
+   * @note
+   * Unlocking an unlocked mutex results in undefined behaviour.
+   */
+  void unlock() const;
+
+  /**
+   * Initialise mutex.
+   *
+   * Initialising an already initialised mutex is an error.
+   */
+  void init();
+
+  /**
+   * Destroy mutex and release resources.
+   *
+   * Destroying uninitialised mutex is a legal NOP.
+   */
+  void destroy();
 
 };
 

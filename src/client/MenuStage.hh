@@ -34,23 +34,23 @@ namespace client
 
 class MenuStage : public Stage
 {
-  private:
+private:
 
-    ui::MainMenu* mainMenu;
+  ui::MainMenu* mainMenu;
 
-  public:
+public:
 
-    bool doExit;
+  bool doExit;
 
-    bool update() override;
-    void present( bool isFull ) override;
-    void wait( uint micros ) override;
+  bool update() override;
+  void present( bool isFull ) override;
+  void wait( uint micros ) override;
 
-    void load() override;
-    void unload() override;
+  void load() override;
+  void unload() override;
 
-    void init() override;
-    void destroy() override;
+  void init() override;
+  void destroy() override;
 
 };
 

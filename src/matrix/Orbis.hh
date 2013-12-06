@@ -49,120 +49,121 @@ class Orbis : public Bounds
 {
   friend class Synapse;
 
-  public:
+public:
 
-    // # of cells on each (x, y) axis
-    static const int DIM         = MAX_WORLD_COORD;
-    static const int CELLS       = 2 * DIM / Cell::SIZE;
-    static const int MAX_STRUCTS = ( 1 << 10 ) - 1;
-    static const int MAX_OBJECTS = ( 1 << 15 ) - 1;
-    static const int MAX_FRAGS   = ( 1 << 12 ) - 1;
+  // # of cells on each (x, y) axis
+  static const int DIM         = MAX_WORLD_COORD;
+  static const int CELLS       = 2 * DIM / Cell::SIZE;
+  static const int MAX_STRUCTS = ( 1 << 10 ) - 1;
+  static const int MAX_OBJECTS = ( 1 << 15 ) - 1;
+  static const int MAX_FRAGS   = ( 1 << 12 ) - 1;
 
-    Caelum  caelum;
-    Terra   terra;
-    Cell    cells[CELLS][CELLS];
+  Caelum  caelum;
+  Terra   terra;
+  Cell    cells[CELLS][CELLS];
 
-  private:
+private:
 
-    Struct* structs[1 + MAX_STRUCTS];
-    Object* objects[1 + MAX_OBJECTS];
-    Frag*   frags[1 + MAX_FRAGS];
+  Struct* structs[1 + MAX_STRUCTS];
+  Object* objects[1 + MAX_OBJECTS];
+  Frag*   frags[1 + MAX_FRAGS];
 
-  private:
+private:
 
-    bool position( Struct* str );
-    void unposition( Struct* str );
+  bool position( Struct* str );
+  void unposition( Struct* str );
 
-    void position( Object* obj );
-    void unposition( Object* obj );
+  void position( Object* obj );
+  void unposition( Object* obj );
 
-    void position( Frag* frag );
-    void unposition( Frag* frag );
+  void position( Frag* frag );
+  void unposition( Frag* frag );
 
-    Struct* add( const BSP* bsp, const Point& p, Heading heading );
-    Object* add( const ObjectClass* clazz, const Point& p, Heading heading );
-    Frag*   add( const FragPool* pool, const Point& p, const Vec3& velocity );
+  Struct* add( const BSP* bsp, const Point& p, Heading heading );
+  Object* add( const ObjectClass* clazz, const Point& p, Heading heading );
+  Frag*   add( const FragPool* pool, const Point& p, const Vec3& velocity );
 
-    void remove( Struct* str );
-    void remove( Object* obj );
-    void remove( Frag* frag );
+  void remove( Struct* str );
+  void remove( Object* obj );
+  void remove( Frag* frag );
 
-  public:
+public:
 
-    void reposition( Object* obj );
-    void reposition( Frag* frag );
+  void reposition( Object* obj );
+  void reposition( Frag* frag );
 
-    /**
-     * Return structure at a given index, nullptr if index is -1.
-     */
-    Struct* str( int index ) const;
+  /**
+   * Return structure at a given index, nullptr if index is -1.
+   */
+  Struct* str( int index ) const;
 
-    /**
-     * Return entity with a given index, nullptr if index is -1 or structure does not exist.
-     */
-    Entity* ent( int index ) const;
+  /**
+   * Return entity with a given index, nullptr if index is -1 or structure does not exist.
+   */
+  Entity* ent( int index ) const;
 
-    /**
-     * Return object at a given index, nullptr if index is -1.
-     */
-    Object* obj( int index ) const;
+  /**
+   * Return object at a given index, nullptr if index is -1.
+   */
+  Object* obj( int index ) const;
 
-    /**
-     * Return fragment at a given index, nullptr if index is -1.
-     */
-    Frag* frag( int index ) const;
+  /**
+   * Return fragment at a given index, nullptr if index is -1.
+   */
+  Frag* frag( int index ) const;
 
-    /**
-     * Adjust structure index; return -1 if non-existent, original index otherwise.
-     */
-    int strIndex( int index ) const;
+  /**
+   * Adjust structure index; return -1 if non-existent, original index otherwise.
+   */
+  int strIndex( int index ) const;
 
-    /**
-     * Adjust entity index; return -1 if structure does not exist, original index otherwise.
-     */
-    int entIndex( int index ) const;
+  /**
+   * Adjust entity index; return -1 if structure does not exist, original index otherwise.
+   */
+  int entIndex( int index ) const;
 
-    /**
-     * Adjust object index; return -1 if non-existent, original index otherwise.
-     */
-    int objIndex( int index ) const;
+  /**
+   * Adjust object index; return -1 if non-existent, original index otherwise.
+   */
+  int objIndex( int index ) const;
 
-    /**
-     * Adjust fragment index; return -1 if non-existent, original index otherwise.
-     */
-    int fragIndex( int index ) const;
+  /**
+   * Adjust fragment index; return -1 if non-existent, original index otherwise.
+   */
+  int fragIndex( int index ) const;
 
-    // get pointer to the cell the point is in
-    Cell* getCell( float x, float y );
-    Cell* getCell( const Point& p );
+  // get pointer to the cell the point is in
+  Cell* getCell( float x, float y );
+  Cell* getCell( const Point& p );
 
-    // get indices of the cell the point is in
-    Span getInters( float x, float y, float epsilon = 0.0f ) const;
-    Span getInters( const Point& p, float epsilon = 0.0f ) const;
+  // get indices of the cell the point is in
+  Span getInters( float x, float y, float epsilon = 0.0f ) const;
+  Span getInters( const Point& p, float epsilon = 0.0f ) const;
 
-    // get indices of min and max cells which the area intersects
-    Span getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
-                    float epsilon = 0.0f ) const;
+  // get indices of min and max cells which the area intersects
+  Span getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
+                  float epsilon = 0.0f ) const;
 
-    // get indices of min and max cells which the AABB intersects
-    Span getInters( const AABB& bb, float epsilon = 0.0f ) const;
+  // get indices of min and max cells which the AABB intersects
+  Span getInters( const AABB& bb, float epsilon = 0.0f ) const;
 
-    // get indices of min and max cells which the bounds intersects
-    Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
+  // get indices of min and max cells which the bounds intersects
+  Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
-    void update();
+  void resetLastIndices();
+  void update();
 
-    void read( InputStream* is );
-    void read( const JSON& json );
+  void read( InputStream* is );
+  void read( const JSON& json );
 
-    void write( OutputStream* os ) const;
-    JSON write() const;
+  void write( OutputStream* os ) const;
+  JSON write() const;
 
-    void load();
-    void unload();
+  void load();
+  void unload();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

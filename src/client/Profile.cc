@@ -168,6 +168,7 @@ void Profile::destroy()
 
   items.clear();
   items.deallocate();
+  persistent.clear();
 }
 
 Profile profile;

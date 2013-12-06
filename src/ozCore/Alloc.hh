@@ -57,136 +57,136 @@ namespace oz
  */
 class Alloc
 {
-  public:
+public:
 
-    /// Alignment of allocated storage returned by the `new` operator.
+  /// Alignment of allocated storage returned by the `new` operator.
 #ifdef OZ_SIMD_MATH
-    static const size_t ALIGNMENT = sizeof( float[4] );
+  static const size_t ALIGNMENT = sizeof( float[4] );
 #else
-    static const size_t ALIGNMENT = sizeof( void* );
+  static const size_t ALIGNMENT = sizeof( void* );
 #endif
 
-    /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
-    static const bool OVERLOADS_NEW_AND_DELETE;
+  /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
+  static const bool OVERLOADS_NEW_AND_DELETE;
 
+public:
+
+  /**
+   * Information about an allocated memory chunk.
+   *
+   * Internal list of all memory allocations is held to detect memory leaks and `new`/`delete`
+   * mismatches.
+   */
+  struct ChunkInfo
+  {
+    ChunkInfo*  next;       ///< Pointer to the next chunk.
+    void*       address;    ///< Address of actual data (meta data lays before this address).
+    size_t      size;       ///< Size (including meta data).
+    StackTrace  stackTrace; ///< Stack trace for the `new` call that allocated it.
+  };
+
+  /**
+   * %Iterator for memory chunks allocated via overloaded `new` and `new[]` operators.
+   */
+  class ChunkCIterator : public IteratorBase<const ChunkInfo>
+  {
   public:
 
     /**
-     * Information about an allocated memory chunk.
-     *
-     * Internal list of all memory allocations is held to detect memory leaks and `new`/`delete`
-     * mismatches.
-     */
-    struct ChunkInfo
-    {
-      ChunkInfo*  next;       ///< Pointer to the next chunk.
-      void*       address;    ///< Address of actual data (meta data lays before this address).
-      size_t      size;       ///< Size (including meta data).
-      StackTrace  stackTrace; ///< Stack trace for the `new` call that allocated it.
-    };
-
-    /**
-     * %Iterator for memory chunks allocated via overloaded `new` and `new[]` operators.
-     */
-    class ChunkCIterator : public IteratorBase<const ChunkInfo>
-    {
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        explicit ChunkCIterator() :
-          IteratorBase<const ChunkInfo>( nullptr )
-        {}
-
-        /**
-         * Create iterator for a given `ChunkInfo` element (used internally).
-         */
-        OZ_ALWAYS_INLINE
-        explicit ChunkCIterator( const ChunkInfo* chunkInfo ) :
-          IteratorBase<const ChunkInfo>( chunkInfo )
-        {}
-
-        /**
-         * Advance to the next element.
-         */
-        OZ_ALWAYS_INLINE
-        ChunkCIterator& operator ++ ()
-        {
-          hard_assert( elem != nullptr );
-
-          elem = elem->next;
-          return *this;
-        }
-
-    };
-
-  public:
-
-    static int    count;     ///< Current number of allocated memory chunks.
-    static size_t amount;    ///< Amount of currently allocated memory.
-
-    static int    sumCount;  ///< Number of all memory allocations.
-    static size_t sumAmount; ///< Cumulative amount of all memory allocations.
-
-    static int    maxCount;  ///< Top number to memory allocations.
-    static size_t maxAmount; ///< Top amount of allocated memory.
-
-  public:
-
-    /**
-     * Forbid instances.
-     */
-    explicit Alloc() = delete;
-
-    /**
-     * Create iterator for iterating over allocated objects.
-     */
-    static ChunkCIterator objectCIter();
-
-    /**
-     * Create iterator for iterating over allocated arrays.
-     */
-    static ChunkCIterator arrayCIter();
-
-    /**
-     * Align to the previous boundary.
+     * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    static size_t alignDown( size_t size )
-    {
-      return size & ~( ALIGNMENT - 1 );
-    }
+    explicit ChunkCIterator() :
+      IteratorBase<const ChunkInfo>( nullptr )
+    {}
 
     /**
-     * Align to the next boundary.
+     * Create iterator for a given `ChunkInfo` element (used internally).
      */
     OZ_ALWAYS_INLINE
-    static size_t alignUp( size_t size )
-    {
-      return ( size + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 );
-    }
+    explicit ChunkCIterator( const ChunkInfo* chunkInfo ) :
+      IteratorBase<const ChunkInfo>( chunkInfo )
+    {}
 
     /**
-     * Align to the previous boundary.
+     * Advance to the next element.
      */
-    template <typename Type>
     OZ_ALWAYS_INLINE
-    static Type* alignDown( Type* p )
+    ChunkCIterator& operator ++ ()
     {
-      return reinterpret_cast<Type*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
+      hard_assert( elem != nullptr );
+
+      elem = elem->next;
+      return *this;
     }
 
-    /**
-     * Align to the next boundary.
-     */
-    template <typename Type>
-    OZ_ALWAYS_INLINE
-    static Type* alignUp( Type* p )
-    {
-      return reinterpret_cast<Type*>( size_t( p + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 ) );
-    }
+  };
+
+public:
+
+  static int    count;     ///< Current number of allocated memory chunks.
+  static size_t amount;    ///< Amount of currently allocated memory.
+
+  static int    sumCount;  ///< Number of all memory allocations.
+  static size_t sumAmount; ///< Cumulative amount of all memory allocations.
+
+  static int    maxCount;  ///< Top number to memory allocations.
+  static size_t maxAmount; ///< Top amount of allocated memory.
+
+public:
+
+  /**
+   * Forbid instances.
+   */
+  explicit Alloc() = delete;
+
+  /**
+   * Create iterator for iterating over allocated objects.
+   */
+  static ChunkCIterator objectCIter();
+
+  /**
+   * Create iterator for iterating over allocated arrays.
+   */
+  static ChunkCIterator arrayCIter();
+
+  /**
+   * Align to the previous boundary.
+   */
+  OZ_ALWAYS_INLINE
+  static size_t alignDown( size_t size )
+  {
+    return size & ~( ALIGNMENT - 1 );
+  }
+
+  /**
+   * Align to the next boundary.
+   */
+  OZ_ALWAYS_INLINE
+  static size_t alignUp( size_t size )
+  {
+    return ( size + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 );
+  }
+
+  /**
+   * Align to the previous boundary.
+   */
+  template <typename Type>
+  OZ_ALWAYS_INLINE
+  static Type* alignDown( Type* p )
+  {
+    return reinterpret_cast<Type*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
+  }
+
+  /**
+   * Align to the next boundary.
+   */
+  template <typename Type>
+  OZ_ALWAYS_INLINE
+  static Type* alignUp( Type* p )
+  {
+    return reinterpret_cast<Type*>( size_t( p + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 ) );
+  }
 
 };
 

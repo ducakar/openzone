@@ -52,37 +52,37 @@ namespace oz
 /**
  * Profiling statistics.
  *
- * This class has an internal hashtable of string-microseconds pairs. `add()` method may be used
- * to add a new entry or add time to an existing entry, but `OZ_PROFILER_BEGIN()` and
+ * This class has an internal hashtable of string-microseconds pairs. `add()` method may be used to
+ * add a new entry or add time to an existing entry, but `OZ_PROFILER_BEGIN()` and
  * `OZ_PROFILER_END()` macros are probably better suited.
  */
 class Profiler
 {
-  public:
+public:
 
-    /**
-     * Constant iterator for accumulated times.
-     */
-    typedef HashMap<String, ulong64>::CIterator CIterator;
+  /**
+   * Constant iterator for accumulated times.
+   */
+  typedef HashMap<String, ulong64>::CIterator CIterator;
 
-  public:
+public:
 
-    /**
-     * Return constant iterator for accumulated times.
-     */
-    static CIterator citer();
+  /**
+   * Return constant iterator for accumulated times.
+   */
+  static CIterator citer();
 
-    /**
-     * Add a time in microseconds to a named sum.
-     *
-     * If the key doesn't exist, a new key with initial value `micros` is added.
-     */
-    static void add( const char* key, uint micros );
+  /**
+   * Add a time in microseconds to a named sum.
+   *
+   * If the key doesn't exist, a new key with initial value `micros` is added.
+   */
+  static void add( const char* key, uint micros );
 
-    /**
-     * Clear internal hashtable, deleting all times.
-     */
-    static void clear();
+  /**
+   * Clear internal hashtable, deleting all times.
+   */
+  static void clear();
 
 };
 

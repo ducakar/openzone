@@ -34,44 +34,44 @@ namespace ui
 
 class GalileoFrame : public Frame
 {
-  private:
+private:
 
-    GLTexture mapTex;
-    GLTexture arrowTex;
-    GLTexture markerTex;
+  GLTexture mapTex;
+  GLTexture arrowTex;
+  GLTexture markerTex;
 
-    int       normalX;
-    int       normalY;
-    int       normalWidth;
-    int       normalHeight;
+  int       normalX;
+  int       normalY;
+  int       normalWidth;
+  int       normalHeight;
 
-    int       maximisedX;
-    int       maximisedY;
-    int       maximisedWidth;
-    int       maximisedHeight;
+  int       maximisedX;
+  int       maximisedY;
+  int       maximisedWidth;
+  int       maximisedHeight;
 
-    Vec4      colour;
+  Vec4      colour;
 
-  public:
+public:
 
-    // World coordinate of a mouse click, NaN if no click.
-    float     clickX;
-    float     clickY;
+  // World coordinate of a mouse click, NaN if no click.
+  float     clickX;
+  float     clickY;
 
-    bool      isMaximised;
+  bool      isMaximised;
 
-  protected:
+protected:
 
-    void onReposition() override;
-    void onUpdate() override;
-    bool onMouseEvent() override;
-    void onDraw() override;
+  void onReposition() override;
+  void onUpdate() override;
+  bool onMouseEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit GalileoFrame();
+  explicit GalileoFrame();
 
-    void setMaximised( bool doMaximise );
+  void setMaximised( bool doMaximise );
 
 };
 

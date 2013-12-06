@@ -34,50 +34,50 @@ namespace ui
 
 class ModelField : public Area
 {
-  public:
+public:
 
-    typedef void Callback( ModelField* sender, bool isClicked );
+  typedef void Callback( ModelField* sender, bool isClicked );
 
-  private:
+private:
 
-    static const float DEFAULT_ROTATION;
-    static const float ROTATION_VEL;
-    static const float ROTATION_SMOOTHING;
+  static const float DEFAULT_ROTATION;
+  static const float ROTATION_VEL;
+  static const float ROTATION_SMOOTHING;
 
-    Callback*      callback;
-    const oz::BSP* bsp;
-    int            model;
+  Callback*      callback;
+  const oz::BSP* bsp;
+  int            model;
 
-    float          defaultRot;
-    float          currRot;
-    float          nextRot;
+  float          defaultRot;
+  float          currRot;
+  float          nextRot;
 
-    int            clickMask;
-    bool           isHighlighted;
-    bool           isClicked;
-    bool           wasClicked;
+  int            clickMask;
+  bool           isHighlighted;
+  bool           isClicked;
+  bool           wasClicked;
 
-  public:
+public:
 
-    int            id; ///< Can be used to store e.g. object index.
+  int            id; ///< Can be used to store e.g. object index.
 
-  protected:
+protected:
 
-    void onVisibilityChange( bool doShow ) override;
-    bool onMouseEvent() override;
-    void onDraw() override;
+  void onVisibilityChange( bool doShow ) override;
+  bool onMouseEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit ModelField( Callback* callback, int width, int height );
+  explicit ModelField( Callback* callback, int width, int height );
 
-    void setCallback( Callback* callback );
-    void setDefaultRotation( float defaultRotation );
+  void setCallback( Callback* callback );
+  void setDefaultRotation( float defaultRotation );
 
-    void setModel( const oz::BSP* bsp );
-    void setModel( int model );
+  void setModel( const oz::BSP* bsp );
+  void setModel( int model );
 
-    void setClickMask( int mask );
+  void setClickMask( int mask );
 
 };
 

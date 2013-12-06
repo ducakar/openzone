@@ -32,46 +32,46 @@ namespace client
 
 class Shape
 {
-  private:
+private:
 
-    struct Vertex
-    {
-      float pos[3];
-      float texCoord[2];
-      float normal[3];
-    };
+  struct Vertex
+  {
+    float pos[3];
+    float texCoord[2];
+    float normal[3];
+  };
 
-    static const Vertex VERTICES[];
-    static const ushort INDICES[];
+  static const Vertex VERTICES[];
+  static const ushort INDICES[];
 
-    uint vbo;
-    uint ibo;
+  uint vbo;
+  uint ibo;
 
-  public:
+public:
 
-    explicit Shape();
+  explicit Shape();
 
-    void bind() const;
-    void unbind() const;
+  void bind() const;
+  void unbind() const;
 
-    static void colour( const Vec4& c );
-    static void colour( float r, float g, float b, float a = 1.0f );
+  static void colour( const Vec4& c );
+  static void colour( float r, float g, float b, float a = 1.0f );
 
-    static void fill( float x, float y, float width, float height );
-    static void fill( int x, int y, int width, int height );
-    static void rect( float x, float y, float width, float height );
-    static void rect( int x, int y, int width, int height );
-    static void tag( float minX, float minY, float maxX, float maxY );
+  static void fill( float x, float y, float width, float height );
+  static void fill( int x, int y, int width, int height );
+  static void rect( float x, float y, float width, float height );
+  static void rect( int x, int y, int width, int height );
+  static void tag( float minX, float minY, float maxX, float maxY );
 
-    static void quad( float dimX, float dimY );
-    static void box( const AABB& bb );
-    static void wireBox( const AABB& bb );
+  static void quad( float dimX, float dimY );
+  static void box( const AABB& bb );
+  static void wireBox( const AABB& bb );
 #ifdef OZ_DYNAMICS
-    static void object( const Point& pos, const Mat33& rot, const void* shape );
+  static void object( const Point& pos, const Mat33& rot, const void* shape );
 #endif
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

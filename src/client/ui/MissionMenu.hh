@@ -37,22 +37,22 @@ class MissionMenu;
 
 class MissionButton : public Button
 {
-  private:
+private:
 
-    MissionMenu* missionMenu;
+  MissionMenu* missionMenu;
 
-  public:
+public:
 
-    const int index;
+  const int index;
 
-  protected:
+protected:
 
-    bool onMouseEvent() override;
+  bool onMouseEvent() override;
 
-  public:
+public:
 
-    explicit MissionButton( const char* text, Callback* callback, MissionMenu* missionMenu,
-                            int index, int width, int height );
+  explicit MissionButton( const char* text, Callback* callback, MissionMenu* missionMenu, int index,
+                          int width, int height );
 
 };
 
@@ -60,44 +60,44 @@ class MissionMenu : public Area
 {
   friend class MissionButton;
 
-  private:
+private:
 
-    struct MissionInfo
-    {
-      String    name;
-      String    title;
-      String    description;
-      GLTexture image;
-    };
+  struct MissionInfo
+  {
+    String    name;
+    String    title;
+    String    description;
+    GLTexture image;
+  };
 
-    List<MissionInfo> missions;
-    int               nSelections;
-    int               selection;
-    int               scroll;
+  List<MissionInfo> missions;
+  int               nSelections;
+  int               selection;
+  int               scroll;
 
-    Text              description;
+  Text              description;
 
-    GLTexture         scrollUpTex;
-    GLTexture         scrollDownTex;
+  GLTexture         scrollUpTex;
+  GLTexture         scrollDownTex;
 
-    uint              imageId;
-    int               imageX;
-    int               imageY;
-    int               imageWidth;
-    int               imageHeight;
+  uint              imageId;
+  int               imageX;
+  int               imageY;
+  int               imageWidth;
+  int               imageHeight;
 
-    static void loadMission( Button* sender );
+  static void loadMission( Button* sender );
 
-  protected:
+protected:
 
-    void onReposition() override;
-    bool onMouseEvent() override;
-    bool onKeyEvent() override;
-    void onDraw() override;
+  void onReposition() override;
+  bool onMouseEvent() override;
+  bool onKeyEvent() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit MissionMenu();
+  explicit MissionMenu();
 
 };
 

@@ -34,21 +34,21 @@ namespace client
 
 class Profile
 {
-  public:
+public:
 
-    String                    name;
-    const BotClass*           clazz;
-    List<const DynamicClass*> items;
-    int                       weaponItem;
-    JSON                      persistent;
+  String                    name;
+  const BotClass*           clazz;
+  List<const DynamicClass*> items;
+  int                       weaponItem;
+  JSON                      persistent;
 
-  public:
+public:
 
-    void load();
-    void save();
+  void load();
+  void save();
 
-    void init();
-    void destroy();
+  void init();
+  void destroy();
 
 };
 

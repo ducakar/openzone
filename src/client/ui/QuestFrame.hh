@@ -37,33 +37,33 @@ namespace ui
 
 class QuestFrame : public Frame
 {
-  private:
+private:
 
-    Text         description;
-    int          contentHeight;
-    bool         isOpened;
+  Text         description;
+  int          contentHeight;
+  bool         isOpened;
 
-    int          lastQuest;
-    Quest::State lastState;
+  int          lastQuest;
+  Quest::State lastState;
 
-  private:
+private:
 
-    void updateTask();
+  void updateTask();
 
-    static void open( Button* sender );
-    static void next( Button* sender );
-    static void prev( Button* sender );
+  static void open( Button* sender );
+  static void next( Button* sender );
+  static void prev( Button* sender );
 
-  protected:
+protected:
 
-    void onUpdate() override;
-    void onDraw() override;
+  void onUpdate() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit QuestFrame();
+  explicit QuestFrame();
 
-    void clear();
+  void clear();
 
 };
 

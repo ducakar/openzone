@@ -38,69 +38,69 @@ namespace oz
  */
 class Time
 {
-  public:
+public:
 
-    int year;   ///< Year, all digits.
-    int month;  ///< Month, from 1 to 12.
-    int day;    ///< Day in month, from 1 to 31.
-    int hour;   ///< Hour.
-    int minute; ///< Minute.
-    int second; ///< Second.
+  int year;   ///< Year, all digits.
+  int month;  ///< Month, from 1 to 12.
+  int day;    ///< Day in month, from 1 to 31.
+  int hour;   ///< Hour.
+  int minute; ///< Minute.
+  int second; ///< Second.
 
-  public:
+public:
 
-    /**
-     * Monotonic clock from an unspecified point in time, with millisecond resolution.
-     *
-     * This clock wraps around in about 49.7 days.
-     */
-    static uint clock();
+  /**
+   * Monotonic clock from an unspecified point in time, with millisecond resolution.
+   *
+   * This clock wraps around in about 49.7 days.
+   */
+  static uint clock();
 
-    /**
-     * Monotonic clock from an unspecified point in time, with microsecond resolution.
-     *
-     * This clock wraps around in about 71.6 min.
-     */
-    static uint uclock();
+  /**
+   * Monotonic clock from an unspecified point in time, with microsecond resolution.
+   *
+   * This clock wraps around in about 71.6 min.
+   */
+  static uint uclock();
 
-    /**
-     * Sleep for given number of milliseconds.
-     */
-    static void sleep( uint milliseconds );
+  /**
+   * Sleep for given number of milliseconds.
+   */
+  static void sleep( uint milliseconds );
 
-    /**
-     * Sleep for given number of microseconds.
-     */
-    static void usleep( uint microseconds );
+  /**
+   * Sleep for given number of microseconds.
+   */
+  static void usleep( uint microseconds );
 
-    /**
-     * Get current time in seconds from the platform-dependent epoch.
-     *
-     * @note
-     * Epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux and 1601-01-01
-     * 0:00:00 on Windows).
-     */
-    static long64 time();
+  /**
+   * Get current time in seconds from the platform-dependent epoch.
+   *
+   * @note
+   * Epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux and 1601-01-01
+   * 0:00:00 on Windows).
+   */
+  static long64 time();
 
-    /**
-     * Get seconds from epoch for the broken-down time representation.
-     */
-    long64 toEpoch() const;
+  /**
+   * Get seconds from epoch for the broken-down time representation.
+   */
+  long64 toEpoch() const;
 
-    /**
-     * Return broken-down local time representing the current time.
-     */
-    static Time local();
+  /**
+   * Return broken-down local time representing the current time.
+   */
+  static Time local();
 
-    /**
-     * Return broken-down local time representing the time given as seconds from epoch.
-     */
-    static Time local( long64 epoch );
+  /**
+   * Return broken-down local time representing the time given as seconds from epoch.
+   */
+  static Time local( long64 epoch );
 
-    /**
-     * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".
-     */
-    String toString() const;
+  /**
+   * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".
+   */
+  String toString() const;
 
 };
 

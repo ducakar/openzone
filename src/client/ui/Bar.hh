@@ -35,20 +35,19 @@ namespace ui
 
 class Bar
 {
-  private:
+private:
 
-    const Style::Bar* style;
+  const Style::Bar* style;
 
-  public:
+public:
 
-    explicit Bar( const Style::Bar* style = nullptr );
+  explicit Bar( const Style::Bar* style = nullptr );
 
-    void setStyle( const Style::Bar* style );
+  void setStyle( const Style::Bar* style );
 
-    void draw( const Area* area, float ratio ) const;
-    void draw( const Area* area, int barX, int barY, int barWidth, int barHeight,
-               float ratio ) const;
-    void drawAbs( int barX, int barY, int barWidth, int barHeight, float ratio ) const;
+  void draw( const Area* area, float ratio ) const;
+  void draw( const Area* area, int barX, int barY, int barWidth, int barHeight, float ratio ) const;
+  void drawAbs( int barX, int barY, int barWidth, int barHeight, float ratio ) const;
 
 };
 

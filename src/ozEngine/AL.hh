@@ -50,116 +50,116 @@ namespace oz
  */
 class AL
 {
+public:
+
+  /**
+   * %Streamer for Ogg Vorbis files.
+   */
+  class Streamer
+  {
+  private:
+
+    struct Data;
+
+    ALuint source; ///< Target OpenAL source for which buffers are queued, 0 if none.
+    Data*  data;   ///< Internal buffers, Ogg Vorbis stream state, format description ...
+
   public:
 
     /**
-     * %Streamer for Ogg Vorbis files.
+     * Create an empty instance (no internal OpenAL buffers are created).
      */
-    class Streamer
+    explicit Streamer();
+
+    /**
+     * Same as default constructor plus `open()`.
+     */
+    explicit Streamer( const File& file );
+
+    /**
+     * Move constructor.
+     */
+    Streamer( Streamer&& s );
+
+    /**
+     * Move operator.
+     */
+    Streamer& operator = ( Streamer&& s );
+
+    /**
+     * True iff streaming.
+     */
+    bool isStreaming() const
     {
-      private:
-
-        struct Data;
-
-        ALuint source; ///< Target OpenAL source for which buffers are queued, 0 if none.
-        Data*  data;   ///< Internal buffers, Ogg Vorbis stream state, format description ...
-
-      public:
-
-        /**
-         * Create an empty instance (no internal OpenAL buffers are created).
-         */
-        explicit Streamer();
-
-        /**
-         * Same as default constructor plus `open()`.
-         */
-        explicit Streamer( const File& file );
-
-        /**
-         * Move constructor.
-         */
-        Streamer( Streamer&& s );
-
-        /**
-         * Move operator.
-         */
-        Streamer& operator = ( Streamer&& s );
-
-        /**
-         * True iff streaming.
-         */
-        bool isStreaming() const
-        {
-          return data != nullptr;
-        }
-
-        /**
-         * True iff a source is attached.
-         */
-        bool hasSource() const
-        {
-          return source != 0;
-        }
-
-        /**
-         * Set OpenAL source which buffers with streamed data will be queued for.
-         */
-        void attach( ALuint source );
-
-        /**
-         * Unset OpenAL source for buffer queuing.
-         */
-        void detach();
-
-        /**
-         * Update processed buffers in the queue, decode new data into them.
-         *
-         * When the end of the stream is reached it invokes `close()`.
-         */
-        bool update();
-
-        /**
-         * Stop attached source and rewind stream to the beginning.
-         */
-        bool rewind();
-
-        /**
-         * Start streaming a given Ogg Vorbis file.
-         */
-        bool open( const File& file );
-
-        /**
-         * Stop streaming and free file buffers and stream state.
-         */
-        void close();
-
-        /**
-         * Deinitialise, detach source and delete all buffers.
-         */
-        void destroy();
-
-    };
-
-  public:
+      return data != nullptr;
+    }
 
     /**
-     * Forbid instances.
+     * True iff a source is attached.
      */
-    explicit AL() = delete;
+    bool hasSource() const
+    {
+      return source != 0;
+    }
 
     /**
-     * Helper method for `OZ_AL_CHECK_ERROR` macro.
+     * Set OpenAL source which buffers with streamed data will be queued for.
      */
-    static void checkError( const char* function, const char* file, int line );
+    void attach( ALuint source );
 
     /**
-     * Load OpenAL buffer from a WAVE of Ogg Vorbis file.
+     * Unset OpenAL source for buffer queuing.
+     */
+    void detach();
+
+    /**
+     * Update processed buffers in the queue, decode new data into them.
      *
-     * @note
-     * Beware, 3D effects in OpenAL only work on mono sound samples.
+     * When the end of the stream is reached it invokes `close()`.
      */
-    static bool bufferDataFromFile( ALuint buffer, const File& file );
+    bool update();
+
+    /**
+     * Stop attached source and rewind stream to the beginning.
+     */
+    bool rewind();
+
+    /**
+     * Start streaming a given Ogg Vorbis file.
+     */
+    bool open( const File& file );
+
+    /**
+     * Stop streaming and free file buffers and stream state.
+     */
+    void close();
+
+    /**
+     * Deinitialise, detach source and delete all buffers.
+     */
+    void destroy();
+
+  };
+
+public:
+
+  /**
+   * Forbid instances.
+   */
+  explicit AL() = delete;
+
+  /**
+   * Helper method for `OZ_AL_CHECK_ERROR` macro.
+   */
+  static void checkError( const char* function, const char* file, int line );
+
+  /**
+   * Load OpenAL buffer from a WAVE of Ogg Vorbis file.
+   *
+   * @note
+   * Beware, 3D effects in OpenAL only work on mono sound samples.
+   */
+  static bool bufferDataFromFile( ALuint buffer, const File& file );
 
 };
 

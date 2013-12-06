@@ -36,59 +36,58 @@ namespace ui
 
 class Inventory : public Frame
 {
-  private:
+private:
 
-    static const int   COLS          = 8;
-    static const int   PADDING_SIZE  = 1;
-    static const int   FOOTER_SIZE   = 32;
-    static const int   ICON_SIZE     = 32;
-    static const int   SLOT_SIZE     = 64;
-    static const int   SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
-    static const int   SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
+  static const int   COLS          = 8;
+  static const int   PADDING_SIZE  = 1;
+  static const int   FOOTER_SIZE   = 32;
+  static const int   ICON_SIZE     = 32;
+  static const int   SLOT_SIZE     = 64;
+  static const int   SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
+  static const int   SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
 
-    const Bot*     owner;
-    const Object*  other;
+  const Bot*     owner;
+  const Object*  other;
 
-    Bar            lifeBar;
-    Bar            statusBar;
+  Bar            lifeBar;
+  Bar            statusBar;
 
-    ModelField*    ownerModels[COLS];
-    ModelField*    otherModels[COLS];
+  ModelField*    ownerModels[COLS];
+  ModelField*    otherModels[COLS];
 
-    GLTexture      scrollUpTex;
-    GLTexture      scrollDownTex;
-    GLTexture      useTex;
-    GLTexture      equipTex;
-    GLTexture      unequipTex;
+  GLTexture      scrollUpTex;
+  GLTexture      scrollDownTex;
+  GLTexture      useTex;
+  GLTexture      equipTex;
+  GLTexture      unequipTex;
 
-    Label          itemDesc;
+  Label          itemDesc;
 
-    int            taggedItemIndex;
-    bool           taggedOwnerComponent;
+  int            taggedItemIndex;
+  bool           taggedOwnerComponent;
 
-    int            scrollOwner;
-    int            scrollOther;
+  int            scrollOwner;
+  int            scrollOther;
 
-  private:
+private:
 
-    static void ownerItemCallback( ModelField* sender, bool isClicked );
-    static void otherItemCallback( ModelField* sender, bool isClicked );
+  static void ownerItemCallback( ModelField* sender, bool isClicked );
+  static void otherItemCallback( ModelField* sender, bool isClicked );
 
-    void updateReferences();
-    void handleScroll( const Object* container, int* scroll );
-    void drawComponent( int height, const Object* container, const Dynamic* taggedItem,
-                        int scroll );
+  void updateReferences();
+  void handleScroll( const Object* container, int* scroll );
+  void drawComponent( int height, const Object* container, const Dynamic* taggedItem, int scroll );
 
-  protected:
+protected:
 
-    void onVisibilityChange( bool doShow ) override;
-    bool onMouseEvent() override;
-    void onUpdate() override;
-    void onDraw() override;
+  void onVisibilityChange( bool doShow ) override;
+  bool onMouseEvent() override;
+  void onUpdate() override;
+  void onDraw() override;
 
-  public:
+public:
 
-    explicit Inventory();
+  explicit Inventory();
 
 };
 

@@ -36,44 +36,44 @@ namespace client
 
 class SMM
 {
-  public:
+public:
 
-    typedef SMM* CreateFunc( int id );
+  typedef SMM* CreateFunc( int id );
 
-  protected:
+protected:
 
-    int   id;
-    Model model;
+  int   id;
+  Model model;
 
-    explicit SMM( int id );
+  explicit SMM( int id );
 
-  public:
+public:
 
-    static SMM* create( int id );
-    virtual ~SMM();
+  static SMM* create( int id );
+  virtual ~SMM();
 
-    Vec3 dim() const
-    {
-      return model.dim;
-    }
+  Vec3 dim() const
+  {
+    return model.dim;
+  }
 
-    bool isPreloaded() const
-    {
-      return model.isPreloaded();
-    }
+  bool isPreloaded() const
+  {
+    return model.isPreloaded();
+  }
 
-    bool isLoaded() const
-    {
-      return model.isLoaded();
-    }
+  bool isLoaded() const
+  {
+    return model.isLoaded();
+  }
 
-    void schedule( int node, Model::QueueType queue )
-    {
-      model.schedule( node, queue );
-    }
+  void schedule( int node, Model::QueueType queue )
+  {
+    model.schedule( node, queue );
+  }
 
-    virtual void preload();
-    virtual void load();
+  virtual void preload();
+  virtual void load();
 
 };
 

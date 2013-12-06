@@ -38,31 +38,30 @@ namespace oz
  */
 class Capsule : public Shape
 {
-  public:
+public:
 
-    static Pool<Capsule> pool; ///< Memory pool.
+  static Pool<Capsule> pool; ///< Memory pool.
 
-    float ext;                 ///< Line segment length.
-    float radius;              ///< Distance from line segment representing capsule surface.
+  float ext;                 ///< Line segment length.
+  float radius;              ///< Distance from line segment representing capsule surface.
 
-  public:
+public:
 
-    OZ_ALWAYS_INLINE
-    explicit Capsule() :
-      Shape( CAPSULE )
-    {}
+  OZ_ALWAYS_INLINE
+  explicit Capsule() :
+    Shape( CAPSULE )
+  {}
 
-    OZ_ALWAYS_INLINE
-    explicit Capsule( float ext_, float radius_ ) :
-      Shape( CAPSULE ), ext( ext_ ), radius( radius_ )
-    {}
+  OZ_ALWAYS_INLINE
+  explicit Capsule( float ext_, float radius_ ) :
+    Shape( CAPSULE ), ext( ext_ ), radius( radius_ )
+  {}
 
-    ~Capsule() override;
+  ~Capsule() override;
 
-    Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+  Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

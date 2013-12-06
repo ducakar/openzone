@@ -33,26 +33,25 @@ namespace client
 
 class SMMImago : public Imago
 {
-  private:
+private:
 
-    SMM* smm;
+  SMM* smm;
 
-    explicit SMMImago( const Object* obj ) :
-      Imago( obj )
-    {}
+  explicit SMMImago( const Object* obj ) :
+    Imago( obj )
+  {}
 
-    ~SMMImago() override;
+  ~SMMImago() override;
 
-  public:
+public:
 
-    static Pool<SMMImago, 4096> pool;
+  static Pool<SMMImago, 4096> pool;
 
-    static Imago* create( const Object* obj );
+  static Imago* create( const Object* obj );
 
-    void draw( const Imago* parent ) override;
+  void draw( const Imago* parent ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

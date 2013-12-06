@@ -33,24 +33,23 @@ namespace client
 
 class BasicAudio : public Audio
 {
-  protected:
+protected:
 
-    static const int RECENT_TICKS = Timer::TICKS_PER_SEC / 12;
+  static const int RECENT_TICKS = Timer::TICKS_PER_SEC / 12;
 
-    int recent[ObjectClass::MAX_SOUNDS];
+  int recent[ObjectClass::MAX_SOUNDS];
 
-    explicit BasicAudio( const Object* obj );
+  explicit BasicAudio( const Object* obj );
 
-  public:
+public:
 
-    static Pool<BasicAudio, 2048> pool;
+  static Pool<BasicAudio, 2048> pool;
 
-    static Audio* create( const Object* obj );
+  static Audio* create( const Object* obj );
 
-    void play( const Object* playAt ) override;
+  void play( const Object* playAt ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

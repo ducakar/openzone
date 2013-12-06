@@ -33,26 +33,25 @@ namespace client
 
 class MD2WeaponImago : public Imago
 {
-  private:
+private:
 
-    MD2* md2;
+  MD2* md2;
 
-    explicit MD2WeaponImago( const Object* obj ) :
-      Imago( obj )
-    {}
+  explicit MD2WeaponImago( const Object* obj ) :
+    Imago( obj )
+  {}
 
-    ~MD2WeaponImago() override;
+  ~MD2WeaponImago() override;
 
-  public:
+public:
 
-    static Pool<MD2WeaponImago, 256> pool;
+  static Pool<MD2WeaponImago, 256> pool;
 
-    static Imago* create( const Object* obj );
+  static Imago* create( const Object* obj );
 
-    void draw( const Imago* parent ) override;
+  void draw( const Imago* parent ) override;
 
-    OZ_STATIC_POOL_ALLOC( pool )
-
+  OZ_STATIC_POOL_ALLOC( pool )
 };
 
 }

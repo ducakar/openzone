@@ -32,24 +32,22 @@ namespace client
 
 class ParticleGen
 {
-  private:
+private:
 
-    struct Particle
-    {
-      Vec3  p;
-      Vec3  velocity;
-      Vec3  colour;
-      float lifeTime;
-    };
+  struct Particle
+  {
+    Vec3  p;
+    Vec3  velocity;
+    Vec3  colour;
+    float lifeTime;
+  };
 
-    DArray<Particle>* particles;
-    float             particlesPerTick;
+  DArray<Particle>* particles;
+  float             particlesPerTick;
 
-    void createSpark( int i );
+  void createSpark( int i );
 
-  public:
-
-
+public:
 
 };
 

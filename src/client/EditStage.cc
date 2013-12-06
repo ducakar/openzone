@@ -133,6 +133,8 @@ bool EditStage::update()
    * UI and modules update, world may be updated from the main thread during this phase.
    */
 
+  orbis.resetLastIndices();
+
   if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
     if( !layoutFile.isEmpty() ) {
       write();

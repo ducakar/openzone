@@ -32,46 +32,46 @@ namespace client
 
 class StrategicProxy : public Proxy
 {
-  private:
+private:
 
-    static const float MIN_HEIGHT;
-    static const float MAX_HEIGHT;
-    static const float DEFAULT_HEIGHT;
-    static const float DEFAULT_ANGLE;
-    static const float FREE_LOW_SPEED;
-    static const float FREE_HIGH_SPEED;
-    static const float RTS_LOW_SPEED;
-    static const float RTS_HIGH_SPEED;
-    static const float ZOOM_FACTOR;
+  static const float MIN_HEIGHT;
+  static const float MAX_HEIGHT;
+  static const float DEFAULT_HEIGHT;
+  static const float DEFAULT_ANGLE;
+  static const float FREE_LOW_SPEED;
+  static const float FREE_HIGH_SPEED;
+  static const float RTS_LOW_SPEED;
+  static const float RTS_HIGH_SPEED;
+  static const float ZOOM_FACTOR;
 
-  public:
+public:
 
-    float h;
-    float v;
-    Point desiredPos;
-    float height;
+  float h;
+  float v;
+  Point desiredPos;
+  float height;
 
-    bool  isFree;
-    bool  isFreeFast;
-    bool  isRTSFast;
+  bool  isFree;
+  bool  isFreeFast;
+  bool  isRTSFast;
 
-    bool  hasBuildFrame;
+  bool  hasBuildFrame;
 
-  public:
+public:
 
-    void begin() override;
-    void end() override;
+  void begin() override;
+  void end() override;
 
-    void prepare() override;
-    void update() override;
+  void prepare() override;
+  void update() override;
 
-    void reset() override;
+  void reset() override;
 
-    void read( InputStream* is ) override;
-    void read( const JSON& json ) override;
+  void read( InputStream* is ) override;
+  void read( const JSON& json ) override;
 
-    void write( OutputStream* os ) const override;
-    JSON write() const override;
+  void write( OutputStream* os ) const override;
+  JSON write() const override;
 
 };
 

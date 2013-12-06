@@ -36,20 +36,20 @@ namespace oz
 
 class Physics
 {
-  private:
+private:
 
-    Space*    space;
-    Kollider* collider;
+  Space*    space;
+  Kollider* collider;
 
-  public:
+public:
 
-    void add( DBody* body );
-    void erase( DBody* body );
+  void add( DBody* body );
+  void erase( DBody* body );
 
-    void update( float time );
+  void update( float time );
 
-    void init( Space* space, Kollider* collider );
-    void destroy();
+  void init( Space* space, Kollider* collider );
+  void destroy();
 
 };
 

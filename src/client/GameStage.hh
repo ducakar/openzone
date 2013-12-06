@@ -33,62 +33,62 @@ namespace client
 
 class GameStage : public Stage
 {
-  private:
+private:
 
-    // 2.5 min.
-    static const uint AUTOSAVE_INTERVAL;
+  // 2.5 min.
+  static const uint AUTOSAVE_INTERVAL;
 
-    ulong64       startTicks;
-    long64        sleepMicros;
-    long64        loadingMicros;
-    long64        uiMicros;
-    long64        loaderMicros;
-    long64        soundMicros;
-    long64        renderMicros;
-    long64        matrixMicros;
-    long64        nirvanaMicros;
+  ulong64       startTicks;
+  long64        sleepMicros;
+  long64        loadingMicros;
+  long64        uiMicros;
+  long64        loaderMicros;
+  long64        soundMicros;
+  long64        renderMicros;
+  long64        matrixMicros;
+  long64        nirvanaMicros;
 
-    uint          autosaveTicks;
+  uint          autosaveTicks;
 
-    OutputStream  saveStream;
-    File          saveFile;
-    Thread        saveThread;
+  OutputStream  saveStream;
+  File          saveFile;
+  Thread        saveThread;
 
-    Thread        auxThread;
-    Semaphore     mainSemaphore;
-    Semaphore     auxSemaphore;
-    volatile bool isAuxAlive;
+  Thread        auxThread;
+  Semaphore     mainSemaphore;
+  Semaphore     auxSemaphore;
+  volatile bool isAuxAlive;
 
-  public:
+public:
 
-    Proxy*        proxy;
+  Proxy*        proxy;
 
-    File          autosaveFile;
-    File          quicksaveFile;
-    File          stateFile;
-    String        mission;
+  File          autosaveFile;
+  File          quicksaveFile;
+  File          stateFile;
+  String        mission;
 
-  private:
+private:
 
-    static void saveMain( void* );
+  static void saveMain( void* );
 
-    void read();
-    void write();
+  void read();
+  void write();
 
-    static void auxMain( void* );
-    void auxRun();
+  static void auxMain( void* );
+  void auxRun();
 
-  public:
+public:
 
-    bool update() override;
-    void present( bool isFull ) override;
-    void wait( uint micros ) override;
+  bool update() override;
+  void present( bool isFull ) override;
+  void wait( uint micros ) override;
 
-    void load() override;
-    void unload() override;
+  void load() override;
+  void unload() override;
 
-    void init() override;
-    void destroy() override;
+  void init() override;
+  void destroy() override;
 
 };
 

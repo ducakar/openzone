@@ -38,96 +38,96 @@ namespace oz
  */
 class ALStreamingBuffer
 {
-  private:
+private:
 
-    AL::Streamer streamer; ///< Internal streamer.
-    ALuint       sourceId; ///< Attached source id, 0 if none.
+  AL::Streamer streamer; ///< Internal streamer.
+  ALuint       sourceId; ///< Attached source id, 0 if none.
 
-  public:
+public:
 
-    /**
-     * Create an empty instance (no OpenAL buffers are created).
-     */
-    explicit ALStreamingBuffer();
+  /**
+   * Create an empty instance (no OpenAL buffers are created).
+   */
+  explicit ALStreamingBuffer();
 
-    /**
-     * Create a new buffer from a given file. Same as the default constructor plus `open()`.
-     */
-    explicit ALStreamingBuffer( const File& file );
+  /**
+   * Create a new buffer from a given file. Same as the default constructor plus `open()`.
+   */
+  explicit ALStreamingBuffer( const File& file );
 
-    /**
-     * Destructor, invokes `destroy()`.
-     */
-    ~ALStreamingBuffer();
+  /**
+   * Destructor, invokes `destroy()`.
+   */
+  ~ALStreamingBuffer();
 
-    /**
-     * Move constructor.
-     */
-    ALStreamingBuffer( ALStreamingBuffer&& b );
+  /**
+   * Move constructor.
+   */
+  ALStreamingBuffer( ALStreamingBuffer&& b );
 
-    /**
-     * Move operator.
-     */
-    ALStreamingBuffer& operator = ( ALStreamingBuffer&& b );
+  /**
+   * Move operator.
+   */
+  ALStreamingBuffer& operator = ( ALStreamingBuffer&& b );
 
-    /**
-     * True iff streaming.
-     */
-    bool isStreaming() const
-    {
-      return streamer.isStreaming();
-    }
+  /**
+   * True iff streaming.
+   */
+  bool isStreaming() const
+  {
+    return streamer.isStreaming();
+  }
 
-    /**
-     * Get attached OpenAL source id.
-     */
-    ALuint attachedSource() const
-    {
-      return sourceId;
-    }
+  /**
+   * Get attached OpenAL source id.
+   */
+  ALuint attachedSource() const
+  {
+    return sourceId;
+  }
 
-    /**
-     * True iff a source is attached.
-     */
-    bool isSourceAttached() const
-    {
-      return sourceId != 0;
-    }
+  /**
+   * True iff a source is attached.
+   */
+  bool isSourceAttached() const
+  {
+    return sourceId != 0;
+  }
 
-    /**
-     * Update processed buffers in the queue, decode new data into them.
-     *
-     * When the end of the stream is reached it invokes `close()`.
-     */
-    bool update();
+  /**
+   * Update processed buffers in the queue, decode new data into them.
+   *
+   * When the end of the stream is reached it invokes `close()`.
+   */
+  bool update();
 
-    /**
-     * Stop source and streaming and rewind to the beginning of the stream.
-     */
-    bool rewind();
+  /**
+   * Stop source and streaming and rewind to the beginning of the stream.
+   */
+  bool rewind();
 
-    /**
-     * Create a new source and attach it to this buffer queue.
-     *
-     * The buffers must be created to attach a source. If there already is a source attached it is
-     * forgotten.
-     */
-    ALSource createSource();
+  /**
+   * Create a new source and attach it to this buffer queue.
+   *
+   * The buffers must be created to attach a source. If there already is a source attached it is
+   * forgotten.
+   */
+  ALSource createSource();
 
-    /**
-     * Start streaming a given Ogg Vorbis file.
-     */
-    bool open( const File& file );
+  /**
+   * Start streaming a given Ogg Vorbis file.
+   */
+  bool open( const File& file );
 
-    /**
-     * Stop streaming and free file buffers and stream state.
-     */
-    void close();
+  /**
+   * Stop streaming and free file buffers and stream state.
+   */
+  void close();
 
-    /**
-     * Deinitialise, detach source and delete all buffers.
-     */
-    void destroy();
+  /**
+   * Deinitialise, detach source and delete all buffers.
+   */
+  void destroy();
 
 };
 
