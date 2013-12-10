@@ -215,12 +215,12 @@ void AssImp::build( const char* path )
     const aiAnimation* anim = scene->mAnimations[i];
 
     for( uint j = 0; j < anim->mNumChannels; ++j ) {
-      const aiNodeAnim* nodeAnim = anim->mChannels[j];
+//      const aiNodeAnim* nodeAnim = anim->mChannels[j];
 
-      for( double t = 0.0; t < anim->mDuration; ) {
+//      for( double t = 0.0; t < anim->mDuration; ) {
 
 
-      }
+//      }
     }
   }
 

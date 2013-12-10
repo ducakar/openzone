@@ -65,26 +65,5 @@ struct Foo
 int main()
 {
   System::init();
-
-  OutputStream os( 0 );
-
-  SBitset<43> bs;
-  bs.clearAll();
-
-  Log() << bs.length();
-  Log() << bs.unitLength();
-
-  bs.set( 42 );
-  os.writeBitset( bs, bs.length() );
-  bs.clearAll();
-
-  os.seek( 0 );
-  os.readBitset( bs, 43 );
-
-  for( int i = 0; i < bs.length(); ++i ) {
-    if( bs.get( i ) ) {
-      Log() << i;
-    }
-  }
   return 0;
 }

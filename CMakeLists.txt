@@ -22,6 +22,7 @@ option( OZ_NET "Enable networking support." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
 option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
+option( OZ_MONO_TEST "Build Mono embedding test." OFF )
 
 #
 # Internal configuration
@@ -141,6 +142,12 @@ endif()
 
 pkg_check_modules( PNG REQUIRED libpng )
 pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
+
+if( OZ_MONO_TEST )
+  pkg_check_modules( MONO REQUIRED mono-2 )
+
+  include_directories( SYSTEM ${MONO_INCLUDE_DIRS} )
+endif()
 
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.

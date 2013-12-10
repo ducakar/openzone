@@ -105,6 +105,13 @@ You may also want to set several options when configuring CMake build system:
   when one wants to create all-in-one ZIP archive that can be unpacked and run without installation.
   `OFF` by default, forced to `ON` on Windows, forced to `OFF` on Android and NaCl.
 
+- `OZ_TESTS`: Build tests. These are used during development to test some features before they are
+  implemented into engine. You don't need this.
+  `OFF` by default.
+
+- `OZ_MONO_TEST`: Build a Mono embedding test. You don't need this.
+  `OFF` by default.
+
 Tools
 -----
 

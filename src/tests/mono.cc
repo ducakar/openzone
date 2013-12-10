@@ -34,11 +34,60 @@ using namespace oz;
 static MonoDomain*   monoDomain;
 static MonoAssembly* monoAssembly;
 
-struct Test
+struct Object;
+static DArray<Object> objects( 100 );
+
+struct Object
 {
-  static MonoString* getString()
+  int   index;
+  Point p;
+  Vec3  velocity;
+  float life;
+
+  static void getP( MonoObject*, int index, float* x, float* y, float* z )
   {
-    return mono_string_new( monoDomain, "Drek na palci" );
+    const Point& p = objects[index].p;
+
+    *x = p.x;
+    *y = p.y;
+    *z = p.z;
+  }
+
+  static void setP( MonoObject*, int index, float x, float y, float z )
+  {
+    Point& p = objects[index].p;
+
+    p.x = x;
+    p.y = y;
+    p.z = z;
+  }
+
+  static void getVelocity( MonoObject*, int index, float* x, float* y, float* z )
+  {
+    const Vec3& velocity = objects[index].velocity;
+
+    *x = velocity.x;
+    *y = velocity.y;
+    *z = velocity.z;
+  }
+
+  static void setVelocity( MonoObject*, int index, float x, float y, float z )
+  {
+    Vec3& velocity = objects[index].velocity;
+
+    velocity.x = x;
+    velocity.y = y;
+    velocity.z = z;
+  }
+
+  static float getLife( MonoObject*, int index )
+  {
+    return objects[index].life;
+  }
+
+  static void setLife( MonoObject*, int index, float value )
+  {
+    objects[index].life = value;
   }
 };
 
@@ -54,7 +103,16 @@ int main( int argc, char** argv )
 
   hard_assert( monoAssembly != nullptr );
 
-  OZ_MONO_FUNCTION( Test::getString );
+  OZ_MONO_FUNCTION( Object::getP );
+  OZ_MONO_FUNCTION( Object::setP );
+  OZ_MONO_FUNCTION( Object::getVelocity );
+  OZ_MONO_FUNCTION( Object::setVelocity );
+  OZ_MONO_FUNCTION( Object::getLife );
+  OZ_MONO_FUNCTION( Object::setLife );
+
+  objects[42].p = Point( 1.0f, 2.0f, 3.0f );
+  objects[42].life = 3.14f;
+
   mono_jit_exec( monoDomain, monoAssembly, argc, argv );
   mono_jit_cleanup( monoDomain );
   return 0;
