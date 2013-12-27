@@ -107,6 +107,7 @@ void UnitProxy::prepare()
 
   if( bot != nullptr ) {
     bot->actions = 0;
+    camera.strategic.h = bot->h;
   }
 
   if( input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] ) {

@@ -478,7 +478,7 @@ void GameStage::unload()
   Log::println( "tick rate in run time   %6.2f Hz", ticks / runTime                          );
   Log::println( "frame rate in run time  %6.2f Hz", float( timer.nFrames ) / runTime         );
   Log::println( "frame drop rate         %6.2f %%", frameDropRate * 100.0f                   );
-  Log::println( "frame drops             %6d",      nFrameDrops                              );
+  Log::println( "frame drops           %8d",        nFrameDrops                              );
   Log::println( "Run time usage {" );
   Log::indent();
   Log::println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );

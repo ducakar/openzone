@@ -402,6 +402,14 @@ public:
   static bool cp( const File& file, const char* path );
 
   /**
+   * Move/remove a file.
+   *
+   * @param file source file.
+   * @param path destination directory or file path.
+   */
+  static bool mv( const File& file, const char* path );
+
+  /**
    * Delete a file or an empty directory.
    */
   static bool rm( const File& file );

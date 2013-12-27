@@ -530,40 +530,30 @@ static BellFinaliser bellFinaliser = { false };
 OZ_NORETURN
 static void abort( bool doHalt )
 {
+  static_cast<void>( doHalt );
+
   resetSignals();
 
   if( crashHandler != nullptr ) {
     crashHandler();
   }
 
-#if defined( EMSCRIPTEN )
+#if defined( __ANDROID__ )
 
-  static_cast<void>( doHalt );
-  fputs( "ABORTED\n", stderr );
-
-#elif defined( __ANDROID__ )
-
-  static_cast<void>( doHalt );
-  __android_log_write( ANDROID_LOG_FATAL, "oz", "ABORTED\n"  );
-
-#elif defined( __native_client__ )
-
-  static_cast<void>( doHalt );
-
-  fflush( stdout );
-  fputs( "ABORTED\n", stderr );
-  fflush( stderr );
+  __android_log_write( ANDROID_LOG_FATAL, "liboz", "ABORTED\n"  );
 
 #else
 
-  if( doHalt ) {
-    fflush( stdout );
-    fputs( "Halted. Attach a debugger or press Enter to quit ... ", stderr );
-    fflush( stderr );
+# if !defined( EMSCRIPTEN ) && !defined( __native_client )
+  doHalt = doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO );
+# endif
 
-    if( isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
-      fgetc( stdin );
-    }
+  fflush( stdout );
+  fputs( doHalt ? "Halted. Attach a debugger or press Enter to abort ... " : "ABORTED\n", stderr );
+  fflush( stderr );
+
+  if( doHalt ) {
+    fgetc( stdin );
   }
 
 #endif
