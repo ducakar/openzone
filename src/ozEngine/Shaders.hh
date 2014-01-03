@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozEngine/Shader.hh
+ * @file ozEngine/Shaders.hh
  *
- * `Shader` class.
+ * `Shaders` class.
  */
 
 #pragma once
@@ -32,16 +32,30 @@
 
 namespace oz
 {
-#if 0
+
 class Shaders
 {
 public:
 
-  int load( const char* path );
+  static const int oz_projModelMatrix;
+  static const int oz_modelMatrix;
+  static const int oz_colourMatrix;
 
-  bool init();
-  void destroy();
+private:
+
+  static HashMap<String, int, 64> uniforms;
+  static HashMap<String, int, 64> shaders;
+
+  static const int PLAIN;
+  static const int MESH;
+
+public:
+
+  static int load( const char* path );
+
+  static bool init();
+  static void destroy();
 
 };
-#endif
+
 }

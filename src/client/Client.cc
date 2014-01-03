@@ -523,7 +523,7 @@ void Client::shutdown()
 
     Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
 
-    config.save( configFile );
+    config.save( configFile, CONFIG_FORMAT );
 
     Log::printEnd( " OK" );
   }

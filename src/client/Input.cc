@@ -741,7 +741,7 @@ void Input::destroy()
   keyboardConfig.add( "sensitivity.y",       keySensY );
   keyMapConfig = keyMapToJSON();
 
-  if( !inputConfig.save( configFile ) ) {
+  if( !inputConfig.save( configFile, CONFIG_FORMAT ) ) {
     OZ_ERROR( "Failed to write '%s'", configFile.path().cstr() );
   }
 

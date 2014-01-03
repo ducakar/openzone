@@ -21,10 +21,10 @@
  */
 
 /**
- * @file ozEngine/Shader.cc
+ * @file ozEngine/Shaders.cc
  */
 
-#include "Shader.hh"
+#include "Shaders.hh"
 
 #include "GL.hh"
 
@@ -172,4 +172,13 @@ void Shaders::destroy()
   programs.deallocate();
 }
 #endif
+
+const int Shaders::oz_colourMatrix = -1;
+
+bool Shaders::init()
+{
+  *const_cast<int*>( &oz_colourMatrix ) = 0;
+  return true;
+}
+
 }

@@ -487,9 +487,7 @@ public:
    * Converting a 6-digit decimal representation to a single-precision float value and back to
    * decimal representation should be an identity. The same for converting a float to a 9-digit
    * decimal representation and back to a float.
-   * For double-precision values these digit counts are 15 and 17 respectively. However, due to
-   * `parseDouble()` accuracy limitation, accuracy of this function is limited to 1e-15 to avoid
-   * producing numbers like 6665.999... instead of 6666 on all compilers.
+   * For double-precision values these digit counts are 15 and 17 respectively.
    *
    * @param d number.
    * @param nDigits number of digits to show (must be 1...17).
@@ -529,12 +527,6 @@ public:
   String& operator = ( const char* s );
 
   /**
-   * Create a string in sprintf-like way.
-   */
-  OZ_PRINTF_FORMAT( 1, 2 )
-  static String str( const char* s, ... );
-
-  /**
    * Create uninitialised string.
    *
    * Terminating null character is written, so it represents a valid string even if not
@@ -544,6 +536,20 @@ public:
    * @param buffer where to pass non-constant pointer to the internal buffer.
    */
   static String create( int length, char** buffer );
+
+  /**
+   * Create a string in sprintf-like way.
+   */
+  OZ_PRINTF_FORMAT( 1, 2 )
+  static String str( const char* s, ... );
+
+  /**
+   * Generate a string representing the number and optionally add a SI unit prefix.
+   *
+   * It adds a space after the number and, when neccessary, it multiplies the number with an
+   * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
+   */
+  static String si( double e, int nDigits = 3 );
 
   /**
    * Equality.

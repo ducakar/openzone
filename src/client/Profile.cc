@@ -52,7 +52,7 @@ void Profile::save()
 
   profileConfig.add( "weaponItem", weaponItem );
   profileConfig.add( "persistent", persistent );
-  profileConfig.save( profileFile );
+  profileConfig.save( profileFile, CONFIG_FORMAT );
 }
 
 void Profile::init()

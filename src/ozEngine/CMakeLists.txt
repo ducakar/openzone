@@ -14,7 +14,7 @@ add_library( ozEngine
   GLTexture.hh
   ozEngine.hh
   pch.hh
-  Shader.hh
+  Shaders.hh
   Window.hh
   ALBuffer.cc
   AL.cc
@@ -23,7 +23,7 @@ add_library( ozEngine
   Cursor.cc
   GL.cc
   GLTexture.cc
-  Shader.cc
+  Shaders.cc
   Window.cc
 #END SOURCES
 )

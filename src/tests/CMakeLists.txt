@@ -30,4 +30,4 @@ add_executable( simd simd.cc )
 target_link_libraries( simd ozCore )
 
 add_executable( test test.cc )
-target_link_libraries( test ozCore ozFactory )
+target_link_libraries( test ozCore )

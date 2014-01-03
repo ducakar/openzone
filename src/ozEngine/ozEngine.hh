@@ -39,6 +39,6 @@
 #include "ALStreamingBuffer.hh"
 #include "ALSource.hh"
 
-#include "Shader.hh"
+#include "Shaders.hh"
 #include "Cursor.hh"
 #include "Window.hh"

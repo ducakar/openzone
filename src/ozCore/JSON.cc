@@ -443,11 +443,8 @@ struct JSON::Parser
 
 struct JSON::Formatter
 {
-  static const int ALIGNMENT_COLUMN   = 32;
-  static const int SIGNIFICANT_DIGITS = 12;
-
   OutputStream* os;
-  const char*   lineEnd;
+  const Format* format;
   int           lineEndLength;
   int           indentLevel;
 
@@ -531,7 +528,7 @@ struct JSON::Formatter
       case NUMBER: {
         const NumberData* numberData = static_cast<const NumberData*>( value.data );
 
-        String s = String( numberData->value, SIGNIFICANT_DIGITS );
+        String s = String( numberData->value, format->significantDigits );
         os->writeChars( s, s.length() );
         break;
       }
@@ -563,14 +560,14 @@ struct JSON::Formatter
     }
 
     os->writeChar( '[' );
-    os->writeChars( lineEnd, lineEndLength );
+    os->writeChars( format->lineEnd, lineEndLength );
 
     ++indentLevel;
 
     for( int i = 0; i < list.length(); ++i ) {
       if( i != 0 ) {
         os->writeChar( ',' );
-        os->writeChars( lineEnd, lineEndLength );
+        os->writeChars( format->lineEnd, lineEndLength );
       }
 
       for( int j = 0; j < indentLevel; ++j ) {
@@ -580,7 +577,7 @@ struct JSON::Formatter
       writeValue( list[i] );
     }
 
-    os->writeChars( lineEnd, lineEndLength );
+    os->writeChars( format->lineEnd, lineEndLength );
 
     --indentLevel;
     for( int j = 0; j < indentLevel; ++j ) {
@@ -601,7 +598,7 @@ struct JSON::Formatter
     }
 
     os->writeChar( '{' );
-    os->writeChars( lineEnd, lineEndLength );
+    os->writeChars( format->lineEnd, lineEndLength );
 
     ++indentLevel;
 
@@ -614,7 +611,7 @@ struct JSON::Formatter
     for( int i = 0; i < sortedEntries.length(); ++i ) {
       if( i != 0 ) {
         os->writeChar( ',' );
-        os->writeChars( lineEnd, lineEndLength );
+        os->writeChars( format->lineEnd, lineEndLength );
       }
 
       for( int j = 0; j < indentLevel; ++j ) {
@@ -628,7 +625,7 @@ struct JSON::Formatter
       os->writeChar( ':' );
 
       if( entryValue->valueType == ARRAY || entryValue->valueType == OBJECT ) {
-        os->writeChars( lineEnd, lineEndLength );
+        os->writeChars( format->lineEnd, lineEndLength );
 
         for( int j = 0; j < indentLevel; ++j ) {
           os->writeChars( "  ", 2 );
@@ -638,7 +635,7 @@ struct JSON::Formatter
         int column = indentLevel * 2 + keyLength + 1;
 
         // Align to 24-th column.
-        for( int j = column; j < ALIGNMENT_COLUMN; ++j ) {
+        for( int j = column; j < format->alignmentColumn; ++j ) {
           os->writeChar( ' ' );
         }
       }
@@ -649,7 +646,7 @@ struct JSON::Formatter
     sortedEntries.clear();
     sortedEntries.deallocate();
 
-    os->writeChars( lineEnd, lineEndLength );
+    os->writeChars( format->lineEnd, lineEndLength );
 
     --indentLevel;
     for( int j = 0; j < indentLevel; ++j ) {
@@ -659,6 +656,8 @@ struct JSON::Formatter
     os->writeChar( '}' );
   }
 };
+
+const JSON::Format JSON::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
 
 OZ_HIDDEN
 const JSON JSON::NIL_VALUE;
@@ -1987,7 +1986,7 @@ String JSON::toString() const
     case NUMBER: {
       const NumberData* numberData = static_cast<const NumberData*>( data );
 
-      return String( numberData->value, Formatter::SIGNIFICANT_DIGITS );
+      return String( numberData->value );
     }
     case STRING: {
       const StringData* stringData = static_cast<const StringData*>( data );
@@ -2034,13 +2033,13 @@ String JSON::toString() const
   }
 }
 
-String JSON::toFormattedString( const char* lineEnd ) const
+String JSON::toFormattedString( const Format& format ) const
 {
   OutputStream os( 0 );
-  Formatter formatter = { &os, lineEnd, String::length( lineEnd ), 0 };
+  Formatter formatter = { &os, &format, String::length( format.lineEnd ), 0 };
 
   formatter.writeValue( *this );
-  os.writeChars( lineEnd, formatter.lineEndLength );
+  os.writeChars( format.lineEnd, formatter.lineEndLength );
 
   return String( os.begin(), os.tell() );
 }
@@ -2057,13 +2056,13 @@ bool JSON::load( const File& file )
   return true;
 }
 
-bool JSON::save( const File& file, const char* lineEnd ) const
+bool JSON::save( const File& file, const Format& format ) const
 {
   OutputStream os( 0 );
-  Formatter formatter = { &os, lineEnd, String::length( lineEnd ), 0 };
+  Formatter formatter = { &os, &format, String::length( format.lineEnd ), 0 };
 
   formatter.writeValue( *this );
-  os.writeChars( lineEnd, formatter.lineEndLength );
+  os.writeChars( format.lineEnd, formatter.lineEndLength );
 
   return file.write( os.begin(), os.tell() );
 }

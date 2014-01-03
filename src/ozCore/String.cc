@@ -493,7 +493,7 @@ String::String( double d, int nDigits ) :
 {
   static_assert( BUFFER_SIZE >= 25, "Too small String::baseBuffer for double representation." );
 
-  nDigits = clamp( nDigits, 1, 16 );
+  nDigits = clamp( nDigits, 1, 17 );
 
   union DoubleToBits
   {
@@ -526,67 +526,40 @@ String::String( double d, int nDigits ) :
     return;
   }
 
-  // Check exponent.
-  int e = int( log10( d ) );
+  // Mantissa.
+  int    e      = 1 + int( floor( log10( d ) ) ); // Intentionally 1 higher, will be fixed later.
+  double eps    = 5.0 * exp10( e - nDigits - 1 );
+  double base   = exp10( e );
+  double approx = 0.0;
 
-  // Non-exponential form.
-  if( -4 < e && e < nDigits ) {
-    // Mantissa.
-    double eps = d * exp10( 1 - nDigits );
-    double n   = d;
+  // Rounding does NOT add leading 1, e.g. 0.00999 -> 0.01, so decrease leading decimal position.
+  e -= d + eps < base;
 
-    for( int i = min( 0, e ); ; ++i ) {
-      double base = exp10( e - i );
+  bool isExp      = e <= -5 || nDigits <= e;
+  int  pointIndex = isExp ? 1 : 1 + e;
 
-      if( i == e + 1 ) {
-        baseBuffer[count++] = '.';
-      }
+  for( int i = !isExp && e < 0 ? e : 0; ; ++i ) {
+    double base  = exp10( e - i );
+    int    digit = int( ( d - approx ) / base );
 
-      baseBuffer[count++] = char( '0' + int( n / base ) );
-      n = fmod( n, base );
+    approx += digit * base;
 
-      if( base - n < eps ) {
-        n = 0.0;
-        ++baseBuffer[count - 1];
+    if( d + eps >= approx + base ) {
+      approx = d;
+      ++digit;
+    }
 
-        if( e - i <= 0 ) {
-          break;
-        }
-      }
-      else if( n < eps && e - i <= 0 ) {
-        break;
-      }
+    if( i == pointIndex ) {
+      baseBuffer[count++] = '.';
+    }
+    baseBuffer[count++] = char( '0' + digit );
+
+    if( ( isExp || i >= e ) && abs( d - approx ) < eps ) {
+      break;
     }
   }
-  // Exponential form.
-  else {
-    // Mantissa.
-    double eps = d * exp10( 1 - nDigits );
-    double n   = d;
 
-    if( d < 1.0 ) {
-      --e;
-    }
-
-    for( int i = 0; i < nDigits; ++i ) {
-      double base = exp10( e - i );
-
-      if( i == 1 ) {
-        baseBuffer[count++] = '.';
-      }
-
-      baseBuffer[count++] = char( '0' + int( n / base ) );
-      n = fmod( d, base );
-
-      if( n < eps ) {
-        break;
-      }
-      else if( base - n < eps ) {
-        ++baseBuffer[count - 1];
-        break;
-      }
-    }
-
+  if( isExp ) {
     // Exponent.
     baseBuffer[count++] = 'e';
 
@@ -601,6 +574,7 @@ String::String( double d, int nDigits ) :
     baseBuffer[count++] = char( '0' + e / 10 );
     baseBuffer[count++] = char( '0' + e % 10 );
   }
+
   baseBuffer[count] = '\0';
 }
 
@@ -694,6 +668,15 @@ String& String::operator = ( const char* s )
   return *this;
 }
 
+String String::create( int length, char** buffer_ )
+{
+  String r( length, 0 );
+
+  r.buffer[length] = '\0';
+  *buffer_ = r.buffer;
+  return r;
+}
+
 String String::str( const char* s, ... )
 {
   va_list ap;
@@ -710,13 +693,27 @@ String String::str( const char* s, ... )
   return r;
 }
 
-String String::create( int length, char** buffer_ )
+String String::si(double e, int nDigits )
 {
-  String r( length, 0 );
+  char prefixes[] = "m kMG";
 
-  r.buffer[length] = '\0';
-  *buffer_ = r.buffer;
-  return r;
+  int nGroups = 0;
+  if( e < 1.0 ) {
+    e *= 1000.0;
+    --nGroups;
+  }
+  else {
+    for( ; nGroups < 3 && e >= 1000.0; ++nGroups ) {
+      e /= 1000.0;
+    }
+  }
+
+  char suffix[] = " \0";
+  if( nGroups != 0 ) {
+    suffix[1] = prefixes[nGroups + 1];
+  }
+
+  return String( e, nDigits ) + suffix;
 }
 
 bool String::endsWith( const char* sub ) const

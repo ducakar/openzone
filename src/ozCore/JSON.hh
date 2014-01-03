@@ -59,6 +59,17 @@ public:
     OBJECT
   };
 
+  /**
+   * Formatter parameters.
+   */
+  struct Format
+  {
+    int         indentSpaces;      ///< Number of spaces used for indentitation.
+    int         alignmentColumn;   ///< Value alignment column.
+    int         significantDigits; ///< Significant digits for formatting numbers.
+    const char* lineEnd;           ///< EOL character sequence.
+  };
+
 private:
 
   struct Data;
@@ -91,6 +102,11 @@ public:
    * %Iterator for %JSON objects with non-constant access to elements.
    */
   typedef HashMap<String, JSON>::Iterator ObjectIterator;
+
+public:
+
+  /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).
+  static const Format DEFAULT_FORMAT;
 
 private:
 
@@ -1206,7 +1222,7 @@ public:
    *
    * This function returns string written by `write()` method.
    */
-  String toFormattedString( const char* lineEnd = "\n" ) const;
+  String toFormattedString( const Format& format = DEFAULT_FORMAT ) const;
 
   /**
    * Clear existing value and read new contents from a %JSON file.
@@ -1220,7 +1236,7 @@ public:
   /**
    * Write to a file.
    */
-  bool save( const File& file, const char* lineEnd = "\n" ) const;
+  bool save( const File& file, const Format& format = DEFAULT_FORMAT ) const;
 
 };
 

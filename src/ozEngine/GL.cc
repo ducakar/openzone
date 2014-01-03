@@ -250,7 +250,7 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
   if( target == GL_TEXTURE_2D ) {
     if( nMipmaps == 1 ) {
       // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
-      // non-mipmapped textures. Since those are usually used in UI, where texture repeating is not
+      // non-mipmapped textures. Those are usually used in UI, where texture repeating is not
       // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
       glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
       glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -273,15 +273,16 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
       }
     }
     else {
-      int   mipmapPitch = ( ( mipmapWidth * bpp / 8 + 3 ) / 4 ) * 4;
-      int   mipmapSize  = mipmapHeight * mipmapPitch;
-      char* data        = new char[mipmapSize];
-      int   pixelSize   = bpp / 8;
+      int mipmapPitch = ( ( mipmapWidth * bpp / 8 + 3 ) / 4 ) * 4;
+      int mipmapSize  = mipmapHeight * mipmapPitch;
+      int pixelSize   = bpp / 8;
 
       if( i < bias ) {
         is.forward( mipmapWidth * mipmapHeight * pixelSize );
       }
       else {
+        char* data = new char[mipmapSize];
+
         for( int y = 0; y < mipmapHeight; ++y ) {
           char* pixels    = &data[y * mipmapPitch];
           int   lineWidth = mipmapWidth * pixelSize;
