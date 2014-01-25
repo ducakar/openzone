@@ -123,6 +123,9 @@ struct Node
   {}
 
   OZ_HIDDEN
+  Node& operator = ( Node&& ) = default;
+
+  OZ_HIDDEN
   ~Node()
   {
     children.free();

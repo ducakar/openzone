@@ -108,10 +108,10 @@ public:
   /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).
   static const Format DEFAULT_FORMAT;
 
-private:
-
-  /// A null value instance, required by `operator []`.
+  /// A null value instance, required by `operator []` or an alternative to default constructor.
   static const JSON NIL_VALUE;
+
+private:
 
   Data*        data;        ///< Pointer to internal data structure.
   Type         valueType;   ///< Value type, `JSON::Type`.

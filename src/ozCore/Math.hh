@@ -467,9 +467,7 @@ public:
   OZ_ALWAYS_INLINE
   static bool isPow2( Value v )
   {
-    hard_assert( 0 < v );
-
-    return ( v & ( v - 1 ) ) == 0;
+    return 0 < v && ( v & ( v - 1 ) ) == 0;
   }
 
   /**

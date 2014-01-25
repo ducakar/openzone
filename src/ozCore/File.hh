@@ -396,23 +396,23 @@ public:
   /**
    * Copy a file.
    *
-   * @param file source file.
-   * @param path destination directory or file path.
+   * @param src source file.
+   * @param dest destination directory or file.
    */
-  static bool cp( const File& file, const char* path );
+  static bool cp( const File& src, const File& dest );
 
   /**
    * Move/remove a file.
    *
-   * @param file source file.
-   * @param path destination directory or file path.
+   * @param srcPath source file path.
+   * @param dest destination directory or file.
    */
-  static bool mv( const File& file, const char* path );
+  static bool mv( const char* srcPath, const File& dest );
 
   /**
    * Delete a file or an empty directory.
    */
-  static bool rm( const File& file );
+  static bool rm( const char* path );
 
   /**
    * Mount read-only directory or archive into VFS.

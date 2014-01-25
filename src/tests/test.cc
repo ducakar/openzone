@@ -62,8 +62,29 @@ struct Foo
   }
 };
 
+static void threadMain( void* )
+{
+  MainCall2() << []() { Log() << "Drekec"; };
+  Log() << "Fak";
+  MainCall2() += []() { Log() << "pekec"; };
+  Time::sleep( 500 );
+
+  MainCall2::terminate();
+}
+
 int main()
 {
   System::init();
+
+  MainCall2::init();
+
+  Thread thread;
+  thread.start( "core", Thread::JOINABLE, threadMain );
+
+  MainCall2::loop();
+
+  thread.join();
+  MainCall2::destroy();
+  Log() << "END";
   return 0;
 }

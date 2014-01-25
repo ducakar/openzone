@@ -658,8 +658,6 @@ struct JSON::Formatter
 };
 
 const JSON::Format JSON::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
-
-OZ_HIDDEN
 const JSON JSON::NIL_VALUE;
 
 OZ_HIDDEN

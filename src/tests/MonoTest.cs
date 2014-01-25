@@ -46,19 +46,19 @@ class Object
 {
   private int index;
 
-  [ MethodImplAttribute(MethodImplOptions.InternalCall)]
+  [ MethodImplAttribute(MethodImplOptions.InternalCall) ]
   private extern Point getP( int index, ref float x, ref float y, ref float z );
-  [ MethodImplAttribute(MethodImplOptions.InternalCall)]
+  [ MethodImplAttribute(MethodImplOptions.InternalCall) ]
   private extern void setP( int index, float x, float y, float z );
 
-  [ MethodImplAttribute(MethodImplOptions.InternalCall)]
+  [ MethodImplAttribute(MethodImplOptions.InternalCall) ]
   private extern Vec3 getVelocity( int index, ref float x, ref float y, ref float z );
-  [ MethodImplAttribute(MethodImplOptions.InternalCall)]
+  [ MethodImplAttribute(MethodImplOptions.InternalCall) ]
   private extern void setVelocity( int index, float x, float y, float z );
 
-  [ MethodImplAttribute(MethodImplOptions.InternalCall)]
+  [ MethodImplAttribute(MethodImplOptions.InternalCall) ]
   private extern float getLife( int index );
-  [ MethodImplAttribute(MethodImplOptions.InternalCall)]
+  [ MethodImplAttribute(MethodImplOptions.InternalCall) ]
   private extern void setLife( int index, float value );
 
   public Object( int index )

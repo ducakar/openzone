@@ -27,6 +27,7 @@ add_library( ozCore
   JSON.hh
   List.hh
   Log.hh
+  MainCall.hh
   Map.hh
   Mat33.hh
   Mat44.hh
@@ -65,6 +66,7 @@ add_library( ozCore
   Java.cc
   JSON.cc
   Log.cc
+  MainCall.cc
   Mat33.cc
   Mat44.cc
   Math.cc

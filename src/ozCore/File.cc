@@ -1100,58 +1100,50 @@ bool File::mkdir( const char* path )
   }
 }
 
-bool File::cp( const File& file, const char* path )
+bool File::cp( const File& src, const File& dest )
 {
-  File destFile = path;
+  File destFile = dest;
 
   if( destFile.type() == DIRECTORY ) {
-    destFile = destFile.path() + "/" + file.name();
+    destFile = destFile.path() + "/" + src.name();
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = src.inputStream();
   return !is.isAvailable() ? false : destFile.write( is.begin(), is.available() );
 }
 
-bool File::mv( const File& file, const char* path )
+bool File::mv( const char* srcPath, const File& dest )
 {
-  File destFile = path;
+  if( String::fileIsVirtual( srcPath ) ) {
+    return false;
+  }
+
+  File destFile = dest;
 
   if( destFile.type() == DIRECTORY ) {
-    destFile = destFile.path() + "/" + file.name();
+    destFile = destFile.path() + "/" + srcPath;
   }
 
-  return rename( file.path(), destFile.path() ) == 0;
+#ifdef __native_client__
+  pp::FileRef srcFileRef( ppFileSystem, srcPath );
+  pp::FileRef destFileRef( ppFileSystem, destFile.path() );
+  return srcFileRef.Rename( destFileRef, pp::BlockUntilComplete() ) == PP_OK;
+#else
+  return rename( srcPath, destFile.path() ) == 0;
+#endif
 }
 
-bool File::rm( const File& file )
+bool File::rm( const char* path )
 {
-  if( file.filePath.fileIsVirtual() ) {
-    return PHYSFS_delete( &file.filePath[1] );
+  if( String::fileIsVirtual( path ) ) {
+    return PHYSFS_delete( &path[1] );
   }
   else {
-#if defined( __native_client__ )
-
-    pp::FileRef fileRef( ppFileSystem, file.filePath );
+#ifdef __native_client__
+    pp::FileRef fileRef( ppFileSystem, path );
     return fileRef.Delete( pp::BlockUntilComplete() ) == PP_OK;
-
-#elif defined( _WIN32 )
-
-    if( file.fileType == DIRECTORY ) {
-      return RemoveDirectory( file.filePath ) != 0;
-    }
-    else {
-      return DeleteFile( file.filePath ) != 0;
-    }
-
 #else
-
-    if( file.fileType == DIRECTORY ) {
-      return rmdir( file.filePath ) == 0;
-    }
-    else {
-      return unlink( file.filePath ) == 0;
-    }
-
+    return remove( path ) == 0;
 #endif
   }
 }

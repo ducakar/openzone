@@ -194,7 +194,7 @@ include_directories( SYSTEM etc/include )
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )
 
-  # A hack to use libc++ instead of libstdc++.
+  # Use libc++ instead of libstdc++.
   # set( flags "${flags} -stdlib=libc++" )
   # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
   # Analyse only.
