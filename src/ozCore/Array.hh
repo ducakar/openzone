@@ -99,7 +99,7 @@ public:
    */
   bool operator != ( const Array& a ) const
   {
-    return !aEquals<Elem>( data, COUNT, a.data );
+    return !operator == ( a );
   }
 
   /**
@@ -186,7 +186,7 @@ public:
   }
 
   /**
-   * Reference the `i`-th element.
+   * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
   Elem& operator [] ( int i )

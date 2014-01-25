@@ -97,7 +97,7 @@ public:
    */
   bool operator != ( const SList& l ) const
   {
-    return count != l.count || !aEquals<Elem>( data, count, l.data );
+    return !operator == ( l );
   }
 
   /**

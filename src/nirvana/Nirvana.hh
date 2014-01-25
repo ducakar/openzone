@@ -41,10 +41,10 @@ private:
 
 public:
 
-  HashMap<String, Device::CreateFunc*, 32> deviceClasses;
+  HashMap<String, Device::CreateFunc*> deviceClasses;
 
-  HashMap<int, Device*, 4096> devices;
-  HashMap<int, Mind, 4096>    minds;
+  HashMap<int, Device*> devices;
+  HashMap<int, Mind>    minds;
 
   void sync();
   void update();

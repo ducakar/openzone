@@ -33,25 +33,25 @@
 namespace oz
 {
 
-static HashMap<String, BSP, 64>                     bsps;
-static HashMap<String, ObjectClass::CreateFunc*, 8> baseClasses;
-static HashMap<String, ObjectClass*, 128>           objClasses;
-static HashMap<String, FragPool, 32>                fragPools;
+static HashMap<String, BSP>                      bsps;
+static HashMap<String, ObjectClass::CreateFunc*> baseClasses;
+static HashMap<String, ObjectClass*>             objClasses;
+static HashMap<String, FragPool>                 fragPools;
 
-static HashMap<String, int, 64>                     shaderIndices;
-static HashMap<String, int, 256>                    textureIndices;
-static HashMap<String, int, 256>                    soundIndices;
-static HashMap<String, int, 16>                     caelumIndices;
-static HashMap<String, int, 16>                     terraIndices;
-static HashMap<String, int, 64>                     partIndices;
-static HashMap<String, int, 256>                    modelIndices;
+static HashMap<String, int>                      shaderIndices;
+static HashMap<String, int>                      textureIndices;
+static HashMap<String, int>                      soundIndices;
+static HashMap<String, int>                      caelumIndices;
+static HashMap<String, int>                      terraIndices;
+static HashMap<String, int>                      partIndices;
+static HashMap<String, int>                      modelIndices;
 
-static HashMap<String, int, 16>                     nameListIndices;
-static HashMap<String, int, 64>                     musicTrackIndices;
+static HashMap<String, int>                      nameListIndices;
+static HashMap<String, int>                      musicTrackIndices;
 
-static HashMap<String, int, 8>                      deviceIndices;
-static HashMap<String, int, 16>                     imagoIndices;
-static HashMap<String, int, 8>                      audioIndices;
+static HashMap<String, int>                      deviceIndices;
+static HashMap<String, int>                      imagoIndices;
+static HashMap<String, int>                      audioIndices;
 
 const BSP* Liber::bsp( const char* name ) const
 {

@@ -48,8 +48,8 @@ int main()
   SList<int, 5> sv;
   Set<int> s;
   Map<int, int> m;
-  HashMap<int, int, 7> hi;
-  HashMap<String, int, 7> hs;
+  HashMap<int, int> hi;
+  HashMap<String, int> hs;
 
   Chain<Elem, 0> l1;
   DChain<Elem, 0> dl1;
@@ -58,8 +58,8 @@ int main()
   SList<int, 5> sv1;
   Set<int> s1;
   Map<int, int> m1;
-  HashMap<int, int, 7> hi1;
-  HashMap<String, int, 7> hs1;
+  HashMap<int, int> hi1;
+  HashMap<String, int> hs1;
 
   // 1
   l.add( new Elem( 1 ) );

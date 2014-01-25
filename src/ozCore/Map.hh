@@ -61,55 +61,51 @@ public:
   /**
    * Key-value pair.
    */
-  class Elem
+  struct Pair
   {
-    public:
+    Key   key;   ///< Key.
+    Value value; ///< Value.
 
-      Key   key;   ///< Key.
-      Value value; ///< Value.
+    /**
+     * Less-than operator required for `aSort()`.
+     */
+    OZ_ALWAYS_INLINE
+    bool operator < ( const Pair& e ) const
+    {
+      return key < e.key;
+    }
 
-    public:
-
-      /**
-       * Less-than operator required for `aSort()`.
-       */
-      bool operator < ( const Elem& e ) const
-      {
-        return key < e.key;
-      }
-
-      /**
-       * Less-than operator required for `aBisection()`.
-       */
-      OZ_ALWAYS_INLINE
-      friend bool operator < ( const Key& key, const Elem& e )
-      {
-        return key < e.key;
-      }
-
+    /**
+     * Less-than operator required for `aBisection()`.
+     */
+    OZ_ALWAYS_INLINE
+    friend bool operator < ( const Key& key, const Pair& e )
+    {
+      return key < e.key;
+    }
   };
 
   /**
    * %Iterator with constant access to elements.
    */
-  typedef ArrayIterator<const Elem> CIterator;
+  typedef ArrayIterator<const Pair> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef ArrayIterator<Elem> Iterator;
+  typedef ArrayIterator<Pair> Iterator;
 
 private:
 
-  Elem* data;  ///< Element storage.
+  Pair* data;  ///< Element storage.
   int   count; ///< Number of elements.
   int   size;  ///< Capacity, number of elements in storage.
 
   /**
-   * Increase capacity to be able to hold the requested number of elements.
+   * Ensure a given capacity.
    *
-   * Capacity is doubled, if it doesn't suffice, it is set to the least multiple of `GRANULARITY`
-   * able to hold the requested number of elements.
+   * Capacity is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
+   * `GRANULARITY` able to hold the requested number of elements.
    */
   void ensureCapacity( int capacity )
   {
@@ -124,7 +120,7 @@ private:
         OZ_ERROR( "oz::Map: Capacity overflow" );
       }
 
-      data = aReallocate<Elem>( data, count, size );
+      data = aReallocate<Pair>( data, count, size );
     }
   }
 
@@ -134,17 +130,17 @@ public:
    * Create an empty map with a given initial capacity.
    */
   explicit Map( int capacity = 0 ) :
-    data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
+    data( capacity == 0 ? nullptr : new Pair[capacity] ), count( 0 ), size( capacity )
   {}
 
   /**
    * Initialise from an initialiser list.
    */
-  Map( InitialiserList<Elem> l ) :
-    data( new Elem[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
+  Map( InitialiserList<Pair> l ) :
+    data( new Pair[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
   {
-    aCopy<Elem>( l.begin(), int( l.size() ), data );
-    aSort<Elem>( data, count );
+    aCopy<Pair>( l.begin(), int( l.size() ), data );
+    aSort<Pair>( data, count );
   }
 
   /**
@@ -159,9 +155,9 @@ public:
    * Copy constructor, copies elements.
    */
   Map( const Map& m ) :
-    data( m.size == 0 ? nullptr : new Elem[m.size] ), count( m.count ), size( m.size )
+    data( m.size == 0 ? nullptr : new Pair[m.size] ), count( m.count ), size( m.size )
   {
-    aCopy<Elem>( m.data, m.count, data );
+    aCopy<Pair>( m.data, m.count, data );
   }
 
   /**
@@ -189,11 +185,11 @@ public:
     if( size < m.count ) {
       delete[] data;
 
-      data = new Elem[m.size];
+      data = new Pair[m.size];
       size = m.size;
     }
 
-    aCopy<Elem>( m.data, m.count, data );
+    aCopy<Pair>( m.data, m.count, data );
     count = m.count;
 
     return *this;
@@ -226,7 +222,7 @@ public:
    */
   bool operator == ( const Map& m ) const
   {
-    return count == m.count && aEquals<Elem>( data, count, m.data );
+    return count == m.count && aEquals<Pair>( data, count, m.data );
   }
 
   /**
@@ -234,7 +230,7 @@ public:
    */
   bool operator != ( const Map& m ) const
   {
-    return count != m.count || !aEquals<Elem>( data, count, m.data );
+    return !operator == ( m );
   }
 
   /**
@@ -259,7 +255,7 @@ public:
    * STL-compatible constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  const Elem* begin() const
+  const Pair* begin() const
   {
     return data;
   }
@@ -268,7 +264,7 @@ public:
    * STL-compatible begin iterator.
    */
   OZ_ALWAYS_INLINE
-  Elem* begin()
+  Pair* begin()
   {
     return data;
   }
@@ -277,7 +273,7 @@ public:
    * STL-compatible constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  const Elem* end() const
+  const Pair* end() const
   {
     return data + count;
   }
@@ -286,7 +282,7 @@ public:
    * STL-compatible end iterator.
    */
   OZ_ALWAYS_INLINE
-  Elem* end()
+  Pair* end()
   {
     return data + count;
   }
@@ -322,7 +318,7 @@ public:
    * Constant reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& operator [] ( int i ) const
+  const Pair& operator [] ( int i ) const
   {
     hard_assert( uint( i ) < uint( count ) );
 
@@ -333,7 +329,7 @@ public:
    * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator [] ( int i )
+  Pair& operator [] ( int i )
   {
     hard_assert( uint( i ) < uint( count ) );
 
@@ -344,7 +340,7 @@ public:
    * Constant reference to the first element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& first() const
+  const Pair& first() const
   {
     hard_assert( count != 0 );
 
@@ -355,7 +351,7 @@ public:
    * Reference to the first element.
    */
   OZ_ALWAYS_INLINE
-  Elem& first()
+  Pair& first()
   {
     hard_assert( count != 0 );
 
@@ -366,7 +362,7 @@ public:
    * Constant reference to the last element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& last() const
+  const Pair& last() const
   {
     hard_assert( count != 0 );
 
@@ -377,7 +373,7 @@ public:
    * Reference to the last element.
    */
   OZ_ALWAYS_INLINE
-  Elem& last()
+  Pair& last()
   {
     hard_assert( count != 0 );
 
@@ -390,7 +386,7 @@ public:
   template <typename Key_ = Key>
   bool contains( const Key_& key ) const
   {
-    int i = aBisection<Elem, Key_>( data, count, key );
+    int i = aBisection<Pair, Key_>( data, count, key );
     return i >= 0 && data[i].key == key;
   }
 
@@ -400,7 +396,7 @@ public:
   template <typename Key_ = Key>
   int index( const Key_& key ) const
   {
-    int i = aBisection<Elem, Key_>( data, count, key );
+    int i = aBisection<Pair, Key_>( data, count, key );
     return i >= 0 && data[i].key == key ? i : -1;
   }
 
@@ -410,7 +406,7 @@ public:
   template <typename Key_ = Key>
   const Value* find( const Key_& key ) const
   {
-    int i = aBisection<Elem, Key_>( data, count, key );
+    int i = aBisection<Pair, Key_>( data, count, key );
     return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
   }
 
@@ -420,7 +416,7 @@ public:
   template <typename Key_ = Key>
   Value* find( const Key_& key )
   {
-    int i = aBisection<Elem, Key_>( data, count, key );
+    int i = aBisection<Pair, Key_>( data, count, key );
     return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
   }
 
@@ -432,7 +428,7 @@ public:
   template <typename Key_ = Key, typename Value_ = Value>
   int add( Key_&& key, Value_&& value )
   {
-    int i = aBisection<Elem, Key>( data, count, key );
+    int i = aBisection<Pair, Key>( data, count, key );
 
     if( i >= 0 && data[i].key == key ) {
       data[i].key   = static_cast<Key_&&>( key );
@@ -453,7 +449,7 @@ public:
   template <typename Key_ = Key, typename Value_ = Value>
   int include( Key_&& key, Value_&& value )
   {
-    int i = aBisection<Elem, Key>( data, count, key );
+    int i = aBisection<Pair, Key>( data, count, key );
 
     if( i >= 0 && data[i].key == key ) {
       return i;
@@ -478,7 +474,7 @@ public:
 
     ensureCapacity( count + 1 );
 
-    aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
+    aMoveBackward<Pair>( data + i, count - i, data + i + 1 );
     data[i].key   = static_cast<Key_&&>( key );
     data[i].value = static_cast<Value_&&>( value );
 
@@ -499,10 +495,10 @@ public:
     if( i == count ) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
-      data[count] = Elem();
+      data[count] = Pair();
     }
     else {
-      aMove<Elem>( data + i + 1, count - i, data + i );
+      aMove<Pair>( data + i + 1, count - i, data + i );
     }
   }
 
@@ -513,7 +509,7 @@ public:
    */
   int exclude( const Key& key )
   {
-    int i = aBisection<Elem, Key>( data, count, key );
+    int i = aBisection<Pair, Key>( data, count, key );
 
     if( i >= 0 && data[i].key == key ) {
       erase( i );
@@ -533,7 +529,7 @@ public:
     else {
       // Ensure destruction of removed elements.
       for( int i = newCount; i < count; ++i ) {
-        data[i] = Elem();
+        data[i] = Pair();
       }
     }
     count = newCount;
@@ -546,7 +542,7 @@ public:
   {
     if( count < size ) {
       size = count;
-      data = aReallocate<Elem>( data, count, size );
+      data = aReallocate<Pair>( data, count, size );
     }
   }
 
@@ -556,7 +552,7 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    aFill<Elem, Elem>( data, count, Elem() );
+    aFill<Pair, Pair>( data, count, Pair() );
     count = 0;
   }
 
@@ -569,7 +565,7 @@ public:
       delete data[i].value;
 
       // Ensure destruction.
-      data[i] = Elem();
+      data[i] = Pair();
     }
     count = 0;
   }
@@ -581,7 +577,7 @@ public:
   {
     hard_assert( size == 0 && capacity > 0 );
 
-    data = new Elem[capacity];
+    data = new Pair[capacity];
     size = capacity;
   }
 

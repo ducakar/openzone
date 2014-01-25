@@ -75,10 +75,10 @@ private:
   int   size;  ///< Capacity, number of elements in storage.
 
   /**
-   * Increase capacity to be able to hold the requested number of elements.
+   * Ensure a given capacity.
    *
-   * Capacity is doubled, if it doesn't suffice, it is set to the least multiple of `GRANULARITY`
-   * able to hold the requested number of elements.
+   * Capacity is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
+   * `GRANULARITY` able to hold the requested number of elements.
    */
   void ensureCapacity( int capacity )
   {
@@ -203,7 +203,7 @@ public:
    */
   bool operator != ( const Set& s ) const
   {
-    return count != s.count || !aEquals<Elem>( data, count, s.data );
+    return !operator == ( s );
   }
 
   /**

@@ -171,7 +171,7 @@ public:
    */
   bool operator != ( const DArray& a ) const
   {
-    return count != a.count || !aEquals<Elem>( data, count, a.data );
+    return !operator == ( a );
   }
 
   /**

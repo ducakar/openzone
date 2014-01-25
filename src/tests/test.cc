@@ -62,29 +62,21 @@ struct Foo
   }
 };
 
-static void threadMain( void* )
-{
-  MainCall2() << []() { Log() << "Drekec"; };
-  Log() << "Fak";
-  MainCall2() += []() { Log() << "pekec"; };
-  Time::sleep( 500 );
-
-  MainCall2::terminate();
-}
-
 int main()
 {
   System::init();
 
-  MainCall2::init();
+  HashMap<String, int> hm = {
+    { "Drekec", 1 },
+    { "Pekec", 2 },
+    { "Pizda", 42 }
+  };
 
-  Thread thread;
-  thread.start( "core", Thread::JOINABLE, threadMain );
+  hm.add( "Jajc", 0 );
+  hm.add( "Pizda", 314 );
 
-  MainCall2::loop();
-
-  thread.join();
-  MainCall2::destroy();
-  Log() << "END";
+  for( HashMap<String, int>::Pair e : hm ) {
+    Log() << e.key << " :: " << e.value;
+  }
   return 0;
 }

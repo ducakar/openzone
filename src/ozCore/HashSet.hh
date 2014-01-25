@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "System.hh"
 #include "Pool.hh"
 
 namespace oz
@@ -40,56 +41,40 @@ namespace oz
  *
  * @sa `oz::HashMap`, `oz::Set`
  */
-template <typename Key, int SIZE = 256>
+template <typename Key>
 class HashSet
 {
-  static_assert( SIZE > 0, "HashSet size must be at least 1" );
+private:
 
-public:
-
-  /**
-   * Key-only element entry.
-   */
-  class Elem
-  {
-    friend class HashSet;
-
-  private:
-
-    Elem* next; ///< Next element in a slot.
-
-  public:
-
-    Key   key;  ///< Key.
-
-  private:
-
-    /**
-     * Initialise a new element.
-     */
-    template <typename Key_ = Key>
-    OZ_ALWAYS_INLINE
-    explicit Elem( Elem* next_, Key_&& key_ ) :
-      next( next_ ), key( static_cast<Key_&&>( key_ ) )
-    {}
-
-    OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
-  };
+  /// Granularity for automatic storage allocations.
+  static const int GRANULARITY = 8;
 
 private:
 
   /**
+   * Key-only element entry.
+   */
+  struct Elem
+  {
+    Elem* next;   ///< Next element in a slot.
+    int   hash;   ///< Cached hash.
+    Key   key;    ///< Key.
+
+    OZ_PLACEMENT_POOL_ALLOC( Elem, 256 )
+  };
+
+  /**
    * Hashtable iterator.
    */
-  template <class IterElem>
+  template <class IterElem, class KeyType>
   class HashIterator : public IteratorBase<IterElem>
   {
   private:
 
     using IteratorBase<IterElem>::elem;
 
-    IterElem* const* data;  ///< Pointer to hashtable slots.
-    int              index; ///< Index of the current slot.
+    const HashSet* table; ///< Hashtable that is being iterated.
+    int            index; ///< Index of the current bucket.
 
   public:
 
@@ -98,19 +83,46 @@ private:
      */
     OZ_ALWAYS_INLINE
     explicit HashIterator() :
-      IteratorBase<IterElem>( nullptr ), data( nullptr ), index( 0 )
+      IteratorBase<IterElem>( nullptr ), table( nullptr ), index( 0 )
     {}
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
-    explicit HashIterator( const HashSet& hs ) :
-      IteratorBase<IterElem>( hs.data[0] ), data( hs.data ), index( 0 )
+    explicit HashIterator( const HashSet& ht ) :
+      IteratorBase<IterElem>( ht.size == 0 ? nullptr : ht.data[0] ), table( &ht ), index( 0 )
     {
-      while( elem == nullptr && index < SIZE - 1 ) {
+      while( elem == nullptr && index < table->size - 1 ) {
         ++index;
-        elem = data[index];
+        elem = table->data[index];
       }
+    }
+
+    /**
+     * Pointer to the current key.
+     */
+    OZ_ALWAYS_INLINE
+    operator KeyType* () const
+    {
+      return &elem->key;
+    }
+
+    /**
+     * Reference to the current key.
+     */
+    OZ_ALWAYS_INLINE
+    KeyType& operator * () const
+    {
+      return elem->key;
+    }
+
+    /**
+     * Access to the current key's member.
+     */
+    OZ_ALWAYS_INLINE
+    KeyType* operator -> () const
+    {
+      return &elem->key;
     }
 
     /**
@@ -123,15 +135,15 @@ private:
       if( elem->next != nullptr ) {
         elem = elem->next;
       }
-      else if( index == SIZE - 1 ) {
+      else if( index == table->size - 1 ) {
         elem = nullptr;
       }
       else {
         do {
           ++index;
-          elem = data[index];
+          elem = table->data[index];
         }
-        while( elem == nullptr && index < SIZE - 1 );
+        while( elem == nullptr && index < table->size - 1 );
       }
       return *this;
     }
@@ -143,51 +155,62 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef HashIterator<const Elem> CIterator;
+  typedef HashIterator<const Elem, const Key> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef HashIterator<Elem> Iterator;
+  typedef HashIterator<Elem, Key> Iterator;
 
 private:
 
-  Elem*            data[SIZE]; ///< %Array of linked lists.
-  Pool<Elem, SIZE> pool;       ///< Memory pool for elements.
+  Pool<Elem> pool; ///< Memory pool for elements.
+  Elem**     data; ///< %Array of buckets, each containing a linked list.
+  int        size; ///< Number of buckets.
 
   /**
-   * True iff chains have same length and respective elements are equal.
+   * True iff a bucket chains have the same length and contain equal elements.
    */
   static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
   {
-    while( chainA != nullptr && chainB != nullptr ) {
-      if( chainA->key != chainB->key ) {
-        return false;
-      }
+    const Elem* firstB = chainB;
 
+    while( chainA != nullptr && chainB != nullptr ) {
+      Elem* i = firstB;
+      do {
+        if( i->key == chainA->key ) {
+          goto nextElem;
+        }
+        i = i->next;
+      }
+      while( i != nullptr );
+
+      return false;
+
+nextElem:
       chainA = chainA->next;
       chainB = chainB->next;
     }
-    // At least one is nullptr.
+    // At least one is nullptr, so this is true iff both chains have the same length.
     return chainA == chainB;
   }
 
   /**
-   * Allocate and make a copy of a given chain.
+   * Allocate and make a copy of a given bucket chain.
    */
   Elem* cloneChain( const Elem* chain )
   {
     Elem* newChain = nullptr;
 
     while( chain != nullptr ) {
-      newChain = new( pool ) Elem( newChain, chain->key );
+      newChain = new( pool ) Elem { newChain, chain->hash, chain->key };
       chain = chain->next;
     }
     return newChain;
   }
 
   /**
-   * Delete all elements in a given chain.
+   * Delete all elements in a given bucket chain.
    */
   void clearChain( Elem* chain )
   {
@@ -201,20 +224,73 @@ private:
     }
   }
 
+  /**
+   * Resize bucket array and rebuild hashtable.
+   */
+  void resize( int newSize )
+  {
+    Elem** newData = new Elem*[newSize] {};
+
+    // Rebuild hashtable.
+    for( int i = 0; i < size; ++i ) {
+      Elem* e    = data[i];
+      Elem* next = nullptr;
+
+      while( e != nullptr ) {
+        uint index = uint( e->hash ) % uint( newSize );
+
+        next = e->next;
+        e->next = newData[index];
+        newData[index] = e;
+
+        e = next;
+      }
+    }
+
+    delete[] data;
+
+    data = newData;
+    size = newSize;
+  }
+
+  /**
+   * Ensure a given bucket array size.
+   *
+   * Size is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
+   * `GRANULARITY` greater or equal to the requested size.
+   */
+  void ensureCapacity( int capacity )
+  {
+    if( capacity < 0 ) {
+      OZ_ERROR( "oz::HashMap: Capacity overflow" );
+    }
+    else if( size < capacity ) {
+      int newSize = size * 2;
+      if( newSize < capacity ) {
+        newSize = ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
+      }
+      if( newSize <= 0 ) {
+        OZ_ERROR( "oz::HashMap: Capacity overflow" );
+      }
+
+      resize( newSize );
+    }
+  }
+
 public:
 
   /**
    * Create an empty hashtable.
    */
   explicit HashSet() :
-    data{}
+    data( nullptr ), size( 0 )
   {}
 
   /**
    * Initialise from an initialiser list.
    */
   HashSet( InitialiserList<Key> l ) :
-    data{}
+    data( nullptr ), size( 0 )
   {
     for( const Key& key : l ) {
       add( key );
@@ -233,68 +309,82 @@ public:
   /**
    * Copy constructor, copies elements and storage.
    */
-  HashSet( const HashSet& hs )
+  HashSet( const HashSet& ht ) :
+    data( new Elem*[ht.size] ), size( ht.size )
   {
-    for( int i = 0; i < SIZE; ++i ) {
-      data[i] = cloneChain( hs.data[i] );
+    for( int i = 0; i < ht.size; ++i ) {
+      data[i] = cloneChain( ht.data[i] );
     }
   }
 
   /**
    * Move constructor, moves storage.
    */
-  HashSet( HashSet&& hs ) :
-    pool( static_cast<Pool<Elem, SIZE>&&>( hs.pool ) )
+  HashSet( HashSet&& ht ) :
+    pool( static_cast<Pool<Elem>&&>( ht.pool ) ), data( ht.data ), size( ht.size )
   {
-    aCopy<Elem*>( hs.data, SIZE, data );
-    aFill<Elem*, Elem*>( hs.data, SIZE, nullptr );
+    ht.data = nullptr;
+    ht.size = 0;
   }
 
   /**
    * Copy operator, copies elements and storage.
    */
-  HashSet& operator = ( const HashSet& hs )
+  HashSet& operator = ( const HashSet& ht )
   {
-    if( &hs == this ) {
+    if( &ht == this ) {
       return *this;
     }
 
-    for( int i = 0; i < SIZE; ++i ) {
-      clearChain( data[i] );
-      data[i] = cloneChain( hs.data[i] );
+    clear();
+
+    if( size < ht.pool.count ) {
+      delete[] data;
+
+      data = new Elem[ht.size];
+      size = ht.size;
     }
+
+    for( int i = 0; i < size; ++i ) {
+      data[i] = i < ht.size ? cloneChain( ht.data[i] ) : nullptr;
+    }
+
     return *this;
   }
 
   /**
    * Move operator, moves storage.
    */
-  HashSet& operator = ( HashSet&& hs )
+  HashSet& operator = ( HashSet&& ht )
   {
-    if( &hs == this ) {
+    if( &ht == this ) {
       return *this;
     }
 
     clear();
+    delete[] data;
 
-    aCopy<Elem*>( hs.data, SIZE, data );
-    aFill<Elem*, Elem*>( hs.data, SIZE, nullptr );
-    pool = static_cast<Pool<Elem, SIZE>&&>( hs.pool );
+    pool = static_cast< Pool<Elem>&& >( ht.pool );
+    data = ht.data;
+    size = ht.size;
+
+    ht.data = nullptr;
+    ht.size = 0;
 
     return *this;
   }
 
   /**
-   * True iff respective elements are equal (including chain order).
+   * True iff contained elements are equal.
    */
-  bool operator == ( const HashSet& hs ) const
+  bool operator == ( const HashSet& ht ) const
   {
-    if( pool.length() != hs.pool.length() ) {
+    if( pool.length() != ht.pool.length() ) {
       return false;
     }
 
-    for( int i = 0; i < SIZE; ++i ) {
-      if( !areChainsEqual( data[i], hs.data[i] ) ) {
+    for( int i = 0; i < size; ++i ) {
+      if( !areChainsEqual( data[i], ht.data[i] ) ) {
         return false;
       }
     }
@@ -302,20 +392,11 @@ public:
   }
 
   /**
-   * False iff respective elements are equal (including chain order!).
+   * False iff contained elements are equal.
    */
-  bool operator != ( const HashSet& hs ) const
+  bool operator != ( const HashSet& ht ) const
   {
-    if( pool.length() != hs.pool.length() ) {
-      return true;
-    }
-
-    for( int i = 0; i < SIZE; ++i ) {
-      if( !areChainsEqual( data[i], hs.data[i] ) ) {
-        return true;
-      }
-    }
-    return false;
+    return !operator == ( ht );
   }
 
   /**
@@ -404,7 +485,7 @@ public:
    */
   float loadFactor() const
   {
-    return float( pool.length() ) / float( SIZE );
+    return float( pool.length() ) / float( size );
   }
 
   /**
@@ -413,7 +494,12 @@ public:
   template <typename Key_ = Key>
   bool contains( const Key_& key ) const
   {
-    uint  i = uint( hash( key ) ) % uint( SIZE );
+    if( size == 0 ) {
+      return false;
+    }
+
+    int   h = hash( key );
+    uint  i = uint( h ) % uint( size );
     Elem* e = data[i];
 
     while( e != nullptr ) {
@@ -432,7 +518,10 @@ public:
   template <typename Key_ = Key>
   void add( Key_&& key )
   {
-    uint  i = uint( hash( key ) ) % uint( SIZE );
+    ensureCapacity( pool.length() + 1 );
+
+    int   h = hash( key );
+    uint  i = uint( h ) % uint( size );
     Elem* e = data[i];
 
     while( e != nullptr ) {
@@ -440,12 +529,10 @@ public:
         e->key = static_cast<Key_&&>( key );
         return;
       }
-
       e = e->next;
     }
 
-    data[i] = new( pool ) Elem( data[i], static_cast<Key_&&>( key ) );
-    soft_assert( loadFactor() < 0.75f );
+    data[i] = new( pool ) Elem { data[i], h, static_cast<Key_&&>( key ) };
   }
 
   /**
@@ -454,19 +541,20 @@ public:
   template <typename Key_ = Key>
   void include( Key_&& key )
   {
-    uint  i = uint( hash( key ) ) % uint( SIZE );
+    ensureCapacity( pool.length() + 1 );
+
+    int   h = hash( key );
+    uint  i = uint( h ) % uint( size );
     Elem* e = data[i];
 
     while( e != nullptr ) {
       if( e->key == key ) {
         return;
       }
-
       e = e->next;
     }
 
-    data[i] = new( pool ) Elem( data[i], static_cast<Key_&&>( key ) );
-    soft_assert( loadFactor() < 0.75f );
+    data[i] = new( pool ) Elem { data[i], h, static_cast<Key_&&>( key ) };
   }
 
   /**
@@ -476,7 +564,11 @@ public:
    */
   bool exclude( const Key& key )
   {
-    uint   i     = uint( hash( key ) ) % uint( SIZE );
+    if( size == 0 ) {
+      return nullptr;
+    }
+
+    uint   i     = uint( hash( key ) ) % uint( size );
     Elem*  e     = data[i];
     Elem** pPrev = &data[i];
 
@@ -497,11 +589,23 @@ public:
   }
 
   /**
+   * Trim the bucket array size to 4/3 of the current number of elements.
+   */
+  void trim()
+  {
+    int capacity = pool.count * 4 / 3;
+
+    if( size > capacity ) {
+      ensureCapacity( capacity );
+    }
+  }
+
+  /**
    * Clear the hashtable.
    */
   void clear()
   {
-    for( int i = 0; i < SIZE; ++i ) {
+    for( int i = 0; i < size; ++i ) {
       clearChain( data[i] );
       data[i] = nullptr;
     }

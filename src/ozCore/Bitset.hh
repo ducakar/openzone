@@ -146,10 +146,7 @@ public:
    */
   bool operator == ( const Bitset& b ) const
   {
-    if( size != b.size ) {
-      return false;
-    }
-    return aEquals<ulong>( data, size, b.data );
+    return size == b.size && aEquals<ulong>( data, size, b.data );
   }
 
   /**
@@ -157,10 +154,7 @@ public:
    */
   bool operator != ( const Bitset& b ) const
   {
-    if( size != b.size ) {
-      return true;
-    }
-    return !aEquals<ulong>( data, size, b.data );
+    return !operator == ( b );
   }
 
   /**

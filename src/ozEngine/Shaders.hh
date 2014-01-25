@@ -43,8 +43,8 @@ public:
 
 private:
 
-  static HashMap<String, int, 64> uniforms;
-  static HashMap<String, int, 64> shaders;
+  static HashMap<String, int> uniforms;
+  static HashMap<String, int> shaders;
 
   static const int PLAIN;
   static const int MESH;

@@ -104,51 +104,51 @@ private:
 
 private:
 
-  Imago::CreateFunc**        imagoClasses;
-  Audio::CreateFunc**        audioClasses;
-  FragPool**                 fragPools;
+  Imago::CreateFunc**      imagoClasses;
+  Audio::CreateFunc**      audioClasses;
+  FragPool**               fragPools;
 
-  Resource<Texture>*         textures;
-  Resource<uint>*            sounds;
+  Resource<Texture>*       textures;
+  Resource<uint>*          sounds;
 
-  Chain<Source>              sources;               // Non-looping sources.
-  HashMap<int, ContSource>   contSources;           // Looping sources.
+  Chain<Source>            sources;               // Non-looping sources.
+  HashMap<int, ContSource> contSources;           // Looping sources.
 
-  Chain<PartGen>             partGens;
+  Chain<PartGen>           partGens;
 
-  Resource<BSP*>*            bsps;
-  Resource<BSPAudio*>*       bspAudios;
+  Resource<BSP*>*          bsps;
+  Resource<BSPAudio*>*     bspAudios;
 
-  Resource<SMM*>*            models;
-  Resource<PartClass>*       partClasses;
+  Resource<SMM*>*          models;
+  Resource<PartClass>*     partClasses;
 
-  HashMap<int, Imago*, 8192> imagines;              // Currently loaded graphics models.
-  HashMap<int, Audio*, 4096> audios;                // Currently loaded audio models.
+  HashMap<int, Imago*>     imagines;              // Currently loaded graphics models.
+  HashMap<int, Audio*>     audios;                // Currently loaded audio models.
 
-  int                        maxFragPools;
+  int                      maxFragPools;
 
-  int                        maxImagines;
-  int                        maxAudios;
-  int                        maxSources;
-  int                        maxContSources;
-  int                        maxPartGens;
+  int                      maxImagines;
+  int                      maxAudios;
+  int                      maxSources;
+  int                      maxContSources;
+  int                      maxPartGens;
 
-  int                        maxSMMImagines;
-  int                        maxSMMVehicleImagines;
-  int                        maxExplosionImagines;
-  int                        maxMD2Imagines;
-  int                        maxMD2WeaponImagines;
+  int                      maxSMMImagines;
+  int                      maxSMMVehicleImagines;
+  int                      maxExplosionImagines;
+  int                      maxMD2Imagines;
+  int                      maxMD2WeaponImagines;
 
-  int                        maxBasicAudios;
-  int                        maxBotAudios;
-  int                        maxVehicleAudios;
+  int                      maxBasicAudios;
+  int                      maxBotAudios;
+  int                      maxVehicleAudios;
 
-  static int                 speakSampleRate;       // Set from Sound class.
-  static SpeakSource         speakSource;
+  static int               speakSampleRate;       // Set from Sound class.
+  static SpeakSource       speakSource;
 
 public:
 
-  int                        textureLod;
+  int                      textureLod;
 
 private:
 

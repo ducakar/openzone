@@ -105,9 +105,9 @@ bool Buffer::operator == ( const Buffer& b ) const
   return size == b.size && mCompare( data, b.data, size_t( size ) ) == 0;
 }
 
-bool Buffer::operator!=( const Buffer& b ) const
+bool Buffer::operator != ( const Buffer& b ) const
 {
-  return size != b.size || mCompare( data, b.data, size_t( size ) ) != 0;
+  return !operator == ( b );
 }
 
 InputStream Buffer::inputStream( Endian::Order order ) const

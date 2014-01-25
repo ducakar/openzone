@@ -71,7 +71,7 @@ public:
    */
   bool operator != ( const SBitset& b ) const
   {
-    return !aEquals<ulong>( data, SIZE, b.data );
+    return !operator == ( b );
   }
 
   /**
