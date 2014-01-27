@@ -318,7 +318,7 @@ void CinematicProxy::write( OutputStream* os ) const
 
 JSON CinematicProxy::write() const
 {
-  return JSON();
+  return JSON::NIL;
 }
 
 }

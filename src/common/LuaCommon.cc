@@ -175,19 +175,19 @@ JSON LuaCommon::writeValue()
 
   switch( type ) {
     case LUA_TNIL: {
-      return JSON( JSON::NIL );
+      return JSON::NIL;
     }
     case LUA_TBOOLEAN: {
-      return JSON( l_tobool( -1 ) );
+      return l_tobool( -1 );
     }
     case LUA_TNUMBER: {
-      return JSON( l_todouble( -1 ) );
+      return l_todouble( -1 );
     }
     case LUA_TSTRING: {
-      return JSON( l_tostring( -1 ) );
+      return l_tostring( -1 );
     }
     case LUA_TTABLE: {
-      JSON json( JSON::OBJECT );
+      JSON json = JSON::OBJECT;
 
       l_pushnil();
       while( l_next( -2 ) != 0 ) {

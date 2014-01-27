@@ -70,18 +70,8 @@ public:
     const char* lineEnd;           ///< EOL character sequence.
   };
 
-private:
-
-  struct Data;
-  struct BooleanData;
-  struct NumberData;
-  struct StringData;
-  struct ArrayData;
-  struct ObjectData;
-  struct Parser;
-  struct Formatter;
-
-public:
+  /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).
+  static const Format DEFAULT_FORMAT;
 
   /**
    * %Iterator for %JSON arrays with constant access to elements.
@@ -103,17 +93,23 @@ public:
    */
   typedef HashMap<String, JSON>::Iterator ObjectIterator;
 
-public:
+private:
 
-  /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).
-  static const Format DEFAULT_FORMAT;
-
-  /// A null value instance, required by `operator []` or an alternative to default constructor.
-  static const JSON NIL_VALUE;
+  struct Data;
+  struct StringData;
+  struct ArrayData;
+  struct ObjectData;
+  struct Parser;
+  struct Formatter;
 
 private:
 
-  Data*        data;        ///< Pointer to internal data structure.
+  union
+  {
+    bool       boolean;     ///< Boolean value storage.
+    double     number;      ///< Number value storage.
+    Data*      data;        ///< Pointer to other, complex, value storage.
+  };
   Type         valueType;   ///< Value type, `JSON::Type`.
   mutable bool wasAccessed; ///< For warnings about unused variables.
 
@@ -132,72 +128,72 @@ public:
    * Default value is false for a boolean, 0.0 for a number, "" for a string or an empty container
    * for an array or an object.
    */
-  explicit JSON( Type type = NIL );
+  JSON( Type type = NIL );
 
   /**
    * Create a boolean value.
    */
-  explicit JSON( bool value );
+  JSON( bool value );
 
   /**
    * Create a number value for an integer.
    */
-  explicit JSON( int value );
+  JSON( int value );
 
   /**
    * Create a number value for a float.
    */
-  explicit JSON( float value );
+  JSON( float value );
 
   /**
    * Create a number value for a double.
    */
-  explicit JSON( double value );
+  JSON( double value );
 
   /**
    * Create a string value for a given string.
    */
-  explicit JSON( const String& value );
+  JSON( const String& value );
 
   /**
    * Create a string value for a given string.
    */
-  explicit JSON( const char* value );
+  JSON( const char* value );
 
   /**
    * Create an array of 3 numbers representing `Vec3` components.
    */
-  explicit JSON( const Vec3& v );
+  JSON( const Vec3& v );
 
   /**
    * Create an array of 4 numbers representing `Vec4` components.
    */
-  explicit JSON( const Vec4& v );
+  JSON( const Vec4& v );
 
   /**
    * Create an array of 4 numbers representing `Point` components.
    */
-  explicit JSON( const Point& p );
+  JSON( const Point& p );
 
   /**
    * Create an array of 4 numbers representing `Plane` components.
    */
-  explicit JSON( const Plane& p );
+  JSON( const Plane& p );
 
   /**
    * Create an array of 4 numbers representing `Quat` components.
    */
-  explicit JSON( const Quat& q );
+  JSON( const Quat& q );
 
   /**
    * Create an array of 9 numbers representing `Mat33` components.
    */
-  explicit JSON( const Mat33& m );
+  JSON( const Mat33& m );
 
   /**
    * Create an array of 16 numbers representing `Mat44` components.
    */
-  explicit JSON( const Mat44& m );
+  JSON( const Mat44& m );
 
   /**
    * Load from a file.

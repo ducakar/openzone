@@ -627,12 +627,12 @@ void Input::init()
 
   if( !String::equals( inputConfig["_version"].get( "" ), OZ_VERSION ) ) {
     configExists = false;
-    inputConfig = JSON();
+    inputConfig = JSON::NIL;
   }
 
   if( !String::equals( inputConfig["_backend"].get( "" ), BACKEND ) ) {
     configExists = false;
-    inputConfig = JSON();
+    inputConfig = JSON::NIL;
   }
 
   const JSON& mouseConfig    = inputConfig["mouse"];

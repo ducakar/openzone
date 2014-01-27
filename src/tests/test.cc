@@ -66,17 +66,8 @@ int main()
 {
   System::init();
 
-  HashMap<String, int> hm = {
-    { "Drekec", 1 },
-    { "Pekec", 2 },
-    { "Pizda", 42 }
-  };
-
-  hm.add( "Jajc", 0 );
-  hm.add( "Pizda", 314 );
-
-  for( HashMap<String, int>::Pair e : hm ) {
-    Log() << e.key << " :: " << e.value;
-  }
+  JSON json = true;
+  json = false;
+  Log() << json;
   return 0;
 }

@@ -63,7 +63,7 @@ void Profile::init()
   bool configExists = profileConfig.load( profileFile );
 
   if( profileConfig.isNull() ) {
-    profileConfig = JSON( JSON::OBJECT );
+    profileConfig = JSON::OBJECT;
   }
 
   name = profileConfig["name"].get( "" );
@@ -158,7 +158,7 @@ void Profile::init()
   persistent = profileConfig["persistent"];
 
   if( persistent.type() != JSON::OBJECT ) {
-    persistent = JSON( JSON::OBJECT );
+    persistent = JSON::OBJECT;
   }
 }
 

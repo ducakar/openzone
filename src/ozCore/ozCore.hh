@@ -114,11 +114,11 @@
 #include "Time.hh"
 #include "Profiler.hh"
 #include "EnumMap.hh"
-#include "Log.hh"
 #include "SharedLib.hh"
 #include "Gettext.hh"
 #include "JSON.hh"
 #include "MainCall.hh"
+#include "Log.hh"
 
 /*
  * Platform support.

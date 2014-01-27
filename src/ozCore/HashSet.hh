@@ -619,6 +619,10 @@ public:
     hard_assert( pool.isEmpty() );
 
     pool.free();
+    delete[] data;
+
+    data = nullptr;
+    size = 0;
   }
 
 };

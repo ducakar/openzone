@@ -589,6 +589,12 @@ const Log& Log::operator << ( const Mat44& m ) const
   return *this;
 }
 
+const Log& Log::operator << ( const JSON& json ) const
+{
+  printRaw( "%s", json.toString().cstr() );
+  return *this;
+}
+
 const Log& Log::operator << ( volatile const void* p ) const
 {
   printRaw( "%p", p );

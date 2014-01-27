@@ -37,28 +37,10 @@
 namespace oz
 {
 
+static const JSON NIL_VALUE;
+
 struct JSON::Data
 {};
-
-struct JSON::BooleanData : JSON::Data
-{
-  bool value;
-
-  OZ_HIDDEN
-  explicit BooleanData( bool value_ ) :
-    value( value_ )
-  {}
-};
-
-struct JSON::NumberData : JSON::Data
-{
-  double value;
-
-  OZ_HIDDEN
-  explicit NumberData( double value_ ) :
-    value( value_ )
-  {}
-};
 
 struct JSON::StringData : JSON::Data
 {
@@ -316,7 +298,7 @@ struct JSON::Parser
           OZ_PARSE_ERROR( -4, "Unknown value type" );
         }
 
-        return JSON( new BooleanData( false ), BOOLEAN );
+        return JSON( false );
       }
       case 't': {
         if( pos.is->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
@@ -325,7 +307,7 @@ struct JSON::Parser
           OZ_PARSE_ERROR( -3, "Unknown value type" );
         }
 
-        return JSON( new BooleanData( true ), BOOLEAN );
+        return JSON( true );
       }
       default: { // Number.
         SList<char, 32> chars;
@@ -352,7 +334,7 @@ struct JSON::Parser
           OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
         }
 
-        return JSON( new NumberData( number ), NUMBER );
+        return JSON( number );
       }
       case '"': {
         return JSON( new StringData( parseString() ), STRING );
@@ -515,9 +497,7 @@ struct JSON::Formatter
         break;
       }
       case BOOLEAN: {
-        const BooleanData* booleanData = static_cast<const BooleanData*>( value.data );
-
-        if( booleanData->value ) {
+        if( value.boolean ) {
           os->writeChars( "true", 4 );
         }
         else {
@@ -526,9 +506,7 @@ struct JSON::Formatter
         break;
       }
       case NUMBER: {
-        const NumberData* numberData = static_cast<const NumberData*>( value.data );
-
-        String s = String( numberData->value, format->significantDigits );
+        String s = String( value.number, format->significantDigits );
         os->writeChars( s, s.length() );
         break;
       }
@@ -658,7 +636,6 @@ struct JSON::Formatter
 };
 
 const JSON::Format JSON::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
-const JSON JSON::NIL_VALUE;
 
 OZ_HIDDEN
 JSON::JSON( Data* data_, Type valueType_ ) :
@@ -669,15 +646,7 @@ JSON::JSON( Type type ) :
   data( nullptr ), valueType( type ), wasAccessed( true )
 {
   switch( type ) {
-    case NIL: {
-      break;
-    }
-    case BOOLEAN: {
-      data = new BooleanData( false );
-      break;
-    }
-    case NUMBER: {
-      data = new NumberData( 0.0 );
+    default: {
       break;
     }
     case STRING: {
@@ -696,19 +665,19 @@ JSON::JSON( Type type ) :
 }
 
 JSON::JSON( bool value ) :
-  data( new BooleanData( value ) ), valueType( BOOLEAN ), wasAccessed( true )
+  boolean( value ), valueType( BOOLEAN ), wasAccessed( true )
 {}
 
 JSON::JSON( int value ) :
-  data( new NumberData( value ) ), valueType( NUMBER ), wasAccessed( true )
+  number( value ), valueType( NUMBER ), wasAccessed( true )
 {}
 
 JSON::JSON( float value ) :
-  data( new NumberData( value ) ), valueType( NUMBER ), wasAccessed( true )
+  number( value ), valueType( NUMBER ), wasAccessed( true )
 {}
 
 JSON::JSON( double value ) :
-  data( new NumberData( value ) ), valueType( NUMBER ), wasAccessed( true )
+  number( value ), valueType( NUMBER ), wasAccessed( true )
 {}
 
 JSON::JSON( const String& value ) :
@@ -725,7 +694,7 @@ JSON::JSON( const Vec3& v ) :
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( v[i] ), NUMBER ) );
+    list.add( JSON( v[i] ) );
   }
 }
 
@@ -735,7 +704,7 @@ JSON::JSON( const Vec4& v ) :
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   for( int i = 0; i < 4; ++i ) {
-    list.add( JSON( new NumberData( v[i] ), NUMBER ) );
+    list.add( JSON( v[i] ) );
   }
 }
 
@@ -745,7 +714,7 @@ JSON::JSON( const Point& p ) :
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( p[i] ), NUMBER ) );
+    list.add( JSON( p[i] ) );
   }
 }
 
@@ -755,9 +724,9 @@ JSON::JSON( const Plane& p ) :
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   for( int i = 0; i < 3; ++i ) {
-    list.add( JSON( new NumberData( p.n[i] ), NUMBER ) );
+    list.add( JSON( p.n[i] ) );
   }
-  list.add( JSON( new NumberData( p.d ), NUMBER ) );
+  list.add( JSON( p.d ) );
 }
 
 JSON::JSON( const Quat& q ) :
@@ -766,7 +735,7 @@ JSON::JSON( const Quat& q ) :
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   for( int i = 0; i < 4; ++i ) {
-    list.add( JSON( new NumberData( q[i] ), NUMBER ) );
+    list.add( JSON( q[i] ) );
   }
 }
 
@@ -777,7 +746,7 @@ JSON::JSON( const Mat33& m ) :
 
   for( int i = 0; i < 3; ++i ) {
     for( int j = 0; j < 3; ++j ) {
-      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+      list.add( JSON( m[i][j] ) );
     }
   }
 }
@@ -789,7 +758,7 @@ JSON::JSON( const Mat44& m ) :
 
   for( int i = 0; i < 4; ++i ) {
     for( int j = 0; j < 4; ++j ) {
-      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+      list.add( JSON( m[i][j] ) );
     }
   }
 }
@@ -809,15 +778,15 @@ JSON::JSON( const JSON& v ) :
   data( nullptr ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
   switch( valueType ) {
-    case NIL: {
+    default: {
       break;
     }
     case BOOLEAN: {
-      data = new BooleanData( *static_cast<const BooleanData*>( v.data ) );
+      boolean = v.boolean;
       break;
     }
     case NUMBER: {
-      data = new NumberData( *static_cast<const NumberData*>( v.data ) );
+      number = v.number;
       break;
     }
     case STRING: {
@@ -860,11 +829,11 @@ JSON& JSON::operator = ( const JSON& v )
       break;
     }
     case BOOLEAN: {
-      data = new BooleanData( *static_cast<const BooleanData*>( v.data ) );
+      boolean = v.boolean;
       break;
     }
     case NUMBER: {
-      data = new NumberData( *static_cast<const NumberData*>( v.data ) );
+      number = v.number;
       break;
     }
     case STRING: {
@@ -1065,7 +1034,7 @@ bool JSON::asBool() const
   if( valueType != BOOLEAN ) {
     OZ_ERROR( "oz::JSON: Value accessed as a boolean: %s", toString().cstr() );
   }
-  return static_cast<const BooleanData*>( data )->value;
+  return boolean;
 }
 
 int JSON::asInt() const
@@ -1085,7 +1054,7 @@ double JSON::asDouble() const
   if( valueType != NUMBER ) {
     OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
   }
-  return static_cast<const NumberData*>( data )->value;
+  return number;
 }
 
 const String& JSON::asString() const
@@ -1398,7 +1367,7 @@ bool JSON::get( bool defaultValue ) const
     OZ_ERROR( "oz::JSON: Value accessed as a boolean: %s", toString().cstr() );
   }
 
-  return static_cast<const BooleanData*>( data )->value;
+  return boolean;
 }
 
 int JSON::get( int defaultValue ) const
@@ -1412,7 +1381,7 @@ int JSON::get( int defaultValue ) const
     OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
   }
 
-  return int( static_cast<const NumberData*>( data )->value );
+  return int( number );
 }
 
 float JSON::get( float defaultValue ) const
@@ -1426,7 +1395,7 @@ float JSON::get( float defaultValue ) const
     OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
   }
 
-  return float( static_cast<const NumberData*>( data )->value );
+  return float( number );
 }
 
 double JSON::get( double defaultValue ) const
@@ -1440,7 +1409,7 @@ double JSON::get( double defaultValue ) const
     OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
   }
 
-  return static_cast<const NumberData*>( data )->value;
+  return number;
 }
 
 const String& JSON::get( const String& defaultValue ) const
@@ -1921,16 +1890,7 @@ bool JSON::clear( bool warnUnused )
   }
 
   switch( valueType ) {
-    case NIL: {
-      hard_assert( data == nullptr );
-      break;
-    }
-    case BOOLEAN: {
-      delete static_cast<BooleanData*>( data );
-      break;
-    }
-    case NUMBER: {
-      delete static_cast<NumberData*>( data );
+    default: {
       break;
     }
     case STRING: {
@@ -1977,14 +1937,10 @@ String JSON::toString() const
       return "null";
     }
     case BOOLEAN: {
-      const BooleanData* booleanData = static_cast<const BooleanData*>( data );
-
-      return booleanData->value ? "true" : "false";
+      return boolean ? "true" : "false";
     }
     case NUMBER: {
-      const NumberData* numberData = static_cast<const NumberData*>( data );
-
-      return String( numberData->value );
+      return String( number );
     }
     case STRING: {
       const StringData* stringData = static_cast<const StringData*>( data );

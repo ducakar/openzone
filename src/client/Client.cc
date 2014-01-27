@@ -240,7 +240,7 @@ int Client::init( int argc, char** argv )
       Log::println( "Invalid configuration file version, configuration will be cleaned and written"
                     " upon exit" );
 
-      config = JSON( JSON::OBJECT );
+      config = JSON::OBJECT;
       config.add( "_version", OZ_VERSION );
       config["_version"];
     }
@@ -249,7 +249,7 @@ int Client::init( int argc, char** argv )
     Log::println( "No configuration file, default configuration will be used and written upon"
                   " exit" );
 
-    config = JSON( JSON::OBJECT );
+    config = JSON::OBJECT;
     config.add( "_version", OZ_VERSION );
     config["_version"];
   }
