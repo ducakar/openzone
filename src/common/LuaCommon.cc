@@ -83,15 +83,15 @@ void LuaCommon::readValue( const JSON& json )
       break;
     }
     case JSON::BOOLEAN: {
-      l_pushbool( json.asBool() );
+      l_pushbool( json.get( false ) );
       break;
     }
     case JSON::NUMBER: {
-      l_pushdouble( json.asDouble() );
+      l_pushdouble( json.get( 0.0 ) );
       break;
     }
     case JSON::STRING: {
-      l_pushstring( json.asString() );
+      l_pushstring( json.get( "" ) );
       break;
     }
     case JSON::ARRAY: {

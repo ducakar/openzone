@@ -642,6 +642,25 @@ JSON::JSON( Data* data_, Type valueType_ ) :
   data( data_ ), valueType( valueType_ ), wasAccessed( false )
 {}
 
+OZ_HIDDEN
+bool JSON::getVector( float* vector, int count ) const
+{
+  if( valueType != ARRAY ) {
+    return false;
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    return false;
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    vector[i] = float( list[i].get( 0.0 ) );
+  }
+  return true;
+}
+
 JSON::JSON( Type type ) :
   data( nullptr ), valueType( type ), wasAccessed( true )
 {
@@ -872,6 +891,58 @@ JSON& JSON::operator = ( JSON&& v )
   return *this;
 }
 
+JSON::ArrayCIterator JSON::arrayCIter() const
+{
+  if( valueType == ARRAY ) {
+    const ArrayData* arrayData = static_cast<const ArrayData*>( data );
+
+    wasAccessed = true;
+    return ArrayCIterator( arrayData->list.begin(), arrayData->list.end() );
+  }
+  else {
+    return ArrayCIterator();
+  }
+}
+
+JSON::ArrayIterator JSON::arrayIter()
+{
+  if( valueType == ARRAY ) {
+    ArrayData* arrayData = static_cast<ArrayData*>( data );
+
+    wasAccessed = true;
+    return ArrayIterator( arrayData->list.begin(), arrayData->list.end() );
+  }
+  else {
+    return ArrayIterator();
+  }
+}
+
+JSON::ObjectCIterator JSON::objectCIter() const
+{
+  if( valueType == OBJECT ) {
+    const ObjectData* objectData = static_cast<const ObjectData*>( data );
+
+    wasAccessed = true;
+    return ObjectCIterator( objectData->table );
+  }
+  else {
+    return ObjectCIterator();
+  }
+}
+
+JSON::ObjectIterator JSON::objectIter()
+{
+  if( valueType == OBJECT ) {
+    ObjectData* objectData = static_cast<ObjectData*>( data );
+
+    wasAccessed = true;
+    return ObjectIterator( objectData->table );
+  }
+  else {
+    return ObjectIterator();
+  }
+}
+
 int JSON::length() const
 {
   switch( valueType ) {
@@ -893,87 +964,15 @@ int JSON::length() const
   }
 }
 
-int JSON::isEmpty() const
-{
-  switch( valueType ) {
-    default: {
-      return true;
-    }
-    case ARRAY: {
-      const ArrayData* arrayData = static_cast<const ArrayData*>( data );
-
-      wasAccessed = true;
-      return arrayData->list.isEmpty();
-    }
-    case OBJECT: {
-      const ObjectData* objectData = static_cast<const ObjectData*>( data );
-
-      wasAccessed = true;
-      return objectData->table.isEmpty();
-    }
-  }
-}
-
-JSON::ArrayCIterator JSON::arrayCIter() const
-{
-  if( valueType == ARRAY ) {
-    const ArrayData* arrayData = static_cast<const ArrayData*>( data );
-
-    return ArrayCIterator( arrayData->list.begin(), arrayData->list.end() );
-  }
-  else {
-    return ArrayCIterator();
-  }
-}
-
-JSON::ArrayIterator JSON::arrayIter()
-{
-  if( valueType == ARRAY ) {
-    ArrayData* arrayData = static_cast<ArrayData*>( data );
-
-    return ArrayIterator( arrayData->list.begin(), arrayData->list.end() );
-  }
-  else {
-    return ArrayIterator();
-  }
-}
-
-JSON::ObjectCIterator JSON::objectCIter() const
-{
-  if( valueType == OBJECT ) {
-    const ObjectData* objectData = static_cast<const ObjectData*>( data );
-
-    return ObjectCIterator( objectData->table );
-  }
-  else {
-    return ObjectCIterator();
-  }
-}
-
-JSON::ObjectIterator JSON::objectIter()
-{
-  if( valueType == OBJECT ) {
-    ObjectData* objectData = static_cast<ObjectData*>( data );
-
-    return ObjectIterator( objectData->table );
-  }
-  else {
-    return ObjectIterator();
-  }
-}
-
 const JSON& JSON::operator [] ( int i ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != ARRAY ) {
     return NIL_VALUE;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
   }
 
   const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  wasAccessed = true;
 
   if( uint( i ) >= uint( list.length() ) ) {
     return NIL_VALUE;
@@ -985,17 +984,14 @@ const JSON& JSON::operator [] ( int i ) const
 
 const JSON& JSON::operator [] ( const char* key ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != OBJECT ) {
     return NIL_VALUE;
-  }
-  else if( valueType != OBJECT ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an object: %s", toString().cstr() );
   }
 
   const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
   const JSON* value = table.find( key );
+
+  wasAccessed = true;
 
   if( value == nullptr ) {
     return NIL_VALUE;
@@ -1007,17 +1003,14 @@ const JSON& JSON::operator [] ( const char* key ) const
 
 bool JSON::contains( const char* key ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != OBJECT ) {
     return false;
-  }
-  else if( valueType != OBJECT ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an object: %s", toString().cstr() );
   }
 
   const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
   const JSON* value = table.find( key );
+
+  wasAccessed = true;
 
   if( value == nullptr ) {
     return false;
@@ -1027,747 +1020,86 @@ bool JSON::contains( const char* key ) const
   return true;
 }
 
-bool JSON::asBool() const
-{
-  wasAccessed = true;
-
-  if( valueType != BOOLEAN ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a boolean: %s", toString().cstr() );
-  }
-  return boolean;
-}
-
-int JSON::asInt() const
-{
-  return int( asDouble() );
-}
-
-float JSON::asFloat() const
-{
-  return float( asDouble() );
-}
-
-double JSON::asDouble() const
-{
-  wasAccessed = true;
-
-  if( valueType != NUMBER ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
-  }
-  return number;
-}
-
-const String& JSON::asString() const
-{
-  wasAccessed = true;
-
-  if( valueType != STRING ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a string: %s", toString().cstr() );
-  }
-  return static_cast<const StringData*>( data )->value;
-}
-
-Vec3 JSON::asVec3() const
-{
-  Vec3 v;
-  asArray( v, 3 );
-  return v;
-}
-
-Vec4 JSON::asVec4() const
-{
-  Vec4 v;
-  asArray( v, 4 );
-  return v;
-}
-
-Point JSON::asPoint() const
-{
-  Point p;
-  asArray( p, 3 );
-  return p;
-}
-
-Plane JSON::asPlane() const
-{
-  Plane p;
-  asArray( p.n, 4 );
-  return p;
-}
-
-Quat JSON::asQuat() const
-{
-  Quat q;
-  asArray( q, 4 );
-  return q;
-}
-
-Mat33 JSON::asMat33() const
-{
-  Mat33 m;
-  asArray( m, 9 );
-  return m;
-}
-
-Mat44 JSON::asMat44() const
-{
-  Mat44 m;
-  asArray( m, 16 );
-  return m;
-}
-
-void JSON::asArray( bool* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asBool();
-  }
-}
-
-void JSON::asArray( int* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asInt();
-  }
-}
-
-void JSON::asArray( float* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asFloat();
-  }
-}
-
-void JSON::asArray( double* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asDouble();
-  }
-}
-
-void JSON::asArray( String* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asString();
-  }
-}
-
-void JSON::asArray( Vec3* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asVec3();
-  }
-}
-
-void JSON::asArray( Vec4* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asVec4();
-  }
-}
-
-void JSON::asArray( Point* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asPoint();
-  }
-}
-
-void JSON::asArray( Plane* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asPlane();
-  }
-}
-
-void JSON::asArray( Quat* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asQuat();
-  }
-}
-
-void JSON::asArray( Mat33* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asMat33();
-  }
-}
-
-void JSON::asArray( Mat44* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asMat44();
-  }
-}
-
 bool JSON::get( bool defaultValue ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != BOOLEAN ) {
     return defaultValue;
   }
-  else if( valueType != BOOLEAN ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a boolean: %s", toString().cstr() );
-  }
 
+  wasAccessed = true;
   return boolean;
-}
-
-int JSON::get( int defaultValue ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return defaultValue;
-  }
-  else if( valueType != NUMBER ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
-  }
-
-  return int( number );
-}
-
-float JSON::get( float defaultValue ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return defaultValue;
-  }
-  else if( valueType != NUMBER ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
-  }
-
-  return float( number );
 }
 
 double JSON::get( double defaultValue ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != NUMBER ) {
     return defaultValue;
   }
-  else if( valueType != NUMBER ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a number: %s", toString().cstr() );
-  }
 
+  wasAccessed = true;
   return number;
 }
 
 const String& JSON::get( const String& defaultValue ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != STRING ) {
     return defaultValue;
   }
-  else if( valueType != STRING ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a string: %s", toString().cstr() );
-  }
 
+  wasAccessed = true;
   return static_cast<const StringData*>( data )->value;
 }
 
 const char* JSON::get( const char* defaultValue ) const
 {
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
+  if( valueType != STRING ) {
     return defaultValue;
   }
-  else if( valueType != STRING ) {
-    OZ_ERROR( "oz::JSON: Value accessed as a string: %s", toString().cstr() );
-  }
 
-  return static_cast<const StringData*>( data )->value;
+  wasAccessed = true;
+  return static_cast<const StringData*>( data )->value.cstr();
 }
 
 Vec3 JSON::get( const Vec3& defaultValue ) const
 {
   Vec3 v;
-  return get( v, 3 ) ? v : defaultValue;
+  return getVector( v, 3 ) ? v : defaultValue;
 }
 
 Vec4 JSON::get( const Vec4& defaultValue ) const
 {
   Vec4 v;
-  return get( v, 4 ) ? v : defaultValue;
+  return getVector( v, 4 ) ? v : defaultValue;
 }
 
 Point JSON::get( const Point& defaultValue ) const
 {
   Point p;
-  return get( p, 3 ) ? p : defaultValue;
+  return getVector( p, 3 ) ? p : defaultValue;
 }
 
 Plane JSON::get( const Plane& defaultValue ) const
 {
   Plane p;
-  return get( p.n, 4 ) ? p : defaultValue;
+  return getVector( p.n, 4 ) ? p : defaultValue;
 }
 
 Quat JSON::get( const Quat& defaultValue ) const
 {
   Quat q;
-  return get( q, 4 ) ? q : defaultValue;
+  return getVector( q, 4 ) ? q : defaultValue;
 }
 
 Mat33 JSON::get( const Mat33& defaultValue ) const
 {
   Mat33 m;
-  return get( m, 9 ) ? m : defaultValue;
+  return getVector( m, 9 ) ? m : defaultValue;
 }
 
 Mat44 JSON::get( const Mat44& defaultValue ) const
 {
   Mat44 m;
-  return get( m, 16 ) ? m : defaultValue;
-}
-
-bool JSON::get( bool* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asBool();
-  }
-  return true;
-}
-
-bool JSON::get( int* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asInt();
-  }
-  return false;
-}
-
-bool JSON::get( float* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asFloat();
-  }
-  return true;
-}
-
-bool JSON::get( double* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asDouble();
-  }
-  return true;
-}
-
-bool JSON::get( String* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asString();
-  }
-  return true;
-}
-
-bool JSON::get( Vec3* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asVec3();
-  }
-  return true;
-}
-
-bool JSON::get( Vec4* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asVec4();
-  }
-  return true;
-}
-
-bool JSON::get( Point* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asPoint();
-  }
-  return true;
-}
-
-bool JSON::get( Plane* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asPlane();
-  }
-  return true;
-}
-
-bool JSON::get( Quat* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asQuat();
-  }
-  return true;
-}
-
-bool JSON::get( Mat33* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asMat33();
-  }
-  return true;
-}
-
-bool JSON::get( Mat44* array, int count ) const
-{
-  wasAccessed = true;
-
-  if( valueType == NIL ) {
-    return false;
-  }
-  else if( valueType != ARRAY ) {
-    OZ_ERROR( "oz::JSON: Value accessed as an array: %s", toString().cstr() );
-  }
-
-  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
-
-  if( list.length() != count ) {
-    OZ_ERROR( "oz::JSON: Array has %d elements but %d expected: %s",
-              list.length(), count, toString().cstr() );
-  }
-
-  for( int i = 0; i < count; ++i ) {
-    array[i] = list[i].asMat44();
-  }
-  return true;
+  return getVector( m, 16 ) ? m : defaultValue;
 }
 
 JSON& JSON::add( const JSON& json )

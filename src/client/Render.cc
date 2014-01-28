@@ -903,19 +903,19 @@ void Render::init()
   EnumMap<Model::Collation> collationMap( COLLATION_MAP );
 
 #ifdef __native_client__
-  const char* sCollation = config.include( "render.collation", "MODEL_MAJOR" ).asString();
+  const char* sCollation = config.include( "render.collation", "MODEL_MAJOR" ).get( "" );
 #else
-  const char* sCollation = config.include( "render.collation", "DEPTH_MAJOR" ).asString();
+  const char* sCollation = config.include( "render.collation", "DEPTH_MAJOR" ).get( "" );
 #endif
   Model::setCollation( collationMap[ sCollation ] );
 
-  isOffscreen     = config.include( "render.forceFBO",    false ).asBool();
-  scale           = config.include( "render.scale",       1.0f ).asFloat();
-  scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).asString() ];
+  isOffscreen     = config.include( "render.forceFBO",    false ).get( false );
+  scale           = config.include( "render.scale",       1.0f ).get( 0.0f );
+  scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).get( "" ) ];
 
-  visibilityRange = config.include( "render.distance",    400.0f ).asFloat();
-  showBounds      = config.include( "render.showBounds",  false ).asBool();
-  showAim         = config.include( "render.showAim",     false ).asBool();
+  visibilityRange = config.include( "render.distance",    400.0f ).get( 0.0f );
+  showBounds      = config.include( "render.showBounds",  false ).get( false );
+  showAim         = config.include( "render.showAim",     false ).get( false );
 
   isOffscreen     = isOffscreen || shader.doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;

@@ -121,8 +121,8 @@ Weapon::Weapon( const WeaponClass* clazz_, InputStream* is ) :
 Weapon::Weapon( const WeaponClass* clazz_, const JSON& json ) :
   Dynamic( clazz_, json )
 {
-  nRounds  = json["nRounds"].asInt();
-  shotTime = json["shotTime"].asFloat();
+  nRounds  = json["nRounds"].get( 0 );
+  shotTime = json["shotTime"].get( 0.0f );
 }
 
 void Weapon::write( OutputStream* os ) const

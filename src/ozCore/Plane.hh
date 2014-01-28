@@ -40,6 +40,11 @@ class Plane
 {
 public:
 
+  /// Zero plane, [0, 0, 0; 0].
+  static const Plane ZERO;
+
+public:
+
   Vec3  n; ///< Normal.
   float d; ///< Distance from origin.
 

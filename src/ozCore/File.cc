@@ -73,7 +73,7 @@ namespace oz
 static pp::Core*      ppCore = nullptr;
 static pp::FileSystem ppFileSystem;
 #endif
-static String         specialDirs[File::VIDEOS + 1];
+static String         specialDirs[10];
 static String         exePath;
 
 static bool operator < ( const File& a, const File& b )
@@ -85,9 +85,9 @@ static bool operator < ( const File& a, const File& b )
 
 static void initSpecialDirs()
 {
-  specialDirs[File::HOME]   = "/";
-  specialDirs[File::CONFIG] = "/config";
-  specialDirs[File::DATA]   = "/data";
+  specialDirs[0] = "/";
+  specialDirs[1] = "/config";
+  specialDirs[2] = "/data";
 
   File::mkdir( "/config" );
   File::mkdir( "/data" );
@@ -100,7 +100,7 @@ static void initExecutablePath()
 
 #elif defined( _WIN32 )
 
-static void setSpecialDir( File::UserDirectory dir, int csidl )
+static void setSpecialDir( int dirId, int csidl )
 {
   char path[MAX_PATH];
   path[0] = '\0';
@@ -111,20 +111,20 @@ static void setSpecialDir( File::UserDirectory dir, int csidl )
     path[i] = path[i] == '\\' ? '/' : path[i];
   }
 
-  specialDirs[dir] = path;
+  specialDirs[dirId] = path;
 }
 
 static void initSpecialDirs()
 {
-  setSpecialDir( File::HOME,      CSIDL_PROFILE          );
-  setSpecialDir( File::CONFIG,    CSIDL_APPDATA          );
-  setSpecialDir( File::DATA,      CSIDL_LOCAL_APPDATA    );
-  setSpecialDir( File::DESKTOP,   CSIDL_DESKTOPDIRECTORY );
-  setSpecialDir( File::DOCUMENTS, CSIDL_PERSONAL         );
-  setSpecialDir( File::DOWNLOAD,  CSIDL_PERSONAL         );
-  setSpecialDir( File::MUSIC,     CSIDL_MYMUSIC          );
-  setSpecialDir( File::PICTURES,  CSIDL_MYPICTURES       );
-  setSpecialDir( File::VIDEOS,    CSIDL_MYVIDEO          );
+  setSpecialDir( 0, CSIDL_PROFILE          );
+  setSpecialDir( 1, CSIDL_APPDATA          );
+  setSpecialDir( 2, CSIDL_LOCAL_APPDATA    );
+  setSpecialDir( 3, CSIDL_DESKTOPDIRECTORY );
+  setSpecialDir( 4, CSIDL_PERSONAL         );
+  setSpecialDir( 5, CSIDL_PERSONAL         );
+  setSpecialDir( 6, CSIDL_MYMUSIC          );
+  setSpecialDir( 7, CSIDL_MYPICTURES       );
+  setSpecialDir( 8, CSIDL_MYVIDEO          );
 }
 
 static void initExecutablePath()
@@ -143,8 +143,7 @@ static void initExecutablePath()
 
 #else
 
-static void setSpecialDir( File::UserDirectory dir, const char* name,
-                           HashMap<String, String>* vars )
+static void setSpecialDir( int dirId, const char* name, HashMap<String, String>* vars )
 {
   const char* value = getenv( name );
 
@@ -152,14 +151,14 @@ static void setSpecialDir( File::UserDirectory dir, const char* name,
     const String* defValue = vars->find( name );
 
     if( defValue == nullptr ) {
-      specialDirs[dir] = "";
+      specialDirs[dirId] = "";
       return;
     }
 
     value = defValue->cstr();
   }
 
-  specialDirs[dir] = value;
+  specialDirs[dirId] = value;
 }
 
 static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
@@ -190,7 +189,7 @@ static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
     }
 
     if( path.beginsWith( "$HOME" ) ) {
-      path = specialDirs[File::HOME] + path.substring( 5 );
+      path = File::HOME + path.substring( 5 );
     }
 
     vars->add( name, path );
@@ -199,23 +198,23 @@ static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
 
 static void initSpecialDirs()
 {
-  setSpecialDir( File::HOME, "HOME", nullptr );
+  setSpecialDir( 0, "HOME", nullptr );
 
-  if( specialDirs[File::HOME].isEmpty() ) {
+  if( File::HOME.isEmpty() ) {
     OZ_ERROR( "oz::File: Unable to determine home directory: HOME environment variable not set" );
   }
 
   HashMap<String, String> vars;
 
   // Default locations.
-  vars.add( "XDG_CONFIG_HOME",   specialDirs[File::HOME] + "/.config"      );
-  vars.add( "XDG_DATA_HOME",     specialDirs[File::HOME] + "/.local/share" );
-  vars.add( "XDG_DESKTOP_DIR",   specialDirs[File::HOME] + "/Desktop"      );
-  vars.add( "XDG_DOCUMENTS_DIR", specialDirs[File::HOME] + "/Documents"    );
-  vars.add( "XDG_DOWNLOAD_DIR",  specialDirs[File::HOME] + "/Download"     );
-  vars.add( "XDG_MUSIC_DIR",     specialDirs[File::HOME] + "/Music"        );
-  vars.add( "XDG_PICTURES_DIR",  specialDirs[File::HOME] + "/Pictures"     );
-  vars.add( "XDG_VIDEOS_DIR",    specialDirs[File::HOME] + "/Videos"       );
+  vars.add( "XDG_CONFIG_HOME",   File::HOME + "/.config"      );
+  vars.add( "XDG_DATA_HOME",     File::HOME + "/.local/share" );
+  vars.add( "XDG_DESKTOP_DIR",   File::HOME + "/Desktop"      );
+  vars.add( "XDG_DOCUMENTS_DIR", File::HOME + "/Documents"    );
+  vars.add( "XDG_DOWNLOAD_DIR",  File::HOME + "/Download"     );
+  vars.add( "XDG_MUSIC_DIR",     File::HOME + "/Music"        );
+  vars.add( "XDG_PICTURES_DIR",  File::HOME + "/Pictures"     );
+  vars.add( "XDG_VIDEOS_DIR",    File::HOME + "/Videos"       );
 
   // Override default locations with global settings, if exist.
   loadXDGSettings( "/etc/xdg/user", &vars );
@@ -224,14 +223,14 @@ static void initSpecialDirs()
   loadXDGSettings( *vars.find( "XDG_CONFIG_HOME" ) + "/user-dirs.dirs", &vars );
 
   // Finally set special directories, environment variables again override default values.
-  setSpecialDir( File::CONFIG,    "XDG_CONFIG_HOME",   &vars );
-  setSpecialDir( File::DATA,      "XDG_DATA_HOME",     &vars );
-  setSpecialDir( File::DESKTOP,   "XDG_DESKTOP_DIR",   &vars );
-  setSpecialDir( File::DOCUMENTS, "XDG_DOCUMENTS_DIR", &vars );
-  setSpecialDir( File::DOWNLOAD,  "XDG_DOWNLOAD_DIR",  &vars );
-  setSpecialDir( File::MUSIC,     "XDG_MUSIC_DIR",     &vars );
-  setSpecialDir( File::PICTURES,  "XDG_PICTURES_DIR",  &vars );
-  setSpecialDir( File::VIDEOS,    "XDG_VIDEOS_DIR",    &vars );
+  setSpecialDir( 1, "XDG_CONFIG_HOME",   &vars );
+  setSpecialDir( 2, "XDG_DATA_HOME",     &vars );
+  setSpecialDir( 3, "XDG_DESKTOP_DIR",   &vars );
+  setSpecialDir( 4, "XDG_DOCUMENTS_DIR", &vars );
+  setSpecialDir( 5, "XDG_DOWNLOAD_DIR",  &vars );
+  setSpecialDir( 6, "XDG_MUSIC_DIR",     &vars );
+  setSpecialDir( 7, "XDG_PICTURES_DIR",  &vars );
+  setSpecialDir( 8, "XDG_VIDEOS_DIR",    &vars );
 }
 
 static void initExecutablePath()
@@ -243,11 +242,20 @@ static void initExecutablePath()
   snprintf( pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid );
 
   ptrdiff_t length = readlink( pidPathBuffer, exePathBuffer, PATH_MAX );
-
   exePath = length < 0 ? String() : String( exePathBuffer, int( length ) );
 }
 
 #endif
+
+const String& File::HOME      = specialDirs[0];
+const String& File::CONFIG    = specialDirs[1];
+const String& File::DATA      = specialDirs[2];
+const String& File::DESKTOP   = specialDirs[3];
+const String& File::DOCUMENTS = specialDirs[4];
+const String& File::DOWNLOAD  = specialDirs[5];
+const String& File::MUSIC     = specialDirs[6];
+const String& File::PICTURES  = specialDirs[7];
+const String& File::VIDEOS    = specialDirs[8];
 
 OZ_HIDDEN
 File::File( const String& path, File::Type type, int size, long64 time ) :
@@ -1165,15 +1173,6 @@ bool File::mountLocal( const char* path, bool append )
   return true;
 }
 
-const String& File::userDirectory( File::UserDirectory directory )
-{
-  if( directory < HOME || VIDEOS < directory ) {
-    return String::EMPTY;
-  }
-
-  return specialDirs[directory];
-}
-
 const String& File::executablePath()
 {
   return exePath;
@@ -1226,9 +1225,7 @@ void File::destroy()
 {
   PHYSFS_deinit();
 
-  for( int i = HOME; i <= VIDEOS; ++i ) {
-    specialDirs[i] = "";
-  }
+  aFill<String, String>( specialDirs, aLength<String>( specialDirs ), String::EMPTY );
   exePath = "";
 }
 

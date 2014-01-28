@@ -40,7 +40,7 @@
     area.y = y_, \
     area.w = w_, \
     area.h = h_, \
-    config[#area].get( &area.x, 4 ) \
+    config[#area].getArray( &area.x, 4, 0 ) \
   )
 
 #define OZ_READ_BAR( bar, x_, y_, w_, h_, border_, background_, minColour_, maxColour_ ) \
@@ -53,7 +53,7 @@
     bar.background = background_, \
     bar.minColour  = minColour_, \
     bar.maxColour  = maxColour_, \
-    config[#bar].get( &bar.x, 20 ) \
+    config[#bar].getArray( &bar.x, 20, 0 ) \
   )
 
 namespace oz

@@ -689,7 +689,7 @@ void Sound::init()
   Log::println( "}" );
   Log::verboseMode = false;
 
-  const char* deviceName = config.include( "sound.device", "" ).asString();
+  const char* deviceName = config.include( "sound.device", "" ).get( "" );
 
   if( String::isEmpty( deviceName ) ) {
     deviceName = nullptr;
@@ -797,10 +797,10 @@ void Sound::init()
 
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
-  setVolume( config.include( "sound.volume", 1.0f ).asFloat() );
+  setVolume( config.include( "sound.volume", 1.0f ).get( 0.0f ) );
   setMusicVolume( 0.5f );
 
-  const String& speaker = config.include( "sound.speaker", "en" ).asString();
+  const String& speaker = config.include( "sound.speaker", "en" ).get( "" );
 
   if( espeak_Initialize != nullptr ) {
     context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );

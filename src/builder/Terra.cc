@@ -152,7 +152,7 @@ void Terra::load()
     const JSON& gradientConfig = config["gradient"];
 
     for( int i = 0; i < gradientConfig.length(); ++i ) {
-      Vec4 gradientPoint = gradientConfig[i].asVec4();
+      Vec4 gradientPoint = gradientConfig[i].get( Vec4::ZERO );
 
       TerraBuilder::addGradientPoint( gradientPoint );
     }

@@ -152,8 +152,8 @@ void Shader::loadProgram( int id )
     OZ_ERROR( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
   }
 
-  const char* vertName = programConfig[0].asString();
-  const char* fragName = programConfig[1].asString();
+  const char* vertName = programConfig[0].get( "" );
+  const char* fragName = programConfig[1].get( "" );
 
   const uint* vertId = vertShaders.find( vertName );
   const uint* fragId = fragShaders.find( fragName );
@@ -297,13 +297,13 @@ void Shader::init()
 {
   Log::print( "Initialising Shader ..." );
 
-  hasVertexTexture = config.include( "shader.vertexTexture", true  ).asBool();
-  setSamplerMap    = config.include( "shader.setSamplerMap", true  ).asBool();
-  isLowDetail      = config.include( "shader.lowDetail",     false ).asBool();
-  doEnvMap         = config.include( "shader.envMap",        true  ).asBool();
-  doBumpMap        = config.include( "shader.bumpMap",       true  ).asBool();
-  doPostprocess    = config.include( "shader.postprocess",   false ).asBool();
-  nLights          = config.include( "shader.nLights",       4     ).asInt();
+  hasVertexTexture = config.include( "shader.vertexTexture", true  ).get( false );
+  setSamplerMap    = config.include( "shader.setSamplerMap", true  ).get( false );
+  isLowDetail      = config.include( "shader.lowDetail",     false ).get( false );
+  doEnvMap         = config.include( "shader.envMap",        true  ).get( false );
+  doBumpMap        = config.include( "shader.bumpMap",       true  ).get( false );
+  doPostprocess    = config.include( "shader.postprocess",   false ).get( false );
+  nLights          = config.include( "shader.nLights",       4     ).get( 0 );
 
 #ifdef GL_ES_VERSION_2_0
   hasVertexTexture = false;

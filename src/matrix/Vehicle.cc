@@ -558,34 +558,34 @@ Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  h          = json["h"].asFloat();
-  v          = json["v"].asFloat();
-  w          = json["w"].asFloat();
-  rotVelH    = json["rotVelH"].asFloat();
-  rotVelV    = json["rotVelV"].asFloat();
-  actions    = json["actions"].asInt();
-  oldActions = json["oldActions"].asInt();
+  h          = json["h"].get( 0.0f );
+  v          = json["v"].get( 0.0f );
+  w          = json["w"].get( 0.0f );
+  rotVelH    = json["rotVelH"].get( 0.0f );
+  rotVelV    = json["rotVelV"].get( 0.0f );
+  actions    = json["actions"].get( 0 );
+  oldActions = json["oldActions"].get( 0 );
 
   rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
                                                    Mat44::rotationZXZ( h, v, w );
-  state      = json["state"].asInt();
-  oldState   = json["oldState"].asInt();
-  fuel       = json["fuel"].asFloat();
+  state      = json["state"].get( 0 );
+  oldState   = json["oldState"].get( 0 );
+  fuel       = json["fuel"].get( 0.0f );
 
   step       = 0.0f;
   stairRate  = 0.0f;
 
-  pilot      = json["pilot"].asInt();
+  pilot      = json["pilot"].get( -1 );
 
-  weapon     = json["weapon"].asInt();
+  weapon     = json["weapon"].get( 0 );
 
   const JSON& weaponsJSON = json["weapons"];
 
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     const JSON& weaponJSON = weaponsJSON[i];
 
-    nRounds[i]  = weaponJSON["nRounds"].asInt();
-    shotTime[i] = weaponJSON["shotTime"].asFloat();
+    nRounds[i]  = weaponJSON["nRounds"].get( 0 );
+    shotTime[i] = weaponJSON["shotTime"].get( 0.0f );
   }
 }
 

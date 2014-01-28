@@ -38,7 +38,7 @@ namespace client
 
 void Profile::save()
 {
-  File profileFile = config["dir.config"].asString() + "/profile.json";
+  File profileFile = config["dir.config"].get( String::EMPTY ) + "/profile.json";
   JSON profileConfig( JSON::OBJECT );
 
   profileConfig.add( "name", name );
@@ -57,7 +57,7 @@ void Profile::save()
 
 void Profile::init()
 {
-  File profileFile = config["dir.config"].asString() + "/profile.json";
+  File profileFile = config["dir.config"].get( File::CONFIG ) + "/profile.json";
 
   JSON profileConfig;
   bool configExists = profileConfig.load( profileFile );
@@ -112,7 +112,7 @@ void Profile::init()
     profileConfig.add( "weaponItem", 0 );
   }
 
-  const char*        sClazz   = profileConfig["class"].asString();
+  const char*        sClazz   = profileConfig["class"].get( "" );
   const ObjectClass* objClazz = liber.objClass( sClazz );
 
   clazz = static_cast<const BotClass*>( objClazz );
@@ -128,7 +128,7 @@ void Profile::init()
   items.deallocate();
 
   for( int i = 0; i < nItems; ++i ) {
-    const char* sItem = itemsConfig[i].asString();
+    const char* sItem = itemsConfig[i].get( "" );
 
     const ObjectClass* itemClazz = liber.objClass( sItem );
     if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=

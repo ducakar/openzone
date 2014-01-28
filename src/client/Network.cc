@@ -79,8 +79,8 @@ void Network::update()
 
 void Network::init()
 {
-  host = config.include( "net.server", "localhost" ).asString();
-  port = ushort( config.include( "net.port", 6666 ).asInt() );
+  host = config.include( "net.server", "localhost" ).get( "" );
+  port = ushort( config.include( "net.port", 6666 ).get( 0 ) );
 }
 
 void Network::destroy()

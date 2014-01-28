@@ -108,7 +108,7 @@ void UI::buildIcons()
   const JSON& sounds = style["sounds"];
 
   foreach( sound, sounds.objectCIter() ) {
-    context.usedSounds.add( sound->value.asString(), "UI style" );
+    context.usedSounds.add( sound->value.get( "?" ), "UI style" );
   }
 
   Log::unindent();

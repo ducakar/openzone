@@ -56,24 +56,23 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
 
   for( int i = 0; i < nSteps; ++i ) {
     const JSON& stepConfig = sequence[i];
-
     const JSON& rotArray = stepConfig["rot"];
 
     if( !rotArray.isNull() ) {
-      Vec3 rot = rotArray.asVec3();
+      Vec3 rot = rotArray.get( Vec3::ZERO );
       step.rot = Quat::rotationZXZ( Math::rad( rot.x ), Math::rad( rot.y ), Math::rad( rot.z ) );
     }
 
     const JSON& posArray = stepConfig["pos"];
 
     if( !posArray.isNull() ) {
-      step.p = posArray.asPoint();
+      step.p = posArray.get( Point::ORIGIN );
     }
 
     const JSON& colourArray = stepConfig["colour"];
 
     if( !colourArray.isNull() ) {
-      step.colour = colourArray.asMat44();
+      step.colour = colourArray.get( Mat44::ID );
     }
 
     const JSON& execConfig = stepConfig["exec"];
@@ -81,29 +80,33 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
       step.code = "";
     }
     else {
-      step.code = execConfig.asString();
+      step.code = execConfig.get( "" );
     }
 
     const JSON& trackConfig = stepConfig["track"];
+    const String& track = trackConfig.get( String::EMPTY );
+
     if( trackConfig.isNull() ) {
       step.track = -1;
     }
-    else if( trackConfig.asString().isEmpty() ) {
+    else if( track.isEmpty() ) {
       step.track = -2;
     }
     else {
-      step.track = liber.musicTrackIndex( trackConfig.asString() );
+      step.track = liber.musicTrackIndex( track );
     }
 
     const JSON& titleConfig = stepConfig["title"];
+    const String& title = titleConfig.get( String::EMPTY );
+
     if( titleConfig.isNull() ) {
       step.title = "";
     }
-    else if( titleConfig.asString().isEmpty() ) {
+    else if( title.isEmpty() ) {
       step.title = " ";
     }
     else {
-      step.title = missionLingua->get( titleConfig.asString() );
+      step.title = missionLingua->get( title );
     }
 
     step.time = stepConfig["time"].get( 0.0f );

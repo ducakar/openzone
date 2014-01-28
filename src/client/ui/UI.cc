@@ -215,8 +215,8 @@ void UI::init()
 {
   fps        = 1.0f / Timer::TICK_TIME;
   isFreelook = false;
-  showFPS    = config.include( "ui.showFPS",   false ).asBool();
-  showDebug  = config.include( "ui.showDebug", false ).asBool();
+  showFPS    = config.include( "ui.showFPS",   false ).get( false );
+  showDebug  = config.include( "ui.showDebug", false ).get( false );
   doShow     = true;
 
   style.init();

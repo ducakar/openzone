@@ -303,7 +303,7 @@ void Loader::preloadRun()
 
 void Loader::makeScreenshot()
 {
-  const char* picturesDir = config["dir.pictures"].asString();
+  const char* picturesDir = config["dir.pictures"].get( File::PICTURES );
 
   File::mkdir( picturesDir );
 

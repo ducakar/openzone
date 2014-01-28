@@ -592,7 +592,7 @@ void Liber::initClasses()
     }
 
     String name = file->baseName();
-    const String& base = config["base"].asString();
+    const String& base = config["base"].get( "" );
 
     if( objClasses.contains( name ) ) {
       OZ_ERROR( "Duplicated class '%s'", name.cstr() );

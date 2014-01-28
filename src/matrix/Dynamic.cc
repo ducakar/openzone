@@ -83,12 +83,12 @@ Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* is ) :
 Dynamic::Dynamic( const DynamicClass* clazz_, const JSON& json ) :
   Object( clazz_, json )
 {
-  velocity = json["velocity"].asVec3();
-  momentum = json["momentum"].asVec3();
-  floor    = json["floor"].asVec3();
-  parent   = json["parent"].asInt();
-  lower    = json["lower"].asInt();
-  depth    = json["depth"].asFloat();
+  velocity = json["velocity"].get( Vec3::ZERO );
+  momentum = json["momentum"].get( Vec3::ZERO );
+  floor    = json["floor"].get( Vec3( 0.0f, 0.0f, 1.0f ) );
+  parent   = json["parent"].get( -1 );
+  lower    = json["lower"].get( -1 );
+  depth    = json["depth"].get( -1 );
   mass     = clazz_->mass;
   lift     = clazz_->lift;
 }

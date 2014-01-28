@@ -149,20 +149,13 @@ int Client::init( int argc, char** argv )
 
 #else
 
-  const char* configBase   = File::userDirectory( File::CONFIG );
-  const char* dataBase     = File::userDirectory( File::DATA );
-  const char* musicBase    = File::userDirectory( File::MUSIC );
-  const char* picturesBase = File::userDirectory( File::PICTURES );
+  File::mkdir( File::CONFIG );
+  File::mkdir( File::DATA );
 
-  File::mkdir( configBase );
-  File::mkdir( dataBase );
-
-  String configDir   = String( configBase, "/openzone" );
-  String dataDir     = String( dataBase, "/openzone" );
-  String musicDir    = String::isEmpty( musicBase ) ? String() :
-                                                      String( musicBase, "/OpenZone" );
-  String picturesDir = String::isEmpty( picturesBase ) ? String() :
-                                                         String( picturesBase, "/OpenZone" );
+  String configDir   = File::CONFIG + "/openzone";
+  String dataDir     = File::DATA + "/openzone";
+  String musicDir    = File::MUSIC.isEmpty() ? String::EMPTY : File::MUSIC + "/OpenZone";
+  String picturesDir = File::PICTURES.isEmpty() ? String::EMPTY : File::PICTURES + "/OpenZone";
 
 #endif
 
@@ -267,17 +260,17 @@ int Client::init( int argc, char** argv )
   config["dir.pictures"];
   config["dir.prefix"];
 
-  windowWidth     = config.include( "window.windowWidth",  1280 ).asInt();
-  windowHeight    = config.include( "window.windowHeight", 720  ).asInt();
-  screenWidth     = config.include( "window.screenWidth",  0    ).asInt();
-  screenHeight    = config.include( "window.screenHeight", 0    ).asInt();
+  windowWidth     = config.include( "window.windowWidth",  1280 ).get( 0 );
+  windowHeight    = config.include( "window.windowHeight", 720  ).get( 0 );
+  screenWidth     = config.include( "window.screenWidth",  0    ).get( 0 );
+  screenHeight    = config.include( "window.screenHeight", 0    ).get( 0 );
 
   windowWidth     = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
   windowHeight    = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
   screenWidth     = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
   screenHeight    = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
 
-  bool fullscreen = config.include( "window.fullscreen",    true ).asBool();
+  bool fullscreen = config.include( "window.fullscreen",    true ).get( false );
 
   Window::create( "OpenZone " OZ_VERSION,
                   fullscreen ? screenWidth  : windowWidth,
@@ -291,7 +284,7 @@ int Client::init( int argc, char** argv )
   network.init();
   initFlags |= INIT_NETWORK;
 
-  String globalDataDir = config["dir.prefix"].asString() + "/share/openzone";
+  String globalDataDir = config["dir.prefix"].get( String::EMPTY ) + "/share/openzone";
 
 #ifdef __native_client__
 
@@ -322,7 +315,7 @@ int Client::init( int argc, char** argv )
 
 #else
 
-  const char* userMusicPath = config["dir.music"].asString();
+  const char* userMusicPath = config["dir.music"].get( File::MUSIC );
 
   if( File::mount( userMusicPath, "/userMusic", true ) ) {
     Log::println( "%s [mounted on /userMusic]", userMusicPath );
@@ -414,14 +407,14 @@ int Client::init( int argc, char** argv )
   int seed;
 
   if( config["seed"].type() == JSON::STRING ) {
-    if( !config["seed"].asString().equals( "TIME" ) ) {
+    if( !config["seed"].get( String::EMPTY ).equals( "TIME" ) ) {
       OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
     }
 
     seed = int( Time::time() );
   }
   else {
-    seed = config["seed"].asInt();
+    seed = config["seed"].get( 42 );
     LuaCommon::isRandomSeedTime = false;
   }
 
@@ -516,7 +509,7 @@ void Client::shutdown()
     Window::destroy();
   }
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    File configFile = config["dir.config"].asString() + "/client.json";
+    File configFile = config["dir.config"].get( File::CONFIG ) + "/client.json";
 
     config.exclude( "dir.config" );
     config.exclude( "dir.data" );

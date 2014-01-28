@@ -359,8 +359,8 @@ void Camera::init()
   centreX       = Window::width() / 2;
   centreY       = Window::height() / 2;
 
-  float angle   = Math::rad( config.include( "camera.angle", 80.0f ).asFloat() );
-  aspect        = config.include( "camera.aspect", 0.0f ).asFloat();
+  float angle   = Math::rad( config.include( "camera.angle", 80.0f ).get( 0.0f ) );
+  aspect        = config.include( "camera.aspect", 0.0f ).get( 0.0f );
   isFixedAspect = aspect != 0.0f;
   aspect        = isFixedAspect ? aspect : float( width ) / float( height );
   coeff         = Math::tan( angle / 2.0f );

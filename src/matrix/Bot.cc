@@ -1191,30 +1191,30 @@ Bot::Bot( const BotClass* clazz_, InputStream* is ) :
 Bot::Bot( const BotClass* clazz_, const JSON& json ) :
   Dynamic( clazz_, json )
 {
-  dim        = json["dim"].asVec3();
+  dim        = json["dim"].get( Vec3::ZERO );
 
-  h          = json["h"].asFloat();
-  v          = json["v"].asFloat();
+  h          = json["h"].get( 0.0f );
+  v          = json["v"].get( 0.0f );
   actions    = 0;
   oldActions = 0;
   instrument = -1;
   container  = -1;
 
-  state      = json["state"].asInt();
+  state      = json["state"].get( 0 );
   oldState   = state;
-  stamina    = json["stamina"].asFloat();
-  step       = json["step"].asFloat();
-  stairRate  = json["stairRate"].asFloat();
+  stamina    = json["stamina"].get( 0.0f );
+  step       = json["step"].get( 0.0f );
+  stairRate  = json["stairRate"].get( 0.0f );
 
-  cargo      = json["cargo"].asInt();
-  weapon     = json["weapon"].asInt();
-  grabHandle = json["grabHandle"].asFloat();
+  cargo      = json["cargo"].get( -1 );
+  weapon     = json["weapon"].get( -1 );
+  grabHandle = json["grabHandle"].get( 0.0f );
   meleeTime  = 0.0f;
 
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
-  name       = json["name"].asString();
-  mindFunc   = json["mindFunc"].asString();
+  name       = json["name"].get( "" );
+  mindFunc   = json["mindFunc"].get( "" );
 
   if( state & DEAD_BIT ) {
     resistance = Math::INF;

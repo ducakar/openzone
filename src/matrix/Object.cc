@@ -148,14 +148,18 @@ Object::Object( const ObjectClass* clazz_, InputStream* is )
 
 Object::Object( const ObjectClass* clazz_, const JSON& json )
 {
-  p          = json["p"].asPoint();
+  p          = json["p"].get( Point::ORIGIN );
   dim        = clazz_->dim;
   cell       = nullptr;
-  index      = json["index"].asInt();
-  flags      = json["flags"].asInt();
-  life       = json["life"].asFloat();
+  index      = json["index"].get( -1 );
+  flags      = json["flags"].get( 0 );
+  life       = json["life"].get( 0.0f );
   resistance = clazz_->resistance;
   clazz      = clazz_;
+
+  if( index < 0 ) {
+    OZ_ERROR( "Invalid object index" );
+  }
 
   if( flags & WEST_EAST_MASK ) {
     swap( dim.x, dim.y );
@@ -168,7 +172,11 @@ Object::Object( const ObjectClass* clazz_, const JSON& json )
 
     int nItems = itemsJSON.length();
     for( int i = 0; i < nItems; ++i ) {
-      items.add( itemsJSON[i].asInt() );
+      int index = itemsJSON[i].get( -1 );
+      if( index < 0 ) {
+        OZ_ERROR( "Invalid item index" );
+      }
+      items.add( index );
     }
   }
 }

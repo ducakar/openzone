@@ -73,6 +73,7 @@ add_library( ozCore
   Mutex.cc
   OutputStream.cc
   Pepper.cc
+  Plane.cc
   Point.cc
   Profiler.cc
   Quat.cc

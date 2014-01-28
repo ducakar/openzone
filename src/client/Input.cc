@@ -336,7 +336,7 @@ void Input::loadKeyMap( const JSON& keyConfig )
     }
 
     for( int j = 0; j < nBindings; ++j ) {
-      const String& keyDesc = keyBindings[j].asString();
+      const String& keyDesc = keyBindings[j].get( "?" );
 
       if( keyDesc.isEmpty() ) {
         OZ_ERROR( "Empty key description string for '%s'", KEY_NAMES[i] );
@@ -618,7 +618,7 @@ void Input::update()
 
 void Input::init()
 {
-  File configFile = config["dir.config"].asString() + "/input.json";
+  File configFile = config["dir.config"].get( File::CONFIG ) + "/input.json";
 
   Log::print( "Initialising Input from '%s' ...", configFile.path().cstr() );
 
@@ -713,7 +713,7 @@ void Input::destroy()
     return;
   }
 
-  File configFile = config["dir.config"].asString() + "/input.json";
+  File configFile = config["dir.config"].get( File::CONFIG ) + "/input.json";
 
   Log::print( "Writing Input configuration to '%s' ...", configFile.path().cstr() );
 

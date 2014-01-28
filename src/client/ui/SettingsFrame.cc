@@ -55,7 +55,7 @@ SettingsFrame::SettingsFrame() :
   x = ( camera.width - width ) / 2;
   y = ( camera.height - height ) / 2;
 
-  const String& configDirPath = config["dir.config"].asString();
+  const String& configDirPath = config["dir.config"].get( File::CONFIG );
 
   message.setWidth( width - 8 );
   message.setText( "%s\n\n  %s\n  %s\n  %s",

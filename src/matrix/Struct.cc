@@ -748,14 +748,14 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
 {
   bsp         = bsp_;
 
-  p           = json["p"].asPoint();
-  heading     = Heading( json["heading"].asInt() );
+  p           = json["p"].get( Point::ORIGIN );
+  heading     = Heading( json["heading"].get( Heading::NORTH ) );
 
-  index       = json["index"].asInt();
+  index       = json["index"].get( -1 );
 
-  life        = json["life"].asFloat();
+  life        = json["life"].get( 0.0f );
   resistance  = bsp->resistance;
-  demolishing = json["demolishing"].asFloat();
+  demolishing = json["demolishing"].get( 0.0f );
 
   transf      = Mat44::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
   invTransf   = ROTATIONS[4 - heading] ^ Mat44::translation( Point::ORIGIN - p );
@@ -763,6 +763,10 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
   Bounds bb   = toAbsoluteCS( *bsp );
   mins        = bb.mins;
   maxs        = bb.maxs;
+
+  if( index < 0 ) {
+    OZ_ERROR( "Invalid struct index" );
+  }
 
   if( bsp->nEntities != 0 ) {
     entities.resize( bsp->nEntities );
@@ -775,11 +779,11 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
 
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
-      entity.key    = entityJSON["key"].asInt();
-      entity.state  = Entity::State( entityJSON["state"].asInt() );
-      entity.ratio  = entityJSON["ratio"].asFloat();
-      entity.time   = entityJSON["time"].asFloat();
-      entity.offset = entityJSON["offset"].asVec3();
+      entity.key    = entityJSON["key"].get( 0 );
+      entity.state  = Entity::State( entityJSON["state"].get( Entity::CLOSED ) );
+      entity.ratio  = entityJSON["ratio"].get( 0.0f );
+      entity.time   = entityJSON["time"].get( 0.0f );
+      entity.offset = entityJSON["offset"].get( Vec3::ZERO );
 
       if( entity.state == Entity::OPENING ) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
@@ -800,7 +804,11 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
     boundObjects.allocate( bsp->nBoundObjects );
 
     foreach( i, boundObjectsJSON.arrayCIter() ) {
-      boundObjects.add( i->asInt() );
+      int index = i->get( -1 );
+      if( index < 0 ) {
+        OZ_ERROR( "Invalid struct bound object index" );
+      }
+      boundObjects.add( index );
     }
   }
 }

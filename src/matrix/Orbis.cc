@@ -401,7 +401,7 @@ void Orbis::read( const JSON& json )
   const JSON& structsJSON = json["structs"];
 
   foreach( i, structsJSON.arrayCIter() ) {
-    String name    = ( *i )["bsp"].asString();
+    String name    = ( *i )["bsp"].get( "" );
     const BSP* bsp = liber.bsp( name );
 
     const_cast<BSP*>( bsp )->request();
@@ -415,7 +415,7 @@ void Orbis::read( const JSON& json )
   const JSON& objectsJSON = json["objects"];
 
   foreach( i, objectsJSON.arrayCIter() ) {
-    String             name  = ( *i )["class"].asString();
+    String             name  = ( *i )["class"].get( "" );
     const ObjectClass* clazz = liber.objClass( name );
     Object*            obj   = clazz->create( *i );
     Dynamic*           dyn   = static_cast<Dynamic*>( obj );
@@ -433,7 +433,7 @@ void Orbis::read( const JSON& json )
   const JSON& fragsJSON = json["frags"];
 
   foreach( i, fragsJSON.arrayCIter() ) {
-    String          name = ( *i )["pool"].asString();
+    String          name = ( *i )["pool"].get( "" );
     const FragPool* pool = liber.fragPool( name );
     Frag*           frag = new Frag( pool, *i );
 

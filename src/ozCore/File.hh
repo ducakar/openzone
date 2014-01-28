@@ -46,6 +46,33 @@ class File
 {
 public:
 
+  /// User's home/profile directory.
+  static const String& HOME;
+
+  ///< Directory for configuration (i.e. `~/.config`).
+  static const String& CONFIG;
+
+  ///< Directory for program data (i.e. `~/.local/share`).
+  static const String& DATA;
+
+  /// User's desktop directory.
+  static const String& DESKTOP;
+
+  /// User's directory for documents.
+  static const String& DOCUMENTS;
+
+  /// User's directory for downloads.
+  static const String& DOWNLOAD;
+
+  /// User's directory for music.
+  static const String& MUSIC;
+
+  /// User's directory for pictures.
+  static const String& PICTURES;
+
+  /// User's directory for videos.
+  static const String& VIDEOS;
+
   /**
    * %File type classification.
    */
@@ -54,22 +81,6 @@ public:
     MISSING,
     DIRECTORY,
     REGULAR
-  };
-
-  /**
-   * Special user directories.
-   */
-  enum UserDirectory
-  {
-    HOME,      ///< User's home/profile directory
-    CONFIG,    ///< Directory for configuration (i.e. `~/.config`).
-    DATA,      ///< Directory for program data (i.e. `~/.local/share`).
-    DESKTOP,
-    DOCUMENTS,
-    DOWNLOAD,
-    MUSIC,
-    PICTURES,
-    VIDEOS
   };
 
   /**
@@ -436,13 +447,6 @@ public:
    * @param append true to append to the end instead to the beginning of the search path.
    */
   static bool mountLocal( const char* path, bool append = false );
-
-  /**
-   * Return requested special user directory or `nullptr` for an invalid enum.
-   *
-   * File system initialisation must be performed before using this function on all platforms.
-   */
-  static const String& userDirectory( UserDirectory directory );
 
   /**
    * Get executable file path.

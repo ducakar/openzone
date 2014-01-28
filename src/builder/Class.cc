@@ -43,7 +43,7 @@ void Class::scanObjClass( const char* className )
 
   const JSON& soundsConfig = config["audioSounds"];
   foreach( sound, soundsConfig.objectCIter() ) {
-    context.usedSounds.include( sound->value.asString(), name + " (Object class)" );
+    context.usedSounds.include( sound->value.get( "?" ), name + " (Object class)" );
   }
 }
 
@@ -59,7 +59,7 @@ void Class::scanFragPool( const char* poolName )
 
   const JSON& modelsConfig = config["models"];
   foreach( model, modelsConfig.arrayCIter() ) {
-    context.usedModels.include( model->asString(), name + " (Object class)" );
+    context.usedModels.include( model->get( "?" ), name + " (Object class)" );
   }
 }
 

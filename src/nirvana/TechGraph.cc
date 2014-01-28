@@ -175,7 +175,7 @@ void TechGraph::load()
 
     int nRequires = requires.length();
     for( int i = 0; i < nRequires; ++i ) {
-      Node* depNode = findNode( requires[i].asString() );
+      Node* depNode = findNode( requires[i].get( "?" ) );
 
       node.requires.add( depNode );
     }

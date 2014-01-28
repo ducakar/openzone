@@ -24,6 +24,7 @@
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>
+#include <complex.h>
 
 using namespace oz;
 
@@ -66,8 +67,8 @@ int main()
 {
   System::init();
 
-  JSON json = true;
-  json = false;
-  Log() << json;
+  JSON json = Vec4( 49.5f, 50.0f, 51.0f, 1.0f );
+
+  Log() << json.get( Vec3::ZERO );
   return 0;
 }
