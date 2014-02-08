@@ -167,7 +167,7 @@ private:
   // Vertex in Quake 3 BSP.
   struct QBSPVertex
   {
-    float p[3];
+    float pos[3];
     float texCoord[2];
     float lightmapCoord[2];
     float normal[3];
@@ -265,37 +265,37 @@ private:
     Heading heading;
   };
 
-  String                 name;
-  String                 title;
-  String                 description;
+  String               name;
+  String               title;
+  String               description;
 
-  float                  life;
-  float                  resistance;
+  float                life;
+  float                resistance;
 
-  DArray<Texture>        textures;
-  List<Plane>            planes;
-  List<oz::BSP::Node>    nodes;
-  List<oz::BSP::Leaf>    leaves;
-  List<int>              leafBrushes;
-  DArray<Model>          models;
-  List<oz::BSP::Brush>   brushes;
-  List<int>              brushSides;
-  DArray<ModelFaces>     modelFaces;
-  DArray<client::Vertex> vertices;
-  DArray<int>            indices;
-  List<Face>             faces;
+  DArray<Texture>      textures;
+  List<Plane>          planes;
+  List<oz::BSP::Node>  nodes;
+  List<oz::BSP::Leaf>  leaves;
+  List<int>            leafBrushes;
+  DArray<Model>        models;
+  List<oz::BSP::Brush> brushes;
+  List<int>            brushSides;
+  DArray<ModelFaces>   modelFaces;
+  DArray<QBSPVertex>   vertices;
+  DArray<int>          indices;
+  List<Face>           faces;
 
-  String                 fragPool;
-  int                    nFrags;
+  String               fragPool;
+  int                  nFrags;
 
-  String                 demolishSound;
+  String               demolishSound;
 
-  float                  groundOffset;
+  float                groundOffset;
 
-  List<BoundObject>      boundObjects;
+  List<BoundObject>    boundObjects;
 
-  Vec4                   waterFogColour;
-  Vec4                   lavaFogColour;
+  Vec4                 waterFogColour;
+  Vec4                 lavaFogColour;
 
   void load();
   void optimise();

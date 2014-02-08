@@ -1143,7 +1143,7 @@ void BSP::saveClient()
       compiler.begin( Compiler::TRIANGLES );
 
       for( int k = 0; k < face.nIndices; ++k ) {
-        const client::Vertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+        const QBSPVertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
         compiler.texCoord( v.texCoord );
         compiler.normal( v.normal );
@@ -1152,7 +1152,7 @@ void BSP::saveClient()
 
       if( textures[face.texture].type & QBSP_WATER_TYPE_BIT ) {
         for( int k = face.nIndices - 1; k >= 0; --k ) {
-          const client::Vertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+          const QBSPVertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
           compiler.texCoord( v.texCoord );
           compiler.normal( -v.normal[0], -v.normal[1], -v.normal[2] );

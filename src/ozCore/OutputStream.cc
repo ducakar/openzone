@@ -267,8 +267,8 @@ void OutputStream::writeMat44( const Mat44& m )
 
 void OutputStream::readBitset( ulong* bitset, int nBits )
 {
-  int unitBits    = sizeof( ulong ) * 8;
-  int unit64Bits  = sizeof( ulong64 ) * 8;
+  int unitBits    = int( sizeof( ulong ) ) * 8;
+  int unit64Bits  = int( sizeof( ulong64 ) ) * 8;
   int unitCount   = ( nBits + unitBits - 1 ) / unitBits;
   int unit64Count = ( nBits + unit64Bits - 1 ) / unit64Bits;
 
@@ -291,8 +291,8 @@ void OutputStream::readBitset( ulong* bitset, int nBits )
 
 void OutputStream::writeBitset( const ulong* bitset, int nBits )
 {
-  int unitBits    = sizeof( ulong ) * 8;
-  int unit64Bits  = sizeof( ulong64 ) * 8;
+  int unitBits    = int( sizeof( ulong ) ) * 8;
+  int unit64Bits  = int( sizeof( ulong64 ) ) * 8;
   int unitCount   = ( nBits + unitBits - 1 ) / unitBits;
   int unit64Count = ( nBits + unit64Bits - 1 ) / unit64Bits;
 

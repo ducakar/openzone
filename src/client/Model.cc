@@ -43,20 +43,16 @@ void Vertex::setFormat()
                          static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
-  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glVertexAttribPointer( Attrib::NORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 
-//   glEnableVertexAttribArray( Attrib::TANGENT );
-//   glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
-//                          static_cast<char*>( nullptr ) + offsetof( Vertex, tangent ) );
-//
-//   glEnableVertexAttribArray( Attrib::BINORMAL );
-//   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
-//                          static_cast<char*>( nullptr ) + offsetof( Vertex, binormal ) );
-//
-//   glEnableVertexAttribArray( Attrib::COLOUR );
-//   glVertexAttribPointer( Attrib::COLOUR, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
-//                          static_cast<char*>( nullptr ) + offsetof( Vertex, colour ) );
+  glEnableVertexAttribArray( Attrib::TANGENT );
+  glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, tangent ) );
+
+  glEnableVertexAttribArray( Attrib::BINORMAL );
+  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, binormal ) );
 }
 
 struct Model::LightEntry
@@ -130,9 +126,9 @@ void Model::animate( const Instance* instance )
         vertexAnimBuffer[i].texCoord[0] = vertices[i].texCoord[0];
         vertexAnimBuffer[i].texCoord[1] = vertices[i].texCoord[1];
 
-        vertexAnimBuffer[i].normal[0] = normal.x;
-        vertexAnimBuffer[i].normal[1] = normal.y;
-        vertexAnimBuffer[i].normal[2] = normal.z;
+        vertexAnimBuffer[i].normal[0] = byte( normal.x * 127.0f );
+        vertexAnimBuffer[i].normal[1] = byte( normal.y * 127.0f );
+        vertexAnimBuffer[i].normal[2] = byte( normal.z * 127.0f );
       }
     }
     else {
@@ -152,9 +148,9 @@ void Model::animate( const Instance* instance )
         vertexAnimBuffer[i].texCoord[0] = vertices[i].texCoord[0];
         vertexAnimBuffer[i].texCoord[1] = vertices[i].texCoord[1];
 
-        vertexAnimBuffer[i].normal[0] = normal.x;
-        vertexAnimBuffer[i].normal[1] = normal.y;
-        vertexAnimBuffer[i].normal[2] = normal.z;
+        vertexAnimBuffer[i].normal[0] = byte( normal.x * 127.0f );
+        vertexAnimBuffer[i].normal[1] = byte( normal.y * 127.0f );
+        vertexAnimBuffer[i].normal[2] = byte( normal.z * 127.0f );
       }
     }
 

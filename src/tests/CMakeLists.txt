@@ -2,6 +2,9 @@ if( NOT OZ_TESTS )
   return()
 endif()
 
+add_executable( containers containers.cc )
+target_link_libraries( containers ozCore )
+
 if( NOT OZ_GL_ES )
   add_executable( engine engine.cc )
   target_link_libraries( engine ozEngine )

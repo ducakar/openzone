@@ -102,8 +102,8 @@ Mat44 InputStream::readMat44()
 
 void InputStream::readBitset( ulong* bitset, int bits )
 {
-  int unitBits    = sizeof( ulong ) * 8;
-  int unit64Bits  = sizeof( ulong64 ) * 8;
+  int unitBits    = int( sizeof( ulong ) ) * 8;
+  int unit64Bits  = int( sizeof( ulong64 ) ) * 8;
   int unitCount   = ( bits + unitBits - 1 ) / unitBits;
   int unit64Count = ( bits + unit64Bits - 1 ) / unit64Bits;
 

@@ -71,7 +71,7 @@ public:
   static bool isImage( const File& file );
 
   /**
-   * Convert a given image to DDS format and optionally compress it and create mipmaps.
+   * Generate a DDS form a given image and optionally compress it and create mipmaps.
    *
    * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
    * - `MIPMAPS_BIT` enables generation of mipmaps.
@@ -95,6 +95,26 @@ public:
    */
   static bool createDDS( const void* data, int width, int height, int bpp, int options,
                          const File& destFile );
+
+  /**
+   * Generate DDS for a given cube map.
+   *
+   * Usage is the same as for the basic `createDDS()` but all six cube faces are given instead of
+   * `data` parameter.
+   */
+  static bool createCubeMapDDS( const void* positiveX, const void* negativeX,
+                                const void* positiveY, const void* negativeY,
+                                const void* positiveZ, const void* negativeZ,
+                                int width, int height, int bpp, int options, const File& destFile );
+
+  /**
+   * Generate DDS from a given array of textures.
+   *
+   * This function uses DirectX 10 extensions for DDS to write multiple textures of the same size
+   * and format into one DDS file.
+   */
+  static bool createArrayDDS( const void* dataArray[], int width, int height, int bpp, int options,
+                              const File& destFile );
 
   /**
    * Convert a given image to DDS format, similar to `buildDDS()`.

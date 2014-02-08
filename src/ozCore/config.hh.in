@@ -69,6 +69,15 @@
 # define __extern_always_inline extern __always_inline __attribute__(( __gnu_inline__ ))
 #endif
 
+// Disable `new`/`delete` overloads when they would interfere with other things.
+#if defined( EMSCRIPTEN ) || defined( __SANITIZE_ADDRESS__ )
+# define OZ_DISABLE_ALLOC_OVERLOADS
+#elif defined( __has_feature )
+# if __has_feature( address_sanitizer )
+#  define OZ_DISABLE_ALLOC_OVERLOADS
+# endif
+#endif
+
 #ifdef _WIN32
 // At least Windows 2000 required.
 # define WINVER 0x0500

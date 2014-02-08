@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION 0.3.84 )
+set( OZ_VERSION 0.3.85 )
 
 option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
 option( OZ_PULSE_BELL "Enable PulseAudio backend for System::bell()." OFF )
@@ -195,10 +195,10 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )
 
   # Use libc++ instead of libstdc++.
-  # set( flags "${flags} -stdlib=libc++" )
-  # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
+  set( flags "${flags} -stdlib=libc++" )
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
   # Analyse only.
-  # set( flags "${flags} --analyze -Qunused-arguments" )
+  #set( flags "${flags} --analyze -Qunused-arguments" )
 else()
   set( flags "-std=c++11 -pedantic -fstrict-enums" )
 endif()
@@ -210,11 +210,11 @@ if( BUILD_SHARED_LIBS )
 endif()
 
 # AddressSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
-# set( flags "${flags} -fsanitize=address" )
+#set( flags "${flags} -fsanitize=address" )
 # ThreadSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
-# set( flags "${flags} -fsanitize=thread -fpie -fPIC" )
+#set( flags "${flags} -fsanitize=thread -fpie -fPIC" )
 # Undefined behaviour (GCC 4.9+, LLVM/Clang 3.3+)
-# set( flags "${flags} -fsanitize=undefined" )
+#set( flags "${flags} -fsanitize=undefined" )
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
@@ -226,8 +226,8 @@ else()
   set( flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2" )
   set( flags "${flags} -Wno-format-zero-length -Wmissing-format-attribute -Winvalid-pch" )
 
-  # set( flags "${flags} -Wsuggest-attribute=noreturn" )
-  # set( flags "${flags} -Wzero-as-null-pointer-constant" )
+  #set( flags "${flags} -Wsuggest-attribute=noreturn" )
+  #set( flags "${flags} -Wzero-as-null-pointer-constant" )
 endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )

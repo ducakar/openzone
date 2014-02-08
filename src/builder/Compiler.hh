@@ -32,6 +32,9 @@ namespace oz
 namespace builder
 {
 
+using client::TexCoord;
+using client::Model;
+
 class Compiler
 {
 public:

@@ -63,25 +63,29 @@ void String::ensureCapacity( int newCount )
       free( buffer );
       buffer = baseBuffer;
 
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
       --Alloc::count;
       Alloc::amount -= size_t( count + 1 );
+#endif
     }
   }
   else {
     if( buffer == baseBuffer ) {
       buffer = nullptr;
 
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
       ++Alloc::count;
-      Alloc::amount += size_t( newCount + 1 );
-
       ++Alloc::sumCount;
+      Alloc::amount    += size_t( newCount + 1 );
       Alloc::sumAmount += size_t( newCount + 1 );
+#endif
     }
     else {
-      Alloc::amount += size_t( newCount - count );
-
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
       ++Alloc::sumCount;
+      Alloc::amount    += size_t( newCount - count );
       Alloc::sumAmount += size_t( newCount + 1 );
+#endif
     }
 
     buffer = buffer == baseBuffer ? nullptr : buffer;
@@ -91,8 +95,10 @@ void String::ensureCapacity( int newCount )
       OZ_ERROR( "oz::String: Allocation failed" );
     }
 
+#ifdef OZ_DISABLE_ALLOC_OVERLOADS
     Alloc::maxCount  = max<int>( Alloc::count, Alloc::maxCount );
     Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
+#endif
   }
 
   count = newCount;
@@ -583,8 +589,10 @@ String::~String()
   if( buffer != baseBuffer ) {
     free( buffer );
 
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
     --Alloc::count;
     Alloc::amount -= size_t( count + 1 );
+#endif
   }
 }
 
@@ -631,6 +639,11 @@ String& String::operator = ( String&& s )
 
   if( buffer != baseBuffer ) {
     free( buffer );
+
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
+    --Alloc::count;
+    Alloc::amount -= size_t( count + 1 );
+#endif
   }
 
   count = s.count;

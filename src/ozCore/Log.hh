@@ -147,11 +147,9 @@ public:
    * If new and delete operators were not overloaded (`Alloc::OVERLOADS_NEW_AND_DELETE` is false),
    * nothing is printed.
    *
-   * @return true iff summary was printed.
-   *
    * @sa `oz::Alloc`
    */
-  static bool printMemorySummary();
+  static void printMemorySummary();
 
   /**
    * Print memory chunks allocated via `new` and `new[]` operators, tracked by `Alloc` class.
@@ -167,11 +165,9 @@ public:
    *
    * If there's no statistics accumulated by profiler, nothing is printed.
    *
-   * @return true iff there was any statistics printed.
-   *
    * @sa `oz::Profiler`
    */
-  static bool printProfilerStatistics();
+  static void printProfilerStatistics();
 
   /**
    * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other tells

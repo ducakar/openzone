@@ -325,29 +325,27 @@ void Log::printSignal( int sigNum )
   }
 }
 
-bool Log::printMemorySummary()
+void Log::printMemorySummary()
 {
-  if( !Alloc::OVERLOADS_NEW_AND_DELETE ) {
-    return false;
-  }
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
 
   println( "Alloc summary {" );
   indent();
 
   println( "current chunks    %7d", Alloc::count );
   println( "current amount    %7.2f MiB (%lu B)",
-                float( Alloc::amount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::amount ) );
+           float( Alloc::amount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::amount ) );
   println( "maximum chunks    %7d", Alloc::maxCount );
   println( "maximum amount    %7.2f MiB (%lu B)",
-                float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::maxAmount ) );
+           float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::maxAmount ) );
   println( "cumulative chunks %7d", Alloc::sumCount );
   println( "cumulative amount %7.2f MiB (%lu B)",
-                float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::sumAmount ) );
+           float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::sumAmount ) );
 
   unindent();
   println( "}" );
 
-  return true;
+#endif
 }
 
 bool Log::printMemoryLeaks()
@@ -375,23 +373,19 @@ bool Log::printMemoryLeaks()
   return hasOutput;
 }
 
-bool Log::printProfilerStatistics()
+void Log::printProfilerStatistics()
 {
-  if( !Profiler::citer().isValid() ) {
-    return false;
+  if( Profiler::citer().isValid() ) {
+    println( "Profiler statistics {" );
+    indent();
+
+    foreach( i, Profiler::citer() ) {
+      println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
+    }
+
+    unindent();
+    println( "}" );
   }
-
-  println( "Profiler statistics {" );
-  indent();
-
-  foreach( i, Profiler::citer() ) {
-    println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
-  }
-
-  unindent();
-  println( "}" );
-
-  return true;
 }
 
 bool Log::init( const char* filePath_, bool clearFile )

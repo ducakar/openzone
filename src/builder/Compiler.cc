@@ -54,22 +54,41 @@ enum Environment
 
 struct Vertex
 {
-  Point            pos;
-  client::TexCoord texCoord;
-  Vec3             normal;
-  Vec3             tangent;
-  Vec3             binormal;
-  Vec3             colour;
+  Point    pos;
+  TexCoord texCoord;
+  Vec3     normal;
+  Vec3     tangent;
+  Vec3     binormal;
+  Vec3     colour;
 
-  OZ_HIDDEN
   bool operator == ( const Vertex& v ) const
   {
     return pos == v.pos && texCoord == v.texCoord && normal == v.normal && tangent == v.tangent &&
            binormal == v.binormal && colour == v.colour;
   }
 
-  OZ_HIDDEN
-  void write( OutputStream* os ) const;
+  void write( OutputStream* os ) const
+  {
+    os->writePoint( pos );
+
+    os->writeFloat( texCoord.u );
+    os->writeFloat( texCoord.v );
+
+    os->writeByte( byte( normal.x * 127.0f ) );
+    os->writeByte( byte( normal.y * 127.0f ) );
+    os->writeByte( byte( normal.z * 127.0f ) );
+    os->writeByte( 0 );
+
+    os->writeByte( byte( tangent.x * 127.0f ) );
+    os->writeByte( byte( tangent.y * 127.0f ) );
+    os->writeByte( byte( tangent.z * 127.0f ) );
+    os->writeByte( 0 );
+
+    os->writeByte( byte( binormal.x * 127.0f ) );
+    os->writeByte( byte( binormal.y * 127.0f ) );
+    os->writeByte( byte( binormal.z * 127.0f ) );
+    os->writeByte( 0 );
+  }
 };
 
 struct Triangle
@@ -77,7 +96,6 @@ struct Triangle
   float depth;
   int   index;
 
-  OZ_HIDDEN
   bool operator < ( const Triangle& t ) const
   {
     return depth < t.depth;
@@ -117,15 +135,12 @@ struct Node
   Node*       prev[1];
   Node*       next[1];
 
-  OZ_HIDDEN
   explicit Node( const char* name_ = "", Node* parent_ = nullptr ) :
     transf( Mat44::ID ), mesh( -1 ), name( name_ ), includeBounds( true ), parent( parent_ )
   {}
 
-  OZ_HIDDEN
   Node& operator = ( Node&& ) = default;
 
-  OZ_HIDDEN
   ~Node()
   {
     children.free();
@@ -159,15 +174,6 @@ static int                nFramePositions;
 static Compiler::PolyMode mode;
 static int                vertNum;
 static List<ushort>       polyIndices;
-
-OZ_HIDDEN
-void Vertex::write( OutputStream* os ) const
-{
-  os->writePoint( pos );
-  os->writeFloat( texCoord.u );
-  os->writeFloat( texCoord.v );
-  os->writeVec3( normal );
-}
 
 static void calculateBounds( const Node* node, const Mat44& parentTransf )
 {
@@ -235,7 +241,7 @@ void Compiler::beginModel()
   bounds.mins          = Point( +Math::INF, +Math::INF, +Math::INF );
   bounds.maxs          = Point( -Math::INF, -Math::INF, -Math::INF );
 
-  mesh.flags           = client::Model::SOLID_BIT;
+  mesh.flags           = Model::SOLID_BIT;
   mesh.texture         = "";
 
   light.pos            = Point::ORIGIN;
@@ -365,7 +371,7 @@ void Compiler::beginMesh()
   hard_assert( environment == MODEL );
   environment = MESH;
 
-  mesh.flags   = client::Model::SOLID_BIT;
+  mesh.flags   = Model::SOLID_BIT;
   mesh.texture = "";
 }
 
@@ -386,7 +392,7 @@ void Compiler::begin( Compiler::PolyMode mode_ )
   environment = POLY;
 
   vert.pos        = Point::ORIGIN;
-  vert.texCoord   = client::TexCoord( 0.0f, 0.0f );
+  vert.texCoord   = TexCoord( 0.0f, 0.0f );
   vert.normal     = Vec3::ZERO;
   vert.tangent    = Vec3::ZERO;
   vert.binormal   = Vec3::ZERO;
@@ -454,7 +460,7 @@ void Compiler::blend( bool doBlend )
 {
   hard_assert( environment == MESH );
 
-  mesh.flags = doBlend ? client::Model::ALPHA_BIT : client::Model::SOLID_BIT;
+  mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
 }
 
 void Compiler::texCoord( float u, float v )
@@ -653,9 +659,41 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     os->writeString( *texture );
   }
 
+  // Generate tangents and binormals.
+  for( int i = 0; i < indices[0].length(); i += 3 ) {
+    Vertex* v[3] = {
+      &vertices[ indices[0][i + 0] ],
+      &vertices[ indices[0][i + 1] ],
+      &vertices[ indices[0][i + 2] ]
+    };
+
+    // [ t_x b_x ]   [ p_x q_x ]            -1
+    // [ t_y b_y ] = [ p_y q_y ] [ p_u q_u ]
+    // [ t_z b_z ]   [ p_z q_z ] [ p_v q_v ]
+    //
+    // (t, b) - tangent and binormal
+    // (p, q) - delta points
+    for( int j = 0; j < 3; ++j ) {
+      Vertex* a = v[j];
+      Vertex* b = v[ ( j + 1 ) % 3 ];
+      Vertex* c = v[ ( j + 2 ) % 3 ];
+
+      Vec3  p      = b->pos - a->pos;
+      Vec3  q      = c->pos - a->pos;
+      float pu     = b->texCoord.u - a->texCoord.u;
+      float pv     = b->texCoord.v - a->texCoord.v;
+      float qu     = c->texCoord.u - a->texCoord.u;
+      float qv     = c->texCoord.v - a->texCoord.v;
+      float detInv = 1.0f / ( pu*pv - qu*pv );
+
+      v[j]->tangent  = detInv * Vec3( p.x*qv - q.x*pv, p.y*qv - q.y*pv, p.z*qv - q.z*pv );
+      v[j]->binormal = detInv * Vec3( q.x*pu - p.x*qu, q.y*pu - p.y*qu, q.z*pu - p.z*qu );
+    }
+  }
+
   foreach( vertex, vertices.iter() ) {
     if( nFrames != 0 ) {
-      vertex->pos = Point( ( vertex->pos[0] + 0.5f ) / float( nFramePositions ), 0.0f, 0.0f );
+      vertex->pos = Point( ( vertex->pos.x + 0.5f ) / float( nFramePositions ), 0.0f, 0.0f );
     }
     vertex->write( os );
   }

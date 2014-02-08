@@ -35,25 +35,33 @@
 namespace oz
 {
 
-static const int DDSD_CAPS            = 0x00000001;
-static const int DDSD_HEIGHT          = 0x00000002;
-static const int DDSD_WIDTH           = 0x00000004;
-static const int DDSD_PITCH           = 0x00000008;
-static const int DDSD_PIXELFORMAT     = 0x00001000;
-static const int DDSD_MIPMAPCOUNT     = 0x00020000;
-static const int DDSD_LINEARSIZE      = 0x00080000;
+static const int DDSD_CAPS                  = 0x00000001;
+static const int DDSD_HEIGHT                = 0x00000002;
+static const int DDSD_WIDTH                 = 0x00000004;
+static const int DDSD_PITCH                 = 0x00000008;
+static const int DDSD_PIXELFORMAT           = 0x00001000;
+static const int DDSD_MIPMAPCOUNT           = 0x00020000;
+static const int DDSD_LINEARSIZE            = 0x00080000;
 
-static const int DDSDCAPS_COMPLEX     = 0x00000008;
-static const int DDSDCAPS_TEXTURE     = 0x00001000;
-static const int DDSDCAPS_MIPMAP      = 0x00400000;
+static const int DDSCAPS_COMPLEX            = 0x00000008;
+static const int DDSCAPS_TEXTURE            = 0x00001000;
+static const int DDSCAPS_MIPMAP             = 0x00400000;
 
-static const int DDPF_ALPHAPIXELS     = 0x00000001;
-static const int DDPF_FOURCC          = 0x00000004;
-static const int DDPF_RGB             = 0x00000040;
+static const int DDSCAPS2_CUBEMAP           = 0x00000200;
+static const int DDSCAPS2_CUBEMAP_POSITIVEX = 0x00000200;
+static const int DDSCAPS2_CUBEMAP_NEGITIVEX = 0x00000200;
+static const int DDSCAPS2_CUBEMAP_POSITIVEY = 0x00000200;
+static const int DDSCAPS2_CUBEMAP_NEGITIVEY = 0x00000200;
+static const int DDSCAPS2_CUBEMAP_POSITIVEZ = 0x00000200;
+static const int DDSCAPS2_CUBEMAP_NEGITIVEZ = 0x00000200;
 
-static const int ERROR_LENGTH         = 1024;
+static const int DDPF_ALPHAPIXELS           = 0x00000001;
+static const int DDPF_FOURCC                = 0x00000004;
+static const int DDPF_RGB                   = 0x00000040;
 
-static char errorBuffer[ERROR_LENGTH] = {};
+static const int ERROR_LENGTH               = 1024;
+
+static char errorBuffer[ERROR_LENGTH]       = {};
 
 static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& destFile )
 {
@@ -86,8 +94,8 @@ static bool buildDDS( FIBITMAP* dib, bool doMipmaps, bool compress, const File& 
   flags |= doMipmaps ? DDSD_MIPMAPCOUNT : 0;
   flags |= compress ? DDSD_LINEARSIZE : DDSD_PITCH;
 
-  int caps = DDSDCAPS_TEXTURE;
-  caps |= doMipmaps ? DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP : 0;
+  int caps = DDSCAPS_TEXTURE;
+  caps |= doMipmaps ? DDSCAPS_COMPLEX | DDSCAPS_MIPMAP : 0;
 
   int pixelFlags = 0;
   pixelFlags |= bpp == 32 ? DDPF_ALPHAPIXELS : 0;

@@ -99,7 +99,7 @@ public:
   }
 
   /**
-   * Round to the nearest integer away from zero.
+   * Round to the nearest integer, away from zero.
    */
   OZ_ALWAYS_INLINE
   static float round( float x )
@@ -108,7 +108,7 @@ public:
   }
 
   /**
-   * Round to the nearest integer away from zero (return integer).
+   * Round to the nearest integer, away from zero (return as int).
    */
   OZ_ALWAYS_INLINE
   static int lround( float x )

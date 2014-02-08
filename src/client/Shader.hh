@@ -113,8 +113,7 @@ struct Attrib
     TEXCOORD,
     NORMAL,
     TANGENT,
-    BINORMAL,
-    COLOUR
+    BINORMAL
   };
 };
 

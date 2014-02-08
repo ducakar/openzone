@@ -32,18 +32,10 @@
 #include <cstdlib>
 #include <malloc.h>
 
-#if defined( EMSCRIPTEN ) || defined( __SANITIZE_ADDRESS__ )
-# define OZ_DISABLE_ALLOC
-#elif defined( has_feature )
-# if has_feature( address_sanitizer )
-#  define OZ_DISABLE_ALLOC
-# endif
-#endif
-
 namespace oz
 {
 
-#ifndef OZ_DISABLE_ALLOC
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
 
 enum AllocMode
 {
@@ -54,7 +46,7 @@ enum AllocMode
 #ifdef OZ_TRACK_ALLOCS
 
 static Alloc::ChunkInfo* volatile firstChunkInfo[2] = { nullptr, nullptr };
-static volatile bool              chunkInfoLock     = 0;
+static volatile int               chunkInfoLock     = 0;
 
 static void addChunkInfo( AllocMode mode, void* ptr, size_t size )
 {
@@ -192,18 +184,10 @@ static void deallocate( AllocMode mode, void* ptr )
 #endif
 }
 
-#endif // !OZ_ADDRESS_SANITIZER
+#endif // !OZ_DISABLE_ALLOC_OVERLOADS
 
-static_assert( Alloc::ALIGNMENT >= sizeof( void* ) &&
-               ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-               "oz::Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
-
-const size_t         Alloc::ALIGNMENT;
-#ifdef OZ_ADDRESS_SANITIZER
-const bool           Alloc::OVERLOADS_NEW_AND_DELETE = false;
-#else
-const bool           Alloc::OVERLOADS_NEW_AND_DELETE = true;
-#endif
+const size_t Alloc::ALIGNMENT;
+const bool   Alloc::OVERLOADS_NEW_AND_DELETE;
 
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;
@@ -212,7 +196,7 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-#if !defined( OZ_ADDRESS_SANITIZER ) && defined( OZ_TRACK_ALLOCS )
+#if !defined( OZ_DISABLE_ALLOC_OVERLOADS ) && defined( OZ_TRACK_ALLOCS )
 
 Alloc::ChunkCIterator Alloc::objectCIter()
 {
@@ -240,7 +224,7 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 
 }
 
-#ifndef OZ_DISABLE_ALLOC
+#ifndef OZ_DISABLE_ALLOC_OVERLOADS
 
 OZ_WEAK
 void* operator new ( size_t size )

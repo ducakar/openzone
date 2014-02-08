@@ -46,7 +46,7 @@ const char* const   BuildInfo::CONFIG      = "OZ_SHARED_LIBS: @OZ_SHARED_LIBS@, 
                                              "OZ_TRACK_ALLOCS: @OZ_TRACK_ALLOCS@, "
                                              "OZ_SIMD_MATH: @OZ_SIMD_MATH@, "
                                              "OZ_DYNAMICS: @OZ_DYNAMICS@, "
-                                             "OZ_SDL2: @OZ_SDL2@, "
+                                             "OZ_SDL1: @OZ_SDL1@, "
                                              "OZ_GL_ES: @OZ_GL_ES@, "
                                              "OZ_NONFREE: @OZ_NONFREE@, "
                                              "OZ_LUAJIT: @OZ_LUAJIT@, "

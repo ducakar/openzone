@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgname=openzone
-pkgver=0.3.84
+pkgver=0.3.85
 pkgrel=1
 pkgdesc='Simple cross-platform FPS/RTS game engine'
 url="http://ducakar.github.com/openzone/"

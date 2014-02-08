@@ -181,7 +181,6 @@ void Shader::loadProgram( int id )
     OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
-    OZ_REGISTER_ATTRIBUTE( Attrib::COLOUR,   "inColour"   );
 
     glLinkProgram( programs[id].program );
 

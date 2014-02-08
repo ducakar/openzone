@@ -88,7 +88,7 @@ Dynamic::Dynamic( const DynamicClass* clazz_, const JSON& json ) :
   floor    = json["floor"].get( Vec3( 0.0f, 0.0f, 1.0f ) );
   parent   = json["parent"].get( -1 );
   lower    = json["lower"].get( -1 );
-  depth    = json["depth"].get( -1 );
+  depth    = json["depth"].get( 0.0f );
   mass     = clazz_->mass;
   lift     = clazz_->lift;
 }

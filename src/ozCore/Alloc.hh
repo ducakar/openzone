@@ -67,7 +67,11 @@ public:
 #endif
 
   /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
-  static const bool OVERLOADS_NEW_AND_DELETE;
+#ifdef OZ_DISABLE_ALLOC_OVERLOADS
+  static const bool OVERLOADS_NEW_AND_DELETE = false;
+#else
+  static const bool OVERLOADS_NEW_AND_DELETE = true;
+#endif
 
 public:
 

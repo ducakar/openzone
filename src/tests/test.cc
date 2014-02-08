@@ -24,51 +24,11 @@
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>
-#include <complex.h>
 
 using namespace oz;
-
-struct Foo
-{
-  Foo()
-  {
-    Log() << "Foo()";
-  }
-
-  ~Foo()
-  {
-    Log() << "~Foo()";
-  }
-
-  Foo( const Foo& )
-  {
-    Log() << "Foo( const Foo& )";
-  }
-
-  Foo( Foo&& )
-  {
-    Log() << "Foo( Foo&& )";
-  }
-
-  Foo& operator = ( const Foo& )
-  {
-    Log() << "Foo& operator = ( const Foo& )";
-    return *this;
-  }
-
-  Foo& operator = ( Foo&& )
-  {
-    Log() << "Foo& operator = ( Foo&& )";
-    return *this;
-  }
-};
 
 int main()
 {
   System::init();
-
-  JSON json = Vec4( 49.5f, 50.0f, 51.0f, 1.0f );
-
-  Log() << json.get( Vec3::ZERO );
   return 0;
 }
