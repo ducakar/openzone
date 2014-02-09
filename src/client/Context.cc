@@ -498,19 +498,19 @@ void Context::playBSP( const Struct* str )
   resource.handle->play( str );
 }
 
-SMM* Context::getModel( int id )
+Model* Context::getModel( int id )
 {
-  Resource<SMM*>& resource = models[id];
+  Resource<Model*>& resource = models[id];
 
   return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
 }
 
-SMM* Context::requestModel( int id )
+Model* Context::requestModel( int id )
 {
-  Resource<SMM*>& resource = models[id];
+  Resource<Model*>& resource = models[id];
 
   if( resource.nUsers < 0 ) {
-    resource.handle = SMM::create( id );
+    resource.handle = new Model( liber.models[id].path );
     resource.nUsers = 1;
   }
 
@@ -520,7 +520,7 @@ SMM* Context::requestModel( int id )
 
 void Context::releaseModel( int id )
 {
-  Resource<SMM*>& resource = models[id];
+  Resource<Model*>& resource = models[id];
 
   hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
 
@@ -539,7 +539,7 @@ PartClass* Context::requestPartClass( int id )
   Resource<PartClass>& resource = partClasses[id];
 
   if( resource.nUsers < 0 ) {
-//     resource.handle.preload();
+//    resource.handle.preload();
     resource.nUsers = 1;
   }
 
@@ -816,7 +816,7 @@ void Context::init()
   bsps        = nBSPs        == 0 ? nullptr : new Resource<BSP*>[nBSPs];
   bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
 
-  models      = nModels      == 0 ? nullptr : new Resource<SMM*>[nModels];
+  models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels];
   partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses];
 
   for( int i = 0; i < nTextures; ++i ) {

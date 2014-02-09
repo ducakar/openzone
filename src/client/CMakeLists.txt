@@ -42,7 +42,6 @@ add_library( client STATIC
   Render.hh
   Shader.hh
   Shape.hh
-  SMM.hh
   SMMImago.hh
   SMMVehicleImago.hh
   Sound.hh
@@ -89,7 +88,6 @@ add_library( client STATIC
   Render.cc
   Shader.cc
   Shape.cc
-  SMM.cc
   SMMImago.cc
   SMMVehicleImago.cc
   Sound.cc

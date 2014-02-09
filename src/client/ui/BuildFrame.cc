@@ -29,7 +29,6 @@
 #include <client/Shape.hh>
 #include <client/Shader.hh>
 #include <client/Camera.hh>
-#include <client/SMM.hh>
 #include <client/Context.hh>
 #include <client/EditStage.hh>
 #include <client/ui/StrategicArea.hh>
@@ -106,9 +105,9 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
     bspModel->schedule( nullptr, Model::OVERLAY_QUEUE );
   }
   else {
-    Vec3 dim   = clazz->dim + Vec3( 2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON );
-    AABB bb    = AABB( position, rotate( dim, heading ) );
-    SMM* model = context.requestModel( clazz->imagoModel );
+    Vec3   dim   = clazz->dim + Vec3( 2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON );
+    AABB   bb    = AABB( position, rotate( dim, heading ) );
+    Model* model = context.requestModel( clazz->imagoModel );
 
     overlaps  = collider.overlaps( bb );
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;

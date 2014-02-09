@@ -24,14 +24,14 @@
 #pragma once
 
 #include <matrix/Vehicle.hh>
-#include <client/SMM.hh>
+#include <client/common.hh>
 
 namespace oz
 {
 namespace client
 {
 
-class MD2 : public SMM
+class MD2
 {
 public:
 
@@ -70,7 +70,7 @@ public:
 
   class AnimState
   {
-    friend class MD2;
+    friend class Model;
 
   private:
 
@@ -104,22 +104,6 @@ public:
   };
 
   static const AnimInfo ANIM_LIST[];
-
-private:
-
-  explicit MD2( int id );
-
-public:
-
-  static SMM* create( int id );
-
-  void scheduleAnim( const AnimState* anim, Model::QueueType queue )
-  {
-    model.scheduleAnimated( 1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
-  }
-
-  void preload() override;
-  void load() override;
 
 };
 

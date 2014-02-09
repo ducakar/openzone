@@ -68,8 +68,8 @@ struct EntityClass : Bounds
   int    closeSound;  ///< Close sound sample, played when an entity stops moving.
   int    frictSound;  ///< Friction sound sample, played while the entity is moving.
 
-  int    model;       ///< SMM model index, -1 if none.
-  Mat44  modelTransf; ///< Model transformation.
+  int    model;       ///< %Model index, -1 if none.
+  Mat44  modelTransf; ///< %Model transformation.
 };
 
 /**

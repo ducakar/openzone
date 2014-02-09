@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/Imago.hh>
-#include <client/SMM.hh>
+#include <client/Model.hh>
 
 namespace oz
 {
@@ -35,7 +35,7 @@ class SMMVehicleImago : public Imago
 {
 private:
 
-  SMM* smm;
+  Model* model;
 
   explicit SMMVehicleImago( const Object* obj ) :
     Imago( obj )

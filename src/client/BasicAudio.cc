@@ -69,7 +69,7 @@ void BasicAudio::play( const Object* playAt )
   // friction
   const Dynamic* dyn = static_cast<const Dynamic*>( obj );
 
-  if( dyn->parent < 0 && ( dyn->flags & Object::DYNAMIC_BIT ) &&
+  if( ( obj->flags & Object::DYNAMIC_BIT ) && dyn->parent < 0 &&
       sounds[Object::EVENT_FRICTING] >= 0 )
   {
     if( ( dyn->flags & ( Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) == Object::FRICTING_BIT &&

@@ -36,7 +36,7 @@ Imago* SMMImago::create( const Object* obj )
 {
   SMMImago* imago = new SMMImago( obj );
 
-  imago->smm = context.requestModel( obj->clazz->imagoModel );
+  imago->model = context.requestModel( obj->clazz->imagoModel );
 
   return imago;
 }
@@ -48,14 +48,14 @@ SMMImago::~SMMImago()
 
 void SMMImago::draw( const Imago* )
 {
-  if( !smm->isLoaded() ) {
+  if( !model->isLoaded() ) {
     return;
   }
 
   tf.model = Mat44::translation( obj->p - Point::ORIGIN );
   tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
 
-  smm->schedule( 0, Model::SCENE_QUEUE );
+  model->schedule( 0, Model::SCENE_QUEUE );
 }
 
 }

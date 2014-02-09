@@ -26,7 +26,6 @@
 #include <common/Timer.hh>
 #include <client/Input.hh>
 #include <client/Shape.hh>
-#include <client/SMM.hh>
 #include <client/Context.hh>
 #include <client/ui/Style.hh>
 
@@ -93,8 +92,8 @@ void ModelField::onDraw()
   }
 
   if( bsp != nullptr || model >= 0 ) {
-    BSP*  bspModel = nullptr;
-    SMM*  smmModel = nullptr;
+    BSP*   bspModel = nullptr;
+    Model* objModel = nullptr;
     float dim;
 
     if( bsp != nullptr ) {
@@ -102,8 +101,8 @@ void ModelField::onDraw()
       dim      = bspModel->dim().fastN();
     }
     else {
-      smmModel = context.requestModel( model );
-      dim      = smmModel->dim().fastN();
+      objModel = context.requestModel( model );
+      dim      = objModel->dim.fastN();
     }
 
     float scale = float( width / 2 ) / dim;
@@ -121,8 +120,8 @@ void ModelField::onDraw()
       }
     }
     else {
-      if( smmModel->isLoaded() ) {
-        smmModel->schedule( 0, Model::SCENE_QUEUE );
+      if( objModel->isLoaded() ) {
+        objModel->schedule( 0, Model::SCENE_QUEUE );
       }
       context.releaseModel( model );
     }

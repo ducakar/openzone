@@ -156,10 +156,10 @@ void HudArea::drawBotCrosshair()
             // not climbing or on a ladder
             !( me->state & ( Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) &&
             // if it is not a bot that is holding something
-            ( !( obj->flags & Object::BOT_BIT ) || bot->cargo < 0 ) )
+            ( !( dyn->flags & Object::BOT_BIT ) || bot->cargo < 0 ) )
       {
-        float dimX = bot->dim.x + dyn->dim.x;
-        float dimY = bot->dim.y + dyn->dim.y;
+        float dimX = dyn->dim.x + dyn->dim.x;
+        float dimY = dyn->dim.y + dyn->dim.y;
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
 
         if( dist <= myClazz->reachDist ) {

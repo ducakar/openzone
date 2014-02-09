@@ -30,7 +30,7 @@ namespace oz
 namespace client
 {
 
-class SMM;
+class Model;
 
 class FragPool
 {
@@ -44,7 +44,7 @@ private:
 
   const oz::FragPool* pool;
 
-  List<SMM*> models;
+  List<Model*> models;
 
 public:
 

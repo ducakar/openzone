@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/Imago.hh>
-#include <client/MD2.hh>
+#include <client/Model.hh>
 
 namespace oz
 {
@@ -35,7 +35,7 @@ class MD2WeaponImago : public Imago
 {
 private:
 
-  MD2* md2;
+  Model* model;
 
   explicit MD2WeaponImago( const Object* obj ) :
     Imago( obj )

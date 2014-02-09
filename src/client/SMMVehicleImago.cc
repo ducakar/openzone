@@ -39,7 +39,7 @@ Imago* SMMVehicleImago::create( const Object* obj )
 
   SMMVehicleImago* imago = new SMMVehicleImago( obj );
 
-  imago->smm = context.requestModel( obj->clazz->imagoModel );
+  imago->model = context.requestModel( obj->clazz->imagoModel );
 
   return imago;
 }
@@ -51,7 +51,7 @@ SMMVehicleImago::~SMMVehicleImago()
 
 void SMMVehicleImago::draw( const Imago* )
 {
-  if( !smm->isLoaded() ) {
+  if( !model->isLoaded() ) {
     return;
   }
 
@@ -72,7 +72,7 @@ void SMMVehicleImago::draw( const Imago* )
     tf.pop();
   }
 
-  smm->schedule( 0, Model::SCENE_QUEUE );
+  model->schedule( 0, Model::SCENE_QUEUE );
 }
 
 }

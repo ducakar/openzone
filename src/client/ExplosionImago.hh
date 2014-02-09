@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/Imago.hh>
-#include <client/SMM.hh>
+#include <client/Model.hh>
 
 namespace oz
 {
@@ -37,8 +37,8 @@ protected:
 
   static int modelId;
 
-  SMM* smm;
-  uint startMicros;
+  Model* model;
+  uint   startMicros;
 
   explicit ExplosionImago( const Object* obj ) :
     Imago( obj )

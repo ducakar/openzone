@@ -34,8 +34,7 @@ class BSP
 {
 private:
 
-  const oz::BSP* bsp;
-  Model          model;
+  Model model;
 
 public:
 

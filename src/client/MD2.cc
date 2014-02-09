@@ -271,24 +271,5 @@ void MD2::AnimState::advance()
   hard_assert( 0.0f <= frameRatio && frameRatio < 1.0f );
 }
 
-MD2::MD2( int id_ ) :
-  SMM( id_ )
-{}
-
-SMM* MD2::create( int id )
-{
-  return new MD2( id );
-}
-
-void MD2::preload()
-{
-  model.preload( liber.models[id].path );
-}
-
-void MD2::load()
-{
-  model.load( shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
-}
-
 }
 }

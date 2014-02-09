@@ -24,15 +24,14 @@
 #include <client/BSP.hh>
 
 #include <client/Context.hh>
-#include <client/SMM.hh>
 
 namespace oz
 {
 namespace client
 {
 
-BSP::BSP( const oz::BSP* bsp_ ) :
-  bsp( bsp_ )
+BSP::BSP( const oz::BSP* bsp ) :
+  model( "@bsp/" + bsp->name + ".ozcModel" )
 {}
 
 BSP::~BSP()
@@ -55,7 +54,7 @@ void BSP::schedule( const Struct* str, Model::QueueType queue )
       model.schedule( i + 1, queue );
 
       if( entity.clazz->model != -1 ) {
-        SMM* model = context.requestModel( entity.clazz->model );;
+        Model* model = context.requestModel( entity.clazz->model );;
 
         if( model != nullptr && model->isLoaded() ) {
           tf.model = tf.model ^ entity.clazz->modelTransf;
@@ -75,7 +74,7 @@ void BSP::schedule( const Struct* str, Model::QueueType queue )
 
 void BSP::preload()
 {
-  const File* file = model.preload( "@bsp/" + bsp->name + ".ozcModel" );
+  const File* file = model.preload();
   InputStream is   = file->inputStream( Endian::LITTLE );
 
   is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
@@ -85,7 +84,7 @@ void BSP::preload()
 
 void BSP::load()
 {
-  model.load( GL_STATIC_DRAW );
+  model.load();
 }
 
 }

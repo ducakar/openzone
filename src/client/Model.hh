@@ -24,6 +24,7 @@
 #pragma once
 
 #include <client/Shader.hh>
+#include <client/MD2.hh>
 
 namespace oz
 {
@@ -77,7 +78,7 @@ class Model
 {
 public:
 
-  static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into SMM file.
+  static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into model file.
 
   static const int SOLID_BIT       = 0x04; ///< Mesh is opaque.
   static const int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
@@ -144,6 +145,7 @@ private:
   static int              vertexAnimBufferLength;
   static Collation        collation;
 
+  String                  path;
   int                     flags;
   uint                    vbo;
   uint                    ibo;
@@ -189,7 +191,7 @@ public:
 
   static void deallocate();
 
-  explicit Model();
+  explicit Model( const String& path );
   ~Model();
 
   bool isPreloaded() const
@@ -209,9 +211,14 @@ public:
   void scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
                          QueueType queue );
 
-  const File* preload( const char* path );
+  void scheduleMD2Anim( const MD2::AnimState* anim, Model::QueueType queue )
+  {
+    scheduleAnimated( 1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
+  }
+
+  const File* preload();
   void upload( const Vertex* vertices, int nVertices, uint usage ) const;
-  void load( uint usage );
+  void load();
   void unload();
 
 };

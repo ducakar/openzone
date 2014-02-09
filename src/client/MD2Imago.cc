@@ -49,7 +49,7 @@ Imago* MD2Imago::create( const Object* obj )
     MD2Imago*      imago = new MD2Imago( veh );
 
     imago->flags = Imago::MD2MODEL_BIT;
-    imago->md2   = static_cast<MD2*>( context.requestModel( obj->clazz->imagoModel ) );
+    imago->model   = context.requestModel( obj->clazz->imagoModel );
     imago->h     = veh->h;
 
     return imago;
@@ -59,7 +59,7 @@ Imago* MD2Imago::create( const Object* obj )
     MD2Imago*      imago = new MD2Imago( bot );
 
     imago->flags = Imago::MD2MODEL_BIT;
-    imago->md2   = static_cast<MD2*>( context.requestModel( obj->clazz->imagoModel ) );
+    imago->model   = context.requestModel( obj->clazz->imagoModel );
     imago->h     = bot->h;
 
     return imago;
@@ -68,7 +68,7 @@ Imago* MD2Imago::create( const Object* obj )
 
 void MD2Imago::draw( const Imago* parent )
 {
-  if( !md2->isLoaded() ) {
+  if( !model->isLoaded() ) {
     return;
   }
 
@@ -86,7 +86,7 @@ void MD2Imago::draw( const Imago* parent )
       tf.model = Mat44::translation( obj->p - Point::ORIGIN );
       tf.model.rotateZ( h );
 
-      md2->scheduleAnim( &anim, Model::SCENE_QUEUE );
+      model->scheduleMD2Anim( &anim, Model::SCENE_QUEUE );
     }
   }
   else {
@@ -105,7 +105,7 @@ void MD2Imago::draw( const Imago* parent )
         tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
       }
 
-      md2->scheduleAnim( &anim, Model::SCENE_QUEUE );
+      model->scheduleMD2Anim( &anim, Model::SCENE_QUEUE );
 
       // FIXME Enable when no buggy models are used (no mismatched death animation for weapons).
   //     if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
@@ -142,7 +142,7 @@ void MD2Imago::draw( const Imago* parent )
         }
       }
 
-      md2->scheduleAnim( &anim, Model::SCENE_QUEUE );
+      model->scheduleMD2Anim( &anim, Model::SCENE_QUEUE );
 
       if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
         context.drawImago( orbis.obj( bot->weapon ), this );

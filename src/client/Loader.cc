@@ -27,7 +27,6 @@
 #include <client/Context.hh>
 #include <client/Terra.hh>
 #include <client/Caelum.hh>
-#include <client/SMM.hh>
 
 #include <cstdio>
 
@@ -113,7 +112,7 @@ void Loader::cleanupRender()
 
   if( tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG ) {
     for( int i = 0; i < liber.models.length(); ++i ) {
-      Context::Resource<SMM*>& model = context.models[i];
+      Context::Resource<Model*>& model = context.models[i];
 
       if( model.nUsers == 0 ) {
         delete model.handle;
@@ -250,7 +249,7 @@ void Loader::preloadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    SMM* model = context.models[i].handle;
+    Model* model = context.models[i].handle;
 
     if( model != nullptr && !model->isPreloaded() ) {
       model->preload();
@@ -280,7 +279,7 @@ void Loader::uploadRender()
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
-    SMM* model = context.models[i].handle;
+    Model* model = context.models[i].handle;
 
     if( model != nullptr && !model->isLoaded() && model->isPreloaded() ) {
       model->load();

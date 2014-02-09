@@ -41,7 +41,7 @@ Imago* ExplosionImago::create( const Object* obj )
 
   modelId = obj->clazz->imagoModel;
 
-  imago->smm = context.requestModel( modelId );
+  imago->model = context.requestModel( modelId );
   imago->startMicros = uint( timer.micros );
 
   return imago;
@@ -54,7 +54,7 @@ ExplosionImago::~ExplosionImago()
 
 void ExplosionImago::draw( const Imago* )
 {
-  if( !smm->isLoaded() ) {
+  if( !model->isLoaded() ) {
     return;
   }
 
@@ -67,7 +67,7 @@ void ExplosionImago::draw( const Imago* )
 
   tf.colour.w.w = alpha*alpha;
 
-  smm->schedule( 0, Model::SCENE_QUEUE );
+  model->schedule( 0, Model::SCENE_QUEUE );
 
   tf.colour.w.w = 1.0f;
 }

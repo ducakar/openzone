@@ -119,7 +119,7 @@ private:
   Resource<BSP*>*          bsps;
   Resource<BSPAudio*>*     bspAudios;
 
-  Resource<SMM*>*          models;
+  Resource<Model*>*        models;
   Resource<PartClass>*     partClasses;
 
   HashMap<int, Imago*>     imagines;              // Currently loaded graphics models.
@@ -192,8 +192,8 @@ public:
   void drawBSP( const Struct* str );
   void playBSP( const Struct* str );
 
-  SMM* getModel( int id );
-  SMM* requestModel( int id );
+  Model* getModel( int id );
+  Model* requestModel( int id );
   void releaseModel( int id );
 
   PartClass* getPartClass( int id );

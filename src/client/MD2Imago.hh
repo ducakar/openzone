@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/Imago.hh>
-#include <client/MD2.hh>
+#include <client/Model.hh>
 
 namespace oz
 {
@@ -41,7 +41,7 @@ private:
 
 private:
 
-  MD2*           md2;
+  Model*         model;
   float          h;
   MD2::AnimState anim;
 

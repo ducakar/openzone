@@ -329,8 +329,8 @@ void Model::deallocate()
   sceneLights.deallocate();
 }
 
-Model::Model() :
-  vbo( 0 ), ibo( 0 ), animationTexId( 0 ),
+Model::Model( const String& path_ ) :
+  path( path_ ), vbo( 0 ), ibo( 0 ), animationTexId( 0 ),
   nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFrames( 0 ), nFramePositions( 0 ),
   vertices( nullptr ), positions( nullptr ), normals( nullptr ),
   preloadData( nullptr ), dim( Vec3::ONE )
@@ -385,7 +385,7 @@ void Model::scheduleAnimated( int mesh, int firstFrame, int secondFrame, float i
   list.add( { this, tf.model, tf.colour, mesh, firstFrame, secondFrame, interpolation } );
 }
 
-const File* Model::preload( const char* path )
+const File* Model::preload()
 {
   hard_assert( preloadData == nullptr );
 
@@ -393,7 +393,7 @@ const File* Model::preload( const char* path )
   preloadData->modelFile = path;
 
   if( !preloadData->modelFile.map() ) {
-    OZ_ERROR( "Failed to map '%s'", path );
+    OZ_ERROR( "Failed to map '%s'", path.cstr() );
   }
 
   InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
@@ -443,7 +443,7 @@ void Model::upload( const Vertex* vertices, int nVertices, uint usage ) const
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Model::load( uint usage )
+void Model::load()
 {
   flags = 0;
 
@@ -488,8 +488,9 @@ void Model::load( uint usage )
     }
   }
 
-  int vboSize = nVertices  * int( sizeof( Vertex ) );
-  int iboSize = 8*nIndices * int( sizeof( ushort ) );
+  uint usage   = nFrames != 0 && shader.hasVertexTexture ? GL_STREAM_DRAW : GL_STATIC_DRAW;
+  int  vboSize = nVertices  * int( sizeof( Vertex ) );
+  int  iboSize = 8*nIndices * int( sizeof( ushort ) );
 
   const void* vertexBuffer = is.forward( vboSize );
 
