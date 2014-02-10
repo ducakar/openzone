@@ -99,10 +99,8 @@ public:
    * Play a sound alert.
    *
    * Sine wave with decreasing volume lasting ~0.3 s is played asynchronously through platform's
-   * native sound system (PulseAudio and ALSA/OSS as fallback on Linux/Unix, `PlaySound` system call
-   * on Windows, Pepper API on NaCl).
-   *
-   * On NaCl, `System::instance` and `System::core` must be set for bell to work.
+   * native sound system (ALSA on Linux, OSS on Unix, `PlaySound` system call on Windows and Pepper
+   * API on NaCl).
    */
   static void bell();
 

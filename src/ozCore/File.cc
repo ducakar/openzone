@@ -1202,7 +1202,7 @@ void File::init( NaClFileSystem naclFileSystem, int naclSize )
     OZ_ERROR( "oz::File: Local NaCl file system open failed" );
   }
   if( ppInstance == nullptr ) {
-    OZ_ERROR( "oz::File: System::instance must be set prior to NaCl file system initialisation" );
+    OZ_ERROR( "oz::File: Pepper must be initialised prior to NaCl file system initialisation" );
   }
   if( ppCore->IsMainThread() ) {
     OZ_ERROR( "oz::File: PhysicsFS cannot be initialised from the main NaCl thread" );

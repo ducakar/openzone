@@ -462,7 +462,6 @@ public:
    * @param naclSize NaCl file system size.
    *
    * @note
-   * On NaCl, `System::instance` must be set prior to initialising any kind of file system.
    * Persistent NaCl file system must be initialised from JavaScript before NaCl module is loaded.
    * On other platforms `naclFileSystem` and `naclSize` parameters are ignored.
    */

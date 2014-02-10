@@ -19,8 +19,8 @@ platforms=(
 #   Linux-x86_64-Clang
 #   Linux-i686
 #   Linux-i686-Clang
-  Windows-x86_64
-  Windows-i686
+#   Windows-x86_64
+#   Windows-i686
 #   PNaCl
 #   Android14-i686
 #   Android14-ARM

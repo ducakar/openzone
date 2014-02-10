@@ -43,15 +43,14 @@ class ImageBuilder
 {
 public:
 
-  /**
-   * Enable generation of mipmaps for a texture.
-   */
+  /// Enable generation of mipmaps for a texture.
   static const int MIPMAPS_BIT = 0x01;
 
-  /**
-   * Enable texture compression.
-   */
+  /// Enable texture compression.
   static const int COMPRESSION_BIT = 0x02;
+
+  /// Image array is a cube map.
+  static const int CUBE_MAP_BIT = 0x04;
 
 public:
 
@@ -78,49 +77,39 @@ public:
    * - `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an alpha
    *   channel and DXT5 for images with an alpha channel. Texture compression is enabled only if
    *   `OZ_NONFREE` is enabled on ozEngine build.
+   * - `CUBE_MAP_BIT` tells that image array contains exactly 6 images and a cube map should be
+   *   generates instead of array texture.
    *
-   * Input image should not use 32-bit bundary for line alignment and should be in RGB or RGBA
-   * format (OpenGL GL_RGB or GL_RGBA).
+   * Input images should use 32-bit bundary for line alignment and should be in RGB or RGBA format
+   * (OpenGL GL_RGB or GL_RGBA).
+   *
+   * An array texture is created if more than one image face is given. The array texture must be
+   * 32 BPP. If an array of exactly 6 faces is given and `CUBE_MAP_BIT` option is set a cube map is
+   * generated. Cube map faces must be given in the following order: +x, -x, +y, -y, +z, -z.
    *
    * @note
    * The highest possible quality settings are used for compression and mipmap scaling, so this
    * might take a long time for a large image.
    *
-   * @param data input image pixels.
+   * @param faces array of pointers to pixels of input images.
+   * @param nFaces number of input images.
    * @param width image width.
    * @param height image height.
-   * @param bpp bits-per-pixel.
-   * @param options bit-mask to control mipmap generation and compression.
+   * @param bpp bits-per-pixel (24 for RGB or 32 for RGBA).
+   * @param options bit-mask to control mipmap generation, compression and cube map.
    * @param destFile output file.
    */
-  static bool createDDS( const void* data, int width, int height, int bpp, int options,
-                         const File& destFile );
-
-  /**
-   * Generate DDS for a given cube map.
-   *
-   * Usage is the same as for the basic `createDDS()` but all six cube faces are given instead of
-   * `data` parameter.
-   */
-  static bool createCubeMapDDS( const void* positiveX, const void* negativeX,
-                                const void* positiveY, const void* negativeY,
-                                const void* positiveZ, const void* negativeZ,
-                                int width, int height, int bpp, int options, const File& destFile );
-
-  /**
-   * Generate DDS from a given array of textures.
-   *
-   * This function uses DirectX 10 extensions for DDS to write multiple textures of the same size
-   * and format into one DDS file.
-   */
-  static bool createArrayDDS( const void* dataArray[], int width, int height, int bpp, int options,
-                              const File& destFile );
+  static bool createDDS( const void* faces, int nFaces, int width, int height, int bpp,
+                         int options, const File& destFile );
 
   /**
    * Convert a given image to DDS format, similar to `buildDDS()`.
    *
    * Freeimage library is used for reading a file, so most of image file formats are supported.
    * If the input file is a valid DDS, it is only copied.
+   *
+   * This function only supports single-layer DDS images, volume and cube map textures are not
+   * supported.
    *
    * @param file input image file.
    * @param options bit-mask to control mipmap generation and compression.

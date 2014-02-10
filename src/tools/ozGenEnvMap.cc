@@ -22,15 +22,7 @@
  *
  * Generate environment cube map.
  *
- * In the current directory, the following files are generated:
- * @li env-x.dds,
- * @li env+x.dds,
- * @li env-y.dds,
- * @li env+y.dds,
- * @li env-z.dds,
- * @li env+z.dds
- *
- * Those files are to be copied to `oz_base/glsl` directory.
+ * A `env.dds` file is generated in the current directory. It should be copied to `oz_base/glsl`.
  */
 
 #include <ozFactory/ozFactory.hh>
@@ -99,13 +91,7 @@ int main( int argc, char** argv )
 
   char** images = TerraBuilder::generateCubeNoise( size );
 
-  if( !ImageBuilder::createDDS( images[0], size, size, 24, ddsOptions, "env-x.dds" ) ||
-      !ImageBuilder::createDDS( images[1], size, size, 24, ddsOptions, "env+x.dds" ) ||
-      !ImageBuilder::createDDS( images[2], size, size, 24, ddsOptions, "env-y.dds" ) ||
-      !ImageBuilder::createDDS( images[3], size, size, 24, ddsOptions, "env+y.dds" ) ||
-      !ImageBuilder::createDDS( images[4], size, size, 24, ddsOptions, "env-z.dds" ) ||
-      !ImageBuilder::createDDS( images[5], size, size, 24, ddsOptions, "env+z.dds" ) )
-  {
+  if( !ImageBuilder::createDDS( images, 6, size, size, 24, ddsOptions, "env.dds" ) ) {
     Log::println( "Failed to generate maps: %s", ImageBuilder::getError() );
     exitCode = EXIT_FAILURE;
   }

@@ -24,6 +24,7 @@
     * new SharedLib class for run-time linking
     * new Profiler class
     * new Gettext class for gettext translations
+    * JSON is more forgiving and simplified (implicit ctors, get<NumType>(), removed asType())
 - ozDynamics: new rigid body dynamics library
     * collision
         + primitives: Box, Capsule, Polytope, Compound
@@ -58,10 +59,10 @@
     * StrategicArea group selection
     * status bars under health bars
 - client
-    * Mesh -> Model, tree-based model hierarchy
+    * Mesh, SMM -> Model, tree-based model hierarchy
     * Models have 8-part IBO for each +/-x, +/-y, +/-z direction to reduce overdraw
     * environment maps
-    * SMM models can be rendered at BSP entities
+    * Models can be rendered at BSP entities
     * DDS format used for all textures, every texture is in its own file
     * switched over to ozEngine classes wherever possible
     * layout files, can be edited in built-in editor (-e option) or loaded by missions
