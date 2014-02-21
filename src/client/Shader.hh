@@ -34,23 +34,25 @@ namespace client
 
 struct Uniform
 {
-  int projModelTransform;
-  int modelTransform;
-  int boneTransforms;
-  int meshAnimation;
+  int projCamera;
+  int model;
+  int modelRot;
+  int cameraPos;
+  int bones;
 
-  int colourTransform;
+  int colour;
   int textures;
-  int environment;
+  int envMap;
+  int vertexAnim;
 
   int caelumLight_dir;
   int caelumLight_diffuse;
   int caelumLight_ambient;
-  int cameraPosition;
 
-  int fog_dist;
   int fog_colour;
+  int fog_dist2;
 
+  int meshAnimation;
   int starsColour;
   int waveBias;
   int wind;
@@ -72,8 +74,6 @@ public:
   Mat44 camera;
   Mat44 model;
 
-  Mat44 projCamera;
-
   Mat44 colour;
 
   OZ_ALWAYS_INLINE
@@ -92,7 +92,6 @@ public:
   void projection();
 
   void applyCamera();
-  void applyModel() const;
   void apply() const;
 
   void applyColour() const;
@@ -107,14 +106,7 @@ extern Transform tf;
 
 struct Attrib
 {
-  enum Type
-  {
-    POSITION,
-    TEXCOORD,
-    NORMAL,
-    TANGENT,
-    BINORMAL
-  };
+
 };
 
 class Shader
@@ -144,6 +136,28 @@ private:
     explicit Light() = default;
     explicit Light( const Point& pos, const Vec4& diffuse );
   };
+
+public:
+
+  enum Attrib
+  {
+    POSITION,
+    TEXCOORD,
+    NORMAL,
+    TANGENT,
+    BINORMAL
+  };
+
+  enum Sampler
+  {
+    DIFFUSE     = GL_TEXTURE0,
+    MASKS       = GL_TEXTURE1,
+    NORMALS     = GL_TEXTURE2,
+    ENV_MAP     = GL_TEXTURE3,
+    VERTEX_ANIM = GL_TEXTURE4
+  };
+
+private:
 
   static const int  LOG_BUFFER_SIZE = 8192;
   static const int  SAMPLER_MAP[];
@@ -182,9 +196,9 @@ public:
   bool hasS3TC;
   bool hasVertexTexture;
   bool setSamplerMap;
-  bool isLowDetail;
   bool doEnvMap;
   bool doBumpMap;
+  bool isLowDetail;
   bool doPostprocess;
   bool nLights;
 

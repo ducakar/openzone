@@ -38,7 +38,6 @@ public:
   HashMap<String, String> usedSounds;
   HashMap<String, String> usedModels;
 
-  bool bumpmap;
   bool useS3TC;
 
 public:

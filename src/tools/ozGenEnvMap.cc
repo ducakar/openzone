@@ -36,9 +36,9 @@ static void usage()
 {
   Log::printRaw(
     "Usage: ozGenEnvMap [-C] [-M] [size]\n"
-    "\tsize\tTexture size, 32 by default"
-    "\t-C\tUse S3 texture compression\n"
-    "\t-M\tGenerate mipmaps\n"
+    "  size\tTexture size, 32 by default\n"
+    "  -C\tUse S3 texture compression\n"
+    "  -M\tGenerate mipmaps\n"
   );
 }
 
@@ -46,7 +46,7 @@ int main( int argc, char** argv )
 {
   System::init();
 
-  int ddsOptions = 0;
+  int ddsOptions = ImageBuilder::CUBE_MAP_BIT;
   int size       = 32;
 
   int opt;
@@ -96,12 +96,7 @@ int main( int argc, char** argv )
     exitCode = EXIT_FAILURE;
   }
 
-  delete[] images[0];
-  delete[] images[1];
-  delete[] images[2];
-  delete[] images[3];
-  delete[] images[4];
-  delete[] images[5];
+  aFree( images, 6 );
   delete[] images;
 
   return exitCode;

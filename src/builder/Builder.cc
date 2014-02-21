@@ -693,7 +693,6 @@ int Builder::main( int argc, char** argv )
   bool useCompression = false;
   bool use7zip        = false;
 
-  context.bumpmap     = false;
   context.useS3TC     = false;
 
   optind = 1;

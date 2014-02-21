@@ -34,24 +34,24 @@ namespace client
 
 void Vertex::setFormat()
 {
-  glEnableVertexAttribArray( Attrib::POSITION );
-  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::POSITION );
+  glVertexAttribPointer( Shader::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
-  glEnableVertexAttribArray( Attrib::TEXCOORD );
-  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::TEXCOORD );
+  glVertexAttribPointer( Shader::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 
-  glEnableVertexAttribArray( Attrib::NORMAL );
-  glVertexAttribPointer( Attrib::NORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::NORMAL );
+  glVertexAttribPointer( Shader::NORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 
-  glEnableVertexAttribArray( Attrib::TANGENT );
-  glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::TANGENT );
+  glVertexAttribPointer( Shader::TANGENT, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, tangent ) );
 
-  glEnableVertexAttribArray( Attrib::BINORMAL );
-  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::BINORMAL );
+  glVertexAttribPointer( Shader::BINORMAL, 3, GL_BYTE, GL_TRUE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, binormal ) );
 }
 
@@ -66,7 +66,7 @@ struct Model::PreloadData
 {
   struct TexFiles
   {
-    File diffuse;
+    File albedo;
     File masks;
     File normals;
   };
@@ -100,7 +100,7 @@ void Model::addSceneLights()
 void Model::animate( const Instance* instance )
 {
   if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE2 );
+    glActiveTexture( Shader::VERTEX_ANIM );
     glBindTexture( GL_TEXTURE_2D, animationTexId );
 
     glUniform3f( uniform.meshAnimation,
@@ -171,10 +171,12 @@ void Model::drawNode( const Node* node, int dir, int mask )
 
       tf.apply();
 
-      glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, texture.diffuse );
-      glActiveTexture( GL_TEXTURE1 );
+      glActiveTexture( Shader::DIFFUSE );
+      glBindTexture( GL_TEXTURE_2D, texture.albedo );
+      glActiveTexture( Shader::MASKS );
       glBindTexture( GL_TEXTURE_2D, texture.masks );
+      glActiveTexture( Shader::NORMALS );
+      glBindTexture( GL_TEXTURE_2D, texture.normals );
 
       glDrawElements( GL_TRIANGLES, mesh.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( nullptr ) + dir * nIndices + mesh.firstIndex );
@@ -286,13 +288,18 @@ void Model::drawScheduled( QueueType queue, int mask )
     }
   }
 
-  glActiveTexture( GL_TEXTURE2 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  if( shader.hasVertexTexture ) {
+    glActiveTexture( Shader::VERTEX_ANIM );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  }
 
-  glActiveTexture( GL_TEXTURE1 );
+  glActiveTexture( Shader::NORMALS );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
+
+  glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
 
-  glActiveTexture( GL_TEXTURE0 );
+  glActiveTexture( Shader::DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -419,16 +426,16 @@ const File* Model::preload()
       if( !name.isEmpty() ) {
         PreloadData::TexFiles& texFiles = preloadData->textures.last();
 
-        texFiles.diffuse = name + ".dds";
+        texFiles.albedo  = name + ".dds";
         texFiles.masks   = name + "_m.dds";
-//         texFiles.normals = name + "_n.dds";
+        texFiles.normals = name + "_n.dds";
 
-        if( !texFiles.diffuse.map() ) {
-          OZ_ERROR( "Failed to map '%s'", texFiles.diffuse.path().cstr() );
+        if( !texFiles.albedo.map() ) {
+          OZ_ERROR( "Failed to map '%s'", texFiles.albedo.path().cstr() );
         }
 
         texFiles.masks.map();
-//         texFiles.normals.map();
+        texFiles.normals.map();
       }
     }
   }
@@ -482,7 +489,7 @@ void Model::load()
     for( int i = 0; i < nTextures; ++i ) {
       is.readString();
 
-      textures[i] = context.loadTexture( preloadData->textures[i].diffuse,
+      textures[i] = context.loadTexture( preloadData->textures[i].albedo,
                                          preloadData->textures[i].masks,
                                          preloadData->textures[i].normals );
     }

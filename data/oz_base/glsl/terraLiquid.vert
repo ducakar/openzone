@@ -46,14 +46,12 @@ float noise( vec2 pos, float t )
 void main()
 {
   float z        = 0.15 * sin( oz_WaveBias + inPosition.x + inPosition.y );
-  vec4  localPos = vec4( inPosition.x, inPosition.y, z, 1.0 );
-  vec3  position = ( oz_ModelTransform * localPos ).xyz;
-
+  vec4  position = oz_Model * vec4( inPosition.x, inPosition.y, z, 1.0 );
   float dx       = 0.2 * noise( 0.1 * position.xy, oz_WaveBias );
   float dy       = 0.2 * noise( 0.1 * position.yx, oz_WaveBias );
 
-  gl_Position    = oz_ProjModelTransform * localPos;
-  exTexCoord     = inTexCoord * TERRA_WATER_SCALE;
-  exNormal       = vec3( dx, dy, 1.0 );
-  exLook         = position - oz_CameraPosition;
+  gl_Position = oz_ProjCamera * position;
+  exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
+  exNormal    = vec3( dx, dy, 1.0 );
+  exLook      = position.xyz - oz_CameraPos;
 }

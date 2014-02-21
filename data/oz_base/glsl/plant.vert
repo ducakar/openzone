@@ -37,13 +37,15 @@ varying vec3 exLook;
 
 void main()
 {
+  vec4  position = oz_Model * vec4( inPosition, 1.0 );
   float windFact = max( inPosition.z, 0.0 );
-  vec3  position = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
                      sin( 0.08 * ( position.x + position.y ) + oz_Wind.w );
 
-  gl_Position    = oz_ProjModelTransform * vec4( inPosition.xy + windBias.xy, inPosition.z, 1.0 );
-  exTexCoord     = inTexCoord;
-  exNormal       = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
-  exLook         = position - oz_CameraPosition;
+  position    = vec4( position.xy + windBias.xy, position.z, 1.0 );
+
+  gl_Position = oz_ProjCamera * position;
+  exTexCoord  = inTexCoord;
+  exNormal    = oz_CameraPos * inNormal;
+  exLook      = position.xyz - oz_CameraPos;
 }

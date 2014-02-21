@@ -20,7 +20,7 @@
 /*
  * plain.vert
  *
- * Shader for UI, bounding boxes, aim dot etc.
+ * Shader for UI.
  */
 
 #include "header.glsl"
@@ -32,6 +32,8 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
+  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+
+  gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord;
 }

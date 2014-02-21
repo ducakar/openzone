@@ -153,20 +153,19 @@ public:
    *
    * This function is to be used in place of `glTexImage2D()`.
    *
-   * For mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR` filters and `GL_REPEAT` wrapping
-   * are used as default, for non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters and
-   * `GL_CLAMP_TO_EDGE` wrapping are used as default.
+   * For non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters and `GL_CLAMP_TO_EDGE` wrapping
+   * are used as default, while for mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR`
+   * filters and `GL_REPEAT` wrapping (or `GL_CLAMP_TO_EDGE` if a cube map) are used.
    *
    * The source file must be in either BGR, BGRA, DXT1, DXT3 or DXT5 format.
    *
    * @param file source file.
    * @param bias the number of mipmaps at the beginning that should be skipped to obtain lower
    *        texture quality.
-   * @param target texture target type.
    *
    * @return number of mipmap levels loaded, 0 on an error.
    */
-  static int textureDataFromFile( const File& file, int bias = 0, GLenum target = GL_TEXTURE_2D );
+  static int textureDataFromFile( const File& file, int bias = 0 );
 
   /**
    * Compile a GLSL shader from a file.

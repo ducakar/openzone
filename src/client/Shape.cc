@@ -160,16 +160,16 @@ void Shape::bind() const
 {
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
 
-  glEnableVertexAttribArray( Attrib::POSITION );
-  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::POSITION );
+  glVertexAttribPointer( Shader::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
-  glEnableVertexAttribArray( Attrib::TEXCOORD );
-  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::TEXCOORD );
+  glVertexAttribPointer( Shader::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 
-  glEnableVertexAttribArray( Attrib::NORMAL );
-  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glEnableVertexAttribArray( Shader::NORMAL );
+  glVertexAttribPointer( Shader::NORMAL, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
@@ -183,12 +183,12 @@ void Shape::unbind() const
 
 void Shape::colour( const Vec4& c )
 {
-  glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, Mat44::scaling( c ) );
+  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE, Mat44::scaling( c ) );
 }
 
 void Shape::colour( float r, float g, float b, float a )
 {
-  glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE,
+  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE,
                       Mat44(    r, 0.0f, 0.0f, 0.0f,
                              0.0f,    g, 0.0f, 0.0f,
                              0.0f, 0.0f,    b, 0.0f,

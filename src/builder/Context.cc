@@ -369,7 +369,7 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
     }
   }
 
-  if( bumpmap && normals.type() != File::MISSING ) {
+  if( normals.type() != File::MISSING ) {
     FIBITMAP* image = loadImage( normals, true );
 
     writeDDS( image, destBasePath + "_n.dds" );

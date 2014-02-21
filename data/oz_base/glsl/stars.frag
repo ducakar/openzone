@@ -35,5 +35,5 @@ void main()
   vec4  disturbance = vec4( sin( 256.0 * exPosition ) * 0.10, 0.0 ) * dot( diff, diff );
   vec4  colour      = oz_StarsColour + disturbance;
 
-  gl_FragData[0]    = oz_ColourTransform * mix( colour, oz_Fog.colour, dist );
+  gl_FragData[0]    = oz_Colour * mix( colour, oz_Fog.colour, dist );
 }

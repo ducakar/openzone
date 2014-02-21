@@ -66,7 +66,7 @@ void Terra::draw()
   tf.apply();
   tf.applyColour();
 
-  glBindTexture( GL_TEXTURE_2D, detailTex.diffuse );
+  glBindTexture( GL_TEXTURE_2D, detailTex.albedo );
   glActiveTexture( GL_TEXTURE1 );
   glBindTexture( GL_TEXTURE_2D, mapTex );
 
@@ -116,7 +116,7 @@ void Terra::drawLiquid()
 
   glUniform1f( uniform.waveBias, waveBias );
 
-  glBindTexture( GL_TEXTURE_2D, liquidTex.diffuse );
+  glBindTexture( GL_TEXTURE_2D, liquidTex.albedo );
   glActiveTexture( GL_TEXTURE1 );
   glBindTexture( GL_TEXTURE_2D, liquidTex.masks );
 

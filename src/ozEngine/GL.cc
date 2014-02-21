@@ -45,6 +45,14 @@ static const int DDPF_ALPHAPIXELS     = 0x00000001;
 static const int DDPF_FOURCC          = 0x00000004;
 static const int DDPF_RGB             = 0x00000040;
 
+static const int DDSCAPS2_CUBEMAP     = 0x00000200;
+
+static const GLenum CUBE_MAP_ENUMS[]  = {
+  GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+  GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+  GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+};
+
 #ifdef _WIN32
 
 OZ_DL_DEFINE( glUniform1i                  );
@@ -167,7 +175,7 @@ void GL::checkError( const char* function, const char* file, int line )
   System::error( function, file, line, 1, "GL error '%s'", message );
 }
 
-int GL::textureDataFromFile( const File& file, int bias, GLenum target )
+int GL::textureDataFromFile( const File& file, int bias )
 {
   InputStream is = file.inputStream( Endian::LITTLE );
 
@@ -204,7 +212,18 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
   char formatFourCC[4];
   is.readChars( formatFourCC, 4 );
 
-  int    bpp = is.readInt();
+  int bpp = is.readInt();
+
+  is.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+
+  int caps2 = is.readInt();
+
+  is.seek( 4 + 124 );
+
   GLenum format;
   GLint  internalFormat;
 
@@ -241,72 +260,80 @@ int GL::textureDataFromFile( const File& file, int bias, GLenum target )
     return 0;
   }
 
-  is.seek( 4 + 124 );
+  int    nFaces = caps2 & DDSCAPS2_CUBEMAP ? 6 : 1;
+  GLenum target = nFaces == 1 ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
 
-  int mipmapWidth  = width;
-  int mipmapHeight = height;
-  int mipmapS3Size = pitch;
+  if( nMipmaps == 1 ) {
+    // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
+    // non-mipmapped textures. Those are usually used in UI, where texture repeating is not
+    // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
+    glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+  }
+  else {
+    // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding
+    // whether texture actually has mipmaps.
+    glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
-  if( target == GL_TEXTURE_2D ) {
-    if( nMipmaps == 1 ) {
-      // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
-      // non-mipmapped textures. Those are usually used in UI, where texture repeating is not
-      // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
-      glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    if( nFaces == 6 ) {
       glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
       glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
     }
-    else {
-      // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding
-      // whether texture actually has mipmaps.
-      glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-    }
   }
 
-  for( int i = 0; i < nMipmaps; ++i ) {
-    if( pixelFlags & DDPF_FOURCC ) {
-      const char* data = is.forward( mipmapS3Size );
+  for( int i = 0; i < nFaces; ++i ) {
+    GLenum target = nFaces == 1 ? GL_TEXTURE_2D : CUBE_MAP_ENUMS[i];
 
-      if( i >= bias ) {
-        glCompressedTexImage2D( target, i - bias, format, mipmapWidth, mipmapHeight, 0,
-                                mipmapS3Size, data );
-      }
-    }
-    else {
-      int mipmapPitch = ( ( mipmapWidth * bpp / 8 + 3 ) / 4 ) * 4;
-      int mipmapSize  = mipmapHeight * mipmapPitch;
-      int pixelSize   = bpp / 8;
+    int mipmapWidth  = width;
+    int mipmapHeight = height;
+    int mipmapS3Size = pitch;
 
-      if( i < bias ) {
-        is.forward( mipmapWidth * mipmapHeight * pixelSize );
+    for( int j = 0; j < nMipmaps; ++j ) {
+      if( pixelFlags & DDPF_FOURCC ) {
+        const char* data = is.forward( mipmapS3Size );
+
+        if( j >= bias ) {
+          glCompressedTexImage2D( target, j - bias, format, mipmapWidth, mipmapHeight, 0,
+                                  mipmapS3Size, data );
+        }
       }
       else {
-        char* data = new char[mipmapSize];
+        int mipmapPitch = ( ( mipmapWidth * bpp / 8 + 3 ) / 4 ) * 4;
+        int mipmapSize  = mipmapHeight * mipmapPitch;
+        int pixelSize   = bpp / 8;
 
-        for( int y = 0; y < mipmapHeight; ++y ) {
-          char* pixels    = &data[y * mipmapPitch];
-          int   lineWidth = mipmapWidth * pixelSize;
+        if( j < bias ) {
+          is.forward( mipmapWidth * mipmapHeight * pixelSize );
+        }
+        else {
+          char* data = new char[mipmapSize];
 
-          mCopy( pixels, is.forward( lineWidth ), size_t( lineWidth ) );
+          for( int y = 0; y < mipmapHeight; ++y ) {
+            char* pixels    = &data[y * mipmapPitch];
+            int   lineWidth = mipmapWidth * pixelSize;
+
+            mCopy( pixels, is.forward( lineWidth ), size_t( lineWidth ) );
 
 #ifdef GL_ES_VERSION_2_0
-          // BGR(A) -> RGB(A).
-          for( int x = 0; x < mipmapWidth; ++x ) {
-            swap( pixels[0], pixels[2] );
-            pixels += pixelSize;
-          }
+            // BGR(A) -> RGB(A).
+            for( int x = 0; x < mipmapWidth; ++x ) {
+              swap( pixels[0], pixels[2] );
+              pixels += pixelSize;
+            }
 #endif
+          }
+
+          glTexImage2D( target, j - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
+                        GL_UNSIGNED_BYTE, data );
+          delete[] data;
         }
-
-        glTexImage2D( target, i - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
-                      GL_UNSIGNED_BYTE, data );
-        delete[] data;
       }
-    }
 
-    mipmapWidth  = max( 1, mipmapWidth / 2 );
-    mipmapHeight = max( 1, mipmapHeight / 2 );
-    mipmapS3Size = ( ( mipmapWidth + 3 ) / 4 ) * ( ( mipmapHeight + 3 ) / 4 ) * blockSize;
+      mipmapWidth  = max( 1, mipmapWidth / 2 );
+      mipmapHeight = max( 1, mipmapHeight / 2 );
+      mipmapS3Size = ( ( mipmapWidth + 3 ) / 4 ) * ( ( mipmapHeight + 3 ) / 4 ) * blockSize;
+    }
   }
 
   hard_assert( !is.isAvailable() );

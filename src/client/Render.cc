@@ -304,8 +304,8 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( uniform.fog_dist, visibility );
     glUniform4fv( uniform.fog_colour, 1, shader.fogColour );
+    glUniform1f( uniform.fog_dist2, visibility*visibility );
 
     glUniform4f( uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
@@ -360,7 +360,7 @@ void Render::drawGeometry()
   shape.bind();
   shader.program( shader.plain );
 
-  glActiveTexture( GL_TEXTURE0 );
+  glActiveTexture( Shader::DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   if( showAim ) {

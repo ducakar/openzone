@@ -33,20 +33,25 @@ const float TAU = 6.283185307179586;
 /*
  * Transformation
  */
-uniform mat4            oz_ProjModelTransform;
-uniform mat4            oz_ModelTransform;
-uniform mat4            oz_BoneTransforms[16];
+uniform mat4            oz_ProjCamera;
+uniform mat4            oz_Model;
+uniform mat3            oz_ModelRot;
+uniform vec3            oz_CameraPos;
+uniform mat4            oz_Bones[16];
 
 /*
  * Colour
  */
-uniform mat4            oz_ColourTransform;
+uniform mat4            oz_Colour;
 
 /*
- * Texturing { albedo, masks, animation } + environment map
+ * Texturing { albedo, masks, normals }
  */
 uniform sampler2D       oz_Textures[3];
-uniform samplerCube     oz_Environment;
+uniform samplerCube     oz_EnvMap;
+#ifndef GL_ES
+uniform sampler2D       oz_VertexAnim;
+#endif
 
 /*
  * Lighting
@@ -66,15 +71,14 @@ struct Light
 
 uniform CaelumLight     oz_CaelumLight;
 uniform Light           oz_PointLights[8];
-uniform vec3            oz_CameraPosition;
 
 /*
  * Fog
  */
 struct Fog
 {
-  float dist;
   vec4  colour;
+  float dist2;
 };
 
 uniform Fog             oz_Fog;
@@ -85,6 +89,6 @@ uniform Fog             oz_Fog;
 
 vec4 applyFog( vec4 colour, float dist )
 {
-  float ratio = min( dist / oz_Fog.dist, 1.0 );
+  float ratio = min( dist*dist / oz_Fog.dist2, 1.0 );
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }

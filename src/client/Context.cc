@@ -276,16 +276,16 @@ Context::Context() :
   bsps( nullptr ), models( nullptr )
 {}
 
-Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
+Texture Context::loadTexture( const File& albedoFile, const File& masksFile,
                               const File& normalsFile )
 {
   Texture texture;
   texture.id = -2;
 
-  if( diffuseFile.isMapped() ) {
-    glGenTextures( 1, &texture.diffuse );
-    glBindTexture( GL_TEXTURE_2D, texture.diffuse );
-    GL::textureDataFromFile( diffuseFile, context.textureLod );
+  if( albedoFile.isMapped() ) {
+    glGenTextures( 1, &texture.albedo );
+    glBindTexture( GL_TEXTURE_2D, texture.albedo );
+    GL::textureDataFromFile( albedoFile, context.textureLod );
   }
   if( masksFile.isMapped() ) {
     glGenTextures( 1, &texture.masks );
@@ -305,12 +305,12 @@ Texture Context::loadTexture( const File& diffuseFile, const File& masksFile,
 Texture Context::loadTexture( const char* basePath_ )
 {
   String basePath = basePath_;
-  File   diffuse  = basePath + ".dds";
+  File   albedo   = basePath + ".dds";
   File   masks    = basePath + "_m.dds";
   File   normals  = basePath + "_n.dds";
 
-  if( diffuse.type() == File::REGULAR ) {
-    diffuse.map();
+  if( albedo.type() == File::REGULAR ) {
+    albedo.map();
   }
   else {
     OZ_ERROR( "Missing texture '%s'", basePath_ );
@@ -322,13 +322,13 @@ Texture Context::loadTexture( const char* basePath_ )
     normals.map();
   }
 
-  return loadTexture( diffuse, masks, normals );
+  return loadTexture( albedo, masks, normals );
 }
 
 void Context::unloadTexture( const Texture* texture )
 {
-  if( texture->diffuse != shader.defaultTexture ) {
-    glDeleteTextures( 1, &texture->diffuse );
+  if( texture->albedo != shader.defaultTexture ) {
+    glDeleteTextures( 1, &texture->albedo );
   }
   if( texture->masks != shader.defaultMasks ) {
     glDeleteTextures( 1, &texture->masks );
@@ -356,19 +356,19 @@ Texture Context::requestTexture( int id )
 
   const String& basePath = liber.textures[id].path;
 
-  File diffuseFile = basePath + ".dds";
+  File albedoFile  = basePath + ".dds";
   File masksFile   = basePath + "_m.dds";
-//   File normalsFile = basePath + "_n.dds";
+  File normalsFile = basePath + "_n.dds";
 
-  if( !diffuseFile.map() ) {
-    OZ_ERROR( "Failed to load '%s'", diffuseFile.path().cstr() );
+  if( !albedoFile.map() ) {
+    OZ_ERROR( "Failed to load '%s'", albedoFile.path().cstr() );
   }
 
   masksFile.map();
-//   normalsFile.map();
+  normalsFile.map();
 
   resource.nUsers    = 1;
-  resource.handle    = loadTexture( diffuseFile, masksFile, File() );
+  resource.handle    = loadTexture( albedoFile, masksFile, normalsFile );
   resource.handle.id = id;
 
   return resource.handle;

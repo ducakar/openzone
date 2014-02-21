@@ -45,12 +45,12 @@ struct Vertex
 struct Texture
 {
   int  id;      ///< -2: external, -1: default, 0+ BSP texture index.
-  uint diffuse;
+  uint albedo;
   uint masks;
   uint normals;
 
   explicit Texture() :
-    id( -1 ), diffuse( shader.defaultTexture ), masks( shader.defaultMasks ),
+    id( -1 ), albedo( shader.defaultTexture ), masks( shader.defaultMasks ),
     normals( shader.defaultNormals )
   {}
 };

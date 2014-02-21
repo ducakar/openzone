@@ -55,14 +55,14 @@ void main()
   vec3  specular     = oz_CaelumLight.diffuse * vec3( 2.0*masksSample.r * specularDot*specularDot );
   vec3  lighting     = min( ambient + diffuse + emission, vec3( 1.25 ) ) + specular;
 # ifdef OZ_ENV_MAP
-  vec3  environment  = textureCube( oz_Environment, reflectDir ).xyz;
+  vec3  environment  = textureCube( oz_EnvMap, reflectDir ).xyz;
   base               = mix( base, environment, masksSample.b );
 # endif
 #endif
 
   vec4  fragColour   = vec4( base * lighting, colourSample.w );
 
-  gl_FragData[0]     = applyFog( oz_ColourTransform * fragColour, dist );
+  gl_FragData[0]     = applyFog( oz_Colour * fragColour, dist );
 #ifdef OZ_POSTPROCESS
   gl_FragData[1]     = vec4( specular + emission, 1.0 );
 #endif

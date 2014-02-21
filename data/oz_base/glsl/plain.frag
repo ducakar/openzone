@@ -20,7 +20,7 @@
 /*
  * plain.frag
  *
- * Shader for UI, bounding boxes, aim dot etc.
+ * Shader for UI.
  */
 
 #include "header.glsl"
@@ -29,5 +29,7 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  gl_FragData[0] = oz_ColourTransform * texture2D( oz_Textures[0], exTexCoord );
+  vec4 sample = texture2D( oz_Textures[0], exTexCoord );
+
+  gl_FragData[0] = oz_Colour * sample;
 }

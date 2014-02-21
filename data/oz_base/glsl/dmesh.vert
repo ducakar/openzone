@@ -32,6 +32,8 @@ uniform vec3 oz_MeshAnimation;
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
+attribute vec3 inTangent;
+attribute vec3 inBinormal;
 
 varying vec2 exTexCoord;
 varying vec3 exNormal;
@@ -48,24 +50,22 @@ void main()
   float iNormal1      = 0.5 + oz_MeshAnimation[1] * 0.5;
   float interpolation = oz_MeshAnimation[2];
 
-  vec4  position0     = texture2D( oz_Textures[2], vec2( iVertex, iPosition0 ) );
-  vec4  position1     = texture2D( oz_Textures[2], vec2( iVertex, iPosition1 ) );
-  vec4  normal0       = texture2D( oz_Textures[2], vec2( iVertex, iNormal0 ) );
-  vec4  normal1       = texture2D( oz_Textures[2], vec2( iVertex, iNormal1 ) );
-  vec4  localPosition = vec4( mix( position0, position1, interpolation ).xyz, 1.0 );
-  vec4  localNormal   = vec4( normalize( mix( normal0, normal1, interpolation ).xyz ), 0.0 );
-
-  gl_Position         = oz_ProjModelTransform * localPosition;
-  exTexCoord          = inTexCoord;
-  exNormal            = ( oz_ModelTransform * localNormal ).xyz;
-  exLook              = ( oz_ModelTransform * localPosition ).xyz - oz_CameraPosition;
+  vec4  position0     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition0 ) );
+  vec4  position1     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition1 ) );
+  vec4  normal0       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal0 ) );
+  vec4  normal1       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal1 ) );
+  vec4  position      = oz_Model * mix( position0, position1, interpolation );
+  vec3  normal        = normalize( mix( normal0, normal1, interpolation ).xyz );
 
 #else
 
-  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
-  exTexCoord  = inTexCoord;
-  exNormal    = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
-  exLook      = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz - oz_CameraPosition;
+  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  vec3 normal   = inNormal;
 
 #endif
+
+  gl_Position = oz_ProjCamera * position;
+  exTexCoord  = inTexCoord;
+  exNormal    = oz_ModelRot * normal;
+  exLook      = position.xyz - oz_CameraPos;
 }

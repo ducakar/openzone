@@ -47,7 +47,7 @@ void main()
   vec3  lighting     = min( ambient + diffuse, vec3( 1.25 ) );
   vec4  fragColour   = vec4( detailSample.xyz * mapSample.xyz * lighting, 1.0 );
 
-  gl_FragData[0]     = applyFog( oz_ColourTransform * fragColour, dist );
+  gl_FragData[0]     = applyFog( oz_Colour * fragColour, dist );
 #ifdef OZ_POSTPROCESS
   gl_FragData[1]     = vec4( 0.0, 0.0, 0.0, 1.0 );
 #endif

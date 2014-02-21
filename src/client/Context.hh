@@ -171,7 +171,7 @@ public:
 
   explicit Context();
 
-  static Texture loadTexture( const File& diffuseFile, const File& masksFile,
+  static Texture loadTexture( const File& albedoFile, const File& masksFile,
                               const File& normalsFile );
   static Texture loadTexture( const char* basePath );
   static void unloadTexture( const Texture* texture );

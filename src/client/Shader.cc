@@ -71,20 +71,14 @@ void Transform::projection()
 
 void Transform::applyCamera()
 {
-  projCamera = proj * camera;
-
-  glUniform3fv( uniform.cameraPosition, 1, client::camera.p );
-}
-
-void Transform::applyModel() const
-{
-  glUniformMatrix4fv( uniform.modelTransform, 1, GL_FALSE, model );
+  glUniformMatrix4fv( uniform.projCamera, 1, GL_FALSE, proj * camera );
+  glUniform3fv( uniform.cameraPos, 1, client::camera.p );
 }
 
 void Transform::apply() const
 {
-  glUniformMatrix4fv( uniform.projModelTransform, 1, GL_FALSE, projCamera * model );
-  glUniformMatrix4fv( uniform.modelTransform, 1, GL_FALSE, model );
+  glUniformMatrix4fv( uniform.model, 1, GL_FALSE, model );
+  glUniformMatrix3fv( uniform.modelRot, 1, GL_FALSE, model.mat33() );
 }
 
 void Transform::applyColour() const
@@ -94,7 +88,7 @@ void Transform::applyColour() const
 
 void Transform::setColour( const Mat44& colour_ ) const
 {
-  glUniformMatrix4fv( uniform.colourTransform, 1, GL_FALSE, colour_ );
+  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE, colour_ );
 }
 
 void Transform::setColour( const Vec4& colour_ ) const
@@ -109,7 +103,7 @@ void Transform::setColour( float r, float g, float b, float a ) const
 
 Transform tf;
 
-const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3 };
+const int Shader::SAMPLER_MAP[] = { 0, 1, 2 };
 char      Shader::logBuffer[LOG_BUFFER_SIZE];
 String    Shader::defines;
 
@@ -206,22 +200,24 @@ void Shader::loadProgram( int id )
 
     glUseProgram( programs[id].program );
 
-    OZ_REGISTER_UNIFORM( projModelTransform,  "oz_ProjModelTransform"  );
-    OZ_REGISTER_UNIFORM( modelTransform,      "oz_ModelTransform"      );
-    OZ_REGISTER_UNIFORM( boneTransforms,      "oz_BoneTransforms"      );
+    OZ_REGISTER_UNIFORM( projCamera,          "oz_ProjCamera"          );
+    OZ_REGISTER_UNIFORM( model,               "oz_Model"               );
+    OZ_REGISTER_UNIFORM( modelRot,            "oz_ModelRot"            );
+    OZ_REGISTER_UNIFORM( cameraPos,           "oz_CameraPos"           );
+    OZ_REGISTER_UNIFORM( bones,               "oz_Bones"               );
     OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
 
-    OZ_REGISTER_UNIFORM( colourTransform,     "oz_ColourTransform"     );
+    OZ_REGISTER_UNIFORM( colour,              "oz_Colour"              );
     OZ_REGISTER_UNIFORM( textures,            "oz_Textures"            );
-    OZ_REGISTER_UNIFORM( environment,         "oz_Environment"         );
+    OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
+    OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
 
     OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
     OZ_REGISTER_UNIFORM( caelumLight_diffuse, "oz_CaelumLight.diffuse" );
     OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
-    OZ_REGISTER_UNIFORM( cameraPosition,      "oz_CameraPosition"      );
 
-    OZ_REGISTER_UNIFORM( fog_dist,            "oz_Fog.dist"            );
     OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
+    OZ_REGISTER_UNIFORM( fog_dist2,           "oz_Fog.dist2"           );
 
     OZ_REGISTER_UNIFORM( starsColour,         "oz_StarsColour"         );
     OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
@@ -231,7 +227,11 @@ void Shader::loadProgram( int id )
 
     if( setSamplerMap ) {
       glUniform1iv( uniform.textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
-      glUniform1i( uniform.environment, 3 );
+      glUniform1i( uniform.envMap, 3 );
+
+      if( hasVertexTexture ) {
+        glUniform1i( uniform.vertexAnim, 4 );
+      }
     }
 
     Mat44 bones[] = {
@@ -241,11 +241,11 @@ void Shader::loadProgram( int id )
       Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID
     };
 
-    glUniformMatrix4fv( uniform.boneTransforms, 16, GL_FALSE, bones[0] );
+    glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
 
-    glActiveTexture( GL_TEXTURE3 );
+    glActiveTexture( ENV_MAP );
     glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
-    glActiveTexture( GL_TEXTURE0 );
+    glActiveTexture( DIFFUSE );
   };
 
   OZ_GL_CHECK_ERROR();
@@ -298,9 +298,9 @@ void Shader::init()
 
   hasVertexTexture = config.include( "shader.vertexTexture", true  ).get( false );
   setSamplerMap    = config.include( "shader.setSamplerMap", true  ).get( false );
-  isLowDetail      = config.include( "shader.lowDetail",     false ).get( false );
   doEnvMap         = config.include( "shader.envMap",        true  ).get( false );
   doBumpMap        = config.include( "shader.bumpMap",       true  ).get( false );
+  isLowDetail      = config.include( "shader.lowDetail",     false ).get( false );
   doPostprocess    = config.include( "shader.postprocess",   false ).get( false );
   nLights          = config.include( "shader.nLights",       4     ).get( 0 );
 
@@ -311,8 +311,7 @@ void Shader::init()
 
   medium = 0;
 
-  // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
-  // always returns white colour when texture 0 is bound)
+  // Bind white texture to id 0 to emulate fixed functionality that has white texture on id 0.
   ubyte whitePixel[] = { 0xff, 0xff, 0xff };
 
   glGenTextures( 1, &defaultTexture );
@@ -321,7 +320,7 @@ void Shader::init()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
 
-  // default masks (specular 0.0, emission 0.0)
+  // Default masks: specular 0.0, emission 0.0, environment 0.0.
   ubyte masksPixel[] = { 0x00, 0x00, 0x00 };
 
   glGenTextures( 1, &defaultMasks );
@@ -330,7 +329,7 @@ void Shader::init()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel );
 
-  // default normals for bumpmap [0, 0, 1]
+  // Default normal for bumpmap: [0, 0, 1].
   ubyte normalsPixel[] = { 0x80, 0x80, 0xff };
 
   glGenTextures( 1, &defaultNormals );
@@ -339,32 +338,16 @@ void Shader::init()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, normalsPixel );
 
-  File envNegX = "@glsl/env-x.dds";
-  File envPosX = "@glsl/env+x.dds";
-  File envNegY = "@glsl/env-y.dds";
-  File envPosY = "@glsl/env+y.dds";
-  File envNegZ = "@glsl/env-z.dds";
-  File envPosZ = "@glsl/env+z.dds";
+  File envMap = "@glsl/env.dds";
 
   glGenTextures( 1, &noiseTexture );
   glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
 
-  glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-  glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-  if( GL::textureDataFromFile( envNegX, 0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X ) == 0 ||
-      GL::textureDataFromFile( envPosX, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_X ) == 0 ||
-      GL::textureDataFromFile( envNegY, 0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ) == 0 ||
-      GL::textureDataFromFile( envPosY, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y ) == 0 ||
-      GL::textureDataFromFile( envNegZ, 0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z ) == 0 ||
-      GL::textureDataFromFile( envPosZ, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z ) == 0 )
-  {
-    OZ_ERROR( "Failed to load noise textures '@glsl/env*.dds" );
+  if( GL::textureDataFromFile( envMap, 0 ) == 0 ) {
+    OZ_ERROR( "Failed to load environment map texture '%s'", envMap.path().cstr() );
   }
 
-  glActiveTexture( GL_TEXTURE0 );
+  glActiveTexture( DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, defaultTexture );
 
   if( liber.shaders.length() == 0 ) {
@@ -385,14 +368,17 @@ void Shader::init()
   if( hasVertexTexture ) {
     defines += "#define OZ_VERTEX_TEXTURE\n";
   }
-  if( doPostprocess ) {
-    defines += "#define OZ_POSTPROCESS\n";
+  if( doEnvMap ) {
+    defines += "#define OZ_ENV_MAP\n";
+  }
+  if( doBumpMap ) {
+    defines += "#define OZ_BUMP_MAP\n";
   }
   if( isLowDetail ) {
     defines += "#define OZ_LOW_DETAIL\n";
   }
-  if( doEnvMap ) {
-    defines += "#define OZ_ENV_MAP\n";
+  if( doPostprocess ) {
+    defines += "#define OZ_POSTPROCESS\n";
   }
 
   File file = "@glsl/header.glsl";

@@ -28,6 +28,10 @@
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
+#ifdef OZ_BUMP_MAP
+attribute vec3 inTangent;
+attribute vec3 inBinormal;
+#endif
 
 varying vec2 exTexCoord;
 varying vec3 exNormal;
@@ -35,8 +39,10 @@ varying vec3 exLook;
 
 void main()
 {
-  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
+  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+
+  gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord;
-  exNormal    = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
-  exLook      = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz - oz_CameraPosition;
+  exNormal    = oz_ModelRot * inNormal;
+  exLook      = position.xyz - oz_CameraPos;
 }

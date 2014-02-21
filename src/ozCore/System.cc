@@ -559,7 +559,7 @@ static void abort( bool doHalt )
 #endif
 
   waitBell();
-  ::abort();
+  _Exit( EXIT_FAILURE );
 }
 
 const int System::HANDLERS_BIT;
