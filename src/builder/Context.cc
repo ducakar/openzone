@@ -217,8 +217,9 @@ bool Context::isBaseTexture( const char* path_ )
 {
   String path = path_;
   return !path.endsWith( "_d" ) && !path.endsWith( "_m" ) && !path.endsWith( "_s" ) &&
-         !path.endsWith( "_spec" ) && !path.endsWith( ".blend" ) && !path.endsWith( "_n" ) &&
-         !path.endsWith( "_nm" ) && !path.endsWith( "_normal" ) && !path.endsWith( "_local" );
+         !path.endsWith( "_spec" ) && !path.endsWith( "_g" ) && !path.endsWith( "_glow" ) &&
+         !path.endsWith( ".blend" ) && !path.endsWith( "_n" ) && !path.endsWith( "_nm" ) &&
+         !path.endsWith( "_normal" ) && !path.endsWith( "_local" );
 }
 
 void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
@@ -229,13 +230,15 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
   String basePath          = basePath_;
   String diffuseBasePath   = basePath;
   String masksBasePath     = basePath + "_m";
-  String specularBasePath  = basePath + "_s";
-  String specular1BasePath = basePath + "_spec";
-  String emissionBasePath  = basePath + ".blend";
-  String normalsBasePath   = basePath + "_n";
-  String normals1BasePath  = basePath + "_nm";
-  String normals2BasePath  = basePath + "_normal";
-  String normals3BasePath  = basePath + "_local";
+  String specular1BasePath = basePath + "_s";
+  String specular2BasePath = basePath + "_spec";
+  String emission1BasePath = basePath + "_g";
+  String emission2BasePath = basePath + "_glow";
+  String emission3BasePath = basePath + ".blend";
+  String normals1BasePath  = basePath + "_n";
+  String normals2BasePath  = basePath + "_nm";
+  String normals3BasePath  = basePath + "_normal";
+  String normals4BasePath  = basePath + "_local";
 
   File diffuse, masks, specular, emission, normals;
 
@@ -249,20 +252,20 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
     }
 
     if( specular.path().isEmpty() || specular.type() == File::MISSING ) {
-      specular = File( specularBasePath + IMAGE_EXTENSIONS[i] );
+      specular = File( specular1BasePath + IMAGE_EXTENSIONS[i] );
     }
     if( specular.type() == File::MISSING ) {
-      specular = File( specular1BasePath + IMAGE_EXTENSIONS[i] );
+      specular = File( specular2BasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( emission.path().isEmpty() || emission.type() == File::MISSING ) {
-      emission = File( emissionBasePath + IMAGE_EXTENSIONS[i] );
+      emission = File( emission1BasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( emission.type() == File::MISSING ) {
+      emission = File( emission2BasePath + IMAGE_EXTENSIONS[i] );
     }
 
     if( normals.path().isEmpty() || normals.type() == File::MISSING ) {
-      normals = File( normalsBasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( normals.type() == File::MISSING ) {
       normals = File( normals1BasePath + IMAGE_EXTENSIONS[i] );
     }
     if( normals.type() == File::MISSING ) {
@@ -270,6 +273,9 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
     }
     if( normals.type() == File::MISSING ) {
       normals = File( normals3BasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( normals.type() == File::MISSING ) {
+      normals = File( normals4BasePath + IMAGE_EXTENSIONS[i] );
     }
   }
 

@@ -29,15 +29,8 @@
 uniform vec3 oz_MeshAnimation;
 #endif
 
-attribute vec3 inPosition;
-attribute vec2 inTexCoord;
-attribute vec3 inNormal;
-attribute vec3 inTangent;
-attribute vec3 inBinormal;
-
-varying vec2 exTexCoord;
-varying vec3 exNormal;
-varying vec3 exLook;
+#include "attributes.glsl"
+#include "varyings.glsl"
 
 void main()
 {
@@ -67,5 +60,9 @@ void main()
   gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord;
   exNormal    = oz_ModelRot * normal;
+#ifdef OZ_BUMP_MAP
+  exTangent   = oz_ModelRot * inTangent;
+  exBinormal  = oz_ModelRot * inBinormal;
+#endif
   exLook      = position.xyz - oz_CameraPos;
 }

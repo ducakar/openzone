@@ -25,13 +25,26 @@
 
 #include "header.glsl"
 
-varying vec2 exTexCoord;
-varying vec3 exNormal;
-varying vec3 exLook;
+#include "varyings.glsl"
+
+vec3 pixelNormal( sampler2D texture, vec2 texCoord )
+{
+  vec3 sample = texture2D( texture, texCoord ).xyz;
+  vec3 normal = 2.0 * ( sample - vec3( 0.5, 0.5, 0.5 ) );
+  return normal;
+}
 
 void main()
 {
   vec3  normal       = normalize( exNormal );
+#ifdef OZ_BUMP_MAP
+  vec3  tangent      = normalize( exTangent );
+  vec3  binormal     = normalize( exBinormal );
+  mat3  plane        = mat3( tangent, binormal, normal );
+
+  normal             = plane * pixelNormal( oz_Textures[2], exTexCoord );
+  normal             = normalize( normal );
+#endif
 #ifdef OZ_LOW_DETAIL
   float dist         = 1.0 / gl_FragCoord.w;
 #else

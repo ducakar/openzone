@@ -45,8 +45,8 @@ void ObjectClass::init( const JSON& config, const char* name_ )
    */
 
   name        = name_;
-  title       = config["title"].get( name );
-  description = config["description"].get( "" );
+  title       = OZ_GETTEXT( config["title"].get( name ) );
+  description = OZ_GETTEXT( config["description"].get( "" ) );
 
   if( name.isEmpty() ) {
     OZ_ERROR( "Empty class name" );

@@ -117,8 +117,10 @@ void Terra::drawLiquid()
   glUniform1f( uniform.waveBias, waveBias );
 
   glBindTexture( GL_TEXTURE_2D, liquidTex.albedo );
-  glActiveTexture( GL_TEXTURE1 );
+  glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, liquidTex.masks );
+  glActiveTexture( Shader::NORMALS );
+  glBindTexture( GL_TEXTURE_2D, liquidTex.normals );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
@@ -137,8 +139,10 @@ void Terra::drawLiquid()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
+  glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
+  glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
-  glActiveTexture( GL_TEXTURE0 );
+  glActiveTexture( Shader::DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   if( camera.p.z >= 0.0f ) {

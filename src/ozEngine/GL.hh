@@ -151,7 +151,7 @@ public:
   /**
    * Load texture image from a (DirectX 9) DDS file.
    *
-   * This function is to be used in place of `glTexImage2D()`.
+   * This function is to be used in place of `glTexImage2D()`. It can also load cube map textures.
    *
    * For non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters and `GL_CLAMP_TO_EDGE` wrapping
    * are used as default, while for mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR`

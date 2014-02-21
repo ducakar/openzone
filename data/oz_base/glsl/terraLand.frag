@@ -27,9 +27,7 @@
 
 const float TERRA_DETAIL_SCALE = 768.0;
 
-varying vec2 exTexCoord;
-varying vec3 exNormal;
-varying vec3 exLook;
+#include "varyings.glsl"
 
 void main()
 {

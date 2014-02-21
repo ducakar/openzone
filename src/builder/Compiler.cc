@@ -526,6 +526,8 @@ void Compiler::animVertex( int i )
   hard_assert( environment == POLY );
   hard_assert( nFrames > 1 && uint( i ) < uint( positions.length() ) );
 
+  hard_assert( !normals[i] > 0.9f );
+  normal( normals[i] );
   vertex( float( i ), 0.0f, 0.0f );
 }
 
@@ -671,7 +673,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     // [ t_y b_y ] = [ p_y q_y ] [ p_u q_u ]
     // [ t_z b_z ]   [ p_z q_z ] [ p_v q_v ]
     //
-    // (t, b) - tangent and binormal
+    // (t, b) - tangent and binormal (non-ortonormised)
     // (p, q) - delta points
     for( int j = 0; j < 3; ++j ) {
       Vertex* a = v[j];
@@ -684,10 +686,28 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
       float pv     = b->texCoord.v - a->texCoord.v;
       float qu     = c->texCoord.u - a->texCoord.u;
       float qv     = c->texCoord.v - a->texCoord.v;
-      float detInv = 1.0f / ( pu*pv - qu*pv );
+      float detInv = 1.0f / ( pu*qv - qu*pv );
 
-      v[j]->tangent  = detInv * Vec3( p.x*qv - q.x*pv, p.y*qv - q.y*pv, p.z*qv - q.z*pv );
-      v[j]->binormal = detInv * Vec3( q.x*pu - p.x*qu, q.y*pu - p.y*qu, q.z*pu - p.z*qu );
+      Vec3 tangent  = detInv * Vec3( p.x*qv - q.x*pv, p.y*qv - q.y*pv, p.z*qv - q.z*pv );
+      Vec3 binormal = detInv * Vec3( q.x*pu - p.x*qu, q.y*pu - p.y*qu, q.z*pu - p.z*qu );
+      Vec3 normal   = v[j]->normal;
+
+      // Ortonormise.
+      tangent  -= ( tangent * normal ) / normal.sqN() * normal;
+      binormal -= ( binormal * normal ) / normal.sqN() * normal;
+      binormal -= ( binormal * tangent ) / tangent.sqN() * tangent;
+
+      if( Math::isFinite( detInv ) &&
+          normal.sqN() != 0.0f && tangent.sqN() != 0.0f && binormal.sqN() != 0.0f )
+      {
+        normal   = ~normal;
+        tangent  = ~tangent;
+        binormal = ~binormal;
+      }
+
+      v[j]->normal   = normal;
+      v[j]->tangent  = tangent;
+      v[j]->binormal = binormal;
     }
   }
 

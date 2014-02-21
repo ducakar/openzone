@@ -30,13 +30,8 @@ const vec3  NORMAL            = vec3( 0.0, 0.0, 1.0 );
 
 uniform float oz_WaveBias;
 
-attribute vec3 inPosition;
-attribute vec2 inTexCoord;
-attribute vec3 inNormal;
-
-varying vec2 exTexCoord;
-varying vec3 exNormal;
-varying vec3 exLook;
+#include "attributes.glsl"
+#include "varyings.glsl"
 
 float noise( vec2 pos, float t )
 {
@@ -53,5 +48,9 @@ void main()
   gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
   exNormal    = vec3( dx, dy, 1.0 );
+#ifdef OZ_BUMP_MAP
+  exTangent   = vec3( 1.0, 0.0, 0.0 );
+  exBinormal  = vec3( 0.0, 1.0, 0.0 );
+#endif
   exLook      = position.xyz - oz_CameraPos;
 }
