@@ -49,7 +49,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor; ///< %Semaphore descriptor.
+  Descriptor* descriptor; ///< Internal semaphore descriptor.
 
 public:
 

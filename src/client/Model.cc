@@ -158,7 +158,7 @@ void Model::animate( const Instance* instance )
   }
 }
 
-void Model::drawNode( const Node* node, int dir, int mask )
+void Model::drawNode( const Node* node, int mask )
 {
   tf.push();
   tf.model = tf.model ^ node->transf;
@@ -179,12 +179,12 @@ void Model::drawNode( const Node* node, int dir, int mask )
       glBindTexture( GL_TEXTURE_2D, texture.normals );
 
       glDrawElements( GL_TRIANGLES, mesh.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( nullptr ) + dir * nIndices + mesh.firstIndex );
+                      static_cast<ushort*>( nullptr ) + mesh.firstIndex );
     }
   }
 
   for( int i = 0; i < node->nChildren; ++i ) {
-    drawNode( &nodes[node->firstChild + i], dir, mask );
+    drawNode( &nodes[node->firstChild + i], mask );
   }
 
   tf.pop();
@@ -196,10 +196,7 @@ void Model::draw( const Instance* instance, int mask )
   tf.colour = instance->colour;
   tf.applyColour();
 
-  Vec3 localDir = ~instance->transf * camera.at;
-  int  dir      = ( localDir.x < 0.0f ) | ( localDir.y < 0.0f ) << 1 | ( localDir.z < 0.0f ) << 2;
-
-  drawNode( &nodes[instance->node], dir, mask );
+  drawNode( &nodes[instance->node], mask );
 }
 
 void Model::setCollation( Collation collation_ )
@@ -496,8 +493,8 @@ void Model::load()
   }
 
   uint usage   = nFrames != 0 && shader.hasVertexTexture ? GL_STREAM_DRAW : GL_STATIC_DRAW;
-  int  vboSize = nVertices  * int( sizeof( Vertex ) );
-  int  iboSize = 8*nIndices * int( sizeof( ushort ) );
+  int  vboSize = nVertices * int( sizeof( Vertex ) );
+  int  iboSize = nIndices  * int( sizeof( ushort ) );
 
   const void* vertexBuffer = is.forward( vboSize );
 

@@ -60,7 +60,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor; ///< %Thread descriptor.
+  Descriptor* descriptor; ///< Internal thread descriptor.
 
 public:
 

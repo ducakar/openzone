@@ -179,7 +179,7 @@ private:
   void addSceneLights();
 
   void animate( const Instance* instance );
-  void drawNode( const Node* node, int dir, int mask );
+  void drawNode( const Node* node, int mask );
   void draw( const Instance* instance, int mask );
 
 public:

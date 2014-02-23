@@ -61,6 +61,7 @@
 - client
     * Mesh, SMM -> Model, tree-based model hierarchy
     * Models have 8-part IBO for each +/-x, +/-y, +/-z direction to reduce overdraw
+    * bump mapping
     * environment maps
     * Models can be rendered at BSP entities
     * DDS format used for all textures, every texture is in its own file
@@ -76,6 +77,7 @@
     * Terrain can be generated based on config file settings
     * Asset Importer integration, can build Collada models
     * major Compiler updates for tree-based models
+    * Compiler generates surface tangents and binormals
 - general
     * builds on Android (i686, ARM, ARMv7a, MIPS)
     * common, matrix and nirvana sub-namespaces removed

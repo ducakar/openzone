@@ -320,8 +320,8 @@ struct JSON::Parser
             pos.backChar();
             break;
           }
-          if( chars.length() == 32 ) {
-            OZ_PARSE_ERROR( -chars.length(), "Too long " );
+          if( chars.length() >= 31 ) {
+            OZ_PARSE_ERROR( -chars.length(), "Too long number" );
           }
           chars.add( ch );
         }
@@ -662,7 +662,7 @@ bool JSON::getVector( float* vector, int count ) const
 }
 
 JSON::JSON( Type type ) :
-  data( nullptr ), valueType( type ), wasAccessed( true )
+  valueType( type ), wasAccessed( true )
 {
   switch( type ) {
     default: {
@@ -783,7 +783,7 @@ JSON::JSON( const Mat44& m ) :
 }
 
 JSON::JSON( const File& file ) :
-  data( nullptr ), valueType( NIL ), wasAccessed( true )
+  valueType( NIL ), wasAccessed( true )
 {
   load( file );
 }
@@ -794,7 +794,7 @@ JSON::~JSON()
 }
 
 JSON::JSON( const JSON& v ) :
-  data( nullptr ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
+  valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
   switch( valueType ) {
     default: {
@@ -824,9 +824,12 @@ JSON::JSON( const JSON& v ) :
 }
 
 JSON::JSON( JSON&& v ) :
-  data( v.data ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
+  valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
-  v.data        = nullptr;
+  boolean = v.boolean;
+  number  = v.number;
+  data    = v.data;
+
   v.valueType   = NIL;
   v.wasAccessed = true;
 }
@@ -880,11 +883,12 @@ JSON& JSON::operator = ( JSON&& v )
 
   clear();
 
+  boolean     = v.boolean;
+  number      = v.number;
   data        = v.data;
   valueType   = v.valueType;
   wasAccessed = v.wasAccessed;
 
-  v.data        = nullptr;
   v.valueType   = NIL;
   v.wasAccessed = true;
 
@@ -1255,7 +1259,6 @@ bool JSON::clear( bool warnUnused )
     }
   }
 
-  data        = nullptr;
   valueType   = NIL;
   wasAccessed = true;
 

@@ -60,8 +60,10 @@ static const int DDPF_FOURCC                        = 0x00000004;
 static const int DDPF_RGB                           = 0x00000040;
 
 static const int DXGI_FORMAT_R8G8B8A8_TYPELESS      = 27;
+#ifdef OZ_NONFREE
 static const int DXGI_FORMAT_BC1_TYPELESS           = 70;
 static const int DXGI_FORMAT_BC3_TYPELESS           = 76;
+#endif
 
 static const int D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
 
@@ -129,6 +131,7 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
   int height = int( FreeImage_GetHeight( faces[0] ) );
   int bpp    = int( FreeImage_GetBPP( faces[0] ) );
 
+  bool hasAlpha  = bpp == 32;
   bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
   bool compress  = options & ImageBuilder::COMPRESSION_BIT;
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
@@ -149,12 +152,12 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
     snprintf( errorBuffer, ERROR_LENGTH, "Texture compression requested but compiled without"
               " libsquish (OZ_NONFREE is disabled)." );
     return false;
-#endif
-
+#else
     if( !Math::isPow2( width ) || !Math::isPow2( height ) ) {
       snprintf( errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2." );
       return false;
     }
+#endif
   }
 
   if( isCubeMap && nFaces != 6 ) {
@@ -162,7 +165,8 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
     return false;
   }
 
-  int pitchOrLinSize = ( ( width * bpp / 8 + 3 ) / 4 ) * 4;
+  int targetBPP      = isArray && !compress ? 32 : bpp;
+  int pitchOrLinSize = ( ( width * targetBPP / 8 + 3 ) / 4 ) * 4;
   int nMipmaps       = doMipmaps ? Math::index1( max( width, height ) ) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
@@ -179,7 +183,7 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
   caps2 |= isCubeMap ? DDSCAPS2_CUBEMAP_POSITIVEZ | DDSCAPS2_CUBEMAP_NEGITIVEZ : 0;
 
   int pixelFlags = 0;
-  pixelFlags |= bpp == 32 ? DDPF_ALPHAPIXELS : 0;
+  pixelFlags |= hasAlpha ? DDPF_ALPHAPIXELS : 0;
   pixelFlags |= compress ? DDPF_FOURCC : DDPF_RGB;
 
   const char* fourCC = isArray ? "DX10" : "\0\0\0\0";
@@ -187,12 +191,12 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
 
 #ifdef OZ_NONFREE
   int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
-  squishFlags    |= bpp == 32 ? squish::kDxt5 : squish::kDxt1;
+  squishFlags    |= hasAlpha ? squish::kDxt5 : squish::kDxt1;
 
   if( compress ) {
     pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
-    dx10Format     = bpp == 32 ? DXGI_FORMAT_BC3_TYPELESS : DXGI_FORMAT_BC1_TYPELESS;
-    fourCC         = isArray ? "DX10" : bpp == 32 ? "DXT5" : "DXT1";
+    dx10Format     = hasAlpha ? DXGI_FORMAT_BC3_TYPELESS : DXGI_FORMAT_BC1_TYPELESS;
+    fourCC         = isArray ? "DX10" : hasAlpha ? "DXT5" : "DXT1";
   }
 #endif
 
@@ -225,7 +229,7 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
   os.writeInt( 32 );
   os.writeInt( pixelFlags );
   os.writeChars( fourCC, 4 );
-  os.writeInt( bpp );
+  os.writeInt( targetBPP );
   os.writeUInt( 0x00ff0000 );
   os.writeUInt( 0x0000ff00 );
   os.writeUInt( 0x000000ff );
@@ -254,44 +258,40 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
       faceBpp = 32;
     }
 
-    int mipmapWidth  = width;
-    int mipmapHeight = height;
+    int levelWidth  = width;
+    int levelHeight = height;
 
     for( int j = 0; j < nMipmaps; ++j ) {
-      FIBITMAP* level = face;
-      if( j != 0 ) {
-        level = FreeImage_Rescale( face, mipmapWidth, mipmapHeight, FILTER_CATMULLROM );
-      }
+      FIBITMAP* level = j == 0 ? FreeImage_Clone( face ) :
+                                 FreeImage_Rescale( face, levelWidth, levelHeight,
+                                                    FILTER_CATMULLROM );
 
       if( compress ) {
 #ifdef OZ_NONFREE
         ubyte* pixels  = FreeImage_GetBits( level );
-        int    size    = mipmapWidth * mipmapHeight * 4;
-        int    s3Size  = squish::GetStorageRequirements( mipmapWidth, mipmapHeight, squishFlags );
+        int    size    = levelWidth * levelHeight * 4;
+        int    s3Size  = squish::GetStorageRequirements( levelWidth, levelHeight, squishFlags );
 
         for( int k = 0; k < size; k += 4 ) {
           swap( pixels[k], pixels[k + 2] );
         }
-        squish::CompressImage( pixels, mipmapWidth, mipmapHeight, os.forward( s3Size ),
-                               squishFlags );
+        squish::CompressImage( pixels, levelWidth, levelHeight, os.forward( s3Size ), squishFlags );
 #endif
       }
       else {
         const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
         int         pitch  = int( FreeImage_GetPitch( level ) );
 
-        for( int k = 0; k < mipmapHeight; ++k ) {
-          os.writeChars( pixels, mipmapWidth * faceBpp / 8 );
+        for( int k = 0; k < levelHeight; ++k ) {
+          os.writeChars( pixels, levelWidth * faceBpp / 8 );
           pixels += pitch;
         }
       }
 
-      if( j != 0 ) {
-        FreeImage_Unload( level );
-      }
+      levelWidth  = max( 1, levelWidth / 2 );
+      levelHeight = max( 1, levelHeight / 2 );
 
-      mipmapWidth  = max( 1, mipmapWidth / 2 );
-      mipmapHeight = max( 1, mipmapHeight / 2 );
+      FreeImage_Unload( level );
     }
 
     if( face != faces[i] ) {

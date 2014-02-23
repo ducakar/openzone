@@ -165,7 +165,7 @@ void Render::scheduleCell( int cellX, int cellY )
     float radius = obj->dim.fastN();
 
     if( obj->flags & Object::WIDE_CULL_BIT ) {
-      radius *= Object::WIDE_CULL_BIT;
+      radius *= WIDE_CULL_FACTOR;
     }
 
     if( frustum.isVisible( obj->p, radius ) ) {
@@ -251,9 +251,9 @@ void Render::prepareDraw()
   float minYCentre = float( ( span.minY - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2 );
 
   float x = minXCentre;
-  for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
+  for( int i = span.minX; i <= span.maxX; ++i, x = x + Cell::SIZE ) {
     float y = minYCentre;
-    for( int j = span.minY; j <= span.maxY; ++j, y += Cell::SIZE ) {
+    for( int j = span.minY; j <= span.maxY; ++j, y = y + Cell::SIZE ) {
       if( frustum.isVisible( x, y, CELL_RADIUS ) ) {
         scheduleCell( i, j );
       }

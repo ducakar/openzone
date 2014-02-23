@@ -64,7 +64,7 @@ void BSP::load()
 
   if( life <= 0.0f || !Math::isFinite( life ) ) {
     OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
-              " set resistance to infinity (\"inf\" or \"INF\").", name.cstr() );
+              " set resistance to infinity (\"inf\").", name.cstr() );
   }
   if( resistance < 0.0f ) {
     OZ_ERROR( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
@@ -503,7 +503,7 @@ void BSP::optimise()
     }
 
     brushes.erase( i );
-    Log::print( "outside brush removed " );
+    Log::print( "Outside brush removed " );
 
     // adjust brush references (for leaves)
     for( int j = 0; j < leafBrushes.length(); ) {
@@ -545,7 +545,7 @@ void BSP::optimise()
   }
 
   // remove model brushes from the static tree (WTF Quake BSP puts them there?)
-  Log::print( "removing model brush references " );
+  Log::print( "Removing model brush references " );
 
   for( int i = 0; i < models.length(); ++i ) {
     for( int j = 0; j < models[i].nBrushes; ++j ) {
@@ -578,7 +578,7 @@ void BSP::optimise()
   Log::printEnd( " OK" );
 
   // remove unreferenced leaves
-  Log::print( "removing unreferenced and empty leaves " );
+  Log::print( "Removing unreferenced and empty leaves " );
 
   for( int i = 0; i < leaves.length(); ) {
     bool isReferenced = false;
@@ -620,7 +620,7 @@ void BSP::optimise()
   Log::printEnd( " OK" );
 
   // collapse unnecessary nodes
-  Log::print( "collapsing nodes " );
+  Log::print( "Collapsing nodes " );
 
   bool hasCollapsed;
   do {
@@ -701,7 +701,7 @@ void BSP::optimise()
   Log::printEnd( " OK" );
 
   // remove unused brush sides
-  Log::print( "removing unused brush sides " );
+  Log::print( "Removing unused brush sides " );
 
   List<bool> usedBrushSides;
   usedBrushSides.resize( brushSides.length() );
@@ -740,7 +740,7 @@ void BSP::optimise()
   Log::printEnd( " OK" );
 
   // remove unused planes
-  Log::print( "removing unused planes " );
+  Log::print( "Removing unused planes " );
 
   List<bool> usedPlanes;
   usedPlanes.resize( planes.length() );
@@ -834,7 +834,7 @@ void BSP::optimise()
     }
 
     faces.erase( i );
-    Log::println( "outside face removed" );
+    Log::println( "Outside face removed" );
 
     // adjust face references
     for( int j = 0; j < models.length() + 1; ++j ) {

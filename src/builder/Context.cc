@@ -60,6 +60,7 @@ static const int DDPF_RGB         = 0x00000040;
 static const int DDPF_LUMINANCE   = 0x00020000;
 
 const char* const IMAGE_EXTENSIONS[] = {
+  ".dds",
   ".png",
   ".jpeg",
   ".jpg",
@@ -280,20 +281,34 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
   }
 
   if( diffuse.type() != File::MISSING ) {
-    FIBITMAP* image = loadImage( diffuse, false );
+    String destPath = destBasePath + ".dds";
 
-    writeDDS( image, destBasePath + ".dds" );
-    FreeImage_Unload( image );
+    if( diffuse.hasExtension( "dds" ) ) {
+      File::cp( diffuse, destPath );
+    }
+    else {
+      FIBITMAP* image = loadImage( diffuse, false );
+
+      writeDDS( image, destPath );
+      FreeImage_Unload( image );
+    }
   }
   else {
     OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
   if( masks.type() != File::MISSING ) {
-    FIBITMAP* image = loadImage( masks, true );
+    String destPath = destBasePath + "_m.dds";
 
-    writeDDS( image, destBasePath + "_m.dds" );
-    FreeImage_Unload( image );
+    if( masks.hasExtension( "dds" ) ) {
+      File::cp( masks, destPath );
+    }
+    else {
+      FIBITMAP* image = loadImage( masks, true );
+
+      writeDDS( image, destPath );
+      FreeImage_Unload( image );
+    }
   }
   else {
     FIBITMAP* specularImage  = nullptr;
@@ -376,10 +391,17 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
   }
 
   if( normals.type() != File::MISSING ) {
-    FIBITMAP* image = loadImage( normals, true );
+    String destPath = destBasePath + "_n.dds";
 
-    writeDDS( image, destBasePath + "_n.dds" );
-    FreeImage_Unload( image );
+    if( normals.hasExtension( "dds" ) ) {
+      File::cp( normals, destPath );
+    }
+    else {
+      FIBITMAP* image = loadImage( normals, true );
+
+      writeDDS( image, destPath );
+      FreeImage_Unload( image );
+    }
   }
 
   Log::printEnd( " OK" );

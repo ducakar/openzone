@@ -345,19 +345,19 @@ double String::parseDouble( const char* s, const char** end )
     return sign * Math::INF;
   }
   // Not-a-number.
-  else if( p[0] == 'n' && p[1] == 'a' && p[2] == 'n' ) {
+  else if( s[0] == 'n' && s[1] == 'a' && s[2] == 'n' ) {
     if( end != nullptr ) {
-      *end = p + 3;
+      *end = s + 3;
     }
-    return sign * Math::NaN;
+    return Math::NaN;
   }
   // Invalid.
   else {
-    invalidNumber:
+invalidNumber:
     if( end != nullptr ) {
       *end = s;
     }
-    return Math::NaN;
+    return 0.0;
   }
 
   // Fractional part.
@@ -497,7 +497,7 @@ String::String( int i ) :
 String::String( double d, int nDigits ) :
   buffer( baseBuffer ), count( 0 )
 {
-  static_assert( BUFFER_SIZE >= 25, "Too small String::baseBuffer for double representation." );
+  static_assert( BUFFER_SIZE >= 26, "Too small String::baseBuffer for double representation." );
 
   nDigits = clamp( nDigits, 1, 17 );
 

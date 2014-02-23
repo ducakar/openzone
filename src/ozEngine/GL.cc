@@ -220,7 +220,8 @@ int GL::textureDataFromFile( const File& file, int bias )
   is.readInt();
   is.readInt();
 
-  int caps2 = is.readInt();
+  int  caps2     = is.readInt();
+  bool isCubeMap = caps2 & DDSCAPS2_CUBEMAP;
 
   is.seek( 4 + 124 );
 
@@ -260,8 +261,8 @@ int GL::textureDataFromFile( const File& file, int bias )
     return 0;
   }
 
-  int    nFaces = caps2 & DDSCAPS2_CUBEMAP ? 6 : 1;
-  GLenum target = nFaces == 1 ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
+  int    nFaces = isCubeMap ? 6 : 1;
+  GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
   if( nMipmaps == 1 ) {
     // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
@@ -276,14 +277,14 @@ int GL::textureDataFromFile( const File& file, int bias )
     // whether texture actually has mipmaps.
     glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
-    if( nFaces == 6 ) {
+    if( isCubeMap ) {
       glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
       glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
     }
   }
 
   for( int i = 0; i < nFaces; ++i ) {
-    GLenum target = nFaces == 1 ? GL_TEXTURE_2D : CUBE_MAP_ENUMS[i];
+    GLenum target = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
 
     int mipmapWidth  = width;
     int mipmapHeight = height;

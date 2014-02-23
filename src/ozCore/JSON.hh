@@ -39,7 +39,7 @@ namespace oz
  *
  * This implementation strictly follows JSON standard with the following exceptions:
  * - `inf` and `-inf` (case-sensitive) represent positive and negative infinity respectively,
- * - `nan` and `-nan` (case-sensitive) represent not-a-number and
+ * - `nan` (case-sensitive) represents not-a-number and
  * - C++-style comments are allowed.
  */
 class JSON

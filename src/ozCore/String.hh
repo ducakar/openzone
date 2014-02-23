@@ -376,7 +376,7 @@ public:
   /**
    * Parse integer value.
    *
-   * Signed integer string the should match regular expression `-?(0|[1-9][0-9]*)`.
+   * Signed integer string the should match regular expression `-?(0|[1-9][0-9]*).
    *
    * @param s string to parse.
    * @param end if not nullptr, it is set to the first character after the successfully parsed
@@ -388,8 +388,8 @@ public:
   /**
    * Parse floating-point value.
    *
-   * Double-precision floating-point value should match regular expression `-?inf|nan` or
-   * `-?(0|(1-9][0-9]*)(\\.[0-9]+)?((e|E)(-?[0-9]+))` (JSON number format).
+   * Double-precision floating-point value should match regular expression `-?inf`, `nan` or
+   * `-?(0|([1-9][0-9]*)(\\.[0-9]+)?((e|E)-?[0-9]+)?` (i.e. %JSON number format).
    *
    * @note
    * Only single-precision accuracy is guaranteed. Rounding errors as big as 3.33e-16 are known to
@@ -398,7 +398,7 @@ public:
    * @param s string to parse.
    * @param end if not nullptr, it is set to the first character after the successfully parsed
    * string. Thus, if parsing fails `end` value equals `s`.
-   * @return parsed value, NaN if parsing fails.
+   * @return parsed value, 0.0 if parsing fails.
    */
   static double parseDouble( const char* s, const char** end = nullptr );
 

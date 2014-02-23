@@ -67,8 +67,10 @@ void Terra::draw()
   tf.applyColour();
 
   glBindTexture( GL_TEXTURE_2D, detailTex.albedo );
-  glActiveTexture( GL_TEXTURE1 );
+  glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, mapTex );
+  glActiveTexture( Shader::NORMALS );
+  glBindTexture( GL_TEXTURE_2D, detailTex.normals );
 
   OZ_GL_CHECK_ERROR();
 
@@ -87,8 +89,10 @@ void Terra::draw()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
+  glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
+  glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
-  glActiveTexture( GL_TEXTURE0 );
+  glActiveTexture( Shader::DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   glFrontFace( GL_CCW );

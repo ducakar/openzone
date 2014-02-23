@@ -30,8 +30,7 @@
 vec3 pixelNormal( sampler2D texture, vec2 texCoord )
 {
   vec3 sample = texture2D( texture, texCoord ).xyz;
-  vec3 normal = 2.0 * ( sample - vec3( 0.5, 0.5, 0.5 ) );
-  return normal;
+  return 2.0 * sample - vec3( 1.0 );
 }
 
 void main()
@@ -43,7 +42,6 @@ void main()
   mat3  plane        = mat3( tangent, binormal, normal );
 
   normal             = plane * pixelNormal( oz_Textures[2], exTexCoord );
-  normal             = normalize( normal );
 #endif
 #ifdef OZ_LOW_DETAIL
   float dist         = 1.0 / gl_FragCoord.w;
@@ -61,7 +59,7 @@ void main()
   vec3  ambient      = oz_CaelumLight.ambient;
   vec3  diffuse      = oz_CaelumLight.diffuse * max( 0.0, dot( oz_CaelumLight.dir, normal ) );
 #ifdef OZ_LOW_DETAIL
-  vec3  lighting     = min( ambient + diffuse, vec3( 1.25 ) );
+  vec3  lighting     = ambient + diffuse;
 #else
   float specularDot  = dot( oz_CaelumLight.dir, reflectDir );
   vec3  emission     = vec3( masksSample.g, masksSample.g, masksSample.g );

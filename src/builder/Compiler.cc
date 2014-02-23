@@ -602,7 +602,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
 
   List<String>   textures;
   List<Triangle> triangles;
-  List<ushort>   indices[8];
+  List<ushort>   indices;
 
   int nIndices = 0;
 
@@ -612,26 +612,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     meshes[i].firstIndex = nIndices;
     meshes[i].nIndices   = meshes[i].indices.length();
 
-    // Sort triangles for every (+/-x, +/-y, +/-z) direction.
-    for( int j = 0; j < 8; ++j ) {
-      for( int k = 0; k < meshes[i].indices.length(); k += 3 ) {
-        Vec3 centre = ( ( vertices[ meshes[i].indices[k + 0] ].pos - Point::ORIGIN ) +
-                        ( vertices[ meshes[i].indices[k + 1] ].pos - Point::ORIGIN ) +
-                        ( vertices[ meshes[i].indices[k + 2] ].pos - Point::ORIGIN ) ) / 3.0f;
-
-        triangles.add( { centre * DIRS[j], k } );
-      }
-
-      triangles.sort();
-
-      for( int k = 0; k < triangles.length(); ++k ) {
-        indices[j].add( meshes[i].indices[ triangles[k].index + 0 ] );
-        indices[j].add( meshes[i].indices[ triangles[k].index + 1 ] );
-        indices[j].add( meshes[i].indices[ triangles[k].index + 2 ] );
-      }
-
-      triangles.clear();
-    }
+    indices.addAll( meshes[i].indices.begin(), meshes[i].indices.length() );
 
     nIndices += meshes[i].nIndices;
   }
@@ -662,11 +643,11 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   }
 
   // Generate tangents and binormals.
-  for( int i = 0; i < indices[0].length(); i += 3 ) {
+  for( int i = 0; i < indices.length(); i += 3 ) {
     Vertex* v[3] = {
-      &vertices[ indices[0][i + 0] ],
-      &vertices[ indices[0][i + 1] ],
-      &vertices[ indices[0][i + 2] ]
+      &vertices[ indices[i + 0] ],
+      &vertices[ indices[i + 1] ],
+      &vertices[ indices[i + 2] ]
     };
 
     // [ t_x b_x ]   [ p_x q_x ]            -1
@@ -717,10 +698,8 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     }
     vertex->write( os );
   }
-  for( int i = 0; i < 8; ++i ) {
-    foreach( index, indices[i].citer() ) {
-      os->writeUShort( *index );
-    }
+  foreach( index, indices.citer() ) {
+    os->writeUShort( *index );
   }
 
   if( nFrames != 0 ) {

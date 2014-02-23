@@ -247,6 +247,8 @@ void Area::remove( Area* area )
 void Area::raise()
 {
   if( parent != nullptr && parent->children.first() != this ) {
+    hard_assert( parent->children.has( this ) );
+
     parent->children.erase( this );
     parent->children.pushFirst( this );
   }
@@ -255,6 +257,8 @@ void Area::raise()
 void Area::sink()
 {
   if( parent != nullptr && parent->children.last() != this ) {
+    hard_assert( parent->children.has( this ) );
+
     parent->children.erase( this );
     parent->children.pushLast( this );
   }
