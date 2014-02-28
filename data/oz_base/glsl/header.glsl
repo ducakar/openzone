@@ -23,10 +23,8 @@
  * Common include file, prepended before all shader sources.
  */
 
-#ifdef GL_ES
 precision lowp int;
 precision lowp float;
-#endif
 
 const float TAU = 6.283185307179586;
 
@@ -45,13 +43,13 @@ uniform mat4            oz_Bones[16];
 uniform mat4            oz_Colour;
 
 /*
- * Texturing { albedo, masks, normals }
+ * Textures
  */
-uniform sampler2D       oz_Textures[3];
+uniform sampler2D       oz_Texture;
+uniform sampler2D       oz_Masks;
+uniform sampler2D       oz_Normals;
 uniform samplerCube     oz_EnvMap;
-#ifndef GL_ES
 uniform sampler2D       oz_VertexAnim;
-#endif
 
 /*
  * Lighting
@@ -86,6 +84,12 @@ uniform Fog             oz_Fog;
 /*
  * FUNCTIONS
  */
+
+vec3 pixelNormal( sampler2D texture, vec2 texCoord )
+{
+  vec3 texel = texture2D( texture, texCoord ).xyz;
+  return vec3( 2.0, 2.0, 1.0 ) * texel - vec3( 1.0, 1.0, 0.0 );
+}
 
 vec4 applyFog( vec4 colour, float dist )
 {

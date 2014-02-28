@@ -115,7 +115,7 @@ static void eraseChunkInfo( AllocMode mode, void* ptr )
     OZ_ERROR( mode == OBJECT ? "oz::Alloc: new[] -> delete mismatch for block at %p" :
                                "oz::Alloc: new -> delete[] mismatch for block at %p", ptr );
   }
-  chunkInfoFound:
+chunkInfoFound:
 
   free( ci );
 }

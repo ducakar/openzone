@@ -9,20 +9,21 @@
 # Additionally this scripts updates version numbers in various files.
 #
 
+components=( src/ozCore src/ozDynamics src/ozEngine src/ozFactory src/unittest
+             src/common src/matrix src/nirvana src/modules src/client src/builder
+             data/oz_base/glsl )
 version=`sed -r '/^set\( OZ_VERSION / !d; s|.* ([0-9.]+) .*|\1|' CMakeLists.txt`
-components=( ozCore ozDynamics ozEngine ozFactory
-             common matrix nirvana modules client builder
-             unittest )
+root=`pwd`
 
 # Generate CMakeLists.txt files.
 for component in ${components[@]}; do
-  echo "Generating src/$component/CMakeLists.txt"
+  echo "Generating $component/CMakeLists.txt"
 
-  cd src/$component
+  cd $component
 
-  sources=`echo *.{hh,cc} */*.{hh,cc}`
+  sources=`echo *.{hh,cc} */*.{hh,cc} *.{glsl,vert,frag}`
   # Remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
-  sources=`echo $sources | sed -r 's|(\*/)?\*\...||g'`
+  sources=`echo $sources | sed -r 's|(\*/)?\*\.[^ ]*||g'`
   # Remove PCH trigger library.
   sources=`echo $sources | sed -r 's|pch\.cc||g'`
   # Remove duplicated spaces that may have been introduced by the previous removals.
@@ -34,7 +35,7 @@ for component in ${components[@]}; do
   sed -r '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n  '"$sources"'\n#END SOURCES' \
       -i CMakeLists.txt
 
-  cd ../..
+  cd $root
 done
 
 # Fix version numbers.

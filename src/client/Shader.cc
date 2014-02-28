@@ -208,7 +208,9 @@ void Shader::loadProgram( int id )
     OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
 
     OZ_REGISTER_UNIFORM( colour,              "oz_Colour"              );
-    OZ_REGISTER_UNIFORM( textures,            "oz_Textures"            );
+    OZ_REGISTER_UNIFORM( texture,             "oz_Texture"             );
+    OZ_REGISTER_UNIFORM( masks,               "oz_Masks"               );
+    OZ_REGISTER_UNIFORM( normals,             "oz_Normals"             );
     OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
     OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
 
@@ -226,12 +228,11 @@ void Shader::loadProgram( int id )
     uniform = programs[id].uniform;
 
     if( setSamplerMap ) {
-      glUniform1iv( uniform.textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
+      glUniform1i( uniform.texture, 0 );
+      glUniform1i( uniform.masks, 1 );
+      glUniform1i( uniform.normals, 2 );
       glUniform1i( uniform.envMap, 3 );
-
-      if( hasVertexTexture ) {
-        glUniform1i( uniform.vertexAnim, 4 );
-      }
+      glUniform1i( uniform.vertexAnim, 4 );
     }
 
     Mat44 bones[] = {
@@ -363,7 +364,7 @@ void Shader::init()
 #ifdef GL_ES_VERSION_2_0
   defines = "#version 100\n";
 #else
-  defines = "#version 120\n";
+  defines = "#version 100\n";
 #endif
   if( hasVertexTexture ) {
     defines += "#define OZ_VERTEX_TEXTURE\n";

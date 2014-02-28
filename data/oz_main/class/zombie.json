@@ -23,7 +23,7 @@
                         "cvicek"
   ],
 
-  "onMelee":            "meleeAttack",
+  "onMelee":            "melee_onShot",
 
   "fragPool":           "gibs",
   "nFrags":             5,

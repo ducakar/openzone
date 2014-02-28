@@ -264,23 +264,11 @@ int GL::textureDataFromFile( const File& file, int bias )
   int    nFaces = isCubeMap ? 6 : 1;
   GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
-  if( nMipmaps == 1 ) {
-    // Set GL_LINEAR minification filter instead of GL_NEAREST_MIPMAP_LINEAR as default for
-    // non-mipmapped textures. Those are usually used in UI, where texture repeating is not
-    // desired in most cases, so we set GL_CLAMP_TO_EDGE by default.
-    glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri( target, GL_TEXTURE_MIN_FILTER, nMipmaps == 1 ? GL_LINEAR :
+                                                                  GL_LINEAR_MIPMAP_LINEAR );
+  if( nMipmaps == 1 || isCubeMap ) {
     glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  }
-  else {
-    // Default minification filter in OpenGL is crappy GL_NEAREST_MIPMAP_LINEAR not regarding
-    // whether texture actually has mipmaps.
-    glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-
-    if( isCubeMap ) {
-      glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-      glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    }
   }
 
   for( int i = 0; i < nFaces; ++i ) {

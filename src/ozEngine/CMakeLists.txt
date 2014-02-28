@@ -56,6 +56,9 @@ else()
   endif()
 endif()
 
+# FreeType.
+target_link_libraries( ozEngine ${FREETYPE_LIBRARIES} )
+
 # libpng.
 target_link_libraries( ozEngine ${PNG_LIBRARIES} )
 

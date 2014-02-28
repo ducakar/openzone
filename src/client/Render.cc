@@ -622,8 +622,8 @@ void Render::resize()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
-                GL_UNSIGNED_BYTE, nullptr );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE,
+                nullptr );
 
 #ifndef GL_ES_VERSION_2_0
 
@@ -913,7 +913,7 @@ void Render::init()
   scale           = config.include( "render.scale",       1.0f ).get( 0.0f );
   scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).get( "" ) ];
 
-  visibilityRange = config.include( "render.distance",    400.0f ).get( 0.0f );
+  visibilityRange = config.include( "render.distance",    320.0f ).get( 0.0f );
   showBounds      = config.include( "render.showBounds",  false ).get( false );
   showAim         = config.include( "render.showAim",     false ).get( false );
 

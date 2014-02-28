@@ -60,7 +60,6 @@
     * status bars under health bars
 - client
     * Mesh, SMM -> Model, tree-based model hierarchy
-    * Models have 8-part IBO for each +/-x, +/-y, +/-z direction to reduce overdraw
     * bump mapping
     * environment maps
     * Models can be rendered at BSP entities

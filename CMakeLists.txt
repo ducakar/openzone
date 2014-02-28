@@ -269,6 +269,7 @@ endif()
 #
 
 add_subdirectory( src )
+add_subdirectory( data/oz_base/glsl )
 
 #
 # Data files

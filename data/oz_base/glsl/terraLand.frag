@@ -27,13 +27,13 @@
 
 const float TERRA_DETAIL_SCALE = 512.0;
 
-#include "varyings.glsl"
-
-vec3 pixelNormal( sampler2D texture, vec2 texCoord )
-{
-  vec3 sample = texture2D( texture, texCoord ).xyz;
-  return 2.0 * sample - vec3( 1.0 );
-}
+varying vec2 exTexCoord;
+varying vec3 exNormal;
+#ifdef OZ_BUMP_MAP
+varying vec3 exTangent;
+varying vec3 exBinormal;
+#endif
+varying vec3 exLook;
 
 void main()
 {
@@ -45,7 +45,7 @@ void main()
   vec3  binormal     = normalize( exBinormal );
   mat3  plane        = mat3( tangent, binormal, normal );
 
-  normal             = plane * pixelNormal( oz_Textures[2], texCoord2 );
+  normal             = plane * pixelNormal( oz_Normals, texCoord2 );
 #endif
 #ifdef OZ_LOW_DETAIL
   float dist         = 1.0 / gl_FragCoord.w;
@@ -53,13 +53,13 @@ void main()
   float dist         = length( exLook );
 #endif
 
-  vec4  detailSample = texture2D( oz_Textures[0], texCoord2 );
-  vec4  mapSample    = texture2D( oz_Textures[1], exTexCoord );
+  vec4  detailSample = texture2D( oz_Texture, texCoord2 );
+  vec4  mapSample    = texture2D( oz_Masks, exTexCoord );
 
   vec3  base         = detailSample.xyz * mapSample.xyz;
   vec3  ambient      = oz_CaelumLight.ambient;
   vec3  diffuse      = oz_CaelumLight.diffuse * max( 0.0, dot( oz_CaelumLight.dir, normal ) );
-  vec3  lighting     = ambient + diffuse;
+  vec3  lighting     = min( ambient + diffuse, vec3( 1.25 ) );
   vec4  fragColour   = vec4( base * lighting, 1.0 );
 
   gl_FragData[0]     = applyFog( oz_Colour * fragColour, dist );

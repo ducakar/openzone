@@ -34,8 +34,9 @@ class Caelum
 {
 public:
 
-  static const int   MAX_STARS = 2048;
-  static const Vec4  GLOBAL_AMBIENT_COLOUR;
+  static const char* const SKYBOX_FACES[];
+  static const int         MAX_STARS = 2048;
+  static const Vec4        GLOBAL_AMBIENT_COLOUR;
 
 private:
 
@@ -48,15 +49,12 @@ private:
 
   static const Vec4  DAY_COLOUR;
   static const Vec4  NIGHT_COLOUR;
-  static const Vec4  STARS_COLOUR;
-
-  uint  vbo;
-  uint  ibo;
 
   uint  sunTexId;
   uint  moonTexId;
 
-  int   starShaderId;
+  uint  skyboxTexIds[6];
+
   int   celestialShaderId;
 
 public:

@@ -41,9 +41,11 @@ function meleeAttack( aabbFwdTransl, aabbDim, minDamage, maxDamage )
 
   while ozBindNextObj() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
-      ozObjDamage( baseDamage + math.random() * ( maxDamage - minDamage ) )
+      ozObjDamage( minDamage + math.random() * ( maxDamage - minDamage ) )
     end
   end
+
+  return true
 end
 
 function gunAttack( bulletFragPool, velocity, stillDisp, movingDisp )
@@ -250,7 +252,7 @@ end
 --
 
 function melee_onShot( l )
-  return meleeAttack( 0.6, 0.4, 100, 150 )
+  return meleeAttack( 0.4, 0.4, 100, 125 )
 end
 
 function plasmagun_onUpdate( l )

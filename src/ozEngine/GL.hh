@@ -151,17 +151,19 @@ public:
   /**
    * Load texture image from a (DirectX 9) DDS file.
    *
-   * This function is to be used in place of `glTexImage2D()`. It can also load cube map textures.
+   * This function is to be used in place of `glTexImage2D( GL_TEXTURE_2D, ... )` or, when loading
+   * a cube map texture, it replaces a series of six `glTexImage2D( GL_TEXTURE_CUBE_MAP_*, ... )`
+   * calls.
    *
-   * For non-mipmapped textures `GL_LINEAR` & `GL_LINEAR` filters and `GL_CLAMP_TO_EDGE` wrapping
-   * are used as default, while for mipmapped textures `GL_LINEAR` & `GL_LINEAR_MIPMAP_LINEAR`
-   * filters and `GL_REPEAT` wrapping (or `GL_CLAMP_TO_EDGE` if a cube map) are used.
+   * This functions also sets texture filters and wrapping mode. `GL_LINEAR`/`GL_LINEAR` fiters are
+   * used as default for textures without mipmps and `GL_LINEAR`/`GL_LINEAR_MIPMAP_LINEAR` for
+   * mipmapped textures. `GL_CLAMP_TO_EDGE` wrapping mode is used for non-mipmapped textures and for
+   * cube maps while `GL_REPEAT` is used otherwise.
    *
-   * The source file must be in either BGR, BGRA, DXT1, DXT3 or DXT5 format.
+   * The source file must be in either BGR, BGRA, DXT1 or DXT5 format.
    *
    * @param file source file.
-   * @param bias the number of mipmaps at the beginning that should be skipped to obtain lower
-   *        texture quality.
+   * @param bias number of mipmaps that are skipped (for lower texture quality).
    *
    * @return number of mipmap levels loaded, 0 on an error.
    */

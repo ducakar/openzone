@@ -193,7 +193,7 @@ void Inventory::drawComponent( int height, const Object* container, const Dynami
     shape.fill( x + width - ICON_SIZE - 4, y + height - FOOTER_SIZE + 4, ICON_SIZE, ICON_SIZE );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
-  noIcon:
+noIcon:
 
   itemDesc.set( -ICON_SIZE - 8, height - FOOTER_SIZE / 2, "%s", taggedClazz->title.cstr() );
   itemDesc.draw( this );

@@ -32,10 +32,6 @@ namespace builder
 
 class Caelum
 {
-private:
-
-  static const float STAR_DIM;
-
 public:
 
   void build( const char* name );

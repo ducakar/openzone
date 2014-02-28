@@ -34,43 +34,21 @@ String Lingua::detectLanguage( const char* language_ )
 {
   String lang = language_;
 
-  if( !lang.isEmpty() ) {
-    if( File( "@lingua/" + lang ).type() == File::MISSING ) {
-      lang = "";
+  if( lang.isEmpty() ) {
+    lang = Gettext::systemLanguage();
+
+    int underscore = lang.index( '_' );
+    if( underscore >= 2 ) {
+      lang = lang.substring( 0, underscore );
     }
+  }
+
+  if( File( "@lingua/" + lang ).type() != File::MISSING ) {
     return lang;
   }
-
-  lang = getenv( "LANGUAGE" );
-
-  if( !lang.isEmpty() && File( "@lingua/" + lang ).type() != File::MISSING ) {
-    return lang;
+  else {
+    return "";
   }
-
-  lang = getenv( "LC_MESSAGES" );
-
-  int underscore = lang.index( '_' );
-  if( underscore >= 2 ) {
-    lang = lang.substring( 0, underscore );
-
-    if( File( "@lingua/" + lang ).type() != File::MISSING ) {
-      return lang;
-    }
-  }
-
-  lang = getenv( "LANG" );
-
-  underscore = lang.index( '_' );
-  if( underscore >= 2 ) {
-    lang = lang.substring( 0, underscore );
-
-    if( File( "@lingua/" + lang ).type() != File::MISSING ) {
-      return lang;
-    }
-  }
-
-  lang = "";
-  return lang;
 }
 
 bool Lingua::initMission( const char* mission )

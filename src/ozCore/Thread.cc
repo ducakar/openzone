@@ -34,7 +34,6 @@
 #include "Pepper.hh"
 
 #include <cstdlib>
-#include <cstring>
 
 #if defined( __ANDROID__ )
 # include <jni.h>
@@ -226,8 +225,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
   descriptor->data = data;
   descriptor->type = type;
 
-  strncpy( descriptor->name, name, StackTrace::NAME_LENGTH );
-  descriptor->name[StackTrace::NAME_LENGTH] = '\0';
+  strlcpy( descriptor->name, name, StackTrace::NAME_LENGTH );
 
 #ifdef _WIN32
 

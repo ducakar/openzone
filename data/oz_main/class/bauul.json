@@ -40,7 +40,7 @@
                         "bauul$skull"
   ],
   "weaponItem":         0,
-  "onMelee":            "meleeAttack",
+  "onMelee":            "melee_onShot",
 
   "attrib.nightVision": true,
   "attrib.binoculars":  true,

@@ -174,6 +174,14 @@ inline void* mSet( void* dest, int value, size_t size )
 }
 
 /**
+ * Equivalent to `strlcpy()`.
+ *
+ * Safer and better-performance alternative to `strncpy()`. It always adds a terminating null char
+ * and doesn't pad destination with zeros if `length` is larger that the size of the source string.
+ */
+size_t strlcpy( char* dest, const char* src, size_t size );
+
+/**
  * Equivalent to `memcmp()`.
  */
 OZ_ALWAYS_INLINE

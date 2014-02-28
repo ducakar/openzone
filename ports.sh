@@ -16,7 +16,7 @@
 #
 
 platforms=(
-#   PNaCl
+  PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a
@@ -73,6 +73,7 @@ function setup_pnacl()
   export PATH="$toolsroot/bin64:$originalPath"
 
   export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/include"
+  export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/include/newlib"
   export CFLAGS="-O4 -ffast-math"
   export LDFLAGS="-L$buildDir/usr/lib -L$NACL_SDK_ROOT/lib/pnacl/Release -lnosys"
 
@@ -257,16 +258,16 @@ function fetch()
   download 'http://zlib.net/zlib-1.2.8.tar.xz'
 
   # libpng
-  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.6.tar.xz'
+  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.8.tar.xz'
 
   # libogg
   download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.xz'
 
   # libvorbis
-  download 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz'
+  download 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.4.tar.xz'
 
   # FreeType
-  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.5.1/freetype-2.5.1.tar.bz2'
+  download 'http://sourceforge.net/projects/freetype/files/freetype2/2.5.2/freetype-2.5.2.tar.bz2'
 
   # PhysicsFS 2.1
   cd "$topDir/archives"
@@ -276,7 +277,7 @@ function fetch()
   fi
 
   # Lua
-  download 'http://www.lua.org/ftp/lua-5.2.2.tar.gz'
+  download 'http://www.lua.org/ftp/lua-5.2.3.tar.gz'
 
   # OpenAL Soft
   download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
@@ -372,7 +373,7 @@ function build_zlib()
 
 function build_libpng()
 {
-  prepare libpng-1.6.6 libpng-1.6.6.tar.xz || return
+  prepare libpng-1.6.8 libpng-1.6.8.tar.xz || return
   applyPatches libpng-1.6.6.patch
 
   cmakeBuild -D PNG_SHARED=0 \
@@ -393,8 +394,8 @@ function build_libogg()
 
 function build_libvorbis()
 {
-  prepare libvorbis-1.3.3 libvorbis-1.3.3.tar.xz || return
-  applyPatches libvorbis-1.3.3.patch
+  prepare libvorbis-1.3.4 libvorbis-1.3.4.tar.xz || return
+  applyPatches libvorbis-1.3.4.patch
 
   autotoolsBuild
 
@@ -403,10 +404,10 @@ function build_libvorbis()
 
 function build_freetype()
 {
-  prepare freetype-2.5.1 freetype-2.5.1.tar.bz2 || return
+  prepare freetype-2.5.2 freetype-2.5.2.tar.bz2 || return
   applyPatches freetype-2.5.0.1.patch
 
-  autotoolsBuild --without-bzip2
+  autotoolsBuild --without-bzip2 --without-png
 
   finish
 }
@@ -423,7 +424,7 @@ function build_physfs()
 
 function build_lua()
 {
-  prepare lua-5.2.2 lua-5.2.2.tar.gz || return
+  prepare lua-5.2.3 lua-5.2.3.tar.gz || return
   applyPatches lua-5.2.2.patch
 
   make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"

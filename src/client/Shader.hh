@@ -41,7 +41,9 @@ struct Uniform
   int bones;
 
   int colour;
-  int textures;
+  int texture;
+  int masks;
+  int normals;
   int envMap;
   int vertexAnim;
 

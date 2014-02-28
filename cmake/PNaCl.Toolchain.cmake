@@ -37,4 +37,5 @@ macro( pnacl_finalise _target )
 endmacro()
 
 include_directories( SYSTEM $ENV{NACL_SDK_ROOT}/include )
+include_directories( SYSTEM $ENV{NACL_SDK_ROOT}/include/newlib )
 link_directories( $ENV{NACL_SDK_ROOT}/lib/pnacl/Release )

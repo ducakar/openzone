@@ -66,6 +66,7 @@ public:
   static void quad( float dimX, float dimY );
   static void box( const AABB& bb );
   static void wireBox( const AABB& bb );
+  static void skyBox( uint* texIds );
 #ifdef OZ_DYNAMICS
   static void object( const Point& pos, const Mat33& rot, const void* shape );
 #endif

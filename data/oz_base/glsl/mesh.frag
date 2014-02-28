@@ -25,13 +25,13 @@
 
 #include "header.glsl"
 
-#include "varyings.glsl"
-
-vec3 pixelNormal( sampler2D texture, vec2 texCoord )
-{
-  vec3 sample = texture2D( texture, texCoord ).xyz;
-  return 2.0 * sample - vec3( 1.0 );
-}
+varying vec2 exTexCoord;
+varying vec3 exNormal;
+#ifdef OZ_BUMP_MAP
+varying vec3 exTangent;
+varying vec3 exBinormal;
+#endif
+varying vec3 exLook;
 
 void main()
 {
@@ -41,7 +41,7 @@ void main()
   vec3  binormal     = normalize( exBinormal );
   mat3  plane        = mat3( tangent, binormal, normal );
 
-  normal             = plane * pixelNormal( oz_Textures[2], exTexCoord );
+  normal             = plane * pixelNormal( oz_Normals, exTexCoord );
 #endif
 #ifdef OZ_LOW_DETAIL
   float dist         = 1.0 / gl_FragCoord.w;
@@ -50,9 +50,9 @@ void main()
   vec3  reflectDir   = reflect( exLook / dist, normal );
 #endif
 
-  vec4  colourSample = texture2D( oz_Textures[0], exTexCoord );
+  vec4  colourSample = texture2D( oz_Texture, exTexCoord );
 #ifndef OZ_LOW_DETAIL
-  vec4  masksSample  = texture2D( oz_Textures[1], exTexCoord );
+  vec4  masksSample  = texture2D( oz_Masks, exTexCoord );
 #endif
 
   vec3  base         = colourSample.xyz;

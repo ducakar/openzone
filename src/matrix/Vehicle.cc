@@ -197,7 +197,7 @@ void Vehicle::mechHandler()
         p.z = originalZ;
       }
     }
-    stepSucceeded:
+stepSucceeded:
 
     Vec3 desiredMomentum = lower < 0 && !( flags & ON_FLOOR_BIT ) ? Vec3::ZERO : move;
 

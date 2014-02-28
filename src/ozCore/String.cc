@@ -33,7 +33,6 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
 #if defined( __ANDROID__ ) || defined( _WIN32 )
 # define exp10( x ) exp( log( 10.0 ) * ( x ) )
@@ -448,11 +447,11 @@ String::String( bool b ) :
   static_assert( BUFFER_SIZE >= 6, "Too small String::baseBuffer for bool representation." );
 
   if( b ) {
-    strcpy( baseBuffer, "true" );
+    mCopy( baseBuffer, "true", 5 );
     count = 4;
   }
   else {
-    strcpy( baseBuffer, "false" );
+    mCopy( baseBuffer, "false", 6 );
     count = 5;
   }
 }
@@ -472,7 +471,8 @@ String::String( int i ) :
 
   if( i < 0 ) {
     if( i == int( 0x80000000 ) ) {
-      strcpy( baseBuffer, "-2147483648" );
+      mCopy( baseBuffer, "-2147483648", 12 );
+      count = 11;
       return;
     }
     else {
@@ -522,12 +522,12 @@ String::String( double d, int nDigits ) :
   }
   else if( d + 1e38 == d || d != d ) {
     if( d * 0.0 == d || d != d ) {
-      strcpy( baseBuffer + count, "nan" );
-      count += 4;
+      mCopy( baseBuffer, "nan", 4 );
+      count = 3;
     }
     else {
-      strcpy( baseBuffer + count, "inf" );
-      count += 4;
+      mCopy( baseBuffer + count, "inf", 4 );
+      count += 3;
     }
     return;
   }
@@ -706,7 +706,7 @@ String String::str( const char* s, ... )
   return r;
 }
 
-String String::si(double e, int nDigits )
+String String::si( double e, int nDigits )
 {
   char prefixes[] = "m kMG";
 

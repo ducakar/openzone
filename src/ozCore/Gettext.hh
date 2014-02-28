@@ -55,6 +55,15 @@ private:
 public:
 
   /**
+   * Detect system language from `LANG` and `LC_*` variables.
+   *
+   * This function reads locale name from the first of `LC_ALL`, `LC_MESSAGES` or `LANG` environment
+   * variables that has non-empty value. If all those variables are empty or nonexistent `fallback`
+   * is returned.
+   */
+  static const char* systemLanguage( const char* fallback = "C" );
+
+  /**
    * Default constructor, creates an empty instance.
    */
   explicit Gettext();

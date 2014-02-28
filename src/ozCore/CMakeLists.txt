@@ -57,6 +57,7 @@ add_library( ozCore
   Vec3.hh
   Vec4.hh
   Alloc.cc
+  arrays.cc
   Buffer.cc
   CallOnce.cc
   common.cc

@@ -32,8 +32,6 @@ namespace oz
 namespace builder
 {
 
-const float Caelum::STAR_DIM = 0.008f;
-
 void Caelum::build( const char* name )
 {
   Log::println( "Prebuilding Caelum '%s' {", name );
@@ -44,73 +42,21 @@ void Caelum::build( const char* name )
     texOptions |= ImageBuilder::COMPRESSION_BIT;
   }
 
+  String path = String::str( "caelum/%s", name );
+  File::mkdir( path );
+
+  for( int i = 0; i < 6; ++i ) {
+    String path = String::str( "@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i] );
+
+    context.buildTexture( path, &path[1], false );
+  }
+
   if( !ImageBuilder::convertToDDS( "@caelum/sun.png", texOptions, "caelum" ) ) {
     OZ_ERROR( "Failed to build sun texture" );
   }
   if( !ImageBuilder::convertToDDS( "@caelum/moon.png", texOptions, "caelum" ) ) {
     OZ_ERROR( "Failed to build moon texture" );
   }
-
-  File destFile = String::str( "caelum/%s.ozcCaelum", name );
-
-  OutputStream os( 0, Endian::LITTLE );
-
-  for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
-    Vec3 p;
-    float norm;
-
-    do {
-      p = 10.0f * Vec3( Math::centralRand(), Math::centralRand(), Math::centralRand() );
-      norm = p.sqN();
-    }
-    while( Math::isNaN( norm ) || norm < 25.0f || norm > 100.0f );
-
-    Vec3 z = ~p;
-    Vec3 x = ~Vec3( z.z, 0.0f, -z.x );
-    Vec3 y = z ^ x;
-
-    Mat44 transf = Mat44( x, y, z, -p );
-
-    Point corners[4] = {
-      transf * Point( -STAR_DIM, 0.0f, 0.0f ),
-      transf * Point( 0.0f, -STAR_DIM, 0.0f ),
-      transf * Point( +STAR_DIM, 0.0f, 0.0f ),
-      transf * Point( 0.0f, +STAR_DIM, 0.0f )
-    };
-
-    os.writeFloat( corners[0].x );
-    os.writeFloat( corners[0].y );
-    os.writeFloat( corners[0].z );
-
-    os.writeFloat( corners[1].x );
-    os.writeFloat( corners[1].y );
-    os.writeFloat( corners[1].z );
-
-    os.writeFloat( corners[2].x );
-    os.writeFloat( corners[2].y );
-    os.writeFloat( corners[2].z );
-
-    os.writeFloat( corners[3].x );
-    os.writeFloat( corners[3].y );
-    os.writeFloat( corners[3].z );
-  }
-
-  for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
-    os.writeUShort( ushort( i * 4 + 0 ) );
-    os.writeUShort( ushort( i * 4 + 0 ) );
-    os.writeUShort( ushort( i * 4 + 3 ) );
-    os.writeUShort( ushort( i * 4 + 1 ) );
-    os.writeUShort( ushort( i * 4 + 2 ) );
-    os.writeUShort( ushort( i * 4 + 2 ) );
-  }
-
-  Log::print( "Writing into '%s' ...", destFile.path().cstr() );
-
-  if( !destFile.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
-  }
-
-  Log::printEnd( " OK" );
 
   Log::unindent();
   Log::println( "}" );

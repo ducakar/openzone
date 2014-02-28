@@ -404,8 +404,7 @@ bool Log::init( const char* filePath_, bool clearFile )
 #else
 
   if( filePath_ != nullptr ) {
-    strncpy( filePath, filePath_, 256 );
-    filePath[255] = '\0';
+    strlcpy( filePath, filePath_, 256 );
   }
 
   if( filePath[0] != '\0' ) {

@@ -27,8 +27,21 @@
 
 uniform vec4 oz_Wind;
 
-#include "attributes.glsl"
-#include "varyings.glsl"
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
+#ifdef OZ_BUMP_MAP
+attribute vec3 inTangent;
+attribute vec3 inBinormal;
+#endif
+
+varying vec2 exTexCoord;
+varying vec3 exNormal;
+#ifdef OZ_BUMP_MAP
+varying vec3 exTangent;
+varying vec3 exBinormal;
+#endif
+varying vec3 exLook;
 
 void main()
 {

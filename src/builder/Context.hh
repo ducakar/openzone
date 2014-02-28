@@ -43,7 +43,7 @@ public:
 public:
 
   bool isBaseTexture( const char* path );
-  void buildTexture( const char* path, const char* destPath );
+  void buildTexture( const char* path, const char* destPath, bool allLayers = true );
 
   void init();
   void destroy();

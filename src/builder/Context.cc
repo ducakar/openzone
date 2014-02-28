@@ -223,7 +223,7 @@ bool Context::isBaseTexture( const char* path_ )
          !path.endsWith( "_normal" ) && !path.endsWith( "_local" );
 }
 
-void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
+void Context::buildTexture( const char* basePath_, const char* destBasePath_, bool allLayers )
 {
   Log::print( "Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_ );
 
@@ -248,35 +248,40 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_ )
       diffuse = File( diffuseBasePath + IMAGE_EXTENSIONS[i] );
     }
 
-    if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
-      masks = File( masksBasePath + IMAGE_EXTENSIONS[i] );
-    }
+    if( allLayers ) {
+      if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
+        masks = File( masksBasePath + IMAGE_EXTENSIONS[i] );
+      }
 
-    if( specular.path().isEmpty() || specular.type() == File::MISSING ) {
-      specular = File( specular1BasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( specular.type() == File::MISSING ) {
-      specular = File( specular2BasePath + IMAGE_EXTENSIONS[i] );
-    }
+      if( specular.path().isEmpty() || specular.type() == File::MISSING ) {
+        specular = File( specular1BasePath + IMAGE_EXTENSIONS[i] );
+      }
+      if( specular.type() == File::MISSING ) {
+        specular = File( specular2BasePath + IMAGE_EXTENSIONS[i] );
+      }
 
-    if( emission.path().isEmpty() || emission.type() == File::MISSING ) {
-      emission = File( emission1BasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( emission.type() == File::MISSING ) {
-      emission = File( emission2BasePath + IMAGE_EXTENSIONS[i] );
-    }
+      if( emission.path().isEmpty() || emission.type() == File::MISSING ) {
+        emission = File( emission1BasePath + IMAGE_EXTENSIONS[i] );
+      }
+      if( emission.type() == File::MISSING ) {
+        emission = File( emission2BasePath + IMAGE_EXTENSIONS[i] );
+      }
+      if( emission.type() == File::MISSING ) {
+        emission = File( emission3BasePath + IMAGE_EXTENSIONS[i] );
+      }
 
-    if( normals.path().isEmpty() || normals.type() == File::MISSING ) {
-      normals = File( normals1BasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( normals.type() == File::MISSING ) {
-      normals = File( normals2BasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( normals.type() == File::MISSING ) {
-      normals = File( normals3BasePath + IMAGE_EXTENSIONS[i] );
-    }
-    if( normals.type() == File::MISSING ) {
-      normals = File( normals4BasePath + IMAGE_EXTENSIONS[i] );
+      if( normals.path().isEmpty() || normals.type() == File::MISSING ) {
+        normals = File( normals1BasePath + IMAGE_EXTENSIONS[i] );
+      }
+      if( normals.type() == File::MISSING ) {
+        normals = File( normals2BasePath + IMAGE_EXTENSIONS[i] );
+      }
+      if( normals.type() == File::MISSING ) {
+        normals = File( normals3BasePath + IMAGE_EXTENSIONS[i] );
+      }
+      if( normals.type() == File::MISSING ) {
+        normals = File( normals4BasePath + IMAGE_EXTENSIONS[i] );
+      }
     }
   }
 

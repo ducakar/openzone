@@ -26,6 +26,8 @@
 
 #include "Gettext.hh"
 
+#include <cstdlib>
+
 namespace oz
 {
 
@@ -38,6 +40,28 @@ struct Gettext::Message
   int      translation;
   Message* next;
 };
+
+const char* Gettext::systemLanguage( const char* fallback )
+{
+  const char* lang = nullptr;
+
+  lang = getenv( "LC_ALL" );
+  if( lang != nullptr && !String::isEmpty( lang ) ) {
+    return lang;
+  }
+
+  lang = getenv( "LC_MESSAGES" );
+  if( lang != nullptr && !String::isEmpty( lang ) ) {
+    return lang;
+  }
+
+  lang = getenv( "LANG" );
+  if( lang != nullptr && !String::isEmpty( lang ) ) {
+    return lang;
+  }
+
+  return fallback;
+}
 
 Gettext::Gettext() :
   table( nullptr ), messages( nullptr ), strings( nullptr ), nBuckets( 0 ), nMessages( 0 ),

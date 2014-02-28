@@ -34,20 +34,20 @@ namespace oz
 namespace client
 {
 
-const Shape::Vertex Shape::VERTICES[40] = {
-  // filled rectangle
+const Shape::Vertex Shape::VERTICES[] = {
+  // filled rectangle (base index 0)
   { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
   { { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
   { { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
   { { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
 
-  // line loop rectangle
+  // line loop rectangle (base index 4)
   { { 0.0f, 0.0f, 0.0f }, {}, {} },
   { { 1.0f, 0.0f, 0.0f }, {}, {} },
   { { 1.0f, 1.0f, 0.0f }, {}, {} },
   { { 0.0f, 1.0f, 0.0f }, {}, {} },
 
-  // tag box
+  // tag box (base index 8)
   { { -1.5f, -1.5f, 0.0f }, {}, {} },
   { { -1.5f, +3.5f, 0.0f }, {}, {} },
   { { -0.5f, -1.5f, 0.0f }, {}, {} },
@@ -68,13 +68,13 @@ const Shape::Vertex Shape::VERTICES[40] = {
   { { -1.5f, +0.5f, 0.0f }, {}, {} },
   { { -1.5f, -3.5f, 0.0f }, {}, {} },
 
-  // sprite
-  { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-  { { +1.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-  { { -1.0f, +1.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
-  { { +1.0f, +1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  // sprite (base index 24)
+  { { -1.0f, -1.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { +1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { -1.0f, +1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { +1.0f, +1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
 
-  // box (base index 32)
+  // box (base index 28)
   { { -1.0f, -1.0f, -1.0f }, {}, {} },
   { { -1.0f, -1.0f, +1.0f }, {}, {} },
   { { -1.0f, +1.0f, -1.0f }, {}, {} },
@@ -82,10 +82,41 @@ const Shape::Vertex Shape::VERTICES[40] = {
   { { +1.0f, -1.0f, -1.0f }, {}, {} },
   { { +1.0f, -1.0f, +1.0f }, {}, {} },
   { { +1.0f, +1.0f, -1.0f }, {}, {} },
-  { { +1.0f, +1.0f, +1.0f }, {}, {} }
+  { { +1.0f, +1.0f, +1.0f }, {}, {} },
+
+  // skybox (base index 36)
+  { { +1.0f, +1.0f, -1.0f }, { 0.0f, 1.0f }, {} },
+  { { +1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f }, {} },
+  { { +1.0f, -1.0f, +1.0f }, { 1.0f, 0.0f }, {} },
+  { { +1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f }, {} },
+
+  { { -1.0f, -1.0f, -1.0f }, { 0.0f, 1.0f }, {} },
+  { { -1.0f, +1.0f, -1.0f }, { 1.0f, 1.0f }, {} },
+  { { -1.0f, +1.0f, +1.0f }, { 1.0f, 0.0f }, {} },
+  { { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f }, {} },
+
+  { { -1.0f, +1.0f, -1.0f }, { 0.0f, 1.0f }, {} },
+  { { +1.0f, +1.0f, -1.0f }, { 1.0f, 1.0f }, {} },
+  { { +1.0f, +1.0f, +1.0f }, { 1.0f, 0.0f }, {} },
+  { { -1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f }, {} },
+
+  { { +1.0f, -1.0f, -1.0f }, { 0.0f, 1.0f }, {} },
+  { { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f }, {} },
+  { { -1.0f, -1.0f, +1.0f }, { 1.0f, 0.0f }, {} },
+  { { +1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f }, {} },
+
+  { { -1.0f, +1.0f, +1.0f }, { 0.0f, 1.0f }, {} },
+  { { +1.0f, +1.0f, +1.0f }, { 1.0f, 1.0f }, {} },
+  { { +1.0f, -1.0f, +1.0f }, { 1.0f, 0.0f }, {} },
+  { { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f }, {} },
+
+  { { -1.0f, -1.0f, -1.0f }, { 0.0f, 1.0f }, {} },
+  { { +1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f }, {} },
+  { { +1.0f, +1.0f, -1.0f }, { 1.0f, 0.0f }, {} },
+  { { -1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f }, {} }
 };
 
-const ushort Shape::INDICES[46] = {
+const ushort Shape::INDICES[] = {
   /*
    * Full box (GL_TRIANGLE_STRIP)
    */
@@ -149,7 +180,47 @@ const ushort Shape::INDICES[46] = {
   28 + 2,
   28 + 6,
   28 + 3,
-  28 + 7
+  28 + 7,
+
+  /*
+   * Skybox (GL_TRIANGLE_STRIP)
+   */
+
+  // +x
+  36 + 0,
+  36 + 1,
+  36 + 3,
+  36 + 2,
+
+  // -x
+  40 + 0,
+  40 + 1,
+  40 + 3,
+  40 + 2,
+
+  // +y
+  44 + 0,
+  44 + 1,
+  44 + 3,
+  44 + 2,
+
+  // -y
+  48 + 0,
+  48 + 1,
+  48 + 3,
+  48 + 2,
+
+  // +z
+  52 + 0,
+  52 + 1,
+  52 + 3,
+  52 + 2,
+
+  // -z
+  56 + 0,
+  56 + 1,
+  56 + 3,
+  56 + 2
 };
 
 Shape::Shape() :
@@ -270,6 +341,29 @@ void Shape::wireBox( const AABB& bb )
   tf.apply();
 
   glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+}
+
+void Shape::skyBox( uint* texIds )
+{
+  tf.apply();
+
+  glBindTexture( GL_TEXTURE_2D, texIds[0] );
+  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 46 );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[1] );
+  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 50 );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[2] );
+  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 54 );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[3] );
+  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 58 );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[4] );
+  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 62 );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[5] );
+  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 66 );
 }
 
 #ifdef OZ_DYNAMICS

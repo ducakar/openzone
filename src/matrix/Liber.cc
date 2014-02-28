@@ -373,7 +373,7 @@ void Liber::initSounds()
 
 void Liber::initCaela()
 {
-  Log::println( "Caela (*.ozcCaelum in 'caelum') {" );
+  Log::println( "Caela (directories in 'caelum') {" );
   Log::indent();
 
   List<Resource> caelaList;
@@ -382,7 +382,7 @@ void Liber::initCaela()
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozcCaelum" ) ) {
+    if( file->type() != File::DIRECTORY ) {
       continue;
     }
 

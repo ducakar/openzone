@@ -86,8 +86,8 @@ int main( int argc, char** argv )
   int exitCode = EXIT_SUCCESS;
 
   TerraBuilder::setBounds( TerraBuilder::NOISE, -1.75f, +1.75f );
-  TerraBuilder::setOctaveCount( TerraBuilder::NOISE, 1 );
-  TerraBuilder::setFrequency( TerraBuilder::NOISE, 2.0f );
+  TerraBuilder::setOctaveCount( TerraBuilder::NOISE, 3 );
+  TerraBuilder::setFrequency( TerraBuilder::NOISE, 1.0f );
 
   char** images = TerraBuilder::generateCubeNoise( size );
 

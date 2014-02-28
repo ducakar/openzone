@@ -25,7 +25,6 @@
                         "cvicek"
   ],
   "weaponItem":         0,
-  "onMelee":            "meleeAttack",
 
   "fragPool":           "gibs",
   "nFrags":             5,

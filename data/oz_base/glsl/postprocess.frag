@@ -42,14 +42,14 @@ void main()
 
   for( float x = -MS_DIM; x <= MS_DIM; x += 1.0 ) {
     vec2  coords    = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
-    vec4  sample    = texture2D( oz_Textures[1], coords );
+    vec4  sample    = texture2D( oz_Masks, coords );
     float luminance = sample.r + sample.g + sample.b;
 
     multiSample += max( 0.0, luminance - BLOOM_THRESHOLD );
   }
 
   vec3 bloom   = vec3( multiSample * BLOOM_INTENSITY );
-  vec4 colour  = texture2D( oz_Textures[0], exTexCoord );
+  vec4 colour  = texture2D( oz_Texture, exTexCoord );
 
   gl_FragColor = colour + vec4( bloom, 0 );
 }
