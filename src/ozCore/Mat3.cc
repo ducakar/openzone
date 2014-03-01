@@ -21,20 +21,20 @@
  */
 
 /**
- * @file ozCore/Mat33.cc
+ * @file ozCore/Mat3.cc
  */
 
-#include "Mat33.hh"
+#include "Mat3.hh"
 
 namespace oz
 {
 
-const Mat33 Mat33::ZERO = Mat33( 0.0f, 0.0f, 0.0f,
-                                 0.0f, 0.0f, 0.0f,
-                                 0.0f, 0.0f, 0.0f );
+const Mat3 Mat3::ZERO = Mat3( 0.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f );
 
-const Mat33 Mat33::ID   = Mat33( 1.0f, 0.0f, 0.0f,
-                                 0.0f, 1.0f, 0.0f,
-                                 0.0f, 0.0f, 1.0f );
+const Mat3 Mat3::ID   = Mat3( 1.0f, 0.0f, 0.0f,
+                              0.0f, 1.0f, 0.0f,
+                              0.0f, 0.0f, 1.0f );
 
 }

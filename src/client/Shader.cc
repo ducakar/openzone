@@ -45,10 +45,10 @@ void Transform::ortho( int width, int height )
   float cx = float( 2.0 / double( width ) );
   float cy = float( 2.0 / double( height ) );
 
-  proj = Mat44(    cx,  0.0f,    0.0f, 0.0f,
-                 0.0f,    cy,    0.0f, 0.0f,
-                 0.0f,  0.0f, -0.001f, 0.0f,
-                -1.0f, -1.0f,    0.0f, 1.0f );
+  proj = Mat4(    cx,  0.0f,    0.0f, 0.0f,
+                0.0f,    cy,    0.0f, 0.0f,
+                0.0f,  0.0f, -0.001f, 0.0f,
+               -1.0f, -1.0f,    0.0f, 1.0f );
 }
 
 void Transform::projection()
@@ -63,10 +63,10 @@ void Transform::projection()
   float cz = float( -( far + near ) / ( far - near ) );
   float tz = float( -( 2.0 * far * near ) / ( far - near ) );
 
-  proj = Mat44(   cx, 0.0f, 0.0f,  0.0f,
-                0.0f,   cy, 0.0f,  0.0f,
-                0.0f, 0.0f,   cz, -1.0f,
-                0.0f, 0.0f,   tz,  0.0f );
+  proj = Mat4(   cx, 0.0f, 0.0f,  0.0f,
+               0.0f,   cy, 0.0f,  0.0f,
+               0.0f, 0.0f,   cz, -1.0f,
+               0.0f, 0.0f,   tz,  0.0f );
 }
 
 void Transform::applyCamera()
@@ -78,7 +78,7 @@ void Transform::applyCamera()
 void Transform::apply() const
 {
   glUniformMatrix4fv( uniform.model, 1, GL_FALSE, model );
-  glUniformMatrix3fv( uniform.modelRot, 1, GL_FALSE, model.mat33() );
+  glUniformMatrix3fv( uniform.modelRot, 1, GL_FALSE, model.mat3() );
 }
 
 void Transform::applyColour() const
@@ -86,19 +86,19 @@ void Transform::applyColour() const
   setColour( colour );
 }
 
-void Transform::setColour( const Mat44& colour_ ) const
+void Transform::setColour( const Mat4& colour_ ) const
 {
   glUniformMatrix4fv( uniform.colour, 1, GL_FALSE, colour_ );
 }
 
 void Transform::setColour( const Vec4& colour_ ) const
 {
-  setColour( Mat44::scaling( colour_ ) );
+  setColour( Mat4::scaling( colour_ ) );
 }
 
 void Transform::setColour( float r, float g, float b, float a ) const
 {
-  setColour( Mat44::scaling( Vec4( r, g, b, a ) ) );
+  setColour( Mat4::scaling( Vec4( r, g, b, a ) ) );
 }
 
 Transform tf;
@@ -111,9 +111,9 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
   pos( pos_ ), diffuse( diffuse_ )
 {}
 
-void Shader::compileShader( uint shaderId, const char* defines, const char* path ) const
+void Shader::compileShader( uint shaderId, const String& defines, const String& name ) const
 {
-  bool hasCompiled = GL::compileShaderFromFile( shaderId, defines, path );
+  bool hasCompiled = GL::compileShaderFromFile( shaderId, defines, "@glsl/" + name );
 
   int length;
   glGetShaderInfoLog( shaderId, LOG_BUFFER_SIZE, &length, logBuffer );
@@ -124,12 +124,12 @@ void Shader::compileShader( uint shaderId, const char* defines, const char* path
       Log::verboseMode = true;
     }
 
-    Log::printRaw( "\n%s:\n%s", path, logBuffer );
+    Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
     Log::verboseMode = false;
   }
 
   if( !hasCompiled ) {
-    OZ_ERROR( "Shader '%s' compile failed", path );
+    OZ_ERROR( "Shader '%s' compile failed", name.cstr() );
   }
 
   OZ_GL_CHECK_ERROR();
@@ -146,8 +146,8 @@ void Shader::loadProgram( int id )
     OZ_ERROR( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
   }
 
-  const char* vertName = programConfig[0].get( "" );
-  const char* fragName = programConfig[1].get( "" );
+  const char* vertName = programConfig["vertex"].get( "" );
+  const char* fragName = programConfig["fragment"].get( "" );
 
   const uint* vertId = vertShaders.find( vertName );
   const uint* fragId = fragShaders.find( fragName );
@@ -235,11 +235,11 @@ void Shader::loadProgram( int id )
       glUniform1i( uniform.vertexAnim, 4 );
     }
 
-    Mat44 bones[] = {
-      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
-      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
-      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
-      Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID
+    Mat4 bones[] = {
+      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID
     };
 
     glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
@@ -382,13 +382,6 @@ void Shader::init()
     defines += "#define OZ_POSTPROCESS\n";
   }
 
-  File file = "@glsl/header.glsl";
-  Buffer buffer = file.read();
-
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "'%s' read failed", file.path().cstr() );
-  }
-
   File dir = "@glsl";
   DArray<File> shaderFiles = dir.ls();
 
@@ -397,13 +390,13 @@ void Shader::init()
       uint id = glCreateShader( GL_VERTEX_SHADER );
 
       vertShaders.add( file->baseName(), id );
-      compileShader( id, defines, file->path() );
+      compileShader( id, defines, file->name() );
     }
     else if( file->hasExtension( "frag" ) ) {
       uint id = glCreateShader( GL_FRAGMENT_SHADER );
 
       fragShaders.add( file->baseName(), id );
-      compileShader( id, defines, file->path() );
+      compileShader( id, defines, file->name() );
     }
   }
 

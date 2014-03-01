@@ -100,8 +100,8 @@ public:
 
 private:
 
-  Mat44          transf;
-  Mat44          invTransf;
+  Mat4           transf;
+  Mat4           invTransf;
 
 public:
 

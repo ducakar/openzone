@@ -29,8 +29,8 @@ add_library( ozCore
   Log.hh
   MainCall.hh
   Map.hh
-  Mat33.hh
-  Mat44.hh
+  Mat3.hh
+  Mat4.hh
   Math.hh
   Mutex.hh
   OutputStream.hh
@@ -68,8 +68,8 @@ add_library( ozCore
   JSON.cc
   Log.cc
   MainCall.cc
-  Mat33.cc
-  Mat44.cc
+  Mat3.cc
+  Mat4.cc
   Math.cc
   Mutex.cc
   OutputStream.cc

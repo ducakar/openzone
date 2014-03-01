@@ -23,11 +23,15 @@
  * Mesh shader that reads and interpolates vertex positions from the given vertex texture.
  */
 
-#include "header.glsl"
+precision mediump float;
 
+uniform mat4      oz_ProjCamera;
+uniform mat4      oz_Model;
+uniform vec3      oz_CameraPos;
 #ifdef OZ_VERTEX_TEXTURE
-uniform vec3 oz_MeshAnimation;
+uniform vec3      oz_MeshAnimation;
 #endif
+uniform sampler2D oz_VertexAnim;
 
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
@@ -61,21 +65,25 @@ void main()
   vec4  normal0       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal0 ) );
   vec4  normal1       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal1 ) );
   vec4  position      = oz_Model * mix( position0, position1, interpolation );
-  vec3  normal        = normalize( mix( normal0, normal1, interpolation ).xyz );
+  vec4  normal        = oz_Model * normalize( mix( normal0, normal1, interpolation ) );
 
 #else
 
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
-  vec3 normal   = inNormal;
+  vec4 normal   = oz_Model * vec4( inNormal, 0.0 );
 
 #endif
-
-  gl_Position = oz_ProjCamera * position;
-  exTexCoord  = inTexCoord;
-  exNormal    = oz_ModelRot * normal;
 #ifdef OZ_BUMP_MAP
-  exTangent   = oz_ModelRot * inTangent;
-  exBinormal  = oz_ModelRot * inBinormal;
+  vec4 tangent  = oz_Model * vec4( inTangent, 0.0 );
+  vec4 binormal = oz_Model * vec4( inBinormal, 0.0 );
+#endif
+
+  exTexCoord  = inTexCoord;
+  exNormal    = normal.xyz;
+#ifdef OZ_BUMP_MAP
+  exTangent   = tangent.xyz;
+  exBinormal  = binormal.xyz;
 #endif
   exLook      = position.xyz - oz_CameraPos;
+  gl_Position = oz_ProjCamera * position;
 }

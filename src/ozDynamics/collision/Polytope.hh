@@ -51,7 +51,7 @@ public:
 
   ~Polytope() override;
 
-  Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+  Bounds getBounds( const Point& pos, const Mat3& rot ) const override;
 
   OZ_STATIC_POOL_ALLOC( pool )
 };

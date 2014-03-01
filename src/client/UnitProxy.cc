@@ -435,7 +435,7 @@ void UnitProxy::update()
   if( veh != nullptr ) {
     vehClazz = static_cast<const VehicleClass*>( veh->clazz );
 
-    Mat44 rotMat = veh->rot;
+    Mat4 rotMat = veh->rot;
     // TODO integrate this rotation into pilotPos.
     rotMat.rotateX( -Math::TAU / 4.0f );
 
@@ -604,7 +604,7 @@ void UnitProxy::update()
   }
 
   injuryRatio   = min( injuryRatio, INJURY_CLAMP );
-  camera.colour = Math::mix( Mat44::ID, botClazz->injuryColour, min( injuryRatio, 1.0f ) ) *
+  camera.colour = Math::mix( Mat4::ID, botClazz->injuryColour, min( injuryRatio, 1.0f ) ) *
                   ( camera.nightVision ? botClazz->nvColour : botClazz->baseColour );
   injuryRatio  *= INJURY_SUPPRESSION_COEF;
 

@@ -38,7 +38,7 @@ Compound::~Compound()
   }
 }
 
-Bounds Compound::getBounds( const Point& pos, const Mat33& rot ) const
+Bounds Compound::getBounds( const Point& pos, const Mat3& rot ) const
 {
   Bounds b = children[0].shape->getBounds( pos + rot * children[0].off, rot * children[0].rot );
 

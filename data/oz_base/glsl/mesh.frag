@@ -23,7 +23,28 @@
  * Generic shader for meshes.
  */
 
-#include "header.glsl"
+precision mediump float;
+
+struct CaelumLight
+{
+  vec3 dir;
+  vec3 diffuse;
+  vec3 ambient;
+};
+
+struct Fog
+{
+  vec4  colour;
+  float dist2;
+};
+
+uniform mat4        oz_Colour;
+uniform sampler2D   oz_Texture;
+uniform sampler2D   oz_Masks;
+uniform sampler2D   oz_Normals;
+uniform samplerCube oz_EnvMap;
+uniform CaelumLight oz_CaelumLight;
+uniform Fog         oz_Fog;
 
 varying vec2 exTexCoord;
 varying vec3 exNormal;
@@ -32,6 +53,18 @@ varying vec3 exTangent;
 varying vec3 exBinormal;
 #endif
 varying vec3 exLook;
+
+vec3 pixelNormal( sampler2D texture, vec2 texCoord )
+{
+  vec3 texel = texture2D( texture, texCoord ).xyz;
+  return 2.0 * texel - vec3( 1.0 );
+}
+
+vec4 applyFog( vec4 colour, float dist )
+{
+  float ratio = min( dist*dist / oz_Fog.dist2, 1.0 );
+  return mix( colour, oz_Fog.colour, ratio*ratio );
+}
 
 void main()
 {
@@ -61,13 +94,15 @@ void main()
 #ifdef OZ_LOW_DETAIL
   vec3  lighting     = ambient + diffuse;
 #else
-  float specularDot  = dot( oz_CaelumLight.dir, reflectDir );
+  float specularDot  = max( 0.0, dot( oz_CaelumLight.dir, reflectDir ) );
   vec3  emission     = vec3( masksSample.g, masksSample.g, masksSample.g );
   vec3  specular     = oz_CaelumLight.diffuse * vec3( 2.0*masksSample.r * specularDot*specularDot );
   vec3  lighting     = min( ambient + diffuse + emission, vec3( 1.25 ) ) + specular;
 # ifdef OZ_ENV_MAP
-  vec3  environment  = textureCube( oz_EnvMap, reflectDir ).xyz;
-  base               = mix( base, environment, masksSample.b );
+  if( masksSample.b != 0.0 ) {
+    vec3 environment  = textureCube( oz_EnvMap, reflectDir ).xyz;
+    base              = mix( base, environment, masksSample.b );
+  }
 # endif
 #endif
 

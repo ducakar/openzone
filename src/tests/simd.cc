@@ -46,9 +46,9 @@ static VecX c[MAX];
 static VecX d[MAX];
 static VecX e[MAX];
 
-static Mat44 ma[MAX];
-static Mat44 mb[MAX];
-static Mat44 mc[MAX];
+static Mat4 ma[MAX];
+static Mat4 mb[MAX];
+static Mat4 mc[MAX];
 
 int main()
 {
@@ -60,14 +60,14 @@ int main()
   }
 
   for( int i = 0; i < MAX; ++i ) {
-    ma[i] = Mat44( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                   Math::rand(), Math::rand(), Math::rand(), Math::rand() );
-    mb[i] = Mat44( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                   Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                   Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+    ma[i] = Mat4( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                  Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+    mb[i] = Mat4( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                  Math::rand(), Math::rand(), Math::rand(), Math::rand() );
   }
 
   long64 t0 = Time::clock();

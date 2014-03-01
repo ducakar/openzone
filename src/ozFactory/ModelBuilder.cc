@@ -112,7 +112,7 @@ struct Anim
   int       nKeys;
   Behaviour behaviour;
 
-  Mat44 interpolate( float time ) const;
+  Mat4 interpolate( float time ) const;
 };
 
 struct Light
@@ -135,7 +135,7 @@ struct Light
 struct Node
 {
   String      name;
-  Mat44       transf;
+  Mat4        transf;
   DArray<int> meshes;
   DArray<int> children;
 };
@@ -159,7 +159,7 @@ static int readNode( const aiNode* origNode )
   Node& node   = nodes.last();
 
   node.name = origNode->mName.C_Str();
-  node.transf = ~Mat44( origNode->mTransformation[0] );
+  node.transf = ~Mat4( origNode->mTransformation[0] );
   node.meshes.resize( int( origNode->mNumMeshes ) );
   node.children.resize( int( origNode->mNumChildren ) );
 

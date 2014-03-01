@@ -1,4 +1,4 @@
-[
-  "terraLiquid",
-  "mesh"
-]
+{
+  "vertex":             "terraLiquid",
+  "fragment":           "mesh"
+}

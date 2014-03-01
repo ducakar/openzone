@@ -42,7 +42,7 @@ BSP::~BSP()
 void BSP::schedule( const Struct* str, Model::QueueType queue )
 {
   if( str != nullptr ) {
-    tf.model = Mat44::translation( str->p - Point::ORIGIN );
+    tf.model = Mat4::translation( str->p - Point::ORIGIN );
     tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
 
     for( int i = 0; i < str->entities.length(); ++i ) {

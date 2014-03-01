@@ -57,7 +57,7 @@ public:
 
   Point   p;               ///< Position.
   Quat    o;               ///< Orientation.
-  Mat33   oMat;            ///< Cached orientation matrix.
+  Mat3    oMat;            ///< Cached orientation matrix.
 
   int     flags;           ///< Flags.
   int     mask;            ///< Collision bitmask.
@@ -104,7 +104,7 @@ public:
   void update()
   {
     o    = ~o;
-    oMat = Mat33::rotation( o );
+    oMat = Mat3::rotation( o );
     bb   = bodyShape == nullptr ? Bounds( p, p ) : bodyShape->getBounds( p, oMat );
   }
 

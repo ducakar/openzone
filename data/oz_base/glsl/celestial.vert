@@ -23,7 +23,10 @@
  * Shader for celestial bodies (except stars).
  */
 
-#include "header.glsl"
+precision mediump float;
+
+uniform mat4 oz_ProjCamera;
+uniform mat4 oz_Model;
 
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
@@ -35,7 +38,7 @@ void main()
 {
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
 
-  gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord;
   exAzimuth   = position.z;
+  gl_Position = oz_ProjCamera * position;
 }

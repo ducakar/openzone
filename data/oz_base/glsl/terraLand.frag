@@ -23,9 +23,31 @@
  * Terrain (land) shader.
  */
 
-#include "header.glsl"
+precision mediump float;
 
-const float TERRA_DETAIL_SCALE = 512.0;
+const float DETAIL_SCALE  = 1024.0;
+const float NORMALS_SCALE = 512.0;
+
+struct CaelumLight
+{
+  vec3 dir;
+  vec3 diffuse;
+  vec3 ambient;
+};
+
+struct Fog
+{
+  vec4  colour;
+  float dist2;
+};
+
+uniform mat4        oz_Colour;
+uniform sampler2D   oz_Texture;
+uniform sampler2D   oz_Masks;
+uniform sampler2D   oz_Normals;
+uniform samplerCube oz_EnvMap;
+uniform CaelumLight oz_CaelumLight;
+uniform Fog         oz_Fog;
 
 varying vec2 exTexCoord;
 varying vec3 exNormal;
@@ -35,17 +57,27 @@ varying vec3 exBinormal;
 #endif
 varying vec3 exLook;
 
+vec3 pixelNormal( sampler2D texture, vec2 texCoord )
+{
+  vec3 texel = texture2D( texture, texCoord ).xyz;
+  return 2.0 * texel - vec3( 1.0 );
+}
+
+vec4 applyFog( vec4 colour, float dist )
+{
+  float ratio = min( dist*dist / oz_Fog.dist2, 1.0 );
+  return mix( colour, oz_Fog.colour, ratio*ratio );
+}
+
 void main()
 {
-  vec2  texCoord2    = exTexCoord * TERRA_DETAIL_SCALE;
-
   vec3  normal       = normalize( exNormal );
 #ifdef OZ_BUMP_MAP
   vec3  tangent      = normalize( exTangent );
   vec3  binormal     = normalize( exBinormal );
   mat3  plane        = mat3( tangent, binormal, normal );
 
-  normal             = plane * pixelNormal( oz_Normals, texCoord2 );
+  normal             = plane * pixelNormal( oz_Normals, exTexCoord * NORMALS_SCALE );
 #endif
 #ifdef OZ_LOW_DETAIL
   float dist         = 1.0 / gl_FragCoord.w;
@@ -53,7 +85,7 @@ void main()
   float dist         = length( exLook );
 #endif
 
-  vec4  detailSample = texture2D( oz_Texture, texCoord2 );
+  vec4  detailSample = texture2D( oz_Texture, exTexCoord * DETAIL_SCALE );
   vec4  mapSample    = texture2D( oz_Masks, exTexCoord );
 
   vec3  base         = detailSample.xyz * mapSample.xyz;

@@ -1,4 +1,4 @@
-[
-  "plain",
-  "postprocess"
-]
+{
+  "vertex":             "plain",
+  "fragment":           "postprocess"
+}

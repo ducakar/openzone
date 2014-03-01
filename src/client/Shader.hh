@@ -68,15 +68,15 @@ class Transform
 
 private:
 
-  SList<Mat44, 8> stack;
+  SList<Mat4, 8> stack;
 
 public:
 
-  Mat44 proj;
-  Mat44 camera;
-  Mat44 model;
+  Mat4 proj;
+  Mat4 camera;
+  Mat4 model;
 
-  Mat44 colour;
+  Mat4 colour;
 
   OZ_ALWAYS_INLINE
   void push()
@@ -98,7 +98,7 @@ public:
 
   void applyColour() const;
 
-  void setColour( const Mat44& colour ) const;
+  void setColour( const Mat4& colour ) const;
   void setColour( const Vec4& colour ) const;
   void setColour( float r, float g, float b, float a = 1.0f ) const;
 
@@ -176,7 +176,7 @@ private:
   float             lightingDistance;
   CaelumLight       caelumLight;
 
-  void compileShader( uint shaderId, const char* defines, const char* path ) const;
+  void compileShader( uint shaderId, const String& defines, const String& name ) const;
   void loadProgram( int id );
 
 public:

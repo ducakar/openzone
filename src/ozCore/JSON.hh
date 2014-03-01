@@ -191,14 +191,14 @@ public:
   JSON( const Quat& q );
 
   /**
-   * Create an array of 9 numbers representing `Mat33` components.
+   * Create an array of 9 numbers representing `Mat3` components.
    */
-  JSON( const Mat33& m );
+  JSON( const Mat3& m );
 
   /**
-   * Create an array of 16 numbers representing `Mat44` components.
+   * Create an array of 16 numbers representing `Mat4` components.
    */
-  JSON( const Mat44& m );
+  JSON( const Mat4& m );
 
   /**
    * Load from a file.
@@ -324,7 +324,7 @@ public:
    * If a number return it cast to the specified numeric type, `defaultValue` otherwise.
    */
   template <typename Number>
-  Number get( Number defaultValue ) const
+  Number get( Number defaultValue = Number() ) const
   {
     return Number( get( double( defaultValue ) ) );
   }
@@ -332,47 +332,47 @@ public:
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const String& get( const String& defaultValue ) const;
+  const String& get( const String& defaultValue = String::EMPTY ) const;
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const char* get( const char* defaultValue ) const;
+  const char* get( const char* defaultValue = "" ) const;
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  Vec3 get( const Vec3& defaultValue ) const;
+  Vec3 get( const Vec3& defaultValue = Vec3::ZERO ) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Vec4`, `defaultValue` otherwise.
    */
-  Vec4 get( const Vec4& defaultValue ) const;
+  Vec4 get( const Vec4& defaultValue = Vec4::ZERO ) const;
 
   /**
    * If an array of at least 3 numbers, return it as `Point`, `defaultValue` otherwise.
    */
-  Point get( const Point& defaultValue ) const;
+  Point get( const Point& defaultValue = Point::ORIGIN ) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Plane`, `defaultValue` otherwise.
    */
-  Plane get( const Plane& defaultValue ) const;
+  Plane get( const Plane& defaultValue = Plane::ZERO ) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Quat`, `defaultValue` otherwise.
    */
-  Quat get( const Quat& defaultValue ) const;
+  Quat get( const Quat& defaultValue = Quat::ID ) const;
 
   /**
-   * If an array of at least 9 numbers, return it as `Mat33`, `defaultValue` otherwise.
+   * If an array of at least 9 numbers, return it as `Mat3`, `defaultValue` otherwise.
    */
-  Mat33 get( const Mat33& defaultValue ) const;
+  Mat3 get( const Mat3& defaultValue = Mat3::ID ) const;
 
   /**
-   * If an array of at least 4 numbers, return it as `Mat44`, `defaultValue` otherwise.
+   * If an array of at least 4 numbers, return it as `Mat4`, `defaultValue` otherwise.
    */
-  Mat44 get( const Mat44& defaultValue ) const;
+  Mat4 get( const Mat4& defaultValue = Mat4::ID ) const;
 
   /**
    * Write array values to a given array.

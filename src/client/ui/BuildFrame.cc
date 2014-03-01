@@ -41,20 +41,20 @@ namespace client
 namespace ui
 {
 
-const Mat44 BuildFrame::OVERLAY_GREEN  = Mat44( 0.0f, 1.0f, 0.0f, 0.0f,
-                                                0.0f, 1.0f, 0.0f, 0.0f,
-                                                0.0f, 1.0f, 0.0f, 0.0f,
-                                                0.0f, 0.0f, 0.0f, 0.5f );
+const Mat4 BuildFrame::OVERLAY_GREEN  = Mat4( 0.0f, 1.0f, 0.0f, 0.0f,
+                                              0.0f, 1.0f, 0.0f, 0.0f,
+                                              0.0f, 1.0f, 0.0f, 0.0f,
+                                              0.0f, 0.0f, 0.0f, 0.5f );
 
-const Mat44 BuildFrame::OVERLAY_YELLOW = Mat44( 0.8f, 0.8f, 0.0f, 0.0f,
-                                                0.8f, 0.8f, 0.0f, 0.0f,
-                                                0.8f, 0.8f, 0.0f, 0.0f,
-                                                0.0f, 0.0f, 0.0f, 0.5f );
+const Mat4 BuildFrame::OVERLAY_YELLOW = Mat4( 0.8f, 0.8f, 0.0f, 0.0f,
+                                              0.8f, 0.8f, 0.0f, 0.0f,
+                                              0.8f, 0.8f, 0.0f, 0.0f,
+                                              0.0f, 0.0f, 0.0f, 0.5f );
 
-const Mat44 BuildFrame::OVERLAY_RED    = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
-                                                1.0f, 0.0f, 0.0f, 0.0f,
-                                                1.0f, 0.0f, 0.0f, 0.0f,
-                                                0.0f, 0.0f, 0.0f, 0.5f );
+const Mat4 BuildFrame::OVERLAY_RED    = Mat4( 1.0f, 0.0f, 0.0f, 0.0f,
+                                              1.0f, 0.0f, 0.0f, 0.0f,
+                                              1.0f, 0.0f, 0.0f, 0.0f,
+                                              0.0f, 0.0f, 0.0f, 0.5f );
 
 void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
 {
@@ -70,7 +70,7 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
   position.z += bsp != nullptr ? bsp->groundOffset : clazz->dim.z;
   position.z += 4.0f * EPSILON;
 
-  tf.model = Mat44::translation( position - Point::ORIGIN );
+  tf.model = Mat4::translation( position - Point::ORIGIN );
   tf.model.rotateZ( float( heading ) * Math::TAU / 4.0f );
 
   if( buildFrame->overlayBSP != nullptr ) {
@@ -116,7 +116,7 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
     context.releaseModel( clazz->imagoModel );
   }
 
-  tf.colour = Mat44::ID;
+  tf.colour = Mat4::ID;
 
   if( input.leftPressed ) {
     buildFrame->overlayHeading = Heading( ( heading + 1 ) % 4 );

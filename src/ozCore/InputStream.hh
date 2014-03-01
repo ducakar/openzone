@@ -29,7 +29,7 @@
 #pragma once
 
 #include "String.hh"
-#include "Mat44.hh"
+#include "Mat4.hh"
 #include "System.hh"
 #include "Endian.hh"
 
@@ -568,12 +568,12 @@ public:
   /**
    * Read 3x3 matrix.
    */
-  Mat33 readMat33();
+  Mat3 readMat3();
 
   /**
    * Read 4x4 matrix.
    */
-  Mat44 readMat44();
+  Mat4 readMat4();
 
   /**
    * Fill bitset with data from a stream.

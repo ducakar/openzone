@@ -275,7 +275,7 @@ void MD2::build( const char* path )
 
   config.clear( true );
 
-  Mat44 freeTransf = Mat44::ID;
+  Mat4 freeTransf = Mat4::ID;
   freeTransf.translate( freeTranslation );
   freeTransf.rotateY( Math::rad( freeRotation.y ) );
   freeTransf.rotateX( Math::rad( freeRotation.x ) );

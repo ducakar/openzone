@@ -121,7 +121,7 @@ struct Node
 {
   static Pool<Node> pool;
 
-  Mat44       transf;
+  Mat4        transf;
   int         firstChild;
   int         nChildren;
   int         mesh;
@@ -136,7 +136,7 @@ struct Node
   Node*       next[1];
 
   explicit Node( const char* name_ = "", Node* parent_ = nullptr ) :
-    transf( Mat44::ID ), mesh( -1 ), name( name_ ), includeBounds( true ), parent( parent_ )
+    transf( Mat4::ID ), mesh( -1 ), name( name_ ), includeBounds( true ), parent( parent_ )
   {}
 
   Node& operator = ( Node&& ) = default;
@@ -175,9 +175,9 @@ static Compiler::PolyMode mode;
 static int                vertNum;
 static List<ushort>       polyIndices;
 
-static void calculateBounds( const Node* node, const Mat44& parentTransf )
+static void calculateBounds( const Node* node, const Mat4& parentTransf )
 {
-  Mat44 transf = parentTransf ^ node->transf;
+  Mat4 transf = parentTransf ^ node->transf;
 
   if( node->includeBounds && node->mesh >= 0 ) {
     const Mesh& mesh = meshes[node->mesh];
@@ -271,7 +271,7 @@ void Compiler::endModel()
   hard_assert( environment == MODEL );
   environment = NONE;
 
-  calculateBounds( &root, Mat44::ID );
+  calculateBounds( &root, Mat4::ID );
 }
 
 void Compiler::shader( const char* shaderName_ )
@@ -338,7 +338,7 @@ void Compiler::endNode()
   node = node->parent;
 }
 
-void Compiler::transform( const Mat44& t )
+void Compiler::transform( const Mat4& t )
 {
   hard_assert( environment == MODEL && node != &root );
 
@@ -707,10 +707,10 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     hard_assert( normals.length() == nFrames * nFramePositions );
 
     foreach( position, positions.citer() ) {
-      os->writePoint( *position );
+      os->writeVec4( Vec4( *position ) );
     }
     foreach( normal, normals.citer() ) {
-      os->writeVec3( *normal );
+      os->writeVec4( Vec4( *normal ) );
     }
   }
 
@@ -743,7 +743,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   foreach( i, nodes.citer() ) {
     const Node* node = *i;
 
-    os->writeMat44( node->transf );
+    os->writeMat4( node->transf );
     os->writeInt( node->mesh );
 
     os->writeInt( nodes.index( node->parent ) );

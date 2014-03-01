@@ -69,7 +69,7 @@ struct EntityClass : Bounds
   int    frictSound;  ///< Friction sound sample, played while the entity is moving.
 
   int    model;       ///< %Model index, -1 if none.
-  Mat44  modelTransf; ///< %Model transformation.
+  Mat4   modelTransf; ///< %Model transformation.
 };
 
 /**

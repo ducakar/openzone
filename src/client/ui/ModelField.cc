@@ -109,7 +109,7 @@ void ModelField::onDraw()
 
     currRot = nextRot + ROTATION_SMOOTHING * angleDiff( currRot, nextRot );
 
-    tf.model = Mat44::translation( Vec3( float( x + width / 2 ), float( y + height / 2 ), 0.0f ) );
+    tf.model = Mat4::translation( Vec3( float( x + width / 2 ), float( y + height / 2 ), 0.0f ) );
     tf.model.scale( Vec3( scale, scale, scale ) );
     tf.model.rotateX( -Math::TAU / 7.0f );
     tf.model.rotateZ( currRot );

@@ -97,8 +97,8 @@ void UI::draw()
   shape.bind();
 
   tf.ortho( camera.width, camera.height );
-  tf.camera = Mat44::ID;
-  tf.colour = Mat44::ID;
+  tf.camera = Mat4::ID;
+  tf.colour = Mat4::ID;
 
   // set shaders
   shader.setAmbientLight( Vec4( 0.5f, 0.5f, 0.5f, 1.0f ) );

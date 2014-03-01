@@ -1,6 +1,5 @@
 add_custom_target( glsl SOURCES
 #BEGIN SOURCES
-  header.glsl
   celestial.vert
   dmesh.vert
   mesh.vert

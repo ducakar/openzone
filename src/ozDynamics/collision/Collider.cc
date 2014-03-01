@@ -36,8 +36,8 @@ Kollider::OverlapFunc* const Kollider::dispatchMatrix[Shape::COMPOUND + 1][Shape
   { nullptr, nullptr,        nullptr,          compoundCompound }
 };
 
-bool Kollider::boxBox( const Mat33& rot0, const Shape* box0_,
-                       const Mat33& rot1, const Shape* box1_,
+bool Kollider::boxBox( const Mat3& rot0, const Shape* box0_,
+                       const Mat3& rot1, const Shape* box1_,
                        const Vec3& relPos, Result* result )
 {
   const Box* box0    = static_cast<const Box*>( box0_ );
@@ -45,8 +45,8 @@ bool Kollider::boxBox( const Mat33& rot0, const Shape* box0_,
 
   Vec3  ext0         = box0->ext;
   Vec3  ext1         = box1->ext;
-  Mat33 c            = ~rot0 * rot1;
-  Mat33 d            = abs( c );
+  Mat3  c            = ~rot0 * rot1;
+  Mat3  d            = abs( c );
 
   Vec3  lastAxis     = Vec3::ZERO;
   float lastDepth    = Math::INF;
@@ -156,8 +156,8 @@ bool Kollider::boxBox( const Mat33& rot0, const Shape* box0_,
   return true;
 }
 
-bool Kollider::boxCapsule( const Mat33& rot0, const Shape* box_,
-                           const Mat33& rot1, const Shape* capsule_,
+bool Kollider::boxCapsule( const Mat3& rot0, const Shape* box_,
+                           const Mat3& rot1, const Shape* capsule_,
                            const Vec3& relPos, Result* result )
 {
   const Box*     box     = static_cast<const Box*>( box_ );
@@ -174,8 +174,8 @@ bool Kollider::boxCapsule( const Mat33& rot0, const Shape* box_,
   return false;
 }
 
-bool Kollider::boxPolytope( const Mat33& rot0, const Shape* box_,
-                            const Mat33& rot1, const Shape* polytope_,
+bool Kollider::boxPolytope( const Mat3& rot0, const Shape* box_,
+                            const Mat3& rot1, const Shape* polytope_,
                             const Vec3& relPos, Result* result )
 {
   const Box*      box      = static_cast<const Box*>( box_ );
@@ -192,8 +192,8 @@ bool Kollider::boxPolytope( const Mat33& rot0, const Shape* box_,
   return false;
 }
 
-bool Kollider::boxCompound( const Mat33& rot0, const Shape* box_,
-                            const Mat33& rot1, const Shape* compound_,
+bool Kollider::boxCompound( const Mat3& rot0, const Shape* box_,
+                            const Mat3& rot1, const Shape* compound_,
                             const Vec3& relPos, Result* result )
 {
   const Box*      box      = static_cast<const Box*>( box_ );
@@ -202,7 +202,7 @@ bool Kollider::boxCompound( const Mat33& rot0, const Shape* box_,
   bool overlaps = false;
 
   foreach( i, compound->citer() ) {
-    Mat33 rot2 = rot1 * i->rot;
+    Mat3 rot2 = rot1 * i->rot;
 
     OverlapFunc* func = dispatchMatrix[Shape::BOX][i->shape->type];
     overlaps |= func( rot0, box, rot2, i->shape, relPos + rot2 * i->off, result );
@@ -211,8 +211,8 @@ bool Kollider::boxCompound( const Mat33& rot0, const Shape* box_,
   return overlaps;
 }
 
-bool Kollider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
-                               const Mat33& rot1, const Shape* capsule1_,
+bool Kollider::capsuleCapsule( const Mat3& rot0, const Shape* capsule0_,
+                               const Mat3& rot1, const Shape* capsule1_,
                                const Vec3& relPos, Result* result )
 {
   const Capsule* capsule0 = static_cast<const Capsule*>( capsule0_ );
@@ -246,8 +246,8 @@ bool Kollider::capsuleCapsule( const Mat33& rot0, const Shape* capsule0_,
   return false;
 }
 
-bool Kollider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
-                                const Mat33& rot1, const Shape* polytope_,
+bool Kollider::capsulePolytope( const Mat3& rot0, const Shape* capsule_,
+                                const Mat3& rot1, const Shape* polytope_,
                                 const Vec3& relPos, Result* result )
 {
   const Capsule*  capsule  = static_cast<const Capsule*>( capsule_ );
@@ -264,8 +264,8 @@ bool Kollider::capsulePolytope( const Mat33& rot0, const Shape* capsule_,
   return false;
 }
 
-bool Kollider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
-                                const Mat33& rot1, const Shape* compound_,
+bool Kollider::capsuleCompound( const Mat3& rot0, const Shape* capsule_,
+                                const Mat3& rot1, const Shape* compound_,
                                 const Vec3& relPos, Result* result )
 {
   const Capsule*  capsule  = static_cast<const Capsule*>( capsule_ );
@@ -275,7 +275,7 @@ bool Kollider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
 
   foreach( i, compound->citer() ) {
     Shape::Type type = i->shape->type;
-    Mat33       rot2 = rot1 * i->rot;
+    Mat3        rot2 = rot1 * i->rot;
 
     if( Shape::CAPSULE <= type ) {
       OverlapFunc* func = dispatchMatrix[Shape::CAPSULE][type];
@@ -290,8 +290,8 @@ bool Kollider::capsuleCompound( const Mat33& rot0, const Shape* capsule_,
   return overlaps;
 }
 
-bool Kollider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
-                                 const Mat33& rot1, const Shape* polytope1_,
+bool Kollider::polytopePolytope( const Mat3& rot0, const Shape* polytope0_,
+                                 const Mat3& rot1, const Shape* polytope1_,
                                  const Vec3& relPos, Result* result )
 {
   const Polytope* polytope0 = static_cast<const Polytope*>( polytope0_ );
@@ -308,8 +308,8 @@ bool Kollider::polytopePolytope( const Mat33& rot0, const Shape* polytope0_,
   return false;
 }
 
-bool Kollider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
-                                 const Mat33& rot1, const Shape* compound_,
+bool Kollider::polytopeCompound( const Mat3& rot0, const Shape* polytope_,
+                                 const Mat3& rot1, const Shape* compound_,
                                  const Vec3& relPos, Result* result )
 {
   const Polytope* polytope = static_cast<const Polytope*>( polytope_ );
@@ -319,7 +319,7 @@ bool Kollider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
 
   foreach( i, compound->citer() ) {
     Shape::Type type = i->shape->type;
-    Mat33       rot2 = rot1 * i->rot;
+    Mat3        rot2 = rot1 * i->rot;
 
     if( Shape::POLYTOPE <= type ) {
       OverlapFunc* func = dispatchMatrix[Shape::POLYTOPE][type];
@@ -334,15 +334,15 @@ bool Kollider::polytopeCompound( const Mat33& rot0, const Shape* polytope_,
   return overlaps;
 }
 
-bool Kollider::compoundCompound( const Mat33& rot0, const Shape* compound0_,
-                                 const Mat33& rot1, const Shape* compound1_,
+bool Kollider::compoundCompound( const Mat3& rot0, const Shape* compound0_,
+                                 const Mat3& rot1, const Shape* compound1_,
                                  const Vec3& relPos, Result* result )
 {
   const Compound* compound0 = static_cast<const Compound*>( compound0_ );
   const Compound* compound1 = static_cast<const Compound*>( compound1_ );
 
-  Mat33 rot3[16];
-  bool  overlaps = false;
+  Mat3 rot3[16];
+  bool overlaps = false;
 
   auto j = compound1->citer();
   for( int k = 0; j.isValid(); ++k, ++j ) {
@@ -351,7 +351,7 @@ bool Kollider::compoundCompound( const Mat33& rot0, const Shape* compound0_,
 
   foreach( i, compound0->citer() ) {
     Shape::Type type0 = i->shape->type;
-    Mat33       rot2  = rot0 * i->rot;
+    Mat3        rot2  = rot0 * i->rot;
 
     auto j = compound1->citer();
     for( int k = 0; j.isValid(); ++k, ++j ) {

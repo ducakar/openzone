@@ -23,13 +23,16 @@
  * Shader for UI.
  */
 
-#include "header.glsl"
+precision mediump float;
+
+uniform mat4      oz_Colour;
+uniform sampler2D oz_Texture;
 
 varying vec2 exTexCoord;
 
 void main()
 {
-  vec4 sample = texture2D( oz_Texture, exTexCoord );
+  vec4 colour = texture2D( oz_Texture, exTexCoord );
 
-  gl_FragData[0] = oz_Colour * sample;
+  gl_FragData[0] = oz_Colour * colour;
 }

@@ -563,7 +563,7 @@ const Log& Log::operator << ( const Quat& q ) const
   return *this;
 }
 
-const Log& Log::operator << ( const Mat33& m ) const
+const Log& Log::operator << ( const Mat3& m ) const
 {
   printRaw( "[%g %g %g; %g %g %g; %g %g %g]",
             m.x.x, m.y.x, m.z.x,
@@ -572,7 +572,7 @@ const Log& Log::operator << ( const Mat33& m ) const
   return *this;
 }
 
-const Log& Log::operator << ( const Mat44& m ) const
+const Log& Log::operator << ( const Mat4& m ) const
 {
   printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
             m.x.x, m.y.x, m.z.x, m.w.x,

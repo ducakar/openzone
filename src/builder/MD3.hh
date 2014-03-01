@@ -127,20 +127,20 @@ private:
 //     client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
 //     client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
 
-  String   sPath;
+  String sPath;
 
-  float    scale;
-  String   skin;
-  String   masks;
-  String   model;
-  int      frame;
-  int      lowerFrame;
-  int      upperFrame;
-  String   shaderName;
+  float  scale;
+  String skin;
+  String masks;
+  String model;
+  int    frame;
+  int    lowerFrame;
+  int    upperFrame;
+  String shaderName;
 
-  int      nLowerFrames;
-  int      nUpperFrames;
-  Mat44    meshTransf;
+  int    nLowerFrames;
+  int    nUpperFrames;
+  Mat4   meshTransf;
 
   void readAnimData();
   void buildMesh( const char* name, int frame );

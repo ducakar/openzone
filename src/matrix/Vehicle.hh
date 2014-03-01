@@ -33,22 +33,22 @@ class Vehicle : public Dynamic
 {
 public:
 
-  static const int   MAX_WEAPONS       = 4;
+  static const int   MAX_WEAPONS      = 4;
 
   // not in use, used to reserve a slot for engine sound sample
-  static const int   EVENT_ENGINE      = 9;
-  static const int   EVENT_SHOT0       = 10;
-  static const int   EVENT_SHOT1       = 11;
-  static const int   EVENT_SHOT2       = 12;
-  static const int   EVENT_SHOT3       = 13;
-  static const int   EVENT_SHOT_EMPTY  = 14;
+  static const int   EVENT_ENGINE     = 9;
+  static const int   EVENT_SHOT0      = 10;
+  static const int   EVENT_SHOT1      = 11;
+  static const int   EVENT_SHOT2      = 12;
+  static const int   EVENT_SHOT3      = 13;
+  static const int   EVENT_SHOT_EMPTY = 14;
 
-  static const int   CREW_VISIBLE_BIT  = 0x0001;
-  static const int   HAS_EJECT_BIT     = 0x0004;
-  static const int   AUTO_EJECT_BIT    = 0x0008;
+  static const int   CREW_VISIBLE_BIT = 0x0001;
+  static const int   HAS_EJECT_BIT    = 0x0004;
+  static const int   AUTO_EJECT_BIT   = 0x0008;
 
-  static const int   MOVING_BIT        = 0x0010;
-  static const int   WALKING_BIT       = 0x0020;
+  static const int   MOVING_BIT       = 0x0010;
+  static const int   WALKING_BIT      = 0x0020;
 
 private:
 
@@ -72,7 +72,7 @@ public:
   float rotVelH, rotVelV;
   int   actions, oldActions;
 
-  Mat44 rot;
+  Mat4  rot;
   int   state, oldState;
   float fuel;
 

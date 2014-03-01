@@ -42,7 +42,7 @@ public:
   static const float  SMOOTHING_COEF;
   static const float  ROT_SMOOTHING_COEF;
   static const float  FLASH_SUPPRESSION;
-  static const Mat44  FLASH_COLOUR;
+  static const Mat4   FLASH_COLOUR;
   static Proxy* const PROXIES[];
 
   enum State
@@ -79,14 +79,14 @@ public:
   float         relV;
 
   // Global rotation quaternion, matrix and it's inverse.
-  Mat44         rotMat;
-  Mat44         rotTMat;
+  Mat4          rotMat;
+  Mat4          rotTMat;
 
   // Global colour transformation.
-  Mat44         colour;
-  Mat44         baseColour;
-  Mat44         nvColour;
-  Mat44         flashColour;
+  Mat4          colour;
+  Mat4          baseColour;
+  Mat4          nvColour;
+  Mat4          flashColour;
 
   Vec3          right;
   Vec3          up;

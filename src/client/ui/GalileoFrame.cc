@@ -116,7 +116,7 @@ void GalileoFrame::onDraw()
     float mapX = oX + ( Orbis::DIM + quest.place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
     float mapY = oY + ( Orbis::DIM + quest.place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
 
-    tf.model = Mat44::translation( Vec3( mapX, mapY, 0.0f ) );
+    tf.model = Mat4::translation( Vec3( mapX, mapY, 0.0f ) );
     tf.model.scale( Vec3( 16.0f, 16.0f, 0.0f ) );
     tf.model.translate( Vec3( -0.5f, -0.5f, 0.0f ) );
     tf.apply();
@@ -129,7 +129,7 @@ void GalileoFrame::onDraw()
   float mapX = oX + ( Orbis::DIM + pX ) / ( 2.0f*Orbis::DIM ) * fWidth;
   float mapY = oY + ( Orbis::DIM + pY ) / ( 2.0f*Orbis::DIM ) * fHeight;
 
-  tf.model = Mat44::translation( Vec3( mapX, mapY, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( mapX, mapY, 0.0f ) );
   tf.model.rotateZ( h );
   tf.model.scale( Vec3( 10.0f, 10.0f, 0.0f ) );
   tf.model.translate( Vec3( -0.5f, -0.5f, 0.0f ) );

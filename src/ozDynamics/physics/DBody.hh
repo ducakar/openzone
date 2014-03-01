@@ -42,12 +42,12 @@ public:
 
   static Pool<DBody> pool; ///< Memory pool.
 
-  Vec3    mass;            ///< Mass.
-  Vec3    lift;            ///< Lift.
-  Mat33   inertia;         ///< Inertia.
+  Vec3 mass;               ///< Mass.
+  Vec3 lift;               ///< Lift.
+  Mat3 inertia;            ///< Inertia.
 
-  Vec3    velocity;        ///< Velocity.
-  Vec3    rotVelocity;     ///< Rotational velocity.
+  Vec3 velocity;           ///< Velocity.
+  Vec3 rotVelocity;        ///< Rotational velocity.
 
 public:
 

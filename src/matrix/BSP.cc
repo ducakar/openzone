@@ -184,7 +184,7 @@ void BSP::load()
     entities[i].frictSound  = liber.soundIndex( is.readString() );
 
     entities[i].model       = liber.modelIndex( is.readString() );
-    entities[i].modelTransf = is.readMat44();
+    entities[i].modelTransf = is.readMat4();
   }
   data += nEntities * int( sizeof( entities[0] ) );
 

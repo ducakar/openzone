@@ -1,4 +1,4 @@
-[
-  "dmesh",
-  "mesh"
-]
+{
+  "vertex":             "dmesh",
+  "fragment":           "mesh"
+}

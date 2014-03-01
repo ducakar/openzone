@@ -23,11 +23,14 @@
  * Terrain (lava) sea surface shader.
  */
 
-#include "header.glsl"
+precision mediump float;
 
 const float TERRA_WATER_SCALE = 512.0;
 const vec3  NORMAL            = vec3( 0.0, 0.0, 1.0 );
 
+uniform mat4  oz_ProjCamera;
+uniform mat4  oz_Model;
+uniform vec3  oz_CameraPos;
 uniform float oz_WaveBias;
 
 attribute vec3 inPosition;
@@ -58,7 +61,6 @@ void main()
   float dx       = 0.2 * noise( 0.1 * position.xy, oz_WaveBias );
   float dy       = 0.2 * noise( 0.1 * position.yx, oz_WaveBias );
 
-  gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
   exNormal    = vec3( dx, dy, 1.0 );
 #ifdef OZ_BUMP_MAP
@@ -66,4 +68,5 @@ void main()
   exBinormal  = vec3( 0.0, 1.0, 0.0 );
 #endif
   exLook      = position.xyz - oz_CameraPos;
+  gl_Position = oz_ProjCamera * position;
 }

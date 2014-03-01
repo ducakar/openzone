@@ -62,7 +62,7 @@ void ExplosionImago::draw( const Imago* )
   float radius = 4.0f * time * obj->dim.z;
   float alpha  = 1.0f - 2.0f * time;
 
-  tf.model = Mat44::translation( obj->p - Point::ORIGIN );
+  tf.model = Mat4::translation( obj->p - Point::ORIGIN );
   tf.model.scale( Vec3( radius, radius, radius ) );
 
   tf.colour.w.w = alpha*alpha;

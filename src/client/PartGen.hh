@@ -46,7 +46,7 @@ private:
 
   PartGen*     next[1];
 
-  Mat44        transf;
+  Mat4         transf;
   PartClass*   clazz;
   DArray<Part> parts;
   int          flags;

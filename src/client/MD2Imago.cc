@@ -83,7 +83,7 @@ void MD2Imago::draw( const Imago* parent )
     else {
       h = angleWrap( h + TURN_SMOOTHING_COEF * angleDiff( veh->h, h ) );
 
-      tf.model = Mat44::translation( obj->p - Point::ORIGIN );
+      tf.model = Mat4::translation( obj->p - Point::ORIGIN );
       tf.model.rotateZ( h );
 
       model->scheduleMD2Anim( &anim, Model::SCENE_QUEUE );
@@ -99,7 +99,7 @@ void MD2Imago::draw( const Imago* parent )
       if( parent == nullptr ) {
         Vec3 t = Vec3( obj->p.x, obj->p.y, obj->p.z + clazz->dim.z - clazz->corpseDim.z );
 
-        tf.model = Mat44::translation( t );
+        tf.model = Mat4::translation( t );
         tf.model.rotateZ( h );
 
         tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
@@ -116,7 +116,7 @@ void MD2Imago::draw( const Imago* parent )
       h = bot->h;
 
       if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
-        tf.model = Mat44::translation( obj->p - Point::ORIGIN );
+        tf.model = Mat4::translation( obj->p - Point::ORIGIN );
         tf.model.rotateZ( bot->h );
 
         tf.model.translate( Vec3( 0.0f, 0.0f, +bot->camZ ) );
@@ -134,7 +134,7 @@ void MD2Imago::draw( const Imago* parent )
       if( parent == nullptr ) {
         h = angleWrap( h + TURN_SMOOTHING_COEF * angleDiff( bot->h, h ) );
 
-        tf.model = Mat44::translation( obj->p - Point::ORIGIN );
+        tf.model = Mat4::translation( obj->p - Point::ORIGIN );
         tf.model.rotateZ( h );
 
         if( bot->state & Bot::CROUCHING_BIT ) {

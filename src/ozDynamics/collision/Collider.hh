@@ -54,52 +54,52 @@ public:
 
 private:
 
-  typedef bool OverlapFunc( const Mat33& rot0, const Shape* shape0,
-                            const Mat33& rot1, const Shape* shape1,
+  typedef bool OverlapFunc( const Mat3& rot0, const Shape* shape0,
+                            const Mat3& rot1, const Shape* shape1,
                             const Vec3& relPos, Result* result );
 
   static OverlapFunc* const dispatchMatrix[Shape::COMPOUND + 1][Shape::COMPOUND + 1];
 
 private:
 
-  static bool boxBox( const Mat33& rot0, const Shape* box0,
-                      const Mat33& rot1, const Shape* box1,
+  static bool boxBox( const Mat3& rot0, const Shape* box0,
+                      const Mat3& rot1, const Shape* box1,
                       const Vec3& relPos, Result* result );
 
-  static bool boxCapsule( const Mat33& rot0, const Shape* box,
-                          const Mat33& rot1, const Shape* capsule,
+  static bool boxCapsule( const Mat3& rot0, const Shape* box,
+                          const Mat3& rot1, const Shape* capsule,
                           const Vec3& relPos, Result* result );
 
-  static bool boxPolytope( const Mat33& rot0, const Shape* box,
-                           const Mat33& rot1, const Shape* polytope,
+  static bool boxPolytope( const Mat3& rot0, const Shape* box,
+                           const Mat3& rot1, const Shape* polytope,
                            const Vec3& relPos, Result* result );
 
-  static bool boxCompound( const Mat33& rot0, const Shape* box,
-                           const Mat33& rot1, const Shape* compound,
+  static bool boxCompound( const Mat3& rot0, const Shape* box,
+                           const Mat3& rot1, const Shape* compound,
                            const Vec3& relPos, Result* result );
 
-  static bool capsuleCapsule( const Mat33& rot0, const Shape* capsule0,
-                              const Mat33& rot1, const Shape* capsule1,
+  static bool capsuleCapsule( const Mat3& rot0, const Shape* capsule0,
+                              const Mat3& rot1, const Shape* capsule1,
                               const Vec3& relPos, Result* result );
 
-  static bool capsulePolytope( const Mat33& rot0, const Shape* capsule,
-                               const Mat33& rot1, const Shape* polytope,
+  static bool capsulePolytope( const Mat3& rot0, const Shape* capsule,
+                               const Mat3& rot1, const Shape* polytope,
                                const Vec3& relPos, Result* result );
 
-  static bool capsuleCompound( const Mat33& rot0, const Shape* capsule,
-                               const Mat33& rot1, const Shape* compound,
+  static bool capsuleCompound( const Mat3& rot0, const Shape* capsule,
+                               const Mat3& rot1, const Shape* compound,
                                const Vec3& relPos, Result* result );
 
-  static bool polytopePolytope( const Mat33& rot0, const Shape* polytope0,
-                                const Mat33& rot1, const Shape* polytope1,
+  static bool polytopePolytope( const Mat3& rot0, const Shape* polytope0,
+                                const Mat3& rot1, const Shape* polytope1,
                                 const Vec3& relPos, Result* result );
 
-  static bool polytopeCompound( const Mat33& rot0, const Shape* polytope,
-                                const Mat33& rot1, const Shape* compound,
+  static bool polytopeCompound( const Mat3& rot0, const Shape* polytope,
+                                const Mat3& rot1, const Shape* compound,
                                 const Vec3& relPos, Result* result );
 
-  static bool compoundCompound( const Mat33& rot0, const Shape* compound0,
-                                const Mat33& rot1, const Shape* compound1,
+  static bool compoundCompound( const Mat3& rot0, const Shape* compound0,
+                                const Mat3& rot1, const Shape* compound1,
                                 const Vec3& relPos, Result* result );
 
 public:

@@ -2265,7 +2265,7 @@ static int ozVehicleSetH( lua_State* l )
   veh->h = Math::rad( l_tofloat( 1 ) );
   veh->h = angleWrap( veh->h );
 
-  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat4::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2278,7 +2278,7 @@ static int ozVehicleAddH( lua_State* l )
   veh->h += Math::rad( l_tofloat( 1 ) );
   veh->h  = angleWrap( veh->h );
 
-  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat4::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2301,7 +2301,7 @@ static int ozVehicleSetV( lua_State* l )
   veh->v = Math::rad( l_tofloat( 1 ) );
   veh->v = clamp( veh->v, 0.0f, Math::TAU / 2.0f );
 
-  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat4::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2314,7 +2314,7 @@ static int ozVehicleAddV( lua_State* l )
   veh->v += Math::rad( l_tofloat( 1 ) );
   veh->v  = clamp( veh->v, 0.0f, Math::TAU / 2.0f );
 
-  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat4::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 

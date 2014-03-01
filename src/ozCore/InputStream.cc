@@ -50,11 +50,11 @@ const char* InputStream::readString()
   return begin;
 }
 
-Mat33 InputStream::readMat33()
+Mat3 InputStream::readMat3()
 {
   const char* data = forward( int( sizeof( float[9] ) ) );
 
-  Mat33 m;
+  Mat3 m;
   float* values = m;
 
   if( order == Endian::NATIVE ) {
@@ -75,11 +75,11 @@ Mat33 InputStream::readMat33()
   return m;
 }
 
-Mat44 InputStream::readMat44()
+Mat4 InputStream::readMat4()
 {
   const char* data = forward( int( sizeof( float[16] ) ) );
 
-  Mat44 m;
+  Mat4 m;
   float* values = m;
 
   if( order == Endian::NATIVE ) {

@@ -23,19 +23,22 @@
  * Shader for celestial bodies (except stars).
  */
 
-#include "header.glsl"
+precision mediump float;
+
+uniform mat4      oz_Colour;
+uniform sampler2D oz_Texture;
 
 varying vec2  exTexCoord;
 varying float exAzimuth;
 
 void main()
 {
-  vec4 colour    = texture2D( oz_Texture, exTexCoord );
+  vec4 albedo    = texture2D( oz_Texture, exTexCoord );
 
-  gl_FragData[0] = oz_Colour * colour;
+  gl_FragData[0] = oz_Colour * albedo;
 
 #ifdef OZ_POSTPROCESS
-  float glow     = ( colour.r + colour.g + colour.b ) / 2.0;
+  float glow     = dot( albedo, vec4( 0.667, 0.667, 0.667, 0.0 ) );
 
   gl_FragData[1] = vec4( glow, glow, glow, 1.0 );
 #endif

@@ -58,8 +58,8 @@ void Caelum::update()
 
   angle = Math::TAU * ( orbis.caelum.time / orbis.caelum.period );
 
-  Mat44 rot = Mat44::rotation( Quat::rotationAxis( axis, angle ) );
-  Vec3  dir = rot * originalLightDir;
+  Mat4 rot = Mat4::rotation( Quat::rotationAxis( axis, angle ) );
+  Vec3 dir = rot * originalLightDir;
 
   ratio = clamp( dir.z + DAY_BIAS, 0.0f, 1.0f );
   float ratioDiff = 1.0f - abs( 1.0f - 2.0f * ratio );
@@ -88,8 +88,8 @@ void Caelum::draw()
   OZ_GL_CHECK_ERROR();
 
   // we need the transformation matrix for occlusion of stars below horizon
-  Mat44 transf = Mat44::rotationZ( orbis.caelum.heading ) ^
-                 Mat44::rotationY( angle - Math::TAU / 4.0f );
+  Mat4 transf = Mat4::rotationZ( orbis.caelum.heading ) ^
+                Mat4::rotationY( angle - Math::TAU / 4.0f );
 
   shape.bind();
   shader.program( celestialShaderId );

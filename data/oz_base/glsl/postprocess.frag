@@ -23,16 +23,18 @@
  * Postprocess pass.
  */
 
-#include "header.glsl"
+precision mediump float;
 
-const int   MS_LEVEL         = 16;
-const float MS_SIZE          = 0.04;
+const int   MS_LEVEL        = 16;
+const float MS_SIZE         = 0.04;
+const float MS_DIM          = float( MS_LEVEL - 1 ) / 2.0;
+const float MS_SPACING      = MS_SIZE / float( MS_LEVEL - 1 );
+const float BLOOM_THRESHOLD = 1.7;
+const float BLOOM_INTENSITY = 0.3 / float( MS_LEVEL );
 
-const float BLOOM_THRESHOLD  = 1.7;
-const float BLOOM_INTENSITY  = 0.3 / float( MS_LEVEL );
-
-const float MS_DIM           = float( MS_LEVEL - 1 ) / 2.0;
-const float MS_SPACING       = MS_SIZE / float( MS_LEVEL - 1 );
+uniform mat4      oz_Colour;
+uniform sampler2D oz_Texture;
+uniform sampler2D oz_Masks;
 
 varying vec2 exTexCoord;
 
@@ -42,14 +44,14 @@ void main()
 
   for( float x = -MS_DIM; x <= MS_DIM; x += 1.0 ) {
     vec2  coords    = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
-    vec4  sample    = texture2D( oz_Masks, coords );
-    float luminance = sample.r + sample.g + sample.b;
+    vec4  specular  = texture2D( oz_Masks, coords );
+    float luminance = specular.r + specular.g + specular.b;
 
     multiSample += max( 0.0, luminance - BLOOM_THRESHOLD );
   }
 
-  vec3 bloom   = vec3( multiSample * BLOOM_INTENSITY );
-  vec4 colour  = texture2D( oz_Texture, exTexCoord );
+  vec4 colour = texture2D( oz_Texture, exTexCoord );
+  vec3 bloom  = vec3( multiSample * BLOOM_INTENSITY );
 
   gl_FragColor = colour + vec4( bloom, 0 );
 }

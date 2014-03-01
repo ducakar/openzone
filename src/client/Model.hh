@@ -112,7 +112,7 @@ private:
 
   struct Node
   {
-    Mat44  transf;
+    Mat4   transf;
     int    parent;
     int    firstChild;
     int    nChildren;
@@ -123,8 +123,8 @@ private:
   struct Instance
   {
     Model* model;
-    Mat44  transf;
-    Mat44  colour;
+    Mat4   transf;
+    Mat4   colour;
 
     int    node;
     int    firstFrame;

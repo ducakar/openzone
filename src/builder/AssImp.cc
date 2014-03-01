@@ -56,7 +56,7 @@ struct Anim
   int       nKeys;
   Behaviour behaviour;
 
-  Mat44 interpolate( float time ) const;
+  Mat4 interpolate( float time ) const;
 };
 
 static List<Material>   materials;
@@ -67,7 +67,7 @@ static const aiScene*   scene;
 
 static void readNode( const aiNode* node )
 {
-  Mat44 transf = ~Mat44( node->mTransformation[0] );
+  Mat4 transf = ~Mat4( node->mTransformation[0] );
 
   Log::print( "+ %s ", node->mName.C_Str() );
   Log() << transf;

@@ -57,7 +57,7 @@ void FragPool::draw( const Frag* frag )
   Model* model = models[index];
 
   if( model->isLoaded() ) {
-    tf.model = Mat44::translation( frag->p - Point::ORIGIN );
+    tf.model = Mat4::translation( frag->p - Point::ORIGIN );
     tf.model.rotateX( frag->p.x );
     tf.model.rotateY( frag->p.y );
     tf.model.rotateZ( frag->p.z );

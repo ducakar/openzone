@@ -281,7 +281,7 @@ void BSP::load()
       Vec3 translation = modelConfig["translation"].get( Vec3::ZERO );
       Vec3 rotation    = modelConfig["rotation"].get( Vec3::ZERO );
 
-      models[i].modelTransf = Mat44::translation( models[i].p() + translation - Point::ORIGIN );
+      models[i].modelTransf = Mat4::translation( models[i].p() + translation - Point::ORIGIN );
       models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
       models[i].modelTransf.rotateX( Math::rad( rotation.x ) );
       models[i].modelTransf.rotateZ( Math::rad( rotation.z ) );
@@ -1084,7 +1084,7 @@ void BSP::saveMatrix()
     context.usedModels.include( model->modelName, name + " (BSP)" );
 
     os.writeString( model->modelName );
-    os.writeMat44( model->modelTransf );
+    os.writeMat4( model->modelTransf );
   }
 
   foreach( boundObject, boundObjects.citer() ) {

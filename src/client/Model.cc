@@ -58,7 +58,7 @@ void Vertex::setFormat()
 struct Model::LightEntry
 {
   const Light* light;
-  Mat44        transf;
+  Mat4         transf;
   float        weight;
 };
 
@@ -86,7 +86,7 @@ void Model::addSceneLights()
 {
   foreach( light, lights.citer() ) {
     const Node* node = &nodes[light->node];
-    Mat44 transf = node->transf;
+    Mat4 transf = node->transf;
 
     while( node->parent >= 0 ) {
       node   = &nodes[node->parent];
@@ -511,14 +511,14 @@ void Model::load()
   if( nFrames != 0 ) {
     if( shader.hasVertexTexture ) {
 #ifndef GL_ES_VERSION_2_0
-      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
-      int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
+      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[4] ) );
+      int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[4] ) );
 
       glGenTextures( 1, &animationTexId );
       glBindTexture( GL_TEXTURE_2D, animationTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGBA,
                     GL_FLOAT, is.forward( vertexBufferSize + normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
@@ -581,7 +581,7 @@ void Model::load()
   nodes.resize( nNodes );
 
   for( int i = 0; i < nNodes; ++i ) {
-    nodes[i].transf     = is.readMat44();
+    nodes[i].transf     = is.readMat4();
     nodes[i].mesh       = is.readInt();
 
     nodes[i].parent     = is.readInt();

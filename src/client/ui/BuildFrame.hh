@@ -38,10 +38,10 @@ class BuildFrame : public Frame
 {
 private:
 
-  static const int   SLOT_SIZE      = 76;
-  static const Mat44 OVERLAY_GREEN;
-  static const Mat44 OVERLAY_YELLOW;
-  static const Mat44 OVERLAY_RED;
+  static const int  SLOT_SIZE      = 76;
+  static const Mat4 OVERLAY_GREEN;
+  static const Mat4 OVERLAY_YELLOW;
+  static const Mat4 OVERLAY_RED;
 
   enum Mode
   {

@@ -423,7 +423,7 @@ void Vehicle::onUpdate()
     flags  &= ~DISABLED_BIT;
   }
 
-  rot = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) : Mat44::rotationZXZ( h, v, w );
+  rot = clazz->type == VehicleClass::MECH ? Mat4::rotationZ( h ) : Mat4::rotationZXZ( h, v, w );
 
   if( pilot >= 0 && fuel != 0.0f ) {
     fuel = max( 0.0f, fuel - clazz->engine.idleConsumption );
@@ -504,8 +504,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
   actions    = 0;
   oldActions = 0;
 
-  rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
-                                                   Mat44::rotationZXZ( h, v, w );
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ( h ) :
+                                                   Mat4::rotationZXZ( h, v, w );
   state      = clazz->state;
   oldState   = clazz->state;
   fuel       = clazz->fuel;
@@ -535,8 +535,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* is ) :
   actions    = is->readInt();
   oldActions = is->readInt();
 
-  rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
-                                                   Mat44::rotationZXZ( h, v, w );
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ( h ) :
+                                                   Mat4::rotationZXZ( h, v, w );
   state      = is->readInt();
   oldState   = is->readInt();
   fuel       = is->readFloat();
@@ -566,8 +566,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
   actions    = json["actions"].get( 0 );
   oldActions = json["oldActions"].get( 0 );
 
-  rot        = clazz->type == VehicleClass::MECH ? Mat44::rotationZ( h ) :
-                                                   Mat44::rotationZXZ( h, v, w );
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ( h ) :
+                                                   Mat4::rotationZXZ( h, v, w );
   state      = json["state"].get( 0 );
   oldState   = json["oldState"].get( 0 );
   fuel       = json["fuel"].get( 0.0f );

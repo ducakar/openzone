@@ -68,7 +68,7 @@ public:
   /**
    * Calculate axis-aligned bounding box for the shape in absolute coordinates.
    */
-  virtual Bounds getBounds( const Point& pos, const Mat33& rot ) const = 0;
+  virtual Bounds getBounds( const Point& pos, const Mat3& rot ) const = 0;
 
 };
 

@@ -254,7 +254,7 @@ private:
     String            frictSound;
 
     String            modelName;
-    Mat44             modelTransf;
+    Mat4              modelTransf;
   };
 
   // Temporary structure for bound objects.

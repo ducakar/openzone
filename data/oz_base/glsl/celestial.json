@@ -1,4 +1,4 @@
-[
-  "celestial",
-  "celestial"
-]
+{
+  "vertex":             "celestial",
+  "fragment":           "celestial"
+}

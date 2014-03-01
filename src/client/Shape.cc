@@ -254,21 +254,21 @@ void Shape::unbind() const
 
 void Shape::colour( const Vec4& c )
 {
-  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE, Mat44::scaling( c ) );
+  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE, Mat4::scaling( c ) );
 }
 
 void Shape::colour( float r, float g, float b, float a )
 {
   glUniformMatrix4fv( uniform.colour, 1, GL_FALSE,
-                      Mat44(    r, 0.0f, 0.0f, 0.0f,
-                             0.0f,    g, 0.0f, 0.0f,
-                             0.0f, 0.0f,    b, 0.0f,
-                             0.0f, 0.0f, 0.0f,    a ) );
+                      Mat4(    r, 0.0f, 0.0f, 0.0f,
+                            0.0f,    g, 0.0f, 0.0f,
+                            0.0f, 0.0f,    b, 0.0f,
+                            0.0f, 0.0f, 0.0f,    a ) );
 }
 
 void Shape::fill( float x, float y, float width, float height )
 {
-  tf.model = Mat44::translation( Vec3( x, y, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( x, y, 0.0f ) );
   tf.model.scale( Vec3( width, height, 0.0f ) );
   tf.apply();
 
@@ -282,7 +282,7 @@ void Shape::fill( int x, int y, int width, int height )
 
 void Shape::rect( float x, float y, float width, float height )
 {
-  tf.model = Mat44::translation( Vec3( x + 0.5f, y + 0.5f, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( x + 0.5f, y + 0.5f, 0.0f ) );
   tf.model.scale( Vec3( width - 1.0f, height - 1.0f, 0.0f ) );
   tf.apply();
 
@@ -296,22 +296,22 @@ void Shape::rect( int x, int y, int width, int height )
 
 void Shape::tag( float minX, float minY, float maxX, float maxY )
 {
-  tf.model = Mat44::translation( Vec3( minX, minY, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( minX, minY, 0.0f ) );
   tf.apply();
 
   glDrawArrays( GL_LINES, 8, 4 );
 
-  tf.model = Mat44::translation( Vec3( maxX, minY, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( maxX, minY, 0.0f ) );
   tf.apply();
 
   glDrawArrays( GL_LINES, 12, 4 );
 
-  tf.model = Mat44::translation( Vec3( maxX, maxY, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( maxX, maxY, 0.0f ) );
   tf.apply();
 
   glDrawArrays( GL_LINES, 16, 4 );
 
-  tf.model = Mat44::translation( Vec3( minX, maxY, 0.0f ) );
+  tf.model = Mat4::translation( Vec3( minX, maxY, 0.0f ) );
   tf.apply();
 
   glDrawArrays( GL_LINES, 20, 4 );
@@ -327,7 +327,7 @@ void Shape::quad( float dimX, float dimY )
 
 void Shape::box( const AABB& bb )
 {
-  tf.model = Mat44::translation( bb.p - Point::ORIGIN );
+  tf.model = Mat4::translation( bb.p - Point::ORIGIN );
   tf.model.scale( bb.dim );
   tf.apply();
 
@@ -336,7 +336,7 @@ void Shape::box( const AABB& bb )
 
 void Shape::wireBox( const AABB& bb )
 {
-  tf.model = Mat44::translation( bb.p - Point::ORIGIN );
+  tf.model = Mat4::translation( bb.p - Point::ORIGIN );
   tf.model.scale( bb.dim );
   tf.apply();
 
@@ -368,15 +368,15 @@ void Shape::skyBox( uint* texIds )
 
 #ifdef OZ_DYNAMICS
 
-void Shape::object( const Point& pos, const Mat33& rot, const void* shape_ )
+void Shape::object( const Point& pos, const Mat3& rot, const void* shape_ )
 {
   const oz::Shape* shape = static_cast<const oz::Shape*>( shape_ );
 
   if( shape->type == oz::Shape::BOX ) {
     const Box* box = static_cast<const Box*>( shape );
 
-    tf.model = Mat44::translation( pos - Point::ORIGIN );
-    tf.model = tf.model * Mat44( rot );
+    tf.model = Mat4::translation( pos - Point::ORIGIN );
+    tf.model = tf.model * Mat4( rot );
     tf.model.scale( box->ext );
     tf.apply();
 
@@ -388,8 +388,8 @@ void Shape::object( const Point& pos, const Mat33& rot, const void* shape_ )
   else if( shape->type == oz::Shape::CAPSULE ) {
     const Capsule* capsule = static_cast<const Capsule*>( shape );
 
-    tf.model = Mat44::translation( pos - Point::ORIGIN );
-    tf.model = tf.model * Mat44( rot );
+    tf.model = Mat4::translation( pos - Point::ORIGIN );
+    tf.model = tf.model * Mat4( rot );
     tf.model.scale( Vec3( capsule->radius, capsule->radius, capsule->ext + capsule->radius ) );
     tf.apply();
 

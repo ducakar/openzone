@@ -1185,22 +1185,22 @@ public:
   /**
    * Read 3x3 matrix.
    */
-  Mat33 readMat33();
+  Mat3 readMat3();
 
   /**
    * Write 3x3 matrix.
    */
-  void writeMat33( const Mat44& m );
+  void writeMat3( const Mat3& m );
 
   /**
    * Read 4x4 matrix.
    */
-  Mat44 readMat44();
+  Mat4 readMat4();
 
   /**
    * Write 4x4 matrix.
    */
-  void writeMat44( const Mat44& m );
+  void writeMat4( const Mat4& m );
 
   /**
    * Fill bitset with data from a stream.

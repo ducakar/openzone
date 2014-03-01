@@ -282,8 +282,7 @@ void Render::drawGeometry()
   OZ_GL_CHECK_ERROR();
 
   // clear buffer
-  glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, shader.fogColour.w );
-  glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+  glClear( GL_DEPTH_BUFFER_BIT );
 
   currentMicros = Time::uclock();
   swapMicros += currentMicros - beginMicros;
@@ -446,7 +445,7 @@ void Render::drawOrbis()
     glViewport( 0, 0, windowWidth, windowHeight );
 
     tf.ortho( windowWidth, windowHeight );
-    tf.camera = Mat44::ID;
+    tf.camera = Mat4::ID;
 
     glDisable( GL_CULL_FACE );
 
@@ -1038,8 +1037,8 @@ void Render::loadDyn()
   DBody* body;
 
 //   Compound* c = new Compound();
-//   c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat33::ID );
-//   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat33::rotationX( Math::TAU / 6.0f ) );
+//   c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat3::ID );
+//   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat3::rotationX( Math::TAU / 6.0f ) );
 
   Box* c = new Box( Vec3( 1, 1, 2 ) );
 //   Capsule* c = new Capsule( 1, 1 );

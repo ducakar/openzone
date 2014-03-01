@@ -41,13 +41,17 @@ size_t strlcpy( char *dest, const char *s, size_t size )
   while( s != end && *s != '\0' ) {
     *dest = *s;
 
-    ++dest;
     ++s;
+    ++dest;
     ++count;
   }
   *dest = '\0';
 
-  return count + ( *s != '\0' );
+  while( *s != '\0' ) {
+    ++s;
+    ++count;
+  }
+  return count;
 }
 
 }

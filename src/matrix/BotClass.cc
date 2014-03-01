@@ -30,15 +30,15 @@
 namespace oz
 {
 
-const Mat44 BotClass::INJURY_COLOUR = Mat44( 1.00f, 0.00f, 0.00f, 0.00f,
-                                             1.00f, 0.00f, 0.00f, 0.00f,
-                                             1.00f, 0.00f, 0.00f, 0.00f,
-                                             0.20f, 0.05f, 0.05f, 1.00f );
+const Mat4 BotClass::INJURY_COLOUR = Mat4( 1.00f, 0.00f, 0.00f, 0.00f,
+                                           1.00f, 0.00f, 0.00f, 0.00f,
+                                           1.00f, 0.00f, 0.00f, 0.00f,
+                                           0.20f, 0.05f, 0.05f, 1.00f );
 
-const Mat44 BotClass::NV_COLOUR     = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
-                                             0.25f, 2.00f, 0.25f, 0.00f,
-                                             0.25f, 2.00f, 0.25f, 0.00f,
-                                             0.00f, 0.00f, 0.00f, 1.00f );
+const Mat4 BotClass::NV_COLOUR     = Mat4( 0.25f, 2.00f, 0.25f, 0.00f,
+                                           0.25f, 2.00f, 0.25f, 0.00f,
+                                           0.25f, 2.00f, 0.25f, 0.00f,
+                                           0.00f, 0.00f, 0.00f, 1.00f );
 
 ObjectClass* BotClass::createClass()
 {
@@ -171,7 +171,7 @@ void BotClass::init( const JSON& config, const char* name_ )
   bobAmplitude      = config["bobAmplitude"].get( 0.07f );
   bobSwimAmplitude  = config["bobSwimAmplitude"].get( 0.07f );
 
-  baseColour        = config["baseColour"].get( Mat44::ID );
+  baseColour        = config["baseColour"].get( Mat4::ID );
   injuryColour      = config["injuryColour"].get( INJURY_COLOUR );
   nvColour          = config["nvColour"].get( NV_COLOUR );
 }

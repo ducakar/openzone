@@ -32,8 +32,8 @@ class BotClass : public DynamicClass
 {
 public:
 
-  static const Mat44 INJURY_COLOUR;
-  static const Mat44 NV_COLOUR;
+  static const Mat4 INJURY_COLOUR;
+  static const Mat4 NV_COLOUR;
 
   int    state;
 
@@ -90,9 +90,9 @@ public:
   float  bobAmplitude;
   float  bobSwimAmplitude;
 
-  Mat44  baseColour;
-  Mat44  injuryColour;
-  Mat44  nvColour;
+  Mat4   baseColour;
+  Mat4   injuryColour;
+  Mat4   nvColour;
 
 public:
 

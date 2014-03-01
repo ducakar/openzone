@@ -47,7 +47,7 @@ private:
 
     Quat   rot;
     Point  p;
-    Mat44  colour;
+    Mat4   colour;
 
     String code;
     int    track;
@@ -61,7 +61,7 @@ private:
 
   Quat       beginRot;
   Point      beginPos;
-  Mat44      beginColour;
+  Mat4       beginColour;
 
   String     title;
   int        nTitleChars;

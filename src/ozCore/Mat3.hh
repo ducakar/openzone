@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozCore/Mat33.hh
+ * @file ozCore/Mat3.hh
  *
- * `Mat33` class.
+ * `Mat3` class.
  */
 
 #pragma once
@@ -37,17 +37,17 @@ namespace oz
 /**
  * Column-major 3x3 matrix.
  *
- * @sa `oz::Mat44`
+ * @sa `oz::Mat4`
  */
-class Mat33
+class Mat3
 {
 public:
 
   /// Zero matrix.
-  static const Mat33 ZERO;
+  static const Mat3 ZERO;
 
   /// Identity.
-  static const Mat33 ID;
+  static const Mat3 ID;
 
   Vec3 x; ///< First column (image of i base vector).
   Vec3 y; ///< Second column (image of j base vector).
@@ -59,13 +59,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat33() = default;
+  explicit Mat3() = default;
 
   /**
    * Create matrix with given columns.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat33( const Vec3& a, const Vec3& b, const Vec3& c ) :
+  explicit Mat3( const Vec3& a, const Vec3& b, const Vec3& c ) :
     x( a ), y( b ), z( c )
   {}
 
@@ -73,7 +73,7 @@ public:
    * Create matrix with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat33( float xx, float xy, float xz,
+  explicit Mat3( float xx, float xy, float xz,
                   float yx, float yy, float yz,
                   float zx, float zy, float zz ) :
     x( xx, xy, xz ),
@@ -85,7 +85,7 @@ public:
    * Create matrix from an array of 9 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat33( const float* v ) :
+  explicit Mat3( const float* v ) :
     x( &v[0] ), y( &v[3] ), z( &v[6] )
   {}
 
@@ -93,7 +93,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Mat33& m ) const
+  bool operator == ( const Mat3& m ) const
   {
     return x == m.x && y == m.y && z == m.z;
   }
@@ -102,7 +102,7 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Mat33& m ) const
+  bool operator != ( const Mat3& m ) const
   {
     return x != m.x || y != m.y || z != m.z;
   }
@@ -156,11 +156,11 @@ public:
    * Transposed matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator ~ () const
+  Mat3 operator ~ () const
   {
-    return Mat33( x.x, y.x, z.x,
-                  x.y, y.y, z.y,
-                  x.z, y.z, z.z );
+    return Mat3( x.x, y.x, z.x,
+                 x.y, y.y, z.y,
+                 x.z, y.z, z.z );
   }
 
   /**
@@ -190,7 +190,7 @@ public:
    * Original matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator + () const
+  Mat3 operator + () const
   {
     return *this;
   }
@@ -199,61 +199,61 @@ public:
    * Matrix with negated elements.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator - () const
+  Mat3 operator - () const
   {
-    return Mat33( -x, -y, -z );
+    return Mat3( -x, -y, -z );
   }
 
   /**
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator + ( const Mat33& a ) const
+  Mat3 operator + ( const Mat3& a ) const
   {
-    return Mat33( x + a.x, y + a.y, z + a.z );
+    return Mat3( x + a.x, y + a.y, z + a.z );
   }
 
   /**
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator - ( const Mat33& a ) const
+  Mat3 operator - ( const Mat3& a ) const
   {
-    return Mat33( x - a.x, y - a.y, z - a.z );
+    return Mat3( x - a.x, y - a.y, z - a.z );
   }
 
   /**
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator * ( scalar s ) const
+  Mat3 operator * ( scalar s ) const
   {
-    return Mat33( x * s, y * s, z * s );
+    return Mat3( x * s, y * s, z * s );
   }
 
   /**
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Mat33 operator * ( scalar s, const Mat33& m )
+  friend Mat3 operator * ( scalar s, const Mat3& m )
   {
-    return Mat33( s * m.x, s * m.y, s * m.z );
+    return Mat3( s * m.x, s * m.y, s * m.z );
   }
 
   /**
    * Product, compositum of linear transformations.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator * ( const Mat33& m ) const
+  Mat3 operator * ( const Mat3& m ) const
   {
 #ifdef OZ_SIMD_MATH
-    return Mat33( Vec3( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) + z.f4 * vFill( m.x.z ) ),
-                  Vec3( x.f4 * vFill( m.y.x ) + y.f4 * vFill( m.y.y ) + z.f4 * vFill( m.y.z ) ),
-                  Vec3( x.f4 * vFill( m.z.x ) + y.f4 * vFill( m.z.y ) + z.f4 * vFill( m.z.z ) ) );
+    return Mat3( Vec3( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) + z.f4 * vFill( m.x.z ) ),
+                 Vec3( x.f4 * vFill( m.y.x ) + y.f4 * vFill( m.y.y ) + z.f4 * vFill( m.y.z ) ),
+                 Vec3( x.f4 * vFill( m.z.x ) + y.f4 * vFill( m.z.y ) + z.f4 * vFill( m.z.z ) ) );
 #else
-    return Mat33( x * m.x.x + y * m.x.y + z * m.x.z,
-                  x * m.y.x + y * m.y.y + z * m.y.z,
-                  x * m.z.x + y * m.z.y + z * m.z.z );
+    return Mat3( x * m.x.x + y * m.x.y + z * m.x.z,
+                 x * m.y.x + y * m.y.y + z * m.y.z,
+                 x * m.z.x + y * m.z.y + z * m.z.z );
 #endif
   }
 
@@ -297,7 +297,7 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Mat33 operator / ( scalar s ) const
+  Mat3 operator / ( scalar s ) const
   {
 #ifdef OZ_SIMD_MATH
     s = vFill( 1.0f ) / s.f4;
@@ -306,14 +306,14 @@ public:
 
     s = 1.0f / s;
 #endif
-    return Mat33( x * s, y * s, z * s );
+    return Mat3( x * s, y * s, z * s );
   }
 
   /**
    * Addition.
    */
   OZ_ALWAYS_INLINE
-  Mat33& operator += ( const Mat33& a )
+  Mat3& operator += ( const Mat3& a )
   {
     x += a.x;
     y += a.y;
@@ -325,7 +325,7 @@ public:
    * Subtraction.
    */
   OZ_ALWAYS_INLINE
-  Mat33& operator -= ( const Mat33& a )
+  Mat3& operator -= ( const Mat3& a )
   {
     x -= a.x;
     y -= a.y;
@@ -337,7 +337,7 @@ public:
    * Multiplication.
    */
   OZ_ALWAYS_INLINE
-  Mat33& operator *= ( scalar s )
+  Mat3& operator *= ( scalar s )
   {
     x *= s;
     y *= s;
@@ -349,7 +349,7 @@ public:
    * Division.
    */
   OZ_ALWAYS_INLINE
-  Mat33& operator /= ( scalar s )
+  Mat3& operator /= ( scalar s )
   {
 #ifdef OZ_SIMD_MATH
     s  = vFill( 1.0f ) / s.f4;
@@ -436,7 +436,7 @@ public:
    * Create matrix for rotation from a quaternion.
    */
   OZ_ALWAYS_INLINE
-  static Mat33 rotation( const Quat& q )
+  static Mat3 rotation( const Quat& q )
   {
     //
     // [ 1 - 2yy - 2zz    2xy - 2wz      2xz + 2wy   ]
@@ -459,58 +459,58 @@ public:
     float xx1 = 1.0f - xx2;
     float yy1 = 1.0f - yy2;
 
-    return Mat33( yy1 - zz2, xy2 + zw2, xz2 - yw2,
-                  xy2 - zw2, xx1 - zz2, yz2 + xw2,
-                  xz2 + yw2, yz2 - xw2, xx1 - yy2 );
+    return Mat3( yy1 - zz2, xy2 + zw2, xz2 - yw2,
+                 xy2 - zw2, xx1 - zz2, yz2 + xw2,
+                 xz2 + yw2, yz2 - xw2, xx1 - yy2 );
   }
 
   /**
    * Create matrix for rotation around x axis.
    */
   OZ_ALWAYS_INLINE
-  static Mat33 rotationX( float theta )
+  static Mat3 rotationX( float theta )
   {
     float s, c;
     Math::sincos( theta, &s, &c );
 
-    return Mat33( 1.0f, 0.0f, 0.0f,
-                  0.0f,    c,    s,
-                  0.0f,   -s,    c );
+    return Mat3( 1.0f, 0.0f, 0.0f,
+                 0.0f,    c,    s,
+                 0.0f,   -s,    c );
   }
 
   /**
    * Create matrix for rotation around y axis.
    */
   OZ_ALWAYS_INLINE
-  static Mat33 rotationY( float theta )
+  static Mat3 rotationY( float theta )
   {
     float s, c;
     Math::sincos( theta, &s, &c );
 
-    return Mat33(    c, 0.0f,   -s,
-                  0.0f, 1.0f, 0.0f,
-                     s, 0.0f,    c );
+    return Mat3(    c, 0.0f,   -s,
+                 0.0f, 1.0f, 0.0f,
+                    s, 0.0f,    c );
   }
 
   /**
    * Create matrix for rotation around z axis.
    */
   OZ_ALWAYS_INLINE
-  static Mat33 rotationZ( float theta )
+  static Mat3 rotationZ( float theta )
   {
     float s, c;
     Math::sincos( theta, &s, &c );
 
-    return Mat33(    c,    s, 0.0f,
-                    -s,    c, 0.0f,
-                  0.0f, 0.0f, 1.0f );
+    return Mat3(    c,    s, 0.0f,
+                   -s,    c, 0.0f,
+                 0.0f, 0.0f, 1.0f );
   }
 
   /**
    * `rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )`.
    */
   OZ_ALWAYS_INLINE
-  static Mat33 rotationZXZ( float heading, float pitch, float roll )
+  static Mat3 rotationZXZ( float heading, float pitch, float roll )
   {
     float hs, hc, ps, pc, rs, rc;
 
@@ -521,20 +521,20 @@ public:
     float hspc = hs*pc;
     float hcpc = hc*pc;
 
-    return Mat33(  hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs,
-                  -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc,
-                             hs*ps,           -hc*ps,    pc );
+    return Mat3(  hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs,
+                 -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc,
+                            hs*ps,           -hc*ps,    pc );
   }
 
   /**
    * Create matrix for scaling.
    */
   OZ_ALWAYS_INLINE
-  static Mat33 scaling( const Vec3& v )
+  static Mat3 scaling( const Vec3& v )
   {
-    return Mat33(  v.x, 0.0f, 0.0f,
-                  0.0f,  v.y, 0.0f,
-                  0.0f, 0.0f,  v.z );
+    return Mat3(  v.x, 0.0f, 0.0f,
+                 0.0f,  v.y, 0.0f,
+                 0.0f, 0.0f,  v.z );
   }
 
 };
@@ -543,36 +543,36 @@ public:
  * Per-component absolute value of a matrix.
  */
 OZ_ALWAYS_INLINE
-inline Mat33 abs( const Mat33& a )
+inline Mat3 abs( const Mat3& a )
 {
-  return Mat33( abs( a.x ), abs( a.y ), abs( a.z ) );
+  return Mat3( abs( a.x ), abs( a.y ), abs( a.z ) );
 }
 
 /**
  * Per-component minimum of two matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat33 min( const Mat33& a, const Mat33& b )
+inline Mat3 min( const Mat3& a, const Mat3& b )
 {
-  return Mat33( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+  return Mat3( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
 }
 
 /**
  * Per-component maximum of two matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat33 max( const Mat33& a, const Mat33& b )
+inline Mat3 max( const Mat3& a, const Mat3& b )
 {
-  return Mat33( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+  return Mat3( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
 }
 
 /**
  * Per-component clamped value of matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat33 clamp( const Mat33& c, const Mat33& a, const Mat33& b )
+inline Mat3 clamp( const Mat3& c, const Mat3& a, const Mat3& b )
 {
-  return Mat33( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+  return Mat3( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
 }
 
 }

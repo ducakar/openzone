@@ -21,22 +21,22 @@
  */
 
 /**
- * @file ozCore/Mat44.cc
+ * @file ozCore/Mat4.cc
  */
 
-#include "Mat44.hh"
+#include "Mat4.hh"
 
 namespace oz
 {
 
-const Mat44 Mat44::ZERO = Mat44( 0.0f, 0.0f, 0.0f, 0.0f,
-                                 0.0f, 0.0f, 0.0f, 0.0f,
-                                 0.0f, 0.0f, 0.0f, 0.0f,
-                                 0.0f, 0.0f, 0.0f, 0.0f );
+const Mat4 Mat4::ZERO = Mat4( 0.0f, 0.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f, 0.0f );
 
-const Mat44 Mat44::ID   = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
-                                 0.0f, 1.0f, 0.0f, 0.0f,
-                                 0.0f, 0.0f, 1.0f, 0.0f,
-                                 0.0f, 0.0f, 0.0f, 1.0f );
+const Mat4 Mat4::ID   = Mat4( 1.0f, 0.0f, 0.0f, 0.0f,
+                              0.0f, 1.0f, 0.0f, 0.0f,
+                              0.0f, 0.0f, 1.0f, 0.0f,
+                              0.0f, 0.0f, 0.0f, 1.0f );
 
 }

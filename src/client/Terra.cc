@@ -62,7 +62,7 @@ void Terra::draw()
 
   shader.program( landShaderId );
 
-  tf.model = Mat44::ID;
+  tf.model = Mat4::ID;
   tf.apply();
   tf.applyColour();
 
@@ -114,7 +114,7 @@ void Terra::drawLiquid()
 
   shader.program( liquidShaderId );
 
-  tf.model = Mat44::ID;
+  tf.model = Mat4::ID;
   tf.apply();
   tf.applyColour();
 

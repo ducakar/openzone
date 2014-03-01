@@ -34,7 +34,7 @@ Pool<Capsule> Capsule::pool;
 Capsule::~Capsule()
 {}
 
-Bounds Capsule::getBounds( const Point& pos, const Mat33& rot ) const
+Bounds Capsule::getBounds( const Point& pos, const Mat3& rot ) const
 {
   // Capsule is a convex hull of two spheres so minimum and maximum coordinates are always reached
   // on (at least) one of the spheres.

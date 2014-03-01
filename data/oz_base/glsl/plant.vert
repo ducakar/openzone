@@ -23,8 +23,11 @@
  * Mesh shader that deforms mesh according to the given wind.
  */
 
-#include "header.glsl"
+precision mediump float;
 
+uniform mat4 oz_ProjCamera;
+uniform mat4 oz_Model;
+uniform vec3 oz_CameraPos;
 uniform vec4 oz_Wind;
 
 attribute vec3 inPosition;
@@ -45,19 +48,25 @@ varying vec3 exLook;
 
 void main()
 {
-  vec4  position = oz_Model * vec4( inPosition, 1.0 );
+  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  vec4 normal   = oz_Model * vec4( inNormal, 0.0 );
+#ifdef OZ_BUMP_MAP
+  vec4 tangent  = oz_Model * vec4( inTangent, 0.0 );
+  vec4 binormal = oz_Model * vec4( inBinormal, 0.0 );
+#endif
+
   float windFact = max( inPosition.z, 0.0 );
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
                      sin( 0.08 * ( position.x + position.y ) + oz_Wind.w );
 
-  position    = vec4( position.xy + windBias.xy, position.z, 1.0 );
+  position.xy += windBias.xy, position.z;
 
-  gl_Position = oz_ProjCamera * position;
   exTexCoord  = inTexCoord;
-  exNormal    = oz_ModelRot * inNormal;
+  exNormal    = normal.xyz;
 #ifdef OZ_BUMP_MAP
-  exTangent   = oz_ModelRot * inTangent;
-  exBinormal  = oz_ModelRot * inBinormal;
+  exTangent   = tangent.xyz;
+  exBinormal  = binormal.xyz;
 #endif
   exLook      = position.xyz - oz_CameraPos;
+  gl_Position = oz_ProjCamera * position;
 }

@@ -34,7 +34,7 @@ Pool<Box> Box::pool;
 Box::~Box()
 {}
 
-Bounds Box::getBounds( const Point& pos, const Mat33& rot ) const
+Bounds Box::getBounds( const Point& pos, const Mat3& rot ) const
 {
   // Vertices of a box are {pos ± ext.x·rot.x ± ext.y·rot.y ± ext.z·rot.z}, so minimum and maximum
   // coordinates are reached in {pos[i] + ext.x·|rot.x[i]| + ext.y·|rot.y[i]| + ext.z·|rot.z[i]|}

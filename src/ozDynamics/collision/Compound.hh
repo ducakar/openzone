@@ -41,7 +41,7 @@ public:
   {
     Shape* shape;
     Vec3   off;
-    Mat33  rot;
+    Mat3   rot;
   };
 
 private:
@@ -91,7 +91,7 @@ public:
     return children.length();
   }
 
-  void add( Shape* shape, const Vec3& off, const Mat33& rot )
+  void add( Shape* shape, const Vec3& off, const Mat3& rot )
   {
     Child child = { shape, off, rot };
 
@@ -99,7 +99,7 @@ public:
     ++shape->nUsers;
   }
 
-  Bounds getBounds( const Point& pos, const Mat33& rot ) const override;
+  Bounds getBounds( const Point& pos, const Mat3& rot ) const override;
 
   OZ_STATIC_POOL_ALLOC( pool )
 };

@@ -122,11 +122,11 @@ void MD3::buildMesh( const char* name, int frame )
 //       float m21 = is.readFloat();
 //       float m22 = is.readFloat();
 //
-//       Vec3  transl = Vec3( scale * -ty, scale * tx, scale * tz );
-//       Mat44 rotMat = Mat44( +m11, -m10, -m12, 0.0f,
-//                             -m01, +m00, +m02, 0.0f,
-//                             -m21, +m20, +m22, 0.0f,
-//                             0.0f, 0.0f, 0.0f, 1.0f );
+//       Vec3 transl = Vec3( scale * -ty, scale * tx, scale * tz );
+//       Mat4 rotMat = Mat4( +m11, -m10, -m12, 0.0f,
+//                           -m01, +m00, +m02, 0.0f,
+//                           -m21, +m20, +m22, 0.0f,
+//                           0.0f, 0.0f, 0.0f, 1.0f );
 //
 //       if( String::equals( name, "lower" ) ) {
 //         if( String::equals( name, "tag_torso" ) ) {
@@ -292,7 +292,7 @@ void MD3::load()
   Vec3 weaponTranslation = config["weaponTranslate"].get( Vec3::ZERO );
   Vec3 weaponRotation    = config["weaponRotate"].get( Vec3::ZERO );
 
-  Mat44 weaponTransf = Mat44::translation( weaponTranslation );
+  Mat4 weaponTransf = Mat4::translation( weaponTranslation );
   weaponTransf.rotateX( Math::rad( weaponRotation.x ) );
   weaponTransf.rotateZ( Math::rad( weaponRotation.z ) );
   weaponTransf.rotateY( Math::rad( weaponRotation.y ) );
@@ -315,22 +315,22 @@ void MD3::save()
       OZ_ERROR( "Custom models can only be static. Must specify frame" );
     }
 
-    meshTransf = Mat44::ID;
+    meshTransf = Mat4::ID;
 
     buildMesh( model, frame );
   }
 //   else if( frame >= 0 ) {
-//     meshTransf = Mat44::ID;
+//     meshTransf = Mat4::ID;
 //
 //     buildMesh( "lower", frame );
 //
-//     meshTransf = meshTransf * Mat44::translation( joints[frame][client::MD3::JOINT_HIP].transl );
-//     meshTransf = meshTransf * Mat44::rotation( joints[frame][client::MD3::JOINT_HIP].rot );
+//     meshTransf = meshTransf * Mat4::translation( joints[frame][client::MD3::JOINT_HIP].transl );
+//     meshTransf = meshTransf * Mat4::rotation( joints[frame][client::MD3::JOINT_HIP].rot );
 //
 //     buildMesh( "upper", frame );
 //
-//     meshTransf = meshTransf * Mat44::translation( joints[frame][client::MD3::JOINT_NECK].transl );
-//     meshTransf = meshTransf * Mat44::rotation( joints[frame][client::MD3::JOINT_NECK].rot );
+//     meshTransf = meshTransf * Mat4::translation( joints[frame][client::MD3::JOINT_NECK].transl );
+//     meshTransf = meshTransf * Mat4::rotation( joints[frame][client::MD3::JOINT_NECK].rot );
 //
 //     buildMesh( "head", 0 );
 //   }

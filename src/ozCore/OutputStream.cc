@@ -161,11 +161,11 @@ void OutputStream::writeString( const char* s )
   mCopy( data, s, size_t( size ) );
 }
 
-Mat33 OutputStream::readMat33()
+Mat3 OutputStream::readMat3()
 {
   const char* data = forward( int( sizeof( float[9] ) ) );
 
-  Mat33 m;
+  Mat3 m;
   float* values = m;
 
   if( order == Endian::NATIVE ) {
@@ -186,7 +186,7 @@ Mat33 OutputStream::readMat33()
   return m;
 }
 
-void OutputStream::writeMat33( const Mat44& m )
+void OutputStream::writeMat3( const Mat3& m )
 {
   char* data = forward( int( sizeof( float[9] ) ) );
   const float* values = m;
@@ -213,11 +213,11 @@ void OutputStream::writeMat33( const Mat44& m )
   }
 }
 
-Mat44 OutputStream::readMat44()
+Mat4 OutputStream::readMat4()
 {
   const char* data = forward( int( sizeof( float[16] ) ) );
 
-  Mat44 m;
+  Mat4 m;
   float* values = m;
 
   if( order == Endian::NATIVE ) {
@@ -238,7 +238,7 @@ Mat44 OutputStream::readMat44()
   return m;
 }
 
-void OutputStream::writeMat44( const Mat44& m )
+void OutputStream::writeMat4( const Mat4& m )
 {
   char* data = forward( int( sizeof( float[16] ) ) );
   const float* values = m;

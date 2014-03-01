@@ -32,7 +32,7 @@
 #include "Log.hh"
 
 #define OZ_PARSE_ERROR( charBias, message ) \
-  OZ_ERROR( "oz::JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
+  OZ_ERROR( "oz::JSON: " message " at %s:%d:%d", path, line, column + ( charBias ) );
 
 namespace oz
 {
@@ -81,51 +81,45 @@ struct JSON::Parser
     MULTILINE_COMMENT
   };
 
-  struct Position
+  InputStream* is;
+  const char*  path;
+  int          line;
+  int          column;
+  int          oldLine;
+  int          oldColumn;
+
+  OZ_HIDDEN
+  char readChar()
   {
-    InputStream* is;
-    const char*  path;
-    int          line;
-    int          column;
-    int          oldLine;
-    int          oldColumn;
-
-    OZ_HIDDEN
-    char readChar()
-    {
-      if( !is->isAvailable() ) {
-        const Position& pos = *this;
-        OZ_PARSE_ERROR( 0, "Unexpected end of file" );
-      }
-
-      oldLine   = line;
-      oldColumn = column;
-
-      char ch = is->readChar();
-
-      if( ch == '\n' ) {
-        ++line;
-        column = 0;
-      }
-      else {
-        ++column;
-      }
-      return ch;
+    if( !is->isAvailable() ) {
+      OZ_PARSE_ERROR( 0, "Unexpected end of file" );
     }
 
-    OZ_HIDDEN
-    void backChar()
-    {
-      hard_assert( line != oldLine || column != oldColumn );
+    oldLine   = line;
+    oldColumn = column;
 
-      is->set( is->pos() - 1 );
+    char ch = is->readChar();
 
-      line   = oldLine;
-      column = oldColumn;
+    if( ch == '\n' ) {
+      ++line;
+      column = 0;
     }
-  };
+    else {
+      ++column;
+    }
+    return ch;
+  }
 
-  Position pos;
+  OZ_HIDDEN
+  void backChar()
+  {
+    hard_assert( line != oldLine || column != oldColumn );
+
+    is->set( is->pos() - 1 );
+
+    line   = oldLine;
+    column = oldColumn;
+  }
 
   OZ_HIDDEN
   static void setAccessed( JSON* value )
@@ -167,8 +161,8 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  explicit Parser( InputStream* is, const char* path ) :
-    pos( { is, path, 1, 0, 1, 0 } )
+  explicit Parser( InputStream* is_, const char* path_ ) :
+    is( is_ ), path( path_ ), line( 1 ), column( 0 ), oldLine( 1 ), oldColumn( 0 )
   {}
 
   OZ_HIDDEN
@@ -178,18 +172,18 @@ struct JSON::Parser
 
     do {
       do {
-        ch2 = pos.readChar();
+        ch2 = readChar();
       }
       while( String::isBlank( ch2 ) );
 
       if( ch2 == '/' ) {
         ch1 = ch2;
-        ch2 = pos.readChar();
+        ch2 = readChar();
 
         if( ch2 == '/' ) {
           // Skip a line comment.
           do {
-            ch2 = pos.readChar();
+            ch2 = readChar();
           }
           while( ch2 != '\n' );
 
@@ -197,11 +191,11 @@ struct JSON::Parser
         }
         else if( ch2 == '*' ) {
           // Skip a multi-line comment.
-          ch2 = pos.readChar();
+          ch2 = readChar();
 
           do {
             ch1 = ch2;
-            ch2 = pos.readChar();
+            ch2 = readChar();
           }
           while( ch1 != '*' || ch2 != '/' );
 
@@ -209,7 +203,7 @@ struct JSON::Parser
         }
         else {
           ch2 = ch1;
-          pos.backChar();
+          backChar();
         }
       }
 
@@ -225,14 +219,14 @@ struct JSON::Parser
     char ch = '"';
 
     do {
-      ch = pos.readChar();
+      ch = readChar();
 
       if( ch == '\n' || ch == '\r' ) {
         continue;
       }
 
       if( ch == '\\' ) {
-        ch = pos.readChar();
+        ch = readChar();
 
         switch( ch ) {
           case 'b': {
@@ -266,7 +260,7 @@ struct JSON::Parser
 
       chars.add( ch );
     }
-    while( pos.is->isAvailable() );
+    while( is->isAvailable() );
 
     if( ch != '"' ) {
       OZ_PARSE_ERROR( 0, "End of file while looking for end of string (Is ending \" missing?)" );
@@ -283,17 +277,15 @@ struct JSON::Parser
 
     switch( ch ) {
       case 'n': {
-        if( pos.is->available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
-            pos.readChar() != 'l' )
-        {
+        if( is->available() < 3 || readChar() != 'u' || readChar() != 'l' || readChar() != 'l' ) {
           OZ_PARSE_ERROR( -3, "Unknown value type" );
         }
 
         return JSON( nullptr, NIL );
       }
       case 'f': {
-        if( pos.is->available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
-            pos.readChar() != 's' || pos.readChar() != 'e' )
+        if( is->available() < 4 || readChar() != 'a' || readChar() != 'l' || readChar() != 's' ||
+            readChar() != 'e' )
         {
           OZ_PARSE_ERROR( -4, "Unknown value type" );
         }
@@ -301,9 +293,7 @@ struct JSON::Parser
         return JSON( false );
       }
       case 't': {
-        if( pos.is->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
-            pos.readChar() != 'e' )
-        {
+        if( is->available() < 4 || readChar() != 'r' || readChar() != 'u' || readChar() != 'e' ) {
           OZ_PARSE_ERROR( -3, "Unknown value type" );
         }
 
@@ -313,11 +303,11 @@ struct JSON::Parser
         SList<char, 32> chars;
         chars.add( ch );
 
-        while( pos.is->isAvailable() ) {
-          ch = pos.readChar();
+        while( is->isAvailable() ) {
+          ch = readChar();
 
           if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
-            pos.backChar();
+            backChar();
             break;
           }
           if( chars.length() >= 31 ) {
@@ -356,7 +346,7 @@ struct JSON::Parser
 
     char ch = skipBlanks();
     if( ch != ']' ) {
-      pos.backChar();
+      backChar();
     }
 
     while( ch != ']' ) {
@@ -381,7 +371,7 @@ struct JSON::Parser
 
     char ch = skipBlanks();
     if( ch != '}' ) {
-      pos.backChar();
+      backChar();
     }
 
     while( ch != '}' ) {
@@ -413,8 +403,8 @@ struct JSON::Parser
   OZ_HIDDEN
   void finish()
   {
-    while( pos.is->isAvailable() ) {
-      char ch = pos.readChar();
+    while( is->isAvailable() ) {
+      char ch = readChar();
 
       if( !String::isBlank( ch ) ) {
         OZ_PARSE_ERROR( 0, "End of file expected but some content found after" );
@@ -758,7 +748,7 @@ JSON::JSON( const Quat& q ) :
   }
 }
 
-JSON::JSON( const Mat33& m ) :
+JSON::JSON( const Mat3& m ) :
   data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
@@ -770,7 +760,7 @@ JSON::JSON( const Mat33& m ) :
   }
 }
 
-JSON::JSON( const Mat44& m ) :
+JSON::JSON( const Mat4& m ) :
   data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
@@ -1094,15 +1084,15 @@ Quat JSON::get( const Quat& defaultValue ) const
   return getVector( q, 4 ) ? q : defaultValue;
 }
 
-Mat33 JSON::get( const Mat33& defaultValue ) const
+Mat3 JSON::get( const Mat3& defaultValue ) const
 {
-  Mat33 m;
+  Mat3 m;
   return getVector( m, 9 ) ? m : defaultValue;
 }
 
-Mat44 JSON::get( const Mat44& defaultValue ) const
+Mat4 JSON::get( const Mat4& defaultValue ) const
 {
-  Mat44 m;
+  Mat4 m;
   return getVector( m, 16 ) ? m : defaultValue;
 }
 

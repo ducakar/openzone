@@ -38,10 +38,10 @@ const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
 const float  Camera::FLASH_SUPPRESSION  = 0.75f;
-const Mat44  Camera::FLASH_COLOUR       = Mat44( 2.50f, 1.00f, 1.00f, 0.00f,
-                                                 1.00f, 2.50f, 1.00f, 0.00f,
-                                                 1.00f, 1.00f, 2.50f, 0.00f,
-                                                 0.00f, 0.00f, 0.00f, 1.00f );
+const Mat4   Camera::FLASH_COLOUR       = Mat4( 2.50f, 1.00f, 1.00f, 0.00f,
+                                                1.00f, 2.50f, 1.00f, 0.00f,
+                                                1.00f, 1.00f, 2.50f, 0.00f,
+                                                0.00f, 0.00f, 0.00f, 1.00f );
 
 Proxy* const Camera::PROXIES[] = {
   nullptr,
@@ -56,7 +56,7 @@ CinematicProxy Camera::cinematic;
 
 void Camera::flash( float intensity )
 {
-  flashColour = Math::mix( Mat44::ID, FLASH_COLOUR, intensity );
+  flashColour = Math::mix( Mat4::ID, FLASH_COLOUR, intensity );
 }
 
 void Camera::shake( float intensity )
@@ -98,7 +98,7 @@ void Camera::align()
   velocity = ( p - oldPos ) / Timer::TICK_TIME;
   oldPos   = p;
 
-  rotMat   = Mat44::rotation( rot );
+  rotMat   = Mat4::rotation( rot );
   rotTMat  = ~rotMat;
 
   right    = +rotMat.x.vec3();
@@ -170,7 +170,7 @@ void Camera::update()
 
   horizPlane  = coeff * mag * MIN_DISTANCE;
   vertPlane   = aspect * horizPlane;
-  flashColour = Math::mix( Mat44::ID, flashColour, FLASH_SUPPRESSION );
+  flashColour = Math::mix( Mat4::ID, flashColour, FLASH_SUPPRESSION );
 }
 
 void Camera::reset()
@@ -189,13 +189,13 @@ void Camera::reset()
   relH        = 0.0f;
   relV        = 0.0f;
 
-  rotMat      = Mat44::rotation( rot );
+  rotMat      = Mat4::rotation( rot );
   rotTMat     = ~rotTMat;
 
-  colour      = Mat44::ID;
-  baseColour  = Mat44::ID;
+  colour      = Mat4::ID;
+  baseColour  = Mat4::ID;
   nvColour    = BotClass::NV_COLOUR;
-  flashColour = Mat44::ID;
+  flashColour = Mat4::ID;
 
   right       = rotMat.x.vec3();
   up          = rotMat.y.vec3();
@@ -245,12 +245,12 @@ void Camera::read( InputStream* is )
   relH       = is->readFloat();
   relV       = is->readFloat();
 
-  rotMat     = Mat44::rotation( rot );
+  rotMat     = Mat4::rotation( rot );
   rotTMat    = ~rotMat;
 
-  colour     = is->readMat44();
-  baseColour = is->readMat44();
-  nvColour   = is->readMat44();
+  colour     = is->readMat4();
+  baseColour = is->readMat4();
+  nvColour   = is->readMat4();
 
   right      = rotMat.x.vec3();
   up         = rotMat.y.vec3();
@@ -314,9 +314,9 @@ void Camera::write( OutputStream* os ) const
   os->writeFloat( relH );
   os->writeFloat( relV );
 
-  os->writeMat44( colour );
-  os->writeMat44( baseColour );
-  os->writeMat44( nvColour );
+  os->writeMat4( colour );
+  os->writeMat4( baseColour );
+  os->writeMat4( nvColour );
 
   os->writeInt( bot );
   os->writeInt( vehicle );
