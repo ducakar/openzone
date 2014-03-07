@@ -23,6 +23,8 @@
  * Terrain (lava) sea surface shader.
  */
 
+#version 100
+
 precision mediump float;
 
 const float TERRA_WATER_SCALE = 512.0;

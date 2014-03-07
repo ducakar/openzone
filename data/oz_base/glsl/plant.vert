@@ -23,6 +23,8 @@
  * Mesh shader that deforms mesh according to the given wind.
  */
 
+#version 100
+
 precision mediump float;
 
 uniform mat4 oz_ProjCamera;

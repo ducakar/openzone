@@ -161,6 +161,8 @@ void Shader::loadProgram( int id )
               fragName, name.cstr() );
   }
 
+  programConfig.clear( true );
+
   MainCall() << [&]()
   {
     programs[id].vertShader = *vertId;
@@ -221,7 +223,8 @@ void Shader::loadProgram( int id )
     OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
     OZ_REGISTER_UNIFORM( fog_dist2,           "oz_Fog.dist2"           );
 
-    OZ_REGISTER_UNIFORM( starsColour,         "oz_StarsColour"         );
+    OZ_REGISTER_UNIFORM( caelumColour,        "oz_CaelumColour"        );
+    OZ_REGISTER_UNIFORM( caelumLuminance,     "oz_CaelumLuminance"     );
     OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
     OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
 
@@ -361,11 +364,6 @@ void Shader::init()
 
   programs.resize( liber.shaders.length() );
 
-#ifdef GL_ES_VERSION_2_0
-  defines = "#version 100\n";
-#else
-  defines = "#version 100\n";
-#endif
   if( hasVertexTexture ) {
     defines += "#define OZ_VERTEX_TEXTURE\n";
   }

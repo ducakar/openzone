@@ -57,7 +57,9 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4() = default;
+  explicit Vec4() :
+    VectorBase4( 0.0f, 0.0f, 0.0f, 0.0f )
+  {}
 
 #ifdef OZ_SIMD_MATH
 

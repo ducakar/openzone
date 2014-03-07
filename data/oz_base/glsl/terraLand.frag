@@ -23,6 +23,8 @@
  * Terrain (land) shader.
  */
 
+#version 100
+
 precision mediump float;
 
 const float DETAIL_SCALE  = 1024.0;

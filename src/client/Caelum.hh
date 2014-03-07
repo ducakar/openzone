@@ -52,9 +52,7 @@ private:
 
   uint  sunTexId;
   uint  moonTexId;
-
   uint  skyboxTexIds[6];
-
   int   celestialShaderId;
 
 public:
@@ -63,7 +61,6 @@ public:
   float ratio;
   Vec3  originalLightDir;
   Vec3  axis;
-
   Vec3  lightDir;
 
   Vec4  diffuseColour;

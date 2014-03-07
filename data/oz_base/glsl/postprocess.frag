@@ -23,6 +23,8 @@
  * Postprocess pass.
  */
 
+#version 100
+
 precision mediump float;
 
 const int   MS_LEVEL        = 16;

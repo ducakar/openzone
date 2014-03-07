@@ -101,19 +101,24 @@ void Caelum::draw()
 
   sunColour = max( sunColour, caelumColour );
 
-  tf.setColour( tf.colour * sunColour );
-  tf.applyColour();
+  glUniform3fv( uniform.caelumColour, 1, caelumColour );
+  glUniform1f( uniform.caelumLuminance, max( -lightDir.z, 0.0f ) );
 
   tf.applyCamera();
   tf.model = transf;
+  tf.applyColour();
 
   shape.skyBox( skyboxTexIds );
 
   glDisable( GL_CULL_FACE );
   glBindTexture( GL_TEXTURE_2D, sunTexId );
 
+  glUniform3fv( uniform.caelumColour, 1, Vec4::ZERO );
+  glUniform1f( uniform.caelumLuminance, 1.0f );
+
   tf.model = transf;
   tf.model.translate( Vec3( 0.0f, 0.0f, +15.0f ) );
+  tf.setColour( tf.colour * sunColour );
 
   shape.quad( 1.0f, 1.0f );
 
@@ -121,6 +126,7 @@ void Caelum::draw()
 
   tf.model = transf;
   tf.model.translate( Vec3( 0.0f, 0.0f, -15.0f ) );
+  tf.setColour( tf.colour );
 
   shape.quad( 1.0f, 1.0f );
 

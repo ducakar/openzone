@@ -180,12 +180,6 @@ public:
 
 protected:
 
-  /**
-   * Default constructor, creates uninitialised instance.
-   */
-  OZ_ALWAYS_INLINE
-  explicit VectorBase3() = default;
-
 #ifdef OZ_SIMD_MATH
 
   OZ_ALWAYS_INLINE
@@ -245,12 +239,6 @@ public:
 #endif
 
 protected:
-
-  /**
-   * Default constructor, creates uninitialised instance.
-   */
-  OZ_ALWAYS_INLINE
-  explicit VectorBase4() = default;
 
 #ifdef OZ_SIMD_MATH
 

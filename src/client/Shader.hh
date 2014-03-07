@@ -39,6 +39,7 @@ struct Uniform
   int modelRot;
   int cameraPos;
   int bones;
+  int meshAnimation;
 
   int colour;
   int texture;
@@ -54,8 +55,8 @@ struct Uniform
   int fog_colour;
   int fog_dist2;
 
-  int meshAnimation;
-  int starsColour;
+  int caelumColour;
+  int caelumLuminance;
   int waveBias;
   int wind;
 };

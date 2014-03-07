@@ -20,12 +20,16 @@
 /*
  * celestial.frag
  *
- * Shader for celestial bodies (except stars).
+ * Shader for skybox and celestial bodies.
  */
+
+#version 100
 
 precision mediump float;
 
 uniform mat4      oz_Colour;
+uniform vec3      oz_CaelumColour;
+uniform float     oz_CaelumLuminance;
 uniform sampler2D oz_Texture;
 
 varying vec2  exTexCoord;
@@ -33,13 +37,9 @@ varying float exAzimuth;
 
 void main()
 {
-  vec4 albedo    = texture2D( oz_Texture, exTexCoord );
+  vec4  texel   = texture2D( oz_Texture, exTexCoord );
+  float azimuth = clamp( exAzimuth, 0.0, 1.0 );
+  vec3  colour  = oz_CaelumColour + ( azimuth * oz_CaelumLuminance ) * texel.xyz;
 
-  gl_FragData[0] = oz_Colour * albedo;
-
-#ifdef OZ_POSTPROCESS
-  float glow     = dot( albedo, vec4( 0.667, 0.667, 0.667, 0.0 ) );
-
-  gl_FragData[1] = vec4( glow, glow, glow, 1.0 );
-#endif
+  gl_FragData[0] = oz_Colour * vec4( colour, texel.w );
 }

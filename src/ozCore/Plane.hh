@@ -54,7 +54,9 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane() = default;
+  explicit Plane() :
+    n( 0.0f, 0.0f, 0.0f ), d( 0.0f )
+  {}
 
   /**
    * Create form a pair of normal and distance from the origin.

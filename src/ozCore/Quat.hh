@@ -52,7 +52,9 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat() = default;
+  explicit Quat() :
+    VectorBase4( 0.0f, 0.0f, 0.0f, 1.0f )
+  {}
 
 #ifdef OZ_SIMD_MATH
 

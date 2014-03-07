@@ -20,8 +20,10 @@
 /*
  * celestial.vert
  *
- * Shader for celestial bodies (except stars).
+ * Shader for skybox and celestial bodies.
  */
+
+#version 100
 
 precision mediump float;
 

@@ -51,7 +51,9 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Point() = default;
+  explicit Point() :
+    VectorBase3( 0.0f, 0.0f, 0.0f, 1.0f )
+  {}
 
 #ifdef OZ_SIMD_MATH
 
