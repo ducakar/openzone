@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,4 +42,7 @@ void main()
   vec3  colour  = oz_CaelumColour + ( azimuth * oz_CaelumLuminance ) * texel.xyz;
 
   gl_FragData[0] = oz_Colour * vec4( colour, texel.w );
+#ifdef OZ_POSTPROCESS
+  gl_FragData[1] = vec4( 0.0, 0.0, 0.0, 1.0 );
+#endif
 }

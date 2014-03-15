@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,16 +43,18 @@ attribute vec3 inTangent;
 attribute vec3 inBinormal;
 #endif
 
+varying vec3 exLook;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
 #ifdef OZ_BUMP_MAP
 varying vec3 exTangent;
 varying vec3 exBinormal;
 #endif
-varying vec3 exLook;
 
 void main()
 {
+  mat3 modelRot = mat3( oz_Model );
+
 #ifdef OZ_VERTEX_TEXTURE
 
   float iVertex       = inPosition.x;
@@ -64,28 +66,24 @@ void main()
 
   vec4  position0     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition0 ) );
   vec4  position1     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition1 ) );
-  vec4  normal0       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal0 ) );
-  vec4  normal1       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal1 ) );
+  vec3  normal0       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal0 ) ).xyz;
+  vec3  normal1       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal1 ) ).xyz;
   vec4  position      = oz_Model * mix( position0, position1, interpolation );
-  vec4  normal        = oz_Model * normalize( mix( normal0, normal1, interpolation ) );
+  vec3  normal        = modelRot * mix( normal0, normal1, interpolation );
 
 #else
 
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
-  vec4 normal   = oz_Model * vec4( inNormal, 0.0 );
+  vec4 normal   = modelRot * inNormal;
 
 #endif
-#ifdef OZ_BUMP_MAP
-  vec4 tangent  = oz_Model * vec4( inTangent, 0.0 );
-  vec4 binormal = oz_Model * vec4( inBinormal, 0.0 );
-#endif
 
+  exLook      = position.xyz - oz_CameraPos;
   exTexCoord  = inTexCoord;
   exNormal    = normal.xyz;
 #ifdef OZ_BUMP_MAP
-  exTangent   = tangent.xyz;
-  exBinormal  = binormal.xyz;
+  exTangent   = modelRot * inTangent;
+  exBinormal  = modelRot * inBinormal;
 #endif
-  exLook      = position.xyz - oz_CameraPos;
   gl_Position = oz_ProjCamera * position;
 }

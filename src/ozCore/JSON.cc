@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -652,7 +652,7 @@ bool JSON::getVector( float* vector, int count ) const
 }
 
 JSON::JSON( Type type ) :
-  valueType( type ), wasAccessed( true )
+  valueType( type ), wasAccessed( false )
 {
   switch( type ) {
     default: {
@@ -674,31 +674,31 @@ JSON::JSON( Type type ) :
 }
 
 JSON::JSON( bool value ) :
-  boolean( value ), valueType( BOOLEAN ), wasAccessed( true )
+  boolean( value ), valueType( BOOLEAN ), wasAccessed( false )
 {}
 
 JSON::JSON( int value ) :
-  number( value ), valueType( NUMBER ), wasAccessed( true )
+  number( value ), valueType( NUMBER ), wasAccessed( false )
 {}
 
 JSON::JSON( float value ) :
-  number( value ), valueType( NUMBER ), wasAccessed( true )
+  number( value ), valueType( NUMBER ), wasAccessed( false )
 {}
 
 JSON::JSON( double value ) :
-  number( value ), valueType( NUMBER ), wasAccessed( true )
+  number( value ), valueType( NUMBER ), wasAccessed( false )
 {}
 
 JSON::JSON( const String& value ) :
-  data( new StringData( value ) ), valueType( STRING ), wasAccessed( true )
+  data( new StringData( value ) ), valueType( STRING ), wasAccessed( false )
 {}
 
 JSON::JSON( const char* value ) :
-  data( new StringData( value ) ), valueType( STRING ), wasAccessed( true )
+  data( new StringData( value ) ), valueType( STRING ), wasAccessed( false )
 {}
 
 JSON::JSON( const Vec3& v ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -708,7 +708,7 @@ JSON::JSON( const Vec3& v ) :
 }
 
 JSON::JSON( const Vec4& v ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -718,7 +718,7 @@ JSON::JSON( const Vec4& v ) :
 }
 
 JSON::JSON( const Point& p ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -728,7 +728,7 @@ JSON::JSON( const Point& p ) :
 }
 
 JSON::JSON( const Plane& p ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -739,7 +739,7 @@ JSON::JSON( const Plane& p ) :
 }
 
 JSON::JSON( const Quat& q ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -749,7 +749,7 @@ JSON::JSON( const Quat& q ) :
 }
 
 JSON::JSON( const Mat3& m ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -761,7 +761,7 @@ JSON::JSON( const Mat3& m ) :
 }
 
 JSON::JSON( const Mat4& m ) :
-  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( true )
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
 {
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -773,7 +773,7 @@ JSON::JSON( const Mat4& m ) :
 }
 
 JSON::JSON( const File& file ) :
-  valueType( NIL ), wasAccessed( true )
+  valueType( NIL ), wasAccessed( false )
 {
   load( file );
 }

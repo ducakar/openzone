@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ const char* const Caelum::SKYBOX_FACES[]        = { "+x", "-x", "+y", "-y", "+z"
 const Vec4        Caelum::GLOBAL_AMBIENT_COLOUR = Vec4( 0.12f, 0.12f, 0.15f, 1.00f );
 
 const float       Caelum::DAY_BIAS              = 0.40f;
-const float       Caelum::AMBIENT_COEF          = 0.60f;
+const float       Caelum::AMBIENT_COEF          = 0.40f;
 
 const float       Caelum::RED_COEF              = +0.05f;
 const float       Caelum::GREEN_COEF            = -0.05f;

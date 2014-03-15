@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -203,7 +203,7 @@ public:
   /**
    * Load from a file.
    */
-  explicit JSON( const File& file );
+  JSON( const File& file );
 
   /**
    * Destructor.

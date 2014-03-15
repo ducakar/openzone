@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,29 +39,25 @@ attribute vec3 inTangent;
 attribute vec3 inBinormal;
 #endif
 
+varying vec3 exLook;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
 #ifdef OZ_BUMP_MAP
 varying vec3 exTangent;
 varying vec3 exBinormal;
 #endif
-varying vec3 exLook;
 
 void main()
 {
+  mat3 modelRot = mat3( oz_Model );
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
-  vec4 normal   = oz_Model * vec4( inNormal, 0.0 );
-#ifdef OZ_BUMP_MAP
-  vec4 tangent  = oz_Model * vec4( inTangent, 0.0 );
-  vec4 binormal = oz_Model * vec4( inBinormal, 0.0 );
-#endif
 
-  exTexCoord  = inTexCoord;
-  exNormal    = normal.xyz;
-#ifdef OZ_BUMP_MAP
-  exTangent   = tangent.xyz;
-  exBinormal  = binormal.xyz;
-#endif
   exLook      = position.xyz - oz_CameraPos;
+  exTexCoord  = inTexCoord;
+  exNormal    = modelRot * inNormal;
+#ifdef OZ_BUMP_MAP
+  exTangent   = modelRot * inTangent;
+  exBinormal  = modelRot * inBinormal;
+#endif
   gl_Position = oz_ProjCamera * position;
 }

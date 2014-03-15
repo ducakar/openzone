@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ const float Render::LAVA_VISIBILITY        = 4.0f;
 const float Render::WIND_FACTOR            = 0.0008f;
 const float Render::WIND_PHI_INC           = 0.04f;
 
-const int   Render::GLOW_MINIFICATION      = 4;
+const int   Render::GLOW_MINIFICATION      = 2;
 
 const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 1.00f );
 const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.20f, 0.50f, 1.00f );
@@ -230,8 +230,7 @@ void Render::prepareDraw()
     shader.fogColour.z *= colourRatio;
   }
 
-  tf.colour        = camera.colour * camera.flashColour;
-  shader.fogColour = tf.colour * shader.fogColour;
+  tf.colour = camera.colour * camera.flashColour;
 
   windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
 

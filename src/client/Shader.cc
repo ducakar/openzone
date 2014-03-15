@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,8 +107,8 @@ const int Shader::SAMPLER_MAP[] = { 0, 1, 2 };
 char      Shader::logBuffer[LOG_BUFFER_SIZE];
 String    Shader::defines;
 
-Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
-  pos( pos_ ), diffuse( diffuse_ )
+Shader::Light::Light( const Point& pos_, const Vec4& colour_ ) :
+  pos( pos_ ), colour( colour_ )
 {}
 
 void Shader::compileShader( uint shaderId, const String& defines, const String& name ) const
@@ -217,8 +217,8 @@ void Shader::loadProgram( int id )
     OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
 
     OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
-    OZ_REGISTER_UNIFORM( caelumLight_diffuse, "oz_CaelumLight.diffuse" );
     OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
+    OZ_REGISTER_UNIFORM( caelumLight_colour,  "oz_CaelumLight.colour"  );
 
     OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
     OZ_REGISTER_UNIFORM( fog_dist2,           "oz_Fog.dist2"           );
@@ -285,15 +285,15 @@ void Shader::setAmbientLight( const Vec4& colour )
 
 void Shader::setCaelumLight( const Vec3& dir, const Vec4& colour )
 {
-  caelumLight.dir = dir;
-  caelumLight.diffuse = colour;
+  caelumLight.dir    = dir;
+  caelumLight.colour = colour;
 }
 
 void Shader::updateLights()
 {
   glUniform3fv( uniform.caelumLight_dir,     1, caelumLight.dir );
-  glUniform3fv( uniform.caelumLight_diffuse, 1, caelumLight.diffuse );
   glUniform3fv( uniform.caelumLight_ambient, 1, caelumLight.ambient );
+  glUniform3fv( uniform.caelumLight_colour,  1, caelumLight.colour );
 }
 
 void Shader::init()
@@ -304,7 +304,6 @@ void Shader::init()
   setSamplerMap    = config.include( "shader.setSamplerMap", true  ).get( false );
   doEnvMap         = config.include( "shader.envMap",        true  ).get( false );
   doBumpMap        = config.include( "shader.bumpMap",       true  ).get( false );
-  isLowDetail      = config.include( "shader.lowDetail",     false ).get( false );
   doPostprocess    = config.include( "shader.postprocess",   false ).get( false );
   nLights          = config.include( "shader.nLights",       4     ).get( 0 );
 
@@ -372,9 +371,6 @@ void Shader::init()
   }
   if( doBumpMap ) {
     defines += "#define OZ_BUMP_MAP\n";
-  }
-  if( isLowDetail ) {
-    defines += "#define OZ_LOW_DETAIL\n";
   }
   if( doPostprocess ) {
     defines += "#define OZ_POSTPROCESS\n";

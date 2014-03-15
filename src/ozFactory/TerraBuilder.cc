@@ -1,7 +1,7 @@
 /*
  * ozFactory - OpenZone Assets Builder Library.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -348,12 +348,12 @@ char** TerraBuilder::generateCubeNoise( int size )
   double dim    = size / 2.0;
 
   char** images = new char*[6] {
-    new char[size * pitch * 3],
-    new char[size * pitch * 3],
-    new char[size * pitch * 3],
-    new char[size * pitch * 3],
-    new char[size * pitch * 3],
-    new char[size * pitch * 3]
+    new char[size * pitch],
+    new char[size * pitch],
+    new char[size * pitch],
+    new char[size * pitch],
+    new char[size * pitch],
+    new char[size * pitch]
   };
 
   // +X.

@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2013 Davorin Učakar
+ * Copyright © 2002-2014 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ struct Uniform
   int vertexAnim;
 
   int caelumLight_dir;
-  int caelumLight_diffuse;
   int caelumLight_ambient;
+  int caelumLight_colour;
 
   int fog_colour;
   int fog_dist2;
@@ -127,17 +127,17 @@ private:
   struct CaelumLight
   {
     Vec3 dir;
-    Vec4 diffuse;
     Vec4 ambient;
+    Vec4 colour;
   };
 
   struct Light
   {
     Point pos;
-    Vec4  diffuse;
+    Vec4  colour;
 
     explicit Light() = default;
-    explicit Light( const Point& pos, const Vec4& diffuse );
+    explicit Light( const Point& pos, const Vec4& colour );
   };
 
 public:
@@ -201,7 +201,6 @@ public:
   bool setSamplerMap;
   bool doEnvMap;
   bool doBumpMap;
-  bool isLowDetail;
   bool doPostprocess;
   bool nLights;
 
