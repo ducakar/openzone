@@ -79,6 +79,7 @@ public:
   int endMesh();
 
   void texture( const char* texture );
+  void shininess( float exponent );
   void blend( bool doBlend );
 
   void begin( PolyMode mode );

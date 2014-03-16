@@ -53,7 +53,7 @@ const float Render::LAVA_VISIBILITY        = 4.0f;
 const float Render::WIND_FACTOR            = 0.0008f;
 const float Render::WIND_PHI_INC           = 0.04f;
 
-const int   Render::GLOW_MINIFICATION      = 2;
+const int   Render::GLOW_MINIFICATION      = 4;
 
 const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 1.00f );
 const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.20f, 0.50f, 1.00f );
@@ -280,9 +280,6 @@ void Render::drawGeometry()
 
   OZ_GL_CHECK_ERROR();
 
-  // clear buffer
-  glClear( GL_DEPTH_BUFFER_BIT );
-
   currentMicros = Time::uclock();
   swapMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
@@ -302,9 +299,8 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform4fv( uniform.fog_colour, 1, shader.fogColour );
-    glUniform1f( uniform.fog_dist2, visibility*visibility );
-
+    glUniform3fv( uniform.fogColour, 1, shader.fogColour );
+    glUniform1f( uniform.fogDistance2, visibility*visibility );
     glUniform4f( uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
@@ -313,12 +309,18 @@ void Render::drawGeometry()
   beginMicros = currentMicros;
 
   if( !( shader.medium & Medium::LIQUID_MASK ) && camera.p.z >= 0.0f ) {
+    glClear( GL_DEPTH_BUFFER_BIT );
+
     tf.camera = camera.rotTMat;
 
     caelum.draw();
 
     tf.camera.translate( Point::ORIGIN - camera.p );
     tf.applyCamera();
+  }
+  else {
+    glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, 1.0f );
+    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
   }
 
   glEnable( GL_DEPTH_TEST );
@@ -418,27 +420,25 @@ void Render::drawOrbis()
     resize();
   }
 
+#ifndef GL_ES_VERSION_2_0
+
   if( isOffscreen ) {
     glViewport( 0, 0, frameWidth, frameHeight );
-
-#ifdef GL_ES_VERSION_2_0
-
-    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-
-#else
 
     glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
 
     uint dbos[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT };
     glDrawBuffers( 2, dbos );
+  }
 
 #endif
-  }
 
   prepareDraw();
   drawGeometry();
 
   uint beginMicros = Time::uclock();
+
+#ifndef GL_ES_VERSION_2_0
 
   if( isOffscreen ) {
     glViewport( 0, 0, windowWidth, windowHeight );
@@ -447,20 +447,6 @@ void Render::drawOrbis()
     tf.camera = Mat4::ID;
 
     glDisable( GL_CULL_FACE );
-
-#ifdef GL_ES_VERSION_2_0
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-    shader.program( shader.plain );
-    tf.applyCamera();
-    shape.colour( 1.0f, 1.0f, 1.0f );
-
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
-    shape.fill( 0, windowHeight, windowWidth, -windowHeight );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-#else
 
     if( shader.doPostprocess ) {
       // Scale glow buffer down.
@@ -503,10 +489,10 @@ void Render::drawOrbis()
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
     }
 
-#endif
-
     glEnable( GL_CULL_FACE );
   }
+
+#endif
 
   postprocessMicros += Time::uclock() - beginMicros;
 
@@ -566,22 +552,14 @@ void Render::resize()
   windowWidth  = Window::width();
   windowHeight = Window::height();
 
+#ifndef GL_ES_VERSION_2_0
+
   if( !isOffscreen ) {
     return;
   }
 
   frameWidth  = Math::lround( float( Window::width()  ) * scale );
   frameHeight = Math::lround( float( Window::height() ) * scale );
-
-#ifdef GL_ES_VERSION_2_0
-
-  if( mainFrame != 0 ) {
-    glDeleteFramebuffers( 1, &mainFrame );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffers( 1, &depthBuffer );
-  }
-
-#else
 
   if( mainFrame != 0 ) {
     glDeleteFramebuffersEXT( 1, &mainFrame );
@@ -594,23 +572,10 @@ void Render::resize()
     glDeleteTextures( 1, &glowBuffer );
   }
 
-#endif
-
-#ifdef GL_ES_VERSION_2_0
-
-  glGenRenderbuffers( 1, &depthBuffer );
-  glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
-  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-
-#else
-
   glGenRenderbuffersEXT( 1, &depthBuffer );
   glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
   glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, frameWidth, frameHeight );
   glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
-
-#endif
 
   glGenTextures( 1, &colourBuffer );
   glBindTexture( GL_TEXTURE_2D, colourBuffer );
@@ -622,8 +587,6 @@ void Render::resize()
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE,
                 nullptr );
-
-#ifndef GL_ES_VERSION_2_0
 
   if( shader.doPostprocess ) {
     glGenTextures( 1, &glowBuffer );
@@ -650,25 +613,7 @@ void Render::resize()
                   GL_UNSIGNED_BYTE, nullptr );
   }
 
-#endif
-
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-#ifdef GL_ES_VERSION_2_0
-
-  glGenFramebuffers( 1, &mainFrame );
-  glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-
-  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
-  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
-
-  if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-    OZ_ERROR( "Main framebuffer creation failed" );
-  }
-
-  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-#else
 
   glGenFramebuffersEXT( 1, &mainFrame );
   glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
@@ -953,11 +898,7 @@ void Render::destroy()
   if( mainFrame != 0 ) {
     MainCall() << [&]()
     {
-#ifdef GL_ES_VERSION_2_0
-      glDeleteFramebuffers( 1, &mainFrame );
-      glDeleteTextures( 1, &colourBuffer );
-      glDeleteRenderbuffers( 1, &depthBuffer );
-#else
+#ifndef GL_ES_VERSION_2_0
       glDeleteFramebuffersEXT( 1, &mainFrame );
       glDeleteTextures( 1, &glowBuffer );
       glDeleteTextures( 1, &colourBuffer );

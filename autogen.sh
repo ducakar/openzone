@@ -21,7 +21,7 @@ for component in ${components[@]}; do
 
   cd $component
 
-  sources=`echo *.{hh,cc} */*.{hh,cc} *.{glsl,vert,frag}`
+  sources=`echo *.{hh,cc} */*.{hh,cc} *.{glsl,vert,frag,json}`
   # Remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
   sources=`echo $sources | sed -r 's|(\*/)?\*\.[^ ]*||g'`
   # Remove PCH trigger library.

@@ -18,20 +18,25 @@
  */
 
 /*
- * plant.vert
+ * mesh.vert
  *
- * Mesh shader that deforms mesh according to the given wind.
+ * Generic shader for meshes.
  */
 
 #version 100
 
 precision mediump float;
 
-uniform mat4  oz_ProjCamera;
-uniform mat4  oz_Model;
-uniform vec3  oz_CameraPos;
-uniform float oz_FogDistance2;
-uniform vec4  oz_Wind;
+struct Fog
+{
+  vec4  colour;
+  float dist2;
+};
+
+uniform mat4 oz_ProjCamera;
+uniform mat4 oz_Model;
+uniform vec3 oz_CameraPos;
+uniform Fog  oz_Fog;
 
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
@@ -41,25 +46,18 @@ attribute vec3 inTangent;
 attribute vec3 inBinormal;
 #endif
 
-varying vec3  exPosition;
-varying vec2  exTexCoord;
-varying vec3  exNormal;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 #ifdef OZ_BUMP_MAP
-varying vec3  exTangent;
-varying vec3  exBinormal;
+varying vec3 exTangent;
+varying vec3 exBinormal;
 #endif
-varying float exFog;
 
 void main()
 {
   mat3 modelRot = mat3( oz_Model );
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
-
-  float windFact = max( inPosition.z, 0.0 );
-  vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
-                     sin( 0.08 * ( position.x + position.y ) + oz_Wind.w );
-
-  position.xy   += windBias.xy, position.z;
 
   exPosition  = position.xyz - oz_CameraPos;
   exTexCoord  = inTexCoord;
@@ -68,6 +66,5 @@ void main()
   exTangent   = modelRot * inTangent;
   exBinormal  = modelRot * inBinormal;
 #endif
-  exFog       = min( dot( exPosition, exPosition ) / oz_FogDistance2, 1.0 );
   gl_Position = oz_ProjCamera * position;
 }

@@ -164,11 +164,15 @@ void AssImp::build( const char* path )
       texturePath = basePath + String::fileBaseName( textureName.C_Str() );
     }
 
+    float shininess = 50.0f;
+    material->Get<float>( AI_MATKEY_SHININESS, shininess );
+
     float alpha = 1.0f;
     material->Get<float>( AI_MATKEY_OPACITY, alpha );
 
     compiler.beginMesh();
     compiler.texture( texturePath );
+    compiler.shininess( shininess );
     compiler.blend( alpha != 1.0f );
 
     for( uint j = 0; j < mesh->mNumFaces; ++j ) {

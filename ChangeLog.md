@@ -60,9 +60,9 @@
     * status bars under health bars
 - client
     * Mesh, SMM -> Model, tree-based model hierarchy
-    * bump mapping
-    * environment maps
     * Models can be rendered at BSP entities
+    * better lighting: bump mapping, environment maps, improved specular lighting
+    * skybox
     * DDS format used for all textures, every texture is in its own file
     * switched over to ozEngine classes wherever possible
     * layout files, can be edited in built-in editor (-e option) or loaded by missions

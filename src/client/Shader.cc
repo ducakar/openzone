@@ -215,13 +215,15 @@ void Shader::loadProgram( int id )
     OZ_REGISTER_UNIFORM( normals,             "oz_Normals"             );
     OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
     OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
+    OZ_REGISTER_UNIFORM( shininess,           "oz_Shininess"           );
+    OZ_REGISTER_UNIFORM( nLights,             "oz_NumLights"           );
 
     OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
-    OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
     OZ_REGISTER_UNIFORM( caelumLight_colour,  "oz_CaelumLight.colour"  );
+    OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
 
-    OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
-    OZ_REGISTER_UNIFORM( fog_dist2,           "oz_Fog.dist2"           );
+    OZ_REGISTER_UNIFORM( fogColour,           "oz_FogColour"           );
+    OZ_REGISTER_UNIFORM( fogDistance2,        "oz_FogDistance2"        );
 
     OZ_REGISTER_UNIFORM( caelumColour,        "oz_CaelumColour"        );
     OZ_REGISTER_UNIFORM( caelumLuminance,     "oz_CaelumLuminance"     );
@@ -305,7 +307,6 @@ void Shader::init()
   doEnvMap         = config.include( "shader.envMap",        true  ).get( false );
   doBumpMap        = config.include( "shader.bumpMap",       true  ).get( false );
   doPostprocess    = config.include( "shader.postprocess",   false ).get( false );
-  nLights          = config.include( "shader.nLights",       4     ).get( 0 );
 
 #ifdef GL_ES_VERSION_2_0
   hasVertexTexture = false;

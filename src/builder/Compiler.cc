@@ -106,6 +106,7 @@ struct Mesh
 {
   int          flags;
   String       texture;
+  float        shininess;
 
   int          firstIndex;
   int          nIndices;
@@ -371,8 +372,9 @@ void Compiler::beginMesh()
   hard_assert( environment == MODEL );
   environment = MESH;
 
-  mesh.flags   = Model::SOLID_BIT;
-  mesh.texture = "";
+  mesh.flags     = Model::SOLID_BIT;
+  mesh.texture   = "";
+  mesh.shininess = 50.0f;
 }
 
 int Compiler::endMesh()
@@ -384,6 +386,25 @@ int Compiler::endMesh()
   mesh.indices.clear();
 
   return meshes.length() - 1;
+}
+
+void Compiler::texture( const char* texture )
+{
+  hard_assert( environment == MESH );
+
+  mesh.texture = texture;
+}
+
+void Compiler::shininess( float exponent )
+{
+  mesh.shininess = exponent;
+}
+
+void Compiler::blend( bool doBlend )
+{
+  hard_assert( environment == MESH );
+
+  mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
 }
 
 void Compiler::begin( Compiler::PolyMode mode_ )
@@ -447,20 +468,6 @@ void Compiler::end()
       break;
     }
   }
-}
-
-void Compiler::texture( const char* texture )
-{
-  hard_assert( environment == MESH );
-
-  mesh.texture = texture;
-}
-
-void Compiler::blend( bool doBlend )
-{
-  hard_assert( environment == MESH );
-
-  mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
 }
 
 void Compiler::texCoord( float u, float v )
@@ -707,16 +714,17 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     hard_assert( normals.length() == nFrames * nFramePositions );
 
     foreach( position, positions.citer() ) {
-      os->writeVec4( Vec4( *position ) );
+      os->writePoint( *position );
     }
     foreach( normal, normals.citer() ) {
-      os->writeVec4( Vec4( *normal ) );
+      os->writeVec3( *normal );
     }
   }
 
   foreach( mesh, meshes.citer() ) {
     os->writeInt( mesh->flags );
     os->writeInt( textures.index( mesh->texture ) );
+    os->writeFloat( mesh->shininess );
 
     os->writeInt( mesh->nIndices );
     os->writeInt( mesh->firstIndex );

@@ -27,11 +27,11 @@
 
 precision mediump float;
 
-const int   MS_LEVEL        = 16;
-const float MS_SIZE         = 0.04;
+const int   MS_LEVEL        = 8;
+const float MS_SIZE         = 0.02;
 const float MS_DIM          = float( MS_LEVEL - 1 ) / 2.0;
 const float MS_SPACING      = MS_SIZE / float( MS_LEVEL - 1 );
-const float BLOOM_THRESHOLD = 1.7;
+const float BLOOM_THRESHOLD = 1.5;
 const float BLOOM_INTENSITY = 0.3 / float( MS_LEVEL );
 
 uniform mat4      oz_Colour;

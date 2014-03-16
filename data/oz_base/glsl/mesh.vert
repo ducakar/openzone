@@ -27,9 +27,10 @@
 
 precision mediump float;
 
-uniform mat4 oz_ProjCamera;
-uniform mat4 oz_Model;
-uniform vec3 oz_CameraPos;
+uniform mat4  oz_ProjCamera;
+uniform mat4  oz_Model;
+uniform vec3  oz_CameraPos;
+uniform float oz_FogDistance2;
 
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
@@ -39,25 +40,27 @@ attribute vec3 inTangent;
 attribute vec3 inBinormal;
 #endif
 
-varying vec3 exLook;
-varying vec2 exTexCoord;
-varying vec3 exNormal;
+varying vec3  exPosition;
+varying vec2  exTexCoord;
+varying vec3  exNormal;
 #ifdef OZ_BUMP_MAP
-varying vec3 exTangent;
-varying vec3 exBinormal;
+varying vec3  exTangent;
+varying vec3  exBinormal;
 #endif
+varying float exFog;
 
 void main()
 {
-  mat3 modelRot = mat3( oz_Model );
-  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  mat3  modelRot = mat3( oz_Model );
+  vec4  position = oz_Model * vec4( inPosition, 1.0 );
 
-  exLook      = position.xyz - oz_CameraPos;
+  exPosition  = position.xyz - oz_CameraPos;
   exTexCoord  = inTexCoord;
   exNormal    = modelRot * inNormal;
 #ifdef OZ_BUMP_MAP
   exTangent   = modelRot * inTangent;
   exBinormal  = modelRot * inBinormal;
 #endif
+  exFog       = min( dot( exPosition, exPosition ) / oz_FogDistance2, 1.0 );
   gl_Position = oz_ProjCamera * position;
 }

@@ -33,25 +33,27 @@ const float NORMALS_SCALE = 512.0;
 struct CaelumLight
 {
   vec3 dir;
-  vec3 ambient;
   vec3 colour;
+  vec3 ambient;
 };
 
-struct Fog
+struct Light
 {
-  vec4  colour;
-  float dist2;
+  vec3 dir;
+  vec3 colour;
 };
 
 uniform mat4        oz_Colour;
 uniform sampler2D   oz_Texture;
 uniform sampler2D   oz_Masks;
 uniform sampler2D   oz_Normals;
-uniform samplerCube oz_EnvMap;
+uniform int         oz_NumLights;
 uniform CaelumLight oz_CaelumLight;
-uniform Fog         oz_Fog;
+uniform Light       oz_Lights[8];
+uniform vec3        oz_FogColour;
+uniform float       oz_FogDistance2;
 
-varying vec3 exLook;
+varying vec3 exPosition;
 varying vec2 exTexCoord;
 varying vec3 exNormal;
 #ifdef OZ_BUMP_MAP
@@ -65,12 +67,6 @@ vec3 pixelNormal( sampler2D texture, vec2 texCoord )
   return 2.0 * texel - vec3( 1.0 );
 }
 
-vec4 applyFog( vec4 colour, float dist )
-{
-  float ratio = min( dist*dist / oz_Fog.dist2, 1.0 );
-  return mix( colour, oz_Fog.colour, ratio*ratio );
-}
-
 void main()
 {
 #ifdef OZ_BUMP_MAP
@@ -79,18 +75,22 @@ void main()
 #else
   vec3  normal       = normalize( exNormal );
 #endif
-  float dist         = length( exLook );
+  float distance2    = dot( exPosition, exPosition );
+  float fog          = min( distance2 / oz_FogDistance2, 1.0 );
 
-  float diffuseDot   = max( 0.0, dot( oz_CaelumLight.dir, normal ) );
   vec4  detailSample = texture2D( oz_Texture, exTexCoord * DETAIL_SCALE );
   vec4  mapSample    = texture2D( oz_Masks, exTexCoord );
   vec4  colour       = detailSample * mapSample;
+
+  // Caelum light.
+  float diffuseDot   = max( 0.0, dot( oz_CaelumLight.dir, normal ) );
   vec3  ambient      = oz_CaelumLight.ambient;
   vec3  diffuse      = oz_CaelumLight.colour * diffuseDot;
 
   colour.rgb         = colour.rgb * ( ambient + diffuse );
+  colour.rgb         = mix( colour.rgb, oz_FogColour, fog*fog );
 
-  gl_FragData[0]     = oz_Colour * applyFog( colour, dist );
+  gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS
   gl_FragData[1]     = vec4( 0.0, 0.0, 0.0, 1.0 );
 #endif

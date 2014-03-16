@@ -267,6 +267,7 @@ void MD2::build( const char* path )
     header.nFrames = 1;
   }
   String shaderName      = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
+  float  shininess       = config["shininess"].get( 50.0f );
   float  scale           = config["scale"].get( 0.04f );
   Vec3   translation     = config["translate"].get( Vec3::ZERO );
   Vec3   jumpTranslation = config["jumpTranslate"].get( Vec3::ZERO );
@@ -350,6 +351,7 @@ void MD2::build( const char* path )
 
   compiler.beginMesh();
   compiler.texture( skinPath );
+  compiler.shininess( shininess );
   compiler.begin( Compiler::TRIANGLES );
 
   for( int i = 0; i < header.nTriangles; ++i ) {

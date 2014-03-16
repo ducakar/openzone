@@ -50,15 +50,15 @@ uniform int         oz_NumLights;
 uniform CaelumLight oz_CaelumLight;
 uniform Light       oz_Lights[8];
 uniform vec3        oz_FogColour;
+uniform float       oz_FogDistance2;
 
-varying vec3  exPosition;
-varying vec2  exTexCoord;
-varying vec3  exNormal;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 #ifdef OZ_BUMP_MAP
-varying vec3  exTangent;
-varying vec3  exBinormal;
+varying vec3 exTangent;
+varying vec3 exBinormal;
 #endif
-varying float exFog;
 
 vec3 pixelNormal( sampler2D texture, vec2 texCoord )
 {
@@ -74,7 +74,10 @@ void main()
 #else
   vec3  normal       = normalize( exNormal );
 #endif
-  vec3  reflectDir   = reflect( normalize( exPosition ), normal );
+  float distance2    = dot( exPosition, exPosition );
+  float fog          = min( distance2 / oz_FogDistance2, 1.0 );
+  vec3  look         = exPosition * inversesqrt( distance2 );
+  vec3  reflectDir   = reflect( look, normal );
 
   vec4  colour       = texture2D( oz_Texture, exTexCoord );
   vec4  masks        = texture2D( oz_Masks, exTexCoord );
@@ -87,23 +90,14 @@ void main()
   vec3  diffuse      = oz_CaelumLight.colour * diffuseDot;
   vec3  specular     = oz_CaelumLight.colour * ( masks.r * pow( specularDot, oz_Shininess ) );
 
-  // Point lights.
-//  for( int i = 0; i < oz_NumLights; ++i ) {
-//    vec3 lightDir = oz_Lights[i].pos - exPosition;
-
-//    diffuseDot       = max( 0.0, dot( lightDir, normal ) );
-//    specularDot      = max( 0.0, dot( lightDir, reflectDir ) );
-//    diffuse         += oz_Lights[i].colour * diffuseDot;
-//    specular        += oz_Lights[i].colour * ( masks.r * pow( specularDot, oz_Shininess ) );
-//  }
-
 #ifdef OZ_ENV_MAP
   if( masks.b != 0.0 ) {
     colour.rgb       = mix( colour.rgb, textureCube( oz_EnvMap, reflectDir ).rgb, masks.b );
   }
 #endif
   colour.rgb         = colour.rgb * ( ambient + diffuse + emission ) + specular;
-  colour.rgb         = mix( colour.rgb, oz_FogColour, exFog*exFog );
+  colour.rgb         = mix( colour.rgb, oz_FogColour, fog*fog );
+  colour.a          += 0.8 + dot( look, normal );
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS

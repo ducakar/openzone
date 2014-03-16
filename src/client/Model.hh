@@ -103,8 +103,9 @@ private:
 
   struct Mesh
   {
-    int flags;
-    int texture;
+    int   flags;
+    int   texture;
+    float shininess;
 
     int nIndices;
     int firstIndex;

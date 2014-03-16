@@ -178,6 +178,8 @@ void Model::drawNode( const Node* node, int mask )
       glActiveTexture( Shader::NORMALS );
       glBindTexture( GL_TEXTURE_2D, texture.normals );
 
+      glUniform1f( uniform.shininess, mesh.shininess );
+
       glDrawElements( GL_TRIANGLES, mesh.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( nullptr ) + mesh.firstIndex );
     }
@@ -511,14 +513,14 @@ void Model::load()
   if( nFrames != 0 ) {
     if( shader.hasVertexTexture ) {
 #ifndef GL_ES_VERSION_2_0
-      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[4] ) );
-      int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[4] ) );
+      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
+      int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
       glGenTextures( 1, &animationTexId );
       glBindTexture( GL_TEXTURE_2D, animationTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGBA,
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
                     GL_FLOAT, is.forward( vertexBufferSize + normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
@@ -553,6 +555,7 @@ void Model::load()
   for( int i = 0; i < nMeshes; ++i ) {
     meshes[i].flags      = is.readInt();
     meshes[i].texture    = is.readInt();
+    meshes[i].shininess  = is.readFloat();
 
     meshes[i].nIndices   = is.readInt();
     meshes[i].firstIndex = is.readInt();

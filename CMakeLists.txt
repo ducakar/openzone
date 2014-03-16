@@ -271,6 +271,9 @@ endif()
 add_subdirectory( src )
 add_subdirectory( data/oz_base/glsl )
 
+# To show these files in QtCreator.
+add_custom_target( doc SOURCES AUTHORS ChangeLog.md README.md TODO.md )
+
 #
 # Data files
 #

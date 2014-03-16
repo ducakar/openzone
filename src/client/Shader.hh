@@ -47,13 +47,15 @@ struct Uniform
   int normals;
   int envMap;
   int vertexAnim;
+  int shininess;
+  int nLights;
 
   int caelumLight_dir;
   int caelumLight_ambient;
   int caelumLight_colour;
 
-  int fog_colour;
-  int fog_dist2;
+  int fogColour;
+  int fogDistance2;
 
   int caelumColour;
   int caelumLuminance;
