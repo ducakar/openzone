@@ -288,13 +288,13 @@ void BuildFrame::onDraw()
 
   if( scroll != 0 ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollUp );
     shape.fill( x + 112, y + height - HEADER_SIZE - 40, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
   if( scroll != nScrollRows ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollDownTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollDown );
     shape.fill( x + 112, y + 4, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
@@ -370,10 +370,7 @@ BuildFrame::BuildFrame() :
   Frame( 240, 54, OZ_GETTEXT( "Buildings" ) ), mode( BUILDINGS ), models( nullptr ),
   overlayBSP( nullptr ), overlayClass( nullptr ), overlayHeading( NORTH ),
   rows( 0 ), nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
-{
-  scrollUpTex.load( "@ui/icon/scrollUp.dds" );
-  scrollDownTex.load( "@ui/icon/scrollDown.dds" );
-}
+{}
 
 BuildFrame::~BuildFrame()
 {

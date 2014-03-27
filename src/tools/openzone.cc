@@ -34,6 +34,10 @@ int SDL_main( int argc, char **argv );
 
 using namespace oz;
 
+//static int    exitCode;
+//static int    argc;
+//static char** argv;
+
 static void crashHandler()
 {
 #if SDL_MAJOR_VERSION < 2
@@ -54,8 +58,6 @@ int main( int argc, char** argv )
 {
   System::init( System::DEFAULT_MASK, &crashHandler );
 
-  int exitCode = EXIT_FAILURE;
-
   Log::printRaw( "OpenZone " OZ_VERSION "\n"
                  "Copyright © 2002-2014 Davorin Učakar\n"
                  "This program comes with ABSOLUTELY NO WARRANTY.\n"
@@ -66,23 +68,39 @@ int main( int argc, char** argv )
   Pepper::post( "init:" );
 #endif
 
-  exitCode = client::client.init( argc, argv );
+//  argc = argc_;
+//  argv = argv_;
+//  exitCode = EXIT_FAILURE;
 
-  if( exitCode == EXIT_SUCCESS ) {
-    exitCode = client::client.main();
-  }
+//  auto coreMain = []( void* ) {
+    int exitCode = client::client.init( argc, argv );
 
-  client::client.shutdown();
-
-  if( Alloc::count != 0 ) {
-    Log::verboseMode = true;
-    bool isOutput = Log::printMemoryLeaks();
-    Log::verboseMode = false;
-
-    if( isOutput ) {
-      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+    if( exitCode == EXIT_SUCCESS ) {
+      exitCode = client::client.main();
     }
-  }
+
+    client::client.shutdown();
+
+    if( Alloc::count != 0 ) {
+      Log::verboseMode = true;
+      bool isOutput = Log::printMemoryLeaks();
+      Log::verboseMode = false;
+
+      if( isOutput ) {
+        Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+      }
+    }
+//    MainCall::terminate();
+//  };
+//  Thread coreThread;
+
+//  MainCall::init();
+
+//  coreThread.start( "core", Thread::JOINABLE, coreMain );
+//  MainCall::loop();
+//  coreThread.join();
+
+//  MainCall::destroy();
 
 #ifdef __native_client__
   Pepper::post( "quit:" );

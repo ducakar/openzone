@@ -77,9 +77,6 @@ private:
 
   Text              description;
 
-  GLTexture         scrollUpTex;
-  GLTexture         scrollDownTex;
-
   uint              imageId;
   int               imageX;
   int               imageY;

@@ -30,7 +30,9 @@
 
 #if 0
 
+#include "System.hh"
 #include "Semaphore.hh"
+#include "Thread.hh"
 
 namespace oz
 {
@@ -122,6 +124,9 @@ public:
     if( !schedule( CallbackWrapper::callback, &cw ) ) {
       return false;
     }
+    else if( Thread::isMain() ) {
+      OZ_ERROR( "oz::MainCall: operator << () invoked on the main thread." );
+    }
     localSemaphore.sem.wait();
     return true;
   }
@@ -129,8 +134,9 @@ public:
   /**
    * Call a method on the main thread asynchronously.
    *
-   * The method can also be a lambda expression with captures. In case the method queue is full
-   * false is returned.
+   * The method can also be a lambda expression but captures are discouraged for asynchronous calls
+   * since local variables may change till the function is executed or the local stack may not
+   * even exist any more. In case the method queue is full false is returned.
    */
   template <typename Method>
   bool operator += ( Method method ) const

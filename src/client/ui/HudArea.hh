@@ -61,18 +61,6 @@ private:
 
   ModelField* vehicleModel;
 
-  GLTexture   crossTex;
-  GLTexture   useTex;
-  GLTexture   deviceTex;
-  GLTexture   equipTex;
-  GLTexture   mountTex;
-  GLTexture   takeTex;
-  GLTexture   browseTex;
-  GLTexture   liftTex;
-  GLTexture   grabTex;
-  GLTexture   lockedTex;
-  GLTexture   unlockedTex;
-
   int         descTextX;
   int         descTextY;
   int         healthBarX;

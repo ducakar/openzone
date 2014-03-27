@@ -52,8 +52,6 @@ private:
   };
 
   Mode               mode;
-  GLTexture          scrollUpTex;
-  GLTexture          scrollDownTex;
   ModelField**       models;
 
   const oz::BSP*     overlayBSP;

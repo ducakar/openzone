@@ -303,6 +303,8 @@ void Model::drawScheduled( QueueType queue, int mask )
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+  glFlush();
 }
 
 void Model::clearScheduled( QueueType queue )
@@ -451,6 +453,8 @@ void Model::upload( const Vertex* vertices, int nVertices, uint usage ) const
 
 void Model::load()
 {
+  hard_assert( Thread::isMain() );
+
   flags = 0;
 
   hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
@@ -604,6 +608,8 @@ void Model::load()
 
 void Model::unload()
 {
+  hard_assert( Thread::isMain() );
+
   if( preloadData != nullptr ) {
     delete preloadData;
     preloadData = nullptr;

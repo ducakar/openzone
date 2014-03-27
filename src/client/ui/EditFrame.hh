@@ -53,9 +53,6 @@ private:
 
   ModelField* ownerModels[COLS];
 
-  GLTexture   scrollUpTex;
-  GLTexture   scrollDownTex;
-
   Label       itemDesc;
 
   int         taggedItemIndex;

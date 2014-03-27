@@ -195,9 +195,11 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
-  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-    OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
-  }
+  MainCall() << []() {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+      OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
+    }
+  };
   initFlags |= INIT_SDL;
 
   if( TTF_Init() < 0 ) {
@@ -440,7 +442,9 @@ int Client::init( int argc, char** argv )
   sound.init();
 
   initFlags |= INIT_RENDER;
-  render.init();
+  MainCall() << []() {
+    render.init();
+  };
 
   initFlags |= INIT_STAGE_INIT;
   menuStage.init();
@@ -485,7 +489,9 @@ void Client::shutdown()
     menuStage.destroy();
   }
   if( initFlags & INIT_RENDER ) {
-    render.destroy();
+    MainCall() << []() {
+      render.destroy();
+    };
   }
   if( initFlags & INIT_AUDIO ) {
     sound.destroy();
@@ -527,7 +533,9 @@ void Client::shutdown()
     TTF_Quit();
   }
   if( initFlags & INIT_SDL ) {
-    SDL_Quit();
+    MainCall() << []() {
+      SDL_Quit();
+    };
   }
   if( initFlags & INIT_PHYSFS ) {
     File::destroy();
@@ -547,13 +555,12 @@ int Client::main()
 
   bool isAlive        = true;
   bool isActive       = true;
-  // time passed form start of the frame
-  uint timeSpent;
-  uint timeNow;
+  // Time spent on the current frame so far.
+  uint timeSpent      = 0;
   uint timeZero       = Time::uclock();
-  // time at start of the frame
+  // Time at the end of the last frame.
   uint timeLast       = timeZero;
-  uint timeLastRender = timeZero;
+  bool wasLastDropped = false;
 
   initFlags |= INIT_MAIN_LOOP;
 
@@ -741,20 +748,21 @@ int Client::main()
       continue;
     }
 
-    timeNow = Time::uclock();
-    timeSpent = timeNow - timeLast;
+    timeSpent = Time::uclock() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time.
-    if( timeSpent >= Timer::TICK_MICROS && timeNow - timeLastRender < 1000 * 1000 ) {
+    if( timeSpent >= 2 * Timer::TICK_MICROS ) {
       stage->present( false );
+      wasLastDropped = true;
     }
     else {
       stage->present( true );
+      wasLastDropped = false;
 
       timer.frame();
+
       // If there's still some time left, sleep.
-      timeLastRender = Time::uclock();
-      timeSpent = timeLastRender - timeLast;
+      timeSpent = Time::uclock() - timeLast;
 
       if( timeSpent < Timer::TICK_MICROS ) {
         stage->wait( Timer::TICK_MICROS - timeSpent );

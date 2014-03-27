@@ -412,6 +412,8 @@ void Shape::object( const Point& pos, const Mat3& rot, const void* shape_ )
 
 void Shape::init()
 {
+  hard_assert( Thread::isMain() );
+
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData( GL_ARRAY_BUFFER, sizeof( VERTICES ), VERTICES, GL_STATIC_DRAW );
@@ -425,6 +427,8 @@ void Shape::init()
 
 void Shape::destroy()
 {
+  hard_assert( Thread::isMain() );
+
   if( vbo != 0 ) {
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );

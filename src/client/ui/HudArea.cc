@@ -51,7 +51,7 @@ void HudArea::drawBotCrosshair()
                             life );
 
   shape.colour( colour );
-  glBindTexture( GL_TEXTURE_2D, crossTex.id() );
+  glBindTexture( GL_TEXTURE_2D, style.images.crosshair );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
@@ -76,16 +76,16 @@ void HudArea::drawBotCrosshair()
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
       if( entClazz->target >= 0 && ent->key >= 0 ) {
-        glBindTexture( GL_TEXTURE_2D, useTex.id() );
+        glBindTexture( GL_TEXTURE_2D, style.images.use );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
 
       if( ent->key < 0 ) {
-        glBindTexture( GL_TEXTURE_2D, lockedTex.id() );
+        glBindTexture( GL_TEXTURE_2D, style.images.locked );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
       else if( ent->key > 0 ) {
-        glBindTexture( GL_TEXTURE_2D, unlockedTex.id() );
+        glBindTexture( GL_TEXTURE_2D, style.images.unlocked );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
@@ -113,7 +113,7 @@ void HudArea::drawBotCrosshair()
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
       if( obj->flags & Object::BROWSABLE_BIT ) {
-        glBindTexture( GL_TEXTURE_2D, browseTex.id() );
+        glBindTexture( GL_TEXTURE_2D, style.images.browse );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
       if( ( obj->flags & Object::USE_FUNC_BIT ) &&
@@ -121,7 +121,7 @@ void HudArea::drawBotCrosshair()
       {
 
         glBindTexture( GL_TEXTURE_2D,
-                       obj->flags & Object::USE_FUNC_BIT ? useTex.id() : deviceTex.id() );
+                       obj->flags & Object::USE_FUNC_BIT ? style.images.use : style.images.device );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
 
@@ -134,19 +134,19 @@ void HudArea::drawBotCrosshair()
         const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
 
         if( vehicle->pilot < 0 ) {
-          glBindTexture( GL_TEXTURE_2D, mountTex.id() );
+          glBindTexture( GL_TEXTURE_2D, style.images.mount );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
       }
       else if( obj->flags & Object::WEAPON_BIT ) {
         if( me->canEquip( static_cast<const Weapon*>( obj ) ) ) {
-          glBindTexture( GL_TEXTURE_2D, equipTex.id() );
+          glBindTexture( GL_TEXTURE_2D, style.images.equip );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
       }
 
       if( obj->flags & Object::ITEM_BIT ) {
-        glBindTexture( GL_TEXTURE_2D, takeTex.id() );
+        glBindTexture( GL_TEXTURE_2D, style.images.take );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
 
@@ -163,12 +163,12 @@ void HudArea::drawBotCrosshair()
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
 
         if( dist <= myClazz->reachDist ) {
-          glBindTexture( GL_TEXTURE_2D, liftTex.id() );
+          glBindTexture( GL_TEXTURE_2D, style.images.lift );
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }
       }
       if( camera.botObj->cargo >= 0 ) {
-        glBindTexture( GL_TEXTURE_2D, grabTex.id() );
+        glBindTexture( GL_TEXTURE_2D, style.images.grab );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
@@ -327,18 +327,6 @@ HudArea::HudArea() :
 
   vehicleModel = new ModelField( nullptr, style.vehicleField.w, style.vehicleField.h );
   add( vehicleModel, style.vehicleField.x, style.vehicleField.y );
-
-  crossTex.load( "@ui/icon/crosshair.dds" );
-  useTex.load( "@ui/icon/use.dds" );
-  deviceTex.load( "@ui/icon/device.dds" );
-  equipTex.load( "@ui/icon/equip.dds" );
-  mountTex.load( "@ui/icon/mount.dds" );
-  takeTex.load( "@ui/icon/take.dds" );
-  browseTex.load( "@ui/icon/browse.dds" );
-  liftTex.load( "@ui/icon/lift.dds" );
-  grabTex.load( "@ui/icon/grab.dds" );
-  lockedTex.load( "@ui/icon/locked.dds" );
-  unlockedTex.load( "@ui/icon/unlocked.dds" );
 }
 
 }

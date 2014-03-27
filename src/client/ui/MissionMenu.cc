@@ -152,11 +152,11 @@ void MissionMenu::onDraw()
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
   if( scroll > 0 ) {
-    glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollUp );
     shape.fill( width - 128, height - 32, 16, 16 );
   }
   if( scroll < missions.length() - nSelections ) {
-    glBindTexture( GL_TEXTURE_2D, scrollDownTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollDown );
     shape.fill( width - 128, height - nSelections * 40 - 54, 16, 16 );
   }
 
@@ -204,9 +204,6 @@ MissionMenu::MissionMenu() :
 
     lingua.clear();
   }
-
-  scrollUpTex.load( "@ui/icon/scrollUp.ozIcon" );
-  scrollDownTex.load( "@ui/icon/scrollDown.ozIcon" );
 }
 
 }

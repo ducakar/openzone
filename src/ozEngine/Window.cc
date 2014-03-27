@@ -393,49 +393,57 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
 #else
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
+  MainCall() << [&]() {
+    uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
 
-  Log::print( "Creating OpenGL window %dx%d [%s] ... ",
-              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
+    Log::print( "Creating OpenGL window %dx%d [%s] ... ",
+                windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
 
-  descriptor = SDL_CreateWindow( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                 windowWidth, windowHeight, flags );
+    descriptor = SDL_CreateWindow( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   windowWidth, windowHeight, flags );
+    if( descriptor == nullptr ) {
+      return;
+    }
+
+# ifdef GL_ES_VERSION_2_0
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
+# else
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+# endif
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,            24 );
+    SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
+    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
+
+    SDL_GL_SetSwapInterval( 1 );
+
+    context = SDL_GL_CreateContext( descriptor );
+  };
+
   if( descriptor == nullptr ) {
     Log::printEnd( "Window creation failed" );
     return false;
   }
 
-# ifdef GL_ES_VERSION_2_0
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES );
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-# else
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
-# endif
-  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,            24 );
-  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
-  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
-
-  SDL_GL_SetSwapInterval( 1 );
-
-  context = SDL_GL_CreateContext( descriptor );
-
 #endif
 
-  Log::printEnd( "OK" );
+    Log::printEnd( "OK" );
 
-  glViewport( 0, 0, windowWidth, windowHeight );
-  glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-  glFlush();
+    MainCall() << []() {
+      glViewport( 0, 0, windowWidth, windowHeight );
+      glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+      glFlush();
 
 #if SDL_MAJOR_VERSION < 2
-  SDL_GL_SwapBuffers();
+      SDL_GL_SwapBuffers();
 #else
-  SDL_GL_SwapWindow( descriptor );
+      SDL_GL_SwapWindow( descriptor );
 #endif
+    };
 #endif
 
   return true;

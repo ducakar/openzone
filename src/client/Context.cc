@@ -629,6 +629,8 @@ void Context::updateLoad()
 
 void Context::load()
 {
+  hard_assert( Thread::isMain() );
+
   speakSource.owner = -1;
   alGenBuffers( 2, speakSource.bufferIds );
   alGenSources( 1, &speakSource.id );
@@ -656,9 +658,7 @@ void Context::load()
 
 void Context::unload()
 {
-#ifdef __native_client__
-  hard_assert( Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   Log::println( "Unloading Context {" );
   Log::indent();
@@ -722,6 +722,7 @@ void Context::unload()
   }
   for( int i = 0; i < liber.models.length(); ++i ) {
     delete models[i].handle;
+
     models[i].handle = nullptr;
     models[i].nUsers = -1;
   }

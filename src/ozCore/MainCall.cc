@@ -108,6 +108,10 @@ void MainCall::loop()
 
 void MainCall::wait()
 {
+  if( Thread::isMain() ) {
+    OZ_ERROR( "oz::MainCall: wait() invoked on the main thread." );
+  }
+
   if( nClosures != 0 ) {
     MainCall() << []()
     {};

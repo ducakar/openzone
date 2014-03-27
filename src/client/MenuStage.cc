@@ -48,7 +48,9 @@ void MenuStage::present( bool isFull )
   ui::ui.doShow = true;
 
   sound.play();
-  render.update( isFull ? Render::DRAW_UI_BIT : 0 );
+  MainCall() << [&]() {
+    render.update( isFull ? Render::DRAW_UI_BIT : 0 );
+  };
   sound.sync();
 }
 
@@ -62,18 +64,22 @@ void MenuStage::load()
   input.buttons     = 0;
   input.currButtons = 0;
 
-  mainMenu = new ui::MainMenu();
-  ui::ui.root->add( mainMenu, 0, 0 );
-  ui::ui.showLoadingScreen( false );
-  ui::mouse.doShow = true;
+  MainCall() << [&]() {
+    mainMenu = new ui::MainMenu();
+    ui::ui.root->add( mainMenu, 0, 0 );
+    ui::ui.showLoadingScreen( false );
+    ui::mouse.doShow = true;
 
-  render.update( Render::DRAW_UI_BIT );
+    render.update( Render::DRAW_UI_BIT );
+  };
 }
 
 void MenuStage::unload()
 {
-  ui::mouse.doShow = false;
-  ui::ui.root->remove( mainMenu );
+  MainCall() << [&]() {
+    ui::mouse.doShow = false;
+    ui::ui.root->remove( mainMenu );
+  };
 }
 
 void MenuStage::init()

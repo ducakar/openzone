@@ -275,6 +275,8 @@ void Render::prepareDraw()
 
 void Render::drawGeometry()
 {
+  hard_assert( Thread::isMain() );
+
   uint currentMicros = Time::uclock();
   uint beginMicros = currentMicros;
 
@@ -299,8 +301,8 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform3fv( uniform.fogColour, 1, shader.fogColour );
-    glUniform1f( uniform.fogDistance2, visibility*visibility );
+    glUniform3fv( uniform.fog_colour, 1, shader.fogColour );
+    glUniform1f( uniform.fog_distance2, visibility*visibility );
     glUniform4f( uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
@@ -416,6 +418,8 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
+  hard_assert( Thread::isMain() );
+
   if( windowWidth != Window::width() || windowHeight != Window::height() ) {
     resize();
   }
@@ -510,9 +514,7 @@ void Render::drawUI()
 
 void Render::swap()
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   uint beginMicros = Time::uclock();
 
@@ -523,9 +525,7 @@ void Render::swap()
 
 void Render::update( int flags )
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   if( flags & DRAW_ORBIS_BIT ) {
     effectsAuxSemaphore.post();
@@ -535,6 +535,7 @@ void Render::update( int flags )
   if( flags & DRAW_UI_BIT ) {
     drawUI();
   }
+
   if( flags != 0 ) {
     swap();
   }
@@ -545,9 +546,7 @@ void Render::update( int flags )
 
 void Render::resize()
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   windowWidth  = Window::width();
   windowHeight = Window::height();
@@ -650,9 +649,7 @@ void Render::resize()
 
 void Render::load()
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   Log::print( "Loading Render ..." );
 
@@ -686,9 +683,7 @@ void Render::load()
 
 void Render::unload()
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   Log::print( "Unloading Render ..." );
 
@@ -696,10 +691,7 @@ void Render::unload()
   unloadDyn();
 #endif
 
-  MainCall() << []()
-  {
-    glFinish();
-  };
+  glFinish();
 
   structs.clear();
   structs.deallocate();
@@ -724,9 +716,7 @@ void Render::unload()
 
 void Render::init()
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
+  hard_assert( Thread::isMain() );
 
   Log::println( "Initialising Render {" );
   Log::indent();
@@ -743,17 +733,11 @@ void Render::init()
   const char* glslVersion;
   const char* sExtensions;
 
-  MainCall() << [&]()
-  {
-    vendor      = String::cstr( glGetString( GL_VENDOR ) );
-    renderer    = String::cstr( glGetString( GL_RENDERER ) );
-    version     = String::cstr( glGetString( GL_VERSION ) );
-    glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
-    sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
-
-    // glGetString( GL_EXTENSIONS ) generates an error when using OpenGL 3.2+ Core Profile.
-    glGetError();
-  };
+  vendor      = String::cstr( glGetString( GL_VENDOR ) );
+  renderer    = String::cstr( glGetString( GL_RENDERER ) );
+  version     = String::cstr( glGetString( GL_VERSION ) );
+  glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+  sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
 
   if( vendor == nullptr ) {
     OZ_ERROR( "OpenGL failed to initialise" );
@@ -870,12 +854,9 @@ void Render::init()
 
   resize();
 
-  MainCall() << []()
-  {
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glEnable( GL_CULL_FACE );
-    glEnable( GL_BLEND );
-  };
+  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  glEnable( GL_CULL_FACE );
+  glEnable( GL_BLEND );
 
   camera.init();
   ui::ui.init();
@@ -896,15 +877,12 @@ void Render::destroy()
   Log::indent();
 
   if( mainFrame != 0 ) {
-    MainCall() << [&]()
-    {
 #ifndef GL_ES_VERSION_2_0
-      glDeleteFramebuffersEXT( 1, &mainFrame );
-      glDeleteTextures( 1, &glowBuffer );
-      glDeleteTextures( 1, &colourBuffer );
-      glDeleteRenderbuffersEXT( 1, &depthBuffer );
+    glDeleteFramebuffersEXT( 1, &mainFrame );
+    glDeleteTextures( 1, &glowBuffer );
+    glDeleteTextures( 1, &colourBuffer );
+    glDeleteRenderbuffersEXT( 1, &depthBuffer );
 #endif
-    };
 
     mainFrame = 0;
   }

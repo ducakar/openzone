@@ -40,6 +40,12 @@ struct Light
   vec3 colour;
 };
 
+struct Fog
+{
+  vec3  colour;
+  float distance2;
+};
+
 uniform mat4        oz_Colour;
 uniform sampler2D   oz_Texture;
 uniform sampler2D   oz_Masks;
@@ -49,7 +55,7 @@ uniform float       oz_Shininess;
 uniform int         oz_NumLights;
 uniform CaelumLight oz_CaelumLight;
 uniform Light       oz_Lights[8];
-uniform vec3        oz_FogColour;
+uniform Fog         oz_Fog;
 
 varying vec3  exPosition;
 varying vec2  exTexCoord;
@@ -58,7 +64,6 @@ varying vec3  exNormal;
 varying vec3  exTangent;
 varying vec3  exBinormal;
 #endif
-varying float exFog;
 
 vec3 pixelNormal( sampler2D texture, vec2 texCoord )
 {
@@ -75,6 +80,8 @@ void main()
   vec3  normal       = normalize( exNormal );
 #endif
   vec3  reflectDir   = reflect( normalize( exPosition ), normal );
+  float distance2    = dot( exPosition, exPosition );
+  float fog          = min( distance2 / oz_Fog.distance2, 1.0 );
 
   vec4  colour       = texture2D( oz_Texture, exTexCoord );
   vec4  masks        = texture2D( oz_Masks, exTexCoord );
@@ -103,7 +110,7 @@ void main()
   }
 #endif
   colour.rgb         = colour.rgb * ( ambient + diffuse + emission ) + specular;
-  colour.rgb         = mix( colour.rgb, oz_FogColour, exFog*exFog );
+  colour.rgb         = mix( colour.rgb, oz_Fog.colour, fog*fog );
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS

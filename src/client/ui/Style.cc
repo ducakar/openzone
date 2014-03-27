@@ -56,6 +56,15 @@
     config[#bar].getArray( &bar.x, 20, 0 ) \
   )
 
+#define OZ_LOAD_IMAGE( name ) \
+{ \
+  File file = "@ui/icon/" #name ".dds"; \
+  glBindTexture( GL_TEXTURE_2D, images.name ); \
+  if( GL::textureDataFromFile( file, 0 ) == 0 ) { \
+    OZ_ERROR( "Failed to load texture '%s'", file.path().cstr() ); \
+  } \
+}
+
 namespace oz
 {
 namespace client
@@ -195,6 +204,25 @@ void Style::init()
 
   config.clear( true );
 
+  glGenTextures( sizeof( images ) / sizeof( images.crosshair ), &images.crosshair );
+
+  OZ_LOAD_IMAGE( crosshair );
+  OZ_LOAD_IMAGE( use );
+  OZ_LOAD_IMAGE( equip );
+  OZ_LOAD_IMAGE( unequip );
+  OZ_LOAD_IMAGE( device );
+  OZ_LOAD_IMAGE( mount );
+  OZ_LOAD_IMAGE( take );
+  OZ_LOAD_IMAGE( browse );
+  OZ_LOAD_IMAGE( lift );
+  OZ_LOAD_IMAGE( grab );
+  OZ_LOAD_IMAGE( locked );
+  OZ_LOAD_IMAGE( unlocked );
+  OZ_LOAD_IMAGE( scrollUp );
+  OZ_LOAD_IMAGE( scrollDown );
+  OZ_LOAD_IMAGE( arrow );
+  OZ_LOAD_IMAGE( marker );
+
   context.requestSound( sounds.bell );
   context.requestSound( sounds.click );
   context.requestSound( sounds.nextWeapon );
@@ -207,6 +235,8 @@ void Style::destroy()
   context.releaseSound( sounds.nextWeapon );
   context.releaseSound( sounds.click );
   context.releaseSound( sounds.bell );
+
+  glDeleteTextures( sizeof( images ) / sizeof( images.crosshair ), &images.crosshair );
 
   for( int i = 0; i < Font::MAX; ++i ) {
     fonts[i].destroy();

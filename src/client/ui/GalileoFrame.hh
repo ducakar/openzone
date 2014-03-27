@@ -37,8 +37,6 @@ class GalileoFrame : public Frame
 private:
 
   GLTexture mapTex;
-  GLTexture arrowTex;
-  GLTexture markerTex;
 
   int       normalX;
   int       normalY;

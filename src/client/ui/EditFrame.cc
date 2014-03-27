@@ -93,13 +93,13 @@ void EditFrame::drawComponent( int height, const Object* container, const Dynami
 
   if( scroll != 0 ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollUp );
     shape.fill( x + 16, y + height + SLOT_SIZE, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
   if( scroll != nScrollRows ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollDownTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollDown );
     shape.fill( x + 16, y + height - 16, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
@@ -206,9 +206,6 @@ EditFrame::EditFrame() :
 
     add( ownerModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
   }
-
-  scrollUpTex.load( "@ui/icon/scrollUp.dds" );
-  scrollDownTex.load( "@ui/icon/scrollDown.dds" );
 }
 
 }

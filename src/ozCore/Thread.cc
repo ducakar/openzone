@@ -52,56 +52,27 @@ namespace oz
 
 #ifdef _WIN32
 static DWORD          nameKey;
-static volatile int   onceLock          = 0;
-static volatile bool  isNameInitialised = false;
 #else
 static pthread_key_t  nameKey;
-static pthread_once_t nameOnce = PTHREAD_ONCE_INIT;
+static pthread_t      mainThread = pthread_self();
 #endif
 
-static void initName()
-{
-#ifdef _WIN32
-
-  if( isNameInitialised ) {
-    return;
-  }
-
-  if( __sync_lock_test_and_set( &onceLock, 1 ) != 0 ) {
-    while( onceLock != 0 );
-  }
-  else {
-    if( !isNameInitialised ) {
-      nameKey = TlsAlloc();
-
-      if( nameKey == TLS_OUT_OF_INDEXES ) {
-        OZ_ERROR( "oz::Thread: Name key creation failed" );
-      }
-      isNameInitialised = true;
-    }
-    __sync_lock_release( &onceLock );
-  }
-
-#else
-
-  if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
-    OZ_ERROR( "oz::Thread: Name key creation failed" );
-  }
-
-#endif
-}
-
-// Set main thread name to "main" during static initialisation.
+// Create thread name key and set main thread's name to "main" during static initialisation.
 struct MainThreadNameInitialiser
 {
   OZ_HIDDEN
   explicit MainThreadNameInitialiser()
   {
 #ifdef _WIN32
-    initName();
+    nameKey = TlsAlloc();
+    if( nameKey == TLS_OUT_OF_INDEXES ) {
+      OZ_ERROR( "oz::Thread: Name key creation failed" );
+    }
     TlsSetValue( nameKey, const_cast<char*>( "main" ) );
 #else
-    pthread_once( &nameOnce, initName );
+    if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
+      OZ_ERROR( "oz::Thread: Name key creation failed" );
+    }
     pthread_setspecific( nameKey, "main" );
 #endif
   }
@@ -135,7 +106,6 @@ DWORD WINAPI Thread::Descriptor::threadMain( void* data )
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  initName();
   TlsSetValue( nameKey, descriptor->name );
 
   System::threadInit();
@@ -155,7 +125,6 @@ void* Thread::Descriptor::threadMain( void* data )
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  pthread_once( &nameOnce, initName );
   pthread_setspecific( nameKey, descriptor->name );
 
 #if defined( __ANDROID__ )
@@ -207,7 +176,19 @@ const char* Thread::name()
 #else
   void* data = pthread_getspecific( nameKey );
 #endif
-  return static_cast<const char*>( data );
+  return static_cast<const char*>( data == nullptr ? "" : data );
+}
+
+bool Thread::isMain()
+{
+  return pthread_equal( pthread_self(), mainThread );
+}
+
+Thread::~Thread()
+{
+  if( descriptor != nullptr && descriptor->type == JOINABLE ) {
+    join();
+  }
 }
 
 void Thread::start( const char* name, Type type, Main* main, void* data )
@@ -263,7 +244,7 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
 
 void Thread::join()
 {
-  hard_assert( descriptor != nullptr );
+  hard_assert( descriptor != nullptr && descriptor->type == JOINABLE );
 
 #ifdef _WIN32
   WaitForSingleObject( descriptor->thread, INFINITE );

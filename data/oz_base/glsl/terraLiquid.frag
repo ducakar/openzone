@@ -40,6 +40,12 @@ struct Light
   vec3 colour;
 };
 
+struct Fog
+{
+  vec3  colour;
+  float distance2;
+};
+
 uniform mat4        oz_Colour;
 uniform sampler2D   oz_Texture;
 uniform sampler2D   oz_Masks;
@@ -49,8 +55,7 @@ uniform float       oz_Shininess;
 uniform int         oz_NumLights;
 uniform CaelumLight oz_CaelumLight;
 uniform Light       oz_Lights[8];
-uniform vec3        oz_FogColour;
-uniform float       oz_FogDistance2;
+uniform Fog         oz_Fog;
 
 varying vec3 exPosition;
 varying vec2 exTexCoord;
@@ -75,7 +80,7 @@ void main()
   vec3  normal       = normalize( exNormal );
 #endif
   float distance2    = dot( exPosition, exPosition );
-  float fog          = min( distance2 / oz_FogDistance2, 1.0 );
+  float fog          = min( distance2 / oz_Fog.distance2, 1.0 );
   vec3  look         = exPosition * inversesqrt( distance2 );
   vec3  reflectDir   = reflect( look, normal );
 
@@ -91,13 +96,11 @@ void main()
   vec3  specular     = oz_CaelumLight.colour * ( masks.r * pow( specularDot, oz_Shininess ) );
 
 #ifdef OZ_ENV_MAP
-  if( masks.b != 0.0 ) {
-    colour.rgb       = mix( colour.rgb, textureCube( oz_EnvMap, reflectDir ).rgb, masks.b );
-  }
+  colour.rgb         = mix( colour.rgb, textureCube( oz_EnvMap, reflectDir ).rgb, masks.b );
 #endif
   colour.rgb         = colour.rgb * ( ambient + diffuse + emission ) + specular;
-  colour.rgb         = mix( colour.rgb, oz_FogColour, fog*fog );
-  colour.a          += 0.8 + dot( look, normal );
+  colour.rgb         = mix( colour.rgb, oz_Fog.colour, fog*fog );
+  colour.a           = min( 1.0, 1.2 + look.z );
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS

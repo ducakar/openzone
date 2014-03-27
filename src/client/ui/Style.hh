@@ -57,6 +57,26 @@ public:
     Vec4 menuStrip;
   };
 
+  struct Images
+  {
+    uint crosshair;
+    uint use;
+    uint equip;
+    uint unequip;
+    uint device;
+    uint mount;
+    uint take;
+    uint browse;
+    uint lift;
+    uint grab;
+    uint locked;
+    uint unlocked;
+    uint scrollUp;
+    uint scrollDown;
+    uint arrow;
+    uint marker;
+  };
+
   struct Sounds
   {
     int bell;
@@ -84,6 +104,7 @@ public:
 
   Font    fonts[Font::MAX];
   Colours colours;
+  Images  images;
   Sounds  sounds;
   int     iconSize;
 

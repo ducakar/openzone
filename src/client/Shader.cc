@@ -119,6 +119,8 @@ void Shader::compileShader( uint shaderId, const String& defines, const String& 
   glGetShaderInfoLog( shaderId, LOG_BUFFER_SIZE, &length, logBuffer );
   logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 
+  OZ_GL_CHECK_ERROR();
+
   if( length != 0 ) {
     if( hasCompiled ) {
       Log::verboseMode = true;
@@ -131,8 +133,6 @@ void Shader::compileShader( uint shaderId, const String& defines, const String& 
   if( !hasCompiled ) {
     OZ_ERROR( "Shader '%s' compile failed", name.cstr() );
   }
-
-  OZ_GL_CHECK_ERROR();
 }
 
 void Shader::loadProgram( int id )
@@ -163,96 +163,93 @@ void Shader::loadProgram( int id )
 
   programConfig.clear( true );
 
-  MainCall() << [&]()
-  {
-    programs[id].vertShader = *vertId;
-    programs[id].fragShader = *fragId;
-    programs[id].program    = glCreateProgram();
+  programs[id].vertShader = *vertId;
+  programs[id].fragShader = *fragId;
+  programs[id].program    = glCreateProgram();
 
-    glAttachShader( programs[id].program, programs[id].vertShader );
-    glAttachShader( programs[id].program, programs[id].fragShader );
+  glAttachShader( programs[id].program, programs[id].vertShader );
+  glAttachShader( programs[id].program, programs[id].fragShader );
 
-    OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
-    OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
-    OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
-    OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
-    OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
+  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
 
-    glLinkProgram( programs[id].program );
+  glLinkProgram( programs[id].program );
 
-    int result;
-    glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
+  int result;
+  glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
 
-    int length;
-    glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
-    logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
+  int length;
+  glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
+  logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 
-    if( length != 0 ) {
-      if( result == GL_TRUE ) {
-        Log::verboseMode = true;
-      }
-
-      Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
-      Log::verboseMode = false;
+  if( length != 0 ) {
+    if( result == GL_TRUE ) {
+      Log::verboseMode = true;
     }
 
-    if( result != GL_TRUE ) {
-      OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
-    }
+    Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
+    Log::verboseMode = false;
+  }
 
-    glUseProgram( programs[id].program );
+  if( result != GL_TRUE ) {
+    OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
+  }
 
-    OZ_REGISTER_UNIFORM( projCamera,          "oz_ProjCamera"          );
-    OZ_REGISTER_UNIFORM( model,               "oz_Model"               );
-    OZ_REGISTER_UNIFORM( modelRot,            "oz_ModelRot"            );
-    OZ_REGISTER_UNIFORM( cameraPos,           "oz_CameraPos"           );
-    OZ_REGISTER_UNIFORM( bones,               "oz_Bones"               );
-    OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
+  glUseProgram( programs[id].program );
 
-    OZ_REGISTER_UNIFORM( colour,              "oz_Colour"              );
-    OZ_REGISTER_UNIFORM( texture,             "oz_Texture"             );
-    OZ_REGISTER_UNIFORM( masks,               "oz_Masks"               );
-    OZ_REGISTER_UNIFORM( normals,             "oz_Normals"             );
-    OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
-    OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
-    OZ_REGISTER_UNIFORM( shininess,           "oz_Shininess"           );
-    OZ_REGISTER_UNIFORM( nLights,             "oz_NumLights"           );
+  OZ_REGISTER_UNIFORM( projCamera,          "oz_ProjCamera"          );
+  OZ_REGISTER_UNIFORM( model,               "oz_Model"               );
+  OZ_REGISTER_UNIFORM( modelRot,            "oz_ModelRot"            );
+  OZ_REGISTER_UNIFORM( cameraPos,           "oz_CameraPos"           );
+  OZ_REGISTER_UNIFORM( bones,               "oz_Bones"               );
+  OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
 
-    OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
-    OZ_REGISTER_UNIFORM( caelumLight_colour,  "oz_CaelumLight.colour"  );
-    OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
+  OZ_REGISTER_UNIFORM( colour,              "oz_Colour"              );
+  OZ_REGISTER_UNIFORM( texture,             "oz_Texture"             );
+  OZ_REGISTER_UNIFORM( masks,               "oz_Masks"               );
+  OZ_REGISTER_UNIFORM( normals,             "oz_Normals"             );
+  OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
+  OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
+  OZ_REGISTER_UNIFORM( shininess,           "oz_Shininess"           );
+  OZ_REGISTER_UNIFORM( nLights,             "oz_NumLights"           );
 
-    OZ_REGISTER_UNIFORM( fogColour,           "oz_FogColour"           );
-    OZ_REGISTER_UNIFORM( fogDistance2,        "oz_FogDistance2"        );
+  OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
+  OZ_REGISTER_UNIFORM( caelumLight_colour,  "oz_CaelumLight.colour"  );
+  OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
 
-    OZ_REGISTER_UNIFORM( caelumColour,        "oz_CaelumColour"        );
-    OZ_REGISTER_UNIFORM( caelumLuminance,     "oz_CaelumLuminance"     );
-    OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
-    OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
+  OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
+  OZ_REGISTER_UNIFORM( fog_distance2,       "oz_Fog.distance2"       );
 
-    uniform = programs[id].uniform;
+  OZ_REGISTER_UNIFORM( caelumColour,        "oz_CaelumColour"        );
+  OZ_REGISTER_UNIFORM( caelumLuminance,     "oz_CaelumLuminance"     );
+  OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
+  OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
 
-    if( setSamplerMap ) {
-      glUniform1i( uniform.texture, 0 );
-      glUniform1i( uniform.masks, 1 );
-      glUniform1i( uniform.normals, 2 );
-      glUniform1i( uniform.envMap, 3 );
-      glUniform1i( uniform.vertexAnim, 4 );
-    }
+  uniform = programs[id].uniform;
 
-    Mat4 bones[] = {
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID
-    };
+  if( setSamplerMap ) {
+    glUniform1i( uniform.texture, 0 );
+    glUniform1i( uniform.masks, 1 );
+    glUniform1i( uniform.normals, 2 );
+    glUniform1i( uniform.envMap, 3 );
+    glUniform1i( uniform.vertexAnim, 4 );
+  }
 
-    glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
-
-    glActiveTexture( ENV_MAP );
-    glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
-    glActiveTexture( DIFFUSE );
+  Mat4 bones[] = {
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID
   };
+
+  glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
+
+  glActiveTexture( ENV_MAP );
+  glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
+  glActiveTexture( DIFFUSE );
 
   OZ_GL_CHECK_ERROR();
 }
@@ -353,6 +350,8 @@ void Shader::init()
 
   glActiveTexture( DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, defaultTexture );
+
+  OZ_GL_CHECK_ERROR();
 
   if( liber.shaders.length() == 0 ) {
     OZ_ERROR( "Shaders missing" );

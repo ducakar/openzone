@@ -67,10 +67,15 @@ public:
   /**
    * Get current thread's name.
    *
-   * If the thread hasn't been started through this class nor it is the main thread, `nullptr` is
-   * returned. For main thread, "main" is returned.
+   * If the thread hasn't been started through this class, "" is returned or "main" if it is the
+   * main thread.
    */
   static const char* name();
+
+  /**
+   * True iff called from the main thread.
+   */
+  static bool isMain();
 
   /**
    * Create uninitialised instance.
@@ -82,12 +87,7 @@ public:
   /**
    * Destructor, joins a started but not-yet-joined thread.
    */
-  ~Thread()
-  {
-    if( descriptor != nullptr ) {
-      join();
-    }
-  }
+  ~Thread();
 
   /**
    * Move constructor.

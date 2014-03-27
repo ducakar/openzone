@@ -102,7 +102,9 @@ void Loader::cleanupRender()
         bsp.nUsers = 0;
       }
       else {
-        delete bsp.handle;
+        MainCall() << [&]() {
+          delete bsp.handle;
+        };
 
         bsp.handle = nullptr;
         bsp.nUsers = -1;
@@ -115,7 +117,9 @@ void Loader::cleanupRender()
       Context::Resource<Model*>& model = context.models[i];
 
       if( model.nUsers == 0 ) {
-        delete model.handle;
+        MainCall() << [&]() {
+          delete model.handle;
+        };
 
         model.handle = nullptr;
         model.nUsers = -1;
@@ -260,20 +264,26 @@ void Loader::preloadRender()
 void Loader::uploadRender()
 {
   if( caelum.id != orbis.caelum.id ) {
-    caelum.unload();
-    caelum.load();
+    MainCall() << []() {
+      caelum.unload();
+      caelum.load();
+    };
   }
 
   if( terra.id != orbis.terra.id ) {
-    terra.unload();
-    terra.load();
+    MainCall() << []() {
+      terra.unload();
+      terra.load();
+    };
   }
 
   for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].handle;
 
     if( bsp != nullptr && !bsp->isLoaded() && bsp->isPreloaded() ) {
-      bsp->load();
+      MainCall() << [&]() {
+        bsp->load();
+      };
       return;
     }
   }
@@ -282,7 +292,9 @@ void Loader::uploadRender()
     Model* model = context.models[i].handle;
 
     if( model != nullptr && !model->isLoaded() && model->isPreloaded() ) {
-      model->load();
+      MainCall() << [&]() {
+        model->load();
+      };
       return;
     }
   }

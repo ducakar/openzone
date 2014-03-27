@@ -111,7 +111,7 @@ void GalileoFrame::onDraw()
   if( questList.activeQuest >= 0 ) {
     const Quest& quest = questList.quests[questList.activeQuest];
 
-    glBindTexture( GL_TEXTURE_2D, markerTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.marker );
 
     float mapX = oX + ( Orbis::DIM + quest.place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
     float mapY = oY + ( Orbis::DIM + quest.place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
@@ -124,7 +124,7 @@ void GalileoFrame::onDraw()
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
   }
 
-  glBindTexture( GL_TEXTURE_2D, arrowTex.id() );
+  glBindTexture( GL_TEXTURE_2D, style.images.arrow );
 
   float mapX = oX + ( Orbis::DIM + pX ) / ( 2.0f*Orbis::DIM ) * fWidth;
   float mapY = oY + ( Orbis::DIM + pY ) / ( 2.0f*Orbis::DIM ) * fHeight;
@@ -145,9 +145,6 @@ GalileoFrame::GalileoFrame() :
   clickX( Math::NaN ), clickY( Math::NaN ), isMaximised( false )
 {
   flags |= UPDATE_BIT | PINNED_BIT;
-
-  arrowTex.load( "@ui/icon/arrow.dds" );
-  markerTex.load( "@ui/icon/marker.dds" );
 
   normalWidth  = width;
   normalHeight = height;

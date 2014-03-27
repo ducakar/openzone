@@ -110,7 +110,7 @@ void UI::draw()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( uniform.fogDistance2, Math::INF );
+    glUniform1f( uniform.fog_distance2, Math::INF );
     glUniform4f( uniform.wind, 0.0f, 0.0f, 0.0f, 0.0f );
   }
 

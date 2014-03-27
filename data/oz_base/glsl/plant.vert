@@ -30,7 +30,6 @@ precision mediump float;
 uniform mat4  oz_ProjCamera;
 uniform mat4  oz_Model;
 uniform vec3  oz_CameraPos;
-uniform float oz_FogDistance2;
 uniform vec4  oz_Wind;
 
 attribute vec3 inPosition;
@@ -48,7 +47,6 @@ varying vec3  exNormal;
 varying vec3  exTangent;
 varying vec3  exBinormal;
 #endif
-varying float exFog;
 
 void main()
 {
@@ -68,6 +66,5 @@ void main()
   exTangent   = modelRot * inTangent;
   exBinormal  = modelRot * inBinormal;
 #endif
-  exFog       = min( dot( exPosition, exPosition ) / oz_FogDistance2, 1.0 );
   gl_Position = oz_ProjCamera * position;
 }

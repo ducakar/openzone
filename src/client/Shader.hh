@@ -54,8 +54,8 @@ struct Uniform
   int caelumLight_ambient;
   int caelumLight_colour;
 
-  int fogColour;
-  int fogDistance2;
+  int fog_colour;
+  int fog_distance2;
 
   int caelumColour;
   int caelumLuminance;

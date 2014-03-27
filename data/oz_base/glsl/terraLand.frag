@@ -28,7 +28,6 @@
 precision mediump float;
 
 const float DETAIL_SCALE  = 1024.0;
-const float NORMALS_SCALE = 512.0;
 
 struct CaelumLight
 {
@@ -43,6 +42,12 @@ struct Light
   vec3 colour;
 };
 
+struct Fog
+{
+  vec3  colour;
+  float distance2;
+};
+
 uniform mat4        oz_Colour;
 uniform sampler2D   oz_Texture;
 uniform sampler2D   oz_Masks;
@@ -50,8 +55,7 @@ uniform sampler2D   oz_Normals;
 uniform int         oz_NumLights;
 uniform CaelumLight oz_CaelumLight;
 uniform Light       oz_Lights[8];
-uniform vec3        oz_FogColour;
-uniform float       oz_FogDistance2;
+uniform Fog         oz_Fog;
 
 varying vec3 exPosition;
 varying vec2 exTexCoord;
@@ -71,12 +75,12 @@ void main()
 {
 #ifdef OZ_BUMP_MAP
   mat3  plane        = mat3( exTangent, exBinormal, exNormal );
-  vec3  normal       = plane * pixelNormal( oz_Normals, exTexCoord * NORMALS_SCALE );
+  vec3  normal       = plane * pixelNormal( oz_Normals, exTexCoord * DETAIL_SCALE );
 #else
   vec3  normal       = normalize( exNormal );
 #endif
   float distance2    = dot( exPosition, exPosition );
-  float fog          = min( distance2 / oz_FogDistance2, 1.0 );
+  float fog          = min( distance2 / oz_Fog.distance2, 1.0 );
 
   vec4  detailSample = texture2D( oz_Texture, exTexCoord * DETAIL_SCALE );
   vec4  mapSample    = texture2D( oz_Masks, exTexCoord );
@@ -88,7 +92,7 @@ void main()
   vec3  diffuse      = oz_CaelumLight.colour * diffuseDot;
 
   colour.rgb         = colour.rgb * ( ambient + diffuse );
-  colour.rgb         = mix( colour.rgb, oz_FogColour, fog*fog );
+  colour.rgb         = mix( colour.rgb, oz_Fog.colour, fog*fog );
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS

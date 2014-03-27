@@ -23,7 +23,7 @@
     * new EnumMap class
     * new SharedLib class for run-time linking
     * new Profiler class
-    * new Gettext class for gettext translations
+    * new Gettext class for loading gettext translations
     * JSON is more forgiving and simplified (implicit ctors, get<NumType>(), removed asType())
 - ozDynamics: new rigid body dynamics library
     * collision
@@ -53,6 +53,7 @@
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
     * UI sounds
+    * DDS format used for icons, X11 libxcursor format for cursors
     * buttons triggered on release
     * new ModelField, for rendering models in UI
     * new BuildMenu, unit/building placement

@@ -5,7 +5,6 @@ add_custom_target( glsl SOURCES
   mesh.vert
   plain.vert
   plant.vert
-  terraLand.vert
   terraLiquid.vert
   celestial.frag
   mesh.frag

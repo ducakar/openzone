@@ -150,13 +150,13 @@ void Inventory::drawComponent( int height, const Object* container, const Dynami
 
   if( scroll != 0 ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollUpTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollUp );
     shape.fill( x + 16, y + height + SLOT_SIZE, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
   if( scroll != nScrollRows ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, scrollDownTex.id() );
+    glBindTexture( GL_TEXTURE_2D, style.images.scrollDown );
     shape.fill( x + 16, y + height - 16, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
@@ -178,14 +178,15 @@ void Inventory::drawComponent( int height, const Object* container, const Dynami
   }
 
   if( taggedItem->flags & Object::USE_FUNC_BIT ) {
-    uint texId = useTex.id();
+    uint texId = style.images.use;
 
     if( taggedItem->flags & Object::WEAPON_BIT ) {
       if( !camera.botObj->canEquip( static_cast<const Weapon*>( taggedItem ) ) ) {
         goto noIcon;
       }
 
-      texId = taggedItem->index == camera.botObj->weapon ? unequipTex.id() : equipTex.id();
+      texId = taggedItem->index == camera.botObj->weapon ? style.images.unequip :
+                                                           style.images.equip;
     }
 
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -320,12 +321,6 @@ Inventory::Inventory() :
 
     add( otherModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE );
   }
-
-  scrollUpTex.load( "@ui/icon/scrollUp.dds" );
-  scrollDownTex.load( "@ui/icon/scrollDown.dds" );
-  useTex.load( "@ui/icon/use.dds" );
-  equipTex.load( "@ui/icon/equip.dds" );
-  unequipTex.load( "@ui/icon/unequip.dds" );
 }
 
 }

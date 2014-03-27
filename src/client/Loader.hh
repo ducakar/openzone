@@ -37,7 +37,7 @@ private:
 
   static const uint TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
 
-  static const uint IMAGO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 2 s)
+  static const uint IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  //  10 s (+ 2 s)
   static const uint IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
 
   static const uint FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 s)

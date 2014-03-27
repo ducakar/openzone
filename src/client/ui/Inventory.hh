@@ -55,12 +55,6 @@ private:
   ModelField*    ownerModels[COLS];
   ModelField*    otherModels[COLS];
 
-  GLTexture      scrollUpTex;
-  GLTexture      scrollDownTex;
-  GLTexture      useTex;
-  GLTexture      equipTex;
-  GLTexture      unequipTex;
-
   Label          itemDesc;
 
   int            taggedItemIndex;

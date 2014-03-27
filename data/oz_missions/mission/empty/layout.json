@@ -10,7 +10,8 @@
     },
     "terra":
     {
-      "name":                     "random-0"
+      //"name":                     "random-0"
+      "name":                     "sample"
     }
   }
 }

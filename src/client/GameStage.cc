@@ -286,7 +286,9 @@ void GameStage::present( bool isFull )
   soundMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  render.update( isFull ? Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT : 0 );
+  MainCall() << [&]() {
+    render.update( isFull ? Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT : 0 );
+  };
 
   currentMicros = Time::uclock();
   renderMicros += currentMicros - beginMicros;
@@ -316,7 +318,9 @@ void GameStage::load()
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
-  render.update( Render::DRAW_UI_BIT );
+  MainCall() << []() {
+    render.update( Render::DRAW_UI_BIT );
+  };
 
   timer.reset();
 
@@ -336,8 +340,10 @@ void GameStage::load()
   luaClient.init();
   modules.registerLua();
 
-  render.load();
-  context.load();
+  MainCall() << []() {
+    render.load();
+    context.load();
+  };
 
   camera.reset();
   camera.setState( Camera::STRATEGIC );
@@ -376,7 +382,9 @@ void GameStage::load()
 
   ui::ui.showLoadingScreen( true );
 
-  render.update( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  MainCall() << []() {
+    render.update( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  };
   loader.syncUpdate();
   sound.play();
   sound.sync();
@@ -408,7 +416,9 @@ void GameStage::unload()
 
   loader.unload();
 
-  render.update( Render::DRAW_UI_BIT );
+  MainCall() << []() {
+    render.update( Render::DRAW_UI_BIT );
+  };
 
   isAuxAlive = false;
 
@@ -453,8 +463,10 @@ void GameStage::unload()
 
   camera.reset();
 
-  context.unload();
-  render.unload();
+  MainCall() << []() {
+    context.unload();
+    render.unload();
+  };
 
   luaClient.destroy();
 
