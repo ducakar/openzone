@@ -10,7 +10,7 @@
 #
 
 components=( src/ozCore src/ozDynamics src/ozEngine src/ozFactory src/unittest
-             src/common src/matrix src/nirvana src/modules src/client src/builder
+             src/common src/matrix src/nirvana src/client src/builder
              data/oz_base/glsl )
 version=`sed -r '/^set\( OZ_VERSION / !d; s|.* ([0-9.]+) .*|\1|' CMakeLists.txt`
 root=`pwd`

@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "System.hh"
 #include "String.hh"
 #include "Semaphore.hh"
 
@@ -59,7 +60,7 @@ class Instance;
  *
  * For a NaCl application, you must implement this function and put `OZ_NACL_ENTRY_POINT()` macro in
  * a `.cc` file (out of any namespace). It is run in a new thread named "naclMain". An empty string
- * is passed as argument zero (i.e. `argc = 1` and `argv = { "" }`).
+ * is passed as the first argument (i.e. `argc = 1` and `argv = { "" }`).
  */
 int naclMain( int argc, char** argv );
 
@@ -154,6 +155,135 @@ public:
    * Create PPAPI module instance.
    */
   static pp::Module* createModule();
+
+};
+
+#else
+
+/**
+ * Utility for executing code blocks on the NaCl's main thread.
+ *
+ * Methods schedulled for the main thread should be lambda functions as those can (and often need
+ * to) access local variables of a function on a non-main thread and are quick to implement.
+ *
+ * A typical scenario:
+ * <code>
+ * GLuint id = loadTexture( file );
+ * MainCall() << [&]()
+ * {
+ *   glBindTexture( GL_TEXTURE_2D, id );
+ * };
+ * </code>
+ *
+ * When used on the main thread or on a platform other than NaCl the method is executed immediately
+ * on the caller thread.
+ */
+class MainCall
+{
+#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
+
+private:
+
+  /**
+   * Callback type.
+   */
+  typedef void Callback( void* data, int );
+
+  /**
+   * Semaphore wrapper that constructs and destructs it with a thread.
+   */
+  struct LocalSemaphore
+  {
+    Semaphore sem; ///< Wrapped semaphore.
+
+    LocalSemaphore();
+    ~LocalSemaphore();
+  };
+
+private:
+
+  static thread_local LocalSemaphore localSemaphore; ///< Semaphore for synchronous calls.
+
+#endif
+
+public:
+
+  /**
+   * Call a method on the NaCl main thread synchronously.
+   *
+   * The method can also be a lambda expression with captures.
+   *
+   * On platforms other that NaCl the code is executed immediately on the caller thread.
+   */
+  template <typename Method>
+  void operator << ( Method method ) const
+  {
+#ifdef __native_client__
+
+    if( Thread::isMain() ) {
+      OZ_ERROR( "oz::MainCall: operator << () invoked on the main thread." );
+    }
+
+    struct CallbackWrapper
+    {
+      Method     method;
+      Semaphore* semaphore;
+
+      static void callback( void* data, int )
+      {
+        const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+
+        cw->method();
+        cw->semaphore->post();
+      }
+    };
+    CallbackWrapper cw = { method, &localSemaphore.sem };
+
+    Pepper::mainCall( CallbackWrapper::callback, &cw ) ) {
+    localSemaphore.sem.wait();
+
+#else
+
+    method();
+
+#endif
+  }
+
+  /**
+   * Call a method on the NaCl main thread asynchronously.
+   *
+   * The method can also be a lambda expression but captures are discouraged for asynchronous calls
+   * since local variables may change till the function is executed or the local stack may not
+   * even exist any more.
+   *
+   * On platforms other that NaCl the code is executed immediately on the caller thread.
+   */
+  template <typename Method>
+  void operator += ( Method method ) const
+  {
+#ifdef __native_client__
+
+    struct CallbackWrapper
+    {
+      Method method;
+
+      static void callback( void* data, int )
+      {
+        const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+
+        cw->method();
+      }
+    };
+    CallbackWrapper cw = { method };
+
+    Pepper::mainCall( CallbackWrapper::callback, &cw );
+
+#else
+
+    method();
+
+#endif
+  }
 
 };
 

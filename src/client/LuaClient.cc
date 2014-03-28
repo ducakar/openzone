@@ -288,6 +288,8 @@ void LuaClient::init()
    * Structure
    */
 
+  IMPORT_FUNC( ozBSPDim );
+
   IMPORT_FUNC( ozBindStr );
   IMPORT_FUNC( ozBindNextStr );
 
@@ -360,6 +362,8 @@ void LuaClient::init()
   /*
    * Object
    */
+
+  IMPORT_FUNC( ozClassDim );
 
   IMPORT_FUNC( ozBindObj );
   IGNORE_FUNC( ozBindSelf );

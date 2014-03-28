@@ -22,10 +22,10 @@
  *
  * Handy macros and methods for Lua API implementation.
  *
- * This is internal header, it should only be included by modules that contain Lua API
- * implementation. It contains macros for parameter checking, reporting errors, checking validity of
- * Lua API calls etc. that can be used as some basic building blocks for Lua APIs. Furthermore there
- * are macros that wrap Lua library calls so, one can e.g. write
+ * This is internal header, it should only be included by files containing Lua API implementation.
+ * It contains macros for parameter checking, reporting errors, checking validity of Lua API calls
+ * etc. that can be used as some basic building blocks for Lua APIs. Furthermore there are macros
+ * that wrap Lua library calls so, one can e.g. write
  * @code
  *   l_tofloat( 1 );
  * @endcode

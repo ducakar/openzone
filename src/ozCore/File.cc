@@ -765,7 +765,7 @@ bool File::writeString( const String& s ) const
 
 bool File::map() const
 {
-  if( fileSize < 0 ) {
+  if( fileSize <= 0 ) {
     return false;
   }
   if( data != nullptr ) {

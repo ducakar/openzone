@@ -298,7 +298,6 @@ bool ModelBuilder::buildModel( const File& file, OutputStream* os )
 
       for( double t = 0.0; t < anim->mDuration; ) {
 
-
       }
     }
   }

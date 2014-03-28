@@ -385,6 +385,19 @@ static int ozTerraHeight( lua_State* l )
  * Structure
  */
 
+static int ozBSPDim( lua_State* l )
+{
+  ARG( 1 );
+
+  const BSP* bsp = liber.bsp( l_tostring( 1 ) );
+  Vec3 dim = bsp->dim();
+
+  l_pushfloat( dim.x );
+  l_pushfloat( dim.y );
+  l_pushfloat( dim.z );
+  return 3;
+}
+
 static int ozBindStr( lua_State* l )
 {
   ARG( 1 );
@@ -1119,6 +1132,18 @@ static int ozEntIsVisibleFromSelfEye( lua_State* l )
 /*
  * Object
  */
+
+static int ozClassDim( lua_State* l )
+{
+  ARG( 1 );
+
+  const ObjectClass* clazz = liber.objClass( l_tostring( 1 ) );
+
+  l_pushfloat( clazz->dim.x );
+  l_pushfloat( clazz->dim.y );
+  l_pushfloat( clazz->dim.z );
+  return 3;
+}
 
 static int ozBindObj( lua_State* l )
 {

@@ -320,7 +320,7 @@ function onCreate()
     60, -46, 69.5,
     OZ_QUEST_NONE )
 
-  ozFloraSeed()
+  floraSeed( 0.0015, 12, 0.75 )
 
   ozBindObj( me )
   ozCameraAllowReincarnation( true )

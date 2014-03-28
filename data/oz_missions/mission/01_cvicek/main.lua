@@ -419,8 +419,6 @@ function onCreate()
   ozNirvanaAddMemo( oz_beasts[5], ozGettext( "Is the Farm still standing? Please destroy it, " ..
                                              "maybe then there might be something better on TV." ) )
 
-  ozFloraSeed()
-
   oz_escapeQuest = ozQuestAdd( ozGettext( "Escape" ), ozGettext(
     "You have been caught by a Colonial patrol and they currently hold you in that Colonial " ..
     "outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist " ..
@@ -455,6 +453,8 @@ function onCreate()
     "You can visit the base anytime during the mission for any supplies you need." ),
     -1015, 608, 50,
     OZ_QUEST_NONE )
+
+  floraSeed( 0.0015, 12, 0.75 )
 
   ozCameraAllowReincarnation( false )
   ozCameraAddSwitchableBot( oz_me )

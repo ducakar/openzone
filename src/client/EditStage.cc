@@ -130,7 +130,7 @@ bool EditStage::update()
   /*
    * PHASE 1
    *
-   * UI and modules update, world may be updated from the main thread during this phase.
+   * UI update, world may be updated from the main thread during this phase.
    */
 
   orbis.resetLastIndices();

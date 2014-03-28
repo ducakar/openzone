@@ -26,7 +26,6 @@
 #include <matrix/Synapse.hh>
 #include <matrix/Matrix.hh>
 #include <nirvana/Nirvana.hh>
-#include <modules/Modules.hh>
 #include <client/Context.hh>
 #include <client/Loader.hh>
 #include <client/Render.hh>
@@ -45,8 +44,6 @@ namespace oz
 {
 namespace client
 {
-
-using modules::modules;
 
 const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
 
@@ -100,7 +97,6 @@ void GameStage::read()
   Log::indent();
 
   camera.read( &is );
-  modules.read( &is );
 
   luaClient.read( &is );
 
@@ -118,7 +114,6 @@ void GameStage::write()
   nirvana.write( &saveStream );
 
   camera.write( &saveStream );
-  modules.write( &saveStream );
 
   luaClient.write( &saveStream );
 
@@ -197,7 +192,7 @@ bool GameStage::update()
   /*
    * PHASE 1
    *
-   * UI and modules update, world may be updated from the main thread during this phase.
+   * UI update, world may be updated from the main thread during this phase.
    */
 
   beginMicros = Time::uclock();
@@ -240,7 +235,6 @@ bool GameStage::update()
 
   camera.prepare();
 
-  modules.update();
   luaClient.update();
 
   uiMicros += Time::uclock() - beginMicros;
@@ -338,7 +332,6 @@ void GameStage::load()
   nirvana.load();
 
   luaClient.init();
-  modules.registerLua();
 
   MainCall() << []() {
     render.load();
@@ -347,8 +340,6 @@ void GameStage::load()
 
   camera.reset();
   camera.setState( Camera::STRATEGIC );
-
-  modules.load();
 
   if( stateFile.type() == File::REGULAR ) {
     read();
@@ -456,7 +447,6 @@ void GameStage::unload()
     stateFile = "";
   }
 
-  modules.unload();
   profile.save();
 
   ui::ui.questFrame->enable( false );
@@ -530,7 +520,6 @@ void GameStage::init()
   nirvana.init();
   loader.init();
   profile.init();
-  modules.init();
 
   saveStream = OutputStream( 0, Endian::LITTLE );
 
@@ -547,7 +536,6 @@ void GameStage::destroy()
     saveThread.join();
   }
 
-  modules.destroy();
   profile.destroy();
   loader.destroy();
   nirvana.destroy();

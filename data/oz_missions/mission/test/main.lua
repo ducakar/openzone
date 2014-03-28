@@ -46,7 +46,7 @@ function onCreate()
 
   init_sample()
 
-  ozFloraSeed()
+  floraSeed( 0.0015, 12, 0.75 )
 
   init_stressTest()
 

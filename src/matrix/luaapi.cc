@@ -45,6 +45,7 @@ void importMatrixConstants( lua_State* l )
     COLLIDE_ALL_OBJECTS_BIT = 0x04
   };
 
+  registerLuaConstant( l, "OZ_EPSILON",                     EPSILON );
   registerLuaConstant( l, "OZ_ORBIS_DIM",                   Orbis::DIM );
 
   registerLuaConstant( l, "OZ_NORTH",                       NORTH );

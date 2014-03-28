@@ -70,7 +70,6 @@ void Builder::printUsage( const char* invocationName )
     "  -n         Copy name lists.\n"
     "  -x         Check and copy Lua scripts.\n"
     "  -v         Copy nirvana configuration files.\n"
-    "  -o         Build modules.\n"
     "  -r         Copy music tracks.\n"
     "  -i         Build missions.\n"
     "  -A         Everything above.\n"
@@ -587,15 +586,6 @@ void Builder::checkLua( const char* path )
   Log::println( "}" );
 }
 
-void Builder::buildModules()
-{
-  Log::println( "Building Modules {" );
-  Log::indent();
-
-  Log::unindent();
-  Log::println( "}" );
-}
-
 void Builder::buildMissions()
 {
   Log::println( "Building missions {" );
@@ -687,7 +677,6 @@ int Builder::main( int argc, char** argv )
   bool doNames        = false;
   bool doLua          = false;
   bool doNirvana      = false;
-  bool doModules      = false;
   bool doMusic        = false;
   bool doMissions     = false;
   bool useCompression = false;
@@ -697,7 +686,7 @@ int Builder::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbeafpmsnxvoriARCZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbeafpmsnxvriARCZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -759,10 +748,6 @@ int Builder::main( int argc, char** argv )
         doNirvana = true;
         break;
       }
-      case 'o': {
-        doModules = true;
-        break;
-      }
       case 'r': {
         doMusic = true;
         break;
@@ -787,7 +772,6 @@ int Builder::main( int argc, char** argv )
         doNames     = true;
         doLua       = true;
         doNirvana   = true;
-        doModules   = true;
         doMusic     = true;
         doMissions  = true;
         break;
@@ -928,6 +912,7 @@ int Builder::main( int argc, char** argv )
     copyFiles( "@name", "name", "txt", false );
   }
   if( doLua ) {
+    checkLua( "@lua/common" );
     checkLua( "@lua/matrix" );
     checkLua( "@lua/nirvana" );
 
@@ -935,9 +920,6 @@ int Builder::main( int argc, char** argv )
   }
   if( doNirvana ) {
     copyFiles( "@nirvana", "nirvana", "json", false );
-  }
-  if( doModules ) {
-    buildModules();
   }
   if( doMusic ) {
     copyFiles( "@music", "music", "oga", true );

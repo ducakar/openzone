@@ -64,7 +64,7 @@ function onCreate()
   ozObjAddItem( "bomb" )
   ozObjAddItem( "bomb" )
 
-  ozFloraSeed()
+  floraSeed( 0.0015, 12, 0.75 )
 
   local bounds = { -1100, -900, 500, 700 }
 

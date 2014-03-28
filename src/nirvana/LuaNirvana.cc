@@ -173,6 +173,8 @@ void LuaNirvana::init()
    * Structure
    */
 
+  IMPORT_FUNC( ozBSPDim );
+
   IMPORT_FUNC( ozBindStr );
   IMPORT_FUNC( ozBindNextStr );
 
@@ -245,6 +247,8 @@ void LuaNirvana::init()
   /*
    * Object
    */
+
+  IMPORT_FUNC( ozClassDim );
 
   IMPORT_FUNC( ozBindObj );
   IMPORT_FUNC( ozBindSelf );

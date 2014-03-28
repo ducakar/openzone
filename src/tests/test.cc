@@ -27,30 +27,8 @@
 
 using namespace oz;
 
-static void coreMain( void* )
-{
-  MainCall() << []()
-  {
-    Log() << "drek1";
-
-    MainCall() += []() {
-      Log() << "drek2";
-    };
-
-    Log() << "drek3";
-  };
-  MainCall::terminate();
-}
-
 int main()
 {
   System::init();
-  MainCall::init();
-
-  Thread thread;
-  thread.start( "core", Thread::DETACHED, coreMain );
-
-  MainCall::loop();
-  MainCall::destroy();
   return 0;
 }

@@ -223,7 +223,6 @@ void AssImp::build( const char* path )
 
 //      for( double t = 0.0; t < anim->mDuration; ) {
 
-
 //      }
     }
   }
