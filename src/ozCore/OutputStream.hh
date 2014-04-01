@@ -87,18 +87,7 @@ public:
   /**
    * Move constructor, moves buffer if source stream is buffered.
    */
-  OutputStream( OutputStream&& os ) :
-    streamPos( os.streamPos ), streamBegin( os.streamBegin ), streamEnd( os.streamEnd ),
-    order( os.order ), buffered( os.buffered )
-  {
-    if( os.buffered ) {
-      os.streamPos   = nullptr;
-      os.streamBegin = nullptr;
-      os.streamEnd   = nullptr;
-      os.order       = Endian::NATIVE;
-      os.buffered    = false;
-    }
-  }
+  OutputStream( OutputStream&& os );
 
   /**
    * Copy operator, copies buffer if source stream is buffered.
@@ -110,43 +99,12 @@ public:
   /**
    * Move operator, moves buffer if source stream is buffered.
    */
-  OutputStream& operator = ( OutputStream&& os )
-  {
-    if( &os == this ) {
-      return *this;
-    }
-
-    if( buffered ) {
-      delete[] streamBegin;
-    }
-
-    streamPos   = os.streamPos;
-    streamBegin = os.streamBegin;
-    streamEnd   = os.streamEnd;
-    order       = os.order;
-    buffered    = os.buffered;
-
-    if( os.buffered ) {
-      os.streamPos   = nullptr;
-      os.streamBegin = nullptr;
-      os.streamEnd   = nullptr;
-      os.order       = Endian::NATIVE;
-      os.buffered    = false;
-    }
-
-    return *this;
-  }
+  OutputStream& operator = ( OutputStream&& os );
 
   /**
    * Create `InputStream` for reading this stream (position is not reset).
    */
-  InputStream inputStream() const
-  {
-    InputStream is( streamBegin, streamEnd, order );
-
-    is.set( streamPos );
-    return is;
-  }
+  InputStream inputStream() const;
 
   /**
    * Iff stream uses internal buffer instead of given storage.
@@ -253,30 +211,12 @@ public:
   /**
    * %Set stream position.
    */
-  OZ_ALWAYS_INLINE
-  void set( char* newPos )
-  {
-    if( newPos < streamBegin || streamEnd < newPos ) {
-      OZ_ERROR( "oz::OutputStream: Overrun for %d B during setting stream position",
-                newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
-    }
-
-    streamPos = newPos;
-  }
+  void set( char* newPos );
 
   /**
    * %Set stream position relative to the beginning of the stream.
    */
-  OZ_ALWAYS_INLINE
-  void seek( int offset )
-  {
-    if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
-      OZ_ERROR( "oz::OutputStream: Overrun for %d B during stream seek",
-                offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
-    }
-
-    streamPos = streamBegin + offset;
-  }
+  void seek( int offset );
 
   /**
    * Rewind current position to the beginning of the stream.
@@ -337,42 +277,22 @@ public:
   /**
    * Read boolean.
    */
-  OZ_ALWAYS_INLINE
-  bool readBool()
-  {
-    const char* data = forward( int( sizeof( bool ) ) );
-    return bool( *data );
-  }
+  bool readBool();
 
   /**
    * Write a boolean.
    */
-  OZ_ALWAYS_INLINE
-  void writeBool( bool b )
-  {
-    char* data = forward( int( sizeof( bool ) ) );
-    *data = char( b );
-  }
+  void writeBool( bool b );
 
   /**
    * Read character.
    */
-  OZ_ALWAYS_INLINE
-  char readChar()
-  {
-    const char* data = forward( int( sizeof( char ) ) );
-    return char( *data );
-  }
+  char readChar();
 
   /**
    * Write a character.
    */
-  OZ_ALWAYS_INLINE
-  void writeChar( char c )
-  {
-    char* data = forward( int( sizeof( char ) ) );
-    *data = char( c );
-  }
+  void writeChar( char c );
 
   /**
    * Read an array of characters.
@@ -387,422 +307,102 @@ public:
   /**
    * Read byte.
    */
-  OZ_ALWAYS_INLINE
-  byte readByte()
-  {
-    const char* data = forward( int( sizeof( byte ) ) );
-    return byte( *data );
-  }
+  byte readByte();
 
   /**
    * Write byte.
    */
-  OZ_ALWAYS_INLINE
-  void writeByte( byte b )
-  {
-    char* data = forward( int( sizeof( byte ) ) );
-    *data = char( b );
-  }
+  void writeByte( byte b );
 
   /**
    * Read unsigned byte.
    */
-  OZ_ALWAYS_INLINE
-  ubyte readUByte()
-  {
-    const char* data = forward( int( sizeof( ubyte ) ) );
-    return ubyte( *data );
-  }
+  ubyte readUByte();
 
   /**
    * Write unsigned byte.
    */
-  OZ_ALWAYS_INLINE
-  void writeUByte( ubyte b )
-  {
-    char* data = forward( int( sizeof( ubyte ) ) );
-    *data = char( b );
-  }
+  void writeUByte( ubyte b );
 
   /**
    * Read short integer.
    */
-  OZ_ALWAYS_INLINE
-  short readShort()
-  {
-    const char* data = forward( int( sizeof( short ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToShort value = { { data[0], data[1] } };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToShort value = { { data[1], data[0] } };
-
-      return value.value;
-    }
-  }
+  short readShort();
 
   /**
    * Write short integer.
    */
-  OZ_ALWAYS_INLINE
-  void writeShort( short s )
-  {
-    char* data = forward( int( sizeof( short ) ) );
-
-    Endian::ShortToBytes value = { s };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-    }
-    else {
-      data[0] = value.data[1];
-      data[1] = value.data[0];
-    }
-  }
+  void writeShort( short s );
 
   /**
    * Read unsigned short integer.
    */
-  OZ_ALWAYS_INLINE
-  ushort readUShort()
-  {
-    const char* data = forward( int( sizeof( ushort ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToUShort value = { { data[0], data[1] } };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToUShort value = { { data[1], data[0] } };
-
-      return value.value;
-    }
-  }
+  ushort readUShort();
 
   /**
    * Write unsigned short integer.
    */
-  OZ_ALWAYS_INLINE
-  void writeUShort( ushort s )
-  {
-    char* data = forward( int( sizeof( ushort ) ) );
-
-    Endian::UShortToBytes value = { s };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-    }
-    else {
-      data[0] = value.data[1];
-      data[1] = value.data[0];
-    }
-  }
+  void writeUShort( ushort s );
 
   /**
    * Read integer.
    */
-  OZ_ALWAYS_INLINE
-  int readInt()
-  {
-    const char* data = forward( int( sizeof( int ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToInt value = { { data[3], data[2], data[1], data[0] } };
-
-      return value.value;
-    }
-  }
+  int readInt();
 
   /**
    * Write integer.
    */
-  OZ_ALWAYS_INLINE
-  void writeInt( int i )
-  {
-    char* data = forward( int( sizeof( int ) ) );
-
-    Endian::IntToBytes value = { i };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-    }
-    else {
-      data[0] = value.data[3];
-      data[1] = value.data[2];
-      data[2] = value.data[1];
-      data[3] = value.data[0];
-    }
-  }
+  void writeInt( int i );
 
   /**
    * Read unsigned integer.
    */
-  OZ_ALWAYS_INLINE
-  uint readUInt()
-  {
-    const char* data = forward( int( sizeof( uint ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToUInt value = { { data[3], data[2], data[1], data[0] } };
-
-      return value.value;
-    }
-  }
+  uint readUInt();
 
   /**
    * Write unsigned integer.
    */
-  OZ_ALWAYS_INLINE
-  void writeUInt( uint i )
-  {
-    char* data = forward( int( sizeof( uint ) ) );
-
-    Endian::UIntToBytes value = { i };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-    }
-    else {
-      data[0] = value.data[3];
-      data[1] = value.data[2];
-      data[2] = value.data[1];
-      data[3] = value.data[0];
-    }
-  }
+  void writeUInt( uint i );
 
   /**
    * Read 64-bit integer.
    */
-  OZ_ALWAYS_INLINE
-  long64 readLong64()
-  {
-    const char* data = forward( int( sizeof( long64 ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToLong64 value = {
-        { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-      };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToLong64 value = {
-        { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
-      };
-
-      return value.value;
-    }
-  }
+  long64 readLong64();
 
   /**
    * Write 64-bit integer.
    */
-  OZ_ALWAYS_INLINE
-  void writeLong64( long64 l )
-  {
-    char* data = forward( int( sizeof( long64 ) ) );
-
-    Endian::Long64ToBytes value = { l };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-      data[4] = value.data[4];
-      data[5] = value.data[5];
-      data[6] = value.data[6];
-      data[7] = value.data[7];
-    }
-    else {
-      data[0] = value.data[7];
-      data[1] = value.data[6];
-      data[2] = value.data[5];
-      data[3] = value.data[4];
-      data[4] = value.data[3];
-      data[5] = value.data[2];
-      data[6] = value.data[1];
-      data[7] = value.data[0];
-    }
-  }
+  void writeLong64( long64 l );
 
   /**
    * Read unsigned 64-bit integer.
    */
-  OZ_ALWAYS_INLINE
-  ulong64 readULong64()
-  {
-    const char* data = forward( int( sizeof( ulong64 ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToULong64 value = {
-        { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-      };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToULong64 value = {
-        { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
-      };
-
-      return value.value;
-    }
-  }
+  ulong64 readULong64();
 
   /**
    * Write unsigned 64-bit integer.
    */
-  OZ_ALWAYS_INLINE
-  void writeULong64( ulong64 l )
-  {
-    char* data = forward( int( sizeof( ulong64 ) ) );
-
-    Endian::ULong64ToBytes value = { l };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-      data[4] = value.data[4];
-      data[5] = value.data[5];
-      data[6] = value.data[6];
-      data[7] = value.data[7];
-    }
-    else {
-      data[0] = value.data[7];
-      data[1] = value.data[6];
-      data[2] = value.data[5];
-      data[3] = value.data[4];
-      data[4] = value.data[3];
-      data[5] = value.data[2];
-      data[6] = value.data[1];
-      data[7] = value.data[0];
-    }
-  }
+  void writeULong64( ulong64 l );
 
   /**
    * Read float.
    */
-  OZ_ALWAYS_INLINE
-  float readFloat()
-  {
-    const char* data = forward( int( sizeof( float ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-      return value.value;
-    }
-  }
+  float readFloat();
 
   /**
    * Write float.
    */
-  OZ_ALWAYS_INLINE
-  void writeFloat( float f )
-  {
-    char* data = forward( int( sizeof( float ) ) );
-
-    Endian::FloatToBytes value = { f };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-    }
-    else {
-      data[0] = value.data[3];
-      data[1] = value.data[2];
-      data[2] = value.data[1];
-      data[3] = value.data[0];
-    }
-  }
+  void writeFloat( float f );
 
   /**
    * Read double.
    */
-  OZ_ALWAYS_INLINE
-  double readDouble()
-  {
-    const char* data = forward( int( sizeof( double ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToDouble value = {
-        { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-      };
-
-      return value.value;
-    }
-    else {
-      Endian::BytesToDouble value = {
-        { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
-      };
-
-      return value.value;
-    }
-  }
+  double readDouble();
 
   /**
    * Write double.
    */
-  OZ_ALWAYS_INLINE
-  void writeDouble( double d )
-  {
-    char* data = forward( int( sizeof( double ) ) );
-
-    Endian::DoubleToBytes value = { d };
-
-    if( order == Endian::NATIVE ) {
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-      data[4] = value.data[4];
-      data[5] = value.data[5];
-      data[6] = value.data[6];
-      data[7] = value.data[7];
-    }
-    else {
-      data[0] = value.data[7];
-      data[1] = value.data[6];
-      data[2] = value.data[5];
-      data[3] = value.data[4];
-      data[4] = value.data[3];
-      data[5] = value.data[2];
-      data[6] = value.data[1];
-      data[7] = value.data[0];
-    }
-  }
+  void writeDouble( double d );
 
   /**
    * Read string.
@@ -822,365 +422,52 @@ public:
   /**
    * Read 3D vector.
    */
-  OZ_ALWAYS_INLINE
-  Vec3 readVec3()
-  {
-    const char* data = forward( int( sizeof( float[3] ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-      Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-      Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-
-      return Vec3( x.value, y.value, z.value );
-    }
-    else {
-      Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-      Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-      Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-
-      return Vec3( x.value, y.value, z.value );
-    }
-  }
+  Vec3 readVec3();
 
   /**
    * Write 3D vector.
    */
-  OZ_ALWAYS_INLINE
-  void writeVec3( const Vec3& v )
-  {
-    char* data = forward( int( sizeof( float[3] ) ) );
-
-    Endian::FloatToBytes x = { v.x };
-    Endian::FloatToBytes y = { v.y };
-    Endian::FloatToBytes z = { v.z };
-
-    if( order == Endian::NATIVE ) {
-      data[ 0] = x.data[0];
-      data[ 1] = x.data[1];
-      data[ 2] = x.data[2];
-      data[ 3] = x.data[3];
-      data[ 4] = y.data[0];
-      data[ 5] = y.data[1];
-      data[ 6] = y.data[2];
-      data[ 7] = y.data[3];
-      data[ 8] = z.data[0];
-      data[ 9] = z.data[1];
-      data[10] = z.data[2];
-      data[11] = z.data[3];
-    }
-    else {
-      data[ 0] = x.data[3];
-      data[ 1] = x.data[2];
-      data[ 2] = x.data[1];
-      data[ 3] = x.data[0];
-      data[ 4] = y.data[3];
-      data[ 5] = y.data[2];
-      data[ 6] = y.data[1];
-      data[ 7] = y.data[0];
-      data[ 8] = z.data[3];
-      data[ 9] = z.data[2];
-      data[10] = z.data[1];
-      data[11] = z.data[0];
-    }
-  }
+  void writeVec3( const Vec3& v );
 
   /**
    * Read 4-component vector.
    */
-  OZ_ALWAYS_INLINE
-  Vec4 readVec4()
-  {
-    const char* data = forward( int( sizeof( float[4] ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-      Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-      Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-      Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
-
-      return Vec4( x.value, y.value, z.value, w.value );
-    }
-    else {
-      Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-      Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-      Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-      Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
-
-      return Vec4( x.value, y.value, z.value, w.value );
-    }
-  }
+  Vec4 readVec4();
 
   /**
    * Write 4-component vector.
    */
-  OZ_ALWAYS_INLINE
-  void writeVec4( const Vec4& v )
-  {
-    char* data = forward( int( sizeof( float[4] ) ) );
-
-    Endian::FloatToBytes x = { v.x };
-    Endian::FloatToBytes y = { v.y };
-    Endian::FloatToBytes z = { v.z };
-    Endian::FloatToBytes w = { v.w };
-
-    if( order == Endian::NATIVE ) {
-      data[ 0] = x.data[0];
-      data[ 1] = x.data[1];
-      data[ 2] = x.data[2];
-      data[ 3] = x.data[3];
-      data[ 4] = y.data[0];
-      data[ 5] = y.data[1];
-      data[ 6] = y.data[2];
-      data[ 7] = y.data[3];
-      data[ 8] = z.data[0];
-      data[ 9] = z.data[1];
-      data[10] = z.data[2];
-      data[11] = z.data[3];
-      data[12] = w.data[0];
-      data[13] = w.data[1];
-      data[14] = w.data[2];
-      data[15] = w.data[3];
-    }
-    else {
-      data[ 0] = x.data[3];
-      data[ 1] = x.data[2];
-      data[ 2] = x.data[1];
-      data[ 3] = x.data[0];
-      data[ 4] = y.data[3];
-      data[ 5] = y.data[2];
-      data[ 6] = y.data[1];
-      data[ 7] = y.data[0];
-      data[ 8] = z.data[3];
-      data[ 9] = z.data[2];
-      data[10] = z.data[1];
-      data[11] = z.data[0];
-      data[12] = w.data[3];
-      data[13] = w.data[2];
-      data[14] = w.data[1];
-      data[15] = w.data[0];
-    }
-  }
+  void writeVec4( const Vec4& v );
 
   /**
    * Read 3D point.
    */
-  OZ_ALWAYS_INLINE
-  Point readPoint()
-  {
-    const char* data = forward( int( sizeof( float[3] ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-      Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-      Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-
-      return Point( x.value, y.value, z.value );
-    }
-    else {
-      Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-      Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-      Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-
-      return Point( x.value, y.value, z.value );
-    }
-  }
+  Point readPoint();
 
   /**
    * Write 3D point.
    */
-  OZ_ALWAYS_INLINE
-  void writePoint( const Point& p )
-  {
-    char* data = forward( int( sizeof( float[3] ) ) );
-
-    Endian::FloatToBytes x = { p.x };
-    Endian::FloatToBytes y = { p.y };
-    Endian::FloatToBytes z = { p.z };
-
-    if( order == Endian::NATIVE ) {
-      data[ 0] = x.data[0];
-      data[ 1] = x.data[1];
-      data[ 2] = x.data[2];
-      data[ 3] = x.data[3];
-      data[ 4] = y.data[0];
-      data[ 5] = y.data[1];
-      data[ 6] = y.data[2];
-      data[ 7] = y.data[3];
-      data[ 8] = z.data[0];
-      data[ 9] = z.data[1];
-      data[10] = z.data[2];
-      data[11] = z.data[3];
-    }
-    else {
-      data[ 0] = x.data[3];
-      data[ 1] = x.data[2];
-      data[ 2] = x.data[1];
-      data[ 3] = x.data[0];
-      data[ 4] = y.data[3];
-      data[ 5] = y.data[2];
-      data[ 6] = y.data[1];
-      data[ 7] = y.data[0];
-      data[ 8] = z.data[3];
-      data[ 9] = z.data[2];
-      data[10] = z.data[1];
-      data[11] = z.data[0];
-    }
-  }
+  void writePoint( const Point& p );
 
   /**
    * Read 3D plane.
    */
-  OZ_ALWAYS_INLINE
-  Plane readPlane()
-  {
-    const char* data = forward( int( sizeof( float[4] ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-      Endian::BytesToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-      Endian::BytesToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
-      Endian::BytesToFloat d  = { { data[12], data[13], data[14], data[15] } };
-
-      return Plane( nx.value, ny.value, nz.value, d.value );
-    }
-    else {
-      Endian::BytesToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-      Endian::BytesToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-      Endian::BytesToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
-      Endian::BytesToFloat d  = { { data[15], data[14], data[13], data[12] } };
-
-      return Plane( nx.value, ny.value, nz.value, d.value );
-    }
-  }
+  Plane readPlane();
 
   /**
    * Write 3D plane.
    */
-  OZ_ALWAYS_INLINE
-  void writePlane( const Plane& p )
-  {
-    char* data = forward( int( sizeof( float[4] ) ) );
-
-    Endian::FloatToBytes nx = { p.n.x };
-    Endian::FloatToBytes ny = { p.n.y };
-    Endian::FloatToBytes nz = { p.n.z };
-    Endian::FloatToBytes d  = { p.d };
-
-    if( order == Endian::NATIVE ) {
-      data[ 0] = nx.data[0];
-      data[ 1] = nx.data[1];
-      data[ 2] = nx.data[2];
-      data[ 3] = nx.data[3];
-      data[ 4] = ny.data[0];
-      data[ 5] = ny.data[1];
-      data[ 6] = ny.data[2];
-      data[ 7] = ny.data[3];
-      data[ 8] = nz.data[0];
-      data[ 9] = nz.data[1];
-      data[10] = nz.data[2];
-      data[11] = nz.data[3];
-      data[12] = d.data[0];
-      data[13] = d.data[1];
-      data[14] = d.data[2];
-      data[15] = d.data[3];
-    }
-    else {
-      data[ 0] = nx.data[3];
-      data[ 1] = nx.data[2];
-      data[ 2] = nx.data[1];
-      data[ 3] = nx.data[0];
-      data[ 4] = ny.data[3];
-      data[ 5] = ny.data[2];
-      data[ 6] = ny.data[1];
-      data[ 7] = ny.data[0];
-      data[ 8] = nz.data[3];
-      data[ 9] = nz.data[2];
-      data[10] = nz.data[1];
-      data[11] = nz.data[0];
-      data[12] = d.data[3];
-      data[13] = d.data[2];
-      data[14] = d.data[1];
-      data[15] = d.data[0];
-    }
-  }
+  void writePlane( const Plane& p );
 
   /**
    * Read quaternion.
    */
-  OZ_ALWAYS_INLINE
-  Quat readQuat()
-  {
-    const char* data = forward( int( sizeof( float[4] ) ) );
-
-    if( order == Endian::NATIVE ) {
-      Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-      Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-      Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-      Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
-
-      return Quat( x.value, y.value, z.value, w.value );
-    }
-    else {
-      Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-      Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-      Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-      Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
-
-      return Quat( x.value, y.value, z.value, w.value );
-    }
-  }
+  Quat readQuat();
 
   /**
    * Write quaternion.
    */
-  OZ_ALWAYS_INLINE
-  void writeQuat( const Quat& q )
-  {
-    char* data = forward( int( sizeof( float[4] ) ) );
-
-    Endian::FloatToBytes x = { q.x };
-    Endian::FloatToBytes y = { q.y };
-    Endian::FloatToBytes z = { q.z };
-    Endian::FloatToBytes w = { q.w };
-
-    if( order == Endian::NATIVE ) {
-      data[ 0] = x.data[0];
-      data[ 1] = x.data[1];
-      data[ 2] = x.data[2];
-      data[ 3] = x.data[3];
-      data[ 4] = y.data[0];
-      data[ 5] = y.data[1];
-      data[ 6] = y.data[2];
-      data[ 7] = y.data[3];
-      data[ 8] = z.data[0];
-      data[ 9] = z.data[1];
-      data[10] = z.data[2];
-      data[11] = z.data[3];
-      data[12] = w.data[0];
-      data[13] = w.data[1];
-      data[14] = w.data[2];
-      data[15] = w.data[3];
-    }
-    else {
-      data[ 0] = x.data[3];
-      data[ 1] = x.data[2];
-      data[ 2] = x.data[1];
-      data[ 3] = x.data[0];
-      data[ 4] = y.data[3];
-      data[ 5] = y.data[2];
-      data[ 6] = y.data[1];
-      data[ 7] = y.data[0];
-      data[ 8] = z.data[3];
-      data[ 9] = z.data[2];
-      data[10] = z.data[1];
-      data[11] = z.data[0];
-      data[12] = w.data[3];
-      data[13] = w.data[2];
-      data[14] = w.data[1];
-      data[15] = w.data[0];
-    }
-  }
+  void writeQuat( const Quat& q );
 
   /**
    * Read 3x3 matrix.
@@ -1232,16 +519,7 @@ public:
   /**
    * Deallocate internal buffer if stream is buffered.
    */
-  void deallocate()
-  {
-    if( buffered ) {
-      delete[] streamBegin;
-
-      streamPos   = nullptr;
-      streamBegin = nullptr;
-      streamEnd   = nullptr;
-    }
-  }
+  void deallocate();
 
 };
 

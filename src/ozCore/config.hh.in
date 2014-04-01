@@ -45,28 +45,23 @@
 #if defined( _MSC_VER )
 # define OZ_MSVC _MSC_VER
 # error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
-# error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
+# error GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
 #elif defined( __OPENCC__ )
 # define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
 # error Open64 cannot compile OpenZone due to lack of C++11 support.
-# error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
+# error GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
 #elif defined( __clang__ )
 # define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
-# if OZ_CLANG < 301
-#  error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
+# if OZ_CLANG < 303
+#  error GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
 # endif
 #elif defined( __GNUC__ )
 # define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
 # if OZ_GCC < 407
-#  error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
+#  error GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
 # endif
 #else
-# error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
-#endif
-
-// Workaround for LLVM/Clang 3.2 having issues with glibc headers.
-#if defined( OZ_CLANG ) && OZ_CLANG == 302
-# define __extern_always_inline extern __always_inline __attribute__(( __gnu_inline__ ))
+# error GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
 #endif
 
 // Disable `new`/`delete` overloads when they would interfere with other things.

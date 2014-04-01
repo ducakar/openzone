@@ -229,6 +229,7 @@ void LuaClient::init()
   Log::print( "Initialising Client Lua ..." );
 
   initCommon( "client" );
+  loadDir( "@lua/client" );
 
   ms.structs.allocate( 32 );
   ms.objects.allocate( 512 );

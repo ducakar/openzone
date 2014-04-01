@@ -374,7 +374,7 @@ void Compiler::beginMesh()
 
   mesh.flags     = Model::SOLID_BIT;
   mesh.texture   = "";
-  mesh.shininess = 50.0f;
+  mesh.shininess = 16.0f;
 }
 
 int Compiler::endMesh()

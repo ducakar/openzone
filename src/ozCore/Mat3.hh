@@ -376,50 +376,17 @@ public:
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotateX( float theta )
-  {
-    Vec3 j = y;
-    Vec3 k = z;
-
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    y = j * c + k * s;
-    z = k * c - j * s;
-  }
+  void rotateX( float theta );
 
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotateY( float theta )
-  {
-    Vec3 i = x;
-    Vec3 k = z;
-
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    x = i * c - k * s;
-    z = k * c + i * s;
-  }
+  void rotateY( float theta );
 
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotateZ( float theta )
-  {
-    Vec3 i = x;
-    Vec3 j = y;
-
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    x = i * c + j * s;
-    y = j * c - i * s;
-  }
+  void rotateZ( float theta );
 
   /**
    * Compose with a scale from the right.
@@ -467,64 +434,22 @@ public:
   /**
    * Create matrix for rotation around x axis.
    */
-  OZ_ALWAYS_INLINE
-  static Mat3 rotationX( float theta )
-  {
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    return Mat3( 1.0f, 0.0f, 0.0f,
-                 0.0f,    c,    s,
-                 0.0f,   -s,    c );
-  }
+  static Mat3 rotationX( float theta );
 
   /**
    * Create matrix for rotation around y axis.
    */
-  OZ_ALWAYS_INLINE
-  static Mat3 rotationY( float theta )
-  {
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    return Mat3(    c, 0.0f,   -s,
-                 0.0f, 1.0f, 0.0f,
-                    s, 0.0f,    c );
-  }
+  static Mat3 rotationY( float theta );
 
   /**
    * Create matrix for rotation around z axis.
    */
-  OZ_ALWAYS_INLINE
-  static Mat3 rotationZ( float theta )
-  {
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    return Mat3(    c,    s, 0.0f,
-                   -s,    c, 0.0f,
-                 0.0f, 0.0f, 1.0f );
-  }
+  static Mat3 rotationZ( float theta );
 
   /**
    * `rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )`.
    */
-  OZ_ALWAYS_INLINE
-  static Mat3 rotationZXZ( float heading, float pitch, float roll )
-  {
-    float hs, hc, ps, pc, rs, rc;
-
-    Math::sincos( heading, &hs, &hc );
-    Math::sincos( pitch, &ps, &pc );
-    Math::sincos( roll, &rs, &rc );
-
-    float hspc = hs*pc;
-    float hcpc = hc*pc;
-
-    return Mat3(  hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs,
-                 -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc,
-                            hs*ps,           -hc*ps,    pc );
-  }
+  static Mat3 rotationZXZ( float heading, float pitch, float roll );
 
   /**
    * Create matrix for scaling.

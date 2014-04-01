@@ -38,10 +38,6 @@ namespace oz
  *
  * Class has static storage of `BUFFER_SIZE` bytes, if string is larger it is stored in a
  * dynamically allocated storage. To deallocate storage just assign an empty string.
- *
- * For storage allocation `malloc()` is used, so it bypasses `Alloc` memory manager. However, it
- * still updates `Alloc::amount` & other members but those allocations are not tracked when built
- * with `OZ_TRACK_ALLOCS`.
  */
 class String
 {
@@ -82,13 +78,7 @@ public:
    */
   static int compare( const char* a, const char* b )
   {
-    int diff;
-
-    while( ( diff = *a - *b ) == 0 && *a != '\0' ) {
-      ++a;
-      ++b;
-    }
-    return diff;
+    return __builtin_strcmp( a, b );
   }
 
   /**
@@ -96,7 +86,7 @@ public:
    */
   static bool equals( const char* a, const char* b )
   {
-    return compare( a, b ) == 0;
+    return __builtin_strcmp( a, b ) == 0;
   }
 
   /**
@@ -104,12 +94,7 @@ public:
    */
   static int length( const char* s )
   {
-    int i = 0;
-
-    while( s[i] != '\0' ) {
-      ++i;
-    }
-    return i;
+    return int( __builtin_strlen( s ) );
   }
 
   /**
@@ -124,16 +109,7 @@ public:
   /**
    * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
    */
-  static int strongHash( const char* s )
-  {
-    uint value = 2166136261;
-
-    while( *s != '\0' ) {
-      value = ( value * 16777619 ) ^ uint( *s );
-      ++s;
-    }
-    return int( value );
-  }
+  static int strongHash( const char* s );
 
   /**
    * First character or null character if an empty string.
@@ -149,103 +125,44 @@ public:
    */
   static char last( const char* s )
   {
-    int sCount = length( s );
+    size_t sCount = __builtin_strlen( s );
     return sCount == 0 ? '\0' : s[sCount - 1];
   }
 
   /**
    * Index of the first occurrence of a character from a given index (inclusive).
    */
-  static int index( const char* s, char ch, int start = 0 )
-  {
-    for( int i = start; s[i] != '\0'; ++i ) {
-      if( s[i] == ch ) {
-        return i;
-      }
-    }
-    return -1;
-  }
+  static int index( const char* s, char ch, int start = 0 );
 
   /**
    * Index of the last occurrence of a character before a given index (not inclusive).
    */
-  static int lastIndex( const char* s, char ch, int end )
-  {
-    for( int i = end - 1; i >= 0; --i ) {
-      if( s[i] == ch ) {
-        return i;
-      }
-    }
-    return -1;
-  }
+  static int lastIndex( const char* s, char ch, int end );
 
   /**
    * Index of the last occurrence of a character.
    */
-  static int lastIndex( const char* s, char ch )
-  {
-    int last = -1;
-
-    for( int i = 0; s[i] != '\0'; ++i ) {
-      if( s[i] == ch ) {
-        last = i;
-      }
-    }
-    return last;
-  }
+  static int lastIndex( const char* s, char ch );
 
   /**
    * Pointer to the first occurrence of a character from a given index (inclusive).
    */
-  static const char* find( const char* s, char ch, int start = 0 )
-  {
-    for( const char* p = s + start; *p != '\0'; ++p ) {
-      if( *p == ch ) {
-        return p;
-      }
-    }
-    return nullptr;
-  }
+  static const char* find( const char* s, char ch, int start = 0 );
 
   /**
    * Pointer to the last occurrence of a character before a given index (not inclusive).
    */
-  static const char* findLast( const char* s, char ch, int end )
-  {
-    for( const char* p = s + end - 1; p >= s; --p ) {
-      if( *p == ch ) {
-        return p;
-      }
-    }
-    return nullptr;
-  }
+  static const char* findLast( const char* s, char ch, int end );
 
   /**
    * Pointer to the last occurrence of a character.
    */
-  static const char* findLast( const char* s, char ch )
-  {
-    const char* last = nullptr;
-
-    for( const char* p = s; *p != '\0'; ++p ) {
-      if( *p == ch ) {
-        last = p;
-      }
-    }
-    return last;
-  }
+  static const char* findLast( const char* s, char ch );
 
   /**
    * True iff string begins with given characters.
    */
-  static bool beginsWith( const char* s, const char* sub )
-  {
-    while( *sub != '\0' && *sub == *s ) {
-      ++sub;
-      ++s;
-    }
-    return *sub == '\0';
-  }
+  static bool beginsWith( const char* s, const char* sub );
 
   /**
    * True iff string ends with given characters.
@@ -445,11 +362,7 @@ public:
   /**
    * Create an empty string.
    */
-  explicit String() :
-    buffer( baseBuffer ), count( 0 )
-  {
-    buffer[0] = '\0';
-  }
+  explicit String();
 
   /**
    * Create string form a given C string with a known length.
@@ -766,10 +679,7 @@ public:
   /**
    * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
    */
-  int strongHash() const
-  {
-    return strongHash( buffer );
-  }
+  int strongHash() const;
 
   /**
    * Constant reference to the `i`-th byte.
@@ -803,58 +713,37 @@ public:
   /**
    * Index of the first occurrence of a character from a given index (inclusive).
    */
-  int index( char ch, int start = 0 ) const
-  {
-    return index( buffer, ch, start );
-  }
+  int index( char ch, int start = 0 ) const;
 
   /**
    * Index of the last occurrence of a character before a given index (not inclusive).
    */
-  int lastIndex( char ch, int end ) const
-  {
-    return lastIndex( buffer, ch, end );
-  }
+  int lastIndex( char ch, int end ) const;
 
   /**
    * Index of the last occurrence of a character.
    */
-  int lastIndex( char ch ) const
-  {
-    return lastIndex( buffer, ch, count );
-  }
+  int lastIndex( char ch ) const;
 
   /**
    * Pointer to the first occurrence of a character from a given index (inclusive).
    */
-  const char* find( char ch, int start = 0 ) const
-  {
-    return find( buffer, ch, start );
-  }
+  const char* find( char ch, int start = 0 ) const;
 
   /**
    * Pointer to the last occurrence of a character before a given index (not inclusive).
    */
-  const char* findLast( char ch, int end ) const
-  {
-    return findLast( buffer, ch, end );
-  }
+  const char* findLast( char ch, int end ) const;
 
   /**
    * Pointer to the last occurrence of a character.
    */
-  const char* findLast( char ch ) const
-  {
-    return findLast( buffer, ch, count );
-  }
+  const char* findLast( char ch ) const;
 
   /**
    * True iff string begins with given characters.
    */
-  bool beginsWith( const char* sub ) const
-  {
-    return beginsWith( buffer, sub );
-  }
+  bool beginsWith( const char* sub ) const;
 
   /**
    * True iff string ends with given characters.
@@ -864,29 +753,17 @@ public:
   /**
    * Parse bool value, wraps `parseBool( const char* s, const char** end )`.
    */
-  OZ_ALWAYS_INLINE
-  bool parseBool( const char** end = nullptr ) const
-  {
-    return parseBool( buffer, end );
-  }
+  bool parseBool( const char** end = nullptr ) const;
 
   /**
    * Parse int value, wraps `parseInt( const char* s, const char** end )`.
    */
-  OZ_ALWAYS_INLINE
-  int parseInt( const char** end = nullptr ) const
-  {
-    return parseInt( buffer, end );
-  }
+  int parseInt( const char** end = nullptr ) const;
 
   /**
    * Parse double value, wraps `parseDouble( const char* s, const char** end )`.
    */
-  OZ_ALWAYS_INLINE
-  double parseDouble( const char** end = nullptr ) const
-  {
-    return parseDouble( buffer, end );
-  }
+  double parseDouble( const char** end = nullptr ) const;
 
   /**
    * Create concatenated string.

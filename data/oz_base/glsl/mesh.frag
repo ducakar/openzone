@@ -114,6 +114,6 @@ void main()
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS
-  gl_FragData[1]     = vec4( specular + emission, 1.0 );
+  gl_FragData[1]     = vec4( specular, 1.0 );
 #endif
 }

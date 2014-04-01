@@ -525,50 +525,17 @@ public:
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotateX( float theta )
-  {
-    Vec4 j = y;
-    Vec4 k = z;
-
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    y = j * c + k * s;
-    z = k * c - j * s;
-  }
+  void rotateX( float theta );
 
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotateY( float theta )
-  {
-    Vec4 i = x;
-    Vec4 k = z;
-
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    x = i * c - k * s;
-    z = k * c + i * s;
-  }
+  void rotateY( float theta );
 
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotateZ( float theta )
-  {
-    Vec4 i = x;
-    Vec4 j = y;
-
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    x = i * c + j * s;
-    y = j * c - i * s;
-  }
+  void rotateZ( float theta );
 
   /**
    * Compose with a scale from the right (fourth vector component is assumed 1.0).
@@ -642,68 +609,22 @@ public:
   /**
    * Create matrix for rotation around x axis.
    */
-  OZ_ALWAYS_INLINE
-  static Mat4 rotationX( float theta )
-  {
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    return Mat4( 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.0f,    c,    s, 0.0f,
-                 0.0f,   -s,    c, 0.0f,
-                 0.0f, 0.0f, 0.0f, 1.0f );
-  }
+  static Mat4 rotationX( float theta );
 
   /**
    * Create matrix for rotation around y axis.
    */
-  OZ_ALWAYS_INLINE
-  static Mat4 rotationY( float theta )
-  {
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    return Mat4(    c, 0.0f,   -s, 0.0f,
-                 0.0f, 1.0f, 0.0f, 0.0f,
-                    s, 0.0f,    c, 0.0f,
-                 0.0f, 0.0f, 0.0f, 1.0f );
-  }
+  static Mat4 rotationY( float theta );
 
   /**
    * Create matrix for rotation around z axis.
    */
-  OZ_ALWAYS_INLINE
-  static Mat4 rotationZ( float theta )
-  {
-    float s, c;
-    Math::sincos( theta, &s, &c );
-
-    return Mat4(    c,    s, 0.0f, 0.0f,
-                   -s,    c, 0.0f, 0.0f,
-                 0.0f, 0.0f, 1.0f, 0.0f,
-                 0.0f, 0.0f, 0.0f, 1.0f );
-  }
+  static Mat4 rotationZ( float theta );
 
   /**
    * `rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )`.
    */
-  OZ_ALWAYS_INLINE
-  static Mat4 rotationZXZ( float heading, float pitch, float roll )
-  {
-    float hs, hc, ps, pc, rs, rc;
-
-    Math::sincos( heading, &hs, &hc );
-    Math::sincos( pitch, &ps, &pc );
-    Math::sincos( roll, &rs, &rc );
-
-    float hspc = hs*pc;
-    float hcpc = hc*pc;
-
-    return Mat4(  hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs, 0.0f,
-                 -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc, 0.0f,
-                            hs*ps,           -hc*ps,    pc, 0.0f,
-                             0.0f,             0.0f,  0.0f, 1.0f );
-  }
+  static Mat4 rotationZXZ( float heading, float pitch, float roll );
 
   /**
    * Create matrix for scaling (fourth vector component is assumed 1.0).

@@ -817,17 +817,15 @@ void Render::init()
   shader.init();
   shape.init();
 
-  static const EnumName SCALE_FILTER_MAP[] = {
+  EnumMap<GLenum> scaleFilterMap = {
     { GL_LINEAR,  "LINEAR"  },
     { GL_NEAREST, "NEAREST" }
   };
-  EnumMap<GLenum> scaleFilterMap( SCALE_FILTER_MAP );
 
-  static const EnumName COLLATION_MAP[] = {
+  EnumMap<Model::Collation> collationMap = {
     { Model::DEPTH_MAJOR, "DEPTH_MAJOR" },
     { Model::MODEL_MAJOR, "MODEL_MAJOR"  }
   };
-  EnumMap<Model::Collation> collationMap( COLLATION_MAP );
 
 #ifdef __native_client__
   const char* sCollation = config.include( "render.collation", "MODEL_MAJOR" ).get( "" );

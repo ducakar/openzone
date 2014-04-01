@@ -530,6 +530,31 @@ bool File::stat()
   return fileType != MISSING;
 }
 
+String File::directory() const
+{
+  return filePath.fileDirectory();
+}
+
+String File::name() const
+{
+  return filePath.fileName();
+}
+
+String File::baseName() const
+{
+  return filePath.fileBaseName();
+}
+
+String File::extension() const
+{
+  return filePath.fileExtension();
+}
+
+bool File::hasExtension( const char* ext ) const
+{
+  return filePath.fileHasExtension( ext );
+}
+
 String File::realDirectory() const
 {
   if( filePath.fileIsVirtual() ) {

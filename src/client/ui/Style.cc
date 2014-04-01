@@ -204,7 +204,7 @@ void Style::init()
 
   config.clear( true );
 
-  glGenTextures( sizeof( images ) / sizeof( images.crosshair ), &images.crosshair );
+  glGenTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
 
   OZ_LOAD_IMAGE( crosshair );
   OZ_LOAD_IMAGE( use );
@@ -236,7 +236,7 @@ void Style::destroy()
   context.releaseSound( sounds.click );
   context.releaseSound( sounds.bell );
 
-  glDeleteTextures( sizeof( images ) / sizeof( images.crosshair ), &images.crosshair );
+  glDeleteTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
 
   for( int i = 0; i < Font::MAX; ++i ) {
     fonts[i].destroy();

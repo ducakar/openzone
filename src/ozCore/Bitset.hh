@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "arrays.hh"
+#include "common.hh"
 
 namespace oz
 {
@@ -59,103 +59,44 @@ public:
    * The size of `data` array is adjusted to the smallest unit number that can hold the requested
    * number of bits. No memory is allocated if `nBits == 0`.
    */
-  explicit Bitset( int nBits = 0 )
-  {
-    if( nBits == 0 ) {
-      data = nullptr;
-      size = 0;
-    }
-    else {
-      size = ( nBits + UNIT_BITSIZE - 1 ) / UNIT_BITSIZE;
-      data = new ulong[size];
-    }
-  }
+  explicit Bitset( int nBits = 0 );
 
   /**
    * Destructor.
    */
-  ~Bitset()
-  {
-    delete[] data;
-  }
+  ~Bitset();
 
   /**
    * Copy constructor, copies storage.
    */
-  Bitset( const Bitset& b ) :
-    data( b.size == 0 ? nullptr : new ulong[b.size] ), size( b.size )
-  {
-    aCopy<ulong>( b.data, b.size, data );
-  }
+  Bitset( const Bitset& b );
 
   /**
    * Move constructor, moves storage.
    */
-  Bitset( Bitset&& b ) :
-    data( b.data ), size( b.size )
-  {
-    b.data = nullptr;
-    b.size = 0;
-  }
+  Bitset( Bitset&& b );
 
   /**
    * Copy operator, copies storage.
    *
    * Existing storage is reused if its size matches.
    */
-  Bitset& operator = ( const Bitset& b )
-  {
-    if( &b == this ) {
-      return *this;
-    }
-
-    if( size != b.size ) {
-      delete[] data;
-
-      data = b.size == 0 ? nullptr : new ulong[b.size];
-      size = b.size;
-    }
-
-    aCopy<ulong>( b.data, b.size, data );
-
-    return *this;
-  }
+  Bitset& operator = ( const Bitset& b );
 
   /**
    * Move operator, moves storage.
    */
-  Bitset& operator = ( Bitset&& b )
-  {
-    if( &b == this ) {
-      return *this;
-    }
-
-    delete[] data;
-
-    data = b.data;
-    size = b.size;
-
-    b.data = nullptr;
-    b.size = 0;
-
-    return *this;
-  }
+  Bitset& operator = ( Bitset&& b );
 
   /**
    * True iff same size and respective bits are equal.
    */
-  bool operator == ( const Bitset& b ) const
-  {
-    return size == b.size && aEquals<ulong>( data, size, b.data );
-  }
+  bool operator == ( const Bitset& b ) const;
 
   /**
    * True iff different size or any respective bits differ.
    */
-  bool operator != ( const Bitset& b ) const
-  {
-    return !operator == ( b );
-  }
+  bool operator != ( const Bitset& b ) const;
 
   /**
    * Get constant pointer to `data` array.
@@ -238,28 +179,12 @@ public:
   /**
    * True iff all bits are true.
    */
-  bool isAllSet() const
-  {
-    for( int i = 0; i < size; ++i ) {
-      if( data[i] != ~0ul ) {
-        return false;
-      }
-    }
-    return true;
-  }
+  bool isAllSet() const;
 
   /**
    * True iff all bits are false.
    */
-  bool isAllClear() const
-  {
-    for( int i = 0; i < size; ++i ) {
-      if( data[i] != 0ul ) {
-        return false;
-      }
-    }
-    return true;
-  }
+  bool isAllClear() const;
 
   /**
    * True iff this bitset is a subset of a given bitset.
@@ -271,206 +196,72 @@ public:
    *
    * Both bitsets must be the same size.
    */
-  bool isSubset( const Bitset& b ) const
-  {
-    hard_assert( size == b.size );
-
-    for( int i = 0; i < size; ++i ) {
-      if( ( data[i] & ~b.data[i] ) != 0ul ) {
-        return false;
-      }
-    }
-    return true;
-  }
+  bool isSubset( const Bitset& b ) const;
 
   /**
    * %Set bits from inclusively start to non-inclusively end to true.
    */
-  void set( int start, int end )
-  {
-    hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( size * UNIT_BITSIZE ) );
-
-    int   startUnit   = start / UNIT_BITSIZE;
-    int   startOffset = start % UNIT_BITSIZE;
-
-    int   endUnit     = end / UNIT_BITSIZE;
-    int   endOffset   = end % UNIT_BITSIZE;
-
-    ulong startMask   = ~0ul << startOffset;
-    ulong endMask     = ~( ~0ul << endOffset );
-
-    if( startUnit == endUnit ) {
-      data[startUnit] |= startMask & endMask;
-    }
-    else {
-      data[startUnit] |= startMask;
-      data[endUnit]   |= endMask;
-
-      for( int i = startUnit + 1; i < endUnit; ++i ) {
-        data[i] = ~0ul;
-      }
-    }
-  }
+  void set( int start, int end );
 
   /**
    * %Set bits from inclusively start to non-inclusively end to false.
    */
-  void clear( int start, int end )
-  {
-    hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( size * UNIT_BITSIZE ) );
-
-    int   startUnit   = start / UNIT_BITSIZE;
-    int   startOffset = start % UNIT_BITSIZE;
-
-    int   endUnit     = end / UNIT_BITSIZE;
-    int   endOffset   = end % UNIT_BITSIZE;
-
-    ulong startMask   = ~( ~0ul << startOffset );
-    ulong endMask     = ~0ul << endOffset;
-
-    if( startUnit == endUnit ) {
-      data[startUnit] &= startMask | endMask;
-    }
-    else {
-      data[startUnit] &= startMask;
-      data[endUnit]   &= endMask;
-
-      for( int i = startUnit + 1; i < endUnit; ++i ) {
-        data[i] = 0ul;
-      }
-    }
-  }
+  void clear( int start, int end );
 
   /**
    * %Set all bits to true.
    */
-  void setAll()
-  {
-    mSet( data, -1, size_t( size ) * sizeof( ulong ) );
-  }
+  void setAll();
 
   /**
    * %Set all bits to false.
    */
-  void clearAll()
-  {
-    mSet( data, 0, size_t( size ) * sizeof( ulong ) );
-  }
+  void clearAll();
 
   /**
    * NOT of the bitset.
    */
-  Bitset operator ~ () const
-  {
-    Bitset r( size );
-
-    for( int i = 0; i < size; ++i ) {
-      r.data[i] = ~data[i];
-    }
-    return r;
-  }
+  Bitset operator ~ () const;
 
   /**
    * Return AND of two same-length bitsets.
    */
-  Bitset operator & ( const Bitset& b ) const
-  {
-    hard_assert( size == b.size );
-
-    Bitset r( size );
-
-    for( int i = 0; i < size; ++i ) {
-      r.data[i] = data[i] & b.data[i];
-    }
-    return r;
-  }
+  Bitset operator & ( const Bitset& b ) const;
 
   /**
    * Return OR of two same-length bitsets.
    */
-  Bitset operator | ( const Bitset& b ) const
-  {
-    hard_assert( size == b.size );
-
-    Bitset r( size );
-
-    for( int i = 0; i < size; ++i ) {
-      r.data[i] = data[i] | b.data[i];
-    }
-    return r;
-  }
+  Bitset operator | ( const Bitset& b ) const;
 
   /**
    * Return XOR of two same-length bitsets.
    */
-  Bitset operator ^ ( const Bitset& b ) const
-  {
-    hard_assert( size == b.size );
-
-    Bitset r( size );
-
-    for( int i = 0; i < size; ++i ) {
-      r.data[i] = data[i] ^ b.data[i];
-    }
-    return r;
-  }
+  Bitset operator ^ ( const Bitset& b ) const;
 
   /**
    * AND of two same-length bitsets.
    */
-  Bitset& operator &= ( const Bitset& b )
-  {
-    for( int i = 0; i < size; ++i ) {
-      data[i] &= b.data[i];
-    }
-    return *this;
-  }
+  Bitset& operator &= ( const Bitset& b );
 
   /**
    * OR of two same-length bitsets.
    */
-  Bitset& operator |= ( const Bitset& b )
-  {
-    for( int i = 0; i < size; ++i ) {
-      data[i] |= b.data[i];
-    }
-    return *this;
-  }
+  Bitset& operator |= ( const Bitset& b );
 
   /**
    * XOR of two same-length bitsets.
    */
-  Bitset& operator ^= ( const Bitset& b )
-  {
-    for( int i = 0; i < size; ++i ) {
-      data[i] ^= b.data[i];
-    }
-    return *this;
-  }
+  Bitset& operator ^= ( const Bitset& b );
 
   /**
    * For an empty bitset, allocate storage for `nBits` bits.
    */
-  void allocate( int nBits )
-  {
-    hard_assert( size == 0 && nBits > 0 );
-
-    int nUnits = ( nBits + UNIT_BITSIZE - 1 ) / UNIT_BITSIZE;
-
-    data = new ulong[nUnits];
-    size = nUnits;
-  }
+  void allocate( int nBits );
 
   /**
    * Deallocate data.
    */
-  void deallocate()
-  {
-    delete[] data;
-
-    data = nullptr;
-    size = 0;
-  }
+  void deallocate();
 
 };
 

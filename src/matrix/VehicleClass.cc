@@ -158,7 +158,7 @@ void VehicleClass::init( const JSON& config, const char* name_ )
   }
 
   for( int i = 0; i < nWeapons; ++i ) {
-    weaponTitles[i]        = weaponsConfig[i]["title"].get( "" );
+    weaponTitles[i]        = lingua.get( weaponsConfig[i]["title"].get( "" ) );
     onWeaponShot[i]        = weaponsConfig[i]["onShot"].get( "" );
     nWeaponRounds[i]       = weaponsConfig[i]["nRounds"].get( -1 );
     weaponShotIntervals[i] = weaponsConfig[i]["shotInterval"].get( 0.5f );

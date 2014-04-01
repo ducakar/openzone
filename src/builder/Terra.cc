@@ -41,11 +41,10 @@ void Terra::load()
     OZ_ERROR( "Failed to load terra configuration '%s'", configFile.path().cstr() );
   }
 
-  static const EnumName LIQUID_MAP[] = {
+  EnumMap<int> liquidMap = {
     { Medium::WATER_BIT | Medium::SEA_BIT, "WATER" },
     { Medium::LAVA_BIT  | Medium::SEA_BIT, "LAVA"  }
   };
-  EnumMap<int> liquidMap( LIQUID_MAP );
 
   detailTex     = config["detailTexture"].get( "" );
   liquidTex     = config["liquidTexture"].get( "" );
@@ -107,11 +106,10 @@ void Terra::load()
       "combiner", "plains", "mountains", "turbulence", "noise"
     };
 
-    static const EnumName CONTROL_MAP[] = {
+    static const EnumMap<TerraBuilder::Module> controlMap = {
       { TerraBuilder::COMBINER, "combiner" },
       { TerraBuilder::PLAINS,   "plains"   },
     };
-    static const EnumMap<TerraBuilder::Module> controlMap( CONTROL_MAP );
 
     for( int i = 0; i < aLength( MODULE_NAMES ); ++i ) {
       const JSON& moduleConfig = config[ MODULE_NAMES[i] ];

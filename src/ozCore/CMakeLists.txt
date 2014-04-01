@@ -57,6 +57,7 @@ add_library( ozCore
   Vec4.hh
   Alloc.cc
   arrays.cc
+  Bitset.cc
   Buffer.cc
   CallOnce.cc
   common.cc

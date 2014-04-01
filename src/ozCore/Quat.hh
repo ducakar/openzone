@@ -551,81 +551,32 @@ public:
   /**
    * Create quaternion for rotation around a given axis.
    */
-  static Quat rotationAxis( const Vec3& axis, float theta )
-  {
-    float s, c;
-    Math::sincos( theta * 0.5f, &s, &c );
-    return Quat( s * axis.x, s * axis.y, s * axis.z, c );
-  }
+  static Quat rotationAxis( const Vec3& axis, float theta );
 
   /**
    * Create quaternion for rotation around x axis.
    */
-  static Quat rotationX( float theta )
-  {
-    float s, c;
-    Math::sincos( theta * 0.5f, &s, &c );
-    return Quat( s, 0.0f, 0.0f, c );
-  }
+  static Quat rotationX( float theta );
 
   /**
    * Create quaternion for rotation around y axis.
    */
-  static Quat rotationY( float theta )
-  {
-    float s, c;
-    Math::sincos( theta * 0.5f, &s, &c );
-    return Quat( 0.0f, s, 0.0f, c );
-  }
+  static Quat rotationY( float theta );
 
   /**
    * Create quaternion for rotation around z axis.
    */
-  static Quat rotationZ( float theta )
-  {
-    float s, c;
-    Math::sincos( theta * 0.5f, &s, &c );
-    return Quat( 0.0f, 0.0f, s, c );
-  }
+  static Quat rotationZ( float theta );
 
   /**
    * `rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )`.
    */
-  static Quat rotationZXZ( float heading, float pitch, float roll )
-  {
-    float hs, hc, ps, pc, rs, rc;
-
-    Math::sincos( heading * 0.5f, &hs, &hc );
-    Math::sincos( pitch   * 0.5f, &ps, &pc );
-    Math::sincos( roll    * 0.5f, &rs, &rc );
-
-    float hsps = hs * ps;
-    float hcpc = hc * pc;
-    float hspc = hs * pc;
-    float hcps = hc * ps;
-
-    return Quat( hcps * rc + hsps * rs,
-                 hsps * rc - hcps * rs,
-                 hspc * rc + hcpc * rs,
-                 hcpc * rc - hspc * rs );
-  }
+  static Quat rotationZXZ( float heading, float pitch, float roll );
 
   /**
    * Get rotation axis and angle.
    */
-  void toAxisAngle( Vec3* axis, float* angle ) const
-  {
-    *angle = 2.0f * Math::acos( w );
-
-    float k = Math::sqrt( 1.0f - w*w );
-    if( k == 0.0f ) {
-      *axis = Vec3::ZERO;
-    }
-    else {
-      k = 1.0f / k;
-      *axis = Vec3( x * k, y * k, z * k );
-    }
-  }
+  void toAxisAngle( Vec3* axis, float* angle ) const;
 
   /**
    * Spherical linear interpolation between two orientations.

@@ -35,21 +35,9 @@ namespace oz
 {
 
 /**
- * EnumMap entry.
+ * %Map between enumerator values and their string representations.
  *
- * This is a separate class rather than a subclass of `EnumMap` to shorten code then
- * declaring/defining arrays of enumerator value-name pairs.
- */
-struct EnumName
-{
-  int         value; ///< Enumerator value converted to integer.
-  const char* name;  ///< Enumerator value name.
-};
-
-/**
- * %Map between enumerator values and its string representations.
- *
- * It can be used as follows:
+ * It can be used like:
  * @code
  * enum MyEnum
  * {
@@ -57,12 +45,10 @@ struct EnumName
  *   BAR = 42
  * };
  *
- * static const EnumName MYENUM_NAMES[] = {
+ * EnumMap<MyEnum> myEnumMap = {
  *   { FOO, "FOO" },
  *   { BAR, "BAR" }
  * };
- *
- * EnumMap<MyEnum> myEnumMap( MYENUM_NAMES );
  * Log() << map[FOO];   // "FOO"
  * Log() << map["BAR"]; // 42
  * @endcode
@@ -72,19 +58,27 @@ class EnumMap
 {
 private:
 
-  const EnumName* entries;  ///< %Map entries.
-  int             nEntries; ///< Number of map entries.
+  /**
+   * EnumMap entry.
+   */
+  struct Entry
+  {
+    int         value; ///< Enumerator value as integer.
+    const char* name;  ///< Enumerator value name.
+  };
+
+  const Entry* entries;  ///< %Map entries.
+  int          nEntries; ///< Number of map entries.
 
 public:
 
   /**
    * Create enumerator mapping from an array.
    */
-  template <int COUNT>
-  explicit EnumMap( const EnumName ( & map )[COUNT] ) :
-    entries( map ), nEntries( COUNT )
+  EnumMap( InitialiserList<Entry> l ) :
+    entries( l.begin() ), nEntries( int( l.size() ) )
   {
-    static_assert( COUNT > 0, "oz::EnumMap: Map array is empty" );
+    hard_assert( l.size() != 0 );
   }
 
   /**

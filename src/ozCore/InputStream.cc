@@ -26,13 +26,211 @@
 
 #include "InputStream.hh"
 
+#include "System.hh"
+
 namespace oz
 {
+
+void InputStream::set( const char* newPos )
+{
+  if( newPos < streamBegin || streamEnd < newPos ) {
+    OZ_ERROR( "oz::InputStream: Overrun for %d B during setting stream position",
+              newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
+  }
+
+  streamPos = newPos;
+}
+
+void InputStream::seek( int offset )
+{
+  if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
+    OZ_ERROR( "oz::InputStream: Overrun for %d B during stream seek",
+              offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
+  }
+
+  streamPos = streamBegin + offset;
+}
+
+const char* InputStream::forward( int count )
+{
+  const char* oldPos = streamPos;
+  streamPos += count;
+
+  if( streamPos > streamEnd ) {
+    OZ_ERROR( "oz::InputStream: Overrun for %d B during a read of %d B",
+              int( streamPos - streamEnd ), count );
+  }
+  return oldPos;
+}
+
+bool InputStream::readBool()
+{
+  const char* data = forward( int( sizeof( bool ) ) );
+  return bool( *data );
+}
+
+char InputStream::readChar()
+{
+  const char* data = forward( int( sizeof( char ) ) );
+  return char( *data );
+}
 
 void InputStream::readChars( char* array, int count )
 {
   const char* data = forward( count * int( sizeof( char ) ) );
   mCopy( array, data, size_t( count ) );
+}
+
+byte InputStream::readByte()
+{
+  const char* data = forward( int( sizeof( byte ) ) );
+  return byte( *data );
+}
+
+ubyte InputStream::readUByte()
+{
+  const char* data = forward( int( sizeof( ubyte ) ) );
+  return ubyte( *data );
+}
+
+short InputStream::readShort()
+{
+  const char* data = forward( int( sizeof( short ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToShort value = { { data[0], data[1] } };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToShort value = { { data[1], data[0] } };
+
+    return value.value;
+  }
+}
+
+ushort InputStream::readUShort()
+{
+  const char* data = forward( int( sizeof( ushort ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToUShort value = { { data[0], data[1] } };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToUShort value = { { data[1], data[0] } };
+
+    return value.value;
+  }
+}
+
+int InputStream::readInt()
+{
+  const char* data = forward( int( sizeof( int ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToInt value = { { data[3], data[2], data[1], data[0] } };
+
+    return value.value;
+  }
+}
+
+uint InputStream::readUInt()
+{
+  const char* data = forward( int( sizeof( uint ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToUInt value = { { data[3], data[2], data[1], data[0] } };
+
+    return value.value;
+  }
+}
+
+long64 InputStream::readLong64()
+{
+  const char* data = forward( int( sizeof( long64 ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToLong64 value = {
+      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+    };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToLong64 value = {
+      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+    };
+
+    return value.value;
+  }
+}
+
+ulong64 InputStream::readULong64()
+{
+  const char* data = forward( int( sizeof( ulong64 ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToULong64 value = {
+      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+    };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToULong64 value = {
+      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+    };
+
+    return value.value;
+  }
+}
+
+float InputStream::readFloat()
+{
+  const char* data = forward( int( sizeof( float ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
+
+    return value.value;
+  }
+}
+
+double InputStream::readDouble()
+{
+  const char* data = forward( int( sizeof( double ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToDouble value = {
+      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+    };
+
+    return value.value;
+  }
+  else {
+    Endian::BytesToDouble value = {
+      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+    };
+
+    return value.value;
+  }
 }
 
 const char* InputStream::readString()
@@ -48,6 +246,112 @@ const char* InputStream::readString()
 
   ++streamPos;
   return begin;
+}
+
+Vec3 InputStream::readVec3()
+{
+  const char* data = forward( int( sizeof( float[3] ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+
+    return Vec3( x.value, y.value, z.value );
+  }
+  else {
+    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+
+    return Vec3( x.value, y.value, z.value );
+  }
+}
+
+Vec4 InputStream::readVec4()
+{
+  const char* data = forward( int( sizeof( float[4] ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+    Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
+
+    return Vec4( x.value, y.value, z.value, w.value );
+  }
+  else {
+    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+    Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
+
+    return Vec4( x.value, y.value, z.value, w.value );
+  }
+}
+
+Point InputStream::readPoint()
+{
+  const char* data = forward( int( sizeof( float[3] ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+
+    return Point( x.value, y.value, z.value );
+  }
+  else {
+    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+
+    return Point( x.value, y.value, z.value );
+  }
+}
+
+Plane InputStream::readPlane()
+{
+  const char* data = forward( int( sizeof( float[4] ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+    Endian::BytesToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+    Endian::BytesToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
+    Endian::BytesToFloat d  = { { data[12], data[13], data[14], data[15] } };
+
+    return Plane( nx.value, ny.value, nz.value, d.value );
+  }
+  else {
+    Endian::BytesToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+    Endian::BytesToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+    Endian::BytesToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
+    Endian::BytesToFloat d  = { { data[15], data[14], data[13], data[12] } };
+
+    return Plane( nx.value, ny.value, nz.value, d.value );
+  }
+}
+
+Quat InputStream::readQuat()
+{
+  const char* data = forward( int( sizeof( float[4] ) ) );
+
+  if( order == Endian::NATIVE ) {
+    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
+    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
+    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
+    Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
+
+    return Quat( x.value, y.value, z.value, w.value );
+  }
+  else {
+    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
+    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
+    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
+    Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
+
+    return Quat( x.value, y.value, z.value, w.value );
+  }
 }
 
 Mat3 InputStream::readMat3()

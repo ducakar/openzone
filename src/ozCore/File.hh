@@ -230,46 +230,31 @@ public:
   /**
    * Extract directory from the path (substring before the last `/`).
    */
-  String directory() const
-  {
-    return filePath.fileDirectory();
-  }
+  String directory() const;
 
   /**
    * Extract file name from the path (substring after the last `/`).
    */
-  String name() const
-  {
-    return filePath.fileName();
-  }
+  String name() const;
 
   /**
    * Extract base file name from the path (substring after the last `/` till the last dot following
    * it).
    */
-  String baseName() const
-  {
-    return filePath.fileBaseName();
-  }
+  String baseName() const;
 
   /**
    * Extract file extension from the path (substring after the last dot in file name or "" if no
    * extension).
    */
-  String extension() const
-  {
-    return filePath.fileExtension();
-  }
+  String extension() const;
 
   /**
    * True iff file name has a given extension.
    *
    * Empty string matches both no extension and files names ending with dot.
    */
-  bool hasExtension( const char* ext ) const
-  {
-    return filePath.fileHasExtension( ext );
-  }
+  bool hasExtension( const char* ext ) const;
 
   /**
    * %Path to the archive or mount-point of a VFS, "" for native files.

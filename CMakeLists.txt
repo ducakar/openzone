@@ -231,7 +231,6 @@ else()
 endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}" )
-set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-fwhole-program" )
 
 # Strings for BuildInfo class.
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

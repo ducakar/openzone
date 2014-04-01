@@ -241,7 +241,7 @@ void BSP::load()
     models[i].title      = entityConfig["title"].get( "" );
     models[i].move       = entityConfig["move"].get( Vec3::ZERO );
 
-    static const EnumName ENTITY_MAP[] = {
+    static const EnumMap<EntityClass::Type> entityMap = {
       { EntityClass::STATIC,         "STATIC"         },
       { EntityClass::MANUAL_DOOR,    "MANUAL_DOOR"    },
       { EntityClass::AUTO_DOOR,      "AUTO_DOOR"      },
@@ -249,7 +249,6 @@ void BSP::load()
       { EntityClass::CRUSHING_BLOCK, "CRUSHING_BLOCK" },
       { EntityClass::ELEVATOR,       "ELEVATOR"       }
     };
-    static const EnumMap<EntityClass::Type> entityMap( ENTITY_MAP );
 
     models[i].type       = entityMap[ entityConfig["type"].get( "" ) ];
     models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );

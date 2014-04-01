@@ -553,14 +553,13 @@ int Client::main()
 {
   SDL_Event event;
 
-  bool isAlive        = true;
-  bool isActive       = true;
+  bool isAlive   = true;
+  bool isActive  = true;
   // Time spent on the current frame so far.
-  uint timeSpent      = 0;
-  uint timeZero       = Time::uclock();
+  uint timeSpent = 0;
+  uint timeZero  = Time::uclock();
   // Time at the end of the last frame.
-  uint timeLast       = timeZero;
-  bool wasLastDropped = false;
+  uint timeLast  = timeZero;
 
   initFlags |= INIT_MAIN_LOOP;
 
@@ -753,11 +752,9 @@ int Client::main()
     // Skip rendering graphics, only play sounds if there's not enough time.
     if( timeSpent >= 2 * Timer::TICK_MICROS ) {
       stage->present( false );
-      wasLastDropped = true;
     }
     else {
       stage->present( true );
-      wasLastDropped = false;
 
       timer.frame();
 

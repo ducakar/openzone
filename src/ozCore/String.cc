@@ -26,13 +26,11 @@
 
 #include "String.hh"
 
-#include "System.hh"
 #include "Math.hh"
-#include "Alloc.hh"
 
 #include <cmath>
 #include <cstdio>
-#include <cstdlib>
+#include <cstring>
 
 #if defined( __ANDROID__ ) || defined( _WIN32 )
 # define exp10( x ) exp( log( 10.0 ) * ( x ) )
@@ -59,48 +57,89 @@ void String::ensureCapacity( int newCount )
 
   if( newCount < BUFFER_SIZE ) {
     if( buffer != baseBuffer ) {
-      free( buffer );
+      delete[] buffer ;
       buffer = baseBuffer;
-
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-      --Alloc::count;
-      Alloc::amount -= size_t( count + 1 );
-#endif
     }
   }
-  else {
-    if( buffer == baseBuffer ) {
-      buffer = nullptr;
+  else if( newCount != count ) {
+    char* newBuffer = new char[newCount + 1];
 
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-      ++Alloc::count;
-      ++Alloc::sumCount;
-      Alloc::amount    += size_t( newCount + 1 );
-      Alloc::sumAmount += size_t( newCount + 1 );
-#endif
+    mCopy( newBuffer, buffer, size_t( count + 1 ) );
+
+    if( buffer != baseBuffer ) {
+      delete[] buffer;
     }
-    else {
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-      ++Alloc::sumCount;
-      Alloc::amount    += size_t( newCount - count );
-      Alloc::sumAmount += size_t( newCount + 1 );
-#endif
-    }
-
-    buffer = buffer == baseBuffer ? nullptr : buffer;
-    buffer = static_cast<char*>( realloc( buffer, size_t( newCount + 1 ) ) );
-
-    if( buffer == nullptr ) {
-      OZ_ERROR( "oz::String: Allocation failed" );
-    }
-
-#ifdef OZ_DISABLE_ALLOC_OVERLOADS
-    Alloc::maxCount  = max<int>( Alloc::count, Alloc::maxCount );
-    Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
-#endif
+    buffer = newBuffer;
   }
 
   count = newCount;
+}
+
+int String::strongHash( const char* s )
+{
+  uint value = 2166136261;
+
+  while( *s != '\0' ) {
+    value = ( value * 16777619 ) ^ uint( *s );
+    ++s;
+  }
+  return int( value );
+}
+
+int String::index( const char* s, char ch, int start )
+{
+  for( int i = start; s[i] != '\0'; ++i ) {
+    if( s[i] == ch ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int String::lastIndex( const char* s, char ch, int end )
+{
+  for( int i = end - 1; i >= 0; --i ) {
+    if( s[i] == ch ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int String::lastIndex( const char* s, char ch )
+{
+  int last = -1;
+
+  for( int i = 0; s[i] != '\0'; ++i ) {
+    if( s[i] == ch ) {
+      last = i;
+    }
+  }
+  return last;
+}
+
+const char* String::find( const char* s, char ch, int start )
+{
+  return strchr( s + start, ch );
+}
+
+const char* String::findLast( const char* s, char ch, int end )
+{
+  return static_cast<const char*>( memrchr( s, ch, size_t( end ) ) );
+}
+
+const char* String::findLast( const char* s, char ch )
+{
+  return strrchr( s, ch );
+}
+
+bool String::beginsWith( const char* s, const char* sub )
+{
+  while( *sub != '\0' && *sub == *s ) {
+    ++sub;
+    ++s;
+  }
+  return *sub == '\0';
 }
 
 bool String::endsWith( const char* s, const char* sub )
@@ -410,6 +449,12 @@ invalidNumber:
   return sign * number;
 }
 
+String::String() :
+  buffer( baseBuffer ), count( 0 )
+{
+  baseBuffer[0] = '\0';
+}
+
 String::String( const char* s, int count_ ) :
   buffer( baseBuffer ), count( 0 )
 {
@@ -587,12 +632,7 @@ String::String( double d, int nDigits ) :
 String::~String()
 {
   if( buffer != baseBuffer ) {
-    free( buffer );
-
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-    --Alloc::count;
-    Alloc::amount -= size_t( count + 1 );
-#endif
+    delete[] buffer;
   }
 }
 
@@ -638,12 +678,7 @@ String& String::operator = ( String&& s )
   }
 
   if( buffer != baseBuffer ) {
-    free( buffer );
-
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-    --Alloc::count;
-    Alloc::amount -= size_t( count + 1 );
-#endif
+    delete[] buffer;
   }
 
   count = s.count;
@@ -729,6 +764,46 @@ String String::si( double e, int nDigits )
   return String( e, nDigits ) + suffix;
 }
 
+int String::strongHash() const
+{
+  return strongHash( buffer );
+}
+
+int String::index( char ch, int start ) const
+{
+  return index( buffer, ch, start );
+}
+
+int String::lastIndex( char ch, int end ) const
+{
+  return lastIndex( buffer, ch, end );
+}
+
+int String::lastIndex( char ch ) const
+{
+  return lastIndex( buffer, ch, count );
+}
+
+const char* String::find( char ch, int start ) const
+{
+  return find( buffer, ch, start );
+}
+
+const char* String::findLast( char ch, int end ) const
+{
+  return findLast( buffer, ch, end );
+}
+
+const char* String::findLast( char ch ) const
+{
+  return findLast( buffer, ch, count );
+}
+
+bool String::beginsWith( const char* sub ) const
+{
+  return beginsWith( buffer, sub );
+}
+
 bool String::endsWith( const char* sub ) const
 {
   int subLen = length( sub );
@@ -745,6 +820,21 @@ bool String::endsWith( const char* sub ) const
     --end;
   }
   return subEnd < sub;
+}
+
+bool String::parseBool( const char** end ) const
+{
+  return parseBool( buffer, end );
+}
+
+int String::parseInt( const char** end ) const
+{
+  return parseInt( buffer, end );
+}
+
+double String::parseDouble( const char** end ) const
+{
+  return parseDouble( buffer, end );
 }
 
 String String::operator + ( const String& s ) const
