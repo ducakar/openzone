@@ -281,7 +281,8 @@ void GameStage::present( bool isFull )
   beginMicros = currentMicros;
 
   MainCall() << [&]() {
-    render.update( isFull ? Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT : 0 );
+    render.update( isFull ? Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT :
+                            Render::EFFECTS_BIT );
   };
 
   currentMicros = Time::uclock();
@@ -313,7 +314,7 @@ void GameStage::load()
   ui::ui.loadingScreen->show( true );
 
   MainCall() << []() {
-    render.update( Render::DRAW_UI_BIT );
+    render.update( Render::UI_BIT );
   };
 
   timer.reset();
@@ -374,7 +375,7 @@ void GameStage::load()
   ui::ui.showLoadingScreen( true );
 
   MainCall() << []() {
-    render.update( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+    render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
   };
   loader.syncUpdate();
   sound.play();
@@ -408,7 +409,7 @@ void GameStage::unload()
   loader.unload();
 
   MainCall() << []() {
-    render.update( Render::DRAW_UI_BIT );
+    render.update( Render::UI_BIT );
   };
 
   isAuxAlive = false;

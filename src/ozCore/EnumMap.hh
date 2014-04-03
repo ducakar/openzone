@@ -53,7 +53,7 @@ namespace oz
  * Log() << map["BAR"]; // 42
  * @endcode
  */
-template <class Enum>
+template <class Enum = int>
 class EnumMap
 {
 private:
@@ -67,8 +67,8 @@ private:
     const char* name;  ///< Enumerator value name.
   };
 
-  const Entry* entries;  ///< %Map entries.
-  int          nEntries; ///< Number of map entries.
+  Entry* entries;  ///< %Map entries.
+  int    nEntries; ///< Number of map entries.
 
 public:
 
@@ -76,9 +76,19 @@ public:
    * Create enumerator mapping from an array.
    */
   EnumMap( InitialiserList<Entry> l ) :
-    entries( l.begin() ), nEntries( int( l.size() ) )
+    entries( new Entry[ l.size() ] ), nEntries( int( l.size() ) )
   {
     hard_assert( l.size() != 0 );
+
+    aCopy<Entry>( l.begin(), int( l.size() ), entries );
+  }
+
+  /**
+   * Destructor
+   */
+  ~EnumMap()
+  {
+    delete[] entries;
   }
 
   /**

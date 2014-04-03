@@ -131,9 +131,7 @@ public:
   OZ_ALWAYS_INLINE
   static float fmod( float x, float y )
   {
-    hard_assert( y != 0.0f );
-
-    return __builtin_fmodf( x, y );
+    return hard_assert( y != 0.0f ), __builtin_fmodf( x, y );
   }
 
   /**
@@ -151,9 +149,7 @@ public:
   OZ_ALWAYS_INLINE
   static float sqrt( float x )
   {
-    hard_assert( x >= 0.0f );
-
-    return __builtin_sqrtf( x );
+    return hard_assert( x >= 0.0f ), __builtin_sqrtf( x );
   }
 
   /**
@@ -193,9 +189,7 @@ public:
   OZ_ALWAYS_INLINE
   static float log( float x )
   {
-    hard_assert( x > 0.0f );
-
-    return __builtin_logf( x );
+    return hard_assert( x > 0.0f ), __builtin_logf( x );
   }
 
   /**
@@ -204,9 +198,7 @@ public:
   OZ_ALWAYS_INLINE
   static float log2( float x )
   {
-    hard_assert( x > 0.0f );
-
-    return __builtin_log2f( x );
+    return hard_assert( x > 0.0f ), __builtin_log2f( x );
   }
 
   /**
@@ -215,9 +207,7 @@ public:
   OZ_ALWAYS_INLINE
   static float log10( float x )
   {
-    hard_assert( x > 0.0f );
-
-    return __builtin_log10f( x );
+    return hard_assert( x > 0.0f ), __builtin_log10f( x );
   }
 
   /**
@@ -226,9 +216,7 @@ public:
   OZ_ALWAYS_INLINE
   static float pow( float x, float y )
   {
-    hard_assert( x > 0.0f || ( x == 0.0f && y >= 0.0f ) );
-
-    return __builtin_powf( x, y );
+    return hard_assert( x > 0.0f || ( x == 0.0f && y >= 0.0f ) ), __builtin_powf( x, y );
   }
 
   /**
@@ -256,7 +244,7 @@ public:
   static void sincos( float x, float* s, float* c )
   {
     // No need to use sincosf(). GCC optimises the following calls into one sincosf() call and
-    // LLVM/Clang is missing built-ins for sincosf().
+    // LLVM/Clang is missing a built-in for sincosf().
     *s = __builtin_sinf( x );
     *c = __builtin_cosf( x );
   }
@@ -276,9 +264,7 @@ public:
   OZ_ALWAYS_INLINE
   static float asin( float x )
   {
-    hard_assert( -1.0f <= x && x <= 1.0f );
-
-    return __builtin_asinf( x );
+    return hard_assert( -1.0f <= x && x <= 1.0f ), __builtin_asinf( x );
   }
 
   /**
@@ -287,9 +273,7 @@ public:
   OZ_ALWAYS_INLINE
   static float acos( float x )
   {
-    hard_assert( -1.0f <= x && x <= 1.0f );
-
-    return __builtin_acosf( x );
+    return hard_assert( -1.0f <= x && x <= 1.0f ), __builtin_acosf( x );
   }
 
   /**
@@ -314,7 +298,7 @@ public:
    * True iff the number is not NaN or infinity.
    */
   OZ_ALWAYS_INLINE
-  static bool isFinite( float x )
+  static constexpr bool isFinite( float x )
   {
     // isfinite() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
     // Furthermore, those expressions are faster than __builtin_isfinite().
@@ -329,7 +313,7 @@ public:
    * True iff the number (positive or negative) infinity.
    */
   OZ_ALWAYS_INLINE
-  static bool isInf( float x )
+  static constexpr bool isInf( float x )
   {
     // isinf() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
     // Furthermore, those expressions are faster than __builtin_isinf().
@@ -344,7 +328,7 @@ public:
    * True iff the number is NaN.
    */
   OZ_ALWAYS_INLINE
-  static bool isNaN( float x )
+  static constexpr bool isNaN( float x )
   {
     // isnan() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
     // Furthermore, those expressions are faster than __builtin_isnan().
@@ -359,7 +343,7 @@ public:
    * True iff the number is not subnormal.
    */
   OZ_ALWAYS_INLINE
-  static bool isNormal( float x )
+  static constexpr bool isNormal( float x )
   {
     return __builtin_isnormal( x );
   }
@@ -368,7 +352,7 @@ public:
    * Sign, -1.0 for negative and 1.0 for non-negative.
    */
   OZ_ALWAYS_INLINE
-  static float sgn( float x )
+  static constexpr float sgn( float x )
   {
     return x < 0.0f ? -1.0f : 1.0f;
   }
@@ -379,16 +363,14 @@ public:
   OZ_ALWAYS_INLINE
   static float mod( float x, float y )
   {
-    hard_assert( y > 0.0f );
-
-    return x - __builtin_floorf( x / y ) * y;
+    return hard_assert( y > 0.0f ), x - __builtin_floorf( x / y ) * y;
   }
 
   /**
    * Convert degrees to radians.
    */
   OZ_ALWAYS_INLINE
-  static float rad( float x )
+  static constexpr float rad( float x )
   {
     return TAU / 360.0f * x;
   }
@@ -397,7 +379,7 @@ public:
    * Convert radians to degrees.
    */
   OZ_ALWAYS_INLINE
-  static float deg( float x )
+  static constexpr float deg( float x )
   {
     return 360.0f / TAU * x;
   }
@@ -455,7 +437,7 @@ public:
    */
   template <typename Value = int>
   OZ_ALWAYS_INLINE
-  static int index1( Value v )
+  static constexpr int index1( Value v )
   {
     return v == 0 ? -1 : int( sizeof( ulong64 ) * 8 - 1 ) - __builtin_clzll( ulong64( v ) );
   }
@@ -465,7 +447,7 @@ public:
    */
   template <typename Value = int>
   OZ_ALWAYS_INLINE
-  static bool isPow2( Value v )
+  static constexpr bool isPow2( Value v )
   {
     return 0 < v && ( v & ( v - 1 ) ) == 0;
   }
@@ -475,11 +457,9 @@ public:
    */
   template <typename Value>
   OZ_ALWAYS_INLINE
-  static Value mix( const Value& a, const Value& b, float t )
+  static constexpr Value mix( const Value& a, const Value& b, float t )
   {
-    hard_assert( 0.0f <= t && t <= 1.0f );
-
-    return a + t * ( b - a );
+    return hard_assert( 0.0f <= t && t <= 1.0f ), a + t * ( b - a );
   }
 
   /**

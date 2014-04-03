@@ -50,25 +50,25 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
 typedef uint __attribute__(( vector_size( 16 ) )) uint4;
 
 OZ_ALWAYS_INLINE
-inline float4 vFill( float x, float y, float z, float w )
+inline constexpr float4 vFill( float x, float y, float z, float w )
 {
   return float4{ x, y, z, w };
 }
 
 OZ_ALWAYS_INLINE
-inline float4 vFill( float x )
+inline constexpr float4 vFill( float x )
 {
   return float4{ x, x, x, x };
 }
 
 OZ_ALWAYS_INLINE
-inline uint4 vFill( uint x, uint y, uint z, uint w )
+inline constexpr uint4 vFill( uint x, uint y, uint z, uint w )
 {
   return uint4{ x, y, z, w };
 }
 
 OZ_ALWAYS_INLINE
-inline uint4 vFill( uint x )
+inline constexpr uint4 vFill( uint x )
 {
   return uint4{ x, x, x, x };
 }
@@ -183,17 +183,17 @@ protected:
 #ifdef OZ_SIMD_MATH
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase3( float4 f4_ ) :
+  explicit constexpr VectorBase3( float4 f4_ ) :
     f4( f4_ )
   {}
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase3( uint4 u4_ ) :
+  explicit constexpr VectorBase3( uint4 u4_ ) :
     u4( u4_ )
   {}
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase3( float x_, float y_, float z_, float w_ ) :
+  explicit constexpr VectorBase3( float x_, float y_, float z_, float w_ ) :
     f4( vFill( x_, y_, z_, w_ ) )
   {}
 
@@ -203,7 +203,7 @@ protected:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit VectorBase3( float x_, float y_, float z_, float ) :
+  explicit constexpr VectorBase3( float x_, float y_, float z_, float ) :
     x( x_ ), y( y_ ), z( z_ )
   {}
 
@@ -243,17 +243,17 @@ protected:
 #ifdef OZ_SIMD_MATH
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase4( float4 f4_ ) :
+  explicit constexpr VectorBase4( float4 f4_ ) :
     f4( f4_ )
   {}
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase4( uint4 u4_ ) :
+  explicit constexpr VectorBase4( uint4 u4_ ) :
     u4( u4_ )
   {}
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase4( float x_, float y_, float z_, float w_ ) :
+  explicit constexpr VectorBase4( float x_, float y_, float z_, float w_ ) :
     f4( vFill( x_, y_, z_, w_ ) )
   {}
 
@@ -263,7 +263,7 @@ protected:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit VectorBase4( float x_, float y_, float z_, float w_ ) :
+  explicit constexpr VectorBase4( float x_, float y_, float z_, float w_ ) :
     x( x_ ), y( y_ ), z( z_ ), w( w_ )
   {}
 
@@ -322,15 +322,6 @@ public:
   scalar( float f ) :
     f4( vFill( f ) )
   {}
-
-  /**
-   * %Set to a given float value.
-   */
-  scalar& operator = ( float f )
-  {
-    f4 = vFill( f );
-    return *this;
-  }
 
   /**
    * Cast to float.

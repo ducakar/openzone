@@ -52,7 +52,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat() :
+  explicit constexpr Quat() :
     VectorBase4( 0.0f, 0.0f, 0.0f, 1.0f )
   {}
 
@@ -62,7 +62,7 @@ public:
    * Create from a float SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat( float4 f4 ) :
+  explicit constexpr Quat( float4 f4 ) :
     VectorBase4( f4 )
   {}
 
@@ -70,7 +70,7 @@ public:
    * Create from an uint SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat( uint4 u4 ) :
+  explicit constexpr Quat( uint4 u4 ) :
     VectorBase4( u4 )
   {}
 
@@ -80,7 +80,7 @@ public:
    * Create a quaternion with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat( float x, float y, float z, float w ) :
+  explicit constexpr Quat( float x, float y, float z, float w ) :
     VectorBase4( x, y, z, w )
   {}
 
@@ -88,7 +88,7 @@ public:
    * Create from an array of 4 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat( const float* q ) :
+  explicit constexpr Quat( const float* q ) :
     VectorBase4( q[0], q[1], q[2], q[3] )
   {}
 
@@ -96,7 +96,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Quat& v ) const
+  constexpr bool operator == ( const Quat& v ) const
   {
     return x == v.x && y == v.y && z == v.z && w == v.w;
   }
@@ -105,7 +105,7 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Quat& v ) const
+  constexpr bool operator != ( const Quat& v ) const
   {
     return x != v.x || y != v.y || z != v.z || w != v.w;
   }
@@ -113,7 +113,7 @@ public:
   /**
    * Cast to four-component vector.
    */
-  operator Vec4 () const
+  constexpr operator Vec4 () const
   {
 #ifdef OZ_SIMD_MATH
     return Vec4( f4 );
@@ -126,7 +126,7 @@ public:
    * Constant float pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator const float* () const
+  constexpr operator const float* () const
   {
     return &x;
   }
@@ -144,7 +144,7 @@ public:
    * Constant reference to the `i`-th member.
    */
   OZ_ALWAYS_INLINE
-  const float& operator [] ( int i ) const
+  constexpr const float& operator [] ( int i ) const
   {
     return ( &x )[i];
   }
@@ -162,7 +162,7 @@ public:
    * Conjugated quaternion.
    */
   OZ_ALWAYS_INLINE
-  Quat operator * () const
+  constexpr Quat operator * () const
   {
 #ifdef OZ_SIMD_MATH
     return Quat( u4 ^ vFill( 0x80000000u, 0x80000000u, 0x80000000u, 0u ) );
@@ -175,7 +175,7 @@ public:
    * Norm.
    */
   OZ_ALWAYS_INLINE
-  scalar operator ! () const
+  constexpr scalar operator ! () const
   {
 #ifdef OZ_SIMD_MATH
     return vDot( f4, f4 );
@@ -222,7 +222,7 @@ public:
    * Original quaternion.
    */
   OZ_ALWAYS_INLINE
-  Quat operator + () const
+  constexpr Quat operator + () const
   {
     return *this;
   }
@@ -231,7 +231,7 @@ public:
    * Opposite quaternion.
    */
   OZ_ALWAYS_INLINE
-  Quat operator - () const
+  constexpr Quat operator - () const
   {
 #ifdef OZ_SIMD_MATH
     return Quat( -f4 );
@@ -244,7 +244,7 @@ public:
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Quat operator + ( const Quat& q ) const
+  constexpr Quat operator + ( const Quat& q ) const
   {
 #ifdef OZ_SIMD_MATH
     return Quat( f4 + q.f4 );
@@ -257,7 +257,7 @@ public:
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Quat operator - ( const Quat& q ) const
+  constexpr Quat operator - ( const Quat& q ) const
   {
 #ifdef OZ_SIMD_MATH
     return Quat( f4 - q.f4 );
@@ -270,7 +270,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Quat operator * ( scalar s ) const
+  constexpr Quat operator * ( scalar s ) const
   {
 #ifdef OZ_SIMD_MATH
     return Quat( f4 * s.f4 );
@@ -283,7 +283,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Quat operator * ( scalar s, const Quat& q )
+  friend constexpr Quat operator * ( scalar s, const Quat& q )
   {
 #ifdef OZ_SIMD_MATH
     return Quat( s.f4 * q.f4 );
@@ -296,7 +296,7 @@ public:
    * Quaternion product.
    */
   OZ_ALWAYS_INLINE
-  Quat operator * ( const Quat& q ) const
+  constexpr Quat operator * ( const Quat& q ) const
   {
 #ifdef OZ_SIMD_MATH
     float4 k0 = vFill( w );
@@ -325,15 +325,12 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Quat operator / ( scalar s ) const
+  constexpr Quat operator / ( scalar s ) const
   {
 #ifdef OZ_SIMD_MATH
     return Quat( f4 / s.f4 );
 #else
-    hard_assert( s != 0.0f );
-
-    s = 1.0f / s;
-    return Quat( x * s, y * s, z * s, w * s );
+    return hard_assert( s != 0.0f ), s = 1.0f / s, Quat( x * s, y * s, z * s, w * s );
 #endif
   }
 
@@ -607,7 +604,7 @@ public:
  * Per-component absolute value of a quaternion.
  */
 OZ_ALWAYS_INLINE
-inline Quat abs( const Quat& a )
+inline constexpr Quat abs( const Quat& a )
 {
 #ifdef OZ_SIMD_MATH
   return Quat( vAbs( a.u4 ) );
@@ -620,7 +617,7 @@ inline Quat abs( const Quat& a )
  * Per-component minimum of two quaternions.
  */
 OZ_ALWAYS_INLINE
-inline Quat min( const Quat& a, const Quat& b )
+inline constexpr Quat min( const Quat& a, const Quat& b )
 {
 #ifdef OZ_SIMD_MATH
   return Quat( vMin( a.f4, b.f4 ) );
@@ -633,7 +630,7 @@ inline Quat min( const Quat& a, const Quat& b )
  * Per-component maximum of two quaternions.
  */
 OZ_ALWAYS_INLINE
-inline Quat max( const Quat& a, const Quat& b )
+inline constexpr Quat max( const Quat& a, const Quat& b )
 {
 #ifdef OZ_SIMD_MATH
   return Quat( vMax( a.f4, b.f4 ) );
@@ -646,7 +643,7 @@ inline Quat max( const Quat& a, const Quat& b )
  * Per-component clamped value of quaternions.
  */
 OZ_ALWAYS_INLINE
-inline Quat clamp( const Quat& c, const Quat& a, const Quat& b )
+inline constexpr Quat clamp( const Quat& c, const Quat& a, const Quat& b )
 {
 #ifdef OZ_SIMD_MATH
   return Quat( vMin( b.f4, vMax( a.f4, c.f4 ) ) );

@@ -36,6 +36,7 @@ private:
 
   static const float CAMERA_Z_SMOOTHING;
   static const float CAMERA_Z_TOLERANCE;
+  static const float CAMERA_DIST_SMOOTHING;
   static const float EXTERNAL_CAM_DIST;
   static const float EXTERNAL_CAM_CLIP_DIST; // Leave this much space between obstacle and camera
                                              // if camera is brought closer to the eyes because of
@@ -63,6 +64,7 @@ private:
   float bobBias;
 
   float injuryRatio;
+  float camDist;
 
   int   oldBot;
 

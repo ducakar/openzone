@@ -59,13 +59,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4() = default;
+  explicit constexpr Mat4() = default;
 
   /**
    * Create matrix with given columns.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :
+  explicit constexpr Mat4( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :
     x( a ), y( b ), z( c ), w( d )
   {}
 
@@ -73,7 +73,7 @@ public:
    * Create matrix for base vector images `a`, `b`, `c` and translation `d`.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
+  explicit constexpr Mat4( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
     x( a ), y( b ), z( c ), w( d.x, d.y, d.z, 1.0f )
   {}
 
@@ -81,10 +81,10 @@ public:
    * Create matrix with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4( float xx, float xy, float xz, float xw,
-                  float yx, float yy, float yz, float yw,
-                  float zx, float zy, float zz, float zw,
-                  float wx, float wy, float wz, float ww ) :
+  explicit constexpr Mat4( float xx, float xy, float xz, float xw,
+                           float yx, float yy, float yz, float yw,
+                           float zx, float zy, float zz, float zw,
+                           float wx, float wy, float wz, float ww ) :
     x( xx, xy, xz, xw ),
     y( yx, yy, yz, yw ),
     z( zx, zy, zz, zw ),
@@ -95,7 +95,7 @@ public:
    * Create matrix from an array of 16 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4( const float* v ) :
+  explicit constexpr Mat4( const float* v ) :
     x( &v[0] ), y( &v[4] ), z( &v[8] ), w( &v[12] )
   {}
 
@@ -103,7 +103,7 @@ public:
    * Create from a 3x3 matrix.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4( const Mat3& m ) :
+  explicit constexpr Mat4( const Mat3& m ) :
     x( m.x ), y( m.y ), z( m.z ), w( 0.0f, 0.0f, 0.0f, 1.0f )
   {}
 
@@ -111,7 +111,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Mat4& m ) const
+  constexpr bool operator == ( const Mat4& m ) const
   {
     return x == m.x && y == m.y && z == m.z && w == m.w;
   }
@@ -120,7 +120,7 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Mat4& m ) const
+  constexpr bool operator != ( const Mat4& m ) const
   {
     return x != m.x || y != m.y || z != m.z || w != m.w;
   }
@@ -129,7 +129,7 @@ public:
    * Constant pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator const float* () const
+  constexpr operator const float* () const
   {
     return &x.x;
   }
@@ -147,7 +147,7 @@ public:
    * Constant reference to the `i`-th column.
    */
   OZ_ALWAYS_INLINE
-  const Vec4& operator [] ( int i ) const
+  constexpr const Vec4& operator [] ( int i ) const
   {
     return ( &x )[i];
   }
@@ -165,7 +165,7 @@ public:
    * `i`-th row.
    */
   OZ_ALWAYS_INLINE
-  Vec4 row( int i ) const
+  constexpr Vec4 row( int i ) const
   {
     return Vec4( x[i], y[i], z[i], w[i] );
   }
@@ -174,7 +174,7 @@ public:
    * First 3x3 submatrix.
    */
   OZ_ALWAYS_INLINE
-  Mat3 mat3() const
+  constexpr Mat3 mat3() const
   {
     return Mat3( x.x, x.y, x.z,
                  y.x, y.y, y.z,
@@ -185,7 +185,7 @@ public:
    * Transposed matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator ~ () const
+  constexpr Mat4 operator ~ () const
   {
     return Mat4( x.x, y.x, z.x, w.x,
                  x.y, y.y, z.y, w.y,
@@ -224,7 +224,7 @@ public:
    * Determinant of the upper-left 3x3 submatrix.
    */
   OZ_ALWAYS_INLINE
-  float det3() const
+  constexpr float det3() const
   {
     return x.x * ( y.y*z.z - y.z*z.y ) -
            y.x * ( x.y*z.z - x.z*z.y ) +
@@ -240,14 +240,14 @@ public:
     float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
     float w4 = 2.0f * w2;
 
-    return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, 0.5f * w2 );
+    return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, w2 / 2.0f );
   }
 
   /**
    * Original matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator + () const
+  constexpr Mat4 operator + () const
   {
     return *this;
   }
@@ -256,7 +256,7 @@ public:
    * Matrix with negated elements.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator - () const
+  constexpr Mat4 operator - () const
   {
     return Mat4( -x, -y, -z, -w );
   }
@@ -265,7 +265,7 @@ public:
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator + ( const Mat4& a ) const
+  constexpr Mat4 operator + ( const Mat4& a ) const
   {
     return Mat4( x + a.x, y + a.y, z + a.z, w + a.w );
   }
@@ -274,7 +274,7 @@ public:
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator - ( const Mat4& a ) const
+  constexpr Mat4 operator - ( const Mat4& a ) const
   {
     return Mat4( x - a.x, y - a.y, z - a.z, w - a.w );
   }
@@ -283,7 +283,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator * ( scalar s ) const
+  constexpr Mat4 operator * ( scalar s ) const
   {
     return Mat4( x * s, y * s, z * s, w * s );
   }
@@ -292,7 +292,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Mat4 operator * ( scalar s, const Mat4& m )
+  friend constexpr Mat4 operator * ( scalar s, const Mat4& m )
   {
     return Mat4( s * m.x, s * m.y, s * m.z, s * m.w );
   }
@@ -301,7 +301,7 @@ public:
    * Product, composite of linear transformations.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator * ( const Mat4& m ) const
+  constexpr Mat4 operator * ( const Mat4& m ) const
   {
 #ifdef OZ_SIMD_MATH
     return Mat4( Vec4( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) +
@@ -324,7 +324,7 @@ public:
    * Transformed 3D vector (no translation is applied).
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator * ( const Vec3& v ) const
+  constexpr Vec3 operator * ( const Vec3& v ) const
   {
 #ifdef OZ_SIMD_MATH
     return Vec3( x.f4 * vFill( v.x ) + y.f4 * vFill( v.y ) + z.f4 * vFill( v.z ) );
@@ -339,7 +339,7 @@ public:
    * Transformed point (translation is applied).
    */
   OZ_ALWAYS_INLINE
-  Point operator * ( const Point& p ) const
+  constexpr Point operator * ( const Point& p ) const
   {
 #ifdef OZ_SIMD_MATH
     return Point( x.f4 * vFill( p.x ) + y.f4 * vFill( p.y ) + z.f4 * vFill( p.z ) + w.f4 );
@@ -375,7 +375,7 @@ public:
    * Product with a four-component vector.
    */
   OZ_ALWAYS_INLINE
-  Vec4 operator * ( const Vec4& v ) const
+  constexpr Vec4 operator * ( const Vec4& v ) const
   {
 #ifdef OZ_SIMD_MATH
     return Vec4( x.f4 * vFill( v.x ) + y.f4 * vFill( v.y ) +
@@ -392,16 +392,13 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator / ( scalar s ) const
+  constexpr Mat4 operator / ( scalar s ) const
   {
 #ifdef OZ_SIMD_MATH
     s = vFill( 1.0f ) / s.f4;
 #else
-    hard_assert( s != 0.0f );
-
-    s = 1.0f / s;
+    return hard_assert( s != 0.0f ), s = 1.0f / s, Mat4( x * s, y * s, z * s, w * s );
 #endif
-    return Mat4( x * s, y * s, z * s, w * s );
   }
 
   /**
@@ -411,7 +408,7 @@ public:
    * be [0, 0, 0, 1].
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator ^ ( const Mat4& m ) const
+  constexpr Mat4 operator ^ ( const Mat4& m ) const
   {
 #ifdef OZ_SIMD_MATH
     return Mat4( Vec4( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) + z.f4 * vFill( m.x.z ) ),
@@ -564,7 +561,7 @@ public:
    * Create matrix for translation.
    */
   OZ_ALWAYS_INLINE
-  static Mat4 translation( const Vec3& v )
+  static constexpr Mat4 translation( const Vec3& v )
   {
     return Mat4( 1.0f, 0.0f, 0.0f, 0.0f,
                  0.0f, 1.0f, 0.0f, 0.0f,
@@ -630,7 +627,7 @@ public:
    * Create matrix for scaling (fourth vector component is assumed 1.0).
    */
   OZ_ALWAYS_INLINE
-  static Mat4 scaling( const Vec3& v )
+  static constexpr Mat4 scaling( const Vec3& v )
   {
     return Mat4(  v.x, 0.0f, 0.0f, 0.0f,
                  0.0f,  v.y, 0.0f, 0.0f,
@@ -642,7 +639,7 @@ public:
    * Create matrix for scaling.
    */
   OZ_ALWAYS_INLINE
-  static Mat4 scaling( const Vec4& v )
+  static constexpr Mat4 scaling( const Vec4& v )
   {
     return Mat4(  v.x, 0.0f, 0.0f, 0.0f,
                  0.0f,  v.y, 0.0f, 0.0f,
@@ -656,7 +653,7 @@ public:
  * Per-component absolute value of a matrix.
  */
 OZ_ALWAYS_INLINE
-inline Mat4 abs( const Mat4& a )
+inline constexpr Mat4 abs( const Mat4& a )
 {
   return Mat4( abs( a.x ), abs( a.y ), abs( a.z ), abs( a.w ) );
 }
@@ -665,7 +662,7 @@ inline Mat4 abs( const Mat4& a )
  * Per-component minimum of two matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat4 min( const Mat4& a, const Mat4& b )
+inline constexpr Mat4 min( const Mat4& a, const Mat4& b )
 {
   return Mat4( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ), min( a.w, b.w ) );
 }
@@ -674,7 +671,7 @@ inline Mat4 min( const Mat4& a, const Mat4& b )
  * Per-component maximum of two matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat4 max( const Mat4& a, const Mat4& b )
+inline constexpr Mat4 max( const Mat4& a, const Mat4& b )
 {
   return Mat4( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ), max( a.w, b.w ) );
 }
@@ -683,7 +680,7 @@ inline Mat4 max( const Mat4& a, const Mat4& b )
  * Per-component clamped value of matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat4 clamp( const Mat4& c, const Mat4& a, const Mat4& b )
+inline constexpr Mat4 clamp( const Mat4& c, const Mat4& a, const Mat4& b )
 {
   return Mat4( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ),
                clamp( c.w, a.w, b.w ) );

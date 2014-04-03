@@ -124,7 +124,7 @@ void Render::effectsRun()
   effectsAuxSemaphore.wait();
 
   while( areEffectsAlive ) {
-    Span span = orbis.getInters( camera.p, EFFECTS_DISTANCE + Math::sqrt( 3.0f ) * Object::MAX_DIM );
+    Span span = orbis.getInters( camera.p, EFFECTS_DISTANCE );
 
     for( int x = span.minX ; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -527,21 +527,24 @@ void Render::update( int flags )
 {
   hard_assert( Thread::isMain() );
 
-  if( flags & DRAW_ORBIS_BIT ) {
+  if( flags & EFFECTS_BIT ) {
     effectsAuxSemaphore.post();
-    drawOrbis();
-    effectsMainSemaphore.wait();
   }
-  if( flags & DRAW_UI_BIT ) {
+  if( flags & ORBIS_BIT ) {
+    drawOrbis();
+  }
+  if( flags & UI_BIT ) {
     drawUI();
   }
+  if( flags & ( ORBIS_BIT | UI_BIT ) ) {
+    Model::clearScheduled( Model::SCENE_QUEUE );
+    Model::clearScheduled( Model::OVERLAY_QUEUE );
 
-  if( flags != 0 ) {
     swap();
   }
-
-  Model::clearScheduled( Model::SCENE_QUEUE );
-  Model::clearScheduled( Model::OVERLAY_QUEUE );
+  if( flags & EFFECTS_BIT ) {
+    effectsMainSemaphore.wait();
+  }
 }
 
 void Render::resize()
@@ -834,13 +837,13 @@ void Render::init()
 #endif
   Model::setCollation( collationMap[ sCollation ] );
 
-  isOffscreen     = config.include( "render.forceFBO",    false ).get( false );
-  scale           = config.include( "render.scale",       1.0f ).get( 0.0f );
+  isOffscreen     = config.include( "render.forceFBO",   false ).get( false );
+  scale           = config.include( "render.scale",      1.0f ).get( 0.0f );
   scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).get( "" ) ];
 
-  visibilityRange = config.include( "render.distance",    400.0f ).get( 0.0f );
-  showBounds      = config.include( "render.showBounds",  false ).get( false );
-  showAim         = config.include( "render.showAim",     false ).get( false );
+  visibilityRange = config.include( "render.distance",   400.0f ).get( 0.0f );
+  showBounds      = config.include( "render.showBounds", false ).get( false );
+  showAim         = config.include( "render.showAim",    false ).get( false );
 
   isOffscreen     = isOffscreen || shader.doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;

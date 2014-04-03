@@ -41,6 +41,7 @@ namespace client
 
 const float UnitProxy::CAMERA_Z_SMOOTHING       = 0.40f;
 const float UnitProxy::CAMERA_Z_TOLERANCE       = 0.30f;
+const float UnitProxy::CAMERA_DIST_SMOOTHING    = 0.80f;
 const float UnitProxy::EXTERNAL_CAM_DIST        = 2.75f;
 const float UnitProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
 const float UnitProxy::SHOULDER_CAM_RIGHT       = 0.25f;
@@ -83,6 +84,7 @@ void UnitProxy::begin()
   bobBias     = 0.0f;
 
   injuryRatio = 0.0f;
+  camDist     = 0.0f;
 
   oldBot      = -1;
 
@@ -408,7 +410,8 @@ void UnitProxy::update()
     Vec3 offset = Vec3( 0.0f, 0.0f, DEATH_CAM_DIST );
 
     collider.translate( botEye, offset );
-    offset *= collider.hit.ratio;
+    camDist = Math::mix( collider.hit.ratio, camDist, CAMERA_DIST_SMOOTHING );
+    offset *= camDist;
 
     float dist = !offset;
     if( dist > EXTERNAL_CAM_CLIP_DIST ) {
@@ -497,9 +500,10 @@ void UnitProxy::update()
     }
 
     collider.translate( botEye, offset, bot );
-    offset *= collider.hit.ratio;
+    camDist = Math::mix( collider.hit.ratio, camDist, CAMERA_DIST_SMOOTHING );
+    offset *= camDist;
 
-    float dist = !offset;
+    float dist = offset.fastN();
     if( dist > EXTERNAL_CAM_CLIP_DIST ) {
       offset *= ( dist - EXTERNAL_CAM_CLIP_DIST ) / dist;
     }
@@ -533,6 +537,8 @@ void UnitProxy::update()
     }
     // internal, bot
     else {
+      camDist = 0.0f;
+
       if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) ) == Bot::MOVING_BIT ) {
         float phase = bot->step * Math::TAU;
         float sine  = Math::sin( phase );

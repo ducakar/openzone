@@ -34,8 +34,9 @@ class Render
 {
 public:
 
-  static const int DRAW_UI_BIT    = 0x01;
-  static const int DRAW_ORBIS_BIT = 0x02;
+  static const int UI_BIT      = 0x01;
+  static const int ORBIS_BIT   = 0x02;
+  static const int EFFECTS_BIT = 0x04;
 
 private:
 

@@ -49,7 +49,7 @@ void MenuStage::present( bool isFull )
 
   sound.play();
   MainCall() << [&]() {
-    render.update( isFull ? Render::DRAW_UI_BIT : 0 );
+    render.update( isFull ? Render::UI_BIT : 0 );
   };
   sound.sync();
 }
@@ -70,7 +70,7 @@ void MenuStage::load()
     ui::ui.showLoadingScreen( false );
     ui::mouse.doShow = true;
 
-    render.update( Render::DRAW_UI_BIT );
+    render.update( Render::UI_BIT );
   };
 }
 

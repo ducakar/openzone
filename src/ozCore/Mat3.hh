@@ -59,13 +59,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3() = default;
+  explicit constexpr Mat3() = default;
 
   /**
    * Create matrix with given columns.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3( const Vec3& a, const Vec3& b, const Vec3& c ) :
+  explicit constexpr Mat3( const Vec3& a, const Vec3& b, const Vec3& c ) :
     x( a ), y( b ), z( c )
   {}
 
@@ -73,9 +73,9 @@ public:
    * Create matrix with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3( float xx, float xy, float xz,
-                  float yx, float yy, float yz,
-                  float zx, float zy, float zz ) :
+  explicit constexpr Mat3( float xx, float xy, float xz,
+                           float yx, float yy, float yz,
+                           float zx, float zy, float zz ) :
     x( xx, xy, xz ),
     y( yx, yy, yz ),
     z( zx, zy, zz )
@@ -85,7 +85,7 @@ public:
    * Create matrix from an array of 9 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3( const float* v ) :
+  explicit constexpr Mat3( const float* v ) :
     x( &v[0] ), y( &v[3] ), z( &v[6] )
   {}
 
@@ -93,7 +93,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Mat3& m ) const
+  constexpr bool operator == ( const Mat3& m ) const
   {
     return x == m.x && y == m.y && z == m.z;
   }
@@ -102,7 +102,7 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Mat3& m ) const
+  constexpr bool operator != ( const Mat3& m ) const
   {
     return x != m.x || y != m.y || z != m.z;
   }
@@ -111,7 +111,7 @@ public:
    * Constant pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator const float* () const
+  constexpr operator const float* () const
   {
     return &x.x;
   }
@@ -129,7 +129,7 @@ public:
    * Constant reference to the `i`-th column.
    */
   OZ_ALWAYS_INLINE
-  const Vec3& operator [] ( int i ) const
+  constexpr const Vec3& operator [] ( int i ) const
   {
     return ( &x )[i];
   }
@@ -147,7 +147,7 @@ public:
    * `i`-th row.
    */
   OZ_ALWAYS_INLINE
-  Vec3 row( int i ) const
+  constexpr Vec3 row( int i ) const
   {
     return Vec3( x[i], y[i], z[i] );
   }
@@ -156,7 +156,7 @@ public:
    * Transposed matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator ~ () const
+  constexpr Mat3 operator ~ () const
   {
     return Mat3( x.x, y.x, z.x,
                  x.y, y.y, z.y,
@@ -167,7 +167,7 @@ public:
    * Determinant.
    */
   OZ_ALWAYS_INLINE
-  float det() const
+  constexpr float det() const
   {
     return x.x * ( y.y*z.z - y.z*z.y ) -
            y.x * ( x.y*z.z - x.z*z.y ) +
@@ -183,14 +183,14 @@ public:
     float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
     float w4 = 2.0f * w2;
 
-    return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, 0.5f * w2 );
+    return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, w2 / 2.0f );
   }
 
   /**
    * Original matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator + () const
+  constexpr Mat3 operator + () const
   {
     return *this;
   }
@@ -199,7 +199,7 @@ public:
    * Matrix with negated elements.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator - () const
+  constexpr Mat3 operator - () const
   {
     return Mat3( -x, -y, -z );
   }
@@ -208,7 +208,7 @@ public:
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator + ( const Mat3& a ) const
+  constexpr Mat3 operator + ( const Mat3& a ) const
   {
     return Mat3( x + a.x, y + a.y, z + a.z );
   }
@@ -217,7 +217,7 @@ public:
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator - ( const Mat3& a ) const
+  constexpr Mat3 operator - ( const Mat3& a ) const
   {
     return Mat3( x - a.x, y - a.y, z - a.z );
   }
@@ -226,7 +226,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator * ( scalar s ) const
+  constexpr Mat3 operator * ( scalar s ) const
   {
     return Mat3( x * s, y * s, z * s );
   }
@@ -235,7 +235,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Mat3 operator * ( scalar s, const Mat3& m )
+  friend constexpr Mat3 operator * ( scalar s, const Mat3& m )
   {
     return Mat3( s * m.x, s * m.y, s * m.z );
   }
@@ -244,7 +244,7 @@ public:
    * Product, compositum of linear transformations.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator * ( const Mat3& m ) const
+  constexpr Mat3 operator * ( const Mat3& m ) const
   {
 #ifdef OZ_SIMD_MATH
     return Mat3( Vec3( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) + z.f4 * vFill( m.x.z ) ),
@@ -261,7 +261,7 @@ public:
    * Transformed 3D vector.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator * ( const Vec3& v ) const
+  constexpr Vec3 operator * ( const Vec3& v ) const
   {
 #ifdef OZ_SIMD_MATH
     return Vec3( x.f4 * vFill( v.x ) + y.f4 * vFill( v.y ) + z.f4 * vFill( v.z ) );
@@ -297,16 +297,13 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator / ( scalar s ) const
+  constexpr Mat3 operator / ( scalar s ) const
   {
 #ifdef OZ_SIMD_MATH
     s = vFill( 1.0f ) / s.f4;
 #else
-    hard_assert( s != 0.0f );
-
-    s = 1.0f / s;
+    return hard_assert( s != 0.0f ), s = 1.0f / s, Mat3( x * s, y * s, z * s );
 #endif
-    return Mat3( x * s, y * s, z * s );
   }
 
   /**
@@ -455,7 +452,7 @@ public:
    * Create matrix for scaling.
    */
   OZ_ALWAYS_INLINE
-  static Mat3 scaling( const Vec3& v )
+  static constexpr Mat3 scaling( const Vec3& v )
   {
     return Mat3(  v.x, 0.0f, 0.0f,
                  0.0f,  v.y, 0.0f,
@@ -468,7 +465,7 @@ public:
  * Per-component absolute value of a matrix.
  */
 OZ_ALWAYS_INLINE
-inline Mat3 abs( const Mat3& a )
+inline constexpr Mat3 abs( const Mat3& a )
 {
   return Mat3( abs( a.x ), abs( a.y ), abs( a.z ) );
 }
@@ -477,7 +474,7 @@ inline Mat3 abs( const Mat3& a )
  * Per-component minimum of two matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat3 min( const Mat3& a, const Mat3& b )
+inline constexpr Mat3 min( const Mat3& a, const Mat3& b )
 {
   return Mat3( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
 }
@@ -486,7 +483,7 @@ inline Mat3 min( const Mat3& a, const Mat3& b )
  * Per-component maximum of two matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat3 max( const Mat3& a, const Mat3& b )
+inline constexpr Mat3 max( const Mat3& a, const Mat3& b )
 {
   return Mat3( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
 }
@@ -495,7 +492,7 @@ inline Mat3 max( const Mat3& a, const Mat3& b )
  * Per-component clamped value of matrices.
  */
 OZ_ALWAYS_INLINE
-inline Mat3 clamp( const Mat3& c, const Mat3& a, const Mat3& b )
+inline constexpr Mat3 clamp( const Mat3& c, const Mat3& a, const Mat3& b )
 {
   return Mat3( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
 }

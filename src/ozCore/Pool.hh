@@ -101,8 +101,8 @@ private:
    */
   union Slot
   {
-    char  content[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
     Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
+    char  storage[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
   };
 
   /**
@@ -114,14 +114,14 @@ private:
    */
   struct Block
   {
+    Block* nextBlock;        ///< Pointer to the next block.
     Slot   data[BLOCK_SIZE]; ///< Slots.
-    Block* next;             ///< Pointer to the next block.
 
     /**
      * Create a new block and bind its slots into a linked list.
      */
-    explicit Block( Block* next_ ) :
-      next( next_ )
+    explicit Block( Block* nextBlock_ ) :
+      nextBlock( nextBlock_ )
     {
       for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
         data[i].nextSlot = &data[i + 1];
@@ -202,11 +202,10 @@ public:
       freeSlot   = &firstBlock->data[1];
       size      += BLOCK_SIZE;
 
-      return firstBlock->data[0].content;
+      return firstBlock->data[0].storage;
     }
     else {
       Slot* slot = freeSlot;
-
       freeSlot = slot->nextSlot;
       return slot;
     }
@@ -276,7 +275,7 @@ public:
       Block* block = firstBlock;
 
       while( block != nullptr ) {
-        Block* next = block->next;
+        Block* next = block->nextBlock;
         delete block;
 
         block = next;
