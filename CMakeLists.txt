@@ -19,6 +19,7 @@ option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 
 option( OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF )
 option( OZ_NET "Enable networking support." OFF )
+option( OZ_TOOLS "Build engine tools required for game data creation." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
 option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
@@ -38,6 +39,7 @@ if( PLATFORM_EMBEDDED )
   set( OZ_SHARED_LIBS OFF )
   set( OZ_GL_ES ON )
   set( OZ_NONFREE OFF )
+  set( OZ_TOOLS OFF )
   set( OZ_STANDALONE OFF )
 endif()
 

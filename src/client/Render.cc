@@ -89,12 +89,6 @@ struct Render::DrawEntry
   }
 };
 
-struct Render::Effect
-{
-  int           id;
-  const Object* obj;
-};
-
 void Render::effectsMain( void* )
 {
   render.effectsRun();
@@ -106,14 +100,24 @@ void Render::cellEffects( int cellX, int cellY )
 
   foreach( obj, cell.objects.citer() ) {
     float radius = EFFECTS_DISTANCE + obj->dim.fastN();
+    float dist2  = ( obj->p - camera.p ).sqN();
 
-    if( ( obj->p - camera.p ).sqN() > radius*radius ) {
+    if( dist2 > radius*radius ) {
       continue;
     }
 
     foreach( event, obj->events.citer() ) {
-      if( event->id < 0 ) {
-        effects.add( { event->id, obj } );
+      if( event->id >= 0 ) {
+        continue;
+      }
+
+      float scale = min( 1.0f, 64.0f / dist2 );
+
+      if( event->id == Object::EVENT_FLASH ) {
+        camera.flash( event->intensity * scale );
+      }
+      else {
+        camera.shake( event->intensity * scale );
       }
     }
   }
@@ -131,11 +135,6 @@ void Render::effectsRun()
         cellEffects( x, y );
       }
     }
-
-    if( !effects.isEmpty() ) {
-      camera.flash( 0.5f );
-    }
-    effects.clear();
 
     effectsMainSemaphore.post();
     effectsAuxSemaphore.wait();
@@ -709,8 +708,6 @@ void Render::unload()
 
   effectsAuxSemaphore.destroy();
   effectsMainSemaphore.destroy();
-
-  effects.deallocate();
 
   ui::ui.unload();
 

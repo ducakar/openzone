@@ -62,7 +62,6 @@ private:
   static const Vec4  NONSOLID_AABB;
 
   struct DrawEntry;
-  struct Effect;
 
   SBitset<Orbis::MAX_STRUCTS> drawnStructs;
 
@@ -96,8 +95,6 @@ private:
   uint                        glowBuffer;
   uint                        minGlowBuffer;
 #endif
-
-  List<Effect>                effects;
 
   Thread                      effectsThread;
 

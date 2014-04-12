@@ -18,48 +18,43 @@
  */
 
 /**
- * @file client/LuaClient.hh
- *
- * Lua scripting engine for client
+ * @file nirvana/Automaton.hh
  */
 
 #pragma once
 
-#include <common/LuaCommon.hh>
-#include <client/common.hh>
+#include <nirvana/common.hh>
 
 namespace oz
 {
-namespace client
-{
 
-class LuaClient : public LuaCommon
+class Automaton
 {
-private:
+public:
 
-  void staticCall( const char* functionName );
+  struct Link
+  {
+    String condition;
+    String target;
+  };
+
+  struct State
+  {
+    String     name;
+    String     init;
+    String     exec;
+    List<Link> links;
+  };
+
+  String      name;
+  List<State> states;
 
 public:
 
-  void exec( const char* code ) const;
-  void finish() const;
-  bool popBool() const;
-  int popInt() const;
-  float popFloat() const;
-  String popString() const;
+  explicit Automaton( const char* name );
 
   void update();
-  void create( const char* missionPath );
-
-  void read( InputStream* is );
-  void write( OutputStream* os );
-
-  void init();
-  void destroy();
 
 };
 
-extern LuaClient luaClient;
-
-}
 }

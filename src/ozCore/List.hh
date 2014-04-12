@@ -39,7 +39,7 @@ namespace oz
  *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
  * slightly better performance and simplifies implementation. However, on element removal its
- * destruction is guaranteed.
+ * destruction is still guaranteed.
  *
  * Memory is allocated when the first element is added.
  *

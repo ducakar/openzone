@@ -29,26 +29,30 @@ else()
   target_link_libraries( openzone client nirvana matrix common ozEngine )
   install( TARGETS openzone RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
-  add_executable( ozBuild ozBuild.cc )
-  use_pch( openzone pch )
-  target_link_libraries( ozBuild builder client nirvana matrix common ozFactory ozEngine )
-  install( TARGETS ozBuild RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+  if( OZ_TOOLS )
 
-  add_executable( ozDDS ozDDS.cc )
-  target_link_libraries( ozDDS ozFactory )
-  install( TARGETS ozDDS RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+    add_executable( ozBuild ozBuild.cc )
+    use_pch( openzone pch )
+    target_link_libraries( ozBuild builder client nirvana matrix common ozFactory ozEngine )
+    install( TARGETS ozBuild RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
-  add_executable( ozGenEnvMap ozGenEnvMap.cc )
-  target_link_libraries( ozGenEnvMap ozFactory )
-  install( TARGETS ozGenEnvMap RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+    add_executable( ozDDS ozDDS.cc )
+    target_link_libraries( ozDDS ozFactory )
+    install( TARGETS ozDDS RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
-  add_executable( ozGettext ozGettext.cc )
-  target_link_libraries( ozGettext ozCore )
-  install( TARGETS ozGettext RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+    add_executable( ozGenEnvMap ozGenEnvMap.cc )
+    target_link_libraries( ozGenEnvMap ozFactory )
+    install( TARGETS ozGenEnvMap RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
-  add_executable( ozManifest ozManifest.cc )
-  target_link_libraries( ozManifest ozCore )
-  install( TARGETS ozManifest RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+    add_executable( ozGettext ozGettext.cc )
+    target_link_libraries( ozGettext ozCore )
+    install( TARGETS ozGettext RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+
+    add_executable( ozManifest ozManifest.cc )
+    target_link_libraries( ozManifest ozCore )
+    install( TARGETS ozManifest RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
+
+  endif()
 
 endif()
 

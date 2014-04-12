@@ -118,6 +118,7 @@ void Terra::drawLiquid()
   tf.apply();
   tf.applyColour();
 
+  glUniform1f( uniform.shininess, 30.0f );
   glUniform1f( uniform.waveBias, waveBias );
 
   glBindTexture( GL_TEXTURE_2D, liquidTex.albedo );

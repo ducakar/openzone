@@ -41,6 +41,7 @@ public:
   static const float  MIN_DISTANCE;
   static const float  SMOOTHING_COEF;
   static const float  ROT_SMOOTHING_COEF;
+  static const float  SHAKE_SUPPRESSION;
   static const float  FLASH_SUPPRESSION;
   static const Mat4   FLASH_COLOUR;
   static Proxy* const PROXIES[];
@@ -69,7 +70,7 @@ public:
 
   // Current rotation, magnification and position are smoothly changed to match desired ones.
   Quat          desiredRot;
-  Quat          shakedRot;
+  Quat          shakeRot;
   float         desiredMag;
   Point         desiredPos;
   Point         oldPos;

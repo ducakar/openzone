@@ -1,4 +1,4 @@
-if( PLATFORM_EMBEDDED )
+if( NOT OZ_TOOLS )
   return()
 endif()
 

@@ -49,10 +49,10 @@ public:
   /// User's home/profile directory.
   static const String& HOME;
 
-  ///< Directory for configuration (i.e. `~/.config`).
+  /// Directory for configuration (i.e. `~/.config`).
   static const String& CONFIG;
 
-  ///< Directory for program data (i.e. `~/.local/share`).
+  /// Directory for program data (i.e. `~/.local/share`).
   static const String& DATA;
 
   /// User's desktop directory.

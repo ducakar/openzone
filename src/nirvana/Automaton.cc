@@ -18,48 +18,35 @@
  */
 
 /**
- * @file client/LuaClient.hh
- *
- * Lua scripting engine for client
+ * @file nirvana/Automaton.cc
  */
 
-#pragma once
-
-#include <common/LuaCommon.hh>
-#include <client/common.hh>
+#include <nirvana/Automaton.hh>
 
 namespace oz
 {
-namespace client
+
+Automaton::Automaton( const char* name )
 {
+  JSON json = File( String::str( "/home/davorin/%s.json", name ) );
 
-class LuaClient : public LuaCommon
-{
-private:
+  foreach( i, json.arrayCIter() ) {
+    const JSON& jsonState = *i;
 
-  void staticCall( const char* functionName );
+    states.add();
+    State& state = states.last();
 
-public:
-
-  void exec( const char* code ) const;
-  void finish() const;
-  bool popBool() const;
-  int popInt() const;
-  float popFloat() const;
-  String popString() const;
-
-  void update();
-  void create( const char* missionPath );
-
-  void read( InputStream* is );
-  void write( OutputStream* os );
-
-  void init();
-  void destroy();
-
-};
-
-extern LuaClient luaClient;
-
+    state.name = jsonState["name"].get( "" );
+    state.init = jsonState["init"].get( "" );
+    state.exec = jsonState["exec"].get( "" );
+  }
 }
+
+void Automaton::update()
+{
+  foreach( state, states.citer() ) {
+    Log() << state->name << " :: " << state->exec;
+  }
+}
+
 }

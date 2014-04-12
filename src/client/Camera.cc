@@ -37,6 +37,7 @@ const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
 const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
+const float  Camera::SHAKE_SUPPRESSION  = 0.85f;
 const float  Camera::FLASH_SUPPRESSION  = 0.75f;
 const Mat4   Camera::FLASH_COLOUR       = Mat4( 2.50f, 1.00f, 1.00f, 0.00f,
                                                 1.00f, 2.50f, 1.00f, 0.00f,
@@ -61,7 +62,14 @@ void Camera::flash( float intensity )
 
 void Camera::shake( float intensity )
 {
-  shakedRot = Quat::rotationAxis( right, intensity );
+  float heading = intensity * Math::rand() * Math::TAU;
+  float pitch   = intensity * Math::rand() * Math::TAU / 2.0f;
+  float cPitch  = Math::cos( pitch );
+  Vec3  axis    = Vec3( cPitch * Math::sin( heading ),
+                        cPitch * Math::cos( heading ),
+                        Math::sin( pitch ) );
+
+  shakeRot = Quat::rotationAxis( axis, intensity );
 }
 
 void Camera::updateReferences()
@@ -92,7 +100,7 @@ void Camera::updateReferences()
 
 void Camera::align()
 {
-  rot      = ~Quat::fastSlerp( rot, desiredRot * shakedRot, ROT_SMOOTHING_COEF );
+  rot      = ~Quat::fastSlerp( rot, desiredRot * shakeRot, ROT_SMOOTHING_COEF );
   mag      = Math::mix( mag, desiredMag, SMOOTHING_COEF );
   p        = Math::mix( p, desiredPos, SMOOTHING_COEF );
   velocity = ( p - oldPos ) / Timer::TICK_TIME;
@@ -170,6 +178,7 @@ void Camera::update()
 
   horizPlane  = coeff * mag * MIN_DISTANCE;
   vertPlane   = aspect * horizPlane;
+  shakeRot    = Quat::fastSlerp( Quat::ID, shakeRot, SHAKE_SUPPRESSION );
   flashColour = Math::mix( Mat4::ID, flashColour, FLASH_SUPPRESSION );
 }
 
@@ -181,7 +190,7 @@ void Camera::reset()
   velocity    = Vec3::ZERO;
 
   desiredRot  = Quat::ID;
-  shakedRot   = Quat::ID;
+  shakeRot    = Quat::ID;
   desiredMag  = 1.0f;
   desiredPos  = Point::ORIGIN;
   oldPos      = Point::ORIGIN;

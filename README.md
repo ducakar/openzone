@@ -100,6 +100,8 @@ You may also want to set several options when configuring CMake build system:
 - `OZ_NET`: Enable networking support. Not implemented yet. Requires SDL_net library.
   `OFF` by default, forced to `OFF` on NaCl.
 
+- `OZ_TOOLS`: Build tools required for creating new game data (see next section).
+
 - `OZ_STANDALONE`: This only affects behaviour of `make install`. It also installs dependencies from
   `lib` directory, game data archives found in `share/openzone`, info files etc. This is intended
   when one wants to create all-in-one ZIP archive that can be unpacked and run without installation.
@@ -114,6 +116,23 @@ You may also want to set several options when configuring CMake build system:
 
 Tools
 -----
+
+### `ozBuild -A <pkgSrc>` ###
+
+Compiler for game data. It compiler source game data into formats more suitable for OpenZone engine
+which results in much better run-time performance and much less code required to load data.
+
+Data source are read from `<pkgSrc>` directory. Output directory is `share/openzone` by default (you
+can specify it as an additional parameter after `<pkgSrc>` if you wish otherwise). Last token from
+`<pkgSrc>` path is interpreted as package name. Package is built in `share/openzone/<pkgName>`
+directory and game data archive is packed after successful build in `share/openzone/<pkgName>.zip`,
+if run with `-A` parameter. See "`ozBuild --help`" for all options.
+
+Note that temporary directory `share/openzone/<pkgName>` is not cleared after build, so if you
+remove any files from source data and rebuild package, removed files will still be cached in
+temporary directory and put into newly built package. So, it is highly recommended to remove all
+temporary directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data
+or before doing the final build.
 
 ### `ozGettext <pkgSrc>` ###
 
@@ -137,23 +156,6 @@ should be saved as `<pkgSrc>/mission/<missionName>/lingua/<lang>.po`.
 
 Note that ozbase is a special package and its POT catalogue template should be generated with
 gettext-ozbase.sh Bash script instead.
-
-### `ozBuild -A <pkgSrc>` ###
-
-Compiler for game data. It compiler source game data into formats more suitable for OpenZone engine
-which results in much better run-time performance and much less code required to load data.
-
-Data source are read from `<pkgSrc>` directory. Output directory is `share/openzone` by default (you
-can specify it as an additional parameter after `<pkgSrc>` if you wish otherwise). Last token from
-`<pkgSrc>` path is interpreted as package name. Package is built in `share/openzone/<pkgName>`
-directory and game data archive is packed after successful build in `share/openzone/<pkgName>.zip`,
-if run with `-A` parameter. See "`ozBuild --help`" for all options.
-
-Note that temporary directory `share/openzone/<pkgName>` is not cleared after build, so if you
-remove any files from source data and rebuild package, removed files will still be cached in
-temporary directory and put into newly built package. So, it is highly recommended to remove all
-temporary directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data
-or before doing the final build.
 
 ### `ozManifest` ###
 

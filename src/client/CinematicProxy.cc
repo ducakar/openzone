@@ -222,7 +222,8 @@ void CinematicProxy::update()
   }
   else if( t == 0.0f ) {
     if( !step.code.isEmpty() ) {
-      luaClient.staticExec( step.code );
+      luaClient.exec( step.code );
+      luaClient.finish();
     }
 
     if( step.track == -2 ) {

@@ -42,7 +42,7 @@ namespace oz
  * it is asymptotically faster in average case.
  *
  * Like in `List` all allocated elements are constructed all the time and a removed element's
- * destruction is guaranteed.
+ * destruction is still guaranteed.
  *
  * Memory is allocated when the first element is added.
  *

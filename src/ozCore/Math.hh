@@ -455,11 +455,31 @@ public:
   /**
    * Convex combination.
    */
-  template <typename Value>
+  template <typename Value, typename Real>
   OZ_ALWAYS_INLINE
-  static constexpr Value mix( const Value& a, const Value& b, float t )
+  static constexpr Value mix( const Value& a, const Value& b, Real t )
   {
-    return hard_assert( 0.0f <= t && t <= 1.0f ), a + t * ( b - a );
+    return hard_assert( 0 <= t && t <= 1 ), a + t * ( b - a );
+  }
+
+  /**
+   * 0.0 if x < step, else 1.0.
+   */
+  template <typename Real>
+  OZ_ALWAYS_INLINE
+  static constexpr Real step( Real edge, Real t )
+  {
+    return hard_assert( 0 <= edge && edge <= 1 ), t < edge ? 0 : 1;
+  }
+
+  /**
+   * \f$ [0, 1] \to [0, 1]: t \mapsto 3 t^2 - 2 t^3\f$.
+   */
+  template <typename Real>
+  OZ_ALWAYS_INLINE
+  static constexpr Real smooth( Real t )
+  {
+    return hard_assert( 0 <= t && t <= 1 ), t*t*( 3 - 2*t );
   }
 
   /**

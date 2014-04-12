@@ -2,6 +2,7 @@
 
 - ozCore
     * null replaced by nullptr keyword
+    * more extensive use of constexpr
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
@@ -12,11 +13,12 @@
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
     * String: construction from numbers, new number parsing functions
     * exact SLERP implementation in Quat
-    * new Mat33 class
+    * new Mat3 class for 3x3 matrix
     * SIMD support for linear algebra classes
     * new SpinLock and CallOnce classes added for threading
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
+    * BufferStream merged into OutputStream
     * Buffer supports zlib compression
     * File class determines special user directories and executable path
     * PFile class merged into File class (VFS paths begin with '@')
@@ -25,6 +27,7 @@
     * new Profiler class
     * new Gettext class for loading gettext translations
     * JSON is more forgiving and simplified (implicit ctors, get<NumType>(), removed asType())
+    * new Pepper class that provides basic interfaces to PPAPI on NaCl
 - ozDynamics: new rigid body dynamics library
     * collision
         + primitives: Box, Capsule, Polytope, Compound

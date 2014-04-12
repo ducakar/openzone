@@ -1,5 +1,6 @@
 add_library( nirvana STATIC
 #BEGIN SOURCES
+  Automaton.hh
   common.hh
   Device.hh
   luaapi.hh
@@ -10,6 +11,7 @@ add_library( nirvana STATIC
   QuestList.hh
   Task.hh
   TechGraph.hh
+  Automaton.cc
   Device.cc
   luaapi.cc
   LuaNirvana.cc

@@ -382,6 +382,13 @@ File& File::operator = ( const String& path )
 
 bool File::stat()
 {
+  // Stat shouldn't be performed while the file is mapped. Changing fileSize may make a real mess
+  // when unmapping file on Linux/Unix. True is returned since application should see the file as it
+  // was when it has been mapped.
+  if( data != nullptr ) {
+    return true;
+  }
+
   if( filePath.fileIsVirtual() ) {
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 

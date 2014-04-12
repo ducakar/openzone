@@ -84,7 +84,6 @@ void UnitProxy::begin()
   bobBias     = 0.0f;
 
   injuryRatio = 0.0f;
-  camDist     = 0.0f;
 
   oldBot      = -1;
 
@@ -629,6 +628,7 @@ void UnitProxy::reset()
   bobBias     = 0.0f;
 
   injuryRatio = 0.0f;
+  camDist     = 0.0f;
 
   oldBot      = -1;
 

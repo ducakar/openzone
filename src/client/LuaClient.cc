@@ -51,13 +51,11 @@ void LuaClient::staticCall( const char* functionName )
     Log::println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
     System::bell();
 
-    l_pop( 1 );
+    l_settop( 0 );
   }
-
-  hard_assert( l_gettop() == 0 );
 }
 
-float LuaClient::staticExec( const char* code )
+void LuaClient::exec( const char* code ) const
 {
   ms.obj      = nullptr;
   ms.str      = nullptr;
@@ -65,21 +63,55 @@ float LuaClient::staticExec( const char* code )
   ms.objIndex = 0;
   ms.strIndex = 0;
 
-  float retValue = 0.0f;
+  hard_assert( l_gettop() == 0 );
 
   if( l_dostring( code ) != LUA_OK ) {
     Log::println( "Lua[C]: %s", l_tostring( -1 ) );
     System::bell();
-
-    l_pop( 1 );
-  }
-  else if( l_gettop() == 1 ) {
-    retValue = l_tofloat( 1 );
-
-    l_pop( 1 );
   }
 
-  return retValue;
+  l_settop( 0 );
+}
+
+void LuaClient::finish() const
+{
+  l_settop( 0 );
+}
+
+bool LuaClient::popBool() const
+{
+  hard_assert( l_gettop() != 0 );
+
+  bool value = l_tobool( -1 );
+  l_pop( 1 );
+  return value;
+}
+
+int LuaClient::popInt() const
+{
+  hard_assert( l_gettop() != 0 );
+
+  bool value = l_toint( -1 );
+  l_pop( 1 );
+  return value;
+}
+
+float LuaClient::popFloat() const
+{
+  hard_assert( l_gettop() != 0 );
+
+  float value = l_tofloat( -1 );
+  l_pop( 1 );
+  return value;
+}
+
+String LuaClient::popString() const
+{
+  hard_assert( l_gettop() != 0 );
+
+  String value = l_tostring( -1 );
+  l_pop( 1 );
+  return value;
 }
 
 void LuaClient::update()
@@ -208,9 +240,8 @@ void LuaClient::write( OutputStream* os )
     hard_assert( l_type( -2 ) == LUA_TSTRING );
 
     const char* name = l_tostring( -2 );
-    if( name[0] == 'o' && name[1] == 'z' && name[2] == '_' ) {
+    if( String::beginsWith( name, "oz_" ) ) {
       os->writeString( name );
-
       writeValue( os );
     }
 
