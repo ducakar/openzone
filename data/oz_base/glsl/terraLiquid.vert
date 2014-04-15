@@ -25,7 +25,7 @@
 
 #version 100
 
-precision mediump float;
+precision highp float;
 
 const float TERRA_WATER_SCALE = 512.0;
 const vec3  NORMAL            = vec3( 0.0, 0.0, 1.0 );

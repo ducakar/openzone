@@ -51,7 +51,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Point() :
+  explicit Point() :
     VectorBase3( 0.0f, 0.0f, 0.0f, 1.0f )
   {}
 
@@ -61,7 +61,7 @@ public:
    * Create form a float SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Point( float4 f4 ) :
+  explicit Point( float4 f4 ) :
     VectorBase3( f4 )
   {}
 
@@ -69,7 +69,7 @@ public:
    * Create from an uint SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Point( uint4 u4 ) :
+  explicit Point( uint4 u4 ) :
     VectorBase3( u4 )
   {}
 
@@ -79,7 +79,7 @@ public:
    * Create a point with given coordinates.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Point( float x, float y, float z ) :
+  explicit Point( float x, float y, float z ) :
     VectorBase3( x, y, z, 1.0f )
   {}
 
@@ -87,7 +87,7 @@ public:
    * Create from an array of 3 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Point( const float* v ) :
+  explicit Point( const float* v ) :
     VectorBase3( v[0], v[1], v[2], 1.0f )
   {}
 
@@ -95,7 +95,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator == ( const Point& p ) const
+  bool operator == ( const Point& p ) const
   {
     return x == p.x && y == p.y && z == p.z;
   }
@@ -104,7 +104,7 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator != ( const Point& p ) const
+  bool operator != ( const Point& p ) const
   {
     return x != p.x || y != p.y || z != p.z;
   }
@@ -113,7 +113,7 @@ public:
    * Constant float pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  constexpr operator const float* () const
+  operator const float* () const
   {
     return &x;
   }
@@ -131,7 +131,7 @@ public:
    * Constant reference to the `i`-th member.
    */
   OZ_ALWAYS_INLINE
-  constexpr const float& operator [] ( int i ) const
+  const float& operator [] ( int i ) const
   {
     return ( &x )[i];
   }
@@ -149,7 +149,7 @@ public:
    * Point translated for `v`.
    */
   OZ_ALWAYS_INLINE
-  constexpr Point operator + ( const Vec3& v ) const
+  Point operator + ( const Vec3& v ) const
   {
 #ifdef OZ_SIMD_MATH
     return Point( f4 + v.f4 );
@@ -162,7 +162,7 @@ public:
    * Point translated for `-v`.
    */
   OZ_ALWAYS_INLINE
-  constexpr Point operator - ( const Vec3& v ) const
+  Point operator - ( const Vec3& v ) const
   {
 #ifdef OZ_SIMD_MATH
     return Point( f4 - v.f4 );
@@ -175,7 +175,7 @@ public:
    * Difference of two points.
    */
   OZ_ALWAYS_INLINE
-  constexpr Vec3 operator - ( const Point& p ) const
+  Vec3 operator - ( const Point& p ) const
   {
 #ifdef OZ_SIMD_MATH
     return Vec3( f4 - p.f4 );
@@ -220,7 +220,7 @@ public:
    * Projection of the point to a given vector.
    */
   OZ_ALWAYS_INLINE
-  constexpr scalar operator * ( const Vec3& v ) const
+  scalar operator * ( const Vec3& v ) const
   {
 #ifdef OZ_SIMD_MATH
     return vDot( f4, v.f4 );
@@ -235,7 +235,7 @@ public:
  * Per-component absolute value of a point.
  */
 OZ_ALWAYS_INLINE
-inline constexpr Point abs( const Point& a )
+inline Point abs( const Point& a )
 {
 #ifdef OZ_SIMD_MATH
   return Point( vAbs( a.u4 ) );
@@ -248,7 +248,7 @@ inline constexpr Point abs( const Point& a )
  * Per-component minimum of two points.
  */
 OZ_ALWAYS_INLINE
-inline constexpr Point min( const Point& a, const Point& b )
+inline Point min( const Point& a, const Point& b )
 {
 #ifdef OZ_SIMD_MATH
   return Point( vMin( a.f4, b.f4 ) );
@@ -261,7 +261,7 @@ inline constexpr Point min( const Point& a, const Point& b )
  * Per-component maximum of two points.
  */
 OZ_ALWAYS_INLINE
-inline constexpr Point max( const Point& a, const Point& b )
+inline Point max( const Point& a, const Point& b )
 {
 #ifdef OZ_SIMD_MATH
   return Point( vMax( a.f4, b.f4 ) );
@@ -274,7 +274,7 @@ inline constexpr Point max( const Point& a, const Point& b )
  * Per-component clamped value of points.
  */
 OZ_ALWAYS_INLINE
-inline constexpr Point clamp( const Point& c, const Point& a, const Point& b )
+inline Point clamp( const Point& c, const Point& a, const Point& b )
 {
 #ifdef OZ_SIMD_MATH
   return Point( vMin( b.f4, vMax( a.f4, c.f4 ) ) );

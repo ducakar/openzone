@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <nirvana/common.hh>
+#include <nirvana/Automaton.hh>
 
 namespace oz
 {
@@ -32,14 +32,17 @@ class Mind
 {
 public:
 
-  static const int FORCE_UPDATE_BIT = 0x00000001;
+  static const int FORCE_UPDATE_BIT = 0x01;
 
-  Mind* prev[1];
-  Mind* next[1];
+  Mind*             prev[1];
+  Mind*             next[1];
 
-  int bot;
-  int flags;
-  int side;
+  int               bot;
+  int               flags;
+  int               side;
+
+  Automaton*        automaton;
+  Automaton::State* state;
 
 public:
 

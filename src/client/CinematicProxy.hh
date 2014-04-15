@@ -49,7 +49,7 @@ private:
     Point  p;
     Mat4   colour;
 
-    String code;
+    Buffer code;
     int    track;
     String title;
 

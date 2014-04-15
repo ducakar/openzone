@@ -23,12 +23,40 @@
 
 #include <nirvana/Automaton.hh>
 
+#include <nirvana/LuaNirvana.hh>
+
 namespace oz
 {
 
-Automaton::Automaton( const char* name )
+struct Automaton::State
 {
-  JSON json = File( String::str( "/home/davorin/%s.json", name ) );
+  struct Link
+  {
+    Buffer condition;
+    State* target;
+  };
+
+  String     name;
+  Buffer     onEnter;
+  Buffer     onUpdate;
+  List<Link> links;
+};
+
+Automaton::State* Automaton::findState( const char* stateName )
+{
+  foreach( state, states.iter() ) {
+    if( state->name.equals( stateName ) ) {
+      return state;
+    }
+  }
+  OZ_ERROR( "Unable to find state '%s' in automaton '%s'", stateName, name.cstr() );
+}
+
+Automaton::Automaton( const File& file )
+{
+  name = file.baseName();
+
+  JSON json = file;
 
   foreach( i, json.arrayCIter() ) {
     const JSON& jsonState = *i;
@@ -36,17 +64,38 @@ Automaton::Automaton( const char* name )
     states.add();
     State& state = states.last();
 
+    const char* enterCode  = jsonState["onEnter"].get( "" );
+    const char* updateCode = jsonState["onUpdate"].get( "" );
+
     state.name = jsonState["name"].get( "" );
-    state.init = jsonState["init"].get( "" );
-    state.exec = jsonState["exec"].get( "" );
+
+    if( !String::isEmpty( enterCode ) ) {
+      state.onEnter = luaNirvana.compile( enterCode );
+    }
+    if( !String::isEmpty( updateCode ) ) {
+      state.onUpdate = luaNirvana.compile( updateCode );
+    }
+  }
+
+  for( int i = 0; i < states.length(); ++i ) {
+    const JSON& jsonState = json[i];
+    State& state = states[i];
+
+    foreach( j, jsonState["links"].arrayCIter() ) {
+      const JSON& jsonLink = *j;
+
+      state.links.add();
+      State::Link& link = state.links.last();
+
+      link.condition = luaNirvana.compile( jsonLink["if"].get( "" ) );
+      link.target    = findState( jsonLink["to"].get( "" ) );
+    }
   }
 }
 
-void Automaton::update()
+Automaton::State* Automaton::update( State* state ) const
 {
-  foreach( state, states.citer() ) {
-    Log() << state->name << " :: " << state->exec;
-  }
+  return state;
 }
 
 }

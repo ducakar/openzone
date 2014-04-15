@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.3.85
+Version:        0.3.86
 Release:        1%{?dist}
 Summary:        Simple cross-platform FPS/RTS game engine
 Group:          Amusements/Games
@@ -80,6 +80,7 @@ cmake \
   -D OZ_SHARED_LIBS=1 \
   -D OZ_PULSE_BELL=1 \
   -D OZ_NONFREE=1 \
+  -D OZ_TOOLS=1 \
   ..
 
 make %{?_smp_mflags}

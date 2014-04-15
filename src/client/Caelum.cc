@@ -35,6 +35,7 @@ const char* const Caelum::SKYBOX_FACES[]        = { "+x", "-x", "+y", "-y", "+z"
 const Vec4        Caelum::GLOBAL_AMBIENT_COLOUR = Vec4( 0.12f, 0.12f, 0.15f, 1.00f );
 
 const float       Caelum::DAY_BIAS              = 0.40f;
+const float       Caelum::DIFFUSE_COEF          = 0.80f;
 const float       Caelum::AMBIENT_COEF          = 0.40f;
 
 const float       Caelum::RED_COEF              = +0.05f;
@@ -70,9 +71,9 @@ void Caelum::update()
 
   lightDir = dir;
 
-  diffuseColour.x = ratio + RED_COEF   * ratioDiff;
-  diffuseColour.y = ratio + GREEN_COEF * ratioDiff;
-  diffuseColour.z = ratio + BLUE_COEF  * ratioDiff;
+  diffuseColour.x = DIFFUSE_COEF * ( ratio + RED_COEF   * ratioDiff );
+  diffuseColour.y = DIFFUSE_COEF * ( ratio + GREEN_COEF * ratioDiff );
+  diffuseColour.z = DIFFUSE_COEF * ( ratio + BLUE_COEF  * ratioDiff );
 
   ambientColour.x = AMBIENT_COEF * diffuseColour.x;
   ambientColour.y = AMBIENT_COEF * diffuseColour.y;

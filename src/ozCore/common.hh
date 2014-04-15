@@ -225,7 +225,7 @@ inline void swap( Value& a, Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr Value abs( const Value& a )
+inline Value abs( const Value& a )
 {
   return a < 0 ? -a : a;
 }
@@ -235,7 +235,7 @@ inline constexpr Value abs( const Value& a )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& min( const Value& a, const Value& b )
+inline const Value& min( const Value& a, const Value& b )
 {
   return b < a ? b : a;
 }
@@ -245,7 +245,7 @@ inline constexpr const Value& min( const Value& a, const Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& max( const Value& a, const Value& b )
+inline const Value& max( const Value& a, const Value& b )
 {
   return a < b ? b : a;
 }
@@ -255,16 +255,18 @@ inline constexpr const Value& max( const Value& a, const Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& clamp( const Value& c, const Value& a, const Value& b )
+inline const Value& clamp( const Value& c, const Value& a, const Value& b )
 {
-  return hard_assert( !( b < a ) ), c < a ? a : ( b < c ? b : c );
+  hard_assert( !( b < a ) );
+
+  return c < a ? a : ( b < c ? b : c );
 }
 
 /**
  * Hash function for integers, identity.
  */
 OZ_ALWAYS_INLINE
-inline constexpr int hash( int value )
+inline int hash( int value )
 {
   return value;
 }

@@ -54,7 +54,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Plane() :
+  explicit Plane() :
     n( 0.0f, 0.0f, 0.0f ), d( 0.0f )
   {}
 
@@ -62,7 +62,7 @@ public:
    * Create form a pair of normal and distance from the origin.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Plane( const Vec3& n_, float d_ ) :
+  explicit Plane( const Vec3& n_, float d_ ) :
     n( n_ ), d( d_ )
   {}
 
@@ -70,7 +70,7 @@ public:
    * Create from an array of 4 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Plane( const float* p ) :
+  explicit Plane( const float* p ) :
     n( p[0], p[1], p[2] ), d( p[3] )
   {}
 
@@ -78,7 +78,7 @@ public:
    * Create with given member values.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Plane( float nx, float ny, float nz, float d_ ) :
+  explicit Plane( float nx, float ny, float nz, float d_ ) :
     n( nx, ny, nz ), d( d_ )
   {}
 
@@ -86,7 +86,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator == ( const Plane& p ) const
+  bool operator == ( const Plane& p ) const
   {
     return n.x == p.n.x && n.y == p.n.y && n.z == p.n.z && d == p.d;
   }
@@ -95,7 +95,7 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator != ( const Plane& p ) const
+  bool operator != ( const Plane& p ) const
   {
     return n.x != p.n.x || n.y != p.n.y || n.z != p.n.z || d != p.d;
   }
@@ -104,7 +104,7 @@ public:
    * Projection of a vector to a plane's normal.
    */
   OZ_ALWAYS_INLINE
-  friend constexpr scalar operator * ( const Vec3& v, const Plane& plane )
+  friend scalar operator * ( const Vec3& v, const Plane& plane )
   {
 #ifdef OZ_SIMD_MATH
     return vDot( v.f4, plane.n.f4 );
@@ -117,7 +117,7 @@ public:
    * Distance between a point and a plane.
    */
   OZ_ALWAYS_INLINE
-  friend constexpr scalar operator * ( const Point& p, const Plane& plane )
+  friend scalar operator * ( const Point& p, const Plane& plane )
   {
 #ifdef OZ_SIMD_MATH
     return vDot( p.f4, plane.n.f4 ) - vFill( plane.d, plane.d, plane.d, plane.d );

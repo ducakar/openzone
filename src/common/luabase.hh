@@ -476,11 +476,12 @@
   lua_pcall( l, nArg, nRet, 0 )
 
 /**
- * @def l_dobuffer
+ * @def l_dobufferx
  * Loads (executes) Lua code from a given buffer.
  */
-#define l_dobuffer( begin, length, name ) \
-  ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
+#define l_dobufferx( begin, length, name, mode ) \
+  ( luaL_loadbufferx( l, begin, size_t( length ), name, mode ) || \
+    lua_pcall( l, 0, LUA_MULTRET, 0 ) )
 
 /**
  * @def l_dostring

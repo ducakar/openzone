@@ -25,7 +25,7 @@
 
 #version 100
 
-precision mediump float;
+precision highp float;
 
 uniform mat4      oz_Colour;
 uniform sampler2D oz_Texture;

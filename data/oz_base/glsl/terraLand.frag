@@ -25,7 +25,7 @@
 
 #version 100
 
-precision mediump float;
+precision highp float;
 
 const float DETAIL_SCALE  = 1024.0;
 
@@ -65,17 +65,13 @@ varying vec3 exTangent;
 varying vec3 exBinormal;
 #endif
 
-vec3 pixelNormal( sampler2D texture, vec2 texCoord )
-{
-  vec3 texel = texture2D( texture, texCoord ).xyz;
-  return 2.0 * texel - vec3( 1.0 );
-}
-
 void main()
 {
 #ifdef OZ_BUMP_MAP
-  mat3  plane        = mat3( exTangent, exBinormal, exNormal );
-  vec3  normal       = plane * pixelNormal( oz_Normals, exTexCoord * DETAIL_SCALE );
+  mat3  planeTransf  = mat3( exTangent, exBinormal, exNormal );
+  vec3  texelNormal  = texture2D( oz_Normals, exTexCoord ).xyz;
+  vec3  localNormal  = 2.0 * texelNormal - vec3( 1.0 );
+  vec3  normal       = normalize( planeTransf * localNormal );
 #else
   vec3  normal       = normalize( exNormal );
 #endif
@@ -88,10 +84,9 @@ void main()
 
   // Caelum light.
   float diffuseDot   = max( 0.0, dot( oz_CaelumLight.dir, normal ) );
-  vec3  ambient      = oz_CaelumLight.ambient;
-  vec3  diffuse      = oz_CaelumLight.colour * diffuseDot;
+  vec3  diffuse      = oz_CaelumLight.ambient + oz_CaelumLight.colour * diffuseDot;
 
-  colour.rgb         = colour.rgb * ( ambient + diffuse );
+  colour.rgb         = colour.rgb * diffuse;
   colour.rgb         = mix( colour.rgb, oz_Fog.colour, fog*fog );
 
   gl_FragData[0]     = oz_Colour * colour;

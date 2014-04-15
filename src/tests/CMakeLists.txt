@@ -33,4 +33,4 @@ add_executable( simd simd.cc )
 target_link_libraries( simd ozCore )
 
 add_executable( test test.cc )
-target_link_libraries( test nirvana matrix common ozCore )
+target_link_libraries( test ozCore )

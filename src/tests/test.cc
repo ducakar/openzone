@@ -22,17 +22,13 @@
  */
 
 #include <ozCore/ozCore.hh>
-#include <ozEngine/ozEngine.hh>
-#include <ozFactory/ozFactory.hh>
 
-#include <nirvana/Automaton.hh>
+#include <cmath>
 
 using namespace oz;
 
 int main()
 {
   System::init();
-  Automaton a( "stateMachine" );
-  a.update();
   return 0;
 }

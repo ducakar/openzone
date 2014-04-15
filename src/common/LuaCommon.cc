@@ -28,10 +28,19 @@
 namespace oz
 {
 
+static int luaWriter( lua_State*, const void* data_, size_t size, void* os_ )
+{
+  OutputStream* os   = static_cast<OutputStream*>( os_ );
+  const char*   data = static_cast<const char*>( data_ );
+
+  os->writeChars( data, int( size ) );
+  return LUA_OK;
+}
+
 int  LuaCommon::randomSeed       = 0;
 bool LuaCommon::isRandomSeedTime = true;
 
-bool LuaCommon::readValue( InputStream* is )
+bool LuaCommon::readValue( InputStream* is ) const
 {
   char ch = is->readChar();
 
@@ -75,7 +84,7 @@ bool LuaCommon::readValue( InputStream* is )
   }
 }
 
-void LuaCommon::readValue( const JSON& json )
+void LuaCommon::readValue( const JSON& json ) const
 {
   switch( json.type() ) {
     case JSON::NIL: {
@@ -120,7 +129,7 @@ void LuaCommon::readValue( const JSON& json )
   }
 }
 
-void LuaCommon::writeValue( OutputStream* os )
+void LuaCommon::writeValue( OutputStream* os ) const
 {
   int type = l_type( -1 );
 
@@ -169,7 +178,7 @@ void LuaCommon::writeValue( OutputStream* os )
   }
 }
 
-JSON LuaCommon::writeValue()
+JSON LuaCommon::writeValue() const
 {
   int type = l_type( -1 );
 
@@ -210,7 +219,7 @@ JSON LuaCommon::writeValue()
   }
 }
 
-void LuaCommon::loadDir( const File& dir )
+void LuaCommon::loadDir( const File& dir ) const
 {
   DArray<File> luaFiles = dir.ls();
 
@@ -225,7 +234,7 @@ void LuaCommon::loadDir( const File& dir )
       continue;
     }
 
-    if( l_dobuffer( is.begin(), is.available(), file->path() ) != 0 ) {
+    if( l_dobufferx( is.begin(), is.available(), file->path(), "t" ) != 0 ) {
       const char* errorMessage = l_tostring( -1 );
 
       OZ_ERROR( "Lua error: %s", errorMessage );
@@ -305,6 +314,20 @@ void LuaCommon::registerConstant( const char* name, const char* value )
 {
   l_pushstring( value );
   l_setglobal( name );
+}
+
+Buffer LuaCommon::compile( const char* code, const char* entity ) const
+{
+  if( luaL_loadstring( l, code ) != LUA_OK ) {
+    OZ_ERROR( "Failed to compile Lua chunk from '%s': %s", entity, code );
+  }
+
+  OutputStream os( 0 );
+  if( lua_dump( l, luaWriter, &os ) != LUA_OK ) {
+    OZ_ERROR( "Failed to write Lua chunk from '%s'.", entity );
+  }
+
+  return Buffer( os.begin(), os.available() );
 }
 
 }

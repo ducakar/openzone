@@ -19,6 +19,8 @@
 
 /**
  * @file nirvana/Automaton.hh
+ *
+ * Finite-state automaton for AI representation.
  */
 
 #pragma once
@@ -32,28 +34,22 @@ class Automaton
 {
 public:
 
-  struct Link
-  {
-    String condition;
-    String target;
-  };
+  struct State;
 
-  struct State
-  {
-    String     name;
-    String     init;
-    String     exec;
-    List<Link> links;
-  };
+private:
 
   String      name;
   List<State> states;
 
+private:
+
+  State* findState( const char* stateName );
+
 public:
 
-  explicit Automaton( const char* name );
+  explicit Automaton( const File& file );
 
-  void update();
+  State* update( State* state ) const;
 
 };
 

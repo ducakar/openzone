@@ -25,7 +25,7 @@
 
 #version 100
 
-precision mediump float;
+precision highp float;
 
 const int   MS_LEVEL        = 8;
 const float MS_SIZE         = 0.02;

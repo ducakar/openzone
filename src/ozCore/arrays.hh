@@ -204,7 +204,7 @@ size_t strlcpy( char* dest, const char* src, size_t size );
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline constexpr int aLength( const Elem ( & )[COUNT] )
+inline int aLength( const Elem ( & )[COUNT] )
 {
   return COUNT;
 }

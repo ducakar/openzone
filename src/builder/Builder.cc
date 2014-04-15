@@ -919,7 +919,7 @@ int Builder::main( int argc, char** argv )
     copyFiles( "@lua", "lua", "lua", true );
   }
   if( doNirvana ) {
-    copyFiles( "@nirvana", "nirvana", "json", false );
+    copyFiles( "@nirvana", "nirvana", "json", true );
   }
   if( doMusic ) {
     copyFiles( "@music", "music", "oga", true );

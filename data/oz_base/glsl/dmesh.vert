@@ -25,7 +25,7 @@
 
 #version 100
 
-precision mediump float;
+precision highp float;
 
 uniform mat4      oz_ProjCamera;
 uniform mat4      oz_Model;

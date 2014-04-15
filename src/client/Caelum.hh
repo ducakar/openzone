@@ -41,6 +41,7 @@ public:
 private:
 
   static const float DAY_BIAS;
+  static const float DIFFUSE_COEF;
   static const float AMBIENT_COEF;
 
   static const float RED_COEF;

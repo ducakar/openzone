@@ -69,8 +69,10 @@ void Terra::draw()
   glBindTexture( GL_TEXTURE_2D, detailTex.albedo );
   glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, mapTex );
-  glActiveTexture( Shader::NORMALS );
-  glBindTexture( GL_TEXTURE_2D, detailTex.normals );
+  if( shader.doBumpMap ) {
+    glActiveTexture( Shader::NORMALS );
+    glBindTexture( GL_TEXTURE_2D, detailTex.normals );
+  }
 
   OZ_GL_CHECK_ERROR();
 
@@ -89,8 +91,10 @@ void Terra::draw()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
-  glActiveTexture( Shader::MASKS );
+  if( shader.doBumpMap ) {
+    glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
+    glActiveTexture( Shader::MASKS );
+  }
   glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
   glActiveTexture( Shader::DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
@@ -124,8 +128,10 @@ void Terra::drawLiquid()
   glBindTexture( GL_TEXTURE_2D, liquidTex.albedo );
   glActiveTexture( Shader::MASKS );
   glBindTexture( GL_TEXTURE_2D, liquidTex.masks );
-  glActiveTexture( Shader::NORMALS );
-  glBindTexture( GL_TEXTURE_2D, liquidTex.normals );
+  if( shader.doBumpMap ) {
+    glActiveTexture( Shader::NORMALS );
+    glBindTexture( GL_TEXTURE_2D, liquidTex.normals );
+  }
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
@@ -144,8 +150,10 @@ void Terra::drawLiquid()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
-  glActiveTexture( Shader::MASKS );
+  if( shader.doBumpMap ) {
+    glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
+    glActiveTexture( Shader::MASKS );
+  }
   glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
   glActiveTexture( Shader::DIFFUSE );
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );

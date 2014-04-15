@@ -175,8 +175,10 @@ void Model::drawNode( const Node* node, int mask )
       glBindTexture( GL_TEXTURE_2D, texture.albedo );
       glActiveTexture( Shader::MASKS );
       glBindTexture( GL_TEXTURE_2D, texture.masks );
-      glActiveTexture( Shader::NORMALS );
-      glBindTexture( GL_TEXTURE_2D, texture.normals );
+      if( shader.doBumpMap ) {
+        glActiveTexture( Shader::NORMALS );
+        glBindTexture( GL_TEXTURE_2D, texture.normals );
+      }
 
       glUniform1f( uniform.shininess, mesh.shininess );
 

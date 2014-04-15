@@ -55,62 +55,27 @@ void LuaClient::staticCall( const char* functionName )
   }
 }
 
-void LuaClient::exec( const char* code ) const
+bool LuaClient::execChunk( const char* code, int size ) const
 {
+  hard_assert( l_gettop() == 0 );
+
   ms.obj      = nullptr;
   ms.str      = nullptr;
   ms.frag     = nullptr;
   ms.objIndex = 0;
   ms.strIndex = 0;
 
-  hard_assert( l_gettop() == 0 );
+  bool value = false;
 
-  if( l_dostring( code ) != LUA_OK ) {
+  if( l_dobufferx( code, size, "", "b" ) != LUA_OK ) {
     Log::println( "Lua[C]: %s", l_tostring( -1 ) );
     System::bell();
   }
+  else {
+    value = l_tobool( -1 );
+  }
 
   l_settop( 0 );
-}
-
-void LuaClient::finish() const
-{
-  l_settop( 0 );
-}
-
-bool LuaClient::popBool() const
-{
-  hard_assert( l_gettop() != 0 );
-
-  bool value = l_tobool( -1 );
-  l_pop( 1 );
-  return value;
-}
-
-int LuaClient::popInt() const
-{
-  hard_assert( l_gettop() != 0 );
-
-  bool value = l_toint( -1 );
-  l_pop( 1 );
-  return value;
-}
-
-float LuaClient::popFloat() const
-{
-  hard_assert( l_gettop() != 0 );
-
-  float value = l_tofloat( -1 );
-  l_pop( 1 );
-  return value;
-}
-
-String LuaClient::popString() const
-{
-  hard_assert( l_gettop() != 0 );
-
-  String value = l_tostring( -1 );
-  l_pop( 1 );
   return value;
 }
 
@@ -203,7 +168,7 @@ void LuaClient::read( InputStream* is )
 
     InputStream is = file->inputStream();
 
-    if( !is.isAvailable() || l_dobuffer( is.begin(), is.available(), file->path() ) != 0 ) {
+    if( !is.isAvailable() || l_dobufferx( is.begin(), is.available(), file->path(), "t" ) != 0 ) {
       OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
     }
   }

@@ -55,32 +55,32 @@ protected:
 protected:
 
   /**
-   * Read serialised %Lua value and push it on the stack (recursively for tables).
+   * Read serialised Lua value and push it on the stack (recursively for tables).
    *
    * @return Should always return true. This return value is only used for internal recursive calls
    *         to detect end of a table.
    */
-  bool readValue( InputStream* is );
+  bool readValue( InputStream* is ) const;
 
   /**
-   * Read %Lua value from a %JSON value and push it on the stack (recursively for tables).
+   * Read Lua value from a %JSON value and push it on the stack (recursively for tables).
    */
-  void readValue( const JSON& json );
+  void readValue( const JSON& json ) const;
 
   /**
-   * Serialise %Lua value at the top of the stack (recursively for tables).
+   * Serialise Lua value at the top of the stack (recursively for tables).
    */
-  void writeValue( OutputStream* os );
+  void writeValue( OutputStream* os ) const;
 
   /**
-   * Return %Lua value at the top of the stack (recursively for tables) as a %JSON value.
+   * Return Lua value at the top of the stack (recursively for tables) as a %JSON value.
    */
-  JSON writeValue();
+  JSON writeValue() const;
 
   /**
    * Load all `*.lua` files in a directory.
    */
-  void loadDir( const File& dir );
+  void loadDir( const File& dir ) const;
 
   /**
    * Common initialisation for Lua classes.
@@ -118,6 +118,11 @@ public:
    * Import global variable into the Lua state.
    */
   void registerConstant( const char* name, const char* value );
+
+  /**
+   * Compile Lua source code to bytecode.
+   */
+  Buffer compile( const char* code ) const;
 
 };
 

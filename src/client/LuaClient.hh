@@ -41,12 +41,7 @@ private:
 
 public:
 
-  void exec( const char* code ) const;
-  void finish() const;
-  bool popBool() const;
-  int popInt() const;
-  float popFloat() const;
-  String popString() const;
+  bool execChunk( const char* code, int size ) const;
 
   void update();
   void create( const char* missionPath );
