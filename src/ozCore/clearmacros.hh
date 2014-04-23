@@ -25,13 +25,12 @@
  *
  * This header clears ozCore macros that might interfere with other libraries.
  *
- * It undefines `soft_assert()`, `hard_assert()`, `foreach()` and `vShuffle()` macros. It is not
- * included by `\<oz/oz.hh\>`, one should include it before headers that might conflict with liboz.
+ * It undefines `soft_assert()`, `hard_assert()` and `vShuffle()` macros. It is not included by
+ * `\<oz/ozCore.hh\>`, one should include it before headers that might conflict with liboz.
  */
 
 #pragma once
 
 #undef soft_assert
 #undef hard_assert
-#undef foreach
 #undef vShuffle

@@ -1455,10 +1455,10 @@ static int ozObjBindItems( lua_State* l )
   ms.objIndex = 0;
   ms.objects.clear();
 
-  foreach( item, ms.obj->items.citer() ) {
-    hard_assert( *item >= 0 );
+  for( int item : ms.obj->items ) {
+    hard_assert( item >= 0 );
 
-    ms.objects.add( orbis.obj( *item ) );
+    ms.objects.add( orbis.obj( item ) );
   }
   return 0;
 }
@@ -1551,8 +1551,8 @@ static int ozObjRemoveAllItems( lua_State* l )
   ARG( 0 );
   OBJ();
 
-  foreach( item, ms.obj->items.citer() ) {
-    synapse.removeObject( *item );
+  for( int item : ms.obj->items ) {
+    synapse.removeObject( item );
   }
   ms.obj->items.clear();
   return 0;

@@ -277,9 +277,9 @@ private:
   List<oz::BSP::Node>  nodes;
   List<oz::BSP::Leaf>  leaves;
   List<int>            leafBrushes;
-  DArray<Model>        models;
   List<oz::BSP::Brush> brushes;
   List<int>            brushSides;
+  DArray<Model>        models;
   DArray<ModelFaces>   modelFaces;
   DArray<QBSPVertex>   vertices;
   DArray<int>          indices;

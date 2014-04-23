@@ -33,8 +33,8 @@ Pool<Compound> Compound::pool;
 
 Compound::~Compound()
 {
-  foreach( child, children.citer() ) {
-    delete child->shape;
+  for( Compound::Child& child : children ) {
+    delete child.shape;
   }
 }
 
@@ -42,8 +42,8 @@ Bounds Compound::getBounds( const Point& pos, const Mat3& rot ) const
 {
   Bounds b = children[0].shape->getBounds( pos + rot * children[0].off, rot * children[0].rot );
 
-  foreach( child, children.citer() ) {
-    b |= child->shape->getBounds( pos + rot * child->off, rot * child->rot );
+  for( const Compound::Child& child : children ) {
+    b |= child.shape->getBounds( pos + rot * child.off, rot * child.rot );
   }
   return b;
 }

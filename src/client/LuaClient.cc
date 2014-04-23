@@ -55,7 +55,7 @@ void LuaClient::staticCall( const char* functionName )
   }
 }
 
-bool LuaClient::execChunk( const char* code, int size ) const
+bool LuaClient::execChunk( const char* code, int size, const char* name ) const
 {
   hard_assert( l_gettop() == 0 );
 
@@ -68,7 +68,7 @@ bool LuaClient::execChunk( const char* code, int size ) const
   bool value = false;
 
   if( l_dobufferx( code, size, "", "b" ) != LUA_OK ) {
-    Log::println( "Lua[C]: %s", l_tostring( -1 ) );
+    Log::println( "Lua[C] in '%s': %s", name, l_tostring( -1 ) );
     System::bell();
   }
   else {
@@ -152,24 +152,20 @@ void LuaClient::read( InputStream* is )
   Log::print( "Deserialising scripts for mission %s ...", cs.mission.cstr() );
 
   File missionDir = "@mission/" + cs.mission;
-  DArray<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
     OZ_ERROR( "Mission directory '%s' does not exist", missionDir.path().cstr() );
   }
-  if( files.isEmpty() ) {
-    OZ_ERROR( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
-  }
 
-  foreach( file, files.citer() ) {
-    if( file->type() != File::REGULAR || !file->hasExtension( "lua" ) ) {
+  for( const File& file : missionDir.ls() ) {
+    if( file.type() != File::REGULAR || !file.hasExtension( "lua" ) ) {
       continue;
     }
 
-    InputStream is = file->inputStream();
+    InputStream is = file.inputStream();
 
-    if( !is.isAvailable() || l_dobufferx( is.begin(), is.available(), file->path(), "t" ) != 0 ) {
-      OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
+    if( !is.isAvailable() || l_dobufferx( is.begin(), is.available(), file.path(), "t" ) != 0 ) {
+      OZ_ERROR( "Client Lua script error in %s", file.path().cstr() );
     }
   }
 

@@ -71,26 +71,25 @@ static const int ERROR_LENGTH                       = 1024;
 
 static char errorBuffer[ERROR_LENGTH]               = {};
 
-static FIBITMAP* createBitmap( const void* data, int width, int height, int bpp )
+static FIBITMAP* createBitmap( const void* data, int width, int height )
 {
-  int    pixelSize = bpp / 8;
-  int    pitch     = ( ( width * pixelSize + 3 ) / 4 ) * 4;
-  int    size      = height * pitch;
-  ubyte* image     = new ubyte[size];
+  int    pitch = width * 4;
+  int    size  = height * pitch;
+  ubyte* image = new ubyte[size];
 
   mCopy( image, data, size_t( size ) );
 
-  // RGB(A) -> BGR(A)
+  // RGBA -> BGRA
   for( int y = 0; y < height; ++y ) {
     ubyte* pixels = &image[y * pitch];
 
     for( int x = 0; x < width; ++x ) {
       swap( pixels[0], pixels[2] );
-      pixels += pixelSize;
+      pixels += 4;
     }
   }
 
-  FIBITMAP* dib = FreeImage_ConvertFromRawBits( image, width, height, pitch, uint( bpp ),
+  FIBITMAP* dib = FreeImage_ConvertFromRawBits( image, width, height, pitch, 32,
                                                 FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
                                                 FI_RGBA_BLUE_MASK );
   if( dib == nullptr ) {
@@ -129,9 +128,8 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
 
   int width  = int( FreeImage_GetWidth( faces[0] ) );
   int height = int( FreeImage_GetHeight( faces[0] ) );
-  int bpp    = int( FreeImage_GetBPP( faces[0] ) );
 
-  bool hasAlpha  = bpp == 32;
+  bool hasAlpha  = FreeImage_IsTransparent( faces[0] );
   bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
   bool compress  = options & ImageBuilder::COMPRESSION_BIT;
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
@@ -139,10 +137,9 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
 
   for( int i = 1; i < nFaces; ++i ) {
     if( int( FreeImage_GetWidth( faces[i] ) ) != width ||
-        int( FreeImage_GetHeight( faces[i] ) ) != height ||
-        int( FreeImage_GetBPP( faces[i] ) ) != bpp )
+        int( FreeImage_GetHeight( faces[i] ) ) != height )
     {
-      snprintf( errorBuffer, ERROR_LENGTH, "All faces must have same dimensions and BPP." );
+      snprintf( errorBuffer, ERROR_LENGTH, "All faces must have same dimensions." );
       return false;
     }
   }
@@ -165,7 +162,7 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
     return false;
   }
 
-  int targetBPP      = isArray && !compress ? 32 : bpp;
+  int targetBPP      = hasAlpha || ( isArray && !compress ) ? 32 : 24;
   int pitchOrLinSize = ( ( width * targetBPP / 8 + 3 ) / 4 ) * 4;
   int nMipmaps       = doMipmaps ? Math::index1( max( width, height ) ) + 1 : 1;
 
@@ -250,27 +247,24 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
   }
 
   for( int i = 0; i < nFaces; ++i ) {
-    FIBITMAP* face    = faces[i];
-    int       faceBpp = bpp;
+    FIBITMAP* face = faces[i];
 
-    if( ( compress || isArray ) && faceBpp != 32 ) {
-      face    = FreeImage_ConvertTo32Bits( faces[i] );
-      faceBpp = 32;
+    if( targetBPP == 24 ) {
+      face = FreeImage_ConvertTo24Bits( faces[i] );
     }
 
     int levelWidth  = width;
     int levelHeight = height;
 
     for( int j = 0; j < nMipmaps; ++j ) {
-      FIBITMAP* level = j == 0 ? FreeImage_Clone( face ) :
-                                 FreeImage_Rescale( face, levelWidth, levelHeight,
-                                                    FILTER_CATMULLROM );
+      FIBITMAP* level = j == 0 ? face : FreeImage_Rescale( face, levelWidth, levelHeight,
+                                                           FILTER_CATMULLROM );
 
       if( compress ) {
 #ifdef OZ_NONFREE
-        ubyte* pixels  = FreeImage_GetBits( level );
-        int    size    = levelWidth * levelHeight * 4;
-        int    s3Size  = squish::GetStorageRequirements( levelWidth, levelHeight, squishFlags );
+        ubyte* pixels = FreeImage_GetBits( level );
+        int    size   = levelWidth * levelHeight * 4;
+        int    s3Size = squish::GetStorageRequirements( levelWidth, levelHeight, squishFlags );
 
         for( int k = 0; k < size; k += 4 ) {
           swap( pixels[k], pixels[k + 2] );
@@ -283,7 +277,7 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
         int         pitch  = int( FreeImage_GetPitch( level ) );
 
         for( int k = 0; k < levelHeight; ++k ) {
-          os.writeChars( pixels, levelWidth * faceBpp / 8 );
+          os.writeChars( pixels, levelWidth * targetBPP / 8 );
           pixels += pitch;
         }
       }
@@ -291,7 +285,9 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
       levelWidth  = max( 1, levelWidth / 2 );
       levelHeight = max( 1, levelHeight / 2 );
 
-      FreeImage_Unload( level );
+      if( level != face ) {
+        FreeImage_Unload( level );
+      }
     }
 
     if( face != faces[i] ) {
@@ -326,8 +322,8 @@ bool ImageBuilder::isImage( const File& file )
   return format != FIF_UNKNOWN;
 }
 
-bool ImageBuilder::createDDS( const void* faces_, int nFaces, int width, int height, int bpp,
-                              int options, const File& destFile )
+bool ImageBuilder::createDDS( const void* faces_, int nFaces, int width, int height, int options,
+                              const File& destFile )
 {
   errorBuffer[0] = '\0';
 
@@ -340,7 +336,8 @@ bool ImageBuilder::createDDS( const void* faces_, int nFaces, int width, int hei
   FIBITMAP** dibs = new FIBITMAP*[nFaces];
 
   for( int i = 0; i < nFaces; ++i ) {
-    dibs[i] = createBitmap( faces[i], width, height, bpp );
+    dibs[i] = createBitmap( faces[i], width, height );
+    FreeImage_SetTransparent( dibs[i], options & ALPHA_BIT );
 
     if( dibs[i] == nullptr ) {
       for( int j = 0; j <= i; ++j ) {

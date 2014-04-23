@@ -94,7 +94,7 @@ int main( int argc, char** argv )
 
   char** images = TerraBuilder::generateCubeNoise( size );
 
-  if( !ImageBuilder::createDDS( images, 6, size, size, 24, ddsOptions, "env.dds" ) ) {
+  if( !ImageBuilder::createDDS( images, 6, size, size, ddsOptions, "env.dds" ) ) {
     Log::println( "Failed to generate maps: %s", ImageBuilder::getError() );
     exitCode = EXIT_FAILURE;
   }

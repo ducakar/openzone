@@ -30,17 +30,17 @@ namespace oz
 {
 
 Mind::Mind() :
-  bot( -1 ), flags( 0 ), side( 0 )
+  flags( 0 ), side( 0 ), botObj( nullptr )
 {}
 
 Mind::Mind( int bot_ ) :
-  bot( bot_ ), flags( 0 ), side( 0 )
+  flags( 0 ), side( 0 ), bot( bot_ ), botObj( nullptr )
 {
   luaNirvana.registerMind( bot );
 }
 
 Mind::Mind( int bot_, InputStream* is ) :
-  bot( bot_ )
+  bot( bot_ ), botObj( nullptr )
 {
   flags = is->readInt();
   side  = is->readInt();
@@ -54,7 +54,7 @@ Mind::~Mind()
 }
 
 Mind::Mind( Mind&& m ) :
-  bot( m.bot ), flags( m.flags ), side( m.side )
+  flags( m.flags ), side( m.side ), bot( m.bot ), botObj( nullptr )
 {
   m.bot   = -1;
   m.flags = 0;
@@ -67,13 +67,15 @@ Mind& Mind::operator = ( Mind&& m )
     return *this;
   }
 
-  bot   = m.bot;
-  flags = m.flags;
-  side  = m.side;
+  flags  = m.flags;
+  side   = m.side;
+  bot    = m.bot;
+  botObj = m.botObj;
 
-  m.bot   = -1;
-  m.flags = 0;
-  m.side  = 0;
+  m.flags  = 0;
+  m.side   = 0;
+  m.bot    = -1;
+  m.botObj = nullptr;
 
   return *this;
 }
@@ -82,15 +84,13 @@ void Mind::update()
 {
   hard_assert( orbis.obj( bot ) != nullptr && ( orbis.obj( bot )->flags & Object::BOT_BIT ) );
 
-  Bot* botObj = static_cast<Bot*>( orbis.obj( bot ) );
+  botObj = static_cast<Bot*>( orbis.obj( bot ) );
 
   if( !botObj->mindFunc.isEmpty() && !( botObj->state & Bot::DEAD_BIT ) ) {
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 
-    if( luaNirvana.mindCall( botObj->mindFunc, this, botObj ) ) {
-      flags |= FORCE_UPDATE_BIT;
-    }
+    luaNirvana.mindCall( botObj->mindFunc, this, botObj );
   }
 }
 

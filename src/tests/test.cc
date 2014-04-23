@@ -23,8 +23,6 @@
 
 #include <ozCore/ozCore.hh>
 
-#include <cmath>
-
 using namespace oz;
 
 int main()

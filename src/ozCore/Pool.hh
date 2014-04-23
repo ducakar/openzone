@@ -101,8 +101,8 @@ private:
    */
   union Slot
   {
-    Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
     char  storage[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
+    Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
   };
 
   /**
@@ -114,8 +114,8 @@ private:
    */
   struct Block
   {
-    Block* nextBlock;        ///< Pointer to the next block.
     Slot   data[BLOCK_SIZE]; ///< Slots.
+    Block* nextBlock;        ///< Pointer to the next block.
 
     /**
      * Create a new block and bind its slots into a linked list.

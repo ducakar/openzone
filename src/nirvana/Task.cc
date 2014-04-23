@@ -31,9 +31,9 @@ Task::~Task()
 
 void Task::write( OutputStream* os ) const
 {
-  foreach( child, children.citer() ) {
-    os->writeString( child->type() );
-    child->write( os );
+  for( const Task& child : children ) {
+    os->writeString( child.type() );
+    child.write( os );
   }
   os->writeInt( flags );
 }

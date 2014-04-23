@@ -41,7 +41,7 @@ private:
 
 public:
 
-  bool execChunk( const char* code, int size ) const;
+  bool execChunk( const char* code, int size, const char* name ) const;
 
   void update();
   void create( const char* missionPath );

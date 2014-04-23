@@ -58,6 +58,16 @@ struct Foo
     Log() << "Foo& operator = ( Foo&& )";
     return *this;
   }
+
+  bool operator == ( const Foo& ) const
+  {
+    return true;
+  }
+
+  bool operator < ( const Foo& ) const
+  {
+    return false;
+  }
 };
 
 template <typename Type>
@@ -115,10 +125,14 @@ int main()
 {
   System::init();
 
-  JSON json = Vec3( 49.5f, 50.0f, 51.0f );
+  Set<Foo> s;
+  Set<Foo> t;
+  s.include( Foo() );
+  s.include( Foo() );
 
-  Log() << iCount( json.arrayCIter(), []( const JSON& j ) {
-    return j.get( 0 ) >= 50;
-  } );
+  Log() << 1;
+  t = static_cast< Set<Foo>&& >( s );
+  Log() << 2;
+
   return 0;
 }

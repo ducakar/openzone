@@ -38,7 +38,7 @@ void InputStream::set( const char* newPos )
               newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
   }
 
-  streamPos = newPos;
+  streamPos = const_cast<char*>( newPos );
 }
 
 void InputStream::seek( int offset )

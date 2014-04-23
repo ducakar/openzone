@@ -33,9 +33,14 @@ namespace oz
 
 class LuaNirvana : public LuaCommon
 {
+private:
+
+  bool execChunk( const Buffer& buffer, const char* name, Mind* mind );
+
 public:
 
-  bool mindCall( const char* functionName, Mind* mind, Bot* self );
+  void mindCall( const char* functionName, Mind* mind, Bot* self );
+  const Automaton::State* updateMind( const Automaton::State* state, Mind* mind ) const;
 
   void registerMind( int botIndex );
   void unregisterMind( int botIndex );

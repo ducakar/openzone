@@ -65,7 +65,7 @@ private:
   /**
    * Resize storage if necessary and set `count` to `newCount`.
    */
-  void ensureCapacity( int newCount );
+  void ensureCapacity( int newCount, bool keepContents = false );
 
 public:
 

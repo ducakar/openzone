@@ -43,14 +43,17 @@ class ImageBuilder
 {
 public:
 
+  /// Enable transparency.
+  static const int ALPHA_BIT = 0x01;
+
   /// Enable generation of mipmaps for a texture.
-  static const int MIPMAPS_BIT = 0x01;
+  static const int MIPMAPS_BIT = 0x02;
 
   /// Enable texture compression.
-  static const int COMPRESSION_BIT = 0x02;
+  static const int COMPRESSION_BIT = 0x04;
 
   /// Image array is a cube map.
-  static const int CUBE_MAP_BIT = 0x04;
+  static const int CUBE_MAP_BIT = 0x08;
 
 public:
 
@@ -73,6 +76,7 @@ public:
    * Generate a DDS form a given image and optionally compress it and create mipmaps.
    *
    * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
+   * - `ALPHA_BIT` enables alpha channel and writes texture as RGBA instead as RGB.
    * - `MIPMAPS_BIT` enables generation of mipmaps.
    * - `COMPRESSION_BIT` enables S3 texture compression; DXT1 is used for images without an alpha
    *   channel and DXT5 for images with an alpha channel. Texture compression is enabled only if
@@ -95,18 +99,18 @@ public:
    * @param nFaces number of input images.
    * @param width image width.
    * @param height image height.
-   * @param bpp bits-per-pixel (24 for RGB or 32 for RGBA).
    * @param options bit-mask to control mipmap generation, compression and cube map.
    * @param destFile output file.
    */
-  static bool createDDS( const void* faces, int nFaces, int width, int height, int bpp,
-                         int options, const File& destFile );
+  static bool createDDS( const void* faces, int nFaces, int width, int height, int options,
+                         const File& destFile );
 
   /**
    * Convert a given image to DDS format, similar to `buildDDS()`.
    *
    * Freeimage library is used for reading a file, so most of image file formats are supported.
-   * If the input file is a valid DDS, it is only copied.
+   * If the input file is a valid DDS, it is only copied. Transparency is detected when loading so
+   * `ALPHA_BIT` option has no effect for this function.
    *
    * This function only supports single-layer DDS images, volume and cube map textures are not
    * supported.

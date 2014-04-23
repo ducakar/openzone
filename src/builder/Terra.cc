@@ -263,7 +263,7 @@ void Terra::saveClient()
     imageFlags |= context.useS3TC ? ImageBuilder::COMPRESSION_BIT : 0;
 
     char* image = TerraBuilder::generateImage( imageLength, imageLength );
-    ImageBuilder::createDDS( &image, 1, imageLength, imageLength, 24, imageFlags,
+    ImageBuilder::createDDS( &image, 1, imageLength, imageLength, imageFlags,
                              "terra/" + name + ".dds" );
 
     Log::printEnd( " OK" );

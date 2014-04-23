@@ -82,7 +82,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
       step.code.deallocate();
     }
     else {
-      step.code = luaClient.compile( execConfig.get( "" ) );
+      step.code = luaClient.compile( execConfig.get( "" ), path );
     }
 
     const JSON& trackConfig = stepConfig["track"];
@@ -224,7 +224,7 @@ void CinematicProxy::update()
   }
   else if( t == 0.0f ) {
     if( !step.code.isEmpty() ) {
-      luaClient.execChunk( step.code.begin(), step.code.length() );
+      luaClient.execChunk( step.code.begin(), step.code.length(), "" );
     }
 
     if( step.track == -2 ) {

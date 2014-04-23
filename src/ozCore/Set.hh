@@ -28,8 +28,7 @@
 
 #pragma once
 
-#include "arrays.hh"
-#include "System.hh"
+#include "List.hh"
 
 namespace oz
 {
@@ -49,100 +48,75 @@ namespace oz
  * @sa `oz::Map`, `oz::HashSet`
  */
 template <typename Elem>
-class Set
+class Set : protected List<Elem>
 {
-private:
-
-  /// Granularity for automatic storage allocations.
-  static const int GRANULARITY = 8;
-
 public:
 
   /**
    * %Iterator with constant access to elements.
    */
-  typedef ArrayIterator<const Elem> CIterator;
+  typedef typename List<Elem>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef ArrayIterator<Elem> Iterator;
+  typedef typename List<Elem>::Iterator Iterator;
 
-private:
+protected:
 
-  Elem* data;  ///< Element storage.
-  int   count; ///< Number of elements.
-  int   size;  ///< Capacity, number of elements in storage.
-
-  /**
-   * Ensure a given capacity.
-   *
-   * Capacity is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
-   * `GRANULARITY` able to hold the requested number of elements.
-   */
-  void ensureCapacity( int capacity )
-  {
-    if( capacity < 0 ) {
-      OZ_ERROR( "oz::Set: Capacity overflow" );
-    }
-    else if( size < capacity ) {
-      size *= 2;
-      size  = size < capacity ? ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 ) : size;
-
-      if( size <= 0 ) {
-        OZ_ERROR( "oz::Set: Capacity overflow" );
-      }
-
-      data = aReallocate<Elem>( data, count, size );
-    }
-  }
+  using List<Elem>::data;
+  using List<Elem>::count;
+  using List<Elem>::ensureCapacity;
 
 public:
+
+  using List<Elem>::citer;
+  using List<Elem>::iter;
+  using List<Elem>::begin;
+  using List<Elem>::end;
+  using List<Elem>::length;
+  using List<Elem>::isEmpty;
+  using List<Elem>::capacity;
+  using List<Elem>::operator [];
+  using List<Elem>::first;
+  using List<Elem>::last;
+  using List<Elem>::resize;
+  using List<Elem>::trim;
+  using List<Elem>::clear;
+  using List<Elem>::free;
+  using List<Elem>::allocate;
+  using List<Elem>::deallocate;
 
   /**
    * Create an empty set with a given initial capacity.
    */
   explicit Set( int capacity = 0 ) :
-    data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
+    List<Elem>( capacity )
   {}
 
   /**
    * Initialise from an initialiser list.
    */
-  Set( InitialiserList<Elem> l ) :
-    data( new Elem[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
+  Set( InitialiserList<Elem> l )
   {
-    aCopy<Elem>( l.begin(), int( l.size() ), data );
-    aSort<Elem>( data, count );
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Set()
-  {
-    delete[] data;
+    for( const Elem& e : l ) {
+      add( e );
+    }
   }
 
   /**
    * Copy constructor, copies elements.
    */
   Set( const Set& s ) :
-    data( s.size == 0 ? nullptr : new Elem[s.size] ), count( s.count ), size( s.size )
-  {
-    aCopy<Elem>( s.data, s.count, data );
-  }
+    List<Elem>( s )
+  {}
 
   /**
    * Move constructor, moves element storage.
    */
   Set( Set&& s ) :
-    data( s.data ), count( s.count ), size( s.size )
-  {
-    s.data  = nullptr;
-    s.count = 0;
-    s.size  = 0;
-  }
+    List<Elem>( static_cast<Set&&>( s ) )
+  {}
 
   /**
    * Copy operator, copies elements.
@@ -151,21 +125,7 @@ public:
    */
   Set& operator = ( const Set& s )
   {
-    if( &s == this ) {
-      return *this;
-    }
-
-    if( size < s.count ) {
-      delete[] data;
-
-      data = new Elem[s.size];
-      size = s.size;
-    }
-
-    aCopy<Elem>( s.data, s.count, data );
-    count = s.count;
-
-    return *this;
+    return static_cast<Set&>( List<Elem>::operator = ( s ) );
   }
 
   /**
@@ -173,21 +133,7 @@ public:
    */
   Set& operator = ( Set&& s )
   {
-    if( &s == this ) {
-      return *this;
-    }
-
-    delete[] data;
-
-    data    = s.data;
-    count   = s.count;
-    size    = s.size;
-
-    s.data  = nullptr;
-    s.count = 0;
-    s.size  = 0;
-
-    return *this;
+    return static_cast<Set&>( List<Elem>::operator = ( static_cast<Set&&>( s ) ) );
   }
 
   /**
@@ -195,7 +141,7 @@ public:
    */
   bool operator == ( const Set& s ) const
   {
-    return count == s.count && aEquals<Elem>( data, count, s.data );
+    return List<Elem>::operator == ( s );
   }
 
   /**
@@ -203,154 +149,7 @@ public:
    */
   bool operator != ( const Set& s ) const
   {
-    return !operator == ( s );
-  }
-
-  /**
-   * %Iterator with constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  CIterator citer() const
-  {
-    return CIterator( data, data + count );
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iter()
-  {
-    return Iterator( data, data + count );
-  }
-
-  /**
-   * STL-compatible constant begin iterator.
-   */
-  OZ_ALWAYS_INLINE
-  const Elem* begin() const
-  {
-    return data;
-  }
-
-  /**
-   * STL-compatible begin iterator.
-   */
-  OZ_ALWAYS_INLINE
-  Elem* begin()
-  {
-    return data;
-  }
-
-  /**
-   * STL-compatible constant end iterator.
-   */
-  OZ_ALWAYS_INLINE
-  const Elem* end() const
-  {
-    return data + count;
-  }
-
-  /**
-   * STL-compatible end iterator.
-   */
-  OZ_ALWAYS_INLINE
-  Elem* end()
-  {
-    return data + count;
-  }
-
-  /**
-   * Number of elements.
-   */
-  OZ_ALWAYS_INLINE
-  int length() const
-  {
-    return count;
-  }
-
-  /**
-   * True iff empty.
-   */
-  OZ_ALWAYS_INLINE
-  bool isEmpty() const
-  {
-    return count == 0;
-  }
-
-  /**
-   * Number of allocated elements.
-   */
-  OZ_ALWAYS_INLINE
-  int capacity() const
-  {
-    return size;
-  }
-
-  /**
-   * Constant reference to the `i`-th element.
-   */
-  OZ_ALWAYS_INLINE
-  const Elem& operator [] ( int i ) const
-  {
-    hard_assert( uint( i ) < uint( count ) );
-
-    return data[i];
-  }
-
-  /**
-   * Reference to the `i`-th element.
-   */
-  OZ_ALWAYS_INLINE
-  Elem& operator [] ( int i )
-  {
-    hard_assert( uint( i ) < uint( count ) );
-
-    return data[i];
-  }
-
-  /**
-   * Constant reference to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  const Elem& first() const
-  {
-    hard_assert( count != 0 );
-
-    return data[0];
-  }
-
-  /**
-   * Reference to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Elem& first()
-  {
-    hard_assert( count != 0 );
-
-    return data[0];
-  }
-
-  /**
-   * Constant reference to the last element.
-   */
-  OZ_ALWAYS_INLINE
-  const Elem& last() const
-  {
-    hard_assert( count != 0 );
-
-    return data[count - 1];
-  }
-
-  /**
-   * Reference to the last element.
-   */
-  OZ_ALWAYS_INLINE
-  Elem& last()
-  {
-    hard_assert( count != 0 );
-
-    return data[count - 1];
+    return List<Elem>::operator != ( s );
   }
 
   /**
@@ -467,77 +266,6 @@ public:
       return i;
     }
     return -1;
-  }
-
-  /**
-   * Resize the set to the specified number of elements.
-   */
-  void resize( int newCount )
-  {
-    if( newCount > count ) {
-      ensureCapacity( newCount );
-    }
-    else {
-      // Ensure destruction of removed elements.
-      for( int i = newCount; i < count; ++i ) {
-        data[i] = Elem();
-      }
-    }
-    count = newCount;
-  }
-
-  /**
-   * Trim capacity to the current number of elements.
-   */
-  void trim()
-  {
-    if( count < size ) {
-      size = count;
-      data = aReallocate<Elem>( data, count, size );
-    }
-  }
-
-  /**
-   * Clear the set.
-   */
-  void clear()
-  {
-    // Ensure destruction of all elements.
-    aFill<Elem, Elem>( data, count, Elem() );
-    count = 0;
-  }
-
-  /**
-   * Delete all objects referenced by elements (must be pointers) and clear the set.
-   */
-  void free()
-  {
-    aFree<Elem>( data, count );
-    count = 0;
-  }
-
-  /**
-   * For an empty set with no allocated storage, allocate capacity for `capacity` elements.
-   */
-  void allocate( int capacity )
-  {
-    hard_assert( size == 0 && capacity > 0 );
-
-    data = new Elem[capacity];
-    size = capacity;
-  }
-
-  /**
-   * Deallocate storage of an empty set.
-   */
-  void deallocate()
-  {
-    hard_assert( count == 0 );
-
-    delete[] data;
-
-    data = nullptr;
-    size = 0;
   }
 
 };

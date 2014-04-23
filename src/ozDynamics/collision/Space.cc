@@ -31,8 +31,7 @@ namespace oz
 
 void Space::clear()
 {
-  foreach( i, bodies.citer() ) {
-    Body*  body  = *i;
+  for( Body* body : bodies ) {
     Shape* shape = body->shape();
 
     body->setShape( nullptr );

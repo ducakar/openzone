@@ -51,9 +51,10 @@ String::String( int count_, int ) :
 }
 
 OZ_HIDDEN
-void String::ensureCapacity( int newCount )
+void String::ensureCapacity( int newCount, bool keepContents )
 {
   hard_assert( buffer != nullptr && count >= 0 && newCount >= 0 );
+  hard_assert( !keepContents || newCount > count );
 
   if( newCount < BUFFER_SIZE ) {
     if( buffer != baseBuffer ) {
@@ -64,7 +65,9 @@ void String::ensureCapacity( int newCount )
   else if( newCount != count ) {
     char* newBuffer = new char[newCount + 1];
 
-    mCopy( newBuffer, buffer, size_t( count + 1 ) );
+    if( keepContents ) {
+      mCopy( newBuffer, buffer, size_t( min<int>( count, newCount ) + 1 ) );
+    }
 
     if( buffer != baseBuffer ) {
       delete[] buffer;
@@ -874,17 +877,9 @@ String operator + ( const char* s, const String& t )
 
 String& String::operator += ( const String& s )
 {
-  bool wasStatic = buffer == baseBuffer;
-  int  oCount    = count;
+  int oCount = count;
 
-  ensureCapacity( count + s.count );
-
-  // If the original string resides in the static baseBuffer and a new memory buffer is malloc'd for
-  // it, we have to manually copy the old contents. If the original string is already in a malloc'd
-  // buffer, realloc() takes care of that.
-  if( wasStatic ) {
-    mCopy( buffer, baseBuffer, size_t( oCount ) );
-  }
+  ensureCapacity( count + s.count, true );
 
   mCopy( buffer + oCount, s, size_t( s.count + 1 ) );
   return *this;
@@ -892,18 +887,10 @@ String& String::operator += ( const String& s )
 
 String& String::operator += ( const char* s )
 {
-  bool wasStatic = buffer == baseBuffer;
-  int  oCount    = count;
-  int  sLength   = length( s );
+  int oCount  = count;
+  int sLength = length( s );
 
-  ensureCapacity( count + sLength );
-
-  // If the original string resides in the static baseBuffer and a new memory buffer is malloc'd for
-  // it, we have to manually copy the old contents. If the original string is already in a malloc'd
-  // buffer, realloc() takes care of that.
-  if( wasStatic ) {
-    mCopy( buffer, baseBuffer, size_t( oCount ) );
-  }
+  ensureCapacity( count + sLength, true );
 
   mCopy( buffer + oCount, s, size_t( sLength + 1 ) );
   return *this;
@@ -917,7 +904,6 @@ String String::substring( int start ) const
   String r      = String( rCount, 0 );
 
   mCopy( r.buffer, buffer + start, size_t( rCount + 1 ) );
-
   return r;
 }
 
@@ -930,7 +916,6 @@ String String::substring( int start, int end ) const
 
   mCopy( r.buffer, buffer + start, size_t( rCount ) );
   r.buffer[rCount] = '\0';
-
   return r;
 }
 

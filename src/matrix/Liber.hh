@@ -50,6 +50,7 @@ public:
   DArray<Resource> parts;
   DArray<Resource> models;
   DArray<Resource> nameLists;
+  DArray<Resource> minds;
   DArray<Resource> musicTracks;
 
   int              nBSPs;
@@ -74,6 +75,7 @@ public:
   int modelIndex( const char* name ) const;
 
   int nameListIndex( const char* name ) const;
+  int mindIndex( const char* name ) const;
   int musicTrackIndex( const char* name ) const;
 
   int deviceIndex( const char* name ) const;
@@ -92,6 +94,7 @@ private:
   void initParticles();
   void initModels();
   void initNameLists();
+  void initMinds();
   void initFragPools();
   void initClasses();
   void initBSPs();

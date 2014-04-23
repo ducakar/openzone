@@ -35,28 +35,6 @@
 
 #include "common.hh"
 
-/**
- * @def foreach
- * Macro to shorten common foreach loops.
- *
- * It can be used like
- * @code
- * List<int> l;
- * foreach( i, l.citer() ) {
- *   printf( "%d ", *i );
- * }
- * @endcode
- * to replace a longer piece of code, like:
- * @code
- * List<int> l;
- * for( auto i = l.citer(); i.isValid(); ++i )
- *   printf( "%d ", *i );
- * }
- * @endcode
- */
-#define foreach( i, iterator ) \
-  for( auto i = iterator; i.isValid(); ++i )
-
 namespace oz
 {
 
@@ -154,6 +132,16 @@ public:
    * Advance to the next element, should be implemented in derived classes.
    */
   IteratorBase& operator ++ () = delete;
+
+  /**
+   * STL-style begin iterator, should be implemented in derived classes.
+   */
+  IteratorBase begin() const = delete;
+
+  /**
+   * STL-style end iterator, should be implemented in derived classes.
+   */
+  IteratorBase end() const = delete;
 
 };
 

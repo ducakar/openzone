@@ -31,9 +31,9 @@ namespace oz
 
 TechGraph::Node* TechGraph::findNode( const char* name )
 {
-  foreach( node, nodes.iter() ) {
-    if( node->name.equals( name ) ) {
-      return node;
+  for( Node& node : nodes ) {
+    if( node.name.equals( name ) ) {
+      return &node;
     }
   }
 
@@ -52,28 +52,28 @@ bool TechGraph::disable( const char* )
 
 void TechGraph::enableAll()
 {
-  foreach( node, nodes.iter() ) {
-    node->progress = 1.0f;
+  for( Node& node : nodes ) {
+    node.progress = 1.0f;
 
-    if( node->type == Node::BUILDING ) {
-      allowedBuildings.add( node->building );
+    if( node.type == Node::BUILDING ) {
+      allowedBuildings.add( node.building );
     }
-    else if( node->type == Node::UNIT ) {
-      allowedUnits.add( node->object );
+    else if( node.type == Node::UNIT ) {
+      allowedUnits.add( node.object );
     }
-    else if( node->type == Node::ITEM ) {
-      allowedItems.add( node->object );
+    else if( node.type == Node::ITEM ) {
+      allowedItems.add( node.object );
     }
-    else if( node->type == Node::OBJECT ) {
-      allowedObjects.add( node->object );
+    else if( node.type == Node::OBJECT ) {
+      allowedObjects.add( node.object );
     }
   }
 }
 
 void TechGraph::disableAll()
 {
-  foreach( node, nodes.iter() ) {
-    node->progress = 0.0f;
+  for( Node& node : nodes ) {
+    node.progress = 0.0f;
   }
 
   allowedBuildings.clear();
@@ -94,15 +94,15 @@ void TechGraph::update()
 
 void TechGraph::read( InputStream* is )
 {
-  foreach( node, nodes.iter() ) {
-    node->progress = is->readFloat();
+  for( Node& node : nodes ) {
+    node.progress = is->readFloat();
   }
 }
 
 void TechGraph::write( OutputStream* os ) const
 {
-  foreach( node, nodes.citer() ) {
-    os->writeFloat( node->progress );
+  for( const Node& node : nodes ) {
+    os->writeFloat( node.progress );
   }
 }
 

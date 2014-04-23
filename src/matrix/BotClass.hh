@@ -85,6 +85,7 @@ public:
   int    nameList;
 
   String mindFunc;
+  int    mindAutomaton;
 
   float  bobRotation;
   float  bobAmplitude;

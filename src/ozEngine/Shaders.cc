@@ -158,12 +158,12 @@ int Shaders::load( const char* path_ )
 
 void Shaders::destroy()
 {
-  foreach( p, programs.citer() ) {
-    glDetachShader( p->program, p->vertShader );
-    glDetachShader( p->program, p->fragShader );
-    glDeleteShader( p->vertShader );
-    glDeleteShader( p->fragShader );
-    glDeleteProgram( p->program );
+  for( const Program& p : programs ) {
+    glDetachShader( p.program, p.vertShader );
+    glDetachShader( p.program, p.fragShader );
+    glDeleteShader( p.vertShader );
+    glDeleteShader( p.fragShader );
+    glDeleteProgram( p.program );
   }
 
   programIndices.clear();

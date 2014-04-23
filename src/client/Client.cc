@@ -212,13 +212,13 @@ int Client::init( int argc, char** argv )
   File screenshotDir = configDir + "/screenshots";
 
   DArray<File> saveFiles = saveDir.ls();
-  foreach( file, saveFiles.citer() ) {
-    File::rm( file->path() );
+  for( const File& file : saveFiles ) {
+    File::rm( file.path() );
   }
 
   DArray<File> screenshotFiles = screenshotDir.ls();
-  foreach( file, screenshotFiles.citer() ) {
-    File::rm( file->path() );
+  for( const File& file : screenshotFiles ) {
+    File::rm( file.path() );
   }
 
   File::rm( configDir + "/client.rc" );
@@ -299,10 +299,10 @@ int Client::init( int argc, char** argv )
 
 #ifdef __native_client__
 
-  foreach( pkg, packages.citer() ) {
-    Pepper::post( "data:" + *pkg );
+  for( const String& pkg : packages ) {
+    Pepper::post( "data:" + pkg );
 
-    File pkgFile = dataDir + "/" + *pkg;
+    File pkgFile = dataDir + "/" + pkg;
 
     if( File::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
@@ -326,15 +326,13 @@ int Client::init( int argc, char** argv )
   if( File::mount( dataDir, nullptr, true ) ) {
     Log::println( "%s", dataDir.cstr() );
 
-    DArray<File> list = File( dataDir ).ls();
-
-    foreach( file, list.citer() ) {
-      if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
-        if( !File::mount( file->path(), nullptr, true ) ) {
+    for( const File& file : File( dataDir ).ls() ) {
+      if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
+        if( !File::mount( file.path(), nullptr, true ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
-                    file->path().cstr(), PHYSFS_getLastError() );
+                    file.path().cstr(), PHYSFS_getLastError() );
         }
-        Log::println( "%s", file->path().cstr() );
+        Log::println( "%s", file.path().cstr() );
       }
     }
   }
@@ -342,14 +340,12 @@ int Client::init( int argc, char** argv )
   if( File::mount( globalDataDir, nullptr, true ) ) {
     Log::println( "%s", globalDataDir.cstr() );
 
-    DArray<File> list = File( globalDataDir ).ls();
-
-    foreach( file, list.citer() ) {
-      if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
-        if( !File::mount( file->path(), nullptr, true ) ) {
-          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
+    for( const File& file : File( globalDataDir ).ls() ) {
+      if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
+        if( !File::mount( file.path(), nullptr, true ) ) {
+          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file.path().cstr() );
         }
-        Log::println( "%s", file->path().cstr() );
+        Log::println( "%s", file.path().cstr() );
       }
     }
   }

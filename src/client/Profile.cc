@@ -46,8 +46,8 @@ void Profile::save()
 
   JSON& itemsConfig = profileConfig.add( "items", JSON::ARRAY );
 
-  foreach( item, items.citer() ) {
-    itemsConfig.add( ( *item )->name );
+  for( const ObjectClass* item : items ) {
+    itemsConfig.add( item->name );
   }
 
   profileConfig.add( "weaponItem", weaponItem );

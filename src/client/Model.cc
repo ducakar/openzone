@@ -84,8 +84,8 @@ Model::Collation        Model::collation              = DEPTH_MAJOR;
 
 void Model::addSceneLights()
 {
-  foreach( light, lights.citer() ) {
-    const Node* node = &nodes[light->node];
+  for( const Light& light : lights ) {
+    const Node* node = &nodes[light.node];
     Mat4 transf = node->transf;
 
     while( node->parent >= 0 ) {
@@ -93,7 +93,7 @@ void Model::addSceneLights()
       transf = node->transf ^ transf;
     }
 
-    sceneLights.add( { light, transf, 0.0f } );
+    sceneLights.add( { &light, transf, 0.0f } );
   }
 }
 
@@ -211,9 +211,7 @@ void Model::setCollation( Collation collation_ )
 void Model::drawScheduled( QueueType queue, int mask )
 {
   if( collation == MODEL_MAJOR ) {
-    foreach( i, loadedModels.citer() ) {
-      Model* model = *i;
-
+    for( Model* model : loadedModels ) {
       if( model->modelInstances[queue].isEmpty() ) {
         continue;
       }
@@ -225,11 +223,11 @@ void Model::drawScheduled( QueueType queue, int mask )
 
       shader.program( model->shaderId );
 
-      foreach( instance, model->modelInstances[queue].citer() ) {
+      for( const Instance& instance : model->modelInstances[queue] ) {
         // HACK This is not a nice way to draw non-transparent parts with alpha < 1.
         int instanceMask = mask;
 
-        if( instance->colour.w.w != 1.0f ) {
+        if( instance.colour.w.w != 1.0f ) {
           if( mask & ALPHA_BIT ) {
             instanceMask |= SOLID_BIT;
           }
@@ -243,19 +241,19 @@ void Model::drawScheduled( QueueType queue, int mask )
         }
 
         if( model->nFrames != 0 ) {
-          model->animate( instance );
+          model->animate( &instance );
         }
 
-        model->draw( instance, instanceMask );
+        model->draw( &instance, instanceMask );
       }
     }
   }
   else {
     Model* model = nullptr;
 
-    foreach( instance, instances[queue].citer() ) {
-      if( instance->model != model ) {
-        model = instance->model;
+    for( const Instance& instance : instances[queue] ) {
+      if( instance.model != model ) {
+        model = instance.model;
 
         glBindBuffer( GL_ARRAY_BUFFER, model->vbo );
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, model->ibo );
@@ -268,7 +266,7 @@ void Model::drawScheduled( QueueType queue, int mask )
       // HACK This is not a nice way to draw non-transparent parts for which alpha < 1 has been set.
       int instanceMask = mask;
 
-      if( instance->colour.w.w != 1.0f ) {
+      if( instance.colour.w.w != 1.0f ) {
         if( mask & ALPHA_BIT ) {
           instanceMask |= SOLID_BIT;
         }
@@ -282,10 +280,10 @@ void Model::drawScheduled( QueueType queue, int mask )
       }
 
       if( model->nFrames != 0 ) {
-        model->animate( instance );
+        model->animate( &instance );
       }
 
-      model->draw( instance, instanceMask );
+      model->draw( &instance, instanceMask );
     }
   }
 
@@ -312,9 +310,7 @@ void Model::drawScheduled( QueueType queue, int mask )
 void Model::clearScheduled( QueueType queue )
 {
   if( collation == MODEL_MAJOR ) {
-    foreach( i, loadedModels.citer() ) {
-      Model* model = *i;
-
+    for( Model* model : loadedModels ) {
       model->modelInstances[queue].clear();
     }
   }
@@ -621,12 +617,12 @@ void Model::unload()
     return;
   }
 
-  foreach( texture, textures.citer() ) {
-    if( texture->id >= -1 ) {
-      context.releaseTexture( texture->id );
+  for( const Texture& texture : textures ) {
+    if( texture.id >= -1 ) {
+      context.releaseTexture( texture.id );
     }
     else {
-      context.unloadTexture( texture );
+      context.unloadTexture( &texture );
     }
   }
 

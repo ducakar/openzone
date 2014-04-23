@@ -48,7 +48,7 @@ namespace oz
 template <typename Elem>
 class List
 {
-private:
+protected:
 
   /// Granularity for automatic storage allocations.
   static const int GRANULARITY = 8;
@@ -65,7 +65,7 @@ public:
    */
   typedef ArrayIterator<Elem> Iterator;
 
-private:
+protected:
 
   Elem* data;  ///< Element storage.
   int   count; ///< Number of elements.
@@ -221,7 +221,7 @@ public:
   }
 
   /**
-   * STL-compatible constant begin iterator.
+   * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   const Elem* begin() const
@@ -230,7 +230,7 @@ public:
   }
 
   /**
-   * STL-compatible begin iterator.
+   * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
   Elem* begin()
@@ -239,7 +239,7 @@ public:
   }
 
   /**
-   * STL-compatible constant end iterator.
+   * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
   const Elem* end() const
@@ -248,7 +248,7 @@ public:
   }
 
   /**
-   * STL-compatible end iterator.
+   * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
   Elem* end()

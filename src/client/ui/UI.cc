@@ -66,9 +66,9 @@ void UI::update()
   if( mouse.doShow == isFreelook ) {
     isFreelook = !mouse.doShow;
 
-    foreach( area, root->children.iter() ) {
-      if( !( area->flags & Area::PINNED_BIT ) ) {
-        area->show( mouse.doShow );
+    for( Area& area : root->children ) {
+      if( !( area.flags & Area::PINNED_BIT ) ) {
+        area.show( mouse.doShow );
       }
     }
   }

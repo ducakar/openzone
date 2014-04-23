@@ -115,8 +115,8 @@ void MainMenu::onReposition()
                                  " files named README.txt and COPYING.txt inside game data"
                                  " archives." ) );
 
-  foreach( child, children.iter() ) {
-    child->reposition();
+  for( Area& child : children ) {
+    child.reposition();
   }
 }
 

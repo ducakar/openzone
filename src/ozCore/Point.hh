@@ -226,8 +226,8 @@ public:
     return vDot( f4, v.f4 );
 #else
     return x*v.x + y*v.y + z*v.z;
-  }
 #endif
+  }
 
 };
 

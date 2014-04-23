@@ -71,8 +71,8 @@ void test_iterables()
   iMove( l.iter(), v.iter() );
   iMove( l.iter(), iter( l ) );
   iMove( invalid, invalid );
-  foreach( i, l.citer() ) {
-    OZ_CHECK( *i == -1 );
+  for( const Foo& i : l.citer() ) {
+    OZ_CHECK( i == -1 );
   }
   OZ_CHECK_CONTENTS( v, 1, 2, 3, 2 );
   OZ_CHECK( !iEquals( l.citer(), v.citer() ) );

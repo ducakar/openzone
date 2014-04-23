@@ -39,21 +39,21 @@ namespace oz
 void Nirvana::sync()
 {
   // remove devices and minds of removed objects
-  foreach( i, synapse.removedObjects.citer() ) {
-    const Device* const* device = devices.find( *i );
-    const Mind* mind = minds.find( *i );
+  for( int i : synapse.removedObjects ) {
+    const Device* const* device = devices.find( i );
+    const Mind* mind = minds.find( i );
 
     if( device != nullptr ) {
       delete *device;
-      devices.exclude( *i );
+      devices.exclude( i );
     }
     if( mind != nullptr ) {
-      minds.exclude( *i );
+      minds.exclude( i );
     }
   }
   // add minds for new bots
-  foreach( i, synapse.addedObjects.citer() ) {
-    const Object* obj = orbis.obj( *i );
+  for( int i : synapse.addedObjects ) {
+    const Object* obj = orbis.obj( i );
 
     if( obj != nullptr && ( obj->flags & Object::BOT_BIT ) ) {
       minds.add( obj->index, Mind( obj->index ) );
@@ -64,8 +64,8 @@ void Nirvana::sync()
 void Nirvana::update()
 {
   int count = 0;
-  foreach( i, minds.iter() ) {
-    Mind& mind = i->value;
+  for( auto& i : minds ) {
+    Mind& mind = i.value;
 
     const Bot* bot = static_cast<const Bot*>( orbis.obj( mind.bot ) );
     hard_assert( bot != nullptr && ( bot->flags & Object::BOT_BIT ) );
@@ -124,15 +124,15 @@ void Nirvana::write( OutputStream* os ) const
   os->writeInt( devices.length() );
   os->writeInt( minds.length() );
 
-  foreach( device, devices.citer() ) {
-    os->writeInt( device->key );
-    os->writeString( device->value->type() );
+  for( const auto& device : devices ) {
+    os->writeInt( device.key );
+    os->writeString( device.value->type() );
 
-    device->value->write( os );
+    device.value->write( os );
   }
-  foreach( mind, minds.citer() ) {
-    os->writeInt( mind->value.bot );
-    mind->value.write( os );
+  for( const auto& mind : minds ) {
+    os->writeInt( mind.value.bot );
+    mind.value.write( os );
   }
 
   questList.write( os );

@@ -133,16 +133,16 @@ struct JSON::Parser
       case ARRAY: {
         List<JSON>& list = static_cast<ArrayData*>( value->data )->list;
 
-        foreach( i, list.iter() ) {
-          setAccessed( i );
+        for( JSON& i : list ) {
+          setAccessed( &i );
         }
         break;
       }
       case OBJECT: {
         HashMap<String, JSON>& table = static_cast<ObjectData*>( value->data )->table;
 
-        foreach( i, table.iter() ) {
-          setAccessed( &i->value );
+        for( auto& i : table ) {
+          setAccessed( &i.value );
         }
         break;
       }
@@ -572,8 +572,8 @@ struct JSON::Formatter
 
     Map<String, const JSON*> sortedEntries;
 
-    foreach( entry, table.citer() ) {
-      sortedEntries.add( entry->key, &entry->value );
+    for( const auto& entry : table ) {
+      sortedEntries.add( entry.key, &entry.value );
     }
 
     for( int i = 0; i < sortedEntries.length(); ++i ) {
@@ -917,7 +917,7 @@ JSON::ObjectCIterator JSON::objectCIter() const
     const ObjectData* objectData = static_cast<const ObjectData*>( data );
 
     wasAccessed = true;
-    return ObjectCIterator( objectData->table );
+    return objectData->table.citer();
   }
   else {
     return ObjectCIterator();
@@ -930,7 +930,7 @@ JSON::ObjectIterator JSON::objectIter()
     ObjectData* objectData = static_cast<ObjectData*>( data );
 
     wasAccessed = true;
-    return ObjectIterator( objectData->table );
+    return objectData->table.iter();
   }
   else {
     return ObjectIterator();
@@ -1227,8 +1227,8 @@ bool JSON::clear( bool warnUnused )
       ArrayData* arrayData = static_cast<ArrayData*>( data );
 
       if( warnUnused ) {
-        foreach( i, arrayData->list.iter() ) {
-          hasUnused |= i->clear( true );
+        for( JSON& i : arrayData->list ) {
+          hasUnused |= i.clear( true );
         }
       }
 
@@ -1239,8 +1239,8 @@ bool JSON::clear( bool warnUnused )
       ObjectData* objectData = static_cast<ObjectData*>( data );
 
       if( warnUnused ) {
-        foreach( i, objectData->table.iter() ) {
-          hasUnused |= i->value.clear( true );
+        for( auto& i : objectData->table ) {
+          hasUnused |= i.value.clear( true );
         }
       }
 
@@ -1301,9 +1301,9 @@ String JSON::toString() const
       String s = "{ ";
 
       bool isFirst = true;
-      foreach( i, table.citer() ) {
+      for( const auto& i : table ) {
         s += String::str( isFirst ? "\"%s\": %s" : ", \"%s\": %s",
-                          i->key.cstr(), i->value.toString().cstr() );
+                          i.key.cstr(), i.value.toString().cstr() );
         isFirst = false;
       }
 

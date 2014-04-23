@@ -201,11 +201,11 @@ bool Kollider::boxCompound( const Mat3& rot0, const Shape* box_,
 
   bool overlaps = false;
 
-  foreach( i, compound->citer() ) {
-    Mat3 rot2 = rot1 * i->rot;
+  for( const Compound::Child& i : *compound ) {
+    Mat3 rot2 = rot1 * i.rot;
 
-    OverlapFunc* func = dispatchMatrix[Shape::BOX][i->shape->type];
-    overlaps |= func( rot0, box, rot2, i->shape, relPos + rot2 * i->off, result );
+    OverlapFunc* func = dispatchMatrix[Shape::BOX][i.shape->type];
+    overlaps |= func( rot0, box, rot2, i.shape, relPos + rot2 * i.off, result );
   }
 
   return overlaps;
@@ -273,17 +273,17 @@ bool Kollider::capsuleCompound( const Mat3& rot0, const Shape* capsule_,
 
   bool overlaps = false;
 
-  foreach( i, compound->citer() ) {
-    Shape::Type type = i->shape->type;
-    Mat3        rot2 = rot1 * i->rot;
+  for( const Compound::Child& i : *compound ) {
+    Shape::Type type = i.shape->type;
+    Mat3        rot2 = rot1 * i.rot;
 
     if( Shape::CAPSULE <= type ) {
       OverlapFunc* func = dispatchMatrix[Shape::CAPSULE][type];
-      overlaps |= func( rot0, capsule, rot2, i->shape, relPos + rot2 * i->off, result );
+      overlaps |= func( rot0, capsule, rot2, i.shape, relPos + rot2 * i.off, result );
     }
     else {
       OverlapFunc* func = dispatchMatrix[type][Shape::CAPSULE];
-      overlaps |= func( rot2, i->shape, rot0, capsule, -relPos - rot2 * i->off, result );
+      overlaps |= func( rot2, i.shape, rot0, capsule, -relPos - rot2 * i.off, result );
     }
   }
 
@@ -317,17 +317,17 @@ bool Kollider::polytopeCompound( const Mat3& rot0, const Shape* polytope_,
 
   bool overlaps = false;
 
-  foreach( i, compound->citer() ) {
-    Shape::Type type = i->shape->type;
-    Mat3        rot2 = rot1 * i->rot;
+  for( const Compound::Child& i : *compound ) {
+    Shape::Type type = i.shape->type;
+    Mat3        rot2 = rot1 * i.rot;
 
     if( Shape::POLYTOPE <= type ) {
       OverlapFunc* func = dispatchMatrix[Shape::POLYTOPE][type];
-      overlaps |= func( rot0, polytope, rot2, i->shape, relPos + rot2 * i->off, result );
+      overlaps |= func( rot0, polytope, rot2, i.shape, relPos + rot2 * i.off, result );
     }
     else {
       OverlapFunc* func = dispatchMatrix[type][Shape::POLYTOPE];
-      overlaps |= func( rot2, i->shape, rot0, polytope, -relPos - rot2 * i->off, result );
+      overlaps |= func( rot2, i.shape, rot0, polytope, -relPos - rot2 * i.off, result );
     }
   }
 
@@ -349,23 +349,23 @@ bool Kollider::compoundCompound( const Mat3& rot0, const Shape* compound0_,
     rot3[k] = rot1 * j->rot;
   }
 
-  foreach( i, compound0->citer() ) {
-    Shape::Type type0 = i->shape->type;
-    Mat3        rot2  = rot0 * i->rot;
+  for( const Compound::Child& i : *compound0 ) {
+    Shape::Type type0 = i.shape->type;
+    Mat3        rot2  = rot0 * i.rot;
 
     auto j = compound1->citer();
     for( int k = 0; j.isValid(); ++k, ++j ) {
-      Shape::Type type1 = i->shape->type;
+      Shape::Type type1 = i.shape->type;
 
       if( type0 <= type1 ) {
         OverlapFunc* func = dispatchMatrix[type0][type1];
-        overlaps |= func( rot2, i->shape, rot3[k], j->shape,
-                          relPos + rot3[k] * j->off - rot2 * i->off, result );
+        overlaps |= func( rot2, i.shape, rot3[k], j->shape,
+                          relPos + rot3[k] * j->off - rot2 * i.off, result );
       }
       else {
         OverlapFunc* func = dispatchMatrix[type1][type0];
-        overlaps |= func( rot3[k], j->shape, rot2, i->shape,
-                          rot2 * i->off - rot3[k] * j->off - relPos, result );
+        overlaps |= func( rot3[k], j->shape, rot2, i.shape,
+                          rot2 * i.off - rot3[k] * j->off - relPos, result );
       }
     }
   }

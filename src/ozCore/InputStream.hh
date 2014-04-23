@@ -42,12 +42,21 @@ namespace oz
  */
 class InputStream
 {
-private:
+protected:
 
-  const char*   streamPos;   ///< Current position.
-  const char*   streamBegin; ///< Beginning.
+  char*         streamPos;   ///< Current position.
+  char*         streamBegin; ///< Beginning.
   const char*   streamEnd;   ///< End.
   Endian::Order order;       ///< Stream byte order.
+
+protected:
+
+  /**
+   * Internal constructor for `OutputStream`.
+   */
+  explicit InputStream( char* pos, char* start, const char* end, Endian::Order order_ ) :
+    streamPos( pos ), streamBegin( start ), streamEnd( end ), order( order_ )
+  {}
 
 public:
 
@@ -56,7 +65,8 @@ public:
    */
   explicit InputStream( const char* start = nullptr, const char* end = nullptr,
                         Endian::Order order_ = Endian::NATIVE ) :
-    streamPos( start ), streamBegin( start ), streamEnd( end ), order( order_ )
+    streamPos( const_cast<char*>( start ) ), streamBegin( const_cast<char*>( start ) ),
+    streamEnd( end ), order( order_ )
   {}
 
   /**

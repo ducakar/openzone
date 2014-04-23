@@ -601,9 +601,9 @@ void UnitProxy::update()
     injuryRatio = 0.0f;
   }
   else {
-    foreach( event, bot->events.citer() ) {
-      if( event->id == Object::EVENT_DAMAGE ) {
-        injuryRatio += event->intensity;
+    for( const Object::Event& event : bot->events ) {
+      if( event.id == Object::EVENT_DAMAGE ) {
+        injuryRatio += event.intensity;
       }
     }
   }

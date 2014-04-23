@@ -54,8 +54,8 @@ void Area::reposition()
 
   onReposition();
 
-  foreach( child, children.iter() ) {
-    child->reposition();
+  for( Area& child : children ) {
+    child.reposition();
   }
 }
 
@@ -71,27 +71,27 @@ void Area::move( int moveX, int moveY )
   x += moveX;
   y += moveY;
 
-  foreach( child, children.iter() ) {
-    child->move( moveX, moveY );
+  for( Area& child : children ) {
+    child.move( moveX, moveY );
   }
 }
 
 void Area::updateChildren()
 {
-  foreach( child, children.iter() ) {
-    if( ( child->flags & UPDATE_BIT ) && child->isEnabled() ) {
-      child->onUpdate();
+  for( Area& child : children ) {
+    if( ( child.flags & UPDATE_BIT ) && child.isEnabled() ) {
+      child.onUpdate();
     }
 
-    child->updateChildren();
+    child.updateChildren();
   }
 }
 
 bool Area::passMouseEvents()
 {
-  foreach( child, children.iter() ) {
-    if( child->flags & GRAB_BIT ) {
-      child->onMouseEvent();
+  for( Area& child : children ) {
+    if( child.flags & GRAB_BIT ) {
+      child.onMouseEvent();
       return true;
     }
   }
@@ -176,9 +176,9 @@ void Area::enable( bool doEnable )
   }
 
   if( flags & VISIBLE_BIT ) {
-    foreach( child, children.iter() ) {
-      if( child->isVisible() ) {
-        child->onVisibilityChange( doEnable );
+    for( Area& child : children ) {
+      if( child.isVisible() ) {
+        child.onVisibilityChange( doEnable );
       }
     }
 
@@ -202,9 +202,9 @@ void Area::show( bool doShow )
   }
 
   if( flags & ENABLED_BIT ) {
-    foreach( child, children.iter() ) {
-      if( child->isVisible() ) {
-        child->onVisibilityChange( doShow );
+    for( Area& child : children ) {
+      if( child.isVisible() ) {
+        child.onVisibilityChange( doShow );
       }
     }
 

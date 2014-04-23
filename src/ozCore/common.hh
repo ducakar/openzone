@@ -24,10 +24,6 @@
  * @file ozCore/common.hh
  *
  * Essential includes, macros, types and templates.
- *
- * You may want to add `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`, `ulong`, `long64`,
- * `ulong64`, `foreach`, `float4` and `uint4` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or
- * global `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart editors.
  */
 
 #pragma once

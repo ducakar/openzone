@@ -398,26 +398,22 @@ void Orbis::read( const JSON& json )
   caelum.read( json["caelum"] );
   terra.read( json["terra"] );
 
-  const JSON& structsJSON = json["structs"];
-
-  foreach( i, structsJSON.arrayCIter() ) {
-    String name    = ( *i )["bsp"].get( "" );
+  for( const JSON& i : json["structs"].arrayCIter() ) {
+    String name    = i["bsp"].get( "" );
     const BSP* bsp = liber.bsp( name );
 
     const_cast<BSP*>( bsp )->request();
 
-    Struct* str = new Struct( bsp, *i );
+    Struct* str = new Struct( bsp, i );
 
     position( str );
     structs[1 + str->index] = str;
   }
 
-  const JSON& objectsJSON = json["objects"];
-
-  foreach( i, objectsJSON.arrayCIter() ) {
-    String             name  = ( *i )["class"].get( "" );
+  for( const JSON& i : json["objects"].arrayCIter() ) {
+    String             name  = i["class"].get( "" );
     const ObjectClass* clazz = liber.objClass( name );
-    Object*            obj   = clazz->create( *i );
+    Object*            obj   = clazz->create( i );
     Dynamic*           dyn   = static_cast<Dynamic*>( obj );
 
     if( obj->flags & Object::LUA_BIT ) {
@@ -430,12 +426,10 @@ void Orbis::read( const JSON& json )
     objects[1 + obj->index] = obj;
   }
 
-  const JSON& fragsJSON = json["frags"];
-
-  foreach( i, fragsJSON.arrayCIter() ) {
-    String          name = ( *i )["pool"].get( "" );
+  for( const JSON& i : json["frags"].arrayCIter() ) {
+    String          name = i["pool"].get( "" );
     const FragPool* pool = liber.fragPool( name );
-    Frag*           frag = new Frag( pool, *i );
+    Frag*           frag = new Frag( pool, i );
 
     position( frag );
     frags[1 + frag->index] = frag;

@@ -18,49 +18,22 @@
  */
 
 /**
- * @file nirvana/Automaton.cc
+ * @file common/Automaton.cc
  */
 
-#include <nirvana/Automaton.hh>
+#include <common/Automaton.hh>
 
-#include <nirvana/LuaNirvana.hh>
+#include <common/LuaCommon.hh>
 
 namespace oz
 {
 
-struct Automaton::State
+Automaton::Automaton( const File& file, const LuaCommon* lua )
 {
-  struct Link
-  {
-    Buffer condition;
-    State* target;
-  };
-
-  String     name;
-  Buffer     onEnter;
-  Buffer     onUpdate;
-  List<Link> links;
-};
-
-Automaton::State* Automaton::findState( const char* stateName )
-{
-  foreach( state, states.iter() ) {
-    if( state->name.equals( stateName ) ) {
-      return state;
-    }
-  }
-  OZ_ERROR( "Unable to find state '%s' in automaton '%s'", stateName, name.cstr() );
-}
-
-Automaton::Automaton( const File& file )
-{
-  name = file.baseName();
-
+  String name = file.baseName();
   JSON json = file;
 
-  foreach( i, json.arrayCIter() ) {
-    const JSON& jsonState = *i;
-
+  for( const JSON& jsonState : json.arrayCIter() ) {
     states.add();
     State& state = states.last();
 
@@ -70,10 +43,10 @@ Automaton::Automaton( const File& file )
     state.name = jsonState["name"].get( "" );
 
     if( !String::isEmpty( enterCode ) ) {
-      state.onEnter = luaNirvana.compile( enterCode );
+      state.onEnter = lua->compile( enterCode, name );
     }
     if( !String::isEmpty( updateCode ) ) {
-      state.onUpdate = luaNirvana.compile( updateCode );
+      state.onUpdate = lua->compile( updateCode, name );
     }
   }
 
@@ -81,21 +54,35 @@ Automaton::Automaton( const File& file )
     const JSON& jsonState = json[i];
     State& state = states[i];
 
-    foreach( j, jsonState["links"].arrayCIter() ) {
-      const JSON& jsonLink = *j;
+    for( const JSON& jsonLink : jsonState["links"].arrayCIter() ) {
+      const char* linkName = jsonLink["to"].get( "" );
 
       state.links.add();
       State::Link& link = state.links.last();
 
-      link.condition = luaNirvana.compile( jsonLink["if"].get( "" ) );
-      link.target    = findState( jsonLink["to"].get( "" ) );
+      link.condition = lua->compile( jsonLink["if"].get( "" ), name );
+      link.target    = nullptr;
+
+      for( const State& state : states ) {
+        if( state.name.equals( linkName ) ) {
+          link.target = &state;
+          break;
+        }
+      }
+      if( link.target == nullptr ) {
+        OZ_ERROR( "Unable to find state '%s' in automaton '%s'", linkName, name.cstr() );
+      }
     }
   }
-}
 
-Automaton::State* Automaton::update( State* state ) const
-{
-  return state;
+  // Add automaton name to the beginning of all states for better diagnostics.
+  name = "::" + name;
+
+  for( int i = 0; i < states.length(); ++i ) {
+    states[i].name = name + states[i].name;
+  }
+
+  hard_assert( !states.isEmpty() );
 }
 
 }

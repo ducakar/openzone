@@ -305,8 +305,8 @@ public:
     s = vFill( 1.0f ) / s.f4;
 #else
     s = 1.0f / s;
-    return Mat3( x * s, y * s, z * s );
 #endif
+    return Mat3( x * s, y * s, z * s );
   }
 
   /**

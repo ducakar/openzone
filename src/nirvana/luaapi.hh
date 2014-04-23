@@ -40,8 +40,6 @@ struct NirvanaLuaState
   Bot*    self;
   Mind*   mind;
   Device* device;
-
-  bool forceUpdate;
 };
 
 static NirvanaLuaState ns;
@@ -57,7 +55,7 @@ static int ozForceUpdate( lua_State* l )
 {
   ARG( 0 );
 
-  ns.forceUpdate = true;
+  ns.mind->flags |= Mind::FORCE_UPDATE_BIT;
   return 0;
 }
 
@@ -447,10 +445,10 @@ static int ozSelfBindItems( lua_State* l )
   ms.objIndex = 0;
   ms.objects.clear();
 
-  foreach( item, ns.self->items.citer() ) {
-    hard_assert( *item >= 0 );
+  for( int item : ns.self->items ) {
+    hard_assert( item >= 0 );
 
-    ms.objects.add( orbis.obj( *item ) );
+    ms.objects.add( orbis.obj( item ) );
   }
   return 0;
 }

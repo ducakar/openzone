@@ -183,8 +183,8 @@ static void calculateBounds( const Node* node, const Mat4& parentTransf )
   if( node->includeBounds && node->mesh >= 0 ) {
     const Mesh& mesh = meshes[node->mesh];
 
-    foreach( index, mesh.indices.citer() ) {
-      Point pos = vertices[*index].pos;
+    for( int index : mesh.indices ) {
+      Point pos = vertices[index].pos;
 
       if( nFrames != 0 ) {
         pos = positions[ int( pos.x ) ];
@@ -197,16 +197,16 @@ static void calculateBounds( const Node* node, const Mat4& parentTransf )
     }
   }
 
-  foreach( child, node->children.citer() ) {
-    calculateBounds( *child, transf );
+  for( const Node* child : node->children ) {
+    calculateBounds( child, transf );
   }
 }
 
 static void storeNode( Node* node, int depth )
 {
   if( depth != 0 ) {
-    foreach( child, node->children.citer() ) {
-      storeNode( *child, depth - 1 );
+    for( Node* child : node->children ) {
+      storeNode( child, depth - 1 );
     }
   }
   else {
@@ -645,8 +645,8 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   os->writeInt( lights.length() );
   os->writeInt( Node::pool.length() );
 
-  foreach( texture, textures.citer() ) {
-    os->writeString( *texture );
+  for( const String& texture : textures ) {
+    os->writeString( texture );
   }
 
   // Generate tangents and binormals.
@@ -699,58 +699,56 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     }
   }
 
-  foreach( vertex, vertices.iter() ) {
+  for( Vertex& vertex : vertices ) {
     if( nFrames != 0 ) {
-      vertex->pos = Point( ( vertex->pos.x + 0.5f ) / float( nFramePositions ), 0.0f, 0.0f );
+      vertex.pos = Point( ( vertex.pos.x + 0.5f ) / float( nFramePositions ), 0.0f, 0.0f );
     }
-    vertex->write( os );
+    vertex.write( os );
   }
-  foreach( index, indices.citer() ) {
-    os->writeUShort( *index );
+  for( ushort index : indices ) {
+    os->writeUShort( index );
   }
 
   if( nFrames != 0 ) {
     hard_assert( positions.length() == nFrames * nFramePositions );
     hard_assert( normals.length() == nFrames * nFramePositions );
 
-    foreach( position, positions.citer() ) {
-      os->writePoint( *position );
+    for( const Point& position : positions ) {
+      os->writePoint( position );
     }
-    foreach( normal, normals.citer() ) {
-      os->writeVec3( *normal );
+    for( const Vec3& normal : normals ) {
+      os->writeVec3( normal );
     }
   }
 
-  foreach( mesh, meshes.citer() ) {
-    os->writeInt( mesh->flags );
-    os->writeInt( textures.index( mesh->texture ) );
-    os->writeFloat( mesh->shininess );
+  for( const Mesh& mesh : meshes ) {
+    os->writeInt( mesh.flags );
+    os->writeInt( textures.index( mesh.texture ) );
+    os->writeFloat( mesh.shininess );
 
-    os->writeInt( mesh->nIndices );
-    os->writeInt( mesh->firstIndex );
+    os->writeInt( mesh.nIndices );
+    os->writeInt( mesh.firstIndex );
   }
 
-  foreach( light, lights.citer() ) {
-    hard_assert( nodes.index( light->node ) != -1 );
+  for( const Light& light : lights ) {
+    hard_assert( nodes.index( light.node ) != -1 );
 
-    os->writeInt( nodes.index( light->node ) );
-    os->writeInt( light->type );
+    os->writeInt( nodes.index( light.node ) );
+    os->writeInt( light.type );
 
-    os->writePoint( light->pos );
-    os->writeVec3( light->dir );
-    os->writeVec3( light->colour );
+    os->writePoint( light.pos );
+    os->writeVec3( light.dir );
+    os->writeVec3( light.colour );
 
-    os->writeFloat( light->attenuation[0] );
-    os->writeFloat( light->attenuation[1] );
-    os->writeFloat( light->attenuation[2] );
+    os->writeFloat( light.attenuation[0] );
+    os->writeFloat( light.attenuation[1] );
+    os->writeFloat( light.attenuation[2] );
 
-    os->writeFloat( light->coneCoeff[0] );
-    os->writeFloat( light->coneCoeff[1] );
+    os->writeFloat( light.coneCoeff[0] );
+    os->writeFloat( light.coneCoeff[1] );
   }
 
-  foreach( i, nodes.citer() ) {
-    const Node* node = *i;
-
+  for( const Node* node : nodes ) {
     os->writeMat4( node->transf );
     os->writeInt( node->mesh );
 

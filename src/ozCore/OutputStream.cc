@@ -32,8 +32,7 @@ namespace oz
 {
 
 OutputStream::OutputStream( const OutputStream& os ) :
-  streamPos( os.streamPos ), streamBegin( os.streamBegin ), streamEnd( os.streamEnd ),
-  order( os.order ), buffered( os.buffered )
+  InputStream( os.streamPos, os.streamBegin, os.streamEnd, os.order ), buffered( os.buffered )
 {
   if( os.buffered ) {
     int length = int( os.streamPos - os.streamBegin );
@@ -48,8 +47,7 @@ OutputStream::OutputStream( const OutputStream& os ) :
 }
 
 OutputStream::OutputStream( OutputStream&& os ) :
-  streamPos( os.streamPos ), streamBegin( os.streamBegin ), streamEnd( os.streamEnd ),
-  order( os.order ), buffered( os.buffered )
+  InputStream( os.streamPos, os.streamBegin, os.streamEnd, os.order ), buffered( os.buffered )
 {
   if( os.buffered ) {
     os.streamPos   = nullptr;
@@ -127,34 +125,6 @@ OutputStream& OutputStream::operator = ( OutputStream&& os )
   return *this;
 }
 
-InputStream OutputStream::inputStream() const
-{
-  InputStream is( streamBegin, streamEnd, order );
-
-  is.set( streamPos );
-  return is;
-}
-
-void OutputStream::set( char* newPos )
-{
-  if( newPos < streamBegin || streamEnd < newPos ) {
-    OZ_ERROR( "oz::OutputStream: Overrun for %d B during setting stream position",
-              newPos < streamBegin ? int( newPos - streamBegin ) : int( newPos - streamEnd ) );
-  }
-
-  streamPos = newPos;
-}
-
-void OutputStream::seek( int offset )
-{
-  if( offset < 0 || int( streamEnd - streamBegin ) < offset ) {
-    OZ_ERROR( "oz::OutputStream: Overrun for %d B during stream seek",
-              offset < 0 ? offset : offset - int( streamEnd - streamBegin ) );
-  }
-
-  streamPos = streamBegin + offset;
-}
-
 char* OutputStream::forward( int count )
 {
   char* oldPos = streamPos;
@@ -174,10 +144,10 @@ char* OutputStream::forward( int count )
         newSize = ( reqSize + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
       }
 
-      streamBegin  = aReallocate<char>( streamBegin, size, newSize );
-      streamEnd    = streamBegin + newSize;
-      streamPos    = streamBegin + length;
-      oldPos = streamPos - count;
+      streamBegin = aReallocate<char>( streamBegin, size, newSize );
+      streamEnd   = streamBegin + newSize;
+      streamPos   = streamBegin + length;
+      oldPos      = streamPos - count;
     }
     else {
       OZ_ERROR( "oz::OutputStream: Overrun for %d B during a read or write of %d B",
@@ -188,22 +158,10 @@ char* OutputStream::forward( int count )
   return oldPos;
 }
 
-bool OutputStream::readBool()
-{
-  const char* data = forward( int( sizeof( bool ) ) );
-  return bool( *data );
-}
-
 void OutputStream::writeBool( bool b )
 {
   char* data = forward( int( sizeof( bool ) ) );
   *data = char( b );
-}
-
-char OutputStream::readChar()
-{
-  const char* data = forward( int( sizeof( char ) ) );
-  return char( *data );
 }
 
 void OutputStream::writeChar( char c )
@@ -212,22 +170,10 @@ void OutputStream::writeChar( char c )
   *data = char( c );
 }
 
-void OutputStream::readChars( char* array, int count )
-{
-  const char* data = forward( count * int( sizeof( char ) ) );
-  mCopy( array, data, size_t( count ) );
-}
-
 void OutputStream::writeChars( const char* array, int count )
 {
   char* data = forward( count * int( sizeof( char ) ) );
   mCopy( data, array, size_t( count ) );
-}
-
-byte OutputStream::readByte()
-{
-  const char* data = forward( int( sizeof( byte ) ) );
-  return byte( *data );
 }
 
 void OutputStream::writeByte( byte b )
@@ -236,32 +182,10 @@ void OutputStream::writeByte( byte b )
   *data = char( b );
 }
 
-ubyte OutputStream::readUByte()
-{
-  const char* data = forward( int( sizeof( ubyte ) ) );
-  return ubyte( *data );
-}
-
 void OutputStream::writeUByte( ubyte b )
 {
   char* data = forward( int( sizeof( ubyte ) ) );
   *data = char( b );
-}
-
-short OutputStream::readShort()
-{
-  const char* data = forward( int( sizeof( short ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToShort value = { { data[0], data[1] } };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToShort value = { { data[1], data[0] } };
-
-    return value.value;
-  }
 }
 
 void OutputStream::writeShort( short s )
@@ -280,22 +204,6 @@ void OutputStream::writeShort( short s )
   }
 }
 
-ushort OutputStream::readUShort()
-{
-  const char* data = forward( int( sizeof( ushort ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToUShort value = { { data[0], data[1] } };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToUShort value = { { data[1], data[0] } };
-
-    return value.value;
-  }
-}
-
 void OutputStream::writeUShort( ushort s )
 {
   char* data = forward( int( sizeof( ushort ) ) );
@@ -309,22 +217,6 @@ void OutputStream::writeUShort( ushort s )
   else {
     data[0] = value.data[1];
     data[1] = value.data[0];
-  }
-}
-
-int OutputStream::readInt()
-{
-  const char* data = forward( int( sizeof( int ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToInt value = { { data[3], data[2], data[1], data[0] } };
-
-    return value.value;
   }
 }
 
@@ -348,22 +240,6 @@ void OutputStream::writeInt( int i )
   }
 }
 
-uint OutputStream::readUInt()
-{
-  const char* data = forward( int( sizeof( uint ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToUInt value = { { data[3], data[2], data[1], data[0] } };
-
-    return value.value;
-  }
-}
-
 void OutputStream::writeUInt( uint i )
 {
   char* data = forward( int( sizeof( uint ) ) );
@@ -381,26 +257,6 @@ void OutputStream::writeUInt( uint i )
     data[1] = value.data[2];
     data[2] = value.data[1];
     data[3] = value.data[0];
-  }
-}
-
-long64 OutputStream::readLong64()
-{
-  const char* data = forward( int( sizeof( long64 ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToLong64 value = {
-      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-    };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToLong64 value = {
-      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
-    };
-
-    return value.value;
   }
 }
 
@@ -432,26 +288,6 @@ void OutputStream::writeLong64( long64 l )
   }
 }
 
-ulong64 OutputStream::readULong64()
-{
-  const char* data = forward( int( sizeof( ulong64 ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToULong64 value = {
-      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-    };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToULong64 value = {
-      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
-    };
-
-    return value.value;
-  }
-}
-
 void OutputStream::writeULong64( ulong64 l )
 {
   char* data = forward( int( sizeof( ulong64 ) ) );
@@ -480,22 +316,6 @@ void OutputStream::writeULong64( ulong64 l )
   }
 }
 
-float OutputStream::readFloat()
-{
-  const char* data = forward( int( sizeof( float ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-    return value.value;
-  }
-}
-
 void OutputStream::writeFloat( float f )
 {
   char* data = forward( int( sizeof( float ) ) );
@@ -513,26 +333,6 @@ void OutputStream::writeFloat( float f )
     data[1] = value.data[2];
     data[2] = value.data[1];
     data[3] = value.data[0];
-  }
-}
-
-double OutputStream::readDouble()
-{
-  const char* data = forward( int( sizeof( double ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToDouble value = {
-      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-    };
-
-    return value.value;
-  }
-  else {
-    Endian::BytesToDouble value = {
-      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
-    };
-
-    return value.value;
   }
 }
 
@@ -564,21 +364,6 @@ void OutputStream::writeDouble( double d )
   }
 }
 
-const char* OutputStream::readString()
-{
-  const char* begin = streamPos;
-
-  while( streamPos < streamEnd && *streamPos != '\0' ) {
-    ++streamPos;
-  }
-  if( streamPos == streamEnd ) {
-    OZ_ERROR( "oz::OutputStream: Buffer overrun while looking for the end of a string." );
-  }
-
-  ++streamPos;
-  return begin;
-}
-
 void OutputStream::writeString( const String& s )
 {
   int   size = s.length() + 1;
@@ -593,26 +378,6 @@ void OutputStream::writeString( const char* s )
   char* data = forward( size );
 
   mCopy( data, s, size_t( size ) );
-}
-
-Vec3 OutputStream::readVec3()
-{
-  const char* data = forward( int( sizeof( float[3] ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-
-    return Vec3( x.value, y.value, z.value );
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-
-    return Vec3( x.value, y.value, z.value );
-  }
 }
 
 void OutputStream::writeVec3( const Vec3& v )
@@ -650,28 +415,6 @@ void OutputStream::writeVec3( const Vec3& v )
     data[ 9] = z.data[2];
     data[10] = z.data[1];
     data[11] = z.data[0];
-  }
-}
-
-Vec4 OutputStream::readVec4()
-{
-  const char* data = forward( int( sizeof( float[4] ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-    Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
-
-    return Vec4( x.value, y.value, z.value, w.value );
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-    Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
-
-    return Vec4( x.value, y.value, z.value, w.value );
   }
 }
 
@@ -722,26 +465,6 @@ void OutputStream::writeVec4( const Vec4& v )
   }
 }
 
-Point OutputStream::readPoint()
-{
-  const char* data = forward( int( sizeof( float[3] ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-
-    return Point( x.value, y.value, z.value );
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-
-    return Point( x.value, y.value, z.value );
-  }
-}
-
 void OutputStream::writePoint( const Point& p )
 {
   char* data = forward( int( sizeof( float[3] ) ) );
@@ -777,28 +500,6 @@ void OutputStream::writePoint( const Point& p )
     data[ 9] = z.data[2];
     data[10] = z.data[1];
     data[11] = z.data[0];
-  }
-}
-
-Plane OutputStream::readPlane()
-{
-  const char* data = forward( int( sizeof( float[4] ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
-    Endian::BytesToFloat d  = { { data[12], data[13], data[14], data[15] } };
-
-    return Plane( nx.value, ny.value, nz.value, d.value );
-  }
-  else {
-    Endian::BytesToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
-    Endian::BytesToFloat d  = { { data[15], data[14], data[13], data[12] } };
-
-    return Plane( nx.value, ny.value, nz.value, d.value );
   }
 }
 
@@ -849,28 +550,6 @@ void OutputStream::writePlane( const Plane& p )
   }
 }
 
-Quat OutputStream::readQuat()
-{
-  const char* data = forward( int( sizeof( float[4] ) ) );
-
-  if( order == Endian::NATIVE ) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-    Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
-
-    return Quat( x.value, y.value, z.value, w.value );
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-    Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
-
-    return Quat( x.value, y.value, z.value, w.value );
-  }
-}
-
 void OutputStream::writeQuat( const Quat& q )
 {
   char* data = forward( int( sizeof( float[4] ) ) );
@@ -918,31 +597,6 @@ void OutputStream::writeQuat( const Quat& q )
   }
 }
 
-Mat3 OutputStream::readMat3()
-{
-  const char* data = forward( int( sizeof( float[9] ) ) );
-
-  Mat3 m;
-  float* values = m;
-
-  if( order == Endian::NATIVE ) {
-    for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-      Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-      *values = value.value;
-    }
-  }
-  else {
-    for( int i = 0; i < 9; ++i, data += 4, ++values ) {
-      Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-      *values = value.value;
-    }
-  }
-
-  return m;
-}
-
 void OutputStream::writeMat3( const Mat3& m )
 {
   char* data = forward( int( sizeof( float[9] ) ) );
@@ -970,31 +624,6 @@ void OutputStream::writeMat3( const Mat3& m )
   }
 }
 
-Mat4 OutputStream::readMat4()
-{
-  const char* data = forward( int( sizeof( float[16] ) ) );
-
-  Mat4 m;
-  float* values = m;
-
-  if( order == Endian::NATIVE ) {
-    for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-      Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-      *values = value.value;
-    }
-  }
-  else {
-    for( int i = 0; i < 16; ++i, data += 4, ++values ) {
-      Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-      *values = value.value;
-    }
-  }
-
-  return m;
-}
-
 void OutputStream::writeMat4( const Mat4& m )
 {
   char* data = forward( int( sizeof( float[16] ) ) );
@@ -1019,30 +648,6 @@ void OutputStream::writeMat4( const Mat4& m )
       data[2] = value.data[1];
       data[3] = value.data[0];
     }
-  }
-}
-
-void OutputStream::readBitset( ulong* bitset, int nBits )
-{
-  int unitBits    = int( sizeof( ulong ) ) * 8;
-  int unit64Bits  = int( sizeof( ulong64 ) ) * 8;
-  int unitCount   = ( nBits + unitBits - 1 ) / unitBits;
-  int unit64Count = ( nBits + unit64Bits - 1 ) / unit64Bits;
-
-  const char* data = forward( unit64Count * 8 );
-
-  for( int i = 0; i < unitCount; ++i ) {
-#if OZ_SIZEOF_LONG == 4
-    Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
-#else
-    Endian::BytesToULong64 value = {
-      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
-    };
-#endif
-    *bitset = ulong( value.value );
-
-    bitset += 1;
-    data   += sizeof( ulong );
   }
 }
 
@@ -1092,21 +697,6 @@ void OutputStream::writeBitset( const ulong* bitset, int nBits )
     data[7] = 0;
   }
 #endif
-}
-
-String OutputStream::readLine()
-{
-  const char* begin = streamPos;
-
-  while( streamPos < streamEnd && *streamPos != '\n' && *streamPos != '\r' ) {
-    ++streamPos;
-  }
-
-  int length = int( streamPos - begin );
-
-  streamPos += ( streamPos < streamEnd ) +
-               ( streamPos < streamEnd - 1 && streamPos[0] == '\r' && streamPos[1] == '\n' );
-  return String( begin, length );
 }
 
 void OutputStream::writeLine( const String& s )

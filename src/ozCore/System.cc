@@ -151,6 +151,8 @@ static void abort( bool doHalt );
 OZ_NORETURN
 static void signalHandler( int sigNum )
 {
+  System::bell();
+
   Log::verboseMode = false;
   Log::printSignal( sigNum );
   Log::printTrace( StackTrace::current( 1 ) );
@@ -160,7 +162,6 @@ static void signalHandler( int sigNum )
   __android_log_print( ANDROID_LOG_FATAL, "oz", "Signal %d\n", sigNum );
 #endif
 
-  System::bell();
   abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
 }
 
@@ -631,6 +632,7 @@ void System::warning( const char* function, const char* file, int line, int nSki
                       const char* msg, ... )
 {
   trap();
+  bell();
 
   va_list ap;
   va_start( ap, msg );
@@ -653,14 +655,13 @@ void System::warning( const char* function, const char* file, int line, int nSki
   StackTrace st = StackTrace::current( nSkippedFrames + 1 );
   Log::printTrace( st );
   Log::println();
-
-  bell();
 }
 
 void System::error( const char* function, const char* file, int line, int nSkippedFrames,
                     const char* msg, ... )
 {
   trap();
+  bell();
 
   va_list ap;
   va_start( ap, msg );
@@ -681,7 +682,6 @@ void System::error( const char* function, const char* file, int line, int nSkipp
   Log::printTrace( st );
   Log::println();
 
-  bell();
   abort( initFlags & HALT_BIT );
 }
 

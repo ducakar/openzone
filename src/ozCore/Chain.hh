@@ -70,7 +70,7 @@ namespace oz
 template <class Elem, int INDEX = 0>
 class Chain
 {
-private:
+protected:
 
   /**
    * %Chain iterator.
@@ -112,6 +112,24 @@ private:
       return *this;
     }
 
+    /**
+     * STL-style begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    ChainIterator begin() const
+    {
+      return *this;
+    }
+
+    /**
+     * STL-style end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    ChainIterator end() const
+    {
+      return ChainIterator();
+    }
+
   };
 
 public:
@@ -126,9 +144,18 @@ public:
    */
   typedef ChainIterator<Elem> Iterator;
 
-private:
+protected:
 
   Elem* firstElem; ///< Pointer to the first element in the chain.
+
+protected:
+
+  /**
+   * Internal constructor used by `DChain`.
+   */
+  explicit Chain( Elem* firstElem_ ) :
+    firstElem( firstElem_ )
+  {}
 
 public:
 
@@ -228,7 +255,7 @@ public:
   }
 
   /**
-   * STL-compatible constant begin iterator.
+   * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   CIterator begin() const
@@ -237,7 +264,7 @@ public:
   }
 
   /**
-   * STL-compatible begin iterator.
+   * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
   Iterator begin()
@@ -246,7 +273,7 @@ public:
   }
 
   /**
-   * STL-compatible constant end iterator.
+   * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
   CIterator end() const
@@ -255,7 +282,7 @@ public:
   }
 
   /**
-   * STL-compatible end iterator.
+   * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
   Iterator end()

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "iterables.hh"
+#include "Chain.hh"
 
 namespace oz
 {
@@ -70,83 +70,50 @@ namespace oz
  * @sa `oz::Chain`
  */
 template <class Elem, int INDEX = 0>
-class DChain
+class DChain : private Chain<Elem, INDEX>
 {
-private:
-
-  /**
-   * %Chain iterator.
-   */
-  template <class IterElem>
-  class ChainIterator : public IteratorBase<IterElem>
-  {
-  private:
-
-    using IteratorBase<IterElem>::elem;
-
-  public:
-
-    /**
-     * Default constructor, creates an invalid iterator.
-     */
-    OZ_ALWAYS_INLINE
-    explicit ChainIterator() :
-      IteratorBase<IterElem>( nullptr )
-    {}
-
-    /**
-     * Create chain iterator, initially pointing to a given element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit ChainIterator( const DChain& c ) :
-      IteratorBase<IterElem>( c.firstElem )
-    {}
-
-    /**
-     * Advance to the next element.
-     */
-    OZ_ALWAYS_INLINE
-    ChainIterator& operator ++ ()
-    {
-      hard_assert( elem != nullptr );
-
-      elem = elem->next[INDEX];
-      return *this;
-    }
-
-  };
-
 public:
 
   /**
    * %Iterator with constant access to elements.
    */
-  typedef ChainIterator<const Elem> CIterator;
+  typedef typename Chain<Elem, INDEX>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef ChainIterator<Elem> Iterator;
+  typedef typename Chain<Elem, INDEX>::Iterator Iterator;
 
 private:
 
-  Elem* firstElem; ///< Pointer to the first element in the chain.
-  Elem* lastElem;  ///< Pointer to the last element in the chain.
+  using Chain<Elem, INDEX>::firstElem;
+
+  Elem* lastElem; ///< Pointer to the last element in the chain.
 
 public:
+
+  using Chain<Elem, INDEX>::citer;
+  using Chain<Elem, INDEX>::iter;
+  using Chain<Elem, INDEX>::begin;
+  using Chain<Elem, INDEX>::end;
+  using Chain<Elem, INDEX>::first;
+  using Chain<Elem, INDEX>::length;
+  using Chain<Elem, INDEX>::isEmpty;
+  using Chain<Elem, INDEX>::has;
+  using Chain<Elem, INDEX>::contains;
 
   /**
    * Create an empty chain.
    */
   explicit DChain() :
-    firstElem( nullptr ), lastElem( nullptr )
+    Chain<Elem, INDEX>( nullptr ), lastElem( nullptr )
   {}
 
   /**
    * Move constructor, rebinds elements to the new chain.
    */
   DChain( DChain&& c ) :
-    firstElem( c.firstElem ), lastElem( c.lastElem )
+    Chain<Elem, INDEX>( c.firstElem ), lastElem( c.lastElem )
   {
     c.firstElem = nullptr;
     c.lastElem  = nullptr;
@@ -207,101 +174,7 @@ public:
    */
   bool equals( const DChain& c ) const
   {
-    Elem* e1 = firstElem;
-    Elem* e2 = c.firstElem;
-
-    while( e1 != nullptr && e2 != nullptr && *e1 == *e2 ) {
-      e1 = e1->next[INDEX];
-      e2 = e2->next[INDEX];
-    }
-    return e1 == e2;
-  }
-
-  /**
-   * %Iterator with constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  CIterator citer() const
-  {
-    return CIterator( *this );
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iter()
-  {
-    return Iterator( *this );
-  }
-
-  /**
-   * STL-compatible constant begin iterator.
-   */
-  OZ_ALWAYS_INLINE
-  CIterator begin() const
-  {
-    return CIterator( *this );
-  }
-
-  /**
-   * STL-compatible begin iterator.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator begin()
-  {
-    return Iterator( *this );
-  }
-
-  /**
-   * STL-compatible constant end iterator.
-   */
-  OZ_ALWAYS_INLINE
-  CIterator end() const
-  {
-    return CIterator();
-  }
-
-  /**
-   * STL-compatible end iterator.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator end()
-  {
-    return Iterator();
-  }
-
-  /**
-   * Iterate through the chain and count elements.
-   */
-  int length() const
-  {
-    int i = 0;
-    Elem* p = firstElem;
-
-    while( p != nullptr ) {
-      p = p->next[INDEX];
-      ++i;
-    }
-    return i;
-  }
-
-  /**
-   * True iff the chain has no elements.
-   */
-  OZ_ALWAYS_INLINE
-  bool isEmpty() const
-  {
-    return firstElem == nullptr;
-  }
-
-  /**
-   * Pointer to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Elem* first() const
-  {
-    return firstElem;
+    return Chain<Elem, INDEX>::equals( c );
   }
 
   /**
@@ -311,39 +184,6 @@ public:
   Elem* last() const
   {
     return lastElem;
-  }
-
-  /**
-   * True iff a given element is in the chain.
-   */
-  bool has( const Elem* e ) const
-  {
-    hard_assert( e != nullptr );
-
-    Elem* p = firstElem;
-
-    while( p != nullptr && p != e ) {
-      p = p->next[INDEX];
-    }
-    return p != nullptr;
-  }
-
-  /**
-   * True iff an element equal to a given one is in the chain.
-   *
-   * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
-   * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
-   */
-  bool contains( const Elem* e ) const
-  {
-    hard_assert( e != nullptr );
-
-    Elem* p = firstElem;
-
-    while( p != nullptr && !( *p == *e ) ) {
-      p = p->next[INDEX];
-    }
-    return p != nullptr;
   }
 
   /**
@@ -522,16 +362,7 @@ public:
    */
   void free()
   {
-    Elem* p = firstElem;
-
-    while( p != nullptr ) {
-      Elem* next = p->next[INDEX];
-
-      delete p;
-      p = next;
-    }
-
-    firstElem = nullptr;
+    Chain<Elem>::free();
     lastElem = nullptr;
   }
 

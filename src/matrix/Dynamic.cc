@@ -37,8 +37,8 @@ void Dynamic::onDestroy()
     luaMatrix.objectCall( clazz->onDestroy, this );
   }
 
-  foreach( i, items.citer() ) {
-    Dynamic* item = static_cast<Dynamic*>( orbis.obj( *i ) );
+  for( int i : items ) {
+    Dynamic* item = static_cast<Dynamic*>( orbis.obj( i ) );
 
     if( item != nullptr ) {
       item->destroy();

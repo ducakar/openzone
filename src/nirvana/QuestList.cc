@@ -75,11 +75,11 @@ void QuestList::write( OutputStream* os ) const
 {
   os->writeInt( quests.length() );
 
-  foreach( quest, quests.citer() ) {
-    os->writeString( quest->title );
-    os->writeString( quest->description );
-    os->writePoint( quest->place );
-    os->writeInt( quest->state );
+  for( const Quest& quest : quests ) {
+    os->writeString( quest.title );
+    os->writeString( quest.description );
+    os->writePoint( quest.place );
+    os->writeInt( quest.state );
   }
 
   os->writeInt( activeQuest );

@@ -171,15 +171,15 @@ void StrategicArea::collectHovers()
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( obj, cell.objects.citer() ) {
-          if( ( obj->flags & Object::SOLID_BIT ) &&
-              ( obj->flags & ( Object::BOT_BIT | Object::VEHICLE_BIT ) ) )
+        for( const Object& obj : cell.objects ) {
+          if( ( obj.flags & Object::SOLID_BIT ) &&
+              ( obj.flags & ( Object::BOT_BIT | Object::VEHICLE_BIT ) ) )
           {
             int  x, y;
-            bool hasProj = projectPoint( obj->p, &x, &y );
+            bool hasProj = projectPoint( obj.p, &x, &y );
 
             if( hasProj && drag.minX <= x && x <= drag.maxX && drag.minY <= y && y <= drag.maxY ) {
-              dragObjs.include( obj->index );
+              dragObjs.include( obj.index );
             }
           }
         }
@@ -382,8 +382,8 @@ bool StrategicArea::onMouseEvent()
           }
         }
 
-        foreach( obj, dragObjs.citer() ) {
-          taggedObjs.include( *obj );
+        for( int obj : dragObjs ) {
+          taggedObjs.include( obj );
         }
       }
     }

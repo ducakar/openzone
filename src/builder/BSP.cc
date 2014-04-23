@@ -977,15 +977,15 @@ void BSP::saveMatrix()
 
   Set<String> usedSounds;
 
-  foreach( model, models.citer() ) {
-    if( !model->openSound.isEmpty() ) {
-      usedSounds.include( model->openSound );
+  for( const Model& model : models ) {
+    if( !model.openSound.isEmpty() ) {
+      usedSounds.include( model.openSound );
     }
-    if( !model->closeSound.isEmpty() ) {
-      usedSounds.include( model->closeSound );
+    if( !model.closeSound.isEmpty() ) {
+      usedSounds.include( model.closeSound );
     }
-    if( !model->frictSound.isEmpty() ) {
-      usedSounds.include( model->frictSound );
+    if( !model.frictSound.isEmpty() ) {
+      usedSounds.include( model.frictSound );
     }
   }
   if( !demolishSound.isEmpty() ) {
@@ -1007,8 +1007,8 @@ void BSP::saveMatrix()
   os.writeInt( nFrags );
 
   os.writeInt( usedSounds.length() );
-  foreach( sound, usedSounds.citer() ) {
-    os.writeString( *sound );
+  for( const String& sound : usedSounds ) {
+    os.writeString( sound );
   }
   usedSounds.clear();
   usedSounds.deallocate();
@@ -1025,71 +1025,71 @@ void BSP::saveMatrix()
   os.writeInt( models.length() );
   os.writeInt( boundObjects.length() );
 
-  foreach( plane, planes.citer() ) {
-    os.writePlane( *plane );
+  for( const Plane& plane : planes ) {
+    os.writePlane( plane );
   }
 
-  foreach( node, nodes.citer() ) {
-    os.writeInt( node->plane );
-    os.writeInt( node->front );
-    os.writeInt( node->back );
+  for( const oz::BSP::Node& node : nodes ) {
+    os.writeInt( node.plane );
+    os.writeInt( node.front );
+    os.writeInt( node.back );
   }
 
-  foreach( leaf, leaves.citer() ) {
-    os.writeInt( leaf->firstBrush );
-    os.writeInt( leaf->nBrushes );
+  for( const oz::BSP::Leaf& leaf : leaves ) {
+    os.writeInt( leaf.firstBrush );
+    os.writeInt( leaf.nBrushes );
   }
 
-  foreach( leafBrush, leafBrushes.citer() ) {
-    os.writeInt( *leafBrush );
+  for( int leafBrush : leafBrushes ) {
+    os.writeInt( leafBrush );
   }
 
-  foreach( brush, brushes.citer() ) {
-    os.writeInt( brush->firstSide );
-    os.writeInt( brush->nSides );
-    os.writeInt( brush->flags );
+  for( const oz::BSP::Brush& brush : brushes ) {
+    os.writeInt( brush.firstSide );
+    os.writeInt( brush.nSides );
+    os.writeInt( brush.flags );
   }
 
-  foreach( brushSide, brushSides.citer() ) {
-    os.writeInt( *brushSide );
+  for( int brushSide : brushSides ) {
+    os.writeInt( brushSide );
   }
 
-  foreach( model, models.citer() ) {
-    os.writePoint( model->mins );
-    os.writePoint( model->maxs );
+  for( const Model& model : models ) {
+    os.writePoint( model.mins );
+    os.writePoint( model.maxs );
 
-    os.writeString( model->title );
-    os.writeVec3( model->move );
+    os.writeString( model.title );
+    os.writeVec3( model.move );
 
-    os.writeInt( model->firstBrush );
-    os.writeInt( model->nBrushes );
+    os.writeInt( model.firstBrush );
+    os.writeInt( model.nBrushes );
 
-    os.writeInt( int( model->type ) );
-    os.writeFloat( model->margin );
-    os.writeFloat( model->timeout );
-    os.writeFloat( model->ratioInc );
+    os.writeInt( int( model.type ) );
+    os.writeFloat( model.margin );
+    os.writeFloat( model.timeout );
+    os.writeFloat( model.ratioInc );
 
-    os.writeInt( model->target );
-    os.writeInt( model->key );
+    os.writeInt( model.target );
+    os.writeInt( model.key );
 
-    context.usedSounds.include( model->openSound, name + " (BSP)" );
-    context.usedSounds.include( model->closeSound, name + " (BSP)" );
-    context.usedSounds.include( model->frictSound, name + " (BSP)" );
+    context.usedSounds.include( model.openSound, name + " (BSP)" );
+    context.usedSounds.include( model.closeSound, name + " (BSP)" );
+    context.usedSounds.include( model.frictSound, name + " (BSP)" );
 
-    os.writeString( model->openSound );
-    os.writeString( model->closeSound );
-    os.writeString( model->frictSound );
+    os.writeString( model.openSound );
+    os.writeString( model.closeSound );
+    os.writeString( model.frictSound );
 
-    context.usedModels.include( model->modelName, name + " (BSP)" );
+    context.usedModels.include( model.modelName, name + " (BSP)" );
 
-    os.writeString( model->modelName );
-    os.writeMat4( model->modelTransf );
+    os.writeString( model.modelName );
+    os.writeMat4( model.modelTransf );
   }
 
-  foreach( boundObject, boundObjects.citer() ) {
-    os.writeString( boundObject->clazz );
-    os.writePoint( boundObject->pos );
-    os.writeInt( boundObject->heading );
+  for( const BoundObject& boundObject : boundObjects ) {
+    os.writeString( boundObject.clazz );
+    os.writePoint( boundObject.pos );
+    os.writeInt( boundObject.heading );
   }
 
   if( !destFile.write( os.begin(), os.tell() ) ) {

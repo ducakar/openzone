@@ -7,18 +7,19 @@
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
         + STL-like parameter order in container functions (iCopy/aCopy, aFill, aIndex ...)
-        + STL-like begin() and end() members on containers
+        + STL-like begin() and end() members on containers and iterators
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
+        + inheritance between containers to minimise code duplication (e.g. List -> Set -> Map)
     * String: construction from numbers, new number parsing functions
     * exact SLERP implementation in Quat
-    * new Mat3 class for 3x3 matrix
+    * new Mat3 class for 3x3 matrices
     * SIMD support for linear algebra classes
     * new SpinLock and CallOnce classes added for threading
     * ALSA and OSS back-ends for System::bell()
     * linear algebra classes added as primitives to streams, Log and JSON
-    * BufferStream merged into OutputStream
+    * BufferStream merged into OutputStream, inherits from InputStream
     * Buffer supports zlib compression
     * File class determines special user directories and executable path
     * PFile class merged into File class (VFS paths begin with '@')
@@ -45,6 +46,7 @@
     * common Lua functionality split into LuaCommon which is base for LuaMatrix, LuaNirvana ...
     * common Lua scripts included by all VMs
     * Lua <-> JSON value interoperability
+    * new Automaton class to facilitate implementations of finite-state machines
 - matrix
     * Orbis: 1-based lists internally, proxy functions for accessing objects per index
     * negative Object::Event intensities for continuous sounds
@@ -58,8 +60,8 @@
     * UI sounds
     * DDS format used for icons, X11 libxcursor format for cursors
     * buttons triggered on release
-    * new ModelField, for rendering models in UI
-    * new BuildMenu, unit/building placement
+    * new ModelField area for rendering models in UI
+    * new BuildMenu frame unit/building placement
     * StrategicArea group selection
     * status bars under health bars
 - client

@@ -54,21 +54,22 @@ void VehicleAudio::play( const Object* playAt )
 
   // engine sound
   if( vehicle->pilot >= 0 && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
-    float pitch = clazz->engine.pitchBias + min( vehicle->momentum.sqN() * clazz->engine.pitchRatio,
-                                                 clazz->engine.pitchLimit );
+    float pitch = clazz->engine.pitchBias +
+                  min<float>( vehicle->momentum.sqN() * clazz->engine.pitchRatio,
+                              clazz->engine.pitchLimit );
 
     playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch );
   }
 
   // events
-  foreach( event, obj->events.citer() ) {
-    hard_assert( event->id < ObjectClass::MAX_SOUNDS );
+  for( const Object::Event& event : obj->events ) {
+    hard_assert( event.id < ObjectClass::MAX_SOUNDS );
 
-    if( event->id >= 0 && sounds[event->id] >= 0 && recent[event->id] == 0 ) {
-      hard_assert( 0.0f <= event->intensity );
+    if( event.id >= 0 && sounds[event.id] >= 0 && recent[event.id] == 0 ) {
+      hard_assert( 0.0f <= event.intensity );
 
-      recent[event->id] = RECENT_TICKS;
-      playSound( sounds[event->id], event->intensity, playAt );
+      recent[event.id] = RECENT_TICKS;
+      playSound( sounds[event.id], event.intensity, playAt );
     }
   }
 

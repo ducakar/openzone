@@ -9,7 +9,6 @@
     * RTS interface
     * tutorial tips
 - client
-    * shaking effect
     * decals
     * particle model (smoke, fire ...)
 - missions

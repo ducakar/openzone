@@ -28,11 +28,52 @@
 
 #pragma once
 
-#include "arrays.hh"
-#include "System.hh"
+#include "Set.hh"
 
 namespace oz
 {
+
+namespace detail
+{
+
+/**
+ * Key-value pair.
+ */
+template <typename Key, typename Value>
+struct MapPair
+{
+  Key   key;   ///< Key.
+  Value value; ///< Value.
+
+  /**
+   * Equality operator.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == ( const MapPair& p ) const
+  {
+    return key == p.key;
+  }
+
+  /**
+   * Less-than operator.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator < ( const MapPair& p ) const
+  {
+    return key < p.key;
+  }
+
+  /**
+   * Less-than operator required for `aBisection()`.
+   */
+  OZ_ALWAYS_INLINE
+  friend bool operator < ( const Key& key, const MapPair& p )
+  {
+    return key < p.key;
+  }
+};
+
+}
 
 /**
  * Sorted array list of key-value pairs.
@@ -49,127 +90,80 @@ namespace oz
  * @sa `oz::Set`, `oz::HashMap`
  */
 template <typename Key, typename Value>
-class Map
+class Map : private Set< detail::MapPair<Key, Value> >
 {
 private:
 
-  /// Granularity for automatic storage allocations.
-  static const int GRANULARITY = 8;
+  /**
+   * Shortcut for key-value pair type.
+   */
+  typedef detail::MapPair<Key, Value> Pair;
 
 public:
-
-  /**
-   * Key-value pair.
-   */
-  struct Pair
-  {
-    Key   key;   ///< Key.
-    Value value; ///< Value.
-
-    /**
-     * Less-than operator required for `aSort()`.
-     */
-    OZ_ALWAYS_INLINE
-    bool operator < ( const Pair& e ) const
-    {
-      return key < e.key;
-    }
-
-    /**
-     * Less-than operator required for `aBisection()`.
-     */
-    OZ_ALWAYS_INLINE
-    friend bool operator < ( const Key& key, const Pair& e )
-    {
-      return key < e.key;
-    }
-  };
 
   /**
    * %Iterator with constant access to elements.
    */
-  typedef ArrayIterator<const Pair> CIterator;
+  typedef typename List<Pair>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef ArrayIterator<Pair> Iterator;
+  typedef typename List<Pair>::Iterator Iterator;
 
 private:
 
-  Pair* data;  ///< Element storage.
-  int   count; ///< Number of elements.
-  int   size;  ///< Capacity, number of elements in storage.
-
-  /**
-   * Ensure a given capacity.
-   *
-   * Capacity is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
-   * `GRANULARITY` able to hold the requested number of elements.
-   */
-  void ensureCapacity( int capacity )
-  {
-    if( capacity < 0 ) {
-      OZ_ERROR( "oz::Map: Capacity overflow" );
-    }
-    else if( size < capacity ) {
-      size *= 2;
-      size  = size < capacity ? ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 ) : size;
-
-      if( size <= 0 ) {
-        OZ_ERROR( "oz::Map: Capacity overflow" );
-      }
-
-      data = aReallocate<Pair>( data, count, size );
-    }
-  }
+  using List<Pair>::data;
+  using List<Pair>::count;
+  using List<Pair>::ensureCapacity;
 
 public:
+
+  using List<Pair>::citer;
+  using List<Pair>::iter;
+  using List<Pair>::begin;
+  using List<Pair>::end;
+  using List<Pair>::length;
+  using List<Pair>::isEmpty;
+  using List<Pair>::capacity;
+  using List<Pair>::operator [];
+  using List<Pair>::first;
+  using List<Pair>::last;
+  using Set<Pair>::erase;
+  using List<Pair>::resize;
+  using List<Pair>::trim;
+  using List<Pair>::clear;
+  using List<Pair>::free;
+  using List<Pair>::allocate;
+  using List<Pair>::deallocate;
 
   /**
    * Create an empty map with a given initial capacity.
    */
   explicit Map( int capacity = 0 ) :
-    data( capacity == 0 ? nullptr : new Pair[capacity] ), count( 0 ), size( capacity )
+    Set<Pair>( capacity )
   {}
 
   /**
    * Initialise from an initialiser list.
    */
   Map( InitialiserList<Pair> l ) :
-    data( new Pair[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
-  {
-    aCopy<Pair>( l.begin(), int( l.size() ), data );
-    aSort<Pair>( data, count );
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Map()
-  {
-    delete[] data;
-  }
+    Set<Pair>( l )
+  {}
 
   /**
    * Copy constructor, copies elements.
    */
   Map( const Map& m ) :
-    data( m.size == 0 ? nullptr : new Pair[m.size] ), count( m.count ), size( m.size )
-  {
-    aCopy<Pair>( m.data, m.count, data );
-  }
+    Set<Pair>( m )
+  {}
 
   /**
    * Move constructor, moves element storage.
    */
   Map( Map&& m ) :
-    data( m.data ), count( m.count ), size( m.size )
-  {
-    m.data  = nullptr;
-    m.count = 0;
-    m.size  = 0;
-  }
+    Set<Pair>( static_cast<Map&&>( m ) )
+  {}
 
   /**
    * Copy operator, copies elements.
@@ -178,21 +172,7 @@ public:
    */
   Map& operator = ( const Map& m )
   {
-    if( &m == this ) {
-      return *this;
-    }
-
-    if( size < m.count ) {
-      delete[] data;
-
-      data = new Pair[m.size];
-      size = m.size;
-    }
-
-    aCopy<Pair>( m.data, m.count, data );
-    count = m.count;
-
-    return *this;
+    return static_cast<Map&>( List<Pair>::operator = ( m ) );
   }
 
   /**
@@ -200,21 +180,7 @@ public:
    */
   Map& operator = ( Map&& m )
   {
-    if( &m == this ) {
-      return *this;
-    }
-
-    delete[] data;
-
-    data    = m.data;
-    count   = m.count;
-    size    = m.size;
-
-    m.data  = nullptr;
-    m.count = 0;
-    m.size  = 0;
-
-    return *this;
+    return static_cast<Map&>( List<Pair>::operator = ( static_cast<Map&&>( m ) ) );
   }
 
   /**
@@ -222,7 +188,7 @@ public:
    */
   bool operator == ( const Map& m ) const
   {
-    return count == m.count && aEquals<Pair>( data, count, m.data );
+    return List<Pair>::operator == ( m );
   }
 
   /**
@@ -230,154 +196,7 @@ public:
    */
   bool operator != ( const Map& m ) const
   {
-    return !operator == ( m );
-  }
-
-  /**
-   * %Iterator with constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  CIterator citer() const
-  {
-    return CIterator( data, data + count );
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iter()
-  {
-    return Iterator( data, data + count );
-  }
-
-  /**
-   * STL-compatible constant begin iterator.
-   */
-  OZ_ALWAYS_INLINE
-  const Pair* begin() const
-  {
-    return data;
-  }
-
-  /**
-   * STL-compatible begin iterator.
-   */
-  OZ_ALWAYS_INLINE
-  Pair* begin()
-  {
-    return data;
-  }
-
-  /**
-   * STL-compatible constant end iterator.
-   */
-  OZ_ALWAYS_INLINE
-  const Pair* end() const
-  {
-    return data + count;
-  }
-
-  /**
-   * STL-compatible end iterator.
-   */
-  OZ_ALWAYS_INLINE
-  Pair* end()
-  {
-    return data + count;
-  }
-
-  /**
-   * Number of elements.
-   */
-  OZ_ALWAYS_INLINE
-  int length() const
-  {
-    return count;
-  }
-
-  /**
-   * True iff empty.
-   */
-  OZ_ALWAYS_INLINE
-  bool isEmpty() const
-  {
-    return count == 0;
-  }
-
-  /**
-   * Number of allocated elements.
-   */
-  OZ_ALWAYS_INLINE
-  int capacity() const
-  {
-    return size;
-  }
-
-  /**
-   * Constant reference to the `i`-th element.
-   */
-  OZ_ALWAYS_INLINE
-  const Pair& operator [] ( int i ) const
-  {
-    hard_assert( uint( i ) < uint( count ) );
-
-    return data[i];
-  }
-
-  /**
-   * Reference to the `i`-th element.
-   */
-  OZ_ALWAYS_INLINE
-  Pair& operator [] ( int i )
-  {
-    hard_assert( uint( i ) < uint( count ) );
-
-    return data[i];
-  }
-
-  /**
-   * Constant reference to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  const Pair& first() const
-  {
-    hard_assert( count != 0 );
-
-    return data[0];
-  }
-
-  /**
-   * Reference to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Pair& first()
-  {
-    hard_assert( count != 0 );
-
-    return data[0];
-  }
-
-  /**
-   * Constant reference to the last element.
-   */
-  OZ_ALWAYS_INLINE
-  const Pair& last() const
-  {
-    hard_assert( count != 0 );
-
-    return data[count - 1];
-  }
-
-  /**
-   * Reference to the last element.
-   */
-  OZ_ALWAYS_INLINE
-  Pair& last()
-  {
-    hard_assert( count != 0 );
-
-    return data[count - 1];
+    return List<Pair>::operator != ( m );
   }
 
   /**
@@ -482,27 +301,6 @@ public:
   }
 
   /**
-   * Remove the element at a given position.
-   *
-   * All later elements are shifted to fill the gap.
-   */
-  void erase( int i )
-  {
-    hard_assert( uint( i ) < uint( count ) );
-
-    --count;
-
-    if( i == count ) {
-      // When removing the last element, no shift is performed, so it is not implicitly destroyed by
-      // the move operation.
-      data[count] = Pair();
-    }
-    else {
-      aMove<Pair>( data + i + 1, count - i, data + i );
-    }
-  }
-
-  /**
    * Find and remove the element with a given key.
    *
    * @return Index of the removed element or -1 if not found.
@@ -516,82 +314,6 @@ public:
       return i;
     }
     return -1;
-  }
-
-  /**
-   * Resize the map to the specified number of elements.
-   */
-  void resize( int newCount )
-  {
-    if( newCount > count ) {
-      ensureCapacity( newCount );
-    }
-    else {
-      // Ensure destruction of removed elements.
-      for( int i = newCount; i < count; ++i ) {
-        data[i] = Pair();
-      }
-    }
-    count = newCount;
-  }
-
-  /**
-   * Trim capacity to the current number of elements.
-   */
-  void trim()
-  {
-    if( count < size ) {
-      size = count;
-      data = aReallocate<Pair>( data, count, size );
-    }
-  }
-
-  /**
-   * Clear the map.
-   */
-  void clear()
-  {
-    // Ensure destruction of all elements.
-    aFill<Pair, Pair>( data, count, Pair() );
-    count = 0;
-  }
-
-  /**
-   * Delete all objects referenced by element values (must be pointers) and clear the map.
-   */
-  void free()
-  {
-    for( int i = 0; i < count; ++i ) {
-      delete data[i].value;
-
-      // Ensure destruction.
-      data[i] = Pair();
-    }
-    count = 0;
-  }
-
-  /**
-   * For an empty map with no allocated storage, allocate capacity for `capacity` elements.
-   */
-  void allocate( int capacity )
-  {
-    hard_assert( size == 0 && capacity > 0 );
-
-    data = new Pair[capacity];
-    size = capacity;
-  }
-
-  /**
-   * Deallocate storage of an empty map.
-   */
-  void deallocate()
-  {
-    hard_assert( count == 0 );
-
-    delete[] data;
-
-    data = nullptr;
-    size = 0;
   }
 
 };

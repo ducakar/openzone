@@ -46,8 +46,8 @@ void Object::onDestroy()
     luaMatrix.objectCall( clazz->onDestroy, this );
   }
 
-  foreach( i, items.citer() ) {
-    Object* item = orbis.obj( *i );
+  for( int i : items ) {
+    Object* item = orbis.obj( i );
 
     if( item != nullptr ) {
       item->destroy();
@@ -189,15 +189,15 @@ void Object::write( OutputStream* os ) const
   os->writeFloat( life );
 
   os->writeInt( events.length() );
-  foreach( event, events.citer() ) {
-    os->writeInt( event->id );
-    os->writeFloat( event->intensity );
+  for( const Event& event : events ) {
+    os->writeInt( event.id );
+    os->writeFloat( event.intensity );
   }
 
   if( clazz->nItems != 0 ) {
     os->writeInt( items.length() );
-    foreach( item, items.citer() ) {
-      os->writeInt( *item );
+    for( int item : items ) {
+      os->writeInt( item );
     }
   }
 }
@@ -216,8 +216,8 @@ JSON Object::write() const
   if( clazz->nItems != 0 ) {
     JSON& itemsJSON = json.add( "items", JSON::ARRAY );
 
-    foreach( item, items.citer() ) {
-      itemsJSON.add( orbis.objIndex( *item ) );
+    for( int item : items ) {
+      itemsJSON.add( orbis.objIndex( item ) );
     }
   }
 

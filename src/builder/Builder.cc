@@ -103,22 +103,22 @@ void Builder::copyFiles( const File& srcDir, const File& destDir, const char* ex
 
   File::mkdir( destDir.path() );
 
-  foreach( file, dirList.citer() ) {
-    String fileName = file->name();
+  for( const File& file : dirList ) {
+    String fileName = file.name();
 
-    if( file->type() == File::DIRECTORY ) {
+    if( file.type() == File::DIRECTORY ) {
       if( recurse ) {
-        copyFiles( srcDir.path() + "/" + file->name(), destDir.path() + "/" + file->name(), ext,
+        copyFiles( srcDir.path() + "/" + file.name(), destDir.path() + "/" + file.name(), ext,
                    true );
       }
     }
-    else if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
+    else if( file.hasExtension( ext ) || fileName.beginsWith( "README" ) ||
              fileName.beginsWith( "COPYING" ) )
     {
-      Log::print( "Copying '%s' -> '%s' ...", file->path().cstr(), sDestDir.cstr() );
+      Log::print( "Copying '%s' -> '%s' ...", file.path().cstr(), sDestDir.cstr() );
 
-      if( !File::cp( *file, sDestDir ) ) {
-        OZ_ERROR( "Failed to copy '%s' -> '%s'", file->path().cstr(), sDestDir.cstr() );
+      if( !File::cp( file, sDestDir ) ) {
+        OZ_ERROR( "Failed to copy '%s' -> '%s'", file.path().cstr(), sDestDir.cstr() );
       }
 
       Log::printEnd( " OK" );
@@ -137,16 +137,15 @@ void Builder::buildCaela()
 
   String srcDir = "@caelum";
   File dir = srcDir;
-  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     File::mkdir( "caelum" );
     caelum.build( name );
@@ -163,17 +162,16 @@ void Builder::buildTerrae()
 
   String srcDir = "@terra";
   File dir = srcDir;
-  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
     File::mkdir( "terra" );
-    terra.build( file->baseName() );
+    terra.build( file.baseName() );
   }
 
   Log::unindent();
@@ -188,18 +186,17 @@ void Builder::buildBSPs()
   String srcDir = "@baseq3/maps";
   String destDir = "bsp";
   File dir = srcDir;
-  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
   destDir = destDir + "/";
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
     File::mkdir( "bsp" );
-    bsp.build( file->baseName() );
+    bsp.build( file.baseName() );
   }
 
   Log::unindent();
@@ -218,18 +215,15 @@ void Builder::buildBSPTextures()
   Set<String> usedDirs;
 
   File dir = "@baseq3/textures";
-  DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.citer() ) {
-    if( subDir->type() != File::DIRECTORY ) {
+  for( const File& subDir : dir.ls() ) {
+    if( subDir.type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<File> texList = subDir->ls();
-
-    foreach( file, texList.citer() ) {
-      String name = file->name();
-      String path = file->path();
+    for( const File& file : subDir.ls() ) {
+      String name = file.name();
+      String path = file.path();
 
       int dot   = path.lastIndex( '.' );
       int slash = path.lastIndex( '/' );
@@ -252,28 +246,26 @@ void Builder::buildBSPTextures()
         continue;
       }
 
-      usedDirs.include( subDir->path() );
+      usedDirs.include( subDir.path() );
 
       File::mkdir( "tex" );
-      File::mkdir( "tex/" + subDir->name() );
+      File::mkdir( "tex/" + subDir.name() );
 
       context.buildTexture( path, "tex/" + name );
       context.usedTextures.exclude( name );
     }
   }
 
-  foreach( subDirPath, usedDirs.citer() ) {
-    File subDir = "@" + *subDirPath;
+  for( const String& subDirPath : usedDirs ) {
+    File subDir = "@" + subDirPath;
 
-    DArray<File> texList = subDir.ls();
-
-    foreach( file, texList.citer() ) {
-      if( file->type() != File::REGULAR ) {
+    for( const File& file : subDir.ls() ) {
+      if( file.type() != File::REGULAR ) {
         continue;
       }
 
-      String name = file->name();
-      String path = file->path();
+      String name = file.name();
+      String path = file.path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
@@ -282,7 +274,7 @@ void Builder::buildBSPTextures()
         File::mkdir( "tex/" + subDir.name() );
 
         File destFile = String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() );
-        if( !destFile.write( file->read() ) ) {
+        if( !destFile.write( file.read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
 
@@ -296,8 +288,8 @@ void Builder::buildBSPTextures()
     Log::println( "The following referenced textures are missing in 'baseq3/textures' {" );
     Log::indent();
 
-    foreach( tex, context.usedTextures.citer() ) {
-      Log::println( "'%s' referenced by %s", tex->key.cstr(), tex->value.cstr() );
+    for( const auto& tex : context.usedTextures ) {
+      Log::println( "'%s' referenced by %s", tex.key.cstr(), tex.value.cstr() );
     }
 
     Log::unindent();
@@ -319,14 +311,13 @@ void Builder::buildClasses()
 
   String dirName = "@class";
   File dir = dirName;
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::print( "%s ...", name.cstr() );
 
@@ -348,14 +339,13 @@ void Builder::buildFragPools()
 
   String dirName = "@frag";
   File dir = dirName;
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::print( "%s ...", name.cstr() );
 
@@ -384,27 +374,26 @@ void Builder::buildModels()
     File::mkdir( "mdl" );
   }
 
-  foreach( dir, dirList.citer() ) {
-    if( !context.usedModels.exclude( dir->name() ) ) {
+  for( const File& dir : dirList ) {
+    if( !context.usedModels.exclude( dir.name() ) ) {
       continue;
     }
 
-    File::mkdir( &dir->path()[1] );
-    DArray<File> fileList = dir->ls();
+    File::mkdir( &dir.path()[1] );
 
-    foreach( file, fileList.citer() ) {
-      if( file->type() != File::REGULAR ) {
+    for( const File& file : dir.ls() ) {
+      if( file.type() != File::REGULAR ) {
         continue;
       }
 
-      String name = file->name();
-      String path = file->path();
+      String name = file.name();
+      String path = file.path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
         File destFile = &path[1];
-        if( !destFile.write( file->read() ) ) {
+        if( !destFile.write( file.read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
 
@@ -413,18 +402,18 @@ void Builder::buildModels()
       }
     }
 
-    File daeFile = dir->path() + "/data.dae";
-    File objFile = dir->path() + "/data.obj";
-    File md2File = dir->path() + "/tris.md2";
+    File daeFile = dir.path() + "/data.dae";
+    File objFile = dir.path() + "/data.obj";
+    File md2File = dir.path() + "/tris.md2";
 
     if( daeFile.type() == File::REGULAR || objFile.type() == File::REGULAR ) {
-      assImp.build( dir->path() );
+      assImp.build( dir.path() );
     }
     else if( md2File.type() == File::REGULAR ) {
-      md2.build( dir->path() );
+      md2.build( dir.path() );
     }
     else {
-      md3.build( dir->path() );
+      md3.build( dir.path() );
     }
   }
 
@@ -434,8 +423,8 @@ void Builder::buildModels()
     Log::println( "The following referenced models are missing in 'mdl' {" );
     Log::indent();
 
-    foreach( mdl, context.usedModels.citer() ) {
-      Log::println( "'%s' referenced by %s", mdl->key.cstr(), mdl->value.cstr() );
+    for( const auto& mdl : context.usedModels ) {
+      Log::println( "'%s' referenced by %s", mdl.key.cstr(), mdl.value.cstr() );
     }
 
     Log::unindent();
@@ -460,24 +449,21 @@ void Builder::copySounds()
   Set<String> usedDirs;
 
   File dir = "@snd";
-  DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.citer() ) {
-    if( subDir->type() != File::DIRECTORY ) {
+  for( const File& subDir : dir.ls() ) {
+    if( subDir.type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<File> sndList = subDir->ls();
-
-    foreach( file, sndList.citer() ) {
-      if( file->type() != File::REGULAR || ( !file->hasExtension( "wav" ) &&
-            !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) )
+    for( const File& file : subDir.ls() ) {
+      if( file.type() != File::REGULAR || ( !file.hasExtension( "wav" ) &&
+            !file.hasExtension( "oga" ) && !file.hasExtension( "ogg" ) ) )
       {
         continue;
       }
 
-      String name = file->name();
-      String path = file->path();
+      String name = file.name();
+      String path = file.path();
 
       int dot   = path.lastIndex( '.' );
       int slash = path.lastIndex( '/' );
@@ -496,13 +482,13 @@ void Builder::copySounds()
 
       Log::print( "Copying '%s' ...", name.cstr() );
 
-      usedDirs.include( subDir->path() );
+      usedDirs.include( subDir.path() );
 
       File::mkdir( "snd" );
-      File::mkdir( "snd/" + subDir->name() );
+      File::mkdir( "snd/" + subDir.name() );
 
-      File destFile = &file->path()[1];
-      if( !destFile.write( file->read() ) ) {
+      File destFile = &file.path()[1];
+      if( !destFile.write( file.read() ) ) {
         OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
 
@@ -510,17 +496,16 @@ void Builder::copySounds()
     }
   }
 
-  foreach( subDirPath, usedDirs.citer() ) {
-    File subDir = *subDirPath;
-    DArray<File> texList = subDir.ls();
+  for( const String& subDirPath : usedDirs ) {
+    File subDir = subDirPath;
 
-    foreach( file, texList.citer() ) {
-      if( file->type() != File::REGULAR ) {
+    for( const File& file : subDir.ls() ) {
+      if( file.type() != File::REGULAR ) {
         continue;
       }
 
-      String name = file->name();
-      String path = file->path();
+      String name = file.name();
+      String path = file.path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
@@ -529,7 +514,7 @@ void Builder::copySounds()
         File::mkdir( "snd/" + subDir.name() );
 
         File destFile = &path[1];
-        if( !destFile.write( file->read() ) ) {
+        if( !destFile.write( file.read() ) ) {
           OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
 
@@ -545,8 +530,8 @@ void Builder::copySounds()
     Log::println( "The following referenced sounds are missing in 'snd' {" );
     Log::indent();
 
-    foreach( snd, context.usedSounds.citer() ) {
-      Log::println( "'%s' referenced by %s", snd->key.cstr(), snd->value.cstr() );
+    for( const auto& snd : context.usedSounds ) {
+      Log::println( "'%s' referenced by %s", snd.key.cstr(), snd.value.cstr() );
     }
 
     Log::unindent();
@@ -565,16 +550,13 @@ void Builder::checkLua( const char* path )
   Log::indent();
 
   File dir = path;
-  DArray<File> dirList = dir.ls();
 
-  String sources;
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "lua" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "lua" ) ) {
       continue;
     }
 
-    String cmdLine = "luac -p " + file->realPath();
+    String cmdLine = "luac -p " + file.realPath();
 
     Log::println( "%s", cmdLine.cstr() );
     if( system( cmdLine ) != 0 ) {
@@ -591,26 +573,27 @@ void Builder::buildMissions()
   Log::println( "Building missions {" );
   Log::indent();
 
-  DArray<File> missions = File( "@mission" ).ls();
+  File missionsDir = "@mission";
+  DArray<File> missions = missionsDir.ls();
 
   if( !missions.isEmpty() ) {
     File::mkdir( "mission" );
   }
 
-  foreach( mission, missions.citer() ) {
-    checkLua( mission->path() );
+  for( const File& mission : missions ) {
+    checkLua( mission.path() );
 
-    copyFiles( mission->path(), &mission->path()[1], "lua", false );
-    copyFiles( mission->path(), &mission->path()[1], "json", false );
+    copyFiles( mission.path(), &mission.path()[1], "lua", false );
+    copyFiles( mission.path(), &mission.path()[1], "json", false );
 
-    File srcFile = mission->path() + "/description.png";
+    File srcFile = mission.path() + "/description.png";
     if( srcFile.type() == File::MISSING ) {
       continue;
     }
 
     Log::print( "Building thumbnail '%s' ...", srcFile.path().cstr() );
 
-    if( !ImageBuilder::convertToDDS( srcFile.path(), 0, &mission->path()[1] ) ) {
+    if( !ImageBuilder::convertToDDS( srcFile.path(), 0, &mission.path()[1] ) ) {
       OZ_ERROR( "Failed to convert '%s' to DDS", srcFile.path().cstr() );
     }
 

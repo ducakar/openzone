@@ -18,14 +18,14 @@
  */
 
 /**
- * @file nirvana/Automaton.hh
+ * @file common/Automaton.hh
  *
- * Finite-state automaton for AI representation.
+ * Finite-state automaton for AI or mission logic.
  */
 
 #pragma once
 
-#include <nirvana/common.hh>
+#include <common/LuaCommon.hh>
 
 namespace oz
 {
@@ -34,22 +34,27 @@ class Automaton
 {
 public:
 
-  struct State;
+  struct State
+  {
+    struct Link
+    {
+      Buffer       condition;
+      const State* target;
+    };
+
+    String     name;
+    Buffer     onEnter;
+    Buffer     onUpdate;
+    List<Link> links;
+  };
 
 private:
 
-  String      name;
   List<State> states;
-
-private:
-
-  State* findState( const char* stateName );
 
 public:
 
-  explicit Automaton( const File& file );
-
-  State* update( State* state ) const;
+  explicit Automaton( const File& file, const LuaCommon* lua );
 
 };
 

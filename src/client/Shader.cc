@@ -379,18 +379,18 @@ void Shader::init()
   File dir = "@glsl";
   DArray<File> shaderFiles = dir.ls();
 
-  foreach( file, shaderFiles.citer() ) {
-    if( file->hasExtension( "vert" ) ) {
+  for( const File& file : shaderFiles ) {
+    if( file.hasExtension( "vert" ) ) {
       uint id = glCreateShader( GL_VERTEX_SHADER );
 
-      vertShaders.add( file->baseName(), id );
-      compileShader( id, defines, file->name() );
+      vertShaders.add( file.baseName(), id );
+      compileShader( id, defines, file.name() );
     }
-    else if( file->hasExtension( "frag" ) ) {
+    else if( file.hasExtension( "frag" ) ) {
       uint id = glCreateShader( GL_FRAGMENT_SHADER );
 
-      fragShaders.add( file->baseName(), id );
-      compileShader( id, defines, file->name() );
+      fragShaders.add( file.baseName(), id );
+      compileShader( id, defines, file.name() );
     }
   }
 
@@ -413,11 +413,11 @@ void Shader::destroy()
       programs[i].program = 0;
     }
   }
-  foreach( vertShader, vertShaders.citer() ) {
-    glDeleteShader( vertShader->value );
+  for( const auto& vertShader : vertShaders ) {
+    glDeleteShader( vertShader.value );
   }
-  foreach( fragShader, fragShaders.citer() ) {
-    glDeleteShader( fragShader->value );
+  for( const auto& fragShader : fragShaders ) {
+    glDeleteShader( fragShader.value );
   }
 
   fragShaders.clear();

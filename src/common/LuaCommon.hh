@@ -122,7 +122,7 @@ public:
   /**
    * Compile Lua source code to bytecode.
    */
-  Buffer compile( const char* code ) const;
+  Buffer compile( const char* code, const char* name ) const;
 
 };
 

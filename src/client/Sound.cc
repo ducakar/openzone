@@ -479,12 +479,12 @@ void Sound::playCell( int cellX, int cellY )
 
   OZ_AL_CHECK_ERROR();
 
-  foreach( obj, cell.objects.citer() ) {
-    if( obj->flags & Object::AUDIO_BIT ) {
-      float radius = SOUND_DISTANCE + obj->dim.fastN();
+  for( const Object& obj : cell.objects ) {
+    if( obj.flags & Object::AUDIO_BIT ) {
+      float radius = SOUND_DISTANCE + obj.dim.fastN();
 
-      if( ( obj->p - camera.p ).sqN() <= radius*radius ) {
-        context.playAudio( obj, obj );
+      if( ( obj.p - camera.p ).sqN() <= radius*radius ) {
+        context.playAudio( &obj, &obj );
       }
     }
   }
@@ -779,8 +779,8 @@ void Sound::init()
   Log::println( "OpenAL extensions {" );
   Log::indent();
 
-  foreach( extension, extensions.citer() ) {
-    Log::println( "%s", extension->cstr() );
+  for( const String& extension : extensions ) {
+    Log::println( "%s", extension.cstr() );
   }
 
   Log::unindent();

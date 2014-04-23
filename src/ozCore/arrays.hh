@@ -48,7 +48,7 @@ protected:
   using IteratorBase<Elem>::elem;
 
   /// Successor of the last element, used to determine when the iterator becomes invalid.
-  const Elem* past;
+  Elem* past;
 
 public:
 
@@ -90,6 +90,24 @@ public:
 
     ++elem;
     return *this;
+  }
+
+  /**
+   * STL-style begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* begin() const
+  {
+    return elem;
+  }
+
+  /**
+   * STL-style end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* end() const
+  {
+    return past;
   }
 
 };

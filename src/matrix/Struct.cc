@@ -113,8 +113,8 @@ void Entity::lock( Bot* user )
     return;
   }
 
-  foreach( i, user->items.citer() ) {
-    Object* obj = orbis.obj( *i );
+  for( int i : user->items ) {
+    Object* obj = orbis.obj( i );
 
     if( obj->clazz->key == key || obj->clazz->key == ~key ) {
       key = ~key;
@@ -803,8 +803,8 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
   if( bsp->nBoundObjects != 0 ) {
     boundObjects.allocate( bsp->nBoundObjects );
 
-    foreach( i, boundObjectsJSON.arrayCIter() ) {
-      int index = i->get( -1 );
+    for( const JSON& i : boundObjectsJSON.arrayCIter() ) {
+      int index = i.get( -1 );
       if( index < 0 ) {
         OZ_ERROR( "Invalid struct bound object index" );
       }

@@ -124,6 +124,24 @@ public:
       return *this;
     }
 
+    /**
+     * STL-style begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    ChunkCIterator begin() const
+    {
+      return *this;
+    }
+
+    /**
+     * STL-style end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    ChunkCIterator end() const
+    {
+      return ChunkCIterator();
+    }
+
   };
 
 public:

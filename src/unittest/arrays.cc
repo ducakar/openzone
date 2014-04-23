@@ -126,8 +126,8 @@ void test_arrays()
   OZ_CHECK_CONTENTS( a, 2, 3, 2, 1 );
 
   Foo** c = new Foo*[5];
-  foreach( i, iter( c, 5 ) ) {
-    *i = new Foo();
+  for( Foo*& i : iter( c, 5 ) ) {
+    i = new Foo();
   }
   aFree( c, 5 );
   delete[] c;

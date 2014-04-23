@@ -400,8 +400,8 @@ public:
     s = vFill( 1.0f ) / s.f4;
 #else
     s = 1.0f / s;
-    return Mat4( x * s, y * s, z * s, w * s );
 #endif
+    return Mat4( x * s, y * s, z * s, w * s );
   }
 
   /**

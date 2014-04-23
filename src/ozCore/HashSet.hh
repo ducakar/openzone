@@ -41,37 +41,37 @@ namespace oz
  *
  * @sa `oz::HashMap`, `oz::Set`
  */
-template <typename Key>
+template <typename Elem>
 class HashSet
 {
-private:
+protected:
 
   /// Granularity for automatic storage allocations.
   static const int GRANULARITY = 8;
 
-private:
+protected:
 
   /**
-   * Key-only element entry.
+   * Bucket.
    */
-  struct Elem
+  struct Bucket
   {
-    Elem* next;   ///< Next element in a slot.
-    int   hash;   ///< Cached hash.
-    Key   key;    ///< Key.
+    Bucket* next;   ///< Next bucket in a slot.
+    int     hash;   ///< Cached hash.
+    Elem    elem;   ///< Element/key.
 
-    OZ_PLACEMENT_POOL_ALLOC( Elem, 256 )
+    OZ_PLACEMENT_POOL_ALLOC( Bucket, 256 )
   };
 
   /**
    * Hashtable iterator.
    */
-  template <class IterElem, class KeyType>
-  class HashIterator : public IteratorBase<IterElem>
+  template <class BucketType, class ElemType>
+  class HashIterator : public IteratorBase<BucketType>
   {
   private:
 
-    using IteratorBase<IterElem>::elem;
+    using IteratorBase<BucketType>::elem;
 
     const HashSet* table; ///< Hashtable that is being iterated.
     int            index; ///< Index of the current bucket.
@@ -83,14 +83,14 @@ private:
      */
     OZ_ALWAYS_INLINE
     explicit HashIterator() :
-      IteratorBase<IterElem>( nullptr ), table( nullptr ), index( 0 )
+      IteratorBase<BucketType>( nullptr ), table( nullptr ), index( 0 )
     {}
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
     explicit HashIterator( const HashSet& ht ) :
-      IteratorBase<IterElem>( ht.size == 0 ? nullptr : ht.data[0] ), table( &ht ), index( 0 )
+      IteratorBase<BucketType>( ht.size == 0 ? nullptr : ht.data[0] ), table( &ht ), index( 0 )
     {
       while( elem == nullptr && index < table->size - 1 ) {
         ++index;
@@ -99,30 +99,30 @@ private:
     }
 
     /**
-     * Pointer to the current key.
+     * Pointer to the current element.
      */
     OZ_ALWAYS_INLINE
-    operator KeyType* () const
+    operator ElemType* () const
     {
-      return &elem->key;
+      return &elem->elem;
     }
 
     /**
-     * Reference to the current key.
+     * Reference to the current element.
      */
     OZ_ALWAYS_INLINE
-    KeyType& operator * () const
+    ElemType& operator * () const
     {
-      return elem->key;
+      return elem->elem;
     }
 
     /**
-     * Access to the current key's member.
+     * Access to the current element's member.
      */
     OZ_ALWAYS_INLINE
-    KeyType* operator -> () const
+    ElemType* operator -> () const
     {
-      return &elem->key;
+      return &elem->elem;
     }
 
     /**
@@ -148,6 +148,24 @@ private:
       return *this;
     }
 
+    /**
+     * STL-style begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    HashIterator begin() const
+    {
+      return *this;
+    }
+
+    /**
+     * STL-style end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    HashIterator end() const
+    {
+      return HashIterator();
+    }
+
   };
 
 public:
@@ -155,30 +173,32 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef HashIterator<const Elem, const Key> CIterator;
+  typedef HashIterator<const Bucket, const Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef HashIterator<Elem, Key> Iterator;
+  typedef HashIterator<Bucket, Elem> Iterator;
 
-private:
+protected:
 
-  Pool<Elem> pool; ///< Memory pool for elements.
-  Elem**     data; ///< %Array of buckets, each containing a linked list.
-  int        size; ///< Number of buckets.
+  Pool<Bucket> pool; ///< Memory pool for elements.
+  Bucket**     data; ///< %Array of buckets, each containing a linked list.
+  int          size; ///< Number of buckets.
+
+protected:
 
   /**
    * True iff a bucket chains have the same length and contain equal elements.
    */
-  static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
+  static bool areChainsEqual( const Bucket* chainA, const Bucket* chainB )
   {
-    const Elem* firstB = chainB;
+    const Bucket* firstB = chainB;
 
     while( chainA != nullptr && chainB != nullptr ) {
-      Elem* i = firstB;
+      const Bucket* i = firstB;
       do {
-        if( i->key == chainA->key ) {
+        if( i->elem == chainA->elem ) {
           goto nextElem;
         }
         i = i->next;
@@ -198,12 +218,12 @@ nextElem:
   /**
    * Allocate and make a copy of a given bucket chain.
    */
-  Elem* cloneChain( const Elem* chain )
+  Bucket* cloneChain( const Bucket* chain )
   {
-    Elem* newChain = nullptr;
+    Bucket* newChain = nullptr;
 
     while( chain != nullptr ) {
-      newChain = new( pool ) Elem { newChain, chain->hash, chain->key };
+      newChain = new( pool ) Bucket { newChain, chain->hash, chain->elem };
       chain = chain->next;
     }
     return newChain;
@@ -212,12 +232,12 @@ nextElem:
   /**
    * Delete all elements in a given bucket chain.
    */
-  void clearChain( Elem* chain )
+  void clearChain( Bucket* chain )
   {
     while( chain != nullptr ) {
-      Elem* next = chain->next;
+      Bucket* next = chain->next;
 
-      chain->~Elem();
+      chain->~Bucket();
       pool.deallocate( chain );
 
       chain = next;
@@ -229,12 +249,12 @@ nextElem:
    */
   void resize( int newSize )
   {
-    Elem** newData = new Elem*[newSize] {};
+    Bucket** newData = new Bucket*[newSize] {};
 
     // Rebuild hashtable.
     for( int i = 0; i < size; ++i ) {
-      Elem* e    = data[i];
-      Elem* next = nullptr;
+      Bucket* e    = data[i];
+      Bucket* next = nullptr;
 
       while( e != nullptr ) {
         uint index = uint( e->hash ) % uint( newSize );
@@ -289,11 +309,11 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashSet( InitialiserList<Key> l ) :
+  HashSet( InitialiserList<Elem> l ) :
     data( nullptr ), size( 0 )
   {
-    for( const Key& key : l ) {
-      add( key );
+    for( const Elem& e : l ) {
+      add( e );
     }
   }
 
@@ -310,7 +330,7 @@ public:
    * Copy constructor, copies elements and storage.
    */
   HashSet( const HashSet& ht ) :
-    data( new Elem*[ht.size] ), size( ht.size )
+    data( new Bucket*[ht.size] ), size( ht.size )
   {
     for( int i = 0; i < ht.size; ++i ) {
       data[i] = cloneChain( ht.data[i] );
@@ -321,7 +341,7 @@ public:
    * Move constructor, moves storage.
    */
   HashSet( HashSet&& ht ) :
-    pool( static_cast<Pool<Elem>&&>( ht.pool ) ), data( ht.data ), size( ht.size )
+    pool( static_cast< Pool<Bucket>&& >( ht.pool ) ), data( ht.data ), size( ht.size )
   {
     ht.data = nullptr;
     ht.size = 0;
@@ -341,7 +361,7 @@ public:
     if( size < ht.pool.count ) {
       delete[] data;
 
-      data = new Elem[ht.size];
+      data = new Bucket[ht.size];
       size = ht.size;
     }
 
@@ -364,7 +384,7 @@ public:
     clear();
     delete[] data;
 
-    pool = static_cast< Pool<Elem>&& >( ht.pool );
+    pool = static_cast< Pool<Bucket>&& >( ht.pool );
     data = ht.data;
     size = ht.size;
 
@@ -418,7 +438,7 @@ public:
   }
 
   /**
-   * STL-compatible constant begin iterator.
+   * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   CIterator begin() const
@@ -427,7 +447,7 @@ public:
   }
 
   /**
-   * STL-compatible begin iterator.
+   * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
   Iterator begin()
@@ -436,7 +456,7 @@ public:
   }
 
   /**
-   * STL-compatible constant end iterator.
+   * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
   CIterator end() const
@@ -445,7 +465,7 @@ public:
   }
 
   /**
-   * STL-compatible end iterator.
+   * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
   Iterator end()
@@ -489,101 +509,101 @@ public:
   }
 
   /**
-   * True iff a given key is found in the hashtable.
+   * True iff a given element is found in the hashtable.
    */
-  template <typename Key_ = Key>
-  bool contains( const Key_& key ) const
+  template <typename Elem_ = Elem>
+  bool contains( const Elem_& elem ) const
   {
     if( size == 0 ) {
       return false;
     }
 
-    int   h = hash( key );
-    uint  i = uint( h ) % uint( size );
-    Elem* e = data[i];
+    int     h = hash( elem );
+    uint    i = uint( h ) % uint( size );
+    Bucket* b = data[i];
 
-    while( e != nullptr ) {
-      if( e->key == key ) {
+    while( b != nullptr ) {
+      if( b->elem == elem ) {
         return true;
       }
 
-      e = e->next;
+      b = b->next;
     }
     return false;
   }
 
   /**
-   * Add a new element, if the key already exists in the hashtable overwrite existing element.
+   * Add a new element, if the element already exists in the hashtable overwrite the existing one.
    */
-  template <typename Key_ = Key>
-  void add( Key_&& key )
+  template <typename Elem_ = Elem>
+  void add( Elem_&& elem )
   {
     ensureCapacity( pool.length() + 1 );
 
-    int   h = hash( key );
-    uint  i = uint( h ) % uint( size );
-    Elem* e = data[i];
+    int     h = hash( elem );
+    uint    i = uint( h ) % uint( size );
+    Bucket* b = data[i];
 
-    while( e != nullptr ) {
-      if( e->key == key ) {
-        e->key = static_cast<Key_&&>( key );
+    while( b != nullptr ) {
+      if( b->elem == elem ) {
+        b->elem = static_cast<Elem_&&>( elem );
         return;
       }
-      e = e->next;
+      b = b->next;
     }
 
-    data[i] = new( pool ) Elem { data[i], h, static_cast<Key_&&>( key ) };
+    data[i] = new( pool ) Bucket { data[i], h, static_cast<Elem_&&>( elem ) };
   }
 
   /**
-   * Add a new element if the key does not exist in the hashtable.
+   * Add a new element if it does not exist in the hashtable.
    */
-  template <typename Key_ = Key>
-  void include( Key_&& key )
+  template <typename Elem_ = Elem>
+  void include( Elem_&& elem )
   {
     ensureCapacity( pool.length() + 1 );
 
-    int   h = hash( key );
-    uint  i = uint( h ) % uint( size );
-    Elem* e = data[i];
+    int     h = hash( elem );
+    uint    i = uint( h ) % uint( size );
+    Bucket* b = data[i];
 
-    while( e != nullptr ) {
-      if( e->key == key ) {
+    while( b != nullptr ) {
+      if( b->elem == elem ) {
         return;
       }
-      e = e->next;
+      b = b->next;
     }
 
-    data[i] = new( pool ) Elem { data[i], h, static_cast<Key_&&>( key ) };
+    data[i] = new( pool ) Bucket { data[i], h, static_cast<Elem_&&>( elem ) };
   }
 
   /**
-   * Remove element with a given key.
+   * Remove an element.
    *
-   * @return True iff the key was found (and removed).
+   * @return True iff the element was found (and removed).
    */
-  bool exclude( const Key& key )
+  bool exclude( const Elem& elem )
   {
     if( size == 0 ) {
       return nullptr;
     }
 
-    uint   i     = uint( hash( key ) ) % uint( size );
-    Elem*  e     = data[i];
-    Elem** pPrev = &data[i];
+    uint     i     = uint( hash( elem ) ) % uint( size );
+    Bucket*  b     = data[i];
+    Bucket** bPrev = &data[i];
 
-    while( e != nullptr ) {
-      if( e->key == key ) {
-        *pPrev = e->next;
+    while( b != nullptr ) {
+      if( b->elem == elem ) {
+        *bPrev = b->next;
 
-        e->~Elem();
-        pool.deallocate( e );
+        b->~Bucket();
+        pool.deallocate( b );
 
         return true;
       }
 
-      pPrev = &e->next;
-      e = e->next;
+      bPrev = &b->next;
+      b = b->next;
     }
     return false;
   }

@@ -110,15 +110,15 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
 BSPAudio::BSPAudio( const oz::BSP* bsp_ ) :
   bsp( bsp_ )
 {
-  foreach( i, bsp->sounds.citer() ) {
-    context.requestSound( *i );
+  for( int sound : bsp->sounds ) {
+    context.requestSound( sound );
   }
 }
 
 BSPAudio::~BSPAudio()
 {
-  foreach( i, bsp->sounds.citer() ) {
-    context.releaseSound( *i );
+  for( int sound : bsp->sounds ) {
+    context.releaseSound( sound );
   }
 }
 
@@ -132,21 +132,21 @@ void BSPAudio::play( const Struct* str ) const
     }
   }
 
-  foreach( entity, str->entities.citer() ) {
-    if( entity->state == Entity::OPENING ) {
-      if( entity->time == 0.0f && entity->clazz->openSound >= 0 ) {
-        playSound( entity, entity->clazz->openSound );
+  for( const Entity& entity : str->entities ) {
+    if( entity.state == Entity::OPENING ) {
+      if( entity.time == 0.0f && entity.clazz->openSound >= 0 ) {
+        playSound( &entity, entity.clazz->openSound );
       }
-      if( entity->clazz->frictSound >= 0 ) {
-        playContSound( entity, entity->clazz->frictSound );
+      if( entity.clazz->frictSound >= 0 ) {
+        playContSound( &entity, entity.clazz->frictSound );
       }
     }
-    else if( entity->state == Entity::CLOSING ) {
-      if( entity->time == 0.0f && entity->clazz->closeSound >= 0 ) {
-        playSound( entity, entity->clazz->closeSound );
+    else if( entity.state == Entity::CLOSING ) {
+      if( entity.time == 0.0f && entity.clazz->closeSound >= 0 ) {
+        playSound( &entity, entity.clazz->closeSound );
       }
-      if( entity->clazz->frictSound >= 0 ) {
-        playContSound( entity, entity->clazz->frictSound );
+      if( entity.clazz->frictSound >= 0 ) {
+        playContSound( &entity, entity.clazz->frictSound );
       }
     }
   }

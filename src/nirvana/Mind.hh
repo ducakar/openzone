@@ -23,10 +23,14 @@
 
 #pragma once
 
-#include <nirvana/Automaton.hh>
+#include <nirvana/common.hh>
+
+#include <common/Automaton.hh>
 
 namespace oz
 {
+
+class Bot;
 
 class Mind
 {
@@ -37,9 +41,10 @@ public:
   Mind*             prev[1];
   Mind*             next[1];
 
-  int               bot;
   int               flags;
   int               side;
+  int               bot;
+  Bot*              botObj;
 
   Automaton*        automaton;
   Automaton::State* state;

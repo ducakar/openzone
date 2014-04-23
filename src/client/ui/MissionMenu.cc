@@ -183,15 +183,15 @@ MissionMenu::MissionMenu() :
   File missionRootDir = "@mission";
   DArray<File> missionDirs = missionRootDir.ls();
 
-  foreach( missionDir, missionDirs.citer() ) {
-    File descriptionFile = missionDir->path() + "/description.json";
+  for( const File& missionDir : missionDirs ) {
+    File descriptionFile = missionDir.path() + "/description.json";
 
     JSON descriptionConfig;
     if( !descriptionConfig.load( descriptionFile ) ) {
       continue;
     }
 
-    String missionName = missionDir->baseName();
+    String missionName = missionDir.baseName();
 
     Lingua lingua;
     lingua.initMission( missionName );
@@ -200,7 +200,7 @@ MissionMenu::MissionMenu() :
     missions.last().name        = missionName;
     missions.last().title       = lingua.get( descriptionConfig["title"].get( missionName ) );
     missions.last().description = lingua.get( descriptionConfig["description"].get( "" ) );
-    missions.last().image.load( missionDir->path() + "/description.dds" );
+    missions.last().image.load( missionDir.path() + "/description.dds" );
 
     lingua.clear();
   }

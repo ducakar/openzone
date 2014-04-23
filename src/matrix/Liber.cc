@@ -47,6 +47,7 @@ static HashMap<String, int>                      partIndices;
 static HashMap<String, int>                      modelIndices;
 
 static HashMap<String, int>                      nameListIndices;
+static HashMap<String, int>                      mindIndices;
 static HashMap<String, int>                      musicTrackIndices;
 
 static HashMap<String, int>                      deviceIndices;
@@ -195,6 +196,20 @@ int Liber::nameListIndex( const char* name ) const
   return *value;
 }
 
+int Liber::mindIndex( const char* name ) const
+{
+  if( String::isEmpty( name ) ) {
+    return -1;
+  }
+
+  const int* value = mindIndices.find( name );
+
+  if( value == nullptr ) {
+    OZ_ERROR( "Invalid mind index requested '%s'", name );
+  }
+  return *value;
+}
+
 int Liber::musicTrackIndex( const char* name ) const
 {
   if( String::isEmpty( name ) ) {
@@ -253,10 +268,10 @@ int Liber::audioIndex( const char* name ) const
 
 void Liber::freeBSPs()
 {
-  foreach( bsp, bsps.iter() ) {
-    if( bsp->value.nUsers != 0 ) {
-      bsp->value.unload();
-      bsp->value.nUsers = 0;
+  for( auto& bsp : bsps ) {
+    if( bsp.value.nUsers != 0 ) {
+      bsp.value.unload();
+      bsp.value.nUsers = 0;
     }
   }
 }
@@ -269,14 +284,13 @@ void Liber::initShaders()
   List<Resource> shadersList;
 
   File dir = "@glsl";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
@@ -299,23 +313,20 @@ void Liber::initTextures()
   List<Resource> texturesList;
 
   File dir = "@tex";
-  DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.citer() ) {
-    if( subDir->type() != File::DIRECTORY ) {
+  for( const File& subDir : dir.ls() ) {
+    if( subDir.type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<File> subDirList = subDir->ls();
-
-    foreach( file, subDirList.citer() ) {
-      if( !file->hasExtension( "dds" ) ||
-          file->path().endsWith( "_m.dds" ) || file->path().endsWith( "_n.dds" ) )
+    for( const File& file : subDir.ls() ) {
+      if( !file.hasExtension( "dds" ) ||
+          file.path().endsWith( "_m.dds" ) || file.path().endsWith( "_n.dds" ) )
       {
         continue;
       }
 
-      String name = subDir->name() + "/" + file->baseName();
+      String name = subDir.name() + "/" + file.baseName();
 
       Log::println( "%s", name.cstr() );
 
@@ -339,28 +350,25 @@ void Liber::initSounds()
   List<Resource> soundsList;
 
   File dir = "@snd";
-  DArray<File> dirList = dir.ls();
 
-  foreach( subDir, dirList.citer() ) {
-    if( subDir->type() != File::DIRECTORY ) {
+  for( const File& subDir : dir.ls() ) {
+    if( subDir.type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<File> subDirList = subDir->ls();
-
-    foreach( file, subDirList.citer() ) {
-      if( !file->hasExtension( "wav" ) && !file->hasExtension( "oga" ) &&
-          !file->hasExtension( "ogg" ) )
+    for( const File& file : subDir.ls() ) {
+      if( !file.hasExtension( "wav" ) && !file.hasExtension( "oga" ) &&
+          !file.hasExtension( "ogg" ) )
       {
         continue;
       }
 
-      String name = subDir->name() + "/" + file->baseName();
+      String name = subDir.name() + "/" + file.baseName();
 
       Log::println( "%s", name.cstr() );
 
       soundIndices.add( name, soundsList.length() );
-      soundsList.add( { name, file->path() } );
+      soundsList.add( { name, file.path() } );
     }
   }
 
@@ -379,19 +387,18 @@ void Liber::initCaela()
   List<Resource> caelaList;
 
   File dir = "@caelum";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( file->type() != File::DIRECTORY ) {
+  for( const File& file : dir.ls() ) {
+    if( file.type() != File::DIRECTORY ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
     caelumIndices.add( name, caelaList.length() );
-    caelaList.add( { name, file->path() } );
+    caelaList.add( { name, file.path() } );
   }
 
   caela.resize( caelaList.length() );
@@ -409,19 +416,18 @@ void Liber::initTerrae()
   List<Resource> terraeList;
 
   File dir = "@terra";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozTerra" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "ozTerra" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
     terraIndices.add( name, terraeList.length() );
-    terraeList.add( { name, file->path() } );
+    terraeList.add( { name, file.path() } );
   }
 
   terrae.resize( terraeList.length() );
@@ -439,19 +445,18 @@ void Liber::initParticles()
   List<Resource> partList;
 
   File dir = "@part";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
     partIndices.add( name, partList.length() );
-    partList.add( { name, file->path() } );
+    partList.add( { name, file.path() } );
   }
 
   parts.resize( partList.length() );
@@ -469,15 +474,14 @@ void Liber::initModels()
   List<Resource> modelsList;
 
   File dir = "@mdl";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( file->type() != File::DIRECTORY ) {
+  for( const File& file : dir.ls() ) {
+    if( file.type() != File::DIRECTORY ) {
       continue;
     }
 
-    String name = file->name();
-    String path = file->path() + "/data.ozcModel";
+    String name = file.name();
+    String path = file.path() + "/data.ozcModel";
 
     if( File( path ).type() != File::REGULAR ) {
       OZ_ERROR( "Invalid model '%s'", name.cstr() );
@@ -508,23 +512,51 @@ void Liber::initNameLists()
   List<Resource> nameListsList;
 
   File dir = "@name";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "txt" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "txt" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
     nameListIndices.add( name, nameListsList.length() );
-    nameListsList.add( { name, file->path() } );
+    nameListsList.add( { name, file.path() } );
   }
 
   nameLists.resize( nameListsList.length() );
   aMove<Resource>( nameListsList.begin(), nameListsList.length(), nameLists.begin() );
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Liber::initMinds()
+{
+  Log::println( "Mind automata (*.json in 'nirvana/mind') {" );
+  Log::indent();
+
+  List<Resource> mindsList;
+
+  File dir = "@nirvana/mind";
+
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "txt" ) ) {
+      continue;
+    }
+
+    String name = file.baseName();
+
+    Log::println( "%s", name.cstr() );
+
+    nameListIndices.add( name, mindsList.length() );
+    mindsList.add( { name, file.path() } );
+  }
+
+  nameLists.resize( mindsList.length() );
+  aMove<Resource>( mindsList.begin(), mindsList.length(), nameLists.begin() );
 
   Log::unindent();
   Log::println( "}" );
@@ -536,20 +568,19 @@ void Liber::initFragPools()
   Log::indent();
 
   File dir = "@frag";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
     JSON config;
-    if( !config.load( *file ) ) {
-      OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
+    if( !config.load( file ) ) {
+      OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
     }
 
     fragPools.add( name, FragPool( config, name, fragPools.length() ) );
@@ -577,21 +608,20 @@ void Liber::initClasses()
   Log::indent();
 
   File dir = "@class";
-  DArray<File> dirList = dir.ls();
 
   // First we only add class instances, we don't initialise them as each class may have references
   // to other classes that haven't been created yet.
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "json" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "json" ) ) {
       continue;
     }
 
     JSON config;
-    if( !config.load( *file ) ) {
-      OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
+    if( !config.load( file ) ) {
+      OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
     const String& base = config["base"].get( "" );
 
     if( objClasses.contains( name ) ) {
@@ -629,9 +659,9 @@ void Liber::initClasses()
   nAudioClasses  = audioIndices.length();
 
   // Initialise all classes.
-  foreach( classIter, objClasses.citer() ) {
-    const String& name  = classIter->key;
-    ObjectClass*  clazz = classIter->value;
+  for( const auto& classIter : objClasses ) {
+    const String& name  = classIter.key;
+    ObjectClass*  clazz = classIter.value;
 
     Log::print( "%s ...", name.cstr() );
 
@@ -652,8 +682,8 @@ void Liber::initClasses()
   }
 
   // Sanity checks.
-  foreach( classIter, objClasses.citer() ) {
-    ObjectClass* objClazz = classIter->value;
+  for( const auto& classIter : objClasses ) {
+    ObjectClass* objClazz = classIter.value;
 
     // check that all items are valid
     for( int i = 0; i < objClazz->defaultItems.length(); ++i ) {
@@ -703,14 +733,13 @@ void Liber::initBSPs()
   Log::indent();
 
   File dir = "@bsp";
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozBSP" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "ozBSP" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file.baseName();
 
     Log::println( "%s", name.cstr() );
 
@@ -726,18 +755,17 @@ void Liber::initBSPs()
 void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
 {
   File dir = path;
-  DArray<File> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( file->type() == File::DIRECTORY ) {
-      initMusicRecurse( file->path(), musicTracksList );
+  for( const File& file : dir.ls() ) {
+    if( file.type() == File::DIRECTORY ) {
+      initMusicRecurse( file.path(), musicTracksList );
     }
-    if( file->hasExtension( "oga" ) || file->hasExtension( "ogg" ) ||
-        ( mapMP3s && file->hasExtension( "mp3" ) ) || ( mapAACs && file->hasExtension( "aac" ) ) )
+    if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ||
+        ( mapMP3s && file.hasExtension( "mp3" ) ) || ( mapAACs && file.hasExtension( "aac" ) ) )
     {
-      Log::println( "%s", file->path().cstr() );
+      Log::println( "%s", file.path().cstr() );
 
-      musicTracksList->add( { file->baseName(), file->path() } );
+      musicTracksList->add( { file.baseName(), file.path() } );
     }
   }
 }
@@ -829,6 +857,7 @@ void Liber::destroy()
   terrae.clear();
   models.clear();
   nameLists.clear();
+  minds.clear();
   musicTracks.clear();
 
   shaderIndices.clear();
@@ -845,6 +874,8 @@ void Liber::destroy()
   modelIndices.deallocate();
   nameListIndices.clear();
   nameListIndices.deallocate();
+  mindIndices.clear();
+  mindIndices.deallocate();
   musicTrackIndices.clear();
   musicTrackIndices.deallocate();
 

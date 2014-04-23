@@ -34,6 +34,7 @@ namespace ui
 
 class Area
 {
+  friend class Chain<Area>;
   friend class DChain<Area>;
   friend class UI;
 

@@ -142,47 +142,47 @@ int main()
   hi1.deallocate();
   hs1.deallocate();
 
-  foreach( i, l.citer() ) {
-    printf( "%d ", i->value );
+  for( const Elem& i : l ) {
+    printf( "%d ", i.value );
   }
   printf( "\n" );
 
-  foreach( i, dl.citer() ) {
-    printf( "%d ", i->value );
+  for( const Elem& i : dl ) {
+    printf( "%d ", i.value );
   }
   printf( "\n" );
 
-  foreach( i, a.citer() ) {
-    printf( "%d ", *i );
+  for( int i : a ) {
+    printf( "%d ", i );
   }
   printf( "\n" );
 
-  foreach( i, v.citer() ) {
-    printf( "%d ", *i );
+  for( int i : v ) {
+    printf( "%d ", i );
   }
   printf( "\n" );
 
-  foreach( i, sv.citer() ) {
-    printf( "%d ", *i );
+  for( int i : sv ) {
+    printf( "%d ", i );
   }
   printf( "\n" );
 
-  foreach( i, s.citer() ) {
-    printf( "%d ", *i );
+  for( int i : s ) {
+    printf( "%d ", i );
   }
   printf( "\n" );
-  foreach( i, m.citer() ) {
-    printf( "%d ", i->key );
-  }
-  printf( "\n" );
-
-  foreach( i, hi.citer() ) {
-    printf( "%d ", i->key );
+  for( const auto& i : m ) {
+    printf( "%d ", i.key );
   }
   printf( "\n" );
 
-  foreach( i, hs.citer() ) {
-    printf( "%d ", i->value );
+  for( const auto& i : hi ) {
+    printf( "%d ", i.key );
+  }
+  printf( "\n" );
+
+  for( const auto& i : hs ) {
+    printf( "%d ", i.value );
   }
   printf( "\n" );
 

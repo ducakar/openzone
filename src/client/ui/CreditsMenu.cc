@@ -152,11 +152,11 @@ CreditsMenu::CreditsMenu() :
   lines.add( OZ_GETTEXT( "engine developer" ) );
   lines.add( "Davorin Učakar" );
 
-  foreach( creditsFile, creditsFiles.citer() ) {
-    InputStream is = creditsFile->inputStream();
+  for( const File& creditsFile : creditsFiles ) {
+    InputStream is = creditsFile.inputStream();
 
     if( !is.isAvailable() ) {
-      OZ_ERROR( "Failed to read '%s'", creditsFile->path().cstr() );
+      OZ_ERROR( "Failed to read '%s'", creditsFile.path().cstr() );
     }
 
     lines.add( "" );
@@ -165,7 +165,7 @@ CreditsMenu::CreditsMenu() :
     lines.add( "" );
     lines.add( "" );
     lines.add( String::str( ">> %s \"%s\" <<", OZ_GETTEXT( "package" ),
-                            creditsFile->baseName().cstr() ) );
+                            creditsFile.baseName().cstr() ) );
     lines.add( "" );
     lines.add( "" );
 

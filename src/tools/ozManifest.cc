@@ -70,22 +70,21 @@ int main( int argc, char** argv )
   os.writeChars( "ozManifest", int( sizeof( "ozManifest" ) ) );
 
   File outDir = outDirPath;
-  DArray<File> files = outDir.ls();
   Map<String, File> packages;
 
-  foreach( file, files.citer() ) {
-    if( file->hasExtension( "7z" ) ) {
-      packages.add( file->baseName(), *file );
+  for( const File& file : outDir.ls() ) {
+    if( file.hasExtension( "7z" ) ) {
+      packages.add( file.baseName(), file );
     }
-    else if( file->hasExtension( "zip" ) ) {
-      packages.include( file->baseName(), *file );
+    else if( file.hasExtension( "zip" ) ) {
+      packages.include( file.baseName(), file );
     }
   }
 
   os.writeInt( packages.length() );
 
-  foreach( pkg, packages.iter() ) {
-    File& file = pkg->value;
+  for( auto& pkg : packages ) {
+    File& file = pkg.value;
 
     String name = file.name().cstr();
     long64 time = file.time();

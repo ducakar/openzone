@@ -33,33 +33,81 @@ namespace oz
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
 static LuaNirvana& lua = luaNirvana;
 
-bool LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
+bool LuaNirvana::execChunk( const Buffer& buffer, const char* name, Mind* mind )
+{
+  hard_assert( l_gettop() == 1 && mind != nullptr && mind->botObj != nullptr );
+
+  ms.obj      = nullptr;
+  ms.str      = nullptr;
+  ms.frag     = nullptr;
+  ms.objIndex = 0;
+  ms.strIndex = 0;
+  ns.self     = mind->botObj;
+  ns.mind     = mind;
+  ns.device   = nullptr;
+
+  bool value = false;
+
+  if( l_dobufferx( buffer.begin(), buffer.length(), "", "b" ) != LUA_OK ) {
+    Log::println( "Lua[N] in %s(self = %d): %s", name, ns.self->index, l_tostring( -1 ) );
+    System::bell();
+
+    l_pop( 1 );
+  }
+  else if( l_gettop() > 1 ) {
+    value = l_tobool( -1 );
+    l_settop( 1 );
+  }
+
+  hard_assert( l_gettop() == 1 );
+  return value;
+}
+
+void LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
 {
   hard_assert( l_gettop() == 1 && mind != nullptr && self != nullptr );
 
-  ms.self        = self;
-  ms.obj         = self;
-  ms.str         = nullptr;
-  ms.objIndex    = 0;
-  ms.strIndex    = 0;
-  ns.self        = self;
-  ns.mind        = mind;
-  ns.device      = nullptr;
-  ns.forceUpdate = false;
+  ms.self     = self;
+  ms.obj      = self;
+  ms.str      = nullptr;
+  ms.objIndex = 0;
+  ms.strIndex = 0;
+  ns.self     = self;
+  ns.mind     = mind;
+  ns.device   = nullptr;
 
   l_getglobal( functionName );
-  l_rawgeti( 1, ms.self->index );
+  l_rawgeti( 1, self->index );
 
   if( l_pcall( 1, 0 ) != LUA_OK ) {
-    Log::println( "Lua[N] in %s(self = %d): %s", functionName, ms.self->index, l_tostring( -1 ) );
+    Log::println( "Lua[N] in %s(self = %d): %s", functionName, self->index, l_tostring( -1 ) );
     System::bell();
 
     l_pop( 1 );
   }
 
   hard_assert( l_gettop() == 1 );
+}
 
-  return ns.forceUpdate;
+const Automaton::State* LuaNirvana::updateMind( const Automaton::State* state, Mind* mind ) const
+{
+  hard_assert( state != nullptr );
+
+  for( const Automaton::State::Link& link : state->links ) {
+    if( luaNirvana.execChunk( link.condition, state->name, mind ) ) {
+      state = link.target;
+
+      if( !state->onEnter.isEmpty() ) {
+        luaNirvana.execChunk( state->onEnter, state->name, mind );
+      }
+      return state;
+    }
+  }
+
+  if( !state->onUpdate.isEmpty() ) {
+    luaNirvana.execChunk( state->onUpdate, state->name, mind );
+  }
+  return state;
 }
 
 void LuaNirvana::registerMind( int botIndex )

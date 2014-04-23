@@ -155,8 +155,8 @@ bool EditStage::update()
       synapse.remove( str );
     }
 
-    foreach( i, ui::ui.strategicArea->taggedObjs.citer() ) {
-      Object* obj = orbis.obj( *i );
+    for( int i : ui::ui.strategicArea->taggedObjs ) {
+      Object* obj = orbis.obj( i );
 
       if( obj != nullptr ) {
         synapse.remove( obj );

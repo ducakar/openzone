@@ -98,26 +98,26 @@ void Render::cellEffects( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  foreach( obj, cell.objects.citer() ) {
-    float radius = EFFECTS_DISTANCE + obj->dim.fastN();
-    float dist2  = ( obj->p - camera.p ).sqN();
+  for( const Object& obj : cell.objects ) {
+    float radius = EFFECTS_DISTANCE + obj.dim.fastN();
+    float dist2  = ( obj.p - camera.p ).sqN();
 
     if( dist2 > radius*radius ) {
       continue;
     }
 
-    foreach( event, obj->events.citer() ) {
-      if( event->id >= 0 ) {
+    for( const Object::Event& event : obj.events ) {
+      if( event.id >= 0 ) {
         continue;
       }
 
       float scale = min( 1.0f, 64.0f / dist2 );
 
-      if( event->id == Object::EVENT_FLASH ) {
-        camera.flash( event->intensity * scale );
+      if( event.id == Object::EVENT_FLASH ) {
+        camera.flash( event.intensity * scale );
       }
       else {
-        camera.shake( event->intensity * scale );
+        camera.shake( event.intensity * scale );
       }
     }
   }
@@ -160,27 +160,27 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  foreach( obj, cell.objects.citer() ) {
-    float radius = obj->dim.fastN();
+  for( const Object& obj : cell.objects ) {
+    float radius = obj.dim.fastN();
 
-    if( obj->flags & Object::WIDE_CULL_BIT ) {
+    if( obj.flags & Object::WIDE_CULL_BIT ) {
       radius *= WIDE_CULL_FACTOR;
     }
 
-    if( frustum.isVisible( obj->p, radius ) ) {
-      float distance = ( obj->p - camera.p ).fastN();
+    if( frustum.isVisible( obj.p, radius ) ) {
+      float distance = ( obj.p - camera.p ).fastN();
 
       if( radius / ( distance * camera.mag ) >= OBJECT_VISIBILITY_COEF ) {
-        objects.add( DrawEntry( distance, obj ) );
+        objects.add( DrawEntry( distance, &obj ) );
       }
     }
   }
 
-  foreach( frag, cell.frags.citer() ) {
-    float dist = ( frag->p - camera.p ) * camera.at;
+  for( const Frag& frag : cell.frags ) {
+    float dist = ( frag.p - camera.p ) * camera.at;
 
-    if( dist <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
-      context.drawFrag( frag );
+    if( dist <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible( frag.p, FragPool::FRAG_RADIUS ) ) {
+      context.drawFrag( &frag );
     }
   }
 }
@@ -388,8 +388,8 @@ void Render::drawGeometry()
 
       shape.colour( ENTITY_AABB );
 
-      foreach( entity, str->entities.citer() ) {
-        Bounds bb = str->toAbsoluteCS( *entity->clazz + entity->offset );
+      for( const Entity& entity : str->entities ) {
+        Bounds bb = str->toAbsoluteCS( *entity.clazz + entity.offset );
         shape.wireBox( bb.toAABB() );
       }
 
@@ -761,19 +761,19 @@ void Render::init()
   if( strstr( vendor, "ATI" ) != nullptr ) {
     isCatalyst = true;
   }
-  foreach( extension, extensions.citer() ) {
-    Log::println( "%s", extension->cstr() );
+  for( const String& extension : extensions ) {
+    Log::println( "%s", extension.cstr() );
 
-    if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
+    if( extension.equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
     }
-    if( extension->equals( "GL_ARB_texture_float" ) ||
-        extension->equals( "GL_OES_texture_float" ) )
+    if( extension.equals( "GL_ARB_texture_float" ) ||
+        extension.equals( "GL_OES_texture_float" ) )
     {
       hasFloatTex = true;
     }
-    if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ||
-        extension->equals( "GL_CHROMIUM_texture_compression_dxt5" ) )
+    if( extension.equals( "GL_EXT_texture_compression_s3tc" ) ||
+        extension.equals( "GL_CHROMIUM_texture_compression_dxt5" ) )
     {
       hasS3TC = true;
     }

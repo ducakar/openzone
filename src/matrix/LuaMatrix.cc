@@ -33,26 +33,26 @@ namespace oz
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
 static LuaMatrix& lua = luaMatrix;
 
-bool LuaMatrix::objectCall( const char* functionName, Object* self_, Bot* user_ )
+bool LuaMatrix::objectCall( const char* functionName, Object* self, Bot* user )
 {
-  ms.self         = self_;
-  ms.user         = user_;
-  ms.obj          = self_;
+  ms.self         = self;
+  ms.user         = user;
+  ms.obj          = self;
   ms.str          = nullptr;
   ms.frag         = nullptr;
   ms.objIndex     = 0;
   ms.strIndex     = 0;
 
-  hard_assert( l_gettop() == 1 && ms.self != nullptr );
+  hard_assert( l_gettop() == 1 && self != nullptr );
 
   bool success = true;
 
   l_getglobal( functionName );
-  l_rawgeti( 1, ms.self->index );
+  l_rawgeti( 1, self->index );
 
   if( l_pcall( 1, 1 ) != LUA_OK ) {
-    Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
-                  ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
+    Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, self->index,
+                  user == nullptr ? -1 : user->index, l_tostring( -1 ) );
     System::bell();
   }
   else {

@@ -402,8 +402,8 @@ void Shape::object( const Point& pos, const Mat3& rot, const void* shape_ )
   else if( shape->type == oz::Shape::COMPOUND ) {
     const Compound* compound = static_cast<const Compound*>( shape );
 
-    foreach( child, compound->citer() ) {
-      object( pos + rot * child->off, rot * child->rot, child->shape );
+    for( const oz::Shape& child : *compound ) {
+      object( pos + rot * child.off, rot * child.rot, child.shape );
     }
   }
 }

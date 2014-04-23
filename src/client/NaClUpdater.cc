@@ -73,9 +73,9 @@ void NaClUpdater::writeLocalManifest() const
   os.writeString( "ozManifest" );
   os.writeInt( remotePackages.length() );
 
-  foreach( pkg, remotePackages.citer() ) {
-    os.writeString( pkg->name );
-    os.writeLong64( pkg->time );
+  for( const Package& pkg : remotePackages ) {
+    os.writeString( pkg.name );
+    os.writeLong64( pkg.time );
   }
 
   File localManifest = LOCAL_MANIFEST;
@@ -133,23 +133,23 @@ void NaClUpdater::downloadUpdates()
   int nRemotePackages = remotePackages.length();
   int packageNum      = 1;
 
-  foreach( pkg, remotePackages.citer() ) {
-    File pkgFile = "/local/share/openzone/" + pkg->name;
+  for( const Package& pkg : remotePackages ) {
+    File pkgFile = "/local/share/openzone/" + pkg.name;
 
     if( pkgFile.type() == File::REGULAR ) {
       long64 localTime = 0;
 
-      foreach( localPkg, localPackages.citer() ) {
-        if( localPkg->name.equals( pkg->name ) ) {
-          localTime = localPkg->time;
+      for( const Package& localPkg : localPackages ) {
+        if( localPkg.name.equals( pkg.name ) ) {
+          localTime = localPkg.time;
           break;
         }
       }
 
-      Log::print( "%s: timestamp %s, ", pkg->name.cstr(),
+      Log::print( "%s: timestamp %s, ", pkg.name.cstr(),
                   Time::local( localTime ).toString().cstr() );
 
-      if( localTime == pkg->time ) {
+      if( localTime == pkg.time ) {
         Log::printEnd( " Up-to-date" );
         continue;
       }
@@ -158,7 +158,7 @@ void NaClUpdater::downloadUpdates()
       }
     }
 
-    String url = pkg->name;
+    String url = pkg.name;
 
     Log::print( "Downloading '%s' into '%s' ...", url.cstr(), pkgFile.path().cstr() );
 
@@ -198,18 +198,18 @@ void NaClUpdater::downloadUpdates()
     Log::printEnd( " OK" );
   }
 
-  foreach( localPkg, localPackages.citer() ) {
+  for( const Package& localPkg : localPackages ) {
     bool isOrphan = true;
 
-    foreach( remotePkg, remotePackages.citer() ) {
-      if( remotePkg->name.equals( localPkg->name ) ) {
+    for( const Package& remotePkg : remotePackages ) {
+      if( remotePkg.name.equals( localPkg.name ) ) {
         isOrphan = false;
         break;
       }
     }
 
     if( isOrphan ) {
-      File pkgFile = "/local/share/openzone/" + localPkg->name;
+      File pkgFile = "/local/share/openzone/" + localPkg.name;
 
       Log::print( "Deleting obsolete package '%s' ...", pkgFile.path().cstr() );
       if( File::rm( pkgFile.path() ) ) {

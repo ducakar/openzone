@@ -120,7 +120,7 @@ void Physics::update( float time )
   dWorldQuickStep( world, time );
   dJointGroupEmpty( contactGroup );
 
-  foreach( i, space->bodies.citer() ) {
+  for( Body* i : space->bodies ) {
     DBody* body = static_cast<DBody*>( *i );
 
     if( body->odeId != nullptr ) {
@@ -146,7 +146,7 @@ void Physics::init( Space* space_, Kollider* collider_ )
 
 void Physics::destroy()
 {
-  foreach( i, space->bodies.iter() ) {
+  for( Body* i : space->bodies ) {
     DBody* body = static_cast<DBody*>( *i );
 
     if( body->odeId != nullptr ) {

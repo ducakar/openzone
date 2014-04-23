@@ -352,19 +352,19 @@ bool Log::printMemoryLeaks()
 {
   bool hasOutput = false;
 
-  foreach( ci, Alloc::objectCIter() ) {
-    println( "Leaked object at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
+  for( const auto& ci : Alloc::objectCIter() ) {
+    println( "Leaked object at %p of size %lu B allocated", ci.address, ulong( ci.size ) );
     indent();
-    printTrace( ci->stackTrace );
+    printTrace( ci.stackTrace );
     unindent();
 
     hasOutput = true;
   }
 
-  foreach( ci, Alloc::arrayCIter() ) {
-    println( "Leaked array at %p of size %lu B allocated", ci->address, ulong( ci->size ) );
+  for( const auto& ci : Alloc::arrayCIter() ) {
+    println( "Leaked array at %p of size %lu B allocated", ci.address, ulong( ci.size ) );
     indent();
-    printTrace( ci->stackTrace );
+    printTrace( ci.stackTrace );
     unindent();
 
     hasOutput = true;
@@ -379,8 +379,8 @@ void Log::printProfilerStatistics()
     println( "Profiler statistics {" );
     indent();
 
-    foreach( i, Profiler::citer() ) {
-      println( "%.6f s\t %s", double( i->value ) / 1e6, i->key.cstr() );
+    for( const auto& i : Profiler::citer() ) {
+      println( "%.6f s\t %s", double( i.value ) / 1e6, i.key.cstr() );
     }
 
     unindent();

@@ -1,11 +1,13 @@
 add_library( common STATIC
 #BEGIN SOURCES
+  Automaton.hh
   common.hh
   Lingua.hh
   luaapi.hh
   luabase.hh
   LuaCommon.hh
   Timer.hh
+  Automaton.cc
   Lingua.cc
   luabase.cc
   LuaCommon.cc

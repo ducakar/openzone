@@ -65,25 +65,23 @@ void UI::buildIcons()
   File::mkdir( "ui" );
   File::mkdir( "ui/icon" );
 
-  DArray<File> ls = dir.ls();
+  for( const File& image : dir.ls() ) {
+    String name = image.baseName();
 
-  foreach( image, ls.citer() ) {
-    String name = image->baseName();
-
-    if( image->type() != File::REGULAR || !image->hasExtension( "png" ) ) {
+    if( image.type() != File::REGULAR || !image.hasExtension( "png" ) ) {
       continue;
     }
 
-    Log::print( "%s ...", image->name().cstr() );
+    Log::print( "%s ...", image.name().cstr() );
 
     if( !aContains( ICON_NAMES, aLength( ICON_NAMES ), name ) ) {
-      OZ_ERROR( "Unnecessary icon: %s", image->path().cstr() );
+      OZ_ERROR( "Unnecessary icon: %s", image.path().cstr() );
     }
 
-    if( !ImageBuilder::convertToDDS( *image, 0, "ui/icon" ) ) {
-      OZ_ERROR( "Error converting '%s' to DDS", image->name().cstr() );
+    if( !ImageBuilder::convertToDDS( image, 0, "ui/icon" ) ) {
+      OZ_ERROR( "Error converting '%s' to DDS", image.name().cstr() );
     }
-    image->unmap();
+    image.unmap();
 
     Log::printEnd( " OK" );
 
@@ -107,8 +105,8 @@ void UI::buildIcons()
 
   const JSON& sounds = style["sounds"];
 
-  foreach( sound, sounds.objectCIter() ) {
-    context.usedSounds.add( sound->value.get( "?" ), "UI style" );
+  for( const auto& sound : sounds.objectCIter() ) {
+    context.usedSounds.add( sound.value.get( "?" ), "UI style" );
   }
 
   Log::unindent();

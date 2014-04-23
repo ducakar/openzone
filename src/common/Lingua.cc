@@ -74,14 +74,12 @@ bool Lingua::init( const char* language_ )
     return false;
   }
 
-  DArray<File> files = dir.ls();
-
-  foreach( file, files.citer() ) {
-    if( !file->hasExtension( "mo" ) ) {
+  for( const File& file : dir.ls() ) {
+    if( !file.hasExtension( "mo" ) ) {
       continue;
     }
 
-    catalogue.import( *file );
+    catalogue.import( file );
   }
   return true;
 }
