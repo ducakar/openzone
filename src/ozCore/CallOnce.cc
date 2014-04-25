@@ -31,6 +31,10 @@
 namespace oz
 {
 
+CallOnce::CallOnce() :
+  onceLock( 0 ), wasMethodCalled( false )
+{}
+
 void CallOnce::call( Method* method )
 {
   if( wasMethodCalled ) {

@@ -652,7 +652,7 @@ bool JSON::getVector( float* vector, int count ) const
 }
 
 JSON::JSON( Type type ) :
-  valueType( type ), wasAccessed( false )
+  number( 0.0 ), valueType( type ), wasAccessed( false )
 {
   switch( type ) {
     default: {
@@ -672,6 +672,10 @@ JSON::JSON( Type type ) :
     }
   }
 }
+
+JSON::JSON( nullptr_t ) :
+  number( 0.0 ), valueType( NIL ), wasAccessed( false )
+{}
 
 JSON::JSON( bool value ) :
   boolean( value ), valueType( BOOLEAN ), wasAccessed( false )

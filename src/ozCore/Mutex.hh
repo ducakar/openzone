@@ -53,43 +53,22 @@ public:
   /**
    * Create uninitialised instance.
    */
-  explicit Mutex() :
-    descriptor( nullptr )
-  {}
+  explicit Mutex();
 
   /**
    * Destructor, destroys mutex if initialised.
    */
-  ~Mutex()
-  {
-    if( descriptor != nullptr ) {
-      destroy();
-    }
-  }
+  ~Mutex();
 
   /**
    * Move constructor.
    */
-  Mutex( Mutex&& m ) :
-    descriptor( m.descriptor )
-  {
-    m.descriptor = nullptr;
-  }
+  Mutex( Mutex&& m );
 
   /**
    * Move operator.
    */
-  Mutex& operator = ( Mutex&& m )
-  {
-    if( &m == this ) {
-      return *this;
-    }
-
-    descriptor   = m.descriptor;
-    m.descriptor = nullptr;
-
-    return *this;
-  }
+  Mutex& operator = ( Mutex&& m );
 
   /**
    * True iff initialised.

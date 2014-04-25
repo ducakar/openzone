@@ -123,7 +123,7 @@ void Time::usleep( uint microseconds )
 #endif
 }
 
-long64 Time::time()
+long64 Time::epoch()
 {
 #ifdef _WIN32
 
@@ -190,7 +190,7 @@ long64 Time::toEpoch() const
 
 Time Time::local()
 {
-  return local( time() );
+  return local( epoch() );
 }
 
 Time Time::local( long64 epoch )

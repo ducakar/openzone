@@ -166,7 +166,6 @@ public:
   /**
    * Determinant.
    */
-  OZ_ALWAYS_INLINE
   float det() const
   {
     return x.x * ( y.y*z.z - y.z*z.y ) -
@@ -177,14 +176,7 @@ public:
   /**
    * Convert rotation matrix to a quaternion.
    */
-  OZ_ALWAYS_INLINE
-  Quat toQuat() const
-  {
-    float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
-    float w4 = 2.0f * w2;
-
-    return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, w2 / 2.0f );
-  }
+  Quat toQuat() const;
 
   /**
    * Original matrix.
@@ -243,7 +235,6 @@ public:
   /**
    * Product, compositum of linear transformations.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator * ( const Mat3& m ) const
   {
 #ifdef OZ_SIMD_MATH
@@ -260,7 +251,6 @@ public:
   /**
    * Transformed 3D vector.
    */
-  OZ_ALWAYS_INLINE
   Vec3 operator * ( const Vec3& v ) const
   {
 #ifdef OZ_SIMD_MATH
@@ -275,7 +265,6 @@ public:
   /**
    * Rotated plane.
    */
-  OZ_ALWAYS_INLINE
   Plane operator * ( const Plane& p ) const
   {
     Plane tp;
@@ -402,34 +391,7 @@ public:
   /**
    * Create matrix for rotation from a quaternion.
    */
-  OZ_ALWAYS_INLINE
-  static Mat3 rotation( const Quat& q )
-  {
-    //
-    // [ 1 - 2yy - 2zz    2xy - 2wz      2xz + 2wy   ]
-    // [   2xy + 2wz    1 - 2xx - 2zz    2yz - 2wx   ]
-    // [   2xz - 2wy      2yz + 2wx    1 - 2xx - 2yy ]
-    //
-
-    float x2 = q.x + q.x;
-    float y2 = q.y + q.y;
-    float z2 = q.z + q.z;
-    float xx2 = x2 * q.x;
-    float yy2 = y2 * q.y;
-    float zz2 = z2 * q.z;
-    float xy2 = x2 * q.y;
-    float xz2 = x2 * q.z;
-    float xw2 = x2 * q.w;
-    float yz2 = y2 * q.z;
-    float yw2 = y2 * q.w;
-    float zw2 = z2 * q.w;
-    float xx1 = 1.0f - xx2;
-    float yy1 = 1.0f - yy2;
-
-    return Mat3( yy1 - zz2, xy2 + zw2, xz2 - yw2,
-                 xy2 - zw2, xx1 - zz2, yz2 + xw2,
-                 xz2 + yw2, yz2 - xw2, xx1 - yy2 );
-  }
+  static Mat3 rotation( const Quat& q );
 
   /**
    * Create matrix for rotation around x axis.

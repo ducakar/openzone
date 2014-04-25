@@ -409,7 +409,7 @@ int Client::init( int argc, char** argv )
       OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
     }
 
-    seed = int( Time::time() );
+    seed = int( Time::epoch() );
   }
   else {
     seed = config["seed"].get( 42 );

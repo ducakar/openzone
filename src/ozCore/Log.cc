@@ -582,6 +582,12 @@ const Log& Log::operator << ( const Mat4& m ) const
   return *this;
 }
 
+const Log& Log::operator << ( const Time& time ) const
+{
+  printRaw( "%s", time.toString().cstr() );
+  return *this;
+}
+
 const Log& Log::operator << ( const JSON& json ) const
 {
   printRaw( "%s", json.toString().cstr() );

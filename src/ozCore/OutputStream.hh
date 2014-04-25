@@ -55,30 +55,17 @@ public:
    * Create a fixed-size stream for reading/writing a given memory range.ElemElemElem
    */
   explicit OutputStream( char* start = nullptr, const char* end = nullptr,
-                         Endian::Order order = Endian::NATIVE ) :
-    InputStream( start, start, end, order ), buffered( false )
-  {}
+                         Endian::Order order = Endian::NATIVE );
 
   /**
    * Create a buffered stream with dynamically growing buffer.
    */
-  explicit OutputStream( int size, Endian::Order order = Endian::NATIVE ) :
-    InputStream( nullptr, nullptr, nullptr, order ), buffered( true )
-  {
-    streamPos   = size == 0 ? nullptr : new char[size];
-    streamBegin = streamPos;
-    streamEnd   = streamPos + size;
-  }
+  explicit OutputStream( int size, Endian::Order order = Endian::NATIVE );
 
   /**
    * Destructor.
    */
-  ~OutputStream()
-  {
-    if( buffered ) {
-      delete[] streamBegin;
-    }
-  }
+  ~OutputStream();
 
   /**
    * Copy constructor, copies buffer if source stream is buffered.

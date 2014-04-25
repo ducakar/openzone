@@ -75,6 +75,7 @@ add_library( ozCore
   Pepper.cc
   Plane.cc
   Point.cc
+  Pool.cc
   Profiler.cc
   Quat.cc
   Semaphore.cc

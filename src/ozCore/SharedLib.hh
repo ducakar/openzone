@@ -85,45 +85,27 @@ public:
   /**
    * Create uninitialised instance.
    */
-  explicit SharedLib() :
-    handle( nullptr )
-  {}
+  explicit SharedLib();
 
   /**
    * Destructor, closes the library if opened.
    */
-  ~SharedLib()
-  {
-    close();
-  }
+  ~SharedLib();
 
   /**
    * Move constructor.
    */
-  SharedLib( SharedLib&& l ) :
-    handle( l.handle )
-  {
-    l.handle = nullptr;
-  }
+  SharedLib( SharedLib&& l );
 
   /**
    * Move operator.
    */
-  SharedLib& operator = ( SharedLib&& l )
-  {
-    if( &l == this ) {
-      return *this;
-    }
-
-    handle   = l.handle;
-    l.handle = nullptr;
-
-    return *this;
-  }
+  SharedLib& operator = ( SharedLib&& l );
 
   /**
    * True iff successfully opened.
    */
+  OZ_ALWAYS_INLINE
   bool isOpened() const
   {
     return handle != nullptr;

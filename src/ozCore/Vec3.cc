@@ -32,4 +32,48 @@ namespace oz
 const Vec3 Vec3::ZERO = Vec3( 0.0f, 0.0f, 0.0f );
 const Vec3 Vec3::ONE  = Vec3( 1.0f, 1.0f, 1.0f );
 
+float Vec3::operator ! () const
+{
+#ifdef OZ_SIMD_MATH
+  return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+#else
+  return Math::sqrt( x*x + y*y + z*z );
+#endif
+}
+
+Vec3 Vec3::operator ~ () const
+{
+#ifdef OZ_SIMD_MATH
+  scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+  return Vec3( f4 * s.f4 );
+#else
+  hard_assert( x*x + y*y + z*z > 0.0f );
+
+  float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
+  return Vec3( x * k, y * k, z * k );
+#endif
+}
+
+Vec3 Vec3::slerp( const Vec3& a, const Vec3& b, float t )
+{
+#ifdef OZ_SIMD_MATH
+  float angle = Math::acos( vFirst( vDot( a.f4, b.f4 ) ) );
+#else
+  float angle = Math::acos( a.x*b.x + a.y*b.y + a.z*b.z );
+#endif
+  float sine  = Math::sin( angle );
+
+  if( sine == 0.0f ) {
+    hard_assert( a * b > 0.0f );
+
+    return a;
+  }
+  else {
+    float alpha = Math::sin( ( 1.0f - t ) * angle ) / sine;
+    float beta  = Math::sin( t * angle ) / sine;
+
+    return alpha * a + beta * b;
+  }
+}
+
 }

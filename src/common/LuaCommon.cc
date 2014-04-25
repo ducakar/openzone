@@ -270,7 +270,7 @@ void LuaCommon::initCommon( const char* componentName )
     OZ_ERROR( "Failed to initialise Lua libraries" );
   }
 
-  int seed = isRandomSeedTime ? int( Time::time() ) : randomSeed;
+  int seed = isRandomSeedTime ? int( Time::epoch() ) : randomSeed;
   l_dostring( String::str( "math.random( %u )", seed ) );
 
   IGNORE_FUNC( ozError );

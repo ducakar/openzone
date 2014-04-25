@@ -82,56 +82,26 @@ namespace oz
 {
 
 /**
- * Memory pool.
+ * Memory pool (non-template version).
  *
  * Memory pool consists of a linked list of memory blocks, each an array of uninitialised elements
  * of the specified data type.
  *
  * Unless `NDEBUG` macro is defined, all freed memory is rewritten with 0xee byte values.
+ *
+ * @sa `oz::Pool`
  */
-template <class Elem, int BLOCK_SIZE = 256>
-class Pool
+class PoolAlloc
 {
-  static_assert( BLOCK_SIZE > 0, "Pool block size must be at least 1" );
-
 private:
 
-  /**
-   * %Slot that occupies memory for an object.
-   */
-  union Slot
-  {
-    char  storage[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
-    Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
-  };
-
-  /**
-   * Memory block.
-   *
-   * `Block` is an array that can hold up to `BLOCK_SIZE` elements. When we run out of space we
-   * simply allocate another block. Once a block is allocated it cannot be freed any more unless the
-   * pool is empty. That would be rarely possible due to fragmentation anyway.
-   */
-  struct Block
-  {
-    Slot   data[BLOCK_SIZE]; ///< Slots.
-    Block* nextBlock;        ///< Pointer to the next block.
-
-    /**
-     * Create a new block and bind its slots into a linked list.
-     */
-    explicit Block( Block* nextBlock_ ) :
-      nextBlock( nextBlock_ )
-    {
-      for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
-        data[i].nextSlot = &data[i + 1];
-      }
-      data[BLOCK_SIZE - 1].nextSlot = nullptr;
-    }
-  };
+  union  Slot;
+  struct Block;
 
   Block* firstBlock; ///< Linked list of the allocated blocks.
   Slot*  freeSlot;   ///< Linked list of free slots or `nullptr` if none.
+  size_t slotSize;   ///< Size of an object.
+  int    nSlots;     ///< Number of objects in a memory block.
   int    count;      ///< Number of occupied slots in the pool.
   int    size;       ///< Capacity.
 
@@ -140,94 +110,22 @@ public:
   /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
-  explicit Pool() :
-    firstBlock( nullptr ), freeSlot( nullptr ), count( 0 ), size( 0 )
-  {}
+  explicit PoolAlloc( size_t slotSize, int nSlots );
 
   /**
    * Destructor.
    */
-  ~Pool()
-  {
-    free();
-  }
+  ~PoolAlloc();
 
   /**
    * Move constructor, moves storage.
    */
-  Pool( Pool&& p ) :
-    firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), count( p.count ), size( p.size )
-  {
-    p.firstBlock = nullptr;
-    p.freeSlot   = nullptr;
-    p.count      = 0;
-    p.size       = 0;
-  }
+  PoolAlloc( PoolAlloc&& p );
 
   /**
    * Move operator, moves storage.
    */
-  Pool& operator = ( Pool&& p )
-  {
-    if( &p == this ) {
-      return *this;
-    }
-
-    hard_assert( count == 0 );
-
-    free();
-
-    firstBlock   = p.firstBlock;
-    freeSlot     = p.freeSlot;
-    count        = p.count;
-    size         = p.size;
-
-    p.firstBlock = nullptr;
-    p.freeSlot   = nullptr;
-    p.count      = 0;
-    p.size       = 0;
-
-    return *this;
-  }
-
-  /**
-   * Allocate a new object.
-   */
-  void* allocate()
-  {
-    ++count;
-
-    if( freeSlot == nullptr ) {
-      firstBlock = new Block( firstBlock );
-      freeSlot   = &firstBlock->data[1];
-      size      += BLOCK_SIZE;
-
-      return firstBlock->data[0].storage;
-    }
-    else {
-      Slot* slot = freeSlot;
-      freeSlot = slot->nextSlot;
-      return slot;
-    }
-  }
-
-  /**
-   * Free a given object.
-   */
-  void deallocate( void* ptr )
-  {
-    hard_assert( count != 0 );
-
-    Slot* slot = static_cast<Slot*>( ptr );
-
-#ifndef NDEBUG
-    mSet( slot, 0xee, sizeof( Slot ) );
-#endif
-
-    slot->nextSlot = freeSlot;
-    freeSlot = slot;
-    --count;
-  }
+  PoolAlloc& operator = ( PoolAlloc&& p );
 
   /**
    * Number of used slots in the pool.
@@ -257,36 +155,44 @@ public:
   }
 
   /**
+   * Allocate a new object.
+   */
+  void* allocate();
+
+  /**
+   * Free a given object.
+   */
+  void deallocate( void* ptr );
+
+  /**
    * Deallocate the storage.
    *
    * In the case the pool is not empty it is still cleared but memory is not deallocated. This
    * memory leak is intended to prevent potential crashes and it only happens if you already have
    * a memory leak in your program.
    */
-  void free()
-  {
-    if( firstBlock == nullptr ) {
-      return;
-    }
+  void free();
 
-    soft_assert( count == 0 );
+};
 
-    if( count == 0 ) {
-      Block* block = firstBlock;
+/**
+ * Template wrapper for memory pool.
+ *
+ * @sa `oz::PoolAlloc`
+ */
+template <class Elem, int BLOCK_SIZE = 256>
+class Pool : public PoolAlloc
+{
+  static_assert( BLOCK_SIZE > 0, "Pool block size must be at least 1" );
 
-      while( block != nullptr ) {
-        Block* next = block->nextBlock;
-        delete block;
+public:
 
-        block = next;
-      }
-    }
-
-    firstBlock = nullptr;
-    freeSlot   = nullptr;
-    count      = 0;
-    size       = 0;
-  }
+  /**
+   * Create an empty pool.
+   */
+  explicit Pool() :
+    PoolAlloc( sizeof( Elem ), BLOCK_SIZE )
+  {}
 
 };
 

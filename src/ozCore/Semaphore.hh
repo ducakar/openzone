@@ -56,43 +56,22 @@ public:
   /**
    * Create uninitialised instance.
    */
-  explicit Semaphore() :
-    descriptor( nullptr )
-  {}
+  explicit Semaphore();
 
   /**
    * Destructor, destroys semaphore if initialised.
    */
-  ~Semaphore()
-  {
-    if( descriptor != nullptr ) {
-      destroy();
-    }
-  }
+  ~Semaphore();
 
   /**
    * Move constructor.
    */
-  Semaphore( Semaphore&& b ) :
-    descriptor( b.descriptor )
-  {
-    b.descriptor = nullptr;
-  }
+  Semaphore( Semaphore&& b );
 
   /**
    * Move operator.
    */
-  Semaphore& operator = ( Semaphore&& b )
-  {
-    if( &b == this ) {
-      return *this;
-    }
-
-    descriptor   = b.descriptor;
-    b.descriptor = nullptr;
-
-    return *this;
-  }
+  Semaphore& operator = ( Semaphore&& b );
 
   /**
    * True iff initialised.

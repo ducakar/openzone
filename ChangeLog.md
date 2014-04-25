@@ -2,7 +2,7 @@
 
 - ozCore
     * null replaced by nullptr keyword
-    * more extensive use of constexpr
+    * larger, performance-intensive and non-performance-critical inline functions moved to .cc files
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements
         + improved iterators: much less code duplication, no more key() and value() members
@@ -12,6 +12,7 @@
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
         + inheritance between containers to minimise code duplication (e.g. List -> Set -> Map)
+    * new PoolAlloc class, non-template version of Pool which now extends PoolAlloc
     * String: construction from numbers, new number parsing functions
     * exact SLERP implementation in Quat
     * new Mat3 class for 3x3 matrices

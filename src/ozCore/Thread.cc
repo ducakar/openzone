@@ -184,11 +184,33 @@ bool Thread::isMain()
   return pthread_equal( pthread_self(), mainThread );
 }
 
+Thread::Thread() :
+  descriptor( nullptr )
+{}
+
 Thread::~Thread()
 {
   if( descriptor != nullptr && descriptor->type == JOINABLE ) {
     join();
   }
+}
+
+Thread::Thread( Thread&& t ) :
+  descriptor( t.descriptor )
+{
+  t.descriptor = nullptr;
+}
+
+Thread& Thread::operator = ( Thread&& t )
+{
+  if( &t == this ) {
+    return *this;
+  }
+
+  descriptor   = t.descriptor;
+  t.descriptor = nullptr;
+
+  return *this;
 }
 
 void Thread::start( const char* name, Type type, Main* main, void* data )

@@ -123,42 +123,6 @@ public:
   }
 
   /**
-   * Constant float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator const float* () const
-  {
-    return &x;
-  }
-
-  /**
-   * Float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator float* ()
-  {
-    return &x;
-  }
-
-  /**
-   * Constant reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  const float& operator [] ( int i ) const
-  {
-    return ( &x )[i];
-  }
-
-  /**
-   * Reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  float& operator [] ( int i )
-  {
-    return ( &x )[i];
-  }
-
-  /**
    * Conjugated quaternion.
    */
   OZ_ALWAYS_INLINE
@@ -187,24 +151,11 @@ public:
   /**
    * Unit quaternion.
    */
-  OZ_ALWAYS_INLINE
-  Quat operator ~ () const
-  {
-#ifdef OZ_SIMD_MATH
-    scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-    return Quat( f4 * s.f4 );
-#else
-    hard_assert( x*x + y*y + z*z + w*w > 0.0f );
-
-    float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-    return Quat( x * k, y * k, z * k, w * k );
-#endif
-  }
+  Quat operator ~ () const;
 
   /**
    * Approximate unit quaternion.
    */
-  OZ_ALWAYS_INLINE
   Quat fastUnit() const
   {
 #ifdef OZ_SIMD_MATH
@@ -295,31 +246,7 @@ public:
   /**
    * Quaternion product.
    */
-  OZ_ALWAYS_INLINE
-  Quat operator * ( const Quat& q ) const
-  {
-#ifdef OZ_SIMD_MATH
-    float4 k0 = vFill( w );
-    float4 k1 = f4;
-    float4 k2 = vShuffle( f4, f4, 1, 2, 0, 3 );
-    float4 k3 = vShuffle( f4, f4, 2, 0, 1, 3 );
-
-    float4 q0 = q.f4;
-    float4 q1 = vFill( q.w );
-    float4 q2 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
-    float4 q3 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
-
-    Quat tq = Quat( k0*q0 + k1*q1 + k2*q2 - k3*q3 );
-    tq.w   -= vFirst( vDot( k1, q.f4 ) );
-
-    return tq;
-#else
-    return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
-                 w*q.y + y*q.w + z*q.x - x*q.z,
-                 w*q.z + z*q.w + x*q.y - y*q.x,
-                 w*q.w - x*q.x - y*q.y - z*q.z );
-#endif
-  }
+  Quat operator * ( const Quat& q ) const;
 
   /**
    * Quotient.
@@ -340,52 +267,12 @@ public:
   /**
    * Quotient.
    */
-  OZ_ALWAYS_INLINE
-  friend Quat operator / ( scalar s, const Quat& q )
-  {
-#ifdef OZ_SIMD_MATH
-    s.f4 = s.f4 / vDot( q.f4, q.f4 );
-    s.f4 = vShuffle( s.f4, -s.f4, 0, 0, 0, 0 );
-    s.f4 = vShuffle( s.f4, s.f4, 0, 0, 0, 2 );
-
-    return Quat( q.f4 * s.f4 );
-#else
-    s = s / ( q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w );
-    float ns = -s;
-    return Quat( q.x * ns, q.y * ns, q.z * ns, q.w * s );
-#endif
-  }
+  friend Quat operator / ( scalar s, const Quat& q );
 
   /**
    * Quaternion quotient.
    */
-  OZ_ALWAYS_INLINE
-  Quat operator / ( const Quat& q ) const
-  {
-#ifdef OZ_SIMD_MATH
-    float4 k0 = f4;
-    float4 k1 = vFill( w );
-    float4 k2 = vShuffle( f4, f4, 2, 0, 1, 3 );
-    float4 k3 = vShuffle( f4, f4, 1, 2, 0, 3 );
-
-    float4 q0 = vFill( q.w );
-    float4 q1 = q.f4;
-    float4 q2 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
-    float4 q3 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
-
-    Quat tq = Quat( k0*q0 - k1*q1 + k2*q2 - k3*q3 );
-    tq.w    = vFirst( vDot( k0, q.f4 ) );
-    tq.f4  *= vDot( q.f4, q.f4 );
-
-    return tq;
-#else
-    float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-    return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
-                 k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
-                 k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
-                 k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
-#endif
-  }
+  Quat operator / ( const Quat& q ) const;
 
   /**
    * Addition.
@@ -441,32 +328,7 @@ public:
   /**
    * Quaternion multiplication.
    */
-  OZ_ALWAYS_INLINE
-  Quat& operator *= ( const Quat& q )
-  {
-#ifdef OZ_SIMD_MATH
-    float4 k0 = vFill( w );
-    float4 k1 = f4;
-    float4 k2 = vShuffle( f4, f4, 1, 2, 0, 3 );
-    float4 k3 = vShuffle( f4, f4, 2, 0, 1, 3 );
-
-    float4 q0 = q.f4;
-    float4 q1 = vFill( q.w );
-    float4 q2 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
-    float4 q3 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
-
-    f4 = k0*q0 + k1*q1 + k2*q2 - k3*q3;
-    w -= vFirst( vDot( k1, q0 ) );
-#else
-    float tx = x, ty = y, tz = z;
-
-    x = w*q.x + tx*q.w + ty*q.z - tz*q.y;
-    y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
-    z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
-    w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
-#endif
-    return *this;
-  }
+  Quat& operator *= ( const Quat& q );
 
   /**
    * Division.
@@ -491,62 +353,12 @@ public:
   /**
    * Quaternion division.
    */
-  OZ_ALWAYS_INLINE
-  Quat& operator /= ( const Quat& q )
-  {
-#ifdef OZ_SIMD_MATH
-    float4 k0 = f4;
-    float4 k1 = vFill( w );
-    float4 k2 = vShuffle( f4, f4, 2, 0, 1, 3 );
-    float4 k3 = vShuffle( f4, f4, 1, 2, 0, 3 );
-
-    float4 q0 = vFill( q.w );
-    float4 q1 = q.f4;
-    float4 q2 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
-    float4 q3 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
-
-    f4  = k0*q0 - k1*q1 + k2*q2 - k3*q3;
-    w   = vFirst( vDot( k0, q.f4 ) );
-    f4 *= vDot( q.f4, q.f4 );
-#else
-    float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-    Quat  t = Quat( x*q.w - w*q.x + z*q.y - y*q.z,
-                    y*q.w - w*q.y + x*q.z - z*q.x,
-                    z*q.w - w*q.z + y*q.x - x*q.y,
-                    w*q.w + x*q.x + y*q.y + z*q.z );
-
-    x = k * t.x;
-    y = k * t.y;
-    z = k * t.z;
-    w = k * t.w;
-#endif
-    return *this;
-  }
+  Quat& operator /= ( const Quat& q );
 
   /**
    * Vector rotation.
    */
-  Vec3 operator * ( const Vec3& v ) const
-  {
-    float x2  = x + x;
-    float y2  = y + y;
-    float z2  = z + z;
-    float xx2 = x2 * x;
-    float yy2 = y2 * y;
-    float zz2 = z2 * z;
-    float xy2 = x2 * y;
-    float xz2 = x2 * z;
-    float xw2 = x2 * w;
-    float yz2 = y2 * z;
-    float yw2 = y2 * w;
-    float zw2 = z2 * w;
-    float yy1 = 1.0f - yy2;
-    float xx1 = 1.0f - xx2;
-
-    return Vec3( ( yy1 - zz2 ) * v.x + ( xy2 - zw2 ) * v.y + ( xz2 + yw2 ) * v.z,
-                 ( xy2 + zw2 ) * v.x + ( xx1 - zz2 ) * v.y + ( yz2 - xw2 ) * v.z,
-                 ( xz2 - yw2 ) * v.x + ( yz2 + xw2 ) * v.y + ( xx1 - yy2 ) * v.z );
-  }
+  Vec3 operator * ( const Vec3& v ) const;
 
   /**
    * Create quaternion for rotation around a given axis.

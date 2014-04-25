@@ -31,6 +31,25 @@
 namespace oz
 {
 
+OutputStream::OutputStream( char* start, const char* end, Endian::Order order ) :
+  InputStream( start, start, end, order ), buffered( false )
+{}
+
+OutputStream::OutputStream( int size, Endian::Order order ) :
+  InputStream( nullptr, nullptr, nullptr, order ), buffered( true )
+{
+  streamPos   = size == 0 ? nullptr : new char[size];
+  streamBegin = streamPos;
+  streamEnd   = streamPos + size;
+}
+
+OutputStream::~OutputStream()
+{
+  if( buffered ) {
+    delete[] streamBegin;
+  }
+}
+
 OutputStream::OutputStream( const OutputStream& os ) :
   InputStream( os.streamPos, os.streamBegin, os.streamEnd, os.order ), buffered( os.buffered )
 {

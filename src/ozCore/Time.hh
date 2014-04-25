@@ -80,7 +80,7 @@ public:
    * Epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux and 1601-01-01
    * 0:00:00 on Windows).
    */
-  static long64 time();
+  static long64 epoch();
 
   /**
    * Get seconds from epoch for the broken-down time representation.

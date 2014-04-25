@@ -80,9 +80,7 @@ public:
   /**
    * Create uninitialised instance.
    */
-  explicit Thread() :
-    descriptor( nullptr )
-  {}
+  explicit Thread();
 
   /**
    * Destructor, joins a started but not-yet-joined thread.
@@ -92,26 +90,12 @@ public:
   /**
    * Move constructor.
    */
-  Thread( Thread&& t ) :
-    descriptor( t.descriptor )
-  {
-    t.descriptor = nullptr;
-  }
+  Thread( Thread&& t );
 
   /**
    * Move operator.
    */
-  Thread& operator = ( Thread&& t )
-  {
-    if( &t == this ) {
-      return *this;
-    }
-
-    descriptor   = t.descriptor;
-    t.descriptor = nullptr;
-
-    return *this;
-  }
+  Thread& operator = ( Thread&& t );
 
   /**
    * True iff a joinable thread has been started but not yet joined.

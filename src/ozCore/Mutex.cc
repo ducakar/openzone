@@ -57,6 +57,35 @@ struct Mutex::Descriptor
 
 #endif
 
+Mutex::Mutex() :
+  descriptor( nullptr )
+{}
+
+Mutex::~Mutex()
+{
+  if( descriptor != nullptr ) {
+    destroy();
+  }
+}
+
+Mutex::Mutex( Mutex&& m ) :
+  descriptor( m.descriptor )
+{
+  m.descriptor = nullptr;
+}
+
+Mutex& Mutex::operator = ( Mutex&& m )
+{
+  if( &m == this ) {
+    return *this;
+  }
+
+  descriptor   = m.descriptor;
+  m.descriptor = nullptr;
+
+  return *this;
+}
+
 void Mutex::lock() const
 {
   hard_assert( descriptor != nullptr );

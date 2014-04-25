@@ -57,9 +57,7 @@ public:
   /**
    * Create a new instance.
    */
-  explicit CallOnce() :
-    onceLock( 0 ), wasMethodCalled( false )
-  {}
+  explicit CallOnce();
 
   /**
    * Copying or moving is not possible for the embedded spin lock.

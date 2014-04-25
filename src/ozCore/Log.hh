@@ -29,6 +29,7 @@
 #pragma once
 
 #include "StackTrace.hh"
+#include "Time.hh"
 #include "JSON.hh"
 
 namespace oz
@@ -295,6 +296,11 @@ public:
    * in row-major format.
    */
   const Log& operator << ( const Mat4& m ) const;
+
+  /**
+   * Same as `printRaw( "%s", time.toString().cstr() )`.
+   */
+  const Log& operator << ( const Time& time ) const;
 
   /**
    * Same as `printRaw( "%s", json.toString().cstr() )`.

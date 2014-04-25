@@ -60,6 +60,35 @@ struct Semaphore::Descriptor
 
 #endif
 
+Semaphore::Semaphore() :
+  descriptor( nullptr )
+{}
+
+Semaphore::~Semaphore()
+{
+  if( descriptor != nullptr ) {
+    destroy();
+  }
+}
+
+Semaphore::Semaphore( Semaphore&& b ) :
+  descriptor( b.descriptor )
+{
+  b.descriptor = nullptr;
+}
+
+Semaphore& Semaphore::operator = ( Semaphore&& b )
+{
+  if( &b == this ) {
+    return *this;
+  }
+
+  descriptor   = b.descriptor;
+  b.descriptor = nullptr;
+
+  return *this;
+}
+
 int Semaphore::counter() const
 {
   hard_assert( descriptor != nullptr );

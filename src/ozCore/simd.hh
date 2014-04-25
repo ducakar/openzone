@@ -209,6 +209,44 @@ protected:
 
 #endif
 
+public:
+
+  /**
+   * Constant float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator const float* () const
+  {
+    return &x;
+  }
+
+  /**
+   * Float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator float* ()
+  {
+    return &x;
+  }
+
+  /**
+   * Constant reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  const float& operator [] ( int i ) const
+  {
+    return ( &x )[i];
+  }
+
+  /**
+   * Reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  float& operator [] ( int i )
+  {
+    return ( &x )[i];
+  }
+
 };
 
 /**
@@ -268,6 +306,44 @@ protected:
   {}
 
 #endif
+
+public:
+
+  /**
+   * Constant float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator const float* () const
+  {
+    return &x;
+  }
+
+  /**
+   * Float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator float* ()
+  {
+    return &x;
+  }
+
+  /**
+   * Constant reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  const float& operator [] ( int i ) const
+  {
+    return ( &x )[i];
+  }
+
+  /**
+   * Reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  float& operator [] ( int i )
+  {
+    return ( &x )[i];
+  }
 
 };
 

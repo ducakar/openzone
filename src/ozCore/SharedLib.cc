@@ -57,6 +57,33 @@ void SharedLib::close()
 
 const bool SharedLib::IS_SUPPORTED = true;
 
+SharedLib::SharedLib() :
+  handle( nullptr )
+{}
+
+SharedLib::~SharedLib()
+{
+  close();
+}
+
+SharedLib::SharedLib( SharedLib&& l ) :
+  handle( l.handle )
+{
+  l.handle = nullptr;
+}
+
+SharedLib& SharedLib::operator = ( SharedLib&& l )
+{
+  if( &l == this ) {
+    return *this;
+  }
+
+  handle   = l.handle;
+  l.handle = nullptr;
+
+  return *this;
+}
+
 SharedLib::Method* SharedLib::get( const char* symbol ) const
 {
   if( handle == nullptr ) {

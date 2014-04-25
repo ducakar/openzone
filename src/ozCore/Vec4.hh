@@ -140,44 +140,9 @@ public:
   }
 
   /**
-   * Constant float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator const float* () const
-  {
-    return &x;
-  }
-
-  /**
-   * Float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator float* ()
-  {
-    return &x;
-  }
-
-  /**
-   * Constant reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  const float& operator [] ( int i ) const
-  {
-    return ( &x )[i];
-  }
-
-  /**
-   * Reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  float& operator [] ( int i )
-  {
-    return ( &x )[i];
-  }
-
-  /**
    * Return the 3D vector this vector represents (last component should be 0).
    */
+  OZ_ALWAYS_INLINE
   Vec3 vec3() const
   {
     hard_assert( w == 0.0f );
@@ -192,6 +157,7 @@ public:
   /**
    * Return the point vector represents (last component should be 1).
    */
+  OZ_ALWAYS_INLINE
   Point point() const
   {
     hard_assert( w == 1.0f );
@@ -206,20 +172,11 @@ public:
   /**
    * Norm.
    */
-  OZ_ALWAYS_INLINE
-  float operator ! () const
-  {
-#ifdef OZ_SIMD_MATH
-    return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-#else
-    return Math::sqrt( x*x + y*y + z*z + w*w );
-#endif
-  }
+  float operator ! () const;
 
   /**
    * Approximate norm.
    */
-  OZ_ALWAYS_INLINE
   float fastN() const
   {
 #ifdef OZ_SIMD_MATH
@@ -245,24 +202,11 @@ public:
   /**
    * Unit vector.
    */
-  OZ_ALWAYS_INLINE
-  Vec4 operator ~ () const
-  {
-#ifdef OZ_SIMD_MATH
-    scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-    return Vec4( f4 * s.f4 );
-#else
-    hard_assert( x*x + y*y + z*z + w*w > 0.0f );
-
-    float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-    return Vec4( x * k, y * k, z * k, w * k );
-#endif
-  }
+  Vec4 operator ~ () const;
 
   /**
    * Approximate unit vector.
    */
-  OZ_ALWAYS_INLINE
   Vec4 fastUnit() const
   {
 #ifdef OZ_SIMD_MATH

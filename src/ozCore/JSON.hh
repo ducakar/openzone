@@ -136,6 +136,11 @@ public:
   JSON( Type type = NIL );
 
   /**
+   * Create null value.
+   */
+  JSON( nullptr_t );
+
+  /**
    * Create a boolean value.
    */
   JSON( bool value );
