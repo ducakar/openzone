@@ -26,7 +26,6 @@ platforms=(
 #   Android14-ARM
 #   Android14-ARMv7a
 #   Android14-MIPS
-#   Emscripten
 )
 
 function clean()

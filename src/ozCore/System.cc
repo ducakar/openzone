@@ -37,9 +37,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined( EMSCRIPTEN )
-# include <SDL.h>
-#elif defined( __ANDROID__ )
+#if defined( __ANDROID__ )
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
@@ -245,14 +243,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   }
 }
 
-#if defined( EMSCRIPTEN )
-
-static void bellMain()
-{
-  static_cast<void>( genBellSamples );
-}
-
-#elif defined( __ANDROID__ )
+#if defined( __ANDROID__ )
 
 static void* bellMain( void* )
 {
@@ -499,7 +490,6 @@ static void waitBell()
   }
 #endif
 
-#ifndef EMSCRIPTEN
   while( __sync_lock_test_and_set( &bellLock, 1 ) != 0 ) {
 # ifdef _WIN32
     Sleep( 10 );
@@ -508,8 +498,6 @@ static void waitBell()
 # endif
   }
   __sync_lock_release( &bellLock );
-
-#endif
 }
 
 // Wait bell to finish playing on (normal) process termination.
@@ -545,7 +533,7 @@ static void abort( bool doHalt )
 
 #else
 
-# if !defined( EMSCRIPTEN ) && !defined( __native_client )
+# ifndef __native_client__
   doHalt = doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO );
 # endif
 
@@ -586,13 +574,7 @@ bool System::isInstrumented()
 
 void System::bell()
 {
-#if defined( EMSCRIPTEN )
-
-  static_cast<void>( bellLock );
-
-  bellMain();
-
-#elif defined( _WIN32 )
+#ifdef _WIN32
 
   if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
@@ -697,8 +679,7 @@ void System::init( int flags, CrashHandler* crashHandler_ )
   initFlags    = flags;
   crashHandler = crashHandler_;
 
-#if !defined( EMSCRIPTEN ) && !defined( __ANDROID__ ) && !defined( __native_client__ ) && \
-    !defined( _WIN32 )
+#if !defined( __ANDROID__ ) && !defined( __native_client__ ) && !defined( _WIN32 )
 
   int fd = open( "/", O_RDONLY );
   close( fd );

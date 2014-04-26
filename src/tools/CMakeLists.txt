@@ -1,10 +1,4 @@
-if( EMSCRIPTEN )
-
-  add_executable( openzone openzone.cc )
-  use_pch( openzone pch )
-  target_link_libraries( openzone client nirvana matrix common ozEngine )
-
-elseif( ANDROID )
+if( ANDROID )
 
   add_library( openzone SHARED openzone.cc )
   use_pch( openzone pch )

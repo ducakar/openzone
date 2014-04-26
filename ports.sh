@@ -21,7 +21,6 @@ platforms=(
 #   Android14-ARM
 #   Android14-ARMv7a
 #   Android14-MIPS
-#   Emscripten
 )
 
 buildTriplet="`uname -m`-`uname -i`-linux-gnu"
@@ -40,8 +39,6 @@ ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 
 ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.7/prebuilt/linux-x86_64"
 ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
-
-emscriptenPrefix="$EMSCRIPTEN"
 
 function msg()
 {
@@ -192,34 +189,6 @@ function setup_ndk_MIPS()
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
-
-function setup_emscripten()
-{
-  platform="Emscripten"                                   # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="emscripten"                                    # Platform triplet (tools prefix).
-  hostTriplet="emscripten"                                # Host triplet for autotools configure.
-  toolsroot="$emscriptenPrefix"                           # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-
-  export -n CPP
-  export CC="$toolsroot/emcc"
-  export AR="$toolsroot/emar"
-  export RANLIB="$toolsroot/emranlib"
-  export STRIP="/bin/true"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="-isystem $buildDir/usr/include"
-  export CFLAGS="-O2 -Qunused-arguments -U__STRICT_ANSI__ -Wno-warn-absolute-paths"
-  export LDFLAGS="-L$buildDir/usr/lib"
 
   for p in ${platforms[@]}; do
     [[ $p == $platform ]] && return 0
@@ -501,7 +470,6 @@ function build()
 {
   # zlib
   setup_pnacl       && build_zlib
-  setup_emscripten  && build_zlib
 
   # libpng
   setup_pnacl       && build_libpng
@@ -509,7 +477,6 @@ function build()
   setup_ndk_ARM     && build_libpng
   setup_ndk_ARMv7a  && build_libpng
   setup_ndk_MIPS    && build_libpng
-  setup_emscripten  && build_libpng
 
   # libogg
   setup_pnacl       && build_libogg
@@ -517,7 +484,6 @@ function build()
   setup_ndk_ARM     && build_libogg
   setup_ndk_ARMv7a  && build_libogg
   setup_ndk_MIPS    && build_libogg
-  setup_emscripten  && build_libogg
 
   # libvorbis
   setup_pnacl       && build_libvorbis
@@ -525,7 +491,6 @@ function build()
   setup_ndk_ARM     && build_libvorbis
   setup_ndk_ARMv7a  && build_libvorbis
   setup_ndk_MIPS    && build_libvorbis
-  setup_emscripten  && build_libvorbis
 
   # FreeType
   setup_pnacl       && build_freetype
@@ -533,7 +498,6 @@ function build()
   setup_ndk_ARM     && build_freetype
   setup_ndk_ARMv7a  && build_freetype
   setup_ndk_MIPS    && build_freetype
-  setup_emscripten  && build_freetype
 
   # PhysicsFS
   setup_pnacl       && build_physfs
@@ -541,7 +505,6 @@ function build()
   setup_ndk_ARM     && build_physfs
   setup_ndk_ARMv7a  && build_physfs
   setup_ndk_MIPS    && build_physfs
-  setup_emscripten  && build_physfs
 
   # Lua
   setup_pnacl       && build_lua
@@ -549,7 +512,6 @@ function build()
   setup_ndk_ARM     && build_lua
   setup_ndk_ARMv7a  && build_lua
   setup_ndk_MIPS    && build_lua
-  setup_emscripten  && build_lua
 
   # OpenAL Soft
   setup_pnacl       && build_openal
@@ -571,7 +533,6 @@ function build()
   setup_ndk_ARM     && build_sdl2_ttf
   setup_ndk_ARMv7a  && build_sdl2_ttf
   setup_ndk_MIPS    && build_sdl2_ttf
-  setup_emscripten  && build_sdl2_ttf
 }
 
 case $1 in

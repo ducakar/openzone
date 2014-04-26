@@ -26,7 +26,7 @@
 
 #include "StackTrace.hh"
 
-#if !defined( __GLIBC__ ) || defined( EMSCRIPTEN )
+#if !defined( __GLIBC__ )
 # define OZ_DISABLE_STACK_TRACE
 #endif
 
@@ -50,11 +50,7 @@ const int StackTrace::MAX_FRAMES;
 
 StackTrace StackTrace::current( int )
 {
-#ifdef EMSCRIPTEN
-  const char* name = "main";
-#else
   const char* name = Thread::name();
-#endif
 
   StackTrace st = { {}, 0, {} };
 

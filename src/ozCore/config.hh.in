@@ -65,7 +65,7 @@
 #endif
 
 // Disable `new`/`delete` overloads when they would interfere with other things.
-#if defined( EMSCRIPTEN ) || defined( __SANITIZE_ADDRESS__ )
+#if defined( __SANITIZE_ADDRESS__ )
 # define OZ_DISABLE_ALLOC_OVERLOADS
 #elif defined( __has_feature )
 # if __has_feature( address_sanitizer )

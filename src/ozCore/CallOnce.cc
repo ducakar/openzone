@@ -24,8 +24,6 @@
  * @file ozCore/CallOnce.cc
  */
 
-#ifndef EMSCRIPTEN
-
 #include "CallOnce.hh"
 
 namespace oz
@@ -56,5 +54,3 @@ void CallOnce::call( Method* method )
 }
 
 }
-
-#endif // EMSCRIPTEN

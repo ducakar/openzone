@@ -28,8 +28,6 @@
 
 #pragma once
 
-#ifndef EMSCRIPTEN
-
 #include "common.hh"
 
 namespace oz
@@ -118,5 +116,3 @@ public:
 };
 
 }
-
-#endif // EMSCRIPTEN

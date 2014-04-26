@@ -24,8 +24,6 @@
  * @file ozCore/Thread.cc
  */
 
-#ifndef EMSCRIPTEN
-
 #include "Thread.hh"
 
 #include "System.hh"
@@ -282,5 +280,3 @@ void Thread::join()
 }
 
 }
-
-#endif // EMSCRIPTEN
