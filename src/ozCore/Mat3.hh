@@ -104,7 +104,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator != ( const Mat3& m ) const
   {
-    return x != m.x || y != m.y || z != m.z;
+    return !operator == ( m );
   }
 
   /**

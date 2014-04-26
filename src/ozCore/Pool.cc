@@ -141,6 +141,10 @@ void* PoolAlloc::allocate()
 
 void PoolAlloc::deallocate( void* ptr )
 {
+  if( ptr == nullptr ) {
+    return;
+  }
+
   hard_assert( count != 0 );
 
   Slot* slot = static_cast<Slot*>( ptr );

@@ -42,17 +42,13 @@
  * Array versions of `new`/`delete` operator are disabled for the enclosing class.
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
-  void* operator new ( size_t ) \
-    { return pool.allocate(); } \
+  void* operator new ( size_t ) { return pool.allocate(); } \
   void* operator new[] ( size_t ) = delete; \
-  void  operator delete ( void* ptr ) noexcept \
-    { if( ptr != nullptr ) pool.deallocate( ptr ); } \
+  void  operator delete ( void* ptr ) noexcept { pool.deallocate( ptr ); } \
   void  operator delete[] ( void* ) noexcept = delete; \
-  void* operator new ( size_t, const std::nothrow_t& ) noexcept \
-    { return pool.allocate(); } \
+  void* operator new ( size_t, const std::nothrow_t& ) noexcept { return pool.allocate(); } \
   void* operator new[] ( size_t, const std::nothrow_t& ) noexcept = delete; \
-  void  operator delete ( void* ptr, std::nothrow_t& ) noexcept \
-    { if( ptr != nullptr ) pool.deallocate( ptr ); } \
+  void  operator delete ( void* ptr, std::nothrow_t& ) noexcept { pool.deallocate( ptr ); } \
   void  operator delete[] ( void*, std::nothrow_t& ) noexcept = delete;
 
 /**
@@ -73,10 +69,8 @@
   void* operator new[] ( size_t, const std::nothrow_t& ) noexcept = delete; \
   void  operator delete ( void*, const std::nothrow_t& ) noexcept = delete; \
   void  operator delete[] ( void*, const std::nothrow_t& ) noexcept = delete; \
-  void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) \
-    { return pool.allocate(); } \
-  void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) noexcept \
-    { pool.deallocate( ptr ); }
+  void* operator new ( size_t, oz::PoolAlloc& pool ) { return pool.allocate(); } \
+  void  operator delete ( void* ptr, oz::PoolAlloc& pool ) noexcept { pool.deallocate( ptr ); }
 
 namespace oz
 {
@@ -110,7 +104,7 @@ public:
   /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
-  explicit PoolAlloc( size_t slotSize, int nSlots );
+  explicit PoolAlloc( size_t slotSize, int nSlots = 256 );
 
   /**
    * Destructor.
@@ -176,22 +170,22 @@ public:
 };
 
 /**
- * Template wrapper for memory pool.
+ * Template wrapper for `PoolAlloc`.
  *
  * @sa `oz::PoolAlloc`
  */
-template <class Elem, int BLOCK_SIZE = 256>
+template <class Elem, int BLOCK_SLOTS = 256>
 class Pool : public PoolAlloc
 {
-  static_assert( BLOCK_SIZE > 0, "Pool block size must be at least 1" );
+  static_assert( BLOCK_SLOTS > 0, "Pool block must have at least 1 block." );
 
 public:
 
   /**
    * Create an empty pool.
    */
-  explicit Pool() :
-    PoolAlloc( sizeof( Elem ), BLOCK_SIZE )
+  Pool() :
+    PoolAlloc( sizeof( Elem ), BLOCK_SLOTS )
   {}
 
 };

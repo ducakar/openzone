@@ -54,9 +54,7 @@ protected:
   /**
    * Internal constructor for `OutputStream`.
    */
-  explicit InputStream( char* pos, char* start, const char* end, Endian::Order order_ ) :
-    streamPos( pos ), streamBegin( start ), streamEnd( end ), order( order_ )
-  {}
+  explicit InputStream( char* pos, char* start, const char* end, Endian::Order order_ );
 
 public:
 
@@ -64,10 +62,7 @@ public:
    * Create a stream for reading a given memory range.
    */
   explicit InputStream( const char* start = nullptr, const char* end = nullptr,
-                        Endian::Order order_ = Endian::NATIVE ) :
-    streamPos( const_cast<char*>( start ) ), streamBegin( const_cast<char*>( start ) ),
-    streamEnd( end ), order( order_ )
-  {}
+                        Endian::Order order_ = Endian::NATIVE );
 
   /**
    * Length of the stream.

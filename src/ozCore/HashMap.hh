@@ -105,9 +105,7 @@ public:
   /**
    * Create an empty hashtable.
    */
-  explicit HashMap() :
-    HashSet<Pair>()
-  {}
+  HashMap() = default;
 
   /**
    * Initialise from an initialiser list.

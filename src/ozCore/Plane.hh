@@ -88,7 +88,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator == ( const Plane& p ) const
   {
-    return n.x == p.n.x && n.y == p.n.y && n.z == p.n.z && d == p.d;
+    return n == p.n && d == p.d;
   }
 
   /**
@@ -97,7 +97,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator != ( const Plane& p ) const
   {
-    return n.x != p.n.x || n.y != p.n.y || n.z != p.n.z || d != p.d;
+    return !operator == ( p );
   }
 
   /**

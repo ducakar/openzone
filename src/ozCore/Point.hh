@@ -106,7 +106,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator != ( const Point& p ) const
   {
-    return x != p.x || y != p.y || z != p.z;
+    return !operator == ( p );
   }
 
   /**

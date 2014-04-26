@@ -31,6 +31,15 @@
 namespace oz
 {
 
+InputStream::InputStream( char* pos, char* start, const char* end, Endian::Order order_ ) :
+  streamPos( pos ), streamBegin( start ), streamEnd( end ), order( order_ )
+{}
+
+InputStream::InputStream( const char* start, const char* end, Endian::Order order_ ) :
+  streamPos( const_cast<char*>( start ) ), streamBegin( const_cast<char*>( start ) ),
+  streamEnd( end ), order( order_ )
+{}
+
 void InputStream::set( const char* newPos )
 {
   if( newPos < streamBegin || streamEnd < newPos ) {

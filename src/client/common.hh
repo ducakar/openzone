@@ -64,7 +64,7 @@ struct TexCoord
   OZ_ALWAYS_INLINE
   bool operator != ( const TexCoord& tc ) const
   {
-    return u != tc.u || v != tc.v;
+    return !operator == ( tc );
   }
 
   OZ_ALWAYS_INLINE

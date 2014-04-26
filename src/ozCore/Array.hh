@@ -66,7 +66,7 @@ public:
   /**
    * Create uninitialised array.
    */
-  explicit Array() = default;
+  Array() = default;
 
   /**
    * Initialise form a C++ array.

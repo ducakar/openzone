@@ -97,10 +97,10 @@ protected:
 public:
 
   /**
-   * Create an empty list with a given initial capacity.
+   * Create an empty list.
    */
-  explicit List( int capacity = 0 ) :
-    data( capacity == 0 ? nullptr : new Elem[capacity] ), count( 0 ), size( capacity )
+  List() :
+    data( nullptr ), count( 0 ), size( 0 )
   {}
 
   /**

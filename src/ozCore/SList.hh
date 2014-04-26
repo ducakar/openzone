@@ -69,7 +69,7 @@ public:
   /**
    * Create an empty list with capacity SIZE.
    */
-  explicit SList() :
+  SList() :
     count( 0 )
   {}
 

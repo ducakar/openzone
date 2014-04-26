@@ -138,11 +138,9 @@ public:
   using List<Pair>::deallocate;
 
   /**
-   * Create an empty map with a given initial capacity.
+   * Create an empty map.
    */
-  explicit Map( int capacity = 0 ) :
-    Set<Pair>( capacity )
-  {}
+  Map() = default;
 
   /**
    * Initialise from an initialiser list.

@@ -64,9 +64,16 @@ private:
 public:
 
   /**
+   * Create an empty array.
+   */
+  DArray() :
+    data( nullptr ), count( 0 )
+  {}
+
+  /**
    * Create an array with a given size.
    */
-  explicit DArray( int count_ = 0 ) :
+  explicit DArray( int count_ ) :
     data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
   {}
 

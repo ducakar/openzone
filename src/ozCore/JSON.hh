@@ -93,6 +93,11 @@ public:
    */
   typedef HashMap<String, JSON>::Iterator ObjectIterator;
 
+  /**
+   * Key-value type used in object initialiser lists.
+   */
+  typedef detail::MapPair<const char*, JSON> Pair;
+
 private:
 
   struct Data;
@@ -204,6 +209,21 @@ public:
    * Create an array of 16 numbers representing `Mat4` components.
    */
   JSON( const Mat4& m );
+
+  /**
+   * Create an array from initialiser list of JSON values.
+   */
+  JSON( InitialiserList<JSON> l );
+
+  /**
+   * Create an object from initialiser list of string-JSON pairs.
+   *
+   * For distinguishing from array initialiser list, one should use `JSON::Pair` like:
+   * @code
+   * JSON object = { JSON::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
+   * @endcode
+   */
+  JSON( InitialiserList<Pair> l );
 
   /**
    * Load from a file.

@@ -63,7 +63,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator != ( const Pair& p ) const
   {
-    return !( x == p.x ) || !( y == p.y );
+    return !operator == ( p );
   }
 
 };

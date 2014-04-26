@@ -302,7 +302,7 @@ public:
   /**
    * Create an empty hashtable.
    */
-  explicit HashSet() :
+  HashSet() :
     data( nullptr ), size( 0 )
   {}
 

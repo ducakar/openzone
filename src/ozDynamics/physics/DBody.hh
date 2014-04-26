@@ -51,7 +51,8 @@ public:
 
 public:
 
-  explicit DBody() : Body()
+  explicit DBody() :
+    Body()
   {
     flags = DYNAMIC_BIT;
   }

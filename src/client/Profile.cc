@@ -39,7 +39,7 @@ namespace client
 void Profile::save()
 {
   File profileFile = config["dir.config"].get( String::EMPTY ) + "/profile.json";
-  JSON profileConfig( JSON::OBJECT );
+  JSON profileConfig = JSON::OBJECT;
 
   profileConfig.add( "name", name );
   profileConfig.add( "class", clazz->name );
@@ -61,10 +61,6 @@ void Profile::init()
 
   JSON profileConfig;
   bool configExists = profileConfig.load( profileFile );
-
-  if( profileConfig.isNull() ) {
-    profileConfig = JSON::OBJECT;
-  }
 
   name = profileConfig["name"].get( "" );
 
@@ -97,19 +93,15 @@ void Profile::init()
 
   // HACK Default player profile is hard-coded.
   if( !configExists ) {
-    profileConfig.add( "name", name );
-    profileConfig.add( "class", "beast" );
-
-    JSON& itemsConfig = profileConfig.add( "items", JSON::ARRAY );
-
-    itemsConfig.add( "beast$plasmagun" );
-    itemsConfig.add( "nvGoggles" );
-    itemsConfig.add( "binoculars" );
-    itemsConfig.add( "galileo" );
-    itemsConfig.add( "musicPlayer" );
-    itemsConfig.add( "cvicek" );
-
-    profileConfig.add( "weaponItem", 0 );
+    profileConfig = {
+      JSON::Pair
+      { "name", name },
+      { "class", "beast" },
+      { "items",
+        { "beast$plasmagun", "nvGoggles", "binoculars", "galileo", "musicPlayer", "cvicek" }
+      },
+      { "weaponItem", 0 }
+    };
   }
 
   const char*        sClazz   = profileConfig["class"].get( "" );
@@ -148,6 +140,10 @@ void Profile::init()
     }
 
     const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
+
+    if( !( weaponClazz->flags & Object::WEAPON_BIT ) ) {
+      OZ_ERROR( "Invalid weaponItem #%d '%s' in profile", weaponItem, weaponClazz->name.cstr() );
+    }
 
     if( !clazz->name.beginsWith( weaponClazz->userBase ) ) {
       OZ_ERROR( "Invalid weapon class '%s' for player class '%s' in profile",

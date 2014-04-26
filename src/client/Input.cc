@@ -173,7 +173,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDLK_s;
   keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDLK_SPACE;
   keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDLK_c;
-  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDLK_LCTRL;
+  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDLK_LCTRL;
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDLK_LSHIFT;
 
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDLK_c;
@@ -258,7 +258,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDL_SCANCODE_S;
   keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDL_SCANCODE_SPACE;
   keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDL_SCANCODE_C;
-  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDL_SCANCODE_LCTRL;
+  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDL_SCANCODE_LCTRL;
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
 
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_C;

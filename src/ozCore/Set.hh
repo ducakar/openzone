@@ -88,11 +88,9 @@ public:
   using List<Elem>::deallocate;
 
   /**
-   * Create an empty set with a given initial capacity.
+   * Create an empty set.
    */
-  explicit Set( int capacity = 0 ) :
-    List<Elem>( capacity )
-  {}
+  Set() = default;
 
   /**
    * Initialise from an initialiser list.

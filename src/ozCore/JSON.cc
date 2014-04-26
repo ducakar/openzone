@@ -776,6 +776,24 @@ JSON::JSON( const Mat4& m ) :
   }
 }
 
+JSON::JSON( InitialiserList<JSON> l ) :
+  data( new ArrayData() ), valueType( ARRAY ), wasAccessed( false )
+{
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  list.addAll( l.begin(), int( l.size() ) );
+}
+
+JSON::JSON( InitialiserList<Pair> l ) :
+  data( new ObjectData() ), valueType( OBJECT ), wasAccessed( false )
+{
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+
+  for( const auto& i : l ) {
+    table.add( i.key, i.value );
+  }
+}
+
 JSON::JSON( const File& file ) :
   valueType( NIL ), wasAccessed( false )
 {

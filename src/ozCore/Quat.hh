@@ -96,18 +96,18 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Quat& v ) const
+  bool operator == ( const Quat& q ) const
   {
-    return x == v.x && y == v.y && z == v.z && w == v.w;
+    return x == q.x && y == q.y && z == q.z && w == q.w;
   }
 
   /**
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Quat& v ) const
+  bool operator != ( const Quat& q ) const
   {
-    return x != v.x || y != v.y || z != v.z || w != v.w;
+    return !operator == ( q );
   }
 
   /**

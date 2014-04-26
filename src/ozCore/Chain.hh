@@ -148,15 +148,6 @@ protected:
 
   Elem* firstElem; ///< Pointer to the first element in the chain.
 
-protected:
-
-  /**
-   * Internal constructor used by `DChain`.
-   */
-  explicit Chain( Elem* firstElem_ ) :
-    firstElem( firstElem_ )
-  {}
-
 public:
 
   /**

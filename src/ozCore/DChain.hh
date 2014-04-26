@@ -106,17 +106,16 @@ public:
    * Create an empty chain.
    */
   explicit DChain() :
-    Chain<Elem, INDEX>( nullptr ), lastElem( nullptr )
+    Chain<Elem, INDEX>(), lastElem( nullptr )
   {}
 
   /**
    * Move constructor, rebinds elements to the new chain.
    */
   DChain( DChain&& c ) :
-    Chain<Elem, INDEX>( c.firstElem ), lastElem( c.lastElem )
+    Chain<Elem, INDEX>( static_cast<DChain&&>( c ) ), lastElem( c.lastElem )
   {
-    c.firstElem = nullptr;
-    c.lastElem  = nullptr;
+    c.lastElem = nullptr;
   }
 
   /**
