@@ -202,7 +202,7 @@ public:
 
   bool isLoaded() const
   {
-    return !meshes.isEmpty();
+    return !meshes.isEmpty() && preloadData == nullptr;
   }
 
   int findNode( const char* name ) const;

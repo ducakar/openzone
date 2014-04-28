@@ -2,6 +2,7 @@
 
 - ozCore
     * null replaced by nullptr keyword
+    * more extensive use of constexpr
     * larger, performance-intensive and non-performance-critical inline functions moved to .cc files
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements

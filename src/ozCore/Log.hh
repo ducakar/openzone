@@ -298,6 +298,11 @@ public:
   const Log& operator << ( const Mat4& m ) const;
 
   /**
+   * Same as `printRaw( "%s", file.path().cstr() )`.
+   */
+  const Log& operator << ( const File& file ) const;
+
+  /**
    * Same as `printRaw( "%s", time.toString().cstr() )`.
    */
   const Log& operator << ( const Time& time ) const;

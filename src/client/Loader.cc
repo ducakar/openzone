@@ -247,7 +247,7 @@ void Loader::preloadRender()
   for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].handle;
 
-    if( bsp != nullptr && !bsp->isPreloaded() ) {
+    if( bsp != nullptr && !bsp->isLoaded() && !bsp->isPreloaded() ) {
       bsp->preload();
     }
   }
@@ -255,19 +255,22 @@ void Loader::preloadRender()
   for( int i = 0; i < liber.models.length(); ++i ) {
     Model* model = context.models[i].handle;
 
-    if( model != nullptr && !model->isPreloaded() ) {
+    if( model != nullptr && !model->isLoaded() && !model->isPreloaded() ) {
       model->preload();
     }
   }
 }
 
-void Loader::uploadRender()
+void Loader::uploadRender( bool isOneShot )
 {
   if( caelum.id != orbis.caelum.id ) {
     MainCall() << []() {
       caelum.unload();
       caelum.load();
     };
+    if( isOneShot ) {
+      return;
+    }
   }
 
   if( terra.id != orbis.terra.id ) {
@@ -275,27 +278,34 @@ void Loader::uploadRender()
       terra.unload();
       terra.load();
     };
+    if( isOneShot ) {
+      return;
+    }
   }
 
   for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].handle;
 
-    if( bsp != nullptr && !bsp->isLoaded() && bsp->isPreloaded() ) {
+    if( bsp != nullptr && bsp->isPreloaded() ) {
       MainCall() << [&]() {
         bsp->load();
       };
-      return;
+      if( isOneShot ) {
+        return;
+      }
     }
   }
 
   for( int i = 0; i < liber.models.length(); ++i ) {
     Model* model = context.models[i].handle;
 
-    if( model != nullptr && !model->isLoaded() && model->isPreloaded() ) {
+    if( model != nullptr && model->isPreloaded() ) {
       MainCall() << [&]() {
         model->load();
       };
-      return;
+      if( isOneShot ) {
+        return;
+      }
     }
   }
 }
@@ -328,7 +338,7 @@ void Loader::makeScreenshot()
 void Loader::syncUpdate()
 {
   preloadRender();
-  loader.uploadRender();
+  loader.uploadRender( false );
 }
 
 void Loader::update()
@@ -340,7 +350,7 @@ void Loader::update()
   }
 
   loader.cleanupRender();
-  loader.uploadRender();
+  loader.uploadRender( true );
 
   tick = ( tick + 1 ) % TICK_PERIOD;
 

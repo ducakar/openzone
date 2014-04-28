@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION 0.3.86 )
+set( OZ_VERSION 0.3.87 )
 
 option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
 option( OZ_PULSE_BELL "Enable PulseAudio backend for System::bell()." OFF )

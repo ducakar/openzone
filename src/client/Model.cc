@@ -405,6 +405,7 @@ const File* Model::preload()
   InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
 
   dim             = is.readVec3();
+  flags           = 0;
   shaderId        = liber.shaderIndex( is.readString() );
   nTextures       = is.readInt();
   nVertices       = is.readInt();
@@ -412,11 +413,20 @@ const File* Model::preload()
   nFrames         = is.readInt();
   nFramePositions = is.readInt();
 
-  is.readInt();
-  is.readInt();
-  is.readInt();
+  int nMeshes = is.readInt();
+  int nLights = is.readInt();
+  int nNodes  = is.readInt();
 
-  if( nTextures >= 0 ) {
+  if( nTextures < 0 ) {
+    textures.resize( ~nTextures );
+
+    for( int i = 0; i < ~nTextures; ++i ) {
+      is.readString();
+    }
+  }
+  else {
+    textures.resize( nTextures );
+
     for( int i = 0; i < nTextures; ++i ) {
       const String& name = is.readString();
 
@@ -439,95 +449,18 @@ const File* Model::preload()
     }
   }
 
-  return &preloadData->modelFile;
-}
-
-void Model::upload( const Vertex* vertices, int nVertices, uint usage ) const
-{
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-}
-
-void Model::load()
-{
-  hard_assert( Thread::isMain() );
-
-  flags = 0;
-
-  hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
-  InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
-
-  OZ_GL_CHECK_ERROR();
-
-  is.readVec3();
-  is.readString();
-  is.readInt();
-  is.readInt();
-  is.readInt();
-  is.readInt();
-  is.readInt();
-
-  int nMeshes = is.readInt();
-  int nLights = is.readInt();
-  int nNodes  = is.readInt();
-
-  if( nTextures < 0 ) {
-    nTextures = ~nTextures;
-
-    textures.resize( nTextures );
-
-    for( int i = 0; i < nTextures; ++i ) {
-      const String& name = is.readString();
-
-      int id = name.beginsWith( "@sea:" ) ? terra.liquidTexId : liber.textureIndex( name );
-      textures[i] = context.requestTexture( id );
-    }
-  }
-  else {
-    textures.resize( nTextures );
-
-    for( int i = 0; i < nTextures; ++i ) {
-      is.readString();
-
-      textures[i] = context.loadTexture( preloadData->textures[i].albedo,
-                                         preloadData->textures[i].masks,
-                                         preloadData->textures[i].normals );
-    }
-  }
-
-  uint usage   = nFrames != 0 && shader.hasVertexTexture ? GL_STREAM_DRAW : GL_STATIC_DRAW;
-  int  vboSize = nVertices * int( sizeof( Vertex ) );
-  int  iboSize = nIndices  * int( sizeof( ushort ) );
+  int vboSize = nVertices * int( sizeof( Vertex ) );
+  int iboSize = nIndices  * int( sizeof( ushort ) );
 
   const void* vertexBuffer = is.forward( vboSize );
-
-  glGenBuffers( 1, &vbo );
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, vboSize, vertexBuffer, usage );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-  glGenBuffers( 1, &ibo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  is.forward( iboSize );
 
   if( nFrames != 0 ) {
     if( shader.hasVertexTexture ) {
-#ifndef GL_ES_VERSION_2_0
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
-      glGenTextures( 1, &animationTexId );
-      glBindTexture( GL_TEXTURE_2D, animationTexId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
-                    GL_FLOAT, is.forward( vertexBufferSize + normalBufferSize ) );
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-      OZ_GL_CHECK_ERROR();
-#endif
+      is.forward( vertexBufferSize + normalBufferSize );
     }
     else {
       vertices  = new Vertex[nVertices];
@@ -542,13 +475,6 @@ void Model::load()
       }
 
       mCopy( vertices, vertexBuffer, size_t( nVertices ) * sizeof( Vertex ) );
-
-      if( nVertices > vertexAnimBufferLength ) {
-        delete[] vertexAnimBuffer;
-
-        vertexAnimBuffer = new Vertex[nVertices];
-        vertexAnimBufferLength = nVertices;
-      }
     }
   }
 
@@ -594,6 +520,98 @@ void Model::load()
     nodes[i].nChildren  = is.readInt();
 
     nodes[i].name       = is.readString();
+  }
+
+  return &preloadData->modelFile;
+}
+
+void Model::upload( const Vertex* vertices, int nVertices, uint usage ) const
+{
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
+
+void Model::load()
+{
+  hard_assert( Thread::isMain() );
+
+  hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
+  InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
+
+  is.readVec3();
+  is.readString();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+  is.readInt();
+
+  is.readInt();
+  is.readInt();
+  is.readInt();
+
+  if( nTextures < 0 ) {
+    nTextures = ~nTextures;
+
+    for( int i = 0; i < nTextures; ++i ) {
+      const String& name = is.readString();
+
+      int id = name.beginsWith( "@sea:" ) ? terra.liquidTexId : liber.textureIndex( name );
+      textures[i] = context.requestTexture( id );
+    }
+  }
+  else {
+    for( int i = 0; i < nTextures; ++i ) {
+      is.readString();
+
+      textures[i] = context.loadTexture( preloadData->textures[i].albedo,
+                                         preloadData->textures[i].masks,
+                                         preloadData->textures[i].normals );
+    }
+  }
+
+  uint usage   = nFrames != 0 && shader.hasVertexTexture ? GL_STREAM_DRAW : GL_STATIC_DRAW;
+  int  vboSize = nVertices * int( sizeof( Vertex ) );
+  int  iboSize = nIndices  * int( sizeof( ushort ) );
+
+  const void* vertexBuffer = is.forward( vboSize );
+
+  glGenBuffers( 1, &vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData( GL_ARRAY_BUFFER, vboSize, vertexBuffer, usage );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+  if( nFrames != 0 ) {
+    if( shader.hasVertexTexture ) {
+      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
+      int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
+
+      const char* animData = is.forward( vertexBufferSize + normalBufferSize );
+
+#ifndef GL_ES_VERSION_2_0
+      glGenTextures( 1, &animationTexId );
+      glBindTexture( GL_TEXTURE_2D, animationTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
+                    GL_FLOAT, animData );
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+      OZ_GL_CHECK_ERROR();
+#endif
+    }
+    else if( nVertices > vertexAnimBufferLength ) {
+      delete[] vertexAnimBuffer;
+
+      vertexAnimBuffer = new Vertex[nVertices];
+      vertexAnimBufferLength = nVertices;
+    }
   }
 
   loadedModels.add( this );

@@ -16,10 +16,11 @@ Building
 
 Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
 Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
-supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.1 compilers are supported.
+supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.3 compilers are supported.
 
 To build OpenZone from source, development packages for the following libraries are required:
 
+- glibc >= 2.17 (Linux only)
 - ALSA (Linux only)
 - Assimp
 - FreeImage
@@ -62,9 +63,9 @@ You may also want to set several options when configuring CMake build system:
 - `OZ_SHARED_LIBS`: Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries. This might
   make sense once if some other applications may use OpenZone's libraries as well.
 
-- `OZ_PULSE_BELL`: Enable PulseAudio back-end for `System::bell()` on Linux and generic Unix ports.
-  If enabled, PulseAudio is tried first to play the bell while the native sound system (ALSA on
-  Linux or OSS on generic Unix port) is used only as a fall-back.
+- `OZ_PULSE_BELL`: Enable PulseAudio back-end for `System::bell()` error bell on Linux and generic
+  Unix ports. If enabled, liboz first tries to play bell through PulseAudio before it falls back to
+  the native sound system (ALSA on Linux and OSS on generic Unix port).
   `OFF` by default.
 
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks. Stack trace for every memory
@@ -100,7 +101,7 @@ You may also want to set several options when configuring CMake build system:
 - `OZ_NET`: Enable networking support. Not implemented yet. Requires SDL_net library.
   `OFF` by default, forced to `OFF` on NaCl.
 
-- `OZ_TOOLS`: Build tools required for creating new game data (see next section).
+- `OZ_TOOLS`: Build tools required for creating new game data (see the next section).
 
 - `OZ_STANDALONE`: This only affects behaviour of `make install`. It also installs dependencies from
   `lib` directory, game data archives found in `share/openzone`, info files etc. This is intended
@@ -117,7 +118,7 @@ You may also want to set several options when configuring CMake build system:
 Tools
 -----
 
-### `ozBuild -A <pkgSrc>` ###
+### `ozBuild -CAZ <pkgSrc>` ###
 
 Compiler for game data. It compiler source game data into formats more suitable for OpenZone engine
 which results in much better run-time performance and much less code required to load data.
@@ -133,6 +134,10 @@ remove any files from source data and rebuild package, removed files will still 
 temporary directory and put into newly built package. So, it is highly recommended to remove all
 temporary directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data
 or before doing the final build.
+
+### `ozGenEnvMap -CM` ###
+
+This tool was created to generate environment map for reflections (`oz_base.zip/glsl/env.dds`).
 
 ### `ozGettext <pkgSrc>` ###
 

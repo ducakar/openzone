@@ -582,6 +582,12 @@ const Log& Log::operator << ( const Mat4& m ) const
   return *this;
 }
 
+const Log& Log::operator << ( const File& file ) const
+{
+  printRaw( "%s", file.path().cstr() );
+  return *this;
+}
+
 const Log& Log::operator << ( const Time& time ) const
 {
   printRaw( "%s", time.toString().cstr() );

@@ -196,7 +196,7 @@ private:
   {
     Semaphore sem; ///< Wrapped semaphore.
 
-    LocalSemaphore();
+    explicit LocalSemaphore();
     ~LocalSemaphore();
   };
 

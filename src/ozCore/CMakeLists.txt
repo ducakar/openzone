@@ -106,8 +106,7 @@ else()
   if( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
     target_link_libraries( ozCore -ldl -lrt -lpthread )
   else()
-    # TODO: Remove -lrt once glibc 2.17 becomes minimum.
-    target_link_libraries( ozCore -lasound -ldl -lrt -lpthread )
+    target_link_libraries( ozCore -lasound -ldl -lpthread )
   endif()
 endif()
 

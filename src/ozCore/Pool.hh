@@ -184,7 +184,7 @@ public:
   /**
    * Create an empty pool.
    */
-  Pool() :
+  explicit Pool() :
     PoolAlloc( sizeof( Elem ), BLOCK_SLOTS )
   {}
 

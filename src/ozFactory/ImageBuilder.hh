@@ -49,7 +49,7 @@ struct ImageData
   /**
    * Create empty instance, no allocation is performed.
    */
-  ImageData();
+  explicit ImageData();
 
   /**
    * Create an image an allocate memory for pixel data.

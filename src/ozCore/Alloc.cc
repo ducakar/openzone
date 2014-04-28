@@ -124,12 +124,15 @@ chunkInfoFound:
 
 static void* allocate( AllocMode mode, size_t size )
 {
+#ifdef OZ_SIMD_MATH
+  size = Alloc::alignUp( size )
+#endif
   size += Alloc::alignUp( sizeof( size ) );
 
 #if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
 #elif defined( OZ_SIMD_MATH )
-  void* ptr = memalign( Alloc::ALIGNMENT, size );
+  void* ptr = aligned_alloc( Alloc::ALIGNMENT, size );
 #else
   void* ptr = malloc( size );
 #endif

@@ -913,6 +913,7 @@ JSON::ArrayCIterator JSON::arrayCIter() const
     return ArrayCIterator( arrayData->list.begin(), arrayData->list.end() );
   }
   else {
+    wasAccessed |= valueType == NIL;
     return ArrayCIterator();
   }
 }
@@ -926,6 +927,7 @@ JSON::ArrayIterator JSON::arrayIter()
     return ArrayIterator( arrayData->list.begin(), arrayData->list.end() );
   }
   else {
+    wasAccessed |= valueType == NIL;
     return ArrayIterator();
   }
 }
@@ -939,6 +941,7 @@ JSON::ObjectCIterator JSON::objectCIter() const
     return objectData->table.citer();
   }
   else {
+    wasAccessed |= valueType == NIL;
     return ObjectCIterator();
   }
 }
@@ -952,6 +955,7 @@ JSON::ObjectIterator JSON::objectIter()
     return objectData->table.iter();
   }
   else {
+    wasAccessed |= valueType == NIL;
     return ObjectIterator();
   }
 }
@@ -960,6 +964,7 @@ int JSON::length() const
 {
   switch( valueType ) {
     default: {
+      wasAccessed |= valueType == NIL;
       return -1;
     }
     case ARRAY: {
@@ -980,6 +985,7 @@ int JSON::length() const
 const JSON& JSON::operator [] ( int i ) const
 {
   if( valueType != ARRAY ) {
+    wasAccessed |= valueType == NIL;
     return NIL_VALUE;
   }
 
@@ -998,6 +1004,7 @@ const JSON& JSON::operator [] ( int i ) const
 const JSON& JSON::operator [] ( const char* key ) const
 {
   if( valueType != OBJECT ) {
+    wasAccessed |= valueType == NIL;
     return NIL_VALUE;
   }
 
@@ -1017,6 +1024,7 @@ const JSON& JSON::operator [] ( const char* key ) const
 bool JSON::contains( const char* key ) const
 {
   if( valueType != OBJECT ) {
+    wasAccessed |= valueType == NIL;
     return false;
   }
 

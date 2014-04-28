@@ -85,7 +85,7 @@ private:
   // preload scheduled models
   void preloadRender();
   // load scheduled models
-  void uploadRender();
+  void uploadRender( bool isOneShot );
 
   void preloadRun();
 

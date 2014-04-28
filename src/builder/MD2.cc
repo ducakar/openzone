@@ -268,7 +268,7 @@ void MD2::build( const char* path )
   }
   String shaderName      = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
   float  shininess       = config["shininess"].get( 50.0f );
-  float  scale           = config["scale"].get( 0.04f );
+  float  scale           = config["scale"].get( 2.0f / 48.0f );
   Vec3   translation     = config["translate"].get( Vec3::ZERO );
   Vec3   jumpTranslation = config["jumpTranslate"].get( Vec3::ZERO );
   Vec3   freeTranslation = config["weaponTranslate"].get( Vec3::ZERO );

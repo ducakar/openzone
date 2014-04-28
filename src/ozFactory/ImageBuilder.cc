@@ -73,20 +73,19 @@ static char errorBuffer[ERROR_LENGTH]               = {};
 
 static FIBITMAP* createBitmap( const ImageData& image )
 {
-  int    size = image.width * image.height * 4;
-  ubyte* bgr  = new ubyte[size];
-
-  // RGBA -> BGRA
-  for( int i = 0; i < size; i += 4 ) {
-    bgr[i + 0] = ubyte( image.pixels[i + 2] );
-    bgr[i + 1] = ubyte( image.pixels[i + 1] );
-    bgr[i + 2] = ubyte( image.pixels[i + 0] );
-    bgr[i + 3] = ubyte( image.pixels[i + 3] );
-  }
-
-  FIBITMAP* dib = FreeImage_ConvertFromRawBits( bgr, image.width, image.height, image.width * 4, 32,
+  FIBITMAP* dib = FreeImage_ConvertFromRawBits( reinterpret_cast<ubyte*>( image.pixels ),
+                                                image.width, image.height, image.width * 4, 32,
                                                 FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
                                                 FI_RGBA_BLUE_MASK );
+
+  // Convert RGBA -> BGRA.
+  int    size   = image.width * image.height * 4;
+  ubyte* pixels = FreeImage_GetBits( dib );
+
+  for( int i = 0; i < size; i += 4 ) {
+    swap( pixels[i + 0], pixels[i + 2] );
+  }
+
   if( dib == nullptr ) {
     snprintf( errorBuffer, ERROR_LENGTH, "FreeImage_ConvertFromRawBits failed to build image." );
   }
@@ -122,7 +121,7 @@ static FIBITMAP* loadBitmap( const File& file )
   ubyte* pixels   = FreeImage_GetBits( dib );
 
   for( int i = 0; i < size; i += 4 ) {
-    if( pixels[i * 4 + 3] != 255 ) {
+    if( pixels[i + 3] != 255 ) {
       hasAlpha = true;
       break;
     }
@@ -413,7 +412,18 @@ ImageData ImageBuilder::loadImage( const File& file )
   }
 
   image = ImageData( int( FreeImage_GetWidth( dib ) ), int( FreeImage_GetHeight( dib ) ) );
-  mCopy( image.pixels, FreeImage_GetBits( dib ), size_t( image.width * image.height * 4 ) );
+
+  // Copy and convert BGRA -> RGBA.
+  int    size   = image.width * image.height * 4;
+  ubyte* pixels = FreeImage_GetBits( dib );
+
+  for( int i = 0; i < size; i += 4 ) {
+    image.pixels[i + 0] = char( pixels[i + 2] );
+    image.pixels[i + 1] = char( pixels[i + 1] );
+    image.pixels[i + 2] = char( pixels[i + 0] );
+    image.pixels[i + 3] = char( pixels[i + 3] );
+  }
+
   return image;
 }
 
