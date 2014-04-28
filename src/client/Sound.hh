@@ -44,7 +44,7 @@ class Sound
 private:
 
   static const int   MUSIC_BUFFER_SIZE       = 64 * 1024;
-  static const int   MUSIC_INPUT_BUFFER_SIZE = 16 * 1024;
+  static const int   MUSIC_INPUT_BUFFER_SIZE = 64 * 1024;
   static const float SOUND_DISTANCE;
 
   enum StreamType

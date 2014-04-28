@@ -92,15 +92,13 @@ int main( int argc, char** argv )
   TerraBuilder::setOctaveCount( TerraBuilder::NOISE, 3 );
   TerraBuilder::setFrequency( TerraBuilder::NOISE, 1.0f );
 
-  char** images = TerraBuilder::generateCubeNoise( size );
+  ImageData* images = TerraBuilder::generateCubeNoise( size );
 
-  if( !ImageBuilder::createDDS( images, 6, size, size, ddsOptions, "env.dds" ) ) {
+  if( !ImageBuilder::createDDS( images, 6, ddsOptions, "env.dds" ) ) {
     Log::println( "Failed to generate maps: %s", ImageBuilder::getError() );
     exitCode = EXIT_FAILURE;
   }
 
-  aFree( images, 6 );
   delete[] images;
-
   return exitCode;
 }

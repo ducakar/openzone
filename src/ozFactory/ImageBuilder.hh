@@ -34,6 +34,59 @@ namespace oz
 {
 
 /**
+ * %Image pixel data with basic metadata (dimensions and transparency).
+ */
+struct ImageData
+{
+  /// Alpha flag.
+  static const int ALPHA_BIT = 0x01;
+
+  int   width;  ///< Width.
+  int   height; ///< Height.
+  int   flags;  ///< Flags.
+  char* pixels; ///< Pixels data in RGBA format.
+
+  /**
+   * Create empty instance, no allocation is performed.
+   */
+  ImageData();
+
+  /**
+   * Create an image an allocate memory for pixel data.
+   */
+  explicit ImageData( int width, int height );
+
+  /**
+   * Destructor.
+   */
+  ~ImageData();
+
+  /**
+   * Move constructor, moves pixel data.
+   */
+  ImageData( ImageData&& i );
+
+  /**
+   * Move operator, moves pixel data.
+   */
+  ImageData& operator = ( ImageData&& i );
+
+  /**
+   * True iff it holds no image data.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return pixels == nullptr;
+  }
+
+  /**
+   * Check if any non-opaque pixel is present and update alpha flag accordingly.
+   */
+  void determineAlpha();
+};
+
+/**
  * %ImageBuilder class converts generic image formats to DDS (DirectDraw Surface).
  *
  * FreeImage library is used to read source images and apply transformations to them (e.g. resizing
@@ -42,9 +95,6 @@ namespace oz
 class ImageBuilder
 {
 public:
-
-  /// Enable transparency.
-  static const int ALPHA_BIT = 0x01;
 
   /// Enable generation of mipmaps for a texture.
   static const int MIPMAPS_BIT = 0x02;
@@ -73,6 +123,11 @@ public:
   static bool isImage( const File& file );
 
   /**
+   * Load an image.
+   */
+  static ImageData loadImage( const File& file );
+
+  /**
    * Generate a DDS form a given image and optionally compress it and create mipmaps.
    *
    * Mipmap generation and S3 texture compression can be controlled via `options` parameter.
@@ -97,13 +152,10 @@ public:
    *
    * @param faces array of pointers to pixels of input images.
    * @param nFaces number of input images.
-   * @param width image width.
-   * @param height image height.
    * @param options bit-mask to control mipmap generation, compression and cube map.
    * @param destFile output file.
    */
-  static bool createDDS( const void* faces, int nFaces, int width, int height, int options,
-                         const File& destFile );
+  static bool createDDS( const ImageData* faces, int nFaces, int options, const File& destFile );
 
   /**
    * Convert a given image to DDS format, similar to `buildDDS()`.

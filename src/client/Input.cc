@@ -542,14 +542,13 @@ void Input::update()
   mouseX = +float( dx );
   mouseY = -float( dy );
 
-# ifndef _WIN32
+# ifndef _WIN3
   if( Window::hasGrab() ) {
     // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
     // code is not based on actual code from X.Org, but experimentally tuned to match default X
     // server mouse acceleration as closely as possible.
     float move2  = max( mouseX*mouseX + mouseY*mouseY - mouseAccelThreshold, 0.0f );
-    float move   = Math::fastSqrt( move2 );
-    float factor = mouseAccelC0 + min( mouseAccelC1 * move + mouseAccelC2 * move2, mouseMaxAccel );
+    float factor = min( mouseSpeed + mouseAccel * move2, mouseMaxAccel );
 
     mouseX *= factor;
     mouseY *= factor;
@@ -688,11 +687,10 @@ void Input::init()
   mouseSensZ          = mouseConfig["sensitivity.z"].get( 2.0f );
   mouseSensW          = mouseConfig["sensitivity.w"].get( 2.0f );
 
+  mouseSpeed          = mouseConfig["acceleration.constant"].get( 0.2f );
+  mouseAccel          = mouseConfig["acceleration.factor"].get( 0.00003f );
   mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
-  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 2.0f ) - 1.0f;
-  mouseAccelC0        = mouseConfig["acceleration.c0"].get( 0.4f );
-  mouseAccelC1        = mouseConfig["acceleration.c1"].get( 0.0f );
-  mouseAccelC2        = mouseConfig["acceleration.c2"].get( 0.0004f );
+  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 0.75f );
   mouseWheelStep      = mouseConfig["wheelStep"].get( 3.0f );
 
   keySensX            = keyboardConfig["sensitivity.x"].get( 0.04f );
@@ -732,11 +730,10 @@ void Input::destroy()
   mouseConfig.add( "sensitivity.y",          mouseSensY );
   mouseConfig.add( "sensitivity.z",          mouseSensZ );
   mouseConfig.add( "sensitivity.w",          mouseSensW );
+  mouseConfig.add( "acceleration.constant",  mouseSpeed );
+  mouseConfig.add( "acceleration.factor",    mouseAccel );
   mouseConfig.add( "acceleration.threshold", mouseAccelThreshold );
   mouseConfig.add( "acceleration.max",       mouseMaxAccel + 1.0f );
-  mouseConfig.add( "acceleration.c0",        mouseAccelC0 );
-  mouseConfig.add( "acceleration.c1",        mouseAccelC1 );
-  mouseConfig.add( "acceleration.c2",        mouseAccelC2 );
   mouseConfig.add( "wheelStep",              mouseWheelStep );
 
   keyboardConfig.add( "sensitivity.x",       keySensX );

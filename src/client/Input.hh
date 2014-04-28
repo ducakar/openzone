@@ -153,11 +153,10 @@ public:
   float mouseSensY;
   float mouseSensZ;
   float mouseSensW;
+  float mouseSpeed;
+  float mouseAccel;
   float mouseAccelThreshold;
   float mouseMaxAccel;
-  float mouseAccelC0;
-  float mouseAccelC1;
-  float mouseAccelC2;
   float mouseWheelStep;
 
   float keySensX;

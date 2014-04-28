@@ -378,9 +378,6 @@ void GameStage::load()
     render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
   };
   loader.syncUpdate();
-  sound.play();
-  sound.sync();
-
   loader.load();
 
   isAuxAlive = true;
@@ -389,6 +386,7 @@ void GameStage::load()
   auxThread.start( "aux", Thread::JOINABLE, auxMain );
 
   ui::ui.showLoadingScreen( false );
+  present( true );
 
   loadingMicros = Time::uclock() - loadingMicros;
   autosaveTicks = 0;
@@ -438,8 +436,8 @@ void GameStage::unload()
   float runTime               = float( timer.runMicros )                * 1.0e-6f;
   float gameTime              = float( timer.micros )                   * 1.0e-6f;
   float droppedTime           = float( timer.runMicros - timer.micros ) * 1.0e-6f;
-  int   nFrameDrops           = int( timer.ticks - timer.nFrames );
-  float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
+  int   nFrameDrops           = int( ticks - timer.nFrames );
+  float frameDropRate         = float( ticks - timer.nFrames ) / float( ticks );
 
   if( stateFile.isEmpty() ) {
     stateFile = autosaveFile;

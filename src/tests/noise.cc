@@ -57,14 +57,14 @@ int main( int, char** )
   TerraBuilder::addGradientPoint( Vec4( 0.50f, 0.50f, 0.50f, +0.80f ) );
   TerraBuilder::addGradientPoint( Vec4( 0.80f, 0.80f, 0.80f, +0.95f ) );
 
-  char* data = TerraBuilder::generateImage( width, height );
-  ImageBuilder::createDDS( &data, 1, width, height, 0, "drek.dds" );
+  ImageData image = TerraBuilder::generateImage( width, height );
+  ImageBuilder::createDDS( &image, 1, 0, "drek.dds" );
 
   Log() << "populate time: " << ( Time::clock() - t0 ) << " ms";
 
   t0 = Time::clock();
 
-  Buffer b0( data, width * height * 3 );
+  Buffer b0( image.pixels, width * height * 4 );
   Buffer b1 = b0.deflate( 1 );
   Buffer b2 = b1.inflate();
   Buffer b3 = b2.deflate( 1 );
@@ -78,8 +78,6 @@ int main( int, char** )
 
   Log() << "b0 == b2: " << ( mCompare( b0.begin(), b2.begin(), size_t( b0.length() ) ) == 0 );
   Log() << "b1 == b3: " << ( mCompare( b1.begin(), b3.begin(), size_t( b1.length() ) ) == 0 );
-
-  delete[] data;
 
   bool      isAlive = true;
   SDL_Event event;

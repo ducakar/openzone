@@ -385,14 +385,12 @@ bool Kollider::overlaps( const Body* body0, const Body* body1, Result* result )
     result->depth = -1.0f;
   }
 
-  if( type0 <= type1 ) {
-    OverlapFunc* func = dispatchMatrix[type0][type1];
-    return func( body0->oMat, shape0, body1->oMat, shape1, body1->p - body0->p, result );
+  if( type0 > type1 ) {
+    swap( type0, type1 );
   }
-  else {
-    OverlapFunc* func = dispatchMatrix[type1][type0];
-    return func( body1->oMat, shape1, body0->oMat, shape0, body0->p - body1->p, result );
-  }
+
+  OverlapFunc* func = dispatchMatrix[type0][type1];
+  return func( body0->oMat, shape0, body1->oMat, shape1, body1->p - body0->p, result );
 }
 
 }

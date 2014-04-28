@@ -151,21 +151,20 @@ char* OutputStream::forward( int count )
 
   if( streamPos > streamEnd ) {
     if( buffered ) {
-      int length  = int( streamPos - streamBegin );
       int size    = int( streamEnd - streamBegin );
-      int reqSize = length + count;
+      int newLen  = int( streamPos - streamBegin );
       int newSize = size == 0 ? GRANULARITY : 2 * size;
 
-      if( newSize < 0 || reqSize < 0 ) {
+      if( newSize < 0 || newLen < 0 ) {
         OZ_ERROR( "oz::OutputStream: Capacity overflow" );
       }
-      else if( newSize < reqSize ) {
-        newSize = ( reqSize + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
+      else if( newSize < newLen ) {
+        newSize = ( newLen + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
       }
 
       streamBegin = aReallocate<char>( streamBegin, size, newSize );
       streamEnd   = streamBegin + newSize;
-      streamPos   = streamBegin + length;
+      streamPos   = streamBegin + newLen;
       oldPos      = streamPos - count;
     }
     else {

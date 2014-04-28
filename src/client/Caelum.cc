@@ -42,7 +42,7 @@ const float       Caelum::RED_COEF              = +0.05f;
 const float       Caelum::GREEN_COEF            = -0.05f;
 const float       Caelum::BLUE_COEF             = -0.10f;
 
-const Vec4        Caelum::DAY_COLOUR            = Vec4( 0.45f, 0.60f, 0.90f, 1.0f );
+const Vec4        Caelum::DAY_COLOUR            = Vec4( 0.45f, 0.55f, 0.95f, 1.0f );
 const Vec4        Caelum::NIGHT_COLOUR          = Vec4( 0.02f, 0.02f, 0.05f, 1.0f );
 
 Caelum::Caelum() :

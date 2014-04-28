@@ -151,8 +151,8 @@ void AssImp::build( const char* path )
     const aiMesh*     mesh      = scene->mMeshes[i];
     const aiMaterial* material  = scene->mMaterials[mesh->mMaterialIndex];
     const aiVector3D* positions = mesh->mVertices;
-    const aiVector3D* normals   = mesh->mNormals;
-    const aiVector3D* texCoords = mesh->mTextureCoords[0];
+    const aiVector3D* normals   = mesh->HasNormals() ? mesh->mNormals : nullptr;
+    const aiVector3D* texCoords = mesh->HasTextureCoords( 0 ) ? mesh->mTextureCoords[0] : nullptr;
 
     aiString textureName;
     if( material->GetTextureCount( aiTextureType_DIFFUSE ) != 0 ) {
@@ -186,7 +186,13 @@ void AssImp::build( const char* path )
         if( texCoords != nullptr ) {
           compiler.texCoord( texCoords[index].x, 1.0f - texCoords[index].y );
         }
-        compiler.normal( normals[index].x, normals[index].y, normals[index].z );
+        if( normals != nullptr ) {
+          Vec3 normal = Vec3( &normals[index].x );
+
+          compiler.normal( Math::isFinite( normal.x ) ? normal.x : 0.0f,
+                           Math::isFinite( normal.y ) ? normal.y : 0.0f,
+                           Math::isFinite( normal.z ) ? normal.z : 0.0f );
+        }
         compiler.vertex( positions[index].x, positions[index].y, positions[index].z );
       }
 

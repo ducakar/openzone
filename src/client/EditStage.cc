@@ -253,8 +253,6 @@ void EditStage::load()
     render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
   };
   loader.syncUpdate();
-  sound.play();
-  sound.sync();
 
   loader.load();
 
@@ -264,6 +262,7 @@ void EditStage::load()
   auxThread.start( "aux", Thread::JOINABLE, auxMain );
 
   ui::ui.showLoadingScreen( false );
+  present( true );
 
   Log::unindent();
   Log::println( "}" );

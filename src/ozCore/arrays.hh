@@ -170,7 +170,11 @@ inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
 OZ_ALWAYS_INLINE
 inline void* mCopy( void* dest, const void* src, size_t size )
 {
+#ifdef NDEBUG
   return __builtin_memcpy( dest, src, size );
+#else
+  return __builtin___memcpy_chk( dest, src, size, __builtin_object_size( dest, 0 ) );
+#endif
 }
 
 /**
@@ -179,7 +183,11 @@ inline void* mCopy( void* dest, const void* src, size_t size )
 OZ_ALWAYS_INLINE
 inline void* mMove( void* dest, const void* src, size_t size )
 {
+#ifdef NDEBUG
   return __builtin_memmove( dest, src, size );
+#else
+  return __builtin___memmove_chk( dest, src, size, __builtin_object_size( dest, 0 ) );
+#endif
 }
 
 /**
@@ -188,7 +196,11 @@ inline void* mMove( void* dest, const void* src, size_t size )
 OZ_ALWAYS_INLINE
 inline void* mSet( void* dest, int value, size_t size )
 {
+#ifdef NDEBUG
   return __builtin_memset( dest, value, size );
+#else
+  return __builtin___memset_chk( dest, value, size, __builtin_object_size( dest, 0 ) );
+#endif
 }
 
 /**
@@ -212,8 +224,8 @@ inline void* mChar( const void* src, int ch, size_t size )
 /**
  * `strlcpy()` implementation.
  *
- * Safer and better-performance alternative to `strncpy()`. It always adds the terminating null char
- * and doesn't pad destination with zeros if `length` is larger that the size of the source string.
+ * Safer and faster alternative to `strncpy()`. It always adds the terminating null char and doesn't
+ * pad destination with zeros if `length` is larger that the size of the source string.
  */
 size_t strlcpy( char* dest, const char* src, size_t size );
 
@@ -222,7 +234,7 @@ size_t strlcpy( char* dest, const char* src, size_t size );
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline int aLength( const Elem ( & )[COUNT] )
+inline constexpr int aLength( const Elem ( & )[COUNT] )
 {
   return COUNT;
 }

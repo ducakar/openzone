@@ -55,5 +55,4 @@ Vec4 Vec4::operator ~ () const
 #endif
 }
 
-
 }

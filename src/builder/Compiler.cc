@@ -664,33 +664,43 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     // (t, b) - tangent and binormal (non-ortonormised)
     // (p, q) - delta points
     for( int j = 0; j < 3; ++j ) {
-      Vertex* a = v[j];
-      Vertex* b = v[ ( j + 1 ) % 3 ];
-      Vertex* c = v[ ( j + 2 ) % 3 ];
-
-      Vec3  p      = b->pos - a->pos;
-      Vec3  q      = c->pos - a->pos;
-      float pu     = b->texCoord.u - a->texCoord.u;
-      float pv     = b->texCoord.v - a->texCoord.v;
-      float qu     = c->texCoord.u - a->texCoord.u;
-      float qv     = c->texCoord.v - a->texCoord.v;
-      float detInv = 1.0f / ( pu*qv - qu*pv );
-
-      Vec3 tangent  = detInv * Vec3( p.x*qv - q.x*pv, p.y*qv - q.y*pv, p.z*qv - q.z*pv );
-      Vec3 binormal = detInv * Vec3( q.x*pu - p.x*qu, q.y*pu - p.y*qu, q.z*pu - p.z*qu );
       Vec3 normal   = v[j]->normal;
+      Vec3 tangent  = Vec3::ZERO;
+      Vec3 binormal = Vec3::ZERO;
 
-      // Ortonormise.
-      tangent  -= ( tangent * normal ) / normal.sqN() * normal;
-      binormal -= ( binormal * normal ) / normal.sqN() * normal;
-      binormal -= ( binormal * tangent ) / tangent.sqN() * tangent;
+      if( normal.sqN() != 0.0f ) {
+        Vertex* a     = v[j];
+        Vertex* b     = v[ ( j + 1 ) % 3 ];
+        Vertex* c     = v[ ( j + 2 ) % 3 ];
 
-      if( Math::isFinite( detInv ) &&
-          normal.sqN() != 0.0f && tangent.sqN() != 0.0f && binormal.sqN() != 0.0f )
-      {
-        normal   = ~normal;
-        tangent  = ~tangent;
-        binormal = ~binormal;
+        Vec3  p       = b->pos - a->pos;
+        Vec3  q       = c->pos - a->pos;
+        float pu      = b->texCoord.u - a->texCoord.u;
+        float pv      = b->texCoord.v - a->texCoord.v;
+        float qu      = c->texCoord.u - a->texCoord.u;
+        float qv      = c->texCoord.v - a->texCoord.v;
+        float det     = pu*qv - qu*pv;
+
+        if( abs( det ) > 1e-6f ) {
+          float detInv = det == 0.0f ? 0.0f : 1.0f / det;
+
+          tangent   = detInv * Vec3( p.x*qv - q.x*pv, p.y*qv - q.y*pv, p.z*qv - q.z*pv );
+          binormal  = detInv * Vec3( q.x*pu - p.x*qu, q.y*pu - p.y*qu, q.z*pu - p.z*qu );
+
+          // Ortonormise.
+          tangent  -= ( tangent * normal ) / normal.sqN() * normal;
+          binormal -= ( binormal * normal ) / normal.sqN() * normal;
+          binormal -= ( binormal * tangent ) / tangent.sqN() * tangent;
+
+          if( tangent.sqN() == 0.0f || binormal.sqN() == 0.0f ) {
+            tangent  = Vec3::ZERO;
+            binormal = Vec3::ZERO;
+          }
+          else {
+            tangent  = ~tangent;
+            binormal = ~binormal;
+          }
+        }
       }
 
       v[j]->normal   = normal;

@@ -55,6 +55,9 @@ private:
   Icon   oldIcon;
   bool   wasShown;
 
+  float  fineX;
+  float  fineY;
+
 public:
 
   int  x;

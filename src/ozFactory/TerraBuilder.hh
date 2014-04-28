@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "ImageBuilder.hh"
 
 namespace oz
 {
@@ -159,10 +159,8 @@ public:
 
   /**
    * Generate terrain texture using the given gradient scale.
-   *
-   * Returned image is in RGB format with lines aligned on 32-bit boundaries.
    */
-  static char* generateImage( int width, int height );
+  static ImageData generateImage( int width, int height );
 
   /**
    * Generate grey noise on cube map.
@@ -177,7 +175,7 @@ public:
    *
    * Do not forget to free the returned array and all its members.
    */
-  static char** generateCubeNoise( int size );
+  static ImageData* generateCubeNoise( int size );
 
 };
 

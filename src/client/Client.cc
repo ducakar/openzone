@@ -745,13 +745,12 @@ int Client::main()
 
     timeSpent = Time::uclock() - timeLast;
 
-    // Skip rendering graphics, only play sounds if there's not enough time.
-    if( timeSpent >= 2 * Timer::TICK_MICROS ) {
+    // Skip rendering graphics, only play sounds if there's not enough time left.
+    if( timeSpent >= Timer::TICK_MICROS && timer.frameMicros < 100 * 1000 ) {
       stage->present( false );
     }
     else {
       stage->present( true );
-
       timer.frame();
 
       // If there's still some time left, sleep.
@@ -759,7 +758,6 @@ int Client::main()
 
       if( timeSpent < Timer::TICK_MICROS ) {
         stage->wait( Timer::TICK_MICROS - timeSpent );
-
         timeSpent = Timer::TICK_MICROS;
       }
     }

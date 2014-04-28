@@ -32,32 +32,10 @@
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>
 
-#include <FreeImage.h>
-#ifdef OZ_NONFREE
-# include <squish.h>
-#endif
-
 namespace oz
 {
 namespace builder
 {
-
-static const int DDSD_CAPS        = 0x00000001;
-static const int DDSD_HEIGHT      = 0x00000002;
-static const int DDSD_WIDTH       = 0x00000004;
-static const int DDSD_PITCH       = 0x00000008;
-static const int DDSD_PIXELFORMAT = 0x00001000;
-static const int DDSD_MIPMAPCOUNT = 0x00020000;
-static const int DDSD_LINEARSIZE  = 0x00080000;
-
-static const int DDSDCAPS_COMPLEX = 0x00000008;
-static const int DDSDCAPS_TEXTURE = 0x00001000;
-static const int DDSDCAPS_MIPMAP  = 0x00400000;
-
-static const int DDPF_ALPHAPIXELS = 0x00000001;
-static const int DDPF_FOURCC      = 0x00000004;
-static const int DDPF_RGB         = 0x00000040;
-static const int DDPF_LUMINANCE   = 0x00020000;
 
 const char* const IMAGE_EXTENSIONS[] = {
   ".dds",
@@ -68,151 +46,6 @@ const char* const IMAGE_EXTENSIONS[] = {
   ".tga",
   ".tiff"
 };
-
-static FIBITMAP* loadImage( const File& file, bool force24Bits )
-{
-  InputStream       is        = file.inputStream();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( is.begin() ) );
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( is.capacity() ) );
-  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, is.capacity() );
-  FIBITMAP*         image     = FreeImage_LoadFromMemory( format, memoryIO );
-
-  FreeImage_CloseMemory( memoryIO );
-
-  if( image == nullptr ) {
-    OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
-  }
-
-  bool isTransparent = FreeImage_IsTransparent( image );
-  FIBITMAP* newImage = isTransparent && !force24Bits ? FreeImage_ConvertTo32Bits( image ) :
-                                                       FreeImage_ConvertTo24Bits( image );
-  FreeImage_Unload( image );
-  FreeImage_FlipVertical( newImage );
-  return newImage;
-}
-
-static void writeDDS( FIBITMAP* image, const char* filePath )
-{
-  int width  = int( FreeImage_GetWidth( image ) );
-  int height = int( FreeImage_GetHeight( image ) );
-  int bpp    = int( FreeImage_GetBPP( image ) );
-
-  if( context.useS3TC && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
-    OZ_ERROR( "Dimensions of compressed textures must be powers of 2" );
-  }
-
-  bool isTransparent  = bpp == 32;
-  int  pitchOrLinSize = width * ( bpp / 8 );
-  int  nMipmaps       = Math::index1( max( width, height ) ) + 1;
-
-  int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_MIPMAPCOUNT;
-  flags |= context.useS3TC ? DDSD_LINEARSIZE : DDSD_PITCH;
-
-  int caps = DDSDCAPS_TEXTURE | DDSDCAPS_COMPLEX | DDSDCAPS_MIPMAP;
-
-  int pixelFlags = 0;
-  pixelFlags |= isTransparent ? DDPF_ALPHAPIXELS : 0;
-  pixelFlags |= context.useS3TC ? DDPF_FOURCC :
-                bpp == 8 ? DDPF_LUMINANCE : DDPF_RGB;
-
-  const char* compression = "\0\0\0\0";
-
-#ifdef OZ_NONFREE
-  int squishFlags = isTransparent ? squish::kDxt5 : squish::kDxt1;
-  squishFlags    |= squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
-
-  if( context.useS3TC ) {
-    pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
-    compression    = isTransparent ? "DXT5" : "DXT1";
-  }
-#endif
-
-  OutputStream os( 0, Endian::LITTLE );
-
-  // Header beginning.
-  os.writeChars( "DDS ", 4 );
-  os.writeInt( 124 );
-  os.writeInt( flags );
-  os.writeInt( height );
-  os.writeInt( width );
-  os.writeInt( pitchOrLinSize );
-  os.writeInt( 0 );
-  os.writeInt( nMipmaps );
-
-  // Reserved int[11].
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-
-  // Pixel format.
-  os.writeInt( 32 );
-  os.writeInt( pixelFlags );
-  os.writeChars( compression, 4 );
-  os.writeInt( bpp );
-  os.writeUInt( 0x00ff0000 );
-  os.writeUInt( 0x0000ff00 );
-  os.writeUInt( 0x000000ff );
-  os.writeUInt( 0xff000000 );
-
-  os.writeInt( caps );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-
-  for( int i = 0; i < nMipmaps; ++i ) {
-    FIBITMAP* level = image;
-
-    if( i != 0 ) {
-      width  = max( 1, width / 2 );
-      height = max( 1, height / 2 );
-      level  = FreeImage_Rescale( image, width, height, FILTER_CATMULLROM );
-    }
-
-    if( context.useS3TC ) {
-#ifdef OZ_NONFREE
-      FIBITMAP* level32 = FreeImage_ConvertTo32Bits( level );
-      ubyte*    pixels  = FreeImage_GetBits( level32 );
-      int       size    = width * height * 4;
-      int       s3Size  = squish::GetStorageRequirements( width, height, squishFlags );
-
-      for( int i = 0; i < size; i += 4 ) {
-        swap( pixels[i], pixels[i + 2] );
-      }
-
-      squish::CompressImage( pixels, width, height, os.forward( s3Size ), squishFlags );
-
-      FreeImage_Unload( level32 );
-#endif
-    }
-    else {
-      const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
-      int         pitch  = int( FreeImage_GetPitch( level ) );
-
-      for( int i = 0; i < height; ++i ) {
-        os.writeChars( pixels, width * bpp / 8 );
-        pixels += pitch;
-      }
-    }
-
-    if( level != image ) {
-      FreeImage_Unload( level );
-    }
-  }
-
-  File destFile = filePath;
-  if( !destFile.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Failed to write '%s'", filePath );
-  }
-}
 
 bool Context::isBaseTexture( const char* path_ )
 {
@@ -226,6 +59,11 @@ bool Context::isBaseTexture( const char* path_ )
 void Context::buildTexture( const char* basePath_, const char* destBasePath_, bool allLayers )
 {
   Log::print( "Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_ );
+
+  int imageOptions = ImageBuilder::MIPMAPS_BIT;
+  if( useS3TC ) {
+    imageOptions |= ImageBuilder::COMPRESSION_BIT;
+  }
 
   String destBasePath      = destBasePath_;
   String basePath          = basePath_;
@@ -286,89 +124,61 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
   }
 
   if( diffuse.type() != File::MISSING ) {
-    String destPath = destBasePath + ".dds";
-
-    if( diffuse.hasExtension( "dds" ) ) {
-      File::cp( diffuse, destPath );
-    }
-    else {
-      FIBITMAP* image = loadImage( diffuse, false );
-
-      writeDDS( image, destPath );
-      FreeImage_Unload( image );
-    }
+    ImageBuilder::convertToDDS( diffuse, imageOptions, destBasePath + ".dds" );
   }
   else {
     OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
   if( masks.type() != File::MISSING ) {
-    String destPath = destBasePath + "_m.dds";
-
-    if( masks.hasExtension( "dds" ) ) {
-      File::cp( masks, destPath );
-    }
-    else {
-      FIBITMAP* image = loadImage( masks, true );
-
-      writeDDS( image, destPath );
-      FreeImage_Unload( image );
-    }
+    ImageBuilder::convertToDDS( masks, imageOptions, destBasePath + "_m.dds" );
   }
   else {
-    FIBITMAP* specularImage  = nullptr;
-    ubyte*    specularPixels = nullptr;
+    ImageData specularImage;
     int       specularWidth  = 0;
     int       specularHeight = 0;
 
-    FIBITMAP* emissionImage  = nullptr;
-    ubyte*    emissionPixels = nullptr;
+    ImageData emissionImage;
     int       emissionWidth  = 0;
     int       emissionHeight = 0;
 
     if( specular.type() != File::MISSING ) {
-      specularImage  = loadImage( specular, true );
-      specularPixels = FreeImage_GetBits( specularImage );
-      specularWidth  = int( FreeImage_GetWidth( specularImage ) );
-      specularHeight = int( FreeImage_GetHeight( specularImage ) );
+      specularImage = ImageBuilder::loadImage( specular );
+      specularImage.flags = 0;
     }
     if( emission.type() != File::MISSING ) {
-      emissionImage  = loadImage( emission, true );
-      emissionPixels = FreeImage_GetBits( emissionImage );
-      emissionWidth  = int( FreeImage_GetWidth( emissionImage ) );
-      emissionHeight = int( FreeImage_GetHeight( emissionImage ) );
+      emissionImage = ImageBuilder::loadImage( emission );
+      emissionImage.flags = 0;
     }
 
-    if( specularImage == nullptr && emissionImage == nullptr ) {
+    if( specularImage.isEmpty() && emissionImage.isEmpty() ) {
       // Drop through.
     }
-    else if( emissionImage == nullptr ) {
+    else if( emissionImage.isEmpty() ) {
       for( int i = 0; i < specularWidth * specularHeight; ++i ) {
-        ubyte& b = specularPixels[i*3 + 0];
-        ubyte& g = specularPixels[i*3 + 1];
-        ubyte& r = specularPixels[i*3 + 2];
+        char& b = specularImage.pixels[i*4 + 0];
+        char& g = specularImage.pixels[i*4 + 1];
+        char& r = specularImage.pixels[i*4 + 2];
 
-        r = ubyte( ( b + g + r ) / 3 );
+        r = ( b + g + r ) / 3;
         g = 0;
         b = 0;
       }
 
-      writeDDS( specularImage, destBasePath + "_m.dds" );
-      FreeImage_Unload( specularImage );
+      ImageBuilder::createDDS( &specularImage, 1, imageOptions, destBasePath + "_m.dds" );
     }
-    else if( specularImage == nullptr ) {
+    else if( specularImage.isEmpty() ) {
       for( int i = 0; i < emissionWidth * emissionHeight; ++i ) {
-        ubyte& b = emissionPixels[i*3 + 0];
-        ubyte& g = emissionPixels[i*3 + 1];
-        ubyte& r = emissionPixels[i*3 + 2];
+        char& b = emissionImage.pixels[i*4 + 0];
+        char& g = emissionImage.pixels[i*4 + 1];
+        char& r = emissionImage.pixels[i*4 + 2];
 
         r = 0;
-        g = ubyte( ( b + g + r ) / 3 );
+        g = ( b + g + r ) / 3;
         b = 0;
       }
 
-      writeDDS( emissionImage, destBasePath + "_m.dds" );
-      FreeImage_Unload( emissionImage );
+      ImageBuilder::createDDS( &emissionImage, 1, imageOptions, destBasePath + "_m.dds" );
     }
     else {
       if( specularWidth != emissionWidth || specularHeight != emissionHeight ) {
@@ -376,37 +186,25 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
       }
 
       for( int i = 0; i < specularWidth * specularHeight; ++i ) {
-        ubyte& b = specularPixels[i*3 + 0];
-        ubyte& g = specularPixels[i*3 + 1];
-        ubyte& r = specularPixels[i*3 + 2];
+        char& b = specularImage.pixels[i*4 + 0];
+        char& g = specularImage.pixels[i*4 + 1];
+        char& r = specularImage.pixels[i*4 + 2];
 
-        ubyte& eb = emissionPixels[i*3 + 0];
-        ubyte& eg = emissionPixels[i*3 + 1];
-        ubyte& er = emissionPixels[i*3 + 2];
+        char& eb = emissionImage.pixels[i*4 + 0];
+        char& eg = emissionImage.pixels[i*4 + 1];
+        char& er = emissionImage.pixels[i*4 + 2];
 
-        r = ubyte( ( b + g + r ) / 3 );
-        g = ubyte( ( eb + eg + er ) / 3 );
+        r = ( b + g + r ) / 3;
+        g = ( eb + eg + er ) / 3;
         b = 0;
       }
 
-      writeDDS( specularImage, destBasePath + "_m.dds" );
-      FreeImage_Unload( specularImage );
-      FreeImage_Unload( emissionImage );
+      ImageBuilder::createDDS( &specularImage, 1, imageOptions, destBasePath + "_m.dds" );
     }
   }
 
   if( normals.type() != File::MISSING ) {
-    String destPath = destBasePath + "_n.dds";
-
-    if( normals.hasExtension( "dds" ) ) {
-      File::cp( normals, destPath );
-    }
-    else {
-      FIBITMAP* image = loadImage( normals, true );
-
-      writeDDS( image, destPath );
-      FreeImage_Unload( image );
-    }
+    ImageBuilder::convertToDDS( normals, imageOptions, destBasePath + "_n.dds" );
   }
 
   Log::printEnd( " OK" );

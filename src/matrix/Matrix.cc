@@ -161,6 +161,7 @@ void Matrix::read( InputStream* is )
   Log::indent();
 
   timer.ticks = is->readULong64();
+  timer.time  = float( timer.ticks ) / 1.0e6f;
   orbis.read( is );
   physics.gravity = is->readFloat();
 

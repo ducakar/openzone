@@ -34,6 +34,9 @@
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "oz::JSON: " message " at %s:%d:%d", path, line, column + ( charBias ) );
 
+static_assert( sizeof( double ) >= sizeof( void* ),
+               "Pointer must fit into double for internal JSON union to work properly" );
+
 namespace oz
 {
 
@@ -836,12 +839,8 @@ JSON::JSON( const JSON& v ) :
 }
 
 JSON::JSON( JSON&& v ) :
-  valueType( v.valueType ), wasAccessed( v.wasAccessed )
+  number( v.number ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
-  boolean = v.boolean;
-  number  = v.number;
-  data    = v.data;
-
   v.valueType   = NIL;
   v.wasAccessed = true;
 }
@@ -895,9 +894,7 @@ JSON& JSON::operator = ( JSON&& v )
 
   clear();
 
-  boolean     = v.boolean;
   number      = v.number;
-  data        = v.data;
   valueType   = v.valueType;
   wasAccessed = v.wasAccessed;
 

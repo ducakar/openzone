@@ -50,17 +50,36 @@ void Mouse::update()
   icon = ARROW;
 
   if( doShow ) {
-    int newX = x + Math::lround( input.mouseX );
-    int newY = y + Math::lround( input.mouseY );
+    float minX = 0.0f;
+    float minY = 0.0f;
+    float maxX = float( camera.width ) - 1.0f;
+    float maxY = float( camera.height ) - 1.0f;
 
-    if( newX < 0 || camera.width <= newX ) {
-      newX = clamp( newX, 0, camera.width - 1 );
-      input.lookX -= input.mouseX * input.mouseSensX;
+    fineX += input.mouseX;
+    fineY += input.mouseY;
+
+    if( fineX < minX ) {
+      input.lookX += ( minX - fineX ) * input.mouseSensX;
+      fineX = minX;
     }
-    if( newY < 0 || camera.height <= newY ) {
-      newY = clamp( newY, 0, camera.height - 1 );
-      input.lookY += input.mouseY * input.mouseSensY;
+    else if( fineX > maxX )
+    {
+      input.lookX -= ( fineX - maxX ) * input.mouseSensX;
+      fineX = maxX;
     }
+
+    if( fineY < minY ) {
+      input.lookY -= ( minY - fineY ) * input.mouseSensY;
+      fineY = minY;
+    }
+    else if( fineY > maxY )
+    {
+      input.lookY += ( fineY - maxY ) * input.mouseSensY;
+      fineY = maxY;
+    }
+
+    int newX = Math::lround( fineX );
+    int newY = Math::lround( fineY );
 
     dx = newX - x;
     dy = newY - y;
@@ -71,10 +90,12 @@ void Mouse::update()
     input.lookX -= input.mouseX * input.mouseSensX;
     input.lookY += input.mouseY * input.mouseSensY;
 
-    dx = 0;
-    dy = 0;
-    x  = camera.centreX;
-    y  = camera.centreY;
+    fineX = float( camera.centreX );
+    fineY = float( camera.centreY );
+    dy    = 0;
+    dx    = 0;
+    x     = camera.centreX;
+    y     = camera.centreY;
   }
 }
 
@@ -104,6 +125,8 @@ void Mouse::init()
 {
   Log::print( "Initialising Mouse ..." );
 
+  fineX    = 0.0f;
+  fineY    = 0.0f;
   x        = camera.centreX;
   y        = camera.centreY;
   dx       = 0;

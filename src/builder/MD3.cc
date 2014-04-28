@@ -147,9 +147,6 @@ void MD3::buildMesh( const char* name, int frame )
 //     }
 //   }
 
-  // FIXME cppcheck: indexBase unused.
-  int indexBase = 0;
-
   is.rewind();
   is.forward( header.offSurfaces );
 
@@ -267,8 +264,6 @@ void MD3::buildMesh( const char* name, int frame )
     compiler.beginNode();
     compiler.bindMesh( meshId );
     compiler.endNode();
-
-    indexBase += surface.nVertices;
   }
 
   Log::printEnd( " OK" );
