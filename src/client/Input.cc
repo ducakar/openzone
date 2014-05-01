@@ -308,7 +308,7 @@ void Input::loadKeyMap( const JSON& keyConfig )
 {
 #if SDL_MAJOR_VERSION < 2
 
-  HashMap<String, SDLKey, 512> sdlKeyNames;
+  HashMap<String, SDLKey> sdlKeyNames;
 
   for( int i = 0; i < SDLK_LAST; ++i ) {
     const char* name = SDL_GetKeyName( SDLKey( i ) );
@@ -539,10 +539,16 @@ void Input::update()
   int dx, dy;
   SDL_GetRelativeMouseState( &dx, &dy );
 
+# if SDL_MAJOR_VERSION < 2
   mouseX = +float( dx );
   mouseY = -float( dy );
+# else
+  // FIXME SDL2 bug? Remove workaround when fixed.
+  mouseX = +float( dx ) / 2.0f;
+  mouseY = -float( dy ) / 2.0f;
+# endif
 
-# ifndef _WIN3
+# ifndef _WIN32
   if( Window::hasGrab() ) {
     // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
     // code is not based on actual code from X.Org, but experimentally tuned to match default X
@@ -687,10 +693,10 @@ void Input::init()
   mouseSensZ          = mouseConfig["sensitivity.z"].get( 2.0f );
   mouseSensW          = mouseConfig["sensitivity.w"].get( 2.0f );
 
-  mouseSpeed          = mouseConfig["acceleration.constant"].get( 0.2f );
-  mouseAccel          = mouseConfig["acceleration.factor"].get( 0.00003f );
+  mouseSpeed          = mouseConfig["acceleration.constant"].get( 0.25f );
+  mouseAccel          = mouseConfig["acceleration.factor"].get( 0.0004f );
   mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
-  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 0.75f );
+  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 1.5f );
   mouseWheelStep      = mouseConfig["wheelStep"].get( 3.0f );
 
   keySensX            = keyboardConfig["sensitivity.x"].get( 0.04f );
@@ -733,7 +739,7 @@ void Input::destroy()
   mouseConfig.add( "acceleration.constant",  mouseSpeed );
   mouseConfig.add( "acceleration.factor",    mouseAccel );
   mouseConfig.add( "acceleration.threshold", mouseAccelThreshold );
-  mouseConfig.add( "acceleration.max",       mouseMaxAccel + 1.0f );
+  mouseConfig.add( "acceleration.max",       mouseMaxAccel );
   mouseConfig.add( "wheelStep",              mouseWheelStep );
 
   keyboardConfig.add( "sensitivity.x",       keySensX );

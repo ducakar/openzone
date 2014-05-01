@@ -23,8 +23,6 @@
  * Shader for skybox and celestial bodies.
  */
 
-#version 100
-
 precision highp float;
 
 uniform mat4 oz_ProjCamera;

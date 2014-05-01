@@ -42,7 +42,7 @@ diff -Naur SDL-1.2.15.orig/configure.in SDL-1.2.15/configure.in
 +    if test x$enable_video = xyes -a x$enable_naclvideo = xyes; then
 +        AC_DEFINE(SDL_VIDEO_DRIVER_NACL)
 +        SOURCES="$SOURCES $srcdir/src/video/nacl/*.cc"
-+        SDL_LIBS="-Wl,--start-group -lSDLmain $SDL_LIBS -lppapi -lppapi_cpp -lppapi_gles2 -Wl,--end-group -lstdc++"
++        SDL_LIBS="-Wl,--start-group -lSDLmain $SDL_LIBS -lppapi -lppapi_cpp -lppapi_gles2 -Wl,--end-group -lc++"
 +    fi
 +
 +    AC_ARG_ENABLE(naclaudio,
@@ -70,7 +70,7 @@ diff -Naur SDL-1.2.15.orig/configure.in SDL-1.2.15/configure.in
 +        if test x$video_opengl = xyes; then
 +            AC_DEFINE(SDL_VIDEO_OPENGL)
 +            AC_DEFINE(SDL_VIDEO_OPENGL_REGAL)
-+            SDL_LIBS="$SDL_LIBS -lRegal -lstdc++"
++            SDL_LIBS="$SDL_LIBS -lRegal -lc++"
 +        fi
 +    fi
 +}
@@ -1530,7 +1530,7 @@ diff -Naur SDL-1.2.15.orig/test/configure.in SDL-1.2.15/test/configure.in
  
 +case "$host" in
 +    *-*-nacl*)
-+        LIBS="$LIBS -lnacl_io -lstdc++ -lc -lnosys"
++        LIBS="$LIBS -lnacl_io -lc++ -lc -lnosys"
 +        ;;
 +esac
 +

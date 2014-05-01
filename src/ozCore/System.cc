@@ -531,11 +531,13 @@ static void abort( bool doHalt )
 
   __android_log_write( ANDROID_LOG_FATAL, "liboz", "ABORTED\n"  );
 
+#elif defined( __native_client__ )
+
+  fputs( "ABORTED\n", stderr );
+
 #else
 
-# ifndef __native_client__
   doHalt = doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO );
-# endif
 
   fflush( stdout );
   fputs( doHalt ? "Halted. Attach a debugger or press Enter to abort ... " : "ABORTED\n", stderr );

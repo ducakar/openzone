@@ -34,7 +34,7 @@ void test_Alloc()
 
 #ifndef OZ_DISABLE_ALLOC_OVERLOADS
 
-  static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
+  static const size_t STAT_META_SIZE = OZ_ALIGNMENT;
 
   size_t oAmount    = Alloc::amount;
   size_t oSumAmount = Alloc::sumAmount;
@@ -61,18 +61,18 @@ void test_Alloc()
 
   OZ_CHECK( Alloc::alignDown( 0 ) == 0 );
   OZ_CHECK( Alloc::alignDown( 1 ) == 0 );
-  OZ_CHECK( Alloc::alignDown( Alloc::ALIGNMENT - 1 ) == 0 );
-  OZ_CHECK( Alloc::alignDown( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
+  OZ_CHECK( Alloc::alignDown( OZ_ALIGNMENT - 1 ) == 0 );
+  OZ_CHECK( Alloc::alignDown( OZ_ALIGNMENT ) == OZ_ALIGNMENT );
 
   OZ_CHECK( Alloc::alignUp( 0 ) == 0 );
-  OZ_CHECK( Alloc::alignUp( 1 ) == Alloc::ALIGNMENT );
-  OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT - 1 ) == Alloc::ALIGNMENT );
-  OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
+  OZ_CHECK( Alloc::alignUp( 1 ) == OZ_ALIGNMENT );
+  OZ_CHECK( Alloc::alignUp( OZ_ALIGNMENT - 1 ) == OZ_ALIGNMENT );
+  OZ_CHECK( Alloc::alignUp( OZ_ALIGNMENT ) == OZ_ALIGNMENT );
 
 #endif
 
   char* zeroptr = nullptr;
-  char* oneptr  = zeroptr + Alloc::ALIGNMENT;
+  char* oneptr  = zeroptr + OZ_ALIGNMENT;
 
   OZ_CHECK( Alloc::alignDown( zeroptr ) == zeroptr );
   OZ_CHECK( Alloc::alignDown( zeroptr + 1 ) == zeroptr );

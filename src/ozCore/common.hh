@@ -43,6 +43,16 @@
 #define OZ_ALIGNED( n ) __attribute__(( aligned( n ) ))
 
 /**
+ * @def OZ_ALIGNMENT
+ * Alignment of allocated storage returned by the `new` operator.
+ */
+#ifdef OZ_SIMD_MATH
+# define OZ_ALIGNMENT sizeof( float[4] )
+#else
+# define OZ_ALIGNMENT sizeof( void* )
+#endif
+
+/**
  * @def OZ_ALWAYS_INLINE
  * Compiler-specific attribute that suggests function inlining even in debug mode.
  */

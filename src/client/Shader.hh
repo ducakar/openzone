@@ -164,13 +164,6 @@ public:
 
 private:
 
-  static const int  LOG_BUFFER_SIZE = 8192;
-  static const int  SAMPLER_MAP[];
-
-  static char       logBuffer[LOG_BUFFER_SIZE];
-
-  static String     defines;
-
   Map<String, uint> vertShaders;
   Map<String, uint> fragShaders;
   DArray<Program>   programs;
@@ -179,7 +172,7 @@ private:
   float             lightingDistance;
   CaelumLight       caelumLight;
 
-  void compileShader( uint shaderId, const String& defines, const String& name ) const;
+  void compileShader( uint shaderId, const String& defines, const File& file ) const;
   void loadProgram( int id );
 
 public:
@@ -201,6 +194,7 @@ public:
   bool hasS3TC;
   bool hasVertexTexture;
   bool setSamplerMap;
+  bool doVertexEffects;
   bool doEnvMap;
   bool doBumpMap;
   bool doPostprocess;

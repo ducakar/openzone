@@ -332,12 +332,7 @@ int GL::textureDataFromFile( const File& file, int bias )
 
 static bool readShaderFile( const File& file, OutputStream* os, List<int>* fileOffsets )
 {
-  Buffer buffer = file.read();
-  if( buffer.isEmpty() ) {
-    return false;
-  }
-
-  InputStream  is = buffer.inputStream();
+  InputStream  is = file.inputStream();
   OutputStream cs( 0 ); // Clean file contents, without #include directives.
 
   while( is.isAvailable() ) {

@@ -74,20 +74,22 @@ void Text::setTextv( const char* s, va_list ap )
     int newHash = hash( buffer );
 
     if( newHash != lastHash ) {
-      if( texId == 0 ) {
-        glGenTextures( 1, &texId );
-      }
+      MainCall() << [&]() {
+        if( texId == 0 ) {
+          glGenTextures( 1, &texId );
+        }
 
-      glBindTexture( GL_TEXTURE_2D, texId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glBindTexture( GL_TEXTURE_2D, texId );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
-      texWidth = width;
-      style.fonts[font].upload( buffer, &texWidth, &texHeight );
+        texWidth = width;
+        style.fonts[font].upload( buffer, &texWidth, &texHeight );
 
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+        glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
-      realign();
+        realign();
+      };
     }
   }
 }
@@ -222,7 +224,9 @@ void Text::draw( const Area* area )
 void Text::clear()
 {
   if( texId != 0 ) {
-    glDeleteTextures( 1, &texId );
+    MainCall() << [&]() {
+      glDeleteTextures( 1, &texId );
+    };
 
     texX      = 0;
     texY      = 0;

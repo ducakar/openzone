@@ -23,14 +23,14 @@
  * Mesh shader that deforms mesh according to the given wind.
  */
 
-#version 100
-
 precision highp float;
 
 uniform mat4  oz_ProjCamera;
 uniform mat4  oz_Model;
 uniform vec3  oz_CameraPos;
+#ifdef OZ_VERTEX_EFFECTS
 uniform vec4  oz_Wind;
+#endif
 
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
@@ -53,11 +53,13 @@ void main()
   mat3 modelRot = mat3( oz_Model );
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
 
+#ifdef OZ_VERTEX_EFFECTS
   float windFact = max( inPosition.z, 0.0 );
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
                      sin( 0.08 * ( position.x + position.y ) + oz_Wind.w );
 
   position.xy   += windBias.xy, position.z;
+#endif
 
   exPosition  = position.xyz - oz_CameraPos;
   exTexCoord  = inTexCoord;

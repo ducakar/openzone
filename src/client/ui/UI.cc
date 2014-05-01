@@ -87,6 +87,8 @@ void UI::update()
 
 void UI::draw()
 {
+  OZ_NACL_IS_MAIN( true );
+
   if( !doShow ) {
     return;
   }

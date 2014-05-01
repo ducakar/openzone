@@ -15,13 +15,13 @@
 buildType=Debug
 platforms=(
   Linux-`uname -m`-Clang
-#   Linux-x86_64
+  Linux-x86_64
 #   Linux-x86_64-Clang
 #   Linux-i686
 #   Linux-i686-Clang
 #   Windows-x86_64
 #   Windows-i686
-#   PNaCl
+  PNaCl
 #   Android14-i686
 #   Android14-ARM
 #   Android14-ARMv7a

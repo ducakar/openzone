@@ -189,8 +189,7 @@ static void deallocate( AllocMode mode, void* ptr )
 
 #endif // !OZ_DISABLE_ALLOC_OVERLOADS
 
-const size_t Alloc::ALIGNMENT;
-const bool   Alloc::OVERLOADS_NEW_AND_DELETE;
+const bool Alloc::OVERLOADS_NEW_AND_DELETE;
 
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;

@@ -15,6 +15,7 @@ elseif( NACL )
   use_pch( openzone pch )
   target_link_libraries( openzone client nirvana matrix common ozEngine )
   set_target_properties( openzone PROPERTIES OUTPUT_NAME openzone${PLATFORM_EXE_SUFFIX} )
+  pnacl_finalise( openzone )
 
 else()
 

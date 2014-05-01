@@ -72,6 +72,7 @@ function setup_pnacl()
   export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/include"
   export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/include/newlib"
   export CFLAGS="-O4 -ffast-math"
+  export CXXFLAGS="-O4 -ffast-math"
   export LDFLAGS="-L$buildDir/usr/lib -L$NACL_SDK_ROOT/lib/pnacl/Release -lnosys"
 
   for p in ${platforms[@]}; do
@@ -101,6 +102,7 @@ function setup_ndk_i686()
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC -march=i686 -msse3 -mfpmath=sse"
+  export CXXFLAGS="-Ofast -fPIC -march=i686 -msse3 -mfpmath=sse"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   for p in ${platforms[@]}; do
@@ -130,6 +132,7 @@ function setup_ndk_ARM()
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC -Wno-psabi"
+  export CXXFLAGS="-Ofast -fPIC -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   for p in ${platforms[@]}; do
@@ -159,6 +162,7 @@ function setup_ndk_ARMv7a()
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
+  export CXXFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
 
   for p in ${platforms[@]}; do
@@ -188,6 +192,7 @@ function setup_ndk_MIPS()
 
   export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
   export CFLAGS="-Ofast -fPIC"
+  export CXXFLAGS="-Ofast -fPIC"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   for p in ${platforms[@]}; do

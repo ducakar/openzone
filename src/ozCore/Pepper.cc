@@ -106,8 +106,6 @@ void Pepper::Instance::onMouseLocked( void*, int result )
 Pepper::Instance::Instance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
 {
-  MainCall::semaphore.init();
-
   ppCore     = pp::Module::Get()->core();
   ppInstance = this;
 
@@ -125,8 +123,6 @@ Pepper::Instance::~Instance()
   messageQueue.deallocate();
 
   ppInstance = nullptr;
-
-  MainCall::semaphore.destroy();
 }
 
 bool Pepper::Instance::Init( uint32_t, const char**, const char** )
@@ -282,7 +278,19 @@ pp::Module* Pepper::createModule()
   return new Module();
 }
 
-Semaphore MainCall::semaphore;
+OZ_HIDDEN
+MainCall::LocalSemaphore::LocalSemaphore()
+{
+  sem.init();
+}
+
+OZ_HIDDEN
+MainCall::LocalSemaphore::~LocalSemaphore()
+{
+  sem.destroy();
+}
+
+MainCall::LocalSemaphore MainCall::localSemaphore;
 
 }
 

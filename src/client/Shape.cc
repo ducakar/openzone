@@ -412,30 +412,30 @@ void Shape::object( const Point& pos, const Mat3& rot, const void* shape_ )
 
 void Shape::init()
 {
-  hard_assert( Thread::isMain() );
+  MainCall() << [&]() {
+    glGenBuffers( 1, &vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBufferData( GL_ARRAY_BUFFER, sizeof( VERTICES ), VERTICES, GL_STATIC_DRAW );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  glGenBuffers( 1, &vbo );
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, sizeof( VERTICES ), VERTICES, GL_STATIC_DRAW );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-  glGenBuffers( 1, &ibo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( INDICES ), INDICES, GL_STATIC_DRAW );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glGenBuffers( 1, &ibo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( INDICES ), INDICES, GL_STATIC_DRAW );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  };
 }
 
 void Shape::destroy()
 {
-  hard_assert( Thread::isMain() );
+  MainCall() << [&]() {
+    if( vbo != 0 ) {
+      glDeleteBuffers( 1, &ibo );
+      glDeleteBuffers( 1, &vbo );
 
-  if( vbo != 0 ) {
-    glDeleteBuffers( 1, &ibo );
-    glDeleteBuffers( 1, &vbo );
-
-    ibo = 0;
-    vbo = 0;
-  }
+      ibo = 0;
+      vbo = 0;
+    }
+  };
 }
 
 Shape shape;

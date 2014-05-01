@@ -37,25 +37,10 @@ namespace oz
 {
 
 #ifdef __native_client__
-
 const bool SharedLib::IS_SUPPORTED = false;
-
-SharedLib::Method* SharedLib::get( const char* ) const
-{
-  return nullptr;
-}
-
-bool SharedLib::open( const char* )
-{
-  return nullptr;
-}
-
-void SharedLib::close()
-{}
-
 #else
-
 const bool SharedLib::IS_SUPPORTED = true;
+#endif
 
 SharedLib::SharedLib() :
   handle( nullptr )
@@ -84,6 +69,23 @@ SharedLib& SharedLib::operator = ( SharedLib&& l )
   return *this;
 }
 
+#ifdef __native_client__
+
+SharedLib::Method* SharedLib::get( const char* ) const
+{
+  return nullptr;
+}
+
+bool SharedLib::open( const char* )
+{
+  return nullptr;
+}
+
+void SharedLib::close()
+{}
+
+#else
+
 SharedLib::Method* SharedLib::get( const char* symbol ) const
 {
   if( handle == nullptr ) {
@@ -91,16 +93,12 @@ SharedLib::Method* SharedLib::get( const char* symbol ) const
   }
 
 #ifdef _WIN32
-
   FARPROC proc = GetProcAddress( static_cast<HMODULE>( handle ), symbol );
   return reinterpret_cast<Method*>( proc );
-
 #else
-
   Method* method;
   *( void** ) &method = dlsym( handle, symbol );
   return method;
-
 #endif
 }
 

@@ -534,7 +534,7 @@ void Model::upload( const Vertex* vertices, int nVertices, uint usage ) const
 
 void Model::load()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   hard_assert( preloadData != nullptr && preloadData->modelFile.isMapped() );
   InputStream is = preloadData->modelFile.inputStream( Endian::LITTLE );
@@ -592,15 +592,15 @@ void Model::load()
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
-      const char* animData = is.forward( vertexBufferSize + normalBufferSize );
-
-#ifndef GL_ES_VERSION_2_0
+#ifdef GL_ES_VERSION_2_0
+      is.forward( vertexBufferSize + normalBufferSize );
+#else
       glGenTextures( 1, &animationTexId );
       glBindTexture( GL_TEXTURE_2D, animationTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, 2 * nFrames, 0, GL_RGB,
-                    GL_FLOAT, animData );
+                    GL_FLOAT, is.forward( vertexBufferSize + normalBufferSize ) );
       glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       OZ_GL_CHECK_ERROR();
@@ -624,7 +624,7 @@ void Model::load()
 
 void Model::unload()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   if( preloadData != nullptr ) {
     delete preloadData;

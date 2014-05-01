@@ -59,10 +59,13 @@
 #define OZ_LOAD_IMAGE( name ) \
 { \
   File file = "@ui/icon/" #name ".dds"; \
-  glBindTexture( GL_TEXTURE_2D, images.name ); \
-  if( GL::textureDataFromFile( file, 0 ) == 0 ) { \
-    OZ_ERROR( "Failed to load texture '%s'", file.path().cstr() ); \
-  } \
+  file.map(); \
+  MainCall() << [&]() { \
+    glBindTexture( GL_TEXTURE_2D, images.name ); \
+    if( GL::textureDataFromFile( file, 0 ) == 0 ) { \
+      OZ_ERROR( "Failed to load texture '%s'", file.path().cstr() ); \
+    } \
+  }; \
 }
 
 namespace oz
@@ -204,7 +207,9 @@ void Style::init()
 
   config.clear( true );
 
-  glGenTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
+  MainCall() << [&]() {
+    glGenTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
+  };
 
   OZ_LOAD_IMAGE( crosshair );
   OZ_LOAD_IMAGE( use );
@@ -236,7 +241,9 @@ void Style::destroy()
   context.releaseSound( sounds.click );
   context.releaseSound( sounds.bell );
 
-  glDeleteTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
+  MainCall() << [&]() {
+    glDeleteTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
+  };
 
   for( int i = 0; i < Font::MAX; ++i ) {
     fonts[i].destroy();

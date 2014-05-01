@@ -36,7 +36,7 @@ int main( int argc, char** argv )
 
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Black_Slim/cursors/wait" : argv[1];
 
-  GLTexture texture( "share/openzone/oz_base/ui/icon/use.dds" );
+  GLTexture texture;
   texture.generateIdenticon( 600, String::strongHash( "Davorin" ),
                              Vec4( 0.20f, 0.30f, 0.25f, 1.00f ) );
   Cursor cursor( file, Cursor::SYSTEM );
@@ -62,12 +62,13 @@ int main( int argc, char** argv )
 
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texture.id() );
+//    glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
 
     glBegin( GL_QUADS );
-//       glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
-//       glTexCoord2i( 1, 1 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height() );
-//       glTexCoord2i( 1, 0 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 );
-//       glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
+//      glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
+//      glTexCoord2i( 1, 1 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height() );
+//      glTexCoord2i( 1, 0 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 );
+//      glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
 
       glTexCoord2i( 0, 1 ); glVertex2d( -1, -1 );
       glTexCoord2i( 1, 1 ); glVertex2d( +1, -1 );

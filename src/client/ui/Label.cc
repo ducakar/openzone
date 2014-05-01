@@ -122,18 +122,20 @@ void Label::vset( int x, int y, const char* s, va_list ap )
     int newHash = hash( buffer );
 
     if( newHash != lastHash ) {
-      if( texId == 0 ) {
-        glGenTextures( 1, &texId );
-      }
+      MainCall() << [&]() {
+        if( texId == 0 ) {
+          glGenTextures( 1, &texId );
+        }
 
-      glBindTexture( GL_TEXTURE_2D, texId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glBindTexture( GL_TEXTURE_2D, texId );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-      width = -1;
-      style.fonts[font].upload( buffer, &width, &height );
+        width = -1;
+        style.fonts[font].upload( buffer, &width, &height );
 
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+        glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+      };
     }
   }
 
@@ -199,7 +201,9 @@ void Label::draw( const Area* area )
 void Label::clear()
 {
   if( texId != 0 ) {
-    glDeleteTextures( 1, &texId );
+    MainCall() << [&]() {
+      glDeleteTextures( 1, &texId );
+    };
 
     offsetX  = x;
     offsetY  = y;

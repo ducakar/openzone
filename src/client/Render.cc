@@ -274,8 +274,6 @@ void Render::prepareDraw()
 
 void Render::drawGeometry()
 {
-  hard_assert( Thread::isMain() );
-
   uint currentMicros = Time::uclock();
   uint beginMicros = currentMicros;
 
@@ -417,8 +415,6 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
-  hard_assert( Thread::isMain() );
-
   if( windowWidth != Window::width() || windowHeight != Window::height() ) {
     resize();
   }
@@ -513,7 +509,7 @@ void Render::drawUI()
 
 void Render::swap()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( false );
 
   uint beginMicros = Time::uclock();
 
@@ -524,23 +520,29 @@ void Render::swap()
 
 void Render::update( int flags )
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( false );
 
   if( flags & EFFECTS_BIT ) {
     effectsAuxSemaphore.post();
   }
-  if( flags & ORBIS_BIT ) {
-    drawOrbis();
-  }
-  if( flags & UI_BIT ) {
-    drawUI();
-  }
-  if( flags & ( ORBIS_BIT | UI_BIT ) ) {
-    Model::clearScheduled( Model::SCENE_QUEUE );
-    Model::clearScheduled( Model::OVERLAY_QUEUE );
 
+  MainCall() << [&]() {
+    if( flags & ORBIS_BIT ) {
+      drawOrbis();
+    }
+    if( flags & UI_BIT ) {
+      drawUI();
+    }
+    if( flags & ( ORBIS_BIT | UI_BIT ) ) {
+      Model::clearScheduled( Model::SCENE_QUEUE );
+      Model::clearScheduled( Model::OVERLAY_QUEUE );
+    }
+  };
+
+  if( flags & ( ORBIS_BIT | UI_BIT ) ) {
     swap();
   }
+
   if( flags & EFFECTS_BIT ) {
     effectsMainSemaphore.wait();
   }
@@ -548,7 +550,7 @@ void Render::update( int flags )
 
 void Render::resize()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   windowWidth  = Window::width();
   windowHeight = Window::height();
@@ -646,12 +648,14 @@ void Render::resize()
 
   glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 
+  OZ_GL_CHECK_ERROR();
+
 #endif
 }
 
 void Render::load()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   Log::print( "Loading Render ..." );
 
@@ -685,7 +689,7 @@ void Render::load()
 
 void Render::unload()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   Log::print( "Unloading Render ..." );
 
@@ -716,7 +720,7 @@ void Render::unload()
 
 void Render::init()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( false );
 
   Log::println( "Initialising Render {" );
   Log::indent();
@@ -733,11 +737,13 @@ void Render::init()
   const char* glslVersion;
   const char* sExtensions;
 
-  vendor      = String::cstr( glGetString( GL_VENDOR ) );
-  renderer    = String::cstr( glGetString( GL_RENDERER ) );
-  version     = String::cstr( glGetString( GL_VERSION ) );
-  glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
-  sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
+  MainCall() << [&]() {
+    vendor      = String::cstr( glGetString( GL_VENDOR ) );
+    renderer    = String::cstr( glGetString( GL_RENDERER ) );
+    version     = String::cstr( glGetString( GL_VERSION ) );
+    glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+    sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
+  };
 
   if( vendor == nullptr ) {
     OZ_ERROR( "OpenGL failed to initialise" );
@@ -850,16 +856,16 @@ void Render::init()
   minGlowBuffer   = 0;
 #endif
 
-  resize();
+  MainCall() << [&]() {
+    resize();
 
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-  glEnable( GL_CULL_FACE );
-  glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glEnable( GL_CULL_FACE );
+    glEnable( GL_BLEND );
+  };
 
   camera.init();
   ui::ui.init();
-
-  OZ_GL_CHECK_ERROR();
 
   Log::unindent();
   Log::println( "}" );
@@ -867,9 +873,7 @@ void Render::init()
 
 void Render::destroy()
 {
-#ifdef __native_client__
-  hard_assert( Pepper::isMainThread() );
-#endif
+  OZ_NACL_IS_MAIN( false );
 
   Log::println( "Destroying Render {" );
   Log::indent();

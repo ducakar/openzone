@@ -170,7 +170,7 @@ inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
 OZ_ALWAYS_INLINE
 inline void* mCopy( void* dest, const void* src, size_t size )
 {
-#ifdef NDEBUG
+#if defined( NDEBUG ) || defined( __native_client__ )
   return __builtin_memcpy( dest, src, size );
 #else
   return __builtin___memcpy_chk( dest, src, size, __builtin_object_size( dest, 0 ) );
@@ -183,7 +183,7 @@ inline void* mCopy( void* dest, const void* src, size_t size )
 OZ_ALWAYS_INLINE
 inline void* mMove( void* dest, const void* src, size_t size )
 {
-#ifdef NDEBUG
+#if defined( NDEBUG ) || defined( __native_client__ )
   return __builtin_memmove( dest, src, size );
 #else
   return __builtin___memmove_chk( dest, src, size, __builtin_object_size( dest, 0 ) );
@@ -196,7 +196,7 @@ inline void* mMove( void* dest, const void* src, size_t size )
 OZ_ALWAYS_INLINE
 inline void* mSet( void* dest, int value, size_t size )
 {
-#ifdef NDEBUG
+#if defined( NDEBUG ) || defined( __native_client__ )
   return __builtin_memset( dest, value, size );
 #else
   return __builtin___memset_chk( dest, value, size, __builtin_object_size( dest, 0 ) );

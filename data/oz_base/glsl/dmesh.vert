@@ -23,8 +23,6 @@
  * Mesh shader that reads and interpolates vertex positions from the given vertex texture.
  */
 
-#version 100
-
 precision highp float;
 
 uniform mat4      oz_ProjCamera;

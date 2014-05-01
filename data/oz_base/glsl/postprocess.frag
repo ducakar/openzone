@@ -23,8 +23,6 @@
  * Postprocess pass.
  */
 
-#version 100
-
 precision highp float;
 
 const int   MS_LEVEL        = 8;

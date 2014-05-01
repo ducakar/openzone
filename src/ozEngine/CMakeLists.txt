@@ -43,6 +43,7 @@ endif()
 # OpenAL.
 target_link_libraries( ozEngine ${OPENAL_LIBRARY} )
 
+
 # SDL.
 if( OZ_SDL1 )
   target_link_libraries( ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES} )

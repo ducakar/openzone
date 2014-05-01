@@ -76,475 +76,6 @@ void Client::printUsage( const char* invocationName )
     invocationName, OZ_PREFIX );
 }
 
-int Client::init( int argc, char** argv )
-{
-  initFlags     = 0;
-  isBenchmark   = false;
-  benchmarkTime = 0.0f;
-
-  String executablePath = File::executablePath();
-  String invocationName = executablePath.fileName();
-  String prefixDir      = String::isEmpty( OZ_PREFIX ) ? executablePath.fileDirectory() : OZ_PREFIX;
-  String language       = "";
-  String mission        = "";
-  String layoutFile     = "";
-  bool   doAutoload     = false;
-
-  optind = 1;
-  int opt;
-  while( ( opt = getopt( argc, argv, "li:e:t:L:p:vhH?" ) ) >= 0 ) {
-    switch( opt ) {
-      case 'l': {
-        doAutoload = true;
-        break;
-      }
-      case 'i': {
-        mission = optarg;
-        break;
-      }
-      case 'e': {
-        layoutFile = optarg;
-        break;
-      }
-      case 't': {
-        const char* end;
-        benchmarkTime = float( String::parseDouble( optarg, &end ) );
-
-        if( end == optarg ) {
-          printUsage( invocationName );
-          return EXIT_FAILURE;
-        }
-
-        isBenchmark = true;
-        break;
-      }
-      case 'L': {
-        language = optarg;
-        break;
-      }
-      case 'p': {
-        prefixDir = optarg;
-        break;
-      }
-      case 'v': {
-        Log::showVerbose = true;
-        break;
-      }
-      default: {
-        printUsage( invocationName );
-        return EXIT_FAILURE;
-      }
-    }
-  }
-
-  File::init( File::TEMPORARY, 64*1024*1024 );
-  initFlags |= INIT_PHYSFS;
-
-#if defined( __ANDROID__ )
-
-  String configDir   = OZ_ANDROID_ROOT "/config";
-  String localDir    = OZ_ANDROID_ROOT "/data";
-  String picturesDir = "";
-  String musicDir    = "";
-
-#else
-
-  File::mkdir( File::CONFIG );
-  File::mkdir( File::DATA );
-
-  String configDir   = File::CONFIG + "/openzone";
-  String dataDir     = File::DATA + "/openzone";
-  String musicDir    = File::MUSIC.isEmpty() ? String::EMPTY : File::MUSIC + "/OpenZone";
-  String picturesDir = File::PICTURES.isEmpty() ? String::EMPTY : File::PICTURES + "/OpenZone";
-
-#endif
-
-  if( File::mkdir( configDir ) ) {
-    Log::println( "Profile directory '%s' created", configDir.cstr() );
-  }
-  if( File::mkdir( dataDir ) ) {
-    Log::println( "Directory for per-user content '%s' created", dataDir.cstr() );
-  }
-  if( File::mkdir( dataDir + "/state" ) ) {
-    Log::println( "Directory for saved games '%s/saves' created", dataDir.cstr() );
-  }
-  if( File::mkdir( dataDir + "/layout" ) ) {
-    Log::println( "Directory for layouts '%s/layout' created", dataDir.cstr() );
-  }
-
-  File::mountLocal( dataDir );
-
-  if( Log::init( configDir + "/client.log", true ) ) {
-    Log::println( "Log file '%s'", Log::logFile() );
-  }
-
-  Log::println( "OpenZone " OZ_VERSION " started on %s", Time::local().toString().cstr() );
-
-  Log::verboseMode = true;
-  Log::println( "Build details {" );
-  Log::indent();
-  Log::println( "Date:            %s", BuildInfo::TIME );
-  Log::println( "Host:            %s", BuildInfo::HOST );
-  Log::println( "Host arch:       %s", BuildInfo::HOST_ARCH );
-  Log::println( "Target arch:     %s", BuildInfo::TARGET_ARCH );
-  Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
-  Log::println( "Compiler:        %s", BuildInfo::COMPILER );
-  Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  Log::println( "Configuration:   %s", BuildInfo::CONFIG );
-  Log::unindent();
-  Log::println( "}" );
-  Log::verboseMode = false;
-
-  MainCall() << []() {
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-      OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
-    }
-  };
-  initFlags |= INIT_SDL;
-
-  if( TTF_Init() < 0 ) {
-    OZ_ERROR( "Failed to initialise SDL_ttf" );
-  }
-  initFlags |= INIT_SDL_TTF;
-
-  // Clean up after previous versions. Be evil. Delete saved games and screenshots.
-  File saveDir       = configDir + "/saves";
-  File screenshotDir = configDir + "/screenshots";
-
-  DArray<File> saveFiles = saveDir.ls();
-  for( const File& file : saveFiles ) {
-    File::rm( file.path() );
-  }
-
-  DArray<File> screenshotFiles = screenshotDir.ls();
-  for( const File& file : screenshotFiles ) {
-    File::rm( file.path() );
-  }
-
-  File::rm( configDir + "/client.rc" );
-
-  // Load configuration.
-  File configFile = configDir + "/client.json";
-  if( config.load( configFile ) ) {
-    Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
-
-    if( String::equals( config["_version"].get( "" ), OZ_VERSION ) ) {
-      initFlags |= INIT_CONFIG;
-    }
-    else {
-      Log::println( "Invalid configuration file version, configuration will be cleaned and written"
-                    " upon exit" );
-
-      config = JSON::OBJECT;
-      config.add( "_version", OZ_VERSION );
-      config["_version"];
-    }
-  }
-  else {
-    Log::println( "No configuration file, default configuration will be used and written upon"
-                  " exit" );
-
-    config = JSON::OBJECT;
-    config.add( "_version", OZ_VERSION );
-    config["_version"];
-  }
-
-  config.add( "dir.config", configDir );
-  config.add( "dir.data", dataDir );
-  config.include( "dir.pictures", picturesDir );
-  config.include( "dir.music", musicDir );
-  config.include( "dir.prefix", prefixDir );
-
-  // tag variables as used
-  config["dir.config"];
-  config["dir.data"];
-  config["dir.music"];
-  config["dir.pictures"];
-  config["dir.prefix"];
-
-  windowWidth     = config.include( "window.windowWidth",  1280 ).get( 0 );
-  windowHeight    = config.include( "window.windowHeight", 720  ).get( 0 );
-  screenWidth     = config.include( "window.screenWidth",  0    ).get( 0 );
-  screenHeight    = config.include( "window.screenHeight", 0    ).get( 0 );
-
-  windowWidth     = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
-  windowHeight    = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
-  screenWidth     = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
-  screenHeight    = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
-
-  bool fullscreen = config.include( "window.fullscreen",    true ).get( false );
-
-  Window::create( "OpenZone " OZ_VERSION,
-                  fullscreen ? screenWidth  : windowWidth,
-                  fullscreen ? screenHeight : windowHeight,
-                  fullscreen );
-  initFlags |= INIT_WINDOW;
-
-  input.init();
-  initFlags |= INIT_INPUT;
-
-  network.init();
-  initFlags |= INIT_NETWORK;
-
-  String globalDataDir = config["dir.prefix"].get( String::EMPTY ) + "/share/openzone";
-
-#ifdef __native_client__
-
-  DArray<String> packages = naclUpdater.update();
-
-#endif
-
-  Log::println( "Content search path {" );
-  Log::indent();
-
-#ifdef __native_client__
-
-  for( const String& pkg : packages ) {
-    Pepper::post( "data:" + pkg );
-
-    File pkgFile = dataDir + "/" + pkg;
-
-    if( File::mount( pkgFile.path(), nullptr, true ) ) {
-      Log::println( "%s", pkgFile.path().cstr() );
-    }
-    else {
-      OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
-                pkgFile.path().cstr(), PHYSFS_getLastError() );
-    }
-  }
-
-  packages.clear();
-
-#else
-
-  const char* userMusicPath = config["dir.music"].get( File::MUSIC );
-
-  if( File::mount( userMusicPath, "/userMusic", true ) ) {
-    Log::println( "%s [mounted on /userMusic]", userMusicPath );
-  }
-
-  if( File::mount( dataDir, nullptr, true ) ) {
-    Log::println( "%s", dataDir.cstr() );
-
-    for( const File& file : File( dataDir ).ls() ) {
-      if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
-        if( !File::mount( file.path(), nullptr, true ) ) {
-          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
-                    file.path().cstr(), PHYSFS_getLastError() );
-        }
-        Log::println( "%s", file.path().cstr() );
-      }
-    }
-  }
-
-  if( File::mount( globalDataDir, nullptr, true ) ) {
-    Log::println( "%s", globalDataDir.cstr() );
-
-    for( const File& file : File( globalDataDir ).ls() ) {
-      if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
-        if( !File::mount( file.path(), nullptr, true ) ) {
-          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file.path().cstr() );
-        }
-        Log::println( "%s", file.path().cstr() );
-      }
-    }
-  }
-
-#endif
-
-  Log::unindent();
-  Log::println( "}" );
-
-#ifdef __native_client__
-
-  Pepper::post( "none:" );
-  Pepper::post( "lang:" );
-
-  for( String message = Pepper::pop(); ; message = Pepper::pop() ) {
-    if( message.isEmpty() ) {
-      Time::sleep( 10 );
-    }
-    else if( message.beginsWith( "lang:" ) ) {
-      language = message.substring( 5 );
-      break;
-    }
-    else {
-      Pepper::push( message );
-    }
-  }
-
-#endif
-
-  if( language.isEmpty() ) {
-    language = config["lingua"].get( "" );
-  }
-  else {
-    // Just tag as used.
-    config["lingua"];
-  }
-
-  language = Lingua::detectLanguage( language );
-
-  if( language.isEmpty() ) {
-    language = "en";
-    config.add( "lingua", language );
-  }
-
-  Log::print( "Setting language '%s' ...", language.cstr() );
-  if( lingua.init( language ) ) {
-    Log::printEnd( " OK" );
-
-    initFlags |= INIT_LINGUA;
-  }
-  else {
-    Log::printEnd( " Failed" );
-  }
-
-  config.include( "seed", "TIME" );
-
-  int seed;
-
-  if( config["seed"].type() == JSON::STRING ) {
-    if( !config["seed"].get( String::EMPTY ).equals( "TIME" ) ) {
-      OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
-    }
-
-    seed = int( Time::epoch() );
-  }
-  else {
-    seed = config["seed"].get( 42 );
-    LuaCommon::isRandomSeedTime = false;
-  }
-
-  if( isBenchmark ) {
-    seed = 42;
-    LuaCommon::isRandomSeedTime = false;
-  }
-
-  Math::seed( seed );
-  LuaCommon::randomSeed = seed;
-
-  Log::println( "Random generator seed set to: %u", uint( seed ) );
-
-  sound.initLibs();
-
-  initFlags |= INIT_LIBRARY;
-  liber.init( config["dir.music"].get( "" ) );
-
-  initFlags |= INIT_CONTEXT;
-  context.init();
-
-  initFlags |= INIT_AUDIO;
-  sound.init();
-
-  initFlags |= INIT_RENDER;
-  MainCall() << []() {
-    render.init();
-  };
-
-  initFlags |= INIT_STAGE_INIT;
-  menuStage.init();
-  gameStage.init();
-
-#ifdef __native_client__
-  Pepper::post( "none:" );
-#endif
-
-  Stage::nextStage = nullptr;
-
-  if( !layoutFile.isEmpty() ) {
-    editStage.layoutFile = layoutFile;
-
-    stage = &editStage;
-  }
-  else if( !mission.isEmpty() ) {
-    gameStage.mission = mission;
-
-    stage = &gameStage;
-  }
-  else if( doAutoload ) {
-    gameStage.stateFile = gameStage.autosaveFile;
-    stage = &gameStage;
-  }
-  else {
-    stage = &menuStage;
-  }
-
-  stage->load();
-
-  Window::setGrab( true );
-  input.reset();
-
-  return EXIT_SUCCESS;
-}
-
-void Client::shutdown()
-{
-  if( initFlags & INIT_STAGE_INIT ) {
-    gameStage.destroy();
-    menuStage.destroy();
-  }
-  if( initFlags & INIT_RENDER ) {
-    MainCall() << []() {
-      render.destroy();
-    };
-  }
-  if( initFlags & INIT_AUDIO ) {
-    sound.destroy();
-  }
-  if( initFlags & INIT_CONTEXT ) {
-    context.destroy();
-  }
-  if( initFlags & INIT_LIBRARY ) {
-    liber.destroy();
-  }
-  if( initFlags & INIT_LINGUA ) {
-    lingua.destroy();
-  }
-  if( initFlags & INIT_NETWORK ) {
-    network.destroy();
-  }
-  if( initFlags & INIT_INPUT ) {
-    input.destroy();
-  }
-  if( initFlags & INIT_WINDOW ) {
-    Window::destroy();
-  }
-  if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    File configFile = config["dir.config"].get( File::CONFIG ) + "/client.json";
-
-    config.exclude( "dir.config" );
-    config.exclude( "dir.data" );
-
-    Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
-
-    config.save( configFile, CONFIG_FORMAT );
-
-    Log::printEnd( " OK" );
-  }
-
-  config.clear( initFlags & INIT_CONFIG );
-
-  if( initFlags & INIT_SDL_TTF ) {
-    TTF_Quit();
-  }
-  if( initFlags & INIT_SDL ) {
-    MainCall() << []() {
-      SDL_Quit();
-    };
-  }
-  if( initFlags & INIT_PHYSFS ) {
-    File::destroy();
-  }
-
-  Log::printProfilerStatistics();
-  Profiler::clear();
-
-  Log::printMemorySummary();
-
-  Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );
-}
-
 int Client::main()
 {
   SDL_Event event;
@@ -776,6 +307,470 @@ int Client::main()
   stage->unload();
 
   return EXIT_SUCCESS;
+}
+
+int Client::init( int argc, char** argv )
+{
+  initFlags     = 0;
+  isBenchmark   = false;
+  benchmarkTime = 0.0f;
+
+  String executablePath = File::executablePath();
+  String invocationName = executablePath.fileName();
+  String prefixDir      = String::isEmpty( OZ_PREFIX ) ? executablePath.fileDirectory() : OZ_PREFIX;
+  String language       = "";
+  String mission        = "";
+  String layoutFile     = "";
+  bool   doAutoload     = false;
+
+  optind = 1;
+  int opt;
+  while( ( opt = getopt( argc, argv, "li:e:t:L:p:vhH?" ) ) >= 0 ) {
+    switch( opt ) {
+      case 'l': {
+        doAutoload = true;
+        break;
+      }
+      case 'i': {
+        mission = optarg;
+        break;
+      }
+      case 'e': {
+        layoutFile = optarg;
+        break;
+      }
+      case 't': {
+        const char* end;
+        benchmarkTime = float( String::parseDouble( optarg, &end ) );
+
+        if( end == optarg ) {
+          printUsage( invocationName );
+          return EXIT_FAILURE;
+        }
+
+        isBenchmark = true;
+        break;
+      }
+      case 'L': {
+        language = optarg;
+        break;
+      }
+      case 'p': {
+        prefixDir = optarg;
+        break;
+      }
+      case 'v': {
+        Log::showVerbose = true;
+        break;
+      }
+      default: {
+        printUsage( invocationName );
+        return EXIT_FAILURE;
+      }
+    }
+  }
+
+  File::init( File::TEMPORARY, 64*1024*1024 );
+  initFlags |= INIT_PHYSFS;
+
+#if defined( __ANDROID__ )
+
+  String configDir   = OZ_ANDROID_ROOT "/config";
+  String localDir    = OZ_ANDROID_ROOT "/data";
+  String picturesDir = "";
+  String musicDir    = "";
+
+#else
+
+  File::mkdir( File::CONFIG );
+  File::mkdir( File::DATA );
+
+  String configDir   = File::CONFIG + "/openzone";
+  String dataDir     = File::DATA + "/openzone";
+  String musicDir    = File::MUSIC.isEmpty() ? String::EMPTY : File::MUSIC + "/OpenZone";
+  String picturesDir = File::PICTURES.isEmpty() ? String::EMPTY : File::PICTURES + "/OpenZone";
+
+#endif
+
+  if( File::mkdir( configDir ) ) {
+    Log::println( "Profile directory '%s' created", configDir.cstr() );
+  }
+  if( File::mkdir( dataDir ) ) {
+    Log::println( "Directory for per-user content '%s' created", dataDir.cstr() );
+  }
+  if( File::mkdir( dataDir + "/state" ) ) {
+    Log::println( "Directory for saved games '%s/saves' created", dataDir.cstr() );
+  }
+  if( File::mkdir( dataDir + "/layout" ) ) {
+    Log::println( "Directory for layouts '%s/layout' created", dataDir.cstr() );
+  }
+
+  File::mountLocal( dataDir );
+
+  if( Log::init( configDir + "/client.log", true ) ) {
+    Log::println( "Log file '%s'", Log::logFile() );
+  }
+
+  Log::println( "OpenZone " OZ_VERSION " started on %s", Time::local().toString().cstr() );
+
+  Log::verboseMode = true;
+  Log::println( "Build details {" );
+  Log::indent();
+  Log::println( "Date:            %s", BuildInfo::TIME );
+  Log::println( "Host:            %s", BuildInfo::HOST );
+  Log::println( "Host arch:       %s", BuildInfo::HOST_ARCH );
+  Log::println( "Target arch:     %s", BuildInfo::TARGET_ARCH );
+  Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
+  Log::println( "Compiler:        %s", BuildInfo::COMPILER );
+  Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+  Log::println( "Configuration:   %s", BuildInfo::CONFIG );
+  Log::unindent();
+  Log::println( "}" );
+  Log::verboseMode = false;
+
+  MainCall() << []() {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+      OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
+    }
+  };
+  initFlags |= INIT_SDL;
+
+  if( TTF_Init() < 0 ) {
+    OZ_ERROR( "Failed to initialise SDL_ttf" );
+  }
+  initFlags |= INIT_SDL_TTF;
+
+  // Clean up after previous versions. Be evil. Delete saved games and screenshots.
+  File saveDir       = configDir + "/saves";
+  File screenshotDir = configDir + "/screenshots";
+
+  DArray<File> saveFiles = saveDir.ls();
+  for( const File& file : saveFiles ) {
+    File::rm( file.path() );
+  }
+
+  DArray<File> screenshotFiles = screenshotDir.ls();
+  for( const File& file : screenshotFiles ) {
+    File::rm( file.path() );
+  }
+
+  File::rm( configDir + "/client.rc" );
+
+  // Load configuration.
+  File configFile = configDir + "/client.json";
+  if( config.load( configFile ) ) {
+    Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
+
+    if( String::equals( config["_version"].get( "" ), OZ_VERSION ) ) {
+      initFlags |= INIT_CONFIG;
+    }
+    else {
+      Log::println( "Invalid configuration file version, configuration will be cleaned and written"
+                    " upon exit" );
+
+      config = JSON::OBJECT;
+      config.add( "_version", OZ_VERSION );
+      config["_version"];
+    }
+  }
+  else {
+    Log::println( "No configuration file, default configuration will be used and written upon"
+                  " exit" );
+
+    config = JSON::OBJECT;
+    config.add( "_version", OZ_VERSION );
+    config["_version"];
+  }
+
+  config.add( "dir.config", configDir );
+  config.add( "dir.data", dataDir );
+  config.include( "dir.pictures", picturesDir );
+  config.include( "dir.music", musicDir );
+  config.include( "dir.prefix", prefixDir );
+
+  // tag variables as used
+  config["dir.config"];
+  config["dir.data"];
+  config["dir.music"];
+  config["dir.pictures"];
+  config["dir.prefix"];
+
+  windowWidth     = config.include( "window.windowWidth",  1280 ).get( 0 );
+  windowHeight    = config.include( "window.windowHeight", 720  ).get( 0 );
+  screenWidth     = config.include( "window.screenWidth",  0    ).get( 0 );
+  screenHeight    = config.include( "window.screenHeight", 0    ).get( 0 );
+
+  windowWidth     = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
+  windowHeight    = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
+  screenWidth     = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
+  screenHeight    = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
+
+  bool fullscreen = config.include( "window.fullscreen",    true ).get( false );
+
+  Window::create( "OpenZone " OZ_VERSION,
+                  fullscreen ? screenWidth  : windowWidth,
+                  fullscreen ? screenHeight : windowHeight,
+                  fullscreen );
+  initFlags |= INIT_WINDOW;
+
+  input.init();
+  initFlags |= INIT_INPUT;
+
+  network.init();
+  initFlags |= INIT_NETWORK;
+
+#ifdef __native_client__
+
+  DArray<String> packages = naclUpdater.update();
+
+#endif
+
+  Log::println( "Content search path {" );
+  Log::indent();
+
+#ifdef __native_client__
+
+  for( const String& pkg : packages ) {
+    Pepper::post( "data:" + pkg );
+
+    File pkgFile = dataDir + "/" + pkg;
+
+    if( File::mount( pkgFile.path(), nullptr, true ) ) {
+      Log::println( "%s", pkgFile.path().cstr() );
+    }
+    else {
+      OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
+                pkgFile.path().cstr(), PHYSFS_getLastError() );
+    }
+  }
+
+  packages.clear();
+
+#else
+
+  const String& globalDataDir = config["dir.prefix"].get( String::EMPTY ) + "/share/openzone";
+  const String& userMusicPath = config["dir.music"].get( File::MUSIC );
+
+  if( File::mount( userMusicPath, "/userMusic", true ) ) {
+    Log::println( "%s [mounted on /userMusic]", userMusicPath.cstr() );
+  }
+
+  if( File::mount( dataDir, nullptr, true ) ) {
+    Log::println( "%s", dataDir.cstr() );
+
+    for( const File& file : File( dataDir ).ls() ) {
+      if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
+        if( !File::mount( file.path(), nullptr, true ) ) {
+          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
+                    file.path().cstr(), PHYSFS_getLastError() );
+        }
+        Log::println( "%s", file.path().cstr() );
+      }
+    }
+  }
+
+  if( File::mount( globalDataDir, nullptr, true ) ) {
+    Log::println( "%s", globalDataDir.cstr() );
+
+    for( const File& file : File( globalDataDir ).ls() ) {
+      if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
+        if( !File::mount( file.path(), nullptr, true ) ) {
+          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file.path().cstr() );
+        }
+        Log::println( "%s", file.path().cstr() );
+      }
+    }
+  }
+
+#endif
+
+  Log::unindent();
+  Log::println( "}" );
+
+#ifdef __native_client__
+
+  Pepper::post( "none:" );
+  Pepper::post( "lang:" );
+
+  for( String message = Pepper::pop(); ; message = Pepper::pop() ) {
+    if( message.isEmpty() ) {
+      Time::sleep( 10 );
+    }
+    else if( message.beginsWith( "lang:" ) ) {
+      language = message.substring( 5 );
+      break;
+    }
+    else {
+      Pepper::push( message );
+    }
+  }
+
+#endif
+
+  if( language.isEmpty() ) {
+    language = config["lingua"].get( "" );
+  }
+  else {
+    // Just tag as used.
+    config["lingua"];
+  }
+
+  language = Lingua::detectLanguage( language );
+
+  if( language.isEmpty() ) {
+    language = "en";
+    config.add( "lingua", language );
+  }
+
+  Log::print( "Setting language '%s' ...", language.cstr() );
+  if( lingua.init( language ) ) {
+    Log::printEnd( " OK" );
+
+    initFlags |= INIT_LINGUA;
+  }
+  else {
+    Log::printEnd( " Failed" );
+  }
+
+  config.include( "seed", "TIME" );
+
+  int seed;
+
+  if( config["seed"].type() == JSON::STRING ) {
+    if( !config["seed"].get( String::EMPTY ).equals( "TIME" ) ) {
+      OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
+    }
+
+    seed = int( Time::epoch() );
+  }
+  else {
+    seed = config["seed"].get( 42 );
+    LuaCommon::isRandomSeedTime = false;
+  }
+
+  if( isBenchmark ) {
+    seed = 42;
+    LuaCommon::isRandomSeedTime = false;
+  }
+
+  Math::seed( seed );
+  LuaCommon::randomSeed = seed;
+
+  Log::println( "Random generator seed set to: %u", uint( seed ) );
+
+  sound.initLibs();
+
+  initFlags |= INIT_LIBRARY;
+  liber.init( config["dir.music"].get( "" ) );
+
+  initFlags |= INIT_CONTEXT;
+  context.init();
+
+  initFlags |= INIT_AUDIO;
+  sound.init();
+
+  initFlags |= INIT_RENDER;
+  render.init();
+
+  initFlags |= INIT_STAGE_INIT;
+  menuStage.init();
+  gameStage.init();
+
+#ifdef __native_client__
+  Pepper::post( "none:" );
+#endif
+
+  Stage::nextStage = nullptr;
+
+  if( !layoutFile.isEmpty() ) {
+    editStage.layoutFile = layoutFile;
+
+    stage = &editStage;
+  }
+  else if( !mission.isEmpty() ) {
+    gameStage.mission = mission;
+
+    stage = &gameStage;
+  }
+  else if( doAutoload ) {
+    gameStage.stateFile = gameStage.autosaveFile;
+    stage = &gameStage;
+  }
+  else {
+    stage = &menuStage;
+  }
+
+  stage->load();
+
+  Window::setGrab( true );
+  input.reset();
+
+  return EXIT_SUCCESS;
+}
+
+void Client::shutdown()
+{
+  if( initFlags & INIT_STAGE_INIT ) {
+    gameStage.destroy();
+    menuStage.destroy();
+  }
+  if( initFlags & INIT_RENDER ) {
+    render.destroy();
+  }
+  if( initFlags & INIT_AUDIO ) {
+    sound.destroy();
+  }
+  if( initFlags & INIT_CONTEXT ) {
+    context.destroy();
+  }
+  if( initFlags & INIT_LIBRARY ) {
+    liber.destroy();
+  }
+  if( initFlags & INIT_LINGUA ) {
+    lingua.destroy();
+  }
+  if( initFlags & INIT_NETWORK ) {
+    network.destroy();
+  }
+  if( initFlags & INIT_INPUT ) {
+    input.destroy();
+  }
+  if( initFlags & INIT_WINDOW ) {
+    Window::destroy();
+  }
+  if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
+    File configFile = config["dir.config"].get( File::CONFIG ) + "/client.json";
+
+    config.exclude( "dir.config" );
+    config.exclude( "dir.data" );
+
+    Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
+
+    config.save( configFile, CONFIG_FORMAT );
+
+    Log::printEnd( " OK" );
+  }
+
+  config.clear( initFlags & INIT_CONFIG );
+
+  if( initFlags & INIT_SDL_TTF ) {
+    TTF_Quit();
+  }
+  if( initFlags & INIT_SDL ) {
+    MainCall() << []() {
+      SDL_Quit();
+    };
+  }
+  if( initFlags & INIT_PHYSFS ) {
+    File::destroy();
+  }
+
+  Log::printProfilerStatistics();
+  Profiler::clear();
+
+  Log::printMemorySummary();
+
+  Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );
 }
 
 Client client;

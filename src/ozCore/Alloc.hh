@@ -59,13 +59,6 @@ class Alloc
 {
 public:
 
-  /// Alignment of allocated storage returned by the `new` operator.
-#ifdef OZ_SIMD_MATH
-  static const size_t ALIGNMENT = sizeof( float[4] );
-#else
-  static const size_t ALIGNMENT = sizeof( void* );
-#endif
-
   /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
 #ifdef OZ_DISABLE_ALLOC_OVERLOADS
   static const bool OVERLOADS_NEW_AND_DELETE = false;
@@ -178,7 +171,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr size_t alignDown( size_t size )
   {
-    return size & ~( ALIGNMENT - 1 );
+    return size & ~( OZ_ALIGNMENT - 1 );
   }
 
   /**
@@ -187,7 +180,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr size_t alignUp( size_t size )
   {
-    return ( size + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 );
+    return ( size + OZ_ALIGNMENT - 1 ) & ~( OZ_ALIGNMENT - 1 );
   }
 
   /**
@@ -197,7 +190,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr Type* alignDown( Type* p )
   {
-    return reinterpret_cast<Type*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
+    return reinterpret_cast<Type*>( size_t( p ) & ~( OZ_ALIGNMENT - 1 ) );
   }
 
   /**
@@ -207,7 +200,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr Type* alignUp( Type* p )
   {
-    return reinterpret_cast<Type*>( size_t( p + ALIGNMENT - 1 ) & ~( ALIGNMENT - 1 ) );
+    return reinterpret_cast<Type*>( size_t( p + OZ_ALIGNMENT - 1 ) & ~( OZ_ALIGNMENT - 1 ) );
   }
 
 };

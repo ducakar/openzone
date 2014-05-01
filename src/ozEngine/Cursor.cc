@@ -188,16 +188,18 @@ bool Cursor::load( const File& file, Mode mode_, int size )
       GLenum srcFormat = GL_BGRA;
 #endif
 
-      glGenTextures( 1, &image.textureId );
-      glBindTexture( GL_TEXTURE_2D, image.textureId );
+      MainCall() << [&]() {
+        glGenTextures( 1, &image.textureId );
+        glBindTexture( GL_TEXTURE_2D, image.textureId );
 
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, srcFormat,
-                    GL_UNSIGNED_BYTE, pixels );
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, srcFormat,
+                      GL_UNSIGNED_BYTE, pixels );
+      };
     }
     else {
 #if SDL_MAJOR_VERSION >= 2
@@ -225,11 +227,15 @@ void Cursor::destroy()
     return;
   }
 
-  for( int i = 0; i < nImages; ++i ) {
-    if( mode == TEXTURE ) {
-      glDeleteTextures( 1, &images[i].textureId );
-    }
-    else {
+  if( mode == TEXTURE ) {
+    MainCall() << [&]() {
+      for( int i = 0; i < nImages; ++i ) {
+        glDeleteTextures( 1, &images[i].textureId );
+      }
+    };
+  }
+  else {
+    for( int i = 0; i < nImages; ++i ) {
       SDL_FreeCursor( images[i].sdlCursor );
     }
   }

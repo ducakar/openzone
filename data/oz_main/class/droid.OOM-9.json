@@ -55,7 +55,6 @@
   {
     "destroy":          "oz/destroy_metal1",
     "damage":           "droid-sounds/pain75_1",
-    "hit":              "droid-sounds/fall2",
     "land":             "droid-sounds/fall1",
     "splash":           "free/splash1",
     "step":             "openarena/boot4",

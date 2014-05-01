@@ -43,6 +43,10 @@
 
 #include <lua.hpp>
 
+#if LUA_VERSION_NUM < 502
+# define LUA_OK 0
+#endif
+
 /**
  * @def IMPORT_FUNC
  * Registers Lua API function with the Lua class in the current namespace.

@@ -629,7 +629,7 @@ void Context::updateLoad()
 
 void Context::load()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   speakSource.owner = -1;
   alGenBuffers( 2, speakSource.bufferIds );
@@ -658,7 +658,7 @@ void Context::load()
 
 void Context::unload()
 {
-  hard_assert( Thread::isMain() );
+  OZ_NACL_IS_MAIN( true );
 
   Log::println( "Unloading Context {" );
   Log::indent();

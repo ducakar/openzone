@@ -664,10 +664,6 @@ void Sound::sync()
 
 void Sound::init()
 {
-#ifdef __native_client__
-  hard_assert( !Pepper::isMainThread() );
-#endif
-
   Log::println( "Initialising Sound {" );
   Log::indent();
 
@@ -828,10 +824,6 @@ void Sound::init()
 
 void Sound::destroy()
 {
-#ifdef __native_client__
-  hard_assert( Pepper::isMainThread() );
-#endif
-
   Log::print( "Destroying Sound ..." );
 
   if( espeak_Terminate != nullptr ) {

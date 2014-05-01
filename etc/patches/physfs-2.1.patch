@@ -1,6 +1,6 @@
-diff -r e0dbcd5e50b9 CMakeLists.txt
---- a/CMakeLists.txt	Fri Nov 30 14:37:37 2012 -0500
-+++ b/CMakeLists.txt	Sat Jun 15 20:56:00 2013 +0200
+diff -r 29ab417d9453 CMakeLists.txt
+--- a/CMakeLists.txt	Fri Feb 07 16:23:12 2014 -0500
++++ b/CMakeLists.txt	Thu May 01 19:51:22 2014 +0200
 @@ -50,7 +50,7 @@
  # Add some gcc-specific command lines.
  if(CMAKE_COMPILER_IS_GNUCC)
@@ -35,9 +35,9 @@ diff -r e0dbcd5e50b9 CMakeLists.txt
          set(PHYSFS_HAVE_CDROM_SUPPORT TRUE)
          set(PHYSFS_HAVE_THREAD_SUPPORT TRUE)
          set(HAVE_PTHREAD_H TRUE)
-diff -r e0dbcd5e50b9 src/lzma/C/Archive/7z/7zDecode.c
---- a/src/lzma/C/Archive/7z/7zDecode.c	Fri Nov 30 14:37:37 2012 -0500
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat Jun 15 20:56:00 2013 +0200
+diff -r 29ab417d9453 src/lzma/C/Archive/7z/7zDecode.c
+--- a/src/lzma/C/Archive/7z/7zDecode.c	Fri Feb 07 16:23:12 2014 -0500
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Thu May 01 19:51:22 2014 +0200
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
  
@@ -50,9 +50,9 @@ diff -r e0dbcd5e50b9 src/lzma/C/Archive/7z/7zDecode.c
  
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
-diff -r e0dbcd5e50b9 src/physfs.c
---- a/src/physfs.c	Fri Nov 30 14:37:37 2012 -0500
-+++ b/src/physfs.c	Sat Jun 15 20:56:00 2013 +0200
+diff -r 29ab417d9453 src/physfs.c
+--- a/src/physfs.c	Fri Feb 07 16:23:12 2014 -0500
++++ b/src/physfs.c	Thu May 01 19:51:22 2014 +0200
 @@ -1268,8 +1268,7 @@
  {
      while (numArchivers > 0)
@@ -63,9 +63,9 @@ diff -r e0dbcd5e50b9 src/physfs.c
      } /* while */
  
      allocator.Free(archivers);
-diff -r e0dbcd5e50b9 src/physfs.h
---- a/src/physfs.h	Fri Nov 30 14:37:37 2012 -0500
-+++ b/src/physfs.h	Sat Jun 15 20:56:00 2013 +0200
+diff -r 29ab417d9453 src/physfs.h
+--- a/src/physfs.h	Fri Feb 07 16:23:12 2014 -0500
++++ b/src/physfs.h	Thu May 01 19:51:22 2014 +0200
 @@ -229,7 +229,7 @@
  #define PHYSFS_DECL __declspec(dllexport)
  #elif (defined __SUNPRO_C)
@@ -75,9 +75,9 @@ diff -r e0dbcd5e50b9 src/physfs.h
  #define PHYSFS_DECL __attribute__((visibility("default")))
  #else
  #define PHYSFS_DECL
-diff -r e0dbcd5e50b9 src/physfs_platforms.h
---- a/src/physfs_platforms.h	Fri Nov 30 14:37:37 2012 -0500
-+++ b/src/physfs_platforms.h	Sat Jun 15 20:56:00 2013 +0200
+diff -r 29ab417d9453 src/physfs_platforms.h
+--- a/src/physfs_platforms.h	Fri Feb 07 16:23:12 2014 -0500
++++ b/src/physfs_platforms.h	Thu May 01 19:51:22 2014 +0200
 @@ -40,6 +40,8 @@
  #  define PHYSFS_PLATFORM_UNIX 1
  #  define PHYSFS_PLATFORM_POSIX 1
@@ -87,10 +87,10 @@ diff -r e0dbcd5e50b9 src/physfs_platforms.h
  #elif defined(__linux)
  #  define PHYSFS_PLATFORM_LINUX 1
  #  define PHYSFS_PLATFORM_UNIX 1
-diff -r e0dbcd5e50b9 src/platform_nacl.c
+diff -r 29ab417d9453 src/platform_nacl.c
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Sat Jun 15 20:56:00 2013 +0200
-@@ -0,0 +1,479 @@
++++ b/src/platform_nacl.c	Thu May 01 19:51:22 2014 +0200
+@@ -0,0 +1,477 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
@@ -239,9 +239,7 @@ diff -r e0dbcd5e50b9 src/platform_nacl.c
 +        iCore->ReleaseResource(file->fileIO);
 +        allocator.Free(file);
 +
-+        printf( "%d\n", retval );
-+
-+        BAIL_MACRO(PHYSFS_ERR_IO, NULL);
++        BAIL_MACRO(PP_ERROR_FILENOTFOUND ? PHYSFS_ERR_NOT_FOUND : PHYSFS_ERR_IO, NULL);
 +    } /* if */
 +
 +    retval = iFileIO->Query(file->fileIO, &file->fileInfo, PP_BlockUntilComplete());

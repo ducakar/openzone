@@ -32,11 +32,9 @@ namespace oz
 namespace client
 {
 
-const char MANIFEST_MAGIC[]  = "ozManifest";
-const char LOCAL_MANIFEST[]  = "/local/share/openzone/packages.ozManifest";
-const char REMOTE_MANIFEST[] = "packages.ozManifest";
-
-NaClUpdater naclUpdater;
+static const char MANIFEST_MAGIC[]  = "ozManifest";
+static const char REMOTE_MANIFEST[] = "packages.ozManifest";
+static const char LOCAL_MANIFEST[]  = "/data/openzone/packages.ozManifest";
 
 DArray<NaClUpdater::Package> NaClUpdater::readManifest( InputStream* is ) const
 {
@@ -111,7 +109,7 @@ bool NaClUpdater::checkUpdates()
   while( !downloader.isComplete() );
 
   OutputStream os = downloader.take();
-  InputStream  is = os.inputStream();
+  InputStream  is = os;
 
   is.rewind();
 
@@ -134,7 +132,7 @@ void NaClUpdater::downloadUpdates()
   int packageNum      = 1;
 
   for( const Package& pkg : remotePackages ) {
-    File pkgFile = "/local/share/openzone/" + pkg.name;
+    File pkgFile = File::DATA + "/openzone/" + pkg.name;
 
     if( pkgFile.type() == File::REGULAR ) {
       long64 localTime = 0;
@@ -209,7 +207,7 @@ void NaClUpdater::downloadUpdates()
     }
 
     if( isOrphan ) {
-      File pkgFile = "/local/share/openzone/" + localPkg.name;
+      File pkgFile = File::DATA + "/openzone/" + localPkg.name;
 
       Log::print( "Deleting obsolete package '%s' ...", pkgFile.path().cstr() );
       if( File::rm( pkgFile.path() ) ) {
@@ -253,6 +251,8 @@ DArray<String> NaClUpdater::update()
 
   return packages;
 }
+
+NaClUpdater naclUpdater;
 
 }
 }

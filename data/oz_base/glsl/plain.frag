@@ -23,8 +23,6 @@
  * Shader for UI.
  */
 
-#version 100
-
 precision highp float;
 
 uniform mat4      oz_Colour;

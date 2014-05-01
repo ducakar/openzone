@@ -15,7 +15,6 @@
 #
 
 defaultPlatform=Linux-`uname -m`-Clang
-pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_pnacl"
 
 function run_nacl()
 {
@@ -29,17 +28,12 @@ function run_nacl()
     [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
   done
 
-  # Strip binaries if `strip` option is given.
-  if [[ $arg == strip && -e build/NaCl-test/openzone.pexe ]]; then
-    "$pnaclPrefix/bin64/pnacl-strip" build/NaCl-test/openzone.pexe
-  fi
-
   cd build/NaCl-test
   python -m http.server &
   serverPID=$!
 
   sleep 3
-  chromium --user-data-dir="$HOME/.config/chromium-test" --enable-pnacl \
+  chromium --user-data-dir="$HOME/.config/chromium-test" \
            http://localhost:8000/openzone.sl.html || true
 
   kill $serverPID

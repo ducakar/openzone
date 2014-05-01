@@ -23,8 +23,6 @@
  * Generic shader for meshes.
  */
 
-#version 100
-
 precision highp float;
 
 uniform mat4  oz_ProjCamera;

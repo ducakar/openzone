@@ -31,8 +31,16 @@
 #include "System.hh"
 #include "String.hh"
 #include "Semaphore.hh"
+#include "Thread.hh"
 
 #if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
+
+/**
+ * @def OZ_NACL_IS_MAIN
+ * Check if on the main thread (debug mode only).
+ */
+#define OZ_NACL_IS_MAIN( boolean ) \
+  hard_assert( Thread::isMain() == boolean )
 
 /**
  * @def OZ_NACL_ENTRY_POINT
@@ -66,6 +74,7 @@ int naclMain( int argc, char** argv );
 
 #else
 
+#define OZ_NACL_IS_MAIN( boolean )
 #define OZ_NACL_ENTRY_POINT()
 
 #endif
@@ -158,7 +167,7 @@ public:
 
 };
 
-#else
+#endif
 
 /**
  * Utility for executing code blocks on the NaCl's main thread.
@@ -202,7 +211,7 @@ private:
 
 private:
 
-  static thread_local LocalSemaphore localSemaphore; ///< Semaphore for synchronous calls.
+  static LocalSemaphore localSemaphore; ///< Semaphore for synchronous calls.
 
 #endif
 
@@ -221,26 +230,27 @@ public:
 #ifdef __native_client__
 
     if( Thread::isMain() ) {
-      OZ_ERROR( "oz::MainCall: operator << () invoked on the main thread." );
+      method();
     }
-
-    struct CallbackWrapper
-    {
-      Method     method;
-      Semaphore* semaphore;
-
-      static void callback( void* data, int )
+    else {
+      struct CallbackWrapper
       {
-        const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+        Method     method;
+        Semaphore* semaphore;
 
-        cw->method();
-        cw->semaphore->post();
-      }
-    };
-    CallbackWrapper cw = { method, &localSemaphore.sem };
+        static void callback( void* data, int )
+        {
+          const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
 
-    Pepper::mainCall( CallbackWrapper::callback, &cw ) ) {
-    localSemaphore.sem.wait();
+          cw->method();
+          cw->semaphore->post();
+        }
+      };
+      CallbackWrapper cw = { method, &localSemaphore.sem };
+
+      Pepper::mainCall( CallbackWrapper::callback, &cw );
+      localSemaphore.sem.wait();
+    }
 
 #else
 
@@ -252,9 +262,9 @@ public:
   /**
    * Call a method on the NaCl main thread asynchronously.
    *
-   * The method can also be a lambda expression but captures are discouraged for asynchronous calls
-   * since local variables may change till the function is executed or the local stack may not
-   * even exist any more.
+   * The method can be a lambda expression but captures are discouraged for asynchronous calls as
+   * local variables may change till the function is executed or the local stack may not even exist
+   * any more.
    *
    * On platforms other that NaCl the code is executed immediately on the caller thread.
    */
@@ -286,7 +296,5 @@ public:
   }
 
 };
-
-#endif
 
 }

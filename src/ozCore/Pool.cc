@@ -40,12 +40,12 @@ union PoolAlloc::Slot
 struct PoolAlloc::Block
 {
   Block* nextBlock;
-  char   data[1] OZ_ALIGNED( Alloc::ALIGNMENT );
+  char   data[1] OZ_ALIGNED( OZ_ALIGNMENT );
 
   OZ_HIDDEN
   static Block* allocate( size_t slotSize, int nSlots, Block* nextBlock )
   {
-    void*  chunk = new char[ Alloc::ALIGNMENT + size_t( nSlots ) * slotSize ];
+    void*  chunk = new char[ OZ_ALIGNMENT + size_t( nSlots ) * slotSize ];
     Block* block = reinterpret_cast<Block*>( chunk );
 
     block->nextBlock = nextBlock;
@@ -127,7 +127,7 @@ void* PoolAlloc::allocate()
   if( freeSlot == nullptr ) {
     firstBlock = Block::allocate( slotSize, nSlots, firstBlock );
     freeSlot   = firstBlock->slot( 1, slotSize );
-    size      += slotSize;
+    size      += int( slotSize );
 
     return firstBlock->slot( 0, slotSize )->storage;
   }

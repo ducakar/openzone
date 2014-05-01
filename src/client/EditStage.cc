@@ -195,10 +195,7 @@ bool EditStage::update()
 void EditStage::present( bool isFull )
 {
   sound.play();
-  MainCall() << [&]() {
-    render.update( isFull ? Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT :
-                            Render::EFFECTS_BIT );
-  };
+  render.update( Render::EFFECTS_BIT | ( isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0 ) );
   sound.sync();
 }
 
@@ -216,9 +213,7 @@ void EditStage::load()
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
-  MainCall() << []() {
-    render.update( Render::UI_BIT );
-  };
+  render.update( Render::UI_BIT );
 
   timer.reset();
 
@@ -249,11 +244,9 @@ void EditStage::load()
 
   ui::ui.showLoadingScreen( true );
 
-  MainCall() << []() {
-    render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
-  };
-  loader.syncUpdate();
+  render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
 
+  loader.syncUpdate();
   loader.load();
 
   isAuxAlive = true;
@@ -279,9 +272,7 @@ void EditStage::unload()
 
   loader.unload();
 
-  MainCall() << []() {
-    render.update( Render::UI_BIT );
-  };
+  render.update( Render::UI_BIT );
 
   isAuxAlive = false;
 

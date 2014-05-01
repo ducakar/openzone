@@ -69,10 +69,10 @@ private:
 
 public:
 
+  int main();
+
   int init( int argc, char** argv );
   void shutdown();
-
-  int main();
 
 };
 
