@@ -85,7 +85,7 @@ protected:
   /**
    * Common initialisation for Lua classes.
    */
-  void initCommon( const char* componentName );
+  void initCommon();
 
   /**
    * Common clean-up for Lua classes.

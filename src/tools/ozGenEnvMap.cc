@@ -45,6 +45,7 @@ static void usage()
 int main( int argc, char** argv )
 {
   System::init();
+  ImageBuilder::init();
 
   int ddsOptions = ImageBuilder::CUBE_MAP_BIT;
   int size       = 32;
@@ -100,5 +101,7 @@ int main( int argc, char** argv )
   }
 
   delete[] images;
+  ImageBuilder::destroy();
+
   return exitCode;
 }

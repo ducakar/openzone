@@ -23,7 +23,7 @@
 
 #include <common/LuaCommon.hh>
 
-#include <common/luaapi.hh>
+#include <common/luabase.hh>
 
 namespace oz
 {
@@ -240,10 +240,8 @@ void LuaCommon::loadDir( const File& dir ) const
   }
 }
 
-void LuaCommon::initCommon( const char* componentName )
+void LuaCommon::initCommon()
 {
-  ls.envName = componentName;
-
   l = luaL_newstate();
   if( l == nullptr ) {
     OZ_ERROR( "Failed to create Lua state" );
@@ -272,9 +270,6 @@ void LuaCommon::initCommon( const char* componentName )
 
   int seed = isRandomSeedTime ? int( Time::epoch() ) : randomSeed;
   l_dostring( String::str( "math.random( %u )", seed ) );
-
-  IGNORE_FUNC( ozError );
-  IGNORE_FUNC( ozPrintln );
 
   loadDir( "@lua/common" );
 }

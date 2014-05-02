@@ -424,6 +424,7 @@ ImageData ImageBuilder::loadImage( const File& file )
     image.pixels[i + 3] = char( pixels[i + 3] );
   }
 
+  FreeImage_Unload( dib );
   return image;
 }
 
@@ -437,23 +438,26 @@ bool ImageBuilder::createDDS( const ImageData* faces, int nFaces, int options,
     return false;
   }
 
-  FIBITMAP** dibs = new FIBITMAP*[nFaces];
+  bool       success = false;
+  FIBITMAP** dibs    = new FIBITMAP*[nFaces];
 
   for( int i = 0; i < nFaces; ++i ) {
     dibs[i] = createBitmap( faces[i] );
 
     if( dibs[i] == nullptr ) {
-      for( int j = 0; j <= i; ++j ) {
-        FreeImage_Unload( dibs[j] );
-      }
+      nFaces = i;
+      goto cleanUp;
     }
   }
 
-  bool success = buildDDS( dibs, nFaces, options, destFile );
+  success = buildDDS( dibs, nFaces, options, destFile );
 
+cleanUp:
   for( int i = 0; i < nFaces; ++i ) {
     FreeImage_Unload( dibs[i] );
   }
+  delete[] dibs;
+
   return success;
 }
 
@@ -478,6 +482,16 @@ bool ImageBuilder::convertToDDS( const File& file, int options, const char* dest
 
   FreeImage_Unload( dib );
   return success;
+}
+
+void ImageBuilder::init()
+{
+  FreeImage_Initialise();
+}
+
+void ImageBuilder::destroy()
+{
+  FreeImage_DeInitialise();
 }
 
 }

@@ -67,7 +67,7 @@ bool LuaClient::execChunk( const char* code, int size, const char* name ) const
 
   bool value = false;
 
-  if( l_dobufferx( code, size, "", "b" ) != LUA_OK ) {
+  if( l_dobufferx( code, size, name, "b" ) != LUA_OK ) {
     Log::println( "Lua[C] in '%s': %s", name, l_tostring( -1 ) );
     System::bell();
   }
@@ -220,9 +220,10 @@ void LuaClient::init()
 {
   Log::print( "Initialising Client Lua ..." );
 
-  initCommon( "client" );
+  initCommon();
   loadDir( "@lua/client" );
 
+  ls.envName = "client";
   ms.structs.allocate( 32 );
   ms.objects.allocate( 512 );
 

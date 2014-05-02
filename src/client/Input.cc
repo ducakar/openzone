@@ -539,17 +539,17 @@ void Input::update()
   int dx, dy;
   SDL_GetRelativeMouseState( &dx, &dy );
 
-# if SDL_MAJOR_VERSION < 2
   mouseX = +float( dx );
   mouseY = -float( dy );
-# else
-  // FIXME SDL2 bug? Remove workaround when fixed.
-  mouseX = +float( dx ) / 2.0f;
-  mouseY = -float( dy ) / 2.0f;
-# endif
 
 # ifndef _WIN32
   if( Window::hasGrab() ) {
+#  if SDL_MAJOR_VERSION >= 2
+    // FIXME SDL2 bug? Remove workaround when fixed.
+    mouseX /= 2.0f;
+    mouseY /= 2.0f;
+#  endif
+
     // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
     // code is not based on actual code from X.Org, but experimentally tuned to match default X
     // server mouse acceleration as closely as possible.

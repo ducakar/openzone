@@ -124,8 +124,9 @@ void LuaMatrix::init()
 {
   Log::print( "Initialising Matrix Lua ..." );
 
-  initCommon( "matrix" );
+  initCommon();
 
+  ls.envName = "matrix";
   ms.structs.allocate( 32 );
   ms.objects.allocate( 512 );
 

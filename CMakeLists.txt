@@ -209,8 +209,8 @@ endif()
 
 # Additional warnings.
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
-  set( flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-float-equal" )
-  set( flags "${flags} -Wno-shadow -Wno-switch-enum -Wno-padded" )
+  set( flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
+  set( flags "${flags} -Wno-float-equal -Wno-shadow -Wno-switch-enum -Wno-padded" )
   set( flags "${flags} -Wno-nested-anon-types -Wno-global-constructors -Wno-exit-time-destructors" )
 else()
   set( flags "${flags} -Wall -Wextra -Wconversion -Wcast-align -Winit-self -Wlogical-op -Wundef" )

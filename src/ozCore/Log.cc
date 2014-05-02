@@ -333,14 +333,14 @@ void Log::printMemorySummary()
   indent();
 
   println( "current chunks    %7d", Alloc::count );
-  println( "current amount    %7.2f MiB (%lu B)",
-           float( Alloc::amount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::amount ) );
+  println( "current amount    %7.2f MiB (%llu B)",
+           float( Alloc::amount ) / ( 1024.0f * 1024.0f ), ulong64( Alloc::amount ) );
   println( "maximum chunks    %7d", Alloc::maxCount );
-  println( "maximum amount    %7.2f MiB (%lu B)",
-           float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::maxAmount ) );
+  println( "maximum amount    %7.2f MiB (%llu B)",
+           float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ), ulong64( Alloc::maxAmount ) );
   println( "cumulative chunks %7d", Alloc::sumCount );
-  println( "cumulative amount %7.2f MiB (%lu B)",
-           float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::sumAmount ) );
+  println( "cumulative amount %7.2f MiB (%llu B)",
+           float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ), ulong64( Alloc::sumAmount ) );
 
   unindent();
   println( "}" );
@@ -353,7 +353,7 @@ bool Log::printMemoryLeaks()
   bool hasOutput = false;
 
   for( const auto& ci : Alloc::objectCIter() ) {
-    println( "Leaked object at %p of size %lu B allocated", ci.address, ulong( ci.size ) );
+    println( "Leaked object at %p of size %llu B allocated", ci.address, ulong64( ci.size ) );
     indent();
     printTrace( ci.stackTrace );
     unindent();
@@ -362,7 +362,7 @@ bool Log::printMemoryLeaks()
   }
 
   for( const auto& ci : Alloc::arrayCIter() ) {
-    println( "Leaked array at %p of size %lu B allocated", ci.address, ulong( ci.size ) );
+    println( "Leaked array at %p of size %llu B allocated", ci.address, ulong64( ci.size ) );
     indent();
     printTrace( ci.stackTrace );
     unindent();

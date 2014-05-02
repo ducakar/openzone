@@ -508,5 +508,8 @@ int main( int argc, char** argv )
     }
   }
 
+  messages.clear();
+  messages.deallocate();
+
   return EXIT_SUCCESS;
 }

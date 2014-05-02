@@ -165,8 +165,9 @@ void LuaNirvana::init()
 {
   Log::print( "Initialising Nirvana Lua ..." );
 
-  initCommon( "nirvana" );
+  initCommon();
 
+  ls.envName = "nirvana";
   ms.structs.allocate( 32 );
   ms.objects.allocate( 512 );
 

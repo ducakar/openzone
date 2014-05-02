@@ -533,11 +533,10 @@ void Render::update( int flags )
     if( flags & UI_BIT ) {
       drawUI();
     }
-    if( flags & ( ORBIS_BIT | UI_BIT ) ) {
-      Model::clearScheduled( Model::SCENE_QUEUE );
-      Model::clearScheduled( Model::OVERLAY_QUEUE );
-    }
   };
+
+  Model::clearScheduled( Model::SCENE_QUEUE );
+  Model::clearScheduled( Model::OVERLAY_QUEUE );
 
   if( flags & ( ORBIS_BIT | UI_BIT ) ) {
     swap();

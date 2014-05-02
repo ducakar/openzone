@@ -74,6 +74,8 @@ static int ozPrintln( lua_State* l )
 {
   ARG( 1 );
 
+  hard_assert( ls.envName != nullptr );
+
   const char* s = l_type( 1 ) == LUA_TBOOLEAN ? ( l_tobool( 1 ) ? "true" : "false" ) :
                                                 l_tostring( 1 );
 

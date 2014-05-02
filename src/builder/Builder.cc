@@ -35,7 +35,6 @@
 #include <builder/MD3.hh>
 
 #include <unistd.h>
-#include <FreeImage.h>
 
 namespace oz
 {
@@ -813,7 +812,7 @@ int Builder::main( int argc, char** argv )
   }
 
   File::init();
-  FreeImage_Initialise();
+  ImageBuilder::init();
 
   File::mkdir( outDir );
 
@@ -921,7 +920,7 @@ int Builder::main( int argc, char** argv )
   context.destroy();
   config.clear();
 
-  FreeImage_DeInitialise();
+  ImageBuilder::destroy();
   File::destroy();
 
   Log::printProfilerStatistics();

@@ -95,7 +95,11 @@ You may also want to set several options when configuring CMake build system:
   libsquish library.
   `OFF` by default.
 
-- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster.
+- `OZ_UNITEST`: Build liboz unittest.
+  `OFF` by default.
+
+- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster,
+  but there are some weird issues with LuaJIT not initialising sometimes.
   `OFF` by default.
 
 - `OZ_NET`: Enable networking support. Not implemented yet. Requires SDL_net library.
