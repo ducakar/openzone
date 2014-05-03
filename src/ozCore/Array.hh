@@ -57,7 +57,7 @@ public:
    */
   typedef ArrayIterator<Elem> Iterator;
 
-private:
+protected:
 
   Elem data[COUNT]; ///< %Array of elements.
 

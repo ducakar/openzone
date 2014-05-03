@@ -56,7 +56,7 @@ public:
    */
   typedef ArrayIterator<Elem> Iterator;
 
-private:
+protected:
 
   Elem* data;  ///< %Array of elements.
   int   count; ///< Number of elements.
@@ -281,7 +281,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& first() const
   {
-    hard_assert( count > 0 );
+    hard_assert( count != 0 );
 
     return data[0];
   }
@@ -292,7 +292,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& first()
   {
-    hard_assert( count > 0 );
+    hard_assert( count != 0 );
 
     return data[0];
   }
@@ -303,7 +303,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& last() const
   {
-    hard_assert( count > 0 );
+    hard_assert( count != 0 );
 
     return data[count - 1];
   }
@@ -314,7 +314,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& last()
   {
-    hard_assert( count > 0 );
+    hard_assert( count != 0 );
 
     return data[count - 1];
   }
@@ -324,8 +324,6 @@ public:
    */
   bool contains( const Elem& e ) const
   {
-    hard_assert( count > 0 );
-
     return aContains<Elem, Elem>( data, count, e );
   }
 
@@ -334,8 +332,6 @@ public:
    */
   int index( const Elem& e ) const
   {
-    hard_assert( count > 0 );
-
     return aIndex<Elem, Elem>( data, count, e );
   }
 
@@ -344,8 +340,6 @@ public:
    */
   int lastIndex( const Elem& e ) const
   {
-    hard_assert( count > 0 );
-
     return aLastIndex<Elem, Elem>( data, count, e );
   }
 

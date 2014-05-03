@@ -104,38 +104,38 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef typename List<Pair>::CIterator CIterator;
+  typedef typename Set<Pair>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef typename List<Pair>::Iterator Iterator;
+  typedef typename Set<Pair>::Iterator Iterator;
 
 private:
 
-  using List<Pair>::data;
-  using List<Pair>::count;
-  using List<Pair>::ensureCapacity;
+  using Set<Pair>::data;
+  using Set<Pair>::count;
+  using Set<Pair>::ensureCapacity;
 
 public:
 
-  using List<Pair>::citer;
-  using List<Pair>::iter;
-  using List<Pair>::begin;
-  using List<Pair>::end;
-  using List<Pair>::length;
-  using List<Pair>::isEmpty;
-  using List<Pair>::capacity;
-  using List<Pair>::operator [];
-  using List<Pair>::first;
-  using List<Pair>::last;
+  using Set<Pair>::citer;
+  using Set<Pair>::iter;
+  using Set<Pair>::begin;
+  using Set<Pair>::end;
+  using Set<Pair>::length;
+  using Set<Pair>::isEmpty;
+  using Set<Pair>::capacity;
+  using Set<Pair>::operator [];
+  using Set<Pair>::first;
+  using Set<Pair>::last;
   using Set<Pair>::erase;
-  using List<Pair>::resize;
-  using List<Pair>::trim;
-  using List<Pair>::clear;
-  using List<Pair>::free;
-  using List<Pair>::allocate;
-  using List<Pair>::deallocate;
+  using Set<Pair>::resize;
+  using Set<Pair>::trim;
+  using Set<Pair>::clear;
+  using Set<Pair>::free;
+  using Set<Pair>::allocate;
+  using Set<Pair>::deallocate;
 
   /**
    * Create an empty map.
@@ -170,7 +170,7 @@ public:
    */
   Map& operator = ( const Map& m )
   {
-    return static_cast<Map&>( List<Pair>::operator = ( m ) );
+    return static_cast<Map&>( Set<Pair>::operator = ( m ) );
   }
 
   /**
@@ -178,7 +178,7 @@ public:
    */
   Map& operator = ( Map&& m )
   {
-    return static_cast<Map&>( List<Pair>::operator = ( static_cast<Map&&>( m ) ) );
+    return static_cast<Map&>( Set<Pair>::operator = ( static_cast<Map&&>( m ) ) );
   }
 
   /**
@@ -186,7 +186,7 @@ public:
    */
   bool operator == ( const Map& m ) const
   {
-    return List<Pair>::operator == ( m );
+    return Set<Pair>::operator == ( m );
   }
 
   /**
@@ -194,7 +194,7 @@ public:
    */
   bool operator != ( const Map& m ) const
   {
-    return List<Pair>::operator != ( m );
+    return Set<Pair>::operator != ( m );
   }
 
   /**

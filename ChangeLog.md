@@ -12,7 +12,7 @@
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
-        + inheritance between containers to minimise code duplication (e.g. List -> Set -> Map)
+        + more inheritance between classes for less duplication (e.g. DArray -> List -> Set -> Map)
     * new PoolAlloc class, non-template version of Pool which now extends PoolAlloc
     * String: construction from numbers, new number parsing functions
     * exact SLERP implementation in Quat
