@@ -369,7 +369,7 @@ int Sound::musicDecode()
               mSet( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
             }
 
-            mad_stream_buffer( &madStream, musicInputBuffer, bytesLeft + bytesRead );
+            mad_stream_buffer( &madStream, musicInputBuffer, ulong( bytesLeft + bytesRead ) );
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
             OZ_ERROR( "Unrecoverable error during MP3 decoding of '%s'",
@@ -407,8 +407,9 @@ int Sound::musicDecode()
         }
 
         NeAACDecFrameInfo frameInfo;
-        aacOutputBuffer = static_cast<char*>
-                          ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
+        aacOutputBuffer = static_cast<char*>( NeAACDecDecode( aacDecoder, &frameInfo,
+                                                              musicInputBuffer,
+                                                              ulong( aacInputBytes ) ) );
 
         if( aacOutputBuffer == nullptr ) {
           return int( musicOutput - musicBuffer );

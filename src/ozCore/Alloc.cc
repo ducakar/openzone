@@ -109,18 +109,18 @@ static void eraseChunkInfo( AllocMode mode, void* ptr, size_t size )
   __sync_lock_release( &allocInfoLock );
 
   if( ci == nullptr ) {
-    OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %llu",
-              mode == OBJECT ? "object" : "array", ptr, ulong64( ci->size ) );
+    OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %lu",
+              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
   }
   else {
-    OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %llu",
-              mode == OBJECT ? "object" : "array", ptr, ulong64( ci->size ) );
+    OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
+              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
   }
 chunkInfoFound:
 
   if( ci->size != size ) {
-    OZ_ERROR( "oz::Alloc: Mismatched size %llu for %s block at %p of size %llu",
-              ulong64( size ), mode == OBJECT ? "object" : "array", ptr, ulong64( ci->size ) );
+    OZ_ERROR( "oz::Alloc: Mismatched size %lu for %s block at %p of size %lu",
+              ulong( size ), mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
   }
 
   free( ci );

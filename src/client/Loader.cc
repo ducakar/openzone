@@ -264,20 +264,18 @@ void Loader::preloadRender()
 void Loader::uploadRender( bool isOneShot )
 {
   if( caelum.id != orbis.caelum.id ) {
-    MainCall() << []() {
-      caelum.unload();
-      caelum.load();
-    };
+    caelum.unload();
+    caelum.load();
+
     if( isOneShot ) {
       return;
     }
   }
 
   if( terra.id != orbis.terra.id ) {
-    MainCall() << []() {
-      terra.unload();
-      terra.load();
-    };
+    terra.unload();
+    terra.load();
+
     if( isOneShot ) {
       return;
     }
@@ -287,9 +285,8 @@ void Loader::uploadRender( bool isOneShot )
     BSP* bsp = context.bsps[i].handle;
 
     if( bsp != nullptr && bsp->isPreloaded() ) {
-      MainCall() << [&]() {
-        bsp->load();
-      };
+      bsp->load();
+
       if( isOneShot ) {
         return;
       }
@@ -300,9 +297,8 @@ void Loader::uploadRender( bool isOneShot )
     Model* model = context.models[i].handle;
 
     if( model != nullptr && model->isPreloaded() ) {
-      MainCall() << [&]() {
-        model->load();
-      };
+      model->load();
+
       if( isOneShot ) {
         return;
       }

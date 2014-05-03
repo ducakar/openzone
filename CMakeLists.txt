@@ -148,7 +148,7 @@ if( PLATFORM_EMBEDDED )
   pkg_check_modules( VORBIS REQUIRED vorbis )      # required by vorbisfile
 endif()
 
-if( NOT PLATFORM_EMBEDDED )
+if( OZ_TOOLS )
   pkg_check_modules( ASSIMP REQUIRED assimp )
 
   find_library( FREEIMAGE_LIBRARY NAMES freeimage FreeImage )

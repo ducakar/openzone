@@ -128,7 +128,13 @@ const char* String::find( const char* s, char ch, int start )
 
 const char* String::findLast( const char* s, char ch, int end )
 {
+#ifndef _GNU_SOURCE
+  static_cast<void>( end );
+
+  return strrchr( s, ch );
+#else
   return static_cast<const char*>( memrchr( s, ch, size_t( end ) ) );
+#endif
 }
 
 const char* String::findLast( const char* s, char ch )

@@ -160,7 +160,7 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         char& g = specularImage.pixels[i*4 + 1];
         char& r = specularImage.pixels[i*4 + 2];
 
-        r = ( b + g + r ) / 3;
+        r = char( ( b + g + r ) / 3 );
         g = 0;
         b = 0;
       }
@@ -174,7 +174,7 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         char& r = emissionImage.pixels[i*4 + 2];
 
         r = 0;
-        g = ( b + g + r ) / 3;
+        g = char( ( b + g + r ) / 3 );
         b = 0;
       }
 
@@ -194,8 +194,8 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         char& eg = emissionImage.pixels[i*4 + 1];
         char& er = emissionImage.pixels[i*4 + 2];
 
-        r = ( b + g + r ) / 3;
-        g = ( eb + eg + er ) / 3;
+        r = char( ( b + g + r ) / 3 );
+        g = char( ( eb + eg + er ) / 3 );
         b = 0;
       }
 

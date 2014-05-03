@@ -50,6 +50,7 @@ namespace oz
 
 #ifdef _WIN32
 static DWORD          nameKey;
+static HANDLE         mainThread = GetCurrentThread();
 #else
 static pthread_key_t  nameKey;
 static pthread_t      mainThread = pthread_self();
@@ -179,7 +180,11 @@ const char* Thread::name()
 
 bool Thread::isMain()
 {
+#ifdef _WIN32
+  return GetCurrentThread() == mainThread;
+#else
   return pthread_equal( pthread_self(), mainThread );
+#endif
 }
 
 Thread::Thread() :

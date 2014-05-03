@@ -333,7 +333,7 @@ static DWORD WINAPI bellMain( void* )
   wave->chunkId[1]     = 'I';
   wave->chunkId[2]     = 'F';
   wave->chunkId[3]     = 'F';
-  wave->chunkSize      = 36 + sizeof( wave->samples );
+  wave->chunkSize      = int( 36 + sizeof( wave->samples ) );
   wave->format[0]      = 'W';
   wave->format[1]      = 'A';
   wave->format[2]      = 'V';
@@ -347,9 +347,9 @@ static DWORD WINAPI bellMain( void* )
   wave->audioFormat    = 1;
   wave->nChannels      = 2;
   wave->sampleRate     = BELL_PREFERRED_RATE;
-  wave->byteRate       = BELL_PREFERRED_RATE * 2 * sizeof( short );
-  wave->blockAlign     = 2 * sizeof( short );
-  wave->bitsPerSample  = sizeof( short ) * 8;
+  wave->byteRate       = int( BELL_PREFERRED_RATE * 2 * sizeof( short ) );
+  wave->blockAlign     = short( 2 * sizeof( short ) );
+  wave->bitsPerSample  = short( sizeof( short ) * 8 );
 
   wave->subchunk2Id[0] = 'd';
   wave->subchunk2Id[1] = 'a';

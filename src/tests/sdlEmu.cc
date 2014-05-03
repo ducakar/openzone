@@ -127,7 +127,7 @@ SDL_RWops* SDL_RWFromConstMem( const void* mem, int size )
 
 #endif
 
-int main()
+int main( int, char** )
 {
   System::init();
   File::init();

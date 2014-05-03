@@ -646,7 +646,7 @@ bool File::read( char* buffer, int* size ) const
     }
 
     DWORD read = 0;
-    BOOL result = ReadFile( file, buffer, DWORD( size ), &read, nullptr );
+    BOOL result = ReadFile( file, buffer, DWORD( *size ), &read, nullptr );
     CloseHandle( file );
 
     if( !result || int( read ) != *size ) {
@@ -1164,10 +1164,12 @@ bool File::mv( const char* srcPath, const File& dest )
     destFile = destFile.path() + "/" + srcPath;
   }
 
-#ifdef __native_client__
+#if defined( __native_client__ )
   pp::FileRef srcFileRef( ppFileSystem, srcPath );
   pp::FileRef destFileRef( ppFileSystem, destFile.path() );
   return srcFileRef.Rename( destFileRef, pp::BlockUntilComplete() ) == PP_OK;
+#elif defined( _WIN32 )
+  return MoveFile( srcPath, dest.path() );
 #else
   return rename( srcPath, destFile.path() ) == 0;
 #endif
@@ -1179,9 +1181,11 @@ bool File::rm( const char* path )
     return PHYSFS_delete( &path[1] );
   }
   else {
-#ifdef __native_client__
+#if defined( __native_client__ )
     pp::FileRef fileRef( ppFileSystem, path );
     return fileRef.Delete( pp::BlockUntilComplete() ) == PP_OK;
+#elif defined( _WIN32 )
+    return File( path ).type() == DIRECTORY ? RemoveDirectory( path ) : DeleteFile( path );
 #else
     return remove( path ) == 0;
 #endif
