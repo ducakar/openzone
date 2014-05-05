@@ -163,97 +163,95 @@ void Shader::loadProgram( int id )
 
   programConfig.clear( true );
 
-  MainCall() << [&]() {
-    programs[id].vertShader = *vertId;
-    programs[id].fragShader = *fragId;
-    programs[id].program    = glCreateProgram();
+  programs[id].vertShader = *vertId;
+  programs[id].fragShader = *fragId;
+  programs[id].program    = glCreateProgram();
 
-    glAttachShader( programs[id].program, programs[id].vertShader );
-    glAttachShader( programs[id].program, programs[id].fragShader );
+  glAttachShader( programs[id].program, programs[id].vertShader );
+  glAttachShader( programs[id].program, programs[id].fragShader );
 
-    OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
-    OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
-    OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
-    OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
-    OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
+  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
 
-    glLinkProgram( programs[id].program );
+  glLinkProgram( programs[id].program );
 
-    int result;
-    glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
+  int result;
+  glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
 
-    int length;
-    glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
-    logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
+  int length;
+  glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
+  logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 
-    if( length != 0 ) {
-      if( result == GL_TRUE ) {
-        Log::verboseMode = true;
-      }
-
-      Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
-      Log::verboseMode = false;
+  if( length != 0 ) {
+    if( result == GL_TRUE ) {
+      Log::verboseMode = true;
     }
 
-    if( result != GL_TRUE ) {
-      OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
-    }
+    Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
+    Log::verboseMode = false;
+  }
 
-    glUseProgram( programs[id].program );
+  if( result != GL_TRUE ) {
+    OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
+  }
 
-    OZ_REGISTER_UNIFORM( projCamera,          "oz_ProjCamera"          );
-    OZ_REGISTER_UNIFORM( model,               "oz_Model"               );
-    OZ_REGISTER_UNIFORM( modelRot,            "oz_ModelRot"            );
-    OZ_REGISTER_UNIFORM( cameraPos,           "oz_CameraPos"           );
-    OZ_REGISTER_UNIFORM( bones,               "oz_Bones"               );
-    OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
+  glUseProgram( programs[id].program );
 
-    OZ_REGISTER_UNIFORM( colour,              "oz_Colour"              );
-    OZ_REGISTER_UNIFORM( texture,             "oz_Texture"             );
-    OZ_REGISTER_UNIFORM( masks,               "oz_Masks"               );
-    OZ_REGISTER_UNIFORM( normals,             "oz_Normals"             );
-    OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
-    OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
-    OZ_REGISTER_UNIFORM( shininess,           "oz_Shininess"           );
-    OZ_REGISTER_UNIFORM( nLights,             "oz_NumLights"           );
+  OZ_REGISTER_UNIFORM( projCamera,          "oz_ProjCamera"          );
+  OZ_REGISTER_UNIFORM( model,               "oz_Model"               );
+  OZ_REGISTER_UNIFORM( modelRot,            "oz_ModelRot"            );
+  OZ_REGISTER_UNIFORM( cameraPos,           "oz_CameraPos"           );
+  OZ_REGISTER_UNIFORM( bones,               "oz_Bones"               );
+  OZ_REGISTER_UNIFORM( meshAnimation,       "oz_MeshAnimation"       );
 
-    OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
-    OZ_REGISTER_UNIFORM( caelumLight_colour,  "oz_CaelumLight.colour"  );
-    OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
+  OZ_REGISTER_UNIFORM( colour,              "oz_Colour"              );
+  OZ_REGISTER_UNIFORM( texture,             "oz_Texture"             );
+  OZ_REGISTER_UNIFORM( masks,               "oz_Masks"               );
+  OZ_REGISTER_UNIFORM( normals,             "oz_Normals"             );
+  OZ_REGISTER_UNIFORM( envMap,              "oz_EnvMap"              );
+  OZ_REGISTER_UNIFORM( vertexAnim,          "oz_VertexAnim"          );
+  OZ_REGISTER_UNIFORM( shininess,           "oz_Shininess"           );
+  OZ_REGISTER_UNIFORM( nLights,             "oz_NumLights"           );
 
-    OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
-    OZ_REGISTER_UNIFORM( fog_distance2,       "oz_Fog.distance2"       );
+  OZ_REGISTER_UNIFORM( caelumLight_dir,     "oz_CaelumLight.dir"     );
+  OZ_REGISTER_UNIFORM( caelumLight_colour,  "oz_CaelumLight.colour"  );
+  OZ_REGISTER_UNIFORM( caelumLight_ambient, "oz_CaelumLight.ambient" );
 
-    OZ_REGISTER_UNIFORM( caelumColour,        "oz_CaelumColour"        );
-    OZ_REGISTER_UNIFORM( caelumLuminance,     "oz_CaelumLuminance"     );
-    OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
-    OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
+  OZ_REGISTER_UNIFORM( fog_colour,          "oz_Fog.colour"          );
+  OZ_REGISTER_UNIFORM( fog_distance2,       "oz_Fog.distance2"       );
 
-    uniform = programs[id].uniform;
+  OZ_REGISTER_UNIFORM( caelumColour,        "oz_CaelumColour"        );
+  OZ_REGISTER_UNIFORM( caelumLuminance,     "oz_CaelumLuminance"     );
+  OZ_REGISTER_UNIFORM( waveBias,            "oz_WaveBias"            );
+  OZ_REGISTER_UNIFORM( wind,                "oz_Wind"                );
 
-    if( setSamplerMap ) {
-      glUniform1i( uniform.texture, 0 );
-      glUniform1i( uniform.masks, 1 );
-      glUniform1i( uniform.normals, 2 );
-      glUniform1i( uniform.envMap, 3 );
-      glUniform1i( uniform.vertexAnim, 4 );
-    }
+  uniform = programs[id].uniform;
 
-    Mat4 bones[] = {
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
-      Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID
-    };
+  if( setSamplerMap ) {
+    glUniform1i( uniform.texture, 0 );
+    glUniform1i( uniform.masks, 1 );
+    glUniform1i( uniform.normals, 2 );
+    glUniform1i( uniform.envMap, 3 );
+    glUniform1i( uniform.vertexAnim, 4 );
+  }
 
-    glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
-
-    glActiveTexture( ENV_MAP );
-    glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
-    glActiveTexture( DIFFUSE );
-
-    OZ_GL_CHECK_ERROR();
+  Mat4 bones[] = {
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
+    Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID
   };
+
+  glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
+
+  glActiveTexture( ENV_MAP );
+  glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
+  glActiveTexture( DIFFUSE );
+
+  OZ_GL_CHECK_ERROR();
 }
 
 Shader::Shader() :
@@ -315,28 +313,28 @@ void Shader::init()
 
   medium = 0;
 
-  // Bind white texture to id 0 to emulate fixed functionality that has white texture on id 0.
-  ubyte whitePixel[] = { 0xff, 0xff, 0xff };
-  // Default masks: specular 0.0, emission 0.0, environment 0.0.
-  ubyte masksPixel[] = { 0x00, 0x00, 0x00 };
-  // Default normal for bumpmap: [0, 0, 1].
-  ubyte normalsPixel[] = { 0x80, 0x80, 0xff };
+  MainCall() << [&]()
+  {
+    // Bind white texture to id 0 to emulate fixed functionality that has white texture on id 0.
+    ubyte whitePixel[] = { 0xff, 0xff, 0xff };
 
-  File envMap = "@glsl/env.dds";
-  envMap.map();
-
-  MainCall() << [&]() {
     glGenTextures( 1, &defaultTexture );
     glBindTexture( GL_TEXTURE_2D, defaultTexture );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
 
+    // Default masks: specular 0.0, emission 0.0, environment 0.0.
+    ubyte masksPixel[] = { 0x00, 0x00, 0x00 };
+
     glGenTextures( 1, &defaultMasks );
     glBindTexture( GL_TEXTURE_2D, defaultMasks );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel );
+
+    // Default normal for bumpmap: [0, 0, 1].
+    ubyte normalsPixel[] = { 0x80, 0x80, 0xff };
 
     glGenTextures( 1, &defaultNormals );
     glBindTexture( GL_TEXTURE_2D, defaultNormals );
@@ -347,73 +345,70 @@ void Shader::init()
     glGenTextures( 1, &noiseTexture );
     glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
 
-    if( GL::textureDataFromFile( envMap, 0 ) == 0 ) {
-      OZ_ERROR( "Failed to load environment map texture '%s'", envMap.path().cstr() );
-    }
+//    File envMap = "@glsl/env.dds";
+//    if( GL::textureDataFromFile( envMap, 0 ) == 0 ) {
+//      OZ_ERROR( "Failed to load environment map texture '%s'", envMap.path().cstr() );
+//    }
 
     glActiveTexture( DIFFUSE );
     glBindTexture( GL_TEXTURE_2D, defaultTexture );
 
     OZ_GL_CHECK_ERROR();
-  };
 
-  if( liber.shaders.length() == 0 ) {
-    OZ_ERROR( "Shaders missing" );
-  }
+    if( liber.shaders.length() == 0 ) {
+      OZ_ERROR( "Shaders missing" );
+    }
 
-  plain       = liber.shaderIndex( "plain" );
-  mesh        = liber.shaderIndex( "mesh" );
-  postprocess = liber.shaderIndex( "postprocess" );
+    plain       = liber.shaderIndex( "plain" );
+    mesh        = liber.shaderIndex( "mesh" );
+    postprocess = liber.shaderIndex( "postprocess" );
 
-  programs.resize( liber.shaders.length() );
+    programs.resize( liber.shaders.length() );
 
-  defines = "#version 100\n";
+    defines = "#version 100\n";
 
-  if( hasVertexTexture ) {
-    defines += "#define OZ_VERTEX_TEXTURE\n";
-  }
-  if( doVertexEffects ) {
-    defines += "#define OZ_VERTEX_EFFECTS\n";
-  }
-  if( doEnvMap ) {
-    defines += "#define OZ_ENV_MAP\n";
-  }
-  if( doBumpMap ) {
-    defines += "#define OZ_BUMP_MAP\n";
-  }
-  if( doPostprocess ) {
-    defines += "#define OZ_POSTPROCESS\n";
-  }
+    if( hasVertexTexture ) {
+      defines += "#define OZ_VERTEX_TEXTURE\n";
+    }
+    if( doVertexEffects ) {
+      defines += "#define OZ_VERTEX_EFFECTS\n";
+    }
+    if( doEnvMap ) {
+      defines += "#define OZ_ENV_MAP\n";
+    }
+    if( doBumpMap ) {
+      defines += "#define OZ_BUMP_MAP\n";
+    }
+    if( doPostprocess ) {
+      defines += "#define OZ_POSTPROCESS\n";
+    }
 
-  File dir = "@glsl";
-  DArray<File> shaderFiles = dir.ls();
+    File dir = "@glsl";
+    DArray<File> shaderFiles = dir.ls();
 
-  for( const File& file : shaderFiles ) {
-    if( file.hasExtension( "vert" ) ) {
-      file.map();
+    for( const File& file : shaderFiles ) {
+      if( file.hasExtension( "vert" ) ) {
+        file.map();
 
-      MainCall() << [&]() {
         uint id = glCreateShader( GL_VERTEX_SHADER );
 
         vertShaders.add( file.baseName(), id );
         compileShader( id, defines, file );
-      };
-    }
-    else if( file.hasExtension( "frag" ) ) {
-      file.map();
+      }
+      else if( file.hasExtension( "frag" ) ) {
+        file.map();
 
-      MainCall() << [&]() {
         uint id = glCreateShader( GL_FRAGMENT_SHADER );
 
         fragShaders.add( file.baseName(), id );
         compileShader( id, defines, file );
-      };
+      }
     }
-  }
 
-  for( int i = 0; i < liber.shaders.length(); ++i ) {
-    loadProgram( i );
-  }
+    for( int i = 0; i < liber.shaders.length(); ++i ) {
+      loadProgram( i );
+    }
+  };
 
   Log::printEnd( " OK" );
 }
@@ -422,7 +417,8 @@ void Shader::destroy()
 {
   Log::print( "Destroying Shader ..." );
 
-  MainCall() << [&]() {
+  MainCall() << [&]()
+  {
     for( int i = 0; i < liber.shaders.length(); ++i ) {
       if( programs[i].program != 0 ) {
         glDetachShader( programs[i].program, programs[i].vertShader );

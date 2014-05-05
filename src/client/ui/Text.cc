@@ -74,7 +74,8 @@ void Text::setTextv( const char* s, va_list ap )
     int newHash = hash( buffer );
 
     if( newHash != lastHash ) {
-      MainCall() << [&]() {
+      MainCall() << [&]()
+      {
         if( texId == 0 ) {
           glGenTextures( 1, &texId );
         }
@@ -224,7 +225,8 @@ void Text::draw( const Area* area )
 void Text::clear()
 {
   if( texId != 0 ) {
-    MainCall() << [&]() {
+    MainCall() << [&]()
+    {
       glDeleteTextures( 1, &texId );
     };
 

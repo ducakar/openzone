@@ -329,7 +329,8 @@ void GameStage::load()
 
   luaClient.init();
 
-  MainCall() << []() {
+  MainCall() << []()
+  {
     render.load();
     context.load();
   };
@@ -444,7 +445,8 @@ void GameStage::unload()
 
   camera.reset();
 
-  MainCall() << []() {
+  MainCall() << []()
+  {
     context.unload();
     render.unload();
   };
@@ -504,8 +506,10 @@ void GameStage::init()
   Log::println( "Initialising GameStage {" );
   Log::indent();
 
-  autosaveFile  = "@state/autosave.ozState";
-  quicksaveFile = "@state/quicksave.ozState";
+  String profilePath = config["dir.config"].get( String::EMPTY );
+
+  autosaveFile  = profilePath + "/saves/autosave.ozState";
+  quicksaveFile = profilePath + "/saves/quicksave.ozState";
 
   matrix.init();
   nirvana.init();

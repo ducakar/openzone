@@ -122,7 +122,8 @@ void Label::vset( int x, int y, const char* s, va_list ap )
     int newHash = hash( buffer );
 
     if( newHash != lastHash ) {
-      MainCall() << [&]() {
+      MainCall() << [&]()
+      {
         if( texId == 0 ) {
           glGenTextures( 1, &texId );
         }
@@ -201,7 +202,8 @@ void Label::draw( const Area* area )
 void Label::clear()
 {
   if( texId != 0 ) {
-    MainCall() << [&]() {
+    MainCall() << [&]()
+    {
       glDeleteTextures( 1, &texId );
     };
 

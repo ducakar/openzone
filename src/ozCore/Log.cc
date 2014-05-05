@@ -582,6 +582,37 @@ const Log& Log::operator << ( const Mat4& m ) const
   return *this;
 }
 
+const Log& Log::operator << ( const InputStream& is ) const
+{
+  if( !verboseMode || showVerbose || file == nullptr ) {
+    fwrite( is.begin(), 1, size_t( is.available() ), stdout );
+    fputc( '\n', stdout );
+    fflush( stdout );
+  }
+  if( file != nullptr ) {
+    fwrite( is.begin(), 1, size_t( is.available() ), file );
+    fputc( '\n', file );
+    fflush( file );
+  }
+  return *this;
+}
+
+
+const Log& Log::operator << ( const Buffer& buffer ) const
+{
+  if( !verboseMode || showVerbose || file == nullptr ) {
+    fwrite( buffer.begin(), 1, size_t( buffer.length() ), stdout );
+    fputc( '\n', stdout );
+    fflush( stdout );
+  }
+  if( file != nullptr ) {
+    fwrite( buffer.begin(), 1, size_t( buffer.length() ), file );
+    fputc( '\n', file );
+    fflush( file );
+  }
+  return *this;
+}
+
 const Log& Log::operator << ( const File& file ) const
 {
   printRaw( "%s", file.path().cstr() );

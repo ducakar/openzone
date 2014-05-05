@@ -315,6 +315,9 @@ int Client::init( int argc, char** argv )
   isBenchmark   = false;
   benchmarkTime = 0.0f;
 
+  File::init( File::TEMPORARY, 64*1024*1024 );
+  initFlags |= INIT_PHYSFS;
+
   String executablePath = File::executablePath();
   String invocationName = executablePath.fileName();
   String prefixDir      = String::isEmpty( OZ_PREFIX ) ? executablePath.fileDirectory() : OZ_PREFIX;
@@ -370,9 +373,6 @@ int Client::init( int argc, char** argv )
     }
   }
 
-  File::init( File::TEMPORARY, 64*1024*1024 );
-  initFlags |= INIT_PHYSFS;
-
 #if defined( __ANDROID__ )
 
   String configDir   = OZ_ANDROID_ROOT "/config";
@@ -392,20 +392,8 @@ int Client::init( int argc, char** argv )
 
 #endif
 
-  if( File::mkdir( configDir ) ) {
-    Log::println( "Profile directory '%s' created", configDir.cstr() );
-  }
-  if( File::mkdir( dataDir ) ) {
-    Log::println( "Directory for per-user content '%s' created", dataDir.cstr() );
-  }
-  if( File::mkdir( dataDir + "/state" ) ) {
-    Log::println( "Directory for saved games '%s/saves' created", dataDir.cstr() );
-  }
-  if( File::mkdir( dataDir + "/layout" ) ) {
-    Log::println( "Directory for layouts '%s/layout' created", dataDir.cstr() );
-  }
-
-  File::mountLocal( dataDir );
+  File::mkdir( configDir );
+  File::mkdir( configDir + "/saves" );
 
   if( Log::init( configDir + "/client.log", true ) ) {
     Log::println( "Log file '%s'", Log::logFile() );
@@ -428,7 +416,10 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
-  MainCall() << []() {
+  File::mount( dataDir, "/" );
+
+  MainCall() << []()
+  {
     if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
       OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
     }
@@ -440,14 +431,8 @@ int Client::init( int argc, char** argv )
   }
   initFlags |= INIT_SDL_TTF;
 
-  // Clean up after previous versions. Be evil. Delete saved games and screenshots.
-  File saveDir       = configDir + "/saves";
+  // Clean up after previous versions. Be evil. Delete screenshots.
   File screenshotDir = configDir + "/screenshots";
-
-  DArray<File> saveFiles = saveDir.ls();
-  for( const File& file : saveFiles ) {
-    File::rm( file.path() );
-  }
 
   DArray<File> screenshotFiles = screenshotDir.ls();
   for( const File& file : screenshotFiles ) {
@@ -520,9 +505,7 @@ int Client::init( int argc, char** argv )
   initFlags |= INIT_NETWORK;
 
 #ifdef __native_client__
-
   DArray<String> packages = naclUpdater.update();
-
 #endif
 
   Log::println( "Content search path {" );
@@ -535,7 +518,7 @@ int Client::init( int argc, char** argv )
 
     File pkgFile = dataDir + "/" + pkg;
 
-    if( File::mount( pkgFile.path(), nullptr, true ) ) {
+    if( File::mount( "%" + pkgFile.path(), nullptr ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
     }
     else {
@@ -560,7 +543,7 @@ int Client::init( int argc, char** argv )
 
     for( const File& file : File( dataDir ).ls() ) {
       if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
-        if( !File::mount( file.path(), nullptr, true ) ) {
+        if( !File::mount( file.path(), nullptr ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS: %s",
                     file.path().cstr(), PHYSFS_getLastError() );
         }
@@ -574,7 +557,7 @@ int Client::init( int argc, char** argv )
 
     for( const File& file : File( globalDataDir ).ls() ) {
       if( file.hasExtension( "7z" ) || file.hasExtension( "zip" ) ) {
-        if( !File::mount( file.path(), nullptr, true ) ) {
+        if( !File::mount( file.path(), nullptr ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file.path().cstr() );
         }
         Log::println( "%s", file.path().cstr() );
@@ -756,7 +739,8 @@ void Client::shutdown()
   if( initFlags & INIT_SDL_TTF ) {
     TTF_Quit();
   }
-  if( initFlags & INIT_SDL ) {
+  if( initFlags & INIT_SDL )
+  {
     MainCall() << []() {
       SDL_Quit();
     };

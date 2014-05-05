@@ -417,7 +417,7 @@ public:
    * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
    * @param append true to append to the end instead to the beginning of the search path.
    */
-  static bool mount( const char* path, const char* mountPoint, bool append = false );
+  static bool mount( const char* path, const char* mountPoint, bool append = true );
 
   /**
    * Mount writeable local resource directory to the root of VFS.
@@ -431,7 +431,7 @@ public:
    * @param path path to directory in native file system.
    * @param append true to append to the end instead to the beginning of the search path.
    */
-  static bool mountLocal( const char* path, bool append = false );
+  static bool mountLocal( const char* path, bool append = true );
 
   /**
    * Get executable file path.

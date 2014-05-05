@@ -18,17 +18,16 @@ defaultPlatform=Linux-`uname -m`-Clang
 
 function run_nacl()
 {
-  mkdir -p build/NaCl-test
+  mkdir -p build/PNaCl/src/tools
 
   # Just create symlinks instead of copying.
   for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
-           build/PNaCl/src/tools/openzone.pexe etc/nacl/openzone.nmf \
-           etc/nacl/openzone.??.html doc
+           etc/nacl/openzone.nmf etc/nacl/openzone.??.html doc
   do
-    [[ -e $i ]] && ln -sf ../../$i build/NaCl-test
+    [[ -e $i ]] && ln -sf ../../../../$i build/PNaCl/src/tools
   done
 
-  cd build/NaCl-test
+  cd build/PNaCl/src/tools
   python -m http.server &
   serverPID=$!
 

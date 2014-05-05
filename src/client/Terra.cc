@@ -167,6 +167,8 @@ void Terra::drawLiquid()
 
 void Terra::load()
 {
+  OZ_NACL_IS_MAIN( true );
+
   id = orbis.terra.id;
 
   const String& name  = liber.terrae[id].name;
@@ -256,6 +258,8 @@ void Terra::load()
 
 void Terra::unload()
 {
+  OZ_NACL_IS_MAIN( true );
+
   if( id >= 0 ) {
     context.releaseTexture( detailTexId );
     context.releaseTexture( liquidTexId );

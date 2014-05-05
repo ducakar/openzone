@@ -200,11 +200,13 @@ if( BUILD_SHARED_LIBS )
   set( flags "${flags} -fPIC" )
 endif()
 
-# AddressSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
+# Address sanitizer.
 #set( flags "${flags} -fsanitize=address" )
-# ThreadSanitizer (GCC 4.8+, LLVM/Clang 3.2+).
+# Leak sanitizer.
+#set( flags "${flags} -fsanitize=leak" )
+# Thread sanitizer.
 #set( flags "${flags} -fsanitize=thread -fpie -fPIC" )
-# Undefined behaviour (GCC 4.9+, LLVM/Clang 3.3+)
+# Undefined behaviour sanitizer.
 #set( flags "${flags} -fsanitize=undefined" )
 
 # Additional warnings.

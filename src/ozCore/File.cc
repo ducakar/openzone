@@ -808,7 +808,13 @@ bool File::map() const
     int size = fileSize;
 
     data = new char[size];
-    return read( data, &size );
+    read( data, &size );
+
+    if( size != fileSize ) {
+      delete[] data;
+      data = nullptr;
+    }
+    return true;
   }
   else {
 #if defined( __native_client__ )

@@ -393,7 +393,8 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
 #else
 
-  MainCall() << [&]() {
+  MainCall() << [&]()
+  {
     uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
 
     Log::print( "Creating OpenGL window %dx%d [%s] ... ",
@@ -432,7 +433,8 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
     Log::printEnd( "OK" );
 
-    MainCall() << []() {
+    MainCall() << []()
+    {
       glViewport( 0, 0, windowWidth, windowHeight );
       glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );

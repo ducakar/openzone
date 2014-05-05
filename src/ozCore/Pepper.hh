@@ -99,12 +99,12 @@ private:
   /**
    * Internal `pp::Instance` implementation.
    */
-  class Instance;
+  struct Instance;
 
   /**
    * Internal `pp::Module` implementation.
    */
-  class Module;
+  struct Module;
 
 public:
 

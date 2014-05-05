@@ -72,7 +72,8 @@ void MenuStage::load()
 
 void MenuStage::unload()
 {
-  MainCall() << [&]() {
+  MainCall() << [&]()
+  {
     ui::mouse.doShow = false;
     ui::ui.root->remove( mainMenu );
   };

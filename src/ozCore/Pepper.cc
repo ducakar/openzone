@@ -65,37 +65,33 @@ static Thread        mainThread;
 static pp::Core*     ppCore     = nullptr;
 static pp::Instance* ppInstance = nullptr;
 
-class Pepper::Instance : public pp::Instance, public pp::MouseLock
+struct Pepper::Instance : pp::Instance, pp::MouseLock
 {
-private:
-
   pp::Fullscreen fullscreen;
-
-private:
+  bool           isStarted;
 
   static void mainThreadMain( void* );
   static void onMouseLocked( void*, int result );
 
-  bool Init( uint32_t argc, const char** argn, const char** argv ) override;
+  explicit Instance( PP_Instance instance_ );
+  ~Instance() override;
+
+  bool Init( uint32_t, const char**, const char** ) override;
   void DidChangeView( const pp::View& view ) override;
-  void DidChangeView( const pp::Rect& position, const pp::Rect& clip ) override;
+  void DidChangeView( const pp::Rect&, const pp::Rect& ) override;
   void HandleMessage( const pp::Var& message ) override;
   bool HandleInputEvent( const pp::InputEvent& event ) override;
   void MouseLockLost() override;
-
-public:
-
-  explicit Instance( PP_Instance instance );
-  ~Instance() override;
-
 };
 
+OZ_NORETURN
 void Pepper::Instance::mainThreadMain( void* )
 {
   char  argv0[] = "";
   char* argv[]  = { argv0, nullptr };
 
-  naclMain( 1, argv );
+  int exitCode = naclMain( 1, argv );
+  exit( exitCode );
 }
 
 void Pepper::Instance::onMouseLocked( void*, int result )
@@ -104,7 +100,7 @@ void Pepper::Instance::onMouseLocked( void*, int result )
 }
 
 Pepper::Instance::Instance( PP_Instance instance_ ) :
-  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
+  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isStarted( false )
 {
   ppCore     = pp::Module::Get()->core();
   ppInstance = this;
@@ -115,10 +111,6 @@ Pepper::Instance::Instance( PP_Instance instance_ ) :
 
 Pepper::Instance::~Instance()
 {
-  if( mainThread.isValid() ) {
-    mainThread.join();
-  }
-
   messageQueue.clear();
   messageQueue.deallocate();
 
@@ -142,10 +134,11 @@ void Pepper::Instance::DidChangeView( const pp::View& view )
   width  = newWidth;
   height = newHeight;
 
-  if( !mainThread.isValid() ) {
+  if( !isStarted ) {
     SDL_NACL_SetInstance( pp_instance(), width, height );
 
-    mainThread.start( "main", Thread::JOINABLE, mainThreadMain, nullptr );
+    mainThread.start( "naclMain", Thread::DETACHED, mainThreadMain, nullptr );
+    isStarted = true;
   }
 }
 
@@ -211,12 +204,9 @@ void Pepper::Instance::MouseLockLost()
   fullscreen.SetFullscreen( false );
 }
 
-class Pepper::Module : public pp::Module
+struct Pepper::Module : pp::Module
 {
-public:
-
   pp::Instance* CreateInstance( PP_Instance instance ) override;
-
 };
 
 pp::Instance* Pepper::Module::CreateInstance( PP_Instance instance )

@@ -1,6 +1,6 @@
 diff -r 29ab417d9453 CMakeLists.txt
 --- a/CMakeLists.txt	Fri Feb 07 16:23:12 2014 -0500
-+++ b/CMakeLists.txt	Thu May 01 19:51:22 2014 +0200
++++ b/CMakeLists.txt	Mon May 05 18:29:58 2014 +0200
 @@ -50,7 +50,7 @@
  # Add some gcc-specific command lines.
  if(CMAKE_COMPILER_IS_GNUCC)
@@ -37,7 +37,7 @@ diff -r 29ab417d9453 CMakeLists.txt
          set(HAVE_PTHREAD_H TRUE)
 diff -r 29ab417d9453 src/lzma/C/Archive/7z/7zDecode.c
 --- a/src/lzma/C/Archive/7z/7zDecode.c	Fri Feb 07 16:23:12 2014 -0500
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Thu May 01 19:51:22 2014 +0200
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Mon May 05 18:29:58 2014 +0200
 @@ -1,6 +1,10 @@
  /* 7zDecode.c */
  
@@ -52,7 +52,7 @@ diff -r 29ab417d9453 src/lzma/C/Archive/7z/7zDecode.c
  #include <string.h>
 diff -r 29ab417d9453 src/physfs.c
 --- a/src/physfs.c	Fri Feb 07 16:23:12 2014 -0500
-+++ b/src/physfs.c	Thu May 01 19:51:22 2014 +0200
++++ b/src/physfs.c	Mon May 05 18:29:58 2014 +0200
 @@ -1268,8 +1268,7 @@
  {
      while (numArchivers > 0)
@@ -65,7 +65,7 @@ diff -r 29ab417d9453 src/physfs.c
      allocator.Free(archivers);
 diff -r 29ab417d9453 src/physfs.h
 --- a/src/physfs.h	Fri Feb 07 16:23:12 2014 -0500
-+++ b/src/physfs.h	Thu May 01 19:51:22 2014 +0200
++++ b/src/physfs.h	Mon May 05 18:29:58 2014 +0200
 @@ -229,7 +229,7 @@
  #define PHYSFS_DECL __declspec(dllexport)
  #elif (defined __SUNPRO_C)
@@ -77,7 +77,7 @@ diff -r 29ab417d9453 src/physfs.h
  #define PHYSFS_DECL
 diff -r 29ab417d9453 src/physfs_platforms.h
 --- a/src/physfs_platforms.h	Fri Feb 07 16:23:12 2014 -0500
-+++ b/src/physfs_platforms.h	Thu May 01 19:51:22 2014 +0200
++++ b/src/physfs_platforms.h	Mon May 05 18:29:58 2014 +0200
 @@ -40,6 +40,8 @@
  #  define PHYSFS_PLATFORM_UNIX 1
  #  define PHYSFS_PLATFORM_POSIX 1
@@ -89,8 +89,8 @@ diff -r 29ab417d9453 src/physfs_platforms.h
  #  define PHYSFS_PLATFORM_UNIX 1
 diff -r 29ab417d9453 src/platform_nacl.c
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Thu May 01 19:51:22 2014 +0200
-@@ -0,0 +1,477 @@
++++ b/src/platform_nacl.c	Mon May 05 18:29:58 2014 +0200
+@@ -0,0 +1,508 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
@@ -128,6 +128,8 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +    PP_FileOpenFlags   openFlags;
 +    PHYSFS_uint64      offset;
 +    char               path[256];
++    void              *buffer;
++    struct FileDesc   *next;
 +} FileDesc;
 +
 +
@@ -143,6 +145,10 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +static PPB_FileSystem *iFileSystem = NULL;
 +static PPB_FileRef    *iFileRef    = NULL;
 +static PPB_FileIO     *iFileIO     = NULL;
++
++
++/* Cached files */
++static FileDesc *firstCached = NULL;
 +
 +
 +int PHYSFS_NACL_init(PP_Instance instance_, PPB_GetInterface getInterface_,
@@ -201,17 +207,40 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +} /* __PHYSFS_platformDeinit */
 +
 +
-+static void* openFile(const char* fileName, PP_FileOpenFlags openFlags)
++static void *openFile(const char *fileName, PP_FileOpenFlags openFlags)
 +{
-+    BAIL_IF_MACRO(iCore->IsMainThread(), PHYSFS_ERR_BUSY, 0);
-+
 +    FileDesc *file = (FileDesc *) allocator.Malloc(sizeof (FileDesc));
 +    BAIL_IF_MACRO(!file, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
++
++    int cacheable = 0;
++    if (fileName[0] == '%')
++    {
++        fileName++;
++
++        if (openFlags == PP_FILEOPENFLAG_READ)
++        {
++            cacheable = 1;
++
++            for (FileDesc *i = firstCached; i != NULL; i = i->next)
++            {
++                if (strncmp(fileName, i->path, 255) == 0)
++                {
++                    *file = *i;
++                    return file;
++                }
++            }
++        }
++    }
++
++    BAIL_IF_MACRO(iCore->IsMainThread(), PHYSFS_ERR_BUSY, 0);
 +
 +    file->openFlags = openFlags;
 +    file->offset    = 0;
 +    file->path[255] = '\0';
-+    strncpy( file->path, fileName, 255 );
++    file->buffer    = NULL;
++    file->next      = NULL;
++
++    strncpy(file->path, fileName, 255);
 +
 +    file->fileIO = iFileIO->Create(instance);
 +    if (!file->fileIO)
@@ -239,7 +268,7 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +        iCore->ReleaseResource(file->fileIO);
 +        allocator.Free(file);
 +
-+        BAIL_MACRO(PP_ERROR_FILENOTFOUND ? PHYSFS_ERR_NOT_FOUND : PHYSFS_ERR_IO, NULL);
++        BAIL_MACRO(retval == PP_ERROR_FILENOTFOUND ? PHYSFS_ERR_NOT_FOUND : PHYSFS_ERR_IO, NULL);
 +    } /* if */
 +
 +    retval = iFileIO->Query(file->fileIO, &file->fileInfo, PP_BlockUntilComplete());
@@ -253,6 +282,24 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +    } /* if */
 +
 +    iCore->ReleaseResource(fileRef);
++
++    if (cacheable)
++    {
++        void* buffer = allocator.Malloc(file->fileInfo.size);
++        PHYSFS_sint64 bytesRead = __PHYSFS_platformRead(file, buffer, file->fileInfo.size);
++        BAIL_IF_MACRO(bytesRead != file->fileInfo.size, PHYSFS_ERR_IO, NULL);
++
++        file->buffer = buffer;
++        file->offset = 0;
++        file->next   = firstCached;
++        firstCached  = file;
++
++        file = (FileDesc *) allocator.Malloc(sizeof (FileDesc));
++        BAIL_IF_MACRO(!file, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
++
++        *file = *firstCached;
++    }
++
 +    return file;
 +} /* openFile */
 +
@@ -279,8 +326,18 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +                                    PHYSFS_uint64 len)
 +{
 +    FileDesc* file = (FileDesc* ) opaque;
-+    BAIL_IF_MACRO(iCore->IsMainThread(), PHYSFS_ERR_BUSY, 0);
++    BAIL_IF_MACRO(file->buffer == NULL && iCore->IsMainThread(), PHYSFS_ERR_BUSY, 0);
 +    BAIL_IF_MACRO(file->openFlags != PP_FILEOPENFLAG_READ, PHYSFS_ERR_OPEN_FOR_WRITING, 0);
++
++    if (file->buffer != NULL)
++    {
++        if (file->offset + len > file->fileInfo.size)
++            len = file->fileInfo.size - file->offset;
++
++        memcpy(buffer, file->buffer + file->offset, len);
++        file->offset += len;
++        return len;
++    }
 +
 +    int32_t bytesRead = 0;
 +    int32_t bytesLeft = (int32_t) len;
@@ -337,8 +394,6 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +
 +int __PHYSFS_platformStat(const char *filename, PHYSFS_Stat *st)
 +{
-+    BAIL_IF_MACRO(iCore->IsMainThread(), PHYSFS_ERR_BUSY, 0);
-+
 +    /* Root must be handled as a special case as querying it always fails. */
 +    if (filename[0] == '\0' || (filename[0] == '/' && filename[1] == '\0'))
 +    {
@@ -352,43 +407,16 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +        return 1;
 +    } /* if */
 +
-+    PP_Resource fileIO = iFileIO->Create(instance);
-+    BAIL_IF_MACRO(!fileIO, PHYSFS_ERR_OS_ERROR, 0);
-+    iCore->AddRefResource(fileIO);
++    FileDesc *file = openFile(filename, PP_FILEOPENFLAG_READ);
++    BAIL_IF_MACRO(file == NULL, 0, 0);
 +
-+    PP_Resource fileRef = iFileRef->Create(fileSystem, filename);
-+    if (!fileRef)
-+    {
-+        iCore->ReleaseResource(fileIO);
-+        BAIL_MACRO(PHYSFS_ERR_OS_ERROR, 0);
-+    } /* if */
-+    iCore->AddRefResource(fileRef);
++    st->createtime = file->fileInfo.creation_time;
++    st->modtime    = file->fileInfo.last_modified_time;
++    st->accesstime = file->fileInfo.last_access_time;
++    st->readonly   = file->buffer != NULL;
++    st->filesize   = file->fileInfo.size;
 +
-+    int retval = iFileIO->Open(fileIO, fileRef, 0, PP_BlockUntilComplete());
-+    if (retval != PP_OK)
-+    {
-+        iCore->ReleaseResource(fileRef);
-+        iCore->ReleaseResource(fileIO);
-+
-+        BAIL_MACRO(PHYSFS_ERR_OPEN_FOR_READING, 0);
-+    } /* if */
-+
-+    struct PP_FileInfo fileInfo;
-+    retval = iFileIO->Query(fileIO, &fileInfo, PP_BlockUntilComplete());
-+
-+    iFileIO->Close(fileIO);
-+    iCore->ReleaseResource(fileRef);
-+    iCore->ReleaseResource(fileIO);
-+
-+    BAIL_IF_MACRO(retval != PP_OK, PHYSFS_ERR_IO, 0);
-+
-+    st->createtime = fileInfo.creation_time;
-+    st->modtime    = fileInfo.last_modified_time;
-+    st->accesstime = fileInfo.last_access_time;
-+    st->readonly   = 0;
-+    st->filesize   = fileInfo.size;
-+
-+    switch (fileInfo.type)
++    switch (file->fileInfo.type)
 +    {
 +        case PP_FILETYPE_REGULAR:
 +            st->filetype = PHYSFS_FILETYPE_REGULAR;
@@ -401,6 +429,7 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +            break;
 +    } /* switch */
 +
++    __PHYSFS_platformClose(file);
 +    return 1;
 +} /* __PHYSFS_platformStat */
 +
@@ -415,7 +444,9 @@ diff -r 29ab417d9453 src/platform_nacl.c
 +{
 +    FileDesc *file = (FileDesc *) opaque;
 +
-+    iCore->ReleaseResource(file->fileIO);
++    if (file->buffer == NULL)
++        iCore->ReleaseResource(file->fileIO);
++
 +    allocator.Free(file);
 +} /* __PHYSFS_platformClose */
 +

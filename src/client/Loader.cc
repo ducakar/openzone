@@ -102,9 +102,7 @@ void Loader::cleanupRender()
         bsp.nUsers = 0;
       }
       else {
-        MainCall() << [&]() {
-          delete bsp.handle;
-        };
+        delete bsp.handle;
 
         bsp.handle = nullptr;
         bsp.nUsers = -1;
@@ -117,9 +115,7 @@ void Loader::cleanupRender()
       Context::Resource<Model*>& model = context.models[i];
 
       if( model.nUsers == 0 ) {
-        MainCall() << [&]() {
-          delete model.handle;
-        };
+        delete model.handle;
 
         model.handle = nullptr;
         model.nUsers = -1;
@@ -333,8 +329,11 @@ void Loader::makeScreenshot()
 
 void Loader::syncUpdate()
 {
-  preloadRender();
-  loader.uploadRender( false );
+  MainCall() << [&]()
+  {
+    preloadRender();
+    loader.uploadRender( false );
+  };
 }
 
 void Loader::update()
@@ -345,8 +344,11 @@ void Loader::update()
     return;
   }
 
-  loader.cleanupRender();
-  loader.uploadRender( true );
+  MainCall() << [&]()
+  {
+    loader.cleanupRender();
+    loader.uploadRender( true );
+  };
 
   tick = ( tick + 1 ) % TICK_PERIOD;
 

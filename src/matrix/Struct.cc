@@ -137,7 +137,7 @@ void Entity::manualDoorHandler()
     case OPENING: {
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
       time  += Timer::TICK_TIME;
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state    = OPENED;
@@ -154,7 +154,7 @@ void Entity::manualDoorHandler()
       offset = Vec3::ZERO;
 
       if( collider.overlaps( this ) ) {
-        offset = Math::smooth( ratio ) * clazz->move;
+        offset = ratio * clazz->move;
 
         if( ratio == 1.0f ) {
           state = OPENED;
@@ -196,7 +196,7 @@ void Entity::autoDoorHandler()
     case OPENING: {
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
       time  += Timer::TICK_TIME;
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state    = OPENED;
@@ -226,7 +226,7 @@ void Entity::autoDoorHandler()
       offset = Vec3::ZERO;
 
       if( collider.overlaps( this, clazz->margin ) ) {
-        offset = Math::smooth( ratio ) * clazz->move;
+        offset = ratio * clazz->move;
 
         if( ratio == 1.0f ) {
           state = OPENED;
@@ -268,7 +268,7 @@ void Entity::ignoringBlockHandler()
     }
     case OPENING: {
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state    = OPENED;
@@ -287,7 +287,7 @@ void Entity::ignoringBlockHandler()
     }
     case CLOSING: {
       ratio  = max( ratio - clazz->ratioInc, 0.0f );
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
         state    = CLOSED;
@@ -316,7 +316,7 @@ void Entity::crushingBlockHandler()
       Vec3 move = offset;
 
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
@@ -369,7 +369,7 @@ void Entity::crushingBlockHandler()
       Vec3 move = offset;
 
       ratio  = max( ratio - clazz->ratioInc, 0.0f );
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
@@ -427,7 +427,7 @@ void Entity::elevatorHandler()
 
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
       time  += Timer::TICK_TIME;
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
@@ -478,7 +478,7 @@ void Entity::elevatorHandler()
 
       ratio  = max( ratio - clazz->ratioInc, 0.0f );
       time  += Timer::TICK_TIME;
-      offset = Math::smooth( ratio ) * clazz->move;
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );

@@ -298,6 +298,16 @@ public:
   const Log& operator << ( const Mat4& m ) const;
 
   /**
+   * Dump stream contents to log stream(s).
+   */
+  const Log& operator << ( const InputStream& is ) const;
+
+  /**
+   * Dump buffer contents to log stream(s).
+   */
+  const Log& operator << ( const Buffer& buffer ) const;
+
+  /**
    * Same as `printRaw( "%s", file.path().cstr() )`.
    */
   const Log& operator << ( const File& file ) const;

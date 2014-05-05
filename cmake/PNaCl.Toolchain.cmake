@@ -31,9 +31,9 @@ set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
 
 macro( pnacl_finalise _target )
-  add_custom_command( TARGET ${_target}
-    POST_BUILD COMMAND "${PLATFORM_PREFIX}/bin64/${PLATFORM_TRIPLET}-finalize"
-                       "$<TARGET_FILE:${_target}>" )
+  add_custom_command( TARGET ${_target} POST_BUILD
+    COMMENT "Finalising ${_target}"
+    COMMAND "${PLATFORM_PREFIX}/bin64/${PLATFORM_TRIPLET}-finalize" "$<TARGET_FILE:${_target}>" )
 endmacro()
 
 include_directories( SYSTEM $ENV{NACL_SDK_ROOT}/include )
