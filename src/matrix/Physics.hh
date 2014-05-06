@@ -36,18 +36,16 @@ public:
 
   static const float FLOOR_NORMAL_Z;
   static const float MOVE_BOUNCE;
-  static const float MAX_HIT_MASS;
   static const float ENTITY_BOND_G_RATIO;
   static const float SIDE_PUSH_RATIO;
 
+  static const float HIT_MAX_MASS;
   static const float HIT_THRESHOLD;
   static const float HIT_INTENSITY_COEF;
   static const float HIT_ENERGY_COEF;
   static const float SPLASH_THRESHOLD;
   static const float SPLASH_INTENSITY_COEF;
 
-  static const float WEIGHT_DAMAGE_THRESHOLD;
-  static const float WEIGHT_DAMAGE_FACTOR;
   static const float SLIDE_DAMAGE_THRESHOLD;
   static const float SLIDE_DAMAGE_COEF;
 

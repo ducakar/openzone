@@ -62,6 +62,7 @@ function setup_pnacl()
 
   export -n CPP
   export CC="$toolsroot/bin64/$triplet-clang"
+  export CXX="$toolsroot/bin64/$triplet-clang++"
   export AR="$toolsroot/bin64/$triplet-ar"
   export RANLIB="$toolsroot/bin64/$triplet-ranlib"
   export STRIP="$toolsroot/bin64/$triplet-strip"
@@ -93,6 +94,7 @@ function setup_ndk_i686()
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
+  export CXX="$toolsroot/bin/$triplet-g++"
   export AR="$toolsroot/bin/$triplet-ar"
   export RANLIB="$toolsroot/bin/$triplet-ranlib"
   export STRIP="$toolsroot/bin/$triplet-strip"
@@ -123,6 +125,7 @@ function setup_ndk_ARM()
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
+  export CC="$toolsroot/bin/$triplet-g++"
   export AR="$toolsroot/bin/$triplet-ar"
   export RANLIB="$toolsroot/bin/$triplet-ranlib"
   export STRIP="$toolsroot/bin/$triplet-strip"
@@ -153,6 +156,7 @@ function setup_ndk_ARMv7a()
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
+  export CXX="$toolsroot/bin/$triplet-g++"
   export AR="$toolsroot/bin/$triplet-ar"
   export RANLIB="$toolsroot/bin/$triplet-ranlib"
   export STRIP="$toolsroot/bin/$triplet-strip"
@@ -183,6 +187,7 @@ function setup_ndk_MIPS()
 
   export CPP="$toolsroot/bin/$triplet-cpp"
   export CC="$toolsroot/bin/$triplet-gcc"
+  export CXX="$toolsroot/bin/$triplet-g++"
   export AR="$toolsroot/bin/$triplet-ar"
   export RANLIB="$toolsroot/bin/$triplet-ranlib"
   export STRIP="$toolsroot/bin/$triplet-strip"

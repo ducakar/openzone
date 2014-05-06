@@ -1137,7 +1137,7 @@ bool File::mkdir( const char* path )
   else {
 #if defined( __native_client__ )
     pp::FileRef file( ppFileSystem, path );
-    return file.MakeDirectory( pp::BlockUntilComplete() ) == PP_OK;
+    return file.MakeDirectory( 0, pp::BlockUntilComplete() ) == PP_OK;
 #elif defined( _WIN32 )
     return CreateDirectory( path, nullptr ) != 0;
 #else

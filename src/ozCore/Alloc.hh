@@ -59,15 +59,6 @@ class Alloc
 {
 public:
 
-  /// True iff `new` and `delete` operators are overridden (AddressSanitizer disables them).
-#ifdef OZ_DISABLE_ALLOC_OVERLOADS
-  static const bool OVERLOADS_NEW_AND_DELETE = false;
-#else
-  static const bool OVERLOADS_NEW_AND_DELETE = true;
-#endif
-
-public:
-
   /**
    * Information about an allocated memory chunk.
    *

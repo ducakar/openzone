@@ -16,7 +16,7 @@ Building
 
 Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
 Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
-supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.3 compilers are supported.
+supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.1 compilers are supported.
 
 To build OpenZone from source, development packages for the following libraries are required:
 
@@ -243,6 +243,21 @@ The following commands may be given (`build` is assumed if none):
 - `clean`: Delete directories for all platforms.
 - (none): Copy libraries for selected platforms into corresponding directories.
 
+### `nacl.sh [run | debug | finalise | translate]` ###
+
+Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
+`NACL_SDK_ROOT` environment variable must be set to use this script.
+
+The following alternative launches are available:
+
+- `run`: creates symlinks to compiled data archives, HTML pages etc. in the target directory, starts
+  a simple python web server in that directory at port 8000 (`python -m http.server`) and opens
+  `localhost:8000` in chromium browser to test the web-based NaCl port.
+- `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
+  debugging.
+- `finalise`: runs `pnacl-finalize` to finalise openzone PNaCl pexe executable.
+- `translate`: translates openzone PNaCl pexe to host machine architecture's nexe.
+
 ### `package.sh {src | data | datasrc | bundle}` ###
 
 One of the following commands must be given:
@@ -274,7 +289,7 @@ The following commands may be given (`build` is assumed if none):
 Proxy script for invoking `q3map2` BSP compiler from GtkRadiant in with appropriate parameters to
 compile a BSP structures for OpenZone.
 
-### `run.sh [win | nacl] [<options>]` ###
+### `run.sh [wine]` ###
 
 Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 `NACL_SDK_ROOT` environment variable must be set to use this script.
@@ -282,10 +297,6 @@ Linux-x86_64-Clang client is launched by default. <options> are passed to the cl
 The following alternative launches are available:
 
 - `wine`: Installs the standalone Windows port into `build/Windows-test` and launches it via Wine.
-- `nacl`: Prepares directory `build/NaCl-test` (creating symlinks to binaries, compiled data
-  archives, HTML pages ...), starts a simple python web server in that directory at port 8000
-  (`python -m http.server`) and opens `localhost:8000` in chromium browser to test the web-based
-  NaCl port. If `strip` is passed as the second option, binaries are stripped too.
 
 Documentation
 -------------

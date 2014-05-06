@@ -345,10 +345,10 @@ void Shader::init()
     glGenTextures( 1, &noiseTexture );
     glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
 
-//    File envMap = "@glsl/env.dds";
-//    if( GL::textureDataFromFile( envMap, 0 ) == 0 ) {
-//      OZ_ERROR( "Failed to load environment map texture '%s'", envMap.path().cstr() );
-//    }
+    File envMap = "@glsl/env.dds";
+    if( GL::textureDataFromFile( envMap, 0 ) == 0 ) {
+      OZ_ERROR( "Failed to load environment map texture '%s'", envMap.path().cstr() );
+    }
 
     glActiveTexture( DIFFUSE );
     glBindTexture( GL_TEXTURE_2D, defaultTexture );

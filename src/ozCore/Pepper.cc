@@ -33,26 +33,22 @@
 #include "Thread.hh"
 
 #include <ppapi/cpp/completion_callback.h>
-#include <ppapi/cpp/module.h>
 #include <ppapi/cpp/core.h>
-#include <ppapi/cpp/instance.h>
-#include <ppapi/cpp/graphics_2d.h>
 #include <ppapi/cpp/fullscreen.h>
+#include <ppapi/cpp/graphics_2d.h>
 #include <ppapi/cpp/input_event.h>
+#include <ppapi/cpp/instance.h>
+#include <ppapi/cpp/module.h>
 #include <ppapi/cpp/mouse_lock.h>
 
-extern "C"
-void SDL_NACL_SetInstance( PP_Instance, int, int );
-
-extern "C"
-void SDL_NACL_PushEvent( const pp::InputEvent& );
+#include <SDL_nacl.h>
 
 OZ_WEAK
-void SDL_NACL_SetInstance( PP_Instance, int, int )
+void SDL_NACL_SetInstance( PP_Instance, PPB_GetInterface, int, int )
 {}
 
 OZ_WEAK
-void SDL_NACL_PushEvent( const pp::InputEvent& )
+void SDL_NACL_PushEvent( PP_Resource )
 {}
 
 namespace oz
@@ -135,7 +131,8 @@ void Pepper::Instance::DidChangeView( const pp::View& view )
   height = newHeight;
 
   if( !isStarted ) {
-    SDL_NACL_SetInstance( pp_instance(), width, height );
+    SDL_NACL_SetInstance( pp_instance(), pp::Module::Get()->get_browser_interface(),
+                          width, height );
 
     mainThread.start( "naclMain", Thread::DETACHED, mainThreadMain, nullptr );
     isStarted = true;
@@ -194,7 +191,7 @@ bool Pepper::Instance::HandleInputEvent( const pp::InputEvent& event )
     }
   }
 
-  SDL_NACL_PushEvent( event );
+  SDL_NACL_PushEvent( event.pp_resource() );
   return true;
 }
 

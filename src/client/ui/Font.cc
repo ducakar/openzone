@@ -43,7 +43,7 @@ void Font::upload( const char* s, int* width, int* height ) const
 {
   SDL_Surface* surf = nullptr;
 
-#if SDL_MAJOR_VERSION < 2
+#if SDL_MAJOR_VERSION < 2 && !defined( __native_client__ )
 
   surf = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
 

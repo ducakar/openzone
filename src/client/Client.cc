@@ -304,8 +304,6 @@ int Client::main()
   Log::unindent();
   Log::println( "}" );
 
-  stage->unload();
-
   return EXIT_SUCCESS;
 }
 
@@ -394,6 +392,7 @@ int Client::init( int argc, char** argv )
 
   File::mkdir( configDir );
   File::mkdir( configDir + "/saves" );
+  File::mkdir( dataDir );
 
   if( Log::init( configDir + "/client.log", true ) ) {
     Log::println( "Log file '%s'", Log::logFile() );
@@ -693,6 +692,8 @@ int Client::init( int argc, char** argv )
 
 void Client::shutdown()
 {
+  stage->unload();
+
   if( initFlags & INIT_STAGE_INIT ) {
     gameStage.destroy();
     menuStage.destroy();

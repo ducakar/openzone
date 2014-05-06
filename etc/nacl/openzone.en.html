@@ -1,146 +1,30 @@
 <html>
 <head>
+  <meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8"/>
   <title>OpenZone</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <style>
-    body {
-      font-family: sans-serif;
-    }
-    div.module {
-      text-align: center;
-    }
-    table {
-      width: 100%;
-    }
-    table td {
-      padding: 10px;
-    }
-    table td.side {
-      width: 10%;
-      background-color: #ffffff;
-    }
-    table#hudArea {
-      position: absolute;
-      top: 100px;
-      width: 100%;
-    }
-    table#hudArea td#hudText {
-      width: 600px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.5em;
-      color: #808080;
-    }
-  </style>
+  <link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
+  <link href="doc/style.css" rel="stylesheet" type="text/css"/>
   <script type="text/javascript">
-    var module    = null;
-    var hudArea   = null;
-    var hudText   = null;
-    var hasLoaded = false;
-    var hasEnded  = false;
-
-    window.onload   = onLoad;
-    window.onresize = onResize;
-
-    function handleMessage( e )
-    {
-      var type = e.data.substring( 0, 5 );
-      var text = e.data.substring( 5 );
-
-      if( type == "quit:" ) {
-        hasEnded = true;
-
-        window.onbeforeunload = null;
-        module.style.visibility = "hidden";
-
-        hudArea.style.display = "inline";
-        hudText.innerHTML = "Finished<br/>You can now safely close this page.";
-      }
-      else if( type == "none:" ) {
-        hudArea.style.display = "none";
-        hudText.innerHTML = "";
-      }
-      else if( type == "init:" ) {
-        window.onbeforeunload = onBeforeUnload;
-
-        hudArea.style.display = "inline";
-        hudText.innerHTML = "Initialising ...<br/>" +
-                            "<span style='font-size: 0.6em; font-weight: normal'>" +
-                            "If it takes long enough that you can read this, you don't have " +
-                            "good enough graphics card or you have to navigate to " +
-                            "<tt>chrome://flags</tt> and turn on " +
-                            "<b>Override software rendering list</b>.</span>";
-      }
-      else if( type == "upd0:" ) {
-        hudArea.style.display = "inline";
-        hudText.innerHTML = "Checking for updates ...";
-      }
-      else if( type == "upd1:" ) {
-        hudArea.style.display = "inline";
-        hudText.innerHTML = "Downloading updates<br/>" + text;
-      }
-      else if( type == "data:" ) {
-        hudArea.style.display = "inline";
-        hudText.innerHTML = "Reading game data archives<br/>" + text;
-      }
-      else if( type == "lang:" ) {
-        module.postMessage( "lang:" + navigator.language );
-      }
-      else if( type == "navi:" ) {
-        window.open( text, "_blank" );
-      }
-    }
-
-    function updateLoadProgress()
-    {
-      hasLoaded = true;
-
-      if( event.lengthComputable && event.total > 0 ) {
-        var percent = Math.round( event.loaded / event.total * 100.0 );
-
-        hudText.innerHTML = "Loading<br/>" + percent + " %";
-      }
-      else {
-        hudText.innerHTML = "Loading";
-      }
-    }
-
-    function onLoadEnd( e )
-    {
-      hasLoaded = true;
-
-      hudText.innerHTML = "Starting NaCl<br/>" +
-                          "<span style='font-size: 0.6em; font-weight: normal'>" +
-                          "If it takes long enough that you can read this some unexpected error " +
-                          "occurred.</span>";
-    }
-
-    function onResize()
-    {
-      if( hasLoaded && hasEnded ) {
-        module.style.visibility = "hidden";
-      }
-    }
-
-    function onLoad()
-    {
-      module  = document.getElementById( "nacl" );
-      hudArea = document.getElementById( "hudArea" );
-      hudText = document.getElementById( "hudText" );
-
-      module.addEventListener( "message", handleMessage, true );
-      module.addEventListener( "progress", updateLoadProgress, true );
-      module.addEventListener( "loadend", onLoadEnd, true );
-    }
-
-    function onBeforeUnload()
-    {
-      module.postMessage( "quit:" );
-
-      return "When this messages has been displayed for a few seconds the game is probably saved " +
-             "already and you can safely leave this page.";
-    }
+    var MSG_FINISHED     = "Finished<br/>You can now safely close this page.";
+    var MSG_INITIALISING = "Initialising ...<br/>" +
+                           "<span style='font-size: 0.6em; font-weight: normal'>" +
+                           "If it takes long enough that you can read this, you don't have " +
+                           "good enough graphics card or you have to navigate to " +
+                           "<tt>chrome://flags</tt> and turn on " +
+                           "<b>Override software rendering list</b>.</span>";
+    var MSG_CHECKING     = "Checking for updates ...";
+    var MSG_DOWNLOADING  = "Downloading updates<br/>";
+    var MSG_READING      = "Reading game data archives<br/>"
+    var MSG_LOADING      = "Loading";
+    var MSG_LAUNCHING    = "Starting NaCl<br/>" +
+                           "<span style='font-size: 0.6em; font-weight: normal'>" +
+                           "If it takes long enough that you can read this some unexpected error " +
+                           "occurred.</span>";
+    var MSG_CLOSE        = "When this messages has been displayed for a few seconds the game is " +
+                           "probably saved already and you can safely leave this page.";
   </script>
+  <script type="text/javascript" source="nacl.js"/>
 </head>
 <body>
   <table id="hudArea">

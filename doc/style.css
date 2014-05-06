@@ -41,6 +41,8 @@ td.header {
 td.rowspace {
   height: 10pt;
 }
+
+/* README. */
 table.keys th {
   text-align: right;
   font-family: monospace;
@@ -51,4 +53,21 @@ table.settings td {
 }
 .centre {
   text-align: center;
+}
+
+/* NaCl game page. */
+div.module {
+  text-align: center;
+}
+table#hudArea {
+  position: absolute;
+  top: 100px;
+  width: 100%;
+}
+table#hudArea td#hudText {
+  width: 600px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5em;
+  color: #88aa99;
 }

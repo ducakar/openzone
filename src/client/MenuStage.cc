@@ -59,24 +59,35 @@ void MenuStage::wait( uint micros )
 
 void MenuStage::load()
 {
+  Log::print( "Loading MenuStage ..." );
+
   input.buttons     = 0;
   input.currButtons = 0;
 
-  mainMenu = new ui::MainMenu();
-  ui::ui.root->add( mainMenu, 0, 0 );
-  ui::ui.showLoadingScreen( false );
-  ui::mouse.doShow = true;
+  MainCall() << [&]()
+  {
+    mainMenu = new ui::MainMenu();
+    ui::ui.root->add( mainMenu, 0, 0 );
+    ui::ui.showLoadingScreen( false );
+    ui::mouse.doShow = true;
+  };
 
   render.update( Render::UI_BIT );
+
+  Log::printEnd( " OK" );
 }
 
 void MenuStage::unload()
 {
+  Log::print( "Unloading MenuStage ..." );
+
   MainCall() << [&]()
   {
     ui::mouse.doShow = false;
     ui::ui.root->remove( mainMenu );
   };
+
+  Log::printEnd( " OK" );
 }
 
 void MenuStage::init()

@@ -35,8 +35,6 @@
 namespace oz
 {
 
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-
 enum AllocMode
 {
   OBJECT,
@@ -205,10 +203,6 @@ static void deallocate( AllocMode mode, void* ptr )
 #endif
 }
 
-#endif // !OZ_DISABLE_ALLOC_OVERLOADS
-
-const bool Alloc::OVERLOADS_NEW_AND_DELETE;
-
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;
 int    Alloc::sumCount  = 0;
@@ -216,7 +210,7 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-#if !defined( OZ_DISABLE_ALLOC_OVERLOADS ) && defined( OZ_TRACK_ALLOCS )
+#ifdef OZ_TRACK_ALLOCS
 
 Alloc::ChunkCIterator Alloc::objectCIter()
 {
@@ -243,8 +237,6 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 #endif
 
 }
-
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
 
 OZ_WEAK
 void* operator new ( size_t size )
@@ -305,5 +297,3 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   }
   oz::deallocate( oz::ARRAY, ptr );
 }
-
-#endif

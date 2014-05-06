@@ -32,8 +32,6 @@ void test_Alloc()
 {
   Log() << "+ Alloc";
 
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-
   static const size_t STAT_META_SIZE = OZ_ALIGNMENT;
 
   size_t oAmount    = Alloc::amount;
@@ -68,8 +66,6 @@ void test_Alloc()
   OZ_CHECK( Alloc::alignUp( 1 ) == OZ_ALIGNMENT );
   OZ_CHECK( Alloc::alignUp( OZ_ALIGNMENT - 1 ) == OZ_ALIGNMENT );
   OZ_CHECK( Alloc::alignUp( OZ_ALIGNMENT ) == OZ_ALIGNMENT );
-
-#endif
 
   char* zeroptr = nullptr;
   char* oneptr  = zeroptr + OZ_ALIGNMENT;

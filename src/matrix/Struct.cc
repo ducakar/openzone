@@ -318,7 +318,6 @@ void Entity::crushingBlockHandler()
       ratio  = min( ratio + clazz->ratioInc, 1.0f );
       offset = ratio * clazz->move;
 
-      Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
@@ -348,6 +347,8 @@ void Entity::crushingBlockHandler()
             }
           }
         }
+
+        Struct::overlappingObjs.clear();
       }
 
       if( ratio == 1.0f ) {
@@ -371,7 +372,6 @@ void Entity::crushingBlockHandler()
       ratio  = max( ratio - clazz->ratioInc, 0.0f );
       offset = ratio * clazz->move;
 
-      Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
@@ -401,6 +401,8 @@ void Entity::crushingBlockHandler()
             }
           }
         }
+
+        Struct::overlappingObjs.clear();
       }
 
       if( ratio == 0.0f ) {
@@ -429,7 +431,6 @@ void Entity::elevatorHandler()
       time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
-      Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
@@ -458,6 +459,8 @@ void Entity::elevatorHandler()
             }
           }
         }
+
+        Struct::overlappingObjs.clear();
       }
 
       if( ratio == 1.0f ) {
@@ -480,7 +483,6 @@ void Entity::elevatorHandler()
       time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
-      Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
@@ -509,6 +511,8 @@ void Entity::elevatorHandler()
             }
           }
         }
+
+        Struct::overlappingObjs.clear();
       }
 
       if( ratio == 0.0f ) {
@@ -523,8 +527,6 @@ void Entity::elevatorHandler()
 
 void Struct::onDemolish()
 {
-  overlappingObjs.clear();
-
   collider.mask = ~0;
   collider.getOverlaps( toAABB(), nullptr, &overlappingObjs, 4.0f * EPSILON );
   collider.mask = Object::SOLID_BIT;
@@ -542,6 +544,8 @@ void Struct::onDemolish()
       dyn->flags |= Object::ENABLE_BIT;
     }
   }
+
+  overlappingObjs.clear();
 
   float deltaHeight = DEMOLISH_SPEED * Timer::TICK_TIME;
   demolishing += deltaHeight / ( maxs.z - mins.z );

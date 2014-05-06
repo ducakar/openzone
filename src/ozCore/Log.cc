@@ -33,6 +33,20 @@
 #include <cstdlib>
 #include <cstring>
 
+#define OZ_VAARGS_BUFFER( buffer ) \
+  char buffer[OUT_BUFFER_SIZE]; \
+  va_list ap; \
+  va_start( ap, s ); \
+  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap ); \
+  va_end( ap );
+
+#define OZ_PRINT_BOTH( code ) \
+  { \
+    auto _lambda = [&]( FILE* stream ) code; \
+    if( !verboseMode || showVerbose || file == nullptr ) { _lambda( stdout ); } \
+    if( file != nullptr ) { _lambda( file ); } \
+  }
+
 namespace oz
 {
 
@@ -120,191 +134,119 @@ void Log::unindent()
 
 void Log::putsRaw( const char* s )
 {
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( s, stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( s, file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( s, stream );
+    fflush( stream );
+  } );
 }
 
 void Log::vprintRaw( const char* s, va_list ap )
 {
   char buffer[OUT_BUFFER_SIZE];
-
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
 
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( buffer, stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( buffer, file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( buffer, stream );
+    fflush( stream );
+  } );
 }
 
 void Log::printRaw( const char* s, ... )
 {
-  char buffer[OUT_BUFFER_SIZE];
+  OZ_VAARGS_BUFFER( buffer );
 
-  va_list ap;
-  va_start( ap, s );
-  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
-  va_end( ap );
-
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( buffer, stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( buffer, file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( buffer, stream );
+    fflush( stream );
+  } );
 }
 
 void Log::print( const char* s, ... )
 {
-  char buffer[OUT_BUFFER_SIZE];
-
-  va_list ap;
-  va_start( ap, s );
-  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
-  va_end( ap );
+  OZ_VAARGS_BUFFER( buffer );
 
   const char* indent = getIndent();
 
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( indent, stdout );
-    fputs( buffer, stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( indent, file );
-    fputs( buffer, file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( indent, stream );
+    fputs( buffer, stream );
+    fflush( stream );
+  } );
 }
 
 void Log::printEnd( const char* s, ... )
 {
-  char buffer[OUT_BUFFER_SIZE];
+  OZ_VAARGS_BUFFER( buffer );
 
-  va_list ap;
-  va_start( ap, s );
-  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
-  va_end( ap );
-
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( buffer, stdout );
-    fputc( '\n', stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( buffer, file );
-    fputc( '\n', file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( buffer, stream );
+    fputc( '\n', stream );
+    fflush( stream );
+  } );
 }
 
 void Log::printEnd()
 {
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputc( '\n', stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputc( '\n', file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputc( '\n', stream );
+    fflush( stream );
+  } );
 }
 
 void Log::println( const char* s, ... )
 {
-  char buffer[OUT_BUFFER_SIZE];
-
-  va_list ap;
-  va_start( ap, s );
-  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
-  va_end( ap );
+  OZ_VAARGS_BUFFER( buffer );
 
   const char* indent = getIndent();
 
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( indent, stdout );
-    fputs( buffer, stdout );
-    fputc( '\n', stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( indent, file );
-    fputs( buffer, file );
-    fputc( '\n', file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( indent, stream );
+    fputs( buffer, stream );
+    fputc( '\n', stream );
+    fflush( stream );
+  } );
 }
 
 void Log::println()
 {
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputc( '\n', stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputc( '\n', file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputc( '\n', stream );
+    fflush( stream );
+  } );
 }
 
 void Log::printTrace( const StackTrace& st )
 {
   const char* threadName = String::isEmpty( st.threadName ) ? "?" : st.threadName;
 
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( "  thread: ", stdout );
-    fputs( threadName, stdout );
-    fputs( "\n  stack trace:\n", stdout );
-  }
-  if( file != nullptr ) {
-    fputs( "  thread: ", file );
-    fputs( threadName, file );
-    fputs( "\n  stack trace:\n", file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( "  thread: ", stream );
+    fputs( threadName, stream );
+    fputs( "\n  stack trace:\n", stream );
+  } );
 
   if( st.nFrames == 0 ) {
-    if( !verboseMode || showVerbose || file == nullptr ) {
-      fputs( "    [no stack trace]\n", stdout );
-    }
-    if( file != nullptr ) {
-      fputs( "    [no stack trace]\n", file );
-    }
+    OZ_PRINT_BOTH( {
+      fputs( "    [no stack trace]\n", stream );
+    } );
   }
   else {
     char** entries = st.symbols();
 
     for( int i = 0; i < st.nFrames; ++i ) {
-      if( !verboseMode || showVerbose || file == nullptr ) {
-        fputs( "    ", stdout );
-        fputs( entries[i], stdout );
-        fputc( '\n', stdout );
-      }
-      if( file != nullptr ) {
-        fputs( "    ", file );
-        fputs( entries[i], file );
-        fputc( '\n', file );
-      }
+      OZ_PRINT_BOTH( {
+        fputs( "    ", stream );
+        fputs( entries[i], stream );
+        fputc( '\n', stream );
+      } );
     }
 
     free( entries );
   }
 
-  fflush( stdout );
-
-  if( file != nullptr ) {
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fflush( stream );
+  } );
 }
 
 void Log::printSignal( int sigNum )
@@ -315,20 +257,14 @@ void Log::printSignal( int sigNum )
   snprintf( buffer, OUT_BUFFER_SIZE, "\n\nSignal %d %s (%s)\n",
             sigNum, SIGNALS[index][0], SIGNALS[index][1] );
 
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( buffer, stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fputs( buffer, file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fputs( buffer, stream );
+    fflush( stream );
+  } );
 }
 
 void Log::printMemorySummary()
 {
-#ifndef OZ_DISABLE_ALLOC_OVERLOADS
-
   println( "Alloc summary {" );
   indent();
 
@@ -344,8 +280,6 @@ void Log::printMemorySummary()
 
   unindent();
   println( "}" );
-
-#endif
 }
 
 bool Log::printMemoryLeaks()
@@ -584,32 +518,22 @@ const Log& Log::operator << ( const Mat4& m ) const
 
 const Log& Log::operator << ( const InputStream& is ) const
 {
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fwrite( is.begin(), 1, size_t( is.available() ), stdout );
-    fputc( '\n', stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fwrite( is.begin(), 1, size_t( is.available() ), file );
-    fputc( '\n', file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fwrite( is.begin(), 1, size_t( is.tell() ), stream );
+    fputc( '\n', stream );
+    fflush( stream );
+  } );
   return *this;
 }
 
 
 const Log& Log::operator << ( const Buffer& buffer ) const
 {
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fwrite( buffer.begin(), 1, size_t( buffer.length() ), stdout );
-    fputc( '\n', stdout );
-    fflush( stdout );
-  }
-  if( file != nullptr ) {
-    fwrite( buffer.begin(), 1, size_t( buffer.length() ), file );
-    fputc( '\n', file );
-    fflush( file );
-  }
+  OZ_PRINT_BOTH( {
+    fwrite( buffer.begin(), 1, size_t( buffer.length() ), stream );
+    fputc( '\n', stream );
+    fflush( stream );
+  } );
   return *this;
 }
 

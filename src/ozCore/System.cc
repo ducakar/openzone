@@ -95,7 +95,9 @@ namespace oz
 
 static const float    BELL_TIME           = 0.30f;
 static const float    BELL_FREQUENCY      = 1000.0f;
-static const int      BELL_PREFERRED_RATE = 44100;
+#ifndef __native_client__
+static const int      BELL_PREFERRED_RATE = 48000;
+#endif
 #ifndef _WIN32
 static const timespec TIMESPEC_10MS       = { 0, 10 * 1000000 };
 #endif

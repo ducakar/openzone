@@ -845,7 +845,7 @@ void Render::init()
   scale           = config.include( "render.scale",      1.0f ).get( 0.0f );
   scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).get( "" ) ];
 
-  visibilityRange = config.include( "render.distance",   400.0f ).get( 0.0f );
+  visibilityRange = config.include( "render.distance",   350.0f ).get( 0.0f );
   showBounds      = config.include( "render.showBounds", false ).get( false );
   showAim         = config.include( "render.showAim",    false ).get( false );
 

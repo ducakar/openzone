@@ -264,9 +264,14 @@ int GL::textureDataFromFile( const File& file, int bias )
   int    nFaces = isCubeMap ? 6 : 1;
   GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
+  glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   glTexParameteri( target, GL_TEXTURE_MIN_FILTER, nMipmaps == 1 ? GL_LINEAR :
                                                                   GL_LINEAR_MIPMAP_LINEAR );
+
   if( nMipmaps == 1 || isCubeMap ) {
+#ifndef GL_ES_VERSION_2_0
+    glTexParameteri( target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+#endif
     glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
   }

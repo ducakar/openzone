@@ -43,7 +43,7 @@
 
 #include <lua.hpp>
 
-#if LUA_VERSION_NUM < 502
+#if LUA_VERSION_NUM < 502 && !defined( DOXYGEN_IGNORE )
 # define LUA_OK 0
 #endif
 

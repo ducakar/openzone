@@ -569,6 +569,7 @@ void Orbis::unload()
   Bot::pool.free();
   Vehicle::pool.free();
 
+  Struct::overlappingObjs.deallocate();
   Struct::pool.free();
 
   liber.freeBSPs();
