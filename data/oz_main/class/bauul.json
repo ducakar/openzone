@@ -31,8 +31,7 @@
   "throwMomentum":      10,
 
   "nameList":           "bogovi",
-
-  "mindFunc":           "",
+  "mind":               "",
 
   "nItems":             16,
   "defaultItems":

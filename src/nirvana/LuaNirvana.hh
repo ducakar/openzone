@@ -35,12 +35,16 @@ class LuaNirvana : public LuaCommon
 {
 private:
 
-  bool execChunk( const Buffer& buffer, const char* name, Mind* mind );
+  HashMap<String, Automaton> automata;
+
+  bool execChunk( const Buffer& buffer, const char* name, Mind* mind, Bot* self );
 
 public:
 
   void mindCall( const char* functionName, Mind* mind, Bot* self );
-  const Automaton::State* updateMind( const Automaton::State* state, Mind* mind ) const;
+  const Automaton::State* updateMind( const Automaton::State* state, Mind* mind, Bot* self ) const;
+
+  Automaton* findAutomaton( const char* name );
 
   void registerMind( int botIndex );
   void unregisterMind( int botIndex );

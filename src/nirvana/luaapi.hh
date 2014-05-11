@@ -224,7 +224,7 @@ static int ozSelfGetMind( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushstring( ns.self->mindFunc );
+  l_pushstring( ns.self->mind );
   return 1;
 }
 

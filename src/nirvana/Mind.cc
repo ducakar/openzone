@@ -30,20 +30,31 @@ namespace oz
 {
 
 Mind::Mind() :
-  flags( 0 ), side( 0 ), botObj( nullptr )
+  flags( 0 ), side( 0 ), bot( 0 ), automaton( nullptr ), state( nullptr )
 {}
 
 Mind::Mind( int bot_ ) :
-  flags( 0 ), side( 0 ), bot( bot_ ), botObj( nullptr )
+  flags( 0 ), side( 0 ), bot( bot_ ), automaton( nullptr ), state( nullptr )
 {
+  const Bot* botObj = static_cast<const Bot*>( orbis.obj( bot ) );
+
   luaNirvana.registerMind( bot );
+
+  automaton = botObj == nullptr ? nullptr : luaNirvana.findAutomaton( botObj->mind );
+  state     = automaton == nullptr ? nullptr : automaton->findState( "" );
 }
 
 Mind::Mind( int bot_, InputStream* is ) :
-  bot( bot_ ), botObj( nullptr )
+  bot( bot_ )
 {
-  flags = is->readInt();
-  side  = is->readInt();
+  flags     = is->readInt();
+  side      = is->readInt();
+
+  const char* sAutomaton = is->readString();
+  const char* sState     = is->readString();
+
+  automaton = luaNirvana.findAutomaton( sAutomaton );
+  state     = automaton == nullptr ? nullptr : automaton->findState( sState );
 }
 
 Mind::~Mind()
@@ -54,11 +65,13 @@ Mind::~Mind()
 }
 
 Mind::Mind( Mind&& m ) :
-  flags( m.flags ), side( m.side ), bot( m.bot ), botObj( nullptr )
+  flags( m.flags ), side( m.side ), bot( m.bot ), automaton( m.automaton ), state( m.state )
 {
-  m.bot   = -1;
-  m.flags = 0;
-  m.side  = 0;
+  m.bot       = -1;
+  m.flags     = 0;
+  m.side      = 0;
+  m.automaton = nullptr;
+  m.state     = nullptr;
 }
 
 Mind& Mind::operator = ( Mind&& m )
@@ -67,15 +80,17 @@ Mind& Mind::operator = ( Mind&& m )
     return *this;
   }
 
-  flags  = m.flags;
-  side   = m.side;
-  bot    = m.bot;
-  botObj = m.botObj;
+  flags     = m.flags;
+  side      = m.side;
+  bot       = m.bot;
+  automaton = m.automaton;
+  state     = m.state;
 
-  m.flags  = 0;
-  m.side   = 0;
-  m.bot    = -1;
-  m.botObj = nullptr;
+  m.flags     = 0;
+  m.side      = 0;
+  m.bot       = -1;
+  m.automaton = nullptr;
+  m.state     = nullptr;
 
   return *this;
 }
@@ -84,13 +99,13 @@ void Mind::update()
 {
   hard_assert( orbis.obj( bot ) != nullptr && ( orbis.obj( bot )->flags & Object::BOT_BIT ) );
 
-  botObj = static_cast<Bot*>( orbis.obj( bot ) );
+  Bot* botObj = static_cast<Bot*>( orbis.obj( bot ) );
 
-  if( !botObj->mindFunc.isEmpty() && !( botObj->state & Bot::DEAD_BIT ) ) {
+  if( !botObj->mind.isEmpty() && !( botObj->state & Bot::DEAD_BIT ) ) {
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 
-    luaNirvana.mindCall( botObj->mindFunc, this, botObj );
+    luaNirvana.mindCall( botObj->mind, this, botObj );
   }
 }
 
@@ -98,6 +113,8 @@ void Mind::write( OutputStream* os ) const
 {
   os->writeInt( flags );
   os->writeInt( side );
+  os->writeString( automaton == nullptr ? "" : automaton->name );
+  os->writeString( state == nullptr ? "" : state->name );
 }
 
 }

@@ -32,8 +32,7 @@
   "throwMomentum":      6,
 
   "nameList":           "wesnoth.lizard-male",
-
-  "mindFunc":           "prey",
+  "mind":               "prey",
 
   "nItems":             4,
   "defaultItems":

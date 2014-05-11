@@ -193,7 +193,6 @@ public:
   int  medium;
   bool hasS3TC;
   bool hasVertexTexture;
-  bool setSamplerMap;
   bool doVertexEffects;
   bool doEnvMap;
   bool doBumpMap;

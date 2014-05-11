@@ -13,7 +13,6 @@ add_library( ozEngine
   GL.hh
   GLTexture.hh
   ozEngine.hh
-  pch.hh
   Shaders.hh
   Window.hh
   ALBuffer.cc
@@ -27,9 +26,7 @@ add_library( ozEngine
   Window.cc
 #END SOURCES
 )
-
-add_pch( ozEngine_pch pch.hh pch.cc )
-use_pch( ozEngine ozEngine_pch )
+use_pch( ozEngine ozCore_pch )
 
 target_link_libraries( ozEngine ozCore )
 

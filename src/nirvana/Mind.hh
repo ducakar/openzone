@@ -38,16 +38,15 @@ public:
 
   static const int FORCE_UPDATE_BIT = 0x01;
 
-  Mind*             prev[1];
-  Mind*             next[1];
+  Mind*                   prev[1];
+  Mind*                   next[1];
 
-  int               flags;
-  int               side;
-  int               bot;
-  Bot*              botObj;
+  int                     flags;
+  int                     side;
+  int                     bot;
 
-  Automaton*        automaton;
-  Automaton::State* state;
+  const Automaton*        automaton;
+  const Automaton::State* state;
 
 public:
 

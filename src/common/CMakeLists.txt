@@ -14,8 +14,7 @@ add_library( common STATIC
   Timer.cc
 #END SOURCES
 )
-
-use_pch( common pch )
+use_pch( common ozCore_pch )
 
 if( OZ_LUAJIT )
   target_link_libraries( common ${LUAJIT_LIBRARIES} )

@@ -54,7 +54,13 @@ private:
 
 public:
 
+  String      name;
+
+public:
+
   explicit Automaton( const File& file, const LuaCommon* lua );
+
+  const State* findState( const char* name ) const;
 
 };
 

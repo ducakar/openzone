@@ -26,5 +26,5 @@
  * Common include file for ozDynamics.
  */
 
-#include "pch.hh"
+#include <ozCore/ozCore.hh>
 #include <ozDynamics/config.hh>

@@ -1,5 +1,5 @@
 /*
- * ozFactory - OpenZone Assets Builder Library.
+ * ozCore - OpenZone Core Library.
  *
  * Copyright © 2002-2014 Davorin Učakar
  *
@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozFactory/pch.cc
+ * @file ozCore/pch.cc
  *
  * Trigger for precompiled header.
  */
 
-#include "pch.hh"
+#include "ozCore.hh"

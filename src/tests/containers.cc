@@ -27,46 +27,58 @@ using namespace oz;
 
 struct Foo
 {
-  Foo()
+  int number;
+
+  Foo* next[1];
+  Foo* prev[1];
+
+  Foo( int n = 0 ) :
+    number( n )
   {
-    Log() << "Foo()";
+    Log() << "Foo() : " << number;
   }
 
   ~Foo()
   {
-    Log() << "~Foo()";
+    Log() << "~Foo() : " << number;
   }
 
-  Foo( const Foo& )
+  Foo( const Foo& f ) :
+    number( f.number )
   {
-    Log() << "Foo( const Foo& )";
+    Log() << "Foo( const Foo& ) : " << number;
   }
 
-  Foo( Foo&& )
+  Foo( Foo&& f ) :
+    number( f.number )
   {
-    Log() << "Foo( Foo&& )";
+    Log() << "Foo( Foo&& ) : " << number;
   }
 
-  Foo& operator = ( const Foo& )
+  Foo& operator = ( const Foo& f )
   {
-    Log() << "Foo& operator = ( const Foo& )";
+    Log() << "Foo& operator = ( const Foo& ) : " << number << " := " << f.number;
+    number = f.number;
     return *this;
   }
 
-  Foo& operator = ( Foo&& )
+  Foo& operator = ( Foo&& f )
   {
-    Log() << "Foo& operator = ( Foo&& )";
+    Log() << "Foo& operator = ( Foo&& ) : " << number << " := " << f.number;
+    number = f.number;
     return *this;
   }
 
-  bool operator == ( const Foo& ) const
+  bool operator == ( const Foo& f ) const
   {
-    return true;
+    Log() << "bool operator == ( const Foo& ) : " << number << " == " << f.number;
+    return number == f.number;
   }
 
-  bool operator < ( const Foo& ) const
+  bool operator < ( const Foo& f ) const
   {
-    return false;
+    Log() << "bool operator == ( const Foo& ) : " << number << " < " << f.number;
+    return number < f.number;
   }
 };
 
@@ -124,15 +136,5 @@ inline void iMap( Iterator iter, Method method )
 int main()
 {
   System::init();
-
-  Set<Foo> s;
-  Set<Foo> t;
-  s.include( Foo() );
-  s.include( Foo() );
-
-  Log() << 1;
-  t = static_cast< Set<Foo>&& >( s );
-  Log() << 2;
-
   return 0;
 }

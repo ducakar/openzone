@@ -183,7 +183,7 @@ public:
   float  camZ;
 
   String name;
-  String mindFunc;
+  String mind;
 
 public:
 

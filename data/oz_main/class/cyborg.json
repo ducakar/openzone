@@ -23,8 +23,7 @@
   "throwMomentum":      9,
 
   "nameList":           "wesnoth.troll-male",
-
-  "mindFunc":           "beastie",
+  "mind":               "beastie",
 
   "nItems":             8,
   "defaultItems":

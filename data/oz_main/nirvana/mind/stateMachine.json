@@ -1,0 +1,15 @@
+[
+  {
+    "name": "walk",
+    "onUpdate": "
+      ozSelfAction( OZ_ACTION_FORWARD )
+
+      if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+	ozSelfAction( OZ_ACTION_WALK )
+      end
+      if math.random( 4 ) == 1 then
+	ozSelfAddH( math.random() * 180 - 90 )
+      end
+    "
+  }
+]

@@ -155,5 +155,4 @@ add_library( client STATIC
   ui/UI.cc
 #END SOURCES
 )
-
-use_pch( client pch )
+use_pch( client ozCore_pch )

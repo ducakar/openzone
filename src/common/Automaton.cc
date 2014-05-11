@@ -30,7 +30,8 @@ namespace oz
 
 Automaton::Automaton( const File& file, const LuaCommon* lua )
 {
-  String name = file.baseName();
+  name = file.baseName();
+
   JSON json = file;
 
   for( const JSON& jsonState : json.arrayCIter() ) {
@@ -75,14 +76,21 @@ Automaton::Automaton( const File& file, const LuaCommon* lua )
     }
   }
 
-  // Add automaton name to the beginning of all states for better diagnostics.
-  name = "::" + name;
+  hard_assert( !states.isEmpty() );
+}
 
-  for( int i = 0; i < states.length(); ++i ) {
-    states[i].name = name + states[i].name;
+const Automaton::State* Automaton::findState( const char *name ) const
+{
+  if( String::isEmpty( name ) ) {
+    return &states[0];
   }
 
-  hard_assert( !states.isEmpty() );
+  for( const State& state : states ) {
+    if( state.name.equals( name ) ) {
+      return &state;
+    }
+  }
+  return nullptr;
 }
 
 }

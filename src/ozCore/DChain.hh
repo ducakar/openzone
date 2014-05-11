@@ -238,17 +238,6 @@ public:
   }
 
   /**
-   * Unbind the first element from the chain.
-   *
-   * To keep LIFO behaviour for `add()` and `erase()` methods like in array lists, the first element
-   * is removed instead of the last one.
-   */
-  void erase()
-  {
-    popFirst();
-  }
-
-  /**
    * Unbind a given element from the chain.
    */
   void erase( Elem* e )

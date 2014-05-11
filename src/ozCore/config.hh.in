@@ -52,7 +52,7 @@
 # error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
 #elif defined( __clang__ )
 # define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
-# if OZ_CLANG < 303
+# if OZ_CLANG < 301
 #  error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
 # endif
 #elif defined( __GNUC__ )
@@ -62,11 +62,6 @@
 # endif
 #else
 # error GCC >= 4.7 and LLVM/Clang >= 3.1 are the only supported compilers.
-#endif
-
-// FIXME Dirty temporary workaround for Clang 3.4 when used with GCC 4.9's libstdc++.
-#if defined( OZ_CLANG ) && OZ_CLANG <= 304
-typedef void max_align_t;
 #endif
 
 #ifdef _WIN32

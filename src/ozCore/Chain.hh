@@ -224,7 +224,7 @@ public:
       e1 = e1->next[INDEX];
       e2 = e2->next[INDEX];
     }
-    return e1 == e2;
+    return e1 == nullptr && e2 == nullptr;
   }
 
   /**
@@ -397,20 +397,10 @@ public:
   }
 
   /**
-   * Unbind the first element from the chain.
-   *
-   * To keep LIFO behaviour for `add()` and `erase()` methods like in array lists, the first element
-   * is removed instead of the last one.
-   */
-  void erase()
-  {
-    popFirst();
-  }
-
-  /**
    * Unbind a given element from the chain.
    *
-   * Because this chain is not double-linked, a pointer to the preceding element must be provided.
+   * Since this chain is not double-linked, a pointer to the preceding element (or `nullptr` if the
+   * first element) must be provided.
    */
   void erase( Elem* e, Elem* prev )
   {

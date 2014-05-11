@@ -6,7 +6,6 @@ add_library( ozDynamics
 #BEGIN SOURCES
   common.hh
   ozDynamics.hh
-  pch.hh
   common.cc
   collision/AABB.hh
   collision/Body.hh
@@ -32,9 +31,7 @@ add_library( ozDynamics
   physics/Physics.cc
 #END SOURCES
 )
-
-add_pch( ozDynamics_pch pch.hh pch.cc )
-use_pch( ozDynamics ozDynamics_pch )
+use_pch( ozDynamics ozCore_pch )
 
 target_link_libraries( ozDynamics ozCore )
 

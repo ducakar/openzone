@@ -106,7 +106,7 @@ static int ozOrbisAddPlayer( lua_State* l )
     Bot* player = static_cast<Bot*>( ms.obj );
 
     player->name = profile.name;
-    player->mindFunc = "";
+    player->mind = "";
 
     if( !empty ) {
       int invMax = min( player->clazz->nItems, profile.items.length() );

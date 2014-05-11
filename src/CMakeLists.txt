@@ -7,7 +7,6 @@ add_subdirectory( ozEngine )
 add_subdirectory( ozFactory )
 add_subdirectory( unittest )
 
-add_pch( pch pch.hh pch.cc )
 add_subdirectory( common )
 add_subdirectory( matrix )
 add_subdirectory( nirvana )

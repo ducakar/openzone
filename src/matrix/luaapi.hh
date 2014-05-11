@@ -1938,7 +1938,7 @@ static int ozBotGetMind( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushstring( bot->mindFunc );
+  l_pushstring( bot->mind );
   return 1;
 }
 
@@ -1948,7 +1948,7 @@ static int ozBotSetMind( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  bot->mindFunc = l_tostring( 1 );
+  bot->mind = l_tostring( 1 );
   return 0;
 }
 

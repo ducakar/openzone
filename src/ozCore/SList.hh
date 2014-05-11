@@ -343,14 +343,6 @@ public:
   }
 
   /**
-   * Remove the last element.
-   */
-  void erase()
-  {
-    popLast();
-  }
-
-  /**
    * Remove the element at a given position.
    *
    * All later elements are shifted to fill the gap.

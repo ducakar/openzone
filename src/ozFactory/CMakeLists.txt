@@ -12,16 +12,13 @@ add_library( ozFactory
   ImageBuilder.hh
   ModelBuilder.hh
   ozFactory.hh
-  pch.hh
   TerraBuilder.hh
   ImageBuilder.cc
   ModelBuilder.cc
   TerraBuilder.cc
 #END SOURCES
 )
-
-add_pch( ozFactory_pch pch.hh pch.cc )
-use_pch( ozFactory ozFactory_pch )
+use_pch( ozFactory ozCore_pch )
 
 target_link_libraries( ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY} )
 if( OZ_NONFREE )

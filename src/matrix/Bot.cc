@@ -1152,7 +1152,7 @@ Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) 
   camZ       = clazz_->camZ;
 
   name       = namePool.genName( clazz_->nameList );
-  mindFunc   = clazz_->mindFunc;
+  mind       = clazz_->mind;
 }
 
 Bot::Bot( const BotClass* clazz_, InputStream* is ) :
@@ -1181,7 +1181,7 @@ Bot::Bot( const BotClass* clazz_, InputStream* is ) :
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
   name       = is->readString();
-  mindFunc   = is->readString();
+  mind       = is->readString();
 
   if( state & DEAD_BIT ) {
     resistance = Math::INF;
@@ -1214,7 +1214,7 @@ Bot::Bot( const BotClass* clazz_, const JSON& json ) :
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
   name       = json["name"].get( "" );
-  mindFunc   = json["mindFunc"].get( "" );
+  mind       = json["mind"].get( "" );
 
   if( state & DEAD_BIT ) {
     resistance = Math::INF;
@@ -1246,7 +1246,7 @@ void Bot::write( OutputStream* os ) const
   os->writeFloat( meleeTime );
 
   os->writeString( name );
-  os->writeString( mindFunc );
+  os->writeString( mind );
 }
 
 JSON Bot::write() const
@@ -1268,7 +1268,7 @@ JSON Bot::write() const
   json.add( "grabHandle", grabHandle );
 
   json.add( "name", name );
-  json.add( "mindFunc", mindFunc );
+  json.add( "mind", mind );
 
   return json;
 }

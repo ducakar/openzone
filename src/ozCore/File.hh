@@ -400,10 +400,10 @@ public:
   /**
    * Move/remove a file.
    *
-   * @param srcPath source file path.
+   * @param src source file path.
    * @param dest destination directory or file.
    */
-  static bool mv( const char* srcPath, const File& dest );
+  static bool mv( const File& src, const File& dest );
 
   /**
    * Delete a file or an empty directory.

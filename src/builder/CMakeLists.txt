@@ -32,8 +32,7 @@ add_library( builder STATIC
   UI.cc
 #END SOURCES
 )
-
-use_pch( builder pch )
+use_pch( builder ozCore_pch )
 
 if( OZ_NONFREE )
   target_link_libraries( builder ${SQUISH_LIBRARY} )

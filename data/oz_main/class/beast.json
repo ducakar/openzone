@@ -16,8 +16,7 @@
   "regeneration":       0.5,
 
   "nameList":           "wesnoth.troll-male",
-
-  "mindFunc":           "beastie",
+  "mind":               "beastie",
 
   "nItems":             8,
   "defaultItems":

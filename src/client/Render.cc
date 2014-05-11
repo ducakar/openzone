@@ -725,7 +725,6 @@ void Render::init()
   Log::println( "Initialising Render {" );
   Log::indent();
 
-  bool isMesa7     = false;
   bool isCatalyst  = false;
   bool hasFBO      = false;
   bool hasFloatTex = false;
@@ -762,10 +761,7 @@ void Render::init()
   Log::println( "OpenGL extensions {" );
   Log::indent();
 
-  if( strstr( version, "Mesa 7" ) != nullptr ) {
-    isMesa7 = true;
-  }
-  if( strstr( vendor, "ATI" ) != nullptr ) {
+  if( String::beginsWith( vendor, "ATI" ) || String::beginsWith( vendor, "AMD" ) ) {
     isCatalyst = true;
   }
   for( const String& extension : extensions ) {
@@ -774,9 +770,7 @@ void Render::init()
     if( extension.equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
     }
-    if( extension.equals( "GL_ARB_texture_float" ) ||
-        extension.equals( "GL_OES_texture_float" ) )
-    {
+    if( extension.equals( "GL_ARB_texture_float" ) ) {
       hasFloatTex = true;
     }
     if( extension.equals( "GL_EXT_texture_compression_s3tc" ) ||
@@ -796,13 +790,6 @@ void Render::init()
 
   Log::verboseMode = false;
 
-#ifdef __native_client__
-  config.include( "shader.vertexTexture", false );
-#endif
-
-  if( isMesa7 ) {
-    config.include( "shader.setSamplerMap", false );
-  }
   if( isCatalyst ) {
     config.include( "shader.vertexTexture", false );
   }
@@ -815,10 +802,6 @@ void Render::init()
   if( hasS3TC ) {
     shader.hasS3TC = true;
   }
-
-#ifdef GL_ES_VERSION_2_0
-  config.include( "shader.vertexTexture", false );
-#endif
 
   GL::init();
   shader.init();

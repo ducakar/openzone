@@ -165,7 +165,7 @@ void BotClass::init( const JSON& config, const char* name_ )
   }
 
   nameList          = liber.nameListIndex( config["nameList"].get( "" ) );
-  mindFunc          = config["mindFunc"].get( "" );
+  mind              = config["mind"].get( "" );
 
   bobRotation       = Math::rad( config["bobRotation"].get( 0.35f ) );
   bobAmplitude      = config["bobAmplitude"].get( 0.07f );

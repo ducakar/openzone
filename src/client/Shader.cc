@@ -230,14 +230,6 @@ void Shader::loadProgram( int id )
 
   uniform = programs[id].uniform;
 
-  if( setSamplerMap ) {
-    glUniform1i( uniform.texture, 0 );
-    glUniform1i( uniform.masks, 1 );
-    glUniform1i( uniform.normals, 2 );
-    glUniform1i( uniform.envMap, 3 );
-    glUniform1i( uniform.vertexAnim, 4 );
-  }
-
   Mat4 bones[] = {
     Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
     Mat4::ID, Mat4::ID, Mat4::ID, Mat4::ID,
@@ -246,6 +238,12 @@ void Shader::loadProgram( int id )
   };
 
   glUniformMatrix4fv( uniform.bones, 16, GL_FALSE, bones[0] );
+
+  glUniform1i( uniform.texture, 0 );
+  glUniform1i( uniform.masks, 1 );
+  glUniform1i( uniform.normals, 2 );
+  glUniform1i( uniform.envMap, 3 );
+  glUniform1i( uniform.vertexAnim, 4 );
 
   glActiveTexture( ENV_MAP );
   glBindTexture( GL_TEXTURE_CUBE_MAP, noiseTexture );
@@ -300,16 +298,10 @@ void Shader::init()
   Log::print( "Initialising Shader ..." );
 
   hasVertexTexture = config.include( "shader.vertexTexture", true  ).get( false );
-  setSamplerMap    = config.include( "shader.setSamplerMap", true  ).get( false );
   doVertexEffects  = config.include( "shader.vertexEffects", true  ).get( false );
   doEnvMap         = config.include( "shader.envMap",        true  ).get( false );
   doBumpMap        = config.include( "shader.bumpMap",       true  ).get( false );
   doPostprocess    = config.include( "shader.postprocess",   false ).get( false );
-
-#ifdef GL_ES_VERSION_2_0
-  hasVertexTexture = false;
-  doPostprocess    = false;
-#endif
 
   medium = 0;
 

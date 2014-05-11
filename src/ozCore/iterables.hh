@@ -266,18 +266,6 @@ inline bool iEquals( CIteratorA iterA, CIteratorB iterB )
 }
 
 /**
- * True iff a given value is found in a container.
- */
-template <class CIterator, typename Value = typename CIterator::ElemType>
-inline bool iContains( CIterator iter, const Value& value )
-{
-  while( iter.isValid() && !( *iter == value ) ) {
-    ++iter;
-  }
-  return iter.isValid();
-}
-
-/**
  * %Iterator for the first occurrence or an invalid iterator if not found.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
@@ -305,6 +293,15 @@ inline Iterator iFindLast( Iterator iter, const Value& value )
     ++iter;
   }
   return lastOccurence;
+}
+
+/**
+ * True iff a given value is found in a container.
+ */
+template <class CIterator, typename Value = typename CIterator::ElemType>
+inline bool iContains( CIterator iter, const Value& value )
+{
+  return iFind<CIterator, Value>( iter, value ).isValid();
 }
 
 /**

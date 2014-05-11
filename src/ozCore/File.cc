@@ -222,7 +222,7 @@ static void initSpecialDirs()
   // Override default locations with user settings, if exist.
   loadXDGSettings( *vars.find( "XDG_CONFIG_HOME" ) + "/user-dirs.dirs", &vars );
 
-  // Finally set special directories, environment variables again override default values.
+  // Finally set special directories, environment variables override values from files.
   setSpecialDir( 1, "XDG_CONFIG_HOME",   &vars );
   setSpecialDir( 2, "XDG_DATA_HOME",     &vars );
   setSpecialDir( 3, "XDG_DESKTOP_DIR",   &vars );
@@ -1146,38 +1146,36 @@ bool File::mkdir( const char* path )
   }
 }
 
-bool File::cp( const File& src, const File& dest )
+bool File::cp( const File& src, const File& dest_ )
 {
-  File destFile = dest;
-
-  if( destFile.type() == DIRECTORY ) {
-    destFile = destFile.path() + "/" + src.name();
+  File dest = dest_;
+  if( dest.type() == DIRECTORY ) {
+    dest = dest.path() + "/" + src.name();
   }
 
   InputStream is = src.inputStream();
-  return !is.isAvailable() ? false : destFile.write( is.begin(), is.available() );
+  return !is.isAvailable() ? false : dest.write( is.begin(), is.available() );
 }
 
-bool File::mv( const char* srcPath, const File& dest )
+bool File::mv( const File& src, const File& dest_ )
 {
-  if( String::fileIsVirtual( srcPath ) ) {
+  if( src.isVirtual() ) {
     return false;
   }
 
-  File destFile = dest;
-
-  if( destFile.type() == DIRECTORY ) {
-    destFile = destFile.path() + "/" + srcPath;
+  File dest = dest_;
+  if( dest.type() == DIRECTORY ) {
+    dest = dest.path() + "/" + src.name();
   }
 
 #if defined( __native_client__ )
-  pp::FileRef srcFileRef( ppFileSystem, srcPath );
-  pp::FileRef destFileRef( ppFileSystem, destFile.path() );
+  pp::FileRef srcFileRef( ppFileSystem, src.path() );
+  pp::FileRef destFileRef( ppFileSystem, dest.path() );
   return srcFileRef.Rename( destFileRef, pp::BlockUntilComplete() ) == PP_OK;
 #elif defined( _WIN32 )
-  return MoveFile( srcPath, dest.path() );
+  return MoveFile( src.path(), dest.path() );
 #else
-  return rename( srcPath, destFile.path() ) == 0;
+  return rename( src.path(), dest.path() ) == 0;
 #endif
 }
 

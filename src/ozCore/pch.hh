@@ -1,5 +1,5 @@
 /*
- * ozEngine - OpenZone Engine Library.
+ * ozCore - OpenZone Core Library.
  *
  * Copyright © 2002-2014 Davorin Učakar
  *
@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozEngine/pch.hh
+ * @file ozCore/pch.hh
  *
- * Precompiled header.
+ * Precompiled `ozCore.hh` header.
  */
 
-#include <ozCore/ozCore.hh>
+#include "ozCore.hh"

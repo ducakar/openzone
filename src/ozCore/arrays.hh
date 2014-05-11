@@ -322,20 +322,6 @@ inline bool aEquals( const Elem* arrayA, int count, const Elem* arrayB )
 }
 
 /**
- * True iff a given value is found in an array.
- */
-template <typename Elem, typename Value = Elem>
-inline bool aContains( const Elem* array, int count, const Value& value )
-{
-  for( int i = 0; i < count; ++i ) {
-    if( array[i] == value ) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
  * Pointer to the first occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
@@ -361,6 +347,15 @@ inline Elem* aFindLast( Elem* array, int count, const Value& value )
     }
   }
   return nullptr;
+}
+
+/**
+ * True iff a given value is found in an array.
+ */
+template <typename Elem, typename Value = Elem>
+inline bool aContains( const Elem* array, int count, const Value& value )
+{
+  return aFind<const Elem, Value>( array, count, value ) != nullptr;
 }
 
 /**

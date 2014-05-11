@@ -110,9 +110,12 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashMap( InitialiserList<Pair> l ) :
-    HashSet<Pair>( l )
-  {}
+  HashMap( InitialiserList<Pair> l )
+  {
+    for( const Pair& p : l ) {
+      add( p.key, p.value );
+    }
+  }
 
   /**
    * Copy constructor, copies elements and storage.

@@ -28,5 +28,5 @@
 
 #pragma once
 
-#include "pch.hh"
+#include <ozCore/ozCore.hh>
 #include <ozEngine/config.hh>

@@ -89,6 +89,7 @@ add_library( ozCore
   Vec4.cc
 #END SOURCES
 )
+add_pch( ozCore_pch pch.hh pch.cc )
 
 target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} )
 

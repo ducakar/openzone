@@ -186,10 +186,10 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   set( flags "-std=c++11 -pedantic" )
 
   # Use libc++ instead of libstdc++.
-  set( flags "${flags} -stdlib=libc++" )
-  if( NOT PLATFORM_EMBEDDED )
-    set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
-  endif()
+  #set( flags "${flags} -stdlib=libc++" )
+  #if( NOT PLATFORM_EMBEDDED )
+  #  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
+  #endif()
   # Analyse only.
   #set( flags "${flags} --analyze -Qunused-arguments" )
 else()
