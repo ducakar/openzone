@@ -77,7 +77,7 @@
   </tr>
   <tr>
     <th>y</th>
-    <td>preklopi v naslednjo enoto, ki jo imaš pod nadzorom</td>
+    <td>preklopi na naslednjo enoto, ki jo imaš pod nadzorom</td>
   </tr>
   <tr>
     <td class="rowspace" colspan="2"/>
@@ -424,15 +424,6 @@
     </td>
   </tr>
   <tr>
-    <th>render.lowDetail [bool] false</th>
-  </tr>
-  <tr>
-    <td>
-      Za izboljšanje hitrosti upodabljanja uporabi preprostejše senčenje (brez odseva gladkih
-      površin in izseva) ter ne izrisuje zvezd na nebu.
-    </td>
-  </tr>
-  <tr>
     <th>render.postprocess [bool] true</th>
   </tr>
   <tr>
@@ -492,16 +483,6 @@
     <td>
       Seme za generator naključnih števil. Lahko je celo število ali, če naj se uporabi trenutni
       čas, "TIME".
-    </td>
-  </tr>
-  <tr>
-    <th>shader.setSamplerMap [bool] false</th>
-  </tr>
-  <tr>
-    <td>
-      Nastavi indekse samplerjev tekstur. Če je vklopljeno, teksture prenehajo delovati na
-      gonilnikih Gallium3D z Meso &lt; 8.0, če pa je izklopljeno, teksture ne delujejo pravilno na
-      starejših gonilnikih ATI/AMD Catalyst.
     </td>
   </tr>
   <tr>
@@ -745,16 +726,6 @@
     lastniških kot na odprtokodnih gonilnikih osnovanih na Gallium3D z Meso 8.0+.
   </li>
   <li>
-    Če uporabljaš gonilnike osnovane na Gallium3D in teksture manjkajo, nastavi
-    <code>shader.setSamplerIndices</code> na "false" v datoteki
-    <a href="#dirs">&lt;config&gt;</a>/client.json.
-  </li>
-  <li>
-    Če uporabljaš gonilnike AMD/ATI Catalyst in je teren bel/siv nastavi
-    <code>shader.setSamplerIndices</code> na "true" v datoteki <a href="#dirs">&lt;config&gt;</a>
-    /client.json.
-  </li>
-  <li>
     Če imaš staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo
     modeli MD2, nastavi <code>shader.vertexTexture</code> na "false" v datoteki
     <a href="#dirs">&lt;config&gt;</a>/client.json, sicer pa na "true" za hitrejše izrisovanje.
@@ -764,8 +735,8 @@
 <h2><a name="performance" href="#">Nasveti za boljše delovanje</a></h2>
 <ul>
   <li>
-    V primeru, da uporabljaš prilagajanje frekvence procesorja, to izklopi in nastavi navišjo možno
-    frekvenco. To utegne opazno izboljšati gladkost izrisovanja.
+    V primeru, da uporabljaš dinamično prilagajanje frekvence procesorja, to možnost izklopi in
+    zakleni frekvenco na navišjo možno. To utegne precej izboljšati gladkost izrisovanja.
   </li>
   <li>
     Izklop namiznih učinkov ali preklop v celozaslonski način utegne precej pohitriti grafiko.
@@ -798,7 +769,7 @@
 </p>
 
 <p>
-  Knjižnice ozCore, ozDynamics, ozEngine in ozFactory, ki sta sicer dela pogona, se lahko razpečuje
+  Knjižnice ozCore, ozDynamics, ozEngine in ozFactory, ki so sicer dela pogona, se lahko razpečuje
   in spreminja tudi ločeno pod pogoji <a href="licences/COPYING.liboz.txt">licence zlib</a>.
 </p>
 
@@ -811,7 +782,7 @@
 <h3>Tretje knjižnice</h3>
 <p>
   V kolikor OpenZone ni razpečevan kot paket za katero od distribucij Linuxa, vsebuje tudi
-  (nekatere) naslednje tretje knjižnice, ki jih potrebuje za delovanje:
+  (nekatere) tretje knjižnice, ki jih potrebuje za delovanje:
 </p>
 
 <h4>Assimp</h4>

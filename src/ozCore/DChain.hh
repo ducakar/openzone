@@ -190,9 +190,9 @@ public:
    *
    * For efficiency reasons, elements are added to the beginning of a chain.
    */
-  void add( Elem* e )
+  void add( Elem* elem )
   {
-    pushFirst( e );
+    pushFirst( elem );
   }
 
   /**
@@ -240,59 +240,59 @@ public:
   /**
    * Unbind a given element from the chain.
    */
-  void erase( Elem* e )
+  void erase( Elem* elem )
   {
-    if( e->prev[INDEX] == nullptr ) {
-      firstElem = e->next[INDEX];
+    if( elem->prev[INDEX] == nullptr ) {
+      firstElem = elem->next[INDEX];
     }
     else {
-      e->prev[INDEX]->next[INDEX] = e->next[INDEX];
+      elem->prev[INDEX]->next[INDEX] = elem->next[INDEX];
     }
-    if( e->next[INDEX] == nullptr ) {
-      lastElem = e->prev[INDEX];
+    if( elem->next[INDEX] == nullptr ) {
+      lastElem = elem->prev[INDEX];
     }
     else {
-      e->next[INDEX]->prev[INDEX] = e->prev[INDEX];
+      elem->next[INDEX]->prev[INDEX] = elem->prev[INDEX];
     }
   }
 
   /**
    * Bind an element to the beginning of the chain.
    */
-  void pushFirst( Elem* e )
+  void pushFirst( Elem* elem )
   {
-    hard_assert( e != nullptr );
+    hard_assert( elem != nullptr );
 
-    e->prev[INDEX] = nullptr;
-    e->next[INDEX] = firstElem;
+    elem->prev[INDEX] = nullptr;
+    elem->next[INDEX] = firstElem;
 
     if( firstElem == nullptr ) {
-      firstElem = e;
-      lastElem = e;
+      firstElem = elem;
+      lastElem = elem;
     }
     else {
-      firstElem->prev[INDEX] = e;
-      firstElem = e;
+      firstElem->prev[INDEX] = elem;
+      firstElem = elem;
     }
   }
 
   /**
    * Bind an element to the end of the chain.
    */
-  void pushLast( Elem* e )
+  void pushLast( Elem* elem )
   {
-    hard_assert( e != nullptr );
+    hard_assert( elem != nullptr );
 
-    e->prev[INDEX] = lastElem;
-    e->next[INDEX] = nullptr;
+    elem->prev[INDEX] = lastElem;
+    elem->next[INDEX] = nullptr;
 
     if( lastElem == nullptr ) {
-      firstElem = e;
-      lastElem = e;
+      firstElem = elem;
+      lastElem = elem;
     }
     else {
-      lastElem->next[INDEX] = e;
-      lastElem = e;
+      lastElem->next[INDEX] = elem;
+      lastElem = elem;
     }
   }
 
@@ -303,7 +303,7 @@ public:
   {
     hard_assert( firstElem != nullptr );
 
-    Elem* e = firstElem;
+    Elem* elem = firstElem;
 
     firstElem = firstElem->next[INDEX];
 
@@ -313,7 +313,7 @@ public:
     else {
       firstElem->prev[INDEX] = nullptr;
     }
-    return e;
+    return elem;
   }
 
   /**
@@ -323,7 +323,7 @@ public:
   {
     hard_assert( lastElem != nullptr );
 
-    Elem* e = lastElem;
+    Elem* elem = lastElem;
 
     lastElem = lastElem->prev[INDEX];
 
@@ -333,7 +333,7 @@ public:
     else {
       lastElem->next[INDEX] = nullptr;
     }
-    return e;
+    return elem;
   }
 
   /**

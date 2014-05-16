@@ -35,7 +35,7 @@ Automaton::Automaton( const File& file, const LuaCommon* lua )
   JSON json = file;
 
   for( const JSON& jsonState : json.arrayCIter() ) {
-    states.add();
+    states.add( {} );
     State& state = states.last();
 
     const char* enterCode  = jsonState["onEnter"].get( "" );
@@ -58,7 +58,7 @@ Automaton::Automaton( const File& file, const LuaCommon* lua )
     for( const JSON& jsonLink : jsonState["links"].arrayCIter() ) {
       const char* linkName = jsonLink["to"].get( "" );
 
-      state.links.add();
+      state.links.add( {} );
       State::Link& link = state.links.last();
 
       link.condition = lua->compile( jsonLink["if"].get( "" ), name );

@@ -59,7 +59,7 @@ void QuestList::read( InputStream* is )
   int nQuests = is->readInt();
 
   for( int i = 0; i < nQuests; ++i ) {
-    quests.add();
+    quests.add( {} );
     Quest& quest = quests.last();
 
     quest.title       = is->readString();

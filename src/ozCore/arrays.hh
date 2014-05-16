@@ -387,10 +387,10 @@ inline int aLastIndex( const Elem* array, int count, const Value& value )
 }
 
 /**
- * Delete objects referenced by the elements (must be pointers).
+ * Delete objects referenced by elements (elements must be pointers).
  */
 template <typename Elem>
-inline void aFree( Elem* array, int count )
+inline void aFree( const Elem* array, int count )
 {
   for( int i = 0; i < count; ++i ) {
     delete array[i];
@@ -530,7 +530,7 @@ inline void aSort( Elem* array, int count )
  * @return Index of the last element not greater than `key`, -1 otherwise.
  */
 template <typename Elem, typename Key = Elem>
-inline int aBisection( Elem* array, int count, const Key& key )
+inline int aBisection( const Elem* array, int count, const Key& key )
 {
   int a = -1;
   int b = count;

@@ -329,7 +329,7 @@ void Loader::makeScreenshot()
 
 void Loader::syncUpdate()
 {
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     preloadRender();
     loader.uploadRender( false );
@@ -344,7 +344,7 @@ void Loader::update()
     return;
   }
 
-  MainCall() << [&]()
+  MainCall() << []
   {
     loader.cleanupRender();
     loader.uploadRender( true );

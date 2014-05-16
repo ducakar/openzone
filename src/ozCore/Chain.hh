@@ -189,23 +189,19 @@ public:
   {
     Chain clone;
 
-    Elem* original = firstElem;
-    Elem* prevCopy = nullptr;
+    if( firstElem != nullptr ) {
+      clone.firstElem = new Elem( *firstElem );
 
-    while( original != nullptr ) {
-      Elem* copy = new Elem( *original );
+      const Elem* original = firstElem->next;
+      Elem*       prevCopy = clone.firstElem;
 
-      if( prevCopy == nullptr ) {
-        clone.firstElem = copy;
+      while( original != nullptr ) {
+        prevCopy->next = new Elem( *original );
+
+        prevCopy = prevCopy->next ;
+        original = original->next;
       }
-      else {
-        prevCopy->next[INDEX] = copy;
-      }
-
-      original = original->next[INDEX];
-      prevCopy = copy;
     }
-
     return clone;
   }
 
@@ -217,8 +213,8 @@ public:
    */
   bool equals( const Chain& c ) const
   {
-    Elem* e1 = firstElem;
-    Elem* e2 = c.firstElem;
+    const Elem* e1 = firstElem;
+    const Elem* e2 = c.firstElem;
 
     while( e1 != nullptr && e2 != nullptr && *e1 == *e2 ) {
       e1 = e1->next[INDEX];
@@ -330,12 +326,12 @@ public:
   /**
    * Pointer to the element before a given one.
    */
-  Elem* before( const Elem* e ) const
+  Elem* before( const Elem* elem ) const
   {
     Elem* current = firstElem;
     Elem* before = nullptr;
 
-    while( current != e ) {
+    while( current != elem ) {
       before = current;
       current = current->next[INDEX];
     }
@@ -345,13 +341,13 @@ public:
   /**
    * True iff a given element is in the chain.
    */
-  bool has( const Elem* e ) const
+  bool has( const Elem* elem ) const
   {
-    hard_assert( e != nullptr );
+    hard_assert( elem != nullptr );
 
     Elem* p = firstElem;
 
-    while( p != nullptr && p != e ) {
+    while( p != nullptr && p != elem ) {
       p = p->next[INDEX];
     }
     return p != nullptr;
@@ -363,13 +359,13 @@ public:
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
-  bool contains( const Elem* e ) const
+  bool contains( const Elem* elem ) const
   {
-    hard_assert( e != nullptr );
+    hard_assert( elem != nullptr );
 
     Elem* p = firstElem;
 
-    while( p != nullptr && !( *p == *e ) ) {
+    while( p != nullptr && !( *p == *elem ) ) {
       p = p->next[INDEX];
     }
     return p != nullptr;
@@ -380,20 +376,20 @@ public:
    *
    * For efficiency reasons, elements are added to the beginning of a chain.
    */
-  void add( Elem* e )
+  void add( Elem* elem )
   {
-    pushFirst( e );
+    pushFirst( elem );
   }
 
   /**
    * Bind an element after some given element in the chain.
    */
-  void insertAfter( Elem* e, Elem* p )
+  void insertAfter( Elem* elem, Elem* prev )
   {
-    hard_assert( e != nullptr && p != nullptr );
+    hard_assert( elem != nullptr && prev != nullptr );
 
-    e->next[INDEX] = p->next[INDEX];
-    p->next[INDEX] = e;
+    elem->next[INDEX] = prev->next[INDEX];
+    prev->next[INDEX] = elem;
   }
 
   /**
@@ -402,27 +398,27 @@ public:
    * Since this chain is not double-linked, a pointer to the preceding element (or `nullptr` if the
    * first element) must be provided.
    */
-  void erase( Elem* e, Elem* prev )
+  void erase( Elem* elem, Elem* prev )
   {
-    hard_assert( prev == nullptr || prev->next[INDEX] == e );
+    hard_assert( prev == nullptr || prev->next[INDEX] == elem );
 
     if( prev == nullptr ) {
-      firstElem = e->next[INDEX];
+      firstElem = elem->next[INDEX];
     }
     else {
-      prev->next[INDEX] = e->next[INDEX];
+      prev->next[INDEX] = elem->next[INDEX];
     }
   }
 
   /**
    * Bind an element to the beginning of the chain.
    */
-  void pushFirst( Elem* e )
+  void pushFirst( Elem* elem )
   {
-    hard_assert( e != nullptr );
+    hard_assert( elem != nullptr );
 
-    e->next[INDEX] = firstElem;
-    firstElem = e;
+    elem->next[INDEX] = firstElem;
+    firstElem = elem;
   }
 
   /**
@@ -432,10 +428,10 @@ public:
   {
     hard_assert( firstElem != nullptr );
 
-    Elem* e = firstElem;
+    Elem* elem = firstElem;
 
     firstElem = firstElem->next[INDEX];
-    return e;
+    return elem;
   }
 
   /**

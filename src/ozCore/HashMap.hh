@@ -44,16 +44,12 @@ namespace oz
 template <typename Key, typename Value>
 class HashMap : private HashSet< detail::MapPair<Key, Value> >
 {
-private:
+public:
 
   /**
    * Shortcut for key-value pair type.
    */
   typedef detail::MapPair<Key, Value> Pair;
-
-  using typename HashSet<Pair>::Bucket;
-
-public:
 
   /**
    * %Iterator with constant access to elements.
@@ -66,6 +62,8 @@ public:
   typedef typename HashSet<Pair>::Iterator Iterator;
 
 private:
+
+  using typename HashSet<Pair>::Bucket;
 
   using HashSet<Pair>::pool;
   using HashSet<Pair>::data;
@@ -98,6 +96,8 @@ public:
   using HashSet<Pair>::isEmpty;
   using HashSet<Pair>::capacity;
   using HashSet<Pair>::loadFactor;
+  using HashSet<Pair>::contains;
+  using HashSet<Pair>::exclude;
   using HashSet<Pair>::trim;
   using HashSet<Pair>::clear;
   using HashSet<Pair>::deallocate;
@@ -161,30 +161,6 @@ public:
   bool operator != ( const HashMap& ht ) const
   {
     return HashSet<Pair>::operator != ( ht );
-  }
-
-  /**
-   * True iff a given key is found in the hashtable.
-   */
-  template <typename Key_ = Key>
-  bool contains( const Key_& key ) const
-  {
-    if( size == 0 ) {
-      return false;
-    }
-
-    int     h = hash( key );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
-
-    while( b != nullptr ) {
-      if( b->elem.key == key ) {
-        return true;
-      }
-
-      b = b->next;
-    }
-    return false;
   }
 
   /**
@@ -286,37 +262,6 @@ public:
       data[i], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
     };
     return data[i]->elem.value;
-  }
-
-  /**
-   * Remove element with a given key.
-   *
-   * @return True iff the key was found (and removed).
-   */
-  bool exclude( const Key& key )
-  {
-    if( size == 0 ) {
-      return nullptr;
-    }
-
-    uint     i     = uint( hash( key ) ) % uint( size );
-    Bucket*  b     = data[i];
-    Bucket** bPrev = &data[i];
-
-    while( b != nullptr ) {
-      if( b->elem.key == key ) {
-        *bPrev = b->next;
-
-        b->~Bucket();
-        pool.deallocate( b );
-
-        return true;
-      }
-
-      bPrev = &b->next;
-      b = b->next;
-    }
-    return false;
   }
 
   /**

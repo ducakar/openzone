@@ -526,7 +526,7 @@ void Render::update( int flags )
     effectsAuxSemaphore.post();
   }
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     if( flags & ORBIS_BIT ) {
       drawOrbis();
@@ -736,7 +736,7 @@ void Render::init()
   const char* glslVersion;
   const char* sExtensions;
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     vendor      = String::cstr( glGetString( GL_VENDOR ) );
     renderer    = String::cstr( glGetString( GL_RENDERER ) );
@@ -840,7 +840,7 @@ void Render::init()
   minGlowBuffer   = 0;
 #endif
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     resize();
 

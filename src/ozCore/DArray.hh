@@ -322,25 +322,28 @@ public:
   /**
    * True iff a given value is found in the array.
    */
-  bool contains( const Elem& e ) const
+  template <typename Elem_ = Elem>
+  bool contains( const Elem_& elem ) const
   {
-    return aContains<Elem, Elem>( data, count, e );
+    return aContains<Elem, Elem_>( data, count, elem );
   }
 
   /**
    * Index of the first occurrence of the value or -1 if not found.
    */
-  int index( const Elem& e ) const
+  template <typename Elem_ = Elem>
+  int index( const Elem_& elem ) const
   {
-    return aIndex<Elem, Elem>( data, count, e );
+    return aIndex<Elem, Elem_>( data, count, elem );
   }
 
   /**
    * Index of the last occurrence of the value or -1 if not found.
    */
-  int lastIndex( const Elem& e ) const
+  template <typename Elem_ = Elem>
+  int lastIndex( const Elem_& elem ) const
   {
-    return aLastIndex<Elem, Elem>( data, count, e );
+    return aLastIndex<Elem, Elem_>( data, count, elem );
   }
 
   /**

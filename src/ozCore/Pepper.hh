@@ -178,7 +178,7 @@ public:
  * A typical scenario:
  * <code>
  * GLuint id = loadTexture( file );
- * MainCall() << [&]()
+ * MainCall() << [&]
  * {
  *   glBindTexture( GL_TEXTURE_2D, id );
  * };

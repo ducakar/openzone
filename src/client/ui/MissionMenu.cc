@@ -196,11 +196,10 @@ MissionMenu::MissionMenu() :
     Lingua lingua;
     lingua.initMission( missionName );
 
-    missions.add();
-    missions.last().name        = missionName;
-    missions.last().title       = lingua.get( descriptionConfig["title"].get( missionName ) );
-    missions.last().description = lingua.get( descriptionConfig["description"].get( "" ) );
-    missions.last().image.load( missionDir.path() + "/description.dds" );
+    missions.add( { missionName,
+                    lingua.get( descriptionConfig["title"].get( missionName ) ),
+                    lingua.get( descriptionConfig["description"].get( "" ) ),
+                    GLTexture( missionDir.path() + "/description.dds" ) } );
 
     lingua.clear();
   }

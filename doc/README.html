@@ -423,15 +423,6 @@
     </td>
   </tr>
   <tr>
-    <th>render.lowDetail [bool] false</th>
-  </tr>
-  <tr>
-    <td>
-      Use simpler lighting (no specular lighting and emission) and disable stars to increase
-      rendering performance.
-    </td>
-  </tr>
-  <tr>
     <th>render.postprocess [bool] true</th>
   </tr>
   <tr>
@@ -491,15 +482,6 @@
     <td>
       Seed for random number generator. Can be an integer or "TIME" to use the current time as the
       seed.
-    </td>
-  </tr>
-  <tr>
-    <th>shader.setSamplerMap [bool] false</th>
-  </tr>
-  <tr>
-    <td>
-      Set indices for texture samplers. If set, breaks textures on Gallium3D drivers with Mesa &lt;
-      8.0. If not set, breaks textures on older ATI/AMD Catalyst drivers.
     </td>
   </tr>
   <tr>
@@ -742,16 +724,6 @@
     proprietary and open-source Gallium3D-based drivers with Mesa 8.0+.
   </li>
   <li>
-    If you are using Gallium3D-based drivers and textures are (mostly) missing, set
-    <code>shader.setSamplerIndices</code> to "false" in
-    <a href="#dirs">&lt;config&gt;</a>/client.json file.
-  </li>
-  <li>
-    If you are using AMD/ATI Catalyst driver and terrain looks white/grey, set
-    <code>shader.setSamplerIndices</code> to "true" in
-    <a href="#dirs">&lt;config&gt;</a>/client.json file.
-  </li>
-  <li>
     If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2 models are missing
     set <code>shader.vertexTexture</code> to "false" in
     <a href="#dirs">&lt;config&gt;</a>/client.json file. Otherwise set it to "true" for better
@@ -762,8 +734,8 @@
 <h2><a name="performance" href="#">Performance Tips</a></h2>
 <ul>
   <li>
-    If you use CPU frequency scaling, turn it off and set the highest CPU frequency. It may improve
-    performance a lot.
+    If you use dynamic CPU frequency scaling turn that feature off and set the highest CPU
+    frequency. This may significantly improve frame-rate.
   </li>
   <li>
     Turning off desktop effects or switching to fullscreen mode significantly improves performance

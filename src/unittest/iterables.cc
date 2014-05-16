@@ -94,7 +94,7 @@ void test_iterables()
   iCopy( l.citer(), l.iter() );
   OZ_CHECK( iEquals( citer( l ), v.citer() ) );
 
-  v.add();
+  v.add( {} );
   OZ_CHECK( !iEquals( l.citer(), citer( v ) ) );
 
   v.popLast();

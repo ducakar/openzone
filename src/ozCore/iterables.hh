@@ -340,19 +340,18 @@ inline int iLastIndex( CIterator iter, const Value& value )
 }
 
 /**
- * Delete objects referenced by elements and set all elements to `nullptr`.
+ * Delete objects referenced by elements (elements must be pointers).
  */
-template <class Iterator>
-inline void iFree( Iterator iter )
+template <class CIterator>
+inline void iFree( CIterator iter )
 {
-  typedef typename Iterator::ElemType Elem;
+  typedef typename CIterator::ElemType Elem;
 
   while( iter.isValid() ) {
-    Elem& elem = *iter;
+    const Elem& elem = *iter;
     ++iter;
 
     delete elem;
-    elem = nullptr;
   }
 }
 

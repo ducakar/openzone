@@ -118,7 +118,7 @@ void TechGraph::load()
   for( int i = 0; i < nNodes; ++i ) {
     const JSON& tech = config[i];
 
-    nodes.add();
+    nodes.add( {} );
     Node& node = nodes.last();
 
     const char* technology = tech["technology"].get( "" );

@@ -55,7 +55,7 @@ if( OZ_STANDALONE )
   set( OZ_PREFIX "" )
   set( OZ_BINARY_SUBDIR "/${OZ_PLATFORM_NAME}" )
   set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
-  set( CMAKE_INSTALL_RPATH "$ORIGIN/../../lib${OZ_BINARY_SUBDIR}" )
+  set( CMAKE_INSTALL_RPATH "$ORIGIN" )
 else()
   set( OZ_PREFIX "${CMAKE_INSTALL_PREFIX}" )
   set( OZ_BINARY_SUBDIR "" )
@@ -288,7 +288,7 @@ if( OZ_STANDALONE )
   install( FILES ${readmes} DESTINATION . )
   install( DIRECTORY doc/licences DESTINATION . )
 
-  install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION lib USE_SOURCE_PERMISSIONS )
+  install( DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION bin USE_SOURCE_PERMISSIONS )
 endif()
 
 #
@@ -313,7 +313,5 @@ set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "openzone" )
 set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
 set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
      "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
-set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};"
-     "ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
 set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
      "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )

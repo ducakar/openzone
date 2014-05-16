@@ -80,6 +80,8 @@ public:
   using List<Elem>::operator [];
   using List<Elem>::first;
   using List<Elem>::last;
+  using List<Elem>::insert;
+  using List<Elem>::erase;
   using List<Elem>::resize;
   using List<Elem>::trim;
   using List<Elem>::clear;
@@ -153,21 +155,21 @@ public:
   /**
    * True iff a given key is found in the set.
    */
-  template <typename Key = Elem>
-  bool contains( const Key& key ) const
+  template <typename Elem_ = Elem>
+  bool contains( const Elem_& elem ) const
   {
-    int i = aBisection<Elem, Key>( data, count, key );
-    return i >= 0 && data[i] == key;
+    int i = aBisection<Elem, Elem_>( data, count, elem );
+    return i >= 0 && data[i] == elem;
   }
 
   /**
    * Index of the element with a given value or -1 if not found.
    */
-  template <typename Key = Elem>
-  int index( const Key& key ) const
+  template <typename Elem_ = Elem>
+  int index( const Elem_& elem ) const
   {
-    int i = aBisection<Elem, Key>( data, count, key );
-    return i >= 0 && data[i] == key ? i : -1;
+    int i = aBisection<Elem, Elem_>( data, count, elem );
+    return i >= 0 && data[i] == elem ? i : -1;
   }
 
   /**
@@ -185,7 +187,7 @@ public:
       return i;
     }
     else {
-      insert<Elem_>( i + 1, static_cast<Elem_&&>( elem ) );
+      insert( i + 1, static_cast<Elem_&&>( elem ) );
       return i + 1;
     }
   }
@@ -204,49 +206,8 @@ public:
       return i;
     }
     else {
-      insert<Elem_>( i + 1, static_cast<Elem_&&>( elem ) );
+      insert( i + 1, static_cast<Elem_&&>( elem ) );
       return i + 1;
-    }
-  }
-
-  /**
-   * Insert an element at a given position.
-   *
-   * All later elements are shifted to make a gap.
-   * Use only when you are sure you are inserting at the right position to preserve order of the
-   * element.
-   */
-  template <typename Elem_ = Elem>
-  void insert( int i, Elem_&& elem )
-  {
-    hard_assert( uint( i ) <= uint( count ) );
-
-    ensureCapacity( count + 1 );
-
-    aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
-    data[i] = static_cast<Elem_&&>( elem );
-
-    ++count;
-  }
-
-  /**
-   * Remove the element at a given position.
-   *
-   * All later elements are shifted to fill the gap.
-   */
-  void erase( int i )
-  {
-    hard_assert( uint( i ) < uint( count ) );
-
-    --count;
-
-    if( i == count ) {
-      // When removing the last element, no shift is performed, so it is not implicitly destroyed by
-      // the move operation.
-      data[count] = Elem();
-    }
-    else {
-      aMove<Elem>( data + i + 1, count - i, data + i );
     }
   }
 
@@ -255,9 +216,10 @@ public:
    *
    * @return Index of the removed element or -1 if not found.
    */
-  int exclude( const Elem& elem )
+  template <typename Elem_ = Elem>
+  int exclude( const Elem_& elem )
   {
-    int i = aBisection<Elem, Elem>( data, count, elem );
+    int i = aBisection<Elem, Elem_>( data, count, elem );
 
     if( i >= 0 && data[i] == elem ) {
       erase( i );

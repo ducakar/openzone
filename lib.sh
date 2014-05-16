@@ -19,6 +19,7 @@
 platforms=(
   Linux-x86_64
   Linux-i686
+  Windows-x86_64
   Windows-i686
 )
 
@@ -45,43 +46,45 @@ function build()
       cp "$prefix/libphysfs.so.1" \
          "$prefix/libSDL2-2.0.so.0" \
          "$prefix/libSDL2_ttf-2.0.so.0" \
+         "$prefix/libopenal.so.1" \
          "$prefix/liblua.so.5.2" \
          "$prefix/libpng16.so.16" \
-         "$prefix/libfreeimage.so.3" \
-         "$prefix/libnoise.so.1.0.0" \
-         "$prefix/libassimp.so.3" \
          "$outDir"
 
       chmod +x $outDir/*
       strip $outDir/*
     fi
 
-    if [[ $platform == Windows-i686 ]]; then
+    if [[ $platform == Windows-x86_64 || $platform == Windows-i686 ]]; then
       outDir=lib/$platform
-      prefix=/usr/i486-mingw32/bin
+
+      [[ $platform == Windows-x86_64 ]] && prefix=/usr/x86_64-w64-mingw32/bin
+      [[ $platform == Windows-i686   ]] && prefix=/usr/i686-w64-mingw32/bin
 
       rm -rf $outDir
       mkdir -p $outDir
 
-      cp "$prefix/libgcc_s_sjlj-1.dll" \
-         "$prefix/libstdc++-6.dll" \
+      [[ $platform == Windows-x86_64 ]] && cp "$prefix/libgcc_s_seh-1.dll"  $outDir
+      [[ $platform == Windows-i686   ]] && cp "$prefix/libgcc_s_sjlj-1.dll" $outDir
+
+      cp "$prefix/libstdc++-6.dll" \
+         "$prefix/libwinpthread-1.dll" \
          "$prefix/zlib1.dll" \
+         "$prefix/libbz2-1.dll" \
          "$prefix/libphysfs.dll" \
-         "$prefix/SDL.dll" \
-         "$prefix/SDL_ttf.dll" \
+         "$prefix/SDL2.dll" \
+         "$prefix/SDL2_ttf.dll" \
+         "$prefix/OpenAL32.dll" \
          "$prefix/libpng16-16.dll" \
          "$prefix/lua52.dll" \
          "$prefix/libfreetype-6.dll" \
          "$prefix/libogg-0.dll" \
          "$prefix/libvorbis-0.dll" \
          "$prefix/libvorbisfile-3.dll" \
-         "$prefix/FreeImage.dll" \
-         "$prefix/libnoise.dll" \
-         "$prefix/libassimp.dll" \
          "$outDir"
 
       chmod +x $outDir/*
-      i486-mingw32-strip $outDir/*
+      x86_64-w64-mingw32-strip $outDir/*
     fi
   done
 }

@@ -14,8 +14,9 @@
 #
 
 platforms=(
-  Linux-x86_64
-  Linux-i686
+  Linux-x86_64-Clang
+  Linux-i686-Clang
+  Windows-x86_64
   Windows-i686
 )
 
@@ -59,8 +60,8 @@ case $1 in
       cd ..
     done
 
-    rm -rf OpenZone-$version/include OpenZone-$version/lib/*/*.a OpenZone-$version/lib/*/pkgconfig
-    zip -9 -r ../../OpenZone-$version-bundle.zip OpenZone-$version
+    rm -rf OpenZone-$version/{include,lib}
+    zip -9r ../../OpenZone-$version-bundle.zip OpenZone-$version
     ls -hl --color=always ../../OpenZone-$version-bundle.zip
     ;;
   *)

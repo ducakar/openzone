@@ -191,7 +191,7 @@ void Window::swapBuffers()
 {
 #if defined( __native_client__ )
 
-  MainCall() << []()
+  MainCall() << []
   {
     context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
   };
@@ -243,7 +243,7 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
   windowWidth  = newWidth;
   windowHeight = newHeight;
 
-  MainCall() << []()
+  MainCall() << []
   {
     glSetCurrentContextPPAPI( 0 );
     context->ResizeBuffers( windowWidth, windowHeight );
@@ -325,7 +325,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
   Log::print( "Creating OpenGL surface %dx%d ... ", windowWidth, windowHeight );
 
-  MainCall() << []()
+  MainCall() << []
   {
     glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
 
@@ -393,7 +393,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
 #else
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
 
@@ -433,7 +433,7 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
     Log::printEnd( "OK" );
 
-    MainCall() << []()
+    MainCall() << []
     {
       glViewport( 0, 0, windowWidth, windowHeight );
       glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -456,7 +456,7 @@ void Window::destroy()
 #if defined( __native_client__ )
 
   if( !context->is_null() ) {
-    MainCall() << []()
+    MainCall() << []
     {
       glSetCurrentContextPPAPI( 0 );
       delete context;

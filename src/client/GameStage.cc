@@ -329,7 +329,7 @@ void GameStage::load()
 
   luaClient.init();
 
-  MainCall() << []()
+  MainCall() << []
   {
     render.load();
     context.load();
@@ -445,7 +445,7 @@ void GameStage::unload()
 
   camera.reset();
 
-  MainCall() << []()
+  MainCall() << []
   {
     context.unload();
     render.unload();

@@ -1,6 +1,6 @@
+/CMakeLists.txt.user*
 /*.kdev4
 *.kate-swp
-/CMakeLists.txt.user*
 /.project
 /.cproject
 /.settings
@@ -45,4 +45,5 @@ DISABLED
 /*.tar.gz
 /*.tar.bz2
 /*.tar.xz
+/*.zip
 /*.7z

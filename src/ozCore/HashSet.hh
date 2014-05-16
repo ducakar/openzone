@@ -220,13 +220,22 @@ nextElem:
    */
   Bucket* cloneChain( const Bucket* chain )
   {
-    Bucket* newChain = nullptr;
+    Bucket* clone = nullptr;
 
-    while( chain != nullptr ) {
-      newChain = new( pool ) Bucket { newChain, chain->hash, chain->elem };
-      chain = chain->next;
+    if( chain != nullptr ) {
+      clone = new( pool ) Bucket { clone, chain->hash, chain->elem };
+
+      const Bucket* original = chain->next;
+      Bucket*       prevCopy = clone;
+
+      while( original != nullptr ) {
+        prevCopy->next = new( pool ) Bucket { clone, original->hash, original->elem };
+
+        prevCopy = prevCopy->next ;
+        original = original->next;
+      }
     }
-    return newChain;
+    return clone;
   }
 
   /**
@@ -253,17 +262,17 @@ nextElem:
 
     // Rebuild hashtable.
     for( int i = 0; i < size; ++i ) {
-      Bucket* e    = data[i];
-      Bucket* next = nullptr;
+      Bucket* chain = data[i];
+      Bucket* next  = nullptr;
 
-      while( e != nullptr ) {
-        uint index = uint( e->hash ) % uint( newSize );
+      while( chain != nullptr ) {
+        uint index = uint( chain->hash ) % uint( newSize );
 
-        next = e->next;
-        e->next = newData[index];
-        newData[index] = e;
+        next = chain->next;
+        chain->next = newData[index];
+        newData[index] = chain;
 
-        e = next;
+        chain = next;
       }
     }
 
@@ -582,7 +591,8 @@ public:
    *
    * @return True iff the element was found (and removed).
    */
-  bool exclude( const Elem& elem )
+  template <typename Elem_ = Elem>
+  bool exclude( const Elem_& elem )
   {
     if( size == 0 ) {
       return nullptr;

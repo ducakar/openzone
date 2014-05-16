@@ -200,9 +200,9 @@ public:
 
     static Pool<Event, 256> pool;
 
+    Event* next[1];
     int    id;
     float  intensity;
-    Event* next[1];
 
   public:
 

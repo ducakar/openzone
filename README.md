@@ -187,17 +187,18 @@ this script.
 
 Additionally this scripts updates version numbers in various files.
 
-### `build.sh [clean | conf]` ###
+### `build.sh [clean | conf] [<platform>]` ###
 
-This script configures and/or builds OpenZone in the `build` directory for all platforms that are
-uncommented in the beginning of this script. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables
-must be set for Android and NaCl builds.
+This script configures and/or builds OpenZone in the `build` directory for a specified platform or
+all supported platforms uncommented in the beginning of this script if `<platform>` parameter is
+omitted. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set for Android and NaCl
+builds respectively.
 
 The following commands may be given:
 
-- `clean`: Delete all builds.
-- `conf`: Delete all builds and configure (but not build) them anew.
-- (none): Configure (if necessary) and build all enabled builds.
+- `clean`: Delete build(s).
+- `conf`: Delete build(s) and configure (but not build) them anew.
+- (none): Configure (if necessary) and build.
 
 ### `capture.sh` ###
 

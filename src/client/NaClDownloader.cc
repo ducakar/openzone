@@ -117,7 +117,7 @@ void NaClDownloader::begin( const char* url_ )
   semaphore.init();
   buffer = OutputStream( 0 );
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     pp::URLRequestInfo request( Pepper::instance() );
     request.SetURL( url );

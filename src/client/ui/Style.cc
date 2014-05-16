@@ -204,7 +204,7 @@ void Style::init()
 
   config.clear( true );
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     glGenTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
 
@@ -239,7 +239,7 @@ void Style::destroy()
   context.releaseSound( sounds.click );
   context.releaseSound( sounds.bell );
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     glDeleteTextures( GLsizei( sizeof( images ) / sizeof( images.crosshair ) ), &images.crosshair );
   };

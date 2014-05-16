@@ -417,7 +417,7 @@ int Client::init( int argc, char** argv )
 
   File::mount( dataDir, "/" );
 
-  MainCall() << []()
+  MainCall() << []
   {
     if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
       OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
@@ -742,7 +742,7 @@ void Client::shutdown()
   }
   if( initFlags & INIT_SDL )
   {
-    MainCall() << []() {
+    MainCall() << [] {
       SDL_Quit();
     };
   }

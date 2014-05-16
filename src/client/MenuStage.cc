@@ -64,7 +64,7 @@ void MenuStage::load()
   input.buttons     = 0;
   input.currButtons = 0;
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     mainMenu = new ui::MainMenu();
     ui::ui.root->add( mainMenu, 0, 0 );
@@ -81,7 +81,7 @@ void MenuStage::unload()
 {
   Log::print( "Unloading MenuStage ..." );
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     ui::mouse.doShow = false;
     ui::ui.root->remove( mainMenu );

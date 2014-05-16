@@ -188,7 +188,7 @@ bool Cursor::load( const File& file, Mode mode_, int size )
       GLenum srcFormat = GL_BGRA;
 #endif
 
-      MainCall() << [&]()
+      MainCall() << [&]
       {
         glGenTextures( 1, &image.textureId );
         glBindTexture( GL_TEXTURE_2D, image.textureId );
@@ -229,7 +229,7 @@ void Cursor::destroy()
   }
 
   if( mode == TEXTURE ) {
-    MainCall() << [&]()
+    MainCall() << [&]
     {
       for( int i = 0; i < nImages; ++i ) {
         glDeleteTextures( 1, &images[i].textureId );

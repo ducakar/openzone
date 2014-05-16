@@ -64,12 +64,23 @@ struct MapPair
   }
 
   /**
+   * Equality operator for comparison against a key, required for `contains()`, `exclude()` etc.
+   */
+  template <typename Key_ = Key>
+  OZ_ALWAYS_INLINE
+  bool operator == ( const Key_& k ) const
+  {
+    return key == k;
+  }
+
+  /**
    * Less-than operator required for `aBisection()`.
    */
+  template <typename Key_ = Key>
   OZ_ALWAYS_INLINE
-  friend bool operator < ( const Key& key, const MapPair& p )
+  friend bool operator < ( const Key_& k, const MapPair& p )
   {
-    return key < p.key;
+    return k < p.key;
   }
 };
 
@@ -92,14 +103,12 @@ struct MapPair
 template <typename Key, typename Value>
 class Map : private Set< detail::MapPair<Key, Value> >
 {
-private:
+public:
 
   /**
    * Shortcut for key-value pair type.
    */
   typedef detail::MapPair<Key, Value> Pair;
-
-public:
 
   /**
    * %Iterator with constant access to elements.
@@ -129,7 +138,10 @@ public:
   using Set<Pair>::operator [];
   using Set<Pair>::first;
   using Set<Pair>::last;
+  using Set<Pair>::contains;
+  using Set<Pair>::index;
   using Set<Pair>::erase;
+  using Set<Pair>::exclude;
   using Set<Pair>::resize;
   using Set<Pair>::trim;
   using Set<Pair>::clear;
@@ -198,26 +210,6 @@ public:
   }
 
   /**
-   * True iff a given key is found in the map.
-   */
-  template <typename Key_ = Key>
-  bool contains( const Key_& key ) const
-  {
-    int i = aBisection<Pair, Key_>( data, count, key );
-    return i >= 0 && data[i].key == key;
-  }
-
-  /**
-   * Index of the element with a given value or -1 if not found.
-   */
-  template <typename Key_ = Key>
-  int index( const Key_& key ) const
-  {
-    int i = aBisection<Pair, Key_>( data, count, key );
-    return i >= 0 && data[i].key == key ? i : -1;
-  }
-
-  /**
    * Constant pointer to the value for a given key or `nullptr` if not found.
    */
   template <typename Key_ = Key>
@@ -259,6 +251,22 @@ public:
   }
 
   /**
+   * Insert an element at a given position.
+   */
+  template <typename Key_ = Key, typename Value_ = Value>
+  void insert( int i, Key_&& key, Value_&& value )
+  {
+    hard_assert( uint( i ) <= uint( count ) );
+
+    ensureCapacity( count + 1 );
+
+    aMoveBackward<Pair>( data + i, count - i, data + i + 1 );
+    data[i].key   = static_cast<Key_&&>( key );
+    data[i].value = static_cast<Value_&&>( value );
+    ++count;
+  }
+
+  /**
    * Add an element if the key does not exist in the map.
    *
    * @return Position of the inserted or the existing element.
@@ -275,43 +283,6 @@ public:
       insert<Key_, Value_>( i + 1, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       return i + 1;
     }
-  }
-
-  /**
-   * Insert an element at a given position.
-   *
-   * All later elements are shifted to make a gap.
-   * Use only when you are sure you are inserting at the right position to preserve order of the
-   * element.
-   */
-  template <typename Key_ = Key, typename Value_ = Value>
-  void insert( int i, Key_&& key, Value_&& value = Value() )
-  {
-    hard_assert( uint( i ) <= uint( count ) );
-
-    ensureCapacity( count + 1 );
-
-    aMoveBackward<Pair>( data + i, count - i, data + i + 1 );
-    data[i].key   = static_cast<Key_&&>( key );
-    data[i].value = static_cast<Value_&&>( value );
-
-    ++count;
-  }
-
-  /**
-   * Find and remove the element with a given key.
-   *
-   * @return Index of the removed element or -1 if not found.
-   */
-  int exclude( const Key& key )
-  {
-    int i = aBisection<Pair, Key>( data, count, key );
-
-    if( i >= 0 && data[i].key == key ) {
-      erase( i );
-      return i;
-    }
-    return -1;
   }
 
 };

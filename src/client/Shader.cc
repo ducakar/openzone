@@ -305,7 +305,7 @@ void Shader::init()
 
   medium = 0;
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     // Bind white texture to id 0 to emulate fixed functionality that has white texture on id 0.
     ubyte whitePixel[] = { 0xff, 0xff, 0xff };
@@ -409,7 +409,7 @@ void Shader::destroy()
 {
   Log::print( "Destroying Shader ..." );
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     for( int i = 0; i < liber.shaders.length(); ++i ) {
       if( programs[i].program != 0 ) {

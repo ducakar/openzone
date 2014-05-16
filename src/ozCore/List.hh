@@ -223,9 +223,9 @@ public:
    * Add an element to the end.
    */
   template <typename Elem_ = Elem>
-  void add( Elem_&& e = Elem() )
+  void add( Elem_&& elem )
   {
-    pushLast<Elem_>( static_cast<Elem_&&>( e ) );
+    pushLast<Elem_>( static_cast<Elem_&&>( elem ) );
   }
 
   /**
@@ -260,18 +260,17 @@ public:
    * @return Position of the inserted or the existing equal element.
    */
   template <typename Elem_ = Elem>
-  int include( Elem_&& e )
+  int include( Elem_&& elem )
   {
-    int i = aIndex<Elem, Elem>( data, count, e );
+    int i = aIndex<Elem, Elem>( data, count, elem );
 
-    if( i < 0 ) {
-      ensureCapacity( count + 1 );
-
-      data[count] = static_cast<Elem_&&>( e );
-      i = count;
-      ++count;
+    if( i >= 0 ) {
+      return i;
     }
-    return i;
+    else {
+      pushLast<Elem_>( static_cast<Elem_&&>( elem ) );
+      return count - 1;
+    }
   }
 
   /**
@@ -280,14 +279,14 @@ public:
    * All later elements are shifted to make the gap.
    */
   template <typename Elem_ = Elem>
-  void insert( int i, Elem_&& e )
+  void insert( int i, Elem_&& elem )
   {
     hard_assert( uint( i ) <= uint( count ) );
 
     ensureCapacity( count + 1 );
 
     aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
-    data[i] = static_cast<Elem_&&>( e );
+    data[i] = static_cast<Elem_&&>( elem );
     ++count;
   }
 
@@ -338,9 +337,10 @@ public:
    *
    * @return Index of the removed element or -1 if not found.
    */
-  int exclude( const Elem& e )
+  template <typename Elem_ = Elem>
+  int exclude( const Elem_& elem )
   {
-    int i = aIndex<Elem, Elem>( data, count, e );
+    int i = aIndex<Elem, Elem_>( data, count, elem );
 
     if( i >= 0 ) {
       erase( i );
@@ -355,9 +355,10 @@ public:
    *
    * @return Index of the removed element or -1 if not found.
    */
-  int excludeUnordered( const Elem& e )
+  template <typename Elem_ = Elem>
+  int excludeUnordered( const Elem_& elem )
   {
-    int i = aIndex<Elem, Elem>( data, count, e );
+    int i = aIndex<Elem, Elem_>( data, count, elem );
 
     if( i >= 0 ) {
       eraseUnordered( i );
@@ -371,12 +372,12 @@ public:
    * All elements are shifted to make a gap.
    */
   template <typename Elem_ = Elem>
-  void pushFirst( Elem_&& e )
+  void pushFirst( Elem_&& elem )
   {
     ensureCapacity( count + 1 );
 
     aMoveBackward<Elem>( data, count, data + 1 );
-    data[0] = static_cast<Elem_&&>( e );
+    data[0] = static_cast<Elem_&&>( elem );
     ++count;
   }
 
@@ -384,11 +385,11 @@ public:
    * Add an element to the end.
    */
   template <typename Elem_ = Elem>
-  void pushLast( Elem_&& e )
+  void pushLast( Elem_&& elem )
   {
     ensureCapacity( count + 1 );
 
-    data[count] = static_cast<Elem_&&>( e );
+    data[count] = static_cast<Elem_&&>( elem );
     ++count;
   }
 
@@ -401,11 +402,11 @@ public:
    */
   Elem popFirst()
   {
-    Elem e = static_cast<Elem&&>( data[0] );
+    Elem elem = static_cast<Elem&&>( data[0] );
 
     --count;
     aMove<Elem>( data + 1, count, data );
-    return e;
+    return elem;
   }
 
   /**

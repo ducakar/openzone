@@ -412,7 +412,7 @@ void Shape::object( const Point& pos, const Mat3& rot, const void* shape_ )
 
 void Shape::init()
 {
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -428,7 +428,7 @@ void Shape::init()
 
 void Shape::destroy()
 {
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     if( vbo != 0 ) {
       glDeleteBuffers( 1, &ibo );

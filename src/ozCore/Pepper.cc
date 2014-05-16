@@ -238,7 +238,7 @@ void Pepper::post( const char* message )
 {
   pp::Var var( message );
 
-  MainCall() << [&]()
+  MainCall() << [&]
   {
     ppInstance->PostMessage( var );
   };

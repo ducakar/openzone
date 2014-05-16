@@ -10,17 +10,19 @@
 # - `wine`: Installs the standalone Windows port into `build/Windows-test` and launches it via Wine.
 #
 
-defaultPlatform=Linux-`uname -m`-Clang
+arch=i686
+[[ `uname -m` == x86_64 ]] && arch=x86_64
+defaultPlatform=Linux-${arch}-Clang
 
 case $1 in
   wine)
     cd build
-    ( cd Windows-i686 && make -j4 install DESTDIR=.. )
+    ( cd Windows-${arch} && make -j4 install DESTDIR=.. )
 
     cd OpenZone-*
 
     shift
-    exec wine bin/Windows-i686/openzone.exe -p . $@
+    exec wine bin/Windows-${arch}/openzone.exe -p . $@
     ;;
   *)
     exec ./build/$defaultPlatform/src/tools/openzone -p . $@
