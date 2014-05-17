@@ -101,7 +101,7 @@ void BSP::load()
     OZ_ERROR( "Not a Quake 3 BSP format" );
   }
 
-  DArray<QBSPLump> lumps( QBSPLump::MAX );
+  List<QBSPLump> lumps( QBSPLump::MAX );
   for( int i = 0; i < QBSPLump::MAX; ++i ) {
     lumps[i].offset = is.readInt();
     lumps[i].length = is.readInt();

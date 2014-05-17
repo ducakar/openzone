@@ -5,7 +5,6 @@ add_library( ozCore
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   Alloc.hh
-  Array.hh
   arrays.hh
   Bitset.hh
   Buffer.hh
@@ -13,7 +12,6 @@ add_library( ozCore
   Chain.hh
   clearmacros.hh
   common.hh
-  DArray.hh
   DChain.hh
   Endian.hh
   EnumMap.hh

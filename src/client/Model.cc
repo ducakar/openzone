@@ -641,8 +641,11 @@ void Model::unload()
   }
 
   nodes.clear();
+  nodes.deallocate();
   meshes.clear();
+  meshes.deallocate();
   textures.clear();
+  textures.deallocate();
 
   if( nFrames != 0 ) {
     if( shader.hasVertexTexture ) {

@@ -124,6 +124,7 @@ private:
 
   using Set<Pair>::data;
   using Set<Pair>::count;
+  using Set<Pair>::size;
   using Set<Pair>::ensureCapacity;
 
 public:
@@ -145,7 +146,6 @@ public:
   using Set<Pair>::resize;
   using Set<Pair>::trim;
   using Set<Pair>::clear;
-  using Set<Pair>::free;
   using Set<Pair>::allocate;
   using Set<Pair>::deallocate;
 
@@ -283,6 +283,17 @@ public:
       insert<Key_, Value_>( i + 1, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       return i + 1;
     }
+  }
+
+  /**
+   * Delete all objects referenced by elements (must be pointers) and clear the list.
+   */
+  void free()
+  {
+    for( int i = 0; i < count; ++i ) {
+      delete data[i].value;
+    }
+    count = 0;
   }
 
 };

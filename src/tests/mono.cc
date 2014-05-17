@@ -35,7 +35,7 @@ static MonoDomain*   monoDomain;
 static MonoAssembly* monoAssembly;
 
 struct Object;
-static DArray<Object> objects( 100 );
+static List<Object> objects( 100 );
 
 struct Object
 {

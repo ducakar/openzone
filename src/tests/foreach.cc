@@ -43,7 +43,6 @@ int main()
 {
   Chain<Elem, 0> l;
   DChain<Elem, 0> dl;
-  Array<int, 5> a;
   List<int> v;
   SList<int, 5> sv;
   Set<int> s;
@@ -53,7 +52,6 @@ int main()
 
   Chain<Elem, 0> l1;
   DChain<Elem, 0> dl1;
-  Array<int, 5> a1;
   List<int> v1;
   SList<int, 5> sv1;
   Set<int> s1;
@@ -64,7 +62,6 @@ int main()
   // 1
   l.add( new Elem( 1 ) );
   dl.add( new Elem( 1 ) );
-  a[0] = 1;
   v.add( 1 );
   sv.add( 1 );
   s.include( 1 );
@@ -75,7 +72,6 @@ int main()
   // 2
   l.add( new Elem( 2 ) );
   dl.add( new Elem( 2 ) );
-  a[1] = 2;
   v.add( 2 );
   sv.add( 2 );
   s.include( 2 );
@@ -86,7 +82,6 @@ int main()
   // 4
   l.add( new Elem( 4 ) );
   dl.add( new Elem( 4 ) );
-  a[2] = 4;
   v.add( 4 );
   sv.add( 4 );
   s.include( 4 );
@@ -97,7 +92,6 @@ int main()
   // 3
   l.add( new Elem( 3 ) );
   dl.add( new Elem( 3 ) );
-  a[3] = 3;
   v.add( 3 );
   sv.add( 3 );
   s.include( 3 );
@@ -108,7 +102,6 @@ int main()
   // 5
   l.add( new Elem( 5 ) );
   dl.add( new Elem( 5 ) );
-  a[4] = 5;
   v.add( 5 );
   sv.add( 5 );
   s.include( 5 );
@@ -118,7 +111,6 @@ int main()
 
   swap( l, l1 );
   swap( dl, dl1 );
-  swap( a, a1 );
   swap( v, v1 );
   swap( sv, sv1 );
   swap( s, s1 );
@@ -128,7 +120,6 @@ int main()
 
   swap( l, l1 );
   swap( dl, dl1 );
-  swap( a, a1 );
   swap( v, v1 );
   swap( sv, sv1 );
   swap( s, s1 );
@@ -149,11 +140,6 @@ int main()
 
   for( const Elem& i : dl ) {
     printf( "%d ", i.value );
-  }
-  printf( "\n" );
-
-  for( int i : a ) {
-    printf( "%d ", i );
   }
   printf( "\n" );
 

@@ -144,15 +144,14 @@ CreditsMenu::CreditsMenu() :
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
   add( backButton, -20, 20 );
 
-  File creditsDir = "@credits";
-  DArray<File> creditsFiles = creditsDir.ls();
-
   lines.add( "OpenZone " OZ_VERSION );
   lines.add( "" );
   lines.add( OZ_GETTEXT( "engine developer" ) );
   lines.add( "Davorin Učakar" );
 
-  for( const File& creditsFile : creditsFiles ) {
+  File creditsDir = "@credits";
+
+  for( const File& creditsFile : creditsDir.ls() ) {
     InputStream is = creditsFile.inputStream();
 
     if( !is.isAvailable() ) {
@@ -176,7 +175,7 @@ CreditsMenu::CreditsMenu() :
     }
     contents = lingua.get( contents );
 
-    DArray<String> fileLines = contents.split( '\n' );
+    List<String> fileLines = contents.split( '\n' );
     lines.takeAll( fileLines.begin(), fileLines.length() );
 
     if( !lines.isEmpty() && lines.last().isEmpty() ) {

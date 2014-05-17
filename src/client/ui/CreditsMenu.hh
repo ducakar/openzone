@@ -37,12 +37,12 @@ class CreditsMenu : public Area
 {
 private:
 
-  List<String>  lines;
-  DArray<Label> labels;
-  const int     stride;
-  int           scroll;
-  int           bias;
-  int           direction;
+  List<String> lines;
+  List<Label>  labels;
+  const int    stride;
+  int          scroll;
+  int          bias;
+  int          direction;
 
 protected:
 

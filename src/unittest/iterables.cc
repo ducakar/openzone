@@ -36,10 +36,6 @@ void test_iterables()
   Chain<Foo>::Iterator         il;
   DChain<Foo>::CIterator       icdl;
   DChain<Foo>::Iterator        idl;
-  Array<Foo, 1>::CIterator     ica;
-  Array<Foo, 1>::Iterator      ia;
-  DArray<Foo>::CIterator       icda;
-  DArray<Foo>::Iterator        ida;
   List<Foo>::CIterator         icv;
   List<Foo>::Iterator          iv;
   SList<Foo, 1>::CIterator     icsv;
@@ -176,6 +172,7 @@ void test_iterables()
 
   iFree( pv.iter() );
   iFree( invalid );
+  iFill( pv.iter(), nullptr );
   OZ_CHECK_CONTENTS( pv, nullptr, nullptr );
 
   l.free();

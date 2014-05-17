@@ -181,9 +181,8 @@ MissionMenu::MissionMenu() :
   add( backButton, -20, 20 );
 
   File missionRootDir = "@mission";
-  DArray<File> missionDirs = missionRootDir.ls();
 
-  for( const File& missionDir : missionDirs ) {
+  for( const File& missionDir : missionRootDir.ls() ) {
     File descriptionFile = missionDir.path() + "/description.json";
 
     JSON descriptionConfig;

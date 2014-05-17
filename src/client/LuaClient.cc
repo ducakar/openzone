@@ -100,7 +100,7 @@ void LuaClient::create( const char* mission_ )
   Log::indent();
 
   File missionDir = "@mission/" + cs.mission;
-  DArray<File> files = missionDir.ls();
+  List<File> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
     OZ_ERROR( "Mission directory '%s' does not exist", missionDir.path().cstr() );

@@ -360,7 +360,7 @@ static void writePOT( const HashMap<String, String>* hs, const char* filePath )
       os.writeLine( String::str( "msgid \"%s\"", s.cstr() ) );
     }
     else {
-      DArray<String> stringLines = s.split( '\n' );
+      List<String> stringLines = s.split( '\n' );
 
       os.writeLine( "msgid \"\"" );
 
@@ -421,10 +421,10 @@ int main( int argc, char** argv )
   File luaNirvanaDir = pkgDir + "/lua/nirvana";
   File luaClientDir  = pkgDir + "/lua/client";
 
-  DArray<File> luaCommonFiles  = luaCommonDir.ls();
-  DArray<File> luaMatrixFiles  = luaMatrixDir.ls();
-  DArray<File> luaNirvanaFiles = luaNirvanaDir.ls();
-  DArray<File> luaClientFiles  = luaClientDir.ls();
+  List<File> luaCommonFiles  = luaCommonDir.ls();
+  List<File> luaMatrixFiles  = luaMatrixDir.ls();
+  List<File> luaNirvanaFiles = luaNirvanaDir.ls();
+  List<File> luaClientFiles  = luaClientDir.ls();
 
   List<File> luaFiles;
   luaFiles.addAll( luaCommonFiles.begin(), luaCommonFiles.length() );

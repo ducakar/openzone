@@ -42,25 +42,25 @@ public:
     String path;
   };
 
-  DArray<Resource> shaders;
-  DArray<Resource> textures;
-  DArray<Resource> sounds;
-  DArray<Resource> caela;
-  DArray<Resource> terrae;
-  DArray<Resource> parts;
-  DArray<Resource> models;
-  DArray<Resource> nameLists;
-  DArray<Resource> minds;
-  DArray<Resource> musicTracks;
+  List<Resource> shaders;
+  List<Resource> textures;
+  List<Resource> sounds;
+  List<Resource> caela;
+  List<Resource> terrae;
+  List<Resource> parts;
+  List<Resource> models;
+  List<Resource> nameLists;
+  List<Resource> minds;
+  List<Resource> musicTracks;
 
-  int              nBSPs;
-  int              nFragPools;
-  int              nDeviceClasses;
-  int              nImagoClasses;
-  int              nAudioClasses;
+  int            nBSPs;
+  int            nFragPools;
+  int            nDeviceClasses;
+  int            nImagoClasses;
+  int            nAudioClasses;
 
-  bool             mapMP3s;
-  bool             mapAACs;
+  bool           mapMP3s;
+  bool           mapAACs;
 
   const BSP*         bsp( const char* name ) const;
   const ObjectClass* objClass( const char* name ) const;
@@ -98,7 +98,7 @@ private:
   void initFragPools();
   void initClasses();
   void initBSPs();
-  void initMusicRecurse( const char* path, List<Resource>* musicTracksList );
+  void initMusicRecurse( const char* path );
   void initMusic( const char* userMusicPath );
 
 public:

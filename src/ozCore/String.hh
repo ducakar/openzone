@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "DArray.hh"
+#include "List.hh"
 
 namespace oz
 {
@@ -195,7 +195,7 @@ public:
    * Empty strings between two immediate delimiter occurrences or between a delimiter and
    * beginning/end of the original string are included.
    */
-  static DArray<String> split( const char* s, char delimiter );
+  static List<String> split( const char* s, char delimiter );
 
   /**
    * True iff file path is empty (i.e. an empty string or "@").
@@ -816,7 +816,7 @@ public:
    * Empty strings between two immediate delimiter occurrences or between a delimiter and
    * beginning/end of the original string are included.
    */
-  DArray<String> split( char delimiter ) const;
+  List<String> split( char delimiter ) const;
 
   /**
    * True iff file path is empty (i.e. an empty string or "@").

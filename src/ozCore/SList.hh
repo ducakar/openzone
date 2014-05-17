@@ -40,7 +40,7 @@ namespace oz
  * slightly better performance and simplifies implementation. However, on element removal its
  * destruction is still guaranteed.
  *
- * @sa `oz::List`, `oz::Array`
+ * @sa `oz::List`
  */
 template <typename Elem, int SIZE>
 class SList

@@ -265,22 +265,12 @@ File::File( const String& path, File::Type type, int size, long64 time ) :
 File::File( const char* path ) :
   filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {
-  // Avoid stat'ing obviously non-existent files.
-  if( filePath.isEmpty() ) {
-    return;
-  }
-
   stat();
 }
 
 File::File( const String& path ) :
   filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {
-  // Avoid stat'ing obviously non-existent files.
-  if( filePath.isEmpty() ) {
-    return;
-  }
-
   stat();
 }
 
@@ -349,15 +339,7 @@ File& File::operator = ( const char* path )
   unmap();
 
   filePath = path;
-
-  if( filePath.isEmpty() ) {
-    fileType = MISSING;
-    fileSize = -1;
-    fileTime = 0;
-  }
-  else {
-    stat();
-  }
+  stat();
 
   return *this;
 }
@@ -367,15 +349,7 @@ File& File::operator = ( const String& path )
   unmap();
 
   filePath = path;
-
-  if( filePath.isEmpty() ) {
-    fileType = MISSING;
-    fileSize = -1;
-    fileTime = 0;
-  }
-  else {
-    stat();
-  }
+  stat();
 
   return *this;
 }
@@ -389,33 +363,34 @@ bool File::stat()
     return true;
   }
 
+  fileType = MISSING;
+  fileSize = -1;
+  fileTime = 0;
+
   if( filePath.fileIsVirtual() ) {
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 
-    if( !PHYSFS_exists( &filePath[1] ) ) {
-      fileType = MISSING;
-      fileSize = -1;
-      fileTime = 0;
-    }
-    else if( PHYSFS_isDirectory( &filePath[1] ) ) {
-      fileType = DIRECTORY;
-      fileSize = -1;
-      fileTime = PHYSFS_getLastModTime( &filePath[1] );
-    }
-    else {
-      PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
-
-      if( file == nullptr ) {
-        fileType = MISSING;
+    if( PHYSFS_exists( &filePath[1] ) ) {
+      if( PHYSFS_isDirectory( &filePath[1] ) ) {
+        fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = 0;
+        fileTime = PHYSFS_getLastModTime( &filePath[1] );
       }
       else {
-        fileType = REGULAR;
-        fileSize = int( PHYSFS_fileLength( file ) );
-        fileTime = PHYSFS_getLastModTime( &filePath[1] );
+        PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
 
-        PHYSFS_close( file );
+        if( file == nullptr ) {
+          fileType = MISSING;
+          fileSize = -1;
+          fileTime = 0;
+        }
+        else {
+          fileType = REGULAR;
+          fileSize = int( PHYSFS_fileLength( file ) );
+          fileTime = PHYSFS_getLastModTime( &filePath[1] );
+
+          PHYSFS_close( file );
+        }
       }
     }
 
@@ -423,34 +398,22 @@ bool File::stat()
 
     PHYSFS_Stat info;
 
-    if( !PHYSFS_stat( &filePath[1], &info ) ) {
-      fileType = MISSING;
-      fileSize = -1;
-      fileTime = 0;
-    }
-    else if( info.filetype == PHYSFS_FILETYPE_DIRECTORY ) {
-      fileType = DIRECTORY;
-      fileSize = -1;
-      fileTime = max( info.createtime, info.modtime );
-    }
-    else if( info.filetype == PHYSFS_FILETYPE_REGULAR ) {
-      fileType = REGULAR;
-      fileSize = int( info.filesize );
-      fileTime = max( info.createtime, info.modtime );
-    }
-    else {
-      fileType = MISSING;
-      fileSize = -1;
-      fileTime = 0;
+    if( PHYSFS_stat( &filePath[1], &info ) ) {
+      if( info.filetype == PHYSFS_FILETYPE_DIRECTORY ) {
+        fileType = DIRECTORY;
+        fileSize = -1;
+        fileTime = max( info.createtime, info.modtime );
+      }
+      else if( info.filetype == PHYSFS_FILETYPE_REGULAR ) {
+        fileType = REGULAR;
+        fileSize = int( info.filesize );
+        fileTime = max( info.createtime, info.modtime );
+      }
     }
 
 #endif
   }
-  else {
-    fileType = MISSING;
-    fileSize = -1;
-    fileTime = 0;
-
+  else if( !filePath.isEmpty() ) {
 #if defined( __native_client__ )
 
     if( String::equals( filePath, "/" ) ) {
@@ -903,48 +866,32 @@ InputStream File::inputStream( Endian::Order order ) const
   return InputStream( data, data + fileSize, order );
 }
 
-DArray<File> File::ls() const
+List<File> File::ls() const
 {
-  DArray<File> array;
+  List<File> list;
 
   if( fileType != DIRECTORY ) {
-    return array;
+    return list;
   }
 
   if( filePath.fileIsVirtual() ) {
-    char** list = PHYSFS_enumerateFiles( &filePath[1] );
-    if( list == nullptr ) {
-      return array;
+    char** entities = PHYSFS_enumerateFiles( &filePath[1] );
+    if( entities == nullptr ) {
+      return list;
     }
 
+    String prefix = filePath.length() == 1 || filePath.last() == '/' ? filePath : filePath + "/";
+
     // Count entries first.
-    int count = 0;
-    char** entity = list;
+    char** entity = entities;
     while( *entity != nullptr ) {
       if( ( *entity )[0] != '.' ) {
-        ++count;
+        list.add( prefix + *entity );
       }
       ++entity;
     }
 
-    if( count == 0 ) {
-      PHYSFS_freeList( list );
-      return array;
-    }
-
-    array.resize( count );
-
-    String prefix = filePath[1] == '\0' ? filePath : filePath + "/";
-
-    entity = list;
-    for( int i = 0; i < count; ++entity ) {
-      if( ( *entity )[0] != '.' ) {
-        array[i] = File( prefix + *entity );
-        ++i;
-      }
-    }
-
-    PHYSFS_freeList( list );
+    PHYSFS_freeList( entities );
   }
   else {
 #if defined( __native_client__ )
@@ -960,31 +907,13 @@ DArray<File> File::ls() const
     file.ReadDirectoryEntries( callback );
     EntryList& entries = entryStorage.output();
 
-    // Count entries first.
-    int count = 0;
+    String prefix = filePath.last() == '/' ? filePath : filePath + "/";
+
     for( size_t i = 0; i < entries.size(); ++i ) {
       std::string entryName = entries[i].file_ref().GetName().AsString();
 
       if( entryName[0] != '.' ) {
-        ++count;
-      }
-    }
-
-    if( count == 0 ) {
-      return array;
-    }
-
-    array.resize( count );
-
-    String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
-
-    int j = 0;
-    for( size_t i = 0; i < entries.size(); ++i ) {
-      std::string entryName = entries[i].file_ref().GetName().AsString();
-
-      if( entryName[0] != '.' ) {
-        array[j] = File( prefix + entryName.c_str() );
-        ++j;
+        list.add( prefix + entryName.c_str() );
       }
     }
 
@@ -994,47 +923,14 @@ DArray<File> File::ls() const
 
     HANDLE dir = FindFirstFile( filePath + "\\*.*", &entity );
     if( dir == nullptr ) {
-      return array;
+      return list;
     }
 
-    // Count entries first.
-    int count = 0;
+    String prefix = filePath.last() == '/' || filePath.last() == '\\' ? filePath : filePath + "/";
+
     while( FindNextFile( dir, &entity ) ) {
       if( entity.cFileName[0] != '.' ) {
-        ++count;
-      }
-    }
-
-    CloseHandle( dir );
-
-    if( count == 0 ) {
-      return array;
-    }
-
-    dir = FindFirstFile( filePath + "\\*.*", &entity );
-    if( dir == nullptr ) {
-      return array;
-    }
-
-    array.resize( count );
-
-    int i = 0;
-
-    if( entity.cFileName[i] != '.' ) {
-      array[i].filePath = filePath + "/" + entity.cFileName;
-      ++i;
-    }
-
-    while( i < count ) {
-      if( FindNextFile( dir, &entity ) == 0 ) {
-        CloseHandle( dir );
-        array.clear();
-        return array;
-      }
-
-      if( entity.cFileName[0] != '.' ) {
-        array[i] = File( filePath + "/" + entity.cFileName );
-        ++i;
+        list.add( prefix + entity.cFileName );
       }
     }
 
@@ -1044,47 +940,21 @@ DArray<File> File::ls() const
 
     DIR* directory = opendir( filePath );
     if( directory == nullptr ) {
-      return array;
+      return list;
     }
 
     char    entityBuffer[ offsetof( dirent, d_name ) + NAME_MAX + 1 ];
     dirent* entityData = reinterpret_cast<dirent*>( entityBuffer );
     dirent* entity;
+    String  prefix = filePath.last() == '/' ? filePath : filePath + "/";
 
     readdir_r( directory, entityData, &entity );
 
-    // Count entries first.
-    int count = 0;
     while( entity != nullptr ) {
       if( entity->d_name[0] != '.' ) {
-        ++count;
+        list.add( prefix + entity->d_name );
       }
       readdir_r( directory, entityData, &entity );
-    }
-
-    if( count == 0 ) {
-      closedir( directory );
-      return array;
-    }
-
-    rewinddir( directory );
-    array.resize( count );
-
-    String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
-
-    for( int i = 0; i < count; ) {
-      readdir_r( directory, entityData, &entity );
-
-      if( entity == nullptr ) {
-        closedir( directory );
-        array.clear();
-        return array;
-      }
-
-      if( entity->d_name[0] != '.' ) {
-        array[i] = File( prefix + entity->d_name );
-        ++i;
-      }
     }
 
     closedir( directory );
@@ -1092,8 +962,8 @@ DArray<File> File::ls() const
 #endif
   }
 
-  array.sort();
-  return array;
+  list.sort();
+  return list;
 }
 
 String File::cwd()

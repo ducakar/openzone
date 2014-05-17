@@ -84,7 +84,7 @@ void Builder::copyFiles( const File& srcDir, const File& destDir, const char* ex
 {
   String sSrcDir = srcDir.path();
   String sDestDir = destDir.path();
-  DArray<File> dirList = srcDir.ls();
+  List<File> dirList = srcDir.ls();
 
   if( dirList.isEmpty() ) {
     return;
@@ -367,7 +367,7 @@ void Builder::buildModels()
   Log::indent();
 
   File mdlDir = "@mdl";
-  DArray<File> dirList = mdlDir.ls();
+  List<File> dirList = mdlDir.ls();
 
   if( !dirList.isEmpty() ) {
     File::mkdir( "mdl" );
@@ -573,7 +573,7 @@ void Builder::buildMissions()
   Log::indent();
 
   File missionsDir = "@mission";
-  DArray<File> missions = missionsDir.ls();
+  List<File> missions = missionsDir.ls();
 
   if( !missions.isEmpty() ) {
     File::mkdir( "mission" );

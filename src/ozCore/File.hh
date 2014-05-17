@@ -368,7 +368,7 @@ public:
    *
    * Directory listing is not supported on NaCl, so this function always returns an empty list.
    */
-  DArray<File> ls() const;
+  List<File> ls() const;
 
   /**
    * Return the current directory in native file system.

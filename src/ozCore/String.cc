@@ -210,36 +210,23 @@ String String::trim( const char* s )
   return String( start, int( end - start ) );
 }
 
-DArray<String> String::split( const char* s, char delimiter )
+List<String> String::split( const char* s, char delimiter )
 {
-  int count       = length( s );
-  int nPartitions = 1;
-  int begin       = 0;
-  int end         = index( s, delimiter );
+  List<String> list;
+
+  int begin = 0;
+  int end   = index( s, delimiter );
 
   // Count substrings first.
   while( end >= 0 ) {
-    ++nPartitions;
+    list.add( substring( s, begin, end ) );
 
     begin = end + 1;
     end   = index( s, delimiter, begin );
   }
+  list.add( substring( s, begin ) );
 
-  DArray<String> array( nPartitions );
-
-  begin = 0;
-  end   = index( s, delimiter );
-
-  for( int i = 0; end >= 0; ) {
-    array[i] = substring( s, begin, end );
-    ++i;
-
-    begin = end + 1;
-    end   = index( s, delimiter, begin );
-  }
-  array[nPartitions - 1] = substring( s, begin, count );
-
-  return array;
+  return list;
 }
 
 String String::fileDirectory( const char* s )
@@ -951,35 +938,23 @@ String String::replace( char whatChar, char withChar ) const
   return r;
 }
 
-DArray<String> String::split( char delimiter ) const
+List<String> String::split( char delimiter ) const
 {
-  int nPartitions = 1;
-  int begin       = 0;
-  int end         = index( buffer, delimiter );
+  List<String> list;
+
+  int begin = 0;
+  int end   = index( buffer, delimiter );
 
   // Count substrings first.
   while( end >= 0 ) {
-    ++nPartitions;
+    list.add( substring( begin, end ) );
 
     begin = end + 1;
     end   = index( delimiter, begin );
   }
+  list.add( substring( begin ) );
 
-  DArray<String> array( nPartitions );
-
-  begin = 0;
-  end   = index( buffer, delimiter );
-
-  for( int i = 0; end >= 0; ) {
-    array[i] = substring( begin, end );
-    ++i;
-
-    begin = end + 1;
-    end   = index( delimiter, begin );
-  }
-  array[nPartitions - 1] = substring( begin );
-
-  return array;
+  return list;
 }
 
 String String::fileDirectory() const

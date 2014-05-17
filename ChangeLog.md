@@ -9,10 +9,11 @@
         + improved iterators: much less code duplication, no more key() and value() members
         + STL-like parameter order in container functions (iCopy/aCopy, aFill, aIndex ...)
         + STL-like begin() and end() members on containers and iterators
+        + removed Array and DArray template classes
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
-        + more inheritance between classes for less duplication (e.g. DArray -> List -> Set -> Map)
+        + more inheritance between classes for less duplication (e.g. List -> Set -> Map)
     * new PoolAlloc class, non-template version of Pool which now extends PoolAlloc
     * String: construction from numbers, new number parsing functions
     * exact SLERP implementation in Quat

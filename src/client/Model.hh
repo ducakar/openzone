@@ -153,10 +153,10 @@ private:
   int                     shaderId;
   uint                    animationTexId;
 
-  DArray<Texture>         textures;
-  DArray<Mesh>            meshes;
-  DArray<Light>           lights;
-  DArray<Node>            nodes;
+  List<Texture>           textures;
+  List<Mesh>              meshes;
+  List<Light>             lights;
+  List<Node>              nodes;
 
   int                     nTextures;
   int                     nVertices;

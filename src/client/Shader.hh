@@ -166,7 +166,7 @@ private:
 
   Map<String, uint> vertShaders;
   Map<String, uint> fragShaders;
-  DArray<Program>   programs;
+  List<Program>     programs;
   SList<int, 8>     programStack;
 
   float             lightingDistance;

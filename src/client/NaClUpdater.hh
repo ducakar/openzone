@@ -42,17 +42,17 @@ private:
     long64 time;
   };
 
-  DArray<Package> localPackages;
-  DArray<Package> remotePackages;
+  List<Package> localPackages;
+  List<Package> remotePackages;
 
-  DArray<Package> readManifest( InputStream* is ) const;
+  List<Package> readManifest( InputStream* is ) const;
   void writeLocalManifest() const;
   bool checkUpdates();
   void downloadUpdates();
 
 public:
 
-  DArray<String> update();
+  List<String> update();
 
 };
 

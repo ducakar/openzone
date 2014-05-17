@@ -152,8 +152,8 @@ struct Node
 
 Pool<Node>                Node::pool;
 
-static DArray<Point>      positions;
-static DArray<Vec3>       normals;
+static List<Point>        positions;
+static List<Vec3>         normals;
 static List<Vertex>       vertices;
 static List<Mesh>         meshes;
 static List<Light>        lights;
@@ -232,11 +232,17 @@ void Compiler::beginModel()
   hard_assert( environment == NONE );
 
   positions.clear();
+  positions.deallocate();
   normals.clear();
+  normals.deallocate();
   vertices.clear();
+  vertices.deallocate();
   meshes.clear();
+  meshes.deallocate();
   lights.clear();
+  lights.deallocate();
   nodes.clear();
+  nodes.deallocate();
   root.children.free();
 
   bounds.mins          = Point( +Math::INF, +Math::INF, +Math::INF );
@@ -793,7 +799,10 @@ void Compiler::init()
 void Compiler::destroy()
 {
   positions.clear();
+  positions.deallocate();
+
   normals.clear();
+  normals.deallocate();
 
   vertices.clear();
   vertices.deallocate();

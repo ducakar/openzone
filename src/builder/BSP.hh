@@ -272,17 +272,17 @@ private:
   float                life;
   float                resistance;
 
-  DArray<Texture>      textures;
+  List<Texture>        textures;
   List<Plane>          planes;
   List<oz::BSP::Node>  nodes;
   List<oz::BSP::Leaf>  leaves;
   List<int>            leafBrushes;
   List<oz::BSP::Brush> brushes;
   List<int>            brushSides;
-  DArray<Model>        models;
-  DArray<ModelFaces>   modelFaces;
-  DArray<QBSPVertex>   vertices;
-  DArray<int>          indices;
+  List<Model>          models;
+  List<ModelFaces>     modelFaces;
+  List<QBSPVertex>     vertices;
+  List<int>            indices;
   List<Face>           faces;
 
   String               fragPool;

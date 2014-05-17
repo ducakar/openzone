@@ -36,9 +36,9 @@ static const char MANIFEST_MAGIC[]  = "ozManifest";
 static const char REMOTE_MANIFEST[] = "packages.ozManifest";
 static const char LOCAL_MANIFEST[]  = "/data/openzone/packages.ozManifest";
 
-DArray<NaClUpdater::Package> NaClUpdater::readManifest( InputStream* is ) const
+List<NaClUpdater::Package> NaClUpdater::readManifest( InputStream* is ) const
 {
-  DArray<Package> packages;
+  List<Package> packages;
 
   if( is->available() < int( sizeof( MANIFEST_MAGIC ) ) ||
       !String::beginsWith( is->begin(), MANIFEST_MAGIC ) )
@@ -222,9 +222,9 @@ void NaClUpdater::downloadUpdates()
   writeLocalManifest();
 }
 
-DArray<String> NaClUpdater::update()
+List<String> NaClUpdater::update()
 {
-  DArray<String> packages;
+  List<String> packages;
 
   Log::println( "Updating game data files {" );
   Log::indent();
@@ -234,10 +234,8 @@ DArray<String> NaClUpdater::update()
   if( checkUpdates() ) {
     downloadUpdates();
 
-    packages.resize( remotePackages.length() );
-
-    for( int i = 0; i < packages.length(); ++i ) {
-      packages[i] = static_cast<String&&>( remotePackages[i].name );
+    for( Package& removePkg : remotePackages ) {
+      packages.add( static_cast<String&&>( removePkg.name ) );
     }
   }
 

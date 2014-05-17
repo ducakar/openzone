@@ -66,6 +66,7 @@ protected:
 
   using List<Elem>::data;
   using List<Elem>::count;
+  using List<Elem>::size;
   using List<Elem>::ensureCapacity;
 
 public:
@@ -85,7 +86,6 @@ public:
   using List<Elem>::resize;
   using List<Elem>::trim;
   using List<Elem>::clear;
-  using List<Elem>::free;
   using List<Elem>::allocate;
   using List<Elem>::deallocate;
 

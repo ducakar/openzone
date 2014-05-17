@@ -149,26 +149,16 @@ const char* Gettext::get( const char* message ) const
   return message;
 }
 
-DArray<const char*> Gettext::catalogueDescriptions() const
+List<const char*> Gettext::catalogueDescriptions() const
 {
-  int nCatalogues = 0;
-
-  // Count catalogues by counting empty string translations that are used to store catalogue info.
-  for( int i = 0; i < nMessages; ++i ) {
-    if( String::isEmpty( strings + messages[i].original ) ) {
-      ++nCatalogues;
-    }
-  }
-
-  DArray<const char*> descriptions( nCatalogues );
+  List<const char*> descriptions;
 
   for( int i = 0, j = 0; i < nMessages; ++i ) {
     if( String::isEmpty( strings + messages[i].original ) ) {
-      descriptions[j] = strings + messages[i].translation;
+      descriptions.add( strings + messages[i].translation );
       ++j;
     }
   }
-
   return descriptions;
 }
 

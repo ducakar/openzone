@@ -28,8 +28,8 @@
 
 #pragma once
 
+#include "arrays.hh"
 #include "System.hh"
-#include "DArray.hh"
 
 namespace oz
 {
@@ -43,10 +43,10 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  *
- * @sa `oz::SList`, `oz::DArray`
+ * @sa `oz::SList`
  */
 template <typename Elem>
-class List : protected DArray<Elem>
+class List
 {
 protected:
 
@@ -58,19 +58,18 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef typename DArray<Elem>::CIterator CIterator;
+  typedef ArrayIterator<const Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef typename DArray<Elem>::Iterator Iterator;
+  typedef ArrayIterator<Elem> Iterator;
 
 protected:
 
-  using DArray<Elem>::data;
-  using DArray<Elem>::count;
-
-  int size; ///< Capacity, number of elements in storage.
+  Elem* data;  ///< %Array of elements.
+  int   count; ///< Number of elements.
+  int   size;  ///< Capacity, number of elements in storage.
 
 protected:
 
@@ -103,24 +102,48 @@ public:
    * Create an empty list.
    */
   List() :
-    size( 0 )
+    data( nullptr ), count( 0 ), size( 0 )
   {}
+
+  /**
+   * Create a list with a given initial length.
+   */
+  explicit List( int count_ ) :
+    data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ ), size( count_ )
+  {}
+
+  /**
+   * Initialise from a C++ array.
+   */
+  explicit List( const Elem* array, int count_ ) :
+    data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ ), size( count_ )
+  {
+    aCopy<Elem>( array, count, data );
+  }
 
   /**
    * Initialise from an initialiser list.
    */
   List( InitialiserList<Elem> l ) :
-    DArray<Elem>( l ), size( int( l.size() ) )
-  {}
+    data( new Elem[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
+  {
+    aCopy<Elem>( l.begin(), int( l.size() ), data );
+  }
+
+  /**
+   * Destructor.
+   */
+  ~List()
+  {
+    delete[] data;
+  }
 
   /**
    * Copy constructor, copies elements.
    */
   List( const List& l ) :
-    DArray<Elem>( l.size ), size( l.size )
+    data( l.count == 0 ? nullptr : new Elem[l.count] ), count( l.count ), size( l.size )
   {
-    count = l.count;
-
     aCopy<Elem>( l.data, l.count, data );
   }
 
@@ -128,9 +151,11 @@ public:
    * Move constructor, moves element storage.
    */
   List( List&& l ) :
-    DArray<Elem>( static_cast<List&&>( l ) ), size( l.size )
+    data( l.data ), count( l.count ), size( l.size )
   {
-    l.size = 0;
+    l.data  = nullptr;
+    l.count = 0;
+    l.size  = 0;
   }
 
   /**
@@ -184,7 +209,7 @@ public:
    */
   bool operator == ( const List& l ) const
   {
-    return DArray<Elem>::operator == ( l );
+    return count == l.count && aEquals<Elem>( data, count, l.data );
   }
 
   /**
@@ -192,23 +217,80 @@ public:
    */
   bool operator != ( const List& l ) const
   {
-    return DArray<Elem>::operator != ( l );
+    return !operator == ( l );
   }
 
-  using DArray<Elem>::citer;
-  using DArray<Elem>::iter;
-  using DArray<Elem>::begin;
-  using DArray<Elem>::end;
-  using DArray<Elem>::length;
-  using DArray<Elem>::isEmpty;
-  using DArray<Elem>::operator [];
-  using DArray<Elem>::first;
-  using DArray<Elem>::last;
-  using DArray<Elem>::contains;
-  using DArray<Elem>::index;
-  using DArray<Elem>::lastIndex;
-  using DArray<Elem>::reverse;
-  using DArray<Elem>::sort;
+  /**
+   * %Iterator with constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator citer() const
+  {
+    return CIterator( data, data + count );
+  }
+
+  /**
+   * %Iterator with non-constant access, initially points to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator iter()
+  {
+    return Iterator( data, data + count );
+  }
+
+  /**
+   * STL-style constant begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* begin() const
+  {
+    return data;
+  }
+
+  /**
+   * STL-style begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* begin()
+  {
+    return data;
+  }
+
+  /**
+   * STL-style constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* end() const
+  {
+    return data + count;
+  }
+
+  /**
+   * STL-style end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* end()
+  {
+    return data + count;
+  }
+
+  /**
+   * Number of elements.
+   */
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return count;
+  }
+
+  /**
+   * True iff empty (no storage is allocated).
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
+  {
+    return count == 0;
+  }
 
   /**
    * Number of allocated elements.
@@ -217,6 +299,99 @@ public:
   int capacity() const
   {
     return size;
+  }
+
+  /**
+   * Constant reference to the `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& operator [] ( int i ) const
+  {
+    hard_assert( uint( i ) < uint( count ) );
+
+    return data[i];
+  }
+
+  /**
+   * Reference to the `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& operator [] ( int i )
+  {
+    hard_assert( uint( i ) < uint( count ) );
+
+    return data[i];
+  }
+
+  /**
+   * Constant reference to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& first() const
+  {
+    hard_assert( count != 0 );
+
+    return data[0];
+  }
+
+  /**
+   * Reference to the first element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& first()
+  {
+    hard_assert( count != 0 );
+
+    return data[0];
+  }
+
+  /**
+   * Constant reference to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem& last() const
+  {
+    hard_assert( count != 0 );
+
+    return data[count - 1];
+  }
+
+  /**
+   * Reference to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& last()
+  {
+    hard_assert( count != 0 );
+
+    return data[count - 1];
+  }
+
+  /**
+   * True iff a given value is found in the array.
+   */
+  template <typename Elem_ = Elem>
+  bool contains( const Elem_& elem ) const
+  {
+    return aContains<Elem, Elem_>( data, count, elem );
+  }
+
+  /**
+   * Index of the first occurrence of the value or -1 if not found.
+   */
+  template <typename Elem_ = Elem>
+  int index( const Elem_& elem ) const
+  {
+    return aIndex<Elem, Elem_>( data, count, elem );
+  }
+
+  /**
+   * Index of the last occurrence of the value or -1 if not found.
+   */
+  template <typename Elem_ = Elem>
+  int lastIndex( const Elem_& elem ) const
+  {
+    return aLastIndex<Elem, Elem_>( data, count, elem );
   }
 
   /**
@@ -423,6 +598,22 @@ public:
   }
 
   /**
+   * Reverse elements.
+   */
+  void reverse()
+  {
+    aReverse<Elem>( data, count );
+  }
+
+  /**
+   * Sort elements with quicksort.
+   */
+  void sort()
+  {
+    aSort<Elem>( data, count );
+  }
+
+  /**
    * Resize the list to the specified number of elements.
    */
   void resize( int newCount )
@@ -456,7 +647,9 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    aFill<Elem, Elem>( data, count, Elem() );
+    for( int i = 0; i < count; ++i ) {
+      data[i] = Elem();
+    }
     count = 0;
   }
 

@@ -433,8 +433,7 @@ int Client::init( int argc, char** argv )
   // Clean up after previous versions. Be evil. Delete screenshots.
   File screenshotDir = configDir + "/screenshots";
 
-  DArray<File> screenshotFiles = screenshotDir.ls();
-  for( const File& file : screenshotFiles ) {
+  for( const File& file : screenshotDir.ls() ) {
     File::rm( file.path() );
   }
 
@@ -504,7 +503,7 @@ int Client::init( int argc, char** argv )
   initFlags |= INIT_NETWORK;
 
 #ifdef __native_client__
-  DArray<String> packages = naclUpdater.update();
+  List<String> packages = naclUpdater.update();
 #endif
 
   Log::println( "Content search path {" );

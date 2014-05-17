@@ -282,10 +282,10 @@ void MD2::build( const char* path )
   freeTransf.rotateX( Math::rad( freeRotation.x ) );
   freeTransf.rotateZ( Math::rad( freeRotation.z ) );
 
-  DArray<client::TexCoord> texCoords( header.nTexCoords );
-  DArray<MD2Triangle>      triangles( header.nTriangles );
-  DArray<Vec3>             normals( header.nFrames * header.nFramePositions );
-  DArray<Point>            positions( header.nFrames * header.nFramePositions );
+  List<client::TexCoord> texCoords( header.nTexCoords );
+  List<MD2Triangle>      triangles( header.nTriangles );
+  List<Vec3>             normals( header.nFrames * header.nFramePositions );
+  List<Point>            positions( header.nFrames * header.nFramePositions );
 
   is.rewind();
   is.forward( header.offFrames );
@@ -385,9 +385,13 @@ void MD2::build( const char* path )
   compiler.endModel();
 
   texCoords.clear();
+  texCoords.deallocate();
   triangles.clear();
+  triangles.deallocate();
   normals.clear();
+  normals.deallocate();
   positions.clear();
+  positions.deallocate();
 
   String sDestDir = &sPath[1];
   File::mkdir( sDestDir );

@@ -48,6 +48,9 @@ public:
   const Automaton*        automaton;
   const Automaton::State* state;
 
+  static bool wasBumped( const Bot* botObj );
+  static bool needsUpdate( const Bot* botObj );
+
 public:
 
   explicit Mind();

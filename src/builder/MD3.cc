@@ -182,12 +182,12 @@ void MD3::buildMesh( const char* name, int frame )
 
     String texture;
 
-    DArray<MD3Triangle>      surfaceTriangles( surface.nTriangles );
-    DArray<MD3Shader>        surfaceShaders( surface.nShaders );
-    DArray<client::TexCoord> surfaceTexCoords( surface.nVertices );
-    DArray<MD3Vertex>        surfaceVertices( surface.nFrames * surface.nVertices );
-    DArray<Vec3>             normals( surfaceVertices.length() );
-    DArray<Point>            vertices( surfaceVertices.length() );
+    List<MD3Triangle>      surfaceTriangles( surface.nTriangles );
+    List<MD3Shader>        surfaceShaders( surface.nShaders );
+    List<client::TexCoord> surfaceTexCoords( surface.nVertices );
+    List<MD3Vertex>        surfaceVertices( surface.nFrames * surface.nVertices );
+    List<Vec3>             normals( surfaceVertices.length() );
+    List<Point>            vertices( surfaceVertices.length() );
 
     is.rewind();
     is.forward( surfaceStart + surface.offTriangles );

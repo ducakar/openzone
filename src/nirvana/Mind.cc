@@ -29,6 +29,21 @@
 namespace oz
 {
 
+bool Mind::wasBumped( const Bot* botObj )
+{
+  for( const Object::Event& event : botObj->events ) {
+    if( event.id == Object::EVENT_HIT || event.id == Object::EVENT_DAMAGE ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool Mind::needsUpdate( const Bot* botObj )
+{
+  return !( botObj->state & ( Bot::DEAD_BIT | Bot::PLAYER_BIT ) );
+}
+
 Mind::Mind() :
   flags( 0 ), side( 0 ), bot( 0 ), automaton( nullptr ), state( nullptr )
 {}
@@ -101,7 +116,7 @@ void Mind::update()
 
   Bot* botObj = static_cast<Bot*>( orbis.obj( bot ) );
 
-  if( !botObj->mind.isEmpty() && !( botObj->state & Bot::DEAD_BIT ) ) {
+  if( needsUpdate( botObj ) ) {
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 

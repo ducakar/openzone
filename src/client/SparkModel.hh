@@ -42,8 +42,8 @@ private:
     float lifeTime;
   };
 
-  DArray<Particle>* particles;
-  float             particlesPerTick;
+  List<Particle>* particles;
+  float           particlesPerTick;
 
   void createSpark( int i );
 

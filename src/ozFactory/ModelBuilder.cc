@@ -134,10 +134,10 @@ struct Light
 
 struct Node
 {
-  String      name;
-  Mat4        transf;
-  DArray<int> meshes;
-  DArray<int> children;
+  String    name;
+  Mat4      transf;
+  List<int> meshes;
+  List<int> children;
 };
 
 static List<Vertex>     vertices;

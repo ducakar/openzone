@@ -281,8 +281,6 @@ void Liber::initShaders()
   Log::println( "Shader programs (*.json in 'glsl') {" );
   Log::indent();
 
-  List<Resource> shadersList;
-
   File dir = "@glsl";
 
   for( const File& file : dir.ls() ) {
@@ -294,12 +292,11 @@ void Liber::initShaders()
 
     Log::println( "%s", name.cstr() );
 
-    shaderIndices.add( name, shadersList.length() );
-    shadersList.add( { name, "" } );
+    shaderIndices.add( name, shaders.length() );
+    shaders.add( { name, "" } );
   }
 
-  shaders.resize( shadersList.length() );
-  aMove<Resource>( shadersList.begin(), shadersList.length(), shaders.begin() );
+  shaders.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -309,8 +306,6 @@ void Liber::initTextures()
 {
   Log::println( "Textures (*.dds in 'tex/*') {" );
   Log::indent();
-
-  List<Resource> texturesList;
 
   File dir = "@tex";
 
@@ -330,13 +325,12 @@ void Liber::initTextures()
 
       Log::println( "%s", name.cstr() );
 
-      textureIndices.add( name, texturesList.length() );
-      texturesList.add( { name, "@tex/" + name } );
+      textureIndices.add( name, textures.length() );
+      textures.add( { name, "@tex/" + name } );
     }
   }
 
-  textures.resize( texturesList.length() );
-  aMove<Resource>( texturesList.begin(), texturesList.length(), textures.begin() );
+  textures.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -346,8 +340,6 @@ void Liber::initSounds()
 {
   Log::println( "Sounds (*.wav, *.oga, *.ogg in 'snd') {" );
   Log::indent();
-
-  List<Resource> soundsList;
 
   File dir = "@snd";
 
@@ -367,13 +359,12 @@ void Liber::initSounds()
 
       Log::println( "%s", name.cstr() );
 
-      soundIndices.add( name, soundsList.length() );
-      soundsList.add( { name, file.path() } );
+      soundIndices.add( name, sounds.length() );
+      sounds.add( { name, file.path() } );
     }
   }
 
-  sounds.resize( soundsList.length() );
-  aMove<Resource>( soundsList.begin(), soundsList.length(), sounds.begin() );
+  sounds.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -383,8 +374,6 @@ void Liber::initCaela()
 {
   Log::println( "Caela (directories in 'caelum') {" );
   Log::indent();
-
-  List<Resource> caelaList;
 
   File dir = "@caelum";
 
@@ -397,12 +386,11 @@ void Liber::initCaela()
 
     Log::println( "%s", name.cstr() );
 
-    caelumIndices.add( name, caelaList.length() );
-    caelaList.add( { name, file.path() } );
+    caelumIndices.add( name, caela.length() );
+    caela.add( { name, file.path() } );
   }
 
-  caela.resize( caelaList.length() );
-  aMove<Resource>( caelaList.begin(), caelaList.length(), caela.begin() );
+  caela.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -412,8 +400,6 @@ void Liber::initTerrae()
 {
   Log::println( "Terrae (*.ozTerra, *.ozcTerra in 'terra') {" );
   Log::indent();
-
-  List<Resource> terraeList;
 
   File dir = "@terra";
 
@@ -426,12 +412,11 @@ void Liber::initTerrae()
 
     Log::println( "%s", name.cstr() );
 
-    terraIndices.add( name, terraeList.length() );
-    terraeList.add( { name, file.path() } );
+    terraIndices.add( name, terrae.length() );
+    terrae.add( { name, file.path() } );
   }
 
-  terrae.resize( terraeList.length() );
-  aMove<Resource>( terraeList.begin(), terraeList.length(), terrae.begin() );
+  terrae.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -441,8 +426,6 @@ void Liber::initParticles()
 {
   Log::println( "Particle classes (*.json in 'part') {" );
   Log::indent();
-
-  List<Resource> partList;
 
   File dir = "@part";
 
@@ -455,12 +438,11 @@ void Liber::initParticles()
 
     Log::println( "%s", name.cstr() );
 
-    partIndices.add( name, partList.length() );
-    partList.add( { name, file.path() } );
+    partIndices.add( name, parts.length() );
+    parts.add( { name, file.path() } );
   }
 
-  parts.resize( partList.length() );
-  aMove<Resource>( partList.begin(), partList.length(), parts.begin() );
+  parts.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -470,8 +452,6 @@ void Liber::initModels()
 {
   Log::println( "Models (*/data.ozcModel in 'mdl') {" );
   Log::indent();
-
-  List<Resource> modelsList;
 
   File dir = "@mdl";
 
@@ -493,12 +473,11 @@ void Liber::initModels()
       OZ_ERROR( "Duplicated model '%s'", name.cstr() );
     }
 
-    modelIndices.add( name, modelsList.length() );
-    modelsList.add( { name, path } );
+    modelIndices.add( name, models.length() );
+    models.add( { name, path } );
   }
 
-  models.resize( modelsList.length() );
-  aMove<Resource>( modelsList.begin(), modelsList.length(), models.begin() );
+  models.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -508,8 +487,6 @@ void Liber::initNameLists()
 {
   Log::println( "Name lists (*.txt in 'name') {" );
   Log::indent();
-
-  List<Resource> nameListsList;
 
   File dir = "@name";
 
@@ -522,12 +499,11 @@ void Liber::initNameLists()
 
     Log::println( "%s", name.cstr() );
 
-    nameListIndices.add( name, nameListsList.length() );
-    nameListsList.add( { name, file.path() } );
+    nameListIndices.add( name, nameLists.length() );
+    nameLists.add( { name, file.path() } );
   }
 
-  nameLists.resize( nameListsList.length() );
-  aMove<Resource>( nameListsList.begin(), nameListsList.length(), nameLists.begin() );
+  nameLists.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -537,8 +513,6 @@ void Liber::initMinds()
 {
   Log::println( "Mind automata (*.json in 'nirvana/mind') {" );
   Log::indent();
-
-  List<Resource> mindsList;
 
   File dir = "@nirvana/mind";
 
@@ -551,12 +525,11 @@ void Liber::initMinds()
 
     Log::println( "%s", name.cstr() );
 
-    nameListIndices.add( name, mindsList.length() );
-    mindsList.add( { name, file.path() } );
+    nameListIndices.add( name, minds.length() );
+    minds.add( { name, file.path() } );
   }
 
-  nameLists.resize( mindsList.length() );
-  aMove<Resource>( mindsList.begin(), mindsList.length(), nameLists.begin() );
+  minds.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -752,20 +725,20 @@ void Liber::initBSPs()
   Log::println( "}" );
 }
 
-void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
+void Liber::initMusicRecurse( const char* path )
 {
   File dir = path;
 
   for( const File& file : dir.ls() ) {
     if( file.type() == File::DIRECTORY ) {
-      initMusicRecurse( file.path(), musicTracksList );
+      initMusicRecurse( file.path() );
     }
     if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ||
         ( mapMP3s && file.hasExtension( "mp3" ) ) || ( mapAACs && file.hasExtension( "aac" ) ) )
     {
       Log::println( "%s", file.path().cstr() );
 
-      musicTracksList->add( { file.baseName(), file.path() } );
+      musicTracks.add( { file.baseName(), file.path() } );
     }
   }
 }
@@ -782,18 +755,15 @@ void Liber::initMusic( const char* userMusicPath )
   }
   Log::indent();
 
-  List<Resource> musicTracksList;
+  initMusicRecurse( "@music" );
 
-  initMusicRecurse( "@music", &musicTracksList );
-
-  for( int i = 0; i < musicTracksList.length(); ++i ) {
-    musicTrackIndices.add( musicTracksList[i].name, i );
+  for( int i = 0; i < musicTracks.length(); ++i ) {
+    musicTrackIndices.add( musicTracks[i].name, i );
   }
 
-  initMusicRecurse( "@userMusic", &musicTracksList );
+  initMusicRecurse( "@userMusic" );
 
-  musicTracks.resize( musicTracksList.length() );
-  aMove<Resource>( musicTracksList.begin(), musicTracksList.length(), musicTracks.begin() );
+  musicTracks.trim();
 
   Log::unindent();
   Log::println( "}" );
@@ -851,14 +821,23 @@ void Liber::init( const char* userMusicPath )
 void Liber::destroy()
 {
   shaders.clear();
+  shaders.deallocate();
   textures.clear();
+  textures.deallocate();
   sounds.clear();
+  sounds.deallocate();
   caela.clear();
+  caela.deallocate();
   terrae.clear();
+  terrae.deallocate();
   models.clear();
+  models.deallocate();
   nameLists.clear();
+  nameLists.deallocate();
   minds.clear();
+  minds.deallocate();
   musicTracks.clear();
+  musicTracks.deallocate();
 
   shaderIndices.clear();
   shaderIndices.deallocate();

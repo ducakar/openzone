@@ -44,12 +44,12 @@ private:
 
 private:
 
-  PartGen*     next[1];
+  PartGen*   next[1];
 
-  Mat4         transf;
-  PartClass*   clazz;
-  DArray<Part> parts;
-  int          flags;
+  Mat4       transf;
+  PartClass* clazz;
+  List<Part> parts;
+  int        flags;
 
 private:
 

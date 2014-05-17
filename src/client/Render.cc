@@ -749,7 +749,7 @@ void Render::init()
     OZ_ERROR( "OpenGL failed to initialise" );
   }
 
-  DArray<String> extensions = String::trim( sExtensions ).split( ' ' );
+  List<String> extensions = String::trim( sExtensions ).split( ' ' );
 
   Log::println( "OpenGL vendor: %s", vendor );
   Log::println( "OpenGL renderer: %s", renderer );

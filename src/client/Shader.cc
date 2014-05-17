@@ -375,10 +375,9 @@ void Shader::init()
       defines += "#define OZ_POSTPROCESS\n";
     }
 
-    File dir = "@glsl";
-    DArray<File> shaderFiles = dir.ls();
+    File shadersDir = "@glsl";
 
-    for( const File& file : shaderFiles ) {
+    for( const File& file : shadersDir.ls() ) {
       if( file.hasExtension( "vert" ) ) {
         file.map();
 
@@ -431,6 +430,7 @@ void Shader::destroy()
     vertShaders.clear();
     vertShaders.deallocate();
     programs.clear();
+    programs.deallocate();
 
     if( defaultNormals != 0 ) {
       glDeleteTextures( 1, &defaultNormals );

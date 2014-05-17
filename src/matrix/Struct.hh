@@ -100,24 +100,24 @@ public:
 
 private:
 
-  Mat4           transf;
-  Mat4           invTransf;
+  Mat4         transf;
+  Mat4         invTransf;
 
 public:
 
-  const BSP*     bsp;
+  const BSP*   bsp;
 
-  Point          p;
-  Heading        heading;
+  Point        p;
+  Heading      heading;
 
-  int            index;
+  int          index;
 
-  float          life;
-  float          resistance;
-  float          demolishing;
+  float        life;
+  float        resistance;
+  float        demolishing;
 
-  DArray<Entity> entities;
-  List<int>      boundObjects;
+  List<Entity> entities;
+  List<int>    boundObjects;
 
 private:
 

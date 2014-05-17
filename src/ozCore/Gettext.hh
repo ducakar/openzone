@@ -123,7 +123,7 @@ public:
   /**
    * Obtain descriptions of all .mo catalogues that have been merged into this catalogue.
    */
-  DArray<const char*> catalogueDescriptions() const;
+  List<const char*> catalogueDescriptions() const;
 
   /**
    * Import messages from GNU gettext binary .mo file.

@@ -57,8 +57,6 @@
 #include "Pair.hh"
 #include "Chain.hh"
 #include "DChain.hh"
-#include "Array.hh"
-#include "DArray.hh"
 #include "List.hh"
 #include "SList.hh"
 #include "Set.hh"
