@@ -21,4 +21,4 @@ add_library( nirvana STATIC
   TechGraph.cc
 #END SOURCES
 )
-use_pch( nirvana ozCore_pch )
+use_pch( nirvana pch )

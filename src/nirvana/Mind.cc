@@ -41,7 +41,7 @@ bool Mind::wasBumped( const Bot* botObj )
 
 bool Mind::needsUpdate( const Bot* botObj )
 {
-  return !( botObj->state & ( Bot::DEAD_BIT | Bot::PLAYER_BIT ) );
+  return !botObj->mind.isEmpty() && !( botObj->state & ( Bot::DEAD_BIT | Bot::PLAYER_BIT ) );
 }
 
 Mind::Mind() :

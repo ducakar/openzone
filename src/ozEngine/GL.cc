@@ -28,7 +28,7 @@
 
 #ifdef _WIN32
 # include <SDL.h>
-
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
 # define OZ_DL_GLLOAD( func ) \
   *( void** ) &func = SDL_GL_GetProcAddress( #func ); \
   if( func == nullptr ) { \

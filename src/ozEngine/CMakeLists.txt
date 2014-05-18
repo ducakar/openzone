@@ -26,7 +26,7 @@ add_library( ozEngine
   Window.cc
 #END SOURCES
 )
-use_pch( ozEngine ozCore_pch )
+use_pch( ozEngine pch )
 
 target_link_libraries( ozEngine ozCore )
 

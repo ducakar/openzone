@@ -32,13 +32,10 @@
 #include <ozDynamics/collision/Bounds.hh>
 
 #ifdef _WIN32
+# define NOGDI
 # include <windows.h>
-// Fix M$ crap from Windows headers.
 # undef near
 # undef far
-# undef ERROR
-# undef PLANES
-# undef TECHNOLOGY
 #endif
 
 namespace oz

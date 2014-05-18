@@ -432,7 +432,7 @@ const File* Model::preload()
     for( int i = 0; i < nTextures; ++i ) {
       const String& name = is.readString();
 
-      preloadData->textures.add( {} );
+      preloadData->textures.add( PreloadData::TexFiles() );
 
       if( !name.isEmpty() ) {
         PreloadData::TexFiles& texFiles = preloadData->textures.last();

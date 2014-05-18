@@ -84,7 +84,11 @@
  * @def OZ_PRINTF_FORMAT
  * Compiler-specific attribute that specifies checking of printf-like arguments.
  */
-#define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+#ifdef __MINGW32__
+# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( gnu_printf, s, first ) ))
+#else
+# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+#endif
 
 /**
  * @def OZ_SIZEOF_LONG

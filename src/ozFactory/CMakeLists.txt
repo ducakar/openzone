@@ -18,7 +18,7 @@ add_library( ozFactory
   TerraBuilder.cc
 #END SOURCES
 )
-use_pch( ozFactory ozCore_pch )
+use_pch( ozFactory pch )
 
 target_link_libraries( ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY} )
 if( OZ_NONFREE )
