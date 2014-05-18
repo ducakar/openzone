@@ -62,9 +62,7 @@ void GameStage::saveMain( void* )
     Log::printEnd( " OK" );
   }
 
-  buffer.deallocate();
-
-  gameStage.saveStream.deallocate();
+  gameStage.saveStream.free();
   gameStage.saveFile = "";
 }
 

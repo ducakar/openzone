@@ -174,8 +174,8 @@ void LuaNirvana::init()
   initCommon();
 
   ls.envName = "nirvana";
-  ms.structs.allocate( 32 );
-  ms.objects.allocate( 512 );
+  ms.structs.reserve( 32 );
+  ms.objects.reserve( 512 );
 
   /*
    * General functions
@@ -585,10 +585,10 @@ void LuaNirvana::destroy()
   Log::print( "Destroying Nirvana Lua ..." );
 
   ms.structs.clear();
-  ms.structs.deallocate();
+  ms.structs.trim();
 
   ms.objects.clear();
-  ms.objects.deallocate();
+  ms.objects.trim();
 
   hard_assert( l_gettop() == 1 );
   hard_assert( ( l_pushnil(), true ) );

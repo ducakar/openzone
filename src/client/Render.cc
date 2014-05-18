@@ -668,8 +668,8 @@ void Render::load()
 
   effectsThread.start( "effects", Thread::JOINABLE, effectsMain );
 
-  structs.allocate( 64 );
-  objects.allocate( 8192 );
+  structs.reserve( 64 );
+  objects.reserve( 8192 );
 
   prepareMicros     = 0;
   caelumMicros      = 0;
@@ -700,10 +700,10 @@ void Render::unload()
   glFinish();
 
   structs.clear();
-  structs.deallocate();
+  structs.trim();
 
   objects.clear();
-  objects.deallocate();
+  objects.trim();
 
   areEffectsAlive = false;
 

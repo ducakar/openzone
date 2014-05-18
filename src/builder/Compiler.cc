@@ -232,17 +232,17 @@ void Compiler::beginModel()
   hard_assert( environment == NONE );
 
   positions.clear();
-  positions.deallocate();
+  positions.trim();
   normals.clear();
-  normals.deallocate();
+  normals.trim();
   vertices.clear();
-  vertices.deallocate();
+  vertices.trim();
   meshes.clear();
-  meshes.deallocate();
+  meshes.trim();
   lights.clear();
-  lights.deallocate();
+  lights.trim();
   nodes.clear();
-  nodes.deallocate();
+  nodes.trim();
   root.children.free();
 
   bounds.mins          = Point( +Math::INF, +Math::INF, +Math::INF );
@@ -799,32 +799,32 @@ void Compiler::init()
 void Compiler::destroy()
 {
   positions.clear();
-  positions.deallocate();
+  positions.trim();
 
   normals.clear();
-  normals.deallocate();
+  normals.trim();
 
   vertices.clear();
-  vertices.deallocate();
+  vertices.trim();
 
   meshes.clear();
-  meshes.deallocate();
+  meshes.trim();
 
   lights.clear();
-  lights.deallocate();
+  lights.trim();
 
   nodes.clear();
-  nodes.deallocate();
+  nodes.trim();
 
   mesh.texture = "";
   mesh.indices.clear();
-  mesh.indices.deallocate();
+  mesh.indices.trim();
 
   root.children.free();
   Node::pool.free();
 
   polyIndices.clear();
-  polyIndices.deallocate();
+  polyIndices.trim();
 }
 
 Compiler compiler;

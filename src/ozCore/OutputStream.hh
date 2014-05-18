@@ -264,7 +264,7 @@ public:
   /**
    * Deallocate internal buffer if stream is buffered.
    */
-  void deallocate();
+  void free();
 
 };
 

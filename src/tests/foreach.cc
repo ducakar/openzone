@@ -127,11 +127,11 @@ int main()
   swap( hi, hi1 );
   swap( hs, hs1 );
 
-  v1.deallocate();
-  s1.deallocate();
-  m1.deallocate();
-  hi1.deallocate();
-  hs1.deallocate();
+  v1.trim();
+  s1.trim();
+  m1.trim();
+  hi1.trim();
+  hs1.trim();
 
   for( const Elem& i : l ) {
     printf( "%d ", i.value );
@@ -175,15 +175,15 @@ int main()
   l.free();
   dl.free();
   v.clear();
-  v.deallocate();
+  v.trim();
   s.clear();
-  s.deallocate();
+  s.trim();
   m.clear();
-  m.deallocate();
+  m.trim();
   hi.clear();
-  hi.deallocate();
+  hi.trim();
   hs.clear();
-  hs.deallocate();
+  hs.trim();
 
   Log::printMemoryLeaks();
   return 0;

@@ -270,22 +270,16 @@ Bitset& Bitset::operator ^= ( const Bitset& b )
   return *this;
 }
 
-void Bitset::allocate( int nBits )
+void Bitset::resize( int nBits )
 {
-  hard_assert( size == 0 && nBits > 0 );
+  hard_assert( nBits >= 0 );
 
   int nUnits = ( nBits + UNIT_BITSIZE - 1 ) / UNIT_BITSIZE;
 
-  data = new ulong[nUnits];
-  size = nUnits;
-}
-
-void Bitset::deallocate()
-{
-  delete[] data;
-
-  data = nullptr;
-  size = 0;
+  if( nUnits != size ) {
+    data = aReallocate<ulong>( data, size, nUnits );
+    size = nUnits;
+  }
 }
 
 }

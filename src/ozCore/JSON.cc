@@ -72,7 +72,7 @@ struct JSON::ArrayData : JSON::Data
 
 struct JSON::ObjectData : JSON::Data
 {
-  HashMap<String, JSON> table;
+  Map<String, JSON> map;
 };
 
 struct JSON::Parser
@@ -142,9 +142,9 @@ struct JSON::Parser
         break;
       }
       case OBJECT: {
-        HashMap<String, JSON>& table = static_cast<ObjectData*>( value->data )->table;
+        Map<String, JSON>& map = static_cast<ObjectData*>( value->data )->map;
 
-        for( auto& i : table ) {
+        for( auto& i : map ) {
           setAccessed( &i.value );
         }
         break;
@@ -370,7 +370,7 @@ struct JSON::Parser
   JSON parseObject()
   {
     JSON objectValue( new ObjectData(), OBJECT );
-    HashMap<String, JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
+    Map<String, JSON>& map = static_cast<ObjectData*>( objectValue.data )->map;
 
     char ch = skipBlanks();
     if( ch != '}' ) {
@@ -391,7 +391,7 @@ struct JSON::Parser
       }
 
       JSON value = parseValue();
-      table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
+      map.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
 
       ch = skipBlanks();
 
@@ -504,9 +504,9 @@ struct JSON::Formatter
         break;
       }
       case STRING: {
-        const StringData* stringData = static_cast<const StringData*>( value.data );
+        const String& string = static_cast<const StringData*>( value.data )->value;
 
-        writeString( stringData->value );
+        writeString( string );
         break;
       }
       case ARRAY: {
@@ -561,9 +561,9 @@ struct JSON::Formatter
   OZ_HIDDEN
   void writeObject( const JSON& value )
   {
-    const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value.data )->table;
+    const Map<String, JSON>& map = static_cast<const ObjectData*>( value.data )->map;
 
-    if( table.isEmpty() ) {
+    if( map.isEmpty() ) {
       os->writeChars( "{}", 2 );
       return;
     }
@@ -573,13 +573,7 @@ struct JSON::Formatter
 
     ++indentLevel;
 
-    Map<String, const JSON*> sortedEntries;
-
-    for( const auto& entry : table ) {
-      sortedEntries.add( entry.key, &entry.value );
-    }
-
-    for( int i = 0; i < sortedEntries.length(); ++i ) {
+    for( int i = 0; i < map.length(); ++i ) {
       if( i != 0 ) {
         os->writeChar( ',' );
         os->writeChars( format->lineEnd, lineEndLength );
@@ -589,13 +583,13 @@ struct JSON::Formatter
         os->writeChars( "  ", 2 );
       }
 
-      const String& entryKey   = sortedEntries[i].key;
-      const JSON*   entryValue = sortedEntries[i].value;
+      const String& entryKey   = map[i].key;
+      const JSON&   entryValue = map[i].value;
 
       int keyLength = writeString( entryKey );
       os->writeChar( ':' );
 
-      if( entryValue->valueType == ARRAY || entryValue->valueType == OBJECT ) {
+      if( entryValue.valueType == ARRAY || entryValue.valueType == OBJECT ) {
         os->writeChars( format->lineEnd, lineEndLength );
 
         for( int j = 0; j < indentLevel; ++j ) {
@@ -611,11 +605,8 @@ struct JSON::Formatter
         }
       }
 
-      writeValue( *entryValue );
+      writeValue( entryValue );
     }
-
-    sortedEntries.clear();
-    sortedEntries.deallocate();
 
     os->writeChars( format->lineEnd, lineEndLength );
 
@@ -790,10 +781,10 @@ JSON::JSON( InitialiserList<JSON> l ) :
 JSON::JSON( InitialiserList<Pair> l ) :
   data( new ObjectData() ), valueType( OBJECT ), wasAccessed( false )
 {
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
 
   for( const auto& i : l ) {
-    table.add( i.key, i.value );
+    map.add( i.key, i.value );
   }
 }
 
@@ -907,10 +898,10 @@ JSON& JSON::operator = ( JSON&& v )
 JSON::ArrayCIterator JSON::arrayCIter() const
 {
   if( valueType == ARRAY ) {
-    const ArrayData* arrayData = static_cast<const ArrayData*>( data );
+    const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
 
     wasAccessed = true;
-    return ArrayCIterator( arrayData->list.begin(), arrayData->list.end() );
+    return list.citer();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -921,10 +912,10 @@ JSON::ArrayCIterator JSON::arrayCIter() const
 JSON::ArrayIterator JSON::arrayIter()
 {
   if( valueType == ARRAY ) {
-    ArrayData* arrayData = static_cast<ArrayData*>( data );
+    List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
     wasAccessed = true;
-    return ArrayIterator( arrayData->list.begin(), arrayData->list.end() );
+    return list.iter();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -935,10 +926,10 @@ JSON::ArrayIterator JSON::arrayIter()
 JSON::ObjectCIterator JSON::objectCIter() const
 {
   if( valueType == OBJECT ) {
-    const ObjectData* objectData = static_cast<const ObjectData*>( data );
+    const Map<String, JSON>& map = static_cast<const ObjectData*>( data )->map;
 
     wasAccessed = true;
-    return objectData->table.citer();
+    return map.citer();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -949,10 +940,10 @@ JSON::ObjectCIterator JSON::objectCIter() const
 JSON::ObjectIterator JSON::objectIter()
 {
   if( valueType == OBJECT ) {
-    ObjectData* objectData = static_cast<ObjectData*>( data );
+    Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
 
     wasAccessed = true;
-    return objectData->table.iter();
+    return map.iter();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -968,16 +959,16 @@ int JSON::length() const
       return -1;
     }
     case ARRAY: {
-      const ArrayData* arrayData = static_cast<const ArrayData*>( data );
+      const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
 
       wasAccessed = true;
-      return arrayData->list.length();
+      return list.length();
     }
     case OBJECT: {
-      const ObjectData* objectData = static_cast<const ObjectData*>( data );
+      const Map<String, JSON>& map = static_cast<const ObjectData*>( data )->map;
 
       wasAccessed = true;
-      return objectData->table.length();
+      return map.length();
     }
   }
 }
@@ -1008,8 +999,8 @@ const JSON& JSON::operator [] ( const char* key ) const
     return NIL_VALUE;
   }
 
-  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
-  const JSON* value = table.find( key );
+  const Map<String, JSON>& map = static_cast<const ObjectData*>( data )->map;
+  const JSON* value = map.find( key );
 
   wasAccessed = true;
 
@@ -1028,8 +1019,8 @@ bool JSON::contains( const char* key ) const
     return false;
   }
 
-  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
-  const JSON* value = table.find( key );
+  const Map<String, JSON>& map = static_cast<const ObjectData*>( data )->map;
+  const JSON* value = map.find( key );
 
   wasAccessed = true;
 
@@ -1154,8 +1145,10 @@ JSON& JSON::add( const char* key, const JSON& json )
               key, toString().cstr() );
   }
 
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  return table.add( key, json );
+  Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
+
+  int index = map.add( key, json );
+  return map[index].value;
 }
 
 JSON& JSON::add( const char* key, JSON&& json )
@@ -1165,8 +1158,10 @@ JSON& JSON::add( const char* key, JSON&& json )
               key, toString().cstr() );
   }
 
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
-  return table.add( key, json );
+  Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
+
+  int index = map.add( key, json );
+  return map[index].value;
 }
 
 JSON& JSON::include( const char* key, const JSON& json )
@@ -1176,13 +1171,13 @@ JSON& JSON::include( const char* key, const JSON& json )
               key, toString().cstr() );
   }
 
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
+  Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
 
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, json );
+  int index = map.index( key );
+  if( index < 0 ) {
+    index = map.add( key, json );
   }
-  return *entry;
+  return map[index].value;
 }
 
 JSON& JSON::include( const char* key, JSON&& json )
@@ -1192,13 +1187,13 @@ JSON& JSON::include( const char* key, JSON&& json )
               key, toString().cstr() );
   }
 
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
+  Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
 
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, json );
+  int index = map.index( key );
+  if( index < 0 ) {
+    index = map.add( key, json );
   }
-  return *entry;
+  return map[index].value;
 }
 
 bool JSON::erase( int index )
@@ -1225,9 +1220,9 @@ bool JSON::exclude( const char* key )
               toString().cstr() );
   }
 
-  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  Map<String, JSON>& map = static_cast<ObjectData*>( data )->map;
 
-  return table.exclude( key );
+  return map.exclude( key );
 }
 
 bool JSON::clear( bool warnUnused )
@@ -1266,7 +1261,7 @@ bool JSON::clear( bool warnUnused )
       ObjectData* objectData = static_cast<ObjectData*>( data );
 
       if( warnUnused ) {
-        for( auto& i : objectData->table ) {
+        for( auto& i : objectData->map ) {
           hasUnused |= i.value.clear( true );
         }
       }
@@ -1295,9 +1290,9 @@ String JSON::toString() const
       return String( number );
     }
     case STRING: {
-      const StringData* stringData = static_cast<const StringData*>( data );
+      const String& string = static_cast<const StringData*>( data )->value;
 
-      return "\"" + stringData->value + "\"";
+      return "\"" + string + "\"";
     }
     case ARRAY: {
       const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
@@ -1319,16 +1314,16 @@ String JSON::toString() const
       return s + " ]";
     }
     case OBJECT: {
-      const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
+      const Map<String, JSON>& map = static_cast<const ObjectData*>( data )->map;
 
-      if( table.isEmpty() ) {
+      if( map.isEmpty() ) {
         return "{}";
       }
 
       String s = "{ ";
 
       bool isFirst = true;
-      for( const auto& i : table ) {
+      for( const auto& i : map ) {
         s += String::str( isFirst ? "\"%s\": %s" : ", \"%s\": %s",
                           i.key.cstr(), i.value.toString().cstr() );
         isFirst = false;

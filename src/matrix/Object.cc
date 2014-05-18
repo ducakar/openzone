@@ -109,7 +109,7 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point& p_, Heading 
   }
 
   if( clazz->nItems != 0 ) {
-    items.allocate( clazz->nItems );
+    items.reserve( clazz->nItems );
   }
 }
 
@@ -137,7 +137,7 @@ Object::Object( const ObjectClass* clazz_, InputStream* is )
   }
 
   if( clazz->nItems != 0 ) {
-    items.allocate( clazz->nItems );
+    items.reserve( clazz->nItems );
 
     int nItems = is->readInt();
     for( int i = 0; i < nItems; ++i ) {
@@ -166,7 +166,7 @@ Object::Object( const ObjectClass* clazz_, const JSON& json )
   }
 
   if( clazz->nItems != 0 ) {
-    items.allocate( clazz->nItems );
+    items.reserve( clazz->nItems );
 
     const JSON& itemsJSON = json["items"];
 

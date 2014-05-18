@@ -226,11 +226,11 @@ void Context::init()
 void Context::destroy()
 {
   usedTextures.clear();
-  usedTextures.deallocate();
+  usedTextures.trim();
   usedSounds.clear();
-  usedSounds.deallocate();
+  usedSounds.trim();
   usedModels.clear();
-  usedModels.deallocate();
+  usedModels.trim();
 }
 
 Context context;

@@ -46,32 +46,32 @@ class HashSet
 {
 protected:
 
-  /// Granularity for automatic storage allocations.
-  static const int GRANULARITY = 8;
+  /// Granularity for bucket array and pool block sizes.
+  static const int GRANULARITY = 256;
 
 protected:
 
   /**
    * Bucket.
    */
-  struct Bucket
+  struct Entry
   {
-    Bucket* next;   ///< Next bucket in a slot.
-    int     hash;   ///< Cached hash.
-    Elem    elem;   ///< Element/key.
+    Entry* next; ///< Next entry in a bucket.
+    int    hash; ///< Cached hash.
+    Elem   elem; ///< Element (or key-value pair).
 
-    OZ_PLACEMENT_POOL_ALLOC( Bucket, 256 )
+    OZ_PLACEMENT_POOL_ALLOC( Entry )
   };
 
   /**
    * Hashtable iterator.
    */
-  template <class BucketType, class ElemType>
-  class HashIterator : public IteratorBase<BucketType>
+  template <class EntryType, class ElemType>
+  class HashIterator : public IteratorBase<EntryType>
   {
   private:
 
-    using IteratorBase<BucketType>::elem;
+    using IteratorBase<EntryType>::elem;
 
     const HashSet* table; ///< Hashtable that is being iterated.
     int            index; ///< Index of the current bucket.
@@ -83,14 +83,14 @@ protected:
      */
     OZ_ALWAYS_INLINE
     explicit HashIterator() :
-      IteratorBase<BucketType>( nullptr ), table( nullptr ), index( 0 )
+      IteratorBase<EntryType>( nullptr ), table( nullptr ), index( 0 )
     {}
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
     explicit HashIterator( const HashSet& ht ) :
-      IteratorBase<BucketType>( ht.size == 0 ? nullptr : ht.data[0] ), table( &ht ), index( 0 )
+      IteratorBase<EntryType>( ht.size == 0 ? nullptr : ht.data[0] ), table( &ht ), index( 0 )
     {
       while( elem == nullptr && index < table->size - 1 ) {
         ++index;
@@ -173,32 +173,32 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef HashIterator<const Bucket, const Elem> CIterator;
+  typedef HashIterator<const Entry, const Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef HashIterator<Bucket, Elem> Iterator;
+  typedef HashIterator<Entry, Elem> Iterator;
 
 protected:
 
-  Pool<Bucket> pool; ///< Memory pool for elements.
-  Bucket**     data; ///< %Array of buckets, each containing a linked list.
-  int          size; ///< Number of buckets.
+  Pool<Entry, GRANULARITY> pool; ///< Memory pool for entries.
+  Entry**                  data; ///< %Array of buckets, each containing a linked list of entries.
+  int                      size; ///< Number of buckets.
 
 protected:
 
   /**
-   * True iff a bucket chains have the same length and contain equal elements.
+   * True iff a bucket's chains have the same length and contain equal elements.
    */
-  static bool areChainsEqual( const Bucket* chainA, const Bucket* chainB )
+  static bool areChainsEqual( const Entry* entryA, const Entry* entryB )
   {
-    const Bucket* firstB = chainB;
+    const Entry* firstB = entryB;
 
-    while( chainA != nullptr && chainB != nullptr ) {
-      const Bucket* i = firstB;
+    while( entryA != nullptr && entryB != nullptr ) {
+      const Entry* i = firstB;
       do {
-        if( i->elem == chainA->elem ) {
+        if( i->elem == entryA->elem ) {
           goto nextElem;
         }
         i = i->next;
@@ -208,28 +208,28 @@ protected:
       return false;
 
 nextElem:
-      chainA = chainA->next;
-      chainB = chainB->next;
+      entryA = entryA->next;
+      entryB = entryB->next;
     }
     // At least one is nullptr, so this is true iff both chains have the same length.
-    return chainA == chainB;
+    return entryA == entryB;
   }
 
   /**
    * Allocate and make a copy of a given bucket chain.
    */
-  Bucket* cloneChain( const Bucket* chain )
+  Entry* cloneChain( const Entry* entry )
   {
-    Bucket* clone = nullptr;
+    Entry* clone = nullptr;
 
-    if( chain != nullptr ) {
-      clone = new( pool ) Bucket { clone, chain->hash, chain->elem };
+    if( entry != nullptr ) {
+      clone = new( pool ) Entry { clone, entry->hash, entry->elem };
 
-      const Bucket* original = chain->next;
-      Bucket*       prevCopy = clone;
+      const Entry* original = entry->next;
+      Entry*       prevCopy = clone;
 
       while( original != nullptr ) {
-        prevCopy->next = new( pool ) Bucket { clone, original->hash, original->elem };
+        prevCopy->next = new( pool ) Entry { clone, original->hash, original->elem };
 
         prevCopy = prevCopy->next ;
         original = original->next;
@@ -241,15 +241,15 @@ nextElem:
   /**
    * Delete all elements in a given bucket chain.
    */
-  void clearChain( Bucket* chain )
+  void clearChain( Entry* entry )
   {
-    while( chain != nullptr ) {
-      Bucket* next = chain->next;
+    while( entry != nullptr ) {
+      Entry* next = entry->next;
 
-      chain->~Bucket();
-      pool.deallocate( chain );
+      entry->~Entry();
+      pool.deallocate( entry );
 
-      chain = next;
+      entry = next;
     }
   }
 
@@ -258,24 +258,27 @@ nextElem:
    */
   void resize( int newSize )
   {
-    Bucket** newData = new Bucket*[newSize] {};
+    Entry** newData = nullptr;
 
-    // Rebuild hashtable.
-    for( int i = 0; i < size; ++i ) {
-      Bucket* chain = data[i];
-      Bucket* next  = nullptr;
+    if( newSize != 0 ) {
+      newData = new Entry*[newSize] {};
 
-      while( chain != nullptr ) {
-        uint index = uint( chain->hash ) % uint( newSize );
+      // Rebuild hashtable.
+      for( int i = 0; i < size; ++i ) {
+        Entry* chain = data[i];
+        Entry* next  = nullptr;
 
-        next = chain->next;
-        chain->next = newData[index];
-        newData[index] = chain;
+        while( chain != nullptr ) {
+          uint index = uint( chain->hash ) % uint( newSize );
 
-        chain = next;
+          next = chain->next;
+          chain->next = newData[index];
+          newData[index] = chain;
+
+          chain = next;
+        }
       }
     }
-
     delete[] data;
 
     data = newData;
@@ -283,7 +286,7 @@ nextElem:
   }
 
   /**
-   * Ensure a given bucket array size.
+   * Ensure a given size for the array of buckets.
    *
    * Size is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
    * `GRANULARITY` greater or equal to the requested size.
@@ -332,14 +335,14 @@ public:
   ~HashSet()
   {
     clear();
-    deallocate();
+    trim();
   }
 
   /**
    * Copy constructor, copies elements and storage.
    */
   HashSet( const HashSet& ht ) :
-    data( new Bucket*[ht.size] ), size( ht.size )
+    data( new Entry*[ht.size] ), size( ht.size )
   {
     for( int i = 0; i < ht.size; ++i ) {
       data[i] = cloneChain( ht.data[i] );
@@ -350,7 +353,7 @@ public:
    * Move constructor, moves storage.
    */
   HashSet( HashSet&& ht ) :
-    pool( static_cast< Pool<Bucket>&& >( ht.pool ) ), data( ht.data ), size( ht.size )
+    pool( static_cast< Pool<Entry, GRANULARITY>&& >( ht.pool ) ), data( ht.data ), size( ht.size )
   {
     ht.data = nullptr;
     ht.size = 0;
@@ -370,7 +373,7 @@ public:
     if( size < ht.pool.count ) {
       delete[] data;
 
-      data = new Bucket[ht.size];
+      data = new Entry[ht.size];
       size = ht.size;
     }
 
@@ -393,7 +396,7 @@ public:
     clear();
     delete[] data;
 
-    pool = static_cast< Pool<Bucket>&& >( ht.pool );
+    pool = static_cast< Pool<Entry, GRANULARITY>&& >( ht.pool );
     data = ht.data;
     size = ht.size;
 
@@ -527,16 +530,16 @@ public:
       return false;
     }
 
-    int     h = hash( elem );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( elem );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem == elem ) {
+    while( entry != nullptr ) {
+      if( entry->elem == elem ) {
         return true;
       }
 
-      b = b->next;
+      entry = entry->next;
     }
     return false;
   }
@@ -549,19 +552,19 @@ public:
   {
     ensureCapacity( pool.length() + 1 );
 
-    int     h = hash( elem );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( elem );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem == elem ) {
-        b->elem = static_cast<Elem_&&>( elem );
+    while( entry != nullptr ) {
+      if( entry->elem == elem ) {
+        entry->elem = static_cast<Elem_&&>( elem );
         return;
       }
-      b = b->next;
+      entry = entry->next;
     }
 
-    data[i] = new( pool ) Bucket { data[i], h, static_cast<Elem_&&>( elem ) };
+    data[index] = new( pool ) Entry { data[index], h, static_cast<Elem_&&>( elem ) };
   }
 
   /**
@@ -572,18 +575,18 @@ public:
   {
     ensureCapacity( pool.length() + 1 );
 
-    int     h = hash( elem );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( elem );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem == elem ) {
+    while( entry != nullptr ) {
+      if( entry->elem == elem ) {
         return;
       }
-      b = b->next;
+      entry = entry->next;
     }
 
-    data[i] = new( pool ) Bucket { data[i], h, static_cast<Elem_&&>( elem ) };
+    data[index] = new( pool ) Entry { data[index], h, static_cast<Elem_&&>( elem ) };
   }
 
   /**
@@ -598,35 +601,41 @@ public:
       return nullptr;
     }
 
-    uint     i     = uint( hash( elem ) ) % uint( size );
-    Bucket*  b     = data[i];
-    Bucket** bPrev = &data[i];
+    uint    index = uint( hash( elem ) ) % uint( size );
+    Entry*  entry = data[index];
+    Entry** prev  = &data[index];
 
-    while( b != nullptr ) {
-      if( b->elem == elem ) {
-        *bPrev = b->next;
+    while( entry != nullptr ) {
+      if( entry->elem == elem ) {
+        *prev = entry->next;
 
-        b->~Bucket();
-        pool.deallocate( b );
+        entry->~Entry();
+        pool.deallocate( entry );
 
         return true;
       }
 
-      bPrev = &b->next;
-      b = b->next;
+      prev = &entry->next;
+      entry = entry->next;
     }
     return false;
   }
 
   /**
    * Trim the bucket array size to 4/3 of the current number of elements.
+   *
+   * In case the hastable contains no entries all its storage gets deallocated.
    */
   void trim()
   {
-    int capacity = pool.count * 4 / 3;
+    int newSize = pool.length() * 4 / 3;
 
-    if( size > capacity ) {
-      ensureCapacity( capacity );
+    if( newSize < size ) {
+      resize( newSize );
+
+      if( newSize == 0 ) {
+        pool.free();
+      }
     }
   }
 
@@ -639,20 +648,6 @@ public:
       clearChain( data[i] );
       data[i] = nullptr;
     }
-  }
-
-  /**
-   * Deallocate pool memory of an empty hashtable.
-   */
-  void deallocate()
-  {
-    hard_assert( pool.isEmpty() );
-
-    pool.free();
-    delete[] data;
-
-    data = nullptr;
-    size = 0;
   }
 
 };

@@ -77,16 +77,16 @@ void TechGraph::disableAll()
   }
 
   allowedBuildings.clear();
-  allowedBuildings.deallocate();
+  allowedBuildings.trim();
 
   allowedUnits.clear();
-  allowedUnits.deallocate();
+  allowedUnits.trim();
 
   allowedItems.clear();
-  allowedItems.deallocate();
+  allowedItems.trim();
 
   allowedObjects.clear();
-  allowedObjects.deallocate();
+  allowedObjects.trim();
 }
 
 void TechGraph::update()
@@ -189,19 +189,19 @@ void TechGraph::load()
 void TechGraph::unload()
 {
   allowedBuildings.clear();
-  allowedBuildings.deallocate();
+  allowedBuildings.trim();
 
   allowedUnits.clear();
-  allowedUnits.deallocate();
+  allowedUnits.trim();
 
   allowedItems.clear();
-  allowedItems.deallocate();
+  allowedItems.trim();
 
   allowedObjects.clear();
-  allowedObjects.deallocate();
+  allowedObjects.trim();
 
   nodes.clear();
-  nodes.deallocate();
+  nodes.trim();
 }
 
 TechGraph techGraph;

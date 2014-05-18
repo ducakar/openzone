@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "HashMap.hh"
+#include "Map.hh"
 #include "File.hh"
 
 namespace oz
@@ -86,17 +86,17 @@ public:
   /**
    * %Iterator for %JSON objects with constant access to elements.
    */
-  typedef HashMap<String, JSON>::CIterator ObjectCIterator;
+  typedef Map<String, JSON>::CIterator ObjectCIterator;
 
   /**
    * %Iterator for %JSON objects with non-constant access to elements.
    */
-  typedef HashMap<String, JSON>::Iterator ObjectIterator;
+  typedef Map<String, JSON>::Iterator ObjectIterator;
 
   /**
    * Key-value type used in object initialiser lists.
    */
-  typedef detail::MapPair<const char*, JSON> Pair;
+  typedef Map<const char*, JSON>::Pair Pair;
 
 private:
 

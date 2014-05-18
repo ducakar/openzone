@@ -117,7 +117,7 @@ void Profile::init()
   }
 
   items.clear();
-  items.deallocate();
+  items.trim();
 
   for( int i = 0; i < nItems; ++i ) {
     const char* sItem = itemsConfig[i].get( "" );
@@ -163,7 +163,7 @@ void Profile::destroy()
   save();
 
   items.clear();
-  items.deallocate();
+  items.trim();
   persistent.clear();
 }
 

@@ -54,7 +54,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
     camera.rot, camera.p, camera.colour, Buffer( 0 ), -1, nullptr, 0.0f, Camera::CINEMATIC
   };
 
-  steps.allocate( nSteps );
+  steps.reserve( nSteps );
 
   for( int i = 0; i < nSteps; ++i ) {
     const JSON& stepConfig = sequence[i];
@@ -79,7 +79,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
 
     const JSON& execConfig = stepConfig["exec"];
     if( execConfig.isNull() ) {
-      step.code.deallocate();
+      step.code.resize( 0 );
     }
     else {
       step.code = luaClient.compile( execConfig.get( "" ), path );
@@ -171,7 +171,7 @@ void CinematicProxy::end()
   nTitleChars = 0;
 
   steps.clear();
-  steps.deallocate();
+  steps.trim();
 }
 
 void CinematicProxy::prepare()
@@ -257,7 +257,7 @@ void CinematicProxy::reset()
   camera.colour = camera.baseColour;
 
   steps.clear();
-  steps.deallocate();
+  steps.trim();
 }
 
 void CinematicProxy::read( InputStream* is )

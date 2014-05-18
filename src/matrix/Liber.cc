@@ -821,58 +821,58 @@ void Liber::init( const char* userMusicPath )
 void Liber::destroy()
 {
   shaders.clear();
-  shaders.deallocate();
+  shaders.trim();
   textures.clear();
-  textures.deallocate();
+  textures.trim();
   sounds.clear();
-  sounds.deallocate();
+  sounds.trim();
   caela.clear();
-  caela.deallocate();
+  caela.trim();
   terrae.clear();
-  terrae.deallocate();
+  terrae.trim();
   models.clear();
-  models.deallocate();
+  models.trim();
   nameLists.clear();
-  nameLists.deallocate();
+  nameLists.trim();
   minds.clear();
-  minds.deallocate();
+  minds.trim();
   musicTracks.clear();
-  musicTracks.deallocate();
+  musicTracks.trim();
 
   shaderIndices.clear();
-  shaderIndices.deallocate();
+  shaderIndices.trim();
   textureIndices.clear();
-  textureIndices.deallocate();
+  textureIndices.trim();
   soundIndices.clear();
-  soundIndices.deallocate();
+  soundIndices.trim();
   caelumIndices.clear();
-  caelumIndices.deallocate();
+  caelumIndices.trim();
   terraIndices.clear();
-  terraIndices.deallocate();
+  terraIndices.trim();
   modelIndices.clear();
-  modelIndices.deallocate();
+  modelIndices.trim();
   nameListIndices.clear();
-  nameListIndices.deallocate();
+  nameListIndices.trim();
   mindIndices.clear();
-  mindIndices.deallocate();
+  mindIndices.trim();
   musicTrackIndices.clear();
-  musicTrackIndices.deallocate();
+  musicTrackIndices.trim();
 
   deviceIndices.clear();
-  deviceIndices.deallocate();
+  deviceIndices.trim();
   imagoIndices.clear();
-  imagoIndices.deallocate();
+  imagoIndices.trim();
   audioIndices.clear();
-  audioIndices.deallocate();
+  audioIndices.trim();
 
   bsps.clear();
-  bsps.deallocate();
+  bsps.trim();
   baseClasses.clear();
-  baseClasses.deallocate();
+  baseClasses.trim();
   objClasses.free();
-  objClasses.deallocate();
+  objClasses.trim();
   fragPools.clear();
-  fragPools.deallocate();
+  fragPools.trim();
 }
 
 Liber liber;

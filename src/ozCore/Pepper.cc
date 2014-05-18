@@ -108,7 +108,7 @@ Pepper::Instance::Instance( PP_Instance instance_ ) :
 Pepper::Instance::~Instance()
 {
   messageQueue.clear();
-  messageQueue.deallocate();
+  messageQueue.trim();
 
   ppInstance = nullptr;
 }

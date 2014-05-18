@@ -28,10 +28,5 @@ using namespace oz;
 int main()
 {
   System::init();
-  List<int> l = { 1, 2, 3 };
-  Log() << l.capacity();
-  for( int i : l ) {
-    Log() << i;
-  }
   return 0;
 }

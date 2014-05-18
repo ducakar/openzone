@@ -26,7 +26,7 @@
 
 #include "File.hh"
 
-#include "HashMap.hh"
+#include "Map.hh"
 #include "Pepper.hh"
 
 #if defined( __native_client__ )
@@ -143,7 +143,7 @@ static void initExecutablePath()
 
 #else
 
-static void setSpecialDir( int dirId, const char* name, HashMap<String, String>* vars )
+static void setSpecialDir( int dirId, const char* name, Map<String, String>* vars )
 {
   const char* value = getenv( name );
 
@@ -161,7 +161,7 @@ static void setSpecialDir( int dirId, const char* name, HashMap<String, String>*
   specialDirs[dirId] = value;
 }
 
-static void loadXDGSettings( const File& file, HashMap<String, String>* vars )
+static void loadXDGSettings( const File& file, Map<String, String>* vars )
 {
   InputStream is = file.inputStream();
 
@@ -204,7 +204,7 @@ static void initSpecialDirs()
     OZ_ERROR( "oz::File: Unable to determine home directory: HOME environment variable not set" );
   }
 
-  HashMap<String, String> vars;
+  Map<String, String> vars;
 
   // Default locations.
   vars.add( "XDG_CONFIG_HOME",   File::HOME + "/.config"      );
@@ -658,7 +658,7 @@ Buffer File::read() const
   }
 
   int size = fileSize;
-  buffer.allocate( size );
+  buffer.resize( size );
 
   read( buffer.begin(), &size );
 

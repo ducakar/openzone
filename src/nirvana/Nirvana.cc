@@ -154,10 +154,10 @@ void Nirvana::unload()
   Log::print( "Unloading Nirvana ..." );
 
   devices.free();
-  devices.deallocate();
+  devices.trim();
 
   minds.clear();
-  minds.deallocate();
+  minds.trim();
 
   Memo::pool.free();
 
@@ -190,7 +190,7 @@ void Nirvana::destroy()
   luaNirvana.destroy();
 
   deviceClasses.clear();
-  deviceClasses.deallocate();
+  deviceClasses.trim();
 
   Log::unindent();
   Log::println( "}" );

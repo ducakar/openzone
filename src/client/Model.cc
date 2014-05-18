@@ -323,16 +323,18 @@ void Model::clearScheduled( QueueType queue )
 
 void Model::deallocate()
 {
-  loadedModels.deallocate();
+  hard_assert( loadedModels.isEmpty() );
+
+  loadedModels.trim();
 
   delete[] vertexAnimBuffer;
   vertexAnimBuffer = nullptr;
   vertexAnimBufferLength = 0;
 
-  instances[SCENE_QUEUE].deallocate();
-  instances[OVERLAY_QUEUE].deallocate();
+  instances[SCENE_QUEUE].trim();
+  instances[OVERLAY_QUEUE].trim();
 
-  sceneLights.deallocate();
+  sceneLights.trim();
 }
 
 Model::Model( const String& path_ ) :
@@ -641,11 +643,11 @@ void Model::unload()
   }
 
   nodes.clear();
-  nodes.deallocate();
+  nodes.trim();
   meshes.clear();
-  meshes.deallocate();
+  meshes.trim();
   textures.clear();
-  textures.deallocate();
+  textures.trim();
 
   if( nFrames != 0 ) {
     if( shader.hasVertexTexture ) {

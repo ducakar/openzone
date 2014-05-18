@@ -688,6 +688,10 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
       entity.velocity = Vec3::ZERO;
     }
   }
+
+  if( bsp->nBoundObjects != 0 ) {
+    boundObjects.reserve( bsp->nBoundObjects );
+  }
 }
 
 Struct::Struct( const BSP* bsp_, InputStream* is )
@@ -740,7 +744,7 @@ Struct::Struct( const BSP* bsp_, InputStream* is )
   hard_assert( nBoundObjects <= bsp->nBoundObjects );
 
   if( bsp->nBoundObjects != 0 ) {
-    boundObjects.allocate( bsp->nBoundObjects );
+    boundObjects.reserve( bsp->nBoundObjects );
 
     for( int i = 0; i < nBoundObjects; ++i ) {
       boundObjects.add( is->readInt() );
@@ -805,7 +809,7 @@ Struct::Struct( const BSP* bsp_, const JSON& json )
   hard_assert( boundObjectsJSON.length() <= bsp->nBoundObjects );
 
   if( bsp->nBoundObjects != 0 ) {
-    boundObjects.allocate( bsp->nBoundObjects );
+    boundObjects.reserve( bsp->nBoundObjects );
 
     for( const JSON& i : boundObjectsJSON.arrayCIter() ) {
       int index = i.get( -1 );

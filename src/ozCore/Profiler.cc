@@ -51,7 +51,7 @@ void Profiler::add( const char* key, uint micros )
 void Profiler::clear()
 {
   profileTimes.clear();
-  profileTimes.deallocate();
+  profileTimes.trim();
 }
 
 }

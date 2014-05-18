@@ -631,13 +631,24 @@ public:
   }
 
   /**
+   * Increase capacity (exactly) to the given value if smaller.
+   */
+  void reserve( int capacity )
+  {
+    if( size < capacity ) {
+      data = aReallocate<Elem>( data, count, capacity );
+      size = capacity;
+    }
+  }
+
+  /**
    * Trim capacity to the current number of elements.
    */
   void trim()
   {
     if( count < size ) {
+      data = aReallocate<Elem>( data, count, count );
       size = count;
-      data = aReallocate<Elem>( data, count, size );
     }
   }
 
@@ -660,30 +671,6 @@ public:
   {
     aFree<Elem>( data, count );
     count = 0;
-  }
-
-  /**
-   * For an empty list with no allocated storage, allocate capacity for `capacity` elements.
-   */
-  void allocate( int capacity )
-  {
-    hard_assert( size == 0 && capacity > 0 );
-
-    data = new Elem[capacity];
-    size = capacity;
-  }
-
-  /**
-   * Deallocate storage of an empty list.
-   */
-  void deallocate()
-  {
-    hard_assert( count == 0 );
-
-    delete[] data;
-
-    data = nullptr;
-    size = 0;
   }
 
 };

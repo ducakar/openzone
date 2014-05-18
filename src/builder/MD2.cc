@@ -385,13 +385,13 @@ void MD2::build( const char* path )
   compiler.endModel();
 
   texCoords.clear();
-  texCoords.deallocate();
+  texCoords.trim();
   triangles.clear();
-  triangles.deallocate();
+  triangles.trim();
   normals.clear();
-  normals.deallocate();
+  normals.trim();
   positions.clear();
-  positions.deallocate();
+  positions.trim();
 
   String sDestDir = &sPath[1];
   File::mkdir( sDestDir );

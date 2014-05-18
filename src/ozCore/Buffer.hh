@@ -212,16 +212,6 @@ public:
    */
   void resize( int newSize );
 
-  /**
-   * For an empty buffer, allocate new storage of `newSize` bytes.
-   */
-  void allocate( int newSize );
-
-  /**
-   * Deallocate storage.
-   */
-  void deallocate();
-
 };
 
 }

@@ -101,7 +101,7 @@ void Font::destroy()
     handle = nullptr;
   }
 
-  buffer.deallocate();
+  buffer.resize( 0 );
 }
 
 }

@@ -735,7 +735,7 @@ void OutputStream::writeLine( const char* s )
   data[length] = '\n';
 }
 
-void OutputStream::deallocate()
+void OutputStream::free()
 {
   if( buffered ) {
     delete[] streamBegin;

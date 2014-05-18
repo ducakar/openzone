@@ -83,11 +83,9 @@ public:
   using List<Elem>::last;
   using List<Elem>::insert;
   using List<Elem>::erase;
-  using List<Elem>::resize;
+  using List<Elem>::reserve;
   using List<Elem>::trim;
   using List<Elem>::clear;
-  using List<Elem>::allocate;
-  using List<Elem>::deallocate;
 
   /**
    * Create an empty set.

@@ -87,11 +87,9 @@ Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empt
 
   addedStructs.add( str->index );
 
-  if( !empty && str->bsp->nBoundObjects != 0 ) {
-    str->boundObjects.allocate( bsp->nBoundObjects );
-
-    for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
-      const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
+  if( !empty ) {
+    for( int i = 0; i < bsp->nBoundObjects; ++i ) {
+      const BSP::BoundObject& boundObj = bsp->boundObjects[i];
 
       Point   pos     = str->toAbsoluteCS( boundObj.pos );
       Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
@@ -305,38 +303,38 @@ void Synapse::update()
 
 void Synapse::load()
 {
-  putObjects.allocate( 32 );
-  cutObjects.allocate( 32 );
+  putObjects.reserve( 32 );
+  cutObjects.reserve( 32 );
 
-  addedStructs.allocate( 4 * 16 );
-  addedObjects.allocate( 64 * 16 );
-  addedFrags.allocate( 128 * 8 );
+  addedStructs.reserve( 4 * 16 );
+  addedObjects.reserve( 64 * 16 );
+  addedFrags.reserve( 128 * 8 );
 
-  removedStructs.allocate( 4 );
-  removedObjects.allocate( 64 );
-  removedFrags.allocate( 128 );
+  removedStructs.reserve( 4 );
+  removedObjects.reserve( 64 );
+  removedFrags.reserve( 128 );
 }
 
 void Synapse::unload()
 {
   putObjects.clear();
-  putObjects.deallocate();
+  putObjects.trim();
   cutObjects.clear();
-  cutObjects.deallocate();
+  cutObjects.trim();
 
   addedStructs.clear();
-  addedStructs.deallocate();
+  addedStructs.trim();
   addedObjects.clear();
-  addedObjects.deallocate();
+  addedObjects.trim();
   addedFrags.clear();
-  addedFrags.deallocate();
+  addedFrags.trim();
 
   removedStructs.clear();
-  removedStructs.deallocate();
+  removedStructs.trim();
   removedObjects.clear();
-  removedObjects.deallocate();
+  removedObjects.trim();
   removedFrags.clear();
-  removedFrags.deallocate();
+  removedFrags.trim();
 }
 
 Synapse synapse;

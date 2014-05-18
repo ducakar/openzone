@@ -143,11 +143,9 @@ public:
   using Set<Pair>::index;
   using Set<Pair>::erase;
   using Set<Pair>::exclude;
-  using Set<Pair>::resize;
+  using Set<Pair>::reserve;
   using Set<Pair>::trim;
   using Set<Pair>::clear;
-  using Set<Pair>::allocate;
-  using Set<Pair>::deallocate;
 
   /**
    * Create an empty map.

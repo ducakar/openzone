@@ -63,7 +63,7 @@ public:
 
 private:
 
-  using typename HashSet<Pair>::Bucket;
+  using typename HashSet<Pair>::Entry;
 
   using HashSet<Pair>::pool;
   using HashSet<Pair>::data;
@@ -73,16 +73,16 @@ private:
   /**
    * Delete all elements and referenced objects in a given chain.
    */
-  void freeChain( Bucket* chain )
+  void freeChain( Entry* entry )
   {
-    while( chain != nullptr ) {
-      Bucket* next = chain->next;
+    while( entry != nullptr ) {
+      Entry* next = entry->next;
 
-      delete chain->elem.value;
-      chain->~Bucket();
-      pool.deallocate( chain );
+      delete entry->elem.value;
+      entry->~Entry();
+      pool.deallocate( entry );
 
-      chain = next;
+      entry = next;
     }
   }
 
@@ -100,7 +100,6 @@ public:
   using HashSet<Pair>::exclude;
   using HashSet<Pair>::trim;
   using HashSet<Pair>::clear;
-  using HashSet<Pair>::deallocate;
 
   /**
    * Create an empty hashtable.
@@ -173,15 +172,15 @@ public:
       return nullptr;
     }
 
-    int     h = hash( key );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( key );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem.key == key ) {
-        return &b->elem.value;
+    while( entry != nullptr ) {
+      if( entry->elem.key == key ) {
+        return &entry->elem.value;
       }
-      b = b->next;
+      entry = entry->next;
     }
     return nullptr;
   }
@@ -196,15 +195,15 @@ public:
       return nullptr;
     }
 
-    int     h = hash( key );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( key );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem.key == key ) {
-        return &b->elem.value;
+    while( entry != nullptr ) {
+      if( entry->elem.key == key ) {
+        return &entry->elem.value;
       }
-      b = b->next;
+      entry = entry->next;
     }
     return nullptr;
   }
@@ -219,22 +218,22 @@ public:
   {
     ensureCapacity( pool.length() + 1 );
 
-    int     h = hash( key );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( key );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem.key == key ) {
-        b->elem.value = static_cast<Value_&&>( value );
-        return b->elem.value;
+    while( entry != nullptr ) {
+      if( entry->elem.key == key ) {
+        entry->elem.value = static_cast<Value_&&>( value );
+        return entry->elem.value;
       }
-      b = b->next;
+      entry = entry->next;
     }
 
-    data[i] = new( pool ) Bucket {
-      data[i], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
+    data[index] = new( pool ) Entry {
+      data[index], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
     };
-    return data[i]->elem.value;
+    return data[index]->elem.value;
   }
 
   /**
@@ -247,21 +246,21 @@ public:
   {
     ensureCapacity( pool.length() + 1 );
 
-    int     h = hash( key );
-    uint    i = uint( h ) % uint( size );
-    Bucket* b = data[i];
+    int    h     = hash( key );
+    uint   index = uint( h ) % uint( size );
+    Entry* entry = data[index];
 
-    while( b != nullptr ) {
-      if( b->elem.key == key ) {
-        return b->elem.value;
+    while( entry != nullptr ) {
+      if( entry->elem.key == key ) {
+        return entry->elem.value;
       }
-      b = b->next;
+      entry = entry->next;
     }
 
-    data[i] = new( pool ) Bucket {
-      data[i], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
+    data[index] = new( pool ) Entry {
+      data[index], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
     };
-    return data[i]->elem.value;
+    return data[index]->elem.value;
   }
 
   /**

@@ -734,7 +734,7 @@ void BSP::optimise()
   }
 
   usedBrushSides.clear();
-  usedBrushSides.deallocate();
+  usedBrushSides.trim();
 
   Log::printEnd( " OK" );
 
@@ -780,7 +780,7 @@ void BSP::optimise()
   }
 
   usedPlanes.clear();
-  usedPlanes.deallocate();
+  usedPlanes.trim();
 
   Log::printEnd( " OK" );
 
@@ -1011,7 +1011,7 @@ void BSP::saveMatrix()
     os.writeString( sound );
   }
   usedSounds.clear();
-  usedSounds.deallocate();
+  usedSounds.trim();
 
   os.writeString( demolishSound );
   os.writeFloat( groundOffset );
@@ -1209,25 +1209,25 @@ void BSP::build( const char* name_ )
 
   textures.clear();
   planes.clear();
-  planes.deallocate();
+  planes.trim();
   nodes.clear();
-  nodes.deallocate();
+  nodes.trim();
   leaves.clear();
-  leaves.deallocate();
+  leaves.trim();
   leafBrushes.clear();
-  leafBrushes.deallocate();
+  leafBrushes.trim();
   models.clear();
   brushes.clear();
-  brushes.deallocate();
+  brushes.trim();
   brushSides.clear();
-  brushSides.deallocate();
+  brushSides.trim();
   modelFaces.clear();
   vertices.clear();
   indices.clear();
   faces.clear();
-  faces.deallocate();
+  faces.trim();
   boundObjects.clear();
-  boundObjects.deallocate();
+  boundObjects.trim();
 
   Log::unindent();
   Log::println( "}" );

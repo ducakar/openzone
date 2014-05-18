@@ -60,7 +60,7 @@
  *
  * All standard `new`/`delete` operators are disabled for the enclosing class.
  */
-#define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
+#define OZ_PLACEMENT_POOL_ALLOC( Type ) \
   void* operator new ( size_t ) = delete; \
   void* operator new[] ( size_t ) = delete; \
   void  operator delete ( void* ) noexcept = delete; \
@@ -104,7 +104,7 @@ public:
   /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
-  explicit PoolAlloc( size_t slotSize, int nSlots = 256 );
+  explicit PoolAlloc( size_t slotSize, int nSlots = 64 );
 
   /**
    * Destructor.
@@ -174,7 +174,7 @@ public:
  *
  * @sa `oz::PoolAlloc`
  */
-template <class Elem, int BLOCK_SLOTS = 256>
+template <class Elem, int BLOCK_SLOTS = 64>
 class Pool : public PoolAlloc
 {
   static_assert( BLOCK_SLOTS > 0, "Pool block must have at least 1 block." );

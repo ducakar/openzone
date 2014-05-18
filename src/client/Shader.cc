@@ -426,11 +426,11 @@ void Shader::destroy()
     }
 
     fragShaders.clear();
-    fragShaders.deallocate();
+    fragShaders.trim();
     vertShaders.clear();
-    vertShaders.deallocate();
+    vertShaders.trim();
     programs.clear();
-    programs.deallocate();
+    programs.trim();
 
     if( defaultNormals != 0 ) {
       glDeleteTextures( 1, &defaultNormals );

@@ -296,7 +296,7 @@ void TerraBuilder::addGradientPoint( const Vec4& point )
 void TerraBuilder::clearGradient()
 {
   gradientPoints.clear();
-  gradientPoints.deallocate();
+  gradientPoints.trim();
 }
 
 float* TerraBuilder::generateHeightmap( int width, int height )

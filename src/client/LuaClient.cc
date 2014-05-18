@@ -224,8 +224,8 @@ void LuaClient::init()
   loadDir( "@lua/client" );
 
   ls.envName = "client";
-  ms.structs.allocate( 32 );
-  ms.objects.allocate( 512 );
+  ms.structs.reserve( 32 );
+  ms.objects.reserve( 512 );
 
   /*
    * General functions
@@ -669,10 +669,10 @@ void LuaClient::destroy()
   profile.persistent = writeValue();
 
   ms.structs.clear();
-  ms.structs.deallocate();
+  ms.structs.trim();
 
   ms.objects.clear();
-  ms.objects.deallocate();
+  ms.objects.trim();
 
   cs.mission = "";
   cs.missionLingua.clear();

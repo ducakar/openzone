@@ -49,7 +49,7 @@ Buffer::Buffer( const String& s ) :
 
 Buffer::~Buffer()
 {
-  deallocate();
+  delete[] data;
 }
 
 Buffer::Buffer( const Buffer& b ) :
@@ -74,9 +74,8 @@ Buffer& Buffer::operator = ( const Buffer& b )
     return *this;
   }
 
-  if( size < b.size ) {
-    deallocate();
-    allocate( b.size );
+  if( size != b.size ) {
+    resize( b.size );
   }
 
   mCopy( data, b.data, size_t( b.size ) );
@@ -144,7 +143,7 @@ Buffer Buffer::deflate( int level ) const
 
   // Upper bound for deflated data plus sizeof( int ) to write down size of the uncompressed data.
   int newSize = int( deflateBound( &zstream, ulong( size ) ) ) + 4;
-  buffer.allocate( newSize );
+  buffer.resize( newSize );
 
   zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data ) );
   zstream.avail_in  = uint( size );
@@ -155,7 +154,7 @@ Buffer Buffer::deflate( int level ) const
   deflateEnd( &zstream );
 
   if( ret != Z_STREAM_END ) {
-    buffer.deallocate();
+    buffer.resize( 0 );
   }
   else if( zstream.total_out + 4 != uint( newSize ) ) {
     buffer.resize( int( zstream.total_out + 4 ) );
@@ -189,7 +188,7 @@ Buffer Buffer::inflate() const
   int newSize = *reinterpret_cast<int*>( data );
 #endif
 
-  buffer.allocate( newSize );
+  buffer.resize( newSize );
 
   zstream.next_in   = reinterpret_cast<ubyte*>( const_cast<char*>( data + 4 ) );
   zstream.avail_in  = uint( size - 4 );
@@ -200,7 +199,7 @@ Buffer Buffer::inflate() const
   inflateEnd( &zstream );
 
   if( ret != Z_STREAM_END ) {
-    buffer.deallocate();
+    buffer.resize( 0 );
   }
   return buffer;
 }
@@ -219,22 +218,6 @@ void Buffer::resize( int newSize )
 
   data = newData;
   size = newSize;
-}
-
-void Buffer::allocate( int newSize )
-{
-  hard_assert( size == 0 && newSize > 0 );
-
-  data = new char[newSize];
-  size = newSize;
-}
-
-void Buffer::deallocate()
-{
-  delete[] data;
-
-  data = nullptr;
-  size = 0;
 }
 
 }

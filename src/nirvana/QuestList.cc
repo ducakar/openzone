@@ -91,7 +91,7 @@ void QuestList::load()
 void QuestList::unload()
 {
   quests.clear();
-  quests.deallocate();
+  quests.trim();
 
   activeQuest = -1;
 }

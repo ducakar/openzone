@@ -181,7 +181,7 @@ void test_iterables()
   OZ_CHECK( !iEquals( v.citer(), l.citer() ) );
 
   v.clear();
-  v.deallocate();
+  v.trim();
 
   iCopy( v.citer(), l.iter() );
   iMove( v.iter(), l.iter() );

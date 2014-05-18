@@ -201,7 +201,7 @@ static int ozCameraClearSwitchableBots( lua_State* l )
   BOT_INDEX( l_toint( 1 ) );
 
   camera.switchableUnits.clear();
-  camera.switchableUnits.deallocate();
+  camera.switchableUnits.trim();
   return 0;
 }
 

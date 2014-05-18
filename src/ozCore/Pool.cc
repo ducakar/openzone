@@ -43,7 +43,7 @@ struct PoolAlloc::Block
   char   data[1] OZ_ALIGNED( OZ_ALIGNMENT );
 
   OZ_HIDDEN
-  static Block* allocate( size_t slotSize, int nSlots, Block* nextBlock )
+  static Block* create( size_t slotSize, int nSlots, Block* nextBlock )
   {
     void*  chunk = new char[ OZ_ALIGNMENT + size_t( nSlots ) * slotSize ];
     Block* block = reinterpret_cast<Block*>( chunk );
@@ -59,7 +59,7 @@ struct PoolAlloc::Block
   }
 
   OZ_HIDDEN
-  void deallocate()
+  void destroy()
   {
     delete[] reinterpret_cast<char*>( this );
   }
@@ -125,7 +125,7 @@ void* PoolAlloc::allocate()
   ++count;
 
   if( freeSlot == nullptr ) {
-    firstBlock = Block::allocate( slotSize, nSlots, firstBlock );
+    firstBlock = Block::create( slotSize, nSlots, firstBlock );
     freeSlot   = firstBlock->slot( 1, slotSize );
     size      += int( slotSize );
 
@@ -172,7 +172,7 @@ void PoolAlloc::free()
     while( block != nullptr ) {
       Block* next = block->nextBlock;
 
-      block->deallocate();
+      block->destroy();
       block = next;
     }
   }

@@ -693,9 +693,9 @@ void Context::unload()
   alDeleteBuffers( 2, speakSource.bufferIds );
 
   imagines.free();
-  imagines.deallocate();
+  imagines.trim();
   audios.free();
-  audios.deallocate();
+  audios.trim();
 
   caelum.unload();
   terra.unload();
@@ -750,7 +750,7 @@ void Context::unload()
   sources.free();
   Source::pool.free();
   contSources.clear();
-  contSources.deallocate();
+  contSources.trim();
 
   for( int i = 0; i < liber.textures.length(); ++i ) {
     hard_assert( textures[i].nUsers == -1 );

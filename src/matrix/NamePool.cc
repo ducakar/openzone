@@ -90,9 +90,9 @@ void NamePool::destroy()
   Log::print( "Destroying NamePool ..." );
 
   names.clear();
-  names.deallocate();
+  names.trim();
   listPositions.clear();
-  listPositions.deallocate();
+  listPositions.trim();
 
   Log::printEnd( " OK" );
 }

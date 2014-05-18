@@ -254,14 +254,11 @@ public:
   Bitset& operator ^= ( const Bitset& b );
 
   /**
-   * For an empty bitset, allocate storage for `nBits` bits.
+   * Resize bitmap.
+   *
+   * Resizing to zero frees all allocated storage.
    */
-  void allocate( int nBits );
-
-  /**
-   * Deallocate data.
-   */
-  void deallocate();
+  void resize( int nBits );
 
 };
 
