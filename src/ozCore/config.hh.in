@@ -26,9 +26,6 @@
  * Configuration variables
  */
 
-// Enable PulseAudio back-end for System::bell() for Linux and generic Unix ports.
-#cmakedefine OZ_PULSE_BELL
-
 // Enable tracking of allocated memory chunks. Stack trace for every memory allocation performed
 // via new operator is saved for later diagnostics. It detects new/delete mismatches and one can
 // check for currently allocated memory chunks (and hence memory leaks).

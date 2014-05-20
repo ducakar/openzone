@@ -89,33 +89,6 @@ void LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
   hard_assert( l_gettop() == 1 );
 }
 
-const Automaton::State* LuaNirvana::updateMind( const Automaton::State* state, Mind* mind,
-                                                Bot* self ) const
-{
-  hard_assert( state != nullptr );
-
-  for( const Automaton::State::Link& link : state->links ) {
-    if( luaNirvana.execChunk( link.condition, state->name, mind, self ) ) {
-      state = link.target;
-
-      if( !state->onEnter.isEmpty() ) {
-        luaNirvana.execChunk( state->onEnter, state->name, mind, self );
-      }
-      return state;
-    }
-  }
-
-  if( !state->onUpdate.isEmpty() ) {
-    luaNirvana.execChunk( state->onUpdate, state->name, mind, self );
-  }
-  return state;
-}
-
-Automaton* LuaNirvana::findAutomaton( const char* name )
-{
-  return automata.find( name );
-}
-
 void LuaNirvana::registerMind( int botIndex )
 {
   hard_assert( l_gettop() == 1 );
@@ -565,11 +538,6 @@ void LuaNirvana::init()
   l_getglobal( "ozLocalData" );
 
   loadDir( "@lua/nirvana" );
-
-//  File mindsDir = "@nirvana/mind";
-//  for( const File& file : mindsDir.ls() ) {
-//    automata.add( file.baseName(), Automaton( file, this ) );
-//  }
 
   hard_assert( l_gettop() == 1 );
 

@@ -54,17 +54,13 @@
 # define isatty( fd ) _isatty( fd )
 #else
 # include <ctime>
-# include <fcntl.h>
 # include <pthread.h>
 # ifndef __linux__
+#  include <fcntl.h>
 #  include <sys/ioctl.h>
 #  include <sys/soundcard.h>
 # else
 #  include <alsa/asoundlib.h>
-# endif
-# ifdef OZ_PULSE_BELL
-#  include <cerrno>
-#  include <pulse/simple.h>
 # endif
 #endif
 
@@ -106,12 +102,12 @@ static const timespec TIMESPEC_10MS       = { 0, 10 * 1000000 };
 
 struct SampleInfo
 {
-  pp::Audio* audio;
-  int        rate;
-  int        nFrameSamples;
-  int        nSamples;
-  int        end;
-  int        offset;
+  pp::Audio audio;
+  int       rate;
+  int       nFrameSamples;
+  int       nSamples;
+  int       end;
+  int       offset;
 };
 
 #elif defined( _WIN32 )
@@ -283,33 +279,20 @@ static void* bellMain( void* )
     return nullptr;
   }
 
-  SampleInfo* info  = static_cast<SampleInfo*>( malloc( sizeof( SampleInfo ) ) );
-  pp::Audio*  audio = static_cast<pp::Audio*>( malloc( sizeof( pp::Audio ) ) );
-
-  if( info == nullptr || audio == nullptr ) {
-    free( audio );
-    free( info );
-
-    __sync_lock_release( &bellLock );
-    return nullptr;
-  }
-
   PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( ppInstance );
   uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( ppInstance, rate, 4096 );
+
+  SampleInfo info;
+  info.rate          = rate;
+  info.nFrameSamples = int( nFrameSamples );
+  info.nSamples      = Math::lround( BELL_TIME * float( rate ) );
+  info.end           = info.nSamples + 2 * info.nFrameSamples;
+  info.offset        = 0;
+
   pp::AudioConfig config( ppInstance, rate, nFrameSamples );
+  pp::Audio       audio( ppInstance, config, bellCallback, &info );
 
-  info->audio         = new( audio ) pp::Audio( ppInstance, config, bellCallback, info );
-  info->rate          = rate;
-  info->nFrameSamples = int( nFrameSamples );
-  info->nSamples      = Math::lround( BELL_TIME * float( rate ) );
-  info->end           = info->nSamples + 2*info->nFrameSamples;
-  info->offset        = 0;
-
-  if( info->audio->StartPlayback() == PP_FALSE ) {
-    info->audio->~Audio();
-    free( info->audio );
-    free( info );
-
+  if( audio.StartPlayback() == PP_FALSE ) {
     __sync_lock_release( &bellLock );
     return nullptr;
   }
@@ -318,10 +301,7 @@ static void* bellMain( void* )
     nanosleep( &TIMESPEC_10MS, nullptr );
   }
 
-  info->audio->StopPlayback();
-  info->audio->~Audio();
-  free( info->audio );
-  free( info );
+  audio.StopPlayback();
   return nullptr;
 }
 
@@ -329,7 +309,7 @@ static void* bellMain( void* )
 
 static DWORD WINAPI bellMain( void* )
 {
-  Wave* wave = static_cast<Wave*>( malloc( sizeof( Wave ) ) );
+  Wave* wave = static_cast<Wave*>( alloca( sizeof( Wave ) ) );
 
   wave->chunkId[0]     = 'R';
   wave->chunkId[1]     = 'I';
@@ -360,9 +340,7 @@ static DWORD WINAPI bellMain( void* )
   wave->subchunk2Size  = sizeof( wave->samples );
 
   genBellSamples( wave->samples, BELL_WAVE_SAMPLES, BELL_PREFERRED_RATE, 0, BELL_WAVE_SAMPLES );
-
   PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
-  free( wave );
 
   __sync_lock_release( &bellLock );
   return 0;
@@ -372,32 +350,6 @@ static DWORD WINAPI bellMain( void* )
 
 static void* bellMain( void* )
 {
-#ifdef OZ_PULSE_BELL
-
-  const pa_sample_spec PA_SAMPLE_SPEC = { PA_SAMPLE_S16NE, BELL_PREFERRED_RATE, 2 };
-# ifndef _GNU_SOURCE
-  const char* program_invocation_short_name = "liboz";
-# endif
-
-  pa_simple* pa = pa_simple_new( nullptr, program_invocation_short_name, PA_STREAM_PLAYBACK,
-                                 nullptr, "bell", &PA_SAMPLE_SPEC, nullptr, nullptr, nullptr );
-  if( pa != nullptr ) {
-    int    nSamples = int( BELL_TIME * float( BELL_PREFERRED_RATE ) );
-    size_t size     = size_t( nSamples * 2 ) * sizeof( short );
-    short* samples  = static_cast<short*>( malloc( size ) );
-
-    genBellSamples( samples, nSamples, BELL_PREFERRED_RATE, 0, nSamples );
-    pa_simple_write( pa, samples, size, nullptr );
-    free( samples );
-
-    pa_simple_drain( pa, nullptr );
-    pa_simple_free( pa );
-
-    __sync_lock_release( &bellLock );
-    return nullptr;
-  }
-
-#endif
 #ifndef __linux__
 
   int fd;
@@ -429,11 +381,10 @@ static void* bellMain( void* )
 
   int    nSamples = int( BELL_TIME * float( rate ) );
   size_t size     = size_t( nSamples * channels ) * sizeof( short );
-  short* samples  = static_cast<short*>( malloc( size ) );
+  short* samples  = static_cast<short*>( alloca( size ) );
 
   genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
   write( fd, samples, size );
-  free( samples );
 
   close( fd );
 
@@ -467,11 +418,10 @@ static void* bellMain( void* )
 
   int    nSamples = int( BELL_TIME * float( rate ) );
   size_t size     = size_t( nSamples * 2 ) * sizeof( short );
-  short* samples  = static_cast<short*>( malloc( size ) );
+  short* samples  = static_cast<short*>( alloca( size ) );
 
   genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
   snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
-  free( samples );
 
   snd_pcm_drain( alsa );
   snd_pcm_close( alsa );

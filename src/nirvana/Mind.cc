@@ -45,18 +45,13 @@ bool Mind::needsUpdate( const Bot* botObj )
 }
 
 Mind::Mind() :
-  flags( 0 ), side( 0 ), bot( 0 ), automaton( nullptr ), state( nullptr )
+  flags( 0 ), side( 0 ), bot( 0 )
 {}
 
 Mind::Mind( int bot_ ) :
-  flags( 0 ), side( 0 ), bot( bot_ ), automaton( nullptr ), state( nullptr )
+  flags( 0 ), side( 0 ), bot( bot_ )
 {
-  const Bot* botObj = static_cast<const Bot*>( orbis.obj( bot ) );
-
   luaNirvana.registerMind( bot );
-
-  automaton = botObj == nullptr ? nullptr : luaNirvana.findAutomaton( botObj->mind );
-  state     = automaton == nullptr ? nullptr : automaton->findState( "" );
 }
 
 Mind::Mind( int bot_, InputStream* is ) :
@@ -64,12 +59,6 @@ Mind::Mind( int bot_, InputStream* is ) :
 {
   flags     = is->readInt();
   side      = is->readInt();
-
-  const char* sAutomaton = is->readString();
-  const char* sState     = is->readString();
-
-  automaton = luaNirvana.findAutomaton( sAutomaton );
-  state     = automaton == nullptr ? nullptr : automaton->findState( sState );
 }
 
 Mind::~Mind()
@@ -80,13 +69,11 @@ Mind::~Mind()
 }
 
 Mind::Mind( Mind&& m ) :
-  flags( m.flags ), side( m.side ), bot( m.bot ), automaton( m.automaton ), state( m.state )
+  flags( m.flags ), side( m.side ), bot( m.bot )
 {
-  m.bot       = -1;
-  m.flags     = 0;
-  m.side      = 0;
-  m.automaton = nullptr;
-  m.state     = nullptr;
+  m.bot   = -1;
+  m.flags = 0;
+  m.side  = 0;
 }
 
 Mind& Mind::operator = ( Mind&& m )
@@ -95,17 +82,13 @@ Mind& Mind::operator = ( Mind&& m )
     return *this;
   }
 
-  flags     = m.flags;
-  side      = m.side;
-  bot       = m.bot;
-  automaton = m.automaton;
-  state     = m.state;
+  flags = m.flags;
+  side  = m.side;
+  bot   = m.bot;
 
-  m.flags     = 0;
-  m.side      = 0;
-  m.bot       = -1;
-  m.automaton = nullptr;
-  m.state     = nullptr;
+  m.flags = 0;
+  m.side  = 0;
+  m.bot   = -1;
 
   return *this;
 }
@@ -128,8 +111,6 @@ void Mind::write( OutputStream* os ) const
 {
   os->writeInt( flags );
   os->writeInt( side );
-  os->writeString( automaton == nullptr ? "" : automaton->name );
-  os->writeString( state == nullptr ? "" : state->name );
 }
 
 }

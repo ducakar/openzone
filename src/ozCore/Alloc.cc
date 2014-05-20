@@ -138,8 +138,7 @@ static void* allocate( AllocMode mode, size_t size )
 #if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
 #elif defined( OZ_SIMD_MATH )
-  // FIXME replace with aligned_alloc() once glibc 2.16 becomes minimum.
-  void* ptr = memalign( Alloc::ALIGNMENT, size );
+  void* ptr = alligned_alloc( Alloc::ALIGNMENT, size );
 #else
   void* ptr = malloc( size );
 #endif

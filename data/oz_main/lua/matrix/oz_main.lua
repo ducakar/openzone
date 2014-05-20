@@ -1,29 +1,23 @@
---[[
- * OpenZone - simple cross-platform FPS/RTS game engine.
- * Copyright (C) 2002-2014  Davorin Učakar
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
-]]--
+-- OpenZone - simple cross-platform FPS/RTS game engine.
+--
+-- Copyright © 2002-2014 Davorin Učakar
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
---[[
- * lua/matrix/oz_main.lua
- *
- * Handlers for oz_main objects.
-]]--
+-- lua/matrix/oz_main.lua
+--
+-- Handlers for oz_main objects.
 
 --
 -- Helper functions
@@ -61,7 +55,7 @@ function gunAttack( bulletFragPool, velocity, stillDisp, movingDisp )
 
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
-  local dX, dY, dZ = ozVec3.random( disp )
+  local dX, dY, dZ = vec3.random( disp )
 
   ozOrbisAddFrag( OZ_FORCE, bulletFragPool,
                   pX, pY, pZ,
@@ -73,7 +67,7 @@ end
 function vehicleGunAttack( bulletFragPool, velocity, disp )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozVehicleGetDir()
-  local dX, dY, dZ = ozVec3.random( disp )
+  local dX, dY, dZ = vec3.random( disp )
 
   ozOrbisAddFrag( OZ_FORCE, bulletFragPool,
                   pX, pY, pZ,
@@ -304,7 +298,7 @@ function grenadeLauncher_onShot( l )
 
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
-  local dX, dY, dZ = ozVec3.random( disp )
+  local dX, dY, dZ = vec3.random( disp )
 
   ozOrbisAddObj( OZ_FORCE, "grenade", pX, pY, pZ )
   ozDynSetMomentum( vX * 30 + dX, vY * 30 + dY, vZ * 30 + dZ )

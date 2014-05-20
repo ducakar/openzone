@@ -18,15 +18,13 @@ Building is currently supported under Linux. You can build Linux/Unix, Windows (
 Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
 supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.1 compilers are supported.
 
-To build OpenZone from source, development packages for the following libraries are required:
+Development packages of the following libraries are required to build OpenZone from source:
 
-- glibc >= 2.17 (Linux only)
 - ALSA (Linux only)
 - Assimp
 - FreeImage
 - libnoise
 - libpng
-- libpulse (Linux/Unix only, optional)
 - libsquish (optional)
 - libvorbis
 - Lua 5.1 or 5.2 or LuaJIT 2.0
@@ -62,11 +60,6 @@ You may also want to set several options when configuring CMake build system:
 
 - `OZ_SHARED_LIBS`: Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries. This might
   make sense once if some other applications may use OpenZone's libraries as well.
-
-- `OZ_PULSE_BELL`: Enable PulseAudio back-end for `System::bell()` error bell on Linux and generic
-  Unix ports. If enabled, liboz first tries to play bell through PulseAudio before it falls back to
-  the native sound system (ALSA on Linux and OSS on generic Unix port).
-  `OFF` by default.
 
 - `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks. Stack trace for every memory
   allocation performed via new operator is saved for later diagnostics. It detects new/delete

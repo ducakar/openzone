@@ -25,8 +25,6 @@
 
 #include <nirvana/common.hh>
 
-#include <common/Automaton.hh>
-
 namespace oz
 {
 
@@ -38,15 +36,12 @@ public:
 
   static const int FORCE_UPDATE_BIT = 0x01;
 
-  Mind*                   prev[1];
-  Mind*                   next[1];
+  Mind* prev[1];
+  Mind* next[1];
 
-  int                     flags;
-  int                     side;
-  int                     bot;
-
-  const Automaton*        automaton;
-  const Automaton::State* state;
+  int   flags;
+  int   side;
+  int   bot;
 
   static bool wasBumped( const Bot* botObj );
   static bool needsUpdate( const Bot* botObj );
