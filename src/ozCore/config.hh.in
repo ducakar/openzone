@@ -26,10 +26,12 @@
  * Configuration variables
  */
 
-// Enable tracking of allocated memory chunks. Stack trace for every memory allocation performed
-// via new operator is saved for later diagnostics. It detects new/delete mismatches and one can
-// check for currently allocated memory chunks (and hence memory leaks).
-#cmakedefine OZ_TRACK_ALLOCS
+// Enable memory allocation statistics and tracking of allocated memory chunks. Stack trace for
+// every memory allocation performed via new operator is saved for later diagnostics. It detects
+// new/delete mismatches and one can check for currently allocated memory chunks (and hence memory
+// leaks). Upon freeing a memory chunk is rewritten with 0xee bytes make accesses to freed memory
+// likely result in an error.
+#cmakedefine OZ_ALLOCATOR
 
 // Enable SIMD-specific implementation of linear algebra classes. However, due to larger size and if
 // code is not written with SIMD in mind, it may yield worse performance.

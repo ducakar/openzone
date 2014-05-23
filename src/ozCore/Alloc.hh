@@ -25,21 +25,17 @@
  *
  * `Alloc` class and enhanced `new`/`delete` operators.
  *
- * Apart form `Alloc` class, enhanced `new`/`delete` operators are defined in this module,
- * overriding standard ones defined in \<new\>. Those operators count number of allocations and
- * amount of memory allocated at any given time (reported through `Alloc::count`, `Alloc::amount`
- * etc.).
- *
- * Several other features may also be configured:
- * - Unless compiled with `NDEBUG` all freed memory is overwritten by 0xEE bytes.
- * - If compiled with `OZ_TRACK_ALLOCS` `new`/`delete` also tracks allocated chunks to catch memory
- *   leaks and `new`/`delete` mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()` can be
- *   used to iterate over chunks allocated by `new` and `new[]` operators respectively.
- * - If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to size of 4 floats.
+ * Besides `Alloc` class, enhanced `new`/`delete` operators are optionally defined in this module,
+ * overriding standard ones defined in \<new\>.
+ * - If compiled with `OZ_ALLOCATOR` `new`/`delete` also rewrites freed memory with 0xee bytes,
+ *   tracks memory statistics and allocated chunks to catch memory leaks and `new`/`delete`
+ *   mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()` can be used to iterate over chunks
+ *   allocated by `new` and `new[]` operators respectively.
+ * - If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to 16 bytes.
  *
  * @note
- * Enabling AddressSanitizer during compilation of liboz disables enhanced `new`/`delete` operator
- * implementations.
+ * Enabling AddressSanitizer, LeakSanitizer & similar tools overrides `new`/`delete` once again and
+ * hence disables the enhanced implementations.
  */
 
 #pragma once
@@ -67,10 +63,9 @@ public:
    */
   struct ChunkInfo
   {
-    ChunkInfo*  next;       ///< Pointer to the next chunk.
-    void*       address;    ///< Address of actual data (meta data lays before this address).
-    size_t      size;       ///< Size (including meta data).
-    StackTrace  stackTrace; ///< Stack trace for the `new` call that allocated it.
+    ChunkInfo* next;       ///< Pointer to the next chunk.
+    size_t     size;       ///< Size (including meta data).
+    StackTrace stackTrace; ///< Stack trace for the `new` call that allocated it.
   };
 
   /**

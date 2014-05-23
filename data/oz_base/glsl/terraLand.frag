@@ -67,7 +67,7 @@ void main()
 {
 #ifdef OZ_BUMP_MAP
   mat3  planeTransf  = mat3( exTangent, exBinormal, exNormal );
-  vec3  texelNormal  = texture2D( oz_Normals, exTexCoord ).xyz;
+  vec3  texelNormal  = texture2D( oz_Normals, exTexCoord * DETAIL_SCALE ).xyz;
   vec3  localNormal  = 2.0 * texelNormal - vec3( 1.0 );
   vec3  normal       = normalize( planeTransf * localNormal );
 #else

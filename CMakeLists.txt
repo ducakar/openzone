@@ -9,7 +9,7 @@ project( openzone C CXX )
 set( OZ_VERSION 0.3.87 )
 
 option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
-option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
+option( OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
 option( OZ_SDL1 "Use SDL 1.2 instead of SDL 2.0." OFF )

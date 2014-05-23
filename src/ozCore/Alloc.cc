@@ -35,105 +35,23 @@
 namespace oz
 {
 
+#ifdef OZ_ALLOCATOR
+
 enum AllocMode
 {
   OBJECT,
   ARRAY
 };
 
-static volatile int allocInfoLock = 0;
-
-#ifdef OZ_TRACK_ALLOCS
-
 static Alloc::ChunkInfo* volatile firstChunkInfo[2] = { nullptr, nullptr };
-
-static void addChunkInfo( AllocMode mode, void* ptr, size_t size )
-{
-  Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>( malloc( sizeof( Alloc::ChunkInfo ) ) );
-  if( ci == nullptr ) {
-    OZ_ERROR( "oz::Alloc: ChunkInfo allocation failed" );
-  }
-
-  ci->address    = ptr;
-  ci->size       = size;
-  ci->stackTrace = StackTrace::current( 2 );
-
-  while( __sync_lock_test_and_set( &allocInfoLock, 1 ) != 0 ) {
-    while( allocInfoLock != 0 );
-  }
-
-  ci->next = firstChunkInfo[mode];
-  firstChunkInfo[mode] = ci;
-
-  __sync_lock_release( &allocInfoLock );
-}
-
-static void eraseChunkInfo( AllocMode mode, void* ptr, size_t size )
-{
-  while( __sync_lock_test_and_set( &allocInfoLock, 1 ) != 0 ) {
-    while( allocInfoLock != 0 );
-  }
-
-  Alloc::ChunkInfo* ci   = firstChunkInfo[mode];
-  Alloc::ChunkInfo* prev = nullptr;
-
-  while( ci != nullptr ) {
-    if( ci->address == ptr ) {
-      if( prev == nullptr ) {
-        firstChunkInfo[mode] = ci->next;
-      }
-      else {
-        prev->next = ci->next;
-      }
-
-      __sync_lock_release( &allocInfoLock );
-
-      goto chunkInfoFound;
-    }
-    prev = ci;
-    ci = ci->next;
-  }
-
-  // Check if allocated as a different kind (object/array)
-  ci = firstChunkInfo[!mode];
-
-  while( ci != nullptr ) {
-    if( ci->address == ptr ) {
-      break;
-    }
-    ci = ci->next;
-  }
-
-  __sync_lock_release( &allocInfoLock );
-
-  if( ci == nullptr ) {
-    OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %lu",
-              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
-  }
-  else {
-    OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
-              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
-  }
-chunkInfoFound:
-
-  if( ci->size != size ) {
-    OZ_ERROR( "oz::Alloc: Mismatched size %lu for %s block at %p of size %lu",
-              ulong( size ), mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
-  }
-
-  free( ci );
-}
-
-#endif // OZ_TRACK_ALLOCS
+static volatile int               allocInfoLock     = 0;
 
 static void* allocate( AllocMode mode, size_t size )
 {
-  static_cast<void>( mode );
-
 #ifdef OZ_SIMD_MATH
   size = Alloc::alignUp( size )
 #endif
-  size += Alloc::alignUp( sizeof( size ) );
+  size += Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
 
 #if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
@@ -147,13 +65,16 @@ static void* allocate( AllocMode mode, size_t size )
     OZ_ERROR( "oz::Alloc: Out of memory" );
   }
 
-#ifdef OZ_TRACK_ALLOCS
-  addChunkInfo( mode, ptr, size );
-#endif
+  Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>( ptr );
+  ci->size       = size;
+  ci->stackTrace = StackTrace::current( 2 );
 
   while( __sync_lock_test_and_set( &allocInfoLock, 1 ) != 0 ) {
     while( allocInfoLock != 0 );
   }
+
+  ci->next = firstChunkInfo[mode];
+  firstChunkInfo[mode] = ci;
 
   ++Alloc::count;
   Alloc::amount += size;
@@ -166,35 +87,60 @@ static void* allocate( AllocMode mode, size_t size )
 
   __sync_lock_release( &allocInfoLock );
 
-  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );
-  static_cast<size_t*>( ptr )[-1] = size;
-
-  return ptr;
+  return static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
 }
 
 static void deallocate( AllocMode mode, void* ptr )
 {
-  static_cast<void>( mode );
-
-  size_t size = static_cast<size_t*>( ptr )[-1];
-  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
+  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
 
   while( __sync_lock_test_and_set( &allocInfoLock, 1 ) != 0 ) {
     while( allocInfoLock != 0 );
   }
 
+  Alloc::ChunkInfo* ci   = firstChunkInfo[mode];
+  Alloc::ChunkInfo* prev = nullptr;
+
+  while( ci != nullptr ) {
+    if( ci == ptr ) {
+      if( prev == nullptr ) {
+        firstChunkInfo[mode] = ci->next;
+      }
+      else {
+        prev->next = ci->next;
+      }
+      goto chunkInfoFound;
+    }
+    prev = ci;
+    ci = ci->next;
+  }
+
+  // Check if allocated as a different kind (object/array)
+  ci = firstChunkInfo[!mode];
+
+  while( ci != nullptr ) {
+    if( ci == ptr ) {
+      break;
+    }
+    ci = ci->next;
+  }
+
+  if( ci == nullptr ) {
+    OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %lu",
+              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+  }
+  else {
+    OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
+              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+  }
+chunkInfoFound:
+
   --Alloc::count;
-  Alloc::amount -= size;
+  Alloc::amount -= ci->size;
 
   __sync_lock_release( &allocInfoLock );
 
-#ifdef OZ_TRACK_ALLOCS
-  eraseChunkInfo( mode, ptr, size );
-#endif
-
-#ifndef NDEBUG
-  mSet( ptr, 0xee, size );
-#endif
+  mSet( ptr, 0xee, ci->size );
 
 #if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
   _aligned_free( ptr ));
@@ -203,6 +149,8 @@ static void deallocate( AllocMode mode, void* ptr )
 #endif
 }
 
+#endif // OZ_ALLOCATOR
+
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;
 int    Alloc::sumCount  = 0;
@@ -210,33 +158,27 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-#ifdef OZ_TRACK_ALLOCS
-
 Alloc::ChunkCIterator Alloc::objectCIter()
 {
+#ifdef OZ_ALLOCATOR
   return ChunkCIterator( firstChunkInfo[OBJECT] );
-}
-
-Alloc::ChunkCIterator Alloc::arrayCIter()
-{
-  return ChunkCIterator( firstChunkInfo[ARRAY] );
-}
-
 #else
-
-Alloc::ChunkCIterator Alloc::objectCIter()
-{
   return ChunkCIterator();
+#endif
 }
 
 Alloc::ChunkCIterator Alloc::arrayCIter()
 {
+#ifdef OZ_ALLOCATOR
+  return ChunkCIterator( firstChunkInfo[ARRAY] );
+#else
   return ChunkCIterator();
-}
-
 #endif
+}
 
 }
+
+#ifdef OZ_ALLOCATOR
 
 OZ_WEAK
 void* operator new ( size_t size )
@@ -297,3 +239,5 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   }
   oz::deallocate( oz::ARRAY, ptr );
 }
+
+#endif // OZ_ALLOCATOR

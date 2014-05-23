@@ -42,7 +42,7 @@ const char* const   BuildInfo::COMPILER    = "GCC " __VERSION__;
 #endif
 const char* const   BuildInfo::CXX_FLAGS   = "@OZ_CXX_FLAGS@";
 const char* const   BuildInfo::CONFIG      = "OZ_SHARED_LIBS: @OZ_SHARED_LIBS@, "
-                                             "OZ_TRACK_ALLOCS: @OZ_TRACK_ALLOCS@, "
+                                             "OZ_ALLOCATOR: @OZ_ALLOCATOR@, "
                                              "OZ_SIMD_MATH: @OZ_SIMD_MATH@, "
                                              "OZ_DYNAMICS: @OZ_DYNAMICS@, "
                                              "OZ_SDL1: @OZ_SDL1@, "

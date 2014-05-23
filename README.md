@@ -61,10 +61,11 @@ You may also want to set several options when configuring CMake build system:
 - `OZ_SHARED_LIBS`: Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries. This might
   make sense once if some other applications may use OpenZone's libraries as well.
 
-- `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks. Stack trace for every memory
-  allocation performed via new operator is saved for later diagnostics. It detects new/delete
-  mismatches and can be used to find memory leaks.
-  `OFF` by default.
+- `OZ_ALLOCATOR`: Enable memory allocation statistics and tracking of allocated memory chunks. Stack
+  trace for every memory allocation performed via new operator is saved for later diagnostics. It
+  detects new/delete mismatches and one can check for currently allocated memory chunks (and hence
+  memory leaks). Upon freeing a memory chunk is rewritten with 0xee bytes make accesses to freed
+  memorylikely result in an error.
 
 - `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
   Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementation since

@@ -293,7 +293,8 @@ bool Log::printMemoryLeaks()
   bool hasOutput = false;
 
   for( const auto& ci : Alloc::objectCIter() ) {
-    println( "Leaked object at %p of size %lu B allocated", ci.address, ulong( ci.size ) );
+    println( "Leaked object at %p of size %lu B allocated",
+             static_cast<const void*>( &ci ), ulong( ci.size ) );
     indent();
     printTrace( ci.stackTrace );
     unindent();
@@ -302,7 +303,8 @@ bool Log::printMemoryLeaks()
   }
 
   for( const auto& ci : Alloc::arrayCIter() ) {
-    println( "Leaked array at %p of size %lu B allocated", ci.address, ulong( ci.size ) );
+    println( "Leaked array at %p of size %lu B allocated",
+             static_cast<const void*>( &ci ), ulong( ci.size ) );
     indent();
     printTrace( ci.stackTrace );
     unindent();
