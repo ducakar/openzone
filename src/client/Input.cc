@@ -25,6 +25,13 @@
 
 #include <SDL.h>
 
+// Choose keycode for appropriate SDL version and prepend typical prefix.
+#if SDL_MAJOR_VERSION < 2
+# define OZ_SDL_KEY( sdl1, sdl2 ) SDLK_##sdl1
+#else
+# define OZ_SDL_KEY( sdl1, sdl2 ) SDL_SCANCODE_##sdl2
+#endif
+
 namespace oz
 {
 namespace client
@@ -131,177 +138,88 @@ static bool              configExists = false;
 
 void Input::loadDefaultKeyMap()
 {
-#if SDL_MAJOR_VERSION < 2
+  modifier0                         = OZ_SDL_KEY( LALT, LALT );
+  modifier1                         = OZ_SDL_KEY( RALT, RALT );
 
-  modifier0                         = SDLK_LALT;
-  modifier1                         = SDLK_RALT;
+  keyMap[KEY_UI_ALT][0]             = MOD_MASK    | OZ_SDL_KEY( LALT,        LALT        );
+  keyMap[KEY_UI_ALT][1]             = MOD_MASK    | OZ_SDL_KEY( RALT,        RALT        );
+  keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | OZ_SDL_KEY( TAB,         TAB         );
 
-  keyMap[KEY_UI_ALT][0]             = MOD_MASK    | SDLK_LALT;
-  keyMap[KEY_UI_ALT][1]             = MOD_MASK    | SDLK_RALT;
-  keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDLK_TAB;
+  keyMap[KEY_DIR_1][0]              = MOD_MASK    | OZ_SDL_KEY( KP1,         KP_1        );
+  keyMap[KEY_DIR_1][1]              = MOD_MASK    | OZ_SDL_KEY( END,         END         );
+  keyMap[KEY_DIR_2][0]              = MOD_MASK    | OZ_SDL_KEY( KP2,         KP_2        );
+  keyMap[KEY_DIR_2][1]              = MOD_MASK    | OZ_SDL_KEY( DOWN,        DOWN        );
+  keyMap[KEY_DIR_3][0]              = MOD_MASK    | OZ_SDL_KEY( KP3,         KP_3        );
+  keyMap[KEY_DIR_3][1]              = MOD_MASK    | OZ_SDL_KEY( PAGEDOWN,    PAGEDOWN    );
+  keyMap[KEY_DIR_4][0]              = MOD_MASK    | OZ_SDL_KEY( KP4,         KP_4        );
+  keyMap[KEY_DIR_4][1]              = MOD_MASK    | OZ_SDL_KEY( LEFT,        LEFT        );
+  keyMap[KEY_DIR_6][0]              = MOD_MASK    | OZ_SDL_KEY( KP6,         KP_6        );
+  keyMap[KEY_DIR_6][1]              = MOD_MASK    | OZ_SDL_KEY( RIGHT,       RIGHT       );
+  keyMap[KEY_DIR_7][0]              = MOD_MASK    | OZ_SDL_KEY( KP7,         KP_7        );
+  keyMap[KEY_DIR_7][1]              = MOD_MASK    | OZ_SDL_KEY( HOME,        HOME        );
+  keyMap[KEY_DIR_8][0]              = MOD_MASK    | OZ_SDL_KEY( KP8,         KP_8        );
+  keyMap[KEY_DIR_8][1]              = MOD_MASK    | OZ_SDL_KEY( UP,          UP          );
+  keyMap[KEY_DIR_9][0]              = MOD_MASK    | OZ_SDL_KEY( KP9,         KP_9        );
+  keyMap[KEY_DIR_9][1]              = MOD_MASK    | OZ_SDL_KEY( PAGEUP,      PAGEUP      );
 
-  keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDLK_KP1;
-  keyMap[KEY_DIR_1][1]              = MOD_MASK    | SDLK_END;
-  keyMap[KEY_DIR_2][0]              = MOD_MASK    | SDLK_KP2;
-  keyMap[KEY_DIR_2][1]              = MOD_MASK    | SDLK_DOWN;
-  keyMap[KEY_DIR_3][0]              = MOD_MASK    | SDLK_KP3;
-  keyMap[KEY_DIR_3][1]              = MOD_MASK    | SDLK_PAGEDOWN;
-  keyMap[KEY_DIR_4][0]              = MOD_MASK    | SDLK_KP4;
-  keyMap[KEY_DIR_4][1]              = MOD_MASK    | SDLK_LEFT;
-  keyMap[KEY_DIR_6][0]              = MOD_MASK    | SDLK_KP6;
-  keyMap[KEY_DIR_6][1]              = MOD_MASK    | SDLK_RIGHT;
-  keyMap[KEY_DIR_7][0]              = MOD_MASK    | SDLK_KP7;
-  keyMap[KEY_DIR_7][1]              = MOD_MASK    | SDLK_HOME;
-  keyMap[KEY_DIR_8][0]              = MOD_MASK    | SDLK_KP8;
-  keyMap[KEY_DIR_8][1]              = MOD_MASK    | SDLK_UP;
-  keyMap[KEY_DIR_9][0]              = MOD_MASK    | SDLK_KP9;
-  keyMap[KEY_DIR_9][1]              = MOD_MASK    | SDLK_PAGEUP;
+  keyMap[KEY_NV_TOGGLE][0]          = MOD_OFF_BIT | OZ_SDL_KEY( n,           N           );
+  keyMap[KEY_BINOCULARS_TOGGLE][0]  = MOD_OFF_BIT | OZ_SDL_KEY( b,           B           );
+  keyMap[KEY_MAP_TOGGLE][0]         = MOD_OFF_BIT | OZ_SDL_KEY( m,           M           );
 
-  keyMap[KEY_NV_TOGGLE][0]          = MOD_OFF_BIT | SDLK_n;
-  keyMap[KEY_BINOCULARS_TOGGLE][0]  = MOD_OFF_BIT | SDLK_b;
-  keyMap[KEY_MAP_TOGGLE][0]         = MOD_OFF_BIT | SDLK_m;
+  keyMap[KEY_CAMERA_TOGGLE][0]      = MOD_MASK    | OZ_SDL_KEY( KP_ENTER,    KP_ENTER    );
+  keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | OZ_SDL_KEY( RETURN,      RETURN      );
+  keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | OZ_SDL_KEY( KP_MULTIPLY, KP_MULTIPLY );
 
-  keyMap[KEY_CAMERA_TOGGLE][0]      = MOD_MASK    | SDLK_KP_ENTER;
-  keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDLK_RETURN;
-  keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDLK_KP_MULTIPLY;
+  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | OZ_SDL_KEY( q,           Q           );
+  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | OZ_SDL_KEY( e,           E           );
+  keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | OZ_SDL_KEY( d,           D           );
+  keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | OZ_SDL_KEY( a,           A           );
+  keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | OZ_SDL_KEY( w,           W           );
+  keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | OZ_SDL_KEY( s,           S           );
+  keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | OZ_SDL_KEY( SPACE,       SPACE       );
+  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | OZ_SDL_KEY( c,           C           );
+  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | OZ_SDL_KEY( LCTRL,       LCTRL       );
+  keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | OZ_SDL_KEY( LSHIFT,      LSHIFT      );
 
-  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDLK_q;
-  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDLK_e;
-  keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDLK_d;
-  keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDLK_a;
-  keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDLK_w;
-  keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDLK_s;
-  keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDLK_SPACE;
-  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDLK_c;
-  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDLK_LCTRL;
-  keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDLK_LSHIFT;
+  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | OZ_SDL_KEY( c,           C           );
+  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | OZ_SDL_KEY( LCTRL,       LCTRL       );
+  keyMap[KEY_JUMP][0]               = MOD_MASK    | OZ_SDL_KEY( SPACE,       SPACE       );
+  keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | OZ_SDL_KEY( x,           X           );
+  keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | OZ_SDL_KEY( x,           X           );
+  keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | OZ_SDL_KEY( k,           K           );
 
-  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDLK_c;
-  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDLK_LCTRL;
-  keyMap[KEY_JUMP][0]               = MOD_MASK    | SDLK_SPACE;
-  keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDLK_x;
-  keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDLK_x;
-  keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | SDLK_k;
+  keyMap[KEY_ACTIVATE][0]           = MOD_ON_BIT  | OZ_SDL_KEY( e,           E           );
+  keyMap[KEY_GRAB][0]               = MOD_ON_BIT  | OZ_SDL_KEY( f,           F           );
+  keyMap[KEY_THROW][0]              = MOD_ON_BIT  | OZ_SDL_KEY( r,           R           );
+  keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | OZ_SDL_KEY( q,           Q           );
 
-  keyMap[KEY_ACTIVATE][0]           = MOD_ON_BIT  | SDLK_e;
-  keyMap[KEY_GRAB][0]               = MOD_ON_BIT  | SDLK_f;
-  keyMap[KEY_THROW][0]              = MOD_ON_BIT  | SDLK_r;
-  keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | SDLK_q;
+  keyMap[KEY_WEAPON_1][0]           = MOD_OFF_BIT | OZ_SDL_KEY( 1,           1           );
+  keyMap[KEY_WEAPON_2][0]           = MOD_OFF_BIT | OZ_SDL_KEY( 2,           2           );
+  keyMap[KEY_WEAPON_3][0]           = MOD_OFF_BIT | OZ_SDL_KEY( 3,           3           );
+  keyMap[KEY_WEAPON_4][0]           = MOD_OFF_BIT | OZ_SDL_KEY( 4,           4           );
 
-  keyMap[KEY_WEAPON_1][0]           = MOD_OFF_BIT | SDLK_1;
-  keyMap[KEY_WEAPON_2][0]           = MOD_OFF_BIT | SDLK_2;
-  keyMap[KEY_WEAPON_3][0]           = MOD_OFF_BIT | SDLK_3;
-  keyMap[KEY_WEAPON_4][0]           = MOD_OFF_BIT | SDLK_4;
+  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | OZ_SDL_KEY( g,           G           );
+  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | OZ_SDL_KEY( h,           H           );
+  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | OZ_SDL_KEY( j,           J           );
+  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | OZ_SDL_KEY( k,           K           );
+  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | OZ_SDL_KEY( l,           L           );
 
-  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDLK_g;
-  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDLK_h;
-  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDLK_j;
-  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDLK_k;
-  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDLK_l;
+  keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | OZ_SDL_KEY( i,           I           );
+  keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | OZ_SDL_KEY( y,           Y           );
 
-  keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDLK_i;
-  keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDLK_y;
+  keyMap[KEY_GROUP_SELECT][0]       = MOD_MASK    | OZ_SDL_KEY( LSHIFT,      LSHIFT      );
+  keyMap[KEY_GROUP_SELECT][1]       = MOD_MASK    | OZ_SDL_KEY( RSHIFT,      RSHIFT      );
 
-  keyMap[KEY_GROUP_SELECT][0]       = MOD_MASK    | SDLK_LSHIFT;
-  keyMap[KEY_GROUP_SELECT][1]       = MOD_MASK    | SDLK_RSHIFT;
+  keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | OZ_SDL_KEY( p,           P           );
+  keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | OZ_SDL_KEY( o,           O           );
 
-  keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDLK_p;
-  keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDLK_o;
+  keyMap[KEY_DELETE][0]             = MOD_OFF_BIT | OZ_SDL_KEY( DELETE,      DELETE      );
 
-  keyMap[KEY_DELETE][0]             = MOD_OFF_BIT | SDLK_DELETE;
-
-  keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | SDLK_F5;
-  keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | SDLK_F7;
-  keyMap[KEY_AUTOLOAD][0]           = MOD_OFF_BIT | SDLK_F8;
-  keyMap[KEY_QUIT][0]               = MOD_MASK    | SDLK_F10;
-  keyMap[KEY_QUIT][1]               = MOD_MASK    | SDLK_ESCAPE;
-
-#else
-
-  modifier0                         = SDL_SCANCODE_LALT;
-  modifier1                         = SDL_SCANCODE_RALT;
-
-  keyMap[KEY_UI_ALT][0]             = MOD_MASK    | SDL_SCANCODE_LALT;
-  keyMap[KEY_UI_ALT][1]             = MOD_MASK    | SDL_SCANCODE_RALT;
-  keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDL_SCANCODE_TAB;
-
-  keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDL_SCANCODE_KP_1;
-  keyMap[KEY_DIR_1][1]              = MOD_MASK    | SDL_SCANCODE_END;
-  keyMap[KEY_DIR_2][0]              = MOD_MASK    | SDL_SCANCODE_KP_2;
-  keyMap[KEY_DIR_2][1]              = MOD_MASK    | SDL_SCANCODE_DOWN;
-  keyMap[KEY_DIR_3][0]              = MOD_MASK    | SDL_SCANCODE_KP_3;
-  keyMap[KEY_DIR_3][1]              = MOD_MASK    | SDL_SCANCODE_PAGEDOWN;
-  keyMap[KEY_DIR_4][0]              = MOD_MASK    | SDL_SCANCODE_KP_4;
-  keyMap[KEY_DIR_4][1]              = MOD_MASK    | SDL_SCANCODE_LEFT;
-  keyMap[KEY_DIR_6][0]              = MOD_MASK    | SDL_SCANCODE_KP_6;
-  keyMap[KEY_DIR_6][1]              = MOD_MASK    | SDL_SCANCODE_RIGHT;
-  keyMap[KEY_DIR_7][0]              = MOD_MASK    | SDL_SCANCODE_KP_7;
-  keyMap[KEY_DIR_7][1]              = MOD_MASK    | SDL_SCANCODE_HOME;
-  keyMap[KEY_DIR_8][0]              = MOD_MASK    | SDL_SCANCODE_KP_8;
-  keyMap[KEY_DIR_8][1]              = MOD_MASK    | SDL_SCANCODE_UP;
-  keyMap[KEY_DIR_9][0]              = MOD_MASK    | SDL_SCANCODE_KP_9;
-  keyMap[KEY_DIR_9][1]              = MOD_MASK    | SDL_SCANCODE_PAGEUP;
-
-  keyMap[KEY_NV_TOGGLE][0]          = MOD_OFF_BIT | SDL_SCANCODE_N;
-  keyMap[KEY_BINOCULARS_TOGGLE][0]  = MOD_OFF_BIT | SDL_SCANCODE_B;
-  keyMap[KEY_MAP_TOGGLE][0]         = MOD_OFF_BIT | SDL_SCANCODE_M;
-
-  keyMap[KEY_CAMERA_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_KP_ENTER;
-  keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_RETURN;
-  keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDL_SCANCODE_KP_MULTIPLY;
-
-  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_Q;
-  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_E;
-  keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_D;
-  keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_A;
-  keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDL_SCANCODE_W;
-  keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDL_SCANCODE_S;
-  keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDL_SCANCODE_SPACE;
-  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDL_SCANCODE_C;
-  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDL_SCANCODE_LCTRL;
-  keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
-
-  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_C;
-  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_LCTRL;
-  keyMap[KEY_JUMP][0]               = MOD_MASK    | SDL_SCANCODE_SPACE;
-  keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDL_SCANCODE_X;
-  keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDL_SCANCODE_X;
-  keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | SDL_SCANCODE_K;
-
-  keyMap[KEY_ACTIVATE][0]           = MOD_ON_BIT  | SDL_SCANCODE_E;
-  keyMap[KEY_GRAB][0]               = MOD_ON_BIT  | SDL_SCANCODE_F;
-  keyMap[KEY_THROW][0]              = MOD_ON_BIT  | SDL_SCANCODE_R;
-  keyMap[KEY_PICK_UP][0]            = MOD_ON_BIT  | SDL_SCANCODE_Q;
-
-  keyMap[KEY_WEAPON_1][0]           = MOD_OFF_BIT | SDL_SCANCODE_1;
-  keyMap[KEY_WEAPON_2][0]           = MOD_OFF_BIT | SDL_SCANCODE_2;
-  keyMap[KEY_WEAPON_3][0]           = MOD_OFF_BIT | SDL_SCANCODE_3;
-  keyMap[KEY_WEAPON_4][0]           = MOD_OFF_BIT | SDL_SCANCODE_4;
-
-  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDL_SCANCODE_G;
-  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDL_SCANCODE_H;
-  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDL_SCANCODE_J;
-  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDL_SCANCODE_K;
-  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDL_SCANCODE_L;
-
-  keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDL_SCANCODE_I;
-  keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDL_SCANCODE_Y;
-
-  keyMap[KEY_GROUP_SELECT][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
-  keyMap[KEY_GROUP_SELECT][1]       = MOD_MASK    | SDL_SCANCODE_RSHIFT;
-
-  keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDL_SCANCODE_P;
-  keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDL_SCANCODE_O;
-
-  keyMap[KEY_DELETE][0]             = MOD_OFF_BIT | SDL_SCANCODE_DELETE;
-
-  keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | SDL_SCANCODE_F5;
-  keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | SDL_SCANCODE_F7;
-  keyMap[KEY_AUTOLOAD][0]           = MOD_OFF_BIT | SDL_SCANCODE_F8;
-  keyMap[KEY_QUIT][0]               = MOD_MASK    | SDL_SCANCODE_F10;
-  keyMap[KEY_QUIT][1]               = MOD_MASK    | SDL_SCANCODE_ESCAPE;
-
-#endif
+  keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | OZ_SDL_KEY( F5,          F5          );
+  keyMap[KEY_QUICKLOAD][0]          = MOD_OFF_BIT | OZ_SDL_KEY( F7,          F7          );
+  keyMap[KEY_AUTOLOAD][0]           = MOD_OFF_BIT | OZ_SDL_KEY( F8,          F8          );
+  keyMap[KEY_QUIT][0]               = MOD_MASK    | OZ_SDL_KEY( F10,         F10         );
+  keyMap[KEY_QUIT][1]               = MOD_MASK    | OZ_SDL_KEY( ESCAPE,      ESCAPE      );
 }
 
 void Input::loadKeyMap( const JSON& keyConfig )
@@ -360,6 +278,9 @@ void Input::loadKeyMap( const JSON& keyConfig )
 #else
 
       SDL_Scancode sdlKey = SDL_GetScancodeFromName( &keyDesc[1] );
+      if( sdlKey == SDL_SCANCODE_UNKNOWN ) {
+        OZ_ERROR( "Cannot resolve SDL key name '%s'", &keyDesc[1] );
+      }
 
       keyMap[i][j] = mod | sdlKey;
 
@@ -693,7 +614,7 @@ void Input::init()
   mouseSensZ          = mouseConfig["sensitivity.z"].get( 2.0f );
   mouseSensW          = mouseConfig["sensitivity.w"].get( 2.0f );
 
-  mouseSpeed          = mouseConfig["acceleration.constant"].get( 0.25f );
+  mouseSpeed          = mouseConfig["acceleration.constant"].get( 0.3f );
   mouseAccel          = mouseConfig["acceleration.factor"].get( 0.0004f );
   mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
   mouseMaxAccel       = mouseConfig["acceleration.max"].get( 1.5f );

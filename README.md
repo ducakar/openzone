@@ -109,9 +109,6 @@ You may also want to set several options when configuring CMake build system:
   implemented into engine. You don't need this.
   `OFF` by default.
 
-- `OZ_MONO_TEST`: Build a Mono embedding test. You don't need this.
-  `OFF` by default.
-
 Tools
 -----
 

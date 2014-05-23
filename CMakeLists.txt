@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 2.8 )
 project( openzone C CXX )
 
 #
-# Configuration
+# Configuration options.
 #
 
 set( OZ_VERSION 0.3.87 )
@@ -23,10 +23,9 @@ option( OZ_TOOLS "Build engine tools required for game data creation." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
 option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
-option( OZ_MONO_TEST "Build Mono embedding test." OFF )
 
 #
-# Internal configuration
+# Internal configuration.
 #
 
 include( cmake/PCH.cmake )
@@ -63,7 +62,7 @@ endif()
 set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBS} )
 
 #
-# Libraries
+# Libraries.
 #
 
 # Set-up include and library directories for different toolchains.
@@ -131,12 +130,6 @@ find_package( OpenAL REQUIRED )
 pkg_check_modules( PNG REQUIRED libpng )
 pkg_check_modules( VORBISFILE REQUIRED vorbisfile )
 
-if( OZ_MONO_TEST )
-  pkg_check_modules( MONO REQUIRED mono-2 )
-
-  include_directories( SYSTEM ${MONO_INCLUDE_DIRS} )
-endif()
-
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.
 if( PLATFORM_EMBEDDED )
@@ -173,7 +166,7 @@ endif()
 mark_as_advanced( MINGW32_LIBRARY )
 
 #
-# Compiler flags
+# Compiler flags.
 #
 
 # Local libmad, faad and eSpeak headers.
@@ -242,21 +235,7 @@ site_name( OZ_HOSTNAME )
 mark_as_advanced( OZ_HOSTNAME )
 
 #
-# Android project
-#
-
-if( ANDROID )
-  file( GLOB dataFiles share/openzone/*.7z )
-
-  add_custom_command( OUTPUT ../Android
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/etc/android-project ../Android
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/share/openzone
-            ../Android/assets/share/openzone )
-  add_custom_target( android_project ALL DEPENDS ${CMAKE_BINARY_DIR}/../Android )
-endif()
-
-#
-# Sources
+# Sources.
 #
 
 add_subdirectory( src )
@@ -266,7 +245,7 @@ add_subdirectory( data/oz_base/glsl )
 add_custom_target( doc SOURCES AUTHORS ChangeLog.md README.md TODO.md )
 
 #
-# Data files
+# Data files.
 #
 
 # Application launcher and icon.
@@ -289,26 +268,15 @@ if( OZ_STANDALONE )
 endif()
 
 #
-# CPack
+# Android project.
 #
 
-set( CPACK_GENERATOR ZIP )
+if( ANDROID )
+  file( GLOB dataFiles share/openzone/*.7z )
 
-set( CPACK_PACKAGE_VERSION ${OZ_VERSION} )
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform FPS/RTS game engine" )
-set( CPACK_PACKAGE_VENDOR "Davorin Učakar" )
-set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
-set( CPACK_TOPLEVEL_TAG "openzone" )
-set( CPACK_SYSTEM_NAME ${OZ_PLATFORM_NAME} )
-set( CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/COPYING )
-set( CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md )
-set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
-set( CPACK_STRIP_FILES ON )
-set( CPACK_PACKAGE_INSTALL_DIRECTORY "openzone" )
-set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "openzone" )
-
-set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
-set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
-     "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
-set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
-     "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
+  add_custom_command( OUTPUT ../Android
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/etc/android-project ../Android
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/share/openzone
+            ../Android/assets/share/openzone )
+  add_custom_target( android_project ALL DEPENDS ${CMAKE_BINARY_DIR}/../Android )
+endif()

@@ -35,7 +35,7 @@ namespace oz
 {
 
 /**
- * %Array list.
+ * Array list.
  *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
  * slightly better performance and simplifies implementation. However, on element removal its
@@ -67,7 +67,7 @@ public:
 
 protected:
 
-  Elem* data;  ///< %Array of elements.
+  Elem* data;  ///< Array of elements.
   int   count; ///< Number of elements.
   int   size;  ///< Capacity, number of elements in storage.
 

@@ -40,16 +40,7 @@ ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.7/prebuilt/linux-x86_64"
 ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
 
-function msg()
-{
-  echo -ne "\e[1;32m"
-  echo ================================================================================
-  echo
-  echo "          $@"
-  echo
-  echo ================================================================================
-  echo -ne "\e[0m"
-}
+. etc/common.sh
 
 function setup_pnacl()
 {
@@ -220,8 +211,9 @@ function buildclean()
       [[ $subDir == */usr ]] || rm -rf "$subDir"
     done
 
+    rm -rf "$topDir/$platform"/usr/{bin,doc,man,share}
+    rm -rf "$topDir/$platform"/usr/lib/{libpng,lua}
     rm -rf "$topDir/$platform"/usr/lib/*.la
-    rm -rf "$topDir/$platform"/usr/lib/lua
   done
 }
 
@@ -278,7 +270,7 @@ function prepare()
 {
   [[ -d "$buildDir/$1" ]] && return 1
 
-  msg "$1 @ $platform"
+  header_msg "$1 @ $platform"
 
   mkdir -p "$buildDir"
   if [[ -d "$topDir/archives/$2" ]]; then
@@ -302,6 +294,7 @@ function cmakeBuild()
   mkdir -p build && cd build
 
   cmake \
+    -G Ninja \
     -D CMAKE_MODULE_PATH="$projectDir/cmake" \
     -D CMAKE_TOOLCHAIN_FILE="$toolchain" \
     -D CMAKE_BUILD_TYPE="Release" \
@@ -310,8 +303,8 @@ function cmakeBuild()
     $@ \
     .. || return 1
 
-  make -j4 || exit 1
-  make install DESTDIR="$buildDir"
+  ninja || exit 1
+  cmake -DCMAKE_INSTALL_PREFIX="$buildDir/usr" -P cmake_install.cmake
 }
 
 function autotoolsBuild()

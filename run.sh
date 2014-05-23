@@ -17,7 +17,7 @@ defaultPlatform=Linux-${arch}-Clang
 case $1 in
   wine)
     cd build
-    ( cd Windows-${arch} && make -j4 install DESTDIR=.. )
+    ( cd Windows-${arch} && ninja install DESTDIR=.. )
 
     cd OpenZone-*
 

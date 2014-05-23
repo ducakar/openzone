@@ -183,7 +183,7 @@ public:
 protected:
 
   Pool<Entry, GRANULARITY> pool; ///< Memory pool for entries.
-  Entry**                  data; ///< %Array of buckets, each containing a linked list of entries.
+  Entry**                  data; ///< Array of buckets, each containing a linked list of entries.
   int                      size; ///< Number of buckets.
 
 protected:

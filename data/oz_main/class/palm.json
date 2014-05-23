@@ -7,7 +7,7 @@
 
   "life":               500,
 
-  "fragPool":           "tree",
+  "fragPool":           "wood",
   "nFrags":             10,
 
   "imagoType":          "SMM",

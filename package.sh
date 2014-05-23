@@ -25,6 +25,8 @@ eval `egrep '^version=' ./autogen.sh`
 files=`git ls-files | egrep -v '^data/'`
 files="$files share/applications share/pixmaps"
 
+. etc/common.sh
+
 case $1 in
   src)
     echo "Packing openzone-src-$version.tar.xz"
@@ -50,15 +52,21 @@ case $1 in
     for platform in ${platforms[@]}; do
       mkdir -p $platform && cd $platform
 
+      header_msg $platform
+
       cmake \
+        -G Ninja \
         -D CMAKE_TOOLCHAIN_FILE=../../../cmake/$platform.Toolchain.cmake \
         -D CMAKE_BUILD_TYPE=Release \
         -D OZ_STANDALONE=1 \
         ../../..
-      make -j4 install DESTDIR=..
+      ninja
+      cmake -DCMAKE_INSTALL_PREFIX=../OpenZone-$version -P cmake_install.cmake
 
       cd ..
     done
+
+    header_msg "Packaging ..."
 
     rm -rf OpenZone-$version/{include,lib}
     zip -9r ../../OpenZone-$version-bundle.zip OpenZone-$version

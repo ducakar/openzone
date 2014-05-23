@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * %Array list with static storage (fixed capacity).
+ * Array list with static storage (fixed capacity).
  *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
  * slightly better performance and simplifies implementation. However, on element removal its

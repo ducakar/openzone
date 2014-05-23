@@ -15,7 +15,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 -- lua/common/oz_base.lua
 --
 -- 3D vector utilities and finite automaton processor.
@@ -26,7 +25,7 @@ vec3 = {
   end,
 
   length = function( x, y, z )
-    return math.sqrt( vec.dot( x, y, z, x, y, z ) )
+    return math.sqrt( vec3.dot( x, y, z, x, y, z ) )
   end,
 
   distance = function( ax, ay, az, bx, by, bz )
@@ -57,12 +56,18 @@ vec3 = {
   end
 }
 
+function isSubclassOf( subclass )
+  local class = ozObjGetClassName()
+  local len   = string.len( subclass )
+  return string.sub( class, 1, len ) == subclass
+end
+
 function processAutomaton( automaton, localData )
-  local state = localData.state
+  local state = automaton[localData.state]
 
   if not state then
+    localData.state = automaton.initial
     state = automaton[automaton.initial]
-    localData.state = state
 
     if state.onEnter then
       state.onEnter( localData )
@@ -76,8 +81,8 @@ function processAutomaton( automaton, localData )
     local link = state.links[i]
 
     if link.condition( localData ) then
+      localData.state = link.target
       state = automaton[link.target]
-      localData.state = state
 
       if state.onEnter then
         state.onEnter( localData )

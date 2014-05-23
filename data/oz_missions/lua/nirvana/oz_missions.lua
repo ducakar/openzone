@@ -63,9 +63,9 @@ function droid_guard( l )
     ozSelfBindOverlaps( OZ_OBJECTS_BIT, 100 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
          ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-         ozObjIsVisibleFromSelfEye()
+           ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -111,9 +111,9 @@ function droid_sniper( l )
     ozSelfBindOverlaps( OZ_OBJECTS_BIT, 200 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
          ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-         ozObjIsVisibleFromSelfEye()
+           ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -167,9 +167,9 @@ function droid_patrol( l )
     ozSelfBindOverlaps( OZ_OBJECTS_BIT, 100 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
          ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-         ozObjIsVisibleFromSelfEye()
+           ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -233,21 +233,21 @@ function droid_armouredPatrol( l )
     ozSelfBindOverlaps( OZ_OBJECTS_BIT, 200 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
          ( ozObjDistFromSelf() < 100 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-         ozObjIsVisibleFromSelfEye()
+           ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
         return
       elseif ozObjHasFlag( OZ_VEHICLE_BIT ) and
           ( ozObjDistFromSelf() < 100 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-          ozObjIsVisibleFromSelfEye()
+            ozObjIsVisibleFromSelfEye()
       then
         local vehicleIndex = ozObjGetIndex()
         ozBindObj( ozVehicleGetPilot() )
 
-        if not ozObjIsNull() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" then
+        if not ozObjIsNull() and not isSubclassOf( "droid" ) then
           l.target = vehicleIndex
           l.aimed = nil
           return
@@ -303,7 +303,7 @@ function goblin_defend( l )
     ozSelfBindOverlaps( OZ_OBJECTS_BIT, 10 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 7 ) ~= "goblin" and
+      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
          ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()

@@ -40,10 +40,7 @@ namespace oz
  *
  * There are two modes for rendering cursors. The first, OpenGL textures are generated for each
  * frame. You can retrieve OpenGL texture id for the current frame with `textureId()` call and
- * render it via your UI render path. The second, your OS-provided cursor replaced by the current
- * frame of this cursor with `SDL_SetCursor()` call.
- *
- * Setting system cursor is only enabled when built against SDL 2.0.
+ * render it via your UI render path. The second, your OS-provided cursor is replaced (SDL 2 only).
  *
  * Cursor files must be in Xcursor format, which is the standard cursor format on Linux (or more
  * accurately, on all X11 and Wayland systems).
@@ -63,7 +60,7 @@ public:
 
 private:
 
-  /// Maximum number of images.
+  /// Maximum number of images in animation.
   static const int MAX_IMAGES = 32;
 
   /**

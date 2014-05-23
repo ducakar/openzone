@@ -31,6 +31,7 @@
 namespace oz
 {
 
+OZ_HIDDEN
 InputStream::InputStream( char* pos, char* start, const char* end, Endian::Order order_ ) :
   streamPos( pos ), streamBegin( start ), streamEnd( end ), order( order_ )
 {}

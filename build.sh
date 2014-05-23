@@ -28,6 +28,8 @@ platforms=(
 #   Android14-MIPS
 )
 
+. etc/common.sh
+
 function clean()
 {
   for platform in ${platforms[@]}; do
@@ -44,28 +46,17 @@ function build()
       continue
     fi
 
-    echo ================================================================
-    echo
-    echo                           $platform
-    echo
-    echo ----------------------------------------------------------------
+    header_msg $platform
 
     (( $1 )) && rm -rf build/$platform
     if [[ ! -d build/$platform ]]; then
       mkdir -p build/$platform
-      ( cd build/$platform && cmake -Wdev --warn-uninitialized \
+      ( cd build/$platform && cmake -G Ninja -Wdev --warn-uninitialized \
         -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
         -D CMAKE_BUILD_TYPE=$buildType \
         ../.. )
     fi
-    (( $1 )) || ( cd build/$platform && time make -j`nproc` )
-
-    echo ----------------------------------------------------------------
-    echo
-    echo                           $platform
-    echo
-    echo ================================================================
-    echo
+    (( $1 )) || ( cd build/$platform && time ninja )
   done
 }
 

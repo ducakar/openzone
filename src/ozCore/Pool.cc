@@ -64,7 +64,8 @@ struct PoolAlloc::Block
     delete[] reinterpret_cast<char*>( this );
   }
 
-  OZ_HIDDEN OZ_ALWAYS_INLINE
+  OZ_HIDDEN
+  OZ_ALWAYS_INLINE
   Slot* slot( int i, size_t slotSize )
   {
     return reinterpret_cast<Slot*>( &data[ size_t( i ) * slotSize ] );

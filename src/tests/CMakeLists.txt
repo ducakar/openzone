@@ -13,11 +13,6 @@ endif()
 add_executable( foreach foreach.cc )
 target_link_libraries( foreach ozCore )
 
-if( OZ_MONO_TEST )
-  add_executable( mono mono.cc )
-  target_link_libraries( mono ozCore ${MONO_LIBRARIES} )
-endif()
-
 if( NOT OZ_GL_ES AND OZ_TOOLS )
   add_executable( noise noise.cc )
   target_link_libraries( noise ozCore ozEngine ozFactory )

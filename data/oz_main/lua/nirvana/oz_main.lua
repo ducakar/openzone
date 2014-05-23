@@ -69,7 +69,9 @@ function prey( localData )
   ozSelfBindOverlaps( OZ_OBJECTS_BIT, 20 )
 
   while ozBindNextObj() do
-    if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() ~= "goblin" then
+    if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and
+       ozObjGetClassName() ~= "goblin"
+    then
       local distance = ozObjDistFromSelf()
 
       if distance < minDistance then
@@ -99,7 +101,9 @@ function predator( localData )
   ozSelfBindOverlaps( OZ_OBJECTS_BIT, 20 )
 
   while ozBindNextObj() do
-    if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "goblin" then
+    if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and
+       ozObjGetClassName() == "goblin"
+    then
       local distance = ozObjDistFromSelf()
 
       if distance < minDistance then
@@ -128,7 +132,40 @@ end
 -- Droid AI
 --
 
-function droid_randomWalk( l )
+Droid = {}
+
+function Droid.detectCommander( l )
+  ozSelfBindOverlaps( OZ_OBJECTS_BIT, 50 )
+
+  while ozBindNextObj() do
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "droid.OOM-9" then
+      l.commander = ozObjGetIndex()
+      return true
+    end
+  end
+  return false
+end
+
+function Droid.detectTarget( l )
+  local minDistance = 100
+
+  ozSelfBindOverlaps( OZ_OBJECTS_BIT, 50 )
+
+  while ozBindNextObj() do
+    local typeName = ozObjGetClassName()
+    if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) then
+      local distance = ozObjDistFromSelf()
+
+      if distance < minDistance then
+        l.target = ozObjGetIndex()
+        minDistance = distance
+      end
+    end
+  end
+  return l.target
+end
+
+function Droid.randomWalk( l )
   if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
     ozSelfAction( OZ_ACTION_WALK )
   end
@@ -139,100 +176,104 @@ function droid_randomWalk( l )
   end
 end
 
-function droid_followCommander( l )
-  if not l.commander then
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 50 )
+function Droid.followCommander( l )
+  ozBindObj( l.commander )
 
-    while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "droid.OOM-9" then
-        l.commander = ozObjGetIndex()
-        break
-      end
-    end
-  else
-    ozBindObj( l.commander )
-
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) then
-      l.commander = nil
-    end
+  if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) then
+    l.commander = nil
+    return
   end
 
-  if l.commander then
-    local distance = ozObjDistFromSelf()
+  local distance = ozObjDistFromSelf()
 
-    if distance < 4 then
-      l.nearCommander = true
-    elseif distance > 10 or not l.nearCommander then
-      ozSelfSetH( ozObjHeadingFromSelfEye() )
-      ozSelfAction( OZ_ACTION_FORWARD )
+  if distance < 4 then
+    l.nearCommander = true
+  elseif distance > 10 or not l.nearCommander then
+    ozSelfSetH( ozObjHeadingFromSelfEye() )
+    ozSelfAction( OZ_ACTION_FORWARD )
 
-      if distance > 100 then
-        l.commander = nil
-        l.nearCommander = false
-      elseif distance > 10 then
-        l.nearCommander = false
-        if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-          ozSelfAction( OZ_ACTION_WALK )
-        end
-      elseif not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+    if distance > 100 then
+      l.commander = nil
+      l.nearCommander = false
+    elseif distance > 10 then
+      l.nearCommander = false
+      if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
         ozSelfAction( OZ_ACTION_WALK )
       end
+    elseif not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+      ozSelfAction( OZ_ACTION_WALK )
     end
-    return true
-  else
-    return false
   end
 end
 
-function droid_huntTarget( l )
+function Droid.huntTarget( l )
   ozBindObj( l.target )
 
   if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) then
     l.target = nil
-  else
-    local distance = ozObjDistFromSelf()
+    return
+  end
 
-    if distance < 60 then
-      ozSelfSetH( ozObjHeadingFromSelfEye() )
-      ozSelfSetV( ozObjPitchFromSelfEye() )
+  local distance = ozObjDistFromSelf()
 
-      if distance < 30 then
-        ozSelfAction( OZ_ACTION_ATTACK )
-        ozForceUpdate()
-      else
-        ozSelfAction( OZ_ACTION_FORWARD )
-      end
+  if distance < 60 then
+    ozSelfSetH( ozObjHeadingFromSelfEye() )
+    ozSelfSetV( ozObjPitchFromSelfEye() )
+
+    if distance < 30 then
+      ozSelfAction( OZ_ACTION_ATTACK )
+      ozForceUpdate()
     else
-      l.target = nil
+      ozSelfAction( OZ_ACTION_FORWARD )
     end
+  else
+    l.target = nil
   end
 end
 
+Droid.baseAutomaton =
+{
+  initial = "randomWalk",
+
+  randomWalk = {
+    onUpdate = Droid.randomWalk,
+    links = {
+      {
+        target = "followCommander",
+        condition = Droid.detectCommander
+      },
+      {
+        target = "huntTarget",
+        condition = Droid.detectTarget
+      }
+    }
+  },
+
+  followCommander = {
+    onUpdate = Droid.followCommander,
+    links = {
+      {
+        target = "randomWalk",
+        condition = function( l ) return l.commander == nil end
+      },
+      {
+        target = "huntTarget",
+        condition = Droid.detectTarget
+      }
+    }
+  },
+
+  huntTarget = {
+    onUpdate = Droid.huntTarget,
+    links = {
+      {
+        target = "randomWalk",
+        condition = function( l ) return l.target == nil end
+      }
+    }
+  }
+}
+
 function droid( l )
-  if not l.target then
-    local minDistance = 100
-
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 50 )
-
-    while ozBindNextObj() do
-      local typeName = ozObjGetClassName()
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( typeName, 1, 5 ) ~= "droid" then
-        local distance = ozObjDistFromSelf()
-
-        if distance < minDistance then
-          l.target = ozObjGetIndex()
-          minDistance = distance
-        end
-      end
-    end
-  end
-  if l.target then
-    droid_huntTarget( l )
-  else
-    local hasCommander = droid_followCommander( l )
-
-    if not hasCommander then
-      droid_randomWalk( l )
-    end
-  end
+  processAutomaton( droid.baseAutomaton, l )
 end

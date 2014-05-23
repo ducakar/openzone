@@ -36,7 +36,7 @@ namespace oz
 {
 
 /**
- * %Array iterator.
+ * Array iterator.
  *
  * It should not be used directly but appropriate iterator types should be typedef'd to it.
  */
@@ -61,7 +61,7 @@ public:
   {}
 
   /**
-   * %Array iterator.
+   * Array iterator.
    *
    * @param first first array element.
    * @param past_ successor of the last element.
@@ -113,13 +113,13 @@ public:
 };
 
 /**
- * %Array iterator with constant access to elements.
+ * Array iterator with constant access to elements.
  */
 template <typename Elem>
 using CIterator = ArrayIterator<const Elem>;
 
 /**
- * %Array iterator with non-constant access to elements.
+ * Array iterator with non-constant access to elements.
  */
 template <typename Elem>
 using Iterator = ArrayIterator<Elem>;
