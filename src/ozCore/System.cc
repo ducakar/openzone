@@ -147,8 +147,6 @@ static void abort( bool doHalt );
 OZ_NORETURN
 static void signalHandler( int sigNum )
 {
-  System::bell();
-
   Log::verboseMode = false;
   Log::printSignal( sigNum );
   Log::printTrace( StackTrace::current( 1 ) );
@@ -158,6 +156,7 @@ static void signalHandler( int sigNum )
   __android_log_print( ANDROID_LOG_FATAL, "oz", "Signal %d\n", sigNum );
 #endif
 
+  System::bell();
   abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
 }
 
@@ -184,42 +183,6 @@ static void catchSignals()
   // Disable default handler for SIGTRAP that terminates the process.
   signal( SIGTRAP, SIG_IGN );
 #endif
-}
-
-OZ_NORETURN
-static void terminate()
-{
-  System::trap();
-
-  Log::verboseMode = false;
-  Log::putsRaw( "\n\nException handling aborted\n" );
-  Log::printTrace( StackTrace::current( 1 ) );
-  Log::println();
-
-#ifdef __ANDROID__
-  __android_log_write( ANDROID_LOG_FATAL, "oz", "Exception handling aborted\n" );
-#endif
-
-  System::bell();
-  abort( initFlags & System::HALT_BIT );
-}
-
-OZ_NORETURN
-static void unexpected()
-{
-  System::trap();
-
-  Log::verboseMode = false;
-  Log::putsRaw( "\n\nException specification violation\n" );
-  Log::printTrace( StackTrace::current( 1 ) );
-  Log::println();
-
-#ifdef __ANDROID__
-  __android_log_write( ANDROID_LOG_FATAL, "oz", "Exception specification violation\n" );
-#endif
-
-  System::bell();
-  abort( initFlags & System::HALT_BIT );
 }
 
 static void genBellSamples( short* samples, int nSamples_, int rate, int begin, int end )
@@ -505,7 +468,7 @@ static void abort( bool doHalt )
   _Exit( EXIT_FAILURE );
 }
 
-const int System::HANDLERS_BIT;
+const int System::HANDLER_BIT;
 const int System::HALT_BIT;
 const int System::LOCALE_BIT;
 
@@ -623,7 +586,7 @@ void System::error( const char* function, const char* file, int line, int nSkipp
 
 void System::threadInit()
 {
-  if( initFlags & HANDLERS_BIT ) {
+  if( initFlags & HANDLER_BIT ) {
     catchSignals();
   }
 }
@@ -645,11 +608,6 @@ void System::init( int flags, CrashHandler* crashHandler_ )
   }
 
 #endif
-
-  if( initFlags & HANDLERS_BIT ) {
-    std::set_terminate( terminate );
-    std::set_unexpected( unexpected );
-  }
 
   threadInit();
 }

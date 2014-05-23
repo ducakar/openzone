@@ -145,17 +145,19 @@ public:
   /**
    * Print summary about memory usage (`Alloc`'s -`count` and -`size` fields).
    *
-   * If new and delete operators were not overloaded (`Alloc::OVERLOADS_NEW_AND_DELETE` is false),
-   * nothing is printed.
+   * If new/delete operators haven't been overloaded or no memory allocation have been made nothing
+   * is printed.
+   *
+   * @return true iff there has been anything printed.
    *
    * @sa `oz::Alloc`
    */
-  static void printMemorySummary();
+  static bool printMemorySummary();
 
   /**
    * Print memory chunks allocated via `new` and `new[]` operators, tracked by `Alloc` class.
    *
-   * @return true iff there is still any memory chunk allocated (i.e. something was printed).
+   * @return true iff there have been any memory chunks printed.
    *
    * @sa `oz::Alloc`
    */

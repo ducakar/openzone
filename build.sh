@@ -51,7 +51,8 @@ function build()
     (( $1 )) && rm -rf build/$platform
     if [[ ! -d build/$platform ]]; then
       mkdir -p build/$platform
-      ( cd build/$platform && cmake -G Ninja -Wdev --warn-uninitialized \
+      ( cd build/$platform && cmake -Wdev --warn-uninitialized \
+        -G Ninja \
         -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
         -D CMAKE_BUILD_TYPE=$buildType \
         ../.. )

@@ -263,8 +263,12 @@ void Log::printSignal( int sigNum )
   } );
 }
 
-void Log::printMemorySummary()
+bool Log::printMemorySummary()
 {
+  if( Alloc::count == 0 ) {
+    return false;
+  }
+
   println( "Alloc summary {" );
   indent();
 
@@ -280,6 +284,8 @@ void Log::printMemorySummary()
 
   unindent();
   println( "}" );
+
+  return true;
 }
 
 bool Log::printMemoryLeaks()

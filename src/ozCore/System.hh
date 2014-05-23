@@ -54,10 +54,10 @@ class System
 {
 public:
 
-  /// Install signal and exception handlers.
-  static const int HANDLERS_BIT = 0x01;
+  /// Install signal handler.
+  static const int HANDLER_BIT = 0x01;
 
-  /// If running from a terminal, the handlers wait for Enter before termination.
+  /// If running from a terminal, the crash handler will wait for Enter before termination.
   static const int HALT_BIT = 0x02;
 
   /// %Set system locale.
@@ -65,9 +65,9 @@ public:
 
   /// Default set of bits.
 #ifdef NDEBUG
-  static const int DEFAULT_MASK = HANDLERS_BIT | LOCALE_BIT;
+  static const int DEFAULT_MASK = HANDLER_BIT | LOCALE_BIT;
 #else
-  static const int DEFAULT_MASK = HANDLERS_BIT | HALT_BIT | LOCALE_BIT;
+  static const int DEFAULT_MASK = HANDLER_BIT | HALT_BIT | LOCALE_BIT;
 #endif
 
   /// Type for crash handler function passed to `System::init()`.
@@ -148,19 +148,16 @@ public:
    * Initialise `System` features.
    *
    * @param flags is a bitwise OR of the following bits:
-   * - `HANDLERS_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
+   * - `HANDLER_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
    *   which print diagnostics and abort the program (similar to `System::error()` method).
-   *   Additionally, install handlers for exception violations (`std::terminate()` and
-   *   `std::unexpected()`) that print diagnostics and abort the program via `System::error()`.
    * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
    *   terminating the process via `System::abort()`, so one have time to attach a debugger.
    *   This option has no effect on Android and NaCl.
    * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
    *   This option has no effect on Android and NaCl.
    *
-   * @param crashHandler user-provided method called when the application is aborted by a signal/
-   *        exception handler or `System::error()`. If non-null, it is invoked after the stack trace
-   *        is printed.
+   * @param crashHandler user-provided method called when the application is aborted by a signal
+   *        `System::error()`. If non-null, it is invoked after the stack trace is printed.
    */
   static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );
 

@@ -424,42 +424,42 @@ public:
                  0.0f, 0.0f,  v.z );
   }
 
+  /**
+   * Per-component absolute value of a matrix.
+   */
+  OZ_ALWAYS_INLINE
+  friend Mat3 abs( const Mat3& a )
+  {
+    return Mat3( abs( a.x ), abs( a.y ), abs( a.z ) );
+  }
+
+  /**
+   * Per-component minimum of two matrices.
+   */
+  OZ_ALWAYS_INLINE
+  friend Mat3 min( const Mat3& a, const Mat3& b )
+  {
+    return Mat3( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+  }
+
+  /**
+   * Per-component maximum of two matrices.
+   */
+  OZ_ALWAYS_INLINE
+  friend Mat3 max( const Mat3& a, const Mat3& b )
+  {
+    return Mat3( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+  }
+
+  /**
+   * Per-component clamped value of matrices.
+   */
+  OZ_ALWAYS_INLINE
+  friend Mat3 clamp( const Mat3& c, const Mat3& a, const Mat3& b )
+  {
+    return Mat3( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+  }
+
 };
-
-/**
- * Per-component absolute value of a matrix.
- */
-OZ_ALWAYS_INLINE
-inline Mat3 abs( const Mat3& a )
-{
-  return Mat3( abs( a.x ), abs( a.y ), abs( a.z ) );
-}
-
-/**
- * Per-component minimum of two matrices.
- */
-OZ_ALWAYS_INLINE
-inline Mat3 min( const Mat3& a, const Mat3& b )
-{
-  return Mat3( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
-}
-
-/**
- * Per-component maximum of two matrices.
- */
-OZ_ALWAYS_INLINE
-inline Mat3 max( const Mat3& a, const Mat3& b )
-{
-  return Mat3( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
-}
-
-/**
- * Per-component clamped value of matrices.
- */
-OZ_ALWAYS_INLINE
-inline Mat3 clamp( const Mat3& c, const Mat3& a, const Mat3& b )
-{
-  return Mat3( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
-}
 
 }

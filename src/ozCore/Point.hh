@@ -193,58 +193,58 @@ public:
 #endif
   }
 
+  /**
+   * Per-component absolute value of a point.
+   */
+  OZ_ALWAYS_INLINE
+  friend Point abs( const Point& a )
+  {
+#ifdef OZ_SIMD_MATH
+    return Point( vAbs( a.u4 ) );
+#else
+    return Point( abs( a.x ), abs( a.y ), abs( a.z ) );
+#endif
+  }
+
+  /**
+   * Per-component minimum of two points.
+   */
+  OZ_ALWAYS_INLINE
+  friend Point min( const Point& a, const Point& b )
+  {
+#ifdef OZ_SIMD_MATH
+    return Point( vMin( a.f4, b.f4 ) );
+#else
+    return Point( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+#endif
+  }
+
+  /**
+   * Per-component maximum of two points.
+   */
+  OZ_ALWAYS_INLINE
+  friend Point max( const Point& a, const Point& b )
+  {
+#ifdef OZ_SIMD_MATH
+    return Point( vMax( a.f4, b.f4 ) );
+#else
+    return Point( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+#endif
+  }
+
+  /**
+   * Per-component clamped value of points.
+   */
+  OZ_ALWAYS_INLINE
+  friend Point clamp( const Point& c, const Point& a, const Point& b )
+  {
+#ifdef OZ_SIMD_MATH
+    return Point( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
+#else
+    return Point( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+#endif
+  }
+
 };
-
-/**
- * Per-component absolute value of a point.
- */
-OZ_ALWAYS_INLINE
-inline Point abs( const Point& a )
-{
-#ifdef OZ_SIMD_MATH
-  return Point( vAbs( a.u4 ) );
-#else
-  return Point( abs( a.x ), abs( a.y ), abs( a.z ) );
-#endif
-}
-
-/**
- * Per-component minimum of two points.
- */
-OZ_ALWAYS_INLINE
-inline Point min( const Point& a, const Point& b )
-{
-#ifdef OZ_SIMD_MATH
-  return Point( vMin( a.f4, b.f4 ) );
-#else
-  return Point( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
-#endif
-}
-
-/**
- * Per-component maximum of two points.
- */
-OZ_ALWAYS_INLINE
-inline Point max( const Point& a, const Point& b )
-{
-#ifdef OZ_SIMD_MATH
-  return Point( vMax( a.f4, b.f4 ) );
-#else
-  return Point( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
-#endif
-}
-
-/**
- * Per-component clamped value of points.
- */
-OZ_ALWAYS_INLINE
-inline Point clamp( const Point& c, const Point& a, const Point& b )
-{
-#ifdef OZ_SIMD_MATH
-  return Point( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
-#else
-  return Point( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
-#endif
-}
 
 }

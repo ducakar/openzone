@@ -394,59 +394,59 @@ public:
 #endif
   }
 
+  /**
+   * Per-component absolute value of a vector.
+   */
+  OZ_ALWAYS_INLINE
+  friend Vec4 abs( const Vec4& a )
+  {
+#ifdef OZ_SIMD_MATH
+    return Vec4( vAbs( a.u4 ) );
+#else
+    return Vec4( abs( a.x ), abs( a.y ), abs( a.z ), abs( a.w ) );
+#endif
+  }
+
+  /**
+   * Per-component minimum of two vectors.
+   */
+  OZ_ALWAYS_INLINE
+  friend Vec4 min( const Vec4& a, const Vec4& b )
+  {
+#ifdef OZ_SIMD_MATH
+    return Vec4( vMin( a.f4, b.f4 ) );
+#else
+    return Vec4( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ), min( a.w, b.w ) );
+#endif
+  }
+
+  /**
+   * Per-component maximum of two vectors.
+   */
+  OZ_ALWAYS_INLINE
+  friend Vec4 max( const Vec4& a, const Vec4& b )
+  {
+#ifdef OZ_SIMD_MATH
+    return Vec4( vMax( a.f4, b.f4 ) );
+#else
+    return Vec4( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ), max( a.w, b.w ) );
+#endif
+  }
+
+  /**
+   * Per-component clamped value of vectors.
+   */
+  OZ_ALWAYS_INLINE
+  friend Vec4 clamp( const Vec4& c, const Vec4& a, const Vec4& b )
+  {
+#ifdef OZ_SIMD_MATH
+    return Vec4( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
+#else
+    return Vec4( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ),
+                 clamp( c.w, a.w, b.w ) );
+#endif
+  }
+
 };
-
-/**
- * Per-component absolute value of a vector.
- */
-OZ_ALWAYS_INLINE
-inline Vec4 abs( const Vec4& a )
-{
-#ifdef OZ_SIMD_MATH
-  return Vec4( vAbs( a.u4 ) );
-#else
-  return Vec4( abs( a.x ), abs( a.y ), abs( a.z ), abs( a.w ) );
-#endif
-}
-
-/**
- * Per-component minimum of two vectors.
- */
-OZ_ALWAYS_INLINE
-inline Vec4 min( const Vec4& a, const Vec4& b )
-{
-#ifdef OZ_SIMD_MATH
-  return Vec4( vMin( a.f4, b.f4 ) );
-#else
-  return Vec4( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ), min( a.w, b.w ) );
-#endif
-}
-
-/**
- * Per-component maximum of two vectors.
- */
-OZ_ALWAYS_INLINE
-inline Vec4 max( const Vec4& a, const Vec4& b )
-{
-#ifdef OZ_SIMD_MATH
-  return Vec4( vMax( a.f4, b.f4 ) );
-#else
-  return Vec4( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ), max( a.w, b.w ) );
-#endif
-}
-
-/**
- * Per-component clamped value of vectors.
- */
-OZ_ALWAYS_INLINE
-inline Vec4 clamp( const Vec4& c, const Vec4& a, const Vec4& b )
-{
-#ifdef OZ_SIMD_MATH
-  return Vec4( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
-#else
-  return Vec4( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ),
-               clamp( c.w, a.w, b.w ) );
-#endif
-}
 
 }

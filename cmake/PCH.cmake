@@ -31,47 +31,52 @@ if( PCH_DISABLE )
 
 else( PCH_DISABLE )
 
-  macro( add_pch _pchTarget _inputHeader _inputModule )
+  macro( add_pch pchTarget header module )
     # Extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for the current configuration XXX.
-    string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _buildTypeFlagsVar )
-    set( _flags "${CMAKE_CXX_FLAGS} ${${_buildTypeFlagsVar}}" )
+    string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" buildTypeFlagsVar )
+    set( flags "${CMAKE_CXX_FLAGS} ${${buildTypeFlagsVar}}" )
 
     # Convert string of space separated flags into a list.
-    separate_arguments( _flags )
+    separate_arguments( flags )
 
     # Extract include directories set by include_directories command.
-    get_directory_property( _includes INCLUDE_DIRECTORIES )
-    foreach( _include ${_includes} )
-      list( APPEND _flags "-I${_include}" )
+    get_directory_property( includes INCLUDE_DIRECTORIES )
+    foreach( include ${includes} )
+      list( APPEND flags "-I${include}" )
     endforeach()
 
     # Extract definitions set by add_definitions command.
-    get_directory_property( _defines COMPILE_DEFINITIONS )
-    foreach( _define ${_defines} )
-      list( APPEND _flags "-D${_define}" )
+    get_directory_property( defines COMPILE_DEFINITIONS )
+    foreach( define ${defines} )
+      list( APPEND flags "-D${define}" )
     endforeach()
 
     # Helper target that properly triggers recompilation of precompiled header.
-    add_library( ${_pchTarget}_trigger STATIC "${_inputHeader}" "${_inputModule}" )
+    add_library( ${pchTarget}_trigger STATIC "${header}" "${module}" )
+
+    set( inputHeader  "${CMAKE_CURRENT_SOURCE_DIR}/${header}" )
+    set( outputHeader "${CMAKE_CURRENT_BINARY_DIR}/${header}" )
 
     # Build PCH and copy original header to the build folder since we include PCH indirectly.
     add_custom_command(
-      OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"
-      DEPENDS ${_pchTarget}_trigger
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
-              "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}"
-      COMMAND "${CMAKE_COMMAND}" -E remove -f "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"
-      COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch"
-              "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
-    add_custom_target( ${_pchTarget} DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch" )
-    set_target_properties( ${_pchTarget} PROPERTIES
-      OUTPUT_NAME "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
+      OUTPUT  "${outputHeader}.gch"
+      DEPENDS ${pchTarget}_trigger
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${inputHeader}" "${outputHeader}"
+      COMMAND "${CMAKE_COMMAND}" -E remove -f "${outputHeader}.gch"
+      COMMAND "${CMAKE_CXX_COMPILER}" ${flags} -o "${outputHeader}.gch" "${inputHeader}" )
+    add_custom_target( ${pchTarget} DEPENDS "${outputHeader}.gch" )
+    set_target_properties( ${pchTarget} PROPERTIES OUTPUT_NAME "${outputHeader}" )
   endmacro( add_pch )
 
-  macro( use_pch _target _pchTarget )
-    add_dependencies( ${_target} ${_pchTarget} )
-    get_target_property( pchSrcHeader ${_pchTarget} OUTPUT_NAME )
-    set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include ${pchSrcHeader}" )
+  macro( use_pch target pchTarget )
+    add_dependencies( ${target} ${pchTarget} )
+    get_target_property( pchSrcHeader ${pchTarget} OUTPUT_NAME )
+    set_target_properties( ${target} PROPERTIES COMPILE_FLAGS "-include ${pchSrcHeader}" )
+
+    # Add explicit dependencies. This is required when building with Ninja, otherwise modules won't
+    # get recompiled whenever a header that is also included via PCH is changed.
+    get_target_property( sources ${target} SOURCES )
+    set_source_files_properties( ${sources} PROPERTIES OBJECT_DEPENDS "${pchSrcHeader}.gch" )
   endmacro( use_pch )
 
 endif( PCH_DISABLE )
