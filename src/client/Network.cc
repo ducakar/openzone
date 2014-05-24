@@ -23,64 +23,46 @@
 
 #include <client/Network.hh>
 
-#ifdef OZ_NET
-# include <SDL_net.h>
-#endif
+//#include <SDL_net.h>
 
 namespace oz
 {
 namespace client
 {
 
-#ifndef OZ_NET
+//static TCPsocket socket;
 
 bool Network::connect()
 {
-  return true;
-}
+//  Log::print( "Connecting to %s:%d ...", host.cstr(), port );
 
-void Network::disconnect()
-{}
+//  IPaddress ip;
+//  SDLNet_ResolveHost( &ip, host, port );
+//  socket = SDLNet_TCP_Open( &ip );
 
-void Network::update()
-{}
+//  if( socket == nullptr ) {
+//    Log::printEnd( " Failed" );
+//    return false;
+//  }
 
-#else
-
-static TCPsocket socket;
-
-bool Network::connect()
-{
-  Log::print( "Connecting to %s:%d ...", host.cstr(), port );
-
-  IPaddress ip;
-  SDLNet_ResolveHost( &ip, host, port );
-  socket = SDLNet_TCP_Open( &ip );
-
-  if( socket == nullptr ) {
-    Log::printEnd( " Failed" );
-    return false;
-  }
-
-  Log::printEnd( " OK" );
+//  Log::printEnd( " OK" );
   return true;
 }
 
 void Network::disconnect()
 {
-  SDLNet_TCP_Close( socket );
-  socket = nullptr;
+//  SDLNet_TCP_Close( socket );
+//  socket = nullptr;
 }
 
 void Network::update()
 {}
 
-#endif
 
 void Network::init()
 {
-  host = config.include( "net.server", "localhost" ).get( "" );
-  port = ushort( config.include( "net.port", 6666 ).get( 0 ) );
+//  host = config.include( "net.server", "localhost" ).get( "" );
+//  port = ushort( config.include( "net.port", 6666 ).get( 0 ) );
 }
 
 void Network::destroy()

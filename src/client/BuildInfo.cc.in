@@ -49,8 +49,6 @@ const char* const   BuildInfo::CONFIG      = "OZ_SHARED_LIBS: @OZ_SHARED_LIBS@, 
                                              "OZ_GL_ES: @OZ_GL_ES@, "
                                              "OZ_NONFREE: @OZ_NONFREE@, "
                                              "OZ_UNITTEST: @OZ_UNITTEST@, "
-                                             "OZ_LUAJIT: @OZ_LUAJIT@, "
-                                             "OZ_NET: @OZ_NET@, "
                                              "OZ_TOOLS: @OZ_TOOLS@";
 
 }

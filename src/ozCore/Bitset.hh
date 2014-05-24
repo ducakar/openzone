@@ -45,8 +45,11 @@ class Bitset
 {
 private:
 
+  /// Size of unit in bytes.
+  static const int UNIT_SIZE = int( sizeof( ulong ) );
+
   /// Number of bits per unit.
-  static const int UNIT_BITSIZE = sizeof( ulong ) * 8;
+  static const int UNIT_BITSIZE = int( sizeof( ulong ) ) * 8;
 
   ulong* data; ///< Pointer to array of units that holds the data.
   int    size; ///< Size of data array (in units, not in bits).

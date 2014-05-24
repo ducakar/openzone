@@ -43,9 +43,9 @@ struct PoolAlloc::Block
   char   data[1] OZ_ALIGNED( OZ_ALIGNMENT );
 
   OZ_HIDDEN
-  static Block* create( size_t slotSize, int nSlots, Block* nextBlock )
+  static Block* create( int slotSize, int nSlots, Block* nextBlock )
   {
-    void*  chunk = new char[ OZ_ALIGNMENT + size_t( nSlots ) * slotSize ];
+    void*  chunk = new char[ OZ_ALIGNMENT + size_t( nSlots * slotSize ) ];
     Block* block = reinterpret_cast<Block*>( chunk );
 
     block->nextBlock = nextBlock;
@@ -66,13 +66,13 @@ struct PoolAlloc::Block
 
   OZ_HIDDEN
   OZ_ALWAYS_INLINE
-  Slot* slot( int i, size_t slotSize )
+  Slot* slot( int i, int slotSize )
   {
-    return reinterpret_cast<Slot*>( &data[ size_t( i ) * slotSize ] );
+    return reinterpret_cast<Slot*>( &data[i * slotSize] );
   }
 };
 
-PoolAlloc::PoolAlloc( size_t slotSize_, int nSlots_ ) :
+PoolAlloc::PoolAlloc( int slotSize_, int nSlots_ ) :
   firstBlock( nullptr ), freeSlot( nullptr ), slotSize( slotSize_ ), nSlots( nSlots_ ), count( 0 ),
   size( 0 )
 {}
@@ -128,7 +128,7 @@ void* PoolAlloc::allocate()
   if( freeSlot == nullptr ) {
     firstBlock = Block::create( slotSize, nSlots, firstBlock );
     freeSlot   = firstBlock->slot( 1, slotSize );
-    size      += int( slotSize );
+    size      += slotSize;
 
     return firstBlock->slot( 0, slotSize )->storage;
   }

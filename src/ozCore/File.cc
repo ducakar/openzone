@@ -570,8 +570,8 @@ bool File::read( char* buffer, int* size ) const
     return true;
   }
   else if( data != nullptr ) {
-    *size = min( *size, fileSize );
-    mCopy( buffer, data, size_t( *size ) );
+    *size = min<int>( *size, fileSize );
+    mCopy( buffer, data, *size );
     return true;
   }
   else {

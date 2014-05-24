@@ -21,20 +21,30 @@ supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.1 compilers 
 Development packages of the following libraries are required to build OpenZone from source:
 
 - ALSA (Linux only)
-- Assimp
-- FreeImage
-- libnoise
 - libpng
-- libsquish (optional)
 - libvorbis
-- Lua 5.1 or 5.2 or LuaJIT 2.0
-- ODE (optional)
+- Lua 5.1 or 5.2
 - OpenAL 1.1
 - OpenGL 2.1 or OpenGL ES 2.0
 - PhysicsFS 2.0 or 2.1/dev
 - SDL 1.2 or 2.0
 - SDL_ttf
 - zlib
+
+If you also want to build tools (`OZ_TOOLS` options) you also need:
+
+- Assimp
+- FreeImage
+- libnoise
+- libsquish (optional)
+
+The following development tools are required:
+
+- CMake
+- Ninja (optional, recommended)
+- LLVM/Clang (optional, recommended)
+- MinGW64 (optional, for building Win32/Win64 port)
+- NaCl SDK (optional, for building PNaCl port)
 
 You can then use generic steps for building CMake projects:
 
@@ -52,9 +62,11 @@ for all platforms. You can change variables in headers of both scripts to change
 platforms and whether you want to make debug or a release build. You will also need to fix paths to
 SDKs in those two scripts and in `cmake/*.Toolchain.cmake` files.
 
+Build scripts use Ninja as low-level build system instead of Make which is the default for CMake.
+
 For building Linux and Windows builds, all required libraries need to be installed on your system.
-MinGW32 is searched in `/usr/i486-mingw32` by default. You may change that in
-`cmake/Windows-i686.Toolchain.cmake`.
+MinGW64 is searched in `/usr/i686-w64-mingw32` and `/usr/x86_64-w64-mingw32` by default. You may
+change that in `cmake/Windows-*.Toolchain.cmake`.
 
 You may also want to set several options when configuring CMake build system:
 
@@ -91,13 +103,6 @@ You may also want to set several options when configuring CMake build system:
 
 - `OZ_UNITEST`: Build liboz unittest.
   `OFF` by default.
-
-- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster,
-  but there are some weird issues with LuaJIT not initialising sometimes.
-  `OFF` by default.
-
-- `OZ_NET`: Enable networking support. Not implemented yet. Requires SDL_net library.
-  `OFF` by default, forced to `OFF` on NaCl.
 
 - `OZ_TOOLS`: Build tools required for creating new game data (see the next section).
 

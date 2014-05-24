@@ -44,14 +44,10 @@ target_link_libraries( ozEngine ${OPENAL_LIBRARY} )
 # SDL.
 if( OZ_SDL1 )
   target_link_libraries( ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES} )
-  if( OZ_NET )
-    target_link_libraries( ozEngine ${SDL_NET_LIBRARIES} )
-  endif()
+#  target_link_libraries( ozEngine ${SDL_NET_LIBRARIES} )
 else()
   target_link_libraries( ozEngine ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} )
-  if( OZ_NET )
-    target_link_libraries( ozEngine ${SDL2_NET_LIBRARIES} )
-  endif()
+#  target_link_libraries( ozEngine ${SDL2_NET_LIBRARIES} )
 endif()
 
 # libpng.

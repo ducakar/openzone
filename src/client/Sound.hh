@@ -92,7 +92,7 @@ private:
   char*                       aacOutputBuffer;
   int                         aacWrittenBytes;
   int                         aacBufferBytes;
-  size_t                      aacInputBytes;
+  int                         aacInputBytes;
 
   // Music track id to switch to, -1 to do nothing, -2 stop playing.
   int                         selectedTrack;

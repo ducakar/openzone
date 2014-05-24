@@ -70,7 +70,10 @@ case $1 in
 
     rm -rf OpenZone-$version/{include,lib}
     zip -9r ../../OpenZone-$version-bundle.zip OpenZone-$version
-    ls -hl --color=always ../../OpenZone-$version-bundle.zip
+    cd ../..
+    rm -rf build/bundle
+
+    ls -hl --color=always OpenZone-$version-bundle.zip
     ;;
   *)
     echo "Usage: $0 {src | data | datasrc | bundle}"

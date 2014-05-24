@@ -78,8 +78,7 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
       Log::printRaw( "AL: Speak buffer overrun\n" );
     }
 
-    mCopy( speakSource.samples + speakSource.nSamples, samples,
-           size_t( nSamples ) * sizeof( short ) );
+    mCopy( speakSource.samples + speakSource.nSamples, samples, nSamples * int( sizeof( short ) ) );
     speakSource.nSamples += nSamples;
 
     if( speakSource.nQueuedBuffers != 2 ) {
@@ -701,7 +700,7 @@ void Context::unload()
   terra.unload();
 
   aFree( fragPools, liber.nFragPools );
-  aFill<FragPool*, FragPool*>( fragPools, liber.nFragPools, nullptr );
+  aFill( fragPools, liber.nFragPools, nullptr );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();

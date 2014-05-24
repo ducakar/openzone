@@ -29,6 +29,7 @@
 namespace oz
 {
 
+OZ_WEAK
 size_t strlcpy( char *dest, const char *s, size_t size )
 {
   if( size <= 0 ) {

@@ -88,7 +88,7 @@ char InputStream::readChar()
 void InputStream::readChars( char* array, int count )
 {
   const char* data = forward( count * int( sizeof( char ) ) );
-  mCopy( array, data, size_t( count ) );
+  mCopy( array, data, count );
 }
 
 byte InputStream::readByte()

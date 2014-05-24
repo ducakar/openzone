@@ -704,7 +704,7 @@ void BSP::optimise()
 
   List<bool> usedBrushSides;
   usedBrushSides.resize( brushSides.length() );
-  aFill<bool>( usedBrushSides.begin(), usedBrushSides.length(), false );
+  aFill( usedBrushSides.begin(), usedBrushSides.length(), false );
 
   for( int i = 0; i < brushes.length(); ++i ) {
     for( int j = 0; j < brushes[i].nSides; ++j ) {
@@ -743,7 +743,7 @@ void BSP::optimise()
 
   List<bool> usedPlanes;
   usedPlanes.resize( planes.length() );
-  aFill<bool>( usedPlanes.begin(), planes.length(), false );
+  aFill( usedPlanes.begin(), planes.length(), false );
 
   for( int i = 0; i < nodes.length(); ++i ) {
     usedPlanes[ nodes[i].plane ] = true;

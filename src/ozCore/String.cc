@@ -66,7 +66,7 @@ void String::ensureCapacity( int newCount, bool keepContents )
     char* newBuffer = new char[newCount + 1];
 
     if( keepContents ) {
-      mCopy( newBuffer, buffer, size_t( min<int>( count, newCount ) + 1 ) );
+      mCopy( newBuffer, buffer, min<int>( count, newCount ) + 1 );
     }
 
     if( buffer != baseBuffer ) {
@@ -177,7 +177,7 @@ String String::substring( const char* s, int start )
   int    rCount = length( s ) - start;
   String r      = String( rCount, 0 );
 
-  mCopy( r.buffer, s + start, size_t( rCount + 1 ) );
+  mCopy( r.buffer, s + start, rCount + 1 );
 
   return r;
 }
@@ -189,7 +189,7 @@ String String::substring( const char* s, int start, int end )
   int    rCount = end - start;
   String r      = String( rCount, 0 );
 
-  mCopy( r.buffer, s + start, size_t( rCount ) );
+  mCopy( r.buffer, s + start, rCount );
   r.buffer[rCount] = '\0';
 
   return r;
@@ -455,7 +455,7 @@ String::String( const char* s, int count_ ) :
   buffer( baseBuffer ), count( 0 )
 {
   ensureCapacity( count_ );
-  mCopy( buffer, s, size_t( count ) );
+  mCopy( buffer, s, count );
   buffer[count] = '\0';
 }
 
@@ -467,7 +467,7 @@ String::String( const char* s ) :
   }
   else {
     ensureCapacity( length( s ) );
-    mCopy( buffer, s, size_t( count + 1 ) );
+    mCopy( buffer, s, count + 1 );
   }
 }
 
@@ -478,8 +478,8 @@ String::String( const char* s, const char* t ) :
   int tCount = length( t );
 
   ensureCapacity( sCount + tCount );
-  mCopy( buffer, s, size_t( sCount ) );
-  mCopy( buffer + sCount, t, size_t( tCount + 1 ) );
+  mCopy( buffer, s, sCount );
+  mCopy( buffer + sCount, t, tCount + 1 );
 }
 
 String::String( bool b ) :
@@ -636,7 +636,7 @@ String::String( const String& s ) :
   buffer( baseBuffer ), count( 0 )
 {
   ensureCapacity( s.count );
-  mCopy( buffer, s.buffer, size_t( count + 1 ) );
+  mCopy( buffer, s.buffer, count + 1 );
 }
 
 String::String( String&& s ) :
@@ -648,7 +648,7 @@ String::String( String&& s ) :
   }
   else {
     buffer = baseBuffer;
-    mCopy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
+    mCopy( baseBuffer, s.baseBuffer, count + 1 );
   }
 
   s.count         = 0;
@@ -662,7 +662,7 @@ String& String::operator = ( const String& s )
   }
 
   ensureCapacity( s.count );
-  mCopy( buffer, s.buffer, size_t( count + 1 ) );
+  mCopy( buffer, s.buffer, count + 1 );
 
   return *this;
 }
@@ -685,7 +685,7 @@ String& String::operator = ( String&& s )
   }
   else {
     buffer = baseBuffer;
-    mCopy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
+    mCopy( baseBuffer, s.baseBuffer, count + 1 );
   }
 
   s.count         = 0;
@@ -706,7 +706,7 @@ String& String::operator = ( const char* s )
   }
   else {
     ensureCapacity( length( s ) );
-    mCopy( buffer, s, size_t( count + 1 ) );
+    mCopy( buffer, s, count + 1 );
   }
 
   return *this;
@@ -732,7 +732,7 @@ String String::str( const char* s, ... )
   va_end( ap );
 
   String r( length, 0 );
-  mCopy( r.buffer, localBuffer, size_t( r.count + 1 ) );
+  mCopy( r.buffer, localBuffer, r.count + 1 );
 
   return r;
 }
@@ -838,8 +838,8 @@ String String::operator + ( const String& s ) const
   int    rCount = count + s.count;
   String r      = String( rCount, 0 );
 
-  mCopy( r.buffer, buffer, size_t( count ) );
-  mCopy( r.buffer + count, s.buffer, size_t( s.count + 1 ) );
+  mCopy( r.buffer, buffer, count );
+  mCopy( r.buffer + count, s.buffer, s.count + 1 );
 
   return r;
 }
@@ -850,8 +850,8 @@ String String::operator + ( const char* s ) const
   int    rCount  = count + sLength;
   String r       = String( rCount, 0 );
 
-  mCopy( r.buffer, buffer, size_t( count ) );
-  mCopy( r.buffer + count, s, size_t( sLength + 1 ) );
+  mCopy( r.buffer, buffer, count );
+  mCopy( r.buffer + count, s, sLength + 1 );
 
   return r;
 }
@@ -862,8 +862,8 @@ String operator + ( const char* s, const String& t )
   int    rCount  = t.count + sLength;
   String r       = String( rCount, 0 );
 
-  mCopy( r.buffer, s, size_t( sLength ) );
-  mCopy( r.buffer + sLength, t.buffer, size_t( t.count + 1 ) );
+  mCopy( r.buffer, s, sLength );
+  mCopy( r.buffer + sLength, t.buffer, t.count + 1 );
 
   return r;
 }
@@ -874,7 +874,7 @@ String& String::operator += ( const String& s )
 
   ensureCapacity( count + s.count, true );
 
-  mCopy( buffer + oCount, s, size_t( s.count + 1 ) );
+  mCopy( buffer + oCount, s, s.count + 1 );
   return *this;
 }
 
@@ -885,7 +885,7 @@ String& String::operator += ( const char* s )
 
   ensureCapacity( count + sLength, true );
 
-  mCopy( buffer + oCount, s, size_t( sLength + 1 ) );
+  mCopy( buffer + oCount, s, sLength + 1 );
   return *this;
 }
 
@@ -896,7 +896,7 @@ String String::substring( int start ) const
   int    rCount = count - start;
   String r      = String( rCount, 0 );
 
-  mCopy( r.buffer, buffer + start, size_t( rCount + 1 ) );
+  mCopy( r.buffer, buffer + start, rCount + 1 );
   return r;
 }
 
@@ -907,7 +907,7 @@ String String::substring( int start, int end ) const
   int    rCount = end - start;
   String r      = String( rCount, 0 );
 
-  mCopy( r.buffer, buffer + start, size_t( rCount ) );
+  mCopy( r.buffer, buffer + start, rCount );
   r.buffer[rCount] = '\0';
   return r;
 }

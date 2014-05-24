@@ -14,8 +14,4 @@ add_library( common STATIC
 )
 use_pch( common pch )
 
-if( OZ_LUAJIT )
-  target_link_libraries( common ${LUAJIT_LIBRARIES} )
-else()
-  target_link_libraries( common ${LUA_LIBRARIES} )
-endif()
+target_link_libraries( common ${LUA_LIBRARIES} )

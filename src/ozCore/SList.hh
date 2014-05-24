@@ -497,14 +497,11 @@ public:
    */
   void resize( int newCount )
   {
-    if( newCount > count ) {
-      hard_assert( newCount <= SIZE );
-    }
-    else {
-      // Ensure destruction of removed elements.
-      for( int i = newCount; i < count; ++i ) {
-        data[i] = Elem();
-      }
+    hard_assert( newCount <= SIZE );
+
+    // Ensure destruction of removed elements.
+    for( int i = count; i < newCount; ++i ) {
+      data[i] = Elem();
     }
     count = newCount;
   }
@@ -515,7 +512,9 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    aFill<Elem, Elem>( data, count, Elem() );
+    for( int i = 0; i < count; ++i ) {
+      data[i] = Elem();
+    }
     count = 0;
   }
 

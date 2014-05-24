@@ -35,7 +35,7 @@ struct Foo
   Foo( int n = 0 ) :
     number( n )
   {
-    Log() << "Foo() : " << number;
+    Log() << "Foo( int ) : " << number;
   }
 
   ~Foo()

@@ -94,7 +94,7 @@ private:
 
   Block* firstBlock; ///< Linked list of the allocated blocks.
   Slot*  freeSlot;   ///< Linked list of free slots or `nullptr` if none.
-  size_t slotSize;   ///< Size of an object.
+  int    slotSize;   ///< Size of an object.
   int    nSlots;     ///< Number of objects in a memory block.
   int    count;      ///< Number of occupied slots in the pool.
   int    size;       ///< Capacity.
@@ -104,7 +104,7 @@ public:
   /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
-  explicit PoolAlloc( size_t slotSize, int nSlots = 64 );
+  explicit PoolAlloc( int slotSize, int nSlots = 64 );
 
   /**
    * Destructor.

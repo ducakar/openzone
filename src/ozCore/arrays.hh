@@ -168,12 +168,12 @@ inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
  * Equivalent to `memcpy()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mCopy( void* dest, const void* src, size_t size )
+inline void* mCopy( void* dest, const void* src, int size )
 {
 #if defined( NDEBUG ) || defined( __native_client__ ) || defined( _WIN32 )
-  return __builtin_memcpy( dest, src, size );
+  return __builtin_memcpy( dest, src, size_t( size ) );
 #else
-  return __builtin___memcpy_chk( dest, src, size, __builtin_object_size( dest, 0 ) );
+  return __builtin___memcpy_chk( dest, src, size_t( size ), __builtin_object_size( dest, 0 ) );
 #endif
 }
 
@@ -181,12 +181,12 @@ inline void* mCopy( void* dest, const void* src, size_t size )
  * Equivalent to `memmove()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mMove( void* dest, const void* src, size_t size )
+inline void* mMove( void* dest, const void* src, int size )
 {
 #if defined( NDEBUG ) || defined( __native_client__ ) || defined( _WIN32 )
-  return __builtin_memmove( dest, src, size );
+  return __builtin_memmove( dest, src, size_t( size ) );
 #else
-  return __builtin___memmove_chk( dest, src, size, __builtin_object_size( dest, 0 ) );
+  return __builtin___memmove_chk( dest, src, size_t( size ), __builtin_object_size( dest, 0 ) );
 #endif
 }
 
@@ -194,12 +194,12 @@ inline void* mMove( void* dest, const void* src, size_t size )
  * Equivalent to `memset()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mSet( void* dest, int value, size_t size )
+inline void* mSet( void* dest, int value, int size )
 {
 #if defined( NDEBUG ) || defined( __native_client__ ) || defined( _WIN32 )
-  return __builtin_memset( dest, value, size );
+  return __builtin_memset( dest, value, size_t( size ) );
 #else
-  return __builtin___memset_chk( dest, value, size, __builtin_object_size( dest, 0 ) );
+  return __builtin___memset_chk( dest, value, size_t( size ), __builtin_object_size( dest, 0 ) );
 #endif
 }
 
@@ -207,18 +207,18 @@ inline void* mSet( void* dest, int value, size_t size )
  * Equivalent to `memcmp()`.
  */
 OZ_ALWAYS_INLINE
-inline int mCompare( const void* srcA, const void* srcB, size_t size )
+inline int mCompare( const void* srcA, const void* srcB, int size )
 {
-  return __builtin_memcmp( srcA, srcB, size );
+  return __builtin_memcmp( srcA, srcB, size_t( size ) );
 }
 
 /**
  * Equivalent to `memchr()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mChar( const void* src, int ch, size_t size )
+inline void* mChar( const void* src, int ch, int size )
 {
-  return __builtin_memchr( src, ch, size );
+  return __builtin_memchr( src, ch, size_t( size ) );
 }
 
 /**
@@ -414,7 +414,7 @@ inline Elem* aReallocate( Elem* array, int count, int newCount )
 
   if( newCount != 0 ) {
     newArray = new Elem[newCount];
-    count    = min( count, newCount );
+    count    = min<int>( count, newCount );
 
     for( int i = 0; i < count; ++i ) {
       newArray[i] = static_cast<Elem&&>( array[i] );

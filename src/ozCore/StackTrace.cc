@@ -126,7 +126,7 @@ char** StackTrace::symbols() const
       break;
     }
 
-    mCopy( out, file, fileLen );
+    memcpy( out, file, fileLen );
     out += fileLen;
 
     *out++ = ':';
@@ -146,7 +146,7 @@ char** StackTrace::symbols() const
       size_t funcLen = strlen( func );
 
       if( funcLen != 0 && out + funcLen + 1 <= outEnd ) {
-        mCopy( out, func, funcLen );
+        memcpy( out, func, funcLen );
         out += funcLen;
       }
       else {
@@ -176,7 +176,7 @@ char** StackTrace::symbols() const
     return nullptr;
   }
 
-  mCopy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
+  memcpy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
 
   char* entry = reinterpret_cast<char*>( &niceSymbols[nWrittenFrames] );
   for( i = 0; i < nWrittenFrames; ++i ) {

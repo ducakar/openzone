@@ -53,7 +53,6 @@ Cursor::Cursor( Cursor&& c ) :
 {
   aCopy<Image>( c.images, MAX_IMAGES, images );
 
-  aFill<Image>( c.images, MAX_IMAGES, Image() );
   c.nImages   = 0;
   c.frame     = 0;
   c.lastFrame = -1;
@@ -74,7 +73,6 @@ Cursor& Cursor::operator = ( Cursor&& c )
   frameTime = c.frameTime;
   mode      = c.mode;
 
-  aFill<Image>( c.images, MAX_IMAGES, Image() );
   c.nImages   = 0;
   c.frame     = 0;
   c.lastFrame = -1;
@@ -242,7 +240,6 @@ void Cursor::destroy()
     }
   }
 
-  aFill<Image>( images, MAX_IMAGES, Image() );
   nImages   = 0;
   frame     = 0;
   lastFrame = -1;

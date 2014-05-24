@@ -34,8 +34,8 @@ class Network
 {
 private:
 
-  String host;
-  ushort port;
+//  String host;
+//  ushort port;
 
 public:
 

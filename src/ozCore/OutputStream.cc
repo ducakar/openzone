@@ -61,7 +61,7 @@ OutputStream::OutputStream( const OutputStream& os ) :
     streamEnd   = streamBegin + size;
     streamPos   = streamBegin + length;
 
-    mCopy( streamBegin, os.streamBegin, size_t( size ) );
+    mCopy( streamBegin, os.streamBegin, size );
   }
 }
 
@@ -100,7 +100,7 @@ OutputStream& OutputStream::operator = ( const OutputStream& os )
     order     = os.order;
     buffered  = os.buffered;
 
-    mCopy( streamBegin, os.streamBegin, size_t( size ) );
+    mCopy( streamBegin, os.streamBegin, size );
   }
   else {
     if( buffered ) {
@@ -191,7 +191,7 @@ void OutputStream::writeChar( char c )
 void OutputStream::writeChars( const char* array, int count )
 {
   char* data = forward( count * int( sizeof( char ) ) );
-  mCopy( data, array, size_t( count ) );
+  mCopy( data, array, count );
 }
 
 void OutputStream::writeByte( byte b )
@@ -387,7 +387,7 @@ void OutputStream::writeString( const String& s )
   int   size = s.length() + 1;
   char* data = forward( size );
 
-  mCopy( data, s.cstr(), size_t( size ) );
+  mCopy( data, s.cstr(), size );
 }
 
 void OutputStream::writeString( const char* s )
@@ -395,7 +395,7 @@ void OutputStream::writeString( const char* s )
   int   size = String::length( s ) + 1;
   char* data = forward( size );
 
-  mCopy( data, s, size_t( size ) );
+  mCopy( data, s, size );
 }
 
 void OutputStream::writeVec3( const Vec3& v )
@@ -722,7 +722,7 @@ void OutputStream::writeLine( const String& s )
   int   length = s.length();
   char* data   = forward( length + 1 );
 
-  mCopy( data, s, size_t( length ) );
+  mCopy( data, s, length );
   data[length] = '\n';
 }
 
@@ -731,7 +731,7 @@ void OutputStream::writeLine( const char* s )
   int   length = String::length( s );
   char* data   = forward( length + 1 );
 
-  mCopy( data, s, size_t( length ) );
+  mCopy( data, s, length );
   data[length] = '\n';
 }
 

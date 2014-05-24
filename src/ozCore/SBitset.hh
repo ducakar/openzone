@@ -48,6 +48,9 @@ class SBitset
 
 private:
 
+  /// Size of unit in bytes.
+  static const int UNIT_SIZE = int( sizeof( ulong ) );
+
   /// Number of bits per unit.
   static const int UNIT_BITSIZE = int( sizeof( ulong ) ) * 8;
 
@@ -259,7 +262,7 @@ public:
    */
   void setAll()
   {
-    mSet( data, -1, size_t( SIZE ) * sizeof( ulong ) );
+    mSet( data, -1, SIZE * UNIT_SIZE );
   }
 
   /**
@@ -267,7 +270,7 @@ public:
    */
   void clearAll()
   {
-    mSet( data, 0, size_t( SIZE ) * sizeof( ulong ) );
+    mSet( data, 0, SIZE * UNIT_SIZE );
   }
 
   /**

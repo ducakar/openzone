@@ -307,7 +307,7 @@ int GL::textureDataFromFile( const File& file, int bias )
             char* pixels    = &data[y * mipmapPitch];
             int   lineWidth = mipmapWidth * pixelSize;
 
-            mCopy( pixels, is.forward( lineWidth ), size_t( lineWidth ) );
+            mCopy( pixels, is.forward( lineWidth ), lineWidth );
 
 #ifdef GL_ES_VERSION_2_0
             // BGR(A) -> RGB(A).

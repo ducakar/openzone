@@ -476,7 +476,7 @@ const File* Model::preload()
         normals[i] = is.readVec3();
       }
 
-      mCopy( vertices, vertexBuffer, size_t( nVertices ) * sizeof( Vertex ) );
+      mCopy( vertices, vertexBuffer, nVertices * int( sizeof( Vertex ) ) );
     }
   }
 

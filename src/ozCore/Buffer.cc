@@ -38,13 +38,13 @@ Buffer::Buffer( int size_ ) :
 Buffer::Buffer( const char* data_, int size_ ) :
   data( size_ == 0 ? nullptr : new char[size_] ), size( size_ )
 {
-  mCopy( data, data_, size_t( size ) );
+  mCopy( data, data_, size );
 }
 
 Buffer::Buffer( const String& s ) :
   data( s.length() == 0 ? nullptr : new char[ s.length() ] ), size( s.length() )
 {
-  mCopy( data, s.cstr(), size_t( size ) );
+  mCopy( data, s.cstr(), size );
 }
 
 Buffer::~Buffer()
@@ -53,12 +53,9 @@ Buffer::~Buffer()
 }
 
 Buffer::Buffer( const Buffer& b ) :
-  data( nullptr ), size( b.size )
+  data( b.size == 0 ? nullptr : new char[b.size] ), size( b.size )
 {
-  if( b.size != 0 ) {
-    data = new char[size];
-    mCopy( data, b.data, size_t( size ) );
-  }
+  mCopy( data, b.data, size );
 }
 
 Buffer::Buffer( Buffer&& b ) :
@@ -78,7 +75,7 @@ Buffer& Buffer::operator = ( const Buffer& b )
     resize( b.size );
   }
 
-  mCopy( data, b.data, size_t( b.size ) );
+  mCopy( data, b.data, b.size );
   return *this;
 }
 
@@ -101,7 +98,7 @@ Buffer& Buffer::operator = ( Buffer&& b )
 
 bool Buffer::operator == ( const Buffer& b ) const
 {
-  return size == b.size && mCompare( data, b.data, size_t( size ) ) == 0;
+  return size == b.size && mCompare( data, b.data, size ) == 0;
 }
 
 bool Buffer::operator != ( const Buffer& b ) const
@@ -124,7 +121,7 @@ String Buffer::toString() const
   char*  buffer;
   String s = String::create( size, &buffer );
 
-  mCopy( buffer, data, size_t( size ) );
+  mCopy( buffer, data, size );
   return s;
 }
 
@@ -208,16 +205,18 @@ void Buffer::resize( int newSize )
 {
   hard_assert( newSize >= 0 );
 
-  char* newData = nullptr;
+  if( newSize != size ) {
+    char* newData = nullptr;
 
-  if( newSize != 0 ) {
-    newData = new char[newSize];
-    mCopy( newData, data, size_t( min( newSize, size ) ) );
+    if( newSize != 0 ) {
+      newData = new char[newSize];
+      mCopy( newData, data, min<int>( size, newSize ) );
+    }
+    delete[] data;
+
+    data = newData;
+    size = newSize;
   }
-  delete[] data;
-
-  data = newData;
-  size = newSize;
 }
 
 }

@@ -614,20 +614,22 @@ public:
   }
 
   /**
-   * Resize the list to the specified number of elements.
+   * Resize the list and its capacity to the specified number of elements.
    */
   void resize( int newCount )
   {
-    if( newCount > count ) {
-      ensureCapacity( newCount );
+    if( newCount != size ) {
+      data  = aReallocate<Elem>( data, count, newCount );
+      count = newCount;
+      size  = newCount;
     }
     else {
       // Ensure destruction of removed elements.
-      for( int i = newCount; i < count; ++i ) {
+      for( int i = count; i < newCount; ++i ) {
         data[i] = Elem();
       }
+      count = newCount;
     }
-    count = newCount;
   }
 
   /**

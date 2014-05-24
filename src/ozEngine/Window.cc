@@ -365,10 +365,17 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
   // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
   // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
 #if SDL_MAJOR_VERSION < 2
-  char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
-  SDL_putenv( allowScreensaverEnv );
+# ifdef __unix__
+  setenv( "SDL_VIDEO_ALLOW_SCREENSAVER", "1", true );
+# endif
 #else
   SDL_EnableScreenSaver();
+#endif
+
+  // Force old Mesa drivers (< 9.1?) to turn on partial S3TC support even when libtxc_dxtn is not
+  // present. We don't use online texture compression anywhere so partial S3TC support is enough.
+#ifdef __unix__
+  setenv( "force_s3tc_enable", "true", true );
 #endif
 
 #if SDL_MAJOR_VERSION < 2
