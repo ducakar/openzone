@@ -29,7 +29,7 @@ function onCreate()
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )
-  ozCaelumSetPeriod( 3600 )
+  ozCaelumSetPeriod( 2400 )
   ozCaelumSetTime( 0 )
   --ozCaelumSetRealTime()
 

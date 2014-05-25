@@ -2146,7 +2146,7 @@ static int ozBotSetWeaponItem( lua_State* l )
     }
 
     int index = bot->items[item];
-    Weapon* weapon = static_cast<Weapon*>( orbis.obj( index ) );
+    Weapon* weapon = orbis.obj<Weapon>( index );
 
     if( weapon == nullptr ) {
       l_pushbool( false );
@@ -2392,7 +2392,7 @@ static int ozVehicleDisembarkBot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  Bot* pilot = static_cast<Bot*>( orbis.obj( veh->pilot ) );
+  Bot* pilot = orbis.obj<Bot>( veh->pilot );
   if( pilot == nullptr ) {
     return 0;
   }

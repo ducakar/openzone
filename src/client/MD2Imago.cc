@@ -90,8 +90,9 @@ void MD2Imago::draw( const Imago* parent )
     }
   }
   else {
-    const Bot*      bot   = static_cast<const Bot*>( obj );
-    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+    const Bot*      bot    = static_cast<const Bot*>( obj );
+    const BotClass* clazz  = static_cast<const BotClass*>( bot->clazz );
+    const Weapon*   weapon = orbis.obj<const Weapon>( bot->weapon );
 
     anim.advance();
 
@@ -106,16 +107,11 @@ void MD2Imago::draw( const Imago* parent )
       }
 
       model->scheduleMD2Anim( &anim, Model::SCENE_QUEUE );
-
-      // FIXME Enable when no buggy models are used (no mismatched death animation for weapons).
-  //     if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
-  //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
-  //     }
     }
     else if( bot->index == camera.bot && !camera.isExternal ) {
       h = bot->h;
 
-      if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
+      if( parent == nullptr && weapon != nullptr ) {
         tf.model = Mat4::translation( obj->p - Point::ORIGIN );
         tf.model.rotateZ( bot->h );
 
@@ -125,7 +121,7 @@ void MD2Imago::draw( const Imago* parent )
 
         glDepthFunc( GL_ALWAYS );
 
-        context.drawImago( orbis.obj( bot->weapon ), this );
+        context.drawImago( weapon, this );
 
         glDepthFunc( GL_LEQUAL );
       }
@@ -144,8 +140,8 @@ void MD2Imago::draw( const Imago* parent )
 
       model->scheduleMD2Anim( &anim, Model::SCENE_QUEUE );
 
-      if( parent == nullptr && orbis.obj( bot->weapon ) != nullptr ) {
-        context.drawImago( orbis.obj( bot->weapon ), this );
+      if( parent == nullptr && weapon != nullptr ) {
+        context.drawImago( weapon, this );
       }
     }
 

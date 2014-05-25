@@ -69,7 +69,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
   }
   // Bot.
   else {
-    const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
+    const Weapon* weapon = orbis.obj<const Weapon>( bot->weapon );
 
     if( bot->state & Bot::DEAD_BIT ) {
       if( ANIM_DEATH_FALLBACK <= currType && nextType <= ANIM_DEATH_FALLBACKSLOW ) {
@@ -212,7 +212,7 @@ void MD2::AnimState::advance()
       frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
     }
     else if( ( inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK ) ) {
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
+      const Weapon* weapon = orbis.obj<const Weapon>( bot->weapon );
       float         shotInterval;
 
       if( weapon == nullptr ) {

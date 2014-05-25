@@ -370,7 +370,7 @@ static int ozSelfSetWeaponItem( lua_State* l )
     }
 
     int index = ns.self->items[item];
-    Weapon* weapon = static_cast<Weapon*>( orbis.obj( index ) );
+    Weapon* weapon = orbis.obj<Weapon>( index );
 
     if( weapon == nullptr ) {
       l_pushbool( false );

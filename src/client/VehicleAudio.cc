@@ -84,7 +84,7 @@ void VehicleAudio::play( const Object* playAt )
 
   // pilot
   if( vehicle->pilot >= 0 && camera.bot == vehicle->pilot ) {
-    const Bot* bot = static_cast<const Bot*>( orbis.obj( vehicle->pilot ) );
+    const Bot* bot = orbis.obj<const Bot>( vehicle->pilot );
 
     if( bot != nullptr && ( bot->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( bot, playAt );

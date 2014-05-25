@@ -134,7 +134,7 @@ void UnitProxy::prepare()
       if( currUnit != 0 || nSwitchableunits > 1 ) {
         currUnit = ( currUnit + 1 ) % nSwitchableunits;
 
-        Bot* unit = static_cast<Bot*>( orbis.obj( camera.switchableUnits[currUnit] ) );
+        Bot* unit = orbis.obj<Bot>( camera.switchableUnits[currUnit] );
 
         if( unit->state & Bot::DEAD_BIT ) {
           botEye    = unit->p;
@@ -299,7 +299,7 @@ void UnitProxy::prepare()
 
   if( weaponIndex >= 0 ) {
     for( int i = 0, index = 0; i < bot->items.length(); ++i ) {
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.obj( bot->items[i] ) );
+      const Weapon* weapon = orbis.obj<const Weapon>( bot->items[i] );
 
       if( weapon != nullptr && weapon->flags & Object::WEAPON_BIT ) {
         if( index == weaponIndex ) {

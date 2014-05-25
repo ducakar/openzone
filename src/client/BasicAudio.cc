@@ -82,7 +82,7 @@ void BasicAudio::play( const Object* playAt )
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 
-      const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.obj( dyn->lower ) );
+      const Dynamic* sDyn = orbis.obj<const Dynamic>( dyn->lower );
 
       if( sDyn != nullptr ) {
         dvx -= sDyn->velocity.x;

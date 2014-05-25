@@ -93,7 +93,7 @@ void StrategicProxy::prepare()
         else if( tagged->flags & Object::VEHICLE_BIT ) {
           const Vehicle* veh = static_cast<const Vehicle*>( tagged );
 
-          me = static_cast<const Bot*>( orbis.obj( veh->pilot ) );
+          me = orbis.obj<const Bot>( veh->pilot );
         }
       }
 
@@ -106,7 +106,7 @@ void StrategicProxy::prepare()
 
   if( input.keys[Input::KEY_CYCLE_UNITS] && !input.oldKeys[Input::KEY_CYCLE_UNITS] ) {
     if( !camera.switchableUnits.isEmpty() ) {
-      Bot* bot = static_cast<Bot*>( orbis.obj( camera.switchableUnits.first() ) );
+      Bot* bot = orbis.obj<Bot>( camera.switchableUnits.first() );
 
       camera.setBot( bot );
       camera.setState( Camera::UNIT );

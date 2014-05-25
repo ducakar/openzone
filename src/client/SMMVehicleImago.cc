@@ -61,7 +61,7 @@ void SMMVehicleImago::draw( const Imago* )
   tf.model = Mat4::translation( obj->p - Point::ORIGIN ) ^ veh->rot;
   tf.model.rotateX( Math::TAU / -4.0f );
 
-  const Bot* pilot = static_cast<const Bot*>( orbis.obj( veh->pilot ) );
+  const Bot* pilot = orbis.obj<const Bot>( veh->pilot );
 
   if( pilot != nullptr && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
     tf.push();

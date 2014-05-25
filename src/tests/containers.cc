@@ -80,6 +80,11 @@ struct Foo
     Log() << "bool operator == ( const Foo& ) : " << number << " < " << f.number;
     return number < f.number;
   }
+
+  friend int hash( const Foo& f )
+  {
+    return f.number;
+  }
 };
 
 template <typename Type>

@@ -233,6 +233,7 @@ end
 
 Droid.baseAutomaton =
 {
+  name = "baseAutomaton",
   initial = "randomWalk",
 
   randomWalk = {
@@ -275,5 +276,5 @@ Droid.baseAutomaton =
 }
 
 function droid( l )
-  processAutomaton( droid.baseAutomaton, l )
+  processAutomaton( Droid.baseAutomaton, l )
 end

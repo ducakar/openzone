@@ -199,7 +199,7 @@ bool Physics::handleObjFriction()
         }
       }
       else {
-        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.obj( dyn->lower ) );
+        const Dynamic* sDyn = orbis.obj<const Dynamic>( dyn->lower );
 
         if( sDyn->velocity != Vec3::ZERO ) {
           isLowerStill = false;

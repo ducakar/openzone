@@ -33,10 +33,6 @@ class Nirvana
 {
 private:
 
-  // Mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was added
-  // to the list). To force update, set Mind::FORCE_UPDATE_BIT.
-  static const int UPDATE_INTERVAL = 32;
-
   int updateModulo;
 
 public:

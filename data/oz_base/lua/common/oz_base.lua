@@ -63,10 +63,13 @@ function isSubclassOf( subclass )
 end
 
 function processAutomaton( automaton, localData )
-  local state = automaton[localData.state]
+  local state
 
-  if not state then
-    localData.state = automaton.initial
+  if localData.automatonName == automaton.name then
+    state = automaton[localData.automatonState]
+  else
+    localData.automatonName = automaton.name
+    localData.automatonState = automaton.initial
     state = automaton[automaton.initial]
 
     if state.onEnter then
@@ -77,11 +80,12 @@ function processAutomaton( automaton, localData )
   if state.onUpdate then
     state.onUpdate( localData )
   end
+
   for i = 1, #state.links do
     local link = state.links[i]
 
     if link.condition( localData ) then
-      localData.state = link.target
+      localData.automatonState = link.target
       state = automaton[link.target]
 
       if state.onEnter then

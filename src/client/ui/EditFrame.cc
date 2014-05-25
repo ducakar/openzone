@@ -158,7 +158,7 @@ void EditFrame::onDraw()
 
   const Object*      container      = owner;
   const ObjectClass* containerClazz = container->clazz;
-  const Dynamic*     taggedItem     = static_cast<const Dynamic*>( orbis.obj( taggedItemIndex ) );
+  const Dynamic*     taggedItem     = orbis.obj<const Dynamic>( taggedItemIndex );
 
   if( container->flags & Object::BOT_BIT ) {
     const Bot* bot = static_cast<const Bot*>( container );

@@ -34,7 +34,12 @@ class Mind
 {
 public:
 
+  // Normally, mind is only updated once in UPDATE_INTERVAL ticks.
+  static const int UPDATE_INTERVAL = 32;
+  // Force mind update in the next tick. Cleared after update.
   static const int FORCE_UPDATE_BIT = 0x01;
+  // Force mind update when a collision occurs (in physical world).
+  static const int COLLISION_UPDATE_BIT = 0x02;
 
   Mind* prev[1];
   Mind* next[1];
@@ -43,8 +48,7 @@ public:
   int   side;
   int   bot;
 
-  static bool wasBumped( const Bot* botObj );
-  static bool needsUpdate( const Bot* botObj );
+  static bool hasCollided( const Bot* botObj );
 
 public:
 
@@ -56,7 +60,7 @@ public:
   Mind( Mind&& m );
   Mind& operator = ( Mind&& m );
 
-  void update();
+  void update( bool doRegularUpdate );
 
   void write( OutputStream* os ) const;
 

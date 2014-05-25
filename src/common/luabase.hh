@@ -200,7 +200,7 @@
   if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) { \
     ERROR( "Invalid item index (out of range)" ); \
   } \
-  Dynamic* item = static_cast<Dynamic*>( orbis.obj( index ) ); \
+  Dynamic* item = orbis.obj<Dynamic>( index ); \
   if( item == nullptr ) { \
     ERROR( "Invalid item index (null)" ); \
   } \
@@ -217,7 +217,7 @@
   if( uint( index ) >= uint( Orbis::MAX_OBJECTS ) ) { \
     ERROR( "Invalid bot index (out of range)" ); \
   } \
-  Bot* bot = static_cast<Bot*>( orbis.obj( index ) ); \
+  Bot* bot = orbis.obj<Bot>( index ); \
   if( bot == nullptr ) { \
     ERROR( "Invalid bot index (null)" ); \
   } \

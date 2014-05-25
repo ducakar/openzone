@@ -29,7 +29,7 @@
 namespace oz
 {
 
-bool Mind::wasBumped( const Bot* botObj )
+bool Mind::hasCollided( const Bot* botObj )
 {
   for( const Object::Event& event : botObj->events ) {
     if( event.id == Object::EVENT_HIT || event.id == Object::EVENT_DAMAGE ) {
@@ -37,11 +37,6 @@ bool Mind::wasBumped( const Bot* botObj )
     }
   }
   return false;
-}
-
-bool Mind::needsUpdate( const Bot* botObj )
-{
-  return !botObj->mind.isEmpty() && !( botObj->state & ( Bot::DEAD_BIT | Bot::PLAYER_BIT ) );
 }
 
 Mind::Mind() :
@@ -57,8 +52,8 @@ Mind::Mind( int bot_ ) :
 Mind::Mind( int bot_, InputStream* is ) :
   bot( bot_ )
 {
-  flags     = is->readInt();
-  side      = is->readInt();
+  flags = is->readInt();
+  side  = is->readInt();
 }
 
 Mind::~Mind()
@@ -71,9 +66,9 @@ Mind::~Mind()
 Mind::Mind( Mind&& m ) :
   flags( m.flags ), side( m.side ), bot( m.bot )
 {
-  m.bot   = -1;
   m.flags = 0;
   m.side  = 0;
+  m.bot   = -1;
 }
 
 Mind& Mind::operator = ( Mind&& m )
@@ -93,13 +88,19 @@ Mind& Mind::operator = ( Mind&& m )
   return *this;
 }
 
-void Mind::update()
+void Mind::update( bool doRegularUpdate )
 {
-  hard_assert( orbis.obj( bot ) != nullptr && ( orbis.obj( bot )->flags & Object::BOT_BIT ) );
+  Bot* botObj = orbis.obj<Bot>( bot );
 
-  Bot* botObj = static_cast<Bot*>( orbis.obj( bot ) );
+  hard_assert( botObj != nullptr && ( botObj->flags & Object::BOT_BIT ) );
 
-  if( needsUpdate( botObj ) ) {
+  if( botObj->mind.isEmpty() ) {
+    return;
+  }
+
+  if( doRegularUpdate || ( flags & FORCE_UPDATE_BIT ) ||
+      ( ( flags & COLLISION_UPDATE_BIT ) && hasCollided( botObj ) ) )
+  {
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 

@@ -122,13 +122,11 @@ int Client::main()
             if( keysym.mod & KMOD_CTRL ) {
               Window::setGrab( !Window::hasGrab() );
             }
-            else  {
-              if( Window::isFullscreen() ) {
-                Window::resize( windowWidth, windowHeight, false );
-              }
-              else {
-                Window::resize( screenWidth, screenHeight, true );
-              }
+            else if( Window::isFullscreen() ) {
+              Window::resize( windowWidth, windowHeight, false );
+            }
+            else {
+              Window::resize( screenWidth, screenHeight, true );
             }
           }
           else if( keysym.sym == SDLK_F12 ) {

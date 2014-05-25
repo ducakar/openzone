@@ -38,7 +38,7 @@ void Dynamic::onDestroy()
   }
 
   for( int i : items ) {
-    Dynamic* item = static_cast<Dynamic*>( orbis.obj( i ) );
+    Dynamic* item = orbis.obj<Dynamic>( i );
 
     if( item != nullptr ) {
       item->destroy();

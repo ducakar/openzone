@@ -51,7 +51,7 @@ const Vehicle::Handler Vehicle::HANDLERS[] = {
 
 void Vehicle::exit()
 {
-  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
+  Bot* bot = orbis.obj<Bot>( pilot );
 
   if( bot != nullptr ) {
     float hsc[2];
@@ -73,7 +73,7 @@ void Vehicle::eject()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
+  Bot* bot = orbis.obj<Bot>( pilot );
 
   if( bot != nullptr ) {
     bot->p    = p + rot * clazz->pilotPos;
@@ -323,7 +323,7 @@ void Vehicle::airHandler()
 
 void Vehicle::onDestroy()
 {
-  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
+  Bot* bot = orbis.obj<Bot>( pilot );
 
   if( bot != nullptr ) {
     if( state & AUTO_EJECT_BIT ) {
@@ -358,7 +358,7 @@ void Vehicle::onUpdate()
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
   // clean invalid pilot reference and throw him out if dead
-  Bot* bot = static_cast<Bot*>( orbis.obj( pilot ) );
+  Bot* bot = orbis.obj<Bot>( pilot );
 
   if( bot == nullptr || bot->parent < 0 ) {
     pilot = -1;

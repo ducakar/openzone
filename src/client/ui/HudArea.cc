@@ -187,7 +187,7 @@ void HudArea::drawBotStatus()
   botLife.draw( this, life );
   botStamina.draw( this, stamina );
 
-  const Weapon* weaponObj = static_cast<const Weapon*>( orbis.obj( bot->weapon ) );
+  const Weapon* weaponObj = orbis.obj<const Weapon>( bot->weapon );
 
   if( weaponObj != nullptr ) {
     Pair<int> pos = align( style.botWeapon.x, style.botWeapon.y,
@@ -221,7 +221,7 @@ void HudArea::drawVehicleStatus()
   }
 
   const Bot*          bot      = camera.botObj;
-  const Vehicle*      vehicle  = static_cast<const Vehicle*>( orbis.obj( bot->parent ) );
+  const Vehicle*      vehicle  = orbis.obj<const Vehicle>( bot->parent );
   const VehicleClass* vehClazz = static_cast<const VehicleClass*>( vehicle->clazz );
 
   // HACK close gap between vehicle model and weapons.

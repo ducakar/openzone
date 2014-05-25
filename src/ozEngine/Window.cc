@@ -230,6 +230,7 @@ void Window::minimise()
   SDL_WM_GrabInput( SDL_GRAB_OFF );
   SDL_WM_IconifyWindow();
 #else
+  SDL_RestoreWindow( descriptor );
   SDL_MinimizeWindow( descriptor );
 #endif
 }

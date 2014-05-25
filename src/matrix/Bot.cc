@@ -323,7 +323,7 @@ void Bot::heal()
 void Bot::rearm()
 {
   for( int i = 0; i < items.length(); ++i ) {
-    Weapon* weaponObj = static_cast<Weapon*>( orbis.obj( items[i] ) );
+    Weapon* weaponObj = orbis.obj<Weapon>( items[i] );
 
     if( weaponObj != nullptr && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
       const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
@@ -410,8 +410,8 @@ void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Dynamic* cargoObj  = static_cast<Dynamic*>( orbis.obj( cargo ) );
-  Weapon*  weaponObj = static_cast<Weapon*>( orbis.obj( weapon ) );
+  Dynamic* cargoObj  = orbis.obj<Dynamic>( cargo );
+  Weapon*  weaponObj = orbis.obj<Weapon>( weapon );
 
   if( cargoObj == nullptr ) {
     releaseCargo();
@@ -921,7 +921,7 @@ stepSucceeded:
 
   if( actions & ~oldActions & INSTRUMENT_ACTIONS ) {
     if( actions & ~oldActions & ACTION_INV_USE ) {
-      Dynamic* item   = static_cast<Dynamic*>( orbis.obj( instrument ) );
+      Dynamic* item   = orbis.obj<Dynamic>( instrument );
       Object*  source = orbis.obj( container );
 
       if( item != nullptr && source != nullptr &&
@@ -933,7 +933,7 @@ stepSucceeded:
       }
     }
     else if( actions & ~oldActions & ACTION_INV_TAKE ) {
-      Dynamic* item   = static_cast<Dynamic*>( orbis.obj( instrument ) );
+      Dynamic* item   = orbis.obj<Dynamic>( instrument );
       Object*  source = orbis.obj( container );
 
       if( item != nullptr && source != nullptr && items.length() != clazz->nItems &&
@@ -955,7 +955,7 @@ stepSucceeded:
       }
     }
     else if( actions & ~oldActions & ACTION_INV_GIVE ) {
-      Dynamic* item   = static_cast<Dynamic*>( orbis.obj( instrument ) );
+      Dynamic* item   = orbis.obj<Dynamic>( instrument );
       Object*  target = orbis.obj( container );
 
       if( item != nullptr && target != nullptr && target->items.length() != target->clazz->nItems &&
@@ -986,14 +986,14 @@ stepSucceeded:
         }
       }
       else if( actions & ~oldActions & ACTION_USE ) {
-        Dynamic* obj = static_cast<Dynamic*>( orbis.obj( instrument ) );
+        Dynamic* obj = orbis.obj<Dynamic>( instrument );
 
         if( obj != nullptr && canReach( obj ) ) {
           synapse.use( this, obj );
         }
       }
       else if( actions & ~oldActions & ACTION_TAKE ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.obj( instrument ) );
+        Dynamic* item = orbis.obj<Dynamic>( instrument );
 
         if( item != nullptr && items.length() != clazz->nItems && canReach( item ) ) {
           hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
@@ -1045,7 +1045,7 @@ stepSucceeded:
           releaseCargo();
         }
         else {
-          Dynamic*   dyn      = static_cast<Dynamic*>( orbis.obj( instrument ) );
+          Dynamic*   dyn      = orbis.obj<Dynamic>( instrument );
           const Bot* dynBot   = static_cast<const Bot*>( dyn );
 
           if( dyn != nullptr && abs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
@@ -1067,7 +1067,7 @@ stepSucceeded:
         }
       }
       else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.obj( instrument ) );
+        Dynamic* item = orbis.obj<Dynamic>( instrument );
 
         if( item != nullptr && cargo < 0 && items.contains( instrument ) ) {
           hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );

@@ -149,7 +149,7 @@ function onCreate()
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )
-  ozCaelumSetPeriod( 3600 )
+  ozCaelumSetPeriod( 2400 )
   ozCaelumSetTime( 450 )
 
   oz_me = ozOrbisAddObj( OZ_FORCE, "beast", 786.50, 999.60, 124.73, true )

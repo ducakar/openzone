@@ -346,7 +346,6 @@ void Input::readEvent( SDL_Event* event )
     }
 #if SDL_MAJOR_VERSION >= 2
     case SDL_MOUSEWHEEL: {
-      mouseZ += float( event->wheel.x );
       mouseW += float( event->wheel.y );
       break;
     }
@@ -371,10 +370,6 @@ void Input::readEvent( SDL_Event* event )
       isKeyPressed = true;
       break;
     }
-    default: {
-      hard_assert( false );
-      break;
-    }
   }
 }
 
@@ -384,7 +379,6 @@ void Input::reset()
 
   mouseX         = 0.0f;
   mouseY         = 0.0f;
-  mouseZ         = 0.0f;
   mouseW         = 0.0f;
 
   buttons        = 0;
@@ -417,7 +411,6 @@ void Input::prepare()
 {
   mouseX         = 0.0f;
   mouseY         = 0.0f;
-  mouseZ         = 0.0f;
   mouseW         = 0.0f;
 
   oldButtons     = buttons;
@@ -454,6 +447,11 @@ void Input::update()
 
   mouseX = +Pepper::moveX;
   mouseY = -Pepper::moveY;
+  mouseW = +Pepper::moveW;
+
+  Pepper::moveX = 0;
+  Pepper::moveY = 0;
+  Pepper::moveW = 0;
 
 #else
 
@@ -463,25 +461,6 @@ void Input::update()
   mouseX = +float( dx );
   mouseY = -float( dy );
 
-# ifndef _WIN32
-  if( Window::hasGrab() ) {
-#  if SDL_MAJOR_VERSION >= 2
-    // FIXME SDL2 bug? Remove workaround when fixed.
-    mouseX /= 2.0f;
-    mouseY /= 2.0f;
-#  endif
-
-    // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
-    // code is not based on actual code from X.Org, but experimentally tuned to match default X
-    // server mouse acceleration as closely as possible.
-    float move2  = max( mouseX*mouseX + mouseY*mouseY - mouseAccelThreshold, 0.0f );
-    float factor = min( mouseSpeed + mouseAccel * move2, mouseMaxAccel );
-
-    mouseX *= factor;
-    mouseY *= factor;
-    mouseW *= mouseWheelStep;
-  }
-# endif
 #endif
 
   int pressedButtons  = input.buttons & ~input.oldButtons;
@@ -493,10 +472,8 @@ void Input::update()
   middleReleased = releasedButtons & Input::MIDDLE_BUTTON;
   rightPressed   = pressedButtons  & Input::RIGHT_BUTTON;
   rightReleased  = releasedButtons & Input::RIGHT_BUTTON;
-  wheelUp        = input.mouseW > 0;
-  wheelDown      = input.mouseW < 0;
-
-  Window::warpMouse();
+  wheelUp        = mouseW > 0;
+  wheelDown      = mouseW < 0;
 
   mCopy( oldKeys, keys, sizeof( keys ) );
   mSet( keys, 0, sizeof( keys ) );
@@ -582,7 +559,6 @@ void Input::init()
 
   mouseX         = 0.0f;
   mouseY         = 0.0f;
-  mouseZ         = 0.0f;
   mouseW         = 0.0f;
 
   buttons        = 0;
@@ -606,26 +582,22 @@ void Input::init()
   mSet( keys, 0, sizeof( keys ) );
   mSet( oldKeys, 0, sizeof( oldKeys ) );
 
-  isKeyPressed        = false;
-  isKeyReleased       = false;
+  isKeyPressed   = false;
+  isKeyReleased  = false;
 
-  mouseSensX          = mouseConfig["sensitivity.x"].get( 0.004f );
-  mouseSensY          = mouseConfig["sensitivity.y"].get( 0.004f );
-  mouseSensZ          = mouseConfig["sensitivity.z"].get( 2.0f );
-  mouseSensW          = mouseConfig["sensitivity.w"].get( 2.0f );
+  mouseSensX     = mouseConfig["sensitivity.x"].get( 0.004f );
+  mouseSensY     = mouseConfig["sensitivity.y"].get( 0.004f );
+  mouseSensZ     = mouseConfig["sensitivity.z"].get( 2.0f );
+  mouseSensW     = mouseConfig["sensitivity.w"].get( 2.0f );
+  mouseWheelStep = mouseConfig["wheelStep"].get( 3.0f );
 
-  mouseSpeed          = mouseConfig["acceleration.constant"].get( 0.3f );
-  mouseAccel          = mouseConfig["acceleration.factor"].get( 0.0004f );
-  mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
-  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 1.5f );
-  mouseWheelStep      = mouseConfig["wheelStep"].get( 3.0f );
-
-  keySensX            = keyboardConfig["sensitivity.x"].get( 0.04f );
-  keySensY            = keyboardConfig["sensitivity.y"].get( 0.04f );
+  keySensX       = keyboardConfig["sensitivity.x"].get( 0.04f );
+  keySensY       = keyboardConfig["sensitivity.y"].get( 0.04f );
 
 #if SDL_MAJOR_VERSION < 2
   SDL_ShowCursor( false );
 #else
+  SDL_SetHint( SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1" );
   SDL_SetRelativeMouseMode( SDL_TRUE );
 #endif
 
@@ -649,22 +621,18 @@ void Input::destroy()
   inputConfig.add( "_version", OZ_VERSION );
   inputConfig.add( "_backend", BACKEND );
 
-  JSON& mouseConfig    = inputConfig.add( "mouse", JSON::OBJECT );
+  JSON& mouseConfig = inputConfig.add( "mouse", JSON::OBJECT );
+  mouseConfig.add( "sensitivity.x", mouseSensX );
+  mouseConfig.add( "sensitivity.y", mouseSensY );
+  mouseConfig.add( "sensitivity.z", mouseSensZ );
+  mouseConfig.add( "sensitivity.w", mouseSensW );
+  mouseConfig.add( "wheelStep",     mouseWheelStep );
+
   JSON& keyboardConfig = inputConfig.add( "keyboard", JSON::OBJECT );
-  JSON& keyMapConfig   = inputConfig.add( "bindings", JSON::OBJECT );
+  keyboardConfig.add( "sensitivity.x", keySensX );
+  keyboardConfig.add( "sensitivity.y", keySensY );
 
-  mouseConfig.add( "sensitivity.x",          mouseSensX );
-  mouseConfig.add( "sensitivity.y",          mouseSensY );
-  mouseConfig.add( "sensitivity.z",          mouseSensZ );
-  mouseConfig.add( "sensitivity.w",          mouseSensW );
-  mouseConfig.add( "acceleration.constant",  mouseSpeed );
-  mouseConfig.add( "acceleration.factor",    mouseAccel );
-  mouseConfig.add( "acceleration.threshold", mouseAccelThreshold );
-  mouseConfig.add( "acceleration.max",       mouseMaxAccel );
-  mouseConfig.add( "wheelStep",              mouseWheelStep );
-
-  keyboardConfig.add( "sensitivity.x",       keySensX );
-  keyboardConfig.add( "sensitivity.y",       keySensY );
+  JSON& keyMapConfig = inputConfig.add( "bindings", JSON::OBJECT );
   keyMapConfig = keyMapToJSON();
 
   if( !inputConfig.save( configFile, CONFIG_FORMAT ) ) {

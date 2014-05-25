@@ -104,7 +104,7 @@ public:
   /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
-  explicit PoolAlloc( int slotSize, int nSlots = 64 );
+  explicit PoolAlloc( int slotSize, int nSlots = 256 );
 
   /**
    * Destructor.
@@ -174,7 +174,7 @@ public:
  *
  * @sa `oz::PoolAlloc`
  */
-template <class Elem, int BLOCK_SLOTS = 64>
+template <class Elem, int BLOCK_SLOTS = 256>
 class Pool : public PoolAlloc
 {
   static_assert( BLOCK_SLOTS > 0, "Pool block must have at least 1 block." );

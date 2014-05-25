@@ -67,17 +67,10 @@ void Nirvana::update()
   for( auto& i : minds ) {
     Mind& mind = i.value;
 
-//    const Bot* bot = static_cast<const Bot*>( orbis.obj( mind.bot ) );
-//    hard_assert( bot != nullptr && ( bot->flags & Object::BOT_BIT ) );
-
-//    if( !( bot->state & Bot::PLAYER_BIT ) &&
-//        ( ( mind.flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )
-//    {
-      mind.update();
-//    }
+    mind.update( count % Mind::UPDATE_INTERVAL == updateModulo );
     ++count;
   }
-  updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
+  updateModulo = ( updateModulo + 1 ) % Mind::UPDATE_INTERVAL;
 
   techGraph.update();
 }

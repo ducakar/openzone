@@ -80,14 +80,14 @@ void Camera::updateReferences()
   entityObj  = orbis.ent( entity );
   entity     = entityObj == nullptr ? -1 : entity;
 
-  botObj     = static_cast<Bot*>( orbis.obj( bot ) );
+  botObj     = orbis.obj<Bot>( bot );
   bot        = botObj == nullptr ? -1 : bot;
 
-  vehicleObj = botObj == nullptr ? nullptr : static_cast<Vehicle*>( orbis.obj( botObj->parent ) );
+  vehicleObj = botObj == nullptr ? nullptr : orbis.obj<Vehicle>( botObj->parent );
   vehicle    = vehicleObj == nullptr ? -1 : botObj->parent;
 
   for( int i = 0; i < switchableUnits.length(); ) {
-    const Bot* unit = static_cast<const Bot*>( orbis.obj( switchableUnits[i] ) );
+    const Bot* unit = orbis.obj<const Bot>( switchableUnits[i] );
 
     if( unit == nullptr ) {
       switchableUnits.erase( i );
@@ -270,9 +270,9 @@ void Camera::read( InputStream* is )
   entity     = -1;
   entityObj  = nullptr;
   bot        = is->readInt();
-  botObj     = static_cast<Bot*>( orbis.obj( bot ) );
+  botObj     = orbis.obj<Bot>( bot );
   vehicle    = is->readInt();
-  vehicleObj = static_cast<Vehicle*>( orbis.obj( vehicle ) );
+  vehicleObj = orbis.obj<Vehicle>( vehicle );
 
   hard_assert( switchableUnits.isEmpty() );
 
@@ -303,9 +303,9 @@ void Camera::read( const JSON& json )
   oldPos     = p;
 
   bot        = json["bot"].get( -1 );
-  botObj     = static_cast<Bot*>( orbis.obj( bot ) );
+  botObj     = orbis.obj<Bot>( bot );
   vehicle    = botObj == nullptr ? -1 : botObj->parent;
-  vehicleObj = static_cast<Vehicle*>( orbis.obj( vehicle ) );
+  vehicleObj = orbis.obj<Vehicle>( vehicle );
 
   state     = NONE;
   newState  = State( json["state"].get( STRATEGIC ) );

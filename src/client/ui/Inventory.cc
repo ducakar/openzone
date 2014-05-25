@@ -47,7 +47,7 @@ void Inventory::ownerItemCallback( ModelField* sender, bool isClicked )
   hard_assert( bot != nullptr );
 
   if( uint( id ) < uint( container->items.length() ) ) {
-    item = static_cast<const Dynamic*>( orbis.obj( container->items[id] ) );
+    item = orbis.obj<const Dynamic>( container->items[id] );
   }
   if( item == nullptr ) {
     return;
@@ -91,7 +91,7 @@ void Inventory::otherItemCallback( ModelField* sender, bool isClicked )
   hard_assert( bot != nullptr );
 
   if( uint( id ) < uint( container->items.length() ) ) {
-    item = static_cast<const Dynamic*>( orbis.obj( container->items[id] ) );
+    item = orbis.obj<const Dynamic>( container->items[id] );
   }
   if( item == nullptr ) {
     return;
@@ -246,7 +246,7 @@ void Inventory::onDraw()
 
   const Object*      container      = other == nullptr ? owner : other;
   const ObjectClass* containerClazz = container->clazz;
-  const Dynamic*     taggedItem     = static_cast<const Dynamic*>( orbis.obj( taggedItemIndex ) );
+  const Dynamic*     taggedItem     = orbis.obj<const Dynamic>( taggedItemIndex );
 
   if( container->flags & Object::BOT_BIT ) {
     const Bot* bot = static_cast<const Bot*>( container );
