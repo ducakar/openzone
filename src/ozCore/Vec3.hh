@@ -365,7 +365,7 @@ public:
 #ifdef OZ_SIMD_MATH
     return Vec3( vAbs( a.u4 ) );
 #else
-    return Vec3( abs( a.x ), abs( a.y ), abs( a.z ) );
+    return Vec3( abs<float>( a.x ), abs<float>( a.y ), abs<float>( a.z ) );
 #endif
   }
 
@@ -378,7 +378,7 @@ public:
 #ifdef OZ_SIMD_MATH
     return Vec3( vMin( a.f4, b.f4 ) );
 #else
-    return Vec3( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+    return Vec3( min<float>( a.x, b.x ), min<float>( a.y, b.y ), min<float>( a.z, b.z ) );
 #endif
   }
 
@@ -391,7 +391,7 @@ public:
 #ifdef OZ_SIMD_MATH
     return Vec3( vMax( a.f4, b.f4 ) );
 #else
-    return Vec3( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+    return Vec3( max<float>( a.x, b.x ), max<float>( a.y, b.y ), max<float>( a.z, b.z ) );
 #endif
   }
 
@@ -404,7 +404,8 @@ public:
 #ifdef OZ_SIMD_MATH
     return Vec3( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
 #else
-    return Vec3( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+    return Vec3( clamp<float>( c.x, a.x, b.x ), clamp<float>( c.y, a.y, b.y ),
+                 clamp<float>( c.z, a.z, b.z ) );
 #endif
   }
 

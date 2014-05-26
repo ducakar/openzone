@@ -270,8 +270,6 @@ void LuaCommon::initCommon()
 
   int seed = isRandomSeedTime ? int( Time::epoch() ) : randomSeed;
   l_dostring( String::str( "math.random( %u )", seed ) );
-
-  loadDir( "@lua/common" );
 }
 
 void LuaCommon::freeCommon()

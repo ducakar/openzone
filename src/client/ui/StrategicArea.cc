@@ -314,7 +314,7 @@ void StrategicArea::onUpdate()
 
     dragStartX = -1;
     dragStartY = -1;
-    mouseW     = input.mouseW;
+    mouseW     = input.mouseW * input.mouseSensW;
     return;
   }
 
@@ -347,7 +347,7 @@ void StrategicArea::onUpdate()
 
 bool StrategicArea::onMouseEvent()
 {
-  mouseW = input.mouseW;
+  mouseW = input.mouseW * input.mouseSensW;
 
   if( overlayCallback != nullptr ) {
     Vec3 ray = getRay( mouse.x, mouse.y );

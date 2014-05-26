@@ -333,15 +333,6 @@ void Input::readEvent( SDL_Event* event )
     case SDL_MOUSEBUTTONDOWN: {
       buttons     |= char( SDL_BUTTON( event->button.button ) );
       currButtons |= char( SDL_BUTTON( event->button.button ) );
-
-#if SDL_MAJOR_VERSION < 2
-      if( buttons & SDL_BUTTON( SDL_BUTTON_WHEELUP ) ) {
-        ++mouseW;
-      }
-      if( buttons & SDL_BUTTON( SDL_BUTTON_WHEELDOWN ) ) {
-        --mouseW;
-      }
-#endif
       break;
     }
 #if SDL_MAJOR_VERSION >= 2
@@ -472,8 +463,8 @@ void Input::update()
   middleReleased = releasedButtons & Input::MIDDLE_BUTTON;
   rightPressed   = pressedButtons  & Input::RIGHT_BUTTON;
   rightReleased  = releasedButtons & Input::RIGHT_BUTTON;
-  wheelUp        = mouseW > 0;
-  wheelDown      = mouseW < 0;
+  wheelUp        = mouseW > 0.0f;
+  wheelDown      = mouseW < 0.0f;
 
   mCopy( oldKeys, keys, sizeof( keys ) );
   mSet( keys, 0, sizeof( keys ) );
@@ -585,11 +576,9 @@ void Input::init()
   isKeyPressed   = false;
   isKeyReleased  = false;
 
-  mouseSensX     = mouseConfig["sensitivity.x"].get( 0.004f );
-  mouseSensY     = mouseConfig["sensitivity.y"].get( 0.004f );
-  mouseSensZ     = mouseConfig["sensitivity.z"].get( 2.0f );
-  mouseSensW     = mouseConfig["sensitivity.w"].get( 2.0f );
-  mouseWheelStep = mouseConfig["wheelStep"].get( 3.0f );
+  mouseSensX     = mouseConfig["sensitivity.x"].get( 0.003f );
+  mouseSensY     = mouseConfig["sensitivity.y"].get( 0.003f );
+  mouseSensW     = mouseConfig["sensitivity.w"].get( 3.0f );
 
   keySensX       = keyboardConfig["sensitivity.x"].get( 0.04f );
   keySensY       = keyboardConfig["sensitivity.y"].get( 0.04f );
@@ -624,9 +613,7 @@ void Input::destroy()
   JSON& mouseConfig = inputConfig.add( "mouse", JSON::OBJECT );
   mouseConfig.add( "sensitivity.x", mouseSensX );
   mouseConfig.add( "sensitivity.y", mouseSensY );
-  mouseConfig.add( "sensitivity.z", mouseSensZ );
   mouseConfig.add( "sensitivity.w", mouseSensW );
-  mouseConfig.add( "wheelStep",     mouseWheelStep );
 
   JSON& keyboardConfig = inputConfig.add( "keyboard", JSON::OBJECT );
   keyboardConfig.add( "sensitivity.x", keySensX );

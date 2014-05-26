@@ -10,8 +10,7 @@
 #
 
 components=( src/ozCore src/ozDynamics src/ozEngine src/ozFactory src/unittest
-             src/common src/matrix src/nirvana src/client src/builder
-             data/oz_base/glsl )
+             src/common src/matrix src/nirvana src/client src/builder )
 version=`sed -r '/^set\( OZ_VERSION / !d; s|.* ([0-9.]+) .*|\1|' CMakeLists.txt`
 root=`pwd`
 
@@ -21,7 +20,7 @@ for component in ${components[@]}; do
 
   cd $component
 
-  sources=`echo *.{hh,cc} */*.{hh,cc} *.{glsl,vert,frag,json}`
+  sources=`echo *.{hh,cc} */*.{hh,cc}`
   # Remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
   sources=`echo $sources | sed -r 's|(\*/)?\*\.[^ ]*||g'`
   # Exclude PCH stuff from main targets.

@@ -150,9 +150,7 @@ public:
 
   float mouseSensX;
   float mouseSensY;
-  float mouseSensZ;
   float mouseSensW;
-  float mouseWheelStep;
 
   float keySensX;
   float keySensY;

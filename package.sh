@@ -58,7 +58,7 @@ case $1 in
         -G Ninja \
         -D CMAKE_TOOLCHAIN_FILE=../../../cmake/$platform.Toolchain.cmake \
         -D CMAKE_BUILD_TYPE=Release \
-        -D OZ_STANDALONE=1 \
+        -D OZ_BUNDLE=1 \
         ../../..
       ninja
       cmake -DCMAKE_INSTALL_PREFIX=../OpenZone-$version -P cmake_install.cmake

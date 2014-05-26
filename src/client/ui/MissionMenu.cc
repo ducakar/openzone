@@ -114,8 +114,8 @@ void MissionMenu::onReposition()
 
 bool MissionMenu::onMouseEvent()
 {
-  if( mouse.x >= width - 240 && input.mouseW != 0 ) {
-    if( input.mouseW < 0 ) {
+  if( mouse.x >= width - 240 && input.mouseW != 0.0f ) {
+    if( input.mouseW < 0.0f ) {
       scroll = min( scroll + 1, missions.length() - nSelections );
     }
     else {

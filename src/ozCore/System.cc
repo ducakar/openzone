@@ -193,7 +193,7 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   for( ; begin < end; ++begin ) {
     float i = float( begin );
 
-    float amplitude = 0.8f * Math::fastSqrt( max( ( nSamples - i ) / nSamples, 0.0f ) );
+    float amplitude = 0.8f * Math::fastSqrt( max<float>( 0.0f, ( nSamples - i ) / nSamples ) );
     float theta     = i * quotient;
     float value     = amplitude * Math::sin( theta );
     short sample    = short( Math::lround( value * SHRT_MAX ) );

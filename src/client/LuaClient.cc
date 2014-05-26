@@ -221,7 +221,6 @@ void LuaClient::init()
   Log::print( "Initialising Client Lua ..." );
 
   initCommon();
-  loadDir( "@lua/client" );
 
   ls.envName = "client";
   ms.structs.reserve( 32 );
@@ -651,6 +650,9 @@ void LuaClient::init()
   // Import profile persistance.
   readValue( profile.persistent );
   l_setglobal( "ozPersistent" );
+
+  loadDir( "@lua/common" );
+  loadDir( "@lua/client" );
 
   hard_assert( l_gettop() == 0 );
 

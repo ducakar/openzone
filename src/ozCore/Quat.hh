@@ -545,7 +545,7 @@ inline Quat abs( const Quat& a )
 #ifdef OZ_SIMD_MATH
   return Quat( vAbs( a.u4 ) );
 #else
-  return Quat( abs( a.x ), abs( a.y ), abs( a.z ), abs( a.w ) );
+  return Quat( abs<float>( a.x ), abs<float>( a.y ), abs<float>( a.z ), abs<float>( a.w ) );
 #endif
 }
 
@@ -558,7 +558,8 @@ inline Quat min( const Quat& a, const Quat& b )
 #ifdef OZ_SIMD_MATH
   return Quat( vMin( a.f4, b.f4 ) );
 #else
-  return Quat( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ), min( a.w, b.w ) );
+  return Quat( min<float>( a.x, b.x ), min<float>( a.y, b.y ), min<float>( a.z, b.z ),
+               min<float>( a.w, b.w ) );
 #endif
 }
 
@@ -571,7 +572,8 @@ inline Quat max( const Quat& a, const Quat& b )
 #ifdef OZ_SIMD_MATH
   return Quat( vMax( a.f4, b.f4 ) );
 #else
-  return Quat( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ), max( a.w, b.w ) );
+  return Quat( max<float>( a.x, b.x ), max<float>( a.y, b.y ), max<float>( a.z, b.z ),
+               max<float>( a.w, b.w ) );
 #endif
 }
 
@@ -584,8 +586,8 @@ inline Quat clamp( const Quat& c, const Quat& a, const Quat& b )
 #ifdef OZ_SIMD_MATH
   return Quat( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
 #else
-  return Quat( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ),
-               clamp( c.w, a.w, b.w ) );
+  return Quat( clamp<float>( c.x, a.x, b.x ), clamp<float>( c.y, a.y, b.y ),
+               clamp<float>( c.z, a.z, b.z ), clamp<float>( c.w, a.w, b.w ) );
 #endif
 }
 

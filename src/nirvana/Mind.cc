@@ -94,7 +94,7 @@ void Mind::update( bool doRegularUpdate )
 
   hard_assert( botObj != nullptr && ( botObj->flags & Object::BOT_BIT ) );
 
-  if( botObj->mind.isEmpty() ) {
+  if( botObj->mind.isEmpty() || ( botObj->state & ( Bot::DEAD_BIT | Bot::PLAYER_BIT ) ) ) {
     return;
   }
 

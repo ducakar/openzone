@@ -429,6 +429,7 @@ void LuaMatrix::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
+  loadDir( "@lua/common" );
   loadDir( "@lua/matrix" );
 
   hard_assert( l_gettop() == 1 );

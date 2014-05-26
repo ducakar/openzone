@@ -49,11 +49,9 @@ struct ScreenshotInfo
   char* pixels;
 };
 
-#if defined( __native_client__ )
+#ifdef __native_client__
 static Semaphore       flushSemaphore;
 static pp::Graphics3D* context;
-#elif SDL_MAJOR_VERSION < 2
-static SDL_Surface*    descriptor;
 #else
 static SDL_Window*     descriptor;
 static SDL_GLContext   context;
@@ -121,17 +119,10 @@ bool Window::windowGrab   = false;
 
 void Window::measureScreen()
 {
-#if defined( __native_client__ )
+#ifdef __native_client__
 
   screenWidth  = Pepper::width;
   screenHeight = Pepper::height;
-
-#elif SDL_MAJOR_VERSION < 2
-
-  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-  screenWidth  = videoInfo->current_w;
-  screenHeight = videoInfo->current_h;
 
 #else
 
@@ -178,7 +169,7 @@ void Window::warpMouse()
   Pepper::moveZ = 0.0f;
   Pepper::moveW = 0.0f;
 
-#elif SDL_MAJOR_VERSION >= 2
+#else
 
   SDL_WarpMouseInWindow( descriptor, windowWidth / 2, windowHeight / 2 );
   SDL_PumpEvents();
@@ -196,10 +187,6 @@ void Window::swapBuffers()
     context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
   };
   flushSemaphore.wait();
-
-#elif SDL_MAJOR_VERSION < 2
-
-  SDL_GL_SwapBuffers();
 
 #else
 
@@ -225,11 +212,7 @@ void Window::screenshot( const File& file )
 
 void Window::minimise()
 {
-#if defined( __native_client__ )
-#elif SDL_MAJOR_VERSION < 2
-  SDL_WM_GrabInput( SDL_GRAB_OFF );
-  SDL_WM_IconifyWindow();
-#else
+#ifndef __native_client__
   SDL_RestoreWindow( descriptor );
   SDL_MinimizeWindow( descriptor );
 #endif
@@ -251,35 +234,6 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
     glSetCurrentContextPPAPI( context->pp_resource() );
   };
 
-#elif SDL_MAJOR_VERSION < 2
-# ifdef _WIN32
-
-  static_cast<void>( newWidth );
-  static_cast<void>( newHeight );
-  static_cast<void>( fullscreen_ );
-
-# else
-
-  windowWidth  = windowWidth  == 0 ? screenWidth  : newWidth;
-  windowHeight = windowHeight == 0 ? screenHeight : newHeight;
-  fullscreen   = fullscreen_;
-
-  uint flags = SDL_OPENGL | ( fullscreen ? SDL_FULLSCREEN : 0 );
-
-  Log::print( "Resizing OpenGL window to %dx%d [%s] ... ",
-              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
-
-  SDL_FreeSurface( descriptor );
-  descriptor = SDL_SetVideoMode( windowWidth, windowHeight, 0, flags );
-
-  if( descriptor == nullptr ) {
-    Log::printEnd( "Window resize failed" );
-    return false;
-  }
-
-  Log::printEnd( "OK" );
-
-# endif
 #else
 
   windowWidth  = windowWidth  == 0 ? screenWidth  : newWidth;
@@ -365,45 +319,13 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
   // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
   // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
-#if SDL_MAJOR_VERSION < 2
-# ifdef __unix__
-  setenv( "SDL_VIDEO_ALLOW_SCREENSAVER", "1", true );
-# endif
-#else
   SDL_EnableScreenSaver();
-#endif
 
   // Force old Mesa drivers (< 9.1?) to turn on partial S3TC support even when libtxc_dxtn is not
   // present. We don't use online texture compression anywhere so partial S3TC support is enough.
 #ifdef __unix__
-  setenv( "force_s3tc_enable", "true", true );
+  SDL_setenv( "force_s3tc_enable", "true", true );
 #endif
-
-#if SDL_MAJOR_VERSION < 2
-
-  uint flags = SDL_OPENGL | ( fullscreen ? SDL_FULLSCREEN : 0 );
-
-  Log::print( "Creating OpenGL window %dx%d [%s] ... ",
-              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
-
-  MainCall() << [&]
-  {
-    SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
-    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
-
-    SDL_WM_SetCaption( title, title );
-    descriptor = SDL_SetVideoMode( windowWidth, windowHeight, 0, flags );
-  };
-
-  if( descriptor == nullptr ) {
-    Log::printEnd( "Window creation failed" );
-    return false;
-  }
-
-  SDL_WM_SetCaption( title, title );
-
-#else
 
   uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
 
@@ -441,8 +363,6 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
     return false;
   }
 
-#endif
-
   Log::printEnd( "OK" );
 
   MainCall() << []
@@ -452,12 +372,9 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glFlush();
 
-# if SDL_MAJOR_VERSION < 2
-    SDL_GL_SwapBuffers();
-# else
     SDL_GL_SwapWindow( descriptor );
-# endif
   };
+
 #endif
 
   return true;
@@ -481,12 +398,8 @@ void Window::destroy()
 #else
 
   if( descriptor != nullptr ) {
-# if SDL_MAJOR_VERSION < 2
-    SDL_FreeSurface( descriptor );
-# else
     SDL_GL_DeleteContext( context );
     SDL_DestroyWindow( descriptor );
-# endif
     descriptor = nullptr;
   }
 

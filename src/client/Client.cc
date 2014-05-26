@@ -104,11 +104,7 @@ int Client::main()
       switch( event.type ) {
         case SDL_KEYDOWN: {
 #ifndef __native_client__
-# if SDL_MAJOR_VERSION < 2
-          const SDL_keysym& keysym = event.key.keysym;
-# else
           const SDL_Keysym& keysym = event.key.keysym;
-# endif
 
           if( keysym.sym == SDLK_F9 ) {
             if( keysym.mod & KMOD_CTRL ) {
@@ -138,6 +134,7 @@ int Client::main()
             }
           }
 #endif
+
           input.readEvent( &event );
           break;
         }
@@ -150,30 +147,7 @@ int Client::main()
           input.readEvent( &event );
           break;
         }
-#if defined( __native_client__ )
-#elif SDL_MAJOR_VERSION < 2
-        case SDL_ACTIVEEVENT: {
-          if( event.active.state & SDL_APPMOUSEFOCUS ) {
-            Window::setFocus( event.active.gain != 0 );
-          }
-          if( event.active.state & SDL_APPACTIVE ) {
-            if( event.active.gain ) {
-              Window::setGrab( Window::hasGrab() );
-              input.reset();
-              sound.resume();
-
-              isActive = true;
-            }
-            else {
-              sound.suspend();
-              input.reset();
-
-              isActive = false;
-            }
-          }
-          break;
-        }
-#else
+#ifndef __native_client__
         case SDL_WINDOWEVENT: {
           switch( event.window.event ) {
             case SDL_WINDOWEVENT_FOCUS_GAINED:

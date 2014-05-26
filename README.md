@@ -27,16 +27,16 @@ Development packages of the following libraries are required to build OpenZone f
 - OpenAL 1.1
 - OpenGL 2.1 or OpenGL ES 2.0
 - PhysicsFS 2.0 or 2.1/dev
-- SDL 1.2 or 2.0
-- SDL_ttf
+- SDL2
+- SDL2_ttf
 - zlib
 
-If you also want to build tools (`OZ_TOOLS` options) you also need:
+If you also want to build tools (`OZ_TOOLS` option) you also need:
 
 - Assimp
 - FreeImage
 - libnoise
-- libsquish (optional)
+- libsquish (optional, for texture compression)
 
 The following development tools are required:
 
@@ -70,14 +70,11 @@ change that in `cmake/Windows-*.Toolchain.cmake`.
 
 You may also want to set several options when configuring CMake build system:
 
-- `OZ_SHARED_LIBS`: Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries. This might
-  make sense once if some other applications may use OpenZone's libraries as well.
-
 - `OZ_ALLOCATOR`: Enable memory allocation statistics and tracking of allocated memory chunks. Stack
   trace for every memory allocation performed via new operator is saved for later diagnostics. It
   detects new/delete mismatches and one can check for currently allocated memory chunks (and hence
   memory leaks). Upon freeing a memory chunk is rewritten with 0xee bytes make accesses to freed
-  memorylikely result in an error.
+  memory likely result in an error.
 
 - `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
   Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementation since
@@ -90,29 +87,21 @@ You may also want to set several options when configuring CMake build system:
   is not required by OpenZone.
   `OFF` by default.
 
-- `OZ_SDL1`: Use SDL 1.2 instead of SDL 2.0.
-  `OFF` by default, forced to `OFF` on Android, forced to `ON` on NaCl.
-
-- `OZ_GL_ES`: Use OpenGL ES 2.0 API. Enabling this on Linux while using SDL 1.2 leads to a strange
-  situation when SDL initialises OpenGL but rendering is done entirely through OpenGL ES.
+- `OZ_GL_ES`: Use OpenGL ES 2.0 instead of OpenGL 2.1.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
 - `OZ_NONFREE`: Enable support for building textures using S3 texture compression. Requires
   libsquish library.
   `OFF` by default.
 
-- `OZ_UNITEST`: Build liboz unittest.
+- `OZ_TOOLS`: Build tools required for building game data (see the next section).
+
+- `OZ_TESTS`: Build liboz unittest and various experimantal executables used as a playground when
+  developing OpenZone. You don't need this.
   `OFF` by default.
 
-- `OZ_TOOLS`: Build tools required for creating new game data (see the next section).
-
-- `OZ_STANDALONE`: This only affects behaviour of `make install`. It also installs dependencies from
-  `lib` directory, game data archives found in `share/openzone`, info files etc. This is intended
-  when one wants to create all-in-one ZIP archive that can be unpacked and run without installation.
-  `OFF` by default, forced to `ON` on Windows, forced to `OFF` on Android and NaCl.
-
-- `OZ_TESTS`: Build tests. These are used during development to test some features before they are
-  implemented into engine. You don't need this.
+- `OZ_BUNDLE`: Adjust installation for OpenZone multi-platform bundle ZIP. This is used internally
+  by `package.sh` script.
   `OFF` by default.
 
 Tools
@@ -227,7 +216,7 @@ tool for more details. `<basename>` is package name (last directory name in `<ba
 ### `lib.sh [clean]` ###
 
 Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64,
-Linux-i686 and Windows-i686). Those are required to create standalone build (see OZ_STANDALONE cmake
+Linux-i686 and Windows-i686). Those are required to create standalone build (see `OZ_BUNDLE` cmake
 option) that can be distributed in a ZIP archive (i.e. no installation required, all dependencies
 included).
 

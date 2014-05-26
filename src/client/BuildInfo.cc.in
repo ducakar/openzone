@@ -45,10 +45,10 @@ const char* const   BuildInfo::CONFIG      = "OZ_SHARED_LIBS: @OZ_SHARED_LIBS@, 
                                              "OZ_ALLOCATOR: @OZ_ALLOCATOR@, "
                                              "OZ_SIMD_MATH: @OZ_SIMD_MATH@, "
                                              "OZ_DYNAMICS: @OZ_DYNAMICS@, "
-                                             "OZ_SDL1: @OZ_SDL1@, "
                                              "OZ_GL_ES: @OZ_GL_ES@, "
                                              "OZ_NONFREE: @OZ_NONFREE@, "
-                                             "OZ_UNITTEST: @OZ_UNITTEST@, "
-                                             "OZ_TOOLS: @OZ_TOOLS@";
+                                             "OZ_TOOLS: @OZ_TOOLS@, "
+                                             "OZ_TESTS: @OZ_TESTS@, "
+                                             "OZ_BUNDLE: @OZ_BUNDLE@";
 
 }

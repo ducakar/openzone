@@ -30,17 +30,6 @@ namespace oz
 namespace builder
 {
 
-static const Vec3 DIRS[] = {
-  Vec3( +1.0f, +1.0f, +1.0f ),
-  Vec3( -1.0f, +1.0f, +1.0f ),
-  Vec3( +1.0f, -1.0f, +1.0f ),
-  Vec3( -1.0f, -1.0f, +1.0f ),
-  Vec3( +1.0f, +1.0f, -1.0f ),
-  Vec3( -1.0f, +1.0f, -1.0f ),
-  Vec3( +1.0f, -1.0f, -1.0f ),
-  Vec3( -1.0f, -1.0f, -1.0f )
-};
-
 struct Node;
 
 enum Environment

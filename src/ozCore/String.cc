@@ -540,7 +540,7 @@ String::String( double d, int nDigits ) :
 {
   static_assert( BUFFER_SIZE >= 26, "Too small String::baseBuffer for double representation." );
 
-  nDigits = clamp( nDigits, 1, 17 );
+  nDigits = clamp<int>( nDigits, 1, 17 );
 
   union DoubleToBits
   {
@@ -601,7 +601,7 @@ String::String( double d, int nDigits ) :
     }
     baseBuffer[count++] = char( '0' + digit );
 
-    if( ( isExp || i >= e ) && abs( d - approx ) < eps ) {
+    if( ( isExp || i >= e ) && abs<double>( d - approx ) < eps ) {
       break;
     }
   }

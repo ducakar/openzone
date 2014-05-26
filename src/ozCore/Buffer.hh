@@ -176,12 +176,12 @@ public:
   }
 
   /**
-   * Create an `InputStream` object for reading binary data from the buffer.
+   * Create an `InputStream` object for reading binary data from this buffer.
    */
   InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
   /**
-   * Create an `OutputStream` object for writing binary data into the buffer.
+   * Create a fixed-size `OutputStream` object for writing binary data into this buffer.
    */
   OutputStream outputStream( Endian::Order order = Endian::NATIVE );
 

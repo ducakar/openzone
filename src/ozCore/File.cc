@@ -402,12 +402,12 @@ bool File::stat()
       if( info.filetype == PHYSFS_FILETYPE_DIRECTORY ) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = max( info.createtime, info.modtime );
+        fileTime = max<long64>( info.createtime, info.modtime );
       }
       else if( info.filetype == PHYSFS_FILETYPE_REGULAR ) {
         fileType = REGULAR;
         fileSize = int( info.filesize );
-        fileTime = max( info.createtime, info.modtime );
+        fileTime = max<long64>( info.createtime, info.modtime );
       }
     }
 
@@ -431,12 +431,12 @@ bool File::stat()
       if( info.type == PP_FILETYPE_REGULAR ) {
         fileType = REGULAR;
         fileSize = int( info.size );
-        fileTime = long64( max( info.creation_time, info.last_modified_time ) );
+        fileTime = long64( max<double>( info.creation_time, info.last_modified_time ) );
       }
       else if( info.type == PP_FILETYPE_DIRECTORY ) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = long64( max( info.creation_time, info.last_modified_time ) );
+        fileTime = long64( max<double>( info.creation_time, info.last_modified_time ) );
       }
     }
 
@@ -454,7 +454,7 @@ bool File::stat()
       { info.ftLastWriteTime.dwLowDateTime, info.ftLastWriteTime.dwHighDateTime }
     };
 
-    long64 time = max( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
+    long64 time = max<long64>( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
 
     if( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
       fileType = DIRECTORY;
@@ -485,12 +485,12 @@ bool File::stat()
       if( S_ISREG( info.st_mode ) ) {
         fileType = REGULAR;
         fileSize = int( info.st_size );
-        fileTime = long64( max( info.st_ctime, info.st_mtime ) );
+        fileTime = max<long64>( info.st_ctime, info.st_mtime );
       }
       else if( S_ISDIR( info.st_mode ) ) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = long64( max( info.st_ctime, info.st_mtime ) );
+        fileTime = max<long64>( info.st_ctime, info.st_mtime );
       }
     }
 
@@ -630,7 +630,7 @@ bool File::read( char* buffer, int* size ) const
     close( fd );
 
     if( read != *size ) {
-      *size = max( 0, read );
+      *size = max<int>( 0, read );
       return false;
     }
     return true;

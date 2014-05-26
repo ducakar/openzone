@@ -43,20 +43,12 @@ void Font::upload( const char* s, int* width, int* height ) const
 {
   SDL_Surface* surf = nullptr;
 
-#if SDL_MAJOR_VERSION < 2 && !defined( __native_client__ )
-
-  surf = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
-
-#else
-
   if( width != nullptr && *width > 0 ) {
     surf = TTF_RenderUTF8_Blended_Wrapped( handle, s, SDL_COLOUR_WHITE, uint( *width ) );
   }
   else {
     surf = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
   }
-
-#endif
 
   if( surf == nullptr ) {
     OZ_ERROR( "Failed to generate texture from text: %s", s );

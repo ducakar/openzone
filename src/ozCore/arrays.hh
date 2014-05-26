@@ -225,7 +225,7 @@ inline void* mChar( const void* src, int ch, int size )
  * `strlcpy()` implementation.
  *
  * Safer and faster alternative to `strncpy()`. It always adds the terminating null char and doesn't
- * pad destination with zeros if `length` is larger that the size of the source string.
+ * pad destination with zeros if `length` is larger than the size of the source string.
  */
 size_t strlcpy( char* dest, const char* src, size_t size );
 

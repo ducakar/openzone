@@ -8,18 +8,14 @@ project( openzone C CXX )
 
 set( OZ_VERSION 0.3.87 )
 
-option( OZ_SHARED_LIBS "Build ozCore, ozDynamics, ozEngine and ozFactory as shared libraries." OFF )
 option( OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF )
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 option( OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF )
-option( OZ_SDL1 "Use SDL 1.2 instead of SDL 2.0." OFF )
 option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
-option( OZ_UNITTEST "Build unittests." OFF )
 option( OZ_TOOLS "Build engine tools required for game data creation." OFF )
-
-option( OZ_STANDALONE "Install layout appropriate for launching from its own folder." OFF )
 option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
+option( OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." OFF )
 
 #
 # Internal configuration.
@@ -32,30 +28,19 @@ set( OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
 
 if( PLATFORM_EMBEDDED )
   set( OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
-  set( OZ_SHARED_LIBS OFF )
   set( OZ_GL_ES ON )
   set( OZ_NONFREE OFF )
   set( OZ_TOOLS OFF )
-  set( OZ_STANDALONE OFF )
 endif()
 
-if( NACL )
-  set( OZ_SDL1 ON )
-elseif( WIN32 )
-  set( OZ_STANDALONE ON )
-endif()
-
-if( OZ_STANDALONE )
+if( OZ_BUNDLE )
   set( OZ_PREFIX "" )
   set( OZ_BINARY_SUBDIR "/${OZ_PLATFORM_NAME}" )
-  set( CMAKE_INSTALL_PREFIX "/OpenZone-${OZ_VERSION}" )
   set( CMAKE_INSTALL_RPATH "$ORIGIN" )
 else()
   set( OZ_PREFIX "${CMAKE_INSTALL_PREFIX}" )
   set( OZ_BINARY_SUBDIR "" )
 endif()
-
-set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBS} )
 
 #
 # Libraries.
@@ -82,19 +67,16 @@ endif()
 
 pkg_check_modules( LUA REQUIRED lua )
 
-if( OZ_SDL1 )
+if( NACL )
   pkg_check_modules( SDL REQUIRED sdl )
   pkg_check_modules( SDL_TTF REQUIRED SDL_ttf )
 #  pkg_check_modules( SDL_NET REQUIRED SDL_net )
-
-  include_directories( SYSTEM ${SDL_INCLUDE_DIRS} )
 else()
-  pkg_check_modules( SDL2 REQUIRED sdl2 )
-  pkg_check_modules( SDL2_TTF REQUIRED SDL2_ttf )
-#  pkg_check_modules( SDL2_NET REQUIRED SDL2_net )
-
-  include_directories( SYSTEM ${SDL2_INCLUDE_DIRS} )
+  pkg_check_modules( SDL REQUIRED sdl2 )
+  pkg_check_modules( SDL_TTF REQUIRED SDL2_ttf )
+#  pkg_check_modules( SDL_NET REQUIRED SDL2_net )
 endif()
+include_directories( SYSTEM ${SDL_INCLUDE_DIRS} )
 
 if( OZ_GL_ES )
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
@@ -224,7 +206,6 @@ mark_as_advanced( OZ_HOSTNAME )
 #
 
 add_subdirectory( src )
-add_subdirectory( data/oz_base/glsl )
 
 # To show these files in QtCreator.
 add_custom_target( doc SOURCES AUTHORS ChangeLog.md README.md TODO.md )
@@ -234,13 +215,13 @@ add_custom_target( doc SOURCES AUTHORS ChangeLog.md README.md TODO.md )
 #
 
 # Application launcher and icon.
-if( NOT OZ_STANDALONE )
+if( NOT OZ_BUNDLE )
   install( DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications ${CMAKE_SOURCE_DIR}/share/pixmaps
            DESTINATION share )
 endif()
 
-# Documentation, game data and libraries for a standalone package.
-if( OZ_STANDALONE )
+# Documentation, game data and libraries for a standalone bundle.
+if( OZ_BUNDLE )
   file( GLOB readmes doc/*.html )
   file( GLOB dataFiles share/openzone/*.zip )
 

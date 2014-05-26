@@ -70,13 +70,13 @@ else( PCH_DISABLE )
 
   macro( use_pch target pchTarget )
     add_dependencies( ${target} ${pchTarget} )
-    get_target_property( pchSrcHeader ${pchTarget} OUTPUT_NAME )
-    set_target_properties( ${target} PROPERTIES COMPILE_FLAGS "-include ${pchSrcHeader}" )
+    get_target_property( pchHeader ${pchTarget} OUTPUT_NAME )
+    set_target_properties( ${target} PROPERTIES COMPILE_FLAGS "-include ${pchHeader}" )
 
     # Add explicit dependencies. This is required when building with Ninja, otherwise modules won't
     # get recompiled whenever a header that is also included via PCH is changed.
     get_target_property( sources ${target} SOURCES )
-    set_source_files_properties( ${sources} PROPERTIES OBJECT_DEPENDS "${pchSrcHeader}.gch" )
+    set_source_files_properties( ${sources} PROPERTIES OBJECT_DEPENDS "${pchHeader}.gch" )
   endmacro( use_pch )
 
 endif( PCH_DISABLE )

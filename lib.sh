@@ -3,9 +3,9 @@
 # lib.sh [clean]
 #
 # Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64,
-# Linux-i686 and Windows-i686). Those are required to create standalone build (see OZ_STANDALONE
-# cmake option) that can be distributed in a ZIP archive (i.e. no installation required, all
-# dependencies included).
+# Linux-i686 and Windows-i686). Those are required to create standalone build (see `OZ_BUNDLE` cmake
+# option) that can be distributed in a ZIP archive (i.e. no installation required, all dependencies
+# included).
 #
 # This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-bit (`lib32-*`)
 # and MinGW (`mingw32-*`) versions of all necessary libraries installed. Many of those packages must

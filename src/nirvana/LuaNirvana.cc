@@ -537,6 +537,7 @@ void LuaNirvana::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
+  loadDir( "@lua/common" );
   loadDir( "@lua/nirvana" );
 
   hard_assert( l_gettop() == 1 );

@@ -96,10 +96,10 @@ bool CreditsMenu::onMouseEvent()
     if( input.leftReleased ) {
       direction = !direction;
     }
-    else if( input.mouseW < 0 ) {
+    else if( input.mouseW < 0.0f ) {
       direction = +1;
     }
-    else if( input.mouseW > 0 ) {
+    else if( input.mouseW > 0.0f ) {
       direction = -1;
     }
   }

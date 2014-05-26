@@ -36,9 +36,6 @@ using namespace oz;
 
 static void crashHandler()
 {
-#if SDL_MAJOR_VERSION < 2
-  SDL_WM_GrabInput( SDL_GRAB_OFF );
-#endif
   SDL_Quit();
 }
 

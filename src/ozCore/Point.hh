@@ -202,7 +202,7 @@ public:
 #ifdef OZ_SIMD_MATH
     return Point( vAbs( a.u4 ) );
 #else
-    return Point( abs( a.x ), abs( a.y ), abs( a.z ) );
+    return Point( abs<float>( a.x ), abs<float>( a.y ), abs<float>( a.z ) );
 #endif
   }
 
@@ -215,7 +215,7 @@ public:
 #ifdef OZ_SIMD_MATH
     return Point( vMin( a.f4, b.f4 ) );
 #else
-    return Point( min( a.x, b.x ), min( a.y, b.y ), min( a.z, b.z ) );
+    return Point( min<float>( a.x, b.x ), min<float>( a.y, b.y ), min<float>( a.z, b.z ) );
 #endif
   }
 
@@ -228,7 +228,7 @@ public:
 #ifdef OZ_SIMD_MATH
     return Point( vMax( a.f4, b.f4 ) );
 #else
-    return Point( max( a.x, b.x ), max( a.y, b.y ), max( a.z, b.z ) );
+    return Point( max<float>( a.x, b.x ), max<float>( a.y, b.y ), max<float>( a.z, b.z ) );
 #endif
   }
 
@@ -241,7 +241,8 @@ public:
 #ifdef OZ_SIMD_MATH
     return Point( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
 #else
-    return Point( clamp( c.x, a.x, b.x ), clamp( c.y, a.y, b.y ), clamp( c.z, a.z, b.z ) );
+    return Point( clamp<float>( c.x, a.x, b.x ), clamp<float>( c.y, a.y, b.y ),
+                  clamp<float>( c.z, a.z, b.z ) );
 #endif
   }
 

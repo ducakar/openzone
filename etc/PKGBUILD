@@ -7,8 +7,7 @@ pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('cmake' 'gcc-libs' 'physfs' 'luajit' 'mesa' 'sdl2_ttf' 'libvorbis' 'openal' 'freeimage'
-             'libsquish' 'libnoise' 'assimp')
+makedepends=('cmake' 'gcc-libs' 'physfs' 'lua' 'mesa' 'sdl2_ttf' 'libvorbis' 'openal')
 source=("https://github.com/downloads/ducakar/openzone/${pkgbase}-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/${pkgbase}-data-${pkgver}.tar.xz")
 sha1sums=('SKIP'
@@ -23,8 +22,7 @@ function build()
     -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_CXX_FLAGS="${CXXFLAGS/-O2} -msse3 -mfpmath=sse" \
     -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
-    -D OZ_SHARED_LIBS=1 \
-    -D OZ_LUAJIT=1 \
+    -D BUILD_SHARED_LIBS=1 \
     -D OZ_NONFREE=1 \
     ..
 
@@ -35,8 +33,7 @@ function package_liboz()
 {
   pkgdesc='OpenZone ozCore, ozDynamics, ozEngine and ozFactory libraries'
   license=('ZLIB')
-  depends=('gcc-libs' 'physfs' 'sdl2_ttf' 'libgl' 'openal' 'libvorbis' 'freeimage' 'libnoise'
-           'assimp')
+  depends=('gcc-libs' 'physfs' 'libgl' 'openal' 'libvorbis' 'sdl2_ttf')
 
   cd "${srcdir}/${pkgbase}-${pkgver}"
 
@@ -50,7 +47,7 @@ function package_liboz()
 function package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game engine'
-  depends=('liboz' 'luajit' 'openzone-data')
+  depends=('liboz' 'lua' 'openzone-data')
   optdepends=('espeak: speech synthesis'
               'libmad: MP3 streaming'
               'faad2: AAC streaming'
