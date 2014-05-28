@@ -343,17 +343,17 @@ function onCreate()
   ozOrbisAddStr( OZ_FORCE, "house", 85.0, -30.0, 69.4, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 80.0, -20.0, 70.0 )
-  ozBotSetMind( "goblin_defend" )
+  ozBotSetMind( "goblin_guard" )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 85.0, -10.0, 70.0 )
-  ozBotSetMind( "goblin_defend" )
+  ozBotSetMind( "goblin_guard" )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 82.0, -26.0, 70.0 )
-  ozBotSetMind( "goblin_defend" )
+  ozBotSetMind( "goblin_guard" )
   ozBotSetH( 120 )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 90.0, -43.0, 69.0 )
-  ozBotSetMind( "goblin_defend" )
+  ozBotSetMind( "goblin_guard" )
   ozBotSetH( 230 )
 
   -- lair

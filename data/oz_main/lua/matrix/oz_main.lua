@@ -1,3 +1,4 @@
+--
 -- OpenZone - simple cross-platform FPS/RTS game engine.
 --
 -- Copyright © 2002-2014 Davorin Učakar
@@ -14,6 +15,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
 
 -- lua/matrix/oz_main.lua
 --

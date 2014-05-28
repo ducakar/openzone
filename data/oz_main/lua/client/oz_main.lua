@@ -1,3 +1,4 @@
+--
 -- OpenZone - simple cross-platform FPS/RTS game engine.
 --
 -- Copyright © 2002-2014 Davorin Učakar
@@ -14,6 +15,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
 
 -- lua/common/oz_main.lua
 --
@@ -43,4 +45,12 @@ function floraSeed( density, spacing, treeDepth )
     end
   end
   ozPrintln( "Flora seeded " .. n .. " trees" )
+end
+
+-- Set up profile on first run.
+if ozProfileGetClass() == "" then
+  ozProfileSetClass( "beast" )
+  ozProfileSetItems( { "beast$plasmagun", "nvGoggles", "binoculars", "galileo",
+    "musicPlayer", "cvicek", "cvicek" } );
+  ozProfileSetWeaponItem( 0 );
 end

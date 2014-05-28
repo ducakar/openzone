@@ -26,11 +26,12 @@
 
 #include "Shaders.hh"
 
+#if 0
 #include "GL.hh"
 
 namespace oz
 {
-#if 0
+
 enum Type
 {
   POSITION,
@@ -171,7 +172,6 @@ void Shaders::destroy()
   programs.clear();
   programs.deallocate();
 }
-#endif
 
 const int Shaders::oz_colourMatrix = -1;
 
@@ -182,3 +182,4 @@ bool Shaders::init()
 }
 
 }
+#endif

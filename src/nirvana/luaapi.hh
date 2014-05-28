@@ -346,7 +346,7 @@ static int ozSelfGetCargo( lua_State* l )
   return 1;
 }
 
-static int ozSelfGetWeapon( lua_State* l )
+static int ozSelfGetWeaponItem( lua_State* l )
 {
   ARG( 0 );
 

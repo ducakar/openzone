@@ -2118,7 +2118,7 @@ static int ozBotGetCargo( lua_State* l )
   return 1;
 }
 
-static int ozBotGetWeapon( lua_State* l )
+static int ozBotGetWeaponItem( lua_State* l )
 {
   ARG( 0 );
   OBJ();

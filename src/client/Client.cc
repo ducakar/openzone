@@ -290,11 +290,16 @@ int Client::init( int argc, char** argv )
 
   String executablePath = File::executablePath();
   String invocationName = executablePath.fileName();
-  String prefixDir      = String::isEmpty( OZ_PREFIX ) ? executablePath.fileDirectory() : OZ_PREFIX;
+  String prefixDir      = OZ_PREFIX;
   String language       = "";
   String mission        = "";
   String layoutFile     = "";
   bool   doAutoload     = false;
+
+  // Standalone. Executable is ./bin/<platform>/openzone.
+  if( prefixDir.isEmpty() ) {
+    prefixDir = File::executablePath().fileDirectory() + "/../..";
+  }
 
   optind = 1;
   int opt;

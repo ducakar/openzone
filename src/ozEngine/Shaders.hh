@@ -28,6 +28,7 @@
 
 #pragma once
 
+#if 0
 #include "GL.hh"
 
 namespace oz
@@ -59,3 +60,4 @@ public:
 };
 
 }
+#endif

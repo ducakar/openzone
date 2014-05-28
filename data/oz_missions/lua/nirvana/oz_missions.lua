@@ -1,3 +1,4 @@
+--
 -- OpenZone - simple cross-platform FPS/RTS game engine.
 --
 -- Copyright © 2002-2014 Davorin Učakar
@@ -14,10 +15,15 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
 
 -- lua/nirvana/oz_missions.lua
 --
 -- AIs for cvicek mission.
+
+--
+-- Beast AI
+--
 
 function beast_nervous( l )
   if math.random( 100 ) == 1 then
@@ -31,283 +37,151 @@ function beast_happy( l )
   end
 end
 
-function droid_guard( l )
-  if l.target then
-    ozBindObj( l.target )
+--
+-- Droid AI
+--
 
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) or not ozObjIsVisibleFromSelfEye() then
-      l.target = nil
-    else
-      local dX, dY, dZ = ozObjVectorFromSelfEye()
-      local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistFromSelfEye()
-      local estimatedBulletTime = dist / 300.0
+Droid.guardAutomaton = {
+  name = "Droid.guard",
+  initial = "standGuard",
 
-      dX = dX + estimatedBulletTime * vX
-      dY = dY + estimatedBulletTime * vY
+  standGuard = {
+    onUpdate = standGuard,
+    links = {
+      {
+        target = "shootTarget",
+        condition = detectTargetFunc( 100, 120, 5, "droid" )
+      }
+    }
+  },
+  shootTarget = {
+    onUpdate = shootTargetFunc( 4.0 ),
+    links = {
+      {
+        target = "standGuard",
+        condition = isTargetLost
+      }
+    }
+  }
+}
 
-      local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
+Droid.sniperAutomaton = {
+  name = "Droid.sniper",
+  initial = "standGuard",
 
-      ozSelfSetH( heading + ( 0.5 - math.random() ) * 4.0 )
-      ozSelfSetV( ozObjPitchFromSelfEye() + ( 0.5 - math.random() ) * 4.0 )
+  standGuard = {
+    onUpdate = standGuard,
+    links = {
+      {
+        target = "shootTarget",
+        condition = detectTargetFunc( 200, 120, 5, "droid" )
+      }
+    }
+  },
+  shootTarget = {
+    onUpdate = shootTargetFunc( 2.0 ),
+    links = {
+      {
+        target = "standGuard",
+        condition = isTargetLost
+      }
+    }
+  }
+}
 
-      if not l.aimed then
-        l.aimed = true
-      else
-        ozSelfAction( OZ_ACTION_ATTACK )
-      end
-    end
+Droid.patrolAutomaton = {
+  name = "Droid.patrol",
+  initial = "begin",
 
-    return
-  else
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 100 )
+  begin = {
+    onEnter = enterPatrol,
+    links = {
+      {
+        target = "patrol",
+        condition = function() return true end
+      }
+    }
+  },
+  patrol = {
+    onUpdate = patrolFunc( 50 ),
+    links = {
+      target = "shootTarget",
+      condition = detectTargetFunc( 100, 120, 5, "droid" )
+    }
+  },
+  shootTarget = {
+    onUpdate = shootTargetFunc( 4.0 ),
+    links = {
+      {
+        taget = "patrol",
+        condition = isTargetLost
+      }
+    }
+  }
+}
 
-    while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
-         ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-           ozObjIsVisibleFromSelfEye()
-      then
-        l.target = ozObjGetIndex()
-        l.aimed = nil
-        return
-      end
-    end
-  end
+Droid.armouredPatrolAutomaton = {
+  name = "Droid.armouredPatrol",
+  initial = "begin",
 
-  if math.random( 20 ) == 1 then
-    ozSelfAddH( math.random( -60, 60 ) )
-  end
-end
+  begin = {
+    onEnter = enterPatrol,
+    links = {
+      {
+        target = "patrol",
+        condition = function() return true end
+      }
+    }
+  },
+  patrol = {
+    onUpdate = patrolFunc( 150 ),
+    links = {
+      target = "shootTarget",
+      condition = detectTargetFunc( 150, 120, 5, "droid" )
+    }
+  },
+  shootTarget = {
+    onUpdate = shootTargetFunc( 1.0 ),
+    links = {
+      {
+        taget = "patrol",
+        condition = isTargetLost
+      }
+    }
+  }
+}
 
-function droid_sniper( l )
-  if l.target then
-    ozBindObj( l.target )
+droid_guard          = automatonProcessor( Droid.guardAutomaton )
+droid_sniper         = automatonProcessor( Droid.sniperAutomaton )
+droid_patrol         = automatonProcessor( Droid.patrolAutomaton )
+droid_armouredPatrol = automatonProcessor( Droid.armouredPatrolAutomaton )
 
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) or not ozObjIsVisibleFromSelfEye() then
-      l.target = nil
-    else
-      local dX, dY, dZ = ozObjVectorFromSelfEye()
-      local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistFromSelfEye()
-      local estimatedBulletTime = dist / 300.0
+--
+-- Goblin AI
+--
 
-      dX = dX + estimatedBulletTime * vX
-      dY = dY + estimatedBulletTime * vY
+Goblin.guardAutomaton = {
+  name = "Goblin.guard",
+  initial = "standGuard",
 
-      local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
+  standGuard = {
+    onUpdate = standGuard,
+    links = {
+      {
+        target = "huntTarget",
+        condition = detectTargetFunc( 10, 120, 5, "goblin" )
+      }
+    }
+  },
+  huntTarget = {
+    onUpdate = huntTargetFunc( 30, 1 ),
+    links = {
+      {
+        target = "standGuard",
+        condition = isTargetLost
+      }
+    }
+  }
+}
 
-      ozSelfSetH( heading )
-      ozSelfSetV( ozObjPitchFromSelfEye() )
-
-      if not l.aimed then
-        l.aimed = true
-      else
-        ozSelfAction( OZ_ACTION_ATTACK )
-      end
-    end
-
-    return
-  else
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 200 )
-
-    while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
-         ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-           ozObjIsVisibleFromSelfEye()
-      then
-        l.target = ozObjGetIndex()
-        l.aimed = nil
-        return
-      end
-    end
-  end
-
-  if math.random( 20 ) == 1 then
-    ozSelfAddH( math.random( -60, 60 ) )
-  end
-end
-
-function droid_patrol( l )
-  if not l.pivotX then
-    l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
-
-    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-      ozSelfAction( OZ_ACTION_WALK )
-    end
-  end
-
-  if l.target then
-    ozBindObj( l.target )
-
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) or not ozObjIsVisibleFromSelfEye() then
-      l.target = nil
-    else
-      local dX, dY, dZ = ozObjVectorFromSelfEye()
-      local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistFromSelfEye()
-      local estimatedBulletTime = dist / 300.0
-
-      dX = dX + estimatedBulletTime * vX
-      dY = dY + estimatedBulletTime * vY
-
-      local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
-
-      ozSelfSetH( heading + ( 0.5 - math.random() ) * 4.0 )
-      ozSelfSetV( ozObjPitchFromSelfEye() + ( 0.5 - math.random() ) * 4.0 )
-
-      if not l.aimed then
-        l.aimed = true
-      else
-        ozSelfAction( OZ_ACTION_ATTACK )
-      end
-    end
-
-    return
-  else
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 100 )
-
-    while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
-         ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-           ozObjIsVisibleFromSelfEye()
-      then
-        l.target = ozObjGetIndex()
-        l.aimed = nil
-        return
-      end
-    end
-  end
-
-  local dX, dY, dZ = ozSelfGetPos()
-  dX = l.pivotX - dX
-  dY = l.pivotY - dY
-  dZ = l.pivotZ - dZ
-  local dist = math.sqrt( dX*dX + dY*dY + dZ*dZ )
-
-  if dist > 50 then
-    ozSelfSetH( math.atan2( -dX, dY ) * 180.0 / math.pi )
-  elseif math.random( 20 ) == 1 then
-    ozSelfAddH( math.random( -60, 60 ) )
-  end
-
-  ozSelfAction( OZ_ACTION_FORWARD )
-end
-
-function droid_armouredPatrol( l )
-  if not l.pivotX then
-    l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
-
-    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-      ozSelfAction( OZ_ACTION_WALK )
-    end
-  end
-
-  if l.target then
-    ozBindObj( l.target )
-
-    if ozObjIsNull() or not ozObjHasFlag( OZ_OBJ_SOLID_BIT ) or not ozObjIsVisibleFromSelfEye() then
-      l.target = nil
-    else
-      local dX, dY, dZ = ozObjVectorFromSelfEye()
-      local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistFromSelfEye()
-      local estimatedBulletTime = dist / 300.0
-
-      dX = dX + estimatedBulletTime * vX
-      dY = dY + estimatedBulletTime * vY
-
-      local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
-
-      ozSelfSetH( heading )
-      ozSelfSetV( ozObjPitchFromSelfEye() )
-
-      if not l.aimed then
-        l.aimed = true
-      else
-        ozSelfAction( OZ_ACTION_ATTACK )
-      end
-    end
-
-    return
-  else
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 200 )
-
-    while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
-         ( ozObjDistFromSelf() < 100 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-           ozObjIsVisibleFromSelfEye()
-      then
-        l.target = ozObjGetIndex()
-        l.aimed = nil
-        return
-      elseif ozObjHasFlag( OZ_VEHICLE_BIT ) and
-          ( ozObjDistFromSelf() < 100 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
-            ozObjIsVisibleFromSelfEye()
-      then
-        local vehicleIndex = ozObjGetIndex()
-        ozBindObj( ozVehicleGetPilot() )
-
-        if not ozObjIsNull() and not isSubclassOf( "droid" ) then
-          l.target = vehicleIndex
-          l.aimed = nil
-          return
-        end
-      end
-    end
-  end
-
-  local dX, dY, dZ = ozSelfGetPos()
-  dX = l.pivotX - dX
-  dY = l.pivotY - dY
-  dZ = l.pivotZ - dZ
-  local dist = math.sqrt( dX*dX + dY*dY + dZ*dZ )
-
-  if dist > 150 then
-    ozSelfSetH( math.atan2( -dX, dY ) * 180.0 / math.pi )
-  elseif math.random( 5 ) == 1 then
-    ozSelfAddH( math.random( -60, 60 ) )
-  end
-
-  if not l.forward then
-    ozSelfAction( OZ_ACTION_FORWARD )
-    l.forward = true
-  else
-    l.forward = nil
-  end
-end
-
-function goblin_defend( l )
-  if l.target then
-    ozBindObj( l.target )
-
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) or not ozObjIsVisibleFromSelfEye() then
-      l.target = nil
-    else
-      ozSelfSetH( ozObjHeadingFromSelfEye() )
-      ozSelfSetV( ozObjPitchFromSelfEye() )
-
-      local dist = ozObjDistFromSelfEye()
-
-      if dist > 30 then
-        l.target = nil
-      elseif dist > 2 then
-        if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-          ozSelfAction( OZ_ACTION_WALK )
-        end
-        ozSelfAction( OZ_ACTION_FORWARD )
-      else
-        ozSelfAction( OZ_ACTION_ATTACK )
-      end
-    end
-  else
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 10 )
-
-    while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and not isSubclassOf( "droid" ) and
-         ozObjIsVisibleFromSelfEye()
-      then
-        l.target = ozObjGetIndex()
-      end
-    end
-  end
-end
+goblin_guard = automatonProcessor( Goblin.guardAutomaton )

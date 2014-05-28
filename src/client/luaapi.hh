@@ -244,12 +244,107 @@ static int ozProfileGetName( lua_State* l )
   return 1;
 }
 
-static int ozProfileGetBot( lua_State* l )
+static int ozProfileSetName( lua_State* l )
+{
+  ARG( 1 );
+
+  profile.name = l_tostring( 1 );
+  return 0;
+}
+
+static int ozProfileGetClass( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushstring( profile.clazz->name );
+  l_pushstring( profile.clazz == nullptr ? String::EMPTY : profile.clazz->name );
   return 1;
+}
+
+static int ozProfileSetClass( lua_State* l )
+{
+  ARG( 1 );
+
+  const char* sClazz = l_tostring( 1 );
+  if( String::isEmpty( sClazz ) ) {
+    profile.clazz = nullptr;
+  }
+  else {
+    profile.clazz = static_cast<const BotClass*>( liber.objClass( sClazz ) );
+  }
+  return 0;
+}
+
+static int ozProfileGetItems( lua_State* l )
+{
+  ARG( 0 );
+
+  l_newtable();
+
+  for( int i = 0; i < profile.items.length(); ++i ) {
+    const ObjectClass* clazz = profile.items[i];
+
+    l_pushstring( clazz->name );
+    l_rawseti( -2, i );
+  }
+
+  return 1;
+}
+
+static int ozProfileSetItems( lua_State* l )
+{
+  ARG( 1 );
+
+  profile.items.clear();
+
+  l_pushnil();
+  while( l_next( -2 ) ) {
+    const ObjectClass* clazz = liber.objClass( l_tostring( -1 ) );
+
+    if( !( clazz->flags & Object::ITEM_BIT ) ) {
+      ERROR( "Tried to add non-item object to inventory" );
+    }
+
+    profile.items.add( static_cast<const DynamicClass*>( clazz ) );
+    l_pop( 1 );
+  }
+
+  profile.items.trim();
+  return 0;
+}
+
+static int ozProfileGetWeaponItem( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushint( profile.weaponItem );
+  return 1;
+}
+
+static int ozProfileSetWeaponItem( lua_State* l )
+{
+  ARG( 1 );
+
+  int item = l_toint( 1 );
+  if( item < 0 || profile.clazz == nullptr ) {
+    profile.weaponItem = -1;
+  }
+  else {
+    if( uint( item ) >= uint( profile.items.length() ) ) {
+      ERROR( "Invalid item number (out of range)" );
+    }
+
+    const ObjectClass* clazz = profile.items[item];
+    if( !( clazz->flags & Object::WEAPON_BIT ) ) {
+      ERROR( "Invalid item number (not a weapon)" );
+    }
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( clazz );
+    if( profile.clazz->name.beginsWith( weaponClazz->userBase ) ) {
+      profile.weaponItem = item;
+    }
+  }
+
+  return 0;
 }
 
 /*

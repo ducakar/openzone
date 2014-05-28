@@ -212,13 +212,20 @@ public:
 
   /**
    * Create an array from initialiser list of JSON values.
+   *
+   * This constructor might be ambiguous when elements appear in pairs. Prepending `JSON` before the
+   * first array elements solves the issue is such case:
+   * @code
+   * JSON array = { JSON { 0, 1 }, { 1, 2 }, { 2, 0 } };
+   * @endcode
    */
   JSON( InitialiserList<JSON> l );
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
    *
-   * For distinguishing from array initialiser list, one should use `JSON::Pair` like:
+   * For distinguishing from array initialiser list, one should prepend `JSON::Pair` before the
+   * first element:
    * @code
    * JSON object = { JSON::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
    * @endcode

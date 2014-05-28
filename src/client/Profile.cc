@@ -27,9 +27,9 @@
 #include <matrix/BotClass.hh>
 #include <matrix/WeaponClass.hh>
 
-#include <cstdlib>
 #include <cwchar>
 #include <cwctype>
+#include <SDL.h>
 
 namespace oz
 {
@@ -41,31 +41,33 @@ void Profile::save()
   File profileFile = config["dir.config"].get( String::EMPTY ) + "/profile.json";
   JSON profileConfig = JSON::OBJECT;
 
+  profileConfig.add( "_version", OZ_VERSION );
   profileConfig.add( "name", name );
-  profileConfig.add( "class", clazz->name );
+  profileConfig.add( "class", clazz == nullptr ? String::EMPTY : clazz->name );
 
   JSON& itemsConfig = profileConfig.add( "items", JSON::ARRAY );
-
   for( const ObjectClass* item : items ) {
     itemsConfig.add( item->name );
   }
 
   profileConfig.add( "weaponItem", weaponItem );
   profileConfig.add( "persistent", persistent );
+
   profileConfig.save( profileFile, CONFIG_FORMAT );
 }
 
 void Profile::init()
 {
-  File profileFile = config["dir.config"].get( File::CONFIG ) + "/profile.json";
+  File profileFile = config["dir.config"].get( String::EMPTY ) + "/profile.json";
+  JSON profileConfig( profileFile );
 
-  JSON profileConfig;
-  bool configExists = profileConfig.load( profileFile );
+  name       = profileConfig["name"].get( "" );
+  clazz      = nullptr;
+  weaponItem = -1;
 
-  name = profileConfig["name"].get( "" );
-
+  // Get username and capitalise it (needs conversion to Unicode and back to UTF-8).
   if( name.isEmpty() ) {
-    const char* userName = getenv( "USER" );
+    const char* userName = SDL_getenv( "USER" );
 
     if( userName == nullptr || String::isEmpty( userName ) ) {
       name = OZ_GETTEXT( "Player" );
@@ -75,79 +77,68 @@ void Profile::init()
       mSet( &mbState, 0, sizeof( mbState ) );
 
       const char* userNamePtr = userName;
-      wchar_t wcUserName[64];
-      mbsrtowcs( wcUserName, &userNamePtr, 64, &mbState );
+      wchar_t wcUserName[128];
+      mbsrtowcs( wcUserName, &userNamePtr, 128, &mbState );
 
       wcUserName[0] = wchar_t( towupper( wint_t( wcUserName[0] ) ) );
 
       mSet( &mbState, 0, sizeof( mbState ) );
 
       const wchar_t* wcUserNamePtr = wcUserName;
-      char mbUserName[64];
-      wcsrtombs( mbUserName, &wcUserNamePtr, 64, &mbState );
+      char mbUserName[128];
+      wcsrtombs( mbUserName, &wcUserNamePtr, 128, &mbState );
 
       name = mbUserName;
-      configExists = false;
     }
   }
 
-  // HACK Default player profile is hard-coded.
-  if( !configExists ) {
-    profileConfig = {
-      JSON::Pair
-      { "name", name },
-      { "class", "beast" },
-      { "items",
-        { "beast$plasmagun", "nvGoggles", "binoculars", "galileo", "musicPlayer", "cvicek" }
-      },
-      { "weaponItem", 0 }
-    };
-  }
+  if( profileConfig["_version"].get( String::EMPTY ) == OZ_VERSION ) {
+    const String& sClazz = profileConfig["class"].get( String::EMPTY );
+    clazz = sClazz.isEmpty() ? nullptr : static_cast<const BotClass*>( liber.objClass( sClazz ) );
 
-  const char*        sClazz   = profileConfig["class"].get( "" );
-  const ObjectClass* objClazz = liber.objClass( sClazz );
+    if( clazz != nullptr ) {
+      const JSON& itemsConfig = profileConfig["items"];
+      int nItems = itemsConfig.length();
 
-  clazz = static_cast<const BotClass*>( objClazz );
+      if( nItems > clazz->nItems ) {
+        OZ_ERROR( "Too many items for player class '%s' in profile", clazz->name.cstr() );
+      }
 
-  const JSON& itemsConfig = profileConfig["items"];
-  int nItems = itemsConfig.length();
+      items.clear();
+      items.trim();
 
-  if( nItems > clazz->nItems ) {
-    OZ_ERROR( "Too many items for player class '%s' in profile", clazz->name.cstr() );
-  }
+      for( int i = 0; i < nItems; ++i ) {
+        const char* sItem = itemsConfig[i].get( "" );
 
-  items.clear();
-  items.trim();
+        const ObjectClass* itemClazz = liber.objClass( sItem );
+        if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
+            ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
+        {
+          OZ_ERROR( "Invalid item '%s' in profile", sItem );
+        }
 
-  for( int i = 0; i < nItems; ++i ) {
-    const char* sItem = itemsConfig[i].get( "" );
+        items.add( static_cast<const DynamicClass*>( itemClazz ) );
+      }
 
-    const ObjectClass* itemClazz = liber.objClass( sItem );
-    if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
-        ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
-    {
-      OZ_ERROR( "Invalid item '%s' in profile", sItem );
-    }
+      weaponItem = profileConfig["weaponItem"].get( -1 );
 
-    items.add( static_cast<const DynamicClass*>( itemClazz ) );
-  }
+      if( weaponItem >= 0 ) {
+        if( uint( weaponItem ) >= uint( items.length() ) ) {
+          OZ_ERROR( "Invalid weaponItem #%d in profile", weaponItem );
+        }
 
-  weaponItem = profileConfig["weaponItem"].get( -1 );
+        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
 
-  if( weaponItem >= 0 ) {
-    if( uint( weaponItem ) >= uint( items.length() ) ) {
-      OZ_ERROR( "Invalid weaponItem #%d in profile", weaponItem );
-    }
+        if( !( weaponClazz->flags & Object::WEAPON_BIT ) ) {
+          OZ_ERROR( "Invalid weaponItem #%d '%s' in profile",
+                    weaponItem, weaponClazz->name.cstr() );
+        }
 
-    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
-
-    if( !( weaponClazz->flags & Object::WEAPON_BIT ) ) {
-      OZ_ERROR( "Invalid weaponItem #%d '%s' in profile", weaponItem, weaponClazz->name.cstr() );
-    }
-
-    if( !clazz->name.beginsWith( weaponClazz->userBase ) ) {
-      OZ_ERROR( "Invalid weapon class '%s' for player class '%s' in profile",
-                weaponClazz->name.cstr(), clazz->name.cstr() );
+        if( !clazz->name.beginsWith( weaponClazz->userBase ) ) {
+          OZ_ERROR( "Invalid weapon class '%s' for player class '%s' in profile",
+                    weaponClazz->name.cstr(), clazz->name.cstr() );
+        }
+      }
     }
   }
 

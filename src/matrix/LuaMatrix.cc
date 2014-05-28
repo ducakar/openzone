@@ -351,7 +351,7 @@ void LuaMatrix::init()
   IMPORT_FUNC( ozBotGetDir );
 
   IMPORT_FUNC( ozBotGetCargo );
-  IMPORT_FUNC( ozBotGetWeapon );
+  IMPORT_FUNC( ozBotGetWeaponItem );
   IMPORT_FUNC( ozBotSetWeaponItem );
 
   IMPORT_FUNC( ozBotMaxStamina );

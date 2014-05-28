@@ -459,7 +459,7 @@ void LuaClient::init()
   IMPORT_FUNC( ozBotAddStamina );
 
   IMPORT_FUNC( ozBotGetCargo );
-  IMPORT_FUNC( ozBotGetWeapon );
+  IMPORT_FUNC( ozBotGetWeaponItem );
   IMPORT_FUNC( ozBotSetWeaponItem );
 
   IMPORT_FUNC( ozBotCanReachEntity );
@@ -569,7 +569,7 @@ void LuaClient::init()
   IGNORE_FUNC( ozSelfMaxStamina );
 
   IGNORE_FUNC( ozSelfGetCargo );
-  IGNORE_FUNC( ozSelfGetWeapon );
+  IGNORE_FUNC( ozSelfGetWeaponItem );
   IGNORE_FUNC( ozSelfSetWeaponItem );
 
   IGNORE_FUNC( ozSelfCanReachEntity );
@@ -634,7 +634,13 @@ void LuaClient::init()
    */
 
   IMPORT_FUNC( ozProfileGetName );
-  IMPORT_FUNC( ozProfileGetBot );
+  IMPORT_FUNC( ozProfileSetName );
+  IMPORT_FUNC( ozProfileGetClass );
+  IMPORT_FUNC( ozProfileSetClass );
+  IMPORT_FUNC( ozProfileGetItems );
+  IMPORT_FUNC( ozProfileSetItems );
+  IMPORT_FUNC( ozProfileGetWeaponItem );
+  IMPORT_FUNC( ozProfileSetWeaponItem );
 
   /*
    * UI

@@ -379,7 +379,7 @@ void LuaNirvana::init()
   IGNORE_FUNC( ozBotAddStamina );
 
   IMPORT_FUNC( ozBotGetCargo );
-  IMPORT_FUNC( ozBotGetWeapon );
+  IMPORT_FUNC( ozBotGetWeaponItem );
   IGNORE_FUNC( ozBotSetWeaponItem );
 
   IMPORT_FUNC( ozBotCanReachEntity );
@@ -485,7 +485,7 @@ void LuaNirvana::init()
   IMPORT_FUNC( ozSelfMaxStamina );
 
   IMPORT_FUNC( ozSelfGetCargo );
-  IMPORT_FUNC( ozSelfGetWeapon );
+  IMPORT_FUNC( ozSelfGetWeaponItem );
   IMPORT_FUNC( ozSelfSetWeaponItem );
 
   IMPORT_FUNC( ozSelfCanReachEntity );
