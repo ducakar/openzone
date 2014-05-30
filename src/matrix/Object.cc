@@ -26,14 +26,23 @@
 #include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>
 
+#define OZ_FLAG_READ( flagBit, name ) \
+  if( flagJSON.get( String::EMPTY ).equals( name ) ) { \
+    flags |= flagBit; \
+  }
+
+#define OZ_FLAG_WRITE( flagBit, name ) \
+  if( flags & flagBit ) { \
+    flagsJSON.add( name ); \
+  }
+
 namespace oz
 {
 
-const float Object::REAL_MAX_DIM            = MAX_DIM - 0.01f;
-
-const float Object::DAMAGE_BASE_INTENSITY   = 0.30f;
-const float Object::DAMAGE_INTENSITY_COEF   = 0.01f;
-const Vec3  Object::DESTRUCT_FRAG_VELOCITY  = Vec3( 0.0f, 0.0f, 2.0f );
+const float Object::REAL_MAX_DIM           = float( MAX_DIM ) - 0.01f;
+const float Object::DAMAGE_BASE_INTENSITY  = 0.30f;
+const float Object::DAMAGE_INTENSITY_COEF  = 0.01f;
+const Vec3  Object::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 2.0f );
 
 Pool<Object::Event, 256> Object::Event::pool;
 Pool<Object, 16384>      Object::pool;
@@ -113,6 +122,44 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point& p_, Heading 
   }
 }
 
+Object::Object( const ObjectClass* clazz_, int index_, const JSON& json )
+{
+  p          = json["p"].get( Point::ORIGIN );
+  dim        = clazz_->dim;
+  cell       = nullptr;
+  index      = index_;
+  flags      = 0;
+  life       = json["life"].get( 0.0f );
+  resistance = clazz_->resistance;
+  clazz      = clazz_;
+
+  for( const JSON& flagJSON : json["flags"].arrayCIter() ) {
+    OZ_FLAG_READ( DYNAMIC_BIT,      "dynamic"   );
+    OZ_FLAG_READ( WEAPON_BIT,       "weapon"    );
+    OZ_FLAG_READ( BOT_BIT,          "bot"       );
+    OZ_FLAG_READ( VEHICLE_BIT,      "vehicle"   );
+    OZ_FLAG_READ( ITEM_BIT,         "item"      );
+    OZ_FLAG_READ( BROWSABLE_BIT,    "browsable" );
+    OZ_FLAG_READ( LUA_BIT,          "lua"       );
+    OZ_FLAG_READ( DESTROY_FUNC_BIT, "onDestroy" );
+    OZ_FLAG_READ( USE_FUNC_BIT,     "onUse"     );
+    OZ_FLAG_READ( UPDATE_FUNC_BIT,  "onUpdate"  );
+    OZ_FLAG_READ( STATUS_FUNC_BIT,  "getStatus" );
+    OZ_FLAG_READ( DEVICE_BIT,       "device"    );
+    OZ_FLAG_READ( IMAGO_BIT,        "imago"     );
+    OZ_FLAG_READ( AUDIO_BIT,        "audio"     );
+    OZ_FLAG_READ( SOLID_BIT,        "solid"     );
+    OZ_FLAG_READ( CYLINDER_BIT,     "cylinder"  );
+    OZ_FLAG_READ( WIDE_CULL_BIT,    "wideCull"  );
+  }
+
+  if( flags & WEST_EAST_MASK ) {
+    swap( dim.x, dim.y );
+  }
+
+  items.reserve( clazz->nItems );
+}
+
 Object::Object( const ObjectClass* clazz_, InputStream* is )
 {
   p          = is->readPoint();
@@ -146,39 +193,73 @@ Object::Object( const ObjectClass* clazz_, InputStream* is )
   }
 }
 
-Object::Object( const ObjectClass* clazz_, const JSON& json )
+JSON Object::write() const
 {
-  p          = json["p"].get( Point::ORIGIN );
-  dim        = clazz_->dim;
-  cell       = nullptr;
-  index      = json["index"].get( -1 );
-  flags      = json["flags"].get( 0 );
-  life       = json["life"].get( 0.0f );
-  resistance = clazz_->resistance;
-  clazz      = clazz_;
+  JSON json( JSON::OBJECT );
 
-  if( index < 0 ) {
-    OZ_ERROR( "Invalid object index" );
+  json.add( "class", clazz->name );
+  json.add( "life", life );
+
+  if( cell != nullptr ) {
+    json.add( "p", p );
   }
 
-  if( flags & WEST_EAST_MASK ) {
-    swap( dim.x, dim.y );
+  JSON& flagsJSON = json.add( "flags", JSON::ARRAY );
+
+  OZ_FLAG_WRITE( DYNAMIC_BIT,      "dynamic"   );
+  OZ_FLAG_WRITE( WEAPON_BIT,       "weapon"    );
+  OZ_FLAG_WRITE( BOT_BIT,          "bot"       );
+  OZ_FLAG_WRITE( VEHICLE_BIT,      "vehicle"   );
+  OZ_FLAG_WRITE( ITEM_BIT,         "item"      );
+  OZ_FLAG_WRITE( BROWSABLE_BIT,    "browsable" );
+  OZ_FLAG_WRITE( LUA_BIT,          "lua"       );
+  OZ_FLAG_WRITE( DESTROY_FUNC_BIT, "onDestroy" );
+  OZ_FLAG_WRITE( USE_FUNC_BIT,     "onUse"     );
+  OZ_FLAG_WRITE( UPDATE_FUNC_BIT,  "onUpdate"  );
+  OZ_FLAG_WRITE( STATUS_FUNC_BIT,  "getStatus" );
+  OZ_FLAG_WRITE( DEVICE_BIT,       "device"    );
+  OZ_FLAG_WRITE( IMAGO_BIT,        "imago"     );
+  OZ_FLAG_WRITE( AUDIO_BIT,        "audio"     );
+  OZ_FLAG_WRITE( SOLID_BIT,        "solid"     );
+  OZ_FLAG_WRITE( CYLINDER_BIT,     "cylinder"  );
+  OZ_FLAG_WRITE( WIDE_CULL_BIT,    "wideCull"  );
+
+  switch( flags & HEADING_MASK ) {
+    case NORTH: {
+      flagsJSON.add( "north" );
+      break;
+    }
+    case WEST: {
+      flagsJSON.add( "west" );
+      break;
+    }
+    case SOUTH: {
+      flagsJSON.add( "south" );
+      break;
+    }
+    case EAST: {
+      flagsJSON.add( "east" );
+      break;
+    }
+    default: {
+      hard_assert( false );
+      break;
+    }
   }
 
   if( clazz->nItems != 0 ) {
-    items.reserve( clazz->nItems );
+    JSON& itemsJSON = json.add( "items", JSON::ARRAY );
 
-    const JSON& itemsJSON = json["items"];
+    for( int index : items ) {
+      const Object* item = orbis.obj( index );
 
-    int nItems = itemsJSON.length();
-    for( int i = 0; i < nItems; ++i ) {
-      int index = itemsJSON[i].get( -1 );
-      if( index < 0 ) {
-        OZ_ERROR( "Invalid item index" );
+      if( item != nullptr ) {
+        itemsJSON.add( item->write() );
       }
-      items.add( index );
     }
   }
+
+  return json;
 }
 
 void Object::write( OutputStream* os ) const
@@ -200,28 +281,6 @@ void Object::write( OutputStream* os ) const
       os->writeInt( item );
     }
   }
-}
-
-JSON Object::write() const
-{
-  JSON json( JSON::OBJECT );
-
-  json.add( "class", clazz->name );
-
-  json.add( "p", p );
-  json.add( "index", index );
-  json.add( "flags", flags );
-  json.add( "life", life );
-
-  if( clazz->nItems != 0 ) {
-    JSON& itemsJSON = json.add( "items", JSON::ARRAY );
-
-    for( int item : items ) {
-      itemsJSON.add( orbis.objIndex( item ) );
-    }
-  }
-
-  return json;
 }
 
 void Object::readUpdate( InputStream* )

@@ -56,43 +56,12 @@ Frag::Frag( const FragPool* pool_, InputStream* is )
   elasticity = pool->elasticity;
 }
 
-Frag::Frag( const FragPool* pool_, const JSON& json )
-{
-  cell       = nullptr;
-  index      = json["index"].get( -1 );
-  poolId     = pool_->id;
-  pool       = pool_;
-  p          = json["p"].get( Point::ORIGIN );
-  velocity   = json["velocity"].get( Vec3::ZERO );
-  life       = json["life"].get( 0.0f );
-  mass       = pool->mass;
-  elasticity = pool->elasticity;
-
-  if( index < 0 ) {
-    OZ_ERROR( "Invalid frag index" );
-  }
-}
-
 void Frag::write( OutputStream* os ) const
 {
   os->writeInt( index );
   os->writePoint( p );
   os->writeVec3( velocity );
   os->writeFloat( life );
-}
-
-JSON Frag::write() const
-{
-  JSON json( JSON::OBJECT );
-
-  json.add( "pool", pool->name );
-
-  json.add( "index", index );
-  json.add( "p", p );
-  json.add( "velocity", velocity );
-  json.add( "life", life );
-
-  return json;
 }
 
 void Frag::readUpdate( InputStream* )

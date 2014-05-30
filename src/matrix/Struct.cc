@@ -694,6 +694,64 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   }
 }
 
+Struct::Struct( const BSP* bsp_, int index_, const JSON& json )
+{
+  bsp         = bsp_;
+
+  p           = json["p"].get( Point::ORIGIN );
+  heading     = Heading( json["heading"].get( Heading::NORTH ) );
+
+  index       = index_;
+
+  life        = json["life"].get( 0.0f );
+  resistance  = bsp->resistance;
+  demolishing = json["demolishing"].get( 0.0f );
+
+  transf      = Mat4::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation( Point::ORIGIN - p );
+
+  Bounds bb   = toAbsoluteCS( *bsp );
+  mins        = bb.mins;
+  maxs        = bb.maxs;
+
+  if( index < 0 ) {
+    OZ_ERROR( "Invalid struct index" );
+  }
+
+  if( bsp->nEntities != 0 ) {
+    entities.resize( bsp->nEntities );
+
+    const JSON& entitiesJSON = json["entities"];
+
+    for( int i = 0; i < entities.length(); ++i ) {
+      const JSON& entityJSON = entitiesJSON[i];
+      Entity&     entity     = entities[i];
+
+      entity.clazz  = &bsp->entities[i];
+      entity.str    = this;
+      entity.key    = entityJSON["key"].get( 0 );
+      entity.state  = Entity::State( entityJSON["state"].get( Entity::CLOSED ) );
+      entity.ratio  = entityJSON["ratio"].get( 0.0f );
+      entity.time   = entityJSON["time"].get( 0.0f );
+      entity.offset = entityJSON["offset"].get( Vec3::ZERO );
+
+      if( entity.state == Entity::OPENING ) {
+        entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
+      }
+      else if( entity.state == Entity::CLOSING ) {
+        entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
+      }
+      else {
+        entity.velocity = Vec3::ZERO;
+      }
+    }
+  }
+
+  if( bsp->nBoundObjects != 0 ) {
+    boundObjects.reserve( bsp->nBoundObjects );
+  }
+}
+
 Struct::Struct( const BSP* bsp_, InputStream* is )
 {
   bsp         = bsp_;
@@ -752,73 +810,41 @@ Struct::Struct( const BSP* bsp_, InputStream* is )
   }
 }
 
-Struct::Struct( const BSP* bsp_, const JSON& json )
+JSON Struct::write() const
 {
-  bsp         = bsp_;
+  JSON json( JSON::OBJECT );
 
-  p           = json["p"].get( Point::ORIGIN );
-  heading     = Heading( json["heading"].get( Heading::NORTH ) );
+  json.add( "bsp", bsp->name );
 
-  index       = json["index"].get( -1 );
+  json.add( "p", p );
+  json.add( "heading", heading );
 
-  life        = json["life"].get( 0.0f );
-  resistance  = bsp->resistance;
-  demolishing = json["demolishing"].get( 0.0f );
+  json.add( "life", life );
+  json.add( "demolishing", demolishing );
 
-  transf      = Mat4::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation( Point::ORIGIN - p );
+  JSON& entitiesJSON = json.add( "entities", JSON::ARRAY );
 
-  Bounds bb   = toAbsoluteCS( *bsp );
-  mins        = bb.mins;
-  maxs        = bb.maxs;
+  for( int i = 0; i < entities.length(); ++i ) {
+    JSON& entityJSON = entitiesJSON.add( JSON::OBJECT);
 
-  if( index < 0 ) {
-    OZ_ERROR( "Invalid struct index" );
+    entityJSON.add( "key", entities[i].key );
+    entityJSON.add( "state", entities[i].state );
+    entityJSON.add( "ratio", entities[i].ratio );
+    entityJSON.add( "time", entities[i].time );
+    entityJSON.add( "offset", entities[i].offset );
   }
 
-  if( bsp->nEntities != 0 ) {
-    entities.resize( bsp->nEntities );
+  JSON& boundObjectsJSON = json.add( "boundObjects", JSON::ARRAY );
 
-    const JSON& entitiesJSON = json["entities"];
+  for( int i : boundObjects ) {
+    const Object* obj = orbis.obj( i );
 
-    for( int i = 0; i < entities.length(); ++i ) {
-      const JSON& entityJSON = entitiesJSON[i];
-      Entity&     entity     = entities[i];
-
-      entity.clazz  = &bsp->entities[i];
-      entity.str    = this;
-      entity.key    = entityJSON["key"].get( 0 );
-      entity.state  = Entity::State( entityJSON["state"].get( Entity::CLOSED ) );
-      entity.ratio  = entityJSON["ratio"].get( 0.0f );
-      entity.time   = entityJSON["time"].get( 0.0f );
-      entity.offset = entityJSON["offset"].get( Vec3::ZERO );
-
-      if( entity.state == Entity::OPENING ) {
-        entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
-      }
-      else if( entity.state == Entity::CLOSING ) {
-        entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
-      }
-      else {
-        entity.velocity = Vec3::ZERO;
-      }
+    if( obj != nullptr ) {
+      boundObjectsJSON.add( obj->write() );
     }
   }
 
-  const JSON& boundObjectsJSON = json["boundObjects"];
-  hard_assert( boundObjectsJSON.length() <= bsp->nBoundObjects );
-
-  if( bsp->nBoundObjects != 0 ) {
-    boundObjects.reserve( bsp->nBoundObjects );
-
-    for( const JSON& i : boundObjectsJSON.arrayCIter() ) {
-      int index = i.get( -1 );
-      if( index < 0 ) {
-        OZ_ERROR( "Invalid struct bound object index" );
-      }
-      boundObjects.add( index );
-    }
-  }
+  return json;
 }
 
 void Struct::write( OutputStream* os ) const
@@ -843,41 +869,6 @@ void Struct::write( OutputStream* os ) const
   for( int i = 0; i < boundObjects.length(); ++i ) {
     os->writeInt( boundObjects[i] );
   }
-}
-
-JSON Struct::write() const
-{
-  JSON json( JSON::OBJECT );
-
-  json.add( "bsp", bsp->name );
-
-  json.add( "p", p );
-  json.add( "heading", heading );
-
-  json.add( "index", index );
-
-  json.add( "life", life );
-  json.add( "demolishing", demolishing );
-
-  JSON& entitiesJSON = json.add( "entities", JSON::ARRAY );
-
-  for( int i = 0; i < entities.length(); ++i ) {
-    JSON& entityJSON = entitiesJSON.add( JSON::OBJECT);
-
-    entityJSON.add( "key", entities[i].key );
-    entityJSON.add( "state", entities[i].state );
-    entityJSON.add( "ratio", entities[i].ratio );
-    entityJSON.add( "time", entities[i].time );
-    entityJSON.add( "offset", entities[i].offset );
-  }
-
-  JSON& boundObjectsJSON = json.add( "boundObjects", JSON::ARRAY );
-
-  for( int i = 0; i < boundObjects.length(); ++i ) {
-    boundObjectsJSON.add( boundObjects[i] );
-  }
-
-  return json;
 }
 
 }

@@ -111,6 +111,13 @@ Weapon::Weapon( const WeaponClass* clazz_, int index_, const Point& p_, Heading 
   shotTime = 0.0f;
 }
 
+Weapon::Weapon( const WeaponClass* clazz_, int index, const JSON& json ) :
+  Dynamic( clazz_, index, json )
+{
+  nRounds  = json["nRounds"].get( 0 );
+  shotTime = 0.0f;
+}
+
 Weapon::Weapon( const WeaponClass* clazz_, InputStream* is ) :
   Dynamic( clazz_, is )
 {
@@ -118,11 +125,13 @@ Weapon::Weapon( const WeaponClass* clazz_, InputStream* is ) :
   shotTime = is->readFloat();
 }
 
-Weapon::Weapon( const WeaponClass* clazz_, const JSON& json ) :
-  Dynamic( clazz_, json )
+JSON Weapon::write() const
 {
-  nRounds  = json["nRounds"].get( 0 );
-  shotTime = json["shotTime"].get( 0.0f );
+  JSON json = Dynamic::write();
+
+  json.add( "nRounds", nRounds );
+
+  return json;
 }
 
 void Weapon::write( OutputStream* os ) const
@@ -131,16 +140,6 @@ void Weapon::write( OutputStream* os ) const
 
   os->writeInt( nRounds );
   os->writeFloat( shotTime );
-}
-
-JSON Weapon::write() const
-{
-  JSON json = Dynamic::write();
-
-  json.add( "nRounds", nRounds );
-  json.add( "shotTime", shotTime );
-
-  return json;
 }
 
 void Weapon::readUpdate( InputStream* )

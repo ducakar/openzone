@@ -108,11 +108,11 @@ protected:
 public:
 
   explicit Vehicle( const VehicleClass* clazz, int index, const Point& p, Heading heading );
+  explicit Vehicle( const VehicleClass* clazz, int index, const JSON& json );
   explicit Vehicle( const VehicleClass* clazz, InputStream* is );
-  explicit Vehicle( const VehicleClass* clazz, const JSON& json );
 
-  void write( OutputStream* os ) const override;
   JSON write() const override;
+  void write( OutputStream* os ) const override;
 
   void readUpdate( InputStream* is ) override;
   void writeUpdate( OutputStream* os ) const override;

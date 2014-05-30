@@ -46,8 +46,8 @@ public:
   void init( const JSON& config, const char* name ) override;
 
   Object* create( int index, const Point& pos, Heading heading ) const override;
+  Object* create( int index, const JSON& json ) const override;
   Object* create( InputStream* is ) const override;
-  Object* create( const JSON& json ) const override;
 
 };
 

@@ -239,6 +239,20 @@ void Camera::reset()
   }
 }
 
+void Camera::read( const JSON& json )
+{
+  p          = json["position"].get( Point::ORIGIN );
+  rot        = json["rotation"].get( Quat::ID );
+
+  desiredRot = rot;
+  desiredPos = p;
+  oldPos     = p;
+
+  newState   = State( json["state"].get( STRATEGIC ) );
+
+  strategic.read( json["strategic"] );
+}
+
 void Camera::read( InputStream* is )
 {
   rot        = is->readQuat();
@@ -293,25 +307,17 @@ void Camera::read( InputStream* is )
   cinematic.read( is );
 }
 
-void Camera::read( const JSON& json )
+JSON Camera::write() const
 {
-  p          = json["position"].get( Point::ORIGIN );
-  rot        = json["rotation"].get( Quat::ID );
+  JSON json( JSON::OBJECT );
 
-  desiredRot = rot;
-  desiredPos = p;
-  oldPos     = p;
+  json.add( "position", p );
+  json.add( "rotation", rot );
+  json.add( "state", state );
 
-  bot        = json["bot"].get( -1 );
-  botObj     = orbis.obj<Bot>( bot );
-  vehicle    = botObj == nullptr ? -1 : botObj->parent;
-  vehicleObj = orbis.obj<Vehicle>( vehicle );
+  json.add( "strategic", strategic.write() );
 
-  state     = NONE;
-  newState  = State( json["state"].get( STRATEGIC ) );
-
-  strategic.read( json["strategic"] );
-  unit.read( json["unit"] );
+  return json;
 }
 
 void Camera::write( OutputStream* os ) const
@@ -344,21 +350,6 @@ void Camera::write( OutputStream* os ) const
   strategic.write( os );
   unit.write( os );
   cinematic.write( os );
-}
-
-JSON Camera::write() const
-{
-  JSON json( JSON::OBJECT );
-
-  json.add( "position", p );
-  json.add( "rotation", rot );
-  json.add( "bot", bot );
-  json.add( "state", state );
-
-  json.add( "strategic", strategic.write() );
-  json.add( "unit", unit.write() );
-
-  return json;
 }
 
 void Camera::init()

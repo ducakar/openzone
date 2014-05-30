@@ -192,9 +192,15 @@ void BSP::load()
 
   boundObjects = new( data ) BoundObject[nBoundObjects];
   for( int i = 0; i < nBoundObjects; ++i ) {
-    boundObjects[i].clazz   = liber.objClass( is.readString() );
+    const ObjectClass* clazz = liber.objClass( is.readString() );
+
+    boundObjects[i].clazz   = clazz;
     boundObjects[i].pos     = is.readPoint();
     boundObjects[i].heading = Heading( is.readInt() );
+
+    if( clazz->flags & Object::ITEM_BIT ) {
+      OZ_ERROR( "BSP '%s' bound object '%s' is not static", name.cstr(), clazz->name.cstr() );
+    }
   }
 
   hard_assert( !is.isAvailable() );

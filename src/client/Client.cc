@@ -668,7 +668,9 @@ int Client::init( int argc, char** argv )
 
 void Client::shutdown()
 {
-  stage->unload();
+  if( stage != nullptr ) {
+    stage->unload();
+  }
 
   if( initFlags & INIT_STAGE_INIT ) {
     gameStage.destroy();

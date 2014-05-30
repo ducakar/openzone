@@ -232,11 +232,11 @@ public:
 
   void reset();
 
-  void read( InputStream* is );
   void read( const JSON& json );
+  void read( InputStream* is );
 
-  void write( OutputStream* os ) const;
   JSON write() const;
+  void write( OutputStream* os ) const;
 
   void init();
   void destroy();

@@ -522,39 +522,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
   }
 }
 
-Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* is ) :
-  Dynamic( clazz_, is )
-{
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-
-  h          = is->readFloat();
-  v          = is->readFloat();
-  w          = is->readFloat();
-  rotVelH    = is->readFloat();
-  rotVelV    = is->readFloat();
-  actions    = is->readInt();
-  oldActions = is->readInt();
-
-  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ( h ) :
-                                                   Mat4::rotationZXZ( h, v, w );
-  state      = is->readInt();
-  oldState   = is->readInt();
-  fuel       = is->readFloat();
-
-  step       = is->readFloat();
-  stairRate  = is->readFloat();
-
-  pilot      = is->readInt();
-
-  weapon     = is->readInt();
-  for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    nRounds[i]  = is->readInt();
-    shotTime[i] = is->readFloat();
-  }
-}
-
-Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
-  Dynamic( clazz_, json )
+Vehicle::Vehicle( const VehicleClass* clazz_, int index, const JSON& json ) :
+  Dynamic( clazz_, index, json )
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
@@ -589,31 +558,34 @@ Vehicle::Vehicle( const VehicleClass* clazz_, const JSON& json ) :
   }
 }
 
-void Vehicle::write( OutputStream* os ) const
+Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* is ) :
+  Dynamic( clazz_, is )
 {
-  Dynamic::write( os );
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  os->writeFloat( h );
-  os->writeFloat( v );
-  os->writeFloat( w );
-  os->writeFloat( rotVelH );
-  os->writeFloat( rotVelV );
-  os->writeInt( actions );
-  os->writeInt( oldActions );
+  h          = is->readFloat();
+  v          = is->readFloat();
+  w          = is->readFloat();
+  rotVelH    = is->readFloat();
+  rotVelV    = is->readFloat();
+  actions    = is->readInt();
+  oldActions = is->readInt();
 
-  os->writeInt( state );
-  os->writeInt( oldState );
-  os->writeFloat( fuel );
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ( h ) :
+                                                   Mat4::rotationZXZ( h, v, w );
+  state      = is->readInt();
+  oldState   = is->readInt();
+  fuel       = is->readFloat();
 
-  os->writeFloat( step );
-  os->writeFloat( stairRate );
+  step       = is->readFloat();
+  stairRate  = is->readFloat();
 
-  os->writeInt( pilot );
+  pilot      = is->readInt();
 
-  os->writeInt( weapon );
+  weapon     = is->readInt();
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    os->writeInt( nRounds[i] );
-    os->writeFloat( shotTime[i] );
+    nRounds[i]  = is->readInt();
+    shotTime[i] = is->readFloat();
   }
 }
 
@@ -647,6 +619,34 @@ JSON Vehicle::write() const
   }
 
   return json;
+}
+
+void Vehicle::write( OutputStream* os ) const
+{
+  Dynamic::write( os );
+
+  os->writeFloat( h );
+  os->writeFloat( v );
+  os->writeFloat( w );
+  os->writeFloat( rotVelH );
+  os->writeFloat( rotVelV );
+  os->writeInt( actions );
+  os->writeInt( oldActions );
+
+  os->writeInt( state );
+  os->writeInt( oldState );
+  os->writeFloat( fuel );
+
+  os->writeFloat( step );
+  os->writeFloat( stairRate );
+
+  os->writeInt( pilot );
+
+  os->writeInt( weapon );
+  for( int i = 0; i < MAX_WEAPONS; ++i ) {
+    os->writeInt( nRounds[i] );
+    os->writeFloat( shotTime[i] );
+  }
 }
 
 void Vehicle::readUpdate( InputStream* )

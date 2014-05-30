@@ -241,14 +241,14 @@ Object* VehicleClass::create( int index, const Point& pos, Heading heading ) con
   return new Vehicle( this, index, pos, heading );
 }
 
+Object* VehicleClass::create( int index, const JSON& json ) const
+{
+  return new Vehicle( this, index, json );
+}
+
 Object* VehicleClass::create( InputStream* is ) const
 {
   return new Vehicle( this, is );
-}
-
-Object* VehicleClass::create( const JSON& json ) const
-{
-  return new Vehicle( this, json );
 }
 
 }

@@ -29,6 +29,16 @@
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
 
+#define OZ_STATE_READ( stateBit, name ) \
+  if( stateJSON.get( String::EMPTY ).equals( name ) ) { \
+    state |= stateBit; \
+  }
+
+#define OZ_STATE_WRITE( stateBit, name ) \
+  if( state & stateBit ) { \
+    stateJSON.add( name ); \
+  }
+
 namespace oz
 {
 
@@ -1155,11 +1165,52 @@ Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) 
   mind       = clazz_->mind;
 }
 
+Bot::Bot( const BotClass* clazz_, int index, const JSON& json ) :
+  Dynamic( clazz_, index, json )
+{
+  h          = json["h"].get( 0.0f );
+  v          = json["v"].get( 0.0f );
+  actions    = 0;
+  oldActions = 0;
+  instrument = -1;
+  container  = -1;
+
+  state      = clazz_->state & MECHANICAL_BIT;;
+  oldState   = state;
+  stamina    = json["stamina"].get( 0.0f );
+  step       = 0.0f;
+  stairRate  = 0.0f;
+
+  cargo      = -1;
+  weapon     = clamp( json["weapon"].get( -1 ), -1, items.length() - 1 );
+  grabHandle = 0.0f;
+  meleeTime  = 0.0f;
+
+  camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
+
+  name       = json["name"].get( "" );
+  mind       = json["mind"].get( "" );
+
+  for( const JSON& stateJSON : json["state"].arrayCIter() ) {
+    OZ_STATE_READ( DEAD_BIT,         "dead"         );
+    OZ_STATE_READ( INCARNATABLE_BIT, "incarnatable" );
+    OZ_STATE_READ( PLAYER_BIT,       "player"       );
+    OZ_STATE_READ( CROUCHING_BIT,    "crouching"    );
+    OZ_STATE_READ( WALKING_BIT,      "walking"      );
+  }
+
+  if( state & CROUCHING_BIT ) {
+    dim = clazz_->crouchDim;
+  }
+  if( state & DEAD_BIT ) {
+    dim = clazz_->corpseDim;
+    resistance = Math::INF;
+  }
+}
+
 Bot::Bot( const BotClass* clazz_, InputStream* is ) :
   Dynamic( clazz_, is )
 {
-  dim        = is->readVec3();
-
   h          = is->readFloat();
   v          = is->readFloat();
   actions    = is->readInt();
@@ -1183,49 +1234,40 @@ Bot::Bot( const BotClass* clazz_, InputStream* is ) :
   name       = is->readString();
   mind       = is->readString();
 
+  if( state & CROUCHING_BIT ) {
+    dim = clazz_->crouchDim;
+  }
   if( state & DEAD_BIT ) {
+    dim = clazz_->corpseDim;
     resistance = Math::INF;
   }
 }
 
-Bot::Bot( const BotClass* clazz_, const JSON& json ) :
-  Dynamic( clazz_, json )
+JSON Bot::write() const
 {
-  dim        = json["dim"].get( Vec3::ZERO );
+  JSON json = Dynamic::write();
 
-  h          = json["h"].get( 0.0f );
-  v          = json["v"].get( 0.0f );
-  actions    = 0;
-  oldActions = 0;
-  instrument = -1;
-  container  = -1;
+  json.add( "h", h );
+  json.add( "v", v );
+  json.add( "stamina", stamina );
+  json.add( "weapon", items.index( weapon ) );
+  json.add( "name", name );
+  json.add( "mind", mind );
 
-  state      = json["state"].get( 0 );
-  oldState   = state;
-  stamina    = json["stamina"].get( 0.0f );
-  step       = json["step"].get( 0.0f );
-  stairRate  = json["stairRate"].get( 0.0f );
+  JSON& stateJSON = json.add( "state", JSON::ARRAY );
 
-  cargo      = json["cargo"].get( -1 );
-  weapon     = json["weapon"].get( -1 );
-  grabHandle = json["grabHandle"].get( 0.0f );
-  meleeTime  = 0.0f;
+  OZ_STATE_WRITE( DEAD_BIT,         "dead"         );
+  OZ_STATE_WRITE( INCARNATABLE_BIT, "incarnatable" );
+  OZ_STATE_WRITE( PLAYER_BIT,       "player"       );
+  OZ_STATE_WRITE( CROUCHING_BIT,    "crouching"    );
+  OZ_STATE_WRITE( WALKING_BIT,      "walking"      );
 
-  camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
-
-  name       = json["name"].get( "" );
-  mind       = json["mind"].get( "" );
-
-  if( state & DEAD_BIT ) {
-    resistance = Math::INF;
-  }
+  return json;
 }
 
 void Bot::write( OutputStream* os ) const
 {
   Dynamic::write( os );
-
-  os->writeVec3( dim );
 
   os->writeFloat( h );
   os->writeFloat( v );
@@ -1247,30 +1289,6 @@ void Bot::write( OutputStream* os ) const
 
   os->writeString( name );
   os->writeString( mind );
-}
-
-JSON Bot::write() const
-{
-  JSON json = Dynamic::write();
-
-  json.add( "dim", dim );
-
-  json.add( "h", h );
-  json.add( "v", v );
-
-  json.add( "state", state );
-  json.add( "stamina", stamina );
-  json.add( "step", step );
-  json.add( "stairRate", stairRate );
-
-  json.add( "cargo", orbis.objIndex( cargo ) );
-  json.add( "weapon", orbis.objIndex( weapon ) );
-  json.add( "grabHandle", grabHandle );
-
-  json.add( "name", name );
-  json.add( "mind", mind );
-
-  return json;
 }
 
 void Bot::readUpdate( InputStream* )

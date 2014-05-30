@@ -73,14 +73,14 @@ Object* WeaponClass::create( int index, const Point& pos, Heading heading ) cons
   return new Weapon( this, index, pos, heading );
 }
 
+Object* WeaponClass::create( int index, const JSON& json ) const
+{
+  return new Weapon( this, index, json );
+}
+
 Object* WeaponClass::create( InputStream* is ) const
 {
   return new Weapon( this, is );
-}
-
-Object* WeaponClass::create( const JSON& json ) const
-{
-  return new Weapon( this, json );
 }
 
 }

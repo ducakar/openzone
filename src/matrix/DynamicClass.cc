@@ -42,6 +42,10 @@ void DynamicClass::init( const JSON& config, const char* name_ )
 
   OZ_CLASS_FLAG( Object::ITEM_BIT, "flag.item", false );
 
+  if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
+    OZ_ERROR( "%s: Items cannot have their own inventory. nItems should be 0.", name_ );
+  }
+
   if( audioType >= 0 ) {
     const JSON& soundsConfig = config["audioSounds"];
 
@@ -70,14 +74,14 @@ Object* DynamicClass::create( int index, const Point& pos, Heading heading ) con
   return new Dynamic( this, index, pos, heading );
 }
 
+Object* DynamicClass::create( int index, const JSON& json ) const
+{
+  return new Dynamic( this, index, json );
+}
+
 Object* DynamicClass::create( InputStream* is ) const
 {
   return new Dynamic( this, is );
-}
-
-Object* DynamicClass::create( const JSON& json ) const
-{
-  return new Dynamic( this, json );
 }
 
 }

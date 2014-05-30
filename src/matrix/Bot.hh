@@ -224,11 +224,11 @@ protected:
 public:
 
   explicit Bot( const BotClass* clazz, int index, const Point& p, Heading heading );
+  explicit Bot( const BotClass* clazz, int index, const JSON& json );
   explicit Bot( const BotClass* clazz, InputStream* is );
-  explicit Bot( const BotClass* clazz, const JSON& json );
 
-  void write( OutputStream* os ) const override;
   JSON write() const override;
+  void write( OutputStream* os ) const override;
 
   void readUpdate( InputStream* is ) override;
   void writeUpdate( OutputStream* os ) const override;

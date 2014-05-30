@@ -67,6 +67,19 @@ Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point& p_, Headi
   lift     = clazz_->lift;
 }
 
+Dynamic::Dynamic( const DynamicClass* clazz_, int index, const JSON& json ) :
+  Object( clazz_, index, json )
+{
+  velocity = Vec3::ZERO;
+  momentum = Vec3::ZERO;
+  floor    = Vec3( 0.0f, 0.0f, 1.0f );
+  parent   = -1;
+  lower    = -1;
+  depth    = 0.0f;
+  mass     = clazz_->mass;
+  lift     = clazz_->lift;
+}
+
 Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* is ) :
   Object( clazz_, is )
 {
@@ -80,17 +93,9 @@ Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* is ) :
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic( const DynamicClass* clazz_, const JSON& json ) :
-  Object( clazz_, json )
+JSON Dynamic::write() const
 {
-  velocity = json["velocity"].get( Vec3::ZERO );
-  momentum = json["momentum"].get( Vec3::ZERO );
-  floor    = json["floor"].get( Vec3( 0.0f, 0.0f, 1.0f ) );
-  parent   = json["parent"].get( -1 );
-  lower    = json["lower"].get( -1 );
-  depth    = json["depth"].get( 0.0f );
-  mass     = clazz_->mass;
-  lift     = clazz_->lift;
+  return Object::write();
 }
 
 void Dynamic::write( OutputStream* os ) const
@@ -103,20 +108,6 @@ void Dynamic::write( OutputStream* os ) const
   os->writeInt( parent );
   os->writeInt( lower );
   os->writeFloat( depth );
-}
-
-JSON Dynamic::write() const
-{
-  JSON json = Object::write();
-
-  json.add( "velocity", velocity );
-  json.add( "momentum", momentum );
-  json.add( "floor", floor );
-  json.add( "parent", orbis.objIndex( parent ) );
-  json.add( "lower", orbis.objIndex( lower ) );
-  json.add( "depth", depth );
-
-  return json;
 }
 
 void Dynamic::readUpdate( InputStream* )

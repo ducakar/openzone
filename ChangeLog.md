@@ -86,10 +86,11 @@
     * Asset Importer integration, can build Collada models
     * major Compiler updates for tree-based models
     * Compiler generates surface tangents and binormals
+- scripting
+    * finite automaton implementation, basic building blocks for AIs
+    * all complex AIs rewritten as finite automata
 - general
-    * builds on Android (i686, ARM, ARMv7a, MIPS)
     * common, matrix and nirvana sub-namespaces removed
-    * LuaJIT can be optionally used instead of official Lua
 
 0.3.1
 

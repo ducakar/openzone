@@ -57,6 +57,66 @@ static SBitset<Orbis::MAX_STRUCTS> pendingStructs[2];
 static SBitset<Orbis::MAX_OBJECTS> pendingObjects[2];
 static SBitset<Orbis::MAX_FRAGS>   pendingFrags[2];
 
+int Orbis::allocStrIndex() const
+{
+  int index = lastStructIndex + 1;
+
+  while( structs[1 + index] != nullptr || pendingStructs[0].get( index ) ||
+         pendingStructs[1].get( index ) )
+  {
+    if( index == lastStructIndex ) {
+      // We have wrapped around => no slots available.
+      soft_assert( false );
+      return -1;
+    }
+
+    index = ( index + 1 ) % MAX_STRUCTS;
+  }
+
+  lastStructIndex = index;
+  return index;
+}
+
+int Orbis::allocObjIndex() const
+{
+  int index = lastObjectIndex + 1;
+
+  while( objects[1 + index] != nullptr || pendingObjects[0].get( index ) ||
+         pendingObjects[1].get( index ) )
+  {
+    if( index == lastObjectIndex ) {
+      // We have wrapped around => no slots available.
+      soft_assert( false );
+      return -1;
+    }
+
+    index = ( index + 1 ) % MAX_OBJECTS;
+  }
+
+  lastObjectIndex = index;
+  return index;
+}
+
+int Orbis::allocFragIndex() const
+{
+  int index = lastFragIndex + 1;
+
+  while( frags[1 + index] != nullptr || pendingFrags[0].get( index ) ||
+         pendingFrags[1].get( index ) )
+  {
+    if( index == lastFragIndex ) {
+      // We have wrapped around => no slots available.
+      soft_assert( false );
+      return -1;
+    }
+
+    index = ( index + 1 ) % MAX_FRAGS;
+  }
+
+  lastFragIndex = index;
+  return index;
+}
+
 bool Orbis::position( Struct* str )
 {
   Span span = getInters( *str, EPSILON );
@@ -158,18 +218,9 @@ void Orbis::unposition( Frag* frag )
 
 Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
 {
-  int index = lastStructIndex + 1;
-
-  while( structs[1 + index] != nullptr || pendingStructs[0].get( index ) ||
-         pendingStructs[1].get( index ) )
-  {
-    if( index == lastStructIndex ) {
-      // We have wrapped around => no slots available.
-      soft_assert( false );
-      return nullptr;
-    }
-
-    index = ( index + 1 ) % MAX_STRUCTS;
+  int index = allocStrIndex();
+  if( index < 0 ) {
+    return nullptr;
   }
 
   const_cast<BSP*>( bsp )->request();
@@ -177,24 +228,14 @@ Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
   Struct* str = new Struct( bsp, index, p, heading );
   structs[1 + index] = str;
 
-  lastStructIndex = index;
   return str;
 }
 
 Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
 {
-  int index = lastObjectIndex + 1;
-
-  while( objects[1 + index] != nullptr || pendingObjects[0].get( index ) ||
-         pendingObjects[1].get( index ) )
-  {
-    if( index == lastObjectIndex ) {
-      // We have wrapped around => no slots available.
-      soft_assert( false );
-      return nullptr;
-    }
-
-    index = ( index + 1 ) % MAX_OBJECTS;
+  int index = allocObjIndex();
+  if( index < 0 ) {
+    return nullptr;
   }
 
   Object* obj = clazz->create( index, p, heading );
@@ -204,30 +245,19 @@ Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
     luaMatrix.registerObject( index );
   }
 
-  lastObjectIndex = index;
   return obj;
 }
 
 Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 {
-  int index = lastFragIndex + 1;
-
-  while( frags[1 + index] != nullptr || pendingFrags[0].get( index ) ||
-         pendingFrags[1].get( index ) )
-  {
-    if( index == lastFragIndex ) {
-      // We have wrapped around => no slots available.
-      soft_assert( false );
-      return nullptr;
-    }
-
-    index = ( index + 1 ) % MAX_FRAGS;
+  int index = allocFragIndex();
+  if( index < 0 ) {
+    return nullptr;
   }
 
   Frag* frag = new Frag( pool, index, p, velocity );
   frags[1 + index] = frag;
 
-  lastFragIndex = index;
   return frag;
 }
 
@@ -235,11 +265,10 @@ void Orbis::remove( Struct* str )
 {
   hard_assert( str->index >= 0 );
 
-  pendingStructs[freeing].set( str->index );
-  structs[1 + str->index] = nullptr;
-
   const_cast<BSP*>( str->bsp )->release();
 
+  pendingStructs[freeing].set( str->index );
+  structs[1 + str->index] = nullptr;
   delete str;
 }
 
@@ -253,7 +282,6 @@ void Orbis::remove( Object* obj )
 
   pendingObjects[freeing].set( obj->index );
   objects[1 + obj->index] = nullptr;
-
   delete obj;
 }
 
@@ -263,7 +291,6 @@ void Orbis::remove( Frag* frag )
 
   pendingFrags[freeing].set( frag->index );
   frags[1 + frag->index] = nullptr;
-
   delete frag;
 }
 
@@ -398,41 +425,66 @@ void Orbis::read( const JSON& json )
   caelum.read( json["caelum"] );
   terra.read( json["terra"] );
 
-  for( const JSON& i : json["structs"].arrayCIter() ) {
-    String name    = i["bsp"].get( "" );
+  for( const JSON& json : json["structs"].arrayCIter() ) {
+    String name    = json["bsp"].get( "" );
     const BSP* bsp = liber.bsp( name );
 
-    const_cast<BSP*>( bsp )->request();
+    int index = allocStrIndex();
+    if( index >= 0 ) {
+      const_cast<BSP*>( bsp )->request();
 
-    Struct* str = new Struct( bsp, i );
+      Struct* str = new Struct( bsp, index, json );
+      position( str );
+      structs[1 + index] = str;
 
-    position( str );
-    structs[1 + str->index] = str;
+      // TODO bound objects
+    }
   }
 
-  for( const JSON& i : json["objects"].arrayCIter() ) {
-    String             name  = i["class"].get( "" );
+  for( const JSON& json : json["objects"].arrayCIter() ) {
+    String             name  = json["class"].get( "" );
     const ObjectClass* clazz = liber.objClass( name );
-    Object*            obj   = clazz->create( i );
-    Dynamic*           dyn   = static_cast<Dynamic*>( obj );
 
-    if( obj->flags & Object::LUA_BIT ) {
-      luaMatrix.registerObject( obj->index );
+    int index = allocObjIndex();
+    if( index >= 0 ) {
+      Object*  obj = clazz->create( index, json );
+      Dynamic* dyn = static_cast<Dynamic*>( obj );
+
+      if( obj->flags & Object::LUA_BIT ) {
+        luaMatrix.registerObject( obj->index );
+      }
+
+      if( !( obj->flags & Object::DYNAMIC_BIT ) || dyn->parent < 0 ) {
+        position( obj );
+      }
+      objects[1 + obj->index] = obj;
+
+      for( const JSON& itemJSON : json["items"].arrayCIter() ) {
+        String              name  = itemJSON["class"].get( "" );
+        const DynamicClass* clazz = static_cast<const DynamicClass*>( liber.objClass( name ) );
+
+        if( !( clazz->flags & Object::ITEM_BIT ) ) {
+          OZ_ERROR( "Inventory object '%s' is not an item", clazz->name.cstr() );
+        }
+        if( obj->items.length() >= obj->clazz->nItems ) {
+          OZ_ERROR( "Too many inventory items for '%s'", clazz->name.cstr() );
+        }
+
+        int index = allocObjIndex();
+        if( index >= 0 ) {
+          Dynamic* item = static_cast<Dynamic*>( clazz->create( index, itemJSON ) );
+
+          item->parent = obj->index;
+          obj->items.add( item->index );
+
+          if( item->flags & Object::LUA_BIT ) {
+            luaMatrix.registerObject( item->index );
+          }
+
+          objects[1 + item->index] = item;
+        }
+      }
     }
-
-    if( !( obj->flags & Object::DYNAMIC_BIT ) || dyn->parent < 0 ) {
-      position( obj );
-    }
-    objects[1 + obj->index] = obj;
-  }
-
-  for( const JSON& i : json["frags"].arrayCIter() ) {
-    String          name = i["pool"].get( "" );
-    const FragPool* pool = liber.fragPool( name );
-    Frag*           frag = new Frag( pool, i );
-
-    position( frag );
-    frags[1 + frag->index] = frag;
   }
 }
 
@@ -496,35 +548,35 @@ JSON Orbis::write() const
   json.add( "caelum", caelum.write() );
   json.add( "terra", terra.write() );
 
-  JSON& structsJSON = json.add( "structs", JSON::ARRAY );
+  Set<int> boundObjects;
+
+  JSON structsJSON = JSON::ARRAY;
+  JSON objectsJSON = JSON::ARRAY;
 
   for( int i = 0; i < MAX_STRUCTS; ++i ) {
-    Struct* str = structs[1 + i];
+    const Struct* str = structs[1 + i];
 
     if( str != nullptr ) {
       structsJSON.add( str->write() );
+
+      for( int j : str->boundObjects ) {
+        if( objects[1 + j] != nullptr ) {
+          boundObjects.add( j );
+        }
+      }
     }
   }
 
-  JSON& objectsJSON = json.add( "objects", JSON::ARRAY );
-
   for( int i = 0; i < MAX_OBJECTS; ++i ) {
-    Object* obj = objects[1 + i];
+    const Object* obj = objects[1 + i];
 
-    if( obj != nullptr ) {
+    if( obj != nullptr && obj->cell != nullptr && !boundObjects.contains( obj->index ) ) {
       objectsJSON.add( obj->write() );
     }
   }
 
-  JSON& fragsJSON = json.add( "frags", JSON::ARRAY );
-
-  for( int i = 0; i < MAX_FRAGS; ++i ) {
-    Frag* frag = frags[1 + i];
-
-    if( frag != nullptr ) {
-      fragsJSON.add( frag->write() );
-    }
-  }
+  json.add( "structs", static_cast<JSON&&>( structsJSON ) );
+  json.add( "objects", static_cast<JSON&&>( objectsJSON ) );
 
   return json;
 }

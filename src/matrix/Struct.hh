@@ -172,11 +172,11 @@ public:
 public:
 
   explicit Struct( const BSP* bsp, int index, const Point& p, Heading heading );
+  explicit Struct( const BSP* bsp, int index, const JSON& json );
   explicit Struct( const BSP* bsp, InputStream* is );
-  explicit Struct( const BSP* bsp, const JSON& json );
 
-  void write( OutputStream* os ) const;
   JSON write() const;
+  void write( OutputStream* os ) const;
 
   OZ_STATIC_POOL_ALLOC( pool )
 };

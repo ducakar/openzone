@@ -67,32 +67,32 @@ public:
    */
 
   // if object has Lua handlers
-  static const int LUA_BIT            = 0x00800000;
+  static const int LUA_BIT            = 0x01000000;
 
   // if the onDestroy method should be called on destruction
-  static const int DESTROY_FUNC_BIT   = 0x00400000;
+  static const int DESTROY_FUNC_BIT   = 0x00800000;
 
   // if the onUse function should be called when object is used
-  static const int USE_FUNC_BIT       = 0x00200000;
+  static const int USE_FUNC_BIT       = 0x00400000;
 
   // if the onUpdate method should be called on each tick
-  static const int UPDATE_FUNC_BIT    = 0x00100000;
+  static const int UPDATE_FUNC_BIT    = 0x00200000;
 
   // if the getStatus method should be called to retrieve status bar
-  static const int STATUS_FUNC_BIT    = 0x00080000;
+  static const int STATUS_FUNC_BIT    = 0x00100000;
 
   /*
    * BOUND OBJECTS
    */
 
   // if the object has an Device object in nirvana
-  static const int DEVICE_BIT         = 0x00040000;
+  static const int DEVICE_BIT         = 0x00080000;
 
   // if the object has an Imago object in frontend
-  static const int IMAGO_BIT          = 0x00020000;
+  static const int IMAGO_BIT          = 0x00040000;
 
   // if the object has an Audio object in frontend
-  static const int AUDIO_BIT          = 0x00010000;
+  static const int AUDIO_BIT          = 0x00020000;
 
   /*
    * STATE FLAGS
@@ -101,46 +101,46 @@ public:
   // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
   // in the world, so destruction effects can be processed by frontend (e.g. destruction sounds)
   // in the next tick the destroyed objects are actually removed
-  static const int DESTROYED_BIT      = 0x00008000;
+  static const int DESTROYED_BIT      = 0x00010000;
 
   /*
    * COLLISION & PHYSICS FLAGS
    */
 
   // other object can collide with the object
-  static const int SOLID_BIT          = 0x00004000;
+  static const int SOLID_BIT          = 0x00008000;
 
   // use cylinder model for collision between objects when both are flagged as cylinder
-  static const int CYLINDER_BIT       = 0x00002000;
+  static const int CYLINDER_BIT       = 0x00004000;
 
   // if the object is still and on a still surface, we won't handle physics for it
-  static const int DISABLED_BIT       = 0x00001000;
+  static const int DISABLED_BIT       = 0x00002000;
 
-  // force full physics update in the next step
-  static const int ENABLE_BIT         = 0x00000800;
+  // force full physics update in the next step even if the object should be disabled
+  static const int ENABLE_BIT         = 0x00001000;
 
   // if the object is has been sliding on a floor or on another object in last step
-  static const int FRICTING_BIT       = 0x00000400;
+  static const int FRICTING_BIT       = 0x00000800;
 
   // if the object has collided into another dynamic object from below (to prevent stacked
   // objects from being carried around)
-  static const int BELOW_BIT          = 0x00000200;
+  static const int BELOW_BIT          = 0x00000400;
 
   // if the object lies or moves on a structure, terrain or non-dynamic object
   // (if on another dynamic object, we determine that with "lower" index)
-  static const int ON_FLOOR_BIT       = 0x00000100;
+  static const int ON_FLOOR_BIT       = 0x00000200;
 
   // if the object is on slipping surface (not cleared if disabled)
-  static const int ON_SLICK_BIT       = 0x00000080;
+  static const int ON_SLICK_BIT       = 0x00000100;
 
   // if the object intersects with a liquid (not cleared if disabled)
-  static const int IN_LIQUID_BIT      = 0x00000040;
+  static const int IN_LIQUID_BIT      = 0x00000080;
 
   // if the object is in lava
-  static const int IN_LAVA_BIT        = 0x00000020;
+  static const int IN_LAVA_BIT        = 0x00000040;
 
   // if the object (bot in this case) is on ladder (not cleared if disabled)
-  static const int ON_LADDER_BIT      = 0x00000010;
+  static const int ON_LADDER_BIT      = 0x00000020;
 
   /*
    * RENDER FLAGS
@@ -164,7 +164,7 @@ public:
   static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT | IN_LAVA_BIT |
                                         ON_LADDER_BIT | ON_SLICK_BIT;
 
-  static const int   MAX_DIM          = 5;
+  static const int   MAX_DIM          = 4;
   static const float REAL_MAX_DIM;
 
 protected:
@@ -223,10 +223,10 @@ public:
    */
 
   Object*            prev[1];    // the previous object in cell.objects and list
-  Object*            next[1];    // the next object in cell.objects and list
+  Object*            next[1];    // the next object in cell->objects
 
   Cell*              cell;       // parent cell, nullptr if not positioned in the world
-  int                index;      // position in world.objects vector
+  int                index;      // index in orbis.objects
 
   int                flags;
 
@@ -235,10 +235,10 @@ public:
 
   const ObjectClass* clazz;
 
-  // events are used for reporting hits, friction & stuff and are cleared at the beginning of
-  // the matrix tick
+  // events are used for reporting hits, friction & stuff and are cleared at the beginning of a
+  // matrix update
   Chain<Event>       events;
-  // inventory of an object
+  // inventory
   List<int>          items;
 
 protected:
@@ -261,7 +261,6 @@ public:
 
   virtual ~Object();
 
-  // no copying
   Object( const Object& ) = delete;
   Object& operator = ( const Object& ) = delete;
 
@@ -332,11 +331,11 @@ public:
 public:
 
   explicit Object( const ObjectClass* clazz, int index, const Point& p, Heading heading );
+  explicit Object( const ObjectClass* clazz, int index, const JSON& json );
   explicit Object( const ObjectClass* clazz, InputStream* is );
-  explicit Object( const ObjectClass* clazz, const JSON& json );
 
-  virtual void write( OutputStream* os ) const;
   virtual JSON write() const;
+  virtual void write( OutputStream* os ) const;
 
   virtual void readUpdate( InputStream* is );
   virtual void writeUpdate( OutputStream* os ) const;

@@ -101,8 +101,8 @@ public:
   virtual void init( const JSON& config, const char* name );
 
   virtual Object* create( int index, const Point& pos, Heading heading ) const;
+  virtual Object* create( int index, const JSON& json ) const;
   virtual Object* create( InputStream* is ) const;
-  virtual Object* create( const JSON& json ) const;
 
 };
 

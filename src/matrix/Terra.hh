@@ -76,11 +76,11 @@ public:
   void load( int id );
   void init();
 
-  void read( InputStream* is );
-  void write( OutputStream* os ) const;
-
   void read( const JSON& json );
+  void read( InputStream* is );
+
   JSON write() const;
+  void write( OutputStream* os ) const;
 
 };
 

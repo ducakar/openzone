@@ -70,6 +70,10 @@ private:
 
 private:
 
+  int allocStrIndex() const;
+  int allocObjIndex() const;
+  int allocFragIndex() const;
+
   bool position( Struct* str );
   void unposition( Struct* str );
 
