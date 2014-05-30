@@ -15,7 +15,7 @@
   "stamina":            150,
   "regeneration":       0.5,
 
-  "nameList":           "wesnoth.troll-male",
+  "nameFunc":           "hobgoblinName",
   "mind":               "beastie",
 
   "nItems":             8,

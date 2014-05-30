@@ -25,7 +25,6 @@
 
 #include <common/Timer.hh>
 #include <matrix/LuaMatrix.hh>
-#include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Vehicle.hh>
@@ -246,7 +245,6 @@ void Matrix::init()
   Log::indent();
 
   luaMatrix.init();
-  namePool.init();
   orbis.init();
 
   Log::unindent();
@@ -259,7 +257,6 @@ void Matrix::destroy()
   Log::indent();
 
   orbis.destroy();
-  namePool.destroy();
   luaMatrix.destroy();
 
   Log::unindent();

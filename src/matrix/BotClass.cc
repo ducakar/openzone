@@ -164,7 +164,7 @@ void BotClass::init( const JSON& config, const char* name_ )
     flags |= Object::LUA_BIT;
   }
 
-  nameList          = liber.nameListIndex( config["nameList"].get( "" ) );
+  nameFunc          = config["nameFunc"].get( "" );
   mind              = config["mind"].get( "" );
 
   bobRotation       = Math::rad( config["bobRotation"].get( 0.35f ) );

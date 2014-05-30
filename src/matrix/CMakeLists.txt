@@ -14,7 +14,6 @@ add_library( matrix STATIC
   luaapi.hh
   LuaMatrix.hh
   Matrix.hh
-  NamePool.hh
   ObjectClass.hh
   Object.hh
   Orbis.hh
@@ -39,7 +38,6 @@ add_library( matrix STATIC
   luaapi.cc
   LuaMatrix.cc
   Matrix.cc
-  NamePool.cc
   Object.cc
   ObjectClass.cc
   Orbis.cc

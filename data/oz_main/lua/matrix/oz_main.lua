@@ -349,3 +349,138 @@ function shell_onUpdate( l )
     ozObjDestroy()
   end
 end
+
+--
+-- Name generators
+--
+
+Names = {
+  random = function( list )
+    return list[ math.random( #list ) ]
+  end,
+
+  troll = {
+    first = {
+      "Äg", "Agh", "Bog", "Borb", "Brag", "Brok", "Dak", "Drog", "Frok", "Ga", "Gark", "Gnarf",
+      "Grar", "Grokk", "Grumph", "Gulk", "Hak", "Hask", "Hoth", "Hug", "Hu", "Kak", "Kar", "Krak",
+      "Krug", "Kub", "Lok", "Luk", "Nak", "Nuk", "Pag", "Reck", "Rok", "Ruk", "Sark", "Shak",
+      "Shuf", "Targ", "Thog", "Thruf", "Thur", "Tohg", "Torg", "Trok", "Tsok", "Tuk", "Ugg", "Urg",
+      "Urgh", "Urk", "Vak", "Zog", "Zuug"
+    },
+    sex = {
+      "'koh", "'keh"
+    },
+    last = {
+      "Äh", "Bah", "Goh", "Gah", "Kah", "Kuh", "Ruh", "Stuh", "Tuh", "Üh"
+    }
+  },
+
+  lizard = {
+    first = {
+      "Amprixta", "Anexir", "Anitraz", "Axiz", "Bzz'Kza", "Chamil", "Cleezi", "Clezz", "Fazzis",
+      "Flixta", "Flizzil", "Frikes", "Frizzle", "Hasz", "Heffez", "Hertrazzir", "Hesz", "Hezzir",
+      "Hezzis", "Inexis", "Jizz", "Kaliez", "Kepzs", "Kersezz", "Kertrasz", "Kezz", "Klexaz",
+      "Krisess", "Lazki", "Lixeez", "Mexiss", "Moxanzz", "Naxisz", "Pekzs", "Plaxis", "Presch",
+      "Sailik", "Salik", "Saprazz", "Satras", "Skeely", "Sklizle", "Skrez", "Sprizz", "Ssexur",
+      "Ssizer", "Sszasz", "Sterizz", "Talerez", "Tezzaz", "Tirasch", "Trezz", "Venezz", "Vriss",
+      "Waks", "Xaffrasz", "Xartrez", "Xasz", "Xirasz", "Xirr", "Xirtras", "Xirtrez", "Xirz",
+      "Zandler", "Zizzasz", "Zslap", "Zzalkz", "Zzupde"
+    },
+    last = {
+      "Arix", "Fizztrax", "Hix", "Irix", "Jezzix", "Kernix", "Kerx", "Kerxenix", "Klezyx", "Krarax",
+      "Krenarex", "Krex", "Krinex", "Laizix", "Merax", "Nix", "Plesix", "Salanix", "Sandix",
+      "Skalix", "Skandix", "Skazix", "Skeezix", "Slizilx", "Ssorix", "Tarex", "Tarnix", "Tirax",
+      "Tirix", "Xaztex", "Xerxix", "Zedrix", "Zilrix",
+    }
+  },
+
+  human = {
+    "Addræcyn", "Addrænvan", "Addrær", "Addrærcyn", "Addraryn", "Addreddry", "Addredry",
+    "Addregwyn", "Addrenyc", "Addreoddry", "Addreoddyn", "Addreonyc", "Addreorcyn", "Addreran",
+    "Addribryn", "Addriddyn", "Addrocyn", "Addroryn", "Addrunvan", "Addrurcyn", "Addryllyn",
+    "Addrynvan", "Æthacyn", "Æthadry", "Æthæc", "Æthæran", "Æthæryn", "Æthagwyn", "Æthanry",
+    "Ætharcyn", "Æthec", "Æthellyn", "Æthenvan", "Ætheoc", "Ætheollyn", "Ætheonyc", "Ætheorcyn",
+    "Æthercyn", "Ætherrænt", "Æthibryn", "Æthiddry", "Æthircyn", "Æthobryn", "Æthoddyn", "Æthonnyn",
+    "Æthuc", "Æthudry", "Æthugwyn", "Æthun", "Æthunry", "Æthydry", "Æthynyc", "Blac", "Bladoc",
+    "Blæc", "Blædry", "Blanry", "Blebryn", "Bledoc", "Blemyr", "Blennyn", "Blenvan", "Bleollyn",
+    "Blercyn", "Blidd", "Bliddry", "Blillyn", "Blinvan", "Blollyn", "Blubryn", "Blucyn", "Bludry",
+    "Blullyn", "Bluran", "Blybryn", "Blydd", "Blygwyn", "Blymyr", "Blyr", "Bucyn", "Cac", "Cadry",
+    "Cæbryn", "Cædry", "Cæran", "Cærcyn", "Car", "Carac", "Caraddry", "Caradoc", "Carædry",
+    "Carænnyn", "Cararyn", "Caredd", "Careddry", "Caregwyn", "Caren", "Careobryn", "Careogwyn",
+    "Careonvan", "Careorrænt", "Careoryn", "Carercyn", "Caric", "Cariddry", "Carocyn", "Caroddyn",
+    "Caror", "Caroran", "Carrænt", "Carudoc", "Carullyn", "Carygwyn", "Caryn", "Cebryn", "Cemyr",
+    "Cennyn", "Ceoc", "Ceoddry", "Ceoddyn", "Ceomyr", "Ceonnyn", "Ceonry", "Ceoryn", "Cicyn", "Cin",
+    "Cinry", "Coc", "Convan", "Corcyn", "Cubryn", "Cunry", "Curyn", "Cynyc", "Cyryn", "Dac", "Dadd",
+    "Dadoc", "Dæddry", "Dædoc", "Dællyn", "Demyr", "Denvan", "Deodd", "Deollyn", "Deonyc",
+    "Derrænt", "Dibryn", "Dinnyn", "Dircyn", "Dycyn", "Dyddyn", "Gaddry", "Gæbryn", "Gædry",
+    "Gærcyn", "Gagwyn", "Gan", "Gannyn", "Gar", "Gecyn", "Geddyn", "Gegwyn", "Geodry", "Ginvan",
+    "Glacyn", "Gladoc", "Glærcyn", "Glarrænt", "Gleddry", "Gleoddyn", "Gleran", "Gliddyn",
+    "Glillyn", "Glinry", "Glircyn", "Gloddry", "Gloddyn", "Glonry", "Glonvan", "Glumyr", "Glun",
+    "Glunry", "Glunvan", "Glyc", "Glydd", "Glydoc", "Glynry", "Glynvan", "Glyran", "Goc", "Gor",
+    "Gubryn", "Gudd", "Gullyn", "Gumyr", "Gur", "Gwadoc", "Gwæc", "Gwæddyn", "Gwan", "Gweddyn",
+    "Gwegwyn", "Gwellyn", "Gwennyn", "Gwenyc", "Gweocyn", "Gweodd", "Gweodoc", "Gweodry",
+    "Gweogwyn", "Gweoran", "Gwidoc", "Gwilam", "Gwodd", "Gwoddyn", "Gwollyn", "Gwor", "Gwucyn",
+    "Gwudoc", "Gwumyr", "Gwuran", "Gwybryn", "Gwycyn", "Gwyddry", "Gwydoc", "Gwymyr", "Gwynnyn",
+    "Gydoc", "Gyllyn", "Gymyr", "Haldar", "Labryn", "Ladoc", "Lællyn", "Lan", "Lannyn", "Laran",
+    "Lec", "Lemyr", "Lenvan", "Leogwyn", "Lercyn", "Ligwyn", "Lin", "Liryn", "Lonnyn", "Lorrænt",
+    "Luddry", "Ludoc", "Lunnyn", "Lunvan", "Lurrænt", "Mac", "Maddyn", "Mænnyn", "Manry", "Manyc",
+    "Marcyn", "Mec", "Menvan", "Meollyn", "Meon", "Meonnyn", "Meorrænt", "Middry", "Midry", "Mimyr",
+    "Modd", "Moddry", "Monry", "Moran", "Morcyn", "Mubryn", "Mudoc", "Mugwyn", "Murcyn", "Mydoc",
+    "Mygwyn", "Myn", "Myrrænt", "Owac", "Owadd", "Owaddyn", "Owæcyn", "Owædry", "Owain", "Owarcyn",
+    "Owaryn", "Owecyn", "Owedry", "Oweomyr", "Oweor", "Oweorcyn", "Oweran", "Owercyn", "Owidry",
+    "Owinvan", "Owinyc", "Owodd", "Owoddry", "Owogwyn", "Owollyn", "Oworan", "Oworcyn", "Oworrænt",
+    "Owuddry", "Owuddyn", "Owugwyn", "Owur", "Owyran", "Rabryn", "Radd", "Ranvan", "Rar", "Reoddyn",
+    "Reodry", "Rhæcyn", "Rhædoc", "Rhæmyr", "Rhærrænt", "Rhanry", "Rharcyn", "Rhenry", "Rhenvan",
+    "Rhenyc", "Rheodd", "Rheoddyn", "Rheollyn", "Rheor", "Rheoran", "Rheorrænt", "Rheran",
+    "Rherrænt", "Rhobryn", "Rhodry", "Rhollyn", "Rhonvan", "Rhubryn", "Rhugwyn", "Rhunyc", "Rhur",
+    "Rhygwyn", "Rhyllyn", "Rhynyc", "Rhyrcyn", "Rhyrrænt", "Rocyn", "Roddyn", "Romyr", "Ron",
+    "Ronry", "Rubryn", "Ruddry", "Rumyr", "Run", "Rurcyn", "Rybryn", "Rycyn", "Ryddry", "Rygwyn",
+    "Rynnyn", "Rynry", "Sæc", "Sællyn", "Sæmyr", "Sænvan", "Særcyn", "Sanyc", "Saran", "Sarrænt",
+    "Secyn", "Seddyn", "Sedry", "Sellyn", "Sennyn", "Seoddry", "Seorcyn", "Sercyn", "Siddry",
+    "Simyr", "Siryn", "Sodd", "Sodry", "Soran", "Suc", "Sudd", "Surcyn", "Sydd", "Syran", "Syryn",
+    "Tabryn", "Tæc", "Tædd", "Tædoc", "Tæmyr", "Tænvan", "Tærcyn", "Tanry", "Tarcyn", "Teddyn",
+    "Tegwyn", "Ten", "Tennyn", "Tenvan", "Teobryn", "Teoddyn", "Teor", "Teorcyn", "Terrænt",
+    "Tinry", "Tinvan", "Tiryn", "Todd", "Tudd", "Tuddry", "Tudoc", "Tunvan", "Turrænt", "Tyddyn",
+    "Vaddyn", "Væddyn", "Vædry", "Vænnyn", "Varcyn", "Ven", "Vennyn", "Veocyn", "Veoddyn", "Veodry",
+    "Veogwyn", "Veomyr", "Vinvan", "Vinyc", "Virrænt", "Vobryn", "Vogwyn", "Vonry", "Vuddyn",
+    "Vugwyn", "Vyc", "Vygwyn", "Vyrcyn", "Yracyn", "Yræc", "Yran", "Yrannyn", "Yranvan", "Yraryn",
+    "Yredd", "Yreddyn", "Yregwyn", "Yreryn", "Yrinvan", "Yrirrænt", "Yroddry", "Yrullyn", "Yrumyr",
+    "Yrunnyn", "Yrunvan", "Yryllyn", "Yrymyr", "Yrynyc", "Yryrcyn"
+  },
+
+  ogre = {
+    "Akoark", "Akort", "Akzalk", "Arkarm", "Barkuk", "Blokkar", "Borkuk", "Bukkak", "Bulruk",
+    "Corkkar", "Delkkak", "Garkuk", "Gnukk", "Goruk", "Grak", "Gurk", "Gurm", "Kalknix", "Karak",
+    "Karbuk", "Kargnak", "Karterak", "Kayrak", "Kelkrar", "Kerta", "Kilkrar", "Kingrok", "Kirk",
+    "Klud", "Kokkan", "Kolk", "Komak", "Korgnak", "Kork", "Koruck", "Kramak", "Krog", "Krukrak",
+    "Krumuk", "Kuknuk", "Kurkur", "Kurmak", "Makron", "Markaak", "Markuk", "Merknik", "Nargak",
+    "Olk", "Orkut", "Reknak", "Takolak", "Trabuk", "Trakkon", "Urkar", "Urkark"
+  }
+}
+
+function hobgoblinName()
+  return Names.random( Names.troll.first ) .. Names.random( Names.troll.sex ) ..
+      " " .. Names.random( Names.troll.last )
+end
+
+function lizardName()
+  return Names.random( Names.lizard.first ) .. " " .. Names.random( Names.lizard.last )
+end
+
+function humanName()
+  return Names.random( Names.human )
+end
+
+function ogreName()
+  return Names.random( Names.ogre )
+end
+
+function droidName()
+  return string.char( math.random( 65, 90 ), math.random( 65, 90 ) ) .. "-" ..
+      math.random( 0, 9 ) .. math.random( 0, 9 ) .. math.random( 0, 9 )
+end
+
+function cyborgName()
+  return Names.random( Names.troll.first ) .. "-" ..
+      string.char( math.random( 86, 90 ) ) .. math.random( 0, 9 ) .. math.random( 0, 9 )
+end

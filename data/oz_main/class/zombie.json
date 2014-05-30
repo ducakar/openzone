@@ -12,7 +12,7 @@
   "camZ":               0.79,
   "crouchCamZ":         0.69,
 
-  "nameList":           "wesnoth.ogre-male",
+  "nameFunc":           "ogreName",
   "mind":               "randomWalk",
 
   "nItems":             4,

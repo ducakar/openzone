@@ -25,7 +25,6 @@
 
 #include <common/Timer.hh>
 #include <matrix/LuaMatrix.hh>
-#include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
 
@@ -1161,7 +1160,7 @@ Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) 
 
   camZ       = clazz_->camZ;
 
-  name       = namePool.genName( clazz_->nameList );
+  name       = luaMatrix.nameGenCall( clazz_->nameFunc );
   mind       = clazz_->mind;
 }
 

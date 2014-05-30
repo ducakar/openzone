@@ -22,7 +22,7 @@
   "grabWeight":         1500,
   "throwMomentum":      9,
 
-  "nameList":           "wesnoth.troll-male",
+  "nameFunc":           "cyborgName",
   "mind":               "beastie",
 
   "nItems":             8,

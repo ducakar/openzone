@@ -12,7 +12,7 @@
   "camZ":               0.79,
   "crouchCamZ":         0.69,
 
-  "nameList":           "wesnoth.human-male",
+  "nameFunc":           "humanName",
   "mind":               "predator",
 
   "nItems":             8,

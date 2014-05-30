@@ -17,7 +17,7 @@
 
   "grabWeight":         1000,
 
-  "nameList":           "wesnoth.drake-male",
+  "nameFunc":           "droidName",
   "mind":               "droid_basic",
 
   "nItems":             8,

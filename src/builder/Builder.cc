@@ -66,7 +66,6 @@ void Builder::printUsage( const char* invocationName )
     "  -p         Scan and copy particle class definitions.\n"
     "  -m         Build models.\n"
     "  -s         Copy referenced sounds (by UI, BSPs and object classes).\n"
-    "  -n         Copy name lists.\n"
     "  -x         Check and copy Lua scripts.\n"
     "  -v         Copy nirvana configuration files.\n"
     "  -r         Copy music tracks.\n"
@@ -656,7 +655,6 @@ int Builder::main( int argc, char** argv )
   bool doParticles    = false;
   bool doModels       = false;
   bool doSounds       = false;
-  bool doNames        = false;
   bool doLua          = false;
   bool doNirvana      = false;
   bool doMusic        = false;
@@ -668,7 +666,7 @@ int Builder::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbeafpmsnxvriARCZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbeafpmsxvriARCZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -718,10 +716,6 @@ int Builder::main( int argc, char** argv )
         doSounds = true;
         break;
       }
-      case 'n': {
-        doNames = true;
-        break;
-      }
       case 'x': {
         doLua = true;
         break;
@@ -751,7 +745,6 @@ int Builder::main( int argc, char** argv )
         doParticles = true;
         doModels    = true;
         doSounds    = true;
-        doNames     = true;
         doLua       = true;
         doNirvana   = true;
         doMusic     = true;
@@ -889,9 +882,6 @@ int Builder::main( int argc, char** argv )
   }
   if( doSounds ) {
     copySounds();
-  }
-  if( doNames ) {
-    copyFiles( "@name", "name", "txt", false );
   }
   if( doLua ) {
     checkLua( "@lua/common" );

@@ -33,6 +33,35 @@ namespace oz
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
 static LuaMatrix& lua = luaMatrix;
 
+String LuaMatrix::nameGenCall( const char* functionName )
+{
+  ms.self         = nullptr;
+  ms.user         = nullptr;
+  ms.obj          = nullptr;
+  ms.str          = nullptr;
+  ms.frag         = nullptr;
+  ms.objIndex     = 0;
+  ms.strIndex     = 0;
+
+  hard_assert( l_gettop() == 1 );
+
+  String name = "";
+
+  l_getglobal( functionName );
+
+  if( l_pcall( 0, 1 ) != LUA_OK ) {
+    Log::println( "Lua[M] in %s(): %s", functionName, l_tostring( -1 ) );
+    System::bell();
+  }
+  else {
+    name = l_tostring( 2 );
+  }
+
+  l_settop( 1 );
+
+  return name;
+}
+
 bool LuaMatrix::objectCall( const char* functionName, Object* self, Bot* user )
 {
   ms.self         = self;

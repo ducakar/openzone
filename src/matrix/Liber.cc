@@ -46,7 +46,6 @@ static HashMap<String, int>                      terraIndices;
 static HashMap<String, int>                      partIndices;
 static HashMap<String, int>                      modelIndices;
 
-static HashMap<String, int>                      nameListIndices;
 static HashMap<String, int>                      mindIndices;
 static HashMap<String, int>                      musicTrackIndices;
 
@@ -178,20 +177,6 @@ int Liber::modelIndex( const char* name ) const
 
   if( value == nullptr ) {
     OZ_ERROR( "Invalid model index requested '%s'", name );
-  }
-  return *value;
-}
-
-int Liber::nameListIndex( const char* name ) const
-{
-  if( String::isEmpty( name ) ) {
-    return -1;
-  }
-
-  const int* value = nameListIndices.find( name );
-
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid name list index requested '%s'", name );
   }
   return *value;
 }
@@ -483,32 +468,6 @@ void Liber::initModels()
   Log::println( "}" );
 }
 
-void Liber::initNameLists()
-{
-  Log::println( "Name lists (*.txt in 'name') {" );
-  Log::indent();
-
-  File dir = "@name";
-
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "txt" ) ) {
-      continue;
-    }
-
-    String name = file.baseName();
-
-    Log::println( "%s", name.cstr() );
-
-    nameListIndices.add( name, nameLists.length() );
-    nameLists.add( { name, file.path() } );
-  }
-
-  nameLists.trim();
-
-  Log::unindent();
-  Log::println( "}" );
-}
-
 void Liber::initMinds()
 {
   Log::println( "Mind automata (*.json in 'nirvana/mind') {" );
@@ -525,7 +484,7 @@ void Liber::initMinds()
 
     Log::println( "%s", name.cstr() );
 
-    nameListIndices.add( name, minds.length() );
+    mindIndices.add( name, minds.length() );
     minds.add( { name, file.path() } );
   }
 
@@ -785,7 +744,6 @@ void Liber::init( const char* userMusicPath )
   initCaela();
   initTerrae();
   initModels();
-  initNameLists();
   initFragPools();
   initClasses();
   initBSPs();
@@ -807,7 +765,6 @@ void Liber::init( const char* userMusicPath )
   Log::println( "%5d  BSPs", nBSPs );
   Log::println( "%5d  models", models.length() );
   Log::println( "%5d  music tracks", musicTracks.length() );
-  Log::println( "%5d  name lists", nameLists.length() );
   Log::println( "%5d  fragment pools", fragPools.length() );
   Log::println( "%5d  object classes", objClasses.length() );
 
@@ -832,8 +789,6 @@ void Liber::destroy()
   terrae.trim();
   models.clear();
   models.trim();
-  nameLists.clear();
-  nameLists.trim();
   minds.clear();
   minds.trim();
   musicTracks.clear();
@@ -851,8 +806,6 @@ void Liber::destroy()
   terraIndices.trim();
   modelIndices.clear();
   modelIndices.trim();
-  nameListIndices.clear();
-  nameListIndices.trim();
   mindIndices.clear();
   mindIndices.trim();
   musicTrackIndices.clear();

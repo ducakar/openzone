@@ -30,7 +30,7 @@
   "grabWeight":         inf,
   "throwMomentum":      10,
 
-  "nameList":           "bogovi",
+  "nameFunc":           "ogreName",
   "mind":               "",
 
   "nItems":             16,

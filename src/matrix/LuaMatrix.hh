@@ -41,6 +41,7 @@ public:
 
 public:
 
+  String nameGenCall( const char* functionName );
   bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
 
   void registerObject( int index );

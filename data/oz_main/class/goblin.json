@@ -31,7 +31,7 @@
   "grabWeight":         500,
   "throwMomentum":      6,
 
-  "nameList":           "wesnoth.lizard-male",
+  "nameFunc":           "lizardName",
   "mind":               "prey",
 
   "nItems":             4,

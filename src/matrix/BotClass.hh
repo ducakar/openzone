@@ -82,8 +82,7 @@ public:
   float  meleeInterval;
   String onMelee;
 
-  int    nameList;
-
+  String nameFunc;
   String mind;
   int    mindAutomaton;
 

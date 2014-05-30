@@ -49,7 +49,6 @@ public:
   List<Resource> terrae;
   List<Resource> parts;
   List<Resource> models;
-  List<Resource> nameLists;
   List<Resource> minds;
   List<Resource> musicTracks;
 
@@ -74,7 +73,6 @@ public:
   int partIndex( const char* name ) const;
   int modelIndex( const char* name ) const;
 
-  int nameListIndex( const char* name ) const;
   int mindIndex( const char* name ) const;
   int musicTrackIndex( const char* name ) const;
 
@@ -93,7 +91,6 @@ private:
   void initTerrae();
   void initParticles();
   void initModels();
-  void initNameLists();
   void initMinds();
   void initFragPools();
   void initClasses();
