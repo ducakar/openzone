@@ -52,24 +52,24 @@ private:
 public:
 
   /**
-   * Create uninitialised instance.
+   * Create and initialise semaphore.
    */
-  explicit Semaphore();
+  Semaphore();
 
   /**
-   * Destructor, destroys semaphore if initialised.
+   * Destroy semaphore.
    */
   ~Semaphore();
 
   /**
-   * Move constructor.
+   * Copying or moving is not possible.
    */
-  Semaphore( Semaphore&& b );
+  Semaphore( const Semaphore& ) = delete;
 
   /**
-   * Move operator.
+   * Copying or moving is not possible.
    */
-  Semaphore& operator = ( Semaphore&& b );
+  Semaphore& operator = ( const Semaphore& ) = delete;
 
   /**
    * True iff initialised.
@@ -101,22 +101,6 @@ public:
    * @return True iff counter was decremented.
    */
   bool tryWait() const;
-
-  /**
-   * Initialise semaphore.
-   *
-   * Initialising an already initialised semaphore is an error.
-   *
-   * @param counter initial counter value.
-   */
-  void init( int counter = 0 );
-
-  /**
-   * Destroy semaphore and release resources.
-   *
-   * Destroying uninitialised semaphore is a legal NOP.
-   */
-  void destroy();
 
 };
 

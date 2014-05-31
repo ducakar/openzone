@@ -60,7 +60,7 @@ static pthread_t      mainThread = pthread_self();
 struct MainThreadNameInitialiser
 {
   OZ_HIDDEN
-  explicit MainThreadNameInitialiser()
+  MainThreadNameInitialiser()
   {
 #ifdef _WIN32
     nameKey = TlsAlloc();
@@ -198,24 +198,6 @@ Thread::~Thread()
   }
 }
 
-Thread::Thread( Thread&& t ) :
-  descriptor( t.descriptor )
-{
-  t.descriptor = nullptr;
-}
-
-Thread& Thread::operator = ( Thread&& t )
-{
-  if( &t == this ) {
-    return *this;
-  }
-
-  descriptor   = t.descriptor;
-  t.descriptor = nullptr;
-
-  return *this;
-}
-
 void Thread::start( const char* name, Type type, Main* main, void* data )
 {
   if( descriptor != nullptr ) {
@@ -261,7 +243,6 @@ void Thread::start( const char* name, Type type, Main* main, void* data )
     }
 
     pthread_attr_destroy( &attrib );
-
     descriptor = nullptr;
   }
 

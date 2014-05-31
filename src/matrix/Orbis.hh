@@ -269,6 +269,7 @@ public:
 
   void read( InputStream* is );
   void read( const JSON& json );
+  int readObject( const JSON& json );
 
   void write( OutputStream* os ) const;
   JSON write() const;

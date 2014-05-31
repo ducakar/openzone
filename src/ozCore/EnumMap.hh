@@ -28,11 +28,88 @@
 
 #pragma once
 
-#include "System.hh"
-#include "String.hh"
+#include "common.hh"
 
 namespace oz
 {
+
+/**
+ * Internal EnumMap implementation.
+ */
+namespace detail
+{
+
+class EnumMapImpl
+{
+protected:
+
+  /**
+   * EnumMap entry.
+   */
+  struct Entry
+  {
+    int         value; ///< Enumerator value as integer.
+    const char* name;  ///< Enumerator value name.
+  };
+
+  Entry* entries;  ///< %Map of entries.
+  int    nEntries; ///< Number of map entries.
+
+public:
+
+  /**
+   * Create enumerator mapping from an array.
+   */
+  EnumMapImpl( InitialiserList<Entry> l );
+
+  /**
+   * Destructor
+   */
+  ~EnumMapImpl();
+
+  /**
+   * No copying.
+   */
+  EnumMapImpl( const EnumMapImpl& ) = delete;
+
+  /**
+   * No copying.
+   */
+  EnumMapImpl& operator = ( const EnumMapImpl& ) = delete;
+
+  /**
+   * Return first enumerator value in the map.
+   */
+  int defaultValue() const;
+
+  /**
+   * Return first name in the map.
+   */
+  const char* defaultName() const;
+
+  /**
+   * True iff a given enumerator value exists in the map.
+   */
+  bool has( int value ) const;
+
+  /**
+   * True iff a given name exists in the map.
+   */
+  bool has( const char* name ) const;
+
+  /**
+   * Return name for a enumerator value or invoke `System::error()` on an invalid value.
+   */
+  const char* operator [] ( int value ) const;
+
+  /**
+   * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
+   */
+  int operator[] ( const char* name ) const;
+
+};
+
+}
 
 /**
  * %Map between enumerator values and their string representations.
@@ -54,97 +131,23 @@ namespace oz
  * @endcode
  */
 template <class Enum = int>
-class EnumMap
+class EnumMap : public detail::EnumMapImpl
 {
-private:
-
-  /**
-   * EnumMap entry.
-   */
-  struct Entry
-  {
-    int         value; ///< Enumerator value as integer.
-    const char* name;  ///< Enumerator value name.
-  };
-
-  Entry* entries;  ///< %Map entries.
-  int    nEntries; ///< Number of map entries.
-
 public:
 
   /**
-   * Create enumerator mapping from an array.
+   * Create enumerator mapping from an initialiser list.
    */
   EnumMap( InitialiserList<Entry> l ) :
-    entries( new Entry[ l.size() ] ), nEntries( int( l.size() ) )
-  {
-    hard_assert( l.size() != 0 );
-
-    aCopy<Entry>( l.begin(), int( l.size() ), entries );
-  }
-
-  /**
-   * Destructor
-   */
-  ~EnumMap()
-  {
-    delete[] entries;
-  }
+    EnumMapImpl( l )
+  {}
 
   /**
    * Return first enumerator value in the map.
    */
   Enum defaultValue() const
   {
-    return Enum( entries[0].value );
-  }
-
-  /**
-   * Return first name in the map.
-   */
-  const char* defaultName() const
-  {
-    return entries[0].name;
-  }
-
-  /**
-   * True iff a given enumerator value exists in the map.
-   */
-  bool has( Enum value ) const
-  {
-    for( int i = 0; i < nEntries; ++i ) {
-      if( entries[i].value == value ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * True iff a given name exists in the map.
-   */
-  bool has( const char* name ) const
-  {
-    for( int i = 0; i < nEntries; ++i ) {
-      if( String::equals( entries[i].name, name ) ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Return name for a enumerator value or invoke `System::error()` on an invalid value.
-   */
-  const char* operator [] ( Enum value ) const
-  {
-    for( int i = 0; i < nEntries; ++i ) {
-      if( entries[i].value == value ) {
-        return entries[i].name;
-      }
-    }
-
-    OZ_ERROR( "oz::EnumMap: Invalid value %d", value );
+    return Enum( EnumMapImpl::defaultValue() );
   }
 
   /**
@@ -152,13 +155,7 @@ public:
    */
   Enum operator[] ( const char* name ) const
   {
-    for( int i = 0; i < nEntries; ++i ) {
-      if( String::equals( entries[i].name, name ) ) {
-        return Enum( entries[i].value );
-      }
-    }
-
-    OZ_ERROR( "oz::EnumMap: Invalid name '%s'", name );
+    return Enum( EnumMapImpl::operator [] ( name ) );
   }
 
 };

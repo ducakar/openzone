@@ -59,7 +59,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3() = default;
+  Mat3() = default;
 
   /**
    * Create matrix with given columns.

@@ -78,7 +78,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit Math() = delete;
+  Math() = delete;
 
   /**
    * Round to the nearest integer towards negative infinity.

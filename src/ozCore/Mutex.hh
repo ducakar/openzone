@@ -49,24 +49,24 @@ private:
 public:
 
   /**
-   * Create uninitialised instance.
+   * Create and initialise mutex.
    */
-  explicit Mutex();
+  Mutex();
 
   /**
-   * Destructor, destroys mutex if initialised.
+   * Destroy mutex.
    */
   ~Mutex();
 
   /**
-   * Move constructor.
+   * Copying or moving is not possible.
    */
-  Mutex( Mutex&& m );
+  Mutex( const Mutex& ) = delete;
 
   /**
-   * Move operator.
+   * Copying or moving is not possible.
    */
-  Mutex& operator = ( Mutex&& m );
+  Mutex& operator = ( const Mutex& ) = delete;
 
   /**
    * True iff initialised.
@@ -102,20 +102,6 @@ public:
    * Unlocking an unlocked mutex results in undefined behaviour.
    */
   void unlock() const;
-
-  /**
-   * Initialise mutex.
-   *
-   * Initialising an already initialised mutex is an error.
-   */
-  void init();
-
-  /**
-   * Destroy mutex and release resources.
-   *
-   * Destroying uninitialised mutex is a legal NOP.
-   */
-  void destroy();
 
 };
 

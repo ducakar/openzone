@@ -250,8 +250,7 @@ void EditStage::load()
   loader.load();
 
   isAuxAlive = true;
-  mainSemaphore.init( 1 );
-  auxSemaphore.init( 0 );
+  mainSemaphore.post();
   auxThread.start( "aux", Thread::JOINABLE, auxMain );
 
   ui::ui.showLoadingScreen( false );
@@ -289,9 +288,6 @@ void EditStage::unload()
 
   nirvana.unload();
   matrix.unload();
-
-  auxSemaphore.destroy();
-  mainSemaphore.destroy();
 
   ui::ui.showLoadingScreen( false );
 

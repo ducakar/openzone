@@ -663,9 +663,6 @@ void Render::load()
 
   areEffectsAlive = true;
 
-  effectsMainSemaphore.init();
-  effectsAuxSemaphore.init();
-
   effectsThread.start( "effects", Thread::JOINABLE, effectsMain );
 
   structs.reserve( 64 );
@@ -709,9 +706,6 @@ void Render::unload()
 
   effectsAuxSemaphore.post();
   effectsThread.join();
-
-  effectsAuxSemaphore.destroy();
-  effectsMainSemaphore.destroy();
 
   ui::ui.unload();
 

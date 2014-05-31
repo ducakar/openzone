@@ -79,7 +79,7 @@ public:
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    explicit ChunkCIterator() :
+    ChunkCIterator() :
       IteratorBase<const ChunkInfo>( nullptr )
     {}
 
@@ -139,7 +139,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit Alloc() = delete;
+  Alloc() = delete;
 
   /**
    * Create iterator for iterating over allocated objects.

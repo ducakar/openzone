@@ -56,6 +56,7 @@
     * melee attack
     * new vehicle types: turret, mech warrior
     * reverted from binary stream to JSON format for object classes and fragment pools
+    * name lists replaced by name generator scripts
 - nirvana
     * Technology graph
 - ui

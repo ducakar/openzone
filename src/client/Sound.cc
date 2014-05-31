@@ -809,11 +809,6 @@ void Sound::init()
   isMusicAlive = true;
   isSoundAlive = true;
 
-  musicMainSemaphore.init();
-  musicAuxSemaphore.init();
-  soundMainSemaphore.init();
-  soundAuxSemaphore.init();
-
   musicThread.start( "music", Thread::JOINABLE, musicMain );
   soundThread.start( "sound", Thread::JOINABLE, soundMain );
 
@@ -841,11 +836,6 @@ void Sound::destroy()
   musicAuxSemaphore.post();
   soundThread.join();
   musicThread.join();
-
-  soundAuxSemaphore.destroy();
-  soundMainSemaphore.destroy();
-  musicAuxSemaphore.destroy();
-  musicMainSemaphore.destroy();
 
   if( soundContext != nullptr ) {
     alSourceStop( musicSource );

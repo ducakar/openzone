@@ -62,6 +62,13 @@ private:
 public:
 
   /**
+   * Initialise all bits to zero.
+   */
+  SBitset() :
+    data{}
+  {}
+
+  /**
    * True iff all bits are equal.
    */
   bool operator == ( const SBitset& b ) const

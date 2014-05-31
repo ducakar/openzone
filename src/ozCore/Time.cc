@@ -44,7 +44,7 @@ namespace oz
 struct MediaTimerInitialiser
 {
   OZ_HIDDEN
-  explicit MediaTimerInitialiser()
+  MediaTimerInitialiser()
   {
     timeBeginPeriod( 1 );
   }

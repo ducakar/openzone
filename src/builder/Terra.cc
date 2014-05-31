@@ -288,7 +288,6 @@ void Terra::saveClient()
 
   // generate vertex buffers
   Bitset waterTiles( TILES * TILES );
-  waterTiles.clearAll();
 
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {

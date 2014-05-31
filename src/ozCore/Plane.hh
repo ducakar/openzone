@@ -54,7 +54,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane() :
+  Plane() :
     n( 0.0f, 0.0f, 0.0f ), d( 0.0f )
   {}
 

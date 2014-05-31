@@ -82,7 +82,7 @@ protected:
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    explicit HashIterator() :
+    HashIterator() :
       IteratorBase<EntryType>( nullptr ), table( nullptr ), index( 0 )
     {}
 

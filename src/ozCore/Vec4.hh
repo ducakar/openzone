@@ -57,7 +57,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4() :
+  Vec4() :
     VectorBase4( 0.0f, 0.0f, 0.0f, 0.0f )
   {}
 

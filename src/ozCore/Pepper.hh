@@ -128,7 +128,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit Pepper() = delete;
+  Pepper() = delete;
 
   /**
    * True iff called on the module's main thread.
@@ -205,7 +205,7 @@ private:
   {
     Semaphore sem; ///< Wrapped semaphore.
 
-    explicit LocalSemaphore();
+    LocalSemaphore();
     ~LocalSemaphore();
   };
 

@@ -50,7 +50,7 @@ public:
    * Create new instance.
    */
   OZ_ALWAYS_INLINE
-  explicit SpinLock() :
+  SpinLock() :
     value( 0 )
   {}
 

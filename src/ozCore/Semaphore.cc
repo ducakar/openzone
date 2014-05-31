@@ -58,33 +58,44 @@ struct Semaphore::Descriptor
 
 #endif
 
-Semaphore::Semaphore() :
-  descriptor( nullptr )
-{}
+Semaphore::Semaphore()
+{
+  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
+  if( descriptor == nullptr ) {
+    OZ_ERROR( "oz::Semaphore: Descriptor allocation failed" );
+  }
+
+#ifdef _WIN32
+
+  descriptor->semaphore = CreateSemaphore( nullptr, counter, 0x7fffffff, nullptr );
+  if( descriptor->semaphore == nullptr ) {
+    OZ_ERROR( "oz::Semaphore: Semaphore creation failed" );
+  }
+
+#else
+
+  if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
+    OZ_ERROR( "oz::Semaphore: Mutex initialisation failed" );
+  }
+  if( pthread_cond_init( &descriptor->cond, nullptr ) != 0 ) {
+    OZ_ERROR( "oz::Semaphore: Condition variable initialisation failed" );
+  }
+
+#endif
+
+  descriptor->counter = 0;
+}
 
 Semaphore::~Semaphore()
 {
-  if( descriptor != nullptr ) {
-    destroy();
-  }
-}
+#ifdef _WIN32
+  CloseHandle( &descriptor->semaphore );
+#else
+  pthread_cond_destroy( &descriptor->cond );
+  pthread_mutex_destroy( &descriptor->mutex );
+#endif
 
-Semaphore::Semaphore( Semaphore&& b ) :
-  descriptor( b.descriptor )
-{
-  b.descriptor = nullptr;
-}
-
-Semaphore& Semaphore::operator = ( Semaphore&& b )
-{
-  if( &b == this ) {
-    return *this;
-  }
-
-  descriptor   = b.descriptor;
-  b.descriptor = nullptr;
-
-  return *this;
+  free( descriptor );
 }
 
 int Semaphore::counter() const
@@ -162,55 +173,6 @@ bool Semaphore::tryWait() const
   return hasSucceeded;
 
 #endif
-}
-
-void Semaphore::init( int counter )
-{
-  if( descriptor != nullptr ) {
-    OZ_ERROR( "oz::Semaphore: Semaphore is already initialised" );
-  }
-
-  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
-  if( descriptor == nullptr ) {
-    OZ_ERROR( "oz::Semaphore: Descriptor allocation failed" );
-  }
-
-  descriptor->counter = counter;
-
-#ifdef _WIN32
-
-  descriptor->semaphore = CreateSemaphore( nullptr, counter, 0x7fffffff, nullptr );
-  if( descriptor->semaphore == nullptr ) {
-    OZ_ERROR( "oz::Semaphore: Semaphore creation failed" );
-  }
-
-#else
-
-  if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
-    OZ_ERROR( "oz::Semaphore: Mutex creation failed" );
-  }
-  if( pthread_cond_init( &descriptor->cond, nullptr ) != 0 ) {
-    OZ_ERROR( "oz::Semaphore: Condition variable creation failed" );
-  }
-
-#endif
-}
-
-void Semaphore::destroy()
-{
-  if( descriptor == nullptr ) {
-    return;
-  }
-
-#ifdef _WIN32
-  CloseHandle( &descriptor->semaphore );
-#else
-  pthread_cond_destroy( &descriptor->cond );
-  pthread_mutex_destroy( &descriptor->mutex );
-#endif
-
-  free( descriptor );
-  descriptor = nullptr;
 }
 
 }

@@ -371,9 +371,6 @@ void Loader::init()
 {
   isPreloadAlive = true;
 
-  preloadMainSemaphore.init();
-  preloadAuxSemaphore.init();
-
   preloadThread.start( "preload", Thread::JOINABLE, preloadMain );
 }
 
@@ -383,9 +380,6 @@ void Loader::destroy()
 
   preloadAuxSemaphore.post();
   preloadThread.join();
-
-  preloadAuxSemaphore.destroy();
-  preloadMainSemaphore.destroy();
 }
 
 Loader loader;

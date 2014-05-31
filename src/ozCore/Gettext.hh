@@ -66,7 +66,7 @@ public:
   /**
    * Default constructor, creates an empty instance.
    */
-  explicit Gettext();
+  Gettext();
 
   /**
    * Create a new instance and import translations from a given file.

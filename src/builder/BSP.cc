@@ -860,10 +860,6 @@ void BSP::check() const
   Bitset usedLeaves( leaves.length() );
   Bitset usedBrushes( brushes.length() );
 
-  usedNodes.clearAll();
-  usedLeaves.clearAll();
-  usedBrushes.clearAll();
-
   for( int i = 0; i < nodes.length(); ++i ) {
     if( nodes[i].front < 0 ) {
       if( usedLeaves.get( ~nodes[i].front ) ) {

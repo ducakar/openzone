@@ -841,16 +841,12 @@ void Context::init()
     partClasses[i].nUsers = -1;
   }
 
-  speakSource.mutex.init();
-
   Log::printEnd( " OK" );
 }
 
 void Context::destroy()
 {
   Log::print( "Destroying Context ..." );
-
-  speakSource.mutex.destroy();
 
   delete[] imagoClasses;
   delete[] audioClasses;

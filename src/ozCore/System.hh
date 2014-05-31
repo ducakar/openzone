@@ -78,7 +78,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit System() = delete;
+  System() = delete;
 
   /**
    * Trigger a breakpoint.

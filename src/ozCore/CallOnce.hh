@@ -53,17 +53,17 @@ private:
 public:
 
   /**
-   * Create a new instance.
+   * Create and initialise a single-use instance.
    */
-  explicit CallOnce();
+  CallOnce();
 
   /**
-   * Copying or moving is not possible for the embedded spin lock.
+   * Copying or moving is not possible.
    */
   CallOnce( const CallOnce& ) = delete;
 
   /**
-   * Copying or moving is not possible for the embedded spin lock.
+   * Copying or moving is not possible.
    */
   CallOnce& operator = ( const CallOnce& ) = delete;
 

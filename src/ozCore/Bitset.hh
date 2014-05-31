@@ -57,12 +57,17 @@ private:
 public:
 
   /**
-   * Allocate a new bitset that holds at least `nBits` bits.
+   * Create an empty bitset.
+   */
+  Bitset();
+
+  /**
+   * Allocate a new bitset that holds at least `nBits` bits initialised to 0.
    *
    * The size of `data` array is adjusted to the smallest unit number that can hold the requested
    * number of bits. No memory is allocated if `nBits == 0`.
    */
-  explicit Bitset( int nBits = 0 );
+  explicit Bitset( int nBits );
 
   /**
    * Destructor.

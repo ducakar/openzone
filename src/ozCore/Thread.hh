@@ -76,24 +76,24 @@ public:
   static bool isMain();
 
   /**
-   * Create uninitialised instance.
+   * Create and initialise new instance.
    */
-  explicit Thread();
+  Thread();
 
   /**
-   * Destructor, joins a started but not-yet-joined thread.
+   * Joins a started but not-yet-joined thread and destroy instance.
    */
   ~Thread();
 
   /**
-   * Move constructor.
+   * Copying or moving is not possible.
    */
-  Thread( Thread&& t );
+  Thread( const Thread& ) = delete;
 
   /**
-   * Move operator.
+   * Copying or moving is not possible.
    */
-  Thread& operator = ( Thread&& t );
+  Thread& operator = ( const Thread& ) = delete;
 
   /**
    * True iff a joinable thread has been started but not yet joined.
@@ -105,7 +105,7 @@ public:
   }
 
   /**
-   * Create a new thread and run it.
+   * Create and start a new thread.
    *
    * Detached thread is not attached to the `Thread` object so it can be immediately used to start
    * another thread. The thread's resources are released automatically when it finishes.

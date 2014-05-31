@@ -203,7 +203,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit Endian() = delete;
+  Endian() = delete;
 
   /**
    * Swap byte order.

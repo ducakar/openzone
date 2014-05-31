@@ -56,7 +56,7 @@ public:
    * Default constructor, creates an invalid iterator.
    */
   OZ_ALWAYS_INLINE
-  explicit ArrayIterator() :
+  ArrayIterator() :
     IteratorBase<Elem>( nullptr ), past( nullptr )
   {}
 

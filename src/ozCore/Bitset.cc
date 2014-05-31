@@ -32,9 +32,11 @@ namespace oz
 {
 
 Bitset::Bitset( int nBits ) :
-  data( nullptr ), size( 0 )
+  data( nullptr ), size( ( nBits + UNIT_BITSIZE - 1 ) / UNIT_BITSIZE )
 {
-  resize( nBits );
+  if( size != 0 ) {
+    data = new ulong[size] {};
+  }
 }
 
 Bitset::~Bitset()
@@ -196,7 +198,7 @@ void Bitset::clearAll()
 
 Bitset Bitset::operator ~ () const
 {
-  Bitset r( size );
+  Bitset r( size * UNIT_BITSIZE );
 
   for( int i = 0; i < size; ++i ) {
     r.data[i] = ~data[i];
@@ -208,7 +210,7 @@ Bitset Bitset::operator & ( const Bitset& b ) const
 {
   hard_assert( size == b.size );
 
-  Bitset r( size );
+  Bitset r( size * UNIT_BITSIZE );
 
   for( int i = 0; i < size; ++i ) {
     r.data[i] = data[i] & b.data[i];
@@ -220,7 +222,7 @@ Bitset Bitset::operator | ( const Bitset& b ) const
 {
   hard_assert( size == b.size );
 
-  Bitset r( size );
+  Bitset r( size * UNIT_BITSIZE );
 
   for( int i = 0; i < size; ++i ) {
     r.data[i] = data[i] | b.data[i];
@@ -232,7 +234,7 @@ Bitset Bitset::operator ^ ( const Bitset& b ) const
 {
   hard_assert( size == b.size );
 
-  Bitset r( size );
+  Bitset r( size * UNIT_BITSIZE );
 
   for( int i = 0; i < size; ++i ) {
     r.data[i] = data[i] ^ b.data[i];

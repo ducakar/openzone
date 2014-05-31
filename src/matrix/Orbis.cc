@@ -436,8 +436,6 @@ void Orbis::read( const JSON& json )
       Struct* str = new Struct( bsp, index, json );
       position( str );
       structs[1 + index] = str;
-
-      // TODO bound objects
     }
   }
 
@@ -486,6 +484,30 @@ void Orbis::read( const JSON& json )
       }
     }
   }
+}
+
+int Orbis::readObject( const JSON& json )
+{
+  int index = allocObjIndex();
+  if( index < 0 ) {
+    return index;
+  }
+
+  String             name  = json["class"].get( "" );
+  const ObjectClass* clazz = liber.objClass( name );
+  Object*            obj   = clazz->create( index, json );
+  Dynamic*           dyn   = static_cast<Dynamic*>( obj );
+
+  if( obj->flags & Object::LUA_BIT ) {
+    luaMatrix.registerObject( obj->index );
+  }
+
+  if( !( obj->flags & Object::DYNAMIC_BIT ) || dyn->parent < 0 ) {
+    position( obj );
+  }
+  objects[1 + obj->index] = obj;
+
+  return index;
 }
 
 void Orbis::write( OutputStream* os ) const

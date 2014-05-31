@@ -105,7 +105,7 @@ public:
   /**
    * Create an empty chain.
    */
-  explicit DChain() :
+  DChain() :
     Chain<Elem, INDEX>(), lastElem( nullptr )
   {}
 

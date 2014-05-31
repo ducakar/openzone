@@ -77,7 +77,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit Java() = delete;
+  Java() = delete;
 
   /**
    * Return Java VM handle or `nullptr` if not initialised.

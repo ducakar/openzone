@@ -59,6 +59,7 @@ add_library( ozCore
   Buffer.cc
   CallOnce.cc
   common.cc
+  EnumMap.cc
   File.cc
   Gettext.cc
   InputStream.cc

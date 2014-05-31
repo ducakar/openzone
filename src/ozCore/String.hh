@@ -362,7 +362,7 @@ public:
   /**
    * Create an empty string.
    */
-  explicit String();
+  String();
 
   /**
    * Create string form a given C string with a known length.

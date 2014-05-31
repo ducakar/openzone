@@ -85,7 +85,7 @@ public:
   /**
    * Create uninitialised instance.
    */
-  explicit SharedLib();
+  SharedLib();
 
   /**
    * Destructor, closes the library if opened.
