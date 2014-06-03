@@ -54,8 +54,6 @@ private:
 
 public:
 
-  ~NaClDownloader();
-
   bool isComplete() const;
   float progress() const;
 

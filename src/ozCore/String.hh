@@ -360,9 +360,9 @@ public:
    */
 
   /**
-   * Create an empty string.
+   * Create string form a given C string (nullptr is permitted, equals "").
    */
-  String();
+  String( const char* s = nullptr );
 
   /**
    * Create string form a given C string with a known length.
@@ -371,11 +371,6 @@ public:
    * @param count length in bytes without the terminating null character.
    */
   explicit String( const char* s, int count );
-
-  /**
-   * Create string form a given C string (nullptr is permitted, equals "").
-   */
-  String( const char* s );
 
   /**
    * Create string by concatenating given two C strings.

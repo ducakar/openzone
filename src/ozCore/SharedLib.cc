@@ -63,28 +63,12 @@ SharedLib& SharedLib::operator = ( SharedLib&& l )
     return *this;
   }
 
-  handle   = l.handle;
+  handle = l.handle;
+
   l.handle = nullptr;
 
   return *this;
 }
-
-#ifdef __native_client__
-
-SharedLib::Method* SharedLib::get( const char* ) const
-{
-  return nullptr;
-}
-
-bool SharedLib::open( const char* )
-{
-  return nullptr;
-}
-
-void SharedLib::close()
-{}
-
-#else
 
 SharedLib::Method* SharedLib::get( const char* symbol ) const
 {
@@ -92,7 +76,10 @@ SharedLib::Method* SharedLib::get( const char* symbol ) const
     return nullptr;
   }
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+  static_cast<void>( symbol );
+  return nullptr;
+#elif defined( _WIN32 )
   FARPROC proc = GetProcAddress( static_cast<HMODULE>( handle ), symbol );
   return reinterpret_cast<Method*>( proc );
 #else
@@ -104,7 +91,9 @@ SharedLib::Method* SharedLib::get( const char* symbol ) const
 
 bool SharedLib::open( const char* name )
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+  static_cast<void>( name );
+#elif defined( _WIN32 )
   handle = static_cast<void*>( LoadLibrary( name ) );
 #else
   handle = dlopen( name, RTLD_NOW );
@@ -115,7 +104,8 @@ bool SharedLib::open( const char* name )
 void SharedLib::close()
 {
   if( handle != nullptr ) {
-#ifdef _WIN32
+#if defined( __native_client__ )
+#elif defined( _WIN32 )
     FreeLibrary( static_cast<HMODULE>( handle ) );
 #else
     dlclose( handle );
@@ -123,7 +113,5 @@ void SharedLib::close()
     handle = nullptr;
   }
 }
-
-#endif
 
 }

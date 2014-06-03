@@ -67,7 +67,7 @@ Semaphore::Semaphore()
 
 #ifdef _WIN32
 
-  descriptor->semaphore = CreateSemaphore( nullptr, counter, 0x7fffffff, nullptr );
+  descriptor->semaphore = CreateSemaphore( nullptr, 0, 0x7fffffff, nullptr );
   if( descriptor->semaphore == nullptr ) {
     OZ_ERROR( "oz::Semaphore: Semaphore creation failed" );
   }
@@ -100,15 +100,11 @@ Semaphore::~Semaphore()
 
 int Semaphore::counter() const
 {
-  hard_assert( descriptor != nullptr );
-
   return descriptor->counter;
 }
 
 void Semaphore::post() const
 {
-  hard_assert( descriptor != nullptr );
-
 #ifdef _WIN32
 
   InterlockedIncrement( &descriptor->counter );
@@ -126,8 +122,6 @@ void Semaphore::post() const
 
 void Semaphore::wait() const
 {
-  hard_assert( descriptor != nullptr );
-
 #ifdef _WIN32
 
   WaitForSingleObject( descriptor->semaphore, INFINITE );
@@ -147,8 +141,6 @@ void Semaphore::wait() const
 
 bool Semaphore::tryWait() const
 {
-  hard_assert( descriptor != nullptr );
-
 #ifdef _WIN32
 
   int ret = WaitForSingleObject( descriptor->semaphore, 0 );

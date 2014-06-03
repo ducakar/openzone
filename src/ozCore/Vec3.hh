@@ -116,7 +116,14 @@ public:
   /**
    * Norm.
    */
-  float operator ! () const;
+  float operator ! () const
+  {
+#ifdef OZ_SIMD_MATH
+    return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+#else
+    return Math::sqrt( x*x + y*y + z*z );
+#endif
+  }
 
   /**
    * Approximate norm.
@@ -146,7 +153,18 @@ public:
   /**
    * Unit vector.
    */
-  Vec3 operator ~ () const;
+  Vec3 operator ~ () const
+  {
+#ifdef OZ_SIMD_MATH
+    scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+    return Vec3( f4 * s.f4 );
+#else
+    hard_assert( x*x + y*y + z*z > 0.0f );
+
+    float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
+    return Vec3( x * k, y * k, z * k );
+#endif
+  }
 
   /**
    * Approximate unit vector.

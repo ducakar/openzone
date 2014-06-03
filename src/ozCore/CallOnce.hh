@@ -47,15 +47,15 @@ public:
 
 private:
 
-  volatile int  onceLock;        ///< Spin lock.
-  volatile bool wasMethodCalled; ///< Whether the method was already called.
+  volatile int  flag      = 0;     ///< Spin lock.
+  volatile bool wasCalled = false; ///< Whether the method was already called.
 
 public:
 
   /**
    * Create and initialise a single-use instance.
    */
-  CallOnce();
+  CallOnce() = default;
 
   /**
    * Copying or moving is not possible.
@@ -66,15 +66,6 @@ public:
    * Copying or moving is not possible.
    */
   CallOnce& operator = ( const CallOnce& ) = delete;
-
-  /**
-   * True this object has already been used to call a method.
-   */
-  OZ_ALWAYS_INLINE
-  bool wasCalled() const
-  {
-    return wasMethodCalled;
-  }
 
   /**
    * Call method if this is the first call on this object.

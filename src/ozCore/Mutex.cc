@@ -84,8 +84,6 @@ Mutex::~Mutex()
 
 void Mutex::lock() const
 {
-  hard_assert( descriptor != nullptr );
-
 #ifdef _WIN32
   EnterCriticalSection( &descriptor->criticalSection );
 #else
@@ -95,8 +93,6 @@ void Mutex::lock() const
 
 bool Mutex::tryLock() const
 {
-  hard_assert( descriptor != nullptr );
-
 #ifdef _WIN32
   return TryEnterCriticalSection( &descriptor->criticalSection );
 #else
@@ -106,8 +102,6 @@ bool Mutex::tryLock() const
 
 void Mutex::unlock() const
 {
-  hard_assert( descriptor != nullptr );
-
 #ifdef _WIN32
   LeaveCriticalSection( &descriptor->criticalSection );
 #else

@@ -29,27 +29,22 @@
 namespace oz
 {
 
-CallOnce::CallOnce() :
-  onceLock( 0 ), wasMethodCalled( false )
-{}
-
 void CallOnce::call( Method* method )
 {
-  if( wasMethodCalled ) {
+  if( wasCalled ) {
     return;
   }
 
-  if( __sync_lock_test_and_set( &onceLock, 1 ) != 0 ) {
-    while( onceLock != 0 );
+  if( __sync_lock_test_and_set( &flag, 1 ) != 0 ) {
+    while( flag != 0 );
   }
   else {
-    if( !wasMethodCalled ) {
-      if( method != nullptr ) {
-        method();
-      }
-      wasMethodCalled = true;
+    if( !wasCalled ) {
+      method();
+      __sync_synchronize();
+      wasCalled = true;
     }
-    __sync_lock_release( &onceLock );
+    __sync_lock_release( &flag );
   }
 }
 

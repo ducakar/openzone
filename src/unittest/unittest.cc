@@ -52,7 +52,7 @@ int main()
   test_iterables();
   test_arrays();
 
-  test_Alloc();
+//  test_Alloc();
 
   test_String();
 

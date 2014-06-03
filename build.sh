@@ -55,6 +55,7 @@ function build()
         -G Ninja \
         -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
         -D CMAKE_BUILD_TYPE=$buildType \
+        -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
         ../.. )
     fi
     (( $1 )) || ( cd build/$platform && time ninja )

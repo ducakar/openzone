@@ -116,7 +116,7 @@ void GameStage::write()
   luaClient.write( &saveStream );
 
   saveFile = stateFile;
-  saveThread.start( "save", Thread::JOINABLE, saveMain );
+  saveThread.start( "save", saveMain );
 }
 
 void GameStage::auxMain( void* )
@@ -375,7 +375,7 @@ void GameStage::load()
 
   isAuxAlive = true;
   mainSemaphore.post();
-  auxThread.start( "aux", Thread::JOINABLE, auxMain );
+  auxThread.start( "aux", auxMain );
 
   ui::ui.showLoadingScreen( false );
   present( true );
@@ -403,6 +403,7 @@ void GameStage::unload()
   isAuxAlive = false;
 
   auxSemaphore.post();
+  mainSemaphore.wait();
   auxThread.join();
 
   ulong64 ticks                 = timer.ticks - startTicks;

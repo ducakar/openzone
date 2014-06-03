@@ -251,7 +251,7 @@ void EditStage::load()
 
   isAuxAlive = true;
   mainSemaphore.post();
-  auxThread.start( "aux", Thread::JOINABLE, auxMain );
+  auxThread.start( "aux", auxMain );
 
   ui::ui.showLoadingScreen( false );
   present( true );
@@ -276,6 +276,7 @@ void EditStage::unload()
   isAuxAlive = false;
 
   auxSemaphore.post();
+  mainSemaphore.wait();
   auxThread.join();
 
   ui::ui.root->remove( editFrame );

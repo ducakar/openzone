@@ -329,10 +329,14 @@ public:
   Elem* before( const Elem* elem ) const
   {
     Elem* current = firstElem;
-    Elem* before = nullptr;
+    Elem* before  = nullptr;
 
     while( current != elem ) {
-      before = current;
+      if( current == nullptr ) {
+        return nullptr;
+      }
+
+      before  = current;
       current = current->next[INDEX];
     }
     return before;

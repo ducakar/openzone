@@ -809,8 +809,8 @@ void Sound::init()
   isMusicAlive = true;
   isSoundAlive = true;
 
-  musicThread.start( "music", Thread::JOINABLE, musicMain );
-  soundThread.start( "sound", Thread::JOINABLE, soundMain );
+  musicThread.start( "music", musicMain );
+  soundThread.start( "sound", soundMain );
 
   Log::unindent();
   Log::println( "}" );

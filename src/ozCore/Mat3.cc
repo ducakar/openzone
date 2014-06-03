@@ -45,6 +45,11 @@ Quat Mat3::toQuat() const
   return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, w2 / 2.0f );
 }
 
+void Mat3::rotate( const Quat& q )
+{
+  *this = *this * rotation( q );
+}
+
 void Mat3::rotateX( float theta )
 {
   Vec3 j = y;

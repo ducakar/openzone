@@ -235,7 +235,7 @@ public:
   /**
    * Load from a file.
    */
-  JSON( const File& file );
+  explicit JSON( const File& file );
 
   /**
    * Destructor.

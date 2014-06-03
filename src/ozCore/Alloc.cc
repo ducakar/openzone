@@ -28,6 +28,7 @@
 
 #include "arrays.hh"
 #include "System.hh"
+#include "SpinLock.hh"
 
 #include <cstdlib>
 #include <malloc.h>
@@ -43,8 +44,8 @@ enum AllocMode
   ARRAY
 };
 
-static Alloc::ChunkInfo* volatile firstChunkInfo[2] = { nullptr, nullptr };
-static volatile int               allocInfoLock     = 0;
+static Chain<Alloc::ChunkInfo> chunkInfos[2];
+static SpinLock                allocInfoLock;
 
 static void* allocate( AllocMode mode, size_t size )
 {
@@ -69,12 +70,9 @@ static void* allocate( AllocMode mode, size_t size )
   ci->size       = size;
   ci->stackTrace = StackTrace::current( 2 );
 
-  while( __sync_lock_test_and_set( &allocInfoLock, 1 ) != 0 ) {
-    while( allocInfoLock != 0 );
-  }
+  allocInfoLock.lock();
 
-  ci->next = firstChunkInfo[mode];
-  firstChunkInfo[mode] = ci;
+  chunkInfos[mode].add( ci );
 
   ++Alloc::count;
   Alloc::amount += size;
@@ -85,7 +83,7 @@ static void* allocate( AllocMode mode, size_t size )
   Alloc::maxCount  = max<int>( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
-  __sync_lock_release( &allocInfoLock );
+  allocInfoLock.unlock();
 
   return static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
 }
@@ -94,53 +92,32 @@ static void deallocate( AllocMode mode, void* ptr )
 {
   ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
 
-  while( __sync_lock_test_and_set( &allocInfoLock, 1 ) != 0 ) {
-    while( allocInfoLock != 0 );
-  }
+  allocInfoLock.lock();
 
-  Alloc::ChunkInfo* ci   = firstChunkInfo[mode];
-  Alloc::ChunkInfo* prev = nullptr;
+  Alloc::ChunkInfo* ci   = static_cast<Alloc::ChunkInfo*>( ptr );
+  Alloc::ChunkInfo* prev = chunkInfos[mode].before( ci );
 
-  while( ci != nullptr ) {
-    if( ci == ptr ) {
-      if( prev == nullptr ) {
-        firstChunkInfo[mode] = ci->next;
-      }
-      else {
-        prev->next = ci->next;
-      }
-      goto chunkInfoFound;
-    }
-    prev = ci;
-    ci = ci->next;
-  }
-
-  // Check if allocated as a different kind (object/array)
-  ci = firstChunkInfo[!mode];
-
-  while( ci != nullptr ) {
-    if( ci == ptr ) {
-      break;
-    }
-    ci = ci->next;
-  }
-
-  if( ci == nullptr ) {
-    OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %lu",
-              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+  if( prev != nullptr || chunkInfos[mode].first() == ci ) {
+    chunkInfos[mode].erase( ci, prev );
   }
   else {
-    OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
-              mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+    // Check if allocated as a different kind (object/array)
+    if( chunkInfos[!mode].has( ci ) ) {
+      OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
+                mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+    }
+    else {
+      OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %lu",
+                mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+    }
   }
-chunkInfoFound:
 
   --Alloc::count;
   Alloc::amount -= ci->size;
 
-  __sync_lock_release( &allocInfoLock );
+  allocInfoLock.unlock();
 
-  mSet( ptr, 0xee, ci->size );
+  mSet( ptr, 0xee, int( ci->size ) );
 
 #if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
   _aligned_free( ptr ));
@@ -161,7 +138,7 @@ size_t Alloc::maxAmount = 0;
 Alloc::ChunkCIterator Alloc::objectCIter()
 {
 #ifdef OZ_ALLOCATOR
-  return ChunkCIterator( firstChunkInfo[OBJECT] );
+  return chunkInfos[OBJECT].citer();
 #else
   return ChunkCIterator();
 #endif
@@ -170,7 +147,7 @@ Alloc::ChunkCIterator Alloc::objectCIter()
 Alloc::ChunkCIterator Alloc::arrayCIter()
 {
 #ifdef OZ_ALLOCATOR
-  return ChunkCIterator( firstChunkInfo[ARRAY] );
+  return chunkInfos[ARRAY].citer();
 #else
   return ChunkCIterator();
 #endif

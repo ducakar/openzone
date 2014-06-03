@@ -57,10 +57,7 @@ public:
 
 protected:
 
-  /**
-   * Element which iterator is currently positioned at.
-   */
-  Elem* elem;
+  Elem* elem; ///< Element which iterator is currently positioned at.
 
 protected:
 
@@ -225,29 +222,6 @@ inline void iFill( Iterator iter, const Value& value )
 
     ++iter;
   }
-}
-
-/**
- * Swap element of two same-length containers.
- */
-template <class IteratorA, class IteratorB>
-inline void iSwap( IteratorA iterA, IteratorB iterB )
-{
-  typedef typename IteratorA::ElemType ElemA;
-  typedef typename IteratorB::ElemType ElemB;
-
-  while( iterA.isValid() ) {
-    hard_assert( iterB.isValid() );
-
-    ElemA t = static_cast<ElemA&&>( *iterA );
-    *iterA = static_cast<ElemB&&>( *iterB );
-    *iterB = static_cast<ElemA&&>( t );
-
-    ++iterA;
-    ++iterB;
-  }
-
-  hard_assert( !iterB.isValid() );
 }
 
 /**

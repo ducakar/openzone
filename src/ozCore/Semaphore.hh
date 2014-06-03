@@ -72,15 +72,6 @@ public:
   Semaphore& operator = ( const Semaphore& ) = delete;
 
   /**
-   * True iff initialised.
-   */
-  OZ_ALWAYS_INLINE
-  bool isValid() const
-  {
-    return descriptor != nullptr;
-  }
-
-  /**
    * Get current counter value.
    */
   int counter() const;

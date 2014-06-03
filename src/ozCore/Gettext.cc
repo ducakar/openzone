@@ -68,13 +68,6 @@ Gettext::Gettext() :
   stringsSize( 0 )
 {}
 
-Gettext::Gettext( const File& file ) :
-  table( nullptr ), messages( nullptr ), strings( nullptr ), nBuckets( 0 ), nMessages( 0 ),
-  stringsSize( 0 )
-{
-  import( file );
-}
-
 Gettext::~Gettext()
 {
   clear();
@@ -153,10 +146,9 @@ List<const char*> Gettext::catalogueDescriptions() const
 {
   List<const char*> descriptions;
 
-  for( int i = 0, j = 0; i < nMessages; ++i ) {
+  for( int i = 0; i < nMessages; ++i ) {
     if( String::isEmpty( strings + messages[i].original ) ) {
       descriptions.add( strings + messages[i].translation );
-      ++j;
     }
   }
   return descriptions;

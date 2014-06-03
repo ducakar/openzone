@@ -191,6 +191,8 @@ class MainCall
 {
 #if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
 
+  friend class Thread;
+
 private:
 
   /**
@@ -198,20 +200,9 @@ private:
    */
   typedef void Callback( void* data, int );
 
-  /**
-   * Semaphore wrapper that constructs and destructs it with a thread.
-   */
-  struct LocalSemaphore
-  {
-    Semaphore sem; ///< Wrapped semaphore.
-
-    LocalSemaphore();
-    ~LocalSemaphore();
-  };
-
 private:
 
-  static LocalSemaphore localSemaphore; ///< Semaphore for synchronous calls.
+  static thread_local Semaphore* localSemaphore; ///< Thread-local semaphore for synchronous calls.
 
 #endif
 
@@ -246,10 +237,10 @@ public:
           cw->semaphore->post();
         }
       };
-      CallbackWrapper cw = { method, &localSemaphore.sem };
+      CallbackWrapper cw = { method, localSemaphore };
 
       Pepper::mainCall( CallbackWrapper::callback, &cw );
-      localSemaphore.sem.wait();
+      localSemaphore->wait();
     }
 
 #else

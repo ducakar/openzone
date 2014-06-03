@@ -172,7 +172,14 @@ public:
   /**
    * Norm.
    */
-  float operator ! () const;
+  float operator ! () const
+  {
+#ifdef OZ_SIMD_MATH
+    return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+#else
+    return Math::sqrt( x*x + y*y + z*z + w*w );
+#endif
+  }
 
   /**
    * Approximate norm.
@@ -202,7 +209,18 @@ public:
   /**
    * Unit vector.
    */
-  Vec4 operator ~ () const;
+  Vec4 operator ~ () const
+  {
+#ifdef OZ_SIMD_MATH
+    scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+    return Vec4( f4 * s.f4 );
+#else
+    hard_assert( x*x + y*y + z*z + w*w > 0.0f );
+
+    float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
+    return Vec4( x * k, y * k, z * k, w * k );
+#endif
+  }
 
   /**
    * Approximate unit vector.

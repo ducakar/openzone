@@ -106,7 +106,7 @@ public:
   {}
 
   /**
-   * Create a list with a given initial length.
+   * Create a list with a given initial length and capacity.
    */
   explicit List( int count_ ) :
     data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ ), size( count_ )

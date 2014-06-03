@@ -704,15 +704,11 @@ void OutputStream::writeBitset( const ulong* bitset, int nBits )
   }
 
 #if OZ_SIZEOF_LONG == 4
-  if( unit64Count * 2 != unitCount ) {
+  if( unitCount % 2 != 0 ) {
     data[0] = 0;
     data[1] = 0;
     data[2] = 0;
     data[3] = 0;
-    data[4] = 0;
-    data[5] = 0;
-    data[6] = 0;
-    data[7] = 0;
   }
 #endif
 }

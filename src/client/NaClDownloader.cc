@@ -92,14 +92,6 @@ void NaClDownloader::beginCallback( void* data, int result )
   downloader->semaphore.post();
 }
 
-NaClDownloader::~NaClDownloader()
-{
-  if( semaphore.isValid() ) {
-    semaphore.wait();
-    semaphore.destroy();
-  }
-}
-
 bool NaClDownloader::isComplete() const
 {
   return semaphore.counter() == 1;
@@ -114,7 +106,6 @@ void NaClDownloader::begin( const char* url_ )
 {
   url = url_;
 
-  semaphore.init();
   buffer = OutputStream( 0 );
 
   MainCall() << [&]
@@ -142,7 +133,6 @@ void NaClDownloader::begin( const char* url_ )
 OutputStream NaClDownloader::take()
 {
   semaphore.wait();
-  semaphore.destroy();
 
   return static_cast<OutputStream&&>( buffer );
 }

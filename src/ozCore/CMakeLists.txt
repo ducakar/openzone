@@ -10,7 +10,6 @@ add_library( ozCore
   Buffer.hh
   CallOnce.hh
   Chain.hh
-  clearmacros.hh
   common.hh
   DChain.hh
   Endian.hh

@@ -207,7 +207,7 @@ void Window::screenshot( const File& file )
   ScreenshotInfo* info = new ScreenshotInfo { file, windowWidth, windowHeight, pixels };
 
   glReadPixels( 0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels );
-  screenshotThread.start( "screenshot", Thread::JOINABLE, screenshotMain, info );
+  screenshotThread.start( "screenshot", screenshotMain, info );
 }
 
 void Window::minimise()
@@ -275,8 +275,6 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
   windowWidth  = screenWidth;
   windowHeight = screenHeight;
-
-  flushSemaphore.init();
 
   Log::print( "Creating OpenGL surface %dx%d ... ", windowWidth, windowHeight );
 
@@ -392,7 +390,6 @@ void Window::destroy()
       context = nullptr;
       glTerminatePPAPI();
     };
-    flushSemaphore.destroy();
   }
 
 #else

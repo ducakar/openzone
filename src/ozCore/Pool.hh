@@ -185,7 +185,7 @@ public:
    * Create an empty pool.
    */
   Pool() :
-    PoolAlloc( sizeof( Elem ), BLOCK_SLOTS )
+    PoolAlloc( int( sizeof( Elem ) ), BLOCK_SLOTS )
   {}
 
 };

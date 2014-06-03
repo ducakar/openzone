@@ -445,10 +445,16 @@ invalidNumber:
   return sign * number;
 }
 
-String::String() :
+String::String( const char* s ) :
   buffer( baseBuffer ), count( 0 )
 {
-  baseBuffer[0] = '\0';
+  if( s == nullptr || s[0] == '\0' ) {
+    baseBuffer[0] = '\0';
+  }
+  else {
+    ensureCapacity( length( s ) );
+    mCopy( buffer, s, count + 1 );
+  }
 }
 
 String::String( const char* s, int count_ ) :
@@ -457,18 +463,6 @@ String::String( const char* s, int count_ ) :
   ensureCapacity( count_ );
   mCopy( buffer, s, count );
   buffer[count] = '\0';
-}
-
-String::String( const char* s ) :
-  buffer( baseBuffer ), count( 0 )
-{
-  if( s == nullptr ) {
-    buffer[0] = '\0';
-  }
-  else {
-    ensureCapacity( length( s ) );
-    mCopy( buffer, s, count + 1 );
-  }
 }
 
 String::String( const char* s, const char* t ) :

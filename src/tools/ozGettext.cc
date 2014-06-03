@@ -260,7 +260,7 @@ static void readNirvana( const File& dir )
       continue;
     }
 
-    JSON json = file;
+    JSON json( file );
 
     for( const JSON& state : json.arrayCIter() ) {
       const String& onEnter  = state["onEnter"].get( String::EMPTY );

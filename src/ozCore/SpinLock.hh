@@ -42,26 +42,14 @@ class SpinLock
 {
 private:
 
-  volatile int value; ///< 0 - unlocked, 1 - locked.
+  volatile int flag = 0; ///< 0 - unlocked, 1 - locked.
 
 public:
 
   /**
    * Create new instance.
    */
-  OZ_ALWAYS_INLINE
-  SpinLock() :
-    value( 0 )
-  {}
-
-  /**
-   * Destructor.
-   */
-  OZ_ALWAYS_INLINE
-  ~SpinLock()
-  {
-    hard_assert( value == 0 );
-  }
+  SpinLock() = default;
 
   /**
    * Copying or moving is not possible.
@@ -74,22 +62,12 @@ public:
   SpinLock& operator = ( const SpinLock& ) = delete;
 
   /**
-   * True iff locked.
-   */
-  OZ_ALWAYS_INLINE
-  bool isLocked() const
-  {
-    return value != 0;
-  }
-
-  /**
    * Loop performing a lock operation until it switches from an unlocked to a locked state.
    */
-  OZ_ALWAYS_INLINE
   void lock()
   {
-    while( __sync_lock_test_and_set( &value, 1 ) != 0 ) {
-      while( value != 0 );
+    while( __sync_lock_test_and_set( &flag, 1 ) != 0 ) {
+      while( flag != 0 );
     }
   }
 
@@ -98,19 +76,17 @@ public:
    *
    * @return True iff it was unlocked.
    */
-  OZ_ALWAYS_INLINE
   bool tryLock()
   {
-    return __sync_lock_test_and_set( &value, 1 ) == 0;
+    return __sync_lock_test_and_set( &flag, 1 ) == 0;
   }
 
   /**
    * Unlock.
    */
-  OZ_ALWAYS_INLINE
   void unlock()
   {
-    __sync_lock_release( &value );
+    __sync_lock_release( &flag );
   }
 
 };

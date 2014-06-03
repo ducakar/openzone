@@ -147,8 +147,6 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang )
   #if( NOT PLATFORM_EMBEDDED )
   #  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi" )
   #endif()
-  # Analyse only.
-  #set( flags "${flags} --analyze -Qunused-arguments" )
 else()
   set( flags "-std=c++11 -pedantic -fstrict-enums" )
 endif()

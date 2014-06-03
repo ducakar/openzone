@@ -34,16 +34,22 @@
 #include "common.hh"
 
 /*
+ * System.
+ */
+#include "System.hh"
+#include "StackTrace.hh"
+
+/*
  * Iterators and container utilities.
  */
 #include "iterables.hh"
 #include "arrays.hh"
 
 /*
- * System.
+ * Linked lists of existing elements.
  */
-#include "System.hh"
-#include "StackTrace.hh"
+#include "Chain.hh"
+#include "DChain.hh"
 
 /*
  * Memory management.
@@ -55,8 +61,6 @@
  * Containers.
  */
 #include "Pair.hh"
-#include "Chain.hh"
-#include "DChain.hh"
 #include "List.hh"
 #include "SList.hh"
 #include "Set.hh"

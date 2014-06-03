@@ -69,15 +69,6 @@ public:
   Mutex& operator = ( const Mutex& ) = delete;
 
   /**
-   * True iff initialised.
-   */
-  OZ_ALWAYS_INLINE
-  bool isValid() const
-  {
-    return descriptor != nullptr;
-  }
-
-  /**
    * Wait until lock is obtained.
    *
    * @note

@@ -69,11 +69,6 @@ public:
   Gettext();
 
   /**
-   * Create a new instance and import translations from a given file.
-   */
-  explicit Gettext( const File& file );
-
-  /**
    * Destructor.
    */
   ~Gettext();

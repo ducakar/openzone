@@ -42,15 +42,6 @@ class Thread
 {
 public:
 
-  /**
-   * %Thread type.
-   */
-  enum Type
-  {
-    DETACHED, ///< %Thread is detached on start and automatically releases resources at exit.
-    JOINABLE  ///< %Thread must be joined.
-  };
-
   /// %Thread's main method type.
   typedef void Main( void* data );
 
@@ -65,7 +56,7 @@ public:
   /**
    * Get current thread's name.
    *
-   * If the thread hasn't been started through this class, "" is returned or "main" if it is the
+   * If the thread hasn't been started through this class, "" is returned or "main" if called on the
    * main thread.
    */
   static const char* name();
@@ -81,7 +72,7 @@ public:
   Thread();
 
   /**
-   * Joins a started but not-yet-joined thread and destroy instance.
+   * Joins a started but not-yet-joined if thread if present and destroy instance.
    */
   ~Thread();
 
@@ -96,7 +87,7 @@ public:
   Thread& operator = ( const Thread& ) = delete;
 
   /**
-   * True iff a joinable thread has been started but not yet joined.
+   * True iff a joinable thread has been started but not yet joined or detached.
    */
   OZ_ALWAYS_INLINE
   bool isValid() const
@@ -105,24 +96,29 @@ public:
   }
 
   /**
-   * Create and start a new thread.
+   * Create and start a new joinable thread.
    *
-   * Detached thread is not attached to the `Thread` object so it can be immediately used to start
-   * another thread. The thread's resources are released automatically when it finishes.
+   * A new joinable thread is started and attached to the `Thread` object that created it. `join()`
+   * should be called later to ensure thread's termination and to release its resources or
+   * `detach()` to detach the thread and automatically release its resources upon finishing.
    *
-   * When a new joinable thread is started it is attached to the `Thread` object that started it.
-   * `join()` should be called later to ensure thread's termination and to release its resources.
+   * After the thread has been either joined or detached the `Thread` object can be reused to start
+   * another thread.
    *
    * @note
    * On Android, thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
    * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
    *
    * @param name thread name (copied to an internal buffer).
-   * @param type `DETACHED` or `JOINABLE`.
    * @param main pointer to the thread's main method.
    * @param data pointer to user data, passed to the thread's main method.
    */
-  void start( const char* name, Type type, Main* main, void* data = nullptr );
+  void start( const char* name, Main* main, void* data = nullptr );
+
+  /**
+   * Detach a joinable thread.
+   */
+  void detach();
 
   /**
    * Wait for a joinable thread to finish execution and release its resources.

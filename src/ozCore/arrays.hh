@@ -47,8 +47,7 @@ protected:
 
   using IteratorBase<Elem>::elem;
 
-  /// Successor of the last element, used to determine when the iterator becomes invalid.
-  Elem* past;
+  Elem* past; ///< Pointer that points just past the last element.
 
 public:
 
@@ -291,19 +290,6 @@ inline void aFill( Elem* array, int count, const Value& value )
 {
   for( int i = 0; i < count; ++i ) {
     array[i] = value;
-  }
-}
-
-/**
- * Swap array elements.
- */
-template <typename Elem>
-inline void aSwap( Elem* arrayA, int count, Elem* arrayB )
-{
-  for( int i = 0; i < count; ++i ) {
-    Elem t = static_cast<Elem&&>( arrayA[i] );
-    arrayA[i] = static_cast<Elem&&>( arrayB[i] );
-    arrayB[i] = static_cast<Elem&&>( t );
   }
 }
 

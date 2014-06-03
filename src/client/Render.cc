@@ -663,7 +663,7 @@ void Render::load()
 
   areEffectsAlive = true;
 
-  effectsThread.start( "effects", Thread::JOINABLE, effectsMain );
+  effectsThread.start( "effects", effectsMain );
 
   structs.reserve( 64 );
   objects.reserve( 8192 );

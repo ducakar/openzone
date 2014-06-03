@@ -28,6 +28,7 @@
 
 #include "StackTrace.hh"
 #include "Math.hh"
+#include "SpinLock.hh"
 #include "Log.hh"
 #include "Java.hh"
 #include "Pepper.hh"
@@ -136,9 +137,9 @@ struct Wave
 
 #endif
 
-static volatile int          bellLock           = 0;
-static int                   initFlags          = 0;
+static SpinLock              bellLock;
 static System::CrashHandler* crashHandler       = nullptr;
+static int                   initFlags          = 0;
 static bool                  isDebuggerAttached = false;
 
 OZ_NORETURN
@@ -213,7 +214,7 @@ static void* bellMain( void* )
   // TODO: Implement bell for OpenSL ES.
   __android_log_write( ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n" );
 
-  __sync_lock_release( &bellLock );
+  bellLock.unlock();
   return nullptr;
 }
 
@@ -225,7 +226,7 @@ static void bellCallback( void* buffer, uint, void* info_ )
   short*      samples = static_cast<short*>( buffer );
 
   if( info->offset >= info->end ) {
-    __sync_lock_release( &bellLock );
+    bellLock.unlock();
   }
   else {
     genBellSamples( samples, info->nSamples, info->rate, info->offset,
@@ -256,13 +257,14 @@ static void* bellMain( void* )
   pp::Audio       audio( ppInstance, config, bellCallback, &info );
 
   if( audio.StartPlayback() == PP_FALSE ) {
-    __sync_lock_release( &bellLock );
+    bellLock.unlock();
     return nullptr;
   }
 
-  while( bellLock != 0 ) {
+  while( !bellLock.tryLock() ) {
     nanosleep( &TIMESPEC_10MS, nullptr );
   }
+  bellLock.unlock();
 
   audio.StopPlayback();
   return nullptr;
@@ -305,7 +307,7 @@ static DWORD WINAPI bellMain( void* )
   genBellSamples( wave->samples, BELL_WAVE_SAMPLES, BELL_PREFERRED_RATE, 0, BELL_WAVE_SAMPLES );
   PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
 
-  __sync_lock_release( &bellLock );
+  bellLock.unlock();
   return 0;
 }
 
@@ -320,7 +322,7 @@ static void* bellMain( void* )
       ( fd = open( "/dev/dsp0", O_WRONLY, 0 ) ) < 0 &&
       ( fd = open( "/dev/dsp1", O_WRONLY, 0 ) ) < 0 )
   {
-    __sync_lock_release( &bellLock );
+    bellLock.unlock();
     return nullptr;
   }
 
@@ -338,7 +340,7 @@ static void* bellMain( void* )
   {
     close( fd );
 
-    __sync_lock_release( &bellLock );
+    bellLock.unlock();
     return nullptr;
   }
 
@@ -355,7 +357,7 @@ static void* bellMain( void* )
 
   snd_pcm_t* alsa;
   if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
-    __sync_lock_release( &bellLock );
+    bellLock.unlock();
     return nullptr;
   }
 
@@ -375,7 +377,7 @@ static void* bellMain( void* )
   {
     snd_pcm_close( alsa );
 
-    __sync_lock_release( &bellLock );
+    bellLock.unlock();
     return nullptr;
   }
 
@@ -391,7 +393,7 @@ static void* bellMain( void* )
 
 #endif
 
-  __sync_lock_release( &bellLock );
+  bellLock.unlock();
   return nullptr;
 }
 
@@ -405,20 +407,20 @@ static void waitBell()
   }
 #endif
 
-  while( __sync_lock_test_and_set( &bellLock, 1 ) != 0 ) {
+  while( !bellLock.tryLock() ) {
 # ifdef _WIN32
     Sleep( 10 );
 # else
     nanosleep( &TIMESPEC_10MS, nullptr );
 # endif
   }
-  __sync_lock_release( &bellLock );
+  bellLock.unlock();
 }
 
 // Wait bell to finish playing on (normal) process termination.
 struct BellFinaliser
 {
-  volatile bool isFinalised;
+  volatile bool isFinalised = false;
 
   OZ_HIDDEN
   ~BellFinaliser()
@@ -429,7 +431,7 @@ struct BellFinaliser
   }
 };
 
-static BellFinaliser bellFinaliser = { false };
+static BellFinaliser bellFinaliser;
 
 OZ_NORETURN
 static void abort( bool doHalt )
@@ -493,11 +495,11 @@ void System::bell()
 {
 #ifdef _WIN32
 
-  if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
+  if( bellLock.tryLock() ) {
     HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
 
     if( bellThread == nullptr ) {
-      __sync_lock_release( &bellLock );
+      bellLock.unlock();
     }
     else {
       CloseHandle( bellThread );
@@ -506,7 +508,7 @@ void System::bell()
 
 #else
 
-  if( __sync_lock_test_and_set( &bellLock, 1 ) == 0 ) {
+  if( bellLock.tryLock() ) {
     pthread_t      bellThread;
     pthread_attr_t bellThreadAttr;
 
@@ -514,7 +516,7 @@ void System::bell()
     pthread_attr_setdetachstate( &bellThreadAttr, PTHREAD_CREATE_DETACHED );
 
     if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) != 0 ) {
-      __sync_lock_release( &bellLock );
+      bellLock.unlock();
     }
     pthread_attr_destroy( &bellThreadAttr );
   }

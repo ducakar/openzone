@@ -425,27 +425,27 @@ void Orbis::read( const JSON& json )
   caelum.read( json["caelum"] );
   terra.read( json["terra"] );
 
-  for( const JSON& json : json["structs"].arrayCIter() ) {
-    String name    = json["bsp"].get( "" );
+  for( const JSON& strJSON : json["structs"].arrayCIter() ) {
+    String name    = strJSON["bsp"].get( "" );
     const BSP* bsp = liber.bsp( name );
 
     int index = allocStrIndex();
     if( index >= 0 ) {
       const_cast<BSP*>( bsp )->request();
 
-      Struct* str = new Struct( bsp, index, json );
+      Struct* str = new Struct( bsp, index, strJSON );
       position( str );
       structs[1 + index] = str;
     }
   }
 
-  for( const JSON& json : json["objects"].arrayCIter() ) {
-    String             name  = json["class"].get( "" );
+  for( const JSON& objJSON : json["objects"].arrayCIter() ) {
+    String             name  = objJSON["class"].get( "" );
     const ObjectClass* clazz = liber.objClass( name );
 
     int index = allocObjIndex();
     if( index >= 0 ) {
-      Object*  obj = clazz->create( index, json );
+      Object*  obj = clazz->create( index, objJSON );
       Dynamic* dyn = static_cast<Dynamic*>( obj );
 
       if( obj->flags & Object::LUA_BIT ) {
@@ -457,7 +457,7 @@ void Orbis::read( const JSON& json )
       }
       objects[1 + obj->index] = obj;
 
-      for( const JSON& itemJSON : json["items"].arrayCIter() ) {
+      for( const JSON& itemJSON : objJSON["items"].arrayCIter() ) {
         String              name  = itemJSON["class"].get( "" );
         const DynamicClass* clazz = static_cast<const DynamicClass*>( liber.objClass( name ) );
 

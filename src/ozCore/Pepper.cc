@@ -134,7 +134,8 @@ void Pepper::Instance::DidChangeView( const pp::View& view )
     SDL_NACL_SetInstance( pp_instance(), pp::Module::Get()->get_browser_interface(),
                           width, height );
 
-    mainThread.start( "naclMain", Thread::DETACHED, mainThreadMain, nullptr );
+    mainThread.start( "naclMain", mainThreadMain, nullptr );
+    mainThread.detach();
     isStarted = true;
   }
 }
@@ -265,19 +266,7 @@ pp::Module* Pepper::createModule()
   return new Module();
 }
 
-OZ_HIDDEN
-MainCall::LocalSemaphore::LocalSemaphore()
-{
-  sem.init();
-}
-
-OZ_HIDDEN
-MainCall::LocalSemaphore::~LocalSemaphore()
-{
-  sem.destroy();
-}
-
-MainCall::LocalSemaphore MainCall::localSemaphore;
+thread_local Semaphore* MainCall::localSemaphore = nullptr;
 
 }
 

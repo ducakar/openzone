@@ -78,11 +78,6 @@ void test_iterables()
   iFill( invalid, static_cast<Foo*>( nullptr ) );
   OZ_CHECK_CONTENTS( l, 0, 0, 0, 0 );
 
-  iSwap( l.iter(), v.iter() );
-  OZ_CHECK_CONTENTS( l, 1, 2, 3, 2 );
-  OZ_CHECK_CONTENTS( v, 0, 0, 0, 0 );
-  iSwap( v.iter(), l.iter() );
-
   iCopy( v.citer(), l.iter() );
   iCopy( invalid, invalid );
   OZ_CHECK( iEquals( l.citer(), v.citer() ) );

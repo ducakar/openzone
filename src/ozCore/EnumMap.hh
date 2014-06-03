@@ -33,12 +33,12 @@
 namespace oz
 {
 
-/**
- * Internal EnumMap implementation.
- */
 namespace detail
 {
 
+/**
+ * Internal EnumMap implementation.
+ */
 class EnumMapImpl
 {
 protected:
@@ -68,12 +68,12 @@ public:
   ~EnumMapImpl();
 
   /**
-   * No copying.
+   * No copying or moving.
    */
   EnumMapImpl( const EnumMapImpl& ) = delete;
 
   /**
-   * No copying.
+   * No copying or moving.
    */
   EnumMapImpl& operator = ( const EnumMapImpl& ) = delete;
 

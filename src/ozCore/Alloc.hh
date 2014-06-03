@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include "iterables.hh"
+#include "Chain.hh"
 #include "StackTrace.hh"
 
 namespace oz
@@ -63,65 +63,15 @@ public:
    */
   struct ChunkInfo
   {
-    ChunkInfo* next;       ///< Pointer to the next chunk.
+    ChunkInfo* next[1];    ///< Pointer to the next chunk.
     size_t     size;       ///< Size (including meta data).
     StackTrace stackTrace; ///< Stack trace for the `new` call that allocated it.
   };
 
   /**
-   * %Iterator for memory chunks allocated via overloaded `new` and `new[]` operators.
+   * %Iterator over memory chunks allocated via overloaded `new` operators.
    */
-  class ChunkCIterator : public IteratorBase<const ChunkInfo>
-  {
-  public:
-
-    /**
-     * Default constructor, creates an invalid iterator.
-     */
-    OZ_ALWAYS_INLINE
-    ChunkCIterator() :
-      IteratorBase<const ChunkInfo>( nullptr )
-    {}
-
-    /**
-     * Create iterator for a given `ChunkInfo` element (used internally).
-     */
-    OZ_ALWAYS_INLINE
-    explicit ChunkCIterator( const ChunkInfo* chunkInfo ) :
-      IteratorBase<const ChunkInfo>( chunkInfo )
-    {}
-
-    /**
-     * Advance to the next element.
-     */
-    OZ_ALWAYS_INLINE
-    ChunkCIterator& operator ++ ()
-    {
-      hard_assert( elem != nullptr );
-
-      elem = elem->next;
-      return *this;
-    }
-
-    /**
-     * STL-style begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    ChunkCIterator begin() const
-    {
-      return *this;
-    }
-
-    /**
-     * STL-style end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    ChunkCIterator end() const
-    {
-      return ChunkCIterator();
-    }
-
-  };
+  typedef typename Chain<ChunkInfo>::CIterator ChunkCIterator;
 
 public:
 

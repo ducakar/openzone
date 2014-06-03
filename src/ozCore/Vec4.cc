@@ -33,26 +33,4 @@ const Vec4 Vec4::ZERO = Vec4( 0.0f, 0.0f, 0.0f, 0.0f );
 const Vec4 Vec4::ONE  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 const Vec4 Vec4::ID   = Vec4( 0.0f, 0.0f, 0.0f, 1.0f );
 
-float Vec4::operator ! () const
-{
-#ifdef OZ_SIMD_MATH
-  return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-#else
-  return Math::sqrt( x*x + y*y + z*z + w*w );
-#endif
-}
-
-Vec4 Vec4::operator ~ () const
-{
-#ifdef OZ_SIMD_MATH
-  scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-  return Vec4( f4 * s.f4 );
-#else
-  hard_assert( x*x + y*y + z*z + w*w > 0.0f );
-
-  float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-  return Vec4( x * k, y * k, z * k, w * k );
-#endif
-}
-
 }

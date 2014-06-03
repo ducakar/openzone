@@ -356,11 +356,7 @@ public:
   /**
    * Compose with a rotation from the right.
    */
-  OZ_ALWAYS_INLINE
-  void rotate( const Quat& q )
-  {
-    *this = *this * rotation( q );
-  }
+  void rotate( const Quat& q );
 
   /**
    * Compose with a rotation from the right.
