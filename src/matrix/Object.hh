@@ -69,16 +69,16 @@ public:
   // if object has Lua handlers
   static const int LUA_BIT            = 0x01000000;
 
-  // if the onDestroy method should be called on destruction
+  // if the onDestroy function should be called on destruction
   static const int DESTROY_FUNC_BIT   = 0x00800000;
 
   // if the onUse function should be called when object is used
   static const int USE_FUNC_BIT       = 0x00400000;
 
-  // if the onUpdate method should be called on each tick
+  // if the onUpdate function should be called on each tick
   static const int UPDATE_FUNC_BIT    = 0x00200000;
 
-  // if the getStatus method should be called to retrieve status bar
+  // if the getStatus function should be called to retrieve status bar
   static const int STATUS_FUNC_BIT    = 0x00100000;
 
   /*

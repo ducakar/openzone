@@ -138,7 +138,7 @@ void StrategicProxy::update()
   h = angleWrap( h + camera.relH );
   v = clamp( v + camera.relV, 0.0f, Math::TAU / 2.0f );
 
-  camera.smoothRotateTo( Quat::rotationZXZ( h, v, 0.0f ) );
+  camera.rotateTo( Quat::rotationZXZ( h, v, 0.0f ) );
   camera.align();
 
   if( isFree ) {

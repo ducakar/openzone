@@ -172,7 +172,7 @@ public:
 /**
  * Utility for executing code blocks on the NaCl's main thread.
  *
- * Methods schedulled for the main thread should be lambda functions as those can (and often need
+ * Functions scheduled for the main thread should be lambda functions as those can (and often need
  * to) access local variables of a function on a non-main thread and are quick to implement.
  *
  * A typical scenario:
@@ -184,8 +184,8 @@ public:
  * };
  * </code>
  *
- * When used on the main thread or on a platform other than NaCl the method is executed immediately
- * on the caller thread.
+ * When used on the main thread or on a platform other than NaCl the function is executed
+ * immediately on the caller's thread.
  */
 class MainCall
 {
@@ -209,35 +209,35 @@ private:
 public:
 
   /**
-   * Call a method on the NaCl main thread synchronously.
+   * Call a function on the NaCl main thread synchronously.
    *
-   * The method can also be a lambda expression with captures.
+   * The function can also be a lambda expression with captures.
    *
    * On platforms other that NaCl the code is executed immediately on the caller thread.
    */
-  template <typename Method>
-  void operator << ( Method method ) const
+  template <typename Function>
+  void operator << ( Function function ) const
   {
 #ifdef __native_client__
 
     if( Thread::isMain() ) {
-      method();
+      function();
     }
     else {
       struct CallbackWrapper
       {
-        Method     method;
+        Function   function;
         Semaphore* semaphore;
 
         static void callback( void* data, int )
         {
           const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
 
-          cw->method();
+          cw->function();
           cw->semaphore->post();
         }
       };
-      CallbackWrapper cw = { method, localSemaphore };
+      CallbackWrapper cw = { function, localSemaphore };
 
       Pepper::mainCall( CallbackWrapper::callback, &cw );
       localSemaphore->wait();
@@ -245,43 +245,43 @@ public:
 
 #else
 
-    method();
+    function();
 
 #endif
   }
 
   /**
-   * Call a method on the NaCl main thread asynchronously.
+   * Call a function on the NaCl main thread asynchronously.
    *
-   * The method can be a lambda expression but captures are discouraged for asynchronous calls as
+   * The function can be a lambda expression but captures are discouraged for asynchronous calls as
    * local variables may change till the function is executed or the local stack may not even exist
    * any more.
    *
    * On platforms other that NaCl the code is executed immediately on the caller thread.
    */
-  template <typename Method>
-  void operator += ( Method method ) const
+  template <typename Function>
+  void operator += ( Function function ) const
   {
 #ifdef __native_client__
 
     struct CallbackWrapper
     {
-      Method method;
+      Function function;
 
       static void callback( void* data, int )
       {
         const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
 
-        cw->method();
+        cw->function();
       }
     };
-    CallbackWrapper cw = { method };
+    CallbackWrapper cw = { function };
 
     Pepper::mainCall( CallbackWrapper::callback, &cw );
 
 #else
 
-    method();
+    function();
 
 #endif
   }

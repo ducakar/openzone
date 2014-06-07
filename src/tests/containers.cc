@@ -129,11 +129,11 @@ inline int iCount( Iterator iter, Predicate predicate )
   return count;
 }
 
-template <class Iterator, typename Method>
-inline void iMap( Iterator iter, Method method )
+template <class Iterator, typename Function>
+inline void iMap( Iterator iter, Function function )
 {
   while( iter.isValid() ) {
-    method( *iter );
+    function( *iter );
     ++iter;
   }
 }

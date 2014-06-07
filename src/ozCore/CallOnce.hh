@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Call a method only once, even if called from several threads.
+ * Call a function only once, even if called from several threads.
  *
  * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::Thread`
  */
@@ -42,13 +42,13 @@ class CallOnce
 {
 public:
 
-  /// %Method type.
-  typedef void Method();
+  /// %Function type.
+  typedef void Function();
 
 private:
 
   volatile int  flag      = 0;     ///< Spin lock.
-  volatile bool wasCalled = false; ///< Whether the method was already called.
+  volatile bool wasCalled = false; ///< Whether the function was already called.
 
 public:
 
@@ -68,16 +68,16 @@ public:
   CallOnce& operator = ( const CallOnce& ) = delete;
 
   /**
-   * Call method if this is the first call on this object.
+   * Call function if this is the first call on this object.
    *
-   * The `call()` method only executes the given method first time it is called on this object.
+   * The `call()` function only executes the given function first time it is called on this object.
    * Internal locking mechanism prevents race conditions when this is done from two threads
    * simultaneously.
    *
-   * If `method` is null, this object is just set as used, as if it would have already called a
-   * method.
+   * If `function` is null, this object is just set as used, as if it would have already called a
+   * function.
    */
-  void call( Method* method );
+  void call( Function* function );
 
 };
 

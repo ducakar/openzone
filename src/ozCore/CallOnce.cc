@@ -29,7 +29,7 @@
 namespace oz
 {
 
-void CallOnce::call( Method* method )
+void CallOnce::call( Function* function )
 {
   if( wasCalled ) {
     return;
@@ -40,7 +40,7 @@ void CallOnce::call( Method* method )
   }
   else {
     if( !wasCalled ) {
-      method();
+      function();
       __sync_synchronize();
       wasCalled = true;
     }

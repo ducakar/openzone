@@ -155,8 +155,6 @@ void CinematicProxy::begin()
   beginPos    = camera.p;
   beginColour = camera.colour;
 
-  stepTime    = 0.0f;
-
   cinematicText->set( title.substring( 0, nTitleChars ) );
 }
 
@@ -169,6 +167,8 @@ void CinematicProxy::end()
 
   title       = "";
   nTitleChars = 0;
+
+  stepTime    = 0.0f;
 
   steps.clear();
   steps.trim();

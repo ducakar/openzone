@@ -70,7 +70,7 @@ SharedLib& SharedLib::operator = ( SharedLib&& l )
   return *this;
 }
 
-SharedLib::Method* SharedLib::get( const char* symbol ) const
+SharedLib::Function* SharedLib::get( const char* symbol ) const
 {
   if( handle == nullptr ) {
     return nullptr;
@@ -81,11 +81,11 @@ SharedLib::Method* SharedLib::get( const char* symbol ) const
   return nullptr;
 #elif defined( _WIN32 )
   FARPROC proc = GetProcAddress( static_cast<HMODULE>( handle ), symbol );
-  return reinterpret_cast<Method*>( proc );
+  return reinterpret_cast<Function*>( proc );
 #else
-  Method* method;
-  *( void** ) &method = dlsym( handle, symbol );
-  return method;
+  Function* function;
+  *( void** ) &function = dlsym( handle, symbol );
+  return function;
 #endif
 }
 

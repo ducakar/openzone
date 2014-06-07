@@ -400,11 +400,7 @@ inline Elem* aReallocate( Elem* array, int count, int newCount )
 
   if( newCount != 0 ) {
     newArray = new Elem[newCount];
-    count    = min<int>( count, newCount );
-
-    for( int i = 0; i < count; ++i ) {
-      newArray[i] = static_cast<Elem&&>( array[i] );
-    }
+    aMove<Elem>( array, min<int>( count, newCount ), newArray );
   }
   delete[] array;
 

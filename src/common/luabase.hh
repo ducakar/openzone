@@ -20,7 +20,7 @@
 /**
  * @file common/luabase.hh
  *
- * Handy macros and methods for Lua API implementation.
+ * Handy macros and functions for Lua API implementation.
  *
  * This is internal header, it should only be included by files containing Lua API implementation.
  * It contains macros for parameter checking, reporting errors, checking validity of Lua API calls
@@ -33,7 +33,7 @@
  * @code
  *   float( lua_tonumber( l, 1 ) );
  * @endcode
- * Finally it defines overloaded methods for registering Lua API constants that simplify code in
+ * Finally it defines overloaded functions for registering Lua API constants that simplify code in
  * similar way as the macro above.
  */
 
@@ -500,28 +500,28 @@ namespace oz
 /**
  * Overload for registering boolean Lua constant.
  *
- * This method is only intended for use inside methods that register Lua constants.
+ * This function is only intended for use inside functions that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, bool value );
 
 /**
  * Overload for registering integer Lua constant.
  *
- * This method is only intended for use inside methods that register Lua constants.
+ * This function is only intended for use inside functions that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, int value );
 
 /**
  * Overload for registering number Lua constant.
  *
- * This method is only intended for use inside methods that register Lua constants.
+ * This function is only intended for use inside functions that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, float value );
 
 /**
  * Overload for registering string Lua constant.
  *
- * This method is only intended for use inside methods that register Lua constants.
+ * This function is only intended for use inside functions that register Lua constants.
  */
 void registerLuaConstant( lua_State* l, const char* name, const char* value );
 

@@ -149,7 +149,7 @@ class GL
 public:
 
   /**
-   * Helper method for `OZ_GL_CHECK_ERROR` macro.
+   * Helper function for `OZ_GL_CHECK_ERROR` macro.
    */
   static void checkError( const char* function, const char* file, int line );
 

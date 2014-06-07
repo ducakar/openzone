@@ -156,7 +156,9 @@ function shootTargetFunc( inaccuracy )
   return function( l )
     ozBindObj( l.target )
 
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) or not ozObjIsVisibleFromSelfEye() then
+    if ozObjIsNull() or ( ozObjHasFlag( OZ_BOT_BIT ) and ozBotHasState( OZ_BOT_DEAD_BIT ) ) or
+       not ozObjIsVisibleFromSelfEye()
+    then
       l.target = nil
       l.aimed = nil
     else

@@ -15,14 +15,13 @@ option( OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF )
 option( OZ_NONFREE "Enable support for building S3TC textures." OFF )
 option( OZ_TOOLS "Build engine tools required for game data creation." OFF )
 option( OZ_TESTS "Build test programs (that should only be used by me)." OFF )
-option( OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." OFF )
 
 #
 # Internal configuration.
 #
 
-include( cmake/PCH.cmake )
-include( FindPkgConfig )
+option( OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." OFF )
+mark_as_advanced( OZ_BUNDLE )
 
 set( OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} )
 
@@ -41,6 +40,9 @@ else()
   set( OZ_PREFIX "${CMAKE_INSTALL_PREFIX}" )
   set( OZ_BINARY_SUBDIR "" )
 endif()
+
+include( cmake/PCH.cmake )
+include( FindPkgConfig )
 
 #
 # Libraries.

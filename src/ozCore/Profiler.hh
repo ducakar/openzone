@@ -52,8 +52,8 @@ namespace oz
 /**
  * Profiling statistics.
  *
- * This class has an internal hashtable of string-microseconds pairs. `add()` method may be used to
- * add a new entry or add time to an existing entry, but `OZ_PROFILER_BEGIN()` and
+ * This class has an internal hashtable of string-microseconds pairs. `add()` function may be used
+ * to add a new entry or add time to an existing entry, but `OZ_PROFILER_BEGIN()` and
  * `OZ_PROFILER_END()` macros are probably better suited.
  */
 class Profiler

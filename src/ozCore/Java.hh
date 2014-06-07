@@ -34,7 +34,7 @@
  * @def OZ_JAVA_ENTRY_POINT
  * Implement entry point for a Java JNI application.
  *
- * `name` parameter should be your application's entry point method name. For Android SDL
+ * `name` parameter should be your application's entry point function name. For Android SDL
  * applications that should be something like `Java_com_example_myapp_SDLActivity_nativeInit`.
  */
 #define OZ_JAVA_ENTRY_POINT( name ) \
@@ -87,7 +87,7 @@ public:
   static JavaVM* vm();
 
   /**
-   * Helper method for `OZ_JAVA_ENTRY_POINT()` macro.
+   * Helper function for `OZ_JAVA_ENTRY_POINT()` macro.
    */
   static void application( void* env, void* clazz );
 

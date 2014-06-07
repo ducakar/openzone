@@ -42,7 +42,7 @@ class Thread
 {
 public:
 
-  /// %Thread's main method type.
+  /// %Thread's main function type.
   typedef void Main( void* data );
 
 private:
@@ -110,8 +110,8 @@ public:
    * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
    *
    * @param name thread name (copied to an internal buffer).
-   * @param main pointer to the thread's main method.
-   * @param data pointer to user data, passed to the thread's main method.
+   * @param main pointer to the thread's main function.
+   * @param data pointer to user data, passed to the thread's main function.
    */
   void start( const char* name, Main* main, void* data = nullptr );
 

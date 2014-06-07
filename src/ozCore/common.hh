@@ -206,12 +206,12 @@ namespace detail
 {
 
 /**
- * Helper method for `soft_assert` macro.
+ * Helper function for `soft_assert` macro.
  */
 void softAssertHelper( const char* function, const char* file, int line, const char* message );
 
 /**
- * Helper method for `hard_assert` macro.
+ * Helper function for `hard_assert` macro.
  */
 OZ_NORETURN
 void hardAssertHelper( const char* function, const char* file, int line, const char* message );
@@ -225,7 +225,8 @@ template <typename Value>
 OZ_ALWAYS_INLINE
 inline void swap( Value& a, Value& b )
 {
-  Value t = static_cast<Value&&>( a );
+  Value t( static_cast<Value&&>( a ) );
+
   a = static_cast<Value&&>( b );
   b = static_cast<Value&&>( t );
 }

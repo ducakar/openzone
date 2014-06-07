@@ -269,7 +269,7 @@ public:
    */
   void setAll()
   {
-    mSet( data, -1, SIZE * UNIT_SIZE );
+    aFill<ulong, ulong>( data, SIZE, ~0ul );
   }
 
   /**
@@ -277,7 +277,7 @@ public:
    */
   void clearAll()
   {
-    mSet( data, 0, SIZE * UNIT_SIZE );
+    aFill<ulong, ulong>( data, SIZE, 0ul );
   }
 
   /**

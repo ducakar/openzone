@@ -149,7 +149,7 @@ public:
   explicit AL() = delete;
 
   /**
-   * Helper method for `OZ_AL_CHECK_ERROR` macro.
+   * Helper function for `OZ_AL_CHECK_ERROR` macro.
    */
   static void checkError( const char* function, const char* file, int line );
 

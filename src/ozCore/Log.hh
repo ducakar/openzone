@@ -137,7 +137,7 @@ public:
   /**
    * Print "Caught signal ..." and signal description.
    *
-   * This method is only required internally by signal handler since it has issues with functions
+   * This function is only required internally by signal handler since it has issues with functions
    * that take variable arguments.
    */
   static void printSignal( int sigNum );

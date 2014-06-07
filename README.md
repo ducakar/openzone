@@ -100,10 +100,6 @@ You may also want to set several options when configuring CMake build system:
   developing OpenZone. You don't need this.
   `OFF` by default.
 
-- `OZ_BUNDLE`: Adjust installation for OpenZone multi-platform bundle ZIP. This is used internally
-  by `package.sh` script.
-  `OFF` by default.
-
 Tools
 -----
 

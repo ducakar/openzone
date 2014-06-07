@@ -136,11 +136,11 @@ public:
   /**
    * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
    *
-   * Signal handlers must be set up for each thread in a process separately. `System::init()` method
-   * sets them up for the caller thread only, for other threads this method should be used unless
-   * created with `Thread::start()`, which calls this method implicitly.
+   * Signal handlers must be set up for each thread in a process separately. `System::init()`
+   * function sets them up for the caller thread only, for other threads this function should be
+   * used unless created with `Thread::start()`, which calls this function implicitly.
    *
-   * If `HANDLERS_BIT` hasn't been passed to `System::init()` this method is a NOP.
+   * If `HANDLERS_BIT` hasn't been passed to `System::init()` this function is a NOP.
    */
   static void threadInit();
 
@@ -149,14 +149,14 @@ public:
    *
    * @param flags is a bitwise OR of the following bits:
    * - `HANDLER_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
-   *   which print diagnostics and abort the program (similar to `System::error()` method).
+   *   which print diagnostics and abort the program (similar to `System::error()` function).
    * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
    *   terminating the process via `System::abort()`, so one have time to attach a debugger.
    *   This option has no effect on Android and NaCl.
    * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
    *   This option has no effect on Android and NaCl.
    *
-   * @param crashHandler user-provided method called when the application is aborted by a signal
+   * @param crashHandler user-provided function called when the application is aborted by a signal
    *        `System::error()`. If non-null, it is invoked after the stack trace is printed.
    */
   static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );

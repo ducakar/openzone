@@ -660,8 +660,11 @@ void Model::unload()
     }
   }
 
+  // FIXME This causes crashes after level unloading.
+#ifndef __native_client__
   glDeleteBuffers( 1, &ibo );
   glDeleteBuffers( 1, &vbo );
+#endif
 
   ibo = 0;
   vbo = 0;

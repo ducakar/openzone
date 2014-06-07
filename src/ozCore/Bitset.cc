@@ -32,11 +32,10 @@ namespace oz
 {
 
 Bitset::Bitset( int nBits ) :
-  data( nullptr ), size( ( nBits + UNIT_BITSIZE - 1 ) / UNIT_BITSIZE )
+  data( nullptr ), size( 0 )
 {
-  if( size != 0 ) {
-    data = new ulong[size] {};
-  }
+  resize( nBits );
+  clearAll();
 }
 
 Bitset::~Bitset()
@@ -188,12 +187,12 @@ void Bitset::clear( int start, int end )
 
 void Bitset::setAll()
 {
-  aFill<ulong, ulong>( data, size * UNIT_SIZE, ~0ul );
+  aFill<ulong, ulong>( data, size, ~0ul );
 }
 
 void Bitset::clearAll()
 {
-  aFill<ulong, ulong>( data, size * UNIT_SIZE, 0ul );
+  aFill<ulong, ulong>( data, size, 0ul );
 }
 
 Bitset Bitset::operator ~ () const

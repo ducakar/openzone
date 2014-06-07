@@ -179,14 +179,14 @@ public:
   /**
    * Initialise underlaying FreeImage library.
    *
-   * This method should be called before `ImageBuilder` class is used.
+   * This function should be called before `ImageBuilder` class is used.
    */
   static void init();
 
   /**
    * Deinitialise underlaying FreeImage library.
    *
-   * This method should be called after you finish using `ImageBuilder`.
+   * This function should be called after you finish using `ImageBuilder`.
    */
   static void destroy();
 

@@ -105,15 +105,17 @@ Droid.patrolAutomaton = {
   patrol = {
     onUpdate = patrolFunc( 50 ),
     links = {
-      target = "shootTarget",
-      condition = detectTargetFunc( 100, 120, 5, "droid" )
+      {
+        target = "shootTarget",
+        condition = detectTargetFunc( 100, 120, 5, "droid" )
+      }
     }
   },
   shootTarget = {
     onUpdate = shootTargetFunc( 4.0 ),
     links = {
       {
-        taget = "patrol",
+        target = "patrol",
         condition = isTargetLost
       }
     }
@@ -136,15 +138,17 @@ Droid.armouredPatrolAutomaton = {
   patrol = {
     onUpdate = patrolFunc( 150 ),
     links = {
-      target = "shootTarget",
-      condition = detectTargetFunc( 150, 120, 5, "droid" )
+      {
+        target = "shootTarget",
+        condition = detectTargetFunc( 150, 120, 5, "droid" )
+      }
     }
   },
   shootTarget = {
     onUpdate = shootTargetFunc( 1.0 ),
     links = {
       {
-        taget = "patrol",
+        target = "patrol",
         condition = isTargetLost
       }
     }

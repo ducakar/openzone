@@ -505,7 +505,7 @@ public:
   /**
    * Formatted String representation of a value.
    *
-   * This function returns string written by `write()` method.
+   * This function returns string written by `write()` function.
    */
   String toFormattedString( const Format& format = DEFAULT_FORMAT ) const;
 

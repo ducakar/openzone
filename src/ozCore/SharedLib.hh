@@ -72,9 +72,9 @@ public:
   static const bool IS_SUPPORTED;
 
   /**
-   * Generic method type to avoid casts between pointer-to-function and pointer-to-object.
+   * Generic function type to avoid casts between pointer-to-function and pointer-to-object.
    */
-  typedef void Method();
+  typedef void Function();
 
 private:
 
@@ -114,7 +114,7 @@ public:
   /**
    * Obtain a pointer to the requested function from thr library (`nullptr` on error).
    */
-  Method* get( const char* symbol ) const;
+  Function* get( const char* symbol ) const;
 
   /**
    * Open a shared library with a given (file) name.
