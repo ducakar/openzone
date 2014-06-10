@@ -11,7 +11,7 @@
 #
 
 arch=i686
-#[[ `uname -m` == x86_64 ]] && arch=x86_64
+[[ `uname -m` == x86_64 ]] && arch=x86_64
 defaultPlatform=Linux-${arch}-Clang
 
 case $1 in
@@ -21,7 +21,7 @@ case $1 in
     cp ../../lib/Windows-${arch}/* bin
 
     shift
-    exec wine bin/openzone.exe -p ../../.. $@
+    exec wine bin/openzone.exe -p ../.. $@
     ;;
   *)
     exec ./build/$defaultPlatform/src/tools/openzone -p . $@

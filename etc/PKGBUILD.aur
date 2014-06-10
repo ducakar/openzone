@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgname=openzone
-pkgver=0.3.88
+pkgver=0.3.90
 pkgrel=1
 pkgdesc='Simple cross-platform FPS/RTS game engine'
 url="http://ducakar.github.com/openzone/"
@@ -25,6 +25,8 @@ function build()
     -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_INSTALL_PREFIX=/usr \
     -D CMAKE_CXX_FLAGS="${CXXFLAGS/-O2} -msse3 -mfpmath=sse" \
+    -D CMAKE_AR="/usr/bin/gcc-ar" \
+    -D CMAKE_RANLIB="/usr/bin/gcc-ranlib" \
     -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
     -D OZ_NONFREE=1 \
     ..

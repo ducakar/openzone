@@ -719,11 +719,6 @@ void Render::init()
   Log::println( "Initialising Render {" );
   Log::indent();
 
-  bool isCatalyst  = false;
-  bool hasFBO      = false;
-  bool hasFloatTex = false;
-  bool hasS3TC     = false;
-
   const char* vendor;
   const char* renderer;
   const char* version;
@@ -755,28 +750,25 @@ void Render::init()
   Log::println( "OpenGL extensions {" );
   Log::indent();
 
-  if( String::beginsWith( vendor, "ATI" ) || String::beginsWith( vendor, "AMD" ) ) {
-    isCatalyst = true;
-  }
   for( const String& extension : extensions ) {
     Log::println( "%s", extension.cstr() );
 
     if( extension.equals( "GL_ARB_framebuffer_object" ) ) {
-      hasFBO = true;
+      shader.hasFBO = true;
     }
     if( extension.equals( "GL_ARB_texture_float" ) ) {
-      hasFloatTex = true;
+      shader.hasVTF = true;
     }
     if( extension.equals( "GL_EXT_texture_compression_s3tc" ) ||
         extension.equals( "GL_CHROMIUM_texture_compression_dxt5" ) )
     {
-      hasS3TC = true;
+      shader.hasS3TC = true;
     }
   }
 
 #ifdef GL_ES_VERSION_2_0
-  hasFBO      = true;
-  hasFloatTex = false;
+  shader.hasFBO = true;
+  shader.hasVTF = false;
 #endif
 
   Log::unindent();
@@ -784,18 +776,13 @@ void Render::init()
 
   Log::verboseMode = false;
 
-  if( isCatalyst ) {
-    config.include( "shader.vertexTexture", false );
-  }
-  if( !hasFBO ) {
-    OZ_ERROR( "GL_ARB_framebuffer_object not supported by OpenGL" );
-  }
-  if( !hasFloatTex ) {
-    config.include( "shader.vertexTexture", false );
-  }
-  if( hasS3TC ) {
-    shader.hasS3TC = true;
-  }
+  Log::println( "Feature availability {" );
+  Log::indent();
+  Log::println( "Image scaling & postprocess: %s", shader.hasFBO ?  "yes" : "no" );
+  Log::println( "Animation in vertex shader:  %s", shader.hasVTF ?  "yes" : "no" );
+  Log::println( "Compressed texture loading:  %s", shader.hasS3TC ? "yes" : "no" );
+  Log::unindent();
+  Log::println( "}" );
 
   GL::init();
   shader.init();
@@ -833,6 +820,12 @@ void Render::init()
 #ifndef GL_ES_VERSION_2_0
   minGlowBuffer   = 0;
 #endif
+
+  if( !shader.hasFBO ) {
+    shader.doPostprocess = false;
+    scale                = 1.0f;
+    isOffscreen          = false;
+  }
 
   MainCall() << [&]
   {

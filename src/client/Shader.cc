@@ -297,11 +297,10 @@ void Shader::init()
 {
   Log::print( "Initialising Shader ..." );
 
-  hasVertexTexture = config.include( "shader.vertexTexture", true  ).get( false );
-  doVertexEffects  = config.include( "shader.vertexEffects", true  ).get( false );
-  doEnvMap         = config.include( "shader.envMap",        true  ).get( false );
-  doBumpMap        = config.include( "shader.bumpMap",       true  ).get( false );
-  doPostprocess    = config.include( "shader.postprocess",   false ).get( false );
+  doVertexEffects = config.include( "shader.vertexEffects", true  ).get( false );
+  doEnvMap        = config.include( "shader.envMap",        true  ).get( false );
+  doBumpMap       = config.include( "shader.bumpMap",       true  ).get( false );
+  doPostprocess   = config.include( "shader.postprocess",   false ).get( false );
 
   medium = 0;
 
@@ -359,8 +358,8 @@ void Shader::init()
 
     defines = "#version 100\n";
 
-    if( hasVertexTexture ) {
-      defines += "#define OZ_VERTEX_TEXTURE\n";
+    if( hasVTF ) {
+      defines += "#define OZ_VERTEX_TEXTURE_FETCH\n";
     }
     if( doVertexEffects ) {
       defines += "#define OZ_VERTEX_EFFECTS\n";

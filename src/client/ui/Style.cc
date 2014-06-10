@@ -107,7 +107,7 @@ void Style::init()
 
   const JSON& coloursConfig = config["colours"];
 
-  OZ_READ_COLOUR( text,             0.80f, 1.00f, 0.90f, 1.00f );
+  OZ_READ_COLOUR( text,             0.70f, 0.90f, 0.80f, 1.00f );
   OZ_READ_COLOUR( textBackground,   0.00f, 0.00f, 0.00f, 1.00f );
 
   OZ_READ_COLOUR( button,           0.20f, 0.30f, 0.25f, 0.40f );

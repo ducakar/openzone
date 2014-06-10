@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.3.88
+Version:        0.3.90
 Release:        1%{?dist}
 Summary:        Simple cross-platform FPS/RTS game engine
 Group:          Amusements/Games
@@ -76,6 +76,8 @@ cmake \
   -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
   -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
+  -D CMAKE_AR="/usr/bin/gcc-ar" \
+  -D CMAKE_RANLIB="/usr/bin/gcc-ranlib" \
   -D BUILD_SHARED_LIBS=1 \
   -D OZ_NONFREE=1 \
   -D OZ_TOOLS=1 \

@@ -99,7 +99,7 @@ void Model::addSceneLights()
 
 void Model::animate( const Instance* instance )
 {
-  if( shader.hasVertexTexture ) {
+  if( shader.hasVTF ) {
     glActiveTexture( Shader::VERTEX_ANIM );
     glBindTexture( GL_TEXTURE_2D, animationTexId );
 
@@ -287,7 +287,7 @@ void Model::drawScheduled( QueueType queue, int mask )
     }
   }
 
-  if( shader.hasVertexTexture ) {
+  if( shader.hasVTF ) {
     glActiveTexture( Shader::VERTEX_ANIM );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
@@ -458,7 +458,7 @@ const File* Model::preload()
   is.forward( iboSize );
 
   if( nFrames != 0 ) {
-    if( shader.hasVertexTexture ) {
+    if( shader.hasVTF ) {
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
@@ -573,7 +573,7 @@ void Model::load()
     }
   }
 
-  uint usage   = nFrames != 0 && shader.hasVertexTexture ? GL_STREAM_DRAW : GL_STATIC_DRAW;
+  uint usage   = nFrames != 0 && shader.hasVTF ? GL_STREAM_DRAW : GL_STATIC_DRAW;
   int  vboSize = nVertices * int( sizeof( Vertex ) );
   int  iboSize = nIndices  * int( sizeof( ushort ) );
 
@@ -590,7 +590,7 @@ void Model::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   if( nFrames != 0 ) {
-    if( shader.hasVertexTexture ) {
+    if( shader.hasVTF ) {
       int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
       int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
@@ -650,7 +650,7 @@ void Model::unload()
   textures.trim();
 
   if( nFrames != 0 ) {
-    if( shader.hasVertexTexture ) {
+    if( shader.hasVTF ) {
       glDeleteTextures( 1, &animationTexId );
     }
     else {

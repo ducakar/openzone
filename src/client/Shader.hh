@@ -191,8 +191,9 @@ public:
   uint noiseTexture;
 
   int  medium;
+  bool hasFBO;
+  bool hasVTF;
   bool hasS3TC;
-  bool hasVertexTexture;
   bool doVertexEffects;
   bool doEnvMap;
   bool doBumpMap;

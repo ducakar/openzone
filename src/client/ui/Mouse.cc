@@ -125,8 +125,8 @@ void Mouse::init()
 {
   Log::print( "Initialising Mouse ..." );
 
-  fineX    = 0.0f;
-  fineY    = 0.0f;
+  fineX    = float( camera.centreX );
+  fineY    = float( camera.centreY );
   x        = camera.centreX;
   y        = camera.centreY;
   dx       = 0;

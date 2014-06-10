@@ -22,6 +22,7 @@ else()
   add_executable( openzone openzone.cc )
   use_pch( openzone pch )
   target_link_libraries( openzone client nirvana matrix common ozEngine )
+  set_target_properties( openzone PROPERTIES WIN32_EXECUTABLE ON )
   install( TARGETS openzone RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR} )
 
   if( OZ_TOOLS )

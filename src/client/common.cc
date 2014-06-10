@@ -34,6 +34,7 @@ const JSON::Format CONFIG_FORMAT = { 2, 32, 4, "\n" };
 
 Collider collider;
 JSON     config;
+File     configDir;
 
 }
 }

@@ -413,29 +413,17 @@ int Client::init( int argc, char** argv )
   for( const File& file : screenshotDir.ls() ) {
     File::rm( file.path() );
   }
-
+  File::rm( screenshotDir.path() );
   File::rm( configDir + "/client.rc" );
 
   // Load configuration.
   File configFile = configDir + "/client.json";
-  if( config.load( configFile ) ) {
+  if( config.load( configFile ) && String::equals( config["_version"].get( "" ), OZ_VERSION ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
-
-    if( String::equals( config["_version"].get( "" ), OZ_VERSION ) ) {
-      initFlags |= INIT_CONFIG;
-    }
-    else {
-      Log::println( "Invalid configuration file version, configuration will be cleaned and written"
-                    " upon exit" );
-
-      config = JSON::OBJECT;
-      config.add( "_version", OZ_VERSION );
-      config["_version"];
-    }
+    initFlags |= INIT_CONFIG;
   }
   else {
-    Log::println( "No configuration file, default configuration will be used and written upon"
-                  " exit" );
+    Log::println( "Invalid configuration file version, default settings used." );
 
     config = JSON::OBJECT;
     config.add( "_version", OZ_VERSION );
@@ -455,15 +443,15 @@ int Client::init( int argc, char** argv )
   config["dir.pictures"];
   config["dir.prefix"];
 
-  windowWidth     = config.include( "window.windowWidth",  1280 ).get( 0 );
-  windowHeight    = config.include( "window.windowHeight", 720  ).get( 0 );
-  screenWidth     = config.include( "window.screenWidth",  0    ).get( 0 );
-  screenHeight    = config.include( "window.screenHeight", 0    ).get( 0 );
+  windowWidth  = config.include( "window.windowWidth",  1280 ).get( 0 );
+  windowHeight = config.include( "window.windowHeight", 720  ).get( 0 );
+  screenWidth  = config.include( "window.screenWidth",  0    ).get( 0 );
+  screenHeight = config.include( "window.screenHeight", 0    ).get( 0 );
 
-  windowWidth     = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
-  windowHeight    = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
-  screenWidth     = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
-  screenHeight    = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
+  windowWidth  = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
+  windowHeight = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
+  screenWidth  = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
+  screenHeight = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
 
   bool fullscreen = config.include( "window.fullscreen",    true ).get( false );
 
@@ -565,20 +553,14 @@ int Client::init( int argc, char** argv )
 
 #endif
 
+  config.include( "lingua", "sl" );
+  config["lingua"];
+
   if( language.isEmpty() ) {
     language = config["lingua"].get( "" );
   }
-  else {
-    // Just tag as used.
-    config["lingua"];
-  }
 
   language = Lingua::detectLanguage( language );
-
-  if( language.isEmpty() ) {
-    language = "en";
-    config.add( "lingua", language );
-  }
 
   Log::print( "Setting language '%s' ...", language.cstr() );
   if( lingua.init( language ) ) {
@@ -700,17 +682,17 @@ void Client::shutdown()
   if( initFlags & INIT_WINDOW ) {
     Window::destroy();
   }
-  if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
+  if( initFlags & INIT_MAIN_LOOP ) {
     File configFile = config["dir.config"].get( File::CONFIG ) + "/client.json";
 
-    config.exclude( "dir.config" );
-    config.exclude( "dir.data" );
+    if( !( initFlags & INIT_CONFIG ) ) {
+      config.exclude( "dir.config" );
+      config.exclude( "dir.data" );
 
-    Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
-
-    config.save( configFile, CONFIG_FORMAT );
-
-    Log::printEnd( " OK" );
+      Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
+      config.save( configFile, CONFIG_FORMAT );
+      Log::printEnd( " OK" );
+    }
   }
 
   config.clear( initFlags & INIT_CONFIG );

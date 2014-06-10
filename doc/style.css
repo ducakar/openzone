@@ -1,11 +1,8 @@
-* {
-  font-weight: normal;
-}
 body {
-  font-family: "Droid Sans Mono", sans-serif;
+  font-family: "Droid Sans Mono", monospace;
   font-size: 10pt;
   text-shadow: black 1px 1px 1px;
-  color: #ccffe6;
+  color: #b0e0c8;
   background-color: #0a100c;
 }
 a {
@@ -14,29 +11,45 @@ a {
 a:visited {
   color: #308066;
 }
+code {
+  color: #ffffff;
+}
 h1 {
-  font-size: 2.5em;
+  font-size: 2.0em;
   text-align: center;
+  color: #ffffff;
 }
 h2 {
+  font-size: 1.6em;
   margin-bottom: 4pt;
+  color: #ffffff;
 }
 h3 {
+  font-size: 1.3em;
   margin-bottom: 4pt;
+  color: #ffffff;
 }
 h4 {
+  font-size: 1.1em;
   margin-bottom: 4pt;
+  color: #ffffff;
+}
+table {
+  font-size: 10pt;
 }
 th {
+  font-weight: normal;
   text-align: left;
-  font-weight: bold;
   padding-right: 10pt;
+  color: #ffffff;
 }
 td {
   padding-right: 10pt;
 }
 td.header {
+  font-size: 1.25em;
   font-weight: bold;
+  color: #ddfff0;
 }
 td.rowspace {
   height: 10pt;
@@ -45,7 +58,6 @@ td.rowspace {
 /* README. */
 table.keys th {
   text-align: right;
-  font-family: monospace;
 }
 table.settings td {
   padding-left: 20pt;
@@ -58,6 +70,8 @@ table.settings td {
 /* NaCl game page. */
 div.module {
   text-align: center;
+  padding: 0.25em;
+  background-color: #050806;
 }
 table#hudArea {
   position: absolute;
@@ -69,5 +83,4 @@ table#hudArea td#hudText {
   text-align: center;
   font-weight: bold;
   font-size: 1.5em;
-  color: #88aa99;
 }

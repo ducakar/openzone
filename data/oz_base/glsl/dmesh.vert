@@ -28,7 +28,7 @@ precision highp float;
 uniform mat4      oz_ProjCamera;
 uniform mat4      oz_Model;
 uniform vec3      oz_CameraPos;
-#ifdef OZ_VERTEX_TEXTURE
+#ifdef OZ_VERTEX_TEXTURE_FETCH
 uniform vec3      oz_MeshAnimation;
 #endif
 uniform sampler2D oz_VertexAnim;
@@ -53,7 +53,7 @@ void main()
 {
   mat3 modelRot = mat3( oz_Model );
 
-#ifdef OZ_VERTEX_TEXTURE
+#ifdef OZ_VERTEX_TEXTURE_FETCH
 
   float iVertex       = inPosition.x;
   float iPosition0    = oz_MeshAnimation[0] * 0.5;

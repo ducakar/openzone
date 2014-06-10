@@ -9,7 +9,7 @@
 <body>
 
 <h1 class="centre">OpenZone</h1>
-<p class="centre"><b>version <!--OZ_VERSION-->0.3.88</b></p>
+<p class="centre"><b>version <!--OZ_VERSION-->0.3.90</b></p>
 <div class="centre">
   <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a>
 </div>
@@ -370,7 +370,7 @@
 <h4>Configuration variables</h4>
 <table class="settings">
   <tr>
-    <th>_version [string] "<!--OZ_VERSION-->0.3.88"</th>
+    <th>_version [string] "<!--OZ_VERSION-->0.3.90"</th>
   </tr>
   <tr>
     <td>
@@ -507,7 +507,7 @@
   </tr>
   <tr>
     <td>
-      Sound volume. 1.0 means full (original) intensity.
+      Sound volume. 1.0 represents full volume.
     </td>
   </tr>
   <tr>
@@ -698,8 +698,6 @@
   <li>zlib</li>
   <li>libpng</li>
   <li>libvorbis</li>
-  <li>FreeImage (optional, for ozBuild tool)</li>
-  <li>Assimp (optional, for ozBuild tool)</li>
   <li>libmad (optional, to play MP3 files)</li>
   <li>faad2 (optional, to play AAC files).</li>
 </ul>
@@ -710,24 +708,21 @@
     Make sure you have the <b>LATEST</b> display drivers.
   </li>
   <li>
-    You need at least OpenGL 2.1 compatible graphic card &amp; driver with support of the following
+    You need at least OpenGL 2.1 compatible graphic card and driver with support of the following
     extensions:
     <ul>
       <li>
-        GL_ARB_framebuffer_object and
+        GL_ARB_framebuffer_object,
       </li>
       <li>
-        GL_EXT_texture_compression_s3tc (only if game data use texture compression).
+        GL_ARB_texture_float and
+      </li>
+      <li>
+        GL_EXT_texture_compression_s3tc.
       </li>
     </ul>
     Cards with complete DirectX 9.0c support should do. On Linux, the engine works with both
     proprietary and open-source Gallium3D-based drivers with Mesa 8.0+.
-  </li>
-  <li>
-    If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2 models are missing
-    set <code>shader.vertexTexture</code> to "false" in
-    <a href="#dirs">&lt;config&gt;</a>/client.json file. Otherwise set it to "true" for better
-    rendering performance.
   </li>
 </ul>
 
@@ -738,8 +733,8 @@
     frequency. This may significantly improve frame-rate.
   </li>
   <li>
-    Turning off desktop effects or switching to fullscreen mode significantly improves performance
-    in some cases.
+    Turning off desktop effects or switching to fullscreen mode (<code>F11</code>) may significantly
+    improve performance.
   </li>
 </ul>
 
@@ -785,30 +780,6 @@
   following 3rd party libraries:
 </p>
 
-<h4>Assimp</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://assimp.sourceforge.net/">assimp.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.assimp.txt">BSD</a></td>
-  </tr>
-</table>
-
-<h4>FreeImage</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://freeimage.sourceforge.net/">freeimage.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.GPL3.txt">GNU General Public License 3.0</a></td>
-  </tr>
-</table>
-
 <h4>FreeType</h4>
 <table>
   <tr>
@@ -818,18 +789,6 @@
   <tr>
     <td>Licence:</td>
     <td><a href="licences/COPYING.GPL2.txt">GNU General Public License 2.0</a></td>
-  </tr>
-</table>
-
-<h4>libnoise</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://libnoise.sourceforge.net/">libnoise.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.LGPL2.1.txt">LGPL 2.1</a></td>
   </tr>
 </table>
 
@@ -854,18 +813,6 @@
   <tr>
     <td>Licence:</td>
     <td><a href="licences/COPYING.libpng.txt">libpng</a></td>
-  </tr>
-</table>
-
-<h4>libsquish</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://code.google.com/p/libsquish/">code.google.com/p/libsquish</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.libsquish.txt">MIT</a></td>
   </tr>
 </table>
 
@@ -976,14 +923,6 @@
     <td><a href="licences/COPYING.zlib.txt">zlib</a></td>
   </tr>
 </table>
-
-<h3>Software patents</h3>
-<p>
-  OpenZone uses several techniques patented in United States (and maybe some other countries). In
-  particular OpenZone engine uses external MP3 (libmad) and AAC (faad) decoders if found on your OS
-  and <tt>ozBuild</tt> tool uses S3 texture compression (implemented in libsquish). If software
-  patents are an issue for you, build it from source with <tt>OZ_NONFREE</tt> option turned off.
-</p>
 
 </body>
 </html>

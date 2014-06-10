@@ -9,7 +9,7 @@
 <body>
 
 <h1 class="centre">OpenZone</h1>
-<p class="centre"><b>različica <!--OZ_VERSION-->0.3.88</b></p>
+<p class="centre"><b>različica <!--OZ_VERSION-->0.3.90</b></p>
 <div class="centre">
   <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a>
 </div>
@@ -371,7 +371,7 @@
 <h4>Nastavitvene spremenljivke</h4>
 <table class="settings">
   <tr>
-    <th>_version [string] "<!--OZ_VERSION-->0.3.88"</th>
+    <th>_version [string] "<!--OZ_VERSION-->0.3.90"</th>
   </tr>
   <tr>
     <td>
@@ -508,7 +508,7 @@
   </tr>
   <tr>
     <td>
-      Glasnost. 1.0 pomeni polno (izvirno) glasnost.
+      Glasnost. 1.0 predstavlja polno glasnost.
     </td>
   </tr>
   <tr>
@@ -700,8 +700,6 @@
   <li>zlib</li>
   <li>libpng</li>
   <li>libvorbis</li>
-  <li>FreeImage (neobvezno, za orodje ozBuild)</li>
-  <li>Assimp (neobvezno, za orodje ozBuild)</li>
   <li>libmad (neobvezno, za predvajanje datotek MP3)</li>
   <li>faad2 (neobvezno, za predvajanje datotek AAC).</li>
 </ul>
@@ -716,19 +714,17 @@
     razširitvami:
     <ul>
       <li>
-        GL_ARB_framebuffer_object in
+        GL_ARB_framebuffer_object,
       </li>
       <li>
-        GL_EXT_texture_compression_s3tc (le če podatki uporabljajo kompresijo tekstur).
+        GL_ARB_texture_float in
+      </li>
+      <li>
+        GL_EXT_texture_compression_s3tc.
       </li>
     </ul>
     Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati. Na Linuxu pogon deluje tako na
     lastniških kot na odprtokodnih gonilnikih osnovanih na Gallium3D z Meso 8.0+.
-  </li>
-  <li>
-    Če imaš staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo
-    modeli MD2, nastavi <code>shader.vertexTexture</code> na "false" v datoteki
-    <a href="#dirs">&lt;config&gt;</a>/client.json, sicer pa na "true" za hitrejše izrisovanje.
   </li>
 </ul>
 
@@ -739,7 +735,8 @@
     zakleni frekvenco na navišjo možno. To utegne precej izboljšati gladkost izrisovanja.
   </li>
   <li>
-    Izklop namiznih učinkov ali preklop v celozaslonski način utegne precej pohitriti grafiko.
+    Izklop namiznih učinkov ali preklop v celozaslonski način (<code>F11</code>) utegne precej
+    pohitriti grafiko.
   </li>
 </ul>
 
@@ -785,30 +782,6 @@
   (nekatere) tretje knjižnice, ki jih potrebuje za delovanje:
 </p>
 
-<h4>Assimp</h4>
-<table>
-  <tr>
-    <td>Spletna stran:</td>
-    <td><a href="http://assimp.sourceforge.net/">assimp.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licenca:</td>
-    <td><a href="licences/COPYING.assimp.txt">BSD</a></td>
-  </tr>
-</table>
-
-<h4>FreeImage</h4>
-<table>
-  <tr>
-    <td>Spletna stran:</td>
-    <td><a href="http://freeimage.sourceforge.net/">freeimage.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licenca:</td>
-    <td><a href="licences/COPYING.GPL3.txt">GNU General Public License 3.0</a></td>
-  </tr>
-</table>
-
 <h4>FreeType</h4>
 <table>
   <tr>
@@ -818,18 +791,6 @@
   <tr>
     <td>Licenca:</td>
     <td><a href="licences/COPYING.GPL2.txt">GNU General Public License 2.0</a></td>
-  </tr>
-</table>
-
-<h4>libnoise</h4>
-<table>
-  <tr>
-    <td>Spletna stran:</td>
-    <td><a href="http://libnoise.sourceforge.net/">libnoise.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licenca:</td>
-    <td><a href="licences/COPYING.LGPL2.1.txt">LGPL 2.1</a></td>
   </tr>
 </table>
 
@@ -854,18 +815,6 @@
   <tr>
     <td>Licenca:</td>
     <td><a href="licences/COPYING.libpng.txt">libpng</a></td>
-  </tr>
-</table>
-
-<h4>libsquish</h4>
-<table>
-  <tr>
-    <td>Spletna stran:</td>
-    <td><a href="http://code.google.com/p/libsquish/">code.google.com/p/libsquish</a></td>
-  </tr>
-  <tr>
-    <td>Licenca:</td>
-    <td><a href="licences/COPYING.libsquish.txt">MIT</a></td>
   </tr>
 </table>
 

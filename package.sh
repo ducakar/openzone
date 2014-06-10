@@ -14,8 +14,8 @@
 #
 
 platforms=(
-  Linux-x86_64-Clang
-  Linux-i686-Clang
+  Linux-x86_64
+  Linux-i686
   Windows-x86_64
   Windows-i686
 )

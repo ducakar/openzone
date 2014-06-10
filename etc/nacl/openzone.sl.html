@@ -25,6 +25,7 @@
   </script>
 </head>
 <body>
+
   <table id="hudArea">
     <tr>
       <td/>
@@ -35,22 +36,308 @@
       <td/>
     </tr>
   </table>
+
   <div class="module">
-    <embed id="nacl" width="1280" height="720" src="openzone.nmf" type="application/x-pnacl"/>
+    <embed id="nacl" width="80%" height="80%" src="openzone.nmf" type="application/x-pnacl"/>
+    <p><code>Klikni</code> na igro za fokus. <code>F11</code> preklopi celozaslonski način.<br/>
+    <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a></p>
   </div>
-  <div>
-    <p>Ko se naloži, je potreben klik na igro za fokus. Tipka F11 preklopi celozaslonski način.</p>
-    <h4>Osnovni nadzor</h4>
-    <p>Premikanje: W, A, S, D<br/>
-    Skok: Space<br/>
-    Uporabniški vmesnik: Tab<br/>
-    Glavni meni: F10<br/>
-    <p><a href="doc/PREBERI.html">Beri dalje</a></p>
-    <p>Zaradi tehničnih omejitev NaCl utegne igra delovati precej slabše od verzij za Linux in
-    Windows.</p>
-  </div>
+
+  <table class="keys">
+    <tr>
+      <td class="header" colspan="2">Nadzor proste kamere</td>
+    </tr>
+    <tr>
+      <th>gibanje miške</th>
+      <td>rotiraj kamero</td>
+    </tr>
+    <tr>
+      <th>smerne tipke</th>
+      <td>rotiraj kamero</td>
+    </tr>
+    <tr>
+      <th>w/a/s/d</th>
+      <td>premakni naprej / levo / nazaj / desno</td>
+    </tr>
+    <tr>
+      <th>Space</th>
+      <td>gor / povečaj višino</td>
+    </tr>
+    <tr>
+      <th>LCtrl, c</th>
+      <td>dol / zmanjšaj višino</td>
+    </tr>
+    <tr>
+      <th>LShift</th>
+      <td>preklopi hitro premikanje</td>
+    </tr>
+    <tr>
+      <th>Tab</th>
+      <td>preklopi način vmesnika</td>
+    </tr>
+    <tr>
+      <th>Numerični Enter, Enter</th>
+      <td>preklopi med načinoma kamere FreeCam in Strategic</td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td>preklopi nočno gledanje</td>
+    </tr>
+    <tr>
+      <th>m</th>
+      <td>preklopi med miniaturnim in povečanim zemljevidom</td>
+    </tr>
+    <tr>
+      <th>i</th>
+      <td>inkarniraj se v izbranega bota (ali pilota vozila)</td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td>preklopi na naslednjo enoto, ki jo imaš pod nadzorom</td>
+    </tr>
+    <tr>
+      <td class="rowspace" colspan="2"/>
+    </tr>
+    <tr>
+      <td class="header" colspan="2">Nadzor bota</td>
+    </tr>
+    <tr>
+      <th>gibanje miške</th>
+      <td>glej okoli</td>
+    </tr>
+    <tr>
+      <th>smerne tipke</th>
+      <td>glej okoli</td>
+    </tr>
+    <tr>
+      <th>w/a/s/d</th>
+      <td>pojdi naprej / levo / nazaj / desno</td>
+    </tr>
+    <tr>
+      <th>q/e</th>
+      <td>obrni se levo / desno</td>
+    </tr>
+    <tr>
+      <th>LShift</th>
+      <td>preklopi tek</td>
+    </tr>
+    <tr>
+      <th>LCtrl, c</th>
+      <td>preklopi počep</td>
+    </tr>
+    <tr>
+      <th>Space</th>
+      <td>skoči</td>
+    </tr>
+    <tr>
+      <th>levi klik</th>
+      <td>sproži orožje / rotiraj predmet, ki ga držiš</td>
+    </tr>
+    <tr>
+      <th>desni klik</th>
+      <td>izvedi dejanje na označenem predmetu</td>
+    </tr>
+    <tr>
+      <th>srednji klik</th>
+      <td>zgrabi označen predmet / spusti predmet, ki ga držiš</td>
+    </tr>
+    <tr>
+      <th>kolešček gor</th>
+      <td>vrzi predmet, ki ga držiš</td>
+    </tr>
+    <tr>
+      <th>kolešček dol</th>
+      <td>spravi označen predmet v inventar / odpri inventar za izmenjavo predmetov</td>
+    </tr>
+    <tr>
+      <th>1 - 4</th>
+      <td>izberi n-to orožje iz inventarja ali ga skrij, če je izbrano orožje trenutno</td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td>preklopi nočno gledanje (če je na voljo)</td>
+    </tr>
+    <tr>
+      <th>b</th>
+      <td>preklopi daljnogled (če je na voljo)</td>
+    </tr>
+    <tr>
+      <th>m</th>
+      <td>preklopi med miniaturnim in povečanim zemljevidom (če je na voljo)</td>
+    </tr>
+    <tr>
+      <th>Alt + k</th>
+      <td>stori samomor (če je na voljo)</td>
+    </tr>
+    <tr>
+      <th>i</th>
+      <td>zapusti bota</td>
+    </tr>
+    <tr>
+      <th>Tab</th>
+      <td>preklopi način uporabniškega vmesnika</td>
+    </tr>
+    <tr>
+      <th>Numerični Enter, Enter</th>
+      <td>preklopi med prvoosebno in tretjeosebno kamero</td>
+    </tr>
+    <tr>
+      <th>Numerična *</th>
+      <td>preklopi prosto obračanje kamere v tretjeosebnem pogledu ali v vozilu</td>
+    </tr>
+    <tr>
+      <th>f</th>
+      <td>kretnja »kazanje«</td>
+    </tr>
+    <tr>
+      <th>g</th>
+      <td>kretnja »nazaj«</td>
+    </tr>
+    <tr>
+      <th>h</th>
+      <td>kretnja »pozdrav«</td>
+    </tr>
+    <tr>
+      <th>j</th>
+      <td>kretnja »pomahaj«</td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td>kretnja »ponóri«</td>
+    </tr>
+    <tr>
+      <th>l</th>
+      <td>predvajaj vse animacije</td>
+    </tr>
+    <tr>
+      <td class="rowspace" colspan="2"/>
+    </tr>
+    <tr>
+      <td class="header" colspan="2">Inventar</td>
+    </tr>
+    <tr>
+      <th>levi klik</th>
+      <td>odvrzi predmet / prestavi predmet med inventarjema</td>
+    </tr>
+    <tr>
+      <th>srednji klik</th>
+      <td>zgrabi predmet iz inventarja</td>
+    </tr>
+    <tr>
+      <th>desni klik</th>
+      <td>uporabi predmet / vzemi ali pospravi orožje</td>
+    </tr>
+    <tr>
+      <td class="rowspace" colspan="2"/>
+    </tr>
+    <tr>
+      <td class="header" colspan="2">Nadzor vozila</td>
+    </tr>
+    <tr>
+      <th>gibanje miške</th>
+      <td>obračaj vozilo ali kupolo</td>
+    </tr>
+    <tr>
+      <th>smerne tipke</th>
+      <td>obračaj vozilo ali kupolo</td>
+    </tr>
+    <tr>
+      <th>w/a/s/d</th>
+      <td>pojdi naprej / levo / nazaj / desno</td>
+    </tr>
+    <tr>
+      <th>q/e</th>
+      <td>obrni levo / desno</td>
+    </tr>
+    <tr>
+      <th>Space</th>
+      <td>gor (samo leteča vozila)</td>
+    </tr>
+    <tr>
+      <th>LCtrl, c</th>
+      <td>dol (samo leteča vozila)</td>
+    </tr>
+    <tr>
+      <th>levi klik</th>
+      <td>sproži izbrano orožje</td>
+    </tr>
+    <tr>
+      <th>desni klik</th>
+      <td>izberi naslednje orožje</td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td>izstopi</td>
+    </tr>
+    <tr>
+      <th>Alt + x</th>
+      <td>izskoči</td>
+    </tr>
+    <tr>
+      <td class="rowspace" colspan="2"/>
+    </tr>
+    <tr>
+      <td class="header" colspan="2">Razno</td>
+    </tr>
+    <tr>
+      <th>Alt + vleka</th>
+      <td>premikanje oken uporabniškega vmesnika</td>
+    </tr>
+    <tr>
+      <th>o</th>
+      <td>hitro vrti nebo nazaj</td>
+    </tr>
+    <tr>
+      <th>p</th>
+      <td>hitro vrti nebo naprej</td>
+    </tr>
+    <tr>
+      <th>F5</th>
+      <td>hitro shranjevanje</td>
+    </tr>
+    <tr>
+      <th>F7</th>
+      <td>naloži zadnje hitro shranjeno stanje</td>
+    </tr>
+    <tr>
+      <th>F8</th>
+      <td>naloži zadnje samodejno shranjeno stanje</td>
+    </tr>
+    <tr>
+      <th>F9</th>
+      <td>zajem zaslona</td>
+    </tr>
+    <tr>
+      <th>Ctrl + F9</th>
+      <td>preklopi vidnost uporabniškega vmesnika</td>
+    </tr>
+    <tr>
+      <th>F10, Esc</th>
+      <td>izhod v glavni meni (samo F10 na NaCl)</td>
+    </tr>
+    <tr>
+      <th>F11</th>
+      <td>preklopi celozaslonski način</td>
+    </tr>
+    <tr>
+      <th>Ctrl + F11</th>
+      <td>preklopi centriranje miške in vidljivost sistemskega kazalca (ter izključni zajem vhoda na
+      SDL 1.2)</td>
+    </tr>
+    <tr>
+      <th>F12</th>
+      <td>minimiraj in zamrzni</td>
+    </tr>
+    <tr>
+      <th>Ctrl + F12</th>
+      <td>končaj program</td>
+    </tr>
+  </table>
+
+  <p><a href="doc/PREBERI.html">Beri dalje</a></p>
+
   <div><small>
-    <p>OpenZone (pogon) © 2002-2013 Davorin Učakar.<br/>
+    <p>OpenZone (pogon) © 2002-2014 Davorin Učakar.
     <a href="http://ducakar.github.com/openzone/">http://ducakar.github.com/openzone/</a></p>
     <p>Pogon OpenZone je pod licenco <a href="doc/licences/COPYING.GPL3.txt">GNU GPL 3.0</a>.
     Podatkovni arhivi in knjižnice distribuirane skupaj z OpenZone so delo različnih avtorjev in so
