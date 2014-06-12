@@ -679,6 +679,10 @@ static int ozStrBindOverlaps( lua_State* l )
 
   collider.getOverlaps( aabb, structs, objects );
   collider.mask = Object::SOLID_BIT;
+
+  if( structs != nullptr ) {
+    ms.structs.excludeUnordered( ms.str );
+  }
   return 0;
 }
 
@@ -930,8 +934,8 @@ static int ozEntBindOverlaps( lua_State* l )
   int   flags  = l_toint( 1 );
   float margin = l_tofloat( 2 );
 
-  if( !( flags & ( COLLIDE_STRUCTS_BIT | COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) ) {
-    ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
+  if( !( flags & ( COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) ) {
+    ERROR( "At least one of OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
   List<Object*>* objects = nullptr;
@@ -1614,6 +1618,10 @@ static int ozObjBindOverlaps( lua_State* l )
 
   collider.getOverlaps( aabb, structs, objects );
   collider.mask = Object::SOLID_BIT;
+
+  if( objects != nullptr ) {
+    ms.objects.excludeUnordered( ms.obj );
+  }
   return 0;
 }
 

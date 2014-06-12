@@ -523,6 +523,9 @@ static int ozSelfBindOverlaps( lua_State* l )
   collider.getOverlaps( aabb, structs, objects );
   collider.mask = Object::SOLID_BIT;
 
+  if( objects != nullptr ) {
+    ms.objects.exclude( ns.self );
+  }
   return 0;
 }
 

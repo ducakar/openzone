@@ -13,7 +13,7 @@
   "crouchCamZ":         0.69,
 
   "nameFunc":           "humanName",
-  "mind":               "predator",
+  "mind":               "knight_predator",
 
   "nItems":             8,
   "defaultItems":

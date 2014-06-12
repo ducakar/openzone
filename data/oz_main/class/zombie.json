@@ -13,7 +13,7 @@
   "crouchCamZ":         0.69,
 
   "nameFunc":           "ogreName",
-  "mind":               "randomWalk",
+  "mind":               "zombie_hungry",
 
   "nItems":             4,
   "defaultItems":

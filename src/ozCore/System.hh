@@ -152,7 +152,6 @@ public:
    *   which print diagnostics and abort the program (similar to `System::error()` function).
    * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
    *   terminating the process via `System::abort()`, so one have time to attach a debugger.
-   *   This option has no effect on Android and NaCl.
    * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
    *   This option has no effect on Android and NaCl.
    *

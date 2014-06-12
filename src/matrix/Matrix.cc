@@ -50,8 +50,8 @@ void Matrix::update()
     Object* obj = orbis.obj( i );
 
     if( obj != nullptr ) {
-      // If this is cleared on the object's update, we may also remove effects that were added
-      // by other objects, updated before it.
+      // If this is cleared on the object's update, we may also remove effects added by other
+      // objects updated before it.
       obj->events.free();
 
       // We don't remove objects as they get destroyed but on the next update, so the destruction

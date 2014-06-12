@@ -30,8 +30,7 @@ function onCreate()
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 450 )
 
-  oz_me = ozOrbisAddObj( OZ_FORCE, "beast", -1005.96, 603.80, 51.10, true )
-  ozBotSetH( 20 )
+  oz_me = ozOrbisAddObj( OZ_FORCE, "beast", -1028, 610, 50.60, OZ_EAST, true )
   ozBotSetName( ozProfileGetName() )
   ozBotSetMind( "" )
 
@@ -72,7 +71,7 @@ function onCreate()
     end
   end
 
---   ozCameraAllowReincarnation( false )
+  ozCameraAllowReincarnation( false )
   ozCameraAddSwitchableBot( oz_me )
   ozCameraSetBot( oz_me )
 

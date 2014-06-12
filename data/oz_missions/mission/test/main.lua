@@ -38,20 +38,17 @@ function onCreate()
   ozCameraAddSwitchableBot( me )
   ozCameraSetBot( me )
 
-  init_sample()
-
+  initSample()
   floraSeed( 0.0015, 12, 0.75 )
-
-  init_stressTest()
-
-  ozUIBuildFrame( true )
+  initStressTest()
 
   ozPersistent.oz_testRun = true
 
+  ozUIBuildFrame( true )
   ozCameraExecuteSequence( "intro" )
 end
 
-function init_sample()
+function initSample()
   local cX, cY, cZ = 143, 0, 79
   --local cX, cY, cZ = 2000, 2000, 100
 
@@ -138,24 +135,14 @@ function init_sample()
   ozOrbisAddObj( OZ_FORCE, "smallCrate", cX - 35, cY - 8, cZ + 4 )
 end
 
-function init_stressTest()
+function initStressTest()
   for i = 1, 500 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )
 
     if z > 0 then
---       ozOrbisAddObj( OZ_TRY, "goblin", x, y, z + 0.75 )
-    end
-  end
-
-  for i = 1, 500 do
-    local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
-    local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
-    local z = ozTerraHeight( x, y )
-
-    if z > 0 then
-      ozOrbisAddObj( OZ_TRY, "knight", x, y, z + 1.10 )
+      ozOrbisAddObj( OZ_TRY, "beast", x, y, z + 1.10 )
     end
   end
 
@@ -165,7 +152,17 @@ function init_stressTest()
     local z = ozTerraHeight( x, y )
 
     if z > 0 then
-      ozOrbisAddObj( OZ_TRY, "beast", x, y, z + 1.10 )
+       ozOrbisAddObj( OZ_TRY, "goblin", x, y, z + 0.75 )
+    end
+  end
+
+  for i = 1, 1500 do
+    local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
+    local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
+    local z = ozTerraHeight( x, y )
+
+    if z > 0 then
+      ozOrbisAddObj( OZ_TRY, "knight", x, y, z + 1.10 )
     end
   end
 

@@ -222,8 +222,9 @@ uint Context::addContSource( int sound, int key )
     alDeleteSources( 1, &srcId );
     return INVALID_SOURCE;
   }
+
   if( alGetError() != AL_NO_ERROR ) {
-    Log::printRaw( "AL: Too many sources\n" );
+    // Too many sources.
     return INVALID_SOURCE;
   }
 
@@ -447,8 +448,10 @@ void Context::playSample( int id )
 
   uint srcId = addSource( id );
 
-  alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
-  alSourcePlay( srcId );
+  if( srcId != INVALID_SOURCE ) {
+    alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
+    alSourcePlay( srcId );
+  }
 
   OZ_AL_CHECK_ERROR();
 }

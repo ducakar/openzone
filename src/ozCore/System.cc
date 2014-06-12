@@ -52,7 +52,6 @@
 # include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
-# define isatty( fd ) _isatty( fd )
 #else
 # include <ctime>
 # include <pthread.h>
@@ -444,17 +443,9 @@ static void abort( bool doHalt )
     crashHandler();
   }
 
-#if defined( __ANDROID__ )
-
-  __android_log_write( ANDROID_LOG_FATAL, "liboz", "ABORTED\n"  );
-
-#elif defined( __native_client__ )
-
-  fputs( "ABORTED\n", stderr );
-
-#else
-
-  doHalt = doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO );
+#ifdef __ANDROID__
+  __android_log_write( ANDROID_LOG_FATAL, "liboz", doHalt ? "HALTED\n" : "ABORTED\n"  );
+#endif
 
   fflush( stdout );
   fputs( doHalt ? "Halted. Attach a debugger or press Enter to abort ... " : "ABORTED\n", stderr );
@@ -463,8 +454,6 @@ static void abort( bool doHalt )
   if( doHalt ) {
     fgetc( stdin );
   }
-
-#endif
 
   waitBell();
   _Exit( EXIT_FAILURE );

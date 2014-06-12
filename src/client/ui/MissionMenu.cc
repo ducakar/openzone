@@ -195,10 +195,13 @@ MissionMenu::MissionMenu() :
     Lingua lingua;
     lingua.initMission( missionName );
 
-    missions.add( { missionName,
-                    lingua.get( descriptionConfig["title"].get( missionName ) ),
-                    lingua.get( descriptionConfig["description"].get( "" ) ),
-                    GLTexture( missionDir.path() + "/description.dds" ) } );
+    MainCall() << [&]
+    {
+      missions.add( { missionName,
+                      lingua.get( descriptionConfig["title"].get( missionName ) ),
+                      lingua.get( descriptionConfig["description"].get( "" ) ),
+                      GLTexture( missionDir.path() + "/description.dds" ) } );
+    };
 
     lingua.clear();
   }

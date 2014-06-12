@@ -50,7 +50,7 @@ Droid.guardAutomaton = {
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 100, 120, 5, "droid" )
+        condition = detectTargetFunc( 100, 240, 5, "droid" )
       }
     }
   },
@@ -74,7 +74,7 @@ Droid.sniperAutomaton = {
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 200, 120, 5, "droid" )
+        condition = detectTargetFunc( 200, 240, 5, "droid" )
       }
     }
   },
@@ -97,8 +97,7 @@ Droid.patrolAutomaton = {
     onEnter = enterPatrol,
     links = {
       {
-        target = "patrol",
-        condition = function() return true end
+        target = "patrol"
       }
     }
   },
@@ -107,7 +106,7 @@ Droid.patrolAutomaton = {
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 100, 120, 5, "droid" )
+        condition = detectTargetFunc( 100, 240, 5, "droid" )
       }
     }
   },
@@ -130,8 +129,7 @@ Droid.armouredPatrolAutomaton = {
     onEnter = enterPatrol,
     links = {
       {
-        target = "patrol",
-        condition = function() return true end
+        target = "patrol"
       }
     }
   },
@@ -140,7 +138,7 @@ Droid.armouredPatrolAutomaton = {
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 150, 120, 5, "droid" )
+        condition = detectTargetFunc( 150, 240, 5, "droid" )
       }
     }
   },
@@ -173,7 +171,7 @@ Goblin.guardAutomaton = {
     links = {
       {
         target = "huntTarget",
-        condition = detectTargetFunc( 10, 120, 5, "goblin" )
+        condition = detectTargetFunc( 10, 180, 5, "goblin" )
       }
     }
   },

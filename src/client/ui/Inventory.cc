@@ -90,6 +90,10 @@ void Inventory::otherItemCallback( ModelField* sender, bool isClicked )
 
   hard_assert( bot != nullptr );
 
+  if( container == nullptr ) {
+    return;
+  }
+
   if( uint( id ) < uint( container->items.length() ) ) {
     item = orbis.obj<const Dynamic>( container->items[id] );
   }

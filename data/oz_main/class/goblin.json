@@ -32,7 +32,7 @@
   "throwMomentum":      6,
 
   "nameFunc":           "lizardName",
-  "mind":               "prey",
+  "mind":               "goblin_prey",
 
   "nItems":             4,
   "defaultItems":

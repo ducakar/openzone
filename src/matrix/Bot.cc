@@ -1054,8 +1054,8 @@ stepSucceeded:
           releaseCargo();
         }
         else {
-          Dynamic*   dyn      = orbis.obj<Dynamic>( instrument );
-          const Bot* dynBot   = static_cast<const Bot*>( dyn );
+          Dynamic*   dyn    = orbis.obj<Dynamic>( instrument );
+          const Bot* dynBot = static_cast<const Bot*>( dyn );
 
           if( dyn != nullptr && abs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
               !( ( dyn->flags & BOT_BIT ) && dynBot->cargo >= 0 ) && canReach( dyn ) )
@@ -1068,9 +1068,7 @@ stepSucceeded:
 
             if( dist <= clazz->reachDist ) {
               grabCargo( dyn );
-
-              grabHandle  = dist;
-              dyn->flags &= ~BELOW_BIT;
+              grabHandle = dist;
             }
           }
         }
@@ -1113,9 +1111,7 @@ stepSucceeded:
                 !( state & ( LADDER_BIT | LEDGE_BIT ) ) && weapon < 0 )
             {
               grabCargo( item );
-
-              grabHandle   = dist;
-              item->flags &= ~BELOW_BIT;
+              grabHandle = dist;
             }
           }
         }

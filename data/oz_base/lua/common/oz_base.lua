@@ -130,7 +130,7 @@ function automatonProcessor( automaton )
       for i = 1, #state.links do
         local link = state.links[i]
 
-        if link.condition( localData ) then
+        if link.condition == nil or link.condition( localData ) then
           localData.automatonState = link.target
 
           state = automaton[link.target]

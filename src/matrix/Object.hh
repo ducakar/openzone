@@ -158,7 +158,7 @@ public:
   static const int HEADING_MASK       = 0x00000003;
 
   // those flags are cleared by Physics on each tick
-  static const int TICK_CLEAR_MASK    = FRICTING_BIT;
+  static const int TICK_CLEAR_MASK    = FRICTING_BIT | BELOW_BIT;
 
   // those flags are cleared by Physics on each update when an object moves (plus lower = -1)
   static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT | IN_LAVA_BIT |

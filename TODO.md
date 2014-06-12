@@ -3,8 +3,6 @@
 - matrix
     * smooth/limited Vehicle rotation
     * Vehicle: tracked, submarine
-- nirvana
-    * AI tasks
 - ui
     * RTS interface
     * tutorial tips
