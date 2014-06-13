@@ -1,7 +1,7 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>OpenZone :: Preberi</title>
 <link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
 <link href="style.css" rel="stylesheet" type="text/css"/>
@@ -14,7 +14,7 @@
   <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a>
 </div>
 
-<h2><a name="content" href="#">Vsebina</a></h2>
+<h2><a id="content" href="#">Vsebina</a></h2>
 <ol>
   <li><a href="#controls">Nadzor</a></li>
   <li><a href="#cmdline">Ukazna vrstica</a></li>
@@ -26,10 +26,10 @@
   <li><a href="#legal">Avtorske pravice</a></li>
 </ol>
 
-<h2><a name="controls" href="#">Nadzor</a></h2>
+<h2><a id="controls" href="#">Nadzor</a></h2>
 <table class="keys">
   <tr>
-    <td class="header" colspan="2">Nadzor proste kamere</td>
+    <td colspan="2"><h4>Nadzor proste kamere</h4></td>
   </tr>
   <tr>
     <th>gibanje miške</th>
@@ -80,10 +80,7 @@
     <td>preklopi na naslednjo enoto, ki jo imaš pod nadzorom</td>
   </tr>
   <tr>
-    <td class="rowspace" colspan="2"/>
-  </tr>
-  <tr>
-    <td class="header" colspan="2">Nadzor bota</td>
+    <td colspan="2"><h4>Nadzor bota</h4></td>
   </tr>
   <tr>
     <th>gibanje miške</th>
@@ -194,10 +191,7 @@
     <td>predvajaj vse animacije</td>
   </tr>
   <tr>
-    <td class="rowspace" colspan="2"/>
-  </tr>
-  <tr>
-    <td class="header" colspan="2">Inventar</td>
+    <td colspan="2"><h4>Inventar</h4></td>
   </tr>
   <tr>
     <th>levi klik</th>
@@ -212,10 +206,7 @@
     <td>uporabi predmet / vzemi ali pospravi orožje</td>
   </tr>
   <tr>
-    <td class="rowspace" colspan="2"/>
-  </tr>
-  <tr>
-    <td class="header" colspan="2">Nadzor vozila</td>
+    <td colspan="2"><h4>Nadzor vozila</h4></td>
   </tr>
   <tr>
     <th>gibanje miške</th>
@@ -258,10 +249,7 @@
     <td>izskoči</td>
   </tr>
   <tr>
-    <td class="rowspace" colspan="2"/>
-  </tr>
-  <tr>
-    <td class="header" colspan="2">Razno</td>
+    <td colspan="2"><h4>Razno</h4></td>
   </tr>
   <tr>
     <th>Alt + vleka</th>
@@ -318,7 +306,7 @@
   </tr>
 </table>
 
-<h2><a name="cmdline" href="#">Ukazna vrstica</a></h2>
+<h2><a id="cmdline" href="#">Ukazna vrstica</a></h2>
 <p><code>
     openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-L &lt;jezik&gt;] [-p &lt;predpona&gt;]
 </code></p>
@@ -363,7 +351,7 @@
   </tr>
 </table>
 
-<h2><a name="settings" href="#">Nastavitve</a></h2>
+<h2><a id="settings" href="#">Nastavitve</a></h2>
 <p>
   Datoteka z nastavitvami se nahaja v <a href="#dirs">&lt;config&gt;</a>/client.json.
 </p>
@@ -565,7 +553,7 @@
   </tr>
 </table>
 
-<h2><a name="dirs" href="#">Imeniki</a></h2>
+<h2><a id="dirs" href="#">Imeniki</a></h2>
 
 <h4>Imenik &lt;config&gt;</h4>
 <table>
@@ -663,7 +651,7 @@
   </tr>
 </table>
 
-<h2><a name="vfs" href="#">Navidezni datotečni sistem</a></h2>
+<h2><a id="vfs" href="#">Navidezni datotečni sistem</a></h2>
 <p>
   Podatki za igro se preberejo iz notranjega navideznega datotečnega sistema, ki je unija naslednjih
   mest:
@@ -685,7 +673,7 @@
   izključno male črke.
 </p>
 
-<h2><a name="deps" href="#">Odvisnosti</a></h2>
+<h2><a id="deps" href="#">Odvisnosti</a></h2>
 <p>
   Binarni paketi bodisi že vsebujejo potrebne knjižnice ali jih imajo navedene navedene kot
   odvisnost. Naslednje knjižnice so neposredne odvisnosti, potrebne za poganjanje:
@@ -704,7 +692,7 @@
   <li>faad2 (neobvezno, za predvajanje datotek AAC).</li>
 </ul>
 
-<h2><a name="troubleshooting" href="#">Problemi</a></h2>
+<h2><a id="troubleshooting" href="#">Problemi</a></h2>
 <ul>
   <li>
     Prepričaj se, da imaš <b>NAJNOVEJŠE</b> gonilnike za grafično kartico.
@@ -728,7 +716,7 @@
   </li>
 </ul>
 
-<h2><a name="performance" href="#">Nasveti za boljše delovanje</a></h2>
+<h2><a id="performance" href="#">Nasveti za boljše delovanje</a></h2>
 <ul>
   <li>
     V primeru, da uporabljaš dinamično prilagajanje frekvence procesorja, to možnost izklopi in
@@ -740,7 +728,7 @@
   </li>
 </ul>
 
-<h2><a name="legal" href="#">Avtorske pravice</a></h2>
+<h2><a id="legal" href="#">Avtorske pravice</a></h2>
 <h3>Pogon OpenZone</h3>
 <div>
   Copyright © 2002-2014 Davorin Učakar

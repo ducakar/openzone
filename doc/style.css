@@ -1,9 +1,16 @@
+html {
+  height: 100%;
+}
 body {
   font-family: "Droid Sans Mono", monospace;
   font-size: 10pt;
   text-shadow: black 1px 1px 1px;
+  height: 100%;
   color: #b0e0c8;
   background-color: #0a100c;
+}
+small {
+  font-size: 8pt;
 }
 a {
   color: #40c0a0;
@@ -43,22 +50,14 @@ th {
   padding-right: 10pt;
   color: #ffffff;
 }
-td {
-  padding-right: 10pt;
-}
-td.header {
-  font-size: 1.25em;
-  font-weight: bold;
-  color: #ddfff0;
-}
-td.rowspace {
-  height: 10pt;
-}
-
-/* README. */
 table.keys th {
   text-align: right;
 }
+td {
+  padding-right: 10pt;
+}
+
+/* README. */
 table.settings td {
   padding-left: 20pt;
   padding-bottom: 10pt;
@@ -68,19 +67,31 @@ table.settings td {
 }
 
 /* NaCl game page. */
-div.module {
-  text-align: center;
-  padding: 0.25em;
-  background-color: #050806;
-}
 table#hudArea {
   position: absolute;
-  top: 100px;
   width: 100%;
-}
-table#hudArea td#hudText {
-  width: 600px;
+  height: 90%;
   text-align: center;
+  vertical-align: middle;
   font-weight: bold;
   font-size: 1.5em;
+}
+table.module {
+  text-align: center;
+  padding: 0px;
+  width: 100%;
+  height: 90%;
+  background-color: #050806;
+}
+.detail {
+  font-size: 0.6em;
+  font-weight: normal
+}
+embed#module {
+  width: 1px;
+  height: 1px;
+}
+img#moduleImage {
+  width: 100%;
+  height: 100%;
 }

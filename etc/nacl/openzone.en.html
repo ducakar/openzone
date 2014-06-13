@@ -1,55 +1,64 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>OpenZone</title>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
   <link href="doc/style.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="nacl.js"></script>
   <script type="text/javascript">
     var MSG_FINISHED     = "Finished<br/>You can now safely close this page.";
     var MSG_INITIALISING = "Initialising ...<br/>" +
-                           "<span style='font-size: 0.6em; font-weight: normal'>" +
-                           "If it takes long enough that you can read this, you don't have " +
-                           "good enough graphics card or you have to navigate to " +
-                           "<tt>chrome://flags</tt> and turn on " +
-                           "<b>Override software rendering list</b>.</span>";
+                           "<span class='detail'>If it takes long enough that you can read this, " +
+                           "you don't have good enough graphics card or you have to navigate to " +
+                           "<code>chrome://flags</code> and turn on " +
+                           "<code>Override software rendering list</code>.</span>";
     var MSG_CHECKING     = "Checking for updates ...";
     var MSG_DOWNLOADING  = "Downloading updates<br/>";
     var MSG_READING      = "Reading game data archives<br/>"
     var MSG_LOADING      = "Loading";
     var MSG_LAUNCHING    = "Starting NaCl<br/>" +
-                           "<span style='font-size: 0.6em; font-weight: normal'>" +
-                           "If it takes long enough that you can read this some unexpected error " +
-                           "occurred.</span>";
+                           "<span class='detail'>If it takes long enough that you can read this " +
+                           "some unexpected error occurred.</span>";
     var MSG_CLOSE        = "When this messages has been displayed for a few seconds the game is " +
                            "probably saved already and you can safely leave this page.";
   </script>
-  <script type="text/javascript" source="nacl.js"/>
 </head>
 <body>
 
   <table id="hudArea">
     <tr>
-      <td/>
       <td id="hudText">
-        Loading<br/><span style="font-size: 0.6em; font-weight: normal">
-        Google Chrome/Chromium 31 or newer is required.
+        Loading<br/>
+        <span class="detail">Google Chrome/Chromium 31 or newer is required.</span>
       </td>
-      <td/>
     </tr>
   </table>
 
-  <div class="module">
-    <embed id="nacl" width="80%" height="80%" src="openzone.nmf" type="application/x-pnacl"/>
-    <p><code>Click</code> game for focus
-    <code>F10</code> main menu
-    <code>F11</code> full screen<br/>
-    <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a></p>
-  </div>
+  <table class="module">
+    <tr>
+      <td style="width: 10%"></td>
+      <td style="width: 80%;">
+        <img id="moduleImage" alt="" src="title.jpg"/>
+        <embed id="module" type="application/x-pnacl" src="openzone.nmf"/>
+      </td>
+      <td style="width: 10%"></td>
+    </tr>
+    <tr style="height: 2em">
+      <td></td>
+      <td>
+        <code>Click</code> game for focus
+        <code>F10</code> main menu
+        <code>F11</code> full screen<br/>
+        <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a>
+      </td>
+      <td></td>
+    </tr>
+  </table>
 
   <table class="keys">
     <tr>
-      <td class="header" colspan="2">Free Camera Controls</td>
+      <td colspan="2"><h4>Free Camera Controls</h4></td>
     </tr>
     <tr>
       <th>mouse movement</th>
@@ -100,10 +109,7 @@
       <td>cycle switchable units</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Bot Controls</td>
+      <td colspan="2"><h4>Bot Controls</h4></td>
     </tr>
     <tr>
       <th>mouse movement</th>
@@ -214,10 +220,7 @@
       <td>play all animations</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Inventory</td>
+      <td colspan="2"><h4>Inventory</h4></td>
     </tr>
     <tr>
       <th>left click</th>
@@ -232,10 +235,7 @@
       <td>perform action on item / arm or holster a weapon</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Vehicle Controls</td>
+      <td colspan="2"><h4>Vehicle Controls</h4></td>
     </tr>
     <tr>
       <th>mouse movement</th>
@@ -278,10 +278,7 @@
       <td>eject</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Miscellaneous</td>
+      <td colspan="2"><h4>Miscellaneous</h4></td>
     </tr>
     <tr>
       <th>Alt + drag</th>
@@ -339,13 +336,12 @@
 
   <p><a href="doc/README.html">More</a></p>
 
-  <div><small>
-    <p>OpenZone (engine) © 2002-2013 Davorin Učakar.<br/>
-    <a href="http://ducakar.github.com/openzone/">http://ducakar.github.com/openzone/</a></p>
-    <p>Engine is licensed under <a href="doc/licences/COPYING.GPL3.txt">GNU GPL 3.0</a>.
-    Data files and libraries distributed with OpenZone are work of various authors and use separate
-    licences. See <a href="doc/README.html#legal">details</a>.</p>
-  </small></div>
+  <p><small>OpenZone (engine) © 2002-2013 Davorin Učakar.<br/>
+  <a href="http://ducakar.github.com/openzone/">http://ducakar.github.com/openzone/</a></small></p>
+
+  <p><small>Engine is licensed under <a href="doc/licences/COPYING.GPL3.txt">GNU GPL 3.0</a>.
+  Data files and libraries distributed with OpenZone are work of various authors and use separate
+  licences. See <a href="doc/README.html#legal">details</a>.</small></p>
 
 </body>
 </html>

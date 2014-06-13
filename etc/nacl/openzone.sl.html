@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>OpenZone</title>
   <link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
   <link href="doc/style.css" rel="stylesheet" type="text/css"/>
@@ -8,18 +9,17 @@
   <script type="text/javascript">
     var MSG_FINISHED     = "Končano<br/>Sedaj lahko varno zapreš to stran.";
     var MSG_INITIALISING = "Inicializiram ...<br/>" +
-                           "<span style='font-size: 0.6em; font-weight: normal'>" +
+                           "<span class='detail'>" +
                            "Če traja dovolj dolgo, da lahko to bereš, imaš preslabo grafično " +
-                           "kartico ali pa moraš iti na <tt>chrome://flags</tt> in vklopiti " +
-                           "možnost <b>Preglasi seznam programskega upodabljanja</b>.</span>";
+                           "kartico ali pa moraš iti na <code>chrome://flags</code> in vklopiti " +
+                           "možnost <code>Preglasi seznam programskega upodabljanja</code>.</span>";
     var MSG_CHECKING     = "Preverjam posodobitve ...";
     var MSG_DOWNLOADING  = "Prenašam posodobitve<br/>";
     var MSG_READING      = "Berem podatkovne arhive<br/>";
     var MSG_LOADING      = "Nalagam";
     var MSG_LAUNCHING    = "Zaganjam NaCl<br/>" +
-                           "<span style='font-size: 0.6em; font-weight: normal'>" +
-                           "Če traja dovolj dolgo, da lahko to bereš, je šlo narobe " +
-                           "nekaj nepredvidenega.</span>";
+                           "<span class='detail'>Če traja dovolj dolgo, da lahko to bereš, je " +
+                           "šlo narobe nekaj nepredvidenega.</span>";
     var MSG_CLOSE        = "Če je to sporočilo prikazano nekaj sekund, je igra verjetno že " +
                            "shranjena, zato lahko varno zapustiš to stran.";
   </script>
@@ -28,26 +28,37 @@
 
   <table id="hudArea">
     <tr>
-      <td/>
       <td id="hudText">
-        Nalagam<br/><span style="font-size: 0.6em; font-weight: normal">
-        Deluje samo v brskalniku Google Chrome/Chromium 31 ali novejšem.
+        Nalagam<br/>
+        <span class="detail">Deluje samo v brskalniku Google Chrome/Chromium 31 ali novejšem.</span>
       </td>
-      <td/>
     </tr>
   </table>
 
-  <div class="module">
-    <embed id="nacl" width="80%" height="80%" src="openzone.nmf" type="application/x-pnacl"/>
-    <p><code>Klikni</code> igro za fokus
-    <code>F10</code> glavni meni
-    <code>F11</code> celotni zaslon<br/>
-    <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a></p>
-  </div>
+  <table class="module">
+    <tr>
+      <td style="width: 10%"></td>
+      <td style="width: 80%;">
+        <img id="moduleImage" alt="" src="title.jpg"/>
+        <embed id="module" type="application/x-pnacl" src="openzone.nmf"/>
+      </td>
+      <td style="width: 10%"></td>
+    </tr>
+    <tr style="height: 2em">
+      <td></td>
+      <td>
+        <code>Klikni</code> igro za fokus
+        <code>F10</code> glavni meni
+        <code>F11</code> celotni zaslon<br/>
+        <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a>
+      </td>
+      <td></td>
+    </tr>
+  </table>
 
   <table class="keys">
     <tr>
-      <td class="header" colspan="2">Nadzor proste kamere</td>
+      <td colspan="2"><h4>Nadzor proste kamere</h4></td>
     </tr>
     <tr>
       <th>gibanje miške</th>
@@ -98,10 +109,7 @@
       <td>preklopi na naslednjo enoto, ki jo imaš pod nadzorom</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Nadzor bota</td>
+      <td colspan="2"><h4>Nadzor bota</h4></td>
     </tr>
     <tr>
       <th>gibanje miške</th>
@@ -212,10 +220,7 @@
       <td>predvajaj vse animacije</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Inventar</td>
+      <td colspan="2"><h4>Inventar</h4></td>
     </tr>
     <tr>
       <th>levi klik</th>
@@ -230,10 +235,7 @@
       <td>uporabi predmet / vzemi ali pospravi orožje</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Nadzor vozila</td>
+      <td colspan="2"><h4>Nadzor vozila</h4></td>
     </tr>
     <tr>
       <th>gibanje miške</th>
@@ -276,10 +278,7 @@
       <td>izskoči</td>
     </tr>
     <tr>
-      <td class="rowspace" colspan="2"/>
-    </tr>
-    <tr>
-      <td class="header" colspan="2">Razno</td>
+      <td colspan="2"><h4>Razno</h4></td>
     </tr>
     <tr>
       <th>Alt + vleka</th>
@@ -338,12 +337,12 @@
 
   <p><a href="doc/PREBERI.html">Beri dalje</a></p>
 
-  <div><small>
-    <p>OpenZone (pogon) © 2002-2014 Davorin Učakar.
-    <a href="http://ducakar.github.com/openzone/">http://ducakar.github.com/openzone/</a></p>
-    <p>Pogon OpenZone je pod licenco <a href="doc/licences/COPYING.GPL3.txt">GNU GPL 3.0</a>.
-    Podatkovni arhivi in knjižnice distribuirane skupaj z OpenZone so delo različnih avtorjev in so
-    pod drugačnimi licencami. <a href="doc/PREBERI.html#legal">Več podrobnosti</a>.</p>
-  </small></div>
+  <p><small>OpenZone (pogon) © 2002-2013 Davorin Učakar.<br/>
+  <a href="http://ducakar.github.com/openzone/">http://ducakar.github.com/openzone/</a></small></p>
+
+  <p><small>Pogon OpenZone je pod licenco <a href="doc/licences/COPYING.GPL3.txt">GNU GPL 3.0</a>.
+  Podatkovni arhivi in knjižnice distribuirane skupaj z OpenZone so delo različnih avtorjev in so
+  pod drugačnimi licencami. <a href="doc/PREBERI.html#legal">Več podrobnosti</a>.</small></p>
+
 </body>
 </html>

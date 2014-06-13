@@ -3,32 +3,33 @@
 - ozCore
     * null replaced by nullptr keyword
     * more extensive use of constexpr
-    * larger, performance-intensive and non-performance-critical inline functions moved to .cc files
+    * larger and non-performance-critical inline functions moved to .cc files
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements
-        + improved iterators: much less code duplication, no more key() and value() members
+        + improved iterators: far less code duplication, no more key()/value() members
         + STL-like parameter order in container functions (iCopy/aCopy, aFill, aIndex ...)
         + STL-like begin() and end() members on containers and iterators
         + removed Array and DArray template classes
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
-        + more inheritance between classes for less duplication (e.g. List -> Set -> Map)
+        + more inheritance between classes and far less code duplication (e.g. List -> Set -> Map)
+    * Alloc: new/delete are only overloaded in diagnostics mode (OZ_ALLOCATOR)
     * new PoolAlloc class, non-template version of Pool which now extends PoolAlloc
     * String: construction from numbers, new number parsing functions
     * exact SLERP implementation in Quat
     * new Mat3 class for 3x3 matrices
     * SIMD support for linear algebra classes
     * new SpinLock and CallOnce classes added for threading
-    * ALSA and OSS back-ends for System::bell()
+    * ALSA and OSS back-ends for System::bell(), PulseAudio backend removed
     * linear algebra classes added as primitives to streams, Log and JSON
     * BufferStream merged into OutputStream, inherits from InputStream
     * Buffer supports zlib compression
     * File class determines special user directories and executable path
     * PFile class merged into File class (VFS paths begin with '@')
-    * new EnumMap class
+    * new EnumMap class for enum <-> string conversions
     * new SharedLib class for run-time linking
-    * new Profiler class
+    * new Profiler class for measuring time spent in various code segments
     * new Gettext class for loading gettext translations
     * JSON is more forgiving and simplified (implicit ctors, get<NumType>(), removed asType())
     * new Pepper class that provides basic interfaces to PPAPI on NaCl
@@ -39,7 +40,6 @@
     * GL class for OpenGL utilities: error checks, DDS texture loader
     * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader, Vorbis streamer
     * Window class based on client::Window
-    * Pepper class based on client::NaClPlatform
     * Shader compilation utility, understands #include directive
 - ozFactory: new builder building blocks library
     * ImageBuilder class for building DDS textures

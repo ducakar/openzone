@@ -161,7 +161,7 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         r = s;
         g = 0;
         b = 0;
-        a = 0;
+        a = char( 0xff );
       }
 
       ImageBuilder::createDDS( &specularImage, 1, imageOptions, destBasePath + "_m.dds" );
@@ -178,7 +178,7 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         r = 0;
         g = e;
         b = 0;
-        a = 0;
+        a = char( 0xff );
       }
 
       ImageBuilder::createDDS( &emissionImage, 1, imageOptions, destBasePath + "_m.dds" );
@@ -206,7 +206,7 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         r = s;
         g = e;
         b = 0;
-        a = 0;
+        a = char( 0xff );
       }
 
       ImageBuilder::createDDS( &specularImage, 1, imageOptions, destBasePath + "_m.dds" );
