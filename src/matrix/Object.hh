@@ -252,9 +252,10 @@ protected:
   virtual void onUpdate();
 
   /*
-   * STATUS BAR
+   * INFORMATION
    */
 
+  virtual String getTitle() const;
   virtual float getStatus() const;
 
 public:
@@ -320,6 +321,12 @@ public:
     if( flags & UPDATE_FUNC_BIT ) {
       onUpdate();
     }
+  }
+
+  OZ_ALWAYS_INLINE
+  String title() const
+  {
+    return getTitle();
   }
 
   OZ_ALWAYS_INLINE

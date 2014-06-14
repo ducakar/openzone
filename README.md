@@ -204,10 +204,10 @@ Runs cppcheck tool for static code analysis. Output is written into `cppcheck.lo
 
 Cleans up temporary, intermediate and backup files from a source game data directory.
 
-### `gettext-base.sh <basedata_dir>` ###
+### `gettext-internal.sh <data_dir>` ###
 
-Creates `<basedata_dir>/<basename>.pot` template for localised messages catalogue. See `ozGettext`
-tool for more details. `<basename>` is package name (last directory name in `<basedata_dir>`).
+Extracts internal strings for localisation from OpenZone source code and appends them to
+`<data_dir>/lingua/<data_dir_basename>.pot`.
 
 ### `lib.sh [clean]` ###
 

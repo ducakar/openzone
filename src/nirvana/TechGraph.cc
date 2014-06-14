@@ -94,94 +94,111 @@ void TechGraph::update()
 
 void TechGraph::read( InputStream* is )
 {
-  for( Node& node : nodes ) {
-    node.progress = is->readFloat();
+  int nNodes = is->readInt();
+
+  for( int i = 0; i < nNodes; ++i ) {
+    const char* name     = is->readString();
+    float       progress = is->readFloat();
+
+    for( Node& node : nodes ) {
+      if( node.name.equals( name ) ) {
+        node.progress = progress;
+        break;
+      }
+    }
   }
 }
 
 void TechGraph::write( OutputStream* os ) const
 {
+  os->writeInt( nodes.length() );
+
   for( const Node& node : nodes ) {
+    os->writeString( node.name );
     os->writeFloat( node.progress );
   }
 }
 
 void TechGraph::load()
 {
-  File configFile = "@nirvana/techGraph.json";
-  JSON config;
-  if( !config.load( configFile ) ) {
-    return;
+  File techDir = "@tech";
+
+  for( const File& configFile : techDir.ls() ) {
+    JSON config;
+
+    if( configFile.type() != File::REGULAR || !config.load( configFile ) ) {
+      continue;
+    }
+
+    int nNodes = config.length();
+    for( int i = 0; i < nNodes; ++i ) {
+      const JSON& tech = config[i];
+
+      nodes.add( Node() );
+      Node& node = nodes.last();
+
+      const char* technology = tech["technology"].get( "" );
+      const char* building   = tech["building"].get( "" );
+      const char* unit       = tech["unit"].get( "" );
+      const char* item       = tech["item"].get( "" );
+      const char* object     = tech["object"].get( "" );
+
+      if( !String::isEmpty( technology ) ) {
+        node.type     = Node::TECHNOLOGY;
+        node.name     = technology;
+        node.building = nullptr;
+      }
+      else if( !String::isEmpty( building ) ) {
+        node.type     = Node::BUILDING;
+        node.name     = building;
+        node.building = liber.bsp( node.name );
+      }
+      else if( !String::isEmpty( unit ) ) {
+        node.type   = Node::UNIT;
+        node.name   = unit;
+        node.object = liber.objClass( node.name );
+      }
+      else if( !String::isEmpty( item ) ) {
+        node.type   = Node::ITEM;
+        node.name   = item;
+        node.object = liber.objClass( node.name );
+      }
+      else if( !String::isEmpty( object ) ) {
+        node.type   = Node::OBJECT;
+        node.name   = object;
+        node.object = liber.objClass( node.name );
+      }
+      else {
+        OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit', 'item' or 'object'"
+                  " defined" );
+      }
+
+      node.title       = lingua.get( tech["title"].get( node.name ) );
+      node.description = lingua.get( tech["description"].get( "" ) );
+      node.price       = tech["price"].get( 0 );
+      node.time        = tech["time"].get( 60.0f );
+      node.progress    = node.price == 0 ? 1.0f : 0.0f;
+    }
+
+    for( int i = 0; i < nNodes; ++i ) {
+      const JSON& tech     = config[i];
+      const JSON& requires = tech["requires"];
+      Node&       node     = nodes[i];
+
+      if( requires.length() > Node::MAX_DEPS ) {
+        OZ_ERROR( "Only %d dependencies per technology supported.", Node::MAX_DEPS );
+      }
+
+      int nRequires = requires.length();
+      for( int i = 0; i < nRequires; ++i ) {
+        Node* depNode = findNode( requires[i].get( "?" ) );
+
+        node.requires.add( depNode );
+      }
+    }
+
+    config.clear( true );
   }
-
-  int nNodes = config.length();
-  for( int i = 0; i < nNodes; ++i ) {
-    const JSON& tech = config[i];
-
-    nodes.add( Node() );
-    Node& node = nodes.last();
-
-    const char* technology = tech["technology"].get( "" );
-    const char* building   = tech["building"].get( "" );
-    const char* unit       = tech["unit"].get( "" );
-    const char* item       = tech["item"].get( "" );
-    const char* object     = tech["object"].get( "" );
-
-    if( !String::isEmpty( technology ) ) {
-      node.type     = Node::TECHNOLOGY;
-      node.name     = technology;
-      node.building = nullptr;
-    }
-    else if( !String::isEmpty( building ) ) {
-      node.type     = Node::BUILDING;
-      node.name     = building;
-      node.building = liber.bsp( node.name );
-    }
-    else if( !String::isEmpty( unit ) ) {
-      node.type   = Node::UNIT;
-      node.name   = unit;
-      node.object = liber.objClass( node.name );
-    }
-    else if( !String::isEmpty( item ) ) {
-      node.type   = Node::ITEM;
-      node.name   = item;
-      node.object = liber.objClass( node.name );
-    }
-    else if( !String::isEmpty( object ) ) {
-      node.type   = Node::OBJECT;
-      node.name   = object;
-      node.object = liber.objClass( node.name );
-    }
-    else {
-      OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit', 'item' or 'object'"
-                " defined" );
-    }
-
-    node.title       = lingua.get( tech["title"].get( node.name ) );
-    node.description = lingua.get( tech["description"].get( "" ) );
-    node.price       = tech["price"].get( 0 );
-    node.time        = tech["time"].get( 60.0f );
-    node.progress    = node.price == 0 ? 1.0f : 0.0f;
-  }
-
-  for( int i = 0; i < nNodes; ++i ) {
-    const JSON& tech     = config[i];
-    const JSON& requires = tech["requires"];
-    Node&       node     = nodes[i];
-
-    if( requires.length() > Node::MAX_DEPS ) {
-      OZ_ERROR( "Only %d dependencies per technology supported.", Node::MAX_DEPS );
-    }
-
-    int nRequires = requires.length();
-    for( int i = 0; i < nRequires; ++i ) {
-      Node* depNode = findNode( requires[i].get( "?" ) );
-
-      node.requires.add( depNode );
-    }
-  }
-
-  config.clear( true );
 
   enableAll();
 }

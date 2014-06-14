@@ -104,10 +104,7 @@ void HudArea::drawBotCrosshair()
         taggedStatus.draw( this, healthBarX, healthBarY + 7, ICON_SIZE + 16, 8, status );
       }
 
-      String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-                      bot->name + " (" + objClazz->title + ")" : objClazz->title;
-
-      title.set( descTextX, descTextY, "%s", sTitle.cstr() );
+      title.set( descTextX, descTextY, "%s", obj->title().cstr() );
       title.draw( this );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-08-10 02:06+0100\n"
+"PO-Revision-Date: 2014-06-15 00:03+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: en_GB\n"
@@ -10,13 +10,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.4\n"
 
-#: src/client/ui/CreditsMenu.cc:193
+#: data/oz_base/credits/oz_base.txt
+msgid ""
+"shaders\n"
+"Davorin Učakar\n"
+"\n"
+"OpenZone mouse cursors\n"
+"Davorin Učakar\n"
+"\n"
+"Droid fonts\n"
+"The Android Open Source Project\n"
+"\n"
+"UI icons\n"
+"Davorin Učakar\n"
+msgstr ""
+"shaders\n"
+"Davorin Učakar\n"
+"\n"
+"OpenZone mouse cursors\n"
+"Davorin Učakar\n"
+"\n"
+"Droid fonts\n"
+"The Android Open Source Project\n"
+"\n"
+"UI icons\n"
+"Davorin Učakar\n"
+
+#: src/client/ui/CreditsMenu.cc:192
 msgid "(See doc/README.html for individual copyrights and licences.)"
 msgstr "(See doc/README.html for individual copyrights and licences.)"
 
-#: src/client/ui/BuildFrame.cc:247
+#: src/client/ui/BuildFrame.cc:248
 msgid "B"
 msgstr "B"
 
@@ -24,20 +50,20 @@ msgstr "B"
 msgid "Back"
 msgstr "Back"
 
-#: src/client/ui/BuildFrame.cc:148 src/client/ui/BuildFrame.cc:347
-#: src/client/ui/BuildFrame.cc:369
+#: src/client/ui/BuildFrame.cc:147 src/client/ui/BuildFrame.cc:348
+#: src/client/ui/BuildFrame.cc:370
 msgid "Buildings"
 msgstr "Buildings"
 
-#: src/client/ui/SettingsFrame.cc:66
+#: src/client/ui/SettingsFrame.cc:68
 msgid "Close"
 msgstr "Close"
 
-#: src/client/ui/MainMenu.cc:128
+#: src/client/ui/MainMenu.cc:129
 msgid "Continue"
 msgstr "Continue"
 
-#: src/client/ui/MainMenu.cc:173
+#: src/client/ui/MainMenu.cc:174
 msgid "Credits"
 msgstr "Credits"
 
@@ -45,19 +71,19 @@ msgstr "Credits"
 msgid "Debug"
 msgstr "Debug"
 
-#: src/client/ui/MainMenu.cc:175
+#: src/client/ui/MainMenu.cc:176
 msgid "Exit"
 msgstr "Exit"
 
-#: src/client/ui/BuildFrame.cc:249
+#: src/client/ui/BuildFrame.cc:250
 msgid "I"
 msgstr "I"
 
-#: src/client/ui/BuildFrame.cc:164 src/client/ui/BuildFrame.cc:355
+#: src/client/ui/BuildFrame.cc:163 src/client/ui/BuildFrame.cc:356
 msgid "Items"
 msgstr "Items"
 
-#: src/client/ui/MainMenu.cc:111
+#: src/client/ui/MainMenu.cc:112
 msgid ""
 "Licensed under GNU GPL 3.0. Game data archives and libraries distributed "
 "with OpenZone are work of various authors and use separate licences. For "
@@ -69,19 +95,19 @@ msgstr ""
 "more details see doc/README.html and files named README.txt and COPYING.txt "
 "inside game data archives."
 
-#: src/client/EditStage.cc:210 src/client/GameStage.cc:282
+#: src/client/EditStage.cc:213 src/client/GameStage.cc:308
 msgid "Loading ..."
 msgstr "Loading ..."
 
-#: src/client/ui/BuildFrame.cc:250
+#: src/client/ui/BuildFrame.cc:251
 msgid "M"
 msgstr "M"
 
-#: src/client/ui/BuildFrame.cc:172 src/client/ui/BuildFrame.cc:359
+#: src/client/ui/BuildFrame.cc:171 src/client/ui/BuildFrame.cc:360
 msgid "Miscellaneous"
 msgstr "Miscellaneous"
 
-#: src/client/ui/MainMenu.cc:171
+#: src/client/ui/MainMenu.cc:172
 msgid "Missions"
 msgstr "Missions"
 
@@ -89,7 +115,7 @@ msgstr "Missions"
 msgid "Music Player"
 msgstr "Music Player"
 
-#: src/client/ui/SettingsFrame.cc:60
+#: src/client/ui/SettingsFrame.cc:62
 msgid ""
 "NOT IMPLEMENTED.\n"
 "You can change your settings by manually editing the following files:"
@@ -101,39 +127,39 @@ msgstr ""
 msgid "No quest"
 msgstr "No quest"
 
-#: src/client/Profile.cc:55
+#: src/client/Profile.cc:73
 msgid "Player"
 msgstr "Player"
 
-#: src/client/ui/MainMenu.cc:133
+#: src/client/ui/MainMenu.cc:134
 msgid "Quickload"
 msgstr "Quickload"
 
-#: src/client/ui/MainMenu.cc:172 src/client/ui/SettingsFrame.cc:51
+#: src/client/ui/MainMenu.cc:173 src/client/ui/SettingsFrame.cc:52
 msgid "Settings"
 msgstr "Settings"
 
-#: src/client/EditStage.cc:271 src/client/GameStage.cc:372
+#: src/client/EditStage.cc:269 src/client/GameStage.cc:396
 msgid "Shutting down ..."
 msgstr "Shutting down ..."
 
-#: src/client/ui/CreditsMenu.cc:192
+#: src/client/ui/CreditsMenu.cc:191
 msgid "The following libraries may be bundled with the engine:"
 msgstr "The following libraries may be bundled with the engine:"
 
-#: src/client/ui/BuildFrame.cc:248
+#: src/client/ui/BuildFrame.cc:249
 msgid "U"
 msgstr "U"
 
-#: src/client/ui/BuildFrame.cc:156 src/client/ui/BuildFrame.cc:351
+#: src/client/ui/BuildFrame.cc:155 src/client/ui/BuildFrame.cc:352
 msgid "Units"
 msgstr "Units"
 
-#: src/client/ui/MainMenu.cc:174
+#: src/client/ui/MainMenu.cc:175
 msgid "Web"
 msgstr "Web"
 
-#: src/client/ui/CreditsMenu.cc:152
+#: src/client/ui/CreditsMenu.cc:149
 msgid "engine developer"
 msgstr "engine developer"
 
@@ -145,35 +171,10 @@ msgstr "failed"
 msgid "in progress"
 msgstr "in progress"
 
-#: src/client/ui/CreditsMenu.cc:167
+#: src/client/ui/CreditsMenu.cc:166
 msgid "package"
 msgstr "package"
 
 #: src/client/ui/QuestFrame.cc:58
 msgid "successful"
 msgstr "successful"
-
-msgid ""
-"shaders\n"
-"Davorin Učakar\n"
-"\n"
-"OpenZone mouse cursors\n"
-"Davorin Učakar\n"
-"\n"
-"Droid fonts\n"
-"The Android Open Source Project\n"
-"\n"
-"UI icons\n"
-"Davorin Učakar\n"
-msgstr ""
-"shaders\n"
-"Davorin Učakar\n"
-"\n"
-"OpenZone mouse cursors\n"
-"Davorin Učakar\n"
-"\n"
-"Droid fonts\n"
-"The Android Open Source Project\n"
-"\n"
-"UI icons\n"
-"Davorin Učakar\n"

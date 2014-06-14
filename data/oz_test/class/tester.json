@@ -1,0 +1,35 @@
+{
+  "base":               "Bot",
+
+  "dim":                [ 0.45, 0.45, 1.0 ],
+  "crouchDimZ":         0.8,
+
+  "life":               100,
+
+  "mass":               100,
+  "lift":               1.3,
+
+  "camZ":               0.79,
+  "crouchCamZ":         0.69,
+
+  "fragPool":           "gibs",
+  "nFrags":             5,
+
+  "imagoType":          "MD2",
+  "imagoModel":         "hobgoblin",
+
+  "audioType":          "Bot",
+  "audioSounds":
+  {
+    "damage":           "ppm/pains",
+    "land":             "oz/land",
+    "splash":           "free/splash1",
+    "step":             "openarena/boot4",
+    "waterStep":        "openarena/splash1",
+    "swimSurface":      "openarena/watr_in",
+    "death":            "ppm/deathb",
+    "jump":             "aard/jump",
+    "take":             "oz/itempick",
+    "flip":             "ppm/deathb"
+  }
+}

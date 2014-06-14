@@ -86,6 +86,11 @@ void Object::onUpdate()
   luaMatrix.objectCall( clazz->onUpdate, this );
 }
 
+String Object::getTitle() const
+{
+  return clazz->name;
+}
+
 float Object::getStatus() const
 {
   hard_assert( !clazz->getStatus.isEmpty() );

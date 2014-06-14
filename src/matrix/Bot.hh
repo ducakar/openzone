@@ -219,6 +219,7 @@ protected:
 
   void onDestroy() override;
   void onUpdate() override;
+  String getTitle() const override;
   float getStatus() const override;
 
 public:

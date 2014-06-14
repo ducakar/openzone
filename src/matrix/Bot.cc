@@ -1126,6 +1126,11 @@ stepSucceeded:
   stamina    = max( 0.0f, stamina );
 }
 
+String Bot::getTitle() const
+{
+  return name.isEmpty() ? clazz->name : String::str( "%s (%s)", name.cstr(), clazz->name.cstr() );
+}
+
 float Bot::getStatus() const
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );

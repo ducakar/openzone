@@ -188,20 +188,12 @@ void StrategicArea::collectHovers()
   }
 }
 
-void StrategicArea::drawHoverTitle( const Span& span, const char* title, const Object* obj )
+void StrategicArea::drawHoverTitle( const Span& span, const char* title )
 {
-  const Bot* bot = static_cast<const Bot*>( obj );
-
   int labelX = ( span.minX + span.maxX ) / 2;
   int labelY = span.maxY + 16;
 
-  if( obj != nullptr && obj->flags & Object::BOT_BIT ) {
-    unitName.set( labelX, labelY, "%s (%s)", bot->name.cstr(), title );
-  }
-  else {
-    unitName.set( labelX, labelY, "%s", title );
-  }
-
+  unitName.set( labelX, labelY, "%s", title );
   unitName.draw( this );
 }
 
@@ -416,7 +408,7 @@ void StrategicArea::onDraw()
 
   if( obj != nullptr && obj->cell != nullptr && projectBounds( *obj, &span ) ) {
     drawHoverRect( span, nullptr, obj );
-    drawHoverTitle( span, obj->clazz->title, obj );
+    drawHoverTitle( span, obj->title() );
   }
 
   for( int i = 0; i < dragObjs.length(); ++i ) {

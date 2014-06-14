@@ -248,18 +248,10 @@ void Inventory::onDraw()
     return;
   }
 
-  const Object*      container      = other == nullptr ? owner : other;
-  const ObjectClass* containerClazz = container->clazz;
-  const Dynamic*     taggedItem     = orbis.obj<const Dynamic>( taggedItemIndex );
+  const Object*  container  = other == nullptr ? owner : other;
+  const Dynamic* taggedItem = orbis.obj<const Dynamic>( taggedItemIndex );
 
-  if( container->flags & Object::BOT_BIT ) {
-    const Bot* bot = static_cast<const Bot*>( container );
-
-    title.setText( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
-  }
-  else {
-    title.setText( "%s", containerClazz->title.cstr() );
-  }
+  title.setText( "%s", container->title().cstr() );
 
   for( int i = 0; i < COLS; ++i ) {
     int id = scrollOwner * COLS + i;

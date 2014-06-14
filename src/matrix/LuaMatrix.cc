@@ -47,17 +47,20 @@ String LuaMatrix::nameGenCall( const char* functionName )
 
   String name = "";
 
-  l_getglobal( functionName );
+  if( !String::isEmpty( functionName ) )
+  {
+    l_getglobal( functionName );
 
-  if( l_pcall( 0, 1 ) != LUA_OK ) {
-    Log::println( "Lua[M] in %s(): %s", functionName, l_tostring( -1 ) );
-    System::bell();
-  }
-  else {
-    name = l_tostring( 2 );
-  }
+    if( l_pcall( 0, 1 ) != LUA_OK ) {
+      Log::println( "Lua[M] in %s(): %s", functionName, l_tostring( -1 ) );
+      System::bell();
+    }
+    else {
+      name = l_tostring( 2 );
+    }
 
-  l_settop( 1 );
+    l_settop( 1 );
+  }
 
   return name;
 }

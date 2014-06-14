@@ -156,18 +156,10 @@ void EditFrame::onDraw()
     return;
   }
 
-  const Object*      container      = owner;
-  const ObjectClass* containerClazz = container->clazz;
-  const Dynamic*     taggedItem     = orbis.obj<const Dynamic>( taggedItemIndex );
+  const Object*  container  = owner;
+  const Dynamic* taggedItem = orbis.obj<const Dynamic>( taggedItemIndex );
 
-  if( container->flags & Object::BOT_BIT ) {
-    const Bot* bot = static_cast<const Bot*>( container );
-
-    title.setText( "#%d %s (%s)", bot->index, bot->name.cstr(), containerClazz->title.cstr() );
-  }
-  else {
-    title.setText( "#%d %s", container->index, containerClazz->title.cstr() );
-  }
+  title.setText( "#%d %s", container->index, container->title().cstr() );
 
   for( int i = 0; i < COLS; ++i ) {
     int id = scrollOwner * COLS + i;

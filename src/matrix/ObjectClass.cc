@@ -40,13 +40,16 @@ ObjectClass* ObjectClass::createClass()
 
 void ObjectClass::init( const JSON& config, const char* name_ )
 {
+  const char* origTitle       = config["title"].get( name );
+  const char* origDescription = config["description"].get( "" );
+
   /*
    * name
    */
 
   name        = name_;
-  title       = OZ_GETTEXT( config["title"].get( name ) );
-  description = OZ_GETTEXT( config["description"].get( "" ) );
+  title       = OZ_GETTEXT( origTitle );
+  description = OZ_GETTEXT( origDescription );
 
   if( name.isEmpty() ) {
     OZ_ERROR( "Empty class name" );

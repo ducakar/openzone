@@ -67,7 +67,7 @@ void Builder::printUsage( const char* invocationName )
     "  -m         Build models.\n"
     "  -s         Copy referenced sounds (by UI, BSPs and object classes).\n"
     "  -x         Check and copy Lua scripts.\n"
-    "  -v         Copy nirvana configuration files.\n"
+    "  -k         Copy tech graph files.\n"
     "  -r         Copy music tracks.\n"
     "  -i         Build missions.\n"
     "  -A         Everything above.\n"
@@ -276,7 +276,7 @@ void Builder::buildBSPTextures()
   }
 
   if( !skipReferences && !context.usedTextures.isEmpty() ) {
-    Log::println( "The following referenced textures are missing in 'baseq3/textures' {" );
+    Log::println( "*** The following referenced textures are missing in 'baseq3/textures' *** {" );
     Log::indent();
 
     for( const auto& tex : context.usedTextures ) {
@@ -285,8 +285,6 @@ void Builder::buildBSPTextures()
 
     Log::unindent();
     Log::println( "}" );
-
-    OZ_ERROR( "Referenced textures missing" );
   }
 
   Log::unindent();
@@ -411,7 +409,7 @@ void Builder::buildModels()
   context.usedModels.exclude( "" );
 
   if( !skipReferences && !context.usedModels.isEmpty() ) {
-    Log::println( "The following referenced models are missing in 'mdl' {" );
+    Log::println( "*** The following referenced models are missing in 'mdl' *** {" );
     Log::indent();
 
     for( const auto& mdl : context.usedModels ) {
@@ -420,8 +418,6 @@ void Builder::buildModels()
 
     Log::unindent();
     Log::println( "}" );
-
-    OZ_ERROR( "Referenced models missing" );
   }
 
   Log::unindent();
@@ -518,7 +514,7 @@ void Builder::copySounds()
   context.usedSounds.exclude( "" );
 
   if( !skipReferences && !context.usedSounds.isEmpty() ) {
-    Log::println( "The following referenced sounds are missing in 'snd' {" );
+    Log::println( "*** The following referenced sounds are missing in 'snd' *** {" );
     Log::indent();
 
     for( const auto& snd : context.usedSounds ) {
@@ -527,8 +523,6 @@ void Builder::copySounds()
 
     Log::unindent();
     Log::println( "}" );
-
-    OZ_ERROR( "Referenced sounds missing" );
   }
 
   Log::unindent();
@@ -649,7 +643,7 @@ int Builder::main( int argc, char** argv )
   bool doModels       = false;
   bool doSounds       = false;
   bool doLua          = false;
-  bool doNirvana      = false;
+  bool doTech         = false;
   bool doMusic        = false;
   bool doMissions     = false;
   bool useCompression = false;
@@ -659,7 +653,7 @@ int Builder::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbeafpmsxvriARCZ7h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbeafpmsxkriARCZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -713,8 +707,8 @@ int Builder::main( int argc, char** argv )
         doLua = true;
         break;
       }
-      case 'v': {
-        doNirvana = true;
+      case 'k': {
+        doTech = true;
         break;
       }
       case 'r': {
@@ -739,7 +733,7 @@ int Builder::main( int argc, char** argv )
         doModels    = true;
         doSounds    = true;
         doLua       = true;
-        doNirvana   = true;
+        doTech      = true;
         doMusic     = true;
         doMissions  = true;
         break;
@@ -883,8 +877,8 @@ int Builder::main( int argc, char** argv )
 
     copyFiles( "@lua", "lua", "lua", true );
   }
-  if( doNirvana ) {
-    copyFiles( "@nirvana", "nirvana", "json", true );
+  if( doTech ) {
+    copyFiles( "@tech", "tech", "json", true );
   }
   if( doMusic ) {
     copyFiles( "@music", "music", "oga", true );

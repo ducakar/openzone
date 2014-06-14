@@ -79,7 +79,7 @@ private:
   Vec3 getRay( int x, int y );
   void collectHovers();
 
-  void drawHoverTitle( const Span& span, const char* title, const Object* obj = nullptr );
+  void drawHoverTitle( const Span& span, const char* title );
   void drawHoverRect( const Span& span, const Struct* str, const Object* obj );
   void drawTagRect( const Span& span, const Struct* str, const Object* obj, bool isHovered );
 

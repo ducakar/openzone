@@ -506,9 +506,10 @@ int main( int argc, char** argv )
       writePOT( &messages, mission.path() + "/lingua/messages.pot" );
       Log::printEnd( " OK" );
     }
+
+    messages.clear();
   }
 
-  messages.clear();
   messages.trim();
 
   return EXIT_SUCCESS;
