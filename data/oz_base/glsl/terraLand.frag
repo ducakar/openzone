@@ -25,8 +25,6 @@
 
 precision highp float;
 
-const float DETAIL_SCALE  = 1024.0;
-
 struct CaelumLight
 {
   vec3 dir;
@@ -67,7 +65,7 @@ void main()
 {
 #ifdef OZ_BUMP_MAP
   mat3  planeTransf  = mat3( exTangent, exBinormal, exNormal );
-  vec3  texelNormal  = texture2D( oz_Normals, exTexCoord * DETAIL_SCALE ).xyz;
+  vec3  texelNormal  = texture2D( oz_Normals, exTexCoord * 2.0 ).xyz;
   vec3  localNormal  = 2.0 * texelNormal - vec3( 1.0 );
   vec3  normal       = normalize( planeTransf * localNormal );
 #else
@@ -76,8 +74,8 @@ void main()
   float distance2    = dot( exPosition, exPosition );
   float fog          = min( distance2 / oz_Fog.distance2, 1.0 );
 
-  vec4  detailSample = texture2D( oz_Texture, exTexCoord * DETAIL_SCALE );
-  vec4  mapSample    = texture2D( oz_Masks, exTexCoord );
+  vec4  detailSample = texture2D( oz_Texture, exTexCoord * 2.0 );
+  vec4  mapSample    = texture2D( oz_Masks, exTexCoord / 513.0 );
   vec4  colour       = detailSample * mapSample;
 
   // Caelum light.

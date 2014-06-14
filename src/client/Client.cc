@@ -372,12 +372,11 @@ int Client::init( int argc, char** argv )
   File::mkdir( dataDir );
 
   if( Log::init( configDir + "/client.log", true ) ) {
-    Log::println( "Log file '%s'", Log::logFile() );
+    Log::println( "Log file '%s'", Log::filePath() );
   }
 
   Log::println( "OpenZone " OZ_VERSION " started on %s", Time::local().toString().cstr() );
 
-  Log::verboseMode = true;
   Log::println( "Build details {" );
   Log::indent();
   Log::println( "Date:            %s", BuildInfo::TIME );
@@ -390,7 +389,6 @@ int Client::init( int argc, char** argv )
   Log::println( "Configuration:   %s", BuildInfo::CONFIG );
   Log::unindent();
   Log::println( "}" );
-  Log::verboseMode = false;
 
   File::mount( dataDir, "/" );
 

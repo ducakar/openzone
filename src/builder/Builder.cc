@@ -254,9 +254,7 @@ void Builder::buildBSPTextures()
     }
   }
 
-  for( const String& subDirPath : usedDirs ) {
-    File subDir = "@" + subDirPath;
-
+  for( const File& subDir : usedDirs ) {
     for( const File& file : subDir.ls() ) {
       if( file.type() != File::REGULAR ) {
         continue;
@@ -268,13 +266,8 @@ void Builder::buildBSPTextures()
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
         Log::print( "Copying '%s' ...", path.cstr() );
 
-        File::mkdir( "tex" );
-        File::mkdir( "tex/" + subDir.name() );
-
         File destFile = String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() );
-        if( !destFile.write( file.read() ) ) {
-          OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
-        }
+        File::cp( file, destFile );
 
         Log::printEnd( " OK" );
         continue;

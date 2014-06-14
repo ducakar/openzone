@@ -37,8 +37,7 @@ private:
   struct Vertex
   {
     float pos[3];
-    float texCoord[2];
-    float normal[3];
+    short texCoord[2];
   };
 
   static const Vertex VERTICES[];

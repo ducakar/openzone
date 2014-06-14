@@ -39,7 +39,7 @@ void Vertex::setFormat()
                          static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
   glEnableVertexAttribArray( Shader::TEXCOORD );
-  glVertexAttribPointer( Shader::TEXCOORD, 2, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
+  glVertexAttribPointer( Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, int( sizeof( Vertex ) ),
                          static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Shader::NORMAL );

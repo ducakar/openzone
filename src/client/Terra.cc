@@ -207,8 +207,8 @@ void Terra::load()
           vertex.pos[1] = orbis.terra.quads[x][y].vertex.y;
           vertex.pos[2] = orbis.terra.quads[x][y].vertex.z;
 
-          vertex.texCoord[0] = float( x ) / float( oz::Terra::VERTS );
-          vertex.texCoord[1] = float( oz::Terra::VERTS - y ) / float( oz::Terra::VERTS );
+          vertex.texCoord[0] = short( x );
+          vertex.texCoord[1] = short( oz::Terra::VERTS - y );
 
           vertex.normal[0] = is.readByte();
           vertex.normal[1] = is.readByte();

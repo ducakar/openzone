@@ -90,12 +90,12 @@ static const char* const SIGNALS[][2]         =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-static char  filePath[256] = "";
-static FILE* file          = nullptr;
-static int   indentLevel   = 0;
+static char  path[256]   = "";
+static FILE* file        = nullptr;
+static int   indentLevel = 0;
 
-bool Log::showVerbose      = false;
-bool Log::verboseMode      = false;
+bool Log::showVerbose    = false;
+bool Log::verboseMode    = false;
 
 static inline const char* getIndent()
 {
@@ -110,9 +110,9 @@ Log::~Log()
   printRaw( "\n" );
 }
 
-const char* Log::logFile()
+const char* Log::filePath()
 {
-  return filePath;
+  return path;
 }
 
 void Log::resetIndent()
@@ -330,7 +330,7 @@ void Log::printProfilerStatistics()
   }
 }
 
-bool Log::init( const char* filePath_, bool clearFile )
+bool Log::init( const char* filePath, bool clearFile )
 {
   destroy();
 
@@ -338,19 +338,19 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 #if defined( __ANDROID__ ) || defined( __native_client__ )
 
-  static_cast<void>( filePath_ );
+  static_cast<void>( filePath );
   static_cast<void>( clearFile );
 
   return false;
 
 #else
 
-  if( filePath_ != nullptr ) {
-    strlcpy( filePath, filePath_, 256 );
+  if( filePath != nullptr ) {
+    strlcpy( path, filePath, 256 );
   }
 
-  if( filePath[0] != '\0' ) {
-    file = fopen( filePath, clearFile ? "w" : "a" );
+  if( path[0] != '\0' ) {
+    file = fopen( path, clearFile ? "w" : "a" );
   }
   return file != nullptr;
 
@@ -366,7 +366,7 @@ void Log::destroy()
     file = nullptr;
   }
 
-  filePath[0] = '\0';
+  path[0] = '\0';
 
 #endif
 }

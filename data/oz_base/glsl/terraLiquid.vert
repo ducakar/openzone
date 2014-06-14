@@ -68,7 +68,7 @@ void main()
 #endif
 
   exPosition  = position.xyz - oz_CameraPos;
-  exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
+  exTexCoord  = inTexCoord;
 #ifdef OZ_VERTEX_EFFECTS
   exNormal    = vec3( dx, dy, 1.0 );
 #else

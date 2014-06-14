@@ -51,7 +51,7 @@ void main()
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
 
   exPosition  = position.xyz - oz_CameraPos;
-  exTexCoord  = inTexCoord;
+  exTexCoord  = inTexCoord / 1024.0;
   exNormal    = modelRot * inNormal;
 #ifdef OZ_BUMP_MAP
   exTangent   = modelRot * inTangent;

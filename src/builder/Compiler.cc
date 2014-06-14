@@ -60,8 +60,11 @@ struct Vertex
   {
     os->writePoint( pos );
 
-    os->writeFloat( texCoord.u );
-    os->writeFloat( texCoord.v );
+    os->writeShort( short( Math::lround( texCoord.u * 1024.0f ) ) );
+    os->writeShort( short( Math::lround( texCoord.v * 1024.0f ) ) );
+
+    // Reserved for colour.
+    os->writeInt( 0 );
 
     os->writeByte( byte( normal.x * 127.0f ) );
     os->writeByte( byte( normal.y * 127.0f ) );

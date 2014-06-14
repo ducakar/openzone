@@ -75,7 +75,7 @@ int main( int argc, char** argv )
     Log::verboseMode = false;
 
     if( isOutput ) {
-      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+      Log::println( "There are some memory leaks. See '%s' for details.", Log::filePath() );
     }
   }
 

@@ -34,7 +34,8 @@ namespace client
 struct Vertex
 {
   float pos[3];
-  float texCoord[2];
+  short texCoord[2];
+  byte  colour[4];
   byte  normal[4];
   byte  tangent[4];
   byte  binormal[4];

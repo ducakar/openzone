@@ -18,20 +18,16 @@
  */
 
 /*
- * dmesh.vert
+ * terraLand.vert
  *
- * Mesh shader that reads and interpolates vertex positions from the given vertex texture.
+ * Terrain (land) shader.
  */
 
 precision highp float;
 
-uniform mat4      oz_ProjCamera;
-uniform mat4      oz_Model;
-uniform vec3      oz_CameraPos;
-#ifdef OZ_VERTEX_TEXTURE_FETCH
-uniform vec3      oz_MeshAnimation;
-#endif
-uniform sampler2D oz_VertexAnim;
+uniform mat4  oz_ProjCamera;
+uniform mat4  oz_Model;
+uniform vec3  oz_CameraPos;
 
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
@@ -52,33 +48,11 @@ varying vec3  exBinormal;
 void main()
 {
   mat3 modelRot = mat3( oz_Model );
-
-#ifdef OZ_VERTEX_TEXTURE_FETCH
-
-  float iVertex       = inPosition.x;
-  float iPosition0    = oz_MeshAnimation[0] * 0.5;
-  float iPosition1    = oz_MeshAnimation[1] * 0.5;
-  float iNormal0      = 0.5 + oz_MeshAnimation[0] * 0.5;
-  float iNormal1      = 0.5 + oz_MeshAnimation[1] * 0.5;
-  float interpolation = oz_MeshAnimation[2];
-
-  vec4  position0     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition0 ) );
-  vec4  position1     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition1 ) );
-  vec3  normal0       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal0 ) ).xyz;
-  vec3  normal1       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal1 ) ).xyz;
-  vec4  position      = oz_Model * mix( position0, position1, interpolation );
-  vec3  normal        = modelRot * mix( normal0, normal1, interpolation );
-
-#else
-
   vec4 position = oz_Model * vec4( inPosition, 1.0 );
-  vec3 normal   = modelRot * inNormal;
-
-#endif
 
   exPosition  = position.xyz - oz_CameraPos;
-  exTexCoord  = inTexCoord / 1024.0;
-  exNormal    = normal.xyz;
+  exTexCoord  = inTexCoord;
+  exNormal    = modelRot * inNormal;
 #ifdef OZ_BUMP_MAP
   exTangent   = modelRot * inTangent;
   exBinormal  = modelRot * inBinormal;

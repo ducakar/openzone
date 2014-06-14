@@ -22,7 +22,7 @@
 -- AIs for cvicek mission.
 
 --
--- Beast AI
+-- Beast AI.
 --
 
 function beast_nervous( l )
@@ -37,8 +37,10 @@ function beast_happy( l )
   end
 end
 
+niceBeastie = Beast.explore
+
 --
--- Droid AI
+-- Droid AI.
 --
 
 Droid.guardAutomaton = {
@@ -159,7 +161,7 @@ droid_patrol         = automatonProcessor( Droid.patrolAutomaton )
 droid_armouredPatrol = automatonProcessor( Droid.armouredPatrolAutomaton )
 
 --
--- Goblin AI
+-- Goblin AI.
 --
 
 Goblin.guardAutomaton = {

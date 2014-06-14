@@ -67,7 +67,7 @@ public:
   /**
    * Return log file path or an empty string if log is printed to stdout only.
    */
-  static const char* logFile();
+  static const char* filePath();
 
   /**
    * %Set indent to zero.

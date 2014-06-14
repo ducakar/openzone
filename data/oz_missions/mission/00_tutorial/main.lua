@@ -303,10 +303,15 @@ function onCreate()
 
   ozOrbisAddObj( OZ_FORCE, "beast", 100, -100, 71 )
   ozBotSetH( 0 )
+  ozBotSetMind( "niceBeastie" )
+
   ozOrbisAddObj( OZ_FORCE, "beast", 100, -50, 70 )
   ozBotSetH( 90 )
+  ozBotSetMind( "niceBeastie" )
+
   ozOrbisAddObj( OZ_FORCE, "beast", 60, -80, 69 )
   ozBotSetH( 270 )
+  ozBotSetMind( "niceBeastie" )
 
   ozQuestAdd(
     ozGettext( "Tutorial" ),
