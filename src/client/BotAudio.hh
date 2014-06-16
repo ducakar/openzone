@@ -40,17 +40,17 @@ private:
 
 protected:
 
-  explicit BotAudio( const Object* obj );
+  explicit BotAudio(const Object* obj);
 
 public:
 
   static Pool<BotAudio, 256> pool;
 
-  static Audio* create( const Object* obj );
+  static Audio* create(const Object* obj);
 
-  void play( const Object* playAt ) override;
+  void play(const Object* playAt) override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

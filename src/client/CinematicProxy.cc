@@ -36,134 +36,134 @@ namespace oz
 namespace client
 {
 
-void CinematicProxy::executeSequence( const char* path, const Lingua* missionLingua )
+void CinematicProxy::executeSequence(const char* path, const Lingua* missionLingua)
 {
   JSON sequence;
   File file = path;
 
-  if( !sequence.load( file ) ) {
-    OZ_ERROR( "Failed to load sequence from '%s'", file.path().cstr() );
+  if (!sequence.load(file)) {
+    OZ_ERROR("Failed to load sequence from '%s'", file.path().cstr());
   }
 
   int nSteps = sequence.length();
-  if( nSteps <= 0 ) {
+  if (nSteps <= 0) {
     return;
   }
 
   Step step = {
-    camera.rot, camera.p, camera.colour, Buffer( 0 ), -1, nullptr, 0.0f, Camera::CINEMATIC
+    camera.rot, camera.p, camera.colour, Buffer(0), -1, nullptr, 0.0f, Camera::CINEMATIC
   };
 
-  steps.reserve( nSteps );
+  steps.reserve(nSteps);
 
-  for( int i = 0; i < nSteps; ++i ) {
+  for (int i = 0; i < nSteps; ++i) {
     const JSON& stepConfig = sequence[i];
     const JSON& rotArray = stepConfig["rot"];
 
-    if( !rotArray.isNull() ) {
-      Vec3 rot = rotArray.get( Vec3::ZERO );
-      step.rot = Quat::rotationZXZ( Math::rad( rot.x ), Math::rad( rot.y ), Math::rad( rot.z ) );
+    if (!rotArray.isNull()) {
+      Vec3 rot = rotArray.get(Vec3::ZERO);
+      step.rot = Quat::rotationZXZ(Math::rad(rot.x), Math::rad(rot.y), Math::rad(rot.z));
     }
 
     const JSON& posArray = stepConfig["pos"];
 
-    if( !posArray.isNull() ) {
-      step.p = posArray.get( Point::ORIGIN );
+    if (!posArray.isNull()) {
+      step.p = posArray.get(Point::ORIGIN);
     }
 
     const JSON& colourArray = stepConfig["colour"];
 
-    if( !colourArray.isNull() ) {
-      step.colour = colourArray.get( Mat4::ID );
+    if (!colourArray.isNull()) {
+      step.colour = colourArray.get(Mat4::ID);
     }
 
     const JSON& execConfig = stepConfig["exec"];
-    if( execConfig.isNull() ) {
-      step.code.resize( 0 );
+    if (execConfig.isNull()) {
+      step.code.resize(0);
     }
     else {
-      step.code = luaClient.compile( execConfig.get( "" ), path );
+      step.code = luaClient.compile(execConfig.get(""), path);
     }
 
     const JSON& trackConfig = stepConfig["track"];
-    const String& track = trackConfig.get( String::EMPTY );
+    const String& track = trackConfig.get(String::EMPTY);
 
-    if( trackConfig.isNull() ) {
+    if (trackConfig.isNull()) {
       step.track = -1;
     }
-    else if( track.isEmpty() ) {
+    else if (track.isEmpty()) {
       step.track = -2;
     }
     else {
-      step.track = liber.musicTrackIndex( track );
+      step.track = liber.musicTrackIndex(track);
     }
 
     const JSON& titleConfig = stepConfig["title"];
-    const String& title = titleConfig.get( String::EMPTY );
+    const String& title = titleConfig.get(String::EMPTY);
 
-    if( titleConfig.isNull() ) {
+    if (titleConfig.isNull()) {
       step.title = "";
     }
-    else if( title.isEmpty() ) {
+    else if (title.isEmpty()) {
       step.title = " ";
     }
     else {
-      step.title = missionLingua->get( title );
+      step.title = missionLingua->get(title);
     }
 
-    step.time = stepConfig["time"].get( 0.0f );
+    step.time = stepConfig["time"].get(0.0f);
 
     const JSON& stateConfig = stepConfig["state"];
 
-    if( stateConfig.isNull() ) {
+    if (stateConfig.isNull()) {
       step.endState = Camera::CINEMATIC;
     }
     else {
-      const char* sEndState = stateConfig.get( "CINEMATIC" );
+      const char* sEndState = stateConfig.get("CINEMATIC");
 
-      if( String::equals( sEndState, "CINEMATIC" ) ) {
+      if (String::equals(sEndState, "CINEMATIC")) {
         step.endState = Camera::CINEMATIC;
       }
-      else if( String::equals( sEndState, "STRATEGIC" ) ) {
+      else if (String::equals(sEndState, "STRATEGIC")) {
         step.endState = Camera::STRATEGIC;
       }
-      else if( String::equals( sEndState, "UNIT" ) ) {
+      else if (String::equals(sEndState, "UNIT")) {
         step.endState = Camera::UNIT;
       }
       else {
-        OZ_ERROR( "Invalid state '%s' for sequence step; should be either CINEMATIC, STRATEGIC or"
-                  " UNIT.", sEndState );
+        OZ_ERROR("Invalid state '%s' for sequence step; should be either CINEMATIC, STRATEGIC or"
+                 " UNIT.", sEndState);
       }
     }
 
-    steps.add( step );
+    steps.add(step);
   }
 
-  sequence.clear( true );
+  sequence.clear(true);
 }
 
 void CinematicProxy::begin()
 {
-  ui::ui.galileoFrame->enable( false );
-  ui::ui.musicPlayer->enable( false );
+  ui::ui.galileoFrame->enable(false);
+  ui::ui.musicPlayer->enable(false);
 
   cinematicText = new ui::CinematicText();
-  ui::ui.root->add( cinematicText, ui::Area::CENTRE, 200 );
+  ui::ui.root->add(cinematicText, ui::Area::CENTRE, 200);
   ui::mouse.doShow = false;
 
   beginRot    = camera.rot;
   beginPos    = camera.p;
   beginColour = camera.colour;
 
-  cinematicText->set( title.substring( 0, nTitleChars ) );
+  cinematicText->set(title.substring(0, nTitleChars));
 }
 
 void CinematicProxy::end()
 {
-  ui::ui.root->remove( cinematicText );
+  ui::ui.root->remove(cinematicText);
 
-  ui::ui.musicPlayer->enable( true );
-  ui::ui.galileoFrame->enable( true );
+  ui::ui.musicPlayer->enable(true);
+  ui::ui.galileoFrame->enable(true);
 
   title       = "";
   nTitleChars = 0;
@@ -179,41 +179,41 @@ void CinematicProxy::prepare()
 
 void CinematicProxy::update()
 {
-  if( steps.isEmpty() ) {
-    camera.setState( Camera::State( prevState ) );
+  if (steps.isEmpty()) {
+    camera.setState(Camera::State(prevState));
     return;
   }
 
   const Step& step = steps.first();
 
-  if( step.endState != Camera::CINEMATIC ) {
-    camera.setState( Camera::State( step.endState ) );
+  if (step.endState != Camera::CINEMATIC) {
+    camera.setState(Camera::State(step.endState));
     return;
   }
 
-  float t = step.time == 0.0f ? 1.0f : min( stepTime / step.time, 1.0f );
+  float t = step.time == 0.0f ? 1.0f : min(stepTime / step.time, 1.0f);
 
-  camera.smoothRotateTo( Quat::fastSlerp( beginRot, step.rot, t ) );
-  camera.smoothMoveTo( Math::mix( beginPos, step.p, t ) );
-  camera.colour = Math::mix( beginColour, step.colour, t );
+  camera.smoothRotateTo(Quat::fastSlerp(beginRot, step.rot, t));
+  camera.smoothMoveTo(Math::mix(beginPos, step.p, t));
+  camera.colour = Math::mix(beginColour, step.colour, t);
   camera.align();
 
-  if( nTitleChars < title.length() ) {
-    nTitleChars = min( nTitleChars + int( timer.frameTicks ), title.length() );
+  if (nTitleChars < title.length()) {
+    nTitleChars = min(nTitleChars + int(timer.frameTicks), title.length());
 
     // Take all bytes of UTF-8 characters.
-    while( nTitleChars > 0 && nTitleChars < title.length() &&
-           ( title[nTitleChars - 1] & title[nTitleChars] & 0x80 ) )
+    while (nTitleChars > 0 && nTitleChars < title.length() &&
+           (title[nTitleChars - 1] & title[nTitleChars] & 0x80))
     {
       ++nTitleChars;
     }
 
-    cinematicText->set( title.substring( 0, nTitleChars ) );
+    cinematicText->set(title.substring(0, nTitleChars));
   }
 
   stepTime += Timer::TICK_TIME;
 
-  if( t == 1.0f ) {
+  if (t == 1.0f) {
     beginPos    = step.p;
     beginRot    = step.rot;
     beginColour = step.colour;
@@ -222,23 +222,23 @@ void CinematicProxy::update()
 
     steps.popFirst();
   }
-  else if( t == 0.0f ) {
-    if( !step.code.isEmpty() ) {
-      luaClient.execChunk( step.code.begin(), step.code.length(), "" );
+  else if (t == 0.0f) {
+    if (!step.code.isEmpty()) {
+      luaClient.execChunk(step.code.begin(), step.code.length(), "");
     }
 
-    if( step.track == -2 ) {
+    if (step.track == -2) {
       sound.stopMusic();
     }
-    else if( step.track != -1 ) {
-      sound.playMusic( step.track );
+    else if (step.track != -1) {
+      sound.playMusic(step.track);
     }
 
-    if( !step.title.isEmpty() ) {
+    if (!step.title.isEmpty()) {
       title       = step.title;
       nTitleChars = 0;
 
-      cinematicText->set( " " );
+      cinematicText->set(" ");
     }
   }
 }
@@ -260,7 +260,7 @@ void CinematicProxy::reset()
   steps.trim();
 }
 
-void CinematicProxy::read( InputStream* is )
+void CinematicProxy::read(InputStream* is)
 {
   beginRot    = is->readQuat();
   beginPos    = is->readPoint();
@@ -273,7 +273,7 @@ void CinematicProxy::read( InputStream* is )
   prevState   = is->readInt();
 
   int nSteps = is->readInt();
-  for( int i = 0; i < nSteps; ++i ) {
+  for (int i = 0; i < nSteps; ++i) {
     Step step;
 
     step.rot      = is->readQuat();
@@ -286,38 +286,38 @@ void CinematicProxy::read( InputStream* is )
     step.time     = is->readFloat();
     step.endState = is->readInt();
 
-    steps.add( step );
+    steps.add(step);
   }
 }
 
-void CinematicProxy::read( const JSON& )
+void CinematicProxy::read(const JSON&)
 {}
 
-void CinematicProxy::write( OutputStream* os ) const
+void CinematicProxy::write(OutputStream* os) const
 {
-  os->writeQuat( beginRot );
-  os->writePoint( beginPos );
-  os->writeMat4( beginColour );
+  os->writeQuat(beginRot);
+  os->writePoint(beginPos);
+  os->writeMat4(beginColour);
 
-  os->writeString( title );
-  os->writeInt( nTitleChars );
+  os->writeString(title);
+  os->writeInt(nTitleChars);
 
-  os->writeFloat( stepTime );
-  os->writeInt( prevState );
+  os->writeFloat(stepTime);
+  os->writeInt(prevState);
 
-  os->writeInt( steps.length() );
-  for( int i = 0; i < steps.length(); ++i ) {
+  os->writeInt(steps.length());
+  for (int i = 0; i < steps.length(); ++i) {
     const Step& step = steps[i];
 
-    os->writeQuat( step.rot );
-    os->writePoint( step.p );
-    os->writeMat4( step.colour );
+    os->writeQuat(step.rot);
+    os->writePoint(step.p);
+    os->writeMat4(step.colour);
 
-    os->writeInt( step.track );
-    os->writeString( step.title );
+    os->writeInt(step.track);
+    os->writeString(step.title);
 
-    os->writeFloat( step.time );
-    os->writeInt( step.endState );
+    os->writeFloat(step.time);
+    os->writeInt(step.endState);
   }
 }
 

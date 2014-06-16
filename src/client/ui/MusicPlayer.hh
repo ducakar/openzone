@@ -44,12 +44,12 @@ private:
   int   volume;
   bool  isPlaying;
 
-  static void prevTrack( Button* sender );
-  static void nextTrack( Button* sender );
-  static void playTrack( Button* sender );
-  static void stopTrack( Button* sender );
-  static void volumeDown( Button* sender );
-  static void volumeUp( Button* sender );
+  static void prevTrack(Button* sender);
+  static void nextTrack(Button* sender);
+  static void playTrack(Button* sender);
+  static void stopTrack(Button* sender);
+  static void volumeDown(Button* sender);
+  static void volumeUp(Button* sender);
 
 protected:
 

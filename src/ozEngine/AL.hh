@@ -37,9 +37,9 @@
  * In debug mode, check for OpenAL errors and crash with some diagnostics if there is one.
  */
 #ifdef NDEBUG
-# define OZ_AL_CHECK_ERROR() void( 0 )
+# define OZ_AL_CHECK_ERROR() void(0)
 #else
-# define OZ_AL_CHECK_ERROR() oz::AL::checkError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+# define OZ_AL_CHECK_ERROR() oz::AL::checkError(__PRETTY_FUNCTION__, __FILE__, __LINE__)
 #endif
 
 namespace oz
@@ -74,17 +74,17 @@ public:
     /**
      * Same as default constructor plus `open()`.
      */
-    explicit Streamer( const File& file );
+    explicit Streamer(const File& file);
 
     /**
      * Move constructor.
      */
-    Streamer( Streamer&& s );
+    Streamer(Streamer&& s);
 
     /**
      * Move operator.
      */
-    Streamer& operator = ( Streamer&& s );
+    Streamer& operator = (Streamer&& s);
 
     /**
      * True iff streaming.
@@ -105,7 +105,7 @@ public:
     /**
      * Set OpenAL source which buffers with streamed data will be queued for.
      */
-    void attach( ALuint source );
+    void attach(ALuint source);
 
     /**
      * Unset OpenAL source for buffer queuing.
@@ -127,7 +127,7 @@ public:
     /**
      * Start streaming a given Ogg Vorbis file.
      */
-    bool open( const File& file );
+    bool open(const File& file);
 
     /**
      * Stop streaming and free file buffers and stream state.
@@ -151,7 +151,7 @@ public:
   /**
    * Helper function for `OZ_AL_CHECK_ERROR` macro.
    */
-  static void checkError( const char* function, const char* file, int line );
+  static void checkError(const char* function, const char* file, int line);
 
   /**
    * Load OpenAL buffer from a WAVE of Ogg Vorbis file.
@@ -159,7 +159,7 @@ public:
    * @note
    * Beware, 3D effects in OpenAL only work on mono sound samples.
    */
-  static bool bufferDataFromFile( ALuint buffer, const File& file );
+  static bool bufferDataFromFile(ALuint buffer, const File& file);
 
 };
 

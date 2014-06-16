@@ -32,73 +32,73 @@ namespace client
 
 Pool<BasicAudio, 2048> BasicAudio::pool;
 
-BasicAudio::BasicAudio( const Object* obj ) :
-  Audio( obj ), recent{}
+BasicAudio::BasicAudio(const Object* obj) :
+  Audio(obj), recent {}
 {}
 
-Audio* BasicAudio::create( const Object* obj )
+Audio* BasicAudio::create(const Object* obj)
 {
-  return new BasicAudio( obj );
+  return new BasicAudio(obj);
 }
 
-void BasicAudio::play( const Object* playAt )
+void BasicAudio::play(const Object* playAt)
 {
-  hard_assert( playAt != nullptr );
+  hard_assert(playAt != nullptr);
 
   const auto& sounds = obj->clazz->audioSounds;
 
-  for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
-    recent[i] = max( recent[i] - 1, 0 );
+  for (int i = 0; i < ObjectClass::MAX_SOUNDS; ++i) {
+    recent[i] = max(recent[i] - 1, 0);
   }
 
   // events
-  for( const Object::Event& event : obj->events ) {
-    hard_assert( event.id < ObjectClass::MAX_SOUNDS );
+  for (const Object::Event& event : obj->events) {
+    hard_assert(event.id < ObjectClass::MAX_SOUNDS);
 
-    if( event.id >= 0 && sounds[event.id] >= 0 ) {
-      if( event.intensity < 0.0f ) {
-        playContSound( sounds[event.id], -event.intensity, playAt );
+    if (event.id >= 0 && sounds[event.id] >= 0) {
+      if (event.intensity < 0.0f) {
+        playContSound(sounds[event.id], -event.intensity, playAt);
       }
-      else if( recent[event.id] == 0 ) {
+      else if (recent[event.id] == 0) {
         recent[event.id] = RECENT_TICKS;
-        playSound( sounds[event.id], event.intensity, playAt );
+        playSound(sounds[event.id], event.intensity, playAt);
       }
     }
   }
 
   // friction
-  const Dynamic* dyn = static_cast<const Dynamic*>( obj );
+  const Dynamic* dyn = static_cast<const Dynamic*>(obj);
 
-  if( ( obj->flags & Object::DYNAMIC_BIT ) && dyn->parent < 0 &&
-      sounds[Object::EVENT_FRICTING] >= 0 )
+  if ((obj->flags & Object::DYNAMIC_BIT) && dyn->parent < 0 &&
+      sounds[Object::EVENT_FRICTING] >= 0)
   {
-    if( ( dyn->flags & ( Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) == Object::FRICTING_BIT &&
-        ( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower >= 0 ) )
+    if ((dyn->flags & (Object::FRICTING_BIT | Object::ON_SLICK_BIT)) == Object::FRICTING_BIT &&
+        ((dyn->flags & Object::ON_FLOOR_BIT) || dyn->lower >= 0))
     {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }
 
-    if( recent[Object::EVENT_FRICTING] != 0 ) {
+    if (recent[Object::EVENT_FRICTING] != 0) {
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 
-      const Dynamic* sDyn = orbis.obj<const Dynamic>( dyn->lower );
+      const Dynamic* sDyn = orbis.obj<const Dynamic>(dyn->lower);
 
-      if( sDyn != nullptr ) {
+      if (sDyn != nullptr) {
         dvx -= sDyn->velocity.x;
         dvy -= sDyn->velocity.y;
       }
 
-      playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn );
+      playContSound(sounds[Object::EVENT_FRICTING], Math::sqrt(dvx*dvx + dvy*dvy), dyn);
     }
   }
 
   // inventory items' events
-  for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* item = orbis.obj( obj->items[i] );
+  for (int i = 0; i < obj->items.length(); ++i) {
+    const Object* item = orbis.obj(obj->items[i]);
 
-    if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, playAt );
+    if (item != nullptr && (item->flags & Object::AUDIO_BIT)) {
+      context.playAudio(item, playAt);
     }
   }
 }

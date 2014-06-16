@@ -33,17 +33,17 @@ Pool<Compound> Compound::pool;
 
 Compound::~Compound()
 {
-  for( Compound::Child& child : children ) {
+  for (Compound::Child& child : children) {
     delete child.shape;
   }
 }
 
-Bounds Compound::getBounds( const Point& pos, const Mat3& rot ) const
+Bounds Compound::getBounds(const Point& pos, const Mat3& rot) const
 {
-  Bounds b = children[0].shape->getBounds( pos + rot * children[0].off, rot * children[0].rot );
+  Bounds b = children[0].shape->getBounds(pos + rot * children[0].off, rot * children[0].rot);
 
-  for( const Compound::Child& child : children ) {
-    b |= child.shape->getBounds( pos + rot * child.off, rot * child.rot );
+  for (const Compound::Child& child : children) {
+    b |= child.shape->getBounds(pos + rot * child.off, rot * child.rot);
   }
   return b;
 }

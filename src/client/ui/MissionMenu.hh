@@ -51,8 +51,8 @@ protected:
 
 public:
 
-  explicit MissionButton( const char* text, Callback* callback, MissionMenu* missionMenu, int index,
-                          int width, int height );
+  explicit MissionButton(const char* text, Callback* callback, MissionMenu* missionMenu, int index,
+                         int width, int height);
 
 };
 
@@ -83,7 +83,7 @@ private:
   int               imageWidth;
   int               imageHeight;
 
-  static void loadMission( Button* sender );
+  static void loadMission(Button* sender);
 
 protected:
 

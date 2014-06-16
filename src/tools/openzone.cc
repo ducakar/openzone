@@ -25,11 +25,11 @@
 
 #include <SDL.h>
 
-#if defined( __native_client__ )
+#if defined(__native_client__)
 # include <SDL_nacl.h>
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 extern "C"
-int SDL_main( int argc, char **argv );
+int SDL_main(int argc, char** argv);
 #endif
 
 using namespace oz;
@@ -39,52 +39,52 @@ static void crashHandler()
   SDL_Quit();
 }
 
-#if defined( __ANDROID__ )
-int javaMain( int argc, char** argv )
-#elif defined( __native_client__ )
-int naclMain( int argc, char** argv )
-#elif defined( _WIN32 )
-int SDL_main( int argc, char** argv )
+#if defined(__ANDROID__)
+int javaMain(int argc, char** argv)
+#elif defined(__native_client__)
+int naclMain(int argc, char** argv)
+#elif defined(_WIN32)
+int SDL_main(int argc, char** argv)
 #else
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 #endif
 {
-  System::init( System::DEFAULT_MASK, &crashHandler );
+  System::init(System::DEFAULT_MASK, &crashHandler);
 
-  Log::printRaw( "OpenZone " OZ_VERSION "\n"
-                 "Copyright © 2002-2014 Davorin Učakar\n"
-                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
-                 "This is free software, and you are welcome to redistribute it\n"
-                 "under certain conditions; See COPYING file for details.\n\n" );
+  Log::printRaw("OpenZone " OZ_VERSION "\n"
+                "Copyright © 2002-2014 Davorin Učakar\n"
+                "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                "This is free software, and you are welcome to redistribute it\n"
+                "under certain conditions; See COPYING file for details.\n\n");
 
 #ifdef __native_client__
-  Pepper::post( "init:" );
+  Pepper::post("init:");
 #endif
 
-  int exitCode = client::client.init( argc, argv );
+  int exitCode = client::client.init(argc, argv);
 
-  if( exitCode == EXIT_SUCCESS ) {
+  if (exitCode == EXIT_SUCCESS) {
     exitCode = client::client.main();
   }
 
   client::client.shutdown();
 
-  if( Alloc::count != 0 ) {
+  if (Alloc::count != 0) {
     Log::verboseMode = true;
     bool isOutput = Log::printMemoryLeaks();
     Log::verboseMode = false;
 
-    if( isOutput ) {
-      Log::println( "There are some memory leaks. See '%s' for details.", Log::filePath() );
+    if (isOutput) {
+      Log::println("There are some memory leaks. See '%s' for details.", Log::filePath());
     }
   }
 
 #ifdef __native_client__
-  Pepper::post( "quit:" );
+  Pepper::post("quit:");
 #endif
 
   return exitCode;
 }
 
-OZ_JAVA_ENTRY_POINT( Java_com_github_ducakar_openzone_SDLActivity_nativeInit )
+OZ_JAVA_ENTRY_POINT(Java_com_github_ducakar_openzone_SDLActivity_nativeInit)
 OZ_NACL_ENTRY_POINT()

@@ -51,7 +51,7 @@ protected:
 
 public:
 
-  explicit Frame( int width, int height, const char* text );
+  explicit Frame(int width, int height, const char* text);
 
 };
 

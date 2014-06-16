@@ -34,15 +34,15 @@
  * @def OZ_WARNING
  * Wrapper for `System::warning()`, filling in the current function, file and line parameters.
  */
-#define OZ_WARNING( ... ) \
-  oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
+#define OZ_WARNING(...) \
+  oz::System::warning(__PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__)
 
 /**
  * @def OZ_ERROR
  * Wrapper for `System::error()`, filling in the current function, file and line parameters.
  */
-#define OZ_ERROR( ... ) \
-  oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
+#define OZ_ERROR(...) \
+  oz::System::error(__PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__)
 
 namespace oz
 {
@@ -114,9 +114,9 @@ public:
    * You will probably want to use `OZ_WARNING` macro instead to fill in the current function, file
    * and line for you.
    */
-  OZ_PRINTF_FORMAT( 5, 6 )
-  static void warning( const char* function, const char* file, int line, int nSkippedFrames,
-                       const char* msg, ... );
+  OZ_PRINTF_FORMAT(5, 6)
+  static void warning(const char* function, const char* file, int line, int nSkippedFrames,
+                      const char* msg, ...);
 
   /**
    * Print error message and halt the program.
@@ -129,9 +129,9 @@ public:
    * and line for you.
    */
   OZ_NORETURN
-  OZ_PRINTF_FORMAT( 5, 6 )
-  static void error( const char* function, const char* file, int line, int nSkippedFrames,
-                     const char* msg, ... );
+  OZ_PRINTF_FORMAT(5, 6)
+  static void error(const char* function, const char* file, int line, int nSkippedFrames,
+                    const char* msg, ...);
 
   /**
    * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
@@ -152,13 +152,13 @@ public:
    *   which print diagnostics and abort the program (similar to `System::error()` function).
    * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
    *   terminating the process via `System::abort()`, so one have time to attach a debugger.
-   * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale( LC_ALL, "" )`).
+   * - `LOCALE_BIT`: %Set-up locale for the application (calls `setlocale(LC_ALL, "")`).
    *   This option has no effect on Android and NaCl.
    *
    * @param crashHandler user-provided function called when the application is aborted by a signal
    *        `System::error()`. If non-null, it is invoked after the stack trace is printed.
    */
-  static void init( int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr );
+  static void init(int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr);
 
 };
 

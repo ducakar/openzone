@@ -38,22 +38,22 @@
 
 #include <client/eSpeak.hh>
 
-#define OZ_REGISTER_IMAGOCLASS( name ) \
+#define OZ_REGISTER_IMAGOCLASS(name) \
   { \
-    int id = liber.imagoIndex( #name ); \
-    if( id < 0 ) { \
-      OZ_ERROR( "Invalid imago class: %s", #name ); \
+    int id = liber.imagoIndex(#name); \
+    if(id < 0) { \
+      OZ_ERROR("Invalid imago class: %s", #name); \
     } \
     else { \
       imagoClasses[id] = name##Imago::create; \
     } \
   }
 
-#define OZ_REGISTER_AUDIOCLASS( name ) \
+#define OZ_REGISTER_AUDIOCLASS(name) \
   { \
-    int id = liber.audioIndex( #name ); \
-    if( id < 0 ) { \
-      OZ_ERROR( "Invalid audio class: %s", #name ); \
+    int id = liber.audioIndex(#name); \
+    if(id < 0) { \
+      OZ_ERROR("Invalid audio class: %s", #name); \
     } \
     else { \
       audioClasses[id] = name##Audio::create; \
@@ -69,27 +69,27 @@ Pool<Context::Source> Context::Source::pool;
 int                   Context::speakSampleRate;
 Context::SpeakSource  Context::speakSource;
 
-int Context::speakCallback( short int* samples, int nSamples, void* )
+int Context::speakCallback(short int* samples, int nSamples, void*)
 {
-  if( nSamples != 0 ) {
+  if (nSamples != 0) {
     int maxSamples = SpeakSource::BUFFER_SIZE - speakSource.nSamples;
-    if( nSamples > maxSamples ) {
+    if (nSamples > maxSamples) {
       nSamples = maxSamples;
-      Log::printRaw( "AL: Speak buffer overrun\n" );
+      Log::printRaw("AL: Speak buffer overrun\n");
     }
 
-    mCopy( speakSource.samples + speakSource.nSamples, samples, nSamples * int( sizeof( short ) ) );
+    mCopy(speakSource.samples + speakSource.nSamples, samples, nSamples * int(sizeof(short)));
     speakSource.nSamples += nSamples;
 
-    if( speakSource.nQueuedBuffers != 2 ) {
+    if (speakSource.nQueuedBuffers != 2) {
       int i = speakSource.nQueuedBuffers;
 
       speakSource.mutex.lock();
 
-      alBufferData( speakSource.bufferIds[i], AL_FORMAT_MONO16, speakSource.samples,
-                    speakSource.nSamples * int( sizeof( short ) ), speakSampleRate );
-      alSourceQueueBuffers( speakSource.id, 1, &speakSource.bufferIds[i] );
-      alSourcePlay( speakSource.id );
+      alBufferData(speakSource.bufferIds[i], AL_FORMAT_MONO16, speakSource.samples,
+                   speakSource.nSamples * int(sizeof(short)), speakSampleRate);
+      alSourceQueueBuffers(speakSource.id, 1, &speakSource.bufferIds[i]);
+      alSourcePlay(speakSource.id);
 
       OZ_AL_CHECK_ERROR();
       speakSource.mutex.unlock();
@@ -101,42 +101,42 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
   }
 
   do {
-    if( speakSource.nQueuedBuffers == 0 ) {
+    if (speakSource.nQueuedBuffers == 0) {
       return 1;
     }
 
     int nProcessed;
     do {
-      Time::sleep( 100 );
+      Time::sleep(100);
 
       speakSource.mutex.lock();
 
       int state;
-      alGetSourcei( speakSource.id, AL_SOURCE_STATE, &state );
-      alGetSourcei( speakSource.id, AL_BUFFERS_PROCESSED, &nProcessed );
+      alGetSourcei(speakSource.id, AL_SOURCE_STATE, &state);
+      alGetSourcei(speakSource.id, AL_BUFFERS_PROCESSED, &nProcessed);
 
-      if( nProcessed == 0 && state == AL_STOPPED ) {
-        alSourcePlay( speakSource.id );
+      if (nProcessed == 0 && state == AL_STOPPED) {
+        alSourcePlay(speakSource.id);
       }
 
       speakSource.mutex.unlock();
     }
-    while( nProcessed == 0 && speakSource.isAlive );
+    while (nProcessed == 0 && speakSource.isAlive);
 
-    if( !speakSource.isAlive ) {
+    if (!speakSource.isAlive) {
       return 1;
     }
 
     speakSource.mutex.lock();
 
     ALuint buffer;
-    alSourceUnqueueBuffers( speakSource.id, 1, &buffer );
+    alSourceUnqueueBuffers(speakSource.id, 1, &buffer);
     --speakSource.nQueuedBuffers;
 
-    if( speakSource.nSamples != 0 ) {
-      alBufferData( buffer, AL_FORMAT_MONO16, speakSource.samples,
-                    speakSource.nSamples * int( sizeof( short ) ), speakSampleRate );
-      alSourceQueueBuffers( speakSource.id, 1, &buffer );
+    if (speakSource.nSamples != 0) {
+      alBufferData(buffer, AL_FORMAT_MONO16, speakSource.samples,
+                   speakSource.nSamples * int(sizeof(short)), speakSampleRate);
+      alSourceQueueBuffers(speakSource.id, 1, &buffer);
 
       ++speakSource.nQueuedBuffers;
       speakSource.nSamples = 0;
@@ -145,22 +145,22 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
     OZ_AL_CHECK_ERROR();
     speakSource.mutex.unlock();
   }
-  while( nSamples == 0 );
+  while (nSamples == 0);
 
   return 0;
 }
 
-void Context::speakMain( void* )
+void Context::speakMain(void*)
 {
-  espeak_Synth( speakSource.text, size_t( speakSource.text + 1 ), 0, POS_CHARACTER, 0,
-                espeakCHARS_UTF8, nullptr, nullptr );
+  espeak_Synth(speakSource.text, size_t(speakSource.text + 1), 0, POS_CHARACTER, 0,
+               espeakCHARS_UTF8, nullptr, nullptr);
 
   int value = AL_PLAYING;
-  while( speakSource.isAlive && value != AL_STOPPED ) {
-    Time::sleep( 100 );
+  while (speakSource.isAlive && value != AL_STOPPED) {
+    Time::sleep(100);
 
     speakSource.mutex.lock();
-    alGetSourcei( speakSource.id, AL_SOURCE_STATE, &value );
+    alGetSourcei(speakSource.id, AL_SOURCE_STATE, &value);
     OZ_AL_CHECK_ERROR();
     speakSource.mutex.unlock();
   }
@@ -169,87 +169,87 @@ void Context::speakMain( void* )
   speakSource.isAlive = false;
 }
 
-uint Context::addSource( int sound )
+uint Context::addSource(int sound)
 {
-  hard_assert( sounds[sound].nUsers > 0 );
+  hard_assert(sounds[sound].nUsers > 0);
 
   uint srcId;
-  alGenSources( 1, &srcId );
+  alGenSources(1, &srcId);
 
   // Can this ever happen?
-  if( srcId == INVALID_SOURCE ) {
-    soft_assert( false );
+  if (srcId == INVALID_SOURCE) {
+    soft_assert(false);
 
-    alDeleteSources( 1, &srcId );
+    alDeleteSources(1, &srcId);
     return INVALID_SOURCE;
   }
-  if( alGetError() != AL_NO_ERROR ) {
-    Log::printRaw( "AL: Too many sources\n" );
+  if (alGetError() != AL_NO_ERROR) {
+    Log::printRaw("AL: Too many sources\n");
     return INVALID_SOURCE;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( sounds[sound].handle ) );
+  alSourcei(srcId, AL_BUFFER, int(sounds[sound].handle));
 
   ++sounds[sound].nUsers;
-  sources.add( new Source( srcId, sound ) );
+  sources.add(new Source(srcId, sound));
   return srcId;
 }
 
-void Context::removeSource( Source* source, Source* prev )
+void Context::removeSource(Source* source, Source* prev)
 {
   int sound = source->sound;
 
-  hard_assert( sounds[sound].nUsers > 0 );
+  hard_assert(sounds[sound].nUsers > 0);
 
-  alDeleteSources( 1, &source->id );
+  alDeleteSources(1, &source->id);
 
   --sounds[sound].nUsers;
-  sources.erase( source, prev );
+  sources.erase(source, prev);
   delete source;
 }
 
-uint Context::addContSource( int sound, int key )
+uint Context::addContSource(int sound, int key)
 {
-  hard_assert( sounds[sound].nUsers > 0 );
+  hard_assert(sounds[sound].nUsers > 0);
 
   uint srcId;
-  alGenSources( 1, &srcId );
+  alGenSources(1, &srcId);
 
   // Can this ever happen?
-  if( srcId == INVALID_SOURCE ) {
-    soft_assert( false );
+  if (srcId == INVALID_SOURCE) {
+    soft_assert(false);
 
-    alDeleteSources( 1, &srcId );
+    alDeleteSources(1, &srcId);
     return INVALID_SOURCE;
   }
 
-  if( alGetError() != AL_NO_ERROR ) {
+  if (alGetError() != AL_NO_ERROR) {
     // Too many sources.
     return INVALID_SOURCE;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( sounds[sound].handle ) );
+  alSourcei(srcId, AL_BUFFER, int(sounds[sound].handle));
 
   ++sounds[sound].nUsers;
-  contSources.add( key, ContSource( srcId, sound ) );
+  contSources.add(key, ContSource(srcId, sound));
   return srcId;
 }
 
-void Context::removeContSource( ContSource* contSource, int key )
+void Context::removeContSource(ContSource* contSource, int key)
 {
   int sound = contSource->sound;
 
-  hard_assert( sounds[sound].nUsers > 0 );
+  hard_assert(sounds[sound].nUsers > 0);
 
-  alDeleteSources( 1, &contSource->id );
+  alDeleteSources(1, &contSource->id);
 
   --sounds[sound].nUsers;
-  contSources.exclude( key );
+  contSources.exclude(key);
 }
 
-uint Context::requestSpeakSource( const char* text, int owner )
+uint Context::requestSpeakSource(const char* text, int owner)
 {
-  if( espeak_Synth == nullptr || speakSource.thread.isValid() ) {
+  if (espeak_Synth == nullptr || speakSource.thread.isValid()) {
     return INVALID_SOURCE;
   }
 
@@ -259,94 +259,94 @@ uint Context::requestSpeakSource( const char* text, int owner )
   speakSource.isAlive        = true;
   speakSource.text           = text;
 
-  speakSource.thread.start( "speak", speakMain );
+  speakSource.thread.start("speak", speakMain);
   return speakSource.id;
 }
 
 void Context::releaseSpeakSource()
 {
-  hard_assert( speakSource.thread.isValid() );
+  hard_assert(speakSource.thread.isValid());
 
   speakSource.isAlive = false;
   speakSource.thread.join();
 }
 
 Context::Context() :
-  imagoClasses( nullptr ), audioClasses( nullptr ), textures( nullptr ), sounds( nullptr ),
-  bsps( nullptr ), models( nullptr )
+  imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr),
+  bsps(nullptr), models(nullptr)
 {}
 
-Texture Context::loadTexture( const File& albedoFile, const File& masksFile,
-                              const File& normalsFile )
+Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
+                             const File& normalsFile)
 {
   Texture texture;
   texture.id = -2;
 
-  if( albedoFile.isMapped() ) {
-    glGenTextures( 1, &texture.albedo );
-    glBindTexture( GL_TEXTURE_2D, texture.albedo );
-    GL::textureDataFromFile( albedoFile, context.textureLod );
+  if (albedoFile.isMapped()) {
+    glGenTextures(1, &texture.albedo);
+    glBindTexture(GL_TEXTURE_2D, texture.albedo);
+    GL::textureDataFromFile(albedoFile, context.textureLod);
   }
-  if( masksFile.isMapped() ) {
-    glGenTextures( 1, &texture.masks );
-    glBindTexture( GL_TEXTURE_2D, texture.masks );
-    GL::textureDataFromFile( masksFile, context.textureLod );
+  if (masksFile.isMapped()) {
+    glGenTextures(1, &texture.masks);
+    glBindTexture(GL_TEXTURE_2D, texture.masks);
+    GL::textureDataFromFile(masksFile, context.textureLod);
   }
-  if( normalsFile.isMapped() ) {
-    glGenTextures( 1, &texture.normals );
-    glBindTexture( GL_TEXTURE_2D, texture.normals );
-    GL::textureDataFromFile( normalsFile, context.textureLod );
+  if (normalsFile.isMapped()) {
+    glGenTextures(1, &texture.normals);
+    glBindTexture(GL_TEXTURE_2D, texture.normals);
+    GL::textureDataFromFile(normalsFile, context.textureLod);
   }
 
   OZ_GL_CHECK_ERROR();
   return texture;
 }
 
-Texture Context::loadTexture( const char* basePath_ )
+Texture Context::loadTexture(const char* basePath_)
 {
   String basePath = basePath_;
   File   albedo   = basePath + ".dds";
   File   masks    = basePath + "_m.dds";
   File   normals  = basePath + "_n.dds";
 
-  if( albedo.type() == File::REGULAR ) {
+  if (albedo.type() == File::REGULAR) {
     albedo.map();
   }
-  if( masks.type() == File::REGULAR ) {
+  if (masks.type() == File::REGULAR) {
     masks.map();
   }
-  if( normals.type() == File::REGULAR ) {
+  if (normals.type() == File::REGULAR) {
     normals.map();
   }
 
-  return loadTexture( albedo, masks, normals );
+  return loadTexture(albedo, masks, normals);
 }
 
-void Context::unloadTexture( const Texture* texture )
+void Context::unloadTexture(const Texture* texture)
 {
-  if( texture->albedo != shader.defaultTexture ) {
-    glDeleteTextures( 1, &texture->albedo );
+  if (texture->albedo != shader.defaultTexture) {
+    glDeleteTextures(1, &texture->albedo);
   }
-  if( texture->masks != shader.defaultMasks ) {
-    glDeleteTextures( 1, &texture->masks );
+  if (texture->masks != shader.defaultMasks) {
+    glDeleteTextures(1, &texture->masks);
   }
-  if( texture->normals != shader.defaultNormals ) {
-    glDeleteTextures( 1, &texture->normals );
+  if (texture->normals != shader.defaultNormals) {
+    glDeleteTextures(1, &texture->normals);
   }
 
   OZ_GL_CHECK_ERROR();
 }
 
-Texture Context::requestTexture( int id )
+Texture Context::requestTexture(int id)
 {
   // No texture.
-  if( id == -1 ) {
+  if (id == -1) {
     return Texture();
   }
 
   Resource<Texture>& resource = textures[id];
 
-  if( resource.nUsers >= 0 ) {
+  if (resource.nUsers >= 0) {
     ++resource.nUsers;
     return resource.handle;
   }
@@ -357,44 +357,44 @@ Texture Context::requestTexture( int id )
   File masksFile   = basePath + "_m.dds";
   File normalsFile = basePath + "_n.dds";
 
-  if( !albedoFile.map() ) {
-    OZ_ERROR( "Failed to load '%s'", albedoFile.path().cstr() );
+  if (!albedoFile.map()) {
+    OZ_ERROR("Failed to load '%s'", albedoFile.path().cstr());
   }
 
   masksFile.map();
   normalsFile.map();
 
   resource.nUsers    = 1;
-  resource.handle    = loadTexture( albedoFile, masksFile, normalsFile );
+  resource.handle    = loadTexture(albedoFile, masksFile, normalsFile);
   resource.handle.id = id;
 
   return resource.handle;
 }
 
-void Context::releaseTexture( int id )
+void Context::releaseTexture(int id)
 {
   // No texture.
-  if( id == -1 ) {
+  if (id == -1) {
     return;
   }
 
   Resource<Texture>& resource = textures[id];
 
-  hard_assert( resource.nUsers > 0 );
+  hard_assert(resource.nUsers > 0);
 
   --resource.nUsers;
 
-  if( resource.nUsers == 0 ) {
+  if (resource.nUsers == 0) {
     resource.nUsers = -1;
-    unloadTexture( &resource.handle );
+    unloadTexture(&resource.handle);
   }
 }
 
-uint Context::requestSound( int id )
+uint Context::requestSound(int id)
 {
   Resource<uint>& resource = sounds[id];
 
-  if( resource.nUsers >= 0 ) {
+  if (resource.nUsers >= 0) {
     ++resource.nUsers;
     return resource.handle;
   }
@@ -406,110 +406,110 @@ uint Context::requestSound( int id )
   const String& name = liber.sounds[id].name;
   const String& path = liber.sounds[id].path;
 
-  alGenBuffers( 1, &resource.handle );
+  alGenBuffers(1, &resource.handle);
 
-  if( !AL::bufferDataFromFile( resource.handle, path ) ) {
-    OZ_ERROR( "Failed to load WAVE or Ogg Vorbis sound '%s'", name.cstr() );
+  if (!AL::bufferDataFromFile(resource.handle, path)) {
+    OZ_ERROR("Failed to load WAVE or Ogg Vorbis sound '%s'", name.cstr());
   }
 
   OZ_AL_CHECK_ERROR();
   return resource.handle;
 }
 
-void Context::releaseSound( int id )
+void Context::releaseSound(int id)
 {
   Resource<uint>& resource = sounds[id];
 
-  hard_assert( resource.nUsers > 0 );
+  hard_assert(resource.nUsers > 0);
 
   --resource.nUsers;
 }
 
-void Context::freeSound( int id )
+void Context::freeSound(int id)
 {
   Resource<uint>& resource = sounds[id];
 
-  hard_assert( resource.nUsers == 0 );
+  hard_assert(resource.nUsers == 0);
 
   --resource.nUsers;
-  alDeleteBuffers( 1, &resource.handle );
+  alDeleteBuffers(1, &resource.handle);
 
   OZ_AL_CHECK_ERROR();
 }
 
-void Context::playSample( int id )
+void Context::playSample(int id)
 {
-  if( id < 0 ) {
+  if (id < 0) {
     return;
   }
 
-  uint srcId = addSource( id );
+  uint srcId = addSource(id);
 
-  if( srcId != INVALID_SOURCE ) {
-    alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
-    alSourcePlay( srcId );
+  if (srcId != INVALID_SOURCE) {
+    alSourcei(srcId, AL_SOURCE_RELATIVE, AL_TRUE);
+    alSourcePlay(srcId);
   }
 
   OZ_AL_CHECK_ERROR();
 }
 
-BSPImago* Context::getBSP( const BSP* bsp )
+BSPImago* Context::getBSP(const BSP* bsp)
 {
   Resource<BSPImago*>& resource = bsps[bsp->id];
 
   return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
 }
 
-BSPImago* Context::requestBSP( const BSP* bsp )
+BSPImago* Context::requestBSP(const BSP* bsp)
 {
   Resource<BSPImago*>& resource = bsps[bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
-  if( resource.handle == nullptr ) {
-    resource.handle = new BSPImago( bsp );
+  if (resource.handle == nullptr) {
+    resource.handle = new BSPImago(bsp);
   }
 
   return resource.handle;
 }
 
-void Context::drawBSP( const Struct* str )
+void Context::drawBSP(const Struct* str)
 {
-  BSPImago* bsp = requestBSP( str->bsp );
+  BSPImago* bsp = requestBSP(str->bsp);
 
-  if( bsp->isLoaded() ) {
-    bsp->schedule( str, Model::SCENE_QUEUE );
+  if (bsp->isLoaded()) {
+    bsp->schedule(str, Model::SCENE_QUEUE);
   }
 }
 
-void Context::playBSP( const Struct* str )
+void Context::playBSP(const Struct* str)
 {
   Resource<BSPAudio*>& resource = bspAudios[str->bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
-  if( resource.handle == nullptr ) {
-    resource.handle = new BSPAudio( str->bsp );
+  if (resource.handle == nullptr) {
+    resource.handle = new BSPAudio(str->bsp);
   }
 
-  resource.handle->play( str );
+  resource.handle->play(str);
 }
 
-Model* Context::getModel( int id )
+Model* Context::getModel(int id)
 {
   Resource<Model*>& resource = models[id];
 
   return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
 }
 
-Model* Context::requestModel( int id )
+Model* Context::requestModel(int id)
 {
   Resource<Model*>& resource = models[id];
 
-  if( resource.nUsers < 0 ) {
-    resource.handle = new Model( liber.models[id].path );
+  if (resource.nUsers < 0) {
+    resource.handle = new Model(liber.models[id].path);
     resource.nUsers = 1;
   }
 
@@ -517,27 +517,27 @@ Model* Context::requestModel( int id )
   return resource.handle;
 }
 
-void Context::releaseModel( int id )
+void Context::releaseModel(int id)
 {
   Resource<Model*>& resource = models[id];
 
-  hard_assert( resource.handle != nullptr && resource.nUsers > 0 );
+  hard_assert(resource.handle != nullptr && resource.nUsers > 0);
 
   --resource.nUsers;
 }
 
-PartClass* Context::getPartClass( int id )
+PartClass* Context::getPartClass(int id)
 {
   Resource<PartClass>& resource = partClasses[id];
 
   return &resource.handle;
 }
 
-PartClass* Context::requestPartClass( int id )
+PartClass* Context::requestPartClass(int id)
 {
   Resource<PartClass>& resource = partClasses[id];
 
-  if( resource.nUsers < 0 ) {
+  if (resource.nUsers < 0) {
 //    resource.handle.preload();
     resource.nUsers = 1;
   }
@@ -546,95 +546,95 @@ PartClass* Context::requestPartClass( int id )
   return &resource.handle;
 }
 
-void Context::releasePartClass( int id )
+void Context::releasePartClass(int id)
 {
   Resource<PartClass>& resource = partClasses[id];
 
-  hard_assert( resource.nUsers > 0 );
+  hard_assert(resource.nUsers > 0);
 
   --resource.nUsers;
 }
 
-void Context::drawImago( const Object* obj, const Imago* parent )
+void Context::drawImago(const Object* obj, const Imago* parent)
 {
-  hard_assert( obj->flags & Object::IMAGO_BIT );
+  hard_assert(obj->flags & Object::IMAGO_BIT);
 
-  Imago* const* value = imagines.find( obj->index );
+  Imago* const* value = imagines.find(obj->index);
 
-  if( value == nullptr ) {
+  if (value == nullptr) {
     Imago::CreateFunc* createFunc = imagoClasses[obj->clazz->imagoType];
-    value = &imagines.add( obj->index, createFunc( obj ) );
+    value = &imagines.add(obj->index, createFunc(obj));
   }
 
   Imago* imago = *value;
   imago->flags |= Imago::UPDATED_BIT;
-  imago->draw( parent );
+  imago->draw(parent);
 }
 
-void Context::playAudio( const Object* obj, const Object* parent )
+void Context::playAudio(const Object* obj, const Object* parent)
 {
-  hard_assert( obj->flags & Object::AUDIO_BIT );
+  hard_assert(obj->flags & Object::AUDIO_BIT);
 
-  Audio* const* value = audios.find( obj->index );
+  Audio* const* value = audios.find(obj->index);
 
-  if( value == nullptr ) {
+  if (value == nullptr) {
     Audio::CreateFunc* createFunc = audioClasses[obj->clazz->audioType];
-    value = &audios.add( obj->index, createFunc( obj ) );
+    value = &audios.add(obj->index, createFunc(obj));
   }
 
   Audio* audio = *value;
   audio->flags |= Audio::UPDATED_BIT;
-  audio->play( parent );
+  audio->play(parent);
 }
 
-void Context::drawFrag( const Frag* frag )
+void Context::drawFrag(const Frag* frag)
 {
   FragPool* pool = fragPools[frag->poolId];
 
-  if( pool == nullptr ) {
-    pool = new FragPool( frag->pool );
+  if (pool == nullptr) {
+    pool = new FragPool(frag->pool);
     fragPools[frag->poolId] = pool;
   }
 
   pool->flags |= FragPool::UPDATED_BIT;
-  pool->draw( frag );
+  pool->draw(frag);
 }
 
 void Context::updateLoad()
 {
   int nFragPools = 0;
-  for( int i = 0; i < liber.nFragPools; ++i ) {
+  for (int i = 0; i < liber.nFragPools; ++i) {
     nFragPools += fragPools[i] != nullptr;
   }
 
-  maxFragPools          = max( maxFragPools,          nFragPools );
+  maxFragPools          = max(maxFragPools,          nFragPools);
 
-  maxImagines           = max( maxImagines,           imagines.length() );
-  maxAudios             = max( maxAudios,             audios.length() );
-  maxSources            = max( maxSources,            Source::pool.length() );
-  maxContSources        = max( maxContSources,        contSources.length() );
-  maxPartGens           = max( maxPartGens,           partGens.length() );
+  maxImagines           = max(maxImagines,           imagines.length());
+  maxAudios             = max(maxAudios,             audios.length());
+  maxSources            = max(maxSources,            Source::pool.length());
+  maxContSources        = max(maxContSources,        contSources.length());
+  maxPartGens           = max(maxPartGens,           partGens.length());
 
-  maxSMMImagines        = max( maxSMMImagines,        SMMImago::pool.length() );
-  maxSMMVehicleImagines = max( maxSMMVehicleImagines, SMMVehicleImago::pool.length() );
-  maxExplosionImagines  = max( maxExplosionImagines,  ExplosionImago::pool.length() );
-  maxMD2Imagines        = max( maxMD2Imagines,        MD2Imago::pool.length() );
-  maxMD2WeaponImagines  = max( maxMD2WeaponImagines,  MD2WeaponImago::pool.length() );
+  maxSMMImagines        = max(maxSMMImagines,        SMMImago::pool.length());
+  maxSMMVehicleImagines = max(maxSMMVehicleImagines, SMMVehicleImago::pool.length());
+  maxExplosionImagines  = max(maxExplosionImagines,  ExplosionImago::pool.length());
+  maxMD2Imagines        = max(maxMD2Imagines,        MD2Imago::pool.length());
+  maxMD2WeaponImagines  = max(maxMD2WeaponImagines,  MD2WeaponImago::pool.length());
 
-  maxBasicAudios        = max( maxBasicAudios,        BasicAudio::pool.length() );
-  maxBotAudios          = max( maxBotAudios,          BotAudio::pool.length() );
-  maxVehicleAudios      = max( maxVehicleAudios,      VehicleAudio::pool.length() );
+  maxBasicAudios        = max(maxBasicAudios,        BasicAudio::pool.length());
+  maxBotAudios          = max(maxBotAudios,          BotAudio::pool.length());
+  maxVehicleAudios      = max(maxVehicleAudios,      VehicleAudio::pool.length());
 }
 
 void Context::load()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
   speakSource.owner = -1;
-  alGenBuffers( 2, speakSource.bufferIds );
-  alGenSources( 1, &speakSource.id );
-  if( alGetError() != AL_NO_ERROR ) {
-    OZ_ERROR( "Failed to create speak source" );
+  alGenBuffers(2, speakSource.bufferIds);
+  alGenSources(1, &speakSource.id);
+  if (alGetError() != AL_NO_ERROR) {
+    OZ_ERROR("Failed to create speak source");
   }
 
   maxImagines           = 0;
@@ -657,39 +657,39 @@ void Context::load()
 
 void Context::unload()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
-  Log::println( "Unloading Context {" );
+  Log::println("Unloading Context {");
   Log::indent();
 
-  Log::println( "Peak instances {" );
+  Log::println("Peak instances {");
   Log::indent();
-  Log::println( "%6d  fragment pools",      maxFragPools );
-  Log::println( "%6d  imago objects",       maxImagines );
-  Log::println( "%6d  audio objects",       maxAudios );
-  Log::println( "%6d  one-time sources",    maxSources );
-  Log::println( "%6d  continuous sources",  maxContSources );
-  Log::println( "%6d  particle generators", maxPartGens );
-  Log::println( "%6d  SMM imagines",        maxSMMImagines );
-  Log::println( "%6d  SMMVehicle imagines", maxSMMVehicleImagines );
-  Log::println( "%6d  Explosion imagines",  maxExplosionImagines );
-  Log::println( "%6d  MD2 imagines",        maxMD2Imagines );
-  Log::println( "%6d  MD2Weapon imagines",  maxMD2WeaponImagines );
-  Log::println( "%6d  Basic audios",        maxBasicAudios );
-  Log::println( "%6d  Bot audios",          maxBotAudios );
-  Log::println( "%6d  Vehicle audios",      maxVehicleAudios );
+  Log::println("%6d  fragment pools",      maxFragPools);
+  Log::println("%6d  imago objects",       maxImagines);
+  Log::println("%6d  audio objects",       maxAudios);
+  Log::println("%6d  one-time sources",    maxSources);
+  Log::println("%6d  continuous sources",  maxContSources);
+  Log::println("%6d  particle generators", maxPartGens);
+  Log::println("%6d  SMM imagines",        maxSMMImagines);
+  Log::println("%6d  SMMVehicle imagines", maxSMMVehicleImagines);
+  Log::println("%6d  Explosion imagines",  maxExplosionImagines);
+  Log::println("%6d  MD2 imagines",        maxMD2Imagines);
+  Log::println("%6d  MD2Weapon imagines",  maxMD2WeaponImagines);
+  Log::println("%6d  Basic audios",        maxBasicAudios);
+  Log::println("%6d  Bot audios",          maxBotAudios);
+  Log::println("%6d  Vehicle audios",      maxVehicleAudios);
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   // Speak source must be destroyed before anything else using OpenAL since it calls OpenAL
   // functions from its own thread.
-  if( speakSource.thread.isValid() ) {
+  if (speakSource.thread.isValid()) {
     releaseSpeakSource();
   }
   OZ_AL_CHECK_ERROR();
 
-  alDeleteSources( 1, &speakSource.id );
-  alDeleteBuffers( 2, speakSource.bufferIds );
+  alDeleteSources(1, &speakSource.id);
+  alDeleteBuffers(2, speakSource.bufferIds);
 
   imagines.free();
   imagines.trim();
@@ -699,8 +699,8 @@ void Context::unload()
   caelum.unload();
   terra.unload();
 
-  aFree( fragPools, liber.nFragPools );
-  aFill( fragPools, liber.nFragPools, nullptr );
+  aFree(fragPools, liber.nFragPools);
+  aFill(fragPools, liber.nFragPools, nullptr);
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -708,7 +708,7 @@ void Context::unload()
 
   OZ_AL_CHECK_ERROR();
 
-  for( int i = 0; i < liber.nBSPs; ++i ) {
+  for (int i = 0; i < liber.nBSPs; ++i) {
     delete bsps[i].handle;
 
     bsps[i].handle = nullptr;
@@ -719,7 +719,7 @@ void Context::unload()
     bspAudios[i].handle = nullptr;
     bspAudios[i].nUsers = -1;
   }
-  for( int i = 0; i < liber.models.length(); ++i ) {
+  for (int i = 0; i < liber.models.length(); ++i) {
     delete models[i].handle;
 
     models[i].handle = nullptr;
@@ -734,15 +734,15 @@ void Context::unload()
 
   Model::deallocate();
 
-  while( !sources.isEmpty() ) {
-    removeSource( sources.first(), nullptr );
+  while (!sources.isEmpty()) {
+    removeSource(sources.first(), nullptr);
     OZ_AL_CHECK_ERROR();
   }
-  for( auto i = contSources.iter(); i.isValid(); ) {
+  for (auto i = contSources.iter(); i.isValid();) {
     auto src = i;
     ++i;
 
-    removeContSource( &src->value, src->key );
+    removeContSource(&src->value, src->key);
     OZ_AL_CHECK_ERROR();
   }
 
@@ -751,34 +751,34 @@ void Context::unload()
   contSources.clear();
   contSources.trim();
 
-  for( int i = 0; i < liber.textures.length(); ++i ) {
-    hard_assert( textures[i].nUsers == -1 );
+  for (int i = 0; i < liber.textures.length(); ++i) {
+    hard_assert(textures[i].nUsers == -1);
   }
 
-  for( int i = 0; i < liber.sounds.length(); ++i ) {
-    if( sounds[i].nUsers == 0 ) {
-      freeSound( i );
+  for (int i = 0; i < liber.sounds.length(); ++i) {
+    if (sounds[i].nUsers == 0) {
+      freeSound(i);
     }
   }
 
   OZ_AL_CHECK_ERROR();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Context::clearSounds()
 {
-  while( !sources.isEmpty() ) {
-    removeSource( sources.first(), nullptr );
+  while (!sources.isEmpty()) {
+    removeSource(sources.first(), nullptr);
     OZ_AL_CHECK_ERROR();
   }
 
-  for( int i = 0; i < liber.sounds.length(); ++i ) {
-    if( sounds[i].nUsers == 0 ) {
-      freeSound( i );
+  for (int i = 0; i < liber.sounds.length(); ++i) {
+    if (sounds[i].nUsers == 0) {
+      freeSound(i);
     }
-    hard_assert( sounds[i].nUsers == -1 );
+    hard_assert(sounds[i].nUsers == -1);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -786,23 +786,23 @@ void Context::clearSounds()
 
 void Context::init()
 {
-  Log::print( "Initialising Context ..." );
+  Log::print("Initialising Context ...");
 
-  textureLod   = config.include( "context.textureLod", 0 ).get( 0 );
+  textureLod   = config.include("context.textureLod", 0).get(0);
 
   imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses];
   audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses];
   fragPools    = liber.nFragPools    == 0 ? nullptr : new FragPool*[liber.nFragPools] {};
 
-  OZ_REGISTER_IMAGOCLASS( SMM );
-  OZ_REGISTER_IMAGOCLASS( SMMVehicle );
-  OZ_REGISTER_IMAGOCLASS( Explosion );
-  OZ_REGISTER_IMAGOCLASS( MD2 );
-  OZ_REGISTER_IMAGOCLASS( MD2Weapon );
+  OZ_REGISTER_IMAGOCLASS(SMM);
+  OZ_REGISTER_IMAGOCLASS(SMMVehicle);
+  OZ_REGISTER_IMAGOCLASS(Explosion);
+  OZ_REGISTER_IMAGOCLASS(MD2);
+  OZ_REGISTER_IMAGOCLASS(MD2Weapon);
 
-  OZ_REGISTER_AUDIOCLASS( Basic );
-  OZ_REGISTER_AUDIOCLASS( Bot );
-  OZ_REGISTER_AUDIOCLASS( Vehicle );
+  OZ_REGISTER_AUDIOCLASS(Basic);
+  OZ_REGISTER_AUDIOCLASS(Bot);
+  OZ_REGISTER_AUDIOCLASS(Vehicle);
 
   int nTextures    = liber.textures.length();
   int nSounds      = liber.sounds.length();
@@ -819,34 +819,34 @@ void Context::init()
   models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels];
   partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses];
 
-  for( int i = 0; i < nTextures; ++i ) {
+  for (int i = 0; i < nTextures; ++i) {
     textures[i].nUsers = -1;
   }
-  for( int i = 0; i < nSounds; ++i ) {
+  for (int i = 0; i < nSounds; ++i) {
     sounds[i].nUsers = -1;
   }
-  for( int i = 0; i < nBSPs; ++i ) {
+  for (int i = 0; i < nBSPs; ++i) {
     bsps[i].handle = nullptr;
     bsps[i].nUsers = -1;
 
     bspAudios[i].handle = nullptr;
     bspAudios[i].nUsers = -1;
   }
-  for( int i = 0; i < nModels; ++i ) {
+  for (int i = 0; i < nModels; ++i) {
     models[i].handle = nullptr;
     models[i].nUsers = -1;
   }
-  for( int i = 0; i < nPartClasses; ++i ) {
+  for (int i = 0; i < nPartClasses; ++i) {
     partClasses[i].handle.unload();
     partClasses[i].nUsers = -1;
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Context::destroy()
 {
-  Log::print( "Destroying Context ..." );
+  Log::print("Destroying Context ...");
 
   delete[] imagoClasses;
   delete[] audioClasses;
@@ -874,7 +874,7 @@ void Context::destroy()
   models       = nullptr;
   partClasses  = nullptr;
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 Context context;

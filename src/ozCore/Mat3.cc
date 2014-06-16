@@ -29,64 +29,96 @@
 namespace oz
 {
 
-const Mat3 Mat3::ZERO = Mat3( 0.0f, 0.0f, 0.0f,
-                              0.0f, 0.0f, 0.0f,
-                              0.0f, 0.0f, 0.0f );
+const Mat3 Mat3::ZERO = Mat3(0.0f, 0.0f, 0.0f,
+                             0.0f, 0.0f, 0.0f,
+                             0.0f, 0.0f, 0.0f);
 
-const Mat3 Mat3::ID   = Mat3( 1.0f, 0.0f, 0.0f,
-                              0.0f, 1.0f, 0.0f,
-                              0.0f, 0.0f, 1.0f );
+const Mat3 Mat3::ID   = Mat3(1.0f, 0.0f, 0.0f,
+                             0.0f, 1.0f, 0.0f,
+                             0.0f, 0.0f, 1.0f);
+
+Mat3 Mat3::inverse() const
+{
+  // LLVM/Clang is faster Cayley-Hamilton while GCC is faster with Cramer.
+#ifdef OZ_CLANG
+
+  const Mat3& m = *this;
+
+  // Cayley–Hamilton decomposition.
+  Mat3  m2  = m * m;
+  float mtr = m.tr();
+  float k   = (mtr*mtr - m2.tr()) / 2.0f;
+  Mat3  kI  = Mat3(k, 0.0f, 0.0f, 0.0f, k, 0.0f, 0.0f, 0.0f, k);
+
+  return (kI - m * mtr + m2) / m.det();
+
+#else
+
+  Mat3 inv;
+
+  // Cramer's rule.
+  for (int j = 0; j < 3; ++j) {
+    inv[j][0] = Mat3(Mat3::ID[j], y, z).det();
+    inv[j][1] = Mat3(x, Mat3::ID[j], z).det();
+    inv[j][2] = Mat3(x, y, Mat3::ID[j]).det();
+  }
+
+  inv /= det();
+  return inv;
+
+#endif
+}
 
 Quat Mat3::toQuat() const
 {
-  float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
+  float w2 = Math::sqrt(1.0f + x.x + y.y + z.z);
   float w4 = 2.0f * w2;
 
-  return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, w2 / 2.0f );
+  return ~Quat((y.z - z.y) / w4, (z.x - x.z) / w4, (x.y - y.x) / w4, w2 / 2.0f);
 }
 
-void Mat3::rotate( const Quat& q )
+void Mat3::rotate(const Quat& q)
 {
-  *this = *this * rotation( q );
+  *this = *this * rotation(q);
 }
 
-void Mat3::rotateX( float theta )
+void Mat3::rotateX(float theta)
 {
   Vec3 j = y;
   Vec3 k = z;
 
   float s, c;
-  Math::sincos( theta, &s, &c );
+  Math::sincos(theta, &s, &c);
 
   y = j * c + k * s;
   z = k * c - j * s;
 }
 
-void Mat3::rotateY( float theta )
+void Mat3::rotateY(float theta)
 {
   Vec3 i = x;
   Vec3 k = z;
 
   float s, c;
-  Math::sincos( theta, &s, &c );
+  Math::sincos(theta, &s, &c);
 
   x = i * c - k * s;
   z = k * c + i * s;
 }
 
-void Mat3::rotateZ( float theta )
+void Mat3::rotateZ(float theta)
 {
   Vec3 i = x;
   Vec3 j = y;
 
   float s, c;
-  Math::sincos( theta, &s, &c );
+  Math::sincos(theta, &s, &c);
 
   x = i * c + j * s;
   y = j * c - i * s;
 }
 
-Mat3 Mat3::rotation( const Quat& q )
+Mat3 Mat3::rotation(const Quat& q)
 {
   //
   // [ 1 - 2yy - 2zz    2xy - 2wz      2xz + 2wy   ]
@@ -109,55 +141,55 @@ Mat3 Mat3::rotation( const Quat& q )
   float xx1 = 1.0f - xx2;
   float yy1 = 1.0f - yy2;
 
-  return Mat3( yy1 - zz2, xy2 + zw2, xz2 - yw2,
-               xy2 - zw2, xx1 - zz2, yz2 + xw2,
-               xz2 + yw2, yz2 - xw2, xx1 - yy2 );
+  return Mat3(yy1 - zz2, xy2 + zw2, xz2 - yw2,
+              xy2 - zw2, xx1 - zz2, yz2 + xw2,
+              xz2 + yw2, yz2 - xw2, xx1 - yy2);
 }
 
-Mat3 Mat3::rotationX( float theta )
+Mat3 Mat3::rotationX(float theta)
 {
   float s, c;
-  Math::sincos( theta, &s, &c );
+  Math::sincos(theta, &s, &c);
 
-  return Mat3( 1.0f, 0.0f, 0.0f,
-               0.0f,    c,    s,
-               0.0f,   -s,    c );
+  return Mat3(1.0f, 0.0f, 0.0f,
+              0.0f,    c,    s,
+              0.0f,   -s,    c);
 }
 
-Mat3 Mat3::rotationY( float theta )
+Mat3 Mat3::rotationY(float theta)
 {
   float s, c;
-  Math::sincos( theta, &s, &c );
+  Math::sincos(theta, &s, &c);
 
-  return Mat3(    c, 0.0f,   -s,
-               0.0f, 1.0f, 0.0f,
-                  s, 0.0f,    c );
+  return Mat3(   c, 0.0f,   -s,
+              0.0f, 1.0f, 0.0f,
+                 s, 0.0f,    c);
 }
 
-Mat3 Mat3::rotationZ( float theta )
+Mat3 Mat3::rotationZ(float theta)
 {
   float s, c;
-  Math::sincos( theta, &s, &c );
+  Math::sincos(theta, &s, &c);
 
-  return Mat3(    c,    s, 0.0f,
-                 -s,    c, 0.0f,
-               0.0f, 0.0f, 1.0f );
+  return Mat3(   c,    s, 0.0f,
+                -s,    c, 0.0f,
+              0.0f, 0.0f, 1.0f);
 }
 
-Mat3 Mat3::rotationZXZ( float heading, float pitch, float roll )
+Mat3 Mat3::rotationZXZ(float heading, float pitch, float roll)
 {
   float hs, hc, ps, pc, rs, rc;
 
-  Math::sincos( heading, &hs, &hc );
-  Math::sincos( pitch, &ps, &pc );
-  Math::sincos( roll, &rs, &rc );
+  Math::sincos(heading, &hs, &hc);
+  Math::sincos(pitch, &ps, &pc);
+  Math::sincos(roll, &rs, &rc);
 
   float hspc = hs*pc;
   float hcpc = hc*pc;
 
-  return Mat3(  hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs,
-               -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc,
-                          hs*ps,           -hc*ps,    pc );
+  return Mat3( hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs,
+              -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc,
+                         hs*ps,           -hc*ps,    pc);
 }
 
 }

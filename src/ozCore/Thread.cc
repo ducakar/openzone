@@ -33,13 +33,13 @@
 
 #include <cstdlib>
 
-#if defined( __ANDROID__ )
+#if defined(__ANDROID__)
 # include <jni.h>
 # include <pthread.h>
-#elif defined( __native_client__ )
+#elif defined(__native_client__)
 # include <ppapi/cpp/message_loop.h>
 # include <pthread.h>
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 # include <windows.h>
 #else
 # include <pthread.h>
@@ -65,17 +65,17 @@ struct MainThreadNameInitialiser
 #ifdef _WIN32
 
     nameKey = TlsAlloc();
-    if( nameKey == TLS_OUT_OF_INDEXES ) {
-      OZ_ERROR( "oz::Thread: Name key creation failed" );
+    if (nameKey == TLS_OUT_OF_INDEXES) {
+      OZ_ERROR("oz::Thread: Name key creation failed");
     }
-    TlsSetValue( nameKey, const_cast<char*>( "main" ) );
+    TlsSetValue(nameKey, const_cast<char*>("main"));
 
 #else
 
-    if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
-      OZ_ERROR( "oz::Thread: Name key creation failed" );
+    if (pthread_key_create(&nameKey, nullptr) != 0) {
+      OZ_ERROR("oz::Thread: Name key creation failed");
     }
-    pthread_setspecific( nameKey, "main" );
+    pthread_setspecific(nameKey, "main");
 
 #endif
   }
@@ -96,54 +96,54 @@ struct Thread::Descriptor
   char          name[StackTrace::NAME_LENGTH + 1];
 
 #ifdef _WIN32
-  static DWORD WINAPI threadMain( void* data );
+  static DWORD WINAPI threadMain(void* data);
 #else
-  static void* threadMain( void* data );
+  static void* threadMain(void* data);
 #endif
 };
 
 #ifdef _WIN32
 
 OZ_HIDDEN
-DWORD WINAPI Thread::Descriptor::threadMain( void* data )
+DWORD WINAPI Thread::Descriptor::threadMain(void* data)
 {
-  Descriptor* descriptor = static_cast<Descriptor*>( data );
+  Descriptor* descriptor = static_cast<Descriptor*>(data);
 
-  TlsSetValue( nameKey, descriptor->name );
+  TlsSetValue(nameKey, descriptor->name);
 
   System::threadInit();
-  descriptor->main( descriptor->data );
+  descriptor->main(descriptor->data);
   return 0;
 }
 
 #else
 
 OZ_HIDDEN
-void* Thread::Descriptor::threadMain( void* data )
+void* Thread::Descriptor::threadMain(void* data)
 {
-  Descriptor* descriptor = static_cast<Descriptor*>( data );
+  Descriptor* descriptor = static_cast<Descriptor*>(data);
 
-  pthread_setspecific( nameKey, descriptor->name );
+  pthread_setspecific(nameKey, descriptor->name);
 
-#if defined( __ANDROID__ )
+#if defined(__ANDROID__)
 
   JavaVM* javaVM = Java::vm();
 
-  if( javaVM != nullptr ) {
+  if (javaVM != nullptr) {
     void* jniEnv = nullptr;
-    javaVM->AttachCurrentThread( &jniEnv, nullptr );
+    javaVM->AttachCurrentThread(&jniEnv, nullptr);
   }
 
-#elif defined( __native_client__ )
+#elif defined(__native_client__)
 
   pp::Instance* ppInstance = Pepper::instance();
 
-  if( ppInstance == nullptr ) {
-    OZ_ERROR( "oz::Thread: NaCl application instance must be created via oz::Pepper::createModule()"
-              " before starting any new threads" );
+  if (ppInstance == nullptr) {
+    OZ_ERROR("oz::Thread: NaCl application instance must be created via oz::Pepper::createModule()"
+             " before starting any new threads");
   }
 
-  pp::MessageLoop messageLoop( ppInstance );
+  pp::MessageLoop messageLoop(ppInstance);
   messageLoop.AttachToCurrentThread();
 
   Semaphore localSemaphore;
@@ -152,18 +152,18 @@ void* Thread::Descriptor::threadMain( void* data )
 #endif
 
   System::threadInit();
-  descriptor->main( descriptor->data );
+  descriptor->main(descriptor->data);
 
 #ifdef __ANDROID__
 
-  if( javaVM != nullptr ) {
+  if (javaVM != nullptr) {
     javaVM->DetachCurrentThread();
   }
 
 #endif
 
-  if( descriptor->isDetached ) {
-    free( descriptor );
+  if (descriptor->isDetached) {
+    free(descriptor);
   }
   return nullptr;
 }
@@ -173,11 +173,11 @@ void* Thread::Descriptor::threadMain( void* data )
 const char* Thread::name()
 {
 #ifdef _WIN32
-  void* data = TlsGetValue( nameKey );
+  void* data = TlsGetValue(nameKey);
 #else
-  void* data = pthread_getspecific( nameKey );
+  void* data = pthread_getspecific(nameKey);
 #endif
-  return static_cast<const char*>( data == nullptr ? "" : data );
+  return static_cast<const char*>(data == nullptr ? "" : data);
 }
 
 bool Thread::isMain()
@@ -185,61 +185,61 @@ bool Thread::isMain()
 #ifdef _WIN32
   return GetCurrentThread() == mainThread;
 #else
-  return pthread_equal( pthread_self(), mainThread );
+  return pthread_equal(pthread_self(), mainThread);
 #endif
 }
 
 Thread::Thread() :
-  descriptor( nullptr )
+  descriptor(nullptr)
 {}
 
 Thread::~Thread()
 {
-  if( descriptor != nullptr && !descriptor->isDetached ) {
+  if (descriptor != nullptr && !descriptor->isDetached) {
     join();
   }
 }
 
-void Thread::start( const char* name, Main* main, void* data )
+void Thread::start(const char* name, Main* main, void* data)
 {
-  if( descriptor != nullptr ) {
-    OZ_ERROR( "oz::Thread: Thread is already started" );
+  if (descriptor != nullptr) {
+    OZ_ERROR("oz::Thread: Thread is already started");
   }
 
-  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
-  if( descriptor == nullptr ) {
-    OZ_ERROR( "oz::Thread: Descriptor allocation failed" );
+  descriptor = static_cast<Descriptor*>(malloc(sizeof(Descriptor)));
+  if (descriptor == nullptr) {
+    OZ_ERROR("oz::Thread: Descriptor allocation failed");
   }
 
   descriptor->main       = main;
   descriptor->data       = data;
   descriptor->isDetached = false;
 
-  strlcpy( descriptor->name, name, StackTrace::NAME_LENGTH );
+  strlcpy(descriptor->name, name, StackTrace::NAME_LENGTH);
 
 #ifdef _WIN32
-  descriptor->thread = CreateThread( nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr );
-  if( descriptor->thread == nullptr ) {
-    OZ_ERROR( "oz::Thread: Thread creation failed" );
+  descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr);
+  if (descriptor->thread == nullptr) {
+    OZ_ERROR("oz::Thread: Thread creation failed");
   }
 #else
-  if( pthread_create( &descriptor->thread, nullptr, Descriptor::threadMain, descriptor ) != 0 ) {
-    OZ_ERROR( "oz::Thread: Thread creation failed" );
+  if (pthread_create(&descriptor->thread, nullptr, Descriptor::threadMain, descriptor) != 0) {
+    OZ_ERROR("oz::Thread: Thread creation failed");
   }
 #endif
 }
 
 void Thread::detach()
 {
-  if( descriptor == nullptr ) {
-    OZ_ERROR( "oz::Thread: Detaching invalid thread" );
+  if (descriptor == nullptr) {
+    OZ_ERROR("oz::Thread: Detaching invalid thread");
   }
 
   descriptor->isDetached = true;
 #ifdef _WIN32
-  CloseHandle( descriptor->thread );
+  CloseHandle(descriptor->thread);
 #else
-  pthread_detach( descriptor->thread );
+  pthread_detach(descriptor->thread);
 #endif
 
   descriptor = nullptr;
@@ -247,22 +247,22 @@ void Thread::detach()
 
 void Thread::join()
 {
-  if( descriptor == nullptr ) {
-    OZ_ERROR( "oz::Thread: Detaching invalid thread" );
+  if (descriptor == nullptr) {
+    OZ_ERROR("oz::Thread: Detaching invalid thread");
   }
 
 #ifdef _WIN32
-  if( WaitForSingleObject( descriptor->thread, INFINITE ) == WAIT_FAILED ) {
-    OZ_ERROR( "oz::Thread: Join failed" );
+  if (WaitForSingleObject(descriptor->thread, INFINITE) == WAIT_FAILED) {
+    OZ_ERROR("oz::Thread: Join failed");
   }
-  CloseHandle( descriptor->thread );
+  CloseHandle(descriptor->thread);
 #else
-  if( pthread_join( descriptor->thread, nullptr ) != 0 ) {
-    OZ_ERROR( "oz::Thread: Join failed" );
+  if (pthread_join(descriptor->thread, nullptr) != 0) {
+    OZ_ERROR("oz::Thread: Join failed");
   }
 #endif
 
-  free( descriptor );
+  free(descriptor);
   descriptor = nullptr;
 }
 

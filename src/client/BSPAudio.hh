@@ -38,16 +38,16 @@ private:
 
 private:
 
-  void playDemolish( const Struct* str, int sound ) const;
-  void playSound( const Entity* entity, int sound ) const;
-  void playContSound( const Entity* entity, int sound ) const;
+  void playDemolish(const Struct* str, int sound) const;
+  void playSound(const Entity* entity, int sound) const;
+  void playContSound(const Entity* entity, int sound) const;
 
 public:
 
-  explicit BSPAudio( const BSP* bsp );
+  explicit BSPAudio(const BSP* bsp);
   ~BSPAudio();
 
-  void play( const Struct* str ) const;
+  void play(const Struct* str) const;
 
 };
 

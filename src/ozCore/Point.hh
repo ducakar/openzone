@@ -52,7 +52,7 @@ public:
    */
   OZ_ALWAYS_INLINE
   Point() :
-    VectorBase3( 0.0f, 0.0f, 0.0f, 1.0f )
+    VectorBase3(0.0f, 0.0f, 0.0f, 1.0f)
   {}
 
 #ifdef OZ_SIMD_MATH
@@ -61,16 +61,16 @@ public:
    * Create form a float SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Point( float4 f4 ) :
-    VectorBase3( f4 )
+  explicit Point(float4 f4) :
+    VectorBase3(f4)
   {}
 
   /**
    * Create from an uint SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Point( uint4 u4 ) :
-    VectorBase3( u4 )
+  explicit Point(uint4 u4) :
+    VectorBase3(u4)
   {}
 
 #endif
@@ -79,23 +79,23 @@ public:
    * Create a point with given coordinates.
    */
   OZ_ALWAYS_INLINE
-  explicit Point( float x, float y, float z ) :
-    VectorBase3( x, y, z, 1.0f )
+  explicit Point(float x, float y, float z) :
+    VectorBase3(x, y, z, 1.0f)
   {}
 
   /**
    * Create from an array of 3 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Point( const float* v ) :
-    VectorBase3( v[0], v[1], v[2], 1.0f )
+  explicit Point(const float* v) :
+    VectorBase3(v[0], v[1], v[2], 1.0f)
   {}
 
   /**
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Point& p ) const
+  bool operator == (const Point& p) const
   {
     return x == p.x && y == p.y && z == p.z;
   }
@@ -104,21 +104,21 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Point& p ) const
+  bool operator != (const Point& p) const
   {
-    return !operator == ( p );
+    return !operator == (p);
   }
 
   /**
    * Point translated for `v`.
    */
   OZ_ALWAYS_INLINE
-  Point operator + ( const Vec3& v ) const
+  Point operator + (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return Point( f4 + v.f4 );
+    return Point(f4 + v.f4);
 #else
-    return Point( x + v.x, y + v.y, z + v.z );
+    return Point(x + v.x, y + v.y, z + v.z);
 #endif
   }
 
@@ -126,12 +126,12 @@ public:
    * Point translated for `-v`.
    */
   OZ_ALWAYS_INLINE
-  Point operator - ( const Vec3& v ) const
+  Point operator - (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return Point( f4 - v.f4 );
+    return Point(f4 - v.f4);
 #else
-    return Point( x - v.x, y - v.y, z - v.z );
+    return Point(x - v.x, y - v.y, z - v.z);
 #endif
   }
 
@@ -139,12 +139,12 @@ public:
    * Difference of two points.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator - ( const Point& p ) const
+  Vec3 operator - (const Point& p) const
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( f4 - p.f4 );
+    return Vec3(f4 - p.f4);
 #else
-    return Vec3( x - p.x, y - p.y, z - p.z );
+    return Vec3(x - p.x, y - p.y, z - p.z);
 #endif
   }
 
@@ -152,7 +152,7 @@ public:
    * Translate for `v`.
    */
   OZ_ALWAYS_INLINE
-  Point& operator += ( const Vec3& v )
+  Point& operator += (const Vec3& v)
   {
 #ifdef OZ_SIMD_MATH
     f4 += v.f4;
@@ -168,7 +168,7 @@ public:
    * Translate for `-v`.
    */
   OZ_ALWAYS_INLINE
-  Point& operator -= ( const Vec3& v )
+  Point& operator -= (const Vec3& v)
   {
 #ifdef OZ_SIMD_MATH
     f4 -= v.f4;
@@ -184,10 +184,10 @@ public:
    * Projection of the point to a given vector.
    */
   OZ_ALWAYS_INLINE
-  scalar operator * ( const Vec3& v ) const
+  scalar operator * (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot( f4, v.f4 );
+    return vDot(f4, v.f4);
 #else
     return x*v.x + y*v.y + z*v.z;
 #endif
@@ -197,12 +197,12 @@ public:
    * Per-component absolute value of a point.
    */
   OZ_ALWAYS_INLINE
-  friend Point abs( const Point& a )
+  friend Point abs(const Point& a)
   {
 #ifdef OZ_SIMD_MATH
-    return Point( vAbs( a.u4 ) );
+    return Point(vAbs(a.u4));
 #else
-    return Point( abs<float>( a.x ), abs<float>( a.y ), abs<float>( a.z ) );
+    return Point(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z));
 #endif
   }
 
@@ -210,12 +210,12 @@ public:
    * Per-component minimum of two points.
    */
   OZ_ALWAYS_INLINE
-  friend Point min( const Point& a, const Point& b )
+  friend Point min(const Point& a, const Point& b)
   {
 #ifdef OZ_SIMD_MATH
-    return Point( vMin( a.f4, b.f4 ) );
+    return Point(vMin(a.f4, b.f4));
 #else
-    return Point( min<float>( a.x, b.x ), min<float>( a.y, b.y ), min<float>( a.z, b.z ) );
+    return Point(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z));
 #endif
   }
 
@@ -223,12 +223,12 @@ public:
    * Per-component maximum of two points.
    */
   OZ_ALWAYS_INLINE
-  friend Point max( const Point& a, const Point& b )
+  friend Point max(const Point& a, const Point& b)
   {
 #ifdef OZ_SIMD_MATH
-    return Point( vMax( a.f4, b.f4 ) );
+    return Point(vMax(a.f4, b.f4));
 #else
-    return Point( max<float>( a.x, b.x ), max<float>( a.y, b.y ), max<float>( a.z, b.z ) );
+    return Point(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z));
 #endif
   }
 
@@ -236,13 +236,13 @@ public:
    * Per-component clamped value of points.
    */
   OZ_ALWAYS_INLINE
-  friend Point clamp( const Point& c, const Point& a, const Point& b )
+  friend Point clamp(const Point& c, const Point& a, const Point& b)
   {
 #ifdef OZ_SIMD_MATH
-    return Point( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
+    return Point(vMin(b.f4, vMax(a.f4, c.f4)));
 #else
-    return Point( clamp<float>( c.x, a.x, b.x ), clamp<float>( c.y, a.y, b.y ),
-                  clamp<float>( c.z, a.z, b.z ) );
+    return Point(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),
+                 clamp<float>(c.z, a.z, b.z));
 #endif
   }
 

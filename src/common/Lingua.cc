@@ -30,20 +30,20 @@ namespace oz
 
 static String language;
 
-String Lingua::detectLanguage( const char* language_ )
+String Lingua::detectLanguage(const char* language_)
 {
   String lang = language_;
 
-  if( lang.isEmpty() ) {
+  if (lang.isEmpty()) {
     lang = Gettext::systemLanguage();
 
-    int underscore = lang.index( '_' );
-    if( underscore >= 2 ) {
-      lang = lang.substring( 0, underscore );
+    int underscore = lang.index('_');
+    if (underscore >= 2) {
+      lang = lang.substring(0, underscore);
     }
   }
 
-  if( File( "@lingua/" + lang ).type() != File::MISSING ) {
+  if (File("@lingua/" + lang).type() != File::MISSING) {
     return lang;
   }
   else {
@@ -51,12 +51,12 @@ String Lingua::detectLanguage( const char* language_ )
   }
 }
 
-bool Lingua::initMission( const char* mission )
+bool Lingua::initMission(const char* mission)
 {
   clear();
 
-  File file = String::str( "@mission/%s/lingua/%s.mo", mission, language.cstr() );
-  return catalogue.import( file );
+  File file = String::str("@mission/%s/lingua/%s.mo", mission, language.cstr());
+  return catalogue.import(file);
 }
 
 void Lingua::clear()
@@ -64,22 +64,22 @@ void Lingua::clear()
   catalogue.clear();
 }
 
-bool Lingua::init( const char* language_ )
+bool Lingua::init(const char* language_)
 {
   language = language_;
   catalogue.clear();
 
   File dir = "@lingua/" + language;
-  if( dir.type() == File::MISSING ) {
+  if (dir.type() == File::MISSING) {
     return false;
   }
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "mo" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("mo")) {
       continue;
     }
 
-    catalogue.import( file );
+    catalogue.import(file);
   }
   return true;
 }

@@ -68,44 +68,44 @@ public:
                             ///< `matrix::Medium::GLOBAL_LAVA_BIT`
   int  id;
 
-  Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
-  Pair<int> getIndices( float x, float y ) const;
-  float height( float x, float y ) const;
+  Span getInters(float minX, float minY, float maxX, float maxY, float epsilon = 0.0f) const;
+  Pair<int> getIndices(float x, float y) const;
+  float height(float x, float y) const;
 
   void reset();
-  void load( int id );
+  void load(int id);
   void init();
 
-  void read( const JSON& json );
-  void read( InputStream* is );
+  void read(const JSON& json);
+  void read(InputStream* is);
 
   JSON write() const;
-  void write( OutputStream* os ) const;
+  void write(OutputStream* os) const;
 
 };
 
-inline Span Terra::getInters( float minPosX, float minPosY,
-                              float maxPosX, float maxPosY, float epsilon ) const
+inline Span Terra::getInters(float minPosX, float minPosY, float maxPosX, float maxPosY,
+                             float epsilon) const
 {
   return {
-    max( int( ( minPosX - epsilon + DIM ) / Quad::SIZE ), 0 ),
-    max( int( ( minPosY - epsilon + DIM ) / Quad::SIZE ), 0 ),
-    min( int( ( maxPosX + epsilon + DIM ) / Quad::SIZE ), QUADS - 1 ),
-    min( int( ( maxPosY + epsilon + DIM ) / Quad::SIZE ), QUADS - 1 )
+    max(int((minPosX - epsilon + DIM) / Quad::SIZE), 0),
+    max(int((minPosY - epsilon + DIM) / Quad::SIZE), 0),
+    min(int((maxPosX + epsilon + DIM) / Quad::SIZE), QUADS - 1),
+    min(int((maxPosY + epsilon + DIM) / Quad::SIZE), QUADS - 1)
   };
 }
 
-inline Pair<int> Terra::getIndices( float x, float y ) const
+inline Pair<int> Terra::getIndices(float x, float y) const
 {
-  int ix = int( ( x + DIM ) / Quad::SIZE );
-  int iy = int( ( y + DIM ) / Quad::SIZE );
+  int ix = int((x + DIM) / Quad::SIZE);
+  int iy = int((y + DIM) / Quad::SIZE);
 
-  return { clamp( ix, 0, QUADS - 1 ), clamp( iy, 0, QUADS - 1 ) };
+  return { clamp(ix, 0, QUADS - 1), clamp(iy, 0, QUADS - 1) };
 }
 
-inline float Terra::height( float x, float y ) const
+inline float Terra::height(float x, float y) const
 {
-  Pair<int>   i    = getIndices( x, y );
+  Pair<int>   i    = getIndices(x, y);
   const Quad& quad = quads[i.x][i.y];
 
   float localX = x - quad.vertex.x;
@@ -114,7 +114,7 @@ inline float Terra::height( float x, float y ) const
   int   ii     = localX <= localY;
   Vec3  normal = quad.triNormal[ii];
 
-  return height - ( normal.x * localX + normal.y * localY ) / normal.z;
+  return height - (normal.x * localX + normal.y * localY) / normal.z;
 }
 
 }

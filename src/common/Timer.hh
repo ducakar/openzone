@@ -41,10 +41,10 @@ public:
   static const uint TICKS_PER_SEC = 60;
 
   /// Length of one tick in microseconds.
-  static const uint TICK_MICROS = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
+  static const uint TICK_MICROS = (1000000 + TICKS_PER_SEC / 2) / TICKS_PER_SEC;
 
   /// Length of one tick in milliseconds.
-  static const uint TICK_MILLIS = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
+  static const uint TICK_MILLIS = (1000 + TICKS_PER_SEC / 2) / TICKS_PER_SEC;
 
   /// Length of one tick in seconds.
   static constexpr float TICK_TIME = 1.0f / 60.0f;
@@ -88,7 +88,7 @@ public:
    * ticks. That would results in a period after each "freeze" during which simulation will run
    * faster than in real time.
    */
-  void drop( uint micros );
+  void drop(uint micros);
 
 };
 

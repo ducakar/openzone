@@ -54,15 +54,15 @@ protected:
   /**
    * Internal constructor for `OutputStream`.
    */
-  explicit InputStream( char* pos, char* start, const char* end, Endian::Order order_ );
+  explicit InputStream(char* pos, char* start, const char* end, Endian::Order order_);
 
 public:
 
   /**
    * Create a stream for reading a given memory range.
    */
-  explicit InputStream( const char* start = nullptr, const char* end = nullptr,
-                        Endian::Order order_ = Endian::NATIVE );
+  explicit InputStream(const char* start = nullptr, const char* end = nullptr,
+                       Endian::Order order_ = Endian::NATIVE);
 
   /**
    * Length of the stream.
@@ -70,9 +70,9 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    hard_assert( streamPos <= streamEnd );
+    hard_assert(streamPos <= streamEnd);
 
-    return int( streamEnd - streamBegin );
+    return int(streamEnd - streamBegin);
   }
 
   /**
@@ -81,9 +81,9 @@ public:
   OZ_ALWAYS_INLINE
   int available() const
   {
-    hard_assert( streamPos <= streamEnd );
+    hard_assert(streamPos <= streamEnd);
 
-    return int( streamEnd - streamPos );
+    return int(streamEnd - streamPos);
   }
 
   /**
@@ -92,7 +92,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isAvailable() const
   {
-    hard_assert( streamPos <= streamEnd );
+    hard_assert(streamPos <= streamEnd);
 
     return streamPos != streamEnd;
   }
@@ -121,7 +121,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* pos() const
   {
-    hard_assert( streamBegin <= streamPos && streamPos <= streamEnd );
+    hard_assert(streamBegin <= streamPos && streamPos <= streamEnd);
 
     return streamPos;
   }
@@ -132,20 +132,20 @@ public:
   OZ_ALWAYS_INLINE
   int tell() const
   {
-    hard_assert( streamPos <= streamEnd );
+    hard_assert(streamPos <= streamEnd);
 
-    return int( streamPos - streamBegin );
+    return int(streamPos - streamBegin);
   }
 
   /**
    * %Set stream position.
    */
-  void set( const char* newPos );
+  void set(const char* newPos);
 
   /**
    * %Set stream position relative to the beginning of the stream.
    */
-  void seek( int offset );
+  void seek(int offset);
 
   /**
    * Rewind current position to the beginning of the stream.
@@ -169,7 +169,7 @@ public:
    * %Set byte order.
    */
   OZ_ALWAYS_INLINE
-  void setEndian( Endian::Order order_ )
+  void setEndian(Endian::Order order_)
   {
     order = order_;
   }
@@ -178,9 +178,9 @@ public:
    * Constant reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [] ( int i ) const
+  const char& operator [] (int i) const
   {
-    hard_assert( uint( i ) < uint( streamEnd - streamBegin ) );
+    hard_assert(uint(i) < uint(streamEnd - streamBegin));
 
     return streamBegin[i];
   }
@@ -190,7 +190,7 @@ public:
    *
    * @return Constant pointer to the beginning of the skipped bytes.
    */
-  const char* forward( int count );
+  const char* forward(int count);
 
   /**
    * Read boolean.
@@ -205,7 +205,7 @@ public:
   /**
    * Read an array of characters.
    */
-  void readChars( char* array, int count );
+  void readChars(char* array, int count);
 
   /**
    * Read byte.
@@ -300,7 +300,7 @@ public:
   /**
    * Fill bitset with data from a stream.
    */
-  void readBitset( ulong* bitset, int bits );
+  void readBitset(ulong* bitset, int bits);
 
   /**
    * Read a line.

@@ -61,29 +61,29 @@ public:
   float           elasticity;
 
   // no copying
-  Frag( const Frag& ) = delete;
-  Frag& operator = ( const Frag& ) = delete;
+  Frag(const Frag&) = delete;
+  Frag& operator = (const Frag&) = delete;
 
-  void damage( float damage )
+  void damage(float damage)
   {
     damage -= DAMAGE_THRESHOLD;
 
-    if( damage > 0.0f ) {
+    if (damage > 0.0f) {
       life = 0.0f;
     }
   }
 
 public:
 
-  explicit Frag( const FragPool* pool, int index, const Point& p, const Vec3& velocity );
-  explicit Frag( const FragPool* pool, InputStream* is );
+  explicit Frag(const FragPool* pool, int index, const Point& p, const Vec3& velocity);
+  explicit Frag(const FragPool* pool, InputStream* is);
 
-  void write( OutputStream* os ) const;
+  void write(OutputStream* os) const;
 
-  void readUpdate( InputStream* is );
-  void writeUpdate( OutputStream* os );
+  void readUpdate(InputStream* is);
+  void writeUpdate(OutputStream* os);
 
-  OZ_STATIC_POOL_ALLOC( mpool )
+  OZ_STATIC_POOL_ALLOC(mpool)
 
 };
 

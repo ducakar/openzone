@@ -40,23 +40,23 @@
  * @def OZ_ALIGNED
  * Compiler-specific attribute for data type alignment.
  */
-#define OZ_ALIGNED( n ) __attribute__(( aligned( n ) ))
+#define OZ_ALIGNED(n) __attribute__((aligned(n)))
 
 /**
  * @def OZ_ALIGNMENT
  * Alignment of allocated storage returned by the `new` operator.
  */
 #ifdef OZ_SIMD_MATH
-# define OZ_ALIGNMENT sizeof( float[4] )
+# define OZ_ALIGNMENT sizeof(float[4])
 #else
-# define OZ_ALIGNMENT sizeof( void* )
+# define OZ_ALIGNMENT sizeof(void*)
 #endif
 
 /**
  * @def OZ_ALWAYS_INLINE
  * Compiler-specific attribute that suggests function inlining even in debug mode.
  */
-#define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
+#define OZ_ALWAYS_INLINE __attribute__((always_inline))
 
 /**
  * @def OZ_BYTE_ORDER
@@ -71,23 +71,23 @@
 #ifdef _WIN32
 # define OZ_HIDDEN
 #else
-# define OZ_HIDDEN __attribute__(( visibility( "hidden" ) ))
+# define OZ_HIDDEN __attribute__((visibility("hidden")))
 #endif
 
 /**
  * @def OZ_NORETURN
  * Compiler-specific attribute that marks a function as no-return.
  */
-#define OZ_NORETURN __attribute__(( noreturn ))
+#define OZ_NORETURN __attribute__((noreturn))
 
 /**
  * @def OZ_PRINTF_FORMAT
  * Compiler-specific attribute that specifies checking of printf-like arguments.
  */
 #ifdef __MINGW32__
-# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( gnu_printf, s, first ) ))
+# define OZ_PRINTF_FORMAT(s, first) __attribute__((format(gnu_printf, s, first)))
 #else
-# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+# define OZ_PRINTF_FORMAT(s, first) __attribute__((format(printf, s, first)))
 #endif
 
 /**
@@ -103,7 +103,7 @@
 #ifdef _WIN32
 # define OZ_WEAK
 #else
-# define OZ_WEAK __attribute__(( weak ))
+# define OZ_WEAK __attribute__((weak))
 #endif
 
 /**
@@ -111,11 +111,11 @@
  * If condition fails, raise SIGTRAP and print error using global log.
  */
 #ifdef NDEBUG
-# define soft_assert( cond ) void( 0 )
+# define soft_assert(cond) void(0)
 #else
-# define soft_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::detail::softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+# define soft_assert(cond) \
+  ((cond) ? \
+    void(0) : oz::detail::softAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
 #endif
 
 /**
@@ -123,11 +123,11 @@
  * If condition fails, raise SIGTRAP, print error using global log and abort program.
  */
 #ifdef NDEBUG
-# define hard_assert( cond ) void( 0 )
+# define hard_assert(cond) void(0)
 #else
-# define hard_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::detail::hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+# define hard_assert(cond) \
+  ((cond) ? \
+    void(0) : oz::detail::hardAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
 #endif
 
 /**
@@ -192,12 +192,12 @@ typedef long long long64;
  */
 typedef unsigned long long ulong64;
 
-static_assert( sizeof( char   ) == 1, "sizeof( char ) should be 1"   );
-static_assert( sizeof( short  ) == 2, "sizeof( short ) should be 2"  );
-static_assert( sizeof( int    ) == 4, "sizeof( int ) should be 4"    );
-static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
-static_assert( sizeof( float  ) == 4, "sizeof( float ) should be 4"  );
-static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
+static_assert(sizeof(char  ) == 1, "sizeof(char) should be 1"  );
+static_assert(sizeof(short ) == 2, "sizeof(short) should be 2" );
+static_assert(sizeof(int   ) == 4, "sizeof(int) should be 4"   );
+static_assert(sizeof(long64) == 8, "sizeof(long64) should be 8");
+static_assert(sizeof(float ) == 4, "sizeof(float) should be 4" );
+static_assert(sizeof(double) == 8, "sizeof(double) should be 8");
 
 /**
  * Internal helpers.
@@ -208,13 +208,13 @@ namespace detail
 /**
  * Helper function for `soft_assert` macro.
  */
-void softAssertHelper( const char* function, const char* file, int line, const char* message );
+void softAssertHelper(const char* function, const char* file, int line, const char* message);
 
 /**
  * Helper function for `hard_assert` macro.
  */
 OZ_NORETURN
-void hardAssertHelper( const char* function, const char* file, int line, const char* message );
+void hardAssertHelper(const char* function, const char* file, int line, const char* message);
 
 }
 
@@ -223,12 +223,12 @@ void hardAssertHelper( const char* function, const char* file, int line, const c
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline void swap( Value& a, Value& b )
+inline void swap(Value& a, Value& b)
 {
-  Value t( static_cast<Value&&>( a ) );
+  Value t(static_cast<Value&&>(a));
 
-  a = static_cast<Value&&>( b );
-  b = static_cast<Value&&>( t );
+  a = static_cast<Value&&>(b);
+  b = static_cast<Value&&>(t);
 }
 
 /**
@@ -236,7 +236,7 @@ inline void swap( Value& a, Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr Value abs( const Value& a )
+inline constexpr Value abs(const Value& a)
 {
   return a < 0 ? -a : a;
 }
@@ -246,7 +246,7 @@ inline constexpr Value abs( const Value& a )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& min( const Value& a, const Value& b )
+inline constexpr const Value& min(const Value& a, const Value& b)
 {
   return b < a ? b : a;
 }
@@ -256,7 +256,7 @@ inline constexpr const Value& min( const Value& a, const Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& max( const Value& a, const Value& b )
+inline constexpr const Value& max(const Value& a, const Value& b)
 {
   return a < b ? b : a;
 }
@@ -266,16 +266,16 @@ inline constexpr const Value& max( const Value& a, const Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& clamp( const Value& c, const Value& a, const Value& b )
+inline constexpr const Value& clamp(const Value& c, const Value& a, const Value& b)
 {
-  return c < a ? a : ( b < c ? b : c );
+  return c < a ? a : (b < c ? b : c);
 }
 
 /**
  * Hash function for integers, identity.
  */
 OZ_ALWAYS_INLINE
-inline int hash( int value )
+inline int hash(int value)
 {
   return value;
 }
@@ -283,15 +283,15 @@ inline int hash( int value )
 /**
  * Hash function for strings, (modified) Bernstein's hash.
  */
-inline int hash( const char* s )
+inline int hash(const char* s)
 {
   uint value = 5381;
 
-  while( *s != '\0' ) {
-    value = ( value * 33 ) ^ uint( *s );
+  while (*s != '\0') {
+    value = (value * 33) ^ uint(*s);
     ++s;
   }
-  return int( value );
+  return int(value);
 }
 
 }

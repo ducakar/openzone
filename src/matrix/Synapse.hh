@@ -63,35 +63,35 @@ public:
 
   explicit Synapse();
 
-  void use( Bot* user, Object* target );
-  void trigger( Entity* target );
-  void lock( Bot* user, Entity* target );
+  void use(Bot* user, Object* target);
+  void trigger(Entity* target);
+  void lock(Bot* user, Entity* target);
 
   // schedule for position in the world
-  void put( Dynamic* obj );
+  void put(Dynamic* obj);
 
   // schedule for unposition from world
-  void cut( Dynamic* obj );
+  void cut(Dynamic* obj);
 
   // create an object, schedule for addition in the world and return predicted world index
-  Struct* add( const BSP* bsp, const Point& p, Heading heading, bool empty );
-  Object* add( const ObjectClass* clazz, const Point& p, Heading heading, bool empty );
-  Frag*   add( const FragPool* pool, const Point& p, const Vec3& velocity );
-  void    gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity );
+  Struct* add(const BSP* bsp, const Point& p, Heading heading, bool empty);
+  Object* add(const ObjectClass* clazz, const Point& p, Heading heading, bool empty);
+  Frag*   add(const FragPool* pool, const Point& p, const Vec3& velocity);
+  void    gen(const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity);
 
-  Struct* addStruct( const char* bspName, const Point& p, Heading heading, bool empty );
-  Object* addObject( const char* className, const Point& p, Heading heading, bool empty );
-  Frag*   addFrag( const char* poolName, const Point& p, const Vec3& velocity );
-  void    genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity );
+  Struct* addStruct(const char* bspName, const Point& p, Heading heading, bool empty);
+  Object* addObject(const char* className, const Point& p, Heading heading, bool empty);
+  Frag*   addFrag(const char* poolName, const Point& p, const Vec3& velocity);
+  void    genFrags(const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity);
 
   // schedule for removal from physical world and delete it
-  void remove( Struct* str );
-  void remove( Object* obj );
-  void remove( Frag* frag );
+  void remove(Struct* str);
+  void remove(Object* obj);
+  void remove(Frag* frag);
 
-  void removeStruct( int index );
-  void removeObject( int index );
-  void removeFrag( int index );
+  void removeStruct(int index);
+  void removeObject(int index);
+  void removeFrag(int index);
 
   // clear lists for actions, additions, removals
   void update();

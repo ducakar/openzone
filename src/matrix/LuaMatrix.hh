@@ -41,14 +41,14 @@ public:
 
 public:
 
-  String nameGenCall( const char* functionName );
-  bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
+  String nameGenCall(const char* functionName);
+  bool objectCall(const char* functionName, Object* self, Bot* user = nullptr);
 
-  void registerObject( int index );
-  void unregisterObject( int index );
+  void registerObject(int index);
+  void unregisterObject(int index);
 
-  void read( InputStream* is );
-  void write( OutputStream* os );
+  void read(InputStream* is);
+  void write(OutputStream* os);
 
   void init();
   void destroy();

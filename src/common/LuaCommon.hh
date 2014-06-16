@@ -43,7 +43,7 @@ public:
   /**
    * Lua C API.
    */
-  typedef int APIFunc( lua_State* );
+  typedef int APIFunc(lua_State*);
 
   static int  randomSeed;       ///< Random seed for Lua environments.
   static bool isRandomSeedTime; ///< True iff `Time::time()` should be as a seed.
@@ -60,17 +60,17 @@ protected:
    * @return Should always return true. This return value is only used for internal recursive calls
    *         to detect end of a table.
    */
-  bool readValue( InputStream* is ) const;
+  bool readValue(InputStream* is) const;
 
   /**
    * Read Lua value from a %JSON value and push it on the stack (recursively for tables).
    */
-  void readValue( const JSON& json ) const;
+  void readValue(const JSON& json) const;
 
   /**
    * Serialise Lua value at the top of the stack (recursively for tables).
    */
-  void writeValue( OutputStream* os ) const;
+  void writeValue(OutputStream* os) const;
 
   /**
    * Return Lua value at the top of the stack (recursively for tables) as a %JSON value.
@@ -80,7 +80,7 @@ protected:
   /**
    * Load all `*.lua` files in a directory.
    */
-  void loadDir( const File& dir ) const;
+  void loadDir(const File& dir) const;
 
   /**
    * Common initialisation for Lua classes.
@@ -97,32 +97,32 @@ public:
   /**
    * Register Lua API function to the Lua state.
    */
-  void registerFunction( const char* name, APIFunc func );
+  void registerFunction(const char* name, APIFunc func);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant( const char* name, bool value );
+  void registerConstant(const char* name, bool value);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant( const char* name, int value );
+  void registerConstant(const char* name, int value);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant( const char* name, float value );
+  void registerConstant(const char* name, float value);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant( const char* name, const char* value );
+  void registerConstant(const char* name, const char* value);
 
   /**
    * Compile Lua source code to bytecode.
    */
-  Buffer compile( const char* code, const char* name ) const;
+  Buffer compile(const char* code, const char* name) const;
 
 };
 

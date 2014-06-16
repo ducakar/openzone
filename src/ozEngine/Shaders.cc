@@ -73,10 +73,10 @@ struct Program
 static List<Program>    programs;
 static Map<String, int> programIndices;
 
-int Shaders::load( const char* path_ )
+int Shaders::load(const char* path_)
 {
-  const int* index = programIndices.find( path_ );
-  if( index != nullptr ) {
+  const int* index = programIndices.find(path_);
+  if (index != nullptr) {
     return *index;
   }
 
@@ -87,71 +87,71 @@ int Shaders::load( const char* path_ )
   File   configFile = path + ".json";
   JSON   programConfig;
 
-  if( !programConfig.load( configFile ) ) {
+  if (!programConfig.load(configFile)) {
     return -1;
   }
 
-  p.vertShader = glCreateShader( GL_VERTEX_SHADER );
-  p.fragShader = glCreateShader( GL_FRAGMENT_SHADER );
+  p.vertShader = glCreateShader(GL_VERTEX_SHADER);
+  p.fragShader = glCreateShader(GL_FRAGMENT_SHADER);
   p.program    = glCreateProgram();
 
   String vertPath = programConfig[0].asString() + ".vert";
   String fragPath = programConfig[1].asString() + ".frag";
   String dirName  = configFile.directory();
 
-  if( !dirName.isEmpty() ) {
+  if (!dirName.isEmpty()) {
     vertPath = dirName + "/" + vertPath;
     fragPath = dirName + "/" + fragPath;
   }
 
-  if( !GL::compileShaderFromFile( p.vertShader, "", File( vertPath ) ) ||
-      !GL::compileShaderFromFile( p.vertShader, "", File( fragPath ) ) )
+  if (!GL::compileShaderFromFile(p.vertShader, "", File(vertPath)) ||
+      !GL::compileShaderFromFile(p.vertShader, "", File(fragPath)))
   {
-    glDeleteShader( p.vertShader );
-    glDeleteShader( p.fragShader );
-    glDeleteProgram( p.program );
+    glDeleteShader(p.vertShader);
+    glDeleteShader(p.fragShader);
+    glDeleteProgram(p.program);
     return -1;
   }
 
-  glAttachShader( p.program, p.vertShader );
-  glAttachShader( p.program, p.fragShader );
-  glLinkProgram( p.program );
+  glAttachShader(p.program, p.vertShader);
+  glAttachShader(p.program, p.fragShader);
+  glLinkProgram(p.program);
 
   int result;
-  glGetProgramiv( p.program, GL_LINK_STATUS, &result );
+  glGetProgramiv(p.program, GL_LINK_STATUS, &result);
 
-  if( result != GL_TRUE ) {
-    glDetachShader( p.program, p.vertShader );
-    glDetachShader( p.program, p.fragShader );
-    glDeleteShader( p.vertShader );
-    glDeleteShader( p.fragShader );
-    glDeleteProgram( p.program );
+  if (result != GL_TRUE) {
+    glDetachShader(p.program, p.vertShader);
+    glDetachShader(p.program, p.fragShader);
+    glDeleteShader(p.vertShader);
+    glDeleteShader(p.fragShader);
+    glDeleteProgram(p.program);
     return -1;
   }
 
-  glBindAttribLocation( p.program, POSITION, "inPosition" );
-  glBindAttribLocation( p.program, TEXCOORD, "inTexCoord" );
-  glBindAttribLocation( p.program, NORMAL, "inNormal" );
+  glBindAttribLocation(p.program, POSITION, "inPosition");
+  glBindAttribLocation(p.program, TEXCOORD, "inTexCoord");
+  glBindAttribLocation(p.program, NORMAL, "inNormal");
 
-  p.uniforms.projModelTransform  = glGetUniformLocation( p.program, "oz_ProjModelTransform" );
-  p.uniforms.modelTransform      = glGetUniformLocation( p.program, "oz_ModelTransform" );
-  p.uniforms.boneTransforms      = glGetUniformLocation( p.program, "oz_BoneTransforms" );
-  p.uniforms.colourTransform     = glGetUniformLocation( p.program, "oz_ColourTransform" );
+  p.uniforms.projModelTransform  = glGetUniformLocation(p.program, "oz_ProjModelTransform");
+  p.uniforms.modelTransform      = glGetUniformLocation(p.program, "oz_ModelTransform");
+  p.uniforms.boneTransforms      = glGetUniformLocation(p.program, "oz_BoneTransforms");
+  p.uniforms.colourTransform     = glGetUniformLocation(p.program, "oz_ColourTransform");
 
-  p.uniforms.cameraPosition      = glGetUniformLocation( p.program, "oz_CameraPosition" );
-  p.uniforms.meshAnimation       = glGetUniformLocation( p.program, "oz_MeshAnimation" );
-  p.uniforms.textures            = glGetUniformLocation( p.program, "oz_Textures" );
+  p.uniforms.cameraPosition      = glGetUniformLocation(p.program, "oz_CameraPosition");
+  p.uniforms.meshAnimation       = glGetUniformLocation(p.program, "oz_MeshAnimation");
+  p.uniforms.textures            = glGetUniformLocation(p.program, "oz_Textures");
 
-  p.uniforms.caelumLight_dir     = glGetUniformLocation( p.program, "oz_CaelumLight.dir" );
-  p.uniforms.caelumLight_diffuse = glGetUniformLocation( p.program, "oz_CaelumLight.diffuse" );
-  p.uniforms.caelumLight_ambient = glGetUniformLocation( p.program, "oz_CaelumLight.ambient" );
+  p.uniforms.caelumLight_dir     = glGetUniformLocation(p.program, "oz_CaelumLight.dir");
+  p.uniforms.caelumLight_diffuse = glGetUniformLocation(p.program, "oz_CaelumLight.diffuse");
+  p.uniforms.caelumLight_ambient = glGetUniformLocation(p.program, "oz_CaelumLight.ambient");
 
-  p.uniforms.fog_dist            = glGetUniformLocation( p.program, "oz_Fog.dist" );
-  p.uniforms.fog_colour          = glGetUniformLocation( p.program, "oz_Fog.colour" );
+  p.uniforms.fog_dist            = glGetUniformLocation(p.program, "oz_Fog.dist");
+  p.uniforms.fog_colour          = glGetUniformLocation(p.program, "oz_Fog.colour");
 
-  p.uniforms.starsColour         = glGetUniformLocation( p.program, "oz_StarsColour" );
-  p.uniforms.waveBias            = glGetUniformLocation( p.program, "oz_WaveBias" );
-  p.uniforms.wind                = glGetUniformLocation( p.program, "oz_Wind" );
+  p.uniforms.starsColour         = glGetUniformLocation(p.program, "oz_StarsColour");
+  p.uniforms.waveBias            = glGetUniformLocation(p.program, "oz_WaveBias");
+  p.uniforms.wind                = glGetUniformLocation(p.program, "oz_Wind");
 
   OZ_GL_CHECK_ERROR();
   return programs.length() - 1;
@@ -159,12 +159,12 @@ int Shaders::load( const char* path_ )
 
 void Shaders::destroy()
 {
-  for( const Program& p : programs ) {
-    glDetachShader( p.program, p.vertShader );
-    glDetachShader( p.program, p.fragShader );
-    glDeleteShader( p.vertShader );
-    glDeleteShader( p.fragShader );
-    glDeleteProgram( p.program );
+  for (const Program& p : programs) {
+    glDetachShader(p.program, p.vertShader);
+    glDetachShader(p.program, p.fragShader);
+    glDeleteShader(p.vertShader);
+    glDeleteShader(p.fragShader);
+    glDeleteProgram(p.program);
   }
 
   programIndices.clear();
@@ -177,7 +177,7 @@ const int Shaders::oz_colourMatrix = -1;
 
 bool Shaders::init()
 {
-  *const_cast<int*>( &oz_colourMatrix ) = 0;
+  *const_cast<int*>(&oz_colourMatrix) = 0;
   return true;
 }
 

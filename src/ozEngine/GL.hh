@@ -60,9 +60,9 @@
  * In debug mode, check for OpenGL errors and crash with some diagnostics if there is one.
  */
 #ifdef NDEBUG
-# define OZ_GL_CHECK_ERROR() void( 0 )
+# define OZ_GL_CHECK_ERROR() void(0)
 #else
-# define OZ_GL_CHECK_ERROR() oz::GL::checkError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
+# define OZ_GL_CHECK_ERROR() oz::GL::checkError(__PRETTY_FUNCTION__, __FILE__, __LINE__)
 #endif
 
 namespace oz
@@ -73,71 +73,71 @@ namespace oz
 /*
  * OpenGL 2.0+ functions cannot be linked on executable load, we must link them in runtime.
  */
-extern OZ_DL_DECLARE( glUniform1i                  );
-extern OZ_DL_DECLARE( glUniform2i                  );
-extern OZ_DL_DECLARE( glUniform3i                  );
-extern OZ_DL_DECLARE( glUniform4i                  );
-extern OZ_DL_DECLARE( glUniform1iv                 );
-extern OZ_DL_DECLARE( glUniform2iv                 );
-extern OZ_DL_DECLARE( glUniform3iv                 );
-extern OZ_DL_DECLARE( glUniform4iv                 );
-extern OZ_DL_DECLARE( glUniform1f                  );
-extern OZ_DL_DECLARE( glUniform2f                  );
-extern OZ_DL_DECLARE( glUniform3f                  );
-extern OZ_DL_DECLARE( glUniform4f                  );
-extern OZ_DL_DECLARE( glUniform1fv                 );
-extern OZ_DL_DECLARE( glUniform2fv                 );
-extern OZ_DL_DECLARE( glUniform3fv                 );
-extern OZ_DL_DECLARE( glUniform4fv                 );
-extern OZ_DL_DECLARE( glUniformMatrix2fv           );
-extern OZ_DL_DECLARE( glUniformMatrix3fv           );
-extern OZ_DL_DECLARE( glUniformMatrix4fv           );
+extern OZ_DL_DECLARE(glUniform1i                 );
+extern OZ_DL_DECLARE(glUniform2i                 );
+extern OZ_DL_DECLARE(glUniform3i                 );
+extern OZ_DL_DECLARE(glUniform4i                 );
+extern OZ_DL_DECLARE(glUniform1iv                );
+extern OZ_DL_DECLARE(glUniform2iv                );
+extern OZ_DL_DECLARE(glUniform3iv                );
+extern OZ_DL_DECLARE(glUniform4iv                );
+extern OZ_DL_DECLARE(glUniform1f                 );
+extern OZ_DL_DECLARE(glUniform2f                 );
+extern OZ_DL_DECLARE(glUniform3f                 );
+extern OZ_DL_DECLARE(glUniform4f                 );
+extern OZ_DL_DECLARE(glUniform1fv                );
+extern OZ_DL_DECLARE(glUniform2fv                );
+extern OZ_DL_DECLARE(glUniform3fv                );
+extern OZ_DL_DECLARE(glUniform4fv                );
+extern OZ_DL_DECLARE(glUniformMatrix2fv          );
+extern OZ_DL_DECLARE(glUniformMatrix3fv          );
+extern OZ_DL_DECLARE(glUniformMatrix4fv          );
 
-extern OZ_DL_DECLARE( glDrawBuffers                );
+extern OZ_DL_DECLARE(glDrawBuffers               );
 
-extern OZ_DL_DECLARE( glEnableVertexAttribArray    );
-extern OZ_DL_DECLARE( glVertexAttribPointer        );
-extern OZ_DL_DECLARE( glDrawRangeElements          );
+extern OZ_DL_DECLARE(glEnableVertexAttribArray   );
+extern OZ_DL_DECLARE(glVertexAttribPointer       );
+extern OZ_DL_DECLARE(glDrawRangeElements         );
 
-extern OZ_DL_DECLARE( glGenBuffers                 );
-extern OZ_DL_DECLARE( glDeleteBuffers              );
-extern OZ_DL_DECLARE( glBindBuffer                 );
-extern OZ_DL_DECLARE( glBufferData                 );
-extern OZ_DL_DECLARE( glMapBuffer                  );
-extern OZ_DL_DECLARE( glUnmapBuffer                );
+extern OZ_DL_DECLARE(glGenBuffers                );
+extern OZ_DL_DECLARE(glDeleteBuffers             );
+extern OZ_DL_DECLARE(glBindBuffer                );
+extern OZ_DL_DECLARE(glBufferData                );
+extern OZ_DL_DECLARE(glMapBuffer                 );
+extern OZ_DL_DECLARE(glUnmapBuffer               );
 
-extern OZ_DL_DECLARE( glCreateShader               );
-extern OZ_DL_DECLARE( glDeleteShader               );
-extern OZ_DL_DECLARE( glShaderSource               );
-extern OZ_DL_DECLARE( glCompileShader              );
-extern OZ_DL_DECLARE( glGetShaderiv                );
-extern OZ_DL_DECLARE( glGetShaderInfoLog           );
-extern OZ_DL_DECLARE( glCreateProgram              );
-extern OZ_DL_DECLARE( glDeleteProgram              );
-extern OZ_DL_DECLARE( glAttachShader               );
-extern OZ_DL_DECLARE( glDetachShader               );
-extern OZ_DL_DECLARE( glLinkProgram                );
-extern OZ_DL_DECLARE( glGetProgramiv               );
-extern OZ_DL_DECLARE( glGetProgramInfoLog          );
-extern OZ_DL_DECLARE( glGetUniformLocation         );
-extern OZ_DL_DECLARE( glBindAttribLocation         );
-extern OZ_DL_DECLARE( glUseProgram                 );
+extern OZ_DL_DECLARE(glCreateShader              );
+extern OZ_DL_DECLARE(glDeleteShader              );
+extern OZ_DL_DECLARE(glShaderSource              );
+extern OZ_DL_DECLARE(glCompileShader             );
+extern OZ_DL_DECLARE(glGetShaderiv               );
+extern OZ_DL_DECLARE(glGetShaderInfoLog          );
+extern OZ_DL_DECLARE(glCreateProgram             );
+extern OZ_DL_DECLARE(glDeleteProgram             );
+extern OZ_DL_DECLARE(glAttachShader              );
+extern OZ_DL_DECLARE(glDetachShader              );
+extern OZ_DL_DECLARE(glLinkProgram               );
+extern OZ_DL_DECLARE(glGetProgramiv              );
+extern OZ_DL_DECLARE(glGetProgramInfoLog         );
+extern OZ_DL_DECLARE(glGetUniformLocation        );
+extern OZ_DL_DECLARE(glBindAttribLocation        );
+extern OZ_DL_DECLARE(glUseProgram                );
 
-extern OZ_DL_DECLARE( glActiveTexture              );
-extern OZ_DL_DECLARE( glCompressedTexImage2D       );
-extern OZ_DL_DECLARE( glGetCompressedTexImage      );
+extern OZ_DL_DECLARE(glActiveTexture             );
+extern OZ_DL_DECLARE(glCompressedTexImage2D      );
+extern OZ_DL_DECLARE(glGetCompressedTexImage     );
 
-extern OZ_DL_DECLARE( glGenerateMipmapEXT          );
-extern OZ_DL_DECLARE( glGenRenderbuffersEXT        );
-extern OZ_DL_DECLARE( glDeleteRenderbuffersEXT     );
-extern OZ_DL_DECLARE( glBindRenderbufferEXT        );
-extern OZ_DL_DECLARE( glRenderbufferStorageEXT     );
-extern OZ_DL_DECLARE( glGenFramebuffersEXT         );
-extern OZ_DL_DECLARE( glDeleteFramebuffersEXT      );
-extern OZ_DL_DECLARE( glBindFramebufferEXT         );
-extern OZ_DL_DECLARE( glFramebufferRenderbufferEXT );
-extern OZ_DL_DECLARE( glFramebufferTexture2DEXT    );
-extern OZ_DL_DECLARE( glCheckFramebufferStatusEXT  );
+extern OZ_DL_DECLARE(glGenerateMipmapEXT         );
+extern OZ_DL_DECLARE(glGenRenderbuffersEXT       );
+extern OZ_DL_DECLARE(glDeleteRenderbuffersEXT    );
+extern OZ_DL_DECLARE(glBindRenderbufferEXT       );
+extern OZ_DL_DECLARE(glRenderbufferStorageEXT    );
+extern OZ_DL_DECLARE(glGenFramebuffersEXT        );
+extern OZ_DL_DECLARE(glDeleteFramebuffersEXT     );
+extern OZ_DL_DECLARE(glBindFramebufferEXT        );
+extern OZ_DL_DECLARE(glFramebufferRenderbufferEXT);
+extern OZ_DL_DECLARE(glFramebufferTexture2DEXT   );
+extern OZ_DL_DECLARE(glCheckFramebufferStatusEXT );
 
 #endif
 
@@ -151,13 +151,13 @@ public:
   /**
    * Helper function for `OZ_GL_CHECK_ERROR` macro.
    */
-  static void checkError( const char* function, const char* file, int line );
+  static void checkError(const char* function, const char* file, int line);
 
   /**
    * Load texture image from a (DirectX 9) DDS file.
    *
-   * This function is to be used in place of `glTexImage2D( GL_TEXTURE_2D, ... )` or, when loading
-   * a cube map texture, it replaces a series of six `glTexImage2D( GL_TEXTURE_CUBE_MAP_*, ... )`
+   * This function is to be used in place of `glTexImage2D(GL_TEXTURE_2D, ...)` or, when loading
+   * a cube map texture, it replaces a series of six `glTexImage2D(GL_TEXTURE_CUBE_MAP_*, ...)`
    * calls.
    *
    * This functions also sets texture filters and wrapping mode. `GL_LINEAR`/`GL_LINEAR` fiters are
@@ -172,7 +172,7 @@ public:
    *
    * @return number of mipmap levels loaded, 0 on an error.
    */
-  static int textureDataFromFile( const File& file, int bias = 0 );
+  static int textureDataFromFile(const File& file, int bias = 0);
 
   /**
    * Compile a GLSL shader from a file.
@@ -191,7 +191,7 @@ public:
    * @param defines a string containing defines used during shader compilation.
    * @param file main source file.
    */
-  static bool compileShaderFromFile( GLuint shader, const char* defines, const File& file );
+  static bool compileShaderFromFile(GLuint shader, const char* defines, const File& file);
 
   /**
    * Link previously declared OpenGL functions on Windows, NOP on other platforms.

@@ -84,7 +84,7 @@ public:
   OZ_ALWAYS_INLINE
   void push()
   {
-    stack.pushLast( model );
+    stack.pushLast(model);
   }
 
   OZ_ALWAYS_INLINE
@@ -93,7 +93,7 @@ public:
     model = stack.popLast();
   }
 
-  void ortho( int width, int height );
+  void ortho(int width, int height);
   void projection();
 
   void applyCamera();
@@ -101,9 +101,9 @@ public:
 
   void applyColour() const;
 
-  void setColour( const Mat4& colour ) const;
-  void setColour( const Vec4& colour ) const;
-  void setColour( float r, float g, float b, float a = 1.0f ) const;
+  void setColour(const Mat4& colour) const;
+  void setColour(const Vec4& colour) const;
+  void setColour(float r, float g, float b, float a = 1.0f) const;
 
 };
 
@@ -139,7 +139,7 @@ private:
     Vec4  colour;
 
     explicit Light() = default;
-    explicit Light( const Point& pos, const Vec4& colour );
+    explicit Light(const Point& pos, const Vec4& colour);
   };
 
 public:
@@ -172,8 +172,8 @@ private:
   float             lightingDistance;
   CaelumLight       caelumLight;
 
-  void compileShader( uint shaderId, const String& defines, const File& file ) const;
-  void loadProgram( int id );
+  void compileShader(uint shaderId, const String& defines, const File& file) const;
+  void loadProgram(int id);
 
 public:
 
@@ -202,11 +202,11 @@ public:
 
   explicit Shader();
 
-  void program( int id );
+  void program(int id);
 
-  void setLightingDistance( float distance );
-  void setAmbientLight( const Vec4& colour );
-  void setCaelumLight( const Vec3& dir, const Vec4& colour );
+  void setLightingDistance(float distance);
+  void setAmbientLight(const Vec4& colour);
+  void setCaelumLight(const Vec3& dir, const Vec4& colour);
 
   void updateLights();
 

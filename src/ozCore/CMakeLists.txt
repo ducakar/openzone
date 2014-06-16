@@ -1,7 +1,7 @@
-configure_file( config.hh.in config.hh @ONLY )
-configure_file( ozCore.pc.in ozCore.pc @ONLY )
+configure_file(config.hh.in config.hh @ONLY)
+configure_file(ozCore.pc.in ozCore.pc @ONLY)
 
-add_library( ozCore
+add_library(ozCore
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   Alloc.hh
@@ -88,26 +88,26 @@ add_library( ozCore
 #END SOURCES
 )
 
-target_link_libraries( ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY} )
+target_link_libraries(ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY})
 
-if( ANDROID )
-  target_link_libraries( ozCore -lOpenSLES -ldl -llog ${PLATFORM_STL_LIBRARY} )
-elseif( NACL )
-  target_link_libraries( ozCore -lppapi_cpp -lppapi -lpthread )
-elseif( WIN32 )
-  target_link_libraries( ozCore -lwinmm )
-elseif( NOT CMAKE_SYSTEM_NAME STREQUAL Linux )
-  target_link_libraries( ozCore -ldl -lrt -lpthread )
+if(ANDROID)
+  target_link_libraries(ozCore -lOpenSLES -ldl -llog ${PLATFORM_STL_LIBRARY})
+elseif(NACL)
+  target_link_libraries(ozCore -lppapi_cpp -lppapi -lpthread)
+elseif(WIN32)
+  target_link_libraries(ozCore -lwinmm)
+elseif(NOT CMAKE_SYSTEM_NAME STREQUAL Linux)
+  target_link_libraries(ozCore -ldl -lrt -lpthread)
 else()
-  target_link_libraries( ozCore -lasound -ldl -lpthread )
+  target_link_libraries(ozCore -lasound -ldl -lpthread)
 endif()
 
-set_target_properties( ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
+set_target_properties(ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
 
-install( TARGETS ozCore
-         RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
-         LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
-         ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR} )
-install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozCore )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib${OZ_BINARY_SUBDIR}/pkgconfig )
+install(TARGETS ozCore
+        RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
+        LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
+        ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozCore)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib${OZ_BINARY_SUBDIR}/pkgconfig)

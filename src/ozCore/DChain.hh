@@ -52,8 +52,8 @@ namespace oz
  * DChain<C, 1> chain2;
  *
  * C* c = new C();
- * chain1.add( c );
- * chain2.add( c );
+ * chain1.add(c);
+ * chain2.add(c);
  * @endcode
  * That way an objects can be in two separate chains at once;
  * `prev[0]` and `next[0]` point to previous and next element respectively in `chain1` while
@@ -106,14 +106,14 @@ public:
    * Create an empty chain.
    */
   DChain() :
-    Chain<Elem, INDEX>(), lastElem( nullptr )
+    Chain<Elem, INDEX>(), lastElem(nullptr)
   {}
 
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  DChain( DChain&& c ) :
-    Chain<Elem, INDEX>( static_cast<DChain&&>( c ) ), lastElem( c.lastElem )
+  DChain(DChain&& c) :
+    Chain<Elem, INDEX>(static_cast<DChain&&>(c)), lastElem(c.lastElem)
   {
     c.lastElem = nullptr;
   }
@@ -121,9 +121,9 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  DChain& operator = ( DChain&& c )
+  DChain& operator = (DChain&& c)
   {
-    if( &c == this ) {
+    if (&c == this) {
       return *this;
     }
 
@@ -146,10 +146,10 @@ public:
     Elem* original = firstElem;
     Elem* prevCopy = nullptr;
 
-    while( original != nullptr ) {
-      Elem* copy = new Elem( *original );
+    while (original != nullptr) {
+      Elem* copy = new Elem(*original);
 
-      if( prevCopy == nullptr ) {
+      if (prevCopy == nullptr) {
         clone.firstElem = copy;
       }
       else {
@@ -171,9 +171,9 @@ public:
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
-  bool equals( const DChain& c ) const
+  bool equals(const DChain& c) const
   {
-    return Chain<Elem, INDEX>::equals( c );
+    return Chain<Elem, INDEX>::equals(c);
   }
 
   /**
@@ -190,17 +190,17 @@ public:
    *
    * For efficiency reasons, elements are added to the beginning of a chain.
    */
-  void add( Elem* elem )
+  void add(Elem* elem)
   {
-    pushFirst( elem );
+    pushFirst(elem);
   }
 
   /**
    * Bind an element after some given element in the chain.
    */
-  void insertAfter( Elem* e, Elem* p )
+  void insertAfter(Elem* e, Elem* p)
   {
-    hard_assert( e != nullptr && p != nullptr );
+    hard_assert(e != nullptr && p != nullptr);
 
     Elem* next = p->next[INDEX];
 
@@ -208,7 +208,7 @@ public:
     e->next[INDEX] = p->next[INDEX];
     p->next[INDEX] = e;
 
-    if( next == nullptr ) {
+    if (next == nullptr) {
       lastElem = e;
     }
     else {
@@ -219,9 +219,9 @@ public:
   /**
    * Bind an element before some given element in the chain.
    */
-  void insertBefore( Elem* e, Elem* p )
+  void insertBefore(Elem* e, Elem* p)
   {
-    hard_assert( e != nullptr && p != nullptr );
+    hard_assert(e != nullptr && p != nullptr);
 
     Elem* prev = p->prev[INDEX];
 
@@ -229,7 +229,7 @@ public:
     e->prev[INDEX] = prev;
     p->prev[INDEX] = e;
 
-    if( prev == nullptr ) {
+    if (prev == nullptr) {
       firstElem = e;
     }
     else {
@@ -240,15 +240,15 @@ public:
   /**
    * Unbind a given element from the chain.
    */
-  void erase( Elem* elem )
+  void erase(Elem* elem)
   {
-    if( elem->prev[INDEX] == nullptr ) {
+    if (elem->prev[INDEX] == nullptr) {
       firstElem = elem->next[INDEX];
     }
     else {
       elem->prev[INDEX]->next[INDEX] = elem->next[INDEX];
     }
-    if( elem->next[INDEX] == nullptr ) {
+    if (elem->next[INDEX] == nullptr) {
       lastElem = elem->prev[INDEX];
     }
     else {
@@ -259,14 +259,14 @@ public:
   /**
    * Bind an element to the beginning of the chain.
    */
-  void pushFirst( Elem* elem )
+  void pushFirst(Elem* elem)
   {
-    hard_assert( elem != nullptr );
+    hard_assert(elem != nullptr);
 
     elem->prev[INDEX] = nullptr;
     elem->next[INDEX] = firstElem;
 
-    if( firstElem == nullptr ) {
+    if (firstElem == nullptr) {
       firstElem = elem;
       lastElem = elem;
     }
@@ -279,14 +279,14 @@ public:
   /**
    * Bind an element to the end of the chain.
    */
-  void pushLast( Elem* elem )
+  void pushLast(Elem* elem)
   {
-    hard_assert( elem != nullptr );
+    hard_assert(elem != nullptr);
 
     elem->prev[INDEX] = lastElem;
     elem->next[INDEX] = nullptr;
 
-    if( lastElem == nullptr ) {
+    if (lastElem == nullptr) {
       firstElem = elem;
       lastElem = elem;
     }
@@ -301,13 +301,13 @@ public:
    */
   Elem* popFirst()
   {
-    hard_assert( firstElem != nullptr );
+    hard_assert(firstElem != nullptr);
 
     Elem* elem = firstElem;
 
     firstElem = firstElem->next[INDEX];
 
-    if( firstElem == nullptr ) {
+    if (firstElem == nullptr) {
       lastElem = nullptr;
     }
     else {
@@ -321,13 +321,13 @@ public:
    */
   Elem* popLast()
   {
-    hard_assert( lastElem != nullptr );
+    hard_assert(lastElem != nullptr);
 
     Elem* elem = lastElem;
 
     lastElem = lastElem->prev[INDEX];
 
-    if( lastElem == nullptr ) {
+    if (lastElem == nullptr) {
       firstElem = nullptr;
     }
     else {

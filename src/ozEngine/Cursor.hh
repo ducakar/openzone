@@ -100,7 +100,7 @@ public:
   /**
    * Create from file.
    */
-  explicit Cursor( const File& file, Mode mode, int size = -1 );
+  explicit Cursor(const File& file, Mode mode, int size = -1);
 
   /**
    * Destructor, destroys textures if loaded.
@@ -110,12 +110,12 @@ public:
   /**
    * Move constructor.
    */
-  Cursor( Cursor&& c );
+  Cursor(Cursor&& c);
 
   /**
    * Move operator.
    */
-  Cursor& operator = ( Cursor&& c );
+  Cursor& operator = (Cursor&& c);
 
   /**
    * True iff loaded.
@@ -173,12 +173,12 @@ public:
   /**
    * Advance animation and update the current texture id or the system cursor.
    */
-  void update( int millis );
+  void update(int millis);
 
   /**
    * Load from file.
    */
-  bool load( const File& file, Mode mode, int size = -1 );
+  bool load(const File& file, Mode mode, int size = -1);
 
   /**
    * Destroy textures if loaded.

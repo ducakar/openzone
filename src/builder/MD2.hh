@@ -89,7 +89,7 @@ private:
 
 public:
 
-  void build( const char* path );
+  void build(const char* path);
 
 };
 

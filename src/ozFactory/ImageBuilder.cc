@@ -71,112 +71,112 @@ static const int ERROR_LENGTH                       = 1024;
 
 static char errorBuffer[ERROR_LENGTH]               = {};
 
-static FIBITMAP* createBitmap( const ImageData& image )
+static FIBITMAP* createBitmap(const ImageData& image)
 {
-  FIBITMAP* dib = FreeImage_ConvertFromRawBits( reinterpret_cast<ubyte*>( image.pixels ),
-                                                image.width, image.height, image.width * 4, 32,
-                                                FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
-                                                FI_RGBA_BLUE_MASK );
+  FIBITMAP* dib = FreeImage_ConvertFromRawBits(reinterpret_cast<ubyte*>(image.pixels),
+                  image.width, image.height, image.width * 4, 32,
+                  FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
+                  FI_RGBA_BLUE_MASK);
 
   // Convert RGBA -> BGRA.
   int    size   = image.width * image.height * 4;
-  ubyte* pixels = FreeImage_GetBits( dib );
+  ubyte* pixels = FreeImage_GetBits(dib);
 
-  for( int i = 0; i < size; i += 4 ) {
-    swap( pixels[i + 0], pixels[i + 2] );
+  for (int i = 0; i < size; i += 4) {
+    swap(pixels[i + 0], pixels[i + 2]);
   }
 
-  if( dib == nullptr ) {
-    snprintf( errorBuffer, ERROR_LENGTH, "FreeImage_ConvertFromRawBits failed to build image." );
+  if (dib == nullptr) {
+    snprintf(errorBuffer, ERROR_LENGTH, "FreeImage_ConvertFromRawBits failed to build image.");
   }
 
-  FreeImage_SetTransparent( dib, image.flags & ImageData::ALPHA_BIT );
+  FreeImage_SetTransparent(dib, image.flags & ImageData::ALPHA_BIT);
   return dib;
 }
 
-static FIBITMAP* loadBitmap( const File& file )
+static FIBITMAP* loadBitmap(const File& file)
 {
   InputStream       is        = file.inputStream();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( is.begin() ) );
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory( dataBegin, uint( is.capacity() ) );
-  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory( memoryIO, is.capacity() );
-  FIBITMAP*         dib       = FreeImage_LoadFromMemory( format, memoryIO );
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, uint(is.capacity()));
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
+  FIBITMAP*         dib       = FreeImage_LoadFromMemory(format, memoryIO);
 
-  FreeImage_CloseMemory( memoryIO );
+  FreeImage_CloseMemory(memoryIO);
 
-  if( dib == nullptr ) {
-    snprintf( errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.path().cstr() );
+  if (dib == nullptr) {
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.path().cstr());
     return nullptr;
   }
 
   FIBITMAP* oldDib = dib;
-  dib = FreeImage_ConvertTo32Bits( dib );
-  FreeImage_Unload( oldDib );
+  dib = FreeImage_ConvertTo32Bits(dib);
+  FreeImage_Unload(oldDib);
 
   // Remove alpha if unused.
-  int    width    = int( FreeImage_GetWidth( dib ) );
-  int    height   = int( FreeImage_GetHeight( dib ) );
+  int    width    = int(FreeImage_GetWidth(dib));
+  int    height   = int(FreeImage_GetHeight(dib));
   int    size     = width * height * 4;
   bool   hasAlpha = false;
-  ubyte* pixels   = FreeImage_GetBits( dib );
+  ubyte* pixels   = FreeImage_GetBits(dib);
 
-  for( int i = 0; i < size; i += 4 ) {
-    if( pixels[i + 3] != 255 ) {
+  for (int i = 0; i < size; i += 4) {
+    if (pixels[i + 3] != 255) {
       hasAlpha = true;
       break;
     }
   }
-  if( !hasAlpha ) {
-    FreeImage_SetTransparent( dib, false );
+  if (!hasAlpha) {
+    FreeImage_SetTransparent(dib, false);
   }
 
-  FreeImage_FlipVertical( dib );
+  FreeImage_FlipVertical(dib);
   return dib;
 }
 
-static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& destFile )
+static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& destFile)
 {
-  hard_assert( nFaces > 0 );
+  hard_assert(nFaces > 0);
 
-  int width      = int( FreeImage_GetWidth( faces[0] ) );
-  int height     = int( FreeImage_GetHeight( faces[0] ) );
+  int width      = int(FreeImage_GetWidth(faces[0]));
+  int height     = int(FreeImage_GetHeight(faces[0]));
 
-  bool hasAlpha  = FreeImage_IsTransparent( faces[0] );
+  bool hasAlpha  = FreeImage_IsTransparent(faces[0]);
   bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
   bool compress  = options & ImageBuilder::COMPRESSION_BIT;
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
   bool isArray   = !isCubeMap && nFaces > 1;
 
-  for( int i = 1; i < nFaces; ++i ) {
-    if( int( FreeImage_GetWidth( faces[i] ) ) != width ||
-        int( FreeImage_GetHeight( faces[i] ) ) != height )
+  for (int i = 1; i < nFaces; ++i) {
+    if (int(FreeImage_GetWidth(faces[i])) != width ||
+        int(FreeImage_GetHeight(faces[i])) != height)
     {
-      snprintf( errorBuffer, ERROR_LENGTH, "All faces must have same dimensions." );
+      snprintf(errorBuffer, ERROR_LENGTH, "All faces must have same dimensions.");
       return false;
     }
   }
 
-  if( compress ) {
+  if (compress) {
 #ifndef OZ_NONFREE
-    snprintf( errorBuffer, ERROR_LENGTH, "Texture compression requested but compiled without"
-              " libsquish (OZ_NONFREE is disabled)." );
+    snprintf(errorBuffer, ERROR_LENGTH, "Texture compression requested but compiled without"
+             " libsquish (OZ_NONFREE is disabled).");
     return false;
 #else
-    if( !Math::isPow2( width ) || !Math::isPow2( height ) ) {
-      snprintf( errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2." );
+    if (!Math::isPow2(width) || !Math::isPow2(height)) {
+      snprintf(errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2.");
       return false;
     }
 #endif
   }
 
-  if( isCubeMap && nFaces != 6 ) {
-    snprintf( errorBuffer, ERROR_LENGTH, "Cube map requires exactly 6 faces." );
+  if (isCubeMap && nFaces != 6) {
+    snprintf(errorBuffer, ERROR_LENGTH, "Cube map requires exactly 6 faces.");
     return false;
   }
 
   int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
-  int pitchOrLinSize = ( ( width * targetBPP / 8 + 3 ) / 4 ) * 4;
-  int nMipmaps       = doMipmaps ? Math::index1( max( width, height ) ) + 1 : 1;
+  int pitchOrLinSize = ((width * targetBPP / 8 + 3) / 4) * 4;
+  int nMipmaps       = doMipmaps ? Math::index1(max(width, height)) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
   flags |= doMipmaps ? DDSD_MIPMAPCOUNT : 0;
@@ -202,132 +202,132 @@ static bool buildDDS( FIBITMAP** faces, int nFaces, int options, const File& des
   int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
   squishFlags    |= hasAlpha ? squish::kDxt5 : squish::kDxt1;
 
-  if( compress ) {
-    pitchOrLinSize = squish::GetStorageRequirements( width, height, squishFlags );
+  if (compress) {
+    pitchOrLinSize = squish::GetStorageRequirements(width, height, squishFlags);
     dx10Format     = hasAlpha ? DXGI_FORMAT_BC3_TYPELESS : DXGI_FORMAT_BC1_TYPELESS;
     fourCC         = isArray ? "DX10" : hasAlpha ? "DXT5" : "DXT1";
   }
 #endif
 
-  OutputStream os( 0, Endian::LITTLE );
+  OutputStream os(0, Endian::LITTLE);
 
   // Header beginning.
-  os.writeChars( "DDS ", 4 );
-  os.writeInt( 124 );
-  os.writeInt( flags );
-  os.writeInt( height );
-  os.writeInt( width );
-  os.writeInt( pitchOrLinSize );
-  os.writeInt( 0 );
-  os.writeInt( nMipmaps );
+  os.writeChars("DDS ", 4);
+  os.writeInt(124);
+  os.writeInt(flags);
+  os.writeInt(height);
+  os.writeInt(width);
+  os.writeInt(pitchOrLinSize);
+  os.writeInt(0);
+  os.writeInt(nMipmaps);
 
   // Reserved int[11].
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
 
   // Pixel format.
-  os.writeInt( 32 );
-  os.writeInt( pixelFlags );
-  os.writeChars( fourCC, 4 );
-  os.writeInt( targetBPP );
-  os.writeUInt( 0x00ff0000 );
-  os.writeUInt( 0x0000ff00 );
-  os.writeUInt( 0x000000ff );
-  os.writeUInt( 0xff000000 );
+  os.writeInt(32);
+  os.writeInt(pixelFlags);
+  os.writeChars(fourCC, 4);
+  os.writeInt(targetBPP);
+  os.writeUInt(0x00ff0000);
+  os.writeUInt(0x0000ff00);
+  os.writeUInt(0x000000ff);
+  os.writeUInt(0xff000000);
 
-  os.writeInt( caps );
-  os.writeInt( caps2 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
-  os.writeInt( 0 );
+  os.writeInt(caps);
+  os.writeInt(caps2);
+  os.writeInt(0);
+  os.writeInt(0);
+  os.writeInt(0);
 
-  if( isArray ) {
-    os.writeInt( dx10Format );
-    os.writeInt( D3D10_RESOURCE_DIMENSION_TEXTURE2D );
-    os.writeInt( 0 );
-    os.writeInt( nFaces );
-    os.writeInt( 0 );
+  if (isArray) {
+    os.writeInt(dx10Format);
+    os.writeInt(D3D10_RESOURCE_DIMENSION_TEXTURE2D);
+    os.writeInt(0);
+    os.writeInt(nFaces);
+    os.writeInt(0);
   }
 
-  for( int i = 0; i < nFaces; ++i ) {
+  for (int i = 0; i < nFaces; ++i) {
     FIBITMAP* face = faces[i];
 
-    if( compress ) {
-      ubyte* pixels = FreeImage_GetBits( face );
+    if (compress) {
+      ubyte* pixels = FreeImage_GetBits(face);
       int    size   = width * height * 4;
 
-      for( int j = 0; j < size; j += 4 ) {
-        swap( pixels[j], pixels[j + 2] );
+      for (int j = 0; j < size; j += 4) {
+        swap(pixels[j], pixels[j + 2]);
       }
     }
 
-    if( targetBPP == 24 ) {
-      face = FreeImage_ConvertTo24Bits( faces[i] );
+    if (targetBPP == 24) {
+      face = FreeImage_ConvertTo24Bits(faces[i]);
     }
 
     int levelWidth  = width;
     int levelHeight = height;
 
-    for( int j = 0; j < nMipmaps; ++j ) {
+    for (int j = 0; j < nMipmaps; ++j) {
       FIBITMAP* level = face;
-      if( j != 0 ) {
-        level = FreeImage_Rescale( face, levelWidth, levelHeight, FILTER_CATMULLROM );
+      if (j != 0) {
+        level = FreeImage_Rescale(face, levelWidth, levelHeight, FILTER_CATMULLROM);
       }
 
-      if( compress ) {
+      if (compress) {
 #ifdef OZ_NONFREE
-        ubyte* pixels = FreeImage_GetBits( level );
-        int    s3Size = squish::GetStorageRequirements( levelWidth, levelHeight, squishFlags );
+        ubyte* pixels = FreeImage_GetBits(level);
+        int    s3Size = squish::GetStorageRequirements(levelWidth, levelHeight, squishFlags);
 
-        squish::CompressImage( pixels, levelWidth, levelHeight, os.forward( s3Size ), squishFlags );
+        squish::CompressImage(pixels, levelWidth, levelHeight, os.forward(s3Size), squishFlags);
 #endif
       }
       else {
-        const char* pixels = reinterpret_cast<const char*>( FreeImage_GetBits( level ) );
-        int         pitch  = int( FreeImage_GetPitch( level ) );
+        const char* pixels = reinterpret_cast<const char*>(FreeImage_GetBits(level));
+        int         pitch  = int(FreeImage_GetPitch(level));
 
-        for( int k = 0; k < levelHeight; ++k ) {
-          os.writeChars( pixels, levelWidth * targetBPP / 8 );
+        for (int k = 0; k < levelHeight; ++k) {
+          os.writeChars(pixels, levelWidth * targetBPP / 8);
           pixels += pitch;
         }
       }
 
-      levelWidth  = max( 1, levelWidth / 2 );
-      levelHeight = max( 1, levelHeight / 2 );
+      levelWidth  = max(1, levelWidth / 2);
+      levelHeight = max(1, levelHeight / 2);
 
-      if( j != 0 ) {
-        FreeImage_Unload( level );
+      if (j != 0) {
+        FreeImage_Unload(level);
       }
     }
 
-    if( face != faces[i] ) {
-      FreeImage_Unload( face );
+    if (face != faces[i]) {
+      FreeImage_Unload(face);
     }
   }
 
-  bool success = destFile.write( os.begin(), os.tell() );
-  if( !success ) {
-    snprintf( errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.path().cstr() );
+  bool success = destFile.write(os.begin(), os.tell());
+  if (!success) {
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.path().cstr());
     return false;
   }
   return true;
 }
 
 ImageData::ImageData() :
-  width( 0 ), height( 0 ), flags( 0 ), pixels( nullptr )
+  width(0), height(0), flags(0), pixels(nullptr)
 {}
 
-ImageData::ImageData( int width_, int height_ ) :
-  width( width_ ), height( height_ ), flags( 0 ), pixels( new char[width * height * 4] )
+ImageData::ImageData(int width_, int height_) :
+  width(width_), height(height_), flags(0), pixels(new char[width* height * 4])
 {}
 
 ImageData::~ImageData()
@@ -335,8 +335,8 @@ ImageData::~ImageData()
   delete[] pixels;
 }
 
-ImageData::ImageData( ImageData&& i ) :
-  width( i.width ), height( i.height ), flags( i.flags ), pixels( i.pixels )
+ImageData::ImageData(ImageData&& i) :
+  width(i.width), height(i.height), flags(i.flags), pixels(i.pixels)
 {
   i.width  = 0;
   i.height = 0;
@@ -344,9 +344,9 @@ ImageData::ImageData( ImageData&& i ) :
   i.pixels = nullptr;
 }
 
-ImageData& ImageData::operator = ( ImageData&& i )
+ImageData& ImageData::operator = (ImageData&& i)
 {
-  if( &i == this ) {
+  if (&i == this) {
     return *this;
   }
 
@@ -365,7 +365,7 @@ ImageData& ImageData::operator = ( ImageData&& i )
 
 void ImageData::determineAlpha()
 {
-  if( pixels == nullptr ) {
+  if (pixels == nullptr) {
     return;
   }
 
@@ -373,8 +373,8 @@ void ImageData::determineAlpha()
 
   flags &= ~ALPHA_BIT;
 
-  for( int i = 0; i < size; i += 4 ) {
-    if( pixels[i * 4 + 3] != char( 255 ) ) {
+  for (int i = 0; i < size; i += 4) {
+    if (pixels[i * 4 + 3] != char(255)) {
       flags |= ALPHA_BIT;
       return;
     }
@@ -386,101 +386,99 @@ const char* ImageBuilder::getError()
   return errorBuffer;
 }
 
-bool ImageBuilder::isImage( const File& file )
+bool ImageBuilder::isImage(const File& file)
 {
   errorBuffer[0] = '\0';
 
-  InputStream is        = file.inputStream();
-  ubyte*      dataBegin = reinterpret_cast<ubyte*>( const_cast<char*>( is.begin() ) );
+  InputStream       is        = file.inputStream();
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, uint(is.capacity()));
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
 
-  FIMEMORY*         memoryIO = FreeImage_OpenMemory( dataBegin, uint( is.capacity() ) );
-  FREE_IMAGE_FORMAT format   = FreeImage_GetFileTypeFromMemory( memoryIO, is.capacity() );
-
-  FreeImage_CloseMemory( memoryIO );
+  FreeImage_CloseMemory(memoryIO);
   return format != FIF_UNKNOWN;
 }
 
-ImageData ImageBuilder::loadImage( const File& file )
+ImageData ImageBuilder::loadImage(const File& file)
 {
   errorBuffer[0] = '\0';
 
   ImageData image;
 
-  FIBITMAP* dib = loadBitmap( file );
-  if( dib == nullptr ) {
+  FIBITMAP* dib = loadBitmap(file);
+  if (dib == nullptr) {
     return image;
   }
 
-  image = ImageData( int( FreeImage_GetWidth( dib ) ), int( FreeImage_GetHeight( dib ) ) );
+  image = ImageData(int(FreeImage_GetWidth(dib)), int(FreeImage_GetHeight(dib)));
 
   // Copy and convert BGRA -> RGBA.
   int    size   = image.width * image.height * 4;
-  ubyte* pixels = FreeImage_GetBits( dib );
+  ubyte* pixels = FreeImage_GetBits(dib);
 
-  for( int i = 0; i < size; i += 4 ) {
-    image.pixels[i + 0] = char( pixels[i + 2] );
-    image.pixels[i + 1] = char( pixels[i + 1] );
-    image.pixels[i + 2] = char( pixels[i + 0] );
-    image.pixels[i + 3] = char( pixels[i + 3] );
+  for (int i = 0; i < size; i += 4) {
+    image.pixels[i + 0] = char(pixels[i + 2]);
+    image.pixels[i + 1] = char(pixels[i + 1]);
+    image.pixels[i + 2] = char(pixels[i + 0]);
+    image.pixels[i + 3] = char(pixels[i + 3]);
   }
 
-  FreeImage_Unload( dib );
+  FreeImage_Unload(dib);
   return image;
 }
 
-bool ImageBuilder::createDDS( const ImageData* faces, int nFaces, int options,
-                              const File& destFile )
+bool ImageBuilder::createDDS(const ImageData* faces, int nFaces, int options, const File& destFile)
 {
   errorBuffer[0] = '\0';
 
-  if( nFaces < 1 ) {
-    snprintf( errorBuffer, ERROR_LENGTH, "At least one face must be given." );
+  if (nFaces < 1) {
+    snprintf(errorBuffer, ERROR_LENGTH, "At least one face must be given.");
     return false;
   }
 
   bool       success = false;
   FIBITMAP** dibs    = new FIBITMAP*[nFaces];
 
-  for( int i = 0; i < nFaces; ++i ) {
-    dibs[i] = createBitmap( faces[i] );
+  for (int i = 0; i < nFaces; ++i) {
+    dibs[i] = createBitmap(faces[i]);
 
-    if( dibs[i] == nullptr ) {
+    if (dibs[i] == nullptr) {
       nFaces = i;
       goto cleanUp;
     }
   }
 
-  success = buildDDS( dibs, nFaces, options, destFile );
+  success = buildDDS(dibs, nFaces, options, destFile);
 
 cleanUp:
-  for( int i = 0; i < nFaces; ++i ) {
-    FreeImage_Unload( dibs[i] );
+  for (int i = 0; i < nFaces; ++i) {
+    FreeImage_Unload(dibs[i]);
   }
   delete[] dibs;
 
   return success;
 }
 
-bool ImageBuilder::convertToDDS( const File& file, int options, const char* destPath )
+bool ImageBuilder::convertToDDS(const File& file, int options, const char* destPath)
 {
   errorBuffer[0] = '\0';
 
-  if( file.hasExtension( "dds" ) ) {
-    return File::cp( file, destPath );
+  if (file.hasExtension("dds")) {
+    return File::cp(file, destPath);
   }
 
   File destFile = destPath;
-  if( destFile.type() == File::DIRECTORY ) {
-    destFile = String::str( "%s/%s.dds", destPath, file.baseName().cstr() );
+  if (destFile.type() == File::DIRECTORY) {
+    destFile = String::str("%s/%s.dds", destPath, file.baseName().cstr());
   }
 
-  FIBITMAP* dib = loadBitmap( file );
-  if( dib == nullptr ) {
+  FIBITMAP* dib = loadBitmap(file);
+  if (dib == nullptr) {
     return false;
   }
-  bool success = buildDDS( &dib, 1, options, destFile );
+  bool success = buildDDS(&dib, 1, options, destFile);
 
-  FreeImage_Unload( dib );
+  FreeImage_Unload(dib);
   return success;
 }
 

@@ -37,8 +37,8 @@ private:
 
   Model* model;
 
-  explicit MD2WeaponImago( const Object* obj ) :
-    Imago( obj )
+  explicit MD2WeaponImago(const Object* obj) :
+    Imago(obj)
   {}
 
   ~MD2WeaponImago() override;
@@ -47,11 +47,11 @@ public:
 
   static Pool<MD2WeaponImago, 256> pool;
 
-  static Imago* create( const Object* obj );
+  static Imago* create(const Object* obj);
 
-  void draw( const Imago* parent ) override;
+  void draw(const Imago* parent) override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

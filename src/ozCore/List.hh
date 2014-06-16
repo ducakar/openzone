@@ -79,20 +79,20 @@ protected:
    * Capacity is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
    * `GRANULARITY` able to hold the requested number of elements.
    */
-  void ensureCapacity( int capacity )
+  void ensureCapacity(int capacity)
   {
-    if( capacity < 0 ) {
-      OZ_ERROR( "oz::List: Capacity overflow" );
+    if (capacity < 0) {
+      OZ_ERROR("oz::List: Capacity overflow");
     }
-    else if( size < capacity ) {
+    else if (size < capacity) {
       size *= 2;
-      size  = size < capacity ? ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 ) : size;
+      size  = size < capacity ? (capacity + GRANULARITY - 1) & ~(GRANULARITY - 1) : size;
 
-      if( size <= 0 ) {
-        OZ_ERROR( "oz::List: Capacity overflow" );
+      if (size <= 0) {
+        OZ_ERROR("oz::List: Capacity overflow");
       }
 
-      data = aReallocate<Elem>( data, count, size );
+      data = aReallocate<Elem>(data, count, size);
     }
   }
 
@@ -102,32 +102,32 @@ public:
    * Create an empty list.
    */
   List() :
-    data( nullptr ), count( 0 ), size( 0 )
+    data(nullptr), count(0), size(0)
   {}
 
   /**
    * Create a list with a given initial length and capacity.
    */
-  explicit List( int count_ ) :
-    data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ ), size( count_ )
+  explicit List(int count_) :
+    data(count_ == 0 ? nullptr : new Elem[count_]), count(count_), size(count_)
   {}
 
   /**
    * Initialise from a C++ array.
    */
-  explicit List( const Elem* array, int count_ ) :
-    data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ ), size( count_ )
+  explicit List(const Elem* array, int count_) :
+    data(count_ == 0 ? nullptr : new Elem[count_]), count(count_), size(count_)
   {
-    aCopy<Elem>( array, count, data );
+    aCopy<Elem>(array, count, data);
   }
 
   /**
    * Initialise from an initialiser list.
    */
-  List( InitialiserList<Elem> l ) :
-    data( new Elem[ l.size() ] ), count( int( l.size() ) ), size( int( l.size() ) )
+  List(InitialiserList<Elem> l) :
+    data(new Elem[l.size()]), count(int(l.size())), size(int(l.size()))
   {
-    aCopy<Elem>( l.begin(), int( l.size() ), data );
+    aCopy<Elem>(l.begin(), int(l.size()), data);
   }
 
   /**
@@ -141,17 +141,17 @@ public:
   /**
    * Copy constructor, copies elements.
    */
-  List( const List& l ) :
-    data( l.count == 0 ? nullptr : new Elem[l.count] ), count( l.count ), size( l.size )
+  List(const List& l) :
+    data(l.count == 0 ? nullptr : new Elem[l.count]), count(l.count), size(l.size)
   {
-    aCopy<Elem>( l.data, l.count, data );
+    aCopy<Elem>(l.data, l.count, data);
   }
 
   /**
    * Move constructor, moves element storage.
    */
-  List( List&& l ) :
-    data( l.data ), count( l.count ), size( l.size )
+  List(List&& l) :
+    data(l.data), count(l.count), size(l.size)
   {
     l.data  = nullptr;
     l.count = 0;
@@ -163,20 +163,20 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  List& operator = ( const List& l )
+  List& operator = (const List& l)
   {
-    if( &l == this ) {
+    if (&l == this) {
       return *this;
     }
 
-    if( size < l.count ) {
+    if (size < l.count) {
       delete[] data;
 
       data = new Elem[l.size];
       size = l.size;
     }
 
-    aCopy<Elem>( l.data, l.count, data );
+    aCopy<Elem>(l.data, l.count, data);
     count = l.count;
 
     return *this;
@@ -185,9 +185,9 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  List& operator = ( List&& l )
+  List& operator = (List&& l)
   {
-    if( &l == this ) {
+    if (&l == this) {
       return *this;
     }
 
@@ -207,17 +207,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator == ( const List& l ) const
+  bool operator == (const List& l) const
   {
-    return count == l.count && aEquals<Elem>( data, count, l.data );
+    return count == l.count && aEquals<Elem>(data, count, l.data);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator != ( const List& l ) const
+  bool operator != (const List& l) const
   {
-    return !operator == ( l );
+    return !operator == (l);
   }
 
   /**
@@ -226,7 +226,7 @@ public:
   OZ_ALWAYS_INLINE
   CIterator citer() const
   {
-    return CIterator( data, data + count );
+    return CIterator(data, data + count);
   }
 
   /**
@@ -235,7 +235,7 @@ public:
   OZ_ALWAYS_INLINE
   Iterator iter()
   {
-    return Iterator( data, data + count );
+    return Iterator(data, data + count);
   }
 
   /**
@@ -305,9 +305,9 @@ public:
    * Constant reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& operator [] ( int i ) const
+  const Elem& operator [] (int i) const
   {
-    hard_assert( uint( i ) < uint( count ) );
+    hard_assert(uint(i) < uint(count));
 
     return data[i];
   }
@@ -316,9 +316,9 @@ public:
    * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator [] ( int i )
+  Elem& operator [] (int i)
   {
-    hard_assert( uint( i ) < uint( count ) );
+    hard_assert(uint(i) < uint(count));
 
     return data[i];
   }
@@ -329,7 +329,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& first() const
   {
-    hard_assert( count != 0 );
+    hard_assert(count != 0);
 
     return data[0];
   }
@@ -340,7 +340,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& first()
   {
-    hard_assert( count != 0 );
+    hard_assert(count != 0);
 
     return data[0];
   }
@@ -351,7 +351,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& last() const
   {
-    hard_assert( count != 0 );
+    hard_assert(count != 0);
 
     return data[count - 1];
   }
@@ -362,7 +362,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& last()
   {
-    hard_assert( count != 0 );
+    hard_assert(count != 0);
 
     return data[count - 1];
   }
@@ -371,61 +371,61 @@ public:
    * True iff a given value is found in the array.
    */
   template <typename Elem_ = Elem>
-  bool contains( const Elem_& elem ) const
+  bool contains(const Elem_& elem) const
   {
-    return aContains<Elem, Elem_>( data, count, elem );
+    return aContains<Elem, Elem_>(data, count, elem);
   }
 
   /**
    * Index of the first occurrence of the value or -1 if not found.
    */
   template <typename Elem_ = Elem>
-  int index( const Elem_& elem ) const
+  int index(const Elem_& elem) const
   {
-    return aIndex<Elem, Elem_>( data, count, elem );
+    return aIndex<Elem, Elem_>(data, count, elem);
   }
 
   /**
    * Index of the last occurrence of the value or -1 if not found.
    */
   template <typename Elem_ = Elem>
-  int lastIndex( const Elem_& elem ) const
+  int lastIndex(const Elem_& elem) const
   {
-    return aLastIndex<Elem, Elem_>( data, count, elem );
+    return aLastIndex<Elem, Elem_>(data, count, elem);
   }
 
   /**
    * Add an element to the end.
    */
   template <typename Elem_ = Elem>
-  void add( Elem_&& elem )
+  void add(Elem_&& elem)
   {
-    pushLast<Elem_>( static_cast<Elem_&&>( elem ) );
+    pushLast<Elem_>(static_cast<Elem_&&>(elem));
   }
 
   /**
    * Add (copy) elements from a given array to the end.
    */
-  void addAll( const Elem* array, int arrayCount )
+  void addAll(const Elem* array, int arrayCount)
   {
     int newCount = count + arrayCount;
 
-    ensureCapacity( newCount );
+    ensureCapacity(newCount);
 
-    aCopy<Elem>( array, arrayCount, data + count );
+    aCopy<Elem>(array, arrayCount, data + count);
     count = newCount;
   }
 
   /**
    * Add (move) elements from a given array to the end.
    */
-  void takeAll( Elem* array, int arrayCount )
+  void takeAll(Elem* array, int arrayCount)
   {
     int newCount = count + arrayCount;
 
-    ensureCapacity( newCount );
+    ensureCapacity(newCount);
 
-    aMove<Elem>( array, arrayCount, data + count );
+    aMove<Elem>(array, arrayCount, data + count);
     count = newCount;
   }
 
@@ -435,15 +435,15 @@ public:
    * @return Position of the inserted or the existing equal element.
    */
   template <typename Elem_ = Elem>
-  int include( Elem_&& elem )
+  int include(Elem_&& elem)
   {
-    int i = aIndex<Elem, Elem>( data, count, elem );
+    int i = aIndex<Elem, Elem>(data, count, elem);
 
-    if( i >= 0 ) {
+    if (i >= 0) {
       return i;
     }
     else {
-      pushLast<Elem_>( static_cast<Elem_&&>( elem ) );
+      pushLast<Elem_>(static_cast<Elem_&&>(elem));
       return count - 1;
     }
   }
@@ -454,14 +454,14 @@ public:
    * All later elements are shifted to make the gap.
    */
   template <typename Elem_ = Elem>
-  void insert( int i, Elem_&& elem )
+  void insert(int i, Elem_&& elem)
   {
-    hard_assert( uint( i ) <= uint( count ) );
+    hard_assert(uint(i) <= uint(count));
 
-    ensureCapacity( count + 1 );
+    ensureCapacity(count + 1);
 
-    aMoveBackward<Elem>( data + i, count - i, data + i + 1 );
-    data[i] = static_cast<Elem_&&>( elem );
+    aMoveBackward<Elem>(data + i, count - i, data + i + 1);
+    data[i] = static_cast<Elem_&&>(elem);
     ++count;
   }
 
@@ -470,19 +470,19 @@ public:
    *
    * All later elements are shifted to fill the gap.
    */
-  void erase( int i )
+  void erase(int i)
   {
-    hard_assert( uint( i ) < uint( count ) );
+    hard_assert(uint(i) < uint(count));
 
     --count;
 
-    if( i == count ) {
+    if (i == count) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
       data[count] = Elem();
     }
     else {
-      aMove<Elem>( data + i + 1, count - i, data + i );
+      aMove<Elem>(data + i + 1, count - i, data + i);
     }
   }
 
@@ -491,19 +491,19 @@ public:
    *
    * The last element is moved to its place.
    */
-  void eraseUnordered( int i )
+  void eraseUnordered(int i)
   {
-    hard_assert( uint( i ) < uint( count ) );
+    hard_assert(uint(i) < uint(count));
 
     --count;
 
-    if( i == count ) {
+    if (i == count) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
       data[count] = Elem();
     }
     else {
-      data[i] = static_cast<Elem&&>( data[count] );
+      data[i] = static_cast<Elem&&>(data[count]);
     }
   }
 
@@ -513,12 +513,12 @@ public:
    * @return Index of the removed element or -1 if not found.
    */
   template <typename Elem_ = Elem>
-  int exclude( const Elem_& elem )
+  int exclude(const Elem_& elem)
   {
-    int i = aIndex<Elem, Elem_>( data, count, elem );
+    int i = aIndex<Elem, Elem_>(data, count, elem);
 
-    if( i >= 0 ) {
-      erase( i );
+    if (i >= 0) {
+      erase(i);
     }
     return i;
   }
@@ -531,12 +531,12 @@ public:
    * @return Index of the removed element or -1 if not found.
    */
   template <typename Elem_ = Elem>
-  int excludeUnordered( const Elem_& elem )
+  int excludeUnordered(const Elem_& elem)
   {
-    int i = aIndex<Elem, Elem_>( data, count, elem );
+    int i = aIndex<Elem, Elem_>(data, count, elem);
 
-    if( i >= 0 ) {
-      eraseUnordered( i );
+    if (i >= 0) {
+      eraseUnordered(i);
     }
     return i;
   }
@@ -547,12 +547,12 @@ public:
    * All elements are shifted to make a gap.
    */
   template <typename Elem_ = Elem>
-  void pushFirst( Elem_&& elem )
+  void pushFirst(Elem_&& elem)
   {
-    ensureCapacity( count + 1 );
+    ensureCapacity(count + 1);
 
-    aMoveBackward<Elem>( data, count, data + 1 );
-    data[0] = static_cast<Elem_&&>( elem );
+    aMoveBackward<Elem>(data, count, data + 1);
+    data[0] = static_cast<Elem_&&>(elem);
     ++count;
   }
 
@@ -560,11 +560,11 @@ public:
    * Add an element to the end.
    */
   template <typename Elem_ = Elem>
-  void pushLast( Elem_&& elem )
+  void pushLast(Elem_&& elem)
   {
-    ensureCapacity( count + 1 );
+    ensureCapacity(count + 1);
 
-    data[count] = static_cast<Elem_&&>( elem );
+    data[count] = static_cast<Elem_&&>(elem);
     ++count;
   }
 
@@ -577,10 +577,10 @@ public:
    */
   Elem popFirst()
   {
-    Elem elem = static_cast<Elem&&>( data[0] );
+    Elem elem = static_cast<Elem&&>(data[0]);
 
     --count;
-    aMove<Elem>( data + 1, count, data );
+    aMove<Elem>(data + 1, count, data);
     return elem;
   }
 
@@ -591,10 +591,10 @@ public:
    */
   Elem popLast()
   {
-    hard_assert( count != 0 );
+    hard_assert(count != 0);
 
     --count;
-    return static_cast<Elem&&>( data[count] );
+    return static_cast<Elem&&>(data[count]);
   }
 
   /**
@@ -602,7 +602,7 @@ public:
    */
   void reverse()
   {
-    aReverse<Elem>( data, count );
+    aReverse<Elem>(data, count);
   }
 
   /**
@@ -610,22 +610,22 @@ public:
    */
   void sort()
   {
-    aSort<Elem>( data, count );
+    aSort<Elem>(data, count);
   }
 
   /**
    * Resize the list and its capacity to the specified number of elements.
    */
-  void resize( int newCount )
+  void resize(int newCount)
   {
-    if( newCount != size ) {
-      data  = aReallocate<Elem>( data, count, newCount );
+    if (newCount != size) {
+      data  = aReallocate<Elem>(data, count, newCount);
       count = newCount;
       size  = newCount;
     }
     else {
       // Ensure destruction of removed elements.
-      for( int i = count; i < newCount; ++i ) {
+      for (int i = count; i < newCount; ++i) {
         data[i] = Elem();
       }
       count = newCount;
@@ -635,10 +635,10 @@ public:
   /**
    * Increase capacity (exactly) to the given value if smaller.
    */
-  void reserve( int capacity )
+  void reserve(int capacity)
   {
-    if( size < capacity ) {
-      data = aReallocate<Elem>( data, count, capacity );
+    if (size < capacity) {
+      data = aReallocate<Elem>(data, count, capacity);
       size = capacity;
     }
   }
@@ -648,8 +648,8 @@ public:
    */
   void trim()
   {
-    if( count < size ) {
-      data = aReallocate<Elem>( data, count, count );
+    if (count < size) {
+      data = aReallocate<Elem>(data, count, count);
       size = count;
     }
   }
@@ -660,7 +660,7 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    for( int i = 0; i < count; ++i ) {
+    for (int i = 0; i < count; ++i) {
       data[i] = Elem();
     }
     count = 0;
@@ -671,7 +671,7 @@ public:
    */
   void free()
   {
-    aFree<Elem>( data, count );
+    aFree<Elem>(data, count);
     count = 0;
   }
 

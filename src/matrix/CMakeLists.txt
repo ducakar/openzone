@@ -1,4 +1,4 @@
-add_library( matrix STATIC
+add_library(matrix STATIC
 #BEGIN SOURCES
   BotClass.hh
   Bot.hh
@@ -51,4 +51,4 @@ add_library( matrix STATIC
   WeaponClass.cc
 #END SOURCES
 )
-use_pch( matrix pch )
+use_pch(matrix pch)

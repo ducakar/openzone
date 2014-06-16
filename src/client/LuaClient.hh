@@ -37,17 +37,17 @@ class LuaClient : public LuaCommon
 {
 private:
 
-  void staticCall( const char* functionName );
+  void staticCall(const char* functionName);
 
 public:
 
-  bool execChunk( const char* code, int size, const char* name ) const;
+  bool execChunk(const char* code, int size, const char* name) const;
 
   void update();
-  void create( const char* missionPath );
+  void create(const char* missionPath);
 
-  void read( InputStream* is );
-  void write( OutputStream* os );
+  void read(InputStream* is);
+  void write(OutputStream* os);
 
   void init();
   void destroy();

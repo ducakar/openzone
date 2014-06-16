@@ -29,22 +29,22 @@
 namespace oz
 {
 
-void CallOnce::call( Function* function )
+void CallOnce::call(Function* function)
 {
-  if( wasCalled ) {
+  if (wasCalled) {
     return;
   }
 
-  if( __sync_lock_test_and_set( &flag, 1 ) != 0 ) {
-    while( flag != 0 );
+  if (__sync_lock_test_and_set(&flag, 1) != 0) {
+    while (flag != 0);
   }
   else {
-    if( !wasCalled ) {
+    if (!wasCalled) {
       function();
       __sync_synchronize();
       wasCalled = true;
     }
-    __sync_lock_release( &flag );
+    __sync_lock_release(&flag);
   }
 }
 

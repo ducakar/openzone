@@ -55,57 +55,57 @@ public:
 
 public:
 
-  void enable( Capability cap );
-  void disable( Capability cap );
+  void enable(Capability cap);
+  void disable(Capability cap);
 
   void beginModel();
   void endModel();
 
-  void shader( const char* shaderName );
+  void shader(const char* shaderName);
 
-  void anim( int nFrames, int nPositions );
-  void animPositions( const float* positions );
-  void animNormals( const float* normals );
+  void anim(int nFrames, int nPositions);
+  void animPositions(const float* positions);
+  void animNormals(const float* normals);
 
-  void beginNode( const char* name = "" );
+  void beginNode(const char* name = "");
   void endNode();
 
-  void transform( const Mat4& t );
-  void includeBounds( bool value );
-  void bindMesh( int id );
-  void bindLight( int id );
+  void transform(const Mat4& t);
+  void includeInBounds(bool value);
+  void bindMesh(int id);
+  void bindLight(int id);
 
   void beginMesh();
   int endMesh();
 
-  void texture( const char* texture );
-  void shininess( float exponent );
-  void blend( bool doBlend );
+  void texture(const char* texture);
+  void shininess(float exponent);
+  void blend(bool doBlend);
 
-  void begin( PolyMode mode );
+  void begin(PolyMode mode);
   void end();
 
-  void boneWeight( int which, const char* name, float weight );
+  void boneWeight(int which, const char* name, float weight);
 
-  void texCoord( float u, float v );
-  void texCoord( const float* v );
+  void texCoord(float u, float v);
+  void texCoord(const float* v);
 
-  void normal( float x, float y, float z );
-  void normal( const float* v );
+  void normal(float x, float y, float z);
+  void normal(const float* v);
 
-  void vertex( float x, float y, float z );
-  void vertex( const float* v );
+  void vertex(float x, float y, float z);
+  void vertex(const float* v);
 
-  void animVertex( int i );
+  void animVertex(int i);
 
-  void beginLight( client::Light::Type type );
+  void beginLight(client::Light::Type type);
   int endLight();
 
-  void position( float x, float y, float z );
-  void direction( float x, float y, float z );
-  void colour( float r, float g, float b );
-  void attenuation( float constant, float linear, float quadratic );
-  void coneAngles( float inner, float outer );
+  void position(float x, float y, float z);
+  void direction(float x, float y, float z);
+  void colour(float r, float g, float b);
+  void attenuation(float constant, float linear, float quadratic);
+  void coneAngles(float inner, float outer);
 
   void beginAnimation();
   void endAnimation();
@@ -113,12 +113,12 @@ public:
   void beginChannel();
   void endChannel();
 
-  void positionKey( const Point& pos, float time );
-  void rotationKey( const Quat& rot, float time );
-  void scalingKey( const Vec3& scale, float time );
+  void positionKey(const Point& pos, float time);
+  void rotationKey(const Quat& rot, float time);
+  void scalingKey(const Vec3& scale, float time);
 
-  void writeModel( OutputStream* os, bool globalTextures = false );
-  void buildModelTextures( const char* destDir );
+  void writeModel(OutputStream* os, bool globalTextures = false);
+  void buildModelTextures(const char* destDir);
 
   void init();
   void destroy();

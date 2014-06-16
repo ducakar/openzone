@@ -39,20 +39,20 @@ void LoadingArea::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  status.setPosition( width / 2, height / 5 );
+  status.setPosition(width / 2, height / 5);
 }
 
 void LoadingArea::onDraw()
 {
-  shape.colour( style.colours.background );
-  shape.fill( 0, 0, width, height );
+  shape.colour(style.colours.background);
+  shape.fill(0, 0, width, height);
 
-  status.draw( this );
+  status.draw(this);
 }
 
 LoadingArea::LoadingArea() :
-  Area( camera.width, camera.height ),
-  status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
+  Area(camera.width, camera.height),
+  status(width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " ")
 {
   flags |= PINNED_BIT;
 }

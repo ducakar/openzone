@@ -39,10 +39,10 @@ const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
 const float  Camera::SHAKE_SUPPRESSION  = 0.85f;
 const float  Camera::FLASH_SUPPRESSION  = 0.75f;
-const Mat4   Camera::FLASH_COLOUR       = Mat4( 2.50f, 1.00f, 1.00f, 0.00f,
-                                                1.00f, 2.50f, 1.00f, 0.00f,
-                                                1.00f, 1.00f, 2.50f, 0.00f,
-                                                0.00f, 0.00f, 0.00f, 1.00f );
+const Mat4   Camera::FLASH_COLOUR       = Mat4(2.50f, 1.00f, 1.00f, 0.00f,
+                                               1.00f, 2.50f, 1.00f, 0.00f,
+                                               1.00f, 1.00f, 2.50f, 0.00f,
+                                               0.00f, 0.00f, 0.00f, 1.00f);
 
 Proxy* const Camera::PROXIES[] = {
   nullptr,
@@ -55,42 +55,40 @@ StrategicProxy Camera::strategic;
 UnitProxy      Camera::unit;
 CinematicProxy Camera::cinematic;
 
-void Camera::flash( float intensity )
+void Camera::flash(float intensity)
 {
-  flashColour = Math::mix( Mat4::ID, FLASH_COLOUR, intensity );
+  flashColour = Math::mix(Mat4::ID, FLASH_COLOUR, intensity);
 }
 
-void Camera::shake( float intensity )
+void Camera::shake(float intensity)
 {
   float heading = intensity * Math::rand() * Math::TAU;
   float pitch   = intensity * Math::rand() * Math::TAU / 2.0f;
-  float cPitch  = Math::cos( pitch );
-  Vec3  axis    = Vec3( cPitch * Math::sin( heading ),
-                        cPitch * Math::cos( heading ),
-                        Math::sin( pitch ) );
+  float cPitch  = Math::cos(pitch);
+  Vec3  axis    = Vec3(cPitch * Math::sin(heading), cPitch * Math::cos(heading), Math::sin(pitch));
 
-  shakeRot = Quat::rotationAxis( axis, intensity );
+  shakeRot = Quat::rotationAxis(axis, intensity);
 }
 
 void Camera::updateReferences()
 {
-  objectObj  = orbis.obj( object );
+  objectObj  = orbis.obj(object);
   object     = objectObj == nullptr ? -1 : object;
 
-  entityObj  = orbis.ent( entity );
+  entityObj  = orbis.ent(entity);
   entity     = entityObj == nullptr ? -1 : entity;
 
-  botObj     = orbis.obj<Bot>( bot );
+  botObj     = orbis.obj<Bot>(bot);
   bot        = botObj == nullptr ? -1 : bot;
 
-  vehicleObj = botObj == nullptr ? nullptr : orbis.obj<Vehicle>( botObj->parent );
+  vehicleObj = botObj == nullptr ? nullptr : orbis.obj<Vehicle>(botObj->parent);
   vehicle    = vehicleObj == nullptr ? -1 : botObj->parent;
 
-  for( int i = 0; i < switchableUnits.length(); ) {
-    const Bot* unit = orbis.obj<const Bot>( switchableUnits[i] );
+  for (int i = 0; i < switchableUnits.length();) {
+    const Bot* unit = orbis.obj<const Bot>(switchableUnits[i]);
 
-    if( unit == nullptr ) {
-      switchableUnits.erase( i );
+    if (unit == nullptr) {
+      switchableUnits.erase(i);
     }
     else {
       ++i;
@@ -100,13 +98,13 @@ void Camera::updateReferences()
 
 void Camera::align()
 {
-  rot      = ~Quat::fastSlerp( rot, desiredRot * shakeRot, ROT_SMOOTHING_COEF );
-  mag      = Math::mix( mag, desiredMag, SMOOTHING_COEF );
-  p        = Math::mix( p, desiredPos, SMOOTHING_COEF );
-  velocity = ( p - oldPos ) / Timer::TICK_TIME;
+  rot      = ~Quat::fastSlerp(rot, desiredRot * shakeRot, ROT_SMOOTHING_COEF);
+  mag      = Math::mix(mag, desiredMag, SMOOTHING_COEF);
+  p        = Math::mix(p, desiredPos, SMOOTHING_COEF);
+  velocity = (p - oldPos) / Timer::TICK_TIME;
   oldPos   = p;
 
-  rotMat   = Mat4::rotation( rot );
+  rotMat   = Mat4::rotation(rot);
   rotTMat  = ~rotMat;
 
   right    = +rotMat.x.vec3();
@@ -120,17 +118,17 @@ void Camera::prepare()
 
   ui::mouse.update();
 
-  relH = clamp( input.lookX * mag, -ROT_LIMIT, +ROT_LIMIT );
-  relV = clamp( input.lookY * mag, -ROT_LIMIT, +ROT_LIMIT );
+  relH = clamp(input.lookX * mag, -ROT_LIMIT, +ROT_LIMIT);
+  relV = clamp(input.lookY * mag, -ROT_LIMIT, +ROT_LIMIT);
 
-  if( newState != state ) {
-    if( proxy != nullptr ) {
+  if (newState != state) {
+    if (proxy != nullptr) {
       proxy->end();
     }
 
     proxy = PROXIES[newState];
 
-    if( proxy != nullptr ) {
+    if (proxy != nullptr) {
       proxy->begin();
     }
     else {
@@ -147,20 +145,20 @@ void Camera::prepare()
     state = newState;
   }
 
-  if( proxy != nullptr ) {
+  if (proxy != nullptr) {
     proxy->prepare();
   }
 
   ui::ui.update();
 
-  if( Window::width() != width || Window::height() != height ) {
+  if (Window::width() != width || Window::height() != height) {
     width   = Window::width();
     height  = Window::height();
 
     centreX = Window::width() / 2;
     centreY = Window::height() / 2;
 
-    aspect  = isFixedAspect ? aspect : float( width ) / float( height );
+    aspect  = isFixedAspect ? aspect : float(width) / float(height);
 
     ui::ui.root->width  = camera.width;
     ui::ui.root->height = camera.height;
@@ -172,14 +170,14 @@ void Camera::update()
 {
   updateReferences();
 
-  if( proxy != nullptr ) {
+  if (proxy != nullptr) {
     proxy->update();
   }
 
   horizPlane  = coeff * mag * MIN_DISTANCE;
   vertPlane   = aspect * horizPlane;
-  shakeRot    = Quat::fastSlerp( Quat::ID, shakeRot, SHAKE_SUPPRESSION );
-  flashColour = Math::mix( Mat4::ID, flashColour, FLASH_SUPPRESSION );
+  shakeRot    = Quat::fastSlerp(Quat::ID, shakeRot, SHAKE_SUPPRESSION);
+  flashColour = Math::mix(Mat4::ID, flashColour, FLASH_SUPPRESSION);
 }
 
 void Camera::reset()
@@ -198,7 +196,7 @@ void Camera::reset()
   relH        = 0.0f;
   relV        = 0.0f;
 
-  rotMat      = Mat4::rotation( rot );
+  rotMat      = Mat4::rotation(rot);
   rotTMat     = ~rotTMat;
 
   colour      = Mat4::ID;
@@ -233,27 +231,27 @@ void Camera::reset()
   unit.reset();
   cinematic.reset();
 
-  if( proxy != nullptr ) {
+  if (proxy != nullptr) {
     proxy->end();
     proxy = nullptr;
   }
 }
 
-void Camera::read( const JSON& json )
+void Camera::read(const JSON& json)
 {
-  p          = json["position"].get( Point::ORIGIN );
-  rot        = json["rotation"].get( Quat::ID );
+  p          = json["position"].get(Point::ORIGIN);
+  rot        = json["rotation"].get(Quat::ID);
 
   desiredRot = rot;
   desiredPos = p;
   oldPos     = p;
 
-  newState   = State( json["state"].get( STRATEGIC ) );
+  newState   = State(json["state"].get(STRATEGIC));
 
-  strategic.read( json["strategic"] );
+  strategic.read(json["strategic"]);
 }
 
-void Camera::read( InputStream* is )
+void Camera::read(InputStream* is)
 {
   rot        = is->readQuat();
   mag        = is->readFloat();
@@ -268,7 +266,7 @@ void Camera::read( InputStream* is )
   relH       = is->readFloat();
   relV       = is->readFloat();
 
-  rotMat     = Mat4::rotation( rot );
+  rotMat     = Mat4::rotation(rot);
   rotTMat    = ~rotMat;
 
   colour     = is->readMat4();
@@ -284,15 +282,15 @@ void Camera::read( InputStream* is )
   entity     = -1;
   entityObj  = nullptr;
   bot        = is->readInt();
-  botObj     = orbis.obj<Bot>( bot );
+  botObj     = orbis.obj<Bot>(bot);
   vehicle    = is->readInt();
-  vehicleObj = orbis.obj<Vehicle>( vehicle );
+  vehicleObj = orbis.obj<Vehicle>(vehicle);
 
-  hard_assert( switchableUnits.isEmpty() );
+  hard_assert(switchableUnits.isEmpty());
 
   int nSwitchableUnits = is->readInt();
-  for( int i = 0; i < nSwitchableUnits; ++i ) {
-    switchableUnits.add( is->readInt() );
+  for (int i = 0; i < nSwitchableUnits; ++i) {
+    switchableUnits.add(is->readInt());
   }
 
   allowReincarnation = is->readBool();
@@ -300,56 +298,56 @@ void Camera::read( InputStream* is )
   isExternal         = is->readBool();
 
   state     = NONE;
-  newState  = State( is->readInt() );
+  newState  = State(is->readInt());
 
-  strategic.read( is );
-  unit.read( is );
-  cinematic.read( is );
+  strategic.read(is);
+  unit.read(is);
+  cinematic.read(is);
 }
 
 JSON Camera::write() const
 {
-  JSON json( JSON::OBJECT );
+  JSON json(JSON::OBJECT);
 
-  json.add( "position", p );
-  json.add( "rotation", rot );
-  json.add( "state", state );
+  json.add("position", p);
+  json.add("rotation", rot);
+  json.add("state", state);
 
-  json.add( "strategic", strategic.write() );
+  json.add("strategic", strategic.write());
 
   return json;
 }
 
-void Camera::write( OutputStream* os ) const
+void Camera::write(OutputStream* os) const
 {
-  os->writeQuat( desiredRot );
-  os->writeFloat( desiredMag );
-  os->writePoint( desiredPos );
+  os->writeQuat(desiredRot);
+  os->writeFloat(desiredMag);
+  os->writePoint(desiredPos);
 
-  os->writeFloat( relH );
-  os->writeFloat( relV );
+  os->writeFloat(relH);
+  os->writeFloat(relV);
 
-  os->writeMat4( colour );
-  os->writeMat4( baseColour );
-  os->writeMat4( nvColour );
+  os->writeMat4(colour);
+  os->writeMat4(baseColour);
+  os->writeMat4(nvColour);
 
-  os->writeInt( bot );
-  os->writeInt( vehicle );
+  os->writeInt(bot);
+  os->writeInt(vehicle);
 
-  os->writeInt( switchableUnits.length() );
-  for( int i = 0; i < switchableUnits.length(); ++i ) {
-    os->writeInt( switchableUnits[i] );
+  os->writeInt(switchableUnits.length());
+  for (int i = 0; i < switchableUnits.length(); ++i) {
+    os->writeInt(switchableUnits[i]);
   }
 
-  os->writeBool( allowReincarnation );
-  os->writeBool( nightVision );
-  os->writeBool( isExternal );
+  os->writeBool(allowReincarnation);
+  os->writeBool(nightVision);
+  os->writeBool(isExternal);
 
-  os->writeInt( state );
+  os->writeInt(state);
 
-  strategic.write( os );
-  unit.write( os );
-  cinematic.write( os );
+  strategic.write(os);
+  unit.write(os);
+  cinematic.write(os);
 }
 
 void Camera::init()
@@ -359,11 +357,11 @@ void Camera::init()
   centreX       = Window::width() / 2;
   centreY       = Window::height() / 2;
 
-  float angle   = Math::rad( config.include( "camera.angle", 80.0f ).get( 0.0f ) );
-  aspect        = config.include( "camera.aspect", 0.0f ).get( 0.0f );
+  float angle   = Math::rad(config.include("camera.angle", 80.0f).get(0.0f));
+  aspect        = config.include("camera.aspect", 0.0f).get(0.0f);
   isFixedAspect = aspect != 0.0f;
-  aspect        = isFixedAspect ? aspect : float( width ) / float( height );
-  coeff         = Math::tan( angle / 2.0f );
+  aspect        = isFixedAspect ? aspect : float(width) / float(height);
+  coeff         = Math::tan(angle / 2.0f);
 
   reset();
 }

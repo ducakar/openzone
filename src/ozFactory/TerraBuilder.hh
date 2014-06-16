@@ -68,7 +68,7 @@ public:
    * Default: -1.0 and +1.0.
    * Applies to: PLAINS, MOUNTAINS, NOISE.
    */
-  static bool setBounds( Module module, float bottomHeight, float topHeight );
+  static bool setBounds(Module module, float bottomHeight, float topHeight);
 
   /**
    * Set seed.
@@ -76,7 +76,7 @@ public:
    * Default: 0.
    * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE, NOISE.
    */
-  static bool setSeed( Module module, int seed );
+  static bool setSeed(Module module, int seed);
 
   /**
    * Set number of octaves for a given module.
@@ -84,7 +84,7 @@ public:
    * Default: 6.
    * Applies to: PLAINS, MOUNTAINS, COMBINER, NOISE.
    */
-  static bool setOctaveCount( Module module, int count );
+  static bool setOctaveCount(Module module, int count);
 
   /**
    * Set roughness.
@@ -92,7 +92,7 @@ public:
    * Default: 3.
    * Applies to: TURBULENCE.
    */
-  static bool setRoughness( Module module, int roughness );
+  static bool setRoughness(Module module, int roughness);
 
   /**
    * Set frequency for a given module.
@@ -100,7 +100,7 @@ public:
    * Default: 1.0.
    * Applies to: PLAINS, MOUNTAINS, COMBINER, TURBULENCE, NOISE.
    */
-  static bool setFrequency( Module module, float frequency );
+  static bool setFrequency(Module module, float frequency);
 
   /**
    * Set persistence for a given module.
@@ -108,7 +108,7 @@ public:
    * Default: 0.5.
    * Applies to: PLAINS, COMBINER, NOISE.
    */
-  static bool setPersistence( Module module, float persistence );
+  static bool setPersistence(Module module, float persistence);
 
   /**
    * Set power.
@@ -116,7 +116,7 @@ public:
    * Default: 1.0.
    * Applies to: TURBULENCE.
    */
-  static bool setPower( Module module, float power );
+  static bool setPower(Module module, float power);
 
   /**
    * Set combiner control module which defines mountain regions (PLAINS or COMBINER).
@@ -124,7 +124,7 @@ public:
    * Default: COMBINER.
    * Applies to: COMBINER.
    */
-  static void setMountainsControl( Module module );
+  static void setMountainsControl(Module module);
 
   /**
    * Set lower bound for combiner control input to switch to mountain terrain.
@@ -132,7 +132,7 @@ public:
    * Default: -1.0 and +1.0.
    * Applies to: COMBINER.
    */
-  static void setMountainsBounds( float lower, float upper );
+  static void setMountainsBounds(float lower, float upper);
 
   /**
    * Set edge smoothing between plain and mountain regions.
@@ -140,12 +140,12 @@ public:
    * Default: 0.0.
    * Applies to: COMBINER.
    */
-  static void setEdgeFalloff( float falloff );
+  static void setEdgeFalloff(float falloff);
 
   /**
    * Add a colour to gradient scale. W coordinate is used as level.
    */
-  static void addGradientPoint( const Vec4& point );
+  static void addGradientPoint(const Vec4& point);
 
   /**
    * Clear gradient scale.
@@ -155,12 +155,12 @@ public:
   /**
    * Generate column-major heightmap array.
    */
-  static float* generateHeightmap( int width, int height );
+  static float* generateHeightmap(int width, int height);
 
   /**
    * Generate terrain texture using the given gradient scale.
    */
-  static ImageData generateImage( int width, int height );
+  static ImageData generateImage(int width, int height);
 
   /**
    * Generate grey noise on cube map.
@@ -175,7 +175,7 @@ public:
    *
    * Do not forget to free the returned array and all its members.
    */
-  static ImageData* generateCubeNoise( int size );
+  static ImageData* generateCubeNoise(int size);
 
 };
 

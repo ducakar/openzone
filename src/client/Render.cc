@@ -41,8 +41,8 @@ namespace client
 const float Render::WIDE_CULL_FACTOR       = 6.0f;
 const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
 const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
-const float Render::CELL_RADIUS            =
-  ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
+const float Render::CELL_RADIUS            = (Cell::SIZE / 2 + Object::MAX_DIM* WIDE_CULL_FACTOR) *
+                                             Math::sqrt(2.0f);
 const float Render::EFFECTS_DISTANCE       = 192.0f;
 
 const float Render::NIGHT_FOG_COEFF        = 2.0f;
@@ -55,10 +55,10 @@ const float Render::WIND_PHI_INC           = 0.04f;
 
 const int   Render::GLOW_MINIFICATION      = 4;
 
-const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 1.00f );
-const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.20f, 0.50f, 1.00f );
-const Vec4  Render::SOLID_AABB             = Vec4( 0.50f, 0.80f, 0.20f, 1.00f );
-const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 1.00f );
+const Vec4  Render::STRUCT_AABB            = Vec4(0.20f, 0.50f, 1.00f, 1.00f);
+const Vec4  Render::ENTITY_AABB            = Vec4(1.00f, 0.20f, 0.50f, 1.00f);
+const Vec4  Render::SOLID_AABB             = Vec4(0.50f, 0.80f, 0.20f, 1.00f);
+const Vec4  Render::NONSOLID_AABB          = Vec4(0.70f, 0.80f, 0.90f, 1.00f);
 
 struct Render::DrawEntry
 {
@@ -73,51 +73,51 @@ struct Render::DrawEntry
   explicit DrawEntry() = default;
 
   OZ_ALWAYS_INLINE
-  explicit DrawEntry( float distance_, const Struct* str_ ) :
-    distance( distance_ ), str( str_ )
+  explicit DrawEntry(float distance_, const Struct* str_) :
+    distance(distance_), str(str_)
   {}
 
   OZ_ALWAYS_INLINE
-  explicit DrawEntry( float distance_, const Object* obj_ ) :
-    distance( distance_ ), obj( obj_ )
+  explicit DrawEntry(float distance_, const Object* obj_) :
+    distance(distance_), obj(obj_)
   {}
 
   OZ_ALWAYS_INLINE
-  bool operator < ( const DrawEntry& de )
+  bool operator < (const DrawEntry& de)
   {
     return distance < de.distance;
   }
 };
 
-void Render::effectsMain( void* )
+void Render::effectsMain(void*)
 {
   render.effectsRun();
 }
 
-void Render::cellEffects( int cellX, int cellY )
+void Render::cellEffects(int cellX, int cellY)
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for( const Object& obj : cell.objects ) {
+  for (const Object& obj : cell.objects) {
     float radius = EFFECTS_DISTANCE + obj.dim.fastN();
-    float dist2  = ( obj.p - camera.p ).sqN();
+    float dist2  = (obj.p - camera.p).sqN();
 
-    if( dist2 > radius*radius ) {
+    if (dist2 > radius*radius) {
       continue;
     }
 
-    for( const Object::Event& event : obj.events ) {
-      if( event.id >= 0 ) {
+    for (const Object::Event& event : obj.events) {
+      if (event.id >= 0) {
         continue;
       }
 
-      float scale = min( 1.0f, 64.0f / dist2 );
+      float scale = min(1.0f, 64.0f / dist2);
 
-      if( event.id == Object::EVENT_FLASH ) {
-        camera.flash( event.intensity * scale );
+      if (event.id == Object::EVENT_FLASH) {
+        camera.flash(event.intensity * scale);
       }
       else {
-        camera.shake( event.intensity * scale );
+        camera.shake(event.intensity * scale);
       }
     }
   }
@@ -127,12 +127,12 @@ void Render::effectsRun()
 {
   effectsAuxSemaphore.wait();
 
-  while( areEffectsAlive ) {
-    Span span = orbis.getInters( camera.p, EFFECTS_DISTANCE );
+  while (areEffectsAlive) {
+    Span span = orbis.getInters(camera.p, EFFECTS_DISTANCE);
 
-    for( int x = span.minX ; x <= span.maxX; ++x ) {
-      for( int y = span.minY; y <= span.maxY; ++y ) {
-        cellEffects( x, y );
+    for (int x = span.minX ; x <= span.maxX; ++x) {
+      for (int y = span.minY; y <= span.maxY; ++y) {
+        cellEffects(x, y);
       }
     }
 
@@ -141,46 +141,46 @@ void Render::effectsRun()
   }
 }
 
-void Render::scheduleCell( int cellX, int cellY )
+void Render::scheduleCell(int cellX, int cellY)
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for( int i = 0; i < cell.structs.length(); ++i ) {
-    if( !drawnStructs.get( cell.structs[i] ) ) {
-      drawnStructs.set( cell.structs[i] );
+  for (int i = 0; i < cell.structs.length(); ++i) {
+    if (!drawnStructs.get(cell.structs[i])) {
+      drawnStructs.set(cell.structs[i]);
 
-      Struct* str    = orbis.str( cell.structs[i] );
+      Struct* str    = orbis.str(cell.structs[i]);
       float   radius = str->dim().fastN();
 
-      if( frustum.isVisible( str->p, radius ) ) {
-        float distance = ( str->p - camera.p ).fastN();
+      if (frustum.isVisible(str->p, radius)) {
+        float distance = (str->p - camera.p).fastN();
 
-        structs.add( DrawEntry( distance, str ) );
+        structs.add(DrawEntry(distance, str));
       }
     }
   }
 
-  for( const Object& obj : cell.objects ) {
+  for (const Object& obj : cell.objects) {
     float radius = obj.dim.fastN();
 
-    if( obj.flags & Object::WIDE_CULL_BIT ) {
+    if (obj.flags & Object::WIDE_CULL_BIT) {
       radius *= WIDE_CULL_FACTOR;
     }
 
-    if( frustum.isVisible( obj.p, radius ) ) {
-      float distance = ( obj.p - camera.p ).fastN();
+    if (frustum.isVisible(obj.p, radius)) {
+      float distance = (obj.p - camera.p).fastN();
 
-      if( radius / ( distance * camera.mag ) >= OBJECT_VISIBILITY_COEF ) {
-        objects.add( DrawEntry( distance, &obj ) );
+      if (radius / (distance * camera.mag) >= OBJECT_VISIBILITY_COEF) {
+        objects.add(DrawEntry(distance, &obj));
       }
     }
   }
 
-  for( const Frag& frag : cell.frags ) {
-    float dist = ( frag.p - camera.p ) * camera.at;
+  for (const Frag& frag : cell.frags) {
+    float dist = (frag.p - camera.p) * camera.at;
 
-    if( dist <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible( frag.p, FragPool::FRAG_RADIUS ) ) {
-      context.drawFrag( &frag );
+    if (dist <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible(frag.p, FragPool::FRAG_RADIUS)) {
+      context.drawFrag(&frag);
     }
   }
 }
@@ -190,10 +190,10 @@ void Render::prepareDraw()
   uint currentMicros = Time::uclock();
   uint beginMicros = currentMicros;
 
-  collider.translate( camera.p, Vec3::ZERO );
+  collider.translate(camera.p, Vec3::ZERO);
   shader.medium = collider.hit.medium;
 
-  if( camera.p.z < 0.0f ) {
+  if (camera.p.z < 0.0f) {
     shader.fogColour = terra.liquidFogColour;
     visibility = orbis.terra.liquid & Medium::WATER_BIT ? WATER_VISIBILITY : LAVA_VISIBILITY;
   }
@@ -202,15 +202,15 @@ void Render::prepareDraw()
     visibility = visibilityRange;
   }
 
-  if( collider.hit.mediumStr != nullptr && ( shader.medium & Medium::LIQUID_MASK ) ) {
-    const BSPImago* bsp = context.getBSP( collider.hit.mediumStr->bsp );
+  if (collider.hit.mediumStr != nullptr && (shader.medium & Medium::LIQUID_MASK)) {
+    const BSPImago* bsp = context.getBSP(collider.hit.mediumStr->bsp);
 
-    if( bsp != nullptr ) {
-      if( shader.medium & Medium::SEA_BIT ) {
+    if (bsp != nullptr) {
+      if (shader.medium & Medium::SEA_BIT) {
         shader.fogColour = terra.liquidFogColour;
         visibility = orbis.terra.liquid & Medium::WATER_BIT ? WATER_VISIBILITY : LAVA_VISIBILITY;
       }
-      else if( shader.medium & Medium::WATER_BIT ) {
+      else if (shader.medium & Medium::WATER_BIT) {
         shader.fogColour = bsp->waterFogColour;
         visibility = WATER_VISIBILITY;
       }
@@ -221,8 +221,8 @@ void Render::prepareDraw()
     }
   }
 
-  if( camera.p.z < 0.0f || ( shader.medium & Medium::WATER_BIT ) ) {
-    float colourRatio = Math::mix( caelum.nightLuminance, 1.0f, caelum.ratio );
+  if (camera.p.z < 0.0f || (shader.medium & Medium::WATER_BIT)) {
+    float colourRatio = Math::mix(caelum.nightLuminance, 1.0f, caelum.ratio);
 
     shader.fogColour.x *= colourRatio;
     shader.fogColour.y *= colourRatio;
@@ -231,41 +231,41 @@ void Render::prepareDraw()
 
   tf.colour = camera.colour * camera.flashColour;
 
-  windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
+  windPhi = Math::fmod(windPhi + WIND_PHI_INC, Math::TAU);
 
   // frustum
   camera.maxDist = visibility;
 
   Span span;
   frustum.update();
-  frustum.getExtrems( span, camera.p );
+  frustum.getExtrems(span, camera.p);
 
   caelum.update();
 
   // drawnStructs
   drawnStructs.clearAll();
 
-  float minXCentre = float( ( span.minX - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2 );
-  float minYCentre = float( ( span.minY - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2 );
+  float minXCentre = float((span.minX - Orbis::CELLS / 2) * Cell::SIZE + Cell::SIZE / 2);
+  float minYCentre = float((span.minY - Orbis::CELLS / 2) * Cell::SIZE + Cell::SIZE / 2);
 
   float x = minXCentre;
-  for( int i = span.minX; i <= span.maxX; ++i, x = x + Cell::SIZE ) {
+  for (int i = span.minX; i <= span.maxX; ++i, x = x + Cell::SIZE) {
     float y = minYCentre;
-    for( int j = span.minY; j <= span.maxY; ++j, y = y + Cell::SIZE ) {
-      if( frustum.isVisible( x, y, CELL_RADIUS ) ) {
-        scheduleCell( i, j );
+    for (int j = span.minY; j <= span.maxY; ++j, y = y + Cell::SIZE) {
+      if (frustum.isVisible(x, y, CELL_RADIUS)) {
+        scheduleCell(i, j);
       }
     }
   }
 
   structs.sort();
-  for( int i = 0; i < structs.length(); ++i ) {
-    context.drawBSP( structs[i].str );
+  for (int i = 0; i < structs.length(); ++i) {
+    context.drawBSP(structs[i].str);
   }
 
   objects.sort();
-  for( int i = 0; i < objects.length(); ++i ) {
-    context.drawImago( objects[i].obj, nullptr );
+  for (int i = 0; i < objects.length(); ++i) {
+    context.drawImago(objects[i].obj, nullptr);
   }
 
   currentMicros = Time::uclock();
@@ -286,49 +286,49 @@ void Render::drawGeometry()
   // camera transformation
   tf.projection();
   tf.camera = camera.rotTMat;
-  tf.camera.translate( Point::ORIGIN - camera.p );
+  tf.camera.translate(Point::ORIGIN - camera.p);
 
-  shader.setAmbientLight( Caelum::GLOBAL_AMBIENT_COLOUR + caelum.ambientColour );
-  shader.setCaelumLight( caelum.lightDir, caelum.diffuseColour );
+  shader.setAmbientLight(Caelum::GLOBAL_AMBIENT_COLOUR + caelum.ambientColour);
+  shader.setCaelumLight(caelum.lightDir, caelum.diffuseColour);
 
   // set shaders
-  for( int i = 0; i < liber.shaders.length(); ++i ) {
-    shader.program( i );
+  for (int i = 0; i < liber.shaders.length(); ++i) {
+    shader.program(i);
 
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform3fv( uniform.fog_colour, 1, shader.fogColour );
-    glUniform1f( uniform.fog_distance2, visibility*visibility );
-    glUniform4f( uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
+    glUniform3fv(uniform.fog_colour, 1, shader.fogColour);
+    glUniform1f(uniform.fog_distance2, visibility*visibility);
+    glUniform4f(uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi);
   }
 
   currentMicros = Time::uclock();
   miscMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  if( !( shader.medium & Medium::LIQUID_MASK ) && camera.p.z >= 0.0f ) {
-    glClear( GL_DEPTH_BUFFER_BIT );
+  if (!(shader.medium & Medium::LIQUID_MASK) && camera.p.z >= 0.0f) {
+    glClear(GL_DEPTH_BUFFER_BIT);
 
     tf.camera = camera.rotTMat;
 
     caelum.draw();
 
-    tf.camera.translate( Point::ORIGIN - camera.p );
+    tf.camera.translate(Point::ORIGIN - camera.p);
     tf.applyCamera();
   }
   else {
-    glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, 1.0f );
-    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+    glClearColor(shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, 1.0f);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   }
 
-  glEnable( GL_DEPTH_TEST );
+  glEnable(GL_DEPTH_TEST);
 
   currentMicros = Time::uclock();
   caelumMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Model::drawScheduled( Model::SCENE_QUEUE, Model::SOLID_BIT );
+  Model::drawScheduled(Model::SCENE_QUEUE, Model::SOLID_BIT);
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
@@ -346,53 +346,53 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Model::drawScheduled( Model::SCENE_QUEUE, Model::ALPHA_BIT );
-  Model::clearScheduled( Model::SCENE_QUEUE );
+  Model::drawScheduled(Model::SCENE_QUEUE, Model::ALPHA_BIT);
+  Model::clearScheduled(Model::SCENE_QUEUE);
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  Model::drawScheduled( Model::OVERLAY_QUEUE, Model::SOLID_BIT | Model::ALPHA_BIT );
-  Model::clearScheduled( Model::OVERLAY_QUEUE );
+  Model::drawScheduled(Model::OVERLAY_QUEUE, Model::SOLID_BIT | Model::ALPHA_BIT);
+  Model::clearScheduled(Model::OVERLAY_QUEUE);
 
   shape.bind();
-  shader.program( shader.plain );
+  shader.program(shader.plain);
 
-  glActiveTexture( Shader::DIFFUSE );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glActiveTexture(Shader::DIFFUSE);
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  if( showAim ) {
+  if (showAim) {
     Vec3 move = camera.at * 32.0f;
-    collider.translate( camera.p, move, camera.botObj );
+    collider.translate(camera.p, move, camera.botObj);
     move *= collider.hit.ratio;
 
-    shape.colour( 0.0f, 1.0f, 0.0f, 1.0f );
-    shape.box( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
+    shape.colour(0.0f, 1.0f, 0.0f, 1.0f);
+    shape.box(AABB(camera.p + move, Vec3(0.05f, 0.05f, 0.05f)));
   }
 
-  if( showBounds ) {
-    glLineWidth( 1.0f );
+  if (showBounds) {
+    glLineWidth(1.0f);
 
-    for( int i = 0; i < objects.length(); ++i ) {
+    for (int i = 0; i < objects.length(); ++i) {
       const Object* obj = objects[i].obj;
 
-      shape.colour( obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
-      shape.wireBox( *obj );
+      shape.colour(obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB);
+      shape.wireBox(*obj);
     }
 
-    for( int i = 0; i < structs.length(); ++i ) {
+    for (int i = 0; i < structs.length(); ++i) {
       const Struct* str = structs[i].str;
 
-      shape.colour( ENTITY_AABB );
+      shape.colour(ENTITY_AABB);
 
-      for( const Entity& entity : str->entities ) {
-        Bounds bb = str->toAbsoluteCS( *entity.clazz + entity.offset );
-        shape.wireBox( bb.toAABB() );
+      for (const Entity& entity : str->entities) {
+        Bounds bb = str->toAbsoluteCS(*entity.clazz + entity.offset);
+        shape.wireBox(bb.toAABB());
       }
 
-      shape.colour( STRUCT_AABB );
-      shape.wireBox( str->toAABB() );
+      shape.colour(STRUCT_AABB);
+      shape.wireBox(str->toAABB());
     }
   }
 
@@ -402,7 +402,7 @@ void Render::drawGeometry()
 
   shape.unbind();
 
-  glDisable( GL_DEPTH_TEST );
+  glDisable(GL_DEPTH_TEST);
 
   OZ_GL_CHECK_ERROR();
 
@@ -415,19 +415,19 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
-  if( windowWidth != Window::width() || windowHeight != Window::height() ) {
+  if (windowWidth != Window::width() || windowHeight != Window::height()) {
     resize();
   }
 
 #ifndef GL_ES_VERSION_2_0
 
-  if( isOffscreen ) {
-    glViewport( 0, 0, frameWidth, frameHeight );
+  if (isOffscreen) {
+    glViewport(0, 0, frameWidth, frameHeight);
 
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mainFrame);
 
     uint dbos[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT };
-    glDrawBuffers( 2, dbos );
+    glDrawBuffers(2, dbos);
   }
 
 #endif
@@ -439,56 +439,56 @@ void Render::drawOrbis()
 
 #ifndef GL_ES_VERSION_2_0
 
-  if( isOffscreen ) {
-    glViewport( 0, 0, windowWidth, windowHeight );
+  if (isOffscreen) {
+    glViewport(0, 0, windowWidth, windowHeight);
 
-    tf.ortho( windowWidth, windowHeight );
+    tf.ortho(windowWidth, windowHeight);
     tf.camera = Mat4::ID;
 
-    glDisable( GL_CULL_FACE );
+    glDisable(GL_CULL_FACE);
 
-    if( shader.doPostprocess ) {
+    if (shader.doPostprocess) {
       // Scale glow buffer down.
-      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, minGlowFrame );
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, minGlowFrame);
 
-      shader.program( shader.plain );
+      shader.program(shader.plain);
       tf.applyCamera();
-      shape.colour( 1.0f, 1.0f, 1.0f );
+      shape.colour(1.0f, 1.0f, 1.0f);
 
-      glBindTexture( GL_TEXTURE_2D, glowBuffer );
-      shape.fill( 0, windowHeight / GLOW_MINIFICATION,
-                  frameWidth / GLOW_MINIFICATION, -windowHeight / GLOW_MINIFICATION );
+      glBindTexture(GL_TEXTURE_2D, glowBuffer);
+      shape.fill(0, windowHeight / GLOW_MINIFICATION,
+                 frameWidth / GLOW_MINIFICATION, -windowHeight / GLOW_MINIFICATION);
 
-      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
       // Perform prostprocessing into the screen buffer.
-      shader.program( shader.postprocess );
+      shader.program(shader.postprocess);
       tf.applyCamera();
-      shape.colour( 1.0f, 1.0f, 1.0f );
+      shape.colour(1.0f, 1.0f, 1.0f);
 
-      glBindTexture( GL_TEXTURE_2D, colourBuffer );
-      glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, minGlowBuffer );
+      glBindTexture(GL_TEXTURE_2D, colourBuffer);
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, minGlowBuffer);
 
-      shape.fill( 0, windowHeight, windowWidth, -windowHeight );
+      shape.fill(0, windowHeight, windowWidth, -windowHeight);
 
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-      glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+      glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
     }
     else {
-      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
-      shader.program( shader.plain );
+      shader.program(shader.plain);
       tf.applyCamera();
-      shape.colour( 1.0f, 1.0f, 1.0f );
+      shape.colour(1.0f, 1.0f, 1.0f);
 
-      glBindTexture( GL_TEXTURE_2D, colourBuffer );
-      shape.fill( 0, windowHeight, windowWidth, -windowHeight );
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+      glBindTexture(GL_TEXTURE_2D, colourBuffer);
+      shape.fill(0, windowHeight, windowWidth, -windowHeight);
+      glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
     }
 
-    glEnable( GL_CULL_FACE );
+    glEnable(GL_CULL_FACE);
   }
 
 #endif
@@ -509,7 +509,7 @@ void Render::drawUI()
 
 void Render::swap()
 {
-  OZ_NACL_IS_MAIN( false );
+  OZ_NACL_IS_MAIN(false);
 
   uint beginMicros = Time::uclock();
 
@@ -518,135 +518,135 @@ void Render::swap()
   swapMicros += Time::uclock() - beginMicros;
 }
 
-void Render::update( int flags )
+void Render::update(int flags)
 {
-  OZ_NACL_IS_MAIN( false );
+  OZ_NACL_IS_MAIN(false);
 
-  if( flags & EFFECTS_BIT ) {
+  if (flags & EFFECTS_BIT) {
     effectsAuxSemaphore.post();
   }
 
   MainCall() << [&]
   {
-    if( flags & ORBIS_BIT ) {
+    if (flags & ORBIS_BIT) {
       drawOrbis();
     }
-    if( flags & UI_BIT ) {
+    if (flags & UI_BIT) {
       drawUI();
     }
   };
 
-  Model::clearScheduled( Model::SCENE_QUEUE );
-  Model::clearScheduled( Model::OVERLAY_QUEUE );
+  Model::clearScheduled(Model::SCENE_QUEUE);
+  Model::clearScheduled(Model::OVERLAY_QUEUE);
 
-  if( flags & ( ORBIS_BIT | UI_BIT ) ) {
+  if (flags & (ORBIS_BIT | UI_BIT)) {
     swap();
   }
 
-  if( flags & EFFECTS_BIT ) {
+  if (flags & EFFECTS_BIT) {
     effectsMainSemaphore.wait();
   }
 }
 
 void Render::resize()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
   windowWidth  = Window::width();
   windowHeight = Window::height();
 
 #ifndef GL_ES_VERSION_2_0
 
-  if( !isOffscreen ) {
+  if (!isOffscreen) {
     return;
   }
 
-  frameWidth  = Math::lround( float( Window::width()  ) * scale );
-  frameHeight = Math::lround( float( Window::height() ) * scale );
+  frameWidth  = Math::lround(float(Window::width()) * scale);
+  frameHeight = Math::lround(float(Window::height()) * scale);
 
-  if( mainFrame != 0 ) {
-    glDeleteFramebuffersEXT( 1, &mainFrame );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+  if (mainFrame != 0) {
+    glDeleteFramebuffersEXT(1, &mainFrame);
+    glDeleteTextures(1, &colourBuffer);
+    glDeleteRenderbuffersEXT(1, &depthBuffer);
   }
-  if( minGlowFrame != 0 ) {
-    glDeleteFramebuffersEXT( 1, &minGlowFrame );
-    glDeleteTextures( 1, &minGlowBuffer );
-    glDeleteTextures( 1, &glowBuffer );
-  }
-
-  glGenRenderbuffersEXT( 1, &depthBuffer );
-  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depthBuffer );
-  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, frameWidth, frameHeight );
-  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
-
-  glGenTextures( 1, &colourBuffer );
-  glBindTexture( GL_TEXTURE_2D, colourBuffer );
-
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, int( scaleFilter ) );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, int( scaleFilter ) );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE,
-                nullptr );
-
-  if( shader.doPostprocess ) {
-    glGenTextures( 1, &glowBuffer );
-    glBindTexture( GL_TEXTURE_2D, glowBuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
-                  GL_UNSIGNED_BYTE, nullptr );
-
-    glGenTextures( 1, &minGlowBuffer );
-    glBindTexture( GL_TEXTURE_2D, minGlowBuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
-                  frameWidth / GLOW_MINIFICATION, frameHeight / GLOW_MINIFICATION, 0, GL_RGB,
-                  GL_UNSIGNED_BYTE, nullptr );
+  if (minGlowFrame != 0) {
+    glDeleteFramebuffersEXT(1, &minGlowFrame);
+    glDeleteTextures(1, &minGlowBuffer);
+    glDeleteTextures(1, &glowBuffer);
   }
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glGenRenderbuffersEXT(1, &depthBuffer);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthBuffer);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, frameWidth, frameHeight);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 
-  glGenFramebuffersEXT( 1, &mainFrame );
-  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mainFrame );
+  glGenTextures(1, &colourBuffer);
+  glBindTexture(GL_TEXTURE_2D, colourBuffer);
 
-  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-                                depthBuffer );
-  glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-                             colourBuffer, 0 );
-  if( shader.doPostprocess ) {
-    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
-                               glowBuffer, 0 );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, int(scaleFilter));
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, int(scaleFilter));
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE,
+               nullptr);
+
+  if (shader.doPostprocess) {
+    glGenTextures(1, &glowBuffer);
+    glBindTexture(GL_TEXTURE_2D, glowBuffer);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, nullptr);
+
+    glGenTextures(1, &minGlowBuffer);
+    glBindTexture(GL_TEXTURE_2D, minGlowBuffer);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 frameWidth / GLOW_MINIFICATION, frameHeight / GLOW_MINIFICATION, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, nullptr);
   }
 
-  if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
-    OZ_ERROR( "Main framebuffer creation failed" );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
+
+  glGenFramebuffersEXT(1, &mainFrame);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mainFrame);
+
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+                               depthBuffer);
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+                            colourBuffer, 0);
+  if (shader.doPostprocess) {
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
+                              glowBuffer, 0);
   }
 
-  if( shader.doPostprocess ) {
-    glGenFramebuffersEXT( 1, &minGlowFrame );
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, minGlowFrame );
+  if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+    OZ_ERROR("Main framebuffer creation failed");
+  }
 
-    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-                               minGlowBuffer, 0 );
+  if (shader.doPostprocess) {
+    glGenFramebuffersEXT(1, &minGlowFrame);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, minGlowFrame);
 
-    if( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) != GL_FRAMEBUFFER_COMPLETE_EXT ) {
-      OZ_ERROR( "Glow framebuffer creation failed" );
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+                              minGlowBuffer, 0);
+
+    if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      OZ_ERROR("Glow framebuffer creation failed");
     }
   }
 
-  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
   OZ_GL_CHECK_ERROR();
 
@@ -655,18 +655,18 @@ void Render::resize()
 
 void Render::load()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
-  Log::print( "Loading Render ..." );
+  Log::print("Loading Render ...");
 
   ui::ui.load();
 
   areEffectsAlive = true;
 
-  effectsThread.start( "effects", effectsMain );
+  effectsThread.start("effects", effectsMain);
 
-  structs.reserve( 64 );
-  objects.reserve( 8192 );
+  structs.reserve(64);
+  objects.reserve(8192);
 
   prepareMicros     = 0;
   caelumMicros      = 0;
@@ -681,14 +681,14 @@ void Render::load()
   loadDyn();
 #endif
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Render::unload()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
-  Log::print( "Unloading Render ..." );
+  Log::print("Unloading Render ...");
 
 #ifdef OZ_DYNAMICS
   unloadDyn();
@@ -709,14 +709,14 @@ void Render::unload()
 
   ui::ui.unload();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Render::init()
 {
-  OZ_NACL_IS_MAIN( false );
+  OZ_NACL_IS_MAIN(false);
 
-  Log::println( "Initialising Render {" );
+  Log::println("Initialising Render {");
   Log::indent();
 
   const char* vendor;
@@ -727,40 +727,40 @@ void Render::init()
 
   MainCall() << [&]
   {
-    vendor      = String::cstr( glGetString( GL_VENDOR ) );
-    renderer    = String::cstr( glGetString( GL_RENDERER ) );
-    version     = String::cstr( glGetString( GL_VERSION ) );
-    glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
-    sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
+    vendor      = String::cstr(glGetString(GL_VENDOR));
+    renderer    = String::cstr(glGetString(GL_RENDERER));
+    version     = String::cstr(glGetString(GL_VERSION));
+    glslVersion = String::cstr(glGetString(GL_SHADING_LANGUAGE_VERSION));
+    sExtensions = String::cstr(glGetString(GL_EXTENSIONS));
   };
 
-  if( vendor == nullptr ) {
-    OZ_ERROR( "OpenGL failed to initialise" );
+  if (vendor == nullptr) {
+    OZ_ERROR("OpenGL failed to initialise");
   }
 
-  List<String> extensions = String::trim( sExtensions ).split( ' ' );
+  List<String> extensions = String::trim(sExtensions).split(' ');
 
-  Log::println( "OpenGL vendor: %s", vendor );
-  Log::println( "OpenGL renderer: %s", renderer );
-  Log::println( "OpenGL version: %s", version );
-  Log::println( "GLSL version: %s", glslVersion );
+  Log::println("OpenGL vendor: %s", vendor);
+  Log::println("OpenGL renderer: %s", renderer);
+  Log::println("OpenGL version: %s", version);
+  Log::println("GLSL version: %s", glslVersion);
 
   Log::verboseMode = true;
 
-  Log::println( "OpenGL extensions {" );
+  Log::println("OpenGL extensions {");
   Log::indent();
 
-  for( const String& extension : extensions ) {
-    Log::println( "%s", extension.cstr() );
+  for (const String& extension : extensions) {
+    Log::println("%s", extension.cstr());
 
-    if( extension.equals( "GL_ARB_framebuffer_object" ) ) {
+    if (extension.equals("GL_ARB_framebuffer_object")) {
       shader.hasFBO = true;
     }
-    if( extension.equals( "GL_ARB_texture_float" ) ) {
+    if (extension.equals("GL_ARB_texture_float")) {
       shader.hasVTF = true;
     }
-    if( extension.equals( "GL_EXT_texture_compression_s3tc" ) ||
-        extension.equals( "GL_CHROMIUM_texture_compression_dxt5" ) )
+    if (extension.equals("GL_EXT_texture_compression_s3tc") ||
+        extension.equals("GL_CHROMIUM_texture_compression_dxt5"))
     {
       shader.hasS3TC = true;
     }
@@ -772,17 +772,17 @@ void Render::init()
 #endif
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   Log::verboseMode = false;
 
-  Log::println( "Feature availability {" );
+  Log::println("Feature availability {");
   Log::indent();
-  Log::println( "Image scaling & postprocess: %s", shader.hasFBO ?  "yes" : "no" );
-  Log::println( "Animation in vertex shader:  %s", shader.hasVTF ?  "yes" : "no" );
-  Log::println( "Compressed texture loading:  %s", shader.hasS3TC ? "yes" : "no" );
+  Log::println("Image scaling & postprocess: %s", shader.hasFBO ?  "yes" : "no");
+  Log::println("Animation in vertex shader:  %s", shader.hasVTF ?  "yes" : "no");
+  Log::println("Compressed texture loading:  %s", shader.hasS3TC ? "yes" : "no");
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   GL::init();
   shader.init();
@@ -799,19 +799,19 @@ void Render::init()
   };
 
 #ifdef __native_client__
-  const char* sCollation = config.include( "render.collation", "MODEL_MAJOR" ).get( "" );
+  const char* sCollation = config.include("render.collation", "MODEL_MAJOR").get("");
 #else
-  const char* sCollation = config.include( "render.collation", "DEPTH_MAJOR" ).get( "" );
+  const char* sCollation = config.include("render.collation", "DEPTH_MAJOR").get("");
 #endif
-  Model::setCollation( collationMap[ sCollation ] );
+  Model::setCollation(collationMap[sCollation]);
 
-  isOffscreen     = config.include( "render.forceFBO",   false ).get( false );
-  scale           = config.include( "render.scale",      1.0f ).get( 0.0f );
-  scaleFilter     = scaleFilterMap[ config.include( "render.scaleFilter", "LINEAR" ).get( "" ) ];
+  isOffscreen     = config.include("render.forceFBO",   false).get(false);
+  scale           = config.include("render.scale",      1.0f).get(0.0f);
+  scaleFilter     = scaleFilterMap[config.include("render.scaleFilter", "LINEAR").get("")];
 
-  visibilityRange = config.include( "render.distance",   350.0f ).get( 0.0f );
-  showBounds      = config.include( "render.showBounds", false ).get( false );
-  showAim         = config.include( "render.showAim",    false ).get( false );
+  visibilityRange = config.include("render.distance",   350.0f).get(0.0f);
+  showBounds      = config.include("render.showBounds", false).get(false);
+  showAim         = config.include("render.showAim",    false).get(false);
 
   isOffscreen     = isOffscreen || shader.doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;
@@ -821,7 +821,7 @@ void Render::init()
   minGlowBuffer   = 0;
 #endif
 
-  if( !shader.hasFBO ) {
+  if (!shader.hasFBO) {
     shader.doPostprocess = false;
     scale                = 1.0f;
     isOffscreen          = false;
@@ -831,31 +831,31 @@ void Render::init()
   {
     resize();
 
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glEnable( GL_CULL_FACE );
-    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
   };
 
   camera.init();
   ui::ui.init();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Render::destroy()
 {
-  OZ_NACL_IS_MAIN( false );
+  OZ_NACL_IS_MAIN(false);
 
-  Log::println( "Destroying Render {" );
+  Log::println("Destroying Render {");
   Log::indent();
 
-  if( mainFrame != 0 ) {
+  if (mainFrame != 0) {
 #ifndef GL_ES_VERSION_2_0
-    glDeleteFramebuffersEXT( 1, &mainFrame );
-    glDeleteTextures( 1, &glowBuffer );
-    glDeleteTextures( 1, &colourBuffer );
-    glDeleteRenderbuffersEXT( 1, &depthBuffer );
+    glDeleteFramebuffersEXT(1, &mainFrame);
+    glDeleteTextures(1, &glowBuffer);
+    glDeleteTextures(1, &colourBuffer);
+    glDeleteRenderbuffersEXT(1, &depthBuffer);
 #endif
 
     mainFrame = 0;
@@ -869,7 +869,7 @@ void Render::destroy()
   OZ_GL_CHECK_ERROR();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 Render render;
@@ -898,71 +898,71 @@ static oz::Physics  physics;
 
 void Render::drawDyn()
 {
-  if( timer.frameTime > 0.0f ) {
-    physics.update( timer.frameTime );
+  if (timer.frameTime > 0.0f) {
+    physics.update(timer.frameTime);
   }
 
-  Vec4 colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
+  Vec4 colour = Vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
-  for( int i = 0; i < space.bodies.length(); ++i ) {
+  for (int i = 0; i < space.bodies.length(); ++i) {
     Body* body = space.bodies[i];
 
-    if( i < 2 && pcollider.overlaps( body, space.bodies[2] ) ) {
-      colour = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    if (i < 2 && pcollider.overlaps(body, space.bodies[2])) {
+      colour = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
     }
     else {
-      colour = Vec4( 0.0f, 0.0f, 1.0f, 1.0f );
+      colour = Vec4(0.0f, 0.0f, 1.0f, 1.0f);
     }
 
     body->update();
 
-    shape.colour( colour );
-    shape.wireBox( body->bb.toAABB() );
-    shape.object( body->p, body->oMat, body->shape() );
+    shape.colour(colour);
+    shape.wireBox(body->bb.toAABB());
+    shape.object(body->p, body->oMat, body->shape());
   }
 }
 
 void Render::loadDyn()
 {
-  physics.init( &space, &pcollider );
+  physics.init(&space, &pcollider);
 
   DBody* body;
 
 //   Compound* c = new Compound();
-//   c->add( new Box( Vec3( 1.0f, 1.0f, 1.0f ) ), Vec3( 1.0f, 1.0f, 1.0f ), Mat3::ID );
-//   c->add( new Capsule( 1, 1 ), Vec3( -2, 1, 0 ), Mat3::rotationX( Math::TAU / 6.0f ) );
+//   c->add(new Box(Vec3(1.0f, 1.0f, 1.0f)), Vec3(1.0f, 1.0f, 1.0f), Mat3::ID);
+//   c->add(new Capsule(1, 1), Vec3(-2, 1, 0), Mat3::rotationX(Math::TAU / 6.0f));
 
-  Box* c = new Box( Vec3( 1, 1, 2 ) );
-//   Capsule* c = new Capsule( 1, 1 );
-
-  body = new DBody();
-  body->p = Point( 140, 0, 80 );
-  body->o = Quat::ID;
-  body->setShape( c );
-  body->update();
-  space.bodies.add( body );
-
-  physics.add( body );
-
-  Box* b = new Box( Vec3( 1, 1, 2 ) );
+  Box* c = new Box(Vec3(1, 1, 2));
+//   Capsule* c = new Capsule(1, 1);
 
   body = new DBody();
-  body->p = Point( 143, 0, 80 );
+  body->p = Point(140, 0, 80);
   body->o = Quat::ID;
-  body->setShape( b );
+  body->setShape(c);
   body->update();
-  space.bodies.add( body );
+  space.bodies.add(body);
 
-  physics.add( body );
+  physics.add(body);
 
-  Box* p = new Box( Vec3( 10, 10, 1 ) );
+  Box* b = new Box(Vec3(1, 1, 2));
 
   body = new DBody();
-  body->p = Point( 142, 0, 75 );
+  body->p = Point(143, 0, 80);
   body->o = Quat::ID;
-  body->setShape( p );
+  body->setShape(b);
   body->update();
-  space.bodies.add( body );
+  space.bodies.add(body);
+
+  physics.add(body);
+
+  Box* p = new Box(Vec3(10, 10, 1));
+
+  body = new DBody();
+  body->p = Point(142, 0, 75);
+  body->o = Quat::ID;
+  body->setShape(p);
+  body->update();
+  space.bodies.add(body);
 }
 
 void Render::unloadDyn()

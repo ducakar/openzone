@@ -32,13 +32,13 @@ namespace oz
 {
 
 ALBuffer::ALBuffer() :
-  bufferId( 0 )
+  bufferId(0)
 {}
 
-ALBuffer::ALBuffer( const File& file ) :
-  bufferId( 0 )
+ALBuffer::ALBuffer(const File& file) :
+  bufferId(0)
 {
-  load( file );
+  load(file);
 }
 
 ALBuffer::~ALBuffer()
@@ -50,11 +50,11 @@ ALSource ALBuffer::createSource() const
 {
   ALSource source;
 
-  if( bufferId != 0 ) {
+  if (bufferId != 0) {
     source.create();
 
-    if( source.isCreated() ) {
-      alSourcei( source.id(), AL_BUFFER, ALint( bufferId ) );
+    if (source.isCreated()) {
+      alSourcei(source.id(), AL_BUFFER, ALint(bufferId));
     }
   }
   return source;
@@ -62,21 +62,21 @@ ALSource ALBuffer::createSource() const
 
 bool ALBuffer::create()
 {
-  if( bufferId == 0 ) {
-    alGenBuffers( 1, &bufferId );
+  if (bufferId == 0) {
+    alGenBuffers(1, &bufferId);
   }
   return bufferId != 0;
 }
 
-bool ALBuffer::load( const File& file )
+bool ALBuffer::load(const File& file)
 {
   create();
 
-  if( bufferId == 0 ) {
+  if (bufferId == 0) {
     return false;
   }
 
-  if( !AL::bufferDataFromFile( bufferId, file ) ) {
+  if (!AL::bufferDataFromFile(bufferId, file)) {
     destroy();
     return false;
   }
@@ -85,8 +85,8 @@ bool ALBuffer::load( const File& file )
 
 void ALBuffer::destroy()
 {
-  if( bufferId != 0 ) {
-    alDeleteBuffers( 1, &bufferId );
+  if (bufferId != 0) {
+    alDeleteBuffers(1, &bufferId);
     bufferId = 0;
   }
 }

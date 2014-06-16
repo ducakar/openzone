@@ -63,7 +63,7 @@ public:
   /**
    * Report size of a texture the would contain the given text in one line.
    */
-  void sizeOf( const char* s, int* width = nullptr, int* height = nullptr ) const;
+  void sizeOf(const char* s, int* width = nullptr, int* height = nullptr) const;
 
   /**
    * Generate texture data for the given text and upload it via `glTexImage2D`.
@@ -71,9 +71,9 @@ public:
    * `*width` and `*height` are set to the final texture size if not null. `*width` is also an
    * input parameter; if it is > 0, the text is wrapped to `*width` pixels.
    */
-  void upload( const char* s, int* width = nullptr, int* height = nullptr ) const;
+  void upload(const char* s, int* width = nullptr, int* height = nullptr) const;
 
-  void init( const char* name, int height );
+  void init(const char* name, int height);
   void destroy();
 
 };

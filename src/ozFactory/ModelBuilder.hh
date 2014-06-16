@@ -55,12 +55,12 @@ public:
   /**
    * True iff the given 3D model format is supported by Assimp (only file extension is checked).
    */
-  static bool isModel( const File& file );
+  static bool isModel(const File& file);
 
   /**
    * Build a Collada (.dae) model into OpenZone (.ozModel) format.
    */
-  static bool buildModel( const File& file, OutputStream* os );
+  static bool buildModel(const File& file, OutputStream* os);
 
 };
 

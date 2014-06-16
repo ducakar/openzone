@@ -30,8 +30,8 @@
 #include <nirvana/QuestList.hh>
 #include <nirvana/TechGraph.hh>
 
-#define OZ_REGISTER_DEVICE( name ) \
-  deviceClasses.add( #name, &name::create )
+#define OZ_REGISTER_DEVICE(name) \
+  deviceClasses.add(#name, &name::create)
 
 namespace oz
 {
@@ -39,24 +39,24 @@ namespace oz
 void Nirvana::sync()
 {
   // remove devices and minds of removed objects
-  for( int i : synapse.removedObjects ) {
-    const Device* const* device = devices.find( i );
-    const Mind* mind = minds.find( i );
+  for (int i : synapse.removedObjects) {
+    const Device* const* device = devices.find(i);
+    const Mind* mind = minds.find(i);
 
-    if( device != nullptr ) {
+    if (device != nullptr) {
       delete *device;
-      devices.exclude( i );
+      devices.exclude(i);
     }
-    if( mind != nullptr ) {
-      minds.exclude( i );
+    if (mind != nullptr) {
+      minds.exclude(i);
     }
   }
   // add minds for new bots
-  for( int i : synapse.addedObjects ) {
-    const Object* obj = orbis.obj( i );
+  for (int i : synapse.addedObjects) {
+    const Object* obj = orbis.obj(i);
 
-    if( obj != nullptr && ( obj->flags & Object::BOT_BIT ) ) {
-      minds.add( obj->index, Mind( obj->index ) );
+    if (obj != nullptr && (obj->flags & Object::BOT_BIT)) {
+      minds.add(obj->index, Mind(obj->index));
     }
   }
 }
@@ -64,87 +64,87 @@ void Nirvana::sync()
 void Nirvana::update()
 {
   int count = 0;
-  for( auto& i : minds ) {
+  for (auto& i : minds) {
     Mind& mind = i.value;
 
-    mind.update( count % Mind::UPDATE_INTERVAL == updateModulo );
+    mind.update(count % Mind::UPDATE_INTERVAL == updateModulo);
     ++count;
   }
-  updateModulo = ( updateModulo + 1 ) % Mind::UPDATE_INTERVAL;
+  updateModulo = (updateModulo + 1) % Mind::UPDATE_INTERVAL;
 
   techGraph.update();
 }
 
-void Nirvana::read( InputStream* is )
+void Nirvana::read(InputStream* is)
 {
-  Log::print( "Reading Nirvana ..." );
+  Log::print("Reading Nirvana ...");
 
-  luaNirvana.read( is );
+  luaNirvana.read(is);
 
   String typeName;
 
   int nDevices = is->readInt();
   int nMinds   = is->readInt();
 
-  for( int i = 0; i < nDevices; ++i ) {
+  for (int i = 0; i < nDevices; ++i) {
     int index   = is->readInt();
     String type = is->readString();
 
-    Device::CreateFunc* const* func = deviceClasses.find( type );
+    Device::CreateFunc* const* func = deviceClasses.find(type);
 
-    if( func == nullptr ) {
-      OZ_ERROR( "Invalid device type '%s'", type.cstr() );
+    if (func == nullptr) {
+      OZ_ERROR("Invalid device type '%s'", type.cstr());
     }
 
-    devices.add( index, ( *func )( index, is ) );
+    devices.add(index, (*func)(index, is));
   }
-  for( int i = 0; i < nMinds; ++i ) {
+  for (int i = 0; i < nMinds; ++i) {
     int index = is->readInt();
 
-    minds.add( index, Mind( index, is ) );
+    minds.add(index, Mind(index, is));
   }
 
-  questList.read( is );
-  techGraph.read( is );
+  questList.read(is);
+  techGraph.read(is);
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
-void Nirvana::write( OutputStream* os ) const
+void Nirvana::write(OutputStream* os) const
 {
-  luaNirvana.write( os );
+  luaNirvana.write(os);
 
-  os->writeInt( devices.length() );
-  os->writeInt( minds.length() );
+  os->writeInt(devices.length());
+  os->writeInt(minds.length());
 
-  for( const auto& device : devices ) {
-    os->writeInt( device.key );
-    os->writeString( device.value->type() );
+  for (const auto& device : devices) {
+    os->writeInt(device.key);
+    os->writeString(device.value->type());
 
-    device.value->write( os );
+    device.value->write(os);
   }
-  for( const auto& mind : minds ) {
-    os->writeInt( mind.value.bot );
-    mind.value.write( os );
+  for (const auto& mind : minds) {
+    os->writeInt(mind.value.bot);
+    mind.value.write(os);
   }
 
-  questList.write( os );
-  techGraph.write( os );
+  questList.write(os);
+  techGraph.write(os);
 }
 
 void Nirvana::load()
 {
-  Log::print( "Loading Nirvana ..." );
+  Log::print("Loading Nirvana ...");
 
   questList.load();
   techGraph.load();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Nirvana::unload()
 {
-  Log::print( "Unloading Nirvana ..." );
+  Log::print("Unloading Nirvana ...");
 
   devices.free();
   devices.trim();
@@ -157,27 +157,27 @@ void Nirvana::unload()
   questList.unload();
   techGraph.unload();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Nirvana::init()
 {
-  Log::println( "Initialising Nirvana {" );
+  Log::println("Initialising Nirvana {");
   Log::indent();
 
-  OZ_REGISTER_DEVICE( Memo );
+  OZ_REGISTER_DEVICE(Memo);
 
   luaNirvana.init();
 
   updateModulo = 0;
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Nirvana::destroy()
 {
-  Log::println( "Destroy Nirvana {" );
+  Log::println("Destroy Nirvana {");
   Log::indent();
 
   luaNirvana.destroy();
@@ -186,7 +186,7 @@ void Nirvana::destroy()
   deviceClasses.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 Nirvana nirvana;

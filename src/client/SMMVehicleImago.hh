@@ -37,8 +37,8 @@ private:
 
   Model* model;
 
-  explicit SMMVehicleImago( const Object* obj ) :
-    Imago( obj )
+  explicit SMMVehicleImago(const Object* obj) :
+    Imago(obj)
   {}
 
   ~SMMVehicleImago() override;
@@ -47,11 +47,11 @@ public:
 
   static Pool<SMMVehicleImago, 64> pool;
 
-  static Imago* create( const Object* obj );
+  static Imago* create(const Object* obj);
 
-  void draw( const Imago* parent ) override;
+  void draw(const Imago* parent) override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

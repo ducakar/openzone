@@ -52,17 +52,17 @@ protected:
 
 public:
 
-  explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
-  explicit Dynamic( const DynamicClass* clazz, int index, const JSON& json );
-  explicit Dynamic( const DynamicClass* clazz, InputStream* is );
+  explicit Dynamic(const DynamicClass* clazz, int index, const Point& p, Heading heading);
+  explicit Dynamic(const DynamicClass* clazz, int index, const JSON& json);
+  explicit Dynamic(const DynamicClass* clazz, InputStream* is);
 
   JSON write() const override;
-  void write( OutputStream* os ) const override;
+  void write(OutputStream* os) const override;
 
-  void readUpdate( InputStream* is ) override;
-  void writeUpdate( OutputStream* os ) const override;
+  void readUpdate(InputStream* is) override;
+  void writeUpdate(OutputStream* os) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

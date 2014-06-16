@@ -65,8 +65,8 @@ protected:
    * Create an iterator pointing to a given element.
    */
   OZ_ALWAYS_INLINE
-  explicit IteratorBase( Elem* first ) :
-    elem( first )
+  explicit IteratorBase(Elem* first) :
+    elem(first)
   {}
 
 public:
@@ -75,7 +75,7 @@ public:
    * True iff iterators point to the same element.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const IteratorBase& i ) const
+  bool operator == (const IteratorBase& i) const
   {
     return elem == i.elem;
   }
@@ -84,7 +84,7 @@ public:
    * False iff iterators point to the same element.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const IteratorBase& i ) const
+  bool operator != (const IteratorBase& i) const
   {
     return elem != i.elem;
   }
@@ -147,7 +147,7 @@ public:
  */
 template <class Container>
 OZ_ALWAYS_INLINE
-inline typename Container::CIterator citer( const Container& container )
+inline typename Container::CIterator citer(const Container& container)
 {
   return container.citer();
 }
@@ -157,7 +157,7 @@ inline typename Container::CIterator citer( const Container& container )
  */
 template <class Container>
 OZ_ALWAYS_INLINE
-inline typename Container::Iterator iter( Container& container )
+inline typename Container::Iterator iter(Container& container)
 {
   return container.iter();
 }
@@ -166,11 +166,11 @@ inline typename Container::Iterator iter( Container& container )
  * Count elements.
  */
 template <class CIterator>
-inline int iLength( CIterator iter )
+inline int iLength(CIterator iter)
 {
   int count = 0;
 
-  while( iter.isValid() ) {
+  while (iter.isValid()) {
     ++count;
     ++iter;
   }
@@ -181,10 +181,10 @@ inline int iLength( CIterator iter )
  * Copy all elements from `srcIter` to `destIter`.
  */
 template <class CIteratorA, class IteratorB>
-inline void iCopy( CIteratorA srcIter, IteratorB destIter )
+inline void iCopy(CIteratorA srcIter, IteratorB destIter)
 {
-  while( srcIter.isValid() ) {
-    hard_assert( destIter.isValid() );
+  while (srcIter.isValid()) {
+    hard_assert(destIter.isValid());
 
     *destIter = *srcIter;
 
@@ -197,14 +197,14 @@ inline void iCopy( CIteratorA srcIter, IteratorB destIter )
  * Move all elements from `srcIter` to `destIter`.
  */
 template <class IteratorA, class IteratorB>
-inline void iMove( IteratorA srcIter, IteratorB destIter )
+inline void iMove(IteratorA srcIter, IteratorB destIter)
 {
   typedef typename IteratorB::ElemType ElemB;
 
-  while( srcIter.isValid() ) {
-    hard_assert( destIter.isValid() );
+  while (srcIter.isValid()) {
+    hard_assert(destIter.isValid());
 
-    *destIter = static_cast<ElemB&&>( *srcIter );
+    *destIter = static_cast<ElemB&&>(*srcIter);
 
     ++srcIter;
     ++destIter;
@@ -215,9 +215,9 @@ inline void iMove( IteratorA srcIter, IteratorB destIter )
  * %Set elements to a given value.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
-inline void iFill( Iterator iter, const Value& value )
+inline void iFill(Iterator iter, const Value& value)
 {
-  while( iter.isValid() ) {
+  while (iter.isValid()) {
     *iter = value;
 
     ++iter;
@@ -228,11 +228,11 @@ inline void iFill( Iterator iter, const Value& value )
  * True iff same length and respective elements are equal.
  */
 template <class CIteratorA, class CIteratorB>
-inline bool iEquals( CIteratorA iterA, CIteratorB iterB )
+inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
 {
-  hard_assert( static_cast<void*>( &iterA ) != static_cast<void*>( &iterB ) );
+  hard_assert(static_cast<void*>(&iterA) != static_cast<void*>(&iterB));
 
-  while( iterA.isValid() && iterB.isValid() && *iterA == *iterB ) {
+  while (iterA.isValid() && iterB.isValid() && *iterA == *iterB) {
     ++iterA;
     ++iterB;
   }
@@ -243,9 +243,9 @@ inline bool iEquals( CIteratorA iterA, CIteratorB iterB )
  * %Iterator for the first occurrence or an invalid iterator if not found.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
-inline Iterator iFind( Iterator iter, const Value& value )
+inline Iterator iFind(Iterator iter, const Value& value)
 {
-  while( iter.isValid() && !( *iter == value ) ) {
+  while (iter.isValid() && !(*iter == value)) {
     ++iter;
   }
   return iter;
@@ -255,12 +255,12 @@ inline Iterator iFind( Iterator iter, const Value& value )
  * %Iterator for the last occurrence or an invalid iterator if not found.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
-inline Iterator iFindLast( Iterator iter, const Value& value )
+inline Iterator iFindLast(Iterator iter, const Value& value)
 {
   Iterator lastOccurence;
 
-  while( iter.isValid() ) {
-    if( *iter == value ) {
+  while (iter.isValid()) {
+    if (*iter == value) {
       lastOccurence = iter;
     }
 
@@ -273,20 +273,20 @@ inline Iterator iFindLast( Iterator iter, const Value& value )
  * True iff a given value is found in a container.
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
-inline bool iContains( CIterator iter, const Value& value )
+inline bool iContains(CIterator iter, const Value& value)
 {
-  return iFind<CIterator, Value>( iter, value ).isValid();
+  return iFind<CIterator, Value>(iter, value).isValid();
 }
 
 /**
  * Index of the first occurrence of the value or -1 if not found.
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
-inline int iIndex( CIterator iter, const Value& value )
+inline int iIndex(CIterator iter, const Value& value)
 {
   int index = 0;
 
-  while( iter.isValid() && !( *iter == value ) ) {
+  while (iter.isValid() && !(*iter == value)) {
     ++iter;
     ++index;
   }
@@ -297,13 +297,13 @@ inline int iIndex( CIterator iter, const Value& value )
  * Index of the last occurrence of the value or -1 if not found.
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
-inline int iLastIndex( CIterator iter, const Value& value )
+inline int iLastIndex(CIterator iter, const Value& value)
 {
   int index = 0;
   int lastIndex = -1;
 
-  while( iter.isValid() ) {
-    if( *iter == value ) {
+  while (iter.isValid()) {
+    if (*iter == value) {
       lastIndex = index;
     }
 
@@ -317,11 +317,11 @@ inline int iLastIndex( CIterator iter, const Value& value )
  * Delete objects referenced by elements (elements must be pointers).
  */
 template <class CIterator>
-inline void iFree( CIterator iter )
+inline void iFree(CIterator iter)
 {
   typedef typename CIterator::ElemType Elem;
 
-  while( iter.isValid() ) {
+  while (iter.isValid()) {
     const Elem& elem = *iter;
     ++iter;
 

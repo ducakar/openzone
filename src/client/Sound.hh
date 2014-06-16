@@ -112,27 +112,27 @@ private:
 
 private:
 
-  static void musicMain( void* );
-  static void soundMain( void* );
+  static void musicMain(void*);
+  static void soundMain(void*);
 
-  void musicOpen( const char* path );
+  void musicOpen(const char* path);
   void musicClear();
   int  musicDecode();
   void musicRun();
 
-  void playCell( int cellX, int cellY );
+  void playCell(int cellX, int cellY);
   void updateMusic();
   void soundRun();
 
 public:
 
-  void setVolume( float volume );
-  void setMusicVolume( float volume ) const;
+  void setVolume(float volume);
+  void setMusicVolume(float volume) const;
 
   bool isMusicPlaying() const;
   int  getCurrentTrack() const;
 
-  void playMusic( int track );
+  void playMusic(int track);
   void stopMusic();
 
   void resume() const;

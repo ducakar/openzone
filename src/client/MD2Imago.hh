@@ -47,14 +47,14 @@ private:
 
 private:
 
-  explicit MD2Imago( const Bot* bot ) :
-    Imago( bot ), anim( bot )
+  explicit MD2Imago(const Bot* bot) :
+    Imago(bot), anim(bot)
   {
     flags |= Imago::MD2MODEL_BIT;
   }
 
-  explicit MD2Imago( const Vehicle* vehicle ) :
-    Imago( vehicle ), anim( vehicle )
+  explicit MD2Imago(const Vehicle* vehicle) :
+    Imago(vehicle), anim(vehicle)
   {
     flags |= Imago::MD2MODEL_BIT;
   }
@@ -65,11 +65,11 @@ public:
 
   static Pool<MD2Imago, 256> pool;
 
-  static Imago* create( const Object* obj );
+  static Imago* create(const Object* obj);
 
-  void draw( const Imago* parent ) override;
+  void draw(const Imago* parent) override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

@@ -32,13 +32,13 @@ namespace oz
 {
 
 GLTexture::GLTexture() :
-  textureId( 0 ), textureMipmaps( 0 )
+  textureId(0), textureMipmaps(0)
 {}
 
-GLTexture::GLTexture( const File& file ) :
-  textureId( 0 ), textureMipmaps( 0 )
+GLTexture::GLTexture(const File& file) :
+  textureId(0), textureMipmaps(0)
 {
-  load( file );
+  load(file);
 }
 
 GLTexture::~GLTexture()
@@ -48,35 +48,35 @@ GLTexture::~GLTexture()
 
 bool GLTexture::create()
 {
-  if( textureId == 0 ) {
-    glGenTextures( 1, &textureId );
+  if (textureId == 0) {
+    glGenTextures(1, &textureId);
   }
   return textureId != 0;
 }
 
-bool GLTexture::load( const File& file, int bias )
+bool GLTexture::load(const File& file, int bias)
 {
   create();
 
-  if( textureId == 0 ) {
+  if (textureId == 0) {
     return false;
   }
 
-  glBindTexture( GL_TEXTURE_2D, textureId );
-  textureMipmaps = GL::textureDataFromFile( file, bias );
+  glBindTexture(GL_TEXTURE_2D, textureId);
+  textureMipmaps = GL::textureDataFromFile(file, bias);
 
-  if( textureMipmaps == 0 ) {
+  if (textureMipmaps == 0) {
     destroy();
     return false;
   }
   return true;
 }
 
-bool GLTexture::generateIdenticon( int size, int hash, const Vec4& backgroundColour )
+bool GLTexture::generateIdenticon(int size, int hash, const Vec4& backgroundColour)
 {
   create();
 
-  if( textureId == 0 ) {
+  if (textureId == 0) {
     return false;
   }
 
@@ -85,9 +85,9 @@ bool GLTexture::generateIdenticon( int size, int hash, const Vec4& backgroundCol
   bool grid[5][5];
 
   // Fill 5 x 5 grid from hash.
-  for( int x = 0; x < 3; ++x ) {
-    for( int y = 0; y < 5; ++y ) {
-      bool value = hash & ( 1 << ( x * 5 + y ) );
+  for (int x = 0; x < 3; ++x) {
+    for (int y = 0; y < 5; ++y) {
+      bool value = hash & (1 << (x * 5 + y));
 
       grid[x][y]     = value;
       grid[4 - x][y] = value;
@@ -95,33 +95,33 @@ bool GLTexture::generateIdenticon( int size, int hash, const Vec4& backgroundCol
   }
 
   char bg[3] = {
-    char( Math::lround( backgroundColour.x * 255.0f ) ),
-    char( Math::lround( backgroundColour.y * 255.0f ) ),
-    char( Math::lround( backgroundColour.z * 255.0f ) )
+    char(Math::lround(backgroundColour.x * 255.0f)),
+    char(Math::lround(backgroundColour.y * 255.0f)),
+    char(Math::lround(backgroundColour.z * 255.0f))
   };
 
   char rgb[3] = {
-    char( 0x60 + ( ( uint( hash ) >> 13 ) & 0x7c ) ),
-    char( 0x60 + ( ( uint( hash ) >> 20 ) & 0x7e ) ),
-    char( 0x60 + ( ( uint( hash ) >> 25 ) & 0x7c ) )
+    char(0x60 + ((uint(hash) >> 13) & 0x7c)),
+    char(0x60 + ((uint(hash) >> 20) & 0x7e)),
+    char(0x60 + ((uint(hash) >> 25) & 0x7c))
   };
 
   int   fieldSize = size / 6;
   int   fieldHalf = fieldSize / 2;
-  int   pitch     = ( ( size * 3 + 3 ) / 4 ) * 4;
+  int   pitch     = ((size * 3 + 3) / 4) * 4;
   char* data      = new char[size * pitch];
 
-  for( int i = 0; i < size; ++i ) {
+  for (int i = 0; i < size; ++i) {
     char* pixel = data + i * pitch;
 
-    for( int j = 0; j < size; ++j ) {
+    for (int j = 0; j < size; ++j) {
       int x = j - fieldHalf;
       int y = i - fieldHalf;
 
       x = x < 0 ? 5 : x / fieldSize;
       y = y < 0 ? 5 : y / fieldSize;
 
-      if( x < 5 && y < 5 && grid[x][y] ) {
+      if (x < 5 && y < 5 && grid[x][y]) {
         pixel[0] = rgb[0];
         pixel[1] = rgb[1];
         pixel[2] = rgb[2];
@@ -136,13 +136,13 @@ bool GLTexture::generateIdenticon( int size, int hash, const Vec4& backgroundCol
     }
   }
 
-  glBindTexture( GL_TEXTURE_2D, textureId );
+  glBindTexture(GL_TEXTURE_2D, textureId);
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   delete[] data;
   return true;
@@ -150,8 +150,8 @@ bool GLTexture::generateIdenticon( int size, int hash, const Vec4& backgroundCol
 
 void GLTexture::destroy()
 {
-  if( textureId != 0 ) {
-    glDeleteTextures( 1, &textureId );
+  if (textureId != 0) {
+    glDeleteTextures(1, &textureId);
 
     textureId      = 0;
     textureMipmaps = 0;

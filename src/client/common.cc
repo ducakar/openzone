@@ -28,7 +28,7 @@ namespace oz
 namespace client
 {
 
-const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
+const TexCoord TexCoord::ZERO = TexCoord(0.0f, 0.0f);
 
 const JSON::Format CONFIG_FORMAT = { 2, 32, 4, "\n" };
 

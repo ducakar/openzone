@@ -54,7 +54,7 @@ struct ImageData
   /**
    * Create an image an allocate memory for pixel data.
    */
-  explicit ImageData( int width, int height );
+  explicit ImageData(int width, int height);
 
   /**
    * Destructor.
@@ -64,12 +64,12 @@ struct ImageData
   /**
    * Move constructor, moves pixel data.
    */
-  ImageData( ImageData&& i );
+  ImageData(ImageData&& i);
 
   /**
    * Move operator, moves pixel data.
    */
-  ImageData& operator = ( ImageData&& i );
+  ImageData& operator = (ImageData&& i);
 
   /**
    * True iff it holds no image data.
@@ -120,12 +120,12 @@ public:
   /**
    * True iff the given file contains an image according to FreeImage.
    */
-  static bool isImage( const File& file );
+  static bool isImage(const File& file);
 
   /**
    * Load an image.
    */
-  static ImageData loadImage( const File& file );
+  static ImageData loadImage(const File& file);
 
   /**
    * Generate a DDS form a given image and optionally compress it and create mipmaps.
@@ -155,7 +155,7 @@ public:
    * @param options bit-mask to control mipmap generation, compression and cube map.
    * @param destFile output file.
    */
-  static bool createDDS( const ImageData* faces, int nFaces, int options, const File& destFile );
+  static bool createDDS(const ImageData* faces, int nFaces, int options, const File& destFile);
 
   /**
    * Convert a given image to DDS format, similar to `buildDDS()`.
@@ -174,7 +174,7 @@ public:
    *
    * @sa `buildDDS()`
    */
-  static bool convertToDDS( const File& file, int options, const char* destPath );
+  static bool convertToDDS(const File& file, int options, const char* destPath);
 
   /**
    * Initialise underlaying FreeImage library.

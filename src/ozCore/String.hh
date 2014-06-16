@@ -44,7 +44,7 @@ class String
 private:
 
   /// Size of static buffer.
-  static const int BUFFER_SIZE = 48 - sizeof( char* ) - sizeof( int );
+  static const int BUFFER_SIZE = 48 - sizeof(char*) - sizeof(int);
 
 public:
 
@@ -60,12 +60,12 @@ private:
   /**
    * Only allocate storage, do not initialise string.
    */
-  explicit String( int count, int );
+  explicit String(int count, int);
 
   /**
    * Resize storage if necessary and set `count` to `newCount`.
    */
-  void ensureCapacity( int newCount, bool keepContents = false );
+  void ensureCapacity(int newCount, bool keepContents = false);
 
 public:
 
@@ -76,32 +76,32 @@ public:
   /**
    * Compare two C strings per-byte (same as `strcmp()`).
    */
-  static int compare( const char* a, const char* b )
+  static int compare(const char* a, const char* b)
   {
-    return __builtin_strcmp( a, b );
+    return __builtin_strcmp(a, b);
   }
 
   /**
    * Equality.
    */
-  static bool equals( const char* a, const char* b )
+  static bool equals(const char* a, const char* b)
   {
-    return __builtin_strcmp( a, b ) == 0;
+    return __builtin_strcmp(a, b) == 0;
   }
 
   /**
    * Length of a C string.
    */
-  static int length( const char* s )
+  static int length(const char* s)
   {
-    return int( __builtin_strlen( s ) );
+    return int(__builtin_strlen(s));
   }
 
   /**
    * True iff the C string is empty.
    */
   OZ_ALWAYS_INLINE
-  static bool isEmpty( const char* s )
+  static bool isEmpty(const char* s)
   {
     return s[0] == '\0';
   }
@@ -109,13 +109,13 @@ public:
   /**
    * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
    */
-  static int strongHash( const char* s );
+  static int strongHash(const char* s);
 
   /**
    * First character or null character if an empty string.
    */
   OZ_ALWAYS_INLINE
-  static char first( const char* s )
+  static char first(const char* s)
   {
     return s[0];
   }
@@ -123,71 +123,71 @@ public:
   /**
    * Last character or null character if an empty string.
    */
-  static char last( const char* s )
+  static char last(const char* s)
   {
-    size_t sCount = __builtin_strlen( s );
+    size_t sCount = __builtin_strlen(s);
     return sCount == 0 ? '\0' : s[sCount - 1];
   }
 
   /**
    * Index of the first occurrence of a character from a given index (inclusive).
    */
-  static int index( const char* s, char ch, int start = 0 );
+  static int index(const char* s, char ch, int start = 0);
 
   /**
    * Index of the last occurrence of a character before a given index (not inclusive).
    */
-  static int lastIndex( const char* s, char ch, int end );
+  static int lastIndex(const char* s, char ch, int end);
 
   /**
    * Index of the last occurrence of a character.
    */
-  static int lastIndex( const char* s, char ch );
+  static int lastIndex(const char* s, char ch);
 
   /**
    * Pointer to the first occurrence of a character from a given index (inclusive).
    */
-  static const char* find( const char* s, char ch, int start = 0 );
+  static const char* find(const char* s, char ch, int start = 0);
 
   /**
    * Pointer to the last occurrence of a character before a given index (not inclusive).
    */
-  static const char* findLast( const char* s, char ch, int end );
+  static const char* findLast(const char* s, char ch, int end);
 
   /**
    * Pointer to the last occurrence of a character.
    */
-  static const char* findLast( const char* s, char ch );
+  static const char* findLast(const char* s, char ch);
 
   /**
    * True iff string begins with given characters.
    */
-  static bool beginsWith( const char* s, const char* sub );
+  static bool beginsWith(const char* s, const char* sub);
 
   /**
    * True iff string ends with given characters.
    */
-  static bool endsWith( const char* s, const char* sub );
+  static bool endsWith(const char* s, const char* sub);
 
   /**
    * Substring from `start` character (inclusively).
    */
-  static String substring( const char* s, int start );
+  static String substring(const char* s, int start);
 
   /**
    * Substring between `start` (inclusively) and `end` (not inclusively) character.
    */
-  static String substring( const char* s, int start, int end );
+  static String substring(const char* s, int start, int end);
 
   /**
    * Create string with stripped leading and trailing blanks.
    */
-  static String trim( const char* s );
+  static String trim(const char* s);
 
   /**
    * Create a copy that has all instances of `whatChar` replaced by `withChar`.
    */
-  static String replace( const char* s, char whatChar, char withChar );
+  static String replace(const char* s, char whatChar, char withChar);
 
   /**
    * Return array of substrings between occurrences of a given delimiter.
@@ -195,22 +195,22 @@ public:
    * Empty strings between two immediate delimiter occurrences or between a delimiter and
    * beginning/end of the original string are included.
    */
-  static List<String> split( const char* s, char delimiter );
+  static List<String> split(const char* s, char delimiter);
 
   /**
    * True iff file path is empty (i.e. an empty string or "@").
    */
   OZ_ALWAYS_INLINE
-  static bool fileIsEmpty( const char* s )
+  static bool fileIsEmpty(const char* s)
   {
-    return s[0] == '\0' || ( s[1] == '\0' && s[0] == '@' );
+    return s[0] == '\0' || (s[1] == '\0' && s[0] == '@');
   }
 
   /**
    * True iff file path is a VFS file path.
    */
   OZ_ALWAYS_INLINE
-  static bool fileIsVirtual( const char* s )
+  static bool fileIsVirtual(const char* s)
   {
     return s[0] == '@';
   }
@@ -218,37 +218,37 @@ public:
   /**
    * Extract directory from a path (substring before the last `/`).
    */
-  static String fileDirectory( const char* s );
+  static String fileDirectory(const char* s);
 
   /**
    * Extract file name from a path (substring after the last `/`).
    */
-  static String fileName( const char* s );
+  static String fileName(const char* s);
 
   /**
    * Extract base file name from a path (substring after the last `/` till the last dot following
    * it).
    */
-  static String fileBaseName( const char* s );
+  static String fileBaseName(const char* s);
 
   /**
    * Extract file extension from the path (substring after the last dot in file name or "" if no
    * extension).
    */
-  static String fileExtension( const char* s );
+  static String fileExtension(const char* s);
 
   /**
    * True iff file name has a given extension.
    *
    * Empty string matches both no extension and files names ending with dot.
    */
-  static bool fileHasExtension( const char* s, const char* ext );
+  static bool fileHasExtension(const char* s, const char* ext);
 
   /**
    * True iff character is an ASCII digit.
    */
   OZ_ALWAYS_INLINE
-  static bool isDigit( char c )
+  static bool isDigit(char c)
   {
     return '0' <= c && c <= '9';
   }
@@ -257,16 +257,16 @@ public:
    * True iff character is an ASCII letter.
    */
   OZ_ALWAYS_INLINE
-  static bool isLetter( char c )
+  static bool isLetter(char c)
   {
-    return ( 'A' <= c && c <= 'Z' ) || ( 'a' <= c && c <= 'z' );
+    return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
   }
 
   /**
    * True iff character is a space.
    */
   OZ_ALWAYS_INLINE
-  static bool isSpace( char c )
+  static bool isSpace(char c)
   {
     return c == ' ' || c == '\t';
   }
@@ -275,7 +275,7 @@ public:
    * True iff character is a space, horizontal tab or newline.
    */
   OZ_ALWAYS_INLINE
-  static bool isBlank( char c )
+  static bool isBlank(char c)
   {
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
   }
@@ -288,7 +288,7 @@ public:
    * string. Thus, if parsing fails `end` value equals `s`.
    * @return true if "true", false if "false" or anything else (parsing fails).
    */
-  static bool parseBool( const char* s, const char** end = nullptr );
+  static bool parseBool(const char* s, const char** end = nullptr);
 
   /**
    * Parse integer value.
@@ -300,7 +300,7 @@ public:
    * string. Thus, if parsing fails `end` value equals `s`.
    * @return parsed integer value, 0 if parsing fails.
    */
-  static int parseInt( const char* s, const char** end = nullptr );
+  static int parseInt(const char* s, const char** end = nullptr);
 
   /**
    * Parse floating-point value.
@@ -317,42 +317,42 @@ public:
    * string. Thus, if parsing fails `end` value equals `s`.
    * @return parsed value, 0.0 if parsing fails.
    */
-  static double parseDouble( const char* s, const char** end = nullptr );
+  static double parseDouble(const char* s, const char** end = nullptr);
 
   /**
    * Cast signed byte string to C string.
    */
   OZ_ALWAYS_INLINE
-  static const char* cstr( const byte* s )
+  static const char* cstr(const byte* s)
   {
-    return reinterpret_cast<const char*>( s );
+    return reinterpret_cast<const char*>(s);
   }
 
   /**
    * Cast unsigned byte string to C string.
    */
   OZ_ALWAYS_INLINE
-  static const char* cstr( const ubyte* s )
+  static const char* cstr(const ubyte* s)
   {
-    return reinterpret_cast<const char*>( s );
+    return reinterpret_cast<const char*>(s);
   }
 
   /**
    * Cast C string to signed byte string.
    */
   OZ_ALWAYS_INLINE
-  static const byte* bytestr( const char* s )
+  static const byte* bytestr(const char* s)
   {
-    return reinterpret_cast<const byte*>( s );
+    return reinterpret_cast<const byte*>(s);
   }
 
   /**
    * Cast C string to unsigned byte string.
    */
   OZ_ALWAYS_INLINE
-  static const ubyte* ubytestr( const char* s )
+  static const ubyte* ubytestr(const char* s)
   {
-    return reinterpret_cast<const ubyte*>( s );
+    return reinterpret_cast<const ubyte*>(s);
   }
 
   /*
@@ -362,7 +362,7 @@ public:
   /**
    * Create string form a given C string (nullptr is permitted, equals "").
    */
-  String( const char* s = nullptr );
+  String(const char* s = nullptr);
 
   /**
    * Create string form a given C string with a known length.
@@ -370,22 +370,22 @@ public:
    * @param s C string.
    * @param count length in bytes without the terminating null character.
    */
-  explicit String( const char* s, int count );
+  explicit String(const char* s, int count);
 
   /**
    * Create string by concatenating given two C strings.
    */
-  explicit String( const char* s, const char* t );
+  explicit String(const char* s, const char* t);
 
   /**
    * Create either "true" or "false" string.
    */
-  explicit String( bool b );
+  explicit String(bool b);
 
   /**
    * Create a string representing a given int value.
    */
-  explicit String( int i );
+  explicit String(int i);
 
   /**
    * Create a string representing a given double value.
@@ -400,7 +400,7 @@ public:
    * @param d number.
    * @param nDigits number of digits to show (must be 1...17).
    */
-  explicit String( double d, int nDigits = 9 );
+  explicit String(double d, int nDigits = 9);
 
   /**
    * Destructor.
@@ -410,29 +410,29 @@ public:
   /**
    * Copy constructor.
    */
-  String( const String& s );
+  String(const String& s);
 
   /**
    * Move constructor.
    */
-  String( String&& s );
+  String(String&& s);
 
   /**
    * Copy operator.
    *
    * Existing storage is reused if its size matches.
    */
-  String& operator = ( const String& s );
+  String& operator = (const String& s);
 
   /**
    * Move operator.
    */
-  String& operator = ( String&& s );
+  String& operator = (String&& s);
 
   /**
    * Replace current string with a given C string (nullptr is permitted, equals "").
    */
-  String& operator = ( const char* s );
+  String& operator = (const char* s);
 
   /**
    * Create uninitialised string.
@@ -443,13 +443,13 @@ public:
    * @param length length of string (without the terminating null character).
    * @param buffer where to pass non-constant pointer to the internal buffer.
    */
-  static String create( int length, char** buffer );
+  static String create(int length, char** buffer);
 
   /**
    * Create a string in sprintf-like way.
    */
-  OZ_PRINTF_FORMAT( 1, 2 )
-  static String str( const char* s, ... );
+  OZ_PRINTF_FORMAT(1, 2)
+  static String str(const char* s, ...);
 
   /**
    * Generate a string representing the number and optionally add a SI unit prefix.
@@ -457,182 +457,182 @@ public:
    * It adds a space after the number and, when neccessary, it multiplies the number with an
    * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
    */
-  static String si( double e, int nDigits = 3 );
+  static String si(double e, int nDigits = 3);
 
   /**
    * Equality.
    */
-  bool operator == ( const String& s ) const
+  bool operator == (const String& s) const
   {
-    return compare( buffer, s.buffer ) == 0;
+    return compare(buffer, s.buffer) == 0;
   }
 
   /**
    * Equality.
    */
-  bool operator == ( const char* s ) const
+  bool operator == (const char* s) const
   {
-    return compare( buffer, s ) == 0;
+    return compare(buffer, s) == 0;
   }
 
   /**
    * Equality.
    */
-  friend bool operator == ( const char* a, const String& b )
+  friend bool operator == (const char* a, const String& b)
   {
-    return compare( a, b.buffer ) == 0;
+    return compare(a, b.buffer) == 0;
   }
 
   /**
    * Inequality.
    */
-  bool operator != ( const String& s ) const
+  bool operator != (const String& s) const
   {
-    return compare( buffer, s.buffer ) != 0;
+    return compare(buffer, s.buffer) != 0;
   }
 
   /**
    * Inequality.
    */
-  bool operator != ( const char* s ) const
+  bool operator != (const char* s) const
   {
-    return compare( buffer, s ) != 0;
+    return compare(buffer, s) != 0;
   }
 
   /**
    * Inequality.
    */
-  friend bool operator != ( const char* a, const String& b )
+  friend bool operator != (const char* a, const String& b)
   {
-    return compare( a, b.buffer ) != 0;
+    return compare(a, b.buffer) != 0;
   }
 
   /**
    * Operator <=.
    */
-  bool operator <= ( const String& s ) const
+  bool operator <= (const String& s) const
   {
-    return compare( buffer, s.buffer ) <= 0;
+    return compare(buffer, s.buffer) <= 0;
   }
 
   /**
    * Operator <=.
    */
-  bool operator <= ( const char* s ) const
+  bool operator <= (const char* s) const
   {
-    return compare( buffer, s ) <= 0;
+    return compare(buffer, s) <= 0;
   }
 
   /**
    * Operator <=.
    */
-  friend bool operator <= ( const char* a, const String& b )
+  friend bool operator <= (const char* a, const String& b)
   {
-    return compare( a, b.buffer ) <= 0;
+    return compare(a, b.buffer) <= 0;
   }
 
   /**
    * Operator >=.
    */
-  bool operator >= ( const String& s ) const
+  bool operator >= (const String& s) const
   {
-    return compare( buffer, s.buffer ) >= 0;
+    return compare(buffer, s.buffer) >= 0;
   }
 
   /**
    * Operator >=.
    */
-  bool operator >= ( const char* s ) const
+  bool operator >= (const char* s) const
   {
-    return compare( buffer, s ) >= 0;
+    return compare(buffer, s) >= 0;
   }
 
   /**
    * Operator >=.
    */
-  friend bool operator >= ( const char* a, const String& b )
+  friend bool operator >= (const char* a, const String& b)
   {
-    return compare( a, b.buffer ) >= 0;
+    return compare(a, b.buffer) >= 0;
   }
 
   /**
    * Operator <.
    */
-  bool operator < ( const String& s ) const
+  bool operator < (const String& s) const
   {
-    return compare( buffer, s.buffer ) < 0;
+    return compare(buffer, s.buffer) < 0;
   }
 
   /**
    * Operator <.
    */
-  bool operator < ( const char* s ) const
+  bool operator < (const char* s) const
   {
-    return compare( buffer, s ) < 0;
+    return compare(buffer, s) < 0;
   }
 
   /**
    * Operator <.
    */
-  friend bool operator < ( const char* a, const String& b )
+  friend bool operator < (const char* a, const String& b)
   {
-    return compare( a, b.buffer ) < 0;
+    return compare(a, b.buffer) < 0;
   }
 
   /**
    * Operator >.
    */
-  bool operator > ( const String& s ) const
+  bool operator > (const String& s) const
   {
-    return compare( buffer, s.buffer ) > 0;
+    return compare(buffer, s.buffer) > 0;
   }
 
   /**
    * Operator >.
    */
-  bool operator > ( const char* s ) const
+  bool operator > (const char* s) const
   {
-    return compare( buffer, s ) > 0;
+    return compare(buffer, s) > 0;
   }
 
   /**
    * Operator >.
    */
-  friend bool operator > ( const char* a, const String& b )
+  friend bool operator > (const char* a, const String& b)
   {
-    return compare( a, b.buffer ) > 0;
+    return compare(a, b.buffer) > 0;
   }
 
   /**
    * Equality.
    */
-  bool equals( const String& s ) const
+  bool equals(const String& s) const
   {
-    return compare( buffer, s.buffer ) == 0;
+    return compare(buffer, s.buffer) == 0;
   }
 
   /**
    * Compare strings per-byte.
    */
-  int compare( const String& s ) const
+  int compare(const String& s) const
   {
-    return compare( buffer, s.buffer );
+    return compare(buffer, s.buffer);
   }
 
   /**
    * Compare strings per-byte.
    */
-  int compare( const char* s ) const
+  int compare(const char* s) const
   {
-    return compare( buffer, s );
+    return compare(buffer, s);
   }
 
   /**
    * Equality.
    */
-  bool equals( const char* s ) const
+  bool equals(const char* s) const
   {
-    return compare( buffer, s ) == 0;
+    return compare(buffer, s) == 0;
   }
 
   /**
@@ -680,9 +680,9 @@ public:
    * Constant reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [] ( int i ) const
+  const char& operator [](int i) const
   {
-    hard_assert( 0 <= i && i <= count );
+    hard_assert(0 <= i && i <= count);
 
     return buffer[i];
   }
@@ -708,92 +708,92 @@ public:
   /**
    * Index of the first occurrence of a character from a given index (inclusive).
    */
-  int index( char ch, int start = 0 ) const;
+  int index(char ch, int start = 0) const;
 
   /**
    * Index of the last occurrence of a character before a given index (not inclusive).
    */
-  int lastIndex( char ch, int end ) const;
+  int lastIndex(char ch, int end) const;
 
   /**
    * Index of the last occurrence of a character.
    */
-  int lastIndex( char ch ) const;
+  int lastIndex(char ch) const;
 
   /**
    * Pointer to the first occurrence of a character from a given index (inclusive).
    */
-  const char* find( char ch, int start = 0 ) const;
+  const char* find(char ch, int start = 0) const;
 
   /**
    * Pointer to the last occurrence of a character before a given index (not inclusive).
    */
-  const char* findLast( char ch, int end ) const;
+  const char* findLast(char ch, int end) const;
 
   /**
    * Pointer to the last occurrence of a character.
    */
-  const char* findLast( char ch ) const;
+  const char* findLast(char ch) const;
 
   /**
    * True iff string begins with given characters.
    */
-  bool beginsWith( const char* sub ) const;
+  bool beginsWith(const char* sub) const;
 
   /**
    * True iff string ends with given characters.
    */
-  bool endsWith( const char* sub ) const;
+  bool endsWith(const char* sub) const;
 
   /**
-   * Parse bool value, wraps `parseBool( const char* s, const char** end )`.
+   * Parse bool value, wraps `parseBool(const char* s, const char** end)`.
    */
-  bool parseBool( const char** end = nullptr ) const;
+  bool parseBool(const char** end = nullptr) const;
 
   /**
-   * Parse int value, wraps `parseInt( const char* s, const char** end )`.
+   * Parse int value, wraps `parseInt(const char* s, const char** end)`.
    */
-  int parseInt( const char** end = nullptr ) const;
+  int parseInt(const char** end = nullptr) const;
 
   /**
-   * Parse double value, wraps `parseDouble( const char* s, const char** end )`.
+   * Parse double value, wraps `parseDouble(const char* s, const char** end)`.
    */
-  double parseDouble( const char** end = nullptr ) const;
-
-  /**
-   * Create concatenated string.
-   */
-  String operator + ( const String& s ) const;
+  double parseDouble(const char** end = nullptr) const;
 
   /**
    * Create concatenated string.
    */
-  String operator + ( const char* s ) const;
+  String operator + (const String& s) const;
 
   /**
    * Create concatenated string.
    */
-  friend String operator + ( const char* s, const String& t );
+  String operator + (const char* s) const;
+
+  /**
+   * Create concatenated string.
+   */
+  friend String operator + (const char* s, const String& t);
 
   /**
    * Replace with concatenated string.
    */
-  String& operator += ( const String& s );
+  String& operator += (const String& s);
 
   /**
    * Replace with concatenated string.
    */
-  String& operator += ( const char* s );
+  String& operator += (const char* s);
 
   /**
    * Substring from `start` character (inclusively).
    */
-  String substring( int start ) const;
+  String substring(int start) const;
 
   /**
    * Substring between `start` (inclusively) and `end` (not inclusively) character.
    */
-  String substring( int start, int end ) const;
+  String substring(int start, int end) const;
 
   /**
    * Create string with stripped leading and trailing blanks.
@@ -803,7 +803,7 @@ public:
   /**
    * Create a copy that has all instances of `whatChar` replaced by `withChar`.
    */
-  String replace( char whatChar, char withChar ) const;
+  String replace(char whatChar, char withChar) const;
 
   /**
    * Return array of substrings between occurrences of a given delimiter.
@@ -811,7 +811,7 @@ public:
    * Empty strings between two immediate delimiter occurrences or between a delimiter and
    * beginning/end of the original string are included.
    */
-  List<String> split( char delimiter ) const;
+  List<String> split(char delimiter) const;
 
   /**
    * True iff file path is empty (i.e. an empty string or "@").
@@ -819,7 +819,7 @@ public:
   OZ_ALWAYS_INLINE
   bool fileIsEmpty() const
   {
-    return fileIsEmpty( buffer );
+    return fileIsEmpty(buffer);
   }
 
   /**
@@ -828,7 +828,7 @@ public:
   OZ_ALWAYS_INLINE
   bool fileIsVirtual() const
   {
-    return fileIsVirtual( buffer );
+    return fileIsVirtual(buffer);
   }
 
   /**
@@ -858,7 +858,7 @@ public:
    *
    * Empty string matches both no extension and files names ending with dot.
    */
-  bool fileHasExtension( const char* ext ) const;
+  bool fileHasExtension(const char* ext) const;
 
 };
 

@@ -1,10 +1,10 @@
-if( NOT OZ_TOOLS )
+if(NOT OZ_TOOLS)
   return()
 endif()
 
-configure_file( config.hh.in config.hh @ONLY )
+configure_file(config.hh.in config.hh @ONLY)
 
-add_library( builder STATIC
+add_library(builder STATIC
 #BEGIN SOURCES
   AssImp.hh
   BSP.hh
@@ -32,10 +32,10 @@ add_library( builder STATIC
   UI.cc
 #END SOURCES
 )
-use_pch( builder pch )
+use_pch(builder pch)
 
-if( OZ_NONFREE )
-  target_link_libraries( builder ${SQUISH_LIBRARY} )
+if(OZ_NONFREE)
+  target_link_libraries(builder ${SQUISH_LIBRARY})
 endif()
 
-target_link_libraries( builder ${FREEIMAGE_LIBRARY} ${ASSIMP_LIBRARIES} )
+target_link_libraries(builder ${FREEIMAGE_LIBRARY} ${ASSIMP_LIBRARIES})

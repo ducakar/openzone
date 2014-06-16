@@ -29,59 +29,59 @@
 namespace oz
 {
 
-FragPool::FragPool( const JSON& config, const char* name_, int id_ ) :
-  name( name_ ), id( id_ )
+FragPool::FragPool(const JSON& config, const char* name_, int id_) :
+  name(name_), id(id_)
 {
   flags = 0;
 
-  OZ_CLASS_FLAG( oz::FragPool::FADEOUT_BIT, "flag.fadeout", true );
+  OZ_CLASS_FLAG(oz::FragPool::FADEOUT_BIT, "flag.fadeout", true);
 
-  velocitySpread = config["velocitySpread"].get( 4.0f );
+  velocitySpread = config["velocitySpread"].get(4.0f);
 
-  if( velocitySpread < 0.0f ) {
-    OZ_ERROR( "%s: Frag velocitySpread must be >= 0.0", name_ );
+  if (velocitySpread < 0.0f) {
+    OZ_ERROR("%s: Frag velocitySpread must be >= 0.0", name_);
   }
 
-  life       = config["life"].get( 4.0f );
-  lifeSpread = config["lifeSpread"].get( 1.0f );
-  mass       = config["mass"].get( 0.0f );
-  elasticity = config["elasticity"].get( 0.5f );
+  life       = config["life"].get(4.0f);
+  lifeSpread = config["lifeSpread"].get(1.0f);
+  mass       = config["mass"].get(0.0f);
+  elasticity = config["elasticity"].get(0.5f);
 
-  if( life <= 0.0f ) {
-    OZ_ERROR( "%s: Frag life must be > 0.0", name_ );
+  if (life <= 0.0f) {
+    OZ_ERROR("%s: Frag life must be > 0.0", name_);
   }
-  if( lifeSpread < 0.0f ) {
-    OZ_ERROR( "%s: Frag lifeSpread must be >= 0.0", name_ );
+  if (lifeSpread < 0.0f) {
+    OZ_ERROR("%s: Frag lifeSpread must be >= 0.0", name_);
   }
-  if( mass < 0.0f ) {
-    OZ_ERROR( "%s: Frag mass must be >= 0.0", name_ );
+  if (mass < 0.0f) {
+    OZ_ERROR("%s: Frag mass must be >= 0.0", name_);
   }
-  if( elasticity < 0.0f || 1.0f < elasticity ) {
-    OZ_ERROR( "%s: Frag elasticity must lie on interval [0, 1]", name_ );
+  if (elasticity < 0.0f || 1.0f < elasticity) {
+    OZ_ERROR("%s: Frag elasticity must lie on interval [0, 1]", name_);
   }
 
   const JSON& modelsConfig = config["models"];
   int nModels = modelsConfig.length();
 
-  for( int i = 0; i < nModels; ++i ) {
-    const char* modelName = modelsConfig[i].get( "" );
+  for (int i = 0; i < nModels; ++i) {
+    const char* modelName = modelsConfig[i].get("");
 
-    if( String::isEmpty( modelName ) ) {
-      OZ_ERROR( "%s: Empty name for model #%d", name_, i );
+    if (String::isEmpty(modelName)) {
+      OZ_ERROR("%s: Empty name for model #%d", name_, i);
     }
 
-    models.add( liber.modelIndex( modelName ) );
+    models.add(liber.modelIndex(modelName));
   }
 }
 
-Frag* FragPool::create( int index, const Point& pos, const Vec3& velocity ) const
+Frag* FragPool::create(int index, const Point& pos, const Vec3& velocity) const
 {
-  return new Frag( this, index, pos, velocity );
+  return new Frag(this, index, pos, velocity);
 }
 
-Frag* FragPool::create( InputStream* is ) const
+Frag* FragPool::create(InputStream* is) const
 {
-  return new Frag( this, is );
+  return new Frag(this, is);
 }
 
 }

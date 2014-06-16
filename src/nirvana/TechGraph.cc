@@ -29,50 +29,50 @@
 namespace oz
 {
 
-TechGraph::Node* TechGraph::findNode( const char* name )
+TechGraph::Node* TechGraph::findNode(const char* name)
 {
-  for( Node& node : nodes ) {
-    if( node.name.equals( name ) ) {
+  for (Node& node : nodes) {
+    if (node.name.equals(name)) {
       return &node;
     }
   }
 
-  OZ_ERROR( "Invalid TechGraph node reference '%s'", name );
+  OZ_ERROR("Invalid TechGraph node reference '%s'", name);
 }
 
-bool TechGraph::enable( const char* )
+bool TechGraph::enable(const char*)
 {
   return false;
 }
 
-bool TechGraph::disable( const char* )
+bool TechGraph::disable(const char*)
 {
   return false;
 }
 
 void TechGraph::enableAll()
 {
-  for( Node& node : nodes ) {
+  for (Node& node : nodes) {
     node.progress = 1.0f;
 
-    if( node.type == Node::BUILDING ) {
-      allowedBuildings.add( node.building );
+    if (node.type == Node::BUILDING) {
+      allowedBuildings.add(node.building);
     }
-    else if( node.type == Node::UNIT ) {
-      allowedUnits.add( node.object );
+    else if (node.type == Node::UNIT) {
+      allowedUnits.add(node.object);
     }
-    else if( node.type == Node::ITEM ) {
-      allowedItems.add( node.object );
+    else if (node.type == Node::ITEM) {
+      allowedItems.add(node.object);
     }
-    else if( node.type == Node::OBJECT ) {
-      allowedObjects.add( node.object );
+    else if (node.type == Node::OBJECT) {
+      allowedObjects.add(node.object);
     }
   }
 }
 
 void TechGraph::disableAll()
 {
-  for( Node& node : nodes ) {
+  for (Node& node : nodes) {
     node.progress = 0.0f;
   }
 
@@ -92,16 +92,16 @@ void TechGraph::disableAll()
 void TechGraph::update()
 {}
 
-void TechGraph::read( InputStream* is )
+void TechGraph::read(InputStream* is)
 {
   int nNodes = is->readInt();
 
-  for( int i = 0; i < nNodes; ++i ) {
+  for (int i = 0; i < nNodes; ++i) {
     const char* name     = is->readString();
     float       progress = is->readFloat();
 
-    for( Node& node : nodes ) {
-      if( node.name.equals( name ) ) {
+    for (Node& node : nodes) {
+      if (node.name.equals(name)) {
         node.progress = progress;
         break;
       }
@@ -109,13 +109,13 @@ void TechGraph::read( InputStream* is )
   }
 }
 
-void TechGraph::write( OutputStream* os ) const
+void TechGraph::write(OutputStream* os) const
 {
-  os->writeInt( nodes.length() );
+  os->writeInt(nodes.length());
 
-  for( const Node& node : nodes ) {
-    os->writeString( node.name );
-    os->writeFloat( node.progress );
+  for (const Node& node : nodes) {
+    os->writeString(node.name);
+    os->writeFloat(node.progress);
   }
 }
 
@@ -123,81 +123,81 @@ void TechGraph::load()
 {
   File techDir = "@tech";
 
-  for( const File& configFile : techDir.ls() ) {
+  for (const File& configFile : techDir.ls()) {
     JSON config;
 
-    if( configFile.type() != File::REGULAR || !config.load( configFile ) ) {
+    if (configFile.type() != File::REGULAR || !config.load(configFile)) {
       continue;
     }
 
     int nNodes = config.length();
-    for( int i = 0; i < nNodes; ++i ) {
+    for (int i = 0; i < nNodes; ++i) {
       const JSON& tech = config[i];
 
-      nodes.add( Node() );
+      nodes.add(Node());
       Node& node = nodes.last();
 
-      const char* technology = tech["technology"].get( "" );
-      const char* building   = tech["building"].get( "" );
-      const char* unit       = tech["unit"].get( "" );
-      const char* item       = tech["item"].get( "" );
-      const char* object     = tech["object"].get( "" );
+      const char* technology = tech["technology"].get("");
+      const char* building   = tech["building"].get("");
+      const char* unit       = tech["unit"].get("");
+      const char* item       = tech["item"].get("");
+      const char* object     = tech["object"].get("");
 
-      if( !String::isEmpty( technology ) ) {
+      if (!String::isEmpty(technology)) {
         node.type     = Node::TECHNOLOGY;
         node.name     = technology;
         node.building = nullptr;
       }
-      else if( !String::isEmpty( building ) ) {
+      else if (!String::isEmpty(building)) {
         node.type     = Node::BUILDING;
         node.name     = building;
-        node.building = liber.bsp( node.name );
+        node.building = liber.bsp(node.name);
       }
-      else if( !String::isEmpty( unit ) ) {
+      else if (!String::isEmpty(unit)) {
         node.type   = Node::UNIT;
         node.name   = unit;
-        node.object = liber.objClass( node.name );
+        node.object = liber.objClass(node.name);
       }
-      else if( !String::isEmpty( item ) ) {
+      else if (!String::isEmpty(item)) {
         node.type   = Node::ITEM;
         node.name   = item;
-        node.object = liber.objClass( node.name );
+        node.object = liber.objClass(node.name);
       }
-      else if( !String::isEmpty( object ) ) {
+      else if (!String::isEmpty(object)) {
         node.type   = Node::OBJECT;
         node.name   = object;
-        node.object = liber.objClass( node.name );
+        node.object = liber.objClass(node.name);
       }
       else {
-        OZ_ERROR( "Tech node must have either 'technology', 'building', 'unit', 'item' or 'object'"
-                  " defined" );
+        OZ_ERROR("Tech node must have either 'technology', 'building', 'unit', 'item' or 'object'"
+                 " defined");
       }
 
-      node.title       = lingua.get( tech["title"].get( node.name ) );
-      node.description = lingua.get( tech["description"].get( "" ) );
-      node.price       = tech["price"].get( 0 );
-      node.time        = tech["time"].get( 60.0f );
+      node.title       = lingua.get(tech["title"].get(node.name));
+      node.description = lingua.get(tech["description"].get(""));
+      node.price       = tech["price"].get(0);
+      node.time        = tech["time"].get(60.0f);
       node.progress    = node.price == 0 ? 1.0f : 0.0f;
     }
 
-    for( int i = 0; i < nNodes; ++i ) {
+    for (int i = 0; i < nNodes; ++i) {
       const JSON& tech     = config[i];
       const JSON& requires = tech["requires"];
       Node&       node     = nodes[i];
 
-      if( requires.length() > Node::MAX_DEPS ) {
-        OZ_ERROR( "Only %d dependencies per technology supported.", Node::MAX_DEPS );
+      if (requires.length() > Node::MAX_DEPS) {
+        OZ_ERROR("Only %d dependencies per technology supported.", Node::MAX_DEPS);
       }
 
       int nRequires = requires.length();
-      for( int i = 0; i < nRequires; ++i ) {
-        Node* depNode = findNode( requires[i].get( "?" ) );
+      for (int i = 0; i < nRequires; ++i) {
+        Node* depNode = findNode(requires[i].get("?"));
 
-        node.requires.add( depNode );
+        node.requires.add(depNode);
       }
     }
 
-    config.clear( true );
+    config.clear(true);
   }
 
   enableAll();

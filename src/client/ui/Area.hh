@@ -88,7 +88,7 @@ protected:
   bool passKeyEvents();
   void drawChildren();
 
-  virtual void onVisibilityChange( bool doShow );
+  virtual void onVisibilityChange(bool doShow);
   virtual void onReposition();
   virtual void onUpdate();
   // return true if event has been caught
@@ -98,7 +98,7 @@ protected:
 
 public:
 
-  explicit Area( int width, int height );
+  explicit Area(int width, int height);
   virtual ~Area();
 
   OZ_ALWAYS_INLINE
@@ -107,15 +107,15 @@ public:
     return flags & ENABLED_BIT;
   }
 
-  void enable( bool doEnable );
+  void enable(bool doEnable);
 
   OZ_ALWAYS_INLINE
   bool isVisible() const
   {
-    return ( flags & ( ENABLED_BIT | VISIBLE_BIT ) ) == ( ENABLED_BIT | VISIBLE_BIT );
+    return (flags & (ENABLED_BIT | VISIBLE_BIT)) == (ENABLED_BIT | VISIBLE_BIT);
   }
 
-  void show( bool doShow );
+  void show(bool doShow);
 
   /**
    * Fix position if parent has been resized.
@@ -125,15 +125,15 @@ public:
   /**
    * Move for `moveX` to the right and for `moveY` up.
    */
-  void move( int moveX, int moveY );
+  void move(int moveX, int moveY);
 
   /**
    * Calculate global (x, y) for given relative rectangle coordinates/dimension.
    */
-  Pair<int> align( int localX, int localY, int width, int height ) const;
+  Pair<int> align(int localX, int localY, int width, int height) const;
 
-  void add( Area* area, int localX, int localY );
-  void remove( Area* area );
+  void add(Area* area, int localX, int localY);
+  void remove(Area* area);
   void raise();
   void sink();
 

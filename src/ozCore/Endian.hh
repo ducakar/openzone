@@ -209,54 +209,54 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static short bswap16( short s )
+  static short bswap16(short s)
   {
-    return short( ushort( s ) << 8 | ushort( s ) >> 8 );
+    return short(ushort(s) << 8 | ushort(s) >> 8);
   }
 
   /**
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static ushort bswap16( ushort s )
+  static ushort bswap16(ushort s)
   {
-    return ushort( s << 8 | s >> 8 );
+    return ushort(s << 8 | s >> 8);
   }
 
   /**
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static int bswap32( int i )
+  static int bswap32(int i)
   {
-    return int( __builtin_bswap32( uint( i ) ) );
+    return int(__builtin_bswap32(uint(i)));
   }
 
   /**
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static uint bswap32( uint i )
+  static uint bswap32(uint i)
   {
-    return __builtin_bswap32( i );
+    return __builtin_bswap32(i);
   }
 
   /**
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static long64 bswap64( long64 l )
+  static long64 bswap64(long64 l)
   {
-    return long64( __builtin_bswap64( ulong64( l ) ) );
+    return long64(__builtin_bswap64(ulong64(l)));
   }
 
   /**
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static ulong64 bswap64( ulong64 l )
+  static ulong64 bswap64(ulong64 l)
   {
-    return __builtin_bswap64( l );
+    return __builtin_bswap64(l);
   }
 
 };

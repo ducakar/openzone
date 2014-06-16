@@ -35,39 +35,39 @@ int ExplosionImago::modelId;
 
 Pool<ExplosionImago, 64> ExplosionImago::pool;
 
-Imago* ExplosionImago::create( const Object* obj )
+Imago* ExplosionImago::create(const Object* obj)
 {
-  ExplosionImago* imago = new ExplosionImago( obj );
+  ExplosionImago* imago = new ExplosionImago(obj);
 
   modelId = obj->clazz->imagoModel;
 
-  imago->model = context.requestModel( modelId );
-  imago->startMicros = uint( timer.micros );
+  imago->model = context.requestModel(modelId);
+  imago->startMicros = uint(timer.micros);
 
   return imago;
 }
 
 ExplosionImago::~ExplosionImago()
 {
-  context.releaseModel( modelId );
+  context.releaseModel(modelId);
 }
 
-void ExplosionImago::draw( const Imago* )
+void ExplosionImago::draw(const Imago*)
 {
-  if( !model->isLoaded() ) {
+  if (!model->isLoaded()) {
     return;
   }
 
-  float time   = float( uint( timer.micros ) - startMicros ) * 1.0e-6f;
+  float time   = float(uint(timer.micros) - startMicros) * 1.0e-6f;
   float radius = 4.0f * time * obj->dim.z;
   float alpha  = 1.0f - 2.0f * time;
 
-  tf.model = Mat4::translation( obj->p - Point::ORIGIN );
-  tf.model.scale( Vec3( radius, radius, radius ) );
+  tf.model = Mat4::translation(obj->p - Point::ORIGIN);
+  tf.model.scale(Vec3(radius, radius, radius));
 
   tf.colour.w.w = alpha*alpha;
 
-  model->schedule( 0, Model::SCENE_QUEUE );
+  model->schedule(0, Model::SCENE_QUEUE);
 
   tf.colour.w.w = 1.0f;
 }

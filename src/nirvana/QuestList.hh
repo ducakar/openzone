@@ -55,11 +55,11 @@ public:
 
   explicit QuestList();
 
-  void add( const char* title, const char* description, const Point& place, Quest::State state );
-  void remove( int index );
+  void add(const char* title, const char* description, const Point& place, Quest::State state);
+  void remove(int index);
 
-  void read( InputStream* is );
-  void write( OutputStream* os ) const;
+  void read(InputStream* is);
+  void write(OutputStream* os) const;
 
   void load();
   void unload();

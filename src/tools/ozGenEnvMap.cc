@@ -42,7 +42,7 @@ static void usage()
   );
 }
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
   System::init();
   ImageBuilder::init();
@@ -51,8 +51,8 @@ int main( int argc, char** argv )
   int size       = 32;
 
   int opt;
-  while( ( opt = getopt( argc, argv, "CM" ) ) >= 0 ) {
-    switch( opt ) {
+  while ((opt = getopt(argc, argv, "CM")) >= 0) {
+    switch (opt) {
       case 'C': {
         ddsOptions |= ImageBuilder::COMPRESSION_BIT;
         break;
@@ -69,16 +69,16 @@ int main( int argc, char** argv )
   }
 
   int nArgs = argc - optind;
-  if( nArgs > 1 ) {
+  if (nArgs > 1) {
     usage();
     return EXIT_FAILURE;
   }
-  else if( nArgs == 1 ) {
+  else if (nArgs == 1) {
     const char* end;
 
-    size = String::parseInt( argv[optind], &end );
+    size = String::parseInt(argv[optind], &end);
 
-    if( *end != '\0' ) {
+    if (*end != '\0') {
       usage();
       return EXIT_FAILURE;
     }
@@ -87,16 +87,16 @@ int main( int argc, char** argv )
   int exitCode = EXIT_SUCCESS;
 
   // For TextureReplacer:
-  //TerraBuilder::setBounds( TerraBuilder::NOISE, -1.75f, +0.25f );
-  //TerraBuilder::setFrequency( TerraBuilder::NOISE, 0.5f );
-  TerraBuilder::setBounds( TerraBuilder::NOISE, -1.75f, +1.75f );
-  TerraBuilder::setOctaveCount( TerraBuilder::NOISE, 3 );
-  TerraBuilder::setFrequency( TerraBuilder::NOISE, 1.0f );
+  //TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +0.25f);
+  //TerraBuilder::setFrequency(TerraBuilder::NOISE, 0.5f);
+  TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +1.75f);
+  TerraBuilder::setOctaveCount(TerraBuilder::NOISE, 3);
+  TerraBuilder::setFrequency(TerraBuilder::NOISE, 1.0f);
 
-  ImageData* images = TerraBuilder::generateCubeNoise( size );
+  ImageData* images = TerraBuilder::generateCubeNoise(size);
 
-  if( !ImageBuilder::createDDS( images, 6, ddsOptions, "env.dds" ) ) {
-    Log::println( "Failed to generate maps: %s", ImageBuilder::getError() );
+  if (!ImageBuilder::createDDS(images, 6, ddsOptions, "env.dds")) {
+    Log::println("Failed to generate maps: %s", ImageBuilder::getError());
     exitCode = EXIT_FAILURE;
   }
 

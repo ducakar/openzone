@@ -1,7 +1,7 @@
-configure_file( config.hh.in config.hh @ONLY )
-configure_file( ozDynamics.pc.in ozDynamics.pc @ONLY )
+configure_file(config.hh.in config.hh @ONLY)
+configure_file(ozDynamics.pc.in ozDynamics.pc @ONLY)
 
-add_library( ozDynamics
+add_library(ozDynamics
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   common.hh
@@ -31,21 +31,21 @@ add_library( ozDynamics
   physics/Physics.cc
 #END SOURCES
 )
-use_pch( ozDynamics pch )
+use_pch(ozDynamics pch)
 
-target_link_libraries( ozDynamics ozCore )
+target_link_libraries(ozDynamics ozCore)
 
 # HACK
-if( OZ_DYNAMICS )
-  target_link_libraries( ozDynamics ${ODE_LIBRARIES} )
+if(OZ_DYNAMICS)
+  target_link_libraries(ozDynamics ${ODE_LIBRARIES})
 endif()
 
-set_target_properties( ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0 )
+set_target_properties(ozDynamics PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
 
-install( TARGETS ozDynamics
-         RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
-         LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
-         ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR} )
-install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozDynamics )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozDynamics.pc DESTINATION lib${OZ_BINARY_SUBDIR}/pkgconfig )
+install(TARGETS ozDynamics
+        RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
+        LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
+        ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozDynamics)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ozDynamics.pc DESTINATION lib${OZ_BINARY_SUBDIR}/pkgconfig)

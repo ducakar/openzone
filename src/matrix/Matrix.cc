@@ -37,44 +37,44 @@ const float Matrix::MAX_VELOCITY2 = 1000000.0f;
 
 void Matrix::update()
 {
-  maxStructs  = max( maxStructs,  Struct::pool.length() );
-  maxEvents   = max( maxEvents,   Object::Event::pool.length() );
-  maxObjects  = max( maxObjects,  Object::pool.length() );
-  maxDynamics = max( maxDynamics, Dynamic::pool.length() );
-  maxWeapons  = max( maxWeapons,  Weapon::pool.length() );
-  maxBots     = max( maxBots,     Bot::pool.length() );
-  maxVehicles = max( maxVehicles, Vehicle::pool.length() );
-  maxFrags    = max( maxFrags,    Frag::mpool.length() );
+  maxStructs  = max(maxStructs,  Struct::pool.length());
+  maxEvents   = max(maxEvents,   Object::Event::pool.length());
+  maxObjects  = max(maxObjects,  Object::pool.length());
+  maxDynamics = max(maxDynamics, Dynamic::pool.length());
+  maxWeapons  = max(maxWeapons,  Weapon::pool.length());
+  maxBots     = max(maxBots,     Bot::pool.length());
+  maxVehicles = max(maxVehicles, Vehicle::pool.length());
+  maxFrags    = max(maxFrags,    Frag::mpool.length());
 
-  for( int i = 0; i < Orbis::MAX_OBJECTS; ++i ) {
-    Object* obj = orbis.obj( i );
+  for (int i = 0; i < Orbis::MAX_OBJECTS; ++i) {
+    Object* obj = orbis.obj(i);
 
-    if( obj != nullptr ) {
+    if (obj != nullptr) {
       // If this is cleared on the object's update, we may also remove effects added by other
       // objects updated before it.
       obj->events.free();
 
       // We don't remove objects as they get destroyed but on the next update, so the destruction
       // sound and other effects can be played on an object's destruction.
-      if( obj->flags & Object::DESTROYED_BIT ) {
-        synapse.remove( obj );
+      if (obj->flags & Object::DESTROYED_BIT) {
+        synapse.remove(obj);
       }
     }
   }
 
-  for( int i = 0; i < Orbis::MAX_STRUCTS; ++i ) {
-    Struct* str = orbis.str( i );
+  for (int i = 0; i < Orbis::MAX_STRUCTS; ++i) {
+    Struct* str = orbis.str(i);
 
-    if( str == nullptr ) {
+    if (str == nullptr) {
       continue;
     }
 
-    hard_assert( str->life >= 0.0f );
+    hard_assert(str->life >= 0.0f);
 
-    if( str->demolishing >= 1.0f ) {
-      synapse.remove( str );
+    if (str->demolishing >= 1.0f) {
+      synapse.remove(str);
     }
-    else if( str->life == 0.0f && str->demolishing == 0.0f ) {
+    else if (str->life == 0.0f && str->demolishing == 0.0f) {
       str->destroy();
     }
     else {
@@ -82,24 +82,24 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < Orbis::MAX_OBJECTS; ++i ) {
-    Object* obj = orbis.obj( i );
+  for (int i = 0; i < Orbis::MAX_OBJECTS; ++i) {
+    Object* obj = orbis.obj(i);
 
-    if( obj == nullptr ) {
+    if (obj == nullptr) {
       continue;
     }
 
-    hard_assert( obj->life >= 0.0f );
+    hard_assert(obj->life >= 0.0f);
 
-    if( obj->life == 0.0f ) {
+    if (obj->life == 0.0f) {
       obj->destroy();
     }
     else {
       // clear inventory of invalid references
-      if( !obj->items.isEmpty() ) {
-        for( int j = 0; j < obj->items.length(); ) {
-          if( orbis.obj( obj->items[j] ) == nullptr ) {
-            obj->items.erase( j );
+      if (!obj->items.isEmpty()) {
+        for (int j = 0; j < obj->items.length();) {
+          if (orbis.obj(obj->items[j]) == nullptr) {
+            obj->items.erase(j);
           }
           else {
             ++j;
@@ -110,43 +110,43 @@ void Matrix::update()
       obj->update();
 
       // objects should not remove themselves within onUpdate()
-      hard_assert( orbis.obj( i ) != nullptr );
+      hard_assert(orbis.obj(i) != nullptr);
 
-      if( obj->flags & Object::DYNAMIC_BIT ) {
-        Dynamic* dyn = static_cast<Dynamic*>( obj );
+      if (obj->flags & Object::DYNAMIC_BIT) {
+        Dynamic* dyn = static_cast<Dynamic*>(obj);
 
-        hard_assert( ( dyn->parent >= 0 ) == ( dyn->cell == nullptr ) );
+        hard_assert((dyn->parent >= 0) == (dyn->cell == nullptr));
 
-        if( dyn->cell == nullptr ) {
-          if( orbis.obj( dyn->parent ) == nullptr ) {
-            synapse.remove( dyn );
+        if (dyn->cell == nullptr) {
+          if (orbis.obj(dyn->parent) == nullptr) {
+            synapse.remove(dyn);
           }
         }
         else {
-          physics.updateObj( dyn );
+          physics.updateObj(dyn);
 
           // remove on velocity overflow
-          if( dyn->velocity.sqN() > MAX_VELOCITY2 ) {
-            synapse.remove( dyn );
+          if (dyn->velocity.sqN() > MAX_VELOCITY2) {
+            synapse.remove(dyn);
           }
         }
       }
     }
   }
 
-  for( int i = 0; i < Orbis::MAX_FRAGS; ++i ) {
-    Frag* frag = orbis.frag( i );
+  for (int i = 0; i < Orbis::MAX_FRAGS; ++i) {
+    Frag* frag = orbis.frag(i);
 
-    if( frag == nullptr ) {
+    if (frag == nullptr) {
       continue;
     }
 
-    if( frag->life <= 0.0f || frag->velocity.sqN() > MAX_VELOCITY2 ) {
-      synapse.remove( frag );
+    if (frag->life <= 0.0f || frag->velocity.sqN() > MAX_VELOCITY2) {
+      synapse.remove(frag);
     }
     else {
       frag->life -= Timer::TICK_TIME;
-      physics.updateFrag( frag );
+      physics.updateFrag(frag);
     }
   }
 
@@ -154,36 +154,36 @@ void Matrix::update()
   orbis.update();
 }
 
-void Matrix::read( InputStream* is )
+void Matrix::read(InputStream* is)
 {
-  Log::println( "Reading Matrix {" );
+  Log::println("Reading Matrix {");
   Log::indent();
 
   timer.ticks = is->readULong64();
-  timer.time  = float( timer.ticks ) / 1.0e6f;
-  orbis.read( is );
+  timer.time  = float(timer.ticks) / 1.0e6f;
+  orbis.read(is);
   physics.gravity = is->readFloat();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
-void Matrix::read( const JSON& json )
+void Matrix::read(const JSON& json)
 {
-  Log::println( "Reading Matrix {" );
+  Log::println("Reading Matrix {");
   Log::indent();
 
-  orbis.read( json );
+  orbis.read(json);
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
-void Matrix::write( OutputStream* os ) const
+void Matrix::write(OutputStream* os) const
 {
-  os->writeULong64( timer.ticks );
-  orbis.write( os );
-  os->writeFloat( physics.gravity );
+  os->writeULong64(timer.ticks);
+  orbis.write(os);
+  os->writeFloat(physics.gravity);
 }
 
 JSON Matrix::write() const
@@ -193,7 +193,7 @@ JSON Matrix::write() const
 
 void Matrix::load()
 {
-  Log::print( "Loading Matrix ..." );
+  Log::print("Loading Matrix ...");
 
   maxStructs  = 0;
   maxEvents   = 0;
@@ -209,58 +209,58 @@ void Matrix::load()
 
   physics.gravity = -9.81f;
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Matrix::unload()
 {
-  Log::println( "Unloading Matrix {" );
+  Log::println("Unloading Matrix {");
   Log::indent();
 
-  Log::println( "Static memory usage  %.2f MiB", float( sizeof( orbis ) ) / ( 1024.0f * 1024.0f ) );
+  Log::println("Static memory usage  %.2f MiB", float(sizeof(orbis)) / (1024.0f * 1024.0f));
 
-  Log::println( "Peak instances {" );
+  Log::println("Peak instances {");
   Log::indent();
-  Log::println( "%6d  structures",      maxStructs );
-  Log::println( "%6d  object events",   maxEvents );
-  Log::println( "%6d  static objects",  maxObjects );
-  Log::println( "%6d  dynamic objects", maxDynamics );
-  Log::println( "%6d  weapon objects",  maxWeapons );
-  Log::println( "%6d  bot objects",     maxBots );
-  Log::println( "%6d  vehicle objects", maxVehicles );
-  Log::println( "%6d  fragments",       maxFrags );
+  Log::println("%6d  structures",      maxStructs);
+  Log::println("%6d  object events",   maxEvents);
+  Log::println("%6d  static objects",  maxObjects);
+  Log::println("%6d  dynamic objects", maxDynamics);
+  Log::println("%6d  weapon objects",  maxWeapons);
+  Log::println("%6d  bot objects",     maxBots);
+  Log::println("%6d  vehicle objects", maxVehicles);
+  Log::println("%6d  fragments",       maxFrags);
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   synapse.unload();
   orbis.unload();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Matrix::init()
 {
-  Log::println( "Initialising Matrix {" );
+  Log::println("Initialising Matrix {");
   Log::indent();
 
   luaMatrix.init();
   orbis.init();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Matrix::destroy()
 {
-  Log::println( "Destroying Matrix {" );
+  Log::println("Destroying Matrix {");
   Log::indent();
 
   orbis.destroy();
   luaMatrix.destroy();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 Matrix matrix;

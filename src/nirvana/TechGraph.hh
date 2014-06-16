@@ -73,20 +73,20 @@ public:
 
 private:
 
-  Node* findNode( const char* name );
+  Node* findNode(const char* name);
 
 public:
 
-  bool enable( const char* technology );
-  bool disable( const char* technology );
+  bool enable(const char* technology);
+  bool disable(const char* technology);
 
   void enableAll();
   void disableAll();
 
   void update();
 
-  void read( InputStream* is );
-  void write( OutputStream* os ) const;
+  void read(InputStream* is);
+  void write(OutputStream* os) const;
 
   void load();
   void unload();

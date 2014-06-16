@@ -105,7 +105,7 @@ private:
   /**
    * Internal constructor.
    */
-  explicit File( const String& path, Type type, int size, long64 time );
+  explicit File(const String& path, Type type, int size, long64 time);
 
 public:
 
@@ -114,14 +114,14 @@ public:
    *
    * `stat()` is automatically called on construction unless the path is empty.
    */
-  File( const char* path = "" );
+  File(const char* path = "");
 
   /**
    * Create an instance for a given path.
    *
    * `stat()` is automatically called on construction unless the path is empty.
    */
-  File( const String& path );
+  File(const String& path);
 
   /**
    * Destructor.
@@ -133,38 +133,38 @@ public:
    *
    * Mapped memory is not copied.
    */
-  File( const File& file );
+  File(const File& file);
 
   /**
    * Move constructor, transfers mapped memory.
    */
-  File( File&& file );
+  File(File&& file);
 
   /**
    * Copy operator.
    *
    * Mapped memory is not copied.
    */
-  File& operator = ( const File& file );
+  File& operator = (const File& file);
 
   /**
    * Move operator, transfers mapped memory.
    */
-  File& operator = ( File&& file );
+  File& operator = (File&& file);
 
   /**
    * Recreate instance for a given path.
    *
    * `stat()` is automatically called on construction unless the new path is empty.
    */
-  File& operator = ( const char* path );
+  File& operator = (const char* path);
 
   /**
    * Recreate instance for a given path.
    *
    * `stat()` is automatically called on construction unless the new path is empty.
    */
-  File& operator = ( const String& path );
+  File& operator = (const String& path);
 
   /**
    * Access file to update its type, size and modification time.
@@ -254,7 +254,7 @@ public:
    *
    * Empty string matches both no extension and files names ending with dot.
    */
-  bool hasExtension( const char* ext ) const;
+  bool hasExtension(const char* ext) const;
 
   /**
    * %Path to the archive or mount-point of a VFS, "" for native files.
@@ -284,7 +284,7 @@ public:
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read( char* buffer, int* size ) const;
+  bool read(char* buffer, int* size) const;
 
   /**
    * Read file and write it to a given stream's current position.
@@ -293,7 +293,7 @@ public:
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read( OutputStream* os ) const;
+  bool read(OutputStream* os) const;
 
   /**
    * Read file into a buffer.
@@ -317,7 +317,7 @@ public:
    *   manually for this.
    * - Write operation is not possible while the file is mapped.
    */
-  bool write( const char* data, int size ) const;
+  bool write(const char* data, int size) const;
 
   /**
    * Write buffer contents into the file.
@@ -327,7 +327,7 @@ public:
    *   manually for this.
    * - Write operation is not possible while the file is mapped.
    */
-  bool write( const Buffer& buffer ) const;
+  bool write(const Buffer& buffer) const;
 
   /**
    * Write string into the file (omitting the terminating null character).
@@ -337,7 +337,7 @@ public:
    *   manually for this.
    * - Write operation is not possible while the file is mapped.
    */
-  bool writeString( const String& s ) const;
+  bool writeString(const String& s) const;
 
   /**
    * %Map file into memory for reading.
@@ -358,7 +358,7 @@ public:
    * If the file is not mapped, `map()` is called implicitly. An invalid (empty) `InputStream` is
    * returned on an error.
    */
-  InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
+  InputStream inputStream(Endian::Order order = Endian::NATIVE) const;
 
   /**
    * Generate a list of files in directory.
@@ -382,12 +382,12 @@ public:
    *
    * Always fails on NaCl.
    */
-  static bool chdir( const char* path );
+  static bool chdir(const char* path);
 
   /**
    * Make a new directory.
    */
-  static bool mkdir( const char* path );
+  static bool mkdir(const char* path);
 
   /**
    * Copy a file.
@@ -395,7 +395,7 @@ public:
    * @param src source file.
    * @param dest destination directory or file.
    */
-  static bool cp( const File& src, const File& dest );
+  static bool cp(const File& src, const File& dest);
 
   /**
    * Move/remove a file.
@@ -403,12 +403,12 @@ public:
    * @param src source file path.
    * @param dest destination directory or file.
    */
-  static bool mv( const File& src, const File& dest );
+  static bool mv(const File& src, const File& dest);
 
   /**
    * Delete a file or an empty directory.
    */
-  static bool rm( const char* path );
+  static bool rm(const char* path);
 
   /**
    * Mount read-only directory or archive into VFS.
@@ -417,7 +417,7 @@ public:
    * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
    * @param append true to append to the end instead to the beginning of the search path.
    */
-  static bool mount( const char* path, const char* mountPoint, bool append = true );
+  static bool mount(const char* path, const char* mountPoint, bool append = true);
 
   /**
    * Mount writeable local resource directory to the root of VFS.
@@ -431,7 +431,7 @@ public:
    * @param path path to directory in native file system.
    * @param append true to append to the end instead to the beginning of the search path.
    */
-  static bool mountLocal( const char* path, bool append = true );
+  static bool mountLocal(const char* path, bool append = true);
 
   /**
    * Get executable file path.
@@ -450,7 +450,7 @@ public:
    * Persistent NaCl file system must be initialised from JavaScript before NaCl module is loaded.
    * On other platforms `naclFileSystem` and `naclSize` parameters are ignored.
    */
-  static void init( NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0 );
+  static void init(NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0);
 
   /**
    * Deinitialise file systems.

@@ -37,7 +37,7 @@ namespace oz
  * Bit array with dynamically allocated storage.
  *
  * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
- * `sizeof( ulong ) * 8`.
+ * `sizeof(ulong) * 8`.
  *
  * @sa `oz::SBitset`
  */
@@ -46,10 +46,10 @@ class Bitset
 private:
 
   /// Size of unit in bytes.
-  static const int UNIT_SIZE = int( sizeof( ulong ) );
+  static const int UNIT_SIZE = int(sizeof(ulong));
 
   /// Number of bits per unit.
-  static const int UNIT_BITSIZE = int( sizeof( ulong ) ) * 8;
+  static const int UNIT_BITSIZE = int(sizeof(ulong)) * 8;
 
   ulong* data; ///< Pointer to array of units that holds the data.
   int    size; ///< Size of data array (in units, not in bits).
@@ -62,7 +62,7 @@ public:
    * The size of `data` array is adjusted to the smallest unit number that can hold the requested
    * number of bits. No memory is allocated if `nBits == 0`.
    */
-  explicit Bitset( int nBits = 0 );
+  explicit Bitset(int nBits = 0);
 
   /**
    * Destructor.
@@ -72,34 +72,34 @@ public:
   /**
    * Copy constructor, copies storage.
    */
-  Bitset( const Bitset& b );
+  Bitset(const Bitset& b);
 
   /**
    * Move constructor, moves storage.
    */
-  Bitset( Bitset&& b );
+  Bitset(Bitset&& b);
 
   /**
    * Copy operator, copies storage.
    *
    * Existing storage is reused if its size matches.
    */
-  Bitset& operator = ( const Bitset& b );
+  Bitset& operator = (const Bitset& b);
 
   /**
    * Move operator, moves storage.
    */
-  Bitset& operator = ( Bitset&& b );
+  Bitset& operator = (Bitset&& b);
 
   /**
    * True iff same size and respective bits are equal.
    */
-  bool operator == ( const Bitset& b ) const;
+  bool operator == (const Bitset& b) const;
 
   /**
    * True iff different size or any respective bits differ.
    */
-  bool operator != ( const Bitset& b ) const;
+  bool operator != (const Bitset& b) const;
 
   /**
    * Get constant pointer to `data` array.
@@ -150,33 +150,33 @@ public:
    * Get the `i`-th bit.
    */
   OZ_ALWAYS_INLINE
-  bool get( int i ) const
+  bool get(int i) const
   {
-    hard_assert( uint( i ) < uint( size * UNIT_BITSIZE ) );
+    hard_assert(uint(i) < uint(size * UNIT_BITSIZE));
 
-    return ( data[i / UNIT_BITSIZE] & ( 1ul << ( i % UNIT_BITSIZE ) ) ) != 0ul;
+    return (data[i / UNIT_BITSIZE] & (1ul << (i % UNIT_BITSIZE))) != 0ul;
   }
 
   /**
    * %Set the `i`-th bit to true.
    */
   OZ_ALWAYS_INLINE
-  void set( int i )
+  void set(int i)
   {
-    hard_assert( uint( i ) < uint( size * UNIT_BITSIZE ) );
+    hard_assert(uint(i) < uint(size * UNIT_BITSIZE));
 
-    data[i / UNIT_BITSIZE] |= 1ul << ( i % UNIT_BITSIZE );
+    data[i / UNIT_BITSIZE] |= 1ul << (i % UNIT_BITSIZE);
   }
 
   /**
    * %Set the `i`-th bit to false.
    */
   OZ_ALWAYS_INLINE
-  void clear( int i )
+  void clear(int i)
   {
-    hard_assert( uint( i ) < uint( size * UNIT_BITSIZE ) );
+    hard_assert(uint(i) < uint(size * UNIT_BITSIZE));
 
-    data[i / UNIT_BITSIZE] &= ~( 1ul << ( i % UNIT_BITSIZE ) );
+    data[i / UNIT_BITSIZE] &= ~(1ul << (i % UNIT_BITSIZE));
   }
 
   /**
@@ -199,17 +199,17 @@ public:
    *
    * Both bitsets must be the same size.
    */
-  bool isSubset( const Bitset& b ) const;
+  bool isSubset(const Bitset& b) const;
 
   /**
    * %Set bits from inclusively start to non-inclusively end to true.
    */
-  void set( int start, int end );
+  void set(int start, int end);
 
   /**
    * %Set bits from inclusively start to non-inclusively end to false.
    */
-  void clear( int start, int end );
+  void clear(int start, int end);
 
   /**
    * %Set all bits to true.
@@ -229,39 +229,39 @@ public:
   /**
    * Return AND of two same-length bitsets.
    */
-  Bitset operator & ( const Bitset& b ) const;
+  Bitset operator & (const Bitset& b) const;
 
   /**
    * Return OR of two same-length bitsets.
    */
-  Bitset operator | ( const Bitset& b ) const;
+  Bitset operator | (const Bitset& b) const;
 
   /**
    * Return XOR of two same-length bitsets.
    */
-  Bitset operator ^ ( const Bitset& b ) const;
+  Bitset operator ^ (const Bitset& b) const;
 
   /**
    * AND of two same-length bitsets.
    */
-  Bitset& operator &= ( const Bitset& b );
+  Bitset& operator &= (const Bitset& b);
 
   /**
    * OR of two same-length bitsets.
    */
-  Bitset& operator |= ( const Bitset& b );
+  Bitset& operator |= (const Bitset& b);
 
   /**
    * XOR of two same-length bitsets.
    */
-  Bitset& operator ^= ( const Bitset& b );
+  Bitset& operator ^= (const Bitset& b);
 
   /**
    * Resize bitmap.
    *
    * Resizing to zero frees all allocated storage.
    */
-  void resize( int nBits );
+  void resize(int nBits);
 
 };
 

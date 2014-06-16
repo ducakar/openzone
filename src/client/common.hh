@@ -51,20 +51,20 @@ struct TexCoord
   explicit TexCoord() = default;
 
   OZ_ALWAYS_INLINE
-  explicit TexCoord( float u_, float v_ ) :
-    u( u_ ), v( v_ )
+  explicit TexCoord(float u_, float v_) :
+    u(u_), v(v_)
   {}
 
   OZ_ALWAYS_INLINE
-  bool operator == ( const TexCoord& tc ) const
+  bool operator == (const TexCoord& tc) const
   {
     return u == tc.u && v == tc.v;
   }
 
   OZ_ALWAYS_INLINE
-  bool operator != ( const TexCoord& tc ) const
+  bool operator != (const TexCoord& tc) const
   {
-    return !operator == ( tc );
+    return !operator == (tc);
   }
 
   OZ_ALWAYS_INLINE
@@ -80,19 +80,19 @@ struct TexCoord
   }
 
   OZ_ALWAYS_INLINE
-  const float& operator [] ( int i ) const
+  const float& operator [] (int i) const
   {
-    hard_assert( 0 <= i && i < 2 );
+    hard_assert(0 <= i && i < 2);
 
-    return ( &u )[i];
+    return (&u)[i];
   }
 
   OZ_ALWAYS_INLINE
-  float& operator [] ( int i )
+  float& operator [] (int i)
   {
-    hard_assert( 0 <= i && i < 2 );
+    hard_assert(0 <= i && i < 2);
 
-    return ( &u )[i];
+    return (&u)[i];
   }
 };
 

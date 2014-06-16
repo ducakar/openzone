@@ -56,7 +56,7 @@ public:
    */
   OZ_ALWAYS_INLINE
   Vec3() :
-    VectorBase3( 0.0f, 0.0f, 0.0f, 0.0f )
+    VectorBase3(0.0f, 0.0f, 0.0f, 0.0f)
   {}
 
 #ifdef OZ_SIMD_MATH
@@ -65,16 +65,16 @@ public:
    * Create from a float SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3( float4 f4 ) :
-    VectorBase3( f4 )
+  explicit Vec3(float4 f4) :
+    VectorBase3(f4)
   {}
 
   /**
    * Create from an uint SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3( uint4 u4 ) :
-    VectorBase3( u4 )
+  explicit Vec3(uint4 u4) :
+    VectorBase3(u4)
   {}
 
 #endif
@@ -83,23 +83,23 @@ public:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3( float x, float y, float z ) :
-    VectorBase3( x, y, z, 0.0f )
+  explicit Vec3(float x, float y, float z) :
+    VectorBase3(x, y, z, 0.0f)
   {}
 
   /**
    * Create from an array of 3 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3( const float* v ) :
-    VectorBase3( v[0], v[1], v[2], 0.0f )
+  explicit Vec3(const float* v) :
+    VectorBase3(v[0], v[1], v[2], 0.0f)
   {}
 
   /**
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Vec3& v ) const
+  bool operator == (const Vec3& v) const
   {
     return x == v.x && y == v.y && z == v.z;
   }
@@ -108,9 +108,9 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Vec3& v ) const
+  bool operator != (const Vec3& v) const
   {
-    return !operator == ( v );
+    return !operator == (v);
   }
 
   /**
@@ -119,9 +119,9 @@ public:
   float operator ! () const
   {
 #ifdef OZ_SIMD_MATH
-    return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
+    return Math::sqrt(vFirst(vDot(f4, f4)));
 #else
-    return Math::sqrt( x*x + y*y + z*z );
+    return Math::sqrt(x*x + y*y + z*z);
 #endif
   }
 
@@ -131,9 +131,9 @@ public:
   float fastN() const
   {
 #ifdef OZ_SIMD_MATH
-    return Math::fastSqrt( vFirst( vDot( f4, f4 ) ) );
+    return Math::fastSqrt(vFirst(vDot(f4, f4)));
 #else
-    return Math::fastSqrt( x*x + y*y + z*z );
+    return Math::fastSqrt(x*x + y*y + z*z);
 #endif
   }
 
@@ -144,7 +144,7 @@ public:
   scalar sqN() const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot( f4, f4 );
+    return vDot(f4, f4);
 #else
     return x*x + y*y + z*z;
 #endif
@@ -156,13 +156,13 @@ public:
   Vec3 operator ~ () const
   {
 #ifdef OZ_SIMD_MATH
-    scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
-    return Vec3( f4 * s.f4 );
+    scalar s = 1.0f / Math::sqrt(vFirst(vDot(f4, f4)));
+    return Vec3(f4 * s.f4);
 #else
-    hard_assert( x*x + y*y + z*z > 0.0f );
+    hard_assert(x*x + y*y + z*z > 0.0f);
 
-    float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
-    return Vec3( x * k, y * k, z * k );
+    float k = 1.0f / Math::sqrt(x*x + y*y + z*z);
+    return Vec3(x * k, y * k, z * k);
 #endif
   }
 
@@ -172,13 +172,13 @@ public:
   Vec3 fastUnit() const
   {
 #ifdef OZ_SIMD_MATH
-    scalar s = Math::fastInvSqrt( vFirst( vDot( f4, f4 ) ) );
-    return Vec3( f4 * s.f4 );
+    scalar s = Math::fastInvSqrt(vFirst(vDot(f4, f4)));
+    return Vec3(f4 * s.f4);
 #else
-    hard_assert( x*x + y*y + z*z > 0.0f );
+    hard_assert(x*x + y*y + z*z > 0.0f);
 
-    float k = Math::fastInvSqrt( x*x + y*y + z*z );
-    return Vec3( x * k, y * k, z * k );
+    float k = Math::fastInvSqrt(x*x + y*y + z*z);
+    return Vec3(x * k, y * k, z * k);
 #endif
   }
 
@@ -198,9 +198,9 @@ public:
   Vec3 operator - () const
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( -f4 );
+    return Vec3(-f4);
 #else
-    return Vec3( -x, -y, -z );
+    return Vec3(-x, -y, -z);
 #endif
   }
 
@@ -208,12 +208,12 @@ public:
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator + ( const Vec3& v ) const
+  Vec3 operator + (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( f4 + v.f4 );
+    return Vec3(f4 + v.f4);
 #else
-    return Vec3( x + v.x, y + v.y, z + v.z );
+    return Vec3(x + v.x, y + v.y, z + v.z);
 #endif
   }
 
@@ -221,12 +221,12 @@ public:
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator - ( const Vec3& v ) const
+  Vec3 operator - (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( f4 - v.f4 );
+    return Vec3(f4 - v.f4);
 #else
-    return Vec3( x - v.x, y - v.y, z - v.z );
+    return Vec3(x - v.x, y - v.y, z - v.z);
 #endif
   }
 
@@ -234,12 +234,12 @@ public:
    * Vector multiplied by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator * ( scalar s ) const
+  Vec3 operator * (scalar s) const
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( f4 * s.f4 );
+    return Vec3(f4 * s.f4);
 #else
-    return Vec3( x * s, y * s, z * s );
+    return Vec3(x * s, y * s, z * s);
 #endif
   }
 
@@ -247,12 +247,12 @@ public:
    * Vector multiplied by a scalar.
    */
   OZ_ALWAYS_INLINE
-  friend Vec3 operator * ( scalar s, const Vec3& v )
+  friend Vec3 operator * (scalar s, const Vec3& v)
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( s.f4 * v.f4 );
+    return Vec3(s.f4 * v.f4);
 #else
-    return Vec3( s * v.x, s * v.y, s * v.z );
+    return Vec3(s * v.x, s * v.y, s * v.z);
 #endif
   }
 
@@ -260,15 +260,15 @@ public:
    * Vector divided by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator / ( scalar s ) const
+  Vec3 operator / (scalar s) const
   {
-    hard_assert( s != 0.0f );
+    hard_assert(s != 0.0f);
 
 #ifdef OZ_SIMD_MATH
-    return Vec3( f4 / s.f4 );
+    return Vec3(f4 / s.f4);
 #else
     s = 1.0f / s;
-    return Vec3( x * s, y * s, z * s );
+    return Vec3(x * s, y * s, z * s);
 #endif
   }
 
@@ -276,7 +276,7 @@ public:
    * Addition.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator += ( const Vec3& v )
+  Vec3& operator += (const Vec3& v)
   {
 #ifdef OZ_SIMD_MATH
     f4 += v.f4;
@@ -292,7 +292,7 @@ public:
    * Subtraction.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator -= ( const Vec3& v )
+  Vec3& operator -= (const Vec3& v)
   {
 #ifdef OZ_SIMD_MATH
     f4 -= v.f4;
@@ -308,7 +308,7 @@ public:
    * Multiplication by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator *= ( scalar s )
+  Vec3& operator *= (scalar s)
   {
 #ifdef OZ_SIMD_MATH
     f4 *= s.f4;
@@ -324,12 +324,12 @@ public:
    * Division by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator /= ( scalar s )
+  Vec3& operator /= (scalar s)
   {
 #ifdef OZ_SIMD_MATH
     f4 /= s.f4;
 #else
-    hard_assert( s != 0.0f );
+    hard_assert(s != 0.0f);
 
     s  = 1.0f / s;
     x *= s;
@@ -343,10 +343,10 @@ public:
    * Scalar product.
    */
   OZ_ALWAYS_INLINE
-  scalar operator * ( const Vec3& v ) const
+  scalar operator * (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot( f4, v.f4 );
+    return vDot(f4, v.f4);
 #else
     return x*v.x + y*v.y + z*v.z;
 #endif
@@ -355,35 +355,35 @@ public:
   /**
    * Vector product.
    */
-  Vec3 operator ^ ( const Vec3& v ) const
+  Vec3 operator ^ (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    float4 a  = vShuffle( f4, f4, 1, 2, 0, 3 );
-    float4 b  = vShuffle( f4, f4, 2, 0, 1, 3 );
-    float4 va = vShuffle( v.f4, v.f4, 2, 0, 1, 3 );
-    float4 vb = vShuffle( v.f4, v.f4, 1, 2, 0, 3 );
+    float4 a  = vShuffle(f4, f4, 1, 2, 0, 3);
+    float4 b  = vShuffle(f4, f4, 2, 0, 1, 3);
+    float4 va = vShuffle(v.f4, v.f4, 2, 0, 1, 3);
+    float4 vb = vShuffle(v.f4, v.f4, 1, 2, 0, 3);
 
-    return Vec3( a*va - b*vb );
+    return Vec3(a*va - b*vb);
 #else
-    return Vec3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
+    return Vec3(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x);
 #endif
   }
 
   /**
    * Spherical linear interpolation.
    */
-  static Vec3 slerp( const Vec3& a, const Vec3& b, float t );
+  static Vec3 slerp(const Vec3& a, const Vec3& b, float t);
 
   /**
    * Per-component absolute value of a vector.
    */
   OZ_ALWAYS_INLINE
-  friend Vec3 abs( const Vec3& a )
+  friend Vec3 abs(const Vec3& a)
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( vAbs( a.u4 ) );
+    return Vec3(vAbs(a.u4));
 #else
-    return Vec3( abs<float>( a.x ), abs<float>( a.y ), abs<float>( a.z ) );
+    return Vec3(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z));
 #endif
   }
 
@@ -391,12 +391,12 @@ public:
    * Per-component minimum of two vectors.
    */
   OZ_ALWAYS_INLINE
-  friend Vec3 min( const Vec3& a, const Vec3& b )
+  friend Vec3 min(const Vec3& a, const Vec3& b)
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( vMin( a.f4, b.f4 ) );
+    return Vec3(vMin(a.f4, b.f4));
 #else
-    return Vec3( min<float>( a.x, b.x ), min<float>( a.y, b.y ), min<float>( a.z, b.z ) );
+    return Vec3(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z));
 #endif
   }
 
@@ -404,12 +404,12 @@ public:
    * Per-component maximum of two vectors.
    */
   OZ_ALWAYS_INLINE
-  friend Vec3 max( const Vec3& a, const Vec3& b )
+  friend Vec3 max(const Vec3& a, const Vec3& b)
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( vMax( a.f4, b.f4 ) );
+    return Vec3(vMax(a.f4, b.f4));
 #else
-    return Vec3( max<float>( a.x, b.x ), max<float>( a.y, b.y ), max<float>( a.z, b.z ) );
+    return Vec3(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z));
 #endif
   }
 
@@ -417,13 +417,13 @@ public:
    * Per-component clamped value of vectors.
    */
   OZ_ALWAYS_INLINE
-  friend Vec3 clamp( const Vec3& c, const Vec3& a, const Vec3& b )
+  friend Vec3 clamp(const Vec3& c, const Vec3& a, const Vec3& b)
   {
 #ifdef OZ_SIMD_MATH
-    return Vec3( vMin( b.f4, vMax( a.f4, c.f4 ) ) );
+    return Vec3(vMin(b.f4, vMax(a.f4, c.f4)));
 #else
-    return Vec3( clamp<float>( c.x, a.x, b.x ), clamp<float>( c.y, a.y, b.y ),
-                 clamp<float>( c.z, a.z, b.z ) );
+    return Vec3(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),
+                clamp<float>(c.z, a.z, b.z));
 #endif
   }
 

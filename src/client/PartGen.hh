@@ -62,7 +62,7 @@ public:
 
   static void dellocate();
 
-  explicit PartGen( InputStream* is );
+  explicit PartGen(InputStream* is);
   ~PartGen();
 
   void update();

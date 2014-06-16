@@ -29,7 +29,7 @@
 #include "Map.hh"
 #include "Pepper.hh"
 
-#if defined( __native_client__ )
+#if defined(__native_client__)
 # include <ppapi/c/pp_file_info.h>
 # include <ppapi/c/ppb_file_io.h>
 # include <ppapi/cpp/completion_callback.h>
@@ -38,7 +38,7 @@
 # include <ppapi/cpp/file_ref.h>
 # include <ppapi/cpp/file_system.h>
 # include <ppapi/cpp/directory_entry.h>
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 # include <windows.h>
 # include <shlobj.h>
 #else
@@ -56,14 +56,14 @@
 #if PHYSFS_VER_MAJOR < 2
 # error PhysicsFS version must be at least 2.0.
 #elif PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
-# define PHYSFS_readBytes( handle, buffer, len )  PHYSFS_read( handle, buffer, 1, uint( len ) )
-# define PHYSFS_writeBytes( handle, buffer, len ) PHYSFS_write( handle, buffer, 1, uint( len ) )
+# define PHYSFS_readBytes(handle, buffer, len)  PHYSFS_read(handle, buffer, 1, uint(len))
+# define PHYSFS_writeBytes(handle, buffer, len) PHYSFS_write(handle, buffer, 1, uint(len))
 #endif
 
 #ifdef __native_client__
 extern "C"
-int PHYSFS_NACL_init( PP_Instance instance, PPB_GetInterface getInterface,
-                      PP_FileSystemType fileSystemType, PHYSFS_sint64 size );
+int PHYSFS_NACL_init(PP_Instance instance, PPB_GetInterface getInterface,
+                     PP_FileSystemType fileSystemType, PHYSFS_sint64 size);
 #endif
 
 namespace oz
@@ -76,12 +76,12 @@ static pp::FileSystem ppFileSystem;
 static String         specialDirs[10];
 static String         exePath;
 
-static bool operator < ( const File& a, const File& b )
+static bool operator < (const File& a, const File& b)
 {
-  return String::compare( a.path(), b.path() ) < 0;
+  return String::compare(a.path(), b.path()) < 0;
 }
 
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
 static void initSpecialDirs()
 {
@@ -89,8 +89,8 @@ static void initSpecialDirs()
   specialDirs[1] = "/config";
   specialDirs[2] = "/data";
 
-  File::mkdir( "/config" );
-  File::mkdir( "/data" );
+  File::mkdir("/config");
+  File::mkdir("/data");
 }
 
 static void initExecutablePath()
@@ -98,16 +98,16 @@ static void initExecutablePath()
   exePath = "/";
 }
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
-static void setSpecialDir( int dirId, int csidl )
+static void setSpecialDir(int dirId, int csidl)
 {
   char path[MAX_PATH];
   path[0] = '\0';
 
-  SHGetSpecialFolderPath( nullptr, path, csidl, false );
+  SHGetSpecialFolderPath(nullptr, path, csidl, false);
 
-  for( int i = 0; i < MAX_PATH && path[i] != '\0'; ++i ) {
+  for (int i = 0; i < MAX_PATH && path[i] != '\0'; ++i) {
     path[i] = path[i] == '\\' ? '/' : path[i];
   }
 
@@ -116,41 +116,41 @@ static void setSpecialDir( int dirId, int csidl )
 
 static void initSpecialDirs()
 {
-  setSpecialDir( 0, CSIDL_PROFILE          );
-  setSpecialDir( 1, CSIDL_APPDATA          );
-  setSpecialDir( 2, CSIDL_LOCAL_APPDATA    );
-  setSpecialDir( 3, CSIDL_DESKTOPDIRECTORY );
-  setSpecialDir( 4, CSIDL_PERSONAL         );
-  setSpecialDir( 5, CSIDL_PERSONAL         );
-  setSpecialDir( 6, CSIDL_MYMUSIC          );
-  setSpecialDir( 7, CSIDL_MYPICTURES       );
-  setSpecialDir( 8, CSIDL_MYVIDEO          );
+  setSpecialDir(0, CSIDL_PROFILE         );
+  setSpecialDir(1, CSIDL_APPDATA         );
+  setSpecialDir(2, CSIDL_LOCAL_APPDATA   );
+  setSpecialDir(3, CSIDL_DESKTOPDIRECTORY);
+  setSpecialDir(4, CSIDL_PERSONAL        );
+  setSpecialDir(5, CSIDL_PERSONAL        );
+  setSpecialDir(6, CSIDL_MYMUSIC         );
+  setSpecialDir(7, CSIDL_MYPICTURES      );
+  setSpecialDir(8, CSIDL_MYVIDEO         );
 }
 
 static void initExecutablePath()
 {
   char path[MAX_PATH];
 
-  HMODULE module = GetModuleHandle( nullptr );
-  int     length = GetModuleFileName( module, path, MAX_PATH );
+  HMODULE module = GetModuleHandle(nullptr);
+  int     length = GetModuleFileName(module, path, MAX_PATH);
 
-  for( int i = 0; i < length; ++i ) {
+  for (int i = 0; i < length; ++i) {
     path[i] = path[i] == '\\' ? '/' : path[i];
   }
 
-  exePath = length == 0 || length == MAX_PATH ? String() : String( path, length );
+  exePath = length == 0 || length == MAX_PATH ? String() : String(path, length);
 }
 
 #else
 
-static void setSpecialDir( int dirId, const char* name, Map<String, String>* vars )
+static void setSpecialDir(int dirId, const char* name, Map<String, String>* vars)
 {
-  const char* value = getenv( name );
+  const char* value = getenv(name);
 
-  if( value == nullptr && vars != nullptr ) {
-    const String* defValue = vars->find( name );
+  if (value == nullptr && vars != nullptr) {
+    const String* defValue = vars->find(name);
 
-    if( defValue == nullptr ) {
+    if (defValue == nullptr) {
       specialDirs[dirId] = "";
       return;
     }
@@ -161,76 +161,76 @@ static void setSpecialDir( int dirId, const char* name, Map<String, String>* var
   specialDirs[dirId] = value;
 }
 
-static void loadXDGSettings( const File& file, Map<String, String>* vars )
+static void loadXDGSettings(const File& file, Map<String, String>* vars)
 {
   InputStream is = file.inputStream();
 
   String line;
-  while( is.isAvailable() ) {
+  while (is.isAvailable()) {
     line = is.readLine();
 
-    if( line[0] == '#' ) {
+    if (line[0] == '#') {
       continue;
     }
 
-    int equal      = line.index( '=' );
-    int firstQuote = line.index( '"' );
-    int lastQuote  = line.lastIndex( '"' );
+    int equal      = line.index('=');
+    int firstQuote = line.index('"');
+    int lastQuote  = line.lastIndex('"');
 
-    if( equal <= 0 || firstQuote <= equal || lastQuote <= firstQuote ) {
+    if (equal <= 0 || firstQuote <= equal || lastQuote <= firstQuote) {
       continue;
     }
 
-    String name = line.substring( 0, equal ).trim();
-    String path = line.substring( firstQuote + 1, lastQuote );
+    String name = line.substring(0, equal).trim();
+    String path = line.substring(firstQuote + 1, lastQuote);
 
-    if( !name.beginsWith( "XDG_" ) || !name.endsWith( "_DIR" ) ) {
+    if (!name.beginsWith("XDG_") || !name.endsWith("_DIR")) {
       continue;
     }
 
-    if( path.beginsWith( "$HOME" ) ) {
-      path = File::HOME + path.substring( 5 );
+    if (path.beginsWith("$HOME")) {
+      path = File::HOME + path.substring(5);
     }
 
-    vars->add( name, path );
+    vars->add(name, path);
   }
 }
 
 static void initSpecialDirs()
 {
-  setSpecialDir( 0, "HOME", nullptr );
+  setSpecialDir(0, "HOME", nullptr);
 
-  if( File::HOME.isEmpty() ) {
-    OZ_ERROR( "oz::File: Unable to determine home directory: HOME environment variable not set" );
+  if (File::HOME.isEmpty()) {
+    OZ_ERROR("oz::File: Unable to determine home directory: HOME environment variable not set");
   }
 
   Map<String, String> vars;
 
   // Default locations.
-  vars.add( "XDG_CONFIG_HOME",   File::HOME + "/.config"      );
-  vars.add( "XDG_DATA_HOME",     File::HOME + "/.local/share" );
-  vars.add( "XDG_DESKTOP_DIR",   File::HOME + "/Desktop"      );
-  vars.add( "XDG_DOCUMENTS_DIR", File::HOME + "/Documents"    );
-  vars.add( "XDG_DOWNLOAD_DIR",  File::HOME + "/Download"     );
-  vars.add( "XDG_MUSIC_DIR",     File::HOME + "/Music"        );
-  vars.add( "XDG_PICTURES_DIR",  File::HOME + "/Pictures"     );
-  vars.add( "XDG_VIDEOS_DIR",    File::HOME + "/Videos"       );
+  vars.add("XDG_CONFIG_HOME",   File::HOME + "/.config"     );
+  vars.add("XDG_DATA_HOME",     File::HOME + "/.local/share");
+  vars.add("XDG_DESKTOP_DIR",   File::HOME + "/Desktop"     );
+  vars.add("XDG_DOCUMENTS_DIR", File::HOME + "/Documents"   );
+  vars.add("XDG_DOWNLOAD_DIR",  File::HOME + "/Download"    );
+  vars.add("XDG_MUSIC_DIR",     File::HOME + "/Music"       );
+  vars.add("XDG_PICTURES_DIR",  File::HOME + "/Pictures"    );
+  vars.add("XDG_VIDEOS_DIR",    File::HOME + "/Videos"      );
 
   // Override default locations with global settings, if exist.
-  loadXDGSettings( "/etc/xdg/user", &vars );
+  loadXDGSettings("/etc/xdg/user", &vars);
 
   // Override default locations with user settings, if exist.
-  loadXDGSettings( *vars.find( "XDG_CONFIG_HOME" ) + "/user-dirs.dirs", &vars );
+  loadXDGSettings(*vars.find("XDG_CONFIG_HOME") + "/user-dirs.dirs", &vars);
 
   // Finally set special directories, environment variables override values from files.
-  setSpecialDir( 1, "XDG_CONFIG_HOME",   &vars );
-  setSpecialDir( 2, "XDG_DATA_HOME",     &vars );
-  setSpecialDir( 3, "XDG_DESKTOP_DIR",   &vars );
-  setSpecialDir( 4, "XDG_DOCUMENTS_DIR", &vars );
-  setSpecialDir( 5, "XDG_DOWNLOAD_DIR",  &vars );
-  setSpecialDir( 6, "XDG_MUSIC_DIR",     &vars );
-  setSpecialDir( 7, "XDG_PICTURES_DIR",  &vars );
-  setSpecialDir( 8, "XDG_VIDEOS_DIR",    &vars );
+  setSpecialDir(1, "XDG_CONFIG_HOME",   &vars);
+  setSpecialDir(2, "XDG_DATA_HOME",     &vars);
+  setSpecialDir(3, "XDG_DESKTOP_DIR",   &vars);
+  setSpecialDir(4, "XDG_DOCUMENTS_DIR", &vars);
+  setSpecialDir(5, "XDG_DOWNLOAD_DIR",  &vars);
+  setSpecialDir(6, "XDG_MUSIC_DIR",     &vars);
+  setSpecialDir(7, "XDG_PICTURES_DIR",  &vars);
+  setSpecialDir(8, "XDG_VIDEOS_DIR",    &vars);
 }
 
 static void initExecutablePath()
@@ -239,10 +239,10 @@ static void initExecutablePath()
   char exePathBuffer[PATH_MAX];
 
   pid_t pid = getpid();
-  snprintf( pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid );
+  snprintf(pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid);
 
-  ptrdiff_t length = readlink( pidPathBuffer, exePathBuffer, PATH_MAX );
-  exePath = length < 0 ? String() : String( exePathBuffer, int( length ) );
+  ptrdiff_t length = readlink(pidPathBuffer, exePathBuffer, PATH_MAX);
+  exePath = length < 0 ? String() : String(exePathBuffer, int(length));
 }
 
 #endif
@@ -258,18 +258,18 @@ const String& File::PICTURES  = specialDirs[7];
 const String& File::VIDEOS    = specialDirs[8];
 
 OZ_HIDDEN
-File::File( const String& path, File::Type type, int size, long64 time ) :
-  filePath( path ), fileType( type ), fileSize( size ), fileTime( time ), data( nullptr )
+File::File(const String& path, File::Type type, int size, long64 time) :
+  filePath(path), fileType(type), fileSize(size), fileTime(time), data(nullptr)
 {}
 
-File::File( const char* path ) :
-  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
+File::File(const char* path) :
+  filePath(path), fileType(MISSING), fileSize(-1), fileTime(0), data(nullptr)
 {
   stat();
 }
 
-File::File( const String& path ) :
-  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
+File::File(const String& path) :
+  filePath(path), fileType(MISSING), fileSize(-1), fileTime(0), data(nullptr)
 {
   stat();
 }
@@ -279,14 +279,14 @@ File::~File()
   unmap();
 }
 
-File::File( const File& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
-  fileTime( file.fileTime ), data( nullptr )
+File::File(const File& file) :
+  filePath(file.filePath), fileType(file.fileType), fileSize(file.fileSize),
+  fileTime(file.fileTime), data(nullptr)
 {}
 
-File::File( File&& file ) :
-  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
+File::File(File&& file) :
+  filePath(static_cast<String&&>(file.filePath)), fileType(file.fileType), fileSize(file.fileSize),
+  fileTime(file.fileTime), data(file.data)
 {
   file.filePath = "";
   file.fileType = MISSING;
@@ -295,9 +295,9 @@ File::File( File&& file ) :
   file.data     = nullptr;
 }
 
-File& File::operator = ( const File& file )
+File& File::operator = (const File& file)
 {
-  if( &file == this ) {
+  if (&file == this) {
     return *this;
   }
 
@@ -311,15 +311,15 @@ File& File::operator = ( const File& file )
   return *this;
 }
 
-File& File::operator = ( File&& file )
+File& File::operator = (File&& file)
 {
-  if( &file == this ) {
+  if (&file == this) {
     return *this;
   }
 
   unmap();
 
-  filePath = static_cast<String&&>( file.filePath );
+  filePath = static_cast<String&&>(file.filePath);
   fileType = file.fileType;
   fileSize = file.fileSize;
   fileTime = file.fileTime;
@@ -334,7 +334,7 @@ File& File::operator = ( File&& file )
   return *this;
 }
 
-File& File::operator = ( const char* path )
+File& File::operator = (const char* path)
 {
   unmap();
 
@@ -344,7 +344,7 @@ File& File::operator = ( const char* path )
   return *this;
 }
 
-File& File::operator = ( const String& path )
+File& File::operator = (const String& path)
 {
   unmap();
 
@@ -359,7 +359,7 @@ bool File::stat()
   // Stat shouldn't be performed while the file is mapped. Changing fileSize may make a real mess
   // when unmapping file on Linux/Unix. True is returned since application should see the file as it
   // was when it has been mapped.
-  if( data != nullptr ) {
+  if (data != nullptr) {
     return true;
   }
 
@@ -367,29 +367,29 @@ bool File::stat()
   fileSize = -1;
   fileTime = 0;
 
-  if( filePath.fileIsVirtual() ) {
+  if (filePath.fileIsVirtual()) {
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 
-    if( PHYSFS_exists( &filePath[1] ) ) {
-      if( PHYSFS_isDirectory( &filePath[1] ) ) {
+    if (PHYSFS_exists(&filePath[1])) {
+      if (PHYSFS_isDirectory(&filePath[1])) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = PHYSFS_getLastModTime( &filePath[1] );
+        fileTime = PHYSFS_getLastModTime(&filePath[1]);
       }
       else {
-        PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
+        PHYSFS_File* file = PHYSFS_openRead(&filePath[1]);
 
-        if( file == nullptr ) {
+        if (file == nullptr) {
           fileType = MISSING;
           fileSize = -1;
           fileTime = 0;
         }
         else {
           fileType = REGULAR;
-          fileSize = int( PHYSFS_fileLength( file ) );
-          fileTime = PHYSFS_getLastModTime( &filePath[1] );
+          fileSize = int(PHYSFS_fileLength(file));
+          fileTime = PHYSFS_getLastModTime(&filePath[1]);
 
-          PHYSFS_close( file );
+          PHYSFS_close(file);
         }
       }
     }
@@ -398,52 +398,52 @@ bool File::stat()
 
     PHYSFS_Stat info;
 
-    if( PHYSFS_stat( &filePath[1], &info ) ) {
-      if( info.filetype == PHYSFS_FILETYPE_DIRECTORY ) {
+    if (PHYSFS_stat(&filePath[1], &info)) {
+      if (info.filetype == PHYSFS_FILETYPE_DIRECTORY) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = max<long64>( info.createtime, info.modtime );
+        fileTime = max<long64>(info.createtime, info.modtime);
       }
-      else if( info.filetype == PHYSFS_FILETYPE_REGULAR ) {
+      else if (info.filetype == PHYSFS_FILETYPE_REGULAR) {
         fileType = REGULAR;
-        fileSize = int( info.filesize );
-        fileTime = max<long64>( info.createtime, info.modtime );
+        fileSize = int(info.filesize);
+        fileTime = max<long64>(info.createtime, info.modtime);
       }
     }
 
 #endif
   }
-  else if( !filePath.isEmpty() ) {
-#if defined( __native_client__ )
+  else if (!filePath.isEmpty()) {
+#if defined(__native_client__)
 
-    if( String::equals( filePath, "/" ) ) {
+    if (String::equals(filePath, "/")) {
       fileType = DIRECTORY;
       return true;
     }
 
-    pp::FileRef file( ppFileSystem, filePath );
-    pp::FileIO  fio( Pepper::instance() );
+    pp::FileRef file(ppFileSystem, filePath);
+    pp::FileIO  fio(Pepper::instance());
     PP_FileInfo info;
 
-    if( fio.Open( file, 0, pp::BlockUntilComplete() ) == PP_OK &&
-        fio.Query( &info, pp::BlockUntilComplete() ) == PP_OK )
+    if (fio.Open(file, 0, pp::BlockUntilComplete()) == PP_OK &&
+        fio.Query(&info, pp::BlockUntilComplete()) == PP_OK)
     {
-      if( info.type == PP_FILETYPE_REGULAR ) {
+      if (info.type == PP_FILETYPE_REGULAR) {
         fileType = REGULAR;
-        fileSize = int( info.size );
-        fileTime = long64( max<double>( info.creation_time, info.last_modified_time ) );
+        fileSize = int(info.size);
+        fileTime = long64(max<double>(info.creation_time, info.last_modified_time));
       }
-      else if( info.type == PP_FILETYPE_DIRECTORY ) {
+      else if (info.type == PP_FILETYPE_DIRECTORY) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = long64( max<double>( info.creation_time, info.last_modified_time ) );
+        fileTime = long64(max<double>(info.creation_time, info.last_modified_time));
       }
     }
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
     WIN32_FILE_ATTRIBUTE_DATA info;
-    if( GetFileAttributesEx( filePath, GetFileExInfoStandard, &info ) == 0 ) {
+    if (GetFileAttributesEx(filePath, GetFileExInfoStandard, &info) == 0) {
       return false;
     }
 
@@ -454,26 +454,26 @@ bool File::stat()
       { info.ftLastWriteTime.dwLowDateTime, info.ftLastWriteTime.dwHighDateTime }
     };
 
-    long64 time = max<long64>( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
+    long64 time = max<long64>(creationTime.QuadPart, modificationTime.QuadPart) / 10000;
 
-    if( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+    if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
       fileType = DIRECTORY;
       fileSize = -1;
       fileTime = time;
     }
     else {
-      HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                                  FILE_ATTRIBUTE_NORMAL, nullptr );
-      if( handle != nullptr ) {
-        int size = int( GetFileSize( handle, nullptr ) );
+      HANDLE handle = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                 FILE_ATTRIBUTE_NORMAL, nullptr);
+      if (handle != nullptr) {
+        int size = int(GetFileSize(handle, nullptr));
 
-        if( size != int( INVALID_FILE_SIZE ) ) {
+        if (size != int(INVALID_FILE_SIZE)) {
           fileType = REGULAR;
           fileSize = size;
           fileTime = time;
         }
 
-        CloseHandle( handle );
+        CloseHandle(handle);
       }
     }
 
@@ -481,16 +481,16 @@ bool File::stat()
 
     struct stat info;
 
-    if( ::stat( filePath, &info ) == 0 ) {
-      if( S_ISREG( info.st_mode ) ) {
+    if (::stat(filePath, &info) == 0) {
+      if (S_ISREG(info.st_mode)) {
         fileType = REGULAR;
-        fileSize = int( info.st_size );
-        fileTime = max<long64>( info.st_ctime, info.st_mtime );
+        fileSize = int(info.st_size);
+        fileTime = max<long64>(info.st_ctime, info.st_mtime);
       }
-      else if( S_ISDIR( info.st_mode ) ) {
+      else if (S_ISDIR(info.st_mode)) {
         fileType = DIRECTORY;
         fileSize = -1;
-        fileTime = max<long64>( info.st_ctime, info.st_mtime );
+        fileTime = max<long64>(info.st_ctime, info.st_mtime);
       }
     }
 
@@ -520,15 +520,15 @@ String File::extension() const
   return filePath.fileExtension();
 }
 
-bool File::hasExtension( const char* ext ) const
+bool File::hasExtension(const char* ext) const
 {
-  return filePath.fileHasExtension( ext );
+  return filePath.fileHasExtension(ext);
 }
 
 String File::realDirectory() const
 {
-  if( filePath.fileIsVirtual() ) {
-    const char* realDir = PHYSFS_getRealDir( &filePath[1] );
+  if (filePath.fileIsVirtual()) {
+    const char* realDir = PHYSFS_getRealDir(&filePath[1]);
     return realDir == nullptr ? "" : realDir;
   }
   else {
@@ -538,99 +538,98 @@ String File::realDirectory() const
 
 String File::realPath() const
 {
-  if( filePath.fileIsVirtual() ) {
-    const char* realDir = PHYSFS_getRealDir( &filePath[1] );
+  if (filePath.fileIsVirtual()) {
+    const char* realDir = PHYSFS_getRealDir(&filePath[1]);
     realDir = realDir == nullptr ? "" : realDir;
 
-    return String::str( String::last( realDir ) == '/' ? "%s%s" : "%s/%s", realDir, &filePath[1] );
+    return String::str(String::last(realDir) == '/' ? "%s%s" : "%s/%s", realDir, &filePath[1]);
   }
   else {
     return filePath;
   }
 }
 
-bool File::read( char* buffer, int* size ) const
+bool File::read(char* buffer, int* size) const
 {
-  if( fileSize <= 0 ) {
+  if (fileSize <= 0) {
     *size = 0;
     return fileSize == 0;
   }
 
-  if( filePath.fileIsVirtual() ) {
-    PHYSFS_File* file = PHYSFS_openRead( &filePath[1] );
-    if( file == nullptr ) {
+  if (filePath.fileIsVirtual()) {
+    PHYSFS_File* file = PHYSFS_openRead(&filePath[1]);
+    if (file == nullptr) {
       *size = 0;
       return false;
     }
 
-    int result = int( PHYSFS_readBytes( file, buffer, ulong64( *size ) ) );
-    PHYSFS_close( file );
+    int result = int(PHYSFS_readBytes(file, buffer, ulong64(*size)));
+    PHYSFS_close(file);
 
     *size = result;
     return true;
   }
-  else if( data != nullptr ) {
-    *size = min<int>( *size, fileSize );
-    mCopy( buffer, data, *size );
+  else if (data != nullptr) {
+    *size = min<int>(*size, fileSize);
+    mCopy(buffer, data, *size);
     return true;
   }
   else {
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
-    pp::FileRef file( ppFileSystem, filePath );
-    pp::FileIO  fio( Pepper::instance() );
+    pp::FileRef file(ppFileSystem, filePath);
+    pp::FileIO  fio(Pepper::instance());
 
-    if( fio.Open( file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete() ) != PP_OK ) {
+    if (fio.Open(file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete()) != PP_OK) {
       *size = 0;
       return false;
     }
 
     int read = 0;
     int result;
-    while( ( result = fio.Read( read, &buffer[read], *size - read,
-                                pp::BlockUntilComplete() ) ) > 0 )
+    while ((result = fio.Read(read, &buffer[read], *size - read, pp::BlockUntilComplete())) > 0)
     {
       read += result;
     }
 
-    if( result < 0 || read != *size ) {
+    if (result < 0 || read != *size) {
       *size = read;
       return false;
     }
     return true;
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
-    HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                              FILE_ATTRIBUTE_NORMAL, nullptr );
-    if( file == nullptr ) {
+    HANDLE file = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == nullptr) {
       *size = 0;
       return false;
     }
 
     DWORD read = 0;
-    BOOL result = ReadFile( file, buffer, DWORD( *size ), &read, nullptr );
-    CloseHandle( file );
+    BOOL result = ReadFile(file, buffer, DWORD(*size), &read, nullptr);
+    CloseHandle(file);
 
-    if( !result || int( read ) != *size ) {
-      *size = int( read );
+    if (!result || int(read) != *size) {
+      *size = int(read);
       return false;
     }
     return true;
 
 #else
 
-    int fd = open( filePath, O_RDONLY );
-    if( fd < 0 ) {
+    int fd = open(filePath, O_RDONLY);
+    if (fd < 0) {
       *size = 0;
       return false;
     }
 
-    int read = int( ::read( fd, buffer, size_t( *size ) ) );
-    close( fd );
+    int read = int(::read(fd, buffer, size_t(*size)));
+    close(fd);
 
-    if( read != *size ) {
-      *size = max<int>( 0, read );
+    if (read != *size) {
+      *size = max<int>(0, read);
       return false;
     }
     return true;
@@ -639,13 +638,13 @@ bool File::read( char* buffer, int* size ) const
   }
 }
 
-bool File::read( OutputStream* os ) const
+bool File::read(OutputStream* os) const
 {
   int   size   = fileSize;
-  char* buffer = os->forward( fileSize );
-  bool  result = read( buffer, &size );
+  char* buffer = os->forward(fileSize);
+  bool  result = read(buffer, &size);
 
-  os->set( buffer + size );
+  os->set(buffer + size);
   return result;
 }
 
@@ -653,17 +652,17 @@ Buffer File::read() const
 {
   Buffer buffer;
 
-  if( fileSize <= 0 ) {
+  if (fileSize <= 0) {
     return buffer;
   }
 
   int size = fileSize;
-  buffer.resize( size );
+  buffer.resize(size);
 
-  read( buffer.begin(), &size );
+  read(buffer.begin(), &size);
 
-  if( size != fileSize ) {
-    buffer.resize( size );
+  if (size != fileSize) {
+    buffer.resize(size);
   }
   return buffer;
 }
@@ -672,75 +671,75 @@ String File::readString() const
 {
   char*  buffer;
   int    size = fileSize;
-  String s    = String::create( size, &buffer );
+  String s    = String::create(size, &buffer);
 
-  read( buffer, &size );
+  read(buffer, &size);
   buffer[size] = '\0';
   return s;
 }
 
-bool File::write( const char* buffer, int size ) const
+bool File::write(const char* buffer, int size) const
 {
-  if( filePath.fileIsVirtual() ) {
-    PHYSFS_File* file = PHYSFS_openWrite( &filePath[1] );
-    if( file == nullptr ) {
+  if (filePath.fileIsVirtual()) {
+    PHYSFS_File* file = PHYSFS_openWrite(&filePath[1]);
+    if (file == nullptr) {
       return false;
     }
 
-    int result = int( PHYSFS_writeBytes( file, buffer, ulong64( size ) ) );
-    PHYSFS_close( file );
+    int result = int(PHYSFS_writeBytes(file, buffer, ulong64(size)));
+    PHYSFS_close(file);
 
     return result == size;
   }
-  else if( data != nullptr ) {
-    OZ_ERROR( "oz::File: Writing to a memory mapped file '%s'", filePath.cstr() );
+  else if (data != nullptr) {
+    OZ_ERROR("oz::File: Writing to a memory mapped file '%s'", filePath.cstr());
   }
   else {
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
-    pp::FileRef file( ppFileSystem, filePath );
-    pp::FileIO  fio( Pepper::instance() );
+    pp::FileRef file(ppFileSystem, filePath);
+    pp::FileIO  fio(Pepper::instance());
 
-    if( fio.Open( file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
-                  pp::BlockUntilComplete() ) != PP_OK )
+    if (fio.Open(file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
+                 pp::BlockUntilComplete()) != PP_OK)
     {
       return false;
     }
 
     int written = 0;
     int result;
-    while( written != size &&
-          ( result = fio.Write( written, &buffer[written], size - written,
-                                pp::BlockUntilComplete() ) ) > 0 )
+    while (written != size &&
+           (result = fio.Write(written, &buffer[written], size - written,
+                               pp::BlockUntilComplete())) > 0)
     {
       written += result;
     }
 
     return written == size;
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
-    HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
-                              FILE_ATTRIBUTE_NORMAL, nullptr );
-    if( file == nullptr ) {
+    HANDLE file = CreateFile(filePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                             FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == nullptr) {
       return false;
     }
 
     DWORD written;
-    BOOL result = WriteFile( file, buffer, DWORD( size ), &written, nullptr );
-    CloseHandle( file );
+    BOOL result = WriteFile(file, buffer, DWORD(size), &written, nullptr);
+    CloseHandle(file);
 
-    return result && int( written ) == size;
+    return result && int(written) == size;
 
 #else
 
-    int fd = open( filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
-    if( fd < 0 ) {
+    int fd = open(filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd < 0) {
       return false;
     }
 
-    int result = int( ::write( fd, buffer, size_t( size ) ) );
-    close( fd );
+    int result = int(::write(fd, buffer, size_t(size)));
+    close(fd);
 
     return result == size;
 
@@ -748,45 +747,45 @@ bool File::write( const char* buffer, int size ) const
   }
 }
 
-bool File::write( const Buffer& buffer ) const
+bool File::write(const Buffer& buffer) const
 {
-  return write( buffer.begin(), buffer.length() );
+  return write(buffer.begin(), buffer.length());
 }
 
-bool File::writeString( const String& s ) const
+bool File::writeString(const String& s) const
 {
-  return write( s.cstr(), s.length() );
+  return write(s.cstr(), s.length());
 }
 
 bool File::map() const
 {
-  if( fileSize <= 0 ) {
+  if (fileSize <= 0) {
     return false;
   }
-  if( data != nullptr ) {
+  if (data != nullptr) {
     return true;
   }
 
-  if( filePath.fileIsVirtual() ) {
+  if (filePath.fileIsVirtual()) {
     int size = fileSize;
 
     data = new char[size];
-    read( data, &size );
+    read(data, &size);
 
-    if( size != fileSize ) {
+    if (size != fileSize) {
       delete[] data;
       data = nullptr;
     }
     return true;
   }
   else {
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
     // If we used `data` member here `read()` would copy it into itself.
     char* buffer = new char[fileSize];
     int   size   = fileSize;
 
-    if( !read( buffer, &size ) || size != fileSize ) {
+    if (!read(buffer, &size) || size != fileSize) {
       delete[] buffer;
       return nullptr;
     }
@@ -794,38 +793,38 @@ bool File::map() const
     data = buffer;
     return true;
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
-    HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                              FILE_ATTRIBUTE_NORMAL, nullptr );
-    if( file == nullptr ) {
+    HANDLE file = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == nullptr) {
       return nullptr;
     }
 
-    HANDLE mapping = CreateFileMapping( file, nullptr, PAGE_READONLY, 0, 0, nullptr );
-    if( mapping == nullptr ) {
-      CloseHandle( file );
+    HANDLE mapping = CreateFileMapping(file, nullptr, PAGE_READONLY, 0, 0, nullptr);
+    if (mapping == nullptr) {
+      CloseHandle(file);
       return nullptr;
     }
 
-    data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
+    data = static_cast<char*>(MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));
 
-    CloseHandle( mapping );
-    CloseHandle( file );
+    CloseHandle(mapping);
+    CloseHandle(file);
 
     return data != nullptr;
 
 #else
 
-    int fd = open( filePath, O_RDONLY );
-    if( fd < 0 ) {
+    int fd = open(filePath, O_RDONLY);
+    if (fd < 0) {
       return nullptr;
     }
 
-    data = static_cast<char*>( mmap( nullptr, size_t( fileSize ), PROT_READ, MAP_SHARED, fd, 0 ) );
+    data = static_cast<char*>(mmap(nullptr, size_t(fileSize), PROT_READ, MAP_SHARED, fd, 0));
     data = data == MAP_FAILED ? nullptr : data;
 
-    close( fd );
+    close(fd);
     return data != nullptr;
 
 #endif
@@ -834,49 +833,49 @@ bool File::map() const
 
 void File::unmap() const
 {
-  if( data == nullptr ) {
+  if (data == nullptr) {
     return;
   }
 
-  if( filePath.fileIsVirtual() ) {
+  if (filePath.fileIsVirtual()) {
     delete[] data;
   }
   else {
-#if defined( __native_client__ )
+#if defined(__native_client__)
     delete[] data;
-#elif defined( _WIN32 )
-    UnmapViewOfFile( data );
+#elif defined(_WIN32)
+    UnmapViewOfFile(data);
 #else
-    munmap( data, size_t( fileSize ) );
+    munmap(data, size_t(fileSize));
 #endif
   }
   data = nullptr;
 }
 
-InputStream File::inputStream( Endian::Order order ) const
+InputStream File::inputStream(Endian::Order order) const
 {
-  if( data == nullptr ) {
+  if (data == nullptr) {
     map();
 
-    if( data == nullptr ) {
-      return InputStream( nullptr, nullptr, order );
+    if (data == nullptr) {
+      return InputStream(nullptr, nullptr, order);
     }
   }
 
-  return InputStream( data, data + fileSize, order );
+  return InputStream(data, data + fileSize, order);
 }
 
 List<File> File::ls() const
 {
   List<File> list;
 
-  if( fileType != DIRECTORY ) {
+  if (fileType != DIRECTORY) {
     return list;
   }
 
-  if( filePath.fileIsVirtual() ) {
-    char** entities = PHYSFS_enumerateFiles( &filePath[1] );
-    if( entities == nullptr ) {
+  if (filePath.fileIsVirtual()) {
+    char** entities = PHYSFS_enumerateFiles(&filePath[1]);
+    if (entities == nullptr) {
       return list;
     }
 
@@ -884,80 +883,80 @@ List<File> File::ls() const
 
     // Count entries first.
     char** entity = entities;
-    while( *entity != nullptr ) {
-      if( ( *entity )[0] != '.' ) {
-        list.add( prefix + *entity );
+    while (*entity != nullptr) {
+      if ((*entity)[0] != '.') {
+        list.add(prefix + *entity);
       }
       ++entity;
     }
 
-    PHYSFS_freeList( entities );
+    PHYSFS_freeList(entities);
   }
   else {
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
     typedef std::vector<pp::DirectoryEntry>                 EntryList;
     typedef pp::CompletionCallbackWithOutput<EntryList>     CallbackWithOutput;
     typedef CallbackWithOutput::BaseType::OutputStorageType EntryListStorage;
 
-    pp::FileRef        file( ppFileSystem, filePath );
+    pp::FileRef        file(ppFileSystem, filePath);
     EntryListStorage   entryStorage;
-    CallbackWithOutput callback( &entryStorage );
+    CallbackWithOutput callback(&entryStorage);
 
-    file.ReadDirectoryEntries( callback );
+    file.ReadDirectoryEntries(callback);
     EntryList& entries = entryStorage.output();
 
     String prefix = filePath.last() == '/' ? filePath : filePath + "/";
 
-    for( size_t i = 0; i < entries.size(); ++i ) {
+    for (size_t i = 0; i < entries.size(); ++i) {
       std::string entryName = entries[i].file_ref().GetName().AsString();
 
-      if( entryName[0] != '.' ) {
-        list.add( prefix + entryName.c_str() );
+      if (entryName[0] != '.') {
+        list.add(prefix + entryName.c_str());
       }
     }
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
     WIN32_FIND_DATA entity;
 
-    HANDLE dir = FindFirstFile( filePath + "\\*.*", &entity );
-    if( dir == nullptr ) {
+    HANDLE dir = FindFirstFile(filePath + "\\*.*", &entity);
+    if (dir == nullptr) {
       return list;
     }
 
     String prefix = filePath.last() == '/' || filePath.last() == '\\' ? filePath : filePath + "/";
 
-    while( FindNextFile( dir, &entity ) ) {
-      if( entity.cFileName[0] != '.' ) {
-        list.add( prefix + entity.cFileName );
+    while (FindNextFile(dir, &entity)) {
+      if (entity.cFileName[0] != '.') {
+        list.add(prefix + entity.cFileName);
       }
     }
 
-    CloseHandle( dir );
+    CloseHandle(dir);
 
 #else
 
-    DIR* directory = opendir( filePath );
-    if( directory == nullptr ) {
+    DIR* directory = opendir(filePath);
+    if (directory == nullptr) {
       return list;
     }
 
-    char    entityBuffer[ offsetof( dirent, d_name ) + NAME_MAX + 1 ];
-    dirent* entityData = reinterpret_cast<dirent*>( entityBuffer );
+    char    entityBuffer[offsetof(dirent, d_name) + NAME_MAX + 1];
+    dirent* entityData = reinterpret_cast<dirent*>(entityBuffer);
     dirent* entity;
     String  prefix = filePath.last() == '/' ? filePath : filePath + "/";
 
-    readdir_r( directory, entityData, &entity );
+    readdir_r(directory, entityData, &entity);
 
-    while( entity != nullptr ) {
-      if( entity->d_name[0] != '.' ) {
-        list.add( prefix + entity->d_name );
+    while (entity != nullptr) {
+      if (entity->d_name[0] != '.') {
+        list.add(prefix + entity->d_name);
       }
-      readdir_r( directory, entityData, &entity );
+      readdir_r(directory, entityData, &entity);
     }
 
-    closedir( directory );
+    closedir(directory);
 
 #endif
   }
@@ -968,116 +967,110 @@ List<File> File::ls() const
 
 String File::cwd()
 {
-#if defined( __native_client__ )
-
+#if defined(__native_client__)
   return "";
-
-#elif defined( _WIN32 )
-
+#elif defined(_WIN32)
   char buffer[256];
-  bool hasFailed = GetCurrentDirectory( 256, buffer ) == 0;
+  bool hasFailed = GetCurrentDirectory(256, buffer) == 0;
   return hasFailed ? "" : buffer;
-
 #else
-
   char buffer[PATH_MAX];
-  bool hasFailed = getcwd( buffer, PATH_MAX ) == nullptr;
+  bool hasFailed = getcwd(buffer, PATH_MAX) == nullptr;
   return hasFailed ? "" : buffer;
-
 #endif
 }
 
-bool File::chdir( const char* path )
+bool File::chdir(const char* path)
 {
-#if defined( __native_client__ )
-  static_cast<void>( path );
+#if defined(__native_client__)
+  static_cast<void>(path);
   return false;
-#elif defined( _WIN32 )
-  return SetCurrentDirectory( path ) != 0;
+#elif defined(_WIN32)
+  return SetCurrentDirectory(path) != 0;
 #else
-  return ::chdir( path ) == 0;
+  return ::chdir(path) == 0;
 #endif
 }
 
-bool File::mkdir( const char* path )
+bool File::mkdir(const char* path)
 {
-  if( String::fileIsVirtual( path ) ) {
-    return PHYSFS_mkdir( &path[1] ) != 0;
+  if (String::fileIsVirtual(path)) {
+    return PHYSFS_mkdir(&path[1]) != 0;
   }
   else {
-#if defined( __native_client__ )
-    pp::FileRef file( ppFileSystem, path );
-    return file.MakeDirectory( 0, pp::BlockUntilComplete() ) == PP_OK;
-#elif defined( _WIN32 )
-    return CreateDirectory( path, nullptr ) != 0;
+#if defined(__native_client__)
+    pp::FileRef file(ppFileSystem, path);
+    return file.MakeDirectory(0, pp::BlockUntilComplete()) == PP_OK;
+#elif defined(_WIN32)
+    return CreateDirectory(path, nullptr) != 0;
 #else
-    return ::mkdir( path, 0755 ) == 0;
+    return ::mkdir(path, 0755) == 0;
 #endif
   }
 }
 
-bool File::cp( const File& src, const File& dest_ )
+bool File::cp(const File& src, const File& dest_)
 {
   File dest = dest_;
-  if( dest.type() == DIRECTORY ) {
+  if (dest.type() == DIRECTORY) {
     dest = dest.path() + "/" + src.name();
   }
 
   InputStream is = src.inputStream();
-  return !is.isAvailable() ? false : dest.write( is.begin(), is.available() );
+  return !is.isAvailable() ? false : dest.write(is.begin(), is.available());
 }
 
-bool File::mv( const File& src, const File& dest_ )
+bool File::mv(const File& src, const File& dest_)
 {
-  if( src.isVirtual() ) {
+  if (src.isVirtual()) {
     return false;
   }
 
   File dest = dest_;
-  if( dest.type() == DIRECTORY ) {
+  if (dest.type() == DIRECTORY) {
     dest = dest.path() + "/" + src.name();
   }
 
-#if defined( __native_client__ )
-  pp::FileRef srcFileRef( ppFileSystem, src.path() );
-  pp::FileRef destFileRef( ppFileSystem, dest.path() );
-  return srcFileRef.Rename( destFileRef, pp::BlockUntilComplete() ) == PP_OK;
-#elif defined( _WIN32 )
-  return MoveFile( src.path(), dest.path() );
+#if defined(__native_client__)
+  pp::FileRef srcFileRef(ppFileSystem, src.path());
+  pp::FileRef destFileRef(ppFileSystem, dest.path());
+  return srcFileRef.Rename(destFileRef, pp::BlockUntilComplete()) == PP_OK;
+#elif defined(_WIN32)
+  return MoveFile(src.path(), dest.path());
 #else
-  return rename( src.path(), dest.path() ) == 0;
+  return rename(src.path(), dest.path()) == 0;
 #endif
 }
 
-bool File::rm( const char* path )
+bool File::rm(const char* path)
 {
-  if( String::fileIsVirtual( path ) ) {
-    return PHYSFS_delete( &path[1] );
+  if (String::fileIsVirtual(path)) {
+    return PHYSFS_delete(&path[1]);
   }
   else {
-#if defined( __native_client__ )
-    pp::FileRef fileRef( ppFileSystem, path );
-    return fileRef.Delete( pp::BlockUntilComplete() ) == PP_OK;
-#elif defined( _WIN32 )
-    return File( path ).type() == DIRECTORY ? RemoveDirectory( path ) : DeleteFile( path );
+#if defined(__native_client__)
+    pp::FileRef fileRef(ppFileSystem, path);
+    return fileRef.Delete(pp::BlockUntilComplete()) == PP_OK;
+#elif defined(_WIN32)
+    return File(path).type() == DIRECTORY ? RemoveDirectory(path) : DeleteFile(path);
 #else
-    return remove( path ) == 0;
+    return remove(path) == 0;
 #endif
   }
 }
 
-bool File::mount( const char* path, const char* mountPoint, bool append )
+bool File::mount(const char* path, const char* mountPoint, bool append)
 {
-  return PHYSFS_mount( path, mountPoint, append ) != 0;
+  return PHYSFS_mount(path, mountPoint, append) != 0;
 }
 
-bool File::mountLocal( const char* path, bool append )
+bool File::mountLocal(const char* path, bool append)
 {
-  if( PHYSFS_setWriteDir( path ) == 0 ) {
+  if (PHYSFS_setWriteDir(path) == 0) {
     return false;
   }
-  if( PHYSFS_mount( path, nullptr, append ) == 0 ) {
-    PHYSFS_setWriteDir( nullptr );
+  if (PHYSFS_mount(path, nullptr, append) == 0) {
+    PHYSFS_setWriteDir(nullptr);
     return false;
   }
   return true;
@@ -1088,46 +1081,46 @@ const String& File::executablePath()
   return exePath;
 }
 
-void File::init( NaClFileSystem naclFileSystem, int naclSize )
+void File::init(NaClFileSystem naclFileSystem, int naclSize)
 {
-  static_cast<void>( naclFileSystem );
-  static_cast<void>( naclSize );
+  static_cast<void>(naclFileSystem);
+  static_cast<void>(naclSize);
 
 #ifdef __native_client__
 
   pp::Instance* ppInstance = Pepper::instance();
   pp::Module*   ppModule   = pp::Module::Get();
 
-  if( ppInstance == nullptr ) {
-    OZ_ERROR( "oz::File: NaCl instance is nullptr (was oz::Pepper::createModule called?)" );
+  if (ppInstance == nullptr) {
+    OZ_ERROR("oz::File: NaCl instance is nullptr (was oz::Pepper::createModule called?)");
   }
 
   PP_FileSystemType naclType = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                                              PP_FILESYSTEMTYPE_LOCALTEMPORARY;
+                               PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
   ppCore       = ppModule->core();
-  ppFileSystem = pp::FileSystem( ppInstance, naclType );
+  ppFileSystem = pp::FileSystem(ppInstance, naclType);
 
-  if( ppFileSystem.Open( naclSize, pp::BlockUntilComplete() ) != PP_OK ) {
-    OZ_ERROR( "oz::File: Local NaCl file system open failed" );
+  if (ppFileSystem.Open(naclSize, pp::BlockUntilComplete()) != PP_OK) {
+    OZ_ERROR("oz::File: Local NaCl file system open failed");
   }
-  if( ppInstance == nullptr ) {
-    OZ_ERROR( "oz::File: Pepper must be initialised prior to NaCl file system initialisation" );
+  if (ppInstance == nullptr) {
+    OZ_ERROR("oz::File: Pepper must be initialised prior to NaCl file system initialisation");
   }
-  if( ppCore->IsMainThread() ) {
-    OZ_ERROR( "oz::File: PhysicsFS cannot be initialised from the main NaCl thread" );
+  if (ppCore->IsMainThread()) {
+    OZ_ERROR("oz::File: PhysicsFS cannot be initialised from the main NaCl thread");
   }
 
-  PHYSFS_NACL_init( ppInstance->pp_instance(), ppModule->get_browser_interface(), naclType,
-                    naclSize );
+  PHYSFS_NACL_init(ppInstance->pp_instance(), ppModule->get_browser_interface(), naclType,
+                   naclSize);
 
 #endif
 
   initSpecialDirs();
   initExecutablePath();
 
-  if( PHYSFS_init( nullptr ) == 0 ) {
-    OZ_ERROR( "oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
+  if (PHYSFS_init(nullptr) == 0) {
+    OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError());
   }
 }
 
@@ -1135,7 +1128,7 @@ void File::destroy()
 {
   PHYSFS_deinit();
 
-  aFill<String, String>( specialDirs, aLength<String>( specialDirs ), String::EMPTY );
+  aFill<String, String>(specialDirs, aLength<String>(specialDirs), String::EMPTY);
   exePath = "";
 }
 

@@ -43,7 +43,7 @@ class Thread
 public:
 
   /// %Thread's main function type.
-  typedef void Main( void* data );
+  typedef void Main(void* data);
 
 private:
 
@@ -79,12 +79,12 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  Thread( const Thread& ) = delete;
+  Thread(const Thread&) = delete;
 
   /**
    * Copying or moving is not possible.
    */
-  Thread& operator = ( const Thread& ) = delete;
+  Thread& operator = (const Thread&) = delete;
 
   /**
    * True iff a joinable thread has been started but not yet joined or detached.
@@ -113,7 +113,7 @@ public:
    * @param main pointer to the thread's main function.
    * @param data pointer to user data, passed to the thread's main function.
    */
-  void start( const char* name, Main* main, void* data = nullptr );
+  void start(const char* name, Main* main, void* data = nullptr);
 
   /**
    * Detach a joinable thread.

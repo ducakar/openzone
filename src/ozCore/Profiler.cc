@@ -36,12 +36,12 @@ Profiler::CIterator Profiler::citer()
   return profileTimes.citer();
 }
 
-void Profiler::add( const char* key, uint micros )
+void Profiler::add(const char* key, uint micros)
 {
-  ulong64* time = profileTimes.find( key );
+  ulong64* time = profileTimes.find(key);
 
-  if( time == nullptr ) {
-    profileTimes.add( key, micros );
+  if (time == nullptr) {
+    profileTimes.add(key, micros);
   }
   else {
     *time += micros;

@@ -52,10 +52,10 @@ public:
 
 public:
 
-  explicit FragPool( const oz::FragPool* pool );
+  explicit FragPool(const oz::FragPool* pool);
   ~FragPool();
 
-  void draw( const Frag* frag );
+  void draw(const Frag* frag);
 
 };
 

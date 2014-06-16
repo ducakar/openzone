@@ -49,19 +49,19 @@ public:
 
   OZ_ALWAYS_INLINE
   explicit Capsule() :
-    Shape( CAPSULE )
+    Shape(CAPSULE)
   {}
 
   OZ_ALWAYS_INLINE
-  explicit Capsule( float ext_, float radius_ ) :
-    Shape( CAPSULE ), ext( ext_ ), radius( radius_ )
+  explicit Capsule(float ext_, float radius_) :
+    Shape(CAPSULE), ext(ext_), radius(radius_)
   {}
 
   ~Capsule() override;
 
-  Bounds getBounds( const Point& pos, const Mat3& rot ) const override;
+  Bounds getBounds(const Point& pos, const Mat3& rot) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

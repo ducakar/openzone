@@ -158,12 +158,12 @@ public:
 private:
 
   void loadDefaultKeyMap();
-  void loadKeyMap( const JSON& keyConfig );
+  void loadKeyMap(const JSON& keyConfig);
   JSON keyMapToJSON() const;
 
 public:
 
-  void readEvent( SDL_Event* event );
+  void readEvent(SDL_Event* event);
 
   void reset();
   void prepare();

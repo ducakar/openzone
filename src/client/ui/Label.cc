@@ -37,20 +37,20 @@ namespace client
 namespace ui
 {
 
-static const int EMPTY_HASH = hash( "" );
+static const int EMPTY_HASH = hash("");
 
 Label::Label() :
-  x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
-  width( 0 ), height( 0 ), lastHash( EMPTY_HASH ), texId( 0 )
+  x(0), y(0), align(Area::ALIGN_NONE), font(Font::MONO), offsetX(0), offsetY(0),
+  width(0), height(0), lastHash(EMPTY_HASH), texId(0)
 {}
 
-Label::Label( int x, int y, int align_, Font::Type font_, const char* s, ... ) :
-  align( align_ ), font( font_ ), offsetX( 0 ), offsetY( 0 ), lastHash( EMPTY_HASH ), texId( 0 )
+Label::Label(int x, int y, int align_, Font::Type font_, const char* s, ...) :
+  align(align_), font(font_), offsetX(0), offsetY(0), lastHash(EMPTY_HASH), texId(0)
 {
   va_list ap;
-  va_start( ap, s );
-  vset( x, y, s, ap );
-  va_end( ap );
+  va_start(ap, s);
+  vset(x, y, s, ap);
+  va_end(ap);
 }
 
 Label::~Label()
@@ -58,9 +58,9 @@ Label::~Label()
   clear();
 }
 
-Label::Label( Label&& l ) :
-  x( l.x ), y( l.y ), align( l.align ), font( l.font ), offsetX( l.offsetX ), offsetY( l.offsetY ),
-  width( l.width ), height( l.height ), lastHash( l.lastHash ), texId( l.texId )
+Label::Label(Label&& l) :
+  x(l.x), y(l.y), align(l.align), font(l.font), offsetX(l.offsetX), offsetY(l.offsetY),
+  width(l.width), height(l.height), lastHash(l.lastHash), texId(l.texId)
 {
   l.x        = 0;
   l.y        = 0;
@@ -74,9 +74,9 @@ Label::Label( Label&& l ) :
   l.texId    = 0;
 }
 
-Label& Label::operator = ( Label&& l )
+Label& Label::operator = (Label&& l)
 {
-  if( &l == this ) {
+  if (&l == this) {
     return *this;
   }
 
@@ -107,104 +107,104 @@ Label& Label::operator = ( Label&& l )
   return *this;
 }
 
-void Label::vset( int x, int y, const char* s, va_list ap )
+void Label::vset(int x, int y, const char* s, va_list ap)
 {
-  hard_assert( s != nullptr );
+  hard_assert(s != nullptr);
 
   char buffer[1024];
-  vsnprintf( buffer, 1024, s, ap );
+  vsnprintf(buffer, 1024, s, ap);
   buffer[1023] = '\0';
 
-  if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
+  if (buffer[0] == '\0' || (buffer[0] == ' ' && buffer[1] == '\0')) {
     clear();
   }
   else {
-    int newHash = hash( buffer );
+    int newHash = hash(buffer);
 
-    if( newHash != lastHash ) {
+    if (newHash != lastHash) {
       MainCall() << [&]
       {
-        if( texId == 0 ) {
-          glGenTextures( 1, &texId );
+        if (texId == 0) {
+          glGenTextures(1, &texId);
         }
 
-        glBindTexture( GL_TEXTURE_2D, texId );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         width = -1;
-        style.fonts[font].upload( buffer, &width, &height );
+        style.fonts[font].upload(buffer, &width, &height);
 
-        glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+        glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
       };
     }
   }
 
-  setPosition( x, y );
+  setPosition(x, y);
 }
 
-void Label::set( int x, int y, const char* s, ... )
+void Label::set(int x, int y, const char* s, ...)
 {
   va_list ap;
-  va_start( ap, s );
-  vset( x, y, s, ap );
-  va_end( ap );
+  va_start(ap, s);
+  vset(x, y, s, ap);
+  va_end(ap);
 }
 
-void Label::setPosition( int x_, int y_ )
+void Label::setPosition(int x_, int y_)
 {
   x       = x_;
   y       = y_;
   offsetX = x_;
   offsetY = y_;
 
-  if( align & Area::ALIGN_RIGHT ) {
+  if (align & Area::ALIGN_RIGHT) {
     offsetX -= width;
   }
-  else if( align & Area::ALIGN_HCENTRE ) {
+  else if (align & Area::ALIGN_HCENTRE) {
     offsetX -= width / 2;
   }
-  if( align & Area::ALIGN_TOP ) {
+  if (align & Area::ALIGN_TOP) {
     offsetY -= height;
   }
-  else if( align & Area::ALIGN_VCENTRE ) {
+  else if (align & Area::ALIGN_VCENTRE) {
     offsetY -= height / 2;
   }
 }
 
-void Label::setText( const char* s, ... )
+void Label::setText(const char* s, ...)
 {
   va_list ap;
-  va_start( ap, s );
-  vset( x, y, s, ap );
-  va_end( ap );
+  va_start(ap, s);
+  vset(x, y, s, ap);
+  va_end(ap);
 }
 
-void Label::draw( const Area* area )
+void Label::draw(const Area* area)
 {
-  if( texId == 0 ) {
+  if (texId == 0) {
     return;
   }
 
-  int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
-  int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
+  int posX = area->x + (x < 0 ? area->width  + offsetX : offsetX);
+  int posY = area->y + (y < 0 ? area->height + offsetY : offsetY);
 
-  glBindTexture( GL_TEXTURE_2D, texId );
+  glBindTexture(GL_TEXTURE_2D, texId);
 
-  shape.colour( style.colours.textBackground );
-  shape.fill( posX + 1, posY - 1, width, height );
-  shape.colour( style.colours.text );
-  shape.fill( posX, posY, width, height );
+  shape.colour(style.colours.textBackground);
+  shape.fill(posX + 1, posY - 1, width, height);
+  shape.colour(style.colours.text);
+  shape.fill(posX, posY, width, height);
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 }
 
 void Label::clear()
 {
-  if( texId != 0 ) {
+  if (texId != 0) {
     MainCall() << [&]
     {
-      glDeleteTextures( 1, &texId );
+      glDeleteTextures(1, &texId);
     };
 
     offsetX  = x;

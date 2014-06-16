@@ -32,34 +32,34 @@ namespace oz
 namespace builder
 {
 
-void Caelum::build( const char* name )
+void Caelum::build(const char* name)
 {
-  Log::println( "Prebuilding Caelum '%s' {", name );
+  Log::println("Prebuilding Caelum '%s' {", name);
   Log::indent();
 
   int texOptions = ImageBuilder::MIPMAPS_BIT;
-  if( context.useS3TC ) {
+  if (context.useS3TC) {
     texOptions |= ImageBuilder::COMPRESSION_BIT;
   }
 
-  String path = String::str( "caelum/%s", name );
-  File::mkdir( path );
+  String path = String::str("caelum/%s", name);
+  File::mkdir(path);
 
-  for( int i = 0; i < 6; ++i ) {
-    String path = String::str( "@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i] );
+  for (int i = 0; i < 6; ++i) {
+    String path = String::str("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);
 
-    context.buildTexture( path, &path[1], false );
+    context.buildTexture(path, &path[1], false);
   }
 
-  if( !ImageBuilder::convertToDDS( "@caelum/sun.png", texOptions, "caelum" ) ) {
-    OZ_ERROR( "Failed to build sun texture" );
+  if (!ImageBuilder::convertToDDS("@caelum/sun.png", texOptions, "caelum")) {
+    OZ_ERROR("Failed to build sun texture");
   }
-  if( !ImageBuilder::convertToDDS( "@caelum/moon.png", texOptions, "caelum" ) ) {
-    OZ_ERROR( "Failed to build moon texture" );
+  if (!ImageBuilder::convertToDDS("@caelum/moon.png", texOptions, "caelum")) {
+    OZ_ERROR("Failed to build moon texture");
   }
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 Caelum caelum;

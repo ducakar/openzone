@@ -49,15 +49,15 @@ private:
   const char*    url;
   volatile float downloadProgress;
 
-  static void readCallback( void* data, int result );
-  static void beginCallback( void* data, int result );
+  static void readCallback(void* data, int result);
+  static void beginCallback(void* data, int result);
 
 public:
 
   bool isComplete() const;
   float progress() const;
 
-  void begin( const char* url );
+  void begin(const char* url);
 
   /**
    * Get (with move semantics) buffer with downloaded contents.

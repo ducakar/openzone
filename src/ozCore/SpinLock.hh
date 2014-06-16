@@ -54,20 +54,20 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  SpinLock( const SpinLock& ) = delete;
+  SpinLock(const SpinLock&) = delete;
 
   /**
    * Copying or moving is not possible.
    */
-  SpinLock& operator = ( const SpinLock& ) = delete;
+  SpinLock& operator = (const SpinLock&) = delete;
 
   /**
    * Loop performing a lock operation until it switches from an unlocked to a locked state.
    */
   void lock()
   {
-    while( __sync_lock_test_and_set( &flag, 1 ) != 0 ) {
-      while( flag != 0 );
+    while (__sync_lock_test_and_set(&flag, 1) != 0) {
+      while (flag != 0);
     }
   }
 
@@ -78,7 +78,7 @@ public:
    */
   bool tryLock()
   {
-    return __sync_lock_test_and_set( &flag, 1 ) == 0;
+    return __sync_lock_test_and_set(&flag, 1) == 0;
   }
 
   /**
@@ -86,7 +86,7 @@ public:
    */
   void unlock()
   {
-    __sync_lock_release( &flag );
+    __sync_lock_release(&flag);
   }
 
 };

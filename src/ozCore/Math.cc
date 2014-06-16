@@ -37,29 +37,29 @@ constexpr float Math::INF;
 constexpr float Math::E;
 constexpr float Math::TAU;
 
-void Math::seed( int n )
+void Math::seed(int n)
 {
-  srand( uint( n ) );
+  srand(uint(n));
 }
 
-int Math::rand( int max )
+int Math::rand(int max)
 {
   return ::rand() % max;
 }
 
 float Math::rand()
 {
-  return float( ::rand() ) / float( RAND_MAX );
+  return float(::rand()) / float(RAND_MAX);
 }
 
 float Math::centralRand()
 {
-  return float( ::rand() - RAND_MAX / 2 ) / float( RAND_MAX / 2 );
+  return float(::rand() - RAND_MAX / 2) / float(RAND_MAX / 2);
 }
 
 float Math::normalRand()
 {
-  float x = float( ::rand() - RAND_MAX / 2 ) / float( RAND_MAX / 2 );
+  float x = float(::rand() - RAND_MAX / 2) / float(RAND_MAX / 2);
   return x*x*x;
 }
 

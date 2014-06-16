@@ -35,37 +35,37 @@ Pool<MD2WeaponImago, 256> MD2WeaponImago::pool;
 
 MD2WeaponImago::~MD2WeaponImago()
 {
-  context.releaseModel( clazz->imagoModel );
+  context.releaseModel(clazz->imagoModel);
 }
 
-Imago* MD2WeaponImago::create( const Object* obj )
+Imago* MD2WeaponImago::create(const Object* obj)
 {
-  hard_assert( obj->flags & Object::DYNAMIC_BIT );
-  hard_assert( obj->flags & Object::WEAPON_BIT );
+  hard_assert(obj->flags & Object::DYNAMIC_BIT);
+  hard_assert(obj->flags & Object::WEAPON_BIT);
 
-  MD2WeaponImago* imago = new MD2WeaponImago( obj );
+  MD2WeaponImago* imago = new MD2WeaponImago(obj);
 
-  imago->model = context.requestModel( obj->clazz->imagoModel );
+  imago->model = context.requestModel(obj->clazz->imagoModel);
 
   return imago;
 }
 
-void MD2WeaponImago::draw( const Imago* parent )
+void MD2WeaponImago::draw(const Imago* parent)
 {
-  if( !model->isLoaded() ) {
+  if (!model->isLoaded()) {
     return;
   }
 
-  if( parent == nullptr ) {
-    tf.model = Mat4::translation( obj->p - Point::ORIGIN );
-    tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
+  if (parent == nullptr) {
+    tf.model = Mat4::translation(obj->p - Point::ORIGIN);
+    tf.model.rotateZ(float(obj->flags & Object::HEADING_MASK) * Math::TAU / 4.0f);
 
-    model->schedule( 0, Model::SCENE_QUEUE );
+    model->schedule(0, Model::SCENE_QUEUE);
   }
-  else if( parent->flags & Imago::MD2MODEL_BIT ) {
-    const MD2Imago* parentImago = static_cast<const MD2Imago*>( parent );
+  else if (parent->flags & Imago::MD2MODEL_BIT) {
+    const MD2Imago* parentImago = static_cast<const MD2Imago*>(parent);
 
-    model->scheduleMD2Anim( &parentImago->anim, Model::SCENE_QUEUE );
+    model->scheduleMD2Anim(&parentImago->anim, Model::SCENE_QUEUE);
   }
 }
 

@@ -35,7 +35,7 @@ namespace oz
 namespace client
 {
 
-void Loader::preloadMain( void* )
+void Loader::preloadMain(void*)
 {
   loader.preloadRun();
 }
@@ -45,45 +45,45 @@ void Loader::cleanupRender()
   OZ_GL_CHECK_ERROR();
 
   // delete imagines of removed objects
-  for( auto i = context.imagines.citer(); i.isValid(); ) {
+  for (auto i = context.imagines.citer(); i.isValid();) {
     auto imago = i;
     ++i;
 
     // We can afford to do this as orbis.objects[key] will remain nullptr at least one whole tick
     // after the object has been removed (because matrix also needs to clear references to this
     // object).
-    if( orbis.obj( imago->key ) == nullptr ) {
+    if (orbis.obj(imago->key) == nullptr) {
       delete imago->value;
-      context.imagines.exclude( imago->key );
+      context.imagines.exclude(imago->key);
     }
   }
 
-  if( tick % IMAGO_CLEAR_INTERVAL == IMAGO_CLEAR_LAG ) {
+  if (tick % IMAGO_CLEAR_INTERVAL == IMAGO_CLEAR_LAG) {
     // remove unused models
-    for( auto i = context.imagines.citer(); i.isValid(); ) {
+    for (auto i = context.imagines.citer(); i.isValid();) {
       auto imago = i;
       ++i;
 
-      if( imago->value->flags & Imago::UPDATED_BIT ) {
+      if (imago->value->flags & Imago::UPDATED_BIT) {
         imago->value->flags &= ~Imago::UPDATED_BIT;
       }
       else {
         delete imago->value;
-        context.imagines.exclude( imago->key );
+        context.imagines.exclude(imago->key);
       }
     }
   }
 
-  if( tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG ) {
+  if (tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG) {
     // remove unused frag pools
-    for( int i = 0; i < liber.nFragPools; ++i ) {
+    for (int i = 0; i < liber.nFragPools; ++i) {
       FragPool* pool = context.fragPools[i];
 
-      if( pool == nullptr ) {
+      if (pool == nullptr) {
         continue;
       }
 
-      if( pool->flags & FragPool::UPDATED_BIT ) {
+      if (pool->flags & FragPool::UPDATED_BIT) {
         pool->flags &= ~FragPool::UPDATED_BIT;
       }
       else {
@@ -93,12 +93,12 @@ void Loader::cleanupRender()
     }
   }
 
-  if( tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG ) {
+  if (tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG) {
     // remove unused BSPs
-    for( int i = 0; i < liber.nBSPs; ++i ) {
+    for (int i = 0; i < liber.nBSPs; ++i) {
       Context::Resource<BSPImago*>& bsp = context.bsps[i];
 
-      if( bsp.nUsers != 0 ) {
+      if (bsp.nUsers != 0) {
         bsp.nUsers = 0;
       }
       else {
@@ -110,11 +110,11 @@ void Loader::cleanupRender()
     }
   }
 
-  if( tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG ) {
-    for( int i = 0; i < liber.models.length(); ++i ) {
+  if (tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG) {
+    for (int i = 0; i < liber.models.length(); ++i) {
       Context::Resource<Model*>& model = context.models[i];
 
-      if( model.nUsers == 0 ) {
+      if (model.nUsers == 0) {
         delete model.handle;
 
         model.handle = nullptr;
@@ -123,8 +123,8 @@ void Loader::cleanupRender()
     }
   }
 
-  if( tick % PARTICLE_CLEAR_INTERVAL == PARTICLE_CLEAR_LAG ) {
-    for( int i = 0; i < liber.parts.length(); ++i ) {
+  if (tick % PARTICLE_CLEAR_INTERVAL == PARTICLE_CLEAR_LAG) {
+    for (int i = 0; i < liber.parts.length(); ++i) {
     }
   }
 
@@ -136,24 +136,24 @@ void Loader::cleanupSound()
   OZ_AL_CHECK_ERROR();
 
   // remove audios of removed objects
-  for( auto i = context.audios.citer(); i.isValid(); ) {
+  for (auto i = context.audios.citer(); i.isValid();) {
     auto audio = i;
     ++i;
 
     // We can afford to do this as orbis.objects[key] will remain nullptr at least one whole tick after
     // the object has been removed (because matrix also needs to clear references to this object).
-    if( orbis.obj( audio->key ) == nullptr ) {
+    if (orbis.obj(audio->key) == nullptr) {
       delete audio->value;
-      context.audios.exclude( audio->key );
+      context.audios.exclude(audio->key);
     }
   }
 
-  if( tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG ) {
+  if (tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG) {
     // remove unused BSPAudios
-    for( int i = 0; i < liber.nBSPs; ++i ) {
+    for (int i = 0; i < liber.nBSPs; ++i) {
       Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
 
-      if( bspAudio.nUsers != 0 ) {
+      if (bspAudio.nUsers != 0) {
         bspAudio.nUsers = 0;
       }
       else {
@@ -165,35 +165,35 @@ void Loader::cleanupSound()
     }
   }
 
-  if( tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG ) {
+  if (tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG) {
     // remove unused Audio objects
-    for( auto i = context.audios.citer(); i.isValid(); ) {
+    for (auto i = context.audios.citer(); i.isValid();) {
       auto audio = i;
       ++i;
 
-      if( audio->value->flags & Audio::UPDATED_BIT ) {
+      if (audio->value->flags & Audio::UPDATED_BIT) {
         audio->value->flags &= ~Audio::UPDATED_BIT ;
       }
       else {
         delete audio->value;
-        context.audios.exclude( audio->key );
+        context.audios.exclude(audio->key);
       }
     }
   }
 
-  if( tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG ) {
+  if (tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG) {
     // remove stopped sources of non-continous sounds
     Context::Source* prev = nullptr;
     Context::Source* src  = context.sources.first();
 
-    while( src != nullptr ) {
+    while (src != nullptr) {
       Context::Source* next = src->next[0];
 
       ALint value;
-      alGetSourcei( src->id, AL_SOURCE_STATE, &value );
+      alGetSourcei(src->id, AL_SOURCE_STATE, &value);
 
-      if( value != AL_PLAYING ) {
-        context.removeSource( src, prev );
+      if (value != AL_PLAYING) {
+        context.removeSource(src, prev);
       }
       else {
         prev = src;
@@ -203,34 +203,34 @@ void Loader::cleanupSound()
   }
 
   // Remove continuous sounds that are not played any more.
-  for( auto i = context.contSources.iter(); i.isValid(); ) {
+  for (auto i = context.contSources.iter(); i.isValid();) {
     auto src = i;
     ++i;
 
-    if( src->value.isUpdated ) {
+    if (src->value.isUpdated) {
       src->value.isUpdated = false;
     }
     else {
-      context.removeContSource( &src->value, src->key );
+      context.removeContSource(&src->value, src->key);
     }
   }
 
   int speaker = context.speakSource.owner;
-  if( speaker < 0 ) {
-    if( context.speakSource.thread.isValid() ) {
+  if (speaker < 0) {
+    if (context.speakSource.thread.isValid()) {
       context.releaseSpeakSource();
     }
   }
-  else if( orbis.obj( speaker ) == nullptr ) {
+  else if (orbis.obj(speaker) == nullptr) {
     context.speakSource.isAlive = false;
   }
 
-  if( tick % SOUND_CLEAR_INTERVAL == SOUND_CLEAR_LAG ) {
-    for( int i = 0; i < liber.sounds.length(); ++i ) {
+  if (tick % SOUND_CLEAR_INTERVAL == SOUND_CLEAR_LAG) {
+    for (int i = 0; i < liber.sounds.length(); ++i) {
       Context::Resource<uint>& sound = context.sounds[i];
 
-      if( sound.nUsers == 0 ) {
-        context.freeSound( i );
+      if (sound.nUsers == 0) {
+        context.freeSound(i);
       }
     }
   }
@@ -240,62 +240,62 @@ void Loader::cleanupSound()
 
 void Loader::preloadRender()
 {
-  for( int i = 0; i < liber.nBSPs; ++i ) {
+  for (int i = 0; i < liber.nBSPs; ++i) {
     BSPImago* bsp = context.bsps[i].handle;
 
-    if( bsp != nullptr && !bsp->isLoaded() && !bsp->isPreloaded() ) {
+    if (bsp != nullptr && !bsp->isLoaded() && !bsp->isPreloaded()) {
       bsp->preload();
     }
   }
 
-  for( int i = 0; i < liber.models.length(); ++i ) {
+  for (int i = 0; i < liber.models.length(); ++i) {
     Model* model = context.models[i].handle;
 
-    if( model != nullptr && !model->isLoaded() && !model->isPreloaded() ) {
+    if (model != nullptr && !model->isLoaded() && !model->isPreloaded()) {
       model->preload();
     }
   }
 }
 
-void Loader::uploadRender( bool isOneShot )
+void Loader::uploadRender(bool isOneShot)
 {
-  if( caelum.id != orbis.caelum.id ) {
+  if (caelum.id != orbis.caelum.id) {
     caelum.unload();
     caelum.load();
 
-    if( isOneShot ) {
+    if (isOneShot) {
       return;
     }
   }
 
-  if( terra.id != orbis.terra.id ) {
+  if (terra.id != orbis.terra.id) {
     terra.unload();
     terra.load();
 
-    if( isOneShot ) {
+    if (isOneShot) {
       return;
     }
   }
 
-  for( int i = 0; i < liber.nBSPs; ++i ) {
+  for (int i = 0; i < liber.nBSPs; ++i) {
     BSPImago* bsp = context.bsps[i].handle;
 
-    if( bsp != nullptr && bsp->isPreloaded() ) {
+    if (bsp != nullptr && bsp->isPreloaded()) {
       bsp->load();
 
-      if( isOneShot ) {
+      if (isOneShot) {
         return;
       }
     }
   }
 
-  for( int i = 0; i < liber.models.length(); ++i ) {
+  for (int i = 0; i < liber.models.length(); ++i) {
     Model* model = context.models[i].handle;
 
-    if( model != nullptr && model->isPreloaded() ) {
+    if (model != nullptr && model->isPreloaded()) {
       model->load();
 
-      if( isOneShot ) {
+      if (isOneShot) {
         return;
       }
     }
@@ -306,7 +306,7 @@ void Loader::preloadRun()
 {
   preloadAuxSemaphore.wait();
 
-  while( isPreloadAlive ) {
+  while (isPreloadAlive) {
     preloadRender();
 
     preloadMainSemaphore.post();
@@ -316,15 +316,15 @@ void Loader::preloadRun()
 
 void Loader::makeScreenshot()
 {
-  const char* picturesDir = config["dir.pictures"].get( File::PICTURES );
+  const char* picturesDir = config["dir.pictures"].get(File::PICTURES);
 
-  File::mkdir( picturesDir );
+  File::mkdir(picturesDir);
 
   char path[256];
-  snprintf( path, 256, "%s/OpenZone %s.png", picturesDir, Time::local().toString().cstr() );
+  snprintf(path, 256, "%s/OpenZone %s.png", picturesDir, Time::local().toString().cstr());
 
-  Log::println( "Screenshot to '%s' scheduled in background thread", path );
-  Window::screenshot( path );
+  Log::println("Screenshot to '%s' scheduled in background thread", path);
+  Window::screenshot(path);
 }
 
 void Loader::syncUpdate()
@@ -332,7 +332,7 @@ void Loader::syncUpdate()
   MainCall() << [&]
   {
     preloadRender();
-    loader.uploadRender( false );
+    loader.uploadRender(false);
   };
 }
 
@@ -340,17 +340,17 @@ void Loader::update()
 {
   cleanupSound();
 
-  if( !preloadMainSemaphore.tryWait() ) {
+  if (!preloadMainSemaphore.tryWait()) {
     return;
   }
 
   MainCall() << []
   {
     loader.cleanupRender();
-    loader.uploadRender( true );
+    loader.uploadRender(true);
   };
 
-  tick = ( tick + 1 ) % TICK_PERIOD;
+  tick = (tick + 1) % TICK_PERIOD;
 
   preloadAuxSemaphore.post();
 }
@@ -371,7 +371,7 @@ void Loader::init()
 {
   isPreloadAlive = true;
 
-  preloadThread.start( "preload", preloadMain );
+  preloadThread.start("preload", preloadMain);
 }
 
 void Loader::destroy()

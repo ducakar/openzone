@@ -34,35 +34,35 @@ namespace oz
 namespace client
 {
 
-void NaClDownloader::readCallback( void* data, int result )
+void NaClDownloader::readCallback(void* data, int result)
 {
-  NaClDownloader* downloader = static_cast<NaClDownloader*>( data );
+  NaClDownloader* downloader = static_cast<NaClDownloader*>(data);
 
-  if( result < 0 ) {
+  if (result < 0) {
     downloader->buffer.free();
   }
   else {
     int length = downloader->buffer.tell() - 4096 + result;
 
     downloader->buffer.rewind();
-    downloader->buffer.forward( length );
+    downloader->buffer.forward(length);
 
-    if( result != 0 ) {
+    if (result != 0) {
       pp::URLLoader* loader = downloader->loader;
 
       long64 received, total;
-      int hasProgress = loader->GetDownloadProgress( &received, &total );
+      int hasProgress = loader->GetDownloadProgress(&received, &total);
 
-      if( hasProgress && total >= 0 ) {
-        downloader->downloadProgress = float( received ) / float( total );
+      if (hasProgress && total >= 0) {
+        downloader->downloadProgress = float(received) / float(total);
       }
       else {
         downloader->downloadProgress = Math::NaN;
       }
 
-      int ret = loader->ReadResponseBody( downloader->buffer.forward( 4096 ), 4096,
-                                          pp::CompletionCallback( readCallback, downloader ) );
-      if( ret == PP_OK_COMPLETIONPENDING ) {
+      int ret = loader->ReadResponseBody(downloader->buffer.forward(4096), 4096,
+                                         pp::CompletionCallback(readCallback, downloader));
+      if (ret == PP_OK_COMPLETIONPENDING) {
         return;
       }
     }
@@ -73,15 +73,15 @@ void NaClDownloader::readCallback( void* data, int result )
   downloader->semaphore.post();
 }
 
-void NaClDownloader::beginCallback( void* data, int result )
+void NaClDownloader::beginCallback(void* data, int result)
 {
-  NaClDownloader* downloader = static_cast<NaClDownloader*>( data );
+  NaClDownloader* downloader = static_cast<NaClDownloader*>(data);
 
-  if( result == PP_OK ) {
+  if (result == PP_OK) {
     pp::URLLoader* loader = downloader->loader;
-    int ret = loader->ReadResponseBody( downloader->buffer.forward( 4096 ), 4096,
-                                        pp::CompletionCallback( readCallback, downloader ) );
-    if( ret == PP_OK_COMPLETIONPENDING ) {
+    int ret = loader->ReadResponseBody(downloader->buffer.forward(4096), 4096,
+                                       pp::CompletionCallback(readCallback, downloader));
+    if (ret == PP_OK_COMPLETIONPENDING) {
       return;
     }
   }
@@ -102,27 +102,27 @@ float NaClDownloader::progress() const
   return downloadProgress;
 }
 
-void NaClDownloader::begin( const char* url_ )
+void NaClDownloader::begin(const char* url_)
 {
   url = url_;
 
-  buffer = OutputStream( 0 );
+  buffer = OutputStream(0);
 
   MainCall() << [&]
   {
-    pp::URLRequestInfo request( Pepper::instance() );
-    request.SetURL( url );
-    request.SetMethod( "GET" );
-    request.SetRecordDownloadProgress( true );
+    pp::URLRequestInfo request(Pepper::instance());
+    request.SetURL(url);
+    request.SetMethod("GET");
+    request.SetRecordDownloadProgress(true);
 
-    loader = new pp::URLLoader( Pepper::instance() );
-    if( loader == nullptr ) {
+    loader = new pp::URLLoader(Pepper::instance());
+    if (loader == nullptr) {
       semaphore.post();
       return;
     }
 
-    int ret = loader->Open( request, pp::CompletionCallback( beginCallback, this ) );
-    if( ret != PP_OK_COMPLETIONPENDING ) {
+    int ret = loader->Open(request, pp::CompletionCallback(beginCallback, this));
+    if (ret != PP_OK_COMPLETIONPENDING) {
       delete loader;
       semaphore.post();
       return;
@@ -134,7 +134,7 @@ OutputStream NaClDownloader::take()
 {
   semaphore.wait();
 
-  return static_cast<OutputStream&&>( buffer );
+  return static_cast<OutputStream&&>(buffer);
 }
 
 }

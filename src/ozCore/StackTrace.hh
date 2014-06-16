@@ -60,7 +60,7 @@ public:
    *
    * @param nSkippedFrames number of stack frames to skip (must be >= 0).
    */
-  static StackTrace current( int nSkippedFrames );
+  static StackTrace current(int nSkippedFrames);
 
   /**
    * Return string table for stack frames.

@@ -95,25 +95,25 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Set( InitialiserList<Elem> l )
+  Set(InitialiserList<Elem> l)
   {
-    for( const Elem& e : l ) {
-      add( e );
+    for (const Elem& e : l) {
+      add(e);
     }
   }
 
   /**
    * Copy constructor, copies elements.
    */
-  Set( const Set& s ) :
-    List<Elem>( s )
+  Set(const Set& s) :
+    List<Elem>(s)
   {}
 
   /**
    * Move constructor, moves element storage.
    */
-  Set( Set&& s ) :
-    List<Elem>( static_cast<Set&&>( s ) )
+  Set(Set&& s) :
+    List<Elem>(static_cast<Set&&>(s))
   {}
 
   /**
@@ -121,42 +121,42 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator = ( const Set& s )
+  Set& operator = (const Set& s)
   {
-    return static_cast<Set&>( List<Elem>::operator = ( s ) );
+    return static_cast<Set&>(List<Elem>::operator = (s));
   }
 
   /**
    * Move operator, moves element storage.
    */
-  Set& operator = ( Set&& s )
+  Set& operator = (Set&& s)
   {
-    return static_cast<Set&>( List<Elem>::operator = ( static_cast<Set&&>( s ) ) );
+    return static_cast<Set&>(List<Elem>::operator = (static_cast<Set&&>(s)));
   }
 
   /**
    * True iff respective elements are equal.
    */
-  bool operator == ( const Set& s ) const
+  bool operator == (const Set& s) const
   {
-    return List<Elem>::operator == ( s );
+    return List<Elem>::operator == (s);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator != ( const Set& s ) const
+  bool operator != (const Set& s) const
   {
-    return List<Elem>::operator != ( s );
+    return List<Elem>::operator != (s);
   }
 
   /**
    * True iff a given key is found in the set.
    */
   template <typename Elem_ = Elem>
-  bool contains( const Elem_& elem ) const
+  bool contains(const Elem_& elem) const
   {
-    int i = aBisection<Elem, Elem_>( data, count, elem );
+    int i = aBisection<Elem, Elem_>(data, count, elem);
     return i >= 0 && data[i] == elem;
   }
 
@@ -164,9 +164,9 @@ public:
    * Index of the element with a given value or -1 if not found.
    */
   template <typename Elem_ = Elem>
-  int index( const Elem_& elem ) const
+  int index(const Elem_& elem) const
   {
-    int i = aBisection<Elem, Elem_>( data, count, elem );
+    int i = aBisection<Elem, Elem_>(data, count, elem);
     return i >= 0 && data[i] == elem ? i : -1;
   }
 
@@ -176,16 +176,16 @@ public:
    * @return Position of the inserted element.
    */
   template <typename Elem_ = Elem>
-  int add( Elem_&& elem )
+  int add(Elem_&& elem)
   {
-    int i = aBisection<Elem, Elem>( data, count, elem );
+    int i = aBisection<Elem, Elem>(data, count, elem);
 
-    if( i >= 0 && data[i] == elem ) {
-      data[i] = static_cast<Elem_&&>( elem );
+    if (i >= 0 && data[i] == elem) {
+      data[i] = static_cast<Elem_&&>(elem);
       return i;
     }
     else {
-      insert( i + 1, static_cast<Elem_&&>( elem ) );
+      insert(i + 1, static_cast<Elem_&&>(elem));
       return i + 1;
     }
   }
@@ -196,15 +196,15 @@ public:
    * @return Position of the inserted or the existing element.
    */
   template <typename Elem_ = Elem>
-  int include( Elem_&& elem )
+  int include(Elem_&& elem)
   {
-    int i = aBisection<Elem, Elem>( data, count, elem );
+    int i = aBisection<Elem, Elem>(data, count, elem);
 
-    if( i >= 0 && data[i] == elem ) {
+    if (i >= 0 && data[i] == elem) {
       return i;
     }
     else {
-      insert( i + 1, static_cast<Elem_&&>( elem ) );
+      insert(i + 1, static_cast<Elem_&&>(elem));
       return i + 1;
     }
   }
@@ -215,12 +215,12 @@ public:
    * @return Index of the removed element or -1 if not found.
    */
   template <typename Elem_ = Elem>
-  int exclude( const Elem_& elem )
+  int exclude(const Elem_& elem)
   {
-    int i = aBisection<Elem, Elem_>( data, count, elem );
+    int i = aBisection<Elem, Elem_>(data, count, elem);
 
-    if( i >= 0 && data[i] == elem ) {
-      erase( i );
+    if (i >= 0 && data[i] == elem) {
+      erase(i);
       return i;
     }
     return -1;

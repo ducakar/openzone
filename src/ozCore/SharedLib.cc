@@ -26,8 +26,8 @@
 
 #include "SharedLib.hh"
 
-#if defined( __native_client__ )
-#elif defined( _WIN32 )
+#if defined(__native_client__)
+#elif defined(_WIN32)
 # include <windows.h>
 #else
 # include <dlfcn.h>
@@ -43,7 +43,7 @@ const bool SharedLib::IS_SUPPORTED = true;
 #endif
 
 SharedLib::SharedLib() :
-  handle( nullptr )
+  handle(nullptr)
 {}
 
 SharedLib::~SharedLib()
@@ -51,15 +51,15 @@ SharedLib::~SharedLib()
   close();
 }
 
-SharedLib::SharedLib( SharedLib&& l ) :
-  handle( l.handle )
+SharedLib::SharedLib(SharedLib&& l) :
+  handle(l.handle)
 {
   l.handle = nullptr;
 }
 
-SharedLib& SharedLib::operator = ( SharedLib&& l )
+SharedLib& SharedLib::operator = (SharedLib&& l)
 {
-  if( &l == this ) {
+  if (&l == this) {
     return *this;
   }
 
@@ -70,45 +70,45 @@ SharedLib& SharedLib::operator = ( SharedLib&& l )
   return *this;
 }
 
-SharedLib::Function* SharedLib::get( const char* symbol ) const
+SharedLib::Function* SharedLib::get(const char* symbol) const
 {
-  if( handle == nullptr ) {
+  if (handle == nullptr) {
     return nullptr;
   }
 
-#if defined( __native_client__ )
-  static_cast<void>( symbol );
+#if defined(__native_client__)
+  static_cast<void>(symbol);
   return nullptr;
-#elif defined( _WIN32 )
-  FARPROC proc = GetProcAddress( static_cast<HMODULE>( handle ), symbol );
-  return reinterpret_cast<Function*>( proc );
+#elif defined(_WIN32)
+  FARPROC proc = GetProcAddress(static_cast<HMODULE>(handle), symbol);
+  return reinterpret_cast<Function*>(proc);
 #else
   Function* function;
-  *( void** ) &function = dlsym( handle, symbol );
+  *(void**) &function = dlsym(handle, symbol);
   return function;
 #endif
 }
 
-bool SharedLib::open( const char* name )
+bool SharedLib::open(const char* name)
 {
-#if defined( __native_client__ )
-  static_cast<void>( name );
-#elif defined( _WIN32 )
-  handle = static_cast<void*>( LoadLibrary( name ) );
+#if defined(__native_client__)
+  static_cast<void>(name);
+#elif defined(_WIN32)
+  handle = static_cast<void*>(LoadLibrary(name));
 #else
-  handle = dlopen( name, RTLD_NOW );
+  handle = dlopen(name, RTLD_NOW);
 #endif
   return handle != nullptr;
 }
 
 void SharedLib::close()
 {
-  if( handle != nullptr ) {
-#if defined( __native_client__ )
-#elif defined( _WIN32 )
-    FreeLibrary( static_cast<HMODULE>( handle ) );
+  if (handle != nullptr) {
+#if defined(__native_client_)
+#elif defined(_WIN32)
+    FreeLibrary(static_cast<HMODULE>(handle));
 #else
-    dlclose( handle );
+    dlclose(handle);
 #endif
     handle = nullptr;
   }

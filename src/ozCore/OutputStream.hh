@@ -54,13 +54,13 @@ public:
   /**
    * Create a fixed-size stream for reading/writing a given memory range.ElemElemElem
    */
-  explicit OutputStream( char* start = nullptr, const char* end = nullptr,
-                         Endian::Order order = Endian::NATIVE );
+  explicit OutputStream(char* start = nullptr, const char* end = nullptr,
+                        Endian::Order order = Endian::NATIVE);
 
   /**
    * Create a buffered stream with dynamically growing buffer.
    */
-  explicit OutputStream( int size, Endian::Order order = Endian::NATIVE );
+  explicit OutputStream(int size, Endian::Order order = Endian::NATIVE);
 
   /**
    * Destructor.
@@ -70,24 +70,24 @@ public:
   /**
    * Copy constructor, copies buffer if source stream is buffered.
    */
-  OutputStream( const OutputStream& os );
+  OutputStream(const OutputStream& os);
 
   /**
    * Move constructor, moves buffer if source stream is buffered.
    */
-  OutputStream( OutputStream&& os );
+  OutputStream(OutputStream&& os);
 
   /**
    * Copy operator, copies buffer if source stream is buffered.
    *
    * Existing storage is reused if its size matches.
    */
-  OutputStream& operator = ( const OutputStream& os );
+  OutputStream& operator = (const OutputStream& os);
 
   /**
    * Move operator, moves buffer if source stream is buffered.
    */
-  OutputStream& operator = ( OutputStream&& os );
+  OutputStream& operator = (OutputStream&& os);
 
   /**
    * Iff stream uses internal buffer instead of given storage.
@@ -113,7 +113,7 @@ public:
   OZ_ALWAYS_INLINE
   char* pos()
   {
-    hard_assert( streamBegin <= streamPos && streamPos <= streamEnd );
+    hard_assert(streamBegin <= streamPos && streamPos <= streamEnd);
 
     return streamPos;
   }
@@ -122,9 +122,9 @@ public:
    * Reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  char& operator [] ( int i )
+  char& operator [] (int i)
   {
-    hard_assert( uint( i ) < uint( streamEnd - streamBegin ) );
+    hard_assert(uint(i) < uint(streamEnd - streamBegin));
 
     return streamBegin[i];
   }
@@ -134,132 +134,132 @@ public:
    *
    * @return Pointer to the beginning of the skipped bytes.
    */
-  char* forward( int count );
+  char* forward(int count);
 
   /**
    * Write a boolean.
    */
-  void writeBool( bool b );
+  void writeBool(bool b);
 
   /**
    * Write a character.
    */
-  void writeChar( char c );
+  void writeChar(char c);
 
   /**
    * Write an array of characters.
    */
-  void writeChars( const char* array, int count );
+  void writeChars(const char* array, int count);
 
   /**
    * Write byte.
    */
-  void writeByte( byte b );
+  void writeByte(byte b);
 
   /**
    * Write unsigned byte.
    */
-  void writeUByte( ubyte b );
+  void writeUByte(ubyte b);
 
   /**
    * Write short integer.
    */
-  void writeShort( short s );
+  void writeShort(short s);
 
   /**
    * Write unsigned short integer.
    */
-  void writeUShort( ushort s );
+  void writeUShort(ushort s);
 
   /**
    * Write integer.
    */
-  void writeInt( int i );
+  void writeInt(int i);
 
   /**
    * Write unsigned integer.
    */
-  void writeUInt( uint i );
+  void writeUInt(uint i);
 
   /**
    * Write 64-bit integer.
    */
-  void writeLong64( long64 l );
+  void writeLong64(long64 l);
 
   /**
    * Write unsigned 64-bit integer.
    */
-  void writeULong64( ulong64 l );
+  void writeULong64(ulong64 l);
 
   /**
    * Write float.
    */
-  void writeFloat( float f );
+  void writeFloat(float f);
 
   /**
    * Write double.
    */
-  void writeDouble( double d );
+  void writeDouble(double d);
 
   /**
    * Write string.
    */
-  void writeString( const String& s );
+  void writeString(const String& s);
 
   /**
    * Write C string.
    */
-  void writeString( const char* s );
+  void writeString(const char* s);
 
   /**
    * Write 3D vector.
    */
-  void writeVec3( const Vec3& v );
+  void writeVec3(const Vec3& v);
 
   /**
    * Write 4-component vector.
    */
-  void writeVec4( const Vec4& v );
+  void writeVec4(const Vec4& v);
 
   /**
    * Write 3D point.
    */
-  void writePoint( const Point& p );
+  void writePoint(const Point& p);
 
   /**
    * Write 3D plane.
    */
-  void writePlane( const Plane& p );
+  void writePlane(const Plane& p);
 
   /**
    * Write quaternion.
    */
-  void writeQuat( const Quat& q );
+  void writeQuat(const Quat& q);
 
   /**
    * Write 3x3 matrix.
    */
-  void writeMat3( const Mat3& m );
+  void writeMat3(const Mat3& m);
 
   /**
    * Write 4x4 matrix.
    */
-  void writeMat4( const Mat4& m );
+  void writeMat4(const Mat4& m);
 
   /**
    * Write bitset data.
    */
-  void writeBitset( const ulong* bitset, int nBits );
+  void writeBitset(const ulong* bitset, int nBits);
 
   /**
    * Write a line replacing terminating null byte with UNIX newline.
    */
-  void writeLine( const String& s );
+  void writeLine(const String& s);
 
   /**
    * Write a line replacing terminating null byte with UNIX newline.
    */
-  void writeLine( const char* s );
+  void writeLine(const char* s);
 
   /**
    * Deallocate internal buffer if stream is buffered.

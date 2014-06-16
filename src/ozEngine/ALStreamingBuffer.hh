@@ -53,7 +53,7 @@ public:
   /**
    * Create a new buffer from a given file. Same as the default constructor plus `open()`.
    */
-  explicit ALStreamingBuffer( const File& file );
+  explicit ALStreamingBuffer(const File& file);
 
   /**
    * Destructor, invokes `destroy()`.
@@ -63,12 +63,12 @@ public:
   /**
    * Move constructor.
    */
-  ALStreamingBuffer( ALStreamingBuffer&& b );
+  ALStreamingBuffer(ALStreamingBuffer&& b);
 
   /**
    * Move operator.
    */
-  ALStreamingBuffer& operator = ( ALStreamingBuffer&& b );
+  ALStreamingBuffer& operator = (ALStreamingBuffer&& b);
 
   /**
    * True iff streaming.
@@ -117,7 +117,7 @@ public:
   /**
    * Start streaming a given Ogg Vorbis file.
    */
-  bool open( const File& file );
+  bool open(const File& file);
 
   /**
    * Stop streaming and free file buffers and stream state.

@@ -44,11 +44,11 @@
 #include <SDL_nacl.h>
 
 OZ_WEAK
-void SDL_NACL_SetInstance( PP_Instance, PPB_GetInterface, int, int )
+void SDL_NACL_SetInstance(PP_Instance, PPB_GetInterface, int, int)
 {}
 
 OZ_WEAK
-void SDL_NACL_PushEvent( PP_Resource )
+void SDL_NACL_PushEvent(PP_Resource)
 {}
 
 namespace oz
@@ -66,43 +66,43 @@ struct Pepper::Instance : pp::Instance, pp::MouseLock
   pp::Fullscreen fullscreen;
   bool           isStarted;
 
-  static void mainThreadMain( void* );
-  static void onMouseLocked( void*, int result );
+  static void mainThreadMain(void*);
+  static void onMouseLocked(void*, int result);
 
-  explicit Instance( PP_Instance instance_ );
+  explicit Instance(PP_Instance instance_);
   ~Instance() override;
 
-  bool Init( uint32_t, const char**, const char** ) override;
-  void DidChangeView( const pp::View& view ) override;
-  void DidChangeView( const pp::Rect&, const pp::Rect& ) override;
-  void HandleMessage( const pp::Var& message ) override;
-  bool HandleInputEvent( const pp::InputEvent& event ) override;
+  bool Init(uint32_t, const char**, const char**) override;
+  void DidChangeView(const pp::View& view) override;
+  void DidChangeView(const pp::Rect&, const pp::Rect&) override;
+  void HandleMessage(const pp::Var& message) override;
+  bool HandleInputEvent(const pp::InputEvent& event) override;
   void MouseLockLost() override;
 };
 
 OZ_NORETURN
-void Pepper::Instance::mainThreadMain( void* )
+void Pepper::Instance::mainThreadMain(void*)
 {
   char  argv0[] = "";
   char* argv[]  = { argv0, nullptr };
 
-  int exitCode = naclMain( 1, argv );
-  exit( exitCode );
+  int exitCode = naclMain(1, argv);
+  exit(exitCode);
 }
 
-void Pepper::Instance::onMouseLocked( void*, int result )
+void Pepper::Instance::onMouseLocked(void*, int result)
 {
   hasFocus = result == PP_OK;
 }
 
-Pepper::Instance::Instance( PP_Instance instance_ ) :
-  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isStarted( false )
+Pepper::Instance::Instance(PP_Instance instance_) :
+  pp::Instance(instance_), pp::MouseLock(this), fullscreen(this), isStarted(false)
 {
   ppCore     = pp::Module::Get()->core();
   ppInstance = this;
 
-  RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |
-                      PP_INPUTEVENT_CLASS_WHEEL );
+  RequestInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |
+                     PP_INPUTEVENT_CLASS_WHEEL);
 }
 
 Pepper::Instance::~Instance()
@@ -113,63 +113,63 @@ Pepper::Instance::~Instance()
   ppInstance = nullptr;
 }
 
-bool Pepper::Instance::Init( uint32_t, const char**, const char** )
+bool Pepper::Instance::Init(uint32_t, const char**, const char**)
 {
   return true;
 }
 
-void Pepper::Instance::DidChangeView( const pp::View& view )
+void Pepper::Instance::DidChangeView(const pp::View& view)
 {
   int newWidth  = view.GetRect().width();
   int newHeight = view.GetRect().height();
 
-  if( newWidth == width && newHeight == height ) {
+  if (newWidth == width && newHeight == height) {
     return;
   }
 
   width  = newWidth;
   height = newHeight;
 
-  if( !isStarted ) {
-    SDL_NACL_SetInstance( pp_instance(), pp::Module::Get()->get_browser_interface(),
-                          width, height );
+  if (!isStarted) {
+    SDL_NACL_SetInstance(pp_instance(), pp::Module::Get()->get_browser_interface(),
+                         width, height);
 
-    mainThread.start( "naclMain", mainThreadMain, nullptr );
+    mainThread.start("naclMain", mainThreadMain, nullptr);
     mainThread.detach();
     isStarted = true;
   }
 }
 
-void Pepper::Instance::DidChangeView( const pp::Rect&, const pp::Rect& )
+void Pepper::Instance::DidChangeView(const pp::Rect&, const pp::Rect&)
 {
   PP_NOTREACHED();
 }
 
-void Pepper::Instance::HandleMessage( const pp::Var& message )
+void Pepper::Instance::HandleMessage(const pp::Var& message)
 {
-  push( message.AsString().c_str() );
+  push(message.AsString().c_str());
 }
 
-bool Pepper::Instance::HandleInputEvent( const pp::InputEvent& event )
+bool Pepper::Instance::HandleInputEvent(const pp::InputEvent& event)
 {
-  switch( event.GetType() ) {
+  switch (event.GetType()) {
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-      if( !Pepper::hasFocus ) {
-        LockMouse( pp::CompletionCallback( onMouseLocked, this ) );
+      if (!Pepper::hasFocus) {
+        LockMouse(pp::CompletionCallback(onMouseLocked, this));
         return true;
       }
       break;
     }
     case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
-      pp::MouseInputEvent mouseEvent( event );
+      pp::MouseInputEvent mouseEvent(event);
       pp::Point move = mouseEvent.GetMovement();
 
-      moveX += float( move.x() );
-      moveY += float( move.y() );
+      moveX += float(move.x());
+      moveY += float(move.y());
       break;
     }
     case PP_INPUTEVENT_TYPE_WHEEL: {
-      pp::WheelInputEvent wheelEvent( event );
+      pp::WheelInputEvent wheelEvent(event);
       pp::FloatPoint move = wheelEvent.GetDelta();
 
       moveZ += move.x();
@@ -177,12 +177,12 @@ bool Pepper::Instance::HandleInputEvent( const pp::InputEvent& event )
       break;
     }
     case PP_INPUTEVENT_TYPE_KEYDOWN: {
-      pp::KeyboardInputEvent keyEvent( event );
+      pp::KeyboardInputEvent keyEvent(event);
 
-      if( ( keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13 ) &&
-          event.GetModifiers() == 0 )
+      if ((keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13) &&
+          event.GetModifiers() == 0)
       {
-        fullscreen.SetFullscreen( !fullscreen.IsFullscreen() );
+        fullscreen.SetFullscreen(!fullscreen.IsFullscreen());
         return true;
       }
       break;
@@ -192,24 +192,24 @@ bool Pepper::Instance::HandleInputEvent( const pp::InputEvent& event )
     }
   }
 
-  SDL_NACL_PushEvent( event.pp_resource() );
+  SDL_NACL_PushEvent(event.pp_resource());
   return true;
 }
 
 void Pepper::Instance::MouseLockLost()
 {
   hasFocus = false;
-  fullscreen.SetFullscreen( false );
+  fullscreen.SetFullscreen(false);
 }
 
 struct Pepper::Module : pp::Module
 {
-  pp::Instance* CreateInstance( PP_Instance instance ) override;
+  pp::Instance* CreateInstance(PP_Instance instance) override;
 };
 
-pp::Instance* Pepper::Module::CreateInstance( PP_Instance instance )
+pp::Instance* Pepper::Module::CreateInstance(PP_Instance instance)
 {
-  return new Instance( instance );
+  return new Instance(instance);
 }
 
 int   Pepper::width    = 0;
@@ -225,9 +225,9 @@ bool Pepper::isMainThread()
   return ppCore->IsMainThread();
 }
 
-void Pepper::mainCall( Callback* callback, void* data )
+void Pepper::mainCall(Callback* callback, void* data)
 {
-  ppCore->CallOnMainThread( 0, pp::CompletionCallback( callback, data ) );
+  ppCore->CallOnMainThread(0, pp::CompletionCallback(callback, data));
 }
 
 pp::Instance* Pepper::instance()
@@ -235,13 +235,13 @@ pp::Instance* Pepper::instance()
   return ppInstance;
 }
 
-void Pepper::post( const char* message )
+void Pepper::post(const char* message)
 {
-  pp::Var var( message );
+  pp::Var var(message);
 
   MainCall() << [&]
   {
-    ppInstance->PostMessage( var );
+    ppInstance->PostMessage(var);
   };
 }
 
@@ -254,10 +254,10 @@ String Pepper::pop()
   return s;
 }
 
-void Pepper::push( const char* message )
+void Pepper::push(const char* message)
 {
   messageLock.lock();
-  messageQueue.pushLast( message );
+  messageQueue.pushLast(message);
   messageLock.unlock();
 }
 

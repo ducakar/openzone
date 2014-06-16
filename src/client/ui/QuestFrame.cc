@@ -35,9 +35,9 @@ namespace ui
 
 void QuestFrame::updateTask()
 {
-  if( questList.activeQuest < 0 ) {
-    title.setText( "%s", OZ_GETTEXT( "No quest" ) );
-    description.setText( " " );
+  if (questList.activeQuest < 0) {
+    title.setText("%s", OZ_GETTEXT("No quest"));
+    description.setText(" ");
 
     lastQuest = questList.activeQuest;
     lastState = Quest::NONE;
@@ -45,37 +45,37 @@ void QuestFrame::updateTask()
   else {
     const Quest& quest = questList.quests[questList.activeQuest];
 
-    if( quest.state == Quest::NONE ) {
-      title.setText( "%s", quest.title.cstr() );
+    if (quest.state == Quest::NONE) {
+      title.setText("%s", quest.title.cstr());
     }
     else {
       const char* stateText;
 
-      if( quest.state == Quest::PENDING ) {
-        stateText = OZ_GETTEXT( "in progress" );
+      if (quest.state == Quest::PENDING) {
+        stateText = OZ_GETTEXT("in progress");
       }
-      else if( quest.state == Quest::SUCCESSFUL ) {
-        stateText = OZ_GETTEXT( "successful" );
+      else if (quest.state == Quest::SUCCESSFUL) {
+        stateText = OZ_GETTEXT("successful");
       }
       else {
-        stateText = OZ_GETTEXT( "failed" );
+        stateText = OZ_GETTEXT("failed");
       }
 
-      title.setText( "%s  [%s]", quest.title.cstr(), stateText );
+      title.setText("%s  [%s]", quest.title.cstr(), stateText);
     }
 
-    description.setText( "%s", quest.description.cstr() );
+    description.setText("%s", quest.description.cstr());
 
     lastQuest = questList.activeQuest;
     lastState = quest.state;
   }
 }
 
-void QuestFrame::open( Button* sender )
+void QuestFrame::open(Button* sender)
 {
-  QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
+  QuestFrame* questFrame = static_cast<QuestFrame*>(sender->parent);
 
-  if( questFrame->isOpened ) {
+  if (questFrame->isOpened) {
     questFrame->y += questFrame->contentHeight;
     questFrame->height -= questFrame->contentHeight;
     questFrame->isOpened = false;
@@ -87,34 +87,34 @@ void QuestFrame::open( Button* sender )
   }
 }
 
-void QuestFrame::next( Button* sender )
+void QuestFrame::next(Button* sender)
 {
-  QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
+  QuestFrame* questFrame = static_cast<QuestFrame*>(sender->parent);
 
   int nQuests = questList.quests.length();
 
-  if( nQuests > 1 ) {
-    questList.activeQuest = ( questList.activeQuest + 1 ) % nQuests;
+  if (nQuests > 1) {
+    questList.activeQuest = (questList.activeQuest + 1) % nQuests;
     questFrame->updateTask();
   }
 }
 
-void QuestFrame::prev( Button* sender )
+void QuestFrame::prev(Button* sender)
 {
-  QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
+  QuestFrame* questFrame = static_cast<QuestFrame*>(sender->parent);
 
   int nQuests = questList.quests.length();
 
-  if( nQuests > 1 ) {
-    questList.activeQuest = ( questList.activeQuest + nQuests - 1 ) % nQuests;
+  if (nQuests > 1) {
+    questList.activeQuest = (questList.activeQuest + nQuests - 1) % nQuests;
     questFrame->updateTask();
   }
 }
 
 void QuestFrame::onUpdate()
 {
-  if( lastQuest != questList.activeQuest ||
-      ( lastQuest >= 0 && lastState != questList.quests[lastQuest].state ) )
+  if (lastQuest != questList.activeQuest ||
+      (lastQuest >= 0 && lastState != questList.quests[lastQuest].state))
   {
     updateTask();
   }
@@ -124,24 +124,24 @@ void QuestFrame::onDraw()
 {
   Frame::onDraw();
 
-  if( isOpened ) {
-    description.draw( this );
+  if (isOpened) {
+    description.draw(this);
   }
 }
 
 QuestFrame::QuestFrame() :
-  Frame( 500, 2, OZ_GETTEXT( "No quest" ) ),
-  description( 6, -HEADER_SIZE - 4, 488, Area::ALIGN_TOP, Font::SANS, "" ),
-  contentHeight( 8 + 16 * style.fonts[Font::SANS].height ),
-  isOpened( false ), lastQuest( -1 ), lastState( Quest::NONE )
+  Frame(500, 2, OZ_GETTEXT("No quest")),
+  description(6, -HEADER_SIZE - 4, 488, Area::ALIGN_TOP, Font::SANS, ""),
+  contentHeight(8 + 16 * style.fonts[Font::SANS].height),
+  isOpened(false), lastQuest(-1), lastState(Quest::NONE)
 {
   flags |= UPDATE_BIT;
 
   height += contentHeight;
 
-  add( new Button( " + ", open, 24, 16 ), -4, 4 );
-  add( new Button( " > ", next, 24, 16 ), -36, 4 );
-  add( new Button( " < ", prev, 24, 16 ), -64, 4 );
+  add(new Button(" + ", open, 24, 16), -4, 4);
+  add(new Button(" > ", next, 24, 16), -36, 4);
+  add(new Button(" < ", prev, 24, 16), -64, 4);
 
   height -= contentHeight;
 }

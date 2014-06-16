@@ -29,84 +29,84 @@
 
 using namespace oz;
 
-static void printUsage( const char* invocationName )
+static void printUsage(const char* invocationName)
 {
   Log::printRaw(
     "Usage: %s <data_dir>\n"
     "\n"
     "<data_dir>  Output directory where built packages are located.\n"
     "            Defaults to 'share/openzone'.\n\n",
-    invocationName );
+    invocationName);
 }
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
   System::init();
 
-  String invocationName = String::fileBaseName( argv[0] );
+  String invocationName = String::fileBaseName(argv[0]);
 
-  if( argc > 2 ) {
-    printUsage( invocationName );
+  if (argc > 2) {
+    printUsage(invocationName);
     return EXIT_FAILURE;
   }
 
 #ifdef _WIN32
-  String outDirPath = argc < 2 ? "share/openzone" : String::replace( argv[1], '\\', '/' );
+  String outDirPath = argc < 2 ? "share/openzone" : String::replace(argv[1], '\\', '/');
 #else
   String outDirPath = argc < 2 ? "share/openzone" : argv[1];
 #endif
 
-  while( !outDirPath.isEmpty() && outDirPath.last() == '/' ) {
-    outDirPath = outDirPath.substring( 0, outDirPath.length() - 1 );
+  while (!outDirPath.isEmpty() && outDirPath.last() == '/') {
+    outDirPath = outDirPath.substring(0, outDirPath.length() - 1);
   }
-  if( outDirPath.isEmpty() ) {
-    OZ_ERROR( "Package directory cannot be root ('/')" );
+  if (outDirPath.isEmpty()) {
+    OZ_ERROR("Package directory cannot be root ('/')");
   }
 
-  Log::println( "Package manifest {" );
+  Log::println("Package manifest {");
   Log::indent();
 
-  OutputStream os( 0, Endian::LITTLE );
-  os.writeChars( "ozManifest", int( sizeof( "ozManifest" ) ) );
+  OutputStream os(0, Endian::LITTLE);
+  os.writeChars("ozManifest", int(sizeof("ozManifest")));
 
   File outDir = outDirPath;
   Map<String, File> packages;
 
-  for( const File& file : outDir.ls() ) {
-    if( file.hasExtension( "7z" ) ) {
-      packages.add( file.baseName(), file );
+  for (const File& file : outDir.ls()) {
+    if (file.hasExtension("7z")) {
+      packages.add(file.baseName(), file);
     }
-    else if( file.hasExtension( "zip" ) ) {
-      packages.include( file.baseName(), file );
+    else if (file.hasExtension("zip")) {
+      packages.include(file.baseName(), file);
     }
   }
 
-  os.writeInt( packages.length() );
+  os.writeInt(packages.length());
 
-  for( auto& pkg : packages ) {
+  for (auto& pkg : packages) {
     File& file = pkg.value;
 
     String name = file.name().cstr();
     long64 time = file.time();
 
-    Log::println( "%s, timestamp: %s", name.cstr(), Time::local( time ).toString().cstr() );
+    Log::println("%s, timestamp: %s", name.cstr(), Time::local(time).toString().cstr());
 
-    os.writeString( name );
-    os.writeLong64( time );
+    os.writeString(name);
+    os.writeLong64(time);
   }
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   File manifest = outDirPath + "/packages.ozManifest";
 
-  Log::print( "Writing manifest to '%s' ...", manifest.path().cstr() );
+  Log::print("Writing manifest to '%s' ...", manifest.path().cstr());
 
-  if( !manifest.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Failed to write manifest file" );
+  if (!manifest.write(os.begin(), os.tell())) {
+    OZ_ERROR("Failed to write manifest file");
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   return EXIT_SUCCESS;
 }

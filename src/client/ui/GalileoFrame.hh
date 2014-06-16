@@ -69,7 +69,7 @@ public:
 
   explicit GalileoFrame();
 
-  void setMaximised( bool doMaximise );
+  void setMaximised(bool doMaximise);
 
 };
 

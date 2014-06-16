@@ -1,4 +1,4 @@
-add_library( common STATIC
+add_library(common STATIC
 #BEGIN SOURCES
   common.hh
   Lingua.hh
@@ -12,6 +12,6 @@ add_library( common STATIC
   Timer.cc
 #END SOURCES
 )
-use_pch( common pch )
+use_pch(common pch)
 
-target_link_libraries( common ${LUA_LIBRARIES} )
+target_link_libraries(common ${LUA_LIBRARIES})

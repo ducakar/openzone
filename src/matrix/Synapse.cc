@@ -31,117 +31,117 @@ namespace oz
 {
 
 Synapse::Synapse() :
-  mode( SINGLE )
+  mode(SINGLE)
 {}
 
-void Synapse::use( Bot* user, Object* target )
+void Synapse::use(Bot* user, Object* target)
 {
-  target->use( user );
+  target->use(user);
 }
 
-void Synapse::trigger( Entity* target )
+void Synapse::trigger(Entity* target)
 {
   target->trigger();
 }
 
-void Synapse::lock( Bot* user, Entity* target )
+void Synapse::lock(Bot* user, Entity* target)
 {
-  target->lock( user );
+  target->lock(user);
 }
 
-void Synapse::put( Dynamic* obj )
+void Synapse::put(Dynamic* obj)
 {
-  hard_assert( obj->index >= 0 && obj->cell == nullptr && obj->parent == -1 );
+  hard_assert(obj->index >= 0 && obj->cell == nullptr && obj->parent == -1);
 
-  orbis.position( obj );
+  orbis.position(obj);
 
-  putObjects.add( obj->index );
+  putObjects.add(obj->index);
 }
 
-void Synapse::cut( Dynamic* obj )
+void Synapse::cut(Dynamic* obj)
 {
-  hard_assert( obj->index >= 0 && obj->cell != nullptr && obj->parent >= 0 );
+  hard_assert(obj->index >= 0 && obj->cell != nullptr && obj->parent >= 0);
 
-  obj->flags   &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
+  obj->flags   &= ~(Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK);
   obj->lower    = -1;
   obj->velocity = Vec3::ZERO;
   obj->momentum = Vec3::ZERO;
 
-  orbis.unposition( obj );
+  orbis.unposition(obj);
 
-  cutObjects.add( obj->index );
+  cutObjects.add(obj->index);
 }
 
-Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empty )
+Struct* Synapse::add(const BSP* bsp, const Point& p, Heading heading, bool empty)
 {
-  Struct* str = orbis.add( bsp, p, heading );
-  if( str == nullptr ) {
+  Struct* str = orbis.add(bsp, p, heading);
+  if (str == nullptr) {
     return nullptr;
   }
 
-  if( !orbis.position( str ) ) {
-    orbis.remove( str );
+  if (!orbis.position(str)) {
+    orbis.remove(str);
     delete str;
     return nullptr;
   }
 
-  addedStructs.add( str->index );
+  addedStructs.add(str->index);
 
-  if( !empty ) {
-    for( int i = 0; i < bsp->nBoundObjects; ++i ) {
+  if (!empty) {
+    for (int i = 0; i < bsp->nBoundObjects; ++i) {
       const BSP::BoundObject& boundObj = bsp->boundObjects[i];
 
-      Point   pos     = str->toAbsoluteCS( boundObj.pos );
-      Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
+      Point   pos     = str->toAbsoluteCS(boundObj.pos);
+      Heading heading = Heading((str->heading + boundObj.heading) % 4);
 
-      Object* obj = orbis.add( boundObj.clazz, pos, heading );
-      if( obj == nullptr ) {
+      Object* obj = orbis.add(boundObj.clazz, pos, heading);
+      if (obj == nullptr) {
         continue;
       }
 
-      orbis.position( obj );
-      str->boundObjects.add( obj->index );
+      orbis.position(obj);
+      str->boundObjects.add(obj->index);
 
-      addedObjects.add( obj->index );
+      addedObjects.add(obj->index);
     }
   }
 
   return str;
 }
 
-Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading, bool empty )
+Object* Synapse::add(const ObjectClass* clazz, const Point& p, Heading heading, bool empty)
 {
-  Object* obj = orbis.add( clazz, p, heading );
-  if( obj == nullptr ) {
+  Object* obj = orbis.add(clazz, p, heading);
+  if (obj == nullptr) {
     return nullptr;
   }
 
-  orbis.position( obj );
+  orbis.position(obj);
 
-  addedObjects.add( obj->index );
+  addedObjects.add(obj->index);
 
-  if( !empty ) {
+  if (!empty) {
     const List<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
-    for( int i = 0; i < defaultItems.length(); ++i ) {
-      Heading heading = Heading( Math::rand( 4 ) );
-      Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point::ORIGIN, heading ) );
+    for (int i = 0; i < defaultItems.length(); ++i) {
+      Heading heading = Heading(Math::rand(4));
+      Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItems[i], Point::ORIGIN, heading));
 
-      if( item == nullptr ) {
+      if (item == nullptr) {
         continue;
       }
 
-      obj->items.add( item->index );
+      obj->items.add(item->index);
       item->parent = obj->index;
 
-      addedObjects.add( item->index );
+      addedObjects.add(item->index);
     }
 
-    if( obj->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
-      Bot* bot = static_cast<Bot*>( obj );
+    if (obj->flags & Object::BOT_BIT) {
+      const BotClass* botClazz = static_cast<const BotClass*>(obj->clazz);
+      Bot* bot = static_cast<Bot*>(obj);
 
-      if( uint( botClazz->weaponItem ) < uint( obj->items.length() ) ) {
+      if (uint(botClazz->weaponItem) < uint(obj->items.length())) {
         bot->weapon = bot->items[botClazz->weaponItem];
       }
     }
@@ -150,140 +150,140 @@ Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading,
   return obj;
 }
 
-Frag* Synapse::add( const FragPool* pool, const Point& p, const Vec3& velocity )
+Frag* Synapse::add(const FragPool* pool, const Point& p, const Vec3& velocity)
 {
-  Frag* frag = orbis.add( pool, p, velocity );
-  if( frag == nullptr ) {
+  Frag* frag = orbis.add(pool, p, velocity);
+  if (frag == nullptr) {
     return nullptr;
   }
 
-  orbis.position( frag );
-  addedFrags.add( frag->index );
+  orbis.position(frag);
+  addedFrags.add(frag->index);
 
   return frag;
 }
 
-void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity )
+void Synapse::gen(const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity)
 {
-  for( int i = 0; i < nFrags; ++i ) {
+  for (int i = 0; i < nFrags; ++i) {
     // spawn the frag somewhere in the upper half of the structure's bounding box
-    Point fragPos = Point( bb.mins.x + Math::rand() * ( bb.maxs.x - bb.mins.x ),
-                           bb.mins.y + Math::rand() * ( bb.maxs.y - bb.mins.y ),
-                           bb.mins.z + Math::rand() * ( bb.maxs.z - bb.mins.z ) );
+    Point fragPos = Point(bb.mins.x + Math::rand() * (bb.maxs.x - bb.mins.x),
+                          bb.mins.y + Math::rand() * (bb.maxs.y - bb.mins.y),
+                          bb.mins.z + Math::rand() * (bb.maxs.z - bb.mins.z));
 
-    Frag*  frag = add( pool, fragPos, velocity );
-    if( frag == nullptr ) {
+    Frag*  frag = add(pool, fragPos, velocity);
+    if (frag == nullptr) {
       continue;
     }
 
-    frag->velocity += Vec3( Math::normalRand() * pool->velocitySpread,
-                            Math::normalRand() * pool->velocitySpread,
-                            Math::normalRand() * pool->velocitySpread );
+    frag->velocity += Vec3(Math::normalRand() * pool->velocitySpread,
+                           Math::normalRand() * pool->velocitySpread,
+                           Math::normalRand() * pool->velocitySpread);
 
     frag->life     += Math::centralRand() * pool->lifeSpread;
   }
 }
 
-Struct* Synapse::addStruct( const char* bspName, const Point& p, Heading heading, bool empty )
+Struct* Synapse::addStruct(const char* bspName, const Point& p, Heading heading, bool empty)
 {
-  return add( liber.bsp( bspName ), p, heading, empty );
+  return add(liber.bsp(bspName), p, heading, empty);
 }
 
-Object* Synapse::addObject( const char* className, const Point& p, Heading heading, bool empty )
+Object* Synapse::addObject(const char* className, const Point& p, Heading heading, bool empty)
 {
-  return add( liber.objClass( className ), p, heading, empty );
+  return add(liber.objClass(className), p, heading, empty);
 }
 
-Frag* Synapse::addFrag( const char* poolName, const Point& p, const Vec3& velocity )
+Frag* Synapse::addFrag(const char* poolName, const Point& p, const Vec3& velocity)
 {
-  return add( liber.fragPool( poolName ), p, velocity );
+  return add(liber.fragPool(poolName), p, velocity);
 }
 
-void Synapse::genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity )
+void Synapse::genFrags(const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity)
 {
-  gen( liber.fragPool( poolName ), nFrags, bb, velocity );
+  gen(liber.fragPool(poolName), nFrags, bb, velocity);
 }
 
-void Synapse::remove( Struct* str )
+void Synapse::remove(Struct* str)
 {
-  hard_assert( str->index >= 0 );
+  hard_assert(str->index >= 0);
 
-  for( int i = 0; i < str->boundObjects.length(); ++i ) {
-    Object* boundObj = orbis.obj( str->boundObjects[i] );
+  for (int i = 0; i < str->boundObjects.length(); ++i) {
+    Object* boundObj = orbis.obj(str->boundObjects[i]);
 
-    if( boundObj != nullptr ) {
-      remove( boundObj );
+    if (boundObj != nullptr) {
+      remove(boundObj);
     }
   }
 
-  removedStructs.add( str->index );
+  removedStructs.add(str->index);
 
-  collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
-  orbis.unposition( str );
-  orbis.remove( str );
+  collider.touchOverlaps(str->toAABB(), 4.0f * EPSILON);
+  orbis.unposition(str);
+  orbis.remove(str);
 }
 
-void Synapse::remove( Object* obj )
+void Synapse::remove(Object* obj)
 {
-  hard_assert( obj->index >= 0 );
+  hard_assert(obj->index >= 0);
 
-  for( int i = 0; i < obj->items.length(); ++i ) {
-    Object* item = orbis.obj( obj->items[i] );
+  for (int i = 0; i < obj->items.length(); ++i) {
+    Object* item = orbis.obj(obj->items[i]);
 
-    if( item != nullptr ) {
-      remove( item );
+    if (item != nullptr) {
+      remove(item);
     }
   }
 
-  removedObjects.add( obj->index );
+  removedObjects.add(obj->index);
 
-  if( obj->cell != nullptr ) {
-    collider.touchOverlaps( *obj, 4.0f * EPSILON );
-    orbis.unposition( obj );
+  if (obj->cell != nullptr) {
+    collider.touchOverlaps(*obj, 4.0f * EPSILON);
+    orbis.unposition(obj);
   }
-  orbis.remove( obj );
+  orbis.remove(obj);
 }
 
-void Synapse::remove( Frag* frag )
+void Synapse::remove(Frag* frag)
 {
-  hard_assert( frag->index >= 0 );
+  hard_assert(frag->index >= 0);
 
-  removedFrags.add( frag->index );
+  removedFrags.add(frag->index);
 
-  orbis.unposition( frag );
-  orbis.remove( frag );
+  orbis.unposition(frag);
+  orbis.remove(frag);
 }
 
-void Synapse::removeStruct( int index )
+void Synapse::removeStruct(int index)
 {
-  hard_assert( index >= 0 );
+  hard_assert(index >= 0);
 
-  Struct* str = orbis.str( index );
+  Struct* str = orbis.str(index);
 
-  if( str != nullptr ) {
-    remove( str );
-  }
-}
-
-void Synapse::removeObject( int index )
-{
-  hard_assert( index >= 0 );
-
-  Object* obj = orbis.obj( index );
-
-  if( obj != nullptr ) {
-    remove( obj );
+  if (str != nullptr) {
+    remove(str);
   }
 }
 
-void Synapse::removeFrag( int index )
+void Synapse::removeObject(int index)
 {
-  hard_assert( index >= 0 );
+  hard_assert(index >= 0);
 
-  Frag* frag = orbis.frag( index );
+  Object* obj = orbis.obj(index);
 
-  if( frag != nullptr ) {
-    remove( frag );
+  if (obj != nullptr) {
+    remove(obj);
+  }
+}
+
+void Synapse::removeFrag(int index)
+{
+  hard_assert(index >= 0);
+
+  Frag* frag = orbis.frag(index);
+
+  if (frag != nullptr) {
+    remove(frag);
   }
 }
 
@@ -303,16 +303,16 @@ void Synapse::update()
 
 void Synapse::load()
 {
-  putObjects.reserve( 32 );
-  cutObjects.reserve( 32 );
+  putObjects.reserve(32);
+  cutObjects.reserve(32);
 
-  addedStructs.reserve( 4 * 16 );
-  addedObjects.reserve( 64 * 16 );
-  addedFrags.reserve( 128 * 8 );
+  addedStructs.reserve(4 * 16);
+  addedObjects.reserve(64 * 16);
+  addedFrags.reserve(128 * 8);
 
-  removedStructs.reserve( 4 );
-  removedObjects.reserve( 64 );
-  removedFrags.reserve( 128 );
+  removedStructs.reserve(4);
+  removedObjects.reserve(64);
+  removedFrags.reserve(128);
 }
 
 void Synapse::unload()

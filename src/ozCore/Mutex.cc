@@ -57,16 +57,16 @@ struct Mutex::Descriptor
 
 Mutex::Mutex()
 {
-  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
-  if( descriptor == nullptr ) {
-    OZ_ERROR( "oz::Mutex: Descriptor allocation failed" );
+  descriptor = static_cast<Descriptor*>(malloc(sizeof(Descriptor)));
+  if (descriptor == nullptr) {
+    OZ_ERROR("oz::Mutex: Descriptor allocation failed");
   }
 
 #ifdef _WIN32
-  InitializeCriticalSection( &descriptor->criticalSection );
+  InitializeCriticalSection(&descriptor->criticalSection);
 #else
-  if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
-    OZ_ERROR( "oz::Mutex: Mutex initialisation failed" );
+  if (pthread_mutex_init(&descriptor->mutex, nullptr) != 0) {
+    OZ_ERROR("oz::Mutex: Mutex initialisation failed");
   }
 #endif
 }
@@ -74,38 +74,38 @@ Mutex::Mutex()
 Mutex::~Mutex()
 {
 #ifdef _WIN32
-  DeleteCriticalSection( &descriptor->criticalSection );
+  DeleteCriticalSection(&descriptor->criticalSection);
 #else
-  pthread_mutex_destroy( &descriptor->mutex );
+  pthread_mutex_destroy(&descriptor->mutex);
 #endif
 
-  free( descriptor );
+  free(descriptor);
 }
 
 void Mutex::lock() const
 {
 #ifdef _WIN32
-  EnterCriticalSection( &descriptor->criticalSection );
+  EnterCriticalSection(&descriptor->criticalSection);
 #else
-  pthread_mutex_lock( &descriptor->mutex );
+  pthread_mutex_lock(&descriptor->mutex);
 #endif
 }
 
 bool Mutex::tryLock() const
 {
 #ifdef _WIN32
-  return TryEnterCriticalSection( &descriptor->criticalSection );
+  return TryEnterCriticalSection(&descriptor->criticalSection);
 #else
-  return pthread_mutex_trylock( &descriptor->mutex ) == 0;
+  return pthread_mutex_trylock(&descriptor->mutex) == 0;
 #endif
 }
 
 void Mutex::unlock() const
 {
 #ifdef _WIN32
-  LeaveCriticalSection( &descriptor->criticalSection );
+  LeaveCriticalSection(&descriptor->criticalSection);
 #else
-  pthread_mutex_unlock( &descriptor->mutex );
+  pthread_mutex_unlock(&descriptor->mutex);
 #endif
 }
 

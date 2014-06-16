@@ -32,7 +32,7 @@ namespace client
 {
 
 const char* const Caelum::SKYBOX_FACES[]        = { "+x", "-x", "+y", "-y", "+z", "-z" };
-const Vec4        Caelum::GLOBAL_AMBIENT_COLOUR = Vec4( 0.12f, 0.12f, 0.15f, 1.00f );
+const Vec4        Caelum::GLOBAL_AMBIENT_COLOUR = Vec4(0.12f, 0.12f, 0.15f, 1.00f);
 
 const float       Caelum::DAY_BIAS              = 0.40f;
 const float       Caelum::DIFFUSE_COEF          = 0.80f;
@@ -42,38 +42,38 @@ const float       Caelum::RED_COEF              = +0.05f;
 const float       Caelum::GREEN_COEF            = -0.05f;
 const float       Caelum::BLUE_COEF             = -0.10f;
 
-const Vec4        Caelum::DAY_COLOUR            = Vec4( 0.45f, 0.55f, 0.95f, 1.0f );
-const Vec4        Caelum::NIGHT_COLOUR          = Vec4( 0.02f, 0.02f, 0.05f, 1.0f );
+const Vec4        Caelum::DAY_COLOUR            = Vec4(0.45f, 0.55f, 0.95f, 1.0f);
+const Vec4        Caelum::NIGHT_COLOUR          = Vec4(0.02f, 0.02f, 0.05f, 1.0f);
 
 Caelum::Caelum() :
-  sunTexId( 0 ), moonTexId( 0 ), lightDir( 0.0f, 0.0f, 1.0f ),
-  diffuseColour( 1.0f, 1.0f, 1.0f, 1.0f ), ambientColour( 1.0f, 1.0f, 1.0f, 1.0f ),
-  caelumColour( 1.0f, 1.0f, 1.0f, 1.0f ), id( -1 )
+  sunTexId(0), moonTexId(0), lightDir(0.0f, 0.0f, 1.0f),
+  diffuseColour(1.0f, 1.0f, 1.0f, 1.0f), ambientColour(1.0f, 1.0f, 1.0f, 1.0f),
+  caelumColour(1.0f, 1.0f, 1.0f, 1.0f), id(-1)
 {}
 
 void Caelum::update()
 {
-  if( id < 0 ) {
+  if (id < 0) {
     return;
   }
 
-  angle = Math::TAU * ( orbis.caelum.time / orbis.caelum.period );
+  angle = Math::TAU * (orbis.caelum.time / orbis.caelum.period);
 
-  Mat4 rot = Mat4::rotation( Quat::rotationAxis( axis, angle ) );
+  Mat4 rot = Mat4::rotation(Quat::rotationAxis(axis, angle));
   Vec3 dir = rot * originalLightDir;
 
-  ratio = clamp( dir.z + DAY_BIAS, 0.0f, 1.0f );
-  float ratioDiff = 1.0f - abs( 1.0f - 2.0f * ratio );
+  ratio = clamp(dir.z + DAY_BIAS, 0.0f, 1.0f);
+  float ratioDiff = 1.0f - abs(1.0f - 2.0f * ratio);
 
-  caelumColour.x = Math::mix( NIGHT_COLOUR.x, DAY_COLOUR.x, ratio ) + RED_COEF   * ratioDiff;
-  caelumColour.y = Math::mix( NIGHT_COLOUR.y, DAY_COLOUR.y, ratio ) + GREEN_COEF * ratioDiff;
-  caelumColour.z = Math::mix( NIGHT_COLOUR.z, DAY_COLOUR.z, ratio ) + BLUE_COEF  * ratioDiff;
+  caelumColour.x = Math::mix(NIGHT_COLOUR.x, DAY_COLOUR.x, ratio) + RED_COEF   * ratioDiff;
+  caelumColour.y = Math::mix(NIGHT_COLOUR.y, DAY_COLOUR.y, ratio) + GREEN_COEF * ratioDiff;
+  caelumColour.z = Math::mix(NIGHT_COLOUR.z, DAY_COLOUR.z, ratio) + BLUE_COEF  * ratioDiff;
 
   lightDir = dir;
 
-  diffuseColour.x = DIFFUSE_COEF * ( ratio + RED_COEF   * ratioDiff );
-  diffuseColour.y = DIFFUSE_COEF * ( ratio + GREEN_COEF * ratioDiff );
-  diffuseColour.z = DIFFUSE_COEF * ( ratio + BLUE_COEF  * ratioDiff );
+  diffuseColour.x = DIFFUSE_COEF * (ratio + RED_COEF   * ratioDiff);
+  diffuseColour.y = DIFFUSE_COEF * (ratio + GREEN_COEF * ratioDiff);
+  diffuseColour.z = DIFFUSE_COEF * (ratio + BLUE_COEF  * ratioDiff);
 
   ambientColour.x = AMBIENT_COEF * diffuseColour.x;
   ambientColour.y = AMBIENT_COEF * diffuseColour.y;
@@ -82,57 +82,57 @@ void Caelum::update()
 
 void Caelum::draw()
 {
-  if( id < 0 ) {
+  if (id < 0) {
     return;
   }
 
   OZ_GL_CHECK_ERROR();
 
   // we need the transformation matrix for occlusion of stars below horizon
-  Mat4 transf = Mat4::rotationZ( orbis.caelum.heading ) ^
-                Mat4::rotationY( angle - Math::TAU / 4.0f );
+  Mat4 transf = Mat4::rotationZ(orbis.caelum.heading) ^
+                Mat4::rotationY(angle - Math::TAU / 4.0f);
 
   shape.bind();
-  shader.program( celestialShaderId );
+  shader.program(celestialShaderId);
 
-  Vec4 sunColour = Vec4( ambientColour.x + 2.0f * diffuseColour.x,
-                         ambientColour.y + diffuseColour.y,
-                         ambientColour.z + diffuseColour.z,
-                         1.0f );
+  Vec4 sunColour = Vec4(ambientColour.x + 2.0f * diffuseColour.x,
+                        ambientColour.y + diffuseColour.y,
+                        ambientColour.z + diffuseColour.z,
+                        1.0f);
 
-  sunColour = max( sunColour, caelumColour );
+  sunColour = max(sunColour, caelumColour);
 
-  glUniform3fv( uniform.caelumColour, 1, caelumColour );
-  glUniform1f( uniform.caelumLuminance, max( -lightDir.z, 0.0f ) );
+  glUniform3fv(uniform.caelumColour, 1, caelumColour);
+  glUniform1f(uniform.caelumLuminance, max(-lightDir.z, 0.0f));
 
   tf.applyCamera();
   tf.model = transf;
   tf.applyColour();
 
-  shape.skyBox( skyboxTexIds );
+  shape.skyBox(skyboxTexIds);
 
-  glDisable( GL_CULL_FACE );
-  glBindTexture( GL_TEXTURE_2D, sunTexId );
+  glDisable(GL_CULL_FACE);
+  glBindTexture(GL_TEXTURE_2D, sunTexId);
 
-  glUniform3fv( uniform.caelumColour, 1, Vec4::ZERO );
-  glUniform1f( uniform.caelumLuminance, 1.0f );
-
-  tf.model = transf;
-  tf.model.translate( Vec3( 0.0f, 0.0f, +15.0f ) );
-  tf.setColour( tf.colour * sunColour );
-
-  shape.quad( 1.0f, 1.0f );
-
-  glBindTexture( GL_TEXTURE_2D, moonTexId );
+  glUniform3fv(uniform.caelumColour, 1, Vec4::ZERO);
+  glUniform1f(uniform.caelumLuminance, 1.0f);
 
   tf.model = transf;
-  tf.model.translate( Vec3( 0.0f, 0.0f, -15.0f ) );
-  tf.setColour( tf.colour );
+  tf.model.translate(Vec3(0.0f, 0.0f, +15.0f));
+  tf.setColour(tf.colour * sunColour);
 
-  shape.quad( 1.0f, 1.0f );
+  shape.quad(1.0f, 1.0f);
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  glEnable( GL_CULL_FACE );
+  glBindTexture(GL_TEXTURE_2D, moonTexId);
+
+  tf.model = transf;
+  tf.model.translate(Vec3(0.0f, 0.0f, -15.0f));
+  tf.setColour(tf.colour);
+
+  shape.quad(1.0f, 1.0f);
+
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
+  glEnable(GL_CULL_FACE);
 
   shape.unbind();
 
@@ -145,45 +145,43 @@ void Caelum::load()
 
   const String& path = liber.caela[id].path;
 
-  glGenTextures( 1, &sunTexId );
-  glBindTexture( GL_TEXTURE_2D, sunTexId );
+  glGenTextures(1, &sunTexId);
+  glBindTexture(GL_TEXTURE_2D, sunTexId);
 
-  if( !GL::textureDataFromFile( "@caelum/sun.dds" ) ) {
-    OZ_ERROR( "Failed to load sun texture" );
+  if (!GL::textureDataFromFile("@caelum/sun.dds")) {
+    OZ_ERROR("Failed to load sun texture");
   }
 
-  glGenTextures( 1, &moonTexId );
-  glBindTexture( GL_TEXTURE_2D, moonTexId );
+  glGenTextures(1, &moonTexId);
+  glBindTexture(GL_TEXTURE_2D, moonTexId);
 
-  if( !GL::textureDataFromFile( "@caelum/moon.dds" ) ) {
-    OZ_ERROR( "Failed to load moon texture" );
+  if (!GL::textureDataFromFile("@caelum/moon.dds")) {
+    OZ_ERROR("Failed to load moon texture");
   }
 
-  glGenTextures( 6, skyboxTexIds );
+  glGenTextures(6, skyboxTexIds);
 
-  for( int i = 0; i < 6; ++i ) {
-    File file = String::str( "%s/%s.dds", path.cstr(), SKYBOX_FACES[i] );
+  for (int i = 0; i < 6; ++i) {
+    File file = String::str("%s/%s.dds", path.cstr(), SKYBOX_FACES[i]);
 
-    glBindTexture( GL_TEXTURE_2D, skyboxTexIds[i] );
-    if( !GL::textureDataFromFile( file ) ) {
-      OZ_ERROR( "Failed to load skybox texture '%s'", file.path().cstr() );
+    glBindTexture(GL_TEXTURE_2D, skyboxTexIds[i]);
+    if (!GL::textureDataFromFile(file)) {
+      OZ_ERROR("Failed to load skybox texture '%s'", file.path().cstr());
     }
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
-  originalLightDir = Vec3( -Math::cos( orbis.caelum.heading ),
-                           -Math::sin( orbis.caelum.heading ),
-                           0.0f );
+  axis = Vec3(-Math::sin(orbis.caelum.heading), Math::cos(orbis.caelum.heading), 0.0f);
+  originalLightDir = Vec3(-Math::cos(orbis.caelum.heading), -Math::sin(orbis.caelum.heading), 0.0f);
 
-  celestialShaderId = liber.shaderIndex( "celestial" );
+  celestialShaderId = liber.shaderIndex("celestial");
 
-  nightColour = Vec4( NIGHT_COLOUR );
-  nightLuminance = ( nightColour.x + nightColour.y + nightColour.z ) / 3.0f;
+  nightColour = Vec4(NIGHT_COLOUR);
+  nightLuminance = (nightColour.x + nightColour.y + nightColour.z) / 3.0f;
 
   OZ_GL_CHECK_ERROR();
 
@@ -192,16 +190,16 @@ void Caelum::load()
 
 void Caelum::unload()
 {
-  if( id >= 0 ) {
-    glDeleteTextures( 6, skyboxTexIds );
+  if (id >= 0) {
+    glDeleteTextures(6, skyboxTexIds);
 
-    glDeleteTextures( 1, &sunTexId );
-    glDeleteTextures( 1, &moonTexId );
+    glDeleteTextures(1, &sunTexId);
+    glDeleteTextures(1, &moonTexId);
 
     sunTexId = 0;
     moonTexId = 0;
 
-    lightDir      = Vec3( 0.0f, 0.0f, 1.0f );
+    lightDir      = Vec3(0.0f, 0.0f, 1.0f);
 
     diffuseColour = Vec4::ONE;
     ambientColour = Vec4::ONE;

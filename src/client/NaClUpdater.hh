@@ -45,7 +45,7 @@ private:
   List<Package> localPackages;
   List<Package> remotePackages;
 
-  List<Package> readManifest( InputStream* is ) const;
+  List<Package> readManifest(InputStream* is) const;
   void writeLocalManifest() const;
   bool checkUpdates();
   void downloadUpdates();

@@ -59,7 +59,7 @@ public:
 
   ~DBody() override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

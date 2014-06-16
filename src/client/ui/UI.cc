@@ -48,38 +48,37 @@ namespace ui
 {
 
 UI::UI() :
-  fps( 0.0f ), fpsLabel( nullptr ), isFreelook( false ), showFPS( false ), showDebug( false ),
-  doShow( true ),
-  root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ), strategicArea( nullptr ),
-  questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ), inventory( nullptr ),
-  buildFrame( nullptr ), debugFrame( nullptr )
+  fps(0.0f), fpsLabel(nullptr), isFreelook(false), showFPS(false), showDebug(false), doShow(true),
+  root(nullptr), loadingScreen(nullptr), hudArea(nullptr), strategicArea(nullptr),
+  questFrame(nullptr), galileoFrame(nullptr), musicPlayer(nullptr), inventory(nullptr),
+  buildFrame(nullptr), debugFrame(nullptr)
 {}
 
-void UI::showLoadingScreen( bool doShow )
+void UI::showLoadingScreen(bool doShow)
 {
   loadingScreen->raise();
-  loadingScreen->show( doShow );
+  loadingScreen->show(doShow);
 }
 
 void UI::update()
 {
-  if( mouse.doShow == isFreelook ) {
+  if (mouse.doShow == isFreelook) {
     isFreelook = !mouse.doShow;
 
-    for( Area& area : root->children ) {
-      if( !( area.flags & Area::PINNED_BIT ) ) {
-        area.show( mouse.doShow );
+    for (Area& area : root->children) {
+      if (!(area.flags & Area::PINNED_BIT)) {
+        area.show(mouse.doShow);
       }
     }
   }
 
   root->updateChildren();
 
-  if( !isFreelook ) {
-    if( input.isKeyPressed || input.isKeyReleased ) {
+  if (!isFreelook) {
+    if (input.isKeyPressed || input.isKeyReleased) {
       root->passKeyEvents();
     }
-    if( doShow ) {
+    if (doShow) {
       root->passMouseEvents();
     }
   }
@@ -87,47 +86,47 @@ void UI::update()
 
 void UI::draw()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
-  if( !doShow ) {
+  if (!doShow) {
     return;
   }
 
-  glViewport( 0, 0, camera.width, camera.height );
-  glClear( GL_DEPTH_BUFFER_BIT );
+  glViewport(0, 0, camera.width, camera.height);
+  glClear(GL_DEPTH_BUFFER_BIT);
 
   shape.bind();
 
-  tf.ortho( camera.width, camera.height );
+  tf.ortho(camera.width, camera.height);
   tf.camera = Mat4::ID;
   tf.colour = Mat4::ID;
 
   // set shaders
-  shader.setAmbientLight( Vec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-  shader.setCaelumLight( Vec3( -0.4851f, 0.4851f, 0.7276f ), Vec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
+  shader.setAmbientLight(Vec4(0.5f, 0.5f, 0.5f, 1.0f));
+  shader.setCaelumLight(Vec3(-0.4851f, 0.4851f, 0.7276f), Vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
-  for( int i = 0; i < liber.shaders.length(); ++i ) {
-    shader.program( i );
+  for (int i = 0; i < liber.shaders.length(); ++i) {
+    shader.program(i);
 
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( uniform.fog_distance2, Math::INF );
-    glUniform4f( uniform.wind, 0.0f, 0.0f, 0.0f, 0.0f );
+    glUniform1f(uniform.fog_distance2, Math::INF);
+    glUniform4f(uniform.wind, 0.0f, 0.0f, 0.0f, 0.0f);
   }
 
-  shader.program( shader.plain );
+  shader.program(shader.plain);
 
   root->drawChildren();
   mouse.draw();
 
-  if( showFPS ) {
-    if( timer.frameTicks != 0 ) {
-      fps = Math::mix( fps, 1.0f / timer.frameTime, 0.04f );
+  if (showFPS) {
+    if (timer.frameTicks != 0) {
+      fps = Math::mix(fps, 1.0f / timer.frameTime, 0.04f);
     }
 
-    fpsLabel->setText( "%.1f", fps );
-    fpsLabel->draw( root );
+    fpsLabel->setText("%.1f", fps);
+    fpsLabel->draw(root);
   }
 
   shape.unbind();
@@ -151,65 +150,65 @@ void UI::load()
   buildFrame    = new BuildFrame();
   debugFrame    = showDebug ? new DebugFrame() : nullptr;
 
-  root->add( hudArea, 0, 0 );
-  root->add( strategicArea, 0, 0 );
-  root->add( questFrame, Area::CENTRE, -8 );
-  root->add( galileoFrame, 8, -8 );
-  root->add( musicPlayer, 8, -16 - galileoFrame->height );
-  root->add( inventory, Area::CENTRE, 8 );
-  root->add( infoFrame, -8, -8 );
-  root->add( buildFrame, -8, -8 );
+  root->add(hudArea, 0, 0);
+  root->add(strategicArea, 0, 0);
+  root->add(questFrame, Area::CENTRE, -8);
+  root->add(galileoFrame, 8, -8);
+  root->add(musicPlayer, 8, -16 - galileoFrame->height);
+  root->add(inventory, Area::CENTRE, 8);
+  root->add(infoFrame, -8, -8);
+  root->add(buildFrame, -8, -8);
 
-  if( showDebug ) {
-    root->add( debugFrame, Area::CENTRE, -16 - questFrame->height );
+  if (showDebug) {
+    root->add(debugFrame, Area::CENTRE, -16 - questFrame->height);
   }
 
-  hudArea->enable( false );
-  strategicArea->enable( false );
-  questFrame->enable( false );
-  inventory->enable( false );
-  infoFrame->enable( false );
-  buildFrame->enable( false );
+  hudArea->enable(false);
+  strategicArea->enable(false);
+  questFrame->enable(false);
+  inventory->enable(false);
+  infoFrame->enable(false);
+  buildFrame->enable(false);
 
   loadingScreen->raise();
 }
 
 void UI::unload()
 {
-  if( debugFrame != nullptr ) {
-    root->remove( debugFrame );
+  if (debugFrame != nullptr) {
+    root->remove(debugFrame);
     debugFrame = nullptr;
   }
-  if( buildFrame != nullptr ) {
-    root->remove( buildFrame );
+  if (buildFrame != nullptr) {
+    root->remove(buildFrame);
     buildFrame = nullptr;
   }
-  if( infoFrame != nullptr ) {
-    root->remove( infoFrame );
+  if (infoFrame != nullptr) {
+    root->remove(infoFrame);
     infoFrame = nullptr;
   }
-  if( inventory != nullptr ) {
-    root->remove( inventory );
+  if (inventory != nullptr) {
+    root->remove(inventory);
     inventory = nullptr;
   }
-  if( musicPlayer != nullptr ) {
-    root->remove( musicPlayer );
+  if (musicPlayer != nullptr) {
+    root->remove(musicPlayer);
     musicPlayer = nullptr;
   }
-  if( galileoFrame != nullptr ) {
-    root->remove( galileoFrame );
+  if (galileoFrame != nullptr) {
+    root->remove(galileoFrame);
     galileoFrame = nullptr;
   }
-  if( questFrame != nullptr ) {
-    root->remove( questFrame );
+  if (questFrame != nullptr) {
+    root->remove(questFrame);
     questFrame = nullptr;
   }
-  if( strategicArea != nullptr ) {
-    root->remove( strategicArea );
+  if (strategicArea != nullptr) {
+    root->remove(strategicArea);
     strategicArea = nullptr;
   }
-  if( hudArea != nullptr ) {
-    root->remove( hudArea );
+  if (hudArea != nullptr) {
+    root->remove(hudArea);
     hudArea = nullptr;
   }
 }
@@ -218,21 +217,21 @@ void UI::init()
 {
   fps        = 1.0f / Timer::TICK_TIME;
   isFreelook = false;
-  showFPS    = config.include( "ui.showFPS",   false ).get( false );
-  showDebug  = config.include( "ui.showDebug", false ).get( false );
+  showFPS    = config.include("ui.showFPS",   false).get(false);
+  showDebug  = config.include("ui.showDebug", false).get(false);
   doShow     = true;
 
   style.init();
   mouse.init();
 
-  root = new Area( camera.width, camera.height );
+  root = new Area(camera.width, camera.height);
   loadingScreen = new LoadingArea();
 
-  if( showFPS ) {
-    fpsLabel = new Label( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, " " );
+  if (showFPS) {
+    fpsLabel = new Label(-4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, " ");
   }
 
-  root->add( loadingScreen, 0, 0 );
+  root->add(loadingScreen, 0, 0);
 }
 
 void UI::destroy()

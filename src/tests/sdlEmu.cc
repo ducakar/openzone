@@ -31,16 +31,16 @@ using namespace oz;
 
 static const char* rwError = "";
 
-static Sint64 rwSize( struct SDL_RWops* context )
+static Sint64 rwSize(struct SDL_RWops* context)
 {
   return context->hidden.mem.stop - context->hidden.mem.base;
 }
 
-static Sint64 rwSeek( struct SDL_RWops* context, Sint64 offset, int whence )
+static Sint64 rwSeek(struct SDL_RWops* context, Sint64 offset, int whence)
 {
   Uint8* newHere;
 
-  switch( whence ) {
+  switch (whence) {
     case RW_SEEK_SET: {
       newHere = context->hidden.mem.base + offset;
       break;
@@ -59,10 +59,10 @@ static Sint64 rwSeek( struct SDL_RWops* context, Sint64 offset, int whence )
     }
   }
 
-  if( newHere < context->hidden.mem.base ) {
+  if (newHere < context->hidden.mem.base) {
     newHere = context->hidden.mem.base;
   }
-  if( newHere > context->hidden.mem.stop ) {
+  if (newHere > context->hidden.mem.stop) {
     newHere = context->hidden.mem.stop;
   }
 
@@ -70,33 +70,33 @@ static Sint64 rwSeek( struct SDL_RWops* context, Sint64 offset, int whence )
   return newHere - context->hidden.mem.base;
 }
 
-static size_t rwRead( struct SDL_RWops* context, void* ptr, size_t size, size_t maxnum )
+static size_t rwRead(struct SDL_RWops* context, void* ptr, size_t size, size_t maxnum)
 {
   size_t nBytes   = maxnum * size;
-  size_t maxBytes = size_t( context->hidden.mem.stop - context->hidden.mem.here );
+  size_t maxBytes = size_t(context->hidden.mem.stop - context->hidden.mem.here);
 
-  if( nBytes > maxBytes ) {
+  if (nBytes > maxBytes) {
     maxnum = maxBytes / size;
     nBytes = maxnum * size;
   }
 
-  mCopy( ptr, context->hidden.mem.here, nBytes );
+  mCopy(ptr, context->hidden.mem.here, nBytes);
   context->hidden.mem.here += nBytes;
 
   return maxnum;
 }
 
-static size_t rwWrite( struct SDL_RWops*, const void*, size_t, size_t )
+static size_t rwWrite(struct SDL_RWops*, const void*, size_t, size_t)
 {
-  hard_assert( false );
+  hard_assert(false);
   rwError = "RW write not implemented";
   return 0;
 }
 
-static int rwClose( struct SDL_RWops* context )
+static int rwClose(struct SDL_RWops* context)
 {
-  if( context != nullptr ) {
-    free( context );
+  if (context != nullptr) {
+    free(context);
   }
   return 0;
 }
@@ -108,9 +108,9 @@ const char* SDL_GetError()
 }
 
 extern "C"
-SDL_RWops* SDL_RWFromConstMem( const void* mem, int size )
+SDL_RWops* SDL_RWFromConstMem(const void* mem, int size)
 {
-  struct SDL_RWops* rwOps = (SDL_RWops*) malloc( sizeof *rwOps );
+  struct SDL_RWops* rwOps = (SDL_RWops*) malloc(sizeof *rwOps);
 
   rwOps->size            = rwSize;
   rwOps->seek            = rwSeek;
@@ -127,7 +127,7 @@ SDL_RWops* SDL_RWFromConstMem( const void* mem, int size )
 
 #endif
 
-int main( int, char** )
+int main(int, char**)
 {
   System::init();
   File::init();
@@ -136,21 +136,21 @@ int main( int, char** )
   const char* name   = "DroidSansMono";
   const int   height = 12;
 
-  File   file   = String::str( "/usr/share/fonts/TTF/%s.ttf", name );
+  File   file   = String::str("/usr/share/fonts/TTF/%s.ttf", name);
   Buffer buffer = file.read();
 
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Failed to read font file '%s'", file.path().cstr() );
+  if (buffer.isEmpty()) {
+    OZ_ERROR("Failed to read font file '%s'", file.path().cstr());
   }
 
-  SDL_RWops* rwOps  = SDL_RWFromConstMem( buffer.begin(), buffer.length() );
-  TTF_Font*  handle = TTF_OpenFontRW( rwOps, true, height );
+  SDL_RWops* rwOps  = SDL_RWFromConstMem(buffer.begin(), buffer.length());
+  TTF_Font*  handle = TTF_OpenFontRW(rwOps, true, height);
 
-  if( handle == nullptr ) {
-    OZ_ERROR( "TTF Error: %s", TTF_GetError() );
+  if (handle == nullptr) {
+    OZ_ERROR("TTF Error: %s", TTF_GetError());
   }
 
-  TTF_CloseFont( handle );
+  TTF_CloseFont(handle);
 
   File::destroy();
   return 0;

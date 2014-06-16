@@ -72,7 +72,7 @@ public:
    */
   static int desktopWidth()
   {
-    if( screenWidth == 0 ) {
+    if (screenWidth == 0) {
       measureScreen();
     }
     return screenWidth;
@@ -83,7 +83,7 @@ public:
    */
   static int desktopHeight()
   {
-    if( screenHeight == 0 ) {
+    if (screenHeight == 0) {
       measureScreen();
     }
     return screenHeight;
@@ -124,7 +124,7 @@ public:
   /**
    * Set whether window has focus.
    */
-  static void setFocus( bool focus )
+  static void setFocus(bool focus)
   {
     windowFocus = focus;
   }
@@ -140,7 +140,7 @@ public:
   /**
    * Toggle input grab.
    */
-  static void setGrab( bool grab );
+  static void setGrab(bool grab);
 
   /**
    * Warp mouse cursor to the centre of the window.
@@ -159,7 +159,7 @@ public:
    * take some time. Only one screenshot thread at a time is possible, so making two screenshots in
    * a short time will block the second call until the first screenshot is written.
    */
-  static void screenshot( const File& file );
+  static void screenshot(const File& file);
 
   /**
    * Minimise window.
@@ -172,7 +172,7 @@ public:
    * If width (or height) is 0, desktop width (or height) is used.
    * On error, window is destroyed.
    */
-  static bool resize( int newWidth, int newHeight, bool fullscreen = false );
+  static bool resize(int newWidth, int newHeight, bool fullscreen = false);
 
   /**
    * Create the window.
@@ -180,7 +180,7 @@ public:
    * If width (or height) is 0, desktop width (or height) is used.
    * Invoking this function when the window is already created is an error.
    */
-  static bool create( const char* title, int width, int height, bool fullscreen = false );
+  static bool create(const char* title, int width, int height, bool fullscreen = false);
 
   /**
    * Destroy the window.

@@ -36,7 +36,7 @@ class Imago
 {
 public:
 
-  typedef Imago* CreateFunc( const Object* object );
+  typedef Imago* CreateFunc(const Object* object);
 
   static const int UPDATED_BIT  = 0x00000001;
   static const int MD2MODEL_BIT = 0x00000002;
@@ -52,15 +52,15 @@ public:
 
 protected:
 
-  explicit Imago( const Object* obj_ ) :
-    obj( obj_ ), clazz( obj_->clazz ), flags( 0 )
+  explicit Imago(const Object* obj_) :
+    obj(obj_), clazz(obj_->clazz), flags(0)
   {}
 
 public:
 
   virtual ~Imago();
 
-  virtual void draw( const Imago* parent ) = 0;
+  virtual void draw(const Imago* parent) = 0;
 
 };
 

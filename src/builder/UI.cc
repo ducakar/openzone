@@ -53,64 +53,64 @@ void UI::buildIcons()
 {
   File dir = "@ui/icon";
 
-  if( dir.type() != File::DIRECTORY ) {
+  if (dir.type() != File::DIRECTORY) {
     return;
   }
 
   Set<String> builtIcons;
 
-  Log::println( "Building UI icons {" );
+  Log::println("Building UI icons {");
   Log::indent();
 
-  File::mkdir( "ui" );
-  File::mkdir( "ui/icon" );
+  File::mkdir("ui");
+  File::mkdir("ui/icon");
 
-  for( const File& image : dir.ls() ) {
+  for (const File& image : dir.ls()) {
     String name = image.baseName();
 
-    if( image.type() != File::REGULAR || !image.hasExtension( "png" ) ) {
+    if (image.type() != File::REGULAR || !image.hasExtension("png")) {
       continue;
     }
 
-    Log::print( "%s ...", image.name().cstr() );
+    Log::print("%s ...", image.name().cstr());
 
-    if( !aContains( ICON_NAMES, aLength( ICON_NAMES ), name ) ) {
-      OZ_ERROR( "Unnecessary icon: %s", image.path().cstr() );
+    if (!aContains(ICON_NAMES, aLength(ICON_NAMES), name)) {
+      OZ_ERROR("Unnecessary icon: %s", image.path().cstr());
     }
 
-    if( !ImageBuilder::convertToDDS( image, 0, "ui/icon" ) ) {
-      OZ_ERROR( "Error converting '%s' to DDS", image.name().cstr() );
+    if (!ImageBuilder::convertToDDS(image, 0, "ui/icon")) {
+      OZ_ERROR("Error converting '%s' to DDS", image.name().cstr());
     }
     image.unmap();
 
-    Log::printEnd( " OK" );
+    Log::printEnd(" OK");
 
-    builtIcons.add( name );
+    builtIcons.add(name);
   }
 
-  for( int i = 0; i < aLength( ICON_NAMES ); ++i ) {
-    if( !builtIcons.contains( ICON_NAMES[i]) ) {
-      OZ_ERROR( "Mission icon: %s", ICON_NAMES[i] );
+  for (int i = 0; i < aLength(ICON_NAMES); ++i) {
+    if (!builtIcons.contains(ICON_NAMES[i])) {
+      OZ_ERROR("Mission icon: %s", ICON_NAMES[i]);
     }
   }
 
-  hard_assert( builtIcons.length() == aLength( ICON_NAMES ) );
+  hard_assert(builtIcons.length() == aLength(ICON_NAMES));
 
   File styleFile = "@ui/style.json";
   JSON style;
 
-  if( !style.load( styleFile ) ) {
-    OZ_ERROR( "Failed to load style '%s'", styleFile.path().cstr() );
+  if (!style.load(styleFile)) {
+    OZ_ERROR("Failed to load style '%s'", styleFile.path().cstr());
   }
 
   const JSON& sounds = style["sounds"];
 
-  for( const auto& sound : sounds.objectCIter() ) {
-    context.usedSounds.add( sound.value.get( "?" ), "UI style" );
+  for (const auto& sound : sounds.objectCIter()) {
+    context.usedSounds.add(sound.value.get("?"), "UI style");
   }
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 }

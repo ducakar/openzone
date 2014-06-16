@@ -55,29 +55,29 @@ public:
 
   explicit Label();
 
-  OZ_PRINTF_FORMAT( 6, 7 )
-  explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );
+  OZ_PRINTF_FORMAT(6, 7)
+  explicit Label(int x, int y, int align, Font::Type font, const char* s, ...);
 
   ~Label();
 
-  Label( const Label& ) = delete;
-  Label( Label&& l );
+  Label(const Label&) = delete;
+  Label(Label&& l);
 
-  Label& operator = ( const Label& ) = delete;
-  Label& operator = ( Label&& l );
+  Label& operator = (const Label&) = delete;
+  Label& operator = (Label&& l);
 
-  OZ_PRINTF_FORMAT( 4, 0 )
-  void vset( int x, int y, const char* s, va_list ap );
+  OZ_PRINTF_FORMAT(4, 0)
+  void vset(int x, int y, const char* s, va_list ap);
 
-  OZ_PRINTF_FORMAT( 4, 5 )
-  void set( int x, int y, const char* s, ... );
+  OZ_PRINTF_FORMAT(4, 5)
+  void set(int x, int y, const char* s, ...);
 
-  void setPosition( int x, int y );
+  void setPosition(int x, int y);
 
-  OZ_PRINTF_FORMAT( 2, 3 )
-  void setText( const char* s, ... );
+  OZ_PRINTF_FORMAT(2, 3)
+  void setText(const char* s, ...);
 
-  void draw( const Area* area );
+  void draw(const Area* area);
 
   void clear();
 

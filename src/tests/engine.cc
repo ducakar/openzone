@@ -28,58 +28,58 @@
 
 using namespace oz;
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
   System::init();
-  SDL_Init( SDL_INIT_VIDEO );
-  Window::create( "Test", 600, 600, false );
+  SDL_Init(SDL_INIT_VIDEO);
+  Window::create("Test", 600, 600, false);
 
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Black_Slim/cursors/wait" : argv[1];
 
   GLTexture texture;
-  texture.generateIdenticon( 600, String::strongHash( "Davorin" ),
-                             Vec4( 0.20f, 0.30f, 0.25f, 1.00f ) );
-  Cursor cursor( file, Cursor::SYSTEM );
+  texture.generateIdenticon(600, String::strongHash("Davorin"),
+                             Vec4(0.20f, 0.30f, 0.25f, 1.00f));
+  Cursor cursor(file, Cursor::SYSTEM);
 
-  if( !cursor.isLoaded() ) {
+  if(!cursor.isLoaded()) {
     return EXIT_FAILURE;
   }
 
-  glEnable( GL_BLEND );
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   bool isAlive = true;
-  while( isAlive ) {
+  while(isAlive) {
     SDL_Event event;
-    SDL_PollEvent( &event );
+    SDL_PollEvent(&event);
 
-    if( event.type == SDL_QUIT || event.type == SDL_KEYDOWN ) {
+    if(event.type == SDL_QUIT || event.type == SDL_KEYDOWN) {
       isAlive = false;
     }
 
-    glClearColor( 1.2f, 1.2f, 1.2f, 0.0f );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glClearColor(1.2f, 1.2f, 1.2f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, texture.id() );
-//    glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture.id());
+//    glBindTexture(GL_TEXTURE_2D, cursor.textureId());
 
-    glBegin( GL_QUADS );
-//      glTexCoord2i( 0, 1 ); glVertex2d( -1, +1 - 0.02 * cursor.height() );
-//      glTexCoord2i( 1, 1 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height() );
-//      glTexCoord2i( 1, 0 ); glVertex2d( -1 + 0.02 * cursor.width(), +1 );
-//      glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
+    glBegin(GL_QUADS);
+//      glTexCoord2i(0, 1); glVertex2d(-1, +1 - 0.02 * cursor.height());
+//      glTexCoord2i(1, 1); glVertex2d(-1 + 0.02 * cursor.width(), +1 - 0.02 * cursor.height());
+//      glTexCoord2i(1, 0); glVertex2d(-1 + 0.02 * cursor.width(), +1);
+//      glTexCoord2i(0, 0); glVertex2d(-1, +1);
 
-      glTexCoord2i( 0, 1 ); glVertex2d( -1, -1 );
-      glTexCoord2i( 1, 1 ); glVertex2d( +1, -1 );
-      glTexCoord2i( 1, 0 ); glVertex2d( +1, +1 );
-      glTexCoord2i( 0, 0 ); glVertex2d( -1, +1 );
+      glTexCoord2i(0, 1); glVertex2d(-1, -1);
+      glTexCoord2i(1, 1); glVertex2d(+1, -1);
+      glTexCoord2i(1, 0); glVertex2d(+1, +1);
+      glTexCoord2i(0, 0); glVertex2d(-1, +1);
     glEnd();
 
     Window::swapBuffers();
-    cursor.update( 15 );
+    cursor.update(15);
 
-    Time::sleep( 10 );
+    Time::sleep(10);
   }
 
   cursor.destroy();

@@ -34,53 +34,53 @@ ObjectClass* WeaponClass::createClass()
   return new WeaponClass();
 }
 
-void WeaponClass::init( const JSON& config, const char* name_ )
+void WeaponClass::init(const JSON& config, const char* name_)
 {
-  DynamicClass::init( config, name_ );
+  DynamicClass::init(config, name_);
 
   flags |= Object::WEAPON_BIT | Object::ITEM_BIT | Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT |
            Object::STATUS_FUNC_BIT;
 
-  if( audioType >= 0 ) {
+  if (audioType >= 0) {
     const JSON& soundsConfig = config["audioSounds"];
 
-    const char* sEventShotEmpty = soundsConfig["shotEmpty"].get( "" );
-    const char* sEventShot      = soundsConfig["shot"     ].get( "" );
+    const char* sEventShotEmpty = soundsConfig["shotEmpty"].get("");
+    const char* sEventShot      = soundsConfig["shot"    ].get("");
 
-    audioSounds[Weapon::EVENT_SHOT_EMPTY] = liber.soundIndex( sEventShotEmpty );
-    audioSounds[Weapon::EVENT_SHOT]       = liber.soundIndex( sEventShot      );
+    audioSounds[Weapon::EVENT_SHOT_EMPTY] = liber.soundIndex(sEventShotEmpty);
+    audioSounds[Weapon::EVENT_SHOT]       = liber.soundIndex(sEventShot);
   }
 
-  int dollar = name.index( '$' );
-  if( dollar < 0 ) {
-    OZ_ERROR( "%s: Weapon name should be of the form botPrefix$weaponName", name_ );
+  int dollar = name.index('$');
+  if (dollar < 0) {
+    OZ_ERROR("%s: Weapon name should be of the form botPrefix$weaponName", name_);
   }
 
-  userBase     = name.substring( 0, dollar );
+  userBase     = name.substring(0, dollar);
 
-  nRounds      = config["nRounds"].get( -1 );
-  shotInterval = config["shotInterval"].get( 0.5f );
+  nRounds      = config["nRounds"].get(-1);
+  shotInterval = config["shotInterval"].get(0.5f);
 
-  onShot       = config["onShot"].get( "" );
+  onShot       = config["onShot"].get("");
 
-  if( !String::isEmpty( onShot ) ) {
+  if (!String::isEmpty(onShot)) {
     flags |= Object::LUA_BIT;
   }
 }
 
-Object* WeaponClass::create( int index, const Point& pos, Heading heading ) const
+Object* WeaponClass::create(int index, const Point& pos, Heading heading) const
 {
-  return new Weapon( this, index, pos, heading );
+  return new Weapon(this, index, pos, heading);
 }
 
-Object* WeaponClass::create( int index, const JSON& json ) const
+Object* WeaponClass::create(int index, const JSON& json) const
 {
-  return new Weapon( this, index, json );
+  return new Weapon(this, index, json);
 }
 
-Object* WeaponClass::create( InputStream* is ) const
+Object* WeaponClass::create(InputStream* is) const
 {
-  return new Weapon( this, is );
+  return new Weapon(this, is);
 }
 
 }

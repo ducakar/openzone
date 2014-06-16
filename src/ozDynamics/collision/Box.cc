@@ -34,15 +34,15 @@ Pool<Box> Box::pool;
 Box::~Box()
 {}
 
-Bounds Box::getBounds( const Point& pos, const Mat3& rot ) const
+Bounds Box::getBounds(const Point& pos, const Mat3& rot) const
 {
   // Vertices of a box are {pos ± ext.x·rot.x ± ext.y·rot.y ± ext.z·rot.z}, so minimum and maximum
   // coordinates are reached in {pos[i] + ext.x·|rot.x[i]| + ext.y·|rot.y[i]| + ext.z·|rot.z[i]|}
   // for the i-th component.
-  Vec3 margin3 = Vec3( MARGIN, MARGIN, MARGIN );
-  Vec3 dim     = ext.x*abs( rot.x ) + ext.y*abs( rot.y ) + ext.z*abs( rot.z ) + margin3;
+  Vec3 margin3 = Vec3(MARGIN, MARGIN, MARGIN);
+  Vec3 dim     = ext.x*abs(rot.x) + ext.y*abs(rot.y) + ext.z*abs(rot.z) + margin3;
 
-  return Bounds( pos - dim, pos + dim );
+  return Bounds(pos - dim, pos + dim);
 }
 
 }

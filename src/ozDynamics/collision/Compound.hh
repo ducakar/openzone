@@ -56,7 +56,7 @@ public:
 
   OZ_ALWAYS_INLINE
   explicit Compound() :
-    Shape( COMPOUND )
+    Shape(COMPOUND)
   {}
 
   ~Compound() override;
@@ -80,7 +80,7 @@ public:
   }
 
   OZ_ALWAYS_INLINE
-  const Child& operator [] ( int i ) const
+  const Child& operator [] (int i) const
   {
     return children[i];
   }
@@ -91,17 +91,17 @@ public:
     return children.length();
   }
 
-  void add( Shape* shape, const Vec3& off, const Mat3& rot )
+  void add(Shape* shape, const Vec3& off, const Mat3& rot)
   {
     Child child = { shape, off, rot };
 
-    children.add( child );
+    children.add(child);
     ++shape->nUsers;
   }
 
-  Bounds getBounds( const Point& pos, const Mat3& rot ) const override;
+  Bounds getBounds(const Point& pos, const Mat3& rot) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

@@ -28,14 +28,14 @@
 namespace oz
 {
 
-void importNirvanaConstants( lua_State* l );
+void importNirvanaConstants(lua_State* l);
 
-void importNirvanaConstants( lua_State* l )
+void importNirvanaConstants(lua_State* l)
 {
-  registerLuaConstant( l, "OZ_QUEST_NONE",                  Quest::NONE );
-  registerLuaConstant( l, "OZ_QUEST_PENDING",               Quest::PENDING );
-  registerLuaConstant( l, "OZ_QUEST_SUCCESSFUL",            Quest::SUCCESSFUL );
-  registerLuaConstant( l, "OZ_QUEST_FAILED",                Quest::FAILED );
+  registerLuaConstant(l, "OZ_QUEST_NONE",       Quest::NONE);
+  registerLuaConstant(l, "OZ_QUEST_PENDING",    Quest::PENDING);
+  registerLuaConstant(l, "OZ_QUEST_SUCCESSFUL", Quest::SUCCESSFUL);
+  registerLuaConstant(l, "OZ_QUEST_FAILED",     Quest::FAILED);
 }
 
 }

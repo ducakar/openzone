@@ -29,6 +29,6 @@
 namespace oz
 {
 
-const Point Point::ORIGIN = Point( 0.0f, 0.0f, 0.0f );
+const Point Point::ORIGIN = Point(0.0f, 0.0f, 0.0f);
 
 }

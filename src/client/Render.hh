@@ -116,12 +116,12 @@ public:
 
 private:
 
-  static void effectsMain( void* );
+  static void effectsMain(void*);
 
-  void cellEffects( int cellX, int cellY );
+  void cellEffects(int cellX, int cellY);
   void effectsRun();
 
-  void scheduleCell( int cellX, int cellY );
+  void scheduleCell(int cellX, int cellY);
   void prepareDraw();
   void drawGeometry();
 
@@ -131,7 +131,7 @@ private:
 
 public:
 
-  void update( int flags );
+  void update(int flags);
   void resize();
 
   void load();

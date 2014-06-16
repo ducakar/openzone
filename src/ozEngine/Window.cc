@@ -58,43 +58,43 @@ static SDL_GLContext   context;
 #endif
 static Thread          screenshotThread;
 
-static void writeFunc( png_struct* png, ubyte* data, size_t size )
+static void writeFunc(png_struct* png, ubyte* data, size_t size)
 {
-  OutputStream* os = static_cast<OutputStream*>( png_get_io_ptr( png ) );
+  OutputStream* os = static_cast<OutputStream*>(png_get_io_ptr(png));
 
-  os->writeChars( reinterpret_cast<const char*>( data ), int( size ) );
+  os->writeChars(reinterpret_cast<const char*>(data), int(size));
 }
 
-static void flushFunc( png_struct* )
+static void flushFunc(png_struct*)
 {}
 
-static void screenshotMain( void* data )
+static void screenshotMain(void* data)
 {
-  const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>( data );
+  const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
-  OutputStream os( 0 );
+  OutputStream os(0);
 
-  png_struct* png     = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
-  png_info*   pngInfo = png_create_info_struct( png );
+  png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+  png_info*   pngInfo = png_create_info_struct(png);
 
-  png_set_IHDR( png, pngInfo, uint( info->width ), uint( info->height ), 8, PNG_COLOR_TYPE_RGB,
-                PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE );
+  png_set_IHDR(png, pngInfo, uint(info->width), uint(info->height), 8, PNG_COLOR_TYPE_RGB,
+               PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
-  png_set_write_fn( png, &os, writeFunc, flushFunc );
-  png_write_info( png, pngInfo );
+  png_set_write_fn(png, &os, writeFunc, flushFunc);
+  png_write_info(png, pngInfo);
 
-  int pitch = ( ( info->width * 3 + 3 ) / 4 ) * 4;
+  int pitch = ((info->width * 3 + 3) / 4) * 4;
 
-  for( int i = info->height - 1; i >= 0; --i ) {
+  for (int i = info->height - 1; i >= 0; --i) {
     const char* row = &info->pixels[i * pitch];
 
-    png_write_row( png, reinterpret_cast<const ubyte*>( row ) );
+    png_write_row(png, reinterpret_cast<const ubyte*>(row));
   }
 
-  png_write_end( png, pngInfo );
-  png_destroy_write_struct( &png, &pngInfo );
+  png_write_end(png, pngInfo);
+  png_destroy_write_struct(&png, &pngInfo);
 
-  info->file.write( os.begin(), os.tell() );
+  info->file.write(os.begin(), os.tell());
 
   delete[] info->pixels;
   delete info;
@@ -102,7 +102,7 @@ static void screenshotMain( void* data )
 
 #ifdef __native_client__
 
-static void flushCompleteCallback( void*, int )
+static void flushCompleteCallback(void*, int)
 {
   flushSemaphore.post();
 }
@@ -127,7 +127,7 @@ void Window::measureScreen()
 #else
 
   SDL_DisplayMode mode;
-  SDL_GetDesktopDisplayMode( 0, &mode );
+  SDL_GetDesktopDisplayMode(0, &mode);
 
   screenWidth  = mode.w;
   screenHeight = mode.h;
@@ -144,21 +144,21 @@ bool Window::isCreated()
 #endif
 }
 
-void Window::setGrab( bool grab )
+void Window::setGrab(bool grab)
 {
   windowGrab = grab;
 
 #if SDL_MAJOR_VERSION < 2
-  SDL_ShowCursor( !windowGrab );
-  SDL_WM_GrabInput( SDL_GrabMode( windowGrab && !System::isInstrumented() ) );
+  SDL_ShowCursor(!windowGrab);
+  SDL_WM_GrabInput(SDL_GrabMode(windowGrab && !System::isInstrumented()));
 #else
-  SDL_SetRelativeMouseMode( SDL_bool( windowGrab ) );
+  SDL_SetRelativeMouseMode(SDL_bool(windowGrab));
 #endif
 }
 
 void Window::warpMouse()
 {
-  if( !windowFocus || !windowGrab ) {
+  if (!windowFocus || !windowGrab) {
     return;
   }
 
@@ -171,67 +171,67 @@ void Window::warpMouse()
 
 #else
 
-  SDL_WarpMouseInWindow( descriptor, windowWidth / 2, windowHeight / 2 );
+  SDL_WarpMouseInWindow(descriptor, windowWidth / 2, windowHeight / 2);
   SDL_PumpEvents();
-  SDL_GetRelativeMouseState( nullptr, nullptr );
+  SDL_GetRelativeMouseState(nullptr, nullptr);
 
 #endif
 }
 
 void Window::swapBuffers()
 {
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
   MainCall() << []
   {
-    context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
+    context->SwapBuffers(pp::CompletionCallback(flushCompleteCallback, nullptr));
   };
   flushSemaphore.wait();
 
 #else
 
-  SDL_GL_SwapWindow( descriptor );
+  SDL_GL_SwapWindow(descriptor);
 
 #endif
 }
 
-void Window::screenshot( const File& file )
+void Window::screenshot(const File& file)
 {
-  if( screenshotThread.isValid() ) {
+  if (screenshotThread.isValid()) {
     screenshotThread.join();
   }
 
-  int   pitch  = ( ( windowWidth * 3 + 3 ) / 4 ) * 4;
+  int   pitch  = ((windowWidth * 3 + 3) / 4) * 4;
   char* pixels = new char[windowWidth * pitch];
 
   ScreenshotInfo* info = new ScreenshotInfo { file, windowWidth, windowHeight, pixels };
 
-  glReadPixels( 0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels );
-  screenshotThread.start( "screenshot", screenshotMain, info );
+  glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels);
+  screenshotThread.start("screenshot", screenshotMain, info);
 }
 
 void Window::minimise()
 {
 #ifndef __native_client__
-  SDL_RestoreWindow( descriptor );
-  SDL_MinimizeWindow( descriptor );
+  SDL_RestoreWindow(descriptor);
+  SDL_MinimizeWindow(descriptor);
 #endif
 }
 
-bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
+bool Window::resize(int newWidth, int newHeight, bool fullscreen_)
 {
 #ifdef __native_client__
 
-  static_cast<void>( fullscreen_ );
+  static_cast<void>(fullscreen_);
 
   windowWidth  = newWidth;
   windowHeight = newHeight;
 
   MainCall() << []
   {
-    glSetCurrentContextPPAPI( 0 );
-    context->ResizeBuffers( windowWidth, windowHeight );
-    glSetCurrentContextPPAPI( context->pp_resource() );
+    glSetCurrentContextPPAPI(0);
+    context->ResizeBuffers(windowWidth, windowHeight);
+    glSetCurrentContextPPAPI(context->pp_resource());
   };
 
 #else
@@ -240,26 +240,26 @@ bool Window::resize( int newWidth, int newHeight, bool fullscreen_ )
   windowHeight = windowHeight == 0 ? screenHeight : newHeight;
   fullscreen   = fullscreen_;
 
-  Log::print( "Resizing OpenGL window to %dx%d [%s] ... ",
-              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
+  Log::print("Resizing OpenGL window to %dx%d [%s] ... ",
+             windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
 
-  if( fullscreen ) {
-    SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
-    SDL_SetWindowFullscreen( descriptor, SDL_TRUE );
+  if (fullscreen) {
+    SDL_SetWindowSize(descriptor, windowWidth, windowHeight);
+    SDL_SetWindowFullscreen(descriptor, SDL_TRUE);
   }
   else {
-    SDL_SetWindowFullscreen( descriptor, SDL_FALSE );
-    SDL_SetWindowSize( descriptor, windowWidth, windowHeight );
+    SDL_SetWindowFullscreen(descriptor, SDL_FALSE);
+    SDL_SetWindowSize(descriptor, windowWidth, windowHeight);
   }
 
-  Log::printEnd( "OK" );
+  Log::printEnd("OK");
 
 #endif
 
   return true;
 }
 
-bool Window::create( const char* title, int width, int height, bool fullscreen_ )
+bool Window::create(const char* title, int width, int height, bool fullscreen_)
 {
   measureScreen();
 
@@ -271,16 +271,16 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
 #ifdef __native_client__
 
-  static_cast<void>( title );
+  static_cast<void>(title);
 
   windowWidth  = screenWidth;
   windowHeight = screenHeight;
 
-  Log::print( "Creating OpenGL surface %dx%d ... ", windowWidth, windowHeight );
+  Log::print("Creating OpenGL surface %dx%d ... ", windowWidth, windowHeight);
 
   MainCall() << []
   {
-    glInitializePPAPI( pp::Module::Get()->get_browser_interface() );
+    glInitializePPAPI(pp::Module::Get()->get_browser_interface());
 
     int attribs[] = {
       PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
@@ -289,27 +289,27 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
       PP_GRAPHICS3DATTRIB_NONE
     };
 
-    context = new pp::Graphics3D( Pepper::instance(), pp::Graphics3D(), attribs );
+    context = new pp::Graphics3D(Pepper::instance(), pp::Graphics3D(), attribs);
 
-    if( context->is_null() ) {
-      Log::printEnd( "Failed to create OpenGL context" );
+    if (context->is_null()) {
+      Log::printEnd("Failed to create OpenGL context");
     }
-    else if( !Pepper::instance()->BindGraphics( *context ) ) {
-      Log::printEnd( "Failed to bind Graphics3D" );
+    else if (!Pepper::instance()->BindGraphics(*context)) {
+      Log::printEnd("Failed to bind Graphics3D");
     }
     else {
-      glSetCurrentContextPPAPI( context->pp_resource() );
+      glSetCurrentContextPPAPI(context->pp_resource());
 
-      glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       glFlush();
 
-      context->SwapBuffers( pp::CompletionCallback( flushCompleteCallback, nullptr ) );
+      context->SwapBuffers(pp::CompletionCallback(flushCompleteCallback, nullptr));
     }
   };
   flushSemaphore.wait();
 
-  Log::printEnd( "OK" );
+  Log::printEnd("OK");
 
 #else
 
@@ -322,55 +322,55 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
   // Force old Mesa drivers (< 9.1?) to turn on partial S3TC support even when libtxc_dxtn is not
   // present. We don't use online texture compression anywhere so partial S3TC support is enough.
 #ifdef __unix__
-  SDL_setenv( "force_s3tc_enable", "true", true );
+  SDL_setenv("force_s3tc_enable", "true", true);
 #endif
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( fullscreen ? SDL_WINDOW_FULLSCREEN : 0 );
+  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 
-  Log::print( "Creating OpenGL window %dx%d [%s] ... ",
-              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed" );
+  Log::print("Creating OpenGL window %dx%d [%s] ... ",
+             windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
 
   MainCall() << [&]
   {
-    descriptor = SDL_CreateWindow( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   windowWidth, windowHeight, flags );
-    if( descriptor == nullptr ) {
+    descriptor = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                  windowWidth, windowHeight, flags);
+    if (descriptor == nullptr) {
       return;
     }
 
 # ifdef GL_ES_VERSION_2_0
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 # else
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 # endif
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,            24 );
-    SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
-    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,            24);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,            0);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,          0);
 
-    SDL_GL_SetSwapInterval( 1 );
+    SDL_GL_SetSwapInterval(1);
 
-    context = SDL_GL_CreateContext( descriptor );
+    context = SDL_GL_CreateContext(descriptor);
   };
 
-  if( descriptor == nullptr ) {
-    Log::printEnd( "Window creation failed" );
+  if (descriptor == nullptr) {
+    Log::printEnd("Window creation failed");
     return false;
   }
 
-  Log::printEnd( "OK" );
+  Log::printEnd("OK");
 
   MainCall() << []
   {
-    glViewport( 0, 0, windowWidth, windowHeight );
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+    glViewport(0, 0, windowWidth, windowHeight);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glFlush();
 
-    SDL_GL_SwapWindow( descriptor );
+    SDL_GL_SwapWindow(descriptor);
   };
 
 #endif
@@ -380,12 +380,12 @@ bool Window::create( const char* title, int width, int height, bool fullscreen_ 
 
 void Window::destroy()
 {
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
-  if( !context->is_null() ) {
+  if (!context->is_null()) {
     MainCall() << []
     {
-      glSetCurrentContextPPAPI( 0 );
+      glSetCurrentContextPPAPI(0);
       delete context;
       context = nullptr;
       glTerminatePPAPI();
@@ -394,15 +394,15 @@ void Window::destroy()
 
 #else
 
-  if( descriptor != nullptr ) {
-    SDL_GL_DeleteContext( context );
-    SDL_DestroyWindow( descriptor );
+  if (descriptor != nullptr) {
+    SDL_GL_DeleteContext(context);
+    SDL_DestroyWindow(descriptor);
     descriptor = nullptr;
   }
 
 #endif
 
-  if( screenshotThread.isValid() ) {
+  if (screenshotThread.isValid()) {
     screenshotThread.join();
   }
 }

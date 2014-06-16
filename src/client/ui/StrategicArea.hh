@@ -47,7 +47,7 @@ private:
   static const float TAG_MIN_PIXEL_SIZE;
   static const float TAG_MAX_COEFF_SIZE;
 
-  typedef void OverlayCallback( Area* sender, const Vec3& p );
+  typedef void OverlayCallback(Area* sender, const Vec3& p);
 
   Label            unitName;
 
@@ -74,19 +74,19 @@ public:
 
 private:
 
-  bool projectPoint( const Point& p, int* x, int* y ) const;
-  bool projectBounds( const AABB& bb, Span* span ) const;
-  Vec3 getRay( int x, int y );
+  bool projectPoint(const Point& p, int* x, int* y) const;
+  bool projectBounds(const AABB& bb, Span* span) const;
+  Vec3 getRay(int x, int y);
   void collectHovers();
 
-  void drawHoverTitle( const Span& span, const char* title );
-  void drawHoverRect( const Span& span, const Struct* str, const Object* obj );
-  void drawTagRect( const Span& span, const Struct* str, const Object* obj, bool isHovered );
+  void drawHoverTitle(const Span& span, const char* title);
+  void drawHoverRect(const Span& span, const Struct* str, const Object* obj);
+  void drawTagRect(const Span& span, const Struct* str, const Object* obj, bool isHovered);
 
 protected:
 
   void onUpdate() override;
-  void onVisibilityChange( bool doShow ) override;
+  void onVisibilityChange(bool doShow) override;
   void onReposition() override;
   bool onMouseEvent() override;
   void onDraw() override;
@@ -95,7 +95,7 @@ public:
 
   explicit StrategicArea();
 
-  void setOverlay( OverlayCallback* callback, Area* sender );
+  void setOverlay(OverlayCallback* callback, Area* sender);
   void clearOverlay();
 
 };

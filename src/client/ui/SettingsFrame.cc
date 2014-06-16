@@ -35,37 +35,37 @@ namespace client
 namespace ui
 {
 
-static void closeFrame( Button* sender )
+static void closeFrame(Button* sender)
 {
-  SettingsFrame* settings = static_cast<SettingsFrame*>( sender->parent );
-  settings->parent->remove( settings );
+  SettingsFrame* settings = static_cast<SettingsFrame*>(sender->parent);
+  settings->parent->remove(settings);
 }
 
 void SettingsFrame::onDraw()
 {
   Frame::onDraw();
 
-  message.draw( this );
+  message.draw(this);
 }
 
 SettingsFrame::SettingsFrame() :
-  Frame( 400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
-  message( 4, 24, -HEADER_SIZE - 4, Area::ALIGN_NONE, Font::SANS, "" )
+  Frame(400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT("Settings")),
+  message(4, 24, -HEADER_SIZE - 4, Area::ALIGN_NONE, Font::SANS, "")
 {
-  x = ( camera.width - width ) / 2;
-  y = ( camera.height - height ) / 2;
+  x = (camera.width - width) / 2;
+  y = (camera.height - height) / 2;
 
-  const String& configDirPath = config["dir.config"].get( File::CONFIG );
+  const String& configDirPath = config["dir.config"].get(File::CONFIG);
 
-  message.setWidth( width - 8 );
-  message.setText( "%s\n\n  %s\n  %s\n  %s",
-                   OZ_GETTEXT( "NOT IMPLEMENTED.\nYou can change your settings by manually editing"
-                               " the following files:" ),
-                   ( configDirPath + "/config.json" ).cstr(),
-                   ( configDirPath + "/input.json" ).cstr(),
-                   ( configDirPath + "/profile.json" ).cstr() );
+  message.setWidth(width - 8);
+  message.setText("%s\n\n  %s\n  %s\n  %s",
+                  OZ_GETTEXT("NOT IMPLEMENTED.\nYou can change your settings by manually editing"
+                             " the following files:"),
+                  (configDirPath + "/config.json").cstr(),
+                  (configDirPath + "/input.json").cstr(),
+                  (configDirPath + "/profile.json").cstr());
 
-  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 80, 25 ), -4, 4 );
+  add(new Button(OZ_GETTEXT("Close"), closeFrame, 80, 25), -4, 4);
 }
 
 }

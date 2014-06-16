@@ -44,28 +44,28 @@ enum Heading
 /// Bitwise AND with this mask is non-zero iff heading is either `EAST` or `WEST`.
 const int WEST_EAST_MASK = 0x01;
 
-inline Vec3 rotate( const Vec3& dim, Heading heading )
+inline Vec3 rotate(const Vec3& dim, Heading heading)
 {
-  return heading & WEST_EAST_MASK ? Vec3( dim.y, dim.x, dim.z ) : dim;
+  return heading & WEST_EAST_MASK ? Vec3(dim.y, dim.x, dim.z) : dim;
 }
 
-inline Bounds rotate( const Bounds& bb, Heading heading )
+inline Bounds rotate(const Bounds& bb, Heading heading)
 {
-  switch( heading ) {
+  switch (heading) {
     case NORTH: {
       return bb;
     }
     case WEST: {
-      return Bounds( Point( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                     Point( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      return Bounds(Point(-bb.maxs.y, +bb.mins.x, +bb.mins.z),
+                    Point(-bb.mins.y, +bb.maxs.x, +bb.maxs.z));
     }
     case SOUTH: {
-      return Bounds( Point( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                     Point( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      return Bounds(Point(-bb.maxs.x, -bb.maxs.y, +bb.mins.z),
+                    Point(-bb.mins.x, -bb.mins.y, +bb.maxs.z));
     }
     case EAST: {
-      return Bounds( Point( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                     Point( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+      return Bounds(Point(+bb.mins.y, -bb.maxs.x, +bb.mins.z),
+                    Point(+bb.maxs.y, -bb.mins.x, +bb.maxs.z));
     }
   }
 }

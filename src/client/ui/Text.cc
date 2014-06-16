@@ -37,57 +37,57 @@ namespace client
 namespace ui
 {
 
-static const int EMPTY_HASH = hash( "" );
+static const int EMPTY_HASH = hash("");
 
 void Text::realign()
 {
   texX = x;
   texY = y;
 
-  if( align & Area::ALIGN_RIGHT ) {
+  if (align & Area::ALIGN_RIGHT) {
     texX -= texWidth;
   }
-  else if( align & Area::ALIGN_HCENTRE ) {
+  else if (align & Area::ALIGN_HCENTRE) {
     texX -= texWidth / 2;
   }
 
-  if( align & Area::ALIGN_TOP ) {
+  if (align & Area::ALIGN_TOP) {
     texY -= texHeight;
   }
-  else if( align & Area::ALIGN_VCENTRE ) {
+  else if (align & Area::ALIGN_VCENTRE) {
     texY -= texHeight / 2;
   }
 }
 
-void Text::setTextv( const char* s, va_list ap )
+void Text::setTextv(const char* s, va_list ap)
 {
-  hard_assert( s != nullptr );
+  hard_assert(s != nullptr);
 
   char buffer[1024];
-  vsnprintf( buffer, 1024, s, ap );
+  vsnprintf(buffer, 1024, s, ap);
   buffer[1023] = '\0';
 
-  if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
+  if (buffer[0] == '\0' || (buffer[0] == ' ' && buffer[1] == '\0')) {
     clear();
   }
   else {
-    int newHash = hash( buffer );
+    int newHash = hash(buffer);
 
-    if( newHash != lastHash ) {
+    if (newHash != lastHash) {
       MainCall() << [&]
       {
-        if( texId == 0 ) {
-          glGenTextures( 1, &texId );
+        if (texId == 0) {
+          glGenTextures(1, &texId);
         }
 
-        glBindTexture( GL_TEXTURE_2D, texId );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         texWidth = width;
-        style.fonts[font].upload( buffer, &texWidth, &texHeight );
+        style.fonts[font].upload(buffer, &texWidth, &texHeight);
 
-        glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+        glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
         realign();
       };
@@ -96,18 +96,18 @@ void Text::setTextv( const char* s, va_list ap )
 }
 
 Text::Text() :
-  x( 0 ), y( 0 ), width( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ),
-  texX( 0 ), texY( 0 ), texWidth( 0 ), texHeight( 0 ), lastHash( EMPTY_HASH ), texId( 0 )
+  x(0), y(0), width(0), align(Area::ALIGN_NONE), font(Font::MONO),
+  texX(0), texY(0), texWidth(0), texHeight(0), lastHash(EMPTY_HASH), texId(0)
 {}
 
-Text::Text( int x_, int y_, int width_, int align_, Font::Type font_, const char* s, ... ) :
-  x( x_ ), y( y_ ), width( width_ ), align( align_ ), font( font_ ),
-  texX( 0 ), texY( 0 ), texWidth( 0 ), texHeight( 0 ), lastHash( EMPTY_HASH ), texId( 0 )
+Text::Text(int x_, int y_, int width_, int align_, Font::Type font_, const char* s, ...) :
+  x(x_), y(y_), width(width_), align(align_), font(font_),
+  texX(0), texY(0), texWidth(0), texHeight(0), lastHash(EMPTY_HASH), texId(0)
 {
   va_list ap;
-  va_start( ap, s );
-  setTextv( s, ap );
-  va_end( ap );
+  va_start(ap, s);
+  setTextv(s, ap);
+  va_end(ap);
 }
 
 Text::~Text()
@@ -115,10 +115,10 @@ Text::~Text()
   clear();
 }
 
-Text::Text( Text&& l ) :
-  x( l.x ), y( l.y ), width( l.width ), align( l.align ), font( l.font ),
-  texX( l.texX ), texY( l.texY ), texWidth( l.texWidth ), texHeight( l.texHeight ),
-  lastHash( l.lastHash ), texId( l.texId )
+Text::Text(Text&& l) :
+  x(l.x), y(l.y), width(l.width), align(l.align), font(l.font),
+  texX(l.texX), texY(l.texY), texWidth(l.texWidth), texHeight(l.texHeight),
+  lastHash(l.lastHash), texId(l.texId)
 {
   l.x         = 0;
   l.y         = 0;
@@ -133,9 +133,9 @@ Text::Text( Text&& l ) :
   l.texId     = 0;
 }
 
-Text& Text::operator = ( Text&& l )
+Text& Text::operator = (Text&& l)
 {
-  if( &l == this ) {
+  if (&l == this) {
     return *this;
   }
 
@@ -168,7 +168,7 @@ Text& Text::operator = ( Text&& l )
   return *this;
 }
 
-void Text::setPosition( int x_, int y_ )
+void Text::setPosition(int x_, int y_)
 {
   x = x_;
   y = y_;
@@ -176,58 +176,58 @@ void Text::setPosition( int x_, int y_ )
   realign();
 }
 
-void Text::setWidth( int width_ )
+void Text::setWidth(int width_)
 {
   width = width_;
 
   realign();
 }
 
-void Text::setAlign( int align_ )
+void Text::setAlign(int align_)
 {
   align = align_;
 
   realign();
 }
 
-void Text::setFont( Font::Type font_ )
+void Text::setFont(Font::Type font_)
 {
   font = font_;
 }
 
-void Text::setText( const char* s, ... )
+void Text::setText(const char* s, ...)
 {
   va_list ap;
-  va_start( ap, s );
-  setTextv( s, ap );
-  va_end( ap );
+  va_start(ap, s);
+  setTextv(s, ap);
+  va_end(ap);
 }
 
-void Text::draw( const Area* area )
+void Text::draw(const Area* area)
 {
-  if( texId == 0 ) {
+  if (texId == 0) {
     return;
   }
 
-  int posX = area->x + ( x < 0 ? area->width  + texX : texX );
-  int posY = area->y + ( y < 0 ? area->height + texY : texY );
+  int posX = area->x + (x < 0 ? area->width  + texX : texX);
+  int posY = area->y + (y < 0 ? area->height + texY : texY);
 
-  glBindTexture( GL_TEXTURE_2D, texId );
+  glBindTexture(GL_TEXTURE_2D, texId);
 
-  shape.colour( style.colours.textBackground );
-  shape.fill( posX + 1, posY - 1, texWidth, texHeight );
-  shape.colour( style.colours.text );
-  shape.fill( posX, posY, texWidth, texHeight );
+  shape.colour(style.colours.textBackground);
+  shape.fill(posX + 1, posY - 1, texWidth, texHeight);
+  shape.colour(style.colours.text);
+  shape.fill(posX, posY, texWidth, texHeight);
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 }
 
 void Text::clear()
 {
-  if( texId != 0 ) {
+  if (texId != 0) {
     MainCall() << [&]
     {
-      glDeleteTextures( 1, &texId );
+      glDeleteTextures(1, &texId);
     };
 
     texX      = 0;

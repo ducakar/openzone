@@ -43,7 +43,7 @@ private:
   static const int   FOOTER_SIZE   = 32;
   static const int   ICON_SIZE     = 32;
   static const int   SLOT_SIZE     = 64;
-  static const int   SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
+  static const int   SLOT_OBJ_DIM  = (SLOT_SIZE - 2*PADDING_SIZE) / 2;
   static const int   SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
 
   const Bot*     owner;
@@ -65,16 +65,16 @@ private:
 
 private:
 
-  static void ownerItemCallback( ModelField* sender, bool isClicked );
-  static void otherItemCallback( ModelField* sender, bool isClicked );
+  static void ownerItemCallback(ModelField* sender, bool isClicked);
+  static void otherItemCallback(ModelField* sender, bool isClicked);
 
   void updateReferences();
-  void handleScroll( const Object* container, int* scroll );
-  void drawComponent( int height, const Object* container, const Dynamic* taggedItem, int scroll );
+  void handleScroll(const Object* container, int* scroll);
+  void drawComponent(int height, const Object* container, const Dynamic* taggedItem, int scroll);
 
 protected:
 
-  void onVisibilityChange( bool doShow ) override;
+  void onVisibilityChange(bool doShow) override;
   bool onMouseEvent() override;
   void onUpdate() override;
   void onDraw() override;

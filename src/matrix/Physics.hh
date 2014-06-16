@@ -89,8 +89,8 @@ private:
 
 public:
 
-  void updateFrag( Frag* frag );
-  void updateObj( Dynamic* dyn );
+  void updateFrag(Frag* frag);
+  void updateObj(Dynamic* dyn);
 
 };
 

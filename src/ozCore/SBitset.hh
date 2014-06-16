@@ -37,25 +37,25 @@ namespace oz
  * Bit array with static storage.
  *
  * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
- * `sizeof( ulong ) * 8`.
+ * `sizeof(ulong) * 8`.
  *
  * @sa `oz::Bitset`
  */
 template <int BITSIZE>
 class SBitset
 {
-  static_assert( BITSIZE > 0, "SBitset size must be at least 1" );
+  static_assert(BITSIZE > 0, "SBitset size must be at least 1");
 
 private:
 
   /// Size of unit in bytes.
-  static const int UNIT_SIZE = int( sizeof( ulong ) );
+  static const int UNIT_SIZE = int(sizeof(ulong));
 
   /// Number of bits per unit.
-  static const int UNIT_BITSIZE = int( sizeof( ulong ) ) * 8;
+  static const int UNIT_BITSIZE = int(sizeof(ulong)) * 8;
 
   /// Number of units.
-  static const int SIZE = ( BITSIZE + UNIT_BITSIZE - 1 ) / UNIT_BITSIZE;
+  static const int SIZE = (BITSIZE + UNIT_BITSIZE - 1) / UNIT_BITSIZE;
 
   ulong data[SIZE]; ///< Pointer to array of units that holds the data.
 
@@ -65,23 +65,23 @@ public:
    * Initialise all bits to zero.
    */
   SBitset() :
-    data{}
+    data {}
   {}
 
   /**
    * True iff all bits are equal.
    */
-  bool operator == ( const SBitset& b ) const
+  bool operator == (const SBitset& b) const
   {
-    return aEquals<ulong>( data, SIZE, b.data );
+    return aEquals<ulong>(data, SIZE, b.data);
   }
 
   /**
    * True any bit differ.
    */
-  bool operator != ( const SBitset& b ) const
+  bool operator != (const SBitset& b) const
   {
-    return !operator == ( b );
+    return !operator == (b);
   }
 
   /**
@@ -133,33 +133,33 @@ public:
    * Get the `i`-th bit.
    */
   OZ_ALWAYS_INLINE
-  bool get( int i ) const
+  bool get(int i) const
   {
-    hard_assert( uint( i ) < uint( SIZE * UNIT_BITSIZE ) );
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITSIZE));
 
-    return ( data[i / UNIT_BITSIZE] & ( 1ul << ( i % UNIT_BITSIZE ) ) ) != 0ul;
+    return (data[i / UNIT_BITSIZE] & (1ul << (i % UNIT_BITSIZE))) != 0ul;
   }
 
   /**
    * %Set the `i`-th bit to true.
    */
   OZ_ALWAYS_INLINE
-  void set( int i )
+  void set(int i)
   {
-    hard_assert( uint( i ) < uint( SIZE * UNIT_BITSIZE ) );
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITSIZE));
 
-    data[i / UNIT_BITSIZE] |= 1ul << ( i % UNIT_BITSIZE );
+    data[i / UNIT_BITSIZE] |= 1ul << (i % UNIT_BITSIZE);
   }
 
   /**
    * %Set the `i`-th bit to false.
    */
   OZ_ALWAYS_INLINE
-  void clear( int i )
+  void clear(int i)
   {
-    hard_assert( uint( i ) < uint( SIZE * UNIT_BITSIZE ) );
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITSIZE));
 
-    data[i / UNIT_BITSIZE] &= ~( 1ul << ( i % UNIT_BITSIZE ) );
+    data[i / UNIT_BITSIZE] &= ~(1ul << (i % UNIT_BITSIZE));
   }
 
   /**
@@ -167,8 +167,8 @@ public:
    */
   bool isAllSet() const
   {
-    for( int i = 0; i < SIZE; ++i ) {
-      if( data[i] != ~0ul ) {
+    for (int i = 0; i < SIZE; ++i) {
+      if (data[i] != ~0ul) {
         return false;
       }
     }
@@ -180,8 +180,8 @@ public:
    */
   bool isAllClear() const
   {
-    for( int i = 0; i < SIZE; ++i ) {
-      if( data[i] != 0ul ) {
+    for (int i = 0; i < SIZE; ++i) {
+      if (data[i] != 0ul) {
         return false;
       }
     }
@@ -196,10 +196,10 @@ public:
    * true: if first bitset has true on the i-th position then the second bitset also has true on the
    * i-th position.
    */
-  bool isSubset( const SBitset& b ) const
+  bool isSubset(const SBitset& b) const
   {
-    for( int i = 0; i < SIZE; ++i ) {
-      if( ( data[i] & ~b.data[i] ) != 0ul ) {
+    for (int i = 0; i < SIZE; ++i) {
+      if ((data[i] & ~b.data[i]) != 0ul) {
         return false;
       }
     }
@@ -209,9 +209,9 @@ public:
   /**
    * %Set bits from inclusively start to non-inclusively end to true.
    */
-  void set( int start, int end )
+  void set(int start, int end)
   {
-    hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( SIZE * UNIT_BITSIZE ) );
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITSIZE));
 
     int   startUnit   = start / UNIT_BITSIZE;
     int   startOffset = start % UNIT_BITSIZE;
@@ -220,16 +220,16 @@ public:
     int   endOffset   = end % UNIT_BITSIZE;
 
     ulong startMask   = ~0ul << startOffset;
-    ulong endMask     = ~( ~0ul << endOffset );
+    ulong endMask     = ~(~0ul << endOffset);
 
-    if( startUnit == endUnit ) {
+    if (startUnit == endUnit) {
       data[startUnit] |= startMask & endMask;
     }
     else {
       data[startUnit] |= startMask;
       data[endUnit]   |= endMask;
 
-      for( int i = startUnit + 1; i < endUnit; ++i ) {
+      for (int i = startUnit + 1; i < endUnit; ++i) {
         data[i] = ~0ul;
       }
     }
@@ -238,9 +238,9 @@ public:
   /**
    * %Set bits from inclusively start to non-inclusively end to false.
    */
-  void clear( int start, int end )
+  void clear(int start, int end)
   {
-    hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( SIZE * UNIT_BITSIZE ) );
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITSIZE));
 
     int   startUnit   = start / UNIT_BITSIZE;
     int   startOffset = start % UNIT_BITSIZE;
@@ -248,17 +248,17 @@ public:
     int   endUnit     = end / UNIT_BITSIZE;
     int   endOffset   = end % UNIT_BITSIZE;
 
-    ulong startMask   = ~( ~0ul << startOffset );
+    ulong startMask   = ~(~0ul << startOffset);
     ulong endMask     = ~0ul << endOffset;
 
-    if( startUnit == endUnit ) {
+    if (startUnit == endUnit) {
       data[startUnit] &= startMask | endMask;
     }
     else {
       data[startUnit] &= startMask;
       data[endUnit]   &= endMask;
 
-      for( int i = startUnit + 1; i < endUnit; ++i ) {
+      for (int i = startUnit + 1; i < endUnit; ++i) {
         data[i] = 0ul;
       }
     }
@@ -269,7 +269,7 @@ public:
    */
   void setAll()
   {
-    aFill<ulong, ulong>( data, SIZE, ~0ul );
+    aFill<ulong, ulong>(data, SIZE, ~0ul);
   }
 
   /**
@@ -277,7 +277,7 @@ public:
    */
   void clearAll()
   {
-    aFill<ulong, ulong>( data, SIZE, 0ul );
+    aFill<ulong, ulong>(data, SIZE, 0ul);
   }
 
   /**
@@ -287,7 +287,7 @@ public:
   {
     SBitset r;
 
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       r.data[i] = ~data[i];
     }
     return r;
@@ -296,11 +296,11 @@ public:
   /**
    * Return AND of two bitsets.
    */
-  SBitset operator & ( const SBitset& b ) const
+  SBitset operator & (const SBitset& b) const
   {
     SBitset r;
 
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       r.data[i] = data[i] & b.data[i];
     }
     return r;
@@ -309,11 +309,11 @@ public:
   /**
    * Return OR of two bitsets.
    */
-  SBitset operator | ( const SBitset& b ) const
+  SBitset operator | (const SBitset& b) const
   {
     SBitset r;
 
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       r.data[i] = data[i] | b.data[i];
     }
     return r;
@@ -322,11 +322,11 @@ public:
   /**
    * Return XOR of two bitsets.
    */
-  SBitset operator ^ ( const SBitset& b ) const
+  SBitset operator ^ (const SBitset& b) const
   {
     SBitset r;
 
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       r.data[i] = data[i] ^ b.data[i];
     }
     return r;
@@ -335,9 +335,9 @@ public:
   /**
    * AND of two bitsets.
    */
-  SBitset& operator &= ( const SBitset& b )
+  SBitset& operator &= (const SBitset& b)
   {
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       data[i] &= b.data[i];
     }
     return *this;
@@ -346,9 +346,9 @@ public:
   /**
    * OR of two bitsets.
    */
-  SBitset& operator |= ( const SBitset& b )
+  SBitset& operator |= (const SBitset& b)
   {
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       data[i] |= b.data[i];
     }
     return *this;
@@ -357,9 +357,9 @@ public:
   /**
    * XOR of two bitsets.
    */
-  SBitset& operator ^= ( const SBitset& b )
+  SBitset& operator ^= (const SBitset& b)
   {
-    for( int i = 0; i < SIZE; ++i ) {
+    for (int i = 0; i < SIZE; ++i) {
       data[i] ^= b.data[i];
     }
     return *this;

@@ -33,46 +33,46 @@ namespace client
 
 Pool<SMMVehicleImago, 64> SMMVehicleImago::pool;
 
-Imago* SMMVehicleImago::create( const Object* obj )
+Imago* SMMVehicleImago::create(const Object* obj)
 {
-  hard_assert( obj->flags & Object::VEHICLE_BIT );
+  hard_assert(obj->flags & Object::VEHICLE_BIT);
 
-  SMMVehicleImago* imago = new SMMVehicleImago( obj );
+  SMMVehicleImago* imago = new SMMVehicleImago(obj);
 
-  imago->model = context.requestModel( obj->clazz->imagoModel );
+  imago->model = context.requestModel(obj->clazz->imagoModel);
 
   return imago;
 }
 
 SMMVehicleImago::~SMMVehicleImago()
 {
-  context.releaseModel( clazz->imagoModel );
+  context.releaseModel(clazz->imagoModel);
 }
 
-void SMMVehicleImago::draw( const Imago* )
+void SMMVehicleImago::draw(const Imago*)
 {
-  if( !model->isLoaded() ) {
+  if (!model->isLoaded()) {
     return;
   }
 
-  const Vehicle*      veh   = static_cast<const Vehicle*>( obj );
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
+  const Vehicle*      veh   = static_cast<const Vehicle*>(obj);
+  const VehicleClass* clazz = static_cast<const VehicleClass*>(obj->clazz);
 
-  tf.model = Mat4::translation( obj->p - Point::ORIGIN ) ^ veh->rot;
-  tf.model.rotateX( Math::TAU / -4.0f );
+  tf.model = Mat4::translation(obj->p - Point::ORIGIN) ^ veh->rot;
+  tf.model.rotateX(Math::TAU / -4.0f);
 
-  const Bot* pilot = orbis.obj<const Bot>( veh->pilot );
+  const Bot* pilot = orbis.obj<const Bot>(veh->pilot);
 
-  if( pilot != nullptr && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
+  if (pilot != nullptr && (veh->state & Vehicle::CREW_VISIBLE_BIT)) {
     tf.push();
-    tf.model.translate( clazz->pilotPos );
+    tf.model.translate(clazz->pilotPos);
 
-    context.drawImago( pilot, this );
+    context.drawImago(pilot, this);
 
     tf.pop();
   }
 
-  model->schedule( 0, Model::SCENE_QUEUE );
+  model->schedule(0, Model::SCENE_QUEUE);
 }
 
 }

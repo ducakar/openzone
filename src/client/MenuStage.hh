@@ -43,8 +43,8 @@ public:
   bool doExit;
 
   bool update() override;
-  void present( bool isFull ) override;
-  void wait( uint micros ) override;
+  void present(bool isFull) override;
+  void wait(uint micros) override;
 
   void load() override;
   void unload() override;

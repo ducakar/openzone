@@ -30,36 +30,36 @@ namespace oz
 namespace builder
 {
 
-void Class::scanObjClass( const char* className )
+void Class::scanObjClass(const char* className)
 {
   String name       = className;
   File   configFile = "@class/" + name + ".json";
 
-  if( !config.load( configFile ) ) {
-    OZ_ERROR( "Failed to load '%s'", configFile.path().cstr() );
+  if (!config.load(configFile)) {
+    OZ_ERROR("Failed to load '%s'", configFile.path().cstr());
   }
 
-  context.usedModels.include( config["imagoModel"].get( "" ), name + " (Object class)" );
+  context.usedModels.include(config["imagoModel"].get(""), name + " (Object class)");
 
   const JSON& soundsConfig = config["audioSounds"];
-  for( const auto& sound : soundsConfig.objectCIter() ) {
-    context.usedSounds.include( sound.value.get( "?" ), name + " (Object class)" );
+  for (const auto& sound : soundsConfig.objectCIter()) {
+    context.usedSounds.include(sound.value.get("?"), name + " (Object class)");
   }
 }
 
-void Class::scanFragPool( const char* poolName )
+void Class::scanFragPool(const char* poolName)
 {
   String name       = poolName;
   File   configFile = "@frag/" + name + ".json";
 
   JSON config;
-  if( !config.load( configFile ) ) {
-    OZ_ERROR( "Failed to load '%s'", configFile.path().cstr() );
+  if (!config.load(configFile)) {
+    OZ_ERROR("Failed to load '%s'", configFile.path().cstr());
   }
 
   const JSON& modelsConfig = config["models"];
-  for( const JSON& model : modelsConfig.arrayCIter() ) {
-    context.usedModels.include( model.get( "?" ), name + " (Object class)" );
+  for (const JSON& model : modelsConfig.arrayCIter()) {
+    context.usedModels.include(model.get("?"), name + " (Object class)");
   }
 }
 

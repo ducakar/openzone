@@ -29,10 +29,10 @@
 namespace oz
 {
 
-bool Mind::hasCollided( const Bot* botObj )
+bool Mind::hasCollided(const Bot* botObj)
 {
-  for( const Object::Event& event : botObj->events ) {
-    if( event.id == Object::EVENT_HIT || event.id == Object::EVENT_DAMAGE ) {
+  for (const Object::Event& event : botObj->events) {
+    if (event.id == Object::EVENT_HIT || event.id == Object::EVENT_DAMAGE) {
       return true;
     }
   }
@@ -40,17 +40,17 @@ bool Mind::hasCollided( const Bot* botObj )
 }
 
 Mind::Mind() :
-  flags( 0 ), side( 0 ), bot( 0 )
+  flags(0), side(0), bot(0)
 {}
 
-Mind::Mind( int bot_ ) :
-  flags( 0 ), side( 0 ), bot( bot_ )
+Mind::Mind(int bot_) :
+  flags(0), side(0), bot(bot_)
 {
-  luaNirvana.registerMind( bot );
+  luaNirvana.registerMind(bot);
 }
 
-Mind::Mind( int bot_, InputStream* is ) :
-  bot( bot_ )
+Mind::Mind(int bot_, InputStream* is) :
+  bot(bot_)
 {
   flags = is->readInt();
   side  = is->readInt();
@@ -58,22 +58,22 @@ Mind::Mind( int bot_, InputStream* is ) :
 
 Mind::~Mind()
 {
-  if( bot >= 0 ) {
-    luaNirvana.unregisterMind( bot );
+  if (bot >= 0) {
+    luaNirvana.unregisterMind(bot);
   }
 }
 
-Mind::Mind( Mind&& m ) :
-  flags( m.flags ), side( m.side ), bot( m.bot )
+Mind::Mind(Mind&& m) :
+  flags(m.flags), side(m.side), bot(m.bot)
 {
   m.flags = 0;
   m.side  = 0;
   m.bot   = -1;
 }
 
-Mind& Mind::operator = ( Mind&& m )
+Mind& Mind::operator = (Mind&& m)
 {
-  if( &m == this ) {
+  if (&m == this) {
     return *this;
   }
 
@@ -88,30 +88,30 @@ Mind& Mind::operator = ( Mind&& m )
   return *this;
 }
 
-void Mind::update( bool doRegularUpdate )
+void Mind::update(bool doRegularUpdate)
 {
-  Bot* botObj = orbis.obj<Bot>( bot );
+  Bot* botObj = orbis.obj<Bot>(bot);
 
-  hard_assert( botObj != nullptr && ( botObj->flags & Object::BOT_BIT ) );
+  hard_assert(botObj != nullptr && (botObj->flags & Object::BOT_BIT));
 
-  if( botObj->mind.isEmpty() || ( botObj->state & ( Bot::DEAD_BIT | Bot::PLAYER_BIT ) ) ) {
+  if (botObj->mind.isEmpty() || (botObj->state & (Bot::DEAD_BIT | Bot::PLAYER_BIT))) {
     return;
   }
 
-  if( doRegularUpdate || ( flags & FORCE_UPDATE_BIT ) ||
-      ( ( flags & COLLISION_UPDATE_BIT ) && hasCollided( botObj ) ) )
+  if (doRegularUpdate || (flags & FORCE_UPDATE_BIT) ||
+      ((flags & COLLISION_UPDATE_BIT) && hasCollided(botObj)))
   {
     flags &= ~FORCE_UPDATE_BIT;
     botObj->actions = 0;
 
-    luaNirvana.mindCall( botObj->mind, this, botObj );
+    luaNirvana.mindCall(botObj->mind, this, botObj);
   }
 }
 
-void Mind::write( OutputStream* os ) const
+void Mind::write(OutputStream* os) const
 {
-  os->writeInt( flags );
-  os->writeInt( side );
+  os->writeInt(flags);
+  os->writeInt(side);
 }
 
 }

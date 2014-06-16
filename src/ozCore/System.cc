@@ -38,17 +38,17 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined( __ANDROID__ )
+#if defined(__ANDROID__)
 # include <android/log.h>
 # include <ctime>
 # include <pthread.h>
-#elif defined( __native_client__ )
+#elif defined(__native_client__)
 # include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 # include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
@@ -64,7 +64,7 @@
 # endif
 #endif
 
-#if defined( __native_client__ ) && !defined( __GLIBC__ )
+#if defined(__native_client__) && !defined(__GLIBC__)
 
 using namespace oz;
 
@@ -73,13 +73,13 @@ using namespace oz;
 // us several #ifdefs in this file.
 
 extern "C" OZ_WEAK
-void ( * signal( int, void ( * )( int ) ) )( int )
+void (* signal(int, void (*)(int)))(int)
 {
   return nullptr;
 }
 
 extern "C" OZ_WEAK
-int raise( int )
+int raise(int)
 {
   return 0;
 }
@@ -98,7 +98,7 @@ static const int      BELL_PREFERRED_RATE = 48000;
 static const timespec TIMESPEC_10MS       = { 0, 10 * 1000000 };
 #endif
 
-#if defined( __native_client__ )
+#if defined(__native_client__)
 
 struct SampleInfo
 {
@@ -110,9 +110,9 @@ struct SampleInfo
   int       offset;
 };
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
-static const int BELL_WAVE_SAMPLES = int( BELL_TIME * BELL_PREFERRED_RATE );
+static const int BELL_WAVE_SAMPLES = int(BELL_TIME* BELL_PREFERRED_RATE);
 
 struct Wave
 {
@@ -142,61 +142,61 @@ static int                   initFlags          = 0;
 static bool                  isDebuggerAttached = false;
 
 OZ_NORETURN
-static void abort( bool doHalt );
+static void abort(bool doHalt);
 
 OZ_NORETURN
-static void signalHandler( int sigNum )
+static void signalHandler(int sigNum)
 {
   Log::verboseMode = false;
-  Log::printSignal( sigNum );
-  Log::printTrace( StackTrace::current( 1 ) );
+  Log::printSignal(sigNum);
+  Log::printTrace(StackTrace::current(1));
   Log::println();
 
 #ifdef __ANDROID__
-  __android_log_print( ANDROID_LOG_FATAL, "oz", "Signal %d\n", sigNum );
+  __android_log_print(ANDROID_LOG_FATAL, "oz", "Signal %d\n", sigNum);
 #endif
 
   System::bell();
-  abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
+  abort((initFlags & System::HALT_BIT) && sigNum != SIGINT);
 }
 
 static void resetSignals()
 {
-  signal( SIGILL,  SIG_DFL );
-  signal( SIGABRT, SIG_DFL );
-  signal( SIGFPE,  SIG_DFL );
-  signal( SIGSEGV, SIG_DFL );
+  signal(SIGILL,  SIG_DFL);
+  signal(SIGABRT, SIG_DFL);
+  signal(SIGFPE,  SIG_DFL);
+  signal(SIGSEGV, SIG_DFL);
 #ifndef _WIN32
-  signal( SIGQUIT, SIG_DFL );
-  signal( SIGTRAP, SIG_DFL );
+  signal(SIGQUIT, SIG_DFL);
+  signal(SIGTRAP, SIG_DFL);
 #endif
 }
 
 static void catchSignals()
 {
-  signal( SIGILL,  signalHandler );
-  signal( SIGABRT, signalHandler );
-  signal( SIGFPE,  signalHandler );
-  signal( SIGSEGV, signalHandler );
+  signal(SIGILL,  signalHandler);
+  signal(SIGABRT, signalHandler);
+  signal(SIGFPE,  signalHandler);
+  signal(SIGSEGV, signalHandler);
 #ifndef _WIN32
-  signal( SIGQUIT, signalHandler );
+  signal(SIGQUIT, signalHandler);
   // Disable default handler for SIGTRAP that terminates the process.
-  signal( SIGTRAP, SIG_IGN );
+  signal(SIGTRAP, SIG_IGN);
 #endif
 }
 
-static void genBellSamples( short* samples, int nSamples_, int rate, int begin, int end )
+static void genBellSamples(short* samples, int nSamples_, int rate, int begin, int end)
 {
-  float nSamples = float( nSamples_ );
-  float quotient = BELL_FREQUENCY / float( rate ) * Math::TAU;
+  float nSamples = float(nSamples_);
+  float quotient = BELL_FREQUENCY / float(rate) * Math::TAU;
 
-  for( ; begin < end; ++begin ) {
-    float i = float( begin );
+  for (; begin < end; ++begin) {
+    float i = float(begin);
 
-    float amplitude = 0.8f * Math::fastSqrt( max<float>( 0.0f, ( nSamples - i ) / nSamples ) );
+    float amplitude = 0.8f * Math::fastSqrt(max<float>(0.0f, (nSamples - i) / nSamples));
     float theta     = i * quotient;
-    float value     = amplitude * Math::sin( theta );
-    short sample    = short( Math::lround( value * SHRT_MAX ) );
+    float value     = amplitude * Math::sin(theta);
+    short sample    = short(Math::lround(value * SHRT_MAX));
 
     samples[0] = sample;
     samples[1] = sample;
@@ -204,64 +204,64 @@ static void genBellSamples( short* samples, int nSamples_, int rate, int begin, 
   }
 }
 
-#if defined( __ANDROID__ )
+#if defined(__ANDROID__)
 
-static void* bellMain( void* )
+static void* bellMain(void*)
 {
-  static_cast<void>( genBellSamples );
+  static_cast<void>(genBellSamples);
 
   // TODO: Implement bell for OpenSL ES.
-  __android_log_write( ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n" );
+  __android_log_write(ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n");
 
   bellLock.unlock();
   return nullptr;
 }
 
-#elif defined( __native_client__ )
+#elif defined(__native_client__)
 
-static void bellCallback( void* buffer, uint, void* info_ )
+static void bellCallback(void* buffer, uint, void* info_)
 {
-  SampleInfo* info    = static_cast<SampleInfo*>( info_ );
-  short*      samples = static_cast<short*>( buffer );
+  SampleInfo* info    = static_cast<SampleInfo*>(info_);
+  short*      samples = static_cast<short*>(buffer);
 
-  if( info->offset >= info->end ) {
+  if (info->offset >= info->end) {
     bellLock.unlock();
   }
   else {
-    genBellSamples( samples, info->nSamples, info->rate, info->offset,
-                    info->offset + info->nFrameSamples );
+    genBellSamples(samples, info->nSamples, info->rate, info->offset,
+                   info->offset + info->nFrameSamples);
     info->offset += info->nFrameSamples;
   }
 }
 
-static void* bellMain( void* )
+static void* bellMain(void*)
 {
   pp::Instance* ppInstance = Pepper::instance();
 
-  if( ppInstance == nullptr ) {
+  if (ppInstance == nullptr) {
     return nullptr;
   }
 
-  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( ppInstance );
-  uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( ppInstance, rate, 4096 );
+  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
+  uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
 
   SampleInfo info;
   info.rate          = rate;
-  info.nFrameSamples = int( nFrameSamples );
-  info.nSamples      = Math::lround( BELL_TIME * float( rate ) );
+  info.nFrameSamples = int(nFrameSamples);
+  info.nSamples      = Math::lround(BELL_TIME * float(rate));
   info.end           = info.nSamples + 2 * info.nFrameSamples;
   info.offset        = 0;
 
-  pp::AudioConfig config( ppInstance, rate, nFrameSamples );
-  pp::Audio       audio( ppInstance, config, bellCallback, &info );
+  pp::AudioConfig config(ppInstance, rate, nFrameSamples);
+  pp::Audio       audio(ppInstance, config, bellCallback, &info);
 
-  if( audio.StartPlayback() == PP_FALSE ) {
+  if (audio.StartPlayback() == PP_FALSE) {
     bellLock.unlock();
     return nullptr;
   }
 
-  while( !bellLock.tryLock() ) {
-    nanosleep( &TIMESPEC_10MS, nullptr );
+  while (!bellLock.tryLock()) {
+    nanosleep(&TIMESPEC_10MS, nullptr);
   }
   bellLock.unlock();
 
@@ -269,17 +269,17 @@ static void* bellMain( void* )
   return nullptr;
 }
 
-#elif defined( _WIN32 )
+#elif defined(_WIN32)
 
-static DWORD WINAPI bellMain( void* )
+static DWORD WINAPI bellMain(void*)
 {
-  Wave* wave = static_cast<Wave*>( alloca( sizeof( Wave ) ) );
+  Wave* wave = static_cast<Wave*>(alloca(sizeof(Wave)));
 
   wave->chunkId[0]     = 'R';
   wave->chunkId[1]     = 'I';
   wave->chunkId[2]     = 'F';
   wave->chunkId[3]     = 'F';
-  wave->chunkSize      = int( 36 + sizeof( wave->samples ) );
+  wave->chunkSize      = int(36 + sizeof(wave->samples));
   wave->format[0]      = 'W';
   wave->format[1]      = 'A';
   wave->format[2]      = 'V';
@@ -293,18 +293,18 @@ static DWORD WINAPI bellMain( void* )
   wave->audioFormat    = 1;
   wave->nChannels      = 2;
   wave->sampleRate     = BELL_PREFERRED_RATE;
-  wave->byteRate       = int( BELL_PREFERRED_RATE * 2 * sizeof( short ) );
-  wave->blockAlign     = short( 2 * sizeof( short ) );
-  wave->bitsPerSample  = short( sizeof( short ) * 8 );
+  wave->byteRate       = int(BELL_PREFERRED_RATE * 2 * sizeof(short));
+  wave->blockAlign     = short(2 * sizeof(short));
+  wave->bitsPerSample  = short(sizeof(short) * 8);
 
   wave->subchunk2Id[0] = 'd';
   wave->subchunk2Id[1] = 'a';
   wave->subchunk2Id[2] = 't';
   wave->subchunk2Id[3] = 'a';
-  wave->subchunk2Size  = sizeof( wave->samples );
+  wave->subchunk2Size  = sizeof(wave->samples);
 
-  genBellSamples( wave->samples, BELL_WAVE_SAMPLES, BELL_PREFERRED_RATE, 0, BELL_WAVE_SAMPLES );
-  PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
+  genBellSamples(wave->samples, BELL_WAVE_SAMPLES, BELL_PREFERRED_RATE, 0, BELL_WAVE_SAMPLES);
+  PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
   bellLock.unlock();
   return 0;
@@ -312,14 +312,14 @@ static DWORD WINAPI bellMain( void* )
 
 #else
 
-static void* bellMain( void* )
+static void* bellMain(void*)
 {
 #ifndef __linux__
 
   int fd;
-  if( ( fd = open( "/dev/dsp", O_WRONLY, 0 ) ) < 0 &&
-      ( fd = open( "/dev/dsp0", O_WRONLY, 0 ) ) < 0 &&
-      ( fd = open( "/dev/dsp1", O_WRONLY, 0 ) ) < 0 )
+  if ((fd = open("/dev/dsp", O_WRONLY, 0)) < 0 &&
+      (fd = open("/dev/dsp0", O_WRONLY, 0)) < 0 &&
+      (fd = open("/dev/dsp1", O_WRONLY, 0)) < 0)
   {
     bellLock.unlock();
     return nullptr;
@@ -333,62 +333,62 @@ static void* bellMain( void* )
   int channels = 2;
   int rate     = BELL_PREFERRED_RATE;
 
-  if( ioctl( fd, SNDCTL_DSP_SETFMT, &format ) < 0 ||
-      ioctl( fd, SNDCTL_DSP_CHANNELS, &channels ) < 0 ||
-      ioctl( fd, SNDCTL_DSP_SPEED, &rate ) < 0 )
+  if (ioctl(fd, SNDCTL_DSP_SETFMT, &format) < 0 ||
+      ioctl(fd, SNDCTL_DSP_CHANNELS, &channels) < 0 ||
+      ioctl(fd, SNDCTL_DSP_SPEED, &rate) < 0)
   {
-    close( fd );
+    close(fd);
 
     bellLock.unlock();
     return nullptr;
   }
 
-  int    nSamples = int( BELL_TIME * float( rate ) );
-  size_t size     = size_t( nSamples * channels ) * sizeof( short );
-  short* samples  = static_cast<short*>( alloca( size ) );
+  int    nSamples = int(BELL_TIME * float(rate));
+  size_t size     = size_t(nSamples * channels) * sizeof(short);
+  short* samples  = static_cast<short*>(alloca(size));
 
-  genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
-  write( fd, samples, size );
+  genBellSamples(samples, nSamples, int(rate), 0, nSamples);
+  write(fd, samples, size);
 
-  close( fd );
+  close(fd);
 
 #else
 
   snd_pcm_t* alsa;
-  if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) != 0 ) {
+  if (snd_pcm_open(&alsa, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
     bellLock.unlock();
     return nullptr;
   }
 
   snd_pcm_hw_params_t* params;
-  snd_pcm_hw_params_alloca( &params );
-  snd_pcm_hw_params_any( alsa, params );
+  snd_pcm_hw_params_alloca(&params);
+  snd_pcm_hw_params_any(alsa, params);
 
   uint rate = BELL_PREFERRED_RATE;
 
-  if( snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED ) != 0 ||
-      snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 ) != 0 ||
-      snd_pcm_hw_params_set_channels( alsa, params, 2 ) != 0 ||
-      snd_pcm_hw_params_set_rate_resample( alsa, params, 0 ) != 0 ||
-      snd_pcm_hw_params_set_rate_near( alsa, params, &rate, nullptr ) != 0 ||
-      snd_pcm_hw_params( alsa, params ) != 0 ||
-      snd_pcm_prepare( alsa ) != 0 )
+  if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) != 0 ||
+      snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) != 0 ||
+      snd_pcm_hw_params_set_channels(alsa, params, 2) != 0 ||
+      snd_pcm_hw_params_set_rate_resample(alsa, params, 0) != 0 ||
+      snd_pcm_hw_params_set_rate_near(alsa, params, &rate, nullptr) != 0 ||
+      snd_pcm_hw_params(alsa, params) != 0 ||
+      snd_pcm_prepare(alsa) != 0)
   {
-    snd_pcm_close( alsa );
+    snd_pcm_close(alsa);
 
     bellLock.unlock();
     return nullptr;
   }
 
-  int    nSamples = int( BELL_TIME * float( rate ) );
-  size_t size     = size_t( nSamples * 2 ) * sizeof( short );
-  short* samples  = static_cast<short*>( alloca( size ) );
+  int    nSamples = int(BELL_TIME * float(rate));
+  size_t size     = size_t(nSamples * 2) * sizeof(short);
+  short* samples  = static_cast<short*>(alloca(size));
 
-  genBellSamples( samples, nSamples, int( rate ), 0, nSamples );
-  snd_pcm_writei( alsa, samples, snd_pcm_uframes_t( nSamples ) );
+  genBellSamples(samples, nSamples, int(rate), 0, nSamples);
+  snd_pcm_writei(alsa, samples, snd_pcm_uframes_t(nSamples));
 
-  snd_pcm_drain( alsa );
-  snd_pcm_close( alsa );
+  snd_pcm_drain(alsa);
+  snd_pcm_close(alsa);
 
 #endif
 
@@ -400,17 +400,17 @@ static void* bellMain( void* )
 
 static void waitBell()
 {
-#if defined( __native_client__ )
-  if( pp::Module::Get()->core()->IsMainThread() ) {
+#ifdef __native_client__
+  if (pp::Module::Get()->core()->IsMainThread()) {
     return;
   }
 #endif
 
-  while( !bellLock.tryLock() ) {
+  while (!bellLock.tryLock()) {
 # ifdef _WIN32
-    Sleep( 10 );
+    Sleep(10);
 # else
-    nanosleep( &TIMESPEC_10MS, nullptr );
+    nanosleep(&TIMESPEC_10MS, nullptr);
 # endif
   }
   bellLock.unlock();
@@ -433,30 +433,30 @@ struct BellFinaliser
 static BellFinaliser bellFinaliser;
 
 OZ_NORETURN
-static void abort( bool doHalt )
+static void abort(bool doHalt)
 {
-  static_cast<void>( doHalt );
+  static_cast<void>(doHalt);
 
   resetSignals();
 
-  if( crashHandler != nullptr ) {
+  if (crashHandler != nullptr) {
     crashHandler();
   }
 
 #ifdef __ANDROID__
-  __android_log_write( ANDROID_LOG_FATAL, "liboz", doHalt ? "HALTED\n" : "ABORTED\n"  );
+  __android_log_write(ANDROID_LOG_FATAL, "liboz", doHalt ? "HALTED\n" : "ABORTED\n");
 #endif
 
-  fflush( stdout );
-  fputs( doHalt ? "Halted. Attach a debugger or press Enter to abort ... " : "ABORTED\n", stderr );
-  fflush( stderr );
+  fflush(stdout);
+  fputs(doHalt ? "Halted. Attach a debugger or press Enter to abort ... " : "ABORTED\n", stderr);
+  fflush(stderr);
 
-  if( doHalt ) {
-    fgetc( stdin );
+  if (doHalt) {
+    fgetc(stdin);
   }
 
   waitBell();
-  _Exit( EXIT_FAILURE );
+  _Exit(EXIT_FAILURE);
 }
 
 const int System::HANDLER_BIT;
@@ -465,13 +465,12 @@ const int System::LOCALE_BIT;
 
 void System::trap()
 {
-#if defined( __ANDROID__ ) || defined( __native_client__ )
-#elif defined( _WIN32 )
-  if( IsDebuggerPresent() ) {
+#ifdef _WIN32
+  if (IsDebuggerPresent()) {
     DebugBreak();
   }
 #else
-  raise( SIGTRAP );
+  raise(SIGTRAP);
 #endif
 }
 
@@ -484,118 +483,118 @@ void System::bell()
 {
 #ifdef _WIN32
 
-  if( bellLock.tryLock() ) {
-    HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
+  if (bellLock.tryLock()) {
+    HANDLE bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
 
-    if( bellThread == nullptr ) {
+    if (bellThread == nullptr) {
       bellLock.unlock();
     }
     else {
-      CloseHandle( bellThread );
+      CloseHandle(bellThread);
     }
   }
 
 #else
 
-  if( bellLock.tryLock() ) {
+  if (bellLock.tryLock()) {
     pthread_t      bellThread;
     pthread_attr_t bellThreadAttr;
 
-    pthread_attr_init( &bellThreadAttr );
-    pthread_attr_setdetachstate( &bellThreadAttr, PTHREAD_CREATE_DETACHED );
+    pthread_attr_init(&bellThreadAttr);
+    pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
 
-    if( pthread_create( &bellThread, &bellThreadAttr, bellMain, nullptr ) != 0 ) {
+    if (pthread_create(&bellThread, &bellThreadAttr, bellMain, nullptr) != 0) {
       bellLock.unlock();
     }
-    pthread_attr_destroy( &bellThreadAttr );
+    pthread_attr_destroy(&bellThreadAttr);
   }
 
 #endif
 
   // If this occurs during static finalisation bellFinaliser may already be destructed.
-  if( bellFinaliser.isFinalised ) {
+  if (bellFinaliser.isFinalised) {
     waitBell();
   }
 }
 
-void System::warning( const char* function, const char* file, int line, int nSkippedFrames,
-                      const char* msg, ... )
+void System::warning(const char* function, const char* file, int line, int nSkippedFrames,
+                     const char* msg, ...)
 {
   trap();
   bell();
 
   va_list ap;
-  va_start( ap, msg );
+  va_start(ap, msg);
 
   bool verboseMode = Log::verboseMode;
 
   Log::verboseMode = false;
-  Log::putsRaw( "\n\n" );
-  Log::vprintRaw( msg, ap );
-  Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
+  Log::putsRaw("\n\n");
+  Log::vprintRaw(msg, ap);
+  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
   Log::verboseMode = verboseMode;
 
 #ifdef __ANDROID__
-  __android_log_vprint( ANDROID_LOG_WARN, "oz", msg, ap );
-  __android_log_print( ANDROID_LOG_WARN, "oz", "  in %s\n  at %s:%d\n", function, file, line );
+  __android_log_vprint(ANDROID_LOG_WARN, "oz", msg, ap);
+  __android_log_print(ANDROID_LOG_WARN, "oz", "  in %s\n  at %s:%d\n", function, file, line);
 #endif
 
-  va_end( ap );
+  va_end(ap);
 
-  StackTrace st = StackTrace::current( nSkippedFrames + 1 );
-  Log::printTrace( st );
+  StackTrace st = StackTrace::current(nSkippedFrames + 1);
+  Log::printTrace(st);
   Log::println();
 }
 
-void System::error( const char* function, const char* file, int line, int nSkippedFrames,
-                    const char* msg, ... )
+void System::error(const char* function, const char* file, int line, int nSkippedFrames,
+                   const char* msg, ...)
 {
   trap();
   bell();
 
   va_list ap;
-  va_start( ap, msg );
+  va_start(ap, msg);
 
   Log::verboseMode = false;
-  Log::putsRaw( "\n\n" );
-  Log::vprintRaw( msg, ap );
-  Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
+  Log::putsRaw("\n\n");
+  Log::vprintRaw(msg, ap);
+  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
 
 #ifdef __ANDROID__
-  __android_log_vprint( ANDROID_LOG_FATAL, "oz", msg, ap );
-  __android_log_print( ANDROID_LOG_FATAL, "oz", "  in %s\n  at %s:%d\n", function, file, line );
+  __android_log_vprint(ANDROID_LOG_FATAL, "oz", msg, ap);
+  __android_log_print(ANDROID_LOG_FATAL, "oz", "  in %s\n  at %s:%d\n", function, file, line);
 #endif
 
-  va_end( ap );
+  va_end(ap);
 
-  StackTrace st = StackTrace::current( nSkippedFrames + 1 );
-  Log::printTrace( st );
+  StackTrace st = StackTrace::current(nSkippedFrames + 1);
+  Log::printTrace(st);
   Log::println();
 
-  abort( initFlags & HALT_BIT );
+  abort(initFlags & HALT_BIT);
 }
 
 void System::threadInit()
 {
-  if( initFlags & HANDLER_BIT ) {
+  if (initFlags & HANDLER_BIT) {
     catchSignals();
   }
 }
 
-void System::init( int flags, CrashHandler* crashHandler_ )
+void System::init(int flags, CrashHandler* crashHandler_)
 {
   initFlags    = flags;
   crashHandler = crashHandler_;
 
-#if !defined( __ANDROID__ ) && !defined( __native_client__ ) && !defined( _WIN32 )
+#if !defined(__ANDROID__) && !defined(__native_client__) && !defined(_WIN32)
 
-  int fd = open( "/", O_RDONLY );
-  close( fd );
+  int fd = open("/", O_RDONLY);
+  close(fd);
 
   isDebuggerAttached = fd >= 5;
 
-  if( initFlags & LOCALE_BIT ) {
-    setlocale( LC_ALL, "" );
+  if (initFlags & LOCALE_BIT) {
+    setlocale(LC_ALL, "");
   }
 
 #endif

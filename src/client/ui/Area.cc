@@ -32,9 +32,9 @@ namespace client
 namespace ui
 {
 
-Area::Area( int width_, int height_ ) :
-  flags( ENABLED_BIT | VISIBLE_BIT ), parent( nullptr ),
-  x( 0 ), y( 0 ), width( width_ ), height( height_ ), defaultX( 0 ), defaultY( 0 )
+Area::Area(int width_, int height_) :
+  flags(ENABLED_BIT | VISIBLE_BIT), parent(nullptr),
+  x(0), y(0), width(width_), height(height_), defaultX(0), defaultY(0)
 {}
 
 Area::~Area()
@@ -44,42 +44,42 @@ Area::~Area()
 
 void Area::reposition()
 {
-  if( parent != nullptr ) {
-    x = defaultX == CENTRE ? parent->x + ( parent->width - width ) / 2 :
+  if (parent != nullptr) {
+    x = defaultX == CENTRE ? parent->x + (parent->width - width) / 2 :
         defaultX < 0 ? parent->x + parent->width - width + defaultX : parent->x + defaultX;
 
-    y = defaultY == CENTRE ? parent->y + ( parent->height - height ) / 2 :
+    y = defaultY == CENTRE ? parent->y + (parent->height - height) / 2 :
         defaultY < 0 ? parent->y + parent->height - height + defaultY : parent->y + defaultY;
   }
 
   onReposition();
 
-  for( Area& child : children ) {
+  for (Area& child : children) {
     child.reposition();
   }
 }
 
-void Area::move( int moveX, int moveY )
+void Area::move(int moveX, int moveY)
 {
-  if( parent == nullptr ) {
+  if (parent == nullptr) {
     return;
   }
 
-  moveX = clamp( moveX, parent->x - x, parent->x + parent->width  - x - width  );
-  moveY = clamp( moveY, parent->y - y, parent->y + parent->height - y - height );
+  moveX = clamp(moveX, parent->x - x, parent->x + parent->width  - x - width );
+  moveY = clamp(moveY, parent->y - y, parent->y + parent->height - y - height);
 
   x += moveX;
   y += moveY;
 
-  for( Area& child : children ) {
-    child.move( moveX, moveY );
+  for (Area& child : children) {
+    child.move(moveX, moveY);
   }
 }
 
 void Area::updateChildren()
 {
-  for( Area& child : children ) {
-    if( ( child.flags & UPDATE_BIT ) && child.isEnabled() ) {
+  for (Area& child : children) {
+    if ((child.flags & UPDATE_BIT) && child.isEnabled()) {
       child.onUpdate();
     }
 
@@ -89,23 +89,23 @@ void Area::updateChildren()
 
 bool Area::passMouseEvents()
 {
-  for( Area& child : children ) {
-    if( child.flags & GRAB_BIT ) {
+  for (Area& child : children) {
+    if (child.flags & GRAB_BIT) {
       child.onMouseEvent();
       return true;
     }
   }
 
-  for( auto i = children.iter(); i.isValid(); ) {
+  for (auto i = children.iter(); i.isValid();) {
     Area* child = i;
     ++i;
 
-    if( child->x <= mouse.x && mouse.x < child->x + child->width &&
-        child->y <= mouse.y && mouse.y < child->y + child->height )
+    if (child->x <= mouse.x && mouse.x < child->x + child->width &&
+        child->y <= mouse.y && mouse.y < child->y + child->height)
     {
       // If event is passed to a child, we won't handle it on parent. Of course we assume
       // children do not overlap, so event can only be passed to one of them.
-      if( child->isVisible() && child->onMouseEvent() ) {
+      if (child->isVisible() && child->onMouseEvent()) {
         return true;
       }
     }
@@ -116,11 +116,11 @@ bool Area::passMouseEvents()
 
 bool Area::passKeyEvents()
 {
-  for( auto i = children.iter(); i.isValid(); ) {
+  for (auto i = children.iter(); i.isValid();) {
     Area* child = i;
     ++i;
 
-    if( child->isVisible() ) {
+    if (child->isVisible()) {
       child->onKeyEvent();
     }
   }
@@ -131,14 +131,14 @@ bool Area::passKeyEvents()
 void Area::drawChildren()
 {
   // Render in opposite order; last added child (the first one in the list) should be rendered last.
-  for( Area* child = children.last(); child != nullptr; child = child->prev[0] ) {
-    if( child->isVisible() ) {
+  for (Area* child = children.last(); child != nullptr; child = child->prev[0]) {
+    if (child->isVisible()) {
       child->onDraw();
     }
   }
 }
 
-void Area::onVisibilityChange( bool )
+void Area::onVisibilityChange(bool)
 {}
 
 void Area::onReposition()
@@ -160,72 +160,72 @@ bool Area::onKeyEvent()
 void Area::onDraw()
 {}
 
-void Area::enable( bool doEnable )
+void Area::enable(bool doEnable)
 {
   bool isEnabled = flags & ENABLED_BIT;
 
-  if( doEnable == isEnabled ) {
+  if (doEnable == isEnabled) {
     return;
   }
 
-  if( doEnable ) {
+  if (doEnable) {
     flags |= ENABLED_BIT;
   }
   else {
     flags &= ~ENABLED_BIT;
   }
 
-  if( flags & VISIBLE_BIT ) {
-    for( Area& child : children ) {
-      if( child.isVisible() ) {
-        child.onVisibilityChange( doEnable );
+  if (flags & VISIBLE_BIT) {
+    for (Area& child : children) {
+      if (child.isVisible()) {
+        child.onVisibilityChange(doEnable);
       }
     }
 
-    onVisibilityChange( doEnable );
+    onVisibilityChange(doEnable);
   }
 }
 
-void Area::show( bool doShow )
+void Area::show(bool doShow)
 {
   bool isVisible = flags & VISIBLE_BIT;
 
-  if( doShow == isVisible ) {
+  if (doShow == isVisible) {
     return;
   }
 
-  if( doShow ) {
+  if (doShow) {
     flags |= VISIBLE_BIT;
   }
   else {
     flags &= ~VISIBLE_BIT;
   }
 
-  if( flags & ENABLED_BIT ) {
-    for( Area& child : children ) {
-      if( child.isVisible() ) {
-        child.onVisibilityChange( doShow );
+  if (flags & ENABLED_BIT) {
+    for (Area& child : children) {
+      if (child.isVisible()) {
+        child.onVisibilityChange(doShow);
       }
     }
 
-    onVisibilityChange( doShow );
+    onVisibilityChange(doShow);
   }
 }
 
-Pair<int> Area::align( int localX, int localY, int width, int height ) const
+Pair<int> Area::align(int localX, int localY, int width, int height) const
 {
   return {
-    localX == CENTRE ? x + ( this->width - width ) / 2 :
+    localX == CENTRE ? x + (this->width - width) / 2 :
     localX < 0 ? x + this->width - width + localX : x + localX,
-    localY == CENTRE ? y + ( this->height - height ) / 2 :
+    localY == CENTRE ? y + (this->height - height) / 2 :
     localY < 0 ? y + this->height - height + localY : y + localY
   };
 }
 
-void Area::add( Area* area, int localX, int localY )
+void Area::add(Area* area, int localX, int localY)
 {
-  area->width  = clamp( area->width,  1, width  );
-  area->height = clamp( area->height, 1, height );
+  area->width  = clamp(area->width,  1, width );
+  area->height = clamp(area->height, 1, height);
 
   area->defaultX = localX;
   area->defaultY = localY;
@@ -233,34 +233,34 @@ void Area::add( Area* area, int localX, int localY )
   area->parent = this;
   area->reposition();
 
-  children.pushFirst( area );
+  children.pushFirst(area);
 }
 
-void Area::remove( Area* area )
+void Area::remove(Area* area)
 {
-  hard_assert( children.has( area ) );
+  hard_assert(children.has(area));
 
-  children.erase( area );
+  children.erase(area);
   delete area;
 }
 
 void Area::raise()
 {
-  if( parent != nullptr && parent->children.first() != this ) {
-    hard_assert( parent->children.has( this ) );
+  if (parent != nullptr && parent->children.first() != this) {
+    hard_assert(parent->children.has(this));
 
-    parent->children.erase( this );
-    parent->children.pushFirst( this );
+    parent->children.erase(this);
+    parent->children.pushFirst(this);
   }
 }
 
 void Area::sink()
 {
-  if( parent != nullptr && parent->children.last() != this ) {
-    hard_assert( parent->children.has( this ) );
+  if (parent != nullptr && parent->children.last() != this) {
+    hard_assert(parent->children.has(this));
 
-    parent->children.erase( this );
-    parent->children.pushLast( this );
+    parent->children.erase(this);
+    parent->children.pushLast(this);
   }
 }
 

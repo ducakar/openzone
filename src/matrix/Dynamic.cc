@@ -33,33 +33,33 @@ Pool<Dynamic, 4096> Dynamic::pool;
 
 void Dynamic::onDestroy()
 {
-  if( !clazz->onDestroy.isEmpty() ) {
-    luaMatrix.objectCall( clazz->onDestroy, this );
+  if (!clazz->onDestroy.isEmpty()) {
+    luaMatrix.objectCall(clazz->onDestroy, this);
   }
 
-  for( int i : items ) {
-    Dynamic* item = orbis.obj<Dynamic>( i );
+  for (int i : items) {
+    Dynamic* item = orbis.obj<Dynamic>(i);
 
-    if( item != nullptr ) {
+    if (item != nullptr) {
       item->destroy();
     }
   }
 
-  if( cell != nullptr && clazz->fragPool != nullptr ) {
-    synapse.gen( clazz->fragPool,
-                 clazz->nFrags,
-                 Bounds( Point( p.x - dim.x, p.y - dim.y, p.z ),
-                         Point( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
-                 velocity + DESTRUCT_FRAG_VELOCITY );
+  if (cell != nullptr && clazz->fragPool != nullptr) {
+    synapse.gen(clazz->fragPool,
+                clazz->nFrags,
+                Bounds(Point(p.x - dim.x, p.y - dim.y, p.z),
+                       Point(p.x + dim.x, p.y + dim.y, p.z + dim.z)),
+                velocity + DESTRUCT_FRAG_VELOCITY);
   }
 }
 
-Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point& p_, Heading heading ) :
-  Object( clazz_, index_, p_, heading )
+Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Heading heading) :
+  Object(clazz_, index_, p_, heading)
 {
   velocity = Vec3::ZERO;
   momentum = Vec3::ZERO;
-  floor    = Vec3( 0.0f, 0.0f, 1.0f );
+  floor    = Vec3(0.0f, 0.0f, 1.0f);
   parent   = -1;
   lower    = -1;
   depth    = 0.0f;
@@ -67,12 +67,12 @@ Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point& p_, Headi
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic( const DynamicClass* clazz_, int index, const JSON& json ) :
-  Object( clazz_, index, json )
+Dynamic::Dynamic(const DynamicClass* clazz_, int index, const JSON& json) :
+  Object(clazz_, index, json)
 {
   velocity = Vec3::ZERO;
   momentum = Vec3::ZERO;
-  floor    = Vec3( 0.0f, 0.0f, 1.0f );
+  floor    = Vec3(0.0f, 0.0f, 1.0f);
   parent   = -1;
   lower    = -1;
   depth    = 0.0f;
@@ -80,8 +80,8 @@ Dynamic::Dynamic( const DynamicClass* clazz_, int index, const JSON& json ) :
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* is ) :
-  Object( clazz_, is )
+Dynamic::Dynamic(const DynamicClass* clazz_, InputStream* is) :
+  Object(clazz_, is)
 {
   velocity = is->readVec3();
   momentum = is->readVec3();
@@ -98,22 +98,22 @@ JSON Dynamic::write() const
   return Object::write();
 }
 
-void Dynamic::write( OutputStream* os ) const
+void Dynamic::write(OutputStream* os) const
 {
-  Object::write( os );
+  Object::write(os);
 
-  os->writeVec3( velocity );
-  os->writeVec3( momentum );
-  os->writeVec3( floor );
-  os->writeInt( parent );
-  os->writeInt( lower );
-  os->writeFloat( depth );
+  os->writeVec3(velocity);
+  os->writeVec3(momentum);
+  os->writeVec3(floor);
+  os->writeInt(parent);
+  os->writeInt(lower);
+  os->writeFloat(depth);
 }
 
-void Dynamic::readUpdate( InputStream* )
+void Dynamic::readUpdate(InputStream*)
 {}
 
-void Dynamic::writeUpdate( OutputStream* ) const
+void Dynamic::writeUpdate(OutputStream*) const
 {}
 
 }

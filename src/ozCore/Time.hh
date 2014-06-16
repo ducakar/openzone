@@ -66,12 +66,12 @@ public:
   /**
    * Sleep for given number of milliseconds.
    */
-  static void sleep( uint milliseconds );
+  static void sleep(uint milliseconds);
 
   /**
    * Sleep for given number of microseconds.
    */
-  static void usleep( uint microseconds );
+  static void usleep(uint microseconds);
 
   /**
    * Get current time in seconds from the platform-dependent epoch.
@@ -95,7 +95,7 @@ public:
   /**
    * Return broken-down local time representing the time given as seconds from epoch.
    */
-  static Time local( long64 epoch );
+  static Time local(long64 epoch);
 
   /**
    * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".

@@ -52,7 +52,7 @@ void GalileoFrame::onReposition()
   maximisedWidth  = maxSize;
   maximisedHeight = maxSize;
 
-  setMaximised( isMaximised );
+  setMaximised(isMaximised);
 
   clickX = Math::NaN;
   clickY = Math::NaN;
@@ -65,84 +65,86 @@ void GalileoFrame::onUpdate()
   clickX = Math::NaN;
   clickY = Math::NaN;
 
-  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && ( bot == nullptr ||
-        ( bot->state & Bot::DEAD_BIT ) || !bot->hasAttribute( ObjectClass::GALILEO_BIT ) ) ) )
+  if (orbis.terra.id < 0 ||
+      (camera.state == Camera::UNIT &&
+       (bot == nullptr ||
+        (bot->state & Bot::DEAD_BIT) || !bot->hasAttribute(ObjectClass::GALILEO_BIT))))
   {
-    show( false );
-    setMaximised( false );
+    show(false);
+    setMaximised(false);
   }
   else {
-    show( true );
+    show(true);
   }
 }
 
 bool GalileoFrame::onMouseEvent()
 {
-  if( input.buttons ) {
-    clickX = -Orbis::DIM + float( mouse.x - x ) / float( width  ) * 2.0f * Orbis::DIM;
-    clickY = -Orbis::DIM + float( mouse.y - y ) / float( height ) * 2.0f * Orbis::DIM;
+  if (input.buttons) {
+    clickX = -Orbis::DIM + float(mouse.x - x) / float(width) * 2.0f * Orbis::DIM;
+    clickY = -Orbis::DIM + float(mouse.y - y) / float(height) * 2.0f * Orbis::DIM;
   }
   return true;
 }
 
 void GalileoFrame::onDraw()
 {
-  if( !mapTex.isLoaded() ) {
-    mapTex.load( "@terra/" + liber.terrae[orbis.terra.id].name + ".dds", context.textureLod );
+  if (!mapTex.isLoaded()) {
+    mapTex.load("@terra/" + liber.terrae[orbis.terra.id].name + ".dds", context.textureLod);
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
 
   float pX = camera.p.x;
   float pY = camera.p.y;
   float h  = camera.botObj == nullptr ? camera.strategic.h : camera.botObj->h;
 
-  shape.colour( colour );
-  glBindTexture( GL_TEXTURE_2D, mapTex.id() );
-  shape.fill( x, y, width, height );
-  shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+  shape.colour(colour);
+  glBindTexture(GL_TEXTURE_2D, mapTex.id());
+  shape.fill(x, y, width, height);
+  shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
 
-  float oX      = float( x );
-  float oY      = float( y );
-  float fWidth  = float( width );
-  float fHeight = float( height );
+  float oX      = float(x);
+  float oY      = float(y);
+  float fWidth  = float(width);
+  float fHeight = float(height);
 
-  if( questList.activeQuest >= 0 ) {
+  if (questList.activeQuest >= 0) {
     const Quest& quest = questList.quests[questList.activeQuest];
 
-    glBindTexture( GL_TEXTURE_2D, style.images.marker );
+    glBindTexture(GL_TEXTURE_2D, style.images.marker);
 
-    float mapX = oX + ( Orbis::DIM + quest.place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
-    float mapY = oY + ( Orbis::DIM + quest.place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
+    float mapX = oX + (Orbis::DIM + quest.place.x) / (2.0f*Orbis::DIM) * fWidth;
+    float mapY = oY + (Orbis::DIM + quest.place.y) / (2.0f*Orbis::DIM) * fHeight;
 
-    tf.model = Mat4::translation( Vec3( mapX, mapY, 0.0f ) );
-    tf.model.scale( Vec3( 16.0f, 16.0f, 0.0f ) );
-    tf.model.translate( Vec3( -0.5f, -0.5f, 0.0f ) );
+    tf.model = Mat4::translation(Vec3(mapX, mapY, 0.0f));
+    tf.model.scale(Vec3(16.0f, 16.0f, 0.0f));
+    tf.model.translate(Vec3(-0.5f, -0.5f, 0.0f));
     tf.apply();
 
-    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
-  glBindTexture( GL_TEXTURE_2D, style.images.arrow );
+  glBindTexture(GL_TEXTURE_2D, style.images.arrow);
 
-  float mapX = oX + ( Orbis::DIM + pX ) / ( 2.0f*Orbis::DIM ) * fWidth;
-  float mapY = oY + ( Orbis::DIM + pY ) / ( 2.0f*Orbis::DIM ) * fHeight;
+  float mapX = oX + (Orbis::DIM + pX) / (2.0f*Orbis::DIM) * fWidth;
+  float mapY = oY + (Orbis::DIM + pY) / (2.0f*Orbis::DIM) * fHeight;
 
-  tf.model = Mat4::translation( Vec3( mapX, mapY, 0.0f ) );
-  tf.model.rotateZ( h );
-  tf.model.scale( Vec3( 10.0f, 10.0f, 0.0f ) );
-  tf.model.translate( Vec3( -0.5f, -0.5f, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(mapX, mapY, 0.0f));
+  tf.model.rotateZ(h);
+  tf.model.scale(Vec3(10.0f, 10.0f, 0.0f));
+  tf.model.translate(Vec3(-0.5f, -0.5f, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 }
 
 GalileoFrame::GalileoFrame() :
-  Frame( 240, 232 - HEADER_SIZE, "" ), colour( style.colours.galileoNormal ),
-  clickX( Math::NaN ), clickY( Math::NaN ), isMaximised( false )
+  Frame(240, 232 - HEADER_SIZE, ""), colour(style.colours.galileoNormal),
+  clickX(Math::NaN), clickY(Math::NaN), isMaximised(false)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 
@@ -150,11 +152,11 @@ GalileoFrame::GalileoFrame() :
   normalHeight = height;
 }
 
-void GalileoFrame::setMaximised( bool doMaximise )
+void GalileoFrame::setMaximised(bool doMaximise)
 {
   isMaximised = doMaximise;
 
-  if( doMaximise ) {
+  if (doMaximise) {
     x      = maximisedX;
     y      = maximisedY;
     width  = maximisedWidth;

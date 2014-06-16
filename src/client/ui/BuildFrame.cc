@@ -41,50 +41,50 @@ namespace client
 namespace ui
 {
 
-const Mat4 BuildFrame::OVERLAY_GREEN  = Mat4( 0.0f, 1.0f, 0.0f, 0.0f,
-                                              0.0f, 1.0f, 0.0f, 0.0f,
-                                              0.0f, 1.0f, 0.0f, 0.0f,
-                                              0.0f, 0.0f, 0.0f, 0.5f );
+const Mat4 BuildFrame::OVERLAY_GREEN  = Mat4(0.0f, 1.0f, 0.0f, 0.0f,
+                                             0.0f, 1.0f, 0.0f, 0.0f,
+                                             0.0f, 1.0f, 0.0f, 0.0f,
+                                             0.0f, 0.0f, 0.0f, 0.5f);
 
-const Mat4 BuildFrame::OVERLAY_YELLOW = Mat4( 0.8f, 0.8f, 0.0f, 0.0f,
-                                              0.8f, 0.8f, 0.0f, 0.0f,
-                                              0.8f, 0.8f, 0.0f, 0.0f,
-                                              0.0f, 0.0f, 0.0f, 0.5f );
+const Mat4 BuildFrame::OVERLAY_YELLOW = Mat4(0.8f, 0.8f, 0.0f, 0.0f,
+                                             0.8f, 0.8f, 0.0f, 0.0f,
+                                             0.8f, 0.8f, 0.0f, 0.0f,
+                                             0.0f, 0.0f, 0.0f, 0.5f);
 
-const Mat4 BuildFrame::OVERLAY_RED    = Mat4( 1.0f, 0.0f, 0.0f, 0.0f,
-                                              1.0f, 0.0f, 0.0f, 0.0f,
-                                              1.0f, 0.0f, 0.0f, 0.0f,
-                                              0.0f, 0.0f, 0.0f, 0.5f );
+const Mat4 BuildFrame::OVERLAY_RED    = Mat4(1.0f, 0.0f, 0.0f, 0.0f,
+                                             1.0f, 0.0f, 0.0f, 0.0f,
+                                             1.0f, 0.0f, 0.0f, 0.0f,
+                                             0.0f, 0.0f, 0.0f, 0.5f);
 
-void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
+void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
 {
-  BuildFrame*        buildFrame = static_cast<BuildFrame*>( area );
+  BuildFrame*        buildFrame = static_cast<BuildFrame*>(area);
   const BSP*         bsp        = buildFrame->overlayBSP;
   const ObjectClass* clazz      = buildFrame->overlayClass;
   Heading            heading    = buildFrame->overlayHeading;
   bool               overlaps   = false;
 
-  collider.translate( camera.p, ray );
+  collider.translate(camera.p, ray);
 
   Point position = camera.p + collider.hit.ratio * ray;
   position.z += bsp != nullptr ? bsp->groundOffset : clazz->dim.z;
   position.z += 4.0f * EPSILON;
 
-  tf.model = Mat4::translation( position - Point::ORIGIN );
-  tf.model.rotateZ( float( heading ) * Math::TAU / 4.0f );
+  tf.model = Mat4::translation(position - Point::ORIGIN);
+  tf.model.rotateZ(float(heading) * Math::TAU / 4.0f);
 
-  if( buildFrame->overlayBSP != nullptr ) {
-    Bounds    bounds   = rotate( *bsp, heading ) + ( position - Point::ORIGIN );
-    BSPImago* bspModel = context.requestBSP( bsp );
+  if (buildFrame->overlayBSP != nullptr) {
+    Bounds    bounds   = rotate(*bsp, heading) + (position - Point::ORIGIN);
+    BSPImago* bspModel = context.requestBSP(bsp);
 
     List<Struct*> strs;
     List<Object*> objs;
 
-    collider.getOverlaps( bounds.toAABB(), &strs, &objs );
+    collider.getOverlaps(bounds.toAABB(), &strs, &objs);
     overlaps  = !strs.isEmpty() || !objs.isEmpty();
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 
-    if( !overlaps ) {
+    if (!overlaps) {
       // Check if ground is plain enough.
       float corners[][2] = {
         { bounds.mins.x, bounds.mins.y },
@@ -93,8 +93,8 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
         { bounds.maxs.x, bounds.maxs.y }
       };
 
-      for( int i = 0; i < 4; ++i ) {
-        if( orbis.terra.height( corners[i][0], corners[i][1] ) < bounds.mins.z ) {
+      for (int i = 0; i < 4; ++i) {
+        if (orbis.terra.height(corners[i][0], corners[i][1]) < bounds.mins.z) {
           overlaps  = true;
           tf.colour = OVERLAY_YELLOW;
           break;
@@ -102,97 +102,97 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
       }
     }
 
-    bspModel->schedule( nullptr, Model::OVERLAY_QUEUE );
+    bspModel->schedule(nullptr, Model::OVERLAY_QUEUE);
   }
   else {
-    Vec3   dim   = clazz->dim + Vec3( 2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON );
-    AABB   bb    = AABB( position, rotate( dim, heading ) );
-    Model* model = context.requestModel( clazz->imagoModel );
+    Vec3   dim   = clazz->dim + Vec3(2.0f*EPSILON, 2.0f*EPSILON, 2.0f*EPSILON);
+    AABB   bb    = AABB(position, rotate(dim, heading));
+    Model* model = context.requestModel(clazz->imagoModel);
 
-    overlaps  = collider.overlaps( bb );
+    overlaps  = collider.overlaps(bb);
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 
-    model->schedule( 0, Model::OVERLAY_QUEUE );
-    context.releaseModel( clazz->imagoModel );
+    model->schedule(0, Model::OVERLAY_QUEUE);
+    context.releaseModel(clazz->imagoModel);
   }
 
   tf.colour = Mat4::ID;
 
-  if( input.leftPressed ) {
-    buildFrame->overlayHeading = Heading( ( heading + 1 ) % 4 );
+  if (input.leftPressed) {
+    buildFrame->overlayHeading = Heading((heading + 1) % 4);
   }
-  else if( input.middlePressed && !overlaps ) {
-    if( bsp != nullptr ) {
-      synapse.add( bsp, position, heading, false );
+  else if (input.middlePressed && !overlaps) {
+    if (bsp != nullptr) {
+      synapse.add(bsp, position, heading, false);
     }
     else {
-      synapse.add( clazz, position, heading, false );
+      synapse.add(clazz, position, heading, false);
     }
 
     buildFrame->overlayBSP     = nullptr;
     buildFrame->overlayClass   = nullptr;
     buildFrame->overlayHeading = NORTH;
 
-    if( ui.strategicArea ) {
+    if (ui.strategicArea) {
       ui.strategicArea->clearOverlay();
     }
   }
 }
 
-void BuildFrame::selectBuildings( Button* sender )
+void BuildFrame::selectBuildings(Button* sender)
 {
-  BuildFrame* buildFrame = static_cast<BuildFrame*>( sender->parent );
+  BuildFrame* buildFrame = static_cast<BuildFrame*>(sender->parent);
 
   buildFrame->mode = BUILDINGS;
-  buildFrame->title.setText( "%s", OZ_GETTEXT( "Buildings" ) );
+  buildFrame->title.setText("%s", OZ_GETTEXT("Buildings"));
 }
 
-void BuildFrame::selectUnits( Button* sender )
+void BuildFrame::selectUnits(Button* sender)
 {
-  BuildFrame* buildFrame = static_cast<BuildFrame*>( sender->parent );
+  BuildFrame* buildFrame = static_cast<BuildFrame*>(sender->parent);
 
   buildFrame->mode = UNITS;
-  buildFrame->title.setText( "%s", OZ_GETTEXT( "Units" ) );
+  buildFrame->title.setText("%s", OZ_GETTEXT("Units"));
 }
 
-void BuildFrame::selectItems( Button* sender )
+void BuildFrame::selectItems(Button* sender)
 {
-  BuildFrame* buildFrame = static_cast<BuildFrame*>( sender->parent );
+  BuildFrame* buildFrame = static_cast<BuildFrame*>(sender->parent);
 
   buildFrame->mode = ITEMS;
-  buildFrame->title.setText( "%s", OZ_GETTEXT( "Items" ) );
+  buildFrame->title.setText("%s", OZ_GETTEXT("Items"));
 }
 
-void BuildFrame::selectObjects( Button* sender )
+void BuildFrame::selectObjects(Button* sender)
 {
-  BuildFrame* buildFrame = static_cast<BuildFrame*>( sender->parent );
+  BuildFrame* buildFrame = static_cast<BuildFrame*>(sender->parent);
 
   buildFrame->mode = OBJECTS;
-  buildFrame->title.setText( "%s", OZ_GETTEXT( "Miscellaneous" ) );
+  buildFrame->title.setText("%s", OZ_GETTEXT("Miscellaneous"));
 }
 
-void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
+void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
 {
-  if( sender->id < 0 ) {
+  if (sender->id < 0) {
     return;
   }
 
-  BuildFrame* buildFrame = static_cast<BuildFrame*>( sender->parent );
+  BuildFrame* buildFrame = static_cast<BuildFrame*>(sender->parent);
 
   buildFrame->isOverModel  = true;
   buildFrame->wasOverModel = true;
 
-  if( buildFrame->mode == BUILDINGS ) {
+  if (buildFrame->mode == BUILDINGS) {
     const BSP* bsp = techGraph.allowedBuildings[sender->id];
 
-    buildFrame->title.setText( "%s", bsp->title.cstr() );
+    buildFrame->title.setText("%s", bsp->title.cstr());
 
-    if( isClicked && ui.strategicArea != nullptr ) {
+    if (isClicked && ui.strategicArea != nullptr) {
       buildFrame->overlayBSP     = bsp;
       buildFrame->overlayClass   = nullptr;
       buildFrame->overlayHeading = NORTH;
 
-      ui.strategicArea->setOverlay( overlayCallback, buildFrame );
+      ui.strategicArea->setOverlay(overlayCallback, buildFrame);
     }
   }
   else {
@@ -200,31 +200,31 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
                                buildFrame->mode == ITEMS ? techGraph.allowedItems[sender->id] :
                                                            techGraph.allowedObjects[sender->id];
 
-    buildFrame->title.setText( "%s", clazz->title.cstr() );
+    buildFrame->title.setText("%s", clazz->title.cstr());
 
-    if( isClicked && ui.strategicArea != nullptr ) {
+    if (isClicked && ui.strategicArea != nullptr) {
       buildFrame->overlayBSP     = nullptr;
       buildFrame->overlayClass   = clazz;
       buildFrame->overlayHeading = NORTH;
 
       Object* container = camera.objectObj;
 
-      if( buildFrame->mode == ITEMS && container != nullptr && container->clazz->nItems != 0 &&
-          editStage.editFrame != nullptr && editStage.editFrame->isVisible() )
+      if (buildFrame->mode == ITEMS && container != nullptr && container->clazz->nItems != 0 &&
+          editStage.editFrame != nullptr && editStage.editFrame->isVisible())
       {
-        if( container->items.length() != container->clazz->nItems ) {
-          Heading  heading = Heading( Math::rand( 4 ) );
-          Object*  newObj  = synapse.add( clazz, Point::ORIGIN, heading, false );
-          Dynamic* newItem = static_cast<Dynamic*>( newObj );
+        if (container->items.length() != container->clazz->nItems) {
+          Heading  heading = Heading(Math::rand(4));
+          Object*  newObj  = synapse.add(clazz, Point::ORIGIN, heading, false);
+          Dynamic* newItem = static_cast<Dynamic*>(newObj);
 
           newItem->parent = container->index;
-          container->items.add( newItem->index );
+          container->items.add(newItem->index);
 
-          synapse.cut( newItem );
+          synapse.cut(newItem);
         }
       }
       else {
-        ui.strategicArea->setOverlay( overlayCallback, buildFrame );
+        ui.strategicArea->setOverlay(overlayCallback, buildFrame);
       }
     }
   }
@@ -235,37 +235,37 @@ void BuildFrame::onReposition()
   children.free();
   delete[] models;
 
-  rows   = ( camera.height - 320 ) / ( SLOT_SIZE + 2 );
-  height = HEADER_SIZE + 58 + rows * ( SLOT_SIZE + 2 );
+  rows   = (camera.height - 320) / (SLOT_SIZE + 2);
+  height = HEADER_SIZE + 58 + rows * (SLOT_SIZE + 2);
 
-  Pair<int> pos = parent->align( defaultX, defaultY, width, height );
+  Pair<int> pos = parent->align(defaultX, defaultY, width, height);
 
   x = pos.x;
   y = pos.y;
 
   models = new ModelField*[rows * 3];
 
-  add( new Button( OZ_GETTEXT( "B" ), selectBuildings, 55, 18 ),   4, -HEADER_SIZE - 2 );
-  add( new Button( OZ_GETTEXT( "U" ), selectUnits,     55, 18 ),  63, -HEADER_SIZE - 2 );
-  add( new Button( OZ_GETTEXT( "I" ), selectItems,     55, 18 ), 122, -HEADER_SIZE - 2 );
-  add( new Button( OZ_GETTEXT( "M" ), selectObjects,   55, 18 ), 181, -HEADER_SIZE - 2 );
+  add(new Button(OZ_GETTEXT("B"), selectBuildings, 55, 18),   4, -HEADER_SIZE - 2);
+  add(new Button(OZ_GETTEXT("U"), selectUnits,     55, 18),  63, -HEADER_SIZE - 2);
+  add(new Button(OZ_GETTEXT("I"), selectItems,     55, 18), 122, -HEADER_SIZE - 2);
+  add(new Button(OZ_GETTEXT("M"), selectObjects,   55, 18), 181, -HEADER_SIZE - 2);
 
-  for( int i = 0; i < rows; ++i ) {
-    models[i*3 + 0] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
-    models[i*3 + 1] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
-    models[i*3 + 2] = new ModelField( startPlacement, SLOT_SIZE, SLOT_SIZE );
+  for (int i = 0; i < rows; ++i) {
+    models[i*3 + 0] = new ModelField(startPlacement, SLOT_SIZE, SLOT_SIZE);
+    models[i*3 + 1] = new ModelField(startPlacement, SLOT_SIZE, SLOT_SIZE);
+    models[i*3 + 2] = new ModelField(startPlacement, SLOT_SIZE, SLOT_SIZE);
 
     models[i*3 + 0]->id = i*3 + 0;
     models[i*3 + 1]->id = i*3 + 1;
     models[i*3 + 2]->id = i*3 + 2;
 
-    models[i*3 + 0]->show( false );
-    models[i*3 + 1]->show( false );
-    models[i*3 + 2]->show( false );
+    models[i*3 + 0]->show(false);
+    models[i*3 + 1]->show(false);
+    models[i*3 + 2]->show(false);
 
-    add( models[i*3 + 0],   4, -HEADER_SIZE - 40 - i * ( SLOT_SIZE + 2 ) );
-    add( models[i*3 + 1],  82, -HEADER_SIZE - 40 - i * ( SLOT_SIZE + 2 ) );
-    add( models[i*3 + 2], 160, -HEADER_SIZE - 40 - i * ( SLOT_SIZE + 2 ) );
+    add(models[i*3 + 0],   4, -HEADER_SIZE - 40 - i * (SLOT_SIZE + 2));
+    add(models[i*3 + 1],  82, -HEADER_SIZE - 40 - i * (SLOT_SIZE + 2));
+    add(models[i*3 + 2], 160, -HEADER_SIZE - 40 - i * (SLOT_SIZE + 2));
   }
 }
 
@@ -273,11 +273,11 @@ bool BuildFrame::onMouseEvent()
 {
   Frame::onMouseEvent();
 
-  if( input.wheelDown ) {
-    scroll = clamp( scroll + 1, 0, nScrollRows );
+  if (input.wheelDown) {
+    scroll = clamp(scroll + 1, 0, nScrollRows);
   }
-  else if( input.wheelUp ) {
-    scroll = clamp( scroll - 1, 0, nScrollRows );
+  else if (input.wheelUp) {
+    scroll = clamp(scroll - 1, 0, nScrollRows);
   }
   return true;
 }
@@ -286,90 +286,90 @@ void BuildFrame::onDraw()
 {
   Frame::onDraw();
 
-  if( scroll != 0 ) {
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, style.images.scrollUp );
-    shape.fill( x + 112, y + height - HEADER_SIZE - 40, 16, 16 );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  if (scroll != 0) {
+    shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, style.images.scrollUp);
+    shape.fill(x + 112, y + height - HEADER_SIZE - 40, 16, 16);
+    glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
   }
-  if( scroll != nScrollRows ) {
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, style.images.scrollDown );
-    shape.fill( x + 112, y + 4, 16, 16 );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  if (scroll != nScrollRows) {
+    shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, style.images.scrollDown);
+    shape.fill(x + 112, y + 4, 16, 16);
+    glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
   }
 
-  if( mode == BUILDINGS ) {
-    for( int i = 0; i < rows * 3; ++i ) {
+  if (mode == BUILDINGS) {
+    for (int i = 0; i < rows * 3; ++i) {
       int index = scroll * 3 + i;
 
-      if( index < techGraph.allowedBuildings.length() ) {
-        models[i]->setModel( techGraph.allowedBuildings[index] );
-        models[i]->show( true );
+      if (index < techGraph.allowedBuildings.length()) {
+        models[i]->setModel(techGraph.allowedBuildings[index]);
+        models[i]->show(true);
         models[i]->id = index;
       }
       else {
-        models[i]->setModel( nullptr );
-        models[i]->show( false );
+        models[i]->setModel(nullptr);
+        models[i]->show(false);
         models[i]->id = -1;
       }
     }
 
-    nScrollRows = max( 0, ( techGraph.allowedBuildings.length() + 2 ) / 3 - rows );
+    nScrollRows = max(0, (techGraph.allowedBuildings.length() + 2) / 3 - rows);
   }
   else {
     const List<const ObjectClass*> allowed = mode == UNITS ? techGraph.allowedUnits :
                                              mode == ITEMS ? techGraph.allowedItems :
                                                              techGraph.allowedObjects;
 
-    for( int i = 0; i < rows * 3; ++i ) {
+    for (int i = 0; i < rows * 3; ++i) {
       int index = scroll * 3 + i;
 
-      if( index < allowed.length() ) {
-        models[i]->setModel( allowed[index]->imagoModel );
-        models[i]->show( true );
+      if (index < allowed.length()) {
+        models[i]->setModel(allowed[index]->imagoModel);
+        models[i]->show(true);
         models[i]->id = index;
       }
       else {
-        models[i]->setModel( -1 );
-        models[i]->show( false );
+        models[i]->setModel(-1);
+        models[i]->show(false);
         models[i]->id = -1;
       }
     }
 
-    nScrollRows = max( 0, ( allowed.length() + 2 ) / 3 - rows );
+    nScrollRows = max(0, (allowed.length() + 2) / 3 - rows);
   }
 
-  if( !isOverModel && wasOverModel ) {
+  if (!isOverModel && wasOverModel) {
     wasOverModel = false;
 
-    switch( mode ) {
+    switch (mode) {
       case BUILDINGS: {
-        title.setText( "%s", OZ_GETTEXT( "Buildings" ) );
+        title.setText("%s", OZ_GETTEXT("Buildings"));
         break;
       }
       case UNITS: {
-        title.setText( "%s", OZ_GETTEXT( "Units" ) );
+        title.setText("%s", OZ_GETTEXT("Units"));
         break;
       }
       case ITEMS: {
-        title.setText( "%s", OZ_GETTEXT( "Items" ) );
+        title.setText("%s", OZ_GETTEXT("Items"));
         break;
       }
       case OBJECTS: {
-        title.setText( "%s", OZ_GETTEXT( "Miscellaneous" ) );
+        title.setText("%s", OZ_GETTEXT("Miscellaneous"));
       }
     }
   }
 
-  scroll      = clamp( scroll, 0, nScrollRows );
+  scroll      = clamp(scroll, 0, nScrollRows);
   isOverModel = false;
 }
 
 BuildFrame::BuildFrame() :
-  Frame( 240, 54, OZ_GETTEXT( "Buildings" ) ), mode( BUILDINGS ), models( nullptr ),
-  overlayBSP( nullptr ), overlayClass( nullptr ), overlayHeading( NORTH ),
-  rows( 0 ), nScrollRows( 0 ), scroll( 0 ), isOverModel( false ), wasOverModel( false )
+  Frame(240, 54, OZ_GETTEXT("Buildings")), mode(BUILDINGS), models(nullptr),
+  overlayBSP(nullptr), overlayClass(nullptr), overlayHeading(NORTH),
+  rows(0), nScrollRows(0), scroll(0), isOverModel(false), wasOverModel(false)
 {}
 
 BuildFrame::~BuildFrame()

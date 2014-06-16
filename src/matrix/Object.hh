@@ -207,11 +207,11 @@ public:
   public:
 
     OZ_ALWAYS_INLINE
-    explicit Event( int id_, float intensity_ ) :
-      id( id_ ), intensity( intensity_ )
+    explicit Event(int id_, float intensity_) :
+      id(id_), intensity(intensity_)
     {}
 
-    OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC(pool)
   };
 
 public:
@@ -248,7 +248,7 @@ protected:
    */
 
   virtual void onDestroy();
-  virtual bool onUse( Bot* user );
+  virtual bool onUse(Bot* user);
   virtual void onUpdate();
 
   /*
@@ -262,29 +262,29 @@ public:
 
   virtual ~Object();
 
-  Object( const Object& ) = delete;
-  Object& operator = ( const Object& ) = delete;
+  Object(const Object&) = delete;
+  Object& operator = (const Object&) = delete;
 
   /**
    * Add an event to the object. Events can be used for reporting collisions, sounds etc.
    */
   OZ_ALWAYS_INLINE
-  void addEvent( int id, float intensity )
+  void addEvent(int id, float intensity)
   {
-    events.add( new Event( id, intensity ) );
+    events.add(new Event(id, intensity));
   }
 
   OZ_ALWAYS_INLINE
   void destroy()
   {
-    if( !( flags & DESTROYED_BIT ) ) {
+    if (!(flags & DESTROYED_BIT)) {
       life = 0.0f;
       flags |= DESTROYED_BIT;
 
-      if( flags & DESTROY_FUNC_BIT ) {
+      if (flags & DESTROY_FUNC_BIT) {
         onDestroy();
       }
-      addEvent( EVENT_DESTROY, 1.0f );
+      addEvent(EVENT_DESTROY, 1.0f);
     }
   }
 
@@ -292,23 +292,23 @@ public:
    * Inflict damage to the object.
    */
   OZ_ALWAYS_INLINE
-  void damage( float damage )
+  void damage(float damage)
   {
     damage -= resistance;
 
-    if( damage > 0.0f ) {
-      life = max( 0.0f, life - damage );
-      addEvent( EVENT_DAMAGE, DAMAGE_BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
+    if (damage > 0.0f) {
+      life = max(0.0f, life - damage);
+      addEvent(EVENT_DAMAGE, DAMAGE_BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF);
     }
   }
 
   OZ_ALWAYS_INLINE
-  void use( Bot* user )
+  void use(Bot* user)
   {
-    if( flags & USE_FUNC_BIT ) {
-      bool success = onUse( user );
+    if (flags & USE_FUNC_BIT) {
+      bool success = onUse(user);
 
-      addEvent( EVENT_FAILED - success, 1.0f );
+      addEvent(EVENT_FAILED - success, 1.0f);
     }
   }
 
@@ -318,7 +318,7 @@ public:
   OZ_ALWAYS_INLINE
   void update()
   {
-    if( flags & UPDATE_FUNC_BIT ) {
+    if (flags & UPDATE_FUNC_BIT) {
       onUpdate();
     }
   }
@@ -337,17 +337,17 @@ public:
 
 public:
 
-  explicit Object( const ObjectClass* clazz, int index, const Point& p, Heading heading );
-  explicit Object( const ObjectClass* clazz, int index, const JSON& json );
-  explicit Object( const ObjectClass* clazz, InputStream* is );
+  explicit Object(const ObjectClass* clazz, int index, const Point& p, Heading heading);
+  explicit Object(const ObjectClass* clazz, int index, const JSON& json);
+  explicit Object(const ObjectClass* clazz, InputStream* is);
 
   virtual JSON write() const;
-  virtual void write( OutputStream* os ) const;
+  virtual void write(OutputStream* os) const;
 
-  virtual void readUpdate( InputStream* is );
-  virtual void writeUpdate( OutputStream* os ) const;
+  virtual void readUpdate(InputStream* is);
+  virtual void writeUpdate(OutputStream* os) const;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 
 };
 

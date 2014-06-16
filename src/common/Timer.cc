@@ -51,11 +51,11 @@ void Timer::tick()
 
   ticks       += 1;
   micros      += TICK_MICROS;
-  time         = float( micros ) / 1.0e6f;
+  time         = float(micros) / 1.0e6f;
 
   frameTicks  += 1;
   frameMicros += TICK_MICROS;
-  frameTime    = float( frameMicros ) / 1.0e6f;
+  frameTime    = float(frameMicros) / 1.0e6f;
 }
 
 void Timer::frame()
@@ -66,7 +66,7 @@ void Timer::frame()
   frameTime   = 0.0f;
 }
 
-void Timer::drop( uint micros_ )
+void Timer::drop(uint micros_)
 {
   runMicros += micros_;
 }

@@ -50,17 +50,17 @@ public:
   /**
    * Create an uninitialised buffer of size `size`.
    */
-  explicit Buffer( int size = 0 );
+  explicit Buffer(int size = 0);
 
   /**
    * Create a buffer of size `size` and copy `data` into it.
    */
-  explicit Buffer( const char* data, int size );
+  explicit Buffer(const char* data, int size);
 
   /**
    * Create a buffer containing a given string (without the terminating null character).
    */
-  explicit Buffer( const String& s );
+  explicit Buffer(const String& s);
 
   /**
    * Destructor.
@@ -70,42 +70,42 @@ public:
   /**
    * Copy constructor, copies data.
    */
-  Buffer( const Buffer& b );
+  Buffer(const Buffer& b);
 
   /**
    * Move constructor, moves data storage.
    */
-  Buffer( Buffer&& b );
+  Buffer(Buffer&& b);
 
   /**
    * Copy operator, copies data.
    *
    * Existing storage is reused if it suffices.
    */
-  Buffer& operator = ( const Buffer& b );
+  Buffer& operator = (const Buffer& b);
 
   /**
    * Move operator, moves data storage.
    */
-  Buffer& operator = ( Buffer&& b );
+  Buffer& operator = (Buffer&& b);
 
   /**
    * True iff buffer sizes and contents are equal.
    */
-  bool operator == ( const Buffer& b ) const;
+  bool operator == (const Buffer& b) const;
 
   /**
    * False iff buffer sizes and contents are equal.
    */
-  bool operator != ( const Buffer& b ) const;
+  bool operator != (const Buffer& b) const;
 
   /**
    * Constant reference to `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [] ( int i ) const
+  const char& operator [] (int i) const
   {
-    hard_assert( uint( i ) < uint( size ) );
+    hard_assert(uint(i) < uint(size));
 
     return data[i];
   }
@@ -114,9 +114,9 @@ public:
    * Reference to `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  char& operator [] ( int i )
+  char& operator [] (int i)
   {
-    hard_assert( uint( i ) < uint( size ) );
+    hard_assert(uint(i) < uint(size));
 
     return data[i];
   }
@@ -178,12 +178,12 @@ public:
   /**
    * Create an `InputStream` object for reading binary data from this buffer.
    */
-  InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
+  InputStream inputStream(Endian::Order order = Endian::NATIVE) const;
 
   /**
    * Create a fixed-size `OutputStream` object for writing binary data into this buffer.
    */
-  OutputStream outputStream( Endian::Order order = Endian::NATIVE );
+  OutputStream outputStream(Endian::Order order = Endian::NATIVE);
 
   /**
    * Create a string from the buffer contents. Terminating null byte is always appended.
@@ -198,7 +198,7 @@ public:
    * @param level compression level: -1 (default), 0 (no compression) or 1...9 (1 - best speed,
    *        9 - best compression).
    */
-  Buffer deflate( int level = -1 ) const;
+  Buffer deflate(int level = -1) const;
 
   /**
    * Uncompress using inflate algorithm.
@@ -210,7 +210,7 @@ public:
   /**
    * Resize the buffer.
    */
-  void resize( int newSize );
+  void resize(int newSize);
 
 };
 

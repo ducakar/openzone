@@ -74,7 +74,7 @@ public:
    * Create uninitialised instance.
    */
   explicit Body() :
-    flags( 0 ), mask( ~0 ), odeId( nullptr ), bodyShape( nullptr )
+    flags(0), mask(~0), odeId(nullptr), bodyShape(nullptr)
   {}
 
   virtual ~Body();
@@ -85,15 +85,15 @@ public:
     return bodyShape;
   }
 
-  void setShape( Shape* shape )
+  void setShape(Shape* shape)
   {
-    if( bodyShape != nullptr ) {
+    if (bodyShape != nullptr) {
       --bodyShape->nUsers;
     }
 
     bodyShape = shape;
 
-    if( bodyShape != nullptr ) {
+    if (bodyShape != nullptr) {
       ++bodyShape->nUsers;
     }
   }
@@ -104,11 +104,11 @@ public:
   void update()
   {
     o    = ~o;
-    oMat = Mat3::rotation( o );
-    bb   = bodyShape == nullptr ? Bounds( p, p ) : bodyShape->getBounds( p, oMat );
+    oMat = Mat3::rotation(o);
+    bb   = bodyShape == nullptr ? Bounds(p, p) : bodyShape->getBounds(p, oMat);
   }
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

@@ -87,31 +87,31 @@ public:
   /**
    * Print the raw text (without indentation or newline).
    */
-  static void putsRaw( const char* s );
+  static void putsRaw(const char* s);
 
   /**
    * Print the raw text (without indentation or newline).
    */
-  OZ_PRINTF_FORMAT( 1, 0 )
-  static void vprintRaw( const char* s, va_list ap );
+  OZ_PRINTF_FORMAT(1, 0)
+  static void vprintRaw(const char* s, va_list ap);
 
   /**
    * Print the raw text (without indentation or newline).
    */
-  OZ_PRINTF_FORMAT( 1, 2 )
-  static void printRaw( const char* s, ... );
+  OZ_PRINTF_FORMAT(1, 2)
+  static void printRaw(const char* s, ...);
 
   /**
    * Indent and print the text.
    */
-  OZ_PRINTF_FORMAT( 1, 2 )
-  static void print( const char* s, ... );
+  OZ_PRINTF_FORMAT(1, 2)
+  static void print(const char* s, ...);
 
   /**
    * Print the text and terminate the line.
    */
-  OZ_PRINTF_FORMAT( 1, 2 )
-  static void printEnd( const char* s, ... );
+  OZ_PRINTF_FORMAT(1, 2)
+  static void printEnd(const char* s, ...);
 
   /**
    * Terminate the line.
@@ -121,8 +121,8 @@ public:
   /**
    * Indent, print the text and terminate the line.
    */
-  OZ_PRINTF_FORMAT( 1, 2 )
-  static void println( const char* s, ... );
+  OZ_PRINTF_FORMAT(1, 2)
+  static void println(const char* s, ...);
 
   /**
    * Print a blank line.
@@ -132,7 +132,7 @@ public:
   /**
    * Print stored thread's name and stack trace.
    */
-  static void printTrace( const StackTrace& st );
+  static void printTrace(const StackTrace& st);
 
   /**
    * Print "Caught signal ..." and signal description.
@@ -140,7 +140,7 @@ public:
    * This function is only required internally by signal handler since it has issues with functions
    * that take variable arguments.
    */
-  static void printSignal( int sigNum );
+  static void printSignal(int sigNum);
 
   /**
    * Print summary about memory usage (`Alloc`'s -`count` and -`size` fields).
@@ -176,7 +176,7 @@ public:
    * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other tells
    * whether to clear its content if the file already exists.
    */
-  static bool init( const char* filePath = nullptr, bool clearFile = true );
+  static bool init(const char* filePath = nullptr, bool clearFile = true);
 
   /**
    * Close log file.
@@ -184,150 +184,150 @@ public:
   static void destroy();
 
   /**
-   * Same as `putsRaw( b ? "true" : "false" )`.
+   * Same as `putsRaw(b ? "true" : "false")`.
    */
-  const Log& operator << ( bool b ) const;
+  const Log& operator << (bool b) const;
 
   /**
-   * Same as `printRaw( "%c", c )`.
+   * Same as `printRaw("%c", c)`.
    */
-  const Log& operator << ( char c ) const;
+  const Log& operator << (char c) const;
 
   /**
-   * Same as `printRaw( "%d", b )`.
+   * Same as `printRaw("%d", b)`.
    */
-  const Log& operator << ( byte b ) const;
+  const Log& operator << (byte b) const;
 
   /**
-   * Same as `printRaw( "%ud", b )`.
+   * Same as `printRaw("%ud", b)`.
    */
-  const Log& operator << ( ubyte b ) const;
+  const Log& operator << (ubyte b) const;
 
   /**
-   * Same as `printRaw( "%d", s )`.
+   * Same as `printRaw("%d", s)`.
    */
-  const Log& operator << ( short s ) const;
+  const Log& operator << (short s) const;
 
   /**
-   * Same as `printRaw( "%ud", s )`.
+   * Same as `printRaw("%ud", s)`.
    */
-  const Log& operator << ( ushort s ) const;
+  const Log& operator << (ushort s) const;
 
   /**
-   * Same as `printRaw( "%d", i )`.
+   * Same as `printRaw("%d", i)`.
    */
-  const Log& operator << ( int i ) const;
+  const Log& operator << (int i) const;
 
   /**
-   * Same as `printRaw( "%ud", i )`.
+   * Same as `printRaw("%ud", i)`.
    */
-  const Log& operator << ( uint i ) const;
+  const Log& operator << (uint i) const;
 
   /**
-   * Same as `printRaw( "%ld", l )`.
+   * Same as `printRaw("%ld", l)`.
    */
-  const Log& operator << ( long l ) const;
+  const Log& operator << (long l) const;
 
   /**
-   * Same as `printRaw( "%lud", l )`.
+   * Same as `printRaw("%lud", l)`.
    */
-  const Log& operator << ( ulong l ) const;
+  const Log& operator << (ulong l) const;
 
   /**
-   * Same as `printRaw( "%lld", l )`.
+   * Same as `printRaw("%lld", l)`.
    */
-  const Log& operator << ( long64 l ) const;
+  const Log& operator << (long64 l) const;
 
   /**
-   * Same as `printRaw( "%llud", l )`.
+   * Same as `printRaw("%llud", l)`.
    */
-  const Log& operator << ( ulong64 l ) const;
+  const Log& operator << (ulong64 l) const;
 
   /**
-   * Same as `printRaw( "%g", f )`.
+   * Same as `printRaw("%g", f)`.
    */
-  const Log& operator << ( float f ) const;
+  const Log& operator << (float f) const;
 
   /**
-   * Same as `printRaw( "%g", d )`.
+   * Same as `printRaw("%g", d)`.
    */
-  const Log& operator << ( double d ) const;
+  const Log& operator << (double d) const;
 
   /**
-   * Same as `putsRaw( s )`.
+   * Same as `putsRaw(s)`.
    */
-  const Log& operator << ( const String& s ) const;
+  const Log& operator << (const String& s) const;
 
   /**
-   * Same as `putsRaw( s )`.
+   * Same as `putsRaw(s)`.
    */
-  const Log& operator << ( const char* s ) const;
+  const Log& operator << (const char* s) const;
 
   /**
-   * Same as `printRaw( "(%g %g %g)", v.x, v.y, v.z )`.
+   * Same as `printRaw("(%g %g %g)", v.x, v.y, v.z)`.
    */
-  const Log& operator << ( const Vec3& v ) const;
+  const Log& operator << (const Vec3& v) const;
 
   /**
-   * Same as `printRaw( "(%g %g %g %g)", v.x, v.y, v.z, v.z )`.
+   * Same as `printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.z)`.
    */
-  const Log& operator << ( const Vec4& v ) const;
+  const Log& operator << (const Vec4& v) const;
 
   /**
-   * Same as `printRaw( "[%g %g %g]", p.x, p.y, p.z )`.
+   * Same as `printRaw("[%g %g %g]", p.x, p.y, p.z)`.
    */
-  const Log& operator << ( const Point& p ) const;
+  const Log& operator << (const Point& p) const;
 
   /**
-   * Same as `printRaw( "(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d )`.
+   * Same as `printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d)`.
    */
-  const Log& operator << ( const Plane& p ) const;
+  const Log& operator << (const Plane& p) const;
 
   /**
-   * Same as `printRaw( "[%g %g %g %g]", q.x, q.y, q.z, q.w )`.
+   * Same as `printRaw("[%g %g %g %g]", q.x, q.y, q.z, q.w)`.
    */
-  const Log& operator << ( const Quat& q ) const;
+  const Log& operator << (const Quat& q) const;
 
   /**
-   * Print 3x3 matrix as `printRaw( "[%g %g %g; %g %g %g; %g %g %g]", ... )` in column-major format.
+   * Print 3x3 matrix as `printRaw("[%g %g %g; %g %g %g; %g %g %g]", ...)` in column-major format.
    */
-  const Log& operator << ( const Mat3& m ) const;
+  const Log& operator << (const Mat3& m) const;
 
   /**
-   * Print 4x4 matrix as `printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ... )`
-   * in column-major format.
+   * Print 4x4 matrix as `printRaw("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ...)` in
+   * column-major format.
    */
-  const Log& operator << ( const Mat4& m ) const;
+  const Log& operator << (const Mat4& m) const;
 
   /**
    * Dump stream contents to log stream(s).
    */
-  const Log& operator << ( const InputStream& is ) const;
+  const Log& operator << (const InputStream& is) const;
 
   /**
    * Dump buffer contents to log stream(s).
    */
-  const Log& operator << ( const Buffer& buffer ) const;
+  const Log& operator << (const Buffer& buffer) const;
 
   /**
-   * Same as `printRaw( "%s", file.path().cstr() )`.
+   * Same as `printRaw("%s", file.path().cstr())`.
    */
-  const Log& operator << ( const File& file ) const;
+  const Log& operator << (const File& file) const;
 
   /**
-   * Same as `printRaw( "%s", time.toString().cstr() )`.
+   * Same as `printRaw("%s", time.toString().cstr())`.
    */
-  const Log& operator << ( const Time& time ) const;
+  const Log& operator << (const Time& time) const;
 
   /**
-   * Same as `printRaw( "%s", json.toString().cstr() )`.
+   * Same as `printRaw("%s", json.toString().cstr())`.
    */
-  const Log& operator << ( const JSON& json ) const;
+  const Log& operator << (const JSON& json) const;
 
   /**
-   * Same as `printfRaw( "%p", p )`.
+   * Same as `printfRaw("%p", p)`.
    */
-  const Log& operator << ( volatile const void* p ) const;
+  const Log& operator << (volatile const void* p) const;
 
 };
 

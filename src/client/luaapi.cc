@@ -30,14 +30,14 @@ namespace oz
 namespace client
 {
 
-void importClientConstants( lua_State* l );
+void importClientConstants(lua_State* l);
 
-void importClientConstants( lua_State* l )
+void importClientConstants(lua_State* l)
 {
-  registerLuaConstant( l, "OZ_CAMERA_NONE",                 Camera::NONE );
-  registerLuaConstant( l, "OZ_CAMERA_STRATEGIC",            Camera::STRATEGIC );
-  registerLuaConstant( l, "OZ_CAMERA_UNIT",                 Camera::UNIT );
-  registerLuaConstant( l, "OZ_CAMERA_CINEMATIC",            Camera::CINEMATIC );
+  registerLuaConstant(l, "OZ_CAMERA_NONE",      Camera::NONE);
+  registerLuaConstant(l, "OZ_CAMERA_STRATEGIC", Camera::STRATEGIC);
+  registerLuaConstant(l, "OZ_CAMERA_UNIT",      Camera::UNIT);
+  registerLuaConstant(l, "OZ_CAMERA_CINEMATIC", Camera::CINEMATIC);
 }
 
 }

@@ -52,7 +52,7 @@ private:
 
 public:
 
-  static int load( const char* path );
+  static int load(const char* path);
 
   static bool init();
   static void destroy();

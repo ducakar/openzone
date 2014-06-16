@@ -64,7 +64,7 @@ struct EntityClass : Bounds
   int    key;         ///< Default key code or 0 if door is unlocked by default.
 
   int    openSound;   ///< Open sound sample, played when an entity starts moving or - for static.
-                      ///< entities - when activated (as a trigger not as a target).
+                       ///< entities - when activated (as a trigger not as a target).
   int    closeSound;  ///< Close sound sample, played when an entity stops moving.
   int    frictSound;  ///< Friction sound sample, played while the entity is moving.
 
@@ -160,15 +160,15 @@ public:
   void load();
   void unload();
 
-  explicit BSP( const char* name, int id );
+  explicit BSP(const char* name, int id);
 
 };
 
 inline void BSP::request()
 {
-  hard_assert( !name.isEmpty() );
+  hard_assert(!name.isEmpty());
 
-  if( nUsers == 0 ) {
+  if (nUsers == 0) {
     load();
   }
 
@@ -177,11 +177,11 @@ inline void BSP::request()
 
 inline void BSP::release()
 {
-  hard_assert( nUsers > 0 );
+  hard_assert(nUsers > 0);
 
   --nUsers;
 
-  if( nUsers == 0 ) {
+  if (nUsers == 0) {
     unload();
   }
 }

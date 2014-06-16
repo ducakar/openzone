@@ -28,7 +28,7 @@
 
 #pragma once
 
-#if defined( __ANDROID__ ) || defined( DOXYGEN_IGNORE )
+#if defined(__ANDROID__) || defined(DOXYGEN_IGNORE)
 
 /**
  * @def OZ_JAVA_ENTRY_POINT
@@ -37,12 +37,12 @@
  * `name` parameter should be your application's entry point function name. For Android SDL
  * applications that should be something like `Java_com_example_myapp_SDLActivity_nativeInit`.
  */
-#define OZ_JAVA_ENTRY_POINT( name ) \
+#define OZ_JAVA_ENTRY_POINT(name) \
   extern "C" \
-  void name( JNIEnv* env, jclass clazz ); \
-  void name( JNIEnv* env, jclass clazz ) \
+  void name(JNIEnv* env, jclass clazz); \
+  void name(JNIEnv* env, jclass clazz) \
   { \
-    oz::Java::application( env, clazz ); \
+    oz::Java::application(env, clazz); \
   }
 
 #ifndef DOXYGEN_IGNORE
@@ -59,7 +59,7 @@ typedef JavaVM_ JavaVM;
  * macro in a `.cc` file (out of any namespace). An empty string is passed as argument zero (i.e.
  * `argc = 1` and `argv = { "" }`).
  */
-int javaMain( int argc, char** argv );
+int javaMain(int argc, char** argv);
 
 namespace oz
 {
@@ -89,7 +89,7 @@ public:
   /**
    * Helper function for `OZ_JAVA_ENTRY_POINT()` macro.
    */
-  static void application( void* env, void* clazz );
+  static void application(void* env, void* clazz);
 
 };
 
@@ -97,6 +97,6 @@ public:
 
 #else
 
-#define OZ_JAVA_ENTRY_POINT( name )
+#define OZ_JAVA_ENTRY_POINT(name)
 
 #endif

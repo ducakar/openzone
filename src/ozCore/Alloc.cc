@@ -47,32 +47,32 @@ enum AllocMode
 static Chain<Alloc::ChunkInfo> chunkInfos[2];
 static SpinLock                allocInfoLock;
 
-static void* allocate( AllocMode mode, size_t size )
+static void* allocate(AllocMode mode, size_t size)
 {
 #ifdef OZ_SIMD_MATH
-  size = Alloc::alignUp( size )
+  size = Alloc::alignUp(size);
 #endif
-  size += Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
+  size += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 
-#if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-#elif defined( OZ_SIMD_MATH )
-  void* ptr = alligned_alloc( Alloc::ALIGNMENT, size );
+#if defined(OZ_SIMD_MATH) && defined(_WIN32)
+  void* ptr = _aligned_malloc(size, Alloc::ALIGNMENT);
+#elif defined(OZ_SIMD_MATH)
+  void* ptr = alligned_alloc(Alloc::ALIGNMENT, size);
 #else
-  void* ptr = malloc( size );
+  void* ptr = malloc(size);
 #endif
 
-  if( ptr == nullptr ) {
-    OZ_ERROR( "oz::Alloc: Out of memory" );
+  if (ptr == nullptr) {
+    OZ_ERROR("oz::Alloc: Out of memory");
   }
 
-  Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>( ptr );
+  Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>(ptr);
   ci->size       = size;
-  ci->stackTrace = StackTrace::current( 2 );
+  ci->stackTrace = StackTrace::current(2);
 
   allocInfoLock.lock();
 
-  chunkInfos[mode].add( ci );
+  chunkInfos[mode].add(ci);
 
   ++Alloc::count;
   Alloc::amount += size;
@@ -80,35 +80,35 @@ static void* allocate( AllocMode mode, size_t size )
   ++Alloc::sumCount;
   Alloc::sumAmount += size;
 
-  Alloc::maxCount  = max<int>( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
+  Alloc::maxCount  = max<int>(Alloc::count, Alloc::maxCount);
+  Alloc::maxAmount = max<size_t>(Alloc::amount, Alloc::maxAmount);
 
   allocInfoLock.unlock();
 
-  return static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
+  return static_cast<char*>(ptr) + Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 }
 
-static void deallocate( AllocMode mode, void* ptr )
+static void deallocate(AllocMode mode, void* ptr)
 {
-  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( Alloc::ChunkInfo ) );
+  ptr = static_cast<char*>(ptr) - Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 
   allocInfoLock.lock();
 
-  Alloc::ChunkInfo* ci   = static_cast<Alloc::ChunkInfo*>( ptr );
-  Alloc::ChunkInfo* prev = chunkInfos[mode].before( ci );
+  Alloc::ChunkInfo* ci   = static_cast<Alloc::ChunkInfo*>(ptr);
+  Alloc::ChunkInfo* prev = chunkInfos[mode].before(ci);
 
-  if( prev != nullptr || chunkInfos[mode].first() == ci ) {
-    chunkInfos[mode].erase( ci, prev );
+  if (prev != nullptr || chunkInfos[mode].first() == ci) {
+    chunkInfos[mode].erase(ci, prev);
   }
   else {
     // Check if allocated as a different kind (object/array)
-    if( chunkInfos[!mode].has( ci ) ) {
-      OZ_ERROR( "oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
-                mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+    if (chunkInfos[!mode].has(ci)) {
+      OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
+               mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
     }
     else {
-      OZ_ERROR( "oz::Alloc: Freeing unregistered %s block at %p of size %lu",
-                mode == OBJECT ? "object" : "array", ptr, ulong( ci->size ) );
+      OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %lu",
+               mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
     }
   }
 
@@ -117,12 +117,12 @@ static void deallocate( AllocMode mode, void* ptr )
 
   allocInfoLock.unlock();
 
-  mSet( ptr, 0xee, int( ci->size ) );
+  mSet(ptr, 0xee, int(ci->size));
 
-#if defined( OZ_SIMD_MATH ) && defined( _WIN32 )
-  _aligned_free( ptr ));
+#if defined(OZ_SIMD_MATH) && defined(_WIN32)
+  _aligned_free(ptr));
 #else
-  free( ptr );
+  free(ptr);
 #endif
 }
 
@@ -158,63 +158,63 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 #ifdef OZ_ALLOCATOR
 
 OZ_WEAK
-void* operator new ( size_t size )
+void* operator new(size_t size)
 {
-  return oz::allocate( oz::OBJECT, size );
+  return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[] ( size_t size )
+void* operator new[](size_t size)
 {
-  return oz::allocate( oz::ARRAY, size );
+  return oz::allocate(oz::ARRAY, size);
 }
 
 OZ_WEAK
-void operator delete ( void* ptr ) noexcept
+void operator delete(void* ptr) noexcept
 {
-  if( ptr == nullptr ) {
+  if (ptr == nullptr) {
     return;
   }
-  oz::deallocate( oz::OBJECT, ptr );
+  oz::deallocate(oz::OBJECT, ptr);
 }
 
 OZ_WEAK
-void operator delete[] ( void* ptr ) noexcept
+void operator delete[](void* ptr) noexcept
 {
-  if( ptr == nullptr ) {
+  if (ptr == nullptr) {
     return;
   }
-  oz::deallocate( oz::ARRAY, ptr );
+  oz::deallocate(oz::ARRAY, ptr);
 }
 
 OZ_WEAK
-void* operator new ( size_t size, const std::nothrow_t& ) noexcept
+void* operator new(size_t size, const std::nothrow_t&) noexcept
 {
-  return oz::allocate( oz::OBJECT, size );
+  return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
+void* operator new[](size_t size, const std::nothrow_t&) noexcept
 {
-  return oz::allocate( oz::ARRAY, size );
+  return oz::allocate(oz::ARRAY, size);
 }
 
 OZ_WEAK
-void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
+void operator delete(void* ptr, const std::nothrow_t&) noexcept
 {
-  if( ptr == nullptr ) {
+  if (ptr == nullptr) {
     return;
   }
-  oz::deallocate( oz::OBJECT, ptr );
+  oz::deallocate(oz::OBJECT, ptr);
 }
 
 OZ_WEAK
-void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
+void operator delete[](void* ptr, const std::nothrow_t&) noexcept
 {
-  if( ptr == nullptr ) {
+  if (ptr == nullptr) {
     return;
   }
-  oz::deallocate( oz::ARRAY, ptr );
+  oz::deallocate(oz::ARRAY, ptr);
 }
 
 #endif // OZ_ALLOCATOR

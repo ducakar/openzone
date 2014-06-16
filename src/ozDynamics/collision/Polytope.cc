@@ -34,7 +34,7 @@ Pool<Polytope> Polytope::pool;
 Polytope::~Polytope()
 {}
 
-Bounds Polytope::getBounds( const Point&, const Mat3& ) const
+Bounds Polytope::getBounds(const Point&, const Mat3&) const
 {
   return Bounds();
 }

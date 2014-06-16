@@ -26,17 +26,17 @@
 
 #include <ozCore/ozCore.hh>
 
-#define OZ_CHECK( cond ) \
-  if( !( cond ) ) { \
-    oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "Check '%s' failed", #cond ); \
+#define OZ_CHECK(cond) \
+  if(!(cond)) { \
+    oz::System::error(__PRETTY_FUNCTION__, __FILE__, __LINE__, 0, "Check '%s' failed", #cond); \
   }
 
-#define OZ_CHECK_CONTENTS( container, ... ) \
+#define OZ_CHECK_CONTENTS(container, ...) \
   { \
-    auto i = citer( container ); \
-    typedef decltype( i ) CIterator; \
+    auto i = citer(container); \
+    typedef decltype(i) CIterator; \
     CIterator::ElemType array[] = { __VA_ARGS__ }; \
-    OZ_CHECK( iEquals( i, citer( array ) ) ); \
+    OZ_CHECK(iEquals(i, citer(array))); \
   }
 
 extern bool hasPassed;
@@ -54,92 +54,92 @@ struct Foo
   Foo* next[1];
 
   Foo() :
-    value( -1 )
+    value(-1)
   {}
 
-  Foo( const Foo& f ) :
-    value( f.value )
+  Foo(const Foo& f) :
+    value(f.value)
   {
-    OZ_CHECK( allowCopy );
+    OZ_CHECK(allowCopy);
   }
 
-  Foo( Foo&& f ) :
-    value( f.value )
+  Foo(Foo&& f) :
+    value(f.value)
   {
-    OZ_CHECK( allowMove );
+    OZ_CHECK(allowMove);
 
     f.value = -1;
   }
 
-  Foo( int i ) :
-    value( i )
+  Foo(int i) :
+    value(i)
   {}
 
-  Foo& operator = ( const Foo& f )
+  Foo& operator = (const Foo& f)
   {
-    OZ_CHECK( allowCopy );
+    OZ_CHECK(allowCopy);
 
-    if( this != &f ) {
+    if (this != &f) {
       value = f.value;
     }
     return *this;
   }
 
-  Foo& operator = ( Foo&& f )
+  Foo& operator = (Foo&& f)
   {
-    OZ_CHECK( allowMove );
+    OZ_CHECK(allowMove);
 
-    if( this != &f ) {
+    if (this != &f) {
       value = f.value;
       f.value = -1;
     }
     return *this;
   }
 
-  Foo& operator = ( int i )
+  Foo& operator = (int i)
   {
     value = i;
     return *this;
   }
 
-  bool operator == ( const Foo& f ) const
+  bool operator == (const Foo& f) const
   {
-    OZ_CHECK( allowEqualsOp );
+    OZ_CHECK(allowEqualsOp);
 
     return value == f.value;
   }
 
-  bool operator == ( int i ) const
+  bool operator == (int i) const
   {
-    OZ_CHECK( allowEqualsOp );
+    OZ_CHECK(allowEqualsOp);
 
     return value == i;
   }
 
-  friend bool operator == ( int i, const Foo& f )
+  friend bool operator == (int i, const Foo& f)
   {
-    OZ_CHECK( allowEqualsOp );
+    OZ_CHECK(allowEqualsOp);
 
     return i == f.value;
   }
 
-  bool operator < ( const Foo& f ) const
+  bool operator < (const Foo& f) const
   {
-    OZ_CHECK( allowLessOp );
+    OZ_CHECK(allowLessOp);
 
     return value < f.value;
   }
 
-  bool operator < ( int i ) const
+  bool operator < (int i) const
   {
-    OZ_CHECK( allowLessOp );
+    OZ_CHECK(allowLessOp);
 
     return value < i;
   }
 
-  friend bool operator < ( int i, const Foo& f )
+  friend bool operator < (int i, const Foo& f)
   {
-    OZ_CHECK( allowLessOp );
+    OZ_CHECK(allowLessOp);
 
     return i < f.value;
   }

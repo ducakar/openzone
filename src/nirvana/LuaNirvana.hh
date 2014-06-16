@@ -35,17 +35,17 @@ class LuaNirvana : public LuaCommon
 {
 private:
 
-  bool execChunk( const Buffer& buffer, const char* name, Mind* mind, Bot* self );
+  bool execChunk(const Buffer& buffer, const char* name, Mind* mind, Bot* self);
 
 public:
 
-  void mindCall( const char* functionName, Mind* mind, Bot* self );
+  void mindCall(const char* functionName, Mind* mind, Bot* self);
 
-  void registerMind( int botIndex );
-  void unregisterMind( int botIndex );
+  void registerMind(int botIndex);
+  void unregisterMind(int botIndex);
 
-  void read( InputStream* is );
-  void write( OutputStream* os );
+  void read(InputStream* is);
+  void write(OutputStream* os);
 
   void init();
   void destroy();

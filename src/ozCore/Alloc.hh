@@ -105,18 +105,18 @@ public:
    * Align to the previous boundary.
    */
   OZ_ALWAYS_INLINE
-  static constexpr size_t alignDown( size_t size )
+  static constexpr size_t alignDown(size_t size)
   {
-    return size & ~( OZ_ALIGNMENT - 1 );
+    return size & ~(OZ_ALIGNMENT - 1);
   }
 
   /**
    * Align to the next boundary.
    */
   OZ_ALWAYS_INLINE
-  static constexpr size_t alignUp( size_t size )
+  static constexpr size_t alignUp(size_t size)
   {
-    return ( size + OZ_ALIGNMENT - 1 ) & ~( OZ_ALIGNMENT - 1 );
+    return (size + OZ_ALIGNMENT - 1) & ~(OZ_ALIGNMENT - 1);
   }
 
   /**
@@ -124,9 +124,9 @@ public:
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  static constexpr Type* alignDown( Type* p )
+  static constexpr Type* alignDown(Type* p)
   {
-    return reinterpret_cast<Type*>( size_t( p ) & ~( OZ_ALIGNMENT - 1 ) );
+    return reinterpret_cast<Type*>(size_t(p) & ~(OZ_ALIGNMENT - 1));
   }
 
   /**
@@ -134,9 +134,9 @@ public:
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  static constexpr Type* alignUp( Type* p )
+  static constexpr Type* alignUp(Type* p)
   {
-    return reinterpret_cast<Type*>( size_t( p + OZ_ALIGNMENT - 1 ) & ~( OZ_ALIGNMENT - 1 ) );
+    return reinterpret_cast<Type*>(size_t(p + OZ_ALIGNMENT - 1) & ~(OZ_ALIGNMENT - 1));
   }
 
 };

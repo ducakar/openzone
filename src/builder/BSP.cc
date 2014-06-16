@@ -47,47 +47,47 @@ void BSP::load()
   File bspFile    = "@baseq3/maps/" + name + ".bsp";
 
   JSON config;
-  if( !config.load( configFile ) ) {
-    OZ_ERROR( "BSP config loading failed" );
+  if (!config.load(configFile)) {
+    OZ_ERROR("BSP config loading failed");
   }
 
-  title = config["title"].get( name );
-  description = config["description"].get( "" );
+  title = config["title"].get(name);
+  description = config["description"].get("");
 
-  float scale = config["scale"].get( DEFAULT_SCALE );
+  float scale = config["scale"].get(DEFAULT_SCALE);
 
-  life = config["life"].get( DEFAULT_LIFE );
-  resistance = config["resistance"].get( DEFAULT_RESISTANCE );
+  life = config["life"].get(DEFAULT_LIFE);
+  resistance = config["resistance"].get(DEFAULT_RESISTANCE);
 
-  waterFogColour = config["waterFogColour"].get( Vec4( 0.00f, 0.05f, 0.20f, 1.00f ) );
-  lavaFogColour  = config["lavaFogColour"].get( Vec4( 0.30f, 0.20f, 0.00f, 1.00f ) );
+  waterFogColour = config["waterFogColour"].get(Vec4(0.00f, 0.05f, 0.20f, 1.00f));
+  lavaFogColour  = config["lavaFogColour"].get(Vec4(0.30f, 0.20f, 0.00f, 1.00f));
 
-  if( life <= 0.0f || !Math::isFinite( life ) ) {
-    OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
-              " set resistance to infinity (\"inf\").", name.cstr() );
+  if (life <= 0.0f || !Math::isFinite(life)) {
+    OZ_ERROR("%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
+             " set resistance to infinity (\"inf\").", name.cstr());
   }
-  if( resistance < 0.0f ) {
-    OZ_ERROR( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
-  }
-
-  fragPool = config["fragPool"].get( "" );
-  nFrags   = config["nFrags"].get( 0 );
-
-  demolishSound = config["demolishSound"].get( "" );
-  groundOffset  = config["groundOffset"].get( 0.0f );
-
-  mins = Point( -Math::INF, -Math::INF, -Math::INF );
-  maxs = Point( +Math::INF, +Math::INF, +Math::INF );
-
-  if( Math::isNaN( scale ) ) {
-    OZ_ERROR( "Invalid BSP config" );
+  if (resistance < 0.0f) {
+    OZ_ERROR("%s: Invalid resistance. Should be >= 0.", name.cstr());
   }
 
-  if( bspFile.type() != File::REGULAR ) {
-    OZ_ERROR( "BSP reading failed" );
+  fragPool = config["fragPool"].get("");
+  nFrags   = config["nFrags"].get(0);
+
+  demolishSound = config["demolishSound"].get("");
+  groundOffset  = config["groundOffset"].get(0.0f);
+
+  mins = Point(-Math::INF, -Math::INF, -Math::INF);
+  maxs = Point(+Math::INF, +Math::INF, +Math::INF);
+
+  if (Math::isNaN(scale)) {
+    OZ_ERROR("Invalid BSP config");
   }
 
-  InputStream is = bspFile.inputStream( Endian::LITTLE );
+  if (bspFile.type() != File::REGULAR) {
+    OZ_ERROR("BSP reading failed");
+  }
+
+  InputStream is = bspFile.inputStream(Endian::LITTLE);
 
   char id[4];
   id[0] = is.readChar();
@@ -97,64 +97,64 @@ void BSP::load()
 
   int version = is.readInt();
 
-  if( id[0] != 'I' || id[1] != 'B' || id[2] != 'S' || id[3] != 'P' || version != 46 ) {
-    OZ_ERROR( "Not a Quake 3 BSP format" );
+  if (id[0] != 'I' || id[1] != 'B' || id[2] != 'S' || id[3] != 'P' || version != 46) {
+    OZ_ERROR("Not a Quake 3 BSP format");
   }
 
-  List<QBSPLump> lumps( QBSPLump::MAX );
-  for( int i = 0; i < QBSPLump::MAX; ++i ) {
+  List<QBSPLump> lumps(QBSPLump::MAX);
+  for (int i = 0; i < QBSPLump::MAX; ++i) {
     lumps[i].offset = is.readInt();
     lumps[i].length = is.readInt();
   }
 
-  textures.resize( lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) ) );
+  textures.resize(lumps[QBSPLump::TEXTURES].length / int(sizeof(QBSPTexture)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::TEXTURES].offset );
+  is.forward(lumps[QBSPLump::TEXTURES].offset);
 
-  for( int i = 0; i < textures.length(); ++i ) {
-    textures[i].name  = is.forward( 64 );
+  for (int i = 0; i < textures.length(); ++i) {
+    textures[i].name  = is.forward(64);
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
-    if( textures[i].name.equals( "noshader" ) ) {
+    if (textures[i].name.equals("noshader")) {
       textures[i].name = "";
     }
-    else if( textures[i].name.length() <= 9 ) {
-      OZ_ERROR( "Invalid texture name '%s'", textures[i].name.cstr() );
+    else if (textures[i].name.length() <= 9) {
+      OZ_ERROR("Invalid texture name '%s'", textures[i].name.cstr());
     }
     else {
-      textures[i].name = textures[i].name.substring( 9 );
+      textures[i].name = textures[i].name.substring(9);
     }
 
-    if( textures[i].type & QBSP_SEA_TYPE_BIT ) {
+    if (textures[i].type & QBSP_SEA_TYPE_BIT) {
       textures[i].name = "@sea:" + textures[i].name;
     }
 
-    Log::println( "Texture '%s' flags %x type %x",
-                  textures[i].name.cstr(),
-                  textures[i].flags,
-                  textures[i].type );
+    Log::println("Texture '%s' flags %x type %x",
+                 textures[i].name.cstr(),
+                 textures[i].flags,
+                 textures[i].type);
   }
 
-  planes.resize( lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) ) );
+  planes.resize(lumps[QBSPLump::PLANES].length / int(sizeof(QBSPPlane)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::PLANES].offset );
+  is.forward(lumps[QBSPLump::PLANES].offset);
 
-  for( int i = 0; i < planes.length(); ++i ) {
+  for (int i = 0; i < planes.length(); ++i) {
     planes[i].n.x = is.readFloat();
     planes[i].n.y = is.readFloat();
     planes[i].n.z = is.readFloat();
     planes[i].d   = is.readFloat() * scale;
   }
 
-  nodes.resize( lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) ) );
+  nodes.resize(lumps[QBSPLump::NODES].length / int(sizeof(QBSPNode)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::NODES].offset );
+  is.forward(lumps[QBSPLump::NODES].offset);
 
-  for( int i = 0; i < nodes.length(); ++i ) {
+  for (int i = 0; i < nodes.length(); ++i) {
     nodes[i].plane = is.readInt();
     nodes[i].front = is.readInt();
     nodes[i].back  = is.readInt();
@@ -168,12 +168,12 @@ void BSP::load()
     is.readInt();
   }
 
-  leaves.resize( lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) ) );
+  leaves.resize(lumps[QBSPLump::LEAFS].length / int(sizeof(QBSPLeaf)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::LEAFS].offset );
+  is.forward(lumps[QBSPLump::LEAFS].offset);
 
-  for( int i = 0; i < leaves.length(); ++i ) {
+  for (int i = 0; i < leaves.length(); ++i) {
     // int cluster
     is.readInt();
     // int area
@@ -194,33 +194,33 @@ void BSP::load()
     leaves[i].nBrushes   = is.readInt();
   }
 
-  leafBrushes.resize( lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) ) );
+  leafBrushes.resize(lumps[QBSPLump::LEAFBRUSHES].length / int(sizeof(int)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::LEAFBRUSHES].offset );
+  is.forward(lumps[QBSPLump::LEAFBRUSHES].offset);
 
-  for( int i = 0; i < leafBrushes.length(); ++i ) {
+  for (int i = 0; i < leafBrushes.length(); ++i) {
     leafBrushes[i] = is.readInt();
   }
 
-  int nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) );
+  int nModels = lumps[QBSPLump::MODELS].length / int(sizeof(QBSPModel));
 
-  models.resize( nModels - 1 );
-  modelFaces.resize( nModels );
+  models.resize(nModels - 1);
+  modelFaces.resize(nModels);
 
   is.rewind();
-  is.forward( lumps[QBSPLump::MODELS].offset );
+  is.forward(lumps[QBSPLump::MODELS].offset);
 
   const JSON& modelsConfig = config["entities"];
 
-  if( !modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY ) {
-    OZ_ERROR( "'models' entry in '%s' is not an array", configFile.path().cstr() );
+  if (!modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY) {
+    OZ_ERROR("'models' entry in '%s' is not an array", configFile.path().cstr());
   }
 
   // skip model 0 (whole BSP)
-  is.forward( int( sizeof( QBSPModel ) ) );
+  is.forward(int(sizeof(QBSPModel)));
 
-  for( int i = 0; i < models.length(); ++i ) {
+  for (int i = 0; i < models.length(); ++i) {
     const JSON& entityConfig = modelsConfig[i];
 
     models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
@@ -238,8 +238,8 @@ void BSP::load()
 
     models[i].firstBrush = is.readInt();
     models[i].nBrushes   = is.readInt();
-    models[i].title      = entityConfig["title"].get( "" );
-    models[i].move       = entityConfig["move"].get( Vec3::ZERO );
+    models[i].title      = entityConfig["title"].get("");
+    models[i].move       = entityConfig["move"].get(Vec3::ZERO);
 
     static const EnumMap<EntityClass::Type> entityMap = {
       { EntityClass::STATIC,         "STATIC"         },
@@ -250,47 +250,47 @@ void BSP::load()
       { EntityClass::ELEVATOR,       "ELEVATOR"       }
     };
 
-    models[i].type       = entityMap[ entityConfig["type"].get( "" ) ];
-    models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );
-    models[i].timeout    = entityConfig["timeout"].get( Math::INF );
-    models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get( 1.0f );
+    models[i].type       = entityMap[entityConfig["type"].get("")];
+    models[i].margin     = entityConfig["margin"].get(DEFAULT_MARGIN);
+    models[i].timeout    = entityConfig["timeout"].get(Math::INF);
+    models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get(1.0f);
 
-    models[i].target     = entityConfig["target"].get( -1 );
-    models[i].key        = entityConfig["key"].get( 0 );
+    models[i].target     = entityConfig["target"].get(-1);
+    models[i].key        = entityConfig["key"].get(0);
 
-    models[i].openSound  = entityConfig["openSound"].get( "" );
-    models[i].closeSound = entityConfig["closeSound"].get( "" );
-    models[i].frictSound = entityConfig["frictSound"].get( "" );
+    models[i].openSound  = entityConfig["openSound"].get("");
+    models[i].closeSound = entityConfig["closeSound"].get("");
+    models[i].frictSound = entityConfig["frictSound"].get("");
 
-    if( models[i].type == EntityClass::ELEVATOR &&
-        ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
+    if (models[i].type == EntityClass::ELEVATOR &&
+        (models[i].move.x != 0.0f || models[i].move.y != 0.0f))
     {
-      OZ_ERROR( "Elevator can only move vertically, but model[%d].move = (%g %g %g)",
-                i, models[i].move.x, models[i].move.y, models[i].move.z );
+      OZ_ERROR("Elevator can only move vertically, but model[%d].move = (%g %g %g)",
+               i, models[i].move.x, models[i].move.y, models[i].move.z);
     }
 
     const JSON& modelConfig = entityConfig["model"];
 
-    if( !modelConfig.isNull() ) {
-      models[i].modelName = modelConfig["name"].get( "" );
-      if( models[i].modelName.isEmpty() ) {
-        OZ_ERROR( "model[%d].name is empty", i );
+    if (!modelConfig.isNull()) {
+      models[i].modelName = modelConfig["name"].get("");
+      if (models[i].modelName.isEmpty()) {
+        OZ_ERROR("model[%d].name is empty", i);
       }
 
-      Vec3 translation = modelConfig["translation"].get( Vec3::ZERO );
-      Vec3 rotation    = modelConfig["rotation"].get( Vec3::ZERO );
+      Vec3 translation = modelConfig["translation"].get(Vec3::ZERO);
+      Vec3 rotation    = modelConfig["rotation"].get(Vec3::ZERO);
 
-      models[i].modelTransf = Mat4::translation( models[i].p() + translation - Point::ORIGIN );
-      models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
-      models[i].modelTransf.rotateX( Math::rad( rotation.x ) );
-      models[i].modelTransf.rotateZ( Math::rad( rotation.z ) );
+      models[i].modelTransf = Mat4::translation(models[i].p() + translation - Point::ORIGIN);
+      models[i].modelTransf.rotateY(Math::rad(rotation.y));
+      models[i].modelTransf.rotateX(Math::rad(rotation.x));
+      models[i].modelTransf.rotateZ(Math::rad(rotation.z));
     }
   }
 
   is.rewind();
-  is.forward( lumps[QBSPLump::MODELS].offset );
+  is.forward(lumps[QBSPLump::MODELS].offset);
 
-  for( int i = 0; i < models.length() + 1; ++i ) {
+  for (int i = 0; i < models.length() + 1; ++i) {
     // float bb[2][3]
     is.readFloat();
     is.readFloat();
@@ -308,66 +308,66 @@ void BSP::load()
     is.readInt();
   }
 
-  brushSides.resize( lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) ) );
+  brushSides.resize(lumps[QBSPLump::BRUSHSIDES].length / int(sizeof(QBSPBrushSide)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::BRUSHSIDES].offset );
+  is.forward(lumps[QBSPLump::BRUSHSIDES].offset);
 
-  for( int i = 0; i < brushSides.length(); ++i ) {
+  for (int i = 0; i < brushSides.length(); ++i) {
     brushSides[i] = is.readInt();
 
     // int texture
     is.readInt();
   }
 
-  brushes.resize( lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) ) );
+  brushes.resize(lumps[QBSPLump::BRUSHES].length / int(sizeof(QBSPBrush)));
 
-  if( brushes.length() > oz::BSP::MAX_BRUSHES ) {
-    OZ_ERROR( "Too many brushes %d, maximum is %d", brushes.length(), oz::BSP::MAX_BRUSHES );
+  if (brushes.length() > oz::BSP::MAX_BRUSHES) {
+    OZ_ERROR("Too many brushes %d, maximum is %d", brushes.length(), oz::BSP::MAX_BRUSHES);
   }
 
   is.rewind();
-  is.forward( lumps[QBSPLump::BRUSHES].offset );
+  is.forward(lumps[QBSPLump::BRUSHES].offset);
 
-  for( int i = 0; i < brushes.length(); ++i ) {
+  for (int i = 0; i < brushes.length(); ++i) {
     brushes[i].firstSide = is.readInt();
     brushes[i].nSides    = is.readInt();
     brushes[i].flags     = 0;
 
     int texture = is.readInt();
 
-    if( textures[texture].flags & QBSP_NONSOLID_FLAG_BIT ) {
-      if( textures[texture].flags & QBSP_LADDER_FLAG_BIT ) {
+    if (textures[texture].flags & QBSP_NONSOLID_FLAG_BIT) {
+      if (textures[texture].flags & QBSP_LADDER_FLAG_BIT) {
         brushes[i].flags |= Medium::LADDER_BIT;
       }
-      else if( textures[texture].type & QBSP_AIR_TYPE_BIT ) {
+      else if (textures[texture].type & QBSP_AIR_TYPE_BIT) {
         brushes[i].flags |= Medium::AIR_BIT;
       }
-      else if( textures[texture].type & QBSP_WATER_TYPE_BIT ) {
+      else if (textures[texture].type & QBSP_WATER_TYPE_BIT) {
         brushes[i].flags |= Medium::WATER_BIT;
       }
-      else if( textures[texture].type & QBSP_LAVA_TYPE_BIT ) {
+      else if (textures[texture].type & QBSP_LAVA_TYPE_BIT) {
         brushes[i].flags |= Medium::LAVA_BIT;
       }
-      else if( textures[texture].type & QBSP_SEA_TYPE_BIT ) {
+      else if (textures[texture].type & QBSP_SEA_TYPE_BIT) {
         brushes[i].flags |= Medium::SEA_BIT;
       }
     }
     else {
       brushes[i].flags |= Material::STRUCT_BIT;
 
-      if( textures[texture].flags & QBSP_SLICK_FLAG_BIT ) {
+      if (textures[texture].flags & QBSP_SLICK_FLAG_BIT) {
         brushes[i].flags |= Material::SLICK_BIT;
       }
     }
   }
 
-  vertices.resize( lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) ) );
+  vertices.resize(lumps[QBSPLump::VERTICES].length / int(sizeof(QBSPVertex)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::VERTICES].offset );
+  is.forward(lumps[QBSPLump::VERTICES].offset);
 
-  for( int i = 0; i < vertices.length(); ++i ) {
+  for (int i = 0; i < vertices.length(); ++i) {
     vertices[i].pos[0]      = is.readFloat() * scale;
     vertices[i].pos[1]      = is.readFloat() * scale;
     vertices[i].pos[2]      = is.readFloat() * scale;
@@ -390,21 +390,21 @@ void BSP::load()
     is.readChar();
   }
 
-  indices.resize( lumps[QBSPLump::INDICES].length / int( sizeof( int ) ) );
+  indices.resize(lumps[QBSPLump::INDICES].length / int(sizeof(int)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::INDICES].offset );
+  is.forward(lumps[QBSPLump::INDICES].offset);
 
-  for( int i = 0; i < indices.length(); ++i ) {
+  for (int i = 0; i < indices.length(); ++i) {
     indices[i] = is.readInt();
   }
 
-  faces.resize( lumps[QBSPLump::FACES].length / int( sizeof( QBSPFace ) ) );
+  faces.resize(lumps[QBSPLump::FACES].length / int(sizeof(QBSPFace)));
 
   is.rewind();
-  is.forward( lumps[QBSPLump::FACES].offset );
+  is.forward(lumps[QBSPLump::FACES].offset);
 
-  for( int i = 0; i < faces.length(); ++i ) {
+  for (int i = 0; i < faces.length(); ++i) {
     faces[i].texture     = is.readInt();
 
     // int effect
@@ -449,80 +449,80 @@ void BSP::load()
   const JSON& objectsConfig = config["boundObjects"];
   int nBoundObjects = objectsConfig.length();
 
-  for( int i = 0; i < nBoundObjects; ++i ) {
+  for (int i = 0; i < nBoundObjects; ++i) {
     const JSON& objectConfig = objectsConfig[i];
 
-    String clazz = objectConfig["class"].get( "" );
+    String clazz = objectConfig["class"].get("");
 
-    if( !clazz.isEmpty() ) {
+    if (!clazz.isEmpty()) {
       BoundObject object;
 
       object.clazz = clazz;
-      object.pos   = objectConfig["pos"].get( Point::ORIGIN );
+      object.pos   = objectConfig["pos"].get(Point::ORIGIN);
 
-      String sHeading = objectConfig["heading"].get( "" );
-      if( sHeading.equals( "NORTH" ) ) {
+      String sHeading = objectConfig["heading"].get("");
+      if (sHeading.equals("NORTH")) {
         object.heading = NORTH;
       }
-      else if( sHeading.equals( "WEST" ) ) {
+      else if (sHeading.equals("WEST")) {
         object.heading = WEST;
       }
-      else if( sHeading.equals( "SOUTH" ) ) {
+      else if (sHeading.equals("SOUTH")) {
         object.heading = SOUTH;
       }
-      else if( sHeading.equals( "EAST" ) ) {
+      else if (sHeading.equals("EAST")) {
         object.heading = EAST;
       }
-      else if( sHeading.isEmpty() ) {
-        OZ_ERROR( "Missing heading for a BSP bound object" );
+      else if (sHeading.isEmpty()) {
+        OZ_ERROR("Missing heading for a BSP bound object");
       }
       else {
-        OZ_ERROR( "Invalid object heading '%s'", sHeading.cstr() );
+        OZ_ERROR("Invalid object heading '%s'", sHeading.cstr());
       }
 
-      boundObjects.add( object );
+      boundObjects.add(object);
     }
   }
 
-  config.clear( true );
+  config.clear(true);
 }
 
 void BSP::optimise()
 {
-  Log::println( "Optimising BSP structure {" );
+  Log::println("Optimising BSP structure {");
   Log::indent();
 
   // remove brushes that lay out of boundaries
-  for( int i = 0; i < brushes.length(); ) {
-    hard_assert( brushes[i].nSides >= 0 );
+  for (int i = 0; i < brushes.length();) {
+    hard_assert(brushes[i].nSides >= 0);
 
-    if( brushes[i].nSides != 0 ) {
+    if (brushes[i].nSides != 0) {
       ++i;
       continue;
     }
 
-    brushes.erase( i );
-    Log::print( "Outside brush removed " );
+    brushes.erase(i);
+    Log::print("Outside brush removed ");
 
     // adjust brush references (for leaves)
-    for( int j = 0; j < leafBrushes.length(); ) {
-      if( leafBrushes[j] < i ) {
+    for (int j = 0; j < leafBrushes.length();) {
+      if (leafBrushes[j] < i) {
         ++j;
       }
-      else if( i < leafBrushes[j] ) {
+      else if (i < leafBrushes[j]) {
         --leafBrushes[j];
         ++j;
       }
       else {
-        leafBrushes.erase( j );
-        Log::printRaw( "." );
+        leafBrushes.erase(j);
+        Log::printRaw(".");
 
-        for( int k = 0; k < leaves.length(); ++k ) {
-          if( j < leaves[k].firstBrush ) {
+        for (int k = 0; k < leaves.length(); ++k) {
+          if (j < leaves[k].firstBrush) {
             --leaves[k].firstBrush;
           }
-          else if( j < leaves[k].firstBrush + leaves[k].nBrushes ) {
-            hard_assert( leaves[k].nBrushes > 0 );
+          else if (j < leaves[k].firstBrush + leaves[k].nBrushes) {
+            hard_assert(leaves[k].nBrushes > 0);
 
             --leaves[k].nBrushes;
           }
@@ -530,12 +530,12 @@ void BSP::optimise()
       }
     }
     // adjust brush references (for models)
-    for( int j = 0; j < models.length(); ++j ) {
-      if( i < models[j].firstBrush ) {
+    for (int j = 0; j < models.length(); ++j) {
+      if (i < models[j].firstBrush) {
         --models[j].firstBrush;
       }
-      else if( i < models[j].firstBrush + models[j].nBrushes ) {
-        hard_assert( models[j].nBrushes > 0 );
+      else if (i < models[j].firstBrush + models[j].nBrushes) {
+        hard_assert(models[j].nBrushes > 0);
 
         --models[j].nBrushes;
       }
@@ -544,28 +544,28 @@ void BSP::optimise()
   }
 
   // remove model brushes from the static tree (WTF Quake BSP puts them there?)
-  Log::print( "Removing model brush references " );
+  Log::print("Removing model brush references ");
 
-  for( int i = 0; i < models.length(); ++i ) {
-    for( int j = 0; j < models[i].nBrushes; ++j ) {
+  for (int i = 0; i < models.length(); ++i) {
+    for (int j = 0; j < models[i].nBrushes; ++j) {
       int brush = models[i].firstBrush + j;
 
-      for( int k = 0; k < leafBrushes.length(); ) {
-        if( leafBrushes[k] != brush ) {
+      for (int k = 0; k < leafBrushes.length();) {
+        if (leafBrushes[k] != brush) {
           ++k;
           continue;
         }
 
-        leafBrushes.erase( k );
-        Log::printRaw( "." );
+        leafBrushes.erase(k);
+        Log::printRaw(".");
 
         // adjust leaf references
-        for( int l = 0; l < leaves.length(); ++l ) {
-          if( k < leaves[l].firstBrush ) {
+        for (int l = 0; l < leaves.length(); ++l) {
+          if (k < leaves[l].firstBrush) {
             --leaves[l].firstBrush;
           }
-          else if( k < leaves[l].firstBrush + leaves[l].nBrushes ) {
-            hard_assert( leaves[l].nBrushes > 0 );
+          else if (k < leaves[l].firstBrush + leaves[l].nBrushes) {
+            hard_assert(leaves[l].nBrushes > 0);
 
             --leaves[l].nBrushes;
           }
@@ -574,161 +574,161 @@ void BSP::optimise()
     }
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   // remove unreferenced leaves
-  Log::print( "Removing unreferenced and empty leaves " );
+  Log::print("Removing unreferenced and empty leaves ");
 
-  for( int i = 0; i < leaves.length(); ) {
+  for (int i = 0; i < leaves.length();) {
     bool isReferenced = false;
 
-    for( int j = 0; j < nodes.length(); ++j ) {
-      if( nodes[j].front == ~i || nodes[j].back == ~i ) {
+    for (int j = 0; j < nodes.length(); ++j) {
+      if (nodes[j].front == ~i || nodes[j].back == ~i) {
         isReferenced = true;
         break;
       }
     }
 
-    if( isReferenced && leaves[i].nBrushes != 0 ) {
+    if (isReferenced && leaves[i].nBrushes != 0) {
       ++i;
       continue;
     }
 
-    leaves.erase( i );
-    Log::printRaw( "." );
+    leaves.erase(i);
+    Log::printRaw(".");
 
     // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
     // invalid as the root cannot be referenced)
-    for( int j = 0; j < nodes.length(); ++j ) {
-      if( ~nodes[j].front == i ) {
+    for (int j = 0; j < nodes.length(); ++j) {
+      if (~nodes[j].front == i) {
         nodes[j].front = 0;
       }
-      else if( ~nodes[j].front > i ) {
+      else if (~nodes[j].front > i) {
         ++nodes[j].front;
       }
 
-      if( ~nodes[j].back == i ) {
+      if (~nodes[j].back == i) {
         nodes[j].back = 0;
       }
-      else if( ~nodes[j].back > i ) {
+      else if (~nodes[j].back > i) {
         ++nodes[j].back;
       }
     }
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   // collapse unnecessary nodes
-  Log::print( "Collapsing nodes " );
+  Log::print("Collapsing nodes ");
 
   bool hasCollapsed;
   do {
     hasCollapsed = false;
 
-    for( int i = 0; i < nodes.length(); ) {
-      if( nodes[i].front != 0 && nodes[i].back != 0 ) {
+    for (int i = 0; i < nodes.length();) {
+      if (nodes[i].front != 0 && nodes[i].back != 0) {
         ++i;
         continue;
       }
-      if( i == 0 ) {
+      if (i == 0) {
         // change root node for one of its children, and set i to that child index, so it will
         // be removed instead of root
-        if( nodes[0].front == 0 ) {
+        if (nodes[0].front == 0) {
           i = nodes[0].back;
         }
-        else if( nodes[0].back == 0 ) {
+        else if (nodes[0].back == 0) {
           i = nodes[0].front;
         }
         else {
-          hard_assert( false );
+          hard_assert(false);
         }
         nodes[0] = nodes[i];
 
-        Log::printRaw( "x" );
+        Log::printRaw("x");
       }
       else {
         // find parent
         int* parentsRef = nullptr;
-        for( int j = 0; j < nodes.length(); ++j ) {
-          if( nodes[j].front == i ) {
-            hard_assert( parentsRef == nullptr );
+        for (int j = 0; j < nodes.length(); ++j) {
+          if (nodes[j].front == i) {
+            hard_assert(parentsRef == nullptr);
 
             parentsRef = &nodes[j].front;
           }
-          if( nodes[j].back == i ) {
-            hard_assert( parentsRef == nullptr );
+          if (nodes[j].back == i) {
+            hard_assert(parentsRef == nullptr);
 
             parentsRef = &nodes[j].back;
           }
         }
-        hard_assert( parentsRef != nullptr );
+        hard_assert(parentsRef != nullptr);
 
-        if( nodes[i].front == 0 ) {
+        if (nodes[i].front == 0) {
           *parentsRef = nodes[i].back;
         }
-        else if( nodes[i].back == 0 ) {
+        else if (nodes[i].back == 0) {
           *parentsRef = nodes[i].front;
         }
         else {
-          hard_assert( false );
+          hard_assert(false);
         }
       }
 
-      nodes.erase( i );
+      nodes.erase(i);
 
-      for( int j = 0; j < nodes.length(); ++j ) {
-        hard_assert( nodes[j].front != i );
-        hard_assert( nodes[j].back != i );
+      for (int j = 0; j < nodes.length(); ++j) {
+        hard_assert(nodes[j].front != i);
+        hard_assert(nodes[j].back != i);
       }
 
       // shift nodes' references
-      for( int j = 0; j < nodes.length(); ++j ) {
-        if( nodes[j].front > i ) {
+      for (int j = 0; j < nodes.length(); ++j) {
+        if (nodes[j].front > i) {
           --nodes[j].front;
         }
-        if( nodes[j].back > i ) {
+        if (nodes[j].back > i) {
           --nodes[j].back;
         }
       }
 
-      Log::printRaw( "." );
+      Log::printRaw(".");
       hasCollapsed = true;
     }
   }
-  while( hasCollapsed );
+  while (hasCollapsed);
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   // remove unused brush sides
-  Log::print( "Removing unused brush sides " );
+  Log::print("Removing unused brush sides ");
 
   List<bool> usedBrushSides;
-  usedBrushSides.resize( brushSides.length() );
-  aFill( usedBrushSides.begin(), usedBrushSides.length(), false );
+  usedBrushSides.resize(brushSides.length());
+  aFill(usedBrushSides.begin(), usedBrushSides.length(), false);
 
-  for( int i = 0; i < brushes.length(); ++i ) {
-    for( int j = 0; j < brushes[i].nSides; ++j ) {
-      usedBrushSides[ brushes[i].firstSide + j ] = true;
+  for (int i = 0; i < brushes.length(); ++i) {
+    for (int j = 0; j < brushes[i].nSides; ++j) {
+      usedBrushSides[brushes[i].firstSide + j] = true;
     }
   }
 
-  for( int i = 0; i < brushSides.length(); ) {
-    if( usedBrushSides[i] ) {
+  for (int i = 0; i < brushSides.length();) {
+    if (usedBrushSides[i]) {
       ++i;
       continue;
     }
 
-    brushSides.erase( i );
-    usedBrushSides.erase( i );
-    Log::printRaw( "." );
+    brushSides.erase(i);
+    usedBrushSides.erase(i);
+    Log::printRaw(".");
 
-    for( int j = 0; j < brushes.length(); ++j ) {
-      if( i < brushes[j].firstSide ) {
+    for (int j = 0; j < brushes.length(); ++j) {
+      if (i < brushes[j].firstSide) {
         --brushes[j].firstSide;
       }
-      else if( i < brushes[j].firstSide + brushes[j].nSides ) {
+      else if (i < brushes[j].firstSide + brushes[j].nSides) {
         // removed brush side shouldn't be referenced by any brush
-        hard_assert( false );
+        hard_assert(false);
       }
     }
   }
@@ -736,44 +736,44 @@ void BSP::optimise()
   usedBrushSides.clear();
   usedBrushSides.trim();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   // remove unused planes
-  Log::print( "Removing unused planes " );
+  Log::print("Removing unused planes ");
 
   List<bool> usedPlanes;
-  usedPlanes.resize( planes.length() );
-  aFill( usedPlanes.begin(), planes.length(), false );
+  usedPlanes.resize(planes.length());
+  aFill(usedPlanes.begin(), planes.length(), false);
 
-  for( int i = 0; i < nodes.length(); ++i ) {
-    usedPlanes[ nodes[i].plane ] = true;
+  for (int i = 0; i < nodes.length(); ++i) {
+    usedPlanes[nodes[i].plane] = true;
   }
-  for( int i = 0; i < brushSides.length(); ++i ) {
-    usedPlanes[ brushSides[i] ] = true;
+  for (int i = 0; i < brushSides.length(); ++i) {
+    usedPlanes[brushSides[i]] = true;
   }
 
-  for( int i = 0; i < planes.length(); ) {
-    if( usedPlanes[i] ) {
+  for (int i = 0; i < planes.length();) {
+    if (usedPlanes[i]) {
       ++i;
       continue;
     }
 
-    planes.erase( i );
-    usedPlanes.erase( i );
-    Log::printRaw( "." );
+    planes.erase(i);
+    usedPlanes.erase(i);
+    Log::printRaw(".");
 
     // adjust plane references
-    for( int j = 0; j < nodes.length(); ++j ) {
-      hard_assert( nodes[j].plane != i );
+    for (int j = 0; j < nodes.length(); ++j) {
+      hard_assert(nodes[j].plane != i);
 
-      if( nodes[j].plane > i ) {
+      if (nodes[j].plane > i) {
         --nodes[j].plane;
       }
     }
-    for( int j = 0; j < brushSides.length(); ++j ) {
-      hard_assert( brushSides[j] != i );
+    for (int j = 0; j < brushSides.length(); ++j) {
+      hard_assert(brushSides[j] != i);
 
-      if( brushSides[j] > i ) {
+      if (brushSides[j] > i) {
         --brushSides[j];
       }
     }
@@ -782,66 +782,66 @@ void BSP::optimise()
   usedPlanes.clear();
   usedPlanes.trim();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   // optimise bounds
-  Log::print( "Fitting bounds: " );
+  Log::print("Fitting bounds: ");
 
-  mins = Point( +Math::INF, +Math::INF, +Math::INF );
-  maxs = Point( -Math::INF, -Math::INF, -Math::INF );
+  mins = Point(+Math::INF, +Math::INF, +Math::INF);
+  maxs = Point(-Math::INF, -Math::INF, -Math::INF);
 
-  for( int i = 0; i < brushSides.length(); ++i ) {
-    Plane& plane = planes[ brushSides[i] ];
+  for (int i = 0; i < brushSides.length(); ++i) {
+    Plane& plane = planes[brushSides[i]];
 
-    if( plane.n.x == -1.0f ) {
-      mins.x = min( -plane.d, mins.x );
+    if (plane.n.x == -1.0f) {
+      mins.x = min(-plane.d, mins.x);
     }
-    else if( plane.n.x == 1.0f ) {
-      maxs.x = max( +plane.d, maxs.x );
+    else if (plane.n.x == 1.0f) {
+      maxs.x = max(+plane.d, maxs.x);
     }
-    else if( plane.n.y == -1.0f ) {
-      mins.y = min( -plane.d, mins.y );
+    else if (plane.n.y == -1.0f) {
+      mins.y = min(-plane.d, mins.y);
     }
-    else if( plane.n.y == 1.0f ) {
-      maxs.y = max( +plane.d, maxs.y );
+    else if (plane.n.y == 1.0f) {
+      maxs.y = max(+plane.d, maxs.y);
     }
-    else if( plane.n.z == -1.0f ) {
-      mins.z = min( -plane.d, mins.z );
+    else if (plane.n.z == -1.0f) {
+      mins.z = min(-plane.d, mins.z);
     }
-    else if( plane.n.z == 1.0f ) {
-      maxs.z = max( +plane.d, maxs.z );
+    else if (plane.n.z == 1.0f) {
+      maxs.z = max(+plane.d, maxs.z);
     }
   }
 
   mins -= 2.0f * EPSILON * Vec3::ONE;
   maxs += 2.0f * EPSILON * Vec3::ONE;
 
-  Log::printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
+  Log::printEnd("(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z);
 
   Log::unindent();
-  Log::println( "}" );
-  Log::println( "Optimising BSP model {" );
+  Log::println("}");
+  Log::println("Optimising BSP model {");
   Log::indent();
 
   // remove faces that lay out of boundaries
-  for( int i = 0; i < faces.length(); ) {
-    hard_assert( faces[i].nVertices > 0 && faces[i].nIndices >= 0 );
+  for (int i = 0; i < faces.length();) {
+    hard_assert(faces[i].nVertices > 0 && faces[i].nIndices >= 0);
 
-    if( faces[i].nIndices != 0 ) {
+    if (faces[i].nIndices != 0) {
       ++i;
       continue;
     }
 
-    faces.erase( i );
-    Log::println( "Outside face removed" );
+    faces.erase(i);
+    Log::println("Outside face removed");
 
     // adjust face references
-    for( int j = 0; j < models.length() + 1; ++j ) {
-      if( i < modelFaces[j].firstFace ) {
+    for (int j = 0; j < models.length() + 1; ++j) {
+      if (i < modelFaces[j].firstFace) {
         --modelFaces[j].firstFace;
       }
-      else if( i < modelFaces[j].firstFace + modelFaces[j].nFaces ) {
-        hard_assert( modelFaces[j].nFaces > 0 );
+      else if (i < modelFaces[j].firstFace + modelFaces[j].nFaces) {
+        hard_assert(modelFaces[j].nFaces > 0);
 
         --modelFaces[j].nFaces;
       }
@@ -849,250 +849,250 @@ void BSP::optimise()
   }
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void BSP::check() const
 {
-  Log::print( "Integrity check ..." );
+  Log::print("Integrity check ...");
 
-  Bitset usedNodes( nodes.length() );
-  Bitset usedLeaves( leaves.length() );
-  Bitset usedBrushes( brushes.length() );
+  Bitset usedNodes(nodes.length());
+  Bitset usedLeaves(leaves.length());
+  Bitset usedBrushes(brushes.length());
 
-  for( int i = 0; i < nodes.length(); ++i ) {
-    if( nodes[i].front < 0 ) {
-      if( usedLeaves.get( ~nodes[i].front ) ) {
-        OZ_ERROR( "BSP leaf %d referenced twice", ~nodes[i].front );
+  for (int i = 0; i < nodes.length(); ++i) {
+    if (nodes[i].front < 0) {
+      if (usedLeaves.get(~nodes[i].front)) {
+        OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].front);
       }
-      usedLeaves.set( ~nodes[i].front );
+      usedLeaves.set(~nodes[i].front);
     }
-    else if( nodes[i].front != 0 ) {
-      if( usedNodes.get( nodes[i].front ) ) {
-        OZ_ERROR( "BSP node %d referenced twice", nodes[i].front );
+    else if (nodes[i].front != 0) {
+      if (usedNodes.get(nodes[i].front)) {
+        OZ_ERROR("BSP node %d referenced twice", nodes[i].front);
       }
-      usedNodes.set( nodes[i].front );
+      usedNodes.set(nodes[i].front);
     }
     else {
-      OZ_ERROR( "BSP root node referenced" );
+      OZ_ERROR("BSP root node referenced");
     }
 
-    if( nodes[i].back < 0 ) {
-      if( usedLeaves.get( ~nodes[i].back ) ) {
-        OZ_ERROR( "BSP leaf %d referenced twice", ~nodes[i].back );
+    if (nodes[i].back < 0) {
+      if (usedLeaves.get(~nodes[i].back)) {
+        OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].back);
       }
-      usedLeaves.set( ~nodes[i].back );
+      usedLeaves.set(~nodes[i].back);
     }
-    else if( nodes[i].back != 0 ) {
-      if( usedNodes.get( nodes[i].back ) ) {
-        OZ_ERROR( "BSP node %d referenced twice", nodes[i].back );
+    else if (nodes[i].back != 0) {
+      if (usedNodes.get(nodes[i].back)) {
+        OZ_ERROR("BSP node %d referenced twice", nodes[i].back);
       }
-      usedNodes.set( nodes[i].back );
+      usedNodes.set(nodes[i].back);
     }
     else {
-      OZ_ERROR( "BSP root node referenced" );
+      OZ_ERROR("BSP root node referenced");
     }
   }
 
-  for( int i = 0; i < models.length(); ++i ) {
-    for( int j = 0; j < models[i].nBrushes; ++j ) {
+  for (int i = 0; i < models.length(); ++i) {
+    for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
-      if( usedBrushes.get( index ) ) {
-        OZ_ERROR( "BSP brush %d referenced by two models", index );
+      if (usedBrushes.get(index)) {
+        OZ_ERROR("BSP brush %d referenced by two models", index);
       }
-      usedBrushes.set( index );
+      usedBrushes.set(index);
     }
   }
 
   usedBrushes.clearAll();
-  for( int i = 0; i < leaves.length(); ++i ) {
-    for( int j = 0; j < leaves[i].nBrushes; ++j ) {
-      int index = leafBrushes[ leaves[i].firstBrush + j ];
+  for (int i = 0; i < leaves.length(); ++i) {
+    for (int j = 0; j < leaves[i].nBrushes; ++j) {
+      int index = leafBrushes[leaves[i].firstBrush + j];
 
-      usedBrushes.set( index );
+      usedBrushes.set(index);
     }
   }
-  for( int i = 0; i < models.length(); ++i ) {
-    for( int j = 0; j < models[i].nBrushes; ++j ) {
+  for (int i = 0; i < models.length(); ++i) {
+    for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
-      if( usedBrushes.get( index ) ) {
-        OZ_ERROR( "BSP model brush %d referenced by static tree", index );
+      if (usedBrushes.get(index)) {
+        OZ_ERROR("BSP model brush %d referenced by static tree", index);
       }
-      usedBrushes.set( index );
+      usedBrushes.set(index);
     }
   }
 
-  if( usedNodes.get( 0 ) ) {
-    OZ_ERROR( "BSP root node referenced" );
+  if (usedNodes.get(0)) {
+    OZ_ERROR("BSP root node referenced");
   }
-  for( int i = 1; i < nodes.length(); ++i ) {
-    if( !usedNodes.get( i ) ) {
-      OZ_ERROR( "BSP node %d not referenced", i );
+  for (int i = 1; i < nodes.length(); ++i) {
+    if (!usedNodes.get(i)) {
+      OZ_ERROR("BSP node %d not referenced", i);
     }
   }
-  for( int i = 0; i < leaves.length(); ++i ) {
-    if( !usedLeaves.get( i ) ) {
-      OZ_ERROR( "BSP leaf %d not referenced", i );
+  for (int i = 0; i < leaves.length(); ++i) {
+    if (!usedLeaves.get(i)) {
+      OZ_ERROR("BSP leaf %d not referenced", i);
     }
   }
-  for( int i = 0; i < brushes.length(); ++i ) {
-    if( !usedBrushes.get( i ) ) {
-      OZ_ERROR( "BSP brush %d not referenced", i );
-    }
-  }
-
-  for( int i = 0; i < planes.length(); ++i ) {
-    if( !Math::isFinite( planes[i].d ) ) {
-      OZ_ERROR( "BSP has invalid plane %d", i );
+  for (int i = 0; i < brushes.length(); ++i) {
+    if (!usedBrushes.get(i)) {
+      OZ_ERROR("BSP brush %d not referenced", i);
     }
   }
 
-  Log::printEnd( " OK" );
+  for (int i = 0; i < planes.length(); ++i) {
+    if (!Math::isFinite(planes[i].d)) {
+      OZ_ERROR("BSP has invalid plane %d", i);
+    }
+  }
 
-  Log::println( "Statistics {" );
+  Log::printEnd(" OK");
+
+  Log::println("Statistics {");
   Log::indent();
-  Log::println( "%4d  models",      models.length() );
-  Log::println( "%4d  nodes",       nodes.length() );
-  Log::println( "%4d  leaves",      leaves.length() );
-  Log::println( "%4d  brushes",     brushes.length() );
-  Log::println( "%4d  brush sides", brushSides.length() );
-  Log::println( "%4d  planes",      planes.length() );
-  Log::println( "%4d  faces",       faces.length() );
-  Log::println( "%4d  textures",    textures.length() );
+  Log::println("%4d  models",      models.length());
+  Log::println("%4d  nodes",       nodes.length());
+  Log::println("%4d  leaves",      leaves.length());
+  Log::println("%4d  brushes",     brushes.length());
+  Log::println("%4d  brush sides", brushSides.length());
+  Log::println("%4d  planes",      planes.length());
+  Log::println("%4d  faces",       faces.length());
+  Log::println("%4d  textures",    textures.length());
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void BSP::saveMatrix()
 {
   File destFile = "bsp/" + name + ".ozBSP";
 
-  Log::print( "Writing BSP structure to '%s' ...", destFile.path().cstr() );
+  Log::print("Writing BSP structure to '%s' ...", destFile.path().cstr());
 
   Set<String> usedSounds;
 
-  for( const Model& model : models ) {
-    if( !model.openSound.isEmpty() ) {
-      usedSounds.include( model.openSound );
+  for (const Model& model : models) {
+    if (!model.openSound.isEmpty()) {
+      usedSounds.include(model.openSound);
     }
-    if( !model.closeSound.isEmpty() ) {
-      usedSounds.include( model.closeSound );
+    if (!model.closeSound.isEmpty()) {
+      usedSounds.include(model.closeSound);
     }
-    if( !model.frictSound.isEmpty() ) {
-      usedSounds.include( model.frictSound );
+    if (!model.frictSound.isEmpty()) {
+      usedSounds.include(model.frictSound);
     }
   }
-  if( !demolishSound.isEmpty() ) {
-    usedSounds.include( demolishSound );
+  if (!demolishSound.isEmpty()) {
+    usedSounds.include(demolishSound);
   }
 
-  OutputStream os( 0, Endian::LITTLE );
+  OutputStream os(0, Endian::LITTLE);
 
-  os.writePoint( mins );
-  os.writePoint( maxs );
+  os.writePoint(mins);
+  os.writePoint(maxs);
 
-  os.writeString( title );
-  os.writeString( description );
+  os.writeString(title);
+  os.writeString(description);
 
-  os.writeFloat( life );
-  os.writeFloat( resistance );
+  os.writeFloat(life);
+  os.writeFloat(resistance);
 
-  os.writeString( fragPool );
-  os.writeInt( nFrags );
+  os.writeString(fragPool);
+  os.writeInt(nFrags);
 
-  os.writeInt( usedSounds.length() );
-  for( const String& sound : usedSounds ) {
-    os.writeString( sound );
+  os.writeInt(usedSounds.length());
+  for (const String& sound : usedSounds) {
+    os.writeString(sound);
   }
   usedSounds.clear();
   usedSounds.trim();
 
-  os.writeString( demolishSound );
-  os.writeFloat( groundOffset );
+  os.writeString(demolishSound);
+  os.writeFloat(groundOffset);
 
-  os.writeInt( planes.length() );
-  os.writeInt( nodes.length() );
-  os.writeInt( leaves.length() );
-  os.writeInt( leafBrushes.length() );
-  os.writeInt( brushes.length() );
-  os.writeInt( brushSides.length() );
-  os.writeInt( models.length() );
-  os.writeInt( boundObjects.length() );
+  os.writeInt(planes.length());
+  os.writeInt(nodes.length());
+  os.writeInt(leaves.length());
+  os.writeInt(leafBrushes.length());
+  os.writeInt(brushes.length());
+  os.writeInt(brushSides.length());
+  os.writeInt(models.length());
+  os.writeInt(boundObjects.length());
 
-  for( const Plane& plane : planes ) {
-    os.writePlane( plane );
+  for (const Plane& plane : planes) {
+    os.writePlane(plane);
   }
 
-  for( const oz::BSP::Node& node : nodes ) {
-    os.writeInt( node.plane );
-    os.writeInt( node.front );
-    os.writeInt( node.back );
+  for (const oz::BSP::Node& node : nodes) {
+    os.writeInt(node.plane);
+    os.writeInt(node.front);
+    os.writeInt(node.back);
   }
 
-  for( const oz::BSP::Leaf& leaf : leaves ) {
-    os.writeInt( leaf.firstBrush );
-    os.writeInt( leaf.nBrushes );
+  for (const oz::BSP::Leaf& leaf : leaves) {
+    os.writeInt(leaf.firstBrush);
+    os.writeInt(leaf.nBrushes);
   }
 
-  for( int leafBrush : leafBrushes ) {
-    os.writeInt( leafBrush );
+  for (int leafBrush : leafBrushes) {
+    os.writeInt(leafBrush);
   }
 
-  for( const oz::BSP::Brush& brush : brushes ) {
-    os.writeInt( brush.firstSide );
-    os.writeInt( brush.nSides );
-    os.writeInt( brush.flags );
+  for (const oz::BSP::Brush& brush : brushes) {
+    os.writeInt(brush.firstSide);
+    os.writeInt(brush.nSides);
+    os.writeInt(brush.flags);
   }
 
-  for( int brushSide : brushSides ) {
-    os.writeInt( brushSide );
+  for (int brushSide : brushSides) {
+    os.writeInt(brushSide);
   }
 
-  for( const Model& model : models ) {
-    os.writePoint( model.mins );
-    os.writePoint( model.maxs );
+  for (const Model& model : models) {
+    os.writePoint(model.mins);
+    os.writePoint(model.maxs);
 
-    os.writeString( model.title );
-    os.writeVec3( model.move );
+    os.writeString(model.title);
+    os.writeVec3(model.move);
 
-    os.writeInt( model.firstBrush );
-    os.writeInt( model.nBrushes );
+    os.writeInt(model.firstBrush);
+    os.writeInt(model.nBrushes);
 
-    os.writeInt( int( model.type ) );
-    os.writeFloat( model.margin );
-    os.writeFloat( model.timeout );
-    os.writeFloat( model.ratioInc );
+    os.writeInt(int(model.type));
+    os.writeFloat(model.margin);
+    os.writeFloat(model.timeout);
+    os.writeFloat(model.ratioInc);
 
-    os.writeInt( model.target );
-    os.writeInt( model.key );
+    os.writeInt(model.target);
+    os.writeInt(model.key);
 
-    context.usedSounds.include( model.openSound, name + " (BSP)" );
-    context.usedSounds.include( model.closeSound, name + " (BSP)" );
-    context.usedSounds.include( model.frictSound, name + " (BSP)" );
+    context.usedSounds.include(model.openSound, name + " (BSP)");
+    context.usedSounds.include(model.closeSound, name + " (BSP)");
+    context.usedSounds.include(model.frictSound, name + " (BSP)");
 
-    os.writeString( model.openSound );
-    os.writeString( model.closeSound );
-    os.writeString( model.frictSound );
+    os.writeString(model.openSound);
+    os.writeString(model.closeSound);
+    os.writeString(model.frictSound);
 
-    context.usedModels.include( model.modelName, name + " (BSP)" );
+    context.usedModels.include(model.modelName, name + " (BSP)");
 
-    os.writeString( model.modelName );
-    os.writeMat4( model.modelTransf );
+    os.writeString(model.modelName);
+    os.writeMat4(model.modelTransf);
   }
 
-  for( const BoundObject& boundObject : boundObjects ) {
-    os.writeString( boundObject.clazz );
-    os.writePoint( boundObject.pos );
-    os.writeInt( boundObject.heading );
+  for (const BoundObject& boundObject : boundObjects) {
+    os.writeString(boundObject.clazz);
+    os.writePoint(boundObject.pos);
+    os.writeInt(boundObject.heading);
   }
 
-  if( !destFile.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
+  if (!destFile.write(os.begin(), os.tell())) {
+    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void BSP::saveClient()
@@ -1101,57 +1101,57 @@ void BSP::saveClient()
 
   compiler.beginModel();
 
-  compiler.enable( Compiler::UNIQUE );
-  compiler.enable( Compiler::CLOCKWISE );
+  compiler.enable(Compiler::UNIQUE);
+  compiler.enable(Compiler::CLOCKWISE);
 
-  for( int i = 0; i < models.length() + 1; ++i ) {
+  for (int i = 0; i < models.length() + 1; ++i) {
     compiler.beginNode();
 
-    int lastTexture = faces[ modelFaces[i].firstFace ].texture;
+    int lastTexture = faces[modelFaces[i].firstFace].texture;
 
-    for( int j = 0; j < modelFaces[i].nFaces; ++j ) {
-      const Face&    face = faces[ modelFaces[i].firstFace + j ];
+    for (int j = 0; j < modelFaces[i].nFaces; ++j) {
+      const Face&    face = faces[modelFaces[i].firstFace + j];
       const Texture& tex  = textures[face.texture];
 
-      if( tex.name.isEmpty() ) {
-        OZ_ERROR( "BSP has a visible face without a texture" );
+      if (tex.name.isEmpty()) {
+        OZ_ERROR("BSP has a visible face without a texture");
       }
-      if( !tex.name.beginsWith( "@sea:" ) ) {
-        context.usedTextures.include( tex.name, name + " (BSP)" );
+      if (!tex.name.beginsWith("@sea:")) {
+        context.usedTextures.include(tex.name, name + " (BSP)");
       }
 
-      if( face.texture != lastTexture ) {
+      if (face.texture != lastTexture) {
         int meshId = compiler.endMesh();
 
         compiler.beginNode();
-        compiler.bindMesh( meshId );
+        compiler.bindMesh(meshId);
         compiler.endNode();
       }
-      if( face.texture != lastTexture || j == 0 ) {
+      if (face.texture != lastTexture || j == 0) {
         lastTexture = face.texture;
 
         compiler.beginMesh();
-        compiler.texture( tex.name );
-        compiler.blend( tex.type & QBSP_ALPHA_TYPE_BIT );
+        compiler.texture(tex.name);
+        compiler.blend(tex.type & QBSP_ALPHA_TYPE_BIT);
       }
 
-      compiler.begin( Compiler::TRIANGLES );
+      compiler.begin(Compiler::TRIANGLES);
 
-      for( int k = 0; k < face.nIndices; ++k ) {
-        const QBSPVertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+      for (int k = 0; k < face.nIndices; ++k) {
+        const QBSPVertex& v = vertices[face.firstVertex + indices[face.firstIndex + k]];
 
-        compiler.texCoord( v.texCoord );
-        compiler.normal( v.normal );
-        compiler.vertex( v.pos );
+        compiler.texCoord(v.texCoord);
+        compiler.normal(v.normal);
+        compiler.vertex(v.pos);
       }
 
-      if( textures[face.texture].type & QBSP_WATER_TYPE_BIT ) {
-        for( int k = face.nIndices - 1; k >= 0; --k ) {
-          const QBSPVertex& v = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+      if (textures[face.texture].type & QBSP_WATER_TYPE_BIT) {
+        for (int k = face.nIndices - 1; k >= 0; --k) {
+          const QBSPVertex& v = vertices[face.firstVertex + indices[face.firstIndex + k]];
 
-          compiler.texCoord( v.texCoord );
-          compiler.normal( -v.normal[0], -v.normal[1], -v.normal[2] );
-          compiler.vertex( v.pos );
+          compiler.texCoord(v.texCoord);
+          compiler.normal(-v.normal[0], -v.normal[1], -v.normal[2]);
+          compiler.vertex(v.pos);
         }
       }
 
@@ -1161,7 +1161,7 @@ void BSP::saveClient()
     int meshId = compiler.endMesh();
 
     compiler.beginNode();
-    compiler.bindMesh( meshId );
+    compiler.bindMesh(meshId);
     compiler.endNode();
 
     compiler.endNode();
@@ -1169,24 +1169,24 @@ void BSP::saveClient()
 
   compiler.endModel();
 
-  OutputStream os( 0, Endian::LITTLE );
+  OutputStream os(0, Endian::LITTLE);
 
-  compiler.writeModel( &os, true );
-  os.writeVec4( waterFogColour );
-  os.writeVec4( lavaFogColour );
+  compiler.writeModel(&os, true);
+  os.writeVec4(waterFogColour);
+  os.writeVec4(lavaFogColour);
 
-  Log::print( "Writing BSP model to '%s' ...", destFile.path().cstr() );
+  Log::print("Writing BSP model to '%s' ...", destFile.path().cstr());
 
-  if( !destFile.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
+  if (!destFile.write(os.begin(), os.tell())) {
+    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
-void BSP::build( const char* name_ )
+void BSP::build(const char* name_)
 {
-  Log::println( "Prebuilding BSP '%s' {", name_ );
+  Log::println("Prebuilding BSP '%s' {", name_);
   Log::indent();
 
   name = name_;
@@ -1226,7 +1226,7 @@ void BSP::build( const char* name_ )
   boundObjects.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 BSP bsp;

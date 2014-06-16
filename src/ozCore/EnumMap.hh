@@ -60,7 +60,7 @@ public:
   /**
    * Create enumerator mapping from an array.
    */
-  EnumMapImpl( InitialiserList<Entry> l );
+  EnumMapImpl(InitialiserList<Entry> l);
 
   /**
    * Destructor
@@ -70,12 +70,12 @@ public:
   /**
    * No copying or moving.
    */
-  EnumMapImpl( const EnumMapImpl& ) = delete;
+  EnumMapImpl(const EnumMapImpl&) = delete;
 
   /**
    * No copying or moving.
    */
-  EnumMapImpl& operator = ( const EnumMapImpl& ) = delete;
+  EnumMapImpl& operator = (const EnumMapImpl&) = delete;
 
   /**
    * Return first enumerator value in the map.
@@ -90,22 +90,22 @@ public:
   /**
    * True iff a given enumerator value exists in the map.
    */
-  bool has( int value ) const;
+  bool has(int value) const;
 
   /**
    * True iff a given name exists in the map.
    */
-  bool has( const char* name ) const;
+  bool has(const char* name) const;
 
   /**
    * Return name for a enumerator value or invoke `System::error()` on an invalid value.
    */
-  const char* operator [] ( int value ) const;
+  const char* operator [] (int value) const;
 
   /**
    * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
    */
-  int operator[] ( const char* name ) const;
+  int operator[] (const char* name) const;
 
 };
 
@@ -138,8 +138,8 @@ public:
   /**
    * Create enumerator mapping from an initialiser list.
    */
-  EnumMap( InitialiserList<Entry> l ) :
-    EnumMapImpl( l )
+  EnumMap(InitialiserList<Entry> l) :
+    EnumMapImpl(l)
   {}
 
   /**
@@ -147,15 +147,15 @@ public:
    */
   Enum defaultValue() const
   {
-    return Enum( EnumMapImpl::defaultValue() );
+    return Enum(EnumMapImpl::defaultValue());
   }
 
   /**
    * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
    */
-  Enum operator[] ( const char* name ) const
+  Enum operator[](const char* name) const
   {
-    return Enum( EnumMapImpl::operator [] ( name ) );
+    return Enum(EnumMapImpl::operator [] (name));
   }
 
 };

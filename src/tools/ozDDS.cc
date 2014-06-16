@@ -36,15 +36,15 @@ static void usage()
   );
 }
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
   System::init();
 
   int ddsOptions = 0;
 
   int opt;
-  while( ( opt = getopt( argc, argv, "CM" ) ) >= 0 ) {
-    switch( opt ) {
+  while ((opt = getopt(argc, argv, "CM")) >= 0) {
+    switch (opt) {
       case 'C': {
         ddsOptions |= ImageBuilder::COMPRESSION_BIT;
         break;
@@ -61,14 +61,14 @@ int main( int argc, char** argv )
   }
 
   int nArgs = argc - optind;
-  if( nArgs < 1 || nArgs > 2 ) {
+  if (nArgs < 1 || nArgs > 2) {
     usage();
     return EXIT_FAILURE;
   }
 
   const char* destPath = nArgs == 1 ? "." : argv[optind + 1];
 
-  if( !ImageBuilder::convertToDDS( argv[optind], ddsOptions, destPath ) ) {
+  if (!ImageBuilder::convertToDDS(argv[optind], ddsOptions, destPath)) {
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

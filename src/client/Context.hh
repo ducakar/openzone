@@ -64,13 +64,13 @@ private:
     int     sound;
     Source* next[1];
 
-    explicit Source( uint sourceId, int sound_ ) :
-      id( sourceId ), sound( sound_ )
+    explicit Source(uint sourceId, int sound_) :
+      id(sourceId), sound(sound_)
     {}
 
     static Pool<Source> pool;
 
-    OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC(pool)
   };
 
   struct ContSource
@@ -79,8 +79,8 @@ private:
     int  sound;
     bool isUpdated;
 
-    explicit ContSource( uint sourceId, int sound_ ) :
-      id( sourceId ), sound( sound_ ), isUpdated( true )
+    explicit ContSource(uint sourceId, int sound_) :
+      id(sourceId), sound(sound_), isUpdated(true)
     {}
   };
 
@@ -152,57 +152,57 @@ public:
 
 private:
 
-  static int speakCallback( short int* samples, int nSamples, void* );
-  static void speakMain( void* );
+  static int speakCallback(short int* samples, int nSamples, void*);
+  static void speakMain(void*);
 
-  uint addSource( int sound );
-  void removeSource( Source* source, Source* prev );
+  uint addSource(int sound);
+  void removeSource(Source* source, Source* prev);
 
-  uint addContSource( int sound, int key );
-  void removeContSource( ContSource* contSource, int key );
+  uint addContSource(int sound, int key);
+  void removeContSource(ContSource* contSource, int key);
 
-  uint requestSpeakSource( const char* text, int owner );
+  uint requestSpeakSource(const char* text, int owner);
   void releaseSpeakSource();
 
   PartGen* addPartGen();
-  void removePartGen( PartGen* partGen );
+  void removePartGen(PartGen* partGen);
 
 public:
 
   explicit Context();
 
-  static Texture loadTexture( const File& albedoFile, const File& masksFile,
-                              const File& normalsFile );
-  static Texture loadTexture( const char* basePath );
-  static void unloadTexture( const Texture* texture );
+  static Texture loadTexture(const File& albedoFile, const File& masksFile,
+                             const File& normalsFile);
+  static Texture loadTexture(const char* basePath);
+  static void unloadTexture(const Texture* texture);
 
-  Texture requestTexture( int id );
-  void releaseTexture( int id );
+  Texture requestTexture(int id);
+  void releaseTexture(int id);
 
-  uint requestSound( int id );
-  void releaseSound( int id );
-  void freeSound( int id );
+  uint requestSound(int id);
+  void releaseSound(int id);
+  void freeSound(int id);
 
   // Play sample without 3D effects.
-  void playSample( int id );
+  void playSample(int id);
 
-  BSPImago* getBSP( const BSP* bsp );
-  BSPImago* requestBSP( const BSP* bsp );
+  BSPImago* getBSP(const BSP* bsp);
+  BSPImago* requestBSP(const BSP* bsp);
 
-  void drawBSP( const Struct* str );
-  void playBSP( const Struct* str );
+  void drawBSP(const Struct* str);
+  void playBSP(const Struct* str);
 
-  Model* getModel( int id );
-  Model* requestModel( int id );
-  void releaseModel( int id );
+  Model* getModel(int id);
+  Model* requestModel(int id);
+  void releaseModel(int id);
 
-  PartClass* getPartClass( int id );
-  PartClass* requestPartClass( int id );
-  void releasePartClass( int id );
+  PartClass* getPartClass(int id);
+  PartClass* requestPartClass(int id);
+  void releasePartClass(int id);
 
-  void drawImago( const Object* obj, const Imago* parent );
-  void playAudio( const Object* obj, const Object* parent );
-  void drawFrag( const Frag* frag );
+  void drawImago(const Object* obj, const Imago* parent);
+  void playAudio(const Object* obj, const Object* parent);
+  void drawFrag(const Frag* frag);
 
   void updateLoad();
 

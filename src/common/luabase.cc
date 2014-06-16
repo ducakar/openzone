@@ -26,28 +26,28 @@
 namespace oz
 {
 
-void registerLuaConstant( lua_State* l, const char* name, bool value )
+void registerLuaConstant(lua_State* l, const char* name, bool value)
 {
-  l_pushbool( value );
-  l_setglobal( name );
+  l_pushbool(value);
+  l_setglobal(name);
 }
 
-void registerLuaConstant( lua_State* l, const char* name, int value )
+void registerLuaConstant(lua_State* l, const char* name, int value)
 {
-  l_pushint( value );
-  l_setglobal( name );
+  l_pushint(value);
+  l_setglobal(name);
 }
 
-void registerLuaConstant( lua_State* l, const char* name, float value )
+void registerLuaConstant(lua_State* l, const char* name, float value)
 {
-  l_pushfloat( value );
-  l_setglobal( name );
+  l_pushfloat(value);
+  l_setglobal(name);
 }
 
-void registerLuaConstant( lua_State* l, const char* name, const char* value )
+void registerLuaConstant(lua_State* l, const char* name, const char* value)
 {
-  l_pushstring( value );
-  l_setglobal( name );
+  l_pushstring(value);
+  l_setglobal(name);
 }
 
 }

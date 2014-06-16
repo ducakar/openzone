@@ -37,20 +37,20 @@ namespace ui
 
 bool Frame::onMouseEvent()
 {
-  if( input.buttons != 0 ) {
+  if (input.buttons != 0) {
     raise();
   }
 
-  if( input.keys[Input::KEY_UI_ALT] ) {
+  if (input.keys[Input::KEY_UI_ALT]) {
     mouse.icon = Mouse::OPENHAND;
 
-    if( input.buttons & Input::LEFT_BUTTON ) {
-      if( input.leftPressed ) {
+    if (input.buttons & Input::LEFT_BUTTON) {
+      if (input.leftPressed) {
         flags |= GRAB_BIT;
       }
-      if( flags & GRAB_BIT ) {
+      if (flags & GRAB_BIT) {
         mouse.icon = Mouse::CLOSEDHAND;
-        move( mouse.dx, mouse.dy );
+        move(mouse.dx, mouse.dy);
       }
     }
     else {
@@ -71,17 +71,17 @@ bool Frame::onKeyEvent()
 
 void Frame::onDraw()
 {
-  shape.colour( style.colours.frame );
-  shape.fill( x, y, width, height );
+  shape.colour(style.colours.frame);
+  shape.fill(x, y, width, height);
 
-  title.draw( this );
+  title.draw(this);
 
   drawChildren();
 }
 
-Frame::Frame( int width, int height, const char* text ) :
-  Area( width, height + HEADER_SIZE ),
-  title( width / 2, -HEADER_SIZE / 2, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "%s", text )
+Frame::Frame(int width, int height, const char* text) :
+  Area(width, height + HEADER_SIZE),
+  title(width / 2, -HEADER_SIZE / 2, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "%s", text)
 {}
 
 }

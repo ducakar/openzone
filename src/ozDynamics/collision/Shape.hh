@@ -59,8 +59,8 @@ public:
 public:
 
   OZ_ALWAYS_INLINE
-  explicit Shape( Type type_ ) :
-    type( type_ ), nUsers( 0 )
+  explicit Shape(Type type_) :
+    type(type_), nUsers(0)
   {}
 
   virtual ~Shape();
@@ -68,7 +68,7 @@ public:
   /**
    * Calculate axis-aligned bounding box for the shape in absolute coordinates.
    */
-  virtual Bounds getBounds( const Point& pos, const Mat3& rot ) const = 0;
+  virtual Bounds getBounds(const Point& pos, const Mat3& rot) const = 0;
 
 };
 

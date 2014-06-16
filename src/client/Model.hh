@@ -52,8 +52,8 @@ struct Texture
   uint normals;
 
   explicit Texture() :
-    id( -1 ), albedo( shader.defaultTexture ), masks( shader.defaultMasks ),
-    normals( shader.defaultNormals )
+    id(-1), albedo(shader.defaultTexture), masks(shader.defaultMasks),
+    normals(shader.defaultNormals)
   {}
 };
 
@@ -98,6 +98,7 @@ struct Animation
 
   struct Channel
   {
+    int               bone;
     List<PositionKey> positionKeys;
     List<RotationKey> rotationKeys;
     List<ScalingKey>  scalingKeys;
@@ -212,20 +213,20 @@ private:
 
   void addSceneLights();
 
-  void animate( const Instance* instance );
-  void drawNode( const Node* node, int mask );
-  void draw( const Instance* instance, int mask );
+  void animate(const Instance* instance);
+  void drawNode(const Node* node, int mask);
+  void draw(const Instance* instance, int mask);
 
 public:
 
-  static void setCollation( Collation collation );
+  static void setCollation(Collation collation);
 
-  static void drawScheduled( QueueType queue, int mask );
-  static void clearScheduled( QueueType queue );
+  static void drawScheduled(QueueType queue, int mask);
+  static void clearScheduled(QueueType queue);
 
   static void deallocate();
 
-  explicit Model( const String& path );
+  explicit Model(const String& path);
   ~Model();
 
   bool isPreloaded() const
@@ -238,20 +239,20 @@ public:
     return !meshes.isEmpty() && preloadData == nullptr;
   }
 
-  int findNode( const char* name ) const;
+  int findNode(const char* name) const;
 
-  void schedule( int mesh, QueueType queue );
-  void scheduleFrame( int mesh, int frame, QueueType queue );
-  void scheduleAnimated( int mesh, int firstFrame, int secondFrame, float interpolation,
-                         QueueType queue );
+  void schedule(int mesh, QueueType queue);
+  void scheduleFrame(int mesh, int frame, QueueType queue);
+  void scheduleAnimated(int mesh, int firstFrame, int secondFrame, float interpolation,
+                        QueueType queue);
 
-  void scheduleMD2Anim( const MD2::AnimState* anim, Model::QueueType queue )
+  void scheduleMD2Anim(const MD2::AnimState* anim, Model::QueueType queue)
   {
-    scheduleAnimated( 1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue );
+    scheduleAnimated(1, anim->currFrame, anim->nextFrame, anim->frameRatio, queue);
   }
 
   const File* preload();
-  void upload( const Vertex* vertices, int nVertices, uint usage ) const;
+  void upload(const Vertex* vertices, int nVertices, uint usage) const;
   void load();
   void unload();
 

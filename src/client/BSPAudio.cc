@@ -30,76 +30,76 @@ namespace oz
 namespace client
 {
 
-void BSPAudio::playDemolish( const Struct* str, int sound ) const
+void BSPAudio::playDemolish(const Struct* str, int sound) const
 {
-  hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
+  hard_assert(uint(sound) < uint(liber.sounds.length()));
 
-  uint srcId = context.addSource( sound );
-  if( srcId == Context::INVALID_SOURCE ) {
+  uint srcId = context.addSource(sound);
+  if (srcId == Context::INVALID_SOURCE) {
     return;
   }
 
-  alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
-  alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
+  alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
+  alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
-  alSourcefv( srcId, AL_POSITION, str->p );
+  alSourcefv(srcId, AL_POSITION, str->p);
 
-  alSourcePlay( srcId );
+  alSourcePlay(srcId);
 
   OZ_AL_CHECK_ERROR();
 }
 
-void BSPAudio::playSound( const Entity* entity, int sound ) const
+void BSPAudio::playSound(const Entity* entity, int sound) const
 {
-  hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
+  hard_assert(uint(sound) < uint(liber.sounds.length()));
 
   const Struct* str      = entity->str;
-  Point         p        = str->toAbsoluteCS( entity->clazz->p() + entity->offset );
-  Vec3          velocity = str->toAbsoluteCS( entity->velocity );
+  Point         p        = str->toAbsoluteCS(entity->clazz->p() + entity->offset);
+  Vec3          velocity = str->toAbsoluteCS(entity->velocity);
 
-  uint srcId = context.addSource( sound );
-  if( srcId == Context::INVALID_SOURCE ) {
+  uint srcId = context.addSource(sound);
+  if (srcId == Context::INVALID_SOURCE) {
     return;
   }
 
-  alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
-  alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
+  alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
+  alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
-  alSourcefv( srcId, AL_POSITION, p );
-  alSourcefv( srcId, AL_VELOCITY, velocity );
+  alSourcefv(srcId, AL_POSITION, p);
+  alSourcefv(srcId, AL_VELOCITY, velocity);
 
-  alSourcePlay( srcId );
+  alSourcePlay(srcId);
 
   OZ_AL_CHECK_ERROR();
 }
 
-void BSPAudio::playContSound( const Entity* entity, int sound ) const
+void BSPAudio::playContSound(const Entity* entity, int sound) const
 {
-  hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
+  hard_assert(uint(sound) < uint(liber.sounds.length()));
 
   const Struct* str      = entity->str;
   int           key      = entity->index();
-  Point         p        = str->toAbsoluteCS( entity->clazz->p() + entity->offset );
-  Vec3          velocity = str->toAbsoluteCS( entity->velocity );
+  Point         p        = str->toAbsoluteCS(entity->clazz->p() + entity->offset);
+  Vec3          velocity = str->toAbsoluteCS(entity->velocity);
 
-  Context::ContSource* contSource = context.contSources.find( key );
+  Context::ContSource* contSource = context.contSources.find(key);
 
-  if( contSource == nullptr ) {
-    uint srcId = context.addContSource( sound, key );
-    if( srcId == Context::INVALID_SOURCE ) {
+  if (contSource == nullptr) {
+    uint srcId = context.addContSource(sound, key);
+    if (srcId == Context::INVALID_SOURCE) {
       return;
     }
 
-    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
+    alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
+    alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
-    alSourcei( srcId, AL_LOOPING, AL_TRUE );
-    alSourcefv( srcId, AL_POSITION, p );
-    alSourcefv( srcId, AL_VELOCITY, velocity );
-    alSourcePlay( srcId );
+    alSourcei(srcId, AL_LOOPING, AL_TRUE);
+    alSourcefv(srcId, AL_POSITION, p);
+    alSourcefv(srcId, AL_VELOCITY, velocity);
+    alSourcePlay(srcId);
   }
   else {
-    alSourcefv( contSource->id, AL_POSITION, p );
+    alSourcefv(contSource->id, AL_POSITION, p);
 
     contSource->isUpdated = true;
   }
@@ -107,46 +107,46 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
   OZ_AL_CHECK_ERROR();
 }
 
-BSPAudio::BSPAudio( const BSP* bsp_ ) :
-  bsp( bsp_ )
+BSPAudio::BSPAudio(const BSP* bsp_) :
+  bsp(bsp_)
 {
-  for( int sound : bsp->sounds ) {
-    context.requestSound( sound );
+  for (int sound : bsp->sounds) {
+    context.requestSound(sound);
   }
 }
 
 BSPAudio::~BSPAudio()
 {
-  for( int sound : bsp->sounds ) {
-    context.releaseSound( sound );
+  for (int sound : bsp->sounds) {
+    context.releaseSound(sound);
   }
 }
 
-void BSPAudio::play( const Struct* str ) const
+void BSPAudio::play(const Struct* str) const
 {
-  if( str->life == 0.0f && str->demolishing == 0.0f ) {
+  if (str->life == 0.0f && str->demolishing == 0.0f) {
     int demolishSound = str->bsp->demolishSound;
 
-    if( demolishSound >= 0 ) {
-      playDemolish( str, demolishSound );
+    if (demolishSound >= 0) {
+      playDemolish(str, demolishSound);
     }
   }
 
-  for( const Entity& entity : str->entities ) {
-    if( entity.state == Entity::OPENING ) {
-      if( entity.time == 0.0f && entity.clazz->openSound >= 0 ) {
-        playSound( &entity, entity.clazz->openSound );
+  for (const Entity& entity : str->entities) {
+    if (entity.state == Entity::OPENING) {
+      if (entity.time == 0.0f && entity.clazz->openSound >= 0) {
+        playSound(&entity, entity.clazz->openSound);
       }
-      if( entity.clazz->frictSound >= 0 ) {
-        playContSound( &entity, entity.clazz->frictSound );
+      if (entity.clazz->frictSound >= 0) {
+        playContSound(&entity, entity.clazz->frictSound);
       }
     }
-    else if( entity.state == Entity::CLOSING ) {
-      if( entity.time == 0.0f && entity.clazz->closeSound >= 0 ) {
-        playSound( &entity, entity.clazz->closeSound );
+    else if (entity.state == Entity::CLOSING) {
+      if (entity.time == 0.0f && entity.clazz->closeSound >= 0) {
+        playSound(&entity, entity.clazz->closeSound);
       }
-      if( entity.clazz->frictSound >= 0 ) {
-        playContSound( &entity, entity.clazz->frictSound );
+      if (entity.clazz->frictSound >= 0) {
+        playContSound(&entity, entity.clazz->frictSound);
       }
     }
   }

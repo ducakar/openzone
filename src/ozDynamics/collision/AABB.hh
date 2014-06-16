@@ -55,41 +55,41 @@ public:
    * Create `AABB` with a given centre and extents.
    */
   OZ_ALWAYS_INLINE
-  explicit AABB( const Point& p_, const Vec3& dim_ ) :
-    p( p_ ), dim( dim_ )
+  explicit AABB(const Point& p_, const Vec3& dim_) :
+    p(p_), dim(dim_)
   {}
 
   /**
    * Create `AABB` enlarged for margin `eps` (can also be negative).
    */
   OZ_ALWAYS_INLINE
-  explicit AABB( const AABB& a, float eps ) :
-    p( a.p ), dim( a.dim + Vec3( eps, eps, eps ) )
+  explicit AABB(const AABB& a, float eps) :
+    p(a.p), dim(a.dim + Vec3(eps, eps, eps))
   {}
 
   /**
    * Translated `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB operator + ( const Vec3& v ) const
+  AABB operator + (const Vec3& v) const
   {
-    return AABB( p + v, dim );
+    return AABB(p + v, dim);
   }
 
   /**
    * Translated `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB operator - ( const Vec3& v ) const
+  AABB operator - (const Vec3& v) const
   {
-    return AABB( p - v, dim );
+    return AABB(p - v, dim);
   }
 
   /**
    * Translate `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB& operator += ( const Vec3& v )
+  AABB& operator += (const Vec3& v)
   {
     p += v;
     return *this;
@@ -99,7 +99,7 @@ public:
    * Translate `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB& operator -= ( const Vec3& v )
+  AABB& operator -= (const Vec3& v)
   {
     p -= v;
     return *this;
@@ -112,10 +112,10 @@ public:
    * @param eps margin for which this `AABB` is enlarged (can also be negative).
    */
   OZ_ALWAYS_INLINE
-  bool includes( const Point& point, float eps = 0.0f ) const
+  bool includes(const Point& point, float eps = 0.0f) const
   {
-    Vec3 relPos = abs( point - p );
-    Vec3 sumDim = dim + Vec3( eps, eps, eps );
+    Vec3 relPos = abs(point - p);
+    Vec3 sumDim = dim + Vec3(eps, eps, eps);
 
     return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
   }
@@ -127,10 +127,10 @@ public:
    * @param eps margin for which this `AABB` is enlarged (can also be negative).
    */
   OZ_ALWAYS_INLINE
-  bool includes( const AABB& a, float eps = 0.0f ) const
+  bool includes(const AABB& a, float eps = 0.0f) const
   {
-    Vec3 relPos = abs( a.p - p );
-    Vec3 sumDim = abs( dim - a.dim ) + Vec3( eps, eps, eps );
+    Vec3 relPos = abs(a.p - p);
+    Vec3 sumDim = abs(dim - a.dim) + Vec3(eps, eps, eps);
 
     return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
   }
@@ -142,10 +142,10 @@ public:
    * @param eps margin for which this `AABB` is enlarged (can also be negative).
    */
   OZ_ALWAYS_INLINE
-  bool overlaps( const AABB& a, float eps = 0.0f ) const
+  bool overlaps(const AABB& a, float eps = 0.0f) const
   {
-    Vec3 relPos = abs( a.p - p );
-    Vec3 sumDim = dim + a.dim + Vec3( eps, eps, eps );
+    Vec3 relPos = abs(a.p - p);
+    Vec3 sumDim = dim + a.dim + Vec3(eps, eps, eps);
 
     return relPos.x <= sumDim.x && relPos.y <= sumDim.y && relPos.z <= sumDim.z;
   }

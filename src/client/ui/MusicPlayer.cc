@@ -35,115 +35,115 @@ namespace client
 namespace ui
 {
 
-void MusicPlayer::prevTrack( Button* sender )
+void MusicPlayer::prevTrack(Button* sender)
 {
-  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
+  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
   int nTracks = liber.musicTracks.length();
 
-  if( nTracks != 0 ) {
-    musicPlayer->currentTrack = ( musicPlayer->currentTrack + nTracks - 1 ) % nTracks;
+  if (nTracks != 0) {
+    musicPlayer->currentTrack = (musicPlayer->currentTrack + nTracks - 1) % nTracks;
 
-    sound.playMusic( musicPlayer->currentTrack );
+    sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->title.setText( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
+    musicPlayer->title.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
 }
 
-void MusicPlayer::nextTrack( Button* sender )
+void MusicPlayer::nextTrack(Button* sender)
 {
-  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
+  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
   int nTracks = liber.musicTracks.length();
 
-  if( nTracks != 0 ) {
-    musicPlayer->currentTrack = ( musicPlayer->currentTrack + 1 ) % nTracks;
+  if (nTracks != 0) {
+    musicPlayer->currentTrack = (musicPlayer->currentTrack + 1) % nTracks;
 
-    sound.playMusic( musicPlayer->currentTrack );
+    sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->title.setText( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
+    musicPlayer->title.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
 }
 
-void MusicPlayer::playTrack( Button* sender )
+void MusicPlayer::playTrack(Button* sender)
 {
-  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
+  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
   int nTracks = liber.musicTracks.length();
 
-  if( nTracks != 0 ) {
-    sound.playMusic( musicPlayer->currentTrack );
+  if (nTracks != 0) {
+    sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->title.setText( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
+    musicPlayer->title.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
 }
 
-void MusicPlayer::stopTrack( Button* sender )
+void MusicPlayer::stopTrack(Button* sender)
 {
-  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
+  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
 
   sound.stopMusic();
 
-  musicPlayer->title.setText( " " );
+  musicPlayer->title.setText(" ");
   musicPlayer->isPlaying = false;
 }
 
-void MusicPlayer::volumeDown( Button* sender )
+void MusicPlayer::volumeDown(Button* sender)
 {
-  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
+  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
 
-  musicPlayer->volume = max( musicPlayer->volume - 1, 0 );
-  musicPlayer->volumeLabel.setText( "%d", musicPlayer->volume );
+  musicPlayer->volume = max(musicPlayer->volume - 1, 0);
+  musicPlayer->volumeLabel.setText("%d", musicPlayer->volume);
 
-  sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
+  sound.setMusicVolume(float(musicPlayer->volume) / 10.0f);
 }
 
-void MusicPlayer::volumeUp( Button* sender )
+void MusicPlayer::volumeUp(Button* sender)
 {
-  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
+  MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
 
-  musicPlayer->volume = min( musicPlayer->volume + 1, 10 );
-  musicPlayer->volumeLabel.setText( "%d", musicPlayer->volume );
+  musicPlayer->volume = min(musicPlayer->volume + 1, 10);
+  musicPlayer->volumeLabel.setText("%d", musicPlayer->volume);
 
-  sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
+  sound.setMusicVolume(float(musicPlayer->volume) / 10.0f);
 }
 
 void MusicPlayer::onUpdate()
 {
   const Bot* bot = camera.botObj;
 
-  if( camera.state == Camera::UNIT && ( bot == nullptr || ( bot->state & Bot::DEAD_BIT ) ||
-        !bot->hasAttribute( ObjectClass::MUSIC_PLAYER_BIT ) ) )
+  if (camera.state == Camera::UNIT && (bot == nullptr || (bot->state & Bot::DEAD_BIT) ||
+                                       !bot->hasAttribute(ObjectClass::MUSIC_PLAYER_BIT)))
   {
-    if( isPlaying ) {
+    if (isPlaying) {
       isPlaying = false;
-      title.setText( " " );
+      title.setText(" ");
       sound.stopMusic();
     }
 
-    show( false );
+    show(false);
     return;
   }
-  else if( mouse.doShow ) {
-    show( true );
+  else if (mouse.doShow) {
+    show(true);
   }
 
   int soundTrack = sound.getCurrentTrack();
-  if( isPlaying && soundTrack != currentTrack ) {
-    if( soundTrack == -1 ) {
+  if (isPlaying && soundTrack != currentTrack) {
+    if (soundTrack == -1) {
       // Go to the next track.
       int nTracks = liber.musicTracks.length();
 
-      if( nTracks > 0 ) {
-        currentTrack = ( currentTrack + 1 ) % nTracks;
+      if (nTracks > 0) {
+        currentTrack = (currentTrack + 1) % nTracks;
 
-        sound.playMusic( currentTrack );
+        sound.playMusic(currentTrack);
 
-        title.setText( "%s", liber.musicTracks[currentTrack].name.cstr() );
-        trackLabel.setText( "%d", currentTrack + 1 );
+        title.setText("%s", liber.musicTracks[currentTrack].name.cstr());
+        trackLabel.setText("%d", currentTrack + 1);
       }
     }
   }
@@ -153,31 +153,31 @@ void MusicPlayer::onDraw()
 {
   Frame::onDraw();
 
-  title.draw( this );
-  trackLabel.draw( this );
-  volumeLabel.draw( this );
+  title.draw(this);
+  trackLabel.draw(this);
+  volumeLabel.draw(this);
 }
 
 MusicPlayer::MusicPlayer() :
-  Frame( 240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
-  title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
-  trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
-  volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "5" ),
-  currentTrack( 0 ), volume( 5 ), isPlaying( false )
+  Frame(240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT("Music Player")),
+  title(width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " "),
+  trackLabel(39, 14, ALIGN_CENTRE, Font::SMALL, "0"),
+  volumeLabel(201, 14, ALIGN_CENTRE, Font::SMALL, "5"),
+  currentTrack(0), volume(5), isPlaying(false)
 {
   flags |= UPDATE_BIT;
 
-  if( liber.musicTracks.length() > 0 ) {
-    trackLabel.setText( "1" );
+  if (liber.musicTracks.length() > 0) {
+    trackLabel.setText("1");
   }
-  sound.setMusicVolume( 0.5f );
+  sound.setMusicVolume(0.5f);
 
-  add( new Button( "-", volumeDown, 20, 20 ), 4, 4 );
-  add( new Button( "<<", prevTrack, 30, 20 ), 54, 4 );
-  add( new Button( ">", playTrack, 30, 20 ), 88, 4 );
-  add( new Button( "x", stopTrack, 30, 20 ), 122, 4 );
-  add( new Button( ">>", nextTrack, 30, 20 ), 156, 4 );
-  add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
+  add(new Button("-",  volumeDown, 20, 20),   4, 4);
+  add(new Button("<<", prevTrack,  30, 20),  54, 4);
+  add(new Button(">",  playTrack,  30, 20),  88, 4);
+  add(new Button("x",  stopTrack,  30, 20), 122, 4);
+  add(new Button(">>", nextTrack,  30, 20), 156, 4);
+  add(new Button("+",  volumeUp,   20, 20), 216, 4);
 }
 
 MusicPlayer::~MusicPlayer()

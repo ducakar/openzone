@@ -42,27 +42,27 @@ public:
   int   nRounds;
   float shotTime;
 
-  void trigger( Bot* user );
+  void trigger(Bot* user);
 
 protected:
 
-  bool onUse( Bot* user ) override;
+  bool onUse(Bot* user) override;
   void onUpdate() override;
   float getStatus() const override;
 
 public:
 
-  explicit Weapon( const WeaponClass* clazz, int index, const Point& p, Heading heading );
-  explicit Weapon( const WeaponClass* clazz, int index, const JSON& json );
-  explicit Weapon( const WeaponClass* clazz, InputStream* is );
+  explicit Weapon(const WeaponClass* clazz, int index, const Point& p, Heading heading);
+  explicit Weapon(const WeaponClass* clazz, int index, const JSON& json);
+  explicit Weapon(const WeaponClass* clazz, InputStream* is);
 
   JSON write() const override;
-  void write( OutputStream* os ) const override;
+  void write(OutputStream* os) const override;
 
-  void readUpdate( InputStream* is ) override;
-  void writeUpdate( OutputStream* os ) const override;
+  void readUpdate(InputStream* is) override;
+  void writeUpdate(OutputStream* os) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

@@ -34,66 +34,66 @@ namespace ui
 
 static const SDL_Colour SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
-void Font::sizeOf( const char* s, int* width, int* height ) const
+void Font::sizeOf(const char* s, int* width, int* height) const
 {
-  TTF_SizeUTF8( handle, s, width, height );
+  TTF_SizeUTF8(handle, s, width, height);
 }
 
-void Font::upload( const char* s, int* width, int* height ) const
+void Font::upload(const char* s, int* width, int* height) const
 {
   SDL_Surface* surf = nullptr;
 
-  if( width != nullptr && *width > 0 ) {
-    surf = TTF_RenderUTF8_Blended_Wrapped( handle, s, SDL_COLOUR_WHITE, uint( *width ) );
+  if (width != nullptr && *width > 0) {
+    surf = TTF_RenderUTF8_Blended_Wrapped(handle, s, SDL_COLOUR_WHITE, uint(*width));
   }
   else {
-    surf = TTF_RenderUTF8_Blended( handle, s, SDL_COLOUR_WHITE );
+    surf = TTF_RenderUTF8_Blended(handle, s, SDL_COLOUR_WHITE);
   }
 
-  if( surf == nullptr ) {
-    OZ_ERROR( "Failed to generate texture from text: %s", s );
+  if (surf == nullptr) {
+    OZ_ERROR("Failed to generate texture from text: %s", s);
   }
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, surf->w, surf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                surf->pixels );
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf->w, surf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               surf->pixels);
 
-  if( width != nullptr ) {
+  if (width != nullptr) {
     *width = surf->w;
   }
-  if( height != nullptr ) {
+  if (height != nullptr) {
     *height = surf->h;
   }
 
-  SDL_FreeSurface( surf );
+  SDL_FreeSurface(surf);
 }
 
-void Font::init( const char* name, int height_ )
+void Font::init(const char* name, int height_)
 {
   height = height_;
 
-  File file = String::str( "@ui/font/%s.ttf", name );
+  File file = String::str("@ui/font/%s.ttf", name);
 
   buffer = file.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Failed to read font file '%s'", file.path().cstr() );
+  if (buffer.isEmpty()) {
+    OZ_ERROR("Failed to read font file '%s'", file.path().cstr());
   }
 
-  SDL_RWops* rwOps = SDL_RWFromConstMem( buffer.begin(), buffer.length() );
+  SDL_RWops* rwOps = SDL_RWFromConstMem(buffer.begin(), buffer.length());
 
-  handle = TTF_OpenFontRW( rwOps, true, height );
-  if( handle == nullptr ) {
-    OZ_ERROR( "%s", TTF_GetError() );
+  handle = TTF_OpenFontRW(rwOps, true, height);
+  if (handle == nullptr) {
+    OZ_ERROR("%s", TTF_GetError());
   }
 }
 
 void Font::destroy()
 {
-  if( handle != nullptr ) {
-    TTF_CloseFont( handle );
+  if (handle != nullptr) {
+    TTF_CloseFont(handle);
     handle = nullptr;
   }
 
-  buffer.resize( 0 );
+  buffer.resize(0);
 }
 
 }

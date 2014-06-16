@@ -49,7 +49,7 @@ private:
 
 protected:
 
-  void onVisibilityChange( bool doShow ) override;
+  void onVisibilityChange(bool doShow) override;
   void onUpdate() override;
   void onDraw() override;
 

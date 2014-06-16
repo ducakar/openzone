@@ -30,19 +30,19 @@ namespace oz
 
 void Terra::reset()
 {
-  load( -1 );
+  load(-1);
 }
 
-void Terra::load( int id_ )
+void Terra::load(int id_)
 {
   id = id_;
 
-  if( id < 0 ) {
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
+  if (id < 0) {
+    for (int x = 0; x < VERTS; ++x) {
+      for (int y = 0; y < VERTS; ++y) {
         quads[x][y].vertex.z     = 0.0f;
-        quads[x][y].triNormal[0] = Vec3( 0.0f, 0.0f, 1.0f );
-        quads[x][y].triNormal[1] = Vec3( 0.0f, 0.0f, 1.0f );
+        quads[x][y].triNormal[0] = Vec3(0.0f, 0.0f, 1.0f);
+        quads[x][y].triNormal[1] = Vec3(0.0f, 0.0f, 1.0f);
       }
     }
   }
@@ -50,84 +50,84 @@ void Terra::load( int id_ )
     const String& name = liber.terrae[id].name;
     const String& path = liber.terrae[id].path;
 
-    Log::print( "Loading terrain '%s' ...", name.cstr() );
+    Log::print("Loading terrain '%s' ...", name.cstr());
 
     File file = path;
-    InputStream is = file.inputStream( Endian::LITTLE );
+    InputStream is = file.inputStream(Endian::LITTLE);
 
-    if( !is.isAvailable() ) {
-      OZ_ERROR( "Cannot read terra file '%s'", file.path().cstr() );
+    if (!is.isAvailable()) {
+      OZ_ERROR("Cannot read terra file '%s'", file.path().cstr());
     }
 
     int max = is.readInt();
-    if( max != VERTS ) {
-      OZ_ERROR( "Invalid dimension %d, should be %d", max, VERTS );
+    if (max != VERTS) {
+      OZ_ERROR("Invalid dimension %d, should be %d", max, VERTS);
     }
 
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
+    for (int x = 0; x < VERTS; ++x) {
+      for (int y = 0; y < VERTS; ++y) {
         quads[x][y].vertex.z = is.readFloat();
       }
     }
 
-    for( int x = 0; x < QUADS; ++x ) {
-      for( int y = 0; y < QUADS; ++y ) {
-        if( x != QUADS && y != QUADS ) {
+    for (int x = 0; x < QUADS; ++x) {
+      for (int y = 0; y < QUADS; ++y) {
+        if (x != QUADS && y != QUADS) {
           const Point& a = quads[x    ][y    ].vertex;
           const Point& b = quads[x + 1][y    ].vertex;
           const Point& c = quads[x + 1][y + 1].vertex;
           const Point& d = quads[x    ][y + 1].vertex;
 
-          quads[x][y].triNormal[0] = ~( ( c - b ) ^ ( a - b ) );
-          quads[x][y].triNormal[1] = ~( ( a - d ) ^ ( c - d ) );
+          quads[x][y].triNormal[0] = ~((c - b) ^ (a - b));
+          quads[x][y].triNormal[1] = ~((a - d) ^ (c - d));
         }
       }
     }
 
     liquid = is.readInt();
 
-    Log::printEnd( " OK" );
+    Log::printEnd(" OK");
   }
 }
 
 void Terra::init()
 {
-  for( int x = 0; x < VERTS; ++x ) {
-    for( int y = 0; y < VERTS; ++y ) {
-      quads[x][y].vertex.x = float( x * Quad::SIZE - DIM );
-      quads[x][y].vertex.y = float( y * Quad::SIZE - DIM );
+  for (int x = 0; x < VERTS; ++x) {
+    for (int y = 0; y < VERTS; ++y) {
+      quads[x][y].vertex.x = float(x * Quad::SIZE - DIM);
+      quads[x][y].vertex.y = float(y * Quad::SIZE - DIM);
     }
   }
 }
 
-void Terra::read( const JSON& json )
+void Terra::read(const JSON& json)
 {
-  int id = liber.terraIndex( json["name"].get( "" ) );
+  int id = liber.terraIndex(json["name"].get(""));
 
-  load( id );
+  load(id);
 }
 
-void Terra::read( InputStream* is )
+void Terra::read(InputStream* is)
 {
-  int id = liber.terraIndex( is->readString() );
+  int id = liber.terraIndex(is->readString());
 
-  load( id );
+  load(id);
 }
 
 JSON Terra::write() const
 {
   const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
 
-  JSON json( JSON::OBJECT );
-  json.add( "name", name );
+  JSON json(JSON::OBJECT);
+  json.add("name", name);
   return json;
 }
 
-void Terra::write( OutputStream* os ) const
+void Terra::write(OutputStream* os) const
 {
   const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
 
-  os->writeString( name );
+  os->writeString(name);
 }
 
 }

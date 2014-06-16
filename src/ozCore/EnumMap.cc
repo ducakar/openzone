@@ -34,12 +34,12 @@ namespace oz
 namespace detail
 {
 
-EnumMapImpl::EnumMapImpl( InitialiserList<Entry> l ) :
-  entries( new Entry[ l.size() ] ), nEntries( int( l.size() ) )
+EnumMapImpl::EnumMapImpl(InitialiserList<Entry> l) :
+  entries(new Entry[l.size()]), nEntries(int(l.size()))
 {
-  hard_assert( l.size() != 0 );
+  hard_assert(l.size() != 0);
 
-  aCopy<Entry>( l.begin(), int( l.size() ), entries );
+  aCopy<Entry>(l.begin(), int(l.size()), entries);
 }
 
 EnumMapImpl::~EnumMapImpl()
@@ -57,46 +57,46 @@ const char* EnumMapImpl::defaultName() const
   return entries[0].name;
 }
 
-bool EnumMapImpl::has( int value ) const
+bool EnumMapImpl::has(int value) const
 {
-  for( int i = 0; i < nEntries; ++i ) {
-    if( entries[i].value == value ) {
+  for (int i = 0; i < nEntries; ++i) {
+    if (entries[i].value == value) {
       return true;
     }
   }
   return false;
 }
 
-bool EnumMapImpl::has( const char* name ) const
+bool EnumMapImpl::has(const char* name) const
 {
-  for( int i = 0; i < nEntries; ++i ) {
-    if( String::equals( entries[i].name, name ) ) {
+  for (int i = 0; i < nEntries; ++i) {
+    if (String::equals(entries[i].name, name)) {
       return true;
     }
   }
   return false;
 }
 
-const char* EnumMapImpl::operator [] ( int value ) const
+const char* EnumMapImpl::operator [](int value) const
 {
-  for( int i = 0; i < nEntries; ++i ) {
-    if( entries[i].value == value ) {
+  for (int i = 0; i < nEntries; ++i) {
+    if (entries[i].value == value) {
       return entries[i].name;
     }
   }
 
-  OZ_ERROR( "oz::EnumMap: Invalid value %d", value );
+  OZ_ERROR("oz::EnumMap: Invalid value %d", value);
 }
 
-int EnumMapImpl::operator[] ( const char* name ) const
+int EnumMapImpl::operator[](const char* name) const
 {
-  for( int i = 0; i < nEntries; ++i ) {
-    if( String::equals( entries[i].name, name ) ) {
+  for (int i = 0; i < nEntries; ++i) {
+    if (String::equals(entries[i].name, name)) {
       return entries[i].value;
     }
   }
 
-  OZ_ERROR( "oz::EnumMap: Invalid name '%s'", name );
+  OZ_ERROR("oz::EnumMap: Invalid name '%s'", name);
 }
 
 }

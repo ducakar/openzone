@@ -47,36 +47,36 @@ static bool                isInitialised = false;
 
 static void ensureInitialised()
 {
-  if( isInitialised ) {
+  if (isInitialised) {
     return;
   }
 
-  plainsFinal.SetSourceModule( 0, plainsBase );
-  mountainsFinal.SetSourceModule( 0, mountainsBase );
+  plainsFinal.SetSourceModule(0, plainsBase);
+  mountainsFinal.SetSourceModule(0, mountainsBase);
 
-  combiner.SetSourceModule( 0, plainsFinal );
-  combiner.SetSourceModule( 1, mountainsFinal );
-  combiner.SetControlModule( terrainType );
+  combiner.SetSourceModule(0, plainsFinal);
+  combiner.SetSourceModule(1, mountainsFinal);
+  combiner.SetControlModule(terrainType);
 
-  turbulence.SetSourceModule( 0, combiner );
+  turbulence.SetSourceModule(0, combiner);
 
-  noiseFinal.SetSourceModule( 0, noiseBase );
+  noiseFinal.SetSourceModule(0, noiseBase);
 
   isInitialised = true;
 }
 
-static float genHeight( double x, double y )
+static float genHeight(double x, double y)
 {
-  double height = combiner.GetValue( x, y, 1.0 );
-  return float( height );
+  double height = combiner.GetValue(x, y, 1.0);
+  return float(height);
 }
 
-static uint getColour( double x, double y )
+static uint getColour(double x, double y)
 {
-  float height = float( turbulence.GetValue( x, y, 1.0 ) );
-  float detail = float( noiseFinal.GetValue( x, y, 1.0 ) );
+  float height = float(turbulence.GetValue(x, y, 1.0));
+  float detail = float(noiseFinal.GetValue(x, y, 1.0));
 
-  if( gradientPoints.isEmpty() ) {
+  if (gradientPoints.isEmpty()) {
     return 0xff000000;
   }
 
@@ -84,49 +84,49 @@ static uint getColour( double x, double y )
   const Vec4* top    = &gradientPoints.last();
   float       t      = 0.0f;
 
-  for( int i = 0; i < gradientPoints.length(); ++i ) {
-    if( gradientPoints[i].w > height ) {
-      bottom = &gradientPoints[ max( i - 1, 0 ) ];
+  for (int i = 0; i < gradientPoints.length(); ++i) {
+    if (gradientPoints[i].w > height) {
+      bottom = &gradientPoints[max(i - 1, 0)];
       top    = &gradientPoints[i];
 
-      if( bottom != top ) {
-        t = ( height - bottom->w ) / ( top->w - bottom->w );
-        t = clamp( t, 0.0f, 1.0f );
+      if (bottom != top) {
+        t = (height - bottom->w) / (top->w - bottom->w);
+        t = clamp(t, 0.0f, 1.0f);
       }
       break;
     }
   }
 
-  Vec4 baseColour = Math::mix( *bottom, *top, t );
-  Vec4 noise      = Vec4( detail, detail, detail, 1.0f );
-  Vec4 colour     = clamp( baseColour + noise, Vec4::ID, Vec4::ONE );
+  Vec4 baseColour = Math::mix(*bottom, *top, t);
+  Vec4 noise      = Vec4(detail, detail, detail, 1.0f);
+  Vec4 colour     = clamp(baseColour + noise, Vec4::ID, Vec4::ONE);
 
-  uint red   = uint( 255.0f * colour.x );
-  uint green = uint( 255.0f * colour.y );
-  uint blue  = uint( 255.0f * colour.z );
+  uint red   = uint(255.0f * colour.x);
+  uint green = uint(255.0f * colour.y);
+  uint blue  = uint(255.0f * colour.z);
 
-  return 0xff000000 | red | ( green << 8 ) | ( blue << 16 );
+  return 0xff000000 | red | (green << 8) | (blue << 16);
 }
 
-bool TerraBuilder::setBounds( Module module, float bottomHeight, float topHeight )
+bool TerraBuilder::setBounds(Module module, float bottomHeight, float topHeight)
 {
-  double bias  = ( bottomHeight + topHeight ) / 2.0;
-  double scale = ( topHeight - bottomHeight ) / 2.0;
+  double bias  = (bottomHeight + topHeight) / 2.0;
+  double scale = (topHeight - bottomHeight) / 2.0;
 
-  switch( module ) {
+  switch (module) {
     case PLAINS: {
-      plainsFinal.SetBias( bias );
-      plainsFinal.SetScale( scale );
+      plainsFinal.SetBias(bias);
+      plainsFinal.SetScale(scale);
       return true;
     }
     case MOUNTAINS: {
-      mountainsFinal.SetBias( bias );
-      mountainsFinal.SetScale( scale );
+      mountainsFinal.SetBias(bias);
+      mountainsFinal.SetScale(scale);
       return true;
     }
     case NOISE: {
-      noiseFinal.SetBias( bias );
-      noiseFinal.SetScale( scale );
+      noiseFinal.SetBias(bias);
+      noiseFinal.SetScale(scale);
       return true;
     }
     default: {
@@ -135,49 +135,49 @@ bool TerraBuilder::setBounds( Module module, float bottomHeight, float topHeight
   }
 }
 
-bool TerraBuilder::setSeed( Module module, int seed )
+bool TerraBuilder::setSeed(Module module, int seed)
 {
-  switch( module ) {
+  switch (module) {
     case PLAINS: {
-      plainsBase.SetSeed( seed );
+      plainsBase.SetSeed(seed);
       return true;
     }
     case MOUNTAINS: {
-      mountainsBase.SetSeed( seed );
+      mountainsBase.SetSeed(seed);
       return true;
     }
     case COMBINER: {
-      terrainType.SetSeed( seed );
+      terrainType.SetSeed(seed);
       return true;
     }
     case TURBULENCE: {
-      turbulence.SetSeed( seed );
+      turbulence.SetSeed(seed);
       return true;
     }
     default: {
-      noiseBase.SetSeed( seed );
+      noiseBase.SetSeed(seed);
       return true;
     }
   }
 }
 
-bool TerraBuilder::setOctaveCount( Module module, int count )
+bool TerraBuilder::setOctaveCount(Module module, int count)
 {
-  switch( module ) {
+  switch (module) {
     case PLAINS: {
-      plainsBase.SetOctaveCount( count );
+      plainsBase.SetOctaveCount(count);
       return true;
     }
     case MOUNTAINS: {
-      mountainsBase.SetOctaveCount( count );
+      mountainsBase.SetOctaveCount(count);
       return true;
     }
     case COMBINER: {
-      terrainType.SetOctaveCount( count );
+      terrainType.SetOctaveCount(count);
       return true;
     }
     case NOISE: {
-      noiseBase.SetOctaveCount( count );
+      noiseBase.SetOctaveCount(count);
       return true;
     }
     default: {
@@ -186,11 +186,11 @@ bool TerraBuilder::setOctaveCount( Module module, int count )
   }
 }
 
-bool TerraBuilder::setRoughness( Module module, int roughness )
+bool TerraBuilder::setRoughness(Module module, int roughness)
 {
-  switch( module ) {
+  switch (module) {
     case TURBULENCE: {
-      turbulence.SetRoughness( roughness );
+      turbulence.SetRoughness(roughness);
       return true;
     }
     default: {
@@ -199,45 +199,45 @@ bool TerraBuilder::setRoughness( Module module, int roughness )
   }
 }
 
-bool TerraBuilder::setFrequency( Module module, float frequency )
+bool TerraBuilder::setFrequency(Module module, float frequency)
 {
-  switch( module ) {
+  switch (module) {
     case PLAINS: {
-      plainsBase.SetFrequency( frequency );
+      plainsBase.SetFrequency(frequency);
       return true;
     }
     case MOUNTAINS: {
-      mountainsBase.SetFrequency( frequency );
+      mountainsBase.SetFrequency(frequency);
       return true;
     }
     case COMBINER: {
-      terrainType.SetFrequency( frequency );
+      terrainType.SetFrequency(frequency);
       return true;
     }
     case TURBULENCE: {
-      turbulence.SetFrequency( frequency );
+      turbulence.SetFrequency(frequency);
       return true;
     }
     default: {
-      noiseBase.SetFrequency( frequency );
+      noiseBase.SetFrequency(frequency);
       return true;
     }
   }
 }
 
-bool TerraBuilder::setPersistence( Module module, float persistence )
+bool TerraBuilder::setPersistence(Module module, float persistence)
 {
-  switch( module ) {
+  switch (module) {
     case PLAINS: {
-      plainsBase.SetPersistence( persistence );
+      plainsBase.SetPersistence(persistence);
       return true;
     }
     case COMBINER: {
-      terrainType.SetPersistence( persistence );
+      terrainType.SetPersistence(persistence);
       return true;
     }
     case NOISE: {
-      noiseBase.SetPersistence( persistence );
+      noiseBase.SetPersistence(persistence);
       return true;
     }
     default: {
@@ -246,11 +246,11 @@ bool TerraBuilder::setPersistence( Module module, float persistence )
   }
 }
 
-bool TerraBuilder::setPower( Module module, float power )
+bool TerraBuilder::setPower(Module module, float power)
 {
-  switch( module ) {
+  switch (module) {
     case TURBULENCE: {
-      turbulence.SetPower( power );
+      turbulence.SetPower(power);
       return true;
     }
     default: {
@@ -259,17 +259,17 @@ bool TerraBuilder::setPower( Module module, float power )
   }
 }
 
-void TerraBuilder::setMountainsControl( Module module )
+void TerraBuilder::setMountainsControl(Module module)
 {
   ensureInitialised();
 
-  switch( module ) {
+  switch (module) {
     case PLAINS: {
-      combiner.SetControlModule( plainsBase );
+      combiner.SetControlModule(plainsBase);
       break;
     }
     case COMBINER: {
-      combiner.SetControlModule( terrainType );
+      combiner.SetControlModule(terrainType);
       break;
     }
     default: {
@@ -278,19 +278,19 @@ void TerraBuilder::setMountainsControl( Module module )
   }
 }
 
-void TerraBuilder::setMountainsBounds( float lower, float upper )
+void TerraBuilder::setMountainsBounds(float lower, float upper)
 {
-  combiner.SetBounds( lower, upper );
+  combiner.SetBounds(lower, upper);
 }
 
-void TerraBuilder::setEdgeFalloff( float falloff )
+void TerraBuilder::setEdgeFalloff(float falloff)
 {
-  combiner.SetEdgeFalloff( falloff );
+  combiner.SetEdgeFalloff(falloff);
 }
 
-void TerraBuilder::addGradientPoint( const Vec4& point )
+void TerraBuilder::addGradientPoint(const Vec4& point)
 {
-  gradientPoints.add( point );
+  gradientPoints.add(point);
 }
 
 void TerraBuilder::clearGradient()
@@ -299,7 +299,7 @@ void TerraBuilder::clearGradient()
   gradientPoints.trim();
 }
 
-float* TerraBuilder::generateHeightmap( int width, int height )
+float* TerraBuilder::generateHeightmap(int width, int height)
 {
   ensureInitialised();
 
@@ -307,40 +307,40 @@ float* TerraBuilder::generateHeightmap( int width, int height )
   double dWidth    = width;
   double dHeight   = height;
 
-  for( int x = 0; x < width; ++x ) {
-    for( int y = 0; y < height; ++y ) {
-      heightmap[x * height + y] = genHeight( x / dWidth, y / dHeight );
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
+      heightmap[x * height + y] = genHeight(x / dWidth, y / dHeight);
     }
   }
   return heightmap;
 }
 
-ImageData TerraBuilder::generateImage( int width, int height )
+ImageData TerraBuilder::generateImage(int width, int height)
 {
   ensureInitialised();
 
-  ImageData  image( width, height );
+  ImageData  image(width, height);
   int    pitch   = width * 4;
   double dWidth  = width;
   double dHeight = height;
 
-  for( int y = 0; y < height; ++y ) {
+  for (int y = 0; y < height; ++y) {
     char* pixels = &image.pixels[y * pitch];
 
-    for( int x = 0; x < width; ++x ) {
-      uint pixelColour = getColour( x / dWidth, 1.0 - y / dHeight );
+    for (int x = 0; x < width; ++x) {
+      uint pixelColour = getColour(x / dWidth, 1.0 - y / dHeight);
 
-      pixels[0] = char( pixelColour & 0xff );
-      pixels[1] = char( pixelColour >> 8 & 0xff );
-      pixels[2] = char( pixelColour >> 16 & 0xff );
-      pixels[3] = char( 255 );
+      pixels[0] = char(pixelColour & 0xff);
+      pixels[1] = char(pixelColour >> 8 & 0xff);
+      pixels[2] = char(pixelColour >> 16 & 0xff);
+      pixels[3] = char(255);
       pixels += 4;
     }
   }
   return image;
 }
 
-ImageData* TerraBuilder::generateCubeNoise( int size )
+ImageData* TerraBuilder::generateCubeNoise(int size)
 {
   ensureInitialised();
 
@@ -348,112 +348,112 @@ ImageData* TerraBuilder::generateCubeNoise( int size )
   double dim    = size / 2.0;
 
   ImageData* images = new ImageData[6] {
-    ImageData( size, size ),
-    ImageData( size, size ),
-    ImageData( size, size ),
-    ImageData( size, size ),
-    ImageData( size, size ),
-    ImageData( size, size ),
+    ImageData(size, size),
+    ImageData(size, size),
+    ImageData(size, size),
+    ImageData(size, size),
+    ImageData(size, size),
+    ImageData(size, size),
   };
 
   // +X.
-  for( int y = 0; y < size; ++y ) {
-    char* line = &images[0].pixels[ ( size - 1 - y ) * pitch ];
+  for (int y = 0; y < size; ++y) {
+    char* line = &images[0].pixels[(size - 1 - y) * pitch];
 
-    for( int x = 0; x < size; ++x ) {
-      double u      = x / ( dim - 0.5 );
-      double v      = y / ( dim - 0.5 );
-      double value  = noiseFinal.GetValue( +1.0, -1.0 + v, +1.0 - u );
-      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+    for (int x = 0; x < size; ++x) {
+      double u      = x / (dim - 0.5);
+      double v      = y / (dim - 0.5);
+      double value  = noiseFinal.GetValue(+1.0, -1.0 + v, +1.0 - u);
+      int    colour = clamp<int>(int(128.0 + 128.0 * value), 0, 255);
 
-      line[x * 4 + 0] = char( colour );
-      line[x * 4 + 1] = char( colour );
-      line[x * 4 + 2] = char( colour );
-      line[x * 4 + 3] = char( 255 );
+      line[x * 4 + 0] = char(colour);
+      line[x * 4 + 1] = char(colour);
+      line[x * 4 + 2] = char(colour);
+      line[x * 4 + 3] = char(255);
     }
   }
   // -X.
-  for( int y = 0; y < size; ++y ) {
-    char* line = &images[1].pixels[ ( size - 1 - y ) * pitch ];
+  for (int y = 0; y < size; ++y) {
+    char* line = &images[1].pixels[(size - 1 - y) * pitch];
 
-    for( int x = 0; x < size; ++x ) {
-      double u      = x / ( dim - 0.5 );
-      double v      = y / ( dim - 0.5 );
-      double value  = noiseFinal.GetValue( -1.0, -1.0 + v, -1.0 + u );
-      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+    for (int x = 0; x < size; ++x) {
+      double u      = x / (dim - 0.5);
+      double v      = y / (dim - 0.5);
+      double value  = noiseFinal.GetValue(-1.0, -1.0 + v, -1.0 + u);
+      int    colour = clamp<int>(int(128.0 + 128.0 * value), 0, 255);
 
-      line[x * 4 + 0] = char( colour );
-      line[x * 4 + 1] = char( colour );
-      line[x * 4 + 2] = char( colour );
-      line[x * 4 + 3] = char( 255 );
+      line[x * 4 + 0] = char(colour);
+      line[x * 4 + 1] = char(colour);
+      line[x * 4 + 2] = char(colour);
+      line[x * 4 + 3] = char(255);
     }
   }
 
   // +Y.
-  for( int y = 0; y < size; ++y ) {
-    char* line = &images[2].pixels[ ( size - 1 - y ) * pitch ];
+  for (int y = 0; y < size; ++y) {
+    char* line = &images[2].pixels[(size - 1 - y) * pitch];
 
-    for( int x = 0; x < size; ++x ) {
-      double u      = x / ( dim - 0.5 );
-      double v      = y / ( dim - 0.5 );
-      double value  = noiseFinal.GetValue( -1.0 + u, +1.0, +1.0 - v );
-      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+    for (int x = 0; x < size; ++x) {
+      double u      = x / (dim - 0.5);
+      double v      = y / (dim - 0.5);
+      double value  = noiseFinal.GetValue(-1.0 + u, +1.0, +1.0 - v);
+      int    colour = clamp<int>(int(128.0 + 128.0 * value), 0, 255);
 
-      line[x * 4 + 0] = char( colour );
-      line[x * 4 + 1] = char( colour );
-      line[x * 4 + 2] = char( colour );
-      line[x * 4 + 3] = char( 255 );
+      line[x * 4 + 0] = char(colour);
+      line[x * 4 + 1] = char(colour);
+      line[x * 4 + 2] = char(colour);
+      line[x * 4 + 3] = char(255);
     }
   }
 
   // -Y.
-  for( int y = 0; y < size; ++y ) {
-    char* line = &images[3].pixels[ ( size - 1 - y ) * pitch ];
+  for (int y = 0; y < size; ++y) {
+    char* line = &images[3].pixels[(size - 1 - y) * pitch];
 
-    for( int x = 0; x < size; ++x ) {
-      double u      = x / ( dim - 0.5 );
-      double v      = y / ( dim - 0.5 );
-      double value  = noiseFinal.GetValue( -1.0 + u, -1.0, -1.0 + v );
-      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+    for (int x = 0; x < size; ++x) {
+      double u      = x / (dim - 0.5);
+      double v      = y / (dim - 0.5);
+      double value  = noiseFinal.GetValue(-1.0 + u, -1.0, -1.0 + v);
+      int    colour = clamp<int>(int(128.0 + 128.0 * value), 0, 255);
 
-      line[x * 4 + 0] = char( colour );
-      line[x * 4 + 1] = char( colour );
-      line[x * 4 + 2] = char( colour );
-      line[x * 4 + 3] = char( 255 );
+      line[x * 4 + 0] = char(colour);
+      line[x * 4 + 1] = char(colour);
+      line[x * 4 + 2] = char(colour);
+      line[x * 4 + 3] = char(255);
     }
   }
 
   // +Z.
-  for( int y = 0; y < size; ++y ) {
-    char* line = &images[4].pixels[ ( size - 1 - y ) * pitch ];
+  for (int y = 0; y < size; ++y) {
+    char* line = &images[4].pixels[(size - 1 - y) * pitch];
 
-    for( int x = 0; x < size; ++x ) {
-      double u      = x / ( dim - 0.5 );
-      double v      = y / ( dim - 0.5 );
-      double value  = noiseFinal.GetValue( -1.0 + u, -1.0 + v, +1.0 );
-      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+    for (int x = 0; x < size; ++x) {
+      double u      = x / (dim - 0.5);
+      double v      = y / (dim - 0.5);
+      double value  = noiseFinal.GetValue(-1.0 + u, -1.0 + v, +1.0);
+      int    colour = clamp<int>(int(128.0 + 128.0 * value), 0, 255);
 
-      line[x * 4 + 0] = char( colour );
-      line[x * 4 + 1] = char( colour );
-      line[x * 4 + 2] = char( colour );
-      line[x * 4 + 3] = char( 255 );
+      line[x * 4 + 0] = char(colour);
+      line[x * 4 + 1] = char(colour);
+      line[x * 4 + 2] = char(colour);
+      line[x * 4 + 3] = char(255);
     }
   }
 
   // -Z.
-  for( int y = 0; y < size; ++y ) {
-    char* line = &images[5].pixels[ ( size - 1 - y ) * pitch ];
+  for (int y = 0; y < size; ++y) {
+    char* line = &images[5].pixels[(size - 1 - y) * pitch];
 
-    for( int x = 0; x < size; ++x ) {
-      double u      = x / ( dim - 0.5 );
-      double v      = y / ( dim - 0.5 );
-      double value  = noiseFinal.GetValue( +1.0 - u, -1.0 + v, -1.0 );
-      int    colour = clamp<int>( int( 128.0 + 128.0 * value ), 0, 255 );
+    for (int x = 0; x < size; ++x) {
+      double u      = x / (dim - 0.5);
+      double v      = y / (dim - 0.5);
+      double value  = noiseFinal.GetValue(+1.0 - u, -1.0 + v, -1.0);
+      int    colour = clamp<int>(int(128.0 + 128.0 * value), 0, 255);
 
-      line[x * 4 + 0] = char( colour );
-      line[x * 4 + 1] = char( colour );
-      line[x * 4 + 2] = char( colour );
-      line[x * 4 + 3] = char( 255 );
+      line[x * 4 + 0] = char(colour);
+      line[x * 4 + 1] = char(colour);
+      line[x * 4 + 2] = char(colour);
+      line[x * 4 + 3] = char(255);
     }
   }
 

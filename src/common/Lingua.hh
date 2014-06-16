@@ -35,8 +35,8 @@
  * translation from source. Unfortunately `xgettext` is not capable of recognising C++ constructs
  * like `oz::lingua.get()`, that's why we need this macro.
  */
-#define OZ_GETTEXT( s ) \
-  oz::lingua.get( s )
+#define OZ_GETTEXT(s) \
+  oz::lingua.get(s)
 
 namespace oz
 {
@@ -64,14 +64,14 @@ public:
    * that order). The first derived language code for which translations exist is returned.
    * If none is valid, an empty string is returned.
    */
-  static String detectLanguage( const char* language );
+  static String detectLanguage(const char* language);
 
   /**
    * Obtain translation from the loaded catalogue.
    */
-  const char* get( const char* message ) const
+  const char* get(const char* message) const
   {
-    return catalogue.get( message );
+    return catalogue.get(message);
   }
 
   /**
@@ -80,7 +80,7 @@ public:
    * This function loads catalogue from `mission/\<mission\>/lingua/\<language\>.ozCat` that
    * contains translations of strings that appear inside mission scripts.
    */
-  bool initMission( const char* mission );
+  bool initMission(const char* mission);
 
   /**
    * Clear per-mission Lingua instance.
@@ -96,7 +96,7 @@ public:
    * The global Lingua instance contains translations for strings that appear in the engine (UI) and
    * titles/descriptions of objects and structures from game data.
    */
-  bool init( const char* language );
+  bool init(const char* language);
 
   /**
    * Destroy global instance.

@@ -46,14 +46,14 @@ public:
 
   OZ_ALWAYS_INLINE
   explicit Polytope() :
-    Shape( POLYTOPE )
+    Shape(POLYTOPE)
   {}
 
   ~Polytope() override;
 
-  Bounds getBounds( const Point& pos, const Mat3& rot ) const override;
+  Bounds getBounds(const Point& pos, const Mat3& rot) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

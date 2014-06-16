@@ -29,93 +29,93 @@
 namespace oz
 {
 
-const Quat Quat::ZERO = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
-const Quat Quat::ID   = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+const Quat Quat::ZERO = Quat(0.0f, 0.0f, 0.0f, 0.0f);
+const Quat Quat::ID   = Quat(0.0f, 0.0f, 0.0f, 1.0f);
 
-Quat Quat::rotationAxis( const Vec3& axis, float theta )
+Quat Quat::rotationAxis(const Vec3& axis, float theta)
 {
   float s, c;
-  Math::sincos( theta * 0.5f, &s, &c );
-  return Quat( s * axis.x, s * axis.y, s * axis.z, c );
+  Math::sincos(theta * 0.5f, &s, &c);
+  return Quat(s * axis.x, s * axis.y, s * axis.z, c);
 }
 
-Quat Quat::rotationX( float theta )
+Quat Quat::rotationX(float theta)
 {
   float s, c;
-  Math::sincos( theta * 0.5f, &s, &c );
-  return Quat( s, 0.0f, 0.0f, c );
+  Math::sincos(theta * 0.5f, &s, &c);
+  return Quat(s, 0.0f, 0.0f, c);
 }
 
-Quat Quat::rotationY( float theta )
+Quat Quat::rotationY(float theta)
 {
   float s, c;
-  Math::sincos( theta * 0.5f, &s, &c );
-  return Quat( 0.0f, s, 0.0f, c );
+  Math::sincos(theta * 0.5f, &s, &c);
+  return Quat(0.0f, s, 0.0f, c);
 }
 
-Quat Quat::rotationZ( float theta )
+Quat Quat::rotationZ(float theta)
 {
   float s, c;
-  Math::sincos( theta * 0.5f, &s, &c );
-  return Quat( 0.0f, 0.0f, s, c );
+  Math::sincos(theta * 0.5f, &s, &c);
+  return Quat(0.0f, 0.0f, s, c);
 }
 
-Quat Quat::rotationZXZ( float heading, float pitch, float roll )
+Quat Quat::rotationZXZ(float heading, float pitch, float roll)
 {
   float hs, hc, ps, pc, rs, rc;
 
-  Math::sincos( heading * 0.5f, &hs, &hc );
-  Math::sincos( pitch   * 0.5f, &ps, &pc );
-  Math::sincos( roll    * 0.5f, &rs, &rc );
+  Math::sincos(heading * 0.5f, &hs, &hc);
+  Math::sincos(pitch   * 0.5f, &ps, &pc);
+  Math::sincos(roll    * 0.5f, &rs, &rc);
 
   float hsps = hs * ps;
   float hcpc = hc * pc;
   float hspc = hs * pc;
   float hcps = hc * ps;
 
-  return Quat( hcps * rc + hsps * rs,
-               hsps * rc - hcps * rs,
-               hspc * rc + hcpc * rs,
-               hcpc * rc - hspc * rs );
+  return Quat(hcps * rc + hsps * rs,
+              hsps * rc - hcps * rs,
+              hspc * rc + hcpc * rs,
+              hcpc * rc - hspc * rs);
 }
 
-void Quat::toAxisAngle( Vec3* axis, float* angle ) const
+void Quat::toAxisAngle(Vec3* axis, float* angle) const
 {
-  *angle = 2.0f * Math::acos( w );
+  *angle = 2.0f * Math::acos(w);
 
-  float k = Math::sqrt( 1.0f - w*w );
-  if( k == 0.0f ) {
+  float k = Math::sqrt(1.0f - w*w);
+  if (k == 0.0f) {
     *axis = Vec3::ZERO;
   }
   else {
     k = 1.0f / k;
-    *axis = Vec3( x * k, y * k, z * k );
+    *axis = Vec3(x * k, y * k, z * k);
   }
 }
 
-Quat Quat::slerp( const Quat& a, const Quat& b, float t )
+Quat Quat::slerp(const Quat& a, const Quat& b, float t)
 {
-  hard_assert( 0.0f <= t && t <= 1.0f );
+  hard_assert(0.0f <= t && t <= 1.0f);
 
   float cosTheta  = a.w*b.w + a.x*b.x + a.y*b.y + a.z*b.z;
   float sinTheta2 = 1.0f - cosTheta*cosTheta;
 
-  if( sinTheta2 <= 0.0f ) {
+  if (sinTheta2 <= 0.0f) {
     return a;
   }
 
-  float sinThetaInv = 1.0f / Math::sqrt( sinTheta2 );
-  float theta       = Math::acos( cosTheta );
-  float c1          = Math::sin( ( 1 - t ) * theta ) * sinThetaInv;
-  float c2          = Math::sin( t * theta ) * sinThetaInv;
+  float sinThetaInv = 1.0f / Math::sqrt(sinTheta2);
+  float theta       = Math::acos(cosTheta);
+  float c1          = Math::sin((1 - t) * theta) * sinThetaInv;
+  float c2          = Math::sin(t * theta) * sinThetaInv;
   Quat  q           = cosTheta < 0.0f ? c1*a - c2*b : c1*a + c2*b;
 
   return ~q;
 }
 
-Quat Quat::fastSlerp( const Quat& a, const Quat& b, float t )
+Quat Quat::fastSlerp(const Quat& a, const Quat& b, float t)
 {
-  hard_assert( 0.0f <= t && t <= 1.0f );
+  hard_assert(0.0f <= t && t <= 1.0f);
 
   Quat  d = *a * b;
   float k = d.w < 0.0f ? -t : t;
@@ -125,9 +125,9 @@ Quat Quat::fastSlerp( const Quat& a, const Quat& b, float t )
   d.z *= k;
 
   float l = d.x*d.x + d.y*d.y + d.z*d.z;
-  d.w = l > 1.0f ? 0.0f : Math::fastSqrt( 1.0f - l );
+  d.w = l > 1.0f ? 0.0f : Math::fastSqrt(1.0f - l);
 
-  return ( a * d ).fastUnit();
+  return (a * d).fastUnit();
 }
 
 }

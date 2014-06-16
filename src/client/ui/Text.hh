@@ -55,33 +55,33 @@ private:
 
   void realign();
 
-  OZ_PRINTF_FORMAT( 2, 0 )
-  void setTextv( const char* s, va_list ap );
+  OZ_PRINTF_FORMAT(2, 0)
+  void setTextv(const char* s, va_list ap);
 
 public:
 
   explicit Text();
 
-  OZ_PRINTF_FORMAT( 7, 8 )
-  explicit Text( int x, int y, int height, int align, Font::Type font, const char* s, ... );
+  OZ_PRINTF_FORMAT(7, 8)
+  explicit Text(int x, int y, int height, int align, Font::Type font, const char* s, ...);
 
   ~Text();
 
-  Text( const Text& ) = delete;
-  Text( Text&& l );
+  Text(const Text&) = delete;
+  Text(Text&& l);
 
-  Text& operator = ( const Text& ) = delete;
-  Text& operator = ( Text&& l );
+  Text& operator = (const Text&) = delete;
+  Text& operator = (Text&& l);
 
-  void setPosition( int x, int y );
-  void setWidth( int width );
-  void setAlign( int align );
-  void setFont( Font::Type font ); // Changes are applied next time the text is set.
+  void setPosition(int x, int y);
+  void setWidth(int width);
+  void setAlign(int align);
+  void setFont(Font::Type font); // Changes are applied next time the text is set.
 
-  OZ_PRINTF_FORMAT( 2, 3 )
-  void setText( const char* s, ... );
+  OZ_PRINTF_FORMAT(2, 3)
+  void setText(const char* s, ...);
 
-  void draw( const Area* area );
+  void draw(const Area* area);
 
   void clear();
 

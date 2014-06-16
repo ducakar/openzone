@@ -34,8 +34,8 @@ class Class
 {
 public:
 
-  void scanObjClass( const char* className );
-  void scanFragPool( const char* poolName );
+  void scanObjClass(const char* className);
+  void scanFragPool(const char* poolName);
 
 };
 

@@ -49,7 +49,7 @@ const int MAX_WORLD_COORD = 2048;
 /**
  * Extent of world bounding box (equals `MAX_WORLD_COORD` but float type).
  */
-const float WORLD_DIM = float( MAX_WORLD_COORD );
+const float WORLD_DIM = float(MAX_WORLD_COORD);
 
 /**
  * Margin for collision detection.
@@ -63,7 +63,7 @@ const float WORLD_DIM = float( MAX_WORLD_COORD );
  * \f$ \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
  * Sum of all those errors should hence be less than `|maxWorldCoord| * 2 * Math::FLOAT_EPS`.
  */
-const float EPSILON = float( MAX_WORLD_COORD ) * 2.0f * Math::FLOAT_EPS;
+const float EPSILON = float(MAX_WORLD_COORD) * 2.0f * Math::FLOAT_EPS;
 
 /**
  * 2D integer span.
@@ -83,9 +83,9 @@ struct Span
  * the interval \f$ [-\tau, \infty) \f$.
  */
 OZ_ALWAYS_INLINE
-inline float angleWrap( float x )
+inline float angleWrap(float x)
 {
-  return Math::fmod( x + Math::TAU, Math::TAU );
+  return Math::fmod(x + Math::TAU, Math::TAU);
 }
 
 /**
@@ -94,9 +94,9 @@ inline float angleWrap( float x )
  * This function assumes that both angles lie on the interval \f$ [0, \tau) \f$.
  */
 OZ_ALWAYS_INLINE
-inline float angleDiff( float x, float y )
+inline float angleDiff(float x, float y)
 {
-  return Math::fmod( x - y + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
+  return Math::fmod(x - y + 1.5f*Math::TAU, Math::TAU) - 0.5f*Math::TAU;
 }
 
 }

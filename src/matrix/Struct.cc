@@ -33,29 +33,29 @@ namespace oz
 
 static const Mat4 ROTATIONS[] =
 {
-  Mat4(  1.0f,  0.0f,  0.0f,  0.0f,
-         0.0f,  1.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  1.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,  1.0f ),
-  Mat4(  0.0f,  1.0f,  0.0f,  0.0f,
-        -1.0f,  0.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  1.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,  1.0f ),
-  Mat4( -1.0f,  0.0f,  0.0f,  0.0f,
-         0.0f, -1.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  1.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,  1.0f ),
-  Mat4(  0.0f, -1.0f,  0.0f,  0.0f,
-         1.0f,  0.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  1.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,  1.0f ),
-  Mat4(  1.0f,  0.0f,  0.0f,  0.0f,
-         0.0f,  1.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  1.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,  1.0f ),
+  Mat4( 1.0f,  0.0f,  0.0f,  0.0f,
+        0.0f,  1.0f,  0.0f,  0.0f,
+        0.0f,  0.0f,  1.0f,  0.0f,
+        0.0f,  0.0f,  0.0f,  1.0f),
+  Mat4( 0.0f,  1.0f,  0.0f,  0.0f,
+       -1.0f,  0.0f,  0.0f,  0.0f,
+        0.0f,  0.0f,  1.0f,  0.0f,
+        0.0f,  0.0f,  0.0f,  1.0f),
+  Mat4(-1.0f,  0.0f,  0.0f,  0.0f,
+        0.0f, -1.0f,  0.0f,  0.0f,
+        0.0f,  0.0f,  1.0f,  0.0f,
+        0.0f,  0.0f,  0.0f,  1.0f),
+  Mat4( 0.0f, -1.0f,  0.0f,  0.0f,
+        1.0f,  0.0f,  0.0f,  0.0f,
+        0.0f,  0.0f,  1.0f,  0.0f,
+        0.0f,  0.0f,  0.0f,  1.0f),
+  Mat4( 1.0f,  0.0f,  0.0f,  0.0f,
+        0.0f,  1.0f,  0.0f,  0.0f,
+        0.0f,  0.0f,  1.0f,  0.0f,
+        0.0f,  0.0f,  0.0f,  1.0f),
 };
 
-const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 2.0f );
+const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3(0.0f, 0.0f, 2.0f);
 const float Struct::DEMOLISH_SPEED         = 8.0f;
 
 const Entity::Handler Entity::HANDLERS[] = {
@@ -72,24 +72,24 @@ Pool<Struct>  Struct::pool;
 
 void Entity::trigger()
 {
-  if( clazz->target < 0 || key < 0 ) {
+  if (clazz->target < 0 || key < 0) {
     return;
   }
 
-  if( clazz->type == EntityClass::STATIC ) {
+  if (clazz->type == EntityClass::STATIC) {
     state = OPENING;
-    hard_assert( time == 0.0f );
+    hard_assert(time == 0.0f);
   }
 
   int strIndex = clazz->target >> Struct::MAX_ENT_SHIFT;
-  int entIndex = clazz->target & ( Struct::MAX_ENTITIES - 1 );
+  int entIndex = clazz->target & (Struct::MAX_ENTITIES - 1);
 
-  Struct* targetStr = orbis.str( strIndex );
+  Struct* targetStr = orbis.str(strIndex);
 
-  if( targetStr != nullptr ) {
+  if (targetStr != nullptr) {
     Entity& target = targetStr->entities[entIndex];
 
-    if( target.state == OPENED || target.state == OPENING ) {
+    if (target.state == OPENED || target.state == OPENING) {
       target.state = CLOSING;
       target.time = 0.0f;
       target.velocity = -target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
@@ -102,21 +102,21 @@ void Entity::trigger()
   }
 }
 
-void Entity::lock( Bot* user )
+void Entity::lock(Bot* user)
 {
-  if( key == 0 ) {
+  if (key == 0) {
     return;
   }
 
-  if( user->clazz->key == key || user->clazz->key == ~key ) {
+  if (user->clazz->key == key || user->clazz->key == ~key) {
     key = ~key;
     return;
   }
 
-  for( int i : user->items ) {
-    Object* obj = orbis.obj( i );
+  for (int i : user->items) {
+    Object* obj = orbis.obj(i);
 
-    if( obj->clazz->key == key || obj->clazz->key == ~key ) {
+    if (obj->clazz->key == key || obj->clazz->key == ~key) {
       key = ~key;
       return;
     }
@@ -130,16 +130,16 @@ void Entity::staticHandler()
 
 void Entity::manualDoorHandler()
 {
-  switch( state ) {
+  switch (state) {
     case CLOSED: {
       return;
     }
     case OPENING: {
-      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      ratio  = min(ratio + clazz->ratioInc, 1.0f);
       time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
-      if( ratio == 1.0f ) {
+      if (ratio == 1.0f) {
         state    = OPENED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -153,10 +153,10 @@ void Entity::manualDoorHandler()
       time  += Timer::TICK_TIME;
       offset = Vec3::ZERO;
 
-      if( collider.overlaps( this ) ) {
+      if (collider.overlaps(this)) {
         offset = ratio * clazz->move;
 
-        if( ratio == 1.0f ) {
+        if (ratio == 1.0f) {
           state = OPENED;
           time  = 0.0f;
         }
@@ -168,10 +168,10 @@ void Entity::manualDoorHandler()
         return;
       }
 
-      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      ratio  = max(ratio - clazz->ratioInc, 0.0f);
       offset = ratio * clazz->move;
 
-      if( ratio == 0.0f ) {
+      if (ratio == 0.0f) {
         state    = CLOSED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -183,10 +183,10 @@ void Entity::manualDoorHandler()
 
 void Entity::autoDoorHandler()
 {
-  switch( state ) {
+  switch (state) {
     case CLOSED: {
-      if( ( timer.ticks + uint( str->index * 1025 ) ) % ( Timer::TICKS_PER_SEC / 6 ) == 0 &&
-          collider.overlaps( this, clazz->margin ) )
+      if ((timer.ticks + uint(str->index * 1025)) % (Timer::TICKS_PER_SEC / 6) == 0 &&
+          collider.overlaps(this, clazz->margin))
       {
         state    = OPENING;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
@@ -194,11 +194,11 @@ void Entity::autoDoorHandler()
       return;
     }
     case OPENING: {
-      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      ratio  = min(ratio + clazz->ratioInc, 1.0f);
       time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
-      if( ratio == 1.0f ) {
+      if (ratio == 1.0f) {
         state    = OPENED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -208,11 +208,11 @@ void Entity::autoDoorHandler()
     case OPENED: {
       time += Timer::TICK_TIME;
 
-      if( time > clazz->timeout ) {
+      if (time > clazz->timeout) {
         offset = Vec3::ZERO;
         time   = 0.0f;
 
-        if( !collider.overlaps( this, clazz->margin ) ) {
+        if (!collider.overlaps(this, clazz->margin)) {
           state    = CLOSING;
           velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
@@ -225,10 +225,10 @@ void Entity::autoDoorHandler()
       time  += Timer::TICK_TIME;
       offset = Vec3::ZERO;
 
-      if( collider.overlaps( this, clazz->margin ) ) {
+      if (collider.overlaps(this, clazz->margin)) {
         offset = ratio * clazz->move;
 
-        if( ratio == 1.0f ) {
+        if (ratio == 1.0f) {
           state = OPENED;
           time  = 0.0f;
         }
@@ -240,10 +240,10 @@ void Entity::autoDoorHandler()
         return;
       }
 
-      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      ratio  = max(ratio - clazz->ratioInc, 0.0f);
       offset = ratio * clazz->move;
 
-      if( ratio == 0.0f ) {
+      if (ratio == 0.0f) {
         state    = CLOSED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -257,9 +257,9 @@ void Entity::ignoringBlockHandler()
 {
   time += Timer::TICK_TIME;
 
-  switch( state ) {
+  switch (state) {
     case CLOSED: {
-      if( time > clazz->timeout ) {
+      if (time > clazz->timeout) {
         state    = OPENING;
         time     = 0.0f;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
@@ -267,10 +267,10 @@ void Entity::ignoringBlockHandler()
       return;
     }
     case OPENING: {
-      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      ratio  = min(ratio + clazz->ratioInc, 1.0f);
       offset = ratio * clazz->move;
 
-      if( ratio == 1.0f ) {
+      if (ratio == 1.0f) {
         state    = OPENED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -278,7 +278,7 @@ void Entity::ignoringBlockHandler()
       return;
     }
     case OPENED: {
-      if( time > clazz->timeout ) {
+      if (time > clazz->timeout) {
         state    = CLOSING;
         time     = 0.0f;
         velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
@@ -286,10 +286,10 @@ void Entity::ignoringBlockHandler()
       return;
     }
     case CLOSING: {
-      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      ratio  = max(ratio - clazz->ratioInc, 0.0f);
       offset = ratio * clazz->move;
 
-      if( ratio == 0.0f ) {
+      if (ratio == 0.0f) {
         state    = CLOSED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -303,9 +303,9 @@ void Entity::crushingBlockHandler()
 {
   time += Timer::TICK_TIME;
 
-  switch( state ) {
+  switch (state) {
     case CLOSED: {
-      if( time > clazz->timeout ) {
+      if (time > clazz->timeout) {
         state    = OPENING;
         time     = 0.0f;
         velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
@@ -315,22 +315,22 @@ void Entity::crushingBlockHandler()
     case OPENING: {
       Vec3 move = offset;
 
-      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      ratio  = min(ratio + clazz->ratioInc, 1.0f);
       offset = ratio * clazz->move;
 
-      collider.getOverlaps( this, &Struct::overlappingObjs );
+      collider.getOverlaps(this, &Struct::overlappingObjs);
 
-      if( !Struct::overlappingObjs.isEmpty() ) {
+      if (!Struct::overlappingObjs.isEmpty()) {
         move = offset - move + 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS( move );
+        move = str->toAbsoluteCS(move);
 
-        for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
-          Dynamic* dyn = static_cast<Dynamic*>( Struct::overlappingObjs[i] );
+        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
+          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
 
-          if( dyn->flags & Object::DYNAMIC_BIT ) {
-            collider.translate( dyn, move );
+          if (dyn->flags & Object::DYNAMIC_BIT) {
+            collider.translate(dyn, move);
 
-            if( collider.hit.ratio != 0.0f ) {
+            if (collider.hit.ratio != 0.0f) {
               Vec3 dynMove  = collider.hit.ratio * move;
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
@@ -340,9 +340,9 @@ void Entity::crushingBlockHandler()
               dyn->flags    &= ~Object::DISABLED_BIT;
               dyn->flags    |= Object::ENABLE_BIT;
 
-              orbis.reposition( dyn );
+              orbis.reposition(dyn);
             }
-            if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
+            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
               dyn->destroy();
             }
           }
@@ -351,7 +351,7 @@ void Entity::crushingBlockHandler()
         Struct::overlappingObjs.clear();
       }
 
-      if( ratio == 1.0f ) {
+      if (ratio == 1.0f) {
         state    = OPENED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -359,7 +359,7 @@ void Entity::crushingBlockHandler()
       return;
     }
     case OPENED: {
-      if( time > clazz->timeout ) {
+      if (time > clazz->timeout) {
         state    = CLOSING;
         time     = 0.0f;
         velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
@@ -369,22 +369,22 @@ void Entity::crushingBlockHandler()
     case CLOSING: {
       Vec3 move = offset;
 
-      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      ratio  = max(ratio - clazz->ratioInc, 0.0f);
       offset = ratio * clazz->move;
 
-      collider.getOverlaps( this, &Struct::overlappingObjs );
+      collider.getOverlaps(this, &Struct::overlappingObjs);
 
-      if( !Struct::overlappingObjs.isEmpty() ) {
+      if (!Struct::overlappingObjs.isEmpty()) {
         move = offset - move - 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS( move );
+        move = str->toAbsoluteCS(move);
 
-        for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
-          Dynamic* dyn = static_cast<Dynamic*>( Struct::overlappingObjs[i] );
+        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
+          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
 
-          if( dyn->flags & Object::DYNAMIC_BIT ) {
-            collider.translate( dyn, move );
+          if (dyn->flags & Object::DYNAMIC_BIT) {
+            collider.translate(dyn, move);
 
-            if( collider.hit.ratio != 0.0f ) {
+            if (collider.hit.ratio != 0.0f) {
               Vec3 dynMove  = collider.hit.ratio * move;
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
@@ -394,9 +394,9 @@ void Entity::crushingBlockHandler()
               dyn->flags    &= ~Object::DISABLED_BIT;
               dyn->flags    |= Object::ENABLE_BIT;
 
-              orbis.reposition( dyn );
+              orbis.reposition(dyn);
             }
-            if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
+            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
               dyn->destroy();
             }
           }
@@ -405,7 +405,7 @@ void Entity::crushingBlockHandler()
         Struct::overlappingObjs.clear();
       }
 
-      if( ratio == 0.0f ) {
+      if (ratio == 0.0f) {
         state    = CLOSED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -417,7 +417,7 @@ void Entity::crushingBlockHandler()
 
 void Entity::elevatorHandler()
 {
-  switch( state ) {
+  switch (state) {
     case CLOSED: {
       return;
     }
@@ -427,28 +427,28 @@ void Entity::elevatorHandler()
 
       Vec3 move = offset;
 
-      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      ratio  = min(ratio + clazz->ratioInc, 1.0f);
       time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
-      collider.getOverlaps( this, &Struct::overlappingObjs );
+      collider.getOverlaps(this, &Struct::overlappingObjs);
 
-      if( !Struct::overlappingObjs.isEmpty() ) {
+      if (!Struct::overlappingObjs.isEmpty()) {
         move = offset - move + 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS( move );
+        move = str->toAbsoluteCS(move);
 
-        for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
-          Dynamic* dyn = static_cast<Dynamic*>( Struct::overlappingObjs[i] );
+        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
+          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
 
-          if( dyn->flags & Object::DYNAMIC_BIT ) {
-            collider.translate( dyn, move );
+          if (dyn->flags & Object::DYNAMIC_BIT) {
+            collider.translate(dyn, move);
 
-            if( collider.hit.ratio != 0.0f ) {
+            if (collider.hit.ratio != 0.0f) {
               dyn->p.z   += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
             }
-            if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
+            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
               ratio    = originalRatio;
               offset   = originalOffset;
 
@@ -463,7 +463,7 @@ void Entity::elevatorHandler()
         Struct::overlappingObjs.clear();
       }
 
-      if( ratio == 1.0f ) {
+      if (ratio == 1.0f) {
         state    = OPENED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -479,28 +479,28 @@ void Entity::elevatorHandler()
 
       Vec3 move = offset;
 
-      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      ratio  = max(ratio - clazz->ratioInc, 0.0f);
       time  += Timer::TICK_TIME;
       offset = ratio * clazz->move;
 
-      collider.getOverlaps( this, &Struct::overlappingObjs );
+      collider.getOverlaps(this, &Struct::overlappingObjs);
 
-      if( !Struct::overlappingObjs.isEmpty() ) {
+      if (!Struct::overlappingObjs.isEmpty()) {
         move = offset - move - 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS( move );
+        move = str->toAbsoluteCS(move);
 
-        for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
-          Dynamic* dyn = static_cast<Dynamic*>( Struct::overlappingObjs[i] );
+        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
+          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
 
-          if( dyn->flags & Object::DYNAMIC_BIT ) {
-            collider.translate( dyn, move );
+          if (dyn->flags & Object::DYNAMIC_BIT) {
+            collider.translate(dyn, move);
 
-            if( collider.hit.ratio != 0.0f ) {
+            if (collider.hit.ratio != 0.0f) {
               dyn->p.z   += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
             }
-            if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
+            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
               ratio    = originalRatio;
               offset   = originalOffset;
 
@@ -515,7 +515,7 @@ void Entity::elevatorHandler()
         Struct::overlappingObjs.clear();
       }
 
-      if( ratio == 0.0f ) {
+      if (ratio == 0.0f) {
         state    = CLOSED;
         time     = 0.0f;
         velocity = Vec3::ZERO;
@@ -528,18 +528,18 @@ void Entity::elevatorHandler()
 void Struct::onDemolish()
 {
   collider.mask = ~0;
-  collider.getOverlaps( toAABB(), nullptr, &overlappingObjs, 4.0f * EPSILON );
+  collider.getOverlaps(toAABB(), nullptr, &overlappingObjs, 4.0f * EPSILON);
   collider.mask = Object::SOLID_BIT;
 
-  for( int i = 0; i < overlappingObjs.length(); ++i ) {
-    Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
+  for (int i = 0; i < overlappingObjs.length(); ++i) {
+    Dynamic* dyn = static_cast<Dynamic*>(overlappingObjs[i]);
 
-    if( ( dyn->flags & Object::SOLID_BIT ) &&
-        collider.overlaps( AABB( *dyn, -2.0f * EPSILON ), dyn ) )
+    if ((dyn->flags & Object::SOLID_BIT) &&
+        collider.overlaps(AABB(*dyn, -2.0f * EPSILON), dyn))
     {
       dyn->destroy();
     }
-    else if( dyn->flags & Object::DYNAMIC_BIT ) {
+    else if (dyn->flags & Object::DYNAMIC_BIT) {
       dyn->flags &= ~Object::DISABLED_BIT;
       dyn->flags |= Object::ENABLE_BIT;
     }
@@ -548,109 +548,109 @@ void Struct::onDemolish()
   overlappingObjs.clear();
 
   float deltaHeight = DEMOLISH_SPEED * Timer::TICK_TIME;
-  demolishing += deltaHeight / ( maxs.z - mins.z );
+  demolishing += deltaHeight / (maxs.z - mins.z);
   p.z -= deltaHeight;
 
-  transf.w = Vec4( p );
+  transf.w = Vec4(p);
 
   invTransf = ROTATIONS[4 - heading];
-  invTransf.translate( Point::ORIGIN - p );
+  invTransf.translate(Point::ORIGIN - p);
 
-  Bounds bb = toAbsoluteCS( *bsp );
+  Bounds bb = toAbsoluteCS(*bsp);
   mins = bb.mins;
   maxs = bb.maxs;
 }
 
 void Struct::onUpdate()
 {
-  for( int i = 0; i < boundObjects.length(); ) {
-    if( orbis.obj( boundObjects[i] ) == nullptr ) {
-      boundObjects.eraseUnordered( i );
+  for (int i = 0; i < boundObjects.length();) {
+    if (orbis.obj(boundObjects[i]) == nullptr) {
+      boundObjects.eraseUnordered(i);
     }
     else {
       ++i;
     }
   }
 
-  if( life == 0.0f ) {
+  if (life == 0.0f) {
     onDemolish();
   }
   else {
-    for( int i = 0; i < entities.length(); ++i ) {
+    for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
 
-      hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
+      hard_assert(0.0f <= entity.ratio && entity.ratio <= 1.0f);
 
-      ( entity.*Entity::HANDLERS[entity.clazz->type] )();
+      (entity.*Entity::HANDLERS[entity.clazz->type])();
     }
   }
 }
 
-Bounds Struct::toStructCS( const Bounds& bb ) const
+Bounds Struct::toStructCS(const Bounds& bb) const
 {
-  switch( heading ) {
+  switch (heading) {
     case NORTH: {
-      return Bounds( Point( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
-                     Point( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
+      return Bounds(Point(+bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z),
+                    Point(+bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z));
     }
     case WEST: {
-      return Bounds( Point( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
-                     Point( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
+      return Bounds(Point(+bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z),
+                    Point(+bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z));
     }
     case SOUTH: {
-      return Bounds( Point( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
-                     Point( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
+      return Bounds(Point(-bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z),
+                    Point(-bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z));
     }
     case EAST: {
-      return Bounds( Point( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
-                     Point( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
+      return Bounds(Point(-bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z),
+                    Point(-bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z));
     }
   }
 }
 
-Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
+Bounds Struct::toAbsoluteCS(const Bounds& bb) const
 {
-  switch( heading ) {
+  switch (heading) {
     case NORTH: {
-      return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                     p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+      return Bounds(p + Vec3(+bb.mins.x, +bb.mins.y, +bb.mins.z),
+                    p + Vec3(+bb.maxs.x, +bb.maxs.y, +bb.maxs.z));
     }
     case WEST: {
-      return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                     p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      return Bounds(p + Vec3(-bb.maxs.y, +bb.mins.x, +bb.mins.z),
+                    p + Vec3(-bb.mins.y, +bb.maxs.x, +bb.maxs.z));
     }
     case SOUTH: {
-      return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                     p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      return Bounds(p + Vec3(-bb.maxs.x, -bb.maxs.y, +bb.mins.z),
+                    p + Vec3(-bb.mins.x, -bb.mins.y, +bb.maxs.z));
     }
     case EAST: {
-      return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                     p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+      return Bounds(p + Vec3(+bb.mins.y, -bb.maxs.x, +bb.mins.z),
+                    p + Vec3(+bb.maxs.y, -bb.mins.x, +bb.maxs.z));
     }
   }
 }
 
 void Struct::destroy()
 {
-  for( int i = 0; i < boundObjects.length(); ++i ) {
-    Object* obj = orbis.obj( boundObjects[i] );
+  for (int i = 0; i < boundObjects.length(); ++i) {
+    Object* obj = orbis.obj(boundObjects[i]);
 
-    if( obj != nullptr ) {
+    if (obj != nullptr) {
       obj->destroy();
     }
   }
 
   onDemolish();
 
-  if( bsp->fragPool != nullptr ) {
-    synapse.gen( bsp->fragPool,
-                 bsp->nFrags,
-                 Bounds( Point( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),
-                 DESTRUCT_FRAG_VELOCITY );
+  if (bsp->fragPool != nullptr) {
+    synapse.gen(bsp->fragPool,
+                bsp->nFrags,
+                Bounds(Point(mins.x, mins.y, 0.5f * (mins.z + maxs.z)), maxs),
+                DESTRUCT_FRAG_VELOCITY);
   }
 }
 
-Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
+Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
 {
   bsp         = bsp_;
 
@@ -663,19 +663,19 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   resistance  = bsp->resistance;
   demolishing = 0.0f;
 
-  transf      = Mat4::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation( Point::ORIGIN - p );
+  transf      = Mat4::translation(p - Point::ORIGIN) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation(Point::ORIGIN - p);
 
-  hard_assert( transf.det() != 0.0f );
+  hard_assert(transf.det() != 0.0f);
 
-  Bounds bb   = toAbsoluteCS( *bsp );
+  Bounds bb   = toAbsoluteCS(*bsp);
   mins        = bb.mins;
   maxs        = bb.maxs;
 
-  if( bsp->nEntities != 0 ) {
-    entities.resize( bsp->nEntities );
+  if (bsp->nEntities != 0) {
+    entities.resize(bsp->nEntities);
 
-    for( int i = 0; i < entities.length(); ++i ) {
+    for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
 
       entity.clazz    = &bsp->entities[i];
@@ -689,56 +689,56 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
     }
   }
 
-  if( bsp->nBoundObjects != 0 ) {
-    boundObjects.reserve( bsp->nBoundObjects );
+  if (bsp->nBoundObjects != 0) {
+    boundObjects.reserve(bsp->nBoundObjects);
   }
 }
 
-Struct::Struct( const BSP* bsp_, int index_, const JSON& json )
+Struct::Struct(const BSP* bsp_, int index_, const JSON& json)
 {
   bsp         = bsp_;
 
-  p           = json["p"].get( Point::ORIGIN );
-  heading     = Heading( json["heading"].get( Heading::NORTH ) );
+  p           = json["p"].get(Point::ORIGIN);
+  heading     = Heading(json["heading"].get(Heading::NORTH));
 
   index       = index_;
 
-  life        = json["life"].get( 0.0f );
+  life        = json["life"].get(0.0f);
   resistance  = bsp->resistance;
-  demolishing = json["demolishing"].get( 0.0f );
+  demolishing = json["demolishing"].get(0.0f);
 
-  transf      = Mat4::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation( Point::ORIGIN - p );
+  transf      = Mat4::translation(p - Point::ORIGIN) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation(Point::ORIGIN - p);
 
-  Bounds bb   = toAbsoluteCS( *bsp );
+  Bounds bb   = toAbsoluteCS(*bsp);
   mins        = bb.mins;
   maxs        = bb.maxs;
 
-  if( index < 0 ) {
-    OZ_ERROR( "Invalid struct index" );
+  if (index < 0) {
+    OZ_ERROR("Invalid struct index");
   }
 
-  if( bsp->nEntities != 0 ) {
-    entities.resize( bsp->nEntities );
+  if (bsp->nEntities != 0) {
+    entities.resize(bsp->nEntities);
 
     const JSON& entitiesJSON = json["entities"];
 
-    for( int i = 0; i < entities.length(); ++i ) {
+    for (int i = 0; i < entities.length(); ++i) {
       const JSON& entityJSON = entitiesJSON[i];
       Entity&     entity     = entities[i];
 
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
-      entity.key    = entityJSON["key"].get( 0 );
-      entity.state  = Entity::State( entityJSON["state"].get( Entity::CLOSED ) );
-      entity.ratio  = entityJSON["ratio"].get( 0.0f );
-      entity.time   = entityJSON["time"].get( 0.0f );
-      entity.offset = entityJSON["offset"].get( Vec3::ZERO );
+      entity.key    = entityJSON["key"].get(0);
+      entity.state  = Entity::State(entityJSON["state"].get(Entity::CLOSED));
+      entity.ratio  = entityJSON["ratio"].get(0.0f);
+      entity.time   = entityJSON["time"].get(0.0f);
+      entity.offset = entityJSON["offset"].get(Vec3::ZERO);
 
-      if( entity.state == Entity::OPENING ) {
+      if (entity.state == Entity::OPENING) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
       }
-      else if( entity.state == Entity::CLOSING ) {
+      else if (entity.state == Entity::CLOSING) {
         entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
       }
       else {
@@ -747,17 +747,17 @@ Struct::Struct( const BSP* bsp_, int index_, const JSON& json )
     }
   }
 
-  if( bsp->nBoundObjects != 0 ) {
-    boundObjects.reserve( bsp->nBoundObjects );
+  if (bsp->nBoundObjects != 0) {
+    boundObjects.reserve(bsp->nBoundObjects);
   }
 }
 
-Struct::Struct( const BSP* bsp_, InputStream* is )
+Struct::Struct(const BSP* bsp_, InputStream* is)
 {
   bsp         = bsp_;
 
   p           = is->readPoint();
-  heading     = Heading( is->readInt() );
+  heading     = Heading(is->readInt());
 
   index       = is->readInt();
 
@@ -765,31 +765,31 @@ Struct::Struct( const BSP* bsp_, InputStream* is )
   resistance  = bsp->resistance;
   demolishing = is->readFloat();
 
-  transf      = Mat4::translation( p - Point::ORIGIN ) ^ ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation( Point::ORIGIN - p );
+  transf      = Mat4::translation(p - Point::ORIGIN) ^ ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation(Point::ORIGIN - p);
 
-  Bounds bb   = toAbsoluteCS( *bsp );
+  Bounds bb   = toAbsoluteCS(*bsp);
   mins        = bb.mins;
   maxs        = bb.maxs;
 
-  if( bsp->nEntities != 0 ) {
-    entities.resize( bsp->nEntities );
+  if (bsp->nEntities != 0) {
+    entities.resize(bsp->nEntities);
 
-    for( int i = 0; i < entities.length(); ++i ) {
+    for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
 
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
       entity.key    = is->readInt();
-      entity.state  = Entity::State( is->readInt() );
+      entity.state  = Entity::State(is->readInt());
       entity.ratio  = is->readFloat();
       entity.time   = is->readFloat();
       entity.offset = is->readVec3();
 
-      if( entity.state == Entity::OPENING ) {
+      if (entity.state == Entity::OPENING) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
       }
-      else if( entity.state == Entity::CLOSING ) {
+      else if (entity.state == Entity::CLOSING) {
         entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
       }
       else {
@@ -799,75 +799,75 @@ Struct::Struct( const BSP* bsp_, InputStream* is )
   }
 
   int nBoundObjects = is->readInt();
-  hard_assert( nBoundObjects <= bsp->nBoundObjects );
+  hard_assert(nBoundObjects <= bsp->nBoundObjects);
 
-  if( bsp->nBoundObjects != 0 ) {
-    boundObjects.reserve( bsp->nBoundObjects );
+  if (bsp->nBoundObjects != 0) {
+    boundObjects.reserve(bsp->nBoundObjects);
 
-    for( int i = 0; i < nBoundObjects; ++i ) {
-      boundObjects.add( is->readInt() );
+    for (int i = 0; i < nBoundObjects; ++i) {
+      boundObjects.add(is->readInt());
     }
   }
 }
 
 JSON Struct::write() const
 {
-  JSON json( JSON::OBJECT );
+  JSON json(JSON::OBJECT);
 
-  json.add( "bsp", bsp->name );
+  json.add("bsp", bsp->name);
 
-  json.add( "p", p );
-  json.add( "heading", heading );
+  json.add("p", p);
+  json.add("heading", heading);
 
-  json.add( "life", life );
-  json.add( "demolishing", demolishing );
+  json.add("life", life);
+  json.add("demolishing", demolishing);
 
-  JSON& entitiesJSON = json.add( "entities", JSON::ARRAY );
+  JSON& entitiesJSON = json.add("entities", JSON::ARRAY);
 
-  for( int i = 0; i < entities.length(); ++i ) {
-    JSON& entityJSON = entitiesJSON.add( JSON::OBJECT);
+  for (int i = 0; i < entities.length(); ++i) {
+    JSON& entityJSON = entitiesJSON.add(JSON::OBJECT);
 
-    entityJSON.add( "key", entities[i].key );
-    entityJSON.add( "state", entities[i].state );
-    entityJSON.add( "ratio", entities[i].ratio );
-    entityJSON.add( "time", entities[i].time );
-    entityJSON.add( "offset", entities[i].offset );
+    entityJSON.add("key", entities[i].key);
+    entityJSON.add("state", entities[i].state);
+    entityJSON.add("ratio", entities[i].ratio);
+    entityJSON.add("time", entities[i].time);
+    entityJSON.add("offset", entities[i].offset);
   }
 
-  JSON& boundObjectsJSON = json.add( "boundObjects", JSON::ARRAY );
+  JSON& boundObjectsJSON = json.add("boundObjects", JSON::ARRAY);
 
-  for( int i : boundObjects ) {
-    const Object* obj = orbis.obj( i );
+  for (int i : boundObjects) {
+    const Object* obj = orbis.obj(i);
 
-    if( obj != nullptr ) {
-      boundObjectsJSON.add( obj->write() );
+    if (obj != nullptr) {
+      boundObjectsJSON.add(obj->write());
     }
   }
 
   return json;
 }
 
-void Struct::write( OutputStream* os ) const
+void Struct::write(OutputStream* os) const
 {
-  os->writePoint( p );
-  os->writeInt( heading );
+  os->writePoint(p);
+  os->writeInt(heading);
 
-  os->writeInt( index );
+  os->writeInt(index);
 
-  os->writeFloat( life );
-  os->writeFloat( demolishing );
+  os->writeFloat(life);
+  os->writeFloat(demolishing);
 
-  for( int i = 0; i < entities.length(); ++i ) {
-    os->writeInt( entities[i].key );
-    os->writeInt( entities[i].state );
-    os->writeFloat( entities[i].ratio );
-    os->writeFloat( entities[i].time );
-    os->writeVec3( entities[i].offset );
+  for (int i = 0; i < entities.length(); ++i) {
+    os->writeInt(entities[i].key);
+    os->writeInt(entities[i].state);
+    os->writeFloat(entities[i].ratio);
+    os->writeFloat(entities[i].time);
+    os->writeVec3(entities[i].offset);
   }
 
-  os->writeInt( boundObjects.length() );
-  for( int i = 0; i < boundObjects.length(); ++i ) {
-    os->writeInt( boundObjects[i] );
+  os->writeInt(boundObjects.length());
+  for (int i = 0; i < boundObjects.length(); ++i) {
+    os->writeInt(boundObjects[i]);
   }
 }
 

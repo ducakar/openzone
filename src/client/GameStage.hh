@@ -70,19 +70,19 @@ public:
 
 private:
 
-  static void saveMain( void* );
+  static void saveMain(void*);
 
   void read();
   void write();
 
-  static void auxMain( void* );
+  static void auxMain(void*);
   void auxRun();
 
 public:
 
   bool update() override;
-  void present( bool isFull ) override;
-  void wait( uint micros ) override;
+  void present(bool isFull) override;
+  void wait(uint micros) override;
 
   void load() override;
   void unload() override;

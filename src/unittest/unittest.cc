@@ -38,7 +38,7 @@ bool Foo::allowEqualsOp = true;
 bool Foo::allowLessOp   = true;
 
 #ifdef __native_client__
-int naclMain( int, char** )
+int naclMain(int, char**)
 #else
 int main()
 #endif
@@ -46,7 +46,7 @@ int main()
   Log() << "Unittest has begun";
 
   System::init();
-  Math::seed( 42 );
+  Math::seed(42);
 
   test_common();
   test_iterables();
@@ -56,7 +56,7 @@ int main()
 
   test_String();
 
-  Log() << ( hasPassed ? "Unittest PASSED" : "Unittest FAILED" );
+  Log() << (hasPassed ? "Unittest PASSED" : "Unittest FAILED");
 
   return EXIT_SUCCESS;
 }

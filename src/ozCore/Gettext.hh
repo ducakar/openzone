@@ -61,7 +61,7 @@ public:
    * variables that has non-empty value. If all those variables are empty or nonexistent `fallback`
    * is returned.
    */
-  static const char* systemLanguage( const char* fallback = "C" );
+  static const char* systemLanguage(const char* fallback = "C");
 
   /**
    * Default constructor, creates an empty instance.
@@ -76,12 +76,12 @@ public:
   /**
    * Move constructor.
    */
-  Gettext( Gettext&& gt );
+  Gettext(Gettext&& gt);
 
   /**
    * Move operator.
    */
-  Gettext& operator = ( Gettext&& gt );
+  Gettext& operator = (Gettext&& gt);
 
   /**
    * Number of messages it contains.
@@ -104,7 +104,7 @@ public:
   /**
    * Check whether the catalogue contains a given translation.
    */
-  bool contains( const char* message ) const;
+  bool contains(const char* message) const;
 
   /**
    * Obtain translation from the catalogue.
@@ -113,7 +113,7 @@ public:
    * string is always translated to an empty string -- use `catalogueDescriptions()` to get
    * catalogue descriptions.
    */
-  const char* get( const char* message ) const;
+  const char* get(const char* message) const;
 
   /**
    * Obtain descriptions of all .mo catalogues that have been merged into this catalogue.
@@ -130,7 +130,7 @@ public:
    * Empty strings (storage for catalogue descriptions) are never included in the hashtable, use
    * `catalogueDescriptions()` to obtain those.
    */
-  bool import( const File& file );
+  bool import(const File& file);
 
   /**
    * Clear catalogue.

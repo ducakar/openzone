@@ -33,18 +33,18 @@
 #include <cstdlib>
 #include <cstring>
 
-#define OZ_VAARGS_BUFFER( buffer ) \
+#define OZ_VAARGS_BUFFER(buffer) \
   char buffer[OUT_BUFFER_SIZE]; \
   va_list ap; \
-  va_start( ap, s ); \
-  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap ); \
-  va_end( ap );
+  va_start(ap, s); \
+  vsnprintf(buffer, OUT_BUFFER_SIZE, s, ap); \
+  va_end(ap);
 
-#define OZ_PRINT_BOTH( code ) \
+#define OZ_PRINT_BOTH(code) \
   { \
-    auto lambda = [&]( FILE* stream ) code; \
-    if( !verboseMode || showVerbose || file == nullptr ) { lambda( stdout ); } \
-    if( file != nullptr ) { lambda( file ); } \
+    auto lambda = [&](FILE* stream) code; \
+    if(!verboseMode || showVerbose || file == nullptr) { lambda(stdout); } \
+    if(file != nullptr) { lambda(file); } \
   }
 
 namespace oz
@@ -53,7 +53,7 @@ namespace oz
 static const int         OUT_BUFFER_SIZE      = 4096;
 static const int         INDENT_SPACES        = 2;
 static const char        INDENT_BUFFER[49]    = "                                                ";
-static const int         INDENT_BUFFER_LENGTH = int( sizeof( INDENT_BUFFER ) ) - 1;
+static const int         INDENT_BUFFER_LENGTH = int(sizeof(INDENT_BUFFER)) - 1;
 static const char* const SIGNALS[][2]         =
 {
   { "SIG???",    "[invalid signal number]"    },
@@ -99,15 +99,15 @@ bool Log::verboseMode    = false;
 
 static inline const char* getIndent()
 {
-  hard_assert( indentLevel >= 0 );
+  hard_assert(indentLevel >= 0);
 
-  int bias = max<int>( INDENT_BUFFER_LENGTH - indentLevel * INDENT_SPACES, 0 );
+  int bias = max<int>(INDENT_BUFFER_LENGTH - indentLevel * INDENT_SPACES, 0);
   return &INDENT_BUFFER[bias];
 }
 
 Log::~Log()
 {
-  printRaw( "\n" );
+  printRaw("\n");
 }
 
 const char* Log::filePath()
@@ -127,163 +127,163 @@ void Log::indent()
 
 void Log::unindent()
 {
-  if( indentLevel > 0 ) {
+  if (indentLevel > 0) {
     --indentLevel;
   }
 }
 
-void Log::putsRaw( const char* s )
+void Log::putsRaw(const char* s)
 {
-  OZ_PRINT_BOTH( {
-    fputs( s, stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(s, stream);
+    fflush(stream);
+  });
 }
 
-void Log::vprintRaw( const char* s, va_list ap )
+void Log::vprintRaw(const char* s, va_list ap)
 {
   char buffer[OUT_BUFFER_SIZE];
-  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
+  vsnprintf(buffer, OUT_BUFFER_SIZE, s, ap);
 
-  OZ_PRINT_BOTH( {
-    fputs( buffer, stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(buffer, stream);
+    fflush(stream);
+  });
 }
 
-void Log::printRaw( const char* s, ... )
+void Log::printRaw(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER( buffer );
+  OZ_VAARGS_BUFFER(buffer);
 
-  OZ_PRINT_BOTH( {
-    fputs( buffer, stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(buffer, stream);
+    fflush(stream);
+  });
 }
 
-void Log::print( const char* s, ... )
+void Log::print(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER( buffer );
+  OZ_VAARGS_BUFFER(buffer);
 
   const char* indent = getIndent();
 
-  OZ_PRINT_BOTH( {
-    fputs( indent, stream );
-    fputs( buffer, stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(indent, stream);
+    fputs(buffer, stream);
+    fflush(stream);
+  });
 }
 
-void Log::printEnd( const char* s, ... )
+void Log::printEnd(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER( buffer );
+  OZ_VAARGS_BUFFER(buffer);
 
-  OZ_PRINT_BOTH( {
-    fputs( buffer, stream );
-    fputc( '\n', stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(buffer, stream);
+    fputc('\n', stream);
+    fflush(stream);
+  });
 }
 
 void Log::printEnd()
 {
-  OZ_PRINT_BOTH( {
-    fputc( '\n', stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputc('\n', stream);
+    fflush(stream);
+  });
 }
 
-void Log::println( const char* s, ... )
+void Log::println(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER( buffer );
+  OZ_VAARGS_BUFFER(buffer);
 
   const char* indent = getIndent();
 
-  OZ_PRINT_BOTH( {
-    fputs( indent, stream );
-    fputs( buffer, stream );
-    fputc( '\n', stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(indent, stream);
+    fputs(buffer, stream);
+    fputc('\n', stream);
+    fflush(stream);
+  });
 }
 
 void Log::println()
 {
-  OZ_PRINT_BOTH( {
-    fputc( '\n', stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputc('\n', stream);
+    fflush(stream);
+  });
 }
 
-void Log::printTrace( const StackTrace& st )
+void Log::printTrace(const StackTrace& st)
 {
-  const char* threadName = String::isEmpty( st.threadName ) ? "?" : st.threadName;
+  const char* threadName = String::isEmpty(st.threadName) ? "?" : st.threadName;
 
-  OZ_PRINT_BOTH( {
-    fputs( "  thread: ", stream );
-    fputs( threadName, stream );
-    fputs( "\n  stack trace:\n", stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs("  thread: ", stream);
+    fputs(threadName, stream);
+    fputs("\n  stack trace:\n", stream);
+  });
 
-  if( st.nFrames == 0 ) {
-    OZ_PRINT_BOTH( {
-      fputs( "    [no stack trace]\n", stream );
-    } );
+  if (st.nFrames == 0) {
+    OZ_PRINT_BOTH({
+      fputs("    [no stack trace]\n", stream);
+    });
   }
   else {
     char** entries = st.symbols();
 
-    for( int i = 0; i < st.nFrames; ++i ) {
-      OZ_PRINT_BOTH( {
-        fputs( "    ", stream );
-        fputs( entries[i], stream );
-        fputc( '\n', stream );
-      } );
+    for (int i = 0; i < st.nFrames; ++i) {
+      OZ_PRINT_BOTH({
+        fputs("    ", stream);
+        fputs(entries[i], stream);
+        fputc('\n', stream);
+      });
     }
 
-    free( entries );
+    free(entries);
   }
 
-  OZ_PRINT_BOTH( {
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fflush(stream);
+  });
 }
 
-void Log::printSignal( int sigNum )
+void Log::printSignal(int sigNum)
 {
   char buffer[OUT_BUFFER_SIZE];
-  int  index = uint( sigNum ) >= uint( aLength( SIGNALS ) ) ? 0 : sigNum;
+  int  index = uint(sigNum) >= uint(aLength(SIGNALS)) ? 0 : sigNum;
 
-  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nSignal %d %s (%s)\n",
-            sigNum, SIGNALS[index][0], SIGNALS[index][1] );
+  snprintf(buffer, OUT_BUFFER_SIZE, "\n\nSignal %d %s (%s)\n",
+           sigNum, SIGNALS[index][0], SIGNALS[index][1]);
 
-  OZ_PRINT_BOTH( {
-    fputs( buffer, stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fputs(buffer, stream);
+    fflush(stream);
+  });
 }
 
 bool Log::printMemorySummary()
 {
-  if( Alloc::count == 0 ) {
+  if (Alloc::count == 0) {
     return false;
   }
 
-  println( "Alloc summary {" );
+  println("Alloc summary {");
   indent();
 
-  println( "current chunks    %7d", Alloc::count );
-  println( "current amount    %7.2f MiB (%lu B)",
-           float( Alloc::amount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::amount ) );
-  println( "maximum chunks    %7d", Alloc::maxCount );
-  println( "maximum amount    %7.2f MiB (%lu B)",
-           float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::maxAmount ) );
-  println( "cumulative chunks %7d", Alloc::sumCount );
-  println( "cumulative amount %7.2f MiB (%lu B)",
-           float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ), ulong( Alloc::sumAmount ) );
+  println("current chunks    %7d", Alloc::count);
+  println("current amount    %7.2f MiB (%lu B)",
+          float(Alloc::amount) / (1024.0f * 1024.0f), ulong(Alloc::amount));
+  println("maximum chunks    %7d", Alloc::maxCount);
+  println("maximum amount    %7.2f MiB (%lu B)",
+          float(Alloc::maxAmount) / (1024.0f * 1024.0f), ulong(Alloc::maxAmount));
+  println("cumulative chunks %7d", Alloc::sumCount);
+  println("cumulative amount %7.2f MiB (%lu B)",
+          float(Alloc::sumAmount) / (1024.0f * 1024.0f), ulong(Alloc::sumAmount));
 
   unindent();
-  println( "}" );
+  println("}");
 
   return true;
 }
@@ -292,21 +292,21 @@ bool Log::printMemoryLeaks()
 {
   bool hasOutput = false;
 
-  for( const auto& ci : Alloc::objectCIter() ) {
-    println( "Leaked object at %p of size %lu B allocated",
-             static_cast<const void*>( &ci ), ulong( ci.size ) );
+  for (const auto& ci : Alloc::objectCIter()) {
+    println("Leaked object at %p of size %lu B allocated",
+            static_cast<const void*>(&ci), ulong(ci.size));
     indent();
-    printTrace( ci.stackTrace );
+    printTrace(ci.stackTrace);
     unindent();
 
     hasOutput = true;
   }
 
-  for( const auto& ci : Alloc::arrayCIter() ) {
-    println( "Leaked array at %p of size %lu B allocated",
-             static_cast<const void*>( &ci ), ulong( ci.size ) );
+  for (const auto& ci : Alloc::arrayCIter()) {
+    println("Leaked array at %p of size %lu B allocated",
+            static_cast<const void*>(&ci), ulong(ci.size));
     indent();
-    printTrace( ci.stackTrace );
+    printTrace(ci.stackTrace);
     unindent();
 
     hasOutput = true;
@@ -317,40 +317,40 @@ bool Log::printMemoryLeaks()
 
 void Log::printProfilerStatistics()
 {
-  if( Profiler::citer().isValid() ) {
-    println( "Profiler statistics {" );
+  if (Profiler::citer().isValid()) {
+    println("Profiler statistics {");
     indent();
 
-    for( const auto& i : Profiler::citer() ) {
-      println( "%.6f s\t %s", double( i.value ) / 1e6, i.key.cstr() );
+    for (const auto& i : Profiler::citer()) {
+      println("%.6f s\t %s", double(i.value) / 1e6, i.key.cstr());
     }
 
     unindent();
-    println( "}" );
+    println("}");
   }
 }
 
-bool Log::init( const char* filePath, bool clearFile )
+bool Log::init(const char* filePath, bool clearFile)
 {
   destroy();
 
   indentLevel = 0;
 
-#if defined( __ANDROID__ ) || defined( __native_client__ )
+#if defined(__ANDROID__) || defined(__native_client__)
 
-  static_cast<void>( filePath );
-  static_cast<void>( clearFile );
+  static_cast<void>(filePath);
+  static_cast<void>(clearFile);
 
   return false;
 
 #else
 
-  if( filePath != nullptr ) {
-    strlcpy( path, filePath, 256 );
+  if (filePath != nullptr) {
+    strlcpy(path, filePath, 256);
   }
 
-  if( path[0] != '\0' ) {
-    file = fopen( path, clearFile ? "w" : "a" );
+  if (path[0] != '\0') {
+    file = fopen(path, clearFile ? "w" : "a");
   }
   return file != nullptr;
 
@@ -359,10 +359,10 @@ bool Log::init( const char* filePath, bool clearFile )
 
 void Log::destroy()
 {
-#if !defined( __ANDROID__ ) && !defined( __native_client__ )
+#if !defined(__ANDROID__) && !defined(__native_client__)
 
-  if( file != nullptr ) {
-    fclose( file );
+  if (file != nullptr) {
+    fclose(file);
     file = nullptr;
   }
 
@@ -371,201 +371,201 @@ void Log::destroy()
 #endif
 }
 
-const Log& Log::operator << ( bool b ) const
+const Log& Log::operator << (bool b) const
 {
-  putsRaw( b ? "true" : "false" );
+  putsRaw(b ? "true" : "false");
   return *this;
 }
 
-const Log& Log::operator << ( char c ) const
+const Log& Log::operator << (char c) const
 {
-  printRaw( "%c", c );
+  printRaw("%c", c);
   return *this;
 }
 
-const Log& Log::operator << ( byte b ) const
+const Log& Log::operator << (byte b) const
 {
-  printRaw( "%d", b );
+  printRaw("%d", b);
   return *this;
 }
 
-const Log& Log::operator << ( ubyte b ) const
+const Log& Log::operator << (ubyte b) const
 {
-  printRaw( "%u", b );
+  printRaw("%u", b);
   return *this;
 }
 
-const Log& Log::operator << ( short s ) const
+const Log& Log::operator << (short s) const
 {
-  printRaw( "%hd", s );
+  printRaw("%hd", s);
   return *this;
 }
 
-const Log& Log::operator << ( ushort s ) const
+const Log& Log::operator << (ushort s) const
 {
-  printRaw( "%hu", s );
+  printRaw("%hu", s);
   return *this;
 }
 
-const Log& Log::operator << ( int i ) const
+const Log& Log::operator << (int i) const
 {
-  printRaw( "%d", i );
+  printRaw("%d", i);
   return *this;
 }
 
-const Log& Log::operator << ( uint i ) const
+const Log& Log::operator << (uint i) const
 {
-  printRaw( "%u", i );
+  printRaw("%u", i);
   return *this;
 }
 
-const Log& Log::operator << ( long l ) const
+const Log& Log::operator << (long l) const
 {
-  printRaw( "%ld", l );
+  printRaw("%ld", l);
   return *this;
 }
 
-const Log& Log::operator << ( ulong l ) const
+const Log& Log::operator << (ulong l) const
 {
-  printRaw( "%lu", l );
+  printRaw("%lu", l);
   return *this;
 }
 
-const Log& Log::operator << ( long64 l ) const
+const Log& Log::operator << (long64 l) const
 {
 #ifdef _WIN32
-  printRaw( "%ld", long( l ) );
+  printRaw("%ld", long(l));
 #else
-  printRaw( "%lld", l );
+  printRaw("%lld", l);
 #endif
   return *this;
 }
 
-const Log& Log::operator << ( ulong64 l ) const
+const Log& Log::operator << (ulong64 l) const
 {
 #ifdef _WIN32
-  printRaw( "%lu", ulong( l ) );
+  printRaw("%lu", ulong(l));
 #else
-  printRaw( "%llu", l );
+  printRaw("%llu", l);
 #endif
   return *this;
 }
 
-const Log& Log::operator << ( float f ) const
+const Log& Log::operator << (float f) const
 {
-  printRaw( "%g", f );
+  printRaw("%g", f);
   return *this;
 }
 
-const Log& Log::operator << ( double d ) const
+const Log& Log::operator << (double d) const
 {
-  printRaw( "%g", d );
+  printRaw("%g", d);
   return *this;
 }
 
-const Log& Log::operator << ( const String& s ) const
+const Log& Log::operator << (const String& s) const
 {
-  putsRaw( s );
+  putsRaw(s);
   return *this;
 }
 
-const Log& Log::operator << ( const char* s ) const
+const Log& Log::operator << (const char* s) const
 {
-  putsRaw( s );
+  putsRaw(s);
   return *this;
 }
 
-const Log& Log::operator << ( const Vec3& v ) const
+const Log& Log::operator << (const Vec3& v) const
 {
-  printRaw( "(%g %g %g)", v.x, v.y, v.z );
+  printRaw("(%g %g %g)", v.x, v.y, v.z);
   return *this;
 }
 
-const Log& Log::operator << ( const Vec4& v ) const
+const Log& Log::operator << (const Vec4& v) const
 {
-  printRaw( "(%g %g %g %g)", v.x, v.y, v.z, v.w );
+  printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.w);
   return *this;
 }
 
-const Log& Log::operator << ( const Point& p ) const
+const Log& Log::operator << (const Point& p) const
 {
-  printRaw( "[%g %g %g]", p.x, p.y, p.z );
+  printRaw("[%g %g %g]", p.x, p.y, p.z);
   return *this;
 }
 
-const Log& Log::operator << ( const Plane& p ) const
+const Log& Log::operator << (const Plane& p) const
 {
-  printRaw( "(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d );
+  printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
   return *this;
 }
 
-const Log& Log::operator << ( const Quat& q ) const
+const Log& Log::operator << (const Quat& q) const
 {
-  printRaw( "[%g %g %g %g]", q.x, q.y, q.z, q.w );
+  printRaw("[%g %g %g %g]", q.x, q.y, q.z, q.w);
   return *this;
 }
 
-const Log& Log::operator << ( const Mat3& m ) const
+const Log& Log::operator << (const Mat3& m) const
 {
-  printRaw( "[%g %g %g; %g %g %g; %g %g %g]",
-            m.x.x, m.x.y, m.x.z,
-            m.y.x, m.y.y, m.y.z,
-            m.z.x, m.z.y, m.z.z );
+  printRaw("[%g %g %g; %g %g %g; %g %g %g]",
+           m.x.x, m.x.y, m.x.z,
+           m.y.x, m.y.y, m.y.z,
+           m.z.x, m.z.y, m.z.z);
   return *this;
 }
 
-const Log& Log::operator << ( const Mat4& m ) const
+const Log& Log::operator << (const Mat4& m) const
 {
-  printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
-            m.x.x, m.x.y, m.x.z, m.x.w,
-            m.y.x, m.y.y, m.y.z, m.y.w,
-            m.z.x, m.z.y, m.z.z, m.z.w,
-            m.w.x, m.w.y, m.w.z, m.w.w );
+  printRaw("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
+           m.x.x, m.x.y, m.x.z, m.x.w,
+           m.y.x, m.y.y, m.y.z, m.y.w,
+           m.z.x, m.z.y, m.z.z, m.z.w,
+           m.w.x, m.w.y, m.w.z, m.w.w);
   return *this;
 }
 
-const Log& Log::operator << ( const InputStream& is ) const
+const Log& Log::operator << (const InputStream& is) const
 {
-  OZ_PRINT_BOTH( {
-    fwrite( is.begin(), 1, size_t( is.tell() ), stream );
-    fputc( '\n', stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fwrite(is.begin(), 1, size_t(is.tell()), stream);
+    fputc('\n', stream);
+    fflush(stream);
+  });
   return *this;
 }
 
 
-const Log& Log::operator << ( const Buffer& buffer ) const
+const Log& Log::operator << (const Buffer& buffer) const
 {
-  OZ_PRINT_BOTH( {
-    fwrite( buffer.begin(), 1, size_t( buffer.length() ), stream );
-    fputc( '\n', stream );
-    fflush( stream );
-  } );
+  OZ_PRINT_BOTH({
+    fwrite(buffer.begin(), 1, size_t(buffer.length()), stream);
+    fputc('\n', stream);
+    fflush(stream);
+  });
   return *this;
 }
 
-const Log& Log::operator << ( const File& file ) const
+const Log& Log::operator << (const File& file) const
 {
-  printRaw( "%s", file.path().cstr() );
+  printRaw("%s", file.path().cstr());
   return *this;
 }
 
-const Log& Log::operator << ( const Time& time ) const
+const Log& Log::operator << (const Time& time) const
 {
-  printRaw( "%s", time.toString().cstr() );
+  printRaw("%s", time.toString().cstr());
   return *this;
 }
 
-const Log& Log::operator << ( const JSON& json ) const
+const Log& Log::operator << (const JSON& json) const
 {
-  printRaw( "%s", json.toString().cstr() );
+  printRaw("%s", json.toString().cstr());
   return *this;
 }
 
-const Log& Log::operator << ( volatile const void* p ) const
+const Log& Log::operator << (volatile const void* p) const
 {
-  printRaw( "%p", p );
+  printRaw("%p", p);
   return *this;
 }
 

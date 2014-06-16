@@ -64,12 +64,12 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  Semaphore( const Semaphore& ) = delete;
+  Semaphore(const Semaphore&) = delete;
 
   /**
    * Copying or moving is not possible.
    */
-  Semaphore& operator = ( const Semaphore& ) = delete;
+  Semaphore& operator = (const Semaphore&) = delete;
 
   /**
    * Get current counter value.

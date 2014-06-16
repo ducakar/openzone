@@ -306,7 +306,7 @@ private:
 public:
 
   // create ozBSP from a Quake 3 QBSP and optimise it
-  void build( const char* name );
+  void build(const char* name);
 
 };
 

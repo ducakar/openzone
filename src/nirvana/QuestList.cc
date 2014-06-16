@@ -27,62 +27,62 @@ namespace oz
 {
 
 QuestList::QuestList() :
-  activeQuest( -1 )
+  activeQuest(-1)
 {}
 
-void QuestList::add( const char* title, const char* description, const Point& place,
-                     Quest::State state )
+void QuestList::add(const char* title, const char* description, const Point& place,
+                    Quest::State state)
 {
-  if( quests.isEmpty() ) {
+  if (quests.isEmpty()) {
     activeQuest = 0;
   }
 
   Quest quest = { title, description, place, state };
-  quests.add( static_cast<Quest&&>( quest ) );
+  quests.add(static_cast<Quest&&>(quest));
 }
 
-void QuestList::remove( int index )
+void QuestList::remove(int index)
 {
-  quests.erase( index );
+  quests.erase(index);
 
-  if( index < activeQuest ) {
+  if (index < activeQuest) {
     --activeQuest;
 
-    if( quests.isEmpty() ) {
+    if (quests.isEmpty()) {
       activeQuest = -1;
     }
   }
 }
 
-void QuestList::read( InputStream* is )
+void QuestList::read(InputStream* is)
 {
   int nQuests = is->readInt();
 
-  for( int i = 0; i < nQuests; ++i ) {
-    quests.add( Quest() );
+  for (int i = 0; i < nQuests; ++i) {
+    quests.add(Quest());
     Quest& quest = quests.last();
 
     quest.title       = is->readString();
     quest.description = is->readString();
     quest.place       = is->readPoint();
-    quest.state       = Quest::State( is->readInt() );
+    quest.state       = Quest::State(is->readInt());
   }
 
   activeQuest = is->readInt();
 }
 
-void QuestList::write( OutputStream* os ) const
+void QuestList::write(OutputStream* os) const
 {
-  os->writeInt( quests.length() );
+  os->writeInt(quests.length());
 
-  for( const Quest& quest : quests ) {
-    os->writeString( quest.title );
-    os->writeString( quest.description );
-    os->writePoint( quest.place );
-    os->writeInt( quest.state );
+  for (const Quest& quest : quests) {
+    os->writeString(quest.title);
+    os->writeString(quest.description);
+    os->writePoint(quest.place);
+    os->writeInt(quest.state);
   }
 
-  os->writeInt( activeQuest );
+  os->writeInt(activeQuest);
 }
 
 void QuestList::load()

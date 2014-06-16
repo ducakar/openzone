@@ -47,21 +47,21 @@ const char* const IMAGE_EXTENSIONS[] = {
   ".tiff"
 };
 
-bool Context::isBaseTexture( const char* path_ )
+bool Context::isBaseTexture(const char* path_)
 {
   String path = path_;
-  return !path.endsWith( "_d" ) && !path.endsWith( "_m" ) && !path.endsWith( "_s" ) &&
-         !path.endsWith( "_spec" ) && !path.endsWith( "_g" ) && !path.endsWith( "_glow" ) &&
-         !path.endsWith( ".blend" ) && !path.endsWith( "_n" ) && !path.endsWith( "_nm" ) &&
-         !path.endsWith( "_normal" ) && !path.endsWith( "_local" );
+  return !path.endsWith("_d") && !path.endsWith("_m") && !path.endsWith("_s") &&
+         !path.endsWith("_spec") && !path.endsWith("_g") && !path.endsWith("_glow") &&
+         !path.endsWith(".blend") && !path.endsWith("_n") && !path.endsWith("_nm") &&
+         !path.endsWith("_normal") && !path.endsWith("_local");
 }
 
-void Context::buildTexture( const char* basePath_, const char* destBasePath_, bool allLayers )
+void Context::buildTexture(const char* basePath_, const char* destBasePath_, bool allLayers)
 {
-  Log::print( "Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_ );
+  Log::print("Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_);
 
   int imageOptions = ImageBuilder::MIPMAPS_BIT;
-  if( useS3TC ) {
+  if (useS3TC) {
     imageOptions |= ImageBuilder::COMPRESSION_BIT;
   }
 
@@ -81,116 +81,116 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
 
   File diffuse, masks, specular, emission, normals;
 
-  for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( diffuse.path().isEmpty() || diffuse.type() == File::MISSING ) {
-      diffuse = File( diffuseBasePath + IMAGE_EXTENSIONS[i] );
+  for (int i = 0; i < aLength(IMAGE_EXTENSIONS); ++i) {
+    if (diffuse.path().isEmpty() || diffuse.type() == File::MISSING) {
+      diffuse = File(diffuseBasePath + IMAGE_EXTENSIONS[i]);
     }
 
-    if( allLayers ) {
-      if( masks.path().isEmpty() || masks.type() == File::MISSING ) {
-        masks = File( masksBasePath + IMAGE_EXTENSIONS[i] );
+    if (allLayers) {
+      if (masks.path().isEmpty() || masks.type() == File::MISSING) {
+        masks = File(masksBasePath + IMAGE_EXTENSIONS[i]);
       }
 
-      if( specular.path().isEmpty() || specular.type() == File::MISSING ) {
-        specular = File( specular1BasePath + IMAGE_EXTENSIONS[i] );
+      if (specular.path().isEmpty() || specular.type() == File::MISSING) {
+        specular = File(specular1BasePath + IMAGE_EXTENSIONS[i]);
       }
-      if( specular.type() == File::MISSING ) {
-        specular = File( specular2BasePath + IMAGE_EXTENSIONS[i] );
-      }
-
-      if( emission.path().isEmpty() || emission.type() == File::MISSING ) {
-        emission = File( emission1BasePath + IMAGE_EXTENSIONS[i] );
-      }
-      if( emission.type() == File::MISSING ) {
-        emission = File( emission2BasePath + IMAGE_EXTENSIONS[i] );
-      }
-      if( emission.type() == File::MISSING ) {
-        emission = File( emission3BasePath + IMAGE_EXTENSIONS[i] );
+      if (specular.type() == File::MISSING) {
+        specular = File(specular2BasePath + IMAGE_EXTENSIONS[i]);
       }
 
-      if( normals.path().isEmpty() || normals.type() == File::MISSING ) {
-        normals = File( normals1BasePath + IMAGE_EXTENSIONS[i] );
+      if (emission.path().isEmpty() || emission.type() == File::MISSING) {
+        emission = File(emission1BasePath + IMAGE_EXTENSIONS[i]);
       }
-      if( normals.type() == File::MISSING ) {
-        normals = File( normals2BasePath + IMAGE_EXTENSIONS[i] );
+      if (emission.type() == File::MISSING) {
+        emission = File(emission2BasePath + IMAGE_EXTENSIONS[i]);
       }
-      if( normals.type() == File::MISSING ) {
-        normals = File( normals3BasePath + IMAGE_EXTENSIONS[i] );
+      if (emission.type() == File::MISSING) {
+        emission = File(emission3BasePath + IMAGE_EXTENSIONS[i]);
       }
-      if( normals.type() == File::MISSING ) {
-        normals = File( normals4BasePath + IMAGE_EXTENSIONS[i] );
+
+      if (normals.path().isEmpty() || normals.type() == File::MISSING) {
+        normals = File(normals1BasePath + IMAGE_EXTENSIONS[i]);
+      }
+      if (normals.type() == File::MISSING) {
+        normals = File(normals2BasePath + IMAGE_EXTENSIONS[i]);
+      }
+      if (normals.type() == File::MISSING) {
+        normals = File(normals3BasePath + IMAGE_EXTENSIONS[i]);
+      }
+      if (normals.type() == File::MISSING) {
+        normals = File(normals4BasePath + IMAGE_EXTENSIONS[i]);
       }
     }
   }
 
-  if( diffuse.type() != File::MISSING ) {
-    ImageBuilder::convertToDDS( diffuse, imageOptions, destBasePath + ".dds" );
+  if (diffuse.type() != File::MISSING) {
+    ImageBuilder::convertToDDS(diffuse, imageOptions, destBasePath + ".dds");
   }
   else {
-    OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
+    OZ_ERROR("Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr());
   }
 
-  if( masks.type() != File::MISSING ) {
-    ImageBuilder::convertToDDS( masks, imageOptions, destBasePath + "_m.dds" );
+  if (masks.type() != File::MISSING) {
+    ImageBuilder::convertToDDS(masks, imageOptions, destBasePath + "_m.dds");
   }
   else {
     ImageData specularImage;
     ImageData emissionImage;
 
-    if( specular.type() != File::MISSING ) {
-      specularImage = ImageBuilder::loadImage( specular );
+    if (specular.type() != File::MISSING) {
+      specularImage = ImageBuilder::loadImage(specular);
       specularImage.flags = 0;
     }
-    if( emission.type() != File::MISSING ) {
-      emissionImage = ImageBuilder::loadImage( emission );
+    if (emission.type() != File::MISSING) {
+      emissionImage = ImageBuilder::loadImage(emission);
       emissionImage.flags = 0;
     }
 
-    if( specularImage.isEmpty() && emissionImage.isEmpty() ) {
+    if (specularImage.isEmpty() && emissionImage.isEmpty()) {
       // Drop through.
     }
-    else if( emissionImage.isEmpty() ) {
-      for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
+    else if (emissionImage.isEmpty()) {
+      for (int i = 0; i < specularImage.width * specularImage.height; ++i) {
         char& r = specularImage.pixels[i*4 + 0];
         char& g = specularImage.pixels[i*4 + 1];
         char& b = specularImage.pixels[i*4 + 2];
         char& a = specularImage.pixels[i*4 + 3];
 
-        char s = char( ( r + g + b ) / 3 );
+        char s = char((r + g + b) / 3);
 
         r = s;
         g = 0;
         b = 0;
-        a = char( 0xff );
+        a = char(0xff);
       }
 
-      ImageBuilder::createDDS( &specularImage, 1, imageOptions, destBasePath + "_m.dds" );
+      ImageBuilder::createDDS(&specularImage, 1, imageOptions, destBasePath + "_m.dds");
     }
-    else if( specularImage.isEmpty() ) {
-      for( int i = 0; i < emissionImage.width * emissionImage.height; ++i ) {
+    else if (specularImage.isEmpty()) {
+      for (int i = 0; i < emissionImage.width * emissionImage.height; ++i) {
         char& r = emissionImage.pixels[i*4 + 0];
         char& g = emissionImage.pixels[i*4 + 1];
         char& b = emissionImage.pixels[i*4 + 2];
         char& a = emissionImage.pixels[i*4 + 3];
 
-        char e = char( ( r + g + b ) / 3 );
+        char e = char((r + g + b) / 3);
 
         r = 0;
         g = e;
         b = 0;
-        a = char( 0xff );
+        a = char(0xff);
       }
 
-      ImageBuilder::createDDS( &emissionImage, 1, imageOptions, destBasePath + "_m.dds" );
+      ImageBuilder::createDDS(&emissionImage, 1, imageOptions, destBasePath + "_m.dds");
     }
     else {
-      if( specularImage.width != emissionImage.width ||
-          specularImage.height != emissionImage.height )
+      if (specularImage.width != emissionImage.width ||
+          specularImage.height != emissionImage.height)
       {
-        OZ_ERROR( "Specular and emission texture masks must have the same size." );
+        OZ_ERROR("Specular and emission texture masks must have the same size.");
       }
 
-      for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
+      for (int i = 0; i < specularImage.width * specularImage.height; ++i) {
         char& r = specularImage.pixels[i*4 + 0];
         char& g = specularImage.pixels[i*4 + 1];
         char& b = specularImage.pixels[i*4 + 2];
@@ -200,24 +200,24 @@ void Context::buildTexture( const char* basePath_, const char* destBasePath_, bo
         char& eg = emissionImage.pixels[i*4 + 1];
         char& eb = emissionImage.pixels[i*4 + 2];
 
-        char s = char( ( r + g + b ) / 3 );
-        char e = char( ( er + eg + eb ) / 3 );
+        char s = char((r + g + b) / 3);
+        char e = char((er + eg + eb) / 3);
 
         r = s;
         g = e;
         b = 0;
-        a = char( 0xff );
+        a = char(0xff);
       }
 
-      ImageBuilder::createDDS( &specularImage, 1, imageOptions, destBasePath + "_m.dds" );
+      ImageBuilder::createDDS(&specularImage, 1, imageOptions, destBasePath + "_m.dds");
     }
   }
 
-  if( normals.type() != File::MISSING ) {
-    ImageBuilder::convertToDDS( normals, imageOptions, destBasePath + "_n.dds" );
+  if (normals.type() != File::MISSING) {
+    ImageBuilder::convertToDDS(normals, imageOptions, destBasePath + "_n.dds");
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Context::init()

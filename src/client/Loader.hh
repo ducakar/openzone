@@ -75,7 +75,7 @@ private:
 
 private:
 
-  static void preloadMain( void* );
+  static void preloadMain(void*);
 
   // clean unused imagines and handle screenshots
   void cleanupRender();
@@ -85,7 +85,7 @@ private:
   // preload scheduled models
   void preloadRender();
   // load scheduled models
-  void uploadRender( bool isOneShot );
+  void uploadRender(bool isOneShot);
 
   void preloadRun();
 

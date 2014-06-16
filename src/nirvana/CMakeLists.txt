@@ -1,4 +1,4 @@
-add_library( nirvana STATIC
+add_library(nirvana STATIC
 #BEGIN SOURCES
   common.hh
   Device.hh
@@ -21,4 +21,4 @@ add_library( nirvana STATIC
   TechGraph.cc
 #END SOURCES
 )
-use_pch( nirvana pch )
+use_pch(nirvana pch)

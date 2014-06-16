@@ -35,30 +35,30 @@ bool PartClass::isLoaded() const
   return false;
 }
 
-// void PartClass::init( InputStream* is )
+// void PartClass::init(InputStream* is)
 // {
 //   flags          = 0;
 //
 //   nParts         = is->readInt();
 //   velocity       = is->readVec3();
 //   velocitySpread = is->readFloat();
-//   texId          = liber.textureIndex( is->readString() );
-//   endTexId       = liber.textureIndex( is->readString() );
+//   texId          = liber.textureIndex(is->readString());
+//   endTexId       = liber.textureIndex(is->readString());
 // }
 
 void PartClass::load()
 {
-  context.requestTexture( texId );
-  context.requestTexture( endTexId );
+  context.requestTexture(texId);
+  context.requestTexture(endTexId);
 
   flags |= LOADED_BIT;
 }
 
 void PartClass::unload()
 {
-  if( flags & LOADED_BIT ) {
-    context.releaseTexture( texId );
-    context.releaseTexture( endTexId );
+  if (flags & LOADED_BIT) {
+    context.releaseTexture(texId);
+    context.releaseTexture(endTexId);
   }
 }
 

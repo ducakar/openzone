@@ -34,7 +34,7 @@ class Caelum
 {
 public:
 
-  void build( const char* name );
+  void build(const char* name);
 
 };
 

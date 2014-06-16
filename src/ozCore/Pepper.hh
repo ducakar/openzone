@@ -33,14 +33,14 @@
 #include "Semaphore.hh"
 #include "Thread.hh"
 
-#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
+#if defined(__native_client__) || defined(DOXYGEN_IGNORE)
 
 /**
  * @def OZ_NACL_IS_MAIN
  * Check if on the main thread (debug mode only).
  */
-#define OZ_NACL_IS_MAIN( boolean ) \
-  hard_assert( Thread::isMain() == boolean )
+#define OZ_NACL_IS_MAIN(boolean) \
+  hard_assert(Thread::isMain() == boolean)
 
 /**
  * @def OZ_NACL_ENTRY_POINT
@@ -70,11 +70,11 @@ class Instance;
  * a `.cc` file (out of any namespace). It is run in a new thread named "naclMain". An empty string
  * is passed as the first argument (i.e. `argc = 1` and `argv = { "" }`).
  */
-int naclMain( int argc, char** argv );
+int naclMain(int argc, char** argv);
 
 #else
 
-#define OZ_NACL_IS_MAIN( boolean )
+#define OZ_NACL_IS_MAIN(boolean)
 #define OZ_NACL_ENTRY_POINT()
 
 #endif
@@ -82,7 +82,7 @@ int naclMain( int argc, char** argv );
 namespace oz
 {
 
-#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
+#if defined(__native_client__) || defined(DOXYGEN_IGNORE)
 
 /**
  * High-level interface to NaCl %Pepper API (PPAPI).
@@ -111,7 +111,7 @@ public:
   /**
    * PPAPI callback type.
    */
-  typedef void Callback( void*, int );
+  typedef void Callback(void*, int);
 
   static int   width;    ///< Module area width.
   static int   height;   ///< Module area height.
@@ -138,7 +138,7 @@ public:
   /**
    * Execute asynchronous callback on the module's main thread.
    */
-  static void mainCall( Callback* callback, void* data );
+  static void mainCall(Callback* callback, void* data);
 
   /**
    * Return `pp::Instance` for a NaCl application or `nullptr` if not created.
@@ -148,7 +148,7 @@ public:
   /**
    * Post a message to JavaScript running on the page.
    */
-  static void post( const char* message );
+  static void post(const char* message);
 
   /**
    * Pop next message from the incoming messages queue.
@@ -158,7 +158,7 @@ public:
   /**
    * Push message to the incoming messages queue.
    */
-  static void push( const char* message );
+  static void push(const char* message);
 
   /**
    * Create PPAPI module instance.
@@ -177,10 +177,10 @@ public:
  *
  * A typical scenario:
  * <code>
- * GLuint id = loadTexture( file );
+ * GLuint id = loadTexture(file);
  * MainCall() << [&]
  * {
- *   glBindTexture( GL_TEXTURE_2D, id );
+ *   glBindTexture(GL_TEXTURE_2D, id);
  * };
  * </code>
  *
@@ -189,7 +189,7 @@ public:
  */
 class MainCall
 {
-#if defined( __native_client__ ) || defined( DOXYGEN_IGNORE )
+#if defined(__native_client__) || defined(DOXYGEN_IGNORE)
 
   friend class Thread;
 
@@ -198,7 +198,7 @@ private:
   /**
    * Callback type.
    */
-  typedef void Callback( void* data, int );
+  typedef void Callback(void* data, int);
 
 private:
 
@@ -216,11 +216,11 @@ public:
    * On platforms other that NaCl the code is executed immediately on the caller thread.
    */
   template <typename Function>
-  void operator << ( Function function ) const
+  void operator << (Function function) const
   {
 #ifdef __native_client__
 
-    if( Thread::isMain() ) {
+    if (Thread::isMain()) {
       function();
     }
     else {
@@ -229,9 +229,9 @@ public:
         Function   function;
         Semaphore* semaphore;
 
-        static void callback( void* data, int )
+        static void callback(void* data, int)
         {
-          const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+          const CallbackWrapper* cw = static_cast<const CallbackWrapper*>(data);
 
           cw->function();
           cw->semaphore->post();
@@ -239,7 +239,7 @@ public:
       };
       CallbackWrapper cw = { function, localSemaphore };
 
-      Pepper::mainCall( CallbackWrapper::callback, &cw );
+      Pepper::mainCall(CallbackWrapper::callback, &cw);
       localSemaphore->wait();
     }
 
@@ -260,7 +260,7 @@ public:
    * On platforms other that NaCl the code is executed immediately on the caller thread.
    */
   template <typename Function>
-  void operator += ( Function function ) const
+  void operator += (Function function) const
   {
 #ifdef __native_client__
 
@@ -268,16 +268,16 @@ public:
     {
       Function function;
 
-      static void callback( void* data, int )
+      static void callback(void* data, int)
       {
-        const CallbackWrapper* cw = static_cast<const CallbackWrapper*>( data );
+        const CallbackWrapper* cw = static_cast<const CallbackWrapper*>(data);
 
         cw->function();
       }
     };
     CallbackWrapper cw = { function };
 
-    Pepper::mainCall( CallbackWrapper::callback, &cw );
+    Pepper::mainCall(CallbackWrapper::callback, &cw);
 
 #else
 

@@ -49,7 +49,7 @@ struct MapPair
    * Equality operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const MapPair& p ) const
+  bool operator == (const MapPair& p) const
   {
     return key == p.key;
   }
@@ -58,7 +58,7 @@ struct MapPair
    * Less-than operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator < ( const MapPair& p ) const
+  bool operator < (const MapPair& p) const
   {
     return key < p.key;
   }
@@ -68,7 +68,7 @@ struct MapPair
    */
   template <typename Key_ = Key>
   OZ_ALWAYS_INLINE
-  bool operator == ( const Key_& k ) const
+  bool operator == (const Key_& k) const
   {
     return key == k;
   }
@@ -78,7 +78,7 @@ struct MapPair
    */
   template <typename Key_ = Key>
   OZ_ALWAYS_INLINE
-  friend bool operator < ( const Key_& k, const MapPair& p )
+  friend bool operator < (const Key_& k, const MapPair& p)
   {
     return k < p.key;
   }
@@ -101,7 +101,7 @@ struct MapPair
  * @sa `oz::Set`, `oz::HashMap`
  */
 template <typename Key, typename Value>
-class Map : private Set< detail::MapPair<Key, Value> >
+class Map : private Set<detail::MapPair<Key, Value>>
 {
 public:
 
@@ -155,22 +155,22 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Map( InitialiserList<Pair> l ) :
-    Set<Pair>( l )
+  Map(InitialiserList<Pair> l) :
+    Set<Pair>(l)
   {}
 
   /**
    * Copy constructor, copies elements.
    */
-  Map( const Map& m ) :
-    Set<Pair>( m )
+  Map(const Map& m) :
+    Set<Pair>(m)
   {}
 
   /**
    * Move constructor, moves element storage.
    */
-  Map( Map&& m ) :
-    Set<Pair>( static_cast<Map&&>( m ) )
+  Map(Map&& m) :
+    Set<Pair>(static_cast<Map&&>(m))
   {}
 
   /**
@@ -178,42 +178,42 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator = ( const Map& m )
+  Map& operator = (const Map& m)
   {
-    return static_cast<Map&>( Set<Pair>::operator = ( m ) );
+    return static_cast<Map&>(Set<Pair>::operator = (m));
   }
 
   /**
    * Move operator, moves element storage.
    */
-  Map& operator = ( Map&& m )
+  Map& operator = (Map&& m)
   {
-    return static_cast<Map&>( Set<Pair>::operator = ( static_cast<Map&&>( m ) ) );
+    return static_cast<Map&>(Set<Pair>::operator = (static_cast<Map&&>(m)));
   }
 
   /**
    * True iff respective elements are equal.
    */
-  bool operator == ( const Map& m ) const
+  bool operator == (const Map& m) const
   {
-    return Set<Pair>::operator == ( m );
+    return Set<Pair>::operator == (m);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator != ( const Map& m ) const
+  bool operator != (const Map& m) const
   {
-    return Set<Pair>::operator != ( m );
+    return Set<Pair>::operator != (m);
   }
 
   /**
    * Constant pointer to the value for a given key or `nullptr` if not found.
    */
   template <typename Key_ = Key>
-  const Value* find( const Key_& key ) const
+  const Value* find(const Key_& key) const
   {
-    int i = aBisection<Pair, Key_>( data, count, key );
+    int i = aBisection<Pair, Key_>(data, count, key);
     return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
   }
 
@@ -221,9 +221,9 @@ public:
    * Pointer to the value for a given key or `nullptr` if not found.
    */
   template <typename Key_ = Key>
-  Value* find( const Key_& key )
+  Value* find(const Key_& key)
   {
-    int i = aBisection<Pair, Key_>( data, count, key );
+    int i = aBisection<Pair, Key_>(data, count, key);
     return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
   }
 
@@ -233,17 +233,17 @@ public:
    * @return Position of the inserted element.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  int add( Key_&& key, Value_&& value )
+  int add(Key_&& key, Value_&& value)
   {
-    int i = aBisection<Pair, Key>( data, count, key );
+    int i = aBisection<Pair, Key>(data, count, key);
 
-    if( i >= 0 && data[i].key == key ) {
-      data[i].key   = static_cast<Key_&&>( key );
-      data[i].value = static_cast<Value_&&>( value );
+    if (i >= 0 && data[i].key == key) {
+      data[i].key   = static_cast<Key_&&>(key);
+      data[i].value = static_cast<Value_&&>(value);
       return i;
     }
     else {
-      insert<Key_, Value_>( i + 1, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+      insert<Key_, Value_>(i + 1, static_cast<Key_&&>(key), static_cast<Value_&&>(value));
       return i + 1;
     }
   }
@@ -252,15 +252,15 @@ public:
    * Insert an element at a given position.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  void insert( int i, Key_&& key, Value_&& value )
+  void insert(int i, Key_&& key, Value_&& value)
   {
-    hard_assert( uint( i ) <= uint( count ) );
+    hard_assert(uint(i) <= uint(count));
 
-    ensureCapacity( count + 1 );
+    ensureCapacity(count + 1);
 
-    aMoveBackward<Pair>( data + i, count - i, data + i + 1 );
-    data[i].key   = static_cast<Key_&&>( key );
-    data[i].value = static_cast<Value_&&>( value );
+    aMoveBackward<Pair>(data + i, count - i, data + i + 1);
+    data[i].key   = static_cast<Key_&&>(key);
+    data[i].value = static_cast<Value_&&>(value);
     ++count;
   }
 
@@ -270,15 +270,15 @@ public:
    * @return Position of the inserted or the existing element.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  int include( Key_&& key, Value_&& value )
+  int include(Key_&& key, Value_&& value)
   {
-    int i = aBisection<Pair, Key>( data, count, key );
+    int i = aBisection<Pair, Key>(data, count, key);
 
-    if( i >= 0 && data[i].key == key ) {
+    if (i >= 0 && data[i].key == key) {
       return i;
     }
     else {
-      insert<Key_, Value_>( i + 1, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+      insert<Key_, Value_>(i + 1, static_cast<Key_&&>(key), static_cast<Value_&&>(value));
       return i + 1;
     }
   }
@@ -288,7 +288,7 @@ public:
    */
   void free()
   {
-    for( int i = 0; i < count; ++i ) {
+    for (int i = 0; i < count; ++i) {
       delete data[i].value;
     }
     count = 0;

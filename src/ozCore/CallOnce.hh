@@ -60,12 +60,12 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  CallOnce( const CallOnce& ) = delete;
+  CallOnce(const CallOnce&) = delete;
 
   /**
    * Copying or moving is not possible.
    */
-  CallOnce& operator = ( const CallOnce& ) = delete;
+  CallOnce& operator = (const CallOnce&) = delete;
 
   /**
    * Call function if this is the first call on this object.
@@ -77,7 +77,7 @@ public:
    * If `function` is null, this object is just set as used, as if it would have already called a
    * function.
    */
-  void call( Function* function );
+  void call(Function* function);
 
 };
 

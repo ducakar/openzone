@@ -34,37 +34,37 @@ namespace client
 
 const float FragPool::FRAG_RADIUS = 1.0f;
 
-FragPool::FragPool( const oz::FragPool* pool_ ) :
-  pool( pool_ ), flags( pool_->flags )
+FragPool::FragPool(const oz::FragPool* pool_) :
+  pool(pool_), flags(pool_->flags)
 {
-  models.reserve( pool->models.length() );
+  models.reserve(pool->models.length());
 
-  for( int i = 0; i < pool->models.length(); ++i ) {
-    models.add( context.requestModel( pool->models[i] ) );
+  for (int i = 0; i < pool->models.length(); ++i) {
+    models.add(context.requestModel(pool->models[i]));
   }
 }
 
 FragPool::~FragPool()
 {
-  for( int i = 0; i < pool->models.length(); ++i ) {
-    context.releaseModel( pool->models[i] );
+  for (int i = 0; i < pool->models.length(); ++i) {
+    context.releaseModel(pool->models[i]);
   }
 }
 
-void FragPool::draw( const Frag* frag )
+void FragPool::draw(const Frag* frag)
 {
   int    index = frag->index % models.length();
   Model* model = models[index];
 
-  if( model->isLoaded() ) {
-    tf.model = Mat4::translation( frag->p - Point::ORIGIN );
-    tf.model.rotateX( frag->p.x );
-    tf.model.rotateY( frag->p.y );
-    tf.model.rotateZ( frag->p.z );
+  if (model->isLoaded()) {
+    tf.model = Mat4::translation(frag->p - Point::ORIGIN);
+    tf.model.rotateX(frag->p.x);
+    tf.model.rotateY(frag->p.y);
+    tf.model.rotateZ(frag->p.z);
 
-    tf.colour.w.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
+    tf.colour.w.w = flags & FADEOUT_BIT ? clamp(frag->life, 0.0f, 1.0f) : 1.0f;
 
-    model->schedule( 0, Model::SCENE_QUEUE );
+    model->schedule(0, Model::SCENE_QUEUE);
 
     tf.colour.w.w = 1.0f;
   }

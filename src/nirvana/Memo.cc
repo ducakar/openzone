@@ -28,13 +28,13 @@ namespace oz
 
 Pool<Memo, 1024> Memo::pool;
 
-Device* Memo::create( int, InputStream* is )
+Device* Memo::create(int, InputStream* is)
 {
-  return new Memo( is->readString() );
+  return new Memo(is->readString());
 }
 
-Memo::Memo( const char* text_ ) :
-  Device( MEMO_BIT ), text( text_ )
+Memo::Memo(const char* text_) :
+  Device(MEMO_BIT), text(text_)
 {}
 
 const char* Memo::type() const
@@ -47,9 +47,9 @@ const char* Memo::getMemo() const
   return text;
 }
 
-void Memo::write( OutputStream* os ) const
+void Memo::write(OutputStream* os) const
 {
-  os->writeString( text );
+  os->writeString(text);
 }
 
 }

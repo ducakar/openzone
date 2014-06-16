@@ -44,7 +44,7 @@ public:
   static constexpr float FLOAT_EPS = __FLT_EPSILON__;
 
   /// Not a number.
-  static constexpr float NaN = __builtin_nanf( "" );
+  static constexpr float NaN = __builtin_nanf("");
 
   /// \f$ +\infty \f$.
   static constexpr float INF = __builtin_inff();
@@ -84,106 +84,106 @@ public:
    * Round to the nearest integer towards negative infinity.
    */
   OZ_ALWAYS_INLINE
-  static float floor( float x )
+  static float floor(float x)
   {
-    return __builtin_floorf( x );
+    return __builtin_floorf(x);
   }
 
   /**
    * Round to the nearest integer towards positive infinity.
    */
   OZ_ALWAYS_INLINE
-  static float ceil( float x )
+  static float ceil(float x)
   {
-    return __builtin_ceilf( x );
+    return __builtin_ceilf(x);
   }
 
   /**
    * Round to the nearest integer, away from zero.
    */
   OZ_ALWAYS_INLINE
-  static float round( float x )
+  static float round(float x)
   {
-    return __builtin_roundf( x );
+    return __builtin_roundf(x);
   }
 
   /**
    * Round to the nearest integer, away from zero (return as int).
    */
   OZ_ALWAYS_INLINE
-  static int lround( float x )
+  static int lround(float x)
   {
-    return int( __builtin_lroundf( x ) );
+    return int(__builtin_lroundf(x));
   }
 
   /**
    * Subtract fractional part.
    */
   OZ_ALWAYS_INLINE
-  static float trunc( float x )
+  static float trunc(float x)
   {
-    return __builtin_truncf( x );
+    return __builtin_truncf(x);
   }
 
   /**
    * Reminder.
    */
   OZ_ALWAYS_INLINE
-  static float fmod( float x, float y )
+  static float fmod(float x, float y)
   {
-    hard_assert( y != 0.0f );
+    hard_assert(y != 0.0f);
 
-    return __builtin_fmodf( x, y );
+    return __builtin_fmodf(x, y);
   }
 
   /**
    * Get integral and fractional parts.
    */
   OZ_ALWAYS_INLINE
-  static float modf( float x, float* integral )
+  static float modf(float x, float* integral)
   {
-    return __builtin_modff( x, integral );
+    return __builtin_modff(x, integral);
   }
 
   /**
    * Square root.
    */
   OZ_ALWAYS_INLINE
-  static float sqrt( float x )
+  static float sqrt(float x)
   {
-    hard_assert( x >= 0.0f );
+    hard_assert(x >= 0.0f);
 
-    return __builtin_sqrtf( x );
+    return __builtin_sqrtf(x);
   }
 
   /**
    * Exponent function (base e).
    */
   OZ_ALWAYS_INLINE
-  static float exp( float x )
+  static float exp(float x)
   {
-    return __builtin_expf( x );
+    return __builtin_expf(x);
   }
 
   /**
    * Exponent function (base 2).
    */
   OZ_ALWAYS_INLINE
-  static float exp2( float x )
+  static float exp2(float x)
   {
-    return __builtin_exp2f( x );
+    return __builtin_exp2f(x);
   }
 
   /**
    * Exponent function (base 10).
    */
   OZ_ALWAYS_INLINE
-  static float exp10( float x )
+  static float exp10(float x)
   {
 #ifdef OZ_CLANG
-    return __builtin_expf( __builtin_logf( 10.0f ) * x );
+    return __builtin_expf(__builtin_logf(10.0f) * x);
 #else
-    return __builtin_exp10f( x );
+    return __builtin_exp10f(x);
 #endif
   }
 
@@ -191,134 +191,134 @@ public:
    * Logarithm (base e).
    */
   OZ_ALWAYS_INLINE
-  static float log( float x )
+  static float log(float x)
   {
-    hard_assert( x > 0.0f );
+    hard_assert(x > 0.0f);
 
-    return __builtin_logf( x );
+    return __builtin_logf(x);
   }
 
   /**
    * Logarithm (base 2).
    */
   OZ_ALWAYS_INLINE
-  static float log2( float x )
+  static float log2(float x)
   {
-    hard_assert( x > 0.0f );
+    hard_assert(x > 0.0f);
 
-    return __builtin_log2f( x );
+    return __builtin_log2f(x);
   }
 
   /**
    * Logarithm (base 10).
    */
   OZ_ALWAYS_INLINE
-  static float log10( float x )
+  static float log10(float x)
   {
-    hard_assert( x > 0.0f );
+    hard_assert(x > 0.0f);
 
-    return __builtin_log10f( x );
+    return __builtin_log10f(x);
   }
 
   /**
    * Power.
    */
   OZ_ALWAYS_INLINE
-  static float pow( float x, float y )
+  static float pow(float x, float y)
   {
-    hard_assert( x > 0.0f || ( x == 0.0f && y >= 0.0f ) );
+    hard_assert(x > 0.0f || (x == 0.0f && y >= 0.0f));
 
-    return __builtin_powf( x, y );
+    return __builtin_powf(x, y);
   }
 
   /**
    * Sine.
    */
   OZ_ALWAYS_INLINE
-  static float sin( float x )
+  static float sin(float x)
   {
-    return __builtin_sinf( x );
+    return __builtin_sinf(x);
   }
 
   /**
    * Cosine.
    */
   OZ_ALWAYS_INLINE
-  static float cos( float x )
+  static float cos(float x)
   {
-    return __builtin_cosf( x );
+    return __builtin_cosf(x);
   }
 
   /**
    * `sincos` function, calculates both sine and cosine at a time.
    */
   OZ_ALWAYS_INLINE
-  static void sincos( float x, float* s, float* c )
+  static void sincos(float x, float* s, float* c)
   {
     // No need to use sincosf(). GCC optimises the following calls into one sincosf() call and
     // LLVM/Clang is missing a built-in for sincosf().
-    *s = __builtin_sinf( x );
-    *c = __builtin_cosf( x );
+    *s = __builtin_sinf(x);
+    *c = __builtin_cosf(x);
   }
 
   /**
    * Tangent function.
    */
   OZ_ALWAYS_INLINE
-  static float tan( float x )
+  static float tan(float x)
   {
-    return __builtin_tanf( x );
+    return __builtin_tanf(x);
   }
 
   /**
    * Arc sine.
    */
   OZ_ALWAYS_INLINE
-  static float asin( float x )
+  static float asin(float x)
   {
-    hard_assert( -1.0f <= x && x <= 1.0f );
+    hard_assert(-1.0f <= x && x <= 1.0f);
 
-    return __builtin_asinf( x );
+    return __builtin_asinf(x);
   }
 
   /**
    * Arc cosine.
    */
   OZ_ALWAYS_INLINE
-  static float acos( float x )
+  static float acos(float x)
   {
-    hard_assert( -1.0f <= x && x <= 1.0f );
+    hard_assert(-1.0f <= x && x <= 1.0f);
 
-    return __builtin_acosf( x );
+    return __builtin_acosf(x);
   }
 
   /**
    * Arc tangent function.
    */
   OZ_ALWAYS_INLINE
-  static float atan( float x )
+  static float atan(float x)
   {
-    return __builtin_atanf( x );
+    return __builtin_atanf(x);
   }
 
   /**
    * Arc tangent of two variables.
    */
   OZ_ALWAYS_INLINE
-  static float atan2( float x, float y )
+  static float atan2(float x, float y)
   {
-    return __builtin_atan2f( x, y );
+    return __builtin_atan2f(x, y);
   }
 
   /**
    * True iff the number is not NaN or infinity.
    */
   OZ_ALWAYS_INLINE
-  static bool isFinite( float x )
+  static bool isFinite(float x)
   {
     // isfinite() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
     // Furthermore, those expressions are faster than __builtin_isfinite().
-#if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
+#if defined(OZ_GCC) && defined(__FINITE_MATH_ONLY__)
     return x + 1.0e38f != x;
 #else
     return x + 1.0e38f != x && x == x;
@@ -329,11 +329,11 @@ public:
    * True iff the number (positive or negative) infinity.
    */
   OZ_ALWAYS_INLINE
-  static bool isInf( float x )
+  static bool isInf(float x)
   {
     // isinf() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
     // Furthermore, those expressions are faster than __builtin_isinf().
-#if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
+#if defined(OZ_GCC) && defined(__FINITE_MATH_ONLY__)
     return x + 1.0e38f == x && x * 0.0f != x;
 #else
     return x + 1.0e38f == x;
@@ -344,11 +344,11 @@ public:
    * True iff the number is NaN.
    */
   OZ_ALWAYS_INLINE
-  static bool isNaN( float x )
+  static bool isNaN(float x)
   {
     // isnan() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
     // Furthermore, those expressions are faster than __builtin_isnan().
-#if defined( OZ_GCC ) && defined( __FINITE_MATH_ONLY__ )
+#if defined(OZ_GCC) && defined(__FINITE_MATH_ONLY__)
     return x + 1.0e38f == x && x * 0.0f == x;
 #else
     return x != x;
@@ -359,16 +359,16 @@ public:
    * True iff the number is not subnormal.
    */
   OZ_ALWAYS_INLINE
-  static bool isNormal( float x )
+  static bool isNormal(float x)
   {
-    return __builtin_isnormal( x );
+    return __builtin_isnormal(x);
   }
 
   /**
    * Sign, -1.0 for negative and 1.0 for non-negative.
    */
   OZ_ALWAYS_INLINE
-  static float sgn( float x )
+  static float sgn(float x)
   {
     return x < 0.0f ? -1.0f : 1.0f;
   }
@@ -377,18 +377,18 @@ public:
    * Remainder, always non-negative, on interval [0, y).
    */
   OZ_ALWAYS_INLINE
-  static float mod( float x, float y )
+  static float mod(float x, float y)
   {
-    hard_assert( y > 0.0f );
+    hard_assert(y > 0.0f);
 
-    return x - __builtin_floorf( x / y ) * y;
+    return x - __builtin_floorf(x / y) * y;
   }
 
   /**
    * Convert degrees to radians.
    */
   OZ_ALWAYS_INLINE
-  static float rad( float x )
+  static float rad(float x)
   {
     return TAU / 360.0f * x;
   }
@@ -397,7 +397,7 @@ public:
    * Convert radians to degrees.
    */
   OZ_ALWAYS_INLINE
-  static float deg( float x )
+  static float deg(float x)
   {
     return 360.0f / TAU * x;
   }
@@ -406,7 +406,7 @@ public:
    * Get floating-point value as a bit-field.
    */
   OZ_ALWAYS_INLINE
-  static uint toBits( float x )
+  static uint toBits(float x)
   {
     FloatToBits fb = { x };
     return fb.bits;
@@ -416,7 +416,7 @@ public:
    * Get floating-point value represented by a bit-field.
    */
   OZ_ALWAYS_INLINE
-  static float fromBits( uint b )
+  static float fromBits(uint b)
   {
     BitsToFloat bf = { b };
     return bf.value;
@@ -426,28 +426,28 @@ public:
    * Fast square root (using improved algorithm from Quake).
    */
   OZ_ALWAYS_INLINE
-  static float fastSqrt( float x )
+  static float fastSqrt(float x)
   {
-    hard_assert( x >= 0.0f );
+    hard_assert(x >= 0.0f);
 
     FloatToBits fb = { x };
 
-    fb.bits = 0x5f375a86 - ( fb.bits >> 1 );
-    return x * fb.value * ( 1.5f - 0.5f * x * fb.value*fb.value );
+    fb.bits = 0x5f375a86 - (fb.bits >> 1);
+    return x * fb.value * (1.5f - 0.5f * x * fb.value*fb.value);
   }
 
   /**
    * Fast inverse square root (using improved algorithm from Quake).
    */
   OZ_ALWAYS_INLINE
-  static float fastInvSqrt( float x )
+  static float fastInvSqrt(float x)
   {
-    hard_assert( x > 0.0f );
+    hard_assert(x > 0.0f);
 
     FloatToBits fb = { x };
 
-    fb.bits = 0x5f375a86 - ( fb.bits >> 1 );
-    return fb.value * ( 1.5f - 0.5f * x * fb.value*fb.value );
+    fb.bits = 0x5f375a86 - (fb.bits >> 1);
+    return fb.value * (1.5f - 0.5f * x * fb.value*fb.value);
   }
 
   /**
@@ -455,9 +455,9 @@ public:
    */
   template <typename Value = int>
   OZ_ALWAYS_INLINE
-  static int index1( Value v )
+  static int index1(Value v)
   {
-    return v == 0 ? -1 : int( sizeof( ulong64 ) * 8 - 1 ) - __builtin_clzll( ulong64( v ) );
+    return v == 0 ? -1 : int(sizeof(ulong64) * 8 - 1) - __builtin_clzll(ulong64(v));
   }
 
   /**
@@ -465,9 +465,9 @@ public:
    */
   template <typename Value = int>
   OZ_ALWAYS_INLINE
-  static bool isPow2( Value v )
+  static bool isPow2(Value v)
   {
-    return 0 < v && ( v & ( v - 1 ) ) == 0;
+    return 0 < v && (v & (v - 1)) == 0;
   }
 
   /**
@@ -475,11 +475,11 @@ public:
    */
   template <typename Value, typename Real>
   OZ_ALWAYS_INLINE
-  static Value mix( const Value& a, const Value& b, Real t )
+  static Value mix(const Value& a, const Value& b, Real t)
   {
-    hard_assert( 0 <= t && t <= 1 );
+    hard_assert(0 <= t && t <= 1);
 
-    return a + t * ( b - a );
+    return a + t * (b - a);
   }
 
   /**
@@ -487,9 +487,9 @@ public:
    */
   template <typename Real>
   OZ_ALWAYS_INLINE
-  static Real step( Real edge, Real t )
+  static Real step(Real edge, Real t)
   {
-    hard_assert( 0 <= edge && edge <= 1 );
+    hard_assert(0 <= edge && edge <= 1);
 
     return t < edge ? 0 : 1;
   }
@@ -499,22 +499,22 @@ public:
    */
   template <typename Real>
   OZ_ALWAYS_INLINE
-  static Real smooth( Real t )
+  static Real smooth(Real t)
   {
-    hard_assert( 0 <= t && t <= 1 );
+    hard_assert(0 <= t && t <= 1);
 
-    return t*t*( 3 - 2*t );
+    return t*t*(3 - 2*t);
   }
 
   /**
    * %Set seed for random generator.
    */
-  static void seed( int n );
+  static void seed(int n);
 
   /**
    * Random integer between from [0, `max`).
    */
-  static int rand( int max );
+  static int rand(int max);
 
   /**
    * Random float number from [0, 1].

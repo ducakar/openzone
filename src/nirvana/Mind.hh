@@ -48,21 +48,21 @@ public:
   int   side;
   int   bot;
 
-  static bool hasCollided( const Bot* botObj );
+  static bool hasCollided(const Bot* botObj);
 
 public:
 
   explicit Mind();
-  explicit Mind( int bot );
-  explicit Mind( int bot, InputStream* is );
+  explicit Mind(int bot);
+  explicit Mind(int bot, InputStream* is);
   ~Mind();
 
-  Mind( Mind&& m );
-  Mind& operator = ( Mind&& m );
+  Mind(Mind&& m);
+  Mind& operator = (Mind&& m);
 
-  void update( bool doRegularUpdate );
+  void update(bool doRegularUpdate);
 
-  void write( OutputStream* os ) const;
+  void write(OutputStream* os) const;
 
 };
 

@@ -49,37 +49,35 @@ void Mouse::update()
 {
   icon = ARROW;
 
-  if( doShow ) {
+  if (doShow) {
     float minX = 0.0f;
     float minY = 0.0f;
-    float maxX = float( camera.width ) - 1.0f;
-    float maxY = float( camera.height ) - 1.0f;
+    float maxX = float(camera.width) - 1.0f;
+    float maxY = float(camera.height) - 1.0f;
 
     fineX += input.mouseX;
     fineY += input.mouseY;
 
-    if( fineX < minX ) {
-      input.lookX += ( minX - fineX ) * input.mouseSensX;
+    if (fineX < minX) {
+      input.lookX += (minX - fineX) * input.mouseSensX;
       fineX = minX;
     }
-    else if( fineX > maxX )
-    {
-      input.lookX -= ( fineX - maxX ) * input.mouseSensX;
+    else if (fineX > maxX) {
+      input.lookX -= (fineX - maxX) * input.mouseSensX;
       fineX = maxX;
     }
 
-    if( fineY < minY ) {
-      input.lookY -= ( minY - fineY ) * input.mouseSensY;
+    if (fineY < minY) {
+      input.lookY -= (minY - fineY) * input.mouseSensY;
       fineY = minY;
     }
-    else if( fineY > maxY )
-    {
-      input.lookY += ( fineY - maxY ) * input.mouseSensY;
+    else if (fineY > maxY) {
+      input.lookY += (fineY - maxY) * input.mouseSensY;
       fineY = maxY;
     }
 
-    int newX = Math::lround( fineX );
-    int newY = Math::lround( fineY );
+    int newX = Math::lround(fineX);
+    int newY = Math::lround(fineY);
 
     dx = newX - x;
     dy = newY - y;
@@ -90,8 +88,8 @@ void Mouse::update()
     input.lookX -= input.mouseX * input.mouseSensX;
     input.lookY += input.mouseY * input.mouseSensY;
 
-    fineX = float( camera.centreX );
-    fineY = float( camera.centreY );
+    fineX = float(camera.centreX);
+    fineY = float(camera.centreY);
     dy    = 0;
     dx    = 0;
     x     = camera.centreX;
@@ -103,18 +101,18 @@ void Mouse::draw()
 {
   Cursor& cursor = cursors[icon];
 
-  if( doShow ) {
-    if( icon != oldIcon || !wasShown ) {
+  if (doShow) {
+    if (icon != oldIcon || !wasShown) {
       cursor.reset();
     }
 
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, cursor.textureId() );
-    shape.fill( x - cursor.hotspotLeft(), y - cursor.height() + 1 + cursor.hotspotTop(),
-                cursor.width(), cursor.height() );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+    shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, cursor.textureId());
+    shape.fill(x - cursor.hotspotLeft(), y - cursor.height() + 1 + cursor.hotspotTop(),
+               cursor.width(), cursor.height());
+    glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-    cursor.update( timer.frameMicros / 1000 );
+    cursor.update(timer.frameMicros / 1000);
   }
 
   oldIcon  = icon;
@@ -123,10 +121,10 @@ void Mouse::draw()
 
 void Mouse::init()
 {
-  Log::print( "Initialising Mouse ..." );
+  Log::print("Initialising Mouse ...");
 
-  fineX    = float( camera.centreX );
-  fineY    = float( camera.centreY );
+  fineX    = float(camera.centreX);
+  fineY    = float(camera.centreY);
   x        = camera.centreX;
   y        = camera.centreY;
   dx       = 0;
@@ -137,26 +135,26 @@ void Mouse::init()
   doShow   = false;
   wasShown = false;
 
-  for( int i = 0; i < CURSORS_MAX; ++i ) {
-    File file = String( "@ui/cur/", NAMES[i] );
+  for (int i = 0; i < CURSORS_MAX; ++i) {
+    File file = String("@ui/cur/", NAMES[i]);
 
-    if( !cursors[i].load( file, Cursor::TEXTURE ) ) {
-      OZ_ERROR( "Cursor loading failed" );
+    if (!cursors[i].load(file, Cursor::TEXTURE)) {
+      OZ_ERROR("Cursor loading failed");
     }
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void Mouse::destroy()
 {
-  Log::print( "Destroying Mouse ..." );
+  Log::print("Destroying Mouse ...");
 
-  for( int i = 0; i < CURSORS_MAX; ++i ) {
+  for (int i = 0; i < CURSORS_MAX; ++i) {
     cursors[i].destroy();
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 Mouse mouse;

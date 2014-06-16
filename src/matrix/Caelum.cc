@@ -39,18 +39,18 @@ void Caelum::reset()
 
 void Caelum::update()
 {
-  time = Math::fmod( time + Timer::TICK_TIME, period );
+  time = Math::fmod(time + Timer::TICK_TIME, period);
 }
 
-void Caelum::read( const JSON& json )
+void Caelum::read(const JSON& json)
 {
-  id      = liber.caelumIndex( json["name"].get( "" ) );
-  heading = Math::rad( json["heading"].get( 0.0f ) );
-  period  = json["period"].get( 86400.0f );
-  time    = json["time"].get( 0.0f );
+  id      = liber.caelumIndex(json["name"].get(""));
+  heading = Math::rad(json["heading"].get(0.0f));
+  period  = json["period"].get(86400.0f);
+  time    = json["time"].get(0.0f);
 }
 
-void Caelum::read( InputStream* is )
+void Caelum::read(InputStream* is)
 {
   id      = is->readInt();
   heading = is->readFloat();
@@ -60,23 +60,23 @@ void Caelum::read( InputStream* is )
 
 JSON Caelum::write() const
 {
-  JSON json( JSON::OBJECT );
+  JSON json(JSON::OBJECT);
 
-  if( id >= 0 ) {
-    json.add( "name", liber.caela[id].name );
-    json.add( "heading", Math::deg( heading ) );
-    json.add( "period", period );
-    json.add( "time", time );
+  if (id >= 0) {
+    json.add("name", liber.caela[id].name);
+    json.add("heading", Math::deg(heading));
+    json.add("period", period);
+    json.add("time", time);
   }
   return json;
 }
 
-void Caelum::write( OutputStream* os ) const
+void Caelum::write(OutputStream* os) const
 {
-  os->writeInt( id );
-  os->writeFloat( heading );
-  os->writeFloat( period );
-  os->writeFloat( time );
+  os->writeInt(id);
+  os->writeFloat(heading);
+  os->writeFloat(period);
+  os->writeFloat(time);
 }
 
 }

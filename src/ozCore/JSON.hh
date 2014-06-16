@@ -123,12 +123,12 @@ private:
   /**
    * Internal constructor.
    */
-  explicit JSON( Data* data, Type valueType );
+  explicit JSON(Data* data, Type valueType);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.
    */
-  bool getVector( float* vector, int count ) const;
+  bool getVector(float* vector, int count) const;
 
 public:
 
@@ -138,77 +138,77 @@ public:
    * Default value is false for a boolean, 0.0 for a number, "" for a string or an empty container
    * for an array or an object.
    */
-  JSON( Type type = NIL );
+  JSON(Type type = NIL);
 
   /**
    * Create null value.
    */
-  JSON( nullptr_t );
+  JSON(nullptr_t);
 
   /**
    * Create a boolean value.
    */
-  JSON( bool value );
+  JSON(bool value);
 
   /**
    * Create a number value for an integer.
    */
-  JSON( int value );
+  JSON(int value);
 
   /**
    * Create a number value for a float.
    */
-  JSON( float value );
+  JSON(float value);
 
   /**
    * Create a number value for a double.
    */
-  JSON( double value );
+  JSON(double value);
 
   /**
    * Create a string value for a given string.
    */
-  JSON( const String& value );
+  JSON(const String& value);
 
   /**
    * Create a string value for a given string.
    */
-  JSON( const char* value );
+  JSON(const char* value);
 
   /**
    * Create an array of 3 numbers representing `Vec3` components.
    */
-  JSON( const Vec3& v );
+  JSON(const Vec3& v);
 
   /**
    * Create an array of 4 numbers representing `Vec4` components.
    */
-  JSON( const Vec4& v );
+  JSON(const Vec4& v);
 
   /**
    * Create an array of 4 numbers representing `Point` components.
    */
-  JSON( const Point& p );
+  JSON(const Point& p);
 
   /**
    * Create an array of 4 numbers representing `Plane` components.
    */
-  JSON( const Plane& p );
+  JSON(const Plane& p);
 
   /**
    * Create an array of 4 numbers representing `Quat` components.
    */
-  JSON( const Quat& q );
+  JSON(const Quat& q);
 
   /**
    * Create an array of 9 numbers representing `Mat3` components.
    */
-  JSON( const Mat3& m );
+  JSON(const Mat3& m);
 
   /**
    * Create an array of 16 numbers representing `Mat4` components.
    */
-  JSON( const Mat4& m );
+  JSON(const Mat4& m);
 
   /**
    * Create an array from initialiser list of JSON values.
@@ -219,7 +219,7 @@ public:
    * JSON array = { JSON { 0, 1 }, { 1, 2 }, { 2, 0 } };
    * @endcode
    */
-  JSON( InitialiserList<JSON> l );
+  JSON(InitialiserList<JSON> l);
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
@@ -230,12 +230,12 @@ public:
    * JSON object = { JSON::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
    * @endcode
    */
-  JSON( InitialiserList<Pair> l );
+  JSON(InitialiserList<Pair> l);
 
   /**
    * Load from a file.
    */
-  explicit JSON( const File& file );
+  explicit JSON(const File& file);
 
   /**
    * Destructor.
@@ -245,22 +245,22 @@ public:
   /**
    * Copy constructor.
    */
-  JSON( const JSON& v );
+  JSON(const JSON& v);
 
   /**
    * Move constructor.
    */
-  JSON( JSON&& v );
+  JSON(JSON&& v);
 
   /**
    * Copy operator.
    */
-  JSON& operator = ( const JSON& v );
+  JSON& operator = (const JSON& v);
 
   /**
    * Move operator.
    */
-  JSON& operator = ( JSON&& v );
+  JSON& operator = (JSON&& v);
 
   /**
    * %JSON array iterator with constant access.
@@ -326,85 +326,85 @@ public:
    *
    * If the index is out of bounds or the value not an array null, a null value is returned.
    */
-  const JSON& operator [] ( int i ) const;
+  const JSON& operator [](int i) const;
 
   /**
    * Returns value for `key` in an object.
    *
    * If the key does not exist or the value not an object, a null value is returned.
    */
-  const JSON& operator [] ( const char* key ) const;
+  const JSON& operator [](const char* key) const;
 
   /**
    * True iff value is an object and contains a given key.
    *
    * If value is not either null or an object, `System::error()` is invoked.
    */
-  bool contains( const char* key ) const;
+  bool contains(const char* key) const;
 
   /**
    * If a boolean return it, `defaultValue` otherwise.
    */
-  bool get( bool defaultValue ) const;
+  bool get(bool defaultValue) const;
 
   /**
    * If a number return it, `defaultValue` otherwise.
    */
-  double get( double defaultValue ) const;
+  double get(double defaultValue) const;
 
   /**
    * If a number return it cast to the specified numeric type, `defaultValue` otherwise.
    */
   template <typename Number>
-  Number get( Number defaultValue = Number() ) const
+  Number get(Number defaultValue = Number()) const
   {
-    return Number( get( double( defaultValue ) ) );
+    return Number(get(double(defaultValue)));
   }
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const String& get( const String& defaultValue = String::EMPTY ) const;
+  const String& get(const String& defaultValue = String::EMPTY) const;
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const char* get( const char* defaultValue = "" ) const;
+  const char* get(const char* defaultValue = "") const;
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  Vec3 get( const Vec3& defaultValue = Vec3::ZERO ) const;
+  Vec3 get(const Vec3& defaultValue = Vec3::ZERO) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Vec4`, `defaultValue` otherwise.
    */
-  Vec4 get( const Vec4& defaultValue = Vec4::ZERO ) const;
+  Vec4 get(const Vec4& defaultValue = Vec4::ZERO) const;
 
   /**
    * If an array of at least 3 numbers, return it as `Point`, `defaultValue` otherwise.
    */
-  Point get( const Point& defaultValue = Point::ORIGIN ) const;
+  Point get(const Point& defaultValue = Point::ORIGIN) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Plane`, `defaultValue` otherwise.
    */
-  Plane get( const Plane& defaultValue = Plane::ZERO ) const;
+  Plane get(const Plane& defaultValue = Plane::ZERO) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Quat`, `defaultValue` otherwise.
    */
-  Quat get( const Quat& defaultValue = Quat::ID ) const;
+  Quat get(const Quat& defaultValue = Quat::ID) const;
 
   /**
    * If an array of at least 9 numbers, return it as `Mat3`, `defaultValue` otherwise.
    */
-  Mat3 get( const Mat3& defaultValue = Mat3::ID ) const;
+  Mat3 get(const Mat3& defaultValue = Mat3::ID) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Mat4`, `defaultValue` otherwise.
    */
-  Mat4 get( const Mat4& defaultValue = Mat4::ID ) const;
+  Mat4 get(const Mat4& defaultValue = Mat4::ID) const;
 
   /**
    * Write array values to a given array.
@@ -416,13 +416,13 @@ public:
    * @return number of elements actually read.
    */
   template <typename Type>
-  int getArray( Type* array, int count, const Type& defaultValue ) const
+  int getArray(Type* array, int count, const Type& defaultValue) const
   {
     ArrayCIterator iter = arrayCIter();
-    count = min<int>( count, length() );
+    count = min<int>(count, length());
 
-    for( int i = 0; i < count; ++i, ++iter ) {
-      array[i] = iter->get( defaultValue );
+    for (int i = 0; i < count; ++i, ++iter) {
+      array[i] = iter->get(defaultValue);
     }
     return count;
   }
@@ -432,42 +432,42 @@ public:
    *
    * If the current value is not an array, `System::error()` is invoked.
    */
-  JSON& add( const JSON& json );
+  JSON& add(const JSON& json);
 
   /**
    * Append a value to array (move).
    *
    * If the current value is not an array, `System::error()` is invoked.
    */
-  JSON& add( JSON&& json );
+  JSON& add(JSON&& json);
 
   /**
    * Add a value with a given key to the object (copy) overwriting an existing entry with that key.
    *
    * If current value is not an object, `System::error()` is invoked.
    */
-  JSON& add( const char* key, const JSON& value );
+  JSON& add(const char* key, const JSON& value);
 
   /**
    * Add a value with a given key to the object (move) overwriting an existing entry with that key.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  JSON& add( const char* key, JSON&& value );
+  JSON& add(const char* key, JSON&& value);
 
   /**
    * Add a value with a given key to the object (copy) if the key does not exist in the object.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  JSON& include( const char* key, const JSON& json );
+  JSON& include(const char* key, const JSON& json);
 
   /**
    * Add a value with a given key to the object (move) if the key does not exist in the object.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  JSON& include( const char* key, JSON&& json );
+  JSON& include(const char* key, JSON&& json);
 
   /**
    * Remove element at a given index from an array.
@@ -476,7 +476,7 @@ public:
    *
    * @return false iff an invalid index was given.
    */
-  bool erase( int index );
+  bool erase(int index);
 
   /**
    * Remove element with a given key from an object.
@@ -485,7 +485,7 @@ public:
    *
    * @return true iff key was found (and removed).
    */
-  bool exclude( const char* key );
+  bool exclude(const char* key);
 
   /**
    * Recursively clear node and its children.
@@ -493,7 +493,7 @@ public:
    * @param warnUnused warn about unused variables.
    * @return True iff `warnUnused` is true and there are unused variables.
    */
-  bool clear( bool warnUnused = false );
+  bool clear(bool warnUnused = false);
 
   /**
    * String representation of a value.
@@ -507,7 +507,7 @@ public:
    *
    * This function returns string written by `write()` function.
    */
-  String toFormattedString( const Format& format = DEFAULT_FORMAT ) const;
+  String toFormattedString(const Format& format = DEFAULT_FORMAT) const;
 
   /**
    * Clear existing value and read new contents from a %JSON file.
@@ -516,12 +516,12 @@ public:
    *
    * @return true iff file is successfully read and parsed.
    */
-  bool load( const File& file );
+  bool load(const File& file);
 
   /**
    * Write to a file.
    */
-  bool save( const File& file, const Format& format = DEFAULT_FORMAT ) const;
+  bool save(const File& file, const Format& format = DEFAULT_FORMAT) const;
 
 };
 

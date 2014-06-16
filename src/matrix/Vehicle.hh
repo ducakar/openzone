@@ -60,7 +60,7 @@ private:
   static const float EJECT_EPSILON;
   static const float EJECT_MOMENTUM;
 
-  typedef void ( Vehicle::* Handler )();
+  typedef void (Vehicle::* Handler)();
 
   static const Handler HANDLERS[];
 
@@ -101,23 +101,23 @@ public:
 protected:
 
   void onDestroy() override;
-  bool onUse( Bot* user ) override;
+  bool onUse(Bot* user) override;
   void onUpdate() override;
   float getStatus() const override;
 
 public:
 
-  explicit Vehicle( const VehicleClass* clazz, int index, const Point& p, Heading heading );
-  explicit Vehicle( const VehicleClass* clazz, int index, const JSON& json );
-  explicit Vehicle( const VehicleClass* clazz, InputStream* is );
+  explicit Vehicle(const VehicleClass* clazz, int index, const Point& p, Heading heading);
+  explicit Vehicle(const VehicleClass* clazz, int index, const JSON& json);
+  explicit Vehicle(const VehicleClass* clazz, InputStream* is);
 
   JSON write() const override;
-  void write( OutputStream* os ) const override;
+  void write(OutputStream* os) const override;
 
-  void readUpdate( InputStream* is ) override;
-  void writeUpdate( OutputStream* os ) const override;
+  void readUpdate(InputStream* is) override;
+  void writeUpdate(OutputStream* os) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

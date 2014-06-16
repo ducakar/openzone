@@ -60,7 +60,7 @@ protected:
     int    hash; ///< Cached hash.
     Elem   elem; ///< Element (or key-value pair).
 
-    OZ_PLACEMENT_POOL_ALLOC( Entry )
+    OZ_PLACEMENT_POOL_ALLOC(Entry)
   };
 
   /**
@@ -83,16 +83,16 @@ protected:
      */
     OZ_ALWAYS_INLINE
     HashIterator() :
-      IteratorBase<EntryType>( nullptr ), table( nullptr ), index( 0 )
+      IteratorBase<EntryType>(nullptr), table(nullptr), index(0)
     {}
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
-    explicit HashIterator( const HashSet& ht ) :
-      IteratorBase<EntryType>( ht.size == 0 ? nullptr : ht.data[0] ), table( &ht ), index( 0 )
+    explicit HashIterator(const HashSet& ht) :
+      IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht), index(0)
     {
-      while( elem == nullptr && index < table->size - 1 ) {
+      while (elem == nullptr && index < table->size - 1) {
         ++index;
         elem = table->data[index];
       }
@@ -130,12 +130,12 @@ protected:
      */
     HashIterator& operator ++ ()
     {
-      hard_assert( elem != nullptr );
+      hard_assert(elem != nullptr);
 
-      if( elem->next != nullptr ) {
+      if (elem->next != nullptr) {
         elem = elem->next;
       }
-      else if( index == table->size - 1 ) {
+      else if (index == table->size - 1) {
         elem = nullptr;
       }
       else {
@@ -143,7 +143,7 @@ protected:
           ++index;
           elem = table->data[index];
         }
-        while( elem == nullptr && index < table->size - 1 );
+        while (elem == nullptr && index < table->size - 1);
       }
       return *this;
     }
@@ -191,19 +191,19 @@ protected:
   /**
    * True iff a bucket's chains have the same length and contain equal elements.
    */
-  static bool areChainsEqual( const Entry* entryA, const Entry* entryB )
+  static bool areChainsEqual(const Entry* entryA, const Entry* entryB)
   {
     const Entry* firstB = entryB;
 
-    while( entryA != nullptr && entryB != nullptr ) {
+    while (entryA != nullptr && entryB != nullptr) {
       const Entry* i = firstB;
       do {
-        if( i->elem == entryA->elem ) {
+        if (i->elem == entryA->elem) {
           goto nextElem;
         }
         i = i->next;
       }
-      while( i != nullptr );
+      while (i != nullptr);
 
       return false;
 
@@ -218,18 +218,18 @@ nextElem:
   /**
    * Allocate and make a copy of a given bucket chain.
    */
-  Entry* cloneChain( const Entry* entry )
+  Entry* cloneChain(const Entry* entry)
   {
     Entry* clone = nullptr;
 
-    if( entry != nullptr ) {
-      clone = new( pool ) Entry { clone, entry->hash, entry->elem };
+    if (entry != nullptr) {
+      clone = new(pool) Entry { clone, entry->hash, entry->elem };
 
       const Entry* original = entry->next;
       Entry*       prevCopy = clone;
 
-      while( original != nullptr ) {
-        prevCopy->next = new( pool ) Entry { clone, original->hash, original->elem };
+      while (original != nullptr) {
+        prevCopy->next = new(pool) Entry { clone, original->hash, original->elem };
 
         prevCopy = prevCopy->next ;
         original = original->next;
@@ -241,13 +241,13 @@ nextElem:
   /**
    * Delete all elements in a given bucket chain.
    */
-  void clearChain( Entry* entry )
+  void clearChain(Entry* entry)
   {
-    while( entry != nullptr ) {
+    while (entry != nullptr) {
       Entry* next = entry->next;
 
       entry->~Entry();
-      pool.deallocate( entry );
+      pool.deallocate(entry);
 
       entry = next;
     }
@@ -256,20 +256,20 @@ nextElem:
   /**
    * Resize bucket array and rebuild hashtable.
    */
-  void resize( int newSize )
+  void resize(int newSize)
   {
     Entry** newData = nullptr;
 
-    if( newSize != 0 ) {
+    if (newSize != 0) {
       newData = new Entry*[newSize] {};
 
       // Rebuild hashtable.
-      for( int i = 0; i < size; ++i ) {
+      for (int i = 0; i < size; ++i) {
         Entry* chain = data[i];
         Entry* next  = nullptr;
 
-        while( chain != nullptr ) {
-          uint index = uint( chain->hash ) % uint( newSize );
+        while (chain != nullptr) {
+          uint index = uint(chain->hash) % uint(newSize);
 
           next = chain->next;
           chain->next = newData[index];
@@ -291,21 +291,21 @@ nextElem:
    * Size is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
    * `GRANULARITY` greater or equal to the requested size.
    */
-  void ensureCapacity( int capacity )
+  void ensureCapacity(int capacity)
   {
-    if( capacity < 0 ) {
-      OZ_ERROR( "oz::HashMap: Capacity overflow" );
+    if (capacity < 0) {
+      OZ_ERROR("oz::HashMap: Capacity overflow");
     }
-    else if( size < capacity ) {
+    else if (size < capacity) {
       int newSize = size * 2;
-      if( newSize < capacity ) {
-        newSize = ( capacity + GRANULARITY - 1 ) & ~( GRANULARITY - 1 );
+      if (newSize < capacity) {
+        newSize = (capacity + GRANULARITY - 1) & ~(GRANULARITY - 1);
       }
-      if( newSize <= 0 ) {
-        OZ_ERROR( "oz::HashMap: Capacity overflow" );
+      if (newSize <= 0) {
+        OZ_ERROR("oz::HashMap: Capacity overflow");
       }
 
-      resize( newSize );
+      resize(newSize);
     }
   }
 
@@ -315,17 +315,17 @@ public:
    * Create an empty hashtable.
    */
   HashSet() :
-    data( nullptr ), size( 0 )
+    data(nullptr), size(0)
   {}
 
   /**
    * Initialise from an initialiser list.
    */
-  HashSet( InitialiserList<Elem> l ) :
-    data( nullptr ), size( 0 )
+  HashSet(InitialiserList<Elem> l) :
+    data(nullptr), size(0)
   {
-    for( const Elem& e : l ) {
-      add( e );
+    for (const Elem& e : l) {
+      add(e);
     }
   }
 
@@ -341,19 +341,19 @@ public:
   /**
    * Copy constructor, copies elements and storage.
    */
-  HashSet( const HashSet& ht ) :
-    data( new Entry*[ht.size] ), size( ht.size )
+  HashSet(const HashSet& ht) :
+    data(new Entry*[ht.size]), size(ht.size)
   {
-    for( int i = 0; i < ht.size; ++i ) {
-      data[i] = cloneChain( ht.data[i] );
+    for (int i = 0; i < ht.size; ++i) {
+      data[i] = cloneChain(ht.data[i]);
     }
   }
 
   /**
    * Move constructor, moves storage.
    */
-  HashSet( HashSet&& ht ) :
-    pool( static_cast< Pool<Entry, GRANULARITY>&& >( ht.pool ) ), data( ht.data ), size( ht.size )
+  HashSet(HashSet&& ht) :
+    pool(static_cast<Pool<Entry, GRANULARITY>&&>(ht.pool)), data(ht.data), size(ht.size)
   {
     ht.data = nullptr;
     ht.size = 0;
@@ -362,23 +362,23 @@ public:
   /**
    * Copy operator, copies elements and storage.
    */
-  HashSet& operator = ( const HashSet& ht )
+  HashSet& operator = (const HashSet& ht)
   {
-    if( &ht == this ) {
+    if (&ht == this) {
       return *this;
     }
 
     clear();
 
-    if( size < ht.pool.count ) {
+    if (size < ht.pool.count) {
       delete[] data;
 
       data = new Entry[ht.size];
       size = ht.size;
     }
 
-    for( int i = 0; i < size; ++i ) {
-      data[i] = i < ht.size ? cloneChain( ht.data[i] ) : nullptr;
+    for (int i = 0; i < size; ++i) {
+      data[i] = i < ht.size ? cloneChain(ht.data[i]) : nullptr;
     }
 
     return *this;
@@ -387,16 +387,16 @@ public:
   /**
    * Move operator, moves storage.
    */
-  HashSet& operator = ( HashSet&& ht )
+  HashSet& operator = (HashSet&& ht)
   {
-    if( &ht == this ) {
+    if (&ht == this) {
       return *this;
     }
 
     clear();
     delete[] data;
 
-    pool = static_cast< Pool<Entry, GRANULARITY>&& >( ht.pool );
+    pool = static_cast<Pool<Entry, GRANULARITY>&&>(ht.pool);
     data = ht.data;
     size = ht.size;
 
@@ -409,14 +409,14 @@ public:
   /**
    * True iff contained elements are equal.
    */
-  bool operator == ( const HashSet& ht ) const
+  bool operator == (const HashSet& ht) const
   {
-    if( pool.length() != ht.pool.length() ) {
+    if (pool.length() != ht.pool.length()) {
       return false;
     }
 
-    for( int i = 0; i < size; ++i ) {
-      if( !areChainsEqual( data[i], ht.data[i] ) ) {
+    for (int i = 0; i < size; ++i) {
+      if (!areChainsEqual(data[i], ht.data[i])) {
         return false;
       }
     }
@@ -426,9 +426,9 @@ public:
   /**
    * False iff contained elements are equal.
    */
-  bool operator != ( const HashSet& ht ) const
+  bool operator != (const HashSet& ht) const
   {
-    return !operator == ( ht );
+    return !operator == (ht);
   }
 
   /**
@@ -437,7 +437,7 @@ public:
   OZ_ALWAYS_INLINE
   CIterator citer() const
   {
-    return CIterator( *this );
+    return CIterator(*this);
   }
 
   /**
@@ -446,7 +446,7 @@ public:
   OZ_ALWAYS_INLINE
   Iterator iter()
   {
-    return Iterator( *this );
+    return Iterator(*this);
   }
 
   /**
@@ -455,7 +455,7 @@ public:
   OZ_ALWAYS_INLINE
   CIterator begin() const
   {
-    return CIterator( *this );
+    return CIterator(*this);
   }
 
   /**
@@ -464,7 +464,7 @@ public:
   OZ_ALWAYS_INLINE
   Iterator begin()
   {
-    return Iterator( *this );
+    return Iterator(*this);
   }
 
   /**
@@ -517,25 +517,25 @@ public:
    */
   float loadFactor() const
   {
-    return float( pool.length() ) / float( size );
+    return float(pool.length()) / float(size);
   }
 
   /**
    * True iff a given element is found in the hashtable.
    */
   template <typename Elem_ = Elem>
-  bool contains( const Elem_& elem ) const
+  bool contains(const Elem_& elem) const
   {
-    if( size == 0 ) {
+    if (size == 0) {
       return false;
     }
 
-    int    h     = hash( elem );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(elem);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem == elem ) {
+    while (entry != nullptr) {
+      if (entry->elem == elem) {
         return true;
       }
 
@@ -548,45 +548,45 @@ public:
    * Add a new element, if the element already exists in the hashtable overwrite the existing one.
    */
   template <typename Elem_ = Elem>
-  void add( Elem_&& elem )
+  void add(Elem_&& elem)
   {
-    ensureCapacity( pool.length() + 1 );
+    ensureCapacity(pool.length() + 1);
 
-    int    h     = hash( elem );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(elem);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem == elem ) {
-        entry->elem = static_cast<Elem_&&>( elem );
+    while (entry != nullptr) {
+      if (entry->elem == elem) {
+        entry->elem = static_cast<Elem_&&>(elem);
         return;
       }
       entry = entry->next;
     }
 
-    data[index] = new( pool ) Entry { data[index], h, static_cast<Elem_&&>( elem ) };
+    data[index] = new(pool) Entry { data[index], h, static_cast<Elem_&&>(elem) };
   }
 
   /**
    * Add a new element if it does not exist in the hashtable.
    */
   template <typename Elem_ = Elem>
-  void include( Elem_&& elem )
+  void include(Elem_&& elem)
   {
-    ensureCapacity( pool.length() + 1 );
+    ensureCapacity(pool.length() + 1);
 
-    int    h     = hash( elem );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(elem);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem == elem ) {
+    while (entry != nullptr) {
+      if (entry->elem == elem) {
         return;
       }
       entry = entry->next;
     }
 
-    data[index] = new( pool ) Entry { data[index], h, static_cast<Elem_&&>( elem ) };
+    data[index] = new(pool) Entry { data[index], h, static_cast<Elem_&&>(elem) };
   }
 
   /**
@@ -595,22 +595,22 @@ public:
    * @return True iff the element was found (and removed).
    */
   template <typename Elem_ = Elem>
-  bool exclude( const Elem_& elem )
+  bool exclude(const Elem_& elem)
   {
-    if( size == 0 ) {
+    if (size == 0) {
       return nullptr;
     }
 
-    uint    index = uint( hash( elem ) ) % uint( size );
+    uint    index = uint(hash(elem)) % uint(size);
     Entry*  entry = data[index];
     Entry** prev  = &data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem == elem ) {
+    while (entry != nullptr) {
+      if (entry->elem == elem) {
         *prev = entry->next;
 
         entry->~Entry();
-        pool.deallocate( entry );
+        pool.deallocate(entry);
 
         return true;
       }
@@ -630,10 +630,10 @@ public:
   {
     int newSize = pool.length() * 4 / 3;
 
-    if( newSize < size ) {
-      resize( newSize );
+    if (newSize < size) {
+      resize(newSize);
 
-      if( newSize == 0 ) {
+      if (newSize == 0) {
         pool.free();
       }
     }
@@ -644,8 +644,8 @@ public:
    */
   void clear()
   {
-    for( int i = 0; i < size; ++i ) {
-      clearChain( data[i] );
+    for (int i = 0; i < size; ++i) {
+      clearChain(data[i]);
       data[i] = nullptr;
     }
   }

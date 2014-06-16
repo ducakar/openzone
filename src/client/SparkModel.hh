@@ -45,7 +45,7 @@ private:
   List<Particle>* particles;
   float           particlesPerTick;
 
-  void createSpark( int i );
+  void createSpark(int i);
 
 public:
 

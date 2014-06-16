@@ -57,8 +57,8 @@ public:
   /**
    * Move constructor.
    */
-  ALSource( ALSource&& s ) :
-    sourceId( s.sourceId )
+  ALSource(ALSource&& s) :
+    sourceId(s.sourceId)
   {
     s.sourceId = 0;
   }
@@ -66,9 +66,9 @@ public:
   /**
    * Move operator.
    */
-  ALSource& operator = ( ALSource&& s )
+  ALSource& operator = (ALSource&& s)
   {
-    if( &s == this ) {
+    if (&s == this) {
       return *this;
     }
 

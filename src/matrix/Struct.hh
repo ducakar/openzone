@@ -38,7 +38,7 @@ class Entity
 
 private:
 
-  typedef void ( Entity::* Handler )();
+  typedef void (Entity::* Handler)();
 
   static const Handler HANDLERS[];
 
@@ -68,7 +68,7 @@ public:
 
   int index() const;
   void trigger();
-  void lock( Bot* user );
+  void lock(Bot* user);
 
 private:
 
@@ -127,110 +127,110 @@ private:
 public:
 
   // no copying
-  Struct( const Struct& ) = delete;
-  Struct& operator = ( const Struct& ) = delete;
+  Struct(const Struct&) = delete;
+  Struct& operator = (const Struct&) = delete;
 
   /**
    * Rotate vector from structure coordinate system to absolute coordinate system.
    */
-  Vec3 toAbsoluteCS( const Vec3& v ) const;
+  Vec3 toAbsoluteCS(const Vec3& v) const;
 
   /**
    * Rotate vector from absolute coordinate system to structure coordinate system.
    */
-  Vec3 toStructCS( const Vec3& v ) const;
+  Vec3 toStructCS(const Vec3& v) const;
 
   /**
    * Rotate point from structure coordinate system to absolute coordinate system.
    */
-  Point toAbsoluteCS( const Point& point ) const;
+  Point toAbsoluteCS(const Point& point) const;
 
   /**
    * Rotate point from absolute coordinate system to structure coordinate system.
    */
-  Point toStructCS( const Point& point ) const;
+  Point toStructCS(const Point& point) const;
 
   /**
    * Rotate Bounds from structure coordinate system to absolute coordinate system.
    */
-  Bounds toAbsoluteCS( const Bounds& bb ) const;
+  Bounds toAbsoluteCS(const Bounds& bb) const;
 
   /**
    * Rotate Bounds from absolute coordinate system to structure coordinate system.
    */
-  Bounds toStructCS( const Bounds& bb ) const;
+  Bounds toStructCS(const Bounds& bb) const;
 
   /**
    * Rotate AABB::dim between structure and absolute coordinate system.
    */
-  Vec3 swapDimCS( const Vec3& dim ) const;
+  Vec3 swapDimCS(const Vec3& dim) const;
 
   void destroy();
-  void damage( float damage );
+  void damage(float damage);
   void update();
 
 public:
 
-  explicit Struct( const BSP* bsp, int index, const Point& p, Heading heading );
-  explicit Struct( const BSP* bsp, int index, const JSON& json );
-  explicit Struct( const BSP* bsp, InputStream* is );
+  explicit Struct(const BSP* bsp, int index, const Point& p, Heading heading);
+  explicit Struct(const BSP* bsp, int index, const JSON& json);
+  explicit Struct(const BSP* bsp, InputStream* is);
 
   JSON write() const;
-  void write( OutputStream* os ) const;
+  void write(OutputStream* os) const;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 OZ_ALWAYS_INLINE
 inline int Entity::index() const
 {
-  return ( str->index << Struct::MAX_ENT_SHIFT ) | int( this - str->entities.begin() );
+  return (str->index << Struct::MAX_ENT_SHIFT) | int(this - str->entities.begin());
 }
 
 OZ_ALWAYS_INLINE
-inline Vec3 Struct::toAbsoluteCS( const Vec3& v ) const
+inline Vec3 Struct::toAbsoluteCS(const Vec3& v) const
 {
   return transf * v;
 }
 
 OZ_ALWAYS_INLINE
-inline Vec3 Struct::toStructCS( const Vec3& v ) const
+inline Vec3 Struct::toStructCS(const Vec3& v) const
 {
   return invTransf * v;
 }
 
 OZ_ALWAYS_INLINE
-inline Point Struct::toAbsoluteCS( const Point& point ) const
+inline Point Struct::toAbsoluteCS(const Point& point) const
 {
   return transf * point;
 }
 
 OZ_ALWAYS_INLINE
-inline Point Struct::toStructCS( const Point& point ) const
+inline Point Struct::toStructCS(const Point& point) const
 {
   return invTransf * point;
 }
 
 OZ_ALWAYS_INLINE
-inline Vec3 Struct::swapDimCS( const Vec3& dim ) const
+inline Vec3 Struct::swapDimCS(const Vec3& dim) const
 {
-  return heading & WEST_EAST_MASK ? Vec3( dim.y, dim.x, dim.z ) : dim;
+  return heading & WEST_EAST_MASK ? Vec3(dim.y, dim.x, dim.z) : dim;
 }
 
 OZ_ALWAYS_INLINE
-inline void Struct::damage( float damage )
+inline void Struct::damage(float damage)
 {
   damage -= resistance;
 
-  if( damage > 0.0f ) {
-    life = max( 0.0f, life - damage );
+  if (damage > 0.0f) {
+    life = max(0.0f, life - damage);
   }
 }
 
 OZ_ALWAYS_INLINE
 inline void Struct::update()
 {
-  if( !entities.isEmpty() || !boundObjects.isEmpty() || life == 0.0f ) {
+  if (!entities.isEmpty() || !boundObjects.isEmpty() || life == 0.0f) {
     onUpdate();
   }
 }

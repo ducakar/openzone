@@ -128,30 +128,30 @@ public:
 
 public:
 
-  void setState( State state_ )
+  void setState(State state_)
   {
     newState = state_;
   }
 
-  void setTaggedObj( Object* obj )
+  void setTaggedObj(Object* obj)
   {
     object    = obj == nullptr ? -1 : obj->index;
     objectObj = obj;
   }
 
-  void setTaggedEnt( Entity* ent )
+  void setTaggedEnt(Entity* ent)
   {
     entity    = ent == nullptr ? -1 : ent->index();
     entityObj = ent;
   }
 
-  void setBot( Bot* botObj_ )
+  void setBot(Bot* botObj_)
   {
-    if( botObj != nullptr ) {
+    if (botObj != nullptr) {
       botObj->state &= ~Bot::PLAYER_BIT;
     }
 
-    if( botObj_ == nullptr ) {
+    if (botObj_ == nullptr) {
       bot    = -1;
       botObj = nullptr;
     }
@@ -162,51 +162,51 @@ public:
       botObj_->state |= Bot::PLAYER_BIT;
     }
 
-    hard_assert( botObj == nullptr || ( botObj->flags & Object::BOT_BIT ) );
+    hard_assert(botObj == nullptr || (botObj->flags & Object::BOT_BIT));
   }
 
-  void rotateTo( const Quat& q )
+  void rotateTo(const Quat& q)
   {
     rot        = q;
     desiredRot = q;
   }
 
-  void smoothRotateTo( const Quat& q )
+  void smoothRotateTo(const Quat& q)
   {
     desiredRot = q;
   }
 
-  void moveTo( const Point& p_ )
+  void moveTo(const Point& p_)
   {
     p          = p_;
     desiredPos = p_;
   }
 
-  void magnify( float mag_ )
+  void magnify(float mag_)
   {
     mag        = mag_;
     desiredMag = mag_;
   }
 
-  void smoothMagnify( float mag_ )
+  void smoothMagnify(float mag_)
   {
     desiredMag = mag_;
   }
 
-  void smoothMoveTo( const Point& p_ )
+  void smoothMoveTo(const Point& p_)
   {
     desiredPos = p_;
   }
 
-  void warpTo( const Point& p_ )
+  void warpTo(const Point& p_)
   {
     p          = p_;
     desiredPos = p_;
     oldPos     = p_;
   }
 
-  void flash( float intensity );
-  void shake( float intensity );
+  void flash(float intensity);
+  void shake(float intensity);
 
   void updateReferences();
 
@@ -232,11 +232,11 @@ public:
 
   void reset();
 
-  void read( const JSON& json );
-  void read( InputStream* is );
+  void read(const JSON& json);
+  void read(InputStream* is);
 
   JSON write() const;
-  void write( OutputStream* os ) const;
+  void write(OutputStream* os) const;
 
   void init();
   void destroy();

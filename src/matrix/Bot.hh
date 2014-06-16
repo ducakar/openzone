@@ -187,32 +187,32 @@ public:
 
 public:
 
-  bool hasAttribute( int attribute ) const;
+  bool hasAttribute(int attribute) const;
 
-  bool canReach( const Entity* ent ) const;
-  bool canReach( const Object* obj ) const;
-  bool canEquip( const Weapon* weaponObj ) const;
+  bool canReach(const Entity* ent) const;
+  bool canReach(const Object* obj) const;
+  bool canEquip(const Weapon* weaponObj) const;
 
-  bool trigger( const Entity* entity );
-  bool lock( const Entity* entity );
-  bool use( const Object* object );
-  bool take( const Dynamic* item );
-  bool grab( const Dynamic* dynamic = nullptr );
+  bool trigger(const Entity* entity);
+  bool lock(const Entity* entity);
+  bool use(const Object* object);
+  bool take(const Dynamic* item);
+  bool grab(const Dynamic* dynamic = nullptr);
   bool rotateCargo();
   bool throwCargo();
-  bool invUse( const Dynamic* item, const Object* source );
-  bool invTake( const Dynamic* item, const Object* source );
-  bool invGive( const Dynamic* item, const Object* target );
-  bool invDrop( const Dynamic* item );
-  bool invGrab( const Dynamic* item );
+  bool invUse(const Dynamic* item, const Object* source);
+  bool invTake(const Dynamic* item, const Object* source);
+  bool invGive(const Dynamic* item, const Object* target);
+  bool invDrop(const Dynamic* item);
+  bool invGrab(const Dynamic* item);
 
-  void grabCargo( Dynamic* dyn );
+  void grabCargo(Dynamic* dyn);
   void releaseCargo();
   void heal();
   void rearm();
   void kill();
 
-  void enter( int vehicle );
+  void enter(int vehicle);
   void exit();
 
 protected:
@@ -224,17 +224,17 @@ protected:
 
 public:
 
-  explicit Bot( const BotClass* clazz, int index, const Point& p, Heading heading );
-  explicit Bot( const BotClass* clazz, int index, const JSON& json );
-  explicit Bot( const BotClass* clazz, InputStream* is );
+  explicit Bot(const BotClass* clazz, int index, const Point& p, Heading heading);
+  explicit Bot(const BotClass* clazz, int index, const JSON& json);
+  explicit Bot(const BotClass* clazz, InputStream* is);
 
   JSON write() const override;
-  void write( OutputStream* os ) const override;
+  void write(OutputStream* os) const override;
 
-  void readUpdate( InputStream* is ) override;
-  void writeUpdate( OutputStream* os ) const override;
+  void readUpdate(InputStream* is) override;
+  void writeUpdate(OutputStream* os) const override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

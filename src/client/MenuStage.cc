@@ -42,24 +42,24 @@ bool MenuStage::update()
   return !doExit;
 }
 
-void MenuStage::present( bool isFull )
+void MenuStage::present(bool isFull)
 {
   // We don't want to hide UI or mouse cursor in the menu.
   ui::ui.doShow = true;
 
   sound.play();
-  render.update( isFull ? Render::UI_BIT : 0 );
+  render.update(isFull ? Render::UI_BIT : 0);
   sound.sync();
 }
 
-void MenuStage::wait( uint micros )
+void MenuStage::wait(uint micros)
 {
-  Time::usleep( micros );
+  Time::usleep(micros);
 }
 
 void MenuStage::load()
 {
-  Log::print( "Loading MenuStage ..." );
+  Log::print("Loading MenuStage ...");
 
   input.buttons     = 0;
   input.currButtons = 0;
@@ -67,27 +67,27 @@ void MenuStage::load()
   MainCall() << [&]
   {
     mainMenu = new ui::MainMenu();
-    ui::ui.root->add( mainMenu, 0, 0 );
-    ui::ui.showLoadingScreen( false );
+    ui::ui.root->add(mainMenu, 0, 0);
+    ui::ui.showLoadingScreen(false);
     ui::mouse.doShow = true;
   };
 
-  render.update( Render::UI_BIT );
+  render.update(Render::UI_BIT);
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void MenuStage::unload()
 {
-  Log::print( "Unloading MenuStage ..." );
+  Log::print("Unloading MenuStage ...");
 
   MainCall() << [&]
   {
     ui::mouse.doShow = false;
-    ui::ui.root->remove( mainMenu );
+    ui::ui.root->remove(mainMenu);
   };
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void MenuStage::init()

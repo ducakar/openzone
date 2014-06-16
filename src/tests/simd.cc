@@ -26,16 +26,16 @@
 
 #include <cstdio>
 
-typedef float __attribute__(( vector_size( 16 ) )) float4;
+typedef float __attribute__((vector_size(16))) float4;
 
 using namespace oz;
 
 #if 1
 # define VecX Vec3
-# define CreateVecX( x, y, z, w ) Vec3( x, y, z )
+# define CreateVecX(x, y, z, w) Vec3(x, y, z)
 #else
 # define VecX Vec4
-# define CreateVecX( x, y, z, w ) Vec4( x, y, z, w )
+# define CreateVecX(x, y, z, w) Vec4(x, y, z, w)
 #endif
 
 static const int MAX = 10000;
@@ -52,49 +52,48 @@ static Mat4 mc[MAX];
 
 int main()
 {
-  for( int i = 0; i < MAX; ++i ) {
-    a[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
-    b[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
-    c[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
-    d[i] = CreateVecX( Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+  for (int i = 0; i < MAX; ++i) {
+    a[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
+    b[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
+    c[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
+    d[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
   }
 
-  for( int i = 0; i < MAX; ++i ) {
-    ma[i] = Mat4( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                  Math::rand(), Math::rand(), Math::rand(), Math::rand() );
-    mb[i] = Mat4( Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                  Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                  Math::rand(), Math::rand(), Math::rand(), Math::rand() );
+  for (int i = 0; i < MAX; ++i) {
+    ma[i] = Mat4(Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                 Math::rand(), Math::rand(), Math::rand(), Math::rand());
+    mb[i] = Mat4(Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
+                 Math::rand(), Math::rand(), Math::rand(), Math::rand());
   }
 
   long64 t0 = Time::clock();
 
-  for( int k = 0; k < 10000; ++k ) {
-    for( int i = 0; i < MAX; ++i ) {
-      d[i] += c[i] * ( a[i] * b[i] );
-      e[i]  = d[i] + c[i] - abs( a[i] + b[i] );
-
-      a[i]   += CreateVecX( 0.1f, 0, 0, 0 );
-      b[i].y  = a[i].y;
-      b[i].z  = a[i].z + c[i].x;
+  for (int k = 0; k < 10000; ++k) {
+    for (int i = 0; i < MAX; ++i) {
+      d[i]  += c[i] * (a[i] * b[i]);
+      e[i]   = d[i] + c[i] - abs(a[i] + b[i]);
+      a[i]  += CreateVecX(0.1f, 0, 0, 0);
+      b[i].y = a[i].y;
+      b[i].z = a[i].z + c[i].x;
     }
   }
 
-  Log() << "Vectors: " << float( Time::clock() - t0 ) / 1000.0f;
+  Log() << "Vectors: " << float(Time::clock() - t0) / 1000.0f;
 
   t0 = Time::clock();
 
-  for( int k = 0; k < 10000; ++k ) {
-    for( int i = 0; i < MAX; ++i ) {
+  for (int k = 0; k < 10000; ++k) {
+    for (int i = 0; i < MAX; ++i) {
       ma[i] -= mb[i];
       mc[i]  = ma[i] * mb[i];
       mc[i] *= 10.0f;
     }
   }
 
-  Log() << "Matrices: " << float( Time::clock() - t0 ) / 1000.0f;
+  Log() << "Matrices: " << float(Time::clock() - t0) / 1000.0f;
   return 0;
 }

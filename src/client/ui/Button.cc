@@ -35,7 +35,7 @@ namespace client
 namespace ui
 {
 
-void Button::onVisibilityChange( bool )
+void Button::onVisibilityChange(bool)
 {
   isHighlighted = false;
   isClicked     = false;
@@ -44,24 +44,24 @@ void Button::onVisibilityChange( bool )
 
 bool Button::onMouseEvent()
 {
-  if( input.keys[Input::KEY_UI_ALT] ) {
+  if (input.keys[Input::KEY_UI_ALT]) {
     return false;
   }
 
   isHighlighted = true;
-  isClicked     = wasClicked && ( input.buttons & Input::LEFT_BUTTON );
+  isClicked     = wasClicked && (input.buttons & Input::LEFT_BUTTON);
 
-  if( wasClicked && input.leftReleased ) {
-    if( callback != nullptr ) {
-      callback( this );
+  if (wasClicked && input.leftReleased) {
+    if (callback != nullptr) {
+      callback(this);
     }
   }
-  else if( input.leftPressed ) {
+  else if (input.leftPressed) {
     isClicked  = true;
     wasClicked = true;
 
-    if( style.sounds.click >= 0 ) {
-      context.playSample( style.sounds.click );
+    if (style.sounds.click >= 0) {
+      context.playSample(style.sounds.click);
     }
   }
   return true;
@@ -69,37 +69,37 @@ bool Button::onMouseEvent()
 
 void Button::onDraw()
 {
-  if( isClicked ) {
-    shape.colour( style.colours.buttonClicked );
+  if (isClicked) {
+    shape.colour(style.colours.buttonClicked);
   }
-  else if( isHighlighted ) {
-    shape.colour( style.colours.buttonHover );
+  else if (isHighlighted) {
+    shape.colour(style.colours.buttonHover);
     wasClicked = false;
   }
   else {
-    shape.colour( style.colours.button );
+    shape.colour(style.colours.button);
     wasClicked = false;
   }
 
-  shape.fill( x, y, width, height );
-  label.draw( this );
+  shape.fill(x, y, width, height);
+  label.draw(this);
 
   isHighlighted = false;
   isClicked     = false;
 }
 
-Button::Button( const char* text, Callback* callback_, int width, int height ) :
-  Area( width, height ),
-  label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%s", text ),
-  callback( callback_ ), isHighlighted( false ), isClicked( false ), wasClicked( false )
+Button::Button(const char* text, Callback* callback_, int width, int height) :
+  Area(width, height),
+  label(width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%s", text),
+  callback(callback_), isHighlighted(false), isClicked(false), wasClicked(false)
 {}
 
-void Button::setLabel( const char* text )
+void Button::setLabel(const char* text)
 {
-  label.setText( "%s", text );
+  label.setText("%s", text);
 }
 
-void Button::setCallback( Callback* callback_ )
+void Button::setCallback(Callback* callback_)
 {
   callback = callback_;
 }

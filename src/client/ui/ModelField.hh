@@ -36,7 +36,7 @@ class ModelField : public Area
 {
 public:
 
-  typedef void Callback( ModelField* sender, bool isClicked );
+  typedef void Callback(ModelField* sender, bool isClicked);
 
 private:
 
@@ -63,21 +63,21 @@ public:
 
 protected:
 
-  void onVisibilityChange( bool doShow ) override;
+  void onVisibilityChange(bool doShow) override;
   bool onMouseEvent() override;
   void onDraw() override;
 
 public:
 
-  explicit ModelField( Callback* callback, int width, int height );
+  explicit ModelField(Callback* callback, int width, int height);
 
-  void setCallback( Callback* callback );
-  void setDefaultRotation( float defaultRotation );
+  void setCallback(Callback* callback);
+  void setDefaultRotation(float defaultRotation);
 
-  void setModel( const BSP* bsp );
-  void setModel( int model );
+  void setModel(const BSP* bsp);
+  void setModel(int model);
 
-  void setClickMask( int mask );
+  void setClickMask(int mask);
 
 };
 

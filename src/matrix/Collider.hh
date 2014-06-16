@@ -107,58 +107,58 @@ private:
   /**
    * Return true if brush was already visited and mark it visited.
    */
-  bool visitBrush( int index );
+  bool visitBrush(int index);
 
-  bool overlapsAABBObj( const Object* sObj ) const;
-  bool overlapsAABBBrush( const BSP::Brush* brush ) const;
+  bool overlapsAABBObj(const Object* sObj) const;
+  bool overlapsAABBBrush(const BSP::Brush* brush) const;
   bool overlapsAABBEntity();
-  bool overlapsAABBNode( int nodeIndex );
+  bool overlapsAABBNode(int nodeIndex);
   bool overlapsAABBEntities();
   bool overlapsAABBOrbis();
 
   bool overlapsEntityOrbis();
 
   void trimAABBVoid();
-  void trimAABBObj( const Object* sObj );
-  void trimAABBBrush( const BSP::Brush* brush );
-  void trimAABBLiquid( const BSP::Brush* brush );
-  void trimAABBArea( const BSP::Brush* brush );
-  void trimAABBNode( int nodeIndex );
+  void trimAABBObj(const Object* sObj);
+  void trimAABBBrush(const BSP::Brush* brush);
+  void trimAABBLiquid(const BSP::Brush* brush);
+  void trimAABBArea(const BSP::Brush* brush);
+  void trimAABBNode(int nodeIndex);
   void trimAABBEntities();
 
-  void trimAABBTerraQuad( int x, int y );
+  void trimAABBTerraQuad(int x, int y);
   void trimAABBTerra();
   void trimAABBOrbis();
 
-  void getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects );
-  void getOrbisIncludes( List<Object*>* objects ) const;
+  void getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects);
+  void getOrbisIncludes(List<Object*>* objects) const;
   void touchOrbisOverlaps() const;
-  void getEntityOverlaps( List<Object*>* objects );
+  void getEntityOverlaps(List<Object*>* objects);
 
 public:
 
   explicit Collider();
 
-  bool overlaps( const Point& point, const Object* exclObj = nullptr );
-  bool overlaps( const AABB& aabb, const Object* exclObj = nullptr );
-  bool overlaps( const Object* obj, const Object* exclObj = nullptr );
-  bool overlaps( const Entity* entity, float margin = 0.0f );
-  bool overlapsEntity( const AABB& aabb, const Entity* entity, float margin = 0.0f );
+  bool overlaps(const Point& point, const Object* exclObj = nullptr);
+  bool overlaps(const AABB& aabb, const Object* exclObj = nullptr);
+  bool overlaps(const Object* obj, const Object* exclObj = nullptr);
+  bool overlaps(const Entity* entity, float margin = 0.0f);
+  bool overlapsEntity(const AABB& aabb, const Entity* entity, float margin = 0.0f);
 
   // fill given vectors with objects and structures overlapping with the AABB
   // if either vector is nullptr the respective test is not performed
-  void getOverlaps( const AABB& aabb, List<Struct*>* structs, List<Object*>* objects,
-                    float eps = EPSILON );
+  void getOverlaps(const AABB& aabb, List<Struct*>* structs, List<Object*>* objects,
+                   float eps = EPSILON);
   // fill given vector with objects included in the AABB
-  void getIncludes( const AABB& aabb, List<Object*>* objects, float eps = EPSILON );
+  void getIncludes(const AABB& aabb, List<Object*>* objects, float eps = EPSILON);
   // un-disable all dynamic objects that overlap (does not respect mask)
-  void touchOverlaps( const AABB& aabb, float eps = EPSILON );
+  void touchOverlaps(const AABB& aabb, float eps = EPSILON);
 
-  void getOverlaps( const Entity* entity, List<Object*>* objects, float margin = 0.0f );
+  void getOverlaps(const Entity* entity, List<Object*>* objects, float margin = 0.0f);
 
-  void translate( const Point& point, const Vec3& move, const Object* exclObj = nullptr );
-  void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = nullptr );
-  void translate( const Dynamic* obj, const Vec3& move );
+  void translate(const Point& point, const Vec3& move, const Object* exclObj = nullptr);
+  void translate(const AABB& aabb, const Vec3& move, const Object* exclObj = nullptr);
+  void translate(const Dynamic* obj, const Vec3& move);
 
 };
 

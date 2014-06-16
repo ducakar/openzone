@@ -36,25 +36,25 @@ void CinematicText::onReposition()
 {
   x     = camera.width / 8;
   y     = camera.height / 12;
-  width = ( camera.width * 3 ) / 4;
+  width = (camera.width * 3) / 4;
 
-  text.setWidth( width );
+  text.setWidth(width);
 }
 
 void CinematicText::onDraw()
 {
-  text.draw( this );
+  text.draw(this);
 }
 
 CinematicText::CinematicText() :
-  Area( 600, 400 ), text( 0, 0, 600, Area::ALIGN_NONE, Font::TITLE, "" )
+  Area(600, 400), text(0, 0, 600, Area::ALIGN_NONE, Font::TITLE, "")
 {
   flags |= PINNED_BIT;
 }
 
-void CinematicText::set( const char* title )
+void CinematicText::set(const char* title)
 {
-  text.setText( "%s", title );
+  text.setText("%s", title);
 }
 
 }

@@ -43,7 +43,7 @@ public:
 
 public:
 
-  explicit BSPImago( const BSP* bsp );
+  explicit BSPImago(const BSP* bsp);
   ~BSPImago();
 
   Vec3 dim() const
@@ -61,7 +61,7 @@ public:
     return model.isLoaded();
   }
 
-  void schedule( const Struct* str, Model::QueueType queue );
+  void schedule(const Struct* str, Model::QueueType queue);
 
   void preload();
   void load();

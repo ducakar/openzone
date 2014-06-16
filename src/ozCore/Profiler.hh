@@ -34,7 +34,7 @@
 /**
  * Remember current time for a later `OZ_PROFILER_END()` macro with the same key.
  */
-#define OZ_PROFILER_BEGIN( key ) \
+#define OZ_PROFILER_BEGIN(key) \
   uint key##_profilerTime = oz::Time::uclock()
 
 /**
@@ -43,8 +43,8 @@
  * Time difference is calculated as difference in microseconds between the current time and the
  * saved time from a previous `oz_PROFILER_BEGIN()` with the same key.
  */
-#define OZ_PROFILER_END( key ) \
-  oz::Profiler::add( #key, oz::Time::uclock() - key##_profilerTime )
+#define OZ_PROFILER_END(key) \
+  oz::Profiler::add(#key, oz::Time::uclock() - key##_profilerTime)
 
 namespace oz
 {
@@ -77,7 +77,7 @@ public:
    *
    * If the key doesn't exist, a new key with initial value `micros` is added.
    */
-  static void add( const char* key, uint micros );
+  static void add(const char* key, uint micros);
 
   /**
    * Clear internal hashtable, deleting all times.

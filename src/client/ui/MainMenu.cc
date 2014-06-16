@@ -32,8 +32,8 @@
 #include <client/ui/SettingsFrame.hh>
 #include <client/ui/CreditsMenu.hh>
 
-#if defined( __ANDROID__ ) || defined( __native_client__ )
-#elif defined( _WIN32 )
+#if defined(__ANDROID__) || defined(__native_client__)
+#elif defined(_WIN32)
 # include <shellapi.h>
 #else
 # include <cstdlib>
@@ -47,57 +47,57 @@ namespace client
 namespace ui
 {
 
-static void loadAutosaved( Button* )
+static void loadAutosaved(Button*)
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = gameStage.autosaveFile;
   gameStage.mission = "";
 }
 
-static void loadQuicksaved( Button* )
+static void loadQuicksaved(Button*)
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = gameStage.quicksaveFile;
   gameStage.mission = "";
 }
 
-static void openMissions( Button* sender )
+static void openMissions(Button* sender)
 {
-  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
-  mainMenu->add( new MissionMenu(), 0, 0 );
+  MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
+  mainMenu->add(new MissionMenu(), 0, 0);
 }
 
-static void openSettings( Button* sender )
+static void openSettings(Button* sender)
 {
-  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
-  mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
+  MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
+  mainMenu->add(new SettingsFrame(), Area::CENTRE, Area::CENTRE);
 }
 
-static void openCredits( Button* sender )
+static void openCredits(Button* sender)
 {
-  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
-  mainMenu->add( new CreditsMenu(), 0, 0 );
+  MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
+  mainMenu->add(new CreditsMenu(), 0, 0);
 }
 
-static void openWeb( Button* )
+static void openWeb(Button*)
 {
-#if defined( __ANDROID__ )
-#elif defined( __native_client__ )
-  Pepper::post( "navi:http://ducakar.github.io/openzone/" );
-#elif defined( _WIN32 )
-  ShellExecute( nullptr, "open", "http://ducakar.github.io/openzone/", nullptr, nullptr,
-                SW_SHOWNORMAL );
+#if defined(__ANDROID__)
+#elif defined(__native_client__)
+  Pepper::post("navi:http://ducakar.github.io/openzone/");
+#elif defined(_WIN32)
+  ShellExecute(nullptr, "open", "http://ducakar.github.io/openzone/", nullptr, nullptr,
+               SW_SHOWNORMAL);
 #else
-  if( fork() == 0 ) {
-    execl( "/bin/sh", "sh", "xdg-open", "http://ducakar.github.io/openzone/", nullptr );
-    _Exit( 0 );
+  if (fork() == 0) {
+    execl("/bin/sh", "sh", "xdg-open", "http://ducakar.github.io/openzone/", nullptr);
+    _Exit(0);
   }
 #endif
 
   Window::minimise();
 }
 
-static void quit( Button* )
+static void quit(Button*)
 {
   menuStage.doExit = true;
 }
@@ -107,15 +107,15 @@ void MainMenu::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  copyright.setWidth( width - 280 );
-  copyright.setText( "OpenZone © 2002-2014 Davorin Učakar. %s",
-                     OZ_GETTEXT( "Licensed under GNU GPL 3.0. Game data archives and libraries"
-                                 " distributed with OpenZone are work of various authors and use"
-                                 " separate licences. For more details see doc/README.html and"
-                                 " files named README.txt and COPYING.txt inside game data"
-                                 " archives." ) );
+  copyright.setWidth(width - 280);
+  copyright.setText("OpenZone © 2002-2014 Davorin Učakar. %s",
+                    OZ_GETTEXT("Licensed under GNU GPL 3.0. Game data archives and libraries"
+                               " distributed with OpenZone are work of various authors and use"
+                               " separate licences. For more details see doc/README.html and"
+                               " files named README.txt and COPYING.txt inside game data"
+                               " archives."));
 
-  for( Area& child : children ) {
+  for (Area& child : children) {
     child.reposition();
   }
 }
@@ -125,14 +125,14 @@ void MainMenu::onUpdate()
   gameStage.autosaveFile.stat();
   gameStage.quicksaveFile.stat();
 
-  if( gameStage.autosaveFile.type() == File::REGULAR ) {
-    Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
-    add( continueButton, -20, 360 );
+  if (gameStage.autosaveFile.type() == File::REGULAR) {
+    Button* continueButton  = new Button(OZ_GETTEXT("Continue"), loadAutosaved,  200, 30);
+    add(continueButton, -20, 360);
   }
 
-  if( gameStage.quicksaveFile.type() == File::REGULAR ) {
-    Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
-    add( quickLoadButton, -20, 320 );
+  if (gameStage.quicksaveFile.type() == File::REGULAR) {
+    Button* quickLoadButton = new Button(OZ_GETTEXT("Quickload"), loadQuicksaved, 200, 30);
+    add(quickLoadButton, -20, 320);
   }
 
   flags &= ~UPDATE_BIT;
@@ -150,36 +150,36 @@ bool MainMenu::onKeyEvent()
 
 void MainMenu::onDraw()
 {
-  shape.colour( style.colours.background );
-  shape.fill( 0, 0, camera.width, camera.height );
+  shape.colour(style.colours.background);
+  shape.fill(0, 0, camera.width, camera.height);
 
-  shape.colour( style.colours.menuStrip );
-  shape.fill( camera.width - 240, 0, 240, camera.height );
+  shape.colour(style.colours.menuStrip);
+  shape.fill(camera.width - 240, 0, 240, camera.height);
 
-  copyright.draw( this );
-  title.draw( this );
+  copyright.draw(this);
+  title.draw(this);
 
   drawChildren();
 }
 
 MainMenu::MainMenu() :
-  Area( camera.width, camera.height ),
-  copyright( 20, 10, 360, Area::ALIGN_NONE, Font::SMALL, "" ),
-  title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION )
+  Area(camera.width, camera.height),
+  copyright(20, 10, 360, Area::ALIGN_NONE, Font::SMALL, ""),
+  title(-120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION)
 {
   flags |= UPDATE_BIT;
 
-  Button* missionsButton  = new Button( OZ_GETTEXT( "Missions" ),  openMissions,       200, 30 );
-  Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  openSettings,       200, 30 );
-  Button* creditsButton   = new Button( OZ_GETTEXT( "Credits" ),   openCredits,        200, 30 );
-  Button* webButton       = new Button( OZ_GETTEXT( "Web" ),       openWeb,            200, 30 );
-  Button* quitButton      = new Button( OZ_GETTEXT( "Exit" ),      quit,               200, 30 );
+  Button* missionsButton  = new Button(OZ_GETTEXT("Missions"),  openMissions, 200, 30);
+  Button* settingsButton  = new Button(OZ_GETTEXT("Settings"),  openSettings, 200, 30);
+  Button* creditsButton   = new Button(OZ_GETTEXT("Credits"),   openCredits,  200, 30);
+  Button* webButton       = new Button(OZ_GETTEXT("Web"),       openWeb,      200, 30);
+  Button* quitButton      = new Button(OZ_GETTEXT("Exit"),      quit,         200, 30);
 
-  add( missionsButton,  -20, 260 );
-  add( settingsButton,  -20, 200 );
-  add( creditsButton,   -20, 160 );
-  add( webButton,       -20, 120 );
-  add( quitButton,      -20,  60 );
+  add(missionsButton, -20, 260);
+  add(settingsButton, -20, 200);
+  add(creditsButton,  -20, 160);
+  add(webButton,      -20, 120);
+  add(quitButton,     -20,  60);
 }
 
 }

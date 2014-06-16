@@ -28,12 +28,12 @@ namespace oz
 namespace client
 {
 
-OZ_DL_DEFINE( espeak_Initialize       );
-OZ_DL_DEFINE( espeak_Terminate        );
-OZ_DL_DEFINE( espeak_SetParameter     );
-OZ_DL_DEFINE( espeak_SetVoiceByName   );
-OZ_DL_DEFINE( espeak_SetSynthCallback );
-OZ_DL_DEFINE( espeak_Synth            );
+OZ_DL_DEFINE(espeak_Initialize      );
+OZ_DL_DEFINE(espeak_Terminate       );
+OZ_DL_DEFINE(espeak_SetParameter    );
+OZ_DL_DEFINE(espeak_SetVoiceByName  );
+OZ_DL_DEFINE(espeak_SetSynthCallback);
+OZ_DL_DEFINE(espeak_Synth           );
 
 }
 }

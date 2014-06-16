@@ -51,9 +51,9 @@ static NirvanaLuaState ns;
  * General functions
  */
 
-static int ozForceUpdate( lua_State* l )
+static int ozForceUpdate(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
   ns.mind->flags |= Mind::FORCE_UPDATE_BIT;
   return 0;
@@ -63,362 +63,362 @@ static int ozForceUpdate( lua_State* l )
  * Mind's bot
  */
 
-static int ozSelfIsCut( lua_State* l )
+static int ozSelfIsCut(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushbool( ns.self->cell == nullptr );
+  l_pushbool(ns.self->cell == nullptr);
   return 1;
 }
 
-static int ozSelfGetIndex( lua_State* l )
+static int ozSelfGetIndex(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushint( ns.self->index );
+  l_pushint(ns.self->index);
   return 1;
 }
 
-static int ozSelfGetPos( lua_State* l )
+static int ozSelfGetPos(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  if( ns.self->cell == nullptr ) {
-    Object* parent = orbis.obj( ns.self->parent );
+  if (ns.self->cell == nullptr) {
+    Object* parent = orbis.obj(ns.self->parent);
 
-    if( parent != nullptr ) {
-      l_pushfloat( parent->p.x );
-      l_pushfloat( parent->p.y );
-      l_pushfloat( parent->p.z );
+    if (parent != nullptr) {
+      l_pushfloat(parent->p.x);
+      l_pushfloat(parent->p.y);
+      l_pushfloat(parent->p.z);
       return 3;
     }
   }
 
-  l_pushfloat( ns.self->p.x );
-  l_pushfloat( ns.self->p.y );
-  l_pushfloat( ns.self->p.z );
+  l_pushfloat(ns.self->p.x);
+  l_pushfloat(ns.self->p.y);
+  l_pushfloat(ns.self->p.z);
   return 3;
 }
 
-static int ozSelfGetDim( lua_State* l )
+static int ozSelfGetDim(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->dim.x );
-  l_pushfloat( ns.self->dim.y );
-  l_pushfloat( ns.self->dim.z );
+  l_pushfloat(ns.self->dim.x);
+  l_pushfloat(ns.self->dim.y);
+  l_pushfloat(ns.self->dim.z);
   return 3;
 }
 
-static int ozSelfHasFlag( lua_State* l )
+static int ozSelfHasFlag(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  l_pushbool( ns.self->flags & l_toint( 1 ) );
+  l_pushbool(ns.self->flags & l_toint(1));
   return 1;
 }
 
-static int ozSelfGetHeading( lua_State* l )
+static int ozSelfGetHeading(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushint( ns.self->flags & Object::HEADING_MASK );
+  l_pushint(ns.self->flags & Object::HEADING_MASK);
   return 1;
 }
 
-static int ozSelfGetClassName( lua_State* l )
+static int ozSelfGetClassName(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushstring( ns.self->clazz->name );
+  l_pushstring(ns.self->clazz->name);
   return 1;
 }
 
-static int ozSelfMaxLife( lua_State* l )
+static int ozSelfMaxLife(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->clazz->life );
+  l_pushfloat(ns.self->clazz->life);
   return 1;
 }
 
-static int ozSelfGetLife( lua_State* l )
+static int ozSelfGetLife(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->life );
+  l_pushfloat(ns.self->life);
   return 1;
 }
 
-static int ozSelfDefaultResistance( lua_State* l )
+static int ozSelfDefaultResistance(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->clazz->resistance );
+  l_pushfloat(ns.self->clazz->resistance);
   return 1;
 }
 
-static int ozSelfGetResistance( lua_State* l )
+static int ozSelfGetResistance(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->resistance );
+  l_pushfloat(ns.self->resistance);
   return 1;
 }
 
-static int ozSelfGetParent( lua_State* l )
+static int ozSelfGetParent(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  const Object* parent = orbis.obj( ns.self->parent );
+  const Object* parent = orbis.obj(ns.self->parent);
 
-  l_pushint( parent == nullptr ? -1 : ns.self->parent );
+  l_pushint(parent == nullptr ? -1 : ns.self->parent);
   return 1;
 }
 
-static int ozSelfGetVelocity( lua_State* l )
+static int ozSelfGetVelocity(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->velocity.x );
-  l_pushfloat( ns.self->velocity.y );
-  l_pushfloat( ns.self->velocity.z );
+  l_pushfloat(ns.self->velocity.x);
+  l_pushfloat(ns.self->velocity.y);
+  l_pushfloat(ns.self->velocity.z);
   return 3;
 }
 
-static int ozSelfGetMomentum( lua_State* l )
+static int ozSelfGetMomentum(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->momentum.x );
-  l_pushfloat( ns.self->momentum.y );
-  l_pushfloat( ns.self->momentum.z );
+  l_pushfloat(ns.self->momentum.x);
+  l_pushfloat(ns.self->momentum.y);
+  l_pushfloat(ns.self->momentum.z);
   return 3;
 }
 
-static int ozSelfGetMass( lua_State* l )
+static int ozSelfGetMass(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->mass );
+  l_pushfloat(ns.self->mass);
   return 1;
 }
 
-static int ozSelfGetLift( lua_State* l )
+static int ozSelfGetLift(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->lift );
+  l_pushfloat(ns.self->lift);
   return 1;
 }
 
-static int ozSelfGetName( lua_State* l )
+static int ozSelfGetName(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushstring( ns.self->name );
+  l_pushstring(ns.self->name);
   return 1;
 }
 
-static int ozSelfGetMind( lua_State* l )
+static int ozSelfGetMind(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushstring( ns.self->mind );
+  l_pushstring(ns.self->mind);
   return 1;
 }
 
-static int ozSelfHasState( lua_State* l )
+static int ozSelfHasState(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  l_pushbool( ns.self->state & l_toint( 1 ) );
+  l_pushbool(ns.self->state & l_toint(1));
   return 1;
 }
 
-static int ozSelfGetEyePos( lua_State* l )
+static int ozSelfGetEyePos(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->p.x );
-  l_pushfloat( ns.self->p.y );
-  l_pushfloat( ns.self->p.z + ns.self->camZ );
+  l_pushfloat(ns.self->p.x);
+  l_pushfloat(ns.self->p.y);
+  l_pushfloat(ns.self->p.z + ns.self->camZ);
   return 3;
 }
 
-static int ozSelfGetH( lua_State* l )
+static int ozSelfGetH(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( Math::deg( ns.self->h ) );
+  l_pushfloat(Math::deg(ns.self->h));
   return 1;
 }
 
-static int ozSelfSetH( lua_State* l )
+static int ozSelfSetH(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  ns.self->h = Math::rad( l_tofloat( 1 ) );
-  ns.self->h = angleWrap( ns.self->h );
+  ns.self->h = Math::rad(l_tofloat(1));
+  ns.self->h = angleWrap(ns.self->h);
   return 1;
 }
 
-static int ozSelfAddH( lua_State* l )
+static int ozSelfAddH(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  ns.self->h += Math::rad( l_tofloat( 1 ) );
-  ns.self->h  = angleWrap( ns.self->h );
+  ns.self->h += Math::rad(l_tofloat(1));
+  ns.self->h  = angleWrap(ns.self->h);
   return 1;
 }
 
-static int ozSelfGetV( lua_State* l )
+static int ozSelfGetV(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( Math::deg( ns.self->v ) );
+  l_pushfloat(Math::deg(ns.self->v));
   return 1;
 }
 
-static int ozSelfSetV( lua_State* l )
+static int ozSelfSetV(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  ns.self->v = Math::rad( l_tofloat( 1 ) );
-  ns.self->v = clamp( ns.self->v, 0.0f, Math::TAU / 2.0f );
+  ns.self->v = Math::rad(l_tofloat(1));
+  ns.self->v = clamp(ns.self->v, 0.0f, Math::TAU / 2.0f);
   return 1;
 }
 
-static int ozSelfAddV( lua_State* l )
+static int ozSelfAddV(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  ns.self->v += Math::rad( l_tofloat( 1 ) );
-  ns.self->v  = clamp( ns.self->v, 0.0f, Math::TAU / 2.0f );
+  ns.self->v += Math::rad(l_tofloat(1));
+  ns.self->v  = clamp(ns.self->v, 0.0f, Math::TAU / 2.0f);
   return 1;
 }
 
-static int ozSelfGetDir( lua_State* l )
+static int ozSelfGetDir(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
   // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
   float hvsc[6];
 
-  Math::sincos( ns.self->h, &hvsc[0], &hvsc[1] );
-  Math::sincos( ns.self->v, &hvsc[2], &hvsc[3] );
+  Math::sincos(ns.self->h, &hvsc[0], &hvsc[1]);
+  Math::sincos(ns.self->v, &hvsc[2], &hvsc[3]);
 
   hvsc[4] = hvsc[2] * hvsc[0];
   hvsc[5] = hvsc[2] * hvsc[1];
 
-  l_pushfloat( -hvsc[4] );
-  l_pushfloat(  hvsc[5] );
-  l_pushfloat( -hvsc[3] );
+  l_pushfloat(-hvsc[4]);
+  l_pushfloat(+hvsc[5]);
+  l_pushfloat(-hvsc[3]);
 
   return 3;
 }
 
-static int ozSelfMaxStamina( lua_State* l )
+static int ozSelfMaxStamina(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  const BotClass* clazz = static_cast<const BotClass*>( ns.self->clazz );
+  const BotClass* clazz = static_cast<const BotClass*>(ns.self->clazz);
 
-  l_pushfloat( clazz->stamina );
+  l_pushfloat(clazz->stamina);
   return 1;
 }
 
-static int ozSelfGetStamina( lua_State* l )
+static int ozSelfGetStamina(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushfloat( ns.self->stamina );
+  l_pushfloat(ns.self->stamina);
   return 1;
 }
 
-static int ozSelfGetCargo( lua_State* l )
+static int ozSelfGetCargo(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  const Object* cargo = orbis.obj( ns.self->cargo );
+  const Object* cargo = orbis.obj(ns.self->cargo);
 
-  l_pushint( cargo == nullptr ? -1 : ns.self->cargo );
+  l_pushint(cargo == nullptr ? -1 : ns.self->cargo);
   return 1;
 }
 
-static int ozSelfGetWeaponItem( lua_State* l )
+static int ozSelfGetWeaponItem(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  const Object* weapon = orbis.obj( ns.self->weapon );
+  const Object* weapon = orbis.obj(ns.self->weapon);
 
-  l_pushint( weapon == nullptr ? -1 : ns.self->weapon );
+  l_pushint(weapon == nullptr ? -1 : ns.self->weapon);
   return 1;
 }
 
-static int ozSelfSetWeaponItem( lua_State* l )
+static int ozSelfSetWeaponItem(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  int item = l_toint( 1 );
-  if( item < 0 ) {
+  int item = l_toint(1);
+  if (item < 0) {
     ns.self->weapon = -1;
   }
   else {
-    if( uint( item ) >= uint( ns.self->items.length() ) ) {
-      ERROR( "Invalid item number (out of range)" );
+    if (uint(item) >= uint(ns.self->items.length())) {
+      ERROR("Invalid item number (out of range)");
     }
 
     int index = ns.self->items[item];
-    Weapon* weapon = orbis.obj<Weapon>( index );
+    Weapon* weapon = orbis.obj<Weapon>(index);
 
-    if( weapon == nullptr ) {
-      l_pushbool( false );
+    if (weapon == nullptr) {
+      l_pushbool(false);
       return 1;
     }
 
-    if( !( weapon->flags & Object::WEAPON_BIT ) ) {
-      ERROR( "Invalid item number (not a weapon)" );
+    if (!(weapon->flags & Object::WEAPON_BIT)) {
+      ERROR("Invalid item number (not a weapon)");
     }
 
-    const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
-    if( ns.self->clazz->name.beginsWith( clazz->userBase ) ) {
+    const WeaponClass* clazz = static_cast<const WeaponClass*>(weapon->clazz);
+    if (ns.self->clazz->name.beginsWith(clazz->userBase)) {
       ns.self->weapon = index;
     }
   }
 
-  l_pushbool( true );
+  l_pushbool(true);
   return 1;
 }
 
-static int ozSelfCanReachEntity( lua_State* l )
+static int ozSelfCanReachEntity(lua_State* l)
 {
-  ARG( 2 );
-  STR_INDEX( l_toint( 1 ) );
-  ENT_INDEX( l_toint( 2 ) );
+  ARG(2);
+  STR_INDEX(l_toint(1));
+  ENT_INDEX(l_toint(2));
 
-  l_pushbool( ns.self->canReach( ent ) );
+  l_pushbool(ns.self->canReach(ent));
   return 1;
 }
 
-static int ozSelfCanReachObj( lua_State* l )
+static int ozSelfCanReachObj(lua_State* l)
 {
-  ARG( 1 );
-  OBJ_INDEX( l_toint( 1 ) );
+  ARG(1);
+  OBJ_INDEX(l_toint(1));
 
-  l_pushbool( ns.self->canReach( obj ) );
+  l_pushbool(ns.self->canReach(obj));
   return 1;
 }
 
-static int ozSelfAction( lua_State* l )
+static int ozSelfAction(lua_State* l)
 {
-  VARG( 1, 3 );
+  VARG(1, 3);
 
-  int action = l_toint( 1 );
-  int arg1   = l_toint( 2 );
-  int arg2   = l_toint( 3 );
+  int action = l_toint(1);
+  int arg1   = l_toint(2);
+  int arg2   = l_toint(3);
 
-  if( action & Bot::INSTRUMENT_ACTIONS ) {
+  if (action & Bot::INSTRUMENT_ACTIONS) {
     ns.self->actions   &= ~Bot::INSTRUMENT_ACTIONS;
     ns.self->actions   |= action;
     ns.self->instrument = arg1;
@@ -430,101 +430,101 @@ static int ozSelfAction( lua_State* l )
   return 0;
 }
 
-static int ozSelfClearActions( lua_State* l )
+static int ozSelfClearActions(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
   ns.self->actions = 0;
   return 0;
 }
 
-static int ozSelfBindItems( lua_State* l )
+static int ozSelfBindItems(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
   ms.objIndex = 0;
   ms.objects.clear();
 
-  for( int item : ns.self->items ) {
-    hard_assert( item >= 0 );
+  for (int item : ns.self->items) {
+    hard_assert(item >= 0);
 
-    ms.objects.add( orbis.obj( item ) );
+    ms.objects.add(orbis.obj(item));
   }
   return 0;
 }
 
-static int ozSelfBindItem( lua_State* l )
+static int ozSelfBindItem(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  int index = l_toint( 1 );
+  int index = l_toint(1);
 
-  if( uint( index ) >= uint( ns.self->items.length() ) ) {
-    ERROR( "Invalid inventory item index" );
+  if (uint(index) >= uint(ns.self->items.length())) {
+    ERROR("Invalid inventory item index");
   }
 
-  ms.obj = orbis.obj( ns.self->items[index] );
-  l_pushbool( ms.obj != nullptr );
+  ms.obj = orbis.obj(ns.self->items[index]);
+  l_pushbool(ms.obj != nullptr);
   return 1;
 }
 
-static int ozSelfOverlaps( lua_State* l )
+static int ozSelfOverlaps(lua_State* l)
 {
-  ARG( 2 );
+  ARG(2);
 
-  int  flags = l_toint( 1 );
-  AABB aabb  = AABB( *ns.self, l_tofloat( 2 ) );
+  int  flags = l_toint(1);
+  AABB aabb  = AABB(*ns.self, l_tofloat(2));
 
-  hard_assert( collider.mask == Object::SOLID_BIT );
+  hard_assert(collider.mask == Object::SOLID_BIT);
 
-  if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
+  if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
   }
 
-  bool overlaps = collider.overlaps( aabb, ns.self );
+  bool overlaps = collider.overlaps(aabb, ns.self);
   collider.mask = Object::SOLID_BIT;
 
-  l_pushbool( overlaps );
+  l_pushbool(overlaps);
   return 1;
 }
 
-static int ozSelfBindOverlaps( lua_State* l )
+static int ozSelfBindOverlaps(lua_State* l)
 {
-  ARG( 2 );
+  ARG(2);
 
-  int  flags = l_toint( 1 );
-  AABB aabb  = AABB( *ns.self, l_tofloat( 2 ) );
+  int  flags = l_toint(1);
+  AABB aabb  = AABB(*ns.self, l_tofloat(2));
 
-  if( !( flags & ( COLLIDE_STRUCTS_BIT | COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) ) {
-    ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
+  if (!(flags & (COLLIDE_STRUCTS_BIT | COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT))) {
+    ERROR("At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given");
   }
 
   List<Struct*>* structs = nullptr;
   List<Object*>* objects = nullptr;
 
-  hard_assert( collider.mask == Object::SOLID_BIT );
+  hard_assert(collider.mask == Object::SOLID_BIT);
 
-  if( flags & COLLIDE_STRUCTS_BIT ) {
+  if (flags & COLLIDE_STRUCTS_BIT) {
     structs = &ms.structs;
 
     ms.strIndex = 0;
     ms.structs.clear();
   }
-  if( flags & ( COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) {
+  if (flags & (COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT)) {
     objects = &ms.objects;
 
     ms.objIndex = 0;
     ms.objects.clear();
   }
-  if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
+  if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
   }
 
-  collider.getOverlaps( aabb, structs, objects );
+  collider.getOverlaps(aabb, structs, objects);
   collider.mask = Object::SOLID_BIT;
 
-  if( objects != nullptr ) {
-    ms.objects.exclude( ns.self );
+  if (objects != nullptr) {
+    ms.objects.exclude(ns.self);
   }
   return 0;
 }
@@ -533,19 +533,19 @@ static int ozSelfBindOverlaps( lua_State* l )
  * Mind
  */
 
-static int ozMindGetSide( lua_State* l )
+static int ozMindGetSide(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
-  l_pushint( ns.mind->side );
+  l_pushint(ns.mind->side);
   return 1;
 }
 
-static int ozMindSetSide( lua_State* l )
+static int ozMindSetSide(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  ns.mind->side = l_toint( 1 );
+  ns.mind->side = l_toint(1);
   return 0;
 }
 
@@ -553,29 +553,29 @@ static int ozMindSetSide( lua_State* l )
  * QuestList
  */
 
-static int ozQuestAdd( lua_State* l )
+static int ozQuestAdd(lua_State* l)
 {
-  ARG( 6 );
+  ARG(6);
 
-  questList.add( l_tostring( 1 ),
-                 l_tostring( 2 ),
-                 Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
-                 Quest::State( l_toint( 6 ) ) );
+  questList.add(l_tostring(1),
+                l_tostring(2),
+                Point(l_tofloat(3), l_tofloat(4), l_tofloat(5)),
+                Quest::State(l_toint(6)));
 
-  l_pushint( questList.quests.length() - 1 );
+  l_pushint(questList.quests.length() - 1);
   return 1;
 }
 
-static int ozQuestEnd( lua_State* l )
+static int ozQuestEnd(lua_State* l)
 {
-  ARG( 2 );
+  ARG(2);
 
-  int id = l_toint( 1 );
-  if( uint( id ) >= uint( questList.quests.length() ) ) {
-    ERROR( "Invalid quest id" );
+  int id = l_toint(1);
+  if (uint(id) >= uint(questList.quests.length())) {
+    ERROR("Invalid quest id");
   }
 
-  questList.quests[id].state = l_tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
+  questList.quests[id].state = l_tobool(2) ? Quest::SUCCESSFUL : Quest::FAILED;
   return 0;
 }
 
@@ -583,37 +583,37 @@ static int ozQuestEnd( lua_State* l )
  * TechGraph
  */
 
-static int ozTechEnable( lua_State* l )
+static int ozTechEnable(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  const char* technology = l_tostring( 1 );
+  const char* technology = l_tostring(1);
 
-  l_pushbool( techGraph.enable( technology ) );
+  l_pushbool(techGraph.enable(technology));
   return 1;
 }
 
-static int ozTechDisable( lua_State* l )
+static int ozTechDisable(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  const char* technology = l_tostring( 1 );
+  const char* technology = l_tostring(1);
 
-  l_pushbool( techGraph.disable( technology ) );
+  l_pushbool(techGraph.disable(technology));
   return 1;
 }
 
-static int ozTechEnableAll( lua_State* l )
+static int ozTechEnableAll(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
   techGraph.enableAll();
   return 0;
 }
 
-static int ozTechDisableAll( lua_State* l )
+static int ozTechDisableAll(lua_State* l)
 {
-  ARG( 0 );
+  ARG(0);
 
   techGraph.disableAll();
   return 0;
@@ -623,36 +623,36 @@ static int ozTechDisableAll( lua_State* l )
  * Nirvana
  */
 
-static int ozNirvanaRemoveDevice( lua_State* l )
+static int ozNirvanaRemoveDevice(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  int index = l_toint( 1 );
-  const Device* const* device = nirvana.devices.find( index );
+  int index = l_toint(1);
+  const Device* const* device = nirvana.devices.find(index);
 
-  if( device == nullptr ) {
-    l_pushbool( false );
+  if (device == nullptr) {
+    l_pushbool(false);
   }
   else {
     delete *device;
-    nirvana.devices.exclude( index );
-    l_pushbool( true );
+    nirvana.devices.exclude(index);
+    l_pushbool(true);
   }
   return 1;
 }
 
-static int ozNirvanaAddMemo( lua_State* l )
+static int ozNirvanaAddMemo(lua_State* l)
 {
-  int index = l_toint( 1 );
+  int index = l_toint(1);
 
-  ARG( 2 );
-  OBJ_INDEX( index );
+  ARG(2);
+  OBJ_INDEX(index);
 
-  if( nirvana.devices.contains( index ) ) {
-    ERROR( "object already has a device" );
+  if (nirvana.devices.contains(index)) {
+    ERROR("object already has a device");
   }
 
-  nirvana.devices.add( index, new Memo( l_tostring( 2 ) ) );
+  nirvana.devices.add(index, new Memo(l_tostring(2)));
   return 0;
 }
 
@@ -661,6 +661,6 @@ static int ozNirvanaAddMemo( lua_State* l )
 /**
  * Register nirvana-specific Lua constants with a given Lua VM.
  */
-void importNirvanaConstants( lua_State* l );
+void importNirvanaConstants(lua_State* l);
 
 }

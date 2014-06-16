@@ -37,7 +37,7 @@ class Button : public Area
 {
 public:
 
-  typedef void Callback( Button* sender );
+  typedef void Callback(Button* sender);
 
 private:
 
@@ -50,16 +50,16 @@ private:
 
 protected:
 
-  void onVisibilityChange( bool doShow ) override;
+  void onVisibilityChange(bool doShow) override;
   bool onMouseEvent() override;
   void onDraw() override;
 
 public:
 
-  explicit Button( const char* text, Callback* callback, int width, int height );
+  explicit Button(const char* text, Callback* callback, int width, int height);
 
-  void setLabel( const char* text );
-  void setCallback( Callback* callback );
+  void setLabel(const char* text);
+  void setCallback(Callback* callback);
 
 };
 

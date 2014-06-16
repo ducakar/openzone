@@ -29,6 +29,6 @@
 namespace oz
 {
 
-const Plane Plane::ZERO = Plane( Vec3( 0.0f, 0.0f, 0.0f ), 0.0f );
+const Plane Plane::ZERO = Plane(Vec3(0.0f, 0.0f, 0.0f), 0.0f);
 
 }

@@ -50,9 +50,9 @@ private:
 
   void updateTask();
 
-  static void open( Button* sender );
-  static void next( Button* sender );
-  static void prev( Button* sender );
+  static void open(Button* sender);
+  static void next(Button* sender);
+  static void prev(Button* sender);
 
 protected:
 

@@ -32,10 +32,10 @@ struct Foo
   Foo* next[1];
   Foo* prev[1];
 
-  Foo( int n = 0 ) :
-    number( n )
+  Foo(int n = 0) :
+    number(n)
   {
-    Log() << "Foo( int ) : " << number;
+    Log() << "Foo(int) : " << number;
   }
 
   ~Foo()
@@ -43,61 +43,61 @@ struct Foo
     Log() << "~Foo() : " << number;
   }
 
-  Foo( const Foo& f ) :
-    number( f.number )
+  Foo(const Foo& f) :
+    number(f.number)
   {
-    Log() << "Foo( const Foo& ) : " << number;
+    Log() << "Foo(const Foo&) : " << number;
   }
 
-  Foo( Foo&& f ) :
-    number( f.number )
+  Foo(Foo&& f) :
+    number(f.number)
   {
-    Log() << "Foo( Foo&& ) : " << number;
+    Log() << "Foo(Foo&&) : " << number;
   }
 
-  Foo& operator = ( const Foo& f )
+  Foo& operator = (const Foo& f)
   {
-    Log() << "Foo& operator = ( const Foo& ) : " << number << " := " << f.number;
+    Log() << "Foo& operator = (const Foo&) : " << number << " := " << f.number;
     number = f.number;
     return *this;
   }
 
-  Foo& operator = ( Foo&& f )
+  Foo& operator = (Foo&& f)
   {
-    Log() << "Foo& operator = ( Foo&& ) : " << number << " := " << f.number;
+    Log() << "Foo& operator = (Foo&&) : " << number << " := " << f.number;
     number = f.number;
     return *this;
   }
 
-  bool operator == ( const Foo& f ) const
+  bool operator == (const Foo& f) const
   {
-    Log() << "bool operator == ( const Foo& ) : " << number << " == " << f.number;
+    Log() << "bool operator == (const Foo&) : " << number << " == " << f.number;
     return number == f.number;
   }
 
-  bool operator < ( const Foo& f ) const
+  bool operator < (const Foo& f) const
   {
-    Log() << "bool operator == ( const Foo& ) : " << number << " < " << f.number;
+    Log() << "bool operator == (const Foo&) : " << number << " < " << f.number;
     return number < f.number;
   }
 
-  friend int hash( const Foo& f )
+  friend int hash(const Foo& f)
   {
     return f.number;
   }
 };
 
 template <typename Type>
-inline Type operator | ( const JSON& json, const Type& defaultValue )
+inline Type operator | (const JSON& json, const Type& defaultValue)
 {
-  return json.get( defaultValue );
+  return json.get(defaultValue);
 }
 
 template <class Iterator, typename Predicate>
-inline bool iAny( Iterator iter, Predicate predicate )
+inline bool iAny(Iterator iter, Predicate predicate)
 {
-  while( iter.isValid() ) {
-    if( predicate( *iter ) ) {
+  while (iter.isValid()) {
+    if (predicate(*iter)) {
       return true;
     }
     ++iter;
@@ -106,10 +106,10 @@ inline bool iAny( Iterator iter, Predicate predicate )
 }
 
 template <class Iterator, typename Predicate>
-inline bool iAll( Iterator iter, Predicate predicate )
+inline bool iAll(Iterator iter, Predicate predicate)
 {
-  while( iter.isValid() ) {
-    if( !predicate( *iter ) ) {
+  while (iter.isValid()) {
+    if (!predicate(*iter)) {
       return false;
     }
     ++iter;
@@ -118,22 +118,22 @@ inline bool iAll( Iterator iter, Predicate predicate )
 }
 
 template <class Iterator, typename Predicate>
-inline int iCount( Iterator iter, Predicate predicate )
+inline int iCount(Iterator iter, Predicate predicate)
 {
   int count = 0;
 
-  while( iter.isValid() ) {
-    count += predicate( *iter );
+  while (iter.isValid()) {
+    count += predicate(*iter);
     ++iter;
   }
   return count;
 }
 
 template <class Iterator, typename Function>
-inline void iMap( Iterator iter, Function function )
+inline void iMap(Iterator iter, Function function)
 {
-  while( iter.isValid() ) {
-    function( *iter );
+  while (iter.isValid()) {
+    function(*iter);
     ++iter;
   }
 }

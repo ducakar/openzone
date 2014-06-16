@@ -40,20 +40,20 @@ union PoolAlloc::Slot
 struct PoolAlloc::Block
 {
   Block* nextBlock;
-  char   data[1] OZ_ALIGNED( OZ_ALIGNMENT );
+  char   data[1] OZ_ALIGNED(OZ_ALIGNMENT);
 
   OZ_HIDDEN
-  static Block* create( int slotSize, int nSlots, Block* nextBlock )
+  static Block* create(int slotSize, int nSlots, Block* nextBlock)
   {
-    void*  chunk = new char[ OZ_ALIGNMENT + size_t( nSlots * slotSize ) ];
-    Block* block = reinterpret_cast<Block*>( chunk );
+    void*  chunk = new char[OZ_ALIGNMENT + size_t(nSlots * slotSize)];
+    Block* block = reinterpret_cast<Block*>(chunk);
 
     block->nextBlock = nextBlock;
 
-    for( int i = 0; i < nSlots - 1; ++i ) {
-      block->slot( i, slotSize )->nextSlot = block->slot( i + 1, slotSize );
+    for (int i = 0; i < nSlots - 1; ++i) {
+      block->slot(i, slotSize)->nextSlot = block->slot(i + 1, slotSize);
     }
-    block->slot( nSlots - 1, slotSize )->nextSlot = nullptr;
+    block->slot(nSlots - 1, slotSize)->nextSlot = nullptr;
 
     return block;
   }
@@ -61,20 +61,19 @@ struct PoolAlloc::Block
   OZ_HIDDEN
   void destroy()
   {
-    delete[] reinterpret_cast<char*>( this );
+    delete[] reinterpret_cast<char*>(this);
   }
 
   OZ_HIDDEN
   OZ_ALWAYS_INLINE
-  Slot* slot( int i, int slotSize )
+  Slot* slot(int i, int slotSize)
   {
-    return reinterpret_cast<Slot*>( &data[i * slotSize] );
+    return reinterpret_cast<Slot*>(&data[i * slotSize]);
   }
 };
 
-PoolAlloc::PoolAlloc( int slotSize_, int nSlots_ ) :
-  firstBlock( nullptr ), freeSlot( nullptr ), slotSize( slotSize_ ), nSlots( nSlots_ ), count( 0 ),
-  size( 0 )
+PoolAlloc::PoolAlloc(int slotSize_, int nSlots_) :
+  firstBlock(nullptr), freeSlot(nullptr), slotSize(slotSize_), nSlots(nSlots_), count(0), size(0)
 {}
 
 PoolAlloc::~PoolAlloc()
@@ -82,9 +81,9 @@ PoolAlloc::~PoolAlloc()
   free();
 }
 
-PoolAlloc::PoolAlloc( PoolAlloc&& p ) :
-  firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), slotSize( p.slotSize ), nSlots( p.nSlots ),
-  count( p.count ), size( p.size )
+PoolAlloc::PoolAlloc(PoolAlloc&& p) :
+  firstBlock(p.firstBlock), freeSlot(p.freeSlot), slotSize(p.slotSize), nSlots(p.nSlots),
+  count(p.count), size(p.size)
 {
   p.firstBlock = nullptr;
   p.freeSlot   = nullptr;
@@ -94,13 +93,13 @@ PoolAlloc::PoolAlloc( PoolAlloc&& p ) :
   p.size       = 0;
 }
 
-PoolAlloc& PoolAlloc::operator = ( PoolAlloc&& p )
+PoolAlloc& PoolAlloc::operator = (PoolAlloc&& p)
 {
-  if( &p == this ) {
+  if (&p == this) {
     return *this;
   }
 
-  hard_assert( count == 0 );
+  hard_assert(count == 0);
 
   free();
 
@@ -125,12 +124,12 @@ void* PoolAlloc::allocate()
 {
   ++count;
 
-  if( freeSlot == nullptr ) {
-    firstBlock = Block::create( slotSize, nSlots, firstBlock );
-    freeSlot   = firstBlock->slot( 1, slotSize );
+  if (freeSlot == nullptr) {
+    firstBlock = Block::create(slotSize, nSlots, firstBlock);
+    freeSlot   = firstBlock->slot(1, slotSize);
     size      += slotSize;
 
-    return firstBlock->slot( 0, slotSize )->storage;
+    return firstBlock->slot(0, slotSize)->storage;
   }
   else {
     Slot* slot = freeSlot;
@@ -140,18 +139,18 @@ void* PoolAlloc::allocate()
   }
 }
 
-void PoolAlloc::deallocate( void* ptr )
+void PoolAlloc::deallocate(void* ptr)
 {
-  if( ptr == nullptr ) {
+  if (ptr == nullptr) {
     return;
   }
 
-  hard_assert( count != 0 );
+  hard_assert(count != 0);
 
-  Slot* slot = static_cast<Slot*>( ptr );
+  Slot* slot = static_cast<Slot*>(ptr);
 
 #ifndef NDEBUG
-  mSet( slot, 0xee, slotSize );
+  mSet(slot, 0xee, slotSize);
 #endif
 
   slot->nextSlot = freeSlot;
@@ -161,16 +160,16 @@ void PoolAlloc::deallocate( void* ptr )
 
 void PoolAlloc::free()
 {
-  if( firstBlock == nullptr ) {
+  if (firstBlock == nullptr) {
     return;
   }
 
-  soft_assert( count == 0 );
+  soft_assert(count == 0);
 
-  if( count == 0 ) {
+  if (count == 0) {
     Block* block = firstBlock;
 
-    while( block != nullptr ) {
+    while (block != nullptr) {
       Block* next = block->nextBlock;
 
       block->destroy();

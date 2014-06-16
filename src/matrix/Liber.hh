@@ -61,24 +61,24 @@ public:
   bool           mapMP3s;
   bool           mapAACs;
 
-  const BSP*         bsp( const char* name ) const;
-  const ObjectClass* objClass( const char* name ) const;
-  const FragPool*    fragPool( const char* name ) const;
+  const BSP*         bsp(const char* name) const;
+  const ObjectClass* objClass(const char* name) const;
+  const FragPool*    fragPool(const char* name) const;
 
-  int shaderIndex( const char* name ) const;
-  int textureIndex( const char* name ) const;
-  int soundIndex( const char* name ) const;
-  int caelumIndex( const char* name ) const;
-  int terraIndex( const char* name ) const;
-  int partIndex( const char* name ) const;
-  int modelIndex( const char* name ) const;
+  int shaderIndex(const char* name) const;
+  int textureIndex(const char* name) const;
+  int soundIndex(const char* name) const;
+  int caelumIndex(const char* name) const;
+  int terraIndex(const char* name) const;
+  int partIndex(const char* name) const;
+  int modelIndex(const char* name) const;
 
-  int mindIndex( const char* name ) const;
-  int musicTrackIndex( const char* name ) const;
+  int mindIndex(const char* name) const;
+  int musicTrackIndex(const char* name) const;
 
-  int deviceIndex( const char* name ) const;
-  int imagoIndex( const char* name ) const;
-  int audioIndex( const char* name ) const;
+  int deviceIndex(const char* name) const;
+  int imagoIndex(const char* name) const;
+  int audioIndex(const char* name) const;
 
   void freeBSPs();
 
@@ -95,12 +95,12 @@ private:
   void initFragPools();
   void initClasses();
   void initBSPs();
-  void initMusicRecurse( const char* path );
-  void initMusic( const char* userMusicPath );
+  void initMusicRecurse(const char* path);
+  void initMusic(const char* userMusicPath);
 
 public:
 
-  void init( const char* userMusicPath );
+  void init(const char* userMusicPath);
   void destroy();
 
 };

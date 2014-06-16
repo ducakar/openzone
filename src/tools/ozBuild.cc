@@ -27,19 +27,19 @@
 
 using namespace oz;
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
   System::init();
 
   int exitCode = EXIT_FAILURE;
 
-  Log::printRaw( "OpenZone Builder " OZ_VERSION "\n"
-                 "Copyright © 2002-2014 Davorin Učakar\n"
-                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
-                 "This is free software, and you are welcome to redistribute it\n"
-                 "under certain conditions; See COPYING file for details.\n\n" );
+  Log::printRaw("OpenZone Builder " OZ_VERSION "\n"
+                "Copyright © 2002-2014 Davorin Učakar\n"
+                "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                "This is free software, and you are welcome to redistribute it\n"
+                "under certain conditions; See COPYING file for details.\n\n");
 
-  exitCode = builder::builder.main( argc, argv );
+  exitCode = builder::builder.main(argc, argv);
 
   return exitCode;
 }

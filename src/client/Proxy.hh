@@ -36,19 +36,19 @@ public:
 
   virtual ~Proxy();
 
-  virtual void begin()   = 0;
-  virtual void end()     = 0;
+  virtual void begin()                       = 0;
+  virtual void end()                         = 0;
 
-  virtual void prepare() = 0;
-  virtual void update()  = 0;
+  virtual void prepare()                     = 0;
+  virtual void update()                      = 0;
 
-  virtual void reset()   = 0;
+  virtual void reset()                       = 0;
 
-  virtual void read( InputStream* is )         = 0;
-  virtual void read( const JSON& json )        = 0;
+  virtual void read(InputStream* is)         = 0;
+  virtual void read(const JSON& json)        = 0;
 
-  virtual void write( OutputStream* os ) const = 0;
-  virtual JSON write() const                   = 0;
+  virtual void write(OutputStream* os) const = 0;
+  virtual JSON write() const                 = 0;
 
 };
 

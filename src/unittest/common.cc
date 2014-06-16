@@ -40,26 +40,26 @@ void test_common()
 
   Foo::allowCopy = false;
 
-  swap( a, b );
-  OZ_CHECK( a == 2 && b == 1 );
+  swap(a, b);
+  OZ_CHECK(a == 2 && b == 1);
 
-  swap( a, b );
-  OZ_CHECK( a == 1 && b == 2 );
+  swap(a, b);
+  OZ_CHECK(a == 1 && b == 2);
 
   Foo::allowCopy = true;
 
-  OZ_CHECK( &min( a, b ) == &a );
-  OZ_CHECK( &min( b, a ) == &a );
-  OZ_CHECK( &min( b, c ) == &b );
+  OZ_CHECK(&min(a, b) == &a);
+  OZ_CHECK(&min(b, a) == &a);
+  OZ_CHECK(&min(b, c) == &b);
 
-  OZ_CHECK( &max( a, b ) == &b );
-  OZ_CHECK( &max( b, a ) == &b );
-  OZ_CHECK( &max( b, c ) == &b );
+  OZ_CHECK(&max(a, b) == &b);
+  OZ_CHECK(&max(b, a) == &b);
+  OZ_CHECK(&max(b, c) == &b);
 
-  OZ_CHECK( &clamp( c, a, e ) == &c );
-  OZ_CHECK( &clamp( c, b, e ) == &c );
-  OZ_CHECK( &clamp( c, a, d ) == &c );
-  OZ_CHECK( &clamp( a, b, e ) == &b );
-  OZ_CHECK( &clamp( a, b, d ) == &b );
-  OZ_CHECK( &clamp( e, b, d ) == &d );
+  OZ_CHECK(&clamp(c, a, e) == &c);
+  OZ_CHECK(&clamp(c, b, e) == &c);
+  OZ_CHECK(&clamp(c, a, d) == &c);
+  OZ_CHECK(&clamp(a, b, e) == &b);
+  OZ_CHECK(&clamp(a, b, d) == &b);
+  OZ_CHECK(&clamp(e, b, d) == &d);
 }

@@ -28,7 +28,7 @@
 
 #include <cstdio>
 
-#if defined( _WIN32 )
+#ifdef _WIN32
 # include <windows.h>
 # include <mmsystem.h>
 #else
@@ -46,7 +46,7 @@ struct MediaTimerInitialiser
   OZ_HIDDEN
   MediaTimerInitialiser()
   {
-    timeBeginPeriod( 1 );
+    timeBeginPeriod(1);
   }
 }
 mediaTimerInitialiser;
@@ -55,70 +55,70 @@ mediaTimerInitialiser;
 
 uint Time::clock()
 {
-#if defined( _WIN32 )
+#ifdef _WIN32
 
   return timeGetTime();
 
 #else
 
   struct timespec now;
-  clock_gettime( CLOCK_MONOTONIC, &now );
+  clock_gettime(CLOCK_MONOTONIC, &now);
 
   // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
-  return uint( now.tv_sec * 1000 + now.tv_nsec / 1000000 );
+  return uint(now.tv_sec * 1000 + now.tv_nsec / 1000000);
 
 #endif
 }
 
 uint Time::uclock()
 {
-#if defined( _WIN32 )
+#ifdef _WIN32
 
   return timeGetTime() * 1000;
 
 #else
 
   struct timespec now;
-  clock_gettime( CLOCK_MONOTONIC, &now );
+  clock_gettime(CLOCK_MONOTONIC, &now);
 
   // This wraps around together with uint since (time_t range) * 10^6 is a multiple of uint range.
-  return uint( now.tv_sec * 1000000 + now.tv_nsec / 1000 );
+  return uint(now.tv_sec * 1000000 + now.tv_nsec / 1000);
 
 #endif
 }
 
-void Time::sleep( uint milliseconds )
+void Time::sleep(uint milliseconds)
 {
 #ifdef _WIN32
 
-  Sleep( milliseconds );
+  Sleep(milliseconds);
 
 #else
 
   struct timespec ts = {
-    time_t( milliseconds / 1000 ),
-    long( ( milliseconds % 1000 ) * 1000000 )
+    time_t(milliseconds / 1000),
+    long((milliseconds % 1000) * 1000000)
   };
-  nanosleep( &ts, nullptr );
+  nanosleep(&ts, nullptr);
 
 #endif
 }
 
-void Time::usleep( uint microseconds )
+void Time::usleep(uint microseconds)
 {
 #ifdef _WIN32
 
   // Based on observations performed on Windows 7, adding a millisecond rather rounding to the
   // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
-  Sleep( microseconds / 1000 + 1 );
+  Sleep(microseconds / 1000 + 1);
 
 #else
 
   struct timespec ts = {
-    time_t( microseconds / 1000000 ),
-    long( ( microseconds % 1000000 ) * 1000 )
+    time_t(microseconds / 1000000),
+    long((microseconds % 1000000) * 1000)
   };
-  nanosleep( &ts, nullptr );
+  nanosleep(&ts, nullptr);
 
 #endif
 }
@@ -131,17 +131,17 @@ long64 Time::epoch()
   FILETIME       fileTime;
   ULARGE_INTEGER largeInteger;
 
-  GetSystemTime( &timeStruct );
-  SystemTimeToFileTime( &timeStruct, &fileTime );
+  GetSystemTime(&timeStruct);
+  SystemTimeToFileTime(&timeStruct, &fileTime);
 
   largeInteger.LowPart  = fileTime.dwLowDateTime;
   largeInteger.HighPart = fileTime.dwHighDateTime;
 
-  return long64( largeInteger.QuadPart / 10000 );
+  return long64(largeInteger.QuadPart / 10000);
 
 #else
 
-  return ::time( nullptr );
+  return ::time(nullptr);
 
 #endif
 }
@@ -155,21 +155,21 @@ long64 Time::toEpoch() const
   FILETIME       fileTime;
   ULARGE_INTEGER largeInteger;
 
-  timeStruct.wYear         = ushort( year );
-  timeStruct.wMonth        = ushort( month );
-  timeStruct.wDay          = ushort( day );
-  timeStruct.wHour         = ushort( hour );
-  timeStruct.wMinute       = ushort( minute );
-  timeStruct.wSecond       = ushort( second );
+  timeStruct.wYear         = ushort(year);
+  timeStruct.wMonth        = ushort(month);
+  timeStruct.wDay          = ushort(day);
+  timeStruct.wHour         = ushort(hour);
+  timeStruct.wMinute       = ushort(minute);
+  timeStruct.wSecond       = ushort(second);
   timeStruct.wMilliseconds = 0;
 
-  SystemTimeToFileTime( &timeStruct, &localFileTime );
-  LocalFileTimeToFileTime( &localFileTime, &fileTime );
+  SystemTimeToFileTime(&timeStruct, &localFileTime);
+  LocalFileTimeToFileTime(&localFileTime, &fileTime);
 
   largeInteger.LowPart  = fileTime.dwLowDateTime;
   largeInteger.HighPart = fileTime.dwHighDateTime;
 
-  return long64( largeInteger.QuadPart / 10000 );
+  return long64(largeInteger.QuadPart / 10000);
 
 #else
 
@@ -183,17 +183,17 @@ long64 Time::toEpoch() const
   timeStruct.tm_year  = year - 1900;
   timeStruct.tm_isdst = -1;
 
-  return long64( mktime( &timeStruct ) );
+  return long64(mktime(&timeStruct));
 
 #endif
 }
 
 Time Time::local()
 {
-  return local( epoch() );
+  return local(epoch());
 }
 
-Time Time::local( long64 epoch )
+Time Time::local(long64 epoch)
 {
 #ifdef _WIN32
 
@@ -202,28 +202,28 @@ Time Time::local( long64 epoch )
   FILETIME       localFileTime;
   SYSTEMTIME     timeStruct;
 
-  largeInteger.QuadPart = ulong64( epoch * 10000 );
+  largeInteger.QuadPart = ulong64(epoch * 10000);
 
   fileTime.dwLowDateTime  = largeInteger.LowPart;
   fileTime.dwHighDateTime = largeInteger.HighPart;
 
-  FileTimeToLocalFileTime( &fileTime, &localFileTime );
-  FileTimeToSystemTime( &localFileTime, &timeStruct );
+  FileTimeToLocalFileTime(&fileTime, &localFileTime);
+  FileTimeToSystemTime(&localFileTime, &timeStruct);
 
   return {
-    int( timeStruct.wYear ), int( timeStruct.wMonth ), int( timeStruct.wDay ),
-    int( timeStruct.wHour ), int( timeStruct.wMinute ), int( timeStruct.wSecond )
+    int(timeStruct.wYear), int(timeStruct.wMonth), int(timeStruct.wDay),
+    int(timeStruct.wHour), int(timeStruct.wMinute), int(timeStruct.wSecond)
   };
 
 #else
 
-  time_t ctime = time_t( epoch );
+  time_t ctime = time_t(epoch);
   struct tm timeStruct;
-  localtime_r( &ctime, &timeStruct );
+  localtime_r(&ctime, &timeStruct);
 
   return {
-    int( 1900 + timeStruct.tm_year ), int( 1 + timeStruct.tm_mon ), int( timeStruct.tm_mday ),
-    int( timeStruct.tm_hour ), int( timeStruct.tm_min ), int( timeStruct.tm_sec )
+    int(1900 + timeStruct.tm_year), int(1 + timeStruct.tm_mon), int(timeStruct.tm_mday),
+    int(timeStruct.tm_hour), int(timeStruct.tm_min), int(timeStruct.tm_sec)
   };
 
 #endif
@@ -232,9 +232,9 @@ Time Time::local( long64 epoch )
 String Time::toString() const
 {
   char* buffer;
-  String r = String::create( 19, &buffer );
+  String r = String::create(19, &buffer);
 
-  snprintf( buffer, 20, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second );
+  snprintf(buffer, 20, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
   return r;
 }
 

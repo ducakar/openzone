@@ -41,22 +41,22 @@ struct Gettext::Message
   Message* next;
 };
 
-const char* Gettext::systemLanguage( const char* fallback )
+const char* Gettext::systemLanguage(const char* fallback)
 {
   const char* lang = nullptr;
 
-  lang = getenv( "LC_ALL" );
-  if( lang != nullptr && !String::isEmpty( lang ) ) {
+  lang = getenv("LC_ALL");
+  if (lang != nullptr && !String::isEmpty(lang)) {
     return lang;
   }
 
-  lang = getenv( "LC_MESSAGES" );
-  if( lang != nullptr && !String::isEmpty( lang ) ) {
+  lang = getenv("LC_MESSAGES");
+  if (lang != nullptr && !String::isEmpty(lang)) {
     return lang;
   }
 
-  lang = getenv( "LANG" );
-  if( lang != nullptr && !String::isEmpty( lang ) ) {
+  lang = getenv("LANG");
+  if (lang != nullptr && !String::isEmpty(lang)) {
     return lang;
   }
 
@@ -64,8 +64,7 @@ const char* Gettext::systemLanguage( const char* fallback )
 }
 
 Gettext::Gettext() :
-  table( nullptr ), messages( nullptr ), strings( nullptr ), nBuckets( 0 ), nMessages( 0 ),
-  stringsSize( 0 )
+  table(nullptr), messages(nullptr), strings(nullptr), nBuckets(0), nMessages(0), stringsSize(0)
 {}
 
 Gettext::~Gettext()
@@ -73,9 +72,9 @@ Gettext::~Gettext()
   clear();
 }
 
-Gettext::Gettext( Gettext&& gt ) :
-  table( gt.table ), messages( gt.messages ), strings( gt.strings ), nBuckets( gt.nBuckets ),
-  nMessages( gt.nMessages ), stringsSize( gt.stringsSize )
+Gettext::Gettext(Gettext&& gt) :
+  table(gt.table), messages(gt.messages), strings(gt.strings), nBuckets(gt.nBuckets),
+  nMessages(gt.nMessages), stringsSize(gt.stringsSize)
 {
   gt.table       = nullptr;
   gt.messages    = nullptr;
@@ -85,9 +84,9 @@ Gettext::Gettext( Gettext&& gt ) :
   gt.stringsSize = 0;
 }
 
-Gettext& Gettext::operator = ( Gettext&& gt )
+Gettext& Gettext::operator = (Gettext&& gt)
 {
-  if( &gt == this ) {
+  if (&gt == this) {
     return *this;
   }
 
@@ -110,32 +109,32 @@ Gettext& Gettext::operator = ( Gettext&& gt )
   return *this;
 }
 
-bool Gettext::contains( const char* message ) const
+bool Gettext::contains(const char* message) const
 {
-  if( nMessages == 0 || String::isEmpty( message ) ) {
+  if (nMessages == 0 || String::isEmpty(message)) {
     return false;
   }
 
-  uint index = uint( hash( message ) ) % uint( nBuckets );
+  uint index = uint(hash(message)) % uint(nBuckets);
 
-  for( const Message* m = table[index]; m != nullptr; m = m->next ) {
-    if( String::equals( strings + m->original, message ) ) {
+  for (const Message* m = table[index]; m != nullptr; m = m->next) {
+    if (String::equals(strings + m->original, message)) {
       return true;
     }
   }
   return false;
 }
 
-const char* Gettext::get( const char* message ) const
+const char* Gettext::get(const char* message) const
 {
-  if( nMessages == 0 || String::isEmpty( message ) ) {
+  if (nMessages == 0 || String::isEmpty(message)) {
     return message;
   }
 
-  uint index = uint( hash( message ) ) % uint( nBuckets );
+  uint index = uint(hash(message)) % uint(nBuckets);
 
-  for( const Message* m = table[index]; m != nullptr; m = m->next ) {
-    if( String::equals( strings + m->original, message ) ) {
+  for (const Message* m = table[index]; m != nullptr; m = m->next) {
+    if (String::equals(strings + m->original, message)) {
       return strings + m->translation;
     }
   }
@@ -146,28 +145,28 @@ List<const char*> Gettext::catalogueDescriptions() const
 {
   List<const char*> descriptions;
 
-  for( int i = 0; i < nMessages; ++i ) {
-    if( String::isEmpty( strings + messages[i].original ) ) {
-      descriptions.add( strings + messages[i].translation );
+  for (int i = 0; i < nMessages; ++i) {
+    if (String::isEmpty(strings + messages[i].original)) {
+      descriptions.add(strings + messages[i].translation);
     }
   }
   return descriptions;
 }
 
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
-bool Gettext::import( const File& file )
+bool Gettext::import(const File& file)
 {
   InputStream is = file.inputStream();
 
-  if( !is.isAvailable() ) {
+  if (!is.isAvailable()) {
     return false;
   }
 
   // Header.
   uint magic = is.readUInt();
-  if( magic != GETTEXT_MAGIC ) {
-    if( Endian::bswap32( magic ) == GETTEXT_MAGIC ) {
-      is.setEndian( Endian::Order( !is.endian() ) );
+  if (magic != GETTEXT_MAGIC) {
+    if (Endian::bswap32(magic) == GETTEXT_MAGIC) {
+      is.setEndian(Endian::Order(!is.endian()));
     }
     else {
       return false;
@@ -176,7 +175,7 @@ bool Gettext::import( const File& file )
 
   is.readInt();
   int nNewMessages = is.readInt();
-  if( nNewMessages <= 0 || nNewMessages > MAX_MESSAGES ) {
+  if (nNewMessages <= 0 || nNewMessages > MAX_MESSAGES) {
     return nNewMessages == 0;
   }
 
@@ -188,39 +187,39 @@ bool Gettext::import( const File& file )
   int newStringsSize     = is.capacity() - stringsOffset;
 
   // Expand messages and strings arrays.
-  messages = aReallocate<Message>( messages, nMessages, nMessages + nNewMessages );
-  strings  = aReallocate<char>( strings, stringsSize, stringsSize + newStringsSize );
+  messages = aReallocate<Message>(messages, nMessages, nMessages + nNewMessages);
+  strings  = aReallocate<char>(strings, stringsSize, stringsSize + newStringsSize);
 
   // Add new message entries.
-  for( int i = 0; i < nNewMessages; ++i ) {
-    is.seek( originalsOffset + i * 8 + 4 );
-    messages[nMessages + i].original = stringsSize + ( is.readInt() - stringsOffset );
+  for (int i = 0; i < nNewMessages; ++i) {
+    is.seek(originalsOffset + i * 8 + 4);
+    messages[nMessages + i].original = stringsSize + (is.readInt() - stringsOffset);
 
-    is.seek( translationsOffset + i * 8 + 4 );
-    messages[nMessages + i].translation = stringsSize + ( is.readInt() - stringsOffset );
+    is.seek(translationsOffset + i * 8 + 4);
+    messages[nMessages + i].translation = stringsSize + (is.readInt() - stringsOffset);
   }
 
   // Add new strings.
-  is.seek( stringsOffset );
-  mCopy( strings + stringsSize, is.forward( newStringsSize ), newStringsSize );
+  is.seek(stringsOffset);
+  mCopy(strings + stringsSize, is.forward(newStringsSize), newStringsSize);
 
   nMessages   += nNewMessages;
   stringsSize += newStringsSize;
 
   // Rebuild hashtable.
-  nBuckets = ( 4 * nMessages ) / 3;
+  nBuckets = (4 * nMessages) / 3;
 
   delete[] table;
   table = new Message*[nBuckets] {};
 
-  for( int i = 0; i < nMessages; ++i ) {
+  for (int i = 0; i < nMessages; ++i) {
     const char* original = strings + messages[i].original;
 
-    if( String::isEmpty( original ) ) {
+    if (String::isEmpty(original)) {
       continue;
     }
 
-    uint index = uint( hash( original ) ) % uint( nBuckets );
+    uint index = uint(hash(original)) % uint(nBuckets);
 
     messages[i].next = table[index];
     table[index] = &messages[i];

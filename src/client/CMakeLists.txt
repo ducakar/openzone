@@ -1,7 +1,7 @@
-configure_file( config.hh.in config.hh @ONLY )
-configure_file( BuildInfo.cc.in BuildInfo.cc @ONLY )
+configure_file(config.hh.in config.hh @ONLY)
+configure_file(BuildInfo.cc.in BuildInfo.cc @ONLY)
 
-add_library( client STATIC
+add_library(client STATIC
   ${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.cc
 #BEGIN SOURCES
   Audio.hh
@@ -155,4 +155,4 @@ add_library( client STATIC
   ui/UI.cc
 #END SOURCES
 )
-use_pch( client pch )
+use_pch(client pch)

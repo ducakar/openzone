@@ -52,7 +52,7 @@ public:
   /**
    * Create a new buffer from a given file. Same as the default constructor plus `load()`.
    */
-  explicit ALBuffer( const File& file );
+  explicit ALBuffer(const File& file);
 
   /**
    * Destructor, destroys OpenAL buffer if created.
@@ -62,8 +62,8 @@ public:
   /**
    * Move constructor.
    */
-  ALBuffer( ALBuffer&& b ) :
-    bufferId( b.bufferId )
+  ALBuffer(ALBuffer&& b) :
+    bufferId(b.bufferId)
   {
     b.bufferId = 0;
   }
@@ -71,9 +71,9 @@ public:
   /**
    * Move operator.
    */
-  ALBuffer& operator = ( ALBuffer&& b )
+  ALBuffer& operator = (ALBuffer&& b)
   {
-    if( &b == this ) {
+    if (&b == this) {
       return *this;
     }
 
@@ -122,7 +122,7 @@ public:
    * @note
    * OpenAL error is generated if a buffer contents is changed while some source plays it.
    */
-  bool load( const File& file );
+  bool load(const File& file);
 
   /**
    * Destroy OpenAL buffer if created.

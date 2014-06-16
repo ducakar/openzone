@@ -32,30 +32,30 @@ namespace client
 
 Pool<SMMImago, 4096> SMMImago::pool;
 
-Imago* SMMImago::create( const Object* obj )
+Imago* SMMImago::create(const Object* obj)
 {
-  SMMImago* imago = new SMMImago( obj );
+  SMMImago* imago = new SMMImago(obj);
 
-  imago->model = context.requestModel( obj->clazz->imagoModel );
+  imago->model = context.requestModel(obj->clazz->imagoModel);
 
   return imago;
 }
 
 SMMImago::~SMMImago()
 {
-  context.releaseModel( clazz->imagoModel );
+  context.releaseModel(clazz->imagoModel);
 }
 
-void SMMImago::draw( const Imago* )
+void SMMImago::draw(const Imago*)
 {
-  if( !model->isLoaded() ) {
+  if (!model->isLoaded()) {
     return;
   }
 
-  tf.model = Mat4::translation( obj->p - Point::ORIGIN );
-  tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
+  tf.model = Mat4::translation(obj->p - Point::ORIGIN);
+  tf.model.rotateZ(float(obj->flags & Object::HEADING_MASK) * Math::TAU / 4.0f);
 
-  model->schedule( 0, Model::SCENE_QUEUE );
+  model->schedule(0, Model::SCENE_QUEUE);
 }
 
 }

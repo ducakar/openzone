@@ -40,61 +40,61 @@ namespace oz
 static dWorldID      world;
 static dJointGroupID contactGroup;
 
-void Physics::add( DBody* body )
+void Physics::add(DBody* body)
 {
   dMass mass;
 
-  switch( body->shape()->type ) {
+  switch (body->shape()->type) {
     case Shape::BOX: {
-      const Box* box = static_cast<const Box*>( body->shape() );
+      const Box* box = static_cast<const Box*>(body->shape());
 
-      dMassSetBox( &mass, 1.0f, box->ext.x, box->ext.y, box->ext.z );
+      dMassSetBox(&mass, 1.0f, box->ext.x, box->ext.y, box->ext.z);
       break;
     }
     case Shape::CAPSULE: {
-      const Capsule* capsule = static_cast<const Capsule*>( body->shape() );
+      const Capsule* capsule = static_cast<const Capsule*>(body->shape());
 
-      dMassSetCapsule( &mass, 1.0f, 3, capsule->radius, 2.0f * capsule->ext );
+      dMassSetCapsule(&mass, 1.0f, 3, capsule->radius, 2.0f * capsule->ext);
       break;
     }
     case Shape::POLYTOPE: {
-      dMassSetZero( &mass );
+      dMassSetZero(&mass);
       break;
     }
     case Shape::COMPOUND: {
-      dMassSetZero( &mass );
+      dMassSetZero(&mass);
       break;
     }
   }
 
-  body->odeId = dBodyCreate( world );
+  body->odeId = dBodyCreate(world);
 
-  dBodySetPosition( body->odeId, body->p.x, body->p.y, body->p.z );
-  dBodySetQuaternion( body->odeId, body->o );
-  dBodySetMass( body->odeId, &mass );
+  dBodySetPosition(body->odeId, body->p.x, body->p.y, body->p.z);
+  dBodySetQuaternion(body->odeId, body->o);
+  dBodySetMass(body->odeId, &mass);
 }
 
-void Physics::erase( DBody* body )
+void Physics::erase(DBody* body)
 {
-  dBodyDestroy( body->odeId );
+  dBodyDestroy(body->odeId);
   body->odeId = nullptr;
 }
 
-void Physics::update( float time )
+void Physics::update(float time)
 {
-  for( int i = 0; i < space->bodies.length(); ++i ) {
-    const DBody* body0 = static_cast<const DBody*>( space->bodies[i] );
+  for (int i = 0; i < space->bodies.length(); ++i) {
+    const DBody* body0 = static_cast<const DBody*>(space->bodies[i]);
 
-    for( int j = i + 1; j < space->bodies.length(); ++j ) {
-      const DBody* body1 = static_cast<const DBody*>( space->bodies[j] );
+    for (int j = i + 1; j < space->bodies.length(); ++j) {
+      const DBody* body1 = static_cast<const DBody*>(space->bodies[j]);
 
-      if( body0->odeId == nullptr && body1->odeId == nullptr ) {
+      if (body0->odeId == nullptr && body1->odeId == nullptr) {
         continue;
       }
 
       Kollider::Result result;
-      if( collider->overlaps( body0, body1, &result ) ) {
-        Point p = Math::mix( body0->p, body1->p, 0.5f );
+      if (collider->overlaps(body0, body1, &result)) {
+        Point p = Math::mix(body0->p, body1->p, 0.5f);
 
 //         Log() << result.depth << ", " << result.axis;
 
@@ -111,27 +111,27 @@ void Physics::update( float time )
         contact.geom.pos[2]        = p.z;
         contact.geom.depth         = -result.depth;
 
-        dJointID joint = dJointCreateContact( world, contactGroup, &contact );
-        dJointAttach( joint, body0->odeId, body1->odeId );
+        dJointID joint = dJointCreateContact(world, contactGroup, &contact);
+        dJointAttach(joint, body0->odeId, body1->odeId);
       }
     }
   }
 
-  dWorldQuickStep( world, time );
-  dJointGroupEmpty( contactGroup );
+  dWorldQuickStep(world, time);
+  dJointGroupEmpty(contactGroup);
 
-  for( Body* i : space->bodies ) {
-    DBody* body = static_cast<DBody*>( *i );
+  for (Body* i : space->bodies) {
+    DBody* body = static_cast<DBody*>(*i);
 
-    if( body->odeId != nullptr ) {
-      body->p = Point( dBodyGetPosition( body->odeId ) );
-      body->o = Quat( dBodyGetQuaternion( body->odeId ) );
+    if (body->odeId != nullptr) {
+      body->p = Point(dBodyGetPosition(body->odeId));
+      body->o = Quat(dBodyGetQuaternion(body->odeId));
       body->update();
     }
   }
 }
 
-void Physics::init( Space* space_, Kollider* collider_ )
+void Physics::init(Space* space_, Kollider* collider_)
 {
   space    = space_;
   collider = collider_;
@@ -139,23 +139,23 @@ void Physics::init( Space* space_, Kollider* collider_ )
   dInitODE();
 
   world = dWorldCreate();
-  dWorldSetGravity( world, 0.0f, 0.0f, -9.81f );
+  dWorldSetGravity(world, 0.0f, 0.0f, -9.81f);
 
-  contactGroup = dJointGroupCreate( 0 );
+  contactGroup = dJointGroupCreate(0);
 }
 
 void Physics::destroy()
 {
-  for( Body* i : space->bodies ) {
-    DBody* body = static_cast<DBody*>( *i );
+  for (Body* i : space->bodies) {
+    DBody* body = static_cast<DBody*>(*i);
 
-    if( body->odeId != nullptr ) {
-      erase( body );
+    if (body->odeId != nullptr) {
+      erase(body);
     }
   }
 
-  dWorldDestroy( world );
-  dJointGroupDestroy( contactGroup );
+  dWorldDestroy(world);
+  dJointGroupDestroy(contactGroup);
 
   dCloseODE();
 }

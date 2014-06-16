@@ -53,21 +53,21 @@ public:
   void bind() const;
   void unbind() const;
 
-  static void colour( const Vec4& c );
-  static void colour( float r, float g, float b, float a = 1.0f );
+  static void colour(const Vec4& c);
+  static void colour(float r, float g, float b, float a = 1.0f);
 
-  static void fill( float x, float y, float width, float height );
-  static void fill( int x, int y, int width, int height );
-  static void rect( float x, float y, float width, float height );
-  static void rect( int x, int y, int width, int height );
-  static void tag( float minX, float minY, float maxX, float maxY );
+  static void fill(float x, float y, float width, float height);
+  static void fill(int x, int y, int width, int height);
+  static void rect(float x, float y, float width, float height);
+  static void rect(int x, int y, int width, int height);
+  static void tag(float minX, float minY, float maxX, float maxY);
 
-  static void quad( float dimX, float dimY );
-  static void box( const AABB& bb );
-  static void wireBox( const AABB& bb );
-  static void skyBox( uint* texIds );
+  static void quad(float dimX, float dimY);
+  static void box(const AABB& bb);
+  static void wireBox(const AABB& bb);
+  static void skyBox(uint* texIds);
 #ifdef OZ_DYNAMICS
-  static void object( const Point& pos, const Mat3& rot, const void* shape );
+  static void object(const Point& pos, const Mat3& rot, const void* shape);
 #endif
 
   void init();

@@ -75,7 +75,7 @@ public:
 
   explicit UI();
 
-  void showLoadingScreen( bool doShow );
+  void showLoadingScreen(bool doShow);
 
   void update();
   void draw();

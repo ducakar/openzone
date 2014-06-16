@@ -55,10 +55,10 @@ public:
 
 public:
 
-  explicit FragPool( const JSON& config, const char* name, int id );
+  explicit FragPool(const JSON& config, const char* name, int id);
 
-  Frag* create( int index, const Point& pos, const Vec3& velocity ) const;
-  Frag* create( InputStream* is ) const;
+  Frag* create(int index, const Point& pos, const Vec3& velocity) const;
+  Frag* create(InputStream* is) const;
 
 };
 

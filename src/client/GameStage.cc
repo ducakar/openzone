@@ -47,19 +47,19 @@ namespace client
 
 const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
 
-void GameStage::saveMain( void* )
+void GameStage::saveMain(void*)
 {
-  Log::print( "Saving state to %s ...", gameStage.saveFile.path().cstr() );
+  Log::print("Saving state to %s ...", gameStage.saveFile.path().cstr());
 
-  Buffer buffer( gameStage.saveStream.begin(), gameStage.saveStream.tell() );
-  buffer = buffer.deflate( -1 );
+  Buffer buffer(gameStage.saveStream.begin(), gameStage.saveStream.tell());
+  buffer = buffer.deflate(-1);
 
-  if( !gameStage.saveFile.write( buffer ) ) {
-    Log::printEnd( " Failed" );
+  if (!gameStage.saveFile.write(buffer)) {
+    Log::printEnd(" Failed");
     System::bell();
   }
   else {
-    Log::printEnd( " OK" );
+    Log::printEnd(" OK");
   }
 
   gameStage.saveStream.free();
@@ -68,58 +68,58 @@ void GameStage::saveMain( void* )
 
 void GameStage::read()
 {
-  if( saveThread.isValid() ) {
+  if (saveThread.isValid()) {
     saveThread.join();
   }
 
-  Log::print( "Loading state from '%s' ...", stateFile.path().cstr() );
+  Log::print("Loading state from '%s' ...", stateFile.path().cstr());
 
   Buffer buffer = stateFile.read();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Reading saved state '%s' failed", stateFile.path().cstr() );
+  if (buffer.isEmpty()) {
+    OZ_ERROR("Reading saved state '%s' failed", stateFile.path().cstr());
   }
 
   buffer = buffer.inflate();
-  if( buffer.isEmpty() ) {
-    OZ_ERROR( "Decompressing saved state '%s' failed", stateFile.path().cstr() );
+  if (buffer.isEmpty()) {
+    OZ_ERROR("Decompressing saved state '%s' failed", stateFile.path().cstr());
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
-  InputStream is = buffer.inputStream( Endian::LITTLE );
+  InputStream is = buffer.inputStream(Endian::LITTLE);
 
-  matrix.read( &is );
-  nirvana.read( &is );
+  matrix.read(&is);
+  nirvana.read(&is);
 
-  Log::println( "Reading Client {" );
+  Log::println("Reading Client {");
   Log::indent();
 
-  camera.read( &is );
+  camera.read(&is);
 
-  luaClient.read( &is );
+  luaClient.read(&is);
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void GameStage::write()
 {
-  if( saveThread.isValid() ) {
+  if (saveThread.isValid()) {
     saveThread.join();
   }
 
-  matrix.write( &saveStream );
-  nirvana.write( &saveStream );
+  matrix.write(&saveStream);
+  nirvana.write(&saveStream);
 
-  camera.write( &saveStream );
+  camera.write(&saveStream);
 
-  luaClient.write( &saveStream );
+  luaClient.write(&saveStream);
 
   saveFile = stateFile;
-  saveThread.start( "save", saveMain );
+  saveThread.start("save", saveMain);
 }
 
-void GameStage::auxMain( void* )
+void GameStage::auxMain(void*)
 {
   gameStage.auxRun();
 }
@@ -130,7 +130,7 @@ void GameStage::auxRun()
 
   auxSemaphore.wait();
 
-  while( isAuxAlive ) {
+  while (isAuxAlive) {
     /*
      * PHASE 2
      *
@@ -195,13 +195,13 @@ bool GameStage::update()
 
   beginMicros = Time::uclock();
 
-  if( input.keys[Input::KEY_QUIT] ) {
+  if (input.keys[Input::KEY_QUIT]) {
     Stage::nextStage = &menuStage;
   }
 
   ++autosaveTicks;
 
-  if( autosaveTicks > AUTOSAVE_INTERVAL ) {
+  if (autosaveTicks > AUTOSAVE_INTERVAL) {
     autosaveTicks = 0;
 
     stateFile = autosaveFile;
@@ -209,23 +209,23 @@ bool GameStage::update()
     stateFile = "";
   }
 
-  if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
+  if (input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE]) {
     stateFile = quicksaveFile;
     write();
     stateFile = "";
   }
-  if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
+  if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
     quicksaveFile.stat();
 
-    if( quicksaveFile.type() == File::REGULAR ) {
+    if (quicksaveFile.type() == File::REGULAR) {
       stateFile = quicksaveFile;
       Stage::nextStage = this;
     }
   }
-  if( input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD] ) {
+  if (input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD]) {
     autosaveFile.stat();
 
-    if( autosaveFile.type() == File::REGULAR ) {
+    if (autosaveFile.type() == File::REGULAR) {
       stateFile = autosaveFile;
       Stage::nextStage = this;
     }
@@ -267,7 +267,7 @@ bool GameStage::update()
   return true;
 }
 
-void GameStage::present( bool isFull )
+void GameStage::present(bool isFull)
 {
   uint beginMicros = Time::uclock();
   uint currentMicros;
@@ -278,7 +278,7 @@ void GameStage::present( bool isFull )
   soundMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  render.update( Render::EFFECTS_BIT | ( isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0 ) );
+  render.update(Render::EFFECTS_BIT | (isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0));
 
   currentMicros = Time::uclock();
   renderMicros += currentMicros - beginMicros;
@@ -290,25 +290,25 @@ void GameStage::present( bool isFull )
   soundMicros += currentMicros - beginMicros;
 }
 
-void GameStage::wait( uint micros )
+void GameStage::wait(uint micros)
 {
   sleepMicros += micros;
 
-  Time::usleep( micros );
+  Time::usleep(micros);
 }
 
 void GameStage::load()
 {
-  Log::println( "[%s] Loading GameStage {", Time::local().toString().cstr() );
+  Log::println("[%s] Loading GameStage {", Time::local().toString().cstr());
   Log::indent();
 
   loadingMicros = Time::uclock();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
-  ui::ui.loadingScreen->show( true );
+  ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Loading ..."));
+  ui::ui.loadingScreen->show(true);
 
-  render.update( Render::UI_BIT );
+  render.update(Render::UI_BIT);
 
   timer.reset();
 
@@ -334,21 +334,21 @@ void GameStage::load()
   };
 
   camera.reset();
-  camera.setState( Camera::STRATEGIC );
+  camera.setState(Camera::STRATEGIC);
 
-  if( stateFile.type() == File::REGULAR ) {
+  if (stateFile.type() == File::REGULAR) {
     read();
   }
   else {
-    Log::println( "Initialising new world" );
+    Log::println("Initialising new world");
 
-    Log::println( "Loading Client {" );
+    Log::println("Loading Client {");
     Log::indent();
 
-    luaClient.create( mission );
+    luaClient.create(mission);
 
     Log::unindent();
-    Log::println( "}" );
+    Log::println("}");
   }
 
   stateFile = "";
@@ -362,43 +362,43 @@ void GameStage::load()
   camera.prepare();
   camera.update();
 
-  ui::ui.questFrame->enable( true );
+  ui::ui.questFrame->enable(true);
 
   startTicks = timer.ticks;
 
-  ui::ui.showLoadingScreen( true );
+  ui::ui.showLoadingScreen(true);
 
-  render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
+  render.update(Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT);
 
   loader.syncUpdate();
   loader.load();
 
   isAuxAlive = true;
   mainSemaphore.post();
-  auxThread.start( "aux", auxMain );
+  auxThread.start("aux", auxMain);
 
-  ui::ui.showLoadingScreen( false );
-  present( true );
+  ui::ui.showLoadingScreen(false);
+  present(true);
 
   loadingMicros = Time::uclock() - loadingMicros;
   autosaveTicks = 0;
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void GameStage::unload()
 {
-  Log::println( "[%s] Unloading GameStage {", Time::local().toString().cstr() );
+  Log::println("[%s] Unloading GameStage {", Time::local().toString().cstr());
   Log::indent();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
-  ui::ui.showLoadingScreen( true );
+  ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Shutting down ..."));
+  ui::ui.showLoadingScreen(true);
 
   loader.unload();
 
-  render.update( Render::UI_BIT );
+  render.update(Render::UI_BIT);
 
   isAuxAlive = false;
 
@@ -407,30 +407,30 @@ void GameStage::unload()
   auxThread.join();
 
   ulong64 ticks                 = timer.ticks - startTicks;
-  float   sleepTime             = float( sleepMicros )                    * 1.0e-6f;
-  float   uiTime                = float( uiMicros )                       * 1.0e-6f;
-  float   loaderTime            = float( loaderMicros )                   * 1.0e-6f;
-  float   presentTime           = float( soundMicros + renderMicros )     * 1.0e-6f;
-  float   soundTime             = float( soundMicros )                    * 1.0e-6f;
-  float   renderTime            = float( renderMicros )                   * 1.0e-6f;
-  float   renderPrepareTime     = float( render.prepareMicros )           * 1.0e-6f;
-  float   renderCaelumTime      = float( render.caelumMicros )            * 1.0e-6f;
-  float   renderTerraTime       = float( render.terraMicros )             * 1.0e-6f;
-  float   renderMeshesTime      = float( render.meshesMicros )            * 1.0e-6f;
-  float   renderMiscTime        = float( render.miscMicros )              * 1.0e-6f;
-  float   renderPostprocessTime = float( render.postprocessMicros )       * 1.0e-6f;
-  float   renderUITime          = float( render.uiMicros )                * 1.0e-6f;
-  float   renderSwapTime        = float( render.swapMicros )              * 1.0e-6f;
-  float   matrixTime            = float( matrixMicros )                   * 1.0e-6f;
-  float   nirvanaTime           = float( nirvanaMicros )                  * 1.0e-6f;
-  float   loadingTime           = float( loadingMicros )                  * 1.0e-6f;
-  float   runTime               = float( timer.runMicros )                * 1.0e-6f;
-  float   gameTime              = float( timer.micros )                   * 1.0e-6f;
-  float   droppedTime           = float( timer.runMicros - timer.micros ) * 1.0e-6f;
+  float   sleepTime             = float(sleepMicros)                    * 1.0e-6f;
+  float   uiTime                = float(uiMicros)                       * 1.0e-6f;
+  float   loaderTime            = float(loaderMicros)                   * 1.0e-6f;
+  float   presentTime           = float(soundMicros + renderMicros)     * 1.0e-6f;
+  float   soundTime             = float(soundMicros)                    * 1.0e-6f;
+  float   renderTime            = float(renderMicros)                   * 1.0e-6f;
+  float   renderPrepareTime     = float(render.prepareMicros)           * 1.0e-6f;
+  float   renderCaelumTime      = float(render.caelumMicros)            * 1.0e-6f;
+  float   renderTerraTime       = float(render.terraMicros)             * 1.0e-6f;
+  float   renderMeshesTime      = float(render.meshesMicros)            * 1.0e-6f;
+  float   renderMiscTime        = float(render.miscMicros)              * 1.0e-6f;
+  float   renderPostprocessTime = float(render.postprocessMicros)       * 1.0e-6f;
+  float   renderUITime          = float(render.uiMicros)                * 1.0e-6f;
+  float   renderSwapTime        = float(render.swapMicros)              * 1.0e-6f;
+  float   matrixTime            = float(matrixMicros)                   * 1.0e-6f;
+  float   nirvanaTime           = float(nirvanaMicros)                  * 1.0e-6f;
+  float   loadingTime           = float(loadingMicros)                  * 1.0e-6f;
+  float   runTime               = float(timer.runMicros)                * 1.0e-6f;
+  float   gameTime              = float(timer.micros)                   * 1.0e-6f;
+  float   droppedTime           = float(timer.runMicros - timer.micros) * 1.0e-6f;
   ulong64 nFrameDrops           = ticks - timer.nFrames;
-  float   frameDropRate         = float( ticks - timer.nFrames ) / float( ticks );
+  float   frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
 
-  if( stateFile.isEmpty() ) {
+  if (stateFile.isEmpty()) {
     stateFile = autosaveFile;
     write();
     saveThread.join();
@@ -439,7 +439,7 @@ void GameStage::unload()
 
   profile.save();
 
-  ui::ui.questFrame->enable( false );
+  ui::ui.questFrame->enable(false);
 
   camera.reset();
 
@@ -456,52 +456,52 @@ void GameStage::unload()
 
   network.disconnect();
 
-  ui::ui.showLoadingScreen( false );
+  ui::ui.showLoadingScreen(false);
 
-  Log::println( "Time statistics {" );
+  Log::println("Time statistics {");
   Log::indent();
-  Log::println( "loading time          %8.2f s",    loadingTime                              );
-  Log::println( "run time              %8.2f s",    runTime                                  );
-  Log::println( "game time             %8.2f s",    gameTime                                 );
-  Log::println( "dropped time          %8.2f s",    droppedTime                              );
-  Log::println( "optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                  );
-  Log::println( "tick rate in run time   %6.2f Hz", float( ticks ) / runTime                 );
-  Log::println( "frame rate in run time  %6.2f Hz", float( timer.nFrames ) / runTime         );
-  Log::println( "frame drop rate         %6.2f %%", frameDropRate * 100.0f                   );
-  Log::println( "frame drops           %8lu",       ulong( nFrameDrops )                     );
-  Log::println( "Run time usage {" );
+  Log::println("loading time          %8.2f s",    loadingTime                             );
+  Log::println("run time              %8.2f s",    runTime                                 );
+  Log::println("game time             %8.2f s",    gameTime                                );
+  Log::println("dropped time          %8.2f s",    droppedTime                             );
+  Log::println("optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                 );
+  Log::println("tick rate in run time   %6.2f Hz", float(ticks) / runTime                  );
+  Log::println("frame rate in run time  %6.2f Hz", float(timer.nFrames) / runTime          );
+  Log::println("frame drop rate         %6.2f %%", frameDropRate * 100.0f                  );
+  Log::println("frame drops           %8lu",       ulong(nFrameDrops)                      );
+  Log::println("Run time usage {");
   Log::indent();
-  Log::println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:1] input & ui",       uiTime                / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:2] loader",           loaderTime            / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3] present",          presentTime           / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3] + sound",          soundTime             / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3] + render",         renderTime            / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + prepare",      renderPrepareTime     / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + meshes",       renderMeshesTime      / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f );
-  Log::println( "%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f );
-  Log::println( "%6.2f %%  [A:2] matrix",           matrixTime            / runTime * 100.0f );
-  Log::println( "%6.2f %%  [A:3] nirvana",          nirvanaTime           / runTime * 100.0f );
+  Log::println("%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:1] input & ui",       uiTime                / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:2] loader",           loaderTime            / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3] present",          presentTime           / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3] + sound",          soundTime             / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3] + render",         renderTime            / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + prepare",      renderPrepareTime     / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + meshes",       renderMeshesTime      / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f);
+  Log::println("%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f);
+  Log::println("%6.2f %%  [A:2] matrix",           matrixTime            / runTime * 100.0f);
+  Log::println("%6.2f %%  [A:3] nirvana",          nirvanaTime           / runTime * 100.0f);
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void GameStage::init()
 {
-  Log::println( "Initialising GameStage {" );
+  Log::println("Initialising GameStage {");
   Log::indent();
 
-  String profilePath = config["dir.config"].get( String::EMPTY );
+  String profilePath = config["dir.config"].get(String::EMPTY);
 
   autosaveFile  = profilePath + "/saves/autosave.ozState";
   quicksaveFile = profilePath + "/saves/quicksave.ozState";
@@ -511,18 +511,18 @@ void GameStage::init()
   loader.init();
   profile.init();
 
-  saveStream = OutputStream( 0, Endian::LITTLE );
+  saveStream = OutputStream(0, Endian::LITTLE);
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void GameStage::destroy()
 {
-  Log::println( "Destroying GameStage {" );
+  Log::println("Destroying GameStage {");
   Log::indent();
 
-  if( saveThread.isValid() ) {
+  if (saveThread.isValid()) {
     saveThread.join();
   }
 
@@ -537,7 +537,7 @@ void GameStage::destroy()
   quicksaveFile = "";
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 GameStage gameStage;

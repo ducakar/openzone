@@ -27,8 +27,8 @@
 
 #include <matrix/Vehicle.hh>
 
-#define OZ_REGISTER_BASECLASS( name ) \
-  baseClasses.include( #name, name##Class::createClass )
+#define OZ_REGISTER_BASECLASS(name) \
+  baseClasses.include(#name, name##Class::createClass)
 
 namespace oz
 {
@@ -53,208 +53,208 @@ static HashMap<String, int>                      deviceIndices;
 static HashMap<String, int>                      imagoIndices;
 static HashMap<String, int>                      audioIndices;
 
-const BSP* Liber::bsp( const char* name ) const
+const BSP* Liber::bsp(const char* name) const
 {
-  const BSP* value = bsps.find( name );
+  const BSP* value = bsps.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid BSP requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid BSP requested '%s'", name);
   }
   return value;
 }
 
-const ObjectClass* Liber::objClass( const char* name ) const
+const ObjectClass* Liber::objClass(const char* name) const
 {
-  const ObjectClass* const* value = objClasses.find( name );
+  const ObjectClass* const* value = objClasses.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid object class requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid object class requested '%s'", name);
   }
   return *value;
 }
 
-const FragPool* Liber::fragPool( const char* name ) const
+const FragPool* Liber::fragPool(const char* name) const
 {
-  const FragPool* value = fragPools.find( name );
+  const FragPool* value = fragPools.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid fragment pool requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid fragment pool requested '%s'", name);
   }
   return value;
 }
 
-int Liber::shaderIndex( const char* name ) const
+int Liber::shaderIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = shaderIndices.find( name );
+  const int* value = shaderIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid shader requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid shader requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::textureIndex( const char* name ) const
+int Liber::textureIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = textureIndices.find( name );
+  const int* value = textureIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid texture requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid texture requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::soundIndex( const char* name ) const
+int Liber::soundIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = soundIndices.find( name );
+  const int* value = soundIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid sound requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid sound requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::caelumIndex( const char* name ) const
+int Liber::caelumIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = caelumIndices.find( name );
+  const int* value = caelumIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid caelum index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid caelum index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::terraIndex( const char* name ) const
+int Liber::terraIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = terraIndices.find( name );
+  const int* value = terraIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid terra index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid terra index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::partIndex( const char* name ) const
+int Liber::partIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = partIndices.find( name );
+  const int* value = partIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid particle index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid particle index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::modelIndex( const char* name ) const
+int Liber::modelIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = modelIndices.find( name );
+  const int* value = modelIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid model index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid model index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::mindIndex( const char* name ) const
+int Liber::mindIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = mindIndices.find( name );
+  const int* value = mindIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid mind index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid mind index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::musicTrackIndex( const char* name ) const
+int Liber::musicTrackIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = musicTrackIndices.find( name );
+  const int* value = musicTrackIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid music track index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid music track index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::deviceIndex( const char* name ) const
+int Liber::deviceIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = deviceIndices.find( name );
+  const int* value = deviceIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid device index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid device index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::imagoIndex( const char* name ) const
+int Liber::imagoIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = imagoIndices.find( name );
+  const int* value = imagoIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid imago index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid imago index requested '%s'", name);
   }
   return *value;
 }
 
-int Liber::audioIndex( const char* name ) const
+int Liber::audioIndex(const char* name) const
 {
-  if( String::isEmpty( name ) ) {
+  if (String::isEmpty(name)) {
     return -1;
   }
 
-  const int* value = audioIndices.find( name );
+  const int* value = audioIndices.find(name);
 
-  if( value == nullptr ) {
-    OZ_ERROR( "Invalid audio index requested '%s'", name );
+  if (value == nullptr) {
+    OZ_ERROR("Invalid audio index requested '%s'", name);
   }
   return *value;
 }
 
 void Liber::freeBSPs()
 {
-  for( auto& bsp : bsps ) {
-    if( bsp.value.nUsers != 0 ) {
+  for (auto& bsp : bsps) {
+    if (bsp.value.nUsers != 0) {
       bsp.value.unload();
       bsp.value.nUsers = 0;
     }
@@ -263,327 +263,325 @@ void Liber::freeBSPs()
 
 void Liber::initShaders()
 {
-  Log::println( "Shader programs (*.json in 'glsl') {" );
+  Log::println("Shader programs (*.json in 'glsl') {");
   Log::indent();
 
   File dir = "@glsl";
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "json" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("json")) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    shaderIndices.add( name, shaders.length() );
-    shaders.add( { name, "" } );
+    shaderIndices.add(name, shaders.length());
+    shaders.add({ name, "" });
   }
 
   shaders.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initTextures()
 {
-  Log::println( "Textures (*.dds in 'tex/*') {" );
+  Log::println("Textures (*.dds in 'tex/*') {");
   Log::indent();
 
   File dir = "@tex";
 
-  for( const File& subDir : dir.ls() ) {
-    if( subDir.type() != File::DIRECTORY ) {
+  for (const File& subDir : dir.ls()) {
+    if (subDir.type() != File::DIRECTORY) {
       continue;
     }
 
-    for( const File& file : subDir.ls() ) {
-      if( !file.hasExtension( "dds" ) ||
-          file.path().endsWith( "_m.dds" ) || file.path().endsWith( "_n.dds" ) )
+    for (const File& file : subDir.ls()) {
+      if (!file.hasExtension("dds") ||
+          file.path().endsWith("_m.dds") || file.path().endsWith("_n.dds"))
       {
         continue;
       }
 
       String name = subDir.name() + "/" + file.baseName();
 
-      Log::println( "%s", name.cstr() );
+      Log::println("%s", name.cstr());
 
-      textureIndices.add( name, textures.length() );
-      textures.add( { name, "@tex/" + name } );
+      textureIndices.add(name, textures.length());
+      textures.add({ name, "@tex/" + name });
     }
   }
 
   textures.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initSounds()
 {
-  Log::println( "Sounds (*.wav, *.oga, *.ogg in 'snd') {" );
+  Log::println("Sounds (*.wav, *.oga, *.ogg in 'snd') {");
   Log::indent();
 
   File dir = "@snd";
 
-  for( const File& subDir : dir.ls() ) {
-    if( subDir.type() != File::DIRECTORY ) {
+  for (const File& subDir : dir.ls()) {
+    if (subDir.type() != File::DIRECTORY) {
       continue;
     }
 
-    for( const File& file : subDir.ls() ) {
-      if( !file.hasExtension( "wav" ) && !file.hasExtension( "oga" ) &&
-          !file.hasExtension( "ogg" ) )
-      {
+    for (const File& file : subDir.ls()) {
+      if (!file.hasExtension("wav") && !file.hasExtension("oga") && !file.hasExtension("ogg")) {
         continue;
       }
 
       String name = subDir.name() + "/" + file.baseName();
 
-      Log::println( "%s", name.cstr() );
+      Log::println("%s", name.cstr());
 
-      soundIndices.add( name, sounds.length() );
-      sounds.add( { name, file.path() } );
+      soundIndices.add(name, sounds.length());
+      sounds.add({ name, file.path() });
     }
   }
 
   sounds.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initCaela()
 {
-  Log::println( "Caela (directories in 'caelum') {" );
+  Log::println("Caela (directories in 'caelum') {");
   Log::indent();
 
   File dir = "@caelum";
 
-  for( const File& file : dir.ls() ) {
-    if( file.type() != File::DIRECTORY ) {
+  for (const File& file : dir.ls()) {
+    if (file.type() != File::DIRECTORY) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    caelumIndices.add( name, caela.length() );
-    caela.add( { name, file.path() } );
+    caelumIndices.add(name, caela.length());
+    caela.add({ name, file.path() });
   }
 
   caela.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initTerrae()
 {
-  Log::println( "Terrae (*.ozTerra, *.ozcTerra in 'terra') {" );
+  Log::println("Terrae (*.ozTerra, *.ozcTerra in 'terra') {");
   Log::indent();
 
   File dir = "@terra";
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "ozTerra" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("ozTerra")) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    terraIndices.add( name, terrae.length() );
-    terrae.add( { name, file.path() } );
+    terraIndices.add(name, terrae.length());
+    terrae.add({ name, file.path() });
   }
 
   terrae.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initParticles()
 {
-  Log::println( "Particle classes (*.json in 'part') {" );
+  Log::println("Particle classes (*.json in 'part') {");
   Log::indent();
 
   File dir = "@part";
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "json" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("json")) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    partIndices.add( name, parts.length() );
-    parts.add( { name, file.path() } );
+    partIndices.add(name, parts.length());
+    parts.add({ name, file.path() });
   }
 
   parts.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initModels()
 {
-  Log::println( "Models (*/data.ozcModel in 'mdl') {" );
+  Log::println("Models (*/data.ozcModel in 'mdl') {");
   Log::indent();
 
   File dir = "@mdl";
 
-  for( const File& file : dir.ls() ) {
-    if( file.type() != File::DIRECTORY ) {
+  for (const File& file : dir.ls()) {
+    if (file.type() != File::DIRECTORY) {
       continue;
     }
 
     String name = file.name();
     String path = file.path() + "/data.ozcModel";
 
-    if( File( path ).type() != File::REGULAR ) {
-      OZ_ERROR( "Invalid model '%s'", name.cstr() );
+    if (File(path).type() != File::REGULAR) {
+      OZ_ERROR("Invalid model '%s'", name.cstr());
     }
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    if( modelIndices.contains( name ) ) {
-      OZ_ERROR( "Duplicated model '%s'", name.cstr() );
+    if (modelIndices.contains(name)) {
+      OZ_ERROR("Duplicated model '%s'", name.cstr());
     }
 
-    modelIndices.add( name, models.length() );
-    models.add( { name, path } );
+    modelIndices.add(name, models.length());
+    models.add({ name, path });
   }
 
   models.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initMinds()
 {
-  Log::println( "Mind automata (*.json in 'nirvana/mind') {" );
+  Log::println("Mind automata (*.json in 'nirvana/mind') {");
   Log::indent();
 
   File dir = "@nirvana/mind";
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "txt" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("txt")) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    mindIndices.add( name, minds.length() );
-    minds.add( { name, file.path() } );
+    mindIndices.add(name, minds.length());
+    minds.add({ name, file.path() });
   }
 
   minds.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initFragPools()
 {
-  Log::println( "Fragment pools (*.json in 'frag') {" );
+  Log::println("Fragment pools (*.json in 'frag') {");
   Log::indent();
 
   File dir = "@frag";
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "json" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("json")) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
     JSON config;
-    if( !config.load( file ) ) {
-      OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
+    if (!config.load(file)) {
+      OZ_ERROR("Failed to read '%s'", file.path().cstr());
     }
 
-    fragPools.add( name, FragPool( config, name, fragPools.length() ) );
+    fragPools.add(name, FragPool(config, name, fragPools.length()));
 
     Log::showVerbose = true;
-    config.clear( true );
+    config.clear(true);
     Log::showVerbose = false;
   }
 
   nFragPools = fragPools.length();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initClasses()
 {
-  OZ_REGISTER_BASECLASS( Object );
-  OZ_REGISTER_BASECLASS( Dynamic );
-  OZ_REGISTER_BASECLASS( Weapon );
-  OZ_REGISTER_BASECLASS( Bot );
-  OZ_REGISTER_BASECLASS( Vehicle );
+  OZ_REGISTER_BASECLASS(Object);
+  OZ_REGISTER_BASECLASS(Dynamic);
+  OZ_REGISTER_BASECLASS(Weapon);
+  OZ_REGISTER_BASECLASS(Bot);
+  OZ_REGISTER_BASECLASS(Vehicle);
 
-  Log::println( "Object classes (*.json in 'class') {" );
+  Log::println("Object classes (*.json in 'class') {");
   Log::indent();
 
   File dir = "@class";
 
   // First we only add class instances, we don't initialise them as each class may have references
   // to other classes that haven't been created yet.
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "json" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("json")) {
       continue;
     }
 
     JSON config;
-    if( !config.load( file ) ) {
-      OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
+    if (!config.load(file)) {
+      OZ_ERROR("Failed to read '%s'", file.path().cstr());
     }
 
     String name = file.baseName();
-    const String& base = config["base"].get( "" );
+    const String& base = config["base"].get("");
 
-    if( objClasses.contains( name ) ) {
-      OZ_ERROR( "Duplicated class '%s'", name.cstr() );
+    if (objClasses.contains(name)) {
+      OZ_ERROR("Duplicated class '%s'", name.cstr());
     }
 
-    if( String::isEmpty( base ) ) {
-      OZ_ERROR( "%s: 'base' missing in class description", name.cstr() );
+    if (String::isEmpty(base)) {
+      OZ_ERROR("%s: 'base' missing in class description", name.cstr());
     }
 
-    ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
-    if( createFunc == nullptr ) {
-      OZ_ERROR( "%s: Invalid class base '%s'", name.cstr(), base.cstr() );
+    ObjectClass::CreateFunc* const* createFunc = baseClasses.find(base);
+    if (createFunc == nullptr) {
+      OZ_ERROR("%s: Invalid class base '%s'", name.cstr(), base.cstr());
     }
 
-    const String& deviceType = config["deviceType"].get( "" );
-    const String& imagoType  = config["imagoType"].get( "" );
-    const String& audioType  = config["audioType"].get( "" );
+    const String& deviceType = config["deviceType"].get("");
+    const String& imagoType  = config["imagoType"].get("");
+    const String& audioType  = config["audioType"].get("");
 
-    if( !deviceType.isEmpty() ) {
-      deviceIndices.include( deviceType, deviceIndices.length() );
+    if (!deviceType.isEmpty()) {
+      deviceIndices.include(deviceType, deviceIndices.length());
     }
-    if( !imagoType.isEmpty() ) {
-      imagoIndices.include( imagoType, imagoIndices.length() );
+    if (!imagoType.isEmpty()) {
+      imagoIndices.include(imagoType, imagoIndices.length());
     }
-    if( !audioType.isEmpty() ) {
-      audioIndices.include( audioType, audioIndices.length() );
+    if (!audioType.isEmpty()) {
+      audioIndices.include(audioType, audioIndices.length());
     }
 
-    objClasses.add( name, ( *createFunc )() );
+    objClasses.add(name, (*createFunc)());
   }
 
   nDeviceClasses = deviceIndices.length();
@@ -591,151 +589,151 @@ void Liber::initClasses()
   nAudioClasses  = audioIndices.length();
 
   // Initialise all classes.
-  for( const auto& classIter : objClasses ) {
+  for (const auto& classIter : objClasses) {
     const String& name  = classIter.key;
     ObjectClass*  clazz = classIter.value;
 
-    Log::print( "%s ...", name.cstr() );
+    Log::print("%s ...", name.cstr());
 
     File file = "@class/" + name + ".json";
     JSON config;
-    if( !config.load( file ) ) {
-      OZ_ERROR( "Failed to read '%s'", file.path().cstr() );
+    if (!config.load(file)) {
+      OZ_ERROR("Failed to read '%s'", file.path().cstr());
     }
 
-    clazz->init( config, name );
+    clazz->init(config, name);
 
     Log::showVerbose = true;
     config["base"];
-    config.clear( true );
+    config.clear(true);
     Log::showVerbose = false;
 
-    Log::printEnd( " OK" );
+    Log::printEnd(" OK");
   }
 
   // Sanity checks.
-  for( const auto& classIter : objClasses ) {
+  for (const auto& classIter : objClasses) {
     ObjectClass* objClazz = classIter.value;
 
     // check that all items are valid
-    for( int i = 0; i < objClazz->defaultItems.length(); ++i ) {
+    for (int i = 0; i < objClazz->defaultItems.length(); ++i) {
       const ObjectClass* itemClazz = objClazz->defaultItems[i];
 
-      if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
-          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
+      if ((itemClazz->flags & (Object::DYNAMIC_BIT | Object::ITEM_BIT)) !=
+          (Object::DYNAMIC_BIT | Object::ITEM_BIT))
       {
-        OZ_ERROR( "Invalid item class '%s' in '%s', must be dynamic and have item flag",
-                  itemClazz->name.cstr(), objClazz->name.cstr() );
+        OZ_ERROR("Invalid item class '%s' in '%s', must be dynamic and have item flag",
+                 itemClazz->name.cstr(), objClazz->name.cstr());
       }
     }
 
     // check if weaponItem is a valid weapon for bots
-    if( objClazz->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( objClazz );
+    if (objClazz->flags & Object::BOT_BIT) {
+      const BotClass* botClazz = static_cast<const BotClass*>(objClazz);
 
-      if( botClazz->weaponItem >= 0 ) {
-        if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
-          OZ_ERROR( "Invalid weaponItem index for '%s'", botClazz->name.cstr() );
+      if (botClazz->weaponItem >= 0) {
+        if (uint(botClazz->weaponItem) >= uint(botClazz->defaultItems.length())) {
+          OZ_ERROR("Invalid weaponItem index for '%s'", botClazz->name.cstr());
         }
 
         // we already checked it in the previous loop it's non-nullptr and a valid item
         const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
 
-        if( !( itemClazz->flags & Object::WEAPON_BIT ) ) {
-          OZ_ERROR( "Default weapon of '%s' is of a non-weapon class", botClazz->name.cstr() );
+        if (!(itemClazz->flags & Object::WEAPON_BIT)) {
+          OZ_ERROR("Default weapon of '%s' is of a non-weapon class", botClazz->name.cstr());
         }
 
-        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( itemClazz );
+        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(itemClazz);
 
-        if( !botClazz->name.beginsWith( weaponClazz->userBase ) ) {
-          OZ_ERROR( "Default weapon of '%s' is not allowed for this bot class",
-                    botClazz->name.cstr() );
+        if (!botClazz->name.beginsWith(weaponClazz->userBase)) {
+          OZ_ERROR("Default weapon of '%s' is not allowed for this bot class",
+                   botClazz->name.cstr());
         }
       }
     }
   }
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::initBSPs()
 {
-  Log::println( "BSP structures (*.ozBSP, *.ozcModel in 'bsp') {" );
+  Log::println("BSP structures (*.ozBSP, *.ozcModel in 'bsp') {");
   Log::indent();
 
   File dir = "@bsp";
 
-  for( const File& file : dir.ls() ) {
-    if( !file.hasExtension( "ozBSP" ) ) {
+  for (const File& file : dir.ls()) {
+    if (!file.hasExtension("ozBSP")) {
       continue;
     }
 
     String name = file.baseName();
 
-    Log::println( "%s", name.cstr() );
+    Log::println("%s", name.cstr());
 
-    bsps.add( name, BSP( name, bsps.length() ) );
+    bsps.add(name, BSP(name, bsps.length()));
   }
 
   nBSPs = bsps.length();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
-void Liber::initMusicRecurse( const char* path )
+void Liber::initMusicRecurse(const char* path)
 {
   File dir = path;
 
-  for( const File& file : dir.ls() ) {
-    if( file.type() == File::DIRECTORY ) {
-      initMusicRecurse( file.path() );
+  for (const File& file : dir.ls()) {
+    if (file.type() == File::DIRECTORY) {
+      initMusicRecurse(file.path());
     }
-    if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ||
-        ( mapMP3s && file.hasExtension( "mp3" ) ) || ( mapAACs && file.hasExtension( "aac" ) ) )
+    if (file.hasExtension("oga") || file.hasExtension("ogg") ||
+        (mapMP3s && file.hasExtension("mp3")) || (mapAACs && file.hasExtension("aac")))
     {
-      Log::println( "%s", file.path().cstr() );
+      Log::println("%s", file.path().cstr());
 
-      musicTracks.add( { file.baseName(), file.path() } );
+      musicTracks.add({ file.baseName(), file.path() });
     }
   }
 }
 
-void Liber::initMusic( const char* userMusicPath )
+void Liber::initMusic(const char* userMusicPath)
 {
-  if( userMusicPath == nullptr || String::isEmpty( userMusicPath ) ) {
-    Log::println( "Music (*.oga, *.ogg%s%s in 'music') {",
-                  mapMP3s ? ", *.mp3" : "", mapAACs ? "*.aac" : "" );
+  if (userMusicPath == nullptr || String::isEmpty(userMusicPath)) {
+    Log::println("Music (*.oga, *.ogg%s%s in 'music') {",
+                 mapMP3s ? ", *.mp3" : "", mapAACs ? "*.aac" : "");
   }
   else {
-    Log::println( "Music (*.oga, *.ogg%s%s in 'music' and '%s') {",
-                  mapMP3s ? ", *.mp3" : "", mapAACs ? ", *.aac" : "", userMusicPath );
+    Log::println("Music (*.oga, *.ogg%s%s in 'music' and '%s') {",
+                 mapMP3s ? ", *.mp3" : "", mapAACs ? ", *.aac" : "", userMusicPath);
   }
   Log::indent();
 
-  initMusicRecurse( "@music" );
+  initMusicRecurse("@music");
 
-  for( int i = 0; i < musicTracks.length(); ++i ) {
-    musicTrackIndices.add( musicTracks[i].name, i );
+  for (int i = 0; i < musicTracks.length(); ++i) {
+    musicTrackIndices.add(musicTracks[i].name, i);
   }
 
-  initMusicRecurse( "@userMusic" );
+  initMusicRecurse("@userMusic");
 
   musicTracks.trim();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
-void Liber::init( const char* userMusicPath )
+void Liber::init(const char* userMusicPath)
 {
-  Log::println( "Initialising Library {" );
+  Log::println("Initialising Library {");
   Log::indent();
 
   Log::verboseMode = true;
 
-  Log::println( "Mapping resources {" );
+  Log::println("Mapping resources {");
   Log::indent();
 
   initShaders();
@@ -747,32 +745,32 @@ void Liber::init( const char* userMusicPath )
   initFragPools();
   initClasses();
   initBSPs();
-  initMusic( userMusicPath );
+  initMusic(userMusicPath);
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   Log::verboseMode = false;
 
-  Log::println( "Summary {" );
+  Log::println("Summary {");
   Log::indent();
 
-  Log::println( "%5d  shaders", shaders.length() );
-  Log::println( "%5d  textures", textures.length() );
-  Log::println( "%5d  sounds", sounds.length() );
-  Log::println( "%5d  caela", caela.length() );
-  Log::println( "%5d  terrae", terrae.length() );
-  Log::println( "%5d  BSPs", nBSPs );
-  Log::println( "%5d  models", models.length() );
-  Log::println( "%5d  music tracks", musicTracks.length() );
-  Log::println( "%5d  fragment pools", fragPools.length() );
-  Log::println( "%5d  object classes", objClasses.length() );
+  Log::println("%5d  shaders", shaders.length());
+  Log::println("%5d  textures", textures.length());
+  Log::println("%5d  sounds", sounds.length());
+  Log::println("%5d  caela", caela.length());
+  Log::println("%5d  terrae", terrae.length());
+  Log::println("%5d  BSPs", nBSPs);
+  Log::println("%5d  models", models.length());
+  Log::println("%5d  music tracks", musicTracks.length());
+  Log::println("%5d  fragment pools", fragPools.length());
+  Log::println("%5d  object classes", objClasses.length());
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void Liber::destroy()

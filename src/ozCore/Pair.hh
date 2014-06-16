@@ -52,7 +52,7 @@ public:
    * Per-member equality operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator == ( const Pair& p ) const
+  bool operator == (const Pair& p) const
   {
     return x == p.x && y == p.y;
   }
@@ -61,9 +61,9 @@ public:
    * Per-member inequality operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator != ( const Pair& p ) const
+  bool operator != (const Pair& p) const
   {
-    return !operator == ( p );
+    return !operator == (p);
   }
 
 };

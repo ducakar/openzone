@@ -24,17 +24,17 @@
  * @file ozCore/Java.cc
  */
 
-#if defined( __ANDROID__ )
+#if defined(__ANDROID__)
 
 #include "Java.hh"
 
 #include <jni.h>
 
 extern "C"
-void SDL_Android_Init( JNIEnv*, jclass );
+void SDL_Android_Init(JNIEnv*, jclass);
 
 OZ_WEAK
-void SDL_Android_Init( JNIEnv*, jclass )
+void SDL_Android_Init(JNIEnv*, jclass)
 {}
 
 namespace oz
@@ -47,18 +47,18 @@ JavaVM* Java::vm()
   return javaVM;
 }
 
-void Java::application( void* env_, void* clazz_ )
+void Java::application(void* env_, void* clazz_)
 {
-  JNIEnv* env   = static_cast<JNIEnv*>( env_ );
-  jclass  clazz = static_cast<jclass>( clazz_ );
+  JNIEnv* env   = static_cast<JNIEnv*>(env_);
+  jclass  clazz = static_cast<jclass>(clazz_);
 
-  SDL_Android_Init( env, clazz );
-  env->GetJavaVM( &javaVM );
+  SDL_Android_Init(env, clazz);
+  env->GetJavaVM(&javaVM);
 
   char  argv0[] = "";
   char* argv[]  = { argv0, nullptr };
 
-  javaMain( 1, argv );
+  javaMain(1, argv);
 }
 
 }

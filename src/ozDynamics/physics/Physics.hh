@@ -43,12 +43,12 @@ private:
 
 public:
 
-  void add( DBody* body );
-  void erase( DBody* body );
+  void add(DBody* body);
+  void erase(DBody* body);
 
-  void update( float time );
+  void update(float time);
 
-  void init( Space* space, Kollider* collider );
+  void init(Space* space, Kollider* collider);
   void destroy();
 
 };

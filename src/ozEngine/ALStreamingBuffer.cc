@@ -30,28 +30,28 @@ namespace oz
 {
 
 ALStreamingBuffer::ALStreamingBuffer() :
-  sourceId( 0 )
+  sourceId(0)
 {}
 
-ALStreamingBuffer::ALStreamingBuffer( const File& file ) :
-  sourceId( 0 )
+ALStreamingBuffer::ALStreamingBuffer(const File& file) :
+  sourceId(0)
 {
-  open( file );
+  open(file);
 }
 
-ALStreamingBuffer::ALStreamingBuffer( ALStreamingBuffer&& b ) :
-  streamer( static_cast<AL::Streamer&&>( b.streamer ) ), sourceId( b.sourceId )
+ALStreamingBuffer::ALStreamingBuffer(ALStreamingBuffer&& b) :
+  streamer(static_cast<AL::Streamer&&>(b.streamer)), sourceId(b.sourceId)
 {
   b.sourceId = 0;
 }
 
-ALStreamingBuffer& ALStreamingBuffer::operator = ( ALStreamingBuffer&& b )
+ALStreamingBuffer& ALStreamingBuffer::operator = (ALStreamingBuffer&& b)
 {
-  if( &b == this ) {
+  if (&b == this) {
     return *this;
   }
 
-  streamer   = static_cast<AL::Streamer&&>( b.streamer );
+  streamer   = static_cast<AL::Streamer&&>(b.streamer);
   sourceId   = b.sourceId;
 
   b.sourceId = 0;
@@ -78,20 +78,20 @@ ALSource ALStreamingBuffer::createSource()
 {
   ALSource source;
 
-  if( streamer.isStreaming() ) {
+  if (streamer.isStreaming()) {
     source.create();
 
-    if( source.isCreated() ) {
+    if (source.isCreated()) {
       sourceId = source.id();
-      streamer.attach( sourceId );
+      streamer.attach(sourceId);
     }
   }
   return source;
 }
 
-bool ALStreamingBuffer::open( const File& file )
+bool ALStreamingBuffer::open(const File& file)
 {
-  return streamer.open( file );
+  return streamer.open(file);
 }
 
 void ALStreamingBuffer::close()

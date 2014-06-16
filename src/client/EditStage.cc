@@ -45,41 +45,41 @@ namespace client
 
 void EditStage::read()
 {
-  Log::print( "Loading layout from '%s' ...", layoutFile.path().cstr() );
+  Log::print("Loading layout from '%s' ...", layoutFile.path().cstr());
 
   JSON json;
-  if( !json.load( layoutFile ) ) {
-    OZ_ERROR( "Reading saved layout '%s' failed", layoutFile.path().cstr() );
+  if (!json.load(layoutFile)) {
+    OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().cstr());
   }
   layoutFile.unmap();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
-  matrix.read( json["matrix"] );
-  camera.read( json["camera"] );
+  matrix.read(json["matrix"]);
+  camera.read(json["camera"]);
 
-  json.clear( true );
+  json.clear(true);
 }
 
 void EditStage::write() const
 {
-  JSON json( JSON::OBJECT );
+  JSON json(JSON::OBJECT);
 
-  json.add( "matrix", matrix.write() );
-  json.add( "camera", camera.write() );
+  json.add("matrix", matrix.write());
+  json.add("camera", camera.write());
 
-  Log::print( "Saving layout to %s ...", layoutFile.path().cstr() );
+  Log::print("Saving layout to %s ...", layoutFile.path().cstr());
 
-  if( !json.save( layoutFile ) ) {
-    Log::printEnd( " Failed" );
+  if (!json.save(layoutFile)) {
+    Log::printEnd(" Failed");
     System::bell();
   }
   else {
-    Log::printEnd( " OK" );
+    Log::printEnd(" OK");
   }
 }
 
-void EditStage::auxMain( void* )
+void EditStage::auxMain(void*)
 {
   editStage.auxRun();
 }
@@ -88,7 +88,7 @@ void EditStage::auxRun()
 {
   auxSemaphore.wait();
 
-  while( isAuxAlive ) {
+  while (isAuxAlive) {
     /*
      * PHASE 2
      *
@@ -135,31 +135,31 @@ bool EditStage::update()
 
   orbis.resetLastIndices();
 
-  if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
-    if( !layoutFile.isEmpty() ) {
+  if (input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE]) {
+    if (!layoutFile.isEmpty()) {
       write();
     }
   }
-  if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
+  if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
     layoutFile.stat();
 
-    if( layoutFile.type() == File::REGULAR ) {
+    if (layoutFile.type() == File::REGULAR) {
       Stage::nextStage = this;
     }
   }
 
-  if( input.keys[Input::KEY_DELETE] && !input.oldKeys[Input::KEY_DELETE] ) {
-    Struct* str = orbis.str( ui::ui.strategicArea->taggedStr );
+  if (input.keys[Input::KEY_DELETE] && !input.oldKeys[Input::KEY_DELETE]) {
+    Struct* str = orbis.str(ui::ui.strategicArea->taggedStr);
 
-    if( str != nullptr ) {
-      synapse.remove( str );
+    if (str != nullptr) {
+      synapse.remove(str);
     }
 
-    for( int i : ui::ui.strategicArea->taggedObjs ) {
-      Object* obj = orbis.obj( i );
+    for (int i : ui::ui.strategicArea->taggedObjs) {
+      Object* obj = orbis.obj(i);
 
-      if( obj != nullptr ) {
-        synapse.remove( obj );
+      if (obj != nullptr) {
+        synapse.remove(obj);
       }
     }
   }
@@ -192,28 +192,28 @@ bool EditStage::update()
   return !input.keys[Input::KEY_QUIT];
 }
 
-void EditStage::present( bool isFull )
+void EditStage::present(bool isFull)
 {
   sound.play();
-  render.update( Render::EFFECTS_BIT | ( isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0 ) );
+  render.update(Render::EFFECTS_BIT | (isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0));
   sound.sync();
 }
 
-void EditStage::wait( uint micros )
+void EditStage::wait(uint micros)
 {
-  Time::usleep( micros );
+  Time::usleep(micros);
 }
 
 void EditStage::load()
 {
-  Log::println( "[%s] Loading EditStage {", Time::local().toString().cstr() );
+  Log::println("[%s] Loading EditStage {", Time::local().toString().cstr());
   Log::indent();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
-  ui::ui.loadingScreen->show( true );
+  ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Loading ..."));
+  ui::ui.loadingScreen->show(true);
 
-  render.update( Render::UI_BIT );
+  render.update(Render::UI_BIT);
 
   timer.reset();
 
@@ -224,13 +224,13 @@ void EditStage::load()
   context.load();
 
   camera.reset();
-  camera.setState( Camera::STRATEGIC );
+  camera.setState(Camera::STRATEGIC);
   camera.strategic.hasBuildFrame = true;
 
   editFrame = new ui::EditFrame();
-  ui::ui.root->add( editFrame, ui::Area::CENTRE, 8 );
+  ui::ui.root->add(editFrame, ui::Area::CENTRE, 8);
 
-  if( layoutFile.type() == File::REGULAR ) {
+  if (layoutFile.type() == File::REGULAR) {
     read();
   }
 
@@ -242,36 +242,36 @@ void EditStage::load()
   camera.prepare();
   camera.update();
 
-  ui::ui.showLoadingScreen( true );
+  ui::ui.showLoadingScreen(true);
 
-  render.update( Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT );
+  render.update(Render::ORBIS_BIT | Render::UI_BIT | Render::EFFECTS_BIT);
 
   loader.syncUpdate();
   loader.load();
 
   isAuxAlive = true;
   mainSemaphore.post();
-  auxThread.start( "aux", auxMain );
+  auxThread.start("aux", auxMain);
 
-  ui::ui.showLoadingScreen( false );
-  present( true );
+  ui::ui.showLoadingScreen(false);
+  present(true);
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void EditStage::unload()
 {
-  Log::println( "[%s] Unloading EditStage {", Time::local().toString().cstr() );
+  Log::println("[%s] Unloading EditStage {", Time::local().toString().cstr());
   Log::indent();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
-  ui::ui.showLoadingScreen( true );
+  ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Shutting down ..."));
+  ui::ui.showLoadingScreen(true);
 
   loader.unload();
 
-  render.update( Render::UI_BIT );
+  render.update(Render::UI_BIT);
 
   isAuxAlive = false;
 
@@ -279,7 +279,7 @@ void EditStage::unload()
   mainSemaphore.wait();
   auxThread.join();
 
-  ui::ui.root->remove( editFrame );
+  ui::ui.root->remove(editFrame);
   editFrame = nullptr;
 
   camera.reset();
@@ -290,15 +290,15 @@ void EditStage::unload()
   nirvana.unload();
   matrix.unload();
 
-  ui::ui.showLoadingScreen( false );
+  ui::ui.showLoadingScreen(false);
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void EditStage::init()
 {
-  Log::println( "Initialising EditStage {" );
+  Log::println("Initialising EditStage {");
   Log::indent();
 
   matrix.init();
@@ -307,12 +307,12 @@ void EditStage::init()
   profile.init();
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 void EditStage::destroy()
 {
-  Log::println( "Destroying EditStage {" );
+  Log::println("Destroying EditStage {");
   Log::indent();
 
   profile.destroy();
@@ -323,7 +323,7 @@ void EditStage::destroy()
   layoutFile = "";
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 EditStage editStage;

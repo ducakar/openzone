@@ -39,72 +39,72 @@ namespace client
 namespace ui
 {
 
-void EditFrame::itemCallback( ModelField* sender, bool isClicked )
+void EditFrame::itemCallback(ModelField* sender, bool isClicked)
 {
-  EditFrame*    editFrame = static_cast<EditFrame*>( sender->parent );
+  EditFrame*    editFrame = static_cast<EditFrame*>(sender->parent);
   const Object* container = editFrame->owner;
   Object*       item      = nullptr;
   int           id        = editFrame->scrollOwner * COLS + sender->id;
 
-  if( uint( id ) < uint( container->items.length() ) ) {
-    item = orbis.obj( container->items[id] );
+  if (uint(id) < uint(container->items.length())) {
+    item = orbis.obj(container->items[id]);
   }
-  if( item == nullptr ) {
+  if (item == nullptr) {
     return;
   }
 
-  hard_assert( editFrame->taggedItemIndex == -1 );
+  hard_assert(editFrame->taggedItemIndex == -1);
 
   editFrame->taggedItemIndex = item->index;
 
-  if( isClicked && input.leftReleased ) {
-    synapse.remove( item );
+  if (isClicked && input.leftReleased) {
+    synapse.remove(item);
   }
 }
 
 void EditFrame::updateReferences()
 {
-  if( ui.strategicArea->taggedObjs.length() == 1 ) {
-    owner = orbis.obj( ui.strategicArea->taggedObjs[0] );
+  if (ui.strategicArea->taggedObjs.length() == 1) {
+    owner = orbis.obj(ui.strategicArea->taggedObjs[0]);
   }
   else {
     owner = nullptr;
   }
 }
 
-void EditFrame::handleScroll( const Object* container, int* scroll )
+void EditFrame::handleScroll(const Object* container, int* scroll)
 {
-  if( input.wheelDown ) {
-    int nScrollRows = max( 0, container->clazz->nItems - 1 ) / COLS;
-    *scroll = clamp( *scroll + 1,  0, nScrollRows );
+  if (input.wheelDown) {
+    int nScrollRows = max(0, container->clazz->nItems - 1) / COLS;
+    *scroll = clamp(*scroll + 1,  0, nScrollRows);
   }
-  if( input.wheelUp ) {
-    int nScrollRows = max( 0, container->clazz->nItems - 1 ) / COLS;
-    *scroll = clamp( *scroll - 1,  0, nScrollRows );
+  if (input.wheelUp) {
+    int nScrollRows = max(0, container->clazz->nItems - 1) / COLS;
+    *scroll = clamp(*scroll - 1,  0, nScrollRows);
   }
 }
 
-void EditFrame::drawComponent( int height, const Object* container, const Dynamic* taggedItem,
-                               int scroll )
+void EditFrame::drawComponent(int height, const Object* container, const Dynamic* taggedItem,
+                              int scroll)
 {
   const ObjectClass* containerClazz = container->clazz;
 
-  int nScrollRows = max( 0, containerClazz->nItems - 1 ) / COLS;
+  int nScrollRows = max(0, containerClazz->nItems - 1) / COLS;
 
-  if( scroll != 0 ) {
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, style.images.scrollUp );
-    shape.fill( x + 16, y + height + SLOT_SIZE, 16, 16 );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  if (scroll != 0) {
+    shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, style.images.scrollUp);
+    shape.fill(x + 16, y + height + SLOT_SIZE, 16, 16);
+    glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
   }
-  if( scroll != nScrollRows ) {
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, style.images.scrollDown );
-    shape.fill( x + 16, y + height - 16, 16, 16 );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  if (scroll != nScrollRows) {
+    shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, style.images.scrollDown);
+    shape.fill(x + 16, y + height - 16, 16, 16);
+    glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
   }
 
-  if( taggedItem == nullptr || taggedItem->parent != container->index ) {
+  if (taggedItem == nullptr || taggedItem->parent != container->index) {
     return;
   }
 
@@ -113,17 +113,17 @@ void EditFrame::drawComponent( int height, const Object* container, const Dynami
   float life   = taggedItem->life / taggedClazz->life;
   float status = taggedItem->status();
 
-  lifeBar.draw( this, x + width - 52, y + height + SLOT_SIZE + 8, 50, 12, life );
-  if( status >= 0.0f ) {
-    statusBar.draw( this, x + width - 52, y + height + SLOT_SIZE + 1, 50, 8, status );
+  lifeBar.draw(this, x + width - 52, y + height + SLOT_SIZE + 8, 50, 12, life);
+  if (status >= 0.0f) {
+    statusBar.draw(this, x + width - 52, y + height + SLOT_SIZE + 1, 50, 8, status);
   }
 
-  itemDesc.setPosition( -ICON_SIZE - 8, height - FOOTER_SIZE / 2 );
-  itemDesc.setText( "#%d %s", taggedItem->index, taggedClazz->title.cstr() );
-  itemDesc.draw( this );
+  itemDesc.setPosition(-ICON_SIZE - 8, height - FOOTER_SIZE / 2);
+  itemDesc.setText("#%d %s", taggedItem->index, taggedClazz->title.cstr());
+  itemDesc.draw(this);
 }
 
-void EditFrame::onVisibilityChange( bool )
+void EditFrame::onVisibilityChange(bool)
 {
   scrollOwner = 0;
 }
@@ -133,18 +133,18 @@ void EditFrame::onUpdate()
   updateReferences();
   taggedItemIndex = -1;
 
-  show( mouse.doShow && owner != nullptr );
+  show(mouse.doShow && owner != nullptr);
 }
 
 bool EditFrame::onMouseEvent()
 {
   Frame::onMouseEvent();
 
-  if( input.keys[Input::KEY_UI_ALT] ) {
+  if (input.keys[Input::KEY_UI_ALT]) {
     return true;
   }
 
-  handleScroll( owner, &scrollOwner );
+  handleScroll(owner, &scrollOwner);
   return true;
 }
 
@@ -152,51 +152,51 @@ void EditFrame::onDraw()
 {
   updateReferences();
 
-  if( owner == nullptr ) {
+  if (owner == nullptr) {
     return;
   }
 
   const Object*  container  = owner;
-  const Dynamic* taggedItem = orbis.obj<const Dynamic>( taggedItemIndex );
+  const Dynamic* taggedItem = orbis.obj<const Dynamic>(taggedItemIndex);
 
-  title.setText( "#%d %s", container->index, container->title().cstr() );
+  title.setText("#%d %s", container->index, container->title().cstr());
 
-  for( int i = 0; i < COLS; ++i ) {
+  for (int i = 0; i < COLS; ++i) {
     int id = scrollOwner * COLS + i;
 
-    if( id < owner->items.length() ) {
-      const Object* item = orbis.obj( owner->items[id] );
+    if (id < owner->items.length()) {
+      const Object* item = orbis.obj(owner->items[id]);
 
-      ownerModels[i]->show( true );
-      ownerModels[i]->setModel( item == nullptr ? -1 : item->clazz->imagoModel );
+      ownerModels[i]->show(true);
+      ownerModels[i]->setModel(item == nullptr ? -1 : item->clazz->imagoModel);
     }
     else {
-      ownerModels[i]->show( id < owner->items.capacity() );
-      ownerModels[i]->setModel( -1 );
+      ownerModels[i]->show(id < owner->items.capacity());
+      ownerModels[i]->setModel(-1);
     }
   }
 
   Frame::onDraw();
 
-  drawComponent( FOOTER_SIZE, owner, taggedItem, scrollOwner );
+  drawComponent(FOOTER_SIZE, owner, taggedItem, scrollOwner);
 }
 
 EditFrame::EditFrame() :
-  Frame( COLS*SLOT_SIZE + 2*PADDING_SIZE, SINGLE_HEIGHT, " " ),
-  owner( nullptr ),
-  lifeBar( &style.taggedLife ), statusBar( &style.taggedStatus ),
-  itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-  taggedItemIndex( -1 ), scrollOwner( 0 )
+  Frame(COLS*SLOT_SIZE + 2*PADDING_SIZE, SINGLE_HEIGHT, " "),
+  owner(nullptr),
+  lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
+  itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " "),
+  taggedItemIndex(-1), scrollOwner(0)
 {
   flags |= UPDATE_BIT;
 
-  for( int i = 0; i < COLS; ++i ) {
-    ownerModels[i] = new ModelField( itemCallback, SLOT_SIZE - 2*PADDING_SIZE,
-                                     SLOT_SIZE - 2*PADDING_SIZE );
-    ownerModels[i]->setClickMask( -1 );
+  for (int i = 0; i < COLS; ++i) {
+    ownerModels[i] = new ModelField(itemCallback, SLOT_SIZE - 2*PADDING_SIZE,
+                                    SLOT_SIZE - 2*PADDING_SIZE);
+    ownerModels[i]->setClickMask(-1);
     ownerModels[i]->id = i;
 
-    add( ownerModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE );
+    add(ownerModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE);
   }
 }
 

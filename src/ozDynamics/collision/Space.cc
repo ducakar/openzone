@@ -31,12 +31,12 @@ namespace oz
 
 void Space::clear()
 {
-  for( Body* body : bodies ) {
+  for (Body* body : bodies) {
     Shape* shape = body->shape();
 
-    body->setShape( nullptr );
+    body->setShape(nullptr);
 
-    if( shape != nullptr && shape->nUsers == 0 ) {
+    if (shape != nullptr && shape->nUsers == 0) {
       delete shape;
     }
     delete body;

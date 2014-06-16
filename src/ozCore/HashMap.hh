@@ -42,7 +42,7 @@ namespace oz
  * @sa `oz::HashSet`, `oz::Map`
  */
 template <typename Key, typename Value>
-class HashMap : private HashSet< detail::MapPair<Key, Value> >
+class HashMap : private HashSet<detail::MapPair<Key, Value>>
 {
 public:
 
@@ -73,14 +73,14 @@ private:
   /**
    * Delete all elements and referenced objects in a given chain.
    */
-  void freeChain( Entry* entry )
+  void freeChain(Entry* entry)
   {
-    while( entry != nullptr ) {
+    while (entry != nullptr) {
       Entry* next = entry->next;
 
       delete entry->elem.value;
       entry->~Entry();
-      pool.deallocate( entry );
+      pool.deallocate(entry);
 
       entry = next;
     }
@@ -109,75 +109,75 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashMap( InitialiserList<Pair> l )
+  HashMap(InitialiserList<Pair> l)
   {
-    for( const Pair& p : l ) {
-      add( p.key, p.value );
+    for (const Pair& p : l) {
+      add(p.key, p.value);
     }
   }
 
   /**
    * Copy constructor, copies elements and storage.
    */
-  HashMap( const HashMap& ht ) :
-    HashSet<Pair>( ht )
+  HashMap(const HashMap& ht) :
+    HashSet<Pair>(ht)
   {}
 
   /**
    * Move constructor, moves storage.
    */
-  HashMap( HashMap&& ht ) :
-    HashSet<Pair>( static_cast<HashMap&&>( ht ) )
+  HashMap(HashMap&& ht) :
+    HashSet<Pair>(static_cast<HashMap&&>(ht))
   {}
 
   /**
    * Copy operator, copies elements and storage.
    */
-  HashMap& operator = ( const HashMap& ht )
+  HashMap& operator = (const HashMap& ht)
   {
-    return static_cast<HashMap&>( HashSet<Pair>::operator = ( ht ) );
+    return static_cast<HashMap&>(HashSet<Pair>::operator = (ht));
   }
 
   /**
    * Move operator, moves storage.
    */
-  HashMap& operator = ( HashMap&& ht )
+  HashMap& operator = (HashMap&& ht)
   {
-    return static_cast<HashMap&>( HashSet<Pair>::operator = ( static_cast<HashMap&&>( ht ) ) );
+    return static_cast<HashMap&>(HashSet<Pair>::operator = (static_cast<HashMap&&>(ht)));
   }
 
   /**
    * True iff contained elements are equal.
    */
-  bool operator == ( const HashMap& ht ) const
+  bool operator == (const HashMap& ht) const
   {
-    return HashSet<Pair>::operator == ( ht );
+    return HashSet<Pair>::operator == (ht);
   }
 
   /**
    * False iff contained elements are equal.
    */
-  bool operator != ( const HashMap& ht ) const
+  bool operator != (const HashMap& ht) const
   {
-    return HashSet<Pair>::operator != ( ht );
+    return HashSet<Pair>::operator != (ht);
   }
 
   /**
    * Constant pointer to the value for a given key or `nullptr` if not found.
    */
   template <typename Key_ = Key>
-  const Value* find( const Key_& key ) const
+  const Value* find(const Key_& key) const
   {
-    if( size == 0 ) {
+    if (size == 0) {
       return nullptr;
     }
 
-    int    h     = hash( key );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(key);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem.key == key ) {
+    while (entry != nullptr) {
+      if (entry->elem.key == key) {
         return &entry->elem.value;
       }
       entry = entry->next;
@@ -189,18 +189,18 @@ public:
    * Pointer to the value for a given key or `nullptr` if not found.
    */
   template <typename Key_ = Key>
-  Value* find( const Key_& key )
+  Value* find(const Key_& key)
   {
-    if( size == 0 ) {
+    if (size == 0) {
       return nullptr;
     }
 
-    int    h     = hash( key );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(key);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem.key == key ) {
+    while (entry != nullptr) {
+      if (entry->elem.key == key) {
         return &entry->elem.value;
       }
       entry = entry->next;
@@ -214,24 +214,24 @@ public:
    * @return Reference to the value of the inserted element.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  Value& add( Key_&& key, Value_&& value )
+  Value& add(Key_&& key, Value_&& value)
   {
-    ensureCapacity( pool.length() + 1 );
+    ensureCapacity(pool.length() + 1);
 
-    int    h     = hash( key );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(key);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem.key == key ) {
-        entry->elem.value = static_cast<Value_&&>( value );
+    while (entry != nullptr) {
+      if (entry->elem.key == key) {
+        entry->elem.value = static_cast<Value_&&>(value);
         return entry->elem.value;
       }
       entry = entry->next;
     }
 
-    data[index] = new( pool ) Entry {
-      data[index], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
+    data[index] = new(pool) Entry {
+      data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
     };
     return data[index]->elem.value;
   }
@@ -242,23 +242,23 @@ public:
    * @return Reference to the value of the inserted or the existing element with the same key.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  Value& include( Key_&& key, Value_&& value )
+  Value& include(Key_&& key, Value_&& value)
   {
-    ensureCapacity( pool.length() + 1 );
+    ensureCapacity(pool.length() + 1);
 
-    int    h     = hash( key );
-    uint   index = uint( h ) % uint( size );
+    int    h     = hash(key);
+    uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
-    while( entry != nullptr ) {
-      if( entry->elem.key == key ) {
+    while (entry != nullptr) {
+      if (entry->elem.key == key) {
         return entry->elem.value;
       }
       entry = entry->next;
     }
 
-    data[index] = new( pool ) Entry {
-      data[index], h, { static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) }
+    data[index] = new(pool) Entry {
+      data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
     };
     return data[index]->elem.value;
   }
@@ -268,8 +268,8 @@ public:
    */
   void free()
   {
-    for( int i = 0; i < size; ++i ) {
-      freeChain( data[i] );
+    for (int i = 0; i < size; ++i) {
+      freeChain(data[i]);
       data[i] = nullptr;
     }
   }

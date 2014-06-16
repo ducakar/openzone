@@ -37,19 +37,19 @@ namespace ui
 
 const Device* const* InfoFrame::updateReferences()
 {
-  if( camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0 ) {
+  if (camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0) {
     lastId = -1;
     return nullptr;
   }
 
-  const Device* const* device = nirvana.devices.find( camera.object );
-  if( device == nullptr ) {
+  const Device* const* device = nirvana.devices.find(camera.object);
+  if (device == nullptr) {
     lastId = -1;
   }
   return device;
 }
 
-void InfoFrame::onVisibilityChange( bool )
+void InfoFrame::onVisibilityChange(bool)
 {
   lastId = -1;
 }
@@ -58,38 +58,38 @@ void InfoFrame::onUpdate()
 {
   const Device* const* device = updateReferences();
 
-  show( device != nullptr );
+  show(device != nullptr);
 }
 
 void InfoFrame::onDraw()
 {
   const Device* const* device = updateReferences();
-  if( device == nullptr ) {
+  if (device == nullptr) {
     return;
   }
 
-  if( lastId != camera.object ) {
+  if (lastId != camera.object) {
     lastId = camera.object;
 
-    const Bot* tagged = static_cast<const Bot*>( camera.objectObj );
+    const Bot* tagged = static_cast<const Bot*>(camera.objectObj);
 
-    text.setText( "%s", ( *device )->getMemo() );
+    text.setText("%s", (*device)->getMemo());
 
-    if( tagged->flags & Object::BOT_BIT ) {
-      title.setText( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );
+    if (tagged->flags & Object::BOT_BIT) {
+      title.setText("%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr());
     }
     else {
-      title.setText( "%s", tagged->clazz->title.cstr() );
+      title.setText("%s", tagged->clazz->title.cstr());
     }
   }
 
   Frame::onDraw();
-  text.draw( this );
+  text.draw(this);
 }
 
 InfoFrame::InfoFrame() :
-  Frame( 320, 12 + 30 * style.fonts[Font::SANS].height, "" ),
-  text( 6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, Font::SANS, "" ), lastId( -1 )
+  Frame(320, 12 + 30 * style.fonts[Font::SANS].height, ""),
+  text(6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, Font::SANS, ""), lastId(-1)
 {
   flags |= PINNED_BIT;
 }

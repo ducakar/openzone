@@ -33,9 +33,9 @@ namespace oz
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
 static LuaNirvana& lua = luaNirvana;
 
-bool LuaNirvana::execChunk( const Buffer& buffer, const char* name, Mind* mind, Bot* self )
+bool LuaNirvana::execChunk(const Buffer& buffer, const char* name, Mind* mind, Bot* self)
 {
-  hard_assert( l_gettop() == 1 && mind != nullptr );
+  hard_assert(l_gettop() == 1 && mind != nullptr);
 
   ms.obj      = nullptr;
   ms.str      = nullptr;
@@ -48,24 +48,24 @@ bool LuaNirvana::execChunk( const Buffer& buffer, const char* name, Mind* mind, 
 
   bool value = false;
 
-  if( l_dobufferx( buffer.begin(), buffer.length(), "", "b" ) != LUA_OK ) {
-    Log::println( "Lua[N] in %s(self = %d): %s", name, ns.self->index, l_tostring( -1 ) );
+  if (l_dobufferx(buffer.begin(), buffer.length(), "", "b") != LUA_OK) {
+    Log::println("Lua[N] in %s(self = %d): %s", name, ns.self->index, l_tostring(-1));
     System::bell();
 
-    l_pop( 1 );
+    l_pop(1);
   }
-  else if( l_gettop() > 1 ) {
-    value = l_tobool( -1 );
-    l_settop( 1 );
+  else if (l_gettop() > 1) {
+    value = l_tobool(-1);
+    l_settop(1);
   }
 
-  hard_assert( l_gettop() == 1 );
+  hard_assert(l_gettop() == 1);
   return value;
 }
 
-void LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
+void LuaNirvana::mindCall(const char* functionName, Mind* mind, Bot* self)
 {
-  hard_assert( l_gettop() == 1 && mind != nullptr && self != nullptr );
+  hard_assert(l_gettop() == 1 && mind != nullptr && self != nullptr);
 
   ms.self     = self;
   ms.obj      = self;
@@ -76,482 +76,482 @@ void LuaNirvana::mindCall( const char* functionName, Mind* mind, Bot* self )
   ns.mind     = mind;
   ns.device   = nullptr;
 
-  l_getglobal( functionName );
-  l_rawgeti( 1, self->index );
+  l_getglobal(functionName);
+  l_rawgeti(1, self->index);
 
-  if( l_pcall( 1, 0 ) != LUA_OK ) {
-    Log::println( "Lua[N] in %s(self = %d): %s", functionName, self->index, l_tostring( -1 ) );
+  if (l_pcall(1, 0) != LUA_OK) {
+    Log::println("Lua[N] in %s(self = %d): %s", functionName, self->index, l_tostring(-1));
     System::bell();
 
-    l_pop( 1 );
+    l_pop(1);
   }
 
-  hard_assert( l_gettop() == 1 );
+  hard_assert(l_gettop() == 1);
 }
 
-void LuaNirvana::registerMind( int botIndex )
+void LuaNirvana::registerMind(int botIndex)
 {
-  hard_assert( l_gettop() == 1 );
+  hard_assert(l_gettop() == 1);
 
   l_newtable();
-  l_rawseti( 1, botIndex );
+  l_rawseti(1, botIndex);
 }
 
-void LuaNirvana::unregisterMind( int botIndex )
+void LuaNirvana::unregisterMind(int botIndex)
 {
-  hard_assert( l_gettop() == 1 );
+  hard_assert(l_gettop() == 1);
 
   l_pushnil();
-  l_rawseti( 1, botIndex );
+  l_rawseti(1, botIndex);
 }
 
-void LuaNirvana::read( InputStream* is )
+void LuaNirvana::read(InputStream* is)
 {
-  hard_assert( l_gettop() == 1 );
-  hard_assert( ( l_pushnil(), true ) );
-  hard_assert( !l_next( 1 ) );
+  hard_assert(l_gettop() == 1);
+  hard_assert((l_pushnil(), true));
+  hard_assert(!l_next(1));
 
   int index = is->readInt();
 
-  while( index >= 0 ) {
-    readValue( is );
+  while (index >= 0) {
+    readValue(is);
 
-    l_rawseti( 1, index );
+    l_rawseti(1, index);
 
     index = is->readInt();
   }
 }
 
-void LuaNirvana::write( OutputStream* os )
+void LuaNirvana::write(OutputStream* os)
 {
-  hard_assert( l_gettop() == 1 );
+  hard_assert(l_gettop() == 1);
 
   l_pushnil();
-  while( l_next( 1 ) ) {
-    hard_assert( l_type( -2 ) == LUA_TNUMBER );
-    hard_assert( l_type( -1 ) == LUA_TTABLE );
+  while (l_next(1)) {
+    hard_assert(l_type(-2) == LUA_TNUMBER);
+    hard_assert(l_type(-1) == LUA_TTABLE);
 
-    os->writeInt( l_toint( -2 ) );
-    writeValue( os );
+    os->writeInt(l_toint(-2));
+    writeValue(os);
 
-    l_pop( 1 );
+    l_pop(1);
   }
 
-  os->writeInt( -1 );
+  os->writeInt(-1);
 }
 
 void LuaNirvana::init()
 {
-  Log::print( "Initialising Nirvana Lua ..." );
+  Log::print("Initialising Nirvana Lua ...");
 
   initCommon();
 
   ls.envName = "nirvana";
-  ms.structs.reserve( 32 );
-  ms.objects.reserve( 512 );
+  ms.structs.reserve(32);
+  ms.objects.reserve(512);
 
   /*
    * General functions
    */
 
-  IMPORT_FUNC( ozError );
-  IMPORT_FUNC( ozPrintln );
+  IMPORT_FUNC(ozError);
+  IMPORT_FUNC(ozPrintln);
 
-  IMPORT_FUNC( ozForceUpdate );
+  IMPORT_FUNC(ozForceUpdate);
 
   /*
    * Orbis
    */
 
-  IMPORT_FUNC( ozOrbisGetGravity );
-  IGNORE_FUNC( ozOrbisSetGravity );
+  IMPORT_FUNC(ozOrbisGetGravity);
+  IGNORE_FUNC(ozOrbisSetGravity);
 
-  IGNORE_FUNC( ozOrbisAddStr );
-  IGNORE_FUNC( ozOrbisAddObj );
-  IGNORE_FUNC( ozOrbisAddFrag );
-  IGNORE_FUNC( ozOrbisGenFrags );
+  IGNORE_FUNC(ozOrbisAddStr);
+  IGNORE_FUNC(ozOrbisAddObj);
+  IGNORE_FUNC(ozOrbisAddFrag);
+  IGNORE_FUNC(ozOrbisGenFrags);
 
-  IMPORT_FUNC( ozOrbisOverlaps );
-  IMPORT_FUNC( ozOrbisBindOverlaps );
+  IMPORT_FUNC(ozOrbisOverlaps);
+  IMPORT_FUNC(ozOrbisBindOverlaps);
 
   /*
    * Caelum
    */
 
-  IGNORE_FUNC( ozCaelumLoad );
+  IGNORE_FUNC(ozCaelumLoad);
 
-  IMPORT_FUNC( ozCaelumGetHeading );
-  IGNORE_FUNC( ozCaelumSetHeading );
-  IMPORT_FUNC( ozCaelumGetPeriod );
-  IGNORE_FUNC( ozCaelumSetPeriod );
-  IMPORT_FUNC( ozCaelumGetTime );
-  IGNORE_FUNC( ozCaelumSetTime );
-  IGNORE_FUNC( ozCaelumAddTime );
-  IGNORE_FUNC( ozCaelumSetRealTime );
+  IMPORT_FUNC(ozCaelumGetHeading);
+  IGNORE_FUNC(ozCaelumSetHeading);
+  IMPORT_FUNC(ozCaelumGetPeriod);
+  IGNORE_FUNC(ozCaelumSetPeriod);
+  IMPORT_FUNC(ozCaelumGetTime);
+  IGNORE_FUNC(ozCaelumSetTime);
+  IGNORE_FUNC(ozCaelumAddTime);
+  IGNORE_FUNC(ozCaelumSetRealTime);
 
   /*
    * Terra
    */
 
-  IGNORE_FUNC( ozTerraLoad );
+  IGNORE_FUNC(ozTerraLoad);
 
-  IMPORT_FUNC( ozTerraHeight );
+  IMPORT_FUNC(ozTerraHeight);
 
   /*
    * Structure
    */
 
-  IMPORT_FUNC( ozBSPDim );
+  IMPORT_FUNC(ozBSPDim);
 
-  IMPORT_FUNC( ozBindStr );
-  IMPORT_FUNC( ozBindNextStr );
+  IMPORT_FUNC(ozBindStr);
+  IMPORT_FUNC(ozBindNextStr);
 
-  IMPORT_FUNC( ozStrIsNull );
+  IMPORT_FUNC(ozStrIsNull);
 
-  IMPORT_FUNC( ozStrGetIndex );
-  IMPORT_FUNC( ozStrGetBounds );
-  IMPORT_FUNC( ozStrGetPos );
-  IMPORT_FUNC( ozStrGetBSP );
-  IMPORT_FUNC( ozStrGetHeading );
+  IMPORT_FUNC(ozStrGetIndex);
+  IMPORT_FUNC(ozStrGetBounds);
+  IMPORT_FUNC(ozStrGetPos);
+  IMPORT_FUNC(ozStrGetBSP);
+  IMPORT_FUNC(ozStrGetHeading);
 
-  IMPORT_FUNC( ozStrMaxLife );
-  IMPORT_FUNC( ozStrGetLife );
-  IGNORE_FUNC( ozStrSetLife );
-  IGNORE_FUNC( ozStrAddLife );
-  IMPORT_FUNC( ozStrDefaultResistance );
-  IMPORT_FUNC( ozStrGetResistance );
-  IGNORE_FUNC( ozStrSetResistance );
+  IMPORT_FUNC(ozStrMaxLife);
+  IMPORT_FUNC(ozStrGetLife);
+  IGNORE_FUNC(ozStrSetLife);
+  IGNORE_FUNC(ozStrAddLife);
+  IMPORT_FUNC(ozStrDefaultResistance);
+  IMPORT_FUNC(ozStrGetResistance);
+  IGNORE_FUNC(ozStrSetResistance);
 
-  IGNORE_FUNC( ozStrDamage );
-  IGNORE_FUNC( ozStrDestroy );
-  IGNORE_FUNC( ozStrRemove );
+  IGNORE_FUNC(ozStrDamage);
+  IGNORE_FUNC(ozStrDestroy);
+  IGNORE_FUNC(ozStrRemove);
 
-  IMPORT_FUNC( ozStrNumBoundObjs );
-  IMPORT_FUNC( ozStrBindBoundObj );
+  IMPORT_FUNC(ozStrNumBoundObjs);
+  IMPORT_FUNC(ozStrBindBoundObj);
 
-  IMPORT_FUNC( ozStrNumEnts );
-  IMPORT_FUNC( ozStrBindEnt );
+  IMPORT_FUNC(ozStrNumEnts);
+  IMPORT_FUNC(ozStrBindEnt);
 
-  IMPORT_FUNC( ozStrOverlaps );
-  IMPORT_FUNC( ozStrBindOverlaps );
+  IMPORT_FUNC(ozStrOverlaps);
+  IMPORT_FUNC(ozStrBindOverlaps);
 
-  IMPORT_FUNC( ozStrVectorFromSelf );
-  IMPORT_FUNC( ozStrVectorFromSelfEye );
-  IMPORT_FUNC( ozStrDirFromSelf );
-  IMPORT_FUNC( ozStrDirFromSelfEye );
-  IMPORT_FUNC( ozStrDistFromSelf );
-  IMPORT_FUNC( ozStrDistFromSelfEye );
-  IMPORT_FUNC( ozStrHeadingFromSelfEye );
-  IMPORT_FUNC( ozStrRelHeadingFromSelfEye );
-  IMPORT_FUNC( ozStrPitchFromSelfEye );
-  IMPORT_FUNC( ozStrIsVisibleFromSelf );
-  IMPORT_FUNC( ozStrIsVisibleFromSelfEye );
+  IMPORT_FUNC(ozStrVectorFromSelf);
+  IMPORT_FUNC(ozStrVectorFromSelfEye);
+  IMPORT_FUNC(ozStrDirFromSelf);
+  IMPORT_FUNC(ozStrDirFromSelfEye);
+  IMPORT_FUNC(ozStrDistFromSelf);
+  IMPORT_FUNC(ozStrDistFromSelfEye);
+  IMPORT_FUNC(ozStrHeadingFromSelfEye);
+  IMPORT_FUNC(ozStrRelHeadingFromSelfEye);
+  IMPORT_FUNC(ozStrPitchFromSelfEye);
+  IMPORT_FUNC(ozStrIsVisibleFromSelf);
+  IMPORT_FUNC(ozStrIsVisibleFromSelfEye);
 
   /*
    * Entity
    */
 
-  IMPORT_FUNC( ozEntGetState );
-  IGNORE_FUNC( ozEntSetState );
-  IMPORT_FUNC( ozEntGetLock );
-  IGNORE_FUNC( ozEntSetLock );
-  IGNORE_FUNC( ozEntTrigger );
+  IMPORT_FUNC(ozEntGetState);
+  IGNORE_FUNC(ozEntSetState);
+  IMPORT_FUNC(ozEntGetLock);
+  IGNORE_FUNC(ozEntSetLock);
+  IGNORE_FUNC(ozEntTrigger);
 
-  IMPORT_FUNC( ozEntOverlaps );
-  IMPORT_FUNC( ozEntBindOverlaps );
+  IMPORT_FUNC(ozEntOverlaps);
+  IMPORT_FUNC(ozEntBindOverlaps);
 
-  IMPORT_FUNC( ozEntVectorFromSelf );
-  IMPORT_FUNC( ozEntVectorFromSelfEye );
-  IMPORT_FUNC( ozEntDirFromSelf );
-  IMPORT_FUNC( ozEntDirFromSelfEye );
-  IMPORT_FUNC( ozEntDistFromSelf );
-  IMPORT_FUNC( ozEntDistFromSelfEye );
-  IMPORT_FUNC( ozEntHeadingFromSelfEye );
-  IMPORT_FUNC( ozEntRelHeadingFromSelfEye );
-  IMPORT_FUNC( ozEntPitchFromSelfEye );
-  IMPORT_FUNC( ozEntIsVisibleFromSelf );
-  IMPORT_FUNC( ozEntIsVisibleFromSelfEye );
+  IMPORT_FUNC(ozEntVectorFromSelf);
+  IMPORT_FUNC(ozEntVectorFromSelfEye);
+  IMPORT_FUNC(ozEntDirFromSelf);
+  IMPORT_FUNC(ozEntDirFromSelfEye);
+  IMPORT_FUNC(ozEntDistFromSelf);
+  IMPORT_FUNC(ozEntDistFromSelfEye);
+  IMPORT_FUNC(ozEntHeadingFromSelfEye);
+  IMPORT_FUNC(ozEntRelHeadingFromSelfEye);
+  IMPORT_FUNC(ozEntPitchFromSelfEye);
+  IMPORT_FUNC(ozEntIsVisibleFromSelf);
+  IMPORT_FUNC(ozEntIsVisibleFromSelfEye);
 
   /*
    * Object
    */
 
-  IMPORT_FUNC( ozClassDim );
+  IMPORT_FUNC(ozClassDim);
 
-  IMPORT_FUNC( ozBindObj );
-  IMPORT_FUNC( ozBindSelf );
-  IGNORE_FUNC( ozBindUser );
-  IMPORT_FUNC( ozBindNextObj );
+  IMPORT_FUNC(ozBindObj);
+  IMPORT_FUNC(ozBindSelf);
+  IGNORE_FUNC(ozBindUser);
+  IMPORT_FUNC(ozBindNextObj);
 
-  IMPORT_FUNC( ozObjIsNull );
-  IMPORT_FUNC( ozObjIsSelf );
-  IGNORE_FUNC( ozObjIsUser );
-  IMPORT_FUNC( ozObjIsCut );
+  IMPORT_FUNC(ozObjIsNull);
+  IMPORT_FUNC(ozObjIsSelf);
+  IGNORE_FUNC(ozObjIsUser);
+  IMPORT_FUNC(ozObjIsCut);
 
-  IMPORT_FUNC( ozObjGetIndex );
-  IMPORT_FUNC( ozObjGetPos );
-  IGNORE_FUNC( ozObjWarpPos );
-  IMPORT_FUNC( ozObjGetDim );
-  IMPORT_FUNC( ozObjHasFlag );
-  IMPORT_FUNC( ozObjGetHeading );
-  IMPORT_FUNC( ozObjGetClassName );
+  IMPORT_FUNC(ozObjGetIndex);
+  IMPORT_FUNC(ozObjGetPos);
+  IGNORE_FUNC(ozObjWarpPos);
+  IMPORT_FUNC(ozObjGetDim);
+  IMPORT_FUNC(ozObjHasFlag);
+  IMPORT_FUNC(ozObjGetHeading);
+  IMPORT_FUNC(ozObjGetClassName);
 
-  IMPORT_FUNC( ozObjMaxLife );
-  IMPORT_FUNC( ozObjGetLife );
-  IGNORE_FUNC( ozObjSetLife );
-  IGNORE_FUNC( ozObjAddLife );
-  IMPORT_FUNC( ozObjDefaultResistance );
-  IMPORT_FUNC( ozObjGetResistance );
-  IGNORE_FUNC( ozObjSetResistance );
+  IMPORT_FUNC(ozObjMaxLife);
+  IMPORT_FUNC(ozObjGetLife);
+  IGNORE_FUNC(ozObjSetLife);
+  IGNORE_FUNC(ozObjAddLife);
+  IMPORT_FUNC(ozObjDefaultResistance);
+  IMPORT_FUNC(ozObjGetResistance);
+  IGNORE_FUNC(ozObjSetResistance);
 
-  IGNORE_FUNC( ozObjAddEvent );
+  IGNORE_FUNC(ozObjAddEvent);
 
-  IMPORT_FUNC( ozObjBindItems );
-  IMPORT_FUNC( ozObjBindItem );
-  IGNORE_FUNC( ozObjAddItem );
-  IGNORE_FUNC( ozObjRemoveItem );
-  IGNORE_FUNC( ozObjRemoveAllItems );
+  IMPORT_FUNC(ozObjBindItems);
+  IMPORT_FUNC(ozObjBindItem);
+  IGNORE_FUNC(ozObjAddItem);
+  IGNORE_FUNC(ozObjRemoveItem);
+  IGNORE_FUNC(ozObjRemoveAllItems);
 
-  IGNORE_FUNC( ozObjEnableUpdate );
-  IGNORE_FUNC( ozObjReportStatus );
-  IGNORE_FUNC( ozObjDamage );
-  IGNORE_FUNC( ozObjDestroy );
+  IGNORE_FUNC(ozObjEnableUpdate);
+  IGNORE_FUNC(ozObjReportStatus);
+  IGNORE_FUNC(ozObjDamage);
+  IGNORE_FUNC(ozObjDestroy);
 
-  IMPORT_FUNC( ozObjOverlaps );
-  IMPORT_FUNC( ozObjBindOverlaps );
+  IMPORT_FUNC(ozObjOverlaps);
+  IMPORT_FUNC(ozObjBindOverlaps);
 
-  IMPORT_FUNC( ozObjVectorFromSelf );
-  IMPORT_FUNC( ozObjVectorFromSelfEye );
-  IMPORT_FUNC( ozObjDirFromSelf );
-  IMPORT_FUNC( ozObjDirFromSelfEye );
-  IMPORT_FUNC( ozObjDistFromSelf );
-  IMPORT_FUNC( ozObjDistFromSelfEye );
-  IMPORT_FUNC( ozObjHeadingFromSelfEye );
-  IMPORT_FUNC( ozObjRelHeadingFromSelfEye );
-  IMPORT_FUNC( ozObjPitchFromSelfEye );
-  IMPORT_FUNC( ozObjIsVisibleFromSelf );
-  IMPORT_FUNC( ozObjIsVisibleFromSelfEye );
+  IMPORT_FUNC(ozObjVectorFromSelf);
+  IMPORT_FUNC(ozObjVectorFromSelfEye);
+  IMPORT_FUNC(ozObjDirFromSelf);
+  IMPORT_FUNC(ozObjDirFromSelfEye);
+  IMPORT_FUNC(ozObjDistFromSelf);
+  IMPORT_FUNC(ozObjDistFromSelfEye);
+  IMPORT_FUNC(ozObjHeadingFromSelfEye);
+  IMPORT_FUNC(ozObjRelHeadingFromSelfEye);
+  IMPORT_FUNC(ozObjPitchFromSelfEye);
+  IMPORT_FUNC(ozObjIsVisibleFromSelf);
+  IMPORT_FUNC(ozObjIsVisibleFromSelfEye);
 
   /*
    * Dynamic object
    */
 
-  IMPORT_FUNC( ozDynGetParent );
+  IMPORT_FUNC(ozDynGetParent);
 
-  IMPORT_FUNC( ozDynGetVelocity );
-  IMPORT_FUNC( ozDynGetMomentum );
-  IGNORE_FUNC( ozDynSetMomentum );
-  IGNORE_FUNC( ozDynAddMomentum );
-  IMPORT_FUNC( ozDynGetMass );
-  IMPORT_FUNC( ozDynGetLift );
+  IMPORT_FUNC(ozDynGetVelocity);
+  IMPORT_FUNC(ozDynGetMomentum);
+  IGNORE_FUNC(ozDynSetMomentum);
+  IGNORE_FUNC(ozDynAddMomentum);
+  IMPORT_FUNC(ozDynGetMass);
+  IMPORT_FUNC(ozDynGetLift);
 
   /*
    * Weapon
    */
 
-  IMPORT_FUNC( ozWeaponMaxRounds );
-  IMPORT_FUNC( ozWeaponGetRounds );
-  IGNORE_FUNC( ozWeaponSetRounds );
-  IGNORE_FUNC( ozWeaponAddRounds );
+  IMPORT_FUNC(ozWeaponMaxRounds);
+  IMPORT_FUNC(ozWeaponGetRounds);
+  IGNORE_FUNC(ozWeaponSetRounds);
+  IGNORE_FUNC(ozWeaponAddRounds);
 
   /*
    * Bot
    */
 
-  IMPORT_FUNC( ozBotGetName );
-  IGNORE_FUNC( ozBotSetName );
-  IMPORT_FUNC( ozBotGetMind );
-  IGNORE_FUNC( ozBotSetMind );
+  IMPORT_FUNC(ozBotGetName);
+  IGNORE_FUNC(ozBotSetName);
+  IMPORT_FUNC(ozBotGetMind);
+  IGNORE_FUNC(ozBotSetMind);
 
-  IMPORT_FUNC( ozBotHasState );
-  IMPORT_FUNC( ozBotGetEyePos );
-  IMPORT_FUNC( ozBotGetH );
-  IGNORE_FUNC( ozBotSetH );
-  IGNORE_FUNC( ozBotAddH );
-  IMPORT_FUNC( ozBotGetV );
-  IGNORE_FUNC( ozBotSetV );
-  IGNORE_FUNC( ozBotAddV );
-  IMPORT_FUNC( ozBotGetDir );
+  IMPORT_FUNC(ozBotHasState);
+  IMPORT_FUNC(ozBotGetEyePos);
+  IMPORT_FUNC(ozBotGetH);
+  IGNORE_FUNC(ozBotSetH);
+  IGNORE_FUNC(ozBotAddH);
+  IMPORT_FUNC(ozBotGetV);
+  IGNORE_FUNC(ozBotSetV);
+  IGNORE_FUNC(ozBotAddV);
+  IMPORT_FUNC(ozBotGetDir);
 
-  IMPORT_FUNC( ozBotMaxStamina );
-  IMPORT_FUNC( ozBotGetStamina );
-  IGNORE_FUNC( ozBotSetStamina );
-  IGNORE_FUNC( ozBotAddStamina );
+  IMPORT_FUNC(ozBotMaxStamina);
+  IMPORT_FUNC(ozBotGetStamina);
+  IGNORE_FUNC(ozBotSetStamina);
+  IGNORE_FUNC(ozBotAddStamina);
 
-  IMPORT_FUNC( ozBotGetCargo );
-  IMPORT_FUNC( ozBotGetWeaponItem );
-  IGNORE_FUNC( ozBotSetWeaponItem );
+  IMPORT_FUNC(ozBotGetCargo);
+  IMPORT_FUNC(ozBotGetWeaponItem);
+  IGNORE_FUNC(ozBotSetWeaponItem);
 
-  IMPORT_FUNC( ozBotCanReachEntity );
-  IMPORT_FUNC( ozBotCanReachObj );
+  IMPORT_FUNC(ozBotCanReachEntity);
+  IMPORT_FUNC(ozBotCanReachObj);
 
-  IGNORE_FUNC( ozBotAction );
-  IGNORE_FUNC( ozBotClearActions );
+  IGNORE_FUNC(ozBotAction);
+  IGNORE_FUNC(ozBotClearActions);
 
-  IGNORE_FUNC( ozBotHeal );
-  IGNORE_FUNC( ozBotRearm );
-  IGNORE_FUNC( ozBotKill );
+  IGNORE_FUNC(ozBotHeal);
+  IGNORE_FUNC(ozBotRearm);
+  IGNORE_FUNC(ozBotKill);
 
   /*
    * Vehicle
    */
 
-  IMPORT_FUNC( ozVehicleGetPilot );
+  IMPORT_FUNC(ozVehicleGetPilot);
 
-  IMPORT_FUNC( ozVehicleGetH );
-  IGNORE_FUNC( ozVehicleSetH );
-  IGNORE_FUNC( ozVehicleAddH );
-  IMPORT_FUNC( ozVehicleGetV );
-  IGNORE_FUNC( ozVehicleSetV );
-  IGNORE_FUNC( ozVehicleAddV );
-  IMPORT_FUNC( ozVehicleGetDir );
+  IMPORT_FUNC(ozVehicleGetH);
+  IGNORE_FUNC(ozVehicleSetH);
+  IGNORE_FUNC(ozVehicleAddH);
+  IMPORT_FUNC(ozVehicleGetV);
+  IGNORE_FUNC(ozVehicleSetV);
+  IGNORE_FUNC(ozVehicleAddV);
+  IMPORT_FUNC(ozVehicleGetDir);
 
-  IGNORE_FUNC( ozVehicleEmbarkBot );
-  IGNORE_FUNC( ozVehicleDisembarkBot );
+  IGNORE_FUNC(ozVehicleEmbarkBot);
+  IGNORE_FUNC(ozVehicleDisembarkBot);
 
-  IGNORE_FUNC( ozVehicleService );
+  IGNORE_FUNC(ozVehicleService);
 
   /*
    * Frag
    */
 
-  IMPORT_FUNC( ozFragBindIndex );
+  IMPORT_FUNC(ozFragBindIndex);
 
-  IMPORT_FUNC( ozFragIsNull );
+  IMPORT_FUNC(ozFragIsNull);
 
-  IMPORT_FUNC( ozFragGetPos );
-  IGNORE_FUNC( ozFragWarpPos );
-  IMPORT_FUNC( ozFragGetIndex );
-  IMPORT_FUNC( ozFragGetVelocity );
-  IGNORE_FUNC( ozFragSetVelocity );
-  IGNORE_FUNC( ozFragAddVelocity );
-  IMPORT_FUNC( ozFragGetLife );
-  IGNORE_FUNC( ozFragSetLife );
-  IGNORE_FUNC( ozFragAddLife );
+  IMPORT_FUNC(ozFragGetPos);
+  IGNORE_FUNC(ozFragWarpPos);
+  IMPORT_FUNC(ozFragGetIndex);
+  IMPORT_FUNC(ozFragGetVelocity);
+  IGNORE_FUNC(ozFragSetVelocity);
+  IGNORE_FUNC(ozFragAddVelocity);
+  IMPORT_FUNC(ozFragGetLife);
+  IGNORE_FUNC(ozFragSetLife);
+  IGNORE_FUNC(ozFragAddLife);
 
-  IGNORE_FUNC( ozFragRemove );
+  IGNORE_FUNC(ozFragRemove);
 
-  IMPORT_FUNC( ozFragOverlaps );
-  IMPORT_FUNC( ozFragBindOverlaps );
+  IMPORT_FUNC(ozFragOverlaps);
+  IMPORT_FUNC(ozFragBindOverlaps);
 
-  IMPORT_FUNC( ozFragVectorFromSelf );
-  IMPORT_FUNC( ozFragVectorFromSelfEye );
-  IMPORT_FUNC( ozFragDirFromSelf );
-  IMPORT_FUNC( ozFragDirFromSelfEye );
-  IMPORT_FUNC( ozFragDistFromSelf );
-  IMPORT_FUNC( ozFragDistFromSelfEye );
-  IMPORT_FUNC( ozFragHeadingFromSelfEye );
-  IMPORT_FUNC( ozFragRelHeadingFromSelfEye );
-  IMPORT_FUNC( ozFragPitchFromSelfEye );
-  IMPORT_FUNC( ozFragIsVisibleFromSelf );
-  IMPORT_FUNC( ozFragIsVisibleFromSelfEye );
+  IMPORT_FUNC(ozFragVectorFromSelf);
+  IMPORT_FUNC(ozFragVectorFromSelfEye);
+  IMPORT_FUNC(ozFragDirFromSelf);
+  IMPORT_FUNC(ozFragDirFromSelfEye);
+  IMPORT_FUNC(ozFragDistFromSelf);
+  IMPORT_FUNC(ozFragDistFromSelfEye);
+  IMPORT_FUNC(ozFragHeadingFromSelfEye);
+  IMPORT_FUNC(ozFragRelHeadingFromSelfEye);
+  IMPORT_FUNC(ozFragPitchFromSelfEye);
+  IMPORT_FUNC(ozFragIsVisibleFromSelf);
+  IMPORT_FUNC(ozFragIsVisibleFromSelfEye);
 
   /*
    * Mind's bot
    */
 
-  IMPORT_FUNC( ozSelfIsCut );
+  IMPORT_FUNC(ozSelfIsCut);
 
-  IMPORT_FUNC( ozSelfGetIndex );
-  IMPORT_FUNC( ozSelfGetPos );
-  IMPORT_FUNC( ozSelfGetDim );
-  IMPORT_FUNC( ozSelfHasFlag );
-  IMPORT_FUNC( ozSelfGetHeading );
-  IMPORT_FUNC( ozSelfGetClassName );
-  IMPORT_FUNC( ozSelfMaxLife );
-  IMPORT_FUNC( ozSelfGetLife );
-  IMPORT_FUNC( ozSelfDefaultResistance );
-  IMPORT_FUNC( ozSelfGetResistance );
+  IMPORT_FUNC(ozSelfGetIndex);
+  IMPORT_FUNC(ozSelfGetPos);
+  IMPORT_FUNC(ozSelfGetDim);
+  IMPORT_FUNC(ozSelfHasFlag);
+  IMPORT_FUNC(ozSelfGetHeading);
+  IMPORT_FUNC(ozSelfGetClassName);
+  IMPORT_FUNC(ozSelfMaxLife);
+  IMPORT_FUNC(ozSelfGetLife);
+  IMPORT_FUNC(ozSelfDefaultResistance);
+  IMPORT_FUNC(ozSelfGetResistance);
 
-  IMPORT_FUNC( ozSelfGetParent );
-  IMPORT_FUNC( ozSelfGetVelocity );
-  IMPORT_FUNC( ozSelfGetMomentum );
-  IMPORT_FUNC( ozSelfGetMass );
-  IMPORT_FUNC( ozSelfGetLift );
+  IMPORT_FUNC(ozSelfGetParent);
+  IMPORT_FUNC(ozSelfGetVelocity);
+  IMPORT_FUNC(ozSelfGetMomentum);
+  IMPORT_FUNC(ozSelfGetMass);
+  IMPORT_FUNC(ozSelfGetLift);
 
-  IMPORT_FUNC( ozSelfGetName );
-  IMPORT_FUNC( ozSelfGetMind );
-  IMPORT_FUNC( ozSelfHasState );
-  IMPORT_FUNC( ozSelfGetEyePos );
-  IMPORT_FUNC( ozSelfGetH );
-  IMPORT_FUNC( ozSelfSetH );
-  IMPORT_FUNC( ozSelfAddH );
-  IMPORT_FUNC( ozSelfGetV );
-  IMPORT_FUNC( ozSelfSetV );
-  IMPORT_FUNC( ozSelfAddV );
-  IMPORT_FUNC( ozSelfGetDir );
+  IMPORT_FUNC(ozSelfGetName);
+  IMPORT_FUNC(ozSelfGetMind);
+  IMPORT_FUNC(ozSelfHasState);
+  IMPORT_FUNC(ozSelfGetEyePos);
+  IMPORT_FUNC(ozSelfGetH);
+  IMPORT_FUNC(ozSelfSetH);
+  IMPORT_FUNC(ozSelfAddH);
+  IMPORT_FUNC(ozSelfGetV);
+  IMPORT_FUNC(ozSelfSetV);
+  IMPORT_FUNC(ozSelfAddV);
+  IMPORT_FUNC(ozSelfGetDir);
 
-  IMPORT_FUNC( ozSelfGetStamina );
-  IMPORT_FUNC( ozSelfMaxStamina );
+  IMPORT_FUNC(ozSelfGetStamina);
+  IMPORT_FUNC(ozSelfMaxStamina);
 
-  IMPORT_FUNC( ozSelfGetCargo );
-  IMPORT_FUNC( ozSelfGetWeaponItem );
-  IMPORT_FUNC( ozSelfSetWeaponItem );
+  IMPORT_FUNC(ozSelfGetCargo);
+  IMPORT_FUNC(ozSelfGetWeaponItem);
+  IMPORT_FUNC(ozSelfSetWeaponItem);
 
-  IMPORT_FUNC( ozSelfCanReachEntity );
-  IMPORT_FUNC( ozSelfCanReachObj );
+  IMPORT_FUNC(ozSelfCanReachEntity);
+  IMPORT_FUNC(ozSelfCanReachObj);
 
-  IMPORT_FUNC( ozSelfAction );
-  IMPORT_FUNC( ozSelfClearActions );
+  IMPORT_FUNC(ozSelfAction);
+  IMPORT_FUNC(ozSelfClearActions);
 
-  IMPORT_FUNC( ozSelfBindItems );
-  IMPORT_FUNC( ozSelfBindItem );
+  IMPORT_FUNC(ozSelfBindItems);
+  IMPORT_FUNC(ozSelfBindItem);
 
-  IMPORT_FUNC( ozSelfOverlaps );
-  IMPORT_FUNC( ozSelfBindOverlaps );
+  IMPORT_FUNC(ozSelfOverlaps);
+  IMPORT_FUNC(ozSelfBindOverlaps);
 
   /*
    * Mind
    */
 
-  IMPORT_FUNC( ozMindGetSide );
-  IMPORT_FUNC( ozMindSetSide );
+  IMPORT_FUNC(ozMindGetSide);
+  IMPORT_FUNC(ozMindSetSide);
 
   /*
    * QuestList
    */
 
-  IMPORT_FUNC( ozQuestAdd );
-  IMPORT_FUNC( ozQuestEnd );
+  IMPORT_FUNC(ozQuestAdd);
+  IMPORT_FUNC(ozQuestEnd);
 
   /*
    * TechGraph
    */
 
-  IMPORT_FUNC( ozTechEnable );
-  IMPORT_FUNC( ozTechDisable );
-  IMPORT_FUNC( ozTechEnableAll );
-  IMPORT_FUNC( ozTechDisableAll );
+  IMPORT_FUNC(ozTechEnable);
+  IMPORT_FUNC(ozTechDisable);
+  IMPORT_FUNC(ozTechEnableAll);
+  IMPORT_FUNC(ozTechDisableAll);
 
   /*
    * Nirvana
    */
 
-  IMPORT_FUNC( ozNirvanaRemoveDevice );
-  IMPORT_FUNC( ozNirvanaAddMemo );
+  IMPORT_FUNC(ozNirvanaRemoveDevice);
+  IMPORT_FUNC(ozNirvanaAddMemo);
 
-  importMatrixConstants( l );
-  importNirvanaConstants( l );
+  importMatrixConstants(l);
+  importNirvanaConstants(l);
 
   l_newtable();
-  l_setglobal( "ozLocalData" );
-  l_getglobal( "ozLocalData" );
+  l_setglobal("ozLocalData");
+  l_getglobal("ozLocalData");
 
-  loadDir( "@lua/common" );
-  loadDir( "@lua/nirvana" );
+  loadDir("@lua/common");
+  loadDir("@lua/nirvana");
 
-  hard_assert( l_gettop() == 1 );
+  hard_assert(l_gettop() == 1);
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 void LuaNirvana::destroy()
 {
-  if( l == nullptr ) {
+  if (l == nullptr) {
     return;
   }
 
-  Log::print( "Destroying Nirvana Lua ..." );
+  Log::print("Destroying Nirvana Lua ...");
 
   ms.structs.clear();
   ms.structs.trim();
@@ -559,13 +559,13 @@ void LuaNirvana::destroy()
   ms.objects.clear();
   ms.objects.trim();
 
-  hard_assert( l_gettop() == 1 );
-  hard_assert( ( l_pushnil(), true ) );
-  hard_assert( !l_next( 1 ) );
+  hard_assert(l_gettop() == 1);
+  hard_assert((l_pushnil(), true));
+  hard_assert(!l_next(1));
 
   freeCommon();
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 }
 
 LuaNirvana luaNirvana;

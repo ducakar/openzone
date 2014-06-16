@@ -56,7 +56,7 @@ public:
    */
   OZ_ALWAYS_INLINE
   ArrayIterator() :
-    IteratorBase<Elem>( nullptr ), past( nullptr )
+    IteratorBase<Elem>(nullptr), past(nullptr)
   {}
 
   /**
@@ -66,8 +66,8 @@ public:
    * @param past_ successor of the last element.
    */
   OZ_ALWAYS_INLINE
-  explicit ArrayIterator( Elem* first, Elem* past_ ) :
-    IteratorBase<Elem>( first ), past( past_ )
+  explicit ArrayIterator(Elem* first, Elem* past_) :
+    IteratorBase<Elem>(first), past(past_)
   {}
 
   /**
@@ -85,7 +85,7 @@ public:
   OZ_ALWAYS_INLINE
   ArrayIterator& operator ++ ()
   {
-    hard_assert( elem != past );
+    hard_assert(elem != past);
 
     ++elem;
     return *this;
@@ -128,9 +128,9 @@ using Iterator = ArrayIterator<Elem>;
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
-inline CIterator<Elem> citer( const Elem* array, int count )
+inline CIterator<Elem> citer(const Elem* array, int count)
 {
-  return CIterator<Elem>( array, array + count );
+  return CIterator<Elem>(array, array + count);
 }
 
 /**
@@ -138,9 +138,9 @@ inline CIterator<Elem> citer( const Elem* array, int count )
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
-inline Iterator<Elem> iter( Elem* array, int count )
+inline Iterator<Elem> iter(Elem* array, int count)
 {
-  return Iterator<Elem>( array, array + count );
+  return Iterator<Elem>(array, array + count);
 }
 
 /**
@@ -148,9 +148,9 @@ inline Iterator<Elem> iter( Elem* array, int count )
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline CIterator<Elem> citer( const Elem ( & array )[COUNT] )
+inline CIterator<Elem> citer(const Elem(& array)[COUNT])
 {
-  return CIterator<Elem>( array, array + COUNT );
+  return CIterator<Elem>(array, array + COUNT);
 }
 
 /**
@@ -158,21 +158,21 @@ inline CIterator<Elem> citer( const Elem ( & array )[COUNT] )
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
+inline Iterator<Elem> iter(Elem(& array)[COUNT])
 {
-  return Iterator<Elem>( array, array + COUNT );
+  return Iterator<Elem>(array, array + COUNT);
 }
 
 /**
  * Equivalent to `memcpy()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mCopy( void* dest, const void* src, int size )
+inline void* mCopy(void* dest, const void* src, int size)
 {
-#if defined( NDEBUG ) || defined( __native_client__ ) || defined( _WIN32 )
-  return __builtin_memcpy( dest, src, size_t( size ) );
+#if defined(NDEBUG) || defined(__native_client__) || defined(_WIN32)
+  return __builtin_memcpy(dest, src, size_t(size));
 #else
-  return __builtin___memcpy_chk( dest, src, size_t( size ), __builtin_object_size( dest, 0 ) );
+  return __builtin___memcpy_chk(dest, src, size_t(size), __builtin_object_size(dest, 0));
 #endif
 }
 
@@ -180,12 +180,12 @@ inline void* mCopy( void* dest, const void* src, int size )
  * Equivalent to `memmove()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mMove( void* dest, const void* src, int size )
+inline void* mMove(void* dest, const void* src, int size)
 {
-#if defined( NDEBUG ) || defined( __native_client__ ) || defined( _WIN32 )
-  return __builtin_memmove( dest, src, size_t( size ) );
+#if defined(NDEBUG) || defined(__native_client__) || defined(_WIN32)
+  return __builtin_memmove(dest, src, size_t(size));
 #else
-  return __builtin___memmove_chk( dest, src, size_t( size ), __builtin_object_size( dest, 0 ) );
+  return __builtin___memmove_chk(dest, src, size_t(size), __builtin_object_size(dest, 0));
 #endif
 }
 
@@ -193,12 +193,12 @@ inline void* mMove( void* dest, const void* src, int size )
  * Equivalent to `memset()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mSet( void* dest, int value, int size )
+inline void* mSet(void* dest, int value, int size)
 {
-#if defined( NDEBUG ) || defined( __native_client__ ) || defined( _WIN32 )
-  return __builtin_memset( dest, value, size_t( size ) );
+#if defined(NDEBUG) || defined(__native_client__) || defined(_WIN32)
+  return __builtin_memset(dest, value, size_t(size));
 #else
-  return __builtin___memset_chk( dest, value, size_t( size ), __builtin_object_size( dest, 0 ) );
+  return __builtin___memset_chk(dest, value, size_t(size), __builtin_object_size(dest, 0));
 #endif
 }
 
@@ -206,18 +206,18 @@ inline void* mSet( void* dest, int value, int size )
  * Equivalent to `memcmp()`.
  */
 OZ_ALWAYS_INLINE
-inline int mCompare( const void* srcA, const void* srcB, int size )
+inline int mCompare(const void* srcA, const void* srcB, int size)
 {
-  return __builtin_memcmp( srcA, srcB, size_t( size ) );
+  return __builtin_memcmp(srcA, srcB, size_t(size));
 }
 
 /**
  * Equivalent to `memchr()`.
  */
 OZ_ALWAYS_INLINE
-inline void* mChar( const void* src, int ch, int size )
+inline void* mChar(const void* src, int ch, int size)
 {
-  return __builtin_memchr( src, ch, size_t( size ) );
+  return __builtin_memchr(src, ch, size_t(size));
 }
 
 /**
@@ -226,14 +226,14 @@ inline void* mChar( const void* src, int ch, int size )
  * Safer and faster alternative to `strncpy()`. It always adds the terminating null char and doesn't
  * pad destination with zeros if `length` is larger than the size of the source string.
  */
-size_t strlcpy( char* dest, const char* src, size_t size );
+size_t strlcpy(char* dest, const char* src, size_t size);
 
 /**
  * Length of a static array.
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline constexpr int aLength( const Elem ( & )[COUNT] )
+inline constexpr int aLength(const Elem(&)[COUNT])
 {
   return COUNT;
 }
@@ -242,9 +242,9 @@ inline constexpr int aLength( const Elem ( & )[COUNT] )
  * Copy array elements from the first to the last.
  */
 template <typename Elem>
-inline void aCopy( const Elem* srcArray, int count, Elem* destArray )
+inline void aCopy(const Elem* srcArray, int count, Elem* destArray)
 {
-  for( int i = 0; i < count; ++i ) {
+  for (int i = 0; i < count; ++i) {
     destArray[i] = srcArray[i];
   }
 }
@@ -253,9 +253,9 @@ inline void aCopy( const Elem* srcArray, int count, Elem* destArray )
  * Move array elements from the last to the first.
  */
 template <typename Elem>
-inline void aCopyBackward( const Elem* srcArray, int count, Elem* destArray )
+inline void aCopyBackward(const Elem* srcArray, int count, Elem* destArray)
 {
-  for( int i = count - 1; i >= 0; --i ) {
+  for (int i = count - 1; i >= 0; --i) {
     destArray[i] = srcArray[i];
   }
 }
@@ -264,10 +264,10 @@ inline void aCopyBackward( const Elem* srcArray, int count, Elem* destArray )
  * Move array elements from the first to the last.
  */
 template <typename Elem>
-inline void aMove( Elem* srcArray, int count, Elem* destArray )
+inline void aMove(Elem* srcArray, int count, Elem* destArray)
 {
-  for( int i = 0; i < count; ++i ) {
-    destArray[i] = static_cast<Elem&&>( srcArray[i] );
+  for (int i = 0; i < count; ++i) {
+    destArray[i] = static_cast<Elem&&>(srcArray[i]);
   }
 }
 
@@ -275,10 +275,10 @@ inline void aMove( Elem* srcArray, int count, Elem* destArray )
  * Move array elements from the last to the first.
  */
 template <typename Elem>
-inline void aMoveBackward( Elem* srcArray, int count, Elem* destArray )
+inline void aMoveBackward(Elem* srcArray, int count, Elem* destArray)
 {
-  for( int i = count - 1; i >= 0; --i ) {
-    destArray[i] = static_cast<Elem&&>( srcArray[i] );
+  for (int i = count - 1; i >= 0; --i) {
+    destArray[i] = static_cast<Elem&&>(srcArray[i]);
   }
 }
 
@@ -286,9 +286,9 @@ inline void aMoveBackward( Elem* srcArray, int count, Elem* destArray )
  * %Set array elements to a given value.
  */
 template <typename Elem, typename Value = Elem>
-inline void aFill( Elem* array, int count, const Value& value )
+inline void aFill(Elem* array, int count, const Value& value)
 {
-  for( int i = 0; i < count; ++i ) {
+  for (int i = 0; i < count; ++i) {
     array[i] = value;
   }
 }
@@ -297,10 +297,10 @@ inline void aFill( Elem* array, int count, const Value& value )
  * True iff respective elements are equal.
  */
 template <typename Elem>
-inline bool aEquals( const Elem* arrayA, int count, const Elem* arrayB )
+inline bool aEquals(const Elem* arrayA, int count, const Elem* arrayB)
 {
-  for( int i = 0; i < count; ++i ) {
-    if( !( arrayA[i] == arrayB[i] ) ) {
+  for (int i = 0; i < count; ++i) {
+    if (!(arrayA[i] == arrayB[i])) {
       return false;
     }
   }
@@ -311,10 +311,10 @@ inline bool aEquals( const Elem* arrayA, int count, const Elem* arrayB )
  * Pointer to the first occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline Elem* aFind( Elem* array, int count, const Value& value )
+inline Elem* aFind(Elem* array, int count, const Value& value)
 {
-  for( int i = 0; i < count; ++i ) {
-    if( array[i] == value ) {
+  for (int i = 0; i < count; ++i) {
+    if (array[i] == value) {
       return &array[i];
     }
   }
@@ -325,10 +325,10 @@ inline Elem* aFind( Elem* array, int count, const Value& value )
  * Pointer to the last occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline Elem* aFindLast( Elem* array, int count, const Value& value )
+inline Elem* aFindLast(Elem* array, int count, const Value& value)
 {
-  for( int i = count - 1; i >= 0; --i ) {
-    if( array[i] == value ) {
+  for (int i = count - 1; i >= 0; --i) {
+    if (array[i] == value) {
       return &array[i];
     }
   }
@@ -339,19 +339,19 @@ inline Elem* aFindLast( Elem* array, int count, const Value& value )
  * True iff a given value is found in an array.
  */
 template <typename Elem, typename Value = Elem>
-inline bool aContains( const Elem* array, int count, const Value& value )
+inline bool aContains(const Elem* array, int count, const Value& value)
 {
-  return aFind<const Elem, Value>( array, count, value ) != nullptr;
+  return aFind<const Elem, Value>(array, count, value) != nullptr;
 }
 
 /**
  * Index of the first occurrence of the value or -1 if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline int aIndex( const Elem* array, int count, const Value& value )
+inline int aIndex(const Elem* array, int count, const Value& value)
 {
-  for( int i = 0; i < count; ++i ) {
-    if( array[i] == value ) {
+  for (int i = 0; i < count; ++i) {
+    if (array[i] == value) {
       return i;
     }
   }
@@ -362,10 +362,10 @@ inline int aIndex( const Elem* array, int count, const Value& value )
  * Index of the last occurrence of the value or -1 if not found.
  */
 template <typename Elem, typename Value = Elem>
-inline int aLastIndex( const Elem* array, int count, const Value& value )
+inline int aLastIndex(const Elem* array, int count, const Value& value)
 {
-  for( int i = count - 1; i >= 0; --i ) {
-    if( array[i] == value ) {
+  for (int i = count - 1; i >= 0; --i) {
+    if (array[i] == value) {
       return i;
     }
   }
@@ -376,9 +376,9 @@ inline int aLastIndex( const Elem* array, int count, const Value& value )
  * Delete objects referenced by elements (elements must be pointers).
  */
 template <typename Elem>
-inline void aFree( const Elem* array, int count )
+inline void aFree(const Elem* array, int count)
 {
-  for( int i = 0; i < count; ++i ) {
+  for (int i = 0; i < count; ++i) {
     delete array[i];
   }
 }
@@ -386,7 +386,7 @@ inline void aFree( const Elem* array, int count )
 /**
  * Reallocate array moving its elements.
  *
- * Allocate a new array of `newCount` elements, move first `min( count, newCount )` elements of the
+ * Allocate a new array of `newCount` elements, move first `min(count, newCount)` elements of the
  * source array to the newly created one and delete the source array. Similar to `realloc()`,
  * the given array is deleted and `nullptr` is returned if `newCount` is 0 and a new array one is
  * created and no elements are moved if `count` is 0.
@@ -394,13 +394,13 @@ inline void aFree( const Elem* array, int count )
  * @return Newly allocated array.
  */
 template <typename Elem>
-inline Elem* aReallocate( Elem* array, int count, int newCount )
+inline Elem* aReallocate(Elem* array, int count, int newCount)
 {
   Elem* newArray = nullptr;
 
-  if( newCount != 0 ) {
+  if (newCount != 0) {
     newArray = new Elem[newCount];
-    aMove<Elem>( array, min<int>( count, newCount ), newArray );
+    aMove<Elem>(array, min<int>(count, newCount), newArray);
   }
   delete[] array;
 
@@ -411,13 +411,13 @@ inline Elem* aReallocate( Elem* array, int count, int newCount )
  * Reverse the order of array elements.
  */
 template <typename Elem>
-inline void aReverse( Elem* array, int count )
+inline void aReverse(Elem* array, int count)
 {
   int bottom = 0;
   int top    = count - 1;
 
-  while( bottom < top ) {
-    swap<Elem>( array[bottom], array[top] );
+  while (bottom < top) {
+    swap<Elem>(array[bottom], array[top]);
     ++bottom;
     --top;
   }
@@ -427,7 +427,7 @@ inline void aReverse( Elem* array, int count )
  * Utility function for aSort.
  *
  * @note
- * `Elem` type must have `operator < ( const Elem& )` defined.
+ * `Elem` type must have `operator < (const Elem&)` defined.
  *
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
@@ -437,49 +437,49 @@ inline void aReverse( Elem* array, int count )
  * @param last pointer to last element in the array.
  */
 template <typename Elem>
-static void quicksort( Elem* first, Elem* last )
+static void quicksort(Elem* first, Elem* last)
 {
   // 8-14 seem as optimal thresholds for switching to selection sort.
-  if( last - first > 10 ) {
+  if (last - first > 10) {
     // Quicksort (last element is pivot).
     Elem* top    = first;
     Elem* bottom = last - 1;
 
     do {
-      while( !( *last < *top ) && top <= bottom ) {
+      while (!(*last < *top) && top <= bottom) {
         ++top;
       }
-      while( *last < *bottom && top < bottom ) {
+      while (*last < *bottom && top < bottom) {
         --bottom;
       }
-      if( top >= bottom ) {
+      if (top >= bottom) {
         break;
       }
 
-      swap<Elem>( *top, *bottom );
+      swap<Elem>(*top, *bottom);
     }
-    while( true );
+    while (true);
 
-    if( top != last ) {
-      swap<Elem>( *top, *last );
-      quicksort<Elem>( top + 1, last );
+    if (top != last) {
+      swap<Elem>(*top, *last);
+      quicksort<Elem>(top + 1, last);
     }
-    quicksort<Elem>( first, top - 1 );
+    quicksort<Elem>(first, top - 1);
   }
   else {
     // Selection sort.
-    for( Elem* i = first; i < last; ) {
+    for (Elem* i = first; i < last;) {
       Elem* pivot = i;
       Elem* min   = i;
       ++i;
 
-      for( Elem* j = i; j <= last; ++j ) {
-        if( *j < *min ) {
+      for (Elem* j = i; j <= last; ++j) {
+        if (*j < *min) {
           min = j;
         }
       }
-      if( min != pivot ) {
-        swap<Elem>( *min, *pivot );
+      if (min != pivot) {
+        swap<Elem>(*min, *pivot);
       }
     }
   }
@@ -489,12 +489,12 @@ static void quicksort( Elem* first, Elem* last )
  * Sort array using quicksort algorithm.
  */
 template <typename Elem>
-inline void aSort( Elem* array, int count )
+inline void aSort(Elem* array, int count)
 {
   int last = count - 1;
 
-  if( last > 0 ) {
-    quicksort<Elem>( array, &array[last] );
+  if (last > 0) {
+    quicksort<Elem>(array, &array[last]);
   }
 }
 
@@ -502,7 +502,7 @@ inline void aSort( Elem* array, int count )
  * Find index in a sorted array such that `array[index] <= key && key < array[index + 1]`.
  *
  * @note
- * `Elem` type must have defined `bool operator < ( const Key&, const Elem& ) const`.
+ * `Elem` type must have defined `bool operator < (const Key&, const Elem&) const`.
  *
  * If all elements are lesser return `count - 1` and if all elements are greater return -1.
  *
@@ -512,17 +512,17 @@ inline void aSort( Elem* array, int count )
  * @return Index of the last element not greater than `key`, -1 otherwise.
  */
 template <typename Elem, typename Key = Elem>
-inline int aBisection( const Elem* array, int count, const Key& key )
+inline int aBisection(const Elem* array, int count, const Key& key)
 {
   int a = -1;
   int b = count;
 
   // The algorithm ensures that (a == -1 or array[a] <= key) and (b == count or key < array[b]),
   // so the key may only lie on position a or nowhere.
-  while( b - a > 1 ) {
-    int c = ( a + b ) / 2;
+  while (b - a > 1) {
+    int c = (a + b) / 2;
 
-    if( key < array[c] ) {
+    if (key < array[c]) {
       b = c;
     }
     else {

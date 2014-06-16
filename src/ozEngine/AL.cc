@@ -37,33 +37,33 @@ namespace oz
  * Vorbis stream reader callbacks.
  */
 
-static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
+static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 {
-  InputStream* is = static_cast<InputStream*>( handle );
+  InputStream* is = static_cast<InputStream*>(handle);
 
-  int blockSize = int( size );
-  int nBlocks   = min( int( n ), is->available() / blockSize );
+  int blockSize = int(size);
+  int nBlocks   = min(int(n), is->available() / blockSize);
 
-  is->readChars( static_cast<char*>( buffer ), nBlocks * blockSize );
-  return size_t( nBlocks );
+  is->readChars(static_cast<char*>(buffer), nBlocks * blockSize);
+  return size_t(nBlocks);
 }
 
-static int vorbisSeek( void* handle, ogg_int64_t offset, int whence )
+static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
 {
-  InputStream* is = static_cast<InputStream*>( handle );
+  InputStream* is = static_cast<InputStream*>(handle);
 
   const char* origin = whence == SEEK_CUR ? is->pos() :
                        whence == SEEK_END ? is->end() : is->begin();
 
-  is->set( origin + offset );
+  is->set(origin + offset);
   return 0;
 }
 
-static long vorbisTell( void* handle )
+static long vorbisTell(void* handle)
 {
-  InputStream* is = static_cast<InputStream*>( handle );
+  InputStream* is = static_cast<InputStream*>(handle);
 
-  return long( is->tell() );
+  return long(is->tell());
 }
 
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbisTell };
@@ -72,22 +72,22 @@ static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbis
  * Vorbis decoder helper function.
  */
 
-static bool decodeVorbis( OggVorbis_File* stream, char* buffer, int size )
+static bool decodeVorbis(OggVorbis_File* stream, char* buffer, int size)
 {
   long bytesRead = 0;
   long result;
 
   do {
     int section;
-    result = ov_read( stream, buffer + bytesRead, size - int( bytesRead ), 0, 2, 1, &section );
+    result = ov_read(stream, buffer + bytesRead, size - int(bytesRead), 0, 2, 1, &section);
 
-    if( result < 0 ) {
+    if (result < 0) {
       return false;
     }
 
     bytesRead += result;
   }
-  while( result > 0 && bytesRead < long( size ) );
+  while (result > 0 && bytesRead < long(size));
 
   return result > 0;
 }
@@ -109,30 +109,30 @@ struct AL::Streamer::Data
   char           samples[BUFFER_SIZE];
 
   explicit Data() :
-    buffers{ 0, 0 }
+    buffers { 0, 0 }
   {}
 };
 
 AL::Streamer::Streamer() :
-  source( 0 ), data( nullptr )
+  source(0), data(nullptr)
 {}
 
-AL::Streamer::Streamer( const File& file ) :
-  source( 0 ), data( nullptr )
+AL::Streamer::Streamer(const File& file) :
+  source(0), data(nullptr)
 {
-  open( file );
+  open(file);
 }
 
-AL::Streamer::Streamer( Streamer&& s ) :
-  source( s.source ), data( s.data )
+AL::Streamer::Streamer(Streamer&& s) :
+  source(s.source), data(s.data)
 {
   s.source = 0;
   s.data   = nullptr;
 }
 
-AL::Streamer& AL::Streamer::operator = ( Streamer&& s )
+AL::Streamer& AL::Streamer::operator = (Streamer&& s)
 {
-  if( &s == this ) {
+  if (&s == this) {
     return *this;
   }
 
@@ -145,29 +145,29 @@ AL::Streamer& AL::Streamer::operator = ( Streamer&& s )
   return *this;
 }
 
-void AL::Streamer::attach( ALuint source_ )
+void AL::Streamer::attach(ALuint source_)
 {
   detach();
 
-  if( source_ != 0 && alIsSource( source_ ) ) {
+  if (source_ != 0 && alIsSource(source_)) {
     source = source_;
 
-    if( data != nullptr  ) {
-      alSourceQueueBuffers( source, 2, data->buffers );
+    if (data != nullptr) {
+      alSourceQueueBuffers(source, 2, data->buffers);
     }
   }
 }
 
 void AL::Streamer::detach()
 {
-  if( source != 0 && data != nullptr && alIsSource( source ) ) {
-    alSourceStop( source );
+  if (source != 0 && data != nullptr && alIsSource(source)) {
+    alSourceStop(source);
 
     ALint nQueued;
-    alGetSourcei( source, AL_BUFFERS_PROCESSED, &nQueued );
+    alGetSourcei(source, AL_BUFFERS_PROCESSED, &nQueued);
 
-    if( nQueued != 0 ) {
-      alSourceUnqueueBuffers( source, 2, data->buffers );
+    if (nQueued != 0) {
+      alSourceUnqueueBuffers(source, 2, data->buffers);
     }
   }
   source = 0;
@@ -175,34 +175,34 @@ void AL::Streamer::detach()
 
 bool AL::Streamer::rewind()
 {
-  if( data == nullptr ) {
+  if (data == nullptr) {
     return false;
   }
 
-  if( ov_raw_seek( &data->ovFile, 0 ) != 0 ) {
+  if (ov_raw_seek(&data->ovFile, 0) != 0) {
     close();
     return false;
   }
 
-  if( source != 0 && alIsSource( source ) ) {
-    alSourceStop( source );
-    alSourceUnqueueBuffers( source, 2, data->buffers );
+  if (source != 0 && alIsSource(source)) {
+    alSourceStop(source);
+    alSourceUnqueueBuffers(source, 2, data->buffers);
   }
   else {
     source = 0;
   }
 
-  for( int i = 0; i < 2; ++i ) {
-    if( !decodeVorbis( &data->ovFile, data->samples, Data::BUFFER_SIZE ) ) {
+  for (int i = 0; i < 2; ++i) {
+    if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
       close();
       return false;
     }
 
-    alBufferData( data->buffers[i], data->format, &data->samples, Data::BUFFER_SIZE, data->rate );
+    alBufferData(data->buffers[i], data->format, &data->samples, Data::BUFFER_SIZE, data->rate);
   }
 
-  if( source != 0 ) {
-    alSourceQueueBuffers( source, 2, data->buffers );
+  if (source != 0) {
+    alSourceQueueBuffers(source, 2, data->buffers);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -211,36 +211,36 @@ bool AL::Streamer::rewind()
 
 bool AL::Streamer::update()
 {
-  if( source == 0 || data == nullptr ) {
+  if (source == 0 || data == nullptr) {
     return false;
   }
-  if( !alIsSource( source ) ) {
+  if (!alIsSource(source)) {
     source = 0;
     return false;
   }
 
   ALint nProcessed;
-  alGetSourcei( source, AL_BUFFERS_PROCESSED, &nProcessed );
+  alGetSourcei(source, AL_BUFFERS_PROCESSED, &nProcessed);
 
-  if( nProcessed == 0 ) {
+  if (nProcessed == 0) {
     return true;
   }
 
-  if( !decodeVorbis( &data->ovFile, data->samples, Data::BUFFER_SIZE ) ) {
+  if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
     close();
     return false;
   }
 
   ALuint buffer;
-  alSourceUnqueueBuffers( source, 1, &buffer );
-  alBufferData( buffer, data->format, data->samples, Data::BUFFER_SIZE, data->rate );
-  alSourceQueueBuffers( source, 1, &buffer );
+  alSourceUnqueueBuffers(source, 1, &buffer);
+  alBufferData(buffer, data->format, data->samples, Data::BUFFER_SIZE, data->rate);
+  alSourceQueueBuffers(source, 1, &buffer);
 
   OZ_AL_CHECK_ERROR();
   return true;
 }
 
-bool AL::Streamer::open( const File& file )
+bool AL::Streamer::open(const File& file)
 {
   close();
 
@@ -248,47 +248,47 @@ bool AL::Streamer::open( const File& file )
   data->fileBuffer = file.read();
   data->is         = data->fileBuffer.inputStream();
 
-  if( data->fileBuffer.isEmpty() ) {
+  if (data->fileBuffer.isEmpty()) {
     delete data;
     data = nullptr;
     return false;
   }
 
-  if( ov_open_callbacks( &data->is, &data->ovFile, nullptr, 0, VORBIS_CALLBACKS ) != 0 ) {
+  if (ov_open_callbacks(&data->is, &data->ovFile, nullptr, 0, VORBIS_CALLBACKS) != 0) {
     delete data;
     data = nullptr;
     return false;
   }
 
-  vorbis_info* vorbisInfo = ov_info( &data->ovFile, -1 );
-  if( vorbisInfo == nullptr ) {
+  vorbis_info* vorbisInfo = ov_info(&data->ovFile, -1);
+  if (vorbisInfo == nullptr) {
     close();
     return false;
   }
 
   int nChannels = vorbisInfo->channels;
-  if( nChannels != 1 && nChannels != 2 ) {
+  if (nChannels != 1 && nChannels != 2) {
     close();
     return false;
   }
 
   data->format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-  data->rate   = ALsizei( vorbisInfo->rate );
+  data->rate   = ALsizei(vorbisInfo->rate);
 
-  hard_assert( data->buffers[0] == 0 && data->buffers[1] == 0 );
-  alGenBuffers( 2, data->buffers );
+  hard_assert(data->buffers[0] == 0 && data->buffers[1] == 0);
+  alGenBuffers(2, data->buffers);
 
-  for( int i = 0; i < 2; ++i ) {
-    if( !decodeVorbis( &data->ovFile, data->samples, Data::BUFFER_SIZE ) ) {
+  for (int i = 0; i < 2; ++i) {
+    if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
       close();
       return false;
     }
 
-    alBufferData( data->buffers[i], data->format, &data->samples, Data::BUFFER_SIZE, data->rate );
+    alBufferData(data->buffers[i], data->format, &data->samples, Data::BUFFER_SIZE, data->rate);
   }
 
-  if( source != 0 && alIsSource( source ) ) {
-    alSourceQueueBuffers( source, 2, data->buffers );
+  if (source != 0 && alIsSource(source)) {
+    alSourceQueueBuffers(source, 2, data->buffers);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -297,20 +297,20 @@ bool AL::Streamer::open( const File& file )
 
 void AL::Streamer::close()
 {
-  if( data != nullptr ) {
-    if( source != 0 && alIsSource( source ) ) {
-      alSourceStop( source );
+  if (data != nullptr) {
+    if (source != 0 && alIsSource(source)) {
+      alSourceStop(source);
 
       ALint nQueued;
-      alGetSourcei( source, AL_BUFFERS_PROCESSED, &nQueued );
+      alGetSourcei(source, AL_BUFFERS_PROCESSED, &nQueued);
 
-      if( nQueued != 0 ) {
-        alSourceUnqueueBuffers( source, 2, data->buffers );
+      if (nQueued != 0) {
+        alSourceUnqueueBuffers(source, 2, data->buffers);
       }
     }
 
-    alDeleteBuffers( 2, data->buffers );
-    ov_clear( &data->ovFile );
+    alDeleteBuffers(2, data->buffers);
+    ov_clear(&data->ovFile);
 
     delete data;
     data = nullptr;
@@ -325,12 +325,12 @@ void AL::Streamer::destroy()
   close();
 }
 
-void AL::checkError( const char* function, const char* file, int line )
+void AL::checkError(const char* function, const char* file, int line)
 {
   const char* message;
   ALenum result = alGetError();
 
-  switch( result ) {
+  switch (result) {
     case AL_NO_ERROR: {
       return;
     }
@@ -355,46 +355,46 @@ void AL::checkError( const char* function, const char* file, int line )
       break;
     }
     default: {
-      message = String::str( "UNKNOWN(%d)", int( result ) );
+      message = String::str("UNKNOWN(%d)", int(result));
       break;
     }
   }
 
-  System::error( function, file, line, 1, "AL error '%s'", message );
+  System::error(function, file, line, 1, "AL error '%s'", message);
 }
 
-bool AL::bufferDataFromFile( ALuint buffer, const File &file )
+bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 {
-  InputStream is = file.inputStream( Endian::LITTLE );
+  InputStream is = file.inputStream(Endian::LITTLE);
 
-  if( !is.isAvailable() ) {
+  if (!is.isAvailable()) {
     return false;
   }
 
   // WAVE loader is implemented according to specification found in
   // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/.
-  if( is.capacity() >= 44 &&
-      String::beginsWith( is.begin(), "RIFF" ) &&
-      String::beginsWith( is.begin() + 8, "WAVE" ) )
+  if (is.capacity() >= 44 &&
+      String::beginsWith(is.begin(), "RIFF") &&
+      String::beginsWith(is.begin() + 8, "WAVE"))
   {
-    is.seek( 22 );
-    int nChannels = int( is.readShort() );
+    is.seek(22);
+    int nChannels = int(is.readShort());
     int rate      = is.readInt();
 
-    is.seek( 34 );
-    int bits = int( is.readShort() );
+    is.seek(34);
+    int bits = int(is.readShort());
 
-    is.seek( 36 );
+    is.seek(36);
 
     const char* chunkName = is.pos();
     is.readInt();
 
     int size = is.readInt();
 
-    while( !String::beginsWith( chunkName, "data" ) ) {
-      is.forward( size );
+    while (!String::beginsWith(chunkName, "data")) {
+      is.forward(size);
 
-      if( !is.isAvailable() ) {
+      if (!is.isAvailable()) {
         return false;
       }
 
@@ -404,39 +404,39 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
       size = is.readInt();
     }
 
-    if( ( nChannels != 1 && nChannels != 2 ) || ( bits != 8 && bits != 16 ) ) {
+    if ((nChannels != 1 && nChannels != 2) || (bits != 8 && bits != 16)) {
       return false;
     }
 
     ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8   : AL_FORMAT_MONO16 :
-                                     bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
+                    bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
 
-    size = min( size, is.available() );
+    size = min(size, is.available());
 
-    const char* data = is.forward( size );
+    const char* data = is.forward(size);
 
 #if OZ_BYTE_ORDER == 4321
 
-    if( nChannels == 2 ) {
-      int    nSamples = size / int( sizeof( short ) );
+    if (nChannels == 2) {
+      int    nSamples = size / int(sizeof(short));
       short* samples  = new short[nSamples];
 
-      mCopy( samples, data, size_t( size ) );
+      mCopy(samples, data, size_t(size));
 
-      for( int i = 0; i < nSamples; ++i ) {
-        samples[i] = Endian::bswap16( samples[i] );
+      for (int i = 0; i < nSamples; ++i) {
+        samples[i] = Endian::bswap16(samples[i]);
       }
 
-      data = reinterpret_cast<const char*>( samples );
+      data = reinterpret_cast<const char*>(samples);
     }
 
 #endif
 
-    alBufferData( buffer, format, data, size, rate );
+    alBufferData(buffer, format, data, size, rate);
 
 #if OZ_BYTE_ORDER == 4321
 
-    if( nChannels == 2 ) {
+    if (nChannels == 2) {
       delete[] data;
     }
 
@@ -447,37 +447,37 @@ bool AL::bufferDataFromFile( ALuint buffer, const File &file )
   }
   else {
     OggVorbis_File ovStream;
-    if( ov_open_callbacks( &is, &ovStream, nullptr, 0, VORBIS_CALLBACKS ) < 0 ) {
+    if (ov_open_callbacks(&is, &ovStream, nullptr, 0, VORBIS_CALLBACKS) < 0) {
       return false;
     }
 
-    vorbis_info* vorbisInfo = ov_info( &ovStream, -1 );
-    if( vorbisInfo == nullptr ) {
-      ov_clear( &ovStream );
+    vorbis_info* vorbisInfo = ov_info(&ovStream, -1);
+    if (vorbisInfo == nullptr) {
+      ov_clear(&ovStream);
       return false;
     }
 
     int nChannels = vorbisInfo->channels;
-    if( nChannels != 1 && nChannels != 2 ) {
-      ov_clear( &ovStream );
+    if (nChannels != 1 && nChannels != 2) {
+      ov_clear(&ovStream);
       return false;
     }
 
     ALenum format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-    int    rate   = int( vorbisInfo->rate );
-    int    size   = int( ov_pcm_total( &ovStream, -1 ) ) * nChannels * int( sizeof( short ) );
+    int    rate   = int(vorbisInfo->rate);
+    int    size   = int(ov_pcm_total(&ovStream, -1)) * nChannels * int(sizeof(short));
     char*  data   = new char[size];
 
-    if( !decodeVorbis( &ovStream, data, size ) ) {
+    if (!decodeVorbis(&ovStream, data, size)) {
       delete[] data;
-      ov_clear( &ovStream );
+      ov_clear(&ovStream);
       return false;
     }
 
-    alBufferData( buffer, format, data, size, rate );
+    alBufferData(buffer, format, data, size, rate);
 
     delete[] data;
-    ov_clear( &ovStream );
+    ov_clear(&ovStream);
 
     OZ_AL_CHECK_ERROR();
     return true;

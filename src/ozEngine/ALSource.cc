@@ -32,7 +32,7 @@ namespace oz
 {
 
 ALSource::ALSource() :
-  sourceId( 0 )
+  sourceId(0)
 {}
 
 ALSource::~ALSource()
@@ -42,22 +42,22 @@ ALSource::~ALSource()
 
 bool ALSource::create()
 {
-  alGenSources( 1, &sourceId );
+  alGenSources(1, &sourceId);
 
-  if( alGetError() != AL_NO_ERROR ) {
+  if (alGetError() != AL_NO_ERROR) {
     sourceId = 0;
   }
   else {
     // This is not necessary by specification but it seems it's always the case with openalsoft.
-    hard_assert( sourceId != 0 );
+    hard_assert(sourceId != 0);
   }
   return sourceId != 0;
 }
 
 void ALSource::destroy()
 {
-  if( sourceId != 0 ) {
-    alDeleteSources( 1, &sourceId );
+  if (sourceId != 0) {
+    alDeleteSources(1, &sourceId);
     sourceId = 0;
   }
 }

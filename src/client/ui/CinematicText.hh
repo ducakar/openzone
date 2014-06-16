@@ -48,7 +48,7 @@ public:
 
   explicit CinematicText();
 
-  void set( const char* title );
+  void set(const char* title);
 
 };
 

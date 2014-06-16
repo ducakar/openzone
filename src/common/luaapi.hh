@@ -51,35 +51,35 @@ static LuaState ls;
 /**
  * Call `System::error()`.
  *
- * @code void ozError( string description ) @endcode
+ * @code void ozError(string description) @endcode
  *
  * Engine is aborted with a given error.
  */
-static int ozError( lua_State* l )
+static int ozError(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  const char* message = l_tostring( 1 );
-  OZ_ERROR( "%s", message );
+  const char* message = l_tostring(1);
+  OZ_ERROR("%s", message);
 }
 
 /**
  * Print string.
  *
- * @code void ozPrintln( string text ) @endcode
+ * @code void ozPrintln(string text) @endcode
  *
  * Message is printed to Log like `Lua:matrix> text` (if called from `matrix::Lua`).
  */
-static int ozPrintln( lua_State* l )
+static int ozPrintln(lua_State* l)
 {
-  ARG( 1 );
+  ARG(1);
 
-  hard_assert( ls.envName != nullptr );
+  hard_assert(ls.envName != nullptr);
 
-  const char* s = l_type( 1 ) == LUA_TBOOLEAN ? ( l_tobool( 1 ) ? "true" : "false" ) :
-                                                l_tostring( 1 );
+  const char* s = l_type(1) == LUA_TBOOLEAN ? (l_tobool(1) ? "true" : "false") :
+                                              l_tostring(1);
 
-  Log::println( "Lua:%s> %s", ls.envName, s );
+  Log::println("Lua:%s> %s", ls.envName, s);
   return 0;
 }
 

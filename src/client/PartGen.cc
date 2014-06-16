@@ -45,12 +45,12 @@ void PartGen::draw() const
 {
   tf.model = camera.rotMat;
 
-  for( const Part& part : parts ) {
+  for (const Part& part : parts) {
     tf.push();
-    tf.model.translate( part.p );
+    tf.model.translate(part.p);
     tf.model = tf.model ^ camera.rotTMat;
 
-    shape.quad( 1.0f, 1.0f );
+    shape.quad(1.0f, 1.0f);
 
     tf.pop();
   }
@@ -58,11 +58,11 @@ void PartGen::draw() const
 
 void PartGen::update()
 {
-  for( Part& part : parts ) {
-    if( part.life <= 0.0f ) {
-      Vec3 localVel = clazz->velocity + Vec3( clazz->velocitySpread * Math::normalRand(),
-                                              clazz->velocitySpread * Math::normalRand(),
-                                              clazz->velocitySpread * Math::normalRand() );
+  for (Part& part : parts) {
+    if (part.life <= 0.0f) {
+      Vec3 localVel = clazz->velocity + Vec3(clazz->velocitySpread * Math::normalRand(),
+                                             clazz->velocitySpread * Math::normalRand(),
+                                             clazz->velocitySpread * Math::normalRand());
 
       part.p        = transf.w.vec3();
       part.velocity = transf * localVel;

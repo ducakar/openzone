@@ -26,7 +26,7 @@
 
 #include "StackTrace.hh"
 
-#if !defined( __GLIBC__ )
+#if !defined(__GLIBC__)
 # define OZ_DISABLE_STACK_TRACE
 #endif
 
@@ -48,14 +48,14 @@ const int StackTrace::MAX_FRAMES;
 
 #ifdef OZ_DISABLE_STACK_TRACE
 
-StackTrace StackTrace::current( int )
+StackTrace StackTrace::current(int)
 {
   const char* name = Thread::name();
 
   StackTrace st = { {}, 0, {} };
 
-  if( name != nullptr ) {
-    strlcpy( st.threadName, name, NAME_LENGTH );
+  if (name != nullptr) {
+    strlcpy(st.threadName, name, NAME_LENGTH);
   }
   return st;
 }
@@ -70,21 +70,22 @@ char** StackTrace::symbols() const
 // Size of output buffer where stack trace output string is generated.
 static const int TRACE_BUFFER_SIZE = 4096;
 
-StackTrace StackTrace::current( int nSkippedFrames )
+StackTrace StackTrace::current(int nSkippedFrames)
 {
-  hard_assert( nSkippedFrames >= 0 );
+  hard_assert(nSkippedFrames >= 0);
 
-  void*       framesBuffer[StackTrace::MAX_FRAMES + 4];
+  void* framesBuffer[StackTrace::MAX_FRAMES + 4];
+
   const char* name            = Thread::name();
-  int         nBufferedFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
-  int         nFrames         = min<int>( nBufferedFrames - 1 - nSkippedFrames, MAX_FRAMES );
+  int         nBufferedFrames = backtrace(framesBuffer, MAX_FRAMES + 4);
+  int         nFrames         = min<int>(nBufferedFrames - 1 - nSkippedFrames, MAX_FRAMES);
 
   StackTrace st = { {}, nFrames, {} };
 
-  if( name != nullptr ) {
-    strlcpy( st.threadName, name, NAME_LENGTH );
+  if (name != nullptr) {
+    strlcpy(st.threadName, name, NAME_LENGTH);
   }
-  aCopy<void*>( framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames );
+  aCopy<void*>(framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames);
   return st;
 }
 
@@ -92,8 +93,8 @@ char** StackTrace::symbols() const
 {
   char outputBuffer[TRACE_BUFFER_SIZE];
 
-  char** symbols = backtrace_symbols( frames, nFrames );
-  if( symbols == nullptr ) {
+  char** symbols = backtrace_symbols(frames, nFrames);
+  if (symbols == nullptr) {
     return nullptr;
   }
 
@@ -103,36 +104,36 @@ char** StackTrace::symbols() const
   *out = '\0';
 
   int i;
-  for( i = 0; i < nFrames; ++i ) {
+  for (i = 0; i < nFrames; ++i) {
     // File.
     char* file = symbols[i];
 
     // Mangled function name.
-    char* func = strrchr( symbols[i], '(' );
+    char* func = strrchr(symbols[i], '(');
     char* end  = nullptr;
 
-    if( func != nullptr ) {
+    if (func != nullptr) {
       *func++ = '\0';
 
-      end = strrchr( func, '+' );
+      end = strrchr(func, '+');
 
-      if( end != nullptr ) {
+      if (end != nullptr) {
         *end = '\0';
       }
     }
 
-    size_t fileLen = strlen( file );
-    if( out + fileLen + 4 > outEnd ) {
+    size_t fileLen = strlen(file);
+    if (out + fileLen + 4 > outEnd) {
       break;
     }
 
-    memcpy( out, file, fileLen );
+    memcpy(out, file, fileLen);
     out += fileLen;
 
     *out++ = ':';
     *out++ = ' ';
 
-    if( func == nullptr || func >= end ) {
+    if (func == nullptr || func >= end) {
       *out++ = '?';
     }
     else {
@@ -140,20 +141,20 @@ char** StackTrace::symbols() const
       char* demangled;
       int   status = 0;
 
-      demangled = abi::__cxa_demangle( func, nullptr, nullptr, &status );
+      demangled = abi::__cxa_demangle(func, nullptr, nullptr, &status);
       func      = demangled == nullptr ? func : demangled;
 
-      size_t funcLen = strlen( func );
+      size_t funcLen = strlen(func);
 
-      if( funcLen != 0 && out + funcLen + 1 <= outEnd ) {
-        memcpy( out, func, funcLen );
+      if (funcLen != 0 && out + funcLen + 1 <= outEnd) {
+        memcpy(out, func, funcLen);
         out += funcLen;
       }
       else {
         *out++ = '?';
       }
 
-      free( demangled );
+      free(demangled);
     }
 
     *out++ = '\0';
@@ -161,27 +162,27 @@ char** StackTrace::symbols() const
 
   int nWrittenFrames = i;
 
-  size_t headerSize = size_t( nWrittenFrames ) * sizeof( char* );
-  size_t bodySize   = size_t( out - outputBuffer );
+  size_t headerSize = size_t(nWrittenFrames) * sizeof(char*);
+  size_t bodySize   = size_t(out - outputBuffer);
 
-  if( headerSize + bodySize == 0 ) {
-    free( symbols );
+  if (headerSize + bodySize == 0) {
+    free(symbols);
     return nullptr;
   }
 
-  char** niceSymbols = static_cast<char**>( realloc( symbols, headerSize + bodySize ) );
+  char** niceSymbols = static_cast<char**>(realloc(symbols, headerSize + bodySize));
 
-  if( niceSymbols == nullptr ) {
-    free( symbols );
+  if (niceSymbols == nullptr) {
+    free(symbols);
     return nullptr;
   }
 
-  memcpy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
+  memcpy(&niceSymbols[nWrittenFrames], outputBuffer, bodySize);
 
-  char* entry = reinterpret_cast<char*>( &niceSymbols[nWrittenFrames] );
-  for( i = 0; i < nWrittenFrames; ++i ) {
+  char* entry = reinterpret_cast<char*>(&niceSymbols[nWrittenFrames]);
+  for (i = 0; i < nWrittenFrames; ++i) {
     niceSymbols[i] = entry;
-    entry += strlen( entry ) + 1;
+    entry += strlen(entry) + 1;
   }
 
   return niceSymbols;

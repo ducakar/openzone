@@ -34,15 +34,15 @@
  * @def OZ_DL_DECLARE
  * Declare pointer to function for a given function definition.
  */
-#define OZ_DL_DECLARE( func ) \
-  decltype( ::func )* func
+#define OZ_DL_DECLARE(func) \
+  decltype(::func)* func
 
 /**
  * @def OZ_DL_DEFINE
  * Define pointer to function (initially `nullptr`) for a given function definition.
  */
-#define OZ_DL_DEFINE( func ) \
-  decltype( ::func )* func = nullptr
+#define OZ_DL_DEFINE(func) \
+  decltype(::func)* func = nullptr
 
 /**
  * @def OZ_DL_LOAD
@@ -50,10 +50,10 @@
  *
  * On error, `System::error()` is invoked.
  */
-#define OZ_DL_LOAD( l, func ) \
-  func = reinterpret_cast< decltype( func ) >( l.get( #func ) ); \
-  if( func == nullptr ) { \
-    OZ_ERROR( "Failed to link function: " #func ); \
+#define OZ_DL_LOAD(l, func) \
+  func = reinterpret_cast<decltype(func)>(l.get(#func)); \
+  if(func == nullptr) { \
+    OZ_ERROR("Failed to link function: " #func); \
   }
 
 namespace oz
@@ -95,12 +95,12 @@ public:
   /**
    * Move constructor.
    */
-  SharedLib( SharedLib&& l );
+  SharedLib(SharedLib&& l);
 
   /**
    * Move operator.
    */
-  SharedLib& operator = ( SharedLib&& l );
+  SharedLib& operator = (SharedLib&& l);
 
   /**
    * True iff successfully opened.
@@ -114,12 +114,12 @@ public:
   /**
    * Obtain a pointer to the requested function from thr library (`nullptr` on error).
    */
-  Function* get( const char* symbol ) const;
+  Function* get(const char* symbol) const;
 
   /**
    * Open a shared library with a given (file) name.
    */
-  bool open( const char* name );
+  bool open(const char* name);
 
   /**
    * Close the library if opened.

@@ -34,24 +34,24 @@ namespace client
 
 bool Network::connect()
 {
-//  Log::print( "Connecting to %s:%d ...", host.cstr(), port );
+//  Log::print("Connecting to %s:%d ...", host.cstr(), port);
 
 //  IPaddress ip;
-//  SDLNet_ResolveHost( &ip, host, port );
-//  socket = SDLNet_TCP_Open( &ip );
+//  SDLNet_ResolveHost(&ip, host, port);
+//  socket = SDLNet_TCP_Open(&ip);
 
-//  if( socket == nullptr ) {
-//    Log::printEnd( " Failed" );
+//  if(socket == nullptr) {
+//    Log::printEnd(" Failed");
 //    return false;
 //  }
 
-//  Log::printEnd( " OK" );
+//  Log::printEnd(" OK");
   return true;
 }
 
 void Network::disconnect()
 {
-//  SDLNet_TCP_Close( socket );
+//  SDLNet_TCP_Close(socket);
 //  socket = nullptr;
 }
 
@@ -61,8 +61,8 @@ void Network::update()
 
 void Network::init()
 {
-//  host = config.include( "net.server", "localhost" ).get( "" );
-//  port = ushort( config.include( "net.port", 6666 ).get( 0 ) );
+//  host = config.include("net.server", "localhost").get("");
+//  port = ushort(config.include("net.port", 6666).get(0));
 }
 
 void Network::destroy()

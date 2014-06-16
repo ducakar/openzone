@@ -56,7 +56,7 @@ struct Anim
   int       nKeys;
   Behaviour behaviour;
 
-  Mat4 interpolate( float time ) const;
+  Mat4 interpolate(float time) const;
 };
 
 static List<Material>   materials;
@@ -65,40 +65,44 @@ static List<Anim>       anims;
 static Assimp::Importer importer;
 static const aiScene*   scene;
 
-static void readNode( const aiNode* node )
+static void readNode(const aiNode* node)
 {
-  Mat4 transf = ~Mat4( node->mTransformation[0] );
+  if (String::equals(node->mName.C_Str(), "Armature")) {
+    return;
+  }
 
-  Log::print( "+ %s ", node->mName.C_Str() );
+  Mat4 transf = ~Mat4(node->mTransformation[0]);
+
+  Log::print("+ %s ", node->mName.C_Str());
   Log() << transf;
   Log::indent();
 
-  compiler.beginNode( node->mName.C_Str() );
-  compiler.transform( transf );
+  compiler.beginNode(node->mName.C_Str());
+  compiler.transform(transf);
 
-  if( node->mNumMeshes != 0 ) {
-    compiler.bindMesh( int( node->mMeshes[0] ) );
+  if (node->mNumMeshes != 0) {
+    compiler.bindMesh(int(node->mMeshes[0]));
 
-    if( node->mNumMeshes > 1 ) {
-      for( uint i = 1; i < node->mNumMeshes; ++i ) {
+    if (node->mNumMeshes > 1) {
+      for (uint i = 1; i < node->mNumMeshes; ++i) {
         compiler.beginNode();
-        compiler.bindMesh( int( node->mMeshes[i] ) );
+        compiler.bindMesh(int(node->mMeshes[i]));
         compiler.endNode();
       }
     }
   }
 
-  for( uint i = 0; i < scene->mNumLights; ++i ) {
+  for (uint i = 0; i < scene->mNumLights; ++i) {
     aiLight* light = scene->mLights[i];
 
-    if( String::equals( light->mName.C_Str(), node->mName.C_Str() ) ) {
-      compiler.bindLight( int( i ) );
-      Log::println( "- light" );
+    if (String::equals(light->mName.C_Str(), node->mName.C_Str())) {
+      compiler.bindLight(int(i));
+      Log::println("- light");
     }
   }
 
-  for( uint i = 0; i < node->mNumChildren; ++i ) {
-    readNode( node->mChildren[i] );
+  for (uint i = 0; i < node->mNumChildren; ++i) {
+    readNode(node->mChildren[i]);
   }
 
   compiler.endNode();
@@ -106,171 +110,172 @@ static void readNode( const aiNode* node )
   Log::unindent();
 }
 
-void AssImp::build( const char* path )
+void AssImp::build(const char* path)
 {
-  Log::println( "Prebuilding Collada model '%s' {", path );
+  Log::println("Prebuilding Collada model '%s' {", path);
   Log::indent();
 
-  File   modelFile = String( path, "/data.obj" );
-  File   outFile   = String( &path[1], "/data.ozcModel" );
-  String basePath  = String( path, "/" );
+  File   modelFile = String(path, "/data.obj");
+  File   outFile   = String(&path[1], "/data.ozcModel");
+  String basePath  = String(path, "/");
 
-  if( modelFile.type() == File::MISSING ) {
-    modelFile = String( path, "/data.dae" );
+  if (modelFile.type() == File::MISSING) {
+    modelFile = String(path, "/data.dae");
   }
 
   InputStream is = modelFile.inputStream();
 
-  if( !is.isAvailable() ) {
-    OZ_ERROR( "Failed to read '%s' (.dae and .obj extensions probed)", path );
+  if (!is.isAvailable()) {
+    OZ_ERROR("Failed to read '%s' (.dae and .obj extensions probed)", path);
   }
 
-  scene = importer.ReadFile( modelFile.realPath(),
-                             aiProcess_JoinIdenticalVertices |
-                             aiProcess_GenNormals |
-                             aiProcess_ValidateDataStructure |
-                             aiProcess_ImproveCacheLocality |
-                             aiProcess_RemoveRedundantMaterials |
-                             aiProcess_FindInvalidData |
-                             aiProcess_FindInstances |
-                             aiProcess_OptimizeMeshes );
-  if( scene == nullptr ) {
-    OZ_ERROR( "Error loading '%s': %s", modelFile.path().cstr(), importer.GetErrorString() );
+  scene = importer.ReadFile(modelFile.realPath(),
+                            aiProcess_JoinIdenticalVertices |
+                            aiProcess_GenNormals |
+                            aiProcess_ValidateDataStructure |
+                            aiProcess_ImproveCacheLocality |
+                            aiProcess_RemoveRedundantMaterials |
+                            aiProcess_FindInvalidData |
+                            aiProcess_FindInstances |
+                            aiProcess_OptimizeMeshes);
+  if (scene == nullptr) {
+    OZ_ERROR("Error loading '%s': %s", modelFile.path().cstr(), importer.GetErrorString());
   }
-
-  if( !scene->HasMeshes() ) {
-    OZ_ERROR( "Error loading '%s': Meshes missing", modelFile.path().cstr() );
+  if (!scene->HasMeshes()) {
+    OZ_ERROR("Error loading '%s': Meshes missing", modelFile.path().cstr());
   }
-  if( !scene->HasMaterials() ) {
-    OZ_ERROR( "Error loading '%s': Materials missing", modelFile.path().cstr() );
+  if (!scene->HasMaterials()) {
+    OZ_ERROR("Error loading '%s': Materials missing", modelFile.path().cstr());
   }
 
   compiler.beginModel();
 
-  for( uint i = 0; i < scene->mNumMeshes; ++i ) {
+  for (uint i = 0; i < scene->mNumMeshes; ++i) {
     const aiMesh*     mesh      = scene->mMeshes[i];
     const aiMaterial* material  = scene->mMaterials[mesh->mMaterialIndex];
     const aiVector3D* positions = mesh->mVertices;
     const aiVector3D* normals   = mesh->HasNormals() ? mesh->mNormals : nullptr;
-    const aiVector3D* texCoords = mesh->HasTextureCoords( 0 ) ? mesh->mTextureCoords[0] : nullptr;
+    const aiVector3D* texCoords = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0] : nullptr;
 
     aiString textureName;
-    if( material->GetTextureCount( aiTextureType_DIFFUSE ) != 0 ) {
-      material->GetTexture( aiTextureType_DIFFUSE, 0, &textureName );
+    if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+      material->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
     }
 
     String texturePath = "";
-    if( textureName.length != 0 ) {
-      texturePath = basePath + String::fileBaseName( textureName.C_Str() );
+    if (textureName.length != 0) {
+      texturePath = basePath + String::fileBaseName(textureName.C_Str());
     }
 
     float shininess = 50.0f;
-    material->Get<float>( AI_MATKEY_SHININESS, shininess );
+    material->Get<float>(AI_MATKEY_SHININESS, shininess);
 
     float alpha = 1.0f;
-    material->Get<float>( AI_MATKEY_OPACITY, alpha );
+    material->Get<float>(AI_MATKEY_OPACITY, alpha);
 
     compiler.beginMesh();
-    compiler.texture( texturePath );
-    compiler.shininess( shininess );
-    compiler.blend( alpha != 1.0f );
+    compiler.texture(texturePath);
+    compiler.shininess(shininess);
+    compiler.blend(alpha != 1.0f);
 
-    for( uint j = 0; j < mesh->mNumFaces; ++j ) {
+    for (uint j = 0; j < mesh->mNumFaces; ++j) {
       const aiFace& face = mesh->mFaces[j];
 
-      compiler.begin( Compiler::POLYGON );
+      compiler.begin(Compiler::POLYGON);
 
-      for( uint k = 0; k < face.mNumIndices; ++k ) {
+      for (uint k = 0; k < face.mNumIndices; ++k) {
         uint index = face.mIndices[k];
 
-        if( texCoords != nullptr ) {
-          compiler.texCoord( texCoords[index].x, 1.0f - texCoords[index].y );
+        if (texCoords != nullptr) {
+          compiler.texCoord(texCoords[index].x, 1.0f - texCoords[index].y);
         }
-        if( normals != nullptr ) {
-          Vec3 normal = Vec3( &normals[index].x );
+        if (normals != nullptr) {
+          Vec3 normal = Vec3(&normals[index].x);
 
-          compiler.normal( Math::isFinite( normal.x ) ? normal.x : 0.0f,
-                           Math::isFinite( normal.y ) ? normal.y : 0.0f,
-                           Math::isFinite( normal.z ) ? normal.z : 0.0f );
+          if (!Math::isFinite(normal.x) || !Math::isFinite(normal.y) || !Math::isFinite(normal.z)) {
+            normal = Vec3::ZERO;
+          }
+
+          compiler.normal(normal);
         }
-        compiler.vertex( positions[index].x, positions[index].y, positions[index].z );
+        compiler.vertex(positions[index].x, positions[index].y, positions[index].z);
       }
 
       compiler.end();
     }
 
-    for( uint j = 0; j < mesh->mNumBones; ++j ) {
-      Log() << "bone " << mesh->mBones[j]->mName.C_Str() <<
-               ", " << mesh->mBones[j]->mNumWeights <<
-               ", " << ~Mat4( mesh->mBones[j]->mOffsetMatrix[0] );
+    for (uint j = 0; j < mesh->mNumBones; ++j) {
+      Log() << "bone " << mesh->mBones[j]->mName.C_Str()
+            << ", " << mesh->mBones[j]->mNumWeights
+            << ", " << ~Mat4(mesh->mBones[j]->mOffsetMatrix[0]);
     }
 
     compiler.endMesh();
   }
 
-  for( uint i = 0; i < scene->mNumLights; ++i ) {
+  for (uint i = 0; i < scene->mNumLights; ++i) {
     const aiLight* light = scene->mLights[i];
 
-    compiler.beginLight( client::Light::Type( light->mType - 1 ) );
+    compiler.beginLight(client::Light::Type(light->mType - 1));
 
-    compiler.position( light->mPosition.x, light->mPosition.y, light->mPosition.z );
-    compiler.direction( light->mDirection.x, light->mDirection.y, light->mDirection.z );
-    compiler.colour( light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b );
-    compiler.attenuation( light->mAttenuationConstant, light->mAttenuationLinear,
-                          light->mAttenuationQuadratic );
-    compiler.coneAngles( light->mAngleInnerCone, light->mAngleOuterCone );
+    compiler.position(light->mPosition.x, light->mPosition.y, light->mPosition.z);
+    compiler.direction(light->mDirection.x, light->mDirection.y, light->mDirection.z);
+    compiler.colour(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b);
+    compiler.attenuation(light->mAttenuationConstant, light->mAttenuationLinear,
+                         light->mAttenuationQuadratic);
+    compiler.coneAngles(light->mAngleInnerCone, light->mAngleOuterCone);
 
     compiler.endLight();
   }
 
-  for( uint i = 0; i < scene->mRootNode->mNumChildren; ++i ) {
-    readNode( scene->mRootNode->mChildren[i] );
+  for (uint i = 0; i < scene->mRootNode->mNumChildren; ++i) {
+    readNode(scene->mRootNode->mChildren[i]);
   }
 
-  for( uint i = 0; i < scene->mNumAnimations; ++i ) {
+  for (uint i = 0; i < scene->mNumAnimations; ++i) {
     const aiAnimation* anim = scene->mAnimations[i];
 
     compiler.beginAnimation();
 
-    for( uint j = 0; j < anim->mNumChannels; ++j ) {
+    for (uint j = 0; j < anim->mNumChannels; ++j) {
       const aiNodeAnim* nodeAnim = anim->mChannels[j];
 
       compiler.beginChannel();
 
       Log() << "  positions";
-      for( uint k = 0; k < nodeAnim->mNumPositionKeys; ++k ) {
+      for (uint k = 0; k < nodeAnim->mNumPositionKeys; ++k) {
         const aiVectorKey& key = nodeAnim->mPositionKeys[k];
 
-        Point position = Point( key.mValue.x, key.mValue.y, key.mValue.z );
-        float time     = float( key.mTime );
+        Point position = Point(key.mValue.x, key.mValue.y, key.mValue.z);
+        float time     = float(key.mTime);
 
         Log() << "    " << position << " @ " << time;
 
-        compiler.positionKey( position, time );
+        compiler.positionKey(position, time);
       }
 
       Log() << "  rotations";
-      for( uint k = 0; k < nodeAnim->mNumRotationKeys; ++k ) {
+      for (uint k = 0; k < nodeAnim->mNumRotationKeys; ++k) {
         const aiQuatKey& key = nodeAnim->mRotationKeys[k];
 
-        Quat  rotation = Quat( key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w );
-        float time     = float( key.mTime );
+        Quat  rotation = Quat(key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w);
+        float time     = float(key.mTime);
 
         Log() << "    " << rotation << " @ " << time;
 
-        compiler.rotationKey( rotation, time );
+        compiler.rotationKey(rotation, time);
       }
 
       Log() << "  scalings";
-      for( uint k = 0; k < nodeAnim->mNumScalingKeys; ++k ) {
+      for (uint k = 0; k < nodeAnim->mNumScalingKeys; ++k) {
         const aiVectorKey& key = nodeAnim->mScalingKeys[k];
 
-        Vec3  scaling = Vec3( key.mValue.x, key.mValue.y, key.mValue.z );
-        float time    = float( key.mTime );
+        Vec3  scaling = Vec3(key.mValue.x, key.mValue.y, key.mValue.z);
+        float time    = float(key.mTime);
 
         Log() << "    " << scaling << " @ " << time;
 
-        compiler.scalingKey( scaling, time );
+        compiler.scalingKey(scaling, time);
       }
 
       compiler.endChannel();
@@ -283,21 +288,21 @@ void AssImp::build( const char* path )
 
   scene = nullptr;
 
-  OutputStream os( 0, Endian::LITTLE );
+  OutputStream os(0, Endian::LITTLE);
 
-  compiler.writeModel( &os );
-  compiler.buildModelTextures( outFile.directory() );
+  compiler.writeModel(&os);
+  compiler.buildModelTextures(outFile.directory());
 
-  Log::print( "Writing to '%s' ...", outFile.path().cstr() );
+  Log::print("Writing to '%s' ...", outFile.path().cstr());
 
-  if( !outFile.write( os.begin(), os.tell() ) ) {
-    OZ_ERROR( "Failed to write %s", outFile.path().cstr() );
+  if (!outFile.write(os.begin(), os.tell())) {
+    OZ_ERROR("Failed to write %s", outFile.path().cstr());
   }
 
-  Log::printEnd( " OK" );
+  Log::printEnd(" OK");
 
   Log::unindent();
-  Log::println( "}" );
+  Log::println("}");
 }
 
 AssImp assImp;

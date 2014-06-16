@@ -66,13 +66,13 @@ private:
 
 private:
 
-  static void overlayCallback( Area* area, const Vec3& ray );
-  static void selectBuildings( Button* sender );
-  static void selectUnits( Button* sender );
-  static void selectItems( Button* sender );
-  static void selectObjects( Button* sender );
+  static void overlayCallback(Area* area, const Vec3& ray);
+  static void selectBuildings(Button* sender);
+  static void selectUnits(Button* sender);
+  static void selectItems(Button* sender);
+  static void selectObjects(Button* sender);
 
-  static void startPlacement( ModelField* sender, bool isClicked );
+  static void startPlacement(ModelField* sender, bool isClicked);
 
   void onReposition() override;
   bool onMouseEvent() override;

@@ -53,7 +53,7 @@ public:
   /**
    * Load a DDS texture from a file.
    */
-  explicit GLTexture( const File& file );
+  explicit GLTexture(const File& file);
 
   /**
    * Destructor, unloads texture from GPU if loaded.
@@ -63,8 +63,8 @@ public:
   /**
    * Move constructor.
    */
-  GLTexture( GLTexture&& t ) :
-    textureId( t.textureId ), textureMipmaps( t.textureMipmaps )
+  GLTexture(GLTexture&& t) :
+    textureId(t.textureId), textureMipmaps(t.textureMipmaps)
   {
     t.textureId      = 0;
     t.textureMipmaps = 0;
@@ -73,9 +73,9 @@ public:
   /**
    * Move operator.
    */
-  GLTexture& operator = ( GLTexture&& t )
+  GLTexture& operator = (GLTexture&& t)
   {
-    if( &t == this ) {
+    if (&t == this) {
       return *this;
     }
 
@@ -125,7 +125,7 @@ public:
    * If the texture already exists, it is destroyed and re-created. On loading failure, texture is
    * deleted.
    */
-  bool load( const File& file, int bias = 0 );
+  bool load(const File& file, int bias = 0);
 
   /**
    * Generate square identicon.
@@ -133,7 +133,7 @@ public:
    * `size` is used as both width and height. For best result it should be a multiple of 12.
    * It is meant for use in UI, so it uses `GL_LINEAR`/`GL_LINEAR` filters with no compression.
    */
-  bool generateIdenticon( int size, int hash, const Vec4& backgroundColour );
+  bool generateIdenticon(int size, int hash, const Vec4& backgroundColour);
 
   /**
    * Unload texture from GPU if loaded.

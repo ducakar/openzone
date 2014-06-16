@@ -30,8 +30,8 @@ namespace oz
 namespace client
 {
 
-BSPImago::BSPImago( const BSP* bsp ) :
-  model( "@bsp/" + bsp->name + ".ozcModel" )
+BSPImago::BSPImago(const BSP* bsp) :
+  model("@bsp/" + bsp->name + ".ozcModel")
 {}
 
 BSPImago::~BSPImago()
@@ -39,45 +39,45 @@ BSPImago::~BSPImago()
   model.unload();
 }
 
-void BSPImago::schedule( const Struct* str, Model::QueueType queue )
+void BSPImago::schedule(const Struct* str, Model::QueueType queue)
 {
-  if( str != nullptr ) {
-    tf.model = Mat4::translation( str->p - Point::ORIGIN );
-    tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
+  if (str != nullptr) {
+    tf.model = Mat4::translation(str->p - Point::ORIGIN);
+    tf.model.rotateZ(float(str->heading) * Math::TAU / 4.0f);
 
-    for( int i = 0; i < str->entities.length(); ++i ) {
+    for (int i = 0; i < str->entities.length(); ++i) {
       const Entity& entity = str->entities[i];
 
       tf.push();
-      tf.model.translate( entity.offset );
+      tf.model.translate(entity.offset);
 
-      model.schedule( i + 1, queue );
+      model.schedule(i + 1, queue);
 
-      if( entity.clazz->model != -1 ) {
-        Model* model = context.requestModel( entity.clazz->model );;
+      if (entity.clazz->model != -1) {
+        Model* model = context.requestModel(entity.clazz->model);;
 
-        if( model != nullptr && model->isLoaded() ) {
+        if (model != nullptr && model->isLoaded()) {
           tf.model = tf.model ^ entity.clazz->modelTransf;
 
-          model->schedule( 0, queue );
+          model->schedule(0, queue);
         }
 
-        context.releaseModel( entity.clazz->model );
+        context.releaseModel(entity.clazz->model);
       }
 
       tf.pop();
     }
   }
 
-  model.schedule( 0, queue );
+  model.schedule(0, queue);
 }
 
 void BSPImago::preload()
 {
   const File* file = model.preload();
-  InputStream is   = file->inputStream( Endian::LITTLE );
+  InputStream is   = file->inputStream(Endian::LITTLE);
 
-  is.seek( is.available() - 2 * int( sizeof( float[4] ) ) );
+  is.seek(is.available() - 2 * int(sizeof(float[4])));
   waterFogColour = is.readVec4();
   lavaFogColour  = is.readVec4();
 }

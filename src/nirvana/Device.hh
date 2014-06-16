@@ -35,17 +35,17 @@ public:
   static const int MEMO_BIT     = 0x0001;
   static const int COMPUTER_BIT = 0x0002;
 
-  typedef Device* CreateFunc( int id, InputStream* is );
+  typedef Device* CreateFunc(int id, InputStream* is);
 
   int flags;
 
 protected:
 
-  explicit Device( int flags_ ) :
-    flags( flags_ )
+  explicit Device(int flags_) :
+    flags(flags_)
   {}
 
-  virtual void onUse( const Bot* user );
+  virtual void onUse(const Bot* user);
   virtual void onUpdate();
 
 public:
@@ -55,7 +55,7 @@ public:
   virtual const char* type() const = 0;
   virtual const char* getMemo() const;
 
-  virtual void write( OutputStream* os ) const;
+  virtual void write(OutputStream* os) const;
 
 };
 

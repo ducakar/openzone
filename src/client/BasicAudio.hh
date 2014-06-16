@@ -39,17 +39,17 @@ protected:
 
   int recent[ObjectClass::MAX_SOUNDS];
 
-  explicit BasicAudio( const Object* obj );
+  explicit BasicAudio(const Object* obj);
 
 public:
 
   static Pool<BasicAudio, 2048> pool;
 
-  static Audio* create( const Object* obj );
+  static Audio* create(const Object* obj);
 
-  void play( const Object* playAt ) override;
+  void play(const Object* playAt) override;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC(pool)
 };
 
 }

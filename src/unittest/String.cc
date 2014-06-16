@@ -30,147 +30,147 @@ using namespace oz;
 
 static void test_String_parsing()
 {
-  for( int i = 0; i < 100000; ++i ) {
-    int x = Math::rand( INT_MAX );
-    if( i == 0 ) {
-      x = int( 0xffffffff );
+  for (int i = 0; i < 100000; ++i) {
+    int x = Math::rand(INT_MAX);
+    if (i == 0) {
+      x = int(0xffffffff);
     }
-    else if( i == 1 ) {
-      x = int( 0x7fffffff );
+    else if (i == 1) {
+      x = int(0x7fffffff);
     }
-    else if( i == 2 ) {
-      x = int( 0x80000000 );
+    else if (i == 2) {
+      x = int(0x80000000);
     }
 
-    String s = String( x );
-    int    y = String::parseInt( s );
-    String t = String::str( "%d", x );
-    int    z = String::parseInt( t );
+    String s = String(x);
+    int    y = String::parseInt(s);
+    String t = String::str("%d", x);
+    int    z = String::parseInt(t);
 
-    if( x != y ) {
-      Log::println( "%d -> %s -> %d  delta: %d", x, s.cstr(), y, y - x );
+    if (x != y) {
+      Log::println("%d -> %s -> %d  delta: %d", x, s.cstr(), y, y - x);
     }
-    OZ_CHECK( x == y );
+    OZ_CHECK(x == y);
 
-    if( x != z ) {
-      Log::println( "%d -> printf -> %d  delta: %d", x, z, z - x );
+    if (x != z) {
+      Log::println("%d -> printf -> %d  delta: %d", x, z, z - x);
     }
-    OZ_CHECK( x == z );
+    OZ_CHECK(x == z);
   }
 
-  for( int i = 0; i < 100000; ++i ) {
+  for (int i = 0; i < 100000; ++i) {
     float x = Math::rand();
 
-    if( i == 0 ) {
+    if (i == 0) {
       x = 0.0f;
     }
-    else if( i == 1 ) {
+    else if (i == 1) {
       x = Math::INF;
     }
-    else if( i == 2 ) {
+    else if (i == 2) {
       x = -Math::INF;
     }
-    else if( i == 3 ) {
+    else if (i == 3) {
       x = Math::NaN;
     }
-    else if( i == 4 ) {
+    else if (i == 4) {
       x = -Math::NaN;
     }
 
-    String s = String( x, 9 );
-    float  y = float( String::parseDouble( s ) );
-    String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
-    float  z = float( String::parseDouble( t ) );
+    String s = String(x, 9);
+    float  y = float(String::parseDouble(s));
+    String t = String::str("%.9g", x).replace(',', '.'); // Replace decimal ',' with '.'.
+    float  z = float(String::parseDouble(t));
 
-    if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
+    if (Math::isNaN(x) && Math::isNaN(y) && Math::isNaN(z)) {
       continue;
     }
 
-    if( x != y ) {
-      Log::println( "%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x );
+    if (x != y) {
+      Log::println("%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
     }
-    OZ_CHECK( x == y );
+    OZ_CHECK(x == y);
 
-    if( x != z ) {
-      Log::println( "%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x );
+    if (x != z) {
+      Log::println("%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x);
     }
-    OZ_CHECK( x == z );
+    OZ_CHECK(x == z);
   }
-  for( int i = 0; i < 100000; ++i ) {
+  for (int i = 0; i < 100000; ++i) {
     float x = Math::rand() * 3.4e38f;
 
-    if( i == 0 ) {
+    if (i == 0) {
       x = 0.0f;
     }
-    else if( i == 1 ) {
+    else if (i == 1) {
       x = Math::INF;
     }
-    else if( i == 2 ) {
+    else if (i == 2) {
       x = -Math::INF;
     }
-    else if( i == 3 ) {
+    else if (i == 3) {
       x = Math::NaN;
     }
-    else if( i == 4 ) {
+    else if (i == 4) {
       x = -Math::NaN;
     }
 
-    String s = String( x, 9 );
-    float  y = float( String::parseDouble( s ) );
-    String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
-    float  z = float( String::parseDouble( t ) );
+    String s = String(x, 9);
+    float  y = float(String::parseDouble(s));
+    String t = String::str("%.9g", x).replace(',', '.'); // Replace decimal ',' with '.'.
+    float  z = float(String::parseDouble(t));
 
-    if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
+    if (Math::isNaN(x) && Math::isNaN(y) && Math::isNaN(z)) {
       continue;
     }
 
-    if( x != y ) {
-      Log::println( "%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x );
+    if (x != y) {
+      Log::println("%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
     }
-    OZ_CHECK( x == y );
+    OZ_CHECK(x == y);
 
-    if( x != z ) {
-      Log::println( "%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x );
+    if (x != z) {
+      Log::println("%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x);
     }
-    OZ_CHECK( x == z );
+    OZ_CHECK(x == z);
   }
-  for( int i = 0; i < 100000; ++i ) {
+  for (int i = 0; i < 100000; ++i) {
     float x = Math::rand() * 3.4e-38f;
 
-    if( i == 0 ) {
+    if (i == 0) {
       x = 0.0f;
     }
-    else if( i == 1 ) {
+    else if (i == 1) {
       x = Math::INF;
     }
-    else if( i == 2 ) {
+    else if (i == 2) {
       x = -Math::INF;
     }
-    else if( i == 3 ) {
+    else if (i == 3) {
       x = Math::NaN;
     }
-    else if( i == 4 ) {
+    else if (i == 4) {
       x = -Math::NaN;
     }
 
-    String s = String( x, 9 );
-    float  y = float( String::parseDouble( s ) );
-    String t = String::str( "%.9g", x ).replace( ',', '.' ); // Replace decimal ',' with '.'.
-    float  z = float( String::parseDouble( t ) );
+    String s = String(x, 9);
+    float  y = float(String::parseDouble(s));
+    String t = String::str("%.9g", x).replace(',', '.'); // Replace decimal ',' with '.'.
+    float  z = float(String::parseDouble(t));
 
-    if( Math::isNaN( x ) && Math::isNaN( y ) && Math::isNaN( z ) ) {
+    if (Math::isNaN(x) && Math::isNaN(y) && Math::isNaN(z)) {
       continue;
     }
 
-    if( x != y ) {
-      Log::println( "%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x );
+    if (x != y) {
+      Log::println("%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
     }
-    OZ_CHECK( x == y );
+    OZ_CHECK(x == y);
 
-    if( x != z ) {
-      Log::println( "%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x );
+    if (x != z) {
+      Log::println("%.9g -> printf -> %.9g  delta: %.9g", x, z, z - x);
     }
-    OZ_CHECK( x == z );
+    OZ_CHECK(x == z);
   }
 }
 

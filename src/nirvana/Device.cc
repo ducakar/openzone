@@ -26,7 +26,7 @@
 namespace oz
 {
 
-void Device::onUse( const Bot* )
+void Device::onUse(const Bot*)
 {}
 
 void Device::onUpdate()
@@ -40,7 +40,7 @@ const char* Device::getMemo() const
   return nullptr;
 }
 
-void Device::write( OutputStream* ) const
+void Device::write(OutputStream*) const
 {}
 
 }

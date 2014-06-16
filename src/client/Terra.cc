@@ -36,10 +36,10 @@ namespace client
 const float Terra::WAVE_BIAS_INC = 2.0f;
 
 Terra::Terra() :
-  ibo( 0 ), id( -1 )
+  ibo(0), id(-1)
 {
-  for( int i = 0; i < TILES; ++i ) {
-    for( int j = 0; j < TILES; ++j ) {
+  for (int i = 0; i < TILES; ++i) {
+    for (int j = 0; j < TILES; ++j) {
       vbos[i][j] = 0;
     }
   }
@@ -47,119 +47,119 @@ Terra::Terra() :
 
 void Terra::draw()
 {
-  if( id < 0 ) {
+  if (id < 0) {
     return;
   }
 
   // to match strip triangles with matrix terrain we have to make them clockwise since
   // we draw column-major (triangle strips along y axis) for better cache performance
-  glFrontFace( GL_CW );
+  glFrontFace(GL_CW);
 
-  span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), 0 );
-  span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), 0 );
-  span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
-  span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
+  span.minX = max(int((camera.p.x - frustum.radius + oz::Terra::DIM) / TILE_SIZE), 0);
+  span.minY = max(int((camera.p.y - frustum.radius + oz::Terra::DIM) / TILE_SIZE), 0);
+  span.maxX = min(int((camera.p.x + frustum.radius + oz::Terra::DIM) / TILE_SIZE), TILES - 1);
+  span.maxY = min(int((camera.p.y + frustum.radius + oz::Terra::DIM) / TILE_SIZE), TILES - 1);
 
-  shader.program( landShaderId );
+  shader.program(landShaderId);
 
   tf.model = Mat4::ID;
   tf.apply();
   tf.applyColour();
 
-  glBindTexture( GL_TEXTURE_2D, detailTex.albedo );
-  glActiveTexture( Shader::MASKS );
-  glBindTexture( GL_TEXTURE_2D, mapTex );
-  if( shader.doBumpMap ) {
-    glActiveTexture( Shader::NORMALS );
-    glBindTexture( GL_TEXTURE_2D, detailTex.normals );
+  glBindTexture(GL_TEXTURE_2D, detailTex.albedo);
+  glActiveTexture(Shader::MASKS);
+  glBindTexture(GL_TEXTURE_2D, mapTex);
+  if (shader.doBumpMap) {
+    glActiveTexture(Shader::NORMALS);
+    glBindTexture(GL_TEXTURE_2D, detailTex.normals);
   }
 
   OZ_GL_CHECK_ERROR();
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-  for( int i = span.minX; i <= span.maxX; ++i ) {
-    for( int j = span.minY; j <= span.maxY; ++j ) {
-      glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+  for (int i = span.minX; i <= span.maxX; ++i) {
+    for (int j = span.minY; j <= span.maxY; ++j) {
+      glBindBuffer(GL_ARRAY_BUFFER, vbos[i][j]);
 
       Vertex::setFormat();
 
-      glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, nullptr );
+      glDrawElements(GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, nullptr);
     }
   }
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  if( shader.doBumpMap ) {
-    glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
-    glActiveTexture( Shader::MASKS );
+  if (shader.doBumpMap) {
+    glBindTexture(GL_TEXTURE_2D, shader.defaultNormals);
+    glActiveTexture(Shader::MASKS);
   }
-  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
-  glActiveTexture( Shader::DIFFUSE );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultMasks);
+  glActiveTexture(Shader::DIFFUSE);
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  glFrontFace( GL_CCW );
+  glFrontFace(GL_CCW);
 
   OZ_GL_CHECK_ERROR();
 }
 
 void Terra::drawLiquid()
 {
-  if( id < 0 ) {
+  if (id < 0) {
     return;
   }
 
-  if( camera.p.z >= 0.0f ) {
-    glFrontFace( GL_CW );
+  if (camera.p.z >= 0.0f) {
+    glFrontFace(GL_CW);
   }
 
-  waveBias = Math::fmod( waveBias + WAVE_BIAS_INC * Timer::TICK_TIME, Math::TAU );
+  waveBias = Math::fmod(waveBias + WAVE_BIAS_INC * Timer::TICK_TIME, Math::TAU);
 
-  shader.program( liquidShaderId );
+  shader.program(liquidShaderId);
 
   tf.model = Mat4::ID;
   tf.apply();
   tf.applyColour();
 
-  glUniform1f( uniform.shininess, 30.0f );
-  glUniform1f( uniform.waveBias, waveBias );
+  glUniform1f(uniform.shininess, 30.0f);
+  glUniform1f(uniform.waveBias, waveBias);
 
-  glBindTexture( GL_TEXTURE_2D, liquidTex.albedo );
-  glActiveTexture( Shader::MASKS );
-  glBindTexture( GL_TEXTURE_2D, liquidTex.masks );
-  if( shader.doBumpMap ) {
-    glActiveTexture( Shader::NORMALS );
-    glBindTexture( GL_TEXTURE_2D, liquidTex.normals );
+  glBindTexture(GL_TEXTURE_2D, liquidTex.albedo);
+  glActiveTexture(Shader::MASKS);
+  glBindTexture(GL_TEXTURE_2D, liquidTex.masks);
+  if (shader.doBumpMap) {
+    glActiveTexture(Shader::NORMALS);
+    glBindTexture(GL_TEXTURE_2D, liquidTex.normals);
   }
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-  for( int i = span.minX; i <= span.maxX; ++i ) {
-    for( int j = span.minY; j <= span.maxY; ++j ) {
-      if( liquidTiles.get( i * TILES + j ) ) {
-        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+  for (int i = span.minX; i <= span.maxX; ++i) {
+    for (int j = span.minY; j <= span.maxY; ++j) {
+      if (liquidTiles.get(i * TILES + j)) {
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[i][j]);
 
         Vertex::setFormat();
 
-        glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, nullptr );
+        glDrawElements(GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, nullptr);
       }
     }
   }
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  if( shader.doBumpMap ) {
-    glBindTexture( GL_TEXTURE_2D, shader.defaultNormals );
-    glActiveTexture( Shader::MASKS );
+  if (shader.doBumpMap) {
+    glBindTexture(GL_TEXTURE_2D, shader.defaultNormals);
+    glActiveTexture(Shader::MASKS);
   }
-  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
-  glActiveTexture( Shader::DIFFUSE );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultMasks);
+  glActiveTexture(Shader::DIFFUSE);
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  if( camera.p.z >= 0.0f ) {
-    glFrontFace( GL_CCW );
+  if (camera.p.z >= 0.0f) {
+    glFrontFace(GL_CCW);
   }
 
   OZ_GL_CHECK_ERROR();
@@ -167,7 +167,7 @@ void Terra::drawLiquid()
 
 void Terra::load()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
   id = orbis.terra.id;
 
@@ -176,105 +176,104 @@ void Terra::load()
   File file = "@terra/" + name + ".ozcTerra";
   File map  = "@terra/" + name + ".dds";
 
-  InputStream is = file.inputStream( Endian::LITTLE );
-
-  if( !is.isAvailable() ) {
-    OZ_ERROR( "Terra file '%s' read failed", file.path().cstr() );
+  InputStream is = file.inputStream(Endian::LITTLE);
+  if (!is.isAvailable()) {
+    OZ_ERROR("Terra file '%s' read failed", file.path().cstr());
   }
 
-  glGenBuffers( TILES * TILES, &vbos[0][0] );
-  glGenBuffers( 1, &ibo );
+  glGenBuffers(TILES * TILES, &vbos[0][0]);
+  glGenBuffers(1, &ibo);
 
-  int vboSize = TILE_VERTICES * int( sizeof( Vertex ) );
-  int iboSize = TILE_INDICES * int( sizeof( ushort ) );
+  int vboSize = TILE_VERTICES * int(sizeof(Vertex));
+  int iboSize = TILE_INDICES * int(sizeof(ushort));
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward(iboSize), GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  for( int i = 0; i < TILES; ++i ) {
-    for( int j = 0; j < TILES; ++j ) {
+  for (int i = 0; i < TILES; ++i) {
+    for (int j = 0; j < TILES; ++j) {
       Vertex* vertices = new Vertex[TILE_VERTICES] {};
 
-      for( int k = 0; k <= TILE_QUADS; ++k ) {
-        for( int l = 0; l <= TILE_QUADS; ++l ) {
+      for (int k = 0; k <= TILE_QUADS; ++k) {
+        for (int l = 0; l <= TILE_QUADS; ++l) {
           int x = i * TILE_QUADS + k;
           int y = j * TILE_QUADS + l;
 
-          Vertex& vertex = vertices[ k * ( TILE_QUADS + 1 ) + l ];
+          Vertex& vertex = vertices[k * (TILE_QUADS + 1) + l];
 
           vertex.pos[0]      = orbis.terra.quads[x][y].vertex.x;
           vertex.pos[1]      = orbis.terra.quads[x][y].vertex.y;
           vertex.pos[2]      = orbis.terra.quads[x][y].vertex.z;
 
-          vertex.texCoord[0] = short( x );
-          vertex.texCoord[1] = short( oz::Terra::VERTS - y );
+          vertex.texCoord[0] = short(x);
+          vertex.texCoord[1] = short(oz::Terra::VERTS - y);
 
           vertex.normal[0]   = is.readByte();
           vertex.normal[1]   = is.readByte();
           vertex.normal[2]   = is.readByte();
 
-          vertex.tangent[0]  = byte( 127 );
-          vertex.binormal[1] = byte( 127 );
+          vertex.tangent[0]  = byte(127);
+          vertex.binormal[1] = byte(127);
         }
       }
 
-      glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-      glBufferData( GL_ARRAY_BUFFER, vboSize, vertices, GL_STATIC_DRAW );
-      glBindBuffer( GL_ARRAY_BUFFER, 0 );
+      glBindBuffer(GL_ARRAY_BUFFER, vbos[i][j]);
+      glBufferData(GL_ARRAY_BUFFER, vboSize, vertices, GL_STATIC_DRAW);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
 
       delete[] vertices;
     }
   }
 
   liquidTiles.clearAll();
-  for( int i = 0; i < liquidTiles.length(); ++i ) {
-    if( is.readBool() ) {
-      liquidTiles.set( i );
+  for (int i = 0; i < liquidTiles.length(); ++i) {
+    if (is.readBool()) {
+      liquidTiles.set(i);
     }
   }
 
-  detailTexId     = liber.textureIndex( is.readString() );
-  liquidTexId     = liber.textureIndex( is.readString() );
+  detailTexId     = liber.textureIndex(is.readString());
+  liquidTexId     = liber.textureIndex(is.readString());
   liquidFogColour = is.readVec4();
 
-  detailTex       = context.requestTexture( detailTexId );
-  liquidTex       = context.requestTexture( liquidTexId );
+  detailTex       = context.requestTexture(detailTexId);
+  liquidTex       = context.requestTexture(liquidTexId);
 
-  glGenTextures( 1, &mapTex );
-  glBindTexture( GL_TEXTURE_2D, mapTex );
+  glGenTextures(1, &mapTex);
+  glBindTexture(GL_TEXTURE_2D, mapTex);
 
-  if( GL::textureDataFromFile( map, context.textureLod ) == 0 ) {
-    OZ_ERROR( "Failed to load terain map texture '%s'", map.path().cstr() );
+  if (GL::textureDataFromFile(map, context.textureLod) == 0) {
+    OZ_ERROR("Failed to load terain map texture '%s'", map.path().cstr());
   }
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  landShaderId    = liber.shaderIndex( "terraLand" );
-  liquidShaderId  = liber.shaderIndex( "terraLiquid" );
+  landShaderId    = liber.shaderIndex("terraLand");
+  liquidShaderId  = liber.shaderIndex("terraLiquid");
 
-  hard_assert( !is.isAvailable() );
+  hard_assert(!is.isAvailable());
 }
 
 void Terra::unload()
 {
-  OZ_NACL_IS_MAIN( true );
+  OZ_NACL_IS_MAIN(true);
 
-  if( id >= 0 ) {
-    context.releaseTexture( detailTexId );
-    context.releaseTexture( liquidTexId );
+  if (id >= 0) {
+    context.releaseTexture(detailTexId);
+    context.releaseTexture(liquidTexId);
 
-    glDeleteTextures( 1, &mapTex );
+    glDeleteTextures(1, &mapTex);
 
-    glDeleteBuffers( 1, &ibo );
-    glDeleteBuffers( TILES * TILES, &vbos[0][0] );
+    glDeleteBuffers(1, &ibo);
+    glDeleteBuffers(TILES * TILES, &vbos[0][0]);
 
     ibo = 0;
-    for( int i = 0; i < TILES; ++i ) {
-      for( int j = 0; j < TILES; ++j ) {
+    for (int i = 0; i < TILES; ++i) {
+      for (int j = 0; j < TILES; ++j) {
         vbos[i][j] = 0;
       }
     }

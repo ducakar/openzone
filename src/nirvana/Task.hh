@@ -36,8 +36,8 @@ public:
 
   static const int ACTIVE_BIT = 0x00000001;
 
-  typedef Task* CreateFunc( const Task* parent );
-  typedef Task* ReadFunc( InputStream* is, const Task* parent );
+  typedef Task* CreateFunc(const Task* parent);
+  typedef Task* ReadFunc(InputStream* is, const Task* parent);
 
   Task*       prev[1];
   Task*       next[1];
@@ -52,29 +52,29 @@ private:
 
 public:
 
-  static Task* create( const Task* parent );
-  static Task* read( InputStream* is, const Task* parent );
+  static Task* create(const Task* parent);
+  static Task* read(InputStream* is, const Task* parent);
 
-  explicit Task( Mind* mind_, Task* parent_ ) :
-    flags( 0 ), mind( mind_ ), parent( parent_ )
+  explicit Task(Mind* mind_, Task* parent_) :
+    flags(0), mind(mind_), parent(parent_)
   {}
 
   virtual ~Task();
 
   virtual const char* type() const = 0;
 
-  void addChild( Task* child )
+  void addChild(Task* child)
   {
-    children.pushLast( child );
+    children.pushLast(child);
   }
 
   void update()
   {
-    if( onUpdate() ) {
-      while( children.first() != nullptr && !( children.first()->flags & ACTIVE_BIT ) ) {
+    if (onUpdate()) {
+      while (children.first() != nullptr && !(children.first()->flags & ACTIVE_BIT)) {
         delete children.popFirst();
       }
-      if( children.first() != nullptr ) {
+      if (children.first() != nullptr) {
         children.first()->update();
       }
     }
@@ -87,7 +87,7 @@ protected:
 
 public:
 
-  virtual void write( OutputStream* os ) const;
+  virtual void write(OutputStream* os) const;
 
 };
 

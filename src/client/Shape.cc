@@ -224,182 +224,182 @@ const ushort Shape::INDICES[] = {
 };
 
 Shape::Shape() :
-  vbo( 0 ), ibo( 0 )
+  vbo(0), ibo(0)
 {}
 
 void Shape::bind() const
 {
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-  glEnableVertexAttribArray( Shader::POSITION );
-  glVertexAttribPointer( Shader::POSITION, 3, GL_FLOAT, GL_FALSE, int( sizeof( Vertex ) ),
-                         static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
+  glEnableVertexAttribArray(Shader::POSITION);
+  glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, int(sizeof(Vertex)),
+                        static_cast<char*>(nullptr) + offsetof(Vertex, pos));
 
-  glEnableVertexAttribArray( Shader::TEXCOORD );
-  glVertexAttribPointer( Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, int( sizeof( Vertex ) ),
-                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
+  glEnableVertexAttribArray(Shader::TEXCOORD);
+  glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, int(sizeof(Vertex)),
+                        static_cast<char*>(nullptr) + offsetof(Vertex, texCoord));
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 }
 
 void Shape::unbind() const
 {
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Shape::colour( const Vec4& c )
+void Shape::colour(const Vec4& c)
 {
-  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE, Mat4::scaling( c ) );
+  glUniformMatrix4fv(uniform.colour, 1, GL_FALSE, Mat4::scaling(c));
 }
 
-void Shape::colour( float r, float g, float b, float a )
+void Shape::colour(float r, float g, float b, float a)
 {
-  glUniformMatrix4fv( uniform.colour, 1, GL_FALSE,
-                      Mat4(    r, 0.0f, 0.0f, 0.0f,
-                            0.0f,    g, 0.0f, 0.0f,
-                            0.0f, 0.0f,    b, 0.0f,
-                            0.0f, 0.0f, 0.0f,    a ) );
+  glUniformMatrix4fv(uniform.colour, 1, GL_FALSE,
+                     Mat4(   r, 0.0f, 0.0f, 0.0f,
+                          0.0f,    g, 0.0f, 0.0f,
+                          0.0f, 0.0f,    b, 0.0f,
+                          0.0f, 0.0f, 0.0f,    a));
 }
 
-void Shape::fill( float x, float y, float width, float height )
+void Shape::fill(float x, float y, float width, float height)
 {
-  tf.model = Mat4::translation( Vec3( x, y, 0.0f ) );
-  tf.model.scale( Vec3( width, height, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(x, y, 0.0f));
+  tf.model.scale(Vec3(width, height, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void Shape::fill( int x, int y, int width, int height )
+void Shape::fill(int x, int y, int width, int height)
 {
-  fill( float( x ), float( y ), float( width ), float( height ) );
+  fill(float(x), float(y), float(width), float(height));
 }
 
-void Shape::rect( float x, float y, float width, float height )
+void Shape::rect(float x, float y, float width, float height)
 {
-  tf.model = Mat4::translation( Vec3( x + 0.5f, y + 0.5f, 0.0f ) );
-  tf.model.scale( Vec3( width - 1.0f, height - 1.0f, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(x + 0.5f, y + 0.5f, 0.0f));
+  tf.model.scale(Vec3(width - 1.0f, height - 1.0f, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_LINE_LOOP, 4, 4 );
+  glDrawArrays(GL_LINE_LOOP, 4, 4);
 }
 
-void Shape::rect( int x, int y, int width, int height )
+void Shape::rect(int x, int y, int width, int height)
 {
-  rect( float( x ), float( y ), float( width ), float( height ) );
+  rect(float(x), float(y), float(width), float(height));
 }
 
-void Shape::tag( float minX, float minY, float maxX, float maxY )
+void Shape::tag(float minX, float minY, float maxX, float maxY)
 {
-  tf.model = Mat4::translation( Vec3( minX, minY, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(minX, minY, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_LINES, 8, 4 );
+  glDrawArrays(GL_LINES, 8, 4);
 
-  tf.model = Mat4::translation( Vec3( maxX, minY, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(maxX, minY, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_LINES, 12, 4 );
+  glDrawArrays(GL_LINES, 12, 4);
 
-  tf.model = Mat4::translation( Vec3( maxX, maxY, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(maxX, maxY, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_LINES, 16, 4 );
+  glDrawArrays(GL_LINES, 16, 4);
 
-  tf.model = Mat4::translation( Vec3( minX, maxY, 0.0f ) );
+  tf.model = Mat4::translation(Vec3(minX, maxY, 0.0f));
   tf.apply();
 
-  glDrawArrays( GL_LINES, 20, 4 );
+  glDrawArrays(GL_LINES, 20, 4);
 }
 
-void Shape::quad( float dimX, float dimY )
+void Shape::quad(float dimX, float dimY)
 {
-  tf.model.scale( Vec3( dimX, 1.0f, dimY ) );
+  tf.model.scale(Vec3(dimX, 1.0f, dimY));
   tf.apply();
 
-  glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
+  glDrawArrays(GL_TRIANGLE_STRIP, 24, 4);
 }
 
-void Shape::box( const AABB& bb )
+void Shape::box(const AABB& bb)
 {
-  tf.model = Mat4::translation( bb.p - Point::ORIGIN );
-  tf.model.scale( bb.dim );
+  tf.model = Mat4::translation(bb.p - Point::ORIGIN);
+  tf.model.scale(bb.dim);
   tf.apply();
 
-  glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 0 );
+  glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 0);
 }
 
-void Shape::wireBox( const AABB& bb )
+void Shape::wireBox(const AABB& bb)
 {
-  tf.model = Mat4::translation( bb.p - Point::ORIGIN );
-  tf.model.scale( bb.dim );
+  tf.model = Mat4::translation(bb.p - Point::ORIGIN);
+  tf.model.scale(bb.dim);
   tf.apply();
 
-  glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+  glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 22);
 }
 
-void Shape::skyBox( uint* texIds )
+void Shape::skyBox(uint* texIds)
 {
   tf.apply();
 
-  glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 46 );
+  glBindTexture(GL_TEXTURE_2D, texIds[0]);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 46);
 
-  glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 50 );
+  glBindTexture(GL_TEXTURE_2D, texIds[1]);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 50);
 
-  glBindTexture( GL_TEXTURE_2D, texIds[2] );
-  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 54 );
+  glBindTexture(GL_TEXTURE_2D, texIds[2]);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 54);
 
-  glBindTexture( GL_TEXTURE_2D, texIds[3] );
-  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 58 );
+  glBindTexture(GL_TEXTURE_2D, texIds[3]);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 58);
 
-  glBindTexture( GL_TEXTURE_2D, texIds[4] );
-  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 62 );
+  glBindTexture(GL_TEXTURE_2D, texIds[4]);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 62);
 
-  glBindTexture( GL_TEXTURE_2D, texIds[5] );
-  glDrawElements( GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 66 );
+  glBindTexture(GL_TEXTURE_2D, texIds[5]);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 66);
 }
 
 #ifdef OZ_DYNAMICS
 
-void Shape::object( const Point& pos, const Mat3& rot, const void* shape_ )
+void Shape::object(const Point& pos, const Mat3& rot, const void* shape_)
 {
-  const oz::Shape* shape = static_cast<const oz::Shape*>( shape_ );
+  const oz::Shape* shape = static_cast<const oz::Shape*>(shape_);
 
-  if( shape->type == oz::Shape::BOX ) {
-    const Box* box = static_cast<const Box*>( shape );
+  if (shape->type == oz::Shape::BOX) {
+    const Box* box = static_cast<const Box*>(shape);
 
-    tf.model = Mat4::translation( pos - Point::ORIGIN );
-    tf.model = tf.model * Mat4( rot );
-    tf.model.scale( box->ext );
+    tf.model = Mat4::translation(pos - Point::ORIGIN);
+    tf.model = tf.model * Mat4(rot);
+    tf.model.scale(box->ext);
     tf.apply();
 
-    colour( 0.5f, 0.5f, 0.5f, 1.0f );
-    glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 0 );
-    colour( 1.0f, 0.0f, 0.0f, 1.0f );
-    glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+    colour(0.5f, 0.5f, 0.5f, 1.0f);
+    glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 0);
+    colour(1.0f, 0.0f, 0.0f, 1.0f);
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 22);
   }
-  else if( shape->type == oz::Shape::CAPSULE ) {
-    const Capsule* capsule = static_cast<const Capsule*>( shape );
+  else if (shape->type == oz::Shape::CAPSULE) {
+    const Capsule* capsule = static_cast<const Capsule*>(shape);
 
-    tf.model = Mat4::translation( pos - Point::ORIGIN );
-    tf.model = tf.model * Mat4( rot );
-    tf.model.scale( Vec3( capsule->radius, capsule->radius, capsule->ext + capsule->radius ) );
+    tf.model = Mat4::translation(pos - Point::ORIGIN);
+    tf.model = tf.model * Mat4(rot);
+    tf.model.scale(Vec3(capsule->radius, capsule->radius, capsule->ext + capsule->radius));
     tf.apply();
 
-    colour( 0.5f, 0.5f, 0.5f, 1.0f );
-    glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 0 );
-    colour( 1.0f, 0.0f, 0.0f, 1.0f );
-    glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
+    colour(0.5f, 0.5f, 0.5f, 1.0f);
+    glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 0);
+    colour(1.0f, 0.0f, 0.0f, 1.0f);
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 22);
 
   }
-  else if( shape->type == oz::Shape::COMPOUND ) {
-    const Compound* compound = static_cast<const Compound*>( shape );
+  else if (shape->type == oz::Shape::COMPOUND) {
+    const Compound* compound = static_cast<const Compound*>(shape);
 
-    for( const oz::Shape& child : *compound ) {
-      object( pos + rot * child.off, rot * child.rot, child.shape );
+    for (const oz::Shape& child : *compound) {
+      object(pos + rot * child.off, rot * child.rot, child.shape);
     }
   }
 }
@@ -410,15 +410,15 @@ void Shape::init()
 {
   MainCall() << [&]
   {
-    glGenBuffers( 1, &vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, sizeof( VERTICES ), VERTICES, GL_STATIC_DRAW );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glGenBuffers( 1, &ibo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( INDICES ), INDICES, GL_STATIC_DRAW );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   };
 }
 
@@ -426,9 +426,9 @@ void Shape::destroy()
 {
   MainCall() << [&]
   {
-    if( vbo != 0 ) {
-      glDeleteBuffers( 1, &ibo );
-      glDeleteBuffers( 1, &vbo );
+    if (vbo != 0) {
+      glDeleteBuffers(1, &ibo);
+      glDeleteBuffers(1, &vbo);
 
       ibo = 0;
       vbo = 0;

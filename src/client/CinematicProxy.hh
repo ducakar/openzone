@@ -73,7 +73,7 @@ private:
 
 public:
 
-  void executeSequence( const char* path, const Lingua* lingua );
+  void executeSequence(const char* path, const Lingua* lingua);
 
   void begin() override;
   void end() override;
@@ -83,10 +83,10 @@ public:
 
   void reset() override;
 
-  void read( InputStream* is ) override;
-  void read( const JSON& json ) override;
+  void read(InputStream* is) override;
+  void read(const JSON& json) override;
 
-  void write( OutputStream* os ) const override;
+  void write(OutputStream* os) const override;
   JSON write() const override;
 
 };

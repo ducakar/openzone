@@ -96,8 +96,8 @@ public:
 
   public:
 
-    explicit AnimState( const Bot* bot );
-    explicit AnimState( const Vehicle* vehicle );
+    explicit AnimState(const Bot* bot);
+    explicit AnimState(const Vehicle* vehicle);
 
     void advance();
 
