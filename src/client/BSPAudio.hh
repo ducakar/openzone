@@ -34,7 +34,7 @@ class BSPAudio
 {
 private:
 
-  const oz::BSP* bsp;
+  const BSP* bsp;
 
 private:
 
@@ -44,7 +44,7 @@ private:
 
 public:
 
-  explicit BSPAudio( const oz::BSP* bsp );
+  explicit BSPAudio( const BSP* bsp );
   ~BSPAudio();
 
   void play( const Struct* str ) const;

@@ -415,9 +415,10 @@ const File* Model::preload()
   nFrames         = is.readInt();
   nFramePositions = is.readInt();
 
-  int nMeshes = is.readInt();
-  int nLights = is.readInt();
-  int nNodes  = is.readInt();
+  int nMeshes     = is.readInt();
+  int nLights     = is.readInt();
+  int nNodes      = is.readInt();
+  int nAnimations = is.readInt();
 
   if( nTextures < 0 ) {
     textures.resize( ~nTextures );
@@ -427,6 +428,8 @@ const File* Model::preload()
     }
   }
   else {
+    hard_assert( nTextures > 0 );
+
     textures.resize( nTextures );
 
     for( int i = 0; i < nTextures; ++i ) {
@@ -524,6 +527,39 @@ const File* Model::preload()
     nodes[i].name       = is.readString();
   }
 
+  animations.resize( nAnimations );
+
+  for( int i = 0; i < nAnimations; ++i ) {
+    int nChannels = is.readInt();
+
+    animations[i].channels.resize( nChannels );
+
+    for( int j = 0; j < nChannels; ++j ) {
+      Animation::Channel& channel = animations[i].channels[j];
+
+      int nPositionKeys = is.readInt();
+      int nRotationKeys = is.readInt();
+      int nScalingKeys  = is.readInt();
+
+      channel.positionKeys.resize( nPositionKeys );
+      channel.rotationKeys.resize( nRotationKeys );
+      channel.scalingKeys.resize( nScalingKeys );
+
+      for( int k = 0; k < nPositionKeys; ++k ) {
+        channel.positionKeys[k].position = is.readPoint();
+        channel.positionKeys[k].time     = is.readFloat();
+      }
+      for( int k = 0; k < nRotationKeys; ++k ) {
+        channel.rotationKeys[k].rotation = is.readQuat();
+        channel.rotationKeys[k].time     = is.readFloat();
+      }
+      for( int k = 0; k < nScalingKeys; ++k ) {
+        channel.scalingKeys[k].scaling = is.readVec3();
+        channel.scalingKeys[k].time    = is.readFloat();
+      }
+    }
+  }
+
   return &preloadData->modelFile;
 }
 
@@ -549,6 +585,7 @@ void Model::load()
   is.readInt();
   is.readInt();
 
+  is.readInt();
   is.readInt();
   is.readInt();
   is.readInt();

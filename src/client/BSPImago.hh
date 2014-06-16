@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/BSP.hh
+ * @file client/BSPImago.hh
  */
 
 #pragma once
@@ -30,7 +30,7 @@ namespace oz
 namespace client
 {
 
-class BSP
+class BSPImago
 {
 private:
 
@@ -43,8 +43,8 @@ public:
 
 public:
 
-  explicit BSP( const oz::BSP* bsp );
-  ~BSP();
+  explicit BSPImago( const BSP* bsp );
+  ~BSPImago();
 
   Vec3 dim() const
   {

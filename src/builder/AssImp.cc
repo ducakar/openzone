@@ -199,6 +199,12 @@ void AssImp::build( const char* path )
       compiler.end();
     }
 
+    for( uint j = 0; j < mesh->mNumBones; ++j ) {
+      Log() << "bone " << mesh->mBones[j]->mName.C_Str() <<
+               ", " << mesh->mBones[j]->mNumWeights <<
+               ", " << ~Mat4( mesh->mBones[j]->mOffsetMatrix[0] );
+    }
+
     compiler.endMesh();
   }
 
@@ -224,13 +230,53 @@ void AssImp::build( const char* path )
   for( uint i = 0; i < scene->mNumAnimations; ++i ) {
     const aiAnimation* anim = scene->mAnimations[i];
 
+    compiler.beginAnimation();
+
     for( uint j = 0; j < anim->mNumChannels; ++j ) {
-//      const aiNodeAnim* nodeAnim = anim->mChannels[j];
+      const aiNodeAnim* nodeAnim = anim->mChannels[j];
 
-//      for( double t = 0.0; t < anim->mDuration; ) {
+      compiler.beginChannel();
 
-//      }
+      Log() << "  positions";
+      for( uint k = 0; k < nodeAnim->mNumPositionKeys; ++k ) {
+        const aiVectorKey& key = nodeAnim->mPositionKeys[k];
+
+        Point position = Point( key.mValue.x, key.mValue.y, key.mValue.z );
+        float time     = float( key.mTime );
+
+        Log() << "    " << position << " @ " << time;
+
+        compiler.positionKey( position, time );
+      }
+
+      Log() << "  rotations";
+      for( uint k = 0; k < nodeAnim->mNumRotationKeys; ++k ) {
+        const aiQuatKey& key = nodeAnim->mRotationKeys[k];
+
+        Quat  rotation = Quat( key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w );
+        float time     = float( key.mTime );
+
+        Log() << "    " << rotation << " @ " << time;
+
+        compiler.rotationKey( rotation, time );
+      }
+
+      Log() << "  scalings";
+      for( uint k = 0; k < nodeAnim->mNumScalingKeys; ++k ) {
+        const aiVectorKey& key = nodeAnim->mScalingKeys[k];
+
+        Vec3  scaling = Vec3( key.mValue.x, key.mValue.y, key.mValue.z );
+        float time    = float( key.mTime );
+
+        Log() << "    " << scaling << " @ " << time;
+
+        compiler.scalingKey( scaling, time );
+      }
+
+      compiler.endChannel();
     }
+
+    compiler.endAnimation();
   }
 
   compiler.endModel();

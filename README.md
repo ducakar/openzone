@@ -21,12 +21,12 @@ supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.3 compilers 
 Development packages of the following libraries are required to build OpenZone from source:
 
 - ALSA (Linux only)
+- libGL or libGLES2
 - libpng
 - libvorbis
 - Lua 5.1 or 5.2
-- OpenAL 1.1
-- OpenGL 2.1 or OpenGL ES 2.0
-- PhysicsFS 2.0 or 2.1/dev
+- openal-soft
+- physfs 2.0 or 2.1/dev
 - SDL2
 - SDL2_ttf
 - zlib
@@ -43,7 +43,7 @@ The following development tools are required:
 - CMake
 - Ninja (optional, recommended)
 - LLVM/Clang (optional, recommended)
-- MinGW64 (optional, for building Win32/Win64 port)
+- MinGW-w64 (optional, for building Win32/Win64 port)
 - NaCl SDK (optional, for building PNaCl port)
 
 You can then use generic steps for building CMake projects:

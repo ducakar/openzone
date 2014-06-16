@@ -25,6 +25,8 @@
 
 #include <builder/Context.hh>
 
+using oz::client::Animation;
+
 namespace oz
 {
 namespace builder
@@ -38,7 +40,9 @@ enum Environment
   MODEL,
   MESH,
   POLY,
-  LIGHT
+  LIGHT,
+  ANIMATION,
+  CHANNEL
 };
 
 struct Vertex
@@ -48,12 +52,15 @@ struct Vertex
   Vec3     normal;
   Vec3     tangent;
   Vec3     binormal;
-  Vec3     colour;
+  String   boneName[2];
+  int      bone[2];
+  float    weight[2];
 
   bool operator == ( const Vertex& v ) const
   {
     return pos == v.pos && texCoord == v.texCoord && normal == v.normal && tangent == v.tangent &&
-           binormal == v.binormal && colour == v.colour;
+           binormal == v.binormal && boneName[0] == v.boneName[0] && boneName[1] == v.boneName[1] &&
+           weight[0] == v.weight[0] && weight[1] == v.weight[1];
   }
 
   void write( OutputStream* os ) const
@@ -62,9 +69,6 @@ struct Vertex
 
     os->writeShort( short( Math::lround( texCoord.u * 1024.0f ) ) );
     os->writeShort( short( Math::lround( texCoord.v * 1024.0f ) ) );
-
-    // Reserved for colour.
-    os->writeInt( 0 );
 
     os->writeByte( byte( normal.x * 127.0f ) );
     os->writeByte( byte( normal.y * 127.0f ) );
@@ -80,6 +84,11 @@ struct Vertex
     os->writeByte( byte( binormal.y * 127.0f ) );
     os->writeByte( byte( binormal.z * 127.0f ) );
     os->writeByte( 0 );
+
+    os->writeUByte( ubyte( bone[0] ) );
+    os->writeUByte( ubyte( bone[1] ) );
+    os->writeUByte( ubyte( weight[0] * 255.0f ) );
+    os->writeUByte( ubyte( weight[1] * 255.0f ) );
   }
 };
 
@@ -150,6 +159,7 @@ static List<Vertex>       vertices;
 static List<Mesh>         meshes;
 static List<Light>        lights;
 static List<Node*>        nodes;
+static List<Animation>    animations;
 
 static Bounds             bounds;
 
@@ -158,6 +168,8 @@ static Mesh               mesh;
 static Light              light;
 static Node               root;
 static Node*              node;
+static Animation::Channel channel;
+static Animation          animation;
 
 static Environment        environment;
 static int                caps;
@@ -410,15 +422,20 @@ void Compiler::begin( Compiler::PolyMode mode_ )
   hard_assert( environment == MESH );
   environment = POLY;
 
-  vert.pos        = Point::ORIGIN;
-  vert.texCoord   = TexCoord( 0.0f, 0.0f );
-  vert.normal     = Vec3::ZERO;
-  vert.tangent    = Vec3::ZERO;
-  vert.binormal   = Vec3::ZERO;
-  vert.colour     = Vec3::ZERO;
+  vert.pos         = Point::ORIGIN;
+  vert.texCoord    = TexCoord( 0.0f, 0.0f );
+  vert.normal      = Vec3::ZERO;
+  vert.tangent     = Vec3::ZERO;
+  vert.binormal    = Vec3::ZERO;
+  vert.boneName[0] = "";
+  vert.boneName[1] = "";
+  vert.bone[0]     = 0;
+  vert.bone[1]     = 0;
+  vert.weight[0]   = 0.0f;
+  vert.weight[1]   = 0.0f;
 
-  mode            = mode_;
-  vertNum         = 0;
+  mode             = mode_;
+  vertNum          = 0;
   polyIndices.clear();
 }
 
@@ -466,6 +483,15 @@ void Compiler::end()
       break;
     }
   }
+}
+
+void Compiler::boneWeight( int which, const char* name, float weight )
+{
+  hard_assert( environment == POLY );
+  hard_assert( which == 0 || which == 1 );
+
+  vert.boneName[which] = name;
+  vert.weight[which]   = weight;
 }
 
 void Compiler::texCoord( float u, float v )
@@ -597,6 +623,61 @@ void Compiler::coneAngles( float inner, float outer )
   light.coneCoeff[1] = Math::tan( outer / 2.0f );
 }
 
+void Compiler::beginAnimation()
+{
+  hard_assert( environment == MODEL );
+  environment = ANIMATION;
+
+  animation.channels.clear();
+}
+
+void Compiler::endAnimation()
+{
+  hard_assert( environment == ANIMATION );
+  environment = MODEL;
+
+  animations.add( static_cast<Animation&&>( animation ) );
+}
+
+void Compiler::beginChannel()
+{
+  hard_assert( environment == ANIMATION );
+  environment = CHANNEL;
+
+  channel.positionKeys.clear();
+  channel.rotationKeys.clear();
+  channel.scalingKeys.clear();
+}
+
+void Compiler::endChannel()
+{
+  hard_assert( environment == CHANNEL );
+  environment = ANIMATION;
+
+  animation.channels.add( static_cast<Animation::Channel&&>( channel ) );
+}
+
+void Compiler::positionKey( const Point& pos, float time )
+{
+  hard_assert( environment == CHANNEL );
+
+  channel.positionKeys.add( { pos, time } );
+}
+
+void Compiler::rotationKey( const Quat& rot, float time )
+{
+  hard_assert( environment == CHANNEL );
+
+  channel.rotationKeys.add( { rot, time } );
+}
+
+void Compiler::scalingKey( const Vec3& scale, float time )
+{
+  hard_assert( environment == CHANNEL );
+
+  channel.scalingKeys.add( { scale, time } );
+}
+
 void Compiler::writeModel( OutputStream* os, bool globalTextures )
 {
   hard_assert( environment == NONE );
@@ -605,9 +686,8 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
 
   Log::print( "Writing mesh ..." );
 
-  List<String>   textures;
-  List<Triangle> triangles;
-  List<ushort>   indices;
+  List<String> textures;
+  List<ushort> indices;
 
   int nIndices = 0;
 
@@ -642,6 +722,7 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
   os->writeInt( meshes.length() );
   os->writeInt( lights.length() );
   os->writeInt( Node::pool.length() );
+  os->writeInt( animations.length() );
 
   for( const String& texture : textures ) {
     os->writeString( texture );
@@ -767,6 +848,29 @@ void Compiler::writeModel( OutputStream* os, bool globalTextures )
     os->writeString( node->name );
   }
 
+  for( const Animation& anim : animations ) {
+    os->writeInt( anim.channels.length() );
+
+    for( const Animation::Channel& channel : anim.channels ) {
+      os->writeInt( channel.positionKeys.length() );
+      os->writeInt( channel.rotationKeys.length() );
+      os->writeInt( channel.scalingKeys.length() );
+
+      for( const Animation::PositionKey& posKey : channel.positionKeys ) {
+        os->writePoint( posKey.position );
+        os->writeFloat( posKey.time );
+      }
+      for( const Animation::RotationKey& rotKey : channel.rotationKeys ) {
+        os->writeQuat( rotKey.rotation );
+        os->writeFloat( rotKey.time);
+      }
+      for( const Animation::ScalingKey& scaleKey : channel.scalingKeys ) {
+        os->writeVec3( scaleKey.scaling );
+        os->writeFloat( scaleKey.time );
+      }
+    }
+  }
+
   Log::printEnd( " OK" );
 }
 
@@ -779,6 +883,7 @@ void Compiler::buildModelTextures( const char* destDir )
   for( int i = 0; i < meshes.length(); ++i ) {
     textures.include( meshes[i].texture );
   }
+  textures.exclude( String::EMPTY );
 
   for( int i = 0; i < textures.length(); ++i ) {
     context.buildTexture( textures[i], String( destDir, "/" ) + textures[i].fileName() );
@@ -808,6 +913,9 @@ void Compiler::destroy()
   nodes.clear();
   nodes.trim();
 
+  animations.clear();
+  animations.trim();
+
   mesh.texture = "";
   mesh.indices.clear();
   mesh.indices.trim();
@@ -817,6 +925,12 @@ void Compiler::destroy()
 
   polyIndices.clear();
   polyIndices.trim();
+
+  hard_assert( channel.positionKeys.capacity() == 0 );
+  hard_assert( channel.rotationKeys.capacity() == 0 );
+  hard_assert( channel.scalingKeys.capacity() == 0 );
+
+  hard_assert( animation.channels.capacity() == 0 );
 }
 
 Compiler compiler;

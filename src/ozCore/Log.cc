@@ -508,19 +508,19 @@ const Log& Log::operator << ( const Quat& q ) const
 const Log& Log::operator << ( const Mat3& m ) const
 {
   printRaw( "[%g %g %g; %g %g %g; %g %g %g]",
-            m.x.x, m.y.x, m.z.x,
-            m.x.y, m.y.y, m.z.y,
-            m.x.z, m.y.z, m.z.z );
+            m.x.x, m.x.y, m.x.z,
+            m.y.x, m.y.y, m.y.z,
+            m.z.x, m.z.y, m.z.z );
   return *this;
 }
 
 const Log& Log::operator << ( const Mat4& m ) const
 {
   printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
-            m.x.x, m.y.x, m.z.x, m.w.x,
-            m.x.y, m.y.y, m.z.y, m.w.y,
-            m.x.z, m.y.z, m.z.z, m.w.z,
-            m.x.w, m.y.w, m.z.w, m.w.w );
+            m.x.x, m.x.y, m.x.z, m.x.w,
+            m.y.x, m.y.y, m.y.z, m.y.w,
+            m.z.x, m.z.y, m.z.z, m.z.w,
+            m.w.x, m.w.y, m.w.z, m.w.w );
   return *this;
 }
 

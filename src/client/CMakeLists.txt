@@ -8,7 +8,7 @@ add_library( client STATIC
   BasicAudio.hh
   BotAudio.hh
   BSPAudio.hh
-  BSP.hh
+  BSPImago.hh
   BuildInfo.hh
   Caelum.hh
   Camera.hh
@@ -55,7 +55,7 @@ add_library( client STATIC
   BasicAudio.cc
   BotAudio.cc
   BSPAudio.cc
-  BSP.cc
+  BSPImago.cc
   Caelum.cc
   Camera.cc
   CinematicProxy.cc

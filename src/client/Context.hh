@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/Shader.hh>
-#include <client/BSP.hh>
+#include <client/BSPImago.hh>
 #include <client/BSPAudio.hh>
 #include <client/Imago.hh>
 #include <client/Audio.hh>
@@ -39,7 +39,7 @@ namespace client
 class Context
 {
   friend class Loader;
-  friend class BSP;
+  friend class BSPImago;
   friend class BSPAudio;
   friend class Model;
   friend class Audio;
@@ -116,7 +116,7 @@ private:
 
   Chain<PartGen>           partGens;
 
-  Resource<BSP*>*          bsps;
+  Resource<BSPImago*>*     bsps;
   Resource<BSPAudio*>*     bspAudios;
 
   Resource<Model*>*        models;
@@ -186,8 +186,8 @@ public:
   // Play sample without 3D effects.
   void playSample( int id );
 
-  BSP* getBSP( const oz::BSP* bsp );
-  BSP* requestBSP( const oz::BSP* bsp );
+  BSPImago* getBSP( const BSP* bsp );
+  BSPImago* requestBSP( const BSP* bsp );
 
   void drawBSP( const Struct* str );
   void playBSP( const Struct* str );

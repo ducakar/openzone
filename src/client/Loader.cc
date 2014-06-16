@@ -96,7 +96,7 @@ void Loader::cleanupRender()
   if( tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG ) {
     // remove unused BSPs
     for( int i = 0; i < liber.nBSPs; ++i ) {
-      Context::Resource<BSP*>& bsp = context.bsps[i];
+      Context::Resource<BSPImago*>& bsp = context.bsps[i];
 
       if( bsp.nUsers != 0 ) {
         bsp.nUsers = 0;
@@ -241,7 +241,7 @@ void Loader::cleanupSound()
 void Loader::preloadRender()
 {
   for( int i = 0; i < liber.nBSPs; ++i ) {
-    BSP* bsp = context.bsps[i].handle;
+    BSPImago* bsp = context.bsps[i].handle;
 
     if( bsp != nullptr && !bsp->isLoaded() && !bsp->isPreloaded() ) {
       bsp->preload();
@@ -278,7 +278,7 @@ void Loader::uploadRender( bool isOneShot )
   }
 
   for( int i = 0; i < liber.nBSPs; ++i ) {
-    BSP* bsp = context.bsps[i].handle;
+    BSPImago* bsp = context.bsps[i].handle;
 
     if( bsp != nullptr && bsp->isPreloaded() ) {
       bsp->load();

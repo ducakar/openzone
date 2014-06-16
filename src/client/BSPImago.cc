@@ -18,10 +18,10 @@
  */
 
 /**
- * @file client/BSP.cc
+ * @file client/BSPImago.cc
  */
 
-#include <client/BSP.hh>
+#include <client/BSPImago.hh>
 
 #include <client/Context.hh>
 
@@ -30,16 +30,16 @@ namespace oz
 namespace client
 {
 
-BSP::BSP( const oz::BSP* bsp ) :
+BSPImago::BSPImago( const BSP* bsp ) :
   model( "@bsp/" + bsp->name + ".ozcModel" )
 {}
 
-BSP::~BSP()
+BSPImago::~BSPImago()
 {
   model.unload();
 }
 
-void BSP::schedule( const Struct* str, Model::QueueType queue )
+void BSPImago::schedule( const Struct* str, Model::QueueType queue )
 {
   if( str != nullptr ) {
     tf.model = Mat4::translation( str->p - Point::ORIGIN );
@@ -72,7 +72,7 @@ void BSP::schedule( const Struct* str, Model::QueueType queue )
   model.schedule( 0, queue );
 }
 
-void BSP::preload()
+void BSPImago::preload()
 {
   const File* file = model.preload();
   InputStream is   = file->inputStream( Endian::LITTLE );
@@ -82,7 +82,7 @@ void BSP::preload()
   lavaFogColour  = is.readVec4();
 }
 
-void BSP::load()
+void BSPImago::load()
 {
   model.load();
 }

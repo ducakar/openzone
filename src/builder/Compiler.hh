@@ -85,6 +85,8 @@ public:
   void begin( PolyMode mode );
   void end();
 
+  void boneWeight( int which, const char* name, float weight );
+
   void texCoord( float u, float v );
   void texCoord( const float* v );
 
@@ -104,6 +106,16 @@ public:
   void colour( float r, float g, float b );
   void attenuation( float constant, float linear, float quadratic );
   void coneAngles( float inner, float outer );
+
+  void beginAnimation();
+  void endAnimation();
+
+  void beginChannel();
+  void endChannel();
+
+  void positionKey( const Point& pos, float time );
+  void rotationKey( const Quat& rot, float time );
+  void scalingKey( const Vec3& scale, float time );
 
   void writeModel( OutputStream* os, bool globalTextures = false );
   void buildModelTextures( const char* destDir );

@@ -107,7 +107,7 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
   OZ_AL_CHECK_ERROR();
 }
 
-BSPAudio::BSPAudio( const oz::BSP* bsp_ ) :
+BSPAudio::BSPAudio( const BSP* bsp_ ) :
   bsp( bsp_ )
 {
   for( int sound : bsp->sounds ) {

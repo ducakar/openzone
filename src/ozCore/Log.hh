@@ -289,13 +289,13 @@ public:
   const Log& operator << ( const Quat& q ) const;
 
   /**
-   * Print 3x3 matrix as `printRaw( "[%g %g %g; %g %g %g; %g %g %g]", ... )` in row-major format.
+   * Print 3x3 matrix as `printRaw( "[%g %g %g; %g %g %g; %g %g %g]", ... )` in column-major format.
    */
   const Log& operator << ( const Mat3& m ) const;
 
   /**
    * Print 4x4 matrix as `printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ... )`
-   * in row-major format.
+   * in column-major format.
    */
   const Log& operator << ( const Mat4& m ) const;
 

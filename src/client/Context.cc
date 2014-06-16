@@ -312,9 +312,6 @@ Texture Context::loadTexture( const char* basePath_ )
   if( albedo.type() == File::REGULAR ) {
     albedo.map();
   }
-  else {
-    OZ_ERROR( "Missing texture '%s'", basePath_ );
-  }
   if( masks.type() == File::REGULAR ) {
     masks.map();
   }
@@ -456,22 +453,22 @@ void Context::playSample( int id )
   OZ_AL_CHECK_ERROR();
 }
 
-BSP* Context::getBSP( const oz::BSP* bsp )
+BSPImago* Context::getBSP( const BSP* bsp )
 {
-  Resource<BSP*>& resource = bsps[bsp->id];
+  Resource<BSPImago*>& resource = bsps[bsp->id];
 
   return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
 }
 
-BSP* Context::requestBSP( const oz::BSP* bsp )
+BSPImago* Context::requestBSP( const BSP* bsp )
 {
-  Resource<BSP*>& resource = bsps[bsp->id];
+  Resource<BSPImago*>& resource = bsps[bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
   if( resource.handle == nullptr ) {
-    resource.handle = new BSP( bsp );
+    resource.handle = new BSPImago( bsp );
   }
 
   return resource.handle;
@@ -479,7 +476,7 @@ BSP* Context::requestBSP( const oz::BSP* bsp )
 
 void Context::drawBSP( const Struct* str )
 {
-  BSP* bsp = requestBSP( str->bsp );
+  BSPImago* bsp = requestBSP( str->bsp );
 
   if( bsp->isLoaded() ) {
     bsp->schedule( str, Model::SCENE_QUEUE );
@@ -816,7 +813,7 @@ void Context::init()
   textures    = nTextures    == 0 ? nullptr : new Resource<Texture>[nTextures];
   sounds      = nSounds      == 0 ? nullptr : new Resource<uint>[nSounds];
 
-  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSP*>[nBSPs];
+  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs];
   bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
 
   models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels];

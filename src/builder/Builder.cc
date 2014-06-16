@@ -267,7 +267,9 @@ void Builder::buildBSPTextures()
         Log::print( "Copying '%s' ...", path.cstr() );
 
         File destFile = String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() );
-        File::cp( file, destFile );
+        if( !File::cp( file, destFile ) ) {
+          OZ_ERROR( "Failed to copy '%s' -> '%s'", file.path().cstr(), destFile.path().cstr() );
+        }
 
         Log::printEnd( " OK" );
         continue;
@@ -359,15 +361,12 @@ void Builder::buildModels()
   File mdlDir = "@mdl";
   List<File> dirList = mdlDir.ls();
 
-  if( !dirList.isEmpty() ) {
-    File::mkdir( "mdl" );
-  }
-
   for( const File& dir : dirList ) {
     if( !context.usedModels.exclude( dir.name() ) ) {
       continue;
     }
 
+    File::mkdir( "mdl" );
     File::mkdir( &dir.path()[1] );
 
     for( const File& file : dir.ls() ) {
@@ -382,8 +381,8 @@ void Builder::buildModels()
         Log::print( "Copying '%s' ...", path.cstr() );
 
         File destFile = &path[1];
-        if( !destFile.write( file.read() ) ) {
-          OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
+        if( !File::cp( file, destFile ) ) {
+          OZ_ERROR( "Failed to write '%s' -> '%s'", file.path().cstr(), destFile.path().cstr() );
         }
 
         Log::printEnd( " OK" );
@@ -443,8 +442,9 @@ void Builder::copySounds()
     }
 
     for( const File& file : subDir.ls() ) {
-      if( file.type() != File::REGULAR || ( !file.hasExtension( "wav" ) &&
-            !file.hasExtension( "oga" ) && !file.hasExtension( "ogg" ) ) )
+      if( file.type() != File::REGULAR ||
+          ( !file.hasExtension( "wav" ) && !file.hasExtension( "oga" ) &&
+            !file.hasExtension( "ogg" ) ) )
       {
         continue;
       }
@@ -475,8 +475,9 @@ void Builder::copySounds()
       File::mkdir( "snd/" + subDir.name() );
 
       File destFile = &file.path()[1];
-      if( !destFile.write( file.read() ) ) {
-        OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
+
+      if( !File::cp( file, destFile ) ) {
+        OZ_ERROR( "Failed to copy '%s' -> '%s'", file.path().cstr(), destFile.path().cstr() );
       }
 
       Log::printEnd( " OK" );

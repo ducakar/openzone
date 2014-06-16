@@ -15,8 +15,8 @@
   "fragPool":           "gibs",
   "nFrags":             5,
 
-  "imagoType":          "MD2",
-  "imagoModel":         "hobgoblin",
+  "imagoType":          "SMM",
+  "imagoModel":         "robo",
 
   "audioType":          "Bot",
   "audioSounds":

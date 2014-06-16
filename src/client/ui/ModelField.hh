@@ -44,22 +44,22 @@ private:
   static const float ROTATION_VEL;
   static const float ROTATION_SMOOTHING;
 
-  Callback*      callback;
-  const oz::BSP* bsp;
-  int            model;
+  Callback*  callback;
+  const BSP* bsp;
+  int        model;
 
-  float          defaultRot;
-  float          currRot;
-  float          nextRot;
+  float      defaultRot;
+  float      currRot;
+  float      nextRot;
 
-  int            clickMask;
-  bool           isHighlighted;
-  bool           isClicked;
-  bool           wasClicked;
+  int        clickMask;
+  bool       isHighlighted;
+  bool       isClicked;
+  bool       wasClicked;
 
 public:
 
-  int            id; ///< Can be used to store e.g. object index.
+  int        id; ///< Can be used to store e.g. object index.
 
 protected:
 
@@ -74,7 +74,7 @@ public:
   void setCallback( Callback* callback );
   void setDefaultRotation( float defaultRotation );
 
-  void setModel( const oz::BSP* bsp );
+  void setModel( const BSP* bsp );
   void setModel( int model );
 
   void setClickMask( int mask );

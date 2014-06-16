@@ -35,10 +35,11 @@ struct Vertex
 {
   float pos[3];
   short texCoord[2];
-  byte  colour[4];
   byte  normal[4];
   byte  tangent[4];
   byte  binormal[4];
+  ubyte bone[2];
+  ubyte weight[2];
 
   static void setFormat();
 };
@@ -73,6 +74,36 @@ struct Light
   Vec3  colour;
   float attenuation[3];
   float coneCoeff[2];
+};
+
+struct Animation
+{
+  struct PositionKey
+  {
+    Point position;
+    float time;
+  };
+
+  struct RotationKey
+  {
+    Quat  rotation;
+    float time;
+  };
+
+  struct ScalingKey
+  {
+    Vec3  scaling;
+    float time;
+  };
+
+  struct Channel
+  {
+    List<PositionKey> positionKeys;
+    List<RotationKey> rotationKeys;
+    List<ScalingKey>  scalingKeys;
+  };
+
+  List<Channel> channels;
 };
 
 class Model
@@ -158,6 +189,7 @@ private:
   List<Mesh>              meshes;
   List<Light>             lights;
   List<Node>              nodes;
+  List<Animation>         animations;
 
   int                     nTextures;
   int                     nVertices;

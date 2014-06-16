@@ -194,7 +194,7 @@ void Terra::load()
 
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {
-      Vertex* vertices = new Vertex[TILE_VERTICES];
+      Vertex* vertices = new Vertex[TILE_VERTICES] {};
 
       for( int k = 0; k <= TILE_QUADS; ++k ) {
         for( int l = 0; l <= TILE_QUADS; ++l ) {
@@ -203,16 +203,19 @@ void Terra::load()
 
           Vertex& vertex = vertices[ k * ( TILE_QUADS + 1 ) + l ];
 
-          vertex.pos[0] = orbis.terra.quads[x][y].vertex.x;
-          vertex.pos[1] = orbis.terra.quads[x][y].vertex.y;
-          vertex.pos[2] = orbis.terra.quads[x][y].vertex.z;
+          vertex.pos[0]      = orbis.terra.quads[x][y].vertex.x;
+          vertex.pos[1]      = orbis.terra.quads[x][y].vertex.y;
+          vertex.pos[2]      = orbis.terra.quads[x][y].vertex.z;
 
           vertex.texCoord[0] = short( x );
           vertex.texCoord[1] = short( oz::Terra::VERTS - y );
 
-          vertex.normal[0] = is.readByte();
-          vertex.normal[1] = is.readByte();
-          vertex.normal[2] = is.readByte();
+          vertex.normal[0]   = is.readByte();
+          vertex.normal[1]   = is.readByte();
+          vertex.normal[2]   = is.readByte();
+
+          vertex.tangent[0]  = byte( 127 );
+          vertex.binormal[1] = byte( 127 );
         }
       }
 

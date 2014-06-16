@@ -59,7 +59,7 @@ const Mat4 BuildFrame::OVERLAY_RED    = Mat4( 1.0f, 0.0f, 0.0f, 0.0f,
 void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
 {
   BuildFrame*        buildFrame = static_cast<BuildFrame*>( area );
-  const oz::BSP*     bsp        = buildFrame->overlayBSP;
+  const BSP*         bsp        = buildFrame->overlayBSP;
   const ObjectClass* clazz      = buildFrame->overlayClass;
   Heading            heading    = buildFrame->overlayHeading;
   bool               overlaps   = false;
@@ -74,8 +74,8 @@ void BuildFrame::overlayCallback( Area* area, const Vec3& ray )
   tf.model.rotateZ( float( heading ) * Math::TAU / 4.0f );
 
   if( buildFrame->overlayBSP != nullptr ) {
-    Bounds bounds   = rotate( *bsp, heading ) + ( position - Point::ORIGIN );
-    BSP*   bspModel = context.requestBSP( bsp );
+    Bounds    bounds   = rotate( *bsp, heading ) + ( position - Point::ORIGIN );
+    BSPImago* bspModel = context.requestBSP( bsp );
 
     List<Struct*> strs;
     List<Object*> objs;
@@ -183,7 +183,7 @@ void BuildFrame::startPlacement( ModelField* sender, bool isClicked )
   buildFrame->wasOverModel = true;
 
   if( buildFrame->mode == BUILDINGS ) {
-    const oz::BSP* bsp = techGraph.allowedBuildings[sender->id];
+    const BSP* bsp = techGraph.allowedBuildings[sender->id];
 
     buildFrame->title.setText( "%s", bsp->title.cstr() );
 

@@ -54,7 +54,7 @@ private:
   Mode               mode;
   ModelField**       models;
 
-  const oz::BSP*     overlayBSP;
+  const BSP*         overlayBSP;
   const ObjectClass* overlayClass;
   Heading            overlayHeading;
 

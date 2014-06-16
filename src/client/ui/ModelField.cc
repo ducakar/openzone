@@ -92,9 +92,9 @@ void ModelField::onDraw()
   }
 
   if( bsp != nullptr || model >= 0 ) {
-    BSP*   bspModel = nullptr;
-    Model* objModel = nullptr;
-    float dim;
+    BSPImago* bspModel = nullptr;
+    Model*    objModel = nullptr;
+    float     dim;
 
     if( bsp != nullptr ) {
       bspModel = context.requestBSP( bsp );
@@ -167,7 +167,7 @@ void ModelField::setCallback( Callback* callback_ )
   callback = callback_;
 }
 
-void ModelField::setModel( const oz::BSP* bsp_ )
+void ModelField::setModel( const BSP* bsp_ )
 {
   if( bsp_ != bsp ) {
     bsp     = bsp_;
