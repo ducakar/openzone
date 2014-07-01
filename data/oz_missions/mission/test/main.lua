@@ -146,17 +146,17 @@ function initStressTest()
     end
   end
 
-  for i = 1, 1000 do
+  for i = 1, 500 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )
 
     if z > 0 then
-       ozOrbisAddObj( OZ_TRY, "goblin", x, y, z + 0.75 )
+      ozOrbisAddObj( OZ_TRY, "goblin", x, y, z + 0.75 )
     end
   end
 
-  for i = 1, 1500 do
+  for i = 1, 500 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )

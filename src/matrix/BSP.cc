@@ -198,7 +198,7 @@ void BSP::load()
     boundObjects[i].pos     = is.readPoint();
     boundObjects[i].heading = Heading(is.readInt());
 
-    if (clazz->flags & Object::ITEM_BIT) {
+    if (clazz->flags & Object::DYNAMIC_BIT) {
       OZ_ERROR("BSP '%s' bound object '%s' is not static", name.cstr(), clazz->name.cstr());
     }
   }

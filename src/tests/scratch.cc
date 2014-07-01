@@ -18,7 +18,7 @@
  */
 
 /**
- * @file tests/test.cc
+ * @file tests/scratch.cc
  */
 
 #include <ozCore/ozCore.hh>

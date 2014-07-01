@@ -9,9 +9,9 @@
 # Additionally this scripts updates version numbers in various files.
 #
 
-components=( src/ozCore src/ozDynamics src/ozEngine src/ozFactory src/unittest
-             src/common src/matrix src/nirvana src/client src/builder )
-version=`sed -r '/^set\( OZ_VERSION / !d; s|.* ([0-9.]+) .*|\1|' CMakeLists.txt`
+components=(src/ozCore src/ozDynamics src/ozEngine src/ozFactory src/unittest
+            src/common src/matrix src/nirvana src/client src/builder)
+version=`sed -r '/^set\(OZ_VERSION / !d; s|.* ([0-9.]+)\)|\1|' CMakeLists.txt`
 root=`pwd`
 
 # Generate CMakeLists.txt files.
@@ -38,9 +38,6 @@ for component in ${components[@]}; do
 done
 
 # Fix version numbers.
-echo "Updating version in CMakeLists.txt"
-sed -r 's|^(set\( OZ_VERSION ).*$|\1'"$version"' )|' -i CMakeLists.txt
-
 echo "Updating version in doc/Doxyfile*"
 sed -r 's|^(PROJECT_NUMBER *= *).*$|\1"'"$version"'"|' -i doc/Doxyfile*
 

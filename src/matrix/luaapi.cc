@@ -130,7 +130,6 @@ void importMatrixConstants(lua_State* l)
   registerLuaConstant(l, "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT);
   registerLuaConstant(l, "OZ_BOT_MECHANICAL_BIT",          Bot::MECHANICAL_BIT);
   registerLuaConstant(l, "OZ_BOT_INCARNATABLE_BIT",        Bot::INCARNATABLE_BIT);
-  registerLuaConstant(l, "OZ_BOT_PLAYER_BIT",              Bot::PLAYER_BIT);
 
   registerLuaConstant(l, "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT);
   registerLuaConstant(l, "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT);

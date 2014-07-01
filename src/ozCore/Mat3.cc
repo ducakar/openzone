@@ -39,12 +39,12 @@ const Mat3 Mat3::ID   = Mat3(1.0f, 0.0f, 0.0f,
 
 Mat3 Mat3::inverse() const
 {
-  // LLVM/Clang is faster Cayley-Hamilton while GCC is faster with Cramer.
+  // LLVM/Clang is faster with Cayley-Hamilton while GCC is faster with Cramer.
 #ifdef OZ_CLANG
 
   const Mat3& m = *this;
 
-  // Cayley–Hamilton decomposition.
+  // Cayley–Hamilton's decomposition.
   Mat3  m2  = m * m;
   float mtr = m.tr();
   float k   = (mtr*mtr - m2.tr()) / 2.0f;

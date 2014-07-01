@@ -64,6 +64,7 @@ public:
   /**
    * Loop performing a lock operation until it switches from an unlocked to a locked state.
    */
+  OZ_ALWAYS_INLINE
   void lock()
   {
     while (__sync_lock_test_and_set(&flag, 1) != 0) {
@@ -76,6 +77,7 @@ public:
    *
    * @return True iff it was unlocked.
    */
+  OZ_ALWAYS_INLINE
   bool tryLock()
   {
     return __sync_lock_test_and_set(&flag, 1) == 0;
@@ -84,6 +86,7 @@ public:
   /**
    * Unlock.
    */
+  OZ_ALWAYS_INLINE
   void unlock()
   {
     __sync_lock_release(&flag);

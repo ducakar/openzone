@@ -112,8 +112,6 @@ public:
   static const int DEAD_BIT               = 0x00000001;
   static const int MECHANICAL_BIT         = 0x00000002;
   static const int INCARNATABLE_BIT       = 0x00000004;
-  // bot is currently controlled by player, nirvana shouldn't process its mind
-  static const int PLAYER_BIT             = 0x00000008;
 
   static const int MOVING_BIT             = 0x00000010;
   static const int CROUCHING_BIT          = 0x00000020;

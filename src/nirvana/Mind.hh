@@ -40,6 +40,8 @@ public:
   static const int FORCE_UPDATE_BIT = 0x01;
   // Force mind update when a collision occurs (in physical world).
   static const int COLLISION_UPDATE_BIT = 0x02;
+  // Disabled because player is currently controlling the bot.
+  static const int PLAYER_BIT = 0x04;
 
   Mind* prev[1];
   Mind* next[1];

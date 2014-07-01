@@ -55,7 +55,7 @@ void LuaClient::staticCall(const char* functionName)
   }
 }
 
-bool LuaClient::execChunk(const char* code, int size, const char* name) const
+bool LuaClient::exec(const char* code) const
 {
   hard_assert(l_gettop() == 0);
 
@@ -67,8 +67,8 @@ bool LuaClient::execChunk(const char* code, int size, const char* name) const
 
   bool value = false;
 
-  if (l_dobufferx(code, size, name, "b") != LUA_OK) {
-    Log::println("Lua[C] in '%s': %s", name, l_tostring(-1));
+  if (l_dostring(code) != LUA_OK) {
+    Log::println("Lua[C] in '%s': %s", code, l_tostring(-1));
     System::bell();
   }
   else {

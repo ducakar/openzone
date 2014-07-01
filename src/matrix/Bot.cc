@@ -1193,7 +1193,6 @@ Bot::Bot(const BotClass* clazz_, int index, const JSON& json) :
   for (const JSON& stateJSON : json["state"].arrayCIter()) {
     OZ_STATE_READ(DEAD_BIT,         "dead"        );
     OZ_STATE_READ(INCARNATABLE_BIT, "incarnatable");
-    OZ_STATE_READ(PLAYER_BIT,       "player"      );
     OZ_STATE_READ(CROUCHING_BIT,    "crouching"   );
     OZ_STATE_READ(WALKING_BIT,      "walking"     );
   }
@@ -1257,7 +1256,6 @@ JSON Bot::write() const
 
   OZ_STATE_WRITE(DEAD_BIT,         "dead"        );
   OZ_STATE_WRITE(INCARNATABLE_BIT, "incarnatable");
-  OZ_STATE_WRITE(PLAYER_BIT,       "player"      );
   OZ_STATE_WRITE(CROUCHING_BIT,    "crouching"   );
   OZ_STATE_WRITE(WALKING_BIT,      "walking"     );
 

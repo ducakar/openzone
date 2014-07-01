@@ -24,6 +24,7 @@
 #pragma once
 
 #include <matrix/Vehicle.hh>
+#include <nirvana/Nirvana.hh>
 #include <client/StrategicProxy.hh>
 #include <client/UnitProxy.hh>
 #include <client/CinematicProxy.hh>
@@ -148,7 +149,11 @@ public:
   void setBot(Bot* botObj_)
   {
     if (botObj != nullptr) {
-      botObj->state &= ~Bot::PLAYER_BIT;
+      Mind* mind = nirvana.minds.find(botObj->index);
+
+      if (mind != nullptr) {
+        mind->flags &= ~Mind::PLAYER_BIT;
+      }
     }
 
     if (botObj_ == nullptr) {
@@ -159,7 +164,11 @@ public:
       bot    = botObj_->index;
       botObj = botObj_;
 
-      botObj_->state |= Bot::PLAYER_BIT;
+      Mind* mind = nirvana.minds.find(botObj_->index);
+
+      if (mind != nullptr) {
+        mind->flags |= Mind::PLAYER_BIT;
+      }
     }
 
     hard_assert(botObj == nullptr || (botObj->flags & Object::BOT_BIT));

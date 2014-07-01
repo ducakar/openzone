@@ -9,14 +9,6 @@
 
   "waterFogColour":     [ 0.15, 0.00, 0.15, 1.00 ],
 
-  "boundObjects":
-  [
-    {
-      "class":          "bauul",
-      "pos":            [ 0, 0, 10 ],
-      "heading":        "NORTH"
-    }
-  ],
   "entities":
   [
     {

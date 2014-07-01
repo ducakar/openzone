@@ -587,8 +587,7 @@ bool File::read(char* buffer, int* size) const
 
     int read = 0;
     int result;
-    while ((result = fio.Read(read, &buffer[read], *size - read, pp::BlockUntilComplete())) > 0)
-    {
+    while ((result = fio.Read(read, &buffer[read], *size - read, pp::BlockUntilComplete())) > 0) {
       read += result;
     }
 

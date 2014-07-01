@@ -1,5 +1,8 @@
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
 set( CMAKE_SYSTEM_PROCESSOR     "x86_64" CACHE STRING "Target processor." )
+set( CMAKE_AR                   "/usr/bin/llvm-ar" CACHE STRING "" )
+set( CMAKE_RANLIB               "/usr/bin/llvm-ranlib" CACHE STRING "" )
+set( CMAKE_STRIP                "/usr/bin/strip" CACHE STRING "" )
 set( CMAKE_C_COMPILER           "/usr/bin/clang" )
 set( CMAKE_CXX_COMPILER         "/usr/bin/clang++" )
 set( CMAKE_C_FLAGS              "-march=x86-64 -m64 -msse3" CACHE STRING "" )

@@ -24,7 +24,7 @@ Development packages of the following libraries are required to build OpenZone f
 - libGL or libGLES2
 - libpng
 - libvorbis
-- Lua 5.1 or 5.2
+- Lua 5.1 or 5.2 or LuaJIT 2.0
 - openal-soft
 - physfs 2.0 or 2.1/dev
 - SDL2
@@ -89,6 +89,10 @@ You may also want to set several options when configuring CMake build system:
 
 - `OZ_GL_ES`: Use OpenGL ES 2.0 instead of OpenGL 2.1.
   `OFF` by default, forced to `ON` on Android and NaCl.
+
+- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster,
+  but there are some weird issues with LuaJIT not initialising sometimes.
+  `OFF` by default.
 
 - `OZ_NONFREE`: Enable support for building textures using S3 texture compression. Requires
   libsquish library.
