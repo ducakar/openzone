@@ -61,6 +61,7 @@
  * Containers.
  */
 #include "Pair.hh"
+#include "Tuple.hh"
 #include "List.hh"
 #include "SList.hh"
 #include "Set.hh"

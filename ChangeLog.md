@@ -9,6 +9,7 @@
         + improved iterators: far less code duplication, no more key()/value() members
         + STL-like parameter order in container functions (iCopy/aCopy, aFill, aIndex ...)
         + STL-like begin() and end() members on containers and iterators
+        + new Tuple template class
         + removed Array and DArray template classes
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type

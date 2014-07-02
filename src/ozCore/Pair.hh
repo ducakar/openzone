@@ -49,7 +49,7 @@ public:
 public:
 
   /**
-   * Per-member equality operator.
+   * Per-element equality operator.
    */
   OZ_ALWAYS_INLINE
   bool operator == (const Pair& p) const
@@ -58,7 +58,7 @@ public:
   }
 
   /**
-   * Per-member inequality operator.
+   * Per-element inequality operator.
    */
   OZ_ALWAYS_INLINE
   bool operator != (const Pair& p) const
