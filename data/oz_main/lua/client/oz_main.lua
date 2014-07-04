@@ -21,12 +21,12 @@
 --
 -- Flora module.
 
-function floraSeed( density, spacing, treeDepth )
+function floraSeed(density, spacing, treeDepth)
   local n = 4 * OZ_ORBIS_DIM * OZ_ORBIS_DIM * density
   for i = 1, n do
     local x = math.random() * 2*OZ_ORBIS_DIM - OZ_ORBIS_DIM
     local y = math.random() * 2*OZ_ORBIS_DIM - OZ_ORBIS_DIM
-    local z = ozTerraHeight( x, y )
+    local z = ozTerraHeight(x, y)
 
     if z < 100 and 2 < z then
       local type = "palm"
@@ -36,21 +36,21 @@ function floraSeed( density, spacing, treeDepth )
         type = "tree"
       end
 
-      local dimX, dimY, dimZ = ozClassDim( type )
-      if not ozOrbisOverlaps( 0, x, y, z + dimZ + 2*OZ_EPSILON,
-                              dimX + spacing, dimY + spacing, dimZ )
+      local dimX, dimY, dimZ = ozClassDim(type)
+      if not ozOrbisOverlaps(0, x, y, z + dimZ + 2*OZ_EPSILON, dimX + spacing, dimY + spacing, dimZ)
       then
-        ozOrbisAddObj( OZ_FORCE, type, x, y, z + dimZ - treeDepth )
+        ozOrbisAddObj(OZ_FORCE, type, x, y, z + dimZ - treeDepth)
       end
     end
   end
-  ozPrintln( "Flora seeded " .. n .. " trees" )
+  ozPrintln("Flora seeded " .. n .. " trees")
 end
 
 -- Set up profile on first run.
 if ozProfileGetClass() == "" then
-  ozProfileSetClass( "beast" )
-  ozProfileSetItems( { "beast$plasmagun", "nvGoggles", "binoculars", "galileo",
-    "musicPlayer", "cvicek", "cvicek" } );
-  ozProfileSetWeaponItem( 0 );
+  ozProfileSetClass("beast")
+  ozProfileSetItems {
+    "beast$plasmagun", "nvGoggles", "binoculars", "galileo", "musicPlayer", "cvicek", "cvicek"
+  }
+  ozProfileSetWeaponItem(0);
 end

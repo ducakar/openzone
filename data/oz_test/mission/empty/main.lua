@@ -23,5 +23,5 @@ function onUpdate()
 end
 
 function onCreate()
-  ozUIBuildFrame( true )
+  ozUIBuildFrame(true)
 end

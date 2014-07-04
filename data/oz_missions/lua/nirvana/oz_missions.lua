@@ -25,25 +25,25 @@
 -- Beast AI.
 --
 
-function beast_nervous( l )
-  if math.random( 100 ) == 1 then
-    ozSelfAction( OZ_ACTION_FLIP )
+function beast_nervous(l)
+  if math.random(100) == 1 then
+    ozSelfAction(OZ_ACTION_FLIP)
   end
 end
 
-function beast_happy( l )
-  if math.random( 10 ) == 1 then
-    ozSelfAction( OZ_ACTION_WAVE )
+function beast_happy(l)
+  if math.random(10) == 1 then
+    ozSelfAction(OZ_ACTION_WAVE)
   end
 end
 
-niceBeastie = Beast.explore
+beast_niceBeastie = Beast.explore
 
 --
 -- Droid AI.
 --
 
-Droid.guardAutomaton = {
+Droid.guardAutomaton = Automaton:new {
   name = "Droid.guard",
   initial = "standGuard",
 
@@ -52,12 +52,12 @@ Droid.guardAutomaton = {
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 100, 240, 5, "droid" )
+        condition = detectTargetFunc(100, 240, 5, "droid")
       }
     }
   },
   shootTarget = {
-    onUpdate = shootTargetFunc( 4.0 ),
+    onUpdate = shootTargetFunc(4.0),
     links = {
       {
         target = "standGuard",
@@ -67,7 +67,7 @@ Droid.guardAutomaton = {
   }
 }
 
-Droid.sniperAutomaton = {
+Droid.sniperAutomaton = Automaton:new {
   name = "Droid.sniper",
   initial = "standGuard",
 
@@ -76,12 +76,12 @@ Droid.sniperAutomaton = {
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 200, 240, 5, "droid" )
+        condition = detectTargetFunc(200, 240, 5, "droid")
       }
     }
   },
   shootTarget = {
-    onUpdate = shootTargetFunc( 2.0 ),
+    onUpdate = shootTargetFunc(2.0),
     links = {
       {
         target = "standGuard",
@@ -91,7 +91,7 @@ Droid.sniperAutomaton = {
   }
 }
 
-Droid.patrolAutomaton = {
+Droid.patrolAutomaton = Automaton:new {
   name = "Droid.patrol",
   initial = "begin",
 
@@ -104,16 +104,16 @@ Droid.patrolAutomaton = {
     }
   },
   patrol = {
-    onUpdate = patrolFunc( 50 ),
+    onUpdate = patrolFunc(50),
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 100, 240, 5, "droid" )
+        condition = detectTargetFunc(100, 240, 5, "droid")
       }
     }
   },
   shootTarget = {
-    onUpdate = shootTargetFunc( 4.0 ),
+    onUpdate = shootTargetFunc(4.0),
     links = {
       {
         target = "patrol",
@@ -123,7 +123,7 @@ Droid.patrolAutomaton = {
   }
 }
 
-Droid.armouredPatrolAutomaton = {
+Droid.armouredPatrolAutomaton = Automaton:new {
   name = "Droid.armouredPatrol",
   initial = "begin",
 
@@ -136,16 +136,16 @@ Droid.armouredPatrolAutomaton = {
     }
   },
   patrol = {
-    onUpdate = patrolFunc( 150 ),
+    onUpdate = patrolFunc(150),
     links = {
       {
         target = "shootTarget",
-        condition = detectTargetFunc( 150, 240, 5, "droid" )
+        condition = detectTargetFunc(150, 240, 5, "droid")
       }
     }
   },
   shootTarget = {
-    onUpdate = shootTargetFunc( 1.0 ),
+    onUpdate = shootTargetFunc(1.0),
     links = {
       {
         target = "patrol",
@@ -155,16 +155,16 @@ Droid.armouredPatrolAutomaton = {
   }
 }
 
-droid_guard          = automatonProcessor( Droid.guardAutomaton )
-droid_sniper         = automatonProcessor( Droid.sniperAutomaton )
-droid_patrol         = automatonProcessor( Droid.patrolAutomaton )
-droid_armouredPatrol = automatonProcessor( Droid.armouredPatrolAutomaton )
+droid_guard          = Droid.guardAutomaton:mind()
+droid_sniper         = Droid.sniperAutomaton:mind()
+droid_patrol         = Droid.patrolAutomaton:mind()
+droid_armouredPatrol = Droid.armouredPatrolAutomaton:mind()
 
 --
 -- Goblin AI.
 --
 
-Goblin.guardAutomaton = {
+Goblin.guardAutomaton = Automaton:new {
   name = "Goblin.guard",
   initial = "standGuard",
 
@@ -173,12 +173,12 @@ Goblin.guardAutomaton = {
     links = {
       {
         target = "huntTarget",
-        condition = detectTargetFunc( 10, 180, 5, "goblin" )
+        condition = detectTargetFunc(10, 180, 5, "goblin")
       }
     }
   },
   huntTarget = {
-    onUpdate = huntTargetFunc( 30, 1 ),
+    onUpdate = huntTargetFunc(30, 1),
     links = {
       {
         target = "standGuard",
@@ -188,4 +188,4 @@ Goblin.guardAutomaton = {
   }
 }
 
-goblin_guard = automatonProcessor( Goblin.guardAutomaton )
+goblin_guard = Goblin.guardAutomaton:mind()

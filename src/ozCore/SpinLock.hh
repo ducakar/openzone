@@ -64,7 +64,6 @@ public:
   /**
    * Loop performing a lock operation until it switches from an unlocked to a locked state.
    */
-  OZ_ALWAYS_INLINE
   void lock()
   {
     while (__sync_lock_test_and_set(&flag, 1) != 0) {

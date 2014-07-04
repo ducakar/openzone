@@ -4,11 +4,11 @@
     "rot":              [ 0, 75, 0 ]
   },
   {
-    "exec":             "ozBindObj( 0 ) ozBotAction( OZ_ACTION_SALUTE )",
+    "exec":             "ozBindObj(0) ozBotAction(OZ_ACTION_SALUTE)",
     "time":             1
   },
   {
-    "exec":             "ozBindObj( 0 ) ozBotClearActions() ozUIBell()",
+    "exec":             "ozBindObj(0) ozBotClearActions() ozUIBell()",
     "time":             1.5
   },
   {

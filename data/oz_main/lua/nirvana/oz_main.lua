@@ -25,26 +25,26 @@
 -- Common functions for AI automata.
 --
 
-function randomWalkFunc( turnProbability, turnAngle )
+function randomWalkFunc(turnProbability, turnAngle)
   return function()
-    ozSelfAction( OZ_ACTION_FORWARD )
+    ozSelfAction(OZ_ACTION_FORWARD)
 
-    if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-      ozSelfAction( OZ_ACTION_WALK )
+    if not ozSelfHasState(OZ_BOT_WALKING_BIT) then
+      ozSelfAction(OZ_ACTION_WALK)
     end
-    if math.random( turnProbability ) == 1 then
-      ozSelfAddH( math.random( 2.0 * turnAngle ) - turnAngle )
+    if math.random(turnProbability) == 1 then
+      ozSelfAddH(math.random(2.0 * turnAngle) - turnAngle)
     end
   end
 end
 
-function detectLeaderFunc( maxDistance, leaderClass )
-  return function( l )
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, maxDistance )
+function detectLeaderFunc(maxDistance, leaderClass)
+  return function(l)
+    ozSelfBindOverlaps(OZ_OBJECTS_BIT, maxDistance)
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjDistFromSelf <= maxDistance and
-         isSubclassOf( leaderClass )
+      if ozObjHasFlag(OZ_BOT_BIT) and ozObjDistFromSelf <= maxDistance and
+         isSubclassOf(leaderClass)
       then
         l.leader = ozObjGetIndex()
         return true
@@ -54,15 +54,15 @@ function detectLeaderFunc( maxDistance, leaderClass )
   end
 end
 
-function isLeaderLost( l )
+function isLeaderLost(l)
   return l.leader == nil
 end
 
-function followLeaderFunc( maxDistance, lowDistance, highDistance )
-  return function( l )
-    ozBindObj( l.leader )
+function followLeaderFunc(maxDistance, lowDistance, highDistance)
+  return function(l)
+    ozBindObj(l.leader)
 
-    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) then
+    if ozObjIsNull() or ozBotHasState(OZ_BOT_DEAD_BIT) then
       l.leader = nil
       return
     end
@@ -72,45 +72,45 @@ function followLeaderFunc( maxDistance, lowDistance, highDistance )
     if distance < lowDistance then
       l.nearLeader = true
     elseif distance > highDistance or not l.nearLeader then
-      ozSelfSetH( ozObjHeadingFromSelfEye() )
-      ozSelfAction( OZ_ACTION_FORWARD )
+      ozSelfSetH(ozObjHeadingFromSelfEye())
+      ozSelfAction(OZ_ACTION_FORWARD)
 
       if distance > maxDistance then
         l.leader = nil
         l.nearleader = nil
       elseif distance > highDistance then
         l.nearLeader = nil
-        if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-          ozSelfAction( OZ_ACTION_WALK )
+        if ozSelfHasState(OZ_BOT_WALKING_BIT) then
+          ozSelfAction(OZ_ACTION_WALK)
         end
-      elseif not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-        ozSelfAction( OZ_ACTION_WALK )
+      elseif not ozSelfHasState(OZ_BOT_WALKING_BIT) then
+        ozSelfAction(OZ_ACTION_WALK)
       end
     end
   end
 end
 
-function detectTargetFunc( visualDistance, visualAngle, hearDistance, excludeClass )
-  return function( l )
-    ozSelfBindOverlaps( OZ_OBJECTS_BIT, visualDistance )
+function detectTargetFunc(visualDistance, visualAngle, hearDistance, excludeClass)
+  return function(l)
+    ozSelfBindOverlaps(OZ_OBJECTS_BIT, visualDistance)
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT + OZ_VEHICLE_BIT ) and ozObjDistFromSelf() <= visualDistance and
-         ( ozObjDistFromSelf() <= hearDistance or
-           math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 180.0 - visualAngle / 2.0 ) and
+      if ozObjHasFlag(OZ_BOT_BIT + OZ_VEHICLE_BIT) and ozObjDistFromSelf() <= visualDistance and
+         (ozObjDistFromSelf() <= hearDistance or
+          math.abs(180.0 - ozObjRelHeadingFromSelfEye()) > 180.0 - visualAngle / 2.0) and
          ozObjIsVisibleFromSelfEye()
       then
-        if ozObjHasFlag( OZ_BOT_BIT ) and not ozBotHasState( OZ_BOT_DEAD_BIT ) and
-           not isSubclassOf( excludeClass )
+        if ozObjHasFlag(OZ_BOT_BIT) and not ozBotHasState(OZ_BOT_DEAD_BIT) and
+           not isSubclassOf(excludeClass)
         then
           l.target = ozObjGetIndex()
           ozForceUpdate()
           return true
-        elseif ozObjHasFlag( OZ_VEHICLE_BIT ) then
+        elseif ozObjHasFlag(OZ_VEHICLE_BIT) then
           local vehicleIndex = ozObjGetIndex()
-          ozBindObj( ozVehicleGetPilot() )
+          ozBindObj(ozVehicleGetPilot())
 
-          if not ozObjIsNull() and not isSubclassOf( excludeClass ) then
+          if not ozObjIsNull() and not isSubclassOf(excludeClass) then
             l.target = vehicleIndex
             ozForceUpdate()
             return true
@@ -122,44 +122,44 @@ function detectTargetFunc( visualDistance, visualAngle, hearDistance, excludeCla
   end
 end
 
-function isTargetLost( l )
+function isTargetLost(l)
   return l.target == nil
 end
 
-function isTargetCloserThanFunc( distance )
-  return function( l )
-    return l.target and ozBindObj( l.target ) and ozObjDistFromSelf() < distance
+function isTargetCloserThanFunc(distance)
+  return function(l)
+    return l.target and ozBindObj(l.target) and ozObjDistFromSelf() < distance
   end
 end
 
-function isTargetFurtherThanFunc( distance )
-  return function( l )
-    return l.target and ozBindObj( l.target ) and ozObjDistFromSelf() > distance
+function isTargetFurtherThanFunc(distance)
+  return function(l)
+    return l.target and ozBindObj(l.target) and ozObjDistFromSelf() > distance
   end
 end
 
-function fleeFromTargetFunc( distance )
-  return function( l )
-    ozBindObj( l.target )
+function fleeFromTargetFunc(distance)
+  return function(l)
+    ozBindObj(l.target)
 
     if ozObjIsNull() or ozObjDistFromSelfEye() > distance then
       l.target = nil
     else
-      ozSelfSetH( ozObjHeadingFromSelfEye() + 180 )
-      ozSelfAction( OZ_ACTION_FORWARD )
+      ozSelfSetH(ozObjHeadingFromSelfEye() + 180)
+      ozSelfAction(OZ_ACTION_FORWARD)
 
-      if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-        ozSelfAction( OZ_ACTION_WALK )
+      if ozSelfHasState(OZ_BOT_WALKING_BIT) then
+        ozSelfAction(OZ_ACTION_WALK)
       end
     end
   end
 end
 
-function huntTargetFunc( maxDistance, shootDistance )
-  return function( l )
-    ozBindObj( l.target )
+function huntTargetFunc(maxDistance, shootDistance)
+  return function(l)
+    ozBindObj(l.target)
 
-    if ozObjIsNull() or ( ozObjHasFlag( OZ_BOT_BIT ) and ozBotHasState( OZ_BOT_DEAD_BIT ) ) then
+    if ozObjIsNull() or (ozObjHasFlag(OZ_BOT_BIT) and ozBotHasState(OZ_BOT_DEAD_BIT)) then
       l.target = nil
     else
       local distance = ozObjDistFromSelf()
@@ -167,29 +167,29 @@ function huntTargetFunc( maxDistance, shootDistance )
       if distance > maxDistance then
         l.target = nil
       else
-        ozSelfSetH( ozObjHeadingFromSelfEye() )
-        ozSelfSetV( ozObjPitchFromSelfEye() )
+        ozSelfSetH(ozObjHeadingFromSelfEye())
+        ozSelfSetV(ozObjPitchFromSelfEye())
         ozForceUpdate()
 
-        if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-          ozSelfAction( OZ_ACTION_WALK )
+        if ozSelfHasState(OZ_BOT_WALKING_BIT) then
+          ozSelfAction(OZ_ACTION_WALK)
         end
 
         if distance > shootDistance then
-          ozSelfAction( OZ_ACTION_FORWARD )
+          ozSelfAction(OZ_ACTION_FORWARD)
         else
-          ozSelfAction( OZ_ACTION_ATTACK )
+          ozSelfAction(OZ_ACTION_ATTACK)
         end
       end
     end
   end
 end
 
-function shootTargetFunc( inaccuracy )
-  return function( l )
-    ozBindObj( l.target )
+function shootTargetFunc(inaccuracy)
+  return function(l)
+    ozBindObj(l.target)
 
-    if ozObjIsNull() or ( ozObjHasFlag( OZ_BOT_BIT ) and ozBotHasState( OZ_BOT_DEAD_BIT ) ) or
+    if ozObjIsNull() or (ozObjHasFlag(OZ_BOT_BIT) and ozBotHasState(OZ_BOT_DEAD_BIT)) or
        not ozObjIsVisibleFromSelfEye()
     then
       l.target = nil
@@ -203,13 +203,13 @@ function shootTargetFunc( inaccuracy )
       dX = dX + estimatedBulletTime * vX
       dY = dY + estimatedBulletTime * vY
 
-      local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
+      local heading = math.atan2(-dX, dY) * 180.0 / math.pi
 
-      ozSelfSetH( heading + ( 0.5 - math.random() ) * inaccuracy )
-      ozSelfSetV( ozObjPitchFromSelfEye() + ( 0.5 - math.random() ) * inaccuracy )
+      ozSelfSetH(heading + (0.5 - math.random()) * inaccuracy)
+      ozSelfSetV(ozObjPitchFromSelfEye() + (0.5 - math.random()) * inaccuracy)
 
       if l.aimed then
-        ozSelfAction( OZ_ACTION_ATTACK )
+        ozSelfAction(OZ_ACTION_ATTACK)
         ozForceUpdate()
       else
         l.aimed = true
@@ -218,29 +218,29 @@ function shootTargetFunc( inaccuracy )
   end
 end
 
-function enterPatrol( l )
+function enterPatrol(l)
   l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
 
-  if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-    ozSelfAction( OZ_ACTION_WALK )
+  if ozSelfHasState(OZ_BOT_WALKING_BIT) then
+    ozSelfAction(OZ_ACTION_WALK)
   end
 end
 
-function patrolFunc( maxDistance )
-  return function( l )
+function patrolFunc(maxDistance)
+  return function(l)
     local dX, dY, dZ = ozSelfGetPos()
     dX = l.pivotX - dX
     dY = l.pivotY - dY
     dZ = l.pivotZ - dZ
-    local dist = math.sqrt( dX*dX + dY*dY + dZ*dZ )
+    local dist = math.sqrt(dX*dX + dY*dY + dZ*dZ)
 
     if dist > maxDistance then
-      ozSelfSetH( math.atan2( -dX, dY ) * 180.0 / math.pi )
-    elseif math.random( 20 ) == 1 then
-      ozSelfAddH( math.random( -60, 60 ) )
+      ozSelfSetH(math.atan2(-dX, dY) * 180.0 / math.pi)
+    elseif math.random(20) == 1 then
+      ozSelfAddH(math.random(-60, 60))
     end
 
-    ozSelfAction( OZ_ACTION_FORWARD )
+    ozSelfAction(OZ_ACTION_FORWARD)
   end
 end
 
@@ -250,21 +250,21 @@ end
 
 Beast = {}
 
-Beast.explore = function( l )
-  if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-    ozSelfAction( OZ_ACTION_FORWARD )
+Beast.explore = function(l)
+  if not ozSelfHasState(OZ_BOT_WALKING_BIT) then
+    ozSelfAction(OZ_ACTION_FORWARD)
   end
-  if math.random( 3 ) == 1 then
-    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
-      ozSelfAddH( math.random( 180 ) - 90 )
-    elseif math.random( 2 ) == 1 then
-      ozSelfAction( OZ_ACTION_JUMP )
+  if math.random(3) == 1 then
+    if ozSelfHasState(OZ_BOT_WALKING_BIT) then
+      ozSelfAddH(math.random(180) - 90)
+    elseif math.random(2) == 1 then
+      ozSelfAction(OZ_ACTION_JUMP)
     end
-    ozSelfAction( OZ_ACTION_WALK )
+    ozSelfAction(OZ_ACTION_WALK)
   end
 end
 
-Beast.beastieAutomaton = {
+Beast.beastieAutomaton = Automaton:new {
   name = "Beast.beastie",
   initial = "explore",
 
@@ -273,12 +273,12 @@ Beast.beastieAutomaton = {
     links = {
       {
         target = "defend",
-        condition = detectTargetFunc( 6, 180, 4, "beast" )
+        condition = detectTargetFunc(6, 180, 4, "beast")
       }
     }
   },
   defend = {
-    onUpdate = shootTargetFunc( 5.0 ),
+    onUpdate = shootTargetFunc(5.0),
     links = {
       {
         target = "explore",
@@ -288,7 +288,7 @@ Beast.beastieAutomaton = {
   }
 }
 
-beastie = automatonProcessor( Beast.beastieAutomaton )
+beastie = Beast.beastieAutomaton:mind()
 
 --
 -- Goblin AI.
@@ -296,7 +296,7 @@ beastie = automatonProcessor( Beast.beastieAutomaton )
 
 Goblin = {}
 
-Goblin.preyAutomaton = {
+Goblin.preyAutomaton = Automaton:new {
   name = "Goblin.prey",
   initial = "stand",
 
@@ -304,12 +304,12 @@ Goblin.preyAutomaton = {
     links = {
       {
         target = "flee",
-        condition = detectTargetFunc( 20, 240, 10, "goblin" )
+        condition = detectTargetFunc(20, 240, 10, "goblin")
       }
     }
   },
   flee = {
-    onUpdate = fleeFromTargetFunc( 20 ),
+    onUpdate = fleeFromTargetFunc(20),
     links = {
       {
         target = "stand",
@@ -317,12 +317,12 @@ Goblin.preyAutomaton = {
       },
       {
         target = "attack",
-        condition = isTargetCloserThanFunc( 3 )
+        condition = isTargetCloserThanFunc(3)
       }
     }
   },
   attack = {
-    onUpdate = huntTargetFunc( 4, 1 ),
+    onUpdate = huntTargetFunc(4, 1),
     links = {
       {
         target = "stand",
@@ -330,13 +330,13 @@ Goblin.preyAutomaton = {
       },
       {
         target = "flee",
-        condition = isTargetFurtherThanFunc( 3 )
+        condition = isTargetFurtherThanFunc(3)
       }
     }
   }
 }
 
-goblin_prey = automatonProcessor( Goblin.preyAutomaton )
+goblin_prey = Goblin.preyAutomaton:mind()
 
 --
 -- Knight AI.
@@ -344,21 +344,21 @@ goblin_prey = automatonProcessor( Goblin.preyAutomaton )
 
 Knight = {}
 
-Knight.predatorAutomaton = {
+Knight.predatorAutomaton = Automaton:new {
   name = "Knight.predator",
   initial = "randomWalk",
 
   randomWalk = {
-    onUpdate = randomWalkFunc( 4, 90 ),
+    onUpdate = randomWalkFunc(4, 90),
     links = {
       {
         target = "huntTarget",
-        condition = detectTargetFunc( 50, 180, 10, "knight" )
+        condition = detectTargetFunc(50, 180, 10, "knight")
       }
     }
   },
   huntTarget = {
-    onUpdate = huntTargetFunc( 60, 1.5 ),
+    onUpdate = huntTargetFunc(60, 1.5),
     links = {
       {
         target = "randomWalk",
@@ -368,7 +368,7 @@ Knight.predatorAutomaton = {
   }
 }
 
-knight_predator = automatonProcessor( Knight.predatorAutomaton )
+knight_predator = Knight.predatorAutomaton:mind()
 
 --
 -- Zombie AI.
@@ -376,21 +376,21 @@ knight_predator = automatonProcessor( Knight.predatorAutomaton )
 
 Zombie = {}
 
-Zombie.hungryAutomaton = {
+Zombie.hungryAutomaton = Automaton:new {
   name = "Zombie.hungry",
   initial = "randomWalk",
 
   randomWalk = {
-    onUpdate = randomWalkFunc( 6, 60 ),
+    onUpdate = randomWalkFunc(6, 60),
     links = {
       {
         target = "huntTarget",
-        condition = detectTargetFunc( 40, 120, 20, "zombie" )
+        condition = detectTargetFunc(40, 120, 20, "zombie")
       }
     }
   },
   huntTarget = {
-    onUpdate = huntTargetFunc( 50, 1 ),
+    onUpdate = huntTargetFunc(50, 1),
     links = {
       {
         target = "randomWalk",
@@ -400,7 +400,7 @@ Zombie.hungryAutomaton = {
   }
 }
 
-zombie_hungry = automatonProcessor( Zombie.hungryAutomaton )
+zombie_hungry = Zombie.hungryAutomaton:mind()
 
 --
 -- Droid AI.
@@ -408,27 +408,26 @@ zombie_hungry = automatonProcessor( Zombie.hungryAutomaton )
 
 Droid = {}
 
-Droid.basicAutomaton =
-{
+Droid.basicAutomaton = Automaton:new {
   name = "Droid.basic",
   initial = "randomWalk",
 
   randomWalk = {
-    onUpdate = randomWalkFunc( 6, 60 ),
+    onUpdate = randomWalkFunc(6, 60),
     links = {
       {
         target = "followLeader",
-        condition = detectLeaderFunc( 50, "droid.OOM-9" )
+        condition = detectLeaderFunc(50, "droid.OOM-9")
       },
       {
         target = "huntTarget",
-        condition = detectTargetFunc( 50, 240, 5, "droid" )
+        condition = detectTargetFunc(50, 240, 5, "droid")
       }
     }
   },
 
   followLeader = {
-    onUpdate = followLeaderFunc( 50, 8, 4 ),
+    onUpdate = followLeaderFunc(50, 8, 4),
     links = {
       {
         target = "randomWalk",
@@ -436,13 +435,13 @@ Droid.basicAutomaton =
       },
       {
         target = "huntTarget",
-        condition = detectTargetFunc( 50, 240, 5, "droid" )
+        condition = detectTargetFunc(50, 240, 5, "droid")
       }
     }
   },
 
   huntTarget = {
-    onUpdate = huntTargetFunc( 70, 30 ),
+    onUpdate = huntTargetFunc(70, 30),
     links = {
       {
         target = "randomWalk",
@@ -452,4 +451,4 @@ Droid.basicAutomaton =
   }
 }
 
-droid_basic = automatonProcessor( Droid.basicAutomaton )
+droid_basic = Droid.basicAutomaton:mind()

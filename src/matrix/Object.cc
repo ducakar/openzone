@@ -88,7 +88,7 @@ void Object::onUpdate()
 
 String Object::getTitle() const
 {
-  return clazz->name;
+  return clazz->title;
 }
 
 float Object::getStatus() const
