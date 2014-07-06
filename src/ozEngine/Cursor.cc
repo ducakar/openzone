@@ -171,7 +171,7 @@ bool Cursor::load(const File& file, Mode mode_, int size)
     is.readChars(pixels, size);
 
     if (mode == TEXTURE) {
-#ifdef GL_ES_VERSION_2_0
+#ifdef OZ_GL_ES
       GLenum srcFormat = GL_RGBA;
 
       // BGRA -> RGBA

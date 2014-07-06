@@ -301,6 +301,10 @@ void Shader::init()
   doBumpMap       = config.include("shader.bumpMap",       true ).get(false);
   doPostprocess   = config.include("shader.postprocess",   false).get(false);
 
+#ifdef OZ_GL_ES
+  doPostprocess = false;
+#endif
+
   medium = 0;
 
   MainCall() << [&]

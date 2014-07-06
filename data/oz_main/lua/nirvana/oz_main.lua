@@ -34,6 +34,7 @@ function randomWalkFunc(turnProbability, turnAngle)
     end
     if math.random(turnProbability) == 1 then
       ozSelfAddH(math.random(2.0 * turnAngle) - turnAngle)
+      ozSelfSetV(90.0)
     end
   end
 end
@@ -73,6 +74,7 @@ function followLeaderFunc(maxDistance, lowDistance, highDistance)
       l.nearLeader = true
     elseif distance > highDistance or not l.nearLeader then
       ozSelfSetH(ozObjHeadingFromSelfEye())
+      ozSelfSetV(90.0)
       ozSelfAction(OZ_ACTION_FORWARD)
 
       if distance > maxDistance then
@@ -123,6 +125,7 @@ function detectTargetFunc(visualDistance, visualAngle, hearDistance, excludeClas
 end
 
 function isTargetLost(l)
+  ozSelfSetV(90.0)
   return l.target == nil
 end
 
@@ -146,6 +149,7 @@ function fleeFromTargetFunc(distance)
       l.target = nil
     else
       ozSelfSetH(ozObjHeadingFromSelfEye() + 180)
+      ozSelfSetV(90.0)
       ozSelfAction(OZ_ACTION_FORWARD)
 
       if ozSelfHasState(OZ_BOT_WALKING_BIT) then
@@ -240,6 +244,7 @@ function patrolFunc(maxDistance)
       ozSelfAddH(math.random(-60, 60))
     end
 
+    ozSelfSetV(0.0)
     ozSelfAction(OZ_ACTION_FORWARD)
   end
 end
@@ -257,6 +262,7 @@ Beast.explore = function(l)
   if math.random(3) == 1 then
     if ozSelfHasState(OZ_BOT_WALKING_BIT) then
       ozSelfAddH(math.random(180) - 90)
+      ozSelfSetV(90.0)
     elseif math.random(2) == 1 then
       ozSelfAction(OZ_ACTION_JUMP)
     end

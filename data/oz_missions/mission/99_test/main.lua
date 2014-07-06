@@ -60,7 +60,7 @@ function initSample()
   ozBotSetMind("")
 
   ozNirvanaAddMemo(memo, "Simulations are like miniskirts, they show a lot but hide the " ..
-                          "essentials.\n\n        -- Hubert Kirrman")
+                         "essentials.\n\n        -- Hubert Kirrman")
   ozNirvanaAddMemo(lord, "Buahahahaha")
 
   ozCameraAddSwitchableBot(cyborg)

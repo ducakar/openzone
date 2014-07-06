@@ -419,25 +419,21 @@ void Render::drawOrbis()
     resize();
   }
 
-#ifndef GL_ES_VERSION_2_0
-
   if (isOffscreen) {
     glViewport(0, 0, frameWidth, frameHeight);
 
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mainFrame);
+    glBindFramebuffer(GL_FRAMEBUFFER, mainFrame);
 
-    uint dbos[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT };
+#ifndef OZ_GL_ES
+    uint dbos[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
     glDrawBuffers(2, dbos);
-  }
-
 #endif
+  }
 
   prepareDraw();
   drawGeometry();
 
   uint beginMicros = Time::uclock();
-
-#ifndef GL_ES_VERSION_2_0
 
   if (isOffscreen) {
     glViewport(0, 0, windowWidth, windowHeight);
@@ -449,7 +445,7 @@ void Render::drawOrbis()
 
     if (shader.doPostprocess) {
       // Scale glow buffer down.
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, minGlowFrame);
+      glBindFramebuffer(GL_FRAMEBUFFER, minGlowFrame);
 
       shader.program(shader.plain);
       tf.applyCamera();
@@ -459,7 +455,7 @@ void Render::drawOrbis()
       shape.fill(0, windowHeight / GLOW_MINIFICATION,
                  frameWidth / GLOW_MINIFICATION, -windowHeight / GLOW_MINIFICATION);
 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
       // Perform prostprocessing into the screen buffer.
       shader.program(shader.postprocess);
@@ -477,7 +473,7 @@ void Render::drawOrbis()
       glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
     }
     else {
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
       shader.program(shader.plain);
       tf.applyCamera();
@@ -490,8 +486,6 @@ void Render::drawOrbis()
 
     glEnable(GL_CULL_FACE);
   }
-
-#endif
 
   postprocessMicros += Time::uclock() - beginMicros;
 
@@ -555,7 +549,6 @@ void Render::resize()
   windowWidth  = Window::width();
   windowHeight = Window::height();
 
-#ifndef GL_ES_VERSION_2_0
 
   if (!isOffscreen) {
     return;
@@ -565,20 +558,24 @@ void Render::resize()
   frameHeight = Math::lround(float(Window::height()) * scale);
 
   if (mainFrame != 0) {
-    glDeleteFramebuffersEXT(1, &mainFrame);
+    glDeleteFramebuffers(1, &mainFrame);
     glDeleteTextures(1, &colourBuffer);
-    glDeleteRenderbuffersEXT(1, &depthBuffer);
+    glDeleteRenderbuffers(1, &depthBuffer);
   }
   if (minGlowFrame != 0) {
-    glDeleteFramebuffersEXT(1, &minGlowFrame);
+    glDeleteFramebuffers(1, &minGlowFrame);
     glDeleteTextures(1, &minGlowBuffer);
     glDeleteTextures(1, &glowBuffer);
   }
 
-  glGenRenderbuffersEXT(1, &depthBuffer);
-  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthBuffer);
-  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, frameWidth, frameHeight);
-  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+  glGenRenderbuffers(1, &depthBuffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+#ifdef OZ_GL_ES
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24_OES, frameWidth, frameHeight);
+#else
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, frameWidth, frameHeight);
+#endif
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
   glGenTextures(1, &colourBuffer);
   glBindTexture(GL_TEXTURE_2D, colourBuffer);
@@ -618,39 +615,35 @@ void Render::resize()
 
   glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  glGenFramebuffersEXT(1, &mainFrame);
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mainFrame);
+  glGenFramebuffers(1, &mainFrame);
+  glBindFramebuffer(GL_FRAMEBUFFER, mainFrame);
 
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-                               depthBuffer);
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-                            colourBuffer, 0);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0);
   if (shader.doPostprocess) {
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
-                              glowBuffer, 0);
+#ifndef OZ_GL_ES
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, glowBuffer, 0);
+#endif
   }
 
-  if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     OZ_ERROR("Main framebuffer creation failed");
   }
 
   if (shader.doPostprocess) {
-    glGenFramebuffersEXT(1, &minGlowFrame);
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, minGlowFrame);
+    glGenFramebuffers(1, &minGlowFrame);
+    glBindFramebuffer(GL_FRAMEBUFFER, minGlowFrame);
 
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-                              minGlowBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minGlowBuffer, 0);
 
-    if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
       OZ_ERROR("Glow framebuffer creation failed");
     }
   }
 
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   OZ_GL_CHECK_ERROR();
-
-#endif
 }
 
 void Render::load()
@@ -756,19 +749,18 @@ void Render::init()
     if (extension.equals("GL_ARB_framebuffer_object")) {
       shader.hasFBO = true;
     }
-    if (extension.equals("GL_ARB_texture_float")) {
+    if (extension.equals("GL_ARB_texture_float") || extension.equals("GL_EXT_texture_storage")) {
       shader.hasVTF = true;
     }
     if (extension.equals("GL_EXT_texture_compression_s3tc") ||
-        extension.equals("GL_CHROMIUM_texture_compression_dxt5"))
+        extension.endsWith("GL_EXT_texture_compression_dxt1"))
     {
       shader.hasS3TC = true;
     }
   }
 
-#ifdef GL_ES_VERSION_2_0
+#ifdef OZ_GL_ES
   shader.hasFBO = true;
-  shader.hasVTF = false;
 #endif
 
   Log::unindent();
@@ -778,9 +770,10 @@ void Render::init()
 
   Log::println("Feature availability {");
   Log::indent();
-  Log::println("Image scaling & postprocess: %s", shader.hasFBO ?  "yes" : "no");
-  Log::println("Animation in vertex shader:  %s", shader.hasVTF ?  "yes" : "no");
-  Log::println("Compressed texture loading:  %s", shader.hasS3TC ? "yes" : "no");
+  Log::println("Offscreen rendering:        %s", shader.hasFBO        ? "yes" : "no");
+  Log::println("Postprocessing:             %s", shader.doPostprocess ? "yes" : "no");
+  Log::println("Animation in vertex shader: %s", shader.hasVTF        ? "yes" : "no");
+  Log::println("Compressed texture loading: %s", shader.hasS3TC       ? "yes" : "no");
   Log::unindent();
   Log::println("}");
 
@@ -798,12 +791,7 @@ void Render::init()
     { Model::MODEL_MAJOR, "MODEL_MAJOR"  }
   };
 
-#ifdef __native_client__
-  const char* sCollation = config.include("render.collation", "MODEL_MAJOR").get("");
-#else
-  const char* sCollation = config.include("render.collation", "DEPTH_MAJOR").get("");
-#endif
-  Model::setCollation(collationMap[sCollation]);
+  Model::setCollation(collationMap[config.include("render.collation", "MODEL_MAJOR").get("")]);
 
   isOffscreen     = config.include("render.forceFBO",   false).get(false);
   scale           = config.include("render.scale",      1.0f).get(0.0f);
@@ -817,9 +805,7 @@ void Render::init()
   windPhi         = 0.0f;
 
   mainFrame       = 0;
-#ifndef GL_ES_VERSION_2_0
   minGlowBuffer   = 0;
-#endif
 
   if (!shader.hasFBO) {
     shader.doPostprocess = false;
@@ -851,12 +837,10 @@ void Render::destroy()
   Log::indent();
 
   if (mainFrame != 0) {
-#ifndef GL_ES_VERSION_2_0
-    glDeleteFramebuffersEXT(1, &mainFrame);
+    glDeleteFramebuffers(1, &mainFrame);
     glDeleteTextures(1, &glowBuffer);
     glDeleteTextures(1, &colourBuffer);
-    glDeleteRenderbuffersEXT(1, &depthBuffer);
-#endif
+    glDeleteRenderbuffers(1, &depthBuffer);
 
     mainFrame = 0;
   }

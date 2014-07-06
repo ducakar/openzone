@@ -28,6 +28,3 @@
 
 // Default root path (e.g. '/usr' on Linux or '.' for standalone).
 #define OZ_PREFIX "@OZ_PREFIX@"
-
-// Use OpenGL ES 2.0.
-#cmakedefine OZ_GL_ES

@@ -338,7 +338,7 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
       return;
     }
 
-# ifdef GL_ES_VERSION_2_0
+# ifdef OZ_GL_ES
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);

@@ -171,7 +171,7 @@ void Terra::load()
 
   id = orbis.terra.id;
 
-  const String& name  = liber.terrae[id].name;
+  const String& name = liber.terrae[id].name;
 
   File file = "@terra/" + name + ".ozcTerra";
   File map  = "@terra/" + name + ".dds";
@@ -193,7 +193,7 @@ void Terra::load()
 
   for (int i = 0; i < TILES; ++i) {
     for (int j = 0; j < TILES; ++j) {
-      Vertex* vertices = new Vertex[TILE_VERTICES] {};
+      Vertex* vertices = new Vertex[TILE_VERTICES];
 
       for (int k = 0; k <= TILE_QUADS; ++k) {
         for (int l = 0; l <= TILE_QUADS; ++l) {
@@ -214,7 +214,18 @@ void Terra::load()
           vertex.normal[2]   = is.readByte();
 
           vertex.tangent[0]  = byte(127);
+          vertex.tangent[1]  = 0;
+          vertex.tangent[2]  = 0;
+
+          vertex.binormal[0] = 0;
           vertex.binormal[1] = byte(127);
+          vertex.binormal[2] = 0;
+
+          vertex.bone[0]     = 0;
+          vertex.bone[1]     = 0;
+
+          vertex.weight[0]   = 0;
+          vertex.weight[0]   = 0;
         }
       }
 
@@ -252,8 +263,8 @@ void Terra::load()
 
   glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  landShaderId    = liber.shaderIndex("terraLand");
-  liquidShaderId  = liber.shaderIndex("terraLiquid");
+  landShaderId   = liber.shaderIndex("terraLand");
+  liquidShaderId = liber.shaderIndex("terraLiquid");
 
   hard_assert(!is.isAvailable());
 }

@@ -104,7 +104,7 @@ bool SharedLib::open(const char* name)
 void SharedLib::close()
 {
   if (handle != nullptr) {
-#if defined(__native_client_)
+#if defined(__native_client__)
 #elif defined(_WIN32)
     FreeLibrary(static_cast<HMODULE>(handle));
 #else
