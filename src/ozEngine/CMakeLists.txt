@@ -12,6 +12,7 @@ add_library(ozEngine
   Cursor.hh
   GL.hh
   GLTexture.hh
+  Lua.hh
   ozEngine.hh
   Shaders.hh
   Window.hh
@@ -22,6 +23,7 @@ add_library(ozEngine
   Cursor.cc
   GL.cc
   GLTexture.cc
+  Lua.cc
   Shaders.cc
   Window.cc
 #END SOURCES
@@ -29,6 +31,9 @@ add_library(ozEngine
 use_pch(ozEngine pch)
 
 target_link_libraries(ozEngine ozCore)
+
+# Lua.
+target_link_libraries(ozEngine ${LUA_LIBRARIES})
 
 # OpenGL.
 if(OZ_GL_ES)

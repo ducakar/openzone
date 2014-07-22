@@ -1,29 +1,34 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * ozEngine - OpenZone Engine Library.
  *
  * Copyright © 2002-2014 Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software in
+ *    a product, an acknowledgement in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
  */
 
 /**
- * @file common/LuaCommon.hh
+ * @file ozEngine/Lua.hh
+ *
+ * Wrapper for %Lua interpreter.
  */
 
 #pragma once
 
-#include <common/common.hh>
+#include "common.hh"
 
 // Forward declaration to prevent pollution from Lua headers.
 struct lua_State;
@@ -31,12 +36,7 @@ struct lua_State;
 namespace oz
 {
 
-/**
- * Lua base class.
- *
- * It provides common functions for derived Lua classes in matrix, nirvana and client layers.
- */
-class LuaCommon
+class Lua
 {
 public:
 
@@ -45,14 +45,11 @@ public:
    */
   typedef int APIFunc(lua_State*);
 
-  static int  randomSeed;       ///< Random seed for Lua environments.
-  static bool isRandomSeedTime; ///< True iff `Time::time()` should be as a seed.
+public:
 
-protected:
+  lua_State* l; ///< Lua state descriptor.
 
-  lua_State* l;                 ///< Lua state descriptor.
-
-protected:
+public:
 
   /**
    * Read serialised Lua value and push it on the stack (recursively for tables).
@@ -82,42 +79,44 @@ protected:
    */
   void loadDir(const File& dir) const;
 
+  bool exec(const char* code) const;
+
   /**
    * Common initialisation for Lua classes.
    */
-  void initCommon();
+  void init();
 
   /**
    * Common clean-up for Lua classes.
    */
-  void freeCommon();
+  void destroy();
 
 public:
 
   /**
    * Register Lua API function to the Lua state.
    */
-  void registerFunction(const char* name, APIFunc func);
+  void import(const char* name, APIFunc func);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant(const char* name, bool value);
+  void set(const char* name, bool value);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant(const char* name, int value);
+  void set(const char* name, int value);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant(const char* name, float value);
+  void set(const char* name, double value);
 
   /**
    * Import global variable into the Lua state.
    */
-  void registerConstant(const char* name, const char* value);
+  void set(const char* name, const char* value);
 
 };
 

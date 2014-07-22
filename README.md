@@ -31,7 +31,7 @@ Development packages of the following libraries are required to build OpenZone f
 - SDL2_ttf
 - zlib
 
-If you also want to build tools (`OZ_TOOLS` option) you also need:
+If you want to build the tools too (`OZ_TOOLS` option) you also need:
 
 - Assimp
 - FreeImage
@@ -43,7 +43,7 @@ The following development tools are required:
 - CMake
 - Ninja (optional, recommended)
 - LLVM/Clang (optional, recommended)
-- MinGW-w64 (optional, for building Win32/Win64 port)
+- MinGW-w64 (optional, for building Windows-i686 and Windows-x86_64 ports)
 - NaCl SDK (optional, for building PNaCl port)
 
 You can then use generic steps for building CMake projects:

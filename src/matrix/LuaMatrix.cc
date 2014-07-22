@@ -125,7 +125,7 @@ void LuaMatrix::read(InputStream* is)
   int index = is->readInt();
 
   while (index >= 0) {
-    readValue(is);
+    readValue(l, is);
 
     l_rawseti(1, index);
 
@@ -143,7 +143,7 @@ void LuaMatrix::write(OutputStream* os)
     hard_assert(l_type(-1) == LUA_TTABLE);
 
     os->writeInt(l_toint(-2));
-    writeValue(os);
+    writeValue(l, os);
 
     l_pop(1);
   }

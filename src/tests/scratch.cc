@@ -22,11 +22,34 @@
  */
 
 #include <ozCore/ozCore.hh>
+#include <ozEngine/Lua.hh>
+#include <cstdio>
+#include <lua.hpp>
 
 using namespace oz;
+
+static Lua lua;
 
 int main()
 {
   System::init();
+  char line[1024];
+
+  lua.init();
+  lua.import("J", [](lua_State* l)
+  {
+    Log() << Lua::writeValue(l);
+    return 0;
+  });
+  lua.set("FAK", 42);
+
+  fputs("> ", stdout);
+  while (fgets(line, 1024, stdin)) {
+    lua.exec(line);
+    fputs("> ", stdout);
+  }
+  putchar('\n');
+
+  lua.destroy();
   return 0;
 }

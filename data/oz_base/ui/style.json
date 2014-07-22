@@ -5,19 +5,19 @@
       "height":         13
     },
     "sans": {
-      "name":           "DroidSansMono",
+      "name":           "DroidSans",
       "height":         13
     },
     "small": {
-      "name":           "DroidSansMono",
-      "height":         10
+      "name":           "DroidSans",
+      "height":         11
     },
     "large": {
-      "name":           "DroidSansMono",
+      "name":           "DroidSans",
       "height":         14
     },
     "title": {
-      "name":           "DroidSansMono",
+      "name":           "DroidSans",
       "height":         18
     }
   },

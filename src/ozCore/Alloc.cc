@@ -158,19 +158,19 @@ Alloc::ChunkCIterator Alloc::arrayCIter()
 #ifdef OZ_ALLOCATOR
 
 OZ_WEAK
-void* operator new(size_t size)
+void* operator new (size_t size)
 {
   return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[](size_t size)
+void* operator new[] (size_t size)
 {
   return oz::allocate(oz::ARRAY, size);
 }
 
 OZ_WEAK
-void operator delete(void* ptr) noexcept
+void operator delete (void* ptr) noexcept
 {
   if (ptr == nullptr) {
     return;
@@ -179,7 +179,7 @@ void operator delete(void* ptr) noexcept
 }
 
 OZ_WEAK
-void operator delete[](void* ptr) noexcept
+void operator delete[] (void* ptr) noexcept
 {
   if (ptr == nullptr) {
     return;
@@ -188,19 +188,19 @@ void operator delete[](void* ptr) noexcept
 }
 
 OZ_WEAK
-void* operator new(size_t size, const std::nothrow_t&) noexcept
+void* operator new (size_t size, const std::nothrow_t&) noexcept
 {
   return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[](size_t size, const std::nothrow_t&) noexcept
+void* operator new[] (size_t size, const std::nothrow_t&) noexcept
 {
   return oz::allocate(oz::ARRAY, size);
 }
 
 OZ_WEAK
-void operator delete(void* ptr, const std::nothrow_t&) noexcept
+void operator delete (void* ptr, const std::nothrow_t&) noexcept
 {
   if (ptr == nullptr) {
     return;
@@ -209,7 +209,7 @@ void operator delete(void* ptr, const std::nothrow_t&) noexcept
 }
 
 OZ_WEAK
-void operator delete[](void* ptr, const std::nothrow_t&) noexcept
+void operator delete[] (void* ptr, const std::nothrow_t&) noexcept
 {
   if (ptr == nullptr) {
     return;

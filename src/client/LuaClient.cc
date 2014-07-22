@@ -172,7 +172,7 @@ void LuaClient::read(InputStream* is)
   const char* name = is->readString();
 
   while (!String::isEmpty(name)) {
-    readValue(is);
+    readValue(l, is);
 
     l_setglobal(name);
 
@@ -203,7 +203,7 @@ void LuaClient::write(OutputStream* os)
     const char* name = l_tostring(-2);
     if (String::beginsWith(name, "oz_")) {
       os->writeString(name);
-      writeValue(os);
+      writeValue(l, os);
     }
 
     l_pop(1);
@@ -654,7 +654,7 @@ void LuaClient::init()
   importClientConstants(l);
 
   // Import profile persistance.
-  readValue(profile.persistent);
+  readValue(l, profile.persistent);
   l_setglobal("ozPersistent");
 
   loadDir("@lua/common");
@@ -674,7 +674,7 @@ void LuaClient::destroy()
   Log::print("Destroying Client Lua ...");
 
   l_getglobal("ozPersistent");
-  profile.persistent = writeValue();
+  profile.persistent = writeValue(l);
 
   ms.structs.clear();
   ms.structs.trim();
