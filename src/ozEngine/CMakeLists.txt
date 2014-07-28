@@ -4,25 +4,17 @@ configure_file(ozEngine.pc.in ozEngine.pc @ONLY)
 add_library(ozEngine
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
-  ALBuffer.hh
   AL.hh
-  ALSource.hh
-  ALStreamingBuffer.hh
   common.hh
   Cursor.hh
   GL.hh
-  GLTexture.hh
   Lua.hh
   ozEngine.hh
   Shaders.hh
   Window.hh
-  ALBuffer.cc
   AL.cc
-  ALSource.cc
-  ALStreamingBuffer.cc
   Cursor.cc
   GL.cc
-  GLTexture.cc
   Lua.cc
   Shaders.cc
   Window.cc

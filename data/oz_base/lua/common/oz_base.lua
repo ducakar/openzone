@@ -65,7 +65,5 @@ Vec3 = {
 -- True iff the bound object's class begins with a given string.
 --
 function isSubclassOf(subclass)
-  local class = ozObjGetClassName()
-  local len   = string.len(subclass)
-  return string.sub(class, 1, len) == subclass
+  return ozObjGetClassName():sub(1, subclass:len()) == subclass
 end

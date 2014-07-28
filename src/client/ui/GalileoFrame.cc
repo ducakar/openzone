@@ -81,7 +81,7 @@ void GalileoFrame::onUpdate()
 bool GalileoFrame::onMouseEvent()
 {
   if (input.buttons) {
-    clickX = -Orbis::DIM + float(mouse.x - x) / float(width) * 2.0f * Orbis::DIM;
+    clickX = -Orbis::DIM + float(mouse.x - x) / float(width ) * 2.0f * Orbis::DIM;
     clickY = -Orbis::DIM + float(mouse.y - y) / float(height) * 2.0f * Orbis::DIM;
   }
   return true;
@@ -89,8 +89,11 @@ bool GalileoFrame::onMouseEvent()
 
 void GalileoFrame::onDraw()
 {
-  if (!mapTex.isLoaded()) {
-    mapTex.load("@terra/" + liber.terrae[orbis.terra.id].name + ".dds", context.textureLod);
+  if (mapTexId == 0) {
+    glGenTextures(1, &mapTexId);
+    glBindTexture(GL_TEXTURE_2D, mapTexId);
+    GL::textureDataFromFile("@terra/" + liber.terrae[orbis.terra.id].name + ".dds",
+                            context.textureLod);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -101,7 +104,7 @@ void GalileoFrame::onDraw()
   float h  = camera.botObj == nullptr ? camera.strategic.h : camera.botObj->h;
 
   shape.colour(colour);
-  glBindTexture(GL_TEXTURE_2D, mapTex.id());
+  glBindTexture(GL_TEXTURE_2D, mapTexId);
   shape.fill(x, y, width, height);
   shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -143,13 +146,20 @@ void GalileoFrame::onDraw()
 }
 
 GalileoFrame::GalileoFrame() :
-  Frame(240, 232 - HEADER_SIZE, ""), colour(style.colours.galileoNormal),
+  Frame(240, 232 - HEADER_SIZE, ""), mapTexId(0), colour(style.colours.galileoNormal),
   clickX(Math::NaN), clickY(Math::NaN), isMaximised(false)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 
   normalWidth  = width;
   normalHeight = height;
+}
+
+GalileoFrame::~GalileoFrame()
+{
+  if (mapTexId != 0) {
+    glDeleteTextures(1, &mapTexId);
+  }
 }
 
 void GalileoFrame::setMaximised(bool doMaximise)

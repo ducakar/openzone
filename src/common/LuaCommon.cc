@@ -31,43 +31,42 @@ namespace oz
 int  LuaCommon::randomSeed       = 0;
 bool LuaCommon::isRandomSeedTime = true;
 
-bool LuaCommon::readValue(lua_State* l, InputStream* is)
+void LuaCommon::readValue(lua_State* l, InputStream* is)
 {
   char ch = is->readChar();
 
   switch (ch) {
     case 'N': {
       l_pushnil();
-      return true;
+      break;
     }
     case 'F': {
       l_pushbool(false);
-      return true;
+      break;
     }
     case 'T': {
       l_pushbool(true);
-      return true;
+      break;
     }
     case 'n': {
       l_pushdouble(is->readDouble());
-      return true;
+      break;
     }
     case 's': {
       l_pushstring(is->readString());
-      return true;
+      break;
     }
     case '[': {
       l_newtable();
 
-      while (readValue(l, is)) { // key
-        readValue(l, is); // value
+      while (is->isAvailable() && is->pos()[0] != ']') {
+        readValue(l, is); // Key.
+        readValue(l, is); // Value.
 
         l_rawset(-3);
       }
-      return true;
-    }
-    case ']': {
-      return false;
+      is->forward(1); // Skip final ']'.
+      break;
     }
     default: {
       OZ_ERROR("Invalid type char '%c' in serialised Lua data", ch);

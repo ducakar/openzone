@@ -33,12 +33,6 @@
 #include "GL.hh"
 #include "AL.hh"
 
-#include "GLTexture.hh"
-
-#include "ALBuffer.hh"
-#include "ALStreamingBuffer.hh"
-#include "ALSource.hh"
-
 #include "Shaders.hh"
 #include "Cursor.hh"
 #include "Window.hh"

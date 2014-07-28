@@ -77,7 +77,7 @@ bool EnumMapImpl::has(const char* name) const
   return false;
 }
 
-const char* EnumMapImpl::operator [](int value) const
+const char* EnumMapImpl::operator [] (int value) const
 {
   for (int i = 0; i < nEntries; ++i) {
     if (entries[i].value == value) {
@@ -88,7 +88,7 @@ const char* EnumMapImpl::operator [](int value) const
   OZ_ERROR("oz::EnumMap: Invalid value %d", value);
 }
 
-int EnumMapImpl::operator[](const char* name) const
+int EnumMapImpl::operator [] (const char* name) const
 {
   for (int i = 0; i < nEntries; ++i) {
     if (String::equals(entries[i].name, name)) {

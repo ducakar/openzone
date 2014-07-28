@@ -59,9 +59,6 @@ void test_arrays()
   aFill(a, 0, -1);
   OZ_CHECK_CONTENTS(a, 0, 0, 0, 0);
 
-  iFill(iter(a), 1);
-  OZ_CHECK_CONTENTS(a, 1, 1, 1, 1);
-
   aCopy(b, 4, a);
   aCopy(b, 0, a);
   OZ_CHECK(aEquals(a, 4, b));
@@ -86,23 +83,6 @@ void test_arrays()
   OZ_CHECK(aContains(a, 4, 3));
   OZ_CHECK(aContains(b, 4, 3));
   OZ_CHECK(!aContains(b, 0, 3));
-
-  OZ_CHECK(aFind(a, 4, 0) == nullptr);
-  OZ_CHECK(aFind(a, 4, 1) == &a[0]);
-  OZ_CHECK(aFind(a, 4, 2) == &a[1]);
-  OZ_CHECK(aFind(a, 4, 3) == &a[2]);
-  OZ_CHECK(aFind(a, 0, 3) == nullptr);
-
-  OZ_CHECK(aFindLast(a, 4, 0) == nullptr);
-  OZ_CHECK(aFindLast(a, 4, 1) == &a[0]);
-  OZ_CHECK(aFindLast(a, 4, 2) == &a[3]);
-  OZ_CHECK(aFindLast(a, 4, 3) == &a[2]);
-  OZ_CHECK(aFindLast(a, 0, 3) == nullptr);
-
-  const Foo(& ca)[4] = a;
-  OZ_CHECK(aFind(ca, 4, 0) == nullptr);
-  OZ_CHECK(aFindLast(ca, 4, 0) == nullptr);
-  OZ_CHECK(aFindLast(ca, 0, 3) == nullptr);
 
   OZ_CHECK(aIndex(a, 4, 0) == -1);
   OZ_CHECK(aIndex(a, 4, 1) == 0);

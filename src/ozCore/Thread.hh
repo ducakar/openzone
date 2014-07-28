@@ -67,7 +67,7 @@ public:
   static bool isMain();
 
   /**
-   * Create and initialise new instance.
+   * Create an instance, no thread is started.
    */
   Thread();
 

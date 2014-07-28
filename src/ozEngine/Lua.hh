@@ -53,11 +53,8 @@ public:
 
   /**
    * Read serialised Lua value and push it on the stack (recursively for tables).
-   *
-   * @return Should always return true. This return value is only used for internal recursive calls
-   *         to detect end of a table.
    */
-  static bool readValue(lua_State* l, InputStream* is);
+  static void readValue(lua_State* l, InputStream* is);
 
   /**
    * Read Lua value from a %JSON value and push it on the stack (recursively for tables).

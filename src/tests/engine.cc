@@ -34,11 +34,12 @@ int main(int argc, char** argv)
   SDL_Init(SDL_INIT_VIDEO);
   Window::create("Test", 600, 600, false);
 
-  File file = argc < 2 ? "/usr/share/icons/OpenZone_Black_Slim/cursors/wait" : argv[1];
+  File file = argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/wait" : argv[1];
 
-  GLTexture texture;
-  texture.generateIdenticon(600, String::strongHash("Davorin"),
-                             Vec4(0.20f, 0.30f, 0.25f, 1.00f));
+  uint texId;
+  glGenTextures(1, &texId);
+  glBindTexture(GL_TEXTURE_2D, texId);
+  GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
   Cursor cursor(file, Cursor::SYSTEM);
 
   if(!cursor.isLoaded()) {
@@ -61,7 +62,7 @@ int main(int argc, char** argv)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture.id());
+    glBindTexture(GL_TEXTURE_2D, texId);
 //    glBindTexture(GL_TEXTURE_2D, cursor.textureId());
 
     glBegin(GL_QUADS);
@@ -84,6 +85,7 @@ int main(int argc, char** argv)
 
   cursor.destroy();
 
+  glDeleteTextures(1, &texId);
   Window::destroy();
   SDL_Quit();
   return 0;

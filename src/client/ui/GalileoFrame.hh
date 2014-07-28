@@ -36,7 +36,7 @@ class GalileoFrame : public Frame
 {
 private:
 
-  GLTexture mapTex;
+  uint      mapTexId;
 
   int       normalX;
   int       normalY;
@@ -68,6 +68,7 @@ protected:
 public:
 
   explicit GalileoFrame();
+  ~GalileoFrame();
 
   void setMaximised(bool doMaximise);
 

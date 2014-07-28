@@ -105,7 +105,7 @@ public:
   /**
    * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
    */
-  int operator[] (const char* name) const;
+  int operator [] (const char* name) const;
 
 };
 
@@ -153,7 +153,7 @@ public:
   /**
    * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
    */
-  Enum operator[](const char* name) const
+  Enum operator [] (const char* name) const
   {
     return Enum(EnumMapImpl::operator [] (name));
   }

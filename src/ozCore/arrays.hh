@@ -164,6 +164,16 @@ inline Iterator<Elem> iter(Elem(& array)[COUNT])
 }
 
 /**
+ * Create initialiser list iterator with element constant access.
+ */
+template <typename Elem>
+OZ_ALWAYS_INLINE
+inline CIterator<Elem> citer(InitialiserList<Elem> l)
+{
+  return CIterator<Elem>(l.begin(), l.begin() + l.size());
+}
+
+/**
  * Equivalent to `memcpy()`.
  */
 OZ_ALWAYS_INLINE
@@ -229,16 +239,6 @@ inline void* mChar(const void* src, int ch, int size)
 size_t strlcpy(char* dest, const char* src, size_t size);
 
 /**
- * Length of a static array.
- */
-template <typename Elem, int COUNT>
-OZ_ALWAYS_INLINE
-inline constexpr int aLength(const Elem(&)[COUNT])
-{
-  return COUNT;
-}
-
-/**
  * Copy array elements from the first to the last.
  */
 template <typename Elem>
@@ -294,6 +294,27 @@ inline void aFill(Elem* array, int count, const Value& value)
 }
 
 /**
+ * Delete objects referenced by elements (elements must be pointers).
+ */
+template <typename Elem>
+inline void aFree(const Elem* array, int count)
+{
+  for (int i = 0; i < count; ++i) {
+    delete array[i];
+  }
+}
+
+/**
+ * Length of a static array.
+ */
+template <typename Elem, int COUNT>
+OZ_ALWAYS_INLINE
+inline constexpr int aLength(const Elem(&)[COUNT])
+{
+  return COUNT;
+}
+
+/**
  * True iff respective elements are equal.
  */
 template <typename Elem>
@@ -308,40 +329,17 @@ inline bool aEquals(const Elem* arrayA, int count, const Elem* arrayB)
 }
 
 /**
- * Pointer to the first occurrence or `nullptr` if not found.
- */
-template <typename Elem, typename Value = Elem>
-inline Elem* aFind(Elem* array, int count, const Value& value)
-{
-  for (int i = 0; i < count; ++i) {
-    if (array[i] == value) {
-      return &array[i];
-    }
-  }
-  return nullptr;
-}
-
-/**
- * Pointer to the last occurrence or `nullptr` if not found.
- */
-template <typename Elem, typename Value = Elem>
-inline Elem* aFindLast(Elem* array, int count, const Value& value)
-{
-  for (int i = count - 1; i >= 0; --i) {
-    if (array[i] == value) {
-      return &array[i];
-    }
-  }
-  return nullptr;
-}
-
-/**
  * True iff a given value is found in an array.
  */
 template <typename Elem, typename Value = Elem>
 inline bool aContains(const Elem* array, int count, const Value& value)
 {
-  return aFind<const Elem, Value>(array, count, value) != nullptr;
+  for (int i = 0; i < count; ++i) {
+    if (array[i] == value) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -370,17 +368,6 @@ inline int aLastIndex(const Elem* array, int count, const Value& value)
     }
   }
   return -1;
-}
-
-/**
- * Delete objects referenced by elements (elements must be pointers).
- */
-template <typename Elem>
-inline void aFree(const Elem* array, int count)
-{
-  for (int i = 0; i < count; ++i) {
-    delete array[i];
-  }
 }
 
 /**

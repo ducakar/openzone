@@ -52,7 +52,7 @@ bool MissionButton::onMouseEvent()
     missionMenu->selection = selection;
 
     missionMenu->description.setText("%s", missionMenu->missions[selection].description.cstr());
-    missionMenu->imageId = missionMenu->missions[selection].image.id();
+    missionMenu->imageId = missionMenu->missions[selection].imageId;
   }
 
   return Button::onMouseEvent();
@@ -172,6 +172,15 @@ void MissionMenu::onDraw()
   drawChildren();
 }
 
+MissionMenu::~MissionMenu()
+{
+  for (const MissionInfo& mi : missions) {
+    glDeleteTextures(1, &mi.imageId);
+  }
+
+  OZ_GL_CHECK_ERROR();
+}
+
 MissionMenu::MissionMenu() :
   Area(camera.width, camera.height),
   description(40, 190, camera.width - 320, ALIGN_TOP, Font::SANS, ""),
@@ -195,15 +204,18 @@ MissionMenu::MissionMenu() :
     Lingua lingua;
     lingua.initMission(missionName);
 
+    const char* missionTitle       = lingua.get(descriptionConfig["title"].get(missionName));
+    const char* missionDescription = lingua.get(descriptionConfig["description"].get(""));
+    uint        missionImageId;
+
     MainCall() << [&]
     {
-      missions.add({
-        missionName,
-        lingua.get(descriptionConfig["title"].get(missionName)),
-        lingua.get(descriptionConfig["description"].get("")),
-                   GLTexture(missionDir.path() + "/description.dds")
-      });
+      glGenTextures(1, &missionImageId);
+      glBindTexture(GL_TEXTURE_2D, missionImageId);
+      GL::textureDataFromFile(missionDir.path() + "/description.dds");
     };
+
+    missions.add({ missionName, missionTitle, missionDescription, missionImageId });
 
     lingua.clear();
   }

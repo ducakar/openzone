@@ -31,43 +31,42 @@
 namespace oz
 {
 
-bool Lua::readValue(lua_State* l, InputStream* is)
+void Lua::readValue(lua_State* l, InputStream* is)
 {
   char ch = is->readChar();
 
   switch (ch) {
     case 'N': {
       lua_pushnil(l);
-      return true;
+      break;
     }
     case 'F': {
       lua_pushboolean(l, false);
-      return true;
+      break;
     }
     case 'T': {
       lua_pushboolean(l, true);
-      return true;
+      break;
     }
     case 'n': {
       lua_pushnumber(l, is->readDouble());
-      return true;
+      break;
     }
     case 's': {
       lua_pushstring(l, is->readString());
-      return true;
+      break;
     }
     case '[': {
       lua_newtable(l);
 
-      while (readValue(l, is)) { // key
-        readValue(l, is); // value
+      while (is->isAvailable() && is->pos()[0] != ']') {
+        readValue(l, is); // Key.
+        readValue(l, is); // Value.
 
         lua_rawset(l, -3);
       }
-      return true;
-    }
-    case ']': {
-      return false;
+      is->forward(1); // Skip final ']'.
+      break;
     }
     default: {
       OZ_ERROR("Invalid type char '%c' in serialised Lua data", ch);

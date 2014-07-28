@@ -64,10 +64,10 @@ private:
 
   struct MissionInfo
   {
-    String    name;
-    String    title;
-    String    description;
-    GLTexture image;
+    String name;
+    String title;
+    String description;
+    uint   imageId;
   };
 
   List<MissionInfo> missions;
@@ -95,6 +95,7 @@ protected:
 public:
 
   explicit MissionMenu();
+  ~MissionMenu();
 
 };
 

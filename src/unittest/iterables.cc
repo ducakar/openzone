@@ -59,31 +59,14 @@ void test_iterables()
   l.add(new Foo(2));
   l.add(new Foo(1));
 
-  v.add(0);
-  v.add(0);
-  v.add(0);
-  v.add(0);
+  v.add(1);
+  v.add(2);
+  v.add(3);
+  v.add(2);
 
-  iMove(l.iter(), v.iter());
-  iMove(l.iter(), iter(l));
-  iMove(invalid, invalid);
-  for (const Foo& i : l.citer()) {
-    OZ_CHECK(i == -1);
-  }
   OZ_CHECK_CONTENTS(v, 1, 2, 3, 2);
-  OZ_CHECK(!iEquals(l.citer(), v.citer()));
-  OZ_CHECK(iEquals(citer(l), citer(l)));
-
-  iFill(l.iter(), 0);
-  iFill(invalid, static_cast<Foo*>(nullptr));
-  OZ_CHECK_CONTENTS(l, 0, 0, 0, 0);
-
-  iCopy(v.citer(), l.iter());
-  iCopy(invalid, invalid);
   OZ_CHECK(iEquals(l.citer(), v.citer()));
-
-  iCopy(l.citer(), l.iter());
-  OZ_CHECK(iEquals(citer(l), v.citer()));
+  OZ_CHECK(iEquals(citer(l), citer(l)));
 
   v.add({});
   OZ_CHECK(!iEquals(l.citer(), citer(v)));
@@ -91,84 +74,9 @@ void test_iterables()
   v.popLast();
   OZ_CHECK(iEquals(citer(l), citer(v)));
 
-  OZ_CHECK(!iContains(l.citer(), 0));
-  OZ_CHECK(!iContains(v.citer(), 0));
-  OZ_CHECK(iContains(l.citer(), 1));
-  OZ_CHECK(iContains(v.citer(), 1));
-  OZ_CHECK(iContains(l.citer(), 2));
-  OZ_CHECK(iContains(v.citer(), 2));
-  OZ_CHECK(iContains(l.citer(), 3));
-  OZ_CHECK(iContains(v.citer(), 3));
-  OZ_CHECK(!iContains(invalid, static_cast<Foo*>(nullptr)));
-
-  OZ_CHECK(!iFind(l.citer(), 0).isValid());
-  OZ_CHECK(!iFind(v.citer(), 0).isValid());
-  OZ_CHECK(!iFind(invalid, static_cast<Foo*>(nullptr)).isValid());
-
-  auto li = l.citer();
-  auto vi = v.citer();
-  OZ_CHECK(iFind(l.citer(), 1) == li);
-  OZ_CHECK(iFind(v.citer(), 1) == vi);
-
-  ++li;
-  ++vi;
-  OZ_CHECK(iFind(l.citer(), 2) == li);
-  OZ_CHECK(iFind(v.citer(), 2) == vi);
-
-  ++li;
-  ++vi;
-  OZ_CHECK(iFind(l.citer(), 3) == li);
-  OZ_CHECK(iFind(v.citer(), 3) == vi);
-
-  OZ_CHECK(!iFindLast(l.citer(), 0).isValid());
-  OZ_CHECK(!iFindLast(v.citer(), 0).isValid());
-  OZ_CHECK(!iFindLast(invalid, static_cast<Foo*>(nullptr)).isValid());
-
-  li = l.citer();
-  vi = v.citer();
-  OZ_CHECK(iFindLast(l.citer(), 1) == li);
-  OZ_CHECK(iFindLast(v.citer(), 1) == vi);
-
-  ++li;
-  ++vi;
-  ++li;
-  ++vi;
-  OZ_CHECK(iFindLast(l.citer(), 3) == li);
-  OZ_CHECK(iFindLast(v.citer(), 3) == vi);
-
-  ++li;
-  ++vi;
-  OZ_CHECK(iFindLast(l.citer(), 2) == li);
-  OZ_CHECK(iFindLast(v.citer(), 2) == vi);
-
-  OZ_CHECK(iIndex(l.citer(), 0) == -1);
-  OZ_CHECK(iIndex(v.citer(), 0) == -1);
-  OZ_CHECK(iIndex(l.citer(), 1) == 0);
-  OZ_CHECK(iIndex(v.citer(), 1) == 0);
-  OZ_CHECK(iIndex(l.citer(), 2) == 1);
-  OZ_CHECK(iIndex(v.citer(), 2) == 1);
-  OZ_CHECK(iIndex(l.citer(), 3) == 2);
-  OZ_CHECK(iIndex(v.citer(), 3) == 2);
-  OZ_CHECK(iIndex(invalid, static_cast<Foo*>(nullptr)) == -1);
-
-  OZ_CHECK(iLastIndex(l.citer(), 0) == -1);
-  OZ_CHECK(iLastIndex(v.citer(), 0) == -1);
-  OZ_CHECK(iLastIndex(l.citer(), 1) == 0);
-  OZ_CHECK(iLastIndex(v.citer(), 1) == 0);
-  OZ_CHECK(iLastIndex(l.citer(), 2) == 3);
-  OZ_CHECK(iLastIndex(v.citer(), 2) == 3);
-  OZ_CHECK(iLastIndex(l.citer(), 3) == 2);
-  OZ_CHECK(iLastIndex(v.citer(), 3) == 2);
-  OZ_CHECK(iLastIndex(invalid, static_cast<Foo*>(nullptr)) == -1);
-
   List<Foo*> pv;
   pv.add(new Foo(1));
   pv.add(new Foo(2));
-
-  iFree(pv.iter());
-  iFree(invalid);
-  iFill(pv.iter(), nullptr);
-  OZ_CHECK_CONTENTS(pv, nullptr, nullptr);
 
   l.free();
 
@@ -178,16 +86,5 @@ void test_iterables()
   v.clear();
   v.trim();
 
-  iCopy(v.citer(), l.iter());
-  iMove(v.iter(), l.iter());
-  iFill(l.iter(), 0);
-
   OZ_CHECK(iEquals(l.citer(), v.citer()));
-  OZ_CHECK(!iContains(l.citer(), 0));
-  OZ_CHECK(!iFind(l.citer(), 0).isValid());
-  OZ_CHECK(!iFindLast(l.citer(), 0).isValid());
-  OZ_CHECK(iIndex(l.citer(), 0) == -1);
-  OZ_CHECK(iLastIndex(l.citer(), 0) == -1);
-
-  iFree(pv.iter());
 }
