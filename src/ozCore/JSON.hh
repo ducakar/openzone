@@ -213,8 +213,8 @@ public:
   /**
    * Create an array from initialiser list of JSON values.
    *
-   * This constructor might be ambiguous when elements appear in pairs. Prepending `JSON` before the
-   * first array elements solves the issue is such case:
+   * This constructor might be ambiguous when elements appear in pairs. Adding `JSON` before the
+   * first array element solves the issue:
    * @code
    * JSON array = { JSON { 0, 1 }, { 1, 2 }, { 2, 0 } };
    * @endcode
@@ -224,8 +224,7 @@ public:
   /**
    * Create an object from initialiser list of string-JSON pairs.
    *
-   * For distinguishing from array initialiser list, one should prepend `JSON::Pair` before the
-   * first element:
+   * For disambiguation from array initialiser one should add `JSON::Pair` before the first element:
    * @code
    * JSON object = { JSON::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
    * @endcode
@@ -326,14 +325,14 @@ public:
    *
    * If the index is out of bounds or the value not an array null, a null value is returned.
    */
-  const JSON& operator [](int i) const;
+  const JSON& operator [] (int i) const;
 
   /**
    * Returns value for `key` in an object.
    *
    * If the key does not exist or the value not an object, a null value is returned.
    */
-  const JSON& operator [](const char* key) const;
+  const JSON& operator [] (const char* key) const;
 
   /**
    * True iff value is an object and contains a given key.

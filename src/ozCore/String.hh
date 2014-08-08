@@ -680,7 +680,7 @@ public:
    * Constant reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [](int i) const
+  const char& operator [] (int i) const
   {
     hard_assert(0 <= i && i <= count);
 

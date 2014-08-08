@@ -75,6 +75,26 @@ static MatrixLuaState ms;
  * Orbis
  */
 
+static int ozOrbisGetSize(lua_State* l)
+{
+  ARG(0);
+
+  l_pushint(2 * Orbis::DIM);
+  return 1;
+}
+
+static int ozOrbisGetDim(lua_State* l)
+{
+  ARG(0);
+
+  Vec3 dim = orbis.dim();
+
+  l_pushfloat(dim.x);
+  l_pushfloat(dim.y);
+  l_pushfloat(dim.z);
+  return 1;
+}
+
 static int ozOrbisGetGravity(lua_State* l)
 {
   ARG(0);

@@ -973,7 +973,7 @@ int JSON::length() const
   }
 }
 
-const JSON& JSON::operator [](int i) const
+const JSON& JSON::operator [] (int i) const
 {
   if (valueType != ARRAY) {
     wasAccessed |= valueType == NIL;
@@ -992,7 +992,7 @@ const JSON& JSON::operator [](int i) const
   return list[i];
 }
 
-const JSON& JSON::operator [](const char* key) const
+const JSON& JSON::operator [] (const char* key) const
 {
   if (valueType != OBJECT) {
     wasAccessed |= valueType == NIL;

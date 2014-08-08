@@ -59,14 +59,31 @@ void test_iterables()
   l.add(new Foo(2));
   l.add(new Foo(1));
 
-  v.add(1);
-  v.add(2);
-  v.add(3);
-  v.add(2);
+  v.add(0);
+  v.add(0);
+  v.add(0);
+  v.add(0);
 
+  iMove(l.iter(), v.iter());
+  iMove(l.iter(), iter(l));
+  iMove(invalid, invalid);
+  for (const Foo& i : l.citer()) {
+    OZ_CHECK(i == -1);
+  }
   OZ_CHECK_CONTENTS(v, 1, 2, 3, 2);
-  OZ_CHECK(iEquals(l.citer(), v.citer()));
+  OZ_CHECK(!iEquals(l.citer(), v.citer()));
   OZ_CHECK(iEquals(citer(l), citer(l)));
+
+  iFill(l.iter(), 0);
+  iFill(invalid, static_cast<Foo*>(nullptr));
+  OZ_CHECK_CONTENTS(l, 0, 0, 0, 0);
+
+  iCopy(v.citer(), l.iter());
+  iCopy(invalid, invalid);
+  OZ_CHECK(iEquals(l.citer(), v.citer()));
+
+  iCopy(l.citer(), l.iter());
+  OZ_CHECK(iEquals(citer(l), v.citer()));
 
   v.add({});
   OZ_CHECK(!iEquals(l.citer(), citer(v)));

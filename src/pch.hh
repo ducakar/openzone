@@ -20,7 +20,7 @@
 /**
  * @file pch.hh
  *
- * Precompiled header for `common/common.hh`.
+ * Precompiled header for `ozCore/ozCore.hh`.
  */
 
 #include <ozCore/ozCore.hh>

@@ -193,9 +193,9 @@ void CinematicProxy::update()
   camera.align();
 
   if (nTitleChars < title.length()) {
-    nTitleChars = min(nTitleChars + int(timer.frameTicks), title.length());
+    nTitleChars = min(nTitleChars + 1, title.length());
 
-    // Take all bytes of UTF-8 characters.
+    // Take all bytes of a UTF-8 character.
     while (nTitleChars > 0 && nTitleChars < title.length() &&
            (title[nTitleChars - 1] & title[nTitleChars] & 0x80))
     {

@@ -239,6 +239,78 @@ inline void* mChar(const void* src, int ch, int size)
 size_t strlcpy(char* dest, const char* src, size_t size);
 
 /**
+ * Length of a static array.
+ */
+template <typename Elem, int COUNT>
+OZ_ALWAYS_INLINE
+inline constexpr int aLength(const Elem(&)[COUNT])
+{
+  return COUNT;
+}
+
+/**
+ * True iff respective elements are equal.
+ */
+template <typename Elem>
+inline bool aEquals(const Elem* arrayA, int count, const Elem* arrayB)
+{
+  for (int i = 0; i < count; ++i) {
+    if (!(arrayA[i] == arrayB[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Index of the first occurrence of the value or -1 if not found.
+ */
+template <typename Elem, typename Value = Elem>
+inline int aIndex(const Elem* array, int count, const Value& value)
+{
+  for (int i = 0; i < count; ++i) {
+    if (array[i] == value) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Index of the last occurrence of the value or -1 if not found.
+ */
+template <typename Elem, typename Value = Elem>
+inline int aLastIndex(const Elem* array, int count, const Value& value)
+{
+  for (int i = count - 1; i >= 0; --i) {
+    if (array[i] == value) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * True iff a given value is found in an array.
+ */
+template <typename Elem, typename Value = Elem>
+inline bool aContains(const Elem* array, int count, const Value& value)
+{
+  return aIndex<Elem, Value>(array, count, value) >= 0;
+}
+
+/**
+ * %Set array elements to a given value.
+ */
+template <typename Elem, typename Value = Elem>
+inline void aFill(Elem* array, int count, const Value& value)
+{
+  for (int i = 0; i < count; ++i) {
+    array[i] = value;
+  }
+}
+
+/**
  * Copy array elements from the first to the last.
  */
 template <typename Elem>
@@ -283,94 +355,6 @@ inline void aMoveBackward(Elem* srcArray, int count, Elem* destArray)
 }
 
 /**
- * %Set array elements to a given value.
- */
-template <typename Elem, typename Value = Elem>
-inline void aFill(Elem* array, int count, const Value& value)
-{
-  for (int i = 0; i < count; ++i) {
-    array[i] = value;
-  }
-}
-
-/**
- * Delete objects referenced by elements (elements must be pointers).
- */
-template <typename Elem>
-inline void aFree(const Elem* array, int count)
-{
-  for (int i = 0; i < count; ++i) {
-    delete array[i];
-  }
-}
-
-/**
- * Length of a static array.
- */
-template <typename Elem, int COUNT>
-OZ_ALWAYS_INLINE
-inline constexpr int aLength(const Elem(&)[COUNT])
-{
-  return COUNT;
-}
-
-/**
- * True iff respective elements are equal.
- */
-template <typename Elem>
-inline bool aEquals(const Elem* arrayA, int count, const Elem* arrayB)
-{
-  for (int i = 0; i < count; ++i) {
-    if (!(arrayA[i] == arrayB[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
- * True iff a given value is found in an array.
- */
-template <typename Elem, typename Value = Elem>
-inline bool aContains(const Elem* array, int count, const Value& value)
-{
-  for (int i = 0; i < count; ++i) {
-    if (array[i] == value) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Index of the first occurrence of the value or -1 if not found.
- */
-template <typename Elem, typename Value = Elem>
-inline int aIndex(const Elem* array, int count, const Value& value)
-{
-  for (int i = 0; i < count; ++i) {
-    if (array[i] == value) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-/**
- * Index of the last occurrence of the value or -1 if not found.
- */
-template <typename Elem, typename Value = Elem>
-inline int aLastIndex(const Elem* array, int count, const Value& value)
-{
-  for (int i = count - 1; i >= 0; --i) {
-    if (array[i] == value) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-/**
  * Reallocate array moving its elements.
  *
  * Allocate a new array of `newCount` elements, move first `min(count, newCount)` elements of the
@@ -392,6 +376,17 @@ inline Elem* aReallocate(Elem* array, int count, int newCount)
   delete[] array;
 
   return newArray;
+}
+
+/**
+ * Delete objects referenced by elements (elements must be pointers).
+ */
+template <typename Elem>
+inline void aFree(const Elem* array, int count)
+{
+  for (int i = 0; i < count; ++i) {
+    delete array[i];
+  }
 }
 
 /**

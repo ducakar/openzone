@@ -72,6 +72,6 @@
 # define _WIN32_IE 0x0400
 // Don't import all crap from Windows headers.
 # define WIN32_LEAN_AND_MEAN
-// Don't define min and max macros as those interfere with oz::min() and oz::max().
+// Don't define min and max macros as those interfere with `oz::min()` and `oz::max()`.
 # define NOMINMAX
 #endif

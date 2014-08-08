@@ -47,11 +47,6 @@ namespace oz
 const int MAX_WORLD_COORD = 2048;
 
 /**
- * Extent of world bounding box (equals `MAX_WORLD_COORD` but float type).
- */
-const float WORLD_DIM = float(MAX_WORLD_COORD);
-
-/**
  * Margin for collision detection.
  *
  * The maximum relative error for transition from world coordinates to relative coordinates is

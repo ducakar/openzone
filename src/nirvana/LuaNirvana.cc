@@ -163,6 +163,9 @@ void LuaNirvana::init()
    * Orbis
    */
 
+  IMPORT_FUNC(ozOrbisGetSize);
+  IMPORT_FUNC(ozOrbisGetDim);
+
   IMPORT_FUNC(ozOrbisGetGravity);
   IGNORE_FUNC(ozOrbisSetGravity);
 

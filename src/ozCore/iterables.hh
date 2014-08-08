@@ -163,6 +163,21 @@ inline typename Container::Iterator iter(Container& container)
 }
 
 /**
+ * Count elements.
+ */
+template <class CIterator>
+inline int iLength(CIterator iter)
+{
+  int count = 0;
+
+  while (iter.isValid()) {
+    ++count;
+    ++iter;
+  }
+  return count;
+}
+
+/**
  * True iff same length and respective elements are equal.
  */
 template <class CIteratorA, class CIteratorB>
@@ -175,6 +190,108 @@ inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
     ++iterB;
   }
   return !iterA.isValid() && !iterB.isValid();
+}
+
+/**
+ * %Iterator for the first occurrence or an invalid iterator if not found.
+ */
+template <class Iterator, typename Value = typename Iterator::ElemType>
+inline Iterator iFind(Iterator iter, const Value& value)
+{
+  while (iter.isValid() && !(*iter == value)) {
+    ++iter;
+  }
+  return iter;
+}
+
+/**
+ * %Iterator for the last occurrence or an invalid iterator if not found.
+ */
+template <class Iterator, typename Value = typename Iterator::ElemType>
+inline Iterator iFindLast(Iterator iter, const Value& value)
+{
+  Iterator lastOccurence;
+
+  while (iter.isValid()) {
+    if (*iter == value) {
+      lastOccurence = iter;
+    }
+
+    ++iter;
+  }
+  return lastOccurence;
+}
+
+/**
+ * True iff a given value is found in a container.
+ */
+template <class CIterator, typename Value = typename CIterator::ElemType>
+inline bool iContains(CIterator iter, const Value& value)
+{
+  return iFind<CIterator, Value>(iter, value).isValid();
+}
+
+/**
+ * %Set elements to a given value.
+ */
+template <class Iterator, typename Value = typename Iterator::ElemType>
+inline void iFill(Iterator iter, const Value& value)
+{
+  while (iter.isValid()) {
+    *iter = value;
+
+    ++iter;
+  }
+}
+
+/**
+ * Copy all elements from `srcIter` to `destIter`.
+ */
+template <class CIteratorA, class IteratorB>
+inline void iCopy(CIteratorA srcIter, IteratorB destIter)
+{
+  while (srcIter.isValid()) {
+    hard_assert(destIter.isValid());
+
+    *destIter = *srcIter;
+
+    ++srcIter;
+    ++destIter;
+  }
+}
+
+/**
+ * Move all elements from `srcIter` to `destIter`.
+ */
+template <class IteratorA, class IteratorB>
+inline void iMove(IteratorA srcIter, IteratorB destIter)
+{
+  typedef typename IteratorB::ElemType ElemB;
+
+  while (srcIter.isValid()) {
+    hard_assert(destIter.isValid());
+
+    *destIter = static_cast<ElemB&&>(*srcIter);
+
+    ++srcIter;
+    ++destIter;
+  }
+}
+
+/**
+ * Delete objects referenced by elements (elements must be pointers).
+ */
+template <class CIterator>
+inline void iFree(CIterator iter)
+{
+  typedef typename CIterator::ElemType Elem;
+
+  while (iter.isValid()) {
+    const Elem& elem = *iter;
+    ++iter;
+
+    delete elem;
+  }
 }
 
 }

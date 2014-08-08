@@ -34,7 +34,7 @@ namespace oz
 
 struct Cell
 {
-  static const int SIZE  = 16;
+  static const int SIZE = 16;
 
   SList<short, 6> structs;
   Chain<Object>   objects;

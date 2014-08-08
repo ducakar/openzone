@@ -172,6 +172,9 @@ void LuaMatrix::init()
    * Orbis
    */
 
+  IMPORT_FUNC(ozOrbisGetSize);
+  IMPORT_FUNC(ozOrbisGetDim);
+
   IMPORT_FUNC(ozOrbisGetGravity);
   IMPORT_FUNC(ozOrbisSetGravity);
 
