@@ -31,7 +31,7 @@ namespace oz
 {
 
 static_assert(Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
-              "Orbis and terrain size mismatch");
+              "oz::Orbis and terrain size mismatch");
 
 /*
  * Index reusing: when an entity (structure, object or fragment) is removed, there may still be

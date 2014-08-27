@@ -479,7 +479,7 @@ String::String(const char* s, const char* t) :
 String::String(bool b) :
   buffer(baseBuffer)
 {
-  static_assert(BUFFER_SIZE >= 6, "Too small String::baseBuffer for bool representation.");
+  static_assert(BUFFER_SIZE >= 6, "Too small oz::String::baseBuffer for bool representation");
 
   if (b) {
     mCopy(baseBuffer, "true", 5);
@@ -494,7 +494,7 @@ String::String(bool b) :
 String::String(int i) :
   buffer(baseBuffer), count(0)
 {
-  static_assert(BUFFER_SIZE >= 12, "Too small String::baseBuffer for int representation.");
+  static_assert(BUFFER_SIZE >= 12, "Too small oz::String::baseBuffer for int representation");
 
   // First, count the digits (at least one digit is always counted).
   int n = i;
@@ -532,7 +532,7 @@ String::String(int i) :
 String::String(double d, int nDigits) :
   buffer(baseBuffer), count(0)
 {
-  static_assert(BUFFER_SIZE >= 26, "Too small String::baseBuffer for double representation.");
+  static_assert(BUFFER_SIZE >= 26, "Too small oz::String::baseBuffer for double representation");
 
   nDigits = clamp<int>(nDigits, 1, 17);
 
@@ -909,7 +909,7 @@ String String::substring(int start, int end) const
 String String::trim() const
 {
   const char* start = buffer;
-  const char* end = buffer + count;
+  const char* end   = buffer + count;
 
   while (start < end && isBlank(*start)) {
     ++start;

@@ -46,7 +46,7 @@ function onCreate()
   ozNirvanaAddMemo(infoMove, ozGettext(
     "1. MOVEMENT\n\n" ..
     "Use W, A, S, D to move and mouse to look around.\n\n" ..
-    "You can jump with SPACEBAR, toggle crouch with LCTRL and toggle running with LSHIFT.\n\n" ..
+    "You can jump with SPACE, toggle crouch with LCTRL or C and toggle running with LSHIFT.\n\n" ..
     "If you crouch you are a bit lower, so you can go under some obstacles, but you cannot run."))
 
   ozNirvanaAddMemo(infoClimb, ozGettext(
@@ -99,12 +99,12 @@ function onCreate()
     "7. CARRYING\n\n" ..
     "You can also carry around objects that you are strong enough to lift. Press middle mouse " ..
     "button to lift/drop an object when you see the 'lift' or 'carrying' icon under your " ..
-    "crosshair. To throw the object you are carrying roll your mouse weel up.\n\n" ..
-    "There are some limitations though. E.g. you cannot lift objects while swimming, climbing a " ..
-    "ladder or holding a weapon. You also cannot lift somebody who is already carrying " ..
-    "something and you cannot run while carrying an object.\n\n" ..
+    "crosshair. To throw the object you are carrying roll your mouse wheel up.\n\n" ..
+    "There are some limitations though. E.g. you cannot lift objects while climbing a ladder " ..
+    "or holding a weapon. You also cannot lift somebody who is already carrying something " ..
+    "and you cannot run while carrying an object.\n\n" ..
     "The object you carry will fall from your hands if you jump of if it touches some other " ..
-    "object above (so you cannot carry several objects stacked on one another).\n\n" ..
+    "object above (so you cannot carry several stacked objects).\n\n" ..
     "If somebody else carries you, you can free yourself with jumping.\n\n" ..
     "Now use the available boxes to get to the next room."))
 
@@ -170,7 +170,7 @@ function onCreate()
     "transfer items between the inventories.\n\n" ..
     "Sometimes inventory is to big for all slots to be shown. In such case you can scroll slots " ..
     "in the inventory windows with your mouse wheel. Arrows on top left and/or bottom left side " ..
-    "are shown when the inventory can be scrolled up and/or down."))
+    "are shown when the inventory can be scrolled."))
 
   ozNirvanaAddMemo(infoHealth, ozGettext(
     "12. HEALTH\n\n" ..

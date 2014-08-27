@@ -135,21 +135,21 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-Alloc::ChunkCIterator Alloc::objectCIter()
+Alloc::CIterator Alloc::objectCIter()
 {
 #ifdef OZ_ALLOCATOR
   return chunkInfos[OBJECT].citer();
 #else
-  return ChunkCIterator();
+  return CIterator();
 #endif
 }
 
-Alloc::ChunkCIterator Alloc::arrayCIter()
+Alloc::CIterator Alloc::arrayCIter()
 {
 #ifdef OZ_ALLOCATOR
   return chunkInfos[ARRAY].citer();
 #else
-  return ChunkCIterator();
+  return CIterator();
 #endif
 }
 

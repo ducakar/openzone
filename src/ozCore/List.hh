@@ -58,12 +58,12 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef ArrayIterator<const Elem> CIterator;
+  typedef detail::ArrayIterator<const Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef ArrayIterator<Elem> Iterator;
+  typedef detail::ArrayIterator<Elem> Iterator;
 
 protected:
 

@@ -92,6 +92,7 @@
     * all complex AIs rewritten as finite automata
 - general
     * common, matrix and nirvana sub-namespaces removed
+    * LuaJIT can be optionally used instead of official Lua
 
 0.3.1
 

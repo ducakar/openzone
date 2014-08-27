@@ -117,23 +117,15 @@ void BotAudio::play(const Object* playAt)
     prevStep = 0;
   }
 
-  if (bot->clazz->name.equals("bauul")) {
-//    playSpeak("Gil-galad was an Elven-king.\n"
-//              "Of him the harpers sadly sing:\n"
-//              "the last whose realm was fair and free\n"
-//              "between the Mountains and the Sea.\n"
-//              "\n"
-//              "His sword was long, his lance was keen,\n"
-//              "his shining helm afar was seen;\n"
-//              "the countless stars of heaven's field\n"
-//              "were mirrored in his silver shield.\n"
-//              "\n"
-//              "But long ago he rode away,\n"
-//              "and where he dwelleth none can say;\n"
-//              "for into darkness fell his star\n"
-//              "in Mordor where the shadows are.\n",
+//  if (bot->clazz->name.equals("bauul")) {
+//    playSpeak("Take my love, take my land, take me where I can not stand.\n"
+//              "I don't care, I'm still free, you can't take the sky from me.\n"
+//              "Take me out to the black, tell 'em I ain't coming back.\n"
+//              "Burn the land, boil the sea, you can't take the sky from me.\n"
+//              "There's no place I can be since I found Serenity.\n"
+//              "You can't take the sky from me.\n",
 //              1.0f, bot);
-  }
+//  }
 }
 
 }

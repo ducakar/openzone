@@ -177,7 +177,7 @@ public:
 template <class Elem, int BLOCK_SLOTS = 256>
 class Pool : public PoolAlloc
 {
-  static_assert(BLOCK_SLOTS > 0, "Pool block must have at least 1 block.");
+  static_assert(BLOCK_SLOTS > 0, "oz::Pool block must have at least 1 slot");
 
 public:
 

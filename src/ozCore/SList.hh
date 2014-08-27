@@ -45,19 +45,19 @@ namespace oz
 template <typename Elem, int SIZE>
 class SList
 {
-  static_assert(SIZE > 0, "SList size must be at least 1");
+  static_assert(SIZE > 0, "oz::SList size must be at least 1");
 
 public:
 
   /**
    * %Iterator with constant access to elements.
    */
-  typedef ArrayIterator<const Elem> CIterator;
+  typedef detail::ArrayIterator<const Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef ArrayIterator<Elem> Iterator;
+  typedef detail::ArrayIterator<Elem> Iterator;
 
 private:
 

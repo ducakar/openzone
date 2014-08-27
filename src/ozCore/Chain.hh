@@ -76,11 +76,11 @@ protected:
    * %Chain iterator.
    */
   template <class IterElem>
-  class ChainIterator : public IteratorBase<IterElem>
+  class ChainIterator : public detail::IteratorBase<IterElem>
   {
   private:
 
-    using IteratorBase<IterElem>::elem;
+    using detail::IteratorBase<IterElem>::elem;
 
   public:
 
@@ -89,7 +89,7 @@ protected:
      */
     OZ_ALWAYS_INLINE
     ChainIterator() :
-      IteratorBase<IterElem>(nullptr)
+      detail::IteratorBase<IterElem>(nullptr)
     {}
 
     /**
@@ -97,7 +97,7 @@ protected:
      */
     OZ_ALWAYS_INLINE
     explicit ChainIterator(const Chain& c) :
-      IteratorBase<IterElem>(c.firstElem)
+      detail::IteratorBase<IterElem>(c.firstElem)
     {}
 
     /**

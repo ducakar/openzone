@@ -71,7 +71,7 @@ public:
   /**
    * %Iterator over memory chunks allocated via overloaded `new` operators.
    */
-  typedef typename Chain<ChunkInfo>::CIterator ChunkCIterator;
+  typedef typename Chain<ChunkInfo>::CIterator CIterator;
 
 public:
 
@@ -94,12 +94,12 @@ public:
   /**
    * Create iterator for iterating over allocated objects.
    */
-  static ChunkCIterator objectCIter();
+  static CIterator objectCIter();
 
   /**
    * Create iterator for iterating over allocated arrays.
    */
-  static ChunkCIterator arrayCIter();
+  static CIterator arrayCIter();
 
   /**
    * Align to the previous boundary.

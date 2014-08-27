@@ -35,6 +35,9 @@
 namespace oz
 {
 
+namespace detail
+{
+
 /**
  * Array iterator.
  *
@@ -112,16 +115,80 @@ public:
 };
 
 /**
+ * Utility function for aSort.
+ *
+ * @note
+ * `Elem` type must have `operator < (const Elem&)` defined.
+ *
+ * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
+ * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
+ * When a partition has at most 10 elements, selection sort is used.
+ *
+ * @param first pointer to first element in the array to be sorted.
+ * @param last pointer to last element in the array.
+ */
+template <typename Elem>
+static void quicksort(Elem* first, Elem* last)
+{
+  // 8-14 seem as optimal thresholds for switching to selection sort.
+  if (last - first > 10) {
+    // Quicksort (last element is pivot).
+    Elem* top    = first;
+    Elem* bottom = last - 1;
+
+    do {
+      while (!(*last < *top) && top <= bottom) {
+        ++top;
+      }
+      while (*last < *bottom && top < bottom) {
+        --bottom;
+      }
+      if (top >= bottom) {
+        break;
+      }
+
+      swap<Elem>(*top, *bottom);
+    }
+    while (true);
+
+    if (top != last) {
+      swap<Elem>(*top, *last);
+      quicksort<Elem>(top + 1, last);
+    }
+    quicksort<Elem>(first, top - 1);
+  }
+  else {
+    // Selection sort.
+    for (Elem* i = first; i < last;) {
+      Elem* pivot = i;
+      Elem* min   = i;
+      ++i;
+
+      for (Elem* j = i; j <= last; ++j) {
+        if (*j < *min) {
+          min = j;
+        }
+      }
+      if (min != pivot) {
+        swap<Elem>(*min, *pivot);
+      }
+    }
+  }
+}
+
+}
+
+/**
  * Array iterator with constant access to elements.
  */
 template <typename Elem>
-using CIterator = ArrayIterator<const Elem>;
+using CIterator = detail::ArrayIterator<const Elem>;
 
 /**
  * Array iterator with non-constant access to elements.
  */
 template <typename Elem>
-using Iterator = ArrayIterator<Elem>;
+using Iterator = detail::ArrayIterator<Elem>;
 
 /**
  * Create array iterator with constant element access.
@@ -239,16 +306,6 @@ inline void* mChar(const void* src, int ch, int size)
 size_t strlcpy(char* dest, const char* src, size_t size);
 
 /**
- * Length of a static array.
- */
-template <typename Elem, int COUNT>
-OZ_ALWAYS_INLINE
-inline constexpr int aLength(const Elem(&)[COUNT])
-{
-  return COUNT;
-}
-
-/**
  * True iff respective elements are equal.
  */
 template <typename Elem>
@@ -260,6 +317,16 @@ inline bool aEquals(const Elem* arrayA, int count, const Elem* arrayB)
     }
   }
   return true;
+}
+
+/**
+ * Length of a static array.
+ */
+template <typename Elem, int COUNT>
+OZ_ALWAYS_INLINE
+inline constexpr int aLength(const Elem(&)[COUNT])
+{
+  return COUNT;
 }
 
 /**
@@ -297,17 +364,6 @@ template <typename Elem, typename Value = Elem>
 inline bool aContains(const Elem* array, int count, const Value& value)
 {
   return aIndex<Elem, Value>(array, count, value) >= 0;
-}
-
-/**
- * %Set array elements to a given value.
- */
-template <typename Elem, typename Value = Elem>
-inline void aFill(Elem* array, int count, const Value& value)
-{
-  for (int i = 0; i < count; ++i) {
-    array[i] = value;
-  }
 }
 
 /**
@@ -379,6 +435,17 @@ inline Elem* aReallocate(Elem* array, int count, int newCount)
 }
 
 /**
+ * %Set array elements to a given value.
+ */
+template <typename Elem, typename Value = Elem>
+inline void aFill(Elem* array, int count, const Value& value)
+{
+  for (int i = 0; i < count; ++i) {
+    array[i] = value;
+  }
+}
+
+/**
  * Delete objects referenced by elements (elements must be pointers).
  */
 template <typename Elem>
@@ -406,69 +473,7 @@ inline void aReverse(Elem* array, int count)
 }
 
 /**
- * Utility function for aSort.
- *
- * @note
- * `Elem` type must have `operator < (const Elem&)` defined.
- *
- * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
- * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
- * When a partition has at most 10 elements, selection sort is used.
- *
- * @param first pointer to first element in the array to be sorted.
- * @param last pointer to last element in the array.
- */
-template <typename Elem>
-static void quicksort(Elem* first, Elem* last)
-{
-  // 8-14 seem as optimal thresholds for switching to selection sort.
-  if (last - first > 10) {
-    // Quicksort (last element is pivot).
-    Elem* top    = first;
-    Elem* bottom = last - 1;
-
-    do {
-      while (!(*last < *top) && top <= bottom) {
-        ++top;
-      }
-      while (*last < *bottom && top < bottom) {
-        --bottom;
-      }
-      if (top >= bottom) {
-        break;
-      }
-
-      swap<Elem>(*top, *bottom);
-    }
-    while (true);
-
-    if (top != last) {
-      swap<Elem>(*top, *last);
-      quicksort<Elem>(top + 1, last);
-    }
-    quicksort<Elem>(first, top - 1);
-  }
-  else {
-    // Selection sort.
-    for (Elem* i = first; i < last;) {
-      Elem* pivot = i;
-      Elem* min   = i;
-      ++i;
-
-      for (Elem* j = i; j <= last; ++j) {
-        if (*j < *min) {
-          min = j;
-        }
-      }
-      if (min != pivot) {
-        swap<Elem>(*min, *pivot);
-      }
-    }
-  }
-}
-
-/**
- * Sort array using quicksort algorithm.
+ * Sort array using `detail::quicksort()`.
  */
 template <typename Elem>
 inline void aSort(Elem* array, int count)
@@ -476,7 +481,7 @@ inline void aSort(Elem* array, int count)
   int last = count - 1;
 
   if (last > 0) {
-    quicksort<Elem>(array, &array[last]);
+    detail::quicksort<Elem>(array, &array[last]);
   }
 }
 

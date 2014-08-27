@@ -67,11 +67,11 @@ protected:
    * Hashtable iterator.
    */
   template <class EntryType, class ElemType>
-  class HashIterator : public IteratorBase<EntryType>
+  class HashIterator : public detail::IteratorBase<EntryType>
   {
   private:
 
-    using IteratorBase<EntryType>::elem;
+    using detail::IteratorBase<EntryType>::elem;
 
     const HashSet* table; ///< Hashtable that is being iterated.
     int            index; ///< Index of the current bucket.
@@ -83,14 +83,14 @@ protected:
      */
     OZ_ALWAYS_INLINE
     HashIterator() :
-      IteratorBase<EntryType>(nullptr), table(nullptr), index(0)
+      detail::IteratorBase<EntryType>(nullptr), table(nullptr), index(0)
     {}
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
     explicit HashIterator(const HashSet& ht) :
-      IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht), index(0)
+      detail::IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht), index(0)
     {
       while (elem == nullptr && index < table->size - 1) {
         ++index;

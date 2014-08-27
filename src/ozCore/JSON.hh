@@ -74,14 +74,19 @@ public:
   static const Format DEFAULT_FORMAT;
 
   /**
+   * Key-value type used in object initialiser lists.
+   */
+  typedef Map<const char*, JSON>::Pair Pair;
+
+  /**
    * %Iterator for %JSON arrays with constant access to elements.
    */
-  typedef oz::ArrayIterator<const JSON> ArrayCIterator;
+  typedef List<const JSON>::CIterator ArrayCIterator;
 
   /**
    * %Iterator for %JSON arrays with non-constant access to elements.
    */
-  typedef oz::ArrayIterator<JSON> ArrayIterator;
+  typedef List<JSON>::Iterator ArrayIterator;
 
   /**
    * %Iterator for %JSON objects with constant access to elements.
@@ -92,11 +97,6 @@ public:
    * %Iterator for %JSON objects with non-constant access to elements.
    */
   typedef Map<String, JSON>::Iterator ObjectIterator;
-
-  /**
-   * Key-value type used in object initialiser lists.
-   */
-  typedef Map<const char*, JSON>::Pair Pair;
 
 private:
 

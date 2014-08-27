@@ -38,6 +38,9 @@
 namespace oz
 {
 
+namespace detail
+{
+
 /**
  * Base class for iterators.
  *
@@ -142,6 +145,8 @@ public:
 
 };
 
+}
+
 /**
  * Iterator with constant element access for a container (same as `container.citer()`).
  */
@@ -163,21 +168,6 @@ inline typename Container::Iterator iter(Container& container)
 }
 
 /**
- * Count elements.
- */
-template <class CIterator>
-inline int iLength(CIterator iter)
-{
-  int count = 0;
-
-  while (iter.isValid()) {
-    ++count;
-    ++iter;
-  }
-  return count;
-}
-
-/**
  * True iff same length and respective elements are equal.
  */
 template <class CIteratorA, class CIteratorB>
@@ -190,6 +180,21 @@ inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
     ++iterB;
   }
   return !iterA.isValid() && !iterB.isValid();
+}
+
+/**
+ * Count elements.
+ */
+template <class CIterator>
+inline int iLength(CIterator iter)
+{
+  int count = 0;
+
+  while (iter.isValid()) {
+    ++count;
+    ++iter;
+  }
+  return count;
 }
 
 /**
@@ -232,19 +237,6 @@ inline bool iContains(CIterator iter, const Value& value)
 }
 
 /**
- * %Set elements to a given value.
- */
-template <class Iterator, typename Value = typename Iterator::ElemType>
-inline void iFill(Iterator iter, const Value& value)
-{
-  while (iter.isValid()) {
-    *iter = value;
-
-    ++iter;
-  }
-}
-
-/**
  * Copy all elements from `srcIter` to `destIter`.
  */
 template <class CIteratorA, class IteratorB>
@@ -275,6 +267,19 @@ inline void iMove(IteratorA srcIter, IteratorB destIter)
 
     ++srcIter;
     ++destIter;
+  }
+}
+
+/**
+ * %Set elements to a given value.
+ */
+template <class Iterator, typename Value = typename Iterator::ElemType>
+inline void iFill(Iterator iter, const Value& value)
+{
+  while (iter.isValid()) {
+    *iter = value;
+
+    ++iter;
   }
 }
 

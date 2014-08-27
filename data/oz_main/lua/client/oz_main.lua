@@ -29,14 +29,9 @@ function floraSeed(density, spacing, treeDepth)
     local z = ozTerraHeight(x, y)
 
     if z < 100 and 2 < z then
-      local type = "palm"
-      if z > 70 then
-        type = "pine"
-      elseif z > 30 then
-        type = "tree"
-      end
-
+      local type             = (z > 70 and "pine") or (z > 30 and "tree") or "palm"
       local dimX, dimY, dimZ = ozClassDim(type)
+
       if not ozOrbisOverlaps(0, x, y, z + dimZ + 2*OZ_EPSILON, dimX + spacing, dimY + spacing, dimZ)
       then
         ozOrbisAddObj(OZ_FORCE, type, x, y, z + dimZ - treeDepth)

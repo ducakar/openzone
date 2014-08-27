@@ -50,11 +50,7 @@ function gunAttack(bulletFragPool, velocity, stillDisp, movingDisp)
     return false
   end
 
-  local disp = stillDisp
-  if ozBotHasState(OZ_BOT_MOVING_BIT) then
-    disp = movingDisp
-  end
-
+  local disp       = ozBotHasState(OZ_BOT_MOVING_BIT) and movingDisp or stillDisp
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
   local dX, dY, dZ = Vec3.random(disp)
@@ -291,13 +287,7 @@ function grenadeLauncher_onShot(l)
     return false
   end
 
-  local disp;
-  if ozBotHasState(OZ_BOT_MOVING_BIT) then
-    disp = 5
-  else
-    disp = 0.5
-  end
-
+  local disp       = ozBotHasState(OZ_BOT_MOVING_BIT) and 5 or 0.5
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
   local dX, dY, dZ = Vec3.random(disp)

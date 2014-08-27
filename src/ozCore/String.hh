@@ -702,7 +702,7 @@ public:
   OZ_ALWAYS_INLINE
   char last() const
   {
-    return count == 0 ? '\0' : buffer[count - 1];
+    return buffer[count - (count != 0)];
   }
 
   /**

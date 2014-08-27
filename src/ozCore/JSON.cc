@@ -35,7 +35,7 @@
   OZ_ERROR("oz::JSON: " message " at %s:%d:%d", path, line, column + (charBias));
 
 static_assert(sizeof(double) >= sizeof(void*),
-              "Pointer must fit into double for internal JSON union to work properly");
+              "Pointer must fit into double for internal oz::JSON union to work properly");
 
 namespace oz
 {
