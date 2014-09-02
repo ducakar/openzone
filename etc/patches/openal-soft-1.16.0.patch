@@ -1,6 +1,6 @@
-diff -Naur openal-soft-1.15.1.orig/Alc/ALc.c openal-soft-1.15.1/Alc/ALc.c
---- openal-soft-1.15.1.orig/Alc/ALc.c	2012-12-11 21:35:55.000000000 +0100
-+++ openal-soft-1.15.1/Alc/ALc.c	2013-03-31 18:54:22.034888608 +0200
+diff -Naur openal-soft-1.16.0.orig/Alc/ALc.c openal-soft-1.16.0/Alc/ALc.c
+--- openal-soft-1.16.0.orig/Alc/ALc.c	2014-08-15 09:06:59.000000000 +0200
++++ openal-soft-1.16.0/Alc/ALc.c	2014-09-02 14:25:39.573760861 +0200
 @@ -23,7 +23,7 @@
  #include <math.h>
  #include <stdlib.h>
@@ -10,50 +10,20 @@ diff -Naur openal-soft-1.15.1.orig/Alc/ALc.c openal-soft-1.15.1/Alc/ALc.c
  #include <ctype.h>
  #include <signal.h>
  
-@@ -77,7 +77,9 @@
+@@ -97,6 +97,9 @@
  #ifdef HAVE_OPENSL
-     { "opensl", alc_opensl_init, alc_opensl_deinit, alc_opensl_probe, EmptyFuncs },
+     { "opensl", NULL, alc_opensl_init, alc_opensl_deinit, alc_opensl_probe, EmptyFuncs },
  #endif
--
 +#ifdef HAVE_PPAPI
-+    { "ppapi", alc_ppapi_init, alc_ppapi_deinit, alc_ppapi_probe, EmptyFuncs },
-+#endif
-     { "null", alc_null_init, alc_null_deinit, alc_null_probe, EmptyFuncs },
- #ifdef HAVE_WAVE
-     { "wave", alc_wave_init, alc_wave_deinit, alc_wave_probe, EmptyFuncs },
-diff -Naur openal-soft-1.15.1.orig/Alc/backends/opensl.c openal-soft-1.15.1/Alc/backends/opensl.c
---- openal-soft-1.15.1.orig/Alc/backends/opensl.c	2012-12-11 21:35:55.000000000 +0100
-+++ openal-soft-1.15.1/Alc/backends/opensl.c	2013-03-31 18:54:22.038221963 +0200
-@@ -152,9 +152,11 @@
-         case SL_RESULT_UNKNOWN_ERROR: return "Unknown error";
-         case SL_RESULT_OPERATION_ABORTED: return "Operation aborted";
-         case SL_RESULT_CONTROL_LOST: return "Control lost";
-+#ifndef __ANDROID__
-         case SL_RESULT_READONLY: return "ReadOnly";
-         case SL_RESULT_ENGINEOPTION_UNSUPPORTED: return "Engine option unsupported";
-         case SL_RESULT_SOURCE_SINK_INCOMPATIBLE: return "Source/Sink incompatible";
-+#endif
-     }
-     return "Unknown error code";
- }
-@@ -293,7 +295,13 @@
-     format_pcm.bitsPerSample = BytesFromDevFmt(Device->FmtType) * 8;
-     format_pcm.containerSize = format_pcm.bitsPerSample;
-     format_pcm.channelMask = GetChannelMask(Device->FmtChans);
-+#if defined( __ANDROID__ ) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-+    format_pcm.endianness = SL_BYTEORDER_BIGENDIAN;
-+#elif defined( __ANDROID__ ) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-+    format_pcm.endianness = SL_BYTEORDER_LITTLEENDIAN;
-+#else
-     format_pcm.endianness = SL_BYTEORDER_NATIVE;
++    { "ppapi", NULL, alc_ppapi_init, alc_ppapi_deinit, alc_ppapi_probe, EmptyFuncs },
 +#endif
  
-     audioSrc.pLocator = &loc_bufq;
-     audioSrc.pFormat = &format_pcm;
-diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/backends/ppapi.c
---- openal-soft-1.15.1.orig/Alc/backends/ppapi.c	1970-01-01 01:00:00.000000000 +0100
-+++ openal-soft-1.15.1/Alc/backends/ppapi.c	2013-03-31 18:54:51.091728669 +0200
-@@ -0,0 +1,316 @@
+     { "null", ALCnullBackendFactory_getFactory, NULL, NULL, NULL, EmptyFuncs },
+ #ifdef HAVE_WAVE
+diff -Naur openal-soft-1.16.0.orig/Alc/backends/ppapi.c openal-soft-1.16.0/Alc/backends/ppapi.c
+--- openal-soft-1.16.0.orig/Alc/backends/ppapi.c	1970-01-01 01:00:00.000000000 +0100
++++ openal-soft-1.16.0/Alc/backends/ppapi.c	2014-09-02 14:25:39.573760861 +0200
+@@ -0,0 +1,320 @@
 +/**
 + * OpenAL cross platform audio library
 + * Copyright (C) 2012
@@ -77,6 +47,7 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +#include "config.h"
 +
 +#include <stdlib.h>
++#include <time.h>
 +#include "alMain.h"
 +#include "alu.h"
 +
@@ -97,6 +68,8 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +const ALuint kRequestedFrameCount = 1024;
 +/* 4 is 2-channels, 2-bytes per sample. */
 +const ALuint kFrameSizeInBytes = 4;
++
++const struct timespec kMillisecond = { 0, 1000000 };
 +
 +typedef struct {
 +    /* Simple circular buffer (single producer/consumer) to buffer data output
@@ -131,10 +104,12 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +/* This is the callback from PPAPI to fill in the audio buffer. */
 +void PPAPI_Audio_Callback(void *buffer,
 +                          uint32_t size,
++                          PP_TimeDelta latency,
 +                          void* user_data)
 +{
 +  ppapi_data *data = (ppapi_data*)user_data;
 +  (void)size;
++  (void)latency;
 +
 +  if(data->buffer_ready)
 +      aluMixData(data->device, buffer, data->sample_frame_count);
@@ -220,7 +195,7 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +    if (!data)
 +      return ALC_OUT_OF_MEMORY;
 +
-+    device->DeviceName = strdup(deviceName);
++    al_string_copy_cstr(&device->DeviceName, deviceName);
 +    device->ExtraData = data;
 +    data->device = device;
 +
@@ -254,7 +229,7 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +        data->core->CallOnMainThread(0, cb, 0);
 +
 +        while (data->main_thread_init_status == 0)
-+            Sleep(1);
++            nanosleep(&kMillisecond, NULL);
 +    }
 +
 +    if (data->main_thread_init_status < 0) {
@@ -351,14 +326,13 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +    NULL,
 +    NULL,
 +    NULL,
-+    ALCdevice_LockDefault,
-+    ALCdevice_UnlockDefault,
 +    ALCdevice_GetLatencyDefault
 +};
 +
-+void alc_ppapi_init(BackendFuncs *func_list)
++ALCboolean alc_ppapi_init(BackendFuncs *func_list)
 +{
 +    *func_list = ppapi_funcs;
++    return 1;
 +}
 +
 +void alc_ppapi_deinit(void)
@@ -370,81 +344,97 @@ diff -Naur openal-soft-1.15.1.orig/Alc/backends/ppapi.c openal-soft-1.15.1/Alc/b
 +    if(type == ALL_DEVICE_PROBE)
 +        AppendAllDevicesList(ppapiDevice);
 +}
-diff -Naur openal-soft-1.15.1.orig/Alc/backends/wave.c openal-soft-1.15.1/Alc/backends/wave.c
---- openal-soft-1.15.1.orig/Alc/backends/wave.c	2012-12-11 21:35:55.000000000 +0100
-+++ openal-soft-1.15.1/Alc/backends/wave.c	2013-03-31 18:54:22.038221963 +0200
+diff -Naur openal-soft-1.16.0.orig/Alc/backends/wave.c openal-soft-1.16.0/Alc/backends/wave.c
+--- openal-soft-1.16.0.orig/Alc/backends/wave.c	2014-08-15 09:06:59.000000000 +0200
++++ openal-soft-1.16.0/Alc/backends/wave.c	2014-09-02 14:25:39.573760861 +0200
 @@ -22,7 +22,7 @@
  
  #include <stdlib.h>
  #include <stdio.h>
 -#include <memory.h>
 +#include <string.h>
+ #include <errno.h>
  #ifdef HAVE_WINDOWS_H
  #include <windows.h>
- #endif
-diff -Naur openal-soft-1.15.1.orig/CMakeLists.txt openal-soft-1.15.1/CMakeLists.txt
---- openal-soft-1.15.1.orig/CMakeLists.txt	2012-12-11 21:35:55.000000000 +0100
-+++ openal-soft-1.15.1/CMakeLists.txt	2013-03-31 18:54:22.038221963 +0200
-@@ -42,6 +42,7 @@
- OPTION(WINMM   "Check for Windows Multimedia backend"  ON)
- OPTION(PORTAUDIO  "Check for PortAudio backend"        ON)
- OPTION(PULSEAUDIO "Check for PulseAudio backend"       ON)
-+OPTION(PPAPI      "Check for PPAPI backend"            ON)
- OPTION(COREAUDIO  "Check for CoreAudio backend"        ON)
- OPTION(OPENSL     "Check for OpenSL backend"           ON)
- OPTION(WAVE    "Enable Wave Writer backend"            ON)
-@@ -504,6 +505,7 @@
- SET(HAVE_WINMM      0)
- SET(HAVE_PORTAUDIO  0)
+diff -Naur openal-soft-1.16.0.orig/CMakeLists.txt openal-soft-1.16.0/CMakeLists.txt
+--- openal-soft-1.16.0.orig/CMakeLists.txt	2014-08-15 09:06:59.000000000 +0200
++++ openal-soft-1.16.0/CMakeLists.txt	2014-09-02 14:25:39.573760861 +0200
+@@ -613,6 +613,7 @@
  SET(HAVE_PULSEAUDIO 0)
-+SET(HAVE_PPAPI      0)
  SET(HAVE_COREAUDIO  0)
  SET(HAVE_OPENSL     0)
++SET(HAVE_PPAPI      0)
  SET(HAVE_WAVE       0)
-@@ -711,6 +713,16 @@
+ 
+ # Check for SSE support
+@@ -976,6 +977,22 @@
      MESSAGE(FATAL_ERROR "Failed to enabled required OpenSL backend")
  ENDIF()
  
 +# Check PPAPI backend
-+IF (PPAPI)
-+    CHECK_INCLUDE_FILE(ppapi/c/ppb_audio.h HAVE_PPAPI_PPB_AUDIO_H)
-+    IF(HAVE_PPAPI_PPB_AUDIO_H)
++OPTION(ALSOFT_REQUIRE_PPAPI "Require PPAPI backend" OFF)
++CHECK_INCLUDE_FILE("ppapi/c/ppb_audio.h" HAVE_PPAPI_PPB_AUDIO_H)
++IF (HAVE_PPAPI_PPB_AUDIO_H)
++    OPTION(ALSOFT_BACKEND_PPAPI "Enable PPAPI backend" ON)
++    IF(ALSOFT_BACKEND_PPAPI)
 +      SET(HAVE_PPAPI 1)
-+      SET(ALC_OBJS  ${ALC_OBJS}  Alc/backends/ppapi.c)
-+      SET(BACKENDS  "${BACKENDS} PPAPI,")
++      SET(ALC_OBJS ${ALC_OBJS} Alc/backends/ppapi.c)
++      SET(BACKENDS "${BACKENDS} PPAPI,")
++      SET(EXTRA_LIBS ppapi ${EXTRA_LIBS})
 +    ENDIF()
++ENDIF()
++IF(ALSOFT_REQUIRE_PPAPI AND NOT HAVE_PPAPI)
++    MESSAGE(FATAL_ERROR "Failed to enabled required PPAPI backend")
 +ENDIF()
 +
  # Optionally enable the Wave Writer backend
- IF(WAVE)
-     SET(HAVE_WAVE 1)
-diff -Naur openal-soft-1.15.1.orig/config.h.in openal-soft-1.15.1/config.h.in
---- openal-soft-1.15.1.orig/config.h.in	2012-12-11 21:35:55.000000000 +0100
-+++ openal-soft-1.15.1/config.h.in	2013-03-31 18:54:22.038221963 +0200
-@@ -56,6 +56,9 @@
- /* Define if we have the PulseAudio backend */
- #cmakedefine HAVE_PULSEAUDIO
+ OPTION(ALSOFT_BACKEND_WAVE "Enable Wave Writer backend" ON)
+ IF(ALSOFT_BACKEND_WAVE)
+@@ -1030,7 +1047,7 @@
+ ADD_LIBRARY(common STATIC ${COMMON_OBJS})
+ 
+ # Build main library
+-ADD_LIBRARY(${LIBNAME} ${LIBTYPE} ${OPENAL_OBJS} ${ALC_OBJS})
++ADD_LIBRARY(${LIBNAME} ${LIBTYPE} ${OPENAL_OBJS} ${ALC_OBJS} ${COMMON_OBJS})
+ SET_PROPERTY(TARGET ${LIBNAME} APPEND PROPERTY COMPILE_DEFINITIONS AL_BUILD_LIBRARY AL_ALEXT_PROTOTYPES)
+ IF(WIN32 AND ALSOFT_NO_UID_DEFS)
+     SET_PROPERTY(TARGET ${LIBNAME} APPEND PROPERTY COMPILE_DEFINITIONS AL_NO_UID_DEFS)
+diff -Naur openal-soft-1.16.0.orig/config.h.in openal-soft-1.16.0/config.h.in
+--- openal-soft-1.16.0.orig/config.h.in	2014-08-15 09:06:59.000000000 +0200
++++ openal-soft-1.16.0/config.h.in	2014-09-02 14:25:39.573760861 +0200
+@@ -70,6 +70,9 @@
+ /* Define if we have the OpenSL backend */
+ #cmakedefine HAVE_OPENSL
  
 +/* Define if we have the PPAPI backend */
 +#cmakedefine HAVE_PPAPI
 +
- /* Define if we have the CoreAudio backend */
- #cmakedefine HAVE_COREAUDIO
+ /* Define if we have the Wave Writer backend */
+ #cmakedefine HAVE_WAVE
  
-diff -Naur openal-soft-1.15.1.orig/OpenAL32/Include/alMain.h openal-soft-1.15.1/OpenAL32/Include/alMain.h
---- openal-soft-1.15.1.orig/OpenAL32/Include/alMain.h	2012-12-11 21:35:55.000000000 +0100
-+++ openal-soft-1.15.1/OpenAL32/Include/alMain.h	2013-03-31 18:54:22.041555318 +0200
-@@ -443,6 +443,9 @@
- ALCboolean alc_pulse_init(BackendFuncs *func_list);
- void alc_pulse_deinit(void);
- void alc_pulse_probe(enum DevProbe type);
-+void alc_ppapi_init(BackendFuncs *func_list);
+diff -Naur openal-soft-1.16.0.orig/OpenAL32/Include/alMain.h openal-soft-1.16.0/OpenAL32/Include/alMain.h
+--- openal-soft-1.16.0.orig/OpenAL32/Include/alMain.h	2014-08-15 09:06:59.000000000 +0200
++++ openal-soft-1.16.0/OpenAL32/Include/alMain.h	2014-09-02 14:25:39.577094197 +0200
+@@ -271,7 +271,7 @@
+ #define U64(x) ((ALuint64)(x##ui64))
+ #elif SIZEOF_LONG == 8
+ #define U64(x) ((ALuint64)(x##ul))
+-#elif SIZEOF_LONG_LONG == 8
++#elif SIZEOF_LONG_LONG == 8 || defined(__native_client__)
+ #define U64(x) ((ALuint64)(x##ull))
+ #endif
+ #endif
+@@ -497,6 +497,9 @@
+ ALCboolean alc_opensl_init(BackendFuncs *func_list);
+ void alc_opensl_deinit(void);
+ void alc_opensl_probe(enum DevProbe type);
++ALCboolean alc_ppapi_init(BackendFuncs *func_list);
 +void alc_ppapi_deinit(void);
 +void alc_ppapi_probe(enum DevProbe type);
- ALCboolean alc_ca_init(BackendFuncs *func_list);
- void alc_ca_deinit(void);
- void alc_ca_probe(enum DevProbe type);
-@@ -502,7 +505,11 @@
+ ALCboolean alc_qsa_init(BackendFuncs *func_list);
+ void alc_qsa_deinit(void);
+ void alc_qsa_probe(enum DevProbe type);
+@@ -549,7 +552,11 @@
      DevFmtUInt   = ALC_UNSIGNED_INT_SOFT,
      DevFmtFloat  = ALC_FLOAT_SOFT,
  
@@ -456,32 +446,3 @@ diff -Naur openal-soft-1.15.1.orig/OpenAL32/Include/alMain.h openal-soft-1.15.1/
  };
  enum DevFmtChannels {
      DevFmtMono   = ALC_MONO_SOFT,
-diff -Naur openal-soft-1.15.1.orig/XCompile-nacl.txt openal-soft-1.15.1/XCompile-nacl.txt
---- openal-soft-1.15.1.orig/XCompile-nacl.txt	1970-01-01 01:00:00.000000000 +0100
-+++ openal-soft-1.15.1/XCompile-nacl.txt	2013-03-31 18:54:22.041555318 +0200
-@@ -0,0 +1,25 @@
-+# Cross-compiling requires CMake 2.6 or newer. To cross-compile, first modify
-+# this file to set the proper settings and paths. Then use it from build/ like:
-+# cmake .. -DCMAKE_TOOLCHAIN_FILE=../XCompile.txt \
-+#          -DCMAKE_INSTALL_PREFIX=/usr/mingw32/mingw
-+# If you already have a toolchain file setup, you may use that instead of this
-+# file.
-+
-+# the name of the target operating system
-+SET(CMAKE_SYSTEM_NAME Linux)
-+
-+# which compilers to use for C and C++
-+SET(CMAKE_C_COMPILER ${NACLCC})
-+SET(CMAKE_CXX_COMPILER ${NACLCXX})
-+set(CMAKE_AR ${NACLAR} CACHE FILEPATH "Archiver")
-+SET(_CMAKE_TOOLCHAIN_PREFIX ${NACL_CROSS_PREFIX})
-+
-+# here is the target environment located
-+SET(CMAKE_FIND_ROOT_PATH ${NACL_TOOLCHAIN_ROOT})
-+
-+# adjust the default behaviour of the FIND_XXX() commands:
-+# search headers and libraries in the target environment, search 
-+# programs in the host environment
-+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)

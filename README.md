@@ -9,14 +9,15 @@ Running
 -------
 
 For standalone packages, run `bin/<platform>/openzone` executable to start the game, where
-`<platform>` is your operation system and processor combination.
+`<platform>` is your operating system-instruction set pair.
 
 Building
 --------
 
-Building is currently supported under Linux. You can build Linux/Unix, Windows (MinGW) and Native
-Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files for all
-supported platforms/toolchains. Only GCC >= 4.7 and LLVM/Clang >= 3.3 compilers are supported.
+Building is currently only supported under Linux. You can build Linux/Unix, Windows (MinGW) and
+Native Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files
+for all supported platforms/toolchains.
+GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
 
 Development packages of the following libraries are required to build OpenZone from source:
 
@@ -53,44 +54,44 @@ You can then use generic steps for building CMake projects:
     cmake ..
     make
 
-For a user-friendly GUI where you can configure build options, use `cmake-gui` instead of `cmake`.
+Use `cmake-gui` instead of `cmake` for a user-friendly GUI where you can configure build options.
 
 For building all supported configurations you can use `ports.sh` and `build.sh` scripts. `ports.sh`
 (see Tools section) downloads and builds all required libraries for NaCl and Android platforms
 (NaCL SDK and Android SDK + NDK are required for this, of course), while `build.sh` builds OpenZone
-for all platforms. You can change variables in headers of both scripts to change list of enabled
+for all platforms. You can change variables at top of both scripts to change the list of enabled
 platforms and whether you want to make debug or a release build. You will also need to fix paths to
 SDKs in those two scripts and in `cmake/*.Toolchain.cmake` files.
 
 Build scripts use Ninja as low-level build system instead of Make which is the default for CMake.
 
 For building Linux and Windows builds, all required libraries need to be installed on your system.
-MinGW64 is searched in `/usr/i686-w64-mingw32` and `/usr/x86_64-w64-mingw32` by default. You may
+MinGW64 is searched for in `/usr/i686-w64-mingw32` and `/usr/x86_64-w64-mingw32` by default. You may
 change that in `cmake/Windows-*.Toolchain.cmake`.
 
-You may also want to set several options when configuring CMake build system:
+You may also want to adjust several options when configuring CMake build system:
 
 - `OZ_ALLOCATOR`: Enable memory allocation statistics and tracking of allocated memory chunks. Stack
   trace for every memory allocation performed via new operator is saved for later diagnostics. It
   detects new/delete mismatches and one can check for currently allocated memory chunks (and hence
-  memory leaks). Upon freeing a memory chunk is rewritten with 0xee bytes make accesses to freed
-  memory likely result in an error.
+  memory leaks). Upon freeing a memory chunk is rewritten with 0xee bytes which makes accesses to
+  the freed memory very likely to result in an error or a crash.
 
 - `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
-  Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementation since
-  `Vec3` and `Point` become larger (4 floats v. 3 floats) and there are plenty of accesses to vector
-  components in OpenZone code (it wasn't written with SIMD in mind).
+  Plane, Quat, Mat44). Currently it yields ~15% worse performance than the generic implementation
+  since `Vec3` and `Point` become longer (4 floats v. 3 floats) and there are plenty of accesses to
+  vector components in OpenZone code (it wasn't written with SIMD in mind).
   `OFF` by default.
 
 - `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library (ozDynamics). Requires ODE (Open Dynamics
-  Engine) compiled in single precision. ozDynamics is only my attempt to create a physics engine and
-  is not required by OpenZone.
+  Engine) compiled in single precision. ozDynamics is my attempt to create a physics engine and is
+  not required by OpenZone.
   `OFF` by default.
 
 - `OZ_GL_ES`: Use OpenGL ES 2.0 instead of OpenGL 2.1.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
-- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster,
+- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster
   but there are some weird issues with LuaJIT not initialising sometimes.
   `OFF` by default.
 
@@ -110,19 +111,19 @@ Tools
 ### `ozBuild -CAZ <pkgSrc>` ###
 
 Compiler for game data. It compiler source game data into formats more suitable for OpenZone engine
-which results in much better run-time performance and much less code required to load data.
+which results in much better run-time performance and much less code required to load the data.
 
-Data source are read from `<pkgSrc>` directory. Output directory is `share/openzone` by default (you
-can specify it as an additional parameter after `<pkgSrc>` if you wish otherwise). Last token from
-`<pkgSrc>` path is interpreted as package name. Package is built in `share/openzone/<pkgName>`
-directory and game data archive is packed after successful build in `share/openzone/<pkgName>.zip`,
-if run with `-A` parameter. See "`ozBuild --help`" for all options.
+Data sources are read from `<pkgSrc>` directory. Output directory is `share/openzone` by default
+(you can specify it as an additional parameter after `<pkgSrc>` if you wish otherwise). Last token
+from `<pkgSrc>` path is interpreted as the package name. The package is built inside
+`share/openzone/<pkgName>` directory and the game data archive is packed after successful build in
+`share/openzone/<pkgName>.zip` if run with `-A` parameter. See "`ozBuild --help`" for all options.
 
 Note that temporary directory `share/openzone/<pkgName>` is not cleared after build, so if you
-remove any files from source data and rebuild package, removed files will still be cached in
-temporary directory and put into newly built package. So, it is highly recommended to remove all
-temporary directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data
-or before doing the final build.
+remove any files from source data and rebuild package, removed files will still be cached in the
+temporary directory and included into newly built package. Hence it's highly recommended to remove
+all temporary directories ("`rm -rf share/openzone/*`" on Linux) after removing something from the
+game data or before doing the final build.
 
 ### `ozGenEnvMap -CM` ###
 

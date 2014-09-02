@@ -61,7 +61,20 @@ function initSample()
 
   ozNirvanaAddMemo(memo, "Simulations are like miniskirts, they show a lot but hide the " ..
                          "essentials.\n\n        -- Hubert Kirrman")
-  ozNirvanaAddMemo(lord, "Buahahahaha")
+  ozNirvanaAddMemo(lord, "Take my love, take my land,\n" ..
+                         "take me where I cannot stand.\n" ..
+                         "I don't care, I'm still free,\n" ..
+                         "you can't take the sky from me.\n" ..
+                         "\n" ..
+                         "Take me out to the black,\n" ..
+                         "tell 'em I ain't comin' back.\n" ..
+                         "Burn the land, boil the sea,\n" ..
+                         "you can't take the sky from me.\n" ..
+                         "\n" ..
+                         "There's no place I can be\n" ..
+                         "since I found Serenity.\n" ..
+                         "\n" ..
+                         "And you can't take the sky from me.\n")
 
   ozCameraAddSwitchableBot(cyborg)
   ozCameraAddSwitchableBot(droid)

@@ -229,7 +229,7 @@ function fetch()
   download 'http://zlib.net/zlib-1.2.8.tar.xz'
 
   # libpng
-  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.10.tar.xz'
+  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.12.tar.xz'
 
   # libogg
   download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.xz'
@@ -251,7 +251,7 @@ function fetch()
   download 'http://www.lua.org/ftp/lua-5.2.3.tar.gz'
 
   # OpenAL Soft
-  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.15.1.tar.bz2'
+  download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.16.0.tar.bz2'
 
   # SDL
   download 'http://www.libsdl.org/release/SDL-1.2.15.tar.gz'
@@ -345,7 +345,7 @@ function build_zlib()
 
 function build_libpng()
 {
-  prepare libpng-1.6.10 libpng-1.6.10.tar.xz || return
+  prepare libpng-1.6.12 libpng-1.6.12.tar.xz || return
   applyPatches libpng-1.6.6.patch
 
   cmakeBuild -D PNG_SHARED=0 \
@@ -408,10 +408,10 @@ function build_lua()
 
 function build_openal()
 {
-  prepare openal-soft-1.15.1 openal-soft-1.15.1.tar.bz2 || return
-  applyPatches openal-soft-1.15.1.patch
+  prepare openal-soft-1.16.0 openal-soft-1.16.0.tar.bz2 || return
+  applyPatches openal-soft-1.16.0.patch
 
-  cmakeBuild -D UTILS=0 -D EXAMPLES=0 -D LIBTYPE=STATIC
+  cmakeBuild -D ALSOFT_UTILS=0 -D ALSOFT_EXAMPLES=0 -D LIBTYPE="STATIC"
 
   finish
 }

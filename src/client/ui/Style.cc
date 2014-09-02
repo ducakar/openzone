@@ -81,10 +81,10 @@ struct FontInfo
 
 static const FontInfo FONT_INFOS[Font::MAX] = {
   { "mono",  "DroidSansMono", 13 },
-  { "sans",  "DroidSansMono", 13 },
-  { "small", "DroidSansMono", 10 },
-  { "large", "DroidSansMono", 14 },
-  { "title", "DroidSansMono", 18 }
+  { "sans",  "DroidSans", 13 },
+  { "small", "DroidSans", 10 },
+  { "large", "DroidSans", 14 },
+  { "title", "DroidSans", 18 }
 };
 
 void Style::init()
