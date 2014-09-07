@@ -49,6 +49,15 @@ typedef float __attribute__((vector_size(16))) float4;
  */
 typedef uint __attribute__((vector_size(16))) uint4;
 
+/**
+ * SIMD vector that can be accessed either as float4 or uint4.
+ */
+union simd4
+{
+  float4 f4;
+  uint4  u4;
+};
+
 OZ_ALWAYS_INLINE
 inline float4 vFill(float x, float y, float z, float w)
 {
@@ -93,6 +102,7 @@ inline float vFirst(float4 a)
 # define vShuffle(a, b, i, j, k, l) \
   __builtin_shufflevector(a, b, i, j, k, l)
 #elif defined(__ARM_NEON__)
+  // TODO Neon shuffle for GCC
 #else
 # define vShuffle(a, b, i, j, k, l) \
   __builtin_ia32_shufps(a, b, i | (j << 2) | (k << 4) | (l << 6));
@@ -138,6 +148,43 @@ inline float4 vMax(float4 a, float4 b)
 }
 
 /**
+ * Component-wise square root of a float SIMD vector.
+ */
+OZ_ALWAYS_INLINE
+inline float4 vSqrt(float4 a)
+{
+#if defined(__ARM_NEON__)
+  // TODO Neon sqrt
+#else
+  return __builtin_ia32_sqrtps(a);
+#endif
+}
+
+/**
+ * Component-wise fast inverse square root of a float SIMD vector.
+ */
+OZ_ALWAYS_INLINE
+inline float4 vFastInvSqrt(float4 a)
+{
+  simd4 s = { a };
+
+  s.u4 = vFill(0x5f375a86u) - (s.u4 >> vFill(1u));
+  return s.f4 * (vFill(1.5f) - vFill(0.5f) * a * s.f4*s.f4);
+}
+
+/**
+ * Component-wise fast inverse square root of a float SIMD vector.
+ */
+OZ_ALWAYS_INLINE
+inline float4 vFastSqrt(float4 a)
+{
+  simd4 s = { a };
+
+  s.u4 = vFill(0x5f375a86u) - (s.u4 >> vFill(1u));
+  return a * s.f4 * (vFill(1.5f) - vFill(0.5f) * a * s.f4*s.f4);
+}
+
+/**
  * Scalar product for float SIMD vectors (returns float SIMD vector).
  */
 OZ_ALWAYS_INLINE
@@ -145,6 +192,7 @@ inline float4 vDot(float4 a, float4 b)
 {
   float4 p = a * b;
 #if defined(__ARM_NEON__)
+  // TODO Neon dot product
 #else
   float4 s = __builtin_ia32_haddps(p, p);
   return __builtin_ia32_haddps(s, s);
@@ -161,11 +209,11 @@ class VectorBase3
 public:
 
 #ifdef OZ_SIMD_MATH
-  union OZ_ALIGNED(16)
+  __extension__ union OZ_ALIGNED(16)
   {
     float4 f4;
     uint4  u4;
-    struct
+    __extension__ struct
     {
       float x;
       float y;
@@ -257,11 +305,11 @@ class VectorBase4
 public:
 
 #ifdef OZ_SIMD_MATH
-  union OZ_ALIGNED(16)
+  __extension__ union OZ_ALIGNED(16)
   {
     float4 f4;
     uint4  u4;
-    struct
+    __extension__ struct
     {
       float x;
       float y;
@@ -346,323 +394,5 @@ public:
   }
 
 };
-
-#ifdef OZ_SIMD_MATH
-
-/**
- * SIMD vector containing 4 equal values.
- *
- * For many operations like multiplication of a vector and scalar, dot product, normalisation etc.
- * we need to convert between float scalars and a SIMD vectors which is an expensive operation. In
- * order to minimise such conversions we introduce scalar class that represents a SIMD register
- * holding 4 identical values. It is used to replace float temporary values.
- */
-class scalar
-{
-public:
-
-  union OZ_ALIGNED(16)
-  {
-    float4 f4; ///< Float SIMD vector.
-    uint4  u4; ///< Unsigned integer SIMD vector.
-  };
-
-public:
-
-  /**
-   * Create an uninitialised instance.
-   */
-  OZ_ALWAYS_INLINE
-  scalar() = default;
-
-  /**
-   * Create from a float SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  scalar(float4 f4_) :
-    f4(f4_)
-  {}
-
-  /**
-   * Create from an uint SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  scalar(uint4 u4_) :
-    u4(u4_)
-  {}
-
-  /**
-   * Create from a float value.
-   */
-  OZ_ALWAYS_INLINE
-  scalar(float f) :
-    f4(vFill(f))
-  {}
-
-  /**
-   * Cast to float.
-   */
-  OZ_ALWAYS_INLINE
-  operator float() const
-  {
-    return vFirst(f4);
-  }
-
-  /**
-   * Original value.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator + () const
-  {
-    return *this;
-  }
-
-  /**
-   * Opposite value.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator - () const
-  {
-    return -f4;
-  }
-
-  /**
-   * Sum.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator + (scalar s) const
-  {
-    return f4 + s.f4;
-  }
-
-  /**
-   * Sum.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator + (float f) const
-  {
-    return f4 + vFill(f);
-  }
-
-  /**
-   * Sum.
-   */
-  OZ_ALWAYS_INLINE
-  friend scalar operator + (float f, scalar s)
-  {
-    return vFill(f) + s.f4;
-  }
-
-  /**
-   * Difference.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator - (scalar s) const
-  {
-    return f4 - s.f4;
-  }
-
-  /**
-   * Difference.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator - (float f) const
-  {
-    return f4 - vFill(f);
-  }
-
-  /**
-   * Difference.
-   */
-  OZ_ALWAYS_INLINE
-  friend scalar operator - (float f, scalar s)
-  {
-    return vFill(f) - s.f4;
-  }
-
-  /**
-   * Product.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator * (scalar s) const
-  {
-    return f4 * s.f4;
-  }
-
-  /**
-   * Product.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator * (float f) const
-  {
-    return f4 * vFill(f);
-  }
-
-  /**
-   * Product.
-   */
-  OZ_ALWAYS_INLINE
-  friend scalar operator * (float f, scalar s)
-  {
-    return vFill(f) * s.f4;
-  }
-
-  /**
-   * Quotient.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator / (scalar s) const
-  {
-    return f4 / s.f4;
-  }
-
-  /**
-   * Quotient.
-   */
-  OZ_ALWAYS_INLINE
-  scalar operator / (float f) const
-  {
-    return f4 / vFill(f);
-  }
-
-  /**
-   * Quotient.
-   */
-  OZ_ALWAYS_INLINE
-  friend scalar operator / (float f, scalar s)
-  {
-    return vFill(f) / s.f4;
-  }
-
-  /**
-   * Addition.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator += (scalar s)
-  {
-    f4 += s.f4;
-    return *this;
-  }
-
-  /**
-   * Addition.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator += (float f)
-  {
-    f4 += vFill(f);
-    return *this;
-  }
-
-  /**
-   * Addition.
-   */
-  OZ_ALWAYS_INLINE
-  friend float& operator += (float& f, scalar s)
-  {
-    f += vFirst(s.f4);
-    return f;
-  }
-
-  /**
-   * Subtraction.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator -= (scalar s)
-  {
-    f4 -= s.f4;
-    return *this;
-  }
-
-  /**
-   * Subtraction.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator -= (float f)
-  {
-    f4 -= vFill(f);
-    return *this;
-  }
-
-  /**
-   * Subtraction.
-   */
-  OZ_ALWAYS_INLINE
-  friend float& operator -= (float& f, scalar s)
-  {
-    f -= vFirst(s.f4);
-    return f;
-  }
-
-  /**
-   * Multiplication.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator *= (scalar s)
-  {
-    f4 *= s.f4;
-    return *this;
-  }
-
-  /**
-   * Multiplication.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator *= (float f)
-  {
-    f4 *= vFill(f);
-    return *this;
-  }
-
-  /**
-   * Multiplication.
-   */
-  OZ_ALWAYS_INLINE
-  friend float& operator *= (float& f, scalar s)
-  {
-    f *= vFirst(s.f4);
-    return f;
-  }
-
-  /**
-   * Division.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator /= (scalar s)
-  {
-    f4 /= s.f4;
-    return *this;
-  }
-
-  /**
-   * Division.
-   */
-  OZ_ALWAYS_INLINE
-  scalar& operator /= (float f)
-  {
-    f4 /= vFill(f);
-    return *this;
-  }
-
-  /**
-   * Division.
-   */
-  OZ_ALWAYS_INLINE
-  friend float& operator /= (float& f, scalar s)
-  {
-    f /= vFirst(s.f4);
-    return f;
-  }
-
-};
-
-#else
-
-/**
- * Alias for float unless `OZ_SIMD_MATH` is enabled.
- */
-typedef float scalar;
-
-#endif
 
 }

@@ -287,7 +287,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator * (scalar s) const
+  Mat4 operator * (float s) const
   {
     return Mat4(x * s, y * s, z * s, w * s);
   }
@@ -296,7 +296,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Mat4 operator * (scalar s, const Mat4& m)
+  friend Mat4 operator * (float s, const Mat4& m)
   {
     return Mat4(s * m.x, s * m.y, s * m.z, s * m.w);
   }
@@ -391,15 +391,11 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator / (scalar s) const
+  Mat4 operator / (float s) const
   {
     hard_assert(s != 0.0f);
 
-#ifdef OZ_SIMD_MATH
-    s = vFill(1.0f) / s.f4;
-#else
     s = 1.0f / s;
-#endif
     return Mat4(x * s, y * s, z * s, w * s);
   }
 
@@ -467,7 +463,7 @@ public:
    * Multiplication.
    */
   OZ_ALWAYS_INLINE
-  Mat4& operator *= (scalar s)
+  Mat4& operator *= (float s)
   {
     x *= s;
     y *= s;
@@ -480,15 +476,11 @@ public:
    * Division.
    */
   OZ_ALWAYS_INLINE
-  Mat4& operator /= (scalar s)
+  Mat4& operator /= (float s)
   {
-#ifdef OZ_SIMD_MATH
-    s = vFill(1.0f) / s.f4;
-#else
     hard_assert(s != 0.0f);
 
     s = 1.0f / s;
-#endif
     x *= s;
     y *= s;
     z *= s;

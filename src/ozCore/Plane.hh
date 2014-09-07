@@ -104,10 +104,10 @@ public:
    * Projection of a vector to a plane's normal.
    */
   OZ_ALWAYS_INLINE
-  friend scalar operator * (const Vec3& v, const Plane& plane)
+  friend float operator * (const Vec3& v, const Plane& plane)
   {
 #ifdef OZ_SIMD_MATH
-    return vDot(v.f4, plane.n.f4);
+    return vFirst(vDot(v.f4, plane.n.f4));
 #else
     return v.x*plane.n.x + v.y*plane.n.y + v.z*plane.n.z;
 #endif
@@ -117,10 +117,10 @@ public:
    * Distance between a point and a plane.
    */
   OZ_ALWAYS_INLINE
-  friend scalar operator * (const Point& p, const Plane& plane)
+  friend float operator * (const Point& p, const Plane& plane)
   {
 #ifdef OZ_SIMD_MATH
-    return vDot(p.f4, plane.n.f4) - vFill(plane.d, plane.d, plane.d, plane.d);
+    return vFirst(vDot(p.f4, plane.n.f4)) - plane.d;
 #else
     return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;
 #endif

@@ -156,3 +156,7 @@ add_library(client STATIC
 #END SOURCES
 )
 use_pch(client pch)
+
+if(OZ_DYNAMICS)
+  target_link_libraries(client ozDynamics)
+endif()

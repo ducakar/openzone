@@ -99,12 +99,11 @@ static const int   BELL_PREFERRED_RATE = 48000;
 
 struct SampleInfo
 {
-  pp::Audio audio;
-  int       rate;
-  int       nFrameSamples;
-  int       nSamples;
-  int       end;
-  int       offset;
+  int rate;
+  int nFrameSamples;
+  int nSamples;
+  int end;
+  int offset;
 };
 
 #elif defined(_WIN32)
@@ -586,11 +585,11 @@ void System::init(int flags, CrashHandler* crashHandler_)
 
   isDebuggerAttached = fd >= 5;
 
+#endif
+
   if (initFlags & LOCALE_BIT) {
     setlocale(LC_ALL, "");
   }
-
-#endif
 
   threadInit();
 }

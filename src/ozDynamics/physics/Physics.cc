@@ -121,7 +121,7 @@ void Physics::update(float time)
   dJointGroupEmpty(contactGroup);
 
   for (Body* i : space->bodies) {
-    DBody* body = static_cast<DBody*>(*i);
+    DBody* body = static_cast<DBody*>(i);
 
     if (body->odeId != nullptr) {
       body->p = Point(dBodyGetPosition(body->odeId));
@@ -147,7 +147,7 @@ void Physics::init(Space* space_, Kollider* collider_)
 void Physics::destroy()
 {
   for (Body* i : space->bodies) {
-    DBody* body = static_cast<DBody*>(*i);
+    DBody* body = static_cast<DBody*>(i);
 
     if (body->odeId != nullptr) {
       erase(body);

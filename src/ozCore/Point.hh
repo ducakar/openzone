@@ -184,10 +184,10 @@ public:
    * Projection of the point to a given vector.
    */
   OZ_ALWAYS_INLINE
-  scalar operator * (const Vec3& v) const
+  float operator * (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot(f4, v.f4);
+    return vFirst(vDot(f4, v.f4));
 #else
     return x*v.x + y*v.y + z*v.z;
 #endif

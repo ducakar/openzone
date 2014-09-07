@@ -139,10 +139,10 @@ public:
    * Norm.
    */
   OZ_ALWAYS_INLINE
-  scalar operator ! () const
+  float operator ! () const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot(f4, f4);
+    return vFirst(vDot(f4, f4));
 #else
     return x*x + y*y + z*z + w*w;
 #endif
@@ -153,12 +153,12 @@ public:
    */
   Quat operator ~ () const
   {
-#ifdef OZ_SIMD_MATH
-    scalar s = 1.0f / Math::sqrt(vFirst(vDot(f4, f4)));
-    return Quat(f4 * s.f4);
-#else
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
+#ifdef OZ_SIMD_MATH
+    float4 k = vFill(1.0f) / vSqrt(vDot(f4, f4));
+    return Quat(f4 * k);
+#else
     float k = 1.0f / Math::sqrt(x*x + y*y + z*z + w*w);
     return Quat(x * k, y * k, z * k, w * k);
 #endif
@@ -169,12 +169,12 @@ public:
    */
   Quat fastUnit() const
   {
-#ifdef OZ_SIMD_MATH
-    scalar s = Math::fastInvSqrt(vFirst(vDot(f4, f4)));
-    return Quat(f4 * s.f4);
-#else
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
+#ifdef OZ_SIMD_MATH
+    float4 k = vFastInvSqrt(vDot(f4, f4));
+    return Quat(f4 * k);
+#else
     float k = Math::fastInvSqrt(x*x + y*y + z*z + w*w);
     return Quat(x * k, y * k, z * k, w * k);
 #endif
@@ -232,10 +232,10 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Quat operator * (scalar s) const
+  Quat operator * (float s) const
   {
 #ifdef OZ_SIMD_MATH
-    return Quat(f4 * s.f4);
+    return Quat(f4 * vFill(s));
 #else
     return Quat(x * s, y * s, z * s, w * s);
 #endif
@@ -245,10 +245,10 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Quat operator * (scalar s, const Quat& q)
+  friend Quat operator * (float s, const Quat& q)
   {
 #ifdef OZ_SIMD_MATH
-    return Quat(s.f4 * q.f4);
+    return Quat(vFill(s) * q.f4);
 #else
     return Quat(s * q.x, s * q.y, s * q.z, s * q.w);
 #endif
@@ -286,12 +286,12 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Quat operator / (scalar s) const
+  Quat operator / (float s) const
   {
     hard_assert(s != 0.0f);
 
 #ifdef OZ_SIMD_MATH
-    return Quat(f4 / s.f4);
+    return Quat(f4 / vFill(s));
 #else
     s = 1.0f / s;
     return Quat(x * s, y * s, z * s, w * s);
@@ -301,14 +301,16 @@ public:
   /**
    * Quotient.
    */
-  friend Quat operator / (scalar s, const Quat& q)
+  friend Quat operator / (float s, const Quat& q)
   {
 #ifdef OZ_SIMD_MATH
-    s.f4 = s.f4 / vDot(q.f4, q.f4);
-    s.f4 = vShuffle(s.f4, -s.f4, 0, 0, 0, 0);
-    s.f4 = vShuffle(s.f4, s.f4, 0, 0, 0, 2);
+    float4 k = vFill(s);
 
-    return Quat(q.f4 * s.f4);
+    k = k / vDot(q.f4, q.f4);
+    k = vShuffle(k, -k, 0, 0, 0, 0);
+    k = vShuffle(k, +k, 0, 0, 0, 2);
+
+    return Quat(q.f4 * k);
 #else
     s = s / (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
     float ns = -s;
@@ -384,10 +386,10 @@ public:
    * Multiplication.
    */
   OZ_ALWAYS_INLINE
-  Quat& operator *= (scalar s)
+  Quat& operator *= (float s)
   {
 #ifdef OZ_SIMD_MATH
-    f4 *= s.f4;
+    f4 *= vFill(s);
 #else
     x *= s;
     y *= s;
@@ -430,10 +432,10 @@ public:
    * Division.
    */
   OZ_ALWAYS_INLINE
-  Quat& operator /= (scalar s)
+  Quat& operator /= (float s)
   {
 #ifdef OZ_SIMD_MATH
-    f4 /= s.f4;
+    f4 /= vFill(s);
 #else
     hard_assert(s != 0.0f);
 

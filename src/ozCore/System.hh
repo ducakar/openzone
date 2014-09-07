@@ -145,7 +145,7 @@ public:
   static void threadInit();
 
   /**
-   * Initialise `System` features.
+   * Initialise `System`.
    *
    * @param flags is a bitwise OR of the following bits:
    * - `HANDLER_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon

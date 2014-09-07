@@ -197,10 +197,10 @@ public:
    * Squared norm.
    */
   OZ_ALWAYS_INLINE
-  scalar sqN() const
+  float sqN() const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot(f4, f4);
+    return vFirst(vDot(f4, f4));
 #else
     return x*x + y*y + z*z + w*w;
 #endif
@@ -211,12 +211,12 @@ public:
    */
   Vec4 operator ~ () const
   {
-#ifdef OZ_SIMD_MATH
-    scalar s = 1.0f / Math::sqrt(vFirst(vDot(f4, f4)));
-    return Vec4(f4 * s.f4);
-#else
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
+#ifdef OZ_SIMD_MATH
+    float4 k = vFill(1.0f) / vSqrt(vDot(f4, f4));
+    return Vec4(f4 * k);
+#else
     float k = 1.0f / Math::sqrt(x*x + y*y + z*z + w*w);
     return Vec4(x * k, y * k, z * k, w * k);
 #endif
@@ -227,12 +227,12 @@ public:
    */
   Vec4 fastUnit() const
   {
-#ifdef OZ_SIMD_MATH
-    scalar s = Math::fastInvSqrt(vFirst(vDot(f4, f4)));
-    return Vec4(f4 * s.f4);
-#else
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
+#ifdef OZ_SIMD_MATH
+    float4 k = vFastInvSqrt(vDot(f4, f4));
+    return Vec4(f4 * k);
+#else
     float k = Math::fastInvSqrt(x*x + y*y + z*z + w*w);
     return Vec4(x * k, y * k, z * k, w * k);
 #endif
@@ -290,10 +290,10 @@ public:
    * Vector multiplied by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec4 operator * (scalar s) const
+  Vec4 operator * (float s) const
   {
 #ifdef OZ_SIMD_MATH
-    return Vec4(f4 * s.f4);
+    return Vec4(f4 * vFill(s));
 #else
     return Vec4(x * s, y * s, z * s, w * s);
 #endif
@@ -303,10 +303,10 @@ public:
    * Vector multiplied by a scalar.
    */
   OZ_ALWAYS_INLINE
-  friend Vec4 operator * (scalar s, const Vec4& v)
+  friend Vec4 operator * (float s, const Vec4& v)
   {
 #ifdef OZ_SIMD_MATH
-    return Vec4(s.f4 * v.f4);
+    return Vec4(vFill(s) * v.f4);
 #else
     return Vec4(s * v.x, s * v.y, s * v.z, s * v.w);
 #endif
@@ -316,12 +316,12 @@ public:
    * Vector divided by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec4 operator / (scalar s) const
+  Vec4 operator / (float s) const
   {
     hard_assert(s != 0.0f);
 
 #ifdef OZ_SIMD_MATH
-    return Vec4(f4 / s.f4);
+    return Vec4(f4 / vFill(s));
 #else
     s = 1.0f / s;
     return Vec4(x * s, y * s, z * s, w * s);
@@ -366,10 +366,10 @@ public:
    * Multiplication by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec4& operator *= (scalar s)
+  Vec4& operator *= (float s)
   {
 #ifdef OZ_SIMD_MATH
-    f4 *= s.f4;
+    f4 *= vFill(s);
 #else
     x *= s;
     y *= s;
@@ -383,13 +383,13 @@ public:
    * Division by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec4& operator /= (scalar s)
+  Vec4& operator /= (float s)
   {
-#ifdef OZ_SIMD_MATH
-    f4 /= s.f4;
-#else
     hard_assert(s != 0.0f);
 
+#ifdef OZ_SIMD_MATH
+    f4 /= vFill(s);
+#else
     s  = 1.0f / s;
     x *= s;
     y *= s;
@@ -403,10 +403,10 @@ public:
    * Scalar product.
    */
   OZ_ALWAYS_INLINE
-  scalar operator * (const Vec4& v) const
+  float operator * (const Vec4& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return vDot(f4, v.f4);
+    return vFirst(vDot(f4, v.f4));
 #else
     return x*v.x + y*v.y + z*v.z + w*v.w;
 #endif

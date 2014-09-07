@@ -51,7 +51,3 @@ else()
   endif()
 
 endif()
-
-if(OZ_DYNAMICS)
-  target_link_libraries(openzone ozDynamics)
-endif()
