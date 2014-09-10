@@ -45,7 +45,7 @@ protected:
 
 public:
 
-  explicit SettingsFrame();
+  SettingsFrame();
 
 };
 

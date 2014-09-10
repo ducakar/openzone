@@ -25,13 +25,13 @@
  *
  * `Alloc` class and enhanced `new`/`delete` operators.
  *
- * Besides `Alloc` class, enhanced `new`/`delete` operators are optionally defined in this module,
- * overriding standard ones defined in \<new\>.
- * - If compiled with `OZ_ALLOCATOR` `new`/`delete` also rewrites freed memory with 0xee bytes,
- *   tracks memory statistics and allocated chunks to catch memory leaks and `new`/`delete`
- *   mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()` can be used to iterate over chunks
- *   allocated by `new` and `new[]` operators respectively.
- * - If compiled with `OZ_SIMD_MATH` allocated chunks are aligned to 16 bytes.
+ * Besides `Alloc` class, enhanced `new`/`delete` operators are defined in this module, overriding
+ * the standard ones.
+ * - When compiled with `OZ_ALLOCATOR` the `new`/`delete` overloads also rewrite the freed memory
+ *   with 0xee bytes and track memory statistics and allocated chunks to catch any memory leaks and
+ *   `new`/`delete` mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()` can be used to
+ *   iterate over the chunks currently allocated by `new` and `new[]` operator respectively.
+ * - If compiled with `OZ_SIMD_MATH` the allocated chunks are aligned to 16 bytes.
  *
  * @note
  * Enabling AddressSanitizer, LeakSanitizer & similar tools overrides `new`/`delete` once again and

@@ -36,8 +36,6 @@
 namespace oz
 {
 
-#ifdef OZ_ALLOCATOR
-
 enum AllocMode
 {
   OBJECT,
@@ -49,15 +47,19 @@ static SpinLock                allocInfoLock;
 
 static void* allocate(AllocMode mode, size_t size)
 {
+  static_cast<void>(mode);
+
 #ifdef OZ_SIMD_MATH
   size = Alloc::alignUp(size);
 #endif
+#ifdef OZ_ALLOCATOR
   size += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
+#endif
 
 #if defined(OZ_SIMD_MATH) && defined(_WIN32)
-  void* ptr = _aligned_malloc(size, Alloc::ALIGNMENT);
+  void* ptr = _aligned_malloc(size, OZ_ALIGNMENT);
 #elif defined(OZ_SIMD_MATH)
-  void* ptr = alligned_alloc(Alloc::ALIGNMENT, size);
+  void* ptr = aligned_alloc(OZ_ALIGNMENT, size);
 #else
   void* ptr = malloc(size);
 #endif
@@ -65,6 +67,8 @@ static void* allocate(AllocMode mode, size_t size)
   if (ptr == nullptr) {
     OZ_ERROR("oz::Alloc: Out of memory");
   }
+
+#ifdef OZ_ALLOCATOR
 
   Alloc::ChunkInfo* ci = static_cast<Alloc::ChunkInfo*>(ptr);
   ci->size       = size;
@@ -85,11 +89,19 @@ static void* allocate(AllocMode mode, size_t size)
 
   allocInfoLock.unlock();
 
-  return static_cast<char*>(ptr) + Alloc::alignUp(sizeof(Alloc::ChunkInfo));
+  ptr = static_cast<char*>(ptr) + Alloc::alignUp(sizeof(Alloc::ChunkInfo));
+
+#endif
+
+  return ptr;
 }
 
 static void deallocate(AllocMode mode, void* ptr)
 {
+  static_cast<void>(mode);
+
+#ifdef OZ_ALLOCATOR
+
   ptr = static_cast<char*>(ptr) - Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 
   allocInfoLock.lock();
@@ -119,14 +131,14 @@ static void deallocate(AllocMode mode, void* ptr)
 
   mSet(ptr, 0xee, int(ci->size));
 
+#endif
+
 #if defined(OZ_SIMD_MATH) && defined(_WIN32)
   _aligned_free(ptr));
 #else
   free(ptr);
 #endif
 }
-
-#endif // OZ_ALLOCATOR
 
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;
@@ -137,25 +149,15 @@ size_t Alloc::maxAmount = 0;
 
 Alloc::CIterator Alloc::objectCIter()
 {
-#ifdef OZ_ALLOCATOR
   return chunkInfos[OBJECT].citer();
-#else
-  return CIterator();
-#endif
 }
 
 Alloc::CIterator Alloc::arrayCIter()
 {
-#ifdef OZ_ALLOCATOR
   return chunkInfos[ARRAY].citer();
-#else
-  return CIterator();
-#endif
 }
 
 }
-
-#ifdef OZ_ALLOCATOR
 
 OZ_WEAK
 void* operator new (size_t size)
@@ -216,5 +218,3 @@ void operator delete[] (void* ptr, const std::nothrow_t&) noexcept
   }
   oz::deallocate(oz::ARRAY, ptr);
 }
-
-#endif // OZ_ALLOCATOR

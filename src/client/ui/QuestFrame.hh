@@ -61,7 +61,7 @@ protected:
 
 public:
 
-  explicit QuestFrame();
+  QuestFrame();
 
   void clear();
 

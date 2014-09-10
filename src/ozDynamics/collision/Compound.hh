@@ -55,7 +55,7 @@ public:
 public:
 
   OZ_ALWAYS_INLINE
-  explicit Compound() :
+  Compound() :
     Shape(COMPOUND)
   {}
 

@@ -49,7 +49,7 @@ struct ImageData
   /**
    * Create empty instance, no allocation is performed.
    */
-  explicit ImageData();
+  ImageData();
 
   /**
    * Create an image an allocate memory for pixel data.
@@ -110,7 +110,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit ImageBuilder() = delete;
+  ImageBuilder() = delete;
 
   /**
    * Get the last error string from `buildDDS()`.

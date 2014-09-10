@@ -53,7 +53,7 @@ private:
 
 public:
 
-  explicit Label();
+  Label();
 
   OZ_PRINTF_FORMAT(6, 7)
   explicit Label(int x, int y, int align, Font::Type font, const char* s, ...);

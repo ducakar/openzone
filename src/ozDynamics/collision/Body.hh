@@ -73,7 +73,7 @@ public:
   /**
    * Create uninitialised instance.
    */
-  explicit Body() :
+  Body() :
     flags(0), mask(~0), odeId(nullptr), bodyShape(nullptr)
   {}
 

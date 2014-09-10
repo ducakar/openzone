@@ -54,7 +54,7 @@ protected:
 
 public:
 
-  explicit CreditsMenu();
+  CreditsMenu();
 
 };
 

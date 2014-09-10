@@ -67,7 +67,7 @@ protected:
 
 public:
 
-  explicit GalileoFrame();
+  GalileoFrame();
   ~GalileoFrame();
 
   void setMaximised(bool doMaximise);

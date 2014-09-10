@@ -158,7 +158,7 @@ public:
     hard_assert(x*x + y*y + z*z > 0.0f);
 
 #ifdef OZ_SIMD_MATH
-    float4 k = vFill(1.0f) / vSqrt(vDot(f4, f4));
+    float4 k = vInvSqrt(vDot(f4, f4));
     return Vec3(f4 * k);
 #else
     float k = 1.0f / Math::sqrt(x*x + y*y + z*z);
@@ -358,10 +358,10 @@ public:
   Vec3 operator ^ (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    float4 a  = vShuffle(f4, f4, 1, 2, 0, 3);
-    float4 b  = vShuffle(f4, f4, 2, 0, 1, 3);
-    float4 va = vShuffle(v.f4, v.f4, 2, 0, 1, 3);
-    float4 vb = vShuffle(v.f4, v.f4, 1, 2, 0, 3);
+    float4 a  = vShuffle(f4, 1, 2, 0, 3);
+    float4 b  = vShuffle(f4, 2, 0, 1, 3);
+    float4 va = vShuffle(v.f4, 2, 0, 1, 3);
+    float4 vb = vShuffle(v.f4, 1, 2, 0, 3);
 
     return Vec3(a*va - b*vb);
 #else

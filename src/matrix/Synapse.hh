@@ -61,7 +61,7 @@ public:
 
 public:
 
-  explicit Synapse();
+  Synapse();
 
   void use(Bot* user, Object* target);
   void trigger(Entity* target);

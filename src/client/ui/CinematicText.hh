@@ -46,7 +46,7 @@ protected:
 
 public:
 
-  explicit CinematicText();
+  CinematicText();
 
   void set(const char* title);
 

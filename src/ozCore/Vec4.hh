@@ -214,7 +214,7 @@ public:
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
 #ifdef OZ_SIMD_MATH
-    float4 k = vFill(1.0f) / vSqrt(vDot(f4, f4));
+    float4 k = vInvSqrt(vDot(f4, f4));
     return Vec4(f4 * k);
 #else
     float k = 1.0f / Math::sqrt(x*x + y*y + z*z + w*w);

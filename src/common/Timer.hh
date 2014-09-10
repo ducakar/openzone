@@ -63,7 +63,7 @@ public:
   /**
    * Default constructor, resets timer.
    */
-  explicit Timer();
+  Timer();
 
   /**
    * Reset all timer counters to zero.

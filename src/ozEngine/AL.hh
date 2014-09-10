@@ -69,7 +69,7 @@ public:
     /**
      * Create an empty instance (no internal OpenAL buffers are created).
      */
-    explicit Streamer();
+    Streamer();
 
     /**
      * Same as default constructor plus `open()`.
@@ -146,7 +146,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit AL() = delete;
+  AL() = delete;
 
   /**
    * Helper function for `OZ_AL_CHECK_ERROR` macro.

@@ -68,7 +68,7 @@ public:
   int  liquidTexId;
   Vec4 liquidFogColour;
 
-  explicit Terra();
+  Terra();
 
   void draw();
   void drawLiquid();

@@ -47,7 +47,7 @@ protected:
 
 public:
 
-  explicit TalkFrame();
+  TalkFrame();
 
 };
 

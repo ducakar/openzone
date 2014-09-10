@@ -30,8 +30,15 @@
 
 #include "common.hh"
 
-#if defined(OZ_SIMD_MATH) && !defined(__SSE3__)
-# error OZ_SIMD_MATH is only implemented for SSE3.
+#ifdef OZ_SIMD_MATH
+# if defined(__ARM_NEON__)
+#  error OZ_SIMD_MATH is only implemented for SSE3.
+#  include <arm_neon.h>
+# elif defined(__SSE__)
+#  include <xmmintrin.h>
+# else
+#  error OZ_SIMD_MATH is only implemented for SSE3.
+# endif
 #endif
 
 namespace oz
@@ -42,161 +49,182 @@ namespace oz
 /**
  * SIMD vector of four floats.
  */
+#ifdef __ARM_NEON__
+typedef float32x4_t float4;
+#else
 typedef float __attribute__((vector_size(16))) float4;
+#endif
 
 /**
  * SIMD vector of four unsigned integers.
  */
+#ifdef __ARM_NEON__
+typedef uint32x4_t uint4;
+#else
 typedef uint __attribute__((vector_size(16))) uint4;
+#endif
 
 /**
- * SIMD vector that can be accessed either as float4 or uint4.
+ * Construct a float vector with given components.
  */
-union simd4
-{
-  float4 f4;
-  uint4  u4;
-};
-
 OZ_ALWAYS_INLINE
 inline float4 vFill(float x, float y, float z, float w)
 {
   return float4 { x, y, z, w };
 }
 
+/**
+ * Construct an uniform (i.e. all components identical) float vector.
+ */
 OZ_ALWAYS_INLINE
 inline float4 vFill(float x)
 {
   return float4 { x, x, x, x };
 }
 
+/**
+ * Construct an uint vector with given components.
+ */
 OZ_ALWAYS_INLINE
 inline uint4 vFill(uint x, uint y, uint z, uint w)
 {
   return uint4 { x, y, z, w };
 }
 
+/**
+ * Construct an uniform (i.e. all components identical) uint vector.
+ */
 OZ_ALWAYS_INLINE
 inline uint4 vFill(uint x)
 {
   return uint4 { x, x, x, x };
 }
 
+/**
+ * First component of a vector.
+ */
 OZ_ALWAYS_INLINE
 inline float vFirst(float4 a)
 {
-#if defined(OZ_CLANG)
-  return a[0];
-#elif defined(__ARM_NEON__)
-  return __builtin_neon_vget_lanev4sf(a, 0, 3);
+#ifdef __ARM_NEON__
+  return vgetq_lane_f32(a, 0);
 #else
-  return __builtin_ia32_vec_ext_v4sf(a, 0);
+  return _mm_cvtss_f32(a);
 #endif
 }
 
 /**
  * @def vShuffle
- * Compiler- and platform-dependent built-in function for SIMD vector shuffle.
+ * Shuffle elements of a single vector.
  */
 #if defined(OZ_CLANG)
-# define vShuffle(a, b, i, j, k, l) \
-  __builtin_shufflevector(a, b, i, j, k, l)
-#elif defined(__ARM_NEON__)
-  // TODO Neon shuffle for GCC
+# define vShuffle(a, i, j, k, l) __builtin_shufflevector(a, a, i, j, k, l)
 #else
-# define vShuffle(a, b, i, j, k, l) \
-  __builtin_ia32_shufps(a, b, i | (j << 2) | (k << 4) | (l << 6));
+# define vShuffle(a, i, j, k, l) __builtin_shuffle(a, uint4 { i, j, k, l })
 #endif
 
 /**
- * Component-wise absolute value of a SIMD vector.
+ * Component-wise absolute value of a float vector (accessed as uint vector).
  */
 OZ_ALWAYS_INLINE
 inline uint4 vAbs(uint4 a)
 {
-#if defined(__ARM_NEON__)
-  return __builtin_neon_vabsv4sf(a, 3);
-#else
   return a & vFill(0x7fffffffu);
-#endif
 }
 
 /**
- * Component-wise minimum of float SIMD vectors.
+ * Component-wise minimum of float vectors.
  */
 OZ_ALWAYS_INLINE
 inline float4 vMin(float4 a, float4 b)
 {
 #if defined(__ARM_NEON__)
-  return __builtin_neon_vminv4sf(a, b, 3);
+  return vminq_f32(a, b);
 #else
-  return __builtin_ia32_minps(a, b);
+  return _mm_min_ps(a, b);
 #endif
 }
 
 /**
- * Component-wise maximum of float SIMD vectors.
+ * Component-wise maximum of float vectors.
  */
 OZ_ALWAYS_INLINE
 inline float4 vMax(float4 a, float4 b)
 {
 #if defined(__ARM_NEON__)
-  return __builtin_neon_vmaxv4sf(a, b, 3);
+  return vmaxq_f32(a, b);
 #else
-  return __builtin_ia32_maxps(a, b);
+  return _mm_max_ps(a, b);
 #endif
 }
 
 /**
- * Component-wise square root of a float SIMD vector.
+ * Component-wise square root of a uniform float vector.
  */
 OZ_ALWAYS_INLINE
 inline float4 vSqrt(float4 a)
 {
 #if defined(__ARM_NEON__)
-  // TODO Neon sqrt
+  return vFill(__builtin_sqrtf(vFirst(a)));
 #else
-  return __builtin_ia32_sqrtps(a);
+  return _mm_sqrt_ps(a);
 #endif
 }
 
 /**
- * Component-wise fast inverse square root of a float SIMD vector.
+ * Component-wise reciprocal square root of a uniform float vector.
+ */
+OZ_ALWAYS_INLINE
+inline float4 vInvSqrt(float4 a)
+{
+#if defined(__ARM_NEON__)
+  return vFill(1.0f / __builtin_sqrtf(vFirst(a)));
+#else
+  return _mm_rsqrt_ps(a);
+#endif
+}
+
+/**
+ * Component-wise fast inverse square root of a uniform float vector.
  */
 OZ_ALWAYS_INLINE
 inline float4 vFastInvSqrt(float4 a)
 {
-  simd4 s = { a };
+#ifdef __ARM_NEON__
+
+  return vrsqrteq_f32(a);
+
+#else
+
+  union Float4Bits
+  {
+    float4 f4;
+    uint4  u4;
+  };
+  Float4Bits s = { a };
 
   s.u4 = vFill(0x5f375a86u) - (s.u4 >> vFill(1u));
   return s.f4 * (vFill(1.5f) - vFill(0.5f) * a * s.f4*s.f4);
+
+#endif
 }
 
 /**
- * Component-wise fast inverse square root of a float SIMD vector.
- */
-OZ_ALWAYS_INLINE
-inline float4 vFastSqrt(float4 a)
-{
-  simd4 s = { a };
-
-  s.u4 = vFill(0x5f375a86u) - (s.u4 >> vFill(1u));
-  return a * s.f4 * (vFill(1.5f) - vFill(0.5f) * a * s.f4*s.f4);
-}
-
-/**
- * Scalar product for float SIMD vectors (returns float SIMD vector).
+ * Scalar product of float vectors returned as a uniform float vector.
  */
 OZ_ALWAYS_INLINE
 inline float4 vDot(float4 a, float4 b)
 {
   float4 p = a * b;
-#if defined(__ARM_NEON__)
-  // TODO Neon dot product
+
+#ifdef __ARM_NEON__
+  p += vrev64q_f32(p);
+  p += vcombine_f32(vget_high_f32(p), vget_low_f32(p));
 #else
-  float4 s = __builtin_ia32_haddps(p, p);
-  return __builtin_ia32_haddps(s, s);
+  p += vShuffle(p, 1, 0, 3, 2);
+  p += vShuffle(p, 2, 3, 0, 1);
 #endif
+  return p;
 }
 
 #endif // OZ_SIMD_MATH
@@ -209,7 +237,7 @@ class VectorBase3
 public:
 
 #ifdef OZ_SIMD_MATH
-  __extension__ union OZ_ALIGNED(16)
+  __extension__ union
   {
     float4 f4;
     uint4  u4;
@@ -305,7 +333,7 @@ class VectorBase4
 public:
 
 #ifdef OZ_SIMD_MATH
-  __extension__ union OZ_ALIGNED(16)
+  __extension__ union
   {
     float4 f4;
     uint4  u4;

@@ -45,7 +45,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit ModelBuilder() = delete;
+  ModelBuilder() = delete;
 
   /**
    * Get the last error string from Assimp.

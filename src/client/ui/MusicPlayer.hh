@@ -58,7 +58,7 @@ protected:
 
 public:
 
-  explicit MusicPlayer();
+  MusicPlayer();
   ~MusicPlayer() override;
 
 };

@@ -229,7 +229,7 @@ function fetch()
   download 'http://zlib.net/zlib-1.2.8.tar.xz'
 
   # libpng
-  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.12.tar.xz'
+  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.13.tar.xz'
 
   # libogg
   download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.xz'
@@ -345,7 +345,7 @@ function build_zlib()
 
 function build_libpng()
 {
-  prepare libpng-1.6.12 libpng-1.6.12.tar.xz || return
+  prepare libpng-1.6.13 libpng-1.6.13.tar.xz || return
   applyPatches libpng-1.6.6.patch
 
   cmakeBuild -D PNG_SHARED=0 \

@@ -137,7 +137,7 @@ private:
 
 public:
 
-  explicit Collider();
+  Collider();
 
   bool overlaps(const Point& point, const Object* exclObj = nullptr);
   bool overlaps(const AABB& aabb, const Object* exclObj = nullptr);

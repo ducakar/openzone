@@ -86,7 +86,7 @@ protected:
 
 public:
 
-  explicit HudArea();
+  HudArea();
 
 };
 

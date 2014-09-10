@@ -108,7 +108,7 @@ struct AL::Streamer::Data
   InputStream    is;
   char           samples[BUFFER_SIZE];
 
-  explicit Data() :
+  Data() :
     buffers { 0, 0 }
   {}
 };

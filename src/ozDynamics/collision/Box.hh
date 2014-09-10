@@ -47,7 +47,7 @@ public:
 public:
 
   OZ_ALWAYS_INLINE
-  explicit Box() :
+  Box() :
     Shape(BOX)
   {}
 

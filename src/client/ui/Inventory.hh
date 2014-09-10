@@ -81,7 +81,7 @@ protected:
 
 public:
 
-  explicit Inventory();
+  Inventory();
 
 };
 

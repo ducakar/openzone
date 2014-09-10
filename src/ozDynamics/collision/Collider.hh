@@ -42,7 +42,7 @@ public:
     Vec3  axis;
     float depth;
 
-    explicit Result() :
+    Result() :
       depth(Math::INF)
     {}
 

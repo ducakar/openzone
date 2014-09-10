@@ -60,7 +60,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit Window() = delete;
+  Window() = delete;
 
   /**
    * True the window is created.

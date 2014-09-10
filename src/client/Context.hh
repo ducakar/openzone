@@ -169,7 +169,7 @@ private:
 
 public:
 
-  explicit Context();
+  Context();
 
   static Texture loadTexture(const File& albedoFile, const File& masksFile,
                              const File& normalsFile);

@@ -54,7 +54,7 @@ public:
 
 public:
 
-  explicit Mind();
+  Mind();
   explicit Mind(int bot);
   explicit Mind(int bot, InputStream* is);
   ~Mind();

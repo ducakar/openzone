@@ -45,7 +45,7 @@ public:
 public:
 
   OZ_ALWAYS_INLINE
-  explicit Polytope() :
+  Polytope() :
     Shape(POLYTOPE)
   {}
 

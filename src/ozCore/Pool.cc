@@ -39,8 +39,8 @@ union PoolAlloc::Slot
 
 struct PoolAlloc::Block
 {
-  Block* nextBlock;
-  char   data[1] OZ_ALIGNED(OZ_ALIGNMENT);
+  Block*                     nextBlock;
+  alignas(OZ_ALIGNMENT) char data[1];
 
   OZ_HIDDEN
   static Block* create(int slotSize, int nSlots, Block* nextBlock)

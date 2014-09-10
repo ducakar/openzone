@@ -80,7 +80,7 @@ private:
 
 public:
 
-  explicit BuildFrame();
+  BuildFrame();
   ~BuildFrame() override;
 
 };

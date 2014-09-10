@@ -49,7 +49,7 @@ public:
    * Create uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit Bounds() = default;
+  Bounds() = default;
 
   /**
    * Create from a given minimal and maximal point.

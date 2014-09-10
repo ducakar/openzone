@@ -70,7 +70,7 @@ struct Render::DrawEntry
   };
 
   OZ_ALWAYS_INLINE
-  explicit DrawEntry() = default;
+  DrawEntry() = default;
 
   OZ_ALWAYS_INLINE
   explicit DrawEntry(float distance_, const Struct* str_) :

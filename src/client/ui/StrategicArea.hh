@@ -93,7 +93,7 @@ protected:
 
 public:
 
-  explicit StrategicArea();
+  StrategicArea();
 
   void setOverlay(OverlayCallback* callback, Area* sender);
   void clearOverlay();

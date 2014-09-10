@@ -95,7 +95,7 @@ public:
   /**
    * Create an empty instance.
    */
-  explicit Cursor();
+  Cursor();
 
   /**
    * Create from file.

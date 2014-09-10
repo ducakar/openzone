@@ -75,7 +75,7 @@ protected:
 
 public:
 
-  explicit EditFrame();
+  EditFrame();
 
 };
 

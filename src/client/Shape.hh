@@ -48,7 +48,7 @@ private:
 
 public:
 
-  explicit Shape();
+  Shape();
 
   void bind() const;
   void unbind() const;

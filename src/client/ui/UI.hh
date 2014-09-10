@@ -73,7 +73,7 @@ public:
   BuildFrame*    buildFrame;
   DebugFrame*    debugFrame;
 
-  explicit UI();
+  UI();
 
   void showLoadingScreen(bool doShow);
 

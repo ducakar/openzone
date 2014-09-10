@@ -138,7 +138,7 @@ private:
     Point pos;
     Vec4  colour;
 
-    explicit Light() = default;
+    Light() = default;
     explicit Light(const Point& pos, const Vec4& colour);
   };
 
@@ -200,7 +200,7 @@ public:
   bool doPostprocess;
   bool nLights;
 
-  explicit Shader();
+  Shader();
 
   void program(int id);
 

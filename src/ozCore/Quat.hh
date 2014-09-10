@@ -156,7 +156,7 @@ public:
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
 #ifdef OZ_SIMD_MATH
-    float4 k = vFill(1.0f) / vSqrt(vDot(f4, f4));
+    float4 k = vInvSqrt(vDot(f4, f4));
     return Quat(f4 * k);
 #else
     float k = 1.0f / Math::sqrt(x*x + y*y + z*z + w*w);
@@ -262,13 +262,13 @@ public:
 #ifdef OZ_SIMD_MATH
     float4 k0 = vFill(w);
     float4 k1 = f4;
-    float4 k2 = vShuffle(f4, f4, 1, 2, 0, 3);
-    float4 k3 = vShuffle(f4, f4, 2, 0, 1, 3);
+    float4 k2 = vShuffle(f4, 1, 2, 0, 3);
+    float4 k3 = vShuffle(f4, 2, 0, 1, 3);
 
     float4 q0 = q.f4;
     float4 q1 = vFill(q.w);
-    float4 q2 = vShuffle(q.f4, q.f4, 2, 0, 1, 3);
-    float4 q3 = vShuffle(q.f4, q.f4, 1, 2, 0, 3);
+    float4 q2 = vShuffle(q.f4, 2, 0, 1, 3);
+    float4 q3 = vShuffle(q.f4, 1, 2, 0, 3);
 
     Quat tq = Quat(k0*q0 + k1*q1 + k2*q2 - k3*q3);
     tq.w   -= vFirst(vDot(k1, q.f4));
@@ -306,13 +306,13 @@ public:
 #ifdef OZ_SIMD_MATH
     float4 k = vFill(s);
 
-    k = k / vDot(q.f4, q.f4);
-    k = vShuffle(k, -k, 0, 0, 0, 0);
-    k = vShuffle(k, +k, 0, 0, 0, 2);
+    k /= vDot(q.f4, q.f4);
+    k *= vFill(-1.0f, -1.0f, -1.0f, +1.0f);
 
     return Quat(q.f4 * k);
 #else
-    s = s / (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
+    s /= (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
+
     float ns = -s;
     return Quat(q.x * ns, q.y * ns, q.z * ns, q.w * s);
 #endif
@@ -326,13 +326,13 @@ public:
 #ifdef OZ_SIMD_MATH
     float4 k0 = f4;
     float4 k1 = vFill(w);
-    float4 k2 = vShuffle(f4, f4, 2, 0, 1, 3);
-    float4 k3 = vShuffle(f4, f4, 1, 2, 0, 3);
+    float4 k2 = vShuffle(f4, 2, 0, 1, 3);
+    float4 k3 = vShuffle(f4, 1, 2, 0, 3);
 
     float4 q0 = vFill(q.w);
     float4 q1 = q.f4;
-    float4 q2 = vShuffle(q.f4, q.f4, 1, 2, 0, 3);
-    float4 q3 = vShuffle(q.f4, q.f4, 2, 0, 1, 3);
+    float4 q2 = vShuffle(q.f4, 1, 2, 0, 3);
+    float4 q3 = vShuffle(q.f4, 2, 0, 1, 3);
 
     Quat tq = Quat(k0*q0 - k1*q1 + k2*q2 - k3*q3);
     tq.w    = vFirst(vDot(k0, q.f4));
@@ -407,13 +407,13 @@ public:
 #ifdef OZ_SIMD_MATH
     float4 k0 = vFill(w);
     float4 k1 = f4;
-    float4 k2 = vShuffle(f4, f4, 1, 2, 0, 3);
-    float4 k3 = vShuffle(f4, f4, 2, 0, 1, 3);
+    float4 k2 = vShuffle(f4, 1, 2, 0, 3);
+    float4 k3 = vShuffle(f4, 2, 0, 1, 3);
 
     float4 q0 = q.f4;
     float4 q1 = vFill(q.w);
-    float4 q2 = vShuffle(q.f4, q.f4, 2, 0, 1, 3);
-    float4 q3 = vShuffle(q.f4, q.f4, 1, 2, 0, 3);
+    float4 q2 = vShuffle(q.f4, 2, 0, 1, 3);
+    float4 q3 = vShuffle(q.f4, 1, 2, 0, 3);
 
     f4 = k0*q0 + k1*q1 + k2*q2 - k3*q3;
     w -= vFirst(vDot(k1, q0));
@@ -456,13 +456,13 @@ public:
 #ifdef OZ_SIMD_MATH
     float4 k0 = f4;
     float4 k1 = vFill(w);
-    float4 k2 = vShuffle(f4, f4, 2, 0, 1, 3);
-    float4 k3 = vShuffle(f4, f4, 1, 2, 0, 3);
+    float4 k2 = vShuffle(f4, 2, 0, 1, 3);
+    float4 k3 = vShuffle(f4, 1, 2, 0, 3);
 
     float4 q0 = vFill(q.w);
     float4 q1 = q.f4;
-    float4 q2 = vShuffle(q.f4, q.f4, 1, 2, 0, 3);
-    float4 q3 = vShuffle(q.f4, q.f4, 2, 0, 1, 3);
+    float4 q2 = vShuffle(q.f4, 1, 2, 0, 3);
+    float4 q3 = vShuffle(q.f4, 2, 0, 1, 3);
 
     f4  = k0*q0 - k1*q1 + k2*q2 - k3*q3;
     w   = vFirst(vDot(k0, q.f4));

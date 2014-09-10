@@ -48,7 +48,7 @@ public:
 public:
 
   OZ_ALWAYS_INLINE
-  explicit Capsule() :
+  Capsule() :
     Shape(CAPSULE)
   {}
 

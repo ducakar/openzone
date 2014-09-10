@@ -49,7 +49,7 @@ public:
    * Create uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  explicit AABB() = default;
+  AABB() = default;
 
   /**
    * Create `AABB` with a given centre and extents.

@@ -74,7 +74,7 @@ public:
 
 public:
 
-  explicit Caelum();
+  Caelum();
 
   void update();
   void draw();

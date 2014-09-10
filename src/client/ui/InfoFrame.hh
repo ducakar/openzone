@@ -55,7 +55,7 @@ protected:
 
 public:
 
-  explicit InfoFrame();
+  InfoFrame();
 
 };
 

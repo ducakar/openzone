@@ -84,7 +84,7 @@ SharedLib::Function* SharedLib::get(const char* symbol) const
   return reinterpret_cast<Function*>(proc);
 #else
   Function* function;
-  *(void**) &function = dlsym(handle, symbol);
+  function = reinterpret_cast<Function*>(dlsym(handle, symbol));
   return function;
 #endif
 }

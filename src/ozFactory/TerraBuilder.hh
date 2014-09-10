@@ -57,7 +57,7 @@ public:
   /**
    * Forbid instances.
    */
-  explicit TerraBuilder() = delete;
+  TerraBuilder() = delete;
 
   /**
    * Set height values to which -1.0 and +1.0 map respectively.

@@ -51,7 +51,7 @@ protected:
 
 public:
 
-  explicit MainMenu();
+  MainMenu();
 
 };
 

@@ -437,7 +437,7 @@ public:
   }
 
   /**
-   * Fast inverse square root (using improved algorithm from Quake).
+   * Fast reciprocal square root (using improved algorithm from Quake).
    */
   OZ_ALWAYS_INLINE
   static float fastInvSqrt(float x)

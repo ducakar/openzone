@@ -73,14 +73,15 @@ You may also want to adjust several options when configuring CMake build system:
 
 - `OZ_ALLOCATOR`: Enable memory allocation statistics and tracking of allocated memory chunks. Stack
   trace for every memory allocation performed via new operator is saved for later diagnostics. It
-  detects new/delete mismatches and one can check for currently allocated memory chunks (and hence
-  memory leaks). Upon freeing a memory chunk is rewritten with 0xee bytes which makes accesses to
-  the freed memory very likely to result in an error or a crash.
+  detects new/delete mismatches and can be used to list the currently allocated memory chunks (and
+  hence memory leaks). Upon freeing, a memory chunk is rewritten with 0xee bytes which makes
+  accesses to the freed memory very likely to result in an error or a crash.
+  `OFF` by default.
 
-- `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
-  Plane, Quat, Mat44). Currently it yields ~15% worse performance than the generic implementation
-  since `Vec3` and `Point` become longer (4 floats v. 3 floats) and there are plenty of accesses to
-  vector components in OpenZone code (it wasn't written with SIMD in mind).
+- `OZ_SIMD_MATH`: Enable SIMD-specific implementation (SSE1 & NEON) of linear algebra classes (Vec3,
+  Vec4, Point, Plane, Quat, Mat3, Mat4). Currently it yields ~15% worse performance than the generic
+  implementation since `Vec3` and `Point` become longer (4 floats v. 3 floats) and there are plenty
+  of accesses to vector components in the code, as it hasn't been written with SIMD in mind.
   `OFF` by default.
 
 - `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library (ozDynamics). Requires ODE (Open Dynamics

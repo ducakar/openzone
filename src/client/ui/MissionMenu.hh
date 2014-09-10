@@ -94,7 +94,7 @@ protected:
 
 public:
 
-  explicit MissionMenu();
+  MissionMenu();
   ~MissionMenu();
 
 };

@@ -50,7 +50,7 @@ protected:
 
 public:
 
-  explicit DebugFrame();
+  DebugFrame();
 
 };
 

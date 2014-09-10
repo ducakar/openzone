@@ -46,7 +46,7 @@ public:
 
   Label status;
 
-  explicit LoadingArea();
+  LoadingArea();
 
 };
 
