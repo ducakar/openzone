@@ -651,49 +651,39 @@ String::String(String&& s) :
 
 String& String::operator = (const String& s)
 {
-  if (&s == this) {
-    return *this;
+  if (&s != this) {
+    ensureCapacity(s.count);
+    mCopy(buffer, s.buffer, count + 1);
   }
-
-  ensureCapacity(s.count);
-  mCopy(buffer, s.buffer, count + 1);
-
   return *this;
 }
 
 String& String::operator = (String&& s)
 {
-  if (&s == this) {
-    return *this;
+  if (&s != this) {
+    if (buffer != baseBuffer) {
+      delete[] buffer;
+    }
+
+    count = s.count;
+
+    if (s.buffer != s.baseBuffer) {
+      buffer   = s.buffer;
+      s.buffer = s.baseBuffer;
+    }
+    else {
+      buffer = baseBuffer;
+      mCopy(baseBuffer, s.baseBuffer, count + 1);
+    }
+
+    s.count         = 0;
+    s.baseBuffer[0] = '\0';
   }
-
-  if (buffer != baseBuffer) {
-    delete[] buffer;
-  }
-
-  count = s.count;
-
-  if (s.buffer != s.baseBuffer) {
-    buffer   = s.buffer;
-    s.buffer = s.baseBuffer;
-  }
-  else {
-    buffer = baseBuffer;
-    mCopy(baseBuffer, s.baseBuffer, count + 1);
-  }
-
-  s.count         = 0;
-  s.baseBuffer[0] = '\0';
-
   return *this;
 }
 
 String& String::operator = (const char* s)
 {
-  if (s == buffer) {
-    return *this;
-  }
-
   if (s == nullptr) {
     ensureCapacity(0);
     buffer[0] = '\0';
@@ -702,7 +692,6 @@ String& String::operator = (const char* s)
     ensureCapacity(length(s));
     mCopy(buffer, s, count + 1);
   }
-
   return *this;
 }
 

@@ -59,14 +59,11 @@ SharedLib::SharedLib(SharedLib&& l) :
 
 SharedLib& SharedLib::operator = (SharedLib&& l)
 {
-  if (&l == this) {
-    return *this;
+  if (&l != this) {
+    handle = l.handle;
+
+    l.handle = nullptr;
   }
-
-  handle = l.handle;
-
-  l.handle = nullptr;
-
   return *this;
 }
 

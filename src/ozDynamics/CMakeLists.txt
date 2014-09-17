@@ -31,7 +31,6 @@ add_library(ozDynamics
   physics/Physics.cc
 #END SOURCES
 )
-use_pch(ozDynamics pch)
 
 target_link_libraries(ozDynamics ozCore)
 

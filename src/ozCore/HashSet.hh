@@ -364,23 +364,20 @@ public:
    */
   HashSet& operator = (const HashSet& ht)
   {
-    if (&ht == this) {
-      return *this;
+    if (&ht != this) {
+      clear();
+
+      if (size < ht.pool.count) {
+        delete[] data;
+
+        data = new Entry[ht.size];
+        size = ht.size;
+      }
+
+      for (int i = 0; i < size; ++i) {
+        data[i] = i < ht.size ? cloneChain(ht.data[i]) : nullptr;
+      }
     }
-
-    clear();
-
-    if (size < ht.pool.count) {
-      delete[] data;
-
-      data = new Entry[ht.size];
-      size = ht.size;
-    }
-
-    for (int i = 0; i < size; ++i) {
-      data[i] = i < ht.size ? cloneChain(ht.data[i]) : nullptr;
-    }
-
     return *this;
   }
 
@@ -389,20 +386,17 @@ public:
    */
   HashSet& operator = (HashSet&& ht)
   {
-    if (&ht == this) {
-      return *this;
+    if (&ht != this) {
+      clear();
+      delete[] data;
+
+      pool = static_cast<Pool<Entry, GRANULARITY>&&>(ht.pool);
+      data = ht.data;
+      size = ht.size;
+
+      ht.data = nullptr;
+      ht.size = 0;
     }
-
-    clear();
-    delete[] data;
-
-    pool = static_cast<Pool<Entry, GRANULARITY>&&>(ht.pool);
-    data = ht.data;
-    size = ht.size;
-
-    ht.data = nullptr;
-    ht.size = 0;
-
     return *this;
   }
 

@@ -47,7 +47,7 @@ public:
 
 private:
 
-  volatile int  flag      = 0;     ///< Spin lock.
+  volatile bool flag      = false; ///< Internal spin lock.
   volatile bool wasCalled = false; ///< Whether the function was already called.
 
 public:

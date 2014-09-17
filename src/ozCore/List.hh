@@ -165,20 +165,17 @@ public:
    */
   List& operator = (const List& l)
   {
-    if (&l == this) {
-      return *this;
+    if (&l != this) {
+      if (size < l.count) {
+        delete[] data;
+
+        data = new Elem[l.size];
+        size = l.size;
+      }
+
+      aCopy<Elem>(l.data, l.count, data);
+      count = l.count;
     }
-
-    if (size < l.count) {
-      delete[] data;
-
-      data = new Elem[l.size];
-      size = l.size;
-    }
-
-    aCopy<Elem>(l.data, l.count, data);
-    count = l.count;
-
     return *this;
   }
 
@@ -187,20 +184,17 @@ public:
    */
   List& operator = (List&& l)
   {
-    if (&l == this) {
-      return *this;
+    if (&l != this) {
+      delete[] data;
+
+      data    = l.data;
+      count   = l.count;
+      size    = l.size;
+
+      l.data  = nullptr;
+      l.count = 0;
+      l.size  = 0;
     }
-
-    delete[] data;
-
-    data    = l.data;
-    count   = l.count;
-    size    = l.size;
-
-    l.data  = nullptr;
-    l.count = 0;
-    l.size  = 0;
-
     return *this;
   }
 

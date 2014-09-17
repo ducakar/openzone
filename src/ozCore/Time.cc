@@ -99,7 +99,11 @@ void Time::sleep(uint milliseconds)
     time_t(milliseconds / 1000),
     long((milliseconds % 1000) * 1000000)
   };
+# if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
+  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
+# else
   nanosleep(&ts, nullptr);
+# endif
 
 #endif
 }
@@ -118,7 +122,11 @@ void Time::usleep(uint microseconds)
     time_t(microseconds / 1000000),
     long((microseconds % 1000000) * 1000)
   };
+# if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
+  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
+# else
   nanosleep(&ts, nullptr);
+# endif
 
 #endif
 }

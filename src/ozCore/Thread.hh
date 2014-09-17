@@ -77,14 +77,14 @@ public:
   ~Thread();
 
   /**
-   * Copying or moving is not possible.
+   * Move constructor.
    */
-  Thread(const Thread&) = delete;
+  Thread(Thread&& t);
 
   /**
-   * Copying or moving is not possible.
+   * Move operator.
    */
-  Thread& operator = (const Thread&) = delete;
+  Thread& operator = (Thread&& t);
 
   /**
    * True iff a joinable thread has been started but not yet joined or detached.

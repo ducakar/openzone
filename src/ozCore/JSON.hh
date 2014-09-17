@@ -244,22 +244,32 @@ public:
   /**
    * Copy constructor.
    */
-  JSON(const JSON& v);
+  JSON(const JSON& j);
 
   /**
    * Move constructor.
    */
-  JSON(JSON&& v);
+  JSON(JSON&& j);
 
   /**
    * Copy operator.
    */
-  JSON& operator = (const JSON& v);
+  JSON& operator = (const JSON& j);
 
   /**
    * Move operator.
    */
-  JSON& operator = (JSON&& v);
+  JSON& operator = (JSON&& j);
+
+  /**
+   * Equality.
+   */
+  bool operator == (const JSON& j) const;
+
+  /**
+   * Inequality.
+   */
+  bool operator != (const JSON& j) const;
 
   /**
    * %JSON array iterator with constant access.

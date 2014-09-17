@@ -58,36 +58,30 @@ Bitset::Bitset(Bitset&& b) :
 
 Bitset& Bitset::operator = (const Bitset& b)
 {
-  if (&b == this) {
-    return *this;
+  if (&b != this) {
+    if (size != b.size) {
+      delete[] data;
+
+      data = b.size == 0 ? nullptr : new ulong[b.size];
+      size = b.size;
+    }
+
+    aCopy<ulong>(b.data, b.size, data);
   }
-
-  if (size != b.size) {
-    delete[] data;
-
-    data = b.size == 0 ? nullptr : new ulong[b.size];
-    size = b.size;
-  }
-
-  aCopy<ulong>(b.data, b.size, data);
-
   return *this;
 }
 
 Bitset& Bitset::operator = (Bitset&& b)
 {
-  if (&b == this) {
-    return *this;
+  if (&b != this) {
+    delete[] data;
+
+    data = b.data;
+    size = b.size;
+
+    b.data = nullptr;
+    b.size = 0;
   }
-
-  delete[] data;
-
-  data = b.data;
-  size = b.size;
-
-  b.data = nullptr;
-  b.size = 0;
-
   return *this;
 }
 

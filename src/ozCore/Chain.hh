@@ -171,14 +171,11 @@ public:
    */
   Chain& operator = (Chain&& c)
   {
-    if (&c == this) {
-      return *this;
+    if (&c != this) {
+      firstElem = c.firstElem;
+
+      c.firstElem = nullptr;
     }
-
-    firstElem   = c.firstElem;
-
-    c.firstElem = nullptr;
-
     return *this;
   }
 

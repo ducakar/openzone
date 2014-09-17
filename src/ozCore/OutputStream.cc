@@ -79,30 +79,44 @@ OutputStream::OutputStream(OutputStream&& os) :
 
 OutputStream& OutputStream::operator = (const OutputStream& os)
 {
-  if (&os == this) {
-    return *this;
-  }
+  if (&os != this) {
+    if (os.buffered) {
+      int  length      = int(os.streamPos - os.streamBegin);
+      int  size        = int(os.streamEnd - os.streamBegin);
+      bool sizeMatches = int(streamEnd - streamBegin) == size;
 
-  if (os.buffered) {
-    int  length      = int(os.streamPos - os.streamBegin);
-    int  size        = int(os.streamEnd - os.streamBegin);
-    bool sizeMatches = int(streamEnd - streamBegin) == size;
+      if (buffered && !sizeMatches) {
+        delete[] streamBegin;
+      }
+      if (!buffered || !sizeMatches) {
+        streamBegin = new char[size];
+        streamEnd   = streamBegin + size;
+      }
 
-    if (buffered && !sizeMatches) {
-      delete[] streamBegin;
+      streamPos = streamBegin + length;
+      order     = os.order;
+      buffered  = os.buffered;
+
+      mCopy(streamBegin, os.streamBegin, size);
     }
-    if (!buffered || !sizeMatches) {
-      streamBegin = new char[size];
-      streamEnd   = streamBegin + size;
+    else {
+      if (buffered) {
+        delete[] streamBegin;
+      }
+
+      streamPos   = os.streamPos;
+      streamBegin = os.streamBegin;
+      streamEnd   = os.streamEnd;
+      order       = os.order;
+      buffered    = os.buffered;
     }
-
-    streamPos = streamBegin + length;
-    order     = os.order;
-    buffered  = os.buffered;
-
-    mCopy(streamBegin, os.streamBegin, size);
   }
-  else {
+  return *this;
+}
+
+OutputStream& OutputStream::operator = (OutputStream&& os)
+{
+  if (&os != this) {
     if (buffered) {
       delete[] streamBegin;
     }
@@ -112,35 +126,15 @@ OutputStream& OutputStream::operator = (const OutputStream& os)
     streamEnd   = os.streamEnd;
     order       = os.order;
     buffered    = os.buffered;
+
+    if (os.buffered) {
+      os.streamPos   = nullptr;
+      os.streamBegin = nullptr;
+      os.streamEnd   = nullptr;
+      os.order       = Endian::NATIVE;
+      os.buffered    = false;
+    }
   }
-
-  return *this;
-}
-
-OutputStream& OutputStream::operator = (OutputStream&& os)
-{
-  if (&os == this) {
-    return *this;
-  }
-
-  if (buffered) {
-    delete[] streamBegin;
-  }
-
-  streamPos   = os.streamPos;
-  streamBegin = os.streamBegin;
-  streamEnd   = os.streamEnd;
-  order       = os.order;
-  buffered    = os.buffered;
-
-  if (os.buffered) {
-    os.streamPos   = nullptr;
-    os.streamBegin = nullptr;
-    os.streamEnd   = nullptr;
-    os.order       = Endian::NATIVE;
-    os.buffered    = false;
-  }
-
   return *this;
 }
 

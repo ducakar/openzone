@@ -297,40 +297,34 @@ File::File(File&& file) :
 
 File& File::operator = (const File& file)
 {
-  if (&file == this) {
-    return *this;
+  if (&file != this) {
+    unmap();
+
+    filePath = file.filePath;
+    fileType = file.fileType;
+    fileSize = file.fileSize;
+    fileTime = file.fileTime;
   }
-
-  unmap();
-
-  filePath = file.filePath;
-  fileType = file.fileType;
-  fileSize = file.fileSize;
-  fileTime = file.fileTime;
-
   return *this;
 }
 
 File& File::operator = (File&& file)
 {
-  if (&file == this) {
-    return *this;
+  if (&file != this) {
+    unmap();
+
+    filePath = static_cast<String&&>(file.filePath);
+    fileType = file.fileType;
+    fileSize = file.fileSize;
+    fileTime = file.fileTime;
+    data     = file.data;
+
+    file.filePath = "";
+    file.fileType = MISSING;
+    file.fileSize = -1;
+    file.fileTime = 0;
+    file.data     = nullptr;
   }
-
-  unmap();
-
-  filePath = static_cast<String&&>(file.filePath);
-  fileType = file.fileType;
-  fileSize = file.fileSize;
-  fileTime = file.fileTime;
-  data     = file.data;
-
-  file.filePath = "";
-  file.fileType = MISSING;
-  file.fileSize = -1;
-  file.fileTime = 0;
-  file.data     = nullptr;
-
   return *this;
 }
 

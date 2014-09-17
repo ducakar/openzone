@@ -71,6 +71,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
   String masksBasePath     = basePath + "_m";
   String specular1BasePath = basePath + "_s";
   String specular2BasePath = basePath + "_spec";
+  String specular3BasePath = basePath + "_h";
   String emission1BasePath = basePath + "_g";
   String emission2BasePath = basePath + "_glow";
   String emission3BasePath = basePath + ".blend";
@@ -96,6 +97,9 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
       }
       if (specular.type() == File::MISSING) {
         specular = File(specular2BasePath + IMAGE_EXTENSIONS[i]);
+      }
+      if (specular.type() == File::MISSING) {
+        specular = File(specular3BasePath + IMAGE_EXTENSIONS[i]);
       }
 
       if (emission.path().isEmpty() || emission.type() == File::MISSING) {

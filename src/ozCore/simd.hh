@@ -32,12 +32,11 @@
 
 #ifdef OZ_SIMD_MATH
 # if defined(__ARM_NEON__)
-#  error OZ_SIMD_MATH is only implemented for SSE3.
 #  include <arm_neon.h>
 # elif defined(__SSE__)
 #  include <xmmintrin.h>
 # else
-#  error OZ_SIMD_MATH is only implemented for SSE3.
+#  error OZ_SIMD_MATH is only implemented for SSE1 and ARM NEON.
 # endif
 #endif
 

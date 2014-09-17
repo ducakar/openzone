@@ -86,26 +86,23 @@ Gettext::Gettext(Gettext&& gt) :
 
 Gettext& Gettext::operator = (Gettext&& gt)
 {
-  if (&gt == this) {
-    return *this;
+  if (&gt != this) {
+    clear();
+
+    table       = gt.table;
+    messages    = gt.messages;
+    strings     = gt.strings;
+    nBuckets    = gt.nBuckets;
+    nMessages   = gt.nMessages;
+    stringsSize = gt.stringsSize;
+
+    gt.table       = nullptr;
+    gt.messages    = nullptr;
+    gt.strings     = nullptr;
+    gt.nBuckets    = 0;
+    gt.nMessages   = 0;
+    gt.stringsSize = 0;
   }
-
-  clear();
-
-  table       = gt.table;
-  messages    = gt.messages;
-  strings     = gt.strings;
-  nBuckets    = gt.nBuckets;
-  nMessages   = gt.nMessages;
-  stringsSize = gt.stringsSize;
-
-  gt.table       = nullptr;
-  gt.messages    = nullptr;
-  gt.strings     = nullptr;
-  gt.nBuckets    = 0;
-  gt.nMessages   = 0;
-  gt.stringsSize = 0;
-
   return *this;
 }
 

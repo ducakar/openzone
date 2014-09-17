@@ -101,16 +101,15 @@ else()
 endif()
 
 find_package(OpenAL REQUIRED)
-
-pkg_check_modules(PNG REQUIRED libpng)
+find_package(PNG REQUIRED)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 
 # On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
 # too.
 if(PLATFORM_EMBEDDED)
-  pkg_check_modules(FREETYPE REQUIRED freetype2) # required by SDL_ttf
-  pkg_check_modules(OGG REQUIRED ogg)            # required by vorbisfile
-  pkg_check_modules(VORBIS REQUIRED vorbis)      # required by vorbisfile
+  find_package(Freetype REQUIRED)           # required by SDL_ttf
+  pkg_check_modules(OGG REQUIRED ogg)       # required by vorbisfile
+  pkg_check_modules(VORBIS REQUIRED vorbis) # required by vorbisfile
 endif()
 
 if(OZ_TOOLS)

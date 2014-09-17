@@ -38,11 +38,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined(__ANDROID__)
-# include <android/log.h>
-# include <ctime>
-# include <pthread.h>
-#elif defined(__native_client__)
+#if defined(__native_client__)
 # include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
@@ -59,6 +55,7 @@
 #  include <fcntl.h>
 #  include <sys/ioctl.h>
 #  include <sys/soundcard.h>
+#  include <unistd.h>
 # else
 #  include <alsa/asoundlib.h>
 # endif
@@ -200,20 +197,7 @@ static void genBellSamples(short* samples, int nSamples_, int rate, int begin, i
   }
 }
 
-#if defined(__ANDROID__)
-
-static void* bellMain(void*)
-{
-  static_cast<void>(genBellSamples);
-
-  // TODO: Implement bell for OpenSL ES.
-  __android_log_write(ANDROID_LOG_DEFAULT, "oz", "*** BELL ***\n");
-
-  bellLock.unlock();
-  return nullptr;
-}
-
-#elif defined(__native_client__)
+#if defined(__native_client__)
 
 static void bellCallback(void* buffer, uint, void* info_)
 {

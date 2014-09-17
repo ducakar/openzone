@@ -799,100 +799,136 @@ JSON::~JSON()
   clear();
 }
 
-JSON::JSON(const JSON& v) :
-  valueType(v.valueType), wasAccessed(v.wasAccessed)
+JSON::JSON(const JSON& j) :
+  valueType(j.valueType), wasAccessed(j.wasAccessed)
 {
   switch (valueType) {
     default: {
       break;
     }
     case BOOLEAN: {
-      boolean = v.boolean;
+      boolean = j.boolean;
       break;
     }
     case NUMBER: {
-      number = v.number;
+      number = j.number;
       break;
     }
     case STRING: {
-      data = new StringData(*static_cast<const StringData*>(v.data));
+      data = new StringData(*static_cast<const StringData*>(j.data));
       break;
     }
     case ARRAY: {
-      data = new ArrayData(*static_cast<const ArrayData*>(v.data));
+      data = new ArrayData(*static_cast<const ArrayData*>(j.data));
       break;
     }
     case OBJECT: {
-      data = new ObjectData(*static_cast<const ObjectData*>(v.data));
+      data = new ObjectData(*static_cast<const ObjectData*>(j.data));
       break;
     }
   }
 }
 
-JSON::JSON(JSON&& v) :
-  number(v.number), valueType(v.valueType), wasAccessed(v.wasAccessed)
+JSON::JSON(JSON&& j) :
+  number(j.number), valueType(j.valueType), wasAccessed(j.wasAccessed)
 {
-  v.valueType   = NIL;
-  v.wasAccessed = true;
+  j.valueType   = NIL;
+  j.wasAccessed = true;
 }
 
-JSON& JSON::operator = (const JSON& v)
+JSON& JSON::operator = (const JSON& j)
 {
-  if (&v == this) {
-    return *this;
+  if (&j != this) {
+    clear();
+
+    valueType   = j.valueType;
+    wasAccessed = j.wasAccessed;
+
+    switch (valueType) {
+      case NIL: {
+        data = nullptr;
+        break;
+      }
+      case BOOLEAN: {
+        boolean = j.boolean;
+        break;
+      }
+      case NUMBER: {
+        number = j.number;
+        break;
+      }
+      case STRING: {
+        data = new StringData(*static_cast<const StringData*>(j.data));
+        break;
+      }
+      case ARRAY: {
+        data = new ArrayData(*static_cast<const ArrayData*>(j.data));
+        break;
+      }
+      case OBJECT: {
+        data = new ObjectData(*static_cast<const ObjectData*>(j.data));
+        break;
+      }
+    }
   }
+  return *this;
+}
 
-  clear();
+JSON& JSON::operator = (JSON&& j)
+{
+  if (&j != this) {
+    clear();
 
-  valueType   = v.valueType;
-  wasAccessed = v.wasAccessed;
+    number      = j.number;
+    valueType   = j.valueType;
+    wasAccessed = j.wasAccessed;
+
+    j.valueType   = NIL;
+    j.wasAccessed = true;
+  }
+  return *this;
+}
+
+bool JSON::operator == (const JSON& j) const
+{
+  if (valueType != j.valueType) {
+    return false;
+  }
 
   switch (valueType) {
     case NIL: {
-      data = nullptr;
-      break;
+      return true;
     }
     case BOOLEAN: {
-      boolean = v.boolean;
-      break;
+      return boolean == j.boolean;
     }
     case NUMBER: {
-      number = v.number;
-      break;
+      return number == j.number;
     }
     case STRING: {
-      data = new StringData(*static_cast<const StringData*>(v.data));
-      break;
+      const String& s1 = static_cast<const StringData*>(data)->value;
+      const String& s2 = static_cast<const StringData*>(j.data)->value;
+
+      return s1.equals(s2);
     }
     case ARRAY: {
-      data = new ArrayData(*static_cast<const ArrayData*>(v.data));
-      break;
+      const List<JSON>& l1 = static_cast<const ArrayData*>(data)->list;
+      const List<JSON>& l2 = static_cast<const ArrayData*>(j.data)->list;
+
+      return l1 == l2;
     }
     case OBJECT: {
-      data = new ObjectData(*static_cast<const ObjectData*>(v.data));
-      break;
+      const Map<String, JSON>& m1 = static_cast<const ObjectData*>(data)->map;
+      const Map<String, JSON>& m2 = static_cast<const ObjectData*>(j.data)->map;
+
+      return m1 == m2;
     }
   }
-
-  return *this;
 }
 
-JSON& JSON::operator = (JSON&& v)
+bool JSON::operator != (const JSON& j) const
 {
-  if (&v == this) {
-    return *this;
-  }
-
-  clear();
-
-  number      = v.number;
-  valueType   = v.valueType;
-  wasAccessed = v.wasAccessed;
-
-  v.valueType   = NIL;
-  v.wasAccessed = true;
-
-  return *this;
+  return !operator == (j);
 }
 
 JSON::ArrayCIterator JSON::arrayCIter() const

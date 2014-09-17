@@ -20,7 +20,6 @@ add_library(ozEngine
   Window.cc
 #END SOURCES
 )
-use_pch(ozEngine pch)
 
 target_link_libraries(ozEngine ozCore)
 
@@ -41,7 +40,7 @@ target_link_libraries(ozEngine ${OPENAL_LIBRARY})
 target_link_libraries(ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES}) #${SDL_NET_LIBRARIES})
 
 # libpng.
-target_link_libraries(ozEngine ${PNG_LIBRARIES})
+target_link_libraries(ozEngine ${PNG_LIBRARY_RELEASE})
 
 # libvorbisfile.
 target_link_libraries(ozEngine ${VORBISFILE_LIBRARIES})

@@ -32,19 +32,13 @@ namespace oz
 void CallOnce::call(Function* function)
 {
   if (wasCalled) {
-    return;
-  }
-
-  if (__sync_lock_test_and_set(&flag, 1) != 0) {
-    while (flag != 0);
-  }
-  else {
-    if (!wasCalled) {
-      function();
-      __sync_synchronize();
-      wasCalled = true;
+    if (__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE)) {
+      while (!wasCalled);
     }
-    __sync_lock_release(&flag);
+    else {
+      function();
+      __atomic_test_and_set(&wasCalled, __ATOMIC_RELEASE);
+    }
   }
 }
 

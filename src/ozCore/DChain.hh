@@ -123,16 +123,13 @@ public:
    */
   DChain& operator = (DChain&& c)
   {
-    if (&c == this) {
-      return *this;
+    if (&c != this) {
+      firstElem = c.firstElem;
+      lastElem  = c.lastElem;
+
+      c.firstElem = nullptr;
+      c.lastElem  = nullptr;
     }
-
-    firstElem   = c.firstElem;
-    lastElem    = c.lastElem;
-
-    c.firstElem = nullptr;
-    c.lastElem  = nullptr;
-
     return *this;
   }
 

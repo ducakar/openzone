@@ -200,6 +200,22 @@ Thread::~Thread()
   }
 }
 
+Thread::Thread(Thread&& t) :
+  descriptor(t.descriptor)
+{
+  t.descriptor = nullptr;
+}
+
+Thread& Thread::operator = (Thread&& t)
+{
+  if (&t != this) {
+    descriptor = t.descriptor;
+
+    t.descriptor = nullptr;
+  }
+  return *this;
+}
+
 void Thread::start(const char* name, Main* main, void* data)
 {
   if (descriptor != nullptr) {

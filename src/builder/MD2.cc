@@ -296,7 +296,7 @@ void MD2::build(const char* path)
     const MD2Frame& frame = *reinterpret_cast<const MD2Frame*>(&frameData[i * header.frameSize]);
 
     for (int j = 0; j < header.nFramePositions; ++j) {
-      Vec3&  normal = normals[i * header.nFramePositions + j];
+      Vec3&  normal   = normals[i * header.nFramePositions + j];
       Point& position = positions[i * header.nFramePositions + j];
 
       normal = NORMALS[frame.verts[j].normal];

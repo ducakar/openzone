@@ -250,7 +250,7 @@ public:
   }
 
   /**
-   * `sincos` function, calculates both sine and cosine at a time.
+   * `sincos` function, calculates both sine and cosine at the same time.
    */
   OZ_ALWAYS_INLINE
   static void sincos(float x, float* s, float* c)

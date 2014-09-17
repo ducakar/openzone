@@ -20,10 +20,10 @@
 /**
  * @file pch.hh
  *
- * Precompiled header for `ozCore/ozCore.hh`.
+ * Precompiled header including `common/common.hh`.
  */
 
-#include <ozCore/ozCore.hh>
+#include <common/common.hh>
 
 #ifdef _WIN32
 # define NOGDI

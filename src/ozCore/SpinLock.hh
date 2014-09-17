@@ -42,7 +42,7 @@ class SpinLock
 {
 private:
 
-  volatile int flag = 0; ///< 0 - unlocked, 1 - locked.
+  volatile bool flag = false; ///< True iff locked.
 
 public:
 
@@ -67,8 +67,8 @@ public:
   OZ_ALWAYS_INLINE
   void lock()
   {
-    while (__sync_lock_test_and_set(&flag, 1) != 0) {
-      while (flag != 0);
+    while (__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE)) {
+      while (flag);
     }
   }
 
@@ -80,7 +80,7 @@ public:
   OZ_ALWAYS_INLINE
   bool tryLock()
   {
-    return __sync_lock_test_and_set(&flag, 1) == 0;
+    return !__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE);
   }
 
   /**
@@ -89,7 +89,7 @@ public:
   OZ_ALWAYS_INLINE
   void unlock()
   {
-    __sync_lock_release(&flag);
+    __atomic_clear(&flag, __ATOMIC_RELEASE);
   }
 
 };

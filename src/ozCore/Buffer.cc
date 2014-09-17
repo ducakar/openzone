@@ -67,32 +67,27 @@ Buffer::Buffer(Buffer&& b) :
 
 Buffer& Buffer::operator = (const Buffer& b)
 {
-  if (&b == this) {
-    return *this;
-  }
+  if (&b != this) {
+    if (size != b.size) {
+      resize(b.size);
+    }
 
-  if (size != b.size) {
-    resize(b.size);
+    mCopy(data, b.data, b.size);
   }
-
-  mCopy(data, b.data, b.size);
   return *this;
 }
 
 Buffer& Buffer::operator = (Buffer&& b)
 {
-  if (&b == this) {
-    return *this;
+  if (&b != this) {
+    delete[] data;
+
+    data = b.data;
+    size = b.size;
+
+    b.data = nullptr;
+    b.size = 0;
   }
-
-  delete[] data;
-
-  data = b.data;
-  size = b.size;
-
-  b.data = nullptr;
-  b.size = 0;
-
   return *this;
 }
 

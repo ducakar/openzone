@@ -28,7 +28,7 @@ else()
   if(OZ_TOOLS)
 
     add_executable(ozBuild ozBuild.cc)
-    use_pch(openzone pch)
+    use_pch(ozBuild pch)
     target_link_libraries(ozBuild builder client nirvana matrix common ozFactory ozEngine)
     install(TARGETS ozBuild RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR})
 
