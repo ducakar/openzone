@@ -85,12 +85,9 @@ protected:
   public:
 
     /**
-     * Default constructor, creates an invalid iterator.
+     * Create an invalid iterator.
      */
-    OZ_ALWAYS_INLINE
-    ChainIterator() :
-      detail::IteratorBase<IterElem>(nullptr)
-    {}
+    ChainIterator() = default;
 
     /**
      * Create chain iterator, initially pointing to a given element.
@@ -146,16 +143,14 @@ public:
 
 protected:
 
-  Elem* firstElem; ///< Pointer to the first element in the chain.
+  Elem* firstElem = nullptr; ///< Pointer to the first element in the chain.
 
 public:
 
   /**
    * Create an empty chain.
    */
-  Chain() :
-    firstElem(nullptr)
-  {}
+  Chain() = default;
 
   /**
    * Move constructor, rebinds elements to the new chain.

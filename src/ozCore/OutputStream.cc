@@ -38,7 +38,7 @@ OutputStream::OutputStream(char* start, const char* end, Endian::Order order) :
 OutputStream::OutputStream(int size, Endian::Order order) :
   InputStream(nullptr, nullptr, nullptr, order), buffered(true)
 {
-  streamPos   = size == 0 ? nullptr : new char[size];
+  streamPos   = mReallocate(nullptr, 0, size);
   streamBegin = streamPos;
   streamEnd   = streamPos + size;
 }
@@ -57,7 +57,7 @@ OutputStream::OutputStream(const OutputStream& os) :
     int length = int(os.streamPos - os.streamBegin);
     int size   = int(os.streamEnd - os.streamBegin);
 
-    streamBegin = size == 0 ? nullptr : new char[size];
+    streamBegin = mReallocate(nullptr, 0, size);
     streamEnd   = streamBegin + size;
     streamPos   = streamBegin + length;
 
@@ -156,7 +156,7 @@ char* OutputStream::forward(int count)
         newSize = (newLen + GRANULARITY - 1) & ~(GRANULARITY - 1);
       }
 
-      streamBegin = aReallocate<char>(streamBegin, size, newSize);
+      streamBegin = mReallocate(streamBegin, size, newSize);
       streamEnd   = streamBegin + newSize;
       streamPos   = streamBegin + newLen;
       oldPos      = streamPos - count;

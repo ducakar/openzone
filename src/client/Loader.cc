@@ -371,7 +371,7 @@ void Loader::init()
 {
   isPreloadAlive = true;
 
-  preloadThread.start("preload", preloadMain);
+  preloadThread = Thread("preload", preloadMain);
 }
 
 void Loader::destroy()

@@ -67,9 +67,9 @@ public:
 
 protected:
 
-  Elem* data;  ///< Array of elements.
-  int   count; ///< Number of elements.
-  int   size;  ///< Capacity, number of elements in storage.
+  Elem* data  = nullptr; ///< Array of elements.
+  int   count = 0;       ///< Number of elements.
+  int   size  = 0;       ///< Capacity, number of elements in storage.
 
 protected:
 
@@ -101,22 +101,22 @@ public:
   /**
    * Create an empty list.
    */
-  List() :
-    data(nullptr), count(0), size(0)
-  {}
+  List() = default;
 
   /**
    * Create a list with a given initial length and capacity.
+   *
+   * Primitive types are not initialised to zero.
    */
   explicit List(int count_) :
-    data(count_ == 0 ? nullptr : new Elem[count_]), count(count_), size(count_)
+    data(aReallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
   {}
 
   /**
    * Initialise from a C++ array.
    */
   explicit List(const Elem* array, int count_) :
-    data(count_ == 0 ? nullptr : new Elem[count_]), count(count_), size(count_)
+    data(aReallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
   {
     aCopy<Elem>(array, count, data);
   }
@@ -142,7 +142,7 @@ public:
    * Copy constructor, copies elements.
    */
   List(const List& l) :
-    data(l.count == 0 ? nullptr : new Elem[l.count]), count(l.count), size(l.size)
+    data(aReallocate<Elem>(nullptr, 0, l.count)), count(l.count), size(l.size)
   {
     aCopy<Elem>(l.data, l.count, data);
   }
@@ -609,21 +609,16 @@ public:
 
   /**
    * Resize the list and its capacity to the specified number of elements.
+   *
+   * Primitive types are not initialised to zero.
    */
   void resize(int newCount)
   {
     if (newCount != size) {
-      data  = aReallocate<Elem>(data, count, newCount);
-      count = newCount;
-      size  = newCount;
+      data = aReallocate<Elem>(data, count, newCount);
+      size = newCount;
     }
-    else {
-      // Ensure destruction of removed elements.
-      for (int i = count; i < newCount; ++i) {
-        data[i] = Elem();
-      }
-      count = newCount;
-    }
+    count = newCount;
   }
 
   /**

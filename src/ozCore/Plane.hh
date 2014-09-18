@@ -107,7 +107,7 @@ public:
   friend float operator * (const Vec3& v, const Plane& plane)
   {
 #ifdef OZ_SIMD_MATH
-    return vFirst(vDot(v.f4, plane.n.f4));
+    return vDot(v.f4, plane.n.f4)[0];
 #else
     return v.x*plane.n.x + v.y*plane.n.y + v.z*plane.n.z;
 #endif
@@ -120,7 +120,7 @@ public:
   friend float operator * (const Point& p, const Plane& plane)
   {
 #ifdef OZ_SIMD_MATH
-    return vFirst(vDot(p.f4, plane.n.f4)) - plane.d;
+    return vDot(p.f4, plane.n.f4)[0] - plane.d;
 #else
     return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;
 #endif

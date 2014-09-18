@@ -100,23 +100,10 @@ inline uint4 vFill(uint x)
 }
 
 /**
- * First component of a vector.
- */
-OZ_ALWAYS_INLINE
-inline float vFirst(float4 a)
-{
-#ifdef __ARM_NEON__
-  return vgetq_lane_f32(a, 0);
-#else
-  return _mm_cvtss_f32(a);
-#endif
-}
-
-/**
  * @def vShuffle
  * Shuffle elements of a single vector.
  */
-#if defined(OZ_CLANG)
+#ifdef OZ_CLANG
 # define vShuffle(a, i, j, k, l) __builtin_shufflevector(a, a, i, j, k, l)
 #else
 # define vShuffle(a, i, j, k, l) __builtin_shuffle(a, uint4 { i, j, k, l })
@@ -139,7 +126,7 @@ inline float4 vMin(float4 a, float4 b)
 {
 #if defined(__ARM_NEON__)
   return vminq_f32(a, b);
-#else
+#elif defined(__SSE__)
   return _mm_min_ps(a, b);
 #endif
 }
@@ -152,7 +139,7 @@ inline float4 vMax(float4 a, float4 b)
 {
 #if defined(__ARM_NEON__)
   return vmaxq_f32(a, b);
-#else
+#elif defined(__SSE__)
   return _mm_max_ps(a, b);
 #endif
 }
@@ -163,10 +150,10 @@ inline float4 vMax(float4 a, float4 b)
 OZ_ALWAYS_INLINE
 inline float4 vSqrt(float4 a)
 {
-#if defined(__ARM_NEON__)
-  return vFill(__builtin_sqrtf(vFirst(a)));
-#else
+#ifdef __SSE__
   return _mm_sqrt_ps(a);
+#else
+  return vFill(__builtin_sqrtf(vFirst(a)));
 #endif
 }
 
@@ -176,10 +163,10 @@ inline float4 vSqrt(float4 a)
 OZ_ALWAYS_INLINE
 inline float4 vInvSqrt(float4 a)
 {
-#if defined(__ARM_NEON__)
-  return vFill(1.0f / __builtin_sqrtf(vFirst(a)));
-#else
+#ifdef __SSE__
   return _mm_rsqrt_ps(a);
+#else
+  return vFill(1.0f / __builtin_sqrtf(vFirst(a)));
 #endif
 }
 
@@ -216,13 +203,8 @@ inline float4 vDot(float4 a, float4 b)
 {
   float4 p = a * b;
 
-#ifdef __ARM_NEON__
-  p += vrev64q_f32(p);
-  p += vcombine_f32(vget_high_f32(p), vget_low_f32(p));
-#else
   p += vShuffle(p, 1, 0, 3, 2);
   p += vShuffle(p, 2, 3, 0, 1);
-#endif
   return p;
 }
 
@@ -258,16 +240,6 @@ protected:
 #ifdef OZ_SIMD_MATH
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase3(float4 f4_) :
-    f4(f4_)
-  {}
-
-  OZ_ALWAYS_INLINE
-  explicit VectorBase3(uint4 u4_) :
-    u4(u4_)
-  {}
-
-  OZ_ALWAYS_INLINE
   explicit VectorBase3(float x_, float y_, float z_, float w_) :
     f4(vFill(x_, y_, z_, w_))
   {}
@@ -285,6 +257,42 @@ protected:
 #endif
 
 public:
+
+#ifdef OZ_SIMD_MATH
+
+  OZ_ALWAYS_INLINE
+  explicit VectorBase3(float4 f4_) :
+    f4(f4_)
+  {}
+
+  OZ_ALWAYS_INLINE
+  explicit VectorBase3(uint4 u4_) :
+    u4(u4_)
+  {}
+
+#endif
+
+  /**
+   * Equality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == (const VectorBase3& v) const
+  {
+#if defined(OZ_SIMD_MATH) && defined(__SSE__)
+    return _mm_movemask_ps(f4 == v.f4) == 0xf;
+#else
+    return x == v.x && y == v.y && z == v.z;
+#endif
+  }
+
+  /**
+   * Inequality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != (const VectorBase3& v) const
+  {
+    return !operator == (v);
+  }
 
   /**
    * Constant float pointer to the members.
@@ -356,16 +364,6 @@ protected:
 #ifdef OZ_SIMD_MATH
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase4(float4 f4_) :
-    f4(f4_)
-  {}
-
-  OZ_ALWAYS_INLINE
-  explicit VectorBase4(uint4 u4_) :
-    u4(u4_)
-  {}
-
-  OZ_ALWAYS_INLINE
   explicit VectorBase4(float x_, float y_, float z_, float w_) :
     f4(vFill(x_, y_, z_, w_))
   {}
@@ -383,6 +381,42 @@ protected:
 #endif
 
 public:
+
+#ifdef OZ_SIMD_MATH
+
+  OZ_ALWAYS_INLINE
+  explicit VectorBase4(float4 f4_) :
+    f4(f4_)
+  {}
+
+  OZ_ALWAYS_INLINE
+  explicit VectorBase4(uint4 u4_) :
+    u4(u4_)
+  {}
+
+#endif
+
+  /**
+   * Equality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == (const VectorBase4& v) const
+  {
+#if defined(OZ_SIMD_MATH) && defined(__SSE__)
+    return _mm_movemask_ps(f4 == v.f4) == 0xf;
+#else
+    return x == v.x && y == v.y && z == v.z && w == v.w;
+#endif
+  }
+
+  /**
+   * Inequality.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != (const VectorBase4& v) const
+  {
+    return !operator == (v);
+  }
 
   /**
    * Constant float pointer to the members.

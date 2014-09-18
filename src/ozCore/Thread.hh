@@ -49,7 +49,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor; ///< Internal thread descriptor.
+  Descriptor* descriptor = nullptr; ///< Internal thread descriptor.
 
 public:
 
@@ -67,12 +67,32 @@ public:
   static bool isMain();
 
   /**
-   * Create an instance, no thread is started.
+   * Create an empty instance, no thread is started.
    */
-  Thread();
+  Thread() = default;
 
   /**
-   * Joins a started but not-yet-joined if thread if present and destroy instance.
+   * Create and start a new joinable thread.
+   *
+   * A new joinable thread is started and attached to the `Thread` object that created it. `join()`
+   * should be called later to ensure thread's termination and to release its resources or
+   * `detach()` to detach the thread and automatically release its resources upon finishing.
+   *
+   * After the thread has been either joined or detached the `Thread` object can be reused to start
+   * another thread.
+   *
+   * @note
+   * On Android, thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
+   * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
+   *
+   * @param name thread name (copied to an internal buffer).
+   * @param main pointer to the thread's main function.
+   * @param data pointer to user data, passed to the thread's main function.
+   */
+  explicit Thread(const char* name, Main* main, void* data = nullptr);
+
+  /**
+   * Join started but not-yet-joined thread if present.
    */
   ~Thread();
 
@@ -94,26 +114,6 @@ public:
   {
     return descriptor != nullptr;
   }
-
-  /**
-   * Create and start a new joinable thread.
-   *
-   * A new joinable thread is started and attached to the `Thread` object that created it. `join()`
-   * should be called later to ensure thread's termination and to release its resources or
-   * `detach()` to detach the thread and automatically release its resources upon finishing.
-   *
-   * After the thread has been either joined or detached the `Thread` object can be reused to start
-   * another thread.
-   *
-   * @note
-   * On Android, thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
-   * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
-   *
-   * @param name thread name (copied to an internal buffer).
-   * @param main pointer to the thread's main function.
-   * @param data pointer to user data, passed to the thread's main function.
-   */
-  void start(const char* name, Main* main, void* data = nullptr);
 
   /**
    * Detach a joinable thread.

@@ -14,10 +14,10 @@
 #
 
 platforms=(
-  Linux-x86_64
   Linux-i686
-  Windows-x86_64
+  Linux-x86_64
   Windows-i686
+  Windows-x86_64
 )
 
 eval `egrep '^version=' ./autogen.sh`
@@ -30,17 +30,17 @@ files="$files share/applications share/pixmaps"
 case $1 in
   src)
     echo "Packing openzone-src-$version.tar.xz"
-    tar Jcf openzone-src-$version.tar.xz --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
+    tar Jcvf openzone-src-$version.tar.xz --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
         $files
     ;;
   data)
     echo "Packing openzone-data-$version.tar.xz"
-    tar Jcf openzone-data-$version.tar.xz --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
+    tar Jcvf openzone-data-$version.tar.xz --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
         share/openzone/*.zip
     ;;
   datasrc)
     echo "Packing openzone-datasrc-$version.tar.xz"
-    tar Jcf openzone-data-src-$version.tar.xz --owner=0 --group=0 --exclude=DISABLED \
+    tar Jcvf openzone-data-src-$version.tar.xz --owner=0 --group=0 --exclude=DISABLED \
         --xform "s|^|openzone-$version/|" data
     ;;
   bundle)

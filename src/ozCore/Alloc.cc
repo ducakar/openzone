@@ -114,16 +114,14 @@ static void deallocate(AllocMode mode, void* ptr)
   if (prev != nullptr || chunkInfos[mode].first() == ci) {
     chunkInfos[mode].erase(ci, prev);
   }
+  // Check if allocated as a different kind (object/array)
+  else if (chunkInfos[!mode].has(ci)) {
+    OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
+             mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
+  }
   else {
-    // Check if allocated as a different kind (object/array)
-    if (chunkInfos[!mode].has(ci)) {
-      OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
-               mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
-    }
-    else {
-      OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %lu",
-               mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
-    }
+    OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %lu",
+             mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
   }
 
   --Alloc::count;

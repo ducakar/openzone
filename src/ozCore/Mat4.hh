@@ -360,7 +360,7 @@ public:
 
 #ifdef OZ_SIMD_MATH
     tp.n = Vec3(x.f4 * vFill(p.n.x) + y.f4 * vFill(p.n.y) + z.f4 * vFill(p.n.z));
-    tp.d = p.d + vFirst(vDot(tp.n.f4, w.f4));
+    tp.d = p.d + vDot(tp.n.f4, w.f4)[0];
 #else
     tp.n = Vec3(x.x * p.n.x + y.x * p.n.y + z.x * p.n.z,
                 x.y * p.n.x + y.y * p.n.y + z.y * p.n.z,

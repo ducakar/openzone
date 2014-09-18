@@ -51,10 +51,15 @@ private:
   /// Number of bits per unit.
   static const int UNIT_BITSIZE = int(sizeof(ulong)) * 8;
 
-  ulong* data; ///< Pointer to array of units that holds the data.
-  int    size; ///< Size of data array (in units, not in bits).
+  ulong* data = nullptr; ///< Pointer to array of units that holds the data.
+  int    size = 0;       ///< Size of data array (in units, not in bits).
 
 public:
+
+  /**
+   * Create an empty bitset.
+   */
+  Bitset() = default;
 
   /**
    * Allocate a new bitset that holds at least `nBits` bits initialised to 0.
@@ -62,7 +67,7 @@ public:
    * The size of `data` array is adjusted to the smallest unit number that can hold the requested
    * number of bits. No memory is allocated if `nBits == 0`.
    */
-  explicit Bitset(int nBits = 0);
+  explicit Bitset(int nBits);
 
   /**
    * Destructor.
@@ -259,7 +264,7 @@ public:
   /**
    * Resize bitmap.
    *
-   * Resizing to zero frees all allocated storage.
+   * Resizing to zero frees all allocated storage. The added bits are initialised to zero.
    */
   void resize(int nBits);
 

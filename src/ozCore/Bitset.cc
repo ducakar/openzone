@@ -31,11 +31,9 @@
 namespace oz
 {
 
-Bitset::Bitset(int nBits) :
-  data(nullptr), size(0)
+Bitset::Bitset(int nBits)
 {
   resize(nBits);
-  clearAll();
 }
 
 Bitset::~Bitset()
@@ -44,7 +42,7 @@ Bitset::~Bitset()
 }
 
 Bitset::Bitset(const Bitset& b) :
-  data(b.size == 0 ? nullptr : new ulong[b.size]), size(b.size)
+  data(aReallocate<ulong>(nullptr, 0, b.size)), size(b.size)
 {
   aCopy<ulong>(b.data, b.size, data);
 }
@@ -267,6 +265,7 @@ void Bitset::resize(int nBits)
 
   if (nUnits != size) {
     data = aReallocate<ulong>(data, size, nUnits);
+    aFill<ulong, ulong>(data + size, nUnits - size, 0u);
     size = nUnits;
   }
 }

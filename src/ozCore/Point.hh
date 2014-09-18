@@ -47,6 +47,9 @@ public:
 
 public:
 
+  // Import SIMD constructors.
+  using VectorBase3::VectorBase3;
+
   /**
    * Create an uninitialised instance.
    */
@@ -54,26 +57,6 @@ public:
   Point() :
     VectorBase3(0.0f, 0.0f, 0.0f, 1.0f)
   {}
-
-#ifdef OZ_SIMD_MATH
-
-  /**
-   * Create form a float SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Point(float4 f4) :
-    VectorBase3(f4)
-  {}
-
-  /**
-   * Create from an uint SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Point(uint4 u4) :
-    VectorBase3(u4)
-  {}
-
-#endif
 
   /**
    * Create a point with given coordinates.
@@ -90,24 +73,6 @@ public:
   explicit Point(const float* v) :
     VectorBase3(v[0], v[1], v[2], 1.0f)
   {}
-
-  /**
-   * Equality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator == (const Point& p) const
-  {
-    return x == p.x && y == p.y && z == p.z;
-  }
-
-  /**
-   * Inequality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator != (const Point& p) const
-  {
-    return !operator == (p);
-  }
 
   /**
    * Point translated for `v`.
@@ -187,7 +152,7 @@ public:
   float operator * (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return vFirst(vDot(f4, v.f4));
+    return vDot(f4, v.f4)[0];
 #else
     return x*v.x + y*v.y + z*v.z;
 #endif

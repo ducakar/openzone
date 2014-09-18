@@ -60,9 +60,14 @@ public:
 
 protected:
 
-  Elem* elem; ///< Element which iterator is currently positioned at.
+  Elem* elem = nullptr; ///< Element which iterator is currently positioned at.
 
 protected:
+
+  /**
+   * Create an invalid iterator.
+   */
+  IteratorBase() = default;
 
   /**
    * Create an iterator pointing to a given element.

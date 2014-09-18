@@ -808,8 +808,8 @@ void Sound::init()
   isMusicAlive = true;
   isSoundAlive = true;
 
-  musicThread.start("music", musicMain);
-  soundThread.start("sound", soundMain);
+  musicThread = Thread("music", musicMain);
+  soundThread = Thread("sound", soundMain);
 
   Log::unindent();
   Log::println("}");
@@ -878,7 +878,8 @@ void Sound::initLibs()
 
   Log::print("Linking eSpeak library '%s' ...", libeSpeakName);
 
-  if (!libeSpeak.open(libeSpeakName)) {
+  libeSpeak = SharedLib(libeSpeakName);
+  if (!libeSpeak.isOpened()) {
     Log::printEnd(" Not found, speech synthesis not supported");
   }
   else {
@@ -894,7 +895,8 @@ void Sound::initLibs()
 
   Log::print("Linking MAD library '%s' ...", libMadName);
 
-  if (!libMad.open(libMadName)) {
+  libMad = SharedLib(libMadName);
+  if (!libMad.isOpened()) {
     liber.mapMP3s = false;
 
     Log::printEnd(" Not found, MP3 not supported");
@@ -916,7 +918,8 @@ void Sound::initLibs()
 
   Log::print("Linking FAAD library '%s' ...", libFaadName);
 
-  if (!libFaad.open(libFaadName)) {
+  libFaad = SharedLib(libFaadName);
+  if (!libFaad.isOpened()) {
     liber.mapAACs = false;
 
     Log::printEnd(" Not found, AAC not supported");

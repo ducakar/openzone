@@ -88,7 +88,7 @@ private:
 
   using Chain<Elem, INDEX>::firstElem;
 
-  Elem* lastElem; ///< Pointer to the last element in the chain.
+  Elem* lastElem = nullptr; ///< Pointer to the last element in the chain.
 
 public:
 
@@ -105,9 +105,7 @@ public:
   /**
    * Create an empty chain.
    */
-  DChain() :
-    Chain<Elem, INDEX>(), lastElem(nullptr)
-  {}
+  DChain() = default;
 
   /**
    * Move constructor, rebinds elements to the new chain.

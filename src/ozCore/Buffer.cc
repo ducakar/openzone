@@ -32,17 +32,17 @@ namespace oz
 {
 
 Buffer::Buffer(int size_) :
-  data(size_ == 0 ? nullptr : new char[size_]), size(size_)
+  data(mReallocate(nullptr, 0, size_)), size(size_)
 {}
 
 Buffer::Buffer(const char* data_, int size_) :
-  data(size_ == 0 ? nullptr : new char[size_]), size(size_)
+  data(mReallocate(nullptr, 0, size_)), size(size_)
 {
   mCopy(data, data_, size);
 }
 
 Buffer::Buffer(const String& s) :
-  data(s.length() == 0 ? nullptr : new char[s.length()]), size(s.length())
+  data(mReallocate(nullptr, 0, s.length())), size(s.length())
 {
   mCopy(data, s.cstr(), size);
 }
@@ -53,7 +53,7 @@ Buffer::~Buffer()
 }
 
 Buffer::Buffer(const Buffer& b) :
-  data(b.size == 0 ? nullptr : new char[b.size]), size(b.size)
+  data(mReallocate(nullptr, 0, b.size)), size(b.size)
 {
   mCopy(data, b.data, size);
 }
@@ -69,7 +69,10 @@ Buffer& Buffer::operator = (const Buffer& b)
 {
   if (&b != this) {
     if (size != b.size) {
-      resize(b.size);
+      delete[] data;
+
+      data = new char[b.size];
+      size = b.size;
     }
 
     mCopy(data, b.data, b.size);
@@ -201,15 +204,7 @@ void Buffer::resize(int newSize)
   hard_assert(newSize >= 0);
 
   if (newSize != size) {
-    char* newData = nullptr;
-
-    if (newSize != 0) {
-      newData = new char[newSize];
-      mCopy(newData, data, min<int>(size, newSize));
-    }
-    delete[] data;
-
-    data = newData;
+    data = mReallocate(data, size, newSize);
     size = newSize;
   }
 }

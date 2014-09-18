@@ -55,6 +55,8 @@ public:
   /// \f$ 2\pi \f$.
   static constexpr float TAU = 6.283185307179586f;
 
+private:
+
   /**
    * Union for accessing a bitwise representation of a float value.
    */

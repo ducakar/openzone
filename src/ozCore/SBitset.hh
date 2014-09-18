@@ -57,16 +57,14 @@ private:
   /// Number of units.
   static const int SIZE = (BITSIZE + UNIT_BITSIZE - 1) / UNIT_BITSIZE;
 
-  ulong data[SIZE]; ///< Pointer to array of units that holds the data.
+  ulong data[SIZE] = {}; ///< Pointer to array of units that holds the data.
 
 public:
 
   /**
    * Initialise all bits to zero.
    */
-  SBitset() :
-    data {}
-  {}
+  SBitset() = default;
 
   /**
    * True iff all bits are equal.

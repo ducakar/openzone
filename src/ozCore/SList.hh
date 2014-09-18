@@ -61,17 +61,26 @@ public:
 
 private:
 
-  Elem data[SIZE]; ///< Element storage.
-  int  count;      ///< Number of elements.
+  Elem data[SIZE];     ///< Element storage.
+  int  count      = 0; ///< Number of elements.
 
 public:
 
   /**
    * Create an empty list with capacity SIZE.
    */
-  SList() :
-    count(0)
-  {}
+  SList() = default;
+
+  /**
+   * Create a list with a given initial length.
+   *
+   * Primitive types are not initialised to zero.
+   */
+  explicit SList(int count_) :
+    count(count_)
+  {
+    hard_assert(count <= SIZE);
+  }
 
   /**
    * Initialise from an initialiser list.
@@ -494,13 +503,15 @@ public:
 
   /**
    * Resize the list to the specified number of elements.
+   *
+   * Primitive types are not initialised to zero.
    */
   void resize(int newCount)
   {
     hard_assert(newCount <= SIZE);
 
-    // Ensure destruction of removed elements.
-    for (int i = count; i < newCount; ++i) {
+    // Ensure destruction of removed elements when downsizing.
+    for (int i = newCount; i < count; ++i) {
       data[i] = Elem();
     }
     count = newCount;

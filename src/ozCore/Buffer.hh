@@ -42,15 +42,20 @@ class Buffer
 {
 private:
 
-  char* data; ///< Storage.
-  int   size; ///< Data length in bytes.
+  char* data = nullptr; ///< Storage.
+  int   size = 0;       ///< Data length in bytes.
 
 public:
 
   /**
-   * Create an uninitialised buffer of size `size`.
+   * Create an empty buffer of size 0.
    */
-  explicit Buffer(int size = 0);
+  Buffer() = default;
+
+  /**
+   * Create an uninitialised buffer of given size.
+   */
+  explicit Buffer(int size);
 
   /**
    * Create a buffer of size `size` and copy `data` into it.

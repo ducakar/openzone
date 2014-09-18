@@ -251,7 +251,7 @@ void EditStage::load()
 
   isAuxAlive = true;
   mainSemaphore.post();
-  auxThread.start("aux", auxMain);
+  auxThread = Thread("aux", auxMain);
 
   ui::ui.showLoadingScreen(false);
   present(true);

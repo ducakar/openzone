@@ -35,7 +35,7 @@ const Vec3 Vec3::ONE  = Vec3(1.0f, 1.0f, 1.0f);
 Vec3 Vec3::slerp(const Vec3& a, const Vec3& b, float t)
 {
 #ifdef OZ_SIMD_MATH
-  float angle = Math::acos(vFirst(vDot(a.f4, b.f4)));
+  float angle = Math::acos(vDot(a.f4, b.f4)[0]);
 #else
   float angle = Math::acos(a.x*b.x + a.y*b.y + a.z*b.z);
 #endif

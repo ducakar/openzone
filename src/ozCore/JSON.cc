@@ -845,7 +845,7 @@ JSON& JSON::operator = (const JSON& j)
     wasAccessed = j.wasAccessed;
 
     switch (valueType) {
-      case NIL: {
+      default: {
         data = nullptr;
         break;
       }
@@ -896,7 +896,7 @@ bool JSON::operator == (const JSON& j) const
   }
 
   switch (valueType) {
-    case NIL: {
+    default: {
       return true;
     }
     case BOOLEAN: {

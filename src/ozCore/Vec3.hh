@@ -51,6 +51,9 @@ public:
 
 public:
 
+  // Import SIMD constructors.
+  using VectorBase3::VectorBase3;
+
   /**
    * Create an uninitialised instance.
    */
@@ -58,26 +61,6 @@ public:
   Vec3() :
     VectorBase3(0.0f, 0.0f, 0.0f, 0.0f)
   {}
-
-#ifdef OZ_SIMD_MATH
-
-  /**
-   * Create from a float SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Vec3(float4 f4) :
-    VectorBase3(f4)
-  {}
-
-  /**
-   * Create from an uint SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Vec3(uint4 u4) :
-    VectorBase3(u4)
-  {}
-
-#endif
 
   /**
    * Create a vector with given components.
@@ -96,30 +79,12 @@ public:
   {}
 
   /**
-   * Equality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator == (const Vec3& v) const
-  {
-    return x == v.x && y == v.y && z == v.z;
-  }
-
-  /**
-   * Inequality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator != (const Vec3& v) const
-  {
-    return !operator == (v);
-  }
-
-  /**
    * Norm.
    */
   float operator ! () const
   {
 #ifdef OZ_SIMD_MATH
-    return Math::sqrt(vFirst(vDot(f4, f4)));
+    return Math::sqrt(vDot(f4, f4)[0]);
 #else
     return Math::sqrt(x*x + y*y + z*z);
 #endif
@@ -131,7 +96,7 @@ public:
   float fastN() const
   {
 #ifdef OZ_SIMD_MATH
-    return Math::fastSqrt(vFirst(vDot(f4, f4)));
+    return Math::fastSqrt(vDot(f4, f4)[0]);
 #else
     return Math::fastSqrt(x*x + y*y + z*z);
 #endif
@@ -144,7 +109,7 @@ public:
   float sqN() const
   {
 #ifdef OZ_SIMD_MATH
-    return vFirst(vDot(f4, f4));
+    return vDot(f4, f4)[0];
 #else
     return x*x + y*y + z*z;
 #endif
@@ -346,7 +311,7 @@ public:
   float operator * (const Vec3& v) const
   {
 #ifdef OZ_SIMD_MATH
-    return vFirst(vDot(f4, v.f4));
+    return vDot(f4, v.f4)[0];
 #else
     return x*v.x + y*v.y + z*v.z;
 #endif

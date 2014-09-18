@@ -29,6 +29,19 @@
 namespace oz
 {
 
+char* mReallocate(const void* src, int size, int newSize)
+{
+  char* newData = nullptr;
+
+  if (newSize != 0) {
+    newData = new char[newSize];
+    mCopy(newData, src, min<int>(size, newSize));
+  }
+  delete[] static_cast<const char*>(src);
+
+  return newData;
+}
+
 OZ_WEAK
 size_t strlcpy(char* dest, const char* s, size_t size)
 {

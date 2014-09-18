@@ -73,24 +73,21 @@ protected:
 
     using detail::IteratorBase<EntryType>::elem;
 
-    const HashSet* table; ///< Hashtable that is being iterated.
-    int            index; ///< Index of the current bucket.
+    const HashSet* table = nullptr; ///< Hashtable that is being iterated.
+    int            index = 0;       ///< Index of the current bucket.
 
   public:
 
     /**
-     * Default constructor, creates an invalid iterator.
+     * Create an invalid iterator.
      */
-    OZ_ALWAYS_INLINE
-    HashIterator() :
-      detail::IteratorBase<EntryType>(nullptr), table(nullptr), index(0)
-    {}
+    HashIterator() = default;
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
     explicit HashIterator(const HashSet& ht) :
-      detail::IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht), index(0)
+      detail::IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht)
     {
       while (elem == nullptr && index < table->size - 1) {
         ++index;

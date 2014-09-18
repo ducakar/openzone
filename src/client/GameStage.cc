@@ -68,10 +68,6 @@ void GameStage::saveMain(void*)
 
 void GameStage::read()
 {
-  if (saveThread.isValid()) {
-    saveThread.join();
-  }
-
   Log::print("Loading state from '%s' ...", stateFile.path().cstr());
 
   Buffer buffer = stateFile.read();
@@ -115,8 +111,8 @@ void GameStage::write()
 
   luaClient.write(&saveStream);
 
-  saveFile = stateFile;
-  saveThread.start("save", saveMain);
+  saveFile   = stateFile;
+  saveThread = Thread("save", saveMain);
 }
 
 void GameStage::auxMain(void*)
@@ -214,7 +210,7 @@ bool GameStage::update()
     write();
     stateFile = "";
   }
-  if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
+  else if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
     quicksaveFile.stat();
 
     if (quicksaveFile.type() == File::REGULAR) {
@@ -222,7 +218,7 @@ bool GameStage::update()
       Stage::nextStage = this;
     }
   }
-  if (input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD]) {
+  else if (input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD]) {
     autosaveFile.stat();
 
     if (autosaveFile.type() == File::REGULAR) {
@@ -375,7 +371,7 @@ void GameStage::load()
 
   isAuxAlive = true;
   mainSemaphore.post();
-  auxThread.start("aux", auxMain);
+  auxThread = Thread("aux", auxMain);
 
   ui::ui.showLoadingScreen(false);
   present(true);
@@ -396,9 +392,13 @@ void GameStage::unload()
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Shutting down ..."));
   ui::ui.showLoadingScreen(true);
 
-  loader.unload();
-
   render.update(Render::UI_BIT);
+
+  if (saveThread.isValid()) {
+    saveThread.join();
+  }
+
+  loader.unload();
 
   isAuxAlive = false;
 
@@ -521,10 +521,6 @@ void GameStage::destroy()
 {
   Log::println("Destroying GameStage {");
   Log::indent();
-
-  if (saveThread.isValid()) {
-    saveThread.join();
-  }
 
   profile.destroy();
   loader.destroy();

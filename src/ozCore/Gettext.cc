@@ -63,10 +63,6 @@ const char* Gettext::systemLanguage(const char* fallback)
   return fallback;
 }
 
-Gettext::Gettext() :
-  table(nullptr), messages(nullptr), strings(nullptr), nBuckets(0), nMessages(0), stringsSize(0)
-{}
-
 Gettext::~Gettext()
 {
   clear();

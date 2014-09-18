@@ -207,7 +207,7 @@ void Window::screenshot(const File& file)
   ScreenshotInfo* info = new ScreenshotInfo { file, windowWidth, windowHeight, pixels };
 
   glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels);
-  screenshotThread.start("screenshot", screenshotMain, info);
+  screenshotThread = Thread("screenshot", screenshotMain, info);
 }
 
 void Window::minimise()

@@ -42,9 +42,16 @@ const bool SharedLib::IS_SUPPORTED = false;
 const bool SharedLib::IS_SUPPORTED = true;
 #endif
 
-SharedLib::SharedLib() :
-  handle(nullptr)
-{}
+SharedLib::SharedLib(const char* name)
+{
+#if defined(__native_client__)
+  static_cast<void>(name);
+#elif defined(_WIN32)
+  handle = static_cast<void*>(LoadLibrary(name));
+#else
+  handle = dlopen(name, RTLD_NOW);
+#endif
+}
 
 SharedLib::~SharedLib()
 {
@@ -84,18 +91,6 @@ SharedLib::Function* SharedLib::get(const char* symbol) const
   function = reinterpret_cast<Function*>(dlsym(handle, symbol));
   return function;
 #endif
-}
-
-bool SharedLib::open(const char* name)
-{
-#if defined(__native_client__)
-  static_cast<void>(name);
-#elif defined(_WIN32)
-  handle = static_cast<void*>(LoadLibrary(name));
-#else
-  handle = dlopen(name, RTLD_NOW);
-#endif
-  return handle != nullptr;
 }
 
 void SharedLib::close()

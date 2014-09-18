@@ -48,6 +48,9 @@ public:
 
 public:
 
+  // Import SIMD constructors.
+  using VectorBase4::VectorBase4;
+
   /**
    * Create an uninitialised instance.
    */
@@ -55,26 +58,6 @@ public:
   Quat() :
     VectorBase4(0.0f, 0.0f, 0.0f, 1.0f)
   {}
-
-#ifdef OZ_SIMD_MATH
-
-  /**
-   * Create from a float SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Quat(float4 f4) :
-    VectorBase4(f4)
-  {}
-
-  /**
-   * Create from an uint SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Quat(uint4 u4) :
-    VectorBase4(u4)
-  {}
-
-#endif
 
   /**
    * Create a quaternion with given components.
@@ -91,24 +74,6 @@ public:
   explicit Quat(const float* q) :
     VectorBase4(q[0], q[1], q[2], q[3])
   {}
-
-  /**
-   * Equality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator == (const Quat& q) const
-  {
-    return x == q.x && y == q.y && z == q.z && w == q.w;
-  }
-
-  /**
-   * Inequality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator != (const Quat& q) const
-  {
-    return !operator == (q);
-  }
 
   /**
    * Cast to four-component vector.
@@ -142,7 +107,7 @@ public:
   float operator ! () const
   {
 #ifdef OZ_SIMD_MATH
-    return vFirst(vDot(f4, f4));
+    return vDot(f4, f4)[0];
 #else
     return x*x + y*y + z*z + w*w;
 #endif
@@ -271,7 +236,7 @@ public:
     float4 q3 = vShuffle(q.f4, 1, 2, 0, 3);
 
     Quat tq = Quat(k0*q0 + k1*q1 + k2*q2 - k3*q3);
-    tq.w   -= vFirst(vDot(k1, q.f4));
+    tq.w   -= vDot(k1, q.f4)[0];
 
     return tq;
 #else
@@ -335,7 +300,7 @@ public:
     float4 q3 = vShuffle(q.f4, 2, 0, 1, 3);
 
     Quat tq = Quat(k0*q0 - k1*q1 + k2*q2 - k3*q3);
-    tq.w    = vFirst(vDot(k0, q.f4));
+    tq.w    = vDot(k0, q.f4)[0];
     tq.f4  *= vDot(q.f4, q.f4);
 
     return tq;
@@ -416,7 +381,7 @@ public:
     float4 q3 = vShuffle(q.f4, 1, 2, 0, 3);
 
     f4 = k0*q0 + k1*q1 + k2*q2 - k3*q3;
-    w -= vFirst(vDot(k1, q0));
+    w -= vDot(k1, q0)[0];
 #else
     float tx = x, ty = y, tz = z;
 
@@ -465,7 +430,7 @@ public:
     float4 q3 = vShuffle(q.f4, 2, 0, 1, 3);
 
     f4  = k0*q0 - k1*q1 + k2*q2 - k3*q3;
-    w   = vFirst(vDot(k0, q.f4));
+    w   = vDot(k0, q.f4)[0];
     f4 *= vDot(q.f4, q.f4);
 #else
     float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;

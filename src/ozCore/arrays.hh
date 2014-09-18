@@ -50,17 +50,14 @@ protected:
 
   using IteratorBase<Elem>::elem;
 
-  Elem* past; ///< Pointer that points just past the last element.
+  Elem* past = nullptr; ///< Pointer that points just past the last element.
 
 public:
 
   /**
-   * Default constructor, creates an invalid iterator.
+   * Create an invalid iterator.
    */
-  OZ_ALWAYS_INLINE
-  ArrayIterator() :
-    IteratorBase<Elem>(nullptr), past(nullptr)
-  {}
+  ArrayIterator() = default;
 
   /**
    * Array iterator.
@@ -298,6 +295,17 @@ inline void* mChar(const void* src, int ch, int size)
 }
 
 /**
+ * Reallocate storage.
+ *
+ * Similar to `realloc()` but uses `new`/`delete` operators. First `min(size, newSize)` bytes from
+ * source are copied to the newly allocated memory. Similar to `realloc()`, it acts as `new char[]`
+ * and `delete[]` if called with `src == nullptr` and `newSize == 0` respectively.
+ *
+ * @return newly allocated stroage.
+ */
+char* mReallocate(const void* src, int size, int newSize);
+
+/**
  * `strlcpy()` implementation.
  *
  * Safer and faster alternative to `strncpy()`. It always adds the terminating null char and doesn't
@@ -411,30 +419,6 @@ inline void aMoveBackward(Elem* srcArray, int count, Elem* destArray)
 }
 
 /**
- * Reallocate array moving its elements.
- *
- * Allocate a new array of `newCount` elements, move first `min(count, newCount)` elements of the
- * source array to the newly created one and delete the source array. Similar to `realloc()`,
- * the given array is deleted and `nullptr` is returned if `newCount` is 0 and a new array one is
- * created and no elements are moved if `count` is 0.
- *
- * @return Newly allocated array.
- */
-template <typename Elem>
-inline Elem* aReallocate(Elem* array, int count, int newCount)
-{
-  Elem* newArray = nullptr;
-
-  if (newCount != 0) {
-    newArray = new Elem[newCount];
-    aMove<Elem>(array, min<int>(count, newCount), newArray);
-  }
-  delete[] array;
-
-  return newArray;
-}
-
-/**
  * %Set array elements to a given value.
  */
 template <typename Elem, typename Value = Elem>
@@ -517,6 +501,29 @@ inline int aBisection(const Elem* array, int count, const Key& key)
     }
   }
   return a;
+}
+
+/**
+ * Reallocate an array moving its elements.
+ *
+ * Allocate a new array of `newCount` elements, move first `min(count, newCount)` elements of the
+ * source array to the newly created one and free the source array. Similar to `realloc()`, the
+ * given array is deleted and `nullptr` is returned if `newCount` is 0.
+ *
+ * @return Newly allocated array.
+ */
+template <typename Elem>
+inline Elem* aReallocate(Elem* array, int count, int newCount)
+{
+  Elem* newArray = nullptr;
+
+  if (newCount != 0) {
+    newArray = new Elem[newCount];
+    aMove<Elem>(array, min<int>(count, newCount), newArray);
+  }
+  delete[] array;
+
+  return newArray;
 }
 
 }

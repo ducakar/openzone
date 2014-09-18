@@ -45,12 +45,12 @@ private:
 
   struct Message;
 
-  Message** table;       ///< Message hashtable.
-  Message*  messages;    ///< Messages.
-  char*     strings;     ///< Strings buffer.
-  int       nBuckets;    ///< Number of hashtable buckets.
-  int       nMessages;   ///< Size of hashtable.
-  int       stringsSize; ///< Size of `strings` array.
+  Message** table       = nullptr; ///< Message hashtable.
+  Message*  messages    = nullptr; ///< Messages.
+  char*     strings     = nullptr; ///< Strings buffer.
+  int       nBuckets    = 0;       ///< Number of hashtable buckets.
+  int       nMessages   = 0;       ///< Size of hashtable.
+  int       stringsSize = 0;       ///< Size of `strings` array.
 
 public:
 
@@ -66,7 +66,7 @@ public:
   /**
    * Default constructor, creates an empty instance.
    */
-  Gettext();
+  Gettext() = default;
 
   /**
    * Destructor.

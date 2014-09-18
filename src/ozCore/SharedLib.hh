@@ -78,14 +78,19 @@ public:
 
 private:
 
-  void* handle; ///< Internal library handle.
+  void* handle = nullptr; ///< Internal library handle.
 
 public:
 
   /**
-   * Create uninitialised instance.
+   * Create an empty instance, no library is opened.
    */
-  SharedLib();
+  SharedLib() = default;
+
+  /**
+   * Open a shared library with a given (file) name.
+   */
+  SharedLib(const char* name);
 
   /**
    * Destructor, closes the library if opened.
@@ -115,11 +120,6 @@ public:
    * Obtain a pointer to the requested function from thr library (`nullptr` on error).
    */
   Function* get(const char* symbol) const;
-
-  /**
-   * Open a shared library with a given (file) name.
-   */
-  bool open(const char* name);
 
   /**
    * Close the library if opened.

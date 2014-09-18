@@ -189,34 +189,7 @@ bool Thread::isMain()
 #endif
 }
 
-Thread::Thread() :
-  descriptor(nullptr)
-{}
-
-Thread::~Thread()
-{
-  if (descriptor != nullptr && !descriptor->isDetached) {
-    join();
-  }
-}
-
-Thread::Thread(Thread&& t) :
-  descriptor(t.descriptor)
-{
-  t.descriptor = nullptr;
-}
-
-Thread& Thread::operator = (Thread&& t)
-{
-  if (&t != this) {
-    descriptor = t.descriptor;
-
-    t.descriptor = nullptr;
-  }
-  return *this;
-}
-
-void Thread::start(const char* name, Main* main, void* data)
+Thread::Thread(const char* name, Main* main, void* data)
 {
   if (descriptor != nullptr) {
     OZ_ERROR("oz::Thread: Thread is already started");
@@ -243,6 +216,29 @@ void Thread::start(const char* name, Main* main, void* data)
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
 #endif
+}
+
+Thread::~Thread()
+{
+  if (descriptor != nullptr && !descriptor->isDetached) {
+    join();
+  }
+}
+
+Thread::Thread(Thread&& t) :
+  descriptor(t.descriptor)
+{
+  t.descriptor = nullptr;
+}
+
+Thread& Thread::operator = (Thread&& t)
+{
+  if (&t != this) {
+    descriptor = t.descriptor;
+
+    t.descriptor = nullptr;
+  }
+  return *this;
 }
 
 void Thread::detach()
