@@ -31,7 +31,7 @@
  *   with 0xee bytes and track memory statistics and allocated chunks to catch any memory leaks and
  *   `new`/`delete` mismatches. `Alloc::objectCIter()` and `Alloc::arrayCIter()` can be used to
  *   iterate over the chunks currently allocated by `new` and `new[]` operator respectively.
- * - If compiled with `OZ_SIMD_MATH` the allocated chunks are aligned to 16 bytes.
+ * - If compiled with `OZ_SIMD` the allocated chunks are aligned to 16 bytes.
  *
  * @note
  * Enabling AddressSanitizer, LeakSanitizer & similar tools overrides `new`/`delete` once again and

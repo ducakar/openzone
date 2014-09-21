@@ -89,6 +89,9 @@ add_library(ozCore
 )
 
 target_link_libraries(ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY})
+if(OZ_LZ4)
+  target_link_libraries(ozCore ${LZ4_LIBRARIES})
+endif()
 if(ANDROID)
   target_link_libraries(ozCore -lasound -ldl -llog ${PLATFORM_STL_LIBRARY})
 elseif(NACL)

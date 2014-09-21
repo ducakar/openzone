@@ -95,44 +95,33 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Set(InitialiserList<Elem> l)
+  Set(InitialiserList<Elem> l) :
+    List<Elem>(l)
   {
-    for (const Elem& e : l) {
-      add(e);
-    }
+    List<Elem>::sort();
   }
 
   /**
    * Copy constructor, copies elements.
    */
-  Set(const Set& s) :
-    List<Elem>(s)
-  {}
+  Set(const Set& s) = default;
 
   /**
    * Move constructor, moves element storage.
    */
-  Set(Set&& s) :
-    List<Elem>(static_cast<Set&&>(s))
-  {}
+  Set(Set&& s) = default;
 
   /**
    * Copy operator, copies elements.
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator = (const Set& s)
-  {
-    return static_cast<Set&>(List<Elem>::operator = (s));
-  }
+  Set& operator = (const Set& s) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Set& operator = (Set&& s)
-  {
-    return static_cast<Set&>(List<Elem>::operator = (static_cast<Set&&>(s)));
-  }
+  Set& operator = (Set&& s) = default;
 
   /**
    * True iff respective elements are equal.

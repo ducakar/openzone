@@ -21,7 +21,7 @@
  * @file tests/simd.cc
  */
 
-// #define OZ_SIMD_MATH
+// #define OZ_SIMD
 #include <ozCore/ozCore.hh>
 
 #include <cstdio>

@@ -106,7 +106,7 @@ public:
   OZ_ALWAYS_INLINE
   friend float operator * (const Vec3& v, const Plane& plane)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return vDot(v.f4, plane.n.f4)[0];
 #else
     return v.x*plane.n.x + v.y*plane.n.y + v.z*plane.n.z;
@@ -119,7 +119,7 @@ public:
   OZ_ALWAYS_INLINE
   friend float operator * (const Point& p, const Plane& plane)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return vDot(p.f4, plane.n.f4)[0] - plane.d;
 #else
     return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;

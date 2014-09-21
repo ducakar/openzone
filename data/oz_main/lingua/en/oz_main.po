@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-11-01 14:57+0100\n"
+"PO-Revision-Date: 2014-09-20 16:56+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: en_GB\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.9\n"
 
 #: data/oz_main/class/mechWarrior.json
 msgid "mech warrior"
@@ -92,10 +92,6 @@ msgstr "heavy blaster"
 msgid "Galileo SatNav"
 msgstr "Galileo SatNav"
 
-#: data/oz_main/nirvana/techGraph.json
-msgid "Cyborg technology"
-msgstr "Cyborg technology"
-
 #: data/oz_main/baseq3/maps/beastBunker.json
 msgid "beast bunker"
 msgstr "beast bunker"
@@ -119,10 +115,6 @@ msgstr "console"
 #: data/oz_main/class/zombie.json
 msgid "zombie"
 msgstr "zombie"
-
-#: data/oz_main/nirvana/techGraph.json
-msgid "Droid technology"
-msgstr "Droid technology"
 
 #: data/oz_main/class/pine.json
 msgid "pine"
@@ -240,7 +232,7 @@ msgstr "skull"
 msgid "raptor"
 msgstr "raptor"
 
-#: data/oz_main/class/explosiveBarrel.json
+#: data/oz_main/class/metalBarrel.json
 msgid "barrel"
 msgstr "barrel"
 
@@ -292,9 +284,9 @@ msgstr "service station"
 msgid "data cube"
 msgstr "data cube"
 
-#: data/oz_main/nirvana/techGraph.json
-msgid "Beastie technology"
-msgstr "Beastie technology"
+#: data/oz_main/class/explosiveBarrel.json
+msgid "explosive barrel"
+msgstr "explosive barrel"
 
 #: data/oz_main/class/box.json
 msgid "box"

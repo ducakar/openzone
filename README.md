@@ -78,10 +78,10 @@ You may also want to adjust several options when configuring CMake build system:
   accesses to the freed memory very likely to result in an error or a crash.
   `OFF` by default.
 
-- `OZ_SIMD_MATH`: Enable SIMD-specific implementation (SSE1 & ARM NEON) of linear algebra classes
-  (Vec3, Vec4, Point, Plane, Quat, Mat3, Mat4). Currently it yields ~15% worse performance than the
-  generic implementation since `Vec3` and `Point` become longer (4 floats v. 3 floats) and there are
-  plenty of accesses to vector components in the code, as it hasn't been written with SIMD in mind.
+- `OZ_SIMD`: Enable SIMD-specific implementation (SSE1 & ARM NEON) of linear algebra classes (Vec3,
+  Vec4, Point, Plane, Quat, Mat3, Mat4). Currently it yields ~15% worse performance than the generic
+  implementation since `Vec3` and `Point` become longer (4 floats v. 3 floats) and there are plenty
+  of accesses to vector components in the code, as it hasn't been written with SIMD in mind.
   `OFF` by default.
 
 - `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library (ozDynamics). Requires ODE (Open Dynamics

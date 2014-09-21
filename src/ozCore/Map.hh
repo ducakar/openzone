@@ -162,34 +162,24 @@ public:
   /**
    * Copy constructor, copies elements.
    */
-  Map(const Map& m) :
-    Set<Pair>(m)
-  {}
+  Map(const Map& m) = default;
 
   /**
    * Move constructor, moves element storage.
    */
-  Map(Map&& m) :
-    Set<Pair>(static_cast<Map&&>(m))
-  {}
+  Map(Map&& m) = default;
 
   /**
    * Copy operator, copies elements.
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator = (const Map& m)
-  {
-    return static_cast<Map&>(Set<Pair>::operator = (m));
-  }
+  Map& operator = (const Map& m) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Map& operator = (Map&& m)
-  {
-    return static_cast<Map&>(Set<Pair>::operator = (static_cast<Map&&>(m)));
-  }
+  Map& operator = (Map&& m) = default;
 
   /**
    * True iff respective elements are equal.

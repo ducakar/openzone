@@ -49,18 +49,18 @@ static void* allocate(AllocMode mode, size_t size)
 {
   static_cast<void>(mode);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   size = Alloc::alignUp(size);
 #endif
 #ifdef OZ_ALLOCATOR
   size += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 #endif
 
-#if defined(OZ_SIMD_MATH) && defined(_WIN32)
+#if defined(OZ_SIMD) && defined(_WIN32)
   void* ptr = _aligned_malloc(size, OZ_ALIGNMENT);
-#elif defined(OZ_SIMD_MATH) && _ISOC11_SOURCE
+#elif defined(OZ_SIMD) && _ISOC11_SOURCE
   void* ptr = aligned_alloc(OZ_ALIGNMENT, size);
-#elif defined(OZ_SIMD_MATH)
+#elif defined(OZ_SIMD)
   void* ptr = memalign(OZ_ALIGNMENT, size);
 #else
   void* ptr = malloc(size);
@@ -133,7 +133,7 @@ static void deallocate(AllocMode mode, void* ptr)
 
 #endif
 
-#if defined(OZ_SIMD_MATH) && defined(_WIN32)
+#if defined(OZ_SIMD) && defined(_WIN32)
   _aligned_free(ptr));
 #else
   free(ptr);

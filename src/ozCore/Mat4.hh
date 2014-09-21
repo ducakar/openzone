@@ -306,7 +306,7 @@ public:
    */
   Mat4 operator * (const Mat4& m) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Mat4(Vec4(x.f4 * vFill(m.x.x) + y.f4 * vFill(m.x.y) +
                      z.f4 * vFill(m.x.z) + w.f4 * vFill(m.x.w)),
                 Vec4(x.f4 * vFill(m.y.x) + y.f4 * vFill(m.y.y) +
@@ -328,7 +328,7 @@ public:
    */
   Vec3 operator * (const Vec3& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(x.f4 * vFill(v.x) + y.f4 * vFill(v.y) + z.f4 * vFill(v.z));
 #else
     return Vec3(x.x * v.x + y.x * v.y + z.x * v.z,
@@ -342,7 +342,7 @@ public:
    */
   Point operator * (const Point& p) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Point(x.f4 * vFill(p.x) + y.f4 * vFill(p.y) + z.f4 * vFill(p.z) + w.f4);
 #else
     return Point(x.x * p.x + y.x * p.y + z.x * p.z + w.x,
@@ -358,7 +358,7 @@ public:
   {
     Plane tp;
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     tp.n = Vec3(x.f4 * vFill(p.n.x) + y.f4 * vFill(p.n.y) + z.f4 * vFill(p.n.z));
     tp.d = p.d + vDot(tp.n.f4, w.f4)[0];
 #else
@@ -376,7 +376,7 @@ public:
    */
   Vec4 operator * (const Vec4& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec4(x.f4 * vFill(v.x) + y.f4 * vFill(v.y) +
                 z.f4 * vFill(v.z) + w.f4 * vFill(v.w));
 #else
@@ -407,7 +407,7 @@ public:
    */
   Mat4 operator ^ (const Mat4& m) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Mat4(Vec4(x.f4 * vFill(m.x.x) + y.f4 * vFill(m.x.y) + z.f4 * vFill(m.x.z)),
                 Vec4(x.f4 * vFill(m.y.x) + y.f4 * vFill(m.y.y) + z.f4 * vFill(m.y.z)),
                 Vec4(x.f4 * vFill(m.z.x) + y.f4 * vFill(m.z.y) + z.f4 * vFill(m.z.z)),
@@ -493,7 +493,7 @@ public:
    */
   void translate(const Vec3& v)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     w.f4 = x.f4 * vFill(v.x) + y.f4 * vFill(v.y) + z.f4 * vFill(v.z) + w.f4;
 #else
     w.x = x.x * v.x + y.x * v.y + z.x * v.z + w.x;

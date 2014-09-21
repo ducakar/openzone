@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-11-01 14:56+0100\n"
+"PO-Revision-Date: 2014-09-20 16:56+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: sl_SI\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.9\n"
 
 #: data/oz_main/class/mechWarrior.json
 msgid "mech warrior"
@@ -92,10 +92,6 @@ msgstr "težki udarnik"
 msgid "Galileo SatNav"
 msgstr "navigacija Galileo"
 
-#: data/oz_main/nirvana/techGraph.json
-msgid "Cyborg technology"
-msgstr "Kiborgovska tehnologija"
-
 #: data/oz_main/baseq3/maps/beastBunker.json
 msgid "beast bunker"
 msgstr "beštji bunker"
@@ -119,10 +115,6 @@ msgstr "konzola"
 #: data/oz_main/class/zombie.json
 msgid "zombie"
 msgstr "zombi"
-
-#: data/oz_main/nirvana/techGraph.json
-msgid "Droid technology"
-msgstr "Droidska tehnologija"
 
 #: data/oz_main/class/pine.json
 msgid "pine"
@@ -240,7 +232,7 @@ msgstr "lobanja"
 msgid "raptor"
 msgstr "raptor"
 
-#: data/oz_main/class/explosiveBarrel.json
+#: data/oz_main/class/metalBarrel.json
 msgid "barrel"
 msgstr "sod"
 
@@ -292,9 +284,9 @@ msgstr "servisna postaja"
 msgid "data cube"
 msgstr "podatkovna kocka"
 
-#: data/oz_main/nirvana/techGraph.json
-msgid "Beastie technology"
-msgstr "Beštijska tehnologija"
+#: data/oz_main/class/explosiveBarrel.json
+msgid "explosive barrel"
+msgstr "ekspozivni sod"
 
 #: data/oz_main/class/box.json
 msgid "box"

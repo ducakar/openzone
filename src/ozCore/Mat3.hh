@@ -250,7 +250,7 @@ public:
    */
   Mat3 operator * (const Mat3& m) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Mat3(Vec3(x.f4 * vFill(m.x.x) + y.f4 * vFill(m.x.y) + z.f4 * vFill(m.x.z)),
                 Vec3(x.f4 * vFill(m.y.x) + y.f4 * vFill(m.y.y) + z.f4 * vFill(m.y.z)),
                 Vec3(x.f4 * vFill(m.z.x) + y.f4 * vFill(m.z.y) + z.f4 * vFill(m.z.z)));
@@ -266,7 +266,7 @@ public:
    */
   Vec3 operator * (const Vec3& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(x.f4 * vFill(v.x) + y.f4 * vFill(v.y) + z.f4 * vFill(v.z));
 #else
     return Vec3(x.x * v.x + y.x * v.y + z.x * v.z,
@@ -282,7 +282,7 @@ public:
   {
     Plane tp;
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     tp.n = Vec3(x.f4 * vFill(p.n.x) + y.f4 * vFill(p.n.y) + z.f4 * vFill(p.n.z));
     tp.d = p.d;
 #else

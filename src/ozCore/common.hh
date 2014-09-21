@@ -40,7 +40,7 @@
  * @def OZ_ALIGNMENT
  * Alignment of allocated storage returned by the `new` operator.
  */
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 # define OZ_ALIGNMENT sizeof(float[4])
 #else
 # define OZ_ALIGNMENT sizeof(void*)

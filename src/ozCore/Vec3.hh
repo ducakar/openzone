@@ -83,7 +83,7 @@ public:
    */
   float operator ! () const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Math::sqrt(vDot(f4, f4)[0]);
 #else
     return Math::sqrt(x*x + y*y + z*z);
@@ -95,7 +95,7 @@ public:
    */
   float fastN() const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Math::fastSqrt(vDot(f4, f4)[0]);
 #else
     return Math::fastSqrt(x*x + y*y + z*z);
@@ -108,7 +108,7 @@ public:
   OZ_ALWAYS_INLINE
   float sqN() const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return vDot(f4, f4)[0];
 #else
     return x*x + y*y + z*z;
@@ -122,7 +122,7 @@ public:
   {
     hard_assert(x*x + y*y + z*z > 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k = vInvSqrt(vDot(f4, f4));
     return Vec3(f4 * k);
 #else
@@ -138,7 +138,7 @@ public:
   {
     hard_assert(x*x + y*y + z*z > 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k = vFastInvSqrt(vDot(f4, f4));
     return Vec3(f4 * k);
 #else
@@ -162,7 +162,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3 operator - () const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(-f4);
 #else
     return Vec3(-x, -y, -z);
@@ -175,7 +175,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3 operator + (const Vec3& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(f4 + v.f4);
 #else
     return Vec3(x + v.x, y + v.y, z + v.z);
@@ -188,7 +188,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3 operator - (const Vec3& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(f4 - v.f4);
 #else
     return Vec3(x - v.x, y - v.y, z - v.z);
@@ -201,7 +201,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3 operator * (float s) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(f4 * vFill(s));
 #else
     return Vec3(x * s, y * s, z * s);
@@ -214,7 +214,7 @@ public:
   OZ_ALWAYS_INLINE
   friend Vec3 operator * (float s, const Vec3& v)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(vFill(s) * v.f4);
 #else
     return Vec3(s * v.x, s * v.y, s * v.z);
@@ -229,7 +229,7 @@ public:
   {
     hard_assert(s != 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(f4 / vFill(s));
 #else
     s = 1.0f / s;
@@ -243,7 +243,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3& operator += (const Vec3& v)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 += v.f4;
 #else
     x += v.x;
@@ -259,7 +259,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3& operator -= (const Vec3& v)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 -= v.f4;
 #else
     x -= v.x;
@@ -275,7 +275,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3& operator *= (float s)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 *= vFill(s);
 #else
     x *= s;
@@ -293,7 +293,7 @@ public:
   {
     hard_assert(s != 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 /= vFill(s);
 #else
     s  = 1.0f / s;
@@ -310,7 +310,7 @@ public:
   OZ_ALWAYS_INLINE
   float operator * (const Vec3& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return vDot(f4, v.f4)[0];
 #else
     return x*v.x + y*v.y + z*v.z;
@@ -322,7 +322,7 @@ public:
    */
   Vec3 operator ^ (const Vec3& v) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 a  = vShuffle(f4, 1, 2, 0, 3);
     float4 b  = vShuffle(f4, 2, 0, 1, 3);
     float4 va = vShuffle(v.f4, 2, 0, 1, 3);
@@ -345,7 +345,7 @@ public:
   OZ_ALWAYS_INLINE
   friend Vec3 abs(const Vec3& a)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(vAbs(a.u4));
 #else
     return Vec3(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z));
@@ -358,7 +358,7 @@ public:
   OZ_ALWAYS_INLINE
   friend Vec3 min(const Vec3& a, const Vec3& b)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(vMin(a.f4, b.f4));
 #else
     return Vec3(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z));
@@ -371,7 +371,7 @@ public:
   OZ_ALWAYS_INLINE
   friend Vec3 max(const Vec3& a, const Vec3& b)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(vMax(a.f4, b.f4));
 #else
     return Vec3(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z));
@@ -384,7 +384,7 @@ public:
   OZ_ALWAYS_INLINE
   friend Vec3 clamp(const Vec3& c, const Vec3& a, const Vec3& b)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec3(vMin(b.f4, vMax(a.f4, c.f4)));
 #else
     return Vec3(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),

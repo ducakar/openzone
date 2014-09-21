@@ -80,7 +80,7 @@ public:
    */
   operator Vec4() const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Vec4(f4);
 #else
     return Vec4(x, y, z, w);
@@ -93,7 +93,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat operator * () const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(u4 ^ vFill(0x80000000u, 0x80000000u, 0x80000000u, 0u));
 #else
     return Quat(-x, -y, -z, w);
@@ -106,7 +106,7 @@ public:
   OZ_ALWAYS_INLINE
   float operator ! () const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return vDot(f4, f4)[0];
 #else
     return x*x + y*y + z*z + w*w;
@@ -120,7 +120,7 @@ public:
   {
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k = vInvSqrt(vDot(f4, f4));
     return Quat(f4 * k);
 #else
@@ -136,7 +136,7 @@ public:
   {
     hard_assert(x*x + y*y + z*z + w*w > 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k = vFastInvSqrt(vDot(f4, f4));
     return Quat(f4 * k);
 #else
@@ -160,7 +160,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat operator - () const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(-f4);
 #else
     return Quat(-x, -y, -z, -w);
@@ -173,7 +173,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat operator + (const Quat& q) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(f4 + q.f4);
 #else
     return Quat(x + q.x, y + q.y, z + q.z, w + q.w);
@@ -186,7 +186,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat operator - (const Quat& q) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(f4 - q.f4);
 #else
     return Quat(x - q.x, y - q.y, z - q.z, w - q.w);
@@ -199,7 +199,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat operator * (float s) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(f4 * vFill(s));
 #else
     return Quat(x * s, y * s, z * s, w * s);
@@ -212,7 +212,7 @@ public:
   OZ_ALWAYS_INLINE
   friend Quat operator * (float s, const Quat& q)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(vFill(s) * q.f4);
 #else
     return Quat(s * q.x, s * q.y, s * q.z, s * q.w);
@@ -224,7 +224,7 @@ public:
    */
   Quat operator * (const Quat& q) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k0 = vFill(w);
     float4 k1 = f4;
     float4 k2 = vShuffle(f4, 1, 2, 0, 3);
@@ -255,7 +255,7 @@ public:
   {
     hard_assert(s != 0.0f);
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     return Quat(f4 / vFill(s));
 #else
     s = 1.0f / s;
@@ -268,7 +268,7 @@ public:
    */
   friend Quat operator / (float s, const Quat& q)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k = vFill(s);
 
     k /= vDot(q.f4, q.f4);
@@ -288,7 +288,7 @@ public:
    */
   Quat operator / (const Quat& q) const
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k0 = f4;
     float4 k1 = vFill(w);
     float4 k2 = vShuffle(f4, 2, 0, 1, 3);
@@ -319,7 +319,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat& operator += (const Quat& q)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 += q.f4;
 #else
     x += q.x;
@@ -336,7 +336,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat& operator -= (const Quat& q)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 -= q.f4;
 #else
     x -= q.x;
@@ -353,7 +353,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat& operator *= (float s)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 *= vFill(s);
 #else
     x *= s;
@@ -369,7 +369,7 @@ public:
    */
   Quat& operator *= (const Quat& q)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k0 = vFill(w);
     float4 k1 = f4;
     float4 k2 = vShuffle(f4, 1, 2, 0, 3);
@@ -399,7 +399,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat& operator /= (float s)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     f4 /= vFill(s);
 #else
     hard_assert(s != 0.0f);
@@ -418,7 +418,7 @@ public:
    */
   Quat& operator /= (const Quat& q)
   {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
     float4 k0 = f4;
     float4 k1 = vFill(w);
     float4 k2 = vShuffle(f4, 2, 0, 1, 3);
@@ -520,7 +520,7 @@ public:
 OZ_ALWAYS_INLINE
 inline Quat abs(const Quat& a)
 {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   return Quat(vAbs(a.u4));
 #else
   return Quat(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z), abs<float>(a.w));
@@ -533,7 +533,7 @@ inline Quat abs(const Quat& a)
 OZ_ALWAYS_INLINE
 inline Quat min(const Quat& a, const Quat& b)
 {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   return Quat(vMin(a.f4, b.f4));
 #else
   return Quat(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z),
@@ -547,7 +547,7 @@ inline Quat min(const Quat& a, const Quat& b)
 OZ_ALWAYS_INLINE
 inline Quat max(const Quat& a, const Quat& b)
 {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   return Quat(vMax(a.f4, b.f4));
 #else
   return Quat(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z),
@@ -561,7 +561,7 @@ inline Quat max(const Quat& a, const Quat& b)
 OZ_ALWAYS_INLINE
 inline Quat clamp(const Quat& c, const Quat& a, const Quat& b)
 {
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   return Quat(vMin(b.f4, vMax(a.f4, c.f4)));
 #else
   return Quat(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),

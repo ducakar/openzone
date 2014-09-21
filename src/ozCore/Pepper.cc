@@ -134,7 +134,7 @@ void Pepper::Instance::DidChangeView(const pp::View& view)
     SDL_NACL_SetInstance(pp_instance(), pp::Module::Get()->get_browser_interface(),
                          width, height);
 
-    mainThread.start("naclMain", mainThreadMain, nullptr);
+    mainThread = Thread("naclMain", mainThreadMain, nullptr);
     mainThread.detach();
     isStarted = true;
   }

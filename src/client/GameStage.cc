@@ -52,7 +52,7 @@ void GameStage::saveMain(void*)
   Log::print("Saving state to %s ...", gameStage.saveFile.path().cstr());
 
   Buffer buffer(gameStage.saveStream.begin(), gameStage.saveStream.tell());
-  buffer = buffer.deflate(-1);
+  buffer = buffer.compress();
 
   if (!gameStage.saveFile.write(buffer)) {
     Log::printEnd(" Failed");
@@ -75,7 +75,7 @@ void GameStage::read()
     OZ_ERROR("Reading saved state '%s' failed", stateFile.path().cstr());
   }
 
-  buffer = buffer.inflate();
+  buffer = buffer.decompress();
   if (buffer.isEmpty()) {
     OZ_ERROR("Decompressing saved state '%s' failed", stateFile.path().cstr());
   }

@@ -119,32 +119,22 @@ public:
   /**
    * Copy constructor, copies elements and storage.
    */
-  HashMap(const HashMap& ht) :
-    HashSet<Pair>(ht)
-  {}
+  HashMap(const HashMap& ht) = default;
 
   /**
    * Move constructor, moves storage.
    */
-  HashMap(HashMap&& ht) :
-    HashSet<Pair>(static_cast<HashMap&&>(ht))
-  {}
+  HashMap(HashMap&& ht) = default;
 
   /**
    * Copy operator, copies elements and storage.
    */
-  HashMap& operator = (const HashMap& ht)
-  {
-    return static_cast<HashMap&>(HashSet<Pair>::operator = (ht));
-  }
+  HashMap& operator = (const HashMap& ht) = default;
 
   /**
    * Move operator, moves storage.
    */
-  HashMap& operator = (HashMap&& ht)
-  {
-    return static_cast<HashMap&>(HashSet<Pair>::operator = (static_cast<HashMap&&>(ht)));
-  }
+  HashMap& operator = (HashMap&& ht) = default;
 
   /**
    * True iff contained elements are equal.

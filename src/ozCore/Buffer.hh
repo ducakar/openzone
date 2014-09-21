@@ -196,21 +196,21 @@ public:
   String toString() const;
 
   /**
-   * Compress using deflate algorithm.
+   * Compress using deflate (ZIP/GZip) or LZ4 algorithm.
    *
-   * An empty buffer is returned on an error.
+   * An empty buffer is returned on an error. LZ4 algoritm is only available when compiled with
+   * `OZ_LZ4` option. `System::error()` is invoked if LZ4 is requested but not compiled.
    *
-   * @param level compression level: -1 (default), 0 (no compression) or 1...9 (1 - best speed,
-   *        9 - best compression).
+   * @param level 0 - none, 1 to 9 - fastest to best, -1 - default level, -2 - LZ4 compression.
    */
-  Buffer deflate(int level = -1) const;
+  Buffer compress(int level = -1) const;
 
   /**
-   * Uncompress using inflate algorithm.
+   * Decompress data compressed with deflate (ZIP/GZip) or LZ4 algorithm.
    *
    * An empty buffer is returned on an error.
    */
-  Buffer inflate() const;
+  Buffer decompress() const;
 
   /**
    * Resize the buffer.

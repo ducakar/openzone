@@ -65,9 +65,9 @@ int main(int, char**)
   t0 = Time::clock();
 
   Buffer b0(image.pixels, width * height * 4);
-  Buffer b1 = b0.deflate(1);
-  Buffer b2 = b1.inflate();
-  Buffer b3 = b2.deflate(1);
+  Buffer b1 = b0.compress(1);
+  Buffer b2 = b1.decompress();
+  Buffer b3 = b2.compress(1);
 
   Log() << "zlib time: " << (Time::clock() - t0) << " ms";
 

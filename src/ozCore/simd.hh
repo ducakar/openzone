@@ -30,20 +30,20 @@
 
 #include "common.hh"
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 # if defined(__ARM_NEON__)
 #  include <arm_neon.h>
 # elif defined(__SSE__)
 #  include <xmmintrin.h>
 # else
-#  error OZ_SIMD_MATH is only implemented for SSE1 and ARM NEON.
+#  error OZ_SIMD is only implemented for SSE1 and ARM NEON.
 # endif
 #endif
 
 namespace oz
 {
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 
 /**
  * SIMD vector of four floats.
@@ -208,7 +208,7 @@ inline float4 vDot(float4 a, float4 b)
   return p;
 }
 
-#endif // OZ_SIMD_MATH
+#endif // OZ_SIMD
 
 /**
  * Base class for 3-component vector and similar algebra structures.
@@ -217,7 +217,7 @@ class VectorBase3
 {
 public:
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   __extension__ union
   {
     float4 f4;
@@ -237,7 +237,7 @@ public:
 
 protected:
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
   explicit VectorBase3(float x_, float y_, float z_, float w_) :
@@ -258,7 +258,7 @@ protected:
 
 public:
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
   explicit VectorBase3(float4 f4_) :
@@ -278,7 +278,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator == (const VectorBase3& v) const
   {
-#if defined(OZ_SIMD_MATH) && defined(__SSE__)
+#if defined(OZ_SIMD) && defined(__SSE__)
     return _mm_movemask_ps(f4 == v.f4) == 0xf;
 #else
     return x == v.x && y == v.y && z == v.z;
@@ -339,7 +339,7 @@ class VectorBase4
 {
 public:
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
   __extension__ union
   {
     float4 f4;
@@ -361,7 +361,7 @@ public:
 
 protected:
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
   explicit VectorBase4(float x_, float y_, float z_, float w_) :
@@ -382,7 +382,7 @@ protected:
 
 public:
 
-#ifdef OZ_SIMD_MATH
+#ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
   explicit VectorBase4(float4 f4_) :
@@ -402,7 +402,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator == (const VectorBase4& v) const
   {
-#if defined(OZ_SIMD_MATH) && defined(__SSE__)
+#if defined(OZ_SIMD) && defined(__SSE__)
     return _mm_movemask_ps(f4 == v.f4) == 0xf;
 #else
     return x == v.x && y == v.y && z == v.z && w == v.w;
