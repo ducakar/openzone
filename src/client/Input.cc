@@ -368,6 +368,10 @@ void Input::reset()
 {
   Window::warpMouse();
 
+  oldMouseX      = 0.0f;
+  oldMouseY      = 0.0f;
+  oldMouseW      = 0.0f;
+
   mouseX         = 0.0f;
   mouseY         = 0.0f;
   mouseW         = 0.0f;
@@ -436,9 +440,9 @@ void Input::update()
 
 #if defined(__native_client__)
 
-  mouseX = +Pepper::moveX;
-  mouseY = -Pepper::moveY;
-  mouseW = +Pepper::moveW;
+  float newMouseX = +Pepper::moveX;
+  float newMouseY = -Pepper::moveY;
+  float newMouseW = +Pepper::moveW;
 
   Pepper::moveX = 0;
   Pepper::moveY = 0;
@@ -449,10 +453,19 @@ void Input::update()
   int dx, dy;
   SDL_GetRelativeMouseState(&dx, &dy);
 
-  mouseX = +float(dx);
-  mouseY = -float(dy);
+  float newMouseX = +float(dx);
+  float newMouseY = -float(dy);
+  float newMouseW = mouseW;
 
 #endif
+
+  mouseX = Math::mix(newMouseX, oldMouseX, mouseSmoothing);
+  mouseY = Math::mix(newMouseY, oldMouseY, mouseSmoothing);
+  mouseW = Math::mix(newMouseW, oldMouseW, mouseSmoothing);
+
+  oldMouseX = newMouseX;
+  oldMouseY = newMouseY;
+  oldMouseW = newMouseW;
 
   int pressedButtons  = input.buttons & ~input.oldButtons;
   int releasedButtons = ~input.buttons & input.oldButtons;
@@ -548,6 +561,10 @@ void Input::init()
     loadKeyMap(keyMapConfig);
   }
 
+  oldMouseX      = 0.0f;
+  oldMouseY      = 0.0f;
+  oldMouseW      = 0.0f;
+
   mouseX         = 0.0f;
   mouseY         = 0.0f;
   mouseW         = 0.0f;
@@ -576,6 +593,7 @@ void Input::init()
   mouseSensX     = mouseConfig["sensitivity.x"].get(0.003f);
   mouseSensY     = mouseConfig["sensitivity.y"].get(0.003f);
   mouseSensW     = mouseConfig["sensitivity.w"].get(3.0f);
+  mouseSmoothing = mouseConfig["smoothing"].get(true) ? 0.5f : 0.0f;
 
   keySensX       = keyboardConfig["sensitivity.x"].get(0.04f);
   keySensY       = keyboardConfig["sensitivity.y"].get(0.04f);
@@ -614,6 +632,7 @@ void Input::destroy()
   mouseConfig.add("sensitivity.x", mouseSensX);
   mouseConfig.add("sensitivity.y", mouseSensY);
   mouseConfig.add("sensitivity.w", mouseSensW);
+  mouseConfig.add("smoothing", mouseSmoothing != 0.0f);
 
   JSON& keyboardConfig = inputConfig.add("keyboard", JSON::OBJECT);
   keyboardConfig.add("sensitivity.x", keySensX);

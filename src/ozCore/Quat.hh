@@ -94,7 +94,7 @@ public:
   Quat operator * () const
   {
 #ifdef OZ_SIMD
-    return Quat(u4 ^ vFill(0x80000000u, 0x80000000u, 0x80000000u, 0u));
+    return Quat(float4(uint4(f4) ^ vFill(0x80000000u, 0x80000000u, 0x80000000u, 0u)));
 #else
     return Quat(-x, -y, -z, w);
 #endif
@@ -521,7 +521,7 @@ OZ_ALWAYS_INLINE
 inline Quat abs(const Quat& a)
 {
 #ifdef OZ_SIMD
-  return Quat(vAbs(a.u4));
+  return Quat(vAbs(a.f4));
 #else
   return Quat(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z), abs<float>(a.w));
 #endif

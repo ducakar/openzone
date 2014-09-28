@@ -1,0 +1,94 @@
+diff -Naur SDL2-2.0.3.orig/build-scripts/config.sub SDL2-2.0.3/build-scripts/config.sub
+--- SDL2-2.0.3.orig/build-scripts/config.sub	2014-03-16 03:31:45.000000000 +0100
++++ SDL2-2.0.3/build-scripts/config.sub	2014-09-21 17:36:48.440009837 +0200
+@@ -337,7 +337,14 @@
+ 	ms1)
+ 		basic_machine=mt-unknown
+ 		;;
+-
++	nacl64*)
++		basic_machine=x86_64-pc
++		os=-nacl
++		;;
++	nacl*)
++		basic_machine=i686-pc
++		os=-nacl
++		;;
+ 	strongarm | thumb | xscale)
+ 		basic_machine=arm-unknown
+ 		;;
+@@ -1384,6 +1391,9 @@
+ 			;;
+ 		esac
+ 		;;
++	-nacl*)
++		os=-nacl
++		;;
+ 	-nto-qnx*)
+ 		;;
+ 	-nto*)
+diff -Naur SDL2-2.0.3.orig/configure.in SDL2-2.0.3/configure.in
+--- SDL2-2.0.3.orig/configure.in	2014-03-16 03:31:42.000000000 +0100
++++ SDL2-2.0.3/configure.in	2014-09-21 17:44:12.702375765 +0200
+@@ -1304,6 +1304,32 @@
+     fi
+ }
+ 
++dnl Check for Native Client stuff
++CheckNativeClient()
++{
++	AC_TRY_COMPILE([
++	  #if !defined(__native_client__)
++	  #error "NO NACL"
++	  #endif
++	],[
++	],[
++	AC_DEFINE(SDL_VIDEO_DRIVER_NACL)
++	AC_DEFINE(SDL_AUDIO_DRIVER_NACL)
++	AC_DEFINE(HAVE_POW, 1, [ ])
++	AC_DEFINE(HAVE_OPENGLES2, 1, [ ])
++	AC_DEFINE(SDL_VIDEO_OPENGL_ES2, 1, [ ])
++	AC_DEFINE(SDL_VIDEO_RENDER_OGL_ES2, 1, [ ])
++
++	SDL_LIBS="-Wl,--undefined=PSUserCreateInstance -lSDL2main $SDL_LIBS -lppapi_gles2 -lppapi_simple -lnacl_io -lppapi_cpp -lppapi -lm -l${NACL_CPP_LIB:-stdc++}"
++	EXTRA_LDFLAGS="-lppapi_simple"
++
++	SDLMAIN_SOURCES="$srcdir/src/main/nacl/*.c"
++	SOURCES="$SOURCES $srcdir/src/audio/nacl/*.c"
++	SUMMARY_audio="${SUMMARY_audio} nacl"
++	SOURCES="$SOURCES $srcdir/src/video/nacl/*.c"
++	SUMMARY_video="${SUMMARY_video} nacl opengles2"
++])
++}
+ 
+ dnl Find the X11 include and library directories
+ CheckX11()
+@@ -3072,6 +3098,28 @@
+             EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AudioUnit"
+         fi
+         ;;
++    *-nacl|*-pnacl)
++        ARCH=nacl
++        CheckNativeClient
++        CheckDummyAudio
++        CheckDummyVideo
++        CheckInputEvents
++        CheckPTHREAD
++
++        # Set up files for the timer library
++        if test x$enable_timers = xyes; then
++            AC_DEFINE(SDL_TIMER_UNIX)
++            SOURCES="$SOURCES $srcdir/src/timer/unix/*.c"
++            have_timers=yes
++        fi
++
++        if test x$enable_filesystem = xyes; then
++            AC_DEFINE(SDL_FILESYSTEM_NACL, 1, [ ])
++            SOURCES="$SOURCES $srcdir/src/filesystem/nacl/*.c"
++            have_filesystem=yes
++        fi
++
++        ;;
+     *)
+         AC_MSG_ERROR([
+ *** Unsupported host:  Please add to configure.in

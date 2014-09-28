@@ -113,9 +113,9 @@ inline uint4 vFill(uint x)
  * Component-wise absolute value of a float vector (accessed as uint vector).
  */
 OZ_ALWAYS_INLINE
-inline uint4 vAbs(uint4 a)
+inline float4 vAbs(float4 a)
 {
-  return a & vFill(0x7fffffffu);
+  return float4(uint4(a) & vFill(0x7fffffffu));
 }
 
 /**
@@ -177,21 +177,10 @@ OZ_ALWAYS_INLINE
 inline float4 vFastInvSqrt(float4 a)
 {
 #ifdef __ARM_NEON__
-
   return vrsqrteq_f32(a);
-
 #else
-
-  union Float4Bits
-  {
-    float4 f4;
-    uint4  u4;
-  };
-  Float4Bits s = { a };
-
-  s.u4 = vFill(0x5f375a86u) - (s.u4 >> vFill(1u));
-  return s.f4 * (vFill(1.5f) - vFill(0.5f) * a * s.f4*s.f4);
-
+  float4 s = float4(vFill(0x5f375a86u) - (uint4(a) >> vFill(1u)));
+  return s * (vFill(1.5f) - vFill(0.5f) * a * s*s);
 #endif
 }
 
@@ -221,7 +210,6 @@ public:
   __extension__ union
   {
     float4 f4;
-    uint4  u4;
     __extension__ struct
     {
       float x;
@@ -265,11 +253,6 @@ public:
     f4(f4_)
   {}
 
-  OZ_ALWAYS_INLINE
-  explicit VectorBase3(uint4 u4_) :
-    u4(u4_)
-  {}
-
 #endif
 
   /**
@@ -279,7 +262,7 @@ public:
   bool operator == (const VectorBase3& v) const
   {
 #if defined(OZ_SIMD) && defined(__SSE__)
-    return _mm_movemask_ps(f4 == v.f4) == 0xf;
+    return (_mm_movemask_ps(f4 == v.f4) & 0x7) == 0x7;
 #else
     return x == v.x && y == v.y && z == v.z;
 #endif
@@ -343,7 +326,6 @@ public:
   __extension__ union
   {
     float4 f4;
-    uint4  u4;
     __extension__ struct
     {
       float x;
@@ -387,11 +369,6 @@ public:
   OZ_ALWAYS_INLINE
   explicit VectorBase4(float4 f4_) :
     f4(f4_)
-  {}
-
-  OZ_ALWAYS_INLINE
-  explicit VectorBase4(uint4 u4_) :
-    u4(u4_)
   {}
 
 #endif

@@ -165,7 +165,7 @@ public:
   friend Point abs(const Point& a)
   {
 #ifdef OZ_SIMD
-    return Point(vAbs(a.u4));
+    return Point(vAbs(a.f4));
 #else
     return Point(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z));
 #endif

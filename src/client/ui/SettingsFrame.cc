@@ -27,6 +27,7 @@
 #include <client/Camera.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>
+#include <client/ui/CheckBox.hh>
 
 namespace oz
 {
@@ -55,16 +56,7 @@ SettingsFrame::SettingsFrame() :
   x = (camera.width - width) / 2;
   y = (camera.height - height) / 2;
 
-  const String& configDirPath = config["dir.config"].get(File::CONFIG);
-
-  message.setWidth(width - 8);
-  message.setText("%s\n\n  %s\n  %s\n  %s",
-                  OZ_GETTEXT("NOT IMPLEMENTED.\nYou can change your settings by manually editing"
-                             " the following files:"),
-                  (configDirPath + "/config.json").cstr(),
-                  (configDirPath + "/input.json").cstr(),
-                  (configDirPath + "/profile.json").cstr());
-
+  add(new CheckBox("Mouse smoothing", width - 20, 20), 10, 40);
   add(new Button(OZ_GETTEXT("Close"), closeFrame, 80, 25), -4, 4);
 }
 

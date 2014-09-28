@@ -114,6 +114,10 @@ void Style::init()
   OZ_READ_COLOUR(buttonHover,      0.40f, 0.60f, 0.50f, 0.40f);
   OZ_READ_COLOUR(buttonClicked,    0.80f, 1.00f, 0.90f, 0.40f);
 
+  OZ_READ_COLOUR(box,              0.00f, 0.00f, 0.00f, 0.00f);
+  OZ_READ_COLOUR(boxHover,         0.40f, 0.60f, 0.50f, 0.10f);
+  OZ_READ_COLOUR(boxClicked,       0.80f, 1.00f, 0.90f, 0.10f);
+
   OZ_READ_COLOUR(tile,             0.24f, 0.30f, 0.27f, 0.60f);
   OZ_READ_COLOUR(tileHover,        0.48f, 0.60f, 0.54f, 0.60f);
 

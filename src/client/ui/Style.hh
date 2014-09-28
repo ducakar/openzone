@@ -40,10 +40,16 @@ public:
   {
     Vec4 text;
     Vec4 textBackground;
+    Vec4 textHover;
+    Vec4 textClicked;
 
     Vec4 button;
     Vec4 buttonHover;
     Vec4 buttonClicked;
+
+    Vec4 box;
+    Vec4 boxHover;
+    Vec4 boxClicked;
 
     Vec4 tile;
     Vec4 tileHover;

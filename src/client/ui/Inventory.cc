@@ -127,6 +127,9 @@ void Inventory::updateReferences()
   else if (camera.objectObj != nullptr && (camera.objectObj->flags & Object::BROWSABLE_BIT)) {
     other = camera.objectObj;
   }
+
+  scrollOwner = owner == nullptr ? 0 : scrollOwner;
+  scrollOther = other == nullptr ? 0 : scrollOther;
 }
 
 void Inventory::handleScroll(const Object* container, int* scroll)

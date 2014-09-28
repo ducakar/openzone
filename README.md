@@ -27,7 +27,7 @@ Development packages of the following libraries are required to build OpenZone f
 - libvorbis
 - Lua 5.1 or 5.2 or LuaJIT 2.0
 - openal-soft
-- physfs 2.0 or 2.1/dev
+- PhysicsFS 2.0 or 2.1/dev
 - SDL2
 - SDL2_ttf
 - zlib

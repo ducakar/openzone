@@ -101,6 +101,7 @@ add_library(client STATIC
   ui/Bar.hh
   ui/BuildFrame.hh
   ui/Button.hh
+  ui/CheckBox.hh
   ui/CinematicText.hh
   ui/CreditsMenu.hh
   ui/DebugFrame.hh
@@ -129,6 +130,7 @@ add_library(client STATIC
   ui/Bar.cc
   ui/BuildFrame.cc
   ui/Button.cc
+  ui/CheckBox.cc
   ui/CinematicText.cc
   ui/CreditsMenu.cc
   ui/DebugFrame.cc

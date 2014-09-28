@@ -384,7 +384,7 @@ public:
   friend Vec4 abs(const Vec4& a)
   {
 #ifdef OZ_SIMD
-    return Vec4(vAbs(a.u4));
+    return Vec4(vAbs(a.f4));
 #else
     return Vec4(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z), abs<float>(a.w));
 #endif

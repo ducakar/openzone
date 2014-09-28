@@ -118,6 +118,12 @@ public:
     KEY_MAX
   };
 
+private:
+
+  float oldMouseX;
+  float oldMouseY;
+  float oldMouseW;
+
 public:
 
   float mouseX;
@@ -151,6 +157,7 @@ public:
   float mouseSensX;
   float mouseSensY;
   float mouseSensW;
+  float mouseSmoothing;
 
   float keySensX;
   float keySensY;

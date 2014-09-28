@@ -57,7 +57,7 @@ private:
   /// Number of units.
   static const int SIZE = (BITSIZE + UNIT_BITSIZE - 1) / UNIT_BITSIZE;
 
-  ulong data[SIZE] = {}; ///< Pointer to array of units that holds the data.
+  ulong data[SIZE] = {}; ///< Pointer to array of units that hold the data.
 
 public:
 
