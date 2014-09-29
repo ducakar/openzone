@@ -30,8 +30,17 @@ namespace oz
 namespace client
 {
 
+namespace ui
+{
+
+class SettingsMenu;
+
+}
+
 class Render
 {
+  friend class ui::SettingsMenu;
+
 public:
 
   static const int UI_BIT      = 0x01;

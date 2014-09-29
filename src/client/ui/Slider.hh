@@ -18,13 +18,13 @@
  */
 
 /**
- * @file client/ui/SettingsFrame.hh
+ * @file client/ui/Slider.hh
  */
 
 #pragma once
 
-#include <client/ui/Frame.hh>
-#include <client/ui/Text.hh>
+#include <client/ui/Area.hh>
+#include <client/ui/Label.hh>
 
 namespace oz
 {
@@ -33,19 +33,33 @@ namespace client
 namespace ui
 {
 
-class SettingsFrame : public Frame
+class Slider : public Area
 {
 private:
 
-  Text message;
+  Label label;
+
+  bool  isHighlighted;
+  bool  isClicked;
+  bool  wasClicked;
+
+  float minValue;
+  float maxValue;
+  float valueStep;
+
+public:
+
+  float value;
 
 protected:
 
+  void onVisibilityChange(bool doShow) override;
+  bool onMouseEvent() override;
   void onDraw() override;
 
 public:
 
-  SettingsFrame();
+  explicit Slider(float min, float max, float step, float value, int width, int height);
 
 };
 

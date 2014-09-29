@@ -18,16 +18,14 @@
  */
 
 /**
- * @file client/ui/SettingsFrame.cc
+ * @file client/ui/SettingsMenu.hh
  */
 
-#include <client/ui/SettingsFrame.hh>
+#pragma once
 
-#include <common/Lingua.hh>
-#include <client/Camera.hh>
-#include <client/ui/Style.hh>
 #include <client/ui/Button.hh>
 #include <client/ui/CheckBox.hh>
+#include <client/ui/Slider.hh>
 
 namespace oz
 {
@@ -36,29 +34,45 @@ namespace client
 namespace ui
 {
 
-static void closeFrame(Button* sender)
+class SettingsMenu : public Area
 {
-  SettingsFrame* settings = static_cast<SettingsFrame*>(sender->parent);
-  settings->parent->remove(settings);
-}
+private:
 
-void SettingsFrame::onDraw()
-{
-  Frame::onDraw();
+  Area*     profile;
+  Area*     graphics;
+  Area*     sound;
+  Area*     debug;
 
-  message.draw(this);
-}
+  CheckBox* showAim;
+  CheckBox* showBounds;
+  CheckBox* showDebug;
+  CheckBox* showFPS;
 
-SettingsFrame::SettingsFrame() :
-  Frame(400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT("Settings")),
-  message(4, 24, -HEADER_SIZE - 4, Area::ALIGN_NONE, Font::SANS, "")
-{
-  x = (camera.width - width) / 2;
-  y = (camera.height - height) / 2;
+  Slider*   distance;
 
-  add(new CheckBox("Mouse smoothing", width - 20, 20), 10, 40);
-  add(new Button(OZ_GETTEXT("Close"), closeFrame, 80, 25), -4, 4);
-}
+private:
+
+  static void back(Button* sender);
+  static void apply(Button* sender);
+
+  static void openProfile(Button* sender);
+  static void openGraphics(Button* sender);
+  static void openSound(Button* sender);
+  static void openDebug(Button* sender);
+
+protected:
+
+  void onReposition() override;
+  bool onMouseEvent() override;
+  bool onKeyEvent() override;
+  void onDraw() override;
+
+public:
+
+  SettingsMenu();
+  ~SettingsMenu();
+
+};
 
 }
 }

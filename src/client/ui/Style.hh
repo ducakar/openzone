@@ -51,6 +51,10 @@ public:
     Vec4 boxHover;
     Vec4 boxClicked;
 
+    Vec4 slider;
+    Vec4 sliderHover;
+    Vec4 sliderClicked;
+
     Vec4 tile;
     Vec4 tileHover;
 

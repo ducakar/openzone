@@ -80,11 +80,11 @@ struct FontInfo
 };
 
 static const FontInfo FONT_INFOS[Font::MAX] = {
-  { "mono",  "DroidSansMono", 13 },
-  { "sans",  "DroidSans", 13 },
-  { "small", "DroidSans", 10 },
-  { "large", "DroidSans", 14 },
-  { "title", "DroidSans", 18 }
+  { "mono",  "", 13 },
+  { "sans",  "", 13 },
+  { "small", "", 10 },
+  { "large", "", 14 },
+  { "title", "", 18 }
 };
 
 void Style::init()
@@ -117,6 +117,10 @@ void Style::init()
   OZ_READ_COLOUR(box,              0.00f, 0.00f, 0.00f, 0.00f);
   OZ_READ_COLOUR(boxHover,         0.40f, 0.60f, 0.50f, 0.10f);
   OZ_READ_COLOUR(boxClicked,       0.80f, 1.00f, 0.90f, 0.10f);
+
+  OZ_READ_COLOUR(slider,           0.20f, 0.30f, 0.25f, 0.40f);
+  OZ_READ_COLOUR(sliderHover,      0.40f, 0.60f, 0.50f, 0.40f);
+  OZ_READ_COLOUR(sliderClicked,    0.80f, 1.00f, 0.90f, 0.40f);
 
   OZ_READ_COLOUR(tile,             0.24f, 0.30f, 0.27f, 0.60f);
   OZ_READ_COLOUR(tileHover,        0.48f, 0.60f, 0.54f, 0.60f);

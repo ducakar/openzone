@@ -18,15 +18,16 @@
  */
 
 /**
- * @file client/ui/CheckBox.cc
+ * @file client/ui/Slider.cc
  */
 
-#include <client/ui/CheckBox.hh>
+#include <client/ui/Slider.hh>
 
 #include <client/Input.hh>
 #include <client/Shape.hh>
 #include <client/Context.hh>
 #include <client/ui/Style.hh>
+#include <client/ui/Mouse.hh>
 
 namespace oz
 {
@@ -35,14 +36,14 @@ namespace client
 namespace ui
 {
 
-void CheckBox::onVisibilityChange(bool)
+void Slider::onVisibilityChange(bool)
 {
   isHighlighted = false;
   isClicked     = false;
   wasClicked    = false;
 }
 
-bool CheckBox::onMouseEvent()
+bool Slider::onMouseEvent()
 {
   if (input.keys[Input::KEY_UI_ALT]) {
     return false;
@@ -51,8 +52,14 @@ bool CheckBox::onMouseEvent()
   isHighlighted = true;
   isClicked     = wasClicked && (input.buttons & Input::LEFT_BUTTON);
 
-  if (wasClicked && input.leftReleased) {
-    isChecked = !isChecked;
+  if (isClicked) {
+    float fineValue = float(mouse.x - x - 4) / float(width - 8);
+    fineValue = minValue + valueStep / 2.0f + fineValue * (maxValue - minValue);
+    fineValue = clamp(fineValue, minValue, maxValue);
+
+    value = fineValue - Math::mod(fineValue, valueStep);
+
+    label.setText("%g", value);
   }
   else if (input.leftPressed) {
     isClicked  = true;
@@ -65,44 +72,38 @@ bool CheckBox::onMouseEvent()
   return true;
 }
 
-void CheckBox::onDraw()
+void Slider::onDraw()
 {
+  int barWidth = Math::lround(float(width - 8) * (value - minValue) / (maxValue - minValue));
+
   if (isClicked) {
-    shape.colour(style.colours.boxClicked);
+    shape.colour(style.colours.sliderClicked);
   }
   else if (isHighlighted) {
-    shape.colour(style.colours.boxHover);
+    shape.colour(style.colours.sliderHover);
     wasClicked = false;
   }
   else {
-    shape.colour(style.colours.box);
+    shape.colour(style.colours.slider);
     wasClicked = false;
   }
-
-  shape.fill(x, y, width, height);
-  label.draw(this);
+  shape.fill(x + 5, y + 1, barWidth, height - 2);
 
   shape.colour(style.colours.text);
-  shape.rect(x + 4, y + 4, height - 8, height - 8);
+  shape.rect(x + 4, y, width - 8, height);
 
-  if (isChecked) {
-    shape.fill(x + 7, y + 7, height - 14, height - 14);
-  }
+  label.draw(this);
 
   isHighlighted = false;
   isClicked     = false;
 }
 
-CheckBox::CheckBox(const char* text, int width, int height) :
+Slider::Slider(float min, float max, float step, float value_, int width, int height) :
   Area(width, height),
-  label(height + 2, height / 2, ALIGN_VCENTRE, Font::SANS, "%s", text),
-  isHighlighted(false), isClicked(false), wasClicked(false), isChecked(false)
+  label(width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%g", value_),
+  isHighlighted(false), isClicked(false), wasClicked(false),
+  minValue(min), maxValue(max), valueStep(step), value(value_)
 {}
-
-void CheckBox::setLabel(const char* text)
-{
-  label.setText("%s", text);
-}
 
 }
 }

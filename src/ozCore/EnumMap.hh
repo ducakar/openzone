@@ -78,6 +78,11 @@ public:
   EnumMapImpl& operator = (const EnumMapImpl&) = delete;
 
   /**
+   * Number of enumerator values.
+   */
+  int length() const;
+
+  /**
    * Return first enumerator value in the map.
    */
   int defaultValue() const;

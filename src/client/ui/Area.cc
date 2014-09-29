@@ -149,16 +149,18 @@ void Area::onUpdate()
 
 bool Area::onMouseEvent()
 {
-  return false;
+  return passMouseEvents();
 }
 
 bool Area::onKeyEvent()
 {
-  return false;
+  return passKeyEvents();
 }
 
 void Area::onDraw()
-{}
+{
+  drawChildren();
+}
 
 void Area::enable(bool doEnable)
 {

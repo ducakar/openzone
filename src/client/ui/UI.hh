@@ -48,6 +48,8 @@ class DebugFrame;
 
 class UI
 {
+  friend class SettingsMenu;
+
 private:
 
   float          fps;

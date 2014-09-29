@@ -47,6 +47,11 @@ EnumMapImpl::~EnumMapImpl()
   delete[] entries;
 }
 
+int EnumMapImpl::length() const
+{
+  return nEntries;
+}
+
 int EnumMapImpl::defaultValue() const
 {
   return entries[0].value;

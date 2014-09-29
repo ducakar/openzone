@@ -120,7 +120,8 @@ add_library(client STATIC
   ui/Mouse.hh
   ui/MusicPlayer.hh
   ui/QuestFrame.hh
-  ui/SettingsFrame.hh
+  ui/SettingsMenu.hh
+  ui/Slider.hh
   ui/StrategicArea.hh
   ui/Style.hh
   ui/TalkFrame.hh
@@ -149,7 +150,8 @@ add_library(client STATIC
   ui/Mouse.cc
   ui/MusicPlayer.cc
   ui/QuestFrame.cc
-  ui/SettingsFrame.cc
+  ui/SettingsMenu.cc
+  ui/Slider.cc
   ui/StrategicArea.cc
   ui/Style.cc
   ui/TalkFrame.cc

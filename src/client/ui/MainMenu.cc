@@ -29,7 +29,7 @@
 #include <client/MenuStage.hh>
 #include <client/ui/Style.hh>
 #include <client/ui/MissionMenu.hh>
-#include <client/ui/SettingsFrame.hh>
+#include <client/ui/SettingsMenu.hh>
 #include <client/ui/CreditsMenu.hh>
 
 #if defined(__ANDROID__) || defined(__native_client__)
@@ -70,7 +70,7 @@ static void openMissions(Button* sender)
 static void openSettings(Button* sender)
 {
   MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
-  mainMenu->add(new SettingsFrame(), Area::CENTRE, Area::CENTRE);
+  mainMenu->add(new SettingsMenu(), 0, 0);
 }
 
 static void openCredits(Button* sender)
