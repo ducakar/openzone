@@ -93,23 +93,22 @@ if(OZ_LZ4)
   target_link_libraries(ozCore ${LZ4_LIBRARIES})
 endif()
 if(ANDROID)
-  target_link_libraries(ozCore -lasound -ldl -llog ${PLATFORM_STL_LIBRARY})
+  target_link_libraries(ozCore ${ALSA_LIBRARIES} -ldl -llog ${PLATFORM_STL_LIBRARY})
 elseif(NACL)
   target_link_libraries(ozCore -lppapi_cpp -lppapi -lpthread)
 elseif(WIN32)
   target_link_libraries(ozCore -lwinmm)
-elseif(NOT CMAKE_SYSTEM_NAME STREQUAL Linux)
+elseif(NOT LINUX)
   target_link_libraries(ozCore -ldl -lrt -lpthread)
 else()
-  target_link_libraries(ozCore -lasound -ldl -lpthread)
+  target_link_libraries(ozCore ${ALSA_LIBRARIES} -ldl -lrt -lpthread)
 endif()
 
 set_target_properties(ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
 
-install(TARGETS ozCore
-        RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
-        LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
-        ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR})
+install(TARGETS ozCore RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
+                       LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}
+                       ARCHIVE DESTINATION lib${OZ_BINARY_SUBDIR})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION include FILES_MATCHING PATTERN *.hh)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.hh DESTINATION include/ozCore)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ozCore.pc DESTINATION lib${OZ_BINARY_SUBDIR}/pkgconfig)

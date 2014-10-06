@@ -48,6 +48,8 @@ bool Weapon::onUse(Bot* user)
     if (parent < 0) {
       parent = user->index;
       synapse.cut(this);
+
+      user->addEvent(Bot::EVENT_TAKE, 1.0f);
     }
     else {
       Object* container = orbis.obj(parent);

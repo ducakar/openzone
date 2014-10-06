@@ -21,17 +21,11 @@ add_library(ozEngine
 #END SOURCES
 )
 
-target_link_libraries(ozEngine ozCore)
-
 # Lua.
 target_link_libraries(ozEngine ${LUA_LIBRARIES})
 
 # OpenGL.
-if(OZ_GL_ES)
-  target_link_libraries(ozEngine ${GLES2_LIBRARIES})
-else()
-  target_link_libraries(ozEngine ${OPENGL_gl_LIBRARY})
-endif()
+target_link_libraries(ozEngine ${GL_LIBRARIES})
 
 # OpenAL.
 target_link_libraries(ozEngine ${OPENAL_LIBRARY})
@@ -45,10 +39,7 @@ target_link_libraries(ozEngine ${PNG_LIBRARY_RELEASE})
 # libvorbisfile.
 target_link_libraries(ozEngine ${VORBISFILE_LIBRARIES})
 
-# Dependencies.
-if(PLATFORM_EMBEDDED)
-  target_link_libraries(ozEngine ${FREETYPE_LIBRARIES} ${VORBIS_LIBRARIES} ${OGG_LIBRARIES})
-endif()
+target_link_libraries(ozEngine ozCore)
 
 set_target_properties(ozEngine PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
 

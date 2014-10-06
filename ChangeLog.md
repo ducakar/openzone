@@ -1,8 +1,11 @@
 0.4.0
 
 - ozCore
-    * null replaced by nullptr keyword
-    * more extensive use of constexpr
+    * full use of C++11
+        + null replaced by nullptr keyword
+        + use of constexpr for functions too
+        + member initialisers used where appropriate
+        + initialiser list constructors for containers
     * larger and non-performance-critical inline functions moved to .cc files
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
     * container improvements
@@ -64,6 +67,7 @@
     * UI sounds
     * DDS format used for icons, X11 libxcursor format for cursors
     * buttons triggered on release
+    * new CheckBox and Slider components
     * new ModelField area for rendering models in UI
     * new BuildMenu frame unit/building placement
     * StrategicArea group selection

@@ -60,7 +60,7 @@ public:
 
 protected:
 
-  Elem* elem = nullptr; ///< Element which iterator is currently positioned at.
+  Elem* elem = nullptr; ///< The element the iterator is currently pointing at.
 
 protected:
 
@@ -134,17 +134,17 @@ public:
   }
 
   /**
-   * Advance to the next element, should be implemented in derived classes.
+   * Advance to the next element; should be implemented in derived classes.
    */
   IteratorBase& operator ++ () = delete;
 
   /**
-   * STL-style begin iterator, should be implemented in derived classes.
+   * STL-style begin iterator; should be implemented in derived classes.
    */
   IteratorBase begin() const = delete;
 
   /**
-   * STL-style end iterator, should be implemented in derived classes.
+   * STL-style end iterator; should be implemented in derived classes.
    */
   IteratorBase end() const = delete;
 
@@ -276,7 +276,7 @@ inline void iMove(IteratorA srcIter, IteratorB destIter)
 }
 
 /**
- * %Set elements to a given value.
+ * %Set all elements to a given value.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline void iFill(Iterator iter, const Value& value)

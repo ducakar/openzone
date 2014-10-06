@@ -26,17 +26,17 @@
 #include <matrix/common.hh>
 
 #define OZ_CLASS_ATTRIB(attribBit, varName, defValue) \
-  if(config[varName].get(defValue)) { \
+  if (config[varName].get(defValue)) { \
     attributes |= attribBit; \
   }
 
 #define OZ_CLASS_FLAG(flagBit, varName, defValue) \
-  if(config[varName].get(defValue)) { \
+  if (config[varName].get(defValue)) { \
     flags |= flagBit; \
   }
 
 #define OZ_CLASS_STATE(stateBit, varName, defValue) \
-  if(config[varName].get(defValue)) { \
+  if (config[varName].get(defValue)) { \
     state |= stateBit; \
   }
 

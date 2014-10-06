@@ -4,6 +4,7 @@
     * smooth/limited Vehicle rotation
     * Vehicle: tracked, submarine
 - ui
+    * options menu
     * RTS interface
     * tutorial tips
 - client
@@ -19,7 +20,6 @@
 - nirvana
     * conversations
 - ui
-    * options menu
     * advanced HUD for mechanic units and vehicles
     * conversations
 - client

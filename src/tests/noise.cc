@@ -95,7 +95,7 @@ int main(int, char**)
 
   glEnable(GL_TEXTURE_2D);
 
-  while(isAlive) {
+  while (isAlive) {
     SDL_PollEvent(&event);
     isAlive &= event.type != SDL_KEYUP;
 

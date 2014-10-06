@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
   Cursor cursor(file, Cursor::SYSTEM);
 
-  if(!cursor.isLoaded()) {
+  if (!cursor.isLoaded()) {
     return EXIT_FAILURE;
   }
 
@@ -50,11 +50,11 @@ int main(int argc, char** argv)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   bool isAlive = true;
-  while(isAlive) {
+  while (isAlive) {
     SDL_Event event;
     SDL_PollEvent(&event);
 
-    if(event.type == SDL_QUIT || event.type == SDL_KEYDOWN) {
+    if (event.type == SDL_QUIT || event.type == SDL_KEYDOWN) {
       isAlive = false;
     }
 

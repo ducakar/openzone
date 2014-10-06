@@ -41,7 +41,7 @@
 #define OZ_REGISTER_IMAGOCLASS(name) \
   { \
     int id = liber.imagoIndex(#name); \
-    if(id < 0) { \
+    if (id < 0) { \
       OZ_ERROR("Invalid imago class: %s", #name); \
     } \
     else { \
@@ -52,7 +52,7 @@
 #define OZ_REGISTER_AUDIOCLASS(name) \
   { \
     int id = liber.audioIndex(#name); \
-    if(id < 0) { \
+    if (id < 0) { \
       OZ_ERROR("Invalid audio class: %s", #name); \
     } \
     else { \

@@ -34,8 +34,8 @@
  * @def OZ_JAVA_ENTRY_POINT
  * Implement entry point for a Java JNI application.
  *
- * `name` parameter should be your application's entry point function name. For Android SDL
- * applications that should be something like `Java_com_example_myapp_SDLActivity_nativeInit`.
+ * `name` parameter should be your application's entry point function. For Android SDL applications
+ * it should be something like `Java_com_example_myapp_SDLActivity_nativeInit`.
  */
 #define OZ_JAVA_ENTRY_POINT(name) \
   extern "C" \
@@ -53,11 +53,11 @@ typedef JavaVM_ JavaVM;
 #endif
 
 /**
- * Main function (entry point) for Java JNI applications.
+ * Main function/entry point for Java JNI applications.
  *
  * For a Java JNI application, you must implement this function and put `OZ_JAVA_ENTRY_POINT()`
- * macro in a `.cc` file (out of any namespace). An empty string is passed as argument zero (i.e.
- * `argc = 1` and `argv = { "" }`).
+ * macro in a `.cc` file (out of any namespace). An empty string is passed as the zero argument
+ * (i.e. `argc = 1` and `argv = { "" }`).
  */
 int javaMain(int argc, char** argv);
 
@@ -66,9 +66,6 @@ namespace oz
 
 /**
  * Java JNI entry point implementation and instance access.
- *
- * Helper class for Java JNI entry point implementation. It also holds `JavaVM` handle for the
- * current application.
  */
 class Java
 {

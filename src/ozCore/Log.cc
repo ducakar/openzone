@@ -43,8 +43,8 @@
 #define OZ_PRINT_BOTH(code) \
   { \
     auto lambda = [&](FILE* stream) code; \
-    if(!verboseMode || showVerbose || file == nullptr) { lambda(stdout); } \
-    if(file != nullptr) { lambda(file); } \
+    if (!verboseMode || showVerbose || file == nullptr) { lambda(stdout); } \
+    if (file != nullptr) { lambda(file); } \
   }
 
 namespace oz

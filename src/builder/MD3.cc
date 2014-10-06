@@ -100,11 +100,11 @@ void MD3::buildMesh(const char* name, int frame)
     nUpperFrames = header.nFrames;
   }
 
-//   if(header.nTags != 0) {
+//   if (header.nTags != 0) {
 //     is.rewind();
 //     is.forward(header.offTags);
 //
-//     for(int i = 0; i < header.nTags; ++i) {
+//     for (int i = 0; i < header.nTags; ++i) {
 //       const char* tag = is.forward(64);
 //
 //       float tx  = is.readFloat();
@@ -123,22 +123,22 @@ void MD3::buildMesh(const char* name, int frame)
 //
 //       Vec3 transl = Vec3(scale * -ty, scale * tx, scale * tz);
 //       Mat4 rotMat = Mat4(+m11, -m10, -m12, 0.0f,
-//                           -m01, +m00, +m02, 0.0f,
-//                           -m21, +m20, +m22, 0.0f,
-//                           0.0f, 0.0f, 0.0f, 1.0f);
+//                          -m01, +m00, +m02, 0.0f,
+//                          -m21, +m20, +m22, 0.0f,
+//                          0.0f, 0.0f, 0.0f, 1.0f);
 //
-//       if(String::equals(name, "lower")) {
-//         if(String::equals(name, "tag_torso")) {
+//       if (String::equals(name, "lower")) {
+//         if (String::equals(name, "tag_torso")) {
 //           joints[i][client::MD3::JOINT_HIP].transl = transl;
 //           joints[i][client::MD3::JOINT_HIP].rot    = rotMat.toQuat();
 //         }
 //       }
-//       else if(String::equals(name, "upper")) {
-//         if(String::equals(tag, "tag_head")) {
+//       else if (String::equals(name, "upper")) {
+//         if (String::equals(tag, "tag_head")) {
 //           joints[i][client::MD3::JOINT_NECK].transl = transl;
 //           joints[i][client::MD3::JOINT_NECK].rot    = rotMat.toQuat();
 //         }
-//         else if(String::equals(tag, "tag_weapon")) {
+//         else if (String::equals(tag, "tag_weapon")) {
 //           joints[i][client::MD3::JOINT_WEAPON].transl = transl;
 //           joints[i][client::MD3::JOINT_WEAPON].rot    = rotMat.toQuat();
 //         }
@@ -313,7 +313,7 @@ void MD3::save()
 
     buildMesh(model, frame);
   }
-//   else if(frame >= 0) {
+//   else if (frame >= 0) {
 //     meshTransf = Mat4::ID;
 //
 //     buildMesh("lower", frame);
@@ -336,15 +336,15 @@ void MD3::save()
     os.writeInt(nLowerFrames);
     os.writeInt(nUpperFrames);
 
-//     for(int i = 0; i < nLowerFrames; ++i) {
+//     for (int i = 0; i < nLowerFrames; ++i) {
 //       os.writeVec3(joints[i][client::MD3::JOINT_HIP].transl);
 //       os.writeQuat(joints[i][client::MD3::JOINT_HIP].rot);
 //     }
-//     for(int i = 0; i < nUpperFrames; ++i) {
+//     for (int i = 0; i < nUpperFrames; ++i) {
 //       os.writeVec3(joints[i][client::MD3::JOINT_NECK].transl);
 //       os.writeQuat(joints[i][client::MD3::JOINT_NECK].rot);
 //     }
-//     for(int i = 0; i < nUpperFrames; ++i) {
+//     for (int i = 0; i < nUpperFrames; ++i) {
 //       os.writeVec3(joints[i][client::MD3::JOINT_WEAPON].transl);
 //       os.writeQuat(joints[i][client::MD3::JOINT_WEAPON].rot);
 //     }

@@ -60,7 +60,7 @@
   { \
     File file = "@ui/icon/" #name ".dds"; \
     glBindTexture(GL_TEXTURE_2D, images.name); \
-    if(GL::textureDataFromFile(file, 0) == 0) { \
+    if (GL::textureDataFromFile(file, 0) == 0) { \
       OZ_ERROR("Failed to load texture '%s'", file.path().cstr()); \
     } \
   }

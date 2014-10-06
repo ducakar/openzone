@@ -40,7 +40,7 @@ bool Network::connect()
 //  SDLNet_ResolveHost(&ip, host, port);
 //  socket = SDLNet_TCP_Open(&ip);
 
-//  if(socket == nullptr) {
+//  if (socket == nullptr) {
 //    Log::printEnd(" Failed");
 //    return false;
 //  }

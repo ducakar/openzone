@@ -377,22 +377,22 @@ void Vehicle::onUpdate()
 //     float diffH = bot->h - h;
 //     float diffV = bot->v - v;
 //
-//     if(diffH < -Math::TAU / 2.0f) {
+//     if (diffH < -Math::TAU / 2.0f) {
 //       diffH += Math::TAU;
 //     }
-//     else if(diffH > Math::TAU / 2.0f) {
+//     else if (diffH > Math::TAU / 2.0f) {
 //       diffH -= Math::TAU;
 //     }
 //
-//     if(diffV < -Math::TAU / 2.0f) {
+//     if (diffV < -Math::TAU / 2.0f) {
 //       diffV += Math::TAU;
 //     }
-//     else if(diffV > Math::TAU / 2.0f) {
+//     else if (diffV > Math::TAU / 2.0f) {
 //       diffV -= Math::TAU;
 //     }
 //
 //     float diffL = Math::sqrt(diffH*diffH + diffV*diffV);
-//     if(diffL > ROT_DIFF_LIMIT) {
+//     if (diffL > ROT_DIFF_LIMIT) {
 //       float k = ROT_DIFF_LIMIT / diffL;
 //
 //       diffH *= k;
@@ -403,7 +403,7 @@ void Vehicle::onUpdate()
 //     rotVelV = Math::mix(rotVelV, diffV, ROT_VEL_DIFF_RATIO);
 //
 //     float rotVelL = Math::sqrt(rotVelH*rotVelH + rotVelV*rotVelV);
-//     if(diffL > clazz->rotVelLimit) {
+//     if (diffL > clazz->rotVelLimit) {
 //       float k = clazz->rotVelLimit / rotVelL;
 //
 //       rotVelH *= k;

@@ -52,7 +52,7 @@
  */
 #define OZ_DL_LOAD(l, func) \
   func = reinterpret_cast<decltype(func)>(l.get(#func)); \
-  if(func == nullptr) { \
+  if (func == nullptr) { \
     OZ_ERROR("Failed to link function: " #func); \
   }
 

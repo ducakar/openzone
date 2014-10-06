@@ -31,7 +31,7 @@
 # pragma GCC diagnostic ignored "-Wstrict-aliasing"
 # define OZ_DL_GLLOAD(func) \
   *(void**) &func = SDL_GL_GetProcAddress(#func); \
-  if(func == nullptr) { \
+  if (func == nullptr) { \
     OZ_ERROR("Failed to link OpenGL function: " #func); \
   }
 #endif

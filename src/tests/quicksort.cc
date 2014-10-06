@@ -187,7 +187,7 @@ int main()
     //aSort<int, 100>(array, MAX);
   }
   printf("%d ms\n", int(Time::clock() - t0));
-//   for(int i = 0; i < MAX; ++i) {
+//   for (int i = 0; i < MAX; ++i) {
 //     printf("%d ", array[i]);
 //   }
 

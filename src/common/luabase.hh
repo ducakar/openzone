@@ -80,7 +80,7 @@
  * Exits Lua API function call with an error if number of parameters is not `n`.
  */
 #define ARG(n) \
-  if(lua_gettop(l) != (n)) { \
+  if (lua_gettop(l) != (n)) { \
     ERROR(#n " arguments expected"); \
   }
 
@@ -91,7 +91,7 @@
 #define VARG(min, max) \
   { \
     int n = lua_gettop(l); \
-    if(n < (min) || (max) < n) { \
+    if (n < (min) || (max) < n) { \
       ERROR("Between " #min " and " #max " arguments expected"); \
     } \
   }
@@ -101,7 +101,7 @@
  * Exits Lua API function call with an error if number of parameters is less than `n`.
  */
 #define ARG_VAR(n) \
-  if(lua_gettop(l) < (n)) { \
+  if (lua_gettop(l) < (n)) { \
     ERROR(#n " or more arguments expected"); \
   }
 
@@ -110,7 +110,7 @@
  * Exits Lua API function call with an error if there is no structure bound.
  */
 #define STR() \
-  if(ms.str == nullptr) { \
+  if (ms.str == nullptr) { \
     ERROR("No structure bound"); \
   }
 
@@ -120,11 +120,11 @@
  * indices.
  */
 #define STR_INDEX(index) \
-  if(uint(index) >= uint(Orbis::MAX_STRUCTS)) { \
+  if (uint(index) >= uint(Orbis::MAX_STRUCTS)) { \
     ERROR("Invalid structure index (out of range)"); \
   } \
   Struct* str = orbis.str(index); \
-  if(str == nullptr) { \
+  if (str == nullptr) { \
     ERROR("Invalid structures index (null)"); \
   }
 
@@ -133,7 +133,7 @@
  * Exits Lua API function call with an error if there is no structure entity bound.
  */
 #define ENT() \
-  if(ms.ent == nullptr) { \
+  if (ms.ent == nullptr) { \
     ERROR("No structure entity bound"); \
   }
 
@@ -143,7 +143,7 @@
  * structureIndex * 128 + entityIndex)or returns with error for invalid indices.
  */
 #define ENT_INDEX(index) \
-  if(uint(index) >= uint(ms.str->entities.length())) { \
+  if (uint(index) >= uint(ms.str->entities.length())) { \
     ERROR("Invalid structure entity index (out of range)"); \
   } \
   Entity* ent = &ms.str->entities[index];
@@ -153,7 +153,7 @@
  * Exits Lua API function call with an error if there is no object bound.
  */
 #define OBJ() \
-  if(ms.obj == nullptr) { \
+  if (ms.obj == nullptr) { \
     ERROR("No object bound"); \
   }
 
@@ -162,7 +162,7 @@
  * Exits Lua API function call with an error if self object is `nullptr`.
  */
 #define SELF() \
-  if(ms.self == nullptr) { \
+  if (ms.self == nullptr) { \
     ERROR("Self object is null"); \
   }
 
@@ -173,7 +173,7 @@
 #define SELF_BOT() \
   SELF(); \
   Bot* self = static_cast<Bot*>(ms.self); \
-  if(!(self->flags & Object::BOT_BIT)) { \
+  if (!(self->flags & Object::BOT_BIT)) { \
     ERROR("Self object is not a bot"); \
   }
 
@@ -183,11 +183,11 @@
  * indices.
  */
 #define OBJ_INDEX(index) \
-  if(uint(index) >= uint(Orbis::MAX_OBJECTS)) { \
+  if (uint(index) >= uint(Orbis::MAX_OBJECTS)) { \
     ERROR("Invalid object index (out of range)"); \
   } \
   Object* obj = orbis.obj(index); \
-  if(obj == nullptr) { \
+  if (obj == nullptr) { \
     ERROR("Invalid object index (null)"); \
   }
 
@@ -197,14 +197,14 @@
  * or objects that are not items.
  */
 #define ITEM_INDEX(index) \
-  if(uint(index) >= uint(Orbis::MAX_OBJECTS)) { \
+  if (uint(index) >= uint(Orbis::MAX_OBJECTS)) { \
     ERROR("Invalid item index (out of range)"); \
   } \
   Dynamic* item = orbis.obj<Dynamic>(index); \
-  if(item == nullptr) { \
+  if (item == nullptr) { \
     ERROR("Invalid item index (null)"); \
   } \
-  if(!(item->flags & Object::ITEM_BIT)) { \
+  if (!(item->flags & Object::ITEM_BIT)) { \
     ERROR("Invalid item index (not an item)"); \
   }
 
@@ -214,14 +214,14 @@
  * or objects that are not bots.
  */
 #define BOT_INDEX(index) \
-  if(uint(index) >= uint(Orbis::MAX_OBJECTS)) { \
+  if (uint(index) >= uint(Orbis::MAX_OBJECTS)) { \
     ERROR("Invalid bot index (out of range)"); \
   } \
   Bot* bot = orbis.obj<Bot>(index); \
-  if(bot == nullptr) { \
+  if (bot == nullptr) { \
     ERROR("Invalid bot index (null)"); \
   } \
-  if(!(bot->flags & Object::BOT_BIT)) { \
+  if (!(bot->flags & Object::BOT_BIT)) { \
     ERROR("Invalid bot index (not a bot)"); \
   }
 
@@ -230,7 +230,7 @@
  * Exits Lua API function call with an error if the bound object is self.
  */
 #define OBJ_NOT_SELF() \
-  if(ms.obj == ms.self) { \
+  if (ms.obj == ms.self) { \
     ERROR("Bound object should not be self"); \
   }
 
@@ -239,7 +239,7 @@
  * Exits Lua API function call with an error if the bound object is not dynamic (Dynamic class).
  */
 #define OBJ_DYNAMIC() \
-  if(!(ms.obj->flags & Object::DYNAMIC_BIT)) { \
+  if (!(ms.obj->flags & Object::DYNAMIC_BIT)) { \
     ERROR("Bound object is not dynamic"); \
   } \
   Dynamic* dyn = static_cast<Dynamic*>(ms.obj);
@@ -249,7 +249,7 @@
  * Exits Lua API function call with an error if the bound object is not a weapon (Weapon class).
  */
 #define OBJ_WEAPON() \
-  if(!(ms.obj->flags & Object::WEAPON_BIT)) { \
+  if (!(ms.obj->flags & Object::WEAPON_BIT)) { \
     ERROR("Bound object is not a weapon"); \
   } \
   Weapon* weapon = static_cast<Weapon*>(ms.obj);
@@ -259,7 +259,7 @@
  * Exits Lua API function call with an error if the bound object is not a bot (Bot class).
  */
 #define OBJ_BOT() \
-  if(!(ms.obj->flags & Object::BOT_BIT)) { \
+  if (!(ms.obj->flags & Object::BOT_BIT)) { \
     ERROR("Bound object is not a bot"); \
   } \
   Bot* bot = static_cast<Bot*>(ms.obj);
@@ -269,7 +269,7 @@
  * Exits Lua API function call with an error if the bound object is not a vehicle (Vehicle class).
  */
 #define OBJ_VEHICLE() \
-  if(!(ms.obj->flags & Object::VEHICLE_BIT)) { \
+  if (!(ms.obj->flags & Object::VEHICLE_BIT)) { \
     ERROR("Bound object is not a vehicle"); \
   } \
   Vehicle* veh = static_cast<Vehicle*>(ms.obj);
@@ -279,7 +279,7 @@
  * Exits Lua API function call with an error if there is no fragment bound.
  */
 #define FRAG() \
-  if(ms.frag == nullptr) { \
+  if (ms.frag == nullptr) { \
     ERROR("No fragment bound"); \
   }
 

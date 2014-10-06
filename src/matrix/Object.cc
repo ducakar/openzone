@@ -27,12 +27,12 @@
 #include <matrix/Synapse.hh>
 
 #define OZ_FLAG_READ(flagBit, name) \
-  if(flagJSON.get(String::EMPTY).equals(name)) { \
+  if (flagJSON.get(String::EMPTY).equals(name)) { \
     flags |= flagBit; \
   }
 
 #define OZ_FLAG_WRITE(flagBit, name) \
-  if(flags & flagBit) { \
+  if (flags & flagBit) { \
     flagsJSON.add(name); \
   }
 

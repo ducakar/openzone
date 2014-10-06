@@ -29,12 +29,12 @@
 #include <matrix/Synapse.hh>
 
 #define OZ_STATE_READ(stateBit, name) \
-  if(stateJSON.get(String::EMPTY).equals(name)) { \
+  if (stateJSON.get(String::EMPTY).equals(name)) { \
     state |= stateBit; \
   }
 
 #define OZ_STATE_WRITE(stateBit, name) \
-  if(state & stateBit) { \
+  if (state & stateBit) { \
     stateJSON.add(name); \
   }
 

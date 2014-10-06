@@ -54,7 +54,7 @@ namespace client
 //   startMillis = float(timer.millis);
 //   nSparks = 0;
 //
-//   for(int i = 0; i < sparkGen->number; ++i) {
+//   for (int i = 0; i < sparkGen->number; ++i) {
 //     sparks[i].lifeTime = 0.0f;
 //   }
 // }
@@ -67,7 +67,7 @@ namespace client
 //
 //   glMultMatrixf(camera.rotMat);
 //
-//   for(int i = 0; i < nSparks; ++i) {
+//   for (int i = 0; i < nSparks; ++i) {
 //     Vec3& p = sparks[i].p;
 //
 //     glTranslatef(p.x, p.y, p.z);
@@ -90,15 +90,15 @@ namespace client
 // }
 //
 // void ParticleGen::update() {
-//   if(nSparks != sparkGen->number) {
+//   if (nSparks != sparkGen->number) {
 //     int desiredNSparks = int((timer.millis - startMillis) * sparksPerTick);
 //
 //     nSparks = min(desiredNSparks, sparkGen->number);
 //   }
-//   for(int i = 0; i < nSparks; ++i) {
+//   for (int i = 0; i < nSparks; ++i) {
 //     sparks[i].lifeTime -= Timer::FRAME_TIME;
 //
-//     if(sparks[i].lifeTime <= 0.0f) {
+//     if (sparks[i].lifeTime <= 0.0f) {
 //       createSpark(i);
 //     }
 //   }

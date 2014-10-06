@@ -59,6 +59,10 @@ elseif(WIN32)
   set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PREFIX}/lib/pkgconfig)
 endif()
 
+if(ANDROID OR LINUX)
+  find_package(ALSA REQUIRED)
+endif()
+
 if(OZ_LZ4)
   pkg_check_modules(LZ4 REQUIRED liblz4)
 endif()
@@ -73,8 +77,8 @@ endif()
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)
-  include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
   set(LUA_LIBRARIES ${LUAJIT_LIBRARIES})
+  include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
 else()
   pkg_check_modules(LUA REQUIRED lua)
 endif()
@@ -94,14 +98,15 @@ if(OZ_GL_ES)
   # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
   # platform directory, no need to explicitly check existence or to detect library names.
   if(ANDROID)
-    set(GLES2_LIBRARIES GLESv2)
+    set(GL_LIBRARIES GLESv2)
   elseif(NACL)
-    set(GLES2_LIBRARIES ppapi_gles2)
+    set(GL_LIBRARIES ppapi_gles2)
   else()
-    pkg_check_modules(GLES2 REQUIRED glesv2)
+    pkg_check_modules(GL REQUIRED glesv2)
   endif()
 else()
   find_package(OpenGL REQUIRED)
+  set(GL_LIBRARIES ${OPENGL_gl_LIBRARY})
 endif()
 
 find_package(OpenAL REQUIRED)
@@ -114,6 +119,9 @@ if(PLATFORM_EMBEDDED)
   find_package(Freetype REQUIRED)           # required by SDL_ttf
   pkg_check_modules(OGG REQUIRED ogg)       # required by vorbisfile
   pkg_check_modules(VORBIS REQUIRED vorbis) # required by vorbisfile
+
+  list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES})
+  list(APPEND VORBISFILE_LIBRARIES ${VORBIS_LIBRARIES} ${OGG_LIBRARIES})
 endif()
 
 if(OZ_TOOLS)

@@ -62,7 +62,7 @@ public:
   SpinLock& operator = (const SpinLock&) = delete;
 
   /**
-   * Loop performing a lock operation until it switches from an unlocked to a locked state.
+   * Loop performing a lock operation until it succeeds.
    */
   OZ_ALWAYS_INLINE
   void lock()
