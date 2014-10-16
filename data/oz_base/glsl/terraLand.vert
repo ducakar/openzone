@@ -47,8 +47,8 @@ varying vec3  exBinormal;
 
 void main()
 {
-  mat3 modelRot = mat3( oz_Model );
-  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  mat3 modelRot = mat3(oz_Model);
+  vec4 position = oz_Model * vec4(inPosition, 1.0);
 
   exPosition  = position.xyz - oz_CameraPos;
   exTexCoord  = inTexCoord;

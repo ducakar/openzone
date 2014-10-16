@@ -50,13 +50,13 @@ varying vec3  exBinormal;
 
 void main()
 {
-  mat3 modelRot = mat3( oz_Model );
-  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  mat3 modelRot = mat3(oz_Model);
+  vec4 position = oz_Model * vec4(inPosition, 1.0);
 
 #ifdef OZ_VERTEX_EFFECTS
-  float windFact = max( inPosition.z, 0.0 );
+  float windFact = max(inPosition.z, 0.0);
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
-                     sin( 0.08 * ( position.x + position.y ) + oz_Wind.w );
+                     sin(0.08 * (position.x + position.y) + oz_Wind.w);
 
   position.xy   += windBias.xy, position.z;
 #endif

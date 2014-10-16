@@ -1,5 +1,3 @@
-set(LINUX                       ON)
-
 set(CMAKE_SYSTEM_NAME           "Linux" CACHE STRING "Target system.")
 set(CMAKE_SYSTEM_PROCESSOR      "i686" CACHE STRING "Target processor.")
 set(CMAKE_AR                    "/usr/bin/gcc-ar" CACHE STRING "")

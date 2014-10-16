@@ -473,7 +473,7 @@ inline void aSort(Elem* array, int count)
  * Find index in a sorted array such that `array[index] <= key && key < array[index + 1]`.
  *
  * @note
- * `Elem` type must have defined `bool operator < (const Key&, const Elem&) const`.
+ * `Elem` type must have `bool operator < (const Key&, const Elem&) const` defined.
  *
  * If all elements are lesser return `count - 1` and if all elements are greater return -1.
  *

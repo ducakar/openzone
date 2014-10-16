@@ -150,15 +150,20 @@ int Client::main()
 #ifndef __native_client__
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
-            case SDL_WINDOWEVENT_FOCUS_GAINED:
-            case SDL_WINDOWEVENT_ENTER: {
+            case SDL_WINDOWEVENT_FOCUS_GAINED: {
               Window::setFocus(true);
+              Window::setGrab(true);
               input.reset();
               break;
             }
-            case SDL_WINDOWEVENT_FOCUS_LOST:
-            case SDL_WINDOWEVENT_LEAVE: {
+            case SDL_WINDOWEVENT_FOCUS_LOST: {
               Window::setFocus(false);
+              Window::setGrab(false);
+              input.reset();
+              break;
+            }
+            case SDL_WINDOWEVENT_RESIZED: {
+              Window::resize(event.window.data1, event.window.data2, Window::isFullscreen());
               input.reset();
               break;
             }

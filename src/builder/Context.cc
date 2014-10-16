@@ -218,7 +218,8 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
   }
 
   if (normals.type() != File::MISSING) {
-    ImageBuilder::convertToDDS(normals, imageOptions, destBasePath + "_n.dds");
+    ImageBuilder::convertToDDS(normals, imageOptions | ImageBuilder::YYYX_NORMALS_BIT,
+                               destBasePath + "_n.dds");
   }
 
   Log::printEnd(" OK");

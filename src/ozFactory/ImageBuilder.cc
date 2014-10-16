@@ -141,10 +141,12 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   int width      = int(FreeImage_GetWidth(faces[0]));
   int height     = int(FreeImage_GetHeight(faces[0]));
 
-  bool hasAlpha  = FreeImage_IsTransparent(faces[0]);
   bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
   bool compress  = options & ImageBuilder::COMPRESSION_BIT;
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
+  bool doYYYX    = options & ImageBuilder::YYYX_NORMALS_BIT;
+  bool doXYX     = options & ImageBuilder::XYX_NORMALS_BIT;
+  bool hasAlpha  = FreeImage_IsTransparent(faces[0]) || doYYYX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
   for (int i = 1; i < nFaces; ++i) {
@@ -174,7 +176,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
     return false;
   }
 
-  int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
+  int targetBPP      = hasAlpha || compress || doYYYX || isArray ? 32 : 24;
   int pitchOrLinSize = ((width * targetBPP / 8 + 3) / 4) * 4;
   int nMipmaps       = doMipmaps ? Math::index1(max(width, height)) + 1 : 1;
 
@@ -261,7 +263,27 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   for (int i = 0; i < nFaces; ++i) {
     FIBITMAP* face = faces[i];
 
-    if (compress) {
+    if (doXYX) {
+      ubyte* pixels = FreeImage_GetBits(face);
+      int    size   = width * height * 4;
+
+      for (int j = 0; j < size; j += 4) {
+        pixels[j] = pixels[j + 2];
+      }
+    }
+    else if (doYYYX) {
+      FreeImage_SetTransparent(face, true);
+
+      ubyte* pixels = FreeImage_GetBits(face);
+      int    size   = width * height * 4;
+
+      for (int j = 0; j < size; j += 4) {
+        pixels[j + 3] = pixels[j + 2];
+        pixels[j + 0] = pixels[j + 1];
+        pixels[j + 2] = pixels[j + 1];
+      }
+    }
+    else if (compress) {
       ubyte* pixels = FreeImage_GetBits(face);
       int    size   = width * height * 4;
 

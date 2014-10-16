@@ -66,48 +66,48 @@ varying vec3  exBinormal;
 void main()
 {
 #ifdef OZ_BUMP_MAP
-  mat3  planeTransf  = mat3( exTangent, exBinormal, exNormal );
-  vec3  texelNormal  = texture2D( oz_Normals, exTexCoord ).xyz;
-  vec3  localNormal  = 2.0 * texelNormal - vec3( 1.0 );
-  vec3  normal       = normalize( planeTransf * localNormal );
+  mat3  planeTransf  = mat3(exTangent, exBinormal, exNormal);
+  vec2  normalXY     = 2.0 * texture2D(oz_Normals, exTexCoord).ag - vec2(1.0);
+  float normalZ      = 1.0 - sqrt(dot(normalXY, normalXY));
+  vec3  normal       = normalize(planeTransf * vec3(normalXY, normalZ));
 #else
-  vec3  normal       = normalize( exNormal );
+  vec3  normal       = normalize(exNormal);
 #endif
-  float distance2    = dot( exPosition, exPosition );
-  float fog          = min( distance2 / oz_Fog.distance2, 1.0 );
-  vec3  look         = exPosition * inversesqrt( distance2 );
-  vec3  reflectDir   = reflect( normalize( exPosition ), normal );
+  float distance2    = dot(exPosition, exPosition);
+  float fog          = min(distance2 / oz_Fog.distance2, 1.0);
+  vec3  look         = exPosition * inversesqrt(distance2);
+  vec3  reflectDir   = reflect(normalize(exPosition), normal);
 
-  vec4  colour       = texture2D( oz_Texture, exTexCoord );
-  vec4  masks        = texture2D( oz_Masks, exTexCoord );
+  vec4  colour       = texture2D(oz_Texture, exTexCoord);
+  vec4  masks        = texture2D(oz_Masks, exTexCoord);
 
   // Caelum light.
-  float diffuseDot   = max( 0.0, dot( oz_CaelumLight.dir, normal ) );
-  float specularDot  = max( 0.0, dot( oz_CaelumLight.dir, reflectDir ) );
+  float diffuseDot   = max(0.0, dot(oz_CaelumLight.dir, normal));
+  float specularDot  = max(0.0, dot(oz_CaelumLight.dir, reflectDir));
   vec3  diffuse      = oz_CaelumLight.ambient + oz_CaelumLight.colour * diffuseDot;
   vec3  emission     = masks.ggg;
-  vec3  specular     = oz_CaelumLight.colour * ( masks.r * pow( specularDot, oz_Shininess ) );
+  vec3  specular     = oz_CaelumLight.colour * (masks.r * pow(specularDot, oz_Shininess));
 
   // Point lights.
-//  for( int i = 0; i < oz_NumLights; ++i ) {
+//  for(int i = 0; i < oz_NumLights; ++i) {
 //    vec3 lightDir = oz_Lights[i].pos - exPosition;
 
-//    diffuseDot       = max( 0.0, dot( lightDir, normal ) );
-//    specularDot      = max( 0.0, dot( lightDir, reflectDir ) );
+//    diffuseDot       = max(0.0, dot(lightDir, normal));
+//    specularDot      = max(0.0, dot(lightDir, reflectDir));
 //    diffuse         += oz_Lights[i].colour * diffuseDot;
-//    specular        += oz_Lights[i].colour * ( masks.r * pow( specularDot, oz_Shininess ) );
+//    specular        += oz_Lights[i].colour * (masks.r * pow(specularDot, oz_Shininess));
 //  }
 
 #ifdef OZ_ENV_MAP
-  if( masks.b != 0.0 ) {
-    colour.rgb       = mix( colour.rgb, textureCube( oz_EnvMap, reflectDir ).rgb, masks.b );
+  if(masks.b != 0.0) {
+    colour.rgb       = mix(colour.rgb, textureCube(oz_EnvMap, reflectDir).rgb, masks.b);
   }
 #endif
-  colour.rgb         = colour.rgb * ( diffuse + emission ) + specular;
-  colour.rgb         = mix( colour.rgb, oz_Fog.colour, fog*fog );
+  colour.rgb         = colour.rgb * (diffuse + emission) + specular;
+  colour.rgb         = mix(colour.rgb, oz_Fog.colour, fog*fog);
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS
-  gl_FragData[1]     = vec4( specular, 1.0 );
+  gl_FragData[1]     = vec4(specular, 1.0);
 #endif
 }

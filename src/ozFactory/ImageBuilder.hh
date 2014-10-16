@@ -105,6 +105,12 @@ public:
   /// Image array is a cube map.
   static const int CUBE_MAP_BIT = 0x08;
 
+  /// Perform R -> B conversion for normal maps.
+  static const int XYX_NORMALS_BIT = 0x10;
+
+  /// Perform R -> A, G -> R, G -> B conversion for normal maps (DXT5mn).
+  static const int YYYX_NORMALS_BIT = 0x20;
+
 public:
 
   /**

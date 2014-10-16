@@ -35,12 +35,12 @@ varying float exAzimuth;
 
 void main()
 {
-  vec4  texel   = texture2D( oz_Texture, exTexCoord );
-  float azimuth = clamp( exAzimuth, 0.0, 1.0 );
-  vec3  colour  = oz_CaelumColour + ( azimuth * oz_CaelumLuminance ) * texel.xyz;
+  vec4  texel   = texture2D(oz_Texture, exTexCoord);
+  float azimuth = clamp(exAzimuth, 0.0, 1.0);
+  vec3  colour  = oz_CaelumColour + (azimuth * oz_CaelumLuminance) * texel.xyz;
 
-  gl_FragData[0] = oz_Colour * vec4( colour, texel.w );
+  gl_FragData[0] = oz_Colour * vec4(colour, texel.w);
 #ifdef OZ_POSTPROCESS
-  gl_FragData[1] = vec4( 0.0, 0.0, 0.0, 1.0 );
+  gl_FragData[1] = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
 }

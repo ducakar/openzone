@@ -211,7 +211,8 @@ int GL::textureDataFromFile(const File& file, int bias)
   char formatFourCC[4];
   is.readChars(formatFourCC, 4);
 
-  int bpp = is.readInt();
+  int bpp       = is.readInt();
+  int pixelSize = bpp / 8;
 
   is.readInt();
   is.readInt();
@@ -264,8 +265,8 @@ int GL::textureDataFromFile(const File& file, int bias)
   GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
   glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(target, GL_TEXTURE_MIN_FILTER, nMipmaps == 1 ? GL_LINEAR :
-                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
+                  nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
 
   if (nMipmaps == 1 || isCubeMap) {
 #ifndef OZ_GL_ES
@@ -292,9 +293,8 @@ int GL::textureDataFromFile(const File& file, int bias)
         }
       }
       else {
-        int mipmapPitch = ((mipmapWidth * bpp / 8 + 3) / 4) * 4;
+        int mipmapPitch = ((mipmapWidth * pixelSize + 3) / 4) * 4;
         int mipmapSize  = mipmapHeight * mipmapPitch;
-        int pixelSize   = bpp / 8;
 
         if (j < bias) {
           is.forward(mipmapWidth * mipmapHeight * pixelSize);

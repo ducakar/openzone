@@ -36,7 +36,7 @@ varying float exAzimuth;
 
 void main()
 {
-  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  vec4 position = oz_Model * vec4(inPosition, 1.0);
 
   exTexCoord  = inTexCoord;
   exAzimuth   = position.z;

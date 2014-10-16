@@ -35,7 +35,7 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  vec4 position = oz_Model * vec4(inPosition, 1.0);
 
   exTexCoord  = inTexCoord;
   gl_Position = oz_ProjCamera * position;

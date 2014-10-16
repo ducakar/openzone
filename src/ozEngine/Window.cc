@@ -319,13 +319,14 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
   SDL_EnableScreenSaver();
 
-  // Force old Mesa drivers (< 9.1?) to turn on partial S3TC support even when libtxc_dxtn is not
-  // present. We don't use online texture compression anywhere so partial S3TC support is enough.
+  // Force old Mesa drivers to turn on partial S3TC support even when libtxc_dxtn is not present.
+  // We don't use online texture compression anywhere so partial S3TC support is enough.
 #ifdef __unix__
   SDL_setenv("force_s3tc_enable", "true", true);
 #endif
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
+               (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 
   Log::print("Creating OpenGL window %dx%d [%s] ... ",
              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");

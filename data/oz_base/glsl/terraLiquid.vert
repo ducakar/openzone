@@ -49,34 +49,34 @@ varying vec3 exBinormal;
 #endif
 
 #ifdef OZ_VERTEX_EFFECTS
-float noise( vec2 pos, float t )
+float noise(vec2 pos, float t)
 {
-  return sin( pos.x*pos.x + pos.y*pos.y + t );
+  return sin(pos.x*pos.x + pos.y*pos.y + t);
 }
 #endif
 
 void main()
 {
 #ifdef OZ_VERTEX_EFFECTS
-  float z        = 0.15 * sin( oz_WaveBias + inPosition.x + inPosition.y );
-  vec4  position = oz_Model * vec4( inPosition.x, inPosition.y, z, 1.0 );
-  float dx       = 0.2 * noise( 0.1 * position.xy, oz_WaveBias );
-  float dy       = 0.2 * noise( 0.1 * position.yx, oz_WaveBias );
+  float z        = 0.15 * sin(oz_WaveBias + inPosition.x + inPosition.y);
+  vec4  position = oz_Model * vec4(inPosition.x, inPosition.y, z, 1.0);
+  float dx       = 0.2 * noise(0.1 * position.xy, oz_WaveBias);
+  float dy       = 0.2 * noise(0.1 * position.yx, oz_WaveBias);
 #else
-  mat3  modelRot = mat3( oz_Model );
-  vec4  position = oz_Model * vec4( inPosition.x, inPosition.y, 0.0, 1.0 );
+  mat3  modelRot = mat3(oz_Model);
+  vec4  position = oz_Model * vec4(inPosition.x, inPosition.y, 0.0, 1.0);
 #endif
 
   exPosition  = position.xyz - oz_CameraPos;
   exTexCoord  = inTexCoord;
 #ifdef OZ_VERTEX_EFFECTS
-  exNormal    = vec3( dx, dy, 1.0 );
+  exNormal    = vec3(dx, dy, 1.0);
 #else
-  exNormal    = vec3( 0.0, 0.0, 1.0 );
+  exNormal    = vec3(0.0, 0.0, 1.0);
 #endif
 #ifdef OZ_BUMP_MAP
-  exTangent   = vec3( 1.0, 0.0, 0.0 );
-  exBinormal  = vec3( 0.0, 1.0, 0.0 );
+  exTangent   = vec3(1.0, 0.0, 0.0);
+  exBinormal  = vec3(0.0, 1.0, 0.0);
 #endif
   gl_Position = oz_ProjCamera * position;
 }

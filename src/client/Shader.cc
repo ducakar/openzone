@@ -328,13 +328,13 @@ void Shader::init()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel);
 
     // Default normal for bumpmap: [0, 0, 1].
-    ubyte normalsPixel[] = { 0x80, 0x80, 0xff };
+    ubyte normalsPixel[] = { 0x80, 0x80, 0x80, 0x80 };
 
     glGenTextures(1, &defaultNormals);
     glBindTexture(GL_TEXTURE_2D, defaultNormals);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, normalsPixel);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, normalsPixel);
 
     glGenTextures(1, &noiseTexture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, noiseTexture);

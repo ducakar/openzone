@@ -51,7 +51,7 @@ varying vec3  exBinormal;
 
 void main()
 {
-  mat3 modelRot = mat3( oz_Model );
+  mat3 modelRot = mat3(oz_Model);
 
 #ifdef OZ_VERTEX_TEXTURE_FETCH
 
@@ -62,16 +62,16 @@ void main()
   float iNormal1      = 0.5 + oz_MeshAnimation[1] * 0.5;
   float interpolation = oz_MeshAnimation[2];
 
-  vec4  position0     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition0 ) );
-  vec4  position1     = texture2D( oz_VertexAnim, vec2( iVertex, iPosition1 ) );
-  vec3  normal0       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal0 ) ).xyz;
-  vec3  normal1       = texture2D( oz_VertexAnim, vec2( iVertex, iNormal1 ) ).xyz;
-  vec4  position      = oz_Model * mix( position0, position1, interpolation );
-  vec3  normal        = modelRot * mix( normal0, normal1, interpolation );
+  vec4  position0     = texture2D(oz_VertexAnim, vec2(iVertex, iPosition0));
+  vec4  position1     = texture2D(oz_VertexAnim, vec2(iVertex, iPosition1));
+  vec3  normal0       = texture2D(oz_VertexAnim, vec2(iVertex, iNormal0)).xyz;
+  vec3  normal1       = texture2D(oz_VertexAnim, vec2(iVertex, iNormal1)).xyz;
+  vec4  position      = oz_Model * mix(position0, position1, interpolation);
+  vec3  normal        = modelRot * mix(normal0, normal1, interpolation);
 
 #else
 
-  vec4 position = oz_Model * vec4( inPosition, 1.0 );
+  vec4 position = oz_Model * vec4(inPosition, 1.0);
   vec3 normal   = modelRot * inNormal;
 
 #endif
