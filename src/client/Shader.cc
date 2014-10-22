@@ -328,7 +328,7 @@ void Shader::init()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel);
 
     // Default normal for bumpmap: [0, 0, 1].
-    ubyte normalsPixel[] = { 0x80, 0x80, 0x80, 0x80 };
+    ubyte normalsPixel[] = { 0x80, 0x80, 0xff, 0x80 };
 
     glGenTextures(1, &defaultNormals);
     glBindTexture(GL_TEXTURE_2D, defaultNormals);

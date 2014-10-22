@@ -30,9 +30,12 @@ using namespace oz;
 static void usage()
 {
   Log::printRaw(
-    "Usage: ozDDS [-C] [-M] <inputImage> [outputDir]\n"
-    "\t-C\tUse S3 texture compression\n"
-    "\t-M\tGenerate mipmaps\n"
+    "Usage: ozDDS [-v] [-m] [-c | -n | -N] <inputImage> [outputDirOrFile]\n"
+    "\t-v\tFlip vertically\n"
+    "\t-m\tGenerate mipmaps\n"
+    "\t-c\tUse S3 texture compression (DXT1 or DXT5 if the image has transparent pixels)\n"
+    "\t-n\tDo RGB -> GGGR swizzle (for DXT5nm)\n"
+    "\t-N\tDo RGB -> BGBR swizzle (for DXT5nm+z)\n"
   );
 }
 
@@ -43,14 +46,26 @@ int main(int argc, char** argv)
   int ddsOptions = 0;
 
   int opt;
-  while ((opt = getopt(argc, argv, "CM")) >= 0) {
+  while ((opt = getopt(argc, argv, "vmcnN")) >= 0) {
     switch (opt) {
-      case 'C': {
+      case 'v': {
+        ddsOptions |= ImageBuilder::FLIP_BIT;
+        break;
+      }
+      case 'm': {
+        ddsOptions |= ImageBuilder::MIPMAPS_BIT;
+        break;
+      }
+      case 'c': {
         ddsOptions |= ImageBuilder::COMPRESSION_BIT;
         break;
       }
-      case 'M': {
-        ddsOptions |= ImageBuilder::MIPMAPS_BIT;
+      case 'n': {
+        ddsOptions |= ImageBuilder::YYYX_BIT;
+        break;
+      }
+      case 'N': {
+        ddsOptions |= ImageBuilder::ZYZX_BIT;
         break;
       }
       default: {
@@ -69,6 +84,7 @@ int main(int argc, char** argv)
   const char* destPath = nArgs == 1 ? "." : argv[optind + 1];
 
   if (!ImageBuilder::convertToDDS(argv[optind], ddsOptions, destPath)) {
+    Log::println("%s", ImageBuilder::getError());
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

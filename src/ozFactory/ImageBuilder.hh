@@ -96,20 +96,23 @@ class ImageBuilder
 {
 public:
 
-  /// Enable generation of mipmaps for a texture.
+  /// Flip vertically.
+  static const int FLIP_BIT = 0x01;
+
+  /// Generate mipmaps.
   static const int MIPMAPS_BIT = 0x02;
 
-  /// Enable texture compression.
-  static const int COMPRESSION_BIT = 0x04;
-
   /// Image array is a cube map.
-  static const int CUBE_MAP_BIT = 0x08;
+  static const int CUBE_MAP_BIT = 0x04;
 
-  /// Perform R -> B conversion for normal maps.
-  static const int XYX_NORMALS_BIT = 0x10;
+  /// Enable texture compression.
+  static const int COMPRESSION_BIT = 0x08;
 
-  /// Perform R -> A, G -> R, G -> B conversion for normal maps (DXT5mn).
-  static const int YYYX_NORMALS_BIT = 0x20;
+  /// Perform RGB(A) -> GGGR swizzle (for DXT5nm normal map compression).
+  static const int YYYX_BIT = 0x10;
+
+  /// Perform RGB(A) -> BGBR swizzle (for DXT5nm+z normal map compression).
+  static const int ZYZX_BIT = 0x20;
 
 public:
 

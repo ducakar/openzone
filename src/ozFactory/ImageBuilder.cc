@@ -35,34 +35,35 @@
 namespace oz
 {
 
-static const int DDSD_CAPS                          = 0x00000001;
-static const int DDSD_HEIGHT                        = 0x00000002;
-static const int DDSD_WIDTH                         = 0x00000004;
-static const int DDSD_PITCH                         = 0x00000008;
-static const int DDSD_PIXELFORMAT                   = 0x00001000;
-static const int DDSD_MIPMAPCOUNT                   = 0x00020000;
-static const int DDSD_LINEARSIZE                    = 0x00080000;
+static const uint DDSD_CAPS                          = 0x00000001;
+static const uint DDSD_HEIGHT                        = 0x00000002;
+static const uint DDSD_WIDTH                         = 0x00000004;
+static const uint DDSD_PITCH                         = 0x00000008;
+static const uint DDSD_PIXELFORMAT                   = 0x00001000;
+static const uint DDSD_MIPMAPCOUNT                   = 0x00020000;
+static const uint DDSD_LINEARSIZE                    = 0x00080000;
 
-static const int DDSCAPS_COMPLEX                    = 0x00000008;
-static const int DDSCAPS_MIPMAP                     = 0x00400000;
-static const int DDSCAPS_TEXTURE                    = 0x00001000;
+static const uint DDSCAPS_COMPLEX                    = 0x00000008;
+static const uint DDSCAPS_MIPMAP                     = 0x00400000;
+static const uint DDSCAPS_TEXTURE                    = 0x00001000;
 
-static const int DDSCAPS2_CUBEMAP                   = 0x00000200;
-static const int DDSCAPS2_CUBEMAP_POSITIVEX         = 0x00000400;
-static const int DDSCAPS2_CUBEMAP_NEGITIVEX         = 0x00000800;
-static const int DDSCAPS2_CUBEMAP_POSITIVEY         = 0x00001000;
-static const int DDSCAPS2_CUBEMAP_NEGITIVEY         = 0x00002000;
-static const int DDSCAPS2_CUBEMAP_POSITIVEZ         = 0x00004000;
-static const int DDSCAPS2_CUBEMAP_NEGITIVEZ         = 0x00008000;
+static const uint DDSCAPS2_CUBEMAP                   = 0x00000200;
+static const uint DDSCAPS2_CUBEMAP_POSITIVEX         = 0x00000400;
+static const uint DDSCAPS2_CUBEMAP_NEGITIVEX         = 0x00000800;
+static const uint DDSCAPS2_CUBEMAP_POSITIVEY         = 0x00001000;
+static const uint DDSCAPS2_CUBEMAP_NEGITIVEY         = 0x00002000;
+static const uint DDSCAPS2_CUBEMAP_POSITIVEZ         = 0x00004000;
+static const uint DDSCAPS2_CUBEMAP_NEGITIVEZ         = 0x00008000;
 
-static const int DDPF_ALPHAPIXELS                   = 0x00000001;
-static const int DDPF_FOURCC                        = 0x00000004;
-static const int DDPF_RGB                           = 0x00000040;
+static const uint DDPF_ALPHAPIXELS                   = 0x00000001;
+static const uint DDPF_FOURCC                        = 0x00000004;
+static const uint DDPF_RGB                           = 0x00000040;
+static const uint DDPF_NORMAL                        = 0x80000000;
 
-static const int DXGI_FORMAT_R8G8B8A8_TYPELESS      = 27;
+static const uint DXGI_FORMAT_R8G8B8A8_UNORM         = 28;
 #ifdef OZ_NONFREE
-static const int DXGI_FORMAT_BC1_TYPELESS           = 70;
-static const int DXGI_FORMAT_BC3_TYPELESS           = 76;
+static const uint DXGI_FORMAT_BC1_UNORM              = 71;
+static const uint DXGI_FORMAT_BC3_UNORM              = 77;
 #endif
 
 static const int D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
@@ -71,12 +72,17 @@ static const int ERROR_LENGTH                       = 1024;
 
 static char errorBuffer[ERROR_LENGTH]               = {};
 
+static void printError(FREE_IMAGE_FORMAT fif, const char* message)
+{
+  Log::println("FreeImage(%s): %s", FreeImage_GetFormatFromFIF(fif), message);
+}
+
 static FIBITMAP* createBitmap(const ImageData& image)
 {
   FIBITMAP* dib = FreeImage_ConvertFromRawBits(reinterpret_cast<ubyte*>(image.pixels),
-                  image.width, image.height, image.width * 4, 32,
-                  FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
-                  FI_RGBA_BLUE_MASK);
+                                               image.width, image.height, image.width * 4, 32,
+                                               FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
+                                               FI_RGBA_BLUE_MASK);
 
   // Convert RGBA -> BGRA.
   int    size   = image.width * image.height * 4;
@@ -100,7 +106,7 @@ static FIBITMAP* loadBitmap(const File& file)
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, uint(is.capacity()));
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
-  FIBITMAP*         dib       = FreeImage_LoadFromMemory(format, memoryIO);
+  FIBITMAP*         dib       = FreeImage_LoadFromMemory(format < 0 ? FIF_TARGA : format, memoryIO);
 
   FreeImage_CloseMemory(memoryIO);
 
@@ -141,12 +147,14 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   int width      = int(FreeImage_GetWidth(faces[0]));
   int height     = int(FreeImage_GetHeight(faces[0]));
 
+  bool doFlip    = options & ImageBuilder::FLIP_BIT;
   bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
-  bool compress  = options & ImageBuilder::COMPRESSION_BIT;
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
-  bool doYYYX    = options & ImageBuilder::YYYX_NORMALS_BIT;
-  bool doXYX     = options & ImageBuilder::XYX_NORMALS_BIT;
-  bool hasAlpha  = FreeImage_IsTransparent(faces[0]) || doYYYX;
+  bool doYYYX    = options & ImageBuilder::YYYX_BIT;
+  bool doZYZX    = options & ImageBuilder::ZYZX_BIT;
+  bool compress  = options & ImageBuilder::COMPRESSION_BIT;
+  bool hasAlpha  = FreeImage_IsTransparent(faces[0]);
+  bool isNormal  = doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
   for (int i = 1; i < nFaces; ++i) {
@@ -164,8 +172,8 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
              " libsquish (OZ_NONFREE is disabled).");
     return false;
 #else
-    if (!Math::isPow2(width) || !Math::isPow2(height)) {
-      snprintf(errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be powers of 2.");
+    if (width % 4 != 0 || height % 4 != 0) {
+      snprintf(errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be multiples 4.");
       return false;
     }
 #endif
@@ -176,7 +184,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
     return false;
   }
 
-  int targetBPP      = hasAlpha || compress || doYYYX || isArray ? 32 : 24;
+  int targetBPP      = hasAlpha || compress || isNormal || isArray ? 32 : 24;
   int pitchOrLinSize = ((width * targetBPP / 8 + 3) / 4) * 4;
   int nMipmaps       = doMipmaps ? Math::index1(max(width, height)) + 1 : 1;
 
@@ -196,18 +204,19 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   int pixelFlags = 0;
   pixelFlags |= hasAlpha ? DDPF_ALPHAPIXELS : 0;
   pixelFlags |= compress ? DDPF_FOURCC : DDPF_RGB;
+  pixelFlags |= isNormal ? DDPF_NORMAL : 0;
 
   const char* fourCC = isArray ? "DX10" : "\0\0\0\0";
-  int dx10Format = DXGI_FORMAT_R8G8B8A8_TYPELESS;
+  int dx10Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 #ifdef OZ_NONFREE
   int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
-  squishFlags    |= hasAlpha ? squish::kDxt5 : squish::kDxt1;
+  squishFlags    |= hasAlpha || isNormal ? squish::kDxt5 : squish::kDxt1;
 
   if (compress) {
     pitchOrLinSize = squish::GetStorageRequirements(width, height, squishFlags);
-    dx10Format     = hasAlpha ? DXGI_FORMAT_BC3_TYPELESS : DXGI_FORMAT_BC1_TYPELESS;
-    fourCC         = isArray ? "DX10" : hasAlpha ? "DXT5" : "DXT1";
+    dx10Format     = hasAlpha || isNormal ? DXGI_FORMAT_BC3_UNORM : DXGI_FORMAT_BC1_UNORM;
+    fourCC         = isArray ? "DX10" : hasAlpha || isNormal ? "DXT5" : "DXT1";
   }
 #endif
 
@@ -240,11 +249,21 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   os.writeInt(32);
   os.writeInt(pixelFlags);
   os.writeChars(fourCC, 4);
-  os.writeInt(targetBPP);
-  os.writeUInt(0x00ff0000);
-  os.writeUInt(0x0000ff00);
-  os.writeUInt(0x000000ff);
-  os.writeUInt(0xff000000);
+
+  if (compress) {
+    os.writeInt(0);
+    os.writeUInt(0);
+    os.writeUInt(0);
+    os.writeUInt(0);
+    os.writeUInt(0);
+  }
+  else {
+    os.writeInt(targetBPP);
+    os.writeUInt(0x00ff0000);
+    os.writeUInt(0x0000ff00);
+    os.writeUInt(0x000000ff);
+    os.writeUInt(0xff000000);
+  }
 
   os.writeInt(caps);
   os.writeInt(caps2);
@@ -263,15 +282,11 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   for (int i = 0; i < nFaces; ++i) {
     FIBITMAP* face = faces[i];
 
-    if (doXYX) {
-      ubyte* pixels = FreeImage_GetBits(face);
-      int    size   = width * height * 4;
-
-      for (int j = 0; j < size; j += 4) {
-        pixels[j] = pixels[j + 2];
-      }
+    if (doFlip) {
+      FreeImage_FlipVertical(face);
     }
-    else if (doYYYX) {
+
+    if (doYYYX) {
       FreeImage_SetTransparent(face, true);
 
       ubyte* pixels = FreeImage_GetBits(face);
@@ -281,6 +296,17 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
         pixels[j + 3] = pixels[j + 2];
         pixels[j + 0] = pixels[j + 1];
         pixels[j + 2] = pixels[j + 1];
+      }
+    }
+    else if (doZYZX) {
+      FreeImage_SetTransparent(face, true);
+
+      ubyte* pixels = FreeImage_GetBits(face);
+      int    size   = width * height * 4;
+
+      for (int j = 0; j < size; j += 4) {
+        pixels[j + 3] = pixels[j + 2];
+        pixels[j + 2] = pixels[j + 0];
       }
     }
     else if (compress) {
@@ -368,20 +394,17 @@ ImageData::ImageData(ImageData&& i) :
 
 ImageData& ImageData::operator = (ImageData&& i)
 {
-  if (&i == this) {
-    return *this;
+  if (&i != this) {
+    width  = i.width;
+    height = i.height;
+    flags  = i.flags;
+    pixels = i.pixels;
+
+    i.width  = 0;
+    i.height = 0;
+    i.flags  = 0;
+    i.pixels = nullptr;
   }
-
-  width  = i.width;
-  height = i.height;
-  flags  = i.flags;
-  pixels = i.pixels;
-
-  i.width  = 0;
-  i.height = 0;
-  i.flags  = 0;
-  i.pixels = nullptr;
-
   return *this;
 }
 
@@ -507,6 +530,8 @@ bool ImageBuilder::convertToDDS(const File& file, int options, const char* destP
 void ImageBuilder::init()
 {
   FreeImage_Initialise();
+
+  FreeImage_SetOutputMessage(printError);
 }
 
 void ImageBuilder::destroy()
