@@ -84,6 +84,14 @@ struct ImageData
    * Check if any non-opaque pixel is present and update alpha flag accordingly.
    */
   void determineAlpha();
+
+  /**
+   * Guess if the image is a normal map.
+   *
+   * The guess is based on average colour being close to #8080ff and whether pixel lengths roughly
+   * one (\f$ (R - 0.5)^2 + (G - 0.5)^2 + (B - 0.5)^2 = 1 \f$).
+   */
+  bool isNormalMap() const;
 };
 
 /**
@@ -96,23 +104,29 @@ class ImageBuilder
 {
 public:
 
-  /// Flip vertically.
-  static const int FLIP_BIT = 0x01;
+  /// Image array is a cube map.
+  static const int CUBE_MAP_BIT = 0x01;
+
+  /// Image is a normal map (set DDPF_NORMAL bit).
+  static const int NORMAL_MAP_BIT = 0x02;
 
   /// Generate mipmaps.
-  static const int MIPMAPS_BIT = 0x02;
-
-  /// Image array is a cube map.
-  static const int CUBE_MAP_BIT = 0x04;
+  static const int MIPMAPS_BIT = 0x04;
 
   /// Enable texture compression.
   static const int COMPRESSION_BIT = 0x08;
 
+  /// Flip vertically.
+  static const int FLIP_BIT = 0x10;
+
+  /// Flip horizontally.
+  static const int FLOP_BIT = 0x20;
+
   /// Perform RGB(A) -> GGGR swizzle (for DXT5nm normal map compression).
-  static const int YYYX_BIT = 0x10;
+  static const int YYYX_BIT = 0x40;
 
   /// Perform RGB(A) -> BGBR swizzle (for DXT5nm+z normal map compression).
-  static const int ZYZX_BIT = 0x20;
+  static const int ZYZX_BIT = 0x80;
 
 public:
 

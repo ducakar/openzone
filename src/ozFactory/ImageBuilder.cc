@@ -147,21 +147,22 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   int width      = int(FreeImage_GetWidth(faces[0]));
   int height     = int(FreeImage_GetHeight(faces[0]));
 
-  bool doFlip    = options & ImageBuilder::FLIP_BIT;
-  bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
+  bool isNormal  = options & ImageBuilder::NORMAL_MAP_BIT;
+  bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
+  bool compress  = options & ImageBuilder::COMPRESSION_BIT;
+  bool doFlip    = options & ImageBuilder::FLIP_BIT;
+  bool doFlop    = options & ImageBuilder::FLOP_BIT;
   bool doYYYX    = options & ImageBuilder::YYYX_BIT;
   bool doZYZX    = options & ImageBuilder::ZYZX_BIT;
-  bool compress  = options & ImageBuilder::COMPRESSION_BIT;
-  bool hasAlpha  = FreeImage_IsTransparent(faces[0]);
-  bool isNormal  = doYYYX || doZYZX;
+  bool hasAlpha  = FreeImage_IsTransparent(faces[0]) || doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
   for (int i = 1; i < nFaces; ++i) {
     if (int(FreeImage_GetWidth(faces[i])) != width ||
         int(FreeImage_GetHeight(faces[i])) != height)
     {
-      snprintf(errorBuffer, ERROR_LENGTH, "All faces must have same dimensions.");
+      snprintf(errorBuffer, ERROR_LENGTH, "All faces must have the same dimensions.");
       return false;
     }
   }
@@ -173,7 +174,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
     return false;
 #else
     if (width % 4 != 0 || height % 4 != 0) {
-      snprintf(errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be multiples 4.");
+      snprintf(errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be multiples of 4.");
       return false;
     }
 #endif
@@ -184,7 +185,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
     return false;
   }
 
-  int targetBPP      = hasAlpha || compress || isNormal || isArray ? 32 : 24;
+  int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
   int pitchOrLinSize = ((width * targetBPP / 8 + 3) / 4) * 4;
   int nMipmaps       = doMipmaps ? Math::index1(max(width, height)) + 1 : 1;
 
@@ -211,12 +212,12 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
 
 #ifdef OZ_NONFREE
   int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
-  squishFlags    |= hasAlpha || isNormal ? squish::kDxt5 : squish::kDxt1;
+  squishFlags    |= hasAlpha ? squish::kDxt5 : squish::kDxt1;
 
   if (compress) {
     pitchOrLinSize = squish::GetStorageRequirements(width, height, squishFlags);
-    dx10Format     = hasAlpha || isNormal ? DXGI_FORMAT_BC3_UNORM : DXGI_FORMAT_BC1_UNORM;
-    fourCC         = isArray ? "DX10" : hasAlpha || isNormal ? "DXT5" : "DXT1";
+    dx10Format     = hasAlpha ? DXGI_FORMAT_BC3_UNORM : DXGI_FORMAT_BC1_UNORM;
+    fourCC         = isArray ? "DX10" : hasAlpha ? "DXT5" : "DXT1";
   }
 #endif
 
@@ -284,6 +285,9 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
 
     if (doFlip) {
       FreeImage_FlipVertical(face);
+    }
+    if (doFlop) {
+      FreeImage_FlipHorizontal(face);
     }
 
     if (doYYYX) {
@@ -419,11 +423,37 @@ void ImageData::determineAlpha()
   flags &= ~ALPHA_BIT;
 
   for (int i = 0; i < size; i += 4) {
-    if (pixels[i * 4 + 3] != char(255)) {
+    if (pixels[i + 3] != char(255)) {
       flags |= ALPHA_BIT;
       return;
     }
   }
+}
+
+bool ImageData::isNormalMap() const
+{
+  if (pixels == nullptr) {
+    return false;
+  }
+
+  int  size    = width * height * 4;
+  Vec4 average = Vec4::ZERO;
+
+  for (int i = 0; i < size; i += 4) {
+    Vec4 c = Vec4(ubyte(pixels[i + 0]) / 255.0f - 0.5f,
+                  ubyte(pixels[i + 1]) / 255.0f - 0.5f,
+                  ubyte(pixels[i + 2]) / 255.0f - 0.5f,
+                  ubyte(pixels[i + 3]) / 255.0f);
+
+    if (abs(1.0f - c.sqN()) > 1.0f || c.w < 0.9f) {
+      return false;
+    }
+
+    average += c;
+  }
+
+  average /= float(width * height);
+  return abs(average - Vec4(0.0f, 0.0f, 0.5f, 1.0f)).sqN() < 0.1f;
 }
 
 const char* ImageBuilder::getError()

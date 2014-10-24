@@ -30,12 +30,16 @@ using namespace oz;
 static void usage()
 {
   Log::printRaw(
-    "Usage: ozDDS [-v] [-m] [-c | -n | -N] <inputImage> [outputDirOrFile]\n"
-    "\t-v\tFlip vertically\n"
-    "\t-m\tGenerate mipmaps\n"
+    "Usage: ozDDS [options] <inputImage> [outputDirOrFile]\n"
     "\t-c\tUse S3 texture compression (DXT1 or DXT5 if the image has transparent pixels)\n"
-    "\t-n\tDo RGB -> GGGR swizzle (for DXT5nm)\n"
-    "\t-N\tDo RGB -> BGBR swizzle (for DXT5nm+z)\n"
+    "\t-h\tFlip horizontally\n"
+    "\t-m\tGenerate mipmaps\n"
+    "\t-n\tSet normal map flag (DDPF_NORMAL)\n"
+    "\t-N\tSet normal map flag if the image looks like a RGB = XYZ normal map,\n"
+    "\t  \tdisable -n, -s and -S options otherwise"
+    "\t-s\tDo RGB -> GGGR swizzle (for DXT5nm)\n"
+    "\t-S\tDo RGB -> BGBR swizzle (for DXT5nm+z)\n"
+    "\t-v\tFlip vertically\n"
   );
 }
 
@@ -43,29 +47,42 @@ int main(int argc, char** argv)
 {
   System::init();
 
-  int ddsOptions = 0;
+  int  ddsOptions    = 0;
+  bool detectNormals = false;
 
   int opt;
-  while ((opt = getopt(argc, argv, "vmcnN")) >= 0) {
+  while ((opt = getopt(argc, argv, "chmnNsSv")) >= 0) {
     switch (opt) {
-      case 'v': {
-        ddsOptions |= ImageBuilder::FLIP_BIT;
+      case 'c': {
+        ddsOptions |= ImageBuilder::COMPRESSION_BIT;
+        break;
+      }
+      case 'h': {
+        ddsOptions |= ImageBuilder::FLOP_BIT;
         break;
       }
       case 'm': {
         ddsOptions |= ImageBuilder::MIPMAPS_BIT;
         break;
       }
-      case 'c': {
-        ddsOptions |= ImageBuilder::COMPRESSION_BIT;
-        break;
-      }
       case 'n': {
-        ddsOptions |= ImageBuilder::YYYX_BIT;
+        ddsOptions |= ImageBuilder::NORMAL_MAP_BIT;
         break;
       }
       case 'N': {
+        detectNormals = true;
+        break;
+      }
+      case 's': {
+        ddsOptions |= ImageBuilder::YYYX_BIT;
+        break;
+      }
+      case 'S': {
         ddsOptions |= ImageBuilder::ZYZX_BIT;
+        break;
+      }
+      case 'v': {
+        ddsOptions |= ImageBuilder::FLIP_BIT;
         break;
       }
       default: {
@@ -79,6 +96,18 @@ int main(int argc, char** argv)
   if (nArgs < 1 || nArgs > 2) {
     usage();
     return EXIT_FAILURE;
+  }
+
+  if (detectNormals) {
+    ImageData image = ImageBuilder::loadImage(argv[optind]);
+
+    if (image.isNormalMap()) {
+      ddsOptions |= ImageBuilder::NORMAL_MAP_BIT;
+    }
+    else {
+      ddsOptions &= ~ImageBuilder::NORMAL_MAP_BIT;
+      ddsOptions &= ~(ImageBuilder::YYYX_BIT | ImageBuilder::ZYZX_BIT);
+    }
   }
 
   const char* destPath = nArgs == 1 ? "." : argv[optind + 1];

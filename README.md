@@ -258,7 +258,7 @@ One of the following commands must be given:
 - `bundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
   standalone builds and compiled game data packages found in `share/openzone`.
 
-### `ports.sh [clean | fetch]` ###
+### `ports.sh [clean | buildclean | fetch]` ###
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
 all required libraries for NaCl and Android configurations that are not provided by SDKs.
@@ -277,7 +277,7 @@ The following commands may be given (`build` is assumed if none):
 Proxy script for invoking `q3map2` BSP compiler from GtkRadiant in with appropriate parameters to
 compile a BSP structures for OpenZone.
 
-### `run.sh [wine]` ###
+### `run.sh [wine] [<openzoneOptions>]` ###
 
 Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 `NACL_SDK_ROOT` environment variable must be set to use this script.
