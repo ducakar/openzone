@@ -29,24 +29,20 @@
 
 using namespace oz;
 
-static void printUsage(const char* invocationName)
+static void printUsage()
 {
   Log::printRaw(
-    "Usage: %s <data_dir>\n"
-    "\n"
-    "<data_dir>  Output directory where built packages are located.\n"
-    "            Defaults to 'share/openzone'.\n\n",
-    invocationName);
+    "Usage: ozManifest <data_dir>\n"
+    "  <data_dir>  Output directory where built packages are located.\n"
+    "              Defaults to 'share/openzone'.\n\n");
 }
 
 int main(int argc, char** argv)
 {
   System::init();
 
-  String invocationName = String::fileBaseName(argv[0]);
-
   if (argc > 2) {
-    printUsage(invocationName);
+    printUsage();
     return EXIT_FAILURE;
   }
 

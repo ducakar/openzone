@@ -42,14 +42,12 @@ enum LuaSyntaxState
 
 static HashMap<String, String> messages;
 
-static void printUsage(const char* invocationName)
+static void printUsage()
 {
   Log::printRaw(
-    "Usage: %s <data_dir>\n"
-    "\n"
-    "<data_dir>  Package directory that contains source game data. The output POT\n"
-    "            files will be written into <data_dir>/lingua.\n\n",
-    invocationName);
+    "Usage: ozGettext <data_dir>\n"
+    "  <data_dir>  Package directory that contains source game data. The output POT\n"
+    "              files will be written into <data_dir>/lingua.\n\n");
 }
 
 static void readLuaChunk(const char* begin, int size, const char* path)
@@ -394,10 +392,8 @@ int main(int argc, char** argv)
 {
   System::init();
 
-  String invocationName = String::fileBaseName(argv[0]);
-
   if (argc != 2) {
-    printUsage(invocationName);
+    printUsage();
     return EXIT_FAILURE;
   }
 

@@ -52,7 +52,7 @@ private:
 public:
 
   /**
-   * Create a fixed-size stream for reading/writing a given memory range.ElemElemElem
+   * Create a fixed-size stream for reading/writing a given memory range.
    */
   explicit OutputStream(char* start = nullptr, const char* end = nullptr,
                         Endian::Order order = Endian::NATIVE);

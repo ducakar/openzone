@@ -353,7 +353,7 @@ public:
   void unmap() const;
 
   /**
-   * Get `InputStream` for the memory mapped of the file.
+   * Get `InputStream` for a memory mapped file.
    *
    * If the file is not mapped, `map()` is called implicitly. An invalid (empty) `InputStream` is
    * returned on an error.
@@ -398,7 +398,7 @@ public:
   static bool cp(const File& src, const File& dest);
 
   /**
-   * Move/remove a file.
+   * Move/rename a file.
    *
    * @param src source file path.
    * @param dest destination directory or file.

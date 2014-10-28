@@ -140,12 +140,12 @@ static FIBITMAP* loadBitmap(const File& file)
   return dib;
 }
 
-static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& destFile)
+static bool buildDDS(const ImageData* faces, int nFaces, int options, const File& destFile)
 {
   hard_assert(nFaces > 0);
 
-  int width      = int(FreeImage_GetWidth(faces[0]));
-  int height     = int(FreeImage_GetHeight(faces[0]));
+  int width      = faces[0].width;
+  int height     = faces[0].height;
 
   bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
   bool isNormal  = options & ImageBuilder::NORMAL_MAP_BIT;
@@ -155,13 +155,11 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   bool doFlop    = options & ImageBuilder::FLOP_BIT;
   bool doYYYX    = options & ImageBuilder::YYYX_BIT;
   bool doZYZX    = options & ImageBuilder::ZYZX_BIT;
-  bool hasAlpha  = FreeImage_IsTransparent(faces[0]) || doYYYX || doZYZX;
+  bool hasAlpha  = (faces[0].flags & ImageData::ALPHA_BIT) || doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
   for (int i = 1; i < nFaces; ++i) {
-    if (int(FreeImage_GetWidth(faces[i])) != width ||
-        int(FreeImage_GetHeight(faces[i])) != height)
-    {
+    if (faces[i].width != width || faces[i].height != height) {
       snprintf(errorBuffer, ERROR_LENGTH, "All faces must have the same dimensions.");
       return false;
     }
@@ -172,11 +170,6 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
     snprintf(errorBuffer, ERROR_LENGTH, "Texture compression requested but compiled without"
              " libsquish (OZ_NONFREE is disabled).");
     return false;
-#else
-    if (width % 4 != 0 || height % 4 != 0) {
-      snprintf(errorBuffer, ERROR_LENGTH, "Compressed texture dimensions must be multiples of 4.");
-      return false;
-    }
 #endif
   }
 
@@ -281,7 +274,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
   }
 
   for (int i = 0; i < nFaces; ++i) {
-    FIBITMAP* face = faces[i];
+    FIBITMAP* face = createBitmap(faces[i]);
 
     if (doFlip) {
       FreeImage_FlipVertical(face);
@@ -323,7 +316,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
     }
 
     if (targetBPP == 24) {
-      face = FreeImage_ConvertTo24Bits(faces[i]);
+      face = FreeImage_ConvertTo24Bits(face);
     }
 
     int levelWidth  = width;
@@ -361,9 +354,7 @@ static bool buildDDS(FIBITMAP** faces, int nFaces, int options, const File& dest
       }
     }
 
-    if (face != faces[i]) {
-      FreeImage_Unload(face);
-    }
+    FreeImage_Unload(face);
   }
 
   bool success = destFile.write(os.begin(), os.tell());
@@ -453,7 +444,7 @@ bool ImageData::isNormalMap() const
   }
 
   average /= float(width * height);
-  return abs(average - Vec4(0.0f, 0.0f, 0.5f, 1.0f)).sqN() < 0.1f;
+  return (average - Vec4(0.0f, 0.0f, 0.5f, 1.0f)).sqN() < 0.1f;
 }
 
 const char* ImageBuilder::getError()
@@ -511,27 +502,7 @@ bool ImageBuilder::createDDS(const ImageData* faces, int nFaces, int options, co
     return false;
   }
 
-  bool       success = false;
-  FIBITMAP** dibs    = new FIBITMAP*[nFaces];
-
-  for (int i = 0; i < nFaces; ++i) {
-    dibs[i] = createBitmap(faces[i]);
-
-    if (dibs[i] == nullptr) {
-      nFaces = i;
-      goto cleanUp;
-    }
-  }
-
-  success = buildDDS(dibs, nFaces, options, destFile);
-
-cleanUp:
-  for (int i = 0; i < nFaces; ++i) {
-    FreeImage_Unload(dibs[i]);
-  }
-  delete[] dibs;
-
-  return success;
+  return buildDDS(faces, nFaces, options, destFile);
 }
 
 bool ImageBuilder::convertToDDS(const File& file, int options, const char* destPath)
@@ -547,20 +518,16 @@ bool ImageBuilder::convertToDDS(const File& file, int options, const char* destP
     destFile = String::str("%s/%s.dds", destPath, file.baseName().cstr());
   }
 
-  FIBITMAP* dib = loadBitmap(file);
-  if (dib == nullptr) {
+  ImageData image = loadImage(file);
+  if (image.isEmpty()) {
     return false;
   }
-  bool success = buildDDS(&dib, 1, options, destFile);
-
-  FreeImage_Unload(dib);
-  return success;
+  return buildDDS(&image, 1, options, destFile);
 }
 
 void ImageBuilder::init()
 {
   FreeImage_Initialise();
-
   FreeImage_SetOutputMessage(printError);
 }
 

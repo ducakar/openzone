@@ -32,14 +32,13 @@
 
 using namespace oz;
 
-static void usage()
+static void printUsage()
 {
   Log::printRaw(
-    "Usage: ozGenEnvMap [-C] [-M] [size]\n"
-    "  size\tTexture size, 32 by default\n"
-    "  -C\tUse S3 texture compression\n"
-    "  -M\tGenerate mipmaps\n"
-  );
+    "Usage: ozGenEnvMap [-C] [-M] [<size>]\n"
+    "  <size>  Texture size, 32 by default\n"
+    "  -C      Use S3 texture compression\n"
+    "  -M      Generate mipmaps\n\n");
 }
 
 int main(int argc, char** argv)
@@ -62,7 +61,7 @@ int main(int argc, char** argv)
         break;
       }
       default: {
-        usage();
+        printUsage();
         return EXIT_FAILURE;
       }
     }
@@ -70,7 +69,7 @@ int main(int argc, char** argv)
 
   int nArgs = argc - optind;
   if (nArgs > 1) {
-    usage();
+    printUsage();
     return EXIT_FAILURE;
   }
   else if (nArgs == 1) {
@@ -79,7 +78,7 @@ int main(int argc, char** argv)
     size = String::parseInt(argv[optind], &end);
 
     if (*end != '\0') {
-      usage();
+      printUsage();
       return EXIT_FAILURE;
     }
   }

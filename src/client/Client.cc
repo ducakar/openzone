@@ -55,12 +55,10 @@ namespace oz
 namespace client
 {
 
-void Client::printUsage(const char* invocationName)
+void Client::printUsage()
 {
   Log::printRaw(
-    "Usage:\n"
-    "  %s [-v] [-l | -i <mission>] [-t <num>] [-L <lang>] [-p <prefix>]\n"
-    "\n"
+    "Usage: openzone [-v] [-l | -i <mission>] [-t <num>] [-L <lang>] [-p <prefix>]\n"
     "  -l            Skip main menu and load the last autosaved game.\n"
     "  -i <mission>  Skip main menu and start mission <mission>.\n"
     "  -e <layout>   Edit world <layout> file. Create a new one if non-existent.\n"
@@ -71,9 +69,7 @@ void Client::printUsage(const char* invocationName)
     "                Defaults to 'en'.\n"
     "  -p <prefix>   Set global data directory to '<prefix>/share/openzone'.\n"
     "                Defaults to '%s'.\n"
-    "  -v            Print verbose log messages to terminal.\n"
-    "\n",
-    invocationName, OZ_PREFIX);
+    "  -v            Print verbose log messages to terminal.\n\n", OZ_PREFIX);
 }
 
 int Client::main()
@@ -293,13 +289,11 @@ int Client::init(int argc, char** argv)
   File::init(File::TEMPORARY, 64*1024*1024);
   initFlags |= INIT_PHYSFS;
 
-  String executablePath = File::executablePath();
-  String invocationName = executablePath.fileName();
-  String prefixDir      = OZ_PREFIX;
-  String language       = "";
-  String mission        = "";
-  String layoutFile     = "";
-  bool   doAutoload     = false;
+  String prefixDir  = OZ_PREFIX;
+  String language   = "";
+  String mission    = "";
+  String layoutFile = "";
+  bool   doAutoload = false;
 
   // Standalone. Executable is ./bin/<platform>/openzone.
   if (prefixDir.isEmpty()) {
@@ -327,7 +321,7 @@ int Client::init(int argc, char** argv)
         benchmarkTime = float(String::parseDouble(optarg, &end));
 
         if (end == optarg) {
-          printUsage(invocationName);
+          printUsage();
           return EXIT_FAILURE;
         }
 
@@ -347,7 +341,7 @@ int Client::init(int argc, char** argv)
         break;
       }
       default: {
-        printUsage(invocationName);
+        printUsage();
         return EXIT_FAILURE;
       }
     }

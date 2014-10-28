@@ -36,7 +36,7 @@ class Builder
 {
 private:
 
-  void printUsage(const char* invocationName);
+  void printUsage();
 
   void copyFiles(const File& srcDir, const File& destDir, const char* ext, bool recurse);
 

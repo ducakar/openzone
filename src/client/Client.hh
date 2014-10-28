@@ -65,7 +65,7 @@ private:
   float  benchmarkTime;
   bool   isBenchmark;
 
-  void printUsage(const char* invocationName);
+  void printUsage();
 
 public:
 

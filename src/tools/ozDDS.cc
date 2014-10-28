@@ -27,20 +27,19 @@
 
 using namespace oz;
 
-static void usage()
+static void printUsage()
 {
   Log::printRaw(
-    "Usage: ozDDS [options] <inputImage> [outputDirOrFile]\n"
-    "\t-c\tUse S3 texture compression (DXT1 or DXT5 if the image has transparent pixels)\n"
-    "\t-h\tFlip horizontally\n"
-    "\t-m\tGenerate mipmaps\n"
-    "\t-n\tSet normal map flag (DDPF_NORMAL)\n"
-    "\t-N\tSet normal map flag if the image looks like a RGB = XYZ normal map,\n"
-    "\t  \tdisable -n, -s and -S options otherwise"
-    "\t-s\tDo RGB -> GGGR swizzle (for DXT5nm)\n"
-    "\t-S\tDo RGB -> BGBR swizzle (for DXT5nm+z)\n"
-    "\t-v\tFlip vertically\n"
-  );
+    "Usage: ozDDS [options] <inputImage> [<outputDirOrFile>]\n"
+    "  -c  Use S3 texture compression (DXT1 or DXT5 if the image has transparent pixels)\n"
+    "  -h  Flip horizontally\n"
+    "  -m  Generate mipmaps\n"
+    "  -n  Set normal map flag (DDPF_NORMAL)\n"
+    "  -N  Set normal map flag if the image looks like a RGB = XYZ normal map,\n"
+    "      disable -n, -s and -S options otherwise\n"
+    "  -s  Do RGB -> GGGR swizzle (for DXT5nm)\n"
+    "  -S  Do RGB -> BGBR swizzle (for DXT5nm+z)\n"
+    "  -v  Flip vertically\n\n");
 }
 
 int main(int argc, char** argv)
@@ -86,7 +85,7 @@ int main(int argc, char** argv)
         break;
       }
       default: {
-        usage();
+        printUsage();
         return EXIT_FAILURE;
       }
     }
@@ -94,7 +93,7 @@ int main(int argc, char** argv)
 
   int nArgs = argc - optind;
   if (nArgs < 1 || nArgs > 2) {
-    usage();
+    printUsage();
     return EXIT_FAILURE;
   }
 

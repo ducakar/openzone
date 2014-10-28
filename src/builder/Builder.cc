@@ -43,12 +43,10 @@ namespace builder
 
 static bool skipReferences = false;
 
-void Builder::printUsage(const char* invocationName)
+void Builder::printUsage()
 {
   Log::printRaw(
-    "Usage:\n"
-    "  %s [OPTIONS] <src_dir> [<out_dir>]\n"
-    "\n"
+    "Usage: ozBuild [OPTIONS] <src_dir> [<out_dir>]\n"
     "  <src_dir>  Path to directory that includes data to be built. Name of this\n"
     "             directory name is used as package name.\n"
     "  <out_dir>  Directory where output directory and archive will be created.\n"
@@ -74,9 +72,7 @@ void Builder::printUsage(const char* invocationName)
     "  -R         Allow missing model texture and sound references.\n"
     "  -C         Use S3 texture compression.\n"
     "  -Z         Compress created ZIP archive (highest compression level).\n"
-    "  -7         Create non-solid LZMA-compressed 7zip archive.\n"
-    "\n",
-    invocationName);
+    "  -7         Create non-solid LZMA-compressed 7zip archive.\n\n");
 }
 
 void Builder::copyFiles(const File& srcDir, const File& destDir, const char* ext, bool recurse)
@@ -627,8 +623,6 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
 
 int Builder::main(int argc, char** argv)
 {
-  String invocationName = String::fileBaseName(argv[0]);
-
   config = JSON::OBJECT;
 
   bool doCat          = false;
@@ -756,14 +750,14 @@ int Builder::main(int argc, char** argv)
         break;
       }
       default: {
-        printUsage(invocationName);
+        printUsage();
         return EXIT_FAILURE;
       }
     }
   }
 
   if (optind != argc - 2 && optind != argc - 1) {
-    printUsage(invocationName);
+    printUsage();
     return EXIT_FAILURE;
   }
 
