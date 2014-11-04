@@ -26,9 +26,6 @@
 
 #include "Buffer.hh"
 
-#ifdef OZ_LZ4
-# include <lz4.h>
-#endif
 #include <zlib.h>
 
 namespace oz
@@ -129,46 +126,29 @@ String Buffer::toString() const
 Buffer Buffer::compress(int level) const
 {
   Buffer buffer;
-  int newSize, oldSize;
 
-  if (level == -2) {
-#ifdef OZ_LZ4
-    newSize = 4 + LZ4_compressBound(size);
-    buffer.resize(newSize);
+  z_stream zstream;
+  zstream.zalloc = nullptr;
+  zstream.zfree  = nullptr;
+  zstream.opaque = nullptr;
 
-    newSize = LZ4_compress(data, buffer.data + 4, size);
-    newSize = newSize == 0 ? 0 : 4 + newSize;
-    oldSize = ~size;
-#else
-    OZ_ERROR("oz::Buffer: LZ4 requested but compiled without OZ_LZ4");
-#endif
-  }
-  else {
-    z_stream zstream;
-    zstream.zalloc = nullptr;
-    zstream.zfree  = nullptr;
-    zstream.opaque = nullptr;
-
-    if (deflateInit(&zstream, level) != Z_OK) {
-      return buffer;
-    }
-
-    // Upper bound for compressed data plus sizeof(int) to write down size of the uncompressed data.
-    newSize = 4 + int(deflateBound(&zstream, ulong(size)));
-    buffer.resize(newSize);
-
-    zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data));
-    zstream.avail_in  = uint(size);
-    zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data + 4);
-    zstream.avail_out = uint(buffer.size);
-
-    int ret = ::deflate(&zstream, Z_FINISH);
-    deflateEnd(&zstream);
-
-    newSize = ret != Z_STREAM_END ? 0 : 4 + int(zstream.total_out);
-    oldSize = size;
+  if (deflateInit(&zstream, level) != Z_OK) {
+    return buffer;
   }
 
+  // Upper bound for compressed data plus sizeof(int) to write down size of the uncompressed data.
+  int newSize = 4 + int(deflateBound(&zstream, ulong(size)));
+  buffer.resize(newSize);
+
+  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data));
+  zstream.avail_in  = uint(size);
+  zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data + 4);
+  zstream.avail_out = uint(buffer.size);
+
+  int ret = ::deflate(&zstream, Z_FINISH);
+  deflateEnd(&zstream);
+
+  newSize = ret != Z_STREAM_END ? 0 : 4 + int(zstream.total_out);
   buffer.resize(newSize);
 
   if (newSize != 0) {
@@ -176,7 +156,7 @@ Buffer Buffer::compress(int level) const
 #if OZ_BYTE_ORDER == 4321
     *reinterpret_cast<int*>(buffer.data) = Endian::bswap32(oldSize);
 #else
-    *reinterpret_cast<int*>(buffer.data) = oldSize;
+    *reinterpret_cast<int*>(buffer.data) = size;
 #endif
   }
   return buffer;
@@ -192,41 +172,27 @@ Buffer Buffer::decompress() const
   int newSize = *reinterpret_cast<int*>(data);
 #endif
 
-  if (newSize < 0) {
-#ifdef OZ_LZ4
-    buffer.resize(~newSize);
+  z_stream zstream;
+  zstream.zalloc = nullptr;
+  zstream.zfree  = nullptr;
+  zstream.opaque = nullptr;
 
-    int ret = LZ4_decompress_safe(data + 4, buffer.data, size - 4, buffer.size);
-    if (ret < 0) {
-      buffer.resize(0);
-    }
-#else
-    OZ_ERROR("oz::Buffer: LZ4 requested but compiled without OZ_LZ4");
-#endif
+  if (inflateInit(&zstream) != Z_OK) {
+    return buffer;
   }
-  else {
-    z_stream zstream;
-    zstream.zalloc = nullptr;
-    zstream.zfree  = nullptr;
-    zstream.opaque = nullptr;
 
-    if (inflateInit(&zstream) != Z_OK) {
-      return buffer;
-    }
+  buffer.resize(newSize);
 
-    buffer.resize(newSize);
+  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data + 4));
+  zstream.avail_in  = uint(size - 4);
+  zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data);
+  zstream.avail_out = uint(buffer.size);
 
-    zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data + 4));
-    zstream.avail_in  = uint(size - 4);
-    zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data);
-    zstream.avail_out = uint(buffer.size);
+  int ret = ::inflate(&zstream, Z_FINISH);
+  inflateEnd(&zstream);
 
-    int ret = ::inflate(&zstream, Z_FINISH);
-    inflateEnd(&zstream);
-
-    if (ret != Z_STREAM_END) {
-      buffer.resize(0);
-    }
+  if (ret != Z_STREAM_END) {
+    buffer.resize(0);
   }
   return buffer;
 }

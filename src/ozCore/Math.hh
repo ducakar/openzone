@@ -459,7 +459,7 @@ public:
   OZ_ALWAYS_INLINE
   static int index1(Value v)
   {
-    return v == 0 ? -1 : int(sizeof(ulong64) * 8 - 1) - __builtin_clzll(ulong64(v));
+    return int(sizeof(ulong64)) * 8 - 1 - __builtin_clzll(ulong64(v));
   }
 
   /**

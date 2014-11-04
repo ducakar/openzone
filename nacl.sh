@@ -39,7 +39,7 @@ function run()
   done
 
   cd build/PNaCl/src/tools
-  python -m http.server &
+  python3 -m http.server &
   serverPID=$!
 
   sleep 3

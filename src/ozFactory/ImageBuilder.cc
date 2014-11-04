@@ -170,6 +170,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
     snprintf(errorBuffer, ERROR_LENGTH, "Texture compression requested but compiled without"
              " libsquish (OZ_NONFREE is disabled).");
     return false;
+#else
+    compress = Math::isPow2(width) && Math::isPow2(height);
 #endif
   }
 
@@ -204,8 +206,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
   int dx10Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 #ifdef OZ_NONFREE
-  int squishFlags = squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha;
-  squishFlags    |= hasAlpha ? squish::kDxt5 : squish::kDxt1;
+  int squishFlags = squish::kColourIterativeClusterFit;
+  squishFlags    |= hasAlpha ? squish::kDxt5 | squish::kWeightColourByAlpha : squish::kDxt1;
 
   if (compress) {
     pitchOrLinSize = squish::GetStorageRequirements(width, height, squishFlags);
@@ -487,6 +489,10 @@ ImageData ImageBuilder::loadImage(const File& file)
     image.pixels[i + 1] = char(pixels[i + 1]);
     image.pixels[i + 2] = char(pixels[i + 0]);
     image.pixels[i + 3] = char(pixels[i + 3]);
+  }
+
+  if (FreeImage_IsTransparent(dib)) {
+    image.flags |= ImageData::ALPHA_BIT;
   }
 
   FreeImage_Unload(dib);

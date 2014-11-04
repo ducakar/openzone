@@ -31,7 +31,10 @@ target_link_libraries(ozEngine ${GL_LIBRARIES})
 target_link_libraries(ozEngine ${OPENAL_LIBRARY})
 
 # SDL.
-target_link_libraries(ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES}) #${SDL_NET_LIBRARIES})
+target_link_libraries(ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
+if(NOT NACL)
+#  target_link_libraries(ozEngine ${SDL_NET_LIBRARIES})
+endif()
 
 # libpng.
 target_link_libraries(ozEngine ${PNG_LIBRARY_RELEASE})

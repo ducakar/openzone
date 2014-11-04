@@ -113,7 +113,7 @@ public:
   /// Generate mipmaps.
   static const int MIPMAPS_BIT = 0x04;
 
-  /// Enable texture compression.
+  /// Enable texture compression (DXT1 or DXT5, depending on presence of alpha channel).
   static const int COMPRESSION_BIT = 0x08;
 
   /// Flip vertically.

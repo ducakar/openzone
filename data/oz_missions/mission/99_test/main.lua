@@ -53,7 +53,7 @@ function initSample()
   --local cX, cY, cZ = 2000, 2000, 100
 
   local lord   = ozOrbisAddObj(OZ_FORCE, "bauul",       cX - 5, cY - 11, cZ - 6, OZ_EAST)
-  ozBotSetName("Jean-Claude van Damme")
+  ozBotSetName("Mal")
   local memo   = ozOrbisAddObj(OZ_FORCE, "datacube",    cX - 9, cY - 6,  cZ - 6)
   local droid  = ozOrbisAddObj(OZ_FORCE, "droid.OOM-9", cX - 3, cY - 11, cZ - 6, OZ_WEST)
   local cyborg = ozOrbisAddObj(OZ_FORCE, "cyborg",      cX - 3, cY - 13, cZ - 6, OZ_WEST)

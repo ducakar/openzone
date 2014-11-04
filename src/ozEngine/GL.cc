@@ -249,11 +249,7 @@ int GL::textureDataFromFile(const File& file, int bias)
     }
   }
   else if (pixelFlags & DDPF_RGB) {
-#ifdef OZ_GL_ES
     format         = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-#else
-    format         = pixelFlags & DDPF_ALPHAPIXELS ? GL_BGRA : GL_BGR;
-#endif
     internalFormat = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
     blockSize      = 1;
   }
@@ -269,9 +265,6 @@ int GL::textureDataFromFile(const File& file, int bias)
                   nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
 
   if (nMipmaps == 1 || isCubeMap) {
-#ifndef OZ_GL_ES
-    glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-#endif
     glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
@@ -282,6 +275,8 @@ int GL::textureDataFromFile(const File& file, int bias)
     int mipmapWidth  = width;
     int mipmapHeight = height;
     int mipmapS3Size = pitch;
+
+    Buffer data;
 
     for (int j = 0; j < nMipmaps; ++j) {
       if (pixelFlags & DDPF_FOURCC) {
@@ -300,7 +295,9 @@ int GL::textureDataFromFile(const File& file, int bias)
           is.forward(mipmapWidth * mipmapHeight * pixelSize);
         }
         else {
-          char* data = new char[mipmapSize];
+          if (data.isEmpty()) {
+            data.resize(mipmapSize);
+          }
 
           for (int y = 0; y < mipmapHeight; ++y) {
             char* pixels    = &data[y * mipmapPitch];
@@ -308,18 +305,15 @@ int GL::textureDataFromFile(const File& file, int bias)
 
             mCopy(pixels, is.forward(lineWidth), lineWidth);
 
-#ifdef OZ_GL_ES
             // BGR(A) -> RGB(A).
             for (int x = 0; x < mipmapWidth; ++x) {
               swap(pixels[0], pixels[2]);
               pixels += pixelSize;
             }
-#endif
           }
 
           glTexImage2D(target, j - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
-                       GL_UNSIGNED_BYTE, data);
-          delete[] data;
+                       GL_UNSIGNED_BYTE, &data[0]);
         }
       }
 

@@ -56,7 +56,7 @@ void main()
 #ifdef OZ_VERTEX_EFFECTS
   float windFact = max(inPosition.z, 0.0);
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
-                     sin(0.08 * (position.x + position.y) + oz_Wind.w);
+                   sin(0.08 * (position.x + position.y) + oz_Wind.w);
 
   position.xy   += windBias.xy, position.z;
 #endif

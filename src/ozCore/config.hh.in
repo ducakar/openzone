@@ -37,9 +37,6 @@
 // code is not written with SIMD in mind, it may yield worse performance.
 #cmakedefine OZ_SIMD
 
-// Enable lz4 compression support in oz::Buffer class.
-#cmakedefine OZ_LZ4
-
 /*
  * Compiler and platform-specific macros
  */

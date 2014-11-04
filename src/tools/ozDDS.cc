@@ -35,7 +35,7 @@ static void printUsage()
     "  -h  Flip horizontally\n"
     "  -m  Generate mipmaps\n"
     "  -n  Set normal map flag (DDPF_NORMAL)\n"
-    "  -N  Set normal map flag if the image looks like a RGB = XYZ normal map,\n"
+    "  -N  Set normal map flag if the image looks like a RGB = XYZ normal map\n"
     "      disable -n, -s and -S options otherwise\n"
     "  -s  Do RGB -> GGGR swizzle (for DXT5nm)\n"
     "  -S  Do RGB -> BGBR swizzle (for DXT5nm+z)\n"
@@ -97,9 +97,14 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  if (detectNormals) {
-    ImageData image = ImageBuilder::loadImage(argv[optind]);
+  ImageData image = ImageBuilder::loadImage(argv[optind]);
 
+  if (image.isEmpty()) {
+    Log::println("Failed to open image '%s'.", argv[optind]);
+    return EXIT_FAILURE;
+  }
+
+  if (detectNormals) {
     if (image.isNormalMap()) {
       ddsOptions |= ImageBuilder::NORMAL_MAP_BIT;
     }

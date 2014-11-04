@@ -75,7 +75,7 @@ struct Model::PreloadData
   List<TexFiles> textures;
 };
 
-Set<Model*>             Model::loadedModels;
+Set<Model::Ref>         Model::loadedModels;
 List<Model::Instance>   Model::instances[2];
 List<Model::LightEntry> Model::sceneLights;
 Vertex*                 Model::vertexAnimBuffer       = nullptr;
@@ -211,7 +211,9 @@ void Model::setCollation(Collation collation_)
 void Model::drawScheduled(QueueType queue, int mask)
 {
   if (collation == MODEL_MAJOR) {
-    for (Model* model : loadedModels) {
+    for (const Ref& ref : loadedModels) {
+      Model* model = ref.model;
+
       if (model->modelInstances[queue].isEmpty()) {
         continue;
       }
@@ -310,8 +312,8 @@ void Model::drawScheduled(QueueType queue, int mask)
 void Model::clearScheduled(QueueType queue)
 {
   if (collation == MODEL_MAJOR) {
-    for (Model* model : loadedModels) {
-      model->modelInstances[queue].clear();
+    for (const Ref& ref : loadedModels) {
+      ref.model->modelInstances[queue].clear();
     }
   }
   else {
@@ -654,7 +656,7 @@ void Model::load()
     }
   }
 
-  loadedModels.add(this);
+  loadedModels.add(Ref(this));
 
   delete preloadData;
   preloadData = nullptr;
@@ -711,7 +713,7 @@ void Model::unload()
   ibo = 0;
   vbo = 0;
 
-  loadedModels.exclude(this);
+  loadedModels.exclude(Ref(this));
 
   OZ_GL_CHECK_ERROR();
 }

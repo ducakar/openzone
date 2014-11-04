@@ -423,12 +423,8 @@ function build_sdl()
 
   ./autogen.sh
 
-  if [[ $platform == PNaCl ]]; then
-    CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/ports/include" autotoolsBuild \
-      --disable-pthread-sem --disable-assembly
-  else
-    autotoolsBuild
-  fi
+  CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/ports/include" autotoolsBuild \
+    --disable-pthread-sem --disable-assembly
 
   finish
 }

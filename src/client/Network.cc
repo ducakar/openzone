@@ -61,12 +61,16 @@ void Network::update()
 
 void Network::init()
 {
+//  SDLNet_Init();
+
 //  host = config.include("net.server", "localhost").get("");
 //  port = ushort(config.include("net.port", 6666).get(0));
 }
 
 void Network::destroy()
-{}
+{
+//  SDLNet_Quit();
+}
 
 Network network;
 

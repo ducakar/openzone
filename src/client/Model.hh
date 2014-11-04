@@ -132,6 +132,28 @@ public:
     OVERLAY_QUEUE
   };
 
+  struct Ref
+  {
+    Model* model;
+    float  size;
+
+    Ref() = default;
+
+    explicit Ref(Model* model_) :
+      model(model_), size(model_->dim.sqN())
+    {}
+
+    bool operator == (const Ref& r) const
+    {
+      return model == r.model;
+    }
+
+    bool operator < (const Ref& r) const
+    {
+      return size > r.size;
+    }
+  };
+
 private:
 
   struct Mesh
@@ -171,7 +193,7 @@ private:
 
 private:
 
-  static Set<Model*>      loadedModels;
+  static Set<Ref>         loadedModels;
   static List<Instance>   instances[2];
   static List<LightEntry> sceneLights;
 

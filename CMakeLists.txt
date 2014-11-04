@@ -10,7 +10,6 @@ set(OZ_VERSION 0.3.91)
 
 option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF)
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
-option(OZ_LZ4 "Enable LZ4 compression support." OFF)
 option(OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF)
 option(OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF)
 option(OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF)
@@ -67,9 +66,6 @@ if(ANDROID OR LINUX)
   find_package(ALSA REQUIRED)
 endif()
 
-if(OZ_LZ4)
-  pkg_check_modules(LZ4 REQUIRED liblz4)
-endif()
 find_package(ZLIB REQUIRED)
 find_package(PhysFS REQUIRED)
 mark_as_advanced(PHYSFS_INCLUDE_DIR)
@@ -90,7 +86,8 @@ endif()
 if(NACL)
   pkg_check_modules(SDL REQUIRED sdl)
   pkg_check_modules(SDL_TTF REQUIRED SDL_ttf)
-#  pkg_check_modules(SDL_NET REQUIRED SDL_net)
+  set(SDL_LIBRARIES SDL)
+  set(SDL_TTF_LIBRARIES SDL_ttf)
 else()
   pkg_check_modules(SDL REQUIRED sdl2)
   pkg_check_modules(SDL_TTF REQUIRED SDL2_ttf)
@@ -229,8 +226,11 @@ mark_as_advanced(OZ_HOSTNAME)
 
 add_subdirectory(src)
 
-# To show these files in QtCreator.
-add_custom_target(doc SOURCES AUTHORS ChangeLog.md README.md TODO.md)
+# This is to show these files in QtCreator.
+file(GLOB_RECURSE dataSources data/*.txt data/*.json data/*.lua data/*.vert data/*.frag)
+
+add_custom_target(docFiles SOURCES AUTHORS ChangeLog.md README.md TODO.md)
+add_custom_target(dataFiles SOURCES ${dataSources})
 
 #
 # Data files.
