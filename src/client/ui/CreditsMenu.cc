@@ -48,7 +48,7 @@ void CreditsMenu::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  int nLabels = (height - 140) / stride;
+  int nLabels = max(0, (height - 140) / stride);
   labels.resize(nLabels);
 
   for (int i = 0; i < nLabels; ++i) {

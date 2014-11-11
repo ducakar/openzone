@@ -128,6 +128,9 @@ public:
   /// Perform RGB(A) -> BGBR swizzle (for DXT5nm+z normal map compression).
   static const int ZYZX_BIT = 0x80;
 
+  /// Use fastest but low-quality filters.
+  static const int FAST_BIT = 0x100;
+
 public:
 
   /**

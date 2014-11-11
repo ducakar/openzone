@@ -168,12 +168,12 @@ void AssImp::build(const char* path)
     }
 
     float shininess = 50.0f;
-    material->Get<float>(AI_MATKEY_SHININESS, shininess);
+    material->Get(AI_MATKEY_SHININESS, shininess);
 
     float alpha = 1.0f;
-    material->Get<float>(AI_MATKEY_OPACITY, alpha);
+    material->Get(AI_MATKEY_OPACITY, alpha);
 
-    Log() << "mesh " << texturePath << " shininess " << shininess << " alpha " << alpha;
+    Log::println("mesh %s, shininess %g, alpha %g", texturePath.cstr(), shininess, alpha);
 
     compiler.beginMesh();
     compiler.texture(texturePath);

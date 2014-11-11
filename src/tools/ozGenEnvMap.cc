@@ -88,9 +88,10 @@ int main(int argc, char** argv)
   // For TextureReplacer:
   //TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +0.25f);
   //TerraBuilder::setFrequency(TerraBuilder::NOISE, 0.5f);
-  TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +1.75f);
+  TerraBuilder::setSeed(TerraBuilder::NOISE, 42);
+  TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +0.75f);
   TerraBuilder::setOctaveCount(TerraBuilder::NOISE, 3);
-  TerraBuilder::setFrequency(TerraBuilder::NOISE, 1.0f);
+  TerraBuilder::setFrequency(TerraBuilder::NOISE, 0.75f);
 
   ImageData* images = TerraBuilder::generateCubeNoise(size);
 

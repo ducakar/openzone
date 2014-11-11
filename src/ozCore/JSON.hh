@@ -411,7 +411,7 @@ public:
   Mat3 get(const Mat3& defaultValue = Mat3::ID) const;
 
   /**
-   * If an array of at least 4 numbers, return it as `Mat4`, `defaultValue` otherwise.
+   * If an array of at least 16 numbers, return it as `Mat4`, `defaultValue` otherwise.
    */
   Mat4 get(const Mat4& defaultValue = Mat4::ID) const;
 

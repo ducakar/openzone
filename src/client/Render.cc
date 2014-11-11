@@ -549,7 +549,6 @@ void Render::resize()
   windowWidth  = Window::width();
   windowHeight = Window::height();
 
-
   if (!isOffscreen) {
     return;
   }

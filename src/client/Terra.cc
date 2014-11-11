@@ -33,7 +33,7 @@ namespace oz
 namespace client
 {
 
-const float Terra::WAVE_BIAS_INC = 2.0f;
+const float Terra::WAVE_BIAS_INC = 1.5f;
 
 Terra::Terra() :
   ibo(0), id(-1)
@@ -122,7 +122,7 @@ void Terra::drawLiquid()
   tf.apply();
   tf.applyColour();
 
-  glUniform1f(uniform.shininess, 30.0f);
+  glUniform1f(uniform.shininess, 50.0f);
   glUniform1f(uniform.waveBias, waveBias);
 
   glBindTexture(GL_TEXTURE_2D, liquidTex.albedo);

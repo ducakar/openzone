@@ -155,6 +155,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
   bool doFlop    = options & ImageBuilder::FLOP_BIT;
   bool doYYYX    = options & ImageBuilder::YYYX_BIT;
   bool doZYZX    = options & ImageBuilder::ZYZX_BIT;
+  bool isFast    = options & ImageBuilder::FAST_BIT;
   bool hasAlpha  = (faces[0].flags & ImageData::ALPHA_BIT) || doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
@@ -206,7 +207,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
   int dx10Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 #ifdef OZ_NONFREE
-  int squishFlags = squish::kColourIterativeClusterFit;
+  int squishFlags = isFast ? squish::kColourRangeFit : squish::kColourIterativeClusterFit;
   squishFlags    |= hasAlpha ? squish::kDxt5 | squish::kWeightColourByAlpha : squish::kDxt1;
 
   if (compress) {
@@ -327,7 +328,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
     for (int j = 0; j < nMipmaps; ++j) {
       FIBITMAP* level = face;
       if (j != 0) {
-        level = FreeImage_Rescale(face, levelWidth, levelHeight, FILTER_CATMULLROM);
+        level = FreeImage_Rescale(face, levelWidth, levelHeight,
+                                  isFast ? FILTER_BILINEAR : FILTER_CATMULLROM);
       }
 
       if (compress) {

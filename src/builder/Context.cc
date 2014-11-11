@@ -64,6 +64,9 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
   if (useS3TC) {
     imageOptions |= ImageBuilder::COMPRESSION_BIT;
   }
+  if (useFast) {
+    imageOptions |= ImageBuilder::FAST_BIT;
+  }
 
   String destBasePath      = destBasePath_;
   String basePath          = basePath_;

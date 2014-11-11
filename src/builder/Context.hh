@@ -39,6 +39,7 @@ public:
   HashMap<String, String> usedModels;
 
   bool useS3TC;
+  bool useFast;
 
 public:
 

@@ -49,19 +49,24 @@ varying vec3 exBinormal;
 #endif
 
 #ifdef OZ_VERTEX_EFFECTS
-float noise(vec2 pos, float t)
+float noise(vec2 pos, float seed)
 {
-  return sin(pos.x*pos.x + pos.y*pos.y + t);
+  return fract(sin(dot(pos, vec2(431.0, 683.0))) * seed) * 3.141592653589793;
 }
 #endif
 
 void main()
 {
 #ifdef OZ_VERTEX_EFFECTS
-  float z        = 0.15 * sin(oz_WaveBias + inPosition.x + inPosition.y);
-  vec4  position = oz_Model * vec4(inPosition.x, inPosition.y, z, 1.0);
-  float dx       = 0.2 * noise(0.1 * position.xy, oz_WaveBias);
-  float dy       = 0.2 * noise(0.1 * position.yx, oz_WaveBias);
+  vec4  position = oz_Model * vec4(inPosition.xy, 0.0, 1.0);
+  float alpha    = oz_WaveBias + noise(position.xy, 43758.5453);
+  float beta     = oz_WaveBias + noise(position.xy, 76283.5127);
+  float sinAlpha = sin(alpha);
+  float cosAlpha = 1.0 - 0.5 * sinAlpha*sinAlpha;
+  float dx       = 0.25 * cosAlpha * cos(beta);
+  float dy       = 0.25 * cosAlpha * sin(beta);
+
+  position.z     = 0.15 * sinAlpha;
 #else
   mat3  modelRot = mat3(oz_Model);
   vec4  position = oz_Model * vec4(inPosition.x, inPosition.y, 0.0, 1.0);

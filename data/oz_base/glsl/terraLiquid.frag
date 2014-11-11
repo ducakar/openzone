@@ -88,11 +88,11 @@ void main()
   vec3  specular     = oz_CaelumLight.colour * (masks.r * pow(specularDot, oz_Shininess));
 
 #ifdef OZ_ENV_MAP
-  colour.rgb         = mix(colour.rgb, textureCube(oz_EnvMap, reflectDir).rgb, masks.b);
+  specular          += textureCube(oz_EnvMap, reflectDir).rgb * masks.b;
 #endif
   colour.rgb         = colour.rgb * (diffuse + emission) + specular;
   colour.rgb         = mix(colour.rgb, oz_Fog.colour, fog*fog);
-  colour.a           = min(1.0, 1.2 + look.z);
+  colour.a           = min(1.0, 1.2 + look.z + dot(specular, vec3(0.5)));
 
   gl_FragData[0]     = oz_Colour * colour;
 #ifdef OZ_POSTPROCESS

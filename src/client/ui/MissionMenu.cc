@@ -78,7 +78,7 @@ void MissionMenu::onReposition()
   width       = camera.width;
   height      = camera.height;
 
-  nSelections = min((height - 150) / 40, missions.length());
+  nSelections = clamp(missions.length(), 0, (height - 150) / 40);
   selection   = -1;
   scroll      = 0;
 

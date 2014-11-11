@@ -642,13 +642,15 @@ int Builder::main(int argc, char** argv)
   bool doMusic        = false;
   bool doMissions     = false;
   bool useCompression = false;
+  bool useFast        = false;
   bool use7zip        = false;
 
   context.useS3TC     = false;
+  context.useFast     = false;
 
   optind = 1;
   int opt;
-  while ((opt = getopt(argc, argv, "lugctbeafpmsxkriARCZ7h?")) >= 0) {
+  while ((opt = getopt(argc, argv, "lugctbeafpmsxkriARCFZ7h?")) >= 0) {
     switch (opt) {
       case 'l': {
         doCat = true;
@@ -739,6 +741,10 @@ int Builder::main(int argc, char** argv)
       }
       case 'C': {
         context.useS3TC = true;
+        break;
+      }
+      case 'F': {
+        context.useFast = true;
         break;
       }
       case 'Z': {

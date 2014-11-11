@@ -227,12 +227,16 @@ bool Window::resize(int newWidth, int newHeight, bool fullscreen_)
   windowWidth  = newWidth;
   windowHeight = newHeight;
 
+  Log::print("Resizing OpenGL window to %dx%d ... ", windowWidth, windowHeight);
+
   MainCall() << []
   {
     glSetCurrentContextPPAPI(0);
     context->ResizeBuffers(windowWidth, windowHeight);
     glSetCurrentContextPPAPI(context->pp_resource());
   };
+
+  Log::printEnd("OK");
 
 #else
 
