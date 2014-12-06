@@ -23,8 +23,6 @@ for component in ${components[@]}; do
   sources=`echo *.{hh,cc} */*.{hh,cc}`
   # Remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
   sources=`echo $sources | sed -r 's|(\*/)?\*\.[^ ]*||g'`
-  # Exclude PCH stuff from main targets.
-  sources=`echo $sources | sed -r 's|pch\...||g'`
   # Remove duplicated spaces that may have been introduced by the previous removals.
   sources=`echo $sources | sed -r 's| +| |g'`
   # Make file list newline-separated and indented.

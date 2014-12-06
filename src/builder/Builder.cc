@@ -642,7 +642,6 @@ int Builder::main(int argc, char** argv)
   bool doMusic        = false;
   bool doMissions     = false;
   bool useCompression = false;
-  bool useFast        = false;
   bool use7zip        = false;
 
   context.useS3TC     = false;

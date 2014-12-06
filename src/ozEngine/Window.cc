@@ -265,6 +265,7 @@ bool Window::resize(int newWidth, int newHeight, bool fullscreen_)
 
 bool Window::create(const char* title, int width, int height, bool fullscreen_)
 {
+  destroy();
   measureScreen();
 
   windowWidth  = width  == 0 ? screenWidth  : width;

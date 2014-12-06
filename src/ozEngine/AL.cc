@@ -26,12 +26,16 @@
 
 #include "AL.hh"
 
+#include <AL/alc.h>
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
 namespace oz
 {
+
+static ALCdevice*  soundDevice  = nullptr;
+static ALCcontext* soundContext = nullptr;
 
 /*
  * Vorbis stream reader callbacks.
@@ -107,20 +111,15 @@ struct AL::Streamer::Data
   Buffer         fileBuffer;
   InputStream    is;
   char           samples[BUFFER_SIZE];
-
-  Data() :
-    buffers { 0, 0 }
-  {}
 };
 
 AL::Streamer::Streamer() :
   source(0), data(nullptr)
 {}
 
-AL::Streamer::Streamer(const File& file) :
-  source(0), data(nullptr)
+AL::Streamer::~Streamer()
 {
-  open(file);
+  destroy();
 }
 
 AL::Streamer::Streamer(Streamer&& s) :
@@ -160,17 +159,97 @@ void AL::Streamer::attach(ALuint source_)
 
 void AL::Streamer::detach()
 {
-  if (source != 0 && data != nullptr && alIsSource(source)) {
+  if (source != 0 && alIsSource(source)) {
     alSourceStop(source);
+    OZ_AL_CHECK_ERROR();
 
-    ALint nQueued;
-    alGetSourcei(source, AL_BUFFERS_PROCESSED, &nQueued);
+    if (data != nullptr) {
+      ALint nQueued;
+      alGetSourcei(source, AL_BUFFERS_QUEUED, &nQueued);
+      OZ_AL_CHECK_ERROR();
 
-    if (nQueued != 0) {
-      alSourceUnqueueBuffers(source, 2, data->buffers);
+      Log() << nQueued;
+      if (nQueued != 0) {
+        ALuint buffers[2];
+        alSourceUnqueueBuffers(source, nQueued, buffers);
+        OZ_AL_CHECK_ERROR();
+      }
     }
   }
   source = 0;
+}
+
+bool AL::Streamer::open(const File& file)
+{
+  data             = new Data();
+  data->fileBuffer = file.read();
+  data->is         = data->fileBuffer.inputStream();
+
+  if (data->fileBuffer.isEmpty()) {
+    delete data;
+    data = nullptr;
+    return false;
+  }
+
+  if (ov_open_callbacks(&data->is, &data->ovFile, nullptr, 0, VORBIS_CALLBACKS) != 0) {
+    delete data;
+    data = nullptr;
+    return false;
+  }
+
+  vorbis_info* vorbisInfo = ov_info(&data->ovFile, -1);
+  if (vorbisInfo == nullptr) {
+    ov_clear(&data->ovFile);
+    delete data;
+    data = nullptr;
+    return false;
+  }
+
+  int nChannels = vorbisInfo->channels;
+  if (nChannels != 1 && nChannels != 2) {
+    ov_clear(&data->ovFile);
+    delete data;
+    data = nullptr;
+    return false;
+  }
+
+  data->format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+  data->rate   = ALsizei(vorbisInfo->rate);
+
+  alGenBuffers(2, data->buffers);
+
+  for (int i = 0; i < 2; ++i) {
+    if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
+      close();
+      return false;
+    }
+
+    alBufferData(data->buffers[i], data->format, &data->samples, Data::BUFFER_SIZE, data->rate);
+  }
+
+  if (source != 0 && alIsSource(source)) {
+    alSourceQueueBuffers(source, 2, data->buffers);
+  }
+
+  OZ_AL_CHECK_ERROR();
+  return true;
+}
+
+void AL::Streamer::close()
+{
+  detach();
+
+  if (data != nullptr) {
+    OZ_AL_CHECK_ERROR();
+    alDeleteBuffers(2, data->buffers);
+
+    OZ_AL_CHECK_ERROR();
+
+    ov_clear(&data->ovFile);
+
+    delete data;
+    data = nullptr;
+  }
 }
 
 bool AL::Streamer::rewind()
@@ -180,7 +259,6 @@ bool AL::Streamer::rewind()
   }
 
   if (ov_raw_seek(&data->ovFile, 0) != 0) {
-    close();
     return false;
   }
 
@@ -194,7 +272,6 @@ bool AL::Streamer::rewind()
 
   for (int i = 0; i < 2; ++i) {
     if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
-      close();
       return false;
     }
 
@@ -227,7 +304,6 @@ bool AL::Streamer::update()
   }
 
   if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
-    close();
     return false;
   }
 
@@ -238,85 +314,6 @@ bool AL::Streamer::update()
 
   OZ_AL_CHECK_ERROR();
   return true;
-}
-
-bool AL::Streamer::open(const File& file)
-{
-  close();
-
-  data             = new Data();
-  data->fileBuffer = file.read();
-  data->is         = data->fileBuffer.inputStream();
-
-  if (data->fileBuffer.isEmpty()) {
-    delete data;
-    data = nullptr;
-    return false;
-  }
-
-  if (ov_open_callbacks(&data->is, &data->ovFile, nullptr, 0, VORBIS_CALLBACKS) != 0) {
-    delete data;
-    data = nullptr;
-    return false;
-  }
-
-  vorbis_info* vorbisInfo = ov_info(&data->ovFile, -1);
-  if (vorbisInfo == nullptr) {
-    close();
-    return false;
-  }
-
-  int nChannels = vorbisInfo->channels;
-  if (nChannels != 1 && nChannels != 2) {
-    close();
-    return false;
-  }
-
-  data->format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-  data->rate   = ALsizei(vorbisInfo->rate);
-
-  hard_assert(data->buffers[0] == 0 && data->buffers[1] == 0);
-  alGenBuffers(2, data->buffers);
-
-  for (int i = 0; i < 2; ++i) {
-    if (!decodeVorbis(&data->ovFile, data->samples, Data::BUFFER_SIZE)) {
-      close();
-      return false;
-    }
-
-    alBufferData(data->buffers[i], data->format, &data->samples, Data::BUFFER_SIZE, data->rate);
-  }
-
-  if (source != 0 && alIsSource(source)) {
-    alSourceQueueBuffers(source, 2, data->buffers);
-  }
-
-  OZ_AL_CHECK_ERROR();
-  return true;
-}
-
-void AL::Streamer::close()
-{
-  if (data != nullptr) {
-    if (source != 0 && alIsSource(source)) {
-      alSourceStop(source);
-
-      ALint nQueued;
-      alGetSourcei(source, AL_BUFFERS_PROCESSED, &nQueued);
-
-      if (nQueued != 0) {
-        alSourceUnqueueBuffers(source, 2, data->buffers);
-      }
-    }
-
-    alDeleteBuffers(2, data->buffers);
-    ov_clear(&data->ovFile);
-
-    delete data;
-    data = nullptr;
-
-    OZ_AL_CHECK_ERROR();
-  }
 }
 
 void AL::Streamer::destroy()
@@ -481,6 +478,46 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 
     OZ_AL_CHECK_ERROR();
     return true;
+  }
+}
+
+bool AL::init()
+{
+  destroy();
+
+  Log::print("Opening default OpenAL device and creating context ... ");
+
+  soundDevice = alcOpenDevice(nullptr);
+  if (soundDevice == nullptr) {
+    Log::printEnd("Failed to open OpenAL device");
+    return false;
+  }
+
+  soundContext = alcCreateContext(soundDevice, nullptr);
+  if (soundContext == nullptr) {
+    Log::printEnd("Failed to create OpenAL context");
+    return false;
+  }
+
+  if (alcMakeContextCurrent(soundContext) != ALC_TRUE) {
+    Log::printEnd("Failed to select OpenAL context");
+    return false;
+  }
+
+  Log::printEnd("OK");
+  return true;
+}
+
+void AL::destroy()
+{
+  if (soundContext != nullptr) {
+    alcDestroyContext(soundContext);
+    soundContext = nullptr;
+  }
+
+  if (soundDevice != nullptr) {
+    alcCloseDevice(soundDevice);
+    soundDevice = nullptr;
   }
 }
 

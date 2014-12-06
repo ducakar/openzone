@@ -82,12 +82,14 @@ static void readNode(const aiNode* node)
 
   if (node->mNumMeshes != 0) {
     compiler.bindMesh(int(node->mMeshes[0]));
+    Log::println("- mesh %u", node->mMeshes[0]);
 
     if (node->mNumMeshes > 1) {
       for (uint i = 1; i < node->mNumMeshes; ++i) {
         compiler.beginNode();
         compiler.bindMesh(int(node->mMeshes[i]));
         compiler.endNode();
+        Log::println("- mesh %u", node->mMeshes[i]);
       }
     }
   }
@@ -172,8 +174,6 @@ void AssImp::build(const char* path)
 
     float alpha = 1.0f;
     material->Get(AI_MATKEY_OPACITY, alpha);
-
-    Log::println("mesh %s, shininess %g, alpha %g", texturePath.cstr(), shininess, alpha);
 
     compiler.beginMesh();
     compiler.texture(texturePath);

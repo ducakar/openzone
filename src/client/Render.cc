@@ -328,6 +328,7 @@ void Render::drawGeometry()
   caelumMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
+  glDisable(GL_BLEND);
   Model::drawScheduled(Model::SCENE_QUEUE, Model::SOLID_BIT);
 
   currentMicros = Time::uclock();
@@ -335,6 +336,7 @@ void Render::drawGeometry()
   beginMicros = currentMicros;
 
   terra.draw();
+  glEnable(GL_BLEND);
 
   currentMicros = Time::uclock();
   terraMicros += currentMicros - beginMicros;

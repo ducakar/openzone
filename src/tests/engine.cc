@@ -33,14 +33,31 @@ int main(int argc, char** argv)
   System::init();
   SDL_Init(SDL_INIT_VIDEO);
   Window::create("Test", 600, 600, false);
+  AL::init();
 
-  File file = argc < 2 ? "/usr/share/icons/OpenZone_Fire_Slim/cursors/wait" : argv[1];
+  File file = argc < 2 ? "/usr/share/icons/OpenZone_Ice_Slim/cursors/wait" : argv[1];
 
   uint texId;
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
   GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
   Cursor cursor(file, Cursor::SYSTEM);
+
+  uint soundBuffer, soundSource, musicSource;
+  alGenBuffers(1, &soundBuffer);
+  alGenSources(1, &soundSource);
+  alGenSources(1, &musicSource);
+
+  AL::bufferDataFromFile(soundBuffer, "/usr/share/sounds/pop.wav");
+  alSourcei(soundSource, AL_BUFFER, int(soundBuffer));
+  alSourcePlay(soundSource);
+
+  AL::Streamer streamer;
+  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
+  streamer.attach(musicSource);
+  streamer.close();
+  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
+  alSourcePlay(musicSource);
 
   if (!cursor.isLoaded()) {
     return EXIT_FAILURE;
@@ -54,8 +71,14 @@ int main(int argc, char** argv)
     SDL_Event event;
     SDL_PollEvent(&event);
 
-    if (event.type == SDL_QUIT || event.type == SDL_KEYDOWN) {
+    if (event.type == SDL_QUIT) {
       isAlive = false;
+      break;
+    }
+
+    if (event.type == SDL_KEYDOWN) {
+      streamer.rewind();
+      alSourcePlay(musicSource);
     }
 
     glClearColor(1.2f, 1.2f, 1.2f, 0.0f);
@@ -79,13 +102,22 @@ int main(int argc, char** argv)
 
     Window::swapBuffers();
     cursor.update(15);
+    streamer.update();
 
     Time::sleep(10);
   }
 
+  streamer.destroy();
+
+  alDeleteSources(1, &musicSource);
+  alDeleteSources(1, &soundSource);
+  alDeleteBuffers(1, &soundBuffer);
+
   cursor.destroy();
 
   glDeleteTextures(1, &texId);
+
+  AL::destroy();
   Window::destroy();
   SDL_Quit();
   return 0;

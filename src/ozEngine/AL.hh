@@ -72,9 +72,9 @@ public:
     Streamer();
 
     /**
-     * Same as default constructor plus `open()`.
+     * Destructor.
      */
-    explicit Streamer(const File& file);
+    ~Streamer();
 
     /**
      * Move constructor.
@@ -113,18 +113,6 @@ public:
     void detach();
 
     /**
-     * Update processed buffers in the queue, decode new data into them.
-     *
-     * When the end of the stream is reached it invokes `close()`.
-     */
-    bool update();
-
-    /**
-     * Stop attached source and rewind stream to the beginning.
-     */
-    bool rewind();
-
-    /**
      * Start streaming a given Ogg Vorbis file.
      */
     bool open(const File& file);
@@ -133,6 +121,18 @@ public:
      * Stop streaming and free file buffers and stream state.
      */
     void close();
+
+    /**
+     * Stop attached source and rewind the stream to the beginning.
+     */
+    bool rewind();
+
+    /**
+     * Update processed buffers in the queue, decode new data into them.
+     *
+     * When the end of the stream is reached it invokes `close()`.
+     */
+    bool update();
 
     /**
      * Deinitialise, detach source and delete all buffers.
@@ -160,6 +160,16 @@ public:
    * Beware, 3D effects in OpenAL only work on mono sound samples.
    */
   static bool bufferDataFromFile(ALuint buffer, const File& file);
+
+  /**
+   * Open default OpenAL device and create a context with default parameters.
+   */
+  static bool init();
+
+  /**
+   * Destroy OpenAL context and close device.
+   */
+  static void destroy();
 
 };
 
