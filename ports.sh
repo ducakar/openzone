@@ -229,10 +229,10 @@ function fetch()
   download 'http://zlib.net/zlib-1.2.8.tar.xz'
 
   # libpng
-  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.13.tar.xz'
+  download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.15.tar.xz'
 
   # libogg
-  download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.xz'
+  download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.2.tar.xz'
 
   # libvorbis
   download 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.4.tar.xz'
@@ -345,7 +345,7 @@ function build_zlib()
 
 function build_libpng()
 {
-  prepare libpng-1.6.13 libpng-1.6.13.tar.xz || return
+  prepare libpng-1.6.15 libpng-1.6.15.tar.xz || return
   applyPatches libpng-1.6.6.patch
 
   cmakeBuild -D PNG_SHARED=0 \
@@ -357,7 +357,7 @@ function build_libpng()
 
 function build_libogg()
 {
-  prepare libogg-1.3.1 libogg-1.3.1.tar.xz || return
+  prepare libogg-1.3.2 libogg-1.3.2.tar.xz || return
   applyPatches libogg-1.3.1.patch
 
   autotoolsBuild

@@ -42,7 +42,7 @@ class SpinLock
 {
 private:
 
-  volatile bool flag = false; ///< True iff locked.
+  bool flag = false; ///< True iff locked.
 
 public:
 
@@ -68,7 +68,9 @@ public:
   void lock()
   {
     while (__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE)) {
-      while (flag);
+#if defined(__i386__) || defined(__x86_64__)
+      __asm__ __volatile__("pause");
+#endif
     }
   }
 

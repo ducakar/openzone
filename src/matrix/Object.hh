@@ -222,8 +222,8 @@ public:
    * FIELDS
    */
 
-  Object*            prev[1];    // the previous object in cell.objects and list
-  Object*            next[1];    // the next object in cell->objects
+  Object*            prev[1];    // the previous object in cell.objects chains
+  Object*            next[1];    // the next object in cell.objects chains
 
   Cell*              cell;       // parent cell, nullptr if not positioned in the world
   int                index;      // index in orbis.objects

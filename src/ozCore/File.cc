@@ -888,9 +888,9 @@ List<File> File::ls() const
   else {
 #if defined(__native_client__)
 
-    typedef std::vector<pp::DirectoryEntry>                 EntryList;
-    typedef pp::CompletionCallbackWithOutput<EntryList>     CallbackWithOutput;
-    typedef CallbackWithOutput::BaseType::OutputStorageType EntryListStorage;
+    typedef std::vector<pp::DirectoryEntry>             EntryList;
+    typedef pp::CompletionCallbackWithOutput<EntryList> CallbackWithOutput;
+    typedef CallbackWithOutput::OutputStorageType       EntryListStorage;
 
     pp::FileRef        file(ppFileSystem, filePath);
     EntryListStorage   entryStorage;

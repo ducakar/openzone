@@ -51,7 +51,7 @@ struct ScreenshotInfo
 
 #ifdef __native_client__
 static Semaphore       flushSemaphore;
-static pp::Graphics3D* context;
+static pp::Graphics3D* context = nullptr;
 #else
 static SDL_Window*     descriptor;
 static SDL_GLContext   context;
@@ -298,9 +298,15 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 
     if (context->is_null()) {
       Log::printEnd("Failed to create OpenGL context");
+
+      delete context;
+      context = nullptr;
     }
     else if (!Pepper::instance()->BindGraphics(*context)) {
       Log::printEnd("Failed to bind Graphics3D");
+
+      delete context;
+      context = nullptr;
     }
     else {
       glSetCurrentContextPPAPI(context->pp_resource());
@@ -310,11 +316,10 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
       glFlush();
 
       context->SwapBuffers(pp::CompletionCallback(flushCompleteCallback, nullptr));
+      Log::printEnd("OK");
     }
   };
   flushSemaphore.wait();
-
-  Log::printEnd("OK");
 
 #else
 
@@ -388,7 +393,7 @@ void Window::destroy()
 {
 #if defined(__native_client__)
 
-  if (!context->is_null()) {
+  if (context != nullptr) {
     MainCall() << []
     {
       glSetCurrentContextPPAPI(0);

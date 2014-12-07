@@ -226,32 +226,27 @@ int GL::textureDataFromFile(const File& file, int bias)
   is.seek(4 + 124);
 
   GLenum format;
-  GLint  internalFormat;
 
   if (pixelFlags & DDPF_FOURCC) {
     if (String::beginsWith(formatFourCC, "DXT1")) {
-      format         = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-      blockSize      = 8;
+      format    = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      blockSize = 8;
     }
     else if (String::beginsWith(formatFourCC, "DXT3")) {
-      format         = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      blockSize      = 16;
+      format    = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      blockSize = 16;
     }
     else if (String::beginsWith(formatFourCC, "DXT5")) {
-      format         = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      blockSize      = 16;
+      format    = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      blockSize = 16;
     }
     else {
       return 0;
     }
   }
   else if (pixelFlags & DDPF_RGB) {
-    format         = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-    internalFormat = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-    blockSize      = 1;
+    format    = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+    blockSize = 1;
   }
   else {
     return 0;
@@ -312,7 +307,7 @@ int GL::textureDataFromFile(const File& file, int bias)
             }
           }
 
-          glTexImage2D(target, j - bias, internalFormat, mipmapWidth, mipmapHeight, 0, format,
+          glTexImage2D(target, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
                        GL_UNSIGNED_BYTE, &data[0]);
         }
       }

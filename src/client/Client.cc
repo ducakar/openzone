@@ -450,7 +450,7 @@ int Client::init(int argc, char** argv)
   screenWidth  = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
   screenHeight = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
 
-  bool fullscreen = config.include("window.fullscreen",    true).get(false);
+  bool fullscreen = config.include("window.fullscreen", true).get(false);
 
   Window::create("OpenZone " OZ_VERSION,
                  fullscreen ? screenWidth  : windowWidth,
@@ -476,14 +476,13 @@ int Client::init(int argc, char** argv)
   for (const String& pkg : packages) {
     Pepper::post("data:" + pkg);
 
-    File pkgFile = dataDir + "/" + pkg;
+    String pkgPath = String::str("%s/%s", dataDir.cstr(), pkg.cstr());
 
-    if (File::mount("%" + pkgFile.path(), nullptr)) {
-      Log::println("%s", pkgFile.path().cstr());
+    if (File::mount("%" + pkgPath, nullptr)) {
+      Log::println("%s", pkgPath.cstr());
     }
     else {
-      OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s",
-               pkgFile.path().cstr(), PHYSFS_getLastError());
+      OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", pkgPath.cstr(), PHYSFS_getLastError());
     }
   }
 

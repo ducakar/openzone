@@ -760,6 +760,9 @@ void Render::init()
     }
   }
 
+#ifdef __native_client__
+  shader.hasVTF = false;
+#endif
 #ifdef OZ_GL_ES
   shader.hasFBO = true;
 #endif
