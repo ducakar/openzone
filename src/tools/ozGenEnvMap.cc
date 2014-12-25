@@ -88,8 +88,8 @@ int main(int argc, char** argv)
   // For TextureReplacer:
   //TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +0.25f);
   //TerraBuilder::setFrequency(TerraBuilder::NOISE, 0.5f);
-  TerraBuilder::setSeed(TerraBuilder::NOISE, 42);
-  TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +0.75f);
+  TerraBuilder::setSeed(TerraBuilder::NOISE, 8);
+  TerraBuilder::setBounds(TerraBuilder::NOISE, -1.75f, +1.25f);
   TerraBuilder::setOctaveCount(TerraBuilder::NOISE, 3);
   TerraBuilder::setFrequency(TerraBuilder::NOISE, 0.75f);
 

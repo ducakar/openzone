@@ -79,9 +79,10 @@ void main()
 
   // Caelum light.
   float diffuseDot   = max(0.0, dot(oz_CaelumLight.dir, normal));
-  vec3  diffuse      = oz_CaelumLight.ambient + oz_CaelumLight.colour * diffuseDot;
+  vec3  ambient      = oz_CaelumLight.ambient;
+  vec3  diffuse      = oz_CaelumLight.colour * diffuseDot;
 
-  colour.rgb         = colour.rgb * diffuse;
+  colour.rgb         = colour.rgb * (ambient + diffuse);
   colour.rgb         = mix(colour.rgb, oz_Fog.colour, fog*fog);
 
   gl_FragData[0]     = oz_Colour * colour;

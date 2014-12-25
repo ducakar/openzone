@@ -83,14 +83,15 @@ void main()
   // Caelum light.
   float diffuseDot   = max(0.0, dot(oz_CaelumLight.dir, normal));
   float specularDot  = max(0.0, dot(oz_CaelumLight.dir, reflectDir));
-  vec3  diffuse      = oz_CaelumLight.ambient + oz_CaelumLight.colour * diffuseDot;
+  vec3  ambient      = oz_CaelumLight.ambient;
+  vec3  diffuse      = oz_CaelumLight.colour * diffuseDot;
   vec3  emission     = masks.ggg;
   vec3  specular     = oz_CaelumLight.colour * (masks.r * pow(specularDot, oz_Shininess));
 
 #ifdef OZ_ENV_MAP
-  specular          += textureCube(oz_EnvMap, reflectDir).rgb * masks.b;
+  specular          += textureCube(oz_EnvMap, reflectDir).rgb * ambient * masks.b;
 #endif
-  colour.rgb         = colour.rgb * (diffuse + emission) + specular;
+  colour.rgb         = colour.rgb * (ambient + diffuse + emission) + specular;
   colour.rgb         = mix(colour.rgb, oz_Fog.colour, fog*fog);
   colour.a           = min(1.0, 1.2 + look.z + dot(specular, vec3(0.5)));
 

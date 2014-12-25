@@ -364,7 +364,7 @@ public:
     if (&ht != this) {
       clear();
 
-      if (size < ht.pool.count) {
+      if (size < ht.pool.length()) {
         delete[] data;
 
         data = new Entry[ht.size];

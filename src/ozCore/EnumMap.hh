@@ -140,6 +140,8 @@ class EnumMap : public detail::EnumMapImpl
 {
 public:
 
+  using EnumMapImpl::operator [];
+
   /**
    * Create enumerator mapping from an initialiser list.
    */

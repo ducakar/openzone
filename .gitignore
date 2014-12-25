@@ -38,9 +38,9 @@ DISABLED
 *.srf
 *.bak
 
+/*log
 /*.patch
 /*.trace
-/*.log
 /stats
 /*.tar.gz
 /*.tar.bz2

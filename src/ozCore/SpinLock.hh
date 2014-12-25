@@ -69,7 +69,7 @@ public:
   {
     while (__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE)) {
 #if defined(__i386__) || defined(__x86_64__)
-      __asm__ __volatile__("pause");
+      __asm__ volatile ("pause");
 #endif
     }
   }

@@ -51,6 +51,10 @@ private:
 
 public:
 
+  using InputStream::begin;
+  using InputStream::pos;
+  using InputStream::operator [];
+
   /**
    * Create a fixed-size stream for reading/writing a given memory range.
    */
