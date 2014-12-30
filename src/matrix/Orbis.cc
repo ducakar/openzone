@@ -420,32 +420,32 @@ void Orbis::read(InputStream* is)
   is->readBitset(pendingFrags[waiting], pendingFrags[waiting].length());
 }
 
-void Orbis::read(const JSON& json)
+void Orbis::read(const Json& json)
 {
   caelum.read(json["caelum"]);
   terra.read(json["terra"]);
 
-  for (const JSON& strJSON : json["structs"].arrayCIter()) {
-    String name    = strJSON["bsp"].get("");
+  for (const Json& strJson : json["structs"].arrayCIter()) {
+    String name    = strJson["bsp"].get("");
     const BSP* bsp = liber.bsp(name);
 
     int index = allocStrIndex();
     if (index >= 0) {
       const_cast<BSP*>(bsp)->request();
 
-      Struct* str = new Struct(bsp, index, strJSON);
+      Struct* str = new Struct(bsp, index, strJson);
       position(str);
       structs[1 + index] = str;
     }
   }
 
-  for (const JSON& objJSON : json["objects"].arrayCIter()) {
-    String             name  = objJSON["class"].get("");
+  for (const Json& objJson : json["objects"].arrayCIter()) {
+    String             name  = objJson["class"].get("");
     const ObjectClass* clazz = liber.objClass(name);
 
     int index = allocObjIndex();
     if (index >= 0) {
-      Object*  obj = clazz->create(index, objJSON);
+      Object*  obj = clazz->create(index, objJson);
       Dynamic* dyn = static_cast<Dynamic*>(obj);
 
       if (obj->flags & Object::LUA_BIT) {
@@ -457,8 +457,8 @@ void Orbis::read(const JSON& json)
       }
       objects[1 + obj->index] = obj;
 
-      for (const JSON& itemJSON : objJSON["items"].arrayCIter()) {
-        String              name  = itemJSON["class"].get("");
+      for (const Json& itemJson : objJson["items"].arrayCIter()) {
+        String              name  = itemJson["class"].get("");
         const DynamicClass* clazz = static_cast<const DynamicClass*>(liber.objClass(name));
 
         if (!(clazz->flags & Object::ITEM_BIT)) {
@@ -470,7 +470,7 @@ void Orbis::read(const JSON& json)
 
         int index = allocObjIndex();
         if (index >= 0) {
-          Dynamic* item = static_cast<Dynamic*>(clazz->create(index, itemJSON));
+          Dynamic* item = static_cast<Dynamic*>(clazz->create(index, itemJson));
 
           item->parent = obj->index;
           obj->items.add(item->index);
@@ -486,7 +486,7 @@ void Orbis::read(const JSON& json)
   }
 }
 
-int Orbis::readObject(const JSON& json)
+int Orbis::readObject(const Json& json)
 {
   int index = allocObjIndex();
   if (index < 0) {
@@ -563,23 +563,23 @@ void Orbis::write(OutputStream* os) const
   os->writeBitset(pendingFrags[waiting], pendingFrags[waiting].length());
 }
 
-JSON Orbis::write() const
+Json Orbis::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("caelum", caelum.write());
   json.add("terra", terra.write());
 
   Set<int> boundObjects;
 
-  JSON structsJSON = JSON::ARRAY;
-  JSON objectsJSON = JSON::ARRAY;
+  Json structsJson = Json::ARRAY;
+  Json objectsJson = Json::ARRAY;
 
   for (int i = 0; i < MAX_STRUCTS; ++i) {
     const Struct* str = structs[1 + i];
 
     if (str != nullptr) {
-      structsJSON.add(str->write());
+      structsJson.add(str->write());
 
       for (int j : str->boundObjects) {
         if (objects[1 + j] != nullptr) {
@@ -593,12 +593,12 @@ JSON Orbis::write() const
     const Object* obj = objects[1 + i];
 
     if (obj != nullptr && obj->cell != nullptr && !boundObjects.contains(obj->index)) {
-      objectsJSON.add(obj->write());
+      objectsJson.add(obj->write());
     }
   }
 
-  json.add("structs", static_cast<JSON&&>(structsJSON));
-  json.add("objects", static_cast<JSON&&>(objectsJSON));
+  json.add("structs", static_cast<Json&&>(structsJson));
+  json.add("objects", static_cast<Json&&>(objectsJson));
 
   return json;
 }

@@ -21,7 +21,7 @@ add_library(ozCore
   InputStream.hh
   iterables.hh
   Java.hh
-  JSON.hh
+  Json.hh
   List.hh
   Log.hh
   Map.hh
@@ -63,7 +63,7 @@ add_library(ozCore
   Gettext.cc
   InputStream.cc
   Java.cc
-  JSON.cc
+  Json.cc
   Log.cc
   Mat3.cc
   Mat4.cc

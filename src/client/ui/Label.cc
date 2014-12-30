@@ -39,75 +39,26 @@ namespace ui
 
 static const int EMPTY_HASH = hash("");
 
-Label::Label() :
-  x(0), y(0), align(Area::ALIGN_NONE), font(Font::MONO), offsetX(0), offsetY(0),
-  width(0), height(0), lastHash(EMPTY_HASH), texId(0)
-{}
-
-Label::Label(int x, int y, int align_, Font::Type font_, const char* s, ...) :
-  align(align_), font(font_), offsetX(0), offsetY(0), lastHash(EMPTY_HASH), texId(0)
+void Label::realign()
 {
-  va_list ap;
-  va_start(ap, s);
-  vset(x, y, s, ap);
-  va_end(ap);
-}
+  texX = x;
+  texY = y;
 
-Label::~Label()
-{
-  clear();
-}
-
-Label::Label(Label&& l) :
-  x(l.x), y(l.y), align(l.align), font(l.font), offsetX(l.offsetX), offsetY(l.offsetY),
-  width(l.width), height(l.height), lastHash(l.lastHash), texId(l.texId)
-{
-  l.x        = 0;
-  l.y        = 0;
-  l.align    = Area::ALIGN_NONE;
-  l.font     = Font::MONO;
-  l.offsetX  = 0;
-  l.offsetY  = 0;
-  l.width    = 0;
-  l.height   = 0;
-  l.lastHash = EMPTY_HASH;
-  l.texId    = 0;
-}
-
-Label& Label::operator = (Label&& l)
-{
-  if (&l == this) {
-    return *this;
+  if (align & Area::ALIGN_RIGHT) {
+    texX -= texWidth;
   }
-
-  clear();
-
-  x        = l.x;
-  y        = l.y;
-  align    = l.align;
-  font     = l.font;
-  offsetX  = l.offsetX;
-  offsetY  = l.offsetY;
-  width    = l.width;
-  height   = l.height;
-  lastHash = l.lastHash;
-  texId    = l.texId;
-
-  l.x        = 0;
-  l.y        = 0;
-  l.align    = Area::ALIGN_NONE;
-  l.font     = Font::MONO;
-  l.offsetX  = 0;
-  l.offsetY  = 0;
-  l.width    = 0;
-  l.height   = 0;
-  l.lastHash = EMPTY_HASH;
-  l.texId    = 0;
-
-  return *this;
+  else if (align & Area::ALIGN_HCENTRE) {
+    texX -= texWidth / 2;
+  }
+  if (align & Area::ALIGN_TOP) {
+    texY -= texHeight;
+  }
+  else if (align & Area::ALIGN_VCENTRE) {
+    texY -= texHeight / 2;
+  }
 }
 
-void Label::vset(int x, int y, const char* s, va_list ap)
+void Label::setTextv(const char* s, va_list ap)
 {
   hard_assert(s != nullptr);
 
@@ -122,6 +73,8 @@ void Label::vset(int x, int y, const char* s, va_list ap)
     int newHash = hash(buffer);
 
     if (newHash != lastHash) {
+      lastHash = newHash;
+
       MainCall() << [&]
       {
         if (texId == 0) {
@@ -132,51 +85,121 @@ void Label::vset(int x, int y, const char* s, va_list ap)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        width = -1;
-        style.fonts[font].upload(buffer, &width, &height);
+        texWidth = width;
+        style.fonts[font].upload(buffer, &texWidth, &texHeight);
 
         glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
+
+        realign();
       };
     }
   }
-
-  setPosition(x, y);
 }
 
-void Label::set(int x, int y, const char* s, ...)
+Label::Label() :
+  x(0), y(0), width(0), align(Area::ALIGN_NONE), font(Font::MONO), lastHash(EMPTY_HASH),
+  texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
+{}
+
+Label::Label(int x_, int y_, int width_, int align_, Font::Type font_, const char* s, ...) :
+  x(x_), y(y_), width(width_), align(align_), font(font_), lastHash(EMPTY_HASH),
+  texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
 {
   va_list ap;
   va_start(ap, s);
-  vset(x, y, s, ap);
+  setTextv(s, ap);
   va_end(ap);
+}
+
+Label::~Label()
+{
+  clear();
+}
+
+Label::Label(Label&& l) :
+  x(l.x), y(l.y), width(l.width), align(l.align), font(l.font), lastHash(l.lastHash),
+  texX(l.texX), texY(l.texY), texWidth(l.texWidth), texHeight(l.texHeight), texId(l.texId)
+{
+  l.x         = 0;
+  l.y         = 0;
+  l.width     = 0;
+  l.align     = Area::ALIGN_NONE;
+  l.font      = Font::MONO;
+  l.lastHash  = EMPTY_HASH;
+  l.texX      = 0;
+  l.texY      = 0;
+  l.texWidth  = 0;
+  l.texHeight = 0;
+  l.texId     = 0;
+}
+
+Label& Label::operator = (Label&& l)
+{
+  if (&l == this) {
+    return *this;
+  }
+
+  clear();
+
+  x         = l.x;
+  y         = l.y;
+  width     = l.width;
+  align     = l.align;
+  font      = l.font;
+  lastHash  = l.lastHash;
+  texX      = l.texX;
+  texY      = l.texY;
+  texWidth  = l.texWidth;
+  texHeight = l.texHeight;
+  texId     = l.texId;
+
+  l.x         = 0;
+  l.y         = 0;
+  l.width     = 0;
+  l.align     = Area::ALIGN_NONE;
+  l.font      = Font::MONO;
+  l.lastHash  = EMPTY_HASH;
+  l.texX      = 0;
+  l.texY      = 0;
+  l.texWidth  = 0;
+  l.texHeight = 0;
+  l.texId     = 0;
+
+  return *this;
 }
 
 void Label::setPosition(int x_, int y_)
 {
-  x       = x_;
-  y       = y_;
-  offsetX = x_;
-  offsetY = y_;
+  x = x_;
+  y = y_;
 
-  if (align & Area::ALIGN_RIGHT) {
-    offsetX -= width;
-  }
-  else if (align & Area::ALIGN_HCENTRE) {
-    offsetX -= width / 2;
-  }
-  if (align & Area::ALIGN_TOP) {
-    offsetY -= height;
-  }
-  else if (align & Area::ALIGN_VCENTRE) {
-    offsetY -= height / 2;
-  }
+  realign();
+}
+
+void Label::setWidth(int width_)
+{
+  width = width_;
+
+  realign();
+}
+
+void Label::setAlign(int align_)
+{
+  align = align_;
+
+  realign();
+}
+
+void Label::setFont(Font::Type font_)
+{
+  font = font_;
 }
 
 void Label::setText(const char* s, ...)
 {
   va_list ap;
   va_start(ap, s);
-  vset(x, y, s, ap);
+  setTextv(s, ap);
   va_end(ap);
 }
 
@@ -186,15 +209,15 @@ void Label::draw(const Area* area)
     return;
   }
 
-  int posX = area->x + (x < 0 ? area->width  + offsetX : offsetX);
-  int posY = area->y + (y < 0 ? area->height + offsetY : offsetY);
+  int posX = area->x + (x < 0 ? area->width  + texX : texX);
+  int posY = area->y + (y < 0 ? area->height + texY : texY);
 
   glBindTexture(GL_TEXTURE_2D, texId);
 
   shape.colour(style.colours.textBackground);
-  shape.fill(posX + 1, posY - 1, width, height);
+  shape.fill(posX + 1, posY - 1, texWidth, texHeight);
   shape.colour(style.colours.text);
-  shape.fill(posX, posY, width, height);
+  shape.fill(posX, posY, texWidth, texHeight);
 
   glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 }
@@ -207,12 +230,12 @@ void Label::clear()
       glDeleteTextures(1, &texId);
     };
 
-    offsetX  = x;
-    offsetY  = y;
-    width    = 0;
-    height   = 0;
-    lastHash = EMPTY_HASH;
-    texId    = 0;
+    lastHash  = EMPTY_HASH;
+    texX      = x;
+    texY      = y;
+    texWidth  = 0;
+    texHeight = 0;
+    texId     = 0;
   }
 }
 

@@ -100,7 +100,7 @@ void Terra::init()
   }
 }
 
-void Terra::read(const JSON& json)
+void Terra::read(const Json& json)
 {
   int id = liber.terraIndex(json["name"].get(""));
 
@@ -114,11 +114,11 @@ void Terra::read(InputStream* is)
   load(id);
 }
 
-JSON Terra::write() const
+Json Terra::write() const
 {
   const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
 
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
   json.add("name", name);
   return json;
 }

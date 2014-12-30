@@ -168,7 +168,7 @@ void Matrix::read(InputStream* is)
   Log::println("}");
 }
 
-void Matrix::read(const JSON& json)
+void Matrix::read(const Json& json)
 {
   Log::println("Reading Matrix {");
   Log::indent();
@@ -186,7 +186,7 @@ void Matrix::write(OutputStream* os) const
   os->writeFloat(physics.gravity);
 }
 
-JSON Matrix::write() const
+Json Matrix::write() const
 {
   return orbis.write();
 }

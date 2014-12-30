@@ -623,7 +623,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
 
 int Builder::main(int argc, char** argv)
 {
-  config = JSON::OBJECT;
+  config = Json::OBJECT;
 
   bool doCat          = false;
   bool doUI           = false;

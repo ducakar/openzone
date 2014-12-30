@@ -53,10 +53,10 @@ protected:
 public:
 
   explicit Weapon(const WeaponClass* clazz, int index, const Point& p, Heading heading);
-  explicit Weapon(const WeaponClass* clazz, int index, const JSON& json);
+  explicit Weapon(const WeaponClass* clazz, int index, const Json& json);
   explicit Weapon(const WeaponClass* clazz, InputStream* is);
 
-  JSON write() const override;
+  Json write() const override;
   void write(OutputStream* os) const override;
 
   void readUpdate(InputStream* is) override;

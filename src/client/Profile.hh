@@ -40,7 +40,7 @@ public:
   const BotClass*           clazz;
   List<const DynamicClass*> items;
   int                       weaponItem;
-  JSON                      persistent;
+  Json                      persistent;
 
 public:
 

@@ -29,7 +29,7 @@
 namespace oz
 {
 
-FragPool::FragPool(const JSON& config, const char* name_, int id_) :
+FragPool::FragPool(const Json& config, const char* name_, int id_) :
   name(name_), id(id_)
 {
   flags = 0;
@@ -60,7 +60,7 @@ FragPool::FragPool(const JSON& config, const char* name_, int id_) :
     OZ_ERROR("%s: Frag elasticity must lie on interval [0, 1]", name_);
   }
 
-  const JSON& modelsConfig = config["models"];
+  const Json& modelsConfig = config["models"];
   int nModels = modelsConfig.length();
 
   for (int i = 0; i < nModels; ++i) {

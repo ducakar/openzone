@@ -114,7 +114,7 @@ void LuaClient::create(const char* mission_)
   if (layoutFile.type() == File::REGULAR) {
     Log::print("Loading layout from '%s' ...", layoutFile.path().cstr());
 
-    JSON json;
+    Json json;
     if (!json.load(layoutFile)) {
       OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().cstr());
     }

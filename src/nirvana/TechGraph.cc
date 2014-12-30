@@ -124,7 +124,7 @@ void TechGraph::load()
   File techDir = "@tech";
 
   for (const File& configFile : techDir.ls()) {
-    JSON config;
+    Json config;
 
     if (configFile.type() != File::REGULAR || !config.load(configFile)) {
       continue;
@@ -132,7 +132,7 @@ void TechGraph::load()
 
     int nNodes = config.length();
     for (int i = 0; i < nNodes; ++i) {
-      const JSON& tech = config[i];
+      const Json& tech = config[i];
 
       nodes.add(Node());
       Node& node = nodes.last();
@@ -181,8 +181,8 @@ void TechGraph::load()
     }
 
     for (int i = 0; i < nNodes; ++i) {
-      const JSON& tech     = config[i];
-      const JSON& requires = tech["requires"];
+      const Json& tech     = config[i];
+      const Json& requires = tech["requires"];
       Node&       node     = nodes[i];
 
       if (requires.length() > Node::MAX_DEPS) {

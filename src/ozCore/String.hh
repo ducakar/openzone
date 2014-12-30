@@ -306,7 +306,7 @@ public:
    * Parse floating-point value.
    *
    * Double-precision floating-point value should match regular expression `-?inf`, `nan` or
-   * `-?(0|([1-9][0-9]*)(\\.[0-9]+)?((e|E)-?[0-9]+)?` (i.e. %JSON number format).
+   * `-?(0|([1-9][0-9]*)(\\.[0-9]+)?((e|E)-?[0-9]+)?` (i.e. JSON number format).
    *
    * @note
    * Only single-precision accuracy is guaranteed. Rounding errors as big as 3.33e-16 are known to

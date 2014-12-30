@@ -34,7 +34,7 @@ ObjectClass* DynamicClass::createClass()
   return new DynamicClass();
 }
 
-void DynamicClass::init(const JSON& config, const char* name_)
+void DynamicClass::init(const Json& config, const char* name_)
 {
   ObjectClass::init(config, name_);
 
@@ -47,7 +47,7 @@ void DynamicClass::init(const JSON& config, const char* name_)
   }
 
   if (audioType >= 0) {
-    const JSON& soundsConfig = config["audioSounds"];
+    const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventLand     = soundsConfig["land"    ].get("");
     const char* sEventSplash   = soundsConfig["splash"  ].get("");
@@ -74,7 +74,7 @@ Object* DynamicClass::create(int index, const Point& pos, Heading heading) const
   return new Dynamic(this, index, pos, heading);
 }
 
-Object* DynamicClass::create(int index, const JSON& json) const
+Object* DynamicClass::create(int index, const Json& json) const
 {
   return new Dynamic(this, index, json);
 }

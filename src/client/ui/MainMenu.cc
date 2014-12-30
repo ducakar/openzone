@@ -165,7 +165,7 @@ void MainMenu::onDraw()
 MainMenu::MainMenu() :
   Area(camera.width, camera.height),
   copyright(20, 10, 360, Area::ALIGN_NONE, Font::SMALL, ""),
-  title(-120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION)
+  title(-120, -20, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION)
 {
   flags |= UPDATE_BIT;
 

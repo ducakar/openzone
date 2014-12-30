@@ -39,13 +39,13 @@ namespace client
 void Profile::save()
 {
   File profileFile = config["dir.config"].get(String::EMPTY) + "/profile.json";
-  JSON profileConfig = JSON::OBJECT;
+  Json profileConfig = Json::OBJECT;
 
   profileConfig.add("_version", OZ_VERSION);
   profileConfig.add("name", name);
   profileConfig.add("class", clazz == nullptr ? String::EMPTY : clazz->name);
 
-  JSON& itemsConfig = profileConfig.add("items", JSON::ARRAY);
+  Json& itemsConfig = profileConfig.add("items", Json::ARRAY);
   for (const ObjectClass* item : items) {
     itemsConfig.add(item->name);
   }
@@ -59,7 +59,7 @@ void Profile::save()
 void Profile::init()
 {
   File profileFile = config["dir.config"].get(String::EMPTY) + "/profile.json";
-  JSON profileConfig(profileFile);
+  Json profileConfig(profileFile);
 
   name       = profileConfig["name"].get("");
   clazz      = nullptr;
@@ -97,7 +97,7 @@ void Profile::init()
     clazz = sClazz.isEmpty() ? nullptr : static_cast<const BotClass*>(liber.objClass(sClazz));
 
     if (clazz != nullptr) {
-      const JSON& itemsConfig = profileConfig["items"];
+      const Json& itemsConfig = profileConfig["items"];
       int nItems = itemsConfig.length();
 
       if (nItems > clazz->nItems) {
@@ -144,8 +144,8 @@ void Profile::init()
 
   persistent = profileConfig["persistent"];
 
-  if (persistent.type() != JSON::OBJECT) {
-    persistent = JSON::OBJECT;
+  if (persistent.type() != Json::OBJECT) {
+    persistent = Json::OBJECT;
   }
 }
 

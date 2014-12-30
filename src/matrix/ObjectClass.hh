@@ -98,10 +98,10 @@ public:
 
   static ObjectClass* createClass();
 
-  virtual void init(const JSON& config, const char* name);
+  virtual void init(const Json& config, const char* name);
 
   virtual Object* create(int index, const Point& pos, Heading heading) const;
-  virtual Object* create(int index, const JSON& json) const;
+  virtual Object* create(int index, const Json& json) const;
   virtual Object* create(InputStream* is) const;
 
 };

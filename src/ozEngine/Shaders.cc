@@ -85,7 +85,7 @@ int Shaders::load(const char* path_)
 
   String path = path_;
   File   configFile = path + ".json";
-  JSON   programConfig;
+  Json   programConfig;
 
   if (!programConfig.load(configFile)) {
     return -1;

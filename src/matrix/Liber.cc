@@ -508,7 +508,7 @@ void Liber::initFragPools()
 
     Log::println("%s", name.cstr());
 
-    JSON config;
+    Json config;
     if (!config.load(file)) {
       OZ_ERROR("Failed to read '%s'", file.path().cstr());
     }
@@ -546,7 +546,7 @@ void Liber::initClasses()
       continue;
     }
 
-    JSON config;
+    Json config;
     if (!config.load(file)) {
       OZ_ERROR("Failed to read '%s'", file.path().cstr());
     }
@@ -596,7 +596,7 @@ void Liber::initClasses()
     Log::print("%s ...", name.cstr());
 
     File file = "@class/" + name + ".json";
-    JSON config;
+    Json config;
     if (!config.load(file)) {
       OZ_ERROR("Failed to read '%s'", file.path().cstr());
     }

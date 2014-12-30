@@ -30,10 +30,10 @@ namespace client
 
 const TexCoord TexCoord::ZERO = TexCoord(0.0f, 0.0f);
 
-const JSON::Format CONFIG_FORMAT = { 2, 32, 4, "\n" };
+const Json::Format CONFIG_FORMAT = { 2, 32, 4, "\n" };
 
 Collider collider;
-JSON     config;
+Json     config;
 File     configDir;
 
 }

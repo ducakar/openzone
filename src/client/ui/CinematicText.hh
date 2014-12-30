@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Text.hh>
+#include <client/ui/Label.hh>
 
 namespace oz
 {
@@ -37,7 +37,7 @@ class CinematicText : public Area
 {
 private:
 
-  Text text;
+  Label text;
 
 protected:
 

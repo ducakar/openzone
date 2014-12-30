@@ -55,10 +55,10 @@ void CreditsMenu::onReposition()
     int line = scroll + i;
 
     if (line < nLabels) {
-      labels[i] = Label(0, 0, ALIGN_HCENTRE, Font::SANS, " ");
+      labels[i] = Label(0, 0, 0, ALIGN_HCENTRE, Font::SANS, " ");
     }
     else {
-      labels[i] = Label(0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr());
+      labels[i] = Label(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr());
     }
   }
 }

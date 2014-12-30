@@ -88,7 +88,7 @@ struct Foo
 };
 
 template <typename Type>
-inline Type operator | (const JSON& json, const Type& defaultValue)
+inline Type operator | (const Json& json, const Type& defaultValue)
 {
   return json.get(defaultValue);
 }

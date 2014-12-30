@@ -57,9 +57,9 @@ public:
   static void readValue(lua_State* l, InputStream* is);
 
   /**
-   * Read Lua value from a %JSON value and push it on the stack (recursively for tables).
+   * Read Lua value from a JSON value and push it on the stack (recursively for tables).
    */
-  static void readValue(lua_State* l, const JSON& json);
+  static void readValue(lua_State* l, const Json& json);
 
   /**
    * Serialise Lua value at the top of the stack (recursively for tables).
@@ -67,9 +67,9 @@ public:
   static void writeValue(lua_State* l, OutputStream* os);
 
   /**
-   * Return Lua value at the top of the stack (recursively for tables) as a %JSON value.
+   * Return Lua value at the top of the stack (recursively for tables) as a JSON value.
    */
-  static JSON writeValue(lua_State* l);
+  static Json writeValue(lua_State* l);
 
   /**
    * Load all `*.lua` files in a directory.

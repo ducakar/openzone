@@ -338,10 +338,10 @@ public:
 public:
 
   explicit Object(const ObjectClass* clazz, int index, const Point& p, Heading heading);
-  explicit Object(const ObjectClass* clazz, int index, const JSON& json);
+  explicit Object(const ObjectClass* clazz, int index, const Json& json);
   explicit Object(const ObjectClass* clazz, InputStream* is);
 
-  virtual JSON write() const;
+  virtual Json write() const;
   virtual void write(OutputStream* os) const;
 
   virtual void readUpdate(InputStream* is);

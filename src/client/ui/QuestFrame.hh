@@ -26,7 +26,6 @@
 #include <nirvana/QuestList.hh>
 #include <client/ui/Frame.hh>
 #include <client/ui/Button.hh>
-#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -39,7 +38,7 @@ class QuestFrame : public Frame
 {
 private:
 
-  Text         description;
+  Label        description;
   int          contentHeight;
   bool         isOpened;
 

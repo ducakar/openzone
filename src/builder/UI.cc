@@ -97,13 +97,13 @@ void UI::buildIcons()
   hard_assert(builtIcons.length() == aLength(ICON_NAMES));
 
   File styleFile = "@ui/style.json";
-  JSON style;
+  Json style;
 
   if (!style.load(styleFile)) {
     OZ_ERROR("Failed to load style '%s'", styleFile.path().cstr());
   }
 
-  const JSON& sounds = style["sounds"];
+  const Json& sounds = style["sounds"];
 
   for (const auto& sound : sounds.objectCIter()) {
     context.usedSounds.add(sound.value.get("?"), "UI style");

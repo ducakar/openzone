@@ -67,7 +67,7 @@ Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Headin
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic(const DynamicClass* clazz_, int index, const JSON& json) :
+Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json) :
   Object(clazz_, index, json)
 {
   velocity = Vec3::ZERO;
@@ -93,7 +93,7 @@ Dynamic::Dynamic(const DynamicClass* clazz_, InputStream* is) :
   lift     = clazz_->lift;
 }
 
-JSON Dynamic::write() const
+Json Dynamic::write() const
 {
   return Object::write();
 }

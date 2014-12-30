@@ -41,7 +41,7 @@ void Class::scanObjClass(const char* className)
 
   context.usedModels.include(config["imagoModel"].get(""), name + " (Object class)");
 
-  const JSON& soundsConfig = config["audioSounds"];
+  const Json& soundsConfig = config["audioSounds"];
   for (const auto& sound : soundsConfig.objectCIter()) {
     context.usedSounds.include(sound.value.get("?"), name + " (Object class)");
   }
@@ -52,13 +52,13 @@ void Class::scanFragPool(const char* poolName)
   String name       = poolName;
   File   configFile = "@frag/" + name + ".json";
 
-  JSON config;
+  Json config;
   if (!config.load(configFile)) {
     OZ_ERROR("Failed to load '%s'", configFile.path().cstr());
   }
 
-  const JSON& modelsConfig = config["models"];
-  for (const JSON& model : modelsConfig.arrayCIter()) {
+  const Json& modelsConfig = config["models"];
+  for (const Json& model : modelsConfig.arrayCIter()) {
     context.usedModels.include(model.get("?"), name + " (Object class)");
   }
 }

@@ -47,7 +47,7 @@ void EditStage::read()
 {
   Log::print("Loading layout from '%s' ...", layoutFile.path().cstr());
 
-  JSON json;
+  Json json;
   if (!json.load(layoutFile)) {
     OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().cstr());
   }
@@ -63,7 +63,7 @@ void EditStage::read()
 
 void EditStage::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("matrix", matrix.write());
   json.add("camera", camera.write());

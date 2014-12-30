@@ -557,7 +557,7 @@ const Log& Log::operator << (const Time& time) const
   return *this;
 }
 
-const Log& Log::operator << (const JSON& json) const
+const Log& Log::operator << (const Json& json) const
 {
   printRaw("%s", json.toString().cstr());
   return *this;

@@ -237,7 +237,7 @@ void Camera::reset()
   }
 }
 
-void Camera::read(const JSON& json)
+void Camera::read(const Json& json)
 {
   p          = json["position"].get(Point::ORIGIN);
   rot        = json["rotation"].get(Quat::ID);
@@ -305,9 +305,9 @@ void Camera::read(InputStream* is)
   cinematic.read(is);
 }
 
-JSON Camera::write() const
+Json Camera::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("position", p);
   json.add("rotation", rot);

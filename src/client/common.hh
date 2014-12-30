@@ -96,10 +96,10 @@ struct TexCoord
   }
 };
 
-extern const JSON::Format CONFIG_FORMAT;
+extern const Json::Format CONFIG_FORMAT;
 
 extern Collider collider;
-extern JSON     config;
+extern Json     config;
 extern File     configDir;
 
 }

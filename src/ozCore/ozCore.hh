@@ -118,7 +118,7 @@
 #include "EnumMap.hh"
 #include "SharedLib.hh"
 #include "Gettext.hh"
-#include "JSON.hh"
+#include "Json.hh"
 #include "Log.hh"
 
 /*

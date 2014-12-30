@@ -53,10 +53,10 @@ protected:
 public:
 
   explicit Dynamic(const DynamicClass* clazz, int index, const Point& p, Heading heading);
-  explicit Dynamic(const DynamicClass* clazz, int index, const JSON& json);
+  explicit Dynamic(const DynamicClass* clazz, int index, const Json& json);
   explicit Dynamic(const DynamicClass* clazz, InputStream* is);
 
-  JSON write() const override;
+  Json write() const override;
   void write(OutputStream* os) const override;
 
   void readUpdate(InputStream* is) override;

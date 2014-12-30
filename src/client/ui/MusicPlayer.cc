@@ -160,9 +160,9 @@ void MusicPlayer::onDraw()
 
 MusicPlayer::MusicPlayer() :
   Frame(240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT("Music Player")),
-  title(width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " "),
-  trackLabel(39, 14, ALIGN_CENTRE, Font::SMALL, "0"),
-  volumeLabel(201, 14, ALIGN_CENTRE, Font::SMALL, "5"),
+  title(width / 2, 32, 0, ALIGN_HCENTRE, Font::SMALL, " "),
+  trackLabel(39, 14, 0, ALIGN_CENTRE, Font::SMALL, "0"),
+  volumeLabel(201, 14, 0, ALIGN_CENTRE, Font::SMALL, "5"),
   currentTrack(0), volume(5), isPlaying(false)
 {
   flags |= UPDATE_BIT;

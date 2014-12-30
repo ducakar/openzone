@@ -27,13 +27,13 @@
 #include <matrix/Synapse.hh>
 
 #define OZ_FLAG_READ(flagBit, name) \
-  if (flagJSON.get(String::EMPTY).equals(name)) { \
+  if (flagJson.get(String::EMPTY).equals(name)) { \
     flags |= flagBit; \
   }
 
 #define OZ_FLAG_WRITE(flagBit, name) \
   if (flags & flagBit) { \
-    flagsJSON.add(name); \
+    flagsJson.add(name); \
   }
 
 namespace oz
@@ -127,7 +127,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const Point& p_, Heading h
   }
 }
 
-Object::Object(const ObjectClass* clazz_, int index_, const JSON& json)
+Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
 {
   p          = json["p"].get(Point::ORIGIN);
   dim        = clazz_->dim;
@@ -138,7 +138,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const JSON& json)
   resistance = clazz_->resistance;
   clazz      = clazz_;
 
-  for (const JSON& flagJSON : json["flags"].arrayCIter()) {
+  for (const Json& flagJson : json["flags"].arrayCIter()) {
     OZ_FLAG_READ(DYNAMIC_BIT,      "dynamic"  );
     OZ_FLAG_READ(WEAPON_BIT,       "weapon"   );
     OZ_FLAG_READ(BOT_BIT,          "bot"      );
@@ -198,9 +198,9 @@ Object::Object(const ObjectClass* clazz_, InputStream* is)
   }
 }
 
-JSON Object::write() const
+Json Object::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("class", clazz->name);
   json.add("life", life);
@@ -209,7 +209,7 @@ JSON Object::write() const
     json.add("p", p);
   }
 
-  JSON& flagsJSON = json.add("flags", JSON::ARRAY);
+  Json& flagsJson = json.add("flags", Json::ARRAY);
 
   OZ_FLAG_WRITE(DYNAMIC_BIT,      "dynamic"  );
   OZ_FLAG_WRITE(WEAPON_BIT,       "weapon"   );
@@ -231,19 +231,19 @@ JSON Object::write() const
 
   switch (flags & HEADING_MASK) {
     case NORTH: {
-      flagsJSON.add("north");
+      flagsJson.add("north");
       break;
     }
     case WEST: {
-      flagsJSON.add("west");
+      flagsJson.add("west");
       break;
     }
     case SOUTH: {
-      flagsJSON.add("south");
+      flagsJson.add("south");
       break;
     }
     case EAST: {
-      flagsJSON.add("east");
+      flagsJson.add("east");
       break;
     }
     default: {
@@ -253,13 +253,13 @@ JSON Object::write() const
   }
 
   if (clazz->nItems != 0) {
-    JSON& itemsJSON = json.add("items", JSON::ARRAY);
+    Json& itemsJson = json.add("items", Json::ARRAY);
 
     for (int index : items) {
       const Object* item = orbis.obj(index);
 
       if (item != nullptr) {
-        itemsJSON.add(item->write());
+        itemsJson.add(item->write());
       }
     }
   }

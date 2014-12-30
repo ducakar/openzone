@@ -209,7 +209,7 @@ void MD2::build(const char* path)
   Log::println("Prebuilding MD2 model '%s' {", path);
   Log::indent();
 
-  JSON config(configFile);
+  Json config(configFile);
 
   if (modelFile.type() != File::REGULAR) {
     OZ_ERROR("MD2 file read failed");

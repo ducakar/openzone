@@ -48,10 +48,10 @@ public:
   void update();
 
   void read(InputStream* is);
-  void read(const JSON& json);
+  void read(const Json& json);
 
   void write(OutputStream* os) const;
-  JSON write() const;
+  Json write() const;
 
   void load();
   void unload();

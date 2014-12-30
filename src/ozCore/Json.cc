@@ -21,10 +21,10 @@
  */
 
 /**
- * @file ozCore/JSON.cc
+ * @file ozCore/Json.cc
  */
 
-#include "JSON.hh"
+#include "Json.hh"
 
 #include "List.hh"
 #include "SList.hh"
@@ -32,20 +32,20 @@
 #include "Log.hh"
 
 #define OZ_PARSE_ERROR(charBias, message) \
-  OZ_ERROR("oz::JSON: " message " at %s:%d:%d", path, line, column + (charBias));
+  OZ_ERROR("oz::Json: " message " at %s:%d:%d", path, line, column + (charBias));
 
 static_assert(sizeof(double) >= sizeof(void*),
-              "Pointer must fit into double for internal oz::JSON union to work properly");
+              "Pointer must fit into double for internal oz::Json union to work properly");
 
 namespace oz
 {
 
-static const JSON NIL_VALUE;
+static const Json NIL_VALUE;
 
-struct JSON::Data
+struct Json::Data
 {};
 
-struct JSON::StringData : JSON::Data
+struct Json::StringData : Json::Data
 {
   String value;
 
@@ -65,17 +65,17 @@ struct JSON::StringData : JSON::Data
   {}
 };
 
-struct JSON::ArrayData : JSON::Data
+struct Json::ArrayData : Json::Data
 {
-  List<JSON> list;
+  List<Json> list;
 };
 
-struct JSON::ObjectData : JSON::Data
+struct Json::ObjectData : Json::Data
 {
-  Map<String, JSON> map;
+  Map<String, Json> map;
 };
 
-struct JSON::Parser
+struct Json::Parser
 {
   enum BlanksMode
   {
@@ -125,7 +125,7 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  static void setAccessed(JSON* value)
+  static void setAccessed(Json* value)
   {
     value->wasAccessed = true;
 
@@ -134,15 +134,15 @@ struct JSON::Parser
         break;
       }
       case ARRAY: {
-        List<JSON>& list = static_cast<ArrayData*>(value->data)->list;
+        List<Json>& list = static_cast<ArrayData*>(value->data)->list;
 
-        for (JSON& i : list) {
+        for (Json& i : list) {
           setAccessed(&i);
         }
         break;
       }
       case OBJECT: {
-        Map<String, JSON>& map = static_cast<ObjectData*>(value->data)->map;
+        Map<String, Json>& map = static_cast<ObjectData*>(value->data)->map;
 
         for (auto& i : map) {
           setAccessed(&i.value);
@@ -153,11 +153,11 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  static JSON parse(InputStream* is, const char* path)
+  static Json parse(InputStream* is, const char* path)
   {
     Parser parser(is, path);
 
-    JSON root = parser.parseValue();
+    Json root = parser.parseValue();
 
     parser.finish();
     return root;
@@ -274,7 +274,7 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  JSON parseValue()
+  Json parseValue()
   {
     char ch = skipBlanks();
 
@@ -284,7 +284,7 @@ struct JSON::Parser
           OZ_PARSE_ERROR(-3, "Unknown value type");
         }
 
-        return JSON(nullptr, NIL);
+        return Json(nullptr, NIL);
       }
       case 'f': {
         if (is->available() < 4 || readChar() != 'a' || readChar() != 'l' || readChar() != 's' ||
@@ -293,14 +293,14 @@ struct JSON::Parser
           OZ_PARSE_ERROR(-4, "Unknown value type");
         }
 
-        return JSON(false);
+        return Json(false);
       }
       case 't': {
         if (is->available() < 4 || readChar() != 'r' || readChar() != 'u' || readChar() != 'e') {
           OZ_PARSE_ERROR(-3, "Unknown value type");
         }
 
-        return JSON(true);
+        return Json(true);
       }
       default: { // Number.
         SList<char, 32> chars;
@@ -327,10 +327,10 @@ struct JSON::Parser
           OZ_PARSE_ERROR(-chars.length(), "Unknown value type");
         }
 
-        return JSON(number);
+        return Json(number);
       }
       case '"': {
-        return JSON(new StringData(parseString()), STRING);
+        return Json(new StringData(parseString()), STRING);
       }
       case '{': {
         return parseObject();
@@ -342,10 +342,10 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  JSON parseArray()
+  Json parseArray()
   {
-    JSON arrayValue(new ArrayData(), ARRAY);
-    List<JSON>& list = static_cast<ArrayData*>(arrayValue.data)->list;
+    Json arrayValue(new ArrayData(), ARRAY);
+    List<Json>& list = static_cast<ArrayData*>(arrayValue.data)->list;
 
     char ch = skipBlanks();
     if (ch != ']') {
@@ -353,8 +353,8 @@ struct JSON::Parser
     }
 
     while (ch != ']') {
-      JSON value = parseValue();
-      list.add(static_cast<JSON&&>(value));
+      Json value = parseValue();
+      list.add(static_cast<Json&&>(value));
 
       ch = skipBlanks();
 
@@ -367,10 +367,10 @@ struct JSON::Parser
   }
 
   OZ_HIDDEN
-  JSON parseObject()
+  Json parseObject()
   {
-    JSON objectValue(new ObjectData(), OBJECT);
-    Map<String, JSON>& map = static_cast<ObjectData*>(objectValue.data)->map;
+    Json objectValue(new ObjectData(), OBJECT);
+    Map<String, Json>& map = static_cast<ObjectData*>(objectValue.data)->map;
 
     char ch = skipBlanks();
     if (ch != '}') {
@@ -390,8 +390,8 @@ struct JSON::Parser
         OZ_PARSE_ERROR(0, "Expected ':' after key in object entry");
       }
 
-      JSON value = parseValue();
-      map.add(static_cast<String&&>(key), static_cast<JSON&&>(value));
+      Json value = parseValue();
+      map.add(static_cast<String&&>(key), static_cast<Json&&>(value));
 
       ch = skipBlanks();
 
@@ -416,7 +416,7 @@ struct JSON::Parser
   }
 };
 
-struct JSON::Formatter
+struct Json::Formatter
 {
   OutputStream* os;
   const Format* format;
@@ -482,7 +482,7 @@ struct JSON::Formatter
   }
 
   OZ_HIDDEN
-  void writeValue(const JSON& value)
+  void writeValue(const Json& value)
   {
     switch (value.valueType) {
       case NIL: {
@@ -521,9 +521,9 @@ struct JSON::Formatter
   }
 
   OZ_HIDDEN
-  void writeArray(const JSON& value)
+  void writeArray(const Json& value)
   {
-    const List<JSON>& list = static_cast<const ArrayData*>(value.data)->list;
+    const List<Json>& list = static_cast<const ArrayData*>(value.data)->list;
 
     if (list.isEmpty()) {
       os->writeChars("[]", 2);
@@ -559,9 +559,9 @@ struct JSON::Formatter
   }
 
   OZ_HIDDEN
-  void writeObject(const JSON& value)
+  void writeObject(const Json& value)
   {
-    const Map<String, JSON>& map = static_cast<const ObjectData*>(value.data)->map;
+    const Map<String, Json>& map = static_cast<const ObjectData*>(value.data)->map;
 
     if (map.isEmpty()) {
       os->writeChars("{}", 2);
@@ -584,7 +584,7 @@ struct JSON::Formatter
       }
 
       const String& entryKey   = map[i].key;
-      const JSON&   entryValue = map[i].value;
+      const Json&   entryValue = map[i].value;
 
       int keyLength = writeString(entryKey);
       os->writeChar(':');
@@ -619,21 +619,21 @@ struct JSON::Formatter
   }
 };
 
-const JSON::Format JSON::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
+const Json::Format Json::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
 
 OZ_HIDDEN
-JSON::JSON(Data* data_, Type valueType_) :
+Json::Json(Data* data_, Type valueType_) :
   data(data_), valueType(valueType_), wasAccessed(false)
 {}
 
 OZ_HIDDEN
-bool JSON::getVector(float* vector, int count) const
+bool Json::getVector(float* vector, int count) const
 {
   if (valueType != ARRAY) {
     return false;
   }
 
-  const List<JSON>& list = static_cast<const ArrayData*>(data)->list;
+  const List<Json>& list = static_cast<const ArrayData*>(data)->list;
 
   if (list.length() != count) {
     return false;
@@ -645,7 +645,7 @@ bool JSON::getVector(float* vector, int count) const
   return true;
 }
 
-JSON::JSON(Type type) :
+Json::Json(Type type) :
   number(0.0), valueType(type), wasAccessed(false)
 {
   switch (type) {
@@ -667,139 +667,139 @@ JSON::JSON(Type type) :
   }
 }
 
-JSON::JSON(nullptr_t) :
+Json::Json(nullptr_t) :
   number(0.0), valueType(NIL), wasAccessed(false)
 {}
 
-JSON::JSON(bool value) :
+Json::Json(bool value) :
   boolean(value), valueType(BOOLEAN), wasAccessed(false)
 {}
 
-JSON::JSON(int value) :
+Json::Json(int value) :
   number(value), valueType(NUMBER), wasAccessed(false)
 {}
 
-JSON::JSON(float value) :
+Json::Json(float value) :
   number(value), valueType(NUMBER), wasAccessed(false)
 {}
 
-JSON::JSON(double value) :
+Json::Json(double value) :
   number(value), valueType(NUMBER), wasAccessed(false)
 {}
 
-JSON::JSON(const String& value) :
+Json::Json(const String& value) :
   data(new StringData(value)), valueType(STRING), wasAccessed(false)
 {}
 
-JSON::JSON(const char* value) :
+Json::Json(const char* value) :
   data(new StringData(value)), valueType(STRING), wasAccessed(false)
 {}
 
-JSON::JSON(const Vec3& v) :
+Json::Json(const Vec3& v) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 3; ++i) {
-    list.add(JSON(v[i]));
+    list.add(Json(v[i]));
   }
 }
 
-JSON::JSON(const Vec4& v) :
+Json::Json(const Vec4& v) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 4; ++i) {
-    list.add(JSON(v[i]));
+    list.add(Json(v[i]));
   }
 }
 
-JSON::JSON(const Point& p) :
+Json::Json(const Point& p) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 3; ++i) {
-    list.add(JSON(p[i]));
+    list.add(Json(p[i]));
   }
 }
 
-JSON::JSON(const Plane& p) :
+Json::Json(const Plane& p) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 3; ++i) {
-    list.add(JSON(p.n[i]));
+    list.add(Json(p.n[i]));
   }
-  list.add(JSON(p.d));
+  list.add(Json(p.d));
 }
 
-JSON::JSON(const Quat& q) :
+Json::Json(const Quat& q) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 4; ++i) {
-    list.add(JSON(q[i]));
+    list.add(Json(q[i]));
   }
 }
 
-JSON::JSON(const Mat3& m) :
+Json::Json(const Mat3& m) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      list.add(JSON(m[i][j]));
+      list.add(Json(m[i][j]));
     }
   }
 }
 
-JSON::JSON(const Mat4& m) :
+Json::Json(const Mat4& m) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      list.add(JSON(m[i][j]));
+      list.add(Json(m[i][j]));
     }
   }
 }
 
-JSON::JSON(InitialiserList<JSON> l) :
+Json::Json(InitialiserList<Json> l) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
 {
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   list.addAll(l.begin(), int(l.size()));
 }
 
-JSON::JSON(InitialiserList<Pair> l) :
+Json::Json(InitialiserList<Pair> l) :
   data(new ObjectData()), valueType(OBJECT), wasAccessed(false)
 {
-  Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+  Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
   for (const auto& i : l) {
     map.add(i.key, i.value);
   }
 }
 
-JSON::JSON(const File& file) :
+Json::Json(const File& file) :
   valueType(NIL), wasAccessed(false)
 {
   load(file);
 }
 
-JSON::~JSON()
+Json::~Json()
 {
   clear();
 }
 
-JSON::JSON(const JSON& j) :
+Json::Json(const Json& j) :
   valueType(j.valueType), wasAccessed(j.wasAccessed)
 {
   switch (valueType) {
@@ -829,14 +829,14 @@ JSON::JSON(const JSON& j) :
   }
 }
 
-JSON::JSON(JSON&& j) :
+Json::Json(Json&& j) :
   number(j.number), valueType(j.valueType), wasAccessed(j.wasAccessed)
 {
   j.valueType   = NIL;
   j.wasAccessed = true;
 }
 
-JSON& JSON::operator = (const JSON& j)
+Json& Json::operator = (const Json& j)
 {
   if (&j != this) {
     clear();
@@ -874,7 +874,7 @@ JSON& JSON::operator = (const JSON& j)
   return *this;
 }
 
-JSON& JSON::operator = (JSON&& j)
+Json& Json::operator = (Json&& j)
 {
   if (&j != this) {
     clear();
@@ -889,7 +889,7 @@ JSON& JSON::operator = (JSON&& j)
   return *this;
 }
 
-bool JSON::operator == (const JSON& j) const
+bool Json::operator == (const Json& j) const
 {
   if (valueType != j.valueType) {
     return false;
@@ -912,29 +912,29 @@ bool JSON::operator == (const JSON& j) const
       return s1.equals(s2);
     }
     case ARRAY: {
-      const List<JSON>& l1 = static_cast<const ArrayData*>(data)->list;
-      const List<JSON>& l2 = static_cast<const ArrayData*>(j.data)->list;
+      const List<Json>& l1 = static_cast<const ArrayData*>(data)->list;
+      const List<Json>& l2 = static_cast<const ArrayData*>(j.data)->list;
 
       return l1 == l2;
     }
     case OBJECT: {
-      const Map<String, JSON>& m1 = static_cast<const ObjectData*>(data)->map;
-      const Map<String, JSON>& m2 = static_cast<const ObjectData*>(j.data)->map;
+      const Map<String, Json>& m1 = static_cast<const ObjectData*>(data)->map;
+      const Map<String, Json>& m2 = static_cast<const ObjectData*>(j.data)->map;
 
       return m1 == m2;
     }
   }
 }
 
-bool JSON::operator != (const JSON& j) const
+bool Json::operator != (const Json& j) const
 {
   return !operator == (j);
 }
 
-JSON::ArrayCIterator JSON::arrayCIter() const
+Json::ArrayCIterator Json::arrayCIter() const
 {
   if (valueType == ARRAY) {
-    const List<JSON>& list = static_cast<const ArrayData*>(data)->list;
+    const List<Json>& list = static_cast<const ArrayData*>(data)->list;
 
     wasAccessed = true;
     return list.citer();
@@ -945,10 +945,10 @@ JSON::ArrayCIterator JSON::arrayCIter() const
   }
 }
 
-JSON::ArrayIterator JSON::arrayIter()
+Json::ArrayIterator Json::arrayIter()
 {
   if (valueType == ARRAY) {
-    List<JSON>& list = static_cast<ArrayData*>(data)->list;
+    List<Json>& list = static_cast<ArrayData*>(data)->list;
 
     wasAccessed = true;
     return list.iter();
@@ -959,10 +959,10 @@ JSON::ArrayIterator JSON::arrayIter()
   }
 }
 
-JSON::ObjectCIterator JSON::objectCIter() const
+Json::ObjectCIterator Json::objectCIter() const
 {
   if (valueType == OBJECT) {
-    const Map<String, JSON>& map = static_cast<const ObjectData*>(data)->map;
+    const Map<String, Json>& map = static_cast<const ObjectData*>(data)->map;
 
     wasAccessed = true;
     return map.citer();
@@ -973,10 +973,10 @@ JSON::ObjectCIterator JSON::objectCIter() const
   }
 }
 
-JSON::ObjectIterator JSON::objectIter()
+Json::ObjectIterator Json::objectIter()
 {
   if (valueType == OBJECT) {
-    Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+    Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
     wasAccessed = true;
     return map.iter();
@@ -987,7 +987,7 @@ JSON::ObjectIterator JSON::objectIter()
   }
 }
 
-int JSON::length() const
+int Json::length() const
 {
   switch (valueType) {
     default: {
@@ -995,13 +995,13 @@ int JSON::length() const
       return -1;
     }
     case ARRAY: {
-      const List<JSON>& list = static_cast<const ArrayData*>(data)->list;
+      const List<Json>& list = static_cast<const ArrayData*>(data)->list;
 
       wasAccessed = true;
       return list.length();
     }
     case OBJECT: {
-      const Map<String, JSON>& map = static_cast<const ObjectData*>(data)->map;
+      const Map<String, Json>& map = static_cast<const ObjectData*>(data)->map;
 
       wasAccessed = true;
       return map.length();
@@ -1009,14 +1009,14 @@ int JSON::length() const
   }
 }
 
-const JSON& JSON::operator [] (int i) const
+const Json& Json::operator [] (int i) const
 {
   if (valueType != ARRAY) {
     wasAccessed |= valueType == NIL;
     return NIL_VALUE;
   }
 
-  const List<JSON>& list = static_cast<const ArrayData*>(data)->list;
+  const List<Json>& list = static_cast<const ArrayData*>(data)->list;
 
   wasAccessed = true;
 
@@ -1028,15 +1028,15 @@ const JSON& JSON::operator [] (int i) const
   return list[i];
 }
 
-const JSON& JSON::operator [] (const char* key) const
+const Json& Json::operator [] (const char* key) const
 {
   if (valueType != OBJECT) {
     wasAccessed |= valueType == NIL;
     return NIL_VALUE;
   }
 
-  const Map<String, JSON>& map = static_cast<const ObjectData*>(data)->map;
-  const JSON* value = map.find(key);
+  const Map<String, Json>& map = static_cast<const ObjectData*>(data)->map;
+  const Json* value = map.find(key);
 
   wasAccessed = true;
 
@@ -1048,15 +1048,15 @@ const JSON& JSON::operator [] (const char* key) const
   return *value;
 }
 
-bool JSON::contains(const char* key) const
+bool Json::contains(const char* key) const
 {
   if (valueType != OBJECT) {
     wasAccessed |= valueType == NIL;
     return false;
   }
 
-  const Map<String, JSON>& map = static_cast<const ObjectData*>(data)->map;
-  const JSON* value = map.find(key);
+  const Map<String, Json>& map = static_cast<const ObjectData*>(data)->map;
+  const Json* value = map.find(key);
 
   wasAccessed = true;
 
@@ -1068,7 +1068,7 @@ bool JSON::contains(const char* key) const
   return true;
 }
 
-bool JSON::get(bool defaultValue) const
+bool Json::get(bool defaultValue) const
 {
   if (valueType != BOOLEAN) {
     return defaultValue;
@@ -1078,7 +1078,7 @@ bool JSON::get(bool defaultValue) const
   return boolean;
 }
 
-double JSON::get(double defaultValue) const
+double Json::get(double defaultValue) const
 {
   if (valueType != NUMBER) {
     return defaultValue;
@@ -1088,7 +1088,7 @@ double JSON::get(double defaultValue) const
   return number;
 }
 
-const String& JSON::get(const String& defaultValue) const
+const String& Json::get(const String& defaultValue) const
 {
   if (valueType != STRING) {
     return defaultValue;
@@ -1098,7 +1098,7 @@ const String& JSON::get(const String& defaultValue) const
   return static_cast<const StringData*>(data)->value;
 }
 
-const char* JSON::get(const char* defaultValue) const
+const char* Json::get(const char* defaultValue) const
 {
   if (valueType != STRING) {
     return defaultValue;
@@ -1108,106 +1108,106 @@ const char* JSON::get(const char* defaultValue) const
   return static_cast<const StringData*>(data)->value.cstr();
 }
 
-Vec3 JSON::get(const Vec3& defaultValue) const
+Vec3 Json::get(const Vec3& defaultValue) const
 {
   Vec3 v;
   return getVector(v, 3) ? v : defaultValue;
 }
 
-Vec4 JSON::get(const Vec4& defaultValue) const
+Vec4 Json::get(const Vec4& defaultValue) const
 {
   Vec4 v;
   return getVector(v, 4) ? v : defaultValue;
 }
 
-Point JSON::get(const Point& defaultValue) const
+Point Json::get(const Point& defaultValue) const
 {
   Point p;
   return getVector(p, 3) ? p : defaultValue;
 }
 
-Plane JSON::get(const Plane& defaultValue) const
+Plane Json::get(const Plane& defaultValue) const
 {
   Plane p;
   return getVector(p.n, 4) ? p : defaultValue;
 }
 
-Quat JSON::get(const Quat& defaultValue) const
+Quat Json::get(const Quat& defaultValue) const
 {
   Quat q;
   return getVector(q, 4) ? q : defaultValue;
 }
 
-Mat3 JSON::get(const Mat3& defaultValue) const
+Mat3 Json::get(const Mat3& defaultValue) const
 {
   Mat3 m;
   return getVector(m, 9) ? m : defaultValue;
 }
 
-Mat4 JSON::get(const Mat4& defaultValue) const
+Mat4 Json::get(const Mat4& defaultValue) const
 {
   Mat4 m;
   return getVector(m, 16) ? m : defaultValue;
 }
 
-JSON& JSON::add(const JSON& json)
+Json& Json::add(const Json& json)
 {
   if (valueType != ARRAY) {
-    OZ_ERROR("oz::JSON: Tried to add a value to a non-array JSON value: %s", toString().cstr());
+    OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().cstr());
   }
 
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   list.add(json);
   return list.last();
 }
 
-JSON& JSON::add(JSON&& json)
+Json& Json::add(Json&& json)
 {
   if (valueType != ARRAY) {
-    OZ_ERROR("oz::JSON: Tried to add a value to a non-array JSON value: %s", toString().cstr());
+    OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().cstr());
   }
 
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   list.add(json);
   return list.last();
 }
 
-JSON& JSON::add(const char* key, const JSON& json)
+Json& Json::add(const char* key, const Json& json)
 {
   if (valueType != OBJECT) {
-    OZ_ERROR("oz::JSON: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
+    OZ_ERROR("oz::Json: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
              key, toString().cstr());
   }
 
-  Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+  Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
   int index = map.add(key, json);
   return map[index].value;
 }
 
-JSON& JSON::add(const char* key, JSON&& json)
+Json& Json::add(const char* key, Json&& json)
 {
   if (valueType != OBJECT) {
-    OZ_ERROR("oz::JSON: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
+    OZ_ERROR("oz::Json: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
              key, toString().cstr());
   }
 
-  Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+  Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
   int index = map.add(key, json);
   return map[index].value;
 }
 
-JSON& JSON::include(const char* key, const JSON& json)
+Json& Json::include(const char* key, const Json& json)
 {
   if (valueType != OBJECT) {
-    OZ_ERROR("oz::JSON: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+    OZ_ERROR("oz::Json: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
              key, toString().cstr());
   }
 
-  Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+  Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
   int index = map.index(key);
   if (index < 0) {
@@ -1216,14 +1216,14 @@ JSON& JSON::include(const char* key, const JSON& json)
   return map[index].value;
 }
 
-JSON& JSON::include(const char* key, JSON&& json)
+Json& Json::include(const char* key, Json&& json)
 {
   if (valueType != OBJECT) {
-    OZ_ERROR("oz::JSON: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+    OZ_ERROR("oz::Json: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
              key, toString().cstr());
   }
 
-  Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+  Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
   int index = map.index(key);
   if (index < 0) {
@@ -1232,14 +1232,14 @@ JSON& JSON::include(const char* key, JSON&& json)
   return map[index].value;
 }
 
-bool JSON::erase(int index)
+bool Json::erase(int index)
 {
   if (valueType != ARRAY) {
-    OZ_ERROR("oz::JSON: Tried to erase a value from a non-array JSON value: %s",
+    OZ_ERROR("oz::Json: Tried to erase a value from a non-array JSON value: %s",
              toString().cstr());
   }
 
-  List<JSON>& list = static_cast<ArrayData*>(data)->list;
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   if (uint(index) >= uint(list.length())) {
     return false;
@@ -1249,24 +1249,24 @@ bool JSON::erase(int index)
   return true;
 }
 
-bool JSON::exclude(const char* key)
+bool Json::exclude(const char* key)
 {
   if (valueType != OBJECT) {
-    OZ_ERROR("oz::JSON: Tried to exclude and entry form a non-object JSON value: %s",
+    OZ_ERROR("oz::Json: Tried to exclude and entry form a non-object JSON value: %s",
              toString().cstr());
   }
 
-  Map<String, JSON>& map = static_cast<ObjectData*>(data)->map;
+  Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
   return map.exclude(key);
 }
 
-bool JSON::clear(bool warnUnused)
+bool Json::clear(bool warnUnused)
 {
   bool hasUnused = false;
 
   if (warnUnused && !wasAccessed) {
-    Log::println("oz::JSON: unused value: %s", toString().cstr());
+    Log::println("oz::Json: unused value: %s", toString().cstr());
     System::bell();
 
     hasUnused  = true;
@@ -1285,7 +1285,7 @@ bool JSON::clear(bool warnUnused)
       ArrayData* arrayData = static_cast<ArrayData*>(data);
 
       if (warnUnused) {
-        for (JSON& i : arrayData->list) {
+        for (Json& i : arrayData->list) {
           hasUnused |= i.clear(true);
         }
       }
@@ -1313,7 +1313,7 @@ bool JSON::clear(bool warnUnused)
   return hasUnused;
 }
 
-String JSON::toString() const
+String Json::toString() const
 {
   switch (valueType) {
     default: {
@@ -1331,7 +1331,7 @@ String JSON::toString() const
       return "\"" + string + "\"";
     }
     case ARRAY: {
-      const List<JSON>& list = static_cast<const ArrayData*>(data)->list;
+      const List<Json>& list = static_cast<const ArrayData*>(data)->list;
 
       if (list.isEmpty()) {
         return "[]";
@@ -1350,7 +1350,7 @@ String JSON::toString() const
       return s + " ]";
     }
     case OBJECT: {
-      const Map<String, JSON>& map = static_cast<const ObjectData*>(data)->map;
+      const Map<String, Json>& map = static_cast<const ObjectData*>(data)->map;
 
       if (map.isEmpty()) {
         return "{}";
@@ -1370,7 +1370,7 @@ String JSON::toString() const
   }
 }
 
-String JSON::toFormattedString(const Format& format) const
+String Json::toFormattedString(const Format& format) const
 {
   OutputStream os(0);
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
@@ -1381,7 +1381,7 @@ String JSON::toFormattedString(const Format& format) const
   return String(os.begin(), os.tell());
 }
 
-bool JSON::load(const File& file)
+bool Json::load(const File& file)
 {
   InputStream is = file.inputStream();
 
@@ -1393,7 +1393,7 @@ bool JSON::load(const File& file)
   return true;
 }
 
-bool JSON::save(const File& file, const Format& format) const
+bool Json::save(const File& file, const Format& format) const
 {
   OutputStream os(0);
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };

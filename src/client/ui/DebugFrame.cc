@@ -103,13 +103,13 @@ DebugFrame::DebugFrame() :
 
   int height = style.fonts[Font::MONO].height + 2;
 
-  camPosRot     = Label(5, 5 + height * 6, ALIGN_NONE, Font::MONO, " ");
-  botPosRot     = Label(5, 5 + height * 5, ALIGN_NONE, Font::MONO, " ");
-  botVelMom     = Label(5, 5 + height * 4, ALIGN_NONE, Font::MONO, " ");
-  botFlagsState = Label(5, 5 + height * 3, ALIGN_NONE, Font::MONO, " ");
-  tagPos        = Label(5, 5 + height * 2, ALIGN_NONE, Font::MONO, " ");
-  tagVelMom     = Label(5, 5 + height * 1, ALIGN_NONE, Font::MONO, " ");
-  tagFlags      = Label(5, 5 + height * 0, ALIGN_NONE, Font::MONO, " ");
+  camPosRot     = Label(5, 5 + height * 6, 0, ALIGN_NONE, Font::MONO, " ");
+  botPosRot     = Label(5, 5 + height * 5, 0, ALIGN_NONE, Font::MONO, " ");
+  botVelMom     = Label(5, 5 + height * 4, 0, ALIGN_NONE, Font::MONO, " ");
+  botFlagsState = Label(5, 5 + height * 3, 0, ALIGN_NONE, Font::MONO, " ");
+  tagPos        = Label(5, 5 + height * 2, 0, ALIGN_NONE, Font::MONO, " ");
+  tagVelMom     = Label(5, 5 + height * 1, 0, ALIGN_NONE, Font::MONO, " ");
+  tagFlags      = Label(5, 5 + height * 0, 0, ALIGN_NONE, Font::MONO, " ");
 }
 
 }

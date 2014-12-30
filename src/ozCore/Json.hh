@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozCore/JSON.hh
+ * @file ozCore/Json.hh
  *
- * `JSON` class.
+ * `Json` class.
  */
 
 #pragma once
@@ -42,7 +42,7 @@ namespace oz
  * - `nan` (case-sensitive) represents not-a-number and
  * - C++-style comments are allowed.
  */
-class JSON
+class Json
 {
 public:
 
@@ -76,27 +76,27 @@ public:
   /**
    * Key-value type used in object initialiser lists.
    */
-  typedef Map<const char*, JSON>::Pair Pair;
+  typedef Map<const char*, Json>::Pair Pair;
 
   /**
-   * %Iterator for %JSON arrays with constant access to elements.
+   * %Iterator for JSON arrays with constant access to elements.
    */
-  typedef List<const JSON>::CIterator ArrayCIterator;
+  typedef List<const Json>::CIterator ArrayCIterator;
 
   /**
-   * %Iterator for %JSON arrays with non-constant access to elements.
+   * %Iterator for JSON arrays with non-constant access to elements.
    */
-  typedef List<JSON>::Iterator ArrayIterator;
+  typedef List<Json>::Iterator ArrayIterator;
 
   /**
-   * %Iterator for %JSON objects with constant access to elements.
+   * %Iterator for JSON objects with constant access to elements.
    */
-  typedef Map<String, JSON>::CIterator ObjectCIterator;
+  typedef Map<String, Json>::CIterator ObjectCIterator;
 
   /**
-   * %Iterator for %JSON objects with non-constant access to elements.
+   * %Iterator for JSON objects with non-constant access to elements.
    */
-  typedef Map<String, JSON>::Iterator ObjectIterator;
+  typedef Map<String, Json>::Iterator ObjectIterator;
 
 private:
 
@@ -115,7 +115,7 @@ private:
     double     number;      ///< Number value storage.
     Data*      data;        ///< Pointer to other, complex, value storage.
   };
-  Type         valueType;   ///< Value type, `JSON::Type`.
+  Type         valueType;   ///< Value type, `Json::Type`.
   mutable bool wasAccessed; ///< For warnings about unused variables.
 
 private:
@@ -123,7 +123,7 @@ private:
   /**
    * Internal constructor.
    */
-  explicit JSON(Data* data, Type valueType);
+  explicit Json(Data* data, Type valueType);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.
@@ -138,164 +138,164 @@ public:
    * Default value is false for a boolean, 0.0 for a number, "" for a string or an empty container
    * for an array or an object.
    */
-  JSON(Type type = NIL);
+  Json(Type type = NIL);
 
   /**
    * Create null value.
    */
-  JSON(nullptr_t);
+  Json(nullptr_t);
 
   /**
    * Create a boolean value.
    */
-  JSON(bool value);
+  Json(bool value);
 
   /**
    * Create a number value for an integer.
    */
-  JSON(int value);
+  Json(int value);
 
   /**
    * Create a number value for a float.
    */
-  JSON(float value);
+  Json(float value);
 
   /**
    * Create a number value for a double.
    */
-  JSON(double value);
+  Json(double value);
 
   /**
    * Create a string value for a given string.
    */
-  JSON(const String& value);
+  Json(const String& value);
 
   /**
    * Create a string value for a given string.
    */
-  JSON(const char* value);
+  Json(const char* value);
 
   /**
    * Create an array of 3 numbers representing `Vec3` components.
    */
-  JSON(const Vec3& v);
+  Json(const Vec3& v);
 
   /**
    * Create an array of 4 numbers representing `Vec4` components.
    */
-  JSON(const Vec4& v);
+  Json(const Vec4& v);
 
   /**
    * Create an array of 4 numbers representing `Point` components.
    */
-  JSON(const Point& p);
+  Json(const Point& p);
 
   /**
    * Create an array of 4 numbers representing `Plane` components.
    */
-  JSON(const Plane& p);
+  Json(const Plane& p);
 
   /**
    * Create an array of 4 numbers representing `Quat` components.
    */
-  JSON(const Quat& q);
+  Json(const Quat& q);
 
   /**
    * Create an array of 9 numbers representing `Mat3` components.
    */
-  JSON(const Mat3& m);
+  Json(const Mat3& m);
 
   /**
    * Create an array of 16 numbers representing `Mat4` components.
    */
-  JSON(const Mat4& m);
+  Json(const Mat4& m);
 
   /**
    * Create an array from initialiser list of JSON values.
    *
-   * This constructor might be ambiguous when elements appear in pairs. Adding `JSON` before the
+   * This constructor might be ambiguous when elements appear in pairs. Adding `Json` before the
    * first array element solves the issue:
    * @code
-   * JSON array = { JSON { 0, 1 }, { 1, 2 }, { 2, 0 } };
+   * Json array = { Json { 0, 1 }, { 1, 2 }, { 2, 0 } };
    * @endcode
    */
-  JSON(InitialiserList<JSON> l);
+  Json(InitialiserList<Json> l);
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
    *
-   * For disambiguation from array initialiser one should add `JSON::Pair` before the first element:
+   * For disambiguation from array initialiser one should add `Json::Pair` before the first element:
    * @code
-   * JSON object = { JSON::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
+   * Json object = { Json::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
    * @endcode
    */
-  JSON(InitialiserList<Pair> l);
+  Json(InitialiserList<Pair> l);
 
   /**
    * Load from a file.
    */
-  explicit JSON(const File& file);
+  explicit Json(const File& file);
 
   /**
    * Destructor.
    */
-  ~JSON();
+  ~Json();
 
   /**
    * Copy constructor.
    */
-  JSON(const JSON& j);
+  Json(const Json& j);
 
   /**
    * Move constructor.
    */
-  JSON(JSON&& j);
+  Json(Json&& j);
 
   /**
    * Copy operator.
    */
-  JSON& operator = (const JSON& j);
+  Json& operator = (const Json& j);
 
   /**
    * Move operator.
    */
-  JSON& operator = (JSON&& j);
+  Json& operator = (Json&& j);
 
   /**
    * Equality.
    */
-  bool operator == (const JSON& j) const;
+  bool operator == (const Json& j) const;
 
   /**
    * Inequality.
    */
-  bool operator != (const JSON& j) const;
+  bool operator != (const Json& j) const;
 
   /**
-   * %JSON array iterator with constant access.
+   * JSON array iterator with constant access.
    *
-   * An invalid iterator is returned if the %JSON element is not an array.
+   * An invalid iterator is returned if the JSON element is not an array.
    */
   ArrayCIterator arrayCIter() const;
 
   /**
-   * %JSON array iterator with non-constant access.
+   * JSON array iterator with non-constant access.
    *
-   * An invalid iterator is returned if the %JSON element is not an array.
+   * An invalid iterator is returned if the JSON element is not an array.
    */
   ArrayIterator arrayIter();
 
   /**
-   * %JSON object iterator with constant access.
+   * JSON object iterator with constant access.
    *
-   * An invalid iterator is returned if the %JSON element is not an object.
+   * An invalid iterator is returned if the JSON element is not an object.
    */
   ObjectCIterator objectCIter() const;
 
   /**
-   * %JSON object iterator with non-constant access.
+   * JSON object iterator with non-constant access.
    *
-   * An invalid iterator is returned if the %JSON element is not an object.
+   * An invalid iterator is returned if the JSON element is not an object.
    */
   ObjectIterator objectIter();
 
@@ -335,14 +335,14 @@ public:
    *
    * If the index is out of bounds or the value not an array null, a null value is returned.
    */
-  const JSON& operator [] (int i) const;
+  const Json& operator [] (int i) const;
 
   /**
    * Returns value for `key` in an object.
    *
    * If the key does not exist or the value not an object, a null value is returned.
    */
-  const JSON& operator [] (const char* key) const;
+  const Json& operator [] (const char* key) const;
 
   /**
    * True iff value is an object and contains a given key.
@@ -418,7 +418,7 @@ public:
   /**
    * Write array values to a given array.
    *
-   * If the %JSON array does not contain enough elements or is not an array at all the redundant
+   * If the JSON array does not contain enough elements or is not an array at all the redundant
    * elements in the output array are left intact. When an array element is of an invalid type
    * `defaultValue` is used.
    *
@@ -441,42 +441,42 @@ public:
    *
    * If the current value is not an array, `System::error()` is invoked.
    */
-  JSON& add(const JSON& json);
+  Json& add(const Json& json);
 
   /**
    * Append a value to array (move).
    *
    * If the current value is not an array, `System::error()` is invoked.
    */
-  JSON& add(JSON&& json);
+  Json& add(Json&& json);
 
   /**
    * Add a value with a given key to the object (copy) overwriting an existing entry with that key.
    *
    * If current value is not an object, `System::error()` is invoked.
    */
-  JSON& add(const char* key, const JSON& value);
+  Json& add(const char* key, const Json& value);
 
   /**
    * Add a value with a given key to the object (move) overwriting an existing entry with that key.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  JSON& add(const char* key, JSON&& value);
+  Json& add(const char* key, Json&& value);
 
   /**
    * Add a value with a given key to the object (copy) if the key does not exist in the object.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  JSON& include(const char* key, const JSON& json);
+  Json& include(const char* key, const Json& json);
 
   /**
    * Add a value with a given key to the object (move) if the key does not exist in the object.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  JSON& include(const char* key, JSON&& json);
+  Json& include(const char* key, Json&& json);
 
   /**
    * Remove element at a given index from an array.
@@ -519,7 +519,7 @@ public:
   String toFormattedString(const Format& format = DEFAULT_FORMAT) const;
 
   /**
-   * Clear existing value and read new contents from a %JSON file.
+   * Clear existing value and read new contents from a JSON file.
    *
    * If file open fails, existing value is kept intact.
    *

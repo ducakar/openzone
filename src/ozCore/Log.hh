@@ -30,7 +30,7 @@
 
 #include "StackTrace.hh"
 #include "Time.hh"
-#include "JSON.hh"
+#include "Json.hh"
 
 namespace oz
 {
@@ -322,7 +322,7 @@ public:
   /**
    * Same as `printRaw("%s", json.toString().cstr())`.
    */
-  const Log& operator << (const JSON& json) const;
+  const Log& operator << (const Json& json) const;
 
   /**
    * Same as `printfRaw("%p", p)`.

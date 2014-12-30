@@ -70,7 +70,7 @@ void HudArea::drawBotCrosshair()
     }
 
     if (ent != nullptr) {
-      title.set(descTextX, descTextY, "%s", entClazz->title.cstr());
+      title.setText("%s", entClazz->title.cstr());
       title.draw(this);
 
       shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -104,7 +104,7 @@ void HudArea::drawBotCrosshair()
         taggedStatus.draw(this, healthBarX, healthBarY + 7, ICON_SIZE + 16, 8, status);
       }
 
-      title.set(descTextX, descTextY, "%s", obj->title().cstr());
+      title.setText("%s", obj->title().cstr());
       title.draw(this);
 
       shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -282,7 +282,7 @@ void HudArea::onReposition()
   descTextX    = width / 2;
   descTextY    = crossIconY + ICON_SIZE + 36;
 
-  title.set(descTextX, descTextY, " ");
+  title.setPosition(descTextX, descTextY);
 }
 
 bool HudArea::onMouseEvent()
@@ -304,9 +304,9 @@ void HudArea::onDraw()
 
 HudArea::HudArea() :
   Area(camera.width, camera.height),
-  title(0, 0, ALIGN_CENTRE, Font::LARGE, " "),
-  weaponName(0, 0, ALIGN_LEFT, Font::LARGE, " "),
-  weaponRounds(0, 0, ALIGN_RIGHT, Font::LARGE, "∞"),
+  title(0, 0, 0, ALIGN_CENTRE, Font::LARGE, " "),
+  weaponName(0, 0, 0, ALIGN_LEFT, Font::LARGE, " "),
+  weaponRounds(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞"),
   taggedLife(&style.taggedLife),
   taggedStatus(&style.taggedStatus),
   botLife(&style.botLife),
@@ -318,8 +318,8 @@ HudArea::HudArea() :
   flags |= UPDATE_BIT | PINNED_BIT;
 
   for (int i = 0; i < Vehicle::MAX_WEAPONS; ++i) {
-    vehicleWeaponNames[i]  = Label(0, 0, ALIGN_LEFT, Font::LARGE, " ");
-    vehicleWeaponRounds[i] = Label(0, 0, ALIGN_RIGHT, Font::LARGE, "∞");
+    vehicleWeaponNames[i]  = Label(0, 0, 0, ALIGN_LEFT, Font::LARGE, " ");
+    vehicleWeaponRounds[i] = Label(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞");
   }
 
   vehicleModel = new ModelField(nullptr, style.vehicleField.w, style.vehicleField.h);

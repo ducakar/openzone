@@ -24,7 +24,6 @@
 #pragma once
 
 #include <client/ui/Frame.hh>
-#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -37,7 +36,7 @@ class TalkFrame : public Frame
 {
 private:
 
-  Text  text;
+  Label text;
   Label answers[8];
 
 protected:

@@ -38,7 +38,7 @@ ObjectClass* ObjectClass::createClass()
   return new ObjectClass();
 }
 
-void ObjectClass::init(const JSON& config, const char* name_)
+void ObjectClass::init(const Json& config, const char* name_)
 {
   const char* origTitle       = config["title"].get(name);
   const char* origDescription = config["description"].get("");
@@ -145,7 +145,7 @@ void ObjectClass::init(const JSON& config, const char* name_)
 
   // default inventory
   if (nItems != 0) {
-    const JSON& defaultItemsConfig = config["defaultItems"];
+    const Json& defaultItemsConfig = config["defaultItems"];
     int nDefaultItems = defaultItemsConfig.length();
 
     for (int i = 0; i < nDefaultItems; ++i) {
@@ -207,7 +207,7 @@ void ObjectClass::init(const JSON& config, const char* name_)
   if (audioType >= 0) {
     flags |= Object::AUDIO_BIT;
 
-    const JSON& soundsConfig = config["audioSounds"];
+    const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventCreate  = soundsConfig["create"].get("");
     const char* sEventDestroy = soundsConfig["destroy"].get("");
@@ -284,7 +284,7 @@ Object* ObjectClass::create(int index, const Point& pos, Heading heading) const
   return new Object(this, index, pos, heading);
 }
 
-Object* ObjectClass::create(int index, const JSON& json) const
+Object* ObjectClass::create(int index, const Json& json) const
 {
   return new Object(this, index, json);
 }

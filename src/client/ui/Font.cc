@@ -41,14 +41,9 @@ void Font::sizeOf(const char* s, int* width, int* height) const
 
 void Font::upload(const char* s, int* width, int* height) const
 {
-  SDL_Surface* surf = nullptr;
-
-  if (width != nullptr && *width > 0) {
-    surf = TTF_RenderUTF8_Blended_Wrapped(handle, s, SDL_COLOUR_WHITE, uint(*width));
-  }
-  else {
-    surf = TTF_RenderUTF8_Blended(handle, s, SDL_COLOUR_WHITE);
-  }
+  SDL_Surface* surf = width != nullptr && *width > 0 ?
+                      TTF_RenderUTF8_Blended_Wrapped(handle, s, SDL_COLOUR_WHITE, uint(*width)) :
+                      TTF_RenderUTF8_Blended(handle, s, SDL_COLOUR_WHITE);
 
   if (surf == nullptr) {
     OZ_ERROR("Failed to generate texture from text: %s", s);

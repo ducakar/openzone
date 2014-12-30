@@ -162,7 +162,7 @@ static void readLua(const File& file)
 
 static void readBSP(const File& file)
 {
-  JSON config;
+  Json config;
 
   if (!config.load(file)) {
     OZ_ERROR("Failed to load '%s'", file.path().cstr());
@@ -181,10 +181,10 @@ static void readBSP(const File& file)
     messages.include(description, file.path());
   }
 
-  const JSON& entities = config["entities"];
+  const Json& entities = config["entities"];
   int nEntities = entities.length();
 
-  if (!entities.isNull() && entities.type() != JSON::ARRAY) {
+  if (!entities.isNull() && entities.type() != Json::ARRAY) {
     OZ_ERROR("'entities' entry in '%s' is not an array", file.path().cstr());
   }
 
@@ -201,7 +201,7 @@ static void readBSP(const File& file)
 
 static void readClass(const File& file)
 {
-  JSON config;
+  Json config;
 
   if (!config.load(file)) {
     OZ_ERROR("Failed to read '%s'", file.path().cstr());
@@ -220,7 +220,7 @@ static void readClass(const File& file)
     messages.include(description, file.path());
   }
 
-  const JSON& weaponsConfig = config["weapons"];
+  const Json& weaponsConfig = config["weapons"];
 
   for (int i = 0; i < weaponsConfig.length(); ++i) {
     const char* weaponTitle = weaponsConfig[i]["title"].get("");
@@ -234,10 +234,10 @@ static void readClass(const File& file)
 static void readNirvana(const File& dir)
 {
   File techFile = dir.path() + "/techGraph.json";
-  JSON techConfig;
+  Json techConfig;
 
   if (techConfig.load(techFile)) {
-    for (const JSON& node : techConfig.arrayCIter()) {
+    for (const Json& node : techConfig.arrayCIter()) {
       const char* technology  = node["technology"].get("");
       const char* title       = node["title"].get(technology);
       const char* description = node["description"].get("");
@@ -258,9 +258,9 @@ static void readNirvana(const File& dir)
       continue;
     }
 
-    JSON json(file);
+    Json json(file);
 
-    for (const JSON& state : json.arrayCIter()) {
+    for (const Json& state : json.arrayCIter()) {
       const String& onEnter  = state["onEnter"].get(String::EMPTY);
       const String& onUpdate = state["onUpdate"].get(String::EMPTY);
 
@@ -271,7 +271,7 @@ static void readNirvana(const File& dir)
         readLuaChunk(onUpdate.cstr(), onUpdate.length(), file.path());
       }
 
-      for (const JSON& link : state["links"].arrayCIter()) {
+      for (const Json& link : state["links"].arrayCIter()) {
         const String& condition = link["if"].get(String::EMPTY);
 
         if (!condition.isEmpty()) {
@@ -301,7 +301,7 @@ static void readCredits(const File& file)
 
 static void readSequence(const File& file)
 {
-  JSON sequence(file);
+  Json sequence(file);
 
   int nSteps = sequence.length();
   for (int i = 0; i < nSteps; ++i) {
@@ -317,7 +317,7 @@ static void readSequence(const File& file)
 
 static void readDescription(const File& file)
 {
-  JSON descriptionConfig(file);
+  Json descriptionConfig(file);
 
   const char* title       = descriptionConfig["title"].get("");
   const char* description = descriptionConfig["description"].get("");

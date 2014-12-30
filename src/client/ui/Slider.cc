@@ -100,7 +100,7 @@ void Slider::onDraw()
 
 Slider::Slider(float min, float max, float step, float value_, int width, int height) :
   Area(width, height),
-  label(width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%g", value_),
+  label(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%g", value_),
   isHighlighted(false), isClicked(false), wasClicked(false),
   minValue(min), maxValue(max), valueStep(step), value(value_)
 {}

@@ -36,7 +36,7 @@ ObjectClass* VehicleClass::createClass()
   return new VehicleClass();
 }
 
-void VehicleClass::init(const JSON& config, const char* name_)
+void VehicleClass::init(const Json& config, const char* name_)
 {
   DynamicClass::init(config, name_);
 
@@ -44,7 +44,7 @@ void VehicleClass::init(const JSON& config, const char* name_)
            Object::UPDATE_FUNC_BIT | Object::STATUS_FUNC_BIT;
 
   if (audioType >= 0) {
-    const JSON& soundsConfig = config["audioSounds"];
+    const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventEngine    = soundsConfig["engine"   ].get("");
     const char* sEventShot0     = soundsConfig["shot0"    ].get("");
@@ -143,7 +143,7 @@ void VehicleClass::init(const JSON& config, const char* name_)
              " set fuelConsumption to zero.", name_);
   }
 
-  const JSON& weaponsConfig = config["weapons"];
+  const Json& weaponsConfig = config["weapons"];
   nWeapons = max(weaponsConfig.length(), 0);
 
   if (nWeapons > VehicleClass::MAX_WEAPONS) {
@@ -173,7 +173,7 @@ void VehicleClass::init(const JSON& config, const char* name_)
     flags |= Object::LUA_BIT;
   }
 
-  const JSON& engineConfig = config["engine"];
+  const Json& engineConfig = config["engine"];
 
   engine.consumption     = engineConfig["consumption"].get(0.0f) * Timer::TICK_TIME;
   engine.idleConsumption = engineConfig["idleConsumption"].get(0.0f) * Timer::TICK_TIME;
@@ -186,19 +186,19 @@ void VehicleClass::init(const JSON& config, const char* name_)
       break;
     }
     case VehicleClass::WHEELED: {
-      const JSON& wheeledConfig = config["wheeled"];
+      const Json& wheeledConfig = config["wheeled"];
 
       wheeled.moveMomentum = wheeledConfig["moveMomentum"].get(2.0f);
       break;
     }
     case VehicleClass::TRACKED: {
-      const JSON& trackedConfig = config["tracked"];
+      const Json& trackedConfig = config["tracked"];
 
       tracked.moveMomentum = trackedConfig["moveMomentum"].get(2.0f);
       break;
     }
     case VehicleClass::MECH: {
-      const JSON& mechConfig = config["mech"];
+      const Json& mechConfig = config["mech"];
 
       mech.walkMomentum   = mechConfig["walkMomentum"].get(1.0f);
       mech.runMomentum    = mechConfig["runMomentum"].get(2.0f);
@@ -213,7 +213,7 @@ void VehicleClass::init(const JSON& config, const char* name_)
       break;
     }
     case VehicleClass::HOVER: {
-      const JSON& hoverConfig = config["hover"];
+      const Json& hoverConfig = config["hover"];
 
       hover.moveMomentum      = hoverConfig["moveMomentum"].get(2.0f);
       hover.height            = hoverConfig["height"].get(2.0f);
@@ -222,13 +222,13 @@ void VehicleClass::init(const JSON& config, const char* name_)
       break;
     }
     case VehicleClass::AIR: {
-      const JSON& airConfig = config["air"];
+      const Json& airConfig = config["air"];
 
       air.moveMomentum = airConfig["moveMomentum"].get(2.0f);
       break;
     }
     case VehicleClass::SUB: {
-      const JSON& subConfig = config["sub"];
+      const Json& subConfig = config["sub"];
 
       sub.moveMomentum = subConfig["moveMomentum"].get(2.0f);
       break;
@@ -241,7 +241,7 @@ Object* VehicleClass::create(int index, const Point& pos, Heading heading) const
   return new Vehicle(this, index, pos, heading);
 }
 
-Object* VehicleClass::create(int index, const JSON& json) const
+Object* VehicleClass::create(int index, const Json& json) const
 {
   return new Vehicle(this, index, json);
 }

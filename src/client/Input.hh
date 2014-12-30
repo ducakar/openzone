@@ -165,8 +165,8 @@ public:
 private:
 
   void loadDefaultKeyMap();
-  void loadKeyMap(const JSON& keyConfig);
-  JSON keyMapToJSON() const;
+  void loadKeyMap(const Json& keyConfig);
+  Json keyMapToJson() const;
 
 public:
 

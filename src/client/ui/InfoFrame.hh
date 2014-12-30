@@ -24,7 +24,6 @@
 #pragma once
 
 #include <client/ui/Frame.hh>
-#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -40,8 +39,8 @@ class InfoFrame : public Frame
 {
 private:
 
-  Text text;
-  int  lastId;
+  Label text;
+  int   lastId;
 
 private:
 

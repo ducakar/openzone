@@ -694,7 +694,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
   }
 }
 
-Struct::Struct(const BSP* bsp_, int index_, const JSON& json)
+Struct::Struct(const BSP* bsp_, int index_, const Json& json)
 {
   bsp         = bsp_;
 
@@ -721,19 +721,19 @@ Struct::Struct(const BSP* bsp_, int index_, const JSON& json)
   if (bsp->nEntities != 0) {
     entities.resize(bsp->nEntities);
 
-    const JSON& entitiesJSON = json["entities"];
+    const Json& entitiesJson = json["entities"];
 
     for (int i = 0; i < entities.length(); ++i) {
-      const JSON& entityJSON = entitiesJSON[i];
+      const Json& entityJson = entitiesJson[i];
       Entity&     entity     = entities[i];
 
       entity.clazz  = &bsp->entities[i];
       entity.str    = this;
-      entity.key    = entityJSON["key"].get(0);
-      entity.state  = Entity::State(entityJSON["state"].get(Entity::CLOSED));
-      entity.ratio  = entityJSON["ratio"].get(0.0f);
-      entity.time   = entityJSON["time"].get(0.0f);
-      entity.offset = entityJSON["offset"].get(Vec3::ZERO);
+      entity.key    = entityJson["key"].get(0);
+      entity.state  = Entity::State(entityJson["state"].get(Entity::CLOSED));
+      entity.ratio  = entityJson["ratio"].get(0.0f);
+      entity.time   = entityJson["time"].get(0.0f);
+      entity.offset = entityJson["offset"].get(Vec3::ZERO);
 
       if (entity.state == Entity::OPENING) {
         entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
@@ -810,9 +810,9 @@ Struct::Struct(const BSP* bsp_, InputStream* is)
   }
 }
 
-JSON Struct::write() const
+Json Struct::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("bsp", bsp->name);
 
@@ -822,25 +822,25 @@ JSON Struct::write() const
   json.add("life", life);
   json.add("demolishing", demolishing);
 
-  JSON& entitiesJSON = json.add("entities", JSON::ARRAY);
+  Json& entitiesJson = json.add("entities", Json::ARRAY);
 
   for (int i = 0; i < entities.length(); ++i) {
-    JSON& entityJSON = entitiesJSON.add(JSON::OBJECT);
+    Json& entityJson = entitiesJson.add(Json::OBJECT);
 
-    entityJSON.add("key", entities[i].key);
-    entityJSON.add("state", entities[i].state);
-    entityJSON.add("ratio", entities[i].ratio);
-    entityJSON.add("time", entities[i].time);
-    entityJSON.add("offset", entities[i].offset);
+    entityJson.add("key", entities[i].key);
+    entityJson.add("state", entities[i].state);
+    entityJson.add("ratio", entities[i].ratio);
+    entityJson.add("time", entities[i].time);
+    entityJson.add("offset", entities[i].offset);
   }
 
-  JSON& boundObjectsJSON = json.add("boundObjects", JSON::ARRAY);
+  Json& boundObjectsJson = json.add("boundObjects", Json::ARRAY);
 
   for (int i : boundObjects) {
     const Object* obj = orbis.obj(i);
 
     if (obj != nullptr) {
-      boundObjectsJSON.add(obj->write());
+      boundObjectsJson.add(obj->write());
     }
   }
 

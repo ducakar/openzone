@@ -45,7 +45,7 @@ ObjectClass* BotClass::createClass()
   return new BotClass();
 }
 
-void BotClass::init(const JSON& config, const char* name_)
+void BotClass::init(const Json& config, const char* name_)
 {
   DynamicClass::init(config, name_);
 
@@ -56,7 +56,7 @@ void BotClass::init(const JSON& config, const char* name_)
   life  *= 2.0f;
 
   if (audioType >= 0) {
-    const JSON& soundsConfig = config["audioSounds"];
+    const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventStep          = soundsConfig["step"         ].get("");
     const char* sEventWaterStep     = soundsConfig["waterStep"    ].get("");
@@ -180,7 +180,7 @@ Object* BotClass::create(int index, const Point& pos, Heading heading) const
   return new Bot(this, index, pos, heading);
 }
 
-Object* BotClass::create(int index, const JSON& json) const
+Object* BotClass::create(int index, const Json& json) const
 {
   return new Bot(this, index, json);
 }

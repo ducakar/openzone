@@ -194,7 +194,7 @@ MissionMenu::MissionMenu() :
   for (const File& missionDir : missionRootDir.ls()) {
     File descriptionFile = missionDir.path() + "/description.json";
 
-    JSON descriptionConfig;
+    Json descriptionConfig;
     if (!descriptionConfig.load(descriptionFile)) {
       continue;
     }

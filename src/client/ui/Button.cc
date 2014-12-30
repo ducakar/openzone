@@ -90,7 +90,7 @@ void Button::onDraw()
 
 Button::Button(const char* text, Callback* callback_, int width, int height) :
   Area(width, height),
-  label(width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%s", text),
+  label(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%s", text),
   callback(callback_), isHighlighted(false), isClicked(false), wasClicked(false)
 {}
 

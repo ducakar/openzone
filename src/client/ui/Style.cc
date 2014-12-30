@@ -92,12 +92,12 @@ void Style::init()
   Log::print("Initialising Style ...");
 
   File configFile = "@ui/style.json";
-  JSON config(configFile);
+  Json config(configFile);
 
-  const JSON& fontsConfig = config["fonts"];
+  const Json& fontsConfig = config["fonts"];
 
   for (int i = 0; i < Font::MAX; ++i) {
-    const JSON& fontConfig = fontsConfig[FONT_INFOS[i].key];
+    const Json& fontConfig = fontsConfig[FONT_INFOS[i].key];
 
     const char* name   = fontConfig["name"].get(FONT_INFOS[i].name);
     int         height = fontConfig["height"].get(FONT_INFOS[i].height);
@@ -105,7 +105,7 @@ void Style::init()
     fonts[i].init(name, height);
   }
 
-  const JSON& coloursConfig = config["colours"];
+  const Json& coloursConfig = config["colours"];
 
   OZ_READ_COLOUR(text,             0.70f, 0.90f, 0.80f, 1.00f);
   OZ_READ_COLOUR(textBackground,   0.00f, 0.00f, 0.00f, 1.00f);
@@ -133,7 +133,7 @@ void Style::init()
 
   OZ_READ_COLOUR(menuStrip,        0.00f, 0.00f, 0.00f, 1.00f);
 
-  const JSON& soundsConfig = config["sounds"];
+  const Json& soundsConfig = config["sounds"];
 
   OZ_READ_SOUND(bell,              "");
   OZ_READ_SOUND(click,             "");

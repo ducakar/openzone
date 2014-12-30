@@ -522,7 +522,7 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Headin
   }
 }
 
-Vehicle::Vehicle(const VehicleClass* clazz_, int index, const JSON& json) :
+Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json) :
   Dynamic(clazz_, index, json)
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
@@ -548,13 +548,13 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index, const JSON& json) :
 
   weapon     = json["weapon"].get(0);
 
-  const JSON& weaponsJSON = json["weapons"];
+  const Json& weaponsJson = json["weapons"];
 
   for (int i = 0; i < MAX_WEAPONS; ++i) {
-    const JSON& weaponJSON = weaponsJSON[i];
+    const Json& weaponJson = weaponsJson[i];
 
-    nRounds[i]  = weaponJSON["nRounds"].get(0);
-    shotTime[i] = weaponJSON["shotTime"].get(0.0f);
+    nRounds[i]  = weaponJson["nRounds"].get(0);
+    shotTime[i] = weaponJson["shotTime"].get(0.0f);
   }
 }
 
@@ -589,9 +589,9 @@ Vehicle::Vehicle(const VehicleClass* clazz_, InputStream* is) :
   }
 }
 
-JSON Vehicle::write() const
+Json Vehicle::write() const
 {
-  JSON json = Dynamic::write();
+  Json json = Dynamic::write();
 
   json.add("h", h);
   json.add("v", v);
@@ -609,13 +609,13 @@ JSON Vehicle::write() const
 
   json.add("weapon", orbis.objIndex(weapon));
 
-  JSON& weaponsJSON = json.add("weapons", JSON::ARRAY);
+  Json& weaponsJson = json.add("weapons", Json::ARRAY);
 
   for (int i = 0; i < MAX_WEAPONS; ++i) {
-    JSON& weaponJSON = weaponsJSON.add(JSON::OBJECT);
+    Json& weaponJson = weaponsJson.add(Json::OBJECT);
 
-    weaponJSON.add("nRounds", nRounds[i]);
-    weaponJSON.add("shotTime", shotTime[i]);
+    weaponJson.add("nRounds", nRounds[i]);
+    weaponJson.add("shotTime", shotTime[i]);
   }
 
   return json;

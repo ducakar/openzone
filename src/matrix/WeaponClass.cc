@@ -34,7 +34,7 @@ ObjectClass* WeaponClass::createClass()
   return new WeaponClass();
 }
 
-void WeaponClass::init(const JSON& config, const char* name_)
+void WeaponClass::init(const Json& config, const char* name_)
 {
   DynamicClass::init(config, name_);
 
@@ -42,7 +42,7 @@ void WeaponClass::init(const JSON& config, const char* name_)
            Object::STATUS_FUNC_BIT;
 
   if (audioType >= 0) {
-    const JSON& soundsConfig = config["audioSounds"];
+    const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventShotEmpty = soundsConfig["shotEmpty"].get("");
     const char* sEventShot      = soundsConfig["shot"    ].get("");
@@ -73,7 +73,7 @@ Object* WeaponClass::create(int index, const Point& pos, Heading heading) const
   return new Weapon(this, index, pos, heading);
 }
 
-Object* WeaponClass::create(int index, const JSON& json) const
+Object* WeaponClass::create(int index, const Json& json) const
 {
   return new Weapon(this, index, json);
 }

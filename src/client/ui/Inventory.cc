@@ -203,7 +203,8 @@ void Inventory::drawComponent(int height, const Object* container, const Dynamic
   }
 noIcon:
 
-  itemDesc.set(-ICON_SIZE - 8, height - FOOTER_SIZE / 2, "%s", taggedClazz->title.cstr());
+  itemDesc.setPosition(-ICON_SIZE - 8, height - FOOTER_SIZE / 2);
+  itemDesc.setText("%s", taggedClazz->title.cstr());
   itemDesc.draw(this);
 }
 
@@ -299,7 +300,7 @@ Inventory::Inventory() :
   Frame(COLS*SLOT_SIZE + 2*PADDING_SIZE, SINGLE_HEIGHT, " "),
   owner(nullptr), other(nullptr),
   lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
-  itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " "),
+  itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " "),
   taggedItemIndex(-1), taggedOwnerComponent(true), scrollOwner(0), scrollOther(0)
 {
   flags |= UPDATE_BIT;

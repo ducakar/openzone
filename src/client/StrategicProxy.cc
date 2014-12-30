@@ -233,7 +233,7 @@ void StrategicProxy::read(InputStream* is)
   hasBuildFrame = is->readBool();
 }
 
-void StrategicProxy::read(const JSON& json)
+void StrategicProxy::read(const Json& json)
 {
   h      = json["h"].get(0.0f);
   v      = json["v"].get(0.0f);
@@ -255,9 +255,9 @@ void StrategicProxy::write(OutputStream* os) const
   os->writeBool(hasBuildFrame);
 }
 
-JSON StrategicProxy::write() const
+Json StrategicProxy::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("h", h);
   json.add("v", v);

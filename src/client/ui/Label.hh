@@ -40,40 +40,39 @@ private:
 
   int        x;
   int        y;
+  int        width;
   int        align;
   Font::Type font;
-
-  int        offsetX;
-  int        offsetY;
-  int        width;
-  int        height;
-
   int        lastHash;
+
+  int        texX;
+  int        texY;
+  int        texWidth;
+  int        texHeight;
   uint       texId;
+
+private:
+
+  void realign();
+
+  OZ_PRINTF_FORMAT(2, 0)
+  void setTextv(const char* s, va_list ap);
 
 public:
 
   Label();
 
-  OZ_PRINTF_FORMAT(6, 7)
-  explicit Label(int x, int y, int align, Font::Type font, const char* s, ...);
+  OZ_PRINTF_FORMAT(7, 8)
+  explicit Label(int x, int y, int width, int align, Font::Type font, const char* s, ...);
 
   ~Label();
-
-  Label(const Label&) = delete;
   Label(Label&& l);
-
-  Label& operator = (const Label&) = delete;
   Label& operator = (Label&& l);
 
-  OZ_PRINTF_FORMAT(4, 0)
-  void vset(int x, int y, const char* s, va_list ap);
-
-  OZ_PRINTF_FORMAT(4, 5)
-  void set(int x, int y, const char* s, ...);
-
   void setPosition(int x, int y);
-
+  void setWidth(int width);
+  void setAlign(int align);
+  void setFont(Font::Type font);
   OZ_PRINTF_FORMAT(2, 3)
   void setText(const char* s, ...);
 

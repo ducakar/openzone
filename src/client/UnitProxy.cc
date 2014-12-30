@@ -641,7 +641,7 @@ void UnitProxy::read(InputStream* is)
   isExternal = is->readBool();
 }
 
-void UnitProxy::read(const JSON& json)
+void UnitProxy::read(const Json& json)
 {
   isExternal = json["isExternal"].get(false);
 }
@@ -651,9 +651,9 @@ void UnitProxy::write(OutputStream* os) const
   os->writeBool(isExternal);
 }
 
-JSON UnitProxy::write() const
+Json UnitProxy::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   json.add("isExternal", isExternal);
 

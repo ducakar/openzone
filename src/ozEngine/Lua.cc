@@ -74,30 +74,30 @@ void Lua::readValue(lua_State* l, InputStream* is)
   }
 }
 
-void Lua::readValue(lua_State* l, const JSON& json)
+void Lua::readValue(lua_State* l, const Json& json)
 {
   switch (json.type()) {
-    case JSON::NIL: {
+    case Json::NIL: {
       lua_pushnil(l);
       break;
     }
-    case JSON::BOOLEAN: {
+    case Json::BOOLEAN: {
       lua_pushboolean(l, json.get(false));
       break;
     }
-    case JSON::NUMBER: {
+    case Json::NUMBER: {
       lua_pushnumber(l, json.get(0.0));
       break;
     }
-    case JSON::STRING: {
+    case Json::STRING: {
       lua_pushstring(l, json.get(""));
       break;
     }
-    case JSON::ARRAY: {
+    case Json::ARRAY: {
       lua_newtable(l);
 
       int index = 0;
-      for (const JSON& i : json.arrayCIter()) {
+      for (const Json& i : json.arrayCIter()) {
         readValue(l, i);
 
         lua_rawseti(l, -2, index);
@@ -105,7 +105,7 @@ void Lua::readValue(lua_State* l, const JSON& json)
       }
       break;
     }
-    case JSON::OBJECT: {
+    case Json::OBJECT: {
       lua_newtable(l);
 
       for (const auto& i : json.objectCIter()) {
@@ -168,13 +168,13 @@ void Lua::writeValue(lua_State* l, OutputStream* os)
   }
 }
 
-JSON Lua::writeValue(lua_State* l)
+Json Lua::writeValue(lua_State* l)
 {
   int type = lua_type(l, -1);
 
   switch (type) {
     case LUA_TNIL: {
-      return JSON::NIL;
+      return Json::NIL;
     }
     case LUA_TBOOLEAN: {
       return lua_toboolean(l, -1);
@@ -209,7 +209,7 @@ JSON Lua::writeValue(lua_State* l)
       }
 
       if (maxIndex == nElements) {
-        JSON json = JSON::ARRAY;
+        Json json = Json::ARRAY;
 
         lua_pushnil(l);
         while (lua_next(l, -2) != 0) {
@@ -221,7 +221,7 @@ JSON Lua::writeValue(lua_State* l)
       }
       else {
 object:
-        JSON json = JSON::OBJECT;
+        Json json = Json::OBJECT;
 
         lua_pushnil(l);
         while (lua_next(l, -2) != 0) {

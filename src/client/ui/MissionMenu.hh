@@ -24,7 +24,6 @@
 #pragma once
 
 #include <client/ui/Button.hh>
-#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -75,7 +74,7 @@ private:
   int               selection;
   int               scroll;
 
-  Text              description;
+  Label             description;
 
   uint              imageId;
   int               imageX;

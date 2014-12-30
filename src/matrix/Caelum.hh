@@ -43,10 +43,10 @@ public:
   void reset();
   void update();
 
-  void read(const JSON& json);
+  void read(const Json& json);
   void read(InputStream* is);
 
-  JSON write() const;
+  Json write() const;
   void write(OutputStream* os) const;
 
 };

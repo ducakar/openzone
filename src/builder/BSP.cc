@@ -46,7 +46,7 @@ void BSP::load()
   File configFile = "@baseq3/maps/" + name + ".json";
   File bspFile    = "@baseq3/maps/" + name + ".bsp";
 
-  JSON config;
+  Json config;
   if (!config.load(configFile)) {
     OZ_ERROR("BSP config loading failed");
   }
@@ -211,9 +211,9 @@ void BSP::load()
   is.rewind();
   is.forward(lumps[QBSPLump::MODELS].offset);
 
-  const JSON& modelsConfig = config["entities"];
+  const Json& modelsConfig = config["entities"];
 
-  if (!modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY) {
+  if (!modelsConfig.isNull() && modelsConfig.type() != Json::ARRAY) {
     OZ_ERROR("'models' entry in '%s' is not an array", configFile.path().cstr());
   }
 
@@ -221,7 +221,7 @@ void BSP::load()
   is.forward(int(sizeof(QBSPModel)));
 
   for (int i = 0; i < models.length(); ++i) {
-    const JSON& entityConfig = modelsConfig[i];
+    const Json& entityConfig = modelsConfig[i];
 
     models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
     models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
@@ -269,7 +269,7 @@ void BSP::load()
                i, models[i].move.x, models[i].move.y, models[i].move.z);
     }
 
-    const JSON& modelConfig = entityConfig["model"];
+    const Json& modelConfig = entityConfig["model"];
 
     if (!modelConfig.isNull()) {
       models[i].modelName = modelConfig["name"].get("");
@@ -446,11 +446,11 @@ void BSP::load()
     is.readInt();
   }
 
-  const JSON& objectsConfig = config["boundObjects"];
+  const Json& objectsConfig = config["boundObjects"];
   int nBoundObjects = objectsConfig.length();
 
   for (int i = 0; i < nBoundObjects; ++i) {
-    const JSON& objectConfig = objectsConfig[i];
+    const Json& objectConfig = objectsConfig[i];
 
     String clazz = objectConfig["class"].get("");
 

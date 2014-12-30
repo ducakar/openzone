@@ -25,7 +25,6 @@
 
 #include <client/ui/Area.hh>
 #include <client/ui/Label.hh>
-#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -38,7 +37,7 @@ class MainMenu : public Area
 {
 private:
 
-  Text  copyright;
+  Label copyright;
   Label title;
 
 protected:

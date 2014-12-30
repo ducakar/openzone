@@ -42,7 +42,7 @@ void Caelum::update()
   time = Math::fmod(time + Timer::TICK_TIME, period);
 }
 
-void Caelum::read(const JSON& json)
+void Caelum::read(const Json& json)
 {
   id      = liber.caelumIndex(json["name"].get(""));
   heading = Math::rad(json["heading"].get(0.0f));
@@ -58,9 +58,9 @@ void Caelum::read(InputStream* is)
   time    = is->readFloat();
 }
 
-JSON Caelum::write() const
+Json Caelum::write() const
 {
-  JSON json(JSON::OBJECT);
+  Json json(Json::OBJECT);
 
   if (id >= 0) {
     json.add("name", liber.caela[id].name);

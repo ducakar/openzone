@@ -193,7 +193,8 @@ void StrategicArea::drawHoverTitle(const Span& span, const char* title)
   int labelX = (span.minX + span.maxX) / 2;
   int labelY = span.maxY + 16;
 
-  unitName.set(labelX, labelY, "%s", title);
+  unitName.setPosition(labelX, labelY);
+  unitName.setText("%s", title);
   unitName.draw(this);
 }
 
@@ -455,7 +456,7 @@ void StrategicArea::onDraw()
 
 StrategicArea::StrategicArea() :
   Area(camera.width, camera.height),
-  unitName(0, 0, ALIGN_HCENTRE, Font::SANS, " "),
+  unitName(0, 0, 0, ALIGN_HCENTRE, Font::SANS, " "),
   overlayCallback(nullptr), overlaySender(nullptr),
   hoverStr(-1), hoverEnt(-1), hoverObj(-1), taggedStr(-1),
   mouseW(0.0f)

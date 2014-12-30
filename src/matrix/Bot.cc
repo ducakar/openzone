@@ -29,13 +29,13 @@
 #include <matrix/Synapse.hh>
 
 #define OZ_STATE_READ(stateBit, name) \
-  if (stateJSON.get(String::EMPTY).equals(name)) { \
+  if (stateJson.get(String::EMPTY).equals(name)) { \
     state |= stateBit; \
   }
 
 #define OZ_STATE_WRITE(stateBit, name) \
   if (state & stateBit) { \
-    stateJSON.add(name); \
+    stateJson.add(name); \
   }
 
 namespace oz
@@ -1164,7 +1164,7 @@ Bot::Bot(const BotClass* clazz_, int index, const Point& p_, Heading heading) :
   mind       = clazz_->mind;
 }
 
-Bot::Bot(const BotClass* clazz_, int index, const JSON& json) :
+Bot::Bot(const BotClass* clazz_, int index, const Json& json) :
   Dynamic(clazz_, index, json)
 {
   h          = json["h"].get(0.0f);
@@ -1190,7 +1190,7 @@ Bot::Bot(const BotClass* clazz_, int index, const JSON& json) :
   name       = json["name"].get("");
   mind       = json["mind"].get("");
 
-  for (const JSON& stateJSON : json["state"].arrayCIter()) {
+  for (const Json& stateJson : json["state"].arrayCIter()) {
     OZ_STATE_READ(DEAD_BIT,         "dead"        );
     OZ_STATE_READ(INCARNATABLE_BIT, "incarnatable");
     OZ_STATE_READ(CROUCHING_BIT,    "crouching"   );
@@ -1241,9 +1241,9 @@ Bot::Bot(const BotClass* clazz_, InputStream* is) :
   }
 }
 
-JSON Bot::write() const
+Json Bot::write() const
 {
-  JSON json = Dynamic::write();
+  Json json = Dynamic::write();
 
   json.add("h", h);
   json.add("v", v);
@@ -1252,7 +1252,7 @@ JSON Bot::write() const
   json.add("name", name);
   json.add("mind", mind);
 
-  JSON& stateJSON = json.add("state", JSON::ARRAY);
+  Json& stateJson = json.add("state", Json::ARRAY);
 
   OZ_STATE_WRITE(DEAD_BIT,         "dead"        );
   OZ_STATE_WRITE(INCARNATABLE_BIT, "incarnatable");

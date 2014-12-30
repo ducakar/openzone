@@ -36,7 +36,7 @@ void Terra::load()
 {
   File configFile = "@terra/" + name + ".json";
 
-  JSON config;
+  Json config;
   if (!config.load(configFile)) {
     OZ_ERROR("Failed to load terra configuration '%s'", configFile.path().cstr());
   }
@@ -112,7 +112,7 @@ void Terra::load()
     };
 
     for (int i = 0; i < aLength(MODULE_NAMES); ++i) {
-      const JSON& moduleConfig = config[MODULE_NAMES[i]];
+      const Json& moduleConfig = config[MODULE_NAMES[i]];
 
       float bottomHeight = moduleConfig["bottomHeight"].get(-100.0f);
       float topHeight    = moduleConfig["topHeight"].get(+100.0f);
@@ -147,7 +147,7 @@ void Terra::load()
 
     TerraBuilder::clearGradient();
 
-    const JSON& gradientConfig = config["gradient"];
+    const Json& gradientConfig = config["gradient"];
 
     for (int i = 0; i < gradientConfig.length(); ++i) {
       Vec4 gradientPoint = gradientConfig[i].get(Vec4::ZERO);

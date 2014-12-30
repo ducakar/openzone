@@ -140,7 +140,7 @@ void Shader::loadProgram(int id)
   const String& name = liber.shaders[id].name;
 
   File configFile = "@glsl/" + name + ".json";
-  JSON programConfig;
+  Json programConfig;
 
   if (!programConfig.load(configFile)) {
     OZ_ERROR("Failed to read shader program configuration '%s'", configFile.path().cstr());

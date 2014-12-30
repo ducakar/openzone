@@ -422,7 +422,7 @@ int Client::init(int argc, char** argv)
   else {
     Log::println("Invalid configuration file version, default settings used.");
 
-    config = JSON::OBJECT;
+    config = Json::OBJECT;
     config.add("_version", OZ_VERSION);
     config["_version"];
   }
@@ -572,7 +572,7 @@ int Client::init(int argc, char** argv)
 
   int seed;
 
-  if (config["seed"].type() == JSON::STRING) {
+  if (config["seed"].type() == Json::STRING) {
     if (!config["seed"].get(String::EMPTY).equals("TIME")) {
       OZ_ERROR("Configuration variable 'sees' must be either \"TIME\" or an integer");
     }

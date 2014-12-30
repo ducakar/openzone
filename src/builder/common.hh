@@ -33,7 +33,7 @@ namespace oz
 namespace builder
 {
 
-extern JSON config;
+extern Json config;
 
 }
 }

@@ -52,7 +52,7 @@ void LoadingArea::onDraw()
 
 LoadingArea::LoadingArea() :
   Area(camera.width, camera.height),
-  status(width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " ")
+  status(width / 2, height / 5, 0, ALIGN_CENTRE, Font::LARGE, " ")
 {
   flags |= PINNED_BIT;
 }

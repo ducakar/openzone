@@ -38,7 +38,7 @@ namespace client
 
 void CinematicProxy::executeSequence(const char* path, const Lingua* missionLingua)
 {
-  JSON sequence;
+  Json sequence;
   File file = path;
 
   if (!sequence.load(file)) {
@@ -57,21 +57,21 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
   steps.reserve(nSteps);
 
   for (int i = 0; i < nSteps; ++i) {
-    const JSON& stepConfig = sequence[i];
-    const JSON& rotArray = stepConfig["rot"];
+    const Json& stepConfig = sequence[i];
+    const Json& rotArray = stepConfig["rot"];
 
     if (!rotArray.isNull()) {
       Vec3 rot = rotArray.get(Vec3::ZERO);
       step.rot = Quat::rotationZXZ(Math::rad(rot.x), Math::rad(rot.y), Math::rad(rot.z));
     }
 
-    const JSON& posArray = stepConfig["pos"];
+    const Json& posArray = stepConfig["pos"];
 
     if (!posArray.isNull()) {
       step.p = posArray.get(Point::ORIGIN);
     }
 
-    const JSON& colourArray = stepConfig["colour"];
+    const Json& colourArray = stepConfig["colour"];
 
     if (!colourArray.isNull()) {
       step.colour = colourArray.get(Mat4::ID);
@@ -79,7 +79,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
 
     step.code = stepConfig["exec"].get("");
 
-    const JSON& trackConfig = stepConfig["track"];
+    const Json& trackConfig = stepConfig["track"];
     const String& track = trackConfig.get(String::EMPTY);
 
     if (trackConfig.isNull()) {
@@ -92,7 +92,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
       step.track = liber.musicTrackIndex(track);
     }
 
-    const JSON& titleConfig = stepConfig["title"];
+    const Json& titleConfig = stepConfig["title"];
     const String& title = titleConfig.get(String::EMPTY);
 
     if (titleConfig.isNull()) {
@@ -107,7 +107,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
 
     step.time = stepConfig["time"].get(0.0f);
 
-    const JSON& stateConfig = stepConfig["state"];
+    const Json& stateConfig = stepConfig["state"];
 
     if (stateConfig.isNull()) {
       step.endState = Camera::CINEMATIC;
@@ -284,7 +284,7 @@ void CinematicProxy::read(InputStream* is)
   }
 }
 
-void CinematicProxy::read(const JSON&)
+void CinematicProxy::read(const Json&)
 {}
 
 void CinematicProxy::write(OutputStream* os) const
@@ -315,9 +315,9 @@ void CinematicProxy::write(OutputStream* os) const
   }
 }
 
-JSON CinematicProxy::write() const
+Json CinematicProxy::write() const
 {
-  return JSON::NIL;
+  return Json::NIL;
 }
 
 }
