@@ -38,30 +38,30 @@ class Inventory : public Frame
 {
 private:
 
-  static const int   COLS          = 8;
-  static const int   PADDING_SIZE  = 1;
-  static const int   FOOTER_SIZE   = 32;
-  static const int   ICON_SIZE     = 32;
-  static const int   SLOT_SIZE     = 64;
-  static const int   SLOT_OBJ_DIM  = (SLOT_SIZE - 2*PADDING_SIZE) / 2;
-  static const int   SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
+  static const int COLS          = 8;
+  static const int PADDING_SIZE  = 1;
+  static const int FOOTER_SIZE   = 32;
+  static const int ICON_SIZE     = 32;
+  static const int SLOT_SIZE     = 64;
+  static const int SLOT_OBJ_DIM  = (SLOT_SIZE - 2*PADDING_SIZE) / 2;
+  static const int SINGLE_HEIGHT = FOOTER_SIZE + SLOT_SIZE;
 
-  const Bot*     owner;
-  const Object*  other;
+  const Bot*    owner;
+  const Object* other;
 
-  Bar            lifeBar;
-  Bar            statusBar;
+  Bar           lifeBar;
+  Bar           statusBar;
 
-  ModelField*    ownerModels[COLS];
-  ModelField*    otherModels[COLS];
+  ModelField*   ownerModels[COLS];
+  ModelField*   otherModels[COLS];
 
-  Label          itemDesc;
+  Text          itemDesc;
 
-  int            taggedItemIndex;
-  bool           taggedOwnerComponent;
+  int           taggedItemIndex;
+  bool          taggedOwnerComponent;
 
-  int            scrollOwner;
-  int            scrollOther;
+  int           scrollOwner;
+  int           scrollOther;
 
 private:
 

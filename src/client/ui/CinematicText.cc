@@ -32,7 +32,7 @@ namespace client
 namespace ui
 {
 
-void CinematicText::onReposition()
+void CinematicText::onRealign()
 {
   x     = camera.width / 8;
   y     = camera.height / 12;

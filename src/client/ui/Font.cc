@@ -36,14 +36,17 @@ static const SDL_Colour SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
 void Font::sizeOf(const char* s, int* width, int* height) const
 {
-  TTF_SizeUTF8(handle, s, width, height);
+  TTF_Font* font = static_cast<TTF_Font*>(handle);
+
+  TTF_SizeUTF8(font, s, width, height);
 }
 
 void Font::upload(const char* s, int* width, int* height) const
 {
+  TTF_Font*    font = static_cast<TTF_Font*>(handle);
   SDL_Surface* surf = width != nullptr && *width > 0 ?
-                      TTF_RenderUTF8_Blended_Wrapped(handle, s, SDL_COLOUR_WHITE, uint(*width)) :
-                      TTF_RenderUTF8_Blended(handle, s, SDL_COLOUR_WHITE);
+                      TTF_RenderUTF8_Blended_Wrapped(font, s, SDL_COLOUR_WHITE, uint(*width)) :
+                      TTF_RenderUTF8_Blended(font, s, SDL_COLOUR_WHITE);
 
   if (surf == nullptr) {
     OZ_ERROR("Failed to generate texture from text: %s", s);
@@ -84,7 +87,9 @@ void Font::init(const char* name, int height_)
 void Font::destroy()
 {
   if (handle != nullptr) {
-    TTF_CloseFont(handle);
+    TTF_Font* font = static_cast<TTF_Font*>(handle);
+
+    TTF_CloseFont(font);
     handle = nullptr;
   }
 

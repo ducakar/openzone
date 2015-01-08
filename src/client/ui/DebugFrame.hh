@@ -36,13 +36,13 @@ class DebugFrame : public Frame
 {
 private:
 
-  Label camPosRot;
-  Label botPosRot;
-  Label botVelMom;
-  Label botFlagsState;
-  Label tagPos;
-  Label tagVelMom;
-  Label tagFlags;
+  Text camPosRot;
+  Text botPosRot;
+  Text botVelMom;
+  Text botFlagsState;
+  Text tagPos;
+  Text tagVelMom;
+  Text tagFlags;
 
 protected:
 

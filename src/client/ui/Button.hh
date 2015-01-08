@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -41,7 +41,7 @@ public:
 
 private:
 
-  Label     label;
+  Text      text;
   Callback* callback;
 
   bool      isHighlighted;
@@ -56,9 +56,9 @@ protected:
 
 public:
 
-  explicit Button(const char* text, Callback* callback, int width, int height);
+  explicit Button(const char* s, Callback* callback, int width, int height);
 
-  void setLabel(const char* text);
+  void setText(const char* s);
   void setCallback(Callback* callback);
 
 };

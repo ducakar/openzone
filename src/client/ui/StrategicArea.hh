@@ -28,7 +28,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -49,7 +49,7 @@ private:
 
   typedef void OverlayCallback(Area* sender, const Vec3& p);
 
-  Label            unitName;
+  Text             unitName;
 
   float            pixelStep;
   float            stepPixel;
@@ -87,7 +87,7 @@ protected:
 
   void onUpdate() override;
   void onVisibilityChange(bool doShow) override;
-  void onReposition() override;
+  void onRealign() override;
   bool onMouseEvent() override;
   void onDraw() override;
 

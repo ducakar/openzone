@@ -73,7 +73,7 @@ void MissionMenu::loadMission(Button* sender)
   gameStage.mission   = missionMenu->missions[missionMenu->scroll + button->index].name;
 }
 
-void MissionMenu::onReposition()
+void MissionMenu::onRealign()
 {
   width       = camera.width;
   height      = camera.height;
@@ -125,7 +125,7 @@ bool MissionMenu::onMouseEvent()
     for (auto i = children.iter(); i != children.last(); ++i) {
       MissionButton* button = static_cast<MissionButton*>(&*i);
 
-      button->setLabel(missions[scroll + button->index].title);
+      button->setText(missions[scroll + button->index].title);
     }
   }
 

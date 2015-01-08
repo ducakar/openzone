@@ -125,6 +125,7 @@ add_library(client STATIC
   ui/StrategicArea.hh
   ui/Style.hh
   ui/TalkFrame.hh
+  ui/Text.hh
   ui/UI.hh
   ui/Area.cc
   ui/Bar.cc
@@ -154,6 +155,7 @@ add_library(client STATIC
   ui/StrategicArea.cc
   ui/Style.cc
   ui/TalkFrame.cc
+  ui/Text.cc
   ui/UI.cc
 #END SOURCES
 )

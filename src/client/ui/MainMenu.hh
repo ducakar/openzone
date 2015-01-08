@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -37,12 +37,12 @@ class MainMenu : public Area
 {
 private:
 
-  Label copyright;
-  Label title;
+  Text copyright;
+  Text title;
 
 protected:
 
-  void onReposition() override;
+  void onRealign() override;
   void onUpdate() override;
   bool onMouseEvent() override;
   bool onKeyEvent() override;

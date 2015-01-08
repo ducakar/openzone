@@ -42,40 +42,6 @@ Area::~Area()
   children.free();
 }
 
-void Area::reposition()
-{
-  if (parent != nullptr) {
-    x = defaultX == CENTRE ? parent->x + (parent->width - width) / 2 :
-        defaultX < 0 ? parent->x + parent->width - width + defaultX : parent->x + defaultX;
-
-    y = defaultY == CENTRE ? parent->y + (parent->height - height) / 2 :
-        defaultY < 0 ? parent->y + parent->height - height + defaultY : parent->y + defaultY;
-  }
-
-  onReposition();
-
-  for (Area& child : children) {
-    child.reposition();
-  }
-}
-
-void Area::move(int moveX, int moveY)
-{
-  if (parent == nullptr) {
-    return;
-  }
-
-  moveX = clamp(moveX, parent->x - x, parent->x + parent->width  - x - width );
-  moveY = clamp(moveY, parent->y - y, parent->y + parent->height - y - height);
-
-  x += moveX;
-  y += moveY;
-
-  for (Area& child : children) {
-    child.move(moveX, moveY);
-  }
-}
-
 void Area::updateChildren()
 {
   for (Area& child : children) {
@@ -141,7 +107,7 @@ void Area::drawChildren()
 void Area::onVisibilityChange(bool)
 {}
 
-void Area::onReposition()
+void Area::onRealign()
 {}
 
 void Area::onUpdate()
@@ -224,16 +190,49 @@ Pair<int> Area::align(int localX, int localY, int width, int height) const
   };
 }
 
+void Area::realign()
+{
+  if (parent != nullptr) {
+    Pair<int> pos = parent->align(defaultX, defaultY, width, height);
+
+    x = pos.x;
+    y = pos.y;
+  }
+
+  onRealign();
+
+  for (Area& child : children) {
+    child.realign();
+  }
+}
+
+void Area::move(int moveX, int moveY)
+{
+  if (parent == nullptr) {
+    return;
+  }
+
+  moveX = clamp(moveX, parent->x - x, parent->x + parent->width  - x - width);
+  moveY = clamp(moveY, parent->y - y, parent->y + parent->height - y - height);
+
+  x += moveX;
+  y += moveY;
+
+  for (Area& child : children) {
+    child.move(moveX, moveY);
+  }
+}
+
 void Area::add(Area* area, int localX, int localY)
 {
-  area->width  = clamp(area->width,  1, width );
+  area->width  = clamp(area->width,  1, width);
   area->height = clamp(area->height, 1, height);
 
   area->defaultX = localX;
   area->defaultY = localY;
 
   area->parent = this;
-  area->reposition();
+  area->realign();
 
   children.pushFirst(area);
 }

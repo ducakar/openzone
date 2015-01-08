@@ -291,7 +291,7 @@ void StrategicArea::onVisibilityChange(bool)
   mouseW     = 0.0f;
 }
 
-void StrategicArea::onReposition()
+void StrategicArea::onRealign()
 {
   width     = camera.width;
   height    = camera.height;
@@ -456,7 +456,7 @@ void StrategicArea::onDraw()
 
 StrategicArea::StrategicArea() :
   Area(camera.width, camera.height),
-  unitName(0, 0, 0, ALIGN_HCENTRE, Font::SANS, " "),
+  unitName(0, 0, 0, ALIGN_HCENTRE, Font::SANS, ""),
   overlayCallback(nullptr), overlaySender(nullptr),
   hoverStr(-1), hoverEnt(-1), hoverObj(-1), taggedStr(-1),
   mouseW(0.0f)

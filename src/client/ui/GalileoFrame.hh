@@ -36,31 +36,31 @@ class GalileoFrame : public Frame
 {
 private:
 
-  uint      mapTexId;
+  uint  mapTexId;
 
-  int       normalX;
-  int       normalY;
-  int       normalWidth;
-  int       normalHeight;
+  int   normalX;
+  int   normalY;
+  int   normalWidth;
+  int   normalHeight;
 
-  int       maximisedX;
-  int       maximisedY;
-  int       maximisedWidth;
-  int       maximisedHeight;
+  int   maximisedX;
+  int   maximisedY;
+  int   maximisedWidth;
+  int   maximisedHeight;
 
-  Vec4      colour;
+  Vec4  colour;
 
 public:
 
   // World coordinate of a mouse click, NaN if no click.
-  float     clickX;
-  float     clickY;
+  float clickX;
+  float clickY;
 
-  bool      isMaximised;
+  bool  isMaximised;
 
 protected:
 
-  void onReposition() override;
+  void onRealign() override;
   void onUpdate() override;
   bool onMouseEvent() override;
   void onDraw() override;

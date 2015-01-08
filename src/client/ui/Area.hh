@@ -40,7 +40,7 @@ class Area
 
 public:
 
-  static const int CENTRE          = 0x10000000; ///< Special value for x and y.
+  static const int CENTRE          = 0x10000000; ///< Special bit for x and y value.
 
   static const int UPDATE_BIT      = 0x01;       ///< If `onUpdate()` should be called.
   static const int PINNED_BIT      = 0x02;       ///< Show in both freelook and interface mode.
@@ -82,6 +82,8 @@ protected:
   int defaultX;
   int defaultY;
 
+protected:
+
   void updateChildren();
   // return true if event has been caught
   bool passMouseEvents();
@@ -89,7 +91,7 @@ protected:
   void drawChildren();
 
   virtual void onVisibilityChange(bool doShow);
-  virtual void onReposition();
+  virtual void onRealign();
   virtual void onUpdate();
   // return true if event has been caught
   virtual bool onMouseEvent();
@@ -118,19 +120,19 @@ public:
   void show(bool doShow);
 
   /**
+   * Calculate global (x, y) for given relative rectangle coordinates/dimension.
+   */
+  Pair<int> align(int localX, int localY, int width, int height) const;
+
+  /**
    * Fix position if parent has been resized.
    */
-  void reposition();
+  void realign();
 
   /**
    * Move for `moveX` to the right and for `moveY` up.
    */
   void move(int moveX, int moveY);
-
-  /**
-   * Calculate global (x, y) for given relative rectangle coordinates/dimension.
-   */
-  Pair<int> align(int localX, int localY, int width, int height) const;
 
   void add(Area* area, int localX, int localY);
   void remove(Area* area);

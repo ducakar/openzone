@@ -18,13 +18,12 @@
  */
 
 /**
- * @file client/ui/CreditsMenu.hh
+ * @file client/ui/Label.hh
  */
 
 #pragma once
 
-#include <client/ui/Text.hh>
-#include <client/ui/Area.hh>
+#include <client/ui/Font.hh>
 
 namespace oz
 {
@@ -33,28 +32,52 @@ namespace client
 namespace ui
 {
 
-class CreditsMenu : public Area
+class Area;
+
+class Text
 {
 private:
 
-  List<String> lines;
-  List<Text>   labels;
-  const int    stride;
-  int          scroll;
-  int          bias;
-  int          direction;
+  int        x;
+  int        y;
+  int        width;
+  int        align;
+  Font::Type font;
+  int        lastHash;
 
-protected:
+  int        texX;
+  int        texY;
+  int        texWidth;
+  int        texHeight;
+  uint       texId;
 
-  void onRealign() override;
-  void onUpdate() override;
-  bool onMouseEvent() override;
-  bool onKeyEvent() override;
-  void onDraw() override;
+private:
+
+  void realign();
 
 public:
 
-  CreditsMenu();
+  Text();
+
+  OZ_PRINTF_FORMAT(7, 8)
+  explicit Text(int x, int y, int width, int align, Font::Type font, const char* s, ...);
+
+  ~Text();
+  Text(Text&& l);
+  Text& operator = (Text&& l);
+
+  void setPosition(int x, int y);
+  void setWidth(int width);
+  void setAlign(int align);
+  void setFont(Font::Type font);
+  OZ_PRINTF_FORMAT(2, 0)
+  void setTextv(const char* s, va_list ap);
+  OZ_PRINTF_FORMAT(2, 3)
+  void setText(const char* s, ...);
+
+  void draw(const Area* area);
+
+  void clear();
 
 };
 

@@ -230,7 +230,7 @@ void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
   }
 }
 
-void BuildFrame::onReposition()
+void BuildFrame::onRealign()
 {
   children.free();
   delete[] models;

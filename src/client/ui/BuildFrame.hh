@@ -74,7 +74,7 @@ private:
 
   static void startPlacement(ModelField* sender, bool isClicked);
 
-  void onReposition() override;
+  void onRealign() override;
   bool onMouseEvent() override;
   void onDraw() override;
 

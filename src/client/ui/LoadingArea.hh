@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -39,12 +39,12 @@ class LoadingArea : public Area
 
 protected:
 
-  void onReposition() override;
+  void onRealign() override;
   void onDraw() override;
 
 public:
 
-  Label status;
+  Text status;
 
   LoadingArea();
 

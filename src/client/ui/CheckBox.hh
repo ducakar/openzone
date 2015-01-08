@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -37,15 +37,15 @@ class CheckBox : public Area
 {
 private:
 
-  Label label;
+  Text label;
 
-  bool  isHighlighted;
-  bool  isClicked;
-  bool  wasClicked;
+  bool isHighlighted;
+  bool isClicked;
+  bool wasClicked;
 
 public:
 
-  bool  isChecked;
+  bool isChecked;
 
 protected:
 

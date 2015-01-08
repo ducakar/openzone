@@ -96,7 +96,7 @@ void SettingsMenu::openDebug(Button* sender)
   settingsMenu->debug->enable(true);
 }
 
-void SettingsMenu::onReposition()
+void SettingsMenu::onRealign()
 {
   width  = camera.width;
   height = camera.height;

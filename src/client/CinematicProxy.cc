@@ -99,7 +99,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
       step.title = "";
     }
     else if (title.isEmpty()) {
-      step.title = " ";
+      step.title = "";
     }
     else {
       step.title = missionLingua->get(title);
@@ -232,7 +232,7 @@ void CinematicProxy::update()
       title       = step.title;
       nTitleChars = 0;
 
-      cinematicText->set(" ");
+      cinematicText->set("");
     }
   }
 }

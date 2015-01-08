@@ -102,7 +102,7 @@ static void quit(Button*)
   menuStage.doExit = true;
 }
 
-void MainMenu::onReposition()
+void MainMenu::onRealign()
 {
   width  = camera.width;
   height = camera.height;
@@ -116,7 +116,7 @@ void MainMenu::onReposition()
                                " archives."));
 
   for (Area& child : children) {
-    child.reposition();
+    child.realign();
   }
 }
 

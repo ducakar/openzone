@@ -82,21 +82,20 @@ void Button::onDraw()
   }
 
   shape.fill(x, y, width, height);
-  label.draw(this);
+  text.draw(this);
 
   isHighlighted = false;
   isClicked     = false;
 }
 
-Button::Button(const char* text, Callback* callback_, int width, int height) :
-  Area(width, height),
-  label(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%s", text),
+Button::Button(const char* s, Callback* callback_, int width, int height) :
+  Area(width, height), text(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%s", s),
   callback(callback_), isHighlighted(false), isClicked(false), wasClicked(false)
 {}
 
-void Button::setLabel(const char* text)
+void Button::setText(const char* s)
 {
-  label.setText("%s", text);
+  text.setText("%s", s);
 }
 
 void Button::setCallback(Callback* callback_)

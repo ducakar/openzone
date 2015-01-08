@@ -53,7 +53,7 @@ private:
 
   ModelField* ownerModels[COLS];
 
-  Label       itemDesc;
+  Text        itemDesc;
 
   int         taggedItemIndex;
   int         scrollOwner;

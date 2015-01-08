@@ -25,9 +25,6 @@
 
 #include <client/common.hh>
 
-struct _TTF_Font;
-typedef struct _TTF_Font TTF_Font;
-
 namespace oz
 {
 namespace client
@@ -51,8 +48,8 @@ public:
 
 private:
 
-  Buffer    buffer;
-  TTF_Font* handle;
+  void*  handle;
+  Buffer buffer;
 
 public:
 

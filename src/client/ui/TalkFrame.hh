@@ -36,8 +36,8 @@ class TalkFrame : public Frame
 {
 private:
 
-  Label text;
-  Label answers[8];
+  Text text;
+  Text answers[8];
 
 protected:
 

@@ -38,7 +38,7 @@ namespace client
 namespace ui
 {
 
-void GalileoFrame::onReposition()
+void GalileoFrame::onRealign()
 {
   int maxSize     = camera.height < camera.width ? camera.height - 64 : camera.width - 64;
 

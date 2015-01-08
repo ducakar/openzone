@@ -24,7 +24,7 @@
 #pragma once
 
 #include <matrix/Vehicle.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 #include <client/ui/Bar.hh>
 #include <client/ui/ModelField.hh>
 
@@ -46,11 +46,11 @@ private:
   static const float VEHICLE_DIM;
   static const float CROSS_FADE_COEFF;
 
-  Label       title;
-  Label       weaponName;
-  Label       weaponRounds;
-  Label       vehicleWeaponNames[Vehicle::MAX_WEAPONS];
-  Label       vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+  Text        title;
+  Text        weaponName;
+  Text        weaponRounds;
+  Text        vehicleWeaponNames[Vehicle::MAX_WEAPONS];
+  Text        vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
 
   Bar         taggedLife;
   Bar         taggedStatus;
@@ -80,7 +80,7 @@ private:
 
 protected:
 
-  void onReposition() override;
+  void onRealign() override;
   bool onMouseEvent() override;
   void onDraw() override;
 

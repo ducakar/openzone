@@ -24,7 +24,7 @@
 #pragma once
 
 #include <client/ui/Area.hh>
-#include <client/ui/Label.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {
@@ -37,7 +37,7 @@ class Slider : public Area
 {
 private:
 
-  Label label;
+  Text  text;
 
   bool  isHighlighted;
   bool  isClicked;

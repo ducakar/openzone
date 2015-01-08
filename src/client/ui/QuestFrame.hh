@@ -38,7 +38,7 @@ class QuestFrame : public Frame
 {
 private:
 
-  Label        description;
+  Text         description;
   int          contentHeight;
   bool         isOpened;
 

@@ -228,7 +228,7 @@ void UI::init()
   loadingScreen = new LoadingArea();
 
   if (showFPS) {
-    fpsLabel = new Label(-4, -4, 0, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, " ");
+    fpsLabel = new Text(-4, -4, 0, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, "");
   }
 
   root->add(loadingScreen, 0, 0);

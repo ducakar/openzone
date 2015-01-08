@@ -43,7 +43,7 @@ static void back(Button* sender)
   creditsMenu->parent->remove(creditsMenu);
 }
 
-void CreditsMenu::onReposition()
+void CreditsMenu::onRealign()
 {
   width  = camera.width;
   height = camera.height;
@@ -55,10 +55,10 @@ void CreditsMenu::onReposition()
     int line = scroll + i;
 
     if (line < nLabels) {
-      labels[i] = Label(0, 0, 0, ALIGN_HCENTRE, Font::SANS, " ");
+      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "");
     }
     else {
-      labels[i] = Label(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr());
+      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr());
     }
   }
 }
@@ -81,7 +81,7 @@ void CreditsMenu::onUpdate()
       int line = (scroll + i) % nEntries;
 
       if (line < labels.length()) {
-        labels[i].setText(" ");
+        labels[i].setText("");
       }
       else {
         labels[i].setText("%s", lines[line - labels.length()].cstr());

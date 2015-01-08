@@ -56,10 +56,10 @@ static void* allocate(AllocMode mode, size_t size)
   size += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 #endif
 
-#if defined(OZ_SIMD) && defined(_WIN32)
-  void* ptr = _aligned_malloc(size, OZ_ALIGNMENT);
-#elif defined(OZ_SIMD) && _ISOC11_SOURCE
+#if defined(OZ_SIMD) && _ISOC11_SOURCE
   void* ptr = aligned_alloc(OZ_ALIGNMENT, size);
+#elif defined(OZ_SIMD) && defined(_WIN32)
+  void* ptr = _aligned_malloc(size, OZ_ALIGNMENT);
 #elif defined(OZ_SIMD)
   void* ptr = memalign(OZ_ALIGNMENT, size);
 #else

@@ -33,7 +33,7 @@ namespace client
 namespace ui
 {
 
-class Label;
+class Text;
 class Area;
 class LoadingArea;
 class StrategicArea;
@@ -53,7 +53,7 @@ class UI
 private:
 
   float          fps;
-  Label*         fpsLabel;
+  Text*          fpsLabel;
 
   bool           isFreelook;
   bool           showFPS;

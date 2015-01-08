@@ -37,7 +37,7 @@ void QuestFrame::updateTask()
 {
   if (questList.activeQuest < 0) {
     title.setText("%s", OZ_GETTEXT("No quest"));
-    description.setText(" ");
+    description.setText("");
 
     lastQuest = questList.activeQuest;
     lastState = Quest::NONE;

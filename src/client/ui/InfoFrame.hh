@@ -39,8 +39,8 @@ class InfoFrame : public Frame
 {
 private:
 
-  Label text;
-  int   lastId;
+  Text text;
+  int  lastId;
 
 private:
 

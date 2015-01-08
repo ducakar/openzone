@@ -59,7 +59,7 @@ bool Slider::onMouseEvent()
 
     value = fineValue - Math::mod(fineValue, valueStep);
 
-    label.setText("%g", value);
+    text.setText("%g", value);
   }
   else if (input.leftPressed) {
     isClicked  = true;
@@ -92,7 +92,7 @@ void Slider::onDraw()
   shape.colour(style.colours.text);
   shape.rect(x + 4, y, width - 8, height);
 
-  label.draw(this);
+  text.draw(this);
 
   isHighlighted = false;
   isClicked     = false;
@@ -100,7 +100,7 @@ void Slider::onDraw()
 
 Slider::Slider(float min, float max, float step, float value_, int width, int height) :
   Area(width, height),
-  label(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%g", value_),
+  text(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%g", value_),
   isHighlighted(false), isClicked(false), wasClicked(false),
   minValue(min), maxValue(max), valueStep(step), value(value_)
 {}

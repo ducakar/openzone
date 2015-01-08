@@ -74,7 +74,7 @@ private:
   int               selection;
   int               scroll;
 
-  Label             description;
+  Text              description;
 
   uint              imageId;
   int               imageX;
@@ -86,7 +86,7 @@ private:
 
 protected:
 
-  void onReposition() override;
+  void onRealign() override;
   bool onMouseEvent() override;
   bool onKeyEvent() override;
   void onDraw() override;

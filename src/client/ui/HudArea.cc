@@ -225,7 +225,7 @@ void HudArea::drawVehicleStatus()
   int modelBiasY = (4 - vehClazz->nWeapons) * (style.vehicleWeapon[0].h + 4);
 
   vehicleModel->setModel(vehClazz->imagoModel);
-  vehicleModel->reposition();
+  vehicleModel->realign();
   vehicleModel->y -= modelBiasY;
 
   float hull = vehicle->life / vehClazz->life;
@@ -235,9 +235,9 @@ void HudArea::drawVehicleStatus()
   vehicleFuel.draw(this, fuel);
 
   for (int i = 0; i < vehClazz->nWeapons; ++i) {
-    int    labelIndex  = vehClazz->nWeapons - i - 1;
-    Label& nameLabel   = vehicleWeaponNames[labelIndex];
-    Label& roundsLabel = vehicleWeaponRounds[labelIndex];
+    int   labelIndex  = vehClazz->nWeapons - i - 1;
+    Text& nameLabel   = vehicleWeaponNames[labelIndex];
+    Text& roundsLabel = vehicleWeaponRounds[labelIndex];
     const Style::Area& areaStyle = style.vehicleWeapon[labelIndex];
 
     Pair<int> pos = align(areaStyle.x, areaStyle.y, areaStyle.w, areaStyle.h);
@@ -264,7 +264,7 @@ void HudArea::drawVehicleStatus()
   }
 }
 
-void HudArea::onReposition()
+void HudArea::onRealign()
 {
   width        = camera.width;
   height       = camera.height;
@@ -304,8 +304,8 @@ void HudArea::onDraw()
 
 HudArea::HudArea() :
   Area(camera.width, camera.height),
-  title(0, 0, 0, ALIGN_CENTRE, Font::LARGE, " "),
-  weaponName(0, 0, 0, ALIGN_LEFT, Font::LARGE, " "),
+  title(0, 0, 0, ALIGN_CENTRE, Font::LARGE, ""),
+  weaponName(0, 0, 0, ALIGN_LEFT, Font::LARGE, ""),
   weaponRounds(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞"),
   taggedLife(&style.taggedLife),
   taggedStatus(&style.taggedStatus),
@@ -318,8 +318,8 @@ HudArea::HudArea() :
   flags |= UPDATE_BIT | PINNED_BIT;
 
   for (int i = 0; i < Vehicle::MAX_WEAPONS; ++i) {
-    vehicleWeaponNames[i]  = Label(0, 0, 0, ALIGN_LEFT, Font::LARGE, " ");
-    vehicleWeaponRounds[i] = Label(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞");
+    vehicleWeaponNames[i]  = Text(0, 0, 0, ALIGN_LEFT, Font::LARGE, "");
+    vehicleWeaponRounds[i] = Text(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞");
   }
 
   vehicleModel = new ModelField(nullptr, style.vehicleField.w, style.vehicleField.h);

@@ -37,12 +37,12 @@ class MusicPlayer : public Frame
 {
 private:
 
-  Label title;
-  Label trackLabel;
-  Label volumeLabel;
-  int   currentTrack;
-  int   volume;
-  bool  isPlaying;
+  Text title;
+  Text trackLabel;
+  Text volumeLabel;
+  int  currentTrack;
+  int  volume;
+  bool isPlaying;
 
   static void prevTrack(Button* sender);
   static void nextTrack(Button* sender);

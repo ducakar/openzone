@@ -162,7 +162,7 @@ void Camera::prepare()
 
     ui::ui.root->width  = camera.width;
     ui::ui.root->height = camera.height;
-    ui::ui.root->reposition();
+    ui::ui.root->realign();
   }
 }
 
