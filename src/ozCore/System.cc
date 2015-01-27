@@ -132,7 +132,6 @@ struct Wave
 static SpinLock              bellLock;
 static System::CrashHandler* crashHandler       = nullptr;
 static int                   initFlags          = 0;
-static bool                  isDebuggerAttached = false;
 
 OZ_NORETURN
 static void abort(bool doHalt);
@@ -450,11 +449,6 @@ void System::trap()
 #endif
 }
 
-bool System::isInstrumented()
-{
-  return isDebuggerAttached;
-}
-
 void System::bell()
 {
 #ifdef _WIN32
@@ -561,15 +555,6 @@ void System::init(int flags, CrashHandler* crashHandler_)
 {
   initFlags    = flags;
   crashHandler = crashHandler_;
-
-#if !defined(__ANDROID__) && !defined(__native_client__) && !defined(_WIN32)
-
-  int fd = open("/", O_RDONLY);
-  close(fd);
-
-  isDebuggerAttached = fd >= 5;
-
-#endif
 
   if (initFlags & LOCALE_BIT) {
     setlocale(LC_ALL, "");

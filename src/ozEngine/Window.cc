@@ -150,7 +150,7 @@ void Window::setGrab(bool grab)
 
 #if SDL_MAJOR_VERSION < 2
   SDL_ShowCursor(!windowGrab);
-  SDL_WM_GrabInput(SDL_GrabMode(windowGrab && !System::isInstrumented()));
+  SDL_WM_GrabInput(SDL_GrabMode(windowGrab));
 #else
   SDL_SetRelativeMouseMode(SDL_bool(windowGrab));
 #endif

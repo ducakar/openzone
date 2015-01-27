@@ -248,7 +248,7 @@ function fetch()
   fi
 
   # Lua
-  download 'http://www.lua.org/ftp/lua-5.2.3.tar.gz'
+  download 'http://www.lua.org/ftp/lua-5.3.0.tar.gz'
 
   # OpenAL Soft
   download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.16.0.tar.bz2'
@@ -397,8 +397,7 @@ function build_physfs()
 
 function build_lua()
 {
-  prepare lua-5.2.3 lua-5.2.3.tar.gz || return
-  applyPatches lua-5.2.2.patch
+  prepare lua-5.3.0 lua-5.3.0.tar.gz || return
 
   make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
   make INSTALL_TOP="$buildDir/usr" install

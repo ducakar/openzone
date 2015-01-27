@@ -45,7 +45,7 @@ void MusicPlayer::prevTrack(Button* sender)
 
     sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->title.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
     musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
@@ -61,7 +61,7 @@ void MusicPlayer::nextTrack(Button* sender)
 
     sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->title.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
     musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
@@ -75,7 +75,7 @@ void MusicPlayer::playTrack(Button* sender)
   if (nTracks != 0) {
     sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->title.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
     musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
@@ -87,7 +87,7 @@ void MusicPlayer::stopTrack(Button* sender)
 
   sound.stopMusic();
 
-  musicPlayer->title.setText("");
+  musicPlayer->trackTitle.setText("");
   musicPlayer->isPlaying = false;
 }
 
@@ -120,7 +120,7 @@ void MusicPlayer::onUpdate()
   {
     if (isPlaying) {
       isPlaying = false;
-      title.setText("");
+      trackTitle.setText("");
       sound.stopMusic();
     }
 
@@ -142,7 +142,7 @@ void MusicPlayer::onUpdate()
 
         sound.playMusic(currentTrack);
 
-        title.setText("%s", liber.musicTracks[currentTrack].name.cstr());
+        trackTitle.setText("%s", liber.musicTracks[currentTrack].name.cstr());
         trackLabel.setText("%d", currentTrack + 1);
       }
     }
@@ -153,14 +153,14 @@ void MusicPlayer::onDraw()
 {
   Frame::onDraw();
 
-  title.draw(this);
+  trackTitle.draw(this);
   trackLabel.draw(this);
   volumeLabel.draw(this);
 }
 
 MusicPlayer::MusicPlayer() :
   Frame(240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT("Music Player")),
-  title(width / 2, 32, 0, ALIGN_HCENTRE, Font::SMALL, ""),
+  trackTitle(width / 2, 32, 0, ALIGN_HCENTRE, Font::SMALL, ""),
   trackLabel(39, 14, 0, ALIGN_CENTRE, Font::SMALL, "0"),
   volumeLabel(201, 14, 0, ALIGN_CENTRE, Font::SMALL, "5"),
   currentTrack(0), volume(5), isPlaying(false)

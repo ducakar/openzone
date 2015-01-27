@@ -466,32 +466,6 @@ void Liber::initModels()
   Log::println("}");
 }
 
-void Liber::initMinds()
-{
-  Log::println("Mind automata (*.json in 'nirvana/mind') {");
-  Log::indent();
-
-  File dir = "@nirvana/mind";
-
-  for (const File& file : dir.ls()) {
-    if (!file.hasExtension("txt")) {
-      continue;
-    }
-
-    String name = file.baseName();
-
-    Log::println("%s", name.cstr());
-
-    mindIndices.add(name, minds.length());
-    minds.add({ name, file.path() });
-  }
-
-  minds.trim();
-
-  Log::unindent();
-  Log::println("}");
-}
-
 void Liber::initFragPools()
 {
   Log::println("Fragment pools (*.json in 'frag') {");

@@ -45,7 +45,7 @@ char* mReallocate(const void* src, int size, int newSize)
 OZ_WEAK
 size_t strlcpy(char* dest, const char* s, size_t size)
 {
-  if (size <= 0) {
+  if (size == 0) {
     return 0;
   }
 

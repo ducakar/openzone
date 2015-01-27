@@ -337,7 +337,7 @@
  * Shorthand for lua_tonumber
  */
 #define l_todouble(i) \
-  lua_tonumber(l, i)
+  double(lua_tonumber(l, i))
 
 /**
  * @def l_tostring

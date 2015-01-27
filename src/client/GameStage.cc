@@ -122,8 +122,6 @@ void GameStage::auxMain(void*)
 
 void GameStage::auxRun()
 {
-  uint beginMicros;
-
   auxSemaphore.wait();
 
   while (isAuxAlive) {
@@ -133,7 +131,7 @@ void GameStage::auxRun()
      * World is being updated, other threads should not access world structures here.
      */
 
-    beginMicros = Time::uclock();
+    uint beginMicros = Time::uclock();
 
     network.update();
 

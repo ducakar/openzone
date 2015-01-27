@@ -33,10 +33,6 @@ namespace oz
 
 class LuaNirvana : public LuaCommon
 {
-private:
-
-  bool execChunk(const Buffer& buffer, const char* name, Mind* mind, Bot* self);
-
 public:
 
   void mindCall(const char* functionName, Mind* mind, Bot* self);

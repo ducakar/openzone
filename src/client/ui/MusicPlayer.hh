@@ -37,7 +37,7 @@ class MusicPlayer : public Frame
 {
 private:
 
-  Text title;
+  Text trackTitle;
   Text trackLabel;
   Text volumeLabel;
   int  currentTrack;

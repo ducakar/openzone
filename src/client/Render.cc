@@ -41,7 +41,7 @@ namespace client
 const float Render::WIDE_CULL_FACTOR       = 6.0f;
 const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
 const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
-const float Render::CELL_RADIUS            = (Cell::SIZE / 2 + Object::MAX_DIM* WIDE_CULL_FACTOR) *
+const float Render::CELL_RADIUS            = (Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR) *
                                              Math::sqrt(2.0f);
 const float Render::EFFECTS_DISTANCE       = 192.0f;
 

@@ -91,7 +91,6 @@ private:
   void initTerrae();
   void initParticles();
   void initModels();
-  void initMinds();
   void initFragPools();
   void initClasses();
   void initBSPs();

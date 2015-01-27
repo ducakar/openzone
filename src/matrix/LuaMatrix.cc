@@ -35,13 +35,13 @@ static LuaMatrix& lua = luaMatrix;
 
 String LuaMatrix::nameGenCall(const char* functionName)
 {
-  ms.self         = nullptr;
-  ms.user         = nullptr;
-  ms.obj          = nullptr;
-  ms.str          = nullptr;
-  ms.frag         = nullptr;
-  ms.objIndex     = 0;
-  ms.strIndex     = 0;
+  ms.self     = nullptr;
+  ms.user     = nullptr;
+  ms.obj      = nullptr;
+  ms.str      = nullptr;
+  ms.frag     = nullptr;
+  ms.objIndex = 0;
+  ms.strIndex = 0;
 
   hard_assert(l_gettop() == 1);
 
@@ -66,13 +66,13 @@ String LuaMatrix::nameGenCall(const char* functionName)
 
 bool LuaMatrix::objectCall(const char* functionName, Object* self, Bot* user)
 {
-  ms.self         = self;
-  ms.user         = user;
-  ms.obj          = self;
-  ms.str          = nullptr;
-  ms.frag         = nullptr;
-  ms.objIndex     = 0;
-  ms.strIndex     = 0;
+  ms.self     = self;
+  ms.user     = user;
+  ms.obj      = self;
+  ms.str      = nullptr;
+  ms.frag     = nullptr;
+  ms.objIndex = 0;
+  ms.strIndex = 0;
 
   hard_assert(l_gettop() == 1 && self != nullptr);
 

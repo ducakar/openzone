@@ -605,7 +605,6 @@ void Input::init()
   SDL_ShowCursor(false);
 #else
   SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
-  SDL_SetRelativeMouseMode(SDL_TRUE);
 #endif
 
   inputConfig.clear(true);

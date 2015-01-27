@@ -81,6 +81,7 @@ if(OZ_LUAJIT)
   include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
 else()
   pkg_check_modules(LUA REQUIRED lua)
+  include_directories(SYSTEM ${LUA_INCLUDE_DIRS})
 endif()
 
 if(NACL)
