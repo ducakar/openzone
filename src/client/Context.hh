@@ -54,15 +54,15 @@ private:
   template <typename Type>
   struct Resource
   {
-    Type handle;
-    int  nUsers; ///< Number of users or -1 if not loaded.
+    Type handle = Type();
+    int  nUsers = -1; ///< Number of users or -1 if not loaded.
   };
 
   struct Source
   {
     uint    id;
     int     sound;
-    Source* next[1];
+    Source* next[1] = { nullptr };
 
     explicit Source(uint sourceId, int sound_) :
       id(sourceId), sound(sound_)
@@ -77,10 +77,10 @@ private:
   {
     uint id;
     int  sound;
-    bool isUpdated;
+    bool isUpdated = true;
 
     explicit ContSource(uint sourceId, int sound_) :
-      id(sourceId), sound(sound_), isUpdated(true)
+      id(sourceId), sound(sound_)
     {}
   };
 

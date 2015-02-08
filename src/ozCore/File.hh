@@ -94,11 +94,11 @@ public:
 
 private:
 
-  String        filePath; ///< %File path.
-  Type          fileType; ///< %File type.
-  int           fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
-  long64        fileTime; ///< Modification or creation time, what is newer.
-  mutable char* data;     ///< Mapped memory.
+  String        filePath;           ///< %File path.
+  Type          fileType = MISSING; ///< %File type.
+  int           fileSize = -1;      ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
+  long64        fileTime = 0;       ///< Modification or creation time, what is newer.
+  mutable char* data     = nullptr; ///< Mapped memory.
 
 private:
 
@@ -110,11 +110,16 @@ private:
 public:
 
   /**
+   * Empty/invalid instance.
+   */
+  File() = default;
+
+  /**
    * Create an instance for a given path.
    *
    * `stat()` is automatically called on construction unless the path is empty.
    */
-  File(const char* path = "");
+  File(const char* path);
 
   /**
    * Create an instance for a given path.

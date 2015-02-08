@@ -192,7 +192,7 @@ public:
   // EVENT_FRICTING is not in use, it only reserves a slot for friction sound.
   static const int EVENT_FRICTING = 6;
   static const int EVENT_USE      = 7;
-  static const int EVENT_FAILED   = 8;
+  static const int EVENT_FAIL     = 8;
 
   class Event
   {
@@ -200,7 +200,7 @@ public:
 
     static Pool<Event, 256> pool;
 
-    Event* next[1];
+    Event* next[1]   = { nullptr };
     int    id;
     float  intensity;
 
@@ -222,11 +222,11 @@ public:
    * FIELDS
    */
 
-  Object*            prev[1];    // the previous object in cell.objects chains
-  Object*            next[1];    // the next object in cell.objects chains
+  Object*            prev[1]    = { nullptr }; // the previous object in cell.objects chains
+  Object*            next[1]    = { nullptr }; // the next object in cell.objects chains
 
-  Cell*              cell;       // parent cell, nullptr if not positioned in the world
-  int                index;      // index in orbis.objects
+  Cell*              cell       = nullptr;     // parent cell, nullptr if not positioned in world
+  int                index      = -1;          // index in orbis.objects
 
   int                flags;
 
@@ -308,7 +308,7 @@ public:
     if (flags & USE_FUNC_BIT) {
       bool success = onUse(user);
 
-      addEvent(EVENT_FAILED - success, 1.0f);
+      addEvent(EVENT_FAIL - success, 1.0f);
     }
   }
 

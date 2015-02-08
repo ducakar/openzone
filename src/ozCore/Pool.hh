@@ -92,12 +92,12 @@ private:
   union  Slot;
   struct Block;
 
-  Block* firstBlock; ///< Linked list of the allocated blocks.
-  Slot*  freeSlot;   ///< Linked list of free slots or `nullptr` if none.
-  int    slotSize;   ///< Size of an object.
-  int    nSlots;     ///< Number of objects in a memory block.
-  int    count;      ///< Number of occupied slots in the pool.
-  int    size;       ///< Capacity.
+  Block* firstBlock = nullptr; ///< Linked list of the allocated blocks.
+  Slot*  freeSlot   = nullptr; ///< Linked list of free slots or `nullptr` if none.
+  int    slotSize   = 0;       ///< Size of an object.
+  int    nSlots     = 0;       ///< Number of objects in a memory block.
+  int    count      = 0;       ///< Number of occupied slots in the pool.
+  int    size       = 0;       ///< Capacity.
 
 public:
 

@@ -38,7 +38,7 @@ class BuildFrame : public Frame
 {
 private:
 
-  static const int  SLOT_SIZE      = 76;
+  static const int  SLOT_SIZE      = 78;
   static const Mat4 OVERLAY_GREEN;
   static const Mat4 OVERLAY_YELLOW;
   static const Mat4 OVERLAY_RED;

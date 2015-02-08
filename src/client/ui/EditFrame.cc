@@ -182,7 +182,7 @@ void EditFrame::onDraw()
 }
 
 EditFrame::EditFrame() :
-  Frame(COLS*SLOT_SIZE + 2*PADDING_SIZE, SINGLE_HEIGHT, ""),
+  Frame(COLS*SLOT_SIZE, SINGLE_HEIGHT, ""),
   owner(nullptr),
   lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
   itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, ""),
@@ -191,12 +191,11 @@ EditFrame::EditFrame() :
   flags |= UPDATE_BIT;
 
   for (int i = 0; i < COLS; ++i) {
-    ownerModels[i] = new ModelField(itemCallback, SLOT_SIZE - 2*PADDING_SIZE,
-                                    SLOT_SIZE - 2*PADDING_SIZE);
+    ownerModels[i] = new ModelField(itemCallback, SLOT_SIZE);
     ownerModels[i]->setClickMask(-1);
     ownerModels[i]->id = i;
 
-    add(ownerModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE);
+    add(ownerModels[i], i*SLOT_SIZE, FOOTER_SIZE);
   }
 }
 

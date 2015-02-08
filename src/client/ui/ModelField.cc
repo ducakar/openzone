@@ -88,7 +88,7 @@ void ModelField::onDraw()
       wasClicked = false;
     }
 
-    shape.fill(x, y, width, height);
+    shape.fill(x + 1, y + 1, width - 2, height - 2);
   }
 
   if (bsp != nullptr || model >= 0) {
@@ -105,7 +105,7 @@ void ModelField::onDraw()
       dim      = objModel->dim.fastN();
     }
 
-    float scale = float(width / 2) / dim;
+    float scale = float((width - 4) / 2) / dim;
 
     currRot = nextRot + ROTATION_SMOOTHING * angleDiff(currRot, nextRot);
 
@@ -145,8 +145,8 @@ void ModelField::onDraw()
   isClicked     = false;
 }
 
-ModelField::ModelField(Callback* callback_, int width, int height) :
-  Area(width, height), callback(callback_), bsp(nullptr), model(-1),
+ModelField::ModelField(Callback* callback_, int size) :
+  Area(size, size), callback(callback_), bsp(nullptr), model(-1),
   defaultRot(DEFAULT_ROTATION), currRot(DEFAULT_ROTATION), nextRot(DEFAULT_ROTATION),
   clickMask(Input::LEFT_BUTTON), isHighlighted(false), isClicked(false), wasClicked(false),
   id(-1)

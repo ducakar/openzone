@@ -58,9 +58,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Vec3() :
-    VectorBase3(0.0f, 0.0f, 0.0f, 0.0f)
-  {}
+  Vec3() = default;
 
   /**
    * Create a vector with given components.

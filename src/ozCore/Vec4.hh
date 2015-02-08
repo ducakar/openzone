@@ -60,9 +60,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Vec4() :
-    VectorBase4(0.0f, 0.0f, 0.0f, 0.0f)
-  {}
+  Vec4() = default;
 
   /**
    * Create a vector with given components.

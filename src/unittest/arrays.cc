@@ -99,7 +99,7 @@ void test_arrays()
   aReverse(a, 4);
   OZ_CHECK_CONTENTS(a, 2, 3, 2, 1);
 
-  Foo** c = new Foo*[5];
+  Foo** c = new Foo*[5]();
   for (Foo*& i : iter(c, 5)) {
     i = new Foo();
   }
@@ -108,7 +108,7 @@ void test_arrays()
 
   OZ_CHECK(aLength(a) == 4);
 
-  Foo* d = new Foo[4];
+  Foo* d = new Foo[4]();
   aCopy(b, 4, d);
   d = aReallocate(d, 4, 10);
   OZ_CHECK(aEquals(b, 4, d));

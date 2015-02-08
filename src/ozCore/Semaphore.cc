@@ -44,25 +44,25 @@ namespace oz
 struct Semaphore::Descriptor
 {
   HANDLE        semaphore;
-  volatile long counter;
+  volatile long counter   = 0;
 };
 
 #else
 
 struct Semaphore::Descriptor
 {
-  pthread_mutex_t mutex;
-  pthread_cond_t  cond;
-  volatile int    counter;
+  pthread_mutex_t mutex   = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  cond    = PTHREAD_COND_INITIALIZER;
+  volatile int    counter = 0;
 };
 
 #endif
 
 Semaphore::Semaphore()
 {
-  descriptor = static_cast<Descriptor*>(malloc(sizeof(Descriptor)));
+  descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
   if (descriptor == nullptr) {
-    OZ_ERROR("oz::Semaphore: Descriptor allocation failed");
+    OZ_ERROR("oz::Semaphore: Descriptor initialisation failed");
   }
 
 #ifdef _WIN32
@@ -72,18 +72,7 @@ Semaphore::Semaphore()
     OZ_ERROR("oz::Semaphore: Semaphore creation failed");
   }
 
-#else
-
-  if (pthread_mutex_init(&descriptor->mutex, nullptr) != 0) {
-    OZ_ERROR("oz::Semaphore: Mutex initialisation failed");
-  }
-  if (pthread_cond_init(&descriptor->cond, nullptr) != 0) {
-    OZ_ERROR("oz::Semaphore: Condition variable initialisation failed");
-  }
-
 #endif
-
-  descriptor->counter = 0;
 }
 
 Semaphore::~Semaphore()

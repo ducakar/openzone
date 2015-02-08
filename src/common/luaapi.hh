@@ -37,7 +37,7 @@ namespace oz
  */
 struct LuaState
 {
-  const char* envName; ///< Name of Lua component. Used when printing messages or errors.
+  const char* envName = "?"; ///< Name of Lua component. Used when printing messages or errors.
 };
 
 /**

@@ -100,10 +100,6 @@ public:
 
 private:
 
-  struct Data;
-  struct StringData;
-  struct ArrayData;
-  struct ObjectData;
   struct Parser;
   struct Formatter;
 
@@ -113,7 +109,7 @@ private:
   {
     bool       boolean;     ///< Boolean value storage.
     double     number;      ///< Number value storage.
-    Data*      data;        ///< Pointer to other, complex, value storage.
+    void*      data;        ///< Pointer to other, complex, value storage.
   };
   Type         valueType;   ///< Value type, `Json::Type`.
   mutable bool wasAccessed; ///< For warnings about unused variables.
@@ -123,7 +119,7 @@ private:
   /**
    * Internal constructor.
    */
-  explicit Json(Data* data, Type valueType);
+  explicit Json(void* data, Type valueType);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.

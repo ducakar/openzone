@@ -111,7 +111,6 @@ Object::Object(const ObjectClass* clazz_, int index_, const Point& p_, Heading h
 {
   p          = p_;
   dim        = clazz_->dim;
-  cell       = nullptr;
   index      = index_;
   flags      = clazz_->flags | heading;
   life       = clazz_->life;
@@ -131,7 +130,6 @@ Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
 {
   p          = json["p"].get(Point::ORIGIN);
   dim        = clazz_->dim;
-  cell       = nullptr;
   index      = index_;
   flags      = 0;
   life       = json["life"].get(0.0f);
@@ -169,7 +167,6 @@ Object::Object(const ObjectClass* clazz_, InputStream* is)
 {
   p          = is->readPoint();
   dim        = clazz_->dim;
-  cell       = nullptr;
   index      = is->readInt();
   flags      = is->readInt();
   life       = is->readFloat();

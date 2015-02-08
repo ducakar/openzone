@@ -297,7 +297,7 @@ void Inventory::onDraw()
 }
 
 Inventory::Inventory() :
-  Frame(COLS*SLOT_SIZE + 2*PADDING_SIZE, SINGLE_HEIGHT, ""),
+  Frame(COLS*SLOT_SIZE, SINGLE_HEIGHT, ""),
   owner(nullptr), other(nullptr),
   lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
   itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, ""),
@@ -306,20 +306,18 @@ Inventory::Inventory() :
   flags |= UPDATE_BIT;
 
   for (int i = 0; i < COLS; ++i) {
-    ownerModels[i] = new ModelField(ownerItemCallback,
-                                    SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE);
+    ownerModels[i] = new ModelField(ownerItemCallback, SLOT_SIZE);
     ownerModels[i]->setClickMask(-1);
     ownerModels[i]->id = i;
 
-    add(ownerModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + PADDING_SIZE);
+    add(ownerModels[i], i*SLOT_SIZE, FOOTER_SIZE);
   }
   for (int i = 0; i < COLS; ++i) {
-    otherModels[i] = new ModelField(otherItemCallback,
-                                    SLOT_SIZE - 2*PADDING_SIZE, SLOT_SIZE - 2*PADDING_SIZE);
+    otherModels[i] = new ModelField(otherItemCallback, SLOT_SIZE);
     otherModels[i]->setClickMask(-1);
     otherModels[i]->id = i;
 
-    add(otherModels[i], 2*PADDING_SIZE + i*SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT + PADDING_SIZE);
+    add(otherModels[i], i*SLOT_SIZE, FOOTER_SIZE + SINGLE_HEIGHT);
   }
 }
 

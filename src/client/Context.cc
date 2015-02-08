@@ -790,8 +790,8 @@ void Context::init()
 
   textureLod   = config.include("context.textureLod", 0).get(0);
 
-  imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses];
-  audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses];
+  imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses] {};
+  audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses] {};
   fragPools    = liber.nFragPools    == 0 ? nullptr : new FragPool*[liber.nFragPools] {};
 
   OZ_REGISTER_IMAGOCLASS(SMM);
@@ -810,36 +810,14 @@ void Context::init()
   int nModels      = liber.models.length();
   int nPartClasses = liber.parts.length();
 
-  textures    = nTextures    == 0 ? nullptr : new Resource<Texture>[nTextures];
-  sounds      = nSounds      == 0 ? nullptr : new Resource<uint>[nSounds];
+  textures    = nTextures    == 0 ? nullptr : new Resource<Texture>[nTextures] {};
+  sounds      = nSounds      == 0 ? nullptr : new Resource<uint>[nSounds] {};
 
-  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs];
-  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
+  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
+  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs] {};
 
-  models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels];
-  partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses];
-
-  for (int i = 0; i < nTextures; ++i) {
-    textures[i].nUsers = -1;
-  }
-  for (int i = 0; i < nSounds; ++i) {
-    sounds[i].nUsers = -1;
-  }
-  for (int i = 0; i < nBSPs; ++i) {
-    bsps[i].handle = nullptr;
-    bsps[i].nUsers = -1;
-
-    bspAudios[i].handle = nullptr;
-    bspAudios[i].nUsers = -1;
-  }
-  for (int i = 0; i < nModels; ++i) {
-    models[i].handle = nullptr;
-    models[i].nUsers = -1;
-  }
-  for (int i = 0; i < nPartClasses; ++i) {
-    partClasses[i].handle.unload();
-    partClasses[i].nUsers = -1;
-  }
+  models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels] {};
+  partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses] {};
 
   Log::printEnd(" OK");
 }

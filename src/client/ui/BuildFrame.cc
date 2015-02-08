@@ -235,8 +235,8 @@ void BuildFrame::onRealign()
   children.free();
   delete[] models;
 
-  rows   = max(0, (camera.height - 320) / (SLOT_SIZE + 2));
-  height = HEADER_SIZE + 58 + rows * (SLOT_SIZE + 2);
+  rows   = max(0, (camera.height - 320) / SLOT_SIZE);
+  height = HEADER_SIZE + 58 + rows * SLOT_SIZE;
 
   Pair<int> pos = parent->align(defaultX, defaultY, width, height);
 
@@ -244,17 +244,17 @@ void BuildFrame::onRealign()
   y = pos.y;
 
   if (rows != 0) {
-    models = new ModelField*[rows * 3];
-
     add(new Button(OZ_GETTEXT("B"), selectBuildings, 55, 18),   4, -HEADER_SIZE - 2);
     add(new Button(OZ_GETTEXT("U"), selectUnits,     55, 18),  63, -HEADER_SIZE - 2);
     add(new Button(OZ_GETTEXT("I"), selectItems,     55, 18), 122, -HEADER_SIZE - 2);
     add(new Button(OZ_GETTEXT("M"), selectObjects,   55, 18), 181, -HEADER_SIZE - 2);
 
+    models = new ModelField*[rows * 3] {};
+
     for (int i = 0; i < rows; ++i) {
-      models[i*3 + 0] = new ModelField(startPlacement, SLOT_SIZE, SLOT_SIZE);
-      models[i*3 + 1] = new ModelField(startPlacement, SLOT_SIZE, SLOT_SIZE);
-      models[i*3 + 2] = new ModelField(startPlacement, SLOT_SIZE, SLOT_SIZE);
+      models[i*3 + 0] = new ModelField(startPlacement, SLOT_SIZE);
+      models[i*3 + 1] = new ModelField(startPlacement, SLOT_SIZE);
+      models[i*3 + 2] = new ModelField(startPlacement, SLOT_SIZE);
 
       models[i*3 + 0]->id = i*3 + 0;
       models[i*3 + 1]->id = i*3 + 1;
@@ -264,9 +264,9 @@ void BuildFrame::onRealign()
       models[i*3 + 1]->show(false);
       models[i*3 + 2]->show(false);
 
-      add(models[i*3 + 0],   4, -HEADER_SIZE - 40 - i * (SLOT_SIZE + 2));
-      add(models[i*3 + 1],  82, -HEADER_SIZE - 40 - i * (SLOT_SIZE + 2));
-      add(models[i*3 + 2], 160, -HEADER_SIZE - 40 - i * (SLOT_SIZE + 2));
+      add(models[i*3 + 0],   3, -HEADER_SIZE - 40 - i * SLOT_SIZE);
+      add(models[i*3 + 1],  81, -HEADER_SIZE - 40 - i * SLOT_SIZE);
+      add(models[i*3 + 2], 159, -HEADER_SIZE - 40 - i * SLOT_SIZE);
     }
   }
 }

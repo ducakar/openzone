@@ -61,26 +61,26 @@ public:
 
 protected:
 
-  Area* prev[1];
-  Area* next[1];
+  Area*        prev[1]  = { nullptr };
+  Area*        next[1]  = { nullptr };
 
-  int   flags;
+  int          flags    = 0;
 
 public:
 
-  Area*        parent;
+  Area*        parent   = nullptr;
   DChain<Area> children;
 
   // absolute x and y, not relative to parent
-  int x;
-  int y;
-  int width;
-  int height;
+  int          x;
+  int          y;
+  int          width;
+  int          height;
 
 protected:
 
-  int defaultX;
-  int defaultY;
+  int          defaultX;
+  int          defaultY;
 
 protected:
 

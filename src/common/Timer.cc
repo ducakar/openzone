@@ -26,11 +26,6 @@
 namespace oz
 {
 
-Timer::Timer()
-{
-  reset();
-}
-
 void Timer::reset()
 {
   runMicros   = 0;

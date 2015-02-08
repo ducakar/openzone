@@ -73,6 +73,7 @@ void importMatrixConstants(lua_State* l)
   registerLuaConstant(l, "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH);
   registerLuaConstant(l, "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING);
   registerLuaConstant(l, "OZ_EVENT_USE",                   Object::EVENT_USE);
+  registerLuaConstant(l, "OZ_EVENT_FAIL",                  Object::EVENT_FAIL);
   registerLuaConstant(l, "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT);
   registerLuaConstant(l, "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY);
   registerLuaConstant(l, "OZ_EVENT_STEP",                  Bot::EVENT_STEP);

@@ -42,35 +42,17 @@ namespace oz
 
 static const Json NIL_VALUE;
 
-struct Json::Data
-{};
-
-struct Json::StringData : Json::Data
+struct StringData
 {
   String value;
-
-  OZ_HIDDEN
-  explicit StringData(const String& value_) :
-    value(value_)
-  {}
-
-  OZ_HIDDEN
-  explicit StringData(String&& value_) :
-    value(static_cast<String&&>(value_))
-  {}
-
-  OZ_HIDDEN
-  explicit StringData(const char* value_) :
-    value(value_)
-  {}
 };
 
-struct Json::ArrayData : Json::Data
+struct ArrayData
 {
   List<Json> list;
 };
 
-struct Json::ObjectData : Json::Data
+struct ObjectData
 {
   Map<String, Json> map;
 };
@@ -330,7 +312,7 @@ struct Json::Parser
         return Json(number);
       }
       case '"': {
-        return Json(new StringData(parseString()), STRING);
+        return Json(new StringData { parseString() }, STRING);
       }
       case '{': {
         return parseObject();
@@ -622,7 +604,7 @@ struct Json::Formatter
 const Json::Format Json::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
 
 OZ_HIDDEN
-Json::Json(Data* data_, Type valueType_) :
+Json::Json(void* data_, Type valueType_) :
   data(data_), valueType(valueType_), wasAccessed(false)
 {}
 
@@ -653,7 +635,7 @@ Json::Json(Type type) :
       break;
     }
     case STRING: {
-      data = new StringData("");
+      data = new StringData();
       break;
     }
     case ARRAY: {
@@ -688,11 +670,11 @@ Json::Json(double value) :
 {}
 
 Json::Json(const String& value) :
-  data(new StringData(value)), valueType(STRING), wasAccessed(false)
+  data(new StringData { value }), valueType(STRING), wasAccessed(false)
 {}
 
 Json::Json(const char* value) :
-  data(new StringData(value)), valueType(STRING), wasAccessed(false)
+  data(new StringData { value }), valueType(STRING), wasAccessed(false)
 {}
 
 Json::Json(const Vec3& v) :

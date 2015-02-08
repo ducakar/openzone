@@ -50,7 +50,7 @@ public:
 
 protected:
 
-  lua_State* l;                 ///< Lua state descriptor.
+  lua_State* l = nullptr;       ///< Lua state descriptor.
 
 protected:
 

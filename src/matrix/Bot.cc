@@ -1127,7 +1127,7 @@ stepSucceeded:
 
 String Bot::getTitle() const
 {
-  return name.isEmpty() ? clazz->name : String::str("%s (%s)", name.cstr(), clazz->name.cstr());
+  return name.isEmpty() ? clazz->title : String::str("%s (%s)", name.cstr(), clazz->title.cstr());
 }
 
 float Bot::getStatus() const

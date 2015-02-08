@@ -52,6 +52,8 @@ protected:
     const char* name;  ///< Enumerator value name.
   };
 
+private:
+
   Entry* entries;  ///< %Map of entries.
   int    nEntries; ///< Number of map entries.
 

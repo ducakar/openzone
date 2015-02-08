@@ -50,8 +50,6 @@ void Audio::playSound(int sound, float volume, const Object* parent) const
   alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
 
-  alSourcef(srcId, AL_GAIN, volume);
-
   // If the object moves since source starts playing and source stands still, it's usually
   // not noticeable for short-time source. After all, sound source many times does't move
   // together with the object in many cases (e.g. the sound when an objects hits something).
@@ -62,9 +60,14 @@ void Audio::playSound(int sound, float volume, const Object* parent) const
   if (parent == camera.botObj || obj == camera.botObj ||
       (camera.botObj != nullptr && parent->index == camera.botObj->parent))
   {
+    alSourcef(srcId, AL_GAIN, volume);
     alSourcei(srcId, AL_SOURCE_RELATIVE, AL_TRUE);
   }
   else {
+    collider.translate(camera.p, parent->p - camera.p, parent);
+    bool isObstructed = collider.hit.ratio != 1.0f;
+
+    alSourcef(srcId, AL_GAIN, isObstructed ? volume / 2.0f : volume);
     alSourcefv(srcId, AL_POSITION, parent->p);
     if (parent->flags & Object::DYNAMIC_BIT) {
       alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
@@ -84,9 +87,10 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
 
   Context::ContSource* contSource = context.contSources.find(key);
   const Dynamic*       dynParent  = static_cast<const Dynamic*>(parent);
+  uint                 srcId;
 
   if (contSource == nullptr) {
-    uint srcId = context.addContSource(sound, key);
+    srcId = context.addContSource(sound, key);
     if (srcId == Context::INVALID_SOURCE) {
       return;
     }
@@ -94,25 +98,23 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
     alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
-
-    alSourcef(srcId, AL_GAIN, volume);
-    alSourcefv(srcId, AL_POSITION, parent->p);
-    if (parent->flags & Object::DYNAMIC_BIT) {
-      alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
-    }
-
-    alSourcePlay(srcId);
   }
   else {
-    uint srcId = contSource->id;
-
-    alSourcef(srcId, AL_GAIN, volume);
-    alSourcefv(srcId, AL_POSITION, parent->p);
-    if (parent->flags & Object::DYNAMIC_BIT) {
-      alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
-    }
-
+    srcId = contSource->id;
     contSource->isUpdated = true;
+  }
+
+  collider.translate(camera.p, parent->p - camera.p, parent);
+  bool isObstructed = collider.hit.ratio != 1.0f;
+
+  alSourcef(srcId, AL_GAIN, isObstructed ? volume / 2.0f : volume);
+  alSourcefv(srcId, AL_POSITION, parent->p);
+  if (parent->flags & Object::DYNAMIC_BIT) {
+    alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
+  }
+
+  if (contSource == nullptr) {
+    alSourcePlay(srcId);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -121,34 +123,35 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
 bool Audio::playSpeak(const char* text, float volume, const Object* parent) const
 {
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
+  uint           srcId;
 
   if (context.speakSource.owner < 0) {
     if (text == nullptr) {
       return false;
     }
 
-    uint srcId = context.requestSpeakSource(text, obj->index);
+    srcId = context.requestSpeakSource(text, obj->index);
     if (srcId == Context::INVALID_SOURCE) {
       return false;
     }
 
     alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
-
-    alSourcef(srcId, AL_GAIN, volume);
-    alSourcefv(srcId, AL_POSITION, parent->p);
-    if (parent->flags & Object::DYNAMIC_BIT) {
-      alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
-    }
   }
   else if (context.speakSource.owner == obj->index) {
-    uint srcId = context.speakSource.id;
+    srcId = context.speakSource.id;
+  }
+  else {
+    return false;
+  }
 
-    alSourcef(srcId, AL_GAIN, volume);
-    alSourcefv(srcId, AL_POSITION, parent->p);
-    if (parent->flags & Object::DYNAMIC_BIT) {
-      alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
-    }
+  collider.translate(camera.p, parent->p - camera.p, parent);
+  bool isObstructed = collider.hit.ratio != 1.0f;
+
+  alSourcef(srcId, AL_GAIN, isObstructed ? volume / 2.0f : volume);
+  alSourcefv(srcId, AL_POSITION, parent->p);
+  if (parent->flags & Object::DYNAMIC_BIT) {
+    alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -156,7 +159,7 @@ bool Audio::playSpeak(const char* text, float volume, const Object* parent) cons
   return true;
 }
 
-void Audio::playEngineSound(int sound, float volume, float pitch) const
+void Audio::playEngineSound(int sound, float volume, float pitch, const Object* parent) const
 {
   hard_assert(uint(sound) < uint(liber.sounds.length()));
   hard_assert(obj->flags & Object::VEHICLE_BIT);
@@ -171,9 +174,10 @@ void Audio::playEngineSound(int sound, float volume, float pitch) const
   int key = veh->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.contSources.find(key);
+  uint                 srcId;
 
   if (contSource == nullptr) {
-    uint srcId = context.addContSource(sound, key);
+    srcId = context.addContSource(sound, key);
     if (srcId == Context::INVALID_SOURCE) {
       return;
     }
@@ -181,23 +185,22 @@ void Audio::playEngineSound(int sound, float volume, float pitch) const
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
     alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
-
-    alSourcef(srcId, AL_PITCH, pitch);
-    alSourcef(srcId, AL_GAIN, volume);
-    alSourcefv(srcId, AL_POSITION, veh->p);
-    alSourcefv(srcId, AL_VELOCITY, veh->velocity);
-
-    alSourcePlay(srcId);
   }
   else {
-    uint srcId = contSource->id;
-
-    alSourcef(contSource->id, AL_PITCH, pitch);
-    alSourcef(contSource->id, AL_GAIN, volume);
-    alSourcefv(srcId, AL_POSITION, veh->p);
-    alSourcefv(srcId, AL_VELOCITY, veh->velocity);
-
+    srcId = contSource->id;
     contSource->isUpdated = true;
+  }
+
+  collider.translate(camera.p, parent->p - camera.p, parent);
+  bool isObstructed = collider.hit.ratio != 1.0f;
+
+  alSourcef(srcId, AL_PITCH, pitch);
+  alSourcef(srcId, AL_GAIN, isObstructed ? volume / 2.0f : volume);
+  alSourcefv(srcId, AL_POSITION, veh->p);
+  alSourcefv(srcId, AL_VELOCITY, veh->velocity);
+
+  if (contSource == nullptr) {
+    alSourcePlay(srcId);
   }
 
   OZ_AL_CHECK_ERROR();

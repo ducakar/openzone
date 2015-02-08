@@ -39,7 +39,7 @@ void test_Alloc()
   int    oCount     = Alloc::count;
   int    oSumCount  = Alloc::sumCount;
 
-  Foo* array = new Foo[10];
+  Foo* array = new Foo[10]();
   OZ_CHECK(Alloc::amount >= oAmount + 10 * sizeof(Foo) + STAT_META_SIZE);
   OZ_CHECK(Alloc::sumAmount >= oSumAmount + 10 * sizeof(Foo) + STAT_META_SIZE);
   OZ_CHECK(Alloc::count == oCount + 1);

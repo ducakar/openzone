@@ -31,6 +31,6 @@
     "land":             "grsites/hit2",
     "splash":           "free/splash1",
     "use":              "aard/tak",
-    "failed":           "bfxr/failed"
+    "fail":             "bfxr/failed"
   }
 }

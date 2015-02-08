@@ -54,9 +54,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Point() :
-    VectorBase3(0.0f, 0.0f, 0.0f, 1.0f)
-  {}
+  Point() = default;
 
   /**
    * Create a point with given coordinates.

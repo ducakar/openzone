@@ -44,10 +44,10 @@ class InputStream
 {
 protected:
 
-  char*         streamPos;   ///< Current position.
-  char*         streamBegin; ///< Beginning.
-  const char*   streamEnd;   ///< End.
-  Endian::Order order;       ///< Stream byte order.
+  char*         streamPos   = nullptr;        ///< Current position.
+  char*         streamBegin = nullptr;        ///< Beginning.
+  const char*   streamEnd   = nullptr;        ///< End.
+  Endian::Order order       = Endian::NATIVE; ///< Stream byte order.
 
 protected:
 
@@ -59,10 +59,14 @@ protected:
 public:
 
   /**
+   * Empty stream.
+   */
+  InputStream() = default;
+
+  /**
    * Create a stream for reading a given memory range.
    */
-  explicit InputStream(const char* start = nullptr, const char* end = nullptr,
-                       Endian::Order order_ = Endian::NATIVE);
+  explicit InputStream(const char* start, const char* end, Endian::Order order_ = Endian::NATIVE);
 
   /**
    * Length of the stream.

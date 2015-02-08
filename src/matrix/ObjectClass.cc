@@ -209,19 +209,19 @@ void ObjectClass::init(const Json& config, const char* name_)
 
     const Json& soundsConfig = config["audioSounds"];
 
-    const char* sEventCreate  = soundsConfig["create"].get("");
+    const char* sEventCreate  = soundsConfig["create" ].get("");
     const char* sEventDestroy = soundsConfig["destroy"].get("");
-    const char* sEventDamage  = soundsConfig["damage"].get("");
-    const char* sEventHit     = soundsConfig["hit"   ].get("");
-    const char* sEventUse     = soundsConfig["use"   ].get("");
-    const char* sEventFailed  = soundsConfig["failed"].get("");
+    const char* sEventDamage  = soundsConfig["damage" ].get("");
+    const char* sEventHit     = soundsConfig["hit"    ].get("");
+    const char* sEventUse     = soundsConfig["use"    ].get("");
+    const char* sEventFail    = soundsConfig["fail"   ].get("");
 
     audioSounds[Object::EVENT_CREATE]  = liber.soundIndex(sEventCreate);
     audioSounds[Object::EVENT_DESTROY] = liber.soundIndex(sEventDestroy);
     audioSounds[Object::EVENT_DAMAGE]  = liber.soundIndex(sEventDamage);
     audioSounds[Object::EVENT_HIT]     = liber.soundIndex(sEventHit);
     audioSounds[Object::EVENT_USE]     = liber.soundIndex(sEventUse);
-    audioSounds[Object::EVENT_FAILED]  = liber.soundIndex(sEventFailed);
+    audioSounds[Object::EVENT_FAIL]    = liber.soundIndex(sEventFail);
   }
 
   /*

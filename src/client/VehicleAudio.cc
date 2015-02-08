@@ -58,7 +58,7 @@ void VehicleAudio::play(const Object* playAt)
                   min<float>(vehicle->momentum.sqN() * clazz->engine.pitchRatio,
                              clazz->engine.pitchLimit);
 
-    playEngineSound(sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch);
+    playEngineSound(sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch, playAt);
   }
 
   // events

@@ -47,7 +47,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor; ///< Internal semaphore descriptor.
+  Descriptor* descriptor = nullptr; ///< Internal semaphore descriptor.
 
 public:
 

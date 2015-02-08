@@ -195,7 +195,7 @@ Thread::Thread(const char* name, Main* main, void* data)
     OZ_ERROR("oz::Thread: Thread is already started");
   }
 
-  descriptor = static_cast<Descriptor*>(malloc(sizeof(Descriptor)));
+  descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
   if (descriptor == nullptr) {
     OZ_ERROR("oz::Thread: Descriptor allocation failed");
   }

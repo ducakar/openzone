@@ -69,7 +69,7 @@ protected:
 
 public:
 
-  explicit ModelField(Callback* callback, int width, int height);
+  explicit ModelField(Callback* callback, int size);
 
   void setCallback(Callback* callback);
   void setDefaultRotation(float defaultRotation);

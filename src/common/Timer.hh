@@ -49,21 +49,16 @@ public:
   /// Length of one tick in seconds.
   static constexpr float TICK_TIME = 1.0f / 60.0f;
 
-  ulong64 runMicros;   ///< Run time (game time plus dropped time).
+  ulong64 runMicros   = 0;    ///< Run time (game time plus dropped time).
 
-  ulong64 ticks;       ///< Ticks from the start of the game.
-  ulong64 micros;      ///< Microseconds from the start of the game.
-  float   time;        ///< %Time from the start of the game is seconds.
+  ulong64 ticks       = 0;    ///< Ticks from the start of the game.
+  ulong64 micros      = 0;    ///< Microseconds from the start of the game.
+  float   time        = 0.0f; ///< %Time from the start of the game is seconds.
 
-  ulong64 nFrames;     ///< Number of rendered frames from the start of the game.
-  uint    frameTicks;  ///< Ticks from the last rendered frame.
-  uint    frameMicros; ///< Microseconds of game time from the last rendered frame.
-  float   frameTime;   ///< Game time from the last rendered frame.
-
-  /**
-   * Default constructor, resets timer.
-   */
-  Timer();
+  ulong64 nFrames     = 0;    ///< Number of rendered frames from the start of the game.
+  uint    frameTicks  = 0;    ///< Ticks from the last rendered frame.
+  uint    frameMicros = 0;    ///< Microseconds of game time from the last rendered frame.
+  float   frameTime   = 0.0f; ///< Game time from the last rendered frame.
 
   /**
    * Reset all timer counters to zero.

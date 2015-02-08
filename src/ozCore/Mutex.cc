@@ -50,24 +50,20 @@ struct Mutex::Descriptor
 
 struct Mutex::Descriptor
 {
-  pthread_mutex_t mutex;
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 };
 
 #endif
 
 Mutex::Mutex()
 {
-  descriptor = static_cast<Descriptor*>(malloc(sizeof(Descriptor)));
+  descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
   if (descriptor == nullptr) {
-    OZ_ERROR("oz::Mutex: Descriptor allocation failed");
+    OZ_ERROR("oz::Mutex: Descriptor initialisation failed");
   }
 
 #ifdef _WIN32
   InitializeCriticalSection(&descriptor->criticalSection);
-#else
-  if (pthread_mutex_init(&descriptor->mutex, nullptr) != 0) {
-    OZ_ERROR("oz::Mutex: Mutex initialisation failed");
-  }
 #endif
 }
 

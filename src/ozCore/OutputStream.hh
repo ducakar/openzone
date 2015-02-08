@@ -47,7 +47,7 @@ private:
 
 private:
 
-  bool buffered; ///< If stream writes to an internal buffer.
+  bool buffered; ///< Whether stream writes to an internal buffer.
 
 public:
 

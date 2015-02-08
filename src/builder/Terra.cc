@@ -287,7 +287,7 @@ void Terra::saveClient()
   }
 
   // generate vertex buffers
-  Bitset waterTiles(TILES * TILES);
+  SBitset<TILES * TILES> liquidTiles;
 
   for (int i = 0; i < TILES; ++i) {
     for (int j = 0; j < TILES; ++j) {
@@ -321,7 +321,7 @@ void Terra::saveClient()
               (x + 1 < VERTS && y + 1 < VERTS &&
                quads[x + 1][y + 1].vertex.z < 0.0f))
           {
-            waterTiles.set(i * TILES + j);
+            liquidTiles.set(i * TILES + j);
           }
 
           os.writeByte(byte(normal.x * 127.0f));
@@ -332,8 +332,8 @@ void Terra::saveClient()
     }
   }
 
-  for (int i = 0; i < waterTiles.length(); ++i) {
-    os.writeBool(waterTiles.get(i));
+  for (int i = 0; i < liquidTiles.length(); ++i) {
+    os.writeBool(liquidTiles.get(i));
   }
 
   os.writeString(detailTex);

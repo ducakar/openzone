@@ -259,17 +259,17 @@ const String& File::VIDEOS    = specialDirs[8];
 
 OZ_HIDDEN
 File::File(const String& path, File::Type type, int size, long64 time) :
-  filePath(path), fileType(type), fileSize(size), fileTime(time), data(nullptr)
+  filePath(path), fileType(type), fileSize(size), fileTime(time)
 {}
 
 File::File(const char* path) :
-  filePath(path), fileType(MISSING), fileSize(-1), fileTime(0), data(nullptr)
+  filePath(path)
 {
   stat();
 }
 
 File::File(const String& path) :
-  filePath(path), fileType(MISSING), fileSize(-1), fileTime(0), data(nullptr)
+  filePath(path)
 {
   stat();
 }
@@ -280,15 +280,14 @@ File::~File()
 }
 
 File::File(const File& file) :
-  filePath(file.filePath), fileType(file.fileType), fileSize(file.fileSize),
-  fileTime(file.fileTime), data(nullptr)
+  filePath(file.filePath), fileType(file.fileType), fileSize(file.fileSize), fileTime(file.fileTime)
 {}
 
 File::File(File&& file) :
   filePath(static_cast<String&&>(file.filePath)), fileType(file.fileType), fileSize(file.fileSize),
   fileTime(file.fileTime), data(file.data)
 {
-  file.filePath = "";
+  file.filePath = String::EMPTY;
   file.fileType = MISSING;
   file.fileSize = -1;
   file.fileTime = 0;
@@ -319,7 +318,7 @@ File& File::operator = (File&& file)
     fileTime = file.fileTime;
     data     = file.data;
 
-    file.filePath = "";
+    file.filePath = String::EMPTY;
     file.fileType = MISSING;
     file.fileSize = -1;
     file.fileTime = 0;

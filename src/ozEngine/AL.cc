@@ -183,7 +183,7 @@ bool AL::Streamer::open(const File& file)
 {
   close();
 
-  data             = new Data();
+  data             = new Data;
   data->fileBuffer = file.read();
   data->is         = data->fileBuffer.inputStream();
 

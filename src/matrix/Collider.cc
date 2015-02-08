@@ -313,7 +313,7 @@ void Collider::trimAABBObj(const Object* sObj)
       float discriminant = radiusEps2 * moveDist2 - pxsy_pysx * pxsy_pysx;
 
       if (startDist2 < radius2) {
-        hard_assert(discriminant > 0.0f);
+        hard_assert(discriminant >= 0.0f);
 
         float sqrtDiscr = Math::sqrt(discriminant);
         float endRatio  = (-pxsx_pysy + sqrtDiscr) / max(moveDist2, Math::FLOAT_EPS);

@@ -24,6 +24,7 @@
 #include <client/BSPAudio.hh>
 
 #include <client/Context.hh>
+#include <client/Camera.hh>
 
 namespace oz
 {
@@ -42,6 +43,12 @@ void BSPAudio::playDemolish(const Struct* str, int sound) const
   alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
+  collider.translate(camera.p, str->p - camera.p);
+  bool isObstructed = collider.hit.str != str;
+
+  if (isObstructed) {
+    alSourcef(srcId, AL_GAIN, 0.5f);
+  }
   alSourcefv(srcId, AL_POSITION, str->p);
 
   alSourcePlay(srcId);
@@ -65,6 +72,12 @@ void BSPAudio::playSound(const Entity* entity, int sound) const
   alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
+  collider.translate(camera.p, p - camera.p);
+  bool isObstructed = collider.hit.entity != entity;
+
+  if (isObstructed) {
+    alSourcef(srcId, AL_GAIN, 0.5f);
+  }
   alSourcefv(srcId, AL_POSITION, p);
   alSourcefv(srcId, AL_VELOCITY, velocity);
 
@@ -83,25 +96,34 @@ void BSPAudio::playContSound(const Entity* entity, int sound) const
   Vec3          velocity = str->toAbsoluteCS(entity->velocity);
 
   Context::ContSource* contSource = context.contSources.find(key);
+  uint                 srcId;
 
   if (contSource == nullptr) {
-    uint srcId = context.addContSource(sound, key);
+    srcId = context.addContSource(sound, key);
     if (srcId == Context::INVALID_SOURCE) {
       return;
     }
 
     alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
-
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
-    alSourcefv(srcId, AL_POSITION, p);
-    alSourcefv(srcId, AL_VELOCITY, velocity);
-    alSourcePlay(srcId);
   }
   else {
-    alSourcefv(contSource->id, AL_POSITION, p);
-
+    srcId = contSource->id;
     contSource->isUpdated = true;
+  }
+
+  collider.translate(camera.p, p - camera.p);
+  bool isObstructed = collider.hit.entity != entity;
+
+  if (isObstructed) {
+    alSourcef(srcId, AL_GAIN, 0.5f);
+  }
+  alSourcefv(srcId, AL_POSITION, p);
+  alSourcefv(srcId, AL_VELOCITY, velocity);
+
+  if (contSource == nullptr) {
+    alSourcePlay(srcId);
   }
 
   OZ_AL_CHECK_ERROR();

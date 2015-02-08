@@ -209,7 +209,7 @@ public:
 #ifdef OZ_SIMD
   __extension__ union
   {
-    float4 f4;
+    float4 f4 = { 0.0f, 0.0f, 0.0f, 0.0f };
     __extension__ struct
     {
       float x;
@@ -218,12 +218,18 @@ public:
     };
   };
 #else
-  float x; ///< X component.
-  float y; ///< Y component.
-  float z; ///< Z component.
+  float x = 0.0f; ///< X component.
+  float y = 0.0f; ///< Y component.
+  float z = 0.0f; ///< Z component.
 #endif
 
 protected:
+
+  /**
+   * Zero vector.
+   */
+  OZ_ALWAYS_INLINE
+  VectorBase3() = default;
 
 #ifdef OZ_SIMD
 
@@ -325,7 +331,7 @@ public:
 #ifdef OZ_SIMD
   __extension__ union
   {
-    float4 f4;
+    float4 f4 = { 0.0f, 0.0f, 0.0f, 0.0f };
     __extension__ struct
     {
       float x;
@@ -335,13 +341,19 @@ public:
     };
   };
 #else
-  float x; ///< X component.
-  float y; ///< Y component.
-  float z; ///< Z component.
-  float w; ///< W component.
+  float x = 0.0f; ///< X component.
+  float y = 0.0f; ///< Y component.
+  float z = 0.0f; ///< Z component.
+  float w = 0.0f; ///< W component.
 #endif
 
 protected:
+
+  /**
+   * Zero vector.
+   */
+  OZ_ALWAYS_INLINE
+  VectorBase4() = default;
 
 #ifdef OZ_SIMD
 

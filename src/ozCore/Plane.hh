@@ -45,8 +45,8 @@ public:
 
 public:
 
-  Vec3  n; ///< Normal.
-  float d; ///< Distance from origin.
+  Vec3  n;        ///< Normal.
+  float d = 0.0f; ///< Distance from origin.
 
 public:
 
@@ -54,9 +54,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Plane() :
-    n(0.0f, 0.0f, 0.0f), d(0.0f)
-  {}
+  Plane() = default;
 
   /**
    * Create form a pair of normal and distance from the origin.

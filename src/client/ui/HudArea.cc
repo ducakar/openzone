@@ -322,7 +322,7 @@ HudArea::HudArea() :
     vehicleWeaponRounds[i] = Text(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞");
   }
 
-  vehicleModel = new ModelField(nullptr, style.vehicleField.w, style.vehicleField.h);
+  vehicleModel = new ModelField(nullptr, style.vehicleField.h);
   add(vehicleModel, style.vehicleField.x, style.vehicleField.y);
 }
 
