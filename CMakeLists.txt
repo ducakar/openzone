@@ -172,7 +172,7 @@ else()
   set(flags "-std=c++11 -pedantic -fstrict-enums")
 endif()
 
-set(flags "${flags} -ffast-math -fvisibility-inlines-hidden")
+set(flags "${flags} -fvisibility-inlines-hidden -ffast-math")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")

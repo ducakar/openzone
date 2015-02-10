@@ -48,7 +48,7 @@ static void test_String_parsing()
     int    z = String::parseInt(t);
 
     if (x != y) {
-      Log::println("%d -> %s -> %d  delta: %d", x, s.cstr(), y, y - x);
+      Log::println("%d -> '%s' -> %d  delta: %d", x, s.cstr(), y, y - x);
     }
     OZ_CHECK(x == y);
 
@@ -87,7 +87,7 @@ static void test_String_parsing()
     }
 
     if (x != y) {
-      Log::println("%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
+      Log::println("%.9g -> '%s' -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
     }
     OZ_CHECK(x == y);
 
@@ -125,7 +125,7 @@ static void test_String_parsing()
     }
 
     if (x != y) {
-      Log::println("%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
+      Log::println("%.9g -> '%s' -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
     }
     OZ_CHECK(x == y);
 
@@ -163,7 +163,7 @@ static void test_String_parsing()
     }
 
     if (x != y) {
-      Log::println("%.9g -> %s -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
+      Log::println("%.9g -> '%s' -> %.9g  delta: %.9g", x, s.cstr(), y, y - x);
     }
     OZ_CHECK(x == y);
 

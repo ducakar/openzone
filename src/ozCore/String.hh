@@ -305,7 +305,7 @@ public:
   /**
    * Parse floating-point value.
    *
-   * Double-precision floating-point value should match regular expression `-?inf`, `nan` or
+   * Double-precision floating-point value should match regular expression `-?inf`, `-?nan` or
    * `-?(0|([1-9][0-9]*)(\\.[0-9]+)?((e|E)-?[0-9]+)?` (i.e. JSON number format).
    *
    * @note

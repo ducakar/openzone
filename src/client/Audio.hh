@@ -60,6 +60,8 @@ protected:
 
 public:
 
+  static Collider    collider;
+
   const Object*      obj;
   const ObjectClass* clazz;
   int                flags;

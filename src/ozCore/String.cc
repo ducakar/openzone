@@ -379,11 +379,11 @@ double String::parseDouble(const char* s, const char** end)
     return sign * Math::INF;
   }
   // Not-a-number.
-  else if (s[0] == 'n' && s[1] == 'a' && s[2] == 'n') {
+  else if (p[0] == 'n' && p[1] == 'a' && p[2] == 'n') {
     if (end != nullptr) {
-      *end = s + 3;
+      *end = p + 3;
     }
-    return Math::NaN;
+    return sign < 0.0f ? -Math::NaN : Math::NaN;
   }
   // Invalid.
   else {
@@ -544,26 +544,25 @@ String::String(double d, int nDigits) :
   db = { d };
 
   // Sign.
-  if (db.bits & 1ull << (sizeof(d) * 8 - 1)) {
+  if (db.bits & 0x8000000000000000ull) {
     baseBuffer[count++] = '-';
     d = -d;
   }
 
-  // Check for zero, infinity and NaN.
-  if (d == 0.0) {
-    baseBuffer[count++] = '0';
-    baseBuffer[count] = '\0';
+  // Check for NaN, infinity and zero.
+  if ((db.bits << 1) > 0xffe0000000000000ull) {
+    mCopy(baseBuffer + count, "nan", 4);
+    count += 3;
     return;
   }
-  else if (d + 1e38 == d || d != d) {
-    if (d * 0.0 == d || d != d) {
-      mCopy(baseBuffer, "nan", 4);
-      count = 3;
-    }
-    else {
-      mCopy(baseBuffer + count, "inf", 4);
-      count += 3;
-    }
+  else if ((db.bits << 1) == 0xffe0000000000000ull) {
+    mCopy(baseBuffer + count, "inf", 4);
+    count += 3;
+    return;
+  }
+  else if (d == 0.0) {
+    baseBuffer[count++] = '0';
+    baseBuffer[count] = '\0';
     return;
   }
 

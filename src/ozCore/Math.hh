@@ -318,12 +318,10 @@ public:
   OZ_ALWAYS_INLINE
   static bool isFinite(float x)
   {
-    // isfinite() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
-    // Furthermore, those expressions are faster than __builtin_isfinite().
-#if defined(OZ_GCC) && defined(__FINITE_MATH_ONLY__)
-    return x + 1.0e38f != x;
+#if __FINITE_MATH_ONLY__
+    return (toBits(x) << 1) < 0xff000000;
 #else
-    return x + 1.0e38f != x && x == x;
+    return __builtin_isfinite(x);
 #endif
   }
 
@@ -333,12 +331,10 @@ public:
   OZ_ALWAYS_INLINE
   static bool isInf(float x)
   {
-    // isinf() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
-    // Furthermore, those expressions are faster than __builtin_isinf().
-#if defined(OZ_GCC) && defined(__FINITE_MATH_ONLY__)
-    return x + 1.0e38f == x && x * 0.0f != x;
+#if __FINITE_MATH_ONLY__
+    return (toBits(x) << 1) == 0xff000000;
 #else
-    return x + 1.0e38f == x;
+    return __builtin_isinf(x);
 #endif
   }
 
@@ -348,12 +344,10 @@ public:
   OZ_ALWAYS_INLINE
   static bool isNaN(float x)
   {
-    // isnan() is broken and NaN = NaN in GCC with -ffinite-math-only (implied by -ffast-math).
-    // Furthermore, those expressions are faster than __builtin_isnan().
-#if defined(OZ_GCC) && defined(__FINITE_MATH_ONLY__)
-    return x + 1.0e38f == x && x * 0.0f == x;
+#if __FINITE_MATH_ONLY__
+    return (toBits(x) << 1) > 0xff000000;
 #else
-    return x != x;
+    return __builtin_isnan(x);
 #endif
   }
 

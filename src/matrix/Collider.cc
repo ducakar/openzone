@@ -575,7 +575,7 @@ void Collider::trimAABBEntities()
 
 void Collider::trimAABBTerraQuad(int x, int y)
 {
-  const Terra::Quad& quad     = orbis.terra.quads[x   ][y   ];
+  const Terra::Quad& quad     = orbis.terra.quads[x][y];
   const Terra::Quad& nextQuad = orbis.terra.quads[x + 1][y + 1];
 
   const Point& minVert = quad.vertex;

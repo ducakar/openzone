@@ -36,6 +36,8 @@ const float Audio::ROLLOFF_FACTOR       = 0.35f;
 const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
 const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
+Collider Audio::collider;
+
 void Audio::playSound(int sound, float volume, const Object* parent) const
 {
   hard_assert(uint(sound) < uint(liber.sounds.length()));

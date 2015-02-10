@@ -43,7 +43,7 @@ void BSPAudio::playDemolish(const Struct* str, int sound) const
   alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
-  collider.translate(camera.p, str->p - camera.p);
+  Audio::collider.translate(camera.p, str->p - camera.p);
   bool isObstructed = collider.hit.str != str;
 
   if (isObstructed) {
@@ -72,7 +72,7 @@ void BSPAudio::playSound(const Entity* entity, int sound) const
   alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
 
-  collider.translate(camera.p, p - camera.p);
+  Audio::collider.translate(camera.p, p - camera.p);
   bool isObstructed = collider.hit.entity != entity;
 
   if (isObstructed) {
@@ -113,7 +113,7 @@ void BSPAudio::playContSound(const Entity* entity, int sound) const
     contSource->isUpdated = true;
   }
 
-  collider.translate(camera.p, p - camera.p);
+  Audio::collider.translate(camera.p, p - camera.p);
   bool isObstructed = collider.hit.entity != entity;
 
   if (isObstructed) {

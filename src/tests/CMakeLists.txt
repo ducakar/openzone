@@ -1,4 +1,4 @@
-if(NOT OZ_TESTS)
+if(NOT OZ_TESTS OR PLATFORM_EMBEDDED)
   return()
 endif()
 

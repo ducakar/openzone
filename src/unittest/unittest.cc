@@ -52,12 +52,13 @@ int main()
   test_iterables();
   test_arrays();
 
-//  test_Alloc();
+#ifdef OZ_ALLOCATOR
+  test_Alloc();
+#endif
 
   test_String();
 
   Log() << (hasPassed ? "Unittest PASSED" : "Unittest FAILED");
-
   return EXIT_SUCCESS;
 }
 

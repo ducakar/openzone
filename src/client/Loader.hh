@@ -41,7 +41,7 @@ private:
   static const uint IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
 
   static const uint FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 s)
-  static const uint FRAG_CLEAR_LAG            = 0  * Timer::TICKS_PER_SEC;
+  static const uint FRAG_CLEAR_LAG            = 0   * Timer::TICKS_PER_SEC;
 
   static const uint BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
   static const uint BSP_CLEAR_LAG             = 20  * Timer::TICKS_PER_SEC;

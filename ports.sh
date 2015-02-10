@@ -52,14 +52,14 @@ function setup_pnacl()
   toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
 
   export -n CPP
-  export CC="$toolsroot/bin64/$triplet-clang"
-  export CXX="$toolsroot/bin64/$triplet-clang++"
-  export AR="$toolsroot/bin64/$triplet-ar"
-  export RANLIB="$toolsroot/bin64/$triplet-ranlib"
-  export STRIP="$toolsroot/bin64/$triplet-strip"
+  export CC="$toolsroot/bin/$triplet-clang"
+  export CXX="$toolsroot/bin/$triplet-clang++"
+  export AR="$toolsroot/bin/$triplet-ar"
+  export RANLIB="$toolsroot/bin/$triplet-ranlib"
+  export STRIP="$toolsroot/bin/$triplet-strip"
   export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin64:$originalPath"
+  export PATH="$toolsroot/bin:$originalPath"
 
   export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/include"
   export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/include/newlib"
