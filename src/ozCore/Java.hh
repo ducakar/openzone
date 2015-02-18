@@ -28,7 +28,11 @@
 
 #pragma once
 
+#include "common.hh"
+
 #if defined(__ANDROID__) || defined(DOXYGEN_IGNORE)
+
+#include <jni.h>
 
 /**
  * @def OZ_JAVA_ENTRY_POINT
@@ -44,13 +48,6 @@
   { \
     oz::Java::application(env, clazz); \
   }
-
-#ifndef DOXYGEN_IGNORE
-
-struct JavaVM_;
-typedef JavaVM_ JavaVM;
-
-#endif
 
 /**
  * Main function/entry point for Java JNI applications.
@@ -86,7 +83,7 @@ public:
   /**
    * Helper function for `OZ_JAVA_ENTRY_POINT()` macro.
    */
-  static void application(void* env, void* clazz);
+  static void application(JNIEnv* env, jclass clazz);
 
 };
 

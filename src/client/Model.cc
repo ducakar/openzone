@@ -630,6 +630,7 @@ void Model::load()
 
   if (nFrames != 0) {
     if (shader.hasVTF) {
+#ifndef OZ_GL_ES
       int vertexBufferSize = nFramePositions * nFrames * int(sizeof(float[3]));
       int normalBufferSize = nFramePositions * nFrames * int(sizeof(float[3]));
 
@@ -637,16 +638,14 @@ void Model::load()
       glBindTexture(GL_TEXTURE_2D, animationTexId);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-#ifdef OZ_GL_ES
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_EXT, nFramePositions, 2 * nFrames, 0, GL_RGB,
-                   GL_FLOAT, is.forward(vertexBufferSize + normalBufferSize));
-#else
+
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, nFramePositions, 2 * nFrames, 0, GL_RGB,
                    GL_FLOAT, is.forward(vertexBufferSize + normalBufferSize));
-#endif
+
       glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
       OZ_GL_CHECK_ERROR();
+#endif
     }
     else if (nVertices > vertexAnimBufferLength) {
       delete[] vertexAnimBuffer;

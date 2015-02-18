@@ -38,7 +38,13 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined(__native_client__)
+#if defined(__ANDROID__)
+# include <android/log.h>
+# include <pthread.h>
+# include <SLES/OpenSLES.h>
+# include <unistd.h>
+# define _Exit(c) _exit(c)
+#elif defined(__native_client__)
 # include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
@@ -86,10 +92,10 @@ int raise(int)
 namespace oz
 {
 
-static const float BELL_TIME           = 0.30f;
-static const float BELL_FREQUENCY      = 1000.0f;
+static const float BELL_TIME      = 0.30f;
+static const float BELL_FREQUENCY = 1000.0f;
 #ifndef __native_client__
-static const int   BELL_PREFERRED_RATE = 48000;
+static const int   BELL_RATE      = 48000;
 #endif
 
 #if defined(__native_client__)
@@ -105,7 +111,7 @@ struct SampleInfo
 
 #elif defined(_WIN32)
 
-static const int BELL_WAVE_SAMPLES = int(BELL_TIME* BELL_PREFERRED_RATE);
+static const int BELL_WAVE_SAMPLES = int(BELL_TIME* BELL_RATE);
 
 struct Wave
 {
@@ -196,7 +202,64 @@ static void genBellSamples(short* samples, int nSamples_, int rate, int begin, i
   }
 }
 
-#if defined(__native_client__)
+#if defined(__ANDROID__)
+
+static void* bellMain(void*)
+{
+  static_cast<void>(genBellSamples);
+
+  SLObjectItf    engine;
+  SLEngineOption engineOptions[] = { SL_ENGINEOPTION_THREADSAFE, true };
+  slCreateEngine(&engine, 1, engineOptions, 0, nullptr, nullptr);
+  (*engine)->Realize(engine, false);
+
+  SLEngineItf iEngine;
+  (*engine)->GetInterface(engine, SL_IID_ENGINE, &iEngine);
+
+  SLObjectItf outputMix;
+  (*iEngine)->CreateOutputMix(iEngine, &outputMix, 0, nullptr, nullptr);
+  (*outputMix)->Realize(outputMix, false);
+
+  SLObjectItf               player;
+  SLDataFormat_PCM          pcmFormat          = { SL_DATAFORMAT_PCM, 2, SL_SAMPLINGRATE_48,
+                                                   SL_PCMSAMPLEFORMAT_FIXED_16, 16,
+                                                   SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
+                                                   SL_BYTEORDER_LITTLEENDIAN };
+  SLDataLocator_BufferQueue bufferQueueLocator = { SL_DATALOCATOR_BUFFERQUEUE, 1 };
+  SLDataLocator_OutputMix   outputMixLocator   = { SL_DATALOCATOR_OUTPUTMIX, outputMix };
+  SLDataSource              audioSource        = { &bufferQueueLocator, &pcmFormat };
+  SLDataSink                audioSink          = { &outputMixLocator, nullptr };
+  (*iEngine)->CreateAudioPlayer(iEngine, &player, &audioSource, &audioSink, 0, nullptr, nullptr);
+  (*player)->Realize(player, false);
+
+  SLPlayItf iPlay;
+  (*player)->GetInterface(player, SL_IID_PLAY, &iPlay);
+
+  SLBufferQueueItf iBufferQueue;
+  (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &iBufferQueue);
+
+  int    nSamples = int(BELL_TIME * float(BELL_RATE));
+  size_t size     = size_t(nSamples * 2) * sizeof(short);
+  short* samples  = static_cast<short*>(alloca(size));
+
+  genBellSamples(samples, nSamples, BELL_RATE, 0, nSamples);
+  (*iBufferQueue)->Enqueue(iBufferQueue, samples, size);
+  (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_PLAYING);
+
+  SLBufferQueueState state;
+  do {
+    (*iBufferQueue)->GetState(iBufferQueue, &state);
+  }
+  while(state.count != 0);
+  (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_STOPPED);
+
+  (*player)->Destroy(player);
+  (*outputMix)->Destroy(outputMix);
+  (*engine)->Destroy(engine);
+  return nullptr;
+}
+
+#elif defined(__native_client__)
 
 static void bellCallback(void* buffer, uint, void* info_)
 {
@@ -271,8 +334,8 @@ static DWORD WINAPI bellMain(void*)
   wave->subchunk1Size  = 16;
   wave->audioFormat    = 1;
   wave->nChannels      = 2;
-  wave->sampleRate     = BELL_PREFERRED_RATE;
-  wave->byteRate       = int(BELL_PREFERRED_RATE * 2 * sizeof(short));
+  wave->sampleRate     = BELL_RATE;
+  wave->byteRate       = int(BELL_RATE * 2 * sizeof(short));
   wave->blockAlign     = short(2 * sizeof(short));
   wave->bitsPerSample  = short(sizeof(short) * 8);
 
@@ -282,7 +345,7 @@ static DWORD WINAPI bellMain(void*)
   wave->subchunk2Id[3] = 'a';
   wave->subchunk2Size  = sizeof(wave->samples);
 
-  genBellSamples(wave->samples, BELL_WAVE_SAMPLES, BELL_PREFERRED_RATE, 0, BELL_WAVE_SAMPLES);
+  genBellSamples(wave->samples, BELL_WAVE_SAMPLES, BELL_RATE, 0, BELL_WAVE_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
   bellLock.unlock();
@@ -310,7 +373,7 @@ static void* bellMain(void*)
   int format   = AFMT_S16_LE;
 # endif
   int channels = 2;
-  int rate     = BELL_PREFERRED_RATE;
+  int rate     = BELL_RATE;
 
   if (ioctl(fd, SNDCTL_DSP_SETFMT, &format) < 0 ||
       ioctl(fd, SNDCTL_DSP_CHANNELS, &channels) < 0 ||
@@ -343,7 +406,7 @@ static void* bellMain(void*)
   snd_pcm_hw_params_alloca(&params);
   snd_pcm_hw_params_any(alsa, params);
 
-  uint rate = BELL_PREFERRED_RATE;
+  uint rate = BELL_RATE;
 
   if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) != 0 ||
       snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) != 0 ||

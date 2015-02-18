@@ -130,7 +130,7 @@ void* Thread::Descriptor::threadMain(void* data)
   JavaVM* javaVM = Java::vm();
 
   if (javaVM != nullptr) {
-    void* jniEnv = nullptr;
+    JNIEnv* jniEnv = nullptr;
     javaVM->AttachCurrentThread(&jniEnv, nullptr);
   }
 

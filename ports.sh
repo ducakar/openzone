@@ -17,10 +17,8 @@
 
 platforms=(
   PNaCl
-#   Android14-i686
-#   Android14-ARM
-#   Android14-ARMv7a
-#   Android14-MIPS
+#  Android14-i686
+#  Android14-ARMv7a
 )
 
 buildTriplet="`uname -m`-`uname -i`-linux-gnu"
@@ -31,14 +29,11 @@ originalPath="$PATH"
 
 pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_pnacl"
 
-ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.7/prebuilt/linux-x86_64"
+ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.9/prebuilt/linux-x86_64"
 ndkX86Platform="$ANDROID_NDK/platforms/android-14/arch-x86"
 
-ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.7/prebuilt/linux-x86_64"
+ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64"
 ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
-
-ndkMIPSTools="$ANDROID_NDK/toolchains/mipsel-linux-android-4.7/prebuilt/linux-x86_64"
-ndkMIPSPlatform="$ANDROID_NDK/platforms/android-14/arch-mips"
 
 . etc/common.sh
 
@@ -61,11 +56,13 @@ function setup_pnacl()
   export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
   export PATH="$toolsroot/bin:$originalPath"
 
-  export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/include"
-  export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/include/newlib"
+  export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/ports/include"
+  export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/ports/include/freetype2"
+  export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/include -isystem $NACL_SDK_ROOT/include/newlib"
   export CFLAGS="-O4 -ffast-math"
   export CXXFLAGS="-O4 -ffast-math"
-  export LDFLAGS="-L$buildDir/usr/lib -L$NACL_SDK_ROOT/lib/pnacl/Release -lnosys"
+  export LDFLAGS="-L$buildDir/usr/lib -L$NACL_SDK_ROOT/ports/lib/newlib_pnacl/Release"
+  export LDFLAGS="-L$NACL_SDK_ROOT/lib/pnacl/Release -lnosys"
 
   for p in ${platforms[@]}; do
     [[ $p == $platform ]] && return 0
@@ -104,37 +101,6 @@ function setup_ndk_i686()
   return 1
 }
 
-function setup_ndk_ARM()
-{
-  platform="Android14-ARM"                                # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$ndkARMTools"                                # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-  sysroot="$ndkARMPlatform"                               # SDK sysroot.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export CC="$toolsroot/bin/$triplet-g++"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -fPIC -Wno-psabi"
-  export CXXFLAGS="-Ofast -fPIC -Wno-psabi"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
-
 function setup_ndk_ARMv7a()
 {
   platform="Android14-ARMv7a"                             # Platform name.
@@ -159,37 +125,6 @@ function setup_ndk_ARMv7a()
   export CFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export CXXFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
-
-function setup_ndk_MIPS()
-{
-  platform="Android14-MIPS"                               # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="mipsel-linux-android"                          # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$ndkMIPSTools"                               # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-  sysroot="$ndkMIPSPlatform"                              # SDK sysroot.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export CXX="$toolsroot/bin/$triplet-g++"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -fPIC"
-  export CXXFLAGS="-Ofast -fPIC"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
   for p in ${platforms[@]}; do
     [[ $p == $platform ]] && return 0
@@ -398,6 +333,7 @@ function build_physfs()
 function build_lua()
 {
   prepare lua-5.3.0 lua-5.3.0.tar.gz || return
+  applyPatches lua-5.3.0.patch
 
   make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
   make INSTALL_TOP="$buildDir/usr" install
@@ -431,9 +367,8 @@ function build_sdl()
 function build_sdl2()
 {
   prepare SDL2-2.0.3 SDL2-2.0.3.tar.gz || return
-  applyPatches SDL2-2.0.0.patch
+  applyPatches SDL2-2.0.3.patch
 
-  buildDir="$buildDir" "$projectDir/etc/SDL2-CMakeLists-gen.sh"
   cmakeBuild
 
   finish
@@ -468,70 +403,52 @@ function build_sdl2_ttf()
 function build()
 {
   # zlib
-  setup_pnacl       && build_zlib
+  #setup_pnacl       && build_zlib
 
   # libpng
-  setup_pnacl       && build_libpng
+  #setup_pnacl       && build_libpng
   setup_ndk_i686    && build_libpng
-  setup_ndk_ARM     && build_libpng
   setup_ndk_ARMv7a  && build_libpng
-  setup_ndk_MIPS    && build_libpng
 
   # libogg
-  setup_pnacl       && build_libogg
+  #setup_pnacl       && build_libogg
   setup_ndk_i686    && build_libogg
-  setup_ndk_ARM     && build_libogg
   setup_ndk_ARMv7a  && build_libogg
-  setup_ndk_MIPS    && build_libogg
 
   # libvorbis
-  setup_pnacl       && build_libvorbis
+  #setup_pnacl       && build_libvorbis
   setup_ndk_i686    && build_libvorbis
-  setup_ndk_ARM     && build_libvorbis
   setup_ndk_ARMv7a  && build_libvorbis
-  setup_ndk_MIPS    && build_libvorbis
 
   # FreeType
-  setup_pnacl       && build_freetype
+  #setup_pnacl       && build_freetype
   setup_ndk_i686    && build_freetype
-  setup_ndk_ARM     && build_freetype
   setup_ndk_ARMv7a  && build_freetype
-  setup_ndk_MIPS    && build_freetype
 
   # PhysicsFS
   setup_pnacl       && build_physfs
   setup_ndk_i686    && build_physfs
-  setup_ndk_ARM     && build_physfs
   setup_ndk_ARMv7a  && build_physfs
-  setup_ndk_MIPS    && build_physfs
 
   # Lua
-  setup_pnacl       && build_lua
+  #setup_pnacl       && build_lua
   setup_ndk_i686    && build_lua
-  setup_ndk_ARM     && build_lua
   setup_ndk_ARMv7a  && build_lua
-  setup_ndk_MIPS    && build_lua
 
   # OpenAL Soft
-  setup_pnacl       && build_openal
+  #setup_pnacl       && build_openal
   setup_ndk_i686    && build_openal
-  setup_ndk_ARM     && build_openal
   setup_ndk_ARMv7a  && build_openal
-  setup_ndk_MIPS    && build_openal
 
   # SDL
   setup_pnacl       && build_sdl
   setup_ndk_i686    && build_sdl2
-  setup_ndk_ARM     && build_sdl2
   setup_ndk_ARMv7a  && build_sdl2
-  setup_ndk_MIPS    && build_sdl2
 
   # SDL_ttf
   setup_pnacl       && build_sdl_ttf
   setup_ndk_i686    && build_sdl2_ttf
-  setup_ndk_ARM     && build_sdl2_ttf
   setup_ndk_ARMv7a  && build_sdl2_ttf
-  setup_ndk_MIPS    && build_sdl2_ttf
 }
 
 case $1 in

@@ -657,7 +657,6 @@ void Bot::onUpdate()
       if ((actions & (ACTION_FORWARD | ACTION_JUMP)) == (ACTION_FORWARD | ACTION_JUMP) &&
           !(state & LADDER_BIT) && stamina >= clazz->staminaClimbDrain)
       {
-        // check if bot's gonna hit a wall soon
         Vec3 desiredMove = CLIMB_MOVE_AHEAD * Vec3(move.x, move.y, 0.0f);
 
         collider.translate(this, desiredMove);
@@ -730,7 +729,6 @@ void Bot::onUpdate()
        *               \----------
        */
       if (!(state & (LADDER_BIT | LEDGE_BIT)) && stairRate <= clazz->stairRateLimit) {
-        // check if bot's gonna hit a stair in the next frame
         Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 
         collider.translate(this, desiredMove);

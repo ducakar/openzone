@@ -90,7 +90,7 @@ add_library(ozCore
 
 target_link_libraries(ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY})
 if(ANDROID)
-  target_link_libraries(ozCore ${ALSA_LIBRARIES} -ldl -llog ${PLATFORM_STL_LIBRARY})
+  target_link_libraries(ozCore OpenSLES -ldl -llog ${PLATFORM_STL_LIBRARY})
 elseif(NACL)
   target_link_libraries(ozCore -lppapi_cpp -lppapi -lpthread)
 elseif(WIN32)

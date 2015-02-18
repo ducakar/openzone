@@ -40,6 +40,12 @@
 # include <SDL_opengl.h>
 #endif
 
+#ifndef GL_EXT_texture_compression_s3tc
+# define GL_EXT_texture_compression_s3tc 1
+# define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
+# define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
+#endif /* GL_EXT_texture_compression_s3tc */
+
 #endif // DOXYGEN_IGNORE
 
 /**

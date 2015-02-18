@@ -62,7 +62,7 @@ elseif(WIN32)
   set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PREFIX}/lib/pkgconfig)
 endif()
 
-if(ANDROID OR LINUX)
+if(LINUX)
   find_package(ALSA REQUIRED)
 endif()
 

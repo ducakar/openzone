@@ -28,8 +28,6 @@
 
 #include "Java.hh"
 
-#include <jni.h>
-
 extern "C"
 void SDL_Android_Init(JNIEnv*, jclass);
 
@@ -47,11 +45,8 @@ JavaVM* Java::vm()
   return javaVM;
 }
 
-void Java::application(void* env_, void* clazz_)
+void Java::application(JNIEnv* env, jclass clazz)
 {
-  JNIEnv* env   = static_cast<JNIEnv*>(env_);
-  jclass  clazz = static_cast<jclass>(clazz_);
-
   SDL_Android_Init(env, clazz);
   env->GetJavaVM(&javaVM);
 

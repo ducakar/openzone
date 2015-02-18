@@ -350,7 +350,7 @@ int Client::init(int argc, char** argv)
 #if defined(__ANDROID__)
 
   String configDir   = OZ_ANDROID_ROOT "/config";
-  String localDir    = OZ_ANDROID_ROOT "/data";
+  String dataDir     = OZ_ANDROID_ROOT "/data";
   String picturesDir = "";
   String musicDir    = "";
 

@@ -58,6 +58,12 @@ private:
     int  nUsers = -1; ///< Number of users or -1 if not loaded.
   };
 
+  struct SoundBuffer
+  {
+    uint id;
+    File file;
+  };
+
   struct Source
   {
     uint    id;

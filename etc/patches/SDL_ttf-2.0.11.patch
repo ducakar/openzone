@@ -1,6 +1,6 @@
 diff -Naur SDL_ttf-2.0.11.orig/config.sub SDL_ttf-2.0.11/config.sub
 --- SDL_ttf-2.0.11.orig/config.sub	2012-01-15 05:44:08.000000000 +0100
-+++ SDL_ttf-2.0.11/config.sub	2014-05-06 21:18:10.963992145 +0200
++++ SDL_ttf-2.0.11/config.sub	2015-02-13 18:14:15.384723874 +0100
 @@ -237,6 +237,18 @@
  		basic_machine=m68k-atari
  		os=-mint
@@ -43,7 +43,7 @@ diff -Naur SDL_ttf-2.0.11.orig/config.sub SDL_ttf-2.0.11/config.sub
  	-qnx*)
 diff -Naur SDL_ttf-2.0.11.orig/Makefile.in SDL_ttf-2.0.11/Makefile.in
 --- SDL_ttf-2.0.11.orig/Makefile.in	2012-01-15 05:44:08.000000000 +0100
-+++ SDL_ttf-2.0.11/Makefile.in	2014-05-06 21:18:10.967325505 +0200
++++ SDL_ttf-2.0.11/Makefile.in	2015-02-13 18:14:15.384723874 +0100
 @@ -37,7 +37,6 @@
  POST_UNINSTALL = :
  build_triplet = @build@
@@ -54,7 +54,7 @@ diff -Naur SDL_ttf-2.0.11.orig/Makefile.in SDL_ttf-2.0.11/Makefile.in
  	$(libSDL_ttfinclude_HEADERS) $(srcdir)/Makefile.am \
 diff -Naur SDL_ttf-2.0.11.orig/SDL_ttf.c SDL_ttf-2.0.11/SDL_ttf.c
 --- SDL_ttf-2.0.11.orig/SDL_ttf.c	2012-01-15 05:44:08.000000000 +0100
-+++ SDL_ttf-2.0.11/SDL_ttf.c	2014-05-06 21:18:10.970658851 +0200
++++ SDL_ttf-2.0.11/SDL_ttf.c	2015-02-13 18:14:24.712597970 +0100
 @@ -1,6 +1,6 @@
  /*
    SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
@@ -3944,7 +3944,7 @@ diff -Naur SDL_ttf-2.0.11.orig/SDL_ttf.c SDL_ttf-2.0.11/SDL_ttf.c
  }
 diff -Naur SDL_ttf-2.0.11.orig/SDL_ttf.h SDL_ttf-2.0.11/SDL_ttf.h
 --- SDL_ttf-2.0.11.orig/SDL_ttf.h	2012-01-15 05:44:08.000000000 +0100
-+++ SDL_ttf-2.0.11/SDL_ttf.h	2014-05-06 21:18:10.970658851 +0200
++++ SDL_ttf-2.0.11/SDL_ttf.h	2015-02-13 18:14:15.388057638 +0100
 @@ -1,6 +1,6 @@
  /*
    SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts

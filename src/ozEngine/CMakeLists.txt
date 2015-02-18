@@ -37,7 +37,7 @@ if(NOT NACL)
 endif()
 
 # libpng.
-target_link_libraries(ozEngine ${PNG_LIBRARY_RELEASE})
+target_link_libraries(ozEngine ${PNG_LIBRARY})
 
 # libvorbisfile.
 target_link_libraries(ozEngine ${VORBISFILE_LIBRARIES})

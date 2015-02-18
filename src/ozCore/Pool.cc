@@ -46,7 +46,9 @@ struct PoolAlloc::Block
   static Block* create(int slotSize, int nSlots, Block* nextBlock)
   {
     char*  chunk = new char[OZ_ALIGNMENT + size_t(nSlots * slotSize)];
-    Block* block = new(chunk) Block { nextBlock, {} };
+    Block* block = new(chunk) Block;
+
+    block->nextBlock = nextBlock;
 
     for (int i = 0; i < nSlots - 1; ++i) {
       block->slot(i, slotSize)->nextSlot = block->slot(i + 1, slotSize);

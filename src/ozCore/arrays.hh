@@ -243,7 +243,7 @@ inline CIterator<Elem> citer(InitialiserList<Elem> l)
 OZ_ALWAYS_INLINE
 inline void* mCopy(void* dest, const void* src, int size)
 {
-#if defined(NDEBUG) || defined(__native_client__) || defined(_WIN32)
+#if defined(NDEBUG) || !defined(__GLIBC__)
   return __builtin_memcpy(dest, src, size_t(size));
 #else
   return __builtin___memcpy_chk(dest, src, size_t(size), __builtin_object_size(dest, 0));
@@ -256,7 +256,7 @@ inline void* mCopy(void* dest, const void* src, int size)
 OZ_ALWAYS_INLINE
 inline void* mMove(void* dest, const void* src, int size)
 {
-#if defined(NDEBUG) || defined(__native_client__) || defined(_WIN32)
+#if defined(NDEBUG) || !defined(__GLIBC__)
   return __builtin_memmove(dest, src, size_t(size));
 #else
   return __builtin___memmove_chk(dest, src, size_t(size), __builtin_object_size(dest, 0));
@@ -269,7 +269,7 @@ inline void* mMove(void* dest, const void* src, int size)
 OZ_ALWAYS_INLINE
 inline void* mSet(void* dest, int value, int size)
 {
-#if defined(NDEBUG) || defined(__native_client__) || defined(_WIN32)
+#if defined(NDEBUG) || !defined(__GLIBC__)
   return __builtin_memset(dest, value, size_t(size));
 #else
   return __builtin___memset_chk(dest, value, size_t(size), __builtin_object_size(dest, 0));
