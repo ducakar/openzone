@@ -132,16 +132,11 @@ public:
     OVERLAY_QUEUE
   };
 
+private:
+
   struct Ref
   {
     Model* model;
-    float  size;
-
-    Ref() = default;
-
-    explicit Ref(Model* model_) :
-      model(model_), size(model_->dim.sqN())
-    {}
 
     bool operator == (const Ref& r) const
     {
@@ -150,11 +145,9 @@ public:
 
     bool operator < (const Ref& r) const
     {
-      return size > r.size;
+      return model->size > r.model->size || (model->size == r.model->size && model < r.model);
     }
   };
-
-private:
 
   struct Mesh
   {
@@ -162,8 +155,8 @@ private:
     int   texture;
     float shininess;
 
-    int nIndices;
-    int firstIndex;
+    int   nIndices;
+    int   firstIndex;
   };
 
   struct Node
@@ -230,6 +223,7 @@ private:
 public:
 
   Vec3                    dim;
+  float                   size;
 
 private:
 

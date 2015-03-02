@@ -343,7 +343,7 @@ Model::Model(const String& path_) :
   path(path_), vbo(0), ibo(0), animationTexId(0),
   nTextures(0), nVertices(0), nIndices(0), nFrames(0), nFramePositions(0),
   vertices(nullptr), positions(nullptr), normals(nullptr),
-  preloadData(nullptr), dim(Vec3::ONE)
+  preloadData(nullptr), dim(Vec3::ONE), size(dim.fastN())
 {}
 
 Model::~Model()
@@ -409,6 +409,7 @@ const File* Model::preload()
   InputStream is = preloadData->modelFile.inputStream(Endian::LITTLE);
 
   dim             = is.readVec3();
+  size            = dim.fastN();
   flags           = 0;
   shaderId        = liber.shaderIndex(is.readString());
   nTextures       = is.readInt();
@@ -655,7 +656,7 @@ void Model::load()
     }
   }
 
-  loadedModels.add(Ref(this));
+  loadedModels.include({ this });
 
   delete preloadData;
   preloadData = nullptr;
@@ -712,7 +713,7 @@ void Model::unload()
   ibo = 0;
   vbo = 0;
 
-  loadedModels.exclude(Ref(this));
+  loadedModels.exclude({ this });
 
   OZ_GL_CHECK_ERROR();
 }

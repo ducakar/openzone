@@ -384,7 +384,7 @@ public:
    * Convert degrees to radians.
    */
   OZ_ALWAYS_INLINE
-  static float rad(float x)
+  static constexpr float rad(float x)
   {
     return TAU / 360.0f * x;
   }
@@ -393,7 +393,7 @@ public:
    * Convert radians to degrees.
    */
   OZ_ALWAYS_INLINE
-  static float deg(float x)
+  static constexpr float deg(float x)
   {
     return 360.0f / TAU * x;
   }
@@ -451,7 +451,7 @@ public:
    */
   template <typename Value = int>
   OZ_ALWAYS_INLINE
-  static int index1(Value v)
+  static constexpr int index1(Value v)
   {
     return int(sizeof(ulong64)) * 8 - 1 - __builtin_clzll(ulong64(v));
   }
@@ -461,7 +461,7 @@ public:
    */
   template <typename Value = int>
   OZ_ALWAYS_INLINE
-  static bool isPow2(Value v)
+  static constexpr bool isPow2(Value v)
   {
     return 0 < v && (v & (v - 1)) == 0;
   }
@@ -471,10 +471,8 @@ public:
    */
   template <typename Value, typename Real>
   OZ_ALWAYS_INLINE
-  static Value mix(const Value& a, const Value& b, Real t)
+  static constexpr Value mix(const Value& a, const Value& b, Real t)
   {
-    hard_assert(0 <= t && t <= 1);
-
     return a + t * (b - a);
   }
 
@@ -483,10 +481,8 @@ public:
    */
   template <typename Real>
   OZ_ALWAYS_INLINE
-  static Real step(Real edge, Real t)
+  static constexpr Real step(Real edge, Real t)
   {
-    hard_assert(0 <= edge && edge <= 1);
-
     return t < edge ? 0 : 1;
   }
 
@@ -495,10 +491,8 @@ public:
    */
   template <typename Real>
   OZ_ALWAYS_INLINE
-  static Real smooth(Real t)
+  static constexpr Real smooth(Real t)
   {
-    hard_assert(0 <= t && t <= 1);
-
     return t*t*(3 - 2*t);
   }
 

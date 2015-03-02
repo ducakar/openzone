@@ -187,9 +187,9 @@ public:
     if (&l != this) {
       delete[] data;
 
-      data    = l.data;
-      count   = l.count;
-      size    = l.size;
+      data  = l.data;
+      count = l.count;
+      size  = l.size;
 
       l.data  = nullptr;
       l.count = 0;

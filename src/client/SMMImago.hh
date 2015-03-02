@@ -37,9 +37,9 @@ private:
 
   Model* model;
 
-  explicit SMMImago(const Object* obj) :
-    Imago(obj)
-  {}
+private:
+
+  using Imago::Imago;
 
   ~SMMImago() override;
 

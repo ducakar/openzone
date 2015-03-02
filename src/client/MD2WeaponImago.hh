@@ -37,9 +37,9 @@ private:
 
   Model* model;
 
-  explicit MD2WeaponImago(const Object* obj) :
-    Imago(obj)
-  {}
+private:
+
+  using Imago::Imago;
 
   ~MD2WeaponImago() override;
 

@@ -3,8 +3,8 @@
 - ozCore
     * full use of C++11
         + null replaced by nullptr keyword
-        + use of constexpr for functions too
-        + member initialisers used where appropriate
+        + use of constexpr for functions
+        + member initialisers used where feasible
         + initialiser list constructors for containers
     * larger and non-performance-critical inline functions moved to .cc files
     * global abs(), min(), max(), clamp() and hash() functions, overloaded where necessary
@@ -189,7 +189,7 @@
         + camera bob, walk/run animations and footsteps sounds are synchronised to a counter in Bot
           class
         + CinematicProxy class for scripted camera movements, colours, music track setting ...
-    * *Audio classes
+    * Audio classes
         + footstep and swim sounds
         + filtering of high-frequency events
         + velocity is set for sound sources and listener

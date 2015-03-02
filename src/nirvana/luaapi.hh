@@ -524,7 +524,7 @@ static int ozSelfBindOverlaps(lua_State* l)
   collider.mask = Object::SOLID_BIT;
 
   if (objects != nullptr) {
-    ms.objects.exclude(ns.self);
+    ms.objects.excludeUnordered(ns.self);
   }
   return 0;
 }

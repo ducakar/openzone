@@ -33,16 +33,16 @@ namespace client
 
 class ExplosionImago : public Imago
 {
-protected:
+private:
 
   static int modelId;
 
   Model* model;
   uint   startMicros;
 
-  explicit ExplosionImago(const Object* obj) :
-    Imago(obj)
-  {}
+private:
+
+  using Imago::Imago;
 
   ~ExplosionImago() override;
 

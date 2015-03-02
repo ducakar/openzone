@@ -31,7 +31,7 @@
 namespace oz
 {
 
-union PoolAlloc::Slot
+union alignas(OZ_ALIGNMENT) PoolAlloc::Slot
 {
   Slot* nextSlot;
   char  storage[1];
@@ -39,8 +39,8 @@ union PoolAlloc::Slot
 
 struct PoolAlloc::Block
 {
-  Block*                     nextBlock;
-  alignas(OZ_ALIGNMENT) char data[1];
+  Block*             nextBlock;
+  alignas(Slot) char data[1];
 
   OZ_HIDDEN
   static Block* create(int slotSize, int nSlots, Block* nextBlock)

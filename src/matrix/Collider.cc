@@ -857,10 +857,10 @@ bool Collider::overlaps(const AABB& aabb_, const Object* exclObj_)
   return overlapsAABBOrbis();
 }
 
-bool Collider::overlaps(const Object* obj_, const Object* exclObj_)
+bool Collider::overlaps(const Object* obj_)
 {
   aabb    = *obj_;
-  exclObj = exclObj_;
+  exclObj = obj_;
   flags   = obj_->flags;
 
   trace   = Bounds(aabb, 4.0f * EPSILON);

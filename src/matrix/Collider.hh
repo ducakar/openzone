@@ -141,7 +141,7 @@ public:
 
   bool overlaps(const Point& point, const Object* exclObj = nullptr);
   bool overlaps(const AABB& aabb, const Object* exclObj = nullptr);
-  bool overlaps(const Object* obj, const Object* exclObj = nullptr);
+  bool overlaps(const Object* obj);
   bool overlaps(const Entity* entity, float margin = 0.0f);
   bool overlapsEntity(const AABB& aabb, const Entity* entity, float margin = 0.0f);
 

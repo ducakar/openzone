@@ -533,14 +533,14 @@ void Bot::onUpdate()
         p.z = oldZ + clazz->dim.z - clazz->crouchDim.z;
         dim = clazz->dim;
 
-        if (!collider.overlaps(this, this)) {
+        if (!collider.overlaps(this)) {
           camZ  = clazz->camZ;
           state &= ~CROUCHING_BIT;
         }
         else {
           p.z = oldZ - clazz->dim.z + clazz->crouchDim.z;
 
-          if (!collider.overlaps(this, this)) {
+          if (!collider.overlaps(this)) {
             camZ  = clazz->camZ;
             state &= ~CROUCHING_BIT;
           }
@@ -1019,7 +1019,7 @@ stepSucceeded:
 
           swap(cargoObj->dim.x, cargoObj->dim.y);
 
-          if (collider.overlaps(cargoObj, cargoObj)) {
+          if (collider.overlaps(cargoObj)) {
             swap(cargoObj->dim.x, cargoObj->dim.y);
           }
           else {

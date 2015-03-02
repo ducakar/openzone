@@ -209,7 +209,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static short bswap16(short s)
+  static constexpr short bswap16(short s)
   {
     return short(ushort(s) << 8 | ushort(s) >> 8);
   }
@@ -218,7 +218,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static ushort bswap16(ushort s)
+  static constexpr ushort bswap16(ushort s)
   {
     return ushort(s << 8 | s >> 8);
   }
@@ -227,7 +227,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static int bswap32(int i)
+  static constexpr int bswap32(int i)
   {
     return int(__builtin_bswap32(uint(i)));
   }
@@ -236,7 +236,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static uint bswap32(uint i)
+  static constexpr uint bswap32(uint i)
   {
     return __builtin_bswap32(i);
   }
@@ -245,7 +245,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static long64 bswap64(long64 l)
+  static constexpr long64 bswap64(long64 l)
   {
     return long64(__builtin_bswap64(ulong64(l)));
   }
@@ -254,7 +254,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static ulong64 bswap64(ulong64 l)
+  static constexpr ulong64 bswap64(ulong64 l)
   {
     return __builtin_bswap64(l);
   }

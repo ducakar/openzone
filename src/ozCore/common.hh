@@ -267,7 +267,7 @@ inline constexpr const Value& clamp(const Value& c, const Value& a, const Value&
  * Hash function for integers, identity.
  */
 OZ_ALWAYS_INLINE
-inline int hash(int value)
+inline constexpr int hash(int value)
 {
   return value;
 }

@@ -52,7 +52,7 @@ public:
    * Per-element equality operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator == (const Pair& p) const
+  constexpr bool operator == (const Pair& p) const
   {
     return x == p.x && y == p.y;
   }
@@ -61,7 +61,7 @@ public:
    * Per-element inequality operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator != (const Pair& p) const
+  constexpr bool operator != (const Pair& p) const
   {
     return !operator == (p);
   }

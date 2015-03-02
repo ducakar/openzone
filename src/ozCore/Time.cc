@@ -99,10 +99,10 @@ void Time::sleep(uint milliseconds)
     time_t(milliseconds / 1000),
     long((milliseconds % 1000) * 1000000)
   };
-# if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
-  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
-# else
+# ifdef __native_client__
   nanosleep(&ts, nullptr);
+# else
+  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
 # endif
 
 #endif
@@ -112,7 +112,7 @@ void Time::usleep(uint microseconds)
 {
 #ifdef _WIN32
 
-  // Based on observations performed on Windows 7, adding a millisecond rather rounding to the
+  // Based on observations performed on Windows 7, adding a millisecond rather than rounding to the
   // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
   Sleep(microseconds / 1000 + 1);
 
@@ -122,10 +122,10 @@ void Time::usleep(uint microseconds)
     time_t(microseconds / 1000000),
     long((microseconds % 1000000) * 1000)
   };
-# if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
-  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
-# else
+# ifdef __native_client__
   nanosleep(&ts, nullptr);
+# else
+  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
 # endif
 
 #endif

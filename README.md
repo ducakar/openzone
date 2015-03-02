@@ -17,7 +17,7 @@ Building
 Building is currently only supported under Linux. You can build Linux/Unix, Windows (MinGW) and
 Native Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files
 for all supported platforms/toolchains.
-GCC >= 4.7 and LLVM/Clang >= 3.3 are the only supported compilers.
+GCC >= 4.8 and LLVM/Clang >= 3.3 are the only supported compilers.
 
 Development packages of the following libraries are required to build OpenZone from source:
 

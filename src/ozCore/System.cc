@@ -248,6 +248,7 @@ static void* bellMain(void*)
 
   SLBufferQueueState state;
   do {
+    Time::sleep(10);
     (*iBufferQueue)->GetState(iBufferQueue, &state);
   }
   while(state.count != 0);
