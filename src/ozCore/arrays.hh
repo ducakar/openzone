@@ -430,6 +430,17 @@ inline void aFill(Elem* array, int count, const Value& value)
 }
 
 /**
+ * %Set array elements to values constructed with given parameters.
+ */
+template <typename Elem, typename... Args>
+inline void aEmplace(Elem* array, int count, Args&&... args)
+{
+  for (int i = 0; i < count; ++i) {
+    array[i] = Elem(static_cast<Args&&>(args)...);
+  }
+}
+
+/**
  * Delete objects referenced by elements (elements must be pointers).
  */
 template <typename Elem>

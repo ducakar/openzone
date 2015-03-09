@@ -305,7 +305,7 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
   for (uint i = 0; i < scene->mNumLights; ++i) {
     const aiLight* light = scene->mLights[i];
 
-    lights.add({
+    lights.add(Light {
       Point(light->mPosition.x, light->mPosition.y, light->mPosition.z),
       Vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z),
       { Math::tan(light->mAngleInnerCone / 2.0f), Math::tan(light->mAngleOuterCone / 2.0f) },

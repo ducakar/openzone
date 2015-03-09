@@ -44,8 +44,8 @@ struct TexCoord
 {
   static const TexCoord ZERO;
 
-  float u;
-  float v;
+  float u = 0.0f;
+  float v = 0.0f;
 
   OZ_ALWAYS_INLINE
   TexCoord() = default;

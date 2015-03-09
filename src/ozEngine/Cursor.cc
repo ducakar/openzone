@@ -34,11 +34,11 @@ namespace oz
 {
 
 Cursor::Cursor() :
-  images {}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
+  images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
 {}
 
 Cursor::Cursor(const File& file, Mode mode, int size) :
-  images {}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
+  images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
 {
   load(file, mode, size);
 }

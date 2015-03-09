@@ -83,11 +83,7 @@ private:
   {
     uint id;
     int  sound;
-    bool isUpdated = true;
-
-    explicit ContSource(uint sourceId, int sound_) :
-      id(sourceId), sound(sound_)
-    {}
+    bool isUpdated;
   };
 
   struct SpeakSource

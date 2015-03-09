@@ -73,7 +73,7 @@ static void* allocate(AllocMode mode, size_t size)
 
 #ifdef OZ_ALLOCATOR
 
-  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo { {}, size, StackTrace::current(2) };
+  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo{ {}, size, StackTrace::current(2) };
 
   allocInfoLock.lock();
 

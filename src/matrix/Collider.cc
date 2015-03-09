@@ -182,24 +182,22 @@ bool Collider::overlapsAABBOrbis()
     return true;
   }
 
-  SList<int, 16> visitedStructs;
+  visitedStructs.clearAll();
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
       for (int i = 0; i < cell.structs.length(); ++i) {
-        str = orbis.str(cell.structs[i]);
+        int strIndex = cell.structs[i];
 
-        if (!trace.overlaps(*str) || visitedStructs.contains(cell.structs[i])) {
+        str = orbis.str(strIndex);
+
+        if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
           continue;
         }
 
-        if (visitedStructs.length() == visitedStructs.capacity()) {
-          visitedStructs.popFirst();
-        }
-
-        visitedStructs.add(cell.structs[i]);
+        visitedStructs.set(strIndex);
         visitedBrushes.clearAll();
 
         startPos = str->toStructCS(aabb.p);
@@ -677,24 +675,22 @@ void Collider::trimAABBOrbis()
     trimAABBVoid();
   }
 
-  SList<int, 16> visitedStructs;
+  visitedStructs.clearAll();
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
       for (int i = 0; i < cell.structs.length(); ++i) {
-        str = orbis.str(cell.structs[i]);
+        int strIndex = cell.structs[i];
 
-        if (!trace.overlaps(*str) || visitedStructs.contains(cell.structs[i])) {
+        str = orbis.str(strIndex);
+
+        if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
           continue;
         }
 
-        if (visitedStructs.length() == visitedStructs.capacity()) {
-          visitedStructs.popFirst();
-        }
-
-        visitedStructs.add(cell.structs[i]);
+        visitedStructs.set(strIndex);
         visitedBrushes.clearAll();
 
         startPos = str->toStructCS(originalStartPos);

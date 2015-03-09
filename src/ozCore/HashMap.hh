@@ -137,6 +137,19 @@ public:
   HashMap& operator = (HashMap&& ht) = default;
 
   /**
+   * Assign from an initialiser list.
+   */
+  HashMap& operator = (InitialiserList<Pair> l)
+  {
+    clear();
+
+    for (const Pair& p : l) {
+      add(p.key, p.value);
+    }
+    return *this;
+  }
+
+  /**
    * True iff contained elements are equal.
    */
   bool operator == (const HashMap& ht) const

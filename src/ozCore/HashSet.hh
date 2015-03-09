@@ -220,13 +220,13 @@ nextElem:
     Entry* clone = nullptr;
 
     if (entry != nullptr) {
-      clone = new(pool) Entry { clone, entry->hash, entry->elem };
+      clone = new(pool) Entry{ clone, entry->hash, entry->elem };
 
       const Entry* original = entry->next;
       Entry*       prevCopy = clone;
 
       while (original != nullptr) {
-        prevCopy->next = new(pool) Entry { clone, original->hash, original->elem };
+        prevCopy->next = new(pool) Entry{ clone, original->hash, original->elem };
 
         prevCopy = prevCopy->next ;
         original = original->next;
@@ -398,6 +398,19 @@ public:
   }
 
   /**
+   * Assign from an initialiser list.
+   */
+  HashSet& operator = (InitialiserList<Elem> l)
+  {
+    clear();
+
+    for (const Elem& e : l) {
+      add(e);
+    }
+    return *this;
+  }
+
+  /**
    * True iff contained elements are equal.
    */
   bool operator == (const HashSet& ht) const
@@ -555,7 +568,7 @@ public:
       entry = entry->next;
     }
 
-    data[index] = new(pool) Entry { data[index], h, static_cast<Elem_&&>(elem) };
+    data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
   }
 
   /**
@@ -577,7 +590,7 @@ public:
       entry = entry->next;
     }
 
-    data[index] = new(pool) Entry { data[index], h, static_cast<Elem_&&>(elem) };
+    data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
   }
 
   /**

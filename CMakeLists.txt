@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(openzone C CXX)
+project(openzone)
 
 #
 # Configuration options.
@@ -165,9 +165,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
 
   # Use libc++ instead of libstdc++.
   #set(flags "${flags} -stdlib=libc++")
-  #if(NOT PLATFORM_EMBEDDED)
-  #  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
-  #endif()
+  #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
 else()
   set(flags "-std=c++11 -pedantic -fstrict-enums")
 endif()

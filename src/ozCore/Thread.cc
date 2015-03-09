@@ -27,7 +27,6 @@
 #include "Thread.hh"
 
 #include "System.hh"
-#include "StackTrace.hh"
 #include "Java.hh"
 #include "Pepper.hh"
 
@@ -86,14 +85,14 @@ static MainThreadNameInitialiser mainThreadNameInitialiser;
 struct Thread::Descriptor
 {
 #ifdef _WIN32
-  HANDLE        thread;
+  HANDLE    thread;
 #else
-  pthread_t     thread;
+  pthread_t thread;
 #endif
-  Thread::Main* main;
-  void*         data;
-  bool          isDetached;
-  char          name[StackTrace::NAME_LENGTH + 1];
+  Main*     main;
+  void*     data;
+  bool      isDetached;
+  char      name[NAME_LENGTH + 1];
 
 #ifdef _WIN32
   static DWORD WINAPI threadMain(void* data);
@@ -142,9 +141,6 @@ void* Thread::Descriptor::threadMain(void* data)
     OZ_ERROR("oz::Thread: NaCl application instance must be created via oz::Pepper::createModule()"
              " before starting any new threads");
   }
-
-  pp::MessageLoop messageLoop(ppInstance);
-  messageLoop.AttachToCurrentThread();
 
   Semaphore localSemaphore;
   MainCall::localSemaphore = &localSemaphore;
@@ -204,7 +200,7 @@ Thread::Thread(const char* name, Main* main, void* data)
   descriptor->data       = data;
   descriptor->isDetached = false;
 
-  strlcpy(descriptor->name, name, StackTrace::NAME_LENGTH);
+  strlcpy(descriptor->name, name, NAME_LENGTH);
 
 #ifdef _WIN32
   descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr);

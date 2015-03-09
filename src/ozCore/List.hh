@@ -199,6 +199,26 @@ public:
   }
 
   /**
+   * Assign from an initialiser list.
+   *
+   * Existing storage is reused if it suffices.
+   */
+  List& operator = (InitialiserList<Elem> l)
+  {
+    if (size < int(l.size())) {
+      delete[] data;
+
+      data = new Elem[l.size()];
+      size = int(l.size());
+    }
+
+    aCopy<Elem>(l.begin(), int(l.size()), data);
+    count = int(l.size());
+
+    return *this;
+  }
+
+  /**
    * True iff respective elements are equal.
    */
   bool operator == (const List& l) const
@@ -649,9 +669,7 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    for (int i = 0; i < count; ++i) {
-      data[i] = Elem();
-    }
+    aEmplace<Elem>(data, count);
     count = 0;
   }
 

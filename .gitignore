@@ -4,6 +4,7 @@
 /.project
 /.cproject
 /.settings
+/nbproject
 
 /doc/doxygen*
 /share

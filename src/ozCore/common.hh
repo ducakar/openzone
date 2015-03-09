@@ -107,8 +107,9 @@
 #ifdef NDEBUG
 # define soft_assert(cond) void(0)
 #else
-# define soft_assert(cond) ((cond) ? \
-    void(0) : oz::detail::softAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
+# define soft_assert(cond) \
+  ((cond) ? \
+   void(0) : oz::detail::softAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
 #endif
 
 /**
@@ -118,8 +119,9 @@
 #ifdef NDEBUG
 # define hard_assert(cond) void(0)
 #else
-# define hard_assert(cond) ((cond) ? \
-    void(0) : oz::detail::hardAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
+# define hard_assert(cond) \
+  ((cond) ? \
+   void(0) : oz::detail::hardAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
 #endif
 
 /**

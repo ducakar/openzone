@@ -37,6 +37,15 @@
  * System.
  */
 #include "System.hh"
+
+/*
+ * Threads.
+ */
+#include "SpinLock.hh"
+#include "Mutex.hh"
+#include "Semaphore.hh"
+#include "CallOnce.hh"
+#include "Thread.hh"
 #include "StackTrace.hh"
 
 /*
@@ -91,15 +100,6 @@
 #include "Quat.hh"
 #include "Mat3.hh"
 #include "Mat4.hh"
-
-/*
- * Threads.
- */
-#include "SpinLock.hh"
-#include "Mutex.hh"
-#include "Semaphore.hh"
-#include "CallOnce.hh"
-#include "Thread.hh"
 
 /*
  * I/O.

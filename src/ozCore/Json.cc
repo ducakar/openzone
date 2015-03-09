@@ -312,7 +312,7 @@ struct Json::Parser
         return Json(number);
       }
       case '"': {
-        return Json(new StringData { parseString() }, STRING);
+        return Json(new StringData{ parseString() }, STRING);
       }
       case '{': {
         return parseObject();
@@ -670,11 +670,11 @@ Json::Json(double value) :
 {}
 
 Json::Json(const String& value) :
-  data(new StringData { value }), valueType(STRING), wasAccessed(false)
+  data(new StringData{ value }), valueType(STRING), wasAccessed(false)
 {}
 
 Json::Json(const char* value) :
-  data(new StringData { value }), valueType(STRING), wasAccessed(false)
+  data(new StringData{ value }), valueType(STRING), wasAccessed(false)
 {}
 
 Json::Json(const Vec3& v) :

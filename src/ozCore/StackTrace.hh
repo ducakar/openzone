@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "Thread.hh"
 
 namespace oz
 {
@@ -46,12 +46,9 @@ public:
   /// Maximum number of stack frames.
   static const int MAX_FRAMES = 32;
 
-  /// Maximum length for a thread name.
-  static const int NAME_LENGTH = 15;
-
-  char  threadName[NAME_LENGTH + 1]; ///< Current thread name (if started via `Thread::start()`).
-  int   nFrames;                     ///< Number of stack frames.
-  void* frames[MAX_FRAMES];          ///< Pointers to stack frames.
+  char  threadName[Thread::NAME_LENGTH + 1]; ///< Current thread's name.
+  int   nFrames;                             ///< Number of stack frames.
+  void* frames[MAX_FRAMES];                  ///< Pointers to stack frames.
 
 public:
 

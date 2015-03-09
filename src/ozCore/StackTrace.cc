@@ -55,7 +55,7 @@ StackTrace StackTrace::current(int)
   StackTrace st = { {}, 0, {} };
 
   if (name != nullptr) {
-    strlcpy(st.threadName, name, NAME_LENGTH);
+    strlcpy(st.threadName, name, Thread::NAME_LENGTH);
   }
   return st;
 }
@@ -83,7 +83,7 @@ StackTrace StackTrace::current(int nSkippedFrames)
   StackTrace st = { {}, nFrames, {} };
 
   if (name != nullptr) {
-    strlcpy(st.threadName, name, NAME_LENGTH);
+    strlcpy(st.threadName, name, Thread::NAME_LENGTH);
   }
   aCopy<void*>(framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames);
   return st;

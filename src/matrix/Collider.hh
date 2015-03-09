@@ -77,7 +77,8 @@ class Collider
 {
 private:
 
-  SBitset<BSP::MAX_BRUSHES> visitedBrushes;
+  SBitset<Orbis::MAX_STRUCTS> visitedStructs;
+  SBitset<BSP::MAX_BRUSHES>   visitedBrushes;
 
   Span           span;
   Bounds         trace;

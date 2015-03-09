@@ -182,6 +182,16 @@ public:
   Map& operator = (Map&& m) = default;
 
   /**
+   * Assign from an initialiser list.
+   *
+   * Existing storage is reused if it suffices.
+   */
+  Map& operator = (InitialiserList<Pair> l)
+  {
+    return Set<Pair>::operator = (l);
+  }
+
+  /**
    * True iff respective elements are equal.
    */
   bool operator == (const Map& m) const

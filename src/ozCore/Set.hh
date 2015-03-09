@@ -124,6 +124,19 @@ public:
   Set& operator = (Set&& s) = default;
 
   /**
+   * Assign from an initialiser list.
+   *
+   * Existing storage is reused if it suffices.
+   */
+  Set& operator = (InitialiserList<Elem> l)
+  {
+    List<Elem>::operator = (l);
+    List<Elem>::sort();
+
+    return *this;
+  }
+
+  /**
    * True iff respective elements are equal.
    */
   bool operator == (const Set& s) const

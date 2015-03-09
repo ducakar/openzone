@@ -42,6 +42,9 @@ class Thread
 {
 public:
 
+  /// Maximum length for a thread name.
+  static const int NAME_LENGTH = 15;
+
   /// %Thread's main function type.
   typedef void Main(void* data);
 

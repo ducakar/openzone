@@ -94,6 +94,21 @@ public:
   }
 
   /**
+   * Assign from an initialiser list.
+   *
+   * Existing storage is reused if it suffices.
+   */
+  SList& operator = (InitialiserList<Elem> l)
+  {
+    hard_assert(l.size() <= SIZE);
+
+    aCopy<Elem>(l.begin(), int(l.size()), data);
+    count = int(l.size());
+
+    return *this;
+  }
+
+  /**
    * True iff respective elements are equal.
    */
   bool operator == (const SList& l) const
@@ -511,9 +526,7 @@ public:
     hard_assert(newCount <= SIZE);
 
     // Ensure destruction of removed elements when downsizing.
-    for (int i = newCount; i < count; ++i) {
-      data[i] = Elem();
-    }
+    aEmplace<Elem>(data + newCount, count - newCount);
     count = newCount;
   }
 
@@ -523,9 +536,7 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    for (int i = 0; i < count; ++i) {
-      data[i] = Elem();
-    }
+    aEmplace<Elem>(data, count);
     count = 0;
   }
 

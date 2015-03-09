@@ -102,11 +102,12 @@ static const int   BELL_RATE      = 48000;
 
 struct SampleInfo
 {
-  int rate;
-  int nFrameSamples;
-  int nSamples;
-  int end;
-  int offset;
+  int      rate;
+  int      nFrameSamples;
+  int      nSamples;
+  int      end;
+  int      offset;
+  SpinLock lock;
 };
 
 #elif defined(_WIN32)
@@ -257,6 +258,8 @@ static void* bellMain(void*)
   (*player)->Destroy(player);
   (*outputMix)->Destroy(outputMix);
   (*engine)->Destroy(engine);
+
+  bellLock.unlock();
   return nullptr;
 }
 
@@ -268,7 +271,7 @@ static void bellCallback(void* buffer, uint, void* info_)
   short*      samples = static_cast<short*>(buffer);
 
   if (info->offset >= info->end) {
-    bellLock.unlock();
+    info->lock.unlock();
   }
   else {
     genBellSamples(samples, info->nSamples, info->rate, info->offset,
@@ -294,6 +297,7 @@ static void* bellMain(void*)
   info.nSamples      = Math::lround(BELL_TIME * float(rate));
   info.end           = info.nSamples + 2 * info.nFrameSamples;
   info.offset        = 0;
+  info.lock.lock();
 
   pp::AudioConfig config(ppInstance, rate, nFrameSamples);
   pp::Audio       audio(ppInstance, config, bellCallback, &info);
@@ -303,12 +307,13 @@ static void* bellMain(void*)
     return nullptr;
   }
 
-  while (!bellLock.tryLock()) {
+  do {
     Time::sleep(10);
   }
-  bellLock.unlock();
-
+  while(!info.lock.tryLock());
   audio.StopPlayback();
+
+  bellLock.unlock();
   return nullptr;
 }
 
