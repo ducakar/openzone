@@ -35,9 +35,6 @@
 #if defined(__ANDROID__)
 # include <jni.h>
 # include <pthread.h>
-#elif defined(__native_client__)
-# include <ppapi/cpp/message_loop.h>
-# include <pthread.h>
 #elif defined(_WIN32)
 # include <windows.h>
 #else
@@ -48,39 +45,11 @@ namespace oz
 {
 
 #ifdef _WIN32
-static DWORD          nameKey;
-static HANDLE         mainThread = GetCurrentThread();
+static HANDLE                   mainThread = GetCurrentThread();
 #else
-static pthread_key_t  nameKey;
-static pthread_t      mainThread = pthread_self();
+static pthread_t                mainThread = pthread_self();
 #endif
-
-// Create thread name key and set main thread's name to "main" during static initialisation.
-struct MainThreadNameInitialiser
-{
-  OZ_HIDDEN
-  MainThreadNameInitialiser()
-  {
-#ifdef _WIN32
-
-    nameKey = TlsAlloc();
-    if (nameKey == TLS_OUT_OF_INDEXES) {
-      OZ_ERROR("oz::Thread: Name key creation failed");
-    }
-    TlsSetValue(nameKey, const_cast<char*>("main"));
-
-#else
-
-    if (pthread_key_create(&nameKey, nullptr) != 0) {
-      OZ_ERROR("oz::Thread: Name key creation failed");
-    }
-    pthread_setspecific(nameKey, "main");
-
-#endif
-  }
-};
-
-static MainThreadNameInitialiser mainThreadNameInitialiser;
+static thread_local const char* threadName = nullptr;
 
 struct Thread::Descriptor
 {
@@ -108,7 +77,7 @@ DWORD WINAPI Thread::Descriptor::threadMain(void* data)
 {
   Descriptor* descriptor = static_cast<Descriptor*>(data);
 
-  TlsSetValue(nameKey, descriptor->name);
+  threadName = descriptor->name;
 
   System::threadInit();
   descriptor->main(descriptor->data);
@@ -122,7 +91,7 @@ void* Thread::Descriptor::threadMain(void* data)
 {
   Descriptor* descriptor = static_cast<Descriptor*>(data);
 
-  pthread_setspecific(nameKey, descriptor->name);
+  threadName = descriptor->name;
 
 #if defined(__ANDROID__)
 
@@ -168,12 +137,7 @@ void* Thread::Descriptor::threadMain(void* data)
 
 const char* Thread::name()
 {
-#ifdef _WIN32
-  void* data = TlsGetValue(nameKey);
-#else
-  void* data = pthread_getspecific(nameKey);
-#endif
-  return static_cast<const char*>(data == nullptr ? "" : data);
+  return isMain() ? "main" : threadName == nullptr ? "" : threadName;
 }
 
 bool Thread::isMain()

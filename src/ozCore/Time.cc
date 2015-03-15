@@ -30,7 +30,6 @@
 
 #ifdef _WIN32
 # include <windows.h>
-# include <mmsystem.h>
 #else
 # include <ctime>
 #endif
@@ -38,26 +37,18 @@
 namespace oz
 {
 
-#ifdef _WIN32
-
-// Ensure that multimedia timer is set to 1 ms resolution during static initialisation.
-struct MediaTimerInitialiser
-{
-  OZ_HIDDEN
-  MediaTimerInitialiser()
-  {
-    timeBeginPeriod(1);
-  }
-}
-mediaTimerInitialiser;
-
-#endif
-
 uint Time::clock()
 {
 #ifdef _WIN32
 
-  return timeGetTime();
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER ticks;
+
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter(&ticks);
+
+  // WARNING This is not continuous.
+  return uint((ticks.QuadPart * 1000) / frequency.QuadPart);
 
 #else
 
@@ -74,7 +65,14 @@ uint Time::uclock()
 {
 #ifdef _WIN32
 
-  return timeGetTime() * 1000;
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER ticks;
+
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter(&ticks);
+
+  // WARNING This is not continuous.
+  return uint((ticks.QuadPart * 1000000) / frequency.QuadPart);
 
 #else
 

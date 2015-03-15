@@ -40,7 +40,9 @@ int main(int argc, char** argv)
   uint texId;
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
-  GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
+//  GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
+  GL::textureDataFromFile("/home/davorin/gvim.png");
+//  GL::textureDataFromFile("/usr/share/pixmaps/gvim.png");
   Cursor cursor(file, Cursor::SYSTEM);
 
   uint soundBuffer, soundSource, musicSource;
@@ -52,12 +54,12 @@ int main(int argc, char** argv)
   alSourcei(soundSource, AL_BUFFER, int(soundBuffer));
   alSourcePlay(soundSource);
 
-  AL::Streamer streamer;
-  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
-  streamer.attach(musicSource);
-  streamer.close();
-  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
-  alSourcePlay(musicSource);
+//  AL::Streamer streamer;
+//  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
+//  streamer.attach(musicSource);
+//  streamer.close();
+//  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
+//  alSourcePlay(musicSource);
 
   if (!cursor.isLoaded()) {
     return EXIT_FAILURE;
@@ -75,11 +77,11 @@ int main(int argc, char** argv)
     }
 
     if (event.type == SDL_KEYDOWN) {
-      streamer.rewind();
-      alSourcePlay(musicSource);
+//      streamer.rewind();
+//      alSourcePlay(musicSource);
     }
 
-    glClearColor(1.2f, 1.2f, 1.2f, 0.0f);
+    glClearColor(0.8f, 0.2f, 0.4f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_TEXTURE_2D);
@@ -100,12 +102,12 @@ int main(int argc, char** argv)
 
     Window::swapBuffers();
     cursor.update(15);
-    streamer.update();
+//    streamer.update();
 
     Time::sleep(10);
   }
 
-  streamer.destroy();
+//  streamer.destroy();
 
   alDeleteSources(1, &musicSource);
   alDeleteSources(1, &soundSource);

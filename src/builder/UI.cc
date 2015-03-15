@@ -94,8 +94,6 @@ void UI::buildIcons()
     }
   }
 
-  hard_assert(builtIcons.length() == aLength(ICON_NAMES));
-
   File styleFile = "@ui/style.json";
   Json style;
 

@@ -137,8 +137,9 @@ struct Wave
 #endif
 
 static SpinLock              bellLock;
-static System::CrashHandler* crashHandler       = nullptr;
-static int                   initFlags          = 0;
+static System::CrashHandler* crashHandler = nullptr;
+static int                   initFlags    = 0;
+static volatile bool         hasBellWait  = false;
 
 OZ_NORETURN
 static void abort(bool doHalt);
@@ -225,7 +226,8 @@ static void* bellMain(void*)
   SLDataFormat_PCM          pcmFormat          = { SL_DATAFORMAT_PCM, 2, SL_SAMPLINGRATE_48,
                                                    SL_PCMSAMPLEFORMAT_FIXED_16, 16,
                                                    SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
-                                                   SL_BYTEORDER_LITTLEENDIAN };
+                                                   SL_BYTEORDER_LITTLEENDIAN
+                                                 };
   SLDataLocator_BufferQueue bufferQueueLocator = { SL_DATALOCATOR_BUFFERQUEUE, 1 };
   SLDataLocator_OutputMix   outputMixLocator   = { SL_DATALOCATOR_OUTPUTMIX, outputMix };
   SLDataSource              audioSource        = { &bufferQueueLocator, &pcmFormat };
@@ -252,7 +254,7 @@ static void* bellMain(void*)
     Time::sleep(10);
     (*iBufferQueue)->GetState(iBufferQueue, &state);
   }
-  while(state.count != 0);
+  while (state.count != 0);
   (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_STOPPED);
 
   (*player)->Destroy(player);
@@ -310,7 +312,7 @@ static void* bellMain(void*)
   do {
     Time::sleep(10);
   }
-  while(!info.lock.tryLock());
+  while (!info.lock.tryLock());
   audio.StopPlayback();
 
   bellLock.unlock();
@@ -460,21 +462,11 @@ static void waitBell()
   bellLock.unlock();
 }
 
-// Wait bell to finish playing on (normal) process termination.
-struct BellFinaliser
+static void waitBellOnExit()
 {
-  volatile bool isFinalised = false;
-
-  OZ_HIDDEN
-  ~BellFinaliser()
-  {
-    isFinalised = true;
-
-    waitBell();
-  }
-};
-
-static BellFinaliser bellFinaliser;
+  hasBellWait = false;
+  waitBell();
+}
 
 OZ_NORETURN
 static void abort(bool doHalt)
@@ -520,9 +512,14 @@ void System::trap()
 
 void System::bell()
 {
+  if (bellLock.tryLock()) {
+    if (!hasBellWait) {
+      hasBellWait = true;
+      atexit(waitBellOnExit);
+    }
+
 #ifdef _WIN32
 
-  if (bellLock.tryLock()) {
     HANDLE bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
 
     if (bellThread == nullptr) {
@@ -531,11 +528,9 @@ void System::bell()
     else {
       CloseHandle(bellThread);
     }
-  }
 
 #else
 
-  if (bellLock.tryLock()) {
     pthread_t      bellThread;
     pthread_attr_t bellThreadAttr;
 
@@ -546,13 +541,8 @@ void System::bell()
       bellLock.unlock();
     }
     pthread_attr_destroy(&bellThreadAttr);
-  }
 
 #endif
-
-  // If this occurs during static finalisation bellFinaliser may already be destructed.
-  if (bellFinaliser.isFinalised) {
-    waitBell();
   }
 }
 
