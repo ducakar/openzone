@@ -81,13 +81,13 @@ static void readNode(const aiNode* node)
   compiler.transform(transf);
 
   if (node->mNumMeshes != 0) {
-    compiler.bindMesh(int(node->mMeshes[0]));
+    compiler.bindMesh(node->mMeshes[0]);
     Log::println("- mesh %u", node->mMeshes[0]);
 
     if (node->mNumMeshes > 1) {
       for (uint i = 1; i < node->mNumMeshes; ++i) {
         compiler.beginNode();
-        compiler.bindMesh(int(node->mMeshes[i]));
+        compiler.bindMesh(node->mMeshes[i]);
         compiler.endNode();
         Log::println("- mesh %u", node->mMeshes[i]);
       }
@@ -98,7 +98,7 @@ static void readNode(const aiNode* node)
     aiLight* light = scene->mLights[i];
 
     if (String::equals(light->mName.C_Str(), node->mName.C_Str())) {
-      compiler.bindLight(int(i));
+      compiler.bindLight(i);
       Log::println("- light");
     }
   }

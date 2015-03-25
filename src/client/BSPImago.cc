@@ -77,7 +77,7 @@ void BSPImago::preload()
   const File* file = model.preload();
   InputStream is   = file->inputStream(Endian::LITTLE);
 
-  is.seek(is.available() - 2 * int(sizeof(float[4])));
+  is.seek(is.available() - 2 * sizeof(float[4]));
   waterFogColour = is.readVec4();
   lavaFogColour  = is.readVec4();
 }

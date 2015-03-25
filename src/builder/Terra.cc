@@ -70,10 +70,10 @@ void Terra::load()
       OZ_ERROR("Failed to load heightmap '%s'", realPath.cstr());
     }
 
-    int width  = int(FreeImage_GetWidth(image));
-    int height = int(FreeImage_GetHeight(image));
-    int bpp    = int(FreeImage_GetBPP(image));
-    int type   = int(FreeImage_GetImageType(image));
+    int width  = FreeImage_GetWidth(image);
+    int height = FreeImage_GetHeight(image);
+    int bpp    = FreeImage_GetBPP(image);
+    int type   = FreeImage_GetImageType(image);
 
     if ((type != FIT_RGB16 && type != FIT_UINT16) || width != VERTS || height != VERTS) {
       OZ_ERROR("Invalid terrain heightmap format %d x %d %d bpp, should be %d x %d and 16 bpp"

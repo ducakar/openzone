@@ -67,7 +67,7 @@ static long vorbisTell(void* handle)
 {
   InputStream* is = static_cast<InputStream*>(handle);
 
-  return long(is->tell());
+  return is->tell();
 }
 
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbisTell };
@@ -91,7 +91,7 @@ static bool decodeVorbis(OggVorbis_File* stream, char* buffer, int size)
 
     bytesRead += result;
   }
-  while (result > 0 && bytesRead < long(size));
+  while (result > 0 && bytesRead < size);
 
   return result > 0;
 }
@@ -377,11 +377,11 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
       String::beginsWith(is.begin() + 8, "WAVE"))
   {
     is.seek(22);
-    int nChannels = int(is.readShort());
+    int nChannels = is.readShort();
     int rate      = is.readInt();
 
     is.seek(34);
-    int bits = int(is.readShort());
+    int bits = is.readShort();
 
     is.seek(36);
 
@@ -417,7 +417,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 #if OZ_BYTE_ORDER == 4321
 
     if (nChannels == 2) {
-      int    nSamples = size / int(sizeof(short));
+      int    nSamples = size / sizeof(short);
       short* samples  = new short[nSamples];
 
       mCopy(samples, data, size_t(size));
@@ -464,7 +464,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 
     ALenum format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
     int    rate   = int(vorbisInfo->rate);
-    int    size   = int(ov_pcm_total(&ovStream, -1)) * nChannels * int(sizeof(short));
+    int    size   = int(ov_pcm_total(&ovStream, -1)) * nChannels * sizeof(short);
     char*  data   = new char[size];
 
     if (!decodeVorbis(&ovStream, data, size)) {

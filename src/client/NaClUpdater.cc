@@ -46,7 +46,7 @@ List<NaClUpdater::Package> NaClUpdater::readManifest(InputStream* is) const
     return packages;
   }
 
-  is->forward(int(sizeof(MANIFEST_MAGIC)));
+  is->forward(sizeof(MANIFEST_MAGIC));
 
   int nPackages = is->readInt();
   if (nPackages == 0) {

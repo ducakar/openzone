@@ -602,7 +602,7 @@ public:
   bool exclude(const Elem_& elem)
   {
     if (size == 0) {
-      return nullptr;
+      return false;
     }
 
     uint    index = uint(hash(elem)) % uint(size);

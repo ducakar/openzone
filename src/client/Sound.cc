@@ -65,7 +65,7 @@ static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, nullptr, nullptr, nullptr }
 
 static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 {
-  return size_t(PHYSFS_readBytes(static_cast<PHYSFS_File*>(handle), buffer, ulong64(size * n)));
+  return size_t(PHYSFS_readBytes(static_cast<PHYSFS_File*>(handle), buffer, size * n));
 }
 
 OZ_ALWAYS_INLINE
@@ -140,7 +140,7 @@ void Sound::musicOpen(const char* path)
         OZ_ERROR("Corrupted Vorbis header in '%s'", path);
       }
 
-      musicRate = int(vorbisInfo->rate);
+      musicRate     = int(vorbisInfo->rate);
       musicChannels = vorbisInfo->channels;
 
       if (vorbisInfo->channels == 1) {
@@ -166,7 +166,7 @@ void Sound::musicOpen(const char* path)
       mad_synth_init(&madSynth);
 
       size_t readSize = size_t(PHYSFS_readBytes(musicFile, musicInputBuffer,
-                                                ulong64(MUSIC_INPUT_BUFFER_SIZE)));
+                                                MUSIC_INPUT_BUFFER_SIZE));
       if (readSize != size_t(MUSIC_INPUT_BUFFER_SIZE)) {
         OZ_ERROR("Failed to read MP3 stream in '%s'", path);
       }
@@ -184,7 +184,7 @@ void Sound::musicOpen(const char* path)
       madFrameSamples   = madSynth.pcm.length;
       madWrittenSamples = 0;
 
-      musicRate = int(madFrame.header.samplerate);
+      musicRate     = madFrame.header.samplerate;
       musicChannels = MAD_NCHANNELS(&madFrame.header);
 
       if (musicChannels == 1) {
@@ -207,8 +207,7 @@ void Sound::musicOpen(const char* path)
 
       aacDecoder = NeAACDecOpen();
 
-      int readSize = int(PHYSFS_readBytes(musicFile, musicInputBuffer,
-                                          ulong64(MUSIC_INPUT_BUFFER_SIZE)));
+      int readSize = int(PHYSFS_readBytes(musicFile, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE));
       if (readSize != MUSIC_INPUT_BUFFER_SIZE) {
         OZ_ERROR("Failed to read AAC stream in '%s'", path);
       }
@@ -226,7 +225,7 @@ void Sound::musicOpen(const char* path)
 
       readSize = int(PHYSFS_readBytes(musicFile,
                                       musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
-                                      ulong64(skipBytes)));
+                                      skipBytes));
 
       if (readSize != skipBytes) {
         OZ_ERROR("Failed to read AAC stream in '%s'", path);
@@ -236,8 +235,8 @@ void Sound::musicOpen(const char* path)
       aacWrittenBytes = 0;
       aacInputBytes   = MUSIC_INPUT_BUFFER_SIZE;
 
-      musicRate = int(aacRate);
-      musicChannels = int(aacChannels);
+      musicRate     = int(aacRate);
+      musicChannels = aacChannels;
 
       if (musicChannels == 1) {
         musicFormat = AL_FORMAT_MONO16;
@@ -295,8 +294,8 @@ int Sound::musicDecode()
       int section;
 
       do {
-        result = int(ov_read(&oggStream, &musicBuffer[bytesRead],
-                             MUSIC_BUFFER_SIZE - bytesRead, false, 2, true, &section));
+        result = int(ov_read(&oggStream, &musicBuffer[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
+                             false, 2, true, &section));
         bytesRead += result;
 
         if (result < 0) {
@@ -359,7 +358,7 @@ int Sound::musicDecode()
             }
 
             int bytesRead = int(PHYSFS_readBytes(musicFile, musicInputBuffer + bytesLeft,
-                                                 ulong64(MUSIC_INPUT_BUFFER_SIZE - bytesLeft)));
+                                                 MUSIC_INPUT_BUFFER_SIZE - bytesLeft));
 
             if (bytesRead == 0) {
               return int(reinterpret_cast<char*>(musicOutput) - musicBuffer);
@@ -368,7 +367,7 @@ int Sound::musicDecode()
               mSet(musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD);
             }
 
-            mad_stream_buffer(&madStream, musicInputBuffer, ulong(bytesLeft + bytesRead));
+            mad_stream_buffer(&madStream, musicInputBuffer, bytesLeft + bytesRead);
           }
           else if (!MAD_RECOVERABLE(madStream.error)) {
             OZ_ERROR("Unrecoverable error during MP3 decoding of '%s'",
@@ -407,22 +406,21 @@ int Sound::musicDecode()
 
         NeAACDecFrameInfo frameInfo;
         aacOutputBuffer = static_cast<char*>(NeAACDecDecode(aacDecoder, &frameInfo,
-                                                            musicInputBuffer,
-                                                            ulong(aacInputBytes)));
+                                                            musicInputBuffer, aacInputBytes));
 
         if (aacOutputBuffer == nullptr) {
           return int(musicOutput - musicBuffer);
         }
 
         int bytesConsumed = int(frameInfo.bytesconsumed);
-        aacInputBytes -= bytesConsumed;
-        aacBufferBytes = int(frameInfo.samples * frameInfo.channels);
+        aacInputBytes  -= bytesConsumed;
+        aacBufferBytes  = int(frameInfo.samples * frameInfo.channels);
         aacWrittenBytes = 0;
 
         mMove(musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes);
 
         int bytesRead = int(PHYSFS_readBytes(musicFile, musicInputBuffer + aacInputBytes,
-                                             ulong64(MUSIC_INPUT_BUFFER_SIZE - aacInputBytes)));
+                                             MUSIC_INPUT_BUFFER_SIZE - aacInputBytes));
 
         aacInputBytes += bytesRead;
       }

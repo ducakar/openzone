@@ -39,7 +39,7 @@ constexpr float Math::TAU;
 
 void Math::seed(int n)
 {
-  srand(uint(n));
+  srand(n);
 }
 
 int Math::rand(int max)

@@ -78,7 +78,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
       Log::printRaw("AL: Speak buffer overrun\n");
     }
 
-    mCopy(speakSource.samples + speakSource.nSamples, samples, nSamples * int(sizeof(short)));
+    mCopy(speakSource.samples + speakSource.nSamples, samples, nSamples * sizeof(short));
     speakSource.nSamples += nSamples;
 
     if (speakSource.nQueuedBuffers != 2) {
@@ -87,7 +87,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
       speakSource.mutex.lock();
 
       alBufferData(speakSource.bufferIds[i], AL_FORMAT_MONO16, speakSource.samples,
-                   speakSource.nSamples * int(sizeof(short)), speakSampleRate);
+                   speakSource.nSamples * sizeof(short), speakSampleRate);
       alSourceQueueBuffers(speakSource.id, 1, &speakSource.bufferIds[i]);
       alSourcePlay(speakSource.id);
 
@@ -135,7 +135,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
 
     if (speakSource.nSamples != 0) {
       alBufferData(buffer, AL_FORMAT_MONO16, speakSource.samples,
-                   speakSource.nSamples * int(sizeof(short)), speakSampleRate);
+                   speakSource.nSamples * sizeof(short), speakSampleRate);
       alSourceQueueBuffers(speakSource.id, 1, &buffer);
 
       ++speakSource.nQueuedBuffers;
@@ -188,7 +188,7 @@ uint Context::addSource(int sound)
     return INVALID_SOURCE;
   }
 
-  alSourcei(srcId, AL_BUFFER, int(sounds[sound].handle));
+  alSourcei(srcId, AL_BUFFER, sounds[sound].handle);
 
   ++sounds[sound].nUsers;
   sources.add(new Source(srcId, sound));
@@ -228,7 +228,7 @@ uint Context::addContSource(int sound, int key)
     return INVALID_SOURCE;
   }
 
-  alSourcei(srcId, AL_BUFFER, int(sounds[sound].handle));
+  alSourcei(srcId, AL_BUFFER, sounds[sound].handle);
 
   ++sounds[sound].nUsers;
   contSources.add(key, { srcId, sound, true });

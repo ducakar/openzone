@@ -453,7 +453,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr int index1(Value v)
   {
-    return int(sizeof(ulong64)) * 8 - 1 - __builtin_clzll(ulong64(v));
+    return sizeof(ulong64) * 8 - 1 - __builtin_clzll(v);
   }
 
   /**

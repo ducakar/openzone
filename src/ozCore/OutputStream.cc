@@ -172,37 +172,37 @@ char* OutputStream::forward(int count)
 
 void OutputStream::writeBool(bool b)
 {
-  char* data = forward(int(sizeof(bool)));
+  char* data = forward(sizeof(bool));
   *data = char(b);
 }
 
 void OutputStream::writeChar(char c)
 {
-  char* data = forward(int(sizeof(char)));
+  char* data = forward(sizeof(char));
   *data = char(c);
 }
 
 void OutputStream::writeChars(const char* array, int count)
 {
-  char* data = forward(count * int(sizeof(char)));
+  char* data = forward(count * sizeof(char));
   mCopy(data, array, count);
 }
 
 void OutputStream::writeByte(byte b)
 {
-  char* data = forward(int(sizeof(byte)));
+  char* data = forward(sizeof(byte));
   *data = char(b);
 }
 
 void OutputStream::writeUByte(ubyte b)
 {
-  char* data = forward(int(sizeof(ubyte)));
+  char* data = forward(sizeof(ubyte));
   *data = char(b);
 }
 
 void OutputStream::writeShort(short s)
 {
-  char* data = forward(int(sizeof(short)));
+  char* data = forward(sizeof(short));
 
   Endian::ShortToBytes value = { s };
 
@@ -218,7 +218,7 @@ void OutputStream::writeShort(short s)
 
 void OutputStream::writeUShort(ushort s)
 {
-  char* data = forward(int(sizeof(ushort)));
+  char* data = forward(sizeof(ushort));
 
   Endian::UShortToBytes value = { s };
 
@@ -234,7 +234,7 @@ void OutputStream::writeUShort(ushort s)
 
 void OutputStream::writeInt(int i)
 {
-  char* data = forward(int(sizeof(int)));
+  char* data = forward(sizeof(int));
 
   Endian::IntToBytes value = { i };
 
@@ -254,7 +254,7 @@ void OutputStream::writeInt(int i)
 
 void OutputStream::writeUInt(uint i)
 {
-  char* data = forward(int(sizeof(uint)));
+  char* data = forward(sizeof(uint));
 
   Endian::UIntToBytes value = { i };
 
@@ -274,7 +274,7 @@ void OutputStream::writeUInt(uint i)
 
 void OutputStream::writeLong64(long64 l)
 {
-  char* data = forward(int(sizeof(long64)));
+  char* data = forward(sizeof(long64));
 
   Endian::Long64ToBytes value = { l };
 
@@ -302,7 +302,7 @@ void OutputStream::writeLong64(long64 l)
 
 void OutputStream::writeULong64(ulong64 l)
 {
-  char* data = forward(int(sizeof(ulong64)));
+  char* data = forward(sizeof(ulong64));
 
   Endian::ULong64ToBytes value = { l };
 
@@ -330,7 +330,7 @@ void OutputStream::writeULong64(ulong64 l)
 
 void OutputStream::writeFloat(float f)
 {
-  char* data = forward(int(sizeof(float)));
+  char* data = forward(sizeof(float));
 
   Endian::FloatToBytes value = { f };
 
@@ -350,7 +350,7 @@ void OutputStream::writeFloat(float f)
 
 void OutputStream::writeDouble(double d)
 {
-  char* data = forward(int(sizeof(double)));
+  char* data = forward(sizeof(double));
 
   Endian::DoubleToBytes value = { d };
 
@@ -394,7 +394,7 @@ void OutputStream::writeString(const char* s)
 
 void OutputStream::writeVec3(const Vec3& v)
 {
-  char* data = forward(int(sizeof(float[3])));
+  char* data = forward(sizeof(float[3]));
 
   Endian::FloatToBytes x = { v.x };
   Endian::FloatToBytes y = { v.y };
@@ -432,7 +432,7 @@ void OutputStream::writeVec3(const Vec3& v)
 
 void OutputStream::writeVec4(const Vec4& v)
 {
-  char* data = forward(int(sizeof(float[4])));
+  char* data = forward(sizeof(float[4]));
 
   Endian::FloatToBytes x = { v.x };
   Endian::FloatToBytes y = { v.y };
@@ -479,7 +479,7 @@ void OutputStream::writeVec4(const Vec4& v)
 
 void OutputStream::writePoint(const Point& p)
 {
-  char* data = forward(int(sizeof(float[3])));
+  char* data = forward(sizeof(float[3]));
 
   Endian::FloatToBytes x = { p.x };
   Endian::FloatToBytes y = { p.y };
@@ -517,7 +517,7 @@ void OutputStream::writePoint(const Point& p)
 
 void OutputStream::writePlane(const Plane& p)
 {
-  char* data = forward(int(sizeof(float[4])));
+  char* data = forward(sizeof(float[4]));
 
   Endian::FloatToBytes nx = { p.n.x };
   Endian::FloatToBytes ny = { p.n.y };
@@ -564,7 +564,7 @@ void OutputStream::writePlane(const Plane& p)
 
 void OutputStream::writeQuat(const Quat& q)
 {
-  char* data = forward(int(sizeof(float[4])));
+  char* data = forward(sizeof(float[4]));
 
   Endian::FloatToBytes x = { q.x };
   Endian::FloatToBytes y = { q.y };
@@ -611,7 +611,7 @@ void OutputStream::writeQuat(const Quat& q)
 
 void OutputStream::writeMat3(const Mat3& m)
 {
-  char* data = forward(int(sizeof(float[9])));
+  char* data = forward(sizeof(float[9]));
   const float* values = m;
 
   if (order == Endian::NATIVE) {
@@ -638,7 +638,7 @@ void OutputStream::writeMat3(const Mat3& m)
 
 void OutputStream::writeMat4(const Mat4& m)
 {
-  char* data = forward(int(sizeof(float[16])));
+  char* data = forward(sizeof(float[16]));
   const float* values = m;
 
   if (order == Endian::NATIVE) {
@@ -665,8 +665,8 @@ void OutputStream::writeMat4(const Mat4& m)
 
 void OutputStream::writeBitset(const ulong* bitset, int nBits)
 {
-  int unitBits    = int(sizeof(ulong)) * 8;
-  int unit64Bits  = int(sizeof(ulong64)) * 8;
+  int unitBits    = sizeof(ulong) * 8;
+  int unit64Bits  = sizeof(ulong64) * 8;
   int unitCount   = (nBits + unitBits - 1) / unitBits;
   int unit64Count = (nBits + unit64Bits - 1) / unit64Bits;
 

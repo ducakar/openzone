@@ -581,8 +581,8 @@ void Render::resize()
   glGenTextures(1, &colourBuffer);
   glBindTexture(GL_TEXTURE_2D, colourBuffer);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, int(scaleFilter));
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, int(scaleFilter));
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaleFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaleFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

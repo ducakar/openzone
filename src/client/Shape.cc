@@ -232,11 +232,11 @@ void Shape::bind() const
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
   glEnableVertexAttribArray(Shader::POSITION);
-  glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, pos));
 
   glEnableVertexAttribArray(Shader::TEXCOORD);
-  glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, texCoord));
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);

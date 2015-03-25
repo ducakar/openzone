@@ -137,13 +137,13 @@ Buffer Buffer::compress(int level) const
   }
 
   // Upper bound for compressed data plus sizeof(int) to write down size of the uncompressed data.
-  int newSize = 4 + int(deflateBound(&zstream, ulong(size)));
+  int newSize = 4 + int(deflateBound(&zstream, size));
   buffer.resize(newSize);
 
   zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data));
-  zstream.avail_in  = uint(size);
+  zstream.avail_in  = size;
   zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data + 4);
-  zstream.avail_out = uint(buffer.size);
+  zstream.avail_out = buffer.size;
 
   int ret = ::deflate(&zstream, Z_FINISH);
   deflateEnd(&zstream);
@@ -184,9 +184,9 @@ Buffer Buffer::decompress() const
   buffer.resize(newSize);
 
   zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data + 4));
-  zstream.avail_in  = uint(size - 4);
+  zstream.avail_in  = size - 4;
   zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data);
-  zstream.avail_out = uint(buffer.size);
+  zstream.avail_out = buffer.size;
 
   int ret = ::inflate(&zstream, Z_FINISH);
   inflateEnd(&zstream);

@@ -63,7 +63,7 @@ int main(int argc, char** argv)
   Log::indent();
 
   OutputStream os(0, Endian::LITTLE);
-  os.writeChars("ozManifest", int(sizeof("ozManifest")));
+  os.writeChars("ozManifest", sizeof("ozManifest"));
 
   File outDir = outDirPath;
   Map<String, File> packages;

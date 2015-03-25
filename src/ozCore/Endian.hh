@@ -211,7 +211,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr short bswap16(short s)
   {
-    return short(ushort(s) << 8 | ushort(s) >> 8);
+    return short(s << 8 | ushort(s) >> 8);
   }
 
   /**
@@ -229,7 +229,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr int bswap32(int i)
   {
-    return int(__builtin_bswap32(uint(i)));
+    return __builtin_bswap32(i);
   }
 
   /**
@@ -247,7 +247,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr long64 bswap64(long64 l)
   {
-    return long64(__builtin_bswap64(ulong64(l)));
+    return __builtin_bswap64(l);
   }
 
   /**

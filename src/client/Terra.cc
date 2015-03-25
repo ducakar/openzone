@@ -184,8 +184,8 @@ void Terra::load()
   glGenBuffers(TILES * TILES, &vbos[0][0]);
   glGenBuffers(1, &ibo);
 
-  int vboSize = TILE_VERTICES * int(sizeof(Vertex));
-  int iboSize = TILE_INDICES * int(sizeof(ushort));
+  int vboSize = TILE_VERTICES * sizeof(Vertex);
+  int iboSize = TILE_INDICES  * sizeof(ushort);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward(iboSize), GL_STATIC_DRAW);

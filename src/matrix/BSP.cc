@@ -106,7 +106,7 @@ void BSP::load()
   for (int i = 0; i < nPlanes; ++i) {
     planes[i] = is.readPlane();
   }
-  data += nPlanes * int(sizeof(planes[0]));
+  data += nPlanes * sizeof(planes[0]);
 
   data = Alloc::alignUp(data);
 
@@ -116,7 +116,7 @@ void BSP::load()
     nodes[i].front = is.readInt();
     nodes[i].back  = is.readInt();
   }
-  data += nNodes * int(sizeof(nodes[0]));
+  data += nNodes * sizeof(nodes[0]);
 
   data = Alloc::alignUp(data);
 
@@ -125,7 +125,7 @@ void BSP::load()
     leaves[i].firstBrush = is.readInt();
     leaves[i].nBrushes   = is.readInt();
   }
-  data += nLeaves * int(sizeof(leaves[0]));
+  data += nLeaves * sizeof(leaves[0]);
 
   data = Alloc::alignUp(data);
 
@@ -133,7 +133,7 @@ void BSP::load()
   for (int i = 0; i < nLeafBrushes; ++i) {
     leafBrushes[i] = is.readInt();
   }
-  data += nLeafBrushes * int(sizeof(leafBrushes[0]));
+  data += nLeafBrushes * sizeof(leafBrushes[0]);
 
   data = Alloc::alignUp(data);
 
@@ -147,7 +147,7 @@ void BSP::load()
       brushes[i].flags |= orbis.terra.liquid & Medium::LIQUID_MASK;
     }
   }
-  data += nBrushes * int(sizeof(brushes[0]));
+  data += nBrushes * sizeof(brushes[0]);
 
   data = Alloc::alignUp(data);
 
@@ -155,7 +155,7 @@ void BSP::load()
   for (int i = 0; i < nBrushSides; ++i) {
     brushSides[i] = is.readInt();
   }
-  data += nBrushSides * int(sizeof(brushSides[0]));
+  data += nBrushSides * sizeof(brushSides[0]);
 
   data = Alloc::alignUp(data);
 
@@ -186,7 +186,7 @@ void BSP::load()
     entities[i].model       = liber.modelIndex(is.readString());
     entities[i].modelTransf = is.readMat4();
   }
-  data += nEntities * int(sizeof(entities[0]));
+  data += nEntities * sizeof(entities[0]);
 
   data = Alloc::alignUp(data);
 

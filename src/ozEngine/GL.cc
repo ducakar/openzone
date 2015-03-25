@@ -334,8 +334,8 @@ int GL::textureDataFromFile(const File& file, int bias)
     png_set_read_fn(png, &is, readFunc);
     png_read_info(png, pngInfo);
 
-    int width    = int(png_get_image_width(png, pngInfo));
-    int height   = int(png_get_image_height(png, pngInfo));
+    int width    = png_get_image_width(png, pngInfo);
+    int height   = png_get_image_height(png, pngInfo);
     int bitDepth = png_get_bit_depth(png, pngInfo);
     int colour   = png_get_color_type(png, pngInfo);
 

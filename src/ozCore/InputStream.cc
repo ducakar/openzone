@@ -75,37 +75,37 @@ const char* InputStream::forward(int count)
 
 bool InputStream::readBool()
 {
-  const char* data = forward(int(sizeof(bool)));
+  const char* data = forward(sizeof(bool));
   return bool(*data);
 }
 
 char InputStream::readChar()
 {
-  const char* data = forward(int(sizeof(char)));
+  const char* data = forward(sizeof(char));
   return char(*data);
 }
 
 void InputStream::readChars(char* array, int count)
 {
-  const char* data = forward(count * int(sizeof(char)));
+  const char* data = forward(count * sizeof(char));
   mCopy(array, data, count);
 }
 
 byte InputStream::readByte()
 {
-  const char* data = forward(int(sizeof(byte)));
+  const char* data = forward(sizeof(byte));
   return byte(*data);
 }
 
 ubyte InputStream::readUByte()
 {
-  const char* data = forward(int(sizeof(ubyte)));
+  const char* data = forward(sizeof(ubyte));
   return ubyte(*data);
 }
 
 short InputStream::readShort()
 {
-  const char* data = forward(int(sizeof(short)));
+  const char* data = forward(sizeof(short));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToShort value = { { data[0], data[1] } };
@@ -121,7 +121,7 @@ short InputStream::readShort()
 
 ushort InputStream::readUShort()
 {
-  const char* data = forward(int(sizeof(ushort)));
+  const char* data = forward(sizeof(ushort));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToUShort value = { { data[0], data[1] } };
@@ -137,7 +137,7 @@ ushort InputStream::readUShort()
 
 int InputStream::readInt()
 {
-  const char* data = forward(int(sizeof(int)));
+  const char* data = forward(sizeof(int));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
@@ -153,7 +153,7 @@ int InputStream::readInt()
 
 uint InputStream::readUInt()
 {
-  const char* data = forward(int(sizeof(uint)));
+  const char* data = forward(sizeof(uint));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
@@ -169,7 +169,7 @@ uint InputStream::readUInt()
 
 long64 InputStream::readLong64()
 {
-  const char* data = forward(int(sizeof(long64)));
+  const char* data = forward(sizeof(long64));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToLong64 value = {
@@ -189,7 +189,7 @@ long64 InputStream::readLong64()
 
 ulong64 InputStream::readULong64()
 {
-  const char* data = forward(int(sizeof(ulong64)));
+  const char* data = forward(sizeof(ulong64));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToULong64 value = {
@@ -209,7 +209,7 @@ ulong64 InputStream::readULong64()
 
 float InputStream::readFloat()
 {
-  const char* data = forward(int(sizeof(float)));
+  const char* data = forward(sizeof(float));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
@@ -225,7 +225,7 @@ float InputStream::readFloat()
 
 double InputStream::readDouble()
 {
-  const char* data = forward(int(sizeof(double)));
+  const char* data = forward(sizeof(double));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToDouble value = {
@@ -260,7 +260,7 @@ const char* InputStream::readString()
 
 Vec3 InputStream::readVec3()
 {
-  const char* data = forward(int(sizeof(float[3])));
+  const char* data = forward(sizeof(float[3]));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -280,7 +280,7 @@ Vec3 InputStream::readVec3()
 
 Vec4 InputStream::readVec4()
 {
-  const char* data = forward(int(sizeof(float[4])));
+  const char* data = forward(sizeof(float[4]));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -302,7 +302,7 @@ Vec4 InputStream::readVec4()
 
 Point InputStream::readPoint()
 {
-  const char* data = forward(int(sizeof(float[3])));
+  const char* data = forward(sizeof(float[3]));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -322,7 +322,7 @@ Point InputStream::readPoint()
 
 Plane InputStream::readPlane()
 {
-  const char* data = forward(int(sizeof(float[4])));
+  const char* data = forward(sizeof(float[4]));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -344,7 +344,7 @@ Plane InputStream::readPlane()
 
 Quat InputStream::readQuat()
 {
-  const char* data = forward(int(sizeof(float[4])));
+  const char* data = forward(sizeof(float[4]));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
@@ -366,7 +366,7 @@ Quat InputStream::readQuat()
 
 Mat3 InputStream::readMat3()
 {
-  const char* data = forward(int(sizeof(float[9])));
+  const char* data = forward(sizeof(float[9]));
 
   Mat3 m;
   float* values = m;
@@ -391,7 +391,7 @@ Mat3 InputStream::readMat3()
 
 Mat4 InputStream::readMat4()
 {
-  const char* data = forward(int(sizeof(float[16])));
+  const char* data = forward(sizeof(float[16]));
 
   Mat4 m;
   float* values = m;
@@ -416,8 +416,8 @@ Mat4 InputStream::readMat4()
 
 void InputStream::readBitset(ulong* bitset, int bits)
 {
-  int unitBits    = int(sizeof(ulong)) * 8;
-  int unit64Bits  = int(sizeof(ulong64)) * 8;
+  int unitBits    = sizeof(ulong) * 8;
+  int unit64Bits  = sizeof(ulong64) * 8;
   int unitCount   = (bits + unitBits - 1) / unitBits;
   int unit64Count = (bits + unit64Bits - 1) / unit64Bits;
 
@@ -431,7 +431,7 @@ void InputStream::readBitset(ulong* bitset, int bits)
       { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
     };
 #endif
-    *bitset = ulong(value.value);
+    *bitset = value.value;
 
     bitset += 1;
     data   += sizeof(ulong);

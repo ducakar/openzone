@@ -45,7 +45,7 @@ void Font::upload(const char* s, int* width, int* height) const
 {
   TTF_Font*    font = static_cast<TTF_Font*>(handle);
   SDL_Surface* surf = width != nullptr && *width > 0 ?
-                      TTF_RenderUTF8_Blended_Wrapped(font, s, SDL_COLOUR_WHITE, uint(*width)) :
+                      TTF_RenderUTF8_Blended_Wrapped(font, s, SDL_COLOUR_WHITE, *width) :
                       TTF_RenderUTF8_Blended(font, s, SDL_COLOUR_WHITE);
 
   if (surf == nullptr) {

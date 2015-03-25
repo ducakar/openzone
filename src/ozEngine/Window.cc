@@ -77,8 +77,8 @@ static void screenshotMain(void* data)
   png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_info*   pngInfo = png_create_info_struct(png);
 
-  png_set_IHDR(png, pngInfo, uint(info->width), uint(info->height), 8, PNG_COLOR_TYPE_RGB,
-               PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+  png_set_IHDR(png, pngInfo, info->width, info->height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+               PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
   png_set_write_fn(png, &os, writeFunc, flushFunc);
   png_write_info(png, pngInfo);

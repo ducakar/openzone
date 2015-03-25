@@ -42,7 +42,9 @@ int main(int argc, char** argv)
   glBindTexture(GL_TEXTURE_2D, texId);
 //  GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
   GL::textureDataFromFile("/home/davorin/gvim.png");
-//  GL::textureDataFromFile("/usr/share/pixmaps/gvim.png");
+//  GL::textureDataFromFile("/usr/share/pixmaps/netbeans.png");
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
   Cursor cursor(file, Cursor::SYSTEM);
 
   uint soundBuffer, soundSource, musicSource;
@@ -51,7 +53,7 @@ int main(int argc, char** argv)
   alGenSources(1, &musicSource);
 
   AL::bufferDataFromFile(soundBuffer, "/usr/share/sounds/pop.wav");
-  alSourcei(soundSource, AL_BUFFER, int(soundBuffer));
+  alSourcei(soundSource, AL_BUFFER, soundBuffer);
   alSourcePlay(soundSource);
 
 //  AL::Streamer streamer;
@@ -81,7 +83,7 @@ int main(int argc, char** argv)
 //      alSourcePlay(musicSource);
     }
 
-    glClearColor(0.8f, 0.2f, 0.4f, 0.0f);
+    glClearColor(1.0f, 0.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_TEXTURE_2D);

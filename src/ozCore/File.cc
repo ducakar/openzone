@@ -556,7 +556,7 @@ bool File::read(char* buffer, int* size) const
       return false;
     }
 
-    int result = int(PHYSFS_readBytes(file, buffer, ulong64(*size)));
+    int result = int(PHYSFS_readBytes(file, buffer, *size));
     PHYSFS_close(file);
 
     *size = result;
@@ -604,7 +604,7 @@ bool File::read(char* buffer, int* size) const
     CloseHandle(file);
 
     if (!result || int(read) != *size) {
-      *size = int(read);
+      *size = read;
       return false;
     }
     return true;
@@ -678,7 +678,7 @@ bool File::write(const char* buffer, int size) const
       return false;
     }
 
-    int result = int(PHYSFS_writeBytes(file, buffer, ulong64(size)));
+    int result = int(PHYSFS_writeBytes(file, buffer, size));
     PHYSFS_close(file);
 
     return result == size;
@@ -810,7 +810,7 @@ bool File::map() const
 
     int fd = open(filePath, O_RDONLY);
     if (fd < 0) {
-      return nullptr;
+      return false;
     }
 
     data = static_cast<char*>(mmap(nullptr, size_t(fileSize), PROT_READ, MAP_SHARED, fd, 0));

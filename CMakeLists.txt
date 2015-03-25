@@ -160,17 +160,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-  set(flags "-std=c++11 -pedantic")
-
-  # Use libc++ instead of libstdc++.
-  #set(flags "${flags} -stdlib=libc++")
-  #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
-else()
-  set(flags "-std=c++11 -pedantic -fstrict-enums")
-endif()
-
-set(flags "${flags} -fvisibility-inlines-hidden -ffast-math")
+set(flags "-std=c++11 -pedantic -fstrict-enums -fvisibility-inlines-hidden -ffast-math")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
@@ -188,10 +178,10 @@ endif()
 # Additional warnings.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
   set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic")
-  set(flags "${flags} -Wno-float-equal -Wno-shadow -Wno-switch-enum -Wno-padded -Wno-date-time")
-  set(flags "${flags} -Wno-global-constructors -Wno-exit-time-destructors")
+  set(flags "${flags} -Wno-shadow -Wno-switch-enum -Wno-padded -Wno-date-time -Wno-float-equal")
+  set(flags "${flags} -Wno-sign-conversion -Wno-global-constructors -Wno-exit-time-destructors")
 else()
-  set(flags "${flags} -Wall -Wextra -Wconversion -Wcast-align -Winit-self -Wlogical-op -Wundef")
+  set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef")
   set(flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2")
   set(flags "${flags} -Wno-format-zero-length -Wmissing-format-attribute -Winvalid-pch")
 

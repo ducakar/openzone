@@ -35,23 +35,23 @@ namespace client
 void Vertex::setFormat()
 {
   glEnableVertexAttribArray(Shader::POSITION);
-  glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, pos));
 
   glEnableVertexAttribArray(Shader::TEXCOORD);
-  glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, texCoord));
 
   glEnableVertexAttribArray(Shader::NORMAL);
-  glVertexAttribPointer(Shader::NORMAL, 3, GL_BYTE, GL_TRUE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::NORMAL, 3, GL_BYTE, GL_TRUE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(Shader::TANGENT);
-  glVertexAttribPointer(Shader::TANGENT, 3, GL_BYTE, GL_TRUE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, tangent));
 
   glEnableVertexAttribArray(Shader::BINORMAL);
-  glVertexAttribPointer(Shader::BINORMAL, 3, GL_BYTE, GL_TRUE, int(sizeof(Vertex)),
+  glVertexAttribPointer(Shader::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof(Vertex),
                         static_cast<char*>(nullptr) + offsetof(Vertex, binormal));
 }
 
@@ -457,16 +457,16 @@ const File* Model::preload()
     }
   }
 
-  int vboSize = nVertices * int(sizeof(Vertex));
-  int iboSize = nIndices  * int(sizeof(ushort));
+  int vboSize = nVertices * sizeof(Vertex);
+  int iboSize = nIndices  * sizeof(ushort);
 
   const void* vertexBuffer = is.forward(vboSize);
   is.forward(iboSize);
 
   if (nFrames != 0) {
     if (shader.hasVTF) {
-      int vertexBufferSize = nFramePositions * nFrames * int(sizeof(float[3]));
-      int normalBufferSize = nFramePositions * nFrames * int(sizeof(float[3]));
+      int vertexBufferSize = nFramePositions * nFrames * sizeof(float[3]);
+      int normalBufferSize = nFramePositions * nFrames * sizeof(float[3]);
 
       is.forward(vertexBufferSize + normalBufferSize);
     }
@@ -482,7 +482,7 @@ const File* Model::preload()
         normals[i] = is.readVec3();
       }
 
-      mCopy(vertices, vertexBuffer, nVertices * int(sizeof(Vertex)));
+      mCopy(vertices, vertexBuffer, nVertices * sizeof(Vertex));
     }
   }
 
@@ -569,7 +569,7 @@ const File* Model::preload()
 void Model::upload(const Vertex* vertices, int nVertices, uint usage) const
 {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, nVertices * int(sizeof(Vertex)), vertices, usage);
+  glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(Vertex), vertices, usage);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -614,8 +614,8 @@ void Model::load()
   }
 
   uint usage   = nFrames != 0 && shader.hasVTF ? GL_STREAM_DRAW : GL_STATIC_DRAW;
-  int  vboSize = nVertices * int(sizeof(Vertex));
-  int  iboSize = nIndices  * int(sizeof(ushort));
+  int  vboSize = nVertices * sizeof(Vertex);
+  int  iboSize = nIndices  * sizeof(ushort);
 
   const void* vertexBuffer = is.forward(vboSize);
 
@@ -632,8 +632,8 @@ void Model::load()
   if (nFrames != 0) {
     if (shader.hasVTF) {
 #ifndef OZ_GL_ES
-      int vertexBufferSize = nFramePositions * nFrames * int(sizeof(float[3]));
-      int normalBufferSize = nFramePositions * nFrames * int(sizeof(float[3]));
+      int vertexBufferSize = nFramePositions * nFrames * sizeof(float[3]);
+      int normalBufferSize = nFramePositions * nFrames * sizeof(float[3]);
 
       glGenTextures(1, &animationTexId);
       glBindTexture(GL_TEXTURE_2D, animationTexId);

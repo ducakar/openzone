@@ -49,10 +49,10 @@ class SBitset
 private:
 
   /// Size of unit in bytes.
-  static const int UNIT_SIZE = int(sizeof(ulong));
+  static const int UNIT_SIZE = sizeof(ulong);
 
   /// Number of bits per unit.
-  static const int UNIT_BITSIZE = int(sizeof(ulong)) * 8;
+  static const int UNIT_BITSIZE = sizeof(ulong) * 8;
 
   /// Number of units.
   static const int SIZE = (BITSIZE + UNIT_BITSIZE - 1) / UNIT_BITSIZE;

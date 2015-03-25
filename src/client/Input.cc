@@ -262,9 +262,7 @@ void Input::loadKeyMap(const Json& keyConfig)
         OZ_ERROR("Empty key description string for '%s'", KEY_NAMES[i]);
       }
 
-      int mod = keyDesc[0] == '_' ? int(MOD_OFF_BIT) :
-                keyDesc[0] == '^' ? int(MOD_ON_BIT) :
-                                    int(MOD_MASK);
+      int mod = keyDesc[0] == '_' ? MOD_OFF_BIT : keyDesc[0] == '^' ? MOD_ON_BIT : MOD_MASK;
 
 #if SDL_MAJOR_VERSION < 2
 
@@ -482,7 +480,7 @@ void Input::update()
   mCopy(oldKeys, keys, sizeof(keys));
   mSet(keys, 0, sizeof(keys));
 
-  int mod = sdlKeys[modifier0] | sdlKeys[modifier1] ? int(MOD_ON_BIT) : int(MOD_OFF_BIT);
+  int mod = sdlKeys[modifier0] | sdlKeys[modifier1] ? MOD_ON_BIT : MOD_OFF_BIT;
 
   for (int i = 0; i < aLength(keys); ++i) {
     if (keyMap[i][0] & mod) {

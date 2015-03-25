@@ -143,7 +143,7 @@ long64 Time::epoch()
   largeInteger.LowPart  = fileTime.dwLowDateTime;
   largeInteger.HighPart = fileTime.dwHighDateTime;
 
-  return long64(largeInteger.QuadPart / 10000);
+  return largeInteger.QuadPart / 10000;
 
 #else
 
@@ -175,7 +175,7 @@ long64 Time::toEpoch() const
   largeInteger.LowPart  = fileTime.dwLowDateTime;
   largeInteger.HighPart = fileTime.dwHighDateTime;
 
-  return long64(largeInteger.QuadPart / 10000);
+  return largeInteger.QuadPart / 10000;
 
 #else
 
@@ -189,7 +189,7 @@ long64 Time::toEpoch() const
   timeStruct.tm_year  = year - 1900;
   timeStruct.tm_isdst = -1;
 
-  return long64(mktime(&timeStruct));
+  return mktime(&timeStruct);
 
 #endif
 }
@@ -208,7 +208,7 @@ Time Time::local(long64 epoch)
   FILETIME       localFileTime;
   SYSTEMTIME     timeStruct;
 
-  largeInteger.QuadPart = ulong64(epoch * 10000);
+  largeInteger.QuadPart = epoch * 10000;
 
   fileTime.dwLowDateTime  = largeInteger.LowPart;
   fileTime.dwHighDateTime = largeInteger.HighPart;
@@ -217,8 +217,8 @@ Time Time::local(long64 epoch)
   FileTimeToSystemTime(&localFileTime, &timeStruct);
 
   return {
-    int(timeStruct.wYear), int(timeStruct.wMonth), int(timeStruct.wDay),
-    int(timeStruct.wHour), int(timeStruct.wMinute), int(timeStruct.wSecond)
+    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay,
+    timeStruct.wHour, timeStruct.wMinute, timeStruct.wSecond
   };
 
 #else
@@ -228,8 +228,8 @@ Time Time::local(long64 epoch)
   localtime_r(&ctime, &timeStruct);
 
   return {
-    int(1900 + timeStruct.tm_year), int(1 + timeStruct.tm_mon), int(timeStruct.tm_mday),
-    int(timeStruct.tm_hour), int(timeStruct.tm_min), int(timeStruct.tm_sec)
+    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
+    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
   };
 
 #endif

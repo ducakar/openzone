@@ -24,6 +24,7 @@
 #include <client/Client.hh>
 
 #include <SDL.h>
+#undef main
 
 #if defined(__native_client__)
 # include <SDL_nacl.h>

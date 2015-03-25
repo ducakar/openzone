@@ -282,10 +282,10 @@ inline int hash(const char* s)
   uint value = 5381;
 
   while (*s != '\0') {
-    value = (value * 33) ^ uint(*s);
+    value = (value * 33) ^ *s;
     ++s;
   }
-  return int(value);
+  return value;
 }
 
 }

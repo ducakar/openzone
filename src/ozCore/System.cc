@@ -112,7 +112,7 @@ struct SampleInfo
 
 #elif defined(_WIN32)
 
-static const int BELL_WAVE_SAMPLES = int(BELL_TIME* BELL_RATE);
+static const int BELL_WAVE_SAMPLES = int(BELL_TIME * float(BELL_RATE));
 
 struct Wave
 {
@@ -295,7 +295,7 @@ static void* bellMain(void*)
 
   SampleInfo info;
   info.rate          = rate;
-  info.nFrameSamples = int(nFrameSamples);
+  info.nFrameSamples = nFrameSamples;
   info.nSamples      = Math::lround(BELL_TIME * float(rate));
   info.end           = info.nSamples + 2 * info.nFrameSamples;
   info.offset        = 0;
@@ -329,7 +329,7 @@ static DWORD WINAPI bellMain(void*)
   wave->chunkId[1]     = 'I';
   wave->chunkId[2]     = 'F';
   wave->chunkId[3]     = 'F';
-  wave->chunkSize      = int(36 + sizeof(wave->samples));
+  wave->chunkSize      = 36 + sizeof(wave->samples);
   wave->format[0]      = 'W';
   wave->format[1]      = 'A';
   wave->format[2]      = 'V';
@@ -343,7 +343,7 @@ static DWORD WINAPI bellMain(void*)
   wave->audioFormat    = 1;
   wave->nChannels      = 2;
   wave->sampleRate     = BELL_RATE;
-  wave->byteRate       = int(BELL_RATE * 2 * sizeof(short));
+  wave->byteRate       = BELL_RATE * 2 * sizeof(short);
   wave->blockAlign     = short(2 * sizeof(short));
   wave->bitsPerSample  = short(sizeof(short) * 8);
 
@@ -397,7 +397,7 @@ static void* bellMain(void*)
   size_t size     = size_t(nSamples * channels) * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
-  genBellSamples(samples, nSamples, int(rate), 0, nSamples);
+  genBellSamples(samples, nSamples, rate, 0, nSamples);
   write(fd, samples, size);
 
   close(fd);
@@ -434,7 +434,7 @@ static void* bellMain(void*)
   size_t size     = size_t(nSamples * 2) * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
-  genBellSamples(samples, nSamples, int(rate), 0, nSamples);
+  genBellSamples(samples, nSamples, rate, 0, nSamples);
   snd_pcm_writei(alsa, samples, snd_pcm_uframes_t(nSamples));
 
   snd_pcm_drain(alsa);

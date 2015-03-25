@@ -83,10 +83,10 @@ int String::strongHash(const char* s)
   uint value = 2166136261;
 
   while (*s != '\0') {
-    value = (value * 16777619) ^ uint(*s);
+    value = (value * 16777619) ^ *s;
     ++s;
   }
-  return int(value);
+  return value;
 }
 
 int String::index(const char* s, char ch, int start)

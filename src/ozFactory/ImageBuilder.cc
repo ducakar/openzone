@@ -104,7 +104,7 @@ static FIBITMAP* loadBitmap(const File& file)
 {
   InputStream       is        = file.inputStream();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, uint(is.capacity()));
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
   FIBITMAP*         dib       = FreeImage_LoadFromMemory(format < 0 ? FIF_TARGA : format, memoryIO);
 
@@ -120,8 +120,8 @@ static FIBITMAP* loadBitmap(const File& file)
   FreeImage_Unload(oldDib);
 
   // Remove alpha if unused.
-  int    width    = int(FreeImage_GetWidth(dib));
-  int    height   = int(FreeImage_GetHeight(dib));
+  int    width    = FreeImage_GetWidth(dib);
+  int    height   = FreeImage_GetHeight(dib);
   int    size     = width * height * 4;
   bool   hasAlpha = false;
   ubyte* pixels   = FreeImage_GetBits(dib);
@@ -342,7 +342,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
       }
       else {
         const char* pixels = reinterpret_cast<const char*>(FreeImage_GetBits(level));
-        int         pitch  = int(FreeImage_GetPitch(level));
+        int         pitch  = FreeImage_GetPitch(level);
 
         for (int k = 0; k < levelHeight; ++k) {
           os.writeChars(pixels, levelWidth * targetBPP / 8);
@@ -462,7 +462,7 @@ bool ImageBuilder::isImage(const File& file)
 
   InputStream       is        = file.inputStream();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, uint(is.capacity()));
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
 
   FreeImage_CloseMemory(memoryIO);
@@ -480,7 +480,7 @@ ImageData ImageBuilder::loadImage(const File& file)
     return image;
   }
 
-  image = ImageData(int(FreeImage_GetWidth(dib)), int(FreeImage_GetHeight(dib)));
+  image = ImageData(FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
 
   // Copy and convert BGRA -> RGBA.
   int    size   = image.width * image.height * 4;

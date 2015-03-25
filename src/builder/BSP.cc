@@ -107,7 +107,7 @@ void BSP::load()
     lumps[i].length = is.readInt();
   }
 
-  textures.resize(lumps[QBSPLump::TEXTURES].length / int(sizeof(QBSPTexture)));
+  textures.resize(lumps[QBSPLump::TEXTURES].length / sizeof(QBSPTexture));
 
   is.rewind();
   is.forward(lumps[QBSPLump::TEXTURES].offset);
@@ -137,7 +137,7 @@ void BSP::load()
                  textures[i].type);
   }
 
-  planes.resize(lumps[QBSPLump::PLANES].length / int(sizeof(QBSPPlane)));
+  planes.resize(lumps[QBSPLump::PLANES].length / sizeof(QBSPPlane));
 
   is.rewind();
   is.forward(lumps[QBSPLump::PLANES].offset);
@@ -149,7 +149,7 @@ void BSP::load()
     planes[i].d   = is.readFloat() * scale;
   }
 
-  nodes.resize(lumps[QBSPLump::NODES].length / int(sizeof(QBSPNode)));
+  nodes.resize(lumps[QBSPLump::NODES].length / sizeof(QBSPNode));
 
   is.rewind();
   is.forward(lumps[QBSPLump::NODES].offset);
@@ -168,7 +168,7 @@ void BSP::load()
     is.readInt();
   }
 
-  leaves.resize(lumps[QBSPLump::LEAFS].length / int(sizeof(QBSPLeaf)));
+  leaves.resize(lumps[QBSPLump::LEAFS].length / sizeof(QBSPLeaf));
 
   is.rewind();
   is.forward(lumps[QBSPLump::LEAFS].offset);
@@ -194,7 +194,7 @@ void BSP::load()
     leaves[i].nBrushes   = is.readInt();
   }
 
-  leafBrushes.resize(lumps[QBSPLump::LEAFBRUSHES].length / int(sizeof(int)));
+  leafBrushes.resize(lumps[QBSPLump::LEAFBRUSHES].length / sizeof(int));
 
   is.rewind();
   is.forward(lumps[QBSPLump::LEAFBRUSHES].offset);
@@ -203,7 +203,7 @@ void BSP::load()
     leafBrushes[i] = is.readInt();
   }
 
-  int nModels = lumps[QBSPLump::MODELS].length / int(sizeof(QBSPModel));
+  int nModels = lumps[QBSPLump::MODELS].length / sizeof(QBSPModel);
 
   models.resize(nModels - 1);
   modelFaces.resize(nModels);
@@ -218,7 +218,7 @@ void BSP::load()
   }
 
   // skip model 0 (whole BSP)
-  is.forward(int(sizeof(QBSPModel)));
+  is.forward(sizeof(QBSPModel));
 
   for (int i = 0; i < models.length(); ++i) {
     const Json& entityConfig = modelsConfig[i];
@@ -308,7 +308,7 @@ void BSP::load()
     is.readInt();
   }
 
-  brushSides.resize(lumps[QBSPLump::BRUSHSIDES].length / int(sizeof(QBSPBrushSide)));
+  brushSides.resize(lumps[QBSPLump::BRUSHSIDES].length / sizeof(QBSPBrushSide));
 
   is.rewind();
   is.forward(lumps[QBSPLump::BRUSHSIDES].offset);
@@ -320,7 +320,7 @@ void BSP::load()
     is.readInt();
   }
 
-  brushes.resize(lumps[QBSPLump::BRUSHES].length / int(sizeof(QBSPBrush)));
+  brushes.resize(lumps[QBSPLump::BRUSHES].length / sizeof(QBSPBrush));
 
   if (brushes.length() > oz::BSP::MAX_BRUSHES) {
     OZ_ERROR("Too many brushes %d, maximum is %d", brushes.length(), oz::BSP::MAX_BRUSHES);
@@ -362,7 +362,7 @@ void BSP::load()
     }
   }
 
-  vertices.resize(lumps[QBSPLump::VERTICES].length / int(sizeof(QBSPVertex)));
+  vertices.resize(lumps[QBSPLump::VERTICES].length / sizeof(QBSPVertex));
 
   is.rewind();
   is.forward(lumps[QBSPLump::VERTICES].offset);
@@ -390,7 +390,7 @@ void BSP::load()
     is.readChar();
   }
 
-  indices.resize(lumps[QBSPLump::INDICES].length / int(sizeof(int)));
+  indices.resize(lumps[QBSPLump::INDICES].length / sizeof(int));
 
   is.rewind();
   is.forward(lumps[QBSPLump::INDICES].offset);
@@ -399,7 +399,7 @@ void BSP::load()
     indices[i] = is.readInt();
   }
 
-  faces.resize(lumps[QBSPLump::FACES].length / int(sizeof(QBSPFace)));
+  faces.resize(lumps[QBSPLump::FACES].length / sizeof(QBSPFace));
 
   is.rewind();
   is.forward(lumps[QBSPLump::FACES].offset);
@@ -1060,7 +1060,7 @@ void BSP::saveMatrix()
     os.writeInt(model.firstBrush);
     os.writeInt(model.nBrushes);
 
-    os.writeInt(int(model.type));
+    os.writeInt(model.type);
     os.writeFloat(model.margin);
     os.writeFloat(model.timeout);
     os.writeFloat(model.ratioInc);

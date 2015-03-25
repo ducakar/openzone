@@ -44,6 +44,7 @@
 #include <unistd.h>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#undef main
 
 #if defined(__native_client__)
 # include <ppapi/cpp/completion_callback.h>
@@ -592,7 +593,7 @@ int Client::init(int argc, char** argv)
   Math::seed(seed);
   LuaCommon::randomSeed = seed;
 
-  Log::println("Random generator seed set to: %u", uint(seed));
+  Log::println("Random generator seed set to: %u", seed);
 
   sound.initLibs();
 

@@ -160,15 +160,15 @@ static int readNode(const aiNode* origNode)
 
   node.name = origNode->mName.C_Str();
   node.transf = ~Mat4(origNode->mTransformation[0]);
-  node.meshes.resize(int(origNode->mNumMeshes));
-  node.children.resize(int(origNode->mNumChildren));
+  node.meshes.resize(origNode->mNumMeshes);
+  node.children.resize(origNode->mNumChildren);
 
   Log() << origNode->mName.C_Str();
   Log() << node.transf;
   Log() << node.children.length() << " :: " << node.meshes.length();
 
   for (int i = 0; i < int(origNode->mNumMeshes); ++i) {
-    node.meshes[i] = int(origNode->mMeshes[i]);
+    node.meshes[i] = origNode->mMeshes[i];
   }
   for (int i = 0; i < int(origNode->mNumChildren); ++i) {
     node.children[i] = readNode(origNode->mChildren[i]);
@@ -264,12 +264,12 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
       Vec3 centre = (a + b + c) / 3.0f;
 
       for (int k = 0; k < 8; ++k) {
-        triangles[k].add({ centre* DIRS[k], int(j) });
+        triangles[k].add({ centre* DIRS[k], j });
       }
     }
 
     int nIndices = indices.length() - firstIndex;
-    int material = int(mesh->mMaterialIndex);
+    int material = mesh->mMaterialIndex;
 
     meshes.add({ firstIndex, nIndices, 0, 0, material });
   }

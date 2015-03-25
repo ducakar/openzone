@@ -30,10 +30,8 @@
 
 #include <client/config.hh>
 
-// Prevent inclusion of SDL_main.h; morons defining a macro named `main` in a popular library's
-// header should be shot on sight. It causes havoc in several places in OpenZone engine. SDL_main.h
-// should be explicitly included when needed.
-#define _SDL_main_h
+// SDL macro named `main` causes havoc in several places in OpenZone engine.
+#define SDL_MAIN_HANDLED
 
 namespace oz
 {
