@@ -45,11 +45,11 @@ namespace oz
 {
 
 #ifdef _WIN32
-static HANDLE                   mainThread = GetCurrentThread();
+static const HANDLE             MAIN_THREAD = GetCurrentThread();
 #else
-static pthread_t                mainThread = pthread_self();
+static const pthread_t          MAIN_THREAD = pthread_self();
 #endif
-static thread_local const char* threadName = nullptr;
+static thread_local const char* threadName  = nullptr;
 
 struct Thread::Descriptor
 {
@@ -143,9 +143,9 @@ const char* Thread::name()
 bool Thread::isMain()
 {
 #ifdef _WIN32
-  return GetCurrentThread() == mainThread;
+  return GetCurrentThread() == MAIN_THREAD;
 #else
-  return pthread_equal(pthread_self(), mainThread);
+  return pthread_equal(pthread_self(), MAIN_THREAD);
 #endif
 }
 

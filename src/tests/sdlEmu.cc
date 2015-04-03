@@ -73,7 +73,7 @@ static Sint64 rwSeek(struct SDL_RWops* context, Sint64 offset, int whence)
 static size_t rwRead(struct SDL_RWops* context, void* ptr, size_t size, size_t maxnum)
 {
   size_t nBytes   = maxnum * size;
-  size_t maxBytes = size_t(context->hidden.mem.stop - context->hidden.mem.here);
+  size_t maxBytes = context->hidden.mem.stop - context->hidden.mem.here;
 
   if (nBytes > maxBytes) {
     maxnum = maxBytes / size;

@@ -162,8 +162,8 @@ char** StackTrace::symbols() const
 
   int nWrittenFrames = i;
 
-  size_t headerSize = size_t(nWrittenFrames) * sizeof(char*);
-  size_t bodySize   = size_t(out - outputBuffer);
+  size_t headerSize = nWrittenFrames * sizeof(char*);
+  size_t bodySize   = out - outputBuffer;
 
   if (headerSize + bodySize == 0) {
     free(symbols);

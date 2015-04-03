@@ -237,11 +237,7 @@ Time Time::local(long64 epoch)
 
 String Time::toString() const
 {
-  char* buffer;
-  String r = String::create(19, &buffer);
-
-  snprintf(buffer, 20, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
-  return r;
+  return String::str("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 }
 
 }

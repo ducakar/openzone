@@ -127,7 +127,7 @@ void MusicPlayer::onUpdate()
     show(false);
     return;
   }
-  else if (mouse.doShow) {
+  else if (mouse.isVisible) {
     show(true);
   }
 

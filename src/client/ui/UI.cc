@@ -48,8 +48,8 @@ namespace ui
 {
 
 UI::UI() :
-  fps(0.0f), fpsLabel(nullptr), isFreelook(false), showFPS(false), showDebug(false), doShow(true),
-  root(nullptr), loadingScreen(nullptr), hudArea(nullptr), strategicArea(nullptr),
+  fps(0.0f), fpsLabel(nullptr), isFreelook(false), showFPS(false), showDebug(false),
+  isVisible(true), root(nullptr), loadingScreen(nullptr), hudArea(nullptr), strategicArea(nullptr),
   questFrame(nullptr), galileoFrame(nullptr), musicPlayer(nullptr), inventory(nullptr),
   buildFrame(nullptr), debugFrame(nullptr)
 {}
@@ -62,12 +62,12 @@ void UI::showLoadingScreen(bool doShow)
 
 void UI::update()
 {
-  if (mouse.doShow == isFreelook) {
-    isFreelook = !mouse.doShow;
+  if (mouse.isVisible == isFreelook) {
+    isFreelook = !mouse.isVisible;
 
     for (Area& area : root->children) {
       if (!(area.flags & Area::PINNED_BIT)) {
-        area.show(mouse.doShow);
+        area.show(mouse.isVisible);
       }
     }
   }
@@ -78,7 +78,7 @@ void UI::update()
     if (input.isKeyPressed || input.isKeyReleased) {
       root->passKeyEvents();
     }
-    if (doShow) {
+    if (isVisible) {
       root->passMouseEvents();
     }
   }
@@ -88,7 +88,7 @@ void UI::draw()
 {
   OZ_NACL_IS_MAIN(true);
 
-  if (!doShow) {
+  if (!isVisible) {
     return;
   }
 
@@ -138,7 +138,7 @@ void UI::load()
 {
   fps           = 1.0f / Timer::TICK_TIME;
   isFreelook    = false;
-  doShow        = true;
+  isVisible     = true;
 
   hudArea       = new HudArea();
   strategicArea = new StrategicArea();
@@ -219,7 +219,7 @@ void UI::init()
   isFreelook = false;
   showFPS    = config.include("ui.showFPS",   false).get(false);
   showDebug  = config.include("ui.showDebug", false).get(false);
-  doShow     = true;
+  isVisible     = true;
 
   style.init();
   mouse.init();

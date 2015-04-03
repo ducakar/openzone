@@ -59,7 +59,7 @@ void UnitProxy::begin()
   camera.setTaggedEnt(nullptr);
   camera.isExternal = isExternal;
 
-  ui::mouse.doShow = false;
+  ui::mouse.isVisible = false;
 
   ui::ui.hudArea->enable(true);
   ui::ui.inventory->enable(true);
@@ -94,7 +94,7 @@ void UnitProxy::end()
 {
   camera.setBot(nullptr);
 
-  ui::mouse.doShow = true;
+  ui::mouse.isVisible = true;
 
   ui::ui.infoFrame->enable(false);
   ui::ui.inventory->enable(false);
@@ -173,7 +173,7 @@ void UnitProxy::prepare()
    * Mouse
    */
 
-  if (!ui::mouse.doShow) {
+  if (!ui::mouse.isVisible) {
     if (input.buttons & Input::LEFT_BUTTON) {
       bot->actions |= Bot::ACTION_ATTACK;
     }
@@ -214,7 +214,7 @@ void UnitProxy::prepare()
     else if (input.wheelDown) {
       if (camera.objectObj != nullptr) {
         if (camera.objectObj->flags & Object::BROWSABLE_BIT) {
-          ui::mouse.doShow = true;
+          ui::mouse.isVisible = true;
         }
         else {
           Dynamic* dyn = static_cast<Dynamic*>(camera.objectObj);
@@ -384,7 +384,7 @@ void UnitProxy::prepare()
   }
 
   if (input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE]) {
-    ui::mouse.doShow = !ui::mouse.doShow;
+    ui::mouse.isVisible = !ui::mouse.isVisible;
   }
 }
 

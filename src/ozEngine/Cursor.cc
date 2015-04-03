@@ -37,10 +37,10 @@ Cursor::Cursor() :
   images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
 {}
 
-Cursor::Cursor(const File& file, Mode mode, int size) :
-  images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
+Cursor::Cursor(const File& file, Mode mode_, int size) :
+  Cursor()
 {
-  load(file, mode, size);
+  load(file, mode_, size);
 }
 
 Cursor::~Cursor()
@@ -165,10 +165,10 @@ bool Cursor::load(const File& file, Mode mode_, int size)
     image.delay       = is.readInt();
     image.sdlCursor   = nullptr;
 
-    int size = image.width * image.height * 4;
+    int nBytes = image.width * image.height * 4;
 
-    char* pixels = new char[size];
-    is.readChars(pixels, size);
+    char* pixels = new char[nBytes];
+    is.readChars(pixels, nBytes);
 
     if (mode == TEXTURE) {
 #ifdef OZ_GL_ES

@@ -298,7 +298,7 @@ void GameStage::load()
 
   loadingMicros = Time::uclock();
 
-  ui::mouse.doShow = false;
+  ui::mouse.isVisible = false;
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Loading ..."));
   ui::ui.loadingScreen->show(true);
 
@@ -386,7 +386,7 @@ void GameStage::unload()
   Log::println("[%s] Unloading GameStage {", Time::local().toString().cstr());
   Log::indent();
 
-  ui::mouse.doShow = false;
+  ui::mouse.isVisible = false;
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Shutting down ..."));
   ui::ui.showLoadingScreen(true);
 

@@ -53,7 +53,7 @@ void StrategicProxy::begin()
   camera.smoothMagnify(1.0f);
   camera.isExternal = true;
 
-  ui::mouse.doShow = true;
+  ui::mouse.isVisible = true;
 
   ui::ui.strategicArea->enable(true);
   ui::ui.buildFrame->enable(hasBuildFrame);
@@ -65,7 +65,7 @@ void StrategicProxy::end()
 {
   camera.colour = camera.baseColour;
 
-  ui::mouse.doShow = true;
+  ui::mouse.isVisible = true;
 
   ui::ui.buildFrame->enable(false);
   ui::ui.strategicArea->enable(false);
@@ -129,7 +129,7 @@ void StrategicProxy::prepare()
   }
 
   if (input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE]) {
-    ui::mouse.doShow = !ui::mouse.doShow;
+    ui::mouse.isVisible = !ui::mouse.isVisible;
   }
 }
 

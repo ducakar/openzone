@@ -61,7 +61,7 @@ private:
 
 public:
 
-  bool           doShow;
+  bool           isVisible;
 
   Area*          root;
   LoadingArea*   loadingScreen;

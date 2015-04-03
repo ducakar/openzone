@@ -105,7 +105,7 @@ int Client::main()
 
           if (keysym.sym == SDLK_F9) {
             if (keysym.mod & KMOD_CTRL) {
-              ui::ui.doShow = !ui::ui.doShow;
+              ui::ui.isVisible = !ui::ui.isVisible;
             }
             else {
               loader.makeScreenshot();

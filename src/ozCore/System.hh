@@ -129,10 +129,8 @@ public:
    * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
    *
    * Signal handlers must be set up for each thread in a process separately. `System::init()`
-   * function sets them up for the caller thread only, for other threads this function should be
-   * used unless created with `Thread::start()`, which calls this function implicitly.
-   *
-   * If `HANDLERS_BIT` hasn't been passed to `System::init()` this function is a NOP.
+   * function sets them up for the caller/main thread only while other threads should call this
+   * function unless created with `Thread::start()`, which calls it implicitly.
    */
   static void threadInit();
 

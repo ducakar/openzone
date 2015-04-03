@@ -117,15 +117,15 @@ void BotAudio::play(const Object* playAt)
     prevStep = 0;
   }
 
-//  if (bot->clazz->name.equals("bauul")) {
-//    playSpeak("Take my love, take my land, take me where I cannot stand.\n"
-//              "I don't care, I'm still free, you can't take the sky from me.\n"
-//              "Take me out to the black, tell 'em I ain't comin' back.\n"
-//              "Burn the land, boil the sea, you can't take the sky from me.\n"
-//              "There's no place I can be since I found Serenity.\n"
-//              "And you can't take the sky from me.\n",
-//              1.0f, bot);
-//  }
+  if (bot->clazz->name.equals("bauul")) {
+    playSpeak("Take my love, take my land, take me where I cannot stand.\n"
+              "I don't care, I'm still free, you can't take the sky from me.\n"
+              "Take me out to the black, tell 'em I ain't comin' back.\n"
+              "Burn the land, boil the sea, you can't take the sky from me.\n"
+              "There's no place I can be since I found Serenity.\n"
+              "And you can't take the sky from me.\n",
+              1.0f, bot);
+  }
 }
 
 }

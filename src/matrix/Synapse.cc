@@ -91,10 +91,10 @@ Struct* Synapse::add(const BSP* bsp, const Point& p, Heading heading, bool empty
     for (int i = 0; i < bsp->nBoundObjects; ++i) {
       const BSP::BoundObject& boundObj = bsp->boundObjects[i];
 
-      Point   pos     = str->toAbsoluteCS(boundObj.pos);
-      Heading heading = Heading((str->heading + boundObj.heading) % 4);
+      Point   objPos     = str->toAbsoluteCS(boundObj.pos);
+      Heading objHeading = Heading((str->heading + boundObj.heading) % 4);
 
-      Object* obj = orbis.add(boundObj.clazz, pos, heading);
+      Object* obj = orbis.add(boundObj.clazz, objPos, objHeading);
       if (obj == nullptr) {
         continue;
       }
@@ -124,8 +124,8 @@ Object* Synapse::add(const ObjectClass* clazz, const Point& p, Heading heading, 
     const List<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
     for (int i = 0; i < defaultItems.length(); ++i) {
-      Heading heading = Heading(Math::rand(4));
-      Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItems[i], Point::ORIGIN, heading));
+      Heading itemHeading = Heading(Math::rand(4));
+      Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItems[i], Point::ORIGIN, itemHeading));
 
       if (item == nullptr) {
         continue;

@@ -209,7 +209,7 @@ void EditStage::load()
   Log::println("[%s] Loading EditStage {", Time::local().toString().cstr());
   Log::indent();
 
-  ui::mouse.doShow = false;
+  ui::mouse.isVisible = false;
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Loading ..."));
   ui::ui.loadingScreen->show(true);
 
@@ -265,7 +265,7 @@ void EditStage::unload()
   Log::println("[%s] Unloading EditStage {", Time::local().toString().cstr());
   Log::indent();
 
-  ui::mouse.doShow = false;
+  ui::mouse.isVisible = false;
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Shutting down ..."));
   ui::ui.showLoadingScreen(true);
 

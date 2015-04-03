@@ -72,7 +72,7 @@ void Inventory::ownerItemCallback(ModelField* sender, bool isClicked)
     }
     else if (input.middleReleased) {
       if (bot->cargo < 0 && inventory->other == nullptr) {
-        ui::mouse.doShow = false;
+        ui::mouse.isVisible = false;
 
         bot->invGrab(item);
       }
@@ -222,7 +222,7 @@ void Inventory::onUpdate()
   taggedItemIndex      = -1;
   taggedOwnerComponent = true;
 
-  show(camera.state == Camera::UNIT && mouse.doShow && owner != nullptr &&
+  show(camera.state == Camera::UNIT && mouse.isVisible && owner != nullptr &&
        !(owner->state & Bot::DEAD_BIT));
 }
 

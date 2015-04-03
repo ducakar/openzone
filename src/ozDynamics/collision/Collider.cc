@@ -344,9 +344,9 @@ bool Kollider::compoundCompound(const Mat3& rot0, const Shape* compound0_,
   Mat3 rot3[16];
   bool overlaps = false;
 
-  auto j = compound1->citer();
-  for (int k = 0; j.isValid(); ++k, ++j) {
-    rot3[k] = rot1 * j->rot;
+  auto l = compound1->citer();
+  for (int i = 0; l.isValid(); ++i, ++l) {
+    rot3[i] = rot1 * l->rot;
   }
 
   for (const Compound::Child& i : *compound0) {

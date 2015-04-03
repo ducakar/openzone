@@ -242,7 +242,7 @@ static void* bellMain(void*)
   (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &iBufferQueue);
 
   int    nSamples = int(BELL_TIME * float(BELL_RATE));
-  size_t size     = size_t(nSamples * 2) * sizeof(short);
+  int    size     = nSamples * 2 * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
   genBellSamples(samples, nSamples, BELL_RATE, 0, nSamples);
@@ -394,7 +394,7 @@ static void* bellMain(void*)
   }
 
   int    nSamples = int(BELL_TIME * float(rate));
-  size_t size     = size_t(nSamples * channels) * sizeof(short);
+  int    size     = nSamples * channels * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
   genBellSamples(samples, nSamples, rate, 0, nSamples);
@@ -431,7 +431,7 @@ static void* bellMain(void*)
   }
 
   int    nSamples = int(BELL_TIME * float(rate));
-  size_t size     = size_t(nSamples * 2) * sizeof(short);
+  int    size     = nSamples * 2 * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
   genBellSamples(samples, nSamples, rate, 0, nSamples);

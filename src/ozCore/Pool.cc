@@ -45,7 +45,7 @@ struct PoolAlloc::Block
   OZ_HIDDEN
   static Block* create(int slotSize, int nSlots, Block* nextBlock)
   {
-    char*  chunk = new char[OZ_ALIGNMENT + size_t(nSlots * slotSize)];
+    char*  chunk = new char[OZ_ALIGNMENT + nSlots * slotSize];
     Block* block = new(chunk) Block;
 
     block->nextBlock = nextBlock;

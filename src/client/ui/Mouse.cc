@@ -49,7 +49,7 @@ void Mouse::update()
 {
   icon = ARROW;
 
-  if (doShow) {
+  if (isVisible) {
     float minX = 0.0f;
     float minY = 0.0f;
     float maxX = float(camera.width) - 1.0f;
@@ -101,9 +101,10 @@ void Mouse::draw()
 {
   Cursor& cursor = cursors[icon];
 
-  if (doShow) {
-    if (icon != oldIcon || !wasShown) {
+  if (isVisible) {
+    if (icon != oldIcon || !wasVisible) {
       cursor.reset();
+      oldIcon = icon;
     }
 
     shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -115,25 +116,24 @@ void Mouse::draw()
     cursor.update(timer.frameMicros / 1000);
   }
 
-  oldIcon  = icon;
-  wasShown = doShow;
+  wasVisible = isVisible;
 }
 
 void Mouse::init()
 {
   Log::print("Initialising Mouse ...");
 
-  fineX    = float(camera.centreX);
-  fineY    = float(camera.centreY);
-  x        = camera.centreX;
-  y        = camera.centreY;
-  dx       = 0;
-  dy       = 0;
+  fineX      = float(camera.centreX);
+  fineY      = float(camera.centreY);
+  x          = camera.centreX;
+  y          = camera.centreY;
+  dx         = 0;
+  dy         = 0;
 
-  icon     = ARROW;
-  oldIcon  = ARROW;
-  doShow   = false;
-  wasShown = false;
+  icon       = ARROW;
+  oldIcon    = ARROW;
+  isVisible  = false;
+  wasVisible = false;
 
   for (int i = 0; i < CURSORS_MAX; ++i) {
     File file = String("@ui/cur/", NAMES[i]);

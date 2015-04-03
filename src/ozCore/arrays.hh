@@ -244,9 +244,9 @@ OZ_ALWAYS_INLINE
 inline void* mCopy(void* dest, const void* src, int size)
 {
 #if defined(NDEBUG) || !defined(__GLIBC__)
-  return __builtin_memcpy(dest, src, size_t(size));
+  return __builtin_memcpy(dest, src, size);
 #else
-  return __builtin___memcpy_chk(dest, src, size_t(size), __builtin_object_size(dest, 0));
+  return __builtin___memcpy_chk(dest, src, size, __builtin_object_size(dest, 0));
 #endif
 }
 
@@ -257,9 +257,9 @@ OZ_ALWAYS_INLINE
 inline void* mMove(void* dest, const void* src, int size)
 {
 #if defined(NDEBUG) || !defined(__GLIBC__)
-  return __builtin_memmove(dest, src, size_t(size));
+  return __builtin_memmove(dest, src, size);
 #else
-  return __builtin___memmove_chk(dest, src, size_t(size), __builtin_object_size(dest, 0));
+  return __builtin___memmove_chk(dest, src, size, __builtin_object_size(dest, 0));
 #endif
 }
 
@@ -270,9 +270,9 @@ OZ_ALWAYS_INLINE
 inline void* mSet(void* dest, int value, int size)
 {
 #if defined(NDEBUG) || !defined(__GLIBC__)
-  return __builtin_memset(dest, value, size_t(size));
+  return __builtin_memset(dest, value, size);
 #else
-  return __builtin___memset_chk(dest, value, size_t(size), __builtin_object_size(dest, 0));
+  return __builtin___memset_chk(dest, value, size, __builtin_object_size(dest, 0));
 #endif
 }
 
@@ -282,7 +282,7 @@ inline void* mSet(void* dest, int value, int size)
 OZ_ALWAYS_INLINE
 inline int mCompare(const void* srcA, const void* srcB, int size)
 {
-  return __builtin_memcmp(srcA, srcB, size_t(size));
+  return __builtin_memcmp(srcA, srcB, size);
 }
 
 /**
@@ -291,7 +291,7 @@ inline int mCompare(const void* srcA, const void* srcB, int size)
 OZ_ALWAYS_INLINE
 inline void* mChar(const void* src, int ch, int size)
 {
-  return __builtin_memchr(src, ch, size_t(size));
+  return __builtin_memchr(src, ch, size);
 }
 
 /**

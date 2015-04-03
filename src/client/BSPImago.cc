@@ -54,12 +54,12 @@ void BSPImago::schedule(const Struct* str, Model::QueueType queue)
       model.schedule(i + 1, queue);
 
       if (entity.clazz->model != -1) {
-        Model* model = context.requestModel(entity.clazz->model);;
+        Model* entityModel = context.requestModel(entity.clazz->model);;
 
-        if (model != nullptr && model->isLoaded()) {
+        if (entityModel != nullptr && entityModel->isLoaded()) {
           tf.model = tf.model ^ entity.clazz->modelTransf;
 
-          model->schedule(0, queue);
+          entityModel->schedule(0, queue);
         }
 
         context.releaseModel(entity.clazz->model);

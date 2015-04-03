@@ -49,7 +49,7 @@ static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
   int nBlocks   = min(int(n), is->available() / blockSize);
 
   is->readChars(static_cast<char*>(buffer), nBlocks * blockSize);
-  return size_t(nBlocks);
+  return nBlocks;
 }
 
 static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
@@ -420,7 +420,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
       int    nSamples = size / sizeof(short);
       short* samples  = new short[nSamples];
 
-      mCopy(samples, data, size_t(size));
+      mCopy(samples, data, size);
 
       for (int i = 0; i < nSamples; ++i) {
         samples[i] = Endian::bswap16(samples[i]);

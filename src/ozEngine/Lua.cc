@@ -257,7 +257,7 @@ void Lua::loadDir(const File& dir) const
       continue;
     }
 
-    if (luaL_loadbufferx(l, is.begin(), size_t(is.available()), file.path(), "t") != 0 ||
+    if (luaL_loadbufferx(l, is.begin(), is.available(), file.path(), "t") != 0 ||
         lua_pcall(l, 0, LUA_MULTRET, 0) != 0)
     {
       const char* errorMessage = lua_tostring(l, -1);

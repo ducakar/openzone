@@ -484,7 +484,7 @@
  * Loads (executes) Lua code from a given buffer.
  */
 #define l_dobufferx(begin, length, name, mode) \
-  (luaL_loadbufferx(l, begin, size_t(length), name, mode) || \
+  (luaL_loadbufferx(l, begin, length, name, mode) || \
     lua_pcall(l, 0, LUA_MULTRET, 0))
 
 /**

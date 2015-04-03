@@ -102,16 +102,12 @@ void Terra::init()
 
 void Terra::read(const Json& json)
 {
-  int id = liber.terraIndex(json["name"].get(""));
-
-  load(id);
+  load(liber.terraIndex(json["name"].get("")));
 }
 
 void Terra::read(InputStream* is)
 {
-  int id = liber.terraIndex(is->readString());
-
-  load(id);
+  load(liber.terraIndex(is->readString()));
 }
 
 Json Terra::write() const

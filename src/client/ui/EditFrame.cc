@@ -133,7 +133,7 @@ void EditFrame::onUpdate()
   updateReferences();
   taggedItemIndex = -1;
 
-  show(mouse.doShow && owner != nullptr);
+  show(mouse.isVisible && owner != nullptr);
 }
 
 bool EditFrame::onMouseEvent()

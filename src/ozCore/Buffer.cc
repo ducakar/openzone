@@ -116,11 +116,7 @@ OutputStream Buffer::outputStream(Endian::Order order)
 
 String Buffer::toString() const
 {
-  char*  buffer;
-  String s = String::create(size, &buffer);
-
-  mCopy(buffer, data, size);
-  return s;
+  return String(data, size);
 }
 
 Buffer Buffer::compress(int level) const

@@ -190,8 +190,8 @@ void TechGraph::load()
       }
 
       int nRequires = requires.length();
-      for (int i = 0; i < nRequires; ++i) {
-        Node* depNode = findNode(requires[i].get("?"));
+      for (int j = 0; j < nRequires; ++j) {
+        Node* depNode = findNode(requires[j].get("?"));
 
         node.requires.add(depNode);
       }

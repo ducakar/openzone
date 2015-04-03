@@ -152,8 +152,8 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
 
 void Context::speakMain(void*)
 {
-  espeak_Synth(speakSource.text, size_t(speakSource.text + 1), 0, POS_CHARACTER, 0,
-               espeakCHARS_UTF8, nullptr, nullptr);
+  espeak_Synth(speakSource.text, speakSource.text.length(), 0, POS_CHARACTER, 0, espeakCHARS_UTF8,
+               nullptr, nullptr);
 
   int value = AL_PLAYING;
   while (speakSource.isAlive && value != AL_STOPPED) {

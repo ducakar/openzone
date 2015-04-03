@@ -458,19 +458,19 @@ void Orbis::read(const Json& json)
       objects[1 + obj->index] = obj;
 
       for (const Json& itemJson : objJson["items"].arrayCIter()) {
-        String              name  = itemJson["class"].get("");
-        const DynamicClass* clazz = static_cast<const DynamicClass*>(liber.objClass(name));
+        String              itemName  = itemJson["class"].get("");
+        const DynamicClass* itemClazz = static_cast<const DynamicClass*>(liber.objClass(itemName));
 
-        if (!(clazz->flags & Object::ITEM_BIT)) {
-          OZ_ERROR("Inventory object '%s' is not an item", clazz->name.cstr());
+        if (!(itemClazz->flags & Object::ITEM_BIT)) {
+          OZ_ERROR("Inventory object '%s' is not an item", itemClazz->name.cstr());
         }
         if (obj->items.length() >= obj->clazz->nItems) {
-          OZ_ERROR("Too many inventory items for '%s'", clazz->name.cstr());
+          OZ_ERROR("Too many inventory items for '%s'", itemClazz->name.cstr());
         }
 
-        int index = allocObjIndex();
-        if (index >= 0) {
-          Dynamic* item = static_cast<Dynamic*>(clazz->create(index, itemJson));
+        int itemIndex = allocObjIndex();
+        if (itemIndex >= 0) {
+          Dynamic* item = static_cast<Dynamic*>(itemClazz->create(itemIndex, itemJson));
 
           item->parent = obj->index;
           obj->items.add(item->index);

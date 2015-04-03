@@ -45,7 +45,7 @@ bool MenuStage::update()
 void MenuStage::present(bool isFull)
 {
   // We don't want to hide UI or mouse cursor in the menu.
-  ui::ui.doShow = true;
+  ui::ui.isVisible = true;
 
   sound.play();
   render.update(isFull ? Render::UI_BIT : 0);
@@ -69,7 +69,7 @@ void MenuStage::load()
     mainMenu = new ui::MainMenu();
     ui::ui.root->add(mainMenu, 0, 0);
     ui::ui.showLoadingScreen(false);
-    ui::mouse.doShow = true;
+    ui::mouse.isVisible = true;
   };
 
   render.update(Render::UI_BIT);
@@ -83,7 +83,7 @@ void MenuStage::unload()
 
   MainCall() << [&]
   {
-    ui::mouse.doShow = false;
+    ui::mouse.isVisible = false;
     ui::ui.root->remove(mainMenu);
   };
 

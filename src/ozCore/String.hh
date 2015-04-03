@@ -58,14 +58,14 @@ private:
   char  baseBuffer[BUFFER_SIZE]; ///< Static buffer.
 
   /**
-   * Only allocate storage, do not initialise string.
+   * Merger of two strings.
    */
-  explicit String(int count, int);
+  explicit String(const char* s, int sLength, const char* t, int tLength);
 
   /**
    * Resize storage if necessary and set `count` to `newCount`.
    */
-  void ensureCapacity(int newCount, bool keepContents = false);
+  void resize(int newCount, bool keepContents = false);
 
 public:
 
@@ -360,12 +360,19 @@ public:
    */
 
   /**
-   * Create string form a given C string (nullptr is permitted, equals "").
+   * Empty string.
    */
-  String(const char* s = nullptr);
+  String();
+
+  /**
+   * Create string form a given C string.
+   */
+  String(const char* s);
 
   /**
    * Create string form a given C string with a known length.
+   *
+   * The given string doesn't need to be null-terminated.
    *
    * @param s C string.
    * @param count length in bytes without the terminating null character.
@@ -433,17 +440,6 @@ public:
    * Replace current string with a given C string (nullptr is permitted, equals "").
    */
   String& operator = (const char* s);
-
-  /**
-   * Create uninitialised string.
-   *
-   * Terminating null character is written, so it represents a valid string even if not
-   * initialised by the caller.
-   *
-   * @param length length of string (without the terminating null character).
-   * @param buffer where to pass non-constant pointer to the internal buffer.
-   */
-  static String create(int length, char** buffer);
 
   /**
    * Create a string in sprintf-like way.

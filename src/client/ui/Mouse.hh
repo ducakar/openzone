@@ -53,7 +53,7 @@ private:
 
   Cursor cursors[CURSORS_MAX];
   Icon   oldIcon;
-  bool   wasShown;
+  bool   wasVisible;
 
   float  fineX;
   float  fineY;
@@ -66,7 +66,7 @@ public:
   int  dy;
 
   Icon icon;
-  bool doShow;
+  bool isVisible;
 
   void update();
 

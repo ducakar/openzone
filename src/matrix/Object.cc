@@ -252,8 +252,8 @@ Json Object::write() const
   if (clazz->nItems != 0) {
     Json& itemsJson = json.add("items", Json::ARRAY);
 
-    for (int index : items) {
-      const Object* item = orbis.obj(index);
+    for (int itemIndex : items) {
+      const Object* item = orbis.obj(itemIndex);
 
       if (item != nullptr) {
         itemsJson.add(item->write());

@@ -43,8 +43,8 @@
 #define OZ_PRINT_BOTH(code) \
   { \
     auto lambda = [&](FILE* stream) code; \
-    if (!verboseMode || showVerbose || file == nullptr) { lambda(stdout); } \
-    if (file != nullptr) { lambda(file); } \
+    if (!verboseMode || showVerbose || logFile == nullptr) { lambda(stdout); } \
+    if (logFile != nullptr) { lambda(logFile); } \
   }
 
 namespace oz
@@ -91,7 +91,7 @@ static const char* const SIGNALS[][2]         =
 };
 
 static char  path[256]   = "";
-static FILE* file        = nullptr;
+static FILE* logFile     = nullptr;
 static int   indentLevel = 0;
 
 bool Log::showVerbose    = false;
@@ -350,9 +350,9 @@ bool Log::init(const char* filePath, bool clearFile)
   }
 
   if (path[0] != '\0') {
-    file = fopen(path, clearFile ? "w" : "a");
+    logFile = fopen(path, clearFile ? "w" : "a");
   }
-  return file != nullptr;
+  return logFile != nullptr;
 
 #endif
 }
@@ -361,9 +361,9 @@ void Log::destroy()
 {
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
-  if (file != nullptr) {
-    fclose(file);
-    file = nullptr;
+  if (logFile != nullptr) {
+    fclose(logFile);
+    logFile = nullptr;
   }
 
   path[0] = '\0';
@@ -527,7 +527,7 @@ const Log& Log::operator << (const Mat4& m) const
 const Log& Log::operator << (const InputStream& is) const
 {
   OZ_PRINT_BOTH({
-    fwrite(is.begin(), 1, size_t(is.tell()), stream);
+    fwrite(is.begin(), 1, is.tell(), stream);
     fputc('\n', stream);
     fflush(stream);
   });
@@ -538,7 +538,7 @@ const Log& Log::operator << (const InputStream& is) const
 const Log& Log::operator << (const Buffer& buffer) const
 {
   OZ_PRINT_BOTH({
-    fwrite(buffer.begin(), 1, size_t(buffer.length()), stream);
+    fwrite(buffer.begin(), 1, buffer.length(), stream);
     fputc('\n', stream);
     fflush(stream);
   });

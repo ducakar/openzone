@@ -175,10 +175,12 @@ void StrategicArea::collectHovers()
           if ((obj.flags & Object::SOLID_BIT) &&
               (obj.flags & (Object::BOT_BIT | Object::VEHICLE_BIT)))
           {
-            int  x, y;
-            bool hasProj = projectPoint(obj.p, &x, &y);
+            int  projX, projY;
+            bool hasProj = projectPoint(obj.p, &projX, &projY);
 
-            if (hasProj && drag.minX <= x && x <= drag.maxX && drag.minY <= y && y <= drag.maxY) {
+            if (hasProj && drag.minX <= projX && projX <= drag.maxX &&
+                drag.minY <= projY && projY <= drag.maxY)
+            {
               dragObjs.include(obj.index);
             }
           }
@@ -302,7 +304,7 @@ void StrategicArea::onRealign()
 
 void StrategicArea::onUpdate()
 {
-  if (!mouse.doShow) {
+  if (!mouse.isVisible) {
     clearOverlay();
 
     dragStartX = -1;
@@ -413,7 +415,7 @@ void StrategicArea::onDraw()
   }
 
   for (int i = 0; i < dragObjs.length(); ++i) {
-    const Object* obj = orbis.obj(dragObjs[i]);
+    obj = orbis.obj(dragObjs[i]);
 
     if (obj != nullptr && obj->cell != nullptr && projectBounds(*obj, &span)) {
       drawHoverRect(span, nullptr, obj);
@@ -429,7 +431,7 @@ void StrategicArea::onDraw()
   }
 
   for (int i = 0; i < taggedObjs.length(); ++i) {
-    const Object* obj = orbis.obj(taggedObjs[i]);
+    obj = orbis.obj(taggedObjs[i]);
 
     if (obj != nullptr && obj->cell != nullptr &&
         (obj->p - camera.p) * camera.at >= TAG_CLIP_DIST && projectBounds(*obj, &span))

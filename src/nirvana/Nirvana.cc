@@ -87,8 +87,8 @@ void Nirvana::read(InputStream* is)
   int nMinds   = is->readInt();
 
   for (int i = 0; i < nDevices; ++i) {
-    int index   = is->readInt();
-    String type = is->readString();
+    int    index = is->readInt();
+    String type  = is->readString();
 
     Device::CreateFunc* const* func = deviceClasses.find(type);
 

@@ -44,14 +44,17 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 const String String::EMPTY;
 
 OZ_HIDDEN
-String::String(int count_, int) :
+String::String(const char* s, int sLength, const char* t, int tLength) :
   buffer(baseBuffer), count(0)
 {
-  ensureCapacity(count_);
+  resize(sLength + tLength);
+
+  mCopy(buffer, s, sLength);
+  mCopy(buffer + sLength, t, tLength + 1);
 }
 
 OZ_HIDDEN
-void String::ensureCapacity(int newCount, bool keepContents)
+void String::resize(int newCount, bool keepContents)
 {
   hard_assert(buffer != nullptr && count >= 0 && newCount >= 0);
   hard_assert(!keepContents || newCount > count);
@@ -61,6 +64,8 @@ void String::ensureCapacity(int newCount, bool keepContents)
       delete[] buffer ;
       buffer = baseBuffer;
     }
+
+    count = newCount;
   }
   else if (newCount != count) {
     char* newBuffer = new char[newCount + 1];
@@ -68,14 +73,13 @@ void String::ensureCapacity(int newCount, bool keepContents)
     if (keepContents) {
       mCopy(newBuffer, buffer, min<int>(count, newCount) + 1);
     }
-
     if (buffer != baseBuffer) {
       delete[] buffer;
     }
-    buffer = newBuffer;
-  }
 
-  count = newCount;
+    buffer = newBuffer;
+    count  = newCount;
+  }
 }
 
 int String::strongHash(const char* s)
@@ -133,7 +137,7 @@ const char* String::findLast(const char* s, char ch, int end)
 
   return strrchr(s, ch);
 #else
-  return static_cast<const char*>(memrchr(s, ch, size_t(end)));
+  return static_cast<const char*>(memrchr(s, ch, end));
 #endif
 }
 
@@ -174,25 +178,14 @@ String String::substring(const char* s, int start)
 {
   hard_assert(0 <= start && start <= length(s));
 
-  int    rCount = length(s) - start;
-  String r      = String(rCount, 0);
-
-  mCopy(r.buffer, s + start, rCount + 1);
-
-  return r;
+  return String(s + start, length(s) - start);
 }
 
 String String::substring(const char* s, int start, int end)
 {
   hard_assert(0 <= start && start <= end && end <= length(s));
 
-  int    rCount = end - start;
-  String r      = String(rCount, 0);
-
-  mCopy(r.buffer, s + start, rCount);
-  r.buffer[rCount] = '\0';
-
-  return r;
+  return String(s + start, end - start);
 }
 
 String String::trim(const char* s)
@@ -207,6 +200,7 @@ String String::trim(const char* s)
   while (start < end && isBlank(*(end - 1))) {
     --end;
   }
+
   return String(start, int(end - start));
 }
 
@@ -275,8 +269,10 @@ bool String::fileHasExtension(const char* s, const char* ext)
 
 String String::replace(const char* s, char whatChar, char withChar)
 {
-  int    count = length(s);
-  String r     = String(count, 0);
+  int count = length(s);
+
+  String r;
+  r.resize(count);
 
   for (int i = 0; i < count; ++i) {
     r.buffer[i] = s[i] == whatChar ? withChar : s[i];
@@ -445,51 +441,34 @@ invalidNumber:
   return sign * number;
 }
 
+String::String() :
+  buffer(baseBuffer), count(0)
+{}
+
 String::String(const char* s) :
   buffer(baseBuffer), count(0)
 {
-  if (s == nullptr || s[0] == '\0') {
-    baseBuffer[0] = '\0';
-  }
-  else {
-    ensureCapacity(length(s));
-    mCopy(buffer, s, count + 1);
-  }
+  hard_assert(s != nullptr);
+
+  resize(length(s));
+  mCopy(buffer, s, count + 1);
 }
 
 String::String(const char* s, int count_) :
   buffer(baseBuffer), count(0)
 {
-  ensureCapacity(count_);
+  resize(count_);
   mCopy(buffer, s, count);
   buffer[count] = '\0';
 }
 
 String::String(const char* s, const char* t) :
-  buffer(baseBuffer), count(0)
-{
-  int sCount = length(s);
-  int tCount = length(t);
-
-  ensureCapacity(sCount + tCount);
-  mCopy(buffer, s, sCount);
-  mCopy(buffer + sCount, t, tCount + 1);
-}
+  String(s, length(s), t, length(t))
+{}
 
 String::String(bool b) :
-  buffer(baseBuffer)
-{
-  static_assert(BUFFER_SIZE >= 6, "Too small oz::String::baseBuffer for bool representation");
-
-  if (b) {
-    mCopy(baseBuffer, "true", 5);
-    count = 4;
-  }
-  else {
-    mCopy(baseBuffer, "false", 6);
-    count = 5;
-  }
-}
+  String(b ? "true" : "false")
+{}
 
 String::String(int i) :
   buffer(baseBuffer), count(0)
@@ -526,6 +505,7 @@ String::String(int i) :
       break;
     }
   }
+
   baseBuffer[count] = '\0';
 }
 
@@ -579,12 +559,12 @@ String::String(double d, int nDigits) :
   int  pointIndex = isExp ? 1 : 1 + e;
 
   for (int i = !isExp && e < 0 ? e : 0; ; ++i) {
-    double base  = exp10(e - i);
-    int    digit = int((d - approx) / base);
+    double digitBase = exp10(e - i);
+    int    digit     = int((d - approx) / digitBase);
 
-    approx += digit * base;
+    approx += digit * digitBase;
 
-    if (d + eps >= approx + base) {
+    if (d + eps >= approx + digitBase) {
       approx = d;
       ++digit;
     }
@@ -628,7 +608,7 @@ String::~String()
 String::String(const String& s) :
   buffer(baseBuffer), count(0)
 {
-  ensureCapacity(s.count);
+  resize(s.count);
   mCopy(buffer, s.buffer, count + 1);
 }
 
@@ -651,7 +631,7 @@ String::String(String&& s) :
 String& String::operator = (const String& s)
 {
   if (&s != this) {
-    ensureCapacity(s.count);
+    resize(s.count);
     mCopy(buffer, s.buffer, count + 1);
   }
   return *this;
@@ -683,24 +663,12 @@ String& String::operator = (String&& s)
 
 String& String::operator = (const char* s)
 {
-  if (s == nullptr) {
-    ensureCapacity(0);
-    buffer[0] = '\0';
-  }
-  else {
-    ensureCapacity(length(s));
-    mCopy(buffer, s, count + 1);
-  }
+  hard_assert(s != nullptr);
+
+  resize(length(s));
+  mCopy(buffer, s, count + 1);
+
   return *this;
-}
-
-String String::create(int length, char** buffer_)
-{
-  String r(length, 0);
-
-  r.buffer[length] = '\0';
-  *buffer_ = r.buffer;
-  return r;
 }
 
 String String::str(const char* s, ...)
@@ -713,10 +681,7 @@ String String::str(const char* s, ...)
 
   va_end(ap);
 
-  String r(length, 0);
-  mCopy(r.buffer, localBuffer, r.count + 1);
-
-  return r;
+  return String(localBuffer, length);
 }
 
 String String::si(double e, int nDigits)
@@ -817,46 +782,26 @@ double String::parseDouble(const char** end) const
 
 String String::operator + (const String& s) const
 {
-  int    rCount = count + s.count;
-  String r      = String(rCount, 0);
-
-  mCopy(r.buffer, buffer, count);
-  mCopy(r.buffer + count, s.buffer, s.count + 1);
-
-  return r;
+  return String(buffer, count, s.buffer, s.count);
 }
 
 String String::operator + (const char* s) const
 {
-  int    sLength = length(s);
-  int    rCount  = count + sLength;
-  String r       = String(rCount, 0);
-
-  mCopy(r.buffer, buffer, count);
-  mCopy(r.buffer + count, s, sLength + 1);
-
-  return r;
+  return String(buffer, count, s, length(s));
 }
 
 String operator + (const char* s, const String& t)
 {
-  int    sLength = String::length(s);
-  int    rCount  = t.count + sLength;
-  String r       = String(rCount, 0);
-
-  mCopy(r.buffer, s, sLength);
-  mCopy(r.buffer + sLength, t.buffer, t.count + 1);
-
-  return r;
+  return String(s, String::length(s), t.buffer, t.count);
 }
 
 String& String::operator += (const String& s)
 {
   int oCount = count;
 
-  ensureCapacity(count + s.count, true);
-
+  resize(count + s.count, true);
   mCopy(buffer + oCount, s, s.count + 1);
+
   return *this;
 }
 
@@ -865,9 +810,9 @@ String& String::operator += (const char* s)
   int oCount  = count;
   int sLength = length(s);
 
-  ensureCapacity(count + sLength, true);
-
+  resize(count + sLength, true);
   mCopy(buffer + oCount, s, sLength + 1);
+
   return *this;
 }
 
@@ -875,23 +820,14 @@ String String::substring(int start) const
 {
   hard_assert(0 <= start && start <= count);
 
-  int    rCount = count - start;
-  String r      = String(rCount, 0);
-
-  mCopy(r.buffer, buffer + start, rCount + 1);
-  return r;
+  return String(buffer + start, count - start);
 }
 
 String String::substring(int start, int end) const
 {
   hard_assert(0 <= start && start <= count && start <= end && end <= count);
 
-  int    rCount = end - start;
-  String r      = String(rCount, 0);
-
-  mCopy(r.buffer, buffer + start, rCount);
-  r.buffer[rCount] = '\0';
-  return r;
+  return String(buffer + start, end - start);
 }
 
 String String::trim() const
@@ -905,12 +841,14 @@ String String::trim() const
   while (start < end && isBlank(*(end - 1))) {
     --end;
   }
+
   return String(start, int(end - start));
 }
 
 String String::replace(char whatChar, char withChar) const
 {
-  String r = String(count, 0);
+  String r;
+  r.resize(count);
 
   for (int i = 0; i < count; ++i) {
     r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];

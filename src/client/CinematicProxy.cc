@@ -51,7 +51,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
   }
 
   Step step = {
-    camera.rot, camera.p, camera.colour, String::EMPTY, -1, nullptr, 0.0f, Camera::CINEMATIC
+    camera.rot, camera.p, camera.colour, String::EMPTY, -1, "", 0.0f, Camera::CINEMATIC
   };
 
   steps.reserve(nSteps);
@@ -143,7 +143,7 @@ void CinematicProxy::begin()
 
   cinematicText = new ui::CinematicText();
   ui::ui.root->add(cinematicText, ui::Area::CENTRE, 200);
-  ui::mouse.doShow = false;
+  ui::mouse.isVisible = false;
 
   beginRot    = camera.rot;
   beginPos    = camera.p;

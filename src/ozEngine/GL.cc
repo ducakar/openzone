@@ -271,20 +271,18 @@ int GL::textureDataFromFile(const File& file, int bias)
     }
 
     for (int i = 0; i < nFaces; ++i) {
-      GLenum target = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
+      GLenum faceTarget = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
 
       int mipmapWidth  = width;
       int mipmapHeight = height;
       int mipmapS3Size = pitch;
-
-      Buffer data;
 
       for (int j = 0; j < nMipmaps; ++j) {
         if (pixelFlags & DDPF_FOURCC) {
           const char* data = is.forward(mipmapS3Size);
 
           if (j >= bias) {
-            glCompressedTexImage2D(target, j - bias, format, mipmapWidth, mipmapHeight, 0,
+            glCompressedTexImage2D(faceTarget, j - bias, format, mipmapWidth, mipmapHeight, 0,
                                    mipmapS3Size, data);
           }
         }
@@ -296,9 +294,7 @@ int GL::textureDataFromFile(const File& file, int bias)
             is.forward(mipmapWidth * mipmapHeight * pixelSize);
           }
           else {
-            if (data.isEmpty()) {
-              data.resize(mipmapSize);
-            }
+            Buffer data(mipmapSize);
 
             for (int y = 0; y < mipmapHeight; ++y) {
               char* pixels    = &data[y * mipmapPitch];
@@ -313,7 +309,7 @@ int GL::textureDataFromFile(const File& file, int bias)
               }
             }
 
-            glTexImage2D(target, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
+            glTexImage2D(faceTarget, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
                          GL_UNSIGNED_BYTE, data.begin());
           }
         }

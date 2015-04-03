@@ -617,7 +617,7 @@ bool File::read(char* buffer, int* size) const
       return false;
     }
 
-    int read = int(::read(fd, buffer, size_t(*size)));
+    int read = int(::read(fd, buffer, *size));
     close(fd);
 
     if (read != *size) {
@@ -661,13 +661,8 @@ Buffer File::read() const
 
 String File::readString() const
 {
-  char*  buffer;
-  int    size = fileSize;
-  String s    = String::create(size, &buffer);
-
-  read(buffer, &size);
-  buffer[size] = '\0';
-  return s;
+  InputStream is = inputStream();
+  return String(is.begin(), is.available());
 }
 
 bool File::write(const char* buffer, int size) const
@@ -730,7 +725,7 @@ bool File::write(const char* buffer, int size) const
       return false;
     }
 
-    int result = int(::write(fd, buffer, size_t(size)));
+    int result = int(::write(fd, buffer, size));
     close(fd);
 
     return result == size;
@@ -813,7 +808,7 @@ bool File::map() const
       return false;
     }
 
-    data = static_cast<char*>(mmap(nullptr, size_t(fileSize), PROT_READ, MAP_SHARED, fd, 0));
+    data = static_cast<char*>(mmap(nullptr, fileSize, PROT_READ, MAP_SHARED, fd, 0));
     data = data == MAP_FAILED ? nullptr : data;
 
     close(fd);
@@ -838,7 +833,7 @@ void File::unmap() const
 #elif defined(_WIN32)
     UnmapViewOfFile(data);
 #else
-    munmap(data, size_t(fileSize));
+    munmap(data, fileSize);
 #endif
   }
   data = nullptr;

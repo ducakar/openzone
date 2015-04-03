@@ -94,13 +94,13 @@ void Physics::handleFragHit()
         }
 
         if (obj->flags & Object::DYNAMIC_BIT) {
-          Dynamic* dyn = static_cast<Dynamic*>(obj);
+          Dynamic* dynObj = static_cast<Dynamic*>(obj);
 
           float fragMass = frag->mass * 10.0f;
-          float massSum  = fragMass + dyn->mass;
+          float massSum  = fragMass + dynObj->mass;
 
-          dyn->flags   &= ~Object::DISABLED_BIT;
-          dyn->momentum = (fragVelocity * fragMass + dyn->momentum * dyn->mass) / massSum;
+          dynObj->flags   &= ~Object::DISABLED_BIT;
+          dynObj->momentum = (fragVelocity * fragMass + dynObj->momentum * dynObj->mass) / massSum;
         }
       }
     }
@@ -383,13 +383,13 @@ Vec3 Physics::handleObjMove()
 {
   // It's much more accurate to sum partial moves than calculate it from a position difference;
   // floating and sliding may never come to a halt at large world coordinates in the latter case.
-  Vec3 completeMove = Vec3::ZERO;
+  Vec3 realisedMove = Vec3::ZERO;
 
   move = dyn->momentum * Timer::TICK_TIME;
 
   float moveLen = move.fastN();
   if (moveLen == 0.0f) {
-    return completeMove;
+    return realisedMove;
   }
 
   Vec3  originalDir = move / moveLen;
@@ -401,7 +401,7 @@ Vec3 Physics::handleObjMove()
 
     Vec3 partialMove = collider.hit.ratio * move;
 
-    completeMove += partialMove;
+    realisedMove += partialMove;
     dyn->p       += partialMove;
     leftRatio    -= leftRatio * collider.hit.ratio;
 
@@ -475,7 +475,7 @@ Vec3 Physics::handleObjMove()
 
   orbis.reposition(dyn);
 
-  return completeMove;
+  return realisedMove;
 }
 
 //***********************************
@@ -535,7 +535,7 @@ void Physics::updateObj(Dynamic* dyn_)
       dyn->lower  = -1;
 
       collider.mask = dyn->flags & Object::SOLID_BIT;
-      Vec3 move = handleObjMove();
+      Vec3 realisedMove = handleObjMove();
       collider.mask = Object::SOLID_BIT;
 
       if (collider.hit.medium & Medium::LADDER_BIT) {
@@ -563,7 +563,7 @@ void Physics::updateObj(Dynamic* dyn_)
         }
       }
 
-      dyn->velocity = move / Timer::TICK_TIME;
+      dyn->velocity = realisedMove / Timer::TICK_TIME;
       dyn->momentum = dyn->velocity;
       dyn->depth    = min(collider.hit.depth, 2.0f * dyn->dim.z);
     }
