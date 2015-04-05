@@ -265,7 +265,7 @@ void Compiler::beginModel()
   light.attenuation[2] = 0.0f;
   light.type           = Light::POINT;
 
-  root                 = Node(nullptr);
+  root                 = Node("");
   node                 = &root;
 
   environment          = MODEL;

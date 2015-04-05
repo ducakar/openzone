@@ -526,7 +526,9 @@ public:
     hard_assert(newCount <= SIZE);
 
     // Ensure destruction of removed elements when downsizing.
-    aEmplace<Elem>(data + newCount, count - newCount);
+    for (int i = newCount; i < count; ++i) {
+      data[i] = Elem();
+    }
     count = newCount;
   }
 
@@ -536,7 +538,9 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    aEmplace<Elem>(data, count);
+    for (int i = 0; i < count; ++i) {
+      data[i] = Elem();
+    }
     count = 0;
   }
 

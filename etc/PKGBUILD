@@ -15,7 +15,8 @@ sha1sums=('SKIP'
 
 function build()
 {
-  cd "${srcdir}/${pkgbase}-${pkgver}/build"
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+  mkdir -p build && cd build
 
   cmake \
     -D CMAKE_INSTALL_PREFIX=/usr \

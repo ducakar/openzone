@@ -119,7 +119,7 @@ public:
  *
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
- * When a partition has at most 10 elements, selection sort is used.
+ * When a partition has at most 11 elements, selection sort is used.
  *
  * @param first pointer to first element in the array to be sorted.
  * @param last pointer to last element in the array.
@@ -128,18 +128,15 @@ template <typename Elem>
 static void quicksort(Elem* first, Elem* last)
 {
   // 8-14 seem as optimal thresholds for switching to selection sort.
-  if (last - first > 10) {
+  if (last - first > 11) {
     // Quicksort (last element is pivot).
     Elem* top    = first;
     Elem* bottom = last - 1;
 
     do {
-      while (!(*last < *top) && top <= bottom) {
-        ++top;
-      }
-      while (*last < *bottom && top < bottom) {
-        --bottom;
-      }
+      for (; !(*last < *top) && top <= bottom; ++top);
+      for (; *last < *bottom && top < bottom; --bottom);
+
       if (top >= bottom) {
         break;
       }
@@ -430,17 +427,6 @@ inline void aFill(Elem* array, int count, const Value& value)
 }
 
 /**
- * %Set array elements to values constructed with given parameters.
- */
-template <typename Elem, typename... Args>
-inline void aEmplace(Elem* array, int count, Args&&... args)
-{
-  for (int i = 0; i < count; ++i) {
-    array[i] = Elem(static_cast<Args&&>(args)...);
-  }
-}
-
-/**
  * Delete objects referenced by elements (elements must be pointers).
  */
 template <typename Elem>
@@ -457,13 +443,8 @@ inline void aFree(const Elem* array, int count)
 template <typename Elem>
 inline void aReverse(Elem* array, int count)
 {
-  int bottom = 0;
-  int top    = count - 1;
-
-  while (bottom < top) {
+  for (int bottom = 0, top = count - 1; bottom < top; ++bottom, --top) {
     swap<Elem>(array[bottom], array[top]);
-    ++bottom;
-    --top;
   }
 }
 

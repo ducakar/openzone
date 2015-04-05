@@ -1104,65 +1104,71 @@ void BSP::saveClient()
   compiler.enable(Compiler::UNIQUE);
   compiler.enable(Compiler::CLOCKWISE);
 
-  for (int i = 0; i < models.length() + 1; ++i) {
+  for (int i = 0; i <= models.length(); ++i) {
     compiler.beginNode();
 
-    int lastTexture = faces[modelFaces[i].firstFace].texture;
+    if (modelFaces[i].nFaces != 0) {
+      compiler.beginMesh();
 
-    for (int j = 0; j < modelFaces[i].nFaces; ++j) {
-      const Face&    face = faces[modelFaces[i].firstFace + j];
-      const Texture& tex  = textures[face.texture];
+      int lastTexture = -1;
 
-      if (tex.name.isEmpty()) {
-        OZ_ERROR("BSP has a visible face without a texture");
-      }
-      if (!tex.name.beginsWith("@sea:")) {
-        context.usedTextures.include(tex.name, name + " (BSP)");
-      }
+      for (int j = 0; j < modelFaces[i].nFaces; ++j) {
+        const Face&    face = faces[modelFaces[i].firstFace + j];
+        const Texture& tex  = textures[face.texture];
 
-      if (face.texture != lastTexture) {
-        int meshId = compiler.endMesh();
+        if (tex.name.isEmpty()) {
+          OZ_ERROR("BSP has a visible face without a texture");
+        }
+        if (!tex.name.beginsWith("@sea:")) {
+          context.usedTextures.include(tex.name, name + " (BSP)");
+        }
 
-        compiler.beginNode();
-        compiler.bindMesh(meshId);
-        compiler.endNode();
-      }
-      if (face.texture != lastTexture || j == 0) {
-        lastTexture = face.texture;
+        if (face.texture != lastTexture) {
+          if (j != 0) {
+            int meshId = compiler.endMesh();
 
-        compiler.beginMesh();
-        compiler.texture(tex.name);
-        compiler.blend(tex.type & QBSP_ALPHA_TYPE_BIT);
-      }
+            compiler.beginNode();
+            compiler.bindMesh(meshId);
+            compiler.endNode();
 
-      compiler.begin(Compiler::TRIANGLES);
+            compiler.beginMesh();
+          }
 
-      for (int k = 0; k < face.nIndices; ++k) {
-        const QBSPVertex& v = vertices[face.firstVertex + indices[face.firstIndex + k]];
+          compiler.texture(tex.name);
+          compiler.blend(tex.type & QBSP_ALPHA_TYPE_BIT);
 
-        compiler.texCoord(v.texCoord);
-        compiler.normal(v.normal);
-        compiler.vertex(v.pos);
-      }
+          lastTexture = face.texture;
+        }
 
-      if (textures[face.texture].type & QBSP_WATER_TYPE_BIT) {
-        for (int k = face.nIndices - 1; k >= 0; --k) {
+        compiler.begin(Compiler::TRIANGLES);
+
+        for (int k = 0; k < face.nIndices; ++k) {
           const QBSPVertex& v = vertices[face.firstVertex + indices[face.firstIndex + k]];
 
           compiler.texCoord(v.texCoord);
-          compiler.normal(-v.normal[0], -v.normal[1], -v.normal[2]);
+          compiler.normal(v.normal);
           compiler.vertex(v.pos);
         }
+
+        if (textures[face.texture].type & QBSP_WATER_TYPE_BIT) {
+          for (int k = face.nIndices - 1; k >= 0; --k) {
+            const QBSPVertex& v = vertices[face.firstVertex + indices[face.firstIndex + k]];
+
+            compiler.texCoord(v.texCoord);
+            compiler.normal(-v.normal[0], -v.normal[1], -v.normal[2]);
+            compiler.vertex(v.pos);
+          }
+        }
+
+        compiler.end();
       }
 
-      compiler.end();
+      int meshId = compiler.endMesh();
+
+      compiler.beginNode();
+      compiler.bindMesh(meshId);
+      compiler.endNode();
     }
-
-    int meshId = compiler.endMesh();
-
-    compiler.beginNode();
-    compiler.bindMesh(meshId);
-    compiler.endNode();
 
     compiler.endNode();
   }

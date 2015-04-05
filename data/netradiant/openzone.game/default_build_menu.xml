@@ -7,6 +7,6 @@ build commands
 <project version="2.0">
 <var name="q3map2">"[RadiantPath]q3map2.[ExecutableType]" -v<cond value="[MonitorAddress]"> -connect [MonitorAddress]</cond> -fs_basepath "[EnginePath]" -fs_homepath "[UserEnginePath]"</var>
 <build name="Build BSP">
-<command>[q3map2] -v "[MapFile]"</command>
+<command>[q3map2] -meta -v "[MapFile]"</command>
 </build>
 </project>

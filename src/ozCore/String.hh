@@ -53,9 +53,9 @@ public:
 
 private:
 
-  char* buffer;                  ///< Pointer to the current buffer.
-  int   count;                   ///< Length in bytes without the terminating null character.
-  char  baseBuffer[BUFFER_SIZE]; ///< Static buffer.
+  char* buffer                  = baseBuffer; ///< Pointer to the current buffer.
+  int   count                   = 0;          ///< Length in bytes (without the final null char).
+  char  baseBuffer[BUFFER_SIZE];              ///< Static buffer.
 
   /**
    * Merger of two strings.
@@ -297,7 +297,7 @@ public:
    *
    * @param s string to parse.
    * @param end if not nullptr, it is set to the first character after the successfully parsed
-   * string. Thus, if parsing fails `end` value equals `s`.
+   * string. If parsing fails `end` equals `s`.
    * @return parsed integer value, 0 if parsing fails.
    */
   static int parseInt(const char* s, const char** end = nullptr);
@@ -314,7 +314,7 @@ public:
    *
    * @param s string to parse.
    * @param end if not nullptr, it is set to the first character after the successfully parsed
-   * string. Thus, if parsing fails `end` value equals `s`.
+   * string. If parsing fails `end` equals `s`.
    * @return parsed value, 0.0 if parsing fails.
    */
   static double parseDouble(const char* s, const char** end = nullptr);
@@ -362,12 +362,17 @@ public:
   /**
    * Empty string.
    */
-  String();
+  String()
+  {
+    baseBuffer[0] = '\0';
+  }
 
   /**
    * Create string form a given C string.
    */
-  String(const char* s);
+  String(const char* s) :
+    String(s, length(s))
+  {}
 
   /**
    * Create string form a given C string with a known length.
@@ -375,9 +380,9 @@ public:
    * The given string doesn't need to be null-terminated.
    *
    * @param s C string.
-   * @param count length in bytes without the terminating null character.
+   * @param nChars length in bytes without the terminating null character.
    */
-  explicit String(const char* s, int count);
+  explicit String(const char* s, int nChars);
 
   /**
    * Create string by concatenating given two C strings.

@@ -77,8 +77,8 @@ public:
    * Get current time in seconds from the platform-dependent epoch.
    *
    * @note
-   * Epoch may differ between platforms (e.g. it is 1970-01-01 0:00:00 on Linux and 1601-01-01
-   * 0:00:00 on Windows).
+   * Epoch may differ among platforms (e.g. it is 1970-01-01 0:00:00 on Linux and 1601-01-01 0:00:00
+   * on Windows).
    */
   static long64 epoch();
 

@@ -44,8 +44,7 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 const String String::EMPTY;
 
 OZ_HIDDEN
-String::String(const char* s, int sLength, const char* t, int tLength) :
-  buffer(baseBuffer), count(0)
+String::String(const char* s, int sLength, const char* t, int tLength)
 {
   resize(sLength + tLength);
 
@@ -441,24 +440,10 @@ invalidNumber:
   return sign * number;
 }
 
-String::String() :
-  buffer(baseBuffer), count(0)
-{}
-
-String::String(const char* s) :
-  buffer(baseBuffer), count(0)
+String::String(const char* s, int nChars)
 {
-  hard_assert(s != nullptr);
-
-  resize(length(s));
-  mCopy(buffer, s, count + 1);
-}
-
-String::String(const char* s, int count_) :
-  buffer(baseBuffer), count(0)
-{
-  resize(count_);
-  mCopy(buffer, s, count);
+  resize(nChars);
+  mCopy(buffer, s, nChars);
   buffer[count] = '\0';
 }
 
@@ -467,11 +452,10 @@ String::String(const char* s, const char* t) :
 {}
 
 String::String(bool b) :
-  String(b ? "true" : "false")
+  String(b ? "true" : "false", 5)
 {}
 
-String::String(int i) :
-  buffer(baseBuffer), count(0)
+String::String(int i)
 {
   static_assert(BUFFER_SIZE >= 12, "Too small oz::String::baseBuffer for int representation");
 
@@ -509,8 +493,7 @@ String::String(int i) :
   baseBuffer[count] = '\0';
 }
 
-String::String(double d, int nDigits) :
-  buffer(baseBuffer), count(0)
+String::String(double d, int nDigits)
 {
   static_assert(BUFFER_SIZE >= 26, "Too small oz::String::baseBuffer for double representation");
 
@@ -606,11 +589,8 @@ String::~String()
 }
 
 String::String(const String& s) :
-  buffer(baseBuffer), count(0)
-{
-  resize(s.count);
-  mCopy(buffer, s.buffer, count + 1);
-}
+  String(s.buffer, s.count)
+{}
 
 String::String(String&& s) :
   count(s.count)
@@ -620,7 +600,6 @@ String::String(String&& s) :
     s.buffer = s.baseBuffer;
   }
   else {
-    buffer = baseBuffer;
     mCopy(baseBuffer, s.baseBuffer, count + 1);
   }
 
@@ -644,16 +623,16 @@ String& String::operator = (String&& s)
       delete[] buffer;
     }
 
-    count = s.count;
-
     if (s.buffer != s.baseBuffer) {
       buffer   = s.buffer;
       s.buffer = s.baseBuffer;
     }
     else {
       buffer = baseBuffer;
-      mCopy(baseBuffer, s.baseBuffer, count + 1);
+      mCopy(baseBuffer, s.baseBuffer, s.count + 1);
     }
+
+    count = s.count;
 
     s.count         = 0;
     s.baseBuffer[0] = '\0';
@@ -663,11 +642,12 @@ String& String::operator = (String&& s)
 
 String& String::operator = (const char* s)
 {
-  hard_assert(s != nullptr);
+  if (s != buffer) {
+    int nChars = length(s);
 
-  resize(length(s));
-  mCopy(buffer, s, count + 1);
-
+    resize(nChars);
+    mCopy(buffer, s, nChars + 1);
+  }
   return *this;
 }
 

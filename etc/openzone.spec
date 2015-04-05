@@ -69,7 +69,7 @@ Game data for OpenZone. Includes tutorial, test world and Cviček mission.
 %setup -q -b 1
 
 %build
-cd build
+mkdir -p build && cd build
 
 cmake \
   -D CMAKE_INSTALL_PREFIX=/usr \

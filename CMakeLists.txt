@@ -166,6 +166,8 @@ if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
 endif()
 
+# Static analyser.
+#set(flags "${flags} -Qunused-arguments --analyze")
 # Address sanitizer.
 #set(flags "${flags} -fsanitize=address")
 # Leak sanitizer.

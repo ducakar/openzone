@@ -669,7 +669,9 @@ public:
   void clear()
   {
     // Ensure destruction of all elements.
-    aEmplace<Elem>(data, count);
+    for (int i = 0; i < count; ++i) {
+      data[i] = Elem();
+    }
     count = 0;
   }
 

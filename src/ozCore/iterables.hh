@@ -180,10 +180,7 @@ inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
 {
   hard_assert(static_cast<void*>(&iterA) != static_cast<void*>(&iterB));
 
-  while (iterA.isValid() && iterB.isValid() && *iterA == *iterB) {
-    ++iterA;
-    ++iterB;
-  }
+  for (; iterA.isValid() && iterB.isValid() && *iterA == *iterB; ++iterA, ++iterB);
   return !iterA.isValid() && !iterB.isValid();
 }
 
@@ -195,10 +192,7 @@ inline int iLength(CIterator iter)
 {
   int count = 0;
 
-  while (iter.isValid()) {
-    ++count;
-    ++iter;
-  }
+  for (; iter.isValid(); ++count, ++iter);
   return count;
 }
 
@@ -208,9 +202,7 @@ inline int iLength(CIterator iter)
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline Iterator iFind(Iterator iter, const Value& value)
 {
-  while (iter.isValid() && !(*iter == value)) {
-    ++iter;
-  }
+  for (; iter.isValid() && !(*iter == value); ++iter);
   return iter;
 }
 
@@ -222,12 +214,10 @@ inline Iterator iFindLast(Iterator iter, const Value& value)
 {
   Iterator lastOccurence;
 
-  while (iter.isValid()) {
+  for (; iter.isValid(); ++iter) {
     if (*iter == value) {
       lastOccurence = iter;
     }
-
-    ++iter;
   }
   return lastOccurence;
 }
@@ -247,13 +237,10 @@ inline bool iContains(CIterator iter, const Value& value)
 template <class CIteratorA, class IteratorB>
 inline void iCopy(CIteratorA srcIter, IteratorB destIter)
 {
-  while (srcIter.isValid()) {
+  for (; srcIter.isValid(); ++srcIter, ++destIter) {
     hard_assert(destIter.isValid());
 
     *destIter = *srcIter;
-
-    ++srcIter;
-    ++destIter;
   }
 }
 
@@ -265,13 +252,10 @@ inline void iMove(IteratorA srcIter, IteratorB destIter)
 {
   typedef typename IteratorB::ElemType ElemB;
 
-  while (srcIter.isValid()) {
+  for (; srcIter.isValid(); ++srcIter, ++destIter) {
     hard_assert(destIter.isValid());
 
     *destIter = static_cast<ElemB&&>(*srcIter);
-
-    ++srcIter;
-    ++destIter;
   }
 }
 
@@ -281,10 +265,8 @@ inline void iMove(IteratorA srcIter, IteratorB destIter)
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline void iFill(Iterator iter, const Value& value)
 {
-  while (iter.isValid()) {
+  for (; iter.isValid(); ++iter) {
     *iter = value;
-
-    ++iter;
   }
 }
 
