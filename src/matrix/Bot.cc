@@ -1001,7 +1001,9 @@ stepSucceeded:
       else if (actions & ~oldActions & ACTION_TAKE) {
         Dynamic* item = orbis.obj<Dynamic>(instrument);
 
-        if (item != nullptr && items.length() != clazz->nItems && canReach(item)) {
+        if (item != nullptr && items.length() != clazz->nItems &&
+            abs(item->mass * physics.gravity) <= clazz->grabWeight && canReach(item))
+        {
           hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
           releaseCargo();

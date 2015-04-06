@@ -31,6 +31,33 @@
 namespace oz
 {
 
+OZ_HIDDEN
+void OutputStream::writeFloats(const float* values, int count)
+{
+  char* data = forward(count * sizeof(float));
+
+  if (order == Endian::NATIVE) {
+    for (int i = 0; i < count; ++i, data += 4, ++values) {
+      Endian::FloatToBytes value = { *values };
+
+      data[0] = value.data[0];
+      data[1] = value.data[1];
+      data[2] = value.data[2];
+      data[3] = value.data[3];
+    }
+  }
+  else {
+    for (int i = 0; i < count; ++i, data += 4, ++values) {
+      Endian::FloatToBytes value = { *values };
+
+      data[0] = value.data[3];
+      data[1] = value.data[2];
+      data[2] = value.data[1];
+      data[3] = value.data[0];
+    }
+  }
+}
+
 OutputStream::OutputStream(char* start, const char* end, Endian::Order order) :
   InputStream(start, start, end, order), buffered(false)
 {}
@@ -394,273 +421,37 @@ void OutputStream::writeString(const char* s)
 
 void OutputStream::writeVec3(const Vec3& v)
 {
-  char* data = forward(sizeof(float[3]));
-
-  Endian::FloatToBytes x = { v.x };
-  Endian::FloatToBytes y = { v.y };
-  Endian::FloatToBytes z = { v.z };
-
-  if (order == Endian::NATIVE) {
-    data[ 0] = x.data[0];
-    data[ 1] = x.data[1];
-    data[ 2] = x.data[2];
-    data[ 3] = x.data[3];
-    data[ 4] = y.data[0];
-    data[ 5] = y.data[1];
-    data[ 6] = y.data[2];
-    data[ 7] = y.data[3];
-    data[ 8] = z.data[0];
-    data[ 9] = z.data[1];
-    data[10] = z.data[2];
-    data[11] = z.data[3];
-  }
-  else {
-    data[ 0] = x.data[3];
-    data[ 1] = x.data[2];
-    data[ 2] = x.data[1];
-    data[ 3] = x.data[0];
-    data[ 4] = y.data[3];
-    data[ 5] = y.data[2];
-    data[ 6] = y.data[1];
-    data[ 7] = y.data[0];
-    data[ 8] = z.data[3];
-    data[ 9] = z.data[2];
-    data[10] = z.data[1];
-    data[11] = z.data[0];
-  }
+  writeFloats(v, 3);
 }
 
 void OutputStream::writeVec4(const Vec4& v)
 {
-  char* data = forward(sizeof(float[4]));
-
-  Endian::FloatToBytes x = { v.x };
-  Endian::FloatToBytes y = { v.y };
-  Endian::FloatToBytes z = { v.z };
-  Endian::FloatToBytes w = { v.w };
-
-  if (order == Endian::NATIVE) {
-    data[ 0] = x.data[0];
-    data[ 1] = x.data[1];
-    data[ 2] = x.data[2];
-    data[ 3] = x.data[3];
-    data[ 4] = y.data[0];
-    data[ 5] = y.data[1];
-    data[ 6] = y.data[2];
-    data[ 7] = y.data[3];
-    data[ 8] = z.data[0];
-    data[ 9] = z.data[1];
-    data[10] = z.data[2];
-    data[11] = z.data[3];
-    data[12] = w.data[0];
-    data[13] = w.data[1];
-    data[14] = w.data[2];
-    data[15] = w.data[3];
-  }
-  else {
-    data[ 0] = x.data[3];
-    data[ 1] = x.data[2];
-    data[ 2] = x.data[1];
-    data[ 3] = x.data[0];
-    data[ 4] = y.data[3];
-    data[ 5] = y.data[2];
-    data[ 6] = y.data[1];
-    data[ 7] = y.data[0];
-    data[ 8] = z.data[3];
-    data[ 9] = z.data[2];
-    data[10] = z.data[1];
-    data[11] = z.data[0];
-    data[12] = w.data[3];
-    data[13] = w.data[2];
-    data[14] = w.data[1];
-    data[15] = w.data[0];
-  }
+  writeFloats(v, 4);
 }
 
 void OutputStream::writePoint(const Point& p)
 {
-  char* data = forward(sizeof(float[3]));
-
-  Endian::FloatToBytes x = { p.x };
-  Endian::FloatToBytes y = { p.y };
-  Endian::FloatToBytes z = { p.z };
-
-  if (order == Endian::NATIVE) {
-    data[ 0] = x.data[0];
-    data[ 1] = x.data[1];
-    data[ 2] = x.data[2];
-    data[ 3] = x.data[3];
-    data[ 4] = y.data[0];
-    data[ 5] = y.data[1];
-    data[ 6] = y.data[2];
-    data[ 7] = y.data[3];
-    data[ 8] = z.data[0];
-    data[ 9] = z.data[1];
-    data[10] = z.data[2];
-    data[11] = z.data[3];
-  }
-  else {
-    data[ 0] = x.data[3];
-    data[ 1] = x.data[2];
-    data[ 2] = x.data[1];
-    data[ 3] = x.data[0];
-    data[ 4] = y.data[3];
-    data[ 5] = y.data[2];
-    data[ 6] = y.data[1];
-    data[ 7] = y.data[0];
-    data[ 8] = z.data[3];
-    data[ 9] = z.data[2];
-    data[10] = z.data[1];
-    data[11] = z.data[0];
-  }
+  writeFloats(p, 3);
 }
 
 void OutputStream::writePlane(const Plane& p)
 {
-  char* data = forward(sizeof(float[4]));
-
-  Endian::FloatToBytes nx = { p.n.x };
-  Endian::FloatToBytes ny = { p.n.y };
-  Endian::FloatToBytes nz = { p.n.z };
-  Endian::FloatToBytes d  = { p.d };
-
-  if (order == Endian::NATIVE) {
-    data[ 0] = nx.data[0];
-    data[ 1] = nx.data[1];
-    data[ 2] = nx.data[2];
-    data[ 3] = nx.data[3];
-    data[ 4] = ny.data[0];
-    data[ 5] = ny.data[1];
-    data[ 6] = ny.data[2];
-    data[ 7] = ny.data[3];
-    data[ 8] = nz.data[0];
-    data[ 9] = nz.data[1];
-    data[10] = nz.data[2];
-    data[11] = nz.data[3];
-    data[12] = d.data[0];
-    data[13] = d.data[1];
-    data[14] = d.data[2];
-    data[15] = d.data[3];
-  }
-  else {
-    data[ 0] = nx.data[3];
-    data[ 1] = nx.data[2];
-    data[ 2] = nx.data[1];
-    data[ 3] = nx.data[0];
-    data[ 4] = ny.data[3];
-    data[ 5] = ny.data[2];
-    data[ 6] = ny.data[1];
-    data[ 7] = ny.data[0];
-    data[ 8] = nz.data[3];
-    data[ 9] = nz.data[2];
-    data[10] = nz.data[1];
-    data[11] = nz.data[0];
-    data[12] = d.data[3];
-    data[13] = d.data[2];
-    data[14] = d.data[1];
-    data[15] = d.data[0];
-  }
+  writeFloats(p, 4);
 }
 
 void OutputStream::writeQuat(const Quat& q)
 {
-  char* data = forward(sizeof(float[4]));
-
-  Endian::FloatToBytes x = { q.x };
-  Endian::FloatToBytes y = { q.y };
-  Endian::FloatToBytes z = { q.z };
-  Endian::FloatToBytes w = { q.w };
-
-  if (order == Endian::NATIVE) {
-    data[ 0] = x.data[0];
-    data[ 1] = x.data[1];
-    data[ 2] = x.data[2];
-    data[ 3] = x.data[3];
-    data[ 4] = y.data[0];
-    data[ 5] = y.data[1];
-    data[ 6] = y.data[2];
-    data[ 7] = y.data[3];
-    data[ 8] = z.data[0];
-    data[ 9] = z.data[1];
-    data[10] = z.data[2];
-    data[11] = z.data[3];
-    data[12] = w.data[0];
-    data[13] = w.data[1];
-    data[14] = w.data[2];
-    data[15] = w.data[3];
-  }
-  else {
-    data[ 0] = x.data[3];
-    data[ 1] = x.data[2];
-    data[ 2] = x.data[1];
-    data[ 3] = x.data[0];
-    data[ 4] = y.data[3];
-    data[ 5] = y.data[2];
-    data[ 6] = y.data[1];
-    data[ 7] = y.data[0];
-    data[ 8] = z.data[3];
-    data[ 9] = z.data[2];
-    data[10] = z.data[1];
-    data[11] = z.data[0];
-    data[12] = w.data[3];
-    data[13] = w.data[2];
-    data[14] = w.data[1];
-    data[15] = w.data[0];
-  }
+  writeFloats(q, 4);
 }
 
 void OutputStream::writeMat3(const Mat3& m)
 {
-  char* data = forward(sizeof(float[9]));
-  const float* values = m;
-
-  if (order == Endian::NATIVE) {
-    for (int i = 0; i < 9; ++i, data += 4, ++values) {
-      Endian::FloatToBytes value = { *values };
-
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-    }
-  }
-  else {
-    for (int i = 0; i < 9; ++i, data += 4, ++values) {
-      Endian::FloatToBytes value = { *values };
-
-      data[0] = value.data[3];
-      data[1] = value.data[2];
-      data[2] = value.data[1];
-      data[3] = value.data[0];
-    }
-  }
+  writeFloats(m, 9);
 }
 
 void OutputStream::writeMat4(const Mat4& m)
 {
-  char* data = forward(sizeof(float[16]));
-  const float* values = m;
-
-  if (order == Endian::NATIVE) {
-    for (int i = 0; i < 16; ++i, data += 4, ++values) {
-      Endian::FloatToBytes value = { *values };
-
-      data[0] = value.data[0];
-      data[1] = value.data[1];
-      data[2] = value.data[2];
-      data[3] = value.data[3];
-    }
-  }
-  else {
-    for (int i = 0; i < 16; ++i, data += 4, ++values) {
-      Endian::FloatToBytes value = { *values };
-
-      data[0] = value.data[3];
-      data[1] = value.data[2];
-      data[2] = value.data[1];
-      data[3] = value.data[0];
-    }
-  }
+  writeFloats(m, 16);
 }
 
 void OutputStream::writeBitset(const ulong* bitset, int nBits)

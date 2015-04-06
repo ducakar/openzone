@@ -49,6 +49,13 @@ private:
 
   bool buffered; ///< Whether stream writes to an internal buffer.
 
+private:
+
+  /**
+   * Write consecutive floats. Helper function for writeVec3(), writeVec4() etc.
+   */
+  void writeFloats(const float* values, int count);
+
 public:
 
   using InputStream::begin;

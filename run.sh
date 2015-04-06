@@ -14,14 +14,22 @@ arch=i686
 [[ `uname -m` == x86_64 ]] && arch=x86_64
 defaultPlatform=Linux-${arch}-Clang
 
+function launchWine()
+{
+  cd build/Windows-${1}
+  cmake -DCMAKE_INSTALL_PREFIX=. -P cmake_install.cmake
+  cp ../../lib/Windows-${1}/* bin
+
+  shift
+  exec wine bin/openzone.exe -p ../.. $@
+}
+
 case $1 in
   wine)
-    cd build/Windows-${arch}
-    cmake -DCMAKE_INSTALL_PREFIX=. -P cmake_install.cmake
-    cp ../../lib/Windows-${arch}/* bin
-
-    shift
-    exec wine bin/openzone.exe -p ../.. $@
+    launchWine 'i686'
+    ;;
+  wine64)
+    launchWine 'x86_64'
     ;;
   *)
     exec ./build/$defaultPlatform/src/tools/openzone -p . $@

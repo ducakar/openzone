@@ -39,8 +39,13 @@
 # include <ppapi/cpp/file_system.h>
 # include <ppapi/cpp/directory_entry.h>
 #elif defined(_WIN32)
-# include <windows.h>
+# include <cstdio>
+# include <dirent.h>
+# include <fcntl.h>
 # include <shlobj.h>
+# include <sys/stat.h>
+# include <unistd.h>
+# include <windows.h>
 #else
 # include <cstdio>
 # include <cstdlib>
@@ -433,43 +438,6 @@ bool File::stat()
       }
     }
 
-#elif defined(_WIN32)
-
-    WIN32_FILE_ATTRIBUTE_DATA info;
-    if (GetFileAttributesEx(filePath, GetFileExInfoStandard, &info) == 0) {
-      return false;
-    }
-
-    ULARGE_INTEGER creationTime = {
-      { info.ftCreationTime.dwLowDateTime, info.ftCreationTime.dwHighDateTime }
-    };
-    ULARGE_INTEGER modificationTime = {
-      { info.ftLastWriteTime.dwLowDateTime, info.ftLastWriteTime.dwHighDateTime }
-    };
-
-    long64 time = max<long64>(creationTime.QuadPart, modificationTime.QuadPart) / 10000;
-
-    if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-      fileType = DIRECTORY;
-      fileSize = -1;
-      fileTime = time;
-    }
-    else {
-      HANDLE handle = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                                 FILE_ATTRIBUTE_NORMAL, nullptr);
-      if (handle != nullptr) {
-        int size = int(GetFileSize(handle, nullptr));
-
-        if (size != int(INVALID_FILE_SIZE)) {
-          fileType = REGULAR;
-          fileSize = size;
-          fileTime = time;
-        }
-
-        CloseHandle(handle);
-      }
-    }
-
 #else
 
     struct stat info;
@@ -590,38 +558,23 @@ bool File::read(char* buffer, int* size) const
     }
     return true;
 
-#elif defined(_WIN32)
-
-    HANDLE file = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file == nullptr) {
-      *size = 0;
-      return false;
-    }
-
-    DWORD read = 0;
-    BOOL result = ReadFile(file, buffer, DWORD(*size), &read, nullptr);
-    CloseHandle(file);
-
-    if (!result || int(read) != *size) {
-      *size = read;
-      return false;
-    }
-    return true;
-
 #else
 
+# ifdef _WIN32
+    int fd = open(filePath, O_RDONLY | O_BINARY);
+# else
     int fd = open(filePath, O_RDONLY);
+# endif
     if (fd < 0) {
       *size = 0;
       return false;
     }
 
-    int read = int(::read(fd, buffer, *size));
+    int nBytes = int(::read(fd, buffer, *size));
     close(fd);
 
-    if (read != *size) {
-      *size = max<int>(0, read);
+    if (nBytes != *size) {
+      *size = max<int>(0, nBytes);
       return false;
     }
     return true;
@@ -704,23 +657,13 @@ bool File::write(const char* buffer, int size) const
 
     return written == size;
 
-#elif defined(_WIN32)
-
-    HANDLE file = CreateFile(filePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
-                             FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file == nullptr) {
-      return false;
-    }
-
-    DWORD written;
-    BOOL result = WriteFile(file, buffer, DWORD(size), &written, nullptr);
-    CloseHandle(file);
-
-    return result && int(written) == size;
-
 #else
 
+# ifdef _WIN32
+    int fd = open(filePath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
+# else
     int fd = open(filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+# endif
     if (fd < 0) {
       return false;
     }
@@ -903,25 +846,6 @@ List<File> File::ls() const
       }
     }
 
-#elif defined(_WIN32)
-
-    WIN32_FIND_DATA entity;
-
-    HANDLE dir = FindFirstFile(filePath + "\\*.*", &entity);
-    if (dir == nullptr) {
-      return list;
-    }
-
-    String prefix = filePath.last() == '/' || filePath.last() == '\\' ? filePath : filePath + "/";
-
-    while (FindNextFile(dir, &entity)) {
-      if (entity.cFileName[0] != '.') {
-        list.add(prefix + entity.cFileName);
-      }
-    }
-
-    CloseHandle(dir);
-
 #else
 
     DIR* directory = opendir(filePath);
@@ -929,18 +853,18 @@ List<File> File::ls() const
       return list;
     }
 
-    char    entityBuffer[offsetof(dirent, d_name) + NAME_MAX + 1];
-    dirent* entityData = reinterpret_cast<dirent*>(entityBuffer);
-    dirent* entity;
     String  prefix = filePath.last() == '/' ? filePath : filePath + "/";
-
-    readdir_r(directory, entityData, &entity);
+    // readlink() implementation is "usually" (required by POSIX) thread-safe as long as threads
+    // don't access the same directory stream. Since opendir() is called for each thread separately
+    // in our case, use of readdir() is safe here. This way we avoid readdir_r()-related issues with
+    // portability and entity buffer size.
+    dirent* entity = readdir(directory);
 
     while (entity != nullptr) {
       if (entity->d_name[0] != '.') {
         list.add(prefix + entity->d_name);
       }
-      readdir_r(directory, entityData, &entity);
+      entity = readdir(directory);
     }
 
     closedir(directory);
@@ -956,10 +880,6 @@ String File::cwd()
 {
 #if defined(__native_client__)
   return "";
-#elif defined(_WIN32)
-  char buffer[256];
-  bool hasFailed = GetCurrentDirectory(256, buffer) == 0;
-  return hasFailed ? "" : buffer;
 #else
   char buffer[PATH_MAX];
   bool hasFailed = getcwd(buffer, PATH_MAX) == nullptr;
@@ -972,8 +892,6 @@ bool File::chdir(const char* path)
 #if defined(__native_client__)
   static_cast<void>(path);
   return false;
-#elif defined(_WIN32)
-  return SetCurrentDirectory(path) != 0;
 #else
   return ::chdir(path) == 0;
 #endif
@@ -989,7 +907,7 @@ bool File::mkdir(const char* path)
     pp::FileRef file(ppFileSystem, path);
     return file.MakeDirectory(0, pp::BlockUntilComplete()) == PP_OK;
 #elif defined(_WIN32)
-    return CreateDirectory(path, nullptr) != 0;
+    return ::mkdir(path) == 0;
 #else
     return ::mkdir(path, 0755) == 0;
 #endif
@@ -1022,8 +940,6 @@ bool File::mv(const File& src, const File& dest_)
   pp::FileRef srcFileRef(ppFileSystem, src.path());
   pp::FileRef destFileRef(ppFileSystem, dest.path());
   return srcFileRef.Rename(destFileRef, pp::BlockUntilComplete()) == PP_OK;
-#elif defined(_WIN32)
-  return MoveFile(src.path(), dest.path());
 #else
   return rename(src.path(), dest.path()) == 0;
 #endif
@@ -1038,8 +954,6 @@ bool File::rm(const char* path)
 #if defined(__native_client__)
     pp::FileRef fileRef(ppFileSystem, path);
     return fileRef.Delete(pp::BlockUntilComplete()) == PP_OK;
-#elif defined(_WIN32)
-    return File(path).type() == DIRECTORY ? RemoveDirectory(path) : DeleteFile(path);
 #else
     return remove(path) == 0;
 #endif

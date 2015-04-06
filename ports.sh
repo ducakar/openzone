@@ -175,6 +175,9 @@ function fetch()
   # FreeType
   download 'http://sourceforge.net/projects/freetype/files/freetype2/2.5.5/freetype-2.5.5.tar.bz2'
 
+  # PhysicsFS
+  download 'http://icculus.org/physfs/downloads/physfs-2.0.3.tar.bz2'
+
   # PhysicsFS 2.1
   cd "$topDir/archives"
   if [[ -d physfs ]]
@@ -322,6 +325,16 @@ function build_freetype()
 
 function build_physfs()
 {
+  prepare physfs-2.0.3 physfs-2.0.3.tar.bz2 || return
+  applyPatches physfs-2.0.3.patch
+
+  cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
+
+  finish
+}
+
+function build_physfs21()
+{
   prepare physfs physfs || return
   applyPatches physfs-2.1.patch
 
@@ -426,7 +439,7 @@ function build()
   setup_ndk_ARMv7a  && build_freetype
 
   # PhysicsFS
-  setup_pnacl       && build_physfs
+  setup_pnacl       && build_physfs21
   setup_ndk_i686    && build_physfs
   setup_ndk_ARMv7a  && build_physfs
 

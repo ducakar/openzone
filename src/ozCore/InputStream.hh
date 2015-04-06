@@ -56,6 +56,11 @@ protected:
    */
   explicit InputStream(char* pos, char* start, const char* end, Endian::Order order_);
 
+  /**
+   * Read consecutive floats. Helper function for readVec3(), readVec4() etc.
+   */
+  void readFloats(float* values, int count);
+
 public:
 
   /**

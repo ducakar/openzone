@@ -72,14 +72,13 @@ struct Pepper::Instance : pp::Instance, pp::MouseLock
   explicit Instance(PP_Instance instance_);
   ~Instance() override;
 
-  bool Init(uint32_t, const char**, const char**) override;
   void DidChangeView(const pp::View& view) override;
-  void DidChangeView(const pp::Rect&, const pp::Rect&) override;
   void HandleMessage(const pp::Var& message) override;
   bool HandleInputEvent(const pp::InputEvent& event) override;
   void MouseLockLost() override;
 };
 
+OZ_HIDDEN
 OZ_NORETURN
 void Pepper::Instance::mainThreadMain(void*)
 {
@@ -90,11 +89,13 @@ void Pepper::Instance::mainThreadMain(void*)
   exit(exitCode);
 }
 
+OZ_HIDDEN
 void Pepper::Instance::onMouseLocked(void*, int result)
 {
   hasFocus = result == PP_OK;
 }
 
+OZ_HIDDEN
 Pepper::Instance::Instance(PP_Instance instance_) :
   pp::Instance(instance_), pp::MouseLock(this), fullscreen(this), isStarted(false)
 {
@@ -105,6 +106,7 @@ Pepper::Instance::Instance(PP_Instance instance_) :
                      PP_INPUTEVENT_CLASS_WHEEL);
 }
 
+OZ_HIDDEN
 Pepper::Instance::~Instance()
 {
   messageQueue.clear();
@@ -113,11 +115,7 @@ Pepper::Instance::~Instance()
   ppInstance = nullptr;
 }
 
-bool Pepper::Instance::Init(uint32_t, const char**, const char**)
-{
-  return true;
-}
-
+OZ_HIDDEN
 void Pepper::Instance::DidChangeView(const pp::View& view)
 {
   int newWidth  = view.GetRect().width();
@@ -140,16 +138,13 @@ void Pepper::Instance::DidChangeView(const pp::View& view)
   }
 }
 
-void Pepper::Instance::DidChangeView(const pp::Rect&, const pp::Rect&)
-{
-  PP_NOTREACHED();
-}
-
+OZ_HIDDEN
 void Pepper::Instance::HandleMessage(const pp::Var& message)
 {
   push(message.AsString().c_str());
 }
 
+OZ_HIDDEN
 bool Pepper::Instance::HandleInputEvent(const pp::InputEvent& event)
 {
   switch (event.GetType()) {
@@ -196,6 +191,7 @@ bool Pepper::Instance::HandleInputEvent(const pp::InputEvent& event)
   return true;
 }
 
+OZ_HIDDEN
 void Pepper::Instance::MouseLockLost()
 {
   hasFocus = false;
@@ -207,6 +203,7 @@ struct Pepper::Module : pp::Module
   pp::Instance* CreateInstance(PP_Instance instance) override;
 };
 
+OZ_HIDDEN
 pp::Instance* Pepper::Module::CreateInstance(PP_Instance instance)
 {
   return new Instance(instance);

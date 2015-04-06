@@ -36,6 +36,27 @@ InputStream::InputStream(char* pos, char* start, const char* end, Endian::Order 
   streamPos(pos), streamBegin(start), streamEnd(end), order(order_)
 {}
 
+OZ_HIDDEN
+void InputStream::readFloats(float* values, int count)
+{
+  const char* data = forward(count * sizeof(float));
+
+  if (order == Endian::NATIVE) {
+    for (int i = 0; i < count; ++i, data += 4, ++values) {
+      Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
+
+      *values = value.value;
+    }
+  }
+  else {
+    for (int i = 0; i < count; ++i, data += 4, ++values) {
+      Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
+
+      *values = value.value;
+    }
+  }
+}
+
 InputStream::InputStream(const char* start, const char* end, Endian::Order order_) :
   streamPos(const_cast<char*>(start)), streamBegin(const_cast<char*>(start)), streamEnd(end),
   order(order_)
@@ -260,157 +281,50 @@ const char* InputStream::readString()
 
 Vec3 InputStream::readVec3()
 {
-  const char* data = forward(sizeof(float[3]));
-
-  if (order == Endian::NATIVE) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-
-    return Vec3(x.value, y.value, z.value);
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-
-    return Vec3(x.value, y.value, z.value);
-  }
+  Vec3 v;
+  readFloats(v, 3);
+  return v;
 }
 
 Vec4 InputStream::readVec4()
 {
-  const char* data = forward(sizeof(float[4]));
-
-  if (order == Endian::NATIVE) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-    Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
-
-    return Vec4(x.value, y.value, z.value, w.value);
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-    Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
-
-    return Vec4(x.value, y.value, z.value, w.value);
-  }
+  Vec4 v;
+  readFloats(v, 4);
+  return v;
 }
 
 Point InputStream::readPoint()
 {
-  const char* data = forward(sizeof(float[3]));
-
-  if (order == Endian::NATIVE) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-
-    return Point(x.value, y.value, z.value);
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-
-    return Point(x.value, y.value, z.value);
-  }
+  Point p;
+  readFloats(p, 3);
+  return p;
 }
 
 Plane InputStream::readPlane()
 {
-  const char* data = forward(sizeof(float[4]));
-
-  if (order == Endian::NATIVE) {
-    Endian::BytesToFloat nx = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat ny = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat nz = { { data[ 8], data[ 9], data[10], data[11] } };
-    Endian::BytesToFloat d  = { { data[12], data[13], data[14], data[15] } };
-
-    return Plane(nx.value, ny.value, nz.value, d.value);
-  }
-  else {
-    Endian::BytesToFloat nx = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat ny = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat nz = { { data[11], data[10], data[ 9], data[ 8] } };
-    Endian::BytesToFloat d  = { { data[15], data[14], data[13], data[12] } };
-
-    return Plane(nx.value, ny.value, nz.value, d.value);
-  }
+  Plane p;
+  readFloats(p, 4);
+  return p;
 }
 
 Quat InputStream::readQuat()
 {
-  const char* data = forward(sizeof(float[4]));
-
-  if (order == Endian::NATIVE) {
-    Endian::BytesToFloat x = { { data[ 0], data[ 1], data[ 2], data[ 3] } };
-    Endian::BytesToFloat y = { { data[ 4], data[ 5], data[ 6], data[ 7] } };
-    Endian::BytesToFloat z = { { data[ 8], data[ 9], data[10], data[11] } };
-    Endian::BytesToFloat w = { { data[12], data[13], data[14], data[15] } };
-
-    return Quat(x.value, y.value, z.value, w.value);
-  }
-  else {
-    Endian::BytesToFloat x = { { data[ 3], data[ 2], data[ 1], data[ 0] } };
-    Endian::BytesToFloat y = { { data[ 7], data[ 6], data[ 5], data[ 4] } };
-    Endian::BytesToFloat z = { { data[11], data[10], data[ 9], data[ 8] } };
-    Endian::BytesToFloat w = { { data[15], data[14], data[13], data[12] } };
-
-    return Quat(x.value, y.value, z.value, w.value);
-  }
+  Quat q;
+  readFloats(q, 4);
+  return q;
 }
 
 Mat3 InputStream::readMat3()
 {
-  const char* data = forward(sizeof(float[9]));
-
   Mat3 m;
-  float* values = m;
-
-  if (order == Endian::NATIVE) {
-    for (int i = 0; i < 9; ++i, data += 4, ++values) {
-      Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-      *values = value.value;
-    }
-  }
-  else {
-    for (int i = 0; i < 9; ++i, data += 4, ++values) {
-      Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-      *values = value.value;
-    }
-  }
-
+  readFloats(m, 9);
   return m;
 }
 
 Mat4 InputStream::readMat4()
 {
-  const char* data = forward(sizeof(float[16]));
-
   Mat4 m;
-  float* values = m;
-
-  if (order == Endian::NATIVE) {
-    for (int i = 0; i < 16; ++i, data += 4, ++values) {
-      Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
-
-      *values = value.value;
-    }
-  }
-  else {
-    for (int i = 0; i < 16; ++i, data += 4, ++values) {
-      Endian::BytesToFloat value = { { data[3], data[2], data[1], data[0] } };
-
-      *values = value.value;
-    }
-  }
-
+  readFloats(m, 16);
   return m;
 }
 
