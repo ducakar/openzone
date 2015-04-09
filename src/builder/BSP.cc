@@ -23,7 +23,6 @@
 
 #include <builder/BSP.hh>
 
-#include <common/Timer.hh>
 #include <builder/Context.hh>
 
 namespace oz

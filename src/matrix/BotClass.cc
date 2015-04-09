@@ -23,7 +23,6 @@
 
 #include <matrix/BotClass.hh>
 
-#include <common/Timer.hh>
 #include <matrix/Liber.hh>
 #include <matrix/Bot.hh>
 

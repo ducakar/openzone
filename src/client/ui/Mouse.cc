@@ -23,7 +23,6 @@
 
 #include <client/ui/Mouse.hh>
 
-#include <common/Timer.hh>
 #include <client/Shader.hh>
 #include <client/Shape.hh>
 #include <client/Camera.hh>

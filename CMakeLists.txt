@@ -10,7 +10,6 @@ set(OZ_VERSION 0.3.91)
 
 option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF)
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
-option(OZ_DYNAMICS "Build complete ozDynamics library with ODE support." OFF)
 option(OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF)
 option(OZ_LUAJIT "Use use LuaJIT 2.0 instead of official Lua." OFF)
 option(OZ_NONFREE "Enable support for building S3TC textures." OFF)
@@ -70,10 +69,6 @@ find_package(ZLIB REQUIRED)
 find_package(PhysFS REQUIRED)
 mark_as_advanced(PHYSFS_INCLUDE_DIR)
 mark_as_advanced(PHYSFS_LIBRARY)
-
-if(OZ_DYNAMICS)
-  pkg_check_modules(ODE REQUIRED ode)
-endif()
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)

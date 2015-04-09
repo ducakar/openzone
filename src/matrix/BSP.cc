@@ -23,7 +23,6 @@
 
 #include <matrix/BSP.hh>
 
-#include <common/Lingua.hh>
 #include <matrix/Liber.hh>
 #include <matrix/Collider.hh>
 

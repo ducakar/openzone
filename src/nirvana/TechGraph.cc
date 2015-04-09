@@ -24,7 +24,6 @@
 #include <nirvana/TechGraph.hh>
 
 #include <matrix/Liber.hh>
-#include <common/Lingua.hh>
 
 namespace oz
 {

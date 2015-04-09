@@ -37,13 +37,3 @@
 - unittest
     * write missing tests
 - documentation
-
-2.0
-
-- ozCore
-    * optional double precision math
-- ozDynamics
-    * finish ozDynamics
-- matrix
-    * collision islands
-- per-game data subdirs

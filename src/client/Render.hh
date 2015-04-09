@@ -145,12 +145,6 @@ public:
   void init();
   void destroy();
 
-#ifdef OZ_DYNAMICS
-  void drawDyn();
-  void loadDyn();
-  void unloadDyn();
-#endif
-
 };
 
 extern Render render;

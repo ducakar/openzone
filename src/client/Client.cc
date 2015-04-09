@@ -25,8 +25,6 @@
 
 #include <client/Client.hh>
 
-#include <common/Timer.hh>
-#include <common/Lingua.hh>
 #include <common/LuaCommon.hh>
 #include <client/Network.hh>
 #include <client/Input.hh>

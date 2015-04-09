@@ -23,7 +23,6 @@
 
 #include <matrix/Matrix.hh>
 
-#include <common/Timer.hh>
 #include <matrix/LuaMatrix.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>

@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include <common/Timer.hh>
 #include <client/common.hh>
 
 namespace oz

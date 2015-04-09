@@ -23,7 +23,6 @@
 
 #include <matrix/Struct.hh>
 
-#include <common/Timer.hh>
 #include <matrix/Collider.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Bot.hh>

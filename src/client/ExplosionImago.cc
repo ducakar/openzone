@@ -23,7 +23,6 @@
 
 #include <client/ExplosionImago.hh>
 
-#include <common/Timer.hh>
 #include <client/Context.hh>
 
 namespace oz

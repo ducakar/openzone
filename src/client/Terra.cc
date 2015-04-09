@@ -23,7 +23,6 @@
 
 #include <client/Terra.hh>
 
-#include <common/Timer.hh>
 #include <client/Frustum.hh>
 #include <client/Camera.hh>
 #include <client/Context.hh>

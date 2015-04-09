@@ -23,7 +23,6 @@
 
 #include <client/Profile.hh>
 
-#include <common/Lingua.hh>
 #include <matrix/BotClass.hh>
 #include <matrix/WeaponClass.hh>
 

@@ -23,7 +23,6 @@
 
 #include <client/StrategicProxy.hh>
 
-#include <common/Timer.hh>
 #include <client/Camera.hh>
 #include <client/Input.hh>
 #include <client/ui/StrategicArea.hh>

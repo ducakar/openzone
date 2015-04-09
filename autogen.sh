@@ -9,7 +9,7 @@
 # Additionally this scripts updates version numbers in various files.
 #
 
-components=(src/ozCore src/ozDynamics src/ozEngine src/ozFactory src/unittest
+components=(src/ozCore src/ozEngine src/ozFactory src/unittest
             src/common src/matrix src/nirvana src/client src/builder)
 version=`sed -r '/^set\(OZ_VERSION / !d; s|.* ([0-9.]+)\)|\1|' CMakeLists.txt`
 root=`pwd`

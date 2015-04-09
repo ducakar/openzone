@@ -66,9 +66,6 @@ public:
   static void box(const AABB& bb);
   static void wireBox(const AABB& bb);
   static void skyBox(uint* texIds);
-#ifdef OZ_DYNAMICS
-  static void object(const Point& pos, const Mat3& rot, const void* shape);
-#endif
 
   void init();
   void destroy();

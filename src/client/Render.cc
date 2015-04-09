@@ -398,10 +398,6 @@ void Render::drawGeometry()
     }
   }
 
-#ifdef OZ_DYNAMICS
-  drawDyn();
-#endif
-
   shape.unbind();
 
   glDisable(GL_DEPTH_TEST);
@@ -671,10 +667,6 @@ void Render::load()
   uiMicros          = 0;
   swapMicros        = 0;
 
-#ifdef OZ_DYNAMICS
-  loadDyn();
-#endif
-
   Log::printEnd(" OK");
 }
 
@@ -683,10 +675,6 @@ void Render::unload()
   OZ_NACL_IS_MAIN(true);
 
   Log::print("Unloading Render ...");
-
-#ifdef OZ_DYNAMICS
-  unloadDyn();
-#endif
 
   glFinish();
 
@@ -864,103 +852,3 @@ Render render;
 
 }
 }
-
-#ifdef OZ_DYNAMICS
-
-/*
- * ozDynamics test
- */
-
-#include <ozDynamics/ozDynamics.hh>
-#include <common/Timer.hh>
-#include <client/Input.hh>
-
-namespace oz
-{
-namespace client
-{
-
-static oz::Space    space;
-static oz::Kollider pcollider;
-static oz::Physics  physics;
-
-void Render::drawDyn()
-{
-  if (timer.frameTime > 0.0f) {
-    physics.update(timer.frameTime);
-  }
-
-  Vec4 colour = Vec4(0.0f, 0.0f, 1.0f, 1.0f);
-
-  for (int i = 0; i < space.bodies.length(); ++i) {
-    Body* body = space.bodies[i];
-
-    if (i < 2 && pcollider.overlaps(body, space.bodies[2])) {
-      colour = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-    else {
-      colour = Vec4(0.0f, 0.0f, 1.0f, 1.0f);
-    }
-
-    body->update();
-
-    shape.colour(colour);
-    shape.wireBox(body->bb.toAABB());
-    shape.object(body->p, body->oMat, body->shape());
-  }
-}
-
-void Render::loadDyn()
-{
-  physics.init(&space, &pcollider);
-
-  DBody* body;
-
-//   Compound* c = new Compound();
-//   c->add(new Box(Vec3(1.0f, 1.0f, 1.0f)), Vec3(1.0f, 1.0f, 1.0f), Mat3::ID);
-//   c->add(new Capsule(1, 1), Vec3(-2, 1, 0), Mat3::rotationX(Math::TAU / 6.0f));
-
-  Box* c = new Box(Vec3(1, 1, 2));
-//   Capsule* c = new Capsule(1, 1);
-
-  body = new DBody();
-  body->p = Point(140, 0, 80);
-  body->o = Quat::ID;
-  body->setShape(c);
-  body->update();
-  space.bodies.add(body);
-
-  physics.add(body);
-
-  Box* b = new Box(Vec3(1, 1, 2));
-
-  body = new DBody();
-  body->p = Point(143, 0, 80);
-  body->o = Quat::ID;
-  body->setShape(b);
-  body->update();
-  space.bodies.add(body);
-
-  physics.add(body);
-
-  Box* p = new Box(Vec3(10, 10, 1));
-
-  body = new DBody();
-  body->p = Point(142, 0, 75);
-  body->o = Quat::ID;
-  body->setShape(p);
-  body->update();
-  space.bodies.add(body);
-}
-
-void Render::unloadDyn()
-{
-  physics.destroy();
-  space.clear();
-  Space::deallocate();
-}
-
-}
-}
-
-#endif

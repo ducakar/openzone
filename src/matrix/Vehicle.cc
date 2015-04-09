@@ -23,7 +23,6 @@
 
 #include <matrix/Vehicle.hh>
 
-#include <common/Timer.hh>
 #include <matrix/Physics.hh>
 #include <matrix/LuaMatrix.hh>
 

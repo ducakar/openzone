@@ -23,7 +23,6 @@
 
 #include <client/Camera.hh>
 
-#include <common/Timer.hh>
 #include <client/Input.hh>
 #include <client/ui/Area.hh>
 #include <client/ui/UI.hh>

@@ -84,11 +84,6 @@ You may also want to adjust several options when configuring CMake build system:
   of accesses to vector components in the code, as it hasn't been written with SIMD in mind.
   `OFF` by default.
 
-- `OZ_DYNAMICS`: Build complete OpenZone Dynamics Library (ozDynamics). Requires ODE (Open Dynamics
-  Engine) compiled in single precision. ozDynamics is my attempt to create a physics engine and is
-  not required by OpenZone.
-  `OFF` by default.
-
 - `OZ_GL_ES`: Use OpenGL ES 2.0 instead of OpenGL 2.1.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
@@ -306,9 +301,9 @@ Legal
 -----
 
 OpenZone engine is licensed under GNU General Public License version 3 or (at your option) any later
-version (see `COPYING` file). liboz library (`src/ozCore`, `src/ozDynamics`, `src/ozEngine` and
-`src/ozFactory` directories) is a part of OpenZone engine but can also be distributed or modified
-separately under the zlib licence (see `src/ozCore/COPYING`).
+version (see `COPYING` file). liboz library (`src/ozCore`, `src/ozEngine` and `src/ozFactory`
+directories) is a part of OpenZone engine but can also be distributed or modified separately under
+the zlib licence (see `src/ozCore/COPYING`).
 
 Libraries that may be bundled with binary distributions of OpenZone come under different licences.
 See `doc/README.html` for details.

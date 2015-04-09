@@ -23,7 +23,6 @@
 
 #include <matrix/ObjectClass.hh>
 
-#include <common/Lingua.hh>
 #include <matrix/Object.hh>
 #include <matrix/Liber.hh>
 

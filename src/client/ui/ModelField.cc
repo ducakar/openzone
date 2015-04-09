@@ -23,7 +23,6 @@
 
 #include <client/ui/ModelField.hh>
 
-#include <common/Timer.hh>
 #include <client/Input.hh>
 #include <client/Shape.hh>
 #include <client/Context.hh>

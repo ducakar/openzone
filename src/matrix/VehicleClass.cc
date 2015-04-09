@@ -23,8 +23,6 @@
 
 #include <matrix/VehicleClass.hh>
 
-#include <common/Timer.hh>
-#include <common/Lingua.hh>
 #include <matrix/Vehicle.hh>
 #include <matrix/Liber.hh>
 

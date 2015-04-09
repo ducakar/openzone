@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include <common/Lingua.hh>
 #include <client/Proxy.hh>
 #include <client/ui/CinematicText.hh>
 

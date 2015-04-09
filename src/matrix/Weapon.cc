@@ -23,7 +23,6 @@
 
 #include <matrix/Weapon.hh>
 
-#include <common/Timer.hh>
 #include <matrix/Bot.hh>
 #include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>

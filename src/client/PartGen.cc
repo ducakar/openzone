@@ -23,7 +23,6 @@
 
 #include <client/PartGen.hh>
 
-#include <common/Timer.hh>
 #include <matrix/Physics.hh>
 #include <client/Shader.hh>
 #include <client/Shape.hh>

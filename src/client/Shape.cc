@@ -25,10 +25,6 @@
 
 #include <client/Shader.hh>
 
-#ifdef OZ_DYNAMICS
-# include <ozDynamics/ozDynamics.hh>
-#endif
-
 namespace oz
 {
 namespace client
@@ -361,50 +357,6 @@ void Shape::skyBox(uint* texIds)
   glBindTexture(GL_TEXTURE_2D, texIds[5]);
   glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 66);
 }
-
-#ifdef OZ_DYNAMICS
-
-void Shape::object(const Point& pos, const Mat3& rot, const void* shape_)
-{
-  const oz::Shape* shape = static_cast<const oz::Shape*>(shape_);
-
-  if (shape->type == oz::Shape::BOX) {
-    const Box* box = static_cast<const Box*>(shape);
-
-    tf.model = Mat4::translation(pos - Point::ORIGIN);
-    tf.model = tf.model * Mat4(rot);
-    tf.model.scale(box->ext);
-    tf.apply();
-
-    colour(0.5f, 0.5f, 0.5f, 1.0f);
-    glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 0);
-    colour(1.0f, 0.0f, 0.0f, 1.0f);
-    glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 22);
-  }
-  else if (shape->type == oz::Shape::CAPSULE) {
-    const Capsule* capsule = static_cast<const Capsule*>(shape);
-
-    tf.model = Mat4::translation(pos - Point::ORIGIN);
-    tf.model = tf.model * Mat4(rot);
-    tf.model.scale(Vec3(capsule->radius, capsule->radius, capsule->ext + capsule->radius));
-    tf.apply();
-
-    colour(0.5f, 0.5f, 0.5f, 1.0f);
-    glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 0);
-    colour(1.0f, 0.0f, 0.0f, 1.0f);
-    glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>(nullptr) + 22);
-
-  }
-  else if (shape->type == oz::Shape::COMPOUND) {
-    const Compound* compound = static_cast<const Compound*>(shape);
-
-    for (const Compound::Child& child : *compound) {
-      object(pos + rot * child.off, rot * child.rot, child.shape);
-    }
-  }
-}
-
-#endif
 
 void Shape::init()
 {

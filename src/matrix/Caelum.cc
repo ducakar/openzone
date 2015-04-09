@@ -23,7 +23,6 @@
 
 #include <matrix/Caelum.hh>
 
-#include <common/Timer.hh>
 #include <matrix/Liber.hh>
 
 namespace oz

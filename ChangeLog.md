@@ -36,9 +36,6 @@
     * new Gettext class for loading gettext translations
     * JSON is more forgiving and simplified (implicit ctors, get<NumType>(), removed asType())
     * new Pepper class that provides basic interfaces to PPAPI on NaCl
-- ozDynamics: new rigid body dynamics library
-    * collision
-        + primitives: Box, Capsule, Polytope, Compound
 - ozEngine: new engine building blocks library
     * GL class for OpenGL utilities: error checks, DDS texture loader
     * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader, Vorbis streamer

@@ -1,5 +1,7 @@
 add_library(common STATIC
 #BEGIN SOURCES
+  AABB.hh
+  Bounds.hh
   common.hh
   Lingua.hh
   luaapi.hh

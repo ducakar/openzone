@@ -23,8 +23,6 @@
 
 #include <client/MD2.hh>
 
-#include <common/Timer.hh>
-
 namespace oz
 {
 namespace client

@@ -23,7 +23,6 @@
 
 #include <client/CinematicProxy.hh>
 
-#include <common/Timer.hh>
 #include <client/LuaClient.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>

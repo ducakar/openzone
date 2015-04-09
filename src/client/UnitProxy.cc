@@ -23,7 +23,6 @@
 
 #include <client/UnitProxy.hh>
 
-#include <common/Timer.hh>
 #include <client/Camera.hh>
 #include <client/Input.hh>
 #include <client/Context.hh>

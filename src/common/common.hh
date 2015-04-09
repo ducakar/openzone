@@ -27,9 +27,10 @@
 
 #pragma once
 
-#include <ozCore/ozCore.hh>
-#include <ozDynamics/collision/AABB.hh>
-#include <ozDynamics/collision/Bounds.hh>
+#include <common/AABB.hh>
+#include <common/Bounds.hh>
+#include <common/Lingua.hh>
+#include <common/Timer.hh>
 
 #ifdef _WIN32
 # define NOGDI
