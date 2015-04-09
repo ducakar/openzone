@@ -414,7 +414,7 @@ public:
   template <typename Elem_ = Elem>
   void add(Elem_&& elem)
   {
-    pushLast<Elem_>(static_cast<Elem_&&>(elem));
+    insert(count, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -457,7 +457,7 @@ public:
       return i;
     }
     else {
-      pushLast<Elem_>(static_cast<Elem_&&>(elem));
+      insert(count, static_cast<Elem_&&>(elem));
       return count - 1;
     }
   }
@@ -563,11 +563,7 @@ public:
   template <typename Elem_ = Elem>
   void pushFirst(Elem_&& elem)
   {
-    ensureCapacity(count + 1);
-
-    aMoveBackward<Elem>(data, count, data + 1);
-    data[0] = static_cast<Elem_&&>(elem);
-    ++count;
+    insert(0, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -576,10 +572,7 @@ public:
   template <typename Elem_ = Elem>
   void pushLast(Elem_&& elem)
   {
-    ensureCapacity(count + 1);
-
-    data[count] = static_cast<Elem_&&>(elem);
-    ++count;
+    insert(count, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -591,6 +584,8 @@ public:
    */
   Elem popFirst()
   {
+    hard_assert(count != 0);
+
     Elem elem = static_cast<Elem&&>(data[0]);
 
     --count;

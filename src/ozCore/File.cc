@@ -812,12 +812,10 @@ List<File> File::ls() const
     String prefix = filePath.length() == 1 || filePath.last() == '/' ? filePath : filePath + "/";
 
     // Count entries first.
-    char** entity = entities;
-    while (*entity != nullptr) {
+    for (char** entity = entities; *entity != nullptr; ++entity) {
       if ((*entity)[0] != '.') {
         list.add(prefix + *entity);
       }
-      ++entity;
     }
 
     PHYSFS_freeList(entities);

@@ -69,6 +69,34 @@ protected:
   using List<Elem>::size;
   using List<Elem>::ensureCapacity;
 
+  /**
+   * Insert an element, optionally overwriting an existing one.
+   *
+   * @return Position of the inserted element.
+   */
+  template <typename Elem_ = Elem>
+  int insert(Elem_&& elem, bool overwrite)
+  {
+    int i = aBisection<Elem, Elem_>(data, count, elem);
+
+    if (i >= 0 && data[i] == elem) {
+      if (overwrite) {
+        data[i] = static_cast<Elem_&&>(elem);
+      }
+      return i;
+    }
+    else {
+      ensureCapacity(count + 1);
+      ++i;
+
+      aMoveBackward<Elem>(data + i, count - i, data + i + 1);
+      data[i] = static_cast<Elem_&&>(elem);
+      ++count;
+
+      return i;
+    }
+  }
+
 public:
 
   using List<Elem>::citer;
@@ -81,7 +109,6 @@ public:
   using List<Elem>::operator [];
   using List<Elem>::first;
   using List<Elem>::last;
-  using List<Elem>::insert;
   using List<Elem>::erase;
   using List<Elem>::reserve;
   using List<Elem>::trim;
@@ -180,16 +207,7 @@ public:
   template <typename Elem_ = Elem>
   int add(Elem_&& elem)
   {
-    int i = aBisection<Elem, Elem>(data, count, elem);
-
-    if (i >= 0 && data[i] == elem) {
-      data[i] = static_cast<Elem_&&>(elem);
-      return i;
-    }
-    else {
-      insert(i + 1, static_cast<Elem_&&>(elem));
-      return i + 1;
-    }
+    return insert<Elem_>(static_cast<Elem_&&>(elem), true);
   }
 
   /**
@@ -200,15 +218,7 @@ public:
   template <typename Elem_ = Elem>
   int include(Elem_&& elem)
   {
-    int i = aBisection<Elem, Elem>(data, count, elem);
-
-    if (i >= 0 && data[i] == elem) {
-      return i;
-    }
-    else {
-      insert(i + 1, static_cast<Elem_&&>(elem));
-      return i + 1;
-    }
+    return insert<Elem_>(static_cast<Elem_&&>(elem), false);
   }
 
   /**

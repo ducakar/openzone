@@ -142,7 +142,7 @@ void BotClass::init(const Json& config, const char* name_)
              " rather set stamina*Drain variables to zero.", name_);
   }
 
-  staminaGain       = config["staminaGain"].get(2.5f) * Timer::TICK_TIME;
+  staminaGain       = config["staminaGain"].get(2.25f) * Timer::TICK_TIME;
   staminaRunDrain   = config["staminaRunDrain"].get(4.0f) * Timer::TICK_TIME;
   staminaWaterDrain = config["staminaWaterDrain"].get(4.0f) * Timer::TICK_TIME;
   staminaClimbDrain = config["staminaClimbDrain"].get(10.0f) * Timer::TICK_TIME;
@@ -151,7 +151,7 @@ void BotClass::init(const Json& config, const char* name_)
 
   regeneration      = config["regeneration"].get(0.0f) * Timer::TICK_TIME;
 
-  reachDist         = config["reachDist"].get(2.0f);
+  reachDist         = config["reachDist"].get(2.5f);
   grabWeight        = config["grabWeight"].get(500.0f);
   throwMomentum     = config["throwMomentum"].get(6.0f);
 

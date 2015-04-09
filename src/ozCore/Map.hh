@@ -127,6 +127,36 @@ private:
   using Set<Pair>::size;
   using Set<Pair>::ensureCapacity;
 
+  /**
+   * Insert an element, optionally overwriting an existing one.
+   *
+   * @return Position of the inserted element.
+   */
+  template <typename Key_ = Key, typename Value_ = Value>
+  int insert(Key_&& key, Value_&& value, bool overwrite)
+  {
+    int i = aBisection<Pair, Key>(data, count, key);
+
+    if (i >= 0 && data[i].key == key) {
+      if (overwrite) {
+        data[i].key   = static_cast<Key_&&>(key);
+        data[i].value = static_cast<Value_&&>(value);
+      }
+      return i;
+    }
+    else {
+      ensureCapacity(count + 1);
+      ++i;
+
+      aMoveBackward<Pair>(data + i, count - i, data + i + 1);
+      data[i].key   = static_cast<Key_&&>(key);
+      data[i].value = static_cast<Value_&&>(value);
+      ++count;
+
+      return i;
+    }
+  }
+
 public:
 
   using Set<Pair>::citer;
@@ -235,33 +265,7 @@ public:
   template <typename Key_ = Key, typename Value_ = Value>
   int add(Key_&& key, Value_&& value)
   {
-    int i = aBisection<Pair, Key>(data, count, key);
-
-    if (i >= 0 && data[i].key == key) {
-      data[i].key   = static_cast<Key_&&>(key);
-      data[i].value = static_cast<Value_&&>(value);
-      return i;
-    }
-    else {
-      insert<Key_, Value_>(i + 1, static_cast<Key_&&>(key), static_cast<Value_&&>(value));
-      return i + 1;
-    }
-  }
-
-  /**
-   * Insert an element at a given position.
-   */
-  template <typename Key_ = Key, typename Value_ = Value>
-  void insert(int i, Key_&& key, Value_&& value)
-  {
-    hard_assert(uint(i) <= uint(count));
-
-    ensureCapacity(count + 1);
-
-    aMoveBackward<Pair>(data + i, count - i, data + i + 1);
-    data[i].key   = static_cast<Key_&&>(key);
-    data[i].value = static_cast<Value_&&>(value);
-    ++count;
+    return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
 
   /**
@@ -272,15 +276,7 @@ public:
   template <typename Key_ = Key, typename Value_ = Value>
   int include(Key_&& key, Value_&& value)
   {
-    int i = aBisection<Pair, Key>(data, count, key);
-
-    if (i >= 0 && data[i].key == key) {
-      return i;
-    }
-    else {
-      insert<Key_, Value_>(i + 1, static_cast<Key_&&>(key), static_cast<Value_&&>(value));
-      return i + 1;
-    }
+    return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
   }
 
   /**
