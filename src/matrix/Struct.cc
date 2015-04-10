@@ -69,10 +69,10 @@ const Entity::Handler Entity::HANDLERS[] = {
 List<Object*> Struct::overlappingObjs;
 Pool<Struct>  Struct::pool;
 
-void Entity::trigger()
+bool Entity::trigger()
 {
   if (clazz->target < 0 || key < 0) {
-    return;
+    return false;
   }
 
   if (clazz->type == EntityClass::STATIC) {
@@ -84,32 +84,35 @@ void Entity::trigger()
   int entIndex = clazz->target & (Struct::MAX_ENTITIES - 1);
 
   Struct* targetStr = orbis.str(strIndex);
-
-  if (targetStr != nullptr) {
-    Entity& target = targetStr->entities[entIndex];
-
-    if (target.state == OPENED || target.state == OPENING) {
-      target.state = CLOSING;
-      target.time = 0.0f;
-      target.velocity = -target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
-    }
-    else {
-      target.state = OPENING;
-      target.time = 0.0f;
-      target.velocity = target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
-    }
+  if (targetStr == nullptr) {
+    return false;
   }
+
+  Entity& target = targetStr->entities[entIndex];
+
+  if (target.state == OPENED || target.state == OPENING) {
+    target.state = CLOSING;
+    target.time = 0.0f;
+    target.velocity = -target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
+  }
+  else {
+    target.state = OPENING;
+    target.time = 0.0f;
+    target.velocity = target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
+  }
+
+  return true;
 }
 
-void Entity::lock(Bot* user)
+bool Entity::lock(Bot* user)
 {
   if (key == 0) {
-    return;
+    return true;
   }
 
   if (user->clazz->key == key || user->clazz->key == ~key) {
     key = ~key;
-    return;
+    return true;
   }
 
   for (int i : user->items) {
@@ -117,9 +120,11 @@ void Entity::lock(Bot* user)
 
     if (obj->clazz->key == key || obj->clazz->key == ~key) {
       key = ~key;
-      return;
+      return true;
     }
   }
+
+  return false;
 }
 
 void Entity::staticHandler()

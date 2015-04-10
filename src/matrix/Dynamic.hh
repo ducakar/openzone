@@ -52,6 +52,10 @@ protected:
 
 public:
 
+  bool rotate(int steps);
+
+public:
+
   explicit Dynamic(const DynamicClass* clazz, int index, const Point& p, Heading heading);
   explicit Dynamic(const DynamicClass* clazz, int index, const Json& json);
   explicit Dynamic(const DynamicClass* clazz, InputStream* is);

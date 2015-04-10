@@ -25,6 +25,7 @@
 
 #include <matrix/LuaMatrix.hh>
 #include <matrix/Synapse.hh>
+#include <matrix/Collider.hh>
 
 namespace oz
 {
@@ -51,6 +52,32 @@ void Dynamic::onDestroy()
                 Bounds(Point(p.x - dim.x, p.y - dim.y, p.z),
                        Point(p.x + dim.x, p.y + dim.y, p.z + dim.z)),
                 velocity + DESTRUCT_FRAG_VELOCITY);
+  }
+}
+
+bool Dynamic::rotate(int steps)
+{
+  hard_assert(steps >= 0);
+
+  int heading = flags & Object::HEADING_MASK;
+
+  if (steps % 2 == 0) {
+    flags &= ~Object::HEADING_MASK;
+    flags |= (heading + steps) % 4;
+    return true;
+  }
+  else {
+    swap(dim.x, dim.y);
+
+    if (collider.overlaps(this)) {
+      swap(dim.x, dim.y);
+      return false;
+    }
+    else {
+      flags &= ~Object::HEADING_MASK;
+      flags |= (heading + steps) % 4;
+      return true;
+    }
   }
 }
 

@@ -110,6 +110,11 @@ private:
   volatile bool               isMusicAlive;
   volatile bool               isSoundAlive;
 
+public:
+
+  ulong64                     effectsMicros;
+  ulong64                     musicMicros;
+
 private:
 
   static void musicMain(void*);
@@ -140,6 +145,9 @@ public:
 
   void play();
   void sync();
+
+  void load();
+  void unload();
 
   void init();
   void destroy();

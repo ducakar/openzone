@@ -267,21 +267,12 @@ void GameStage::present(bool isFull)
   uint currentMicros;
 
   sound.play();
-
-  currentMicros = Time::uclock();
-  soundMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
-
   render.update(Render::EFFECTS_BIT | (isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0));
-
-  currentMicros = Time::uclock();
-  renderMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
 
   sound.sync();
 
   currentMicros = Time::uclock();
-  soundMicros += currentMicros - beginMicros;
+  presentMicros += currentMicros - beginMicros;
 }
 
 void GameStage::wait(uint micros)
@@ -309,8 +300,7 @@ void GameStage::load()
   sleepMicros   = 0;
   uiMicros      = 0;
   loaderMicros  = 0;
-  soundMicros   = 0;
-  renderMicros  = 0;
+  presentMicros = 0;
   matrixMicros  = 0;
   nirvanaMicros = 0;
 
@@ -323,6 +313,7 @@ void GameStage::load()
 
   MainCall() << []
   {
+    sound.load();
     render.load();
     context.load();
   };
@@ -405,11 +396,17 @@ void GameStage::unload()
   auxThread.join();
 
   ulong64 ticks                 = timer.ticks - startTicks;
+  long64  soundMicros           = sound.effectsMicros + sound.musicMicros;
+  long64  renderMicros          = render.prepareMicros + render.caelumMicros + render.terraMicros +
+                                  render.meshesMicros + render.miscMicros +
+                                  render.postprocessMicros + render.uiMicros + render.swapMicros;
   float   sleepTime             = float(sleepMicros)                    * 1.0e-6f;
   float   uiTime                = float(uiMicros)                       * 1.0e-6f;
   float   loaderTime            = float(loaderMicros)                   * 1.0e-6f;
-  float   presentTime           = float(soundMicros + renderMicros)     * 1.0e-6f;
+  float   presentTime           = float(presentMicros)                  * 1.0e-6f;
   float   soundTime             = float(soundMicros)                    * 1.0e-6f;
+  float   soundEffectsTime      = float(sound.effectsMicros)            * 1.0e-6f;
+  float   soundMusicTime        = float(sound.musicMicros)              * 1.0e-6f;
   float   renderTime            = float(renderMicros)                   * 1.0e-6f;
   float   renderPrepareTime     = float(render.prepareMicros)           * 1.0e-6f;
   float   renderCaelumTime      = float(render.caelumMicros)            * 1.0e-6f;
@@ -445,6 +442,7 @@ void GameStage::unload()
   {
     context.unload();
     render.unload();
+    sound.unload();
   };
 
   luaClient.destroy();
@@ -458,33 +456,35 @@ void GameStage::unload()
 
   Log::println("Time statistics {");
   Log::indent();
-  Log::println("loading time          %8.2f s",    loadingTime                             );
-  Log::println("run time              %8.2f s",    runTime                                 );
-  Log::println("game time             %8.2f s",    gameTime                                );
-  Log::println("dropped time          %8.2f s",    droppedTime                             );
-  Log::println("optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                 );
-  Log::println("tick rate in run time   %6.2f Hz", float(ticks) / runTime                  );
-  Log::println("frame rate in run time  %6.2f Hz", float(timer.nFrames) / runTime          );
-  Log::println("frame drop rate         %6.2f %%", frameDropRate * 100.0f                  );
-  Log::println("frame drops           %8lu",       ulong(nFrameDrops)                      );
+  Log::println("loading time          %8.2f s",    loadingTime                                );
+  Log::println("run time              %8.2f s",    runTime                                    );
+  Log::println("game time             %8.2f s",    gameTime                                   );
+  Log::println("dropped time          %8.2f s",    droppedTime                                );
+  Log::println("optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                    );
+  Log::println("tick rate in run time   %6.2f Hz", float(ticks) / runTime                     );
+  Log::println("frame rate in run time  %6.2f Hz", float(timer.nFrames) / runTime             );
+  Log::println("frame drop rate         %6.2f %%", frameDropRate * 100.0f                     );
+  Log::println("frame drops           %8lu",       ulong(nFrameDrops)                         );
   Log::println("Run time usage {");
   Log::indent();
-  Log::println("%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:1] input & ui",       uiTime                / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:2] loader",           loaderTime            / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3] present",          presentTime           / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3] + sound",          soundTime             / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3] + render",         renderTime            / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + prepare",      renderPrepareTime     / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + meshes",       renderMeshesTime      / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f);
-  Log::println("%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f);
-  Log::println("%6.2f %%  [A:2] matrix",           matrixTime            / runTime * 100.0f);
-  Log::println("%6.2f %%  [A:3] nirvana",          nirvanaTime           / runTime * 100.0f);
+  Log::println("Ph0  %6.2f %%  [M] sleep",            sleepTime             / runTime * 100.0f);
+  Log::println("Ph1  %6.2f %%  [M] input & ui",       uiTime                / runTime * 100.0f);
+  Log::println("Ph2  %6.2f %%  [A] matrix",           matrixTime            / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M] loader",           loaderTime            / runTime * 100.0f);
+  Log::println("Ph3  %6.2f %%  [A] nirvana",          nirvanaTime           / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M] present",          presentTime           / runTime * 100.0f);
+  Log::println("     %6.2f %%  [S] + sound",          soundTime             / runTime * 100.0f);
+  Log::println("     %6.2f %%  [S]   + effects",      soundEffectsTime      / runTime * 100.0f);
+  Log::println("     %6.2f %%  [S]   + music",        soundMusicTime        / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M] + render",         renderTime            / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + prepare",      renderPrepareTime     / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + caelum",       renderCaelumTime      / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + terra",        renderTerraTime       / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + meshes",       renderMeshesTime      / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + misc",         renderMiscTime        / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + postprocess",  renderPostprocessTime / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + ui",           renderUITime          / runTime * 100.0f);
+  Log::println("     %6.2f %%  [M]   + swap",         renderSwapTime        / runTime * 100.0f);
   Log::unindent();
   Log::println("}");
   Log::unindent();

@@ -34,19 +34,69 @@ Synapse::Synapse() :
   mode(SINGLE)
 {}
 
-void Synapse::use(Bot* user, Object* target)
+bool Synapse::use(Bot* user, Object* target)
 {
-  target->use(user);
+  return target->use(user);
 }
 
-void Synapse::trigger(Entity* target)
+bool Synapse::trigger(Entity* target)
 {
-  target->trigger();
+  return target->trigger();
 }
 
-void Synapse::lock(Bot* user, Entity* target)
+bool Synapse::lock(Bot* user, Entity* target)
 {
-  target->lock(user);
+  return target->lock(user);
+}
+
+bool Synapse::transferItem(Object* source, Dynamic* item, Object* target)
+{
+  hard_assert(source->items.contains(item->index));
+
+  if (target->items.length() == target->clazz->nItems) {
+    return false;
+  }
+
+  item->parent = target->index;
+  target->items.add(item->index);
+  source->items.exclude(item->index);
+
+  return true;
+}
+
+bool Synapse::takeItem(Object* container, Dynamic* item)
+{
+  hard_assert(item->cell != nullptr);
+
+  if (container->items.length() == container->clazz->nItems) {
+    return false;
+  }
+
+  item->parent = container->index;
+  container->items.add(item->index);
+  cut(item);
+
+  return true;
+}
+
+bool Synapse::dropItem(Object* container, Dynamic* item, const Point& p, const Vec3& velocity)
+{
+  hard_assert(container->items.contains(item->index));
+
+  item->p = p;
+
+  if (collider.overlaps(item)) {
+    return false;
+  }
+
+  item->parent = -1;
+  container->items.exclude(item->index);
+  put(item);
+
+  item->velocity = velocity;
+  item->momentum = velocity;
+
+  return true;
 }
 
 void Synapse::put(Dynamic* obj)

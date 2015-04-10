@@ -946,9 +946,7 @@ stepSucceeded:
       {
         hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
-        item->parent = index;
-        items.add(instrument);
-        source->items.exclude(instrument);
+        synapse.transferItem(source, item, this);
 
         if (source->flags & BOT_BIT) {
           Bot* bot = static_cast<Bot*>(source);
@@ -968,9 +966,7 @@ stepSucceeded:
       {
         hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
-        item->parent = container;
-        target->items.add(instrument);
-        items.exclude(instrument);
+        synapse.transferItem(this, item, target);
 
         if (instrument == weapon) {
           weapon = -1;
@@ -1006,27 +1002,13 @@ stepSucceeded:
           hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
           releaseCargo();
-
-          item->parent = index;
-          items.add(item->index);
-          synapse.cut(item);
-
+          synapse.takeItem(this, item);
           addEvent(EVENT_TAKE, 1.0f);
         }
       }
       else if (actions & ~oldActions & ACTION_ROTATE) {
         if (cargoObj != nullptr) {
-          int heading = cargoObj->flags & Object::HEADING_MASK;
-
-          swap(cargoObj->dim.x, cargoObj->dim.y);
-
-          if (collider.overlaps(cargoObj)) {
-            swap(cargoObj->dim.x, cargoObj->dim.y);
-          }
-          else {
-            cargoObj->flags &= ~Object::HEADING_MASK;
-            cargoObj->flags |= (heading + 1) % 4;
-          }
+          cargoObj->rotate(1);
         }
       }
       else if (actions & ~oldActions & ACTION_THROW) {
@@ -1091,19 +1073,11 @@ stepSucceeded:
           Vec3 handle = Vec3(-hvsc[0], hvsc[1], -hvsc[3]) * dist;
           // bottom of the object cannot be raised over the player aabb
           handle.z    = clamp(handle.z, -dim.z - camZ, dim.z - camZ);
-          item->p     = p + Vec3(0.0f, 0.0f, camZ) + handle;
 
-          if (instrument == weapon) {
-            weapon = -1;
-          }
-
-          if (!collider.overlaps(item)) {
-            item->parent = -1;
-            synapse.put(item);
-            items.exclude(instrument);
-
-            item->velocity = velocity;
-            item->momentum = velocity;
+          if (synapse.dropItem(this, item, p + Vec3(0.0f, 0.0f, camZ) + handle, velocity)) {
+            if (instrument == weapon) {
+              weapon = -1;
+            }
 
             if ((actions & ~oldActions & ACTION_INV_GRAB) &&
                 !(state & (LADDER_BIT | LEDGE_BIT)) && weapon < 0)

@@ -63,9 +63,13 @@ public:
 
   Synapse();
 
-  void use(Bot* user, Object* target);
-  void trigger(Entity* target);
-  void lock(Bot* user, Entity* target);
+  bool use(Bot* user, Object* target);
+  bool trigger(Entity* target);
+  bool lock(Bot* user, Entity* target);
+
+  bool transferItem(Object* source, Dynamic* item, Object* target);
+  bool takeItem(Object* container, Dynamic* item);
+  bool dropItem(Object* container, Dynamic* item, const Point& p, const Vec3& velocity);
 
   // schedule for position in the world
   void put(Dynamic* obj);

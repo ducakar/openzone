@@ -43,8 +43,7 @@ private:
   long64        loadingMicros;
   long64        uiMicros;
   long64        loaderMicros;
-  long64        soundMicros;
-  long64        renderMicros;
+  long64        presentMicros;
   long64        matrixMicros;
   long64        nirvanaMicros;
 

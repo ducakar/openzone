@@ -31,7 +31,7 @@ namespace oz
 {
 
 struct Cell;
-class  Bot;
+class Bot;
 
 /**
  * Static object class and base class for other object classes.
@@ -303,13 +303,14 @@ public:
   }
 
   OZ_ALWAYS_INLINE
-  void use(Bot* user)
+  bool use(Bot* user)
   {
     if (flags & USE_FUNC_BIT) {
       bool success = onUse(user);
-
       addEvent(EVENT_FAIL - success, 1.0f);
+      return success;
     }
+    return false;
   }
 
   /**

@@ -66,9 +66,9 @@ public:
 
 public:
 
-  int index() const;
-  void trigger();
-  void lock(Bot* user);
+  int  index() const;
+  bool trigger();
+  bool lock(Bot* user);
 
 private:
 

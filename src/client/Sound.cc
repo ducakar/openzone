@@ -574,6 +574,9 @@ void Sound::soundRun()
   soundAuxSemaphore.wait();
 
   while (isSoundAlive) {
+    uint currentMicros = Time::uclock();
+    uint beginMicros = currentMicros;
+
     float orientation[] = {
       camera.at.x, camera.at.y, camera.at.z,
       camera.up.x, camera.up.y, camera.up.z
@@ -596,7 +599,14 @@ void Sound::soundRun()
       }
     }
 
+    currentMicros = Time::uclock();
+    effectsMicros += currentMicros - beginMicros;
+    beginMicros = currentMicros;
+
     updateMusic();
+
+    currentMicros = Time::uclock();
+    musicMicros += currentMicros - beginMicros;
 
     soundMainSemaphore.post();
     soundAuxSemaphore.wait();
@@ -659,6 +669,15 @@ void Sound::sync()
   soundMainSemaphore.wait();
   context.speakSource.mutex.unlock();
 }
+
+void Sound::load()
+{
+  effectsMicros = 0;
+  musicMicros   = 0;
+}
+
+void Sound::unload()
+{}
 
 void Sound::init()
 {

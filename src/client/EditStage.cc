@@ -220,6 +220,7 @@ void EditStage::load()
   matrix.load();
   nirvana.load();
 
+  sound.load();
   render.load();
   context.load();
 
@@ -286,6 +287,7 @@ void EditStage::unload()
 
   context.unload();
   render.unload();
+  sound.unload();
 
   nirvana.unload();
   matrix.unload();
