@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "System.hh"
 #include "String.hh"
 #include "Semaphore.hh"
 #include "Thread.hh"

@@ -92,8 +92,8 @@ endif()
 include_directories(SYSTEM ${SDL_INCLUDE_DIRS})
 
 if(OZ_GL_ES)
-  # On embedded platform GLES is part of system libraries and is guaranteed to exist in toolchain or
-  # platform directory, no need to explicitly check existence or to detect library names.
+  # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
+  # or platform directory, no need to explicitly check existence or to detect library names.
   if(ANDROID)
     set(GL_LIBRARIES GLESv2)
   elseif(NACL)
@@ -110,8 +110,7 @@ find_package(OpenAL REQUIRED)
 find_package(PNG REQUIRED)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 
-# On embedded platforms linking is mostly static, so dependencies for all libraries must be linked
-# too.
+# On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
 if(PLATFORM_EMBEDDED)
   find_package(Freetype REQUIRED)           # required by SDL_ttf
   pkg_check_modules(OGG REQUIRED ogg)       # required by vorbisfile
@@ -212,10 +211,12 @@ mark_as_advanced(OZ_HOSTNAME)
 add_subdirectory(src)
 
 # This is to show these files in QtCreator.
-file(GLOB_RECURSE dataSources data/*.txt data/*.json data/*.lua data/*.vert data/*.frag)
-
 add_custom_target(docFiles SOURCES AUTHORS ChangeLog.md README.md TODO.md)
-add_custom_target(dataFiles SOURCES ${dataSources})
+
+if (EXISTS ${CMAKE_SOURCE_DIR}/data)
+  file(GLOB_RECURSE dataSources data/*.json data/*.lua data/*.vert data/*.frag)
+  add_custom_target(dataFiles SOURCES ${dataSources})
+endif()
 
 #
 # Data files.

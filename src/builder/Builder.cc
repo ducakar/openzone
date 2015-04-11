@@ -50,7 +50,7 @@ void Builder::printUsage()
     "  <src_dir>  Path to directory that includes data to be built. Name of this\n"
     "             directory name is used as package name.\n"
     "  <out_dir>  Directory where output directory and archive will be created.\n"
-    "             Defaults to './share/openzone'.\n"
+    "             Defaults to './share/openzone/<pkg_name>'.\n"
     "  -v         More verbose log output.\n"
     "  -l         Build translations.\n"
     "  -u         Build UI.\n"
@@ -766,13 +766,17 @@ int Builder::main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
+  File::init();
+  ImageBuilder::init();
+
+  bool hasOutDir = optind != argc - 1;
+
 #ifdef _WIN32
   String srcDir = String::replace(argv[optind], '\\', '/');
-  String outDir = optind == argc - 1 ? "share/openzone" :
-                  String::replace(argv[optind + 1], '\\', '/');
+  String outDir = hasOutDir ? String::replace(argv[optind + 1], '\\', '/') : "share/openzone";
 #else
   String srcDir = argv[optind];
-  String outDir = optind == argc - 1 ? "share/openzone" : argv[optind + 1];
+  String outDir = hasOutDir ? argv[optind + 1] : "share/openzone";
 #endif
 
   while (!srcDir.isEmpty() && srcDir.last() == '/') {
@@ -788,13 +792,15 @@ int Builder::main(int argc, char** argv)
     srcDir = File::cwd() + "/" + srcDir;
   }
   if (outDir[0] != '/') {
-    outDir = File::cwd() + "/" + outDir + "/" + pkgName;
+    outDir = File::cwd() + "/" + outDir;
   }
 
-  File::init();
-  ImageBuilder::init();
-
   File::mkdir(outDir);
+
+  if (!hasOutDir) {
+    outDir += "/" + pkgName;
+    File::mkdir(outDir);
+  }
 
   Log::println("Chdir to output directory '%s'", outDir.cstr());
   if (!File::chdir(outDir)) {

@@ -160,9 +160,6 @@ function download()
 
 function fetch()
 {
-  # zlib
-  download 'http://zlib.net/zlib-1.2.8.tar.xz'
-
   # libpng
   download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.16.tar.xz'
 
@@ -264,27 +261,9 @@ function finish()
   done
 }
 
-function build_zlib()
-{
-  prepare zlib-1.2.8 zlib-1.2.8.tar.xz || return
-
-  if [[ $platform == PNaCl ]]; then
-    CFLAGS="$CPPFLAGS $CFLAGS -Dunlink=puts" ./configure --prefix=/usr --static
-  else
-    ./configure --prefix=/usr --static
-  fi
-
-  make -j4 || return 1
-  make install DESTDIR="$buildDir"
-  rm -rf "$buildDir"/usr/lib/libz.so*
-
-  finish
-}
-
 function build_libpng()
 {
   prepare libpng-1.6.16 libpng-1.6.16.tar.xz || return
-  applyPatches libpng-1.6.6.patch
 
   cmakeBuild -D PNG_SHARED=0 \
              -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" \
@@ -316,7 +295,6 @@ function build_libvorbis()
 function build_freetype()
 {
   prepare freetype-2.5.5 freetype-2.5.5.tar.bz2 || return
-  applyPatches freetype-2.5.0.1.patch
 
   autotoolsBuild --without-bzip2 --without-png
 
@@ -357,7 +335,6 @@ function build_lua()
 function build_openal()
 {
   prepare openal-soft-1.16.0 openal-soft-1.16.0.tar.bz2 || return
-  applyPatches openal-soft-1.16.0.patch
 
   cmakeBuild -D ALSOFT_UTILS=0 -D ALSOFT_EXAMPLES=0 -D LIBTYPE="STATIC"
 
@@ -415,26 +392,19 @@ function build_sdl2_ttf()
 
 function build()
 {
-  # zlib
-  #setup_pnacl       && build_zlib
-
   # libpng
-  #setup_pnacl       && build_libpng
   setup_ndk_i686    && build_libpng
   setup_ndk_ARMv7a  && build_libpng
 
   # libogg
-  #setup_pnacl       && build_libogg
   setup_ndk_i686    && build_libogg
   setup_ndk_ARMv7a  && build_libogg
 
   # libvorbis
-  #setup_pnacl       && build_libvorbis
   setup_ndk_i686    && build_libvorbis
   setup_ndk_ARMv7a  && build_libvorbis
 
   # FreeType
-  #setup_pnacl       && build_freetype
   setup_ndk_i686    && build_freetype
   setup_ndk_ARMv7a  && build_freetype
 
@@ -444,12 +414,10 @@ function build()
   setup_ndk_ARMv7a  && build_physfs
 
   # Lua
-  #setup_pnacl       && build_lua
   setup_ndk_i686    && build_lua
   setup_ndk_ARMv7a  && build_lua
 
   # OpenAL Soft
-  #setup_pnacl       && build_openal
   setup_ndk_i686    && build_openal
   setup_ndk_ARMv7a  && build_openal
 

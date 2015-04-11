@@ -79,14 +79,16 @@ struct Pepper::Instance : pp::Instance, pp::MouseLock
 };
 
 OZ_HIDDEN
-OZ_NORETURN
 void Pepper::Instance::mainThreadMain(void*)
 {
-  char  argv0[] = "";
-  char* argv[]  = { argv0, nullptr };
+  Instance* instance = static_cast<Instance*>(ppInstance);
+  char      argv0[]  = "";
+  char*     argv[]   = { argv0, nullptr };
 
-  int exitCode = naclMain(1, argv);
-  exit(exitCode);
+  naclMain(1, argv);
+
+  instance->fullscreen.SetFullscreen(false);
+  instance->UnlockMouse();
 }
 
 OZ_HIDDEN
@@ -118,21 +120,13 @@ Pepper::Instance::~Instance()
 OZ_HIDDEN
 void Pepper::Instance::DidChangeView(const pp::View& view)
 {
-  int newWidth  = view.GetRect().width();
-  int newHeight = view.GetRect().height();
-
-  if (newWidth == width && newHeight == height) {
-    return;
-  }
-
-  width  = newWidth;
-  height = newHeight;
+  width  = view.GetRect().width();
+  height = view.GetRect().height();
 
   if (!isStarted) {
-    SDL_NACL_SetInstance(pp_instance(), pp::Module::Get()->get_browser_interface(),
-                         width, height);
+    SDL_NACL_SetInstance(pp_instance(), pp::Module::Get()->get_browser_interface(), width, height);
 
-    mainThread = Thread("naclMain", mainThreadMain, nullptr);
+    mainThread = Thread("naclMain", mainThreadMain);
     mainThread.detach();
     isStarted = true;
   }

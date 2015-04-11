@@ -285,9 +285,6 @@ int Client::init(int argc, char** argv)
   isBenchmark   = false;
   benchmarkTime = 0.0f;
 
-  File::init(File::TEMPORARY, 64*1024*1024);
-  initFlags |= INIT_PHYSFS;
-
   String prefixDir  = OZ_PREFIX;
   String language   = "";
   String mission    = "";
@@ -345,6 +342,9 @@ int Client::init(int argc, char** argv)
       }
     }
   }
+
+  File::init(File::TEMPORARY, 64*1024*1024);
+  initFlags |= INIT_PHYSFS;
 
 #if defined(__ANDROID__)
 
@@ -709,7 +709,9 @@ void Client::shutdown()
 
   Log::printMemorySummary();
 
-  Log::println("OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr());
+  if (initFlags) {
+    Log::println("OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr());
+  }
 }
 
 Client client;

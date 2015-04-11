@@ -184,8 +184,8 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | OZ_SDL_KEY(c,           C          );
   keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | OZ_SDL_KEY(LCTRL,       LCTRL      );
   keyMap[KEY_JUMP][0]               = MOD_MASK    | OZ_SDL_KEY(SPACE,       SPACE      );
-  keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | OZ_SDL_KEY(x,           X          );
-  keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | OZ_SDL_KEY(x,           X          );
+  keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | OZ_SDL_KEY(h,           H          );
+  keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | OZ_SDL_KEY(j,           J          );
   keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | OZ_SDL_KEY(k,           K          );
 
   keyMap[KEY_ACTIVATE][0]           = MOD_ON_BIT  | OZ_SDL_KEY(e,           E          );
@@ -198,11 +198,11 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_WEAPON_3][0]           = MOD_OFF_BIT | OZ_SDL_KEY(3,           3          );
   keyMap[KEY_WEAPON_4][0]           = MOD_OFF_BIT | OZ_SDL_KEY(4,           4          );
 
-  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | OZ_SDL_KEY(g,           G          );
-  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | OZ_SDL_KEY(h,           H          );
-  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | OZ_SDL_KEY(j,           J          );
-  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | OZ_SDL_KEY(k,           K          );
-  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | OZ_SDL_KEY(l,           L          );
+  keyMap[KEY_GESTURE_POINT][0]      = MOD_ON_BIT  | OZ_SDL_KEY(1,           1          );
+  keyMap[KEY_GESTURE_BACK][0]       = MOD_ON_BIT  | OZ_SDL_KEY(2,           2          );
+  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_ON_BIT  | OZ_SDL_KEY(3,           3          );
+  keyMap[KEY_GESTURE_WAVE][0]       = MOD_ON_BIT  | OZ_SDL_KEY(4,           4          );
+  keyMap[KEY_GESTURE_FLIP][0]       = MOD_ON_BIT  | OZ_SDL_KEY(5,           5          );
 
   keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | OZ_SDL_KEY(i,           I          );
   keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | OZ_SDL_KEY(y,           Y          );

@@ -79,7 +79,7 @@ void UI::buildIcons()
     }
 
     if (!ImageBuilder::convertToDDS(image, 0, "ui/icon")) {
-      OZ_ERROR("Error converting '%s' to DDS", image.name().cstr());
+      OZ_ERROR("Error converting '%s' to DDS: %s", image.name().cstr(), ImageBuilder::getError());
     }
     image.unmap();
 

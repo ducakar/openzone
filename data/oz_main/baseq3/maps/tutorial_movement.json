@@ -1,8 +1,0 @@
-{
-  "title":              "tutorial - movement",
-
-  "fragPool":           "ruins",
-  "nFrags":             60,
-
-  "demolishSound":      "free/explode"
-}

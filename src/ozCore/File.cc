@@ -58,13 +58,6 @@
 
 #include <physfs.h>
 
-#if PHYSFS_VER_MAJOR < 2
-# error PhysicsFS version must be at least 2.0.
-#elif PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
-# define PHYSFS_readBytes(handle, buffer, len)  PHYSFS_read(handle, buffer, 1, uint(len))
-# define PHYSFS_writeBytes(handle, buffer, len) PHYSFS_write(handle, buffer, 1, uint(len))
-#endif
-
 #ifdef __native_client__
 extern "C"
 int PHYSFS_NACL_init(PP_Instance instance, PPB_GetInterface getInterface,
@@ -524,7 +517,11 @@ bool File::read(char* buffer, int* size) const
       return false;
     }
 
+#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
+    int result = int(PHYSFS_read(file, buffer, 1, *size));
+#else
     int result = int(PHYSFS_readBytes(file, buffer, *size));
+#endif
     PHYSFS_close(file);
 
     *size = result;
@@ -626,7 +623,11 @@ bool File::write(const char* buffer, int size) const
       return false;
     }
 
+#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
+    int result = int(PHYSFS_write(file, buffer, 1, size));
+#else
     int result = int(PHYSFS_writeBytes(file, buffer, size));
+#endif
     PHYSFS_close(file);
 
     return result == size;
