@@ -25,7 +25,6 @@
 
 #include <client/Client.hh>
 
-#include <common/LuaCommon.hh>
 #include <client/Network.hh>
 #include <client/Input.hh>
 #include <client/Context.hh>
@@ -43,11 +42,6 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #undef main
-
-#if defined(__native_client__)
-# include <ppapi/cpp/completion_callback.h>
-# include <ppapi/cpp/core.h>
-#endif
 
 namespace oz
 {
@@ -204,7 +198,7 @@ int Client::main()
       input.reset();
     }
     for (String message = Pepper::pop(); !message.isEmpty(); message = Pepper::pop()) {
-      if (message.equals("quit:")) {
+      if (message == "quit:") {
         isAlive = false;
       }
     }
@@ -422,22 +416,14 @@ int Client::init(int argc, char** argv)
     Log::println("Invalid configuration file version, default settings used.");
 
     config = Json::OBJECT;
-    config.add("_version", OZ_VERSION);
-    config["_version"];
+    config.add("_version", OZ_VERSION).get(String::EMPTY);
   }
 
-  config.add("dir.config", configDir);
-  config.add("dir.data", dataDir);
-  config.include("dir.pictures", picturesDir);
-  config.include("dir.music", musicDir);
-  config.include("dir.prefix", prefixDir);
-
-  // tag variables as used
-  config["dir.config"];
-  config["dir.data"];
-  config["dir.music"];
-  config["dir.pictures"];
-  config["dir.prefix"];
+  config.add("dir.config", configDir).get(String::EMPTY);
+  config.add("dir.data", dataDir).get(String::EMPTY);
+  config.include("dir.pictures", picturesDir).get(String::EMPTY);
+  config.include("dir.music", musicDir).get(String::EMPTY);
+  config.include("dir.prefix", prefixDir).get(String::EMPTY);
 
   windowWidth  = config.include("window.windowWidth",  1280).get(0);
   windowHeight = config.include("window.windowHeight", 720 ).get(0);
@@ -548,14 +534,14 @@ int Client::init(int argc, char** argv)
 
 #endif
 
-  config.include("lingua", "sl");
-  config["lingua"];
+  config.include("lingua", "AUTO").get(String::EMPTY);
 
   if (language.isEmpty()) {
-    language = config["lingua"].get("");
+    language = config["lingua"].get("AUTO");
   }
-
-  language = Lingua::detectLanguage(language);
+  if (language == "AUTO") {
+    language = Lingua::detectLanguage("en");
+  }
 
   Log::print("Setting language '%s' ...", language.cstr());
   if (lingua.init(language)) {
@@ -572,7 +558,7 @@ int Client::init(int argc, char** argv)
   int seed;
 
   if (config["seed"].type() == Json::STRING) {
-    if (!config["seed"].get(String::EMPTY).equals("TIME")) {
+    if (config["seed"].get(String::EMPTY) != "TIME") {
       OZ_ERROR("Configuration variable 'sees' must be either \"TIME\" or an integer");
     }
 
@@ -580,16 +566,14 @@ int Client::init(int argc, char** argv)
   }
   else {
     seed = config["seed"].get(42);
-    LuaCommon::isRandomSeedTime = false;
   }
 
   if (isBenchmark) {
     seed = 42;
-    LuaCommon::isRandomSeedTime = false;
   }
 
   Math::seed(seed);
-  LuaCommon::randomSeed = seed;
+  Lua::randomSeed = seed;
 
   Log::println("Random generator seed set to: %u", seed);
 

@@ -735,13 +735,13 @@ void Render::init()
   for (const String& extension : extensions) {
     Log::println("%s", extension.cstr());
 
-    if (extension.equals("GL_ARB_framebuffer_object")) {
+    if (extension == "GL_ARB_framebuffer_object") {
       shader.hasFBO = true;
     }
-    if (extension.equals("GL_ARB_texture_float") || extension.equals("GL_EXT_texture_storage")) {
+    if (extension == "GL_ARB_texture_float" || extension == "GL_EXT_texture_storage") {
       shader.hasVTF = true;
     }
-    if (extension.equals("GL_EXT_texture_compression_s3tc") ||
+    if (extension == "GL_EXT_texture_compression_s3tc" ||
         extension.endsWith("GL_EXT_texture_compression_dxt1"))
     {
       shader.hasS3TC = true;

@@ -6,12 +6,13 @@
 /.settings
 /nbproject
 
+/build
 /doc/doxygen*
-/share
+/gh-pages
 /lib
 /ports
-/build
-/gh-pages
+/share/openzone
+/share/pixmaps
 /web
 
 /*log

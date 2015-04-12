@@ -155,7 +155,7 @@ void LuaMatrix::init()
 {
   Log::print("Initialising Matrix Lua ...");
 
-  initCommon();
+  Lua::init();
 
   ls.envName = "matrix";
   ms.structs.reserve(32);
@@ -489,7 +489,7 @@ void LuaMatrix::destroy()
   hard_assert((l_pushnil(), true));
   hard_assert(!l_next(1));
 
-  freeCommon();
+  Lua::destroy();
 
   Log::printEnd(" OK");
 }

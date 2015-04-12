@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <common/LuaCommon.hh>
 #include <client/common.hh>
 
 namespace oz
@@ -33,7 +32,7 @@ namespace oz
 namespace client
 {
 
-class LuaClient : public LuaCommon
+class LuaClient : public Lua
 {
 private:
 

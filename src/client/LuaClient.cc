@@ -220,7 +220,7 @@ void LuaClient::init()
 {
   Log::print("Initialising Client Lua ...");
 
-  initCommon();
+  Lua::init();
 
   ls.envName = "client";
   ms.structs.reserve(32);
@@ -688,7 +688,7 @@ void LuaClient::destroy()
   cs.mission = "";
   cs.missionLingua.clear();
 
-  freeCommon();
+  Lua::destroy();
 
   Log::printEnd(" OK");
 }

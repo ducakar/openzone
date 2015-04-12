@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <common/LuaCommon.hh>
 #include <matrix/Object.hh>
 
 namespace oz
@@ -33,7 +32,7 @@ namespace oz
 
 class Bot;
 
-class LuaMatrix : public LuaCommon
+class LuaMatrix : public Lua
 {
 public:
 

@@ -10,13 +10,11 @@ add_library(ozEngine
   GL.hh
   Lua.hh
   ozEngine.hh
-  Shaders.hh
   Window.hh
   AL.cc
   Cursor.cc
   GL.cc
   Lua.cc
-  Shaders.cc
   Window.cc
 #END SOURCES
 )

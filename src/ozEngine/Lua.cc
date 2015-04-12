@@ -31,6 +31,8 @@
 namespace oz
 {
 
+int Lua::randomSeed = 0;
+
 void Lua::readValue(lua_State* l, InputStream* is)
 {
   char ch = is->readChar();
@@ -69,7 +71,7 @@ void Lua::readValue(lua_State* l, InputStream* is)
       break;
     }
     default: {
-      OZ_ERROR("Invalid type char '%c' in serialised Lua data", ch);
+      OZ_ERROR("oz::Lua: Invalid type char '%c' in serialised Lua data", ch);
     }
   }
 }
@@ -162,7 +164,7 @@ void Lua::writeValue(lua_State* l, OutputStream* os)
       break;
     }
     default: {
-      OZ_ERROR("Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
+      OZ_ERROR("oz::Lua: Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
                " LUA_TSTRING and LUA_TTABLE data types");
     }
   }
@@ -239,7 +241,7 @@ object:
       }
     }
     default: {
-      OZ_ERROR("Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
+      OZ_ERROR("oz::Lua: Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
                " LUA_TSTRING and LUA_TTABLE data types");
     }
   }
@@ -262,7 +264,7 @@ void Lua::loadDir(const File& dir) const
     {
       const char* errorMessage = lua_tostring(l, -1);
 
-      OZ_ERROR("Lua error: %s", errorMessage);
+      OZ_ERROR("oz::Lua: %s", errorMessage);
     }
   }
 }
@@ -283,7 +285,7 @@ void Lua::init()
 {
   l = luaL_newstate();
   if (l == nullptr) {
-    OZ_ERROR("Failed to create Lua state");
+    OZ_ERROR("oz::Lua: Failed to create Lua state");
   }
 
 #if LUA_VERSION_NUM < 502
@@ -303,8 +305,10 @@ void Lua::init()
   lua_settop(l, 0);
 #endif
 
+  luaL_dostring(l, String::str("math.random(%u)", randomSeed));
+
   if (lua_gettop(l) != 0) {
-    OZ_ERROR("Failed to initialise Lua libraries");
+    OZ_ERROR("oz::Lua: Failed to initialise Lua libraries");
   }
 }
 

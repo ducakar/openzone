@@ -605,14 +605,6 @@ public:
   }
 
   /**
-   * Equality.
-   */
-  bool equals(const String& s) const
-  {
-    return compare(buffer, s.buffer) == 0;
-  }
-
-  /**
    * Compare strings per-byte.
    */
   int compare(const String& s) const
@@ -626,14 +618,6 @@ public:
   int compare(const char* s) const
   {
     return compare(buffer, s);
-  }
-
-  /**
-   * Equality.
-   */
-  bool equals(const char* s) const
-  {
-    return compare(buffer, s) == 0;
   }
 
   /**

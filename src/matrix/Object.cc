@@ -27,7 +27,7 @@
 #include <matrix/Synapse.hh>
 
 #define OZ_FLAG_READ(flagBit, name) \
-  if (flagJson.get(String::EMPTY).equals(name)) { \
+  if (flagJson.get(String::EMPTY) == name) { \
     flags |= flagBit; \
   }
 

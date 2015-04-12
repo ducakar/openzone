@@ -25,13 +25,12 @@
 
 #pragma once
 
-#include <common/LuaCommon.hh>
 #include <nirvana/Mind.hh>
 
 namespace oz
 {
 
-class LuaNirvana : public LuaCommon
+class LuaNirvana : public Lua
 {
 public:
 

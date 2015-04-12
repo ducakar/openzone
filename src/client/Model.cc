@@ -354,7 +354,7 @@ Model::~Model()
 int Model::findNode(const char* name) const
 {
   for (int i = 0; i < nodes.length(); ++i) {
-    if (nodes[i].name.equals(name)) {
+    if (nodes[i].name == name) {
       return i;
     }
   }

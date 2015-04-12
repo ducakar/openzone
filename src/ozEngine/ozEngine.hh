@@ -33,6 +33,5 @@
 #include "GL.hh"
 #include "AL.hh"
 
-#include "Shaders.hh"
 #include "Cursor.hh"
 #include "Window.hh"

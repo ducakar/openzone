@@ -138,7 +138,7 @@ void NaClUpdater::downloadUpdates()
       long64 localTime = 0;
 
       for (const Package& localPkg : localPackages) {
-        if (localPkg.name.equals(pkg.name)) {
+        if (localPkg.name == pkg.name) {
           localTime = localPkg.time;
           break;
         }
@@ -197,7 +197,7 @@ void NaClUpdater::downloadUpdates()
     bool isOrphan = true;
 
     for (const Package& remotePkg : remotePackages) {
-      if (remotePkg.name.equals(localPkg.name)) {
+      if (remotePkg.name == localPkg.name) {
         isOrphan = false;
         break;
       }

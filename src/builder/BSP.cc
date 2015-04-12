@@ -116,7 +116,7 @@ void BSP::load()
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
-    if (textures[i].name.equals("noshader")) {
+    if (textures[i].name == "noshader") {
       textures[i].name = "";
     }
     else if (textures[i].name.length() <= 9) {
@@ -460,16 +460,16 @@ void BSP::load()
       object.pos   = objectConfig["pos"].get(Point::ORIGIN);
 
       String sHeading = objectConfig["heading"].get("");
-      if (sHeading.equals("NORTH")) {
+      if (sHeading == "NORTH") {
         object.heading = NORTH;
       }
-      else if (sHeading.equals("WEST")) {
+      else if (sHeading == "WEST") {
         object.heading = WEST;
       }
-      else if (sHeading.equals("SOUTH")) {
+      else if (sHeading == "SOUTH") {
         object.heading = SOUTH;
       }
-      else if (sHeading.equals("EAST")) {
+      else if (sHeading == "EAST") {
         object.heading = EAST;
       }
       else if (sHeading.isEmpty()) {

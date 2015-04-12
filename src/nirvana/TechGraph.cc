@@ -31,7 +31,7 @@ namespace oz
 TechGraph::Node* TechGraph::findNode(const char* name)
 {
   for (Node& node : nodes) {
-    if (node.name.equals(name)) {
+    if (node.name == name) {
       return &node;
     }
   }
@@ -100,7 +100,7 @@ void TechGraph::read(InputStream* is)
     float       progress = is->readFloat();
 
     for (Node& node : nodes) {
-      if (node.name.equals(name)) {
+      if (node.name == name) {
         node.progress = progress;
         break;
       }

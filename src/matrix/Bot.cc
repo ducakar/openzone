@@ -28,7 +28,7 @@
 #include <matrix/Synapse.hh>
 
 #define OZ_STATE_READ(stateBit, name) \
-  if (stateJson.get(String::EMPTY).equals(name)) { \
+  if (stateJson.get(String::EMPTY) == name) { \
     state |= stateBit; \
   }
 
@@ -947,14 +947,6 @@ stepSucceeded:
         hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
         synapse.transferItem(source, item, this);
-
-        if (source->flags & BOT_BIT) {
-          Bot* bot = static_cast<Bot*>(source);
-
-          if (bot->weapon == item->index) {
-            bot->weapon = -1;
-          }
-        }
       }
     }
     else if (actions & ~oldActions & ACTION_INV_GIVE) {
@@ -967,10 +959,6 @@ stepSucceeded:
         hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
         synapse.transferItem(this, item, target);
-
-        if (instrument == weapon) {
-          weapon = -1;
-        }
       }
     }
     else if (parent < 0) { // not applicable in vehicles
@@ -1075,10 +1063,6 @@ stepSucceeded:
           handle.z    = clamp(handle.z, -dim.z - camZ, dim.z - camZ);
 
           if (synapse.dropItem(this, item, p + Vec3(0.0f, 0.0f, camZ) + handle, velocity)) {
-            if (instrument == weapon) {
-              weapon = -1;
-            }
-
             if ((actions & ~oldActions & ACTION_INV_GRAB) &&
                 !(state & (LADDER_BIT | LEDGE_BIT)) && weapon < 0)
             {

@@ -31,6 +31,7 @@
 #include <common/Bounds.hh>
 #include <common/Lingua.hh>
 #include <common/Timer.hh>
+#include <ozEngine/Lua.hh>
 
 #ifdef _WIN32
 # define NOGDI

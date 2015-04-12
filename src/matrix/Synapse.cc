@@ -61,6 +61,12 @@ bool Synapse::transferItem(Object* source, Dynamic* item, Object* target)
   target->items.add(item->index);
   source->items.exclude(item->index);
 
+  if (source->flags & Object::BOT_BIT) {
+    Bot* bot = static_cast<Bot*>(source);
+
+    bot->weapon = bot->weapon == item->index ? -1 : bot->weapon;
+  }
+
   return true;
 }
 
@@ -92,6 +98,12 @@ bool Synapse::dropItem(Object* container, Dynamic* item, const Point& p, const V
   item->parent = -1;
   container->items.exclude(item->index);
   put(item);
+
+  if (container->flags & Object::BOT_BIT) {
+    Bot* bot = static_cast<Bot*>(container);
+
+    bot->weapon = bot->weapon == item->index ? -1 : bot->weapon;
+  }
 
   item->velocity = velocity;
   item->momentum = velocity;

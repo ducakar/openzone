@@ -833,6 +833,7 @@ int Builder::main(int argc, char** argv)
 
   if (doCat) {
     copyFiles("@lingua", "lingua", "mo", true);
+    copyFiles("@lingua", "lingua", "json", true);
   }
   if (doUI) {
     UI::buildIcons();

@@ -796,7 +796,7 @@ InputStream File::inputStream(Endian::Order order) const
   return InputStream(data, data + fileSize, order);
 }
 
-List<File> File::ls() const
+List<File> File::ls(const char* extension) const
 {
   List<File> list;
 
@@ -812,9 +812,10 @@ List<File> File::ls() const
 
     String prefix = filePath.length() == 1 || filePath.last() == '/' ? filePath : filePath + "/";
 
-    // Count entries first.
     for (char** entity = entities; *entity != nullptr; ++entity) {
-      if ((*entity)[0] != '.') {
+      if ((*entity)[0] != '.' &&
+          (extension == nullptr || String::fileHasExtension(*entity, extension)))
+      {
         list.add(prefix + *entity);
       }
     }
@@ -840,7 +841,9 @@ List<File> File::ls() const
     for (size_t i = 0; i < entries.size(); ++i) {
       std::string entryName = entries[i].file_ref().GetName().AsString();
 
-      if (entryName[0] != '.') {
+      if (entryName[0] != '.' &&
+          (extension == nullptr || String::fileHasExtension(entryName.c_str(), extension)))
+      {
         list.add(prefix + entryName.c_str());
       }
     }
@@ -860,7 +863,9 @@ List<File> File::ls() const
     dirent* entity = readdir(directory);
 
     while (entity != nullptr) {
-      if (entity->d_name[0] != '.') {
+      if (entity->d_name[0] != '.' &&
+          (extension == nullptr || String::fileHasExtension(entity->d_name, extension)))
+      {
         list.add(prefix + entity->d_name);
       }
       entity = readdir(directory);

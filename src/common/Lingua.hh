@@ -53,18 +53,14 @@ private:
 public:
 
   /**
-   * Check given language or, if `nullptr` / empty string, try to detect it.
+   * Detect language code from the environment, optionally using language mappings.
    *
-   * If the given `language` is a non-empty string, check if translations exist for that language,
-   * i.e. check for VFS directory `lingua/\<language\>/`. If translations exist `language` is
-   * returned, otherwise an empty string.
-   *
-   * If `language` is `nullptr` or en empty string, it tries to derive language from environment
-   * variables (currently this only test Linux-specific variables LC_ALL, LC_MESSAGES and LANG in
-   * that order). The first derived language code for which translations exist is returned.
-   * If none is valid, an empty string is returned.
+   * This detects the two- or three-letter language code (before the "_" in locale name) from
+   * environment variables, e.g. "sl" for "sl_SI.UTF-8". Additionally it respects mappings specified
+   * in `*.json` files inside `lingua/`. On Windows and Linux those codes don't match so the
+   * mappings are used to fix this, e.g. "Slovenian_cp1250" -> "Slovenian" -> (mapping) -> "sl".
    */
-  static String detectLanguage(const char* language);
+  static String detectLanguage(const char* fallback);
 
   /**
    * Obtain translation from the loaded catalogue.

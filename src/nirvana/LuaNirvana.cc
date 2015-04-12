@@ -114,7 +114,7 @@ void LuaNirvana::init()
 {
   Log::print("Initialising Nirvana Lua ...");
 
-  initCommon();
+  Lua::init();
 
   ls.envName = "nirvana";
   ms.structs.reserve(32);
@@ -536,7 +536,7 @@ void LuaNirvana::destroy()
   hard_assert((l_pushnil(), true));
   hard_assert(!l_next(1));
 
-  freeCommon();
+  Lua::destroy();
 
   Log::printEnd(" OK");
 }

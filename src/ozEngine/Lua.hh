@@ -47,7 +47,11 @@ public:
 
 public:
 
-  lua_State* l; ///< Lua state descriptor.
+  static int randomSeed; ///< Random seed for Lua environments.
+
+protected:
+
+  lua_State* l = nullptr; ///< Lua state descriptor.
 
 public:
 

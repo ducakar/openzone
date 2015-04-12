@@ -891,7 +891,7 @@ bool Json::operator == (const Json& j) const
       const String& s1 = static_cast<const StringData*>(data)->value;
       const String& s2 = static_cast<const StringData*>(j.data)->value;
 
-      return s1.equals(s2);
+      return s1 == s2;
     }
     case ARRAY: {
       const List<Json>& l1 = static_cast<const ArrayData*>(data)->list;

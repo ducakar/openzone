@@ -372,8 +372,10 @@ public:
    * On error, an empty array is returned.
    *
    * Directory listing is not supported on NaCl, so this function always returns an empty list.
+   *
+   * @param extension if not null, filter out all files that don't have the specified extension.
    */
-  List<File> ls() const;
+  List<File> ls(const char* extension = nullptr) const;
 
   /**
    * Return the current directory in native file system.

@@ -91,7 +91,7 @@ void Profile::init()
     }
   }
 
-  if (!profileConfig["_version"].get(String::EMPTY).equals(OZ_VERSION)) {
+  if (profileConfig["_version"].get(String::EMPTY) != OZ_VERSION) {
     const String& sClazz = profileConfig["class"].get(String::EMPTY);
     clazz = sClazz.isEmpty() ? nullptr : static_cast<const BotClass*>(liber.objClass(sClazz));
 

@@ -30,25 +30,33 @@ namespace oz
 
 static String language;
 
-String Lingua::detectLanguage(const char* language_)
+String Lingua::detectLanguage(const char* fallback)
 {
-  String lang = language_;
+  String lang = Gettext::systemLanguage();
 
-  if (lang.isEmpty()) {
-    lang = Gettext::systemLanguage();
+  if (lang.isEmpty() || lang == "C") {
+    lang = fallback;
+  }
 
-    int underscore = lang.index('_');
-    if (underscore >= 2) {
-      lang = lang.substring(0, underscore);
+  int underscore = lang.index('_');
+  if (underscore >= 2) {
+    lang = lang.substring(0, underscore);
+  }
+
+  for (const File& file : File("@lingua").ls("json")) {
+    Json langMap(file);
+
+    if (!langMap.isNull()) {
+      for (const auto& langAlias : langMap.objectCIter()) {
+        if (lang == langAlias.key) {
+          lang = langAlias.value.get(lang);
+          break;
+        }
+      }
     }
   }
 
-  if (File("@lingua/" + lang).type() != File::MISSING) {
-    return lang;
-  }
-  else {
-    return "";
-  }
+  return lang;
 }
 
 bool Lingua::initMission(const char* mission)

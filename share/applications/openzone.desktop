@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OpenZone
+Exec=openzone
+Icon=/usr/share/pixmaps/openzone.png
+Categories=Game;
+Terminal=false
+StartupNotify=false
