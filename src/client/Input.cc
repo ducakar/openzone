@@ -100,6 +100,7 @@ static const char* const KEY_NAMES[] = {
   "Fast forward sky (cheat)",
   "Fast backward sky (cheat)",
 
+  "Skip",
   "Delete",
 
   "Quick save",
@@ -213,6 +214,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | OZ_SDL_KEY(p,           P          );
   keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | OZ_SDL_KEY(o,           O          );
 
+  keyMap[KEY_SKIP][0]               = MOD_OFF_BIT | OZ_SDL_KEY(SPACE,       SPACE      );
   keyMap[KEY_DELETE][0]             = MOD_OFF_BIT | OZ_SDL_KEY(DELETE,      DELETE     );
 
   keyMap[KEY_QUICKSAVE][0]          = MOD_OFF_BIT | OZ_SDL_KEY(F5,          F5         );

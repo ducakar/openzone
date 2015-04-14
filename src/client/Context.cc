@@ -65,6 +65,19 @@ namespace oz
 namespace client
 {
 
+struct Context::TextureResource::PreloadData
+{
+  File albedo;
+  File masks;
+  File normals;
+};
+
+struct Context::SoundResource::PreloadData
+{
+  File   sample;
+  Buffer decodedData;
+};
+
 Pool<Context::Source> Context::Source::pool;
 int                   Context::speakSampleRate;
 Context::SpeakSource  Context::speakSource;
@@ -810,8 +823,8 @@ void Context::init()
   int nModels      = liber.models.length();
   int nPartClasses = liber.parts.length();
 
-  textures    = nTextures    == 0 ? nullptr : new Resource<Texture>[nTextures] {};
-  sounds      = nSounds      == 0 ? nullptr : new Resource<uint>[nSounds] {};
+  textures    = nTextures    == 0 ? nullptr : new TextureResource[nTextures] {};
+  sounds      = nSounds      == 0 ? nullptr : new SoundResource[nSounds] {};
 
   bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
   bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs] {};

@@ -58,10 +58,18 @@ private:
     int  nUsers = -1; ///< Number of users or -1 if not loaded.
   };
 
-  struct SoundBuffer
+  struct TextureResource : Resource<Texture>
   {
-    uint id;
-    File file;
+    struct PreloadData;
+
+    PreloadData* preloadData = nullptr;
+  };
+
+  struct SoundResource : Resource<uint>
+  {
+    struct PreloadData;
+
+    PreloadData* preloadData = nullptr;
   };
 
   struct Source
@@ -110,8 +118,8 @@ private:
   Audio::CreateFunc**      audioClasses;
   FragPool**               fragPools;
 
-  Resource<Texture>*       textures;
-  Resource<uint>*          sounds;
+  TextureResource*         textures;
+  SoundResource*           sounds;
 
   Chain<Source>            sources;               // Non-looping sources.
   HashMap<int, ContSource> contSources;           // Looping sources.
@@ -173,14 +181,15 @@ public:
 
   Context();
 
-  static Texture loadTexture(const File& albedoFile, const File& masksFile,
-                             const File& normalsFile);
+  static Texture loadTexture(const File& albedoFile, const File& masksFile, const File& normalsFile);
   static Texture loadTexture(const char* basePath);
   static void unloadTexture(const Texture* texture);
 
+  void prepareTexture(int id);
   Texture requestTexture(int id);
   void releaseTexture(int id);
 
+  void prepareSound(int id);
   uint requestSound(int id);
   void releaseSound(int id);
   void freeSound(int id);

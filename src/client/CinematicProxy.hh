@@ -53,6 +53,7 @@ private:
     String title;
 
     float  time;
+    bool   isSkippable;
     int    endState;
   };
 

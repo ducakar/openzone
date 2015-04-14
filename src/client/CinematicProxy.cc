@@ -26,6 +26,7 @@
 #include <client/LuaClient.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>
+#include <client/Input.hh>
 #include <client/ui/GalileoFrame.hh>
 #include <client/ui/MusicPlayer.hh>
 #include <client/ui/UI.hh>
@@ -50,7 +51,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
   }
 
   Step step = {
-    camera.rot, camera.p, camera.colour, String::EMPTY, -1, "", 0.0f, Camera::CINEMATIC
+    camera.rot, camera.p, camera.colour, String::EMPTY, -1, "", 0.0f, false, Camera::CINEMATIC
   };
 
   steps.reserve(nSteps);
@@ -105,6 +106,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
     }
 
     step.time = stepConfig["time"].get(0.0f);
+    step.isSkippable = stepConfig["isSkippable"].get(false);
 
     const Json& stateConfig = stepConfig["state"];
 
@@ -195,9 +197,7 @@ void CinematicProxy::update()
     nTitleChars = min(nTitleChars + 1, title.length());
 
     // Take all bytes of a UTF-8 character.
-    while (nTitleChars > 0 && nTitleChars < title.length() &&
-           (title[nTitleChars - 1] & title[nTitleChars] & 0x80))
-    {
+    while (nTitleChars < title.length() && (title[nTitleChars - 1] & title[nTitleChars] & 0x80)) {
       ++nTitleChars;
     }
 
@@ -206,7 +206,18 @@ void CinematicProxy::update()
 
   stepTime += Timer::TICK_TIME;
 
-  if (t == 1.0f) {
+  if (step.isSkippable && input.keys[Input::KEY_SKIP] && !input.oldKeys[Input::KEY_SKIP]) {
+    beginPos    = camera.p;
+    beginRot    = camera.rot;
+    beginColour = camera.colour;
+
+    stepTime    = 0.0f;
+
+    while (!steps.isEmpty() && steps.first().isSkippable) {
+      steps.popFirst();
+    }
+  }
+  else if (t == 1.0f) {
     beginPos    = step.p;
     beginRot    = step.rot;
     beginColour = step.colour;
@@ -269,15 +280,16 @@ void CinematicProxy::read(InputStream* is)
   for (int i = 0; i < nSteps; ++i) {
     Step step;
 
-    step.rot      = is->readQuat();
-    step.p        = is->readPoint();
-    step.colour   = is->readMat4();
+    step.rot         = is->readQuat();
+    step.p           = is->readPoint();
+    step.colour      = is->readMat4();
 
-    step.track    = is->readInt();
-    step.title    = is->readString();
+    step.track       = is->readInt();
+    step.title       = is->readString();
 
-    step.time     = is->readFloat();
-    step.endState = is->readInt();
+    step.time        = is->readFloat();
+    step.isSkippable = is->readBool();
+    step.endState    = is->readInt();
 
     steps.add(step);
   }
@@ -310,6 +322,7 @@ void CinematicProxy::write(OutputStream* os) const
     os->writeString(step.title);
 
     os->writeFloat(step.time);
+    os->writeBool(step.isSkippable);
     os->writeInt(step.endState);
   }
 }

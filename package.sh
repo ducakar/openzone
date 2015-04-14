@@ -22,7 +22,7 @@ platforms=(
 
 eval `egrep '^version=' ./autogen.sh`
 
-files=`git ls-files | egrep -v '^data/'`
+files=`git ls-files | egrep -v '^data$'`
 files="$files share/applications share/pixmaps"
 
 . etc/common.sh
