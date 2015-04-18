@@ -56,10 +56,9 @@ static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
 {
   InputStream* is = static_cast<InputStream*>(handle);
 
-  const char* origin = whence == SEEK_CUR ? is->pos() :
-                       whence == SEEK_END ? is->end() : is->begin();
+  int origin = whence == SEEK_CUR ? is->tell() : whence == SEEK_END ? is->capacity() : 0;
 
-  is->set(origin + offset);
+  is->seek(origin + int(offset));
   return 0;
 }
 
@@ -385,19 +384,19 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 
     is.seek(36);
 
-    const char* chunkName = is.pos();
+    const char* chunkName = &is[is.tell()];
     is.readInt();
 
     int size = is.readInt();
 
     while (!String::beginsWith(chunkName, "data")) {
-      is.forward(size);
+      is.skip(size);
 
       if (!is.isAvailable()) {
         return false;
       }
 
-      chunkName = is.pos();
+      chunkName = &is[is.tell()];
       is.readInt();
 
       size = is.readInt();
@@ -412,7 +411,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 
     size = min(size, is.available());
 
-    const char* data = is.forward(size);
+    const char* data = is.skip(size);
 
 #if OZ_BYTE_ORDER == 4321
 

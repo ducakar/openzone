@@ -61,13 +61,13 @@ void Lua::readValue(lua_State* l, InputStream* is)
     case '[': {
       lua_newtable(l);
 
-      while (is->isAvailable() && is->pos()[0] != ']') {
+      while (is->isAvailable() && (*is)[is->tell()] != ']') {
         readValue(l, is); // Key.
         readValue(l, is); // Value.
 
         lua_rawset(l, -3);
       }
-      is->forward(1); // Skip final ']'.
+      is->skip(1); // Skip final ']'.
       break;
     }
     default: {

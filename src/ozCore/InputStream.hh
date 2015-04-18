@@ -125,17 +125,6 @@ public:
   }
 
   /**
-   * Pointer to the current position.
-   */
-  OZ_ALWAYS_INLINE
-  const char* pos() const
-  {
-    hard_assert(streamBegin <= streamPos && streamPos <= streamEnd);
-
-    return streamPos;
-  }
-
-  /**
    * Offset of the current position from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
@@ -145,11 +134,6 @@ public:
 
     return int(streamPos - streamBegin);
   }
-
-  /**
-   * %Set stream position.
-   */
-  void set(const char* newPos);
 
   /**
    * %Set stream position relative to the beginning of the stream.
@@ -199,7 +183,7 @@ public:
    *
    * @return Constant pointer to the beginning of the skipped bytes.
    */
-  const char* forward(int count);
+  const char* skip(int count);
 
   /**
    * Read boolean.

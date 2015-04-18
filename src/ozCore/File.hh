@@ -83,22 +83,13 @@ public:
     REGULAR
   };
 
-  /**
-   * NaCl file system type.
-   */
-  enum NaClFileSystem
-  {
-    TEMPORARY,
-    PERSISTENT
-  };
-
 private:
 
-  String        filePath;           ///< %File path.
-  Type          fileType = MISSING; ///< %File type.
-  int           fileSize = -1;      ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
-  long64        fileTime = 0;       ///< Modification or creation time, what is newer.
-  mutable char* data     = nullptr; ///< Mapped memory.
+  String         filePath;           ///< %File path.
+  mutable Type   fileType = MISSING; ///< %File type.
+  mutable int    fileSize = -1;      ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
+  mutable long64 fileTime = 0;       ///< Modification or creation time, what is newer.
+  mutable char*  data     = nullptr; ///< Mapped memory.
 
 private:
 
@@ -176,7 +167,7 @@ public:
    *
    * @return true iff file exists.
    */
-  bool stat();
+  bool stat() const;
 
   /**
    * True iff file path is empty (i.e. an empty string or "@").
@@ -318,8 +309,6 @@ public:
    * Write buffer contents to the file.
    *
    * @note
-   * - This function does not update file size and modification time. `stat()` must be invoked
-   *   manually for this.
    * - Write operation is not possible while the file is mapped.
    */
   bool write(const char* data, int size) const;
@@ -328,8 +317,6 @@ public:
    * Write buffer contents into the file.
    *
    * @note
-   * - This function does not update file size and modification time. `stat()` must be invoked
-   *   manually for this.
    * - Write operation is not possible while the file is mapped.
    */
   bool write(const Buffer& buffer) const;
@@ -338,8 +325,6 @@ public:
    * Write string into the file (omitting the terminating null character).
    *
    * @note
-   * - This function does not update file size and modification time. `stat()` must be invoked
-   *   manually for this.
    * - Write operation is not possible while the file is mapped.
    */
   bool writeString(const String& s) const;
@@ -449,15 +434,8 @@ public:
 
   /**
    * Initialise VFS and NaCl file system, determine user directories and executable path.
-   *
-   * @param naclFileSystem NaCl file system type, either `TEMPORARY` or `PERSISTENT`.
-   * @param naclSize NaCl file system size.
-   *
-   * @note
-   * Persistent NaCl file system must be initialised from JavaScript before NaCl module is loaded.
-   * On other platforms `naclFileSystem` and `naclSize` parameters are ignored.
    */
-  static void init(NaClFileSystem naclFileSystem = TEMPORARY, int naclSize = 0);
+  static void init();
 
   /**
    * Deinitialise file systems.

@@ -36,9 +36,11 @@ macro(pnacl_finalise _target)
     COMMAND "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-finalize" "$<TARGET_FILE:${_target}>")
 endmacro()
 
+include_directories(SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include)
 include_directories(SYSTEM $ENV{NACL_SDK_ROOT}/ports/include)
 include_directories(SYSTEM $ENV{NACL_SDK_ROOT}/include)
 include_directories(SYSTEM $ENV{NACL_SDK_ROOT}/include/newlib)
+link_directories(${PLATFORM_PORTS_PREFIX}/usr/lib)
 link_directories($ENV{NACL_SDK_ROOT}/ports/lib/newlib_pnacl/Release)
 link_directories($ENV{NACL_SDK_ROOT}/lib/pnacl/Release)
 

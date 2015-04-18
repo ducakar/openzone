@@ -337,7 +337,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
         ubyte* pixels = FreeImage_GetBits(level);
         int    s3Size = squish::GetStorageRequirements(levelWidth, levelHeight, squishFlags);
 
-        squish::CompressImage(pixels, levelWidth, levelHeight, os.forward(s3Size), squishFlags);
+        squish::CompressImage(pixels, levelWidth, levelHeight, os.skip(s3Size), squishFlags);
 #endif
       }
       else {

@@ -42,6 +42,7 @@ enum AllocMode
   ARRAY
 };
 
+static const char* const       ALLOC_MODE_NAMES[2] = { "object", "array" };
 static Chain<Alloc::ChunkInfo> chunkInfos[2];
 static SpinLock                allocInfoLock;
 
@@ -68,7 +69,7 @@ static void* allocate(AllocMode mode, size_t size)
 
   if (ptr == nullptr) {
     OZ_ERROR("oz::Alloc: Out of memory while trying to allocate an %s of %llu B",
-             mode == OBJECT ? "object" : "array", ulong64(size));
+             ALLOC_MODE_NAMES[mode], ulong64(size));
   }
 
 #ifdef OZ_ALLOCATOR
@@ -116,11 +117,11 @@ static void deallocate(AllocMode mode, void* ptr)
   // Check if allocated as a different kind (object/array)
   else if (chunkInfos[!mode].has(ci)) {
     OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
-             mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
+             ALLOC_MODE_NAMES[mode], ptr, ulong(ci->size));
   }
   else {
     OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %lu",
-             mode == OBJECT ? "object" : "array", ptr, ulong(ci->size));
+             ALLOC_MODE_NAMES[mode], ptr, ulong(ci->size));
   }
 
   --Alloc::count;

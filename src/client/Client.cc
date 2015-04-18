@@ -38,9 +38,10 @@
 #include <client/EditStage.hh>
 #include <client/ui/UI.hh>
 
-#include <unistd.h>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <sys/mount.h>
+#include <unistd.h>
 #undef main
 
 namespace oz
@@ -337,10 +338,16 @@ int Client::init(int argc, char** argv)
     }
   }
 
-  File::init(File::TEMPORARY, 64*1024*1024);
+#ifdef __native_client__
+  umount("");
+  mount("", "/", "html5fs", 0, "type=TEMPORARY");
+  mount("", "/data", "memfs", 0, "");
+#endif
+
+  File::init();
   initFlags |= INIT_PHYSFS;
 
-#if defined(__ANDROID__)
+#ifdef __ANDROID__
 
   String configDir   = OZ_ANDROID_ROOT "/config";
   String dataDir     = OZ_ANDROID_ROOT "/data";
@@ -450,30 +457,13 @@ int Client::init(int argc, char** argv)
   initFlags |= INIT_NETWORK;
 
 #ifdef __native_client__
-  List<String> packages = naclUpdater.update();
+  naclUpdater.update();
 #endif
 
   Log::println("Content search path {");
   Log::indent();
 
-#ifdef __native_client__
-
-  for (const String& pkg : packages) {
-    Pepper::post("data:" + pkg);
-
-    String pkgPath = String::str("%s/%s", dataDir.cstr(), pkg.cstr());
-
-    if (File::mount("%" + pkgPath, nullptr)) {
-      Log::println("%s", pkgPath.cstr());
-    }
-    else {
-      OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", pkgPath.cstr(), PHYSFS_getLastError());
-    }
-  }
-
-  packages.clear();
-
-#else
+#if !defined(__ANDROID__) && !defined(__native_client__)
 
   const String& globalDataDir = config["dir.prefix"].get(String::EMPTY) + "/share/openzone";
   const String& userMusicPath = config["dir.music"].get(File::MUSIC);
@@ -481,6 +471,8 @@ int Client::init(int argc, char** argv)
   if (File::mount(userMusicPath, "/userMusic", true)) {
     Log::println("%s [mounted on /userMusic]", userMusicPath.cstr());
   }
+
+#endif
 
   if (File::mount(dataDir, nullptr, true)) {
     Log::println("%s", dataDir.cstr());
@@ -495,6 +487,8 @@ int Client::init(int argc, char** argv)
       }
     }
   }
+
+#if !defined(__ANDROID__) && !defined(__native_client__)
 
   if (File::mount(globalDataDir, nullptr, true)) {
     Log::println("%s", globalDataDir.cstr());

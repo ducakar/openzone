@@ -187,7 +187,7 @@ void Terra::load()
   int iboSize = TILE_INDICES  * sizeof(ushort);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward(iboSize), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.skip(iboSize), GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   for (int i = 0; i < TILES; ++i) {

@@ -34,7 +34,7 @@ namespace oz
 OZ_HIDDEN
 void OutputStream::writeFloats(const float* values, int count)
 {
-  char* data = forward(count * sizeof(float));
+  char* data = skip(count * sizeof(float));
 
   if (order == Endian::NATIVE) {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
@@ -165,7 +165,7 @@ OutputStream& OutputStream::operator = (OutputStream&& os)
   return *this;
 }
 
-char* OutputStream::forward(int count)
+char* OutputStream::skip(int count)
 {
   char* oldPos = streamPos;
   streamPos += count;
@@ -199,37 +199,37 @@ char* OutputStream::forward(int count)
 
 void OutputStream::writeBool(bool b)
 {
-  char* data = forward(sizeof(bool));
+  char* data = skip(sizeof(bool));
   *data = char(b);
 }
 
 void OutputStream::writeChar(char c)
 {
-  char* data = forward(sizeof(char));
+  char* data = skip(sizeof(char));
   *data = char(c);
 }
 
 void OutputStream::writeChars(const char* array, int count)
 {
-  char* data = forward(count * sizeof(char));
+  char* data = skip(count * sizeof(char));
   mCopy(data, array, count);
 }
 
 void OutputStream::writeByte(byte b)
 {
-  char* data = forward(sizeof(byte));
+  char* data = skip(sizeof(byte));
   *data = char(b);
 }
 
 void OutputStream::writeUByte(ubyte b)
 {
-  char* data = forward(sizeof(ubyte));
+  char* data = skip(sizeof(ubyte));
   *data = char(b);
 }
 
 void OutputStream::writeShort(short s)
 {
-  char* data = forward(sizeof(short));
+  char* data = skip(sizeof(short));
 
   Endian::ShortToBytes value = { s };
 
@@ -245,7 +245,7 @@ void OutputStream::writeShort(short s)
 
 void OutputStream::writeUShort(ushort s)
 {
-  char* data = forward(sizeof(ushort));
+  char* data = skip(sizeof(ushort));
 
   Endian::UShortToBytes value = { s };
 
@@ -261,7 +261,7 @@ void OutputStream::writeUShort(ushort s)
 
 void OutputStream::writeInt(int i)
 {
-  char* data = forward(sizeof(int));
+  char* data = skip(sizeof(int));
 
   Endian::IntToBytes value = { i };
 
@@ -281,7 +281,7 @@ void OutputStream::writeInt(int i)
 
 void OutputStream::writeUInt(uint i)
 {
-  char* data = forward(sizeof(uint));
+  char* data = skip(sizeof(uint));
 
   Endian::UIntToBytes value = { i };
 
@@ -301,7 +301,7 @@ void OutputStream::writeUInt(uint i)
 
 void OutputStream::writeLong64(long64 l)
 {
-  char* data = forward(sizeof(long64));
+  char* data = skip(sizeof(long64));
 
   Endian::Long64ToBytes value = { l };
 
@@ -329,7 +329,7 @@ void OutputStream::writeLong64(long64 l)
 
 void OutputStream::writeULong64(ulong64 l)
 {
-  char* data = forward(sizeof(ulong64));
+  char* data = skip(sizeof(ulong64));
 
   Endian::ULong64ToBytes value = { l };
 
@@ -357,7 +357,7 @@ void OutputStream::writeULong64(ulong64 l)
 
 void OutputStream::writeFloat(float f)
 {
-  char* data = forward(sizeof(float));
+  char* data = skip(sizeof(float));
 
   Endian::FloatToBytes value = { f };
 
@@ -377,7 +377,7 @@ void OutputStream::writeFloat(float f)
 
 void OutputStream::writeDouble(double d)
 {
-  char* data = forward(sizeof(double));
+  char* data = skip(sizeof(double));
 
   Endian::DoubleToBytes value = { d };
 
@@ -406,7 +406,7 @@ void OutputStream::writeDouble(double d)
 void OutputStream::writeString(const String& s)
 {
   int   size = s.length() + 1;
-  char* data = forward(size);
+  char* data = skip(size);
 
   mCopy(data, s.cstr(), size);
 }
@@ -414,7 +414,7 @@ void OutputStream::writeString(const String& s)
 void OutputStream::writeString(const char* s)
 {
   int   size = String::length(s) + 1;
-  char* data = forward(size);
+  char* data = skip(size);
 
   mCopy(data, s, size);
 }
@@ -461,7 +461,7 @@ void OutputStream::writeBitset(const ulong* bitset, int nBits)
   int unitCount   = (nBits + unitBits - 1) / unitBits;
   int unit64Count = (nBits + unit64Bits - 1) / unit64Bits;
 
-  char* data = forward(unit64Count * 8);
+  char* data = skip(unit64Count * 8);
 
   for (int i = 0; i < unitCount; ++i) {
 #if OZ_SIZEOF_LONG == 4
@@ -501,7 +501,7 @@ void OutputStream::writeBitset(const ulong* bitset, int nBits)
 void OutputStream::writeLine(const String& s)
 {
   int   length = s.length();
-  char* data   = forward(length + 1);
+  char* data   = skip(length + 1);
 
   mCopy(data, s, length);
   data[length] = '\n';
@@ -510,7 +510,7 @@ void OutputStream::writeLine(const String& s)
 void OutputStream::writeLine(const char* s)
 {
   int   length = String::length(s);
-  char* data   = forward(length + 1);
+  char* data   = skip(length + 1);
 
   mCopy(data, s, length);
   data[length] = '\n';

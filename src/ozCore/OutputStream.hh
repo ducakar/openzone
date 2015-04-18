@@ -59,7 +59,6 @@ private:
 public:
 
   using InputStream::begin;
-  using InputStream::pos;
   using InputStream::operator [];
 
   /**
@@ -119,17 +118,6 @@ public:
   }
 
   /**
-   * Pointer to the current position.
-   */
-  OZ_ALWAYS_INLINE
-  char* pos()
-  {
-    hard_assert(streamBegin <= streamPos && streamPos <= streamEnd);
-
-    return streamPos;
-  }
-
-  /**
    * Reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
@@ -145,7 +133,7 @@ public:
    *
    * @return Pointer to the beginning of the skipped bytes.
    */
-  char* forward(int count);
+  char* skip(int count);
 
   /**
    * Write a boolean.

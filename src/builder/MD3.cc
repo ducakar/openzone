@@ -77,7 +77,7 @@ void MD3::buildMesh(const char* name, int frame)
   }
 
   // header.fileName
-  is.forward(64);
+  is.skip(64);
 
   header.flags       = is.readInt();
   header.nFrames     = is.readInt();
@@ -147,7 +147,7 @@ void MD3::buildMesh(const char* name, int frame)
 //   }
 
   is.rewind();
-  is.forward(header.offSurfaces);
+  is.skip(header.offSurfaces);
 
   for (int i = 0; i < header.nSurfaces; ++i) {
     int surfaceStart = is.tell();
@@ -155,7 +155,7 @@ void MD3::buildMesh(const char* name, int frame)
     MD3Surface surface;
 
     surface.id           = is.readInt();
-    aCopy(is.forward(64), 64, surface.name);
+    aCopy(is.skip(64), 64, surface.name);
     surface.flags        = is.readInt();
 
     surface.nFrames      = is.readInt();
@@ -189,7 +189,7 @@ void MD3::buildMesh(const char* name, int frame)
     List<Point>            vertices(surfaceVertices.length());
 
     is.rewind();
-    is.forward(surfaceStart + surface.offTriangles);
+    is.skip(surfaceStart + surface.offTriangles);
 
     for (int j = 0; j < surfaceTriangles.length(); ++j) {
       surfaceTriangles[j].vertices[0] = is.readInt();
@@ -198,10 +198,10 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.forward(surfaceStart + surface.offShaders);
+    is.skip(surfaceStart + surface.offShaders);
 
     for (int i = 0; i < surfaceShaders.length(); ++i) {
-      aCopy(is.forward(64), 64, surfaceShaders[i].name);
+      aCopy(is.skip(64), 64, surfaceShaders[i].name);
       surfaceShaders[i].index = is.readInt();
     }
 
@@ -215,7 +215,7 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.forward(surfaceStart + surface.offTexCoords);
+    is.skip(surfaceStart + surface.offTexCoords);
 
     for (int j = 0; j < surfaceTexCoords.length(); ++j) {
       surfaceTexCoords[j].u = is.readFloat();
@@ -223,7 +223,7 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.forward(surfaceStart + surface.offVertices);
+    is.skip(surfaceStart + surface.offVertices);
 
     for (int j = 0; j < surfaceVertices.length(); ++j) {
       vertices[j].y = float(+is.readShort()) / 64.0f * scale;
@@ -240,7 +240,7 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.forward(surfaceStart + surface.offEnd);
+    is.skip(surfaceStart + surface.offEnd);
 
     compiler.beginMesh();
     compiler.texture(sPath + "/" + texture);

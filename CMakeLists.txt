@@ -54,8 +54,6 @@ include(FindPkgConfig)
 
 # Set-up include and library directories for different toolchains.
 if(PLATFORM_EMBEDDED)
-  include_directories(SYSTEM ${PLATFORM_PORTS_PREFIX}/usr/include)
-  link_directories(${PLATFORM_PORTS_PREFIX}/usr/lib)
   set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/usr/lib/pkgconfig)
 elseif(WIN32)
   set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PREFIX}/lib/pkgconfig)
@@ -210,13 +208,10 @@ mark_as_advanced(OZ_HOSTNAME)
 
 add_subdirectory(src)
 
-# This is to show these files in QtCreator.
-add_custom_target(docFiles SOURCES AUTHORS ChangeLog.md README.md TODO.md)
-
-if (EXISTS ${CMAKE_SOURCE_DIR}/data)
-  file(GLOB_RECURSE dataSources data/*.json data/*.lua data/*.vert data/*.frag)
-  add_custom_target(dataFiles SOURCES ${dataSources})
-endif()
+# This is to show these files in Qt Creator.
+file(GLOB miscFiles AUTHORS COPYING *.md *.sh)
+file(GLOB_RECURSE dataFiles data/*.json data/*.lua data/*.vert data/*.frag)
+add_custom_target(dataFiles SOURCES ${miscFiles} ${dataFiles})
 
 #
 # Data files.

@@ -460,15 +460,15 @@ const File* Model::preload()
   int vboSize = nVertices * sizeof(Vertex);
   int iboSize = nIndices  * sizeof(ushort);
 
-  const void* vertexBuffer = is.forward(vboSize);
-  is.forward(iboSize);
+  const void* vertexBuffer = is.skip(vboSize);
+  is.skip(iboSize);
 
   if (nFrames != 0) {
     if (shader.hasVTF) {
       int vertexBufferSize = nFramePositions * nFrames * sizeof(float[3]);
       int normalBufferSize = nFramePositions * nFrames * sizeof(float[3]);
 
-      is.forward(vertexBufferSize + normalBufferSize);
+      is.skip(vertexBufferSize + normalBufferSize);
     }
     else {
       vertices  = new Vertex[nVertices];
@@ -617,7 +617,7 @@ void Model::load()
   int  vboSize = nVertices * sizeof(Vertex);
   int  iboSize = nIndices  * sizeof(ushort);
 
-  const void* vertexBuffer = is.forward(vboSize);
+  const void* vertexBuffer = is.skip(vboSize);
 
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -626,7 +626,7 @@ void Model::load()
 
   glGenBuffers(1, &ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward(iboSize), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.skip(iboSize), GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if (nFrames != 0) {
@@ -641,7 +641,7 @@ void Model::load()
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, nFramePositions, 2 * nFrames, 0, GL_RGB,
-                   GL_FLOAT, is.forward(vertexBufferSize + normalBufferSize));
+                   GL_FLOAT, is.skip(vertexBufferSize + normalBufferSize));
 
       glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 

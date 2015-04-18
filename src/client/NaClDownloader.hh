@@ -44,7 +44,7 @@ class NaClDownloader
 private:
 
   Semaphore      semaphore;
-  OutputStream   buffer;
+  OutputStream   stream;
   pp::URLLoader* loader;
   const char*    url;
   volatile float downloadProgress;

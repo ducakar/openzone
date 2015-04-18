@@ -39,13 +39,13 @@ void NaClDownloader::readCallback(void* data, int result)
   NaClDownloader* downloader = static_cast<NaClDownloader*>(data);
 
   if (result < 0) {
-    downloader->buffer.free();
+    downloader->stream.free();
   }
   else {
-    int length = downloader->buffer.tell() - 4096 + result;
+    int length = downloader->stream.tell() - 4096 + result;
 
-    downloader->buffer.rewind();
-    downloader->buffer.forward(length);
+    downloader->stream.rewind();
+    downloader->stream.skip(length);
 
     if (result != 0) {
       pp::URLLoader* loader = downloader->loader;
@@ -60,7 +60,7 @@ void NaClDownloader::readCallback(void* data, int result)
         downloader->downloadProgress = Math::NaN;
       }
 
-      int ret = loader->ReadResponseBody(downloader->buffer.forward(4096), 4096,
+      int ret = loader->ReadResponseBody(downloader->stream.skip(4096), 4096,
                                          pp::CompletionCallback(readCallback, downloader));
       if (ret == PP_OK_COMPLETIONPENDING) {
         return;
@@ -79,7 +79,7 @@ void NaClDownloader::beginCallback(void* data, int result)
 
   if (result == PP_OK) {
     pp::URLLoader* loader = downloader->loader;
-    int ret = loader->ReadResponseBody(downloader->buffer.forward(4096), 4096,
+    int ret = loader->ReadResponseBody(downloader->stream.skip(4096), 4096,
                                        pp::CompletionCallback(readCallback, downloader));
     if (ret == PP_OK_COMPLETIONPENDING) {
       return;
@@ -88,7 +88,7 @@ void NaClDownloader::beginCallback(void* data, int result)
 
   delete downloader->loader;
 
-  downloader->buffer.free();
+  downloader->stream.free();
   downloader->semaphore.post();
 }
 
@@ -106,7 +106,7 @@ void NaClDownloader::begin(const char* url_)
 {
   url = url_;
 
-  buffer = OutputStream(0);
+  stream = OutputStream(0);
 
   MainCall() << [&]
   {
@@ -134,7 +134,7 @@ OutputStream NaClDownloader::take()
 {
   semaphore.wait();
 
-  return static_cast<OutputStream&&>(buffer);
+  return static_cast<OutputStream&&>(stream);
 }
 
 }

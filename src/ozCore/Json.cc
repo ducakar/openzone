@@ -100,7 +100,7 @@ struct Json::Parser
   {
     hard_assert(line != oldLine || column != oldColumn);
 
-    is->set(is->pos() - 1);
+    is->seek(is->tell() - 1);
 
     line   = oldLine;
     column = oldColumn;

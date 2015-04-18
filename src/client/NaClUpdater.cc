@@ -34,7 +34,7 @@ namespace client
 
 static const char MANIFEST_MAGIC[]  = "ozManifest";
 static const char REMOTE_MANIFEST[] = "packages.ozManifest";
-static const char LOCAL_MANIFEST[]  = "/data/openzone/packages.ozManifest";
+static const char LOCAL_MANIFEST[]  = "/storage/packages.ozManifest";
 
 List<NaClUpdater::Package> NaClUpdater::readManifest(InputStream* is) const
 {
@@ -46,7 +46,7 @@ List<NaClUpdater::Package> NaClUpdater::readManifest(InputStream* is) const
     return packages;
   }
 
-  is->forward(sizeof(MANIFEST_MAGIC));
+  is->skip(sizeof(MANIFEST_MAGIC));
 
   int nPackages = is->readInt();
   if (nPackages == 0) {
@@ -128,11 +128,13 @@ void NaClUpdater::downloadUpdates()
 {
   NaClDownloader downloader;
 
+  File::mkdir("/storage");
+
   int nRemotePackages = remotePackages.length();
   int packageNum      = 1;
 
   for (const Package& pkg : remotePackages) {
-    File pkgFile = File::DATA + "/openzone/" + pkg.name;
+    File pkgFile = "/storage/" + pkg.name;
 
     if (pkgFile.type() == File::REGULAR) {
       long64 localTime = 0;
@@ -204,7 +206,7 @@ void NaClUpdater::downloadUpdates()
     }
 
     if (isOrphan) {
-      File pkgFile = File::DATA + "/openzone/" + localPkg.name;
+      File pkgFile = "/storage/" + localPkg.name;
 
       Log::print("Deleting obsolete package '%s' ...", pkgFile.path().cstr());
       if (File::rm(pkgFile.path())) {
@@ -219,10 +221,8 @@ void NaClUpdater::downloadUpdates()
   writeLocalManifest();
 }
 
-List<String> NaClUpdater::update()
+void NaClUpdater::update()
 {
-  List<String> packages;
-
   Log::println("Updating game data files {");
   Log::indent();
 
@@ -230,10 +230,12 @@ List<String> NaClUpdater::update()
 
   if (checkUpdates()) {
     downloadUpdates();
+  }
 
-    for (Package& removePkg : remotePackages) {
-      packages.add(static_cast<String&&>(removePkg.name));
-    }
+  Pepper::post("copy:");
+
+  for (Package& pkg : remotePackages) {
+    File::cp("/storage/" + pkg.name, "/data/openzone/" + pkg.name);
   }
 
   localPackages.clear();
@@ -243,8 +245,6 @@ List<String> NaClUpdater::update()
 
   Log::unindent();
   Log::println("}");
-
-  return packages;
 }
 
 NaClUpdater naclUpdater;

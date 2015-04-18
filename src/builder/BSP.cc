@@ -109,10 +109,10 @@ void BSP::load()
   textures.resize(lumps[QBSPLump::TEXTURES].length / sizeof(QBSPTexture));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::TEXTURES].offset);
+  is.skip(lumps[QBSPLump::TEXTURES].offset);
 
   for (int i = 0; i < textures.length(); ++i) {
-    textures[i].name  = is.forward(64);
+    textures[i].name  = is.skip(64);
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
@@ -139,7 +139,7 @@ void BSP::load()
   planes.resize(lumps[QBSPLump::PLANES].length / sizeof(QBSPPlane));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::PLANES].offset);
+  is.skip(lumps[QBSPLump::PLANES].offset);
 
   for (int i = 0; i < planes.length(); ++i) {
     planes[i].n.x = is.readFloat();
@@ -151,7 +151,7 @@ void BSP::load()
   nodes.resize(lumps[QBSPLump::NODES].length / sizeof(QBSPNode));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::NODES].offset);
+  is.skip(lumps[QBSPLump::NODES].offset);
 
   for (int i = 0; i < nodes.length(); ++i) {
     nodes[i].plane = is.readInt();
@@ -170,7 +170,7 @@ void BSP::load()
   leaves.resize(lumps[QBSPLump::LEAFS].length / sizeof(QBSPLeaf));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::LEAFS].offset);
+  is.skip(lumps[QBSPLump::LEAFS].offset);
 
   for (int i = 0; i < leaves.length(); ++i) {
     // int cluster
@@ -196,7 +196,7 @@ void BSP::load()
   leafBrushes.resize(lumps[QBSPLump::LEAFBRUSHES].length / sizeof(int));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::LEAFBRUSHES].offset);
+  is.skip(lumps[QBSPLump::LEAFBRUSHES].offset);
 
   for (int i = 0; i < leafBrushes.length(); ++i) {
     leafBrushes[i] = is.readInt();
@@ -208,7 +208,7 @@ void BSP::load()
   modelFaces.resize(nModels);
 
   is.rewind();
-  is.forward(lumps[QBSPLump::MODELS].offset);
+  is.skip(lumps[QBSPLump::MODELS].offset);
 
   const Json& modelsConfig = config["entities"];
 
@@ -217,7 +217,7 @@ void BSP::load()
   }
 
   // skip model 0 (whole BSP)
-  is.forward(sizeof(QBSPModel));
+  is.skip(sizeof(QBSPModel));
 
   for (int i = 0; i < models.length(); ++i) {
     const Json& entityConfig = modelsConfig[i];
@@ -287,7 +287,7 @@ void BSP::load()
   }
 
   is.rewind();
-  is.forward(lumps[QBSPLump::MODELS].offset);
+  is.skip(lumps[QBSPLump::MODELS].offset);
 
   for (int i = 0; i < models.length() + 1; ++i) {
     // float bb[2][3]
@@ -310,7 +310,7 @@ void BSP::load()
   brushSides.resize(lumps[QBSPLump::BRUSHSIDES].length / sizeof(QBSPBrushSide));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::BRUSHSIDES].offset);
+  is.skip(lumps[QBSPLump::BRUSHSIDES].offset);
 
   for (int i = 0; i < brushSides.length(); ++i) {
     brushSides[i] = is.readInt();
@@ -326,7 +326,7 @@ void BSP::load()
   }
 
   is.rewind();
-  is.forward(lumps[QBSPLump::BRUSHES].offset);
+  is.skip(lumps[QBSPLump::BRUSHES].offset);
 
   for (int i = 0; i < brushes.length(); ++i) {
     brushes[i].firstSide = is.readInt();
@@ -364,7 +364,7 @@ void BSP::load()
   vertices.resize(lumps[QBSPLump::VERTICES].length / sizeof(QBSPVertex));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::VERTICES].offset);
+  is.skip(lumps[QBSPLump::VERTICES].offset);
 
   for (int i = 0; i < vertices.length(); ++i) {
     vertices[i].pos[0]      = is.readFloat() * scale;
@@ -392,7 +392,7 @@ void BSP::load()
   indices.resize(lumps[QBSPLump::INDICES].length / sizeof(int));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::INDICES].offset);
+  is.skip(lumps[QBSPLump::INDICES].offset);
 
   for (int i = 0; i < indices.length(); ++i) {
     indices[i] = is.readInt();
@@ -401,7 +401,7 @@ void BSP::load()
   faces.resize(lumps[QBSPLump::FACES].length / sizeof(QBSPFace));
 
   is.rewind();
-  is.forward(lumps[QBSPLump::FACES].offset);
+  is.skip(lumps[QBSPLump::FACES].offset);
 
   for (int i = 0; i < faces.length(); ++i) {
     faces[i].texture     = is.readInt();

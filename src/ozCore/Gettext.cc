@@ -194,7 +194,7 @@ bool Gettext::import(const File& file)
 
   // Add new strings.
   is.seek(stringsOffset);
-  mCopy(strings + stringsSize, is.forward(newStringsSize), newStringsSize);
+  mCopy(strings + stringsSize, is.skip(newStringsSize), newStringsSize);
 
   nMessages   += nNewMessages;
   stringsSize += newStringsSize;

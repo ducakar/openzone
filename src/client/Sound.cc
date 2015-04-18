@@ -37,10 +37,6 @@ extern "C"
 void alSetPpapiInfo(PP_Instance instance, PPB_GetInterface getInterface);
 #endif
 
-#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
-# define PHYSFS_readBytes(handle, buffer, len) PHYSFS_read(handle, buffer, 1, uint(len))
-#endif
-
 namespace oz
 {
 namespace client
@@ -65,7 +61,7 @@ static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, nullptr, nullptr, nullptr }
 
 static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 {
-  return size_t(PHYSFS_readBytes(static_cast<PHYSFS_File*>(handle), buffer, size * n));
+  return size_t(PHYSFS_read(static_cast<PHYSFS_File*>(handle), buffer, 1, uint(size * n)));
 }
 
 OZ_ALWAYS_INLINE
@@ -165,9 +161,8 @@ void Sound::musicOpen(const char* path)
       mad_frame_init(&madFrame);
       mad_synth_init(&madSynth);
 
-      size_t readSize = size_t(PHYSFS_readBytes(musicFile, musicInputBuffer,
-                                                MUSIC_INPUT_BUFFER_SIZE));
-      if (readSize != size_t(MUSIC_INPUT_BUFFER_SIZE)) {
+      int readSize = int(PHYSFS_read(musicFile, musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE));
+      if (readSize != MUSIC_INPUT_BUFFER_SIZE) {
         OZ_ERROR("Failed to read MP3 stream in '%s'", path);
       }
 
@@ -207,7 +202,7 @@ void Sound::musicOpen(const char* path)
 
       aacDecoder = NeAACDecOpen();
 
-      int readSize = int(PHYSFS_readBytes(musicFile, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE));
+      int readSize = int(PHYSFS_read(musicFile, musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE));
       if (readSize != MUSIC_INPUT_BUFFER_SIZE) {
         OZ_ERROR("Failed to read AAC stream in '%s'", path);
       }
@@ -223,9 +218,8 @@ void Sound::musicOpen(const char* path)
 
       mMove(musicInputBuffer, musicInputBuffer + skipBytes, skipBytes);
 
-      readSize = int(PHYSFS_readBytes(musicFile,
-                                      musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
-                                      skipBytes));
+      readSize = int(PHYSFS_read(musicFile, musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
+                                 1, skipBytes));
 
       if (readSize != skipBytes) {
         OZ_ERROR("Failed to read AAC stream in '%s'", path);
@@ -357,8 +351,8 @@ int Sound::musicDecode()
               mMove(musicInputBuffer, madStream.next_frame, bytesLeft);
             }
 
-            int bytesRead = int(PHYSFS_readBytes(musicFile, musicInputBuffer + bytesLeft,
-                                                 MUSIC_INPUT_BUFFER_SIZE - bytesLeft));
+            int bytesRead = int(PHYSFS_read(musicFile, musicInputBuffer + bytesLeft,
+                                            1, MUSIC_INPUT_BUFFER_SIZE - bytesLeft));
 
             if (bytesRead == 0) {
               return int(reinterpret_cast<char*>(musicOutput) - musicBuffer);
@@ -419,8 +413,8 @@ int Sound::musicDecode()
 
         mMove(musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes);
 
-        int bytesRead = int(PHYSFS_readBytes(musicFile, musicInputBuffer + aacInputBytes,
-                                             MUSIC_INPUT_BUFFER_SIZE - aacInputBytes));
+        int bytesRead = int(PHYSFS_read(musicFile, musicInputBuffer + aacInputBytes,
+                                        1, MUSIC_INPUT_BUFFER_SIZE - aacInputBytes));
 
         aacInputBytes += bytesRead;
       }

@@ -175,13 +175,6 @@ function fetch()
   # PhysicsFS
   download 'http://icculus.org/physfs/downloads/physfs-2.0.3.tar.bz2'
 
-  # PhysicsFS 2.1
-  cd "$topDir/archives"
-  if [[ -d physfs ]]
-    then cd physfs && hg pull -u
-    else hg clone 'http://hg.icculus.org/icculus/physfs/'
-  fi
-
   # Lua
   download 'http://www.lua.org/ftp/lua-5.3.0.tar.gz'
 
@@ -275,7 +268,6 @@ function build_libpng()
 function build_libogg()
 {
   prepare libogg-1.3.2 libogg-1.3.2.tar.xz || return
-  applyPatches libogg-1.3.1.patch
 
   autotoolsBuild
 
@@ -285,7 +277,6 @@ function build_libogg()
 function build_libvorbis()
 {
   prepare libvorbis-1.3.4 libvorbis-1.3.4.tar.xz || return
-  applyPatches libvorbis-1.3.4.patch
 
   autotoolsBuild
 
@@ -409,7 +400,6 @@ function build()
   setup_ndk_ARMv7a  && build_freetype
 
   # PhysicsFS
-  setup_pnacl       && build_physfs21
   setup_ndk_i686    && build_physfs
   setup_ndk_ARMv7a  && build_physfs
 

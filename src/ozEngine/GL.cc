@@ -258,67 +258,70 @@ int GL::textureDataFromFile(const File& file, int bias)
       return 0;
     }
 
-    int    nFaces = isCubeMap ? 6 : 1;
-    GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+    MainCall() << [&]
+    {
+      int    nFaces = isCubeMap ? 6 : 1;
+      GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
-    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
-                    nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
+                      nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
 
-    if (nMipmaps == 1 || isCubeMap) {
-      glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    }
+      if (nMipmaps == 1 || isCubeMap) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      }
 
-    for (int i = 0; i < nFaces; ++i) {
-      GLenum faceTarget = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
+      for (int i = 0; i < nFaces; ++i) {
+        GLenum faceTarget = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
 
-      int mipmapWidth  = width;
-      int mipmapHeight = height;
-      int mipmapS3Size = pitch;
+        int mipmapWidth  = width;
+        int mipmapHeight = height;
+        int mipmapS3Size = pitch;
 
-      for (int j = 0; j < nMipmaps; ++j) {
-        if (pixelFlags & DDPF_FOURCC) {
-          const char* data = is.forward(mipmapS3Size);
+        for (int j = 0; j < nMipmaps; ++j) {
+          if (pixelFlags & DDPF_FOURCC) {
+            const char* data = is.skip(mipmapS3Size);
 
-          if (j >= bias) {
-            glCompressedTexImage2D(faceTarget, j - bias, format, mipmapWidth, mipmapHeight, 0,
-                                   mipmapS3Size, data);
-          }
-        }
-        else {
-          int mipmapPitch = ((mipmapWidth * pixelSize + 3) / 4) * 4;
-          int mipmapSize  = mipmapHeight * mipmapPitch;
-
-          if (j < bias) {
-            is.forward(mipmapWidth * mipmapHeight * pixelSize);
+            if (j >= bias) {
+              glCompressedTexImage2D(faceTarget, j - bias, format, mipmapWidth, mipmapHeight, 0,
+                                     mipmapS3Size, data);
+            }
           }
           else {
-            Buffer data(mipmapSize);
+            int mipmapPitch = ((mipmapWidth * pixelSize + 3) / 4) * 4;
+            int mipmapSize  = mipmapHeight * mipmapPitch;
 
-            for (int y = 0; y < mipmapHeight; ++y) {
-              char* pixels    = &data[y * mipmapPitch];
-              int   lineWidth = mipmapWidth * pixelSize;
-
-              mCopy(pixels, is.forward(lineWidth), lineWidth);
-
-              // BGR(A) -> RGB(A).
-              for (int x = 0; x < mipmapWidth; ++x) {
-                swap(pixels[0], pixels[2]);
-                pixels += pixelSize;
-              }
+            if (j < bias) {
+              is.skip(mipmapWidth * mipmapHeight * pixelSize);
             }
+            else {
+              Buffer data(mipmapSize);
 
-            glTexImage2D(faceTarget, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
-                         GL_UNSIGNED_BYTE, data.begin());
+              for (int y = 0; y < mipmapHeight; ++y) {
+                char* pixels    = &data[y * mipmapPitch];
+                int   lineWidth = mipmapWidth * pixelSize;
+
+                mCopy(pixels, is.skip(lineWidth), lineWidth);
+
+                // BGR(A) -> RGB(A).
+                for (int x = 0; x < mipmapWidth; ++x) {
+                  swap(pixels[0], pixels[2]);
+                  pixels += pixelSize;
+                }
+              }
+
+              glTexImage2D(faceTarget, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
+                           GL_UNSIGNED_BYTE, data.begin());
+            }
           }
-        }
 
-        mipmapWidth  = max(1, mipmapWidth / 2);
-        mipmapHeight = max(1, mipmapHeight / 2);
-        mipmapS3Size = ((mipmapWidth + 3) / 4) * ((mipmapHeight + 3) / 4) * blockSize;
+          mipmapWidth  = max(1, mipmapWidth / 2);
+          mipmapHeight = max(1, mipmapHeight / 2);
+          mipmapS3Size = ((mipmapWidth + 3) / 4) * ((mipmapHeight + 3) / 4) * blockSize;
+        }
       }
-    }
+    };
 
     hard_assert(!is.isAvailable());
     return nMipmaps - bias;
@@ -384,14 +387,17 @@ int GL::textureDataFromFile(const File& file, int bias)
     png_read_end(png, pngInfo);
     png_destroy_read_struct(&png, &pngInfo, nullptr);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    MainCall() << [&]
+    {
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GLint(format), width, height, 0, format, GL_UNSIGNED_BYTE,
-                 data.begin());
+      glTexImage2D(GL_TEXTURE_2D, 0, GLint(format), width, height, 0, format, GL_UNSIGNED_BYTE,
+                   data.begin());
+    };
 
     hard_assert(!is.isAvailable());
     return 1;
@@ -457,11 +463,14 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
     }
   }
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  MainCall() << [&]
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data.begin());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data.begin());
+  };
 }
 
 static bool readShaderFile(const File& file, OutputStream* os, List<int>* fileOffsets)
@@ -519,13 +528,16 @@ bool GL::compileShaderFromFile(GLuint shader, const char* defines, const File& f
                     fileOffsets[i + 1] - fileOffsets[i]);
   }
 
-  glShaderSource(shader, fileContents.length(), fileContents.begin(), fileLengths.begin());
-  glCompileShader(shader);
-
   int result;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 
-  OZ_GL_CHECK_ERROR();
+  MainCall() << [&]
+  {
+    glShaderSource(shader, fileContents.length(), fileContents.begin(), fileLengths.begin());
+    glCompileShader(shader);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+
+    OZ_GL_CHECK_ERROR();
+  };
   return result == GL_TRUE;
 }
 

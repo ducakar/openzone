@@ -104,7 +104,7 @@ private:
     int           nSamples;
 
     volatile int  owner;
-    volatile bool isAlive;        // Set to false to terminate source before it finishes.
+    volatile bool isAlive;              // Set to false to terminate source before it finishes.
     Mutex         mutex;
     Thread        thread;
 

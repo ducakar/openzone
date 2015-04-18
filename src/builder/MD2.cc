@@ -288,9 +288,9 @@ void MD2::build(const char* path)
   List<Point>            positions(header.nFrames * header.nFramePositions);
 
   is.rewind();
-  is.forward(header.offFrames);
+  is.skip(header.offFrames);
 
-  const char* frameData = is.forward(header.nFrames * header.frameSize);
+  const char* frameData = is.skip(header.nFrames * header.frameSize);
 
   for (int i = 0; i < header.nFrames; ++i) {
     const MD2Frame& frame = *reinterpret_cast<const MD2Frame*>(&frameData[i * header.frameSize]);
@@ -318,7 +318,7 @@ void MD2::build(const char* path)
   }
 
   is.rewind();
-  is.forward(header.offTexCoords);
+  is.skip(header.offTexCoords);
 
   for (int i = 0; i < texCoords.length(); ++i) {
     texCoords[i].u = float(is.readShort()) / float(header.skinWidth);
@@ -326,7 +326,7 @@ void MD2::build(const char* path)
   }
 
   is.rewind();
-  is.forward(header.offTriangles);
+  is.skip(header.offTriangles);
 
   for (int i = 0; i < triangles.length(); ++i) {
     triangles[i].vertices[0]  = is.readShort();

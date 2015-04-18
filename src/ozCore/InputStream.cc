@@ -39,7 +39,7 @@ InputStream::InputStream(char* pos, char* start, const char* end, Endian::Order 
 OZ_HIDDEN
 void InputStream::readFloats(float* values, int count)
 {
-  const char* data = forward(count * sizeof(float));
+  const char* data = skip(count * sizeof(float));
 
   if (order == Endian::NATIVE) {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
@@ -62,16 +62,6 @@ InputStream::InputStream(const char* start, const char* end, Endian::Order order
   order(order_)
 {}
 
-void InputStream::set(const char* newPos)
-{
-  if (newPos < streamBegin || streamEnd < newPos) {
-    OZ_ERROR("oz::InputStream: Overrun for %d B during setting stream position",
-             newPos < streamBegin ? int(newPos - streamBegin) : int(newPos - streamEnd));
-  }
-
-  streamPos = const_cast<char*>(newPos);
-}
-
 void InputStream::seek(int offset)
 {
   if (offset < 0 || int(streamEnd - streamBegin) < offset) {
@@ -82,7 +72,7 @@ void InputStream::seek(int offset)
   streamPos = streamBegin + offset;
 }
 
-const char* InputStream::forward(int count)
+const char* InputStream::skip(int count)
 {
   const char* oldPos = streamPos;
   streamPos += count;
@@ -96,37 +86,37 @@ const char* InputStream::forward(int count)
 
 bool InputStream::readBool()
 {
-  const char* data = forward(sizeof(bool));
+  const char* data = skip(sizeof(bool));
   return bool(*data);
 }
 
 char InputStream::readChar()
 {
-  const char* data = forward(sizeof(char));
+  const char* data = skip(sizeof(char));
   return char(*data);
 }
 
 void InputStream::readChars(char* array, int count)
 {
-  const char* data = forward(count * sizeof(char));
+  const char* data = skip(count * sizeof(char));
   mCopy(array, data, count);
 }
 
 byte InputStream::readByte()
 {
-  const char* data = forward(sizeof(byte));
+  const char* data = skip(sizeof(byte));
   return byte(*data);
 }
 
 ubyte InputStream::readUByte()
 {
-  const char* data = forward(sizeof(ubyte));
+  const char* data = skip(sizeof(ubyte));
   return ubyte(*data);
 }
 
 short InputStream::readShort()
 {
-  const char* data = forward(sizeof(short));
+  const char* data = skip(sizeof(short));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToShort value = { { data[0], data[1] } };
@@ -142,7 +132,7 @@ short InputStream::readShort()
 
 ushort InputStream::readUShort()
 {
-  const char* data = forward(sizeof(ushort));
+  const char* data = skip(sizeof(ushort));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToUShort value = { { data[0], data[1] } };
@@ -158,7 +148,7 @@ ushort InputStream::readUShort()
 
 int InputStream::readInt()
 {
-  const char* data = forward(sizeof(int));
+  const char* data = skip(sizeof(int));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToInt value = { { data[0], data[1], data[2], data[3] } };
@@ -174,7 +164,7 @@ int InputStream::readInt()
 
 uint InputStream::readUInt()
 {
-  const char* data = forward(sizeof(uint));
+  const char* data = skip(sizeof(uint));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToUInt value = { { data[0], data[1], data[2], data[3] } };
@@ -190,7 +180,7 @@ uint InputStream::readUInt()
 
 long64 InputStream::readLong64()
 {
-  const char* data = forward(sizeof(long64));
+  const char* data = skip(sizeof(long64));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToLong64 value = {
@@ -210,7 +200,7 @@ long64 InputStream::readLong64()
 
 ulong64 InputStream::readULong64()
 {
-  const char* data = forward(sizeof(ulong64));
+  const char* data = skip(sizeof(ulong64));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToULong64 value = {
@@ -230,7 +220,7 @@ ulong64 InputStream::readULong64()
 
 float InputStream::readFloat()
 {
-  const char* data = forward(sizeof(float));
+  const char* data = skip(sizeof(float));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToFloat value = { { data[0], data[1], data[2], data[3] } };
@@ -246,7 +236,7 @@ float InputStream::readFloat()
 
 double InputStream::readDouble()
 {
-  const char* data = forward(sizeof(double));
+  const char* data = skip(sizeof(double));
 
   if (order == Endian::NATIVE) {
     Endian::BytesToDouble value = {
@@ -335,7 +325,7 @@ void InputStream::readBitset(ulong* bitset, int bits)
   int unitCount   = (bits + unitBits - 1) / unitBits;
   int unit64Count = (bits + unit64Bits - 1) / unit64Bits;
 
-  const char* data = forward(unit64Count * 8);
+  const char* data = skip(unit64Count * 8);
 
   for (int i = 0; i < unitCount; ++i) {
 #if OZ_SIZEOF_LONG == 4

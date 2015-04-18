@@ -29,50 +29,27 @@
 #include "Map.hh"
 #include "Pepper.hh"
 
-#if defined(__native_client__)
-# include <ppapi/c/pp_file_info.h>
-# include <ppapi/c/ppb_file_io.h>
-# include <ppapi/cpp/completion_callback.h>
-# include <ppapi/cpp/core.h>
-# include <ppapi/cpp/file_io.h>
-# include <ppapi/cpp/file_ref.h>
-# include <ppapi/cpp/file_system.h>
-# include <ppapi/cpp/directory_entry.h>
-#elif defined(_WIN32)
-# include <cstdio>
-# include <dirent.h>
-# include <fcntl.h>
+#include <cstdio>
+#include <cstdlib>
+#include <dirent.h>
+#include <fcntl.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#ifdef _WIN32
 # include <shlobj.h>
-# include <sys/stat.h>
-# include <unistd.h>
 # include <windows.h>
 #else
-# include <cstdio>
-# include <cstdlib>
-# include <dirent.h>
-# include <fcntl.h>
 # include <sys/mman.h>
-# include <sys/stat.h>
-# include <unistd.h>
 #endif
 
 #include <physfs.h>
 
-#ifdef __native_client__
-extern "C"
-int PHYSFS_NACL_init(PP_Instance instance, PPB_GetInterface getInterface,
-                     PP_FileSystemType fileSystemType, PHYSFS_sint64 size);
-#endif
-
 namespace oz
 {
 
-#ifdef __native_client__
-static pp::Core*      ppCore = nullptr;
-static pp::FileSystem ppFileSystem;
-#endif
-static String         specialDirs[10];
-static String         exePath;
+static String specialDirs[10];
+static String exePath;
 
 static bool operator < (const File& a, const File& b)
 {
@@ -345,7 +322,7 @@ File& File::operator = (const String& path)
   return *this;
 }
 
-bool File::stat()
+bool File::stat() const
 {
   // Stat shouldn't be performed while the file is mapped. Changing fileSize may make a real mess
   // when unmapping file on Linux/Unix. True is returned since application should see the file as it
@@ -359,8 +336,6 @@ bool File::stat()
   fileTime = 0;
 
   if (filePath.fileIsVirtual()) {
-#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
-
     if (PHYSFS_exists(&filePath[1])) {
       if (PHYSFS_isDirectory(&filePath[1])) {
         fileType = DIRECTORY;
@@ -384,55 +359,8 @@ bool File::stat()
         }
       }
     }
-
-#else
-
-    PHYSFS_Stat info;
-
-    if (PHYSFS_stat(&filePath[1], &info)) {
-      if (info.filetype == PHYSFS_FILETYPE_DIRECTORY) {
-        fileType = DIRECTORY;
-        fileSize = -1;
-        fileTime = max<long64>(info.createtime, info.modtime);
-      }
-      else if (info.filetype == PHYSFS_FILETYPE_REGULAR) {
-        fileType = REGULAR;
-        fileSize = int(info.filesize);
-        fileTime = max<long64>(info.createtime, info.modtime);
-      }
-    }
-
-#endif
   }
   else if (!filePath.isEmpty()) {
-#if defined(__native_client__)
-
-    if (String::equals(filePath, "/")) {
-      fileType = DIRECTORY;
-      return true;
-    }
-
-    pp::FileRef file(ppFileSystem, filePath);
-    pp::FileIO  fio(Pepper::instance());
-    PP_FileInfo info;
-
-    if (fio.Open(file, 0, pp::BlockUntilComplete()) == PP_OK &&
-        fio.Query(&info, pp::BlockUntilComplete()) == PP_OK)
-    {
-      if (info.type == PP_FILETYPE_REGULAR) {
-        fileType = REGULAR;
-        fileSize = int(info.size);
-        fileTime = long64(max<double>(info.creation_time, info.last_modified_time));
-      }
-      else if (info.type == PP_FILETYPE_DIRECTORY) {
-        fileType = DIRECTORY;
-        fileSize = -1;
-        fileTime = long64(max<double>(info.creation_time, info.last_modified_time));
-      }
-    }
-
-#else
-
     struct stat info;
 
     if (::stat(filePath, &info) == 0) {
@@ -447,8 +375,6 @@ bool File::stat()
         fileTime = max<long64>(info.st_ctime, info.st_mtime);
       }
     }
-
-#endif
   }
 
   return fileType != MISSING;
@@ -517,11 +443,7 @@ bool File::read(char* buffer, int* size) const
       return false;
     }
 
-#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
     int result = int(PHYSFS_read(file, buffer, 1, *size));
-#else
-    int result = int(PHYSFS_readBytes(file, buffer, *size));
-#endif
     PHYSFS_close(file);
 
     *size = result;
@@ -533,35 +455,11 @@ bool File::read(char* buffer, int* size) const
     return true;
   }
   else {
-#if defined(__native_client__)
-
-    pp::FileRef file(ppFileSystem, filePath);
-    pp::FileIO  fio(Pepper::instance());
-
-    if (fio.Open(file, PP_FILEOPENFLAG_READ, pp::BlockUntilComplete()) != PP_OK) {
-      *size = 0;
-      return false;
-    }
-
-    int read = 0;
-    int result;
-    while ((result = fio.Read(read, &buffer[read], *size - read, pp::BlockUntilComplete())) > 0) {
-      read += result;
-    }
-
-    if (result < 0 || read != *size) {
-      *size = read;
-      return false;
-    }
-    return true;
-
-#else
-
-# ifdef _WIN32
+#ifdef _WIN32
     int fd = open(filePath, O_RDONLY | O_BINARY);
-# else
+#else
     int fd = open(filePath, O_RDONLY);
-# endif
+#endif
     if (fd < 0) {
       *size = 0;
       return false;
@@ -575,18 +473,16 @@ bool File::read(char* buffer, int* size) const
       return false;
     }
     return true;
-
-#endif
   }
 }
 
 bool File::read(OutputStream* os) const
 {
   int   size   = fileSize;
-  char* buffer = os->forward(fileSize);
+  char* buffer = os->skip(fileSize);
   bool  result = read(buffer, &size);
 
-  os->set(buffer + size);
+  os->seek(os->tell() - fileSize + size);
   return result;
 }
 
@@ -623,12 +519,9 @@ bool File::write(const char* buffer, int size) const
       return false;
     }
 
-#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
     int result = int(PHYSFS_write(file, buffer, 1, size));
-#else
-    int result = int(PHYSFS_writeBytes(file, buffer, size));
-#endif
     PHYSFS_close(file);
+    stat();
 
     return result == size;
   }
@@ -636,45 +529,20 @@ bool File::write(const char* buffer, int size) const
     OZ_ERROR("oz::File: Writing to a memory mapped file '%s'", filePath.cstr());
   }
   else {
-#if defined(__native_client__)
-
-    pp::FileRef file(ppFileSystem, filePath);
-    pp::FileIO  fio(Pepper::instance());
-
-    if (fio.Open(file, PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
-                 pp::BlockUntilComplete()) != PP_OK)
-    {
-      return false;
-    }
-
-    int written = 0;
-    int result;
-    while (written != size &&
-           (result = fio.Write(written, &buffer[written], size - written,
-                               pp::BlockUntilComplete())) > 0)
-    {
-      written += result;
-    }
-
-    return written == size;
-
-#else
-
-# ifdef _WIN32
+#ifdef _WIN32
     int fd = open(filePath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
-# else
+#else
     int fd = open(filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-# endif
+#endif
     if (fd < 0) {
       return false;
     }
 
     int result = int(::write(fd, buffer, size));
     close(fd);
+    stat();
 
     return result == size;
-
-#endif
   }
 }
 
@@ -718,7 +586,7 @@ bool File::map() const
 
     if (!read(buffer, &size) || size != fileSize) {
       delete[] buffer;
-      return nullptr;
+      return false;
     }
 
     data = buffer;
@@ -823,33 +691,6 @@ List<File> File::ls(const char* extension) const
     PHYSFS_freeList(entities);
   }
   else {
-#if defined(__native_client__)
-
-    typedef std::vector<pp::DirectoryEntry>             EntryList;
-    typedef pp::CompletionCallbackWithOutput<EntryList> CallbackWithOutput;
-    typedef CallbackWithOutput::OutputStorageType       EntryListStorage;
-
-    pp::FileRef        file(ppFileSystem, filePath);
-    EntryListStorage   entryStorage;
-    CallbackWithOutput callback(&entryStorage);
-
-    file.ReadDirectoryEntries(callback);
-    EntryList& entries = entryStorage.output();
-
-    String prefix = filePath.last() == '/' ? filePath : filePath + "/";
-
-    for (size_t i = 0; i < entries.size(); ++i) {
-      std::string entryName = entries[i].file_ref().GetName().AsString();
-
-      if (entryName[0] != '.' &&
-          (extension == nullptr || String::fileHasExtension(entryName.c_str(), extension)))
-      {
-        list.add(prefix + entryName.c_str());
-      }
-    }
-
-#else
-
     DIR* directory = opendir(filePath);
     if (directory == nullptr) {
       return list;
@@ -872,8 +713,6 @@ List<File> File::ls(const char* extension) const
     }
 
     closedir(directory);
-
-#endif
   }
 
   list.sort();
@@ -907,10 +746,7 @@ bool File::mkdir(const char* path)
     return PHYSFS_mkdir(&path[1]) != 0;
   }
   else {
-#if defined(__native_client__)
-    pp::FileRef file(ppFileSystem, path);
-    return file.MakeDirectory(0, pp::BlockUntilComplete()) == PP_OK;
-#elif defined(_WIN32)
+#ifdef _WIN32
     return ::mkdir(path) == 0;
 #else
     return ::mkdir(path, 0755) == 0;
@@ -940,13 +776,7 @@ bool File::mv(const File& src, const File& dest_)
     dest = dest.path() + "/" + src.name();
   }
 
-#if defined(__native_client__)
-  pp::FileRef srcFileRef(ppFileSystem, src.path());
-  pp::FileRef destFileRef(ppFileSystem, dest.path());
-  return srcFileRef.Rename(destFileRef, pp::BlockUntilComplete()) == PP_OK;
-#else
   return rename(src.path(), dest.path()) == 0;
-#endif
 }
 
 bool File::rm(const char* path)
@@ -955,12 +785,7 @@ bool File::rm(const char* path)
     return PHYSFS_delete(&path[1]);
   }
   else {
-#if defined(__native_client__)
-    pp::FileRef fileRef(ppFileSystem, path);
-    return fileRef.Delete(pp::BlockUntilComplete()) == PP_OK;
-#else
     return remove(path) == 0;
-#endif
   }
 }
 
@@ -986,45 +811,16 @@ const String& File::executablePath()
   return exePath;
 }
 
-void File::init(NaClFileSystem naclFileSystem, int naclSize)
+void File::init()
 {
-  static_cast<void>(naclFileSystem);
-  static_cast<void>(naclSize);
-
-#ifdef __native_client__
-
-  pp::Instance* ppInstance = Pepper::instance();
-  pp::Module*   ppModule   = pp::Module::Get();
-
-  if (ppInstance == nullptr) {
-    OZ_ERROR("oz::File: NaCl instance is nullptr (was oz::Pepper::createModule called?)");
-  }
-
-  PP_FileSystemType naclType = naclFileSystem == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                               PP_FILESYSTEMTYPE_LOCALTEMPORARY;
-
-  ppCore       = ppModule->core();
-  ppFileSystem = pp::FileSystem(ppInstance, naclType);
-
-  if (ppFileSystem.Open(naclSize, pp::BlockUntilComplete()) != PP_OK) {
-    OZ_ERROR("oz::File: Local NaCl file system open failed");
-  }
-  if (ppInstance == nullptr) {
-    OZ_ERROR("oz::File: Pepper must be initialised prior to NaCl file system initialisation");
-  }
-  if (ppCore->IsMainThread()) {
-    OZ_ERROR("oz::File: PhysicsFS cannot be initialised from the main NaCl thread");
-  }
-
-  PHYSFS_NACL_init(ppInstance->pp_instance(), ppModule->get_browser_interface(), naclType,
-                   naclSize);
-
-#endif
-
   initSpecialDirs();
   initExecutablePath();
 
+#ifdef __native_client__
+  if (PHYSFS_init("/") == 0) {
+#else
   if (PHYSFS_init(nullptr) == 0) {
+#endif
     OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError());
   }
 }

@@ -24,8 +24,9 @@ else
   bits=32
 fi
 
-pnaclPath="/home/davorin/Razvoj/nacl_sdk/pepper_34/toolchain/linux_pnacl/bin${bits}"
-naclPath="/home/davorin/Razvoj/nacl_sdk/pepper_34/toolchain/linux_x86_newlib/bin"
+chromium="/usr/bin/chromium"
+pnaclPath="${NACL_SDK_ROOT}/toolchain/linux_pnacl/bin${bits}"
+naclPath="${NACL_SDK_ROOT}/toolchain/linux_x86_newlib/bin"
 
 function run()
 {
@@ -43,15 +44,16 @@ function run()
   serverPID=$!
 
   sleep 3
-  chromium --user-data-dir="$HOME/.config/chromium-test" \
-           http://localhost:8000/openzone.sl.html || true
+  ${chromium} --user-data-dir="$HOME/.config/chromium-test" \
+	      http://localhost:8000/openzone.sl.html || true
 
   kill $serverPID
 }
 
 debug()
 {
-  "$naclPath/${arch}-nacl-gdb" -ex 'target remote localhost:4014' build/PNaCl/src/tools/openzone.${arch}.nexe
+  "$naclPath/${arch}-nacl-gdb" -ex 'target remote localhost:4014' \
+			       build/PNaCl/src/tools/openzone.${arch}.nexe
 }
 
 finalise()
@@ -64,7 +66,7 @@ translate()
 {
   echo Translating ...
   "$pnaclPath/pnacl-translate" --allow-llvm-bitcode-input build/PNaCl/src/tools/openzone.pexe \
-    -arch $arch -o build/PNaCl/src/tools/openzone.${arch}.nexe
+			       -arch $arch -o build/PNaCl/src/tools/openzone.${arch}.nexe
 }
 
 case $1 in

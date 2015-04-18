@@ -32,6 +32,7 @@
 #include "SpinLock.hh"
 #include "Thread.hh"
 
+#include <nacl_io/nacl_io.h>
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/core.h>
 #include <ppapi/cpp/fullscreen.h>
@@ -104,6 +105,7 @@ Pepper::Instance::Instance(PP_Instance instance_) :
   ppCore     = pp::Module::Get()->core();
   ppInstance = this;
 
+  nacl_io_init_ppapi(instance_, pp::Module::Get()->get_browser_interface());
   RequestInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |
                      PP_INPUTEVENT_CLASS_WHEEL);
 }
@@ -113,6 +115,8 @@ Pepper::Instance::~Instance()
 {
   messageQueue.clear();
   messageQueue.trim();
+
+  nacl_io_uninit();
 
   ppInstance = nullptr;
 }
