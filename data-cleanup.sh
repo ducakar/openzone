@@ -2,7 +2,7 @@
 #
 # data-cleanup.sh <datasrc_dir>
 #
-# Cleans up temporary, intermediate and backup files from a source game data directory.
+# Cleans up temporary, intermediate and backup files from a game source data directory.
 #
 
 if [[ -z $1 ]]; then

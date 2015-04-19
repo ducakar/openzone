@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <client/common.hh>
+
 namespace oz
 {
 

@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-# run.sh [wine]
+# run.sh [wine | wine64] [<openzoneOptions>]
 #
 # Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
-# `NACL_SDK_ROOT` environment variable must be set to use this script.
 #
 # The following alternative launches are available:
 #
-# - `wine`: Installs the standalone Windows port into `build/Windows-test` and launches it via Wine.
+# - `wine`: Installs and launches standalone Windows i686 port via Wine.
+# - `wine64`: Installs and launches standalone Windows x86-64 port via Wine.
 #
 
 arch=i686

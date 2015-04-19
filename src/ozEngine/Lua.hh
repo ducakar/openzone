@@ -36,6 +36,12 @@ struct lua_State;
 namespace oz
 {
 
+/**
+ * %Lua VM wrapper/base class.
+ *
+ * It provides common functionality for %Lua VMs, like (de)serialisation of variables to (from)
+ * binary streams or JSON files, registering scripting API function and constants etc.
+ */
 class Lua
 {
 public:
@@ -79,8 +85,6 @@ public:
    * Load all `*.lua` files in a directory.
    */
   void loadDir(const File& dir) const;
-
-  bool exec(const char* code) const;
 
   /**
    * Common initialisation for Lua classes.

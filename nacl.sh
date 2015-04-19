@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# nacl.sh [run | debug | finalise | translate]
+# nacl.sh [run | debug | finalise]
 #
 # Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 # `NACL_SDK_ROOT` environment variable must be set to use this script.
@@ -13,7 +13,6 @@
 # - `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
 #   debugging.
 # - `finalise`: runs `pnacl-finalize` to finalise openzone PNaCl pexe executable.
-# - `translate`: translates openzone PNaCl pexe to host machine architecture's nexe.
 #
 
 if [[ `uname -m` == x86_64 ]]; then
@@ -56,19 +55,6 @@ debug()
 			       build/PNaCl/src/tools/openzone.${arch}.nexe
 }
 
-finalise()
-{
-  echo Finalising ...
-  "$pnaclPath/pnacl-finalize" build/PNaCl/src/tools/openzone.pexe
-}
-
-translate()
-{
-  echo Translating ...
-  "$pnaclPath/pnacl-translate" --allow-llvm-bitcode-input build/PNaCl/src/tools/openzone.pexe \
-			       -arch $arch -o build/PNaCl/src/tools/openzone.${arch}.nexe
-}
-
 case $1 in
   run)
     run
@@ -78,8 +64,5 @@ case $1 in
     ;;
   finalise)
     finalise
-    ;;
-  translate)
-    translate
     ;;
 esac

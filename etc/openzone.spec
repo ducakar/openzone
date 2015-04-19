@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.3.91
+Version:        0.3.92
 Release:        1%{?dist}
 Summary:        Simple cross-platform FPS/RTS game engine
 Group:          Amusements/Games

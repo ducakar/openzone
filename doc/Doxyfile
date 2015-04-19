@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "OpenZone"
-PROJECT_NUMBER         = "0.3.91"
+PROJECT_NUMBER         = "0.3.92"
 PROJECT_BRIEF          = "Simple cross-platform FPS/RTS game engine"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = doc/doxygen
@@ -112,8 +112,7 @@ WARN_LOGFILE           =
 INPUT                  = src/ozCore \
                          src/ozEngine \
                          src/ozFactory \
-                         src/common \
-                         src/tools
+                         src/common
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.hh \
                          *.dox

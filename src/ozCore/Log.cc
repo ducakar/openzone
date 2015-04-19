@@ -534,7 +534,6 @@ const Log& Log::operator << (const InputStream& is) const
   return *this;
 }
 
-
 const Log& Log::operator << (const Buffer& buffer) const
 {
   OZ_PRINT_BOTH({

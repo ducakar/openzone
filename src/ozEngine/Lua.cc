@@ -269,18 +269,6 @@ void Lua::loadDir(const File& dir) const
   }
 }
 
-bool Lua::exec(const char* code) const
-{
-  lua_settop(l, 0);
-
-  if (luaL_dostring(l, code) != 0) {
-    Log::println("%s", lua_tostring(l, -1));
-    System::bell();
-    return false;
-  }
-  return true;
-}
-
 void Lua::init()
 {
   l = luaL_newstate();

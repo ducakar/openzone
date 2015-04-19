@@ -6,7 +6,7 @@ project(openzone)
 # Configuration options.
 #
 
-set(OZ_VERSION 0.3.91)
+set(OZ_VERSION 0.3.92)
 
 option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF)
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
@@ -209,9 +209,9 @@ mark_as_advanced(OZ_HOSTNAME)
 add_subdirectory(src)
 
 # This is to show these files in Qt Creator.
-file(GLOB miscFiles AUTHORS COPYING *.md *.sh)
-file(GLOB_RECURSE dataFiles data/*.json data/*.lua data/*.vert data/*.frag)
-add_custom_target(dataFiles SOURCES ${miscFiles} ${dataFiles})
+file(GLOB docFiles AUTHORS COPYING *.md)
+file(GLOB_RECURSE dataFiles data/*.txt data/*.json data/*.lua data/*.vert data/*.frag)
+add_custom_target(dataFiles SOURCES ${docFiles} ${dataFiles})
 
 #
 # Data files.

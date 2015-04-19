@@ -58,7 +58,6 @@ void Network::disconnect()
 void Network::update()
 {}
 
-
 void Network::init()
 {
 //  SDLNet_Init();

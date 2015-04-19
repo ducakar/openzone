@@ -19,20 +19,22 @@ Native Client ports. Android port in still under development. See `cmake/*.Toolc
 for all supported platforms/toolchains.
 GCC >= 4.8 and LLVM/Clang >= 3.3 are the only supported compilers.
 
+### Dependencies ###
+
 Development packages of the following libraries are required to build OpenZone from source:
 
 - ALSA (Linux only)
-- libGL or libGLES2
 - libpng
 - libvorbis
 - Lua or LuaJIT
 - openal-soft
-- PhysicsFS 2.0 or 2.1/dev
+- OpenGL or OpenGL ES
+- PhysicsFS
 - SDL2
 - SDL2_ttf
 - zlib
 
-If you want to build the tools too (`OZ_TOOLS` option) you also need:
+If you want to build the tools (`OZ_TOOLS` option) you also need:
 
 - Assimp
 - FreeImage
@@ -47,21 +49,37 @@ The following development tools are required:
 - MinGW-w64 (optional, for building Windows-i686 and Windows-x86_64 ports)
 - NaCl SDK (optional, for building PNaCl port)
 
+### Quick Build Instructions ###
+
+Clone the repository:
+
+    git clone --recursive https://github.com/ducakar/openzone.git
+    cd openzone
+
 You can then use generic steps for building CMake projects:
 
-    mkdir build
-    cd build
+    mkdir -p build && cd build
     cmake ..
     make
+    cd ..
 
-Use `cmake-gui` instead of `cmake` for a user-friendly GUI where you can configure build options.
+And then compile the game data:
+
+    ./build/src/tools/ozBuild -CAZ data/oz_base
+    ./build/src/tools/ozBuild -CAZ data/oz_main
+    ./build/src/tools/ozBuild -CAZ data/oz_missions
+
+After that the game is prepared for a test run:
+
+    ./build/src/tools/openzone -p .
+
+### Long Build Instructions ###
 
 For building all supported configurations you can use `ports.sh` and `build.sh` scripts. `ports.sh`
 (see Tools section) downloads and builds all required libraries for NaCl and Android platforms
 (NaCL SDK and Android SDK + NDK are required for this, of course), while `build.sh` builds OpenZone
 for all platforms. You can change variables at top of both scripts to change the list of enabled
-platforms and whether you want to make debug or a release build. You will also need to fix paths to
-SDKs in those two scripts and in `cmake/*.Toolchain.cmake` files.
+platforms and whether you want to make debug or a release build.
 
 Build scripts use Ninja as low-level build system instead of Make which is the default for CMake.
 
@@ -81,14 +99,14 @@ You may also want to adjust several options when configuring CMake build system:
 - `OZ_SIMD`: Enable SIMD-specific implementation (SSE1 & ARM NEON) of linear algebra classes (Vec3,
   Vec4, Point, Plane, Quat, Mat3, Mat4). Currently it yields ~15% worse performance than the generic
   implementation since `Vec3` and `Point` become longer (4 floats v. 3 floats) and there are plenty
-  of accesses to vector components in the code, as it hasn't been written with SIMD in mind.
+  of accesses to vector components in the code.
   `OFF` by default.
 
 - `OZ_GL_ES`: Use OpenGL ES 2.0 instead of OpenGL 2.1.
   `OFF` by default, forced to `ON` on Android and NaCl.
 
-- `OZ_LUAJIT`: Use LuaJIT instead of official Lua library. Lua scripts execute significantly faster
-  but there are some weird issues with LuaJIT not initialising sometimes.
+- `OZ_LUAJIT`: Use LuaJIT instead of the official Lua library. Lua scripts execute much faster but
+  LuaJIT is written in assembler and supported only on x86 desktop platforms.
   `OFF` by default.
 
 - `OZ_NONFREE`: Enable support for building textures using S3 texture compression. Requires
@@ -96,8 +114,9 @@ You may also want to adjust several options when configuring CMake build system:
   `OFF` by default.
 
 - `OZ_TOOLS`: Build tools required for building game data (see the next section).
+  `OFF` by default.
 
-- `OZ_TESTS`: Build liboz unittest and various experimantal executables used as a playground when
+- `OZ_TESTS`: Build liboz unittest and various experimental executables used as a playground when
   developing OpenZone. You don't need this.
   `OFF` by default.
 
@@ -181,8 +200,8 @@ into `openzone-pa.wav` file.
 
 ### `clean-blanks.sh` ###
 
-Cleans up trailing blanks, duplicated empty lines and missing newlines at the end of file for most
-files in the source tree.
+Cleans up trailing blanks, duplicated empty lines and missing newlines at the end of files in the
+source tree.
 
 ### `count.sh` ###
 
@@ -195,7 +214,12 @@ Runs cppcheck tool for static code analysis. Output is written into `cppcheck.lo
 
 ### `data-cleanup.sh <datasrc_dir>` ###
 
-Cleans up temporary, intermediate and backup files from a source game data directory.
+Cleans up temporary, intermediate and backup files from a game source data directory.
+
+### `gen-manifest.sh` ###
+
+Writes `share/openzone/manifest.json` file that contains list of game packeges together with their
+timestamps. Needed by NaCl to update cached game packages.
 
 ### `gettext-internal.sh <data_dir>` ###
 
@@ -218,7 +242,7 @@ The following commands may be given (`build` is assumed if none):
 - `clean`: Delete directories for all platforms.
 - (none): Copy libraries for selected platforms into corresponding directories.
 
-### `nacl.sh [run | debug | finalise | translate]` ###
+### `nacl.sh [run | debug | finalise]` ###
 
 Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 `NACL_SDK_ROOT` environment variable must be set to use this script.
@@ -231,7 +255,6 @@ The following alternative launches are available:
 - `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
   debugging.
 - `finalise`: runs `pnacl-finalize` to finalise openzone PNaCl pexe executable.
-- `translate`: translates openzone PNaCl pexe to host machine architecture's nexe.
 
 ### `package.sh {src | data | datasrc | bundle}` ###
 
@@ -242,8 +265,8 @@ One of the following commands must be given:
   `share/openzone` directory are included.
 - `datasrc`: Create source data archive `openzone-datasrc-<version>.tar.xz`. All source data
   packages found in `data` directory are included.
-- `bundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
-  standalone builds and compiled game data packages found in `share/openzone`.
+- `bundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686 standalone
+  builds and compiled game data packages found in `share/openzone`.
 
 ### `ports.sh [clean | buildclean | fetch]` ###
 
@@ -264,14 +287,13 @@ The following commands may be given (`build` is assumed if none):
 Proxy script for invoking `q3map2` BSP compiler from GtkRadiant in with appropriate parameters to
 compile a BSP structures for OpenZone.
 
-### `run.sh [wine] [<openzoneOptions>]` ###
+### `run.sh [wine | wine64] [<openzoneOptions>]` ###
 
 Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
-`NACL_SDK_ROOT` environment variable must be set to use this script.
-
 The following alternative launches are available:
 
-- `wine`: Installs the standalone Windows port into `build/Windows-test` and launches it via Wine.
+- `wine`: Installs and launches standalone Windows i686 port via Wine.
+- `wine64`: Installs and launches standalone Windows x86-64 port via Wine.
 
 Documentation
 -------------

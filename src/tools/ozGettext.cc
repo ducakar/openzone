@@ -285,7 +285,7 @@ static void readNirvana(const File& dir)
 static void readCredits(const File& file)
 {
   if (file.type() != File::REGULAR) {
-    OZ_ERROR("Failed to read '%s'", file.path().cstr());
+    return;
   }
 
   Buffer buffer = file.read();

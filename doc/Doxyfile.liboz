@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "liboz"
-PROJECT_NUMBER         = "0.3.91"
+PROJECT_NUMBER         = "0.3.92"
 PROJECT_BRIEF          = "OpenZone Core Library & OpenZone Dynamics Library"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = doc/doxygen.liboz
@@ -110,9 +110,6 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = src/ozCore \
-                         src/ozDynamics \
-                         src/ozDynamics/collision \
-                         src/ozDynamics/physics \
                          src/ozEngine \
                          src/ozFactory
 INPUT_ENCODING         = UTF-8

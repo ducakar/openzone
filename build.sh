@@ -3,7 +3,7 @@
 # build.sh [clean | conf] [<platform>]
 #
 # This script configures and/or builds OpenZone in the `build` directory for a specified platform or
-# all supported platforms uncommented in the beginning of this script if `<platform>` parameter is 
+# all supported platforms uncommented in the beginning of this script if `<platform>` parameter is
 # omitted. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set for Android and NaCl
 # builds respectively.
 #
