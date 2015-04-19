@@ -33,12 +33,11 @@
 #include <cstdlib>
 #include <dirent.h>
 #include <fcntl.h>
-#include <sys/mount.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #ifdef _WIN32
-# include <shlobj.h>
 # include <windows.h>
+# include <shlobj.h>
 #else
 # include <sys/mman.h>
 #endif
@@ -578,21 +577,7 @@ bool File::map() const
     return true;
   }
   else {
-#if defined(__native_client__)
-
-    // If we used `data` member here `read()` would copy it into itself.
-    char* buffer = new char[fileSize];
-    int   size   = fileSize;
-
-    if (!read(buffer, &size) || size != fileSize) {
-      delete[] buffer;
-      return false;
-    }
-
-    data = buffer;
-    return true;
-
-#elif defined(_WIN32)
+#ifdef _WIN32
 
     HANDLE file = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -640,9 +625,7 @@ void File::unmap() const
     delete[] data;
   }
   else {
-#if defined(__native_client__)
-    delete[] data;
-#elif defined(_WIN32)
+#ifdef _WIN32
     UnmapViewOfFile(data);
 #else
     munmap(data, fileSize);
@@ -721,23 +704,14 @@ List<File> File::ls(const char* extension) const
 
 String File::cwd()
 {
-#if defined(__native_client__)
-  return "";
-#else
   char buffer[PATH_MAX];
   bool hasFailed = getcwd(buffer, PATH_MAX) == nullptr;
   return hasFailed ? "" : buffer;
-#endif
 }
 
 bool File::chdir(const char* path)
 {
-#if defined(__native_client__)
-  static_cast<void>(path);
-  return false;
-#else
   return ::chdir(path) == 0;
-#endif
 }
 
 bool File::mkdir(const char* path)
@@ -811,16 +785,12 @@ const String& File::executablePath()
   return exePath;
 }
 
-void File::init()
+void File::init(const char* argv0)
 {
   initSpecialDirs();
   initExecutablePath();
 
-#ifdef __native_client__
-  if (PHYSFS_init("/") == 0) {
-#else
-  if (PHYSFS_init(nullptr) == 0) {
-#endif
+  if (PHYSFS_init(argv0) == 0) {
     OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError());
   }
 }

@@ -24,8 +24,5 @@ target_link_libraries(quicksort ozCore)
 add_executable(scratch scratch.cc)
 target_link_libraries(scratch ozCore ozEngine)
 
-add_executable(sdlEmu sdlEmu.cc)
-target_link_libraries(sdlEmu ozCore ozEngine)
-
 add_executable(simd simd.cc)
 target_link_libraries(simd ozCore)

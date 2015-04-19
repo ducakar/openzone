@@ -83,7 +83,7 @@ OZ_HIDDEN
 void Pepper::Instance::mainThreadMain(void*)
 {
   Instance* instance = static_cast<Instance*>(ppInstance);
-  char      argv0[]  = "";
+  char      argv0[]  = "/";
   char*     argv[]   = { argv0, nullptr };
 
   naclMain(1, argv);

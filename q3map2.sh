@@ -14,5 +14,4 @@ fi
 radiantHome=/usr/share/gtkradiant
 basePath=`echo $1 | sed -r 's|(.*)/baseq3/maps/.*|\1|'`
 
-#"$radiantHome"/q3map2 -fs_basepath "$basePath" -meta -v $1
-~/.local/bin/q3map2 -fs_basepath "$basePath" -meta -v $1
+"$radiantHome"/q3map2 -fs_basepath "$basePath" -meta -v $1

@@ -26,13 +26,6 @@
 #include <SDL.h>
 #undef main
 
-#if defined(__native_client__)
-# include <SDL_nacl.h>
-#elif defined(_WIN32)
-extern "C"
-int SDL_main(int argc, char** argv);
-#endif
-
 using namespace oz;
 
 static void crashHandler()
@@ -58,10 +51,6 @@ int main(int argc, char** argv)
                 "This is free software, and you are welcome to redistribute it\n"
                 "under certain conditions; See COPYING file for details.\n\n");
 
-#ifdef __native_client__
-  Pepper::post("init:");
-#endif
-
   int exitCode = client::client.init(argc, argv);
 
   if (exitCode == EXIT_SUCCESS) {
@@ -79,10 +68,6 @@ int main(int argc, char** argv)
       Log::println("There are some memory leaks. See '%s' for details.", Log::filePath());
     }
   }
-
-#ifdef __native_client__
-  Pepper::post("quit:");
-#endif
 
   return exitCode;
 }

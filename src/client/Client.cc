@@ -31,7 +31,6 @@
 #include <client/Sound.hh>
 #include <client/Render.hh>
 #include <client/Loader.hh>
-#include <client/NaClUpdater.hh>
 #include <client/BuildInfo.hh>
 #include <client/MenuStage.hh>
 #include <client/GameStage.hh>
@@ -40,8 +39,11 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
-#include <sys/mount.h>
 #include <unistd.h>
+#ifdef __native_client__
+# include <sys/mount.h>
+#endif
+
 #undef main
 
 namespace oz
@@ -198,10 +200,8 @@ int Client::main()
       Window::setFocus(Pepper::hasFocus);
       input.reset();
     }
-    for (String message = Pepper::pop(); !message.isEmpty(); message = Pepper::pop()) {
-      if (message == "quit:") {
-        isAlive = false;
-      }
+    if (Pepper::pop() == "quit:") {
+      isAlive = false;
     }
 
     input.keys[SDLK_ESCAPE]    = false;
@@ -276,6 +276,10 @@ int Client::main()
 
 int Client::init(int argc, char** argv)
 {
+#ifdef __native_client__
+  Pepper::post("init:");
+#endif
+
   initFlags     = 0;
   isBenchmark   = false;
   benchmarkTime = 0.0f;
@@ -339,12 +343,25 @@ int Client::init(int argc, char** argv)
   }
 
 #ifdef __native_client__
+
+  // Wait until web page updates game data and sends the language code.
+  for (String message = Pepper::pop(); ; message = Pepper::pop()) {
+    if (message.isEmpty()) {
+      Time::sleep(10);
+    }
+    else {
+      language = message;
+      break;
+    }
+  }
+
   umount("");
   mount("", "/", "html5fs", 0, "type=TEMPORARY");
   mount("", "/data", "memfs", 0, "");
+
 #endif
 
-  File::init();
+  File::init(argv[0]);
   initFlags |= INIT_PHYSFS;
 
 #ifdef __ANDROID__
@@ -457,7 +474,12 @@ int Client::init(int argc, char** argv)
   initFlags |= INIT_NETWORK;
 
 #ifdef __native_client__
-  naclUpdater.update();
+
+  // Copy game packages to memfs.
+  for (const File& package : File("/cache").ls("zip")) {
+    File::cp(package, "/data/openzone/" + package.name());
+  }
+
 #endif
 
   Log::println("Content search path {");
@@ -507,26 +529,6 @@ int Client::init(int argc, char** argv)
 
   Log::unindent();
   Log::println("}");
-
-#ifdef __native_client__
-
-  Pepper::post("none:");
-  Pepper::post("lang:");
-
-  for (String message = Pepper::pop(); ; message = Pepper::pop()) {
-    if (message.isEmpty()) {
-      Time::sleep(10);
-    }
-    else if (message.beginsWith("lang:")) {
-      language = message.substring(5);
-      break;
-    }
-    else {
-      Pepper::push(message);
-    }
-  }
-
-#endif
 
   config.include("lingua", "AUTO").get(String::EMPTY);
 
@@ -690,6 +692,10 @@ void Client::shutdown()
   if (initFlags) {
     Log::println("OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr());
   }
+
+#ifdef __native_client__
+  Pepper::post("quit:");
+#endif
 }
 
 Client client;

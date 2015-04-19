@@ -1,104 +1,182 @@
-var module      = null;
-var moduleImage = null;
-var hudArea     = null;
-var hudText     = null;
-var hasLoaded   = false;
-var hasEnded    = false;
+var fileSystem = null;
+var localPackages = null;
+var remotePackages = null;
+var module = null;
+var hudArea = null;
+var hudText = null;
+var hasLoaded = false;
+var hasEnded = false;
 
-window.onload   = onLoad;
-window.onresize = onResize;
+window.onload = onLoad;
 
-function handleMessage( e )
+function download(url, type, progressCallback, completionCallback)
 {
-  var type = e.data.substring( 0, 5 );
-  var text = e.data.substring( 5 );
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.responseType = type;
+  xhr.onprogress = progressCallback;
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      completionCallback(xhr.response);
+    }
+  };
+  xhr.send();
+}
 
-  if( type == "quit:" ) {
-    hasEnded = true;
+function readLocalManifest()
+{
+  fileSystem.root.getFile('/cache/manifest.json', {}, function (fileEntry) {
+    fileEntry.file(function (file) {
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        localPackages = JSON.parse(this.result);
+        fetchRemoteManifest();
+      };
+      reader.readAsText(file);
+    });
+  }, function () {
+    localPackages = {};
+    fetchRemoteManifest();
+  });
+}
 
-    window.onbeforeunload = null;
-    module.style.visibility = "hidden";
+function fetchRemoteManifest()
+{
+  download('manifest.json', 'text', function () {
+  }, function (data) {
+    remotePackages = JSON.parse(data);
+    fileSystem.root.getFile('/cache/manifest.json', {create: true}, function (fileEntry) {
+      fileEntry.createWriter(function (writer) {
+        writer.onwriteend = deleteOrphans;
+        writer.write(new Blob([data], {type: 'text'}));
+      });
+    });
+  }, function () {
+    console.error('Failed to load manifest');
+  });
+}
 
-    hudArea.style.display = "inline-table";
-    hudText.innerHTML = MSG_FINISHED;
-  }
-  else if( type == "none:" ) {
-    window.onbeforeunload = onBeforeUnload;
+// Delete unlisted files.
+function deleteOrphans()
+{
+  fileSystem.root.getDirectory('/cache', {}, function (directoryEntry) {
+    directoryEntry.createReader().readEntries(function (entries) {
+      var nextEntry = function (i) {
+        if (i === entries.length) {
+          updatePackages();
+        }
+        else {
+          var fileEntry = entries[i];
+          if (fileEntry.name in remotePackages || fileEntry.name === 'manifest.json') {
+            nextEntry(i + 1);
+          }
+          else {
+            console.log('deleting ' + fileEntry.fullPath);
+            fileEntry.remove(function () {
+              nextEntry(i + 1);
+            });
+          }
+        }
+      };
+      nextEntry(0);
+    });
+  });
+}
 
-    hudArea.style.display = "none";
-    hudText.innerHTML = "";
-  }
-  else if( type == "init:" ) {
-    hudArea.style.display = "inline-table";
+function updatePackages()
+{
+  var nextEntry = function (i) {
+    var pkgNames = Object.keys(remotePackages);
+    if (i === pkgNames.length) {
+      module.postMessage(navigator.language);
+      hasLoaded = true;
+    }
+    else {
+      var pkg = pkgNames[i];
+      if (pkg in localPackages && localPackages[pkg] === remotePackages[pkg]) {
+        console.log(pkg + ' up to date');
+        nextEntry(i + 1);
+      }
+      else {
+        download(pkg, 'blob', function (e) {
+          hudText.innerHTML = MSG_DOWNLOADING + '<br/>' + pkg;
+
+          if (e.lengthComputable && e.total > 0) {
+            var percent = Math.round(e.loaded / e.total * 100.0);
+            hudText.innerHTML += ' ' + percent + ' %';
+          }
+        }, function (data) {
+          fileSystem.root.getFile('/cache/' + pkg, {create: true}, function (fileEntry) {
+            fileEntry.createWriter(function (writer) {
+              writer.onwriteend = function () {
+                console.log(pkg + ' downloaded');
+                nextEntry(i + 1);
+              };
+              writer.write(data);
+            });
+          });
+        });
+      }
+    }
+  };
+  nextEntry(0);
+}
+
+function onMessage(e)
+{
+  var type = e.data.substring(0, 5);
+  var text = e.data.substring(5);
+
+  if (type === "init:") {
     hudText.innerHTML = MSG_INITIALISING;
   }
-  else if( type == "upd0:" ) {
-    hudArea.style.display = "inline-table";
-    hudText.innerHTML = MSG_CHECKING;
+  else if (type === 'none:') {
+    hudArea.style.display = 'none';
+    hudText.innerHTML = '';
   }
-  else if( type == "upd1:" ) {
-    hudArea.style.display = "inline-table";
-    hudText.innerHTML = MSG_DOWNLOADING + text;
+  else if (type === 'navi:') {
+    window.open(text, '_blank');
   }
-  else if( type == "data:" ) {
-    hudArea.style.display = "inline-table";
-    hudText.innerHTML = MSG_READING + text;
-  }
-  else if( type == "lang:" ) {
-    module.postMessage( "lang:" + navigator.language );
-  }
-  else if( type == "navi:" ) {
-    window.open( text, "_blank" );
+  else if (type === 'quit:') {
+    hasEnded = true;
+
+    module.style.visibility = 'hidden';
+    hudArea.style.display = 'inline-table';
+    hudText.innerHTML = MSG_FINISHED;
   }
 }
 
-function updateLoadProgress()
+function onProgress()
 {
-  hasLoaded = true;
-
-  if( event.lengthComputable && event.total > 0 ) {
-    var percent = Math.round( event.loaded / event.total * 100.0 );
-
-    hudText.innerHTML = MSG_LOADING + "<br/>" + percent + " %";
-  }
-  else {
+  if (hasLoaded) {
     hudText.innerHTML = MSG_LOADING;
+
+    if (event.lengthComputable && event.total > 0) {
+      var percent = Math.round(event.loaded / event.total * 100.0);
+      hudText.innerHTML += '<br/>' + percent + ' %';
+    }
   }
 }
 
-function onLoadEnd( e )
+function onLoadEnd()
 {
-  hasLoaded = true;
-
   hudText.innerHTML = MSG_LAUNCHING;
-
-  moduleImage.style.display = "none";
-  module.style.width        = "100%";
-  module.style.height       = "100%";
-}
-
-function onResize()
-{
-  if( hasLoaded && hasEnded ) {
-    module.style.visibility = "hidden";
-  }
 }
 
 function onLoad()
 {
-  module      = document.getElementById( "module" );
-  moduleImage = document.getElementById( "moduleImage" );
-  hudArea     = document.getElementById( "hudArea" );
-  hudText     = document.getElementById( "hudText" );
+  module = document.getElementById('module');
+  hudArea = document.getElementById('hudArea');
+  hudText = document.getElementById('hudText');
 
-  module.addEventListener( "message", handleMessage, true );
-  module.addEventListener( "progress", updateLoadProgress, true );
-  module.addEventListener( "loadend", onLoadEnd, true );
-}
+  module.addEventListener('message', onMessage, true);
+  module.addEventListener('progress', onProgress, true);
+  module.addEventListener("loadend", onLoadEnd, true);
 
-function onBeforeUnload()
-{
-  module.postMessage( "quit:" );
-
-  return MSG_CLOSE;
+  window.webkitRequestFileSystem(TEMPORARY, 0, function (fs) {
+    fileSystem = fs;
+    fileSystem.root.getDirectory('/cache', {create: true}, function () {
+      readLocalManifest();
+    });
+  });
 }

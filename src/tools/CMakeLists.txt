@@ -45,10 +45,6 @@ else()
     target_link_libraries(ozGettext ozCore)
     install(TARGETS ozGettext RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR})
 
-    add_executable(ozManifest ozManifest.cc)
-    target_link_libraries(ozManifest ozCore)
-    install(TARGETS ozManifest RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR})
-
   endif()
 
 endif()

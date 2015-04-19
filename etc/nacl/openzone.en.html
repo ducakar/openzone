@@ -13,10 +13,8 @@
                            "you don't have good enough graphics card or you have to navigate to " +
                            "<code>chrome://flags</code> and turn on " +
                            "<code>Override software rendering list</code>.</span>";
-    var MSG_CHECKING     = "Checking for updates ...";
     var MSG_DOWNLOADING  = "Downloading updates<br/>";
-    var MSG_READING      = "Reading game data archives<br/>"
-    var MSG_LOADING      = "Loading";
+    var MSG_LOADING      = "Starting NaCl";
     var MSG_LAUNCHING    = "Starting NaCl<br/>" +
                            "<span class='detail'>If it takes long enough that you can read this " +
                            "some unexpected error occurred.</span>";
@@ -38,8 +36,7 @@
   <table class="module">
     <tr>
       <td style="width: 10%"></td>
-      <td style="width: 80%;">
-        <img id="moduleImage" alt="wallpaper" src="../img/title.jpg"/>
+      <td>
         <embed id="module" type="application/x-pnacl" src="openzone.nmf"/>
       </td>
       <td style="width: 10%"></td>

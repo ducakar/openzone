@@ -148,14 +148,6 @@ should be saved as `<pkgSrc>/mission/<missionName>/lingua/<lang>.po`.
 Note that ozbase is a special package and its POT catalogue template should be generated with
 gettext-ozbase.sh Bash script instead.
 
-### `ozManifest` ###
-
-This tool creates package manifest file required by NaCl port for updating game data packages. It
-searches for all game data packages (`*.7z` and `*.zip`) in `share/openzone` directory (first
-parameter is used as target directory, `share/openzone` if nothing is given) and writes manifest
-file `share/openzone/packeages.ozManifest` containing list of package files and respective
-timestamps.
-
 Scripts
 -------
 

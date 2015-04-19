@@ -33,8 +33,8 @@ function run()
   mkdir -p build/PNaCl/src/tools
 
   # Just create symlinks instead of copying.
-  for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
-           doc etc/nacl/openzone.??.html etc/nacl/nacl.js etc/nacl/openzone.nmf
+  for i in share/openzone/*.{7z,zip,json} doc etc/nacl/openzone.??.html etc/nacl/nacl.js \
+           etc/nacl/openzone.nmf
   do
     [[ -e $i ]] && ln -sf ../../../../$i build/PNaCl/src/tools
   done
