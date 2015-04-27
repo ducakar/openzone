@@ -60,12 +60,14 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
 {
   Log::print("Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_);
 
-  int imageOptions = ImageBuilder::MIPMAPS_BIT;
+  ImageBuilder::options = ImageBuilder::MIPMAPS_BIT;
+  ImageBuilder::scale   = 1.0f;
+
   if (useS3TC) {
-    imageOptions |= ImageBuilder::COMPRESSION_BIT;
+    ImageBuilder::options |= ImageBuilder::COMPRESSION_BIT;
   }
   if (useFast) {
-    imageOptions |= ImageBuilder::FAST_BIT;
+    ImageBuilder::options |= ImageBuilder::FAST_BIT;
   }
 
   String destBasePath      = destBasePath_;
@@ -131,14 +133,14 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
   }
 
   if (diffuse.type() != File::MISSING) {
-    ImageBuilder::convertToDDS(diffuse, imageOptions, destBasePath + ".dds");
+    ImageBuilder::convertToDDS(diffuse, destBasePath + ".dds");
   }
   else {
     OZ_ERROR("Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr());
   }
 
   if (masks.type() != File::MISSING) {
-    ImageBuilder::convertToDDS(masks, imageOptions, destBasePath + "_m.dds");
+    ImageBuilder::convertToDDS(masks, destBasePath + "_m.dds");
   }
   else {
     ImageData specularImage;
@@ -171,7 +173,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
         a = char(0xff);
       }
 
-      ImageBuilder::createDDS(&specularImage, 1, imageOptions, destBasePath + "_m.dds");
+      ImageBuilder::createDDS(&specularImage, 1, destBasePath + "_m.dds");
     }
     else if (specularImage.isEmpty()) {
       for (int i = 0; i < emissionImage.width * emissionImage.height; ++i) {
@@ -188,7 +190,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
         a = char(0xff);
       }
 
-      ImageBuilder::createDDS(&emissionImage, 1, imageOptions, destBasePath + "_m.dds");
+      ImageBuilder::createDDS(&emissionImage, 1, destBasePath + "_m.dds");
     }
     else {
       if (specularImage.width != emissionImage.width ||
@@ -216,14 +218,14 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
         a = char(0xff);
       }
 
-      ImageBuilder::createDDS(&specularImage, 1, imageOptions, destBasePath + "_m.dds");
+      ImageBuilder::createDDS(&specularImage, 1, destBasePath + "_m.dds");
     }
   }
 
   if (normals.type() != File::MISSING) {
-    int normalOptions = imageOptions | ImageBuilder::NORMAL_MAP_BIT | ImageBuilder::ZYZX_BIT;
+    ImageBuilder::options |= ImageBuilder::NORMAL_MAP_BIT | ImageBuilder::ZYZX_BIT;
 
-    ImageBuilder::convertToDDS(normals, normalOptions, destBasePath + "_n.dds");
+    ImageBuilder::convertToDDS(normals, destBasePath + "_n.dds");
   }
 
   Log::printEnd(" OK");

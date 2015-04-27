@@ -37,9 +37,11 @@ void Caelum::build(const char* name)
   Log::println("Prebuilding Caelum '%s' {", name);
   Log::indent();
 
-  int texOptions = ImageBuilder::MIPMAPS_BIT;
+  ImageBuilder::options = ImageBuilder::MIPMAPS_BIT;
+  ImageBuilder::scale   = 1.0;
+
   if (context.useS3TC) {
-    texOptions |= ImageBuilder::COMPRESSION_BIT;
+    ImageBuilder::options |= ImageBuilder::COMPRESSION_BIT;
   }
 
   String path = String::str("caelum/%s", name);
@@ -51,10 +53,10 @@ void Caelum::build(const char* name)
     context.buildTexture(path, &path[1], false);
   }
 
-  if (!ImageBuilder::convertToDDS("@caelum/sun.png", texOptions, "caelum")) {
+  if (!ImageBuilder::convertToDDS("@caelum/sun.png", "caelum")) {
     OZ_ERROR("Failed to build sun texture");
   }
-  if (!ImageBuilder::convertToDDS("@caelum/moon.png", texOptions, "caelum")) {
+  if (!ImageBuilder::convertToDDS("@caelum/moon.png", "caelum")) {
     OZ_ERROR("Failed to build moon texture");
   }
 

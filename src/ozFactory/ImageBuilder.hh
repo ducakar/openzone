@@ -131,6 +131,9 @@ public:
   /// Use fastest but low-quality filters.
   static const int FAST_BIT = 0x100;
 
+  static int   options; ///< Bitfield to control compression, mipmap generation etc.
+  static float scale;   ///< Scale to resize images.
+
 public:
 
   /**
@@ -166,10 +169,9 @@ public:
    *
    * @param faces array of input images.
    * @param nFaces number of input images.
-   * @param options bit-mask to control mipmap generation, compression, cube map etc.
    * @param destFile output file.
    */
-  static bool createDDS(const ImageData* faces, int nFaces, int options, const File& destFile);
+  static bool createDDS(const ImageData* faces, int nFaces, const File& destFile);
 
   /**
    * Convert a given image to DDS format, similar to `buildDDS()`.
@@ -179,13 +181,12 @@ public:
    * built by this function.
    *
    * @param file input image file.
-   * @param options bit-mask to control mipmap generation and compression.
    * @param destPath output file or directory (in the latter case output file has the same base name
    * as the input one but "dds" extension).
    *
    * @sa `buildDDS()`
    */
-  static bool convertToDDS(const File& file, int options, const char* destPath);
+  static bool convertToDDS(const File& file, const char* destPath);
 
   /**
    * Initialise underlaying FreeImage library.

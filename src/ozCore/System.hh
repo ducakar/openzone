@@ -91,8 +91,7 @@ public:
    * Play a sound alert.
    *
    * Sine wave with decreasing volume lasting ~0.3 s is played asynchronously through platform's
-   * native sound system (ALSA on Linux and Android, OSS on other Unices, `PlaySound` system call on
-   * Windows and Pepper API on NaCl).
+   * native sound system (ALSA on Linux, `PlaySound` system call on Windows and Pepper API on NaCl).
    */
   static void bell();
 

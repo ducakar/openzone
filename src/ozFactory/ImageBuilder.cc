@@ -140,22 +140,22 @@ static FIBITMAP* loadBitmap(const File& file)
   return dib;
 }
 
-static bool buildDDS(const ImageData* faces, int nFaces, int options, const File& destFile)
+static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 {
   hard_assert(nFaces > 0);
 
   int width      = faces[0].width;
   int height     = faces[0].height;
 
-  bool isCubeMap = options & ImageBuilder::CUBE_MAP_BIT;
-  bool isNormal  = options & ImageBuilder::NORMAL_MAP_BIT;
-  bool doMipmaps = options & ImageBuilder::MIPMAPS_BIT;
-  bool compress  = options & ImageBuilder::COMPRESSION_BIT;
-  bool doFlip    = options & ImageBuilder::FLIP_BIT;
-  bool doFlop    = options & ImageBuilder::FLOP_BIT;
-  bool doYYYX    = options & ImageBuilder::YYYX_BIT;
-  bool doZYZX    = options & ImageBuilder::ZYZX_BIT;
-  bool isFast    = options & ImageBuilder::FAST_BIT;
+  bool isCubeMap = ImageBuilder::options & ImageBuilder::CUBE_MAP_BIT;
+  bool isNormal  = ImageBuilder::options & ImageBuilder::NORMAL_MAP_BIT;
+  bool doMipmaps = ImageBuilder::options & ImageBuilder::MIPMAPS_BIT;
+  bool compress  = ImageBuilder::options & ImageBuilder::COMPRESSION_BIT;
+  bool doFlip    = ImageBuilder::options & ImageBuilder::FLIP_BIT;
+  bool doFlop    = ImageBuilder::options & ImageBuilder::FLOP_BIT;
+  bool doYYYX    = ImageBuilder::options & ImageBuilder::YYYX_BIT;
+  bool doZYZX    = ImageBuilder::options & ImageBuilder::ZYZX_BIT;
+  bool isFast    = ImageBuilder::options & ImageBuilder::FAST_BIT;
   bool hasAlpha  = (faces[0].flags & ImageData::ALPHA_BIT) || doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
@@ -181,9 +181,11 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
     return false;
   }
 
+  int targetWidth    = max(Math::lround(width * ImageBuilder::scale), 1);
+  int targetHeight   = max(Math::lround(height * ImageBuilder::scale), 1);
   int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
-  int pitchOrLinSize = ((width * targetBPP / 8 + 3) / 4) * 4;
-  int nMipmaps       = doMipmaps ? Math::index1(max(width, height)) + 1 : 1;
+  int pitchOrLinSize = ((targetWidth * targetBPP / 8 + 3) / 4) * 4;
+  int nMipmaps       = doMipmaps ? Math::index1(max(targetWidth, targetHeight)) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
   flags |= doMipmaps ? DDSD_MIPMAPCOUNT : 0;
@@ -207,11 +209,13 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
   int dx10Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 #ifdef OZ_NONFREE
-  int squishFlags = isFast ? squish::kColourRangeFit : squish::kColourIterativeClusterFit;
-  squishFlags    |= hasAlpha ? squish::kDxt5 | squish::kWeightColourByAlpha : squish::kDxt1;
+  int squishFlags = 0;
+
+  squishFlags |= isFast   ? squish::kColourRangeFit : squish::kColourIterativeClusterFit;
+  squishFlags |= hasAlpha ? squish::kDxt5 | squish::kWeightColourByAlpha : squish::kDxt1;
 
   if (compress) {
-    pitchOrLinSize = squish::GetStorageRequirements(width, height, squishFlags);
+    pitchOrLinSize = squish::GetStorageRequirements(targetWidth, targetHeight, squishFlags);
     dx10Format     = hasAlpha ? DXGI_FORMAT_BC3_UNORM : DXGI_FORMAT_BC1_UNORM;
     fourCC         = isArray ? "DX10" : hasAlpha ? "DXT5" : "DXT1";
   }
@@ -223,8 +227,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
   os.writeChars("DDS ", 4);
   os.writeInt(124);
   os.writeInt(flags);
-  os.writeInt(height);
-  os.writeInt(width);
+  os.writeInt(targetHeight);
+  os.writeInt(targetWidth);
   os.writeInt(pitchOrLinSize);
   os.writeInt(0);
   os.writeInt(nMipmaps);
@@ -322,14 +326,14 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
       face = FreeImage_ConvertTo24Bits(face);
     }
 
-    int levelWidth  = width;
-    int levelHeight = height;
+    int levelWidth  = targetWidth;
+    int levelHeight = targetHeight;
 
     for (int j = 0; j < nMipmaps; ++j) {
       FIBITMAP* level = face;
-      if (j != 0) {
-        level = FreeImage_Rescale(face, levelWidth, levelHeight,
-                                  isFast ? FILTER_BILINEAR : FILTER_CATMULLROM);
+
+      if (levelWidth != width || levelHeight != height) {
+        level = FreeImage_Rescale(face, levelWidth, levelHeight, FILTER_CATMULLROM);
       }
 
       if (compress) {
@@ -353,7 +357,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
       levelWidth  = max(1, levelWidth / 2);
       levelHeight = max(1, levelHeight / 2);
 
-      if (j != 0) {
+      if (level != face) {
         FreeImage_Unload(level);
       }
     }
@@ -368,6 +372,9 @@ static bool buildDDS(const ImageData* faces, int nFaces, int options, const File
   }
   return true;
 }
+
+int   ImageBuilder::options = 0;
+float ImageBuilder::scale   = 1.0f;
 
 ImageData::ImageData() :
   width(0), height(0), flags(0), pixels(nullptr)
@@ -501,7 +508,7 @@ ImageData ImageBuilder::loadImage(const File& file)
   return image;
 }
 
-bool ImageBuilder::createDDS(const ImageData* faces, int nFaces, int options, const File& destFile)
+bool ImageBuilder::createDDS(const ImageData* faces, int nFaces, const File& destFile)
 {
   errorBuffer[0] = '\0';
 
@@ -510,10 +517,10 @@ bool ImageBuilder::createDDS(const ImageData* faces, int nFaces, int options, co
     return false;
   }
 
-  return buildDDS(faces, nFaces, options, destFile);
+  return buildDDS(faces, nFaces, destFile);
 }
 
-bool ImageBuilder::convertToDDS(const File& file, int options, const char* destPath)
+bool ImageBuilder::convertToDDS(const File& file, const char* destPath)
 {
   errorBuffer[0] = '\0';
 
@@ -530,7 +537,7 @@ bool ImageBuilder::convertToDDS(const File& file, int options, const char* destP
   if (image.isEmpty()) {
     return false;
   }
-  return buildDDS(&image, 1, options, destFile);
+  return buildDDS(&image, 1, destFile);
 }
 
 void ImageBuilder::init()

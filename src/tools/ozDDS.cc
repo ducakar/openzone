@@ -46,26 +46,25 @@ int main(int argc, char** argv)
 {
   System::init();
 
-  int  ddsOptions    = 0;
   bool detectNormals = false;
 
   int opt;
   while ((opt = getopt(argc, argv, "chmnNsSv")) >= 0) {
     switch (opt) {
       case 'c': {
-        ddsOptions |= ImageBuilder::COMPRESSION_BIT;
+        ImageBuilder::options |= ImageBuilder::COMPRESSION_BIT;
         break;
       }
       case 'h': {
-        ddsOptions |= ImageBuilder::FLOP_BIT;
+        ImageBuilder::options |= ImageBuilder::FLOP_BIT;
         break;
       }
       case 'm': {
-        ddsOptions |= ImageBuilder::MIPMAPS_BIT;
+        ImageBuilder::options |= ImageBuilder::MIPMAPS_BIT;
         break;
       }
       case 'n': {
-        ddsOptions |= ImageBuilder::NORMAL_MAP_BIT;
+        ImageBuilder::options |= ImageBuilder::NORMAL_MAP_BIT;
         break;
       }
       case 'N': {
@@ -73,15 +72,15 @@ int main(int argc, char** argv)
         break;
       }
       case 's': {
-        ddsOptions |= ImageBuilder::YYYX_BIT;
+        ImageBuilder::options |= ImageBuilder::YYYX_BIT;
         break;
       }
       case 'S': {
-        ddsOptions |= ImageBuilder::ZYZX_BIT;
+        ImageBuilder::options |= ImageBuilder::ZYZX_BIT;
         break;
       }
       case 'v': {
-        ddsOptions |= ImageBuilder::FLIP_BIT;
+        ImageBuilder::options |= ImageBuilder::FLIP_BIT;
         break;
       }
       default: {
@@ -106,17 +105,17 @@ int main(int argc, char** argv)
 
   if (detectNormals) {
     if (image.isNormalMap()) {
-      ddsOptions |= ImageBuilder::NORMAL_MAP_BIT;
+      ImageBuilder::options |= ImageBuilder::NORMAL_MAP_BIT;
     }
     else {
-      ddsOptions &= ~ImageBuilder::NORMAL_MAP_BIT;
-      ddsOptions &= ~(ImageBuilder::YYYX_BIT | ImageBuilder::ZYZX_BIT);
+      ImageBuilder::options &= ~ImageBuilder::NORMAL_MAP_BIT;
+      ImageBuilder::options &= ~(ImageBuilder::YYYX_BIT | ImageBuilder::ZYZX_BIT);
     }
   }
 
   const char* destPath = nArgs == 1 ? "." : argv[optind + 1];
 
-  if (!ImageBuilder::convertToDDS(argv[optind], ddsOptions, destPath)) {
+  if (!ImageBuilder::convertToDDS(argv[optind], destPath)) {
     Log::println("%s", ImageBuilder::getError());
     return EXIT_FAILURE;
   }

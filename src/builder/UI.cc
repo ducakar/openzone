@@ -78,7 +78,10 @@ void UI::buildIcons()
       OZ_ERROR("Unnecessary icon: %s", image.path().cstr());
     }
 
-    if (!ImageBuilder::convertToDDS(image, 0, "ui/icon")) {
+    ImageBuilder::options = 0;
+    ImageBuilder::scale   = 1.0;
+
+    if (!ImageBuilder::convertToDDS(image, "ui/icon")) {
       OZ_ERROR("Error converting '%s' to DDS: %s", image.name().cstr(), ImageBuilder::getError());
     }
     image.unmap();

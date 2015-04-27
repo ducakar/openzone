@@ -58,7 +58,8 @@ int main(int, char**)
   TerraBuilder::addGradientPoint(Vec4(0.80f, 0.80f, 0.80f, +0.95f));
 
   ImageData image = TerraBuilder::generateImage(width, height);
-  ImageBuilder::createDDS(&image, 1, 0, "drek.dds");
+
+  ImageBuilder::createDDS(&image, 1, "drek.dds");
 
   Log() << "populate time: " << (Time::clock() - t0) << " ms";
 

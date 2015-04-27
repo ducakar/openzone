@@ -304,9 +304,12 @@ void Bot::grabCargo(Dynamic* dyn)
 {
   hard_assert(cargo == -1 && dyn != nullptr);
 
+  const DynamicClass* clazz    = static_cast<const DynamicClass*>(this->clazz);
+  const DynamicClass* dynClazz = static_cast<const DynamicClass*>(dyn->clazz);
+
   flags &= ~DISABLED_BIT;
   cargo  = dyn->index;
-  lift   = (mass * lift + dyn->mass * dyn->lift) / (mass + dyn->mass);
+  lift   = (mass * clazz->lift + dyn->mass * dynClazz->lift) / (mass + dyn->mass);
 }
 
 void Bot::releaseCargo()

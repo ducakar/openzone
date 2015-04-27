@@ -46,18 +46,19 @@ int main(int argc, char** argv)
   System::init();
   ImageBuilder::init();
 
-  int ddsOptions = ImageBuilder::CUBE_MAP_BIT;
-  int size       = 32;
+  ImageBuilder::options = ImageBuilder::CUBE_MAP_BIT;
+
+  int size = 32;
 
   int opt;
   while ((opt = getopt(argc, argv, "CM")) >= 0) {
     switch (opt) {
       case 'C': {
-        ddsOptions |= ImageBuilder::COMPRESSION_BIT;
+        ImageBuilder::options |= ImageBuilder::COMPRESSION_BIT;
         break;
       }
       case 'M': {
-        ddsOptions |= ImageBuilder::MIPMAPS_BIT;
+        ImageBuilder::options |= ImageBuilder::MIPMAPS_BIT;
         break;
       }
       default: {
@@ -95,7 +96,7 @@ int main(int argc, char** argv)
 
   ImageData* images = TerraBuilder::generateCubeNoise(size);
 
-  if (!ImageBuilder::createDDS(images, 6, ddsOptions, "env.dds")) {
+  if (!ImageBuilder::createDDS(images, 6, "env.dds")) {
     Log::println("Failed to generate maps: %s", ImageBuilder::getError());
     exitCode = EXIT_FAILURE;
   }

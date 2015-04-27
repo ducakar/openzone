@@ -575,7 +575,10 @@ void Builder::buildMissions()
 
     Log::print("Building thumbnail '%s' ...", srcFile.path().cstr());
 
-    if (!ImageBuilder::convertToDDS(srcFile.path(), 0, &mission.path()[1])) {
+    ImageBuilder::options = 0;
+    ImageBuilder::scale   = 1.0f;
+
+    if (!ImageBuilder::convertToDDS(srcFile.path(), &mission.path()[1])) {
       OZ_ERROR("Failed to convert '%s' to DDS", srcFile.path().cstr());
     }
 

@@ -55,16 +55,9 @@
 # include <io.h>
 # include <mmsystem.h>
 #else
+# include <alsa/asoundlib.h>
 # include <ctime>
 # include <pthread.h>
-# ifndef __linux__
-#  include <fcntl.h>
-#  include <sys/ioctl.h>
-#  include <sys/soundcard.h>
-#  include <unistd.h>
-# else
-#  include <alsa/asoundlib.h>
-# endif
 #endif
 
 #if defined(__native_client__) && !defined(__GLIBC__)
@@ -364,46 +357,6 @@ static DWORD WINAPI bellMain(void*)
 
 static void* bellMain(void*)
 {
-#ifndef __linux__
-
-  int fd;
-  if ((fd = open("/dev/dsp", O_WRONLY, 0)) < 0 &&
-      (fd = open("/dev/dsp0", O_WRONLY, 0)) < 0 &&
-      (fd = open("/dev/dsp1", O_WRONLY, 0)) < 0)
-  {
-    bellLock.unlock();
-    return nullptr;
-  }
-
-# if OZ_BYTE_ORDER == 4321
-  int format   = AFMT_S16_BE;
-# else
-  int format   = AFMT_S16_LE;
-# endif
-  int channels = 2;
-  int rate     = BELL_RATE;
-
-  if (ioctl(fd, SNDCTL_DSP_SETFMT, &format) < 0 ||
-      ioctl(fd, SNDCTL_DSP_CHANNELS, &channels) < 0 ||
-      ioctl(fd, SNDCTL_DSP_SPEED, &rate) < 0)
-  {
-    close(fd);
-
-    bellLock.unlock();
-    return nullptr;
-  }
-
-  int    nSamples = int(BELL_TIME * float(rate));
-  int    size     = nSamples * channels * sizeof(short);
-  short* samples  = static_cast<short*>(alloca(size));
-
-  genBellSamples(samples, nSamples, rate, 0, nSamples);
-  write(fd, samples, size);
-
-  close(fd);
-
-#else
-
   snd_pcm_t* alsa;
   if (snd_pcm_open(&alsa, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
     bellLock.unlock();
@@ -439,8 +392,6 @@ static void* bellMain(void*)
 
   snd_pcm_drain(alsa);
   snd_pcm_close(alsa);
-
-#endif
 
   bellLock.unlock();
   return nullptr;

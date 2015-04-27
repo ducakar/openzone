@@ -255,15 +255,17 @@ void Terra::saveClient()
     context.buildTexture("@terra/" + map.fileBaseName(), "terra/" + name);
   }
   else {
-    Log::print("Generating terrain texture (this might take a long time) ...");
+    Log::print("Generating terrain texture (this may take a while) ...");
 
     int imageLength = 2 * (VERTS - 1);
-    int imageFlags  = ImageBuilder::MIPMAPS_BIT;
+
+    ImageBuilder::options  = ImageBuilder::MIPMAPS_BIT;
     // S3TC introduces noticeable distortion.
-    imageFlags |= context.useS3TC ? ImageBuilder::COMPRESSION_BIT : 0;
+    ImageBuilder::options |= context.useS3TC ? ImageBuilder::COMPRESSION_BIT : 0;
+    ImageBuilder::scale    = 1.0f;
 
     ImageData image = TerraBuilder::generateImage(imageLength, imageLength);
-    ImageBuilder::createDDS(&image, 1, imageFlags, "terra/" + name + ".dds");
+    ImageBuilder::createDDS(&image, 1, "terra/" + name + ".dds");
 
     Log::printEnd(" OK");
   }
