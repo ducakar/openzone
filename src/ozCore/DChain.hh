@@ -92,8 +92,8 @@ private:
 
 public:
 
-  using Chain<Elem, INDEX>::citer;
-  using Chain<Elem, INDEX>::iter;
+  using Chain<Elem, INDEX>::citerator;
+  using Chain<Elem, INDEX>::iterator;
   using Chain<Elem, INDEX>::begin;
   using Chain<Elem, INDEX>::end;
   using Chain<Elem, INDEX>::first;

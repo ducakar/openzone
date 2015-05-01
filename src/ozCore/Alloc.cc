@@ -149,12 +149,12 @@ size_t Alloc::maxAmount = 0;
 
 Alloc::CIterator Alloc::objectCIter()
 {
-  return chunkInfos[OBJECT].citer();
+  return chunkInfos[OBJECT].citerator();
 }
 
 Alloc::CIterator Alloc::arrayCIter()
 {
-  return chunkInfos[ARRAY].citer();
+  return chunkInfos[ARRAY].citerator();
 }
 
 }

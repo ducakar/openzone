@@ -919,7 +919,7 @@ Json::ArrayCIterator Json::arrayCIter() const
     const List<Json>& list = static_cast<const ArrayData*>(data)->list;
 
     wasAccessed = true;
-    return list.citer();
+    return list.citerator();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -933,7 +933,7 @@ Json::ArrayIterator Json::arrayIter()
     List<Json>& list = static_cast<ArrayData*>(data)->list;
 
     wasAccessed = true;
-    return list.iter();
+    return list.iterator();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -947,7 +947,7 @@ Json::ObjectCIterator Json::objectCIter() const
     const Map<String, Json>& map = static_cast<const ObjectData*>(data)->map;
 
     wasAccessed = true;
-    return map.citer();
+    return map.citerator();
   }
   else {
     wasAccessed |= valueType == NIL;
@@ -961,7 +961,7 @@ Json::ObjectIterator Json::objectIter()
     Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
     wasAccessed = true;
-    return map.iter();
+    return map.iterator();
   }
   else {
     wasAccessed |= valueType == NIL;

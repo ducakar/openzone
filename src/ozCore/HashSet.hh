@@ -41,7 +41,7 @@ namespace oz
  *
  * @sa `oz::HashMap`, `oz::Set`
  */
-template <typename Elem>
+template <typename Elem, class HashFunc = Hash<Elem>>
 class HashSet
 {
 protected:
@@ -439,7 +439,7 @@ public:
    * %Iterator with constant access, initially points to the first element.
    */
   OZ_ALWAYS_INLINE
-  CIterator citer() const
+  CIterator citerator() const
   {
     return CIterator(*this);
   }
@@ -448,7 +448,7 @@ public:
    * %Iterator with non-constant access, initially points to the first element.
    */
   OZ_ALWAYS_INLINE
-  Iterator iter()
+  Iterator iterator()
   {
     return Iterator(*this);
   }
@@ -517,14 +517,6 @@ public:
   }
 
   /**
-   * Number of elements divided by hashtable index size.
-   */
-  float loadFactor() const
-  {
-    return float(pool.length()) / float(size);
-  }
-
-  /**
    * True iff a given element is found in the hashtable.
    */
   template <typename Elem_ = Elem>
@@ -534,7 +526,7 @@ public:
       return false;
     }
 
-    int    h     = hash(elem);
+    int    h     = HashFunc()(elem);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
@@ -556,7 +548,7 @@ public:
   {
     ensureCapacity(pool.length() + 1);
 
-    int    h     = hash(elem);
+    int    h     = HashFunc()(elem);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
@@ -579,7 +571,7 @@ public:
   {
     ensureCapacity(pool.length() + 1);
 
-    int    h     = hash(elem);
+    int    h     = HashFunc()(elem);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
@@ -605,7 +597,8 @@ public:
       return false;
     }
 
-    uint    index = uint(hash(elem)) % uint(size);
+    int     h     = HashFunc()(elem);
+    uint    index = uint(h) % uint(size);
     Entry*  entry = data[index];
     Entry** prev  = &data[index];
 

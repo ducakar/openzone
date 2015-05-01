@@ -45,7 +45,7 @@ void Loader::cleanupRender()
   OZ_GL_CHECK_ERROR();
 
   // delete imagines of removed objects
-  for (auto i = context.imagines.citer(); i.isValid();) {
+  for (auto i = context.imagines.citerator(); i.isValid();) {
     auto imago = i;
     ++i;
 
@@ -60,7 +60,7 @@ void Loader::cleanupRender()
 
   if (tick % IMAGO_CLEAR_INTERVAL == IMAGO_CLEAR_LAG) {
     // remove unused models
-    for (auto i = context.imagines.citer(); i.isValid();) {
+    for (auto i = context.imagines.citerator(); i.isValid();) {
       auto imago = i;
       ++i;
 
@@ -136,7 +136,7 @@ void Loader::cleanupSound()
   OZ_AL_CHECK_ERROR();
 
   // remove audios of removed objects
-  for (auto i = context.audios.citer(); i.isValid();) {
+  for (auto i = context.audios.citerator(); i.isValid();) {
     auto audio = i;
     ++i;
 
@@ -167,7 +167,7 @@ void Loader::cleanupSound()
 
   if (tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG) {
     // remove unused Audio objects
-    for (auto i = context.audios.citer(); i.isValid();) {
+    for (auto i = context.audios.citerator(); i.isValid();) {
       auto audio = i;
       ++i;
 
@@ -203,7 +203,7 @@ void Loader::cleanupSound()
   }
 
   // Remove continuous sounds that are not played any more.
-  for (auto i = context.contSources.iter(); i.isValid();) {
+  for (auto i = context.contSources.iterator(); i.isValid();) {
     auto src = i;
     ++i;
 

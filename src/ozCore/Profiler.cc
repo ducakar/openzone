@@ -31,9 +31,9 @@ namespace oz
 
 static HashMap<String, ulong64> profileTimes;
 
-Profiler::CIterator Profiler::citer()
+Profiler::CIterator Profiler::citerator()
 {
-  return profileTimes.citer();
+  return profileTimes.citerator();
 }
 
 void Profiler::add(const char* key, uint micros)

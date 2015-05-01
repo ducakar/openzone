@@ -128,7 +128,7 @@ public:
    * %Iterator with constant access, initially points to the first element.
    */
   OZ_ALWAYS_INLINE
-  CIterator citer() const
+  CIterator citerator() const
   {
     return CIterator(data, data + count);
   }
@@ -137,7 +137,7 @@ public:
    * %Iterator with non-constant access, initially points to the first element.
    */
   OZ_ALWAYS_INLINE
-  Iterator iter()
+  Iterator iterator()
   {
     return Iterator(data, data + count);
   }

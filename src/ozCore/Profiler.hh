@@ -70,7 +70,7 @@ public:
   /**
    * Return constant iterator for accumulated times.
    */
-  static CIterator citer();
+  static CIterator citerator();
 
   /**
    * Add a time in microseconds to a named sum.

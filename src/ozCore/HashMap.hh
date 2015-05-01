@@ -41,8 +41,8 @@ namespace oz
  *
  * @sa `oz::HashSet`, `oz::Map`
  */
-template <typename Key, typename Value>
-class HashMap : private HashSet<detail::MapPair<Key, Value>>
+template <typename Key, typename Value, class HashFunc = Hash<Key>>
+class HashMap : private HashSet<detail::MapPair<Key, Value>, HashFunc>
 {
 public:
 
@@ -54,21 +54,21 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef typename HashSet<Pair>::CIterator CIterator;
+  typedef typename HashSet<Pair, HashFunc>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef typename HashSet<Pair>::Iterator Iterator;
+  typedef typename HashSet<Pair, HashFunc>::Iterator Iterator;
 
 private:
 
-  using typename HashSet<Pair>::Entry;
+  using typename HashSet<Pair, HashFunc>::Entry;
 
-  using HashSet<Pair>::pool;
-  using HashSet<Pair>::data;
-  using HashSet<Pair>::size;
-  using HashSet<Pair>::ensureCapacity;
+  using HashSet<Pair, HashFunc>::pool;
+  using HashSet<Pair, HashFunc>::data;
+  using HashSet<Pair, HashFunc>::size;
+  using HashSet<Pair, HashFunc>::ensureCapacity;
 
   /**
    * Delete all elements and referenced objects in a given chain.
@@ -88,18 +88,17 @@ private:
 
 public:
 
-  using HashSet<Pair>::citer;
-  using HashSet<Pair>::iter;
-  using HashSet<Pair>::begin;
-  using HashSet<Pair>::end;
-  using HashSet<Pair>::length;
-  using HashSet<Pair>::isEmpty;
-  using HashSet<Pair>::capacity;
-  using HashSet<Pair>::loadFactor;
-  using HashSet<Pair>::contains;
-  using HashSet<Pair>::exclude;
-  using HashSet<Pair>::trim;
-  using HashSet<Pair>::clear;
+  using HashSet<Pair, HashFunc>::citerator;
+  using HashSet<Pair, HashFunc>::iterator;
+  using HashSet<Pair, HashFunc>::begin;
+  using HashSet<Pair, HashFunc>::end;
+  using HashSet<Pair, HashFunc>::length;
+  using HashSet<Pair, HashFunc>::isEmpty;
+  using HashSet<Pair, HashFunc>::capacity;
+  using HashSet<Pair, HashFunc>::contains;
+  using HashSet<Pair, HashFunc>::exclude;
+  using HashSet<Pair, HashFunc>::trim;
+  using HashSet<Pair, HashFunc>::clear;
 
   /**
    * Create an empty hashtable.
@@ -154,7 +153,7 @@ public:
    */
   bool operator == (const HashMap& ht) const
   {
-    return HashSet<Pair>::operator == (ht);
+    return HashSet<Pair, HashFunc>::operator == (ht);
   }
 
   /**
@@ -162,7 +161,7 @@ public:
    */
   bool operator != (const HashMap& ht) const
   {
-    return HashSet<Pair>::operator != (ht);
+    return HashSet<Pair, HashFunc>::operator != (ht);
   }
 
   /**
@@ -175,7 +174,7 @@ public:
       return nullptr;
     }
 
-    int    h     = hash(key);
+    int    h     = HashFunc()(key);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
@@ -198,7 +197,7 @@ public:
       return nullptr;
     }
 
-    int    h     = hash(key);
+    int    h     = HashFunc()(key);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
@@ -221,7 +220,7 @@ public:
   {
     ensureCapacity(pool.length() + 1);
 
-    int    h     = hash(key);
+    int    h     = HashFunc()(key);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
@@ -249,7 +248,7 @@ public:
   {
     ensureCapacity(pool.length() + 1);
 
-    int    h     = hash(key);
+    int    h     = HashFunc()(key);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 

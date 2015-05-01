@@ -847,4 +847,11 @@ public:
 
 };
 
+/**
+ * Hash function is the same as for C strings.
+ */
+template<>
+struct Hash<String> : Hash<const char*>
+{};
+
 }

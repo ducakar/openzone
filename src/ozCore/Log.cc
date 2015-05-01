@@ -317,11 +317,11 @@ bool Log::printMemoryLeaks()
 
 void Log::printProfilerStatistics()
 {
-  if (Profiler::citer().isValid()) {
+  if (Profiler::citerator().isValid()) {
     println("Profiler statistics {");
     indent();
 
-    for (const auto& i : Profiler::citer()) {
+    for (const auto& i : Profiler::citerator()) {
       println("%.6f s\t %s", double(i.value) / 1e6, i.key.cstr());
     }
 

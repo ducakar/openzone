@@ -37,8 +37,6 @@ namespace client
 namespace ui
 {
 
-static const int EMPTY_HASH = hash("");
-
 void Text::realign()
 {
   texX = x;
@@ -59,12 +57,12 @@ void Text::realign()
 }
 
 Text::Text() :
-  x(0), y(0), width(0), align(Area::ALIGN_NONE), font(Font::MONO), lastHash(EMPTY_HASH),
-  texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
+  x(0), y(0), width(0), align(Area::ALIGN_NONE), font(Font::MONO),
+  lastHash(Hash<const char*>::EMPTY), texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
 {}
 
 Text::Text(int x_, int y_, int width_, int align_, Font::Type font_, const char* s, ...) :
-  x(x_), y(y_), width(width_), align(align_), font(font_), lastHash(EMPTY_HASH),
+  x(x_), y(y_), width(width_), align(align_), font(font_), lastHash(Hash<const char*>::EMPTY),
   texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
 {
   va_list ap;
@@ -87,7 +85,7 @@ Text::Text(Text&& l) :
   l.width     = 0;
   l.align     = Area::ALIGN_NONE;
   l.font      = Font::MONO;
-  l.lastHash  = EMPTY_HASH;
+  l.lastHash  = Hash<const char*>::EMPTY;
   l.texX      = 0;
   l.texY      = 0;
   l.texWidth  = 0;
@@ -120,7 +118,7 @@ Text& Text::operator = (Text&& l)
   l.width     = 0;
   l.align     = Area::ALIGN_NONE;
   l.font      = Font::MONO;
-  l.lastHash  = EMPTY_HASH;
+  l.lastHash  = Hash<const char*>::EMPTY;
   l.texX      = 0;
   l.texY      = 0;
   l.texWidth  = 0;
@@ -169,7 +167,7 @@ void Text::setTextv(const char* s, va_list ap)
     clear();
   }
   else {
-    int newHash = hash(buffer);
+    int newHash = Hash<const char*>()(buffer);
 
     if (newHash != lastHash) {
       lastHash = newHash;
@@ -230,7 +228,7 @@ void Text::clear()
       glDeleteTextures(1, &texId);
     };
 
-    lastHash  = EMPTY_HASH;
+    lastHash  = Hash<const char*>::EMPTY;
     texX      = x;
     texY      = y;
     texWidth  = 0;

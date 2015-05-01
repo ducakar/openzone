@@ -153,23 +153,23 @@ public:
 }
 
 /**
- * Iterator with constant element access for a container (same as `container.citer()`).
+ * Iterator with constant element access for a container (same as `container.citerator()`).
  */
 template <class Container>
 OZ_ALWAYS_INLINE
 inline typename Container::CIterator citer(const Container& container)
 {
-  return container.citer();
+  return container.citerator();
 }
 
 /**
- * Iterator with non-constant element access for a container (same as `container.iter()`).
+ * Iterator with non-constant element access for a container (same as `container.iterator()`).
  */
 template <class Container>
 OZ_ALWAYS_INLINE
 inline typename Container::Iterator iter(Container& container)
 {
-  return container.iter();
+  return container.iterator();
 }
 
 /**

@@ -266,26 +266,44 @@ inline constexpr const Value& clamp(const Value& c, const Value& a, const Value&
 }
 
 /**
- * Hash function for integers, identity.
+ * Generic hash function for integers and pointers.
  */
-OZ_ALWAYS_INLINE
-inline constexpr int hash(int value)
+template <typename Number = int>
+struct Hash
 {
-  return value;
-}
+  /**
+   * Return value as integer.
+   */
+  OZ_ALWAYS_INLINE
+  constexpr int operator () (const Number& value) const
+  {
+    return int(value);
+  }
+};
 
 /**
- * Hash function for strings, (modified) Bernstein's hash.
+ * Hash function for strings.
  */
-inline int hash(const char* s)
+template <>
+struct Hash<const char*>
 {
-  uint value = 5381;
+  /// %Hash value for an empty string.
+  static const int EMPTY = 5381;
 
-  while (*s != '\0') {
-    value = (value * 33) ^ *s;
-    ++s;
+  /**
+   * (Modified) Bernstein's hash.
+   */
+  OZ_ALWAYS_INLINE
+  int operator () (const char* s) const
+  {
+    uint value = EMPTY;
+
+    while (*s != '\0') {
+      value = (value * 33) ^ *s;
+      ++s;
+    }
+    return value;
   }
-  return value;
-}
+};
 
 }

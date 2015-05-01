@@ -99,8 +99,8 @@ protected:
 
 public:
 
-  using List<Elem>::citer;
-  using List<Elem>::iter;
+  using List<Elem>::citerator;
+  using List<Elem>::iterator;
   using List<Elem>::begin;
   using List<Elem>::end;
   using List<Elem>::length;

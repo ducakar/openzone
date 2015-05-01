@@ -159,8 +159,8 @@ private:
 
 public:
 
-  using Set<Pair>::citer;
-  using Set<Pair>::iter;
+  using Set<Pair>::citerator;
+  using Set<Pair>::iterator;
   using Set<Pair>::begin;
   using Set<Pair>::end;
   using Set<Pair>::length;

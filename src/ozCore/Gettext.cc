@@ -108,7 +108,7 @@ bool Gettext::contains(const char* message) const
     return false;
   }
 
-  uint index = uint(hash(message)) % uint(nBuckets);
+  uint index = uint(Hash<const char*>()(message)) % uint(nBuckets);
 
   for (const Message* m = table[index]; m != nullptr; m = m->next) {
     if (String::equals(strings + m->original, message)) {
@@ -124,7 +124,7 @@ const char* Gettext::get(const char* message) const
     return message;
   }
 
-  uint index = uint(hash(message)) % uint(nBuckets);
+  uint index = uint(Hash<const char*>()(message)) % uint(nBuckets);
 
   for (const Message* m = table[index]; m != nullptr; m = m->next) {
     if (String::equals(strings + m->original, message)) {
@@ -212,7 +212,7 @@ bool Gettext::import(const File& file)
       continue;
     }
 
-    uint index = uint(hash(original)) % uint(nBuckets);
+    uint index = uint(Hash<const char*>()(original)) % uint(nBuckets);
 
     messages[i].next = table[index];
     table[index] = &messages[i];
