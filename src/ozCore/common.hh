@@ -266,7 +266,24 @@ inline constexpr const Value& clamp(const Value& c, const Value& a, const Value&
 }
 
 /**
- * Generic hash function for integers and pointers.
+ * Generic less function object, defaults to `operator <`.
+ */
+template <typename Type = void>
+struct Less
+{
+  /**
+   * Compare using `operator <`.
+   */
+  template <typename TypeA, typename TypeB>
+  OZ_ALWAYS_INLINE
+  constexpr bool operator () (const TypeA& a, const TypeB& b) const
+  {
+    return a < b;
+  }
+};
+
+/**
+ * Generic hash function object for integers and pointers.
  */
 template <typename Number = int>
 struct Hash

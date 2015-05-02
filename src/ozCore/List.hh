@@ -617,9 +617,10 @@ public:
   /**
    * Sort elements with quicksort.
    */
+  template <class LessFunc = Less<void>>
   void sort()
   {
-    aSort<Elem>(data, count);
+    aSort<Elem, LessFunc>(data, count);
   }
 
   /**

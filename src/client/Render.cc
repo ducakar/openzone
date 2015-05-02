@@ -83,7 +83,7 @@ struct Render::DrawEntry
   {}
 
   OZ_ALWAYS_INLINE
-  bool operator < (const DrawEntry& de)
+  bool operator < (const DrawEntry& de) const
   {
     return distance < de.distance;
   }

@@ -81,17 +81,6 @@ void String::resize(int newCount, bool keepContents)
   }
 }
 
-int String::strongHash(const char* s)
-{
-  uint value = 2166136261;
-
-  while (*s != '\0') {
-    value = (value * 16777619) ^ *s;
-    ++s;
-  }
-  return value;
-}
-
 int String::index(const char* s, char ch, int start)
 {
   for (int i = start; s[i] != '\0'; ++i) {
@@ -685,11 +674,6 @@ String String::si(double e, int nDigits)
   }
 
   return String(e, nDigits) + suffix;
-}
-
-int String::strongHash() const
-{
-  return strongHash(buffer);
 }
 
 int String::index(char ch, int start) const

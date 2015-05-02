@@ -179,7 +179,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem.key == key) {
+      if (key == entry->elem.key) {
         return &entry->elem.value;
       }
       entry = entry->next;
@@ -202,7 +202,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem.key == key) {
+      if (key == entry->elem.key) {
         return &entry->elem.value;
       }
       entry = entry->next;
@@ -225,7 +225,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem.key == key) {
+      if (key == entry->elem.key) {
         entry->elem.value = static_cast<Value_&&>(value);
         return entry->elem.value;
       }
@@ -253,7 +253,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem.key == key) {
+      if (key == entry->elem.key) {
         return entry->elem.value;
       }
       entry = entry->next;

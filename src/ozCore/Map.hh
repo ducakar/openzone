@@ -39,7 +39,7 @@ namespace detail
 /**
  * Key-value pair.
  */
-template <typename Key, typename Value>
+template <typename Key, typename Value, class LessFunc = Less<void>>
 struct MapPair
 {
   Key   key;   ///< Key.
@@ -49,7 +49,7 @@ struct MapPair
    * Equality operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator == (const MapPair& p) const
+  constexpr bool operator == (const MapPair& p) const
   {
     return key == p.key;
   }
@@ -58,29 +58,29 @@ struct MapPair
    * Less-than operator.
    */
   OZ_ALWAYS_INLINE
-  bool operator < (const MapPair& p) const
+  constexpr bool operator < (const MapPair& p) const
   {
-    return key < p.key;
+    return LessFunc()(key, p.key);
   }
 
   /**
-   * Equality operator for comparison against a key, required for `contains()`, `exclude()` etc.
+   * Equality operator for key-pair comparison, required by `Set` class.
    */
   template <typename Key_ = Key>
   OZ_ALWAYS_INLINE
-  bool operator == (const Key_& k) const
+  friend constexpr bool operator == (const Key_& k, const MapPair& p)
   {
-    return key == k;
+    return k == p.key;
   }
 
   /**
-   * Less-than operator required for `aBisection()`.
+   * Less-than operator for key-pair comparison, required for `aBisection()`.
    */
   template <typename Key_ = Key>
   OZ_ALWAYS_INLINE
-  friend bool operator < (const Key_& k, const MapPair& p)
+  friend constexpr bool operator < (const Key_& k, const MapPair& p)
   {
-    return k < p.key;
+    return LessFunc()(k, p.key);
   }
 };
 
@@ -100,32 +100,37 @@ struct MapPair
  *
  * @sa `oz::Set`, `oz::HashMap`
  */
-template <typename Key, typename Value>
-class Map : private Set<detail::MapPair<Key, Value>>
+template <typename Key, typename Value, class LessFunc = Less<void>>
+class Map : private Set<detail::MapPair<Key, Value, LessFunc>, Less<void>>
 {
 public:
 
   /**
    * Shortcut for key-value pair type.
    */
-  typedef detail::MapPair<Key, Value> Pair;
+  typedef detail::MapPair<Key, Value, LessFunc> Pair;
+
+  /**
+   * Shortcut for extended less function object.
+   */
+  typedef oz::Less<void> Less;
 
   /**
    * %Iterator with constant access to elements.
    */
-  typedef typename Set<Pair>::CIterator CIterator;
+  typedef typename Set<Pair, Less>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef typename Set<Pair>::Iterator Iterator;
+  typedef typename Set<Pair, Less>::Iterator Iterator;
 
 private:
 
-  using Set<Pair>::data;
-  using Set<Pair>::count;
-  using Set<Pair>::size;
-  using Set<Pair>::ensureCapacity;
+  using Set<Pair, Less>::data;
+  using Set<Pair, Less>::count;
+  using Set<Pair, Less>::size;
+  using Set<Pair, Less>::ensureCapacity;
 
   /**
    * Insert an element, optionally overwriting an existing one.
@@ -135,7 +140,7 @@ private:
   template <typename Key_ = Key, typename Value_ = Value>
   int insert(Key_&& key, Value_&& value, bool overwrite)
   {
-    int i = aBisection<Pair, Key>(data, count, key);
+    int i = aBisection<Pair, Key, Less>(data, count, key);
 
     if (i >= 0 && data[i].key == key) {
       if (overwrite) {
@@ -159,23 +164,23 @@ private:
 
 public:
 
-  using Set<Pair>::citerator;
-  using Set<Pair>::iterator;
-  using Set<Pair>::begin;
-  using Set<Pair>::end;
-  using Set<Pair>::length;
-  using Set<Pair>::isEmpty;
-  using Set<Pair>::capacity;
-  using Set<Pair>::operator [];
-  using Set<Pair>::first;
-  using Set<Pair>::last;
-  using Set<Pair>::contains;
-  using Set<Pair>::index;
-  using Set<Pair>::erase;
-  using Set<Pair>::exclude;
-  using Set<Pair>::reserve;
-  using Set<Pair>::trim;
-  using Set<Pair>::clear;
+  using Set<Pair, Less>::citerator;
+  using Set<Pair, Less>::iterator;
+  using Set<Pair, Less>::begin;
+  using Set<Pair, Less>::end;
+  using Set<Pair, Less>::length;
+  using Set<Pair, Less>::isEmpty;
+  using Set<Pair, Less>::capacity;
+  using Set<Pair, Less>::operator [];
+  using Set<Pair, Less>::first;
+  using Set<Pair, Less>::last;
+  using Set<Pair, Less>::contains;
+  using Set<Pair, Less>::index;
+  using Set<Pair, Less>::erase;
+  using Set<Pair, Less>::exclude;
+  using Set<Pair, Less>::reserve;
+  using Set<Pair, Less>::trim;
+  using Set<Pair, Less>::clear;
 
   /**
    * Create an empty map.
@@ -186,7 +191,7 @@ public:
    * Initialise from an initialiser list.
    */
   Map(InitialiserList<Pair> l) :
-    Set<Pair>(l)
+    Set<Pair, Less>(l)
   {}
 
   /**
@@ -218,7 +223,7 @@ public:
    */
   Map& operator = (InitialiserList<Pair> l)
   {
-    return Set<Pair>::operator = (l);
+    return Set<Pair, Less>::operator = (l);
   }
 
   /**
@@ -226,7 +231,7 @@ public:
    */
   bool operator == (const Map& m) const
   {
-    return Set<Pair>::operator == (m);
+    return Set<Pair, Less>::operator == (m);
   }
 
   /**
@@ -234,7 +239,7 @@ public:
    */
   bool operator != (const Map& m) const
   {
-    return Set<Pair>::operator != (m);
+    return Set<Pair, Less>::operator != (m);
   }
 
   /**
@@ -243,7 +248,7 @@ public:
   template <typename Key_ = Key>
   const Value* find(const Key_& key) const
   {
-    int i = aBisection<Pair, Key_>(data, count, key);
+    int i = aBisection<Pair, Key_, Less>(data, count, key);
     return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
   }
 
@@ -253,7 +258,7 @@ public:
   template <typename Key_ = Key>
   Value* find(const Key_& key)
   {
-    int i = aBisection<Pair, Key_>(data, count, key);
+    int i = aBisection<Pair, Key_, Less>(data, count, key);
     return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
   }
 

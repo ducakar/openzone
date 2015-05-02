@@ -124,7 +124,7 @@ public:
  * @param first pointer to first element in the array to be sorted.
  * @param last pointer to last element in the array.
  */
-template <typename Elem>
+template <typename Elem, class LessFunc = Less<void>>
 static void quicksort(Elem* first, Elem* last)
 {
   // 8-14 seem as optimal thresholds for switching to selection sort.
@@ -134,8 +134,8 @@ static void quicksort(Elem* first, Elem* last)
     Elem* bottom = last - 1;
 
     do {
-      for (; !(*last < *top) && top <= bottom; ++top);
-      for (; *last < *bottom && top < bottom; --bottom);
+      for (; !LessFunc()(*last, *top) && top <= bottom; ++top);
+      for (; LessFunc()(*last, *bottom) && top < bottom; --bottom);
 
       if (top >= bottom) {
         break;
@@ -147,9 +147,9 @@ static void quicksort(Elem* first, Elem* last)
 
     if (top != last) {
       swap<Elem>(*top, *last);
-      quicksort<Elem>(top + 1, last);
+      quicksort<Elem, LessFunc>(top + 1, last);
     }
-    quicksort<Elem>(first, top - 1);
+    quicksort<Elem, LessFunc>(first, top - 1);
   }
   else {
     // Selection sort.
@@ -159,7 +159,7 @@ static void quicksort(Elem* first, Elem* last)
       ++i;
 
       for (Elem* j = i; j <= last; ++j) {
-        if (*j < *min) {
+        if (LessFunc()(*j, *min)) {
           min = j;
         }
       }
@@ -451,13 +451,13 @@ inline void aReverse(Elem* array, int count)
 /**
  * Sort array using `detail::quicksort()`.
  */
-template <typename Elem>
+template <typename Elem, class LessFunc = Less<void>>
 inline void aSort(Elem* array, int count)
 {
   int last = count - 1;
 
   if (last > 0) {
-    detail::quicksort<Elem>(array, &array[last]);
+    detail::quicksort<Elem, LessFunc>(array, &array[last]);
   }
 }
 
@@ -474,7 +474,7 @@ inline void aSort(Elem* array, int count)
  * @param key the key we are looking for.
  * @return Index of the last element not greater than `key`, -1 otherwise.
  */
-template <typename Elem, typename Key = Elem>
+template <typename Elem, typename Key = Elem, class LessFunc = Less<void>>
 inline int aBisection(const Elem* array, int count, const Key& key)
 {
   int a = -1;
@@ -485,7 +485,7 @@ inline int aBisection(const Elem* array, int count, const Key& key)
   while (b - a > 1) {
     int c = (a + b) / 2;
 
-    if (key < array[c]) {
+    if (LessFunc()(key, array[c])) {
       b = c;
     }
     else {

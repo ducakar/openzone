@@ -107,11 +107,6 @@ public:
   }
 
   /**
-   * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
-   */
-  static int strongHash(const char* s);
-
-  /**
    * First character or null character if an empty string.
    */
   OZ_ALWAYS_INLINE
@@ -657,11 +652,6 @@ public:
   }
 
   /**
-   * FNV hash function, slower but has better distribution than Bernstein's `oz::hash()`.
-   */
-  int strongHash() const;
-
-  /**
    * Constant reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
@@ -853,5 +843,25 @@ public:
 template<>
 struct Hash<String> : Hash<const char*>
 {};
+
+/**
+ * Stronger alternative for string hash function.
+ */
+struct StrongHash
+{
+  /**
+   * FNV hash function, slower but has better distribution than Bernstein's.
+   */
+  int operator () (const char* s) const
+  {
+    uint value = 2166136261;
+
+    while (*s != '\0') {
+      value = (value * 16777619) ^ *s;
+      ++s;
+    }
+    return value;
+  }
+};
 
 }

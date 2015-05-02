@@ -531,7 +531,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem == elem) {
+      if (elem == entry->elem) {
         return true;
       }
 
@@ -553,7 +553,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem == elem) {
+      if (elem == entry->elem) {
         entry->elem = static_cast<Elem_&&>(elem);
         return;
       }
@@ -576,7 +576,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (entry->elem == elem) {
+      if (elem == entry->elem) {
         return;
       }
       entry = entry->next;
@@ -603,7 +603,7 @@ public:
     Entry** prev  = &data[index];
 
     while (entry != nullptr) {
-      if (entry->elem == elem) {
+      if (elem == entry->elem) {
         *prev = entry->next;
 
         entry->~Entry();

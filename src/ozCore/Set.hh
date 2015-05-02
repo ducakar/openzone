@@ -47,7 +47,7 @@ namespace oz
  *
  * @sa `oz::Map`, `oz::HashSet`
  */
-template <typename Elem>
+template <typename Elem, class LessFunc = Less<void>>
 class Set : protected List<Elem>
 {
 public:
@@ -77,9 +77,9 @@ protected:
   template <typename Elem_ = Elem>
   int insert(Elem_&& elem, bool overwrite)
   {
-    int i = aBisection<Elem, Elem_>(data, count, elem);
+    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
 
-    if (i >= 0 && data[i] == elem) {
+    if (i >= 0 && elem == data[i]) {
       if (overwrite) {
         data[i] = static_cast<Elem_&&>(elem);
       }
@@ -125,7 +125,7 @@ public:
   Set(InitialiserList<Elem> l) :
     List<Elem>(l)
   {
-    List<Elem>::sort();
+    List<Elem>::template sort<LessFunc>();
   }
 
   /**
@@ -158,7 +158,7 @@ public:
   Set& operator = (InitialiserList<Elem> l)
   {
     List<Elem>::operator = (l);
-    List<Elem>::sort();
+    List<Elem>::template sort<LessFunc>();
 
     return *this;
   }
@@ -185,8 +185,8 @@ public:
   template <typename Elem_ = Elem>
   bool contains(const Elem_& elem) const
   {
-    int i = aBisection<Elem, Elem_>(data, count, elem);
-    return i >= 0 && data[i] == elem;
+    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
+    return i >= 0 && elem == data[i];
   }
 
   /**
@@ -195,8 +195,8 @@ public:
   template <typename Elem_ = Elem>
   int index(const Elem_& elem) const
   {
-    int i = aBisection<Elem, Elem_>(data, count, elem);
-    return i >= 0 && data[i] == elem ? i : -1;
+    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
+    return i >= 0 && elem == data[i] ? i : -1;
   }
 
   /**
@@ -229,9 +229,9 @@ public:
   template <typename Elem_ = Elem>
   int exclude(const Elem_& elem)
   {
-    int i = aBisection<Elem, Elem_>(data, count, elem);
+    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
 
-    if (i >= 0 && data[i] == elem) {
+    if (i >= 0 && elem == data[i]) {
       erase(i);
       return i;
     }
