@@ -42,14 +42,14 @@ namespace oz
  * @sa `oz::HashSet`, `oz::Map`
  */
 template <typename Key, typename Value, class HashFunc = Hash<Key>>
-class HashMap : private HashSet<detail::MapPair<Key, Value>, HashFunc>
+class HashMap : private HashSet<detail::MapPair<Key, Value, Less<void>>, HashFunc>
 {
 public:
 
   /**
    * Shortcut for key-value pair type.
    */
-  typedef detail::MapPair<Key, Value> Pair;
+  typedef detail::MapPair<Key, Value, Less<void>> Pair;
 
   /**
    * %Iterator with constant access to elements.
@@ -86,6 +86,38 @@ private:
     }
   }
 
+  /**
+   * Insert an element, optionally overwriting an existing one.
+   *
+   * This is a helper function to reduce code duplication between `add()` and `include()`.
+   *
+   * @return Value of the inserted element.
+   */
+  template <typename Key_, typename Value_>
+  Value& insert(Key_&& key, Value_&& value, bool overwrite)
+  {
+    ensureCapacity(pool.length() + 1);
+
+    int    h     = HashFunc()(key);
+    uint   index = uint(h) % uint(size);
+    Entry* entry = data[index];
+
+    while (entry != nullptr) {
+      if (key == entry->elem.key) {
+        if (overwrite) {
+          entry->elem.value = static_cast<Value_&&>(value);
+        }
+        return entry->elem.value;
+      }
+      entry = entry->next;
+    }
+
+    data[index] = new(pool) Entry {
+      data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
+    };
+    return data[index]->elem.value;
+  }
+
 public:
 
   using HashSet<Pair, HashFunc>::citerator;
@@ -95,8 +127,6 @@ public:
   using HashSet<Pair, HashFunc>::length;
   using HashSet<Pair, HashFunc>::isEmpty;
   using HashSet<Pair, HashFunc>::capacity;
-  using HashSet<Pair, HashFunc>::contains;
-  using HashSet<Pair, HashFunc>::exclude;
   using HashSet<Pair, HashFunc>::trim;
   using HashSet<Pair, HashFunc>::clear;
 
@@ -165,6 +195,15 @@ public:
   }
 
   /**
+   * True iff an element matching a given key is found in the hashtable.
+   */
+  template <typename Key_ = Key>
+  bool contains(const Key_& key) const
+  {
+    return HashSet<Pair, HashFunc>::template contains<Key_>(key);
+  }
+
+  /**
    * Constant pointer to the value for a given key or `nullptr` if not found.
    */
   template <typename Key_ = Key>
@@ -193,21 +232,7 @@ public:
   template <typename Key_ = Key>
   Value* find(const Key_& key)
   {
-    if (size == 0) {
-      return nullptr;
-    }
-
-    int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
-
-    while (entry != nullptr) {
-      if (key == entry->elem.key) {
-        return &entry->elem.value;
-      }
-      entry = entry->next;
-    }
-    return nullptr;
+    return const_cast<Value*>(static_cast<const HashMap*>(this)->find<Key_>(key));
   }
 
   /**
@@ -218,24 +243,7 @@ public:
   template <typename Key_ = Key, typename Value_ = Value>
   Value& add(Key_&& key, Value_&& value)
   {
-    ensureCapacity(pool.length() + 1);
-
-    int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
-
-    while (entry != nullptr) {
-      if (key == entry->elem.key) {
-        entry->elem.value = static_cast<Value_&&>(value);
-        return entry->elem.value;
-      }
-      entry = entry->next;
-    }
-
-    data[index] = new(pool) Entry {
-      data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
-    };
-    return data[index]->elem.value;
+    return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
 
   /**
@@ -246,23 +254,18 @@ public:
   template <typename Key_ = Key, typename Value_ = Value>
   Value& include(Key_&& key, Value_&& value)
   {
-    ensureCapacity(pool.length() + 1);
+    return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
+  }
 
-    int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
-
-    while (entry != nullptr) {
-      if (key == entry->elem.key) {
-        return entry->elem.value;
-      }
-      entry = entry->next;
-    }
-
-    data[index] = new(pool) Entry {
-      data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
-    };
-    return data[index]->elem.value;
+  /**
+   * Remove the element that matches a given key.
+   *
+   * @return True iff the element was found (and removed).
+   */
+  template <typename Key_ = Key>
+  bool exclude(const Key_& key)
+  {
+    return HashSet<Pair, HashFunc>::template exclude<Key_>(key);
   }
 
   /**

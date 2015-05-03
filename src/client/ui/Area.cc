@@ -180,7 +180,7 @@ void Area::show(bool doShow)
   }
 }
 
-Pair<int> Area::align(int localX, int localY, int width, int height) const
+Pos2 Area::align(int localX, int localY, int width, int height) const
 {
   return {
     localX == CENTRE ? x + (this->width - width) / 2 :
@@ -193,7 +193,7 @@ Pair<int> Area::align(int localX, int localY, int width, int height) const
 void Area::realign()
 {
   if (parent != nullptr) {
-    Pair<int> pos = parent->align(defaultX, defaultY, width, height);
+    Pos2 pos = parent->align(defaultX, defaultY, width, height);
 
     x = pos.x;
     y = pos.y;

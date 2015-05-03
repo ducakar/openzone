@@ -122,7 +122,7 @@ public:
   /**
    * Calculate global (x, y) for given relative rectangle coordinates/dimension.
    */
-  Pair<int> align(int localX, int localY, int width, int height) const;
+  Pos2 align(int localX, int localY, int width, int height) const;
 
   /**
    * Fix position if parent has been resized.

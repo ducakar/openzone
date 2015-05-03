@@ -306,6 +306,33 @@ nextElem:
     }
   }
 
+  /**
+   * Insert an element, optionally overwriting an existing one.
+   *
+   * This is a helper function to reduce code duplication between `add()` and `include()`.
+   */
+  template <typename Elem_>
+  void insert(Elem_&& elem, bool overwrite)
+  {
+    ensureCapacity(pool.length() + 1);
+
+    int    h     = HashFunc()(elem);
+    uint   index = uint(h) % uint(size);
+    Entry* entry = data[index];
+
+    while (entry != nullptr) {
+      if (elem == entry->elem) {
+        if (overwrite) {
+          entry->elem = static_cast<Elem_&&>(elem);
+        }
+        return;
+      }
+      entry = entry->next;
+    }
+
+    data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
+  }
+
 public:
 
   /**
@@ -517,21 +544,21 @@ public:
   }
 
   /**
-   * True iff a given element is found in the hashtable.
+   * True iff an element matching a given key is found in the hashtable.
    */
-  template <typename Elem_ = Elem>
-  bool contains(const Elem_& elem) const
+  template <typename Key = Elem>
+  bool contains(const Key& key) const
   {
     if (size == 0) {
       return false;
     }
 
-    int    h     = HashFunc()(elem);
+    int    h     = HashFunc()(key);
     uint   index = uint(h) % uint(size);
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (elem == entry->elem) {
+      if (key == entry->elem) {
         return true;
       }
 
@@ -546,21 +573,7 @@ public:
   template <typename Elem_ = Elem>
   void add(Elem_&& elem)
   {
-    ensureCapacity(pool.length() + 1);
-
-    int    h     = HashFunc()(elem);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
-
-    while (entry != nullptr) {
-      if (elem == entry->elem) {
-        entry->elem = static_cast<Elem_&&>(elem);
-        return;
-      }
-      entry = entry->next;
-    }
-
-    data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
+    insert(static_cast<Elem_&&>(elem), true);
   }
 
   /**
@@ -569,41 +582,28 @@ public:
   template <typename Elem_ = Elem>
   void include(Elem_&& elem)
   {
-    ensureCapacity(pool.length() + 1);
-
-    int    h     = HashFunc()(elem);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
-
-    while (entry != nullptr) {
-      if (elem == entry->elem) {
-        return;
-      }
-      entry = entry->next;
-    }
-
-    data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
+    insert(static_cast<Elem_&&>(elem), false);
   }
 
   /**
-   * Remove an element.
+   * Remove the element that matches a given key.
    *
    * @return True iff the element was found (and removed).
    */
-  template <typename Elem_ = Elem>
-  bool exclude(const Elem_& elem)
+  template <typename Key = Elem>
+  bool exclude(const Key& key)
   {
     if (size == 0) {
       return false;
     }
 
-    int     h     = HashFunc()(elem);
+    int     h     = HashFunc()(key);
     uint    index = uint(h) % uint(size);
     Entry*  entry = data[index];
     Entry** prev  = &data[index];
 
     while (entry != nullptr) {
-      if (elem == entry->elem) {
+      if (key == entry->elem) {
         *prev = entry->next;
 
         entry->~Entry();

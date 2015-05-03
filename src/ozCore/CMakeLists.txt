@@ -31,7 +31,6 @@ add_library(ozCore
   Mutex.hh
   OutputStream.hh
   ozCore.hh
-  Pair.hh
   Pepper.hh
   Plane.hh
   Point.hh

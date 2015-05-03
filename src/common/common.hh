@@ -63,6 +63,15 @@ const int MAX_WORLD_COORD = 2048;
 const float EPSILON = float(MAX_WORLD_COORD) * 2.0f * Math::FLOAT_EPS;
 
 /**
+ * 2D integer position.
+ */
+struct Pos2
+{
+  int x; ///< X component.
+  int y; ///< Y component.
+};
+
+/**
  * 2D integer span.
  */
 struct Span

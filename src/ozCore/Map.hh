@@ -39,7 +39,7 @@ namespace detail
 /**
  * Key-value pair.
  */
-template <typename Key, typename Value, class LessFunc = Less<void>>
+template <typename Key, typename Value, class LessFunc>
 struct MapPair
 {
   Key   key;   ///< Key.
@@ -101,7 +101,7 @@ struct MapPair
  * @sa `oz::Set`, `oz::HashMap`
  */
 template <typename Key, typename Value, class LessFunc = Less<void>>
-class Map : private Set<detail::MapPair<Key, Value, LessFunc>, Less<void>>
+class Map : private Set<detail::MapPair<Key, Value, LessFunc>>
 {
 public:
 
@@ -111,36 +111,33 @@ public:
   typedef detail::MapPair<Key, Value, LessFunc> Pair;
 
   /**
-   * Shortcut for extended less function object.
-   */
-  typedef oz::Less<void> Less;
-
-  /**
    * %Iterator with constant access to elements.
    */
-  typedef typename Set<Pair, Less>::CIterator CIterator;
+  typedef typename Set<Pair>::CIterator CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef typename Set<Pair, Less>::Iterator Iterator;
+  typedef typename Set<Pair>::Iterator Iterator;
 
 private:
 
-  using Set<Pair, Less>::data;
-  using Set<Pair, Less>::count;
-  using Set<Pair, Less>::size;
-  using Set<Pair, Less>::ensureCapacity;
+  using Set<Pair>::data;
+  using Set<Pair>::count;
+  using Set<Pair>::size;
+  using Set<Pair>::ensureCapacity;
 
   /**
    * Insert an element, optionally overwriting an existing one.
    *
+   * This is a helper function to reduce code duplication between `add()` and `include()`.
+   *
    * @return Position of the inserted element.
    */
-  template <typename Key_ = Key, typename Value_ = Value>
+  template <typename Key_, typename Value_>
   int insert(Key_&& key, Value_&& value, bool overwrite)
   {
-    int i = aBisection<Pair, Key, Less>(data, count, key);
+    int i = aBisection<Pair, Key>(data, count, key);
 
     if (i >= 0 && data[i].key == key) {
       if (overwrite) {
@@ -164,23 +161,20 @@ private:
 
 public:
 
-  using Set<Pair, Less>::citerator;
-  using Set<Pair, Less>::iterator;
-  using Set<Pair, Less>::begin;
-  using Set<Pair, Less>::end;
-  using Set<Pair, Less>::length;
-  using Set<Pair, Less>::isEmpty;
-  using Set<Pair, Less>::capacity;
-  using Set<Pair, Less>::operator [];
-  using Set<Pair, Less>::first;
-  using Set<Pair, Less>::last;
-  using Set<Pair, Less>::contains;
-  using Set<Pair, Less>::index;
-  using Set<Pair, Less>::erase;
-  using Set<Pair, Less>::exclude;
-  using Set<Pair, Less>::reserve;
-  using Set<Pair, Less>::trim;
-  using Set<Pair, Less>::clear;
+  using Set<Pair>::citerator;
+  using Set<Pair>::iterator;
+  using Set<Pair>::begin;
+  using Set<Pair>::end;
+  using Set<Pair>::length;
+  using Set<Pair>::isEmpty;
+  using Set<Pair>::capacity;
+  using Set<Pair>::operator [];
+  using Set<Pair>::first;
+  using Set<Pair>::last;
+  using Set<Pair>::erase;
+  using Set<Pair>::reserve;
+  using Set<Pair>::trim;
+  using Set<Pair>::clear;
 
   /**
    * Create an empty map.
@@ -191,7 +185,7 @@ public:
    * Initialise from an initialiser list.
    */
   Map(InitialiserList<Pair> l) :
-    Set<Pair, Less>(l)
+    Set<Pair>(l)
   {}
 
   /**
@@ -223,7 +217,7 @@ public:
    */
   Map& operator = (InitialiserList<Pair> l)
   {
-    return Set<Pair, Less>::operator = (l);
+    return Set<Pair>::operator = (l);
   }
 
   /**
@@ -231,7 +225,7 @@ public:
    */
   bool operator == (const Map& m) const
   {
-    return Set<Pair, Less>::operator == (m);
+    return Set<Pair>::operator == (m);
   }
 
   /**
@@ -239,7 +233,25 @@ public:
    */
   bool operator != (const Map& m) const
   {
-    return Set<Pair, Less>::operator != (m);
+    return Set<Pair>::operator != (m);
+  }
+
+  /**
+   * True iff an element that matches a given key is found in the map.
+   */
+  template <typename Key_ = Key>
+  bool contains(const Key_& key) const
+  {
+    return Set<Pair>::template contains<Key_>(key);
+  }
+
+  /**
+   * Index of the element that matches a given key or -1 if not found.
+   */
+  template <typename Key_ = Key>
+  int index(const Key_& key) const
+  {
+    return Set<Pair>::template index<Key_>(key);
   }
 
   /**
@@ -248,8 +260,8 @@ public:
   template <typename Key_ = Key>
   const Value* find(const Key_& key) const
   {
-    int i = aBisection<Pair, Key_, Less>(data, count, key);
-    return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
+    int i = Set<Pair>::template index<Key_>(key);
+    return i < 0 ? nullptr : &data[i].value;
   }
 
   /**
@@ -258,8 +270,7 @@ public:
   template <typename Key_ = Key>
   Value* find(const Key_& key)
   {
-    int i = aBisection<Pair, Key_, Less>(data, count, key);
-    return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
+    return const_cast<Value*>(static_cast<const Map*>(this)->find<Key_>(key));
   }
 
   /**
@@ -282,6 +293,17 @@ public:
   int include(Key_&& key, Value_&& value)
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
+  }
+
+  /**
+   * Find and remove the element with a given key.
+   *
+   * @return Index of the removed element or -1 if not found.
+   */
+  template <typename Key_ = Key>
+  int exclude(const Key_& key)
+  {
+    return Set<Pair>::template exclude<Key_>(key);
   }
 
   /**

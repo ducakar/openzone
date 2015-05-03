@@ -382,7 +382,7 @@ public:
   }
 
   /**
-   * True iff a given value is found in the array.
+   * True iff a given value is found in the list.
    */
   template <typename Elem_ = Elem>
   bool contains(const Elem_& elem) const
@@ -414,7 +414,7 @@ public:
   template <typename Elem_ = Elem>
   void add(Elem_&& elem)
   {
-    insert(count, static_cast<Elem_&&>(elem));
+    insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -457,7 +457,7 @@ public:
       return i;
     }
     else {
-      insert(count, static_cast<Elem_&&>(elem));
+      insert<Elem_>(count, static_cast<Elem_&&>(elem));
       return count - 1;
     }
   }
@@ -563,7 +563,7 @@ public:
   template <typename Elem_ = Elem>
   void pushFirst(Elem_&& elem)
   {
-    insert(0, static_cast<Elem_&&>(elem));
+    insert<Elem_>(0, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -572,7 +572,7 @@ public:
   template <typename Elem_ = Elem>
   void pushLast(Elem_&& elem)
   {
-    insert(count, static_cast<Elem_&&>(elem));
+    insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
 
   /**

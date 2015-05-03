@@ -304,7 +304,7 @@ public:
   template <typename Elem_ = Elem>
   void add(Elem_&& elem)
   {
-    pushLast<Elem_>(static_cast<Elem_&&>(elem));
+    insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -347,7 +347,7 @@ public:
       return i;
     }
     else {
-      pushLast(static_cast<Elem_&&>(elem));
+      insert<Elem_>(count, static_cast<Elem_&&>(elem));
       return count - 1;
     }
   }
@@ -452,11 +452,7 @@ public:
   template <typename Elem_ = Elem>
   void pushFirst(Elem_&& elem)
   {
-    hard_assert(uint(count) < uint(SIZE));
-
-    aMoveBackward<Elem>(data, count, data + 1);
-    data[0] = static_cast<Elem_&&>(elem);
-    ++count;
+    insert<Elem_>(0, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -465,10 +461,7 @@ public:
   template <typename Elem_ = Elem>
   void pushLast(Elem_&& elem)
   {
-    hard_assert(uint(count) < uint(SIZE));
-
-    data[count] = static_cast<Elem_&&>(elem);
-    ++count;
+    insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -480,6 +473,8 @@ public:
    */
   Elem popFirst()
   {
+    hard_assert(count != 0);
+
     Elem elem = static_cast<Elem&&>(data[0]);
 
     --count;
@@ -511,9 +506,10 @@ public:
   /**
    * Sort elements with quicksort.
    */
+  template <class LessFunc = Less<void>>
   void sort()
   {
-    aSort<Elem>(data, count);
+    aSort<Elem, LessFunc>(data, count);
   }
 
   /**

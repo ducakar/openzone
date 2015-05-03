@@ -238,7 +238,7 @@ void BuildFrame::onRealign()
   rows   = max(0, (camera.height - 320) / SLOT_SIZE);
   height = HEADER_SIZE + 58 + rows * SLOT_SIZE;
 
-  Pair<int> pos = parent->align(defaultX, defaultY, width, height);
+  Pos2 pos = parent->align(defaultX, defaultY, width, height);
 
   x = pos.x;
   y = pos.y;

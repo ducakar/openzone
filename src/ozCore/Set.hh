@@ -74,7 +74,7 @@ protected:
    *
    * @return Position of the inserted element.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   int insert(Elem_&& elem, bool overwrite)
   {
     int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
@@ -180,23 +180,22 @@ public:
   }
 
   /**
-   * True iff a given key is found in the set.
+   * True iff an element that matches a given key is found in the set.
    */
-  template <typename Elem_ = Elem>
-  bool contains(const Elem_& elem) const
+  template <typename Key = Elem>
+  bool contains(const Key& key) const
   {
-    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
-    return i >= 0 && elem == data[i];
+    return index<Key>(key) >= 0;
   }
 
   /**
-   * Index of the element with a given value or -1 if not found.
+   * Index of the element that matches a given key or -1 if not found.
    */
-  template <typename Elem_ = Elem>
-  int index(const Elem_& elem) const
+  template <typename Key = Elem>
+  int index(const Key& key) const
   {
-    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
-    return i >= 0 && elem == data[i] ? i : -1;
+    int i = aBisection<Elem, Key, LessFunc>(data, count, key);
+    return i < 0 || !(key == data[i]) ? -1 : i;
   }
 
   /**
@@ -222,16 +221,16 @@ public:
   }
 
   /**
-   * Find and remove the element with a given value.
+   * Find and remove the element that mathes a given key.
    *
    * @return Index of the removed element or -1 if not found.
    */
-  template <typename Elem_ = Elem>
-  int exclude(const Elem_& elem)
+  template <typename Key = Elem>
+  int exclude(const Key& key)
   {
-    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
+    int i = aBisection<Elem, Key, LessFunc>(data, count, key);
 
-    if (i >= 0 && elem == data[i]) {
+    if (i >= 0 && key == data[i]) {
       erase(i);
       return i;
     }

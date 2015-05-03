@@ -69,7 +69,7 @@ public:
   int  id;
 
   Span getInters(float minX, float minY, float maxX, float maxY, float epsilon = 0.0f) const;
-  Pair<int> getIndices(float x, float y) const;
+  Pos2 getIndices(float x, float y) const;
   float height(float x, float y) const;
 
   void reset();
@@ -95,7 +95,7 @@ inline Span Terra::getInters(float minPosX, float minPosY, float maxPosX, float 
   };
 }
 
-inline Pair<int> Terra::getIndices(float x, float y) const
+inline Pos2 Terra::getIndices(float x, float y) const
 {
   int ix = int((x + DIM) / Quad::SIZE);
   int iy = int((y + DIM) / Quad::SIZE);
@@ -105,8 +105,8 @@ inline Pair<int> Terra::getIndices(float x, float y) const
 
 inline float Terra::height(float x, float y) const
 {
-  Pair<int>   i    = getIndices(x, y);
-  const Quad& quad = quads[i.x][i.y];
+  Pos2        pos  = getIndices(x, y);
+  const Quad& quad = quads[pos.x][pos.y];
 
   float localX = x - quad.vertex.x;
   float localY = y - quad.vertex.y;
