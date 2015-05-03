@@ -481,7 +481,7 @@ struct Json::Formatter
         break;
       }
       case NUMBER: {
-        String s = String(value.number, format->significantDigits);
+        String s = String(value.number, format->numberFormat);
         os->writeChars(s, s.length());
         break;
       }
@@ -601,7 +601,7 @@ struct Json::Formatter
   }
 };
 
-const Json::Format Json::DEFAULT_FORMAT = { 2, 32, 9, "\n" };
+const Json::Format Json::DEFAULT_FORMAT = { 2, 32, "%.9g", "\n" };
 
 OZ_HIDDEN
 Json::Json(void* data_, Type valueType_) :

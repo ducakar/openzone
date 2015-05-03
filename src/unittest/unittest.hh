@@ -156,6 +156,4 @@ void test_arrays();
 
 void test_Alloc();
 
-void test_String();
-
 int main();

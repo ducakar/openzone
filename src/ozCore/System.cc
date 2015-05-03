@@ -33,7 +33,6 @@
 #include "Java.hh"
 #include "Pepper.hh"
 
-#include <clocale>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -448,7 +447,6 @@ static void abort(bool doHalt)
 
 const int System::HANDLER_BIT;
 const int System::HALT_BIT;
-const int System::LOCALE_BIT;
 
 void System::trap()
 {
@@ -565,10 +563,6 @@ void System::init(int flags, CrashHandler* crashHandler_)
 {
   initFlags    = flags;
   crashHandler = crashHandler_;
-
-  if (initFlags & LOCALE_BIT) {
-    setlocale(LC_ALL, "");
-  }
 
   threadInit();
 }

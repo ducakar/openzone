@@ -30,11 +30,9 @@
 
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
-
-#if defined(__ANDROID__) || defined(_WIN32)
-# define exp10(x) exp(log(10.0) * (x))
-#endif
+#include <clocale>
 
 namespace oz
 {
@@ -291,142 +289,14 @@ bool String::parseBool(const char* s, const char** end)
   }
 }
 
-int String::parseInt(const char* s, const char** end)
+int String::parseInt(const char* s, const char** end, int base)
 {
-  const char* p = s;
-
-  // Sign.
-  int sign = 1;
-  if (*p == '-') {
-    sign = -1;
-    ++p;
-  }
-
-  // Non-zero integer.
-  if ('1' <= *p && *p <= '9') {
-    int number = *p - '0';
-    ++p;
-
-    while ('0' <= *p && *p <= '9') {
-      number *= 10;
-      number += *p - '0';
-      ++p;
-    }
-
-    if (end != nullptr) {
-      *end = p;
-    }
-    return sign * number;
-  }
-  // Zero or invalid.
-  else {
-    if (end != nullptr) {
-      *end = *p == '0' ? p + 1 : s;
-    }
-    return 0;
-  }
+  return int(strtol(s, const_cast<char**>(end), base));
 }
 
 double String::parseDouble(const char* s, const char** end)
 {
-  const char* p = s;
-  double number;
-
-  // Sign.
-  double sign = 1.0;
-  if (*p == '-') {
-    sign = -1.0;
-    ++p;
-  }
-
-  // Non-zero integer part.
-  if ('1' <= *p && *p <= '9') {
-    number = *p - '0';
-    ++p;
-
-    while ('0' <= *p && *p <= '9') {
-      number *= 10.0;
-      number += *p - '0';
-      ++p;
-    }
-  }
-  // Zero integer part.
-  else if (*p == '0') {
-    number = 0.0;
-    ++p;
-  }
-  // Infinity.
-  else if (p[0] == 'i' && p[1] == 'n' && p[2] == 'f') {
-    if (end != nullptr) {
-      *end = p + 3;
-    }
-    return sign * Math::INF;
-  }
-  // Not-a-number.
-  else if (p[0] == 'n' && p[1] == 'a' && p[2] == 'n') {
-    if (end != nullptr) {
-      *end = p + 3;
-    }
-    return sign < 0.0f ? -Math::NaN : Math::NaN;
-  }
-  // Invalid.
-  else {
-invalidNumber:
-    if (end != nullptr) {
-      *end = s;
-    }
-    return 0.0;
-  }
-
-  // Fractional part.
-  if (*p == '.') {
-    ++p;
-
-    if (*p < '0' || '9' < *p) {
-      goto invalidNumber;
-    }
-
-    double fract = 1.0;
-    do {
-      fract  *= 0.1;
-      number += (*p - '0') * fract;
-      ++p;
-    }
-    while ('0' <= *p && *p <= '9');
-  }
-
-  // Exponent.
-  if (*p == 'e' || *p == 'E') {
-    ++p;
-
-    double expSign = 1.0;
-    if (*p == '-') {
-      expSign = -1.0;
-      ++p;
-    }
-    else if (*p == '+') {
-      ++p;
-    }
-
-    if (*p < '0' || '9' < *p) {
-      goto invalidNumber;
-    }
-
-    double expNumber = 0.0;
-    do {
-      expNumber *= 10.0;
-      expNumber += *p - '0';
-      ++p;
-    }
-    while ('0' <= *p && *p <= '9');
-
-    number *= exp10(expSign * expNumber);
-  }
-
-  if (end != nullptr) {
-    *end = p;
-  }
-  return sign * number;
+  return strtod(s, const_cast<char**>(end));
 }
 
 String::String(const char* s, int nChars)
@@ -444,131 +314,20 @@ String::String(bool b) :
   String(b ? "true" : "false", 5)
 {}
 
-String::String(int i)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
+String::String(int i, const char* format)
 {
-  static_assert(BUFFER_SIZE >= 12, "Too small oz::String::baseBuffer for int representation");
-
-  // First, count the digits (at least one digit is always counted).
-  int n = i;
-  do {
-    n /= 10;
-    ++count;
-  }
-  while (n != 0);
-
-  if (i < 0) {
-    if (i == int(0x80000000)) {
-      mCopy(baseBuffer, "-2147483648", 12);
-      count = 11;
-      return;
-    }
-    else {
-      i = -i;
-
-      baseBuffer[0] = '-';
-      ++count;
-    }
-  }
-
-  for (int j = count - 1; ; j--) {
-    baseBuffer[j] = char('0' + (i % 10));
-    i /= 10;
-
-    if (i == 0) {
-      break;
-    }
-  }
-
-  baseBuffer[count] = '\0';
+  count = snprintf(baseBuffer, BUFFER_SIZE, format, i);
 }
 
-String::String(double d, int nDigits)
+String::String(double d, const char* format)
 {
-  static_assert(BUFFER_SIZE >= 26, "Too small oz::String::baseBuffer for double representation");
-
-  nDigits = clamp<int>(nDigits, 1, 17);
-
-  union DoubleToBits
-  {
-    double  value;
-    ulong64 bits;
-  }
-  db = { d };
-
-  // Sign.
-  if (db.bits & 0x8000000000000000ull) {
-    baseBuffer[count++] = '-';
-    d = -d;
-  }
-
-  // Check for NaN, infinity and zero.
-  if ((db.bits << 1) > 0xffe0000000000000ull) {
-    mCopy(baseBuffer + count, "nan", 4);
-    count += 3;
-    return;
-  }
-  else if ((db.bits << 1) == 0xffe0000000000000ull) {
-    mCopy(baseBuffer + count, "inf", 4);
-    count += 3;
-    return;
-  }
-  else if (d == 0.0) {
-    baseBuffer[count++] = '0';
-    baseBuffer[count] = '\0';
-    return;
-  }
-
-  // Mantissa.
-  int    e      = 1 + int(floor(log10(d)));     // Intentionally 1 higher, will be fixed later.
-  double eps    = 5.0 * exp10(e - nDigits - 1);
-  double base   = exp10(e);
-  double approx = 0.0;
-
-  // Rounding does NOT add leading 1, e.g. 0.00999 -> 0.01, so decrease leading decimal position.
-  e -= d + eps < base;
-
-  bool isExp      = e <= -5 || nDigits <= e;
-  int  pointIndex = isExp ? 1 : 1 + e;
-
-  for (int i = !isExp && e < 0 ? e : 0; ; ++i) {
-    double digitBase = exp10(e - i);
-    int    digit     = int((d - approx) / digitBase);
-
-    approx += digit * digitBase;
-
-    if (d + eps >= approx + digitBase) {
-      approx = d;
-      ++digit;
-    }
-
-    if (i == pointIndex) {
-      baseBuffer[count++] = '.';
-    }
-    baseBuffer[count++] = char('0' + digit);
-
-    if ((isExp || i >= e) && abs<double>(d - approx) < eps) {
-      break;
-    }
-  }
-
-  if (isExp) {
-    // Exponent.
-    baseBuffer[count++] = 'e';
-
-    if (e < 0) {
-      baseBuffer[count++] = '-';
-      e = -e;
-    }
-    else {
-      baseBuffer[count++] = '+';
-    }
-
-    baseBuffer[count++] = char('0' + e / 10);
-    baseBuffer[count++] = char('0' + e % 10);
-  }
-
-  baseBuffer[count] = '\0';
+  count = snprintf(baseBuffer, BUFFER_SIZE, format, d);
 }
+
+#pragma GCC diagnostic pop
 
 String::~String()
 {
@@ -653,7 +412,7 @@ String String::str(const char* s, ...)
   return String(localBuffer, length);
 }
 
-String String::si(double e, int nDigits)
+String String::si(double e, const char* format)
 {
   char prefixes[] = "m kMG";
 
@@ -673,7 +432,7 @@ String String::si(double e, int nDigits)
     suffix[1] = prefixes[nGroups + 1];
   }
 
-  return String(e, nDigits) + suffix;
+  return String(e, format) + suffix;
 }
 
 int String::index(char ch, int start) const

@@ -64,10 +64,10 @@ public:
    */
   struct Format
   {
-    int         indentSpaces;      ///< Number of spaces used for indentitation.
-    int         alignmentColumn;   ///< Value alignment column.
-    int         significantDigits; ///< Significant digits for formatting numbers.
-    const char* lineEnd;           ///< EOL character sequence.
+    int         indentSpaces;    ///< Number of spaces used for indentitation.
+    int         alignmentColumn; ///< Value alignment column.
+    const char* numberFormat;    ///< `printf()`-like number format.
+    const char* lineEnd;         ///< EOL character sequence.
   };
 
   /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).

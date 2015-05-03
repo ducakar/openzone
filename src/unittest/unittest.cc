@@ -56,8 +56,6 @@ int main()
   test_Alloc();
 #endif
 
-  test_String();
-
   Log() << (hasPassed ? "Unittest PASSED" : "Unittest FAILED");
   return EXIT_SUCCESS;
 }

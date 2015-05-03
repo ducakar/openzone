@@ -278,39 +278,17 @@ public:
   /**
    * Parse boolean value.
    *
-   * @param s string to parse.
-   * @param end if not nullptr, it is set to the first character after the successfully parsed
-   * string. Thus, if parsing fails `end` value equals `s`.
    * @return true if "true", false if "false" or anything else (parsing fails).
    */
   static bool parseBool(const char* s, const char** end = nullptr);
 
   /**
-   * Parse integer value.
-   *
-   * Signed integer string the should match regular expression `-?(0|[1-9][0-9]*).
-   *
-   * @param s string to parse.
-   * @param end if not nullptr, it is set to the first character after the successfully parsed
-   * string. If parsing fails `end` equals `s`.
-   * @return parsed integer value, 0 if parsing fails.
+   * Parse integer value, wrapper for `strtol`.
    */
-  static int parseInt(const char* s, const char** end = nullptr);
+  static int parseInt(const char* s, const char** end = nullptr, int base = 10);
 
   /**
-   * Parse floating-point value.
-   *
-   * Double-precision floating-point value should match regular expression `-?inf`, `-?nan` or
-   * `-?(0|([1-9][0-9]*)(\\.[0-9]+)?((e|E)-?[0-9]+)?` (i.e. JSON number format).
-   *
-   * @note
-   * Only single-precision accuracy is guaranteed. Rounding errors as big as 3.33e-16 are known to
-   * occur.
-   *
-   * @param s string to parse.
-   * @param end if not nullptr, it is set to the first character after the successfully parsed
-   * string. If parsing fails `end` equals `s`.
-   * @return parsed value, 0.0 if parsing fails.
+   * Parse floating-point value, wrapper for `strtod`.
    */
   static double parseDouble(const char* s, const char** end = nullptr);
 
@@ -390,24 +368,14 @@ public:
   explicit String(bool b);
 
   /**
-   * Create a string representing a given int value.
+   * Create a string representing a given int value using `snprintf()`.
    */
-  explicit String(int i);
+  explicit String(int i, const char* format = "%d");
 
   /**
-   * Create a string representing a given double value.
-   *
-   * Number is formatted the same as `%.9g` in `printf()` using C locale.
-   *
-   * Converting a 6-digit decimal representation to a single-precision float value and back to
-   * decimal representation should be an identity. The same for converting a float to a 9-digit
-   * decimal representation and back to a float.
-   * For double-precision values these digit counts are 15 and 17 respectively.
-   *
-   * @param d number.
-   * @param nDigits number of digits to show (must be 1...17).
+   * Create a string representing a given double value using `snprintf()`.
    */
-  explicit String(double d, int nDigits = 9);
+  explicit String(double d, const char* format = "%.9g");
 
   /**
    * Destructor.
@@ -453,7 +421,7 @@ public:
    * It adds a space after the number and, when neccessary, it multiplies the number with an
    * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
    */
-  static String si(double e, int nDigits = 3);
+  static String si(double e, const char* format = "%.3g");
 
   /**
    * Equality.
