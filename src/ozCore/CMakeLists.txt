@@ -5,7 +5,7 @@ add_library(ozCore
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   Alloc.hh
-  arrays.hh
+  Arrays.hh
   Bitset.hh
   Buffer.hh
   CallOnce.hh
@@ -19,7 +19,6 @@ add_library(ozCore
   HashMap.hh
   HashSet.hh
   InputStream.hh
-  iterables.hh
   Java.hh
   Json.hh
   List.hh
@@ -52,7 +51,6 @@ add_library(ozCore
   Vec3.hh
   Vec4.hh
   Alloc.cc
-  arrays.cc
   Bitset.cc
   Buffer.cc
   CallOnce.cc

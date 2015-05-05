@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "arrays.hh"
+#include "Arrays.hh"
 
 namespace oz
 {
@@ -52,12 +52,12 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef detail::ArrayIterator<const Elem> CIterator;
+  typedef Arrays::CIterator<Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef detail::ArrayIterator<Elem> Iterator;
+  typedef Arrays::Iterator<Elem> Iterator;
 
 private:
 
@@ -90,7 +90,7 @@ public:
   {
     hard_assert(l.size() <= SIZE);
 
-    aCopy<Elem>(l.begin(), int(l.size()), data);
+    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
   }
 
   /**
@@ -102,7 +102,7 @@ public:
   {
     hard_assert(l.size() <= SIZE);
 
-    aCopy<Elem>(l.begin(), int(l.size()), data);
+    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
     count = int(l.size());
 
     return *this;
@@ -113,7 +113,7 @@ public:
    */
   bool operator == (const SList& l) const
   {
-    return count == l.count && aEquals<Elem>(data, count, l.data);
+    return count == l.count && Arrays::equals<Elem>(data, count, l.data);
   }
 
   /**
@@ -277,7 +277,7 @@ public:
   template <typename Elem_ = Elem>
   bool contains(const Elem_& elem) const
   {
-    return aContains<Elem, Elem_>(data, count, elem);
+    return Arrays::contains<Elem, Elem_>(data, count, elem);
   }
 
   /**
@@ -286,7 +286,7 @@ public:
   template <typename Elem_ = Elem>
   int index(const Elem_& elem) const
   {
-    return aIndex<Elem, Elem_>(data, count, elem);
+    return Arrays::index<Elem, Elem_>(data, count, elem);
   }
 
   /**
@@ -295,7 +295,7 @@ public:
   template <typename Elem_ = Elem>
   int lastIndex(const Elem_& elem) const
   {
-    return aLastIndex<Elem, Elem_>(data, count, elem);
+    return Arrays::lastIndex<Elem, Elem_>(data, count, elem);
   }
 
   /**
@@ -316,7 +316,7 @@ public:
 
     hard_assert(uint(newCount) <= uint(SIZE));
 
-    aCopy<Elem>(array, arrayCount, data + count);
+    Arrays::copy<Elem>(array, arrayCount, data + count);
     count = newCount;
   }
 
@@ -329,7 +329,7 @@ public:
 
     hard_assert(uint(newCount) <= uint(SIZE));
 
-    aMove<Elem>(array, arrayCount, data + count);
+    Arrays::move<Elem>(array, arrayCount, data + count);
     count = newCount;
   }
 
@@ -341,7 +341,7 @@ public:
   template <typename Elem_ = Elem>
   int include(Elem_&& elem)
   {
-    int i = aIndex<Elem, Elem>(data, count, elem);
+    int i = Arrays::index<Elem, Elem>(data, count, elem);
 
     if (i >= 0) {
       return i;
@@ -363,7 +363,7 @@ public:
     hard_assert(uint(i) <= uint(count));
     hard_assert(uint(count) < uint(SIZE));
 
-    aMoveBackward<Elem>(data + i, count - i, data + i + 1);
+    Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
     data[i] = static_cast<Elem_&&>(elem);
     ++count;
   }
@@ -385,7 +385,7 @@ public:
       data[count] = Elem();
     }
     else {
-      aMove<Elem>(data + i + 1, count - i, data + i);
+      Arrays::move<Elem>(data + i + 1, count - i, data + i);
     }
   }
 
@@ -418,7 +418,7 @@ public:
   template <typename Elem_ = Elem>
   int exclude(const Elem_& elem)
   {
-    int i = aIndex<Elem, Elem_>(data, count, elem);
+    int i = Arrays::index<Elem, Elem_>(data, count, elem);
 
     if (i >= 0) {
       erase(i);
@@ -436,7 +436,7 @@ public:
   template <typename Elem_ = Elem>
   int excludeUnordered(const Elem_& elem)
   {
-    int i = aIndex<Elem, Elem_>(data, count, elem);
+    int i = Arrays::index<Elem, Elem_>(data, count, elem);
 
     if (i >= 0) {
       eraseUnordered(i);
@@ -473,13 +473,16 @@ public:
    */
   Elem popFirst()
   {
-    hard_assert(count != 0);
+    if (count == 0) {
+      return Elem();
+    }
+    else {
+      Elem elem = static_cast<Elem&&>(data[0]);
 
-    Elem elem = static_cast<Elem&&>(data[0]);
-
-    --count;
-    aMove<Elem>(data + 1, count, data);
-    return elem;
+      --count;
+      Arrays::move<Elem>(data + 1, count, data);
+      return elem;
+    }
   }
 
   /**
@@ -489,10 +492,13 @@ public:
    */
   Elem popLast()
   {
-    hard_assert(count != 0);
-
-    --count;
-    return static_cast<Elem&&>(data[count]);
+    if (count == 0) {
+      return Elem();
+    }
+    else {
+      --count;
+      return static_cast<Elem&&>(data[count]);
+    }
   }
 
   /**
@@ -500,7 +506,7 @@ public:
    */
   void reverse()
   {
-    aReverse<Elem>(data, count);
+    Arrays::reverse<Elem>(data, count);
   }
 
   /**
@@ -509,7 +515,7 @@ public:
   template <class LessFunc = Less<void>>
   void sort()
   {
-    aSort<Elem, LessFunc>(data, count);
+    Arrays::sort<Elem, LessFunc>(data, count);
   }
 
   /**
@@ -545,7 +551,7 @@ public:
    */
   void free()
   {
-    aFree<Elem>(data, count);
+    Arrays::free<Elem>(data, count);
     count = 0;
   }
 

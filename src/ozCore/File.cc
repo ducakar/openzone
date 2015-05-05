@@ -31,6 +31,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -450,7 +451,7 @@ bool File::read(char* buffer, int* size) const
   }
   else if (data != nullptr) {
     *size = min<int>(*size, fileSize);
-    mCopy(buffer, data, *size);
+    memcpy(buffer, data, *size);
     return true;
   }
   else {
@@ -799,7 +800,7 @@ void File::destroy()
 {
   PHYSFS_deinit();
 
-  aFill<String, String>(specialDirs, aLength<String>(specialDirs), String::EMPTY);
+  Arrays::fill<String, String>(specialDirs, Arrays::length<String>(specialDirs), String::EMPTY);
   exePath = "";
 }
 

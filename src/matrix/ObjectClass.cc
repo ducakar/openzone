@@ -201,7 +201,7 @@ void ObjectClass::init(const Json& config, const char* name_)
    */
 
   audioType = liber.audioIndex(config["audioType"].get(""));
-  aFill(audioSounds, MAX_SOUNDS, -1);
+  Arrays::fill(audioSounds, MAX_SOUNDS, -1);
 
   if (audioType >= 0) {
     flags |= Object::AUDIO_BIT;

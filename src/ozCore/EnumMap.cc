@@ -39,7 +39,7 @@ EnumMapImpl::EnumMapImpl(InitialiserList<Entry> l) :
 {
   hard_assert(l.size() != 0);
 
-  aCopy<Entry>(l.begin(), int(l.size()), entries);
+  Arrays::copy<Entry>(l.begin(), int(l.size()), entries);
 }
 
 EnumMapImpl::~EnumMapImpl()

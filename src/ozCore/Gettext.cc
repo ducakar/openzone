@@ -27,6 +27,7 @@
 #include "Gettext.hh"
 
 #include <cstdlib>
+#include <cstring>
 
 namespace oz
 {
@@ -180,8 +181,8 @@ bool Gettext::import(const File& file)
   int newStringsSize     = is.capacity() - stringsOffset;
 
   // Expand messages and strings arrays.
-  messages = aReallocate<Message>(messages, nMessages, nMessages + nNewMessages);
-  strings  = aReallocate<char>(strings, stringsSize, stringsSize + newStringsSize);
+  messages = Arrays::reallocate<Message>(messages, nMessages, nMessages + nNewMessages);
+  strings  = Arrays::reallocate<char>(strings, stringsSize, stringsSize + newStringsSize);
 
   // Add new message entries.
   for (int i = 0; i < nNewMessages; ++i) {
@@ -194,7 +195,7 @@ bool Gettext::import(const File& file)
 
   // Add new strings.
   is.seek(stringsOffset);
-  mCopy(strings + stringsSize, is.skip(newStringsSize), newStringsSize);
+  memcpy(strings + stringsSize, is.skip(newStringsSize), newStringsSize);
 
   nMessages   += nNewMessages;
   stringsSize += newStringsSize;

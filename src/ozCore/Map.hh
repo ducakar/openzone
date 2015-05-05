@@ -137,7 +137,7 @@ private:
   template <typename Key_, typename Value_>
   int insert(Key_&& key, Value_&& value, bool overwrite)
   {
-    int i = aBisection<Pair, Key>(data, count, key);
+    int i = Arrays::bisection<Pair, Key>(data, count, key);
 
     if (i >= 0 && data[i].key == key) {
       if (overwrite) {
@@ -150,7 +150,7 @@ private:
       ensureCapacity(count + 1);
       ++i;
 
-      aMoveBackward<Pair>(data + i, count - i, data + i + 1);
+      Arrays::moveBackward<Pair>(data + i, count - i, data + i + 1);
       data[i].key   = static_cast<Key_&&>(key);
       data[i].value = static_cast<Value_&&>(value);
       ++count;

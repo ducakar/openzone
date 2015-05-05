@@ -28,6 +28,8 @@
 
 #include "Alloc.hh"
 
+#include <cstring>
+
 namespace oz
 {
 
@@ -150,7 +152,7 @@ void PoolAlloc::deallocate(void* ptr)
   Slot* slot = static_cast<Slot*>(ptr);
 
 #ifndef NDEBUG
-  mSet(slot, 0xee, slotSize);
+  memset(slot, 0xee, slotSize);
 #endif
 
   slot->nextSlot = freeSlot;

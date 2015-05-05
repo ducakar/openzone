@@ -27,6 +27,8 @@
 #include <client/Context.hh>
 #include <client/Camera.hh>
 
+#include <cstring>
+
 namespace oz
 {
 namespace client
@@ -482,7 +484,7 @@ const File* Model::preload()
         normals[i] = is.readVec3();
       }
 
-      mCopy(vertices, vertexBuffer, nVertices * sizeof(Vertex));
+      memcpy(vertices, vertexBuffer, nVertices * sizeof(Vertex));
     }
   }
 

@@ -73,7 +73,7 @@ void Profile::init()
     }
     else {
       mbstate_t mbState;
-      mSet(&mbState, 0, sizeof(mbState));
+      memset(&mbState, 0, sizeof(mbState));
 
       const char* userNamePtr = userName;
       wchar_t wcUserName[128];
@@ -81,7 +81,7 @@ void Profile::init()
 
       wcUserName[0] = wchar_t(towupper(wint_t(wcUserName[0])));
 
-      mSet(&mbState, 0, sizeof(mbState));
+      memset(&mbState, 0, sizeof(mbState));
 
       const wchar_t* wcUserNamePtr = wcUserName;
       char mbUserName[128];

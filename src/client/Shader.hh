@@ -167,7 +167,6 @@ private:
   Map<String, uint> vertShaders;
   Map<String, uint> fragShaders;
   List<Program>     programs;
-  SList<int, 8>     programStack;
 
   float             lightingDistance;
   CaelumLight       caelumLight;

@@ -825,7 +825,7 @@ struct StrongHash
     uint value = 2166136261;
 
     while (*s != '\0') {
-      value = (value * 16777619) ^ *s;
+      value = (value * 16777619) ^ int(*s);
       ++s;
     }
     return value;

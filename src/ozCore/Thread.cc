@@ -31,6 +31,7 @@
 #include "Pepper.hh"
 
 #include <cstdlib>
+#include <cstring>
 
 #if defined(__ANDROID__)
 # include <jni.h>
@@ -164,7 +165,8 @@ Thread::Thread(const char* name, Main* main, void* data)
   descriptor->data       = data;
   descriptor->isDetached = false;
 
-  strlcpy(descriptor->name, name, NAME_LENGTH);
+  strncpy(descriptor->name, name, NAME_LENGTH);
+  descriptor->name[NAME_LENGTH] = '\0';
 
 #ifdef _WIN32
   descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr);

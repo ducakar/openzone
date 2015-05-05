@@ -26,11 +26,12 @@
 
 #include "Alloc.hh"
 
-#include "arrays.hh"
+#include "Arrays.hh"
 #include "System.hh"
 #include "SpinLock.hh"
 
 #include <cstdlib>
+#include <cstring>
 #include <malloc.h>
 
 namespace oz
@@ -129,7 +130,7 @@ static void deallocate(AllocMode mode, void* ptr)
 
   allocInfoLock.unlock();
 
-  mSet(ptr, 0xee, int(ci->size));
+  memset(ptr, 0xee, int(ci->size));
 
 #endif
 

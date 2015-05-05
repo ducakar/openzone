@@ -183,7 +183,7 @@ int main()
     //sort(array, 0, MAX);
     //quickSort(array, MAX);
     //arSort(array, array + MAX - 1);
-    aSort(array, MAX);
+    Arrays::sort(array, MAX);
     //aSort<int, 100>(array, MAX);
   }
   printf("%d ms\n", int(Time::clock() - t0));

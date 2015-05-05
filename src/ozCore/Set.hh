@@ -77,7 +77,7 @@ protected:
   template <typename Elem_>
   int insert(Elem_&& elem, bool overwrite)
   {
-    int i = aBisection<Elem, Elem_, LessFunc>(data, count, elem);
+    int i = Arrays::bisection<Elem, Elem_, LessFunc>(data, count, elem);
 
     if (i >= 0 && elem == data[i]) {
       if (overwrite) {
@@ -89,7 +89,7 @@ protected:
       ensureCapacity(count + 1);
       ++i;
 
-      aMoveBackward<Elem>(data + i, count - i, data + i + 1);
+      Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
       data[i] = static_cast<Elem_&&>(elem);
       ++count;
 
@@ -194,7 +194,7 @@ public:
   template <typename Key = Elem>
   int index(const Key& key) const
   {
-    int i = aBisection<Elem, Key, LessFunc>(data, count, key);
+    int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
     return i < 0 || !(key == data[i]) ? -1 : i;
   }
 
@@ -228,7 +228,7 @@ public:
   template <typename Key = Elem>
   int exclude(const Key& key)
   {
-    int i = aBisection<Elem, Key, LessFunc>(data, count, key);
+    int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
 
     if (i >= 0 && key == data[i]) {
       erase(i);

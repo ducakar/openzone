@@ -77,8 +77,8 @@ int main(int, char**)
   Log() << "b2.length() = " << b2.length();
   Log() << "b3.length() = " << b3.length();
 
-  Log() << "b0 == b2: " << (mCompare(b0.begin(), b2.begin(), b0.length()) == 0);
-  Log() << "b1 == b3: " << (mCompare(b1.begin(), b3.begin(), b1.length()) == 0);
+  Log() << "b0 == b2: " << (memcmp(b0.begin(), b2.begin(), b0.length()) == 0);
+  Log() << "b1 == b3: " << (memcmp(b1.begin(), b3.begin(), b1.length()) == 0);
 
   bool      isAlive = true;
   SDL_Event event;

@@ -28,6 +28,8 @@
 
 #include "System.hh"
 
+#include <cstring>
+
 namespace oz
 {
 
@@ -65,7 +67,7 @@ OutputStream::OutputStream(char* start, const char* end, Endian::Order order) :
 OutputStream::OutputStream(int size, Endian::Order order) :
   InputStream(nullptr, nullptr, nullptr, order), buffered(true)
 {
-  streamPos   = mReallocate(nullptr, 0, size);
+  streamPos   = new char[size];
   streamBegin = streamPos;
   streamEnd   = streamPos + size;
 }
@@ -84,11 +86,11 @@ OutputStream::OutputStream(const OutputStream& os) :
     int length = int(os.streamPos - os.streamBegin);
     int size   = int(os.streamEnd - os.streamBegin);
 
-    streamBegin = mReallocate(nullptr, 0, size);
+    streamBegin = new char[size];
     streamEnd   = streamBegin + size;
     streamPos   = streamBegin + length;
 
-    mCopy(streamBegin, os.streamBegin, size);
+    memcpy(streamBegin, os.streamBegin, size);
   }
 }
 
@@ -124,7 +126,7 @@ OutputStream& OutputStream::operator = (const OutputStream& os)
       order     = os.order;
       buffered  = os.buffered;
 
-      mCopy(streamBegin, os.streamBegin, size);
+      memcpy(streamBegin, os.streamBegin, size);
     }
     else {
       if (buffered) {
@@ -172,20 +174,25 @@ char* OutputStream::skip(int count)
 
   if (streamPos > streamEnd) {
     if (buffered) {
-      int size    = int(streamEnd - streamBegin);
-      int newLen  = int(streamPos - streamBegin);
-      int newSize = size == 0 ? GRANULARITY : 2 * size;
+      int length    = int(oldPos - streamBegin);
+      int size      = int(streamEnd - streamBegin);
+      int newLength = int(streamPos - streamBegin);
+      int newSize   = size == 0 ? GRANULARITY : 2 * size;
 
-      if (newSize < 0 || newLen < 0) {
+      if (newSize < 0 || newLength < 0) {
         OZ_ERROR("oz::OutputStream: Capacity overflow");
       }
-      else if (newSize < newLen) {
-        newSize = (newLen + GRANULARITY - 1) & ~(GRANULARITY - 1);
+      else if (newSize < newLength) {
+        newSize = (newLength + GRANULARITY - 1) & ~(GRANULARITY - 1);
       }
 
-      streamBegin = mReallocate(streamBegin, size, newSize);
+      char* newStream = new char[newSize];
+      memcpy(newStream, streamBegin, length);
+      delete[] streamBegin;
+
+      streamBegin = newStream;
       streamEnd   = streamBegin + newSize;
-      streamPos   = streamBegin + newLen;
+      streamPos   = streamBegin + newLength;
       oldPos      = streamPos - count;
     }
     else {
@@ -212,7 +219,7 @@ void OutputStream::writeChar(char c)
 void OutputStream::writeChars(const char* array, int count)
 {
   char* data = skip(count * sizeof(char));
-  mCopy(data, array, count);
+  memcpy(data, array, count);
 }
 
 void OutputStream::writeByte(byte b)
@@ -408,7 +415,7 @@ void OutputStream::writeString(const String& s)
   int   size = s.length() + 1;
   char* data = skip(size);
 
-  mCopy(data, s.cstr(), size);
+  memcpy(data, s.cstr(), size);
 }
 
 void OutputStream::writeString(const char* s)
@@ -416,7 +423,7 @@ void OutputStream::writeString(const char* s)
   int   size = String::length(s) + 1;
   char* data = skip(size);
 
-  mCopy(data, s, size);
+  memcpy(data, s, size);
 }
 
 void OutputStream::writeVec3(const Vec3& v)
@@ -503,7 +510,7 @@ void OutputStream::writeLine(const String& s)
   int   length = s.length();
   char* data   = skip(length + 1);
 
-  mCopy(data, s, length);
+  memcpy(data, s, length);
   data[length] = '\n';
 }
 
@@ -512,7 +519,7 @@ void OutputStream::writeLine(const char* s)
   int   length = String::length(s);
   char* data   = skip(length + 1);
 
-  mCopy(data, s, length);
+  memcpy(data, s, length);
   data[length] = '\n';
 }
 

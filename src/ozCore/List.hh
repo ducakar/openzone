@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "arrays.hh"
+#include "Arrays.hh"
 #include "System.hh"
 
 namespace oz
@@ -58,12 +58,12 @@ public:
   /**
    * %Iterator with constant access to elements.
    */
-  typedef detail::ArrayIterator<const Elem> CIterator;
+  typedef Arrays::CIterator<Elem> CIterator;
 
   /**
    * %Iterator with non-constant access to elements.
    */
-  typedef detail::ArrayIterator<Elem> Iterator;
+  typedef Arrays::Iterator<Elem> Iterator;
 
 protected:
 
@@ -92,7 +92,7 @@ protected:
         OZ_ERROR("oz::List: Capacity overflow");
       }
 
-      data = aReallocate<Elem>(data, count, size);
+      data = Arrays::reallocate<Elem>(data, count, size);
     }
   }
 
@@ -109,16 +109,16 @@ public:
    * Primitive types are not initialised to zero.
    */
   explicit List(int count_) :
-    data(aReallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
+    data(Arrays::reallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
   {}
 
   /**
    * Initialise from a C++ array.
    */
   explicit List(const Elem* array, int count_) :
-    data(aReallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
+    data(Arrays::reallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
   {
-    aCopy<Elem>(array, count, data);
+    Arrays::copy<Elem>(array, count, data);
   }
 
   /**
@@ -127,7 +127,7 @@ public:
   List(InitialiserList<Elem> l) :
     data(new Elem[l.size()]), count(int(l.size())), size(int(l.size()))
   {
-    aCopy<Elem>(l.begin(), int(l.size()), data);
+    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
   }
 
   /**
@@ -142,9 +142,9 @@ public:
    * Copy constructor, copies elements.
    */
   List(const List& l) :
-    data(aReallocate<Elem>(nullptr, 0, l.count)), count(l.count), size(l.size)
+    data(Arrays::reallocate<Elem>(nullptr, 0, l.count)), count(l.count), size(l.size)
   {
-    aCopy<Elem>(l.data, l.count, data);
+    Arrays::copy<Elem>(l.data, l.count, data);
   }
 
   /**
@@ -173,7 +173,7 @@ public:
         size = l.size;
       }
 
-      aCopy<Elem>(l.data, l.count, data);
+      Arrays::copy<Elem>(l.data, l.count, data);
       count = l.count;
     }
     return *this;
@@ -212,7 +212,7 @@ public:
       size = int(l.size());
     }
 
-    aCopy<Elem>(l.begin(), int(l.size()), data);
+    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
     count = int(l.size());
 
     return *this;
@@ -223,7 +223,7 @@ public:
    */
   bool operator == (const List& l) const
   {
-    return count == l.count && aEquals<Elem>(data, count, l.data);
+    return count == l.count && Arrays::equals<Elem>(data, count, l.data);
   }
 
   /**
@@ -387,7 +387,7 @@ public:
   template <typename Elem_ = Elem>
   bool contains(const Elem_& elem) const
   {
-    return aContains<Elem, Elem_>(data, count, elem);
+    return Arrays::contains<Elem, Elem_>(data, count, elem);
   }
 
   /**
@@ -396,7 +396,7 @@ public:
   template <typename Elem_ = Elem>
   int index(const Elem_& elem) const
   {
-    return aIndex<Elem, Elem_>(data, count, elem);
+    return Arrays::index<Elem, Elem_>(data, count, elem);
   }
 
   /**
@@ -405,7 +405,7 @@ public:
   template <typename Elem_ = Elem>
   int lastIndex(const Elem_& elem) const
   {
-    return aLastIndex<Elem, Elem_>(data, count, elem);
+    return Arrays::lastIndex<Elem, Elem_>(data, count, elem);
   }
 
   /**
@@ -426,7 +426,7 @@ public:
 
     ensureCapacity(newCount);
 
-    aCopy<Elem>(array, arrayCount, data + count);
+    Arrays::copy<Elem>(array, arrayCount, data + count);
     count = newCount;
   }
 
@@ -439,7 +439,7 @@ public:
 
     ensureCapacity(newCount);
 
-    aMove<Elem>(array, arrayCount, data + count);
+    Arrays::move<Elem>(array, arrayCount, data + count);
     count = newCount;
   }
 
@@ -451,7 +451,7 @@ public:
   template <typename Elem_ = Elem>
   int include(Elem_&& elem)
   {
-    int i = aIndex<Elem, Elem>(data, count, elem);
+    int i = Arrays::index<Elem, Elem>(data, count, elem);
 
     if (i >= 0) {
       return i;
@@ -474,7 +474,7 @@ public:
 
     ensureCapacity(count + 1);
 
-    aMoveBackward<Elem>(data + i, count - i, data + i + 1);
+    Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
     data[i] = static_cast<Elem_&&>(elem);
     ++count;
   }
@@ -496,7 +496,7 @@ public:
       data[count] = Elem();
     }
     else {
-      aMove<Elem>(data + i + 1, count - i, data + i);
+      Arrays::move<Elem>(data + i + 1, count - i, data + i);
     }
   }
 
@@ -529,7 +529,7 @@ public:
   template <typename Elem_ = Elem>
   int exclude(const Elem_& elem)
   {
-    int i = aIndex<Elem, Elem_>(data, count, elem);
+    int i = Arrays::index<Elem, Elem_>(data, count, elem);
 
     if (i >= 0) {
       erase(i);
@@ -547,7 +547,7 @@ public:
   template <typename Elem_ = Elem>
   int excludeUnordered(const Elem_& elem)
   {
-    int i = aIndex<Elem, Elem_>(data, count, elem);
+    int i = Arrays::index<Elem, Elem_>(data, count, elem);
 
     if (i >= 0) {
       eraseUnordered(i);
@@ -584,13 +584,16 @@ public:
    */
   Elem popFirst()
   {
-    hard_assert(count != 0);
+    if (count == 0) {
+      return Elem();
+    }
+    else {
+      Elem elem = static_cast<Elem&&>(data[0]);
 
-    Elem elem = static_cast<Elem&&>(data[0]);
-
-    --count;
-    aMove<Elem>(data + 1, count, data);
-    return elem;
+      --count;
+      Arrays::move<Elem>(data + 1, count, data);
+      return elem;
+    }
   }
 
   /**
@@ -600,10 +603,13 @@ public:
    */
   Elem popLast()
   {
-    hard_assert(count != 0);
-
-    --count;
-    return static_cast<Elem&&>(data[count]);
+    if (count == 0) {
+      return Elem();
+    }
+    else {
+      --count;
+      return static_cast<Elem&&>(data[count]);
+    }
   }
 
   /**
@@ -611,7 +617,7 @@ public:
    */
   void reverse()
   {
-    aReverse<Elem>(data, count);
+    Arrays::reverse<Elem>(data, count);
   }
 
   /**
@@ -620,7 +626,7 @@ public:
   template <class LessFunc = Less<void>>
   void sort()
   {
-    aSort<Elem, LessFunc>(data, count);
+    Arrays::sort<Elem, LessFunc>(data, count);
   }
 
   /**
@@ -631,7 +637,7 @@ public:
   void resize(int newCount)
   {
     if (newCount != size) {
-      data = aReallocate<Elem>(data, count, newCount);
+      data = Arrays::reallocate<Elem>(data, count, newCount);
       size = newCount;
     }
     count = newCount;
@@ -643,7 +649,7 @@ public:
   void reserve(int capacity)
   {
     if (size < capacity) {
-      data = aReallocate<Elem>(data, count, capacity);
+      data = Arrays::reallocate<Elem>(data, count, capacity);
       size = capacity;
     }
   }
@@ -654,7 +660,7 @@ public:
   void trim()
   {
     if (count < size) {
-      data = aReallocate<Elem>(data, count, count);
+      data = Arrays::reallocate<Elem>(data, count, count);
       size = count;
     }
   }
@@ -676,7 +682,7 @@ public:
    */
   void free()
   {
-    aFree<Elem>(data, count);
+    Arrays::free<Elem>(data, count);
     count = 0;
   }
 

@@ -37,8 +37,8 @@ struct Cell
   static const int SIZE = 16;
 
   SList<short, 6> structs;
-  Chain<Object> objects;
-  Chain<Frag>   frags;
+  Chain<Object>   objects;
+  Chain<Frag>     frags;
 };
 
 /**

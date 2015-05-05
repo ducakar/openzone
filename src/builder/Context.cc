@@ -87,7 +87,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
 
   File diffuse, masks, specular, emission, normals;
 
-  for (int i = 0; i < aLength(IMAGE_EXTENSIONS); ++i) {
+  for (int i = 0; i < Arrays::length(IMAGE_EXTENSIONS); ++i) {
     if (diffuse.path().isEmpty() || diffuse.type() == File::MISSING) {
       diffuse = File(diffuseBasePath + IMAGE_EXTENSIONS[i]);
     }

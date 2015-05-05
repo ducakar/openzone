@@ -46,8 +46,8 @@ String::String(const char* s, int sLength, const char* t, int tLength)
 {
   resize(sLength + tLength);
 
-  mCopy(buffer, s, sLength);
-  mCopy(buffer + sLength, t, tLength + 1);
+  memcpy(buffer, s, sLength);
+  memcpy(buffer + sLength, t, tLength + 1);
 }
 
 OZ_HIDDEN
@@ -68,7 +68,7 @@ void String::resize(int newCount, bool keepContents)
     char* newBuffer = new char[newCount + 1];
 
     if (keepContents) {
-      mCopy(newBuffer, buffer, min<int>(count, newCount) + 1);
+      memcpy(newBuffer, buffer, min<int>(count, newCount) + 1);
     }
     if (buffer != baseBuffer) {
       delete[] buffer;
@@ -302,7 +302,7 @@ double String::parseDouble(const char* s, const char** end)
 String::String(const char* s, int nChars)
 {
   resize(nChars);
-  mCopy(buffer, s, nChars);
+  memcpy(buffer, s, nChars);
   buffer[count] = '\0';
 }
 
@@ -348,7 +348,7 @@ String::String(String&& s) :
     s.buffer = s.baseBuffer;
   }
   else {
-    mCopy(baseBuffer, s.baseBuffer, count + 1);
+    memcpy(baseBuffer, s.baseBuffer, count + 1);
   }
 
   s.count         = 0;
@@ -359,7 +359,7 @@ String& String::operator = (const String& s)
 {
   if (&s != this) {
     resize(s.count);
-    mCopy(buffer, s.buffer, count + 1);
+    memcpy(buffer, s.buffer, count + 1);
   }
   return *this;
 }
@@ -377,7 +377,7 @@ String& String::operator = (String&& s)
     }
     else {
       buffer = baseBuffer;
-      mCopy(baseBuffer, s.baseBuffer, s.count + 1);
+      memcpy(baseBuffer, s.baseBuffer, s.count + 1);
     }
 
     count = s.count;
@@ -394,7 +394,7 @@ String& String::operator = (const char* s)
     int nChars = length(s);
 
     resize(nChars);
-    mCopy(buffer, s, nChars + 1);
+    memcpy(buffer, s, nChars + 1);
   }
   return *this;
 }
@@ -523,7 +523,7 @@ String& String::operator += (const String& s)
   int oCount = count;
 
   resize(count + s.count, true);
-  mCopy(buffer + oCount, s, s.count + 1);
+  memcpy(buffer + oCount, s, s.count + 1);
 
   return *this;
 }
@@ -534,7 +534,7 @@ String& String::operator += (const char* s)
   int sLength = length(s);
 
   resize(count + sLength, true);
-  mCopy(buffer + oCount, s, sLength + 1);
+  memcpy(buffer + oCount, s, sLength + 1);
 
   return *this;
 }

@@ -26,6 +26,8 @@
 
 #include "AL.hh"
 
+#include <cstring>
+
 #include <AL/alc.h>
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
@@ -419,7 +421,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
       int    nSamples = size / sizeof(short);
       short* samples  = new short[nSamples];
 
-      mCopy(samples, data, size);
+      memcpy(samples, data, size);
 
       for (int i = 0; i < nSamples; ++i) {
         samples[i] = Endian::bswap16(samples[i]);

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "arrays.hh"
+#include "Arrays.hh"
 
 namespace oz
 {
@@ -71,7 +71,7 @@ public:
    */
   bool operator == (const SBitset& b) const
   {
-    return aEquals<ulong>(data, SIZE, b.data);
+    return Arrays::equals<ulong>(data, SIZE, b.data);
   }
 
   /**
@@ -267,7 +267,7 @@ public:
    */
   void setAll()
   {
-    aFill<ulong, ulong>(data, SIZE, ~0ul);
+    Arrays::fill<ulong, ulong>(data, SIZE, ~0ul);
   }
 
   /**
@@ -275,7 +275,7 @@ public:
    */
   void clearAll()
   {
-    aFill<ulong, ulong>(data, SIZE, 0ul);
+    Arrays::fill<ulong, ulong>(data, SIZE, 0ul);
   }
 
   /**

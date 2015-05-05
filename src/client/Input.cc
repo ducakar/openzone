@@ -394,9 +394,9 @@ void Input::reset()
   moveX          = 0.0f;
   moveY          = 0.0f;
 
-  mSet(sdlKeys, 0, sizeof(sdlKeys));
-  mSet(sdlOldKeys, 0, sizeof(sdlOldKeys));
-  mSet(sdlCurrKeys, 0, sizeof(sdlCurrKeys));
+  memset(sdlKeys, 0, sizeof(sdlKeys));
+  memset(sdlOldKeys, 0, sizeof(sdlOldKeys));
+  memset(sdlCurrKeys, 0, sizeof(sdlCurrKeys));
 
   isKeyPressed   = false;
   isKeyReleased  = false;
@@ -425,8 +425,8 @@ void Input::prepare()
   moveX          = 0.0f;
   moveY          = 0.0f;
 
-  mCopy(sdlOldKeys, sdlKeys, sizeof(sdlKeys));
-  mCopy(sdlKeys, sdlCurrKeys, sizeof(sdlKeys));
+  memcpy(sdlOldKeys, sdlKeys, sizeof(sdlKeys));
+  memcpy(sdlKeys, sdlCurrKeys, sizeof(sdlKeys));
 
   isKeyPressed  = false;
   isKeyReleased = false;
@@ -479,12 +479,12 @@ void Input::update()
   wheelUp        = mouseW > 0.0f;
   wheelDown      = mouseW < 0.0f;
 
-  mCopy(oldKeys, keys, sizeof(keys));
-  mSet(keys, 0, sizeof(keys));
+  memcpy(oldKeys, keys, sizeof(keys));
+  memset(keys, 0, sizeof(keys));
 
   int mod = sdlKeys[modifier0] | sdlKeys[modifier1] ? MOD_ON_BIT : MOD_OFF_BIT;
 
-  for (int i = 0; i < aLength(keys); ++i) {
+  for (int i = 0; i < Arrays::length(keys); ++i) {
     if (keyMap[i][0] & mod) {
       keys[i] |= sdlKeys[keyMap[i][0] & ~MOD_MASK];
     }
@@ -548,11 +548,11 @@ void Input::init()
   const Json& keyboardConfig = inputConfig["keyboard"];
   const Json& keyMapConfig   = inputConfig["bindings"];
 
-  mSet(sdlKeys, 0, sizeof(sdlKeys));
-  mSet(sdlOldKeys, 0, sizeof(sdlOldKeys));
-  mSet(sdlCurrKeys, 0, sizeof(sdlCurrKeys));
+  memset(sdlKeys, 0, sizeof(sdlKeys));
+  memset(sdlOldKeys, 0, sizeof(sdlOldKeys));
+  memset(sdlCurrKeys, 0, sizeof(sdlCurrKeys));
 
-  mSet(keyMap, 0, sizeof(keyMap));
+  memset(keyMap, 0, sizeof(keyMap));
 
   if (keyMapConfig.isNull()) {
     loadDefaultKeyMap();
@@ -598,8 +598,8 @@ void Input::init()
   keySensX       = keyboardConfig["sensitivity.x"].get(0.04f);
   keySensY       = keyboardConfig["sensitivity.y"].get(0.04f);
 
-  mSet(keys, 0, sizeof(keys));
-  mSet(oldKeys, 0, sizeof(oldKeys));
+  memset(keys, 0, sizeof(keys));
+  memset(oldKeys, 0, sizeof(oldKeys));
 
 #if SDL_MAJOR_VERSION < 2
   SDL_ShowCursor(false);

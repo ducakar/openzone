@@ -111,7 +111,7 @@ void Terra::load()
       { TerraBuilder::PLAINS,   "plains"   },
     };
 
-    for (int i = 0; i < aLength(MODULE_NAMES); ++i) {
+    for (int i = 0; i < Arrays::length(MODULE_NAMES); ++i) {
       const Json& moduleConfig = config[MODULE_NAMES[i]];
 
       float bottomHeight = moduleConfig["bottomHeight"].get(-100.0f);

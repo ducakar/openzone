@@ -26,7 +26,7 @@
 
 #include "Bitset.hh"
 
-#include "arrays.hh"
+#include "Arrays.hh"
 
 namespace oz
 {
@@ -42,9 +42,9 @@ Bitset::~Bitset()
 }
 
 Bitset::Bitset(const Bitset& b) :
-  data(aReallocate<ulong>(nullptr, 0, b.size)), size(b.size)
+  data(Arrays::reallocate<ulong>(nullptr, 0, b.size)), size(b.size)
 {
-  aCopy<ulong>(b.data, b.size, data);
+  Arrays::copy<ulong>(b.data, b.size, data);
 }
 
 Bitset::Bitset(Bitset&& b) :
@@ -64,7 +64,7 @@ Bitset& Bitset::operator = (const Bitset& b)
       size = b.size;
     }
 
-    aCopy<ulong>(b.data, b.size, data);
+    Arrays::copy<ulong>(b.data, b.size, data);
   }
   return *this;
 }
@@ -85,7 +85,7 @@ Bitset& Bitset::operator = (Bitset&& b)
 
 bool Bitset::operator == (const Bitset& b) const
 {
-  return size == b.size && aEquals<ulong>(data, size, b.data);
+  return size == b.size && Arrays::equals<ulong>(data, size, b.data);
 }
 
 bool Bitset::operator != (const Bitset& b) const
@@ -179,12 +179,12 @@ void Bitset::clear(int start, int end)
 
 void Bitset::setAll()
 {
-  aFill<ulong, ulong>(data, size, ~0ul);
+  Arrays::fill<ulong, ulong>(data, size, ~0ul);
 }
 
 void Bitset::clearAll()
 {
-  aFill<ulong, ulong>(data, size, 0ul);
+  Arrays::fill<ulong, ulong>(data, size, 0ul);
 }
 
 Bitset Bitset::operator ~ () const
@@ -264,8 +264,8 @@ void Bitset::resize(int nBits)
   int nUnits = (nBits + UNIT_BITSIZE - 1) / UNIT_BITSIZE;
 
   if (nUnits != size) {
-    data = aReallocate<ulong>(data, size, nUnits);
-    aFill<ulong, ulong>(data + size, nUnits - size, 0u);
+    data = Arrays::reallocate<ulong>(data, size, nUnits);
+    Arrays::fill<ulong, ulong>(data + size, nUnits - size, 0u);
     size = nUnits;
   }
 }

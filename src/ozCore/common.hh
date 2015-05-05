@@ -210,6 +210,135 @@ void softAssertHelper(const char* function, const char* file, int line, const ch
 OZ_NORETURN
 void hardAssertHelper(const char* function, const char* file, int line, const char* message);
 
+/**
+ * Base class for iterators.
+ *
+ * It should only be used as a base class. The following functions have to be implemented:
+ * - default constructor that creates an invalid iterator and
+ * - `Iterator& operator ++ ()`.
+ */
+template <typename Elem>
+class IteratorBase
+{
+public:
+
+  /**
+   * Element type.
+   */
+  typedef Elem ElemType;
+
+protected:
+
+  Elem* elem = nullptr; ///< The element the iterator is currently pointing at.
+
+protected:
+
+  /**
+   * Create an invalid iterator.
+   */
+  IteratorBase() = default;
+
+  /**
+   * Create an iterator pointing to a given element.
+   */
+  OZ_ALWAYS_INLINE
+  explicit IteratorBase(Elem* first) :
+    elem(first)
+  {}
+
+public:
+
+  /**
+   * True iff iterators point to the same element.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == (const IteratorBase& i) const
+  {
+    return elem == i.elem;
+  }
+
+  /**
+   * False iff iterators point to the same element.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != (const IteratorBase& i) const
+  {
+    return elem != i.elem;
+  }
+
+  /**
+   * True as long as iterator has not passed all elements.
+   */
+  OZ_ALWAYS_INLINE
+  bool isValid() const
+  {
+    return elem != nullptr;
+  }
+
+  /**
+   * Pointer to the current element.
+   */
+  OZ_ALWAYS_INLINE
+  operator Elem* () const
+  {
+    return elem;
+  }
+
+  /**
+   * Reference to the current element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& operator * () const
+  {
+    return *elem;
+  }
+
+  /**
+   * Access to the current element's member.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* operator -> () const
+  {
+    return elem;
+  }
+
+  /**
+   * Advance to the next element; should be implemented in derived classes.
+   */
+  IteratorBase& operator ++ () = delete;
+
+  /**
+   * STL-style begin iterator; should be implemented in derived classes.
+   */
+  IteratorBase begin() const = delete;
+
+  /**
+   * STL-style end iterator; should be implemented in derived classes.
+   */
+  IteratorBase end() const = delete;
+
+};
+
+}
+
+/**
+ * Iterator with constant element access for a container (same as `container.citerator()`).
+ */
+template <class Container>
+OZ_ALWAYS_INLINE
+inline typename Container::CIterator citerator(const Container& container)
+{
+  return container.citerator();
+}
+
+/**
+ * Iterator with non-constant element access for a container (same as `container.iterator()`).
+ */
+template <class Container>
+OZ_ALWAYS_INLINE
+inline typename Container::Iterator iterator(Container& container)
+{
+  return container.iterator();
 }
 
 /**
@@ -316,7 +445,7 @@ struct Hash<const char*>
     uint value = EMPTY;
 
     while (*s != '\0') {
-      value = (value * 33) ^ *s;
+      value = (value * 33) ^ int(*s);
       ++s;
     }
     return value;

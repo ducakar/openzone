@@ -38,6 +38,8 @@
 
 #include <client/eSpeak.hh>
 
+#include <cstring>
+
 #define OZ_REGISTER_IMAGOCLASS(name) \
   { \
     int id = liber.imagoIndex(#name); \
@@ -91,7 +93,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
       Log::printRaw("AL: Speak buffer overrun\n");
     }
 
-    mCopy(speakSource.samples + speakSource.nSamples, samples, nSamples * sizeof(short));
+    memcpy(speakSource.samples + speakSource.nSamples, samples, nSamples * sizeof(short));
     speakSource.nSamples += nSamples;
 
     if (speakSource.nQueuedBuffers != 2) {
@@ -712,8 +714,8 @@ void Context::unload()
   caelum.unload();
   terra.unload();
 
-  aFree(fragPools, liber.nFragPools);
-  aFill(fragPools, liber.nFragPools, nullptr);
+  Arrays::free(fragPools, liber.nFragPools);
+  Arrays::fill(fragPools, liber.nFragPools, nullptr);
 
   BasicAudio::pool.free();
   BotAudio::pool.free();

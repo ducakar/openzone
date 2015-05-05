@@ -26,6 +26,7 @@
 
 #include "GL.hh"
 
+#include <cstring>
 #include <png.h>
 
 #ifdef _WIN32
@@ -302,7 +303,7 @@ int GL::textureDataFromFile(const File& file, int bias)
                 char* pixels    = &data[y * mipmapPitch];
                 int   lineWidth = mipmapWidth * pixelSize;
 
-                mCopy(pixels, is.skip(lineWidth), lineWidth);
+                memcpy(pixels, is.skip(lineWidth), lineWidth);
 
                 // BGR(A) -> RGB(A).
                 for (int x = 0; x < mipmapWidth; ++x) {

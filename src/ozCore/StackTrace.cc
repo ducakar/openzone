@@ -30,7 +30,7 @@
 # define OZ_DISABLE_STACK_TRACE
 #endif
 
-#include "arrays.hh"
+#include "Arrays.hh"
 #include "Thread.hh"
 
 #include <cstring>
@@ -55,7 +55,8 @@ StackTrace StackTrace::current(int)
   StackTrace st = { {}, 0, {} };
 
   if (name != nullptr) {
-    strlcpy(st.threadName, name, Thread::NAME_LENGTH);
+    strncpy(st.threadName, name, Thread::NAME_LENGTH);
+    st.threadName[Thread::NAME_LENGTH] = '\0';
   }
   return st;
 }
@@ -83,9 +84,10 @@ StackTrace StackTrace::current(int nSkippedFrames)
   StackTrace st = { {}, nFrames, {} };
 
   if (name != nullptr) {
-    strlcpy(st.threadName, name, Thread::NAME_LENGTH);
+    strncpy(st.threadName, name, Thread::NAME_LENGTH);
+    st.threadName[Thread::NAME_LENGTH] = '\0';
   }
-  aCopy<void*>(framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames);
+  Arrays::copy<void*>(framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames);
   return st;
 }
 

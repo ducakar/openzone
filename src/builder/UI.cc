@@ -74,7 +74,7 @@ void UI::buildIcons()
 
     Log::print("%s ...", image.name().cstr());
 
-    if (!aContains(ICON_NAMES, aLength(ICON_NAMES), name)) {
+    if (!Arrays::contains(ICON_NAMES, Arrays::length(ICON_NAMES), name)) {
       OZ_ERROR("Unnecessary icon: %s", image.path().cstr());
     }
 
@@ -91,7 +91,7 @@ void UI::buildIcons()
     builtIcons.add(name);
   }
 
-  for (int i = 0; i < aLength(ICON_NAMES); ++i) {
+  for (int i = 0; i < Arrays::length(ICON_NAMES); ++i) {
     if (!builtIcons.contains(ICON_NAMES[i])) {
       OZ_ERROR("Mission icon: %s", ICON_NAMES[i]);
     }

@@ -28,6 +28,8 @@
 
 #include "System.hh"
 
+#include <cstring>
+
 namespace oz
 {
 
@@ -99,7 +101,7 @@ char InputStream::readChar()
 void InputStream::readChars(char* array, int count)
 {
   const char* data = skip(count * sizeof(char));
-  mCopy(array, data, count);
+  memcpy(array, data, count);
 }
 
 byte InputStream::readByte()

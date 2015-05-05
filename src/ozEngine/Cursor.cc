@@ -51,7 +51,7 @@ Cursor::~Cursor()
 Cursor::Cursor(Cursor&& c) :
   nImages(c.nImages), frame(c.frame), lastFrame(-1), frameTime(c.frameTime), mode(c.mode)
 {
-  aCopy<Image>(c.images, MAX_IMAGES, images);
+  Arrays::copy<Image>(c.images, MAX_IMAGES, images);
 
   c.nImages   = 0;
   c.frame     = 0;
@@ -66,7 +66,7 @@ Cursor& Cursor::operator = (Cursor&& c)
     return *this;
   }
 
-  aCopy<Image>(c.images, MAX_IMAGES, images);
+  Arrays::copy<Image>(c.images, MAX_IMAGES, images);
   nImages   = c.nImages;
   frame     = c.frame;
   lastFrame = c.lastFrame;

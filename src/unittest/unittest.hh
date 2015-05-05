@@ -33,11 +33,20 @@
 
 #define OZ_CHECK_CONTENTS(container, ...) \
   { \
-    auto i = citer(container); \
+    auto i = citerator(container); \
     typedef decltype(i) CIterator; \
     CIterator::ElemType array[] = { __VA_ARGS__ }; \
-    OZ_CHECK(iEquals(i, citer(array))); \
+    OZ_CHECK(iEquals(i, citerator(array))); \
   }
+
+template <class CIteratorA, class CIteratorB>
+inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
+{
+  hard_assert(static_cast<void*>(&iterA) != static_cast<void*>(&iterB));
+
+  for (; iterA.isValid() && iterB.isValid() && *iterA == *iterB; ++iterA, ++iterB);
+  return !iterA.isValid() && !iterB.isValid();
+}
 
 extern bool hasPassed;
 

@@ -252,7 +252,7 @@ void Log::printTrace(const StackTrace& st)
 void Log::printSignal(int sigNum)
 {
   char buffer[OUT_BUFFER_SIZE];
-  int  index = uint(sigNum) >= uint(aLength(SIGNALS)) ? 0 : sigNum;
+  int  index = uint(sigNum) >= uint(Arrays::length(SIGNALS)) ? 0 : sigNum;
 
   snprintf(buffer, OUT_BUFFER_SIZE, "\n\nSignal %d %s (%s)\n",
            sigNum, SIGNALS[index][0], SIGNALS[index][1]);
@@ -346,7 +346,8 @@ bool Log::init(const char* filePath, bool clearFile)
 #else
 
   if (filePath != nullptr) {
-    strlcpy(path, filePath, 256);
+    strncpy(path, filePath, 255);
+    path[255] = '\0';
   }
 
   if (path[0] != '\0') {

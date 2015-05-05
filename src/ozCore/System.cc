@@ -30,7 +30,6 @@
 #include "Math.hh"
 #include "SpinLock.hh"
 #include "Log.hh"
-#include "Java.hh"
 #include "Pepper.hh"
 
 #include <csignal>

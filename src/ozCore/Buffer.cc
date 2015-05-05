@@ -26,25 +26,26 @@
 
 #include "Buffer.hh"
 
+#include <cstring>
 #include <zlib.h>
 
 namespace oz
 {
 
 Buffer::Buffer(int size_) :
-  data(mReallocate(nullptr, 0, size_)), size(size_)
+  data(new char[size_]), size(size_)
 {}
 
 Buffer::Buffer(const char* data_, int size_) :
-  data(mReallocate(nullptr, 0, size_)), size(size_)
+  data(new char[size_]), size(size_)
 {
-  mCopy(data, data_, size);
+  memcpy(data, data_, size);
 }
 
 Buffer::Buffer(const String& s) :
-  data(mReallocate(nullptr, 0, s.length())), size(s.length())
+  data(new char[s.length()]), size(s.length())
 {
-  mCopy(data, s.cstr(), size);
+  memcpy(data, s.cstr(), size);
 }
 
 Buffer::~Buffer()
@@ -53,9 +54,9 @@ Buffer::~Buffer()
 }
 
 Buffer::Buffer(const Buffer& b) :
-  data(mReallocate(nullptr, 0, b.size)), size(b.size)
+  data(new char[b.size]), size(b.size)
 {
-  mCopy(data, b.data, size);
+  memcpy(data, b.data, size);
 }
 
 Buffer::Buffer(Buffer&& b) :
@@ -75,7 +76,7 @@ Buffer& Buffer::operator = (const Buffer& b)
       size = b.size;
     }
 
-    mCopy(data, b.data, b.size);
+    memcpy(data, b.data, b.size);
   }
   return *this;
 }
@@ -96,7 +97,7 @@ Buffer& Buffer::operator = (Buffer&& b)
 
 bool Buffer::operator == (const Buffer& b) const
 {
-  return size == b.size && mCompare(data, b.data, size) == 0;
+  return size == b.size && memcmp(data, b.data, size) == 0;
 }
 
 bool Buffer::operator != (const Buffer& b) const
@@ -198,7 +199,11 @@ void Buffer::resize(int newSize)
   hard_assert(newSize >= 0);
 
   if (newSize != size) {
-    data = mReallocate(data, size, newSize);
+    char* newData = new char[newSize];
+    memcpy(newData, data, min<int>(size, newSize));
+    delete[] data;
+
+    data = newData;
     size = newSize;
   }
 }

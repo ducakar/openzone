@@ -32,86 +32,86 @@ void test_arrays()
 {
   Log() << "+ arrays";
 
-  CIterator<Foo> ici;
-  Iterator<Foo>  ii;
+  Arrays::CIterator<Foo> ici;
+  Arrays::Iterator<Foo>  ii;
 
   Foo a[4] = { 1, 2, 3, 2 };
   Foo b[4];
 
-  aMove(a, 4, b);
-  aMove(b, 4, b);
-  aMove(a, 0, b);
+  Arrays::move(a, 4, b);
+  Arrays::move(b, 4, b);
+  Arrays::move(a, 0, b);
   OZ_CHECK_CONTENTS(a, -1, -1, -1, -1);
   OZ_CHECK_CONTENTS(b, 1, 2, 3, 2);
-  OZ_CHECK(!aEquals(a, 4, b));
-  OZ_CHECK(aEquals(a, 0, b));
+  OZ_CHECK(!Arrays::equals(a, 4, b));
+  OZ_CHECK(Arrays::equals(a, 0, b));
 
-  aMoveBackward(b, 4, a);
-  aMoveBackward(a, 4, a);
-  aMoveBackward(b, 0, a);
-  aMove(a, 4, b);
+  Arrays::moveBackward(b, 4, a);
+  Arrays::moveBackward(a, 4, a);
+  Arrays::moveBackward(b, 0, a);
+  Arrays::move(a, 4, b);
   OZ_CHECK_CONTENTS(a, -1, -1, -1, -1);
   OZ_CHECK_CONTENTS(b, 1, 2, 3, 2);
-  OZ_CHECK(!aEquals(a, 4, b));
-  OZ_CHECK(aEquals(a, 0, b));
+  OZ_CHECK(!Arrays::equals(a, 4, b));
+  OZ_CHECK(Arrays::equals(a, 0, b));
 
-  aFill(a, 4, 0);
-  aFill(a, 0, -1);
+  Arrays::fill(a, 4, 0);
+  Arrays::fill(a, 0, -1);
   OZ_CHECK_CONTENTS(a, 0, 0, 0, 0);
 
-  aCopy(b, 4, a);
-  aCopy(b, 0, a);
-  OZ_CHECK(aEquals(a, 4, b));
-  OZ_CHECK(iEquals(citer(a), citer(b)));
+  Arrays::copy(b, 4, a);
+  Arrays::copy(b, 0, a);
+  OZ_CHECK(Arrays::equals(a, 4, b));
+  OZ_CHECK(iEquals(citerator(a), citerator(b)));
 
-  aCopyBackward(a, 4, b);
-  aCopyBackward(a, 0, b);
-  OZ_CHECK(aEquals(a, 4, b));
+  Arrays::copyBackward(a, 4, b);
+  Arrays::copyBackward(a, 0, b);
+  OZ_CHECK(Arrays::equals(a, 4, b));
 
-  aCopy(a, 4, a);
-  OZ_CHECK(aEquals(a, 4, b));
+  Arrays::copy(a, 4, a);
+  OZ_CHECK(Arrays::equals(a, 4, b));
 
-  aCopyBackward(a, 4, a);
-  OZ_CHECK(aEquals(a, 4, b));
+  Arrays::copyBackward(a, 4, a);
+  OZ_CHECK(Arrays::equals(a, 4, b));
 
-  OZ_CHECK(!aContains(a, 4, 0));
-  OZ_CHECK(!aContains(b, 4, 0));
-  OZ_CHECK(aContains(a, 4, 1));
-  OZ_CHECK(aContains(b, 4, 1));
-  OZ_CHECK(aContains(a, 4, 2));
-  OZ_CHECK(aContains(b, 4, 2));
-  OZ_CHECK(aContains(a, 4, 3));
-  OZ_CHECK(aContains(b, 4, 3));
-  OZ_CHECK(!aContains(b, 0, 3));
+  OZ_CHECK(!Arrays::contains(a, 4, 0));
+  OZ_CHECK(!Arrays::contains(b, 4, 0));
+  OZ_CHECK(Arrays::contains(a, 4, 1));
+  OZ_CHECK(Arrays::contains(b, 4, 1));
+  OZ_CHECK(Arrays::contains(a, 4, 2));
+  OZ_CHECK(Arrays::contains(b, 4, 2));
+  OZ_CHECK(Arrays::contains(a, 4, 3));
+  OZ_CHECK(Arrays::contains(b, 4, 3));
+  OZ_CHECK(!Arrays::contains(b, 0, 3));
 
-  OZ_CHECK(aIndex(a, 4, 0) == -1);
-  OZ_CHECK(aIndex(a, 4, 1) == 0);
-  OZ_CHECK(aIndex(a, 4, 2) == 1);
-  OZ_CHECK(aIndex(a, 4, 3) == 2);
-  OZ_CHECK(aIndex(a, 0, 3) == -1);
+  OZ_CHECK(Arrays::index(a, 4, 0) == -1);
+  OZ_CHECK(Arrays::index(a, 4, 1) == 0);
+  OZ_CHECK(Arrays::index(a, 4, 2) == 1);
+  OZ_CHECK(Arrays::index(a, 4, 3) == 2);
+  OZ_CHECK(Arrays::index(a, 0, 3) == -1);
 
-  OZ_CHECK(aLastIndex(a, 4, 0) == -1);
-  OZ_CHECK(aLastIndex(a, 4, 1) == 0);
-  OZ_CHECK(aLastIndex(a, 4, 2) == 3);
-  OZ_CHECK(aLastIndex(a, 4, 3) == 2);
-  OZ_CHECK(aLastIndex(a, 0, 3) == -1);
+  OZ_CHECK(Arrays::lastIndex(a, 4, 0) == -1);
+  OZ_CHECK(Arrays::lastIndex(a, 4, 1) == 0);
+  OZ_CHECK(Arrays::lastIndex(a, 4, 2) == 3);
+  OZ_CHECK(Arrays::lastIndex(a, 4, 3) == 2);
+  OZ_CHECK(Arrays::lastIndex(a, 0, 3) == -1);
 
-  aReverse(a, 4);
+  Arrays::reverse(a, 4);
   OZ_CHECK_CONTENTS(a, 2, 3, 2, 1);
 
   Foo** c = new Foo*[5]();
-  for (Foo*& i : iter(c, 5)) {
+  for (Foo*& i : iterator(c, 5)) {
     i = new Foo();
   }
-  aFree(c, 5);
+  Arrays::free(c, 5);
   delete[] c;
 
-  OZ_CHECK(aLength(a) == 4);
+  OZ_CHECK(Arrays::length(a) == 4);
 
   Foo* d = new Foo[4]();
-  aCopy(b, 4, d);
-  d = aReallocate(d, 4, 10);
-  OZ_CHECK(aEquals(b, 4, d));
+  Arrays::copy(b, 4, d);
+  d = Arrays::reallocate(d, 4, 10);
+  OZ_CHECK(Arrays::equals(b, 4, d));
   delete[] d;
 
   for (int j = 0; j < 100; ++j) {
@@ -119,10 +119,10 @@ void test_arrays()
     for (int i = 0; i < 1000; ++i) {
       r[i] = Math::rand(1000);
     }
-    aSort(r, 1000);
+    Arrays::sort(r, 1000);
 
     for (int i = -1; i <= 1000; ++i) {
-      int index = aBisection(r, 1000, i);
+      int index = Arrays::bisection(r, 1000, i);
 
       if (1 <= i && i < 1000) {
         OZ_CHECK(r[i - 1] <= r[i]);

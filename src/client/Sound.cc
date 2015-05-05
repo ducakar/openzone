@@ -216,7 +216,7 @@ void Sound::musicOpen(const char* path)
         OZ_ERROR("Corrupted AAC header in '%s'", path);
       }
 
-      mMove(musicInputBuffer, musicInputBuffer + skipBytes, skipBytes);
+      memmove(musicInputBuffer, musicInputBuffer + skipBytes, skipBytes);
 
       readSize = int(PHYSFS_read(musicFile, musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
                                  1, skipBytes));
@@ -348,7 +348,7 @@ int Sound::musicDecode()
             else {
               bytesLeft = int(madStream.bufend - madStream.next_frame);
 
-              mMove(musicInputBuffer, madStream.next_frame, bytesLeft);
+              memmove(musicInputBuffer, madStream.next_frame, bytesLeft);
             }
 
             int bytesRead = int(PHYSFS_read(musicFile, musicInputBuffer + bytesLeft,
@@ -358,7 +358,7 @@ int Sound::musicDecode()
               return int(reinterpret_cast<char*>(musicOutput) - musicBuffer);
             }
             else if (bytesRead < MUSIC_INPUT_BUFFER_SIZE - bytesLeft) {
-              mSet(musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD);
+              memset(musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD);
             }
 
             mad_stream_buffer(&madStream, musicInputBuffer, bytesLeft + bytesRead);
@@ -386,13 +386,13 @@ int Sound::musicDecode()
           int space  = int(musicOutputEnd - musicOutput);
 
           if (length >= space) {
-            mCopy(musicOutput, aacOutputBuffer + aacWrittenBytes, space);
+            memcpy(musicOutput, aacOutputBuffer + aacWrittenBytes, space);
             aacWrittenBytes += space;
 
             return MUSIC_BUFFER_SIZE;
           }
           else {
-            mCopy(musicOutput, aacOutputBuffer + aacWrittenBytes, length);
+            memcpy(musicOutput, aacOutputBuffer + aacWrittenBytes, length);
             aacWrittenBytes += length;
             musicOutput += length;
           }
@@ -411,7 +411,7 @@ int Sound::musicDecode()
         aacBufferBytes  = int(frameInfo.samples * frameInfo.channels);
         aacWrittenBytes = 0;
 
-        mMove(musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes);
+        memmove(musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes);
 
         int bytesRead = int(PHYSFS_read(musicFile, musicInputBuffer + aacInputBytes,
                                         1, MUSIC_INPUT_BUFFER_SIZE - aacInputBytes));

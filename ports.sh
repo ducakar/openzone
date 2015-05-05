@@ -295,7 +295,6 @@ function build_freetype()
 function build_physfs()
 {
   prepare physfs-2.0.3 physfs-2.0.3.tar.bz2 || return
-  applyPatches physfs-2.0.3.patch
 
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
 

@@ -49,10 +49,9 @@
 #include "StackTrace.hh"
 
 /*
- * Iterators and container utilities.
+ * Array utilities.
  */
-#include "iterables.hh"
-#include "arrays.hh"
+#include "Arrays.hh"
 
 /*
  * Linked lists of existing elements.
