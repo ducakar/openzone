@@ -290,7 +290,8 @@ void AssImp::build(const char* path)
 
   scene = nullptr;
 
-  OutputStream os(0, Endian::LITTLE);
+  Buffer buffer;
+  OutputStream os(&buffer, Endian::LITTLE);
 
   compiler.writeModel(&os);
   compiler.buildModelTextures(outFile.directory());

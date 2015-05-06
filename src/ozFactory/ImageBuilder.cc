@@ -155,7 +155,6 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   bool doFlop    = ImageBuilder::options & ImageBuilder::FLOP_BIT;
   bool doYYYX    = ImageBuilder::options & ImageBuilder::YYYX_BIT;
   bool doZYZX    = ImageBuilder::options & ImageBuilder::ZYZX_BIT;
-  bool isFast    = ImageBuilder::options & ImageBuilder::FAST_BIT;
   bool hasAlpha  = (faces[0].flags & ImageData::ALPHA_BIT) || doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
@@ -209,6 +208,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   int dx10Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 #ifdef OZ_NONFREE
+  bool isFast     = ImageBuilder::options & ImageBuilder::FAST_BIT;
   int squishFlags = 0;
 
   squishFlags |= isFast   ? squish::kColourRangeFit : squish::kColourIterativeClusterFit;
@@ -221,7 +221,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   }
 #endif
 
-  OutputStream os(0, Endian::LITTLE);
+  Buffer buffer;
+  OutputStream os(&buffer, Endian::LITTLE);
 
   // Header beginning.
   os.writeChars("DDS ", 4);

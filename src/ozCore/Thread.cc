@@ -50,7 +50,7 @@ static const HANDLE             MAIN_THREAD = GetCurrentThread();
 #else
 static const pthread_t          MAIN_THREAD = pthread_self();
 #endif
-static thread_local const char* threadName  = nullptr;
+static thread_local const char* threadName  = "";
 
 struct Thread::Descriptor
 {
@@ -138,7 +138,7 @@ void* Thread::Descriptor::threadMain(void* data)
 
 const char* Thread::name()
 {
-  return isMain() ? "main" : threadName == nullptr ? "" : threadName;
+  return isMain() ? "main" : threadName;
 }
 
 bool Thread::isMain()

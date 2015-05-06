@@ -21,11 +21,9 @@
  */
 
 /**
- * @file ozCore/arrays.hh
+ * @file ozCore/Arrays.hh
  *
  * Iterators and utility functions for arrays and array-like containers.
- *
- * @sa ozCore/iterables.hh
  */
 
 #pragma once

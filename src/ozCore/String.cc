@@ -44,39 +44,43 @@ const String String::EMPTY;
 OZ_HIDDEN
 String::String(const char* s, int sLength, const char* t, int tLength)
 {
-  resize(sLength + tLength);
+  char* begin = resize(sLength + tLength, false);
 
-  memcpy(buffer, s, sLength);
-  memcpy(buffer + sLength, t, tLength + 1);
+  memcpy(begin, s, sLength);
+  memcpy(begin + sLength, t, tLength + 1);
 }
 
 OZ_HIDDEN
-void String::resize(int newCount, bool keepContents)
+char* String::resize(int newCount, bool keepContents)
 {
-  hard_assert(buffer != nullptr && count >= 0 && newCount >= 0);
+  hard_assert(count >= 0 && newCount >= 0);
   hard_assert(!keepContents || newCount > count);
 
   if (newCount < BUFFER_SIZE) {
-    if (buffer != baseBuffer) {
+    if (count >= BUFFER_SIZE) {
       delete[] buffer ;
-      buffer = baseBuffer;
     }
 
     count = newCount;
+    return baseBuffer;
   }
-  else if (newCount != count) {
+
+  if (newCount != count) {
+    char* oldBuffer = data();
     char* newBuffer = new char[newCount + 1];
 
     if (keepContents) {
-      memcpy(newBuffer, buffer, min<int>(count, newCount) + 1);
+      memcpy(newBuffer, oldBuffer, min<int>(count, newCount) + 1);
     }
-    if (buffer != baseBuffer) {
+    if (count >= BUFFER_SIZE) {
       delete[] buffer;
     }
 
     buffer = newBuffer;
     count  = newCount;
   }
+
+  return buffer;
 }
 
 int String::index(const char* s, char ch, int start)
@@ -176,18 +180,34 @@ String String::substring(const char* s, int start, int end)
 
 String String::trim(const char* s)
 {
-  int count = length(s);
-  const char* start = s;
-  const char* end = s + count;
+  int         count = length(s);
+  const char* begin = s;
+  const char* end   = s + count;
 
-  while (start < end && isBlank(*start)) {
-    ++start;
+  while (begin < end && isBlank(*begin)) {
+    ++begin;
   }
-  while (start < end && isBlank(*(end - 1))) {
+  while (begin < end && isBlank(*(end - 1))) {
     --end;
   }
 
-  return String(start, int(end - start));
+  return String(begin, int(end - begin));
+}
+
+String String::replace(const char* s, char whatChar, char withChar)
+{
+  String r;
+
+  int         count  = length(s);
+  const char* oBegin = s;
+  char*       rBegin = r.resize(count, false);
+
+  for (int i = 0; i < count; ++i) {
+    rBegin[i] = oBegin[i] == whatChar ? withChar : oBegin[i];
+  }
+  rBegin[count] = '\0';
+
+  return r;
 }
 
 List<String> String::split(const char* s, char delimiter)
@@ -213,20 +233,19 @@ String String::fileDirectory(const char* s)
 {
   int slash = lastIndex(s, '/');
 
-  return slash >= 0 ? substring(s, 0, slash) : String(s);
+  return slash >= 0 ? substring(s, 0, slash) : String();
 }
 
 String String::fileName(const char* s)
 {
-  int begin = s[0] == '@';
   int slash = lastIndex(s, '/');
 
-  return slash >= 0 ? substring(s, slash + 1) : String(s + begin);
+  return slash >= 0 ? substring(s, slash + 1) : substring(s, fileIsVirtual(s));
 }
 
 String String::fileBaseName(const char* s)
 {
-  int begin = max<int>(lastIndex(s, '/') + 1, s[0] == '@');
+  int begin = max<int>(lastIndex(s, '/') + 1, fileIsVirtual(s));
   int dot   = lastIndex(s, '.');
 
   return begin <= dot ? substring(s, begin, dot) : substring(s, begin);
@@ -251,21 +270,6 @@ bool String::fileHasExtension(const char* s, const char* ext)
   else {
     return isEmpty(ext);
   }
-}
-
-String String::replace(const char* s, char whatChar, char withChar)
-{
-  int count = length(s);
-
-  String r;
-  r.resize(count);
-
-  for (int i = 0; i < count; ++i) {
-    r.buffer[i] = s[i] == whatChar ? withChar : s[i];
-  }
-  r.buffer[count] = '\0';
-
-  return r;
 }
 
 bool String::parseBool(const char* s, const char** end)
@@ -301,9 +305,10 @@ double String::parseDouble(const char* s, const char** end)
 
 String::String(const char* s, int nChars)
 {
-  resize(nChars);
-  memcpy(buffer, s, nChars);
-  buffer[count] = '\0';
+  char* begin = resize(nChars, false);
+
+  memcpy(begin, s, nChars);
+  begin[count] = '\0';
 }
 
 String::String(const char* s, const char* t) :
@@ -331,25 +336,19 @@ String::String(double d, const char* format)
 
 String::~String()
 {
-  if (buffer != baseBuffer) {
+  if (count >= BUFFER_SIZE) {
     delete[] buffer;
   }
 }
 
 String::String(const String& s) :
-  String(s.buffer, s.count)
+  String(s.data(), s.count)
 {}
 
 String::String(String&& s) :
   count(s.count)
 {
-  if (s.buffer != s.baseBuffer) {
-    buffer   = s.buffer;
-    s.buffer = s.baseBuffer;
-  }
-  else {
-    memcpy(baseBuffer, s.baseBuffer, count + 1);
-  }
+  memcpy(this, &s, sizeof(String));
 
   s.count         = 0;
   s.baseBuffer[0] = '\0';
@@ -358,8 +357,9 @@ String::String(String&& s) :
 String& String::operator = (const String& s)
 {
   if (&s != this) {
-    resize(s.count);
-    memcpy(buffer, s.buffer, count + 1);
+    char* begin = resize(s.count, false);
+
+    memcpy(begin, s.data(), count + 1);
   }
   return *this;
 }
@@ -367,20 +367,11 @@ String& String::operator = (const String& s)
 String& String::operator = (String&& s)
 {
   if (&s != this) {
-    if (buffer != baseBuffer) {
+    if (count >= BUFFER_SIZE) {
       delete[] buffer;
     }
 
-    if (s.buffer != s.baseBuffer) {
-      buffer   = s.buffer;
-      s.buffer = s.baseBuffer;
-    }
-    else {
-      buffer = baseBuffer;
-      memcpy(baseBuffer, s.baseBuffer, s.count + 1);
-    }
-
-    count = s.count;
+    memcpy(this, &s, sizeof(String));
 
     s.count         = 0;
     s.baseBuffer[0] = '\0';
@@ -390,11 +381,11 @@ String& String::operator = (String&& s)
 
 String& String::operator = (const char* s)
 {
-  if (s != buffer) {
-    int nChars = length(s);
+  if (s != data()) {
+    int   nChars = length(s);
+    char* begin  = resize(nChars, false);
 
-    resize(nChars);
-    memcpy(buffer, s, nChars + 1);
+    memcpy(begin, s, nChars + 1);
   }
   return *this;
 }
@@ -437,37 +428,37 @@ String String::si(double e, const char* format)
 
 int String::index(char ch, int start) const
 {
-  return index(buffer, ch, start);
+  return index(data(), ch, start);
 }
 
 int String::lastIndex(char ch, int end) const
 {
-  return lastIndex(buffer, ch, end);
+  return lastIndex(data(), ch, end);
 }
 
 int String::lastIndex(char ch) const
 {
-  return lastIndex(buffer, ch, count);
+  return lastIndex(data(), ch, count);
 }
 
 const char* String::find(char ch, int start) const
 {
-  return find(buffer, ch, start);
+  return find(data(), ch, start);
 }
 
 const char* String::findLast(char ch, int end) const
 {
-  return findLast(buffer, ch, end);
+  return findLast(data(), ch, end);
 }
 
 const char* String::findLast(char ch) const
 {
-  return findLast(buffer, ch, count);
+  return findLast(data(), ch, count);
 }
 
 bool String::beginsWith(const char* sub) const
 {
-  return beginsWith(buffer, sub);
+  return beginsWith(data(), sub);
 }
 
 bool String::endsWith(const char* sub) const
@@ -478,7 +469,7 @@ bool String::endsWith(const char* sub) const
     return false;
   }
 
-  const char* end    = buffer + count  - 1;
+  const char* end    = data() + count  - 1;
   const char* subEnd = sub    + subLen - 1;
 
   while (subEnd >= sub && *subEnd == *end) {
@@ -490,32 +481,32 @@ bool String::endsWith(const char* sub) const
 
 bool String::parseBool(const char** end) const
 {
-  return parseBool(buffer, end);
+  return parseBool(data(), end);
 }
 
 int String::parseInt(const char** end) const
 {
-  return parseInt(buffer, end);
+  return parseInt(data(), end);
 }
 
 double String::parseDouble(const char** end) const
 {
-  return parseDouble(buffer, end);
+  return parseDouble(data(), end);
 }
 
 String String::operator + (const String& s) const
 {
-  return String(buffer, count, s.buffer, s.count);
+  return String(data(), count, s.data(), s.count);
 }
 
 String String::operator + (const char* s) const
 {
-  return String(buffer, count, s, length(s));
+  return String(data(), count, s, length(s));
 }
 
 String operator + (const char* s, const String& t)
 {
-  return String(s, String::length(s), t.buffer, t.count);
+  return String(s, String::length(s), t.data(), t.count);
 }
 
 String& String::operator += (const String& s)
@@ -523,7 +514,7 @@ String& String::operator += (const String& s)
   int oCount = count;
 
   resize(count + s.count, true);
-  memcpy(buffer + oCount, s, s.count + 1);
+  memcpy(data() + oCount, s.data(), s.count + 1);
 
   return *this;
 }
@@ -534,7 +525,7 @@ String& String::operator += (const char* s)
   int sLength = length(s);
 
   resize(count + sLength, true);
-  memcpy(buffer + oCount, s, sLength + 1);
+  memcpy(data() + oCount, s, sLength + 1);
 
   return *this;
 }
@@ -543,40 +534,42 @@ String String::substring(int start) const
 {
   hard_assert(0 <= start && start <= count);
 
-  return String(buffer + start, count - start);
+  return String(data() + start, count - start);
 }
 
 String String::substring(int start, int end) const
 {
   hard_assert(0 <= start && start <= count && start <= end && end <= count);
 
-  return String(buffer + start, end - start);
+  return String(data() + start, end - start);
 }
 
 String String::trim() const
 {
-  const char* start = buffer;
-  const char* end   = buffer + count;
+  const char* begin = data();
+  const char* end   = begin + count;
 
-  while (start < end && isBlank(*start)) {
-    ++start;
+  while (begin < end && isBlank(*begin)) {
+    ++begin;
   }
-  while (start < end && isBlank(*(end - 1))) {
+  while (begin < end && isBlank(*(end - 1))) {
     --end;
   }
 
-  return String(start, int(end - start));
+  return String(begin, int(end - begin));
 }
 
 String String::replace(char whatChar, char withChar) const
 {
   String r;
-  r.resize(count);
+
+  const char* oBegin = data();
+  char*       rBegin = r.resize(count, false);
 
   for (int i = 0; i < count; ++i) {
-    r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];
+    rBegin[i] = oBegin[i] == whatChar ? withChar : oBegin[i];
   }
-  r.buffer[count] = '\0';
+  rBegin[count] = '\0';
 
   return r;
 }
@@ -586,7 +579,7 @@ List<String> String::split(char delimiter) const
   List<String> list;
 
   int begin = 0;
-  int end   = index(buffer, delimiter);
+  int end   = index(delimiter);
 
   // Count substrings first.
   while (end >= 0) {
@@ -609,18 +602,17 @@ String String::fileDirectory() const
 
 String String::fileName() const
 {
-  int begin = buffer[0] == '@';
   int slash = lastIndex('/');
 
-  return slash >= 0 ? substring(slash + 1) : String(buffer + begin, count - begin);
+  return slash >= 0 ? substring(slash + 1) : substring(fileIsVirtual());
 }
 
 String String::fileBaseName() const
 {
-  int begin = max<int>(lastIndex('/') + 1, buffer[0] == '@');
+  int begin = max<int>(lastIndex('/') + 1, fileIsVirtual());
   int dot   = lastIndex('.');
 
-  return begin < dot ? substring(begin, dot) : substring(begin);
+  return begin <= dot ? substring(begin, dot) : substring(begin);
 }
 
 String String::fileExtension() const

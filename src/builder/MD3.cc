@@ -296,7 +296,8 @@ void MD3::load()
 
 void MD3::save()
 {
-  OutputStream os(0, Endian::LITTLE);
+  Buffer buffer;
+  OutputStream os(&buffer, Endian::LITTLE);
 
   compiler.beginModel();
 

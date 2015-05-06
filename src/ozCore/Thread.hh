@@ -59,8 +59,8 @@ public:
   /**
    * Get current thread's name.
    *
-   * If the thread hasn't been started through this class, "" is returned or "main" if called on the
-   * main thread.
+   * This method always returns "main" for the main thread and "" for other threads that were not
+   * started through this class.
    */
   static const char* name();
 
@@ -83,6 +83,9 @@ public:
    *
    * After the thread has been either joined or detached the `Thread` object can be reused to start
    * another thread.
+   *
+   * `System::threadInit()` is called implicitly on the new thread to set up signal handlers if
+   * necessary.
    *
    * @note
    * On Android, thread is registered at VM if `Java::vm()` returns a valid handle (i.e.

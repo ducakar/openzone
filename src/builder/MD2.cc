@@ -396,7 +396,8 @@ void MD2::build(const char* path)
   String sDestDir = &sPath[1];
   File::mkdir(sDestDir);
 
-  OutputStream os(0, Endian::LITTLE);
+  Buffer buffer;
+  OutputStream os(&buffer, Endian::LITTLE);
 
   compiler.writeModel(&os);
   compiler.buildModelTextures(sDestDir);

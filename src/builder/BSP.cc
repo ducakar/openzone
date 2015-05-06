@@ -987,7 +987,8 @@ void BSP::saveMatrix()
     usedSounds.include(demolishSound);
   }
 
-  OutputStream os(0, Endian::LITTLE);
+  Buffer buffer;
+  OutputStream os(&buffer, Endian::LITTLE);
 
   os.writePoint(mins);
   os.writePoint(maxs);
@@ -1174,7 +1175,8 @@ void BSP::saveClient()
 
   compiler.endModel();
 
-  OutputStream os(0, Endian::LITTLE);
+  Buffer buffer;
+  OutputStream os(&buffer, Endian::LITTLE);
 
   compiler.writeModel(&os, true);
   os.writeVec4(waterFogColour);

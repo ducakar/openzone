@@ -43,19 +43,29 @@ class String
 {
 private:
 
-  /// Size of static buffer.
-  static const int BUFFER_SIZE = 48 - sizeof(char*) - sizeof(int);
+  /// Size of static buffer for short strin optimisation.
+  static const int BUFFER_SIZE = 32 - sizeof(int);
 
 public:
 
   /// Empty string. Useful when a function needs to return a reference to an empty string.
   static const String EMPTY;
 
+public:
+
+  /**
+   * %Iterator with constant access to characters.
+   */
+  typedef Arrays::CIterator<const char> CIterator;
+
 private:
 
-  char* buffer                  = baseBuffer; ///< Pointer to the current buffer.
-  int   count                   = 0;          ///< Length in bytes (without the final null char).
-  char  baseBuffer[BUFFER_SIZE];              ///< Static buffer.
+  int     count = 0;               ///< Length in bytes (without the final null char).
+  union
+  {
+    char* buffer;                  ///< Pointer to the current buffer.
+    char  baseBuffer[BUFFER_SIZE]; ///< Static buffer.
+  };
 
   /**
    * Merger of two strings.
@@ -63,9 +73,27 @@ private:
   explicit String(const char* s, int sLength, const char* t, int tLength);
 
   /**
+   * Pointer to storage.
+   */
+  OZ_ALWAYS_INLINE
+  const char* data() const
+  {
+    return count < BUFFER_SIZE ? baseBuffer : buffer;
+  }
+
+  /**
+   * Pointer to storage.
+   */
+  OZ_ALWAYS_INLINE
+  char* data()
+  {
+    return count < BUFFER_SIZE ? baseBuffer : buffer;
+  }
+
+  /**
    * Resize storage if necessary and set `count` to `newCount`.
    */
-  void resize(int newCount, bool keepContents = false);
+  char* resize(int newCount, bool keepContents);
 
 public:
 
@@ -121,7 +149,7 @@ public:
   static char last(const char* s)
   {
     size_t sCount = __builtin_strlen(s);
-    return sCount == 0 ? '\0' : s[sCount - 1];
+    return s[sCount - (sCount != 0)];
   }
 
   /**
@@ -198,7 +226,7 @@ public:
   OZ_ALWAYS_INLINE
   static bool fileIsEmpty(const char* s)
   {
-    return s[0] == '\0' || (s[1] == '\0' && s[0] == '@');
+    return s[0] == '\0' || (s[1] == '\0' && fileIsVirtual(s));
   }
 
   /**
@@ -428,7 +456,7 @@ public:
    */
   bool operator == (const String& s) const
   {
-    return compare(buffer, s.buffer) == 0;
+    return compare(data(), s.data()) == 0;
   }
 
   /**
@@ -436,7 +464,7 @@ public:
    */
   bool operator == (const char* s) const
   {
-    return compare(buffer, s) == 0;
+    return compare(data(), s) == 0;
   }
 
   /**
@@ -444,7 +472,7 @@ public:
    */
   friend bool operator == (const char* a, const String& b)
   {
-    return compare(a, b.buffer) == 0;
+    return compare(a, b.data()) == 0;
   }
 
   /**
@@ -452,7 +480,7 @@ public:
    */
   bool operator != (const String& s) const
   {
-    return compare(buffer, s.buffer) != 0;
+    return compare(data(), s.data()) != 0;
   }
 
   /**
@@ -460,7 +488,7 @@ public:
    */
   bool operator != (const char* s) const
   {
-    return compare(buffer, s) != 0;
+    return compare(data(), s) != 0;
   }
 
   /**
@@ -468,7 +496,7 @@ public:
    */
   friend bool operator != (const char* a, const String& b)
   {
-    return compare(a, b.buffer) != 0;
+    return compare(a, b.data()) != 0;
   }
 
   /**
@@ -476,7 +504,7 @@ public:
    */
   bool operator <= (const String& s) const
   {
-    return compare(buffer, s.buffer) <= 0;
+    return compare(data(), s.data()) <= 0;
   }
 
   /**
@@ -484,7 +512,7 @@ public:
    */
   bool operator <= (const char* s) const
   {
-    return compare(buffer, s) <= 0;
+    return compare(data(), s) <= 0;
   }
 
   /**
@@ -492,7 +520,7 @@ public:
    */
   friend bool operator <= (const char* a, const String& b)
   {
-    return compare(a, b.buffer) <= 0;
+    return compare(a, b.data()) <= 0;
   }
 
   /**
@@ -500,7 +528,7 @@ public:
    */
   bool operator >= (const String& s) const
   {
-    return compare(buffer, s.buffer) >= 0;
+    return compare(data(), s.data()) >= 0;
   }
 
   /**
@@ -508,7 +536,7 @@ public:
    */
   bool operator >= (const char* s) const
   {
-    return compare(buffer, s) >= 0;
+    return compare(data(), s) >= 0;
   }
 
   /**
@@ -516,7 +544,7 @@ public:
    */
   friend bool operator >= (const char* a, const String& b)
   {
-    return compare(a, b.buffer) >= 0;
+    return compare(a, b.data()) >= 0;
   }
 
   /**
@@ -524,7 +552,7 @@ public:
    */
   bool operator < (const String& s) const
   {
-    return compare(buffer, s.buffer) < 0;
+    return compare(data(), s.data()) < 0;
   }
 
   /**
@@ -532,7 +560,7 @@ public:
    */
   bool operator < (const char* s) const
   {
-    return compare(buffer, s) < 0;
+    return compare(data(), s) < 0;
   }
 
   /**
@@ -540,7 +568,7 @@ public:
    */
   friend bool operator < (const char* a, const String& b)
   {
-    return compare(a, b.buffer) < 0;
+    return compare(a, b.data()) < 0;
   }
 
   /**
@@ -548,7 +576,7 @@ public:
    */
   bool operator > (const String& s) const
   {
-    return compare(buffer, s.buffer) > 0;
+    return compare(data(), s.data()) > 0;
   }
 
   /**
@@ -556,7 +584,7 @@ public:
    */
   bool operator > (const char* s) const
   {
-    return compare(buffer, s) > 0;
+    return compare(data(), s) > 0;
   }
 
   /**
@@ -564,7 +592,36 @@ public:
    */
   friend bool operator > (const char* a, const String& b)
   {
-    return compare(a, b.buffer) > 0;
+    return compare(a, b.data()) > 0;
+  }
+
+  /**
+   * %Iterator with constant access, initially points to the first character.
+   */
+  OZ_ALWAYS_INLINE
+  CIterator citerator() const
+  {
+    const char* begin = data();
+
+    return CIterator(begin, begin + count);
+  }
+
+  /**
+   * STL-style constant begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const char* begin() const
+  {
+    return data();
+  }
+
+  /**
+   * STL-style constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const char* end() const
+  {
+    return data() + count;
   }
 
   /**
@@ -572,7 +629,7 @@ public:
    */
   int compare(const String& s) const
   {
-    return compare(buffer, s.buffer);
+    return compare(data(), s.data());
   }
 
   /**
@@ -580,7 +637,7 @@ public:
    */
   int compare(const char* s) const
   {
-    return compare(buffer, s);
+    return compare(data(), s);
   }
 
   /**
@@ -589,7 +646,7 @@ public:
   OZ_ALWAYS_INLINE
   operator const char* () const
   {
-    return buffer;
+    return data();
   }
 
   /**
@@ -598,7 +655,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* cstr() const
   {
-    return buffer;
+    return data();
   }
 
   /**
@@ -627,7 +684,7 @@ public:
   {
     hard_assert(0 <= i && i <= count);
 
-    return buffer[i];
+    return data()[i];
   }
 
   /**
@@ -636,7 +693,7 @@ public:
   OZ_ALWAYS_INLINE
   char first() const
   {
-    return buffer[0];
+    return data()[0];
   }
 
   /**
@@ -645,7 +702,7 @@ public:
   OZ_ALWAYS_INLINE
   char last() const
   {
-    return buffer[count - (count != 0)];
+    return data()[count - (count != 0)];
   }
 
   /**
@@ -762,7 +819,7 @@ public:
   OZ_ALWAYS_INLINE
   bool fileIsEmpty() const
   {
-    return fileIsEmpty(buffer);
+    return fileIsEmpty(data());
   }
 
   /**
@@ -771,7 +828,7 @@ public:
   OZ_ALWAYS_INLINE
   bool fileIsVirtual() const
   {
-    return fileIsVirtual(buffer);
+    return fileIsVirtual(data());
   }
 
   /**
