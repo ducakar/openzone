@@ -54,7 +54,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
     camera.rot, camera.p, camera.colour, String::EMPTY, -1, "", 0.0f, false, Camera::CINEMATIC
   };
 
-  steps.reserve(nSteps);
+  steps.reserve(nSteps, true);
 
   for (int i = 0; i < nSteps; ++i) {
     const Json& stepConfig = sequence[i];

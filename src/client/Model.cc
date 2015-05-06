@@ -426,7 +426,7 @@ const File* Model::preload()
   int nAnimations = is.readInt();
 
   if (nTextures < 0) {
-    textures.resize(~nTextures);
+    textures.resize(~nTextures, true);
 
     for (int i = 0; i < ~nTextures; ++i) {
       is.readString();
@@ -435,7 +435,7 @@ const File* Model::preload()
   else {
     hard_assert(nTextures > 0);
 
-    textures.resize(nTextures);
+    textures.resize(nTextures, true);
 
     for (int i = 0; i < nTextures; ++i) {
       const String& name = is.readString();
@@ -488,7 +488,7 @@ const File* Model::preload()
     }
   }
 
-  meshes.resize(nMeshes);
+  meshes.resize(nMeshes, true);
 
   for (int i = 0; i < nMeshes; ++i) {
     meshes[i].flags      = is.readInt();
@@ -501,7 +501,7 @@ const File* Model::preload()
     flags |= meshes[i].flags & (SOLID_BIT | ALPHA_BIT);
   }
 
-  lights.resize(nLights);
+  lights.resize(nLights, true);
 
   for (int i = 0; i < nLights; ++i) {
     lights[i].node           = is.readInt();
@@ -519,7 +519,7 @@ const File* Model::preload()
     lights[i].coneCoeff[1]   = is.readFloat();
   }
 
-  nodes.resize(nNodes);
+  nodes.resize(nNodes, true);
 
   for (int i = 0; i < nNodes; ++i) {
     nodes[i].transf     = is.readMat4();
@@ -532,12 +532,12 @@ const File* Model::preload()
     nodes[i].name       = is.readString();
   }
 
-  animations.resize(nAnimations);
+  animations.resize(nAnimations, true);
 
   for (int i = 0; i < nAnimations; ++i) {
     int nChannels = is.readInt();
 
-    animations[i].channels.resize(nChannels);
+    animations[i].channels.resize(nChannels, true);
 
     for (int j = 0; j < nChannels; ++j) {
       Animation::Channel& channel = animations[i].channels[j];
@@ -546,9 +546,9 @@ const File* Model::preload()
       int nRotationKeys = is.readInt();
       int nScalingKeys  = is.readInt();
 
-      channel.positionKeys.resize(nPositionKeys);
-      channel.rotationKeys.resize(nRotationKeys);
-      channel.scalingKeys.resize(nScalingKeys);
+      channel.positionKeys.resize(nPositionKeys, true);
+      channel.rotationKeys.resize(nRotationKeys, true);
+      channel.scalingKeys.resize(nScalingKeys, true);
 
       for (int k = 0; k < nPositionKeys; ++k) {
         channel.positionKeys[k].position = is.readPoint();

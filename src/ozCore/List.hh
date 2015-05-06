@@ -630,15 +630,20 @@ public:
   }
 
   /**
-   * Resize the list and its capacity to the specified number of elements.
+   * Resize the list (and optionally its capacity too) to the specified number of elements.
    *
    * Primitive types are not initialised to zero.
    */
-  void resize(int newCount)
+  void resize(int newCount, bool exactCapacity = false)
   {
-    if (newCount != size) {
-      data = Arrays::reallocate<Elem>(data, count, newCount);
-      size = newCount;
+    if (exactCapacity) {
+      if (newCount != size) {
+        data = Arrays::reallocate<Elem>(data, count, newCount);
+        size = newCount;
+      }
+    }
+    else {
+      ensureCapacity(newCount);
     }
     count = newCount;
   }
@@ -646,11 +651,16 @@ public:
   /**
    * Increase capacity (exactly) to the given value if smaller.
    */
-  void reserve(int capacity)
+  void reserve(int capacity, bool exactCapacity = false)
   {
-    if (size < capacity) {
-      data = Arrays::reallocate<Elem>(data, count, capacity);
-      size = capacity;
+    if (exactCapacity) {
+      if (size < capacity) {
+        data = Arrays::reallocate<Elem>(data, count, capacity);
+        size = capacity;
+      }
+    }
+    else {
+      ensureCapacity(capacity);
     }
   }
 

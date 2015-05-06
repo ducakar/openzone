@@ -103,9 +103,9 @@
  * I/O.
  */
 #include "Endian.hh"
+#include "Buffer.hh"
 #include "InputStream.hh"
 #include "OutputStream.hh"
-#include "Buffer.hh"
 #include "File.hh"
 
 /*

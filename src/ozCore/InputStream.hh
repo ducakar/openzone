@@ -31,6 +31,7 @@
 #include "String.hh"
 #include "Mat4.hh"
 #include "Endian.hh"
+#include "Buffer.hh"
 
 namespace oz
 {
@@ -52,11 +53,6 @@ protected:
 protected:
 
   /**
-   * Internal constructor for `OutputStream`.
-   */
-  explicit InputStream(char* pos, char* start, const char* end, Endian::Order order_);
-
-  /**
    * Read consecutive floats. Helper function for readVec3(), readVec4() etc.
    */
   void readFloats(float* values, int count);
@@ -72,6 +68,11 @@ public:
    * Create a stream for reading a given memory range.
    */
   explicit InputStream(const char* start, const char* end, Endian::Order order_ = Endian::NATIVE);
+
+  /**
+   * Create a stream for reading contents of a given buffer.
+   */
+  explicit InputStream(const Buffer& buffer, Endian::Order order = Endian::NATIVE);
 
   /**
    * Length of the stream.
@@ -93,17 +94,6 @@ public:
     hard_assert(streamPos <= streamEnd);
 
     return int(streamEnd - streamPos);
-  }
-
-  /**
-   * True iff there is still some bytes left on the stream.
-   */
-  OZ_ALWAYS_INLINE
-  bool isAvailable() const
-  {
-    hard_assert(streamPos <= streamEnd);
-
-    return streamPos != streamEnd;
   }
 
   /**

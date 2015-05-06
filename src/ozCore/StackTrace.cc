@@ -53,11 +53,7 @@ StackTrace StackTrace::current(int)
   const char* name = Thread::name();
 
   StackTrace st = { {}, 0, {} };
-
-  if (name != nullptr) {
-    strncpy(st.threadName, name, Thread::NAME_LENGTH);
-    st.threadName[Thread::NAME_LENGTH] = '\0';
-  }
+  strncpy(st.threadName, name, Thread::NAME_LENGTH);
   return st;
 }
 
@@ -82,11 +78,7 @@ StackTrace StackTrace::current(int nSkippedFrames)
   int         nFrames         = min<int>(nBufferedFrames - 1 - nSkippedFrames, MAX_FRAMES);
 
   StackTrace st = { {}, nFrames, {} };
-
-  if (name != nullptr) {
-    strncpy(st.threadName, name, Thread::NAME_LENGTH);
-    st.threadName[Thread::NAME_LENGTH] = '\0';
-  }
+  strncpy(st.threadName, name, Thread::NAME_LENGTH);
   Arrays::copy<void*>(framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames);
   return st;
 }

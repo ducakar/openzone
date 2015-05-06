@@ -76,7 +76,7 @@ struct Json::Parser
   OZ_HIDDEN
   char readChar()
   {
-    if (!is->isAvailable()) {
+    if (is->available() == 0) {
       OZ_PARSE_ERROR(0, "Unexpected end of file");
     }
 
@@ -245,7 +245,7 @@ struct Json::Parser
 
       chars.add(ch);
     }
-    while (is->isAvailable());
+    while (is->available() != 0);
 
     if (ch != '"') {
       OZ_PARSE_ERROR(0, "End of file while looking for end of string (Is ending \" missing?)");
@@ -288,7 +288,7 @@ struct Json::Parser
         SList<char, 32> chars;
         chars.add(ch);
 
-        while (is->isAvailable()) {
+        while (is->available() != 0) {
           ch = readChar();
 
           if (String::isBlank(ch) || ch == ',' || ch == '}' || ch == ']') {
@@ -388,7 +388,7 @@ struct Json::Parser
   OZ_HIDDEN
   void finish()
   {
-    while (is->isAvailable()) {
+    while (is->available() != 0) {
       char ch = readChar();
 
       if (!String::isBlank(ch)) {
@@ -1354,7 +1354,8 @@ String Json::toString() const
 
 String Json::toFormattedString(const Format& format) const
 {
-  OutputStream os(0);
+  Buffer buffer;
+  OutputStream os(&buffer);
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
 
   formatter.writeValue(*this);
@@ -1367,7 +1368,7 @@ bool Json::load(const File& file)
 {
   InputStream is = file.inputStream();
 
-  if (!is.isAvailable()) {
+  if (is.available() == 0) {
     return false;
   }
 
@@ -1377,7 +1378,8 @@ bool Json::load(const File& file)
 
 bool Json::save(const File& file, const Format& format) const
 {
-  OutputStream os(0);
+  Buffer buffer;
+  OutputStream os(&buffer);
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
 
   formatter.writeValue(*this);

@@ -32,92 +32,21 @@
 namespace oz
 {
 
-Buffer::Buffer(int size_) :
-  data(new char[size_]), size(size_)
+Buffer::Buffer(int size) :
+  List<char>(size)
 {}
 
-Buffer::Buffer(const char* data_, int size_) :
-  data(new char[size_]), size(size_)
-{
-  memcpy(data, data_, size);
-}
+Buffer::Buffer(const char* data, int size) :
+  List<char>(data, size)
+{}
 
 Buffer::Buffer(const String& s) :
-  data(new char[s.length()]), size(s.length())
-{
-  memcpy(data, s.cstr(), size);
-}
-
-Buffer::~Buffer()
-{
-  delete[] data;
-}
-
-Buffer::Buffer(const Buffer& b) :
-  data(new char[b.size]), size(b.size)
-{
-  memcpy(data, b.data, size);
-}
-
-Buffer::Buffer(Buffer&& b) :
-  data(b.data), size(b.size)
-{
-  b.data = nullptr;
-  b.size = 0;
-}
-
-Buffer& Buffer::operator = (const Buffer& b)
-{
-  if (&b != this) {
-    if (size != b.size) {
-      delete[] data;
-
-      data = new char[b.size];
-      size = b.size;
-    }
-
-    memcpy(data, b.data, b.size);
-  }
-  return *this;
-}
-
-Buffer& Buffer::operator = (Buffer&& b)
-{
-  if (&b != this) {
-    delete[] data;
-
-    data = b.data;
-    size = b.size;
-
-    b.data = nullptr;
-    b.size = 0;
-  }
-  return *this;
-}
-
-bool Buffer::operator == (const Buffer& b) const
-{
-  return size == b.size && memcmp(data, b.data, size) == 0;
-}
-
-bool Buffer::operator != (const Buffer& b) const
-{
-  return !operator == (b);
-}
-
-InputStream Buffer::inputStream(Endian::Order order) const
-{
-  return InputStream(data, data + size, order);
-}
-
-OutputStream Buffer::outputStream(Endian::Order order)
-{
-  return OutputStream(data, data + size, order);
-}
+  List<char>(s.cstr(), s.length())
+{}
 
 String Buffer::toString() const
 {
-  return String(data, size);
+  return String(data, count);
 }
 
 Buffer Buffer::compress(int level) const
@@ -134,26 +63,26 @@ Buffer Buffer::compress(int level) const
   }
 
   // Upper bound for compressed data plus sizeof(int) to write down size of the uncompressed data.
-  int newSize = 4 + int(deflateBound(&zstream, size));
-  buffer.resize(newSize);
+  int newSize = 4 + int(deflateBound(&zstream, count));
+  buffer.resize(newSize, true);
 
   zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data));
-  zstream.avail_in  = size;
+  zstream.avail_in  = count;
   zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data + 4);
-  zstream.avail_out = buffer.size;
+  zstream.avail_out = buffer.count;
 
   int ret = ::deflate(&zstream, Z_FINISH);
   deflateEnd(&zstream);
 
   newSize = ret != Z_STREAM_END ? 0 : 4 + int(zstream.total_out);
-  buffer.resize(newSize);
+  buffer.resize(newSize, true);
 
   if (newSize != 0) {
     // Write size of the original data (in little endian).
 #if OZ_BYTE_ORDER == 4321
     *reinterpret_cast<int*>(buffer.data) = Endian::bswap32(oldSize);
 #else
-    *reinterpret_cast<int*>(buffer.data) = size;
+    *reinterpret_cast<int*>(buffer.data) = count;
 #endif
   }
   return buffer;
@@ -178,34 +107,20 @@ Buffer Buffer::decompress() const
     return buffer;
   }
 
-  buffer.resize(newSize);
+  buffer.resize(newSize, true);
 
   zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(data + 4));
-  zstream.avail_in  = size - 4;
+  zstream.avail_in  = count - 4;
   zstream.next_out  = reinterpret_cast<ubyte*>(buffer.data);
-  zstream.avail_out = buffer.size;
+  zstream.avail_out = buffer.count;
 
   int ret = ::inflate(&zstream, Z_FINISH);
   inflateEnd(&zstream);
 
   if (ret != Z_STREAM_END) {
-    buffer.resize(0);
+    buffer.resize(0, true);
   }
   return buffer;
-}
-
-void Buffer::resize(int newSize)
-{
-  hard_assert(newSize >= 0);
-
-  if (newSize != size) {
-    char* newData = new char[newSize];
-    memcpy(newData, data, min<int>(size, newSize));
-    delete[] data;
-
-    data = newData;
-    size = newSize;
-  }
 }
 
 }

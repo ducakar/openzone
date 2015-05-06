@@ -49,7 +49,7 @@ void CreditsMenu::onRealign()
   height = camera.height;
 
   int nLabels = max(0, (height - 140) / stride);
-  labels.resize(nLabels);
+  labels.resize(nLabels, true);
 
   for (int i = 0; i < nLabels; ++i) {
     int line = scroll + i;
@@ -154,7 +154,7 @@ CreditsMenu::CreditsMenu() :
   for (const File& creditsFile : creditsDir.ls()) {
     InputStream is = creditsFile.inputStream();
 
-    if (!is.isAvailable()) {
+    if (is.available() == 0) {
       OZ_ERROR("Failed to read '%s'", creditsFile.path().cstr());
     }
 
@@ -169,7 +169,7 @@ CreditsMenu::CreditsMenu() :
 
     String contents = "";
 
-    while (is.isAvailable()) {
+    while (is.available() != 0) {
       contents += is.readLine() + "\n";
     }
     contents = lingua.get(contents);

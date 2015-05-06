@@ -122,7 +122,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const Point& p_, Heading h
   }
 
   if (clazz->nItems != 0) {
-    items.reserve(clazz->nItems);
+    items.reserve(clazz->nItems, true);
   }
 }
 
@@ -160,7 +160,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
     swap(dim.x, dim.y);
   }
 
-  items.reserve(clazz->nItems);
+  items.reserve(clazz->nItems, true);
 }
 
 Object::Object(const ObjectClass* clazz_, InputStream* is)
@@ -186,7 +186,7 @@ Object::Object(const ObjectClass* clazz_, InputStream* is)
   }
 
   if (clazz->nItems != 0) {
-    items.reserve(clazz->nItems);
+    items.reserve(clazz->nItems, true);
 
     int nItems = is->readInt();
     for (int i = 0; i < nItems; ++i) {

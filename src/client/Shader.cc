@@ -357,7 +357,7 @@ void Shader::init()
     mesh        = liber.shaderIndex("mesh");
     postprocess = liber.shaderIndex("postprocess");
 
-    programs.resize(liber.shaders.length());
+    programs.resize(liber.shaders.length(), true);
 
     defines = "#version 100\n";
 

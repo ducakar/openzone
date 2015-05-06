@@ -176,7 +176,7 @@ void Terra::load()
   File map  = "@terra/" + name + ".dds";
 
   InputStream is = file.inputStream(Endian::LITTLE);
-  if (!is.isAvailable()) {
+  if (is.available() == 0) {
     OZ_ERROR("Terra file '%s' read failed", file.path().cstr());
   }
 
@@ -265,7 +265,7 @@ void Terra::load()
   landShaderId   = liber.shaderIndex("terraLand");
   liquidShaderId = liber.shaderIndex("terraLiquid");
 
-  hard_assert(!is.isAvailable());
+  hard_assert(is.available() == 0);
 }
 
 void Terra::unload()

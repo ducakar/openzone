@@ -51,8 +51,7 @@ void GameStage::saveMain(void*)
 {
   Log::print("Saving state to %s ...", gameStage.saveFile.path().cstr());
 
-  Buffer buffer(gameStage.saveStream.begin(), gameStage.saveStream.tell());
-  buffer = buffer.compress();
+  Buffer buffer = gameStage.saveBuffer.compress();
 
   if (!gameStage.saveFile.write(buffer)) {
     Log::printEnd(" Failed");
@@ -82,7 +81,7 @@ void GameStage::read()
 
   Log::printEnd(" OK");
 
-  InputStream is = buffer.inputStream(Endian::LITTLE);
+  InputStream is(buffer, Endian::LITTLE);
 
   matrix.read(&is);
   nirvana.read(&is);
@@ -91,8 +90,9 @@ void GameStage::read()
   Log::indent();
 
   camera.read(&is);
-
   luaClient.read(&is);
+
+  hard_assert(is.available() == 0);
 
   Log::unindent();
   Log::println("}");
@@ -509,7 +509,7 @@ void GameStage::init()
   loader.init();
   profile.init();
 
-  saveStream = OutputStream(0, Endian::LITTLE);
+  saveStream = OutputStream(&saveBuffer, Endian::LITTLE);
 
   Log::unindent();
   Log::println("}");

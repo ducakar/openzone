@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Buffer.hh"
+#include "OutputStream.hh"
 
 namespace oz
 {

@@ -62,7 +62,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
   bool           restartString  = true;
   bool           inGettext      = false;
 
-  while (is.isAvailable()) {
+  while (is.available() != 0) {
     last[3] = last[2];
     last[2] = last[1];
     last[1] = last[0];
@@ -289,10 +289,10 @@ static void readCredits(const File& file)
   }
 
   Buffer buffer = file.read();
-  InputStream is = buffer.inputStream();
+  InputStream is(buffer);
   String contents;
 
-  while (is.isAvailable()) {
+  while (is.available() != 0) {
     contents += is.readLine() + "\n";
   }
 
@@ -332,8 +332,9 @@ static void readDescription(const File& file)
 
 static void writePOT(const HashMap<String, String>* hs, const char* filePath)
 {
-  OutputStream os(0);
-  String s;
+  Buffer       buffer;
+  OutputStream os(&buffer);
+  String       s;
 
   bool isFirst = true;
   for (const auto& i : *hs) {

@@ -37,7 +37,7 @@ const float FragPool::FRAG_RADIUS = 1.0f;
 FragPool::FragPool(const oz::FragPool* pool_) :
   pool(pool_), flags(pool_->flags)
 {
-  models.reserve(pool->models.length());
+  models.reserve(pool->models.length(), true);
 
   for (int i = 0; i < pool->models.length(); ++i) {
     models.add(context.requestModel(pool->models[i]));

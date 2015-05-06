@@ -120,7 +120,7 @@ bool Cursor::load(const File& file, Mode mode_, int size)
   InputStream is = file.inputStream(Endian::LITTLE);
 
   // Implementation is based on specifications from xcursor(3) manual.
-  if (!is.isAvailable() || !String::beginsWith(is.begin(), "Xcur")) {
+  if (is.available() == 0 || !String::beginsWith(is.begin(), "Xcur")) {
     return false;
   }
 

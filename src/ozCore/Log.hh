@@ -135,14 +135,6 @@ public:
   static void printTrace(const StackTrace& st);
 
   /**
-   * Print "Caught signal ..." and signal description.
-   *
-   * This function is only required internally by signal handler since it has issues with functions
-   * that take variable arguments.
-   */
-  static void printSignal(int sigNum);
-
-  /**
    * Print summary about memory usage (`Alloc`'s -`count` and -`size` fields).
    *
    * If new/delete operators haven't been overloaded or no memory allocation have been made nothing
@@ -184,117 +176,122 @@ public:
   static void destroy();
 
   /**
-   * Same as `putsRaw(b ? "true" : "false")`.
+   * Same as `print(b ? "true" : "false")`.
    */
   const Log& operator << (bool b) const;
 
   /**
-   * Same as `printRaw("%c", c)`.
+   * Same as `print("%c", c)`.
    */
   const Log& operator << (char c) const;
 
   /**
-   * Same as `printRaw("%d", b)`.
+   * Same as `print("%d", b)`.
    */
   const Log& operator << (byte b) const;
 
   /**
-   * Same as `printRaw("%ud", b)`.
+   * Same as `print("%ud", b)`.
    */
   const Log& operator << (ubyte b) const;
 
   /**
-   * Same as `printRaw("%d", s)`.
+   * Same as `print("%d", s)`.
    */
   const Log& operator << (short s) const;
 
   /**
-   * Same as `printRaw("%ud", s)`.
+   * Same as `print("%ud", s)`.
    */
   const Log& operator << (ushort s) const;
 
   /**
-   * Same as `printRaw("%d", i)`.
+   * Same as `print("%d", i)`.
    */
   const Log& operator << (int i) const;
 
   /**
-   * Same as `printRaw("%ud", i)`.
+   * Same as `print("%ud", i)`.
    */
   const Log& operator << (uint i) const;
 
   /**
-   * Same as `printRaw("%ld", l)`.
+   * Same as `print("%ld", l)`.
    */
   const Log& operator << (long l) const;
 
   /**
-   * Same as `printRaw("%lud", l)`.
+   * Same as `print("%lud", l)`.
    */
   const Log& operator << (ulong l) const;
 
   /**
-   * Same as `printRaw("%lld", l)`.
+   * Same as `print("%lld", l)`.
    */
   const Log& operator << (long64 l) const;
 
   /**
-   * Same as `printRaw("%llud", l)`.
+   * Same as `print("%llud", l)`.
    */
   const Log& operator << (ulong64 l) const;
 
   /**
-   * Same as `printRaw("%g", f)`.
+   * Same as `print("%g", f)`.
    */
   const Log& operator << (float f) const;
 
   /**
-   * Same as `printRaw("%g", d)`.
+   * Same as `print("%g", d)`.
    */
   const Log& operator << (double d) const;
 
   /**
-   * Same as `putsRaw(s)`.
+   * Same as `print("%p", p)`.
    */
-  const Log& operator << (const String& s) const;
+  const Log& operator << (volatile const void* p) const;
 
   /**
-   * Same as `putsRaw(s)`.
+   * Same as `print("%s", s)`.
    */
   const Log& operator << (const char* s) const;
 
   /**
-   * Same as `printRaw("(%g %g %g)", v.x, v.y, v.z)`.
+   * Same as `print("%s", s.cstr())`.
+   */
+  const Log& operator << (const String& s) const;
+
+  /**
+   * Same as `print("(%g %g %g)", v.x, v.y, v.z)`.
    */
   const Log& operator << (const Vec3& v) const;
 
   /**
-   * Same as `printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.z)`.
+   * Same as `print("(%g %g %g %g)", v.x, v.y, v.z, v.z)`.
    */
   const Log& operator << (const Vec4& v) const;
 
   /**
-   * Same as `printRaw("[%g %g %g]", p.x, p.y, p.z)`.
+   * Same as `print("[%g %g %g]", p.x, p.y, p.z)`.
    */
   const Log& operator << (const Point& p) const;
 
   /**
-   * Same as `printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d)`.
+   * Same as `print("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d)`.
    */
   const Log& operator << (const Plane& p) const;
 
   /**
-   * Same as `printRaw("[%g %g %g %g]", q.x, q.y, q.z, q.w)`.
+   * Same as `print("[%g %g %g %g]", q.x, q.y, q.z, q.w)`.
    */
   const Log& operator << (const Quat& q) const;
 
   /**
-   * Print 3x3 matrix as `printRaw("[%g %g %g; %g %g %g; %g %g %g]", ...)` in column-major format.
+   * Print 3x3 matrix as `print("[%g %g %g; %g %g %g; %g %g %g]", ...)` in column-major format.
    */
   const Log& operator << (const Mat3& m) const;
 
   /**
-   * Print 4x4 matrix as `printRaw("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ...)` in
+   * Print 4x4 matrix as `print("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ...)` in
    * column-major format.
    */
   const Log& operator << (const Mat4& m) const;
@@ -310,24 +307,19 @@ public:
   const Log& operator << (const Buffer& buffer) const;
 
   /**
-   * Same as `printRaw("%s", file.path().cstr())`.
+   * Same as `print("%s", file.path().cstr())`.
    */
   const Log& operator << (const File& file) const;
 
   /**
-   * Same as `printRaw("%s", time.toString().cstr())`.
+   * Same as `print("%s", time.toString().cstr())`.
    */
   const Log& operator << (const Time& time) const;
 
   /**
-   * Same as `printRaw("%s", json.toString().cstr())`.
+   * Same as `print("%s", json.toString().cstr())`.
    */
   const Log& operator << (const Json& json) const;
-
-  /**
-   * Same as `printfRaw("%p", p)`.
-   */
-  const Log& operator << (volatile const void* p) const;
 
 };
 

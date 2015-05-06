@@ -34,11 +34,6 @@ namespace oz
 {
 
 OZ_HIDDEN
-InputStream::InputStream(char* pos, char* start, const char* end, Endian::Order order_) :
-  streamPos(pos), streamBegin(start), streamEnd(end), order(order_)
-{}
-
-OZ_HIDDEN
 void InputStream::readFloats(float* values, int count)
 {
   const char* data = skip(count * sizeof(float));
@@ -62,6 +57,10 @@ void InputStream::readFloats(float* values, int count)
 InputStream::InputStream(const char* start, const char* end, Endian::Order order_) :
   streamPos(const_cast<char*>(start)), streamBegin(const_cast<char*>(start)), streamEnd(end),
   order(order_)
+{}
+
+InputStream::InputStream(const Buffer& buffer, Endian::Order order_) :
+  InputStream(buffer.begin(), buffer.end(), order_)
 {}
 
 void InputStream::seek(int offset)

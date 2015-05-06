@@ -42,12 +42,7 @@ class OutputStream : public InputStream
 {
 private:
 
-  /// Capacity is always a multiple of `GRANULARITY`.
-  static const int GRANULARITY = 4096;
-
-private:
-
-  bool buffered; ///< Whether stream writes to an internal buffer.
+  Buffer* backBuffer = nullptr; ///< Undelaying buffer
 
 private:
 
@@ -68,44 +63,22 @@ public:
                         Endian::Order order = Endian::NATIVE);
 
   /**
-   * Create a buffered stream with dynamically growing buffer.
+   * Create a stream for reading and writing contents of a given buffer.
    */
-  explicit OutputStream(int size, Endian::Order order = Endian::NATIVE);
+  explicit OutputStream(Buffer& buffer, Endian::Order order = Endian::NATIVE);
 
   /**
-   * Destructor.
+   * Create a stream for reading and writing contents of a given buffer resizing it when neccessary.
    */
-  ~OutputStream();
+  explicit OutputStream(Buffer* backBuffer, Endian::Order order = Endian::NATIVE);
 
   /**
-   * Copy constructor, copies buffer if source stream is buffered.
-   */
-  OutputStream(const OutputStream& os);
-
-  /**
-   * Move constructor, moves buffer if source stream is buffered.
-   */
-  OutputStream(OutputStream&& os);
-
-  /**
-   * Copy operator, copies buffer if source stream is buffered.
-   *
-   * Existing storage is reused if its size matches.
-   */
-  OutputStream& operator = (const OutputStream& os);
-
-  /**
-   * Move operator, moves buffer if source stream is buffered.
-   */
-  OutputStream& operator = (OutputStream&& os);
-
-  /**
-   * Iff stream uses internal buffer instead of given storage.
+   * Underlaying buffer, nullptr if there is none.
    */
   OZ_ALWAYS_INLINE
-  bool isBuffered()
+  Buffer* buffer()
   {
-    return buffered;
+    return backBuffer;
   }
 
   /**
@@ -261,7 +234,7 @@ public:
   void writeLine(const char* s);
 
   /**
-   * Deallocate internal buffer if stream is buffered.
+   * Deallocate underlaying buffer if the stream is buffered.
    */
   void free();
 

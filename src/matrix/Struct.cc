@@ -677,7 +677,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
   maxs        = bb.maxs;
 
   if (bsp->nEntities != 0) {
-    entities.resize(bsp->nEntities);
+    entities.resize(bsp->nEntities, true);
 
     for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
@@ -694,7 +694,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
   }
 
   if (bsp->nBoundObjects != 0) {
-    boundObjects.reserve(bsp->nBoundObjects);
+    boundObjects.reserve(bsp->nBoundObjects, true);
   }
 }
 
@@ -723,7 +723,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Json& json)
   }
 
   if (bsp->nEntities != 0) {
-    entities.resize(bsp->nEntities);
+    entities.resize(bsp->nEntities, true);
 
     const Json& entitiesJson = json["entities"];
 
@@ -752,7 +752,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Json& json)
   }
 
   if (bsp->nBoundObjects != 0) {
-    boundObjects.reserve(bsp->nBoundObjects);
+    boundObjects.reserve(bsp->nBoundObjects, true);
   }
 }
 
@@ -777,7 +777,7 @@ Struct::Struct(const BSP* bsp_, InputStream* is)
   maxs        = bb.maxs;
 
   if (bsp->nEntities != 0) {
-    entities.resize(bsp->nEntities);
+    entities.resize(bsp->nEntities, true);
 
     for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
@@ -806,7 +806,7 @@ Struct::Struct(const BSP* bsp_, InputStream* is)
   hard_assert(nBoundObjects <= bsp->nBoundObjects);
 
   if (bsp->nBoundObjects != 0) {
-    boundObjects.reserve(bsp->nBoundObjects);
+    boundObjects.reserve(bsp->nBoundObjects, true);
 
     for (int i = 0; i < nBoundObjects; ++i) {
       boundObjects.add(is->readInt());

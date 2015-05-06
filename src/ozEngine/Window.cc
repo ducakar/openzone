@@ -72,7 +72,8 @@ static void screenshotMain(void* data)
 {
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
-  OutputStream os(0);
+  Buffer buffer;
+  OutputStream os(&buffer);
 
   png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_info*   pngInfo = png_create_info_struct(png);

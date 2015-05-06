@@ -186,7 +186,7 @@ bool AL::Streamer::open(const File& file)
 
   data             = new Data;
   data->fileBuffer = file.read();
-  data->is         = data->fileBuffer.inputStream();
+  data->is         = InputStream(data->fileBuffer);
 
   if (data->fileBuffer.isEmpty()) {
     delete data;
@@ -367,7 +367,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 {
   InputStream is = file.inputStream(Endian::LITTLE);
 
-  if (!is.isAvailable()) {
+  if (is.available() == 0) {
     return false;
   }
 
@@ -394,7 +394,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
     while (!String::beginsWith(chunkName, "data")) {
       is.skip(size);
 
-      if (!is.isAvailable()) {
+      if (is.available() == 0) {
         return false;
       }
 

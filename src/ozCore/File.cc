@@ -141,7 +141,7 @@ static void loadXDGSettings(const File& file, Map<String, String>* vars)
   InputStream is = file.inputStream();
 
   String line;
-  while (is.isAvailable()) {
+  while (is.available() != 0) {
     line = is.readLine();
 
     if (line[0] == '#') {
@@ -495,7 +495,7 @@ Buffer File::read() const
   }
 
   int size = fileSize;
-  buffer.resize(size);
+  buffer.resize(size, true);
 
   read(buffer.begin(), &size);
 
@@ -737,7 +737,7 @@ bool File::cp(const File& src, const File& dest_)
   }
 
   InputStream is = src.inputStream();
-  return !is.isAvailable() ? false : dest.write(is.begin(), is.available());
+  return is.available() == 0 ? false : dest.write(is.begin(), is.available());
 }
 
 bool File::mv(const File& src, const File& dest_)

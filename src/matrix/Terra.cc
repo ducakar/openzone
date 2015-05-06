@@ -55,7 +55,7 @@ void Terra::load(int id_)
     File file = path;
     InputStream is = file.inputStream(Endian::LITTLE);
 
-    if (!is.isAvailable()) {
+    if (is.available() == 0) {
       OZ_ERROR("Cannot read terra file '%s'", file.path().cstr());
     }
 

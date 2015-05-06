@@ -324,7 +324,7 @@ int GL::textureDataFromFile(const File& file, int bias)
       }
     };
 
-    hard_assert(!is.isAvailable());
+    hard_assert(is.available() == 0);
     return nMipmaps - bias;
   }
   else if (is.available() >= 8 && png_check_sig(reinterpret_cast<const ubyte*>(is.begin()), 8)) {
@@ -400,7 +400,7 @@ int GL::textureDataFromFile(const File& file, int bias)
                    data.begin());
     };
 
-    hard_assert(!is.isAvailable());
+    hard_assert(is.available() == 0);
     return 1;
   }
 
@@ -477,9 +477,10 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
 static bool readShaderFile(const File& file, OutputStream* os, List<int>* fileOffsets)
 {
   InputStream  is = file.inputStream();
-  OutputStream cs(0); // Clean file contents, without #include directives.
+  Buffer       cb;
+  OutputStream cs(&cb); // Clean file contents, without #include directives.
 
-  while (is.isAvailable()) {
+  while (is.available() != 0) {
     String line = is.readLine();
 
     if (!line.beginsWith("#include")) {
@@ -510,7 +511,8 @@ static bool readShaderFile(const File& file, OutputStream* os, List<int>* fileOf
 
 bool GL::compileShaderFromFile(GLuint shader, const char* defines, const File& file)
 {
-  OutputStream os(0);
+  Buffer       buffer;
+  OutputStream os(&buffer);
   List<int>    fileOffsets;
 
   if (!readShaderFile(file, &os, &fileOffsets)) {

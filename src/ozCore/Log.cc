@@ -50,45 +50,10 @@
 namespace oz
 {
 
-static const int         OUT_BUFFER_SIZE      = 4096;
-static const int         INDENT_SPACES        = 2;
-static const char        INDENT_BUFFER[49]    = "                                                ";
-static const int         INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
-static const char* const SIGNALS[][2]         =
-{
-  { "SIG???",    "[invalid signal number]"    },
-  { "SIGHUP",    "Hangup"                     }, //  1
-  { "SIGINT",    "Interrupt"                  }, //  2
-  { "SIGQUIT",   "Quit"                       }, //  3
-  { "SIGILL",    "Illegal instruction"        }, //  4
-  { "SIGTRAP",   "Trace trap"                 }, //  5
-  { "SIGABRT",   "Abort"                      }, //  6
-  { "SIGBUS",    "BUS error"                  }, //  7
-  { "SIGFPE",    "Floating-point exception"   }, //  8
-  { "SIGKILL",   "Kill, unblockable"          }, //  9
-  { "SIGUSR1",   "User-defined signal 1"      }, // 10
-  { "SIGSEGV",   "Segmentation violation"     }, // 11
-  { "SIGUSR2",   "User-defined signal 2"      }, // 12
-  { "SIGPIPE",   "Broken pipe"                }, // 13
-  { "SIGALRM",   "Alarm clock"                }, // 14
-  { "SIGTERM",   "Termination"                }, // 15
-  { "SIGSTKFLT", "Stack fault"                }, // 16
-  { "SIGCHLD",   "Child status has changed"   }, // 17
-  { "SIGCONT",   "Continue"                   }, // 18
-  { "SIGSTOP",   "Stop, unblockable"          }, // 19
-  { "SIGTSTP",   "Keyboard stop"              }, // 20
-  { "SIGTTIN",   "Background read from tty"   }, // 21
-  { "SIGTTOU",   "Background write to tty"    }, // 22
-  { "SIGURG",    "Urgent condition on socket" }, // 23
-  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
-  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
-  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
-  { "SIGPROF",   "Profiling alarm clock"      }, // 27
-  { "SIGWINCH",  "Window size change"         }, // 28
-  { "SIGIO",     "I/O now possible"           }, // 29
-  { "SIGPWR",    "Power failure restart"      }, // 30
-  { "SIGSYS",    "Bad system call"            }  // 31
-};
+static const int  OUT_BUFFER_SIZE      = 4096;
+static const int  INDENT_SPACES        = 2;
+static const char INDENT_BUFFER[49]    = "                                                ";
+static const int  INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
 
 static char  path[256]   = "";
 static FILE* logFile     = nullptr;
@@ -215,6 +180,31 @@ void Log::println()
   });
 }
 
+bool Log::printMemorySummary()
+{
+  if (Alloc::count == 0) {
+    return false;
+  }
+
+  println("Alloc summary {");
+  indent();
+
+  println("current chunks    %7d", Alloc::count);
+  println("current amount    %7.2f MiB (%lu B)",
+          float(Alloc::amount) / (1024.0f * 1024.0f), ulong(Alloc::amount));
+  println("maximum chunks    %7d", Alloc::maxCount);
+  println("maximum amount    %7.2f MiB (%lu B)",
+          float(Alloc::maxAmount) / (1024.0f * 1024.0f), ulong(Alloc::maxAmount));
+  println("cumulative chunks %7d", Alloc::sumCount);
+  println("cumulative amount %7.2f MiB (%lu B)",
+          float(Alloc::sumAmount) / (1024.0f * 1024.0f), ulong(Alloc::sumAmount));
+
+  unindent();
+  println("}");
+
+  return true;
+}
+
 void Log::printTrace(const StackTrace& st)
 {
   const char* threadName = String::isEmpty(st.threadName) ? "?" : st.threadName;
@@ -247,45 +237,6 @@ void Log::printTrace(const StackTrace& st)
   OZ_PRINT_BOTH({
     fflush(stream);
   });
-}
-
-void Log::printSignal(int sigNum)
-{
-  char buffer[OUT_BUFFER_SIZE];
-  int  index = uint(sigNum) >= uint(Arrays::length(SIGNALS)) ? 0 : sigNum;
-
-  snprintf(buffer, OUT_BUFFER_SIZE, "\n\nSignal %d %s (%s)\n",
-           sigNum, SIGNALS[index][0], SIGNALS[index][1]);
-
-  OZ_PRINT_BOTH({
-    fputs(buffer, stream);
-    fflush(stream);
-  });
-}
-
-bool Log::printMemorySummary()
-{
-  if (Alloc::count == 0) {
-    return false;
-  }
-
-  println("Alloc summary {");
-  indent();
-
-  println("current chunks    %7d", Alloc::count);
-  println("current amount    %7.2f MiB (%lu B)",
-          float(Alloc::amount) / (1024.0f * 1024.0f), ulong(Alloc::amount));
-  println("maximum chunks    %7d", Alloc::maxCount);
-  println("maximum amount    %7.2f MiB (%lu B)",
-          float(Alloc::maxAmount) / (1024.0f * 1024.0f), ulong(Alloc::maxAmount));
-  println("cumulative chunks %7d", Alloc::sumCount);
-  println("cumulative amount %7.2f MiB (%lu B)",
-          float(Alloc::sumAmount) / (1024.0f * 1024.0f), ulong(Alloc::sumAmount));
-
-  unindent();
-  println("}");
-
-  return true;
 }
 
 bool Log::printMemoryLeaks()
@@ -374,70 +325,70 @@ void Log::destroy()
 
 const Log& Log::operator << (bool b) const
 {
-  putsRaw(b ? "true" : "false");
+  print(b ? "true" : "false");
   return *this;
 }
 
 const Log& Log::operator << (char c) const
 {
-  printRaw("%c", c);
+  print("%c", c);
   return *this;
 }
 
 const Log& Log::operator << (byte b) const
 {
-  printRaw("%d", b);
+  print("%d", b);
   return *this;
 }
 
 const Log& Log::operator << (ubyte b) const
 {
-  printRaw("%u", b);
+  print("%u", b);
   return *this;
 }
 
 const Log& Log::operator << (short s) const
 {
-  printRaw("%hd", s);
+  print("%hd", s);
   return *this;
 }
 
 const Log& Log::operator << (ushort s) const
 {
-  printRaw("%hu", s);
+  print("%hu", s);
   return *this;
 }
 
 const Log& Log::operator << (int i) const
 {
-  printRaw("%d", i);
+  print("%d", i);
   return *this;
 }
 
 const Log& Log::operator << (uint i) const
 {
-  printRaw("%u", i);
+  print("%u", i);
   return *this;
 }
 
 const Log& Log::operator << (long l) const
 {
-  printRaw("%ld", l);
+  print("%ld", l);
   return *this;
 }
 
 const Log& Log::operator << (ulong l) const
 {
-  printRaw("%lu", l);
+  print("%lu", l);
   return *this;
 }
 
 const Log& Log::operator << (long64 l) const
 {
 #ifdef _WIN32
-  printRaw("%ld", long(l));
+  print("%ld", long(l));
 #else
-  printRaw("%lld", l);
+  print("%lld", l);
 #endif
   return *this;
 }
@@ -445,90 +396,99 @@ const Log& Log::operator << (long64 l) const
 const Log& Log::operator << (ulong64 l) const
 {
 #ifdef _WIN32
-  printRaw("%lu", ulong(l));
+  print("%lu", ulong(l));
 #else
-  printRaw("%llu", l);
+  print("%llu", l);
 #endif
   return *this;
 }
 
 const Log& Log::operator << (float f) const
 {
-  printRaw("%g", f);
+  print("%g", f);
   return *this;
 }
 
 const Log& Log::operator << (double d) const
 {
-  printRaw("%g", d);
+  print("%g", d);
   return *this;
 }
 
-const Log& Log::operator << (const String& s) const
+const Log& Log::operator << (volatile const void* p) const
 {
-  putsRaw(s);
+  print("%p", p);
   return *this;
 }
 
 const Log& Log::operator << (const char* s) const
 {
-  putsRaw(s);
+  print("%s", s);
+  return *this;
+}
+
+const Log& Log::operator << (const String& s) const
+{
+  print("%s", s.cstr());
   return *this;
 }
 
 const Log& Log::operator << (const Vec3& v) const
 {
-  printRaw("(%g %g %g)", v.x, v.y, v.z);
+  print("(%g %g %g)", v.x, v.y, v.z);
   return *this;
 }
 
 const Log& Log::operator << (const Vec4& v) const
 {
-  printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.w);
+  print("(%g %g %g %g)", v.x, v.y, v.z, v.w);
   return *this;
 }
 
 const Log& Log::operator << (const Point& p) const
 {
-  printRaw("[%g %g %g]", p.x, p.y, p.z);
+  print("[%g %g %g]", p.x, p.y, p.z);
   return *this;
 }
 
 const Log& Log::operator << (const Plane& p) const
 {
-  printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
+  print("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
   return *this;
 }
 
 const Log& Log::operator << (const Quat& q) const
 {
-  printRaw("[%g %g %g %g]", q.x, q.y, q.z, q.w);
+  print("[%g %g %g %g]", q.x, q.y, q.z, q.w);
   return *this;
 }
 
 const Log& Log::operator << (const Mat3& m) const
 {
-  printRaw("[%g %g %g; %g %g %g; %g %g %g]",
-           m.x.x, m.x.y, m.x.z,
-           m.y.x, m.y.y, m.y.z,
-           m.z.x, m.z.y, m.z.z);
+  print("[%g %g %g; %g %g %g; %g %g %g]",
+        m.x.x, m.x.y, m.x.z,
+        m.y.x, m.y.y, m.y.z,
+        m.z.x, m.z.y, m.z.z);
   return *this;
 }
 
 const Log& Log::operator << (const Mat4& m) const
 {
-  printRaw("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
-           m.x.x, m.x.y, m.x.z, m.x.w,
-           m.y.x, m.y.y, m.y.z, m.y.w,
-           m.z.x, m.z.y, m.z.z, m.z.w,
-           m.w.x, m.w.y, m.w.z, m.w.w);
+  print("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
+        m.x.x, m.x.y, m.x.z, m.x.w,
+        m.y.x, m.y.y, m.y.z, m.y.w,
+        m.z.x, m.z.y, m.z.z, m.z.w,
+        m.w.x, m.w.y, m.w.z, m.w.w);
   return *this;
 }
 
 const Log& Log::operator << (const InputStream& is) const
 {
+  const char* indent = getIndent();
+
   OZ_PRINT_BOTH({
     fwrite(is.begin(), 1, is.tell(), stream);
+    fputs(indent, stream);
     fputc('\n', stream);
     fflush(stream);
   });
@@ -537,8 +497,11 @@ const Log& Log::operator << (const InputStream& is) const
 
 const Log& Log::operator << (const Buffer& buffer) const
 {
+  const char* indent = getIndent();
+
   OZ_PRINT_BOTH({
     fwrite(buffer.begin(), 1, buffer.length(), stream);
+    fputs(indent, stream);
     fputc('\n', stream);
     fflush(stream);
   });
@@ -547,25 +510,19 @@ const Log& Log::operator << (const Buffer& buffer) const
 
 const Log& Log::operator << (const File& file) const
 {
-  printRaw("%s", file.path().cstr());
+  print("%s", file.path().cstr());
   return *this;
 }
 
 const Log& Log::operator << (const Time& time) const
 {
-  printRaw("%s", time.toString().cstr());
+  print("%s", time.toString().cstr());
   return *this;
 }
 
 const Log& Log::operator << (const Json& json) const
 {
-  printRaw("%s", json.toString().cstr());
-  return *this;
-}
-
-const Log& Log::operator << (volatile const void* p) const
-{
-  printRaw("%p", p);
+  print("%s", json.toString().cstr());
   return *this;
 }
 

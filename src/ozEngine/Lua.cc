@@ -61,7 +61,7 @@ void Lua::readValue(lua_State* l, InputStream* is)
     case '[': {
       lua_newtable(l);
 
-      while (is->isAvailable() && (*is)[is->tell()] != ']') {
+      while (is->available() != 0 && (*is)[is->tell()] != ']') {
         readValue(l, is); // Key.
         readValue(l, is); // Value.
 
@@ -255,7 +255,7 @@ void Lua::loadDir(const File& dir) const
     }
 
     InputStream is = file.inputStream();
-    if (!is.isAvailable()) {
+    if (is.available() == 0) {
       continue;
     }
 

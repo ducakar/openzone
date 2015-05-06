@@ -93,7 +93,7 @@ void Font::destroy()
     handle = nullptr;
   }
 
-  buffer.resize(0);
+  buffer.resize(0, true);
 }
 
 }

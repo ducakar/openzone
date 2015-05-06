@@ -61,111 +61,16 @@ void OutputStream::writeFloats(const float* values, int count)
 }
 
 OutputStream::OutputStream(char* start, const char* end, Endian::Order order) :
-  InputStream(start, start, end, order), buffered(false)
+  InputStream(start, end, order)
 {}
 
-OutputStream::OutputStream(int size, Endian::Order order) :
-  InputStream(nullptr, nullptr, nullptr, order), buffered(true)
-{
-  streamPos   = new char[size];
-  streamBegin = streamPos;
-  streamEnd   = streamPos + size;
-}
+OutputStream::OutputStream(Buffer& buffer, Endian::Order order) :
+  InputStream(buffer.begin(), buffer.end(), order)
+{}
 
-OutputStream::~OutputStream()
-{
-  if (buffered) {
-    delete[] streamBegin;
-  }
-}
-
-OutputStream::OutputStream(const OutputStream& os) :
-  InputStream(os.streamPos, os.streamBegin, os.streamEnd, os.order), buffered(os.buffered)
-{
-  if (os.buffered) {
-    int length = int(os.streamPos - os.streamBegin);
-    int size   = int(os.streamEnd - os.streamBegin);
-
-    streamBegin = new char[size];
-    streamEnd   = streamBegin + size;
-    streamPos   = streamBegin + length;
-
-    memcpy(streamBegin, os.streamBegin, size);
-  }
-}
-
-OutputStream::OutputStream(OutputStream&& os) :
-  InputStream(os.streamPos, os.streamBegin, os.streamEnd, os.order), buffered(os.buffered)
-{
-  if (os.buffered) {
-    os.streamPos   = nullptr;
-    os.streamBegin = nullptr;
-    os.streamEnd   = nullptr;
-    os.order       = Endian::NATIVE;
-    os.buffered    = false;
-  }
-}
-
-OutputStream& OutputStream::operator = (const OutputStream& os)
-{
-  if (&os != this) {
-    if (os.buffered) {
-      int  length      = int(os.streamPos - os.streamBegin);
-      int  size        = int(os.streamEnd - os.streamBegin);
-      bool sizeMatches = int(streamEnd - streamBegin) == size;
-
-      if (buffered && !sizeMatches) {
-        delete[] streamBegin;
-      }
-      if (!buffered || !sizeMatches) {
-        streamBegin = new char[size];
-        streamEnd   = streamBegin + size;
-      }
-
-      streamPos = streamBegin + length;
-      order     = os.order;
-      buffered  = os.buffered;
-
-      memcpy(streamBegin, os.streamBegin, size);
-    }
-    else {
-      if (buffered) {
-        delete[] streamBegin;
-      }
-
-      streamPos   = os.streamPos;
-      streamBegin = os.streamBegin;
-      streamEnd   = os.streamEnd;
-      order       = os.order;
-      buffered    = os.buffered;
-    }
-  }
-  return *this;
-}
-
-OutputStream& OutputStream::operator = (OutputStream&& os)
-{
-  if (&os != this) {
-    if (buffered) {
-      delete[] streamBegin;
-    }
-
-    streamPos   = os.streamPos;
-    streamBegin = os.streamBegin;
-    streamEnd   = os.streamEnd;
-    order       = os.order;
-    buffered    = os.buffered;
-
-    if (os.buffered) {
-      os.streamPos   = nullptr;
-      os.streamBegin = nullptr;
-      os.streamEnd   = nullptr;
-      os.order       = Endian::NATIVE;
-      os.buffered    = false;
-    }
-  }
-  return *this;
-}
+OutputStream::OutputStream(Buffer* backBuffer_, Endian::Order order) :
+  InputStream(backBuffer_->begin(), backBuffer_->end(), order), backBuffer(backBuffer_)
+{}
 
 char* OutputStream::skip(int count)
 {
@@ -173,34 +78,21 @@ char* OutputStream::skip(int count)
   streamPos += count;
 
   if (streamPos > streamEnd) {
-    if (buffered) {
-      int length    = int(oldPos - streamBegin);
-      int size      = int(streamEnd - streamBegin);
-      int newLength = int(streamPos - streamBegin);
-      int newSize   = size == 0 ? GRANULARITY : 2 * size;
-
-      if (newSize < 0 || newLength < 0) {
-        OZ_ERROR("oz::OutputStream: Capacity overflow");
-      }
-      else if (newSize < newLength) {
-        newSize = (newLength + GRANULARITY - 1) & ~(GRANULARITY - 1);
-      }
-
-      char* newStream = new char[newSize];
-      memcpy(newStream, streamBegin, length);
-      delete[] streamBegin;
-
-      streamBegin = newStream;
-      streamEnd   = streamBegin + newSize;
-      streamPos   = streamBegin + newLength;
-      oldPos      = streamPos - count;
-    }
-    else {
+    if (backBuffer == nullptr) {
       OZ_ERROR("oz::OutputStream: Overrun for %d B during a read or write of %d B",
                int(streamPos - streamEnd), count);
     }
-  }
+    else {
+      int newLength = int(streamPos - streamBegin);
 
+      backBuffer->resize(newLength);
+
+      streamBegin = backBuffer->begin();
+      streamEnd   = backBuffer->end();
+      streamPos   = streamBegin + newLength;
+      oldPos      = streamPos - count;
+    }
+  }
   return oldPos;
 }
 
@@ -525,8 +417,8 @@ void OutputStream::writeLine(const char* s)
 
 void OutputStream::free()
 {
-  if (buffered) {
-    delete[] streamBegin;
+  if (backBuffer) {
+    backBuffer->resize(0, true);
 
     streamPos   = nullptr;
     streamBegin = nullptr;

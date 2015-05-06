@@ -152,7 +152,7 @@ bool Gettext::import(const File& file)
 {
   InputStream is = file.inputStream();
 
-  if (!is.isAvailable()) {
+  if (is.available() == 0) {
     return false;
   }
 

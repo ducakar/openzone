@@ -36,7 +36,7 @@ void BSP::load()
   File file = "@bsp/" + name + ".ozBSP";
   InputStream is = file.inputStream(Endian::LITTLE);
 
-  if (!is.isAvailable()) {
+  if (is.available() == 0) {
     OZ_ERROR("BSP file '%s' read failed", file.path().cstr());
   }
 
@@ -202,7 +202,7 @@ void BSP::load()
     }
   }
 
-  hard_assert(!is.isAvailable());
+  hard_assert(is.available() == 0);
 
   Log::printEnd(" OK");
 }
@@ -264,7 +264,7 @@ BSP::BSP(const char* name_, int id_) :
   fragPool         = sFragPool.isEmpty() ? nullptr : liber.fragPool(sFragPool);
   nFrags           = is.readInt();
 
-  sounds.resize(is.readInt());
+  sounds.resize(is.readInt(), true);
   for (int i = 0; i < sounds.length(); ++i) {
     sounds[i] = liber.soundIndex(is.readString());
   }

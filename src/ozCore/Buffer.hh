@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "OutputStream.hh"
+#include "String.hh"
 
 namespace oz
 {
@@ -38,13 +38,8 @@ namespace oz
  *
  * It can be used as a generic memory buffer or to store contents read from a file.
  */
-class Buffer
+class Buffer : public List<char>
 {
-private:
-
-  char* data = nullptr; ///< Storage.
-  int   size = 0;       ///< Data length in bytes.
-
 public:
 
   /**
@@ -68,127 +63,26 @@ public:
   explicit Buffer(const String& s);
 
   /**
-   * Destructor.
-   */
-  ~Buffer();
-
-  /**
    * Copy constructor, copies data.
    */
-  Buffer(const Buffer& b);
+  Buffer(const Buffer& b) = default;
 
   /**
    * Move constructor, moves data storage.
    */
-  Buffer(Buffer&& b);
+  Buffer(Buffer&& b) = default;
 
   /**
    * Copy operator, copies data.
    *
    * Existing storage is reused if it suffices.
    */
-  Buffer& operator = (const Buffer& b);
+  Buffer& operator = (const Buffer& b) = default;
 
   /**
    * Move operator, moves data storage.
    */
-  Buffer& operator = (Buffer&& b);
-
-  /**
-   * True iff buffer sizes and contents are equal.
-   */
-  bool operator == (const Buffer& b) const;
-
-  /**
-   * False iff buffer sizes and contents are equal.
-   */
-  bool operator != (const Buffer& b) const;
-
-  /**
-   * Constant reference to `i`-th byte.
-   */
-  OZ_ALWAYS_INLINE
-  const char& operator [] (int i) const
-  {
-    hard_assert(uint(i) < uint(size));
-
-    return data[i];
-  }
-
-  /**
-   * Reference to `i`-th byte.
-   */
-  OZ_ALWAYS_INLINE
-  char& operator [] (int i)
-  {
-    hard_assert(uint(i) < uint(size));
-
-    return data[i];
-  }
-
-  /**
-   * Constant pointer to the beginning of the buffer.
-   */
-  OZ_ALWAYS_INLINE
-  const char* begin() const
-  {
-    return data;
-  }
-
-  /**
-   * Pointer to the beginning of the buffer.
-   */
-  OZ_ALWAYS_INLINE
-  char* begin()
-  {
-    return data;
-  }
-
-  /**
-   * Constant pointer to the end of the buffer.
-   */
-  OZ_ALWAYS_INLINE
-  const char* end() const
-  {
-    return data + size;
-  }
-
-  /**
-   * Pointer to the end of the buffer.
-   */
-  OZ_ALWAYS_INLINE
-  char* end()
-  {
-    return data + size;
-  }
-
-  /**
-   * %Buffer size in bytes.
-   */
-  OZ_ALWAYS_INLINE
-  int length() const
-  {
-    return size;
-  }
-
-  /**
-   * True iff buffer size is 0 (and no resources allocated).
-   */
-  OZ_ALWAYS_INLINE
-  bool isEmpty() const
-  {
-    return size == 0;
-  }
-
-  /**
-   * Create an `InputStream` object for reading binary data from this buffer.
-   */
-  InputStream inputStream(Endian::Order order = Endian::NATIVE) const;
-
-  /**
-   * Create a fixed-size `OutputStream` object for writing binary data into this buffer.
-   */
-  OutputStream outputStream(Endian::Order order = Endian::NATIVE);
+  Buffer& operator = (Buffer&& b) = default;
 
   /**
    * Create a string from the buffer contents. Terminating null byte is always appended.
@@ -210,11 +104,6 @@ public:
    * An empty buffer is returned on an error.
    */
   Buffer decompress() const;
-
-  /**
-   * Resize the buffer.
-   */
-  void resize(int newSize);
 
 };
 
