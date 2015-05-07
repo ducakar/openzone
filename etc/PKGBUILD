@@ -2,7 +2,7 @@
 
 pkgbase=openzone
 pkgname=('liboz' 'openzone' 'openzone-data')
-pkgver=0.3.92
+pkgver=0.3.93
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
@@ -10,8 +10,16 @@ arch=('i686' 'x86_64')
 makedepends=('cmake' 'gcc-libs' 'physfs' 'lua' 'mesa' 'sdl2_ttf' 'libvorbis' 'openal')
 source=("https://github.com/downloads/ducakar/openzone/${pkgbase}-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/${pkgbase}-data-${pkgver}.tar.xz")
-sha1sums=('SKIP'
-          'SKIP')
+sha256sums=('SKIP'
+            'SKIP')
+noextract=("${pkgbase}-src-${pkgver}.tar.xz"
+           "${pkgbase}-data-${pkgver}.tar.xz")
+
+function prepare()
+{
+  tar xf ${pkgbase}-src-${pkgver}.tar.xz
+  tar xf ${pkgbase}-data-${pkgver}.tar.xz
+}
 
 function build()
 {

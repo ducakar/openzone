@@ -241,7 +241,7 @@ public:
    * @return Reference to the value of the inserted element.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  Value& add(Key_&& key, Value_&& value)
+  Value& add(Key_&& key, Value_&& value = Value_())
   {
     return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
@@ -252,7 +252,7 @@ public:
    * @return Reference to the value of the inserted or the existing element with the same key.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  Value& include(Key_&& key, Value_&& value)
+  Value& include(Key_&& key, Value_&& value = Value_())
   {
     return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
   }

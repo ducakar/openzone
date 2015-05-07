@@ -6,7 +6,7 @@ project(openzone)
 # Configuration options.
 #
 
-set(OZ_VERSION 0.3.92)
+set(OZ_VERSION 0.3.93)
 
 option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF)
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)

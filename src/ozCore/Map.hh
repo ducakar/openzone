@@ -279,7 +279,7 @@ public:
    * @return Position of the inserted element.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  int add(Key_&& key, Value_&& value)
+  int add(Key_&& key, Value_&& value = Value_())
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
@@ -290,7 +290,7 @@ public:
    * @return Position of the inserted or the existing element.
    */
   template <typename Key_ = Key, typename Value_ = Value>
-  int include(Key_&& key, Value_&& value)
+  int include(Key_&& key, Value_&& value = Value_())
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
   }

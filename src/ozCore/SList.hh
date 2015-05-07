@@ -302,7 +302,7 @@ public:
    * Add an element to the end.
    */
   template <typename Elem_ = Elem>
-  void add(Elem_&& elem)
+  void add(Elem_&& elem = Elem_())
   {
     insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
@@ -358,7 +358,7 @@ public:
    * All later elements are shifted to make the gap.
    */
   template <typename Elem_ = Elem>
-  void insert(int i, Elem_&& elem)
+  void insert(int i, Elem_&& elem = Elem_())
   {
     hard_assert(uint(i) <= uint(count));
     hard_assert(uint(count) < uint(SIZE));

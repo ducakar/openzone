@@ -32,14 +32,6 @@
 namespace oz
 {
 
-Buffer::Buffer(int size) :
-  List<char>(size)
-{}
-
-Buffer::Buffer(const char* data, int size) :
-  List<char>(data, size)
-{}
-
 Buffer::Buffer(const String& s) :
   List<char>(s.cstr(), s.length())
 {}

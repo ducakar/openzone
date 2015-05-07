@@ -42,47 +42,17 @@ class Buffer : public List<char>
 {
 public:
 
+  using List<char>::List;
+
   /**
    * Create an empty buffer of size 0.
    */
   Buffer() = default;
 
   /**
-   * Create an uninitialised buffer of given size.
-   */
-  explicit Buffer(int size);
-
-  /**
-   * Create a buffer of size `size` and copy `data` into it.
-   */
-  explicit Buffer(const char* data, int size);
-
-  /**
    * Create a buffer containing a given string (without the terminating null character).
    */
   explicit Buffer(const String& s);
-
-  /**
-   * Copy constructor, copies data.
-   */
-  Buffer(const Buffer& b) = default;
-
-  /**
-   * Move constructor, moves data storage.
-   */
-  Buffer(Buffer&& b) = default;
-
-  /**
-   * Copy operator, copies data.
-   *
-   * Existing storage is reused if it suffices.
-   */
-  Buffer& operator = (const Buffer& b) = default;
-
-  /**
-   * Move operator, moves data storage.
-   */
-  Buffer& operator = (Buffer&& b) = default;
 
   /**
    * Create a string from the buffer contents. Terminating null byte is always appended.

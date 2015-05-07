@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "liboz"
-PROJECT_NUMBER         = "0.3.92"
+PROJECT_NUMBER         = "0.3.93"
 PROJECT_BRIEF          = "OpenZone Core Library & OpenZone Dynamics Library"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = doc/doxygen.liboz

@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgname=openzone
-pkgver=0.3.92
+pkgver=0.3.93
 pkgrel=1
 pkgdesc='Simple cross-platform FPS/RTS game engine'
 url="http://ducakar.github.com/openzone/"
@@ -14,8 +14,16 @@ optdepends=('espeak: speech synthesis'
 makedepends=('cmake' 'mesa' 'libsquish')
 source=("https://github.com/downloads/ducakar/openzone/${pkgname}-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/${pkgname}-data-${pkgver}.tar.xz")
-sha1sums=('SKIP'
-          'SKIP')
+sha256sums=('SKIP'
+            'SKIP')
+noextract=("${pkgbase}-src-${pkgver}.tar.xz"
+           "${pkgbase}-data-${pkgver}.tar.xz")
+
+function prepare()
+{
+  tar xf ${pkgbase}-src-${pkgver}.tar.xz
+  tar xf ${pkgbase}-data-${pkgver}.tar.xz
+}
 
 function build()
 {

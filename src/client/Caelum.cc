@@ -114,9 +114,6 @@ void Caelum::draw()
   glDisable(GL_CULL_FACE);
   glBindTexture(GL_TEXTURE_2D, sunTexId);
 
-  glUniform3fv(uniform.caelumColour, 1, Vec4::ZERO);
-  glUniform1f(uniform.caelumLuminance, 1.0f);
-
   tf.model = transf;
   tf.model.translate(Vec3(0.0f, 0.0f, +15.0f));
   tf.setColour(tf.colour * sunColour);
