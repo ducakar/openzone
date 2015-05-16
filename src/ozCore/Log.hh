@@ -256,7 +256,7 @@ public:
   const Log& operator << (const char* s) const;
 
   /**
-   * Same as `print("%s", s.cstr())`.
+   * Same as `print("%s", s.c())`.
    */
   const Log& operator << (const String& s) const;
 
@@ -307,17 +307,17 @@ public:
   const Log& operator << (const Buffer& buffer) const;
 
   /**
-   * Same as `print("%s", file.path().cstr())`.
+   * Same as `print("%s", file.path().c())`.
    */
   const Log& operator << (const File& file) const;
 
   /**
-   * Same as `print("%s", time.toString().cstr())`.
+   * Same as `print("%s", time.toString().c())`.
    */
   const Log& operator << (const Time& time) const;
 
   /**
-   * Same as `print("%s", json.toString().cstr())`.
+   * Same as `print("%s", json.toString().c())`.
    */
   const Log& operator << (const Json& json) const;
 

@@ -88,7 +88,7 @@ void LuaClient::create(const char* mission_)
 {
   cs.mission = mission_;
 
-  Log::print("Importing mission catalogue '%s' ...", cs.mission.cstr());
+  Log::print("Importing mission catalogue '%s' ...", cs.mission.c());
   if (cs.missionLingua.initMission(cs.mission)) {
     Log::printEnd(" OK");
   }
@@ -96,27 +96,27 @@ void LuaClient::create(const char* mission_)
     Log::printEnd(" Failed");
   }
 
-  Log::println("Executing scripts for mission %s {", cs.mission.cstr());
+  Log::println("Executing scripts for mission %s {", cs.mission.c());
   Log::indent();
 
   File missionDir = "@mission/" + cs.mission;
   List<File> files = missionDir.ls();
 
   if (missionDir.type() != File::DIRECTORY) {
-    OZ_ERROR("Mission directory '%s' does not exist", missionDir.path().cstr());
+    OZ_ERROR("Mission directory '%s' does not exist", missionDir.path().c());
   }
   if (files.isEmpty()) {
-    OZ_ERROR("Mission directory '%s' contains no Lua scripts", missionDir.path().cstr());
+    OZ_ERROR("Mission directory '%s' contains no Lua scripts", missionDir.path().c());
   }
 
   File layoutFile = missionDir.path() + "/layout.json";
 
   if (layoutFile.type() == File::REGULAR) {
-    Log::print("Loading layout from '%s' ...", layoutFile.path().cstr());
+    Log::print("Loading layout from '%s' ...", layoutFile.path().c());
 
     Json json;
     if (!json.load(layoutFile)) {
-      OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().cstr());
+      OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().c());
     }
     layoutFile.unmap();
 
@@ -141,7 +141,7 @@ void LuaClient::read(InputStream* is)
 
   cs.mission = is->readString();
 
-  Log::print("Importing mission catalogue '%s' ...", cs.mission.cstr());
+  Log::print("Importing mission catalogue '%s' ...", cs.mission.c());
   if (cs.missionLingua.initMission(cs.mission)) {
     Log::printEnd(" OK");
   }
@@ -149,12 +149,12 @@ void LuaClient::read(InputStream* is)
     Log::printEnd(" Failed");
   }
 
-  Log::print("Deserialising scripts for mission %s ...", cs.mission.cstr());
+  Log::print("Deserialising scripts for mission %s ...", cs.mission.c());
 
   File missionDir = "@mission/" + cs.mission;
 
   if (missionDir.type() != File::DIRECTORY) {
-    OZ_ERROR("Mission directory '%s' does not exist", missionDir.path().cstr());
+    OZ_ERROR("Mission directory '%s' does not exist", missionDir.path().c());
   }
 
   for (const File& file : missionDir.ls()) {
@@ -165,7 +165,7 @@ void LuaClient::read(InputStream* is)
     InputStream is = file.inputStream();
 
     if (is.available() == 0 || l_dobufferx(is.begin(), is.available(), file.path(), "t") != 0) {
-      OZ_ERROR("Client Lua script error in %s", file.path().cstr());
+      OZ_ERROR("Client Lua script error in %s", file.path().c());
     }
   }
 

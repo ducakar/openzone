@@ -63,10 +63,10 @@ void BSP::load()
 
   if (life <= 0.0f || !Math::isFinite(life)) {
     OZ_ERROR("%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
-             " set resistance to infinity (\"inf\").", name.cstr());
+             " set resistance to infinity (\"inf\").", name.c());
   }
   if (resistance < 0.0f) {
-    OZ_ERROR("%s: Invalid resistance. Should be >= 0.", name.cstr());
+    OZ_ERROR("%s: Invalid resistance. Should be >= 0.", name.c());
   }
 
   fragPool = config["fragPool"].get("");
@@ -120,7 +120,7 @@ void BSP::load()
       textures[i].name = "";
     }
     else if (textures[i].name.length() <= 9) {
-      OZ_ERROR("Invalid texture name '%s'", textures[i].name.cstr());
+      OZ_ERROR("Invalid texture name '%s'", textures[i].name.c());
     }
     else {
       textures[i].name = textures[i].name.substring(9);
@@ -131,7 +131,7 @@ void BSP::load()
     }
 
     Log::println("Texture '%s' flags %x type %x",
-                 textures[i].name.cstr(),
+                 textures[i].name.c(),
                  textures[i].flags,
                  textures[i].type);
   }
@@ -213,7 +213,7 @@ void BSP::load()
   const Json& modelsConfig = config["entities"];
 
   if (!modelsConfig.isNull() && modelsConfig.type() != Json::ARRAY) {
-    OZ_ERROR("'models' entry in '%s' is not an array", configFile.path().cstr());
+    OZ_ERROR("'models' entry in '%s' is not an array", configFile.path().c());
   }
 
   // skip model 0 (whole BSP)
@@ -476,7 +476,7 @@ void BSP::load()
         OZ_ERROR("Missing heading for a BSP bound object");
       }
       else {
-        OZ_ERROR("Invalid object heading '%s'", sHeading.cstr());
+        OZ_ERROR("Invalid object heading '%s'", sHeading.c());
       }
 
       boundObjects.add(object);
@@ -968,7 +968,7 @@ void BSP::saveMatrix()
 {
   File destFile = "bsp/" + name + ".ozBSP";
 
-  Log::print("Writing BSP structure to '%s' ...", destFile.path().cstr());
+  Log::print("Writing BSP structure to '%s' ...", destFile.path().c());
 
   Set<String> usedSounds;
 
@@ -1089,7 +1089,7 @@ void BSP::saveMatrix()
   }
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", destFile.path().c());
   }
 
   Log::printEnd(" OK");
@@ -1182,10 +1182,10 @@ void BSP::saveClient()
   os.writeVec4(waterFogColour);
   os.writeVec4(lavaFogColour);
 
-  Log::print("Writing BSP model to '%s' ...", destFile.path().cstr());
+  Log::print("Writing BSP model to '%s' ...", destFile.path().c());
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", destFile.path().c());
   }
 
   Log::printEnd(" OK");

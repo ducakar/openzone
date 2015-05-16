@@ -56,12 +56,6 @@
 #endif
 
 #ifdef _WIN32
-// At least Windows 2000 required.
-# define WINVER 0x0500
-// At least Visual Studio 2005 run-time libraries required.
-# define __MSVCRT_VERSION__ 0x0800
-// At least Internet Explorer 4.0 libraries required.
-# define _WIN32_IE 0x0400
 // Don't import all crap from Windows headers.
 # define WIN32_LEAN_AND_MEAN
 // Don't define min and max macros as those interfere with `oz::min()` and `oz::max()`.

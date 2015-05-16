@@ -709,11 +709,11 @@ void Render::init()
 
   MainCall() << [&]
   {
-    vendor      = String::cstr(glGetString(GL_VENDOR));
-    renderer    = String::cstr(glGetString(GL_RENDERER));
-    version     = String::cstr(glGetString(GL_VERSION));
-    glslVersion = String::cstr(glGetString(GL_SHADING_LANGUAGE_VERSION));
-    sExtensions = String::cstr(glGetString(GL_EXTENSIONS));
+    vendor      = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    renderer    = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+    version     = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    glslVersion = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+    sExtensions = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
   };
 
   if (vendor == nullptr) {
@@ -733,7 +733,7 @@ void Render::init()
   Log::indent();
 
   for (const String& extension : extensions) {
-    Log::println("%s", extension.cstr());
+    Log::println("%s", extension.c());
 
     if (extension == "GL_ARB_framebuffer_object") {
       shader.hasFBO = true;

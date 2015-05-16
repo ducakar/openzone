@@ -126,12 +126,12 @@ void Shader::compileShader(uint shaderId, const String& defines, const File& fil
       Log::verboseMode = true;
     }
 
-    Log::printRaw("\n%s:\n%s", file.path().cstr(), logBuffer);
+    Log::printRaw("\n%s:\n%s", file.path().c(), logBuffer);
     Log::verboseMode = false;
   }
 
   if (!hasCompiled) {
-    OZ_ERROR("Shader '%s' compile failed", file.path().cstr());
+    OZ_ERROR("Shader '%s' compile failed", file.path().c());
   }
 }
 
@@ -143,7 +143,7 @@ void Shader::loadProgram(int id)
   Json programConfig;
 
   if (!programConfig.load(configFile)) {
-    OZ_ERROR("Failed to read shader program configuration '%s'", configFile.path().cstr());
+    OZ_ERROR("Failed to read shader program configuration '%s'", configFile.path().c());
   }
 
   const char* vertName = programConfig["vertex"].get("");
@@ -153,11 +153,11 @@ void Shader::loadProgram(int id)
   const uint* fragId = fragShaders.find(fragName);
 
   if (vertId == nullptr) {
-    OZ_ERROR("Invalid vertex shader '%s' requested for shader program '%s'", vertName, name.cstr());
+    OZ_ERROR("Invalid vertex shader '%s' requested for shader program '%s'", vertName, name.c());
   }
   if (fragId == nullptr) {
     OZ_ERROR("Invalid fragment shader '%s' requested for shader program '%s'",
-             fragName, name.cstr());
+             fragName, name.c());
   }
 
   programConfig.clear(true);
@@ -189,12 +189,12 @@ void Shader::loadProgram(int id)
       Log::verboseMode = true;
     }
 
-    Log::printRaw("\n%s:\n%s", name.cstr(), logBuffer);
+    Log::printRaw("\n%s:\n%s", name.c(), logBuffer);
     Log::verboseMode = false;
   }
 
   if (result != GL_TRUE) {
-    OZ_ERROR("Shader program '%s' linking failed", name.cstr());
+    OZ_ERROR("Shader program '%s' linking failed", name.c());
   }
 
   glUseProgram(programs[id].program);
@@ -341,7 +341,7 @@ void Shader::init()
 
     File envMap = "@glsl/env.dds";
     if (GL::textureDataFromFile(envMap, 0) == 0) {
-      OZ_ERROR("Failed to load environment map texture '%s'", envMap.path().cstr());
+      OZ_ERROR("Failed to load environment map texture '%s'", envMap.path().c());
     }
 
     glActiveTexture(DIFFUSE);

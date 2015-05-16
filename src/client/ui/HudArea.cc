@@ -70,7 +70,7 @@ void HudArea::drawBotCrosshair()
     }
 
     if (ent != nullptr) {
-      title.setText("%s", entClazz->title.cstr());
+      title.setText("%s", entClazz->title.c());
       title.draw(this);
 
       shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -104,7 +104,7 @@ void HudArea::drawBotCrosshair()
         taggedStatus.draw(this, healthBarX, healthBarY + 7, ICON_SIZE + 16, 8, status);
       }
 
-      title.setText("%s", obj->title().cstr());
+      title.setText("%s", obj->title().c());
       title.draw(this);
 
       shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -195,7 +195,7 @@ void HudArea::drawBotStatus()
     weaponName.setPosition(pos.x + 4, pos.y + 2);
     weaponRounds.setPosition(pos.x + style.botWeapon.w - 4, pos.y + 2);
 
-    weaponName.setText("%s", weaponObj->clazz->title.cstr());
+    weaponName.setText("%s", weaponObj->clazz->title.c());
 
     if (weaponObj->nRounds < 0) {
       weaponRounds.setText("∞");
@@ -249,7 +249,7 @@ void HudArea::drawVehicleStatus()
     nameLabel.setPosition(pos.x + 2, pos.y + 2);
     roundsLabel.setPosition(pos.x + areaStyle.w - 4, pos.y + 2);
 
-    nameLabel.setText("%s", vehClazz->weaponTitles[i].cstr());
+    nameLabel.setText("%s", vehClazz->weaponTitles[i].c());
 
     if (vehicle->nRounds[i] < 0) {
       roundsLabel.setText("∞");

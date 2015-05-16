@@ -404,10 +404,10 @@ void MD2::build(const char* path)
 
   File destFile = sDestDir + "/data.ozcModel";
 
-  Log::print("Writing to '%s' ...", destFile.path().cstr());
+  Log::print("Writing to '%s' ...", destFile.path().c());
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", destFile.path().c());
   }
 
   Log::printEnd(" OK");

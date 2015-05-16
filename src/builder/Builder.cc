@@ -92,7 +92,7 @@ void Builder::copyFiles(const File& srcDir, const File& destDir, const char* ext
     sDestDir = sDestDir + "/";
   }
 
-  Log::println("Copying '%s*.%s' -> '%s' {", sSrcDir.cstr(), ext, sDestDir.cstr());
+  Log::println("Copying '%s*.%s' -> '%s' {", sSrcDir.c(), ext, sDestDir.c());
   Log::indent();
 
   File::mkdir(destDir.path());
@@ -109,10 +109,10 @@ void Builder::copyFiles(const File& srcDir, const File& destDir, const char* ext
     else if (file.hasExtension(ext) || fileName.beginsWith("README") ||
              fileName.beginsWith("COPYING"))
     {
-      Log::print("Copying '%s' -> '%s' ...", file.path().cstr(), sDestDir.cstr());
+      Log::print("Copying '%s' -> '%s' ...", file.path().c(), sDestDir.c());
 
       if (!File::cp(file, sDestDir)) {
-        OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().cstr(), sDestDir.cstr());
+        OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().c(), sDestDir.c());
       }
 
       Log::printEnd(" OK");
@@ -260,11 +260,11 @@ void Builder::buildBSPTextures()
       String path = file.path();
 
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
-        Log::print("Copying '%s' ...", path.cstr());
+        Log::print("Copying '%s' ...", path.c());
 
-        File destFile = String::str("tex/%s/%s", subDir.name().cstr(), name.cstr());
+        File destFile = String::format("tex/%s/%s", subDir.name().c(), name.c());
         if (!File::cp(file, destFile)) {
-          OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().cstr(), destFile.path().cstr());
+          OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().c(), destFile.path().c());
         }
 
         Log::printEnd(" OK");
@@ -278,7 +278,7 @@ void Builder::buildBSPTextures()
     Log::indent();
 
     for (const auto& tex : context.usedTextures) {
-      Log::println("'%s' referenced by %s", tex.key.cstr(), tex.value.cstr());
+      Log::println("'%s' referenced by %s", tex.key.c(), tex.value.c());
     }
 
     Log::unindent();
@@ -306,7 +306,7 @@ void Builder::buildClasses()
 
     String name = file.baseName();
 
-    Log::print("%s ...", name.cstr());
+    Log::print("%s ...", name.c());
 
     clazz.scanObjClass(name);
 
@@ -334,7 +334,7 @@ void Builder::buildFragPools()
 
     String name = file.baseName();
 
-    Log::print("%s ...", name.cstr());
+    Log::print("%s ...", name.c());
 
     clazz.scanFragPool(name);
 
@@ -374,11 +374,11 @@ void Builder::buildModels()
       String path = file.path();
 
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
-        Log::print("Copying '%s' ...", path.cstr());
+        Log::print("Copying '%s' ...", path.c());
 
         File destFile = &path[1];
         if (!File::cp(file, destFile)) {
-          OZ_ERROR("Failed to write '%s' -> '%s'", file.path().cstr(), destFile.path().cstr());
+          OZ_ERROR("Failed to write '%s' -> '%s'", file.path().c(), destFile.path().c());
         }
 
         Log::printEnd(" OK");
@@ -408,7 +408,7 @@ void Builder::buildModels()
     Log::indent();
 
     for (const auto& mdl : context.usedModels) {
-      Log::println("'%s' referenced by %s", mdl.key.cstr(), mdl.value.cstr());
+      Log::println("'%s' referenced by %s", mdl.key.c(), mdl.value.c());
     }
 
     Log::unindent();
@@ -463,7 +463,7 @@ void Builder::copySounds()
         continue;
       }
 
-      Log::print("Copying '%s' ...", name.cstr());
+      Log::print("Copying '%s' ...", name.c());
 
       usedDirs.include(subDir.path());
 
@@ -473,7 +473,7 @@ void Builder::copySounds()
       File destFile = &file.path()[1];
 
       if (!File::cp(file, destFile)) {
-        OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().cstr(), destFile.path().cstr());
+        OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().c(), destFile.path().c());
       }
 
       Log::printEnd(" OK");
@@ -492,14 +492,14 @@ void Builder::copySounds()
       String path = file.path();
 
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
-        Log::print("Copying '%s' ...", path.cstr());
+        Log::print("Copying '%s' ...", path.c());
 
         File::mkdir("snd");
         File::mkdir("snd/" + subDir.name());
 
         File destFile = &path[1];
         if (!destFile.write(file.read())) {
-          OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+          OZ_ERROR("Failed to write '%s'", destFile.path().c());
         }
 
         Log::printEnd(" OK");
@@ -515,7 +515,7 @@ void Builder::copySounds()
     Log::indent();
 
     for (const auto& snd : context.usedSounds) {
-      Log::println("'%s' referenced by %s", snd.key.cstr(), snd.value.cstr());
+      Log::println("'%s' referenced by %s", snd.key.c(), snd.value.c());
     }
 
     Log::unindent();
@@ -540,7 +540,7 @@ void Builder::checkLua(const char* path)
 
     String cmdLine = "luac -p " + file.realPath();
 
-    Log::println("%s", cmdLine.cstr());
+    Log::println("%s", cmdLine.c());
     if (system(cmdLine) != 0) {
       OZ_ERROR("Lua syntax check failed");
     }
@@ -573,13 +573,13 @@ void Builder::buildMissions()
       continue;
     }
 
-    Log::print("Building thumbnail '%s' ...", srcFile.path().cstr());
+    Log::print("Building thumbnail '%s' ...", srcFile.path().c());
 
     ImageBuilder::options = 0;
     ImageBuilder::scale   = 1.0f;
 
     if (!ImageBuilder::convertToDDS(srcFile.path(), &mission.path()[1])) {
-      OZ_ERROR("Failed to convert '%s' to DDS", srcFile.path().cstr());
+      OZ_ERROR("Failed to convert '%s' to DDS", srcFile.path().c());
     }
 
     Log::printEnd(" OK");
@@ -596,13 +596,13 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
   Log::println("Packing archive {");
   Log::indent();
 
-  File archive = String::str("../%s.%s", name, use7zip ? "7z" : "zip");
+  File archive = String::format("../%s.%s", name, use7zip ? "7z" : "zip");
 
-  String cmdLine = use7zip ? String::str("7z u -ms=off -mx=9 '%s' *", archive.path().cstr()) :
-                   String::str("zip -ur %s '%s' *",
-                               useCompression ? "-9" : "-0", archive.path().cstr());
+  String cmdLine = use7zip ? String::format("7z u -ms=off -mx=9 '%s' *", archive.path().c()) :
+                   String::format("zip -ur %s '%s' *",
+                                  useCompression ? "-9" : "-0", archive.path().c());
 
-  Log::println("%s", cmdLine.cstr());
+  Log::println("%s", cmdLine.c());
   Log::println();
 
   if (system(cmdLine) != 0) {
@@ -805,14 +805,14 @@ int Builder::main(int argc, char** argv)
     File::mkdir(outDir);
   }
 
-  Log::println("Chdir to output directory '%s'", outDir.cstr());
+  Log::println("Chdir to output directory '%s'", outDir.c());
   if (!File::chdir(outDir)) {
-    OZ_ERROR("Failed to set working directory '%s'", outDir.cstr());
+    OZ_ERROR("Failed to set working directory '%s'", outDir.c());
   }
 
-  Log::println("Adding source directory '%s' to search path", srcDir.cstr());
+  Log::println("Adding source directory '%s' to search path", srcDir.c());
   if (!File::mount(srcDir, nullptr, true)) {
-    OZ_ERROR("Failed to add directory '%s' to search path", srcDir.cstr());
+    OZ_ERROR("Failed to add directory '%s' to search path", srcDir.c());
   }
 
   config.add("window.width", 400);

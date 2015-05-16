@@ -44,11 +44,11 @@ void Caelum::build(const char* name)
     ImageBuilder::options |= ImageBuilder::COMPRESSION_BIT;
   }
 
-  String path = String::str("caelum/%s", name);
+  String path = String::format("caelum/%s", name);
   File::mkdir(path);
 
   for (int i = 0; i < 6; ++i) {
-    String path = String::str("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);
+    String path = String::format("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);
 
     context.buildTexture(path, &path[1], false);
   }

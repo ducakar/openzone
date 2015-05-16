@@ -320,42 +320,6 @@ public:
    */
   static double parseDouble(const char* s, const char** end = nullptr);
 
-  /**
-   * Cast signed byte string to C string.
-   */
-  OZ_ALWAYS_INLINE
-  static const char* cstr(const byte* s)
-  {
-    return reinterpret_cast<const char*>(s);
-  }
-
-  /**
-   * Cast unsigned byte string to C string.
-   */
-  OZ_ALWAYS_INLINE
-  static const char* cstr(const ubyte* s)
-  {
-    return reinterpret_cast<const char*>(s);
-  }
-
-  /**
-   * Cast C string to signed byte string.
-   */
-  OZ_ALWAYS_INLINE
-  static const byte* bytestr(const char* s)
-  {
-    return reinterpret_cast<const byte*>(s);
-  }
-
-  /**
-   * Cast C string to unsigned byte string.
-   */
-  OZ_ALWAYS_INLINE
-  static const ubyte* ubytestr(const char* s)
-  {
-    return reinterpret_cast<const ubyte*>(s);
-  }
-
   /*
    * Functions that operate on a String object.
    */
@@ -441,7 +405,7 @@ public:
    * Create a string in sprintf-like way.
    */
   OZ_PRINTF_FORMAT(1, 2)
-  static String str(const char* s, ...);
+  static String format(const char* s, ...);
 
   /**
    * Generate a string representing the number and optionally add a SI unit prefix.
@@ -653,7 +617,7 @@ public:
    * Cast to a C string.
    */
   OZ_ALWAYS_INLINE
-  const char* cstr() const
+  const char* c() const
   {
     return data();
   }

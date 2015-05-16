@@ -34,7 +34,7 @@ namespace client
 
 bool Network::connect()
 {
-//  Log::print("Connecting to %s:%d ...", host.cstr(), port);
+//  Log::print("Connecting to %s:%d ...", host.c(), port);
 
 //  IPaddress ip;
 //  SDLNet_ResolveHost(&ip, host, port);

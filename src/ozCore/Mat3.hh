@@ -168,9 +168,18 @@ public:
    */
   float det() const
   {
-    return x.x * (y.y*z.z - y.z*z.y) -
-           y.x * (x.y*z.z - x.z*z.y) +
-           z.x * (x.y*y.z - x.z*y.y);
+#ifdef OZ_SIMD
+    float4 d = x.f4 * (vShuffle(y.f4, 1, 2, 0, 3) * vShiffle(z.f4, 2, 0, 1, 3) -
+                       vShuffle(z.f4, 1, 2, 0, 3) * vShuffle(y.f4, 2, 0, 1, 3));
+
+    d += vShuffle(d, 1, 0, 3, 2);
+    d += vShuffle(d, 2, 3, 0, 1);
+    return d;
+#else
+    return x.x * (y.y*z.z - z.y*y.z) +
+           x.y * (y.z*z.x - z.z*y.x) +
+           x.z * (y.x*z.y - z.x*y.y);
+#endif
   }
 
   /**

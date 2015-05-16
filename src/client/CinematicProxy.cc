@@ -42,7 +42,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
   File file = path;
 
   if (!sequence.load(file)) {
-    OZ_ERROR("Failed to load sequence from '%s'", file.path().cstr());
+    OZ_ERROR("Failed to load sequence from '%s'", file.path().c());
   }
 
   int nSteps = sequence.length();

@@ -208,7 +208,7 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
   InputStream is = file.inputStream();
 
   if (!is.isAvailable()) {
-    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().cstr());
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'", file.path().c());
     return false;
   }
 

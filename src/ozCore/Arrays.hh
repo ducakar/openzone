@@ -214,7 +214,7 @@ public:
    */
   template <typename Elem, int COUNT>
   OZ_ALWAYS_INLINE
-  static constexpr int length(const Elem(&)[COUNT])
+  static constexpr int length(const Elem (&)[COUNT])
   {
     return COUNT;
   }
@@ -430,7 +430,7 @@ inline Arrays::Iterator<Elem> iterator(Elem* array, int count)
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(const Elem(& array)[COUNT])
+inline Arrays::CIterator<Elem> citerator(const Elem (& array)[COUNT])
 {
   return Arrays::CIterator<Elem>(array, array + COUNT);
 }
@@ -440,7 +440,7 @@ inline Arrays::CIterator<Elem> citerator(const Elem(& array)[COUNT])
  */
 template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline Arrays::Iterator<Elem> iterator(Elem(& array)[COUNT])
+inline Arrays::Iterator<Elem> iterator(Elem (& array)[COUNT])
 {
   return Arrays::Iterator<Elem>(array, array + COUNT);
 }

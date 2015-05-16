@@ -321,7 +321,7 @@ void Loader::makeScreenshot()
   File::mkdir(picturesDir);
 
   char path[256];
-  snprintf(path, 256, "%s/OpenZone %s.png", picturesDir, Time::local().toString().cstr());
+  snprintf(path, 256, "%s/OpenZone %s.png", picturesDir, Time::local().toString().c());
 
   Log::println("Screenshot to '%s' scheduled in background thread", path);
   Window::screenshot(path);

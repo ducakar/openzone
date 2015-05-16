@@ -275,7 +275,7 @@ void Liber::initShaders()
 
     String name = file.baseName();
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     shaderIndices.add(name, shaders.length());
     shaders.add({ name, "" });
@@ -308,7 +308,7 @@ void Liber::initTextures()
 
       String name = subDir.name() + "/" + file.baseName();
 
-      Log::println("%s", name.cstr());
+      Log::println("%s", name.c());
 
       textureIndices.add(name, textures.length());
       textures.add({ name, "@tex/" + name });
@@ -340,7 +340,7 @@ void Liber::initSounds()
 
       String name = subDir.name() + "/" + file.baseName();
 
-      Log::println("%s", name.cstr());
+      Log::println("%s", name.c());
 
       soundIndices.add(name, sounds.length());
       sounds.add({ name, file.path() });
@@ -367,7 +367,7 @@ void Liber::initCaela()
 
     String name = file.baseName();
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     caelumIndices.add(name, caela.length());
     caela.add({ name, file.path() });
@@ -393,7 +393,7 @@ void Liber::initTerrae()
 
     String name = file.baseName();
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     terraIndices.add(name, terrae.length());
     terrae.add({ name, file.path() });
@@ -419,7 +419,7 @@ void Liber::initParticles()
 
     String name = file.baseName();
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     partIndices.add(name, parts.length());
     parts.add({ name, file.path() });
@@ -447,13 +447,13 @@ void Liber::initModels()
     String path = file.path() + "/data.ozcModel";
 
     if (File(path).type() != File::REGULAR) {
-      OZ_ERROR("Invalid model '%s'", name.cstr());
+      OZ_ERROR("Invalid model '%s'", name.c());
     }
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     if (modelIndices.contains(name)) {
-      OZ_ERROR("Duplicated model '%s'", name.cstr());
+      OZ_ERROR("Duplicated model '%s'", name.c());
     }
 
     modelIndices.add(name, models.length());
@@ -480,11 +480,11 @@ void Liber::initFragPools()
 
     String name = file.baseName();
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     Json config;
     if (!config.load(file)) {
-      OZ_ERROR("Failed to read '%s'", file.path().cstr());
+      OZ_ERROR("Failed to read '%s'", file.path().c());
     }
 
     fragPools.add(name, FragPool(config, name, fragPools.length()));
@@ -522,23 +522,23 @@ void Liber::initClasses()
 
     Json config;
     if (!config.load(file)) {
-      OZ_ERROR("Failed to read '%s'", file.path().cstr());
+      OZ_ERROR("Failed to read '%s'", file.path().c());
     }
 
     String name = file.baseName();
     const String& base = config["base"].get("");
 
     if (objClasses.contains(name)) {
-      OZ_ERROR("Duplicated class '%s'", name.cstr());
+      OZ_ERROR("Duplicated class '%s'", name.c());
     }
 
     if (String::isEmpty(base)) {
-      OZ_ERROR("%s: 'base' missing in class description", name.cstr());
+      OZ_ERROR("%s: 'base' missing in class description", name.c());
     }
 
     ObjectClass::CreateFunc* const* createFunc = baseClasses.find(base);
     if (createFunc == nullptr) {
-      OZ_ERROR("%s: Invalid class base '%s'", name.cstr(), base.cstr());
+      OZ_ERROR("%s: Invalid class base '%s'", name.c(), base.c());
     }
 
     const String& deviceType = config["deviceType"].get("");
@@ -567,12 +567,12 @@ void Liber::initClasses()
     const String& name  = classIter.key;
     ObjectClass*  clazz = classIter.value;
 
-    Log::print("%s ...", name.cstr());
+    Log::print("%s ...", name.c());
 
     File file = "@class/" + name + ".json";
     Json config;
     if (!config.load(file)) {
-      OZ_ERROR("Failed to read '%s'", file.path().cstr());
+      OZ_ERROR("Failed to read '%s'", file.path().c());
     }
 
     clazz->init(config, name);
@@ -597,7 +597,7 @@ void Liber::initClasses()
           (Object::DYNAMIC_BIT | Object::ITEM_BIT))
       {
         OZ_ERROR("Invalid item class '%s' in '%s', must be dynamic and have item flag",
-                 itemClazz->name.cstr(), objClazz->name.cstr());
+                 itemClazz->name.c(), objClazz->name.c());
       }
     }
 
@@ -607,21 +607,21 @@ void Liber::initClasses()
 
       if (botClazz->weaponItem >= 0) {
         if (uint(botClazz->weaponItem) >= uint(botClazz->defaultItems.length())) {
-          OZ_ERROR("Invalid weaponItem index for '%s'", botClazz->name.cstr());
+          OZ_ERROR("Invalid weaponItem index for '%s'", botClazz->name.c());
         }
 
         // we already checked it in the previous loop it's non-nullptr and a valid item
         const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
 
         if (!(itemClazz->flags & Object::WEAPON_BIT)) {
-          OZ_ERROR("Default weapon of '%s' is of a non-weapon class", botClazz->name.cstr());
+          OZ_ERROR("Default weapon of '%s' is of a non-weapon class", botClazz->name.c());
         }
 
         const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(itemClazz);
 
         if (!botClazz->name.beginsWith(weaponClazz->userBase)) {
           OZ_ERROR("Default weapon of '%s' is not allowed for this bot class",
-                   botClazz->name.cstr());
+                   botClazz->name.c());
         }
       }
     }
@@ -645,7 +645,7 @@ void Liber::initBSPs()
 
     String name = file.baseName();
 
-    Log::println("%s", name.cstr());
+    Log::println("%s", name.c());
 
     bsps.add(name, BSP(name, bsps.length()));
   }
@@ -667,7 +667,7 @@ void Liber::initMusicRecurse(const char* path)
     if (file.hasExtension("oga") || file.hasExtension("ogg") ||
         (mapMP3s && file.hasExtension("mp3")) || (mapAACs && file.hasExtension("aac")))
     {
-      Log::println("%s", file.path().cstr());
+      Log::println("%s", file.path().c());
 
       musicTracks.add({ file.baseName(), file.path() });
     }

@@ -273,7 +273,7 @@ void Log::printProfilerStatistics()
     indent();
 
     for (const auto& i : Profiler::citerator()) {
-      println("%.6f s\t %s", double(i.value) / 1e6, i.key.cstr());
+      println("%.6f s\t %s", double(i.value) / 1e6, i.key.c());
     }
 
     unindent();
@@ -429,7 +429,7 @@ const Log& Log::operator << (const char* s) const
 
 const Log& Log::operator << (const String& s) const
 {
-  print("%s", s.cstr());
+  print("%s", s.c());
   return *this;
 }
 
@@ -510,19 +510,19 @@ const Log& Log::operator << (const Buffer& buffer) const
 
 const Log& Log::operator << (const File& file) const
 {
-  print("%s", file.path().cstr());
+  print("%s", file.path().c());
   return *this;
 }
 
 const Log& Log::operator << (const Time& time) const
 {
-  print("%s", time.toString().cstr());
+  print("%s", time.toString().c());
   return *this;
 }
 
 const Log& Log::operator << (const Json& json) const
 {
-  print("%s", json.toString().cstr());
+  print("%s", json.toString().c());
   return *this;
 }
 

@@ -38,7 +38,7 @@ void Terra::load()
 
   Json config;
   if (!config.load(configFile)) {
-    OZ_ERROR("Failed to load terra configuration '%s'", configFile.path().cstr());
+    OZ_ERROR("Failed to load terra configuration '%s'", configFile.path().c());
   }
 
   EnumMap<int> liquidMap = {
@@ -60,14 +60,14 @@ void Terra::load()
   float*    heightmap = nullptr;
 
   if (!heightmapName.isEmpty()) {
-    Log::print("Loading terrain heightmap image '%s' ...", name.cstr());
+    Log::print("Loading terrain heightmap image '%s' ...", name.c());
 
     File   heightmapFile = "@terra/" + heightmapName;
     String realPath      = heightmapFile.realPath();
 
     image = FreeImage_Load(FIF_PNG, realPath);
     if (image == nullptr) {
-      OZ_ERROR("Failed to load heightmap '%s'", realPath.cstr());
+      OZ_ERROR("Failed to load heightmap '%s'", realPath.c());
     }
 
     int width  = FreeImage_GetWidth(image);
@@ -90,8 +90,8 @@ void Terra::load()
         quads[x][y].vertex.x     = float(x * Quad::SIZE - DIM);
         quads[x][y].vertex.y     = float(y * Quad::SIZE - DIM);
         quads[x][y].vertex.z     = Math::mix(minHeight, maxHeight, value);
-        quads[x][y].triNormal[0] = Vec3::ZERO;
-        quads[x][y].triNormal[1] = Vec3::ZERO;
+        quads[x][y].normals[0] = Vec3::ZERO;
+        quads[x][y].normals[1] = Vec3::ZERO;
 
         pixel += bpp / 16;
       }
@@ -162,8 +162,8 @@ void Terra::load()
         quads[x][y].vertex.x     = float(x * Quad::SIZE - DIM);
         quads[x][y].vertex.y     = float(y * Quad::SIZE - DIM);
         quads[x][y].vertex.z     = heightmap[x * VERTS + y];
-        quads[x][y].triNormal[0] = Vec3::ZERO;
-        quads[x][y].triNormal[1] = Vec3::ZERO;
+        quads[x][y].normals[0] = Vec3::ZERO;
+        quads[x][y].normals[1] = Vec3::ZERO;
       }
     }
 
@@ -197,8 +197,8 @@ void Terra::load()
         const Point& c = quads[x + 1][y + 1].vertex;
         const Point& d = quads[x   ][y + 1].vertex;
 
-        quads[x][y].triNormal[0] = ~((c - b) ^ (a - b));
-        quads[x][y].triNormal[1] = ~((a - d) ^ (c - d));
+        quads[x][y].normals[0] = ~((c - b) ^ (a - b));
+        quads[x][y].normals[1] = ~((a - d) ^ (c - d));
       }
     }
   }
@@ -216,7 +216,7 @@ void Terra::saveMatrix()
 {
   File destFile = "terra/" + name + ".ozTerra";
 
-  Log::print("Writing terrain structure to '%s' ...", destFile.path().cstr());
+  Log::print("Writing terrain structure to '%s' ...", destFile.path().c());
 
   Buffer buffer;
   OutputStream os(&buffer, Endian::LITTLE);
@@ -232,7 +232,7 @@ void Terra::saveMatrix()
   os.writeInt(liquid);
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", destFile.path().c());
   }
 
   Log::printEnd(" OK");
@@ -242,7 +242,7 @@ void Terra::saveClient()
 {
   File destFile = "terra/" + name + ".ozcTerra";
 
-  Log::println("Compiling terrain model to '%s' {", destFile.path().cstr());
+  Log::println("Compiling terrain model to '%s' {", destFile.path().c());
   Log::indent();
 
   if (!detailTex.isEmpty()) {
@@ -304,18 +304,18 @@ void Terra::saveClient()
           Vec3 normal = Vec3::ZERO;
 
           if (x < QUADS && y < QUADS) {
-            normal += quads[x][y].triNormal[0];
-            normal += quads[x][y].triNormal[1];
+            normal += quads[x][y].normals[0];
+            normal += quads[x][y].normals[1];
           }
           if (x > 0 && y < QUADS) {
-            normal += quads[x - 1][y].triNormal[0];
+            normal += quads[x - 1][y].normals[0];
           }
           if (x > 0 && y > 0) {
-            normal += quads[x - 1][y - 1].triNormal[0];
-            normal += quads[x - 1][y - 1].triNormal[1];
+            normal += quads[x - 1][y - 1].normals[0];
+            normal += quads[x - 1][y - 1].normals[1];
           }
           if (x < QUADS && y > 0) {
-            normal += quads[x][y - 1].triNormal[1];
+            normal += quads[x][y - 1].normals[1];
           }
           normal = ~normal;
 
@@ -345,7 +345,7 @@ void Terra::saveClient()
   os.writeVec4(liquidColour);
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", destFile.path().c());
   }
 
   Log::unindent();

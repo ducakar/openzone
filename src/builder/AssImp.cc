@@ -141,13 +141,13 @@ void AssImp::build(const char* path)
                             aiProcess_FindInstances |
                             aiProcess_OptimizeMeshes);
   if (scene == nullptr) {
-    OZ_ERROR("Error loading '%s': %s", modelFile.path().cstr(), importer.GetErrorString());
+    OZ_ERROR("Error loading '%s': %s", modelFile.path().c(), importer.GetErrorString());
   }
   if (!scene->HasMeshes()) {
-    OZ_ERROR("Error loading '%s': Meshes missing", modelFile.path().cstr());
+    OZ_ERROR("Error loading '%s': Meshes missing", modelFile.path().c());
   }
   if (!scene->HasMaterials()) {
-    OZ_ERROR("Error loading '%s': Materials missing", modelFile.path().cstr());
+    OZ_ERROR("Error loading '%s': Materials missing", modelFile.path().c());
   }
 
   compiler.beginModel();
@@ -296,10 +296,10 @@ void AssImp::build(const char* path)
   compiler.writeModel(&os);
   compiler.buildModelTextures(outFile.directory());
 
-  Log::print("Writing to '%s' ...", outFile.path().cstr());
+  Log::print("Writing to '%s' ...", outFile.path().c());
 
   if (!outFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write %s", outFile.path().cstr());
+    OZ_ERROR("Failed to write %s", outFile.path().c());
   }
 
   Log::printEnd(" OK");

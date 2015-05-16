@@ -159,11 +159,11 @@ void Caelum::load()
   glGenTextures(6, skyboxTexIds);
 
   for (int i = 0; i < 6; ++i) {
-    File file = String::str("%s/%s.dds", path.cstr(), SKYBOX_FACES[i]);
+    File file = String::format("%s/%s.dds", path.c(), SKYBOX_FACES[i]);
 
     glBindTexture(GL_TEXTURE_2D, skyboxTexIds[i]);
     if (!GL::textureDataFromFile(file)) {
-      OZ_ERROR("Failed to load skybox texture '%s'", file.path().cstr());
+      OZ_ERROR("Failed to load skybox texture '%s'", file.path().c());
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

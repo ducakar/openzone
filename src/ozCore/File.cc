@@ -130,7 +130,7 @@ static void setSpecialDir(int dirId, const char* name, Map<String, String>* vars
       return;
     }
 
-    value = defValue->cstr();
+    value = defValue->c();
   }
 
   specialDirs[dirId] = value;
@@ -422,7 +422,7 @@ String File::realPath() const
     const char* realDir = PHYSFS_getRealDir(&filePath[1]);
     realDir = realDir == nullptr ? "" : realDir;
 
-    return String::str(String::last(realDir) == '/' ? "%s%s" : "%s/%s", realDir, &filePath[1]);
+    return String::format(String::last(realDir) == '/' ? "%s%s" : "%s/%s", realDir, &filePath[1]);
   }
   else {
     return filePath;
@@ -526,7 +526,7 @@ bool File::write(const char* buffer, int size) const
     return result == size;
   }
   else if (data != nullptr) {
-    OZ_ERROR("oz::File: Writing to a memory mapped file '%s'", filePath.cstr());
+    OZ_ERROR("oz::File: Writing to a memory mapped file '%s'", filePath.c());
   }
   else {
 #ifdef _WIN32
@@ -553,7 +553,7 @@ bool File::write(const Buffer& buffer) const
 
 bool File::writeString(const String& s) const
 {
-  return write(s.cstr(), s.length());
+  return write(s.c(), s.length());
 }
 
 bool File::map() const

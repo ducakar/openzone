@@ -237,7 +237,7 @@ Time Time::local(long64 epoch)
 
 String Time::toString() const
 {
-  return String::str("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+  return String::format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 }
 
 }

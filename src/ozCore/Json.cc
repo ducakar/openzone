@@ -1087,7 +1087,7 @@ const char* Json::get(const char* defaultValue) const
   }
 
   wasAccessed = true;
-  return static_cast<const StringData*>(data)->value.cstr();
+  return static_cast<const StringData*>(data)->value.c();
 }
 
 Vec3 Json::get(const Vec3& defaultValue) const
@@ -1135,7 +1135,7 @@ Mat4 Json::get(const Mat4& defaultValue) const
 Json& Json::add(const Json& json)
 {
   if (valueType != ARRAY) {
-    OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().cstr());
+    OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().c());
   }
 
   List<Json>& list = static_cast<ArrayData*>(data)->list;
@@ -1147,7 +1147,7 @@ Json& Json::add(const Json& json)
 Json& Json::add(Json&& json)
 {
   if (valueType != ARRAY) {
-    OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().cstr());
+    OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().c());
   }
 
   List<Json>& list = static_cast<ArrayData*>(data)->list;
@@ -1160,7 +1160,7 @@ Json& Json::add(const char* key, const Json& json)
 {
   if (valueType != OBJECT) {
     OZ_ERROR("oz::Json: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-             key, toString().cstr());
+             key, toString().c());
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
@@ -1173,7 +1173,7 @@ Json& Json::add(const char* key, Json&& json)
 {
   if (valueType != OBJECT) {
     OZ_ERROR("oz::Json: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
-             key, toString().cstr());
+             key, toString().c());
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
@@ -1186,7 +1186,7 @@ Json& Json::include(const char* key, const Json& json)
 {
   if (valueType != OBJECT) {
     OZ_ERROR("oz::Json: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-             key, toString().cstr());
+             key, toString().c());
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
@@ -1202,7 +1202,7 @@ Json& Json::include(const char* key, Json&& json)
 {
   if (valueType != OBJECT) {
     OZ_ERROR("oz::Json: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-             key, toString().cstr());
+             key, toString().c());
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
@@ -1218,7 +1218,7 @@ bool Json::erase(int index)
 {
   if (valueType != ARRAY) {
     OZ_ERROR("oz::Json: Tried to erase a value from a non-array JSON value: %s",
-             toString().cstr());
+             toString().c());
   }
 
   List<Json>& list = static_cast<ArrayData*>(data)->list;
@@ -1235,7 +1235,7 @@ bool Json::exclude(const char* key)
 {
   if (valueType != OBJECT) {
     OZ_ERROR("oz::Json: Tried to exclude and entry form a non-object JSON value: %s",
-             toString().cstr());
+             toString().c());
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
@@ -1248,7 +1248,7 @@ bool Json::clear(bool warnUnused)
   bool hasUnused = false;
 
   if (warnUnused && !wasAccessed) {
-    Log::println("oz::Json: unused value: %s", toString().cstr());
+    Log::println("oz::Json: unused value: %s", toString().c());
     System::bell();
 
     hasUnused  = true;
@@ -1342,8 +1342,8 @@ String Json::toString() const
 
       bool isFirst = true;
       for (const auto& i : map) {
-        s += String::str(isFirst ? "\"%s\": %s" : ", \"%s\": %s",
-                         i.key.cstr(), i.value.toString().cstr());
+        s += String::format(isFirst ? "\"%s\": %s" : ", \"%s\": %s",
+                            i.key.c(), i.value.toString().c());
         isFirst = false;
       }
 

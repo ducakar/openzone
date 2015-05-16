@@ -45,7 +45,7 @@ void QuestFrame::updateTask()
     const Quest& quest = questList.quests[questList.activeQuest];
 
     if (quest.state == Quest::NONE) {
-      title.setText("%s", quest.title.cstr());
+      title.setText("%s", quest.title.c());
     }
     else {
       const char* stateText;
@@ -60,10 +60,10 @@ void QuestFrame::updateTask()
         stateText = OZ_GETTEXT("failed");
       }
 
-      title.setText("%s  [%s]", quest.title.cstr(), stateText);
+      title.setText("%s  [%s]", quest.title.c(), stateText);
     }
 
-    description.setText("%s", quest.description.cstr());
+    description.setText("%s", quest.description.c());
 
     lastQuest = questList.activeQuest;
     lastState = quest.state;

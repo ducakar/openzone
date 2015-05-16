@@ -178,7 +178,7 @@ bool Collider::overlapsAABBOrbis()
     return true;
   }
 
-  if (aabb.p.z - aabb.dim.z - orbis.terra.height(aabb.p.x, aabb.p.y) <= 0.0f) {
+  if (aabb.p.z - aabb.dim.z - orbis.terra.getHeight(aabb.p.x, aabb.p.y) <= 0.0f) {
     return true;
   }
 
@@ -582,8 +582,8 @@ void Collider::trimAABBTerraQuad(int x, int y)
   Vec3 localStartPos = startPos - minVert;
   Vec3 localEndPos   = endPos   - minVert;
 
-  float startDist = localStartPos * quad.triNormal[0];
-  float endDist   = localEndPos   * quad.triNormal[0];
+  float startDist = localStartPos * quad.normals[0];
+  float endDist   = localEndPos   * quad.normals[0];
 
   if (endDist <= EPSILON && endDist <= startDist) {
     float ratio = max(0.0f, startDist - EPSILON) / max(startDist - endDist, Math::FLOAT_EPS);
@@ -597,7 +597,7 @@ void Collider::trimAABBTerraQuad(int x, int y)
         ratio < hit.ratio)
     {
       hit.ratio    = ratio;
-      hit.normal   = quad.triNormal[0];
+      hit.normal   = quad.normals[0];
       hit.obj      = nullptr;
       hit.str      = nullptr;
       hit.entity   = nullptr;
@@ -607,8 +607,8 @@ void Collider::trimAABBTerraQuad(int x, int y)
     }
   }
 
-  startDist = localStartPos * quad.triNormal[1];
-  endDist   = localEndPos   * quad.triNormal[1];
+  startDist = localStartPos * quad.normals[1];
+  endDist   = localEndPos   * quad.normals[1];
 
   if (endDist <= EPSILON && endDist <= startDist) {
     float ratio = max(0.0f, startDist - EPSILON) / max(startDist - endDist, Math::FLOAT_EPS);
@@ -622,7 +622,7 @@ void Collider::trimAABBTerraQuad(int x, int y)
         ratio < hit.ratio)
     {
       hit.ratio    = ratio;
-      hit.normal   = quad.triNormal[1];
+      hit.normal   = quad.normals[1];
       hit.obj      = nullptr;
       hit.str      = nullptr;
       hit.entity   = nullptr;

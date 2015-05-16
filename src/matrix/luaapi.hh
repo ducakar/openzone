@@ -397,7 +397,7 @@ static int ozTerraHeight(lua_State* l)
   float x = l_tofloat(1);
   float y = l_tofloat(2);
 
-  l_pushfloat(orbis.terra.height(x, y));
+  l_pushfloat(orbis.terra.getHeight(x, y));
   return 1;
 }
 

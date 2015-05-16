@@ -33,7 +33,7 @@ namespace oz
 {
 
 Buffer::Buffer(const String& s) :
-  List<char>(s.cstr(), s.length())
+  List<char>(s.c(), s.length())
 {}
 
 String Buffer::toString() const

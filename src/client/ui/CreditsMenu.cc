@@ -58,7 +58,7 @@ void CreditsMenu::onRealign()
       labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "");
     }
     else {
-      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr());
+      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].c());
     }
   }
 }
@@ -84,7 +84,7 @@ void CreditsMenu::onUpdate()
         labels[i].setText("");
       }
       else {
-        labels[i].setText("%s", lines[line - labels.length()].cstr());
+        labels[i].setText("%s", lines[line - labels.length()].c());
       }
     }
   }
@@ -155,7 +155,7 @@ CreditsMenu::CreditsMenu() :
     InputStream is = creditsFile.inputStream();
 
     if (is.available() == 0) {
-      OZ_ERROR("Failed to read '%s'", creditsFile.path().cstr());
+      OZ_ERROR("Failed to read '%s'", creditsFile.path().c());
     }
 
     lines.add("");
@@ -163,7 +163,7 @@ CreditsMenu::CreditsMenu() :
     lines.add("");
     lines.add("");
     lines.add("");
-    lines.add(String::str(">> %s \"%s\" <<", OZ_GETTEXT("package"), creditsFile.baseName().cstr()));
+    lines.add(String::format(">> %s \"%s\" <<", OZ_GETTEXT("package"), creditsFile.baseName().c()));
     lines.add("");
     lines.add("");
 

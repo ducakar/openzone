@@ -56,10 +56,10 @@ void MD3::buildMesh(const char* name, int frame)
 {
   Log::print("Mesh '%s' ...", name);
 
-  File file = String::str("%s/%s.md3", sPath.cstr(), name);
+  File file = String::format("%s/%s.md3", sPath.c(), name);
 
   if (file.type() != File::REGULAR) {
-    OZ_ERROR("Cannot read MD3 model part file '%s'", file.path().cstr());
+    OZ_ERROR("Cannot read MD3 model part file '%s'", file.path().c());
   }
 
   InputStream is = file.inputStream(Endian::LITTLE);
@@ -362,10 +362,10 @@ void MD3::save()
   if (frame < 0) {
     File destFile = sDestDir + "/data.ozcMD3";
 
-    Log::print("Writing to '%s' ...", destFile.path().cstr());
+    Log::print("Writing to '%s' ...", destFile.path().c());
 
     if (!destFile.write(os.begin(), os.tell())) {
-      OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+      OZ_ERROR("Failed to write '%s'", destFile.path().c());
     }
 
     Log::printEnd(" OK");
@@ -373,10 +373,10 @@ void MD3::save()
   else {
     File destFile = sDestDir + "/data.ozcModel";
 
-    Log::print("Writing to '%s' ...", destFile.path().cstr());
+    Log::print("Writing to '%s' ...", destFile.path().c());
 
     if (!destFile.write(os.begin(), os.tell())) {
-      OZ_ERROR("Failed to write '%s'", destFile.path().cstr());
+      OZ_ERROR("Failed to write '%s'", destFile.path().c());
     }
 
     Log::printEnd(" OK");

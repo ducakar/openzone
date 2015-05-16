@@ -355,7 +355,7 @@ void AL::checkError(const char* function, const char* file, int line)
       break;
     }
     default: {
-      message = String::str("UNKNOWN(%d)", int(result));
+      message = String::format("UNKNOWN(%d)", int(result));
       break;
     }
   }

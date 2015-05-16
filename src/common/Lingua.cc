@@ -63,7 +63,7 @@ bool Lingua::initMission(const char* mission)
 {
   clear();
 
-  File file = String::str("@mission/%s/lingua/%s.mo", mission, language.cstr());
+  File file = String::format("@mission/%s/lingua/%s.mo", mission, language.c());
   return catalogue.import(file);
 }
 

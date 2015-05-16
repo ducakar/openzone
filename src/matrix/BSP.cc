@@ -31,13 +31,13 @@ namespace oz
 
 void BSP::load()
 {
-  Log::print("Loading BSP structure '%s' ...", name.cstr());
+  Log::print("Loading BSP structure '%s' ...", name.c());
 
   File file = "@bsp/" + name + ".ozBSP";
   InputStream is = file.inputStream(Endian::LITTLE);
 
   if (is.available() == 0) {
-    OZ_ERROR("BSP file '%s' read failed", file.path().cstr());
+    OZ_ERROR("BSP file '%s' read failed", file.path().c());
   }
 
   // bounds
@@ -198,7 +198,7 @@ void BSP::load()
     boundObjects[i].heading = Heading(is.readInt());
 
     if (clazz->flags & Object::DYNAMIC_BIT) {
-      OZ_ERROR("BSP '%s' bound object '%s' is not static", name.cstr(), clazz->name.cstr());
+      OZ_ERROR("BSP '%s' bound object '%s' is not static", name.c(), clazz->name.c());
     }
   }
 
@@ -210,7 +210,7 @@ void BSP::load()
 void BSP::unload()
 {
   if (planes != nullptr) {
-    Log::print("Unloading BSP structure '%s' ...", name.cstr());
+    Log::print("Unloading BSP structure '%s' ...", name.c());
 
     delete[] reinterpret_cast<char*>(planes);
 
@@ -243,10 +243,10 @@ BSP::BSP(const char* name_, int id_) :
   nBrushSides(0), nBoundObjects(0),
   name(name_), id(id_), nUsers(0)
 {
-  File file = String::str("@bsp/%s.ozBSP", name_);
+  File file = String::format("@bsp/%s.ozBSP", name_);
 
   if (file.type() != File::REGULAR) {
-    OZ_ERROR("BSP file '%s' read failed", file.path().cstr());
+    OZ_ERROR("BSP file '%s' read failed", file.path().c());
   }
 
   InputStream is   = file.inputStream(Endian::LITTLE);

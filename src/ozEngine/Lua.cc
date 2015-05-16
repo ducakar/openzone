@@ -293,7 +293,7 @@ void Lua::init()
   lua_settop(l, 0);
 #endif
 
-  luaL_dostring(l, String::str("math.random(%u)", randomSeed));
+  luaL_dostring(l, String::format("math.random(%u)", randomSeed));
 
   if (lua_gettop(l) != 0) {
     OZ_ERROR("oz::Lua: Failed to initialise Lua libraries");

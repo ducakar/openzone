@@ -54,8 +54,8 @@ public:
     static const int SIZE = 8;        ///< Integer size of a terrain quad.
     static const int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
 
-    Point vertex;
-    Vec3  triNormal[2];
+    Point vertex;                     ///< Upper-left vertex.
+    Vec3  normals[2];                 ///< [0] upper-left and [1] lower-right triangle normal.
   };
 
   // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
@@ -65,12 +65,40 @@ public:
 
   Quad quads[VERTS][VERTS]; ///< Vertices and triangle normals.
   int  liquid;              ///< Either `matrix::Medium::GLOBAL_WATER_BIT` or
-                            ///< `matrix::Medium::GLOBAL_LAVA_BIT`
+                            ///< `matrix::Medium::GLOBAL_LAVA_BIT`.
   int  id;
 
-  Span getInters(float minX, float minY, float maxX, float maxY, float epsilon = 0.0f) const;
-  Pos2 getIndices(float x, float y) const;
-  float height(float x, float y) const;
+  Span getInters(float minX, float minY, float maxX, float maxY, float epsilon = 0.0f) const
+  {
+    return {
+      max(int((minX - epsilon + DIM) / Quad::SIZE), 0),
+      max(int((minY - epsilon + DIM) / Quad::SIZE), 0),
+      min(int((maxX + epsilon + DIM) / Quad::SIZE), QUADS - 1),
+      min(int((maxY + epsilon + DIM) / Quad::SIZE), QUADS - 1)
+    };
+  }
+
+  Pos2 getIndices(float x, float y) const
+  {
+    int ix = int((x + DIM) / Quad::SIZE);
+    int iy = int((y + DIM) / Quad::SIZE);
+
+    return { clamp(ix, 0, QUADS - 1), clamp(iy, 0, QUADS - 1) };
+  }
+
+  float getHeight(float x, float y) const
+  {
+    Pos2        pos  = getIndices(x, y);
+    const Quad& quad = quads[pos.x][pos.y];
+
+    float localX = x - quad.vertex.x;
+    float localY = y - quad.vertex.y;
+    float height = quad.vertex.z;
+    int   ii     = localX <= localY;
+    Vec3  normal = quad.normals[ii];
+
+    return height - (normal.x * localX + normal.y * localY) / normal.z;
+  }
 
   void reset();
   void load(int id);
@@ -83,38 +111,5 @@ public:
   void write(OutputStream* os) const;
 
 };
-
-inline Span Terra::getInters(float minPosX, float minPosY, float maxPosX, float maxPosY,
-                             float epsilon) const
-{
-  return {
-    max(int((minPosX - epsilon + DIM) / Quad::SIZE), 0),
-    max(int((minPosY - epsilon + DIM) / Quad::SIZE), 0),
-    min(int((maxPosX + epsilon + DIM) / Quad::SIZE), QUADS - 1),
-    min(int((maxPosY + epsilon + DIM) / Quad::SIZE), QUADS - 1)
-  };
-}
-
-inline Pos2 Terra::getIndices(float x, float y) const
-{
-  int ix = int((x + DIM) / Quad::SIZE);
-  int iy = int((y + DIM) / Quad::SIZE);
-
-  return { clamp(ix, 0, QUADS - 1), clamp(iy, 0, QUADS - 1) };
-}
-
-inline float Terra::height(float x, float y) const
-{
-  Pos2        pos  = getIndices(x, y);
-  const Quad& quad = quads[pos.x][pos.y];
-
-  float localX = x - quad.vertex.x;
-  float localY = y - quad.vertex.y;
-  float height = quad.vertex.z;
-  int   ii     = localX <= localY;
-  Vec3  normal = quad.triNormal[ii];
-
-  return height - (normal.x * localX + normal.y * localY) / normal.z;
-}
 
 }

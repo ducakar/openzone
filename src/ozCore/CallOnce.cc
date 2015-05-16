@@ -31,9 +31,9 @@ namespace oz
 
 void CallOnce::call(Function* function)
 {
-  if (!wasCalled) {
-    if (__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE)) {
-      while (!wasCalled) {
+  if (!hasFinished) {
+    if (__atomic_test_and_set(&hasEntered, __ATOMIC_ACQUIRE)) {
+      while (!hasFinished) {
 #if defined(__i386__) || defined(__x86_64__)
         __asm__ volatile ("pause");
 #endif
@@ -41,7 +41,7 @@ void CallOnce::call(Function* function)
     }
     else {
       function();
-      __atomic_test_and_set(&wasCalled, __ATOMIC_RELEASE);
+      __atomic_test_and_set(&hasFinished, __ATOMIC_RELEASE);
     }
   }
 }

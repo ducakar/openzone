@@ -51,7 +51,7 @@ bool MissionButton::onMouseEvent()
   if (missionMenu->selection != selection) {
     missionMenu->selection = selection;
 
-    missionMenu->description.setText("%s", missionMenu->missions[selection].description.cstr());
+    missionMenu->description.setText("%s", missionMenu->missions[selection].description.c());
     missionMenu->imageId = missionMenu->missions[selection].imageId;
   }
 
@@ -90,7 +90,7 @@ void MissionMenu::onRealign()
   description.setWidth(width - 320);
 
   if (selection != -1) {
-    description.setText("%s", missions[selection].description.cstr());
+    description.setText("%s", missions[selection].description.c());
   }
 
   float aspect = float(imageWidth) / float(imageHeight);

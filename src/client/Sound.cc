@@ -294,7 +294,7 @@ int Sound::musicDecode()
 
         if (result < 0) {
           OZ_ERROR("Error during Ogg Vorbis decoding of '%s'",
-                   liber.musicTracks[streamedTrack].path.cstr());
+                   liber.musicTracks[streamedTrack].path.c());
         }
       }
       while (result > 0 && bytesRead < MUSIC_BUFFER_SIZE);
@@ -365,7 +365,7 @@ int Sound::musicDecode()
           }
           else if (!MAD_RECOVERABLE(madStream.error)) {
             OZ_ERROR("Unrecoverable error during MP3 decoding of '%s'",
-                     liber.musicTracks[streamedTrack].path.cstr());
+                     liber.musicTracks[streamedTrack].path.c());
           }
         }
 
@@ -787,7 +787,7 @@ void Sound::init()
   Log::indent();
 
   for (const String& extension : extensions) {
-    Log::println("%s", extension.cstr());
+    Log::println("%s", extension.c());
   }
 
   Log::unindent();

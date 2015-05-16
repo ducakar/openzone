@@ -45,11 +45,11 @@ namespace client
 
 void EditStage::read()
 {
-  Log::print("Loading layout from '%s' ...", layoutFile.path().cstr());
+  Log::print("Loading layout from '%s' ...", layoutFile.path().c());
 
   Json json;
   if (!json.load(layoutFile)) {
-    OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().cstr());
+    OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().c());
   }
   layoutFile.unmap();
 
@@ -68,7 +68,7 @@ void EditStage::write() const
   json.add("matrix", matrix.write());
   json.add("camera", camera.write());
 
-  Log::print("Saving layout to %s ...", layoutFile.path().cstr());
+  Log::print("Saving layout to %s ...", layoutFile.path().c());
 
   if (!json.save(layoutFile)) {
     Log::printEnd(" Failed");
@@ -206,7 +206,7 @@ void EditStage::wait(uint micros)
 
 void EditStage::load()
 {
-  Log::println("[%s] Loading EditStage {", Time::local().toString().cstr());
+  Log::println("[%s] Loading EditStage {", Time::local().toString().c());
   Log::indent();
 
   ui::mouse.isVisible = false;
@@ -263,7 +263,7 @@ void EditStage::load()
 
 void EditStage::unload()
 {
-  Log::println("[%s] Unloading EditStage {", Time::local().toString().cstr());
+  Log::println("[%s] Unloading EditStage {", Time::local().toString().c());
   Log::indent();
 
   ui::mouse.isVisible = false;

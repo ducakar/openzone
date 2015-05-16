@@ -111,7 +111,7 @@ static FIBITMAP* loadBitmap(const File& file)
   FreeImage_CloseMemory(memoryIO);
 
   if (dib == nullptr) {
-    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.path().cstr());
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.path().c());
     return nullptr;
   }
 
@@ -368,7 +368,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 
   bool success = destFile.write(os.begin(), os.tell());
   if (!success) {
-    snprintf(errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.path().cstr());
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.path().c());
     return false;
   }
   return true;
@@ -531,7 +531,7 @@ bool ImageBuilder::convertToDDS(const File& file, const char* destPath)
 
   File destFile = destPath;
   if (destFile.type() == File::DIRECTORY) {
-    destFile = String::str("%s/%s.dds", destPath, file.baseName().cstr());
+    destFile = String::format("%s/%s.dds", destPath, file.baseName().c());
   }
 
   ImageData image = loadImage(file);

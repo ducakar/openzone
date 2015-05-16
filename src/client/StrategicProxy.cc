@@ -197,7 +197,7 @@ void StrategicProxy::update()
 
     desiredPos.x = clamp<float>(desiredPos.x, -Orbis::DIM, +Orbis::DIM);
     desiredPos.y = clamp<float>(desiredPos.y, -Orbis::DIM, +Orbis::DIM);
-    desiredPos.z = max(0.0f, orbis.terra.height(desiredPos.x, desiredPos.y)) + height;
+    desiredPos.z = max(0.0f, orbis.terra.getHeight(desiredPos.x, desiredPos.y)) + height;
   }
 
   camera.smoothMoveTo(desiredPos);

@@ -405,7 +405,7 @@ const File* Model::preload()
   preloadData->modelFile = path;
 
   if (!preloadData->modelFile.map()) {
-    OZ_ERROR("Failed to map '%s'", path.cstr());
+    OZ_ERROR("Failed to map '%s'", path.c());
   }
 
   InputStream is = preloadData->modelFile.inputStream(Endian::LITTLE);
@@ -450,7 +450,7 @@ const File* Model::preload()
         texFiles.normals = name + "_n.dds";
 
         if (!texFiles.albedo.map()) {
-          OZ_ERROR("Failed to map '%s'", texFiles.albedo.path().cstr());
+          OZ_ERROR("Failed to map '%s'", texFiles.albedo.path().c());
         }
 
         texFiles.masks.map();

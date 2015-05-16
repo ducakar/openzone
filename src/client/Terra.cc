@@ -177,7 +177,7 @@ void Terra::load()
 
   InputStream is = file.inputStream(Endian::LITTLE);
   if (is.available() == 0) {
-    OZ_ERROR("Terra file '%s' read failed", file.path().cstr());
+    OZ_ERROR("Terra file '%s' read failed", file.path().c());
   }
 
   glGenBuffers(TILES * TILES, &vbos[0][0]);
@@ -254,7 +254,7 @@ void Terra::load()
   glBindTexture(GL_TEXTURE_2D, mapTex);
 
   if (GL::textureDataFromFile(map, context.textureLod) == 0) {
-    OZ_ERROR("Failed to load terain map texture '%s'", map.path().cstr());
+    OZ_ERROR("Failed to load terain map texture '%s'", map.path().c());
   }
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

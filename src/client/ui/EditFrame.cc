@@ -119,7 +119,7 @@ void EditFrame::drawComponent(int height, const Object* container, const Dynamic
   }
 
   itemDesc.setPosition(-ICON_SIZE - 8, height - FOOTER_SIZE / 2);
-  itemDesc.setText("#%d %s", taggedItem->index, taggedClazz->title.cstr());
+  itemDesc.setText("#%d %s", taggedItem->index, taggedClazz->title.c());
   itemDesc.draw(this);
 }
 
@@ -159,7 +159,7 @@ void EditFrame::onDraw()
   const Object*  container  = owner;
   const Dynamic* taggedItem = orbis.obj<const Dynamic>(taggedItemIndex);
 
-  title.setText("#%d %s", container->index, container->title().cstr());
+  title.setText("#%d %s", container->index, container->title().c());
 
   for (int i = 0; i < COLS; ++i) {
     int id = scrollOwner * COLS + i;

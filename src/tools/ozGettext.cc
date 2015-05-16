@@ -82,7 +82,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
 
             lastString.add('\0');
 
-            String locationInfo = String::str("%s:%d", path, gettextLineNum);
+            String locationInfo = String::format("%s:%d", path, gettextLineNum);
             String message      = &lastString[0];
 
             messages.include(message, locationInfo);
@@ -153,7 +153,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
 static void readLua(const File& file)
 {
   if (file.type() != File::REGULAR) {
-    OZ_ERROR("Failed to read '%s'", file.path().cstr());
+    OZ_ERROR("Failed to read '%s'", file.path().c());
   }
 
   InputStream buffer = file.inputStream();
@@ -165,7 +165,7 @@ static void readBSP(const File& file)
   Json config;
 
   if (!config.load(file)) {
-    OZ_ERROR("Failed to load '%s'", file.path().cstr());
+    OZ_ERROR("Failed to load '%s'", file.path().c());
   }
 
   const char* title       = config["title"].get("");
@@ -185,7 +185,7 @@ static void readBSP(const File& file)
   int nEntities = entities.length();
 
   if (!entities.isNull() && entities.type() != Json::ARRAY) {
-    OZ_ERROR("'entities' entry in '%s' is not an array", file.path().cstr());
+    OZ_ERROR("'entities' entry in '%s' is not an array", file.path().c());
   }
 
   for (int i = 0; i < nEntities; ++i) {
@@ -204,7 +204,7 @@ static void readClass(const File& file)
   Json config;
 
   if (!config.load(file)) {
-    OZ_ERROR("Failed to read '%s'", file.path().cstr());
+    OZ_ERROR("Failed to read '%s'", file.path().c());
   }
 
   const char* title       = config["title"].get("");
@@ -265,17 +265,17 @@ static void readNirvana(const File& dir)
       const String& onUpdate = state["onUpdate"].get(String::EMPTY);
 
       if (!onEnter.isEmpty()) {
-        readLuaChunk(onEnter.cstr(), onEnter.length(), file.path());
+        readLuaChunk(onEnter.c(), onEnter.length(), file.path());
       }
       if (!onUpdate.isEmpty()) {
-        readLuaChunk(onUpdate.cstr(), onUpdate.length(), file.path());
+        readLuaChunk(onUpdate.c(), onUpdate.length(), file.path());
       }
 
       for (const Json& link : state["links"].arrayCIter()) {
         const String& condition = link["if"].get(String::EMPTY);
 
         if (!condition.isEmpty()) {
-          readLuaChunk(condition.cstr(), condition.length(), file.path());
+          readLuaChunk(condition.c(), condition.length(), file.path());
         }
       }
     }
@@ -308,7 +308,7 @@ static void readSequence(const File& file)
     const char* title = sequence[i]["title"].get("");
 
     if (!String::isEmpty(title)) {
-      String locationInfo = String::str("%s:step #%d", file.path().cstr(), i + 1);
+      String locationInfo = String::format("%s:step #%d", file.path().c(), i + 1);
 
       messages.include(title, locationInfo);
     }
@@ -356,7 +356,7 @@ static void writePOT(const HashMap<String, String>* hs, const char* filePath)
 
     // If multi-line, put each line into a new line in .pot file and escape newlines.
     if (s.index('\n') < 0) {
-      os.writeLine(String::str("msgid \"%s\"", s.cstr()));
+      os.writeLine(String::format("msgid \"%s\"", s.c()));
     }
     else {
       List<String> stringLines = s.split('\n');
@@ -369,10 +369,10 @@ static void writePOT(const HashMap<String, String>* hs, const char* filePath)
         }
 
         if (&l == &stringLines.last()) {
-          s = String::str("\"%s\"", l.cstr());
+          s = String::format("\"%s\"", l.c());
         }
         else {
-          s = String::str("\"%s\\n\"", l.cstr());
+          s = String::format("\"%s\\n\"", l.c());
         }
 
         os.writeLine(s);
@@ -385,7 +385,7 @@ static void writePOT(const HashMap<String, String>* hs, const char* filePath)
   File outFile = filePath;
 
   if (!outFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", outFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", outFile.path().c());
   }
 }
 
@@ -464,8 +464,8 @@ int main(int argc, char** argv)
   readCredits(creditsFile);
 
   if (!messages.isEmpty()) {
-    String mainPOT = String::str("%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr());
-    Log::print("%s ...", mainPOT.cstr());
+    String mainPOT = String::format("%s/lingua/%s.pot", pkgDir.c(), pkgName.c());
+    Log::print("%s ...", mainPOT.c());
 
     File::mkdir(pkgDir + "/lingua");
     writePOT(&messages, mainPOT);
@@ -497,7 +497,7 @@ int main(int argc, char** argv)
 
     if (!messages.isEmpty()) {
       String missionPOT = mission.path() + "/lingua/messages.pot";
-      Log::print("%s ...", missionPOT.cstr());
+      Log::print("%s ...", missionPOT.c());
 
       File::mkdir(mission.path() + "/lingua");
       writePOT(&messages, mission.path() + "/lingua/messages.pot");

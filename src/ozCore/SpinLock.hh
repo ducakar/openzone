@@ -40,9 +40,9 @@ namespace oz
  */
 class SpinLock
 {
-private:
+public:
 
-  bool flag = false; ///< True iff locked.
+  volatile bool isLocked = false; ///< True iff locked.
 
 public:
 
@@ -67,7 +67,7 @@ public:
   OZ_ALWAYS_INLINE
   void lock()
   {
-    while (__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE)) {
+    while (__atomic_test_and_set(&isLocked, __ATOMIC_ACQUIRE)) {
 #if defined(__i386__) || defined(__x86_64__)
       __asm__ volatile ("pause");
 #endif
@@ -82,7 +82,7 @@ public:
   OZ_ALWAYS_INLINE
   bool tryLock()
   {
-    return !__atomic_test_and_set(&flag, __ATOMIC_ACQUIRE);
+    return !__atomic_test_and_set(&isLocked, __ATOMIC_ACQUIRE);
   }
 
   /**
@@ -91,7 +91,7 @@ public:
   OZ_ALWAYS_INLINE
   void unlock()
   {
-    __atomic_clear(&flag, __ATOMIC_RELEASE);
+    __atomic_clear(&isLocked, __ATOMIC_RELEASE);
   }
 
 };

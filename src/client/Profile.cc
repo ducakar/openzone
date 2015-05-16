@@ -100,7 +100,7 @@ void Profile::init()
       int nItems = itemsConfig.length();
 
       if (nItems > clazz->nItems) {
-        OZ_ERROR("Too many items for player class '%s' in profile", clazz->name.cstr());
+        OZ_ERROR("Too many items for player class '%s' in profile", clazz->name.c());
       }
 
       items.clear();
@@ -130,12 +130,12 @@ void Profile::init()
 
         if (!(weaponClazz->flags & Object::WEAPON_BIT)) {
           OZ_ERROR("Invalid weaponItem #%d '%s' in profile",
-                   weaponItem, weaponClazz->name.cstr());
+                   weaponItem, weaponClazz->name.c());
         }
 
         if (!clazz->name.beginsWith(weaponClazz->userBase)) {
           OZ_ERROR("Invalid weapon class '%s' for player class '%s' in profile",
-                   weaponClazz->name.cstr(), clazz->name.cstr());
+                   weaponClazz->name.c(), clazz->name.c());
         }
       }
     }

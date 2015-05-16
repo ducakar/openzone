@@ -75,10 +75,10 @@ void InfoFrame::onDraw()
     text.setText("%s", (*device)->getMemo());
 
     if (tagged->flags & Object::BOT_BIT) {
-      title.setText("%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr());
+      title.setText("%s (%s)", tagged->name.c(), tagged->clazz->title.c());
     }
     else {
-      title.setText("%s", tagged->clazz->title.cstr());
+      title.setText("%s", tagged->clazz->title.c());
     }
   }
 

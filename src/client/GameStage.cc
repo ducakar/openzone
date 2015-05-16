@@ -49,7 +49,7 @@ const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
 
 void GameStage::saveMain(void*)
 {
-  Log::print("Saving state to %s ...", gameStage.saveFile.path().cstr());
+  Log::print("Saving state to %s ...", gameStage.saveFile.path().c());
 
   Buffer buffer = gameStage.saveBuffer.compress();
 
@@ -67,16 +67,16 @@ void GameStage::saveMain(void*)
 
 void GameStage::read()
 {
-  Log::print("Loading state from '%s' ...", stateFile.path().cstr());
+  Log::print("Loading state from '%s' ...", stateFile.path().c());
 
   Buffer buffer = stateFile.read();
   if (buffer.isEmpty()) {
-    OZ_ERROR("Reading saved state '%s' failed", stateFile.path().cstr());
+    OZ_ERROR("Reading saved state '%s' failed", stateFile.path().c());
   }
 
   buffer = buffer.decompress();
   if (buffer.isEmpty()) {
-    OZ_ERROR("Decompressing saved state '%s' failed", stateFile.path().cstr());
+    OZ_ERROR("Decompressing saved state '%s' failed", stateFile.path().c());
   }
 
   Log::printEnd(" OK");
@@ -284,7 +284,7 @@ void GameStage::wait(uint micros)
 
 void GameStage::load()
 {
-  Log::println("[%s] Loading GameStage {", Time::local().toString().cstr());
+  Log::println("[%s] Loading GameStage {", Time::local().toString().c());
   Log::indent();
 
   loadingMicros = Time::uclock();
@@ -374,7 +374,7 @@ void GameStage::load()
 
 void GameStage::unload()
 {
-  Log::println("[%s] Unloading GameStage {", Time::local().toString().cstr());
+  Log::println("[%s] Unloading GameStage {", Time::local().toString().c());
   Log::indent();
 
   ui::mouse.isVisible = false;

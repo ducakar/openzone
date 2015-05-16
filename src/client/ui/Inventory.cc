@@ -204,7 +204,7 @@ void Inventory::drawComponent(int height, const Object* container, const Dynamic
 noIcon:
 
   itemDesc.setPosition(-ICON_SIZE - 8, height - FOOTER_SIZE / 2);
-  itemDesc.setText("%s", taggedClazz->title.cstr());
+  itemDesc.setText("%s", taggedClazz->title.c());
   itemDesc.draw(this);
 }
 
@@ -255,7 +255,7 @@ void Inventory::onDraw()
   const Object*  container  = other == nullptr ? owner : other;
   const Dynamic* taggedItem = orbis.obj<const Dynamic>(taggedItemIndex);
 
-  title.setText("%s", container->title().cstr());
+  title.setText("%s", container->title().c());
 
   for (int i = 0; i < COLS; ++i) {
     int id = scrollOwner * COLS + i;

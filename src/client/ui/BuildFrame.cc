@@ -94,7 +94,7 @@ void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
       };
 
       for (int i = 0; i < 4; ++i) {
-        if (orbis.terra.height(corners[i][0], corners[i][1]) < bounds.mins.z) {
+        if (orbis.terra.getHeight(corners[i][0], corners[i][1]) < bounds.mins.z) {
           overlaps  = true;
           tf.colour = OVERLAY_YELLOW;
           break;
@@ -185,7 +185,7 @@ void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
   if (buildFrame->mode == BUILDINGS) {
     const BSP* bsp = techGraph.allowedBuildings[sender->id];
 
-    buildFrame->title.setText("%s", bsp->title.cstr());
+    buildFrame->title.setText("%s", bsp->title.c());
 
     if (isClicked && ui.strategicArea != nullptr) {
       buildFrame->overlayBSP     = bsp;
@@ -200,7 +200,7 @@ void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
                                buildFrame->mode == ITEMS ? techGraph.allowedItems[sender->id] :
                                                            techGraph.allowedObjects[sender->id];
 
-    buildFrame->title.setText("%s", clazz->title.cstr());
+    buildFrame->title.setText("%s", clazz->title.c());
 
     if (isClicked && ui.strategicArea != nullptr) {
       buildFrame->overlayBSP     = nullptr;

@@ -72,17 +72,17 @@ void UI::buildIcons()
       continue;
     }
 
-    Log::print("%s ...", image.name().cstr());
+    Log::print("%s ...", image.name().c());
 
     if (!Arrays::contains(ICON_NAMES, Arrays::length(ICON_NAMES), name)) {
-      OZ_ERROR("Unnecessary icon: %s", image.path().cstr());
+      OZ_ERROR("Unnecessary icon: %s", image.path().c());
     }
 
     ImageBuilder::options = 0;
     ImageBuilder::scale   = 1.0;
 
     if (!ImageBuilder::convertToDDS(image, "ui/icon")) {
-      OZ_ERROR("Error converting '%s' to DDS: %s", image.name().cstr(), ImageBuilder::getError());
+      OZ_ERROR("Error converting '%s' to DDS: %s", image.name().c(), ImageBuilder::getError());
     }
     image.unmap();
 
@@ -101,7 +101,7 @@ void UI::buildIcons()
   Json style;
 
   if (!style.load(styleFile)) {
-    OZ_ERROR("Failed to load style '%s'", styleFile.path().cstr());
+    OZ_ERROR("Failed to load style '%s'", styleFile.path().c());
   }
 
   const Json& sounds = style["sounds"];

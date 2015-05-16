@@ -47,8 +47,8 @@ public:
 
 private:
 
-  volatile bool flag      = false; ///< Internal spin lock.
-  volatile bool wasCalled = false; ///< Whether the function was already called.
+  volatile bool hasEntered  = false; ///< Flipped to true when function starts executing.
+  volatile bool hasFinished = false; ///< Flipped to true when function finishes.
 
 public:
 

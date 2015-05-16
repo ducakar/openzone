@@ -39,24 +39,17 @@
 namespace oz
 {
 
+struct Semaphore::Descriptor
+{
 #ifdef _WIN32
-
-struct Semaphore::Descriptor
-{
-  HANDLE        semaphore;
-  volatile long counter   = 0;
-};
-
+  HANDLE          semaphore;
+  volatile long   counter   = 0;
 #else
-
-struct Semaphore::Descriptor
-{
-  pthread_mutex_t mutex   = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t  cond    = PTHREAD_COND_INITIALIZER;
-  volatile int    counter = 0;
-};
-
+  pthread_mutex_t mutex     = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  cond      = PTHREAD_COND_INITIALIZER;
+  volatile int    counter   = 0;
 #endif
+};
 
 Semaphore::Semaphore()
 {
@@ -132,11 +125,9 @@ bool Semaphore::tryWait() const
 {
 #ifdef _WIN32
 
-  int ret = WaitForSingleObject(descriptor->semaphore, 0);
-  if (ret == WAIT_TIMEOUT) {
+  if (WaitForSingleObject(descriptor->semaphore, 0) != WAIT_OBJECT_0) {
     return false;
   }
-
   InterlockedDecrement(&descriptor->counter);
   return true;
 

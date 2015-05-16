@@ -390,7 +390,7 @@ String& String::operator = (const char* s)
   return *this;
 }
 
-String String::str(const char* s, ...)
+String String::format(const char* s, ...)
 {
   va_list ap;
   va_start(ap, s);

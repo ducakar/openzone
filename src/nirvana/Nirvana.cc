@@ -93,7 +93,7 @@ void Nirvana::read(InputStream* is)
     Device::CreateFunc* const* func = deviceClasses.find(type);
 
     if (func == nullptr) {
-      OZ_ERROR("Invalid device type '%s'", type.cstr());
+      OZ_ERROR("Invalid device type '%s'", type.c());
     }
 
     devices.add(index, (*func)(index, is));

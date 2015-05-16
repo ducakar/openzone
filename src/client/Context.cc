@@ -373,7 +373,7 @@ Texture Context::requestTexture(int id)
   File normalsFile = basePath + "_n.dds";
 
   if (!albedoFile.map()) {
-    OZ_ERROR("Failed to load '%s'", albedoFile.path().cstr());
+    OZ_ERROR("Failed to load '%s'", albedoFile.path().c());
   }
 
   masksFile.map();
@@ -424,7 +424,7 @@ uint Context::requestSound(int id)
   alGenBuffers(1, &resource.handle);
 
   if (!AL::bufferDataFromFile(resource.handle, path)) {
-    OZ_ERROR("Failed to load WAVE or Ogg Vorbis sound '%s'", name.cstr());
+    OZ_ERROR("Failed to load WAVE or Ogg Vorbis sound '%s'", name.c());
   }
 
   OZ_AL_CHECK_ERROR();

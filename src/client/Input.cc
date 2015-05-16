@@ -529,7 +529,7 @@ void Input::init()
 {
   File configFile = config["dir.config"].get(File::CONFIG) + "/input.json";
 
-  Log::print("Initialising Input from '%s' ...", configFile.path().cstr());
+  Log::print("Initialising Input from '%s' ...", configFile.path().c());
 
   Json inputConfig;
   configExists = inputConfig.load(configFile);
@@ -620,7 +620,7 @@ void Input::destroy()
 
   File configFile = config["dir.config"].get(File::CONFIG) + "/input.json";
 
-  Log::print("Writing Input configuration to '%s' ...", configFile.path().cstr());
+  Log::print("Writing Input configuration to '%s' ...", configFile.path().c());
 
   Json inputConfig(Json::OBJECT);
 
@@ -641,7 +641,7 @@ void Input::destroy()
   keyMapConfig = keyMapToJson();
 
   if (!inputConfig.save(configFile, CONFIG_FORMAT)) {
-    OZ_ERROR("Failed to write '%s'", configFile.path().cstr());
+    OZ_ERROR("Failed to write '%s'", configFile.path().c());
   }
 
   Log::printEnd(" OK");

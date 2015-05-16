@@ -462,10 +462,10 @@ void Orbis::read(const Json& json)
         const DynamicClass* itemClazz = static_cast<const DynamicClass*>(liber.objClass(itemName));
 
         if (!(itemClazz->flags & Object::ITEM_BIT)) {
-          OZ_ERROR("Inventory object '%s' is not an item", itemClazz->name.cstr());
+          OZ_ERROR("Inventory object '%s' is not an item", itemClazz->name.c());
         }
         if (obj->items.length() >= obj->clazz->nItems) {
-          OZ_ERROR("Too many inventory items for '%s'", itemClazz->name.cstr());
+          OZ_ERROR("Too many inventory items for '%s'", itemClazz->name.c());
         }
 
         int itemIndex = allocObjIndex();

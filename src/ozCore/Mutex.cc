@@ -39,21 +39,14 @@
 namespace oz
 {
 
+struct Mutex::Descriptor
+{
 #ifdef _WIN32
-
-struct Mutex::Descriptor
-{
-  CRITICAL_SECTION criticalSection;
-};
-
+  HANDLE          mutex;
 #else
-
-struct Mutex::Descriptor
-{
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-};
-
 #endif
+};
 
 Mutex::Mutex()
 {
@@ -63,14 +56,14 @@ Mutex::Mutex()
   }
 
 #ifdef _WIN32
-  InitializeCriticalSection(&descriptor->criticalSection);
+  descriptor->mutex = CreateMutex(nullptr, false, nullptr);
 #endif
 }
 
 Mutex::~Mutex()
 {
 #ifdef _WIN32
-  DeleteCriticalSection(&descriptor->criticalSection);
+  CloseHandle(descriptor->mutex);
 #else
   pthread_mutex_destroy(&descriptor->mutex);
 #endif
@@ -81,7 +74,7 @@ Mutex::~Mutex()
 void Mutex::lock() const
 {
 #ifdef _WIN32
-  EnterCriticalSection(&descriptor->criticalSection);
+  WaitForSingleObject(descriptor->mutex, INFINITE);
 #else
   pthread_mutex_lock(&descriptor->mutex);
 #endif
@@ -90,7 +83,7 @@ void Mutex::lock() const
 bool Mutex::tryLock() const
 {
 #ifdef _WIN32
-  return TryEnterCriticalSection(&descriptor->criticalSection);
+  return WaitForSingleObject(descriptor->mutex, 0) == WAIT_OBJECT_0;
 #else
   return pthread_mutex_trylock(&descriptor->mutex) == 0;
 #endif
@@ -99,7 +92,7 @@ bool Mutex::tryLock() const
 void Mutex::unlock() const
 {
 #ifdef _WIN32
-  LeaveCriticalSection(&descriptor->criticalSection);
+  ReleaseMutex(descriptor->mutex);
 #else
   pthread_mutex_unlock(&descriptor->mutex);
 #endif

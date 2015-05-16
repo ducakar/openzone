@@ -136,7 +136,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
     ImageBuilder::convertToDDS(diffuse, destBasePath + ".dds");
   }
   else {
-    OZ_ERROR("Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr());
+    OZ_ERROR("Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.c());
   }
 
   if (masks.type() != File::MISSING) {

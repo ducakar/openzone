@@ -45,7 +45,7 @@ void MusicPlayer::prevTrack(Button* sender)
 
     sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.c());
     musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
@@ -61,7 +61,7 @@ void MusicPlayer::nextTrack(Button* sender)
 
     sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.c());
     musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
@@ -75,7 +75,7 @@ void MusicPlayer::playTrack(Button* sender)
   if (nTracks != 0) {
     sound.playMusic(musicPlayer->currentTrack);
 
-    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr());
+    musicPlayer->trackTitle.setText("%s", liber.musicTracks[musicPlayer->currentTrack].name.c());
     musicPlayer->trackLabel.setText("%d", musicPlayer->currentTrack + 1);
     musicPlayer->isPlaying = true;
   }
@@ -142,7 +142,7 @@ void MusicPlayer::onUpdate()
 
         sound.playMusic(currentTrack);
 
-        trackTitle.setText("%s", liber.musicTracks[currentTrack].name.cstr());
+        trackTitle.setText("%s", liber.musicTracks[currentTrack].name.c());
         trackLabel.setText("%d", currentTrack + 1);
       }
     }

@@ -391,7 +391,7 @@ int Client::init(int argc, char** argv)
     Log::println("Log file '%s'", Log::filePath());
   }
 
-  Log::println("OpenZone " OZ_VERSION " started on %s", Time::local().toString().cstr());
+  Log::println("OpenZone " OZ_VERSION " started on %s", Time::local().toString().c());
 
   Log::println("Build details {");
   Log::indent();
@@ -433,7 +433,7 @@ int Client::init(int argc, char** argv)
   // Load configuration.
   File configFile = configDir + "/client.json";
   if (config.load(configFile) && String::equals(config["_version"].get(""), OZ_VERSION)) {
-    Log::printEnd("Configuration read from '%s'", configFile.path().cstr());
+    Log::printEnd("Configuration read from '%s'", configFile.path().c());
     initFlags |= INIT_CONFIG;
   }
   else {
@@ -491,21 +491,21 @@ int Client::init(int argc, char** argv)
   const String& userMusicPath = config["dir.music"].get(File::MUSIC);
 
   if (File::mount(userMusicPath, "/userMusic", true)) {
-    Log::println("%s [mounted on /userMusic]", userMusicPath.cstr());
+    Log::println("%s [mounted on /userMusic]", userMusicPath.c());
   }
 
 #endif
 
   if (File::mount(dataDir, nullptr, true)) {
-    Log::println("%s", dataDir.cstr());
+    Log::println("%s", dataDir.c());
 
     for (const File& file : File(dataDir).ls()) {
       if (file.hasExtension("7z") || file.hasExtension("zip")) {
         if (!File::mount(file.path(), nullptr)) {
           OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s",
-                   file.path().cstr(), PHYSFS_getLastError());
+                   file.path().c(), PHYSFS_getLastError());
         }
-        Log::println("%s", file.path().cstr());
+        Log::println("%s", file.path().c());
       }
     }
   }
@@ -513,14 +513,14 @@ int Client::init(int argc, char** argv)
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
   if (File::mount(globalDataDir, nullptr, true)) {
-    Log::println("%s", globalDataDir.cstr());
+    Log::println("%s", globalDataDir.c());
 
     for (const File& file : File(globalDataDir).ls()) {
       if (file.hasExtension("7z") || file.hasExtension("zip")) {
         if (!File::mount(file.path(), nullptr)) {
-          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS", file.path().cstr());
+          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS", file.path().c());
         }
-        Log::println("%s", file.path().cstr());
+        Log::println("%s", file.path().c());
       }
     }
   }
@@ -539,7 +539,7 @@ int Client::init(int argc, char** argv)
     language = Lingua::detectLanguage("en");
   }
 
-  Log::print("Setting language '%s' ...", language.cstr());
+  Log::print("Setting language '%s' ...", language.c());
   if (lingua.init(language)) {
     Log::printEnd(" OK");
 
@@ -664,7 +664,7 @@ void Client::shutdown()
       config.exclude("dir.config");
       config.exclude("dir.data");
 
-      Log::print("Writing configuration to '%s' ...", configFile.path().cstr());
+      Log::print("Writing configuration to '%s' ...", configFile.path().c());
       config.save(configFile, CONFIG_FORMAT);
       Log::printEnd(" OK");
     }
@@ -690,7 +690,7 @@ void Client::shutdown()
   Log::printMemorySummary();
 
   if (initFlags) {
-    Log::println("OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr());
+    Log::println("OpenZone " OZ_VERSION " finished on %s", Time::local().toString().c());
   }
 
 #ifdef __native_client__

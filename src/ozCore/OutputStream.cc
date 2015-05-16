@@ -307,7 +307,7 @@ void OutputStream::writeString(const String& s)
   int   size = s.length() + 1;
   char* data = skip(size);
 
-  memcpy(data, s.cstr(), size);
+  memcpy(data, s.c(), size);
 }
 
 void OutputStream::writeString(const char* s)

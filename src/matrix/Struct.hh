@@ -66,7 +66,7 @@ public:
 
 public:
 
-  int  index() const;
+  int index() const;
   bool trigger();
   bool lock(Bot* user);
 
@@ -133,22 +133,38 @@ public:
   /**
    * Rotate vector from structure coordinate system to absolute coordinate system.
    */
-  Vec3 toAbsoluteCS(const Vec3& v) const;
+  OZ_ALWAYS_INLINE
+  Vec3 toAbsoluteCS(const Vec3& v) const
+  {
+    return transf * v;
+  }
 
   /**
    * Rotate vector from absolute coordinate system to structure coordinate system.
    */
-  Vec3 toStructCS(const Vec3& v) const;
+  OZ_ALWAYS_INLINE
+  Vec3 toStructCS(const Vec3& v) const
+  {
+    return invTransf * v;
+  }
 
   /**
    * Rotate point from structure coordinate system to absolute coordinate system.
    */
-  Point toAbsoluteCS(const Point& point) const;
+  OZ_ALWAYS_INLINE
+  Point toAbsoluteCS(const Point& point) const
+  {
+    return transf * point;
+  }
 
   /**
    * Rotate point from absolute coordinate system to structure coordinate system.
    */
-  Point toStructCS(const Point& point) const;
+  OZ_ALWAYS_INLINE
+  Point toStructCS(const Point& point) const
+  {
+    return invTransf * point;
+  }
 
   /**
    * Rotate Bounds from structure coordinate system to absolute coordinate system.
@@ -163,11 +179,31 @@ public:
   /**
    * Rotate AABB::dim between structure and absolute coordinate system.
    */
-  Vec3 swapDimCS(const Vec3& dim) const;
+  OZ_ALWAYS_INLINE
+  Vec3 swapDimCS(const Vec3& dim) const
+  {
+    return heading & WEST_EAST_MASK ? Vec3(dim.y, dim.x, dim.z) : dim;
+  }
 
   void destroy();
-  void damage(float damage);
-  void update();
+
+  OZ_ALWAYS_INLINE
+  void damage(float damage)
+  {
+    damage -= resistance;
+
+    if (damage > 0.0f) {
+      life = max(0.0f, life - damage);
+    }
+  }
+
+  OZ_ALWAYS_INLINE
+  void update()
+  {
+    if (!entities.isEmpty() || !boundObjects.isEmpty() || life == 0.0f) {
+      onUpdate();
+    }
+  }
 
 public:
 
@@ -185,54 +221,6 @@ OZ_ALWAYS_INLINE
 inline int Entity::index() const
 {
   return (str->index << Struct::MAX_ENT_SHIFT) | int(this - str->entities.begin());
-}
-
-OZ_ALWAYS_INLINE
-inline Vec3 Struct::toAbsoluteCS(const Vec3& v) const
-{
-  return transf * v;
-}
-
-OZ_ALWAYS_INLINE
-inline Vec3 Struct::toStructCS(const Vec3& v) const
-{
-  return invTransf * v;
-}
-
-OZ_ALWAYS_INLINE
-inline Point Struct::toAbsoluteCS(const Point& point) const
-{
-  return transf * point;
-}
-
-OZ_ALWAYS_INLINE
-inline Point Struct::toStructCS(const Point& point) const
-{
-  return invTransf * point;
-}
-
-OZ_ALWAYS_INLINE
-inline Vec3 Struct::swapDimCS(const Vec3& dim) const
-{
-  return heading & WEST_EAST_MASK ? Vec3(dim.y, dim.x, dim.z) : dim;
-}
-
-OZ_ALWAYS_INLINE
-inline void Struct::damage(float damage)
-{
-  damage -= resistance;
-
-  if (damage > 0.0f) {
-    life = max(0.0f, life - damage);
-  }
-}
-
-OZ_ALWAYS_INLINE
-inline void Struct::update()
-{
-  if (!entities.isEmpty() || !boundObjects.isEmpty() || life == 0.0f) {
-    onUpdate();
-  }
 }
 
 }

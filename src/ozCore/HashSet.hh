@@ -66,7 +66,7 @@ protected:
   /**
    * Hashtable iterator.
    */
-  template <class EntryType, class ElemType>
+  template <class EntryType, typename ElemType>
   class HashIterator : public detail::IteratorBase<EntryType>
   {
   private:
