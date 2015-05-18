@@ -27,6 +27,7 @@
 #include "Thread.hh"
 
 #include "System.hh"
+#include "SpinLock.hh"
 #include "Java.hh"
 #include "Pepper.hh"
 
@@ -55,44 +56,44 @@ static thread_local const char* threadName  = "";
 struct Thread::Descriptor
 {
 #ifdef _WIN32
-  HANDLE    thread;
+  HANDLE      thread;
 #else
-  pthread_t thread;
+  pthread_t   thread;
 #endif
-  Main*     main;
-  void*     data;
-  bool      isDetached;
-  char      name[NAME_LENGTH + 1];
+  const char* name;
+  Main*       main;
+  void*       data;
+  SpinLock    lock;
 
 #ifdef _WIN32
-  static DWORD WINAPI threadMain(void* data);
+  static DWORD WINAPI threadMain(void* descriptor);
 #else
-  static void* threadMain(void* data);
+  static void* threadMain(void* descriptor);
 #endif
 };
 
-#ifdef _WIN32
-
 OZ_HIDDEN
-DWORD WINAPI Thread::Descriptor::threadMain(void* data)
+#ifdef _WIN32
+DWORD WINAPI Thread::Descriptor::threadMain(void* descriptor_)
+#else
+void* Thread::Descriptor::threadMain(void* descriptor_)
+#endif
 {
-  Descriptor* descriptor = static_cast<Descriptor*>(data);
+  Descriptor* descriptor            = static_cast<Descriptor*>(descriptor_);
+  Main*       main                  = descriptor->main;
+  void*       data                  = descriptor->data;
+  char        name[NAME_LENGTH + 1];
 
-  threadName = descriptor->name;
+  if (descriptor->name != nullptr) {
+    strncpy(name, descriptor->name, NAME_LENGTH);
+    name[NAME_LENGTH] = '\0';
+
+    threadName = name;
+  }
+
+  descriptor->lock.unlock();
 
   System::threadInit();
-  descriptor->main(descriptor->data);
-  return 0;
-}
-
-#else
-
-OZ_HIDDEN
-void* Thread::Descriptor::threadMain(void* data)
-{
-  Descriptor* descriptor = static_cast<Descriptor*>(data);
-
-  threadName = descriptor->name;
 
 #if defined(__ANDROID__)
 
@@ -105,36 +106,25 @@ void* Thread::Descriptor::threadMain(void* data)
 
 #elif defined(__native_client__)
 
-  pp::Instance* ppInstance = Pepper::instance();
-
-  if (ppInstance == nullptr) {
-    OZ_ERROR("oz::Thread: NaCl application instance must be created via oz::Pepper::createModule()"
-             " before starting any new threads");
-  }
-
   Semaphore localSemaphore;
   MainCall::localSemaphore = &localSemaphore;
 
 #endif
 
-  System::threadInit();
-  descriptor->main(descriptor->data);
+  main(data);
 
 #ifdef __ANDROID__
-
   if (javaVM != nullptr) {
     javaVM->DetachCurrentThread();
   }
-
 #endif
 
-  if (descriptor->isDetached) {
-    free(descriptor);
-  }
+#ifdef _WIN32
+  return 0;
+#else
   return nullptr;
-}
-
 #endif
+}
 
 const char* Thread::name()
 {
@@ -161,12 +151,10 @@ Thread::Thread(const char* name, Main* main, void* data)
     OZ_ERROR("oz::Thread: Descriptor allocation failed");
   }
 
-  descriptor->main       = main;
-  descriptor->data       = data;
-  descriptor->isDetached = false;
-
-  strncpy(descriptor->name, name, NAME_LENGTH);
-  descriptor->name[NAME_LENGTH] = '\0';
+  descriptor->name = name;
+  descriptor->main = main;
+  descriptor->data = data;
+  descriptor->lock.lock();
 
 #ifdef _WIN32
   descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr);
@@ -178,11 +166,14 @@ Thread::Thread(const char* name, Main* main, void* data)
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
 #endif
+
+  // Wait while the thread accesses name pointer and descriptor during its initialisation.
+  descriptor->lock.lock();
 }
 
 Thread::~Thread()
 {
-  if (descriptor != nullptr && !descriptor->isDetached) {
+  if (descriptor != nullptr) {
     join();
   }
 }
@@ -209,24 +200,24 @@ void Thread::detach()
     OZ_ERROR("oz::Thread: Detaching invalid thread");
   }
 
-  descriptor->isDetached = true;
 #ifdef _WIN32
   CloseHandle(descriptor->thread);
 #else
   pthread_detach(descriptor->thread);
 #endif
 
+  free(descriptor);
   descriptor = nullptr;
 }
 
 void Thread::join()
 {
   if (descriptor == nullptr) {
-    OZ_ERROR("oz::Thread: Detaching invalid thread");
+    OZ_ERROR("oz::Thread: Joining invalid thread");
   }
 
 #ifdef _WIN32
-  if (WaitForSingleObject(descriptor->thread, INFINITE) == WAIT_FAILED) {
+  if (WaitForSingleObject(descriptor->thread, INFINITE) != WAIT_OBJECT_0) {
     OZ_ERROR("oz::Thread: Join failed");
   }
   CloseHandle(descriptor->thread);

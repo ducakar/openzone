@@ -449,9 +449,9 @@ public:
   /**
    * Index of the first 1 bit (counting from the least significant bit) or -1 if `v` is 0.
    */
-  template <typename Value = int>
+  template <typename Integer>
   OZ_ALWAYS_INLINE
-  static constexpr int index1(Value v)
+  static constexpr int index1(Integer v)
   {
     return sizeof(ulong64) * 8 - 1 - __builtin_clzll(v);
   }
@@ -459,9 +459,9 @@ public:
   /**
    * True iff a given positive integer is a power of 2.
    */
-  template <typename Value = int>
+  template <typename Integer>
   OZ_ALWAYS_INLINE
-  static constexpr bool isPow2(Value v)
+  static constexpr bool isPow2(Integer v)
   {
     return 0 < v && (v & (v - 1)) == 0;
   }

@@ -50,6 +50,10 @@ void Lua::readValue(lua_State* l, InputStream* is)
       lua_pushboolean(l, true);
       break;
     }
+    case 'i': {
+      lua_pushinteger(l, is->readLong64());
+      break;
+    }
     case 'n': {
       lua_pushnumber(l, is->readDouble());
       break;
@@ -135,6 +139,14 @@ void Lua::writeValue(lua_State* l, OutputStream* os)
       break;
     }
     case LUA_TNUMBER: {
+#if LUA_VERSION_NUM >= 503
+      if (lua_isinteger(l, -1)) {
+        os->writeChar('i');
+        os->writeLong64(lua_tointeger(l, -1));
+        break;
+      }
+#endif
+
       os->writeChar('n');
       os->writeDouble(lua_tonumber(l, -1));
       break;

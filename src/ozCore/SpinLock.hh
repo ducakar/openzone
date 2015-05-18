@@ -40,7 +40,7 @@ namespace oz
  */
 class SpinLock
 {
-public:
+private:
 
   volatile bool isLocked = false; ///< True iff locked.
 

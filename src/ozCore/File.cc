@@ -583,13 +583,13 @@ bool File::map() const
     HANDLE file = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file == nullptr) {
-      return nullptr;
+      return false;
     }
 
     HANDLE mapping = CreateFileMapping(file, nullptr, PAGE_READONLY, 0, 0, nullptr);
     if (mapping == nullptr) {
       CloseHandle(file);
-      return nullptr;
+      return false;
     }
 
     data = static_cast<char*>(MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));

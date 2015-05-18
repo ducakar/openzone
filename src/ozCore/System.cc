@@ -124,6 +124,7 @@ static const float BELL_FREQUENCY = 1000.0f;
 #ifndef __native_client__
 static const int   BELL_RATE      = 48000;
 #endif
+static const int   BELL_SAMPLES   = int(BELL_TIME * float(BELL_RATE));
 
 #if defined(__native_client__)
 
@@ -138,8 +139,6 @@ struct SampleInfo
 };
 
 #elif defined(_WIN32)
-
-static const int BELL_WAVE_SAMPLES = int(BELL_TIME * float(BELL_RATE));
 
 struct Wave
 {
@@ -158,7 +157,7 @@ struct Wave
 
   char  subchunk2Id[4];
   int   subchunk2Size;
-  short samples[BELL_WAVE_SAMPLES * 2];
+  short samples[BELL_SAMPLES * 2];
 };
 
 #endif
@@ -261,6 +260,7 @@ static void* bellMain(void*)
   SLDataLocator_OutputMix   outputMixLocator   = { SL_DATALOCATOR_OUTPUTMIX, outputMix };
   SLDataSource              audioSource        = { &bufferQueueLocator, &pcmFormat };
   SLDataSink                audioSink          = { &outputMixLocator, nullptr };
+
   (*iEngine)->CreateAudioPlayer(iEngine, &player, &audioSource, &audioSink, 0, nullptr, nullptr);
   (*player)->Realize(player, false);
 
@@ -270,11 +270,10 @@ static void* bellMain(void*)
   SLBufferQueueItf iBufferQueue;
   (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &iBufferQueue);
 
-  int    nSamples = int(BELL_TIME * float(BELL_RATE));
-  int    size     = nSamples * 2 * sizeof(short);
+  int    size     = BELL_SAMPLES * 2 * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
-  genBellSamples(samples, nSamples, BELL_RATE, 0, nSamples);
+  genBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   (*iBufferQueue)->Enqueue(iBufferQueue, samples, size);
   (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_PLAYING);
 
@@ -325,7 +324,7 @@ static void* bellMain(void*)
   SampleInfo info;
   info.rate          = rate;
   info.nFrameSamples = nFrameSamples;
-  info.nSamples      = Math::lround(BELL_TIME * float(rate));
+  info.nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
   info.end           = info.nSamples + 2 * info.nFrameSamples;
   info.offset        = 0;
   info.lock.lock();
@@ -382,7 +381,7 @@ static DWORD WINAPI bellMain(void*)
   wave->subchunk2Id[3] = 'a';
   wave->subchunk2Size  = sizeof(wave->samples);
 
-  genBellSamples(wave->samples, BELL_WAVE_SAMPLES, BELL_RATE, 0, BELL_WAVE_SAMPLES);
+  genBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
   bellLock.unlock();
@@ -419,7 +418,7 @@ static void* bellMain(void*)
     return nullptr;
   }
 
-  int    nSamples = int(BELL_TIME * float(rate));
+  int    nSamples = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
   int    size     = nSamples * 2 * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
