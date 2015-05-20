@@ -66,7 +66,7 @@ private:
 
 public:
 
-  static Pool<Vehicle, 256> pool;
+  static Pool<Vehicle> pool;
 
   float h, v, w;
   float rotVelH, rotVelV;

@@ -26,7 +26,7 @@
 namespace oz
 {
 
-Pool<Memo, 1024> Memo::pool;
+Pool<Memo> Memo::pool(1024);
 
 Device* Memo::create(int, InputStream* is)
 {

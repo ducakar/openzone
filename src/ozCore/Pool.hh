@@ -94,8 +94,8 @@ private:
 
   Block* firstBlock = nullptr; ///< Linked list of the allocated blocks.
   Slot*  freeSlot   = nullptr; ///< Linked list of free slots or `nullptr` if none.
-  int    slotSize   = 0;       ///< Size of an object.
-  int    nSlots     = 0;       ///< Number of objects in a memory block.
+  int    objectSize = 0;       ///< Size of an object.
+  int    nSlots     = 0;       ///< Number of object slots per memory block.
   int    count      = 0;       ///< Number of occupied slots in the pool.
   int    size       = 0;       ///< Capacity.
 
@@ -104,7 +104,7 @@ public:
   /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
-  explicit PoolAlloc(int slotSize, int nSlots = 256);
+  explicit PoolAlloc(int slotSize, int blockSlots = 256);
 
   /**
    * Destructor.
@@ -149,6 +149,24 @@ public:
   }
 
   /**
+   * Number of object slots per memory block.
+   */
+  OZ_ALWAYS_INLINE
+  int slotSize() const
+  {
+    return objectSize;
+  }
+
+  /**
+   * Number of object slots per memory block.
+   */
+  OZ_ALWAYS_INLINE
+  int blockSlots() const
+  {
+    return nSlots;
+  }
+
+  /**
    * Allocate a new object.
    */
   void* allocate();
@@ -174,18 +192,23 @@ public:
  *
  * @sa `oz::PoolAlloc`
  */
-template <class Elem, int BLOCK_SLOTS = 256>
+template <class Elem>
 class Pool : public PoolAlloc
 {
-  static_assert(BLOCK_SLOTS > 0, "oz::Pool block must have at least 1 slot");
-
 public:
 
   /**
    * Create an empty pool.
    */
   Pool() :
-    PoolAlloc(sizeof(Elem), BLOCK_SLOTS)
+    PoolAlloc(sizeof(Elem), 256)
+  {}
+
+  /**
+   * Create an empty pool with a given block size.
+   */
+  explicit Pool(int nBlockSlots) :
+    PoolAlloc(sizeof(Elem), nBlockSlots)
   {}
 
 };

@@ -161,7 +161,7 @@ public:
 
 public:
 
-  static Pool<Bot, 1024> pool;
+  static Pool<Bot> pool;
 
   float  h, v;
   int    actions, oldActions;

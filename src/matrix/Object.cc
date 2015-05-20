@@ -44,8 +44,8 @@ const float Object::DAMAGE_BASE_INTENSITY  = 0.30f;
 const float Object::DAMAGE_INTENSITY_COEF  = 0.01f;
 const Vec3  Object::DESTRUCT_FRAG_VELOCITY = Vec3(0.0f, 0.0f, 2.0f);
 
-Pool<Object::Event, 256> Object::Event::pool;
-Pool<Object, 16384>      Object::pool;
+Pool<Object::Event> Object::Event::pool(256);
+Pool<Object>        Object::pool(16384);
 
 void Object::onDestroy()
 {

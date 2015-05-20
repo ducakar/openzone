@@ -38,7 +38,7 @@ private:
 
 public:
 
-  static Pool<Frag, 2048> mpool;
+  static Pool<Frag> mpool;
 
   /*
    *  FIELDS

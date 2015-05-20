@@ -42,7 +42,7 @@ protected:
 
 public:
 
-  static Pool<BasicAudio, 2048> pool;
+  static Pool<BasicAudio> pool;
 
   static Audio* create(const Object* obj);
 

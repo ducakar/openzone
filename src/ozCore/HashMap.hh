@@ -136,6 +136,13 @@ public:
   HashMap() = default;
 
   /**
+   * Create an empty hashtable with a given number of pre-allocated buckets.
+   */
+  explicit HashMap(int capacity) :
+    HashSet<Pair, HashFunc>(capacity)
+  {}
+
+  /**
    * Initialise from an initialiser list.
    */
   HashMap(InitialiserList<Pair> l)

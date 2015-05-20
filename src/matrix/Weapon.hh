@@ -36,7 +36,7 @@ public:
   static const int EVENT_SHOT_EMPTY = 9;
   static const int EVENT_SHOT       = 10;
 
-  static Pool<Weapon, 2048> pool;
+  static Pool<Weapon> pool;
 
   // -1: unlimited
   int   nRounds;

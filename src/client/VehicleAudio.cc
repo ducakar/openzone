@@ -31,7 +31,7 @@ namespace oz
 namespace client
 {
 
-Pool<VehicleAudio, 256> VehicleAudio::pool;
+Pool<VehicleAudio> VehicleAudio::pool(256);
 
 Audio* VehicleAudio::create(const Object* obj)
 {

@@ -37,7 +37,7 @@ const float Vehicle::EXIT_MOMENTUM      = 1.00f;
 const float Vehicle::EJECT_EPSILON      = 0.80f;
 const float Vehicle::EJECT_MOMENTUM     = 15.0f;
 
-Pool<Vehicle, 256> Vehicle::pool;
+Pool<Vehicle> Vehicle::pool(256);
 
 const Vehicle::Handler Vehicle::HANDLERS[] = {
   &Vehicle::staticHandler,

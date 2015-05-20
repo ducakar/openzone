@@ -74,8 +74,8 @@ struct PoolAlloc::Block
   }
 };
 
-PoolAlloc::PoolAlloc(int slotSize_, int nSlots_) :
-  slotSize(slotSize_), nSlots(nSlots_)
+PoolAlloc::PoolAlloc(int slotSize, int blockSlots) :
+  objectSize(slotSize), nSlots(blockSlots)
 {}
 
 PoolAlloc::~PoolAlloc()
@@ -84,12 +84,12 @@ PoolAlloc::~PoolAlloc()
 }
 
 PoolAlloc::PoolAlloc(PoolAlloc&& p) :
-  firstBlock(p.firstBlock), freeSlot(p.freeSlot), slotSize(p.slotSize), nSlots(p.nSlots),
+  firstBlock(p.firstBlock), freeSlot(p.freeSlot), objectSize(p.objectSize), nSlots(p.nSlots),
   count(p.count), size(p.size)
 {
   p.firstBlock = nullptr;
   p.freeSlot   = nullptr;
-  p.slotSize   = 0;
+  p.objectSize = 0;
   p.nSlots     = 0;
   p.count      = 0;
   p.size       = 0;
@@ -107,14 +107,14 @@ PoolAlloc& PoolAlloc::operator = (PoolAlloc&& p)
 
   firstBlock   = p.firstBlock;
   freeSlot     = p.freeSlot;
-  slotSize     = p.slotSize;
+  objectSize   = p.objectSize;
   nSlots       = p.nSlots;
   count        = p.count;
   size         = p.size;
 
   p.firstBlock = nullptr;
   p.freeSlot   = nullptr;
-  p.slotSize   = 0;
+  p.objectSize = 0;
   p.nSlots     = 0;
   p.count      = 0;
   p.size       = 0;
@@ -127,11 +127,11 @@ void* PoolAlloc::allocate()
   ++count;
 
   if (freeSlot == nullptr) {
-    firstBlock = Block::create(slotSize, nSlots, firstBlock);
-    freeSlot   = firstBlock->slot(1, slotSize);
-    size      += slotSize;
+    firstBlock = Block::create(objectSize, nSlots, firstBlock);
+    freeSlot   = firstBlock->slot(1, objectSize);
+    size      += objectSize;
 
-    return firstBlock->slot(0, slotSize)->storage;
+    return firstBlock->slot(0, objectSize)->storage;
   }
   else {
     Slot* slot = freeSlot;
@@ -152,7 +152,7 @@ void PoolAlloc::deallocate(void* ptr)
   Slot* slot = static_cast<Slot*>(ptr);
 
 #ifndef NDEBUG
-  memset(slot, 0xee, slotSize);
+  memset(slot, 0xee, objectSize);
 #endif
 
   slot->nextSlot = freeSlot;

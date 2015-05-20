@@ -36,7 +36,7 @@ private:
 
 public:
 
-  static Pool<Memo, 1024> pool;
+  static Pool<Memo> pool;
 
   static Device* create(int id, InputStream* is);
 

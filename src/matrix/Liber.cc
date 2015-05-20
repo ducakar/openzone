@@ -281,6 +281,7 @@ void Liber::initShaders()
     shaders.add({ name, "" });
   }
 
+  shaderIndices.trim();
   shaders.trim();
 
   Log::unindent();
@@ -315,6 +316,7 @@ void Liber::initTextures()
     }
   }
 
+  textureIndices.trim();
   textures.trim();
 
   Log::unindent();
@@ -347,6 +349,7 @@ void Liber::initSounds()
     }
   }
 
+  soundIndices.trim();
   sounds.trim();
 
   Log::unindent();
@@ -373,6 +376,7 @@ void Liber::initCaela()
     caela.add({ name, file.path() });
   }
 
+  caelumIndices.trim();
   caela.trim();
 
   Log::unindent();
@@ -399,6 +403,7 @@ void Liber::initTerrae()
     terrae.add({ name, file.path() });
   }
 
+  terraIndices.trim();
   terrae.trim();
 
   Log::unindent();
@@ -425,6 +430,7 @@ void Liber::initParticles()
     parts.add({ name, file.path() });
   }
 
+  partIndices.trim();
   parts.trim();
 
   Log::unindent();
@@ -460,6 +466,7 @@ void Liber::initModels()
     models.add({ name, path });
   }
 
+  modelIndices.trim();
   models.trim();
 
   Log::unindent();
@@ -494,6 +501,7 @@ void Liber::initFragPools()
     Log::showVerbose = false;
   }
 
+  fragPools.trim();
   nFragPools = fragPools.length();
 
   Log::unindent();
@@ -507,6 +515,8 @@ void Liber::initClasses()
   OZ_REGISTER_BASECLASS(Weapon);
   OZ_REGISTER_BASECLASS(Bot);
   OZ_REGISTER_BASECLASS(Vehicle);
+
+  baseClasses.trim();
 
   Log::println("Object classes (*.json in 'class') {");
   Log::indent();
@@ -557,6 +567,11 @@ void Liber::initClasses()
 
     objClasses.add(name, (*createFunc)());
   }
+
+  objClasses.trim();
+  deviceIndices.trim();
+  imagoIndices.trim();
+  audioIndices.trim();
 
   nDeviceClasses = deviceIndices.length();
   nImagoClasses  = imagoIndices.length();
@@ -650,6 +665,7 @@ void Liber::initBSPs()
     bsps.add(name, BSP(name, bsps.length()));
   }
 
+  bsps.trim();
   nBSPs = bsps.length();
 
   Log::unindent();
@@ -694,6 +710,7 @@ void Liber::initMusic(const char* userMusicPath)
 
   initMusicRecurse("@userMusic");
 
+  musicTrackIndices.trim();
   musicTracks.trim();
 
   Log::unindent();

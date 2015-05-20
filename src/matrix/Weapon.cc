@@ -30,7 +30,7 @@
 namespace oz
 {
 
-Pool<Weapon, 2048> Weapon::pool;
+Pool<Weapon> Weapon::pool(2048);
 
 bool Weapon::onUse(Bot* user)
 {

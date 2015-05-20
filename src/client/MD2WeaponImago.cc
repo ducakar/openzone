@@ -31,7 +31,7 @@ namespace oz
 namespace client
 {
 
-Pool<MD2WeaponImago, 256> MD2WeaponImago::pool;
+Pool<MD2WeaponImago> MD2WeaponImago::pool(256);
 
 MD2WeaponImago::~MD2WeaponImago()
 {

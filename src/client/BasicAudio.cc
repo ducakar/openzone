@@ -30,7 +30,7 @@ namespace oz
 namespace client
 {
 
-Pool<BasicAudio, 2048> BasicAudio::pool;
+Pool<BasicAudio> BasicAudio::pool(2048);
 
 BasicAudio::BasicAudio(const Object* obj) :
   Audio(obj), recent{}

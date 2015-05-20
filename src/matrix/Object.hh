@@ -198,7 +198,7 @@ public:
   {
   public:
 
-    static Pool<Event, 256> pool;
+    static Pool<Event> pool;
 
     Event* next[1]   = { nullptr };
     int    id;
@@ -216,7 +216,7 @@ public:
 
 public:
 
-  static Pool<Object, 16384> pool;
+  static Pool<Object> pool;
 
   /*
    * FIELDS

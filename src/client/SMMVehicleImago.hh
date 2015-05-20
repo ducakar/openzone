@@ -45,7 +45,7 @@ private:
 
 public:
 
-  static Pool<SMMVehicleImago, 64> pool;
+  static Pool<SMMVehicleImago> pool;
 
   static Imago* create(const Object* obj);
 

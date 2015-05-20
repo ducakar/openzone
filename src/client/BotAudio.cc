@@ -33,7 +33,7 @@ namespace client
 
 const float BotAudio::FOOTSTEP_DISTANCE_SQ = 32.0f*32.0f;
 
-Pool<BotAudio, 256> BotAudio::pool;
+Pool<BotAudio> BotAudio::pool(256);
 
 BotAudio::BotAudio(const Object* obj) :
   BasicAudio(obj), prevStep(0)

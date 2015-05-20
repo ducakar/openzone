@@ -60,7 +60,7 @@ const float Bot::GRAB_MOM_MAX_SQ      =  1.00f;
 const float Bot::STEP_MOVE_AHEAD      =  0.20f;
 const float Bot::CLIMB_MOVE_AHEAD     =  0.40f;
 
-Pool<Bot, 1024> Bot::pool;
+Pool<Bot> Bot::pool(1024);
 
 bool Bot::hasAttribute(int attribute) const
 {

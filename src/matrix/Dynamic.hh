@@ -33,7 +33,7 @@ class Dynamic : public Object
 {
 public:
 
-  static Pool<Dynamic, 4096> pool; ///< Memory pool.
+  static Pool<Dynamic> pool; ///< Memory pool.
 
   Vec3  velocity;
   Vec3  momentum; ///< Desired velocity

@@ -63,7 +63,7 @@ private:
 
 public:
 
-  static Pool<MD2Imago, 256> pool;
+  static Pool<MD2Imago> pool;
 
   static Imago* create(const Object* obj);
 

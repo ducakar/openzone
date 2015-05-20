@@ -38,7 +38,7 @@ protected:
 
 public:
 
-  static Pool<VehicleAudio, 256> pool;
+  static Pool<VehicleAudio> pool;
 
   static Audio* create(const Object* obj);
 

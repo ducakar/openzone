@@ -28,7 +28,7 @@ namespace oz
 
 const float Frag::DAMAGE_THRESHOLD = 50.0f;
 
-Pool<Frag, 2048> Frag::mpool;
+Pool<Frag> Frag::mpool(2048);
 
 Frag::Frag(const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_)
 {

@@ -47,7 +47,7 @@ public:
   static const uint TICK_MILLIS = (1000 + TICKS_PER_SEC / 2) / TICKS_PER_SEC;
 
   /// Length of one tick in seconds.
-  static constexpr float TICK_TIME = 1.0f / 60.0f;
+  static constexpr float TICK_TIME = 1.0f / float(TICKS_PER_SEC);
 
   ulong64 runMicros   = 0;    ///< Run time (game time plus dropped time).
 

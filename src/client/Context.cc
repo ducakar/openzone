@@ -668,6 +668,9 @@ void Context::load()
   maxVehicleAudios      = 0;
 
   maxFragPools          = 0;
+
+  imagines = HashMap<int, Imago*>(4096);
+  audios   = HashMap<int, Audio*>(1024);
 }
 
 void Context::unload()

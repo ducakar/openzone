@@ -30,7 +30,7 @@
 namespace oz
 {
 
-Pool<Dynamic, 4096> Dynamic::pool;
+Pool<Dynamic> Dynamic::pool(4096);
 
 void Dynamic::onDestroy()
 {

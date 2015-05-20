@@ -48,7 +48,7 @@ private:
 
 public:
 
-  static Pool<ExplosionImago, 64> pool;
+  static Pool<ExplosionImago> pool;
 
   static Imago* create(const Object* obj);
 

@@ -44,7 +44,7 @@ protected:
 
 public:
 
-  static Pool<BotAudio, 256> pool;
+  static Pool<BotAudio> pool;
 
   static Audio* create(const Object* obj);
 

@@ -47,7 +47,7 @@ uint Time::clock()
   QueryPerformanceFrequency(&frequency);
   QueryPerformanceCounter(&ticks);
 
-  // WARNING This is not continuous.
+  // This is not continuous when performance counter wraps around.
   return uint((ticks.QuadPart * 1000) / frequency.QuadPart);
 
 #else
@@ -55,7 +55,8 @@ uint Time::clock()
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
 
-  // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
+  // This is continuous if tv_sec wraps around at its maximum value since (time_t range) * 1000 is
+  // a multiple of uint range.
   return uint(now.tv_sec * 1000 + now.tv_nsec / 1000000);
 
 #endif
@@ -71,7 +72,7 @@ uint Time::uclock()
   QueryPerformanceFrequency(&frequency);
   QueryPerformanceCounter(&ticks);
 
-  // WARNING This is not continuous.
+  // This is not continuous when performance counter wraps around.
   return uint((ticks.QuadPart * 1000000) / frequency.QuadPart);
 
 #else
@@ -79,7 +80,8 @@ uint Time::uclock()
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
 
-  // This wraps around together with uint since (time_t range) * 10^6 is a multiple of uint range.
+  // This is continuous if tv_sec wraps around at its maximum value since (time_t range) * 1000000
+  // is a multiple of uint range.
   return uint(now.tv_sec * 1000000 + now.tv_nsec / 1000);
 
 #endif

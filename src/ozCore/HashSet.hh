@@ -37,7 +37,8 @@ namespace oz
 /**
  * Chaining hashtable implementation, containing only keys without values.
  *
- * Memory is allocated when the first element is added.
+ * Memory is allocated when the first element is added. The number of buckets is doubled when the
+ * number of elements surpasses it.
  *
  * @sa `oz::HashMap`, `oz::Set`
  */
@@ -74,7 +75,7 @@ protected:
     using detail::IteratorBase<EntryType>::elem;
 
     const HashSet* table = nullptr; ///< Hashtable that is being iterated.
-    int            index = 0;       ///< Index of the current bucket.
+    int            index = 0;       ///< Index of the next bucket.
 
   public:
 
@@ -87,11 +88,11 @@ protected:
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
     explicit HashIterator(const HashSet& ht) :
-      detail::IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht)
+      detail::IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht), index(1)
     {
-      while (elem == nullptr && index < table->size - 1) {
-        ++index;
+      while (elem == nullptr && index < table->size) {
         elem = table->data[index];
+        ++index;
       }
     }
 
@@ -132,15 +133,15 @@ protected:
       if (elem->next != nullptr) {
         elem = elem->next;
       }
-      else if (index == table->size - 1) {
+      else if (index == table->size) {
         elem = nullptr;
       }
       else {
         do {
-          ++index;
           elem = table->data[index];
+          ++index;
         }
-        while (elem == nullptr && index < table->size - 1);
+        while (elem == nullptr && index < table->size);
       }
       return *this;
     }
@@ -179,9 +180,9 @@ public:
 
 protected:
 
-  Pool<Entry, GRANULARITY> pool; ///< Memory pool for entries.
-  Entry**                  data; ///< Array of buckets, each containing a linked list of entries.
-  int                      size; ///< Number of buckets.
+  Pool<Entry> pool = Pool<Entry>(GRANULARITY); ///< Memory pool for entries.
+  Entry**     data = nullptr;                  ///< Array of buckets -- linked lists of entries.
+  int         size = 0;                        ///< Number of buckets.
 
 protected:
 
@@ -291,7 +292,7 @@ nextElem:
   void ensureCapacity(int capacity)
   {
     if (capacity < 0) {
-      OZ_ERROR("oz::HashMap: Capacity overflow");
+      OZ_ERROR("oz::HashSet: Capacity overflow");
     }
     else if (size < capacity) {
       int newSize = size * 2;
@@ -299,7 +300,7 @@ nextElem:
         newSize = (capacity + GRANULARITY - 1) & ~(GRANULARITY - 1);
       }
       if (newSize <= 0) {
-        OZ_ERROR("oz::HashMap: Capacity overflow");
+        OZ_ERROR("oz::HashSet: Capacity overflow");
       }
 
       resize(newSize);
@@ -338,15 +339,20 @@ public:
   /**
    * Create an empty hashtable.
    */
-  HashSet() :
-    data(nullptr), size(0)
-  {}
+  HashSet() = default;
+
+  /**
+   * Create an empty hashtable with a given number of pre-allocated buckets.
+   */
+  explicit HashSet(int capacity)
+  {
+    resize(capacity);
+  }
 
   /**
    * Initialise from an initialiser list.
    */
-  HashSet(InitialiserList<Elem> l) :
-    data(nullptr), size(0)
+  HashSet(InitialiserList<Elem> l)
   {
     for (const Elem& e : l) {
       add(e);
@@ -377,7 +383,7 @@ public:
    * Move constructor, moves storage.
    */
   HashSet(HashSet&& ht) :
-    pool(static_cast<Pool<Entry, GRANULARITY>&&>(ht.pool)), data(ht.data), size(ht.size)
+    pool(static_cast<Pool<Entry>&&>(ht.pool)), data(ht.data), size(ht.size)
   {
     ht.data = nullptr;
     ht.size = 0;
@@ -414,7 +420,7 @@ public:
       clear();
       delete[] data;
 
-      pool = static_cast<Pool<Entry, GRANULARITY>&&>(ht.pool);
+      pool = static_cast<Pool<Entry>&&>(ht.pool);
       data = ht.data;
       size = ht.size;
 
