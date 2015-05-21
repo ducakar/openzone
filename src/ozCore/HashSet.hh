@@ -521,7 +521,7 @@ public:
   /**
    * True iff an element matching a given key is found in the hashtable.
    */
-  template <typename Key = Elem>
+  template <typename Key>
   bool contains(const Key& key) const
   {
     if (size == 0) {
@@ -545,7 +545,7 @@ public:
   /**
    * Add a new element, if the element already exists in the hashtable overwrite the existing one.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   void add(Elem_&& elem)
   {
     insert(static_cast<Elem_&&>(elem), true);
@@ -554,7 +554,7 @@ public:
   /**
    * Add a new element if it does not exist in the hashtable.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   void include(Elem_&& elem)
   {
     insert(static_cast<Elem_&&>(elem), false);
@@ -565,7 +565,7 @@ public:
    *
    * @return True iff the element was found (and removed).
    */
-  template <typename Key = Elem>
+  template <typename Key>
   bool exclude(const Key& key)
   {
     if (size == 0) {

@@ -50,7 +50,7 @@ protected:
   const char*   streamEnd   = nullptr;        ///< End.
   Endian::Order order       = Endian::NATIVE; ///< Stream byte order.
 
-protected:
+private:
 
   /**
    * Read consecutive floats. Helper function for readVec3(), readVec4() etc.

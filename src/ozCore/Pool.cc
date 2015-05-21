@@ -44,7 +44,7 @@ struct PoolAlloc::Block
   Block*             nextBlock;
   alignas(Slot) char data[1];
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   static Block* create(int slotSize, int nSlots, Block* nextBlock)
   {
     char*  chunk = new char[OZ_ALIGNMENT + nSlots * slotSize];
@@ -60,13 +60,13 @@ struct PoolAlloc::Block
     return block;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   void destroy()
   {
     delete[] reinterpret_cast<char*>(this);
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   OZ_ALWAYS_INLINE
   Slot* slot(int i, int slotSize)
   {

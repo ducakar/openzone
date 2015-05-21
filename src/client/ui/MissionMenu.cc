@@ -215,7 +215,7 @@ MissionMenu::MissionMenu() :
       GL::textureDataFromFile(missionDir.path() + "/description.dds");
     };
 
-    missions.add({ missionName, missionTitle, missionDescription, missionImageId });
+    missions.add(MissionInfo{ missionName, missionTitle, missionDescription, missionImageId });
 
     lingua.clear();
   }

@@ -113,6 +113,8 @@ public:
   using HashSet<Pair, HashFunc>::isEmpty;
   using HashSet<Pair, HashFunc>::capacity;
   using HashSet<Pair, HashFunc>::poolCapacity;
+  using HashSet<Pair, HashFunc>::contains;
+  using HashSet<Pair, HashFunc>::exclude;
   using HashSet<Pair, HashFunc>::trim;
   using HashSet<Pair, HashFunc>::clear;
 
@@ -199,18 +201,9 @@ public:
   }
 
   /**
-   * True iff an element matching a given key is found in the hashtable.
-   */
-  template <typename Key_ = Key>
-  bool contains(const Key_& key) const
-  {
-    return HashSet<Pair, HashFunc>::template contains<Key_>(key);
-  }
-
-  /**
    * Constant pointer to the value for a given key or `nullptr` if not found.
    */
-  template <typename Key_ = Key>
+  template <typename Key_>
   const Value* find(const Key_& key) const
   {
     if (size == 0) {
@@ -233,7 +226,7 @@ public:
   /**
    * Pointer to the value for a given key or `nullptr` if not found.
    */
-  template <typename Key_ = Key>
+  template <typename Key_>
   Value* find(const Key_& key)
   {
     return const_cast<Value*>(static_cast<const HashMap*>(this)->find<Key_>(key));
@@ -244,8 +237,8 @@ public:
    *
    * @return Reference to the value of the inserted element.
    */
-  template <typename Key_ = Key, typename Value_ = Value>
-  Value& add(Key_&& key, Value_&& value = Value_())
+  template <typename Key_, typename Value_>
+  Value& add(Key_&& key, Value_&& value)
   {
     return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
@@ -255,21 +248,10 @@ public:
    *
    * @return Reference to the value of the inserted or the existing element with the same key.
    */
-  template <typename Key_ = Key, typename Value_ = Value>
-  Value& include(Key_&& key, Value_&& value = Value_())
+  template <typename Key_, typename Value_>
+  Value& include(Key_&& key, Value_&& value)
   {
     return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
-  }
-
-  /**
-   * Remove the element that matches a given key.
-   *
-   * @return True iff the element was found (and removed).
-   */
-  template <typename Key_ = Key>
-  bool exclude(const Key_& key)
-  {
-    return HashSet<Pair, HashFunc>::template exclude<Key_>(key);
   }
 
   /**

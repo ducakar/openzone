@@ -232,7 +232,7 @@ const String& File::MUSIC     = specialDirs[6];
 const String& File::PICTURES  = specialDirs[7];
 const String& File::VIDEOS    = specialDirs[8];
 
-OZ_HIDDEN
+OZ_INTERNAL
 File::File(const String& path, File::Type type, int size, long64 time) :
   filePath(path), fileType(type), fileSize(size), fileTime(time)
 {}

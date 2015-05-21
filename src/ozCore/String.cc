@@ -41,7 +41,7 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 
 const String String::EMPTY;
 
-OZ_HIDDEN
+OZ_INTERNAL
 String::String(const char* s, int sLength, const char* t, int tLength)
 {
   char* begin = resize(sLength + tLength, false);
@@ -50,7 +50,7 @@ String::String(const char* s, int sLength, const char* t, int tLength)
   memcpy(begin + sLength, t, tLength + 1);
 }
 
-OZ_HIDDEN
+OZ_INTERNAL
 char* String::resize(int newCount, bool keepContents)
 {
   hard_assert(count >= 0 && newCount >= 0);

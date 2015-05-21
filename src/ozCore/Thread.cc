@@ -72,7 +72,7 @@ struct Thread::Descriptor
 #endif
 };
 
-OZ_HIDDEN
+OZ_INTERNAL
 #ifdef _WIN32
 DWORD WINAPI Thread::Descriptor::threadMain(void* descriptor_)
 #else

@@ -278,7 +278,7 @@ void Liber::initShaders()
     Log::println("%s", name.c());
 
     shaderIndices.add(name, shaders.length());
-    shaders.add({ name, "" });
+    shaders.add(Resource{ name, "" });
   }
 
   shaderIndices.trim();
@@ -312,7 +312,7 @@ void Liber::initTextures()
       Log::println("%s", name.c());
 
       textureIndices.add(name, textures.length());
-      textures.add({ name, "@tex/" + name });
+      textures.add(Resource{ name, "@tex/" + name });
     }
   }
 
@@ -345,7 +345,7 @@ void Liber::initSounds()
       Log::println("%s", name.c());
 
       soundIndices.add(name, sounds.length());
-      sounds.add({ name, file.path() });
+      sounds.add(Resource{ name, file.path() });
     }
   }
 
@@ -373,7 +373,7 @@ void Liber::initCaela()
     Log::println("%s", name.c());
 
     caelumIndices.add(name, caela.length());
-    caela.add({ name, file.path() });
+    caela.add(Resource{ name, file.path() });
   }
 
   caelumIndices.trim();
@@ -400,7 +400,7 @@ void Liber::initTerrae()
     Log::println("%s", name.c());
 
     terraIndices.add(name, terrae.length());
-    terrae.add({ name, file.path() });
+    terrae.add(Resource{ name, file.path() });
   }
 
   terraIndices.trim();
@@ -427,7 +427,7 @@ void Liber::initParticles()
     Log::println("%s", name.c());
 
     partIndices.add(name, parts.length());
-    parts.add({ name, file.path() });
+    parts.add(Resource{ name, file.path() });
   }
 
   partIndices.trim();
@@ -463,7 +463,7 @@ void Liber::initModels()
     }
 
     modelIndices.add(name, models.length());
-    models.add({ name, path });
+    models.add(Resource{ name, path });
   }
 
   modelIndices.trim();
@@ -685,7 +685,7 @@ void Liber::initMusicRecurse(const char* path)
     {
       Log::println("%s", file.path().c());
 
-      musicTracks.add({ file.baseName(), file.path() });
+      musicTracks.add(Resource{ file.baseName(), file.path() });
     }
   }
 }

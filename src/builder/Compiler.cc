@@ -661,21 +661,21 @@ void Compiler::positionKey(const Point& pos, float time)
 {
   hard_assert(environment == CHANNEL);
 
-  channel.positionKeys.add({ pos, time });
+  channel.positionKeys.add(Animation::PositionKey{ pos, time });
 }
 
 void Compiler::rotationKey(const Quat& rot, float time)
 {
   hard_assert(environment == CHANNEL);
 
-  channel.rotationKeys.add({ rot, time });
+  channel.rotationKeys.add(Animation::RotationKey{ rot, time });
 }
 
 void Compiler::scalingKey(const Vec3& scale, float time)
 {
   hard_assert(environment == CHANNEL);
 
-  channel.scalingKeys.add({ scale, time });
+  channel.scalingKeys.add(Animation::ScalingKey{ scale, time });
 }
 
 void Compiler::writeModel(OutputStream* os, bool globalTextures)

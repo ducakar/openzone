@@ -59,13 +59,14 @@
 #define OZ_BYTE_ORDER __BYTE_ORDER__
 
 /**
- * @def OZ_HIDDEN
- * Compiler-specific attribute that prevents symbol exporting when building a shared library.
+ * @def OZ_INTERNAL
+ * Compiler-specific attribute for functions that should not be exported from a shared library and
+ * are only called from withing their compilation units.
  */
 #ifdef _WIN32
-# define OZ_HIDDEN
+# define OZ_INTERNAL
 #else
-# define OZ_HIDDEN __attribute__((visibility("hidden")))
+# define OZ_INTERNAL __attribute__((visibility("internal")))
 #endif
 
 /**
@@ -78,7 +79,7 @@
  * @def OZ_PRINTF_FORMAT
  * Compiler-specific attribute that specifies checking of printf-like arguments.
  */
-#ifdef __MINGW32__
+#ifdef _WIN32
 # define OZ_PRINTF_FORMAT(s, first) __attribute__((format(gnu_printf, s, first)))
 #else
 # define OZ_PRINTF_FORMAT(s, first) __attribute__((format(printf, s, first)))
@@ -94,11 +95,7 @@
  * @def OZ_WEAK
  * Compiler-specific attribute specifying a weak symbol.
  */
-#ifdef _WIN32
-# define OZ_WEAK
-#else
-# define OZ_WEAK __attribute__((weak))
-#endif
+#define OZ_WEAK __attribute__((weak))
 
 /**
  * @def soft_assert
@@ -414,7 +411,7 @@ struct Less
 /**
  * Generic hash function object for integers and pointers.
  */
-template <typename Number = int>
+template <typename Number>
 struct Hash
 {
   /**

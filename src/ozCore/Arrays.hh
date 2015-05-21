@@ -222,7 +222,7 @@ public:
   /**
    * Index of the first occurrence of the value or -1 if not found.
    */
-  template <typename Elem, typename Value = Elem>
+  template <typename Elem, typename Value>
   static int index(const Elem* array, int count, const Value& value)
   {
     for (int i = 0; i < count; ++i) {
@@ -236,7 +236,7 @@ public:
   /**
    * Index of the last occurrence of the value or -1 if not found.
    */
-  template <typename Elem, typename Value = Elem>
+  template <typename Elem, typename Value>
   static int lastIndex(const Elem* array, int count, const Value& value)
   {
     for (int i = count - 1; i >= 0; --i) {
@@ -250,7 +250,7 @@ public:
   /**
    * True iff a given value is found in an array.
    */
-  template <typename Elem, typename Value = Elem>
+  template <typename Elem, typename Value>
   static bool contains(const Elem* array, int count, const Value& value)
   {
     return index<Elem, Value>(array, count, value) >= 0;
@@ -303,7 +303,7 @@ public:
   /**
    * %Set array elements to a given value.
    */
-  template <typename Elem, typename Value = Elem>
+  template <typename Elem, typename Value>
   static void fill(Elem* array, int count, const Value& value)
   {
     for (int i = 0; i < count; ++i) {
@@ -359,7 +359,7 @@ public:
    * @param key the key we are looking for.
    * @return Index of the last element not greater than `key`, -1 otherwise.
    */
-  template <typename Elem, typename Key = Elem, class LessFunc = Less<void>>
+  template <typename Elem, typename Key, class LessFunc = Less<void>>
   static int bisection(const Elem* array, int count, const Key& key)
   {
     int a = -1;

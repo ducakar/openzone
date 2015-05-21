@@ -33,7 +33,7 @@
 namespace oz
 {
 
-OZ_HIDDEN
+OZ_INTERNAL
 void InputStream::readFloats(float* values, int count)
 {
   const char* data = skip(count * sizeof(float));

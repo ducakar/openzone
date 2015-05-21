@@ -33,7 +33,7 @@
 namespace oz
 {
 
-OZ_HIDDEN
+OZ_INTERNAL
 void OutputStream::writeFloats(const float* values, int count)
 {
   char* data = skip(count * sizeof(float));

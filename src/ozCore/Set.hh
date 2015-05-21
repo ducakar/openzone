@@ -182,7 +182,7 @@ public:
   /**
    * True iff an element that matches a given key is found in the set.
    */
-  template <typename Key = Elem>
+  template <typename Key>
   bool contains(const Key& key) const
   {
     return index<Key>(key) >= 0;
@@ -191,7 +191,7 @@ public:
   /**
    * Index of the element that matches a given key or -1 if not found.
    */
-  template <typename Key = Elem>
+  template <typename Key>
   int index(const Key& key) const
   {
     int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
@@ -203,7 +203,7 @@ public:
    *
    * @return Position of the inserted element.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   int add(Elem_&& elem)
   {
     return insert<Elem_>(static_cast<Elem_&&>(elem), true);
@@ -214,7 +214,7 @@ public:
    *
    * @return Position of the inserted or the existing element.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   int include(Elem_&& elem)
   {
     return insert<Elem_>(static_cast<Elem_&&>(elem), false);
@@ -225,7 +225,7 @@ public:
    *
    * @return Index of the removed element or -1 if not found.
    */
-  template <typename Key = Elem>
+  template <typename Key>
   int exclude(const Key& key)
   {
     int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);

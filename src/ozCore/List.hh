@@ -384,35 +384,35 @@ public:
   /**
    * True iff a given value is found in the list.
    */
-  template <typename Elem_ = Elem>
-  bool contains(const Elem_& elem) const
+  template <typename Key>
+  bool contains(const Key& key) const
   {
-    return Arrays::contains<Elem, Elem_>(data, count, elem);
+    return Arrays::contains<Elem, Key>(data, count, key);
   }
 
   /**
    * Index of the first occurrence of the value or -1 if not found.
    */
-  template <typename Elem_ = Elem>
-  int index(const Elem_& elem) const
+  template <typename Key>
+  int index(const Key& key) const
   {
-    return Arrays::index<Elem, Elem_>(data, count, elem);
+    return Arrays::index<Elem, Key>(data, count, key);
   }
 
   /**
    * Index of the last occurrence of the value or -1 if not found.
    */
-  template <typename Elem_ = Elem>
-  int lastIndex(const Elem_& elem) const
+  template <typename Key>
+  int lastIndex(const Key& key) const
   {
-    return Arrays::lastIndex<Elem, Elem_>(data, count, elem);
+    return Arrays::lastIndex<Elem, Key>(data, count, key);
   }
 
   /**
    * Add an element to the end.
    */
-  template <typename Elem_ = Elem>
-  void add(Elem_&& elem = Elem_())
+  template <typename Elem_>
+  void add(Elem_&& elem)
   {
     insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
@@ -448,7 +448,7 @@ public:
    *
    * @return Position of the inserted or the existing equal element.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   int include(Elem_&& elem)
   {
     int i = Arrays::index<Elem, Elem>(data, count, elem);
@@ -467,8 +467,8 @@ public:
    *
    * All later elements are shifted to make the gap.
    */
-  template <typename Elem_ = Elem>
-  void insert(int i, Elem_&& elem = Elem_())
+  template <typename Elem_>
+  void insert(int i, Elem_&& elem)
   {
     hard_assert(uint(i) <= uint(count));
 
@@ -526,10 +526,10 @@ public:
    *
    * @return Index of the removed element or -1 if not found.
    */
-  template <typename Elem_ = Elem>
-  int exclude(const Elem_& elem)
+  template <typename Key>
+  int exclude(const Key& key)
   {
-    int i = Arrays::index<Elem, Elem_>(data, count, elem);
+    int i = Arrays::index<Elem, Key>(data, count, key);
 
     if (i >= 0) {
       erase(i);
@@ -544,10 +544,10 @@ public:
    *
    * @return Index of the removed element or -1 if not found.
    */
-  template <typename Elem_ = Elem>
-  int excludeUnordered(const Elem_& elem)
+  template <typename Key>
+  int excludeUnordered(const Key& key)
   {
-    int i = Arrays::index<Elem, Elem_>(data, count, elem);
+    int i = Arrays::index<Elem, Key>(data, count, key);
 
     if (i >= 0) {
       eraseUnordered(i);
@@ -560,7 +560,7 @@ public:
    *
    * All elements are shifted to make a gap.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   void pushFirst(Elem_&& elem)
   {
     insert<Elem_>(0, static_cast<Elem_&&>(elem));
@@ -569,7 +569,7 @@ public:
   /**
    * Add an element to the end.
    */
-  template <typename Elem_ = Elem>
+  template <typename Elem_>
   void pushLast(Elem_&& elem)
   {
     insert<Elem_>(count, static_cast<Elem_&&>(elem));
@@ -644,6 +644,11 @@ public:
     }
     else {
       ensureCapacity(newCount);
+
+      // Ensure destruction of removed elements when downsizing.
+      for (int i = newCount; i < count; ++i) {
+        data[i] = Elem();
+      }
     }
     count = newCount;
   }

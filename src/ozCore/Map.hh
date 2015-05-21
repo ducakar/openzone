@@ -66,7 +66,7 @@ struct MapPair
   /**
    * Equality operator for key-pair comparison, required by `Set` class.
    */
-  template <typename Key_ = Key>
+  template <typename Key_>
   OZ_ALWAYS_INLINE
   friend constexpr bool operator == (const Key_& k, const MapPair& p)
   {
@@ -76,7 +76,7 @@ struct MapPair
   /**
    * Less-than operator for key-pair comparison, required for `aBisection()`.
    */
-  template <typename Key_ = Key>
+  template <typename Key_>
   OZ_ALWAYS_INLINE
   friend constexpr bool operator < (const Key_& k, const MapPair& p)
   {
@@ -171,7 +171,10 @@ public:
   using Set<Pair>::operator [];
   using Set<Pair>::first;
   using Set<Pair>::last;
+  using Set<Pair>::contains;
+  using Set<Pair>::index;
   using Set<Pair>::erase;
+  using Set<Pair>::exclude;
   using Set<Pair>::reserve;
   using Set<Pair>::trim;
   using Set<Pair>::clear;
@@ -237,27 +240,9 @@ public:
   }
 
   /**
-   * True iff an element that matches a given key is found in the map.
-   */
-  template <typename Key_ = Key>
-  bool contains(const Key_& key) const
-  {
-    return Set<Pair>::template contains<Key_>(key);
-  }
-
-  /**
-   * Index of the element that matches a given key or -1 if not found.
-   */
-  template <typename Key_ = Key>
-  int index(const Key_& key) const
-  {
-    return Set<Pair>::template index<Key_>(key);
-  }
-
-  /**
    * Constant pointer to the value for a given key or `nullptr` if not found.
    */
-  template <typename Key_ = Key>
+  template <typename Key_>
   const Value* find(const Key_& key) const
   {
     int i = Set<Pair>::template index<Key_>(key);
@@ -267,7 +252,7 @@ public:
   /**
    * Pointer to the value for a given key or `nullptr` if not found.
    */
-  template <typename Key_ = Key>
+  template <typename Key_>
   Value* find(const Key_& key)
   {
     return const_cast<Value*>(static_cast<const Map*>(this)->find<Key_>(key));
@@ -278,8 +263,8 @@ public:
    *
    * @return Position of the inserted element.
    */
-  template <typename Key_ = Key, typename Value_ = Value>
-  int add(Key_&& key, Value_&& value = Value_())
+  template <typename Key_, typename Value_>
+  int add(Key_&& key, Value_&& value)
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
@@ -289,21 +274,10 @@ public:
    *
    * @return Position of the inserted or the existing element.
    */
-  template <typename Key_ = Key, typename Value_ = Value>
-  int include(Key_&& key, Value_&& value = Value_())
+  template <typename Key_, typename Value_>
+  int include(Key_&& key, Value_&& value)
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
-  }
-
-  /**
-   * Find and remove the element with a given key.
-   *
-   * @return Index of the removed element or -1 if not found.
-   */
-  template <typename Key_ = Key>
-  int exclude(const Key_& key)
-  {
-    return Set<Pair>::template exclude<Key_>(key);
   }
 
   /**

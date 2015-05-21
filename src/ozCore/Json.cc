@@ -73,7 +73,7 @@ struct Json::Parser
   int          oldLine;
   int          oldColumn;
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   char readChar()
   {
     if (is->available() == 0) {
@@ -95,7 +95,7 @@ struct Json::Parser
     return ch;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   void backChar()
   {
     hard_assert(line != oldLine || column != oldColumn);
@@ -106,7 +106,7 @@ struct Json::Parser
     column = oldColumn;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   static void setAccessed(Json* value)
   {
     value->wasAccessed = true;
@@ -134,7 +134,7 @@ struct Json::Parser
     }
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   static Json parse(InputStream* is, const char* path)
   {
     Parser parser(is, path);
@@ -145,12 +145,12 @@ struct Json::Parser
     return root;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   explicit Parser(InputStream* is_, const char* path_) :
     is(is_), path(path_), line(1), column(0), oldLine(1), oldColumn(0)
   {}
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   char skipBlanks()
   {
     char ch1, ch2;
@@ -197,7 +197,7 @@ struct Json::Parser
     while (true);
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   String parseString()
   {
     List<char> chars;
@@ -255,7 +255,7 @@ struct Json::Parser
     return String(chars.begin(), chars.length() - 1);
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   Json parseValue()
   {
     char ch = skipBlanks();
@@ -323,7 +323,7 @@ struct Json::Parser
     }
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   Json parseArray()
   {
     Json arrayValue(new ArrayData(), ARRAY);
@@ -348,7 +348,7 @@ struct Json::Parser
     return arrayValue;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   Json parseObject()
   {
     Json objectValue(new ObjectData(), OBJECT);
@@ -385,7 +385,7 @@ struct Json::Parser
     return objectValue;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   void finish()
   {
     while (is->available() != 0) {
@@ -405,7 +405,7 @@ struct Json::Formatter
   int           lineEndLength;
   int           indentLevel;
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   int writeString(const String& string)
   {
     int length = string.length() + 2;
@@ -463,7 +463,7 @@ struct Json::Formatter
     return length;
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   void writeValue(const Json& value)
   {
     switch (value.valueType) {
@@ -502,7 +502,7 @@ struct Json::Formatter
     }
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   void writeArray(const Json& value)
   {
     const List<Json>& list = static_cast<const ArrayData*>(value.data)->list;
@@ -540,7 +540,7 @@ struct Json::Formatter
     os->writeChar(']');
   }
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   void writeObject(const Json& value)
   {
     const Map<String, Json>& map = static_cast<const ObjectData*>(value.data)->map;
@@ -603,12 +603,12 @@ struct Json::Formatter
 
 const Json::Format Json::DEFAULT_FORMAT = { 2, 32, "%.9g", "\n" };
 
-OZ_HIDDEN
+OZ_INTERNAL
 Json::Json(void* data_, Type valueType_) :
   data(data_), valueType(valueType_), wasAccessed(false)
 {}
 
-OZ_HIDDEN
+OZ_INTERNAL
 bool Json::getVector(float* vector, int count) const
 {
   if (valueType != ARRAY) {

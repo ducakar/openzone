@@ -246,7 +246,7 @@ uint Context::addContSource(int sound, int key)
   alSourcei(srcId, AL_BUFFER, sounds[sound].handle);
 
   ++sounds[sound].nUsers;
-  contSources.add(key, { srcId, sound, true });
+  contSources.add(key, ContSource{ srcId, sound, true });
   return srcId;
 }
 
