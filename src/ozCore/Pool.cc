@@ -129,7 +129,7 @@ void* PoolAlloc::allocate()
   if (freeSlot == nullptr) {
     firstBlock = Block::create(objectSize, nSlots, firstBlock);
     freeSlot   = firstBlock->slot(1, objectSize);
-    size      += objectSize;
+    size      += nSlots;
 
     return firstBlock->slot(0, objectSize)->storage;
   }

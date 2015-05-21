@@ -37,7 +37,8 @@ namespace oz
 /**
  * Chaining hashtable implementation.
  *
- * Memory is allocated when the first element is added.
+ * Memory is allocated when the first element is added. The number of buckets is doubled when the
+ * number of elements surpasses it.
  *
  * @sa `oz::HashSet`, `oz::Map`
  */
@@ -69,22 +70,6 @@ private:
   using HashSet<Pair, HashFunc>::data;
   using HashSet<Pair, HashFunc>::size;
   using HashSet<Pair, HashFunc>::ensureCapacity;
-
-  /**
-   * Delete all elements and referenced objects in a given chain.
-   */
-  void freeChain(Entry* entry)
-  {
-    while (entry != nullptr) {
-      Entry* next = entry->next;
-
-      delete entry->elem.value;
-      entry->~Entry();
-      pool.deallocate(entry);
-
-      entry = next;
-    }
-  }
 
   /**
    * Insert an element, optionally overwriting an existing one.
@@ -127,6 +112,7 @@ public:
   using HashSet<Pair, HashFunc>::length;
   using HashSet<Pair, HashFunc>::isEmpty;
   using HashSet<Pair, HashFunc>::capacity;
+  using HashSet<Pair, HashFunc>::poolCapacity;
   using HashSet<Pair, HashFunc>::trim;
   using HashSet<Pair, HashFunc>::clear;
 
@@ -190,7 +176,18 @@ public:
    */
   bool operator == (const HashMap& ht) const
   {
-    return HashSet<Pair, HashFunc>::operator == (ht);
+    if (pool.length() != ht.pool.length()) {
+      return false;
+    }
+
+    for (int i = 0; i < size; ++i) {
+      for (Entry* entry = data[i]; entry != nullptr; entry = entry->next) {
+        if (!ht.contains(entry->elem.key)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -198,7 +195,7 @@ public:
    */
   bool operator != (const HashMap& ht) const
   {
-    return HashSet<Pair, HashFunc>::operator != (ht);
+    return !operator == (ht);
   }
 
   /**
@@ -281,7 +278,18 @@ public:
   void free()
   {
     for (int i = 0; i < size; ++i) {
-      freeChain(data[i]);
+      Entry* entry = data[i];
+
+      while (entry != nullptr) {
+        Entry* next = entry->next;
+
+        delete entry->elem.value;
+        entry->~Entry();
+        pool.deallocate(entry);
+
+        entry = next;
+      }
+
       data[i] = nullptr;
     }
   }

@@ -187,33 +187,6 @@ protected:
 protected:
 
   /**
-   * True iff a bucket's chains have the same length and contain equal elements.
-   */
-  static bool areChainsEqual(const Entry* entryA, const Entry* entryB)
-  {
-    const Entry* firstB = entryB;
-
-    while (entryA != nullptr && entryB != nullptr) {
-      const Entry* i = firstB;
-      do {
-        if (i->elem == entryA->elem) {
-          goto nextElem;
-        }
-        i = i->next;
-      }
-      while (i != nullptr);
-
-      return false;
-
-nextElem:
-      entryA = entryA->next;
-      entryB = entryB->next;
-    }
-    // At least one is nullptr, so this is true iff both chains have the same length.
-    return entryA == entryB;
-  }
-
-  /**
    * Allocate and make a copy of a given bucket chain.
    */
   Entry* cloneChain(const Entry* entry)
@@ -234,21 +207,6 @@ nextElem:
       }
     }
     return clone;
-  }
-
-  /**
-   * Delete all elements in a given bucket chain.
-   */
-  void clearChain(Entry* entry)
-  {
-    while (entry != nullptr) {
-      Entry* next = entry->next;
-
-      entry->~Entry();
-      pool.deallocate(entry);
-
-      entry = next;
-    }
   }
 
   /**
@@ -453,8 +411,10 @@ public:
     }
 
     for (int i = 0; i < size; ++i) {
-      if (!areChainsEqual(data[i], ht.data[i])) {
-        return false;
+      for (Entry* entry = data[i]; entry != nullptr; entry = entry->next) {
+        if (!ht.contains(entry->elem)) {
+          return false;
+        }
       }
     }
     return true;
@@ -541,10 +501,19 @@ public:
   }
 
   /**
-   * Current size of memory pool for elements.
+   * Length of bucket array.
    */
   OZ_ALWAYS_INLINE
   int capacity() const
+  {
+    return size;
+  }
+
+  /**
+   * Size of memory pool for elements.
+   */
+  OZ_ALWAYS_INLINE
+  int poolCapacity() const
   {
     return pool.capacity();
   }
@@ -648,7 +617,17 @@ public:
   void clear()
   {
     for (int i = 0; i < size; ++i) {
-      clearChain(data[i]);
+      Entry* entry = data[i];
+
+      while (entry != nullptr) {
+        Entry* next = entry->next;
+
+        entry->~Entry();
+        pool.deallocate(entry);
+
+        entry = next;
+      }
+
       data[i] = nullptr;
     }
   }
