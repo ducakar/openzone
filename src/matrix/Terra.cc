@@ -52,11 +52,11 @@ void Terra::load(int id_)
 
     Log::print("Loading terrain '%s' ...", name.c());
 
-    File file = path;
-    InputStream is = file.inputStream(Endian::LITTLE);
+    File   file   = path;
+    Stream is     = file.inputStream(Endian::LITTLE);
 
     if (is.available() == 0) {
-      OZ_ERROR("Cannot read terra file '%s'", file.path().c());
+      OZ_ERROR("Cannot read terra file '%s'", file.c());
     }
 
     int max = is.readInt();
@@ -105,7 +105,7 @@ void Terra::read(const Json& json)
   load(liber.terraIndex(json["name"].get("")));
 }
 
-void Terra::read(InputStream* is)
+void Terra::read(Stream* is)
 {
   load(liber.terraIndex(is->readString()));
 }
@@ -119,7 +119,7 @@ Json Terra::write() const
   return json;
 }
 
-void Terra::write(OutputStream* os) const
+void Terra::write(Stream* os) const
 {
   const char* name = id < 0 ? "" : liber.terrae[id].name.c();
 

@@ -49,8 +49,7 @@ private:
 
   uint          autosaveTicks;
 
-  Buffer        saveBuffer;
-  OutputStream  saveStream;
+  Stream        saveStream;
   File          saveFile;
   Thread        saveThread;
 

@@ -40,7 +40,7 @@ const char* Device::getMemo() const
   return nullptr;
 }
 
-void Device::write(OutputStream*) const
+void Device::write(Stream*) const
 {}
 
 }

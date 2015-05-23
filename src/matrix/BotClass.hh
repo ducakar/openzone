@@ -102,7 +102,7 @@ public:
 
   Object* create(int index, const Point& pos, Heading heading) const override;
   Object* create(int index, const Json& json) const override;
-  Object* create(InputStream* is) const override;
+  Object* create(Stream* is) const override;
 
 };
 

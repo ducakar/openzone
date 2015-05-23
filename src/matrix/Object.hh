@@ -340,13 +340,13 @@ public:
 
   explicit Object(const ObjectClass* clazz, int index, const Point& p, Heading heading);
   explicit Object(const ObjectClass* clazz, int index, const Json& json);
-  explicit Object(const ObjectClass* clazz, InputStream* is);
+  explicit Object(const ObjectClass* clazz, Stream* is);
 
   virtual Json write() const;
-  virtual void write(OutputStream* os) const;
+  virtual void write(Stream* os) const;
 
-  virtual void readUpdate(InputStream* is);
-  virtual void writeUpdate(OutputStream* os) const;
+  virtual void readUpdate(Stream* is);
+  virtual void writeUpdate(Stream* os) const;
 
   OZ_STATIC_POOL_ALLOC(pool)
 

@@ -45,8 +45,8 @@ public:
   void sync();
   void update();
 
-  void read(InputStream* is);
-  void write(OutputStream* os) const;
+  void read(Stream* is);
+  void write(Stream* os) const;
 
   void load();
   void unload();

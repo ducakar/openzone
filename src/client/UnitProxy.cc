@@ -635,7 +635,7 @@ void UnitProxy::reset()
   isFreelook  = false;
 }
 
-void UnitProxy::read(InputStream* is)
+void UnitProxy::read(Stream* is)
 {
   isExternal = is->readBool();
 }
@@ -645,7 +645,7 @@ void UnitProxy::read(const Json& json)
   isExternal = json["isExternal"].get(false);
 }
 
-void UnitProxy::write(OutputStream* os) const
+void UnitProxy::write(Stream* os) const
 {
   os->writeBool(isExternal);
 }

@@ -75,7 +75,7 @@ void LuaNirvana::unregisterMind(int botIndex)
   l_rawseti(1, botIndex);
 }
 
-void LuaNirvana::read(InputStream* is)
+void LuaNirvana::read(Stream* is)
 {
   hard_assert(l_gettop() == 1);
   hard_assert((l_pushnil(), true));
@@ -92,7 +92,7 @@ void LuaNirvana::read(InputStream* is)
   }
 }
 
-void LuaNirvana::write(OutputStream* os)
+void LuaNirvana::write(Stream* os)
 {
   hard_assert(l_gettop() == 1);
 

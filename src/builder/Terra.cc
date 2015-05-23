@@ -38,7 +38,7 @@ void Terra::load()
 
   Json config;
   if (!config.load(configFile)) {
-    OZ_ERROR("Failed to load terra configuration '%s'", configFile.path().c());
+    OZ_ERROR("Failed to load terra configuration '%s'", configFile.c());
   }
 
   EnumMap<int> liquidMap = {
@@ -216,10 +216,9 @@ void Terra::saveMatrix()
 {
   File destFile = "terra/" + name + ".ozTerra";
 
-  Log::print("Writing terrain structure to '%s' ...", destFile.path().c());
+  Log::print("Writing terrain structure to '%s' ...", destFile.c());
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   os.writeInt(VERTS);
 
@@ -232,7 +231,7 @@ void Terra::saveMatrix()
   os.writeInt(liquid);
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().c());
+    OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 
   Log::printEnd(" OK");
@@ -242,7 +241,7 @@ void Terra::saveClient()
 {
   File destFile = "terra/" + name + ".ozcTerra";
 
-  Log::println("Compiling terrain model to '%s' {", destFile.path().c());
+  Log::println("Compiling terrain model to '%s' {", destFile.c());
   Log::indent();
 
   if (!detailTex.isEmpty()) {
@@ -253,7 +252,7 @@ void Terra::saveClient()
   }
 
   if (!map.isEmpty()) {
-    context.buildTexture("@terra/" + map.fileBaseName(), "terra/" + name);
+    context.buildTexture("@terra/" + File(map).baseName(), "terra/" + name);
   }
   else {
     Log::print("Generating terrain texture (this may take a while) ...");
@@ -271,8 +270,7 @@ void Terra::saveClient()
     Log::printEnd(" OK");
   }
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   // generate index buffer
   int index = 0;
@@ -345,7 +343,7 @@ void Terra::saveClient()
   os.writeVec4(liquidColour);
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().c());
+    OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 
   Log::unindent();

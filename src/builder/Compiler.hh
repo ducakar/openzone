@@ -117,8 +117,8 @@ public:
   void rotationKey(const Quat& rot, float time);
   void scalingKey(const Vec3& scale, float time);
 
-  void writeModel(OutputStream* os, bool globalTextures = false);
-  void buildModelTextures(const char* destDir);
+  void writeModel(Stream* os, bool globalTextures = false);
+  void buildModelTextures(const File& destDir);
 
   void init();
   void destroy();

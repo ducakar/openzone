@@ -756,7 +756,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Json& json)
   }
 }
 
-Struct::Struct(const BSP* bsp_, InputStream* is)
+Struct::Struct(const BSP* bsp_, Stream* is)
 {
   bsp         = bsp_;
 
@@ -851,7 +851,7 @@ Json Struct::write() const
   return json;
 }
 
-void Struct::write(OutputStream* os) const
+void Struct::write(Stream* os) const
 {
   os->writePoint(p);
   os->writeInt(heading);

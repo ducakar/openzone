@@ -297,17 +297,17 @@ Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
   Texture texture;
   texture.id = -2;
 
-  if (albedoFile.isMapped()) {
+  if (albedoFile.stat().type == File::REGULAR) {
     glGenTextures(1, &texture.albedo);
     glBindTexture(GL_TEXTURE_2D, texture.albedo);
     GL::textureDataFromFile(albedoFile, context.textureLod);
   }
-  if (masksFile.isMapped()) {
+  if (masksFile.stat().type == File::REGULAR) {
     glGenTextures(1, &texture.masks);
     glBindTexture(GL_TEXTURE_2D, texture.masks);
     GL::textureDataFromFile(masksFile, context.textureLod);
   }
-  if (normalsFile.isMapped()) {
+  if (normalsFile.stat().type == File::REGULAR) {
     glGenTextures(1, &texture.normals);
     glBindTexture(GL_TEXTURE_2D, texture.normals);
     GL::textureDataFromFile(normalsFile, context.textureLod);
@@ -317,24 +317,9 @@ Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
   return texture;
 }
 
-Texture Context::loadTexture(const char* basePath_)
+Texture Context::loadTexture(const String& basePath)
 {
-  String basePath = basePath_;
-  File   albedo   = basePath + ".dds";
-  File   masks    = basePath + "_m.dds";
-  File   normals  = basePath + "_n.dds";
-
-  if (albedo.type() == File::REGULAR) {
-    albedo.map();
-  }
-  if (masks.type() == File::REGULAR) {
-    masks.map();
-  }
-  if (normals.type() == File::REGULAR) {
-    normals.map();
-  }
-
-  return loadTexture(albedo, masks, normals);
+  return loadTexture(basePath + ".dds", basePath + "_m.dds", basePath + "_n.dds");
 }
 
 void Context::unloadTexture(const Texture* texture)
@@ -371,13 +356,6 @@ Texture Context::requestTexture(int id)
   File albedoFile  = basePath + ".dds";
   File masksFile   = basePath + "_m.dds";
   File normalsFile = basePath + "_n.dds";
-
-  if (!albedoFile.map()) {
-    OZ_ERROR("Failed to load '%s'", albedoFile.path().c());
-  }
-
-  masksFile.map();
-  normalsFile.map();
 
   resource.nUsers    = 1;
   resource.handle    = loadTexture(albedoFile, masksFile, normalsFile);
@@ -578,7 +556,7 @@ void Context::drawImago(const Object* obj, const Imago* parent)
 
   if (value == nullptr) {
     Imago::CreateFunc* createFunc = imagoClasses[obj->clazz->imagoType];
-    value = &imagines.add(obj->index, createFunc(obj));
+    value = &imagines.add(obj->index, createFunc(obj)).value;
   }
 
   Imago* imago = *value;
@@ -594,7 +572,7 @@ void Context::playAudio(const Object* obj, const Object* parent)
 
   if (value == nullptr) {
     Audio::CreateFunc* createFunc = audioClasses[obj->clazz->audioType];
-    value = &audios.add(obj->index, createFunc(obj));
+    value = &audios.add(obj->index, createFunc(obj)).value;
   }
 
   Audio* audio = *value;

@@ -49,7 +49,7 @@ void Caelum::read(const Json& json)
   time    = json["time"].get(0.0f);
 }
 
-void Caelum::read(InputStream* is)
+void Caelum::read(Stream* is)
 {
   id      = is->readInt();
   heading = is->readFloat();
@@ -70,7 +70,7 @@ Json Caelum::write() const
   return json;
 }
 
-void Caelum::write(OutputStream* os) const
+void Caelum::write(Stream* os) const
 {
   os->writeInt(id);
   os->writeFloat(heading);

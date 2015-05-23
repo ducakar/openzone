@@ -75,7 +75,7 @@ protected:
    * @return Position of the inserted element.
    */
   template <typename Elem_>
-  int insert(Elem_&& elem, bool overwrite)
+  Elem& insert(Elem_&& elem, bool overwrite)
   {
     int i = Arrays::bisection<Elem, Elem_, LessFunc>(data, count, elem);
 
@@ -83,7 +83,6 @@ protected:
       if (overwrite) {
         data[i] = static_cast<Elem_&&>(elem);
       }
-      return i;
     }
     else {
       ensureCapacity(count + 1);
@@ -92,9 +91,8 @@ protected:
       Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
       data[i] = static_cast<Elem_&&>(elem);
       ++count;
-
-      return i;
     }
+    return data[i];
   }
 
 public:
@@ -204,7 +202,7 @@ public:
    * @return Position of the inserted element.
    */
   template <typename Elem_>
-  int add(Elem_&& elem)
+  Elem& add(Elem_&& elem)
   {
     return insert<Elem_>(static_cast<Elem_&&>(elem), true);
   }
@@ -215,7 +213,7 @@ public:
    * @return Position of the inserted or the existing element.
    */
   template <typename Elem_>
-  int include(Elem_&& elem)
+  Elem& include(Elem_&& elem)
   {
     return insert<Elem_>(static_cast<Elem_&&>(elem), false);
   }

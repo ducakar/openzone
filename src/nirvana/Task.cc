@@ -29,7 +29,7 @@ namespace oz
 Task::~Task()
 {}
 
-void Task::write(OutputStream* os) const
+void Task::write(Stream* os) const
 {
   for (const Task& child : children) {
     os->writeString(child.type());

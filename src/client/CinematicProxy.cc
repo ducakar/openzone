@@ -42,7 +42,7 @@ void CinematicProxy::executeSequence(const char* path, const Lingua* missionLing
   File file = path;
 
   if (!sequence.load(file)) {
-    OZ_ERROR("Failed to load sequence from '%s'", file.path().c());
+    OZ_ERROR("Failed to load sequence from '%s'", file.c());
   }
 
   int nSteps = sequence.length();
@@ -264,7 +264,7 @@ void CinematicProxy::reset()
   steps.trim();
 }
 
-void CinematicProxy::read(InputStream* is)
+void CinematicProxy::read(Stream* is)
 {
   beginRot    = is->readQuat();
   beginPos    = is->readPoint();
@@ -298,7 +298,7 @@ void CinematicProxy::read(InputStream* is)
 void CinematicProxy::read(const Json&)
 {}
 
-void CinematicProxy::write(OutputStream* os) const
+void CinematicProxy::write(Stream* os) const
 {
   os->writeQuat(beginRot);
   os->writePoint(beginPos);

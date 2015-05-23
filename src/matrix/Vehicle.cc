@@ -557,7 +557,7 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json) :
   }
 }
 
-Vehicle::Vehicle(const VehicleClass* clazz_, InputStream* is) :
+Vehicle::Vehicle(const VehicleClass* clazz_, Stream* is) :
   Dynamic(clazz_, is)
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
@@ -620,7 +620,7 @@ Json Vehicle::write() const
   return json;
 }
 
-void Vehicle::write(OutputStream* os) const
+void Vehicle::write(Stream* os) const
 {
   Dynamic::write(os);
 
@@ -648,10 +648,10 @@ void Vehicle::write(OutputStream* os) const
   }
 }
 
-void Vehicle::readUpdate(InputStream*)
+void Vehicle::readUpdate(Stream*)
 {}
 
-void Vehicle::writeUpdate(OutputStream*) const
+void Vehicle::writeUpdate(Stream*) const
 {}
 
 }

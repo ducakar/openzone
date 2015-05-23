@@ -1166,7 +1166,7 @@ Bot::Bot(const BotClass* clazz_, int index, const Json& json) :
   }
 }
 
-Bot::Bot(const BotClass* clazz_, InputStream* is) :
+Bot::Bot(const BotClass* clazz_, Stream* is) :
   Dynamic(clazz_, is)
 {
   h          = is->readFloat();
@@ -1222,7 +1222,7 @@ Json Bot::write() const
   return json;
 }
 
-void Bot::write(OutputStream* os) const
+void Bot::write(Stream* os) const
 {
   Dynamic::write(os);
 
@@ -1248,10 +1248,10 @@ void Bot::write(OutputStream* os) const
   os->writeString(mind);
 }
 
-void Bot::readUpdate(InputStream*)
+void Bot::readUpdate(Stream*)
 {}
 
-void Bot::writeUpdate(OutputStream*) const
+void Bot::writeUpdate(Stream*) const
 {}
 
 }

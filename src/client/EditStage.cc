@@ -45,13 +45,12 @@ namespace client
 
 void EditStage::read()
 {
-  Log::print("Loading layout from '%s' ...", layoutFile.path().c());
+  Log::print("Loading layout from '%s' ...", layoutFile.c());
 
   Json json;
   if (!json.load(layoutFile)) {
-    OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().c());
+    OZ_ERROR("Reading saved layout '%s' failed", layoutFile.c());
   }
-  layoutFile.unmap();
 
   Log::printEnd(" OK");
 
@@ -68,7 +67,7 @@ void EditStage::write() const
   json.add("matrix", matrix.write());
   json.add("camera", camera.write());
 
-  Log::print("Saving layout to %s ...", layoutFile.path().c());
+  Log::print("Saving layout to %s ...", layoutFile.c());
 
   if (!json.save(layoutFile)) {
     Log::printEnd(" Failed");
@@ -136,14 +135,14 @@ bool EditStage::update()
   orbis.resetLastIndices();
 
   if (input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE]) {
-    if (!layoutFile.isEmpty()) {
+    if (!layoutFile.isNil()) {
       write();
     }
   }
   if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
     layoutFile.stat();
 
-    if (layoutFile.type() == File::REGULAR) {
+    if (layoutFile.stat().type == File::REGULAR) {
       Stage::nextStage = this;
     }
   }
@@ -231,7 +230,7 @@ void EditStage::load()
   editFrame = new ui::EditFrame();
   ui::ui.root->add(editFrame, ui::Area::CENTRE, 8);
 
-  if (layoutFile.type() == File::REGULAR) {
+  if (layoutFile.stat().type == File::REGULAR) {
     read();
   }
 

@@ -58,7 +58,7 @@ public:
   explicit FragPool(const Json& config, const char* name, int id);
 
   Frag* create(int index, const Point& pos, const Vec3& velocity) const;
-  Frag* create(InputStream* is) const;
+  Frag* create(Stream* is) const;
 
 };
 

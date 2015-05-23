@@ -107,7 +107,7 @@ Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json) :
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic(const DynamicClass* clazz_, InputStream* is) :
+Dynamic::Dynamic(const DynamicClass* clazz_, Stream* is) :
   Object(clazz_, is)
 {
   velocity = is->readVec3();
@@ -125,7 +125,7 @@ Json Dynamic::write() const
   return Object::write();
 }
 
-void Dynamic::write(OutputStream* os) const
+void Dynamic::write(Stream* os) const
 {
   Object::write(os);
 
@@ -137,10 +137,10 @@ void Dynamic::write(OutputStream* os) const
   os->writeFloat(depth);
 }
 
-void Dynamic::readUpdate(InputStream*)
+void Dynamic::readUpdate(Stream*)
 {}
 
-void Dynamic::writeUpdate(OutputStream*) const
+void Dynamic::writeUpdate(Stream*) const
 {}
 
 }

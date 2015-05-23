@@ -56,7 +56,7 @@ public:
 
   Mind();
   explicit Mind(int bot);
-  explicit Mind(int bot, InputStream* is);
+  explicit Mind(int bot, Stream* is);
   ~Mind();
 
   Mind(Mind&& m);
@@ -64,7 +64,7 @@ public:
 
   void update(bool doRegularUpdate);
 
-  void write(OutputStream* os) const;
+  void write(Stream* os) const;
 
 };
 

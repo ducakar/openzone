@@ -163,7 +163,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
   items.reserve(clazz->nItems, true);
 }
 
-Object::Object(const ObjectClass* clazz_, InputStream* is)
+Object::Object(const ObjectClass* clazz_, Stream* is)
 {
   p          = is->readPoint();
   dim        = clazz_->dim;
@@ -264,7 +264,7 @@ Json Object::write() const
   return json;
 }
 
-void Object::write(OutputStream* os) const
+void Object::write(Stream* os) const
 {
   os->writePoint(p);
   os->writeInt(index);
@@ -285,10 +285,10 @@ void Object::write(OutputStream* os) const
   }
 }
 
-void Object::readUpdate(InputStream*)
+void Object::readUpdate(Stream*)
 {}
 
-void Object::writeUpdate(OutputStream*) const
+void Object::writeUpdate(Stream*) const
 {}
 
 }

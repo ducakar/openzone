@@ -127,7 +127,7 @@ private:
 //     client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
 //     client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
 
-  String sPath;
+  File   dir;
 
   float  scale;
   String skin;

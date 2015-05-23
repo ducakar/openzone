@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "OutputStream.hh"
+#include "Stream.hh"
 
 namespace oz
 {
@@ -42,36 +42,39 @@ namespace oz
  * Paths inside VFS are always absolute and should not begin with '/', they use '/' as a path
  * separator and are prefixed by "@".
  */
-class File
+class File : public String
 {
 public:
 
+  /// Invalid file.
+  static const File NIL;
+
   /// User's home/profile directory.
-  static const String& HOME;
+  static const File& HOME;
 
   /// Directory for configuration (i.e. `~/.config`).
-  static const String& CONFIG;
+  static const File& CONFIG;
 
   /// Directory for program data (i.e. `~/.local/share`).
-  static const String& DATA;
+  static const File& DATA;
 
   /// User's desktop directory.
-  static const String& DESKTOP;
+  static const File& DESKTOP;
 
   /// User's directory for documents.
-  static const String& DOCUMENTS;
+  static const File& DOCUMENTS;
 
   /// User's directory for downloads.
-  static const String& DOWNLOAD;
+  static const File& DOWNLOAD;
 
   /// User's directory for music.
-  static const String& MUSIC;
+  static const File& MUSIC;
 
   /// User's directory for pictures.
-  static const String& PICTURES;
+  static const File& PICTURES;
 
   /// User's directory for videos.
-  static const String& VIDEOS;
+  static const File& VIDEOS;
 
   /**
    * %File type classification.
@@ -83,20 +86,13 @@ public:
     REGULAR
   };
 
-private:
-
-  String         filePath;           ///< %File path.
-  mutable Type   fileType = MISSING; ///< %File type.
-  mutable int    fileSize = -1;      ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
-  mutable long64 fileTime = 0;       ///< Modification or creation time, what is newer.
-  mutable char*  data     = nullptr; ///< Mapped memory.
-
-private:
-
-  /**
-   * Internal constructor.
-   */
-  explicit File(const String& path, Type type, int size, long64 time);
+  /// File information returned by `stat()`.
+  struct Info
+  {
+    Type   type;
+    int    size;
+    long64 time;
+  };
 
 public:
 
@@ -120,35 +116,6 @@ public:
   File(const String& path);
 
   /**
-   * Destructor.
-   */
-  ~File();
-
-  /**
-   * Copy constructor.
-   *
-   * Mapped memory is not copied.
-   */
-  File(const File& file);
-
-  /**
-   * Move constructor, transfers mapped memory.
-   */
-  File(File&& file);
-
-  /**
-   * Copy operator.
-   *
-   * Mapped memory is not copied.
-   */
-  File& operator = (const File& file);
-
-  /**
-   * Move operator, transfers mapped memory.
-   */
-  File& operator = (File&& file);
-
-  /**
    * Recreate instance for a given path.
    *
    * `stat()` is automatically called on construction unless the new path is empty.
@@ -163,19 +130,13 @@ public:
   File& operator = (const String& path);
 
   /**
-   * Access file to update its type, size and modification time.
-   *
-   * @return true iff file exists.
-   */
-  bool stat() const;
-
-  /**
-   * True iff file path is empty (i.e. an empty string or "@").
+   * True iff path is not initialised (i.e. an empty string or "@").
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isNil() const
   {
-    return filePath.fileIsEmpty();
+    const char* buffer = begin();
+    return buffer[0] == '\0' || (buffer[1] == '\0' && buffer[0] == '@');
   }
 
   /**
@@ -184,49 +145,18 @@ public:
   OZ_ALWAYS_INLINE
   bool isVirtual() const
   {
-    return filePath.fileIsVirtual();
+    return begin()[0] == '@';
   }
 
   /**
-   * %File type.
+   * Stat file and return its type, size and modification/creation time.
    */
-  OZ_ALWAYS_INLINE
-  Type type() const
-  {
-    return fileType;
-  }
-
-  /**
-   * %File size in bytes if regular file, -1 otherwise.
-   */
-  OZ_ALWAYS_INLINE
-  int size() const
-  {
-    return fileSize;
-  }
-
-  /**
-   * Modification or creation (Unix) time, what is newer.
-   */
-  OZ_ALWAYS_INLINE
-  long64 time() const
-  {
-    return fileTime;
-  }
-
-  /**
-   * %File path.
-   */
-  OZ_ALWAYS_INLINE
-  const String& path() const
-  {
-    return filePath;
-  }
+  Info stat() const;
 
   /**
    * Extract directory from the path (substring before the last `/`).
    */
-  String directory() const;
+  File directory() const;
 
   /**
    * Extract file name from the path (substring after the last `/`).
@@ -267,13 +197,44 @@ public:
   String realPath() const;
 
   /**
-   * True iff file is mapped into memory.
+   * Return file with a given string appended to its path.
    */
-  OZ_ALWAYS_INLINE
-  bool isMapped() const
-  {
-    return data != nullptr;
-  }
+  File operator + (const String& pathElem) const;
+
+  /**
+   * Return file with a given string appended to its path.
+   */
+  File operator + (const char* pathElem) const;
+
+  /**
+   * Return file with path separator and a given token appended to its path.
+   */
+  File operator / (const String& pathElem) const;
+
+  /**
+   * Return file with path separator and a given token appended to its path.
+   */
+  File operator / (const char* pathElem) const;
+
+  /**
+   * Append a given string to the path.
+   */
+  File& operator += (const String& pathElem);
+
+  /**
+   * Append a given string to the path.
+   */
+  File& operator += (const char* pathElem);
+
+  /**
+   * Append path separator and a given token to the path.
+   */
+  File& operator /= (const String& pathElem);
+
+  /**
+   * Append path separator and a given token to the path.
+   */
+  File& operator /= (const char* pathElem);
 
   /**
    * Read at most `*size` bytes from file and update `*size` to the number of bytes read.
@@ -289,7 +250,7 @@ public:
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read(OutputStream* os) const;
+  bool read(Stream* os) const;
 
   /**
    * Read file into a buffer.
@@ -330,25 +291,30 @@ public:
   bool writeString(const String& s) const;
 
   /**
-   * %Map file into memory for reading.
+   * Create a buffered stream that contains file contents.
    *
-   * If the back-end doesn't support mapping files to memory (currently NaCl and VFS), this function
-   * merely copies file contents into an internal buffer.
+   * An invalid (empty) stream is returned on error.
    */
-  bool map() const;
+  Stream inputStream(Endian::Order order = Endian::NATIVE) const;
 
   /**
-   * Unmap mapped file.
+   * Copy a file.
+   *
+   * @param dest destination directory or file.
    */
-  void unmap() const;
+  bool copyTo(const File& dest) const;
 
   /**
-   * Get `InputStream` for a memory mapped file.
+   * Move/rename a file.
    *
-   * If the file is not mapped, `map()` is called implicitly. An invalid (empty) `InputStream` is
-   * returned on an error.
+   * @param dest destination directory or file.
    */
-  InputStream inputStream(Endian::Order order = Endian::NATIVE) const;
+  bool moveTo(const File& dest) const;
+
+  /**
+   * Delete a file or an empty directory.
+   */
+  bool remove() const;
 
   /**
    * Generate a list of files in directory.
@@ -367,49 +333,27 @@ public:
    *
    * Empty string is returned on failure. This function always fails on NaCl.
    */
-  static String cwd();
+  static File cwd();
 
   /**
    * Change current directory in native file system.
    *
    * Always fails on NaCl.
    */
-  static bool chdir(const char* path);
+  bool chdir() const;
 
   /**
    * Make a new directory.
    */
-  static bool mkdir(const char* path);
-
-  /**
-   * Copy a file.
-   *
-   * @param src source file.
-   * @param dest destination directory or file.
-   */
-  static bool cp(const File& src, const File& dest);
-
-  /**
-   * Move/rename a file.
-   *
-   * @param src source file path.
-   * @param dest destination directory or file.
-   */
-  static bool mv(const File& src, const File& dest);
-
-  /**
-   * Delete a file or an empty directory.
-   */
-  static bool rm(const char* path);
+  bool mkdir() const;
 
   /**
    * Mount read-only directory or archive into VFS.
    *
-   * @param path archive or directory in native file system.
    * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
    * @param append true to append to the end instead to the beginning of the search path.
    */
-  static bool mount(const char* path, const char* mountPoint, bool append = true);
+  bool mountAt(const char* mountPoint, bool append = true) const;
 
   /**
    * Mount writeable local resource directory to the root of VFS.
@@ -420,17 +364,16 @@ public:
    * @note
    * If more than one directory is mounted via `mountLocal()` the last one will be used for writing.
    *
-   * @param path path to directory in native file system.
    * @param append true to append to the end instead to the beginning of the search path.
    */
-  static bool mountLocal(const char* path, bool append = true);
+  bool mountLocalAt(bool append = true) const;
 
   /**
    * Get executable file path.
    *
    * On NaCl or on an error, an empty string is returned.
    */
-  static const String& executablePath();
+  static const File& executable();
 
   /**
    * Initialise VFS and NaCl file system, determine user directories and executable path.

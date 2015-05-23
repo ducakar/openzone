@@ -126,12 +126,12 @@ void Shader::compileShader(uint shaderId, const String& defines, const File& fil
       Log::verboseMode = true;
     }
 
-    Log::printRaw("\n%s:\n%s", file.path().c(), logBuffer);
+    Log::printRaw("\n%s:\n%s", file.c(), logBuffer);
     Log::verboseMode = false;
   }
 
   if (!hasCompiled) {
-    OZ_ERROR("Shader '%s' compile failed", file.path().c());
+    OZ_ERROR("Shader '%s' compile failed", file.c());
   }
 }
 
@@ -139,11 +139,11 @@ void Shader::loadProgram(int id)
 {
   const String& name = liber.shaders[id].name;
 
-  File configFile = "@glsl/" + name + ".json";
+  File configFile = liber.shaders[id].path;
   Json programConfig;
 
   if (!programConfig.load(configFile)) {
-    OZ_ERROR("Failed to read shader program configuration '%s'", configFile.path().c());
+    OZ_ERROR("Failed to read shader program configuration '%s'", configFile.c());
   }
 
   const char* vertName = programConfig["vertex"].get("");
@@ -341,7 +341,7 @@ void Shader::init()
 
     File envMap = "@glsl/env.dds";
     if (GL::textureDataFromFile(envMap, 0) == 0) {
-      OZ_ERROR("Failed to load environment map texture '%s'", envMap.path().c());
+      OZ_ERROR("Failed to load environment map texture '%s'", envMap.c());
     }
 
     glActiveTexture(DIFFUSE);
@@ -381,16 +381,12 @@ void Shader::init()
 
     for (const File& file : shadersDir.ls()) {
       if (file.hasExtension("vert")) {
-        file.map();
-
         uint id = glCreateShader(GL_VERTEX_SHADER);
 
         vertShaders.add(file.baseName(), id);
         compileShader(id, defines, file);
       }
       else if (file.hasExtension("frag")) {
-        file.map();
-
         uint id = glCreateShader(GL_FRAGMENT_SHADER);
 
         fragShaders.add(file.baseName(), id);

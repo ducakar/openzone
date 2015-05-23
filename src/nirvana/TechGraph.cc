@@ -91,7 +91,7 @@ void TechGraph::disableAll()
 void TechGraph::update()
 {}
 
-void TechGraph::read(InputStream* is)
+void TechGraph::read(Stream* is)
 {
   int nNodes = is->readInt();
 
@@ -108,7 +108,7 @@ void TechGraph::read(InputStream* is)
   }
 }
 
-void TechGraph::write(OutputStream* os) const
+void TechGraph::write(Stream* os) const
 {
   os->writeInt(nodes.length());
 
@@ -125,7 +125,7 @@ void TechGraph::load()
   for (const File& configFile : techDir.ls()) {
     Json config;
 
-    if (configFile.type() != File::REGULAR || !config.load(configFile)) {
+    if (configFile.stat().type != File::REGULAR || !config.load(configFile)) {
       continue;
     }
 

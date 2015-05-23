@@ -67,10 +67,10 @@ public:
 
   void reset() override;
 
-  void read(InputStream* is) override;
+  void read(Stream* is) override;
   void read(const Json& json) override;
 
-  void write(OutputStream* os) const override;
+  void write(Stream* os) const override;
   Json write() const override;
 
 };

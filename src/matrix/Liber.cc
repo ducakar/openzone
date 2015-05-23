@@ -278,7 +278,7 @@ void Liber::initShaders()
     Log::println("%s", name.c());
 
     shaderIndices.add(name, shaders.length());
-    shaders.add(Resource{ name, "" });
+    shaders.add(Resource{ name, file });
   }
 
   shaderIndices.trim();
@@ -296,14 +296,12 @@ void Liber::initTextures()
   File dir = "@tex";
 
   for (const File& subDir : dir.ls()) {
-    if (subDir.type() != File::DIRECTORY) {
+    if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
     for (const File& file : subDir.ls()) {
-      if (!file.hasExtension("dds") ||
-          file.path().endsWith("_m.dds") || file.path().endsWith("_n.dds"))
-      {
+      if (!file.hasExtension("dds") || file.endsWith("_m.dds") || file.endsWith("_n.dds")) {
         continue;
       }
 
@@ -331,7 +329,7 @@ void Liber::initSounds()
   File dir = "@snd";
 
   for (const File& subDir : dir.ls()) {
-    if (subDir.type() != File::DIRECTORY) {
+    if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
@@ -344,8 +342,12 @@ void Liber::initSounds()
 
       Log::println("%s", name.c());
 
+      if (soundIndices.contains(name)) {
+        OZ_ERROR("Duplicated sound '%s'", name.c());
+      }
+
       soundIndices.add(name, sounds.length());
-      sounds.add(Resource{ name, file.path() });
+      sounds.add(Resource{ name, file });
     }
   }
 
@@ -364,7 +366,7 @@ void Liber::initCaela()
   File dir = "@caelum";
 
   for (const File& file : dir.ls()) {
-    if (file.type() != File::DIRECTORY) {
+    if (file.stat().type != File::DIRECTORY) {
       continue;
     }
 
@@ -373,7 +375,7 @@ void Liber::initCaela()
     Log::println("%s", name.c());
 
     caelumIndices.add(name, caela.length());
-    caela.add(Resource{ name, file.path() });
+    caela.add(Resource{ name, file });
   }
 
   caelumIndices.trim();
@@ -400,7 +402,7 @@ void Liber::initTerrae()
     Log::println("%s", name.c());
 
     terraIndices.add(name, terrae.length());
-    terrae.add(Resource{ name, file.path() });
+    terrae.add(Resource{ name, file });
   }
 
   terraIndices.trim();
@@ -427,7 +429,7 @@ void Liber::initParticles()
     Log::println("%s", name.c());
 
     partIndices.add(name, parts.length());
-    parts.add(Resource{ name, file.path() });
+    parts.add(Resource{ name, file });
   }
 
   partIndices.trim();
@@ -444,15 +446,15 @@ void Liber::initModels()
 
   File dir = "@mdl";
 
-  for (const File& file : dir.ls()) {
-    if (file.type() != File::DIRECTORY) {
+  for (const File& subDir : dir.ls()) {
+    if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
-    String name = file.name();
-    String path = file.path() + "/data.ozcModel";
+    String name = subDir.name();
+    File   file = subDir / "data.ozcModel";
 
-    if (File(path).type() != File::REGULAR) {
+    if (file.stat().type != File::REGULAR) {
       OZ_ERROR("Invalid model '%s'", name.c());
     }
 
@@ -463,7 +465,7 @@ void Liber::initModels()
     }
 
     modelIndices.add(name, models.length());
-    models.add(Resource{ name, path });
+    models.add(Resource{ name, file });
   }
 
   modelIndices.trim();
@@ -491,7 +493,7 @@ void Liber::initFragPools()
 
     Json config;
     if (!config.load(file)) {
-      OZ_ERROR("Failed to read '%s'", file.path().c());
+      OZ_ERROR("Failed to read '%s'", file.c());
     }
 
     fragPools.add(name, FragPool(config, name, fragPools.length()));
@@ -532,7 +534,7 @@ void Liber::initClasses()
 
     Json config;
     if (!config.load(file)) {
-      OZ_ERROR("Failed to read '%s'", file.path().c());
+      OZ_ERROR("Failed to read '%s'", file.c());
     }
 
     String name = file.baseName();
@@ -587,7 +589,7 @@ void Liber::initClasses()
     File file = "@class/" + name + ".json";
     Json config;
     if (!config.load(file)) {
-      OZ_ERROR("Failed to read '%s'", file.path().c());
+      OZ_ERROR("Failed to read '%s'", file.c());
     }
 
     clazz->init(config, name);
@@ -677,15 +679,15 @@ void Liber::initMusicRecurse(const char* path)
   File dir = path;
 
   for (const File& file : dir.ls()) {
-    if (file.type() == File::DIRECTORY) {
-      initMusicRecurse(file.path());
+    if (file.stat().type == File::DIRECTORY) {
+      initMusicRecurse(file);
     }
     if (file.hasExtension("oga") || file.hasExtension("ogg") ||
         (mapMP3s && file.hasExtension("mp3")) || (mapAACs && file.hasExtension("aac")))
     {
-      Log::println("%s", file.path().c());
+      Log::println("%s", file.c());
 
-      musicTracks.add(Resource{ file.baseName(), file.path() });
+      musicTracks.add(Resource{ file.baseName(), file });
     }
   }
 }

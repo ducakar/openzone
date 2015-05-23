@@ -192,7 +192,7 @@ MissionMenu::MissionMenu() :
   File missionRootDir = "@mission";
 
   for (const File& missionDir : missionRootDir.ls()) {
-    File descriptionFile = missionDir.path() + "/description.json";
+    File descriptionFile = missionDir / "description.json";
 
     Json descriptionConfig;
     if (!descriptionConfig.load(descriptionFile)) {
@@ -212,7 +212,7 @@ MissionMenu::MissionMenu() :
     {
       glGenTextures(1, &missionImageId);
       glBindTexture(GL_TEXTURE_2D, missionImageId);
-      GL::textureDataFromFile(missionDir.path() + "/description.dds");
+      GL::textureDataFromFile(missionDir / "description.dds");
     };
 
     missions.add(MissionInfo{ missionName, missionTitle, missionDescription, missionImageId });

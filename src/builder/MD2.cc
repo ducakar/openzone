@@ -211,11 +211,11 @@ void MD2::build(const char* path)
 
   Json config(configFile);
 
-  if (modelFile.type() != File::REGULAR) {
+  if (modelFile.stat().type != File::REGULAR) {
     OZ_ERROR("MD2 file read failed");
   }
 
-  InputStream is = modelFile.inputStream(Endian::LITTLE);
+  Stream is = modelFile.inputStream(Endian::LITTLE);
 
   MD2Header header;
 
@@ -288,9 +288,9 @@ void MD2::build(const char* path)
   List<Point>            positions(header.nFrames * header.nFramePositions);
 
   is.rewind();
-  is.skip(header.offFrames);
+  is.readSkip(header.offFrames);
 
-  const char* frameData = is.skip(header.nFrames * header.frameSize);
+  const char* frameData = is.readSkip(header.nFrames * header.frameSize);
 
   for (int i = 0; i < header.nFrames; ++i) {
     const MD2Frame& frame = *reinterpret_cast<const MD2Frame*>(&frameData[i * header.frameSize]);
@@ -318,7 +318,7 @@ void MD2::build(const char* path)
   }
 
   is.rewind();
-  is.skip(header.offTexCoords);
+  is.readSkip(header.offTexCoords);
 
   for (int i = 0; i < texCoords.length(); ++i) {
     texCoords[i].u = float(is.readShort()) / float(header.skinWidth);
@@ -326,7 +326,7 @@ void MD2::build(const char* path)
   }
 
   is.rewind();
-  is.skip(header.offTriangles);
+  is.readSkip(header.offTriangles);
 
   for (int i = 0; i < triangles.length(); ++i) {
     triangles[i].vertices[0]  = is.readShort();
@@ -393,21 +393,20 @@ void MD2::build(const char* path)
   positions.clear();
   positions.trim();
 
-  String sDestDir = &sPath[1];
-  File::mkdir(sDestDir);
+  File destDir = &sPath[1];
+  destDir.mkdir();
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   compiler.writeModel(&os);
-  compiler.buildModelTextures(sDestDir);
+  compiler.buildModelTextures(destDir);
 
-  File destFile = sDestDir + "/data.ozcModel";
+  File destFile = destDir / "data.ozcModel";
 
-  Log::print("Writing to '%s' ...", destFile.path().c());
+  Log::print("Writing to '%s' ...", destFile.c());
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().c());
+    OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 
   Log::printEnd(" OK");

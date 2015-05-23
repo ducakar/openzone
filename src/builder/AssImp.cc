@@ -121,11 +121,11 @@ void AssImp::build(const char* path)
   File   outFile   = String(&path[1], "/data.ozcModel");
   String basePath  = String(path, "/");
 
-  if (modelFile.type() == File::MISSING) {
+  if (modelFile.stat().type == File::MISSING) {
     modelFile = String(path, "/data.dae");
   }
 
-  InputStream is = modelFile.inputStream();
+  Stream is = modelFile.inputStream();
 
   if (is.available() == 0) {
     OZ_ERROR("Failed to read '%s' (.dae and .obj extensions probed)", path);
@@ -141,13 +141,13 @@ void AssImp::build(const char* path)
                             aiProcess_FindInstances |
                             aiProcess_OptimizeMeshes);
   if (scene == nullptr) {
-    OZ_ERROR("Error loading '%s': %s", modelFile.path().c(), importer.GetErrorString());
+    OZ_ERROR("Error loading '%s': %s", modelFile.c(), importer.GetErrorString());
   }
   if (!scene->HasMeshes()) {
-    OZ_ERROR("Error loading '%s': Meshes missing", modelFile.path().c());
+    OZ_ERROR("Error loading '%s': Meshes missing", modelFile.c());
   }
   if (!scene->HasMaterials()) {
-    OZ_ERROR("Error loading '%s': Materials missing", modelFile.path().c());
+    OZ_ERROR("Error loading '%s': Materials missing", modelFile.c());
   }
 
   compiler.beginModel();
@@ -166,7 +166,7 @@ void AssImp::build(const char* path)
 
     String texturePath = "";
     if (textureName.length != 0) {
-      texturePath = basePath + String::fileBaseName(textureName.C_Str());
+      texturePath = basePath + File(textureName.C_Str()).baseName();
     }
 
     float shininess = 50.0f;
@@ -290,16 +290,15 @@ void AssImp::build(const char* path)
 
   scene = nullptr;
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   compiler.writeModel(&os);
   compiler.buildModelTextures(outFile.directory());
 
-  Log::print("Writing to '%s' ...", outFile.path().c());
+  Log::print("Writing to '%s' ...", outFile.c());
 
   if (!outFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write %s", outFile.path().c());
+    OZ_ERROR("Failed to write %s", outFile.c());
   }
 
   Log::printEnd(" OK");

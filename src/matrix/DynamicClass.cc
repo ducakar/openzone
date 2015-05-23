@@ -79,7 +79,7 @@ Object* DynamicClass::create(int index, const Json& json) const
   return new Dynamic(this, index, json);
 }
 
-Object* DynamicClass::create(InputStream* is) const
+Object* DynamicClass::create(Stream* is) const
 {
   return new Dynamic(this, is);
 }

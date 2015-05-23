@@ -102,7 +102,7 @@ public:
 
   virtual Object* create(int index, const Point& pos, Heading heading) const;
   virtual Object* create(int index, const Json& json) const;
-  virtual Object* create(InputStream* is) const;
+  virtual Object* create(Stream* is) const;
 
 };
 

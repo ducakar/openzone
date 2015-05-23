@@ -35,9 +35,9 @@ namespace builder
 
 void MD3::readAnimData()
 {
-  File animFile = sPath + "/animation.cfg";
+  File animFile = dir / "animation.cfg";
 
-  String realPath = animFile.realDirectory() + "/" + animFile.path();
+  String realPath = animFile.realDirectory() + "/" + animFile;
 
   FILE* fs = fopen(realPath, "r");
   if (fs == nullptr) {
@@ -56,13 +56,13 @@ void MD3::buildMesh(const char* name, int frame)
 {
   Log::print("Mesh '%s' ...", name);
 
-  File file = String::format("%s/%s.md3", sPath.c(), name);
+  File file = String::format("%s/%s.md3", dir.c(), name);
 
-  if (file.type() != File::REGULAR) {
-    OZ_ERROR("Cannot read MD3 model part file '%s'", file.path().c());
+  if (file.stat().type != File::REGULAR) {
+    OZ_ERROR("Cannot read MD3 model part file '%s'", file.c());
   }
 
-  InputStream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.inputStream(Endian::LITTLE);
 
   MD3Header header;
 
@@ -77,7 +77,7 @@ void MD3::buildMesh(const char* name, int frame)
   }
 
   // header.fileName
-  is.skip(64);
+  is.readSkip(64);
 
   header.flags       = is.readInt();
   header.nFrames     = is.readInt();
@@ -147,7 +147,7 @@ void MD3::buildMesh(const char* name, int frame)
 //   }
 
   is.rewind();
-  is.skip(header.offSurfaces);
+  is.readSkip(header.offSurfaces);
 
   for (int i = 0; i < header.nSurfaces; ++i) {
     int surfaceStart = is.tell();
@@ -155,7 +155,7 @@ void MD3::buildMesh(const char* name, int frame)
     MD3Surface surface;
 
     surface.id           = is.readInt();
-    Arrays::copy(is.skip(64), 64, surface.name);
+    Arrays::copy(is.readSkip(64), 64, surface.name);
     surface.flags        = is.readInt();
 
     surface.nFrames      = is.readInt();
@@ -189,7 +189,7 @@ void MD3::buildMesh(const char* name, int frame)
     List<Point>            vertices(surfaceVertices.length());
 
     is.rewind();
-    is.skip(surfaceStart + surface.offTriangles);
+    is.readSkip(surfaceStart + surface.offTriangles);
 
     for (int j = 0; j < surfaceTriangles.length(); ++j) {
       surfaceTriangles[j].vertices[0] = is.readInt();
@@ -198,10 +198,10 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.skip(surfaceStart + surface.offShaders);
+    is.readSkip(surfaceStart + surface.offShaders);
 
     for (int i = 0; i < surfaceShaders.length(); ++i) {
-      Arrays::copy(is.skip(64), 64, surfaceShaders[i].name);
+      Arrays::copy(is.readSkip(64), 64, surfaceShaders[i].name);
       surfaceShaders[i].index = is.readInt();
     }
 
@@ -215,7 +215,7 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.skip(surfaceStart + surface.offTexCoords);
+    is.readSkip(surfaceStart + surface.offTexCoords);
 
     for (int j = 0; j < surfaceTexCoords.length(); ++j) {
       surfaceTexCoords[j].u = is.readFloat();
@@ -223,7 +223,7 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.skip(surfaceStart + surface.offVertices);
+    is.readSkip(surfaceStart + surface.offVertices);
 
     for (int j = 0; j < surfaceVertices.length(); ++j) {
       vertices[j].y = float(+is.readShort()) / 64.0f * scale;
@@ -240,10 +240,10 @@ void MD3::buildMesh(const char* name, int frame)
     }
 
     is.rewind();
-    is.skip(surfaceStart + surface.offEnd);
+    is.readSkip(surfaceStart + surface.offEnd);
 
     compiler.beginMesh();
-    compiler.texture(sPath + "/" + texture);
+    compiler.texture(dir / texture);
     compiler.begin(Compiler::TRIANGLES);
 
     for (int j = 0; j < surfaceTriangles.length(); ++j) {
@@ -270,7 +270,7 @@ void MD3::buildMesh(const char* name, int frame)
 
 void MD3::load()
 {
-  File configFile = sPath + "/config.json";
+  File configFile = dir / "config.json";
 
   Json config(configFile);
 
@@ -296,8 +296,7 @@ void MD3::load()
 
 void MD3::save()
 {
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   compiler.beginModel();
 
@@ -353,30 +352,30 @@ void MD3::save()
 
   compiler.endModel();
 
-  String sDestDir = &sPath[1];
-  File::mkdir(sPath);
+  File destDir = dir.substring(1);
+  destDir.mkdir();
 
   compiler.writeModel(&os);
-  compiler.buildModelTextures(sDestDir);
+  compiler.buildModelTextures(destDir);
 
   if (frame < 0) {
-    File destFile = sDestDir + "/data.ozcMD3";
+    File destFile = destDir / "data.ozcMD3";
 
-    Log::print("Writing to '%s' ...", destFile.path().c());
+    Log::print("Writing to '%s' ...", destFile.c());
 
     if (!destFile.write(os.begin(), os.tell())) {
-      OZ_ERROR("Failed to write '%s'", destFile.path().c());
+      OZ_ERROR("Failed to write '%s'", destFile.c());
     }
 
     Log::printEnd(" OK");
   }
   else {
-    File destFile = sDestDir + "/data.ozcModel";
+    File destFile = destDir / "data.ozcModel";
 
-    Log::print("Writing to '%s' ...", destFile.path().c());
+    Log::print("Writing to '%s' ...", destFile.c());
 
     if (!destFile.write(os.begin(), os.tell())) {
-      OZ_ERROR("Failed to write '%s'", destFile.path().c());
+      OZ_ERROR("Failed to write '%s'", destFile.c());
     }
 
     Log::printEnd(" OK");
@@ -388,12 +387,12 @@ void MD3::build(const char* path)
   Log::println("Prebuilding MD3 model '%s' {", path);
   Log::indent();
 
-  sPath = path;
+  dir = path;
 
   load();
   save();
 
-  sPath      = "";
+  dir        = "";
   skin       = "";
   masks      = "";
   model      = "";

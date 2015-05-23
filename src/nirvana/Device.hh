@@ -35,7 +35,7 @@ public:
   static const int MEMO_BIT     = 0x0001;
   static const int COMPUTER_BIT = 0x0002;
 
-  typedef Device* CreateFunc(int id, InputStream* is);
+  typedef Device* CreateFunc(int id, Stream* is);
 
   int flags;
 
@@ -55,7 +55,7 @@ public:
   virtual const char* type() const = 0;
   virtual const char* getMemo() const;
 
-  virtual void write(OutputStream* os) const;
+  virtual void write(Stream* os) const;
 
 };
 

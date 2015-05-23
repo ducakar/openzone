@@ -73,7 +73,7 @@ void Font::init(const char* name, int height_)
 
   buffer = file.read();
   if (buffer.isEmpty()) {
-    OZ_ERROR("Failed to read font file '%s'", file.path().c());
+    OZ_ERROR("Failed to read font file '%s'", file.c());
   }
 
   SDL_RWops* rwOps = SDL_RWFromConstMem(buffer.begin(), buffer.length());

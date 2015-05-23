@@ -316,12 +316,12 @@ void Loader::preloadRun()
 
 void Loader::makeScreenshot()
 {
-  const char* picturesDir = config["dir.pictures"].get(File::PICTURES);
+  File picturesDir = config["dir.pictures"].get(File::PICTURES);
 
-  File::mkdir(picturesDir);
+  picturesDir.mkdir();
 
   char path[256];
-  snprintf(path, 256, "%s/OpenZone %s.png", picturesDir, Time::local().toString().c());
+  snprintf(path, 256, "%s/OpenZone %s.png", picturesDir.c(), Time::local().toString().c());
 
   Log::println("Screenshot to '%s' scheduled in background thread", path);
   Window::screenshot(path);

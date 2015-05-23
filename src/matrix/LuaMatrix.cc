@@ -116,7 +116,7 @@ void LuaMatrix::unregisterObject(int index)
   l_pop(1);
 }
 
-void LuaMatrix::read(InputStream* is)
+void LuaMatrix::read(Stream* is)
 {
   hard_assert(l_gettop() == 1);
   hard_assert((l_pushnil(), true));
@@ -133,7 +133,7 @@ void LuaMatrix::read(InputStream* is)
   }
 }
 
-void LuaMatrix::write(OutputStream* os)
+void LuaMatrix::write(Stream* os)
 {
   hard_assert(l_gettop() == 1);
 

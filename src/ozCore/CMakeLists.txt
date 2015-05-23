@@ -18,7 +18,6 @@ add_library(ozCore
   Gettext.hh
   HashMap.hh
   HashSet.hh
-  InputStream.hh
   Java.hh
   Json.hh
   List.hh
@@ -28,7 +27,6 @@ add_library(ozCore
   Mat4.hh
   Math.hh
   Mutex.hh
-  OutputStream.hh
   ozCore.hh
   Pepper.hh
   Plane.hh
@@ -44,6 +42,7 @@ add_library(ozCore
   SList.hh
   SpinLock.hh
   StackTrace.hh
+  Stream.hh
   String.hh
   System.hh
   Thread.hh
@@ -58,7 +57,6 @@ add_library(ozCore
   EnumMap.cc
   File.cc
   Gettext.cc
-  InputStream.cc
   Java.cc
   Json.cc
   Log.cc
@@ -66,7 +64,6 @@ add_library(ozCore
   Mat4.cc
   Math.cc
   Mutex.cc
-  OutputStream.cc
   Pepper.cc
   Plane.cc
   Point.cc
@@ -76,6 +73,7 @@ add_library(ozCore
   Semaphore.cc
   SharedLib.cc
   StackTrace.cc
+  Stream.cc
   String.cc
   System.cc
   Thread.cc

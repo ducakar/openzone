@@ -121,9 +121,7 @@ static const char* const SIGNALS[][2] =
 
 static const float BELL_TIME      = 0.30f;
 static const float BELL_FREQUENCY = 1000.0f;
-#ifndef __native_client__
 static const int   BELL_RATE      = 48000;
-#endif
 static const int   BELL_SAMPLES   = int(BELL_TIME * float(BELL_RATE));
 
 #if defined(__native_client__)
@@ -176,6 +174,7 @@ static void signalHandler(int sigNum)
   int index = uint(sigNum) >= uint(Arrays::length(SIGNALS)) ? 0 : sigNum;
 
   Log::verboseMode = false;
+
   Log::println("Signal %d %s (%s)", sigNum, SIGNALS[index][0], SIGNALS[index][1]);
   Log::printTrace(StackTrace::current(1));
   Log::println();
@@ -540,24 +539,23 @@ void System::warning(const char* function, const char* file, int line, int nSkip
   va_list ap;
   va_start(ap, msg);
 
-  bool verboseMode = Log::verboseMode;
-
-  Log::verboseMode = false;
-  Log::putsRaw("\n\n");
-  Log::vprintRaw(msg, ap);
-  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
-  Log::verboseMode = verboseMode;
-
 #ifdef __ANDROID__
   __android_log_vprint(ANDROID_LOG_WARN, "oz", msg, ap);
   __android_log_print(ANDROID_LOG_WARN, "oz", "  in %s\n  at %s:%d\n", function, file, line);
 #endif
 
+  bool verboseMode = Log::verboseMode;
+  Log::verboseMode = false;
+
+  Log::putsRaw("\n\n");
+  Log::vprintRaw(msg, ap);
+  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
+
   va_end(ap);
 
-  StackTrace st = StackTrace::current(nSkippedFrames + 1);
-  Log::printTrace(st);
+  Log::printTrace(StackTrace::current(nSkippedFrames + 1));
   Log::println();
+  Log::verboseMode = verboseMode;
 }
 
 void System::error(const char* function, const char* file, int line, int nSkippedFrames,
@@ -569,20 +567,20 @@ void System::error(const char* function, const char* file, int line, int nSkippe
   va_list ap;
   va_start(ap, msg);
 
-  Log::verboseMode = false;
-  Log::putsRaw("\n\n");
-  Log::vprintRaw(msg, ap);
-  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
-
 #ifdef __ANDROID__
   __android_log_vprint(ANDROID_LOG_FATAL, "oz", msg, ap);
   __android_log_print(ANDROID_LOG_FATAL, "oz", "  in %s\n  at %s:%d\n", function, file, line);
 #endif
 
+  Log::verboseMode = false;
+
+  Log::putsRaw("\n\n");
+  Log::vprintRaw(msg, ap);
+  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
+
   va_end(ap);
 
-  StackTrace st = StackTrace::current(nSkippedFrames + 1);
-  Log::printTrace(st);
+  Log::printTrace(StackTrace::current(nSkippedFrames + 1));
   Log::println();
 
   abort(initFlags & HALT_BIT);

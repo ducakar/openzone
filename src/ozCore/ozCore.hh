@@ -104,9 +104,8 @@
  */
 #include "Endian.hh"
 #include "Buffer.hh"
-#include "InputStream.hh"
-#include "OutputStream.hh"
 #include "File.hh"
+#include "Stream.hh"
 
 /*
  * Utilities.

@@ -44,8 +44,8 @@ void Caelum::build(const char* name)
     ImageBuilder::options |= ImageBuilder::COMPRESSION_BIT;
   }
 
-  String path = String::format("caelum/%s", name);
-  File::mkdir(path);
+  File dir = String::format("caelum/%s", name);
+  dir.mkdir();
 
   for (int i = 0; i < 6; ++i) {
     String path = String::format("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);

@@ -102,7 +102,7 @@ static FIBITMAP* createBitmap(const ImageData& image)
 
 static FIBITMAP* loadBitmap(const File& file)
 {
-  InputStream       is        = file.inputStream();
+  Stream            is        = file.inputStream();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
@@ -111,7 +111,7 @@ static FIBITMAP* loadBitmap(const File& file)
   FreeImage_CloseMemory(memoryIO);
 
   if (dib == nullptr) {
-    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.path().c());
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.c());
     return nullptr;
   }
 
@@ -221,8 +221,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   }
 #endif
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   // Header beginning.
   os.writeChars("DDS ", 4);
@@ -342,7 +341,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
         ubyte* pixels = FreeImage_GetBits(level);
         int    s3Size = squish::GetStorageRequirements(levelWidth, levelHeight, squishFlags);
 
-        squish::CompressImage(pixels, levelWidth, levelHeight, os.skip(s3Size), squishFlags);
+        squish::CompressImage(pixels, levelWidth, levelHeight, os.writeSkip(s3Size), squishFlags);
 #endif
       }
       else {
@@ -368,7 +367,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 
   bool success = destFile.write(os.begin(), os.tell());
   if (!success) {
-    snprintf(errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.path().c());
+    snprintf(errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.c());
     return false;
   }
   return true;
@@ -468,7 +467,7 @@ bool ImageBuilder::isImage(const File& file)
 {
   errorBuffer[0] = '\0';
 
-  InputStream       is        = file.inputStream();
+  Stream            is        = file.inputStream();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
@@ -526,11 +525,11 @@ bool ImageBuilder::convertToDDS(const File& file, const char* destPath)
   errorBuffer[0] = '\0';
 
   if (file.hasExtension("dds")) {
-    return File::cp(file, destPath);
+    return file.copyTo(destPath);
   }
 
   File destFile = destPath;
-  if (destFile.type() == File::DIRECTORY) {
+  if (destFile.stat().type == File::DIRECTORY) {
     destFile = String::format("%s/%s.dds", destPath, file.baseName().c());
   }
 

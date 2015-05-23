@@ -78,7 +78,7 @@ Object* WeaponClass::create(int index, const Json& json) const
   return new Weapon(this, index, json);
 }
 
-Object* WeaponClass::create(InputStream* is) const
+Object* WeaponClass::create(Stream* is) const
 {
   return new Weapon(this, is);
 }

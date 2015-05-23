@@ -54,13 +54,13 @@ public:
 
   explicit Weapon(const WeaponClass* clazz, int index, const Point& p, Heading heading);
   explicit Weapon(const WeaponClass* clazz, int index, const Json& json);
-  explicit Weapon(const WeaponClass* clazz, InputStream* is);
+  explicit Weapon(const WeaponClass* clazz, Stream* is);
 
   Json write() const override;
-  void write(OutputStream* os) const override;
+  void write(Stream* os) const override;
 
-  void readUpdate(InputStream* is) override;
-  void writeUpdate(OutputStream* os) const override;
+  void readUpdate(Stream* is) override;
+  void writeUpdate(Stream* os) const override;
 
   OZ_STATIC_POOL_ALLOC(pool)
 };

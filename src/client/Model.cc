@@ -404,11 +404,11 @@ const File* Model::preload()
   preloadData = new PreloadData();
   preloadData->modelFile = path;
 
-  if (!preloadData->modelFile.map()) {
-    OZ_ERROR("Failed to map '%s'", path.c());
-  }
+  Stream is       = preloadData->modelFile.inputStream(Endian::LITTLE);
 
-  InputStream is = preloadData->modelFile.inputStream(Endian::LITTLE);
+  if (is.available() == 0) {
+    OZ_ERROR("Failed to read '%s'", path.c());
+  }
 
   dim             = is.readVec3();
   size            = dim.fastN();
@@ -448,13 +448,6 @@ const File* Model::preload()
         texFiles.albedo  = name + ".dds";
         texFiles.masks   = name + "_m.dds";
         texFiles.normals = name + "_n.dds";
-
-        if (!texFiles.albedo.map()) {
-          OZ_ERROR("Failed to map '%s'", texFiles.albedo.path().c());
-        }
-
-        texFiles.masks.map();
-        texFiles.normals.map();
       }
     }
   }
@@ -462,15 +455,15 @@ const File* Model::preload()
   int vboSize = nVertices * sizeof(Vertex);
   int iboSize = nIndices  * sizeof(ushort);
 
-  const void* vertexBuffer = is.skip(vboSize);
-  is.skip(iboSize);
+  const void* vertexBuffer = is.readSkip(vboSize);
+  is.readSkip(iboSize);
 
   if (nFrames != 0) {
     if (shader.hasVTF) {
       int vertexBufferSize = nFramePositions * nFrames * sizeof(float[3]);
       int normalBufferSize = nFramePositions * nFrames * sizeof(float[3]);
 
-      is.skip(vertexBufferSize + normalBufferSize);
+      is.readSkip(vertexBufferSize + normalBufferSize);
     }
     else {
       vertices  = new Vertex[nVertices];
@@ -579,8 +572,8 @@ void Model::load()
 {
   OZ_NACL_IS_MAIN(true);
 
-  hard_assert(preloadData != nullptr && preloadData->modelFile.isMapped());
-  InputStream is = preloadData->modelFile.inputStream(Endian::LITTLE);
+  hard_assert(preloadData != nullptr);
+  Stream is = preloadData->modelFile.inputStream(Endian::LITTLE);
 
   is.readVec3();
   is.readString();
@@ -619,7 +612,7 @@ void Model::load()
   int  vboSize = nVertices * sizeof(Vertex);
   int  iboSize = nIndices  * sizeof(ushort);
 
-  const void* vertexBuffer = is.skip(vboSize);
+  const void* vertexBuffer = is.readSkip(vboSize);
 
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -628,7 +621,7 @@ void Model::load()
 
   glGenBuffers(1, &ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.skip(iboSize), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.readSkip(iboSize), GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if (nFrames != 0) {
@@ -643,7 +636,7 @@ void Model::load()
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, nFramePositions, 2 * nFrames, 0, GL_RGB,
-                   GL_FLOAT, is.skip(vertexBufferSize + normalBufferSize));
+                   GL_FLOAT, is.readSkip(vertexBufferSize + normalBufferSize));
 
       glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 

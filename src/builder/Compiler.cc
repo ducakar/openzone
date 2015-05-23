@@ -63,7 +63,7 @@ struct Vertex
            weight[0] == v.weight[0] && weight[1] == v.weight[1];
   }
 
-  void write(OutputStream* os) const
+  void write(Stream* os) const
   {
     os->writePoint(pos);
 
@@ -533,7 +533,7 @@ void Compiler::vertex(float x, float y, float z)
   int index;
 
   if (caps & UNIQUE) {
-    index = vertices.include(vert);
+    index = int(&vertices.include(vert) - vertices.begin());
 
     polyIndices.add(ushort(index));
   }
@@ -678,7 +678,7 @@ void Compiler::scalingKey(const Vec3& scale, float time)
   channel.scalingKeys.add(Animation::ScalingKey{ scale, time });
 }
 
-void Compiler::writeModel(OutputStream* os, bool globalTextures)
+void Compiler::writeModel(Stream* os, bool globalTextures)
 {
   hard_assert(environment == NONE);
   hard_assert(meshes.length() > 0 && vertices.length() > 0);
@@ -874,7 +874,7 @@ void Compiler::writeModel(OutputStream* os, bool globalTextures)
   Log::printEnd(" OK");
 }
 
-void Compiler::buildModelTextures(const char* destDir)
+void Compiler::buildModelTextures(const File& destDir)
 {
   hard_assert(environment == NONE);
 
@@ -886,7 +886,7 @@ void Compiler::buildModelTextures(const char* destDir)
   textures.exclude(String::EMPTY);
 
   for (int i = 0; i < textures.length(); ++i) {
-    context.buildTexture(textures[i], String(destDir, "/") + textures[i].fileName());
+    context.buildTexture(textures[i], destDir / File(textures[i]).name());
   }
 }
 

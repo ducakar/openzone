@@ -52,7 +52,7 @@ static void printUsage()
 
 static void readLuaChunk(const char* begin, int size, const char* path)
 {
-  InputStream is(begin, begin + size);
+  Stream is(begin, begin + size);
 
   LuaSyntaxState state          = NORMAL;
   int            lineNum        = 1;
@@ -152,12 +152,12 @@ static void readLuaChunk(const char* begin, int size, const char* path)
 
 static void readLua(const File& file)
 {
-  if (file.type() != File::REGULAR) {
-    OZ_ERROR("Failed to read '%s'", file.path().c());
+  if (file.stat().type != File::REGULAR) {
+    OZ_ERROR("Failed to read '%s'", file.c());
   }
 
-  InputStream buffer = file.inputStream();
-  readLuaChunk(buffer.begin(), buffer.available(), file.path());
+  Stream buffer = file.inputStream();
+  readLuaChunk(buffer.begin(), buffer.available(), file);
 }
 
 static void readBSP(const File& file)
@@ -165,34 +165,34 @@ static void readBSP(const File& file)
   Json config;
 
   if (!config.load(file)) {
-    OZ_ERROR("Failed to load '%s'", file.path().c());
+    OZ_ERROR("Failed to load '%s'", file.c());
   }
 
   const char* title       = config["title"].get("");
   const char* description = config["description"].get("");
 
   if (String::isEmpty(title)) {
-    messages.include(file.baseName(), file.path());
+    messages.include(file.baseName(), file);
   }
   else {
-    messages.include(title, file.path());
+    messages.include(title, file);
   }
   if (!String::isEmpty(description)) {
-    messages.include(description, file.path());
+    messages.include(description, file);
   }
 
   const Json& entities = config["entities"];
   int nEntities = entities.length();
 
   if (!entities.isNull() && entities.type() != Json::ARRAY) {
-    OZ_ERROR("'entities' entry in '%s' is not an array", file.path().c());
+    OZ_ERROR("'entities' entry in '%s' is not an array", file.c());
   }
 
   for (int i = 0; i < nEntities; ++i) {
     const char* entityTitle = entities[i]["title"].get("");
 
     if (!String::isEmpty(entityTitle)) {
-      messages.include(entityTitle, file.path());
+      messages.include(entityTitle, file);
     }
   }
 
@@ -204,20 +204,20 @@ static void readClass(const File& file)
   Json config;
 
   if (!config.load(file)) {
-    OZ_ERROR("Failed to read '%s'", file.path().c());
+    OZ_ERROR("Failed to read '%s'", file.c());
   }
 
   const char* title       = config["title"].get("");
   const char* description = config["description"].get("");
 
   if (String::isEmpty(title)) {
-    messages.include(file.baseName(), file.path());
+    messages.include(file.baseName(), file);
   }
   else {
-    messages.include(title, file.path());
+    messages.include(title, file);
   }
   if (!String::isEmpty(description)) {
-    messages.include(description, file.path());
+    messages.include(description, file);
   }
 
   const Json& weaponsConfig = config["weapons"];
@@ -226,14 +226,14 @@ static void readClass(const File& file)
     const char* weaponTitle = weaponsConfig[i]["title"].get("");
 
     if (!String::isEmpty(weaponTitle)) {
-      messages.include(weaponTitle, file.path());
+      messages.include(weaponTitle, file);
     }
   }
 }
 
 static void readNirvana(const File& dir)
 {
-  File techFile = dir.path() + "/techGraph.json";
+  File techFile = dir / "techGraph.json";
   Json techConfig;
 
   if (techConfig.load(techFile)) {
@@ -243,15 +243,15 @@ static void readNirvana(const File& dir)
       const char* description = node["description"].get("");
 
       if (!String::isEmpty(technology)) {
-        messages.include(title, techFile.path());
+        messages.include(title, techFile);
       }
       if (!String::isEmpty(description)) {
-        messages.include(description, techFile.path());
+        messages.include(description, techFile);
       }
     }
   }
 
-  File mindsDir = dir.path() + "/mind";
+  File mindsDir = dir / "mind";
 
   for (const File& file : mindsDir.ls()) {
     if (!file.hasExtension("json")) {
@@ -265,17 +265,17 @@ static void readNirvana(const File& dir)
       const String& onUpdate = state["onUpdate"].get(String::EMPTY);
 
       if (!onEnter.isEmpty()) {
-        readLuaChunk(onEnter.c(), onEnter.length(), file.path());
+        readLuaChunk(onEnter.c(), onEnter.length(), file);
       }
       if (!onUpdate.isEmpty()) {
-        readLuaChunk(onUpdate.c(), onUpdate.length(), file.path());
+        readLuaChunk(onUpdate.c(), onUpdate.length(), file);
       }
 
       for (const Json& link : state["links"].arrayCIter()) {
         const String& condition = link["if"].get(String::EMPTY);
 
         if (!condition.isEmpty()) {
-          readLuaChunk(condition.c(), condition.length(), file.path());
+          readLuaChunk(condition.c(), condition.length(), file);
         }
       }
     }
@@ -284,19 +284,19 @@ static void readNirvana(const File& dir)
 
 static void readCredits(const File& file)
 {
-  if (file.type() != File::REGULAR) {
+  if (file.stat().type != File::REGULAR) {
     return;
   }
 
   Buffer buffer = file.read();
-  InputStream is(buffer);
+  Stream is(buffer);
   String contents;
 
   while (is.available() != 0) {
     contents += is.readLine() + "\n";
   }
 
-  messages.include(contents, file.path());
+  messages.include(contents, file);
 }
 
 static void readSequence(const File& file)
@@ -308,7 +308,7 @@ static void readSequence(const File& file)
     const char* title = sequence[i]["title"].get("");
 
     if (!String::isEmpty(title)) {
-      String locationInfo = String::format("%s:step #%d", file.path().c(), i + 1);
+      String locationInfo = String::format("%s:step #%d", file.c(), i + 1);
 
       messages.include(title, locationInfo);
     }
@@ -323,18 +323,17 @@ static void readDescription(const File& file)
   const char* description = descriptionConfig["description"].get("");
 
   if (!String::isEmpty(title)) {
-    messages.include(title, file.path());
+    messages.include(title, file);
   }
   if (!String::isEmpty(description)) {
-    messages.include(description, file.path());
+    messages.include(description, file);
   }
 }
 
-static void writePOT(const HashMap<String, String>* hs, const char* filePath)
+static void writePOT(const HashMap<String, String>* hs, const File& outFile)
 {
-  Buffer       buffer;
-  OutputStream os(&buffer);
-  String       s;
+  Stream os(0);
+  String s;
 
   bool isFirst = true;
   for (const auto& i : *hs) {
@@ -382,10 +381,8 @@ static void writePOT(const HashMap<String, String>* hs, const char* filePath)
     os.writeLine("msgstr \"\"");
   }
 
-  File outFile = filePath;
-
   if (!outFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", outFile.path().c());
+    OZ_ERROR("Failed to write '%s'", outFile.c());
   }
 }
 
@@ -399,24 +396,24 @@ int main(int argc, char** argv)
   }
 
 #ifdef _WIN32
-  String pkgDir = String::replace(argv[1], '\\', '/');
+  File pkgDir = String::replace(argv[1], '\\', '/');
 #else
-  String pkgDir = argv[1];
+  File pkgDir = argv[1];
 #endif
 
-  while (!pkgDir.isEmpty() && pkgDir.last() == '/') {
+  while (!pkgDir.isNil() && pkgDir.last() == '/') {
     pkgDir = pkgDir.substring(0, pkgDir.length() - 1);
   }
-  if (pkgDir.isEmpty()) {
+  if (pkgDir.isNil()) {
     OZ_ERROR("Package directory cannot be root ('/')");
   }
 
   String pkgName = pkgDir.substring(pkgDir.lastIndex('/') + 1);
 
-  File luaCommonDir  = pkgDir + "/lua/common";
-  File luaMatrixDir  = pkgDir + "/lua/matrix";
-  File luaNirvanaDir = pkgDir + "/lua/nirvana";
-  File luaClientDir  = pkgDir + "/lua/client";
+  File luaCommonDir  = pkgDir / "lua/common";
+  File luaMatrixDir  = pkgDir / "lua/matrix";
+  File luaNirvanaDir = pkgDir / "lua/nirvana";
+  File luaClientDir  = pkgDir / "lua/client";
 
   List<File> luaCommonFiles  = luaCommonDir.ls();
   List<File> luaMatrixFiles  = luaMatrixDir.ls();
@@ -437,7 +434,7 @@ int main(int argc, char** argv)
     readLua(file);
   }
 
-  File bspDir = pkgDir + "/baseq3/maps";
+  File bspDir = pkgDir / "baseq3/maps";
 
   for (const File& file : bspDir.ls()) {
     if (!file.hasExtension("json")) {
@@ -447,7 +444,7 @@ int main(int argc, char** argv)
     readBSP(file);
   }
 
-  File classDir = pkgDir + "/class";
+  File classDir = pkgDir / "class";
 
   for (const File& file : classDir.ls()) {
     if (!file.hasExtension("json")) {
@@ -457,27 +454,30 @@ int main(int argc, char** argv)
     readClass(file);
   }
 
-  File nirvanaDir = pkgDir + "/nirvana";
+  File nirvanaDir = pkgDir / "nirvana";
   readNirvana(nirvanaDir);
 
-  File creditsFile = pkgDir + "/credits/" + pkgName + ".txt";
+  File creditsFile = pkgDir / "credits/" + pkgName + ".txt";
   readCredits(creditsFile);
 
   if (!messages.isEmpty()) {
-    String mainPOT = String::format("%s/lingua/%s.pot", pkgDir.c(), pkgName.c());
+    File pkgLingua = pkgDir / "lingua";
+    File mainPOT   = pkgLingua / pkgName + ".pot";
+
     Log::print("%s ...", mainPOT.c());
 
-    File::mkdir(pkgDir + "/lingua");
+    pkgLingua.mkdir();
     writePOT(&messages, mainPOT);
+
     Log::printEnd(" OK");
   }
 
   messages.clear();
 
-  File missionsDir = pkgDir + "/mission";
+  File missionsDir = pkgDir / "mission";
 
   for (const File& mission : missionsDir.ls()) {
-    if (mission.type() != File::DIRECTORY) {
+    if (mission.stat().type != File::DIRECTORY) {
       continue;
     }
 
@@ -486,7 +486,7 @@ int main(int argc, char** argv)
         readLua(file);
       }
       else if (file.hasExtension("json")) {
-        if (file.path().endsWith(".sequence.json")) {
+        if (file.endsWith(".sequence.json")) {
           readSequence(file);
         }
         else {
@@ -496,11 +496,14 @@ int main(int argc, char** argv)
     }
 
     if (!messages.isEmpty()) {
-      String missionPOT = mission.path() + "/lingua/messages.pot";
+      File missionLingua = mission / "lingua";
+      File missionPOT    = missionLingua / "messages.pot";
+
       Log::print("%s ...", missionPOT.c());
 
-      File::mkdir(mission.path() + "/lingua");
-      writePOT(&messages, mission.path() + "/lingua/messages.pot");
+      missionLingua.mkdir();
+      writePOT(&messages, missionPOT);
+
       Log::printEnd(" OK");
     }
 

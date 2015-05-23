@@ -250,7 +250,7 @@ void Camera::read(const Json& json)
   strategic.read(json["strategic"]);
 }
 
-void Camera::read(InputStream* is)
+void Camera::read(Stream* is)
 {
   rot        = is->readQuat();
   mag        = is->readFloat();
@@ -317,7 +317,7 @@ Json Camera::write() const
   return json;
 }
 
-void Camera::write(OutputStream* os) const
+void Camera::write(Stream* os) const
 {
   os->writeQuat(desiredRot);
   os->writeFloat(desiredMag);

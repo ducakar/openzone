@@ -36,7 +36,7 @@ void Class::scanObjClass(const char* className)
   File   configFile = "@class/" + name + ".json";
 
   if (!config.load(configFile)) {
-    OZ_ERROR("Failed to load '%s'", configFile.path().c());
+    OZ_ERROR("Failed to load '%s'", configFile.c());
   }
 
   context.usedModels.include(config["imagoModel"].get(""), name + " (Object class)");
@@ -54,7 +54,7 @@ void Class::scanFragPool(const char* poolName)
 
   Json config;
   if (!config.load(configFile)) {
-    OZ_ERROR("Failed to load '%s'", configFile.path().c());
+    OZ_ERROR("Failed to load '%s'", configFile.c());
   }
 
   const Json& modelsConfig = config["models"];

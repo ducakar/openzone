@@ -66,12 +66,12 @@ struct Json::Parser
     MULTILINE_COMMENT
   };
 
-  InputStream* is;
-  const char*  path;
-  int          line;
-  int          column;
-  int          oldLine;
-  int          oldColumn;
+  Stream*     is;
+  const char* path;
+  int         line;
+  int         column;
+  int         oldLine;
+  int         oldColumn;
 
   OZ_INTERNAL
   char readChar()
@@ -135,7 +135,7 @@ struct Json::Parser
   }
 
   OZ_INTERNAL
-  static Json parse(InputStream* is, const char* path)
+  static Json parse(Stream* is, const char* path)
   {
     Parser parser(is, path);
 
@@ -146,7 +146,7 @@ struct Json::Parser
   }
 
   OZ_INTERNAL
-  explicit Parser(InputStream* is_, const char* path_) :
+  explicit Parser(Stream* is_, const char* path_) :
     is(is_), path(path_), line(1), column(0), oldLine(1), oldColumn(0)
   {}
 
@@ -400,7 +400,7 @@ struct Json::Parser
 
 struct Json::Formatter
 {
-  OutputStream* os;
+  Stream*       os;
   const Format* format;
   int           lineEndLength;
   int           indentLevel;
@@ -1164,9 +1164,7 @@ Json& Json::add(const char* key, const Json& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
-
-  int index = map.add(key, json);
-  return map[index].value;
+  return map.add(key, json).value;
 }
 
 Json& Json::add(const char* key, Json&& json)
@@ -1177,9 +1175,7 @@ Json& Json::add(const char* key, Json&& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
-
-  int index = map.add(key, json);
-  return map[index].value;
+  return map.add(key, json).value;
 }
 
 Json& Json::include(const char* key, const Json& json)
@@ -1190,12 +1186,7 @@ Json& Json::include(const char* key, const Json& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
-
-  int index = map.index(key);
-  if (index < 0) {
-    index = map.add(key, json);
-  }
-  return map[index].value;
+  return map.include(key, json).value;
 }
 
 Json& Json::include(const char* key, Json&& json)
@@ -1206,12 +1197,7 @@ Json& Json::include(const char* key, Json&& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
-
-  int index = map.index(key);
-  if (index < 0) {
-    index = map.add(key, json);
-  }
-  return map[index].value;
+  return map.include(key, json).value;
 }
 
 bool Json::erase(int index)
@@ -1354,8 +1340,7 @@ String Json::toString() const
 
 String Json::toFormattedString(const Format& format) const
 {
-  Buffer buffer;
-  OutputStream os(&buffer);
+  Stream    os(0);
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
 
   formatter.writeValue(*this);
@@ -1366,20 +1351,18 @@ String Json::toFormattedString(const Format& format) const
 
 bool Json::load(const File& file)
 {
-  InputStream is = file.inputStream();
-
+  Stream is = file.inputStream();
   if (is.available() == 0) {
     return false;
   }
 
-  *this = Parser::parse(&is, file.path());
+  *this = Parser::parse(&is, file);
   return true;
 }
 
 bool Json::save(const File& file, const Format& format) const
 {
-  Buffer buffer;
-  OutputStream os(&buffer);
+  Stream os(0);
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
 
   formatter.writeValue(*this);

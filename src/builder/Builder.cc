@@ -77,42 +77,32 @@ void Builder::printUsage()
 
 void Builder::copyFiles(const File& srcDir, const File& destDir, const char* ext, bool recurse)
 {
-  String sSrcDir = srcDir.path();
-  String sDestDir = destDir.path();
   List<File> dirList = srcDir.ls();
 
   if (dirList.isEmpty()) {
     return;
   }
 
-  if (!sSrcDir.fileIsEmpty()) {
-    sSrcDir = sSrcDir + "/";
-  }
-  if (!sDestDir.fileIsEmpty()) {
-    sDestDir = sDestDir + "/";
-  }
-
-  Log::println("Copying '%s*.%s' -> '%s' {", sSrcDir.c(), ext, sDestDir.c());
+  Log::println("Copying '%s*.%s' -> '%s' {", srcDir.c(), ext, destDir.c());
   Log::indent();
 
-  File::mkdir(destDir.path());
+  destDir.mkdir();
 
   for (const File& file : dirList) {
     String fileName = file.name();
 
-    if (file.type() == File::DIRECTORY) {
+    if (file.stat().type == File::DIRECTORY) {
       if (recurse) {
-        copyFiles(srcDir.path() + "/" + file.name(), destDir.path() + "/" + file.name(), ext,
-                  true);
+        copyFiles(srcDir / file.name(), destDir / file.name(), ext, true);
       }
     }
     else if (file.hasExtension(ext) || fileName.beginsWith("README") ||
              fileName.beginsWith("COPYING"))
     {
-      Log::print("Copying '%s' -> '%s' ...", file.path().c(), sDestDir.c());
+      Log::print("Copying '%s' -> '%s' ...", file.c(), destDir.c());
 
-      if (!File::cp(file, sDestDir)) {
-        OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().c(), sDestDir.c());
+      if (!file.copyTo(destDir)) {
+        OZ_ERROR("Failed to copy '%s' -> '%s'", file.c(), destDir.c());
       }
 
       Log::printEnd(" OK");
@@ -129,19 +119,14 @@ void Builder::buildCaela()
   Log::println("Building Caela {");
   Log::indent();
 
-  String srcDir = "@caelum";
-  File dir = srcDir;
-
-  srcDir = srcDir + "/";
-
-  for (const File& file : dir.ls()) {
+  for (const File& file : File("@caelum").ls()) {
     if (!file.hasExtension("json")) {
       continue;
     }
 
     String name = file.baseName();
 
-    File::mkdir("caelum");
+    File("caelum").mkdir();
     caelum.build(name);
   }
 
@@ -154,17 +139,12 @@ void Builder::buildTerrae()
   Log::println("Building Terrae {");
   Log::indent();
 
-  String srcDir = "@terra";
-  File dir = srcDir;
-
-  srcDir = srcDir + "/";
-
-  for (const File& file : dir.ls()) {
+  for (const File& file : File("@terra").ls()) {
     if (!file.hasExtension("json")) {
       continue;
     }
 
-    File::mkdir("terra");
+    File("terra").mkdir();
     terra.build(file.baseName());
   }
 
@@ -177,19 +157,12 @@ void Builder::buildBSPs()
   Log::println("Building BSPs {");
   Log::indent();
 
-  String srcDir = "@baseq3/maps";
-  String destDir = "bsp";
-  File dir = srcDir;
-
-  srcDir = srcDir + "/";
-  destDir = destDir + "/";
-
-  for (const File& file : dir.ls()) {
+  for (const File& file : File("@baseq3/maps").ls()) {
     if (!file.hasExtension("json")) {
       continue;
     }
 
-    File::mkdir("bsp");
+    File("bsp").mkdir();
     bsp.build(file.baseName());
   }
 
@@ -208,16 +181,14 @@ void Builder::buildBSPTextures()
 
   Set<String> usedDirs;
 
-  File dir = "@baseq3/textures";
-
-  for (const File& subDir : dir.ls()) {
-    if (subDir.type() != File::DIRECTORY) {
+  for (const File& subDir : File("@baseq3/textures").ls()) {
+    if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
     for (const File& file : subDir.ls()) {
       String name = file.name();
-      String path = file.path();
+      String path = file;
 
       int dot   = path.lastIndex('.');
       int slash = path.lastIndex('/');
@@ -240,10 +211,10 @@ void Builder::buildBSPTextures()
         continue;
       }
 
-      usedDirs.include(subDir.path());
+      usedDirs.include(subDir);
 
-      File::mkdir("tex");
-      File::mkdir("tex/" + subDir.name());
+      File("tex").mkdir();
+      File("tex/" + subDir.name()).mkdir();
 
       context.buildTexture(path, "tex/" + name);
       context.usedTextures.exclude(name);
@@ -252,19 +223,18 @@ void Builder::buildBSPTextures()
 
   for (const File& subDir : usedDirs) {
     for (const File& file : subDir.ls()) {
-      if (file.type() != File::REGULAR) {
+      if (file.stat().type != File::REGULAR) {
         continue;
       }
 
       String name = file.name();
-      String path = file.path();
 
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
-        Log::print("Copying '%s' ...", path.c());
+        Log::print("Copying '%s' ...", file.c());
 
         File destFile = String::format("tex/%s/%s", subDir.name().c(), name.c());
-        if (!File::cp(file, destFile)) {
-          OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().c(), destFile.path().c());
+        if (!file.copyTo(destFile)) {
+          OZ_ERROR("Failed to copy '%s' -> '%s'", file.c(), destFile.c());
         }
 
         Log::printEnd(" OK");
@@ -354,31 +324,27 @@ void Builder::buildModels()
   Log::println("Building used models {");
   Log::indent();
 
-  File mdlDir = "@mdl";
-  List<File> dirList = mdlDir.ls();
-
-  for (const File& dir : dirList) {
+  for (const File& dir : File("@mdl").ls()) {
     if (!context.usedModels.exclude(dir.name())) {
       continue;
     }
 
-    File::mkdir("mdl");
-    File::mkdir(&dir.path()[1]);
+    File("mdl").mkdir();
+    File(dir.substring(1)).mkdir();
 
     for (const File& file : dir.ls()) {
-      if (file.type() != File::REGULAR) {
+      if (file.stat().type != File::REGULAR) {
         continue;
       }
 
       String name = file.name();
-      String path = file.path();
 
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
-        Log::print("Copying '%s' ...", path.c());
+        Log::print("Copying '%s' ...", file.c());
 
-        File destFile = &path[1];
-        if (!File::cp(file, destFile)) {
-          OZ_ERROR("Failed to write '%s' -> '%s'", file.path().c(), destFile.path().c());
+        File destFile = &file[1];
+        if (!file.copyTo(destFile)) {
+          OZ_ERROR("Failed to write '%s' -> '%s'", file.c(), destFile.c());
         }
 
         Log::printEnd(" OK");
@@ -386,18 +352,18 @@ void Builder::buildModels()
       }
     }
 
-    File daeFile = dir.path() + "/data.dae";
-    File objFile = dir.path() + "/data.obj";
-    File md2File = dir.path() + "/tris.md2";
+    File daeFile = dir / "data.dae";
+    File objFile = dir / "data.obj";
+    File md2File = dir / "tris.md2";
 
-    if (daeFile.type() == File::REGULAR || objFile.type() == File::REGULAR) {
-      assImp.build(dir.path());
+    if (daeFile.stat().type == File::REGULAR || objFile.stat().type == File::REGULAR) {
+      assImp.build(dir);
     }
-    else if (md2File.type() == File::REGULAR) {
-      md2.build(dir.path());
+    else if (md2File.stat().type == File::REGULAR) {
+      md2.build(dir);
     }
     else {
-      md3.build(dir.path());
+      md3.build(dir);
     }
   }
 
@@ -430,15 +396,13 @@ void Builder::copySounds()
 
   Set<String> usedDirs;
 
-  File dir = "@snd";
-
-  for (const File& subDir : dir.ls()) {
-    if (subDir.type() != File::DIRECTORY) {
+  for (const File& subDir : File("@snd").ls()) {
+    if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
     for (const File& file : subDir.ls()) {
-      if (file.type() != File::REGULAR ||
+      if (file.stat().type != File::REGULAR ||
           (!file.hasExtension("wav") && !file.hasExtension("oga") &&
            !file.hasExtension("ogg")))
       {
@@ -446,7 +410,7 @@ void Builder::copySounds()
       }
 
       String name = file.name();
-      String path = file.path();
+      String path = file;
 
       int dot   = path.lastIndex('.');
       int slash = path.lastIndex('/');
@@ -465,15 +429,15 @@ void Builder::copySounds()
 
       Log::print("Copying '%s' ...", name.c());
 
-      usedDirs.include(subDir.path());
+      usedDirs.include(subDir);
 
-      File::mkdir("snd");
-      File::mkdir("snd/" + subDir.name());
+      File("snd").mkdir();
+      File("snd/" + subDir.name()).mkdir();
 
-      File destFile = &file.path()[1];
+      File destFile = &file[1];
 
-      if (!File::cp(file, destFile)) {
-        OZ_ERROR("Failed to copy '%s' -> '%s'", file.path().c(), destFile.path().c());
+      if (!file.copyTo(destFile)) {
+        OZ_ERROR("Failed to copy '%s' -> '%s'", file.c(), destFile.c());
       }
 
       Log::printEnd(" OK");
@@ -484,22 +448,21 @@ void Builder::copySounds()
     File subDir = subDirPath;
 
     for (const File& file : subDir.ls()) {
-      if (file.type() != File::REGULAR) {
+      if (file.stat().type != File::REGULAR) {
         continue;
       }
 
       String name = file.name();
-      String path = file.path();
 
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
-        Log::print("Copying '%s' ...", path.c());
+        Log::print("Copying '%s' ...", file.c());
 
-        File::mkdir("snd");
-        File::mkdir("snd/" + subDir.name());
+        File("snd").mkdir();
+        File("snd/" + subDir.name()).mkdir();
 
-        File destFile = &path[1];
+        File destFile = &file[1];
         if (!destFile.write(file.read())) {
-          OZ_ERROR("Failed to write '%s'", destFile.path().c());
+          OZ_ERROR("Failed to write '%s'", destFile.c());
         }
 
         Log::printEnd(" OK");
@@ -555,31 +518,30 @@ void Builder::buildMissions()
   Log::println("Building missions {");
   Log::indent();
 
-  File missionsDir = "@mission";
-  List<File> missions = missionsDir.ls();
+  List<File> missions = File("@mission").ls();
 
   if (!missions.isEmpty()) {
-    File::mkdir("mission");
+    File("mission").mkdir();
   }
 
   for (const File& mission : missions) {
-    checkLua(mission.path());
+    checkLua(mission);
 
-    copyFiles(mission.path(), &mission.path()[1], "lua", false);
-    copyFiles(mission.path(), &mission.path()[1], "json", false);
+    copyFiles(mission, &mission[1], "lua", false);
+    copyFiles(mission, &mission[1], "json", false);
 
-    File srcFile = mission.path() + "/description.png";
-    if (srcFile.type() == File::MISSING) {
+    File srcFile = mission / "description.png";
+    if (srcFile.stat().type == File::MISSING) {
       continue;
     }
 
-    Log::print("Building thumbnail '%s' ...", srcFile.path().c());
+    Log::print("Building thumbnail '%s' ...", srcFile.c());
 
     ImageBuilder::options = 0;
     ImageBuilder::scale   = 1.0f;
 
-    if (!ImageBuilder::convertToDDS(srcFile.path(), &mission.path()[1])) {
-      OZ_ERROR("Failed to convert '%s' to DDS", srcFile.path().c());
+    if (!ImageBuilder::convertToDDS(srcFile, &mission[1])) {
+      OZ_ERROR("Failed to convert '%s' to DDS", srcFile.c());
     }
 
     Log::printEnd(" OK");
@@ -598,9 +560,8 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
 
   File archive = String::format("../%s.%s", name, use7zip ? "7z" : "zip");
 
-  String cmdLine = use7zip ? String::format("7z u -ms=off -mx=9 '%s' *", archive.path().c()) :
-                   String::format("zip -ur %s '%s' *",
-                                  useCompression ? "-9" : "-0", archive.path().c());
+  String cmdLine = use7zip ? String::format("7z u -ms=off -mx=9 '%s' *", archive.c()) :
+                   String::format("zip -ur %s '%s' *", useCompression ? "-9" : "-0", archive.c());
 
   Log::println("%s", cmdLine.c());
   Log::println();
@@ -609,10 +570,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
     OZ_ERROR(use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed");
   }
 
-  // Re-stat file since it changed on disk.
-  archive.stat();
-
-  int size = archive.size();
+  int size = archive.stat().size;
   if (size >= 0) {
     Log::println();
     Log::println("Archive size: %.2f MiB = %.2f MB",
@@ -775,43 +733,43 @@ int Builder::main(int argc, char** argv)
   bool hasOutDir = optind != argc - 1;
 
 #ifdef _WIN32
-  String srcDir = String::replace(argv[optind], '\\', '/');
-  String outDir = hasOutDir ? String::replace(argv[optind + 1], '\\', '/') : "share/openzone";
+  File srcDir = String::replace(argv[optind], '\\', '/');
+  File outDir = hasOutDir ? String::replace(argv[optind + 1], '\\', '/') : "share/openzone";
 #else
-  String srcDir = argv[optind];
-  String outDir = hasOutDir ? argv[optind + 1] : "share/openzone";
+  File srcDir = argv[optind];
+  File outDir = hasOutDir ? argv[optind + 1] : "share/openzone";
 #endif
 
-  while (!srcDir.isEmpty() && srcDir.last() == '/') {
+  while (!srcDir.isNil() && srcDir.last() == '/') {
     srcDir = srcDir.substring(0, srcDir.length() - 1);
   }
-  if (srcDir.isEmpty()) {
+  if (srcDir.isNil()) {
     OZ_ERROR("Source directory cannot be root ('/')");
   }
 
   String pkgName = srcDir.substring(srcDir.lastIndex('/') + 1);
 
   if (srcDir[0] != '/') {
-    srcDir = File::cwd() + "/" + srcDir;
+    srcDir = File::cwd() / srcDir;
   }
   if (outDir[0] != '/') {
-    outDir = File::cwd() + "/" + outDir;
+    outDir = File::cwd() / outDir;
   }
 
-  File::mkdir(outDir);
+  outDir.mkdir();
 
   if (!hasOutDir) {
-    outDir += "/" + pkgName;
-    File::mkdir(outDir);
+    outDir /= pkgName;
+    outDir.mkdir();
   }
 
   Log::println("Chdir to output directory '%s'", outDir.c());
-  if (!File::chdir(outDir)) {
+  if (!outDir.chdir()) {
     OZ_ERROR("Failed to set working directory '%s'", outDir.c());
   }
 
   Log::println("Adding source directory '%s' to search path", srcDir.c());
-  if (!File::mount(srcDir, nullptr, true)) {
+  if (!srcDir.mountAt(nullptr, true)) {
     OZ_ERROR("Failed to add directory '%s' to search path", srcDir.c());
   }
 

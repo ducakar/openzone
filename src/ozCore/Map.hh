@@ -135,7 +135,7 @@ private:
    * @return Position of the inserted element.
    */
   template <typename Key_, typename Value_>
-  int insert(Key_&& key, Value_&& value, bool overwrite)
+  Pair& insert(Key_&& key, Value_&& value, bool overwrite)
   {
     int i = Arrays::bisection<Pair, Key>(data, count, key);
 
@@ -144,7 +144,6 @@ private:
         data[i].key   = static_cast<Key_&&>(key);
         data[i].value = static_cast<Value_&&>(value);
       }
-      return i;
     }
     else {
       ensureCapacity(count + 1);
@@ -154,9 +153,8 @@ private:
       data[i].key   = static_cast<Key_&&>(key);
       data[i].value = static_cast<Value_&&>(value);
       ++count;
-
-      return i;
     }
+    return data[i];
   }
 
 public:
@@ -264,7 +262,7 @@ public:
    * @return Position of the inserted element.
    */
   template <typename Key_, typename Value_>
-  int add(Key_&& key, Value_&& value)
+  Pair& add(Key_&& key, Value_&& value)
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
@@ -275,7 +273,7 @@ public:
    * @return Position of the inserted or the existing element.
    */
   template <typename Key_, typename Value_>
-  int include(Key_&& key, Value_&& value)
+  Pair& include(Key_&& key, Value_&& value)
   {
     return insert<Key_, Value_>(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
   }

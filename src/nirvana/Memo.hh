@@ -38,14 +38,14 @@ public:
 
   static Pool<Memo> pool;
 
-  static Device* create(int id, InputStream* is);
+  static Device* create(int id, Stream* is);
 
   explicit Memo(const char* text);
 
   const char* type() const override;
   const char* getMemo() const override;
 
-  void write(OutputStream* os) const override;
+  void write(Stream* os) const override;
 
   OZ_STATIC_POOL_ALLOC(pool)
 };

@@ -59,9 +59,18 @@
 #define OZ_BYTE_ORDER __BYTE_ORDER__
 
 /**
+ * @def OZ_HIDDEN
+ * Compiler-specific attribute for functions that should not be exported from a shared library.
+ */
+#ifdef _WIN32
+# define OZ_HIDDEN
+#else
+# define OZ_HIDDEN __attribute__((visibility("hidden")))
+#endif
+
+/**
  * @def OZ_INTERNAL
- * Compiler-specific attribute for functions that should not be exported from a shared library and
- * are only called from withing their compilation units.
+ * Same as `OZ_HIDDEN` but function pointer is only valid inside function's compilation unit.
  */
 #ifdef _WIN32
 # define OZ_INTERNAL

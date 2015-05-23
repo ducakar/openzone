@@ -39,7 +39,7 @@ public:
   struct Resource
   {
     String name;
-    String path;
+    File   path;
   };
 
   List<Resource> shaders;

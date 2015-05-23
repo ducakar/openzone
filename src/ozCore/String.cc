@@ -39,16 +39,7 @@ namespace oz
 
 static const int LOCAL_BUFFER_SIZE = 4096;
 
-const String String::EMPTY;
-
-OZ_INTERNAL
-String::String(const char* s, int sLength, const char* t, int tLength)
-{
-  char* begin = resize(sLength + tLength, false);
-
-  memcpy(begin, s, sLength);
-  memcpy(begin + sLength, t, tLength + 1);
-}
+const String String::EMPTY = String();
 
 OZ_INTERNAL
 char* String::resize(int newCount, bool keepContents)
@@ -66,7 +57,7 @@ char* String::resize(int newCount, bool keepContents)
   }
 
   if (newCount != count) {
-    char* oldBuffer = data();
+    char* oldBuffer = begin();
     char* newBuffer = new char[newCount + 1];
 
     if (keepContents) {
@@ -229,49 +220,6 @@ List<String> String::split(const char* s, char delimiter)
   return list;
 }
 
-String String::fileDirectory(const char* s)
-{
-  int slash = lastIndex(s, '/');
-
-  return slash >= 0 ? substring(s, 0, slash) : String();
-}
-
-String String::fileName(const char* s)
-{
-  int slash = lastIndex(s, '/');
-
-  return slash >= 0 ? substring(s, slash + 1) : substring(s, fileIsVirtual(s));
-}
-
-String String::fileBaseName(const char* s)
-{
-  int begin = max<int>(lastIndex(s, '/') + 1, fileIsVirtual(s));
-  int dot   = lastIndex(s, '.');
-
-  return begin <= dot ? substring(s, begin, dot) : substring(s, begin);
-}
-
-String String::fileExtension(const char* s)
-{
-  int slash = lastIndex(s, '/');
-  int dot   = lastIndex(s, '.');
-
-  return slash < dot ? substring(s, dot + 1) : String();
-}
-
-bool String::fileHasExtension(const char* s, const char* ext)
-{
-  const char* slash = findLast(s, '/');
-  const char* dot   = findLast(s, '.');
-
-  if (slash < dot) {
-    return compare(dot + 1, ext) == 0;
-  }
-  else {
-    return isEmpty(ext);
-  }
-}
-
 bool String::parseBool(const char* s, const char** end)
 {
   if (s[0] == 't' && s[1] == 'r' && s[2] == 'u' && s[3] == 'e') {
@@ -315,6 +263,14 @@ String::String(const char* s, const char* t) :
   String(s, length(s), t, length(t))
 {}
 
+String::String(const char* s, int sLength, const char* t, int tLength)
+{
+  char* begin = resize(sLength + tLength, false);
+
+  memcpy(begin, s, sLength);
+  memcpy(begin + sLength, t, tLength + 1);
+}
+
 String::String(bool b) :
   String(b ? "true" : "false", 5)
 {}
@@ -342,7 +298,7 @@ String::~String()
 }
 
 String::String(const String& s) :
-  String(s.data(), s.count)
+  String(s.begin(), s.count)
 {}
 
 String::String(String&& s) :
@@ -359,7 +315,7 @@ String& String::operator = (const String& s)
   if (&s != this) {
     char* begin = resize(s.count, false);
 
-    memcpy(begin, s.data(), count + 1);
+    memcpy(begin, s.begin(), count + 1);
   }
   return *this;
 }
@@ -381,7 +337,7 @@ String& String::operator = (String&& s)
 
 String& String::operator = (const char* s)
 {
-  if (s != data()) {
+  if (s != begin()) {
     int   nChars = length(s);
     char* begin  = resize(nChars, false);
 
@@ -428,37 +384,37 @@ String String::si(double e, const char* format)
 
 int String::index(char ch, int start) const
 {
-  return index(data(), ch, start);
+  return index(begin(), ch, start);
 }
 
 int String::lastIndex(char ch, int end) const
 {
-  return lastIndex(data(), ch, end);
+  return lastIndex(begin(), ch, end);
 }
 
 int String::lastIndex(char ch) const
 {
-  return lastIndex(data(), ch, count);
+  return lastIndex(begin(), ch, count);
 }
 
 const char* String::find(char ch, int start) const
 {
-  return find(data(), ch, start);
+  return find(begin(), ch, start);
 }
 
 const char* String::findLast(char ch, int end) const
 {
-  return findLast(data(), ch, end);
+  return findLast(begin(), ch, end);
 }
 
 const char* String::findLast(char ch) const
 {
-  return findLast(data(), ch, count);
+  return findLast(begin(), ch, count);
 }
 
 bool String::beginsWith(const char* sub) const
 {
-  return beginsWith(data(), sub);
+  return beginsWith(begin(), sub);
 }
 
 bool String::endsWith(const char* sub) const
@@ -469,7 +425,7 @@ bool String::endsWith(const char* sub) const
     return false;
   }
 
-  const char* end    = data() + count  - 1;
+  const char* end    = begin() + count  - 1;
   const char* subEnd = sub    + subLen - 1;
 
   while (subEnd >= sub && *subEnd == *end) {
@@ -481,32 +437,32 @@ bool String::endsWith(const char* sub) const
 
 bool String::parseBool(const char** end) const
 {
-  return parseBool(data(), end);
+  return parseBool(begin(), end);
 }
 
 int String::parseInt(const char** end) const
 {
-  return parseInt(data(), end);
+  return parseInt(begin(), end);
 }
 
 double String::parseDouble(const char** end) const
 {
-  return parseDouble(data(), end);
+  return parseDouble(begin(), end);
 }
 
 String String::operator + (const String& s) const
 {
-  return String(data(), count, s.data(), s.count);
+  return String(begin(), count, s.begin(), s.count);
 }
 
 String String::operator + (const char* s) const
 {
-  return String(data(), count, s, length(s));
+  return String(begin(), count, s, length(s));
 }
 
 String operator + (const char* s, const String& t)
 {
-  return String(s, String::length(s), t.data(), t.count);
+  return String(s, String::length(s), t.begin(), t.count);
 }
 
 String& String::operator += (const String& s)
@@ -514,7 +470,7 @@ String& String::operator += (const String& s)
   int oCount = count;
 
   resize(count + s.count, true);
-  memcpy(data() + oCount, s.data(), s.count + 1);
+  memcpy(begin() + oCount, s.begin(), s.count + 1);
 
   return *this;
 }
@@ -525,7 +481,7 @@ String& String::operator += (const char* s)
   int sLength = length(s);
 
   resize(count + sLength, true);
-  memcpy(data() + oCount, s, sLength + 1);
+  memcpy(begin() + oCount, s, sLength + 1);
 
   return *this;
 }
@@ -534,42 +490,42 @@ String String::substring(int start) const
 {
   hard_assert(0 <= start && start <= count);
 
-  return String(data() + start, count - start);
+  return String(begin() + start, count - start);
 }
 
 String String::substring(int start, int end) const
 {
   hard_assert(0 <= start && start <= count && start <= end && end <= count);
 
-  return String(data() + start, end - start);
+  return String(begin() + start, end - start);
 }
 
 String String::trim() const
 {
-  const char* begin = data();
-  const char* end   = begin + count;
+  const char* start = begin();
+  const char* end   = start + count;
 
-  while (begin < end && isBlank(*begin)) {
-    ++begin;
+  while (start < end && isBlank(*start)) {
+    ++start;
   }
-  while (begin < end && isBlank(*(end - 1))) {
+  while (start < end && isBlank(*(end - 1))) {
     --end;
   }
 
-  return String(begin, int(end - begin));
+  return String(start, int(end - start));
 }
 
 String String::replace(char whatChar, char withChar) const
 {
   String r;
 
-  const char* oBegin = data();
-  char*       rBegin = r.resize(count, false);
+  const char* oStart = begin();
+  char*       rStart = r.resize(count, false);
 
   for (int i = 0; i < count; ++i) {
-    rBegin[i] = oBegin[i] == whatChar ? withChar : oBegin[i];
+    rStart[i] = oStart[i] == whatChar ? withChar : oStart[i];
   }
-  rBegin[count] = '\0';
+  rStart[count] = '\0';
 
   return r;
 }
@@ -578,62 +534,19 @@ List<String> String::split(char delimiter) const
 {
   List<String> list;
 
-  int begin = 0;
+  int start = 0;
   int end   = index(delimiter);
 
   // Count substrings first.
   while (end >= 0) {
-    list.add(substring(begin, end));
+    list.add(substring(start, end));
 
-    begin = end + 1;
-    end   = index(delimiter, begin);
+    start = end + 1;
+    end   = index(delimiter, start);
   }
-  list.add(substring(begin));
+  list.add(substring(start));
 
   return list;
-}
-
-String String::fileDirectory() const
-{
-  int slash = lastIndex('/');
-
-  return slash >= 0 ? substring(0, slash) : String();
-}
-
-String String::fileName() const
-{
-  int slash = lastIndex('/');
-
-  return slash >= 0 ? substring(slash + 1) : substring(fileIsVirtual());
-}
-
-String String::fileBaseName() const
-{
-  int begin = max<int>(lastIndex('/') + 1, fileIsVirtual());
-  int dot   = lastIndex('.');
-
-  return begin <= dot ? substring(begin, dot) : substring(begin);
-}
-
-String String::fileExtension() const
-{
-  int slash = lastIndex('/');
-  int dot   = lastIndex('.');
-
-  return slash < dot ? substring(dot + 1) : String();
-}
-
-bool String::fileHasExtension(const char* ext) const
-{
-  const char* slash = findLast('/');
-  const char* dot   = findLast('.');
-
-  if (slash < dot) {
-    return compare(dot + 1, ext) == 0;
-  }
-  else {
-    return isEmpty(ext);
-  }
 }
 
 }

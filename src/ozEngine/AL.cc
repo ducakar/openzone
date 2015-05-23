@@ -45,7 +45,7 @@ static ALCcontext* soundContext = nullptr;
 
 static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 {
-  InputStream* is = static_cast<InputStream*>(handle);
+  Stream* is = static_cast<Stream*>(handle);
 
   int blockSize = int(size);
   int nBlocks   = min(int(n), is->available() / blockSize);
@@ -56,7 +56,7 @@ static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 
 static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
 {
-  InputStream* is = static_cast<InputStream*>(handle);
+  Stream* is = static_cast<Stream*>(handle);
 
   int origin = whence == SEEK_CUR ? is->tell() : whence == SEEK_END ? is->capacity() : 0;
 
@@ -66,7 +66,7 @@ static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
 
 static long vorbisTell(void* handle)
 {
-  InputStream* is = static_cast<InputStream*>(handle);
+  Stream* is = static_cast<Stream*>(handle);
 
   return is->tell();
 }
@@ -110,7 +110,7 @@ struct AL::Streamer::Data
   ALenum         format;
   ALsizei        rate;
   Buffer         fileBuffer;
-  InputStream    is;
+  Stream         is;
   char           samples[BUFFER_SIZE];
 };
 
@@ -186,7 +186,7 @@ bool AL::Streamer::open(const File& file)
 
   data             = new Data;
   data->fileBuffer = file.read();
-  data->is         = InputStream(data->fileBuffer);
+  data->is         = Stream(data->fileBuffer);
 
   if (data->fileBuffer.isEmpty()) {
     delete data;
@@ -365,7 +365,7 @@ void AL::checkError(const char* function, const char* file, int line)
 
 bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 {
-  InputStream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.inputStream(Endian::LITTLE);
 
   if (is.available() == 0) {
     return false;
@@ -392,7 +392,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
     int size = is.readInt();
 
     while (!String::beginsWith(chunkName, "data")) {
-      is.skip(size);
+      is.readSkip(size);
 
       if (is.available() == 0) {
         return false;
@@ -413,7 +413,7 @@ bool AL::bufferDataFromFile(ALuint buffer, const File& file)
 
     size = min(size, is.available());
 
-    const char* data = is.skip(size);
+    const char* data = is.readSkip(size);
 
 #if OZ_BYTE_ORDER == 4321
 

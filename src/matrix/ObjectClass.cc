@@ -288,7 +288,7 @@ Object* ObjectClass::create(int index, const Json& json) const
   return new Object(this, index, json);
 }
 
-Object* ObjectClass::create(InputStream* is) const
+Object* ObjectClass::create(Stream* is) const
 {
   return new Object(this, is);
 }

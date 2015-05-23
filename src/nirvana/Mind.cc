@@ -49,7 +49,7 @@ Mind::Mind(int bot_) :
   luaNirvana.registerMind(bot);
 }
 
-Mind::Mind(int bot_, InputStream* is) :
+Mind::Mind(int bot_, Stream* is) :
   bot(bot_)
 {
   flags = is->readInt();
@@ -108,7 +108,7 @@ void Mind::update(bool doRegularUpdate)
   }
 }
 
-void Mind::write(OutputStream* os) const
+void Mind::write(Stream* os) const
 {
   os->writeInt(flags);
   os->writeInt(side);

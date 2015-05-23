@@ -45,8 +45,8 @@ public:
   void update();
   void create(const char* missionPath);
 
-  void read(InputStream* is);
-  void write(OutputStream* os);
+  void read(Stream* is);
+  void write(Stream* os);
 
   void init();
   void destroy();

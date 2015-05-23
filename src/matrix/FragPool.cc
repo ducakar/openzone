@@ -79,7 +79,7 @@ Frag* FragPool::create(int index, const Point& pos, const Vec3& velocity) const
   return new Frag(this, index, pos, velocity);
 }
 
-Frag* FragPool::create(InputStream* is) const
+Frag* FragPool::create(Stream* is) const
 {
   return new Frag(this, is);
 }

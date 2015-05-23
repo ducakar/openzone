@@ -33,11 +33,11 @@ void BSP::load()
 {
   Log::print("Loading BSP structure '%s' ...", name.c());
 
-  File file = "@bsp/" + name + ".ozBSP";
-  InputStream is = file.inputStream(Endian::LITTLE);
+  File   file = "@bsp/" + name + ".ozBSP";
+  Stream is   = file.inputStream(Endian::LITTLE);
 
   if (is.available() == 0) {
-    OZ_ERROR("BSP file '%s' read failed", file.path().c());
+    OZ_ERROR("BSP file '%s' read failed", file.c());
   }
 
   // bounds
@@ -245,11 +245,11 @@ BSP::BSP(const char* name_, int id_) :
 {
   File file = String::format("@bsp/%s.ozBSP", name_);
 
-  if (file.type() != File::REGULAR) {
-    OZ_ERROR("BSP file '%s' read failed", file.path().c());
+  if (file.stat().type != File::REGULAR) {
+    OZ_ERROR("BSP file '%s' read failed", file.c());
   }
 
-  InputStream is   = file.inputStream(Endian::LITTLE);
+  Stream is        = file.inputStream(Endian::LITTLE);
 
   mins             = is.readPoint();
   maxs             = is.readPoint();

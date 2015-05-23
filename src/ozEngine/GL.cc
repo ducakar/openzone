@@ -58,7 +58,7 @@ static const GLenum CUBE_MAP_ENUMS[]  = {
 
 static void readFunc(png_struct* png, ubyte* data, size_t size)
 {
-  InputStream* is = static_cast<InputStream*>(png_get_io_ptr(png));
+  Stream* is = static_cast<Stream*>(png_get_io_ptr(png));
 
   is->readChars(reinterpret_cast<char*>(data), int(size));
 }
@@ -186,7 +186,7 @@ void GL::checkError(const char* function, const char* file, int line)
 
 int GL::textureDataFromFile(const File& file, int bias)
 {
-  InputStream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.inputStream(Endian::LITTLE);
 
   // Implementation is based on specifications from
   // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
@@ -282,7 +282,7 @@ int GL::textureDataFromFile(const File& file, int bias)
 
         for (int j = 0; j < nMipmaps; ++j) {
           if (pixelFlags & DDPF_FOURCC) {
-            const char* data = is.skip(mipmapS3Size);
+            const char* data = is.readSkip(mipmapS3Size);
 
             if (j >= bias) {
               glCompressedTexImage2D(faceTarget, j - bias, format, mipmapWidth, mipmapHeight, 0,
@@ -294,7 +294,7 @@ int GL::textureDataFromFile(const File& file, int bias)
             int mipmapSize  = mipmapHeight * mipmapPitch;
 
             if (j < bias) {
-              is.skip(mipmapWidth * mipmapHeight * pixelSize);
+              is.readSkip(mipmapWidth * mipmapHeight * pixelSize);
             }
             else {
               Buffer data(mipmapSize);
@@ -303,7 +303,7 @@ int GL::textureDataFromFile(const File& file, int bias)
                 char* pixels    = &data[y * mipmapPitch];
                 int   lineWidth = mipmapWidth * pixelSize;
 
-                memcpy(pixels, is.skip(lineWidth), lineWidth);
+                memcpy(pixels, is.readSkip(lineWidth), lineWidth);
 
                 // BGR(A) -> RGB(A).
                 for (int x = 0; x < mipmapWidth; ++x) {
@@ -474,11 +474,10 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
   };
 }
 
-static bool readShaderFile(const File& file, OutputStream* os, List<int>* fileOffsets)
+static bool readShaderFile(const File& file, Stream* os, List<int>* fileOffsets)
 {
-  InputStream  is = file.inputStream();
-  Buffer       cb;
-  OutputStream cs(&cb); // Clean file contents, without #include directives.
+  Stream is = file.inputStream();
+  Stream cs(0); // Clean file contents, without #include directives.
 
   while (is.available() != 0) {
     String line = is.readLine();
@@ -492,9 +491,9 @@ static bool readShaderFile(const File& file, OutputStream* os, List<int>* fileOf
       int endQuote   = line.lastIndex('"');
 
       if (startQuote > 0 && startQuote < endQuote) {
-        String dirName     = file.directory();
+        File   directory   = file.directory();
         String fileName    = line.substring(startQuote + 1, endQuote);
-        File   includeFile = dirName.isEmpty() ? fileName : dirName + "/" + fileName;
+        File   includeFile = directory.isNil() ? fileName : directory / fileName;
 
         if (!readShaderFile(includeFile, os, fileOffsets)) {
           return false;
@@ -511,9 +510,8 @@ static bool readShaderFile(const File& file, OutputStream* os, List<int>* fileOf
 
 bool GL::compileShaderFromFile(GLuint shader, const char* defines, const File& file)
 {
-  Buffer       buffer;
-  OutputStream os(&buffer);
-  List<int>    fileOffsets;
+  Stream    os(0);
+  List<int> fileOffsets;
 
   if (!readShaderFile(file, &os, &fileOffsets)) {
     return false;

@@ -150,8 +150,7 @@ List<const char*> Gettext::catalogueDescriptions() const
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import(const File& file)
 {
-  InputStream is = file.inputStream();
-
+  Stream is = file.inputStream();
   if (is.available() == 0) {
     return false;
   }
@@ -195,7 +194,7 @@ bool Gettext::import(const File& file)
 
   // Add new strings.
   is.seek(stringsOffset);
-  memcpy(strings + stringsSize, is.skip(newStringsSize), newStringsSize);
+  memcpy(strings + stringsSize, is.readSkip(newStringsSize), newStringsSize);
 
   nMessages   += nNewMessages;
   stringsSize += newStringsSize;

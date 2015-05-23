@@ -153,7 +153,7 @@ void Matrix::update()
   orbis.update();
 }
 
-void Matrix::read(InputStream* is)
+void Matrix::read(Stream* is)
 {
   Log::println("Reading Matrix {");
   Log::indent();
@@ -178,7 +178,7 @@ void Matrix::read(const Json& json)
   Log::println("}");
 }
 
-void Matrix::write(OutputStream* os) const
+void Matrix::write(Stream* os) const
 {
   os->writeULong64(timer.ticks);
   orbis.write(os);

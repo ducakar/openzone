@@ -102,23 +102,22 @@ void LuaClient::create(const char* mission_)
   File missionDir = "@mission/" + cs.mission;
   List<File> files = missionDir.ls();
 
-  if (missionDir.type() != File::DIRECTORY) {
-    OZ_ERROR("Mission directory '%s' does not exist", missionDir.path().c());
+  if (missionDir.stat().type != File::DIRECTORY) {
+    OZ_ERROR("Mission directory '%s' does not exist", missionDir.c());
   }
   if (files.isEmpty()) {
-    OZ_ERROR("Mission directory '%s' contains no Lua scripts", missionDir.path().c());
+    OZ_ERROR("Mission directory '%s' contains no Lua scripts", missionDir.c());
   }
 
-  File layoutFile = missionDir.path() + "/layout.json";
+  File layoutFile = missionDir / "layout.json";
 
-  if (layoutFile.type() == File::REGULAR) {
-    Log::print("Loading layout from '%s' ...", layoutFile.path().c());
+  if (layoutFile.stat().type == File::REGULAR) {
+    Log::print("Loading layout from '%s' ...", layoutFile.c());
 
     Json json;
     if (!json.load(layoutFile)) {
-      OZ_ERROR("Reading saved layout '%s' failed", layoutFile.path().c());
+      OZ_ERROR("Reading saved layout '%s' failed", layoutFile.c());
     }
-    layoutFile.unmap();
 
     Log::printEnd(" OK");
 
@@ -135,7 +134,7 @@ void LuaClient::create(const char* mission_)
   Log::println("}");
 }
 
-void LuaClient::read(InputStream* is)
+void LuaClient::read(Stream* is)
 {
   hard_assert(l_gettop() == 0);
 
@@ -153,19 +152,19 @@ void LuaClient::read(InputStream* is)
 
   File missionDir = "@mission/" + cs.mission;
 
-  if (missionDir.type() != File::DIRECTORY) {
-    OZ_ERROR("Mission directory '%s' does not exist", missionDir.path().c());
+  if (missionDir.stat().type != File::DIRECTORY) {
+    OZ_ERROR("Mission directory '%s' does not exist", missionDir.c());
   }
 
   for (const File& file : missionDir.ls()) {
-    if (file.type() != File::REGULAR || !file.hasExtension("lua")) {
+    if (file.stat().type != File::REGULAR || !file.hasExtension("lua")) {
       continue;
     }
 
-    InputStream is = file.inputStream();
+    Stream is = file.inputStream();
 
-    if (is.available() == 0 || l_dobufferx(is.begin(), is.available(), file.path(), "t") != 0) {
-      OZ_ERROR("Client Lua script error in %s", file.path().c());
+    if (is.available() == 0 || l_dobufferx(is.begin(), is.available(), file, "t") != 0) {
+      OZ_ERROR("Client Lua script error in %s", file.c());
     }
   }
 
@@ -182,7 +181,7 @@ void LuaClient::read(InputStream* is)
   Log::printEnd(" OK");
 }
 
-void LuaClient::write(OutputStream* os)
+void LuaClient::write(Stream* os)
 {
   hard_assert(l_gettop() == 0);
 

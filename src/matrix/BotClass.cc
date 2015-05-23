@@ -184,7 +184,7 @@ Object* BotClass::create(int index, const Json& json) const
   return new Bot(this, index, json);
 }
 
-Object* BotClass::create(InputStream* is) const
+Object* BotClass::create(Stream* is) const
 {
   return new Bot(this, is);
 }

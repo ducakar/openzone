@@ -219,7 +219,7 @@ void StrategicProxy::reset()
   hasBuildFrame = false;
 }
 
-void StrategicProxy::read(InputStream* is)
+void StrategicProxy::read(Stream* is)
 {
   h             = is->readFloat();
   v             = is->readFloat();
@@ -241,7 +241,7 @@ void StrategicProxy::read(const Json& json)
   isFree = json["isFree"].get(false);
 }
 
-void StrategicProxy::write(OutputStream* os) const
+void StrategicProxy::write(Stream* os) const
 {
   os->writeFloat(h);
   os->writeFloat(v);

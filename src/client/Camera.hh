@@ -242,10 +242,10 @@ public:
   void reset();
 
   void read(const Json& json);
-  void read(InputStream* is);
+  void read(Stream* is);
 
   Json write() const;
-  void write(OutputStream* os) const;
+  void write(Stream* os) const;
 
   void init();
   void destroy();

@@ -33,7 +33,7 @@ namespace oz
 
 int Lua::randomSeed = 0;
 
-void Lua::readValue(lua_State* l, InputStream* is)
+void Lua::readValue(lua_State* l, Stream* is)
 {
   char ch = is->readChar();
 
@@ -51,7 +51,7 @@ void Lua::readValue(lua_State* l, InputStream* is)
       break;
     }
     case 'i': {
-      lua_pushinteger(l, is->readLong64());
+      lua_pushinteger(l, lua_Integer(is->readLong64()));
       break;
     }
     case 'n': {
@@ -71,7 +71,7 @@ void Lua::readValue(lua_State* l, InputStream* is)
 
         lua_rawset(l, -3);
       }
-      is->skip(1); // Skip final ']'.
+      is->readChar(); // Skip final ']'.
       break;
     }
     default: {
@@ -125,7 +125,7 @@ void Lua::readValue(lua_State* l, const Json& json)
   }
 }
 
-void Lua::writeValue(lua_State* l, OutputStream* os)
+void Lua::writeValue(lua_State* l, Stream* os)
 {
   int type = lua_type(l, -1);
 
@@ -262,16 +262,16 @@ object:
 void Lua::loadDir(const File& dir) const
 {
   for (const File& file : dir.ls()) {
-    if (file.type() != File::REGULAR || !file.hasExtension("lua")) {
+    if (file.stat().type != File::REGULAR || !file.hasExtension("lua")) {
       continue;
     }
 
-    InputStream is = file.inputStream();
+    Stream is = file.inputStream();
     if (is.available() == 0) {
       continue;
     }
 
-    if (luaL_loadbufferx(l, is.begin(), is.available(), file.path(), "t") != 0 ||
+    if (luaL_loadbufferx(l, is.begin(), is.available(), file, "t") != 0 ||
         lua_pcall(l, 0, LUA_MULTRET, 0) != 0)
     {
       const char* errorMessage = lua_tostring(l, -1);

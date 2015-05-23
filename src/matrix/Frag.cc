@@ -43,7 +43,7 @@ Frag::Frag(const FragPool* pool_, int index_, const Point& p_, const Vec3& veloc
   elasticity = pool->elasticity;
 }
 
-Frag::Frag(const FragPool* pool_, InputStream* is)
+Frag::Frag(const FragPool* pool_, Stream* is)
 {
   cell       = nullptr;
   index      = is->readInt();
@@ -56,7 +56,7 @@ Frag::Frag(const FragPool* pool_, InputStream* is)
   elasticity = pool->elasticity;
 }
 
-void Frag::write(OutputStream* os) const
+void Frag::write(Stream* os) const
 {
   os->writeInt(index);
   os->writePoint(p);
@@ -64,10 +64,10 @@ void Frag::write(OutputStream* os) const
   os->writeFloat(life);
 }
 
-void Frag::readUpdate(InputStream*)
+void Frag::readUpdate(Stream*)
 {}
 
-void Frag::writeUpdate(OutputStream*)
+void Frag::writeUpdate(Stream*)
 {}
 
 }

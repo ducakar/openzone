@@ -361,7 +361,7 @@ public:
    * If a number return it cast to the specified numeric type, `defaultValue` otherwise.
    */
   template <typename Number>
-  Number get(Number defaultValue = Number()) const
+  Number get(Number defaultValue) const
   {
     return Number(get(double(defaultValue)));
   }
@@ -369,47 +369,55 @@ public:
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const String& get(const String& defaultValue = String::EMPTY) const;
+  const String& get(const String& defaultValue) const;
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const char* get(const char* defaultValue = "") const;
+  const File& get(const File& defaultValue) const
+  {
+    return static_cast<const File&>(get(static_cast<const String&>(defaultValue)));
+  }
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  Vec3 get(const Vec3& defaultValue = Vec3::ZERO) const;
+  const char* get(const char* defaultValue) const;
+
+  /**
+   * If a string return it, `defaultValue` otherwise.
+   */
+  Vec3 get(const Vec3& defaultValue) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Vec4`, `defaultValue` otherwise.
    */
-  Vec4 get(const Vec4& defaultValue = Vec4::ZERO) const;
+  Vec4 get(const Vec4& defaultValue) const;
 
   /**
    * If an array of at least 3 numbers, return it as `Point`, `defaultValue` otherwise.
    */
-  Point get(const Point& defaultValue = Point::ORIGIN) const;
+  Point get(const Point& defaultValue) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Plane`, `defaultValue` otherwise.
    */
-  Plane get(const Plane& defaultValue = Plane::ZERO) const;
+  Plane get(const Plane& defaultValue) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Quat`, `defaultValue` otherwise.
    */
-  Quat get(const Quat& defaultValue = Quat::ID) const;
+  Quat get(const Quat& defaultValue) const;
 
   /**
    * If an array of at least 9 numbers, return it as `Mat3`, `defaultValue` otherwise.
    */
-  Mat3 get(const Mat3& defaultValue = Mat3::ID) const;
+  Mat3 get(const Mat3& defaultValue) const;
 
   /**
    * If an array of at least 16 numbers, return it as `Mat4`, `defaultValue` otherwise.
    */
-  Mat4 get(const Mat4& defaultValue = Mat4::ID) const;
+  Mat4 get(const Mat4& defaultValue) const;
 
   /**
    * Write array values to a given array.

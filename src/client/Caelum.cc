@@ -163,7 +163,7 @@ void Caelum::load()
 
     glBindTexture(GL_TEXTURE_2D, skyboxTexIds[i]);
     if (!GL::textureDataFromFile(file)) {
-      OZ_ERROR("Failed to load skybox texture '%s'", file.path().c());
+      OZ_ERROR("Failed to load skybox texture '%s'", file.c());
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

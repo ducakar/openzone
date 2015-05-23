@@ -75,7 +75,7 @@ void Nirvana::update()
   techGraph.update();
 }
 
-void Nirvana::read(InputStream* is)
+void Nirvana::read(Stream* is)
 {
   Log::print("Reading Nirvana ...");
 
@@ -110,7 +110,7 @@ void Nirvana::read(InputStream* is)
   Log::printEnd(" OK");
 }
 
-void Nirvana::write(OutputStream* os) const
+void Nirvana::write(Stream* os) const
 {
   luaNirvana.write(os);
 

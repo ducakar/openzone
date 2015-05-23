@@ -46,8 +46,8 @@ public:
   void registerObject(int index);
   void unregisterObject(int index);
 
-  void read(InputStream* is);
-  void write(OutputStream* os);
+  void read(Stream* is);
+  void write(Stream* os);
 
   void init();
   void destroy();

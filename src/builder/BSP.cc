@@ -82,11 +82,11 @@ void BSP::load()
     OZ_ERROR("Invalid BSP config");
   }
 
-  if (bspFile.type() != File::REGULAR) {
+  if (bspFile.stat().type != File::REGULAR) {
     OZ_ERROR("BSP reading failed");
   }
 
-  InputStream is = bspFile.inputStream(Endian::LITTLE);
+  Stream is = bspFile.inputStream(Endian::LITTLE);
 
   char id[4];
   id[0] = is.readChar();
@@ -109,10 +109,10 @@ void BSP::load()
   textures.resize(lumps[QBSPLump::TEXTURES].length / sizeof(QBSPTexture));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::TEXTURES].offset);
+  is.readSkip(lumps[QBSPLump::TEXTURES].offset);
 
   for (int i = 0; i < textures.length(); ++i) {
-    textures[i].name  = is.skip(64);
+    textures[i].name  = is.readSkip(64);
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
@@ -139,7 +139,7 @@ void BSP::load()
   planes.resize(lumps[QBSPLump::PLANES].length / sizeof(QBSPPlane));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::PLANES].offset);
+  is.readSkip(lumps[QBSPLump::PLANES].offset);
 
   for (int i = 0; i < planes.length(); ++i) {
     planes[i].n.x = is.readFloat();
@@ -151,7 +151,7 @@ void BSP::load()
   nodes.resize(lumps[QBSPLump::NODES].length / sizeof(QBSPNode));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::NODES].offset);
+  is.readSkip(lumps[QBSPLump::NODES].offset);
 
   for (int i = 0; i < nodes.length(); ++i) {
     nodes[i].plane = is.readInt();
@@ -170,7 +170,7 @@ void BSP::load()
   leaves.resize(lumps[QBSPLump::LEAFS].length / sizeof(QBSPLeaf));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::LEAFS].offset);
+  is.readSkip(lumps[QBSPLump::LEAFS].offset);
 
   for (int i = 0; i < leaves.length(); ++i) {
     // int cluster
@@ -196,7 +196,7 @@ void BSP::load()
   leafBrushes.resize(lumps[QBSPLump::LEAFBRUSHES].length / sizeof(int));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::LEAFBRUSHES].offset);
+  is.readSkip(lumps[QBSPLump::LEAFBRUSHES].offset);
 
   for (int i = 0; i < leafBrushes.length(); ++i) {
     leafBrushes[i] = is.readInt();
@@ -208,16 +208,16 @@ void BSP::load()
   modelFaces.resize(nModels);
 
   is.rewind();
-  is.skip(lumps[QBSPLump::MODELS].offset);
+  is.readSkip(lumps[QBSPLump::MODELS].offset);
 
   const Json& modelsConfig = config["entities"];
 
   if (!modelsConfig.isNull() && modelsConfig.type() != Json::ARRAY) {
-    OZ_ERROR("'models' entry in '%s' is not an array", configFile.path().c());
+    OZ_ERROR("'models' entry in '%s' is not an array", configFile.c());
   }
 
   // skip model 0 (whole BSP)
-  is.skip(sizeof(QBSPModel));
+  is.readSkip(sizeof(QBSPModel));
 
   for (int i = 0; i < models.length(); ++i) {
     const Json& entityConfig = modelsConfig[i];
@@ -287,7 +287,7 @@ void BSP::load()
   }
 
   is.rewind();
-  is.skip(lumps[QBSPLump::MODELS].offset);
+  is.readSkip(lumps[QBSPLump::MODELS].offset);
 
   for (int i = 0; i < models.length() + 1; ++i) {
     // float bb[2][3]
@@ -310,7 +310,7 @@ void BSP::load()
   brushSides.resize(lumps[QBSPLump::BRUSHSIDES].length / sizeof(QBSPBrushSide));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::BRUSHSIDES].offset);
+  is.readSkip(lumps[QBSPLump::BRUSHSIDES].offset);
 
   for (int i = 0; i < brushSides.length(); ++i) {
     brushSides[i] = is.readInt();
@@ -326,7 +326,7 @@ void BSP::load()
   }
 
   is.rewind();
-  is.skip(lumps[QBSPLump::BRUSHES].offset);
+  is.readSkip(lumps[QBSPLump::BRUSHES].offset);
 
   for (int i = 0; i < brushes.length(); ++i) {
     brushes[i].firstSide = is.readInt();
@@ -364,7 +364,7 @@ void BSP::load()
   vertices.resize(lumps[QBSPLump::VERTICES].length / sizeof(QBSPVertex));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::VERTICES].offset);
+  is.readSkip(lumps[QBSPLump::VERTICES].offset);
 
   for (int i = 0; i < vertices.length(); ++i) {
     vertices[i].pos[0]      = is.readFloat() * scale;
@@ -392,7 +392,7 @@ void BSP::load()
   indices.resize(lumps[QBSPLump::INDICES].length / sizeof(int));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::INDICES].offset);
+  is.readSkip(lumps[QBSPLump::INDICES].offset);
 
   for (int i = 0; i < indices.length(); ++i) {
     indices[i] = is.readInt();
@@ -401,7 +401,7 @@ void BSP::load()
   faces.resize(lumps[QBSPLump::FACES].length / sizeof(QBSPFace));
 
   is.rewind();
-  is.skip(lumps[QBSPLump::FACES].offset);
+  is.readSkip(lumps[QBSPLump::FACES].offset);
 
   for (int i = 0; i < faces.length(); ++i) {
     faces[i].texture     = is.readInt();
@@ -539,7 +539,7 @@ void BSP::optimise()
         --models[j].nBrushes;
       }
     }
-    Log::printEnd();
+    Log::println();
   }
 
   // remove model brushes from the static tree (WTF Quake BSP puts them there?)
@@ -968,7 +968,7 @@ void BSP::saveMatrix()
 {
   File destFile = "bsp/" + name + ".ozBSP";
 
-  Log::print("Writing BSP structure to '%s' ...", destFile.path().c());
+  Log::print("Writing BSP structure to '%s' ...", destFile.c());
 
   Set<String> usedSounds;
 
@@ -987,8 +987,7 @@ void BSP::saveMatrix()
     usedSounds.include(demolishSound);
   }
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   os.writePoint(mins);
   os.writePoint(maxs);
@@ -1089,7 +1088,7 @@ void BSP::saveMatrix()
   }
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().c());
+    OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 
   Log::printEnd(" OK");
@@ -1175,17 +1174,16 @@ void BSP::saveClient()
 
   compiler.endModel();
 
-  Buffer buffer;
-  OutputStream os(&buffer, Endian::LITTLE);
+  Stream os(0, Endian::LITTLE);
 
   compiler.writeModel(&os, true);
   os.writeVec4(waterFogColour);
   os.writeVec4(lavaFogColour);
 
-  Log::print("Writing BSP model to '%s' ...", destFile.path().c());
+  Log::print("Writing BSP model to '%s' ...", destFile.c());
 
   if (!destFile.write(os.begin(), os.tell())) {
-    OZ_ERROR("Failed to write '%s'", destFile.path().c());
+    OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 
   Log::printEnd(" OK");

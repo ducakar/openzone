@@ -54,20 +54,31 @@ public:
 public:
 
   /**
-   * Print newline.
+   * Indent line.
    *
    * The only purpose of `Log` instances is to support C++ streams-like syntax:
    * @code
    * Log() << "Hello, " << "world!";
    * @endcode
-   * This destructor adds newline to the end of each string printed with such syntax.
+   * This constructor adds indent to the begining if each line printed with such syntax.
+   */
+  Log();
+
+  /**
+   * Terminate line.
+   *
+   * The only purpose of `Log` instances is to support C++ streams-like syntax:
+   * @code
+   * Log() << "Hello, " << "world!";
+   * @endcode
+   * This destructor adds newline to the end of each line printed with such syntax.
    */
   ~Log();
 
   /**
-   * Return log file path or an empty string if log is printed to stdout only.
+   * Return log file or a null file if log is printed to stdout only.
    */
-  static const char* filePath();
+  static const File& file();
 
   /**
    * %Set indent to zero.
@@ -114,18 +125,13 @@ public:
   static void printEnd(const char* s, ...);
 
   /**
-   * Terminate the line.
-   */
-  static void printEnd();
-
-  /**
    * Indent, print the text and terminate the line.
    */
   OZ_PRINTF_FORMAT(1, 2)
   static void println(const char* s, ...);
 
   /**
-   * Print a blank line.
+   * Print a blank line / terminate current line.
    */
   static void println();
 
@@ -165,10 +171,10 @@ public:
   static void printProfilerStatistics();
 
   /**
-   * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other tells
+   * First parameter is the log file (if null file, it only writes to stdout), the other tells
    * whether to clear its content if the file already exists.
    */
-  static bool init(const char* filePath = nullptr, bool clearFile = true);
+  static bool init(const File& file = File(), bool clearFile = true);
 
   /**
    * Close log file.
@@ -299,17 +305,12 @@ public:
   /**
    * Dump stream contents to log stream(s).
    */
-  const Log& operator << (const InputStream& is) const;
+  const Log& operator << (const Stream& is) const;
 
   /**
    * Dump buffer contents to log stream(s).
    */
   const Log& operator << (const Buffer& buffer) const;
-
-  /**
-   * Same as `print("%s", file.path().c())`.
-   */
-  const Log& operator << (const File& file) const;
 
   /**
    * Same as `print("%s", time.toString().c())`.

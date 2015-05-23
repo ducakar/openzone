@@ -79,7 +79,7 @@ private:
    * @return Value of the inserted element.
    */
   template <typename Key_, typename Value_>
-  Value& insert(Key_&& key, Value_&& value, bool overwrite)
+  Pair& insert(Key_&& key, Value_&& value, bool overwrite)
   {
     ensureCapacity(pool.length() + 1);
 
@@ -92,7 +92,7 @@ private:
         if (overwrite) {
           entry->elem.value = static_cast<Value_&&>(value);
         }
-        return entry->elem.value;
+        return entry->elem;
       }
       entry = entry->next;
     }
@@ -100,7 +100,7 @@ private:
     data[index] = new(pool) Entry {
       data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
     };
-    return data[index]->elem.value;
+    return data[index]->elem;
   }
 
 public:
@@ -238,7 +238,7 @@ public:
    * @return Reference to the value of the inserted element.
    */
   template <typename Key_, typename Value_>
-  Value& add(Key_&& key, Value_&& value)
+  Pair& add(Key_&& key, Value_&& value)
   {
     return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), true);
   }
@@ -249,7 +249,7 @@ public:
    * @return Reference to the value of the inserted or the existing element with the same key.
    */
   template <typename Key_, typename Value_>
-  Value& include(Key_&& key, Value_&& value)
+  Pair& include(Key_&& key, Value_&& value)
   {
     return insert(static_cast<Key_&&>(key), static_cast<Value_&&>(value), false);
   }

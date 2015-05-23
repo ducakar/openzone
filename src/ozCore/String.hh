@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Immutable string.
+ * String.
  *
  * Class has static storage of `BUFFER_SIZE` bytes, if string is larger it is stored in a
  * dynamically allocated storage. To deallocate storage just assign an empty string.
@@ -58,37 +58,19 @@ public:
    */
   typedef Arrays::CIterator<const char> CIterator;
 
+  /**
+   * %Iterator with non-constant access to characters.
+   */
+  typedef Arrays::Iterator<char> Iterator;
+
 private:
 
-  int     count = 0;               ///< Length in bytes (without the final null char).
+  int     count                   = 0;       ///< Length in bytes (without the final null char).
   union
   {
-    char* buffer;                  ///< Pointer to the current buffer.
-    char  baseBuffer[BUFFER_SIZE]; ///< Static buffer.
+    char* buffer                  = nullptr; ///< Pointer to the current buffer.
+    char  baseBuffer[BUFFER_SIZE];           ///< Static buffer.
   };
-
-  /**
-   * Merger of two strings.
-   */
-  explicit String(const char* s, int sLength, const char* t, int tLength);
-
-  /**
-   * Pointer to storage.
-   */
-  OZ_ALWAYS_INLINE
-  const char* data() const
-  {
-    return count < BUFFER_SIZE ? baseBuffer : buffer;
-  }
-
-  /**
-   * Pointer to storage.
-   */
-  OZ_ALWAYS_INLINE
-  char* data()
-  {
-    return count < BUFFER_SIZE ? baseBuffer : buffer;
-  }
 
   /**
    * Resize storage if necessary and set `count` to `newCount`.
@@ -221,53 +203,6 @@ public:
   static List<String> split(const char* s, char delimiter);
 
   /**
-   * True iff file path is empty (i.e. an empty string or "@").
-   */
-  OZ_ALWAYS_INLINE
-  static bool fileIsEmpty(const char* s)
-  {
-    return s[0] == '\0' || (s[1] == '\0' && fileIsVirtual(s));
-  }
-
-  /**
-   * True iff file path is a VFS file path.
-   */
-  OZ_ALWAYS_INLINE
-  static bool fileIsVirtual(const char* s)
-  {
-    return s[0] == '@';
-  }
-
-  /**
-   * Extract directory from a path (substring before the last `/`).
-   */
-  static String fileDirectory(const char* s);
-
-  /**
-   * Extract file name from a path (substring after the last `/`).
-   */
-  static String fileName(const char* s);
-
-  /**
-   * Extract base file name from a path (substring after the last `/` till the last dot following
-   * it).
-   */
-  static String fileBaseName(const char* s);
-
-  /**
-   * Extract file extension from the path (substring after the last dot in file name or "" if no
-   * extension).
-   */
-  static String fileExtension(const char* s);
-
-  /**
-   * True iff file name has a given extension.
-   *
-   * Empty string matches both no extension and files names ending with dot.
-   */
-  static bool fileHasExtension(const char* s, const char* ext);
-
-  /**
    * True iff character is an ASCII digit.
    */
   OZ_ALWAYS_INLINE
@@ -327,10 +262,7 @@ public:
   /**
    * Empty string.
    */
-  String()
-  {
-    baseBuffer[0] = '\0';
-  }
+  String() = default;
 
   /**
    * Create string form a given C string.
@@ -350,9 +282,14 @@ public:
   explicit String(const char* s, int nChars);
 
   /**
-   * Create string by concatenating given two C strings.
+   * Create string by concatenating two C strings.
    */
   explicit String(const char* s, const char* t);
+
+  /**
+   * Create string by concatenating two C strings with known lengths.
+   */
+  explicit String(const char* s, int sLength, const char* t, int tLength);
 
   /**
    * Create either "true" or "false" string.
@@ -420,7 +357,7 @@ public:
    */
   bool operator == (const String& s) const
   {
-    return compare(data(), s.data()) == 0;
+    return compare(begin(), s.begin()) == 0;
   }
 
   /**
@@ -428,7 +365,7 @@ public:
    */
   bool operator == (const char* s) const
   {
-    return compare(data(), s) == 0;
+    return compare(begin(), s) == 0;
   }
 
   /**
@@ -436,7 +373,7 @@ public:
    */
   friend bool operator == (const char* a, const String& b)
   {
-    return compare(a, b.data()) == 0;
+    return compare(a, b.begin()) == 0;
   }
 
   /**
@@ -444,7 +381,7 @@ public:
    */
   bool operator != (const String& s) const
   {
-    return compare(data(), s.data()) != 0;
+    return compare(begin(), s.begin()) != 0;
   }
 
   /**
@@ -452,7 +389,7 @@ public:
    */
   bool operator != (const char* s) const
   {
-    return compare(data(), s) != 0;
+    return compare(begin(), s) != 0;
   }
 
   /**
@@ -460,7 +397,7 @@ public:
    */
   friend bool operator != (const char* a, const String& b)
   {
-    return compare(a, b.data()) != 0;
+    return compare(a, b.begin()) != 0;
   }
 
   /**
@@ -468,7 +405,7 @@ public:
    */
   bool operator <= (const String& s) const
   {
-    return compare(data(), s.data()) <= 0;
+    return compare(begin(), s.begin()) <= 0;
   }
 
   /**
@@ -476,7 +413,7 @@ public:
    */
   bool operator <= (const char* s) const
   {
-    return compare(data(), s) <= 0;
+    return compare(begin(), s) <= 0;
   }
 
   /**
@@ -484,7 +421,7 @@ public:
    */
   friend bool operator <= (const char* a, const String& b)
   {
-    return compare(a, b.data()) <= 0;
+    return compare(a, b.begin()) <= 0;
   }
 
   /**
@@ -492,7 +429,7 @@ public:
    */
   bool operator >= (const String& s) const
   {
-    return compare(data(), s.data()) >= 0;
+    return compare(begin(), s.begin()) >= 0;
   }
 
   /**
@@ -500,7 +437,7 @@ public:
    */
   bool operator >= (const char* s) const
   {
-    return compare(data(), s) >= 0;
+    return compare(begin(), s) >= 0;
   }
 
   /**
@@ -508,7 +445,7 @@ public:
    */
   friend bool operator >= (const char* a, const String& b)
   {
-    return compare(a, b.data()) >= 0;
+    return compare(a, b.begin()) >= 0;
   }
 
   /**
@@ -516,7 +453,7 @@ public:
    */
   bool operator < (const String& s) const
   {
-    return compare(data(), s.data()) < 0;
+    return compare(begin(), s.begin()) < 0;
   }
 
   /**
@@ -524,7 +461,7 @@ public:
    */
   bool operator < (const char* s) const
   {
-    return compare(data(), s) < 0;
+    return compare(begin(), s) < 0;
   }
 
   /**
@@ -532,7 +469,7 @@ public:
    */
   friend bool operator < (const char* a, const String& b)
   {
-    return compare(a, b.data()) < 0;
+    return compare(a, b.begin()) < 0;
   }
 
   /**
@@ -540,7 +477,7 @@ public:
    */
   bool operator > (const String& s) const
   {
-    return compare(data(), s.data()) > 0;
+    return compare(begin(), s.begin()) > 0;
   }
 
   /**
@@ -548,7 +485,7 @@ public:
    */
   bool operator > (const char* s) const
   {
-    return compare(data(), s) > 0;
+    return compare(begin(), s) > 0;
   }
 
   /**
@@ -556,7 +493,7 @@ public:
    */
   friend bool operator > (const char* a, const String& b)
   {
-    return compare(a, b.data()) > 0;
+    return compare(a, b.begin()) > 0;
   }
 
   /**
@@ -565,9 +502,18 @@ public:
   OZ_ALWAYS_INLINE
   CIterator citerator() const
   {
-    const char* begin = data();
+    const char* buffer = begin();
+    return CIterator(buffer, buffer + count);
+  }
 
-    return CIterator(begin, begin + count);
+  /**
+   * %Iterator with non-constant access, initially points to the first character.
+   */
+  OZ_ALWAYS_INLINE
+  Iterator iterator()
+  {
+    char* buffer = begin();
+    return Iterator(buffer, buffer + count);
   }
 
   /**
@@ -576,7 +522,16 @@ public:
   OZ_ALWAYS_INLINE
   const char* begin() const
   {
-    return data();
+    return count < BUFFER_SIZE ? baseBuffer : buffer;
+  }
+
+  /**
+   * STL-style begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  char* begin()
+  {
+    return count < BUFFER_SIZE ? baseBuffer : buffer;
   }
 
   /**
@@ -585,7 +540,16 @@ public:
   OZ_ALWAYS_INLINE
   const char* end() const
   {
-    return data() + count;
+    return begin() + count;
+  }
+
+  /**
+   * STL-style end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  char* end()
+  {
+    return begin() + count;
   }
 
   /**
@@ -593,7 +557,7 @@ public:
    */
   int compare(const String& s) const
   {
-    return compare(data(), s.data());
+    return compare(begin(), s.begin());
   }
 
   /**
@@ -601,7 +565,7 @@ public:
    */
   int compare(const char* s) const
   {
-    return compare(data(), s);
+    return compare(begin(), s);
   }
 
   /**
@@ -610,7 +574,7 @@ public:
   OZ_ALWAYS_INLINE
   operator const char* () const
   {
-    return data();
+    return begin();
   }
 
   /**
@@ -619,7 +583,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* c() const
   {
-    return data();
+    return begin();
   }
 
   /**
@@ -648,25 +612,54 @@ public:
   {
     hard_assert(0 <= i && i <= count);
 
-    return data()[i];
+    return begin()[i];
   }
 
   /**
-   * First character or null character if an empty string.
+   * Reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  char first() const
+  char& operator [] (int i)
   {
-    return data()[0];
+    hard_assert(0 <= i && i <= count);
+
+    return begin()[i];
   }
 
   /**
-   * Last character or null character if an empty string.
+   * Constant reference to the first character or null character if an empty string.
    */
   OZ_ALWAYS_INLINE
-  char last() const
+  const char& first() const
   {
-    return data()[count - (count != 0)];
+    return begin()[0];
+  }
+
+  /**
+   * Reference to the first character or null character if an empty string.
+   */
+  OZ_ALWAYS_INLINE
+  char& first()
+  {
+    return begin()[0];
+  }
+
+  /**
+   * Constant reference to the last character or null character if an empty string.
+   */
+  OZ_ALWAYS_INLINE
+  const char& last() const
+  {
+    return begin()[count - (count != 0)];
+  }
+
+  /**
+   * Reference to the last character or null character if an empty string.
+   */
+  OZ_ALWAYS_INLINE
+  char& last()
+  {
+    return begin()[count - (count != 0)];
   }
 
   /**
@@ -776,53 +769,6 @@ public:
    * beginning/end of the original string are included.
    */
   List<String> split(char delimiter) const;
-
-  /**
-   * True iff file path is empty (i.e. an empty string or "@").
-   */
-  OZ_ALWAYS_INLINE
-  bool fileIsEmpty() const
-  {
-    return fileIsEmpty(data());
-  }
-
-  /**
-   * True iff file path is a VFS file path.
-   */
-  OZ_ALWAYS_INLINE
-  bool fileIsVirtual() const
-  {
-    return fileIsVirtual(data());
-  }
-
-  /**
-   * Extract directory from a path (substring before the last `/`).
-   */
-  String fileDirectory() const;
-
-  /**
-   * Extract file name from a path (substring after the last `/`).
-   */
-  String fileName() const;
-
-  /**
-   * Extract base file name from a path (substring after the last `/` till the last dot following
-   * it).
-   */
-  String fileBaseName() const;
-
-  /**
-   * Extract file extension from the path (substring after the last dot in file name or "" if no
-   * extension).
-   */
-  String fileExtension() const;
-
-  /**
-   * True iff file name has a given extension.
-   *
-   * Empty string matches both no extension and files names ending with dot.
-   */
-  bool fileHasExtension(const char* ext) const;
 
 };
 

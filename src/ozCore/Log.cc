@@ -42,9 +42,9 @@
 
 #define OZ_PRINT_BOTH(code) \
   { \
-    auto lambda = [&](FILE* stream) code; \
-    if (!verboseMode || showVerbose || logFile == nullptr) { lambda(stdout); } \
-    if (logFile != nullptr) { lambda(logFile); } \
+    auto lambda = [&](FILE* stream) { code }; \
+    if (!verboseMode || showVerbose || logFileStream == nullptr) { lambda(stdout); } \
+    if (logFileStream != nullptr) { lambda(logFileStream); } \
   }
 
 namespace oz
@@ -55,12 +55,12 @@ static const int  INDENT_SPACES        = 2;
 static const char INDENT_BUFFER[49]    = "                                                ";
 static const int  INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
 
-static char  path[256]   = "";
-static FILE* logFile     = nullptr;
-static int   indentLevel = 0;
+static File  logFile;
+static FILE* logFileStream = nullptr;
+static int   indentLevel   = 0;
 
-bool Log::showVerbose    = false;
-bool Log::verboseMode    = false;
+bool Log::showVerbose      = false;
+bool Log::verboseMode      = false;
 
 static inline const char* getIndent()
 {
@@ -70,14 +70,20 @@ static inline const char* getIndent()
   return &INDENT_BUFFER[bias];
 }
 
-Log::~Log()
+Log::Log()
 {
-  printRaw("\n");
+  // Indent.
+  print("");
 }
 
-const char* Log::filePath()
+Log::~Log()
 {
-  return path;
+  println();
+}
+
+const File& Log::file()
+{
+  return logFile;
 }
 
 void Log::resetIndent()
@@ -99,10 +105,9 @@ void Log::unindent()
 
 void Log::putsRaw(const char* s)
 {
-  OZ_PRINT_BOTH({
+  OZ_PRINT_BOTH(
     fputs(s, stream);
-    fflush(stream);
-  });
+  );
 }
 
 void Log::vprintRaw(const char* s, va_list ap)
@@ -110,20 +115,14 @@ void Log::vprintRaw(const char* s, va_list ap)
   char buffer[OUT_BUFFER_SIZE];
   vsnprintf(buffer, OUT_BUFFER_SIZE, s, ap);
 
-  OZ_PRINT_BOTH({
-    fputs(buffer, stream);
-    fflush(stream);
-  });
+  putsRaw(buffer);
 }
 
 void Log::printRaw(const char* s, ...)
 {
   OZ_VAARGS_BUFFER(buffer);
 
-  OZ_PRINT_BOTH({
-    fputs(buffer, stream);
-    fflush(stream);
-  });
+  putsRaw(buffer);
 }
 
 void Log::print(const char* s, ...)
@@ -132,30 +131,21 @@ void Log::print(const char* s, ...)
 
   const char* indent = getIndent();
 
-  OZ_PRINT_BOTH({
+  OZ_PRINT_BOTH(
     fputs(indent, stream);
     fputs(buffer, stream);
-    fflush(stream);
-  });
+  );
 }
 
 void Log::printEnd(const char* s, ...)
 {
   OZ_VAARGS_BUFFER(buffer);
 
-  OZ_PRINT_BOTH({
+  OZ_PRINT_BOTH(
     fputs(buffer, stream);
     fputc('\n', stream);
     fflush(stream);
-  });
-}
-
-void Log::printEnd()
-{
-  OZ_PRINT_BOTH({
-    fputc('\n', stream);
-    fflush(stream);
-  });
+  );
 }
 
 void Log::println(const char* s, ...)
@@ -164,20 +154,20 @@ void Log::println(const char* s, ...)
 
   const char* indent = getIndent();
 
-  OZ_PRINT_BOTH({
+  OZ_PRINT_BOTH(
     fputs(indent, stream);
     fputs(buffer, stream);
     fputc('\n', stream);
     fflush(stream);
-  });
+  );
 }
 
 void Log::println()
 {
-  OZ_PRINT_BOTH({
+  OZ_PRINT_BOTH(
     fputc('\n', stream);
     fflush(stream);
-  });
+  );
 }
 
 bool Log::printMemorySummary()
@@ -209,34 +199,20 @@ void Log::printTrace(const StackTrace& st)
 {
   const char* threadName = String::isEmpty(st.threadName) ? "?" : st.threadName;
 
-  OZ_PRINT_BOTH({
-    fputs("  thread: ", stream);
-    fputs(threadName, stream);
-    fputs("\n  stack trace:\n", stream);
-  });
+  printRaw("  thread: %s\n  stack trace:\n", threadName);
 
   if (st.nFrames == 0) {
-    OZ_PRINT_BOTH({
-      fputs("    [no stack trace]\n", stream);
-    });
+    printRaw("    [no stack trace]");
   }
   else {
     char** entries = st.symbols();
 
     for (int i = 0; i < st.nFrames; ++i) {
-      OZ_PRINT_BOTH({
-        fputs("    ", stream);
-        fputs(entries[i], stream);
-        fputc('\n', stream);
-      });
+      printRaw("    %s\n", entries[i]);
     }
 
     free(entries);
   }
-
-  OZ_PRINT_BOTH({
-    fflush(stream);
-  });
 }
 
 bool Log::printMemoryLeaks()
@@ -281,7 +257,7 @@ void Log::printProfilerStatistics()
   }
 }
 
-bool Log::init(const char* filePath, bool clearFile)
+bool Log::init(const File& file, bool clearFile)
 {
   destroy();
 
@@ -289,22 +265,19 @@ bool Log::init(const char* filePath, bool clearFile)
 
 #if defined(__ANDROID__) || defined(__native_client__)
 
-  static_cast<void>(filePath);
+  static_cast<void>(file);
   static_cast<void>(clearFile);
 
   return false;
 
 #else
 
-  if (filePath != nullptr) {
-    strncpy(path, filePath, 255);
-    path[255] = '\0';
-  }
+  logFile = file;
 
-  if (path[0] != '\0') {
-    logFile = fopen(path, clearFile ? "w" : "a");
+  if (!file.isNil()) {
+    logFileStream = fopen(file, clearFile ? "w" : "a");
   }
-  return logFile != nullptr;
+  return logFile.isNil();
 
 #endif
 }
@@ -313,82 +286,82 @@ void Log::destroy()
 {
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
-  if (logFile != nullptr) {
-    fclose(logFile);
-    logFile = nullptr;
-  }
+  if (!logFile.isNil()) {
+    fclose(logFileStream);
 
-  path[0] = '\0';
+    logFileStream = nullptr;
+    logFile = "";
+  }
 
 #endif
 }
 
 const Log& Log::operator << (bool b) const
 {
-  print(b ? "true" : "false");
+  printRaw(b ? "true" : "false");
   return *this;
 }
 
 const Log& Log::operator << (char c) const
 {
-  print("%c", c);
+  printRaw("%c", c);
   return *this;
 }
 
 const Log& Log::operator << (byte b) const
 {
-  print("%d", b);
+  printRaw("%d", b);
   return *this;
 }
 
 const Log& Log::operator << (ubyte b) const
 {
-  print("%u", b);
+  printRaw("%u", b);
   return *this;
 }
 
 const Log& Log::operator << (short s) const
 {
-  print("%hd", s);
+  printRaw("%hd", s);
   return *this;
 }
 
 const Log& Log::operator << (ushort s) const
 {
-  print("%hu", s);
+  printRaw("%hu", s);
   return *this;
 }
 
 const Log& Log::operator << (int i) const
 {
-  print("%d", i);
+  printRaw("%d", i);
   return *this;
 }
 
 const Log& Log::operator << (uint i) const
 {
-  print("%u", i);
+  printRaw("%u", i);
   return *this;
 }
 
 const Log& Log::operator << (long l) const
 {
-  print("%ld", l);
+  printRaw("%ld", l);
   return *this;
 }
 
 const Log& Log::operator << (ulong l) const
 {
-  print("%lu", l);
+  printRaw("%lu", l);
   return *this;
 }
 
 const Log& Log::operator << (long64 l) const
 {
 #ifdef _WIN32
-  print("%ld", long(l));
+  printRaw("%ld", long(l));
 #else
-  print("%lld", l);
+  printRaw("%lld", l);
 #endif
   return *this;
 }
@@ -396,102 +369,102 @@ const Log& Log::operator << (long64 l) const
 const Log& Log::operator << (ulong64 l) const
 {
 #ifdef _WIN32
-  print("%lu", ulong(l));
+  printRaw("%lu", ulong(l));
 #else
-  print("%llu", l);
+  printRaw("%llu", l);
 #endif
   return *this;
 }
 
 const Log& Log::operator << (float f) const
 {
-  print("%g", f);
+  printRaw("%g", f);
   return *this;
 }
 
 const Log& Log::operator << (double d) const
 {
-  print("%g", d);
+  printRaw("%g", d);
   return *this;
 }
 
 const Log& Log::operator << (volatile const void* p) const
 {
-  print("%p", p);
+  printRaw("%p", p);
   return *this;
 }
 
 const Log& Log::operator << (const char* s) const
 {
-  print("%s", s);
+  printRaw("%s", s);
   return *this;
 }
 
 const Log& Log::operator << (const String& s) const
 {
-  print("%s", s.c());
+  printRaw("%s", s.c());
   return *this;
 }
 
 const Log& Log::operator << (const Vec3& v) const
 {
-  print("(%g %g %g)", v.x, v.y, v.z);
+  printRaw("(%g %g %g)", v.x, v.y, v.z);
   return *this;
 }
 
 const Log& Log::operator << (const Vec4& v) const
 {
-  print("(%g %g %g %g)", v.x, v.y, v.z, v.w);
+  printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.w);
   return *this;
 }
 
 const Log& Log::operator << (const Point& p) const
 {
-  print("[%g %g %g]", p.x, p.y, p.z);
+  printRaw("[%g %g %g]", p.x, p.y, p.z);
   return *this;
 }
 
 const Log& Log::operator << (const Plane& p) const
 {
-  print("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
+  printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
   return *this;
 }
 
 const Log& Log::operator << (const Quat& q) const
 {
-  print("[%g %g %g %g]", q.x, q.y, q.z, q.w);
+  printRaw("[%g %g %g %g]", q.x, q.y, q.z, q.w);
   return *this;
 }
 
 const Log& Log::operator << (const Mat3& m) const
 {
-  print("[%g %g %g; %g %g %g; %g %g %g]",
-        m.x.x, m.x.y, m.x.z,
-        m.y.x, m.y.y, m.y.z,
-        m.z.x, m.z.y, m.z.z);
+  printRaw("[%g %g %g; %g %g %g; %g %g %g]",
+           m.x.x, m.x.y, m.x.z,
+           m.y.x, m.y.y, m.y.z,
+           m.z.x, m.z.y, m.z.z);
   return *this;
 }
 
 const Log& Log::operator << (const Mat4& m) const
 {
-  print("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
-        m.x.x, m.x.y, m.x.z, m.x.w,
-        m.y.x, m.y.y, m.y.z, m.y.w,
-        m.z.x, m.z.y, m.z.z, m.z.w,
-        m.w.x, m.w.y, m.w.z, m.w.w);
+  printRaw("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
+           m.x.x, m.x.y, m.x.z, m.x.w,
+           m.y.x, m.y.y, m.y.z, m.y.w,
+           m.z.x, m.z.y, m.z.z, m.z.w,
+           m.w.x, m.w.y, m.w.z, m.w.w);
   return *this;
 }
 
-const Log& Log::operator << (const InputStream& is) const
+const Log& Log::operator << (const Stream& is) const
 {
   const char* indent = getIndent();
 
-  OZ_PRINT_BOTH({
-    fwrite(is.begin(), 1, is.tell(), stream);
+  OZ_PRINT_BOTH(
+    fwrite(is.begin(), 1, is.capacity(), stream);
     fputs(indent, stream);
     fputc('\n', stream);
     fflush(stream);
-  });
+  );
   return *this;
 }
 
@@ -499,30 +472,24 @@ const Log& Log::operator << (const Buffer& buffer) const
 {
   const char* indent = getIndent();
 
-  OZ_PRINT_BOTH({
+  OZ_PRINT_BOTH(
     fwrite(buffer.begin(), 1, buffer.length(), stream);
     fputs(indent, stream);
     fputc('\n', stream);
     fflush(stream);
-  });
-  return *this;
-}
-
-const Log& Log::operator << (const File& file) const
-{
-  print("%s", file.path().c());
+  );
   return *this;
 }
 
 const Log& Log::operator << (const Time& time) const
 {
-  print("%s", time.toString().c());
+  printRaw("%s", time.toString().c());
   return *this;
 }
 
 const Log& Log::operator << (const Json& json) const
 {
-  print("%s", json.toString().c());
+  printRaw("%s", json.toString().c());
   return *this;
 }
 

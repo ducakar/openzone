@@ -53,7 +53,7 @@ void UI::buildIcons()
 {
   File dir = "@ui/icon";
 
-  if (dir.type() != File::DIRECTORY) {
+  if (dir.stat().type != File::DIRECTORY) {
     return;
   }
 
@@ -62,20 +62,20 @@ void UI::buildIcons()
   Log::println("Building UI icons {");
   Log::indent();
 
-  File::mkdir("ui");
-  File::mkdir("ui/icon");
+  File("ui").mkdir();
+  File("ui/icon").mkdir();
 
   for (const File& image : dir.ls()) {
     String name = image.baseName();
 
-    if (image.type() != File::REGULAR || !image.hasExtension("png")) {
+    if (image.stat().type != File::REGULAR || !image.hasExtension("png")) {
       continue;
     }
 
     Log::print("%s ...", image.name().c());
 
     if (!Arrays::contains(ICON_NAMES, Arrays::length(ICON_NAMES), name)) {
-      OZ_ERROR("Unnecessary icon: %s", image.path().c());
+      OZ_ERROR("Unnecessary icon: %s", image.c());
     }
 
     ImageBuilder::options = 0;
@@ -84,7 +84,6 @@ void UI::buildIcons()
     if (!ImageBuilder::convertToDDS(image, "ui/icon")) {
       OZ_ERROR("Error converting '%s' to DDS: %s", image.name().c(), ImageBuilder::getError());
     }
-    image.unmap();
 
     Log::printEnd(" OK");
 
@@ -101,7 +100,7 @@ void UI::buildIcons()
   Json style;
 
   if (!style.load(styleFile)) {
-    OZ_ERROR("Failed to load style '%s'", styleFile.path().c());
+    OZ_ERROR("Failed to load style '%s'", styleFile.c());
   }
 
   const Json& sounds = style["sounds"];

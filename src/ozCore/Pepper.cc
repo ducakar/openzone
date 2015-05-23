@@ -44,10 +44,12 @@
 
 #include <SDL_nacl.h>
 
+OZ_HIDDEN
 OZ_WEAK
 void SDL_NACL_SetInstance(PP_Instance, PPB_GetInterface, int, int)
 {}
 
+OZ_HIDDEN
 OZ_WEAK
 void SDL_NACL_PushEvent(PP_Resource)
 {}
@@ -201,7 +203,6 @@ struct Pepper::Module : pp::Module
   pp::Instance* CreateInstance(PP_Instance instance) override;
 };
 
-OZ_HIDDEN
 pp::Instance* Pepper::Module::CreateInstance(PP_Instance instance)
 {
   return new Instance(instance);

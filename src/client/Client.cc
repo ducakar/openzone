@@ -284,15 +284,15 @@ int Client::init(int argc, char** argv)
   isBenchmark   = false;
   benchmarkTime = 0.0f;
 
-  String prefixDir  = OZ_PREFIX;
+  File   prefixDir  = OZ_PREFIX;
   String language   = "";
   String mission    = "";
   String layoutFile = "";
   bool   doAutoload = false;
 
   // Standalone. Executable is ./bin/<platform>/openzone.
-  if (prefixDir.isEmpty()) {
-    prefixDir = File::executablePath().fileDirectory() + "/../..";
+  if (prefixDir.isNil()) {
+    prefixDir = File::executable().directory() / "../..";
   }
 
   optind = 1;
@@ -366,29 +366,29 @@ int Client::init(int argc, char** argv)
 
 #ifdef __ANDROID__
 
-  String configDir   = OZ_ANDROID_ROOT "/config";
-  String dataDir     = OZ_ANDROID_ROOT "/data";
-  String picturesDir = "";
-  String musicDir    = "";
+  File configDir   = OZ_ANDROID_ROOT "/config";
+  File dataDir     = OZ_ANDROID_ROOT "/data";
+  File picturesDir = "";
+  File musicDir    = "";
 
 #else
 
-  File::mkdir(File::CONFIG);
-  File::mkdir(File::DATA);
+  File::CONFIG.mkdir();
+  File::DATA.mkdir();
 
-  String configDir   = File::CONFIG + "/openzone";
-  String dataDir     = File::DATA + "/openzone";
-  String musicDir    = File::MUSIC.isEmpty() ? String::EMPTY : File::MUSIC + "/OpenZone";
-  String picturesDir = File::PICTURES.isEmpty() ? String::EMPTY : File::PICTURES + "/OpenZone";
+  File configDir   = File::CONFIG / "openzone";
+  File dataDir     = File::DATA / "openzone";
+  File musicDir    = File::MUSIC.isNil() ? String::EMPTY : File::MUSIC / "OpenZone";
+  File picturesDir = File::PICTURES.isNil() ? String::EMPTY : File::PICTURES / "OpenZone";
 
 #endif
 
-  File::mkdir(configDir);
-  File::mkdir(configDir + "/saves");
-  File::mkdir(dataDir);
+  configDir.mkdir();
+  (configDir / "saves").mkdir();
+  dataDir.mkdir();
 
-  if (Log::init(configDir + "/client.log", true)) {
-    Log::println("Log file '%s'", Log::filePath());
+  if (Log::init(configDir / "client.log", true)) {
+    Log::println("Log file '%s'", Log::file().c());
   }
 
   Log::println("OpenZone " OZ_VERSION " started on %s", Time::local().toString().c());
@@ -406,7 +406,7 @@ int Client::init(int argc, char** argv)
   Log::unindent();
   Log::println("}");
 
-  File::mount(dataDir, "/");
+  dataDir.mountAt("/");
 
   MainCall() << []
   {
@@ -425,15 +425,15 @@ int Client::init(int argc, char** argv)
   File screenshotDir = configDir + "/screenshots";
 
   for (const File& file : screenshotDir.ls()) {
-    File::rm(file.path());
+    file.remove();
   }
-  File::rm(screenshotDir.path());
-  File::rm(configDir + "/client.rc");
+  screenshotDir.remove();
+  (configDir / "client.rc").remove();
 
   // Load configuration.
   File configFile = configDir + "/client.json";
   if (config.load(configFile) && String::equals(config["_version"].get(""), OZ_VERSION)) {
-    Log::printEnd("Configuration read from '%s'", configFile.path().c());
+    Log::printEnd("Configuration read from '%s'", configFile.c());
     initFlags |= INIT_CONFIG;
   }
   else {
@@ -477,7 +477,7 @@ int Client::init(int argc, char** argv)
 
   // Copy game packages to memfs.
   for (const File& package : File("/cache").ls("zip")) {
-    File::cp(package, "/data/openzone/" + package.name());
+    package.copyTo("/data/openzone/" + package.name());
   }
 
 #endif
@@ -487,40 +487,39 @@ int Client::init(int argc, char** argv)
 
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
-  const String& globalDataDir = config["dir.prefix"].get(String::EMPTY) + "/share/openzone";
-  const String& userMusicPath = config["dir.music"].get(File::MUSIC);
+  File globalDataDir = config["dir.prefix"].get(String::EMPTY) + "/share/openzone";
+  File userMusicDir  = config["dir.music"].get(File::MUSIC);
 
-  if (File::mount(userMusicPath, "/userMusic", true)) {
-    Log::println("%s [mounted on /userMusic]", userMusicPath.c());
+  if (userMusicDir.mountAt("/userMusic", true)) {
+    Log::println("%s [mounted on /userMusic]", userMusicDir.c());
   }
 
 #endif
 
-  if (File::mount(dataDir, nullptr, true)) {
+  if (dataDir.mountAt(nullptr, true)) {
     Log::println("%s", dataDir.c());
 
-    for (const File& file : File(dataDir).ls()) {
+    for (const File& file : dataDir.ls()) {
       if (file.hasExtension("7z") || file.hasExtension("zip")) {
-        if (!File::mount(file.path(), nullptr)) {
-          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s",
-                   file.path().c(), PHYSFS_getLastError());
+        if (!file.mountAt(nullptr)) {
+          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", file.c(), PHYSFS_getLastError());
         }
-        Log::println("%s", file.path().c());
+        Log::println("%s", file.c());
       }
     }
   }
 
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
-  if (File::mount(globalDataDir, nullptr, true)) {
+  if (globalDataDir.mountAt(nullptr, true)) {
     Log::println("%s", globalDataDir.c());
 
     for (const File& file : File(globalDataDir).ls()) {
       if (file.hasExtension("7z") || file.hasExtension("zip")) {
-        if (!File::mount(file.path(), nullptr)) {
-          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS", file.path().c());
+        if (!file.mountAt(nullptr)) {
+          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", file.c(), PHYSFS_getLastError());
         }
-        Log::println("%s", file.path().c());
+        Log::println("%s", file.c());
       }
     }
   }
@@ -664,7 +663,7 @@ void Client::shutdown()
       config.exclude("dir.config");
       config.exclude("dir.data");
 
-      Log::print("Writing configuration to '%s' ...", configFile.path().c());
+      Log::print("Writing configuration to '%s' ...", configFile.c());
       config.save(configFile, CONFIG_FORMAT);
       Log::printEnd(" OK");
     }

@@ -54,7 +54,7 @@ void QuestList::remove(int index)
   }
 }
 
-void QuestList::read(InputStream* is)
+void QuestList::read(Stream* is)
 {
   int nQuests = is->readInt();
 
@@ -71,7 +71,7 @@ void QuestList::read(InputStream* is)
   activeQuest = is->readInt();
 }
 
-void QuestList::write(OutputStream* os) const
+void QuestList::write(Stream* os) const
 {
   os->writeInt(quests.length());
 

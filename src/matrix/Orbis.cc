@@ -362,7 +362,7 @@ void Orbis::update()
   caelum.update();
 }
 
-void Orbis::read(InputStream* is)
+void Orbis::read(Stream* is)
 {
   luaMatrix.read(is);
 
@@ -510,7 +510,7 @@ int Orbis::readObject(const Json& json)
   return index;
 }
 
-void Orbis::write(OutputStream* os) const
+void Orbis::write(Stream* os) const
 {
   luaMatrix.write(os);
 

@@ -60,7 +60,7 @@ public:
   /**
    * Build a Collada (.dae) model into OpenZone (.ozModel) format.
    */
-  static bool buildModel(const File& file, OutputStream* os);
+  static bool buildModel(const File& file, Stream* os);
 
 };
 

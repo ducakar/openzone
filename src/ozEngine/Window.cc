@@ -60,7 +60,7 @@ static Thread          screenshotThread;
 
 static void writeFunc(png_struct* png, ubyte* data, size_t size)
 {
-  OutputStream* os = static_cast<OutputStream*>(png_get_io_ptr(png));
+  Stream* os = static_cast<Stream*>(png_get_io_ptr(png));
 
   os->writeChars(reinterpret_cast<const char*>(data), int(size));
 }
@@ -72,8 +72,7 @@ static void screenshotMain(void* data)
 {
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
-  Buffer buffer;
-  OutputStream os(&buffer);
+  Stream os(0);
 
   png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_info*   pngInfo = png_create_info_struct(png);

@@ -182,7 +182,7 @@ public:
   Context();
 
   static Texture loadTexture(const File& albedoFile, const File& masksFile, const File& normalsFile);
-  static Texture loadTexture(const char* basePath);
+  static Texture loadTexture(const String& basePath);
   static void unloadTexture(const Texture* texture);
 
   void prepareTexture(int id);

@@ -412,9 +412,9 @@ public:
    * Add an element to the end.
    */
   template <typename Elem_>
-  void add(Elem_&& elem)
+  Elem& add(Elem_&& elem)
   {
-    insert<Elem_>(count, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -449,16 +449,15 @@ public:
    * @return Position of the inserted or the existing equal element.
    */
   template <typename Elem_>
-  int include(Elem_&& elem)
+  Elem& include(Elem_&& elem)
   {
     int i = Arrays::index<Elem, Elem>(data, count, elem);
 
     if (i >= 0) {
-      return i;
+      return data[i];
     }
     else {
-      insert<Elem_>(count, static_cast<Elem_&&>(elem));
-      return count - 1;
+      return insert<Elem_>(count, static_cast<Elem_&&>(elem));
     }
   }
 
@@ -468,7 +467,7 @@ public:
    * All later elements are shifted to make the gap.
    */
   template <typename Elem_>
-  void insert(int i, Elem_&& elem)
+  Elem& insert(int i, Elem_&& elem)
   {
     hard_assert(uint(i) <= uint(count));
 
@@ -477,6 +476,8 @@ public:
     Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
     data[i] = static_cast<Elem_&&>(elem);
     ++count;
+
+    return data[i];
   }
 
   /**
@@ -561,18 +562,18 @@ public:
    * All elements are shifted to make a gap.
    */
   template <typename Elem_>
-  void pushFirst(Elem_&& elem)
+  Elem& pushFirst(Elem_&& elem)
   {
-    insert<Elem_>(0, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(0, static_cast<Elem_&&>(elem));
   }
 
   /**
    * Add an element to the end.
    */
   template <typename Elem_>
-  void pushLast(Elem_&& elem)
+  Elem& pushLast(Elem_&& elem)
   {
-    insert<Elem_>(count, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(count, static_cast<Elem_&&>(elem));
   }
 
   /**

@@ -244,7 +244,7 @@ Object* VehicleClass::create(int index, const Json& json) const
   return new Vehicle(this, index, json);
 }
 
-Object* VehicleClass::create(InputStream* is) const
+Object* VehicleClass::create(Stream* is) const
 {
   return new Vehicle(this, is);
 }

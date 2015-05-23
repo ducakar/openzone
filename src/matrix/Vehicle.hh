@@ -109,13 +109,13 @@ public:
 
   explicit Vehicle(const VehicleClass* clazz, int index, const Point& p, Heading heading);
   explicit Vehicle(const VehicleClass* clazz, int index, const Json& json);
-  explicit Vehicle(const VehicleClass* clazz, InputStream* is);
+  explicit Vehicle(const VehicleClass* clazz, Stream* is);
 
   Json write() const override;
-  void write(OutputStream* os) const override;
+  void write(Stream* os) const override;
 
-  void readUpdate(InputStream* is) override;
-  void writeUpdate(OutputStream* os) const override;
+  void readUpdate(Stream* is) override;
+  void writeUpdate(Stream* os) const override;
 
   OZ_STATIC_POOL_ALLOC(pool)
 };

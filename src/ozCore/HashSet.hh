@@ -271,7 +271,7 @@ protected:
    * This is a helper function to reduce code duplication between `add()` and `include()`.
    */
   template <typename Elem_>
-  void insert(Elem_&& elem, bool overwrite)
+  Elem& insert(Elem_&& elem, bool overwrite)
   {
     ensureCapacity(pool.length() + 1);
 
@@ -290,6 +290,7 @@ protected:
     }
 
     data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
+    return *data[index];
   }
 
 public:
@@ -546,18 +547,18 @@ public:
    * Add a new element, if the element already exists in the hashtable overwrite the existing one.
    */
   template <typename Elem_>
-  void add(Elem_&& elem)
+  Elem& add(Elem_&& elem)
   {
-    insert(static_cast<Elem_&&>(elem), true);
+    return insert(static_cast<Elem_&&>(elem), true);
   }
 
   /**
    * Add a new element if it does not exist in the hashtable.
    */
   template <typename Elem_>
-  void include(Elem_&& elem)
+  Elem& include(Elem_&& elem)
   {
-    insert(static_cast<Elem_&&>(elem), false);
+    return insert(static_cast<Elem_&&>(elem), false);
   }
 
   /**

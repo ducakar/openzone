@@ -40,6 +40,8 @@
 #include <client/ui/LoadingArea.hh>
 #include <client/ui/UI.hh>
 
+#include <cstring>
+
 namespace oz
 {
 namespace client
@@ -49,11 +51,13 @@ const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
 
 void GameStage::saveMain(void*)
 {
-  Log::print("Saving state to %s ...", gameStage.saveFile.path().c());
+  Log::print("Saving state to %s ...", gameStage.saveFile.c());
 
-  Buffer buffer = gameStage.saveBuffer.compress();
+  Buffer buffer(gameStage.saveStream.tell());
 
-  if (!gameStage.saveFile.write(buffer)) {
+  memcpy(buffer.begin(), gameStage.saveStream.begin(), buffer.length());
+
+  if (!gameStage.saveFile.write(buffer.compress())) {
     Log::printEnd(" Failed");
     System::bell();
   }
@@ -67,21 +71,16 @@ void GameStage::saveMain(void*)
 
 void GameStage::read()
 {
-  Log::print("Loading state from '%s' ...", stateFile.path().c());
+  Log::print("Loading state from '%s' ...", stateFile.c());
 
-  Buffer buffer = stateFile.read();
+  Buffer buffer = stateFile.read().decompress();
   if (buffer.isEmpty()) {
-    OZ_ERROR("Reading saved state '%s' failed", stateFile.path().c());
-  }
-
-  buffer = buffer.decompress();
-  if (buffer.isEmpty()) {
-    OZ_ERROR("Decompressing saved state '%s' failed", stateFile.path().c());
+    OZ_ERROR("Reading saved state '%s' failed", stateFile.c());
   }
 
   Log::printEnd(" OK");
 
-  InputStream is(buffer, Endian::LITTLE);
+  Stream is(buffer, Endian::LITTLE);
 
   matrix.read(&is);
   nirvana.read(&is);
@@ -211,7 +210,7 @@ bool GameStage::update()
   else if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
     quicksaveFile.stat();
 
-    if (quicksaveFile.type() == File::REGULAR) {
+    if (quicksaveFile.stat().type == File::REGULAR) {
       stateFile = quicksaveFile;
       Stage::nextStage = this;
     }
@@ -219,7 +218,7 @@ bool GameStage::update()
   else if (input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD]) {
     autosaveFile.stat();
 
-    if (autosaveFile.type() == File::REGULAR) {
+    if (autosaveFile.stat().type == File::REGULAR) {
       stateFile = autosaveFile;
       Stage::nextStage = this;
     }
@@ -321,7 +320,7 @@ void GameStage::load()
   camera.reset();
   camera.setState(Camera::STRATEGIC);
 
-  if (stateFile.type() == File::REGULAR) {
+  if (stateFile.stat().type == File::REGULAR) {
     read();
   }
   else {
@@ -425,7 +424,7 @@ void GameStage::unload()
   ulong64 nFrameDrops           = ticks - timer.nFrames;
   float   frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
 
-  if (stateFile.isEmpty()) {
+  if (stateFile.isNil()) {
     stateFile = autosaveFile;
     write();
     saveThread.join();
@@ -509,7 +508,7 @@ void GameStage::init()
   loader.init();
   profile.init();
 
-  saveStream = OutputStream(&saveBuffer, Endian::LITTLE);
+  saveStream = Stream(0, Endian::LITTLE);
 
   Log::unindent();
   Log::println("}");

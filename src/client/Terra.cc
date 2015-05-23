@@ -175,9 +175,9 @@ void Terra::load()
   File file = "@terra/" + name + ".ozcTerra";
   File map  = "@terra/" + name + ".dds";
 
-  InputStream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.inputStream(Endian::LITTLE);
   if (is.available() == 0) {
-    OZ_ERROR("Terra file '%s' read failed", file.path().c());
+    OZ_ERROR("Terra file '%s' read failed", file.c());
   }
 
   glGenBuffers(TILES * TILES, &vbos[0][0]);
@@ -187,7 +187,7 @@ void Terra::load()
   int iboSize = TILE_INDICES  * sizeof(ushort);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.skip(iboSize), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.readSkip(iboSize), GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   for (int i = 0; i < TILES; ++i) {
@@ -254,7 +254,7 @@ void Terra::load()
   glBindTexture(GL_TEXTURE_2D, mapTex);
 
   if (GL::textureDataFromFile(map, context.textureLod) == 0) {
-    OZ_ERROR("Failed to load terain map texture '%s'", map.path().c());
+    OZ_ERROR("Failed to load terain map texture '%s'", map.c());
   }
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
