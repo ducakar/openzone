@@ -27,7 +27,6 @@
 #include "GL.hh"
 
 #include <cstring>
-#include <png.h>
 
 #ifdef _WIN32
 # include <SDL.h>
@@ -55,13 +54,6 @@ static const GLenum CUBE_MAP_ENUMS[]  = {
   GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
   GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
-
-static void readFunc(png_struct* png, ubyte* data, size_t size)
-{
-  Stream* is = static_cast<Stream*>(png_get_io_ptr(png));
-
-  is->readChars(reinterpret_cast<char*>(data), int(size));
-}
 
 #ifdef _WIN32
 
@@ -184,227 +176,155 @@ void GL::checkError(const char* function, const char* file, int line)
   System::error(function, file, line, 1, "GL error '%s'", message);
 }
 
+int GL::textureDataFromStream(Stream* is, int bias)
+{
+  // Implementation is based on specifications from
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
+  if (is->available() < 4 || !String::beginsWith(is->begin(), "DDS ")) {
+    return 0;
+  }
+
+  is->readInt();
+  is->readInt();
+
+  int flags  = is->readInt();
+  int height = is->readInt();
+  int width  = is->readInt();
+  int pitch  = is->readInt();
+
+  is->readInt();
+
+  int nMipmaps = is->readInt();
+
+  if (!(flags & DDSD_MIPMAPCOUNT_BIT)) {
+    nMipmaps = 1;
+  }
+
+  hard_assert(nMipmaps >= 1);
+  bias = min(bias, nMipmaps - 1);
+
+  is->seek(4 + 76);
+
+  int pixelFlags = is->readInt();
+  int blockSize  = 1;
+
+  char formatFourCC[4];
+  is->readChars(formatFourCC, 4);
+
+  int bpp       = is->readInt();
+  int pixelSize = bpp / 8;
+
+  is->readInt();
+  is->readInt();
+  is->readInt();
+  is->readInt();
+  is->readInt();
+
+  int  caps2     = is->readInt();
+  bool isCubeMap = caps2 & DDSCAPS2_CUBEMAP;
+
+  is->seek(4 + 124);
+
+  GLenum format;
+
+  if (pixelFlags & DDPF_FOURCC) {
+    if (String::beginsWith(formatFourCC, "DXT1")) {
+      format    = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      blockSize = 8;
+    }
+    else if (String::beginsWith(formatFourCC, "DXT3")) {
+      format    = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      blockSize = 16;
+    }
+    else if (String::beginsWith(formatFourCC, "DXT5")) {
+      format    = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      blockSize = 16;
+    }
+    else {
+      return 0;
+    }
+  }
+  else if (pixelFlags & DDPF_RGB) {
+    format    = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
+    blockSize = 1;
+  }
+  else {
+    return 0;
+  }
+
+  MainCall() << [&]
+  {
+    int    nFaces = isCubeMap ? 6 : 1;
+    GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
+                    nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
+
+    if (nMipmaps == 1 || isCubeMap) {
+      glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    for (int i = 0; i < nFaces; ++i) {
+      GLenum faceTarget = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
+
+      int mipmapWidth  = width;
+      int mipmapHeight = height;
+      int mipmapS3Size = pitch;
+
+      for (int j = 0; j < nMipmaps; ++j) {
+        if (pixelFlags & DDPF_FOURCC) {
+          const char* data = is->readSkip(mipmapS3Size);
+
+          if (j >= bias) {
+            glCompressedTexImage2D(faceTarget, j - bias, format, mipmapWidth, mipmapHeight, 0,
+                                   mipmapS3Size, data);
+          }
+        }
+        else {
+          int mipmapPitch = ((mipmapWidth * pixelSize + 3) / 4) * 4;
+          int mipmapSize  = mipmapHeight * mipmapPitch;
+
+          if (j < bias) {
+            is->readSkip(mipmapWidth * mipmapHeight * pixelSize);
+          }
+          else {
+            Buffer data(mipmapSize);
+
+            for (int y = 0; y < mipmapHeight; ++y) {
+              char* pixels    = &data[y * mipmapPitch];
+              int   lineWidth = mipmapWidth * pixelSize;
+
+              memcpy(pixels, is->readSkip(lineWidth), lineWidth);
+
+              // BGR(A) -> RGB(A).
+              for (int x = 0; x < mipmapWidth; ++x) {
+                swap(pixels[0], pixels[2]);
+                pixels += pixelSize;
+              }
+            }
+
+            glTexImage2D(faceTarget, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
+                         GL_UNSIGNED_BYTE, data.begin());
+          }
+        }
+
+        mipmapWidth  = max(1, mipmapWidth / 2);
+        mipmapHeight = max(1, mipmapHeight / 2);
+        mipmapS3Size = ((mipmapWidth + 3) / 4) * ((mipmapHeight + 3) / 4) * blockSize;
+      }
+    }
+  };
+
+  hard_assert(is->available() == 0);
+  return nMipmaps - bias;
+}
+
 int GL::textureDataFromFile(const File& file, int bias)
 {
   Stream is = file.inputStream(Endian::LITTLE);
-
-  // Implementation is based on specifications from
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/bb943991%28v=vs.85%29.aspx.
-  if (is.available() >= 4 && String::beginsWith(is.begin(), "DDS ")) {
-    is.readInt();
-    is.readInt();
-
-    int flags  = is.readInt();
-    int height = is.readInt();
-    int width  = is.readInt();
-    int pitch  = is.readInt();
-
-    is.readInt();
-
-    int nMipmaps = is.readInt();
-
-    if (!(flags & DDSD_MIPMAPCOUNT_BIT)) {
-      nMipmaps = 1;
-    }
-
-    hard_assert(nMipmaps >= 1);
-    bias = min(bias, nMipmaps - 1);
-
-    is.seek(4 + 76);
-
-    int pixelFlags = is.readInt();
-    int blockSize  = 1;
-
-    char formatFourCC[4];
-    is.readChars(formatFourCC, 4);
-
-    int bpp       = is.readInt();
-    int pixelSize = bpp / 8;
-
-    is.readInt();
-    is.readInt();
-    is.readInt();
-    is.readInt();
-    is.readInt();
-
-    int  caps2     = is.readInt();
-    bool isCubeMap = caps2 & DDSCAPS2_CUBEMAP;
-
-    is.seek(4 + 124);
-
-    GLenum format;
-
-    if (pixelFlags & DDPF_FOURCC) {
-      if (String::beginsWith(formatFourCC, "DXT1")) {
-        format    = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-        blockSize = 8;
-      }
-      else if (String::beginsWith(formatFourCC, "DXT3")) {
-        format    = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-        blockSize = 16;
-      }
-      else if (String::beginsWith(formatFourCC, "DXT5")) {
-        format    = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-        blockSize = 16;
-      }
-      else {
-        return 0;
-      }
-    }
-    else if (pixelFlags & DDPF_RGB) {
-      format    = pixelFlags & DDPF_ALPHAPIXELS ? GL_RGBA : GL_RGB;
-      blockSize = 1;
-    }
-    else {
-      return 0;
-    }
-
-    MainCall() << [&]
-    {
-      int    nFaces = isCubeMap ? 6 : 1;
-      GLenum target = isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-
-      glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
-                      nMipmaps == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
-
-      if (nMipmaps == 1 || isCubeMap) {
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      }
-
-      for (int i = 0; i < nFaces; ++i) {
-        GLenum faceTarget = isCubeMap ? CUBE_MAP_ENUMS[i] : GL_TEXTURE_2D;
-
-        int mipmapWidth  = width;
-        int mipmapHeight = height;
-        int mipmapS3Size = pitch;
-
-        for (int j = 0; j < nMipmaps; ++j) {
-          if (pixelFlags & DDPF_FOURCC) {
-            const char* data = is.readSkip(mipmapS3Size);
-
-            if (j >= bias) {
-              glCompressedTexImage2D(faceTarget, j - bias, format, mipmapWidth, mipmapHeight, 0,
-                                     mipmapS3Size, data);
-            }
-          }
-          else {
-            int mipmapPitch = ((mipmapWidth * pixelSize + 3) / 4) * 4;
-            int mipmapSize  = mipmapHeight * mipmapPitch;
-
-            if (j < bias) {
-              is.readSkip(mipmapWidth * mipmapHeight * pixelSize);
-            }
-            else {
-              Buffer data(mipmapSize);
-
-              for (int y = 0; y < mipmapHeight; ++y) {
-                char* pixels    = &data[y * mipmapPitch];
-                int   lineWidth = mipmapWidth * pixelSize;
-
-                memcpy(pixels, is.readSkip(lineWidth), lineWidth);
-
-                // BGR(A) -> RGB(A).
-                for (int x = 0; x < mipmapWidth; ++x) {
-                  swap(pixels[0], pixels[2]);
-                  pixels += pixelSize;
-                }
-              }
-
-              glTexImage2D(faceTarget, j - bias, GLint(format), mipmapWidth, mipmapHeight, 0, format,
-                           GL_UNSIGNED_BYTE, data.begin());
-            }
-          }
-
-          mipmapWidth  = max(1, mipmapWidth / 2);
-          mipmapHeight = max(1, mipmapHeight / 2);
-          mipmapS3Size = ((mipmapWidth + 3) / 4) * ((mipmapHeight + 3) / 4) * blockSize;
-        }
-      }
-    };
-
-    hard_assert(is.available() == 0);
-    return nMipmaps - bias;
-  }
-  else if (is.available() >= 8 && png_check_sig(reinterpret_cast<const ubyte*>(is.begin()), 8)) {
-    png_struct* png     = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-    png_info*   pngInfo = png_create_info_struct(png);
-
-    png_set_read_fn(png, &is, readFunc);
-    png_read_info(png, pngInfo);
-
-    int width    = png_get_image_width(png, pngInfo);
-    int height   = png_get_image_height(png, pngInfo);
-    int bitDepth = png_get_bit_depth(png, pngInfo);
-    int colour   = png_get_color_type(png, pngInfo);
-
-    GLenum format;
-
-    if (bitDepth == 16) {
-      png_set_strip_16(png);
-    }
-
-    if (colour == PNG_COLOR_TYPE_RGB) {
-      format = GL_RGB;
-    }
-    else if (colour == PNG_COLOR_TYPE_RGBA) {
-      format = GL_RGBA;
-    }
-    else if (colour == PNG_COLOR_TYPE_PALETTE) {
-      ubyte* alpha = nullptr;
-      png_get_tRNS(png, pngInfo, &alpha, nullptr, nullptr);
-
-      png_set_palette_to_rgb(png);
-      format = alpha == nullptr ? GL_RGB : GL_RGBA;
-    }
-    else if (colour == PNG_COLOR_TYPE_GRAY) {
-      if (bitDepth < 8) {
-        png_set_expand_gray_1_2_4_to_8(png);
-      }
-      png_set_gray_to_rgb(png);
-      format = GL_RGB;
-    }
-    else if (colour == PNG_COLOR_TYPE_GRAY_ALPHA) {
-      png_set_gray_to_rgb(png);
-      format = GL_RGBA;
-    }
-    else {
-      return 0;
-    }
-
-    int pixelSize = format == GL_RGB ? 3 : 4;
-    int pitch     = ((width * pixelSize + 3) / 4) * 4;
-
-    Buffer       data(height * pitch);
-    List<ubyte*> rows(height);
-
-    for (int i = 0; i < height; ++i) {
-      char* row = &data[i * pitch];
-      rows[i] = reinterpret_cast<ubyte*>(row);
-    }
-
-    png_read_image(png, rows.begin());
-    png_read_end(png, pngInfo);
-    png_destroy_read_struct(&png, &pngInfo, nullptr);
-
-    MainCall() << [&]
-    {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-      glTexImage2D(GL_TEXTURE_2D, 0, GLint(format), width, height, 0, format, GL_UNSIGNED_BYTE,
-                   data.begin());
-    };
-
-    hard_assert(is.available() == 0);
-    return 1;
-  }
-
-  return 0;
+  return textureDataFromStream(&is, bias);
 }
 
 void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
@@ -433,9 +353,9 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
     char(0x60 + ((uint(hash) >> 25) & 0x7c))
   };
 
-  int   fieldSize = size / 6;
-  int   fieldHalf = fieldSize / 2;
-  int   pitch     = ((size * 3 + 3) / 4) * 4;
+  int fieldSize = size / 6;
+  int fieldHalf = fieldSize / 2;
+  int pitch     = ((size * 3 + 3) / 4) * 4;
 
   Buffer data(size * pitch);
 
@@ -472,74 +392,6 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data.begin());
   };
-}
-
-static bool readShaderFile(const File& file, Stream* os, List<int>* fileOffsets)
-{
-  Stream is = file.inputStream();
-  Stream cs(0); // Clean file contents, without #include directives.
-
-  while (is.available() != 0) {
-    String line = is.readLine();
-
-    if (!line.beginsWith("#include")) {
-      cs.writeChars(line, line.length());
-    }
-    else {
-      // Insert included file BEFORE the current one (not at the position of #include directive).
-      int startQuote = line.index('"');
-      int endQuote   = line.lastIndex('"');
-
-      if (startQuote > 0 && startQuote < endQuote) {
-        File   directory   = file.directory();
-        String fileName    = line.substring(startQuote + 1, endQuote);
-        File   includeFile = directory.isNil() ? fileName : directory / fileName;
-
-        if (!readShaderFile(includeFile, os, fileOffsets)) {
-          return false;
-        }
-      }
-    }
-    cs.writeChar('\n');
-  }
-
-  fileOffsets->add(os->tell());
-  os->writeChars(cs.begin(), cs.tell());
-  return true;
-}
-
-bool GL::compileShaderFromFile(GLuint shader, const char* defines, const File& file)
-{
-  Stream    os(0);
-  List<int> fileOffsets;
-
-  if (!readShaderFile(file, &os, &fileOffsets)) {
-    return false;
-  }
-
-  SList<const char*, 16> fileContents;
-  SList<int, 16>         fileLengths;
-
-  fileContents.add(defines);
-  fileLengths.add(String::length(defines));
-
-  for (int i = 0; i < fileOffsets.length(); ++i) {
-    fileContents.add(os.begin() + fileOffsets[i]);
-    fileLengths.add(i == fileOffsets.length() - 1 ? os.tell() - fileOffsets[i] :
-                    fileOffsets[i + 1] - fileOffsets[i]);
-  }
-
-  int result;
-
-  MainCall() << [&]
-  {
-    glShaderSource(shader, fileContents.length(), fileContents.begin(), fileLengths.begin());
-    glCompileShader(shader);
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-
-    OZ_GL_CHECK_ERROR();
-  };
-  return result == GL_TRUE;
 }
 
 void GL::init()

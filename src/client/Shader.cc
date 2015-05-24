@@ -113,15 +113,25 @@ Shader::Light::Light(const Point& pos_, const Vec4& colour_) :
 
 void Shader::compileShader(uint shaderId, const String& defines, const File& file) const
 {
-  bool hasCompiled = GL::compileShaderFromFile(shaderId, defines, file);
+  Stream is = file.inputStream();
 
-  int length;
-  glGetShaderInfoLog(shaderId, LOG_BUFFER_SIZE, &length, logBuffer);
+  const char* strings[] = { defines.begin(), is.begin() };
+  int         lengths[] = { defines.length(), is.available() };
+  int         result;
+  int         logLength;
+
+  glShaderSource(shaderId, 2, strings, lengths);
+  glCompileShader(shaderId);
+
+  glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
+  glGetShaderInfoLog(shaderId, LOG_BUFFER_SIZE, &logLength, logBuffer);
   logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
+
+  bool hasCompiled = result == GL_TRUE;
 
   OZ_GL_CHECK_ERROR();
 
-  if (length != 0) {
+  if (logLength != 0) {
     if (hasCompiled) {
       Log::verboseMode = true;
     }

@@ -363,125 +363,136 @@ void AL::checkError(const char* function, const char* file, int line)
   System::error(function, file, line, 1, "AL error '%s'", message);
 }
 
-bool AL::bufferDataFromFile(ALuint buffer, const File& file)
+AudioBuffer AL::decodeFromStream(Stream* is)
 {
-  Stream is = file.inputStream(Endian::LITTLE);
+  AudioBuffer buffer;
 
-  if (is.available() == 0) {
-    return false;
+  if (is->available() == 0) {
+    return buffer;
   }
 
   // WAVE loader is implemented according to specification found in
   // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/.
-  if (is.capacity() >= 44 &&
-      String::beginsWith(is.begin(), "RIFF") &&
-      String::beginsWith(is.begin() + 8, "WAVE"))
+  if (is->capacity() >= 44 &&
+      String::beginsWith(is->begin(), "RIFF") &&
+      String::beginsWith(is->begin() + 8, "WAVE"))
   {
-    is.seek(22);
-    int nChannels = is.readShort();
-    int rate      = is.readInt();
+    is->seek(22);
+    int nChannels = is->readShort();
+    buffer.rate   = is->readInt();
 
-    is.seek(34);
-    int bits = is.readShort();
+    is->seek(34);
+    int bits = is->readShort();
 
-    is.seek(36);
+    is->seek(36);
 
-    const char* chunkName = &is[is.tell()];
-    is.readInt();
+    const char* chunkName = &(*is)[is->tell()];
+    is->readInt();
 
-    int size = is.readInt();
+    int size = is->readInt();
 
     while (!String::beginsWith(chunkName, "data")) {
-      is.readSkip(size);
+      is->readSkip(size);
 
-      if (is.available() == 0) {
-        return false;
+      if (is->available() == 0) {
+        return buffer;
       }
 
-      chunkName = &is[is.tell()];
-      is.readInt();
+      chunkName = &(*is)[is->tell()];
+      is->readInt();
 
-      size = is.readInt();
+      size = is->readInt();
     }
 
     if ((nChannels != 1 && nChannels != 2) || (bits != 8 && bits != 16)) {
-      return false;
+      return buffer;
     }
 
-    ALenum format = nChannels == 1 ? bits == 8 ? AL_FORMAT_MONO8   : AL_FORMAT_MONO16 :
-                    bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
+    size = min(size, is->available());
 
-    size = min(size, is.available());
+    buffer.data.resize(size);
+    buffer.format = nChannels == 1 ? (bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16) :
+                                     (bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16);
 
-    const char* data = is.readSkip(size);
+    is->readChars(buffer.data.begin(), size);
 
 #if OZ_BYTE_ORDER == 4321
 
-    if (nChannels == 2) {
+    if (bits == 16) {
       int    nSamples = size / sizeof(short);
-      short* samples  = new short[nSamples];
-
-      memcpy(samples, data, size);
+      short* samples  = reinterpret_cast<short*>(buffer.data.begin());
 
       for (int i = 0; i < nSamples; ++i) {
         samples[i] = Endian::bswap16(samples[i]);
       }
-
-      data = reinterpret_cast<const char*>(samples);
-    }
-
-#endif
-
-    alBufferData(buffer, format, data, size, rate);
-
-#if OZ_BYTE_ORDER == 4321
-
-    if (nChannels == 2) {
-      delete[] data;
     }
 
 #endif
 
     OZ_AL_CHECK_ERROR();
-    return true;
+    return buffer;
   }
   else {
     OggVorbis_File ovStream;
-    if (ov_open_callbacks(&is, &ovStream, nullptr, 0, VORBIS_CALLBACKS) < 0) {
-      return false;
+    if (ov_open_callbacks(is, &ovStream, nullptr, 0, VORBIS_CALLBACKS) < 0) {
+      return buffer;
     }
 
     vorbis_info* vorbisInfo = ov_info(&ovStream, -1);
     if (vorbisInfo == nullptr) {
       ov_clear(&ovStream);
-      return false;
+      return buffer;
     }
 
     int nChannels = vorbisInfo->channels;
     if (nChannels != 1 && nChannels != 2) {
       ov_clear(&ovStream);
-      return false;
+      return buffer;
     }
 
-    ALenum format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-    int    rate   = int(vorbisInfo->rate);
-    int    size   = int(ov_pcm_total(&ovStream, -1)) * nChannels * sizeof(short);
-    char*  data   = new char[size];
+    int size = int(ov_pcm_total(&ovStream, -1)) * nChannels * sizeof(short);
 
-    if (!decodeVorbis(&ovStream, data, size)) {
-      delete[] data;
+    buffer.data.resize(size);
+    buffer.format = nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+    buffer.rate   = int(vorbisInfo->rate);
+
+    if (!decodeVorbis(&ovStream, buffer.data.begin(), buffer.data.length())) {
+      buffer.data.resize(0);
       ov_clear(&ovStream);
-      return false;
+      return buffer;
     }
 
-    alBufferData(buffer, format, data, size, rate);
-
-    delete[] data;
     ov_clear(&ovStream);
 
     OZ_AL_CHECK_ERROR();
-    return true;
+    return buffer;
   }
+}
+
+AudioBuffer AL::decodeFromFile(const File& file)
+{
+  Stream is = file.inputStream(Endian::LITTLE);
+  return decodeFromStream(&is);
+}
+
+bool AL::bufferDataFromStream(ALuint bufferId, Stream* is)
+{
+  AudioBuffer buffer = decodeFromStream(is);
+
+  if (buffer.data.isEmpty()) {
+    return false;
+  }
+
+  alBufferData(bufferId, buffer.format, buffer.data.begin(), buffer.data.length(), buffer.rate);
+
+  OZ_AL_CHECK_ERROR();
+  return true;
+}
+
+bool AL::bufferDataFromFile(ALuint bufferId, const File& file)
+{
+  Stream is = file.inputStream(Endian::LITTLE);
+  return bufferDataFromStream(bufferId, &is);
 }
 
 bool AL::init()

@@ -46,6 +46,16 @@ namespace oz
 {
 
 /**
+ * Buffer with decoded audio data.
+ */
+struct AudioBuffer
+{
+  Buffer data;   ///< Samples.
+  ALenum format; ///< OpenAL format.
+  int    rate;   ///< Sampling rate.
+};
+
+/**
  * OpenAL utilities.
  */
 class AL
@@ -154,12 +164,24 @@ public:
   static void checkError(const char* function, const char* file, int line);
 
   /**
-   * Load OpenAL buffer from a WAVE of Ogg Vorbis file.
-   *
-   * @note
-   * Beware, 3D effects in OpenAL only work on mono sound samples.
+   * Read WAVE or Ogg Vorbis file stream and decode data into a buffer.
    */
-  static bool bufferDataFromFile(ALuint buffer, const File& file);
+  static AudioBuffer decodeFromStream(Stream* is);
+
+  /**
+   * Read WAVE or Ogg Vorbis file and decode data into a buffer.
+   */
+  static AudioBuffer decodeFromFile(const File& file);
+
+  /**
+   * Load OpenAL buffer from a WAVE or Ogg Vorbis file stream.
+   */
+  static bool bufferDataFromStream(ALuint bufferId, Stream* is);
+
+  /**
+   * Load OpenAL buffer from a WAVE or Ogg Vorbis file.
+   */
+  static bool bufferDataFromFile(ALuint bufferId, const File& file);
 
   /**
    * Open default OpenAL device and create a context with default parameters.

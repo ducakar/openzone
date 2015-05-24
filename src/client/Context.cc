@@ -69,15 +69,15 @@ namespace client
 
 struct Context::TextureResource::PreloadData
 {
-  File albedo;
-  File masks;
-  File normals;
+  Buffer albedoBuffer;
+  Buffer masksBuffer;
+  Buffer normalsBuffer;
 };
 
 struct Context::SoundResource::PreloadData
 {
-  File   sample;
-  Buffer decodedData;
+  Buffer      fileBuffer;
+  AudioBuffer audioBuffer;
 };
 
 Pool<Context::Source> Context::Source::pool;
