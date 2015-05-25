@@ -47,18 +47,17 @@ const char* const IMAGE_EXTENSIONS[] = {
   ".tiff"
 };
 
-bool Context::isBaseTexture(const char* path_)
+bool Context::isBaseTexture(const String& name)
 {
-  String path = path_;
-  return !path.endsWith("_d") && !path.endsWith("_m") && !path.endsWith("_s") &&
-         !path.endsWith("_spec") && !path.endsWith("_g") && !path.endsWith("_glow") &&
-         !path.endsWith(".blend") && !path.endsWith("_n") && !path.endsWith("_nm") &&
-         !path.endsWith("_normal") && !path.endsWith("_local");
+  return !name.endsWith("_d") && !name.endsWith("_m") && !name.endsWith("_s") &&
+         !name.endsWith("_spec") && !name.endsWith("_g") && !name.endsWith("_glow") &&
+         !name.endsWith(".blend") && !name.endsWith("_n") && !name.endsWith("_nm") &&
+         !name.endsWith("_normal") && !name.endsWith("_local");
 }
 
-void Context::buildTexture(const char* basePath_, const char* destBasePath_, bool allLayers)
+void Context::buildTexture(const File& basePath, const File& destBasePath, bool allLayers)
 {
-  Log::print("Building texture(s) '%s' -> '%s' ...", basePath_, destBasePath_);
+  Log::print("Building texture(s) '%s' -> '%s' ...", basePath.c(), destBasePath.c());
 
   ImageBuilder::options = ImageBuilder::MIPMAPS_BIT;
   ImageBuilder::scale   = 1.0f;
@@ -70,87 +69,85 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
     ImageBuilder::options |= ImageBuilder::FAST_BIT;
   }
 
-  String destBasePath      = destBasePath_;
-  String basePath          = basePath_;
-  String diffuseBasePath   = basePath;
-  String masksBasePath     = basePath + "_m";
-  String specular1BasePath = basePath + "_s";
-  String specular2BasePath = basePath + "_spec";
-  String specular3BasePath = basePath + "_h";
-  String emission1BasePath = basePath + "_g";
-  String emission2BasePath = basePath + "_glow";
-  String emission3BasePath = basePath + ".blend";
-  String normals1BasePath  = basePath + "_n";
-  String normals2BasePath  = basePath + "_nm";
-  String normals3BasePath  = basePath + "_normal";
-  String normals4BasePath  = basePath + "_local";
+  File diffuseBasePath   = basePath;
+  File masksBasePath     = basePath + "_m";
+  File specular1BasePath = basePath + "_s";
+  File specular2BasePath = basePath + "_spec";
+  File specular3BasePath = basePath + "_h";
+  File emission1BasePath = basePath + "_g";
+  File emission2BasePath = basePath + "_glow";
+  File emission3BasePath = basePath + ".blend";
+  File normals1BasePath  = basePath + "_n";
+  File normals2BasePath  = basePath + "_nm";
+  File normals3BasePath  = basePath + "_normal";
+  File normals4BasePath  = basePath + "_local";
 
   File diffuse, masks, specular, emission, normals;
 
   for (int i = 0; i < Arrays::length(IMAGE_EXTENSIONS); ++i) {
-    if (diffuse.isEmpty() || diffuse.stat().type == File::MISSING) {
-      diffuse = File(diffuseBasePath + IMAGE_EXTENSIONS[i]);
+    if (diffuse.isEmpty() || !diffuse.exists()) {
+      diffuse = diffuseBasePath + IMAGE_EXTENSIONS[i];
     }
 
     if (allLayers) {
-      if (masks.isEmpty() || masks.stat().type == File::MISSING) {
-        masks = File(masksBasePath + IMAGE_EXTENSIONS[i]);
+      if (masks.isEmpty() || !masks.exists()) {
+        masks = masksBasePath + IMAGE_EXTENSIONS[i];
       }
 
-      if (specular.isEmpty() || specular.stat().type == File::MISSING) {
-        specular = File(specular1BasePath + IMAGE_EXTENSIONS[i]);
+      if (specular.isEmpty() || !specular.exists()) {
+        specular = specular1BasePath + IMAGE_EXTENSIONS[i];
       }
-      if (specular.stat().type == File::MISSING) {
-        specular = File(specular2BasePath + IMAGE_EXTENSIONS[i]);
+      if (!specular.exists()) {
+        specular = specular2BasePath + IMAGE_EXTENSIONS[i];
       }
-      if (specular.stat().type == File::MISSING) {
-        specular = File(specular3BasePath + IMAGE_EXTENSIONS[i]);
-      }
-
-      if (emission.isEmpty() || emission.stat().type == File::MISSING) {
-        emission = File(emission1BasePath + IMAGE_EXTENSIONS[i]);
-      }
-      if (emission.stat().type == File::MISSING) {
-        emission = File(emission2BasePath + IMAGE_EXTENSIONS[i]);
-      }
-      if (emission.stat().type == File::MISSING) {
-        emission = File(emission3BasePath + IMAGE_EXTENSIONS[i]);
+      if (!specular.exists()) {
+        specular = specular3BasePath + IMAGE_EXTENSIONS[i];
       }
 
-      if (normals.isEmpty() || normals.stat().type == File::MISSING) {
-        normals = File(normals1BasePath + IMAGE_EXTENSIONS[i]);
+      if (emission.isEmpty() || !emission.exists()) {
+        emission = emission1BasePath + IMAGE_EXTENSIONS[i];
       }
-      if (normals.stat().type == File::MISSING) {
-        normals = File(normals2BasePath + IMAGE_EXTENSIONS[i]);
+      if (!emission.exists()) {
+        emission = emission2BasePath + IMAGE_EXTENSIONS[i];
       }
-      if (normals.stat().type == File::MISSING) {
-        normals = File(normals3BasePath + IMAGE_EXTENSIONS[i]);
+      if (!emission.exists()) {
+        emission = emission3BasePath + IMAGE_EXTENSIONS[i];
       }
-      if (normals.stat().type == File::MISSING) {
-        normals = File(normals4BasePath + IMAGE_EXTENSIONS[i]);
+
+      if (normals.isEmpty() || !normals.exists()) {
+        normals = normals1BasePath + IMAGE_EXTENSIONS[i];
+      }
+      if (!normals.exists()) {
+        normals = normals2BasePath + IMAGE_EXTENSIONS[i];
+      }
+      if (!normals.exists()) {
+        normals = normals3BasePath + IMAGE_EXTENSIONS[i];
+      }
+      if (!normals.exists()) {
+        normals = normals4BasePath + IMAGE_EXTENSIONS[i];
       }
     }
   }
 
-  if (diffuse.stat().type != File::MISSING) {
+  if (diffuse.exists()) {
     ImageBuilder::convertToDDS(diffuse, destBasePath + ".dds");
   }
   else {
     OZ_ERROR("Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.c());
   }
 
-  if (masks.stat().type != File::MISSING) {
+  if (masks.exists()) {
     ImageBuilder::convertToDDS(masks, destBasePath + "_m.dds");
   }
   else {
     ImageData specularImage;
     ImageData emissionImage;
 
-    if (specular.stat().type != File::MISSING) {
+    if (specular.exists()) {
       specularImage = ImageBuilder::loadImage(specular);
       specularImage.flags = 0;
     }
-    if (emission.stat().type != File::MISSING) {
+    if (emission.exists()) {
       emissionImage = ImageBuilder::loadImage(emission);
       emissionImage.flags = 0;
     }
@@ -222,7 +219,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
     }
   }
 
-  if (normals.stat().type != File::MISSING) {
+  if (normals.exists()) {
     ImageBuilder::options |= ImageBuilder::NORMAL_MAP_BIT | ImageBuilder::ZYZX_BIT;
 
     ImageBuilder::convertToDDS(normals, destBasePath + "_n.dds");

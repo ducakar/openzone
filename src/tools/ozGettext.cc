@@ -152,7 +152,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
 
 static void readLua(const File& file)
 {
-  if (file.stat().type != File::REGULAR) {
+  if (!file.isFile()) {
     OZ_ERROR("Failed to read '%s'", file.c());
   }
 
@@ -284,7 +284,7 @@ static void readNirvana(const File& dir)
 
 static void readCredits(const File& file)
 {
-  if (file.stat().type != File::REGULAR) {
+  if (!file.isFile()) {
     return;
   }
 
@@ -477,7 +477,7 @@ int main(int argc, char** argv)
   File missionsDir = pkgDir / "mission";
 
   for (const File& mission : missionsDir.list()) {
-    if (mission.stat().type != File::DIRECTORY) {
+    if (!mission.isDirectory()) {
       continue;
     }
 

@@ -48,9 +48,9 @@ void Caelum::build(const char* name)
   dir.mkdir();
 
   for (int i = 0; i < 6; ++i) {
-    String path = String::format("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);
+    File path = String::format("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);
 
-    context.buildTexture(path, &path[1], false);
+    context.buildTexture(path, path.toNative(), false);
   }
 
   if (!ImageBuilder::convertToDDS("@caelum/sun.png", "caelum")) {

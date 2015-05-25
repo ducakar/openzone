@@ -36,10 +36,9 @@ namespace oz
 namespace client
 {
 
-void CinematicProxy::executeSequence(const char* path, const Lingua* missionLingua)
+void CinematicProxy::executeSequence(const File& file, const Lingua* missionLingua)
 {
   Json sequence;
-  File file = path;
 
   if (!sequence.load(file)) {
     OZ_ERROR("Failed to load sequence from '%s'", file.c());

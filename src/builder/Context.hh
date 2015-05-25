@@ -43,8 +43,8 @@ public:
 
 public:
 
-  bool isBaseTexture(const char* path);
-  void buildTexture(const char* path, const char* destPath, bool allLayers = true);
+  bool isBaseTexture(const String& name);
+  void buildTexture(const File& basePath, const File& destBasePath, bool allLayers = true);
 
   void init();
   void destroy();

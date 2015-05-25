@@ -48,12 +48,11 @@ void Terra::load(int id_)
   }
   else {
     const String& name = liber.terrae[id].name;
-    const String& path = liber.terrae[id].path;
+    const File&   file = liber.terrae[id].path;
 
     Log::print("Loading terrain '%s' ...", name.c());
 
-    File   file   = path;
-    Stream is     = file.inputStream(Endian::LITTLE);
+    Stream is = file.inputStream(Endian::LITTLE);
 
     if (is.available() == 0) {
       OZ_ERROR("Cannot read terra file '%s'", file.c());

@@ -46,6 +46,61 @@
 namespace oz
 {
 
+struct Stat
+{
+  enum Type
+  {
+    MISSING,
+    FILE,
+    DIRECTORY
+  };
+
+  Type   type = MISSING;
+  int    size = -1;
+  long64 time = 0;
+
+  OZ_HIDDEN
+  explicit Stat(const char* path)
+  {
+    if (path[0] == '@') {
+      ++path;
+
+      if (PHYSFS_exists(path)) {
+        if (PHYSFS_isDirectory(path)) {
+          type = DIRECTORY;
+          time = PHYSFS_getLastModTime(path);
+        }
+        else {
+          PHYSFS_File* file = PHYSFS_openRead(path);
+
+          if (file != nullptr) {
+            type = FILE;
+            size = int(PHYSFS_fileLength(file));
+            time = PHYSFS_getLastModTime(path);
+
+            PHYSFS_close(file);
+          }
+        }
+      }
+    }
+    else if (path[0] != '\0') {
+      struct stat statInfo;
+
+      if (::stat(path, &statInfo) == 0) {
+        if (S_ISDIR(statInfo.st_mode)) {
+          type = DIRECTORY;
+          time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
+        }
+        else if (S_ISREG(statInfo.st_mode)) {
+          type = FILE;
+          size = int(statInfo.st_size);
+          time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
+        }
+      }
+    }
+  }
+};
+
 static File specialDirs[10];
 static File executableFile;
 
@@ -139,7 +194,7 @@ static void loadXDGSettings(Map<String, File>* vars, const File& file)
     }
 
     String name = line.substring(0, equal).trim();
-    File   dir  = line.substring(firstQuote + 1, lastQuote);
+    File   dir  = File(line + firstQuote + 1, lastQuote - firstQuote - 1);
 
     if (!name.beginsWith("XDG_") || !name.endsWith("_DIR")) {
       continue;
@@ -191,7 +246,7 @@ static void initExecutablePath()
   snprintf(pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid);
 
   ptrdiff_t length = readlink(pidPathBuffer, exePathBuffer, PATH_MAX);
-  executableFile = length < 0 ? File() : File(String(exePathBuffer, int(length)));
+  executableFile = File(exePathBuffer, length < 0 ? 0 : int(length));
 }
 
 #endif
@@ -214,6 +269,10 @@ File::File(const String& path) :
   String(path)
 {}
 
+File::File(String&& path) :
+  String(static_cast<String&&>(path))
+{}
+
 File& File::operator = (const char* path)
 {
   return static_cast<File&>(String::operator = (path));
@@ -224,48 +283,34 @@ File& File::operator = (const String& path)
   return static_cast<File&>(String::operator = (path));
 }
 
-File::Info File::stat() const
+File& File::operator = (String&& path)
 {
-  Info info = { MISSING, -1, 0 };
+  return static_cast<File&>(String::operator = (static_cast<String&&>(path)));
+}
 
-  const char* path = begin();
+bool File::exists() const
+{
+  return Stat(begin()).type != Stat::MISSING;
+}
 
-  if (isVirtual()) {
-    if (PHYSFS_exists(&path[1])) {
-      if (PHYSFS_isDirectory(&path[1])) {
-        info.type = DIRECTORY;
-        info.time = PHYSFS_getLastModTime(&path[1]);
-      }
-      else {
-        PHYSFS_File* file = PHYSFS_openRead(&path[1]);
+bool File::isFile() const
+{
+  return Stat(begin()).type == Stat::FILE;
+}
 
-        if (file != nullptr) {
-          info.type = REGULAR;
-          info.size = int(PHYSFS_fileLength(file));
-          info.time = PHYSFS_getLastModTime(&path[1]);
+bool File::isDirectory() const
+{
+  return Stat(begin()).type == Stat::DIRECTORY;
+}
 
-          PHYSFS_close(file);
-        }
-      }
-    }
-  }
-  else if (!String::isEmpty()) {
-    struct stat statInfo;
+int File::size() const
+{
+  return Stat(begin()).size;
+}
 
-    if (::stat(path, &statInfo) == 0) {
-      if (S_ISDIR(statInfo.st_mode)) {
-        info.type = DIRECTORY;
-        info.time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
-      }
-      else if (S_ISREG(statInfo.st_mode)) {
-        info.type = REGULAR;
-        info.size = int(statInfo.st_size);
-        info.time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
-      }
-    }
-  }
-
-  return info;
+long64 File::time() const
+{
+  return Stat(begin()).time;
 }
 
 File File::directory() const
@@ -273,7 +318,7 @@ File File::directory() const
   int slash = lastIndex('/', length() - 1);
   int end   = slash < 0 ? length() != 1 && first() == '@' : slash + (slash == 0 && first() == '/');
 
-  return substring(0, end);
+  return File(begin(), end); // = substring(0, end), but prevents String -> File ctor.
 }
 
 String File::name() const
@@ -297,12 +342,22 @@ String File::baseName() const
   return substring(start, end);
 }
 
+File File::stripExtension() const
+{
+  int slash = lastIndex('/', length() - 1);
+  int start = lastIndex('.');
+  int end   = start <= slash ? length() : start;
+
+  return File(begin(), end); // = substring(0, end), but prevents String -> File ctor.
+}
+
 String File::extension() const
 {
-  int start = lastIndex('/', length() - 1);
-  int end   = lastIndex('.');
+  int slash = lastIndex('/', length() - 1);
+  int start = lastIndex('.');
+  int end   = start <= slash ? start + 1 : length() - (last() == '/');
 
-  return end <= start ? String() : substring(end + 1, length() - (last() == '/'));
+  return substring(start + 1, end);
 }
 
 bool File::hasExtension(const char* ext) const
@@ -311,21 +366,22 @@ bool File::hasExtension(const char* ext) const
   const char* dot   = findLast('.');
 
   if (slash < dot) {
-    return String::compare(dot + 1, ext) == 0;
+    return compare(dot + 1, ext) == 0;
   }
   else {
-    return String::isEmpty(ext);
+    return isEmpty(ext);
   }
 }
 
 File File::toNative() const
 {
-  return substring(first() == '@');
+  int start = (first() == '@');
+  return File(begin() + start, length() - start);
 }
 
 File File::toVirtual() const
 {
-  return first() == '@' ? *this : static_cast<File>(String("@", 1, begin(), length()));
+  return File("@", first() == '@', begin(), length());
 }
 
 String File::realDirectory() const
@@ -346,7 +402,7 @@ String File::realPath() const
     const char* realDir = PHYSFS_getRealDir(path);
     realDir = realDir == nullptr ? "" : realDir;
 
-    return String::format(String::last(realDir) == '/' ? "%s%s" : "%s/%s", realDir, path);
+    return format(last(realDir) == '/' ? "%s%s" : "%s/%s", realDir, path);
   }
   else {
     return *this;
@@ -355,43 +411,43 @@ String File::realPath() const
 
 File File::operator + (const String& pathElem) const
 {
-  return static_cast<File>(String(begin(), length(), pathElem, pathElem.length()));
+  return File(begin(), length(), pathElem, pathElem.length());
 }
 
 File File::operator + (const char* pathElem) const
 {
-  return static_cast<File>(String(begin(), length(), pathElem, length(pathElem)));
+  return File(begin(), length(), pathElem, length(pathElem));
 }
 
 File File::operator / (const String& pathElem) const
 {
   int separator = length();
 
-  String newPath(begin(), separator + 1, pathElem, pathElem.length());
+  File newPath(begin(), separator + 1, pathElem, pathElem.length());
   newPath[separator] = '/';
 
-  return static_cast<File>(newPath);
+  return newPath;
 }
 
 File File::operator / (const char* pathElem) const
 {
   int separator = length();
 
-  String newPath(begin(), separator + 1, pathElem, length(pathElem));
+  File newPath(begin(), separator + 1, pathElem, length(pathElem));
   newPath[separator] = '/';
 
-  return static_cast<File>(newPath);
+  return newPath;
 }
 
 File& File::operator += (const String& pathElem)
 {
-  *this = static_cast<File&&>(String(begin(), length(), pathElem, pathElem.length()));
+  *this = File(begin(), length(), pathElem, pathElem.length());
   return *this;
 }
 
 File& File::operator += (const char* pathElem)
 {
-  *this = static_cast<File&&>(String(begin(), length(), pathElem, length(pathElem)));
+  *this = File(begin(), length(), pathElem, length(pathElem));
   return *this;
 }
 
@@ -399,7 +455,7 @@ File& File::operator /= (const String& pathElem)
 {
   int separator = length();
 
-  *this = static_cast<File&&>(String(begin(), length() + 1, pathElem, pathElem.length()));
+  *this = File(begin(), length() + 1, pathElem, pathElem.length());
   begin()[separator] = '/';
 
   return *this;
@@ -409,7 +465,7 @@ File& File::operator /= (const char* pathElem)
 {
   int separator = length();
 
-  *this = static_cast<File&&>(String(begin(), length() + 1, pathElem, length(pathElem)));
+  *this = File(begin(), length() + 1, pathElem, length(pathElem));
   begin()[separator] = '/';
 
   return *this;
@@ -454,7 +510,7 @@ bool File::read(char* buffer, int* size) const
 
 bool File::read(Stream* os) const
 {
-  int size = stat().size;
+  int size = Stat(begin()).size;
   return read(os->writeSkip(size), &size);
 }
 
@@ -462,7 +518,7 @@ Buffer File::read() const
 {
   Buffer buffer;
 
-  int size = stat().size;
+  int size = Stat(begin()).size;
   buffer.resize(size, true);
 
   read(buffer.begin(), &size);
@@ -517,7 +573,7 @@ bool File::writeString(const String& s) const
 
 Stream File::inputStream(Endian::Order order) const
 {
-  int size = stat().size;
+  int size = Stat(begin()).size;
   Stream is(size < 0 ? 0 : size, order);
 
   if (size == 0 || !read(is.begin(), &size)) {
@@ -533,22 +589,22 @@ bool File::copyTo(const File& dest) const
     return false;
   }
 
-  File destFile = dest.stat().type == DIRECTORY ? dest / name() : dest;
+  File destFile = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
   return destFile.write(buffer);
 }
 
 bool File::copyTreeTo(const File& dest, const char* ext) const
 {
   bool success = true;
-  Type type    = stat().type;
+  Stat stat    = Stat(begin());
 
-  if (type == REGULAR) {
+  if (stat.type == Stat::FILE) {
     if (ext == nullptr || hasExtension(ext)) {
       success &= copyTo(dest);
     }
   }
-  else if (type == DIRECTORY) {
-    File destDir = dest.stat().type == DIRECTORY ? dest / name() : dest;
+  else if (stat.type == Stat::DIRECTORY) {
+    File destDir = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
 
     destDir.mkdir();
 
@@ -565,7 +621,7 @@ bool File::moveTo(const File& dest) const
     return false;
   }
   else {
-    File destFile = dest.stat().type == DIRECTORY ? dest / name() : dest;
+    File destFile = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
     return rename(begin(), destFile) == 0;
   }
 }
@@ -583,14 +639,14 @@ bool File::remove() const
 bool File::removeTree(const char* ext) const
 {
   bool success = true;
-  Type type    = stat().type;
+  Stat stat    = Stat(begin());
 
-  if (type == REGULAR) {
+  if (stat.type == Stat::FILE) {
     if (ext == nullptr || hasExtension(ext)) {
       success &= remove();
     }
   }
-  else if (type == DIRECTORY) {
+  else if (stat.type == Stat::DIRECTORY) {
     for (const File& file : list()) {
       success &= file.removeTree(ext);
     }
@@ -616,8 +672,8 @@ List<File> File::list(const char* ext) const
     String prefix = length() == 1 || last() == '/' ? *this : *this + "/";
 
     for (char** entity = entities; *entity != nullptr; ++entity) {
-      if (!String::equals(*entity, ".") && !String::equals(*entity, "..")) {
-        File entry = prefix + *entity;
+      if (!equals(*entity, ".") && !equals(*entity, "..")) {
+        File entry(prefix, prefix.length(), *entity, length(*entity));
 
         if (ext == nullptr || entry.hasExtension(ext)) {
           list.add(entry);
@@ -641,8 +697,8 @@ List<File> File::list(const char* ext) const
     dirent* entity = readdir(directory);
 
     while (entity != nullptr) {
-      if (!String::equals(entity->d_name, ".") && !String::equals(entity->d_name, "..")) {
-        File entry = prefix + entity->d_name;
+      if (!equals(entity->d_name, ".") && !equals(entity->d_name, "..")) {
+        File entry(prefix, prefix.length(), entity->d_name, length(entity->d_name));
 
         if (ext == nullptr || entry.hasExtension(ext)) {
           list.add(entry);

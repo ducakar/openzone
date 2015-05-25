@@ -53,7 +53,7 @@ void UI::buildIcons()
 {
   File dir = "@ui/icon";
 
-  if (dir.stat().type != File::DIRECTORY) {
+  if (!dir.isDirectory()) {
     return;
   }
 
@@ -68,7 +68,7 @@ void UI::buildIcons()
   for (const File& image : dir.list()) {
     String name = image.baseName();
 
-    if (image.stat().type != File::REGULAR || !image.hasExtension("png")) {
+    if (!image.isFile() || !image.hasExtension("png")) {
       continue;
     }
 

@@ -243,13 +243,12 @@ BSP::BSP(const char* name_, int id_) :
   nBrushSides(0), nBoundObjects(0),
   name(name_), id(id_), nUsers(0)
 {
-  File file = String::format("@bsp/%s.ozBSP", name_);
+  File   file = String::format("@bsp/%s.ozBSP", name_);
+  Stream is   = file.inputStream(Endian::LITTLE);
 
-  if (file.stat().type != File::REGULAR) {
+  if (is.available() == 0) {
     OZ_ERROR("BSP file '%s' read failed", file.c());
   }
-
-  Stream is        = file.inputStream(Endian::LITTLE);
 
   mins             = is.readPoint();
   maxs             = is.readPoint();

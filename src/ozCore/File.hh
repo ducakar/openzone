@@ -72,23 +72,9 @@ public:
   /// User's directory for videos.
   static const File& VIDEOS;
 
-  /**
-   * %File type classification.
-   */
-  enum Type
-  {
-    MISSING,
-    DIRECTORY,
-    REGULAR
-  };
+private:
 
-  /// File information returned by `stat()`.
-  struct Info
-  {
-    Type   type;
-    int    size;
-    long64 time;
-  };
+  using String::String;
 
 public:
 
@@ -99,31 +85,33 @@ public:
 
   /**
    * Create an instance for a given path.
-   *
-   * `stat()` is automatically called on construction unless the path is empty.
    */
   File(const char* path);
 
   /**
    * Create an instance for a given path.
-   *
-   * `stat()` is automatically called on construction unless the path is empty.
    */
   File(const String& path);
 
   /**
+   * Create an instance for a given path.
+   */
+  File(String&& path);
+
+  /**
    * Recreate instance for a given path.
-   *
-   * `stat()` is automatically called on construction unless the new path is empty.
    */
   File& operator = (const char* path);
 
   /**
    * Recreate instance for a given path.
-   *
-   * `stat()` is automatically called on construction unless the new path is empty.
    */
   File& operator = (const String& path);
+
+  /**
+   * Recreate instance for a given path.
+   */
+  File& operator = (String&& path);
 
   /**
    * True iff VFS file path.
@@ -144,9 +132,29 @@ public:
   }
 
   /**
-   * Stat file and return its type, size and modification/creation time.
+   * True iff file is a directory or regular file.
    */
-  Info stat() const;
+  bool exists() const;
+
+  /**
+   * True iff file is a regular file.
+   */
+  bool isFile() const;
+
+  /**
+   * True iff file is a directory.
+   */
+  bool isDirectory() const;
+
+  /**
+   * File size in bytes.
+   */
+  int size() const;
+
+  /**
+   * File modification or creation time (which is newer).
+   */
+  long64 time() const;
 
   /**
    * Extract directory from the path (substring before the last `/`).
@@ -163,6 +171,11 @@ public:
    * it).
    */
   String baseName() const;
+
+  /**
+   * Path with file extension removed (if there is any).
+   */
+  File stripExtension() const;
 
   /**
    * Extract file extension from the path (substring after the last dot in file name or "" if no

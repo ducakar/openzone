@@ -33,7 +33,7 @@ namespace builder
 void Class::scanObjClass(const char* className)
 {
   String name       = className;
-  File   configFile = "@cls/" + name + ".json";
+  File   configFile = "@class/" + name + ".json";
 
   if (!config.load(configFile)) {
     OZ_ERROR("Failed to load '%s'", configFile.c());
@@ -50,7 +50,7 @@ void Class::scanObjClass(const char* className)
 void Class::scanFragPool(const char* poolName)
 {
   String name       = poolName;
-  File   configFile = "@frg/" + name + ".json";
+  File   configFile = "@frag/" + name + ".json";
 
   Json config;
   if (!config.load(configFile)) {

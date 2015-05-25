@@ -78,7 +78,7 @@ bool Lingua::init(const char* language_)
   catalogue.clear();
 
   File dir = "@lingua/" + language;
-  if (dir.stat().type == File::MISSING) {
+  if (!dir.isDirectory()) {
     return false;
   }
 

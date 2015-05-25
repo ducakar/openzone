@@ -186,7 +186,7 @@ public:
    *
    * @sa `buildDDS()`
    */
-  static bool convertToDDS(const File& file, const char* destPath);
+  static bool convertToDDS(const File& file, const File& destPath);
 
   /**
    * Initialise underlaying FreeImage library.

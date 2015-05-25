@@ -43,7 +43,7 @@ public:
   bool exec(const char* code) const;
 
   void update();
-  void create(const char* missionPath);
+  void create(const char* mission);
 
   void read(Stream* is);
   void write(Stream* os);

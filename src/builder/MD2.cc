@@ -198,24 +198,22 @@ const Vec3 MD2::NORMALS[] =
   Vec3( 0.587785f, -0.688191f, -0.425325f)
 };
 
-void MD2::build(const char* path)
+void MD2::build(const File& path)
 {
-  String sPath = path;
+  File modelFile  = path / "tris.md2";
+  File configFile = path / "config.json";
+  File skinPath   = path / "skin";
 
-  File modelFile = sPath + "/tris.md2";
-  File configFile = sPath + "/config.json";
-  String skinPath = sPath + "/skin";
-
-  Log::println("Prebuilding MD2 model '%s' {", path);
+  Log::println("Prebuilding MD2 model '%s' {", path.c());
   Log::indent();
 
   Json config(configFile);
 
-  if (modelFile.stat().type != File::REGULAR) {
+  Stream is = modelFile.inputStream(Endian::LITTLE);
+
+  if (is.available() == 0) {
     OZ_ERROR("MD2 file read failed");
   }
-
-  Stream is = modelFile.inputStream(Endian::LITTLE);
 
   MD2Header header;
 
@@ -393,7 +391,7 @@ void MD2::build(const char* path)
   positions.clear();
   positions.trim();
 
-  File destDir = &sPath[1];
+  File destDir = path.toNative();
   destDir.mkdir();
 
   Stream os(0, Endian::LITTLE);

@@ -120,7 +120,7 @@ private:
   static void musicMain(void*);
   static void soundMain(void*);
 
-  void musicOpen(const char* path);
+  void musicOpen(const File& file);
   void musicClear();
   int  musicDecode();
   void musicRun();

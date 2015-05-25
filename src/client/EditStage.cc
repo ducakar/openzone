@@ -140,9 +140,7 @@ bool EditStage::update()
     }
   }
   if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
-    layoutFile.stat();
-
-    if (layoutFile.stat().type == File::REGULAR) {
+    if (layoutFile.isFile()) {
       Stage::nextStage = this;
     }
   }
@@ -230,7 +228,7 @@ void EditStage::load()
   editFrame = new ui::EditFrame();
   ui::ui.root->add(editFrame, ui::Area::CENTRE, 8);
 
-  if (layoutFile.stat().type == File::REGULAR) {
+  if (layoutFile.isFile()) {
     read();
   }
 

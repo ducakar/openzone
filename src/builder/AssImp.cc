@@ -112,23 +112,22 @@ static void readNode(const aiNode* node)
   Log::unindent();
 }
 
-void AssImp::build(const char* path)
+void AssImp::build(const File& path)
 {
-  Log::println("Prebuilding Collada model '%s' {", path);
+  Log::println("Prebuilding Collada model '%s' {", path.c());
   Log::indent();
 
-  File   modelFile = String(path, "/data.obj");
-  File   outFile   = String(&path[1], "/data.ozcModel");
-  String basePath  = String(path, "/");
+  File modelFile = path / "data.obj";
+  File outFile   = path.toNative() / "data.ozcModel";
 
-  if (modelFile.stat().type == File::MISSING) {
-    modelFile = String(path, "/data.dae");
+  if (!modelFile.exists()) {
+    modelFile = path / "data.dae";
   }
 
   Stream is = modelFile.inputStream();
 
   if (is.available() == 0) {
-    OZ_ERROR("Failed to read '%s' (.dae and .obj extensions probed)", path);
+    OZ_ERROR("Failed to read '%s' (.dae and .obj extensions probed)", path.c());
   }
 
   scene = importer.ReadFile(modelFile.realPath(),
@@ -166,7 +165,7 @@ void AssImp::build(const char* path)
 
     String texturePath = "";
     if (textureName.length != 0) {
-      texturePath = basePath + File(textureName.C_Str()).baseName();
+      texturePath = path / File(textureName.C_Str()).baseName();
     }
 
     float shininess = 50.0f;

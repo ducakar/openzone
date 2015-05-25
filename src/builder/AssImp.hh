@@ -35,7 +35,7 @@ class AssImp
 {
 public:
 
-  void build(const char* path);
+  void build(const File& path);
 
 };
 

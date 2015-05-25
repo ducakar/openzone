@@ -296,7 +296,7 @@ void Liber::initTextures()
   File dir = "@tex";
 
   for (const File& subDir : dir.list()) {
-    if (subDir.stat().type != File::DIRECTORY) {
+    if (!subDir.isDirectory()) {
       continue;
     }
 
@@ -329,7 +329,7 @@ void Liber::initSounds()
   File dir = "@snd";
 
   for (const File& subDir : dir.list()) {
-    if (subDir.stat().type != File::DIRECTORY) {
+    if (!subDir.isDirectory()) {
       continue;
     }
 
@@ -365,17 +365,17 @@ void Liber::initCaela()
 
   File dir = "@caelum";
 
-  for (const File& file : dir.list()) {
-    if (file.stat().type != File::DIRECTORY) {
+  for (const File& subDir : dir.list()) {
+    if (!subDir.isDirectory()) {
       continue;
     }
 
-    String name = file.baseName();
+    String name = subDir.baseName();
 
     Log::println("%s", name.c());
 
     caelumIndices.add(name, caela.length());
-    caela.add(Resource{ name, file });
+    caela.add(Resource{ name, subDir });
   }
 
   caelumIndices.trim();
@@ -447,14 +447,14 @@ void Liber::initModels()
   File dir = "@mdl";
 
   for (const File& subDir : dir.list()) {
-    if (subDir.stat().type != File::DIRECTORY) {
+    if (!subDir.isDirectory()) {
       continue;
     }
 
     String name = subDir.name();
     File   file = subDir / "data.ozcModel";
 
-    if (file.stat().type != File::REGULAR) {
+    if (!file.isFile()) {
       OZ_ERROR("Invalid model '%s'", name.c());
     }
 
@@ -674,12 +674,10 @@ void Liber::initBSPs()
   Log::println("}");
 }
 
-void Liber::initMusicRecurse(const char* path)
+void Liber::initMusicRecurse(const File& dir)
 {
-  File dir = path;
-
   for (const File& file : dir.list()) {
-    if (file.stat().type == File::DIRECTORY) {
+    if (file.isDirectory()) {
       initMusicRecurse(file);
     }
     if (file.hasExtension("oga") || file.hasExtension("ogg") ||

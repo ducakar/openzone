@@ -90,10 +90,8 @@ void Sound::soundMain(void*)
   sound.soundRun();
 }
 
-void Sound::musicOpen(const char* path)
+void Sound::musicOpen(const File& file)
 {
-  File file = path;
-
   if (file.hasExtension("oga") || file.hasExtension("ogg")) {
     musicStreamType = OGG;
   }
@@ -114,7 +112,7 @@ void Sound::musicOpen(const char* path)
     }
   }
   else {
-    OZ_ERROR("Unknown extension for file '%s'", path);
+    OZ_ERROR("Unknown extension for file '%s'", file.c());
   }
 
   switch (musicStreamType) {
@@ -122,18 +120,18 @@ void Sound::musicOpen(const char* path)
       break;
     }
     case OGG: {
-      musicFile = PHYSFS_openRead(&path[1]);
+      musicFile = PHYSFS_openRead(file.toNative());
       if (musicFile == nullptr) {
-        OZ_ERROR("Failed to open file '%s'", path);
+        OZ_ERROR("Failed to open file '%s'", file.c());
       }
 
       if (ov_open_callbacks(musicFile, &oggStream, nullptr, 0, VORBIS_CALLBACKS) < 0) {
-        OZ_ERROR("Failed to open Ogg stream in '%s'", path);
+        OZ_ERROR("Failed to open Ogg stream in '%s'", file.c());
       }
 
       vorbis_info* vorbisInfo = ov_info(&oggStream, -1);
       if (vorbisInfo == nullptr) {
-        OZ_ERROR("Corrupted Vorbis header in '%s'", path);
+        OZ_ERROR("Corrupted Vorbis header in '%s'", file.c());
       }
 
       musicRate     = int(vorbisInfo->rate);
@@ -146,15 +144,15 @@ void Sound::musicOpen(const char* path)
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        OZ_ERROR("Invalid number of channels in '%s', should be 1 or 2", path);
+        OZ_ERROR("Invalid number of channels in '%s', should be 1 or 2", file.c());
       }
 
       break;
     }
     case MP3: {
-      musicFile = PHYSFS_openRead(&path[1]);
+      musicFile = PHYSFS_openRead(file.toNative());
       if (musicFile == nullptr) {
-        OZ_ERROR("Failed to open file '%s'", path);
+        OZ_ERROR("Failed to open file '%s'", file.c());
       }
 
       mad_stream_init(&madStream);
@@ -163,14 +161,14 @@ void Sound::musicOpen(const char* path)
 
       int readSize = int(PHYSFS_read(musicFile, musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE));
       if (readSize != MUSIC_INPUT_BUFFER_SIZE) {
-        OZ_ERROR("Failed to read MP3 stream in '%s'", path);
+        OZ_ERROR("Failed to read MP3 stream in '%s'", file.c());
       }
 
       mad_stream_buffer(&madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE);
 
       while (mad_frame_decode(&madFrame, &madStream) != 0) {
         if (!MAD_RECOVERABLE(madStream.error)) {
-          OZ_ERROR("Corrupted MP3 header in '%s'", path);
+          OZ_ERROR("Corrupted MP3 header in '%s'", file.c());
         }
       }
 
@@ -189,22 +187,22 @@ void Sound::musicOpen(const char* path)
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        OZ_ERROR("Invalid number of channels in '%s', should be 1 or 2", path);
+        OZ_ERROR("Invalid number of channels in '%s', should be 1 or 2", file.c());
       }
 
       break;
     }
     case AAC: {
-      musicFile = PHYSFS_openRead(&path[1]);
+      musicFile = PHYSFS_openRead(file.toNative());
       if (musicFile == nullptr) {
-        OZ_ERROR("Failed to open file '%s'", path);
+        OZ_ERROR("Failed to open file '%s'", file.c());
       }
 
       aacDecoder = NeAACDecOpen();
 
       int readSize = int(PHYSFS_read(musicFile, musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE));
       if (readSize != MUSIC_INPUT_BUFFER_SIZE) {
-        OZ_ERROR("Failed to read AAC stream in '%s'", path);
+        OZ_ERROR("Failed to read AAC stream in '%s'", file.c());
       }
 
       ulong aacRate;
@@ -213,7 +211,7 @@ void Sound::musicOpen(const char* path)
       int skipBytes = int(NeAACDecInit(aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
                                        &aacRate, &aacChannels));
       if (skipBytes < 0) {
-        OZ_ERROR("Corrupted AAC header in '%s'", path);
+        OZ_ERROR("Corrupted AAC header in '%s'", file.c());
       }
 
       memmove(musicInputBuffer, musicInputBuffer + skipBytes, skipBytes);
@@ -222,7 +220,7 @@ void Sound::musicOpen(const char* path)
                                  1, skipBytes));
 
       if (readSize != skipBytes) {
-        OZ_ERROR("Failed to read AAC stream in '%s'", path);
+        OZ_ERROR("Failed to read AAC stream in '%s'", file.c());
       }
 
       aacBufferBytes  = 0;
@@ -239,7 +237,7 @@ void Sound::musicOpen(const char* path)
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        OZ_ERROR("Invalid number of channels in '%s', should be 1 or 2", path);
+        OZ_ERROR("Invalid number of channels in '%s', should be 1 or 2", file.c());
       }
 
       break;

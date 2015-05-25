@@ -58,11 +58,11 @@ void MD3::buildMesh(const char* name, int frame)
 
   File file = String::format("%s/%s.md3", dir.c(), name);
 
-  if (file.stat().type != File::REGULAR) {
+  Stream is = file.inputStream(Endian::LITTLE);
+
+  if (is.available() == 0) {
     OZ_ERROR("Cannot read MD3 model part file '%s'", file.c());
   }
-
-  Stream is = file.inputStream(Endian::LITTLE);
 
   MD3Header header;
 
@@ -382,9 +382,9 @@ void MD3::save()
   }
 }
 
-void MD3::build(const char* path)
+void MD3::build(const File& path)
 {
-  Log::println("Prebuilding MD3 model '%s' {", path);
+  Log::println("Prebuilding MD3 model '%s' {", path.c());
   Log::indent();
 
   dir = path;

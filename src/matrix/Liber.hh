@@ -94,7 +94,7 @@ private:
   void initFragPools();
   void initClasses();
   void initBSPs();
-  void initMusicRecurse(const char* path);
+  void initMusicRecurse(const File& dir);
   void initMusic(const char* userMusicPath);
 
 public:

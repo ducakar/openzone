@@ -82,11 +82,11 @@ void BSP::load()
     OZ_ERROR("Invalid BSP config");
   }
 
-  if (bspFile.stat().type != File::REGULAR) {
-    OZ_ERROR("BSP reading failed");
-  }
-
   Stream is = bspFile.inputStream(Endian::LITTLE);
+
+  if (is.available() == 0) {
+    OZ_ERROR("Cannot read BSP file '%s'", bspFile.c());
+  }
 
   char id[4];
   id[0] = is.readChar();

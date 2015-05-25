@@ -520,7 +520,7 @@ bool ImageBuilder::createDDS(const ImageData* faces, int nFaces, const File& des
   return buildDDS(faces, nFaces, destFile);
 }
 
-bool ImageBuilder::convertToDDS(const File& file, const char* destPath)
+bool ImageBuilder::convertToDDS(const File& file, const File& destPath)
 {
   errorBuffer[0] = '\0';
 
@@ -529,8 +529,8 @@ bool ImageBuilder::convertToDDS(const File& file, const char* destPath)
   }
 
   File destFile = destPath;
-  if (destFile.stat().type == File::DIRECTORY) {
-    destFile = String::format("%s/%s.dds", destPath, file.baseName().c());
+  if (destFile.isDirectory()) {
+    destFile = String::format("%s/%s.dds", destPath.c(), file.baseName().c());
   }
 
   ImageData image = loadImage(file);

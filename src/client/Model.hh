@@ -194,7 +194,7 @@ private:
   static int              vertexAnimBufferLength;
   static Collation        collation;
 
-  String                  path;
+  File                    path;
   int                     flags;
   uint                    vbo;
   uint                    ibo;
@@ -242,7 +242,7 @@ public:
 
   static void deallocate();
 
-  explicit Model(const String& path);
+  explicit Model(const File& path);
   ~Model();
 
   bool isPreloaded() const

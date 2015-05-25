@@ -122,15 +122,12 @@ void MainMenu::onRealign()
 
 void MainMenu::onUpdate()
 {
-  gameStage.autosaveFile.stat();
-  gameStage.quicksaveFile.stat();
-
-  if (gameStage.autosaveFile.stat().type == File::REGULAR) {
+  if (gameStage.autosaveFile.isFile()) {
     Button* continueButton  = new Button(OZ_GETTEXT("Continue"), loadAutosaved,  200, 30);
     add(continueButton, -20, 360);
   }
 
-  if (gameStage.quicksaveFile.stat().type == File::REGULAR) {
+  if (gameStage.quicksaveFile.isFile()) {
     Button* quickLoadButton = new Button(OZ_GETTEXT("Quickload"), loadQuicksaved, 200, 30);
     add(quickLoadButton, -20, 320);
   }

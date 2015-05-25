@@ -208,17 +208,13 @@ bool GameStage::update()
     stateFile = "";
   }
   else if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
-    quicksaveFile.stat();
-
-    if (quicksaveFile.stat().type == File::REGULAR) {
+    if (quicksaveFile.isFile()) {
       stateFile = quicksaveFile;
       Stage::nextStage = this;
     }
   }
   else if (input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD]) {
-    autosaveFile.stat();
-
-    if (autosaveFile.stat().type == File::REGULAR) {
+    if (autosaveFile.isFile()) {
       stateFile = autosaveFile;
       Stage::nextStage = this;
     }
@@ -320,7 +316,7 @@ void GameStage::load()
   camera.reset();
   camera.setState(Camera::STRATEGIC);
 
-  if (stateFile.stat().type == File::REGULAR) {
+  if (stateFile.isFile()) {
     read();
   }
   else {
@@ -498,10 +494,10 @@ void GameStage::init()
   Log::println("Initialising GameStage {");
   Log::indent();
 
-  String profilePath = config["dir.config"].get(String::EMPTY);
+  File profilePath = config["dir.config"].get(String::EMPTY);
 
-  autosaveFile  = profilePath + "/saves/autosave.ozState";
-  quicksaveFile = profilePath + "/saves/quicksave.ozState";
+  autosaveFile  = profilePath / "saves/autosave.ozState";
+  quicksaveFile = profilePath / "saves/quicksave.ozState";
 
   matrix.init();
   nirvana.init();

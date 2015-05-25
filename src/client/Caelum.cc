@@ -140,7 +140,7 @@ void Caelum::load()
 {
   id = orbis.caelum.id;
 
-  const String& path = liber.caela[id].path;
+  const File& path = liber.caela[id].path;
 
   glGenTextures(1, &sunTexId);
   glBindTexture(GL_TEXTURE_2D, sunTexId);

@@ -48,7 +48,7 @@ private:
   void buildFragPools();
   void buildModels();
   void copySounds();
-  void checkLua(const char* path);
+  void checkLua(const File& dir);
   void buildMissions();
   void packArchive(const char* name, bool useCompresion, bool use7zip);
 

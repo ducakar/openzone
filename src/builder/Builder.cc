@@ -91,7 +91,7 @@ void Builder::copyFiles(const File& srcDir, const File& destDir, const char* ext
   for (const File& file : dirList) {
     String fileName = file.name();
 
-    if (file.stat().type == File::DIRECTORY) {
+    if (file.isDirectory()) {
       if (recurse) {
         copyFiles(srcDir / file.name(), destDir / file.name(), ext, true);
       }
@@ -179,29 +179,16 @@ void Builder::buildBSPTextures()
   Log::println("Building used BSP textures {");
   Log::indent();
 
-  Set<String> usedDirs;
+  Set<File> usedDirs;
 
   for (const File& subDir : File("@baseq3/textures").list()) {
-    if (subDir.stat().type != File::DIRECTORY) {
+    if (!subDir.isDirectory()) {
       continue;
     }
 
     for (const File& file : subDir.list()) {
-      String name = file.name();
-      String path = file;
-
-      int dot   = path.lastIndex('.');
-      int slash = path.lastIndex('/');
-
-      if (slash >= dot) {
-        continue;
-      }
-
-      hard_assert(slash > 16);
-
-      // strlen("@baseq3/textures/") == 17
-      name = path.substring(17, dot);
-      path = path.substring(0, dot);
+      File   path = file.stripExtension();
+      String name = path.substring(17); // strlen("@baseq3/textures/") == 17
 
       // Skip "*_m.*", "*_n.*" etc. as those get build together with diffuse texture.
       if (!context.isBaseTexture(name)) {
@@ -223,7 +210,7 @@ void Builder::buildBSPTextures()
 
   for (const File& subDir : usedDirs) {
     for (const File& file : subDir.list()) {
-      if (file.stat().type != File::REGULAR) {
+      if (!file.isFile()) {
         continue;
       }
 
@@ -333,7 +320,7 @@ void Builder::buildModels()
     dir.toNative().mkdir();
 
     for (const File& file : dir.list()) {
-      if (file.stat().type != File::REGULAR) {
+      if (!file.isFile()) {
         continue;
       }
 
@@ -356,10 +343,10 @@ void Builder::buildModels()
     File objFile = dir / "data.obj";
     File md2File = dir / "tris.md2";
 
-    if (daeFile.stat().type == File::REGULAR || objFile.stat().type == File::REGULAR) {
+    if (daeFile.isFile() || objFile.isFile()) {
       assImp.build(dir);
     }
-    else if (md2File.stat().type == File::REGULAR) {
+    else if (md2File.isFile()) {
       md2.build(dir);
     }
     else {
@@ -394,34 +381,22 @@ void Builder::copySounds()
   Log::println("Copying used sounds {");
   Log::indent();
 
-  Set<String> usedDirs;
+  Set<File> usedDirs;
 
   for (const File& subDir : File("@snd").list()) {
-    if (subDir.stat().type != File::DIRECTORY) {
+    if (!subDir.isDirectory()) {
       continue;
     }
 
     for (const File& file : subDir.list()) {
-      if (file.stat().type != File::REGULAR ||
+      if (!file.isFile() ||
           (!file.hasExtension("wav") && !file.hasExtension("oga") &&
            !file.hasExtension("ogg")))
       {
         continue;
       }
 
-      String name = file.name();
-      String path = file;
-
-      int dot   = path.lastIndex('.');
-      int slash = path.lastIndex('/');
-
-      if (slash < 0 || slash >= dot) {
-        continue;
-      }
-
-      hard_assert(slash > 4);
-
-      name = path.substring(5, dot);
+      String name = file.stripExtension().substring(5); // strlen("@snd/") == 5
 
       if (!context.usedSounds.exclude(name)) {
         continue;
@@ -444,11 +419,9 @@ void Builder::copySounds()
     }
   }
 
-  for (const String& subDirPath : usedDirs) {
-    File subDir = subDirPath;
-
+  for (const File& subDir : usedDirs) {
     for (const File& file : subDir.list()) {
-      if (file.stat().type != File::REGULAR) {
+      if (!file.isFile()) {
         continue;
       }
 
@@ -489,12 +462,10 @@ void Builder::copySounds()
   Log::println("}");
 }
 
-void Builder::checkLua(const char* path)
+void Builder::checkLua(const File& dir)
 {
-  Log::println("Checking Lua scripts in '%s' {", path);
+  Log::println("Checking Lua scripts in '%s' {", dir.c());
   Log::indent();
-
-  File dir = path;
 
   for (const File& file : dir.list()) {
     if (!file.hasExtension("lua")) {
@@ -527,11 +498,11 @@ void Builder::buildMissions()
   for (const File& mission : missions) {
     checkLua(mission);
 
-    copyFiles(mission, &mission[1], "lua", false);
-    copyFiles(mission, &mission[1], "json", false);
+    copyFiles(mission, mission.toNative(), "lua", false);
+    copyFiles(mission, mission.toNative(), "json", false);
 
     File srcFile = mission / "description.png";
-    if (srcFile.stat().type == File::MISSING) {
+    if (!srcFile.exists()) {
       continue;
     }
 
@@ -540,7 +511,7 @@ void Builder::buildMissions()
     ImageBuilder::options = 0;
     ImageBuilder::scale   = 1.0f;
 
-    if (!ImageBuilder::convertToDDS(srcFile, &mission[1])) {
+    if (!ImageBuilder::convertToDDS(srcFile, mission.toNative())) {
       OZ_ERROR("Failed to convert '%s' to DDS", srcFile.c());
     }
 
@@ -570,7 +541,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
     OZ_ERROR(use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed");
   }
 
-  int size = archive.stat().size;
+  int size = archive.size();
   if (size >= 0) {
     Log::println();
     Log::println("Archive size: %.2f MiB = %.2f MB",

@@ -84,9 +84,9 @@ void LuaClient::update()
   staticCall("onUpdate");
 }
 
-void LuaClient::create(const char* mission_)
+void LuaClient::create(const char* mission)
 {
-  cs.mission = mission_;
+  cs.mission = mission;
 
   Log::print("Importing mission catalogue '%s' ...", cs.mission.c());
   if (cs.missionLingua.initMission(cs.mission)) {
@@ -102,7 +102,7 @@ void LuaClient::create(const char* mission_)
   File missionDir = "@mission/" + cs.mission;
   List<File> files = missionDir.list();
 
-  if (missionDir.stat().type != File::DIRECTORY) {
+  if (!missionDir.isDirectory()) {
     OZ_ERROR("Mission directory '%s' does not exist", missionDir.c());
   }
   if (files.isEmpty()) {
@@ -111,7 +111,7 @@ void LuaClient::create(const char* mission_)
 
   File layoutFile = missionDir / "layout.json";
 
-  if (layoutFile.stat().type == File::REGULAR) {
+  if (layoutFile.isFile()) {
     Log::print("Loading layout from '%s' ...", layoutFile.c());
 
     Json json;
@@ -152,12 +152,12 @@ void LuaClient::read(Stream* is)
 
   File missionDir = "@mission/" + cs.mission;
 
-  if (missionDir.stat().type != File::DIRECTORY) {
+  if (!missionDir.isDirectory()) {
     OZ_ERROR("Mission directory '%s' does not exist", missionDir.c());
   }
 
   for (const File& file : missionDir.list()) {
-    if (file.stat().type != File::REGULAR || !file.hasExtension("lua")) {
+    if (!file.isFile() || !file.hasExtension("lua")) {
       continue;
     }
 

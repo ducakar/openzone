@@ -297,17 +297,17 @@ Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
   Texture texture;
   texture.id = -2;
 
-  if (albedoFile.stat().type == File::REGULAR) {
+  if (albedoFile.isFile()) {
     glGenTextures(1, &texture.albedo);
     glBindTexture(GL_TEXTURE_2D, texture.albedo);
     GL::textureDataFromFile(albedoFile, context.textureLod);
   }
-  if (masksFile.stat().type == File::REGULAR) {
+  if (masksFile.isFile()) {
     glGenTextures(1, &texture.masks);
     glBindTexture(GL_TEXTURE_2D, texture.masks);
     GL::textureDataFromFile(masksFile, context.textureLod);
   }
-  if (normalsFile.stat().type == File::REGULAR) {
+  if (normalsFile.isFile()) {
     glGenTextures(1, &texture.normals);
     glBindTexture(GL_TEXTURE_2D, texture.normals);
     GL::textureDataFromFile(normalsFile, context.textureLod);
@@ -397,7 +397,7 @@ uint Context::requestSound(int id)
   OZ_AL_CHECK_ERROR();
 
   const String& name = liber.sounds[id].name;
-  const String& path = liber.sounds[id].path;
+  const File&   path = liber.sounds[id].path;
 
   alGenBuffers(1, &resource.handle);
 
