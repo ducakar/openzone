@@ -88,16 +88,16 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
   File diffuse, masks, specular, emission, normals;
 
   for (int i = 0; i < Arrays::length(IMAGE_EXTENSIONS); ++i) {
-    if (diffuse.isNil() || diffuse.stat().type == File::MISSING) {
+    if (diffuse.isEmpty() || diffuse.stat().type == File::MISSING) {
       diffuse = File(diffuseBasePath + IMAGE_EXTENSIONS[i]);
     }
 
     if (allLayers) {
-      if (masks.isNil() || masks.stat().type == File::MISSING) {
+      if (masks.isEmpty() || masks.stat().type == File::MISSING) {
         masks = File(masksBasePath + IMAGE_EXTENSIONS[i]);
       }
 
-      if (specular.isNil() || specular.stat().type == File::MISSING) {
+      if (specular.isEmpty() || specular.stat().type == File::MISSING) {
         specular = File(specular1BasePath + IMAGE_EXTENSIONS[i]);
       }
       if (specular.stat().type == File::MISSING) {
@@ -107,7 +107,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
         specular = File(specular3BasePath + IMAGE_EXTENSIONS[i]);
       }
 
-      if (emission.isNil() || emission.stat().type == File::MISSING) {
+      if (emission.isEmpty() || emission.stat().type == File::MISSING) {
         emission = File(emission1BasePath + IMAGE_EXTENSIONS[i]);
       }
       if (emission.stat().type == File::MISSING) {
@@ -117,7 +117,7 @@ void Context::buildTexture(const char* basePath_, const char* destBasePath_, boo
         emission = File(emission3BasePath + IMAGE_EXTENSIONS[i]);
       }
 
-      if (normals.isNil() || normals.stat().type == File::MISSING) {
+      if (normals.isEmpty() || normals.stat().type == File::MISSING) {
         normals = File(normals1BasePath + IMAGE_EXTENSIONS[i]);
       }
       if (normals.stat().type == File::MISSING) {

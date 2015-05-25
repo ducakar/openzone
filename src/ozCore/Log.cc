@@ -274,10 +274,10 @@ bool Log::init(const File& file, bool clearFile)
 
   logFile = file;
 
-  if (!file.isNil()) {
+  if (!file.isEmpty()) {
     logFileStream = fopen(file, clearFile ? "w" : "a");
   }
-  return logFile.isNil();
+  return logFile.isEmpty();
 
 #endif
 }
@@ -286,7 +286,7 @@ void Log::destroy()
 {
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
-  if (!logFile.isNil()) {
+  if (!logFile.isEmpty()) {
     fclose(logFileStream);
 
     logFileStream = nullptr;

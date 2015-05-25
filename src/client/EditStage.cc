@@ -135,7 +135,7 @@ bool EditStage::update()
   orbis.resetLastIndices();
 
   if (input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE]) {
-    if (!layoutFile.isNil()) {
+    if (!layoutFile.isEmpty()) {
       write();
     }
   }

@@ -740,10 +740,10 @@ int Builder::main(int argc, char** argv)
   File outDir = hasOutDir ? argv[optind + 1] : "share/openzone";
 #endif
 
-  while (!srcDir.isNil() && srcDir.last() == '/') {
+  while (srcDir.last() == '/') {
     srcDir = srcDir.substring(0, srcDir.length() - 1);
   }
-  if (srcDir.isNil()) {
+  if (srcDir.isEmpty() || srcDir.isRoot()) {
     OZ_ERROR("Source directory cannot be root ('/')");
   }
 

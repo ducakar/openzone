@@ -424,7 +424,7 @@ void GameStage::unload()
   ulong64 nFrameDrops           = ticks - timer.nFrames;
   float   frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
 
-  if (stateFile.isNil()) {
+  if (stateFile.isEmpty()) {
     stateFile = autosaveFile;
     write();
     saveThread.join();

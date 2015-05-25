@@ -291,7 +291,7 @@ int Client::init(int argc, char** argv)
   bool   doAutoload = false;
 
   // Standalone. Executable is ./bin/<platform>/openzone.
-  if (prefixDir.isNil()) {
+  if (prefixDir.isEmpty()) {
     prefixDir = File::executable().directory() / "../..";
   }
 
@@ -378,8 +378,8 @@ int Client::init(int argc, char** argv)
 
   File configDir   = File::CONFIG / "openzone";
   File dataDir     = File::DATA / "openzone";
-  File musicDir    = File::MUSIC.isNil() ? String::EMPTY : File::MUSIC / "OpenZone";
-  File picturesDir = File::PICTURES.isNil() ? String::EMPTY : File::PICTURES / "OpenZone";
+  File musicDir    = File::MUSIC.isEmpty() ? File::MUSIC : File::MUSIC / "OpenZone";
+  File picturesDir = File::PICTURES.isEmpty() ? File::PICTURES : File::PICTURES / "OpenZone";
 
 #endif
 

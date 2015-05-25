@@ -401,10 +401,10 @@ int main(int argc, char** argv)
   File pkgDir = argv[1];
 #endif
 
-  while (!pkgDir.isNil() && pkgDir.last() == '/') {
+  while (pkgDir.last() == '/') {
     pkgDir = pkgDir.substring(0, pkgDir.length() - 1);
   }
-  if (pkgDir.isNil()) {
+  if (pkgDir.isEmpty() || pkgDir.isRoot()) {
     OZ_ERROR("Package directory cannot be root ('/')");
   }
 

@@ -159,7 +159,7 @@ static void initSpecialDirs()
 
   setSpecialDir(&vars, 0, "HOME", File());
 
-  if (File::HOME.isNil()) {
+  if (File::HOME.isEmpty()) {
     OZ_ERROR("oz::File: Unable to determine home directory: HOME environment variable not set");
   }
 
@@ -196,7 +196,6 @@ static void initExecutablePath()
 
 #endif
 
-const File  File::NIL       = File();
 const File& File::HOME      = specialDirs[0];
 const File& File::CONFIG    = specialDirs[1];
 const File& File::DATA      = specialDirs[2];
@@ -271,34 +270,39 @@ File::Info File::stat() const
 
 File File::directory() const
 {
-  int slash = lastIndex('/');
+  int slash = lastIndex('/', length() - 1);
+  int end   = slash < 0 ? length() != 1 && first() == '@' : slash + (slash == 0 && first() == '/');
 
-  return slash < 0 ? File() : substring(0, slash + (slash == 0 && first() == '/'));
+  return substring(0, end);
 }
 
 String File::name() const
 {
-  int begin = lastIndex('/') + 1;
+  int start = lastIndex('/', length() - 1) + 1;
+  int end   = length() - (last() == '/');
 
-  begin = begin == 0 ? isVirtual() : begin;
-  return substring(begin);
+  start = start == 0 ? isVirtual() : start;
+
+  return substring(start, end);
 }
 
 String File::baseName() const
 {
-  int begin = lastIndex('/') + 1;
-  int dot   = lastIndex('.');
+  int start = lastIndex('/', length() - 1) + 1;
+  int end   = lastIndex('.');
 
-  begin = begin == 0 ? isVirtual() : begin;
-  return dot < begin ? substring(begin) : substring(begin, dot);
+  start = start == 0 ? isVirtual() : start;
+  end   = end < start ? length() - (last() == '/') : end;
+
+  return substring(start, end);
 }
 
 String File::extension() const
 {
-  int slash = lastIndex('/');
-  int dot   = lastIndex('.');
+  int start = lastIndex('/', length() - 1);
+  int end   = lastIndex('.');
 
-  return dot <= slash ? String() : substring(dot + 1);
+  return end <= start ? String() : substring(end + 1, length() - (last() == '/'));
 }
 
 bool File::hasExtension(const char* ext) const
@@ -671,7 +675,7 @@ bool File::mkdir(bool makeParents) const
   if (makeParents) {
     File parent = directory();
 
-    if (!parent.isNil() && parent != "/") {
+    if (!parent.isEmpty() && !parent.isRoot()) {
       parent.mkdir(true);
     }
   }

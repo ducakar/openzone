@@ -39,15 +39,11 @@ namespace oz
  * This class provides two back-ends: the native file system back-end and virtual file system (VFS)
  * back-end implemented via PhysicsFS.
  *
- * Paths inside VFS are always absolute and should not begin with '/', they use '/' as a path
- * separator and are prefixed by "@".
+ * Paths inside VFS are always absolute and use '@' in place the leading '/'.
  */
 class File : public String
 {
 public:
-
-  /// Invalid file.
-  static const File NIL;
 
   /// User's home/profile directory.
   static const File& HOME;
@@ -130,22 +126,21 @@ public:
   File& operator = (const String& path);
 
   /**
-   * True iff path is not initialised (i.e. an empty string or "@").
-   */
-  OZ_ALWAYS_INLINE
-  bool isNil() const
-  {
-    const char* buffer = begin();
-    return buffer[0] == '\0' || (buffer[1] == '\0' && buffer[0] == '@');
-  }
-
-  /**
    * True iff VFS file path.
    */
   OZ_ALWAYS_INLINE
   bool isVirtual() const
   {
-    return begin()[0] == '@';
+    return first() == '@';
+  }
+
+  /**
+   * True iff filesystem of VFS root (i.e. equals "/" or "@").
+   */
+  OZ_ALWAYS_INLINE
+  bool isRoot() const
+  {
+    return length() == 1 && (first() == '/' || first() == '@');
   }
 
   /**
