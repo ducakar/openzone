@@ -191,7 +191,7 @@ MissionMenu::MissionMenu() :
 
   File missionRootDir = "@mission";
 
-  for (const File& missionDir : missionRootDir.ls()) {
+  for (const File& missionDir : missionRootDir.list()) {
     File descriptionFile = missionDir / "description.json";
 
     Json descriptionConfig;

@@ -122,7 +122,7 @@ void TechGraph::load()
 {
   File techDir = "@tech";
 
-  for (const File& configFile : techDir.ls()) {
+  for (const File& configFile : techDir.list()) {
     Json config;
 
     if (configFile.stat().type != File::REGULAR || !config.load(configFile)) {

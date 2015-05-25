@@ -261,7 +261,7 @@ object:
 
 void Lua::loadDir(const File& dir) const
 {
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (file.stat().type != File::REGULAR || !file.hasExtension("lua")) {
       continue;
     }

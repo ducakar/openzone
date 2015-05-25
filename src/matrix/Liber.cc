@@ -268,7 +268,7 @@ void Liber::initShaders()
 
   File dir = "@glsl";
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -295,12 +295,12 @@ void Liber::initTextures()
 
   File dir = "@tex";
 
-  for (const File& subDir : dir.ls()) {
+  for (const File& subDir : dir.list()) {
     if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
-    for (const File& file : subDir.ls()) {
+    for (const File& file : subDir.list()) {
       if (!file.hasExtension("dds") || file.endsWith("_m.dds") || file.endsWith("_n.dds")) {
         continue;
       }
@@ -328,12 +328,12 @@ void Liber::initSounds()
 
   File dir = "@snd";
 
-  for (const File& subDir : dir.ls()) {
+  for (const File& subDir : dir.list()) {
     if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
-    for (const File& file : subDir.ls()) {
+    for (const File& file : subDir.list()) {
       if (!file.hasExtension("wav") && !file.hasExtension("oga") && !file.hasExtension("ogg")) {
         continue;
       }
@@ -365,7 +365,7 @@ void Liber::initCaela()
 
   File dir = "@caelum";
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (file.stat().type != File::DIRECTORY) {
       continue;
     }
@@ -392,7 +392,7 @@ void Liber::initTerrae()
 
   File dir = "@terra";
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("ozTerra")) {
       continue;
     }
@@ -419,7 +419,7 @@ void Liber::initParticles()
 
   File dir = "@part";
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -446,7 +446,7 @@ void Liber::initModels()
 
   File dir = "@mdl";
 
-  for (const File& subDir : dir.ls()) {
+  for (const File& subDir : dir.list()) {
     if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
@@ -482,7 +482,7 @@ void Liber::initFragPools()
 
   File dir = "@frag";
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -527,7 +527,7 @@ void Liber::initClasses()
 
   // First we only add class instances, we don't initialise them as each class may have references
   // to other classes that haven't been created yet.
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -655,7 +655,7 @@ void Liber::initBSPs()
 
   File dir = "@bsp";
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("ozBSP")) {
       continue;
     }
@@ -678,7 +678,7 @@ void Liber::initMusicRecurse(const char* path)
 {
   File dir = path;
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (file.stat().type == File::DIRECTORY) {
       initMusicRecurse(file);
     }

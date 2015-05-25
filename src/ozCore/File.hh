@@ -183,6 +183,16 @@ public:
   bool hasExtension(const char* ext) const;
 
   /**
+   * Return de-virtualised path (the leading '@' is stripped if exists).
+   */
+  File toNative() const;
+
+  /**
+   * Return "virtualised" path ('@' is prepended not already there).
+   */
+  File toVirtual() const;
+
+  /**
    * %Path to the archive or mount-point of a VFS, "" for native files.
    */
   String realDirectory() const;
@@ -300,14 +310,29 @@ public:
   /**
    * Copy a file.
    *
-   * @param dest destination directory or file.
+   * If destination is an existing directory, the file is copied into it and its name is preserved.
+   *
+   * @param dest destination file or an existing directory.
    */
   bool copyTo(const File& dest) const;
 
   /**
-   * Move/rename a file.
+   * Recursively copy a directory and it contents.
    *
-   * @param dest destination directory or file.
+   * If destination is an existing directory, the tree is copied into it and the root's name is
+   * preserved.
+   *
+   * @param dest destination path or an existing directory.
+   * @param ext if not null, skip all files with non-matching extensions.
+   */
+  bool copyTreeTo(const File& dest, const char* ext = nullptr) const;
+
+  /**
+   * Move/rename a file or directory.
+   *
+   * If destination is an existing directory, the file is moved into it and its name is preserved.
+   *
+   * @param dest destination path or an existing directory.
    */
   bool moveTo(const File& dest) const;
 
@@ -317,16 +342,20 @@ public:
   bool remove() const;
 
   /**
+   * Recursively delete a file or directory and its contents.
+   *
+   * @param ext if not null, skip all files with non-matching extensions.
+   */
+  bool removeTree(const char* ext = nullptr) const;
+
+  /**
    * Generate a list of files in directory.
    *
-   * Hidden files (in Unix means, so everything starting with '.') are skipped.
-   * On error, an empty array is returned.
+   * An empty array is returned on error.
    *
-   * Directory listing is not supported on NaCl, so this function always returns an empty list.
-   *
-   * @param extension if not null, filter out all files that don't have the specified extension.
+   * @param ext if not null, skip all files with non-matching extensions.
    */
-  List<File> ls(const char* extension = nullptr) const;
+  List<File> list(const char* ext = nullptr) const;
 
   /**
    * Return the current directory in native file system.
@@ -344,8 +373,10 @@ public:
 
   /**
    * Make a new directory.
+   *
+   * @param makeParents create any non-existent parent directories.
    */
-  bool mkdir() const;
+  bool mkdir(bool makeParents = false) const;
 
   /**
    * Mount read-only directory or archive into VFS.

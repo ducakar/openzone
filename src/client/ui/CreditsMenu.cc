@@ -151,7 +151,7 @@ CreditsMenu::CreditsMenu() :
 
   File creditsDir = "@credits";
 
-  for (const File& creditsFile : creditsDir.ls()) {
+  for (const File& creditsFile : creditsDir.list()) {
     Stream is = creditsFile.inputStream();
 
     if (is.available() == 0) {

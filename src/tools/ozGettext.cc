@@ -253,7 +253,7 @@ static void readNirvana(const File& dir)
 
   File mindsDir = dir / "mind";
 
-  for (const File& file : mindsDir.ls()) {
+  for (const File& file : mindsDir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -415,10 +415,10 @@ int main(int argc, char** argv)
   File luaNirvanaDir = pkgDir / "lua/nirvana";
   File luaClientDir  = pkgDir / "lua/client";
 
-  List<File> luaCommonFiles  = luaCommonDir.ls();
-  List<File> luaMatrixFiles  = luaMatrixDir.ls();
-  List<File> luaNirvanaFiles = luaNirvanaDir.ls();
-  List<File> luaClientFiles  = luaClientDir.ls();
+  List<File> luaCommonFiles  = luaCommonDir.list();
+  List<File> luaMatrixFiles  = luaMatrixDir.list();
+  List<File> luaNirvanaFiles = luaNirvanaDir.list();
+  List<File> luaClientFiles  = luaClientDir.list();
 
   List<File> luaFiles;
   luaFiles.addAll(luaCommonFiles.begin(), luaCommonFiles.length());
@@ -436,7 +436,7 @@ int main(int argc, char** argv)
 
   File bspDir = pkgDir / "baseq3/maps";
 
-  for (const File& file : bspDir.ls()) {
+  for (const File& file : bspDir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -446,7 +446,7 @@ int main(int argc, char** argv)
 
   File classDir = pkgDir / "class";
 
-  for (const File& file : classDir.ls()) {
+  for (const File& file : classDir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -476,12 +476,12 @@ int main(int argc, char** argv)
 
   File missionsDir = pkgDir / "mission";
 
-  for (const File& mission : missionsDir.ls()) {
+  for (const File& mission : missionsDir.list()) {
     if (mission.stat().type != File::DIRECTORY) {
       continue;
     }
 
-    for (const File& file : mission.ls()) {
+    for (const File& file : mission.list()) {
       if (file.hasExtension("lua")) {
         readLua(file);
       }

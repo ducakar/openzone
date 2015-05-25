@@ -77,7 +77,7 @@ void Builder::printUsage()
 
 void Builder::copyFiles(const File& srcDir, const File& destDir, const char* ext, bool recurse)
 {
-  List<File> dirList = srcDir.ls();
+  List<File> dirList = srcDir.list();
 
   if (dirList.isEmpty()) {
     return;
@@ -119,7 +119,7 @@ void Builder::buildCaela()
   Log::println("Building Caela {");
   Log::indent();
 
-  for (const File& file : File("@caelum").ls()) {
+  for (const File& file : File("@caelum").list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -139,7 +139,7 @@ void Builder::buildTerrae()
   Log::println("Building Terrae {");
   Log::indent();
 
-  for (const File& file : File("@terra").ls()) {
+  for (const File& file : File("@terra").list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -157,7 +157,7 @@ void Builder::buildBSPs()
   Log::println("Building BSPs {");
   Log::indent();
 
-  for (const File& file : File("@baseq3/maps").ls()) {
+  for (const File& file : File("@baseq3/maps").list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -181,12 +181,12 @@ void Builder::buildBSPTextures()
 
   Set<String> usedDirs;
 
-  for (const File& subDir : File("@baseq3/textures").ls()) {
+  for (const File& subDir : File("@baseq3/textures").list()) {
     if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
-    for (const File& file : subDir.ls()) {
+    for (const File& file : subDir.list()) {
       String name = file.name();
       String path = file;
 
@@ -222,7 +222,7 @@ void Builder::buildBSPTextures()
   }
 
   for (const File& subDir : usedDirs) {
-    for (const File& file : subDir.ls()) {
+    for (const File& file : subDir.list()) {
       if (file.stat().type != File::REGULAR) {
         continue;
       }
@@ -269,7 +269,7 @@ void Builder::buildClasses()
   String dirName = "@class";
   File dir = dirName;
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -297,7 +297,7 @@ void Builder::buildFragPools()
   String dirName = "@frag";
   File dir = dirName;
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("json")) {
       continue;
     }
@@ -324,15 +324,15 @@ void Builder::buildModels()
   Log::println("Building used models {");
   Log::indent();
 
-  for (const File& dir : File("@mdl").ls()) {
+  for (const File& dir : File("@mdl").list()) {
     if (!context.usedModels.exclude(dir.name())) {
       continue;
     }
 
     File("mdl").mkdir();
-    File(dir.substring(1)).mkdir();
+    dir.toNative().mkdir();
 
-    for (const File& file : dir.ls()) {
+    for (const File& file : dir.list()) {
       if (file.stat().type != File::REGULAR) {
         continue;
       }
@@ -342,7 +342,7 @@ void Builder::buildModels()
       if (name.beginsWith("COPYING") || name.beginsWith("README")) {
         Log::print("Copying '%s' ...", file.c());
 
-        File destFile = &file[1];
+        File destFile = file.toNative();
         if (!file.copyTo(destFile)) {
           OZ_ERROR("Failed to write '%s' -> '%s'", file.c(), destFile.c());
         }
@@ -396,12 +396,12 @@ void Builder::copySounds()
 
   Set<String> usedDirs;
 
-  for (const File& subDir : File("@snd").ls()) {
+  for (const File& subDir : File("@snd").list()) {
     if (subDir.stat().type != File::DIRECTORY) {
       continue;
     }
 
-    for (const File& file : subDir.ls()) {
+    for (const File& file : subDir.list()) {
       if (file.stat().type != File::REGULAR ||
           (!file.hasExtension("wav") && !file.hasExtension("oga") &&
            !file.hasExtension("ogg")))
@@ -432,9 +432,9 @@ void Builder::copySounds()
       usedDirs.include(subDir);
 
       File("snd").mkdir();
-      File("snd/" + subDir.name()).mkdir();
+      subDir.toNative().mkdir();
 
-      File destFile = &file[1];
+      File destFile = file.toNative();
 
       if (!file.copyTo(destFile)) {
         OZ_ERROR("Failed to copy '%s' -> '%s'", file.c(), destFile.c());
@@ -447,7 +447,7 @@ void Builder::copySounds()
   for (const String& subDirPath : usedDirs) {
     File subDir = subDirPath;
 
-    for (const File& file : subDir.ls()) {
+    for (const File& file : subDir.list()) {
       if (file.stat().type != File::REGULAR) {
         continue;
       }
@@ -458,9 +458,9 @@ void Builder::copySounds()
         Log::print("Copying '%s' ...", file.c());
 
         File("snd").mkdir();
-        File("snd/" + subDir.name()).mkdir();
+        subDir.toNative().mkdir();
 
-        File destFile = &file[1];
+        File destFile = file.toNative();
         if (!destFile.write(file.read())) {
           OZ_ERROR("Failed to write '%s'", destFile.c());
         }
@@ -496,7 +496,7 @@ void Builder::checkLua(const char* path)
 
   File dir = path;
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("lua")) {
       continue;
     }
@@ -518,7 +518,7 @@ void Builder::buildMissions()
   Log::println("Building missions {");
   Log::indent();
 
-  List<File> missions = File("@mission").ls();
+  List<File> missions = File("@mission").list();
 
   if (!missions.isEmpty()) {
     File("mission").mkdir();

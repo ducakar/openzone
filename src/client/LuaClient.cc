@@ -100,7 +100,7 @@ void LuaClient::create(const char* mission_)
   Log::indent();
 
   File missionDir = "@mission/" + cs.mission;
-  List<File> files = missionDir.ls();
+  List<File> files = missionDir.list();
 
   if (missionDir.stat().type != File::DIRECTORY) {
     OZ_ERROR("Mission directory '%s' does not exist", missionDir.c());
@@ -156,7 +156,7 @@ void LuaClient::read(Stream* is)
     OZ_ERROR("Mission directory '%s' does not exist", missionDir.c());
   }
 
-  for (const File& file : missionDir.ls()) {
+  for (const File& file : missionDir.list()) {
     if (file.stat().type != File::REGULAR || !file.hasExtension("lua")) {
       continue;
     }

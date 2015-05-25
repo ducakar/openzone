@@ -65,7 +65,7 @@ void UI::buildIcons()
   File("ui").mkdir();
   File("ui/icon").mkdir();
 
-  for (const File& image : dir.ls()) {
+  for (const File& image : dir.list()) {
     String name = image.baseName();
 
     if (image.stat().type != File::REGULAR || !image.hasExtension("png")) {

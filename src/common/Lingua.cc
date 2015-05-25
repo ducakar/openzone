@@ -43,7 +43,7 @@ String Lingua::detectLanguage(const char* fallback)
     lang = lang.substring(0, underscore);
   }
 
-  for (const File& file : File("@lingua").ls("json")) {
+  for (const File& file : File("@lingua").list("json")) {
     Json langMap(file);
 
     if (!langMap.isNull()) {
@@ -82,7 +82,7 @@ bool Lingua::init(const char* language_)
     return false;
   }
 
-  for (const File& file : dir.ls()) {
+  for (const File& file : dir.list()) {
     if (!file.hasExtension("mo")) {
       continue;
     }

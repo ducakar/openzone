@@ -273,22 +273,24 @@ File File::directory() const
 {
   int slash = lastIndex('/');
 
-  return slash >= 0 ? File(substring(0, slash)) : File();
+  return slash < 0 ? File() : substring(0, slash + (slash == 0 && first() == '/'));
 }
 
 String File::name() const
 {
-  int slash = lastIndex('/');
+  int begin = lastIndex('/') + 1;
 
-  return slash >= 0 ? substring(slash + 1) : substring(isVirtual());
+  begin = begin == 0 ? isVirtual() : begin;
+  return substring(begin);
 }
 
 String File::baseName() const
 {
-  int begin = max<int>(lastIndex('/') + 1, isVirtual());
+  int begin = lastIndex('/') + 1;
   int dot   = lastIndex('.');
 
-  return begin <= dot ? substring(begin, dot) : substring(begin);
+  begin = begin == 0 ? isVirtual() : begin;
+  return dot < begin ? substring(begin) : substring(begin, dot);
 }
 
 String File::extension() const
@@ -296,7 +298,7 @@ String File::extension() const
   int slash = lastIndex('/');
   int dot   = lastIndex('.');
 
-  return slash < dot ? substring(dot + 1) : String();
+  return dot <= slash ? String() : substring(dot + 1);
 }
 
 bool File::hasExtension(const char* ext) const
@@ -310,6 +312,16 @@ bool File::hasExtension(const char* ext) const
   else {
     return String::isEmpty(ext);
   }
+}
+
+File File::toNative() const
+{
+  return substring(first() == '@');
+}
+
+File File::toVirtual() const
+{
+  return first() == '@' ? *this : static_cast<File>(String("@", 1, begin(), length()));
 }
 
 String File::realDirectory() const
@@ -510,29 +522,48 @@ Stream File::inputStream(Endian::Order order) const
   return is;
 }
 
-bool File::copyTo(const File& dest_) const
+bool File::copyTo(const File& dest) const
 {
-  File dest = dest_;
-  if (dest.stat().type == DIRECTORY) {
-    dest /= name();
+  Buffer buffer = read();
+  if (buffer.isEmpty()) {
+    return false;
   }
 
-  Buffer buffer = read();
-  return buffer.isEmpty() ? false : dest.write(buffer.begin(), buffer.length());
+  File destFile = dest.stat().type == DIRECTORY ? dest / name() : dest;
+  return destFile.write(buffer);
 }
 
-bool File::moveTo(const File& dest_) const
+bool File::copyTreeTo(const File& dest, const char* ext) const
+{
+  bool success = true;
+  Type type    = stat().type;
+
+  if (type == REGULAR) {
+    if (ext == nullptr || hasExtension(ext)) {
+      success &= copyTo(dest);
+    }
+  }
+  else if (type == DIRECTORY) {
+    File destDir = dest.stat().type == DIRECTORY ? dest / name() : dest;
+
+    destDir.mkdir();
+
+    for (const File& file : list()) {
+      success &= file.copyTreeTo(destDir, ext);
+    }
+  }
+  return success;
+}
+
+bool File::moveTo(const File& dest) const
 {
   if (isVirtual()) {
     return false;
   }
-
-  File dest = dest_;
-  if (dest.stat().type == DIRECTORY) {
-    dest /= name();
+  else {
+    File destFile = dest.stat().type == DIRECTORY ? dest / name() : dest;
+    return rename(begin(), destFile) == 0;
   }
-
-  return rename(begin(), dest) == 0;
 }
 
 bool File::remove() const
@@ -545,7 +576,30 @@ bool File::remove() const
   }
 }
 
-List<File> File::ls(const char* extension) const
+bool File::removeTree(const char* ext) const
+{
+  bool success = true;
+  Type type    = stat().type;
+
+  if (type == REGULAR) {
+    if (ext == nullptr || hasExtension(ext)) {
+      success &= remove();
+    }
+  }
+  else if (type == DIRECTORY) {
+    for (const File& file : list()) {
+      success &= file.removeTree(ext);
+    }
+
+    // Delete directory if empty.
+    if (list().isEmpty()) {
+      success &= remove();
+    }
+  }
+  return success;
+}
+
+List<File> File::list(const char* ext) const
 {
   List<File> list;
 
@@ -558,10 +612,12 @@ List<File> File::ls(const char* extension) const
     String prefix = length() == 1 || last() == '/' ? *this : *this + "/";
 
     for (char** entity = entities; *entity != nullptr; ++entity) {
-      File entry = prefix + *entity;
+      if (!String::equals(*entity, ".") && !String::equals(*entity, "..")) {
+        File entry = prefix + *entity;
 
-      if ((*entity)[0] != '.' && (extension == nullptr || entry.hasExtension(extension))) {
-        list.add(entry);
+        if (ext == nullptr || entry.hasExtension(ext)) {
+          list.add(entry);
+        }
       }
     }
 
@@ -581,10 +637,12 @@ List<File> File::ls(const char* extension) const
     dirent* entity = readdir(directory);
 
     while (entity != nullptr) {
-      File entry = prefix + entity->d_name;
+      if (!String::equals(entity->d_name, ".") && !String::equals(entity->d_name, "..")) {
+        File entry = prefix + entity->d_name;
 
-      if (entity->d_name[0] != '.' && (extension == nullptr || entry.hasExtension(extension))) {
-        list.add(entry);
+        if (ext == nullptr || entry.hasExtension(ext)) {
+          list.add(entry);
+        }
       }
       entity = readdir(directory);
     }
@@ -608,8 +666,16 @@ bool File::chdir() const
   return ::chdir(begin()) == 0;
 }
 
-bool File::mkdir() const
+bool File::mkdir(bool makeParents) const
 {
+  if (makeParents) {
+    File parent = directory();
+
+    if (!parent.isNil() && parent != "/") {
+      parent.mkdir(true);
+    }
+  }
+
   if (isVirtual()) {
     return PHYSFS_mkdir(begin() + 1) != 0;
   }

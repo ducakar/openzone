@@ -93,51 +93,6 @@ inline Type operator | (const Json& json, const Type& defaultValue)
   return json.get(defaultValue);
 }
 
-template <class Iterator, typename Predicate>
-inline bool iAny(Iterator iter, Predicate predicate)
-{
-  while (iter.isValid()) {
-    if (predicate(*iter)) {
-      return true;
-    }
-    ++iter;
-  }
-  return false;
-}
-
-template <class Iterator, typename Predicate>
-inline bool iAll(Iterator iter, Predicate predicate)
-{
-  while (iter.isValid()) {
-    if (!predicate(*iter)) {
-      return false;
-    }
-    ++iter;
-  }
-  return true;
-}
-
-template <class Iterator, typename Predicate>
-inline int iCount(Iterator iter, Predicate predicate)
-{
-  int count = 0;
-
-  while (iter.isValid()) {
-    count += predicate(*iter);
-    ++iter;
-  }
-  return count;
-}
-
-template <class Iterator, typename Function>
-inline void iMap(Iterator iter, Function function)
-{
-  while (iter.isValid()) {
-    function(*iter);
-    ++iter;
-  }
-}
-
 int main()
 {
   System::init();

@@ -389,7 +389,7 @@ void Shader::init()
 
     File shadersDir = "@glsl";
 
-    for (const File& file : shadersDir.ls()) {
+    for (const File& file : shadersDir.list()) {
       if (file.hasExtension("vert")) {
         uint id = glCreateShader(GL_VERTEX_SHADER);
 
