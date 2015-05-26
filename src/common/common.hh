@@ -33,6 +33,10 @@
 #include <common/Timer.hh>
 #include <ozEngine/Lua.hh>
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #ifdef _WIN32
 # define NOGDI
 # include <windows.h>

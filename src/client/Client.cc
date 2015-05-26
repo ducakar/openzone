@@ -476,7 +476,7 @@ int Client::init(int argc, char** argv)
 #ifdef __native_client__
 
   // Copy game packages to memfs.
-  for (const File& package : File("/cache").ls("zip")) {
+  for (const File& package : File("/cache").list("zip")) {
     package.copyTo("/data/openzone/" + package.name());
   }
 

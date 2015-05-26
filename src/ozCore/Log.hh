@@ -308,11 +308,6 @@ public:
   const Log& operator << (const Stream& is) const;
 
   /**
-   * Dump buffer contents to log stream(s).
-   */
-  const Log& operator << (const Buffer& buffer) const;
-
-  /**
    * Same as `print("%s", time.toString().c())`.
    */
   const Log& operator << (const Time& time) const;

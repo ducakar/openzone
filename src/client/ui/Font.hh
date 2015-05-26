@@ -49,7 +49,7 @@ public:
 private:
 
   void*  handle;
-  Buffer buffer;
+  Stream fileBuffer;
 
 public:
 

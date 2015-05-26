@@ -28,8 +28,6 @@
 #include <client/Terra.hh>
 #include <client/Caelum.hh>
 
-#include <cstdio>
-
 namespace oz
 {
 namespace client

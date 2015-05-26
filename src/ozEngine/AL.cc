@@ -109,7 +109,6 @@ struct AL::Streamer::Data
   OggVorbis_File ovFile;
   ALenum         format;
   ALsizei        rate;
-  Buffer         fileBuffer;
   Stream         is;
   char           samples[BUFFER_SIZE];
 };
@@ -184,11 +183,10 @@ bool AL::Streamer::open(const File& file)
 {
   close();
 
-  data             = new Data;
-  data->fileBuffer = file.read();
-  data->is         = Stream(data->fileBuffer);
+  data     = new Data;
+  data->is = file.inputStream();
 
-  if (data->fileBuffer.isEmpty()) {
+  if (data->is.available() == 0) {
     delete data;
     data = nullptr;
     return false;

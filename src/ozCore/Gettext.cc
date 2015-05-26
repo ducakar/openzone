@@ -159,7 +159,7 @@ bool Gettext::import(const File& file)
   uint magic = is.readUInt();
   if (magic != GETTEXT_MAGIC) {
     if (Endian::bswap32(magic) == GETTEXT_MAGIC) {
-      is.setEndian(Endian::Order(!is.endian()));
+      is.order = Endian::Order(!is.order);
     }
     else {
       return false;

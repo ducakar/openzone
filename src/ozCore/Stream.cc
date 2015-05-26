@@ -27,6 +27,7 @@
 #include "Stream.hh"
 
 #include <cstring>
+#include <zlib.h>
 
 namespace oz
 {
@@ -81,24 +82,16 @@ void Stream::writeFloats(const float* values, int count)
 
 Stream::Stream(const char* start, const char* end, Endian::Order order_) :
   streamPos(const_cast<char*>(start)), streamBegin(const_cast<char*>(start)),
-  streamEnd(const_cast<char*>(end)), order(order_), flags(0)
+  streamEnd(const_cast<char*>(end)), flags(0), order(order_)
 {}
 
 Stream::Stream(char* start, char* end, Endian::Order order_) :
-  streamPos(start), streamBegin(start), streamEnd(end), order(order_), flags(WRITABLE)
-{}
-
-Stream::Stream(const Buffer& buffer, Endian::Order order) :
-  Stream(buffer.begin(), buffer.end(), order)
-{}
-
-Stream::Stream(Buffer& buffer, Endian::Order order) :
-  Stream(buffer.begin(), buffer.end(), order)
+  streamPos(start), streamBegin(start), streamEnd(end), flags(WRITABLE), order(order_)
 {}
 
 Stream::Stream(int size, Endian::Order order_) :
   streamPos(size == 0 ? nullptr : new char[size]), streamBegin(streamPos),
-  streamEnd(streamPos + size), order(order_), flags(WRITABLE | BUFFERED)
+  streamEnd(streamPos + size), flags(WRITABLE | BUFFERED), order(order_)
 {}
 
 Stream::~Stream()
@@ -107,8 +100,8 @@ Stream::~Stream()
 }
 
 Stream::Stream(Stream&& s) :
-  streamPos(s.streamPos), streamBegin(s.streamBegin), streamEnd(s.streamEnd), order(s.order),
-  flags(s.flags)
+  streamPos(s.streamPos), streamBegin(s.streamBegin), streamEnd(s.streamEnd), flags(s.flags),
+  order(s.order)
 {
   s.streamPos   = nullptr;
   s.streamBegin = nullptr;
@@ -125,14 +118,14 @@ Stream& Stream::operator = (Stream&& s)
     streamPos   = s.streamPos;
     streamBegin = s.streamBegin;
     streamEnd   = s.streamEnd;
-    order       = s.order;
     flags       = s.flags;
+    order       = s.order;
 
     s.streamPos   = nullptr;
     s.streamBegin = nullptr;
     s.streamEnd   = nullptr;
-    s.order       = Endian::NATIVE;
     s.flags       = 0;
+    s.order       = Endian::NATIVE;
   }
   return *this;
 }
@@ -145,6 +138,19 @@ void Stream::seek(int offset)
   }
 
   streamPos = streamBegin + offset;
+}
+
+void Stream::resize(int newSize)
+{
+  int length = min<int>(tell(), newSize);
+
+  char* newData = new char[newSize];
+  memcpy(newData, streamBegin, length);
+  delete[] streamBegin;
+
+  streamBegin = newData;
+  streamEnd   = newData + newSize;
+  streamPos   = newData + length;
 }
 
 const char* Stream::readSkip(int count)
@@ -594,7 +600,7 @@ const char* Stream::readString()
     ++streamPos;
   }
   if (streamPos == streamEnd) {
-    OZ_ERROR("oz::Stream: Buffer overrun while looking for the end of a string.");
+    OZ_ERROR("oz::Stream: Overrun while looking for the end of a string.");
   }
 
   ++streamPos;
@@ -800,6 +806,96 @@ void Stream::writeLine(const char* s)
 
   memcpy(data, s, length);
   data[length] = '\n';
+}
+
+Stream Stream::compress(int level) const
+{
+  z_stream zstream;
+  zstream.zalloc = nullptr;
+  zstream.zfree  = nullptr;
+  zstream.opaque = nullptr;
+
+  if (deflateInit(&zstream, level) != Z_OK) {
+    return Stream();
+  }
+
+  // Upper bound for compressed data plus 2 * sizeof(int) for meta-data.
+  int    outSize    = 8 + int(deflateBound(&zstream, tell()));
+  Stream out        = Stream(outSize, Endian::LITTLE);
+
+  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(streamBegin));
+  zstream.avail_in  = tell();
+  zstream.next_out  = reinterpret_cast<ubyte*>(out.streamBegin + 8);
+  zstream.avail_out = outSize - 8;
+
+  int ret = ::deflate(&zstream, Z_FINISH);
+  deflateEnd(&zstream);
+
+  if (ret != Z_STREAM_END) {
+    return Stream();
+  }
+  else {
+    outSize = 8 + int(zstream.total_out);
+
+    out.seek(outSize);
+    out.resize(outSize);
+
+    // Write size and order of the original data (in little endian).
+    int* start = reinterpret_cast<int*>(out.streamBegin);
+
+#if OZ_BYTE_ORDER == 4321
+    start[0] = Endian::bswap32(tell());
+    start[1] = Endian::bswap32(order);
+#else
+    start[0] = tell();
+    start[1] = order;
+#endif
+
+    return out;
+  }
+}
+
+Stream Stream::decompress() const
+{
+  if (capacity() < 8) {
+    return Stream();
+  }
+
+  z_stream zstream;
+  zstream.zalloc = nullptr;
+  zstream.zfree  = nullptr;
+  zstream.opaque = nullptr;
+
+  if (inflateInit(&zstream) != Z_OK) {
+    return Stream();
+  }
+
+  const int* start = reinterpret_cast<int*>(streamBegin);
+
+#if OZ_BYTE_ORDER == 4321
+  int           outSize  = Endian::bswap32(start[0]);
+  Endian::Order outOrder = Endian::Order(Endian::bswap32(start[1]));
+#else
+  int           outSize  = start[0];
+  Endian::Order outOrder = Endian::Order(start[1]);
+#endif
+
+  Stream out(outSize, outOrder);
+
+  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(streamBegin + 8));
+  zstream.avail_in  = capacity() - 8;
+  zstream.next_out  = reinterpret_cast<ubyte*>(out.streamBegin);
+  zstream.avail_out = outSize;
+
+  int ret = ::inflate(&zstream, Z_FINISH);
+  inflateEnd(&zstream);
+
+  if (ret != Z_STREAM_END) {
+    return Stream();
+  }
+  else {
+    return out;
+  }
 }
 
 }

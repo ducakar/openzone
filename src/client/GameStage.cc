@@ -40,8 +40,6 @@
 #include <client/ui/LoadingArea.hh>
 #include <client/ui/UI.hh>
 
-#include <cstring>
-
 namespace oz
 {
 namespace client
@@ -53,11 +51,8 @@ void GameStage::saveMain(void*)
 {
   Log::print("Saving state to %s ...", gameStage.saveFile.c());
 
-  Buffer buffer(gameStage.saveStream.tell());
-
-  memcpy(buffer.begin(), gameStage.saveStream.begin(), buffer.length());
-
-  if (!gameStage.saveFile.write(buffer.compress())) {
+  Stream outStream = gameStage.saveStream.compress();
+  if (!gameStage.saveFile.write(outStream.begin(), outStream.capacity())) {
     Log::printEnd(" Failed");
     System::bell();
   }
@@ -73,14 +68,12 @@ void GameStage::read()
 {
   Log::print("Loading state from '%s' ...", stateFile.c());
 
-  Buffer buffer = stateFile.read().decompress();
-  if (buffer.isEmpty()) {
+  Stream is = stateFile.inputStream().decompress();
+  if (is.available() == 0) {
     OZ_ERROR("Reading saved state '%s' failed", stateFile.c());
   }
 
   Log::printEnd(" OK");
-
-  Stream is(buffer, Endian::LITTLE);
 
   matrix.read(&is);
   nirvana.read(&is);

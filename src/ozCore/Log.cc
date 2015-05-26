@@ -468,19 +468,6 @@ const Log& Log::operator << (const Stream& is) const
   return *this;
 }
 
-const Log& Log::operator << (const Buffer& buffer) const
-{
-  const char* indent = getIndent();
-
-  OZ_PRINT_BOTH(
-    fwrite(buffer.begin(), 1, buffer.length(), stream);
-    fputs(indent, stream);
-    fputc('\n', stream);
-    fflush(stream);
-  );
-  return *this;
-}
-
 const Log& Log::operator << (const Time& time) const
 {
   printRaw("%s", time.toString().c());

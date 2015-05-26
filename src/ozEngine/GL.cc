@@ -290,7 +290,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
             is->readSkip(mipmapWidth * mipmapHeight * pixelSize);
           }
           else {
-            Buffer data(mipmapSize);
+            List<char> data(mipmapSize);
 
             for (int y = 0; y < mipmapHeight; ++y) {
               char* pixels    = &data[y * mipmapPitch];
@@ -357,7 +357,7 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
   int fieldHalf = fieldSize / 2;
   int pitch     = ((size * 3 + 3) / 4) * 4;
 
-  Buffer data(size * pitch);
+  List<char> data(size * pitch);
 
   for (int i = 0; i < size; ++i) {
     char* pixel = &data[i * pitch];

@@ -288,8 +288,7 @@ static void readCredits(const File& file)
     return;
   }
 
-  Buffer buffer = file.read();
-  Stream is(buffer);
+  Stream is = file.inputStream();
   String contents;
 
   while (is.available() != 0) {

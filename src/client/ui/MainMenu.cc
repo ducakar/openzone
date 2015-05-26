@@ -36,7 +36,6 @@
 #elif defined(_WIN32)
 # include <shellapi.h>
 #else
-# include <cstdlib>
 # include <unistd.h>
 #endif
 

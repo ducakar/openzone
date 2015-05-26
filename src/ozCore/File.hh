@@ -271,13 +271,6 @@ public:
   bool read(Stream* os) const;
 
   /**
-   * Read file into a buffer.
-   *
-   * @return true iff read operation succeeded (it is not necessary the whole file was read).
-   */
-  Buffer read() const;
-
-  /**
    * Read file as a string.
    *
    * Terminating null character is always assured.
@@ -291,14 +284,6 @@ public:
    * - Write operation is not possible while the file is mapped.
    */
   bool write(const char* data, int size) const;
-
-  /**
-   * Write buffer contents into the file.
-   *
-   * @note
-   * - Write operation is not possible while the file is mapped.
-   */
-  bool write(const Buffer& buffer) const;
 
   /**
    * Write string into the file (omitting the terminating null character).

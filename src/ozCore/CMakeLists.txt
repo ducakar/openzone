@@ -7,7 +7,6 @@ add_library(ozCore
   Alloc.hh
   Arrays.hh
   Bitset.hh
-  Buffer.hh
   CallOnce.hh
   Chain.hh
   common.hh
@@ -51,7 +50,6 @@ add_library(ozCore
   Vec4.hh
   Alloc.cc
   Bitset.cc
-  Buffer.cc
   CallOnce.cc
   common.cc
   EnumMap.cc

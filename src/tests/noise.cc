@@ -65,21 +65,6 @@ int main(int, char**)
 
   t0 = Time::clock();
 
-  Buffer b0(image.pixels, width * height * 4);
-  Buffer b1 = b0.compress(1);
-  Buffer b2 = b1.decompress();
-  Buffer b3 = b2.compress(1);
-
-  Log() << "zlib time: " << (Time::clock() - t0) << " ms";
-
-  Log() << "b0.length() = " << b0.length();
-  Log() << "b1.length() = " << b1.length();
-  Log() << "b2.length() = " << b2.length();
-  Log() << "b3.length() = " << b3.length();
-
-  Log() << "b0 == b2: " << (memcmp(b0.begin(), b2.begin(), b0.length()) == 0);
-  Log() << "b1 == b3: " << (memcmp(b1.begin(), b3.begin(), b1.length()) == 0);
-
   bool      isAlive = true;
   SDL_Event event;
 

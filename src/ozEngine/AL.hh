@@ -50,9 +50,9 @@ namespace oz
  */
 struct AudioBuffer
 {
-  Buffer data;   ///< Samples.
-  ALenum format; ///< OpenAL format.
-  int    rate;   ///< Sampling rate.
+  List<char> data;   ///< Samples.
+  ALenum     format; ///< OpenAL format.
+  int        rate;   ///< Sampling rate.
 };
 
 /**

@@ -514,23 +514,6 @@ bool File::read(Stream* os) const
   return read(os->writeSkip(size), &size);
 }
 
-Buffer File::read() const
-{
-  Buffer buffer;
-
-  int size = Stat(begin()).size;
-  buffer.resize(size, true);
-
-  read(buffer.begin(), &size);
-  return buffer;
-}
-
-String File::readString() const
-{
-  Buffer buffer = read();
-  return String(buffer.begin(), buffer.length());
-}
-
 bool File::write(const char* buffer, int size) const
 {
   if (isVirtual()) {
@@ -561,11 +544,6 @@ bool File::write(const char* buffer, int size) const
   }
 }
 
-bool File::write(const Buffer& buffer) const
-{
-  return write(buffer.begin(), buffer.length());
-}
-
 bool File::writeString(const String& s) const
 {
   return write(s.c(), s.length());
@@ -584,13 +562,13 @@ Stream File::inputStream(Endian::Order order) const
 
 bool File::copyTo(const File& dest) const
 {
-  Buffer buffer = read();
-  if (buffer.isEmpty()) {
+  Stream stream = inputStream();
+  if (stream.available() == 0) {
     return false;
   }
 
   File destFile = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
-  return destFile.write(buffer);
+  return destFile.write(stream.begin(), stream.capacity());
 }
 
 bool File::copyTreeTo(const File& dest, const char* ext) const

@@ -103,7 +103,6 @@
  * I/O.
  */
 #include "Endian.hh"
-#include "Buffer.hh"
 #include "File.hh"
 #include "Stream.hh"
 

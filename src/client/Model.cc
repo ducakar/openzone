@@ -27,8 +27,6 @@
 #include <client/Context.hh>
 #include <client/Camera.hh>
 
-#include <cstring>
-
 namespace oz
 {
 namespace client

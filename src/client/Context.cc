@@ -38,8 +38,6 @@
 
 #include <client/eSpeak.hh>
 
-#include <cstring>
-
 #define OZ_REGISTER_IMAGOCLASS(name) \
   { \
     int id = liber.imagoIndex(#name); \
@@ -69,14 +67,14 @@ namespace client
 
 struct Context::TextureResource::PreloadData
 {
-  Buffer albedoBuffer;
-  Buffer masksBuffer;
-  Buffer normalsBuffer;
+  Stream albedoBuffer;
+  Stream masksBuffer;
+  Stream normalsBuffer;
 };
 
 struct Context::SoundResource::PreloadData
 {
-  Buffer      fileBuffer;
+  Stream      fileBuffer;
   AudioBuffer audioBuffer;
 };
 

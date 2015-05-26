@@ -71,12 +71,12 @@ void Font::init(const char* name, int height_)
 
   File file = String::format("@ui/font/%s.ttf", name);
 
-  buffer = file.read();
-  if (buffer.isEmpty()) {
+  fileBuffer = file.inputStream();
+  if (fileBuffer.available() == 0) {
     OZ_ERROR("Failed to read font file '%s'", file.c());
   }
 
-  SDL_RWops* rwOps = SDL_RWFromConstMem(buffer.begin(), buffer.length());
+  SDL_RWops* rwOps = SDL_RWFromConstMem(fileBuffer.begin(), fileBuffer.capacity());
 
   handle = TTF_OpenFontRW(rwOps, true, height);
   if (handle == nullptr) {
@@ -93,7 +93,7 @@ void Font::destroy()
     handle = nullptr;
   }
 
-  buffer.resize(0, true);
+  fileBuffer.free();
 }
 
 }

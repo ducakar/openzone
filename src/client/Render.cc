@@ -31,8 +31,6 @@
 #include <client/Context.hh>
 #include <client/ui/UI.hh>
 
-#include <cstring>
-
 namespace oz
 {
 namespace client

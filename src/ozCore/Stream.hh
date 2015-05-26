@@ -28,9 +28,9 @@
 
 #pragma once
 
+#include "String.hh"
 #include "Mat4.hh"
 #include "Endian.hh"
-#include "Buffer.hh"
 
 namespace oz
 {
@@ -56,8 +56,11 @@ private:
   char*         streamPos   = nullptr;        ///< Current position.
   char*         streamBegin = nullptr;        ///< Beginning.
   char*         streamEnd   = nullptr;        ///< End.
-  Endian::Order order       = Endian::NATIVE; ///< Stream byte order.
   int           flags       = 0;              ///< Feature bitfield.
+
+public:
+
+  Endian::Order order       = Endian::NATIVE; ///< Stream byte order.
 
 private:
 
@@ -89,16 +92,6 @@ public:
   explicit Stream(char* start, char* end, Endian::Order order = Endian::NATIVE);
 
   /**
-   * Create a fixed-size stream for reading contents of a given buffer.
-   */
-  explicit Stream(const Buffer& buffer, Endian::Order order = Endian::NATIVE);
-
-  /**
-   * Create a fixed-size stream for reading/writing to a given buffer.
-   */
-  explicit Stream(Buffer& buffer, Endian::Order order = Endian::NATIVE);
-
-  /**
    * Create a buffered stream of given initial size.
    */
   explicit Stream(int size, Endian::Order order = Endian::NATIVE);
@@ -117,28 +110,6 @@ public:
    * Move operator, moves internal buffer.
    */
   Stream& operator = (Stream&& s);
-
-  /**
-   * Length of the stream.
-   */
-  OZ_ALWAYS_INLINE
-  int capacity() const
-  {
-    hard_assert(streamPos <= streamEnd);
-
-    return int(streamEnd - streamBegin);
-  }
-
-  /**
-   * Number of bytes left before end of the stream is reached.
-   */
-  OZ_ALWAYS_INLINE
-  int available() const
-  {
-    hard_assert(streamPos <= streamEnd);
-
-    return int(streamEnd - streamPos);
-  }
 
   /**
    * Constant pointer to the beginning of the stream.
@@ -177,46 +148,25 @@ public:
   }
 
   /**
-   * Offset of the current position from the beginning of the stream.
+   * Length of the stream.
    */
   OZ_ALWAYS_INLINE
-  int tell() const
+  int capacity() const
   {
     hard_assert(streamPos <= streamEnd);
 
-    return int(streamPos - streamBegin);
+    return int(streamEnd - streamBegin);
   }
 
   /**
-   * %Set stream position relative to the beginning of the stream.
-   */
-  void seek(int offset);
-
-  /**
-   * Rewind current position to the beginning of the stream.
+   * Number of bytes left before end of the stream is reached.
    */
   OZ_ALWAYS_INLINE
-  void rewind()
+  int available() const
   {
-    streamPos = streamBegin;
-  }
+    hard_assert(streamPos <= streamEnd);
 
-  /**
-   * Get byte order.
-   */
-  OZ_ALWAYS_INLINE
-  Endian::Order endian() const
-  {
-    return order;
-  }
-
-  /**
-   * %Set byte order.
-   */
-  OZ_ALWAYS_INLINE
-  void setEndian(Endian::Order order_)
-  {
-    order = order_;
+    return int(streamEnd - streamPos);
   }
 
   /**
@@ -258,6 +208,38 @@ public:
 
     return streamBegin[i];
   }
+
+  /**
+   * Offset of the current position from the beginning of the stream.
+   */
+  OZ_ALWAYS_INLINE
+  int tell() const
+  {
+    hard_assert(streamPos <= streamEnd);
+
+    return int(streamPos - streamBegin);
+  }
+
+  /**
+   * %Set stream position relative to the beginning of the stream.
+   */
+  void seek(int offset);
+
+  /**
+   * Rewind current position to the beginning of the stream.
+   */
+  OZ_ALWAYS_INLINE
+  void rewind()
+  {
+    streamPos = streamBegin;
+  }
+
+  /**
+   * Resize internal buffer.
+   *
+   * The data after the current position is not preserved.
+   */
+  void resize(int newSize);
 
   /**
    * Skip `count` bytes.
@@ -521,6 +503,22 @@ public:
    * Write a line replacing terminating null byte with UNIX newline.
    */
   void writeLine(const char* s);
+
+  /**
+   * Compress using deflate (ZIP/GZip) algorithm.
+   *
+   * An empty stream is returned on an error.
+   *
+   * @param level 0 - none, 1 to 9 - fastest to best, -1 - default level.
+   */
+  Stream compress(int level = -1) const;
+
+  /**
+   * Decompress data compressed with deflate (ZIP/GZip) algorithm.
+   *
+   * An empty stream is returned on an error.
+   */
+  Stream decompress() const;
 
 };
 
