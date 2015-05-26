@@ -86,11 +86,6 @@ public:
   /**
    * Create an instance for a given path.
    */
-  File(const char* path);
-
-  /**
-   * Create an instance for a given path.
-   */
   File(const String& path);
 
   /**
@@ -99,9 +94,11 @@ public:
   File(String&& path);
 
   /**
-   * Recreate instance for a given path.
+   * Create an instance for a given path.
    */
-  File& operator = (const char* path);
+  File(const char* path) :
+    String(path)
+  {}
 
   /**
    * Recreate instance for a given path.
@@ -112,6 +109,14 @@ public:
    * Recreate instance for a given path.
    */
   File& operator = (String&& path);
+
+  /**
+   * Recreate instance for a given path.
+   */
+  File& operator = (const char* path)
+  {
+    return static_cast<File&>(String::operator = (path));
+  }
 
   /**
    * True iff VFS file path.

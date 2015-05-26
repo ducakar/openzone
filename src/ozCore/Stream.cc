@@ -21,7 +21,7 @@
  */
 
 /**
- * @file ozCore/InputStream.cc
+ * @file ozCore/Stream.cc
  */
 
 #include "Stream.hh"

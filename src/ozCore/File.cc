@@ -219,7 +219,7 @@ static void initSpecialDirs()
   }
 
   // Read global settings, if exist.
-  loadXDGSettings(&vars, File("/etc/xdg/user"));
+  loadXDGSettings(&vars, "/etc/xdg/user");
 
   // Read config and data locations from environment.
   setSpecialDir(&vars, 1, "XDG_CONFIG_HOME",   File::HOME / ".config");
@@ -261,10 +261,6 @@ const File& File::MUSIC     = specialDirs[6];
 const File& File::PICTURES  = specialDirs[7];
 const File& File::VIDEOS    = specialDirs[8];
 
-File::File(const char* path) :
-  String(path)
-{}
-
 File::File(const String& path) :
   String(path)
 {}
@@ -272,11 +268,6 @@ File::File(const String& path) :
 File::File(String&& path) :
   String(static_cast<String&&>(path))
 {}
-
-File& File::operator = (const char* path)
-{
-  return static_cast<File&>(String::operator = (path));
-}
 
 File& File::operator = (const String& path)
 {

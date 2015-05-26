@@ -74,6 +74,14 @@ char* String::resize(int newCount, bool keepContents)
   return buffer;
 }
 
+OZ_HIDDEN
+void String::assign(const char* s, int nChars)
+{
+  char* begin = resize(nChars, false);
+
+  memcpy(begin, s, count + 1);
+}
+
 int String::index(const char* s, char ch, int start)
 {
   for (int i = start; s[i] != '\0'; ++i) {
@@ -313,9 +321,7 @@ String::String(String&& s) :
 String& String::operator = (const String& s)
 {
   if (&s != this) {
-    char* begin = resize(s.count, false);
-
-    memcpy(begin, s.begin(), count + 1);
+    assign(s, s.count);
   }
   return *this;
 }
@@ -331,17 +337,6 @@ String& String::operator = (String&& s)
 
     s.count         = 0;
     s.baseBuffer[0] = '\0';
-  }
-  return *this;
-}
-
-String& String::operator = (const char* s)
-{
-  if (s != begin()) {
-    int   nChars = length(s);
-    char* begin  = resize(nChars, false);
-
-    memcpy(begin, s, nChars + 1);
   }
   return *this;
 }

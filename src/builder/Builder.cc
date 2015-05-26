@@ -200,10 +200,12 @@ void Builder::buildBSPTextures()
 
       usedDirs.include(subDir);
 
-      File("tex").mkdir();
-      File("tex/" + subDir.name()).mkdir();
+      File outDir = "tex";
 
-      context.buildTexture(path, "tex/" + name);
+      outDir.mkdir();
+      (outDir / subDir.name()).mkdir();
+
+      context.buildTexture(path, outDir / name);
       context.usedTextures.exclude(name);
     }
   }

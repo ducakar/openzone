@@ -77,6 +77,11 @@ private:
    */
   char* resize(int newCount, bool keepContents);
 
+  /**
+   * Helpher function for assignment operators.
+   */
+  void assign(const char* s, int nChars);
+
 public:
 
   /*
@@ -336,7 +341,13 @@ public:
   /**
    * Replace current string with a given C string (nullptr is permitted, equals "").
    */
-  String& operator = (const char* s);
+  String& operator = (const char* s)
+  {
+    if (s != begin()) {
+      assign(s, length(s));
+    }
+    return *this;
+  }
 
   /**
    * Create a string in sprintf-like way.
