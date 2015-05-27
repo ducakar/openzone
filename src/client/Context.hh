@@ -114,6 +114,9 @@ private:
 
 private:
 
+  static int               speakSampleRate;       // Set from Sound class.
+  static SpeakSource       speakSource;
+
   Imago::CreateFunc**      imagoClasses;
   Audio::CreateFunc**      audioClasses;
   FragPool**               fragPools;
@@ -152,9 +155,6 @@ private:
   int                      maxBasicAudios;
   int                      maxBotAudios;
   int                      maxVehicleAudios;
-
-  static int               speakSampleRate;       // Set from Sound class.
-  static SpeakSource       speakSource;
 
 public:
 
@@ -216,6 +216,9 @@ public:
   void drawFrag(const Frag* frag);
 
   void updateLoad();
+
+  void loadAll();
+  void unloadAll();
 
   void load();
   void unload();

@@ -49,10 +49,6 @@ static HashMap<String, int>                      modelIndices;
 static HashMap<String, int>                      mindIndices;
 static HashMap<String, int>                      musicTrackIndices;
 
-static HashMap<String, int>                      deviceIndices;
-static HashMap<String, int>                      imagoIndices;
-static HashMap<String, int>                      audioIndices;
-
 const BSP* Liber::bsp(const char* name) const
 {
   const BSP* value = bsps.find(name);
@@ -215,12 +211,7 @@ int Liber::deviceIndex(const char* name) const
     return -1;
   }
 
-  const int* value = deviceIndices.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid device index requested '%s'", name);
-  }
-  return *value;
+  return devices.index(name);
 }
 
 int Liber::imagoIndex(const char* name) const
@@ -229,12 +220,7 @@ int Liber::imagoIndex(const char* name) const
     return -1;
   }
 
-  const int* value = imagoIndices.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid imago index requested '%s'", name);
-  }
-  return *value;
+  return imagines.index(name);
 }
 
 int Liber::audioIndex(const char* name) const
@@ -243,12 +229,7 @@ int Liber::audioIndex(const char* name) const
     return -1;
   }
 
-  const int* value = audioIndices.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid audio index requested '%s'", name);
-  }
-  return *value;
+  return audios.index(name);
 }
 
 void Liber::freeBSPs()
@@ -558,26 +539,22 @@ void Liber::initClasses()
     const String& audioType  = config["audioType"].get("");
 
     if (!deviceType.isEmpty()) {
-      deviceIndices.include(deviceType, deviceIndices.length());
+      devices.include(deviceType);
     }
     if (!imagoType.isEmpty()) {
-      imagoIndices.include(imagoType, imagoIndices.length());
+      imagines.include(imagoType);
     }
     if (!audioType.isEmpty()) {
-      audioIndices.include(audioType, audioIndices.length());
+      audios.include(audioType);
     }
 
     objClasses.add(name, (*createFunc)());
   }
 
   objClasses.trim();
-  deviceIndices.trim();
-  imagoIndices.trim();
-  audioIndices.trim();
-
-  nDeviceClasses = deviceIndices.length();
-  nImagoClasses  = imagoIndices.length();
-  nAudioClasses  = audioIndices.length();
+  devices.trim();
+  imagines.trim();
+  audios.trim();
 
   // Initialise all classes.
   for (const auto& classIter : objClasses) {
@@ -778,8 +755,6 @@ void Liber::destroy()
   terrae.trim();
   models.clear();
   models.trim();
-  minds.clear();
-  minds.trim();
   musicTracks.clear();
   musicTracks.trim();
 
@@ -800,12 +775,12 @@ void Liber::destroy()
   musicTrackIndices.clear();
   musicTrackIndices.trim();
 
-  deviceIndices.clear();
-  deviceIndices.trim();
-  imagoIndices.clear();
-  imagoIndices.trim();
-  audioIndices.clear();
-  audioIndices.trim();
+  devices.clear();
+  devices.trim();
+  imagines.clear();
+  imagines.trim();
+  audios.clear();
+  audios.trim();
 
   bsps.clear();
   bsps.trim();

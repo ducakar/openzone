@@ -41,10 +41,7 @@
 #define OZ_REGISTER_IMAGOCLASS(name) \
   { \
     int id = liber.imagoIndex(#name); \
-    if (id < 0) { \
-      OZ_ERROR("Invalid imago class: %s", #name); \
-    } \
-    else { \
+    if (id >= 0) { \
       imagoClasses[id] = name##Imago::create; \
     } \
   }
@@ -52,10 +49,7 @@
 #define OZ_REGISTER_AUDIOCLASS(name) \
   { \
     int id = liber.audioIndex(#name); \
-    if (id < 0) { \
-      OZ_ERROR("Invalid audio class: %s", #name); \
-    } \
-    else { \
+    if (id >= 0) { \
       audioClasses[id] = name##Audio::create; \
     } \
   }
@@ -617,6 +611,16 @@ void Context::updateLoad()
   maxVehicleAudios      = max(maxVehicleAudios,      VehicleAudio::pool.length());
 }
 
+void Context::loadAll()
+{
+
+}
+
+void Context::unloadAll()
+{
+
+}
+
 void Context::load()
 {
   OZ_NACL_IS_MAIN(true);
@@ -782,11 +786,17 @@ void Context::init()
 {
   Log::print("Initialising Context ...");
 
-  textureLod   = config.include("context.textureLod", 0).get(0);
+  textureLod = config.include("context.textureLod", 0).get(0);
 
-  imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses] {};
-  audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses] {};
-  fragPools    = liber.nFragPools    == 0 ? nullptr : new FragPool*[liber.nFragPools] {};
+  if (!liber.imagines.isEmpty()) {
+    imagoClasses = new Imago::CreateFunc*[liber.imagines.length()] {};
+  }
+  if (!liber.audios.isEmpty()) {
+    audioClasses = new Audio::CreateFunc*[liber.audios.length()] {};
+  }
+  if (liber.nFragPools != 0) {
+    fragPools = new FragPool*[liber.nFragPools] {};
+  }
 
   OZ_REGISTER_IMAGOCLASS(SMM);
   OZ_REGISTER_IMAGOCLASS(SMMVehicle);

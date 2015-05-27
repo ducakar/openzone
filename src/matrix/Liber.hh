@@ -49,14 +49,14 @@ public:
   List<Resource> terrae;
   List<Resource> parts;
   List<Resource> models;
-  List<Resource> minds;
   List<Resource> musicTracks;
+
+  Set<String>    devices;
+  Set<String>    imagines;
+  Set<String>    audios;
 
   int            nBSPs;
   int            nFragPools;
-  int            nDeviceClasses;
-  int            nImagoClasses;
-  int            nAudioClasses;
 
   bool           mapMP3s;
   bool           mapAACs;
