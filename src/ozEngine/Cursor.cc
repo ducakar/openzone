@@ -117,7 +117,7 @@ bool Cursor::load(const File& file, Mode mode_, int size)
   }
 #endif
 
-  Stream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.read(Endian::LITTLE);
 
   // Implementation is based on specifications from xcursor(3) manual.
   if (is.available() == 0 || !String::beginsWith(is.begin(), "Xcur")) {
@@ -168,7 +168,7 @@ bool Cursor::load(const File& file, Mode mode_, int size)
     int nBytes = image.width * image.height * 4;
 
     char* pixels = new char[nBytes];
-    is.readChars(pixels, nBytes);
+    is.read(pixels, nBytes);
 
     if (mode == TEXTURE) {
 #ifdef OZ_GL_ES

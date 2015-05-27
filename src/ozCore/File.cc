@@ -176,7 +176,7 @@ static void setSpecialDir(Map<String, File>* vars, int id, const char* name, con
 
 static void loadXDGSettings(Map<String, File>* vars, const File& file)
 {
-  Stream is = file.inputStream();
+  Stream is = file.read();
 
   while (is.available() != 0) {
     String line = is.readLine();
@@ -499,10 +499,15 @@ bool File::read(char* buffer, int* size) const
   }
 }
 
-bool File::read(Stream* os) const
+Stream File::read(Endian::Order order) const
 {
   int size = Stat(begin()).size;
-  return read(os->writeSkip(size), &size);
+  Stream is(size < 0 ? 0 : size, order);
+
+  if (size == 0 || !read(is.begin(), &size)) {
+    is.free();
+  }
+  return is;
 }
 
 bool File::write(const char* buffer, int size) const
@@ -535,25 +540,9 @@ bool File::write(const char* buffer, int size) const
   }
 }
 
-bool File::writeString(const String& s) const
-{
-  return write(s.c(), s.length());
-}
-
-Stream File::inputStream(Endian::Order order) const
-{
-  int size = Stat(begin()).size;
-  Stream is(size < 0 ? 0 : size, order);
-
-  if (size == 0 || !read(is.begin(), &size)) {
-    is.free();
-  }
-  return is;
-}
-
 bool File::copyTo(const File& dest) const
 {
-  Stream stream = inputStream();
+  Stream stream = read();
   if (stream.available() == 0) {
     return false;
   }

@@ -34,7 +34,7 @@ void BSP::load()
   Log::print("Loading BSP structure '%s' ...", name.c());
 
   File   file = "@bsp/" + name + ".ozBSP";
-  Stream is   = file.inputStream(Endian::LITTLE);
+  Stream is   = file.read(Endian::LITTLE);
 
   if (is.available() == 0) {
     OZ_ERROR("BSP file '%s' read failed", file.c());
@@ -244,7 +244,7 @@ BSP::BSP(const char* name_, int id_) :
   name(name_), id(id_), nUsers(0)
 {
   File   file = String::format("@bsp/%s.ozBSP", name_);
-  Stream is   = file.inputStream(Endian::LITTLE);
+  Stream is   = file.read(Endian::LITTLE);
 
   if (is.available() == 0) {
     OZ_ERROR("BSP file '%s' read failed", file.c());

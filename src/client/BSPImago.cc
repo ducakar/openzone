@@ -75,7 +75,7 @@ void BSPImago::schedule(const Struct* str, Model::QueueType queue)
 void BSPImago::preload()
 {
   const File* file = model.preload();
-  Stream      is   = file->inputStream(Endian::LITTLE);
+  Stream      is   = file->read(Endian::LITTLE);
 
   is.seek(is.available() - 2 * sizeof(float[4]));
   waterFogColour = is.readVec4();

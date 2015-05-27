@@ -68,7 +68,7 @@ void GameStage::read()
 {
   Log::print("Loading state from '%s' ...", stateFile.c());
 
-  Stream is = stateFile.inputStream().decompress();
+  Stream is = stateFile.read().decompress();
   if (is.available() == 0) {
     OZ_ERROR("Reading saved state '%s' failed", stateFile.c());
   }

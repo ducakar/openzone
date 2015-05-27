@@ -62,7 +62,7 @@ static void writeFunc(png_struct* png, ubyte* data, size_t size)
 {
   Stream* os = static_cast<Stream*>(png_get_io_ptr(png));
 
-  os->writeChars(reinterpret_cast<const char*>(data), int(size));
+  os->write(reinterpret_cast<const char*>(data), int(size));
 }
 
 static void flushFunc(png_struct*)

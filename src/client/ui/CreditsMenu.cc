@@ -152,7 +152,7 @@ CreditsMenu::CreditsMenu() :
   File creditsDir = "@credits";
 
   for (const File& creditsFile : creditsDir.list()) {
-    Stream is = creditsFile.inputStream();
+    Stream is = creditsFile.read();
 
     if (is.available() == 0) {
       OZ_ERROR("Failed to read '%s'", creditsFile.c());

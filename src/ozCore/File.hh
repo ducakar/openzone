@@ -267,20 +267,11 @@ public:
   bool read(char* buffer, int* size) const;
 
   /**
-   * Read file and write it to a given stream's current position.
+   * Create a buffered stream that contains file contents.
    *
-   * If there's not enough space on stream, the rest of the file contents is skipped.
-   *
-   * @return true iff read operation succeeded (it is not necessary the whole file was read).
+   * An invalid (empty) stream is returned on error.
    */
-  bool read(Stream* os) const;
-
-  /**
-   * Read file as a string.
-   *
-   * Terminating null character is always assured.
-   */
-  String readString() const;
+  Stream read(Endian::Order order = Endian::NATIVE) const;
 
   /**
    * Write buffer contents to the file.
@@ -289,21 +280,6 @@ public:
    * - Write operation is not possible while the file is mapped.
    */
   bool write(const char* data, int size) const;
-
-  /**
-   * Write string into the file (omitting the terminating null character).
-   *
-   * @note
-   * - Write operation is not possible while the file is mapped.
-   */
-  bool writeString(const String& s) const;
-
-  /**
-   * Create a buffered stream that contains file contents.
-   *
-   * An invalid (empty) stream is returned on error.
-   */
-  Stream inputStream(Endian::Order order = Endian::NATIVE) const;
 
   /**
    * Copy a file.

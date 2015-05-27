@@ -161,7 +161,7 @@ void LuaClient::read(Stream* is)
       continue;
     }
 
-    Stream is = file.inputStream();
+    Stream is = file.read();
 
     if (is.available() == 0 || l_dobufferx(is.begin(), is.available(), file, "t") != 0) {
       OZ_ERROR("Client Lua script error in %s", file.c());

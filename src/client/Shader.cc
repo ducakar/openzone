@@ -113,7 +113,7 @@ Shader::Light::Light(const Point& pos_, const Vec4& colour_) :
 
 void Shader::compileShader(uint shaderId, const String& defines, const File& file) const
 {
-  Stream is = file.inputStream();
+  Stream is = file.read();
 
   const char* strings[] = { defines.begin(), is.begin() };
   int         lengths[] = { defines.length(), is.available() };

@@ -71,7 +71,7 @@ void Font::init(const char* name, int height_)
 
   File file = String::format("@ui/font/%s.ttf", name);
 
-  fileBuffer = file.inputStream();
+  fileBuffer = file.read();
   if (fileBuffer.available() == 0) {
     OZ_ERROR("Failed to read font file '%s'", file.c());
   }

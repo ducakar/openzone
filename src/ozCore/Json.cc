@@ -417,37 +417,37 @@ struct Json::Formatter
 
       switch (ch) {
         case '\\': {
-          os->writeChars("\\\\", 2);
+          os->write("\\\\", 2);
           ++length;
           break;
         }
         case '"': {
-          os->writeChars("\\\"", 2);
+          os->write("\\\"", 2);
           ++length;
           break;
         }
         case '\b': {
-          os->writeChars("\\b", 2);
+          os->write("\\b", 2);
           ++length;
           break;
         }
         case '\f': {
-          os->writeChars("\\f", 2);
+          os->write("\\f", 2);
           ++length;
           break;
         }
         case '\n': {
-          os->writeChars("\\n", 2);
+          os->write("\\n", 2);
           ++length;
           break;
         }
         case '\r': {
-          os->writeChars("\\r", 2);
+          os->write("\\r", 2);
           ++length;
           break;
         }
         case '\t': {
-          os->writeChars("\\t", 2);
+          os->write("\\t", 2);
           ++length;
           break;
         }
@@ -468,21 +468,21 @@ struct Json::Formatter
   {
     switch (value.valueType) {
       case NIL: {
-        os->writeChars("null", 4);
+        os->write("null", 4);
         break;
       }
       case BOOLEAN: {
         if (value.boolean) {
-          os->writeChars("true", 4);
+          os->write("true", 4);
         }
         else {
-          os->writeChars("false", 5);
+          os->write("false", 5);
         }
         break;
       }
       case NUMBER: {
         String s = String(value.number, format->numberFormat);
-        os->writeChars(s, s.length());
+        os->write(s, s.length());
         break;
       }
       case STRING: {
@@ -508,33 +508,33 @@ struct Json::Formatter
     const List<Json>& list = static_cast<const ArrayData*>(value.data)->list;
 
     if (list.isEmpty()) {
-      os->writeChars("[]", 2);
+      os->write("[]", 2);
       return;
     }
 
     os->writeChar('[');
-    os->writeChars(format->lineEnd, lineEndLength);
+    os->write(format->lineEnd, lineEndLength);
 
     ++indentLevel;
 
     for (int i = 0; i < list.length(); ++i) {
       if (i != 0) {
         os->writeChar(',');
-        os->writeChars(format->lineEnd, lineEndLength);
+        os->write(format->lineEnd, lineEndLength);
       }
 
       for (int j = 0; j < indentLevel; ++j) {
-        os->writeChars("  ", 2);
+        os->write("  ", 2);
       }
 
       writeValue(list[i]);
     }
 
-    os->writeChars(format->lineEnd, lineEndLength);
+    os->write(format->lineEnd, lineEndLength);
 
     --indentLevel;
     for (int j = 0; j < indentLevel; ++j) {
-      os->writeChars("  ", 2);
+      os->write("  ", 2);
     }
 
     os->writeChar(']');
@@ -546,23 +546,23 @@ struct Json::Formatter
     const Map<String, Json>& map = static_cast<const ObjectData*>(value.data)->map;
 
     if (map.isEmpty()) {
-      os->writeChars("{}", 2);
+      os->write("{}", 2);
       return;
     }
 
     os->writeChar('{');
-    os->writeChars(format->lineEnd, lineEndLength);
+    os->write(format->lineEnd, lineEndLength);
 
     ++indentLevel;
 
     for (int i = 0; i < map.length(); ++i) {
       if (i != 0) {
         os->writeChar(',');
-        os->writeChars(format->lineEnd, lineEndLength);
+        os->write(format->lineEnd, lineEndLength);
       }
 
       for (int j = 0; j < indentLevel; ++j) {
-        os->writeChars("  ", 2);
+        os->write("  ", 2);
       }
 
       const String& entryKey   = map[i].key;
@@ -572,10 +572,10 @@ struct Json::Formatter
       os->writeChar(':');
 
       if (entryValue.valueType == ARRAY || entryValue.valueType == OBJECT) {
-        os->writeChars(format->lineEnd, lineEndLength);
+        os->write(format->lineEnd, lineEndLength);
 
         for (int j = 0; j < indentLevel; ++j) {
-          os->writeChars("  ", 2);
+          os->write("  ", 2);
         }
       }
       else {
@@ -590,11 +590,11 @@ struct Json::Formatter
       writeValue(entryValue);
     }
 
-    os->writeChars(format->lineEnd, lineEndLength);
+    os->write(format->lineEnd, lineEndLength);
 
     --indentLevel;
     for (int j = 0; j < indentLevel; ++j) {
-      os->writeChars("  ", 2);
+      os->write("  ", 2);
     }
 
     os->writeChar('}');
@@ -1344,14 +1344,14 @@ String Json::toFormattedString(const Format& format) const
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
 
   formatter.writeValue(*this);
-  os.writeChars(format.lineEnd, formatter.lineEndLength);
+  os.write(format.lineEnd, formatter.lineEndLength);
 
   return String(os.begin(), os.tell());
 }
 
 bool Json::load(const File& file)
 {
-  Stream is = file.inputStream();
+  Stream is = file.read();
   if (is.available() == 0) {
     return false;
   }
@@ -1366,7 +1366,7 @@ bool Json::save(const File& file, const Format& format) const
   Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
 
   formatter.writeValue(*this);
-  os.writeChars(format.lineEnd, formatter.lineEndLength);
+  os.write(format.lineEnd, formatter.lineEndLength);
 
   return file.write(os.begin(), os.tell());
 }

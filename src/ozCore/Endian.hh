@@ -55,147 +55,23 @@ public:
   };
 
   /**
-   * Union for serialisation of `short` type.
+   * Union for serialisation of an integer value.
    */
-  union ShortToBytes
+  template <typename Type>
+  union ToBytes
   {
-    short value;   ///< `short` value.
-    char  data[2]; ///< Bytes.
+    Type value;              ///< Value.
+    char data[sizeof(Type)]; ///< The value represented as a sequence of bytes.
   };
 
   /**
-   * Union for deserialisation of `short` type.
+   * Union for deserialisation of an integer value.
    */
-  union BytesToShort
+  template <typename Type>
+  union ToValue
   {
-    char  data[2]; ///< Bytes.
-    short value;   ///< `short` value.
-  };
-
-  /**
-   * Union for serialisation of `ushort` type.
-   */
-  union UShortToBytes
-  {
-    ushort value;   ///< `ushort` value.
-    char   data[2]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `ushort` type.
-   */
-  union BytesToUShort
-  {
-    char   data[2]; ///< Bytes.
-    ushort value;   ///< `ushort` value.
-  };
-
-  /**
-   * Union for serialisation of `int` type.
-   */
-  union IntToBytes
-  {
-    int  value;   ///< `int` value.
-    char data[4]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `int` type.
-   */
-  union BytesToInt
-  {
-    char data[4]; ///< Bytes.
-    int  value;   ///< `int` value.
-  };
-
-  /**
-   * Union for serialisation of `uint` type.
-   */
-  union UIntToBytes
-  {
-    uint value;   ///< `uint` value.
-    char data[4]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `uint` type.
-   */
-  union BytesToUInt
-  {
-    char data[4]; ///< Bytes.
-    uint value;   ///< `uint` value.
-  };
-
-  /**
-   * Union for serialisation of `long64` type.
-   */
-  union Long64ToBytes
-  {
-    long64 value;   ///< `long64` value.
-    char   data[8]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `long64` type.
-   */
-  union BytesToLong64
-  {
-    char   data[8]; ///< Bytes.
-    long64 value;   ///< `long64` value.
-  };
-
-  /**
-   * Union for serialisation of `ulong64` type.
-   */
-  union ULong64ToBytes
-  {
-    ulong64 value;   ///< `ulong64` value.
-    char    data[8]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `ulong64` type.
-   */
-  union BytesToULong64
-  {
-    char    data[8]; ///< Bytes.
-    ulong64 value;   ///< `ulong64` value.
-  };
-
-  /**
-   * Union for serialisation of `float` type.
-   */
-  union FloatToBytes
-  {
-    float value;   ///< `float` value.
-    char  data[4]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `float` type.
-   */
-  union BytesToFloat
-  {
-    char  data[4]; ///< Bytes.
-    float value;   ///< `float` value.
-  };
-
-  /**
-   * Union for serialisation of `double` type.
-   */
-  union DoubleToBytes
-  {
-    double value;   ///< `double` value.
-    char   data[8]; ///< Bytes.
-  };
-
-  /**
-   * Union for deserialisation of `double` type.
-   */
-  union BytesToDouble
-  {
-    char   data[8]; ///< Bytes.
-    double value;   ///< `double` value.
+    char data[sizeof(Type)]; ///< Byte sequence.
+    Type value;              ///< Value represented by the bytes.
   };
 
 public:
@@ -209,7 +85,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr short bswap16(short s)
+  static constexpr short bswap(short s)
   {
     return short(s << 8 | ushort(s) >> 8);
   }
@@ -218,7 +94,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr ushort bswap16(ushort s)
+  static constexpr ushort bswap(ushort s)
   {
     return ushort(s << 8 | s >> 8);
   }
@@ -227,7 +103,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr int bswap32(int i)
+  static constexpr int bswap(int i)
   {
     return __builtin_bswap32(i);
   }
@@ -236,7 +112,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr uint bswap32(uint i)
+  static constexpr uint bswap(uint i)
   {
     return __builtin_bswap32(i);
   }
@@ -245,7 +121,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr long64 bswap64(long64 l)
+  static constexpr long64 bswap(long64 l)
   {
     return __builtin_bswap64(l);
   }
@@ -254,7 +130,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr ulong64 bswap64(ulong64 l)
+  static constexpr ulong64 bswap(ulong64 l)
   {
     return __builtin_bswap64(l);
   }

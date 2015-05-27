@@ -266,7 +266,7 @@ void Lua::loadDir(const File& dir) const
       continue;
     }
 
-    Stream is = file.inputStream();
+    Stream is = file.read();
     if (is.available() == 0) {
       continue;
     }

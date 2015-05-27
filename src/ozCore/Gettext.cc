@@ -150,7 +150,7 @@ List<const char*> Gettext::catalogueDescriptions() const
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import(const File& file)
 {
-  Stream is = file.inputStream();
+  Stream is = file.read();
   if (is.available() == 0) {
     return false;
   }
@@ -158,7 +158,7 @@ bool Gettext::import(const File& file)
   // Header.
   uint magic = is.readUInt();
   if (magic != GETTEXT_MAGIC) {
-    if (Endian::bswap32(magic) == GETTEXT_MAGIC) {
+    if (Endian::bswap(magic) == GETTEXT_MAGIC) {
       is.order = Endian::Order(!is.order);
     }
     else {

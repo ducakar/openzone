@@ -175,7 +175,7 @@ void Terra::load()
   File file = "@terra/" + name + ".ozcTerra";
   File map  = "@terra/" + name + ".dds";
 
-  Stream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.read(Endian::LITTLE);
   if (is.available() == 0) {
     OZ_ERROR("Terra file '%s' read failed", file.c());
   }

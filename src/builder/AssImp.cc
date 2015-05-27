@@ -124,7 +124,7 @@ void AssImp::build(const File& path)
     modelFile = path / "data.dae";
   }
 
-  Stream is = modelFile.inputStream();
+  Stream is = modelFile.read();
 
   if (is.available() == 0) {
     OZ_ERROR("Failed to read '%s' (.dae and .obj extensions probed)", path.c());

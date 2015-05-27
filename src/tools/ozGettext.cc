@@ -156,7 +156,7 @@ static void readLua(const File& file)
     OZ_ERROR("Failed to read '%s'", file.c());
   }
 
-  Stream buffer = file.inputStream();
+  Stream buffer = file.read();
   readLuaChunk(buffer.begin(), buffer.available(), file);
 }
 
@@ -288,7 +288,7 @@ static void readCredits(const File& file)
     return;
   }
 
-  Stream is = file.inputStream();
+  Stream is = file.read();
   String contents;
 
   while (is.available() != 0) {

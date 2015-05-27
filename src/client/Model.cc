@@ -402,7 +402,7 @@ const File* Model::preload()
   preloadData = new PreloadData();
   preloadData->modelFile = path;
 
-  Stream is       = preloadData->modelFile.inputStream(Endian::LITTLE);
+  Stream is       = preloadData->modelFile.read(Endian::LITTLE);
 
   if (is.available() == 0) {
     OZ_ERROR("Failed to read '%s'", path.c());
@@ -571,7 +571,7 @@ void Model::load()
   OZ_NACL_IS_MAIN(true);
 
   hard_assert(preloadData != nullptr);
-  Stream is = preloadData->modelFile.inputStream(Endian::LITTLE);
+  Stream is = preloadData->modelFile.read(Endian::LITTLE);
 
   is.readVec3();
   is.readString();

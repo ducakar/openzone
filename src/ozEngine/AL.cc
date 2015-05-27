@@ -50,7 +50,7 @@ static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
   int blockSize = int(size);
   int nBlocks   = min(int(n), is->available() / blockSize);
 
-  is->readChars(static_cast<char*>(buffer), nBlocks * blockSize);
+  is->read(static_cast<char*>(buffer), nBlocks * blockSize);
   return nBlocks;
 }
 
@@ -184,7 +184,7 @@ bool AL::Streamer::open(const File& file)
   close();
 
   data     = new Data;
-  data->is = file.inputStream();
+  data->is = file.read();
 
   if (data->is.available() == 0) {
     delete data;
@@ -412,7 +412,7 @@ AudioBuffer AL::decodeFromStream(Stream* is)
     buffer.format = nChannels == 1 ? (bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16) :
                                      (bits == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16);
 
-    is->readChars(buffer.data.begin(), size);
+    is->read(buffer.data.begin(), size);
 
 #if OZ_BYTE_ORDER == 4321
 
@@ -469,7 +469,7 @@ AudioBuffer AL::decodeFromStream(Stream* is)
 
 AudioBuffer AL::decodeFromFile(const File& file)
 {
-  Stream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.read(Endian::LITTLE);
   return decodeFromStream(&is);
 }
 
@@ -489,7 +489,7 @@ bool AL::bufferDataFromStream(ALuint bufferId, Stream* is)
 
 bool AL::bufferDataFromFile(ALuint bufferId, const File& file)
 {
-  Stream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.read(Endian::LITTLE);
   return bufferDataFromStream(bufferId, &is);
 }
 

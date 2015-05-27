@@ -53,14 +53,14 @@ private:
 
 private:
 
-  char*         streamPos   = nullptr;        ///< Current position.
-  char*         streamBegin = nullptr;        ///< Beginning.
-  char*         streamEnd   = nullptr;        ///< End.
-  int           flags       = 0;              ///< Feature bitfield.
+  char* streamPos   = nullptr; ///< Current position.
+  char* streamBegin = nullptr; ///< Beginning.
+  char* streamEnd   = nullptr; ///< End.
+  int   flags       = 0;       ///< Feature bitfield.
 
 public:
 
-  Endian::Order order       = Endian::NATIVE; ///< Stream byte order.
+  Endian::Order order = Endian::NATIVE; ///< Stream byte order.
 
 private:
 
@@ -263,6 +263,16 @@ public:
   void free();
 
   /**
+   * Read an array of bytes.
+   */
+  void read(char* array, int count);
+
+  /**
+   * Write an array of bytes.
+   */
+  void write(const char* array, int count);
+
+  /**
    * Read boolean.
    */
   bool readBool();
@@ -281,16 +291,6 @@ public:
    * Write character.
    */
   void writeChar(char c);
-
-  /**
-   * Read an array of characters.
-   */
-  void readChars(char* array, int count);
-
-  /**
-   * Write an array of characters.
-   */
-  void writeChars(const char* array, int count);
 
   /**
    * Read byte.

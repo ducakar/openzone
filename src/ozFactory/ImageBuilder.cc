@@ -102,7 +102,7 @@ static FIBITMAP* createBitmap(const ImageData& image)
 
 static FIBITMAP* loadBitmap(const File& file)
 {
-  Stream            is        = file.inputStream();
+  Stream            is        = file.read();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
@@ -224,7 +224,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   Stream os(0, Endian::LITTLE);
 
   // Header beginning.
-  os.writeChars("DDS ", 4);
+  os.write("DDS ", 4);
   os.writeInt(124);
   os.writeInt(flags);
   os.writeInt(targetHeight);
@@ -249,7 +249,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   // Pixel format.
   os.writeInt(32);
   os.writeInt(pixelFlags);
-  os.writeChars(fourCC, 4);
+  os.write(fourCC, 4);
 
   if (compress) {
     os.writeInt(0);
@@ -349,7 +349,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
         int         pitch  = FreeImage_GetPitch(level);
 
         for (int k = 0; k < levelHeight; ++k) {
-          os.writeChars(pixels, levelWidth * targetBPP / 8);
+          os.write(pixels, levelWidth * targetBPP / 8);
           pixels += pitch;
         }
       }
@@ -467,7 +467,7 @@ bool ImageBuilder::isImage(const File& file)
 {
   errorBuffer[0] = '\0';
 
-  Stream            is        = file.inputStream();
+  Stream            is        = file.read();
   ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());

@@ -209,7 +209,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
   int blockSize  = 1;
 
   char formatFourCC[4];
-  is->readChars(formatFourCC, 4);
+  is->read(formatFourCC, 4);
 
   int bpp       = is->readInt();
   int pixelSize = bpp / 8;
@@ -323,7 +323,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
 
 int GL::textureDataFromFile(const File& file, int bias)
 {
-  Stream is = file.inputStream(Endian::LITTLE);
+  Stream is = file.read(Endian::LITTLE);
   return textureDataFromStream(&is, bias);
 }
 
