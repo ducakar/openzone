@@ -279,8 +279,8 @@ void Context::releaseSpeakSource()
 }
 
 Context::Context() :
-  imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr),
-  bsps(nullptr), models(nullptr)
+  imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr), models(nullptr),
+  bsps(nullptr)
 {}
 
 Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
@@ -408,18 +408,11 @@ void Context::releaseSound(int id)
   hard_assert(resource.nUsers > 0);
 
   --resource.nUsers;
-}
 
-void Context::freeSound(int id)
-{
-  Resource<uint>& resource = sounds[id];
-
-  hard_assert(resource.nUsers == 0);
-
-  --resource.nUsers;
-  alDeleteBuffers(1, &resource.handle);
-
-  OZ_AL_CHECK_ERROR();
+  if (resource.nUsers == 0) {
+    alDeleteBuffers(1, &resource.handle);
+    resource.nUsers = -1;
+  }
 }
 
 void Context::playSample(int id)
@@ -587,13 +580,6 @@ void Context::drawFrag(const Frag* frag)
 
 void Context::updateLoad()
 {
-  int nFragPools = 0;
-  for (int i = 0; i < liber.nFragPools; ++i) {
-    nFragPools += fragPools[i] != nullptr;
-  }
-
-  maxFragPools          = max(maxFragPools,          nFragPools);
-
   maxImagines           = max(maxImagines,           imagines.length());
   maxAudios             = max(maxAudios,             audios.length());
   maxSources            = max(maxSources,            Source::pool.length());
@@ -611,14 +597,36 @@ void Context::updateLoad()
   maxVehicleAudios      = max(maxVehicleAudios,      VehicleAudio::pool.length());
 }
 
-void Context::loadAll()
+void Context::loadResources()
 {
-
 }
 
-void Context::unloadAll()
+void Context::unloadResources()
 {
+  for (int i = 0; i < liber.bsps.length(); ++i) {
+    delete bsps[i].handle;
 
+    bsps[i].handle = nullptr;
+    bsps[i].nUsers = -1;
+
+    delete bspAudios[i].handle;
+
+    bspAudios[i].handle = nullptr;
+    bspAudios[i].nUsers = -1;
+  }
+
+  for (int i = 0; i < liber.models.length(); ++i) {
+    delete models[i].handle;
+
+    models[i].handle = nullptr;
+    models[i].nUsers = -1;
+  }
+  Model::deallocate();
+
+  Arrays::free(fragPools, liber.fragPools.length());
+  Arrays::fill(fragPools, liber.fragPools.length(), nullptr);
+
+  OZ_AL_CHECK_ERROR();
 }
 
 void Context::load()
@@ -626,6 +634,7 @@ void Context::load()
   OZ_NACL_IS_MAIN(true);
 
   speakSource.owner = -1;
+
   alGenBuffers(2, speakSource.bufferIds);
   alGenSources(1, &speakSource.id);
   if (alGetError() != AL_NO_ERROR) {
@@ -647,8 +656,6 @@ void Context::load()
   maxBotAudios          = 0;
   maxVehicleAudios      = 0;
 
-  maxFragPools          = 0;
-
   imagines = HashMap<int, Imago*>(4096);
   audios   = HashMap<int, Audio*>(1024);
 }
@@ -662,7 +669,6 @@ void Context::unload()
 
   Log::println("Peak instances {");
   Log::indent();
-  Log::println("%6d  fragment pools",      maxFragPools);
   Log::println("%6d  imago objects",       maxImagines);
   Log::println("%6d  audio objects",       maxAudios);
   Log::println("%6d  one-time sources",    maxSources);
@@ -697,40 +703,17 @@ void Context::unload()
   caelum.unload();
   terra.unload();
 
-  Arrays::free(fragPools, liber.nFragPools);
-  Arrays::fill(fragPools, liber.nFragPools, nullptr);
-
   BasicAudio::pool.free();
   BotAudio::pool.free();
   VehicleAudio::pool.free();
 
   OZ_AL_CHECK_ERROR();
 
-  for (int i = 0; i < liber.nBSPs; ++i) {
-    delete bsps[i].handle;
-
-    bsps[i].handle = nullptr;
-    bsps[i].nUsers = -1;
-
-    delete bspAudios[i].handle;
-
-    bspAudios[i].handle = nullptr;
-    bspAudios[i].nUsers = -1;
-  }
-  for (int i = 0; i < liber.models.length(); ++i) {
-    delete models[i].handle;
-
-    models[i].handle = nullptr;
-    models[i].nUsers = -1;
-  }
-
   SMMImago::pool.free();
   SMMVehicleImago::pool.free();
   ExplosionImago::pool.free();
   MD2Imago::pool.free();
   MD2WeaponImago::pool.free();
-
-  Model::deallocate();
 
   while (!sources.isEmpty()) {
     removeSource(sources.first(), nullptr);
@@ -749,15 +732,7 @@ void Context::unload()
   contSources.clear();
   contSources.trim();
 
-  for (int i = 0; i < liber.textures.length(); ++i) {
-    hard_assert(textures[i].nUsers == -1);
-  }
-
-  for (int i = 0; i < liber.sounds.length(); ++i) {
-    if (sounds[i].nUsers == 0) {
-      freeSound(i);
-    }
-  }
+  unloadResources();
 
   OZ_AL_CHECK_ERROR();
 
@@ -770,13 +745,6 @@ void Context::clearSounds()
   while (!sources.isEmpty()) {
     removeSource(sources.first(), nullptr);
     OZ_AL_CHECK_ERROR();
-  }
-
-  for (int i = 0; i < liber.sounds.length(); ++i) {
-    if (sounds[i].nUsers == 0) {
-      freeSound(i);
-    }
-    hard_assert(sounds[i].nUsers == -1);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -794,8 +762,8 @@ void Context::init()
   if (!liber.audios.isEmpty()) {
     audioClasses = new Audio::CreateFunc*[liber.audios.length()] {};
   }
-  if (liber.nFragPools != 0) {
-    fragPools = new FragPool*[liber.nFragPools] {};
+  if (!liber.fragPools.isEmpty() != 0) {
+    fragPools = new FragPool*[liber.fragPools.length()] {};
   }
 
   OZ_REGISTER_IMAGOCLASS(SMM);
@@ -810,18 +778,18 @@ void Context::init()
 
   int nTextures    = liber.textures.length();
   int nSounds      = liber.sounds.length();
-  int nBSPs        = liber.nBSPs;
-  int nModels      = liber.models.length();
   int nPartClasses = liber.parts.length();
+  int nModels      = liber.models.length();
+  int nBSPs        = liber.bsps.length();
 
   textures    = nTextures    == 0 ? nullptr : new TextureResource[nTextures] {};
   sounds      = nSounds      == 0 ? nullptr : new SoundResource[nSounds] {};
 
-  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
-  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs] {};
-
   models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels] {};
   partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses] {};
+
+  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
+  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs] {};
 
   Log::printEnd(" OK");
 }

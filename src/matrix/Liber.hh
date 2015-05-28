@@ -42,45 +42,44 @@ public:
     File   path;
   };
 
-  List<Resource> shaders;
-  List<Resource> textures;
-  List<Resource> sounds;
-  List<Resource> caela;
-  List<Resource> terrae;
-  List<Resource> parts;
-  List<Resource> models;
-  List<Resource> musicTracks;
+  List<Resource>           shaders;
+  List<Resource>           textures;
+  List<Resource>           musicTracks;
+  List<Resource>           sounds;
+  List<Resource>           caela;
+  List<Resource>           terrae;
+  List<Resource>           parts;
+  List<Resource>           models;
 
-  Set<String>    devices;
-  Set<String>    imagines;
-  Set<String>    audios;
+  List<const FragPool*>    fragPools;
+  List<const ObjectClass*> objClasses;
+  List<const BSP*>         bsps;
 
-  int            nBSPs;
-  int            nFragPools;
+  Set<String>              devices;
+  Set<String>              imagines;
+  Set<String>              audios;
 
-  bool           mapMP3s;
-  bool           mapAACs;
-
-  const BSP*         bsp(const char* name) const;
-  const ObjectClass* objClass(const char* name) const;
-  const FragPool*    fragPool(const char* name) const;
+  bool                     mapMP3s;
+  bool                     mapAACs;
 
   int shaderIndex(const char* name) const;
   int textureIndex(const char* name) const;
   int soundIndex(const char* name) const;
+  int musicTrackIndex(const char* name) const;
   int caelumIndex(const char* name) const;
   int terraIndex(const char* name) const;
   int partIndex(const char* name) const;
   int modelIndex(const char* name) const;
 
   int mindIndex(const char* name) const;
-  int musicTrackIndex(const char* name) const;
+
+  const FragPool* fragPool(const char* name) const;
+  const ObjectClass* objClass(const char* name) const;
+  const BSP* bsp(const char* name) const;
 
   int deviceIndex(const char* name) const;
   int imagoIndex(const char* name) const;
   int audioIndex(const char* name) const;
-
-  void freeBSPs();
 
 private:
 

@@ -152,38 +152,14 @@ public:
   float           groundOffset;  ///< Centre offset from ground when placing a building.
 
   int             id;            ///< Used for indexing BSPs in Context.
-  int             nUsers;
 
-  void request();
-  void release();
+public:
+
+  explicit BSP(const char* name, int id);
 
   void load();
   void unload();
 
-  explicit BSP(const char* name, int id);
-
 };
-
-inline void BSP::request()
-{
-  hard_assert(!name.isEmpty());
-
-  if (nUsers == 0) {
-    load();
-  }
-
-  ++nUsers;
-}
-
-inline void BSP::release()
-{
-  hard_assert(nUsers > 0);
-
-  --nUsers;
-
-  if (nUsers == 0) {
-    unload();
-  }
-}
 
 }

@@ -223,8 +223,6 @@ Struct* Orbis::add(const BSP* bsp, const Point& p, Heading heading)
     return nullptr;
   }
 
-  const_cast<BSP*>(bsp)->request();
-
   Struct* str = new Struct(bsp, index, p, heading);
   structs[1 + index] = str;
 
@@ -264,8 +262,6 @@ Frag* Orbis::add(const FragPool* pool, const Point& p, const Vec3& velocity)
 void Orbis::remove(Struct* str)
 {
   hard_assert(str->index >= 0);
-
-  const_cast<BSP*>(str->bsp)->release();
 
   pendingStructs[freeing].set(str->index);
   structs[1 + str->index] = nullptr;
@@ -377,8 +373,6 @@ void Orbis::read(Stream* is)
     const char* name = is->readString();
     const BSP*  bsp  = liber.bsp(name);
 
-    const_cast<BSP*>(bsp)->request();
-
     Struct* str = new Struct(bsp, is);
 
     position(str);
@@ -431,8 +425,6 @@ void Orbis::read(const Json& json)
 
     int index = allocStrIndex();
     if (index >= 0) {
-      const_cast<BSP*>(bsp)->request();
-
       Struct* str = new Struct(bsp, index, strJson);
       position(str);
       structs[1 + index] = str;
@@ -647,8 +639,6 @@ void Orbis::unload()
 
   Struct::overlappingObjs.trim();
   Struct::pool.free();
-
-  liber.freeBSPs();
 
   lastStructIndex = -1;
   lastObjectIndex = -1;

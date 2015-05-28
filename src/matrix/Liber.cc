@@ -33,51 +33,22 @@
 namespace oz
 {
 
-static HashMap<String, BSP>                      bsps;
 static HashMap<String, ObjectClass::CreateFunc*> baseClasses;
-static HashMap<String, ObjectClass*>             objClasses;
-static HashMap<String, FragPool>                 fragPools;
 
 static HashMap<String, int>                      shaderIndices;
 static HashMap<String, int>                      textureIndices;
 static HashMap<String, int>                      soundIndices;
+static HashMap<String, int>                      musicTrackIndices;
 static HashMap<String, int>                      caelumIndices;
 static HashMap<String, int>                      terraIndices;
 static HashMap<String, int>                      partIndices;
 static HashMap<String, int>                      modelIndices;
 
+static HashMap<String, BSP>                      bspMap;
+static HashMap<String, ObjectClass*>             objClassMap;
+static HashMap<String, FragPool>                 fragPoolMap;
+
 static HashMap<String, int>                      mindIndices;
-static HashMap<String, int>                      musicTrackIndices;
-
-const BSP* Liber::bsp(const char* name) const
-{
-  const BSP* value = bsps.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid BSP requested '%s'", name);
-  }
-  return value;
-}
-
-const ObjectClass* Liber::objClass(const char* name) const
-{
-  const ObjectClass* const* value = objClasses.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid object class requested '%s'", name);
-  }
-  return *value;
-}
-
-const FragPool* Liber::fragPool(const char* name) const
-{
-  const FragPool* value = fragPools.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid fragment pool requested '%s'", name);
-  }
-  return value;
-}
 
 int Liber::shaderIndex(const char* name) const
 {
@@ -130,7 +101,7 @@ int Liber::caelumIndex(const char* name) const
   const int* value = caelumIndices.find(name);
 
   if (value == nullptr) {
-    OZ_ERROR("Invalid caelum index requested '%s'", name);
+    OZ_ERROR("Invalid caelum requested '%s'", name);
   }
   return *value;
 }
@@ -144,7 +115,7 @@ int Liber::terraIndex(const char* name) const
   const int* value = terraIndices.find(name);
 
   if (value == nullptr) {
-    OZ_ERROR("Invalid terra index requested '%s'", name);
+    OZ_ERROR("Invalid terra requested '%s'", name);
   }
   return *value;
 }
@@ -158,7 +129,7 @@ int Liber::partIndex(const char* name) const
   const int* value = partIndices.find(name);
 
   if (value == nullptr) {
-    OZ_ERROR("Invalid particle index requested '%s'", name);
+    OZ_ERROR("Invalid particle requested '%s'", name);
   }
   return *value;
 }
@@ -172,21 +143,7 @@ int Liber::modelIndex(const char* name) const
   const int* value = modelIndices.find(name);
 
   if (value == nullptr) {
-    OZ_ERROR("Invalid model index requested '%s'", name);
-  }
-  return *value;
-}
-
-int Liber::mindIndex(const char* name) const
-{
-  if (String::isEmpty(name)) {
-    return -1;
-  }
-
-  const int* value = mindIndices.find(name);
-
-  if (value == nullptr) {
-    OZ_ERROR("Invalid mind index requested '%s'", name);
+    OZ_ERROR("Invalid model requested '%s'", name);
   }
   return *value;
 }
@@ -200,9 +157,65 @@ int Liber::musicTrackIndex(const char* name) const
   const int* value = musicTrackIndices.find(name);
 
   if (value == nullptr) {
-    OZ_ERROR("Invalid music track index requested '%s'", name);
+    OZ_ERROR("Invalid music track requested '%s'", name);
   }
   return *value;
+}
+
+int Liber::mindIndex(const char* name) const
+{
+  if (String::isEmpty(name)) {
+    return -1;
+  }
+
+  const int* value = mindIndices.find(name);
+
+  if (value == nullptr) {
+    OZ_ERROR("Invalid mind requested '%s'", name);
+  }
+  return *value;
+}
+
+const FragPool* Liber::fragPool(const char* name) const
+{
+  if (String::isEmpty(name)) {
+    return nullptr;
+  }
+
+  const FragPool* value = fragPoolMap.find(name);
+
+  if (value == nullptr) {
+    OZ_ERROR("Invalid fragment pool requested '%s'", name);
+  }
+  return value;
+}
+
+const ObjectClass* Liber::objClass(const char* name) const
+{
+  if (String::isEmpty(name)) {
+    return nullptr;
+  }
+
+  const ObjectClass* const* value = objClassMap.find(name);
+
+  if (value == nullptr) {
+    OZ_ERROR("Invalid object class requested '%s'", name);
+  }
+  return *value;
+}
+
+const BSP* Liber::bsp(const char* name) const
+{
+  if (String::isEmpty(name)) {
+    return nullptr;
+  }
+
+  const BSP* value = bspMap.find(name);
+
+  if (value == nullptr) {
+    OZ_ERROR("Invalid BSP index requested '%s'", name);
+  }
+  return value;
 }
 
 int Liber::deviceIndex(const char* name) const
@@ -230,16 +243,6 @@ int Liber::audioIndex(const char* name) const
   }
 
   return audios.index(name);
-}
-
-void Liber::freeBSPs()
-{
-  for (auto& bsp : bsps) {
-    if (bsp.value.nUsers != 0) {
-      bsp.value.unload();
-      bsp.value.nUsers = 0;
-    }
-  }
 }
 
 void Liber::initShaders()
@@ -477,15 +480,16 @@ void Liber::initFragPools()
       OZ_ERROR("Failed to read '%s'", file.c());
     }
 
-    fragPools.add(name, FragPool(config, name, fragPools.length()));
+    FragPool& pool = fragPoolMap.add(name, FragPool(config, name, fragPools.length())).value;
+    fragPools.add(&pool);
 
     Log::showVerbose = true;
     config.clear(true);
     Log::showVerbose = false;
   }
 
+  fragPoolMap.trim();
   fragPools.trim();
-  nFragPools = fragPools.length();
 
   Log::unindent();
   Log::println("}");
@@ -521,7 +525,7 @@ void Liber::initClasses()
     String name = file.baseName();
     const String& base = config["base"].get("");
 
-    if (objClasses.contains(name)) {
+    if (objClassMap.contains(name)) {
       OZ_ERROR("Duplicated class '%s'", name.c());
     }
 
@@ -548,16 +552,20 @@ void Liber::initClasses()
       audios.include(audioType);
     }
 
-    objClasses.add(name, (*createFunc)());
+    ObjectClass* clazz = (*createFunc)();
+
+    objClassMap.add(name, clazz);
+    objClasses.add(clazz);
   }
 
+  objClassMap.trim();
   objClasses.trim();
   devices.trim();
   imagines.trim();
   audios.trim();
 
   // Initialise all classes.
-  for (const auto& classIter : objClasses) {
+  for (const auto& classIter : objClassMap) {
     const String& name  = classIter.key;
     ObjectClass*  clazz = classIter.value;
 
@@ -580,7 +588,7 @@ void Liber::initClasses()
   }
 
   // Sanity checks.
-  for (const auto& classIter : objClasses) {
+  for (const auto& classIter : objClassMap) {
     ObjectClass* objClazz = classIter.value;
 
     // check that all items are valid
@@ -641,11 +649,14 @@ void Liber::initBSPs()
 
     Log::println("%s", name.c());
 
-    bsps.add(name, BSP(name, bsps.length()));
+    BSP& bsp = bspMap.add(name, BSP(name, bsps.length())).value;
+    bsps.add(&bsp);
+
+    bsp.load();
   }
 
+  bspMap.trim();
   bsps.trim();
-  nBSPs = bsps.length();
 
   Log::unindent();
   Log::println("}");
@@ -726,13 +737,13 @@ void Liber::init(const char* userMusicPath)
   Log::println("%5d  shaders", shaders.length());
   Log::println("%5d  textures", textures.length());
   Log::println("%5d  sounds", sounds.length());
+  Log::println("%5d  music tracks", musicTracks.length());
   Log::println("%5d  caela", caela.length());
   Log::println("%5d  terrae", terrae.length());
-  Log::println("%5d  BSPs", nBSPs);
   Log::println("%5d  models", models.length());
-  Log::println("%5d  music tracks", musicTracks.length());
   Log::println("%5d  fragment pools", fragPools.length());
   Log::println("%5d  object classes", objClasses.length());
+  Log::println("%5d  BSPs", bsps.length());
 
   Log::unindent();
   Log::println("}");
@@ -745,35 +756,41 @@ void Liber::destroy()
 {
   shaders.clear();
   shaders.trim();
-  textures.clear();
-  textures.trim();
-  sounds.clear();
-  sounds.trim();
-  caela.clear();
-  caela.trim();
-  terrae.clear();
-  terrae.trim();
-  models.clear();
-  models.trim();
-  musicTracks.clear();
-  musicTracks.trim();
-
   shaderIndices.clear();
   shaderIndices.trim();
+
+  textures.clear();
+  textures.trim();
   textureIndices.clear();
   textureIndices.trim();
+
+  sounds.clear();
+  sounds.trim();
   soundIndices.clear();
   soundIndices.trim();
+
+  caela.clear();
+  caela.trim();
   caelumIndices.clear();
   caelumIndices.trim();
+
+  terrae.clear();
+  terrae.trim();
   terraIndices.clear();
   terraIndices.trim();
+
+  models.clear();
+  models.trim();
   modelIndices.clear();
   modelIndices.trim();
-  mindIndices.clear();
-  mindIndices.trim();
+
+  musicTracks.clear();
+  musicTracks.trim();
   musicTrackIndices.clear();
   musicTrackIndices.trim();
+
+  mindIndices.clear();
+  mindIndices.trim();
 
   devices.clear();
   devices.trim();
@@ -782,14 +799,27 @@ void Liber::destroy()
   audios.clear();
   audios.trim();
 
-  bsps.clear();
-  bsps.trim();
   baseClasses.clear();
   baseClasses.trim();
+
+  for (auto& bsp: bspMap) {
+    bsp.value.unload();
+  }
+
+  bsps.clear();
+  bsps.trim();
+  bspMap.clear();
+  bspMap.trim();
+
   objClasses.free();
   objClasses.trim();
+  objClassMap.clear();
+  objClassMap.trim();
+
   fragPools.clear();
   fragPools.trim();
+  fragPoolMap.clear();
+  fragPoolMap.trim();
 }
 
 Liber liber;

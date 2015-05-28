@@ -29,46 +29,38 @@
 namespace oz
 {
 
+BSP::BSP(const char* name_, int id_) :
+  name(name_), id(id_)
+{}
+
 void BSP::load()
 {
-  Log::print("Loading BSP structure '%s' ...", name.c());
-
-  File   file = "@bsp/" + name + ".ozBSP";
+  File   file = String::format("@bsp/%s.ozBSP", name.c());
   Stream is   = file.read(Endian::LITTLE);
 
   if (is.available() == 0) {
     OZ_ERROR("BSP file '%s' read failed", file.c());
   }
 
-  // bounds
-  is.readPoint();
-  is.readPoint();
+  mins             = is.readPoint();
+  maxs             = is.readPoint();
 
-  // title
-  is.readString();
-  // description
-  is.readString();
+  title            = lingua.get(is.readString());
+  description      = lingua.get(is.readString());
 
-  // life
-  is.readFloat();
-  // resistance
-  is.readFloat();
+  life             = is.readFloat();
+  resistance       = is.readFloat();
 
-  // fragPool
-  is.readString();
-  // nFrags
-  is.readInt();
+  fragPool         = liber.fragPool(is.readString());
+  nFrags           = is.readInt();
 
-  // sound samples
-  int nSounds = is.readInt();
-  for (int i = 0; i < nSounds; ++i) {
-    is.readString();
+  sounds.resize(is.readInt(), true);
+  for (int i = 0; i < sounds.length(); ++i) {
+    sounds[i] = liber.soundIndex(is.readString());
   }
-  // demolishSound
-  is.readString();
 
-  // groundOffset
-  is.readFloat();
+  demolishSound = liber.soundIndex(is.readString());
+  groundOffset  = is.readFloat();
 
   nPlanes       = is.readInt();
   nNodes        = is.readInt();
@@ -203,73 +195,11 @@ void BSP::load()
   }
 
   hard_assert(is.available() == 0);
-
-  Log::printEnd(" OK");
 }
 
 void BSP::unload()
 {
-  if (planes != nullptr) {
-    Log::print("Unloading BSP structure '%s' ...", name.c());
-
-    delete[] reinterpret_cast<char*>(planes);
-
-    planes        = nullptr;
-    nodes         = nullptr;
-    leaves        = nullptr;
-    leafBrushes   = nullptr;
-    brushes       = nullptr;
-    brushSides    = nullptr;
-    entities      = nullptr;
-    boundObjects  = nullptr;
-
-    nPlanes       = 0;
-    nNodes        = 0;
-    nLeaves       = 0;
-    nLeafBrushes  = 0;
-    nBrushes      = 0;
-    nBrushSides   = 0;
-    nEntities     = 0;
-    nBoundObjects = 0;
-
-    Log::printEnd(" OK");
-  }
-}
-
-BSP::BSP(const char* name_, int id_) :
-  planes(nullptr), nodes(nullptr), leaves(nullptr), leafBrushes(nullptr),
-  entities(nullptr), brushes(nullptr), brushSides(nullptr), boundObjects(nullptr),
-  nPlanes(0), nNodes(0), nLeaves(0), nLeafBrushes(0), nEntities(0), nBrushes(0),
-  nBrushSides(0), nBoundObjects(0),
-  name(name_), id(id_), nUsers(0)
-{
-  File   file = String::format("@bsp/%s.ozBSP", name_);
-  Stream is   = file.read(Endian::LITTLE);
-
-  if (is.available() == 0) {
-    OZ_ERROR("BSP file '%s' read failed", file.c());
-  }
-
-  mins             = is.readPoint();
-  maxs             = is.readPoint();
-
-  title            = lingua.get(is.readString());
-  description      = lingua.get(is.readString());
-
-  life             = is.readFloat();
-  resistance       = is.readFloat();
-
-  String sFragPool = is.readString();
-  fragPool         = sFragPool.isEmpty() ? nullptr : liber.fragPool(sFragPool);
-  nFrags           = is.readInt();
-
-  sounds.resize(is.readInt(), true);
-  for (int i = 0; i < sounds.length(); ++i) {
-    sounds[i] = liber.soundIndex(is.readString());
-  }
-
-  demolishSound = liber.soundIndex(is.readString());
-  groundOffset  = is.readFloat();
+  delete[] reinterpret_cast<char*>(planes);
 }
 
 }

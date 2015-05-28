@@ -129,16 +129,14 @@ private:
 
   Chain<PartGen>           partGens;
 
-  Resource<BSPImago*>*     bsps;
-  Resource<BSPAudio*>*     bspAudios;
-
   Resource<Model*>*        models;
   Resource<PartClass>*     partClasses;
 
+  Resource<BSPImago*>*     bsps;
+  Resource<BSPAudio*>*     bspAudios;
+
   HashMap<int, Imago*>     imagines;              // Currently loaded graphics models.
   HashMap<int, Audio*>     audios;                // Currently loaded audio models.
-
-  int                      maxFragPools;
 
   int                      maxImagines;
   int                      maxAudios;
@@ -192,16 +190,9 @@ public:
   void prepareSound(int id);
   uint requestSound(int id);
   void releaseSound(int id);
-  void freeSound(int id);
 
   // Play sample without 3D effects.
   void playSample(int id);
-
-  BSPImago* getBSP(const BSP* bsp);
-  BSPImago* requestBSP(const BSP* bsp);
-
-  void drawBSP(const Struct* str);
-  void playBSP(const Struct* str);
 
   Model* getModel(int id);
   Model* requestModel(int id);
@@ -211,14 +202,20 @@ public:
   PartClass* requestPartClass(int id);
   void releasePartClass(int id);
 
+  BSPImago* getBSP(const BSP* bsp);
+  BSPImago* requestBSP(const BSP* bsp);
+
+  void drawBSP(const Struct* str);
+  void playBSP(const Struct* str);
+
   void drawImago(const Object* obj, const Imago* parent);
   void playAudio(const Object* obj, const Object* parent);
   void drawFrag(const Frag* frag);
 
   void updateLoad();
 
-  void loadAll();
-  void unloadAll();
+  void loadResources();
+  void unloadResources();
 
   void load();
   void unload();

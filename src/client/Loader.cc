@@ -74,7 +74,7 @@ void Loader::cleanupRender()
 
   if (tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG) {
     // remove unused frag pools
-    for (int i = 0; i < liber.nFragPools; ++i) {
+    for (int i = 0; i < liber.fragPools.length(); ++i) {
       FragPool* pool = context.fragPools[i];
 
       if (pool == nullptr) {
@@ -93,7 +93,7 @@ void Loader::cleanupRender()
 
   if (tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG) {
     // remove unused BSPs
-    for (int i = 0; i < liber.nBSPs; ++i) {
+    for (int i = 0; i < liber.bsps.length(); ++i) {
       Context::Resource<BSPImago*>& bsp = context.bsps[i];
 
       if (bsp.nUsers != 0) {
@@ -148,7 +148,7 @@ void Loader::cleanupSound()
 
   if (tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG) {
     // remove unused BSPAudios
-    for (int i = 0; i < liber.nBSPs; ++i) {
+    for (int i = 0; i < liber.bsps.length(); ++i) {
       Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
 
       if (bspAudio.nUsers != 0) {
@@ -223,22 +223,12 @@ void Loader::cleanupSound()
     context.speakSource.isAlive = false;
   }
 
-  if (tick % SOUND_CLEAR_INTERVAL == SOUND_CLEAR_LAG) {
-    for (int i = 0; i < liber.sounds.length(); ++i) {
-      Context::Resource<uint>& sound = context.sounds[i];
-
-      if (sound.nUsers == 0) {
-        context.freeSound(i);
-      }
-    }
-  }
-
   OZ_AL_CHECK_ERROR();
 }
 
 void Loader::preloadRender()
 {
-  for (int i = 0; i < liber.nBSPs; ++i) {
+  for (int i = 0; i < liber.bsps.length(); ++i) {
     BSPImago* bsp = context.bsps[i].handle;
 
     if (bsp != nullptr && !bsp->isLoaded() && !bsp->isPreloaded()) {
@@ -275,7 +265,7 @@ void Loader::uploadRender(bool isOneShot)
     }
   }
 
-  for (int i = 0; i < liber.nBSPs; ++i) {
+  for (int i = 0; i < liber.bsps.length(); ++i) {
     BSPImago* bsp = context.bsps[i].handle;
 
     if (bsp != nullptr && bsp->isPreloaded()) {
