@@ -172,6 +172,7 @@ public:
       }
 
       Arrays::copy<Elem>(l.data, l.count, data);
+      Arrays::clear<Elem>(data + l.count, count - l.count);
       count = l.count;
     }
     return *this;
@@ -636,11 +637,7 @@ public:
     }
     else {
       ensureCapacity(newCount);
-
-      // Ensure destruction of removed elements when downsizing.
-      for (int i = newCount; i < count; ++i) {
-        data[i] = Elem();
-      }
+      Arrays::clear<Elem>(data + newCount, count - newCount);
     }
     count = newCount;
   }
@@ -677,10 +674,7 @@ public:
    */
   void clear()
   {
-    // Ensure destruction of all elements.
-    for (int i = 0; i < count; ++i) {
-      data[i] = Elem();
-    }
+    Arrays::clear<Elem>(data, count);
     count = 0;
   }
 

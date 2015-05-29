@@ -301,13 +301,24 @@ public:
   }
 
   /**
-   * %Set array elements to a given value.
+   * Assign array elements to a given value.
    */
   template <typename Elem, typename Value>
   static void fill(Elem* array, int count, const Value& value)
   {
     for (int i = 0; i < count; ++i) {
       array[i] = value;
+    }
+  }
+
+  /**
+   * Assign each array element to the default value.
+   */
+  template <typename Elem>
+  static void clear(Elem* array, int count)
+  {
+    for (int i = 0; i < count; ++i) {
+      array[i] = Elem();
     }
   }
 

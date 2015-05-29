@@ -83,14 +83,67 @@ public:
   }
 
   /**
+   * Initialise from a C++ array.
+   */
+  explicit SList(const Elem* array, int count_) :
+    count(count_)
+  {
+    hard_assert(count <= SIZE);
+
+    Arrays::copy<Elem>(array, count, data);
+  }
+
+  /**
    * Initialise from an initialiser list.
    */
   SList(InitialiserList<Elem> l) :
-    count(int(l.size()))
-  {
-    hard_assert(l.size() <= SIZE);
+    SList(l.begin(), int(l.size()))
+  {}
 
-    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
+  /**
+   * Copy constructor, copies elements.
+   */
+  SList(const SList& l) = default;
+
+  /**
+   * Move constructor, moves elements and clears source.
+   */
+  SList(SList&& l) :
+    count(l.count)
+  {
+    Arrays::move<Elem>(l.data, l.count, data);
+
+    l.count = 0;
+  }
+
+  /**
+   * Copy operator, copies elements.
+   *
+   * Existing storage is reused if it suffices.
+   */
+  SList& operator = (const SList& l)
+  {
+    if (&l != this) {
+      Arrays::copy<Elem>(l.data, l.count, data);
+      Arrays::clear<Elem>(data + l.count, count - l.count);
+      count = l.count;
+    }
+    return *this;
+  }
+
+  /**
+   * Move operator, moves elements and clears source.
+   */
+  SList& operator = (SList&& l)
+  {
+    if (&l != this) {
+      Arrays::move<Elem>(l.data, l.count, data);
+      Arrays::clear<Elem>(data + l.count, count - l.count);
+      count = l.count;
+
+      l.count = 0;
+    }
+    return *this;
   }
 
   /**
@@ -100,10 +153,8 @@ public:
    */
   SList& operator = (InitialiserList<Elem> l)
   {
-    hard_assert(l.size() <= SIZE);
-
-    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
-    count = int(l.size());
+    clear();
+    addAll(l.begin(), int(l.size()));
 
     return *this;
   }
@@ -528,10 +579,7 @@ public:
   {
     hard_assert(newCount <= SIZE);
 
-    // Ensure destruction of removed elements when downsizing.
-    for (int i = newCount; i < count; ++i) {
-      data[i] = Elem();
-    }
+    Arrays::clear<Elem>(data + newCount, count - newCount);
     count = newCount;
   }
 
@@ -540,10 +588,7 @@ public:
    */
   void clear()
   {
-    // Ensure destruction of all elements.
-    for (int i = 0; i < count; ++i) {
-      data[i] = Elem();
-    }
+    Arrays::clear<Elem>(data, count);
     count = 0;
   }
 
