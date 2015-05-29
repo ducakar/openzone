@@ -45,28 +45,20 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  *
- * @sa `oz::Map`, `oz::HashSet`
+ * @sa `oz::Map`, `oz::HashSet`, `oz::Heap`, `oz::List`
  */
 template <typename Elem, class LessFunc = Less<void>>
 class Set : protected List<Elem>
 {
 public:
 
-  /**
-   * %Iterator with constant access to elements.
-   */
-  typedef typename List<Elem>::CIterator CIterator;
-
-  /**
-   * %Iterator with non-constant access to elements.
-   */
-  typedef typename List<Elem>::Iterator Iterator;
+  using typename List<Elem>::CIterator;
+  using typename List<Elem>::Iterator;
 
 protected:
 
   using List<Elem>::data;
   using List<Elem>::count;
-  using List<Elem>::size;
   using List<Elem>::ensureCapacity;
 
   /**

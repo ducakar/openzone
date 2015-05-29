@@ -40,7 +40,7 @@ namespace oz
  * Memory is allocated when the first element is added. The number of buckets is doubled when the
  * number of elements surpasses it.
  *
- * @sa `oz::HashMap`, `oz::Set`
+ * @sa `oz::HashMap`, `oz::Set`, `oz::Heap`
  */
 template <typename Elem, class HashFunc = Hash<Elem>>
 class HashSet
@@ -311,7 +311,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashSet(InitialiserList<Elem> l)
+  HashSet(InitialiserList<Elem> l) :
+    HashSet(int(l.size()) * 4 / 3)
   {
     for (const Elem& e : l) {
       add(e);
@@ -331,7 +332,7 @@ public:
    * Copy constructor, copies elements and storage.
    */
   HashSet(const HashSet& ht) :
-    data(new Entry*[ht.size]), size(ht.size)
+    data(Arrays::reallocate<Elem*>(nullptr, 0, ht.size)), size(ht.size)
   {
     for (int i = 0; i < ht.size; ++i) {
       data[i] = cloneChain(ht.data[i]);
@@ -395,6 +396,7 @@ public:
   HashSet& operator = (InitialiserList<Elem> l)
   {
     clear();
+    ensureCapacity(int(l.size()));
 
     for (const Elem& e : l) {
       add(e);

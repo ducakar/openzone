@@ -17,6 +17,7 @@ add_library(ozCore
   Gettext.hh
   HashMap.hh
   HashSet.hh
+  Heap.hh
   Java.hh
   Json.hh
   List.hh

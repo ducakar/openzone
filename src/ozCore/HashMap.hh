@@ -52,15 +52,8 @@ public:
    */
   typedef detail::MapPair<Key, Value, Less<void>> Pair;
 
-  /**
-   * %Iterator with constant access to elements.
-   */
-  typedef typename HashSet<Pair, HashFunc>::CIterator CIterator;
-
-  /**
-   * %Iterator with non-constant access to elements.
-   */
-  typedef typename HashSet<Pair, HashFunc>::Iterator Iterator;
+  using typename HashSet<Pair, HashFunc>::CIterator;
+  using typename HashSet<Pair, HashFunc>::Iterator;
 
 private:
 
@@ -133,7 +126,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashMap(InitialiserList<Pair> l)
+  HashMap(InitialiserList<Pair> l) :
+    HashMap(int(l.size()) * 4 / 3)
   {
     for (const Pair& p : l) {
       add(p.key, p.value);
@@ -166,6 +160,7 @@ public:
   HashMap& operator = (InitialiserList<Pair> l)
   {
     clear();
+    ensureCapacity(int(l.size()));
 
     for (const Pair& p : l) {
       add(p.key, p.value);

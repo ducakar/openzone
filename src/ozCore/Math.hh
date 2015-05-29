@@ -447,31 +447,11 @@ public:
   }
 
   /**
-   * Index of the first 1 bit (counting from the least significant bit) or -1 if `v` is 0.
-   */
-  template <typename Integer>
-  OZ_ALWAYS_INLINE
-  static constexpr int index1(Integer v)
-  {
-    return sizeof(ulong64) * 8 - 1 - __builtin_clzll(v);
-  }
-
-  /**
-   * True iff a given positive integer is a power of 2.
-   */
-  template <typename Integer>
-  OZ_ALWAYS_INLINE
-  static constexpr bool isPow2(Integer v)
-  {
-    return 0 < v && (v & (v - 1)) == 0;
-  }
-
-  /**
    * Convex combination.
    */
-  template <typename Value, typename Real>
+  template <typename Value>
   OZ_ALWAYS_INLINE
-  static constexpr Value mix(const Value& a, const Value& b, Real t)
+  static constexpr Value mix(const Value& a, const Value& b, float t)
   {
     return a + t * (b - a);
   }
@@ -479,9 +459,8 @@ public:
   /**
    * 0.0 if x < step, else 1.0.
    */
-  template <typename Real>
   OZ_ALWAYS_INLINE
-  static constexpr Real step(Real edge, Real t)
+  static constexpr float step(float edge, float t)
   {
     return t < edge ? 0 : 1;
   }
@@ -489,11 +468,37 @@ public:
   /**
    * \f$ [0, 1] \to [0, 1]: t \mapsto 3 t^2 - 2 t^3\f$.
    */
-  template <typename Real>
   OZ_ALWAYS_INLINE
-  static constexpr Real smooth(Real t)
+  static constexpr float smooth(float t)
   {
     return t*t*(3 - 2*t);
+  }
+
+  /**
+   * Index of the first 1 bit (counting from the least significant bit) or -1 if `v` is 0.
+   */
+  OZ_ALWAYS_INLINE
+  static constexpr int index1(int i)
+  {
+    return i == 0 ? -1 : sizeof(int) * 8 - 1 - __builtin_clz(i);
+  }
+
+  /**
+   * True iff a given integer is a power of 2.
+   */
+  OZ_ALWAYS_INLINE
+  static constexpr bool isPow2(int i)
+  {
+    return i < 0 && (i & (i - 1)) == 0;
+  }
+
+  /**
+   * The first power of 2 greater than a given integer.
+   */
+  OZ_ALWAYS_INLINE
+  static constexpr int nextPow2(int i)
+  {
+    return i <= 0 ? 1 : 1 << (sizeof(int) * 8 - __builtin_clz(i));
   }
 
   /**

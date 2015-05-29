@@ -110,21 +110,13 @@ public:
    */
   typedef detail::MapPair<Key, Value, LessFunc> Pair;
 
-  /**
-   * %Iterator with constant access to elements.
-   */
-  typedef typename Set<Pair>::CIterator CIterator;
-
-  /**
-   * %Iterator with non-constant access to elements.
-   */
-  typedef typename Set<Pair>::Iterator Iterator;
+  using typename Set<Pair>::CIterator;
+  using typename Set<Pair>::Iterator;
 
 private:
 
   using Set<Pair>::data;
   using Set<Pair>::count;
-  using Set<Pair>::size;
   using Set<Pair>::ensureCapacity;
 
   /**
@@ -284,6 +276,7 @@ public:
   void free()
   {
     for (int i = 0; i < count; ++i) {
+      data[i].key = Key();
       delete data[i].value;
     }
     count = 0;

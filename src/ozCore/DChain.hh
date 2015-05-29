@@ -74,15 +74,8 @@ class DChain : private Chain<Elem, INDEX>
 {
 public:
 
-  /**
-   * %Iterator with constant access to elements.
-   */
-  typedef typename Chain<Elem, INDEX>::CIterator CIterator;
-
-  /**
-   * %Iterator with non-constant access to elements.
-   */
-  typedef typename Chain<Elem, INDEX>::Iterator Iterator;
+  using typename Chain<Elem, INDEX>::CIterator;
+  using typename Chain<Elem, INDEX>::Iterator;
 
 private:
 

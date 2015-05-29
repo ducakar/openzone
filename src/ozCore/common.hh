@@ -418,6 +418,23 @@ struct Less
 };
 
 /**
+ * Generic greater function object, calls inverted `Less` function.
+ */
+template <typename Type = void>
+struct Greater
+{
+  /**
+   * Compare using appropriate `Less` function object.
+   */
+  template <typename TypeA, typename TypeB>
+  OZ_ALWAYS_INLINE
+  constexpr bool operator () (const TypeA& a, const TypeB& b) const
+  {
+    return Less<Type>()(b, a);
+  }
+};
+
+/**
  * Generic hash function object for integers and pointers.
  */
 template <typename Number>

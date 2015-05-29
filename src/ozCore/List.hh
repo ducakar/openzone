@@ -43,7 +43,7 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  *
- * @sa `oz::SList`
+ * @sa `oz::SList`, `oz::Set`, `oz::Heap`
  */
 template <typename Elem>
 class List
@@ -125,10 +125,8 @@ public:
    * Initialise from an initialiser list.
    */
   List(InitialiserList<Elem> l) :
-    data(new Elem[l.size()]), count(int(l.size())), size(int(l.size()))
-  {
-    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
-  }
+    List(l.begin(), int(l.size()))
+  {}
 
   /**
    * Destructor.
@@ -205,15 +203,8 @@ public:
    */
   List& operator = (InitialiserList<Elem> l)
   {
-    if (size < int(l.size())) {
-      delete[] data;
-
-      data = new Elem[l.size()];
-      size = int(l.size());
-    }
-
-    Arrays::copy<Elem>(l.begin(), int(l.size()), data);
-    count = int(l.size());
+    clear();
+    addAll(l.begin(), int(l.size()));
 
     return *this;
   }

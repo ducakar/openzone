@@ -70,6 +70,7 @@
  */
 #include "List.hh"
 #include "SList.hh"
+#include "Heap.hh"
 #include "Set.hh"
 #include "Map.hh"
 #include "HashSet.hh"

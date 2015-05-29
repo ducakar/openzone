@@ -19,6 +19,7 @@
         + new Set template class: Map with arbitrary elements instead of key-value pairs
         + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
         + new HashSet template class: hashtable of arbitrary elements instead of key-value pairs
+        + new Heap template class implementing binary min-heap
         + more inheritance between classes and far less code duplication (e.g. List -> Set -> Map)
     * Alloc: new/delete statistics only tracked in diagnostics mode (OZ_ALLOCATOR)
     * new PoolAlloc class, non-template version of Pool which now extends PoolAlloc
