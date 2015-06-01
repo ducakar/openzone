@@ -46,10 +46,10 @@ class Bitset
 private:
 
   /// Size of unit in bytes.
-  static const int UNIT_SIZE = sizeof(ulong);
+  static const int ULONG_SIZE = sizeof(ulong);
 
   /// Number of bits per unit.
-  static const int UNIT_BITSIZE = sizeof(ulong) * 8;
+  static const int ULONG_BITSIZE = sizeof(ulong) * 8;
 
   ulong* data = nullptr; ///< Pointer to array of units that holds the data.
   int    size = 0;       ///< Size of data array (in units, not in bits).
@@ -130,7 +130,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return size * UNIT_BITSIZE;
+    return size * ULONG_BITSIZE;
   }
 
   /**
@@ -157,9 +157,9 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITSIZE));
+    hard_assert(uint(i) < uint(size * ULONG_BITSIZE));
 
-    return (data[i / UNIT_BITSIZE] & (1ul << (i % UNIT_BITSIZE))) != 0ul;
+    return (data[i / ULONG_BITSIZE] & (1ul << (i % ULONG_BITSIZE))) != 0ul;
   }
 
   /**
@@ -168,9 +168,9 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITSIZE));
+    hard_assert(uint(i) < uint(size * ULONG_BITSIZE));
 
-    data[i / UNIT_BITSIZE] |= 1ul << (i % UNIT_BITSIZE);
+    data[i / ULONG_BITSIZE] |= 1ul << (i % ULONG_BITSIZE);
   }
 
   /**
@@ -179,9 +179,9 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITSIZE));
+    hard_assert(uint(i) < uint(size * ULONG_BITSIZE));
 
-    data[i / UNIT_BITSIZE] &= ~(1ul << (i % UNIT_BITSIZE));
+    data[i / ULONG_BITSIZE] &= ~(1ul << (i % ULONG_BITSIZE));
   }
 
   /**

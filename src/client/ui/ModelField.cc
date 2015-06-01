@@ -61,7 +61,7 @@ bool ModelField::onMouseEvent()
     isClicked  = true;
     wasClicked = true;
 
-    if (style.sounds.click >= 0) {
+    if (callback != nullptr && style.sounds.click >= 0) {
       context.playSample(style.sounds.click);
     }
   }

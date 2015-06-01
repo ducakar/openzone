@@ -49,13 +49,13 @@ class SBitset
 private:
 
   /// Size of unit in bytes.
-  static const int UNIT_SIZE = sizeof(ulong);
+  static const int ULONG_SIZE = sizeof(ulong);
 
   /// Number of bits per unit.
-  static const int UNIT_BITSIZE = sizeof(ulong) * 8;
+  static const int ULONG_BITSIZE = sizeof(ulong) * 8;
 
   /// Number of units.
-  static const int SIZE = (BITSIZE + UNIT_BITSIZE - 1) / UNIT_BITSIZE;
+  static const int SIZE = (BITSIZE + ULONG_BITSIZE - 1) / ULONG_BITSIZE;
 
   ulong data[SIZE] = {}; ///< Pointer to array of units that hold the data.
 
@@ -106,7 +106,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return SIZE * UNIT_BITSIZE;
+    return SIZE * ULONG_BITSIZE;
   }
 
   /**
@@ -133,9 +133,9 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITSIZE));
+    hard_assert(uint(i) < uint(SIZE * ULONG_BITSIZE));
 
-    return (data[i / UNIT_BITSIZE] & (1ul << (i % UNIT_BITSIZE))) != 0ul;
+    return (data[i / ULONG_BITSIZE] & (1ul << (i % ULONG_BITSIZE))) != 0ul;
   }
 
   /**
@@ -144,9 +144,9 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITSIZE));
+    hard_assert(uint(i) < uint(SIZE * ULONG_BITSIZE));
 
-    data[i / UNIT_BITSIZE] |= 1ul << (i % UNIT_BITSIZE);
+    data[i / ULONG_BITSIZE] |= 1ul << (i % ULONG_BITSIZE);
   }
 
   /**
@@ -155,9 +155,9 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITSIZE));
+    hard_assert(uint(i) < uint(SIZE * ULONG_BITSIZE));
 
-    data[i / UNIT_BITSIZE] &= ~(1ul << (i % UNIT_BITSIZE));
+    data[i / ULONG_BITSIZE] &= ~(1ul << (i % ULONG_BITSIZE));
   }
 
   /**
@@ -209,13 +209,13 @@ public:
    */
   void set(int start, int end)
   {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITSIZE));
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * ULONG_BITSIZE));
 
-    int   startUnit   = start / UNIT_BITSIZE;
-    int   startOffset = start % UNIT_BITSIZE;
+    int   startUnit   = start / ULONG_BITSIZE;
+    int   startOffset = start % ULONG_BITSIZE;
 
-    int   endUnit     = end / UNIT_BITSIZE;
-    int   endOffset   = end % UNIT_BITSIZE;
+    int   endUnit     = end / ULONG_BITSIZE;
+    int   endOffset   = end % ULONG_BITSIZE;
 
     ulong startMask   = ~0ul << startOffset;
     ulong endMask     = ~(~0ul << endOffset);
@@ -238,13 +238,13 @@ public:
    */
   void clear(int start, int end)
   {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITSIZE));
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * ULONG_BITSIZE));
 
-    int   startUnit   = start / UNIT_BITSIZE;
-    int   startOffset = start % UNIT_BITSIZE;
+    int   startUnit   = start / ULONG_BITSIZE;
+    int   startOffset = start % ULONG_BITSIZE;
 
-    int   endUnit     = end / UNIT_BITSIZE;
-    int   endOffset   = end % UNIT_BITSIZE;
+    int   endUnit     = end / ULONG_BITSIZE;
+    int   endOffset   = end % ULONG_BITSIZE;
 
     ulong startMask   = ~(~0ul << startOffset);
     ulong endMask     = ~0ul << endOffset;

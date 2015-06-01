@@ -157,6 +157,7 @@ private:
 public:
 
   int                      textureLod;
+  bool                     dynamicLoading;
 
 private:
 

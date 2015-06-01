@@ -615,6 +615,9 @@ void Context::unloadResources()
     bspAudios[i].nUsers = -1;
   }
 
+  Arrays::free(fragPools, liber.fragPools.length());
+  Arrays::fill(fragPools, liber.fragPools.length(), nullptr);
+
   for (int i = 0; i < liber.models.length(); ++i) {
     delete models[i].handle;
 
@@ -622,9 +625,6 @@ void Context::unloadResources()
     models[i].nUsers = -1;
   }
   Model::deallocate();
-
-  Arrays::free(fragPools, liber.fragPools.length());
-  Arrays::fill(fragPools, liber.fragPools.length(), nullptr);
 
   OZ_AL_CHECK_ERROR();
 }
@@ -755,6 +755,7 @@ void Context::init()
   Log::print("Initialising Context ...");
 
   textureLod = config.include("context.textureLod", 0).get(0);
+  dynamicLoading = config.include("context.dynamicLoading", false).get(false);
 
   if (!liber.imagines.isEmpty()) {
     imagoClasses = new Imago::CreateFunc*[liber.imagines.length()] {};

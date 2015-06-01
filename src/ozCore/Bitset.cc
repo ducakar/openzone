@@ -127,13 +127,13 @@ bool Bitset::isSubset(const Bitset& b) const
 
 void Bitset::set(int start, int end)
 {
-  hard_assert(uint(start) <= uint(end) && uint(end) <= uint(size * UNIT_BITSIZE));
+  hard_assert(uint(start) <= uint(end) && uint(end) <= uint(size * ULONG_BITSIZE));
 
-  int   startUnit   = start / UNIT_BITSIZE;
-  int   startOffset = start % UNIT_BITSIZE;
+  int   startUnit   = start / ULONG_BITSIZE;
+  int   startOffset = start % ULONG_BITSIZE;
 
-  int   endUnit     = end / UNIT_BITSIZE;
-  int   endOffset   = end % UNIT_BITSIZE;
+  int   endUnit     = end / ULONG_BITSIZE;
+  int   endOffset   = end % ULONG_BITSIZE;
 
   ulong startMask   = ~0ul << startOffset;
   ulong endMask     = ~(~0ul << endOffset);
@@ -153,13 +153,13 @@ void Bitset::set(int start, int end)
 
 void Bitset::clear(int start, int end)
 {
-  hard_assert(uint(start) <= uint(end) && uint(end) <= uint(size * UNIT_BITSIZE));
+  hard_assert(uint(start) <= uint(end) && uint(end) <= uint(size * ULONG_BITSIZE));
 
-  int   startUnit   = start / UNIT_BITSIZE;
-  int   startOffset = start % UNIT_BITSIZE;
+  int   startUnit   = start / ULONG_BITSIZE;
+  int   startOffset = start % ULONG_BITSIZE;
 
-  int   endUnit     = end / UNIT_BITSIZE;
-  int   endOffset   = end % UNIT_BITSIZE;
+  int   endUnit     = end / ULONG_BITSIZE;
+  int   endOffset   = end % ULONG_BITSIZE;
 
   ulong startMask   = ~(~0ul << startOffset);
   ulong endMask     = ~0ul << endOffset;
@@ -189,7 +189,7 @@ void Bitset::clearAll()
 
 Bitset Bitset::operator ~ () const
 {
-  Bitset r(size * UNIT_BITSIZE);
+  Bitset r(size * ULONG_BITSIZE);
 
   for (int i = 0; i < size; ++i) {
     r.data[i] = ~data[i];
@@ -201,7 +201,7 @@ Bitset Bitset::operator & (const Bitset& b) const
 {
   hard_assert(size == b.size);
 
-  Bitset r(size * UNIT_BITSIZE);
+  Bitset r(size * ULONG_BITSIZE);
 
   for (int i = 0; i < size; ++i) {
     r.data[i] = data[i] & b.data[i];
@@ -213,7 +213,7 @@ Bitset Bitset::operator | (const Bitset& b) const
 {
   hard_assert(size == b.size);
 
-  Bitset r(size * UNIT_BITSIZE);
+  Bitset r(size * ULONG_BITSIZE);
 
   for (int i = 0; i < size; ++i) {
     r.data[i] = data[i] | b.data[i];
@@ -225,7 +225,7 @@ Bitset Bitset::operator ^ (const Bitset& b) const
 {
   hard_assert(size == b.size);
 
-  Bitset r(size * UNIT_BITSIZE);
+  Bitset r(size * ULONG_BITSIZE);
 
   for (int i = 0; i < size; ++i) {
     r.data[i] = data[i] ^ b.data[i];
@@ -261,7 +261,7 @@ void Bitset::resize(int nBits)
 {
   hard_assert(nBits >= 0);
 
-  int nUnits = (nBits + UNIT_BITSIZE - 1) / UNIT_BITSIZE;
+  int nUnits = (nBits + ULONG_BITSIZE - 1) / ULONG_BITSIZE;
 
   if (nUnits != size) {
     data = Arrays::reallocate<ulong>(data, size, nUnits);

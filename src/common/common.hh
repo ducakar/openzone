@@ -88,25 +88,20 @@ struct Span
 
 /**
  * Wrap angle to the interval \f$ [0, \tau) \f$.
- *
- * This adjustment should be made after each angle change. It assumes the input angle lies on
- * the interval \f$ [-\tau, \infty) \f$.
  */
 OZ_ALWAYS_INLINE
 inline float angleWrap(float x)
 {
-  return Math::fmod(x + Math::TAU, Math::TAU);
+  return Math::mod(x, Math::TAU);
 }
 
 /**
  * Difference between two angles, maps to interval \f$ [-\frac{\tau}{2}, +\frac{\tau}{2}) \f$.
- *
- * This function assumes that both angles lie on the interval \f$ [0, \tau) \f$.
  */
 OZ_ALWAYS_INLINE
 inline float angleDiff(float x, float y)
 {
-  return Math::fmod(x - y + 1.5f*Math::TAU, Math::TAU) - 0.5f*Math::TAU;
+  return Math::mod(x - y + Math::TAU / 2.0f, Math::TAU) - Math::TAU / 2.0f;
 }
 
 }

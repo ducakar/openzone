@@ -462,7 +462,7 @@ void Bot::onUpdate()
     return;
   }
 
-  hard_assert(0.0f <= h && h < Math::TAU);
+  hard_assert(-EPSILON <= h && h < Math::TAU + EPSILON);
   hard_assert(0.0f <= v && v <= Math::TAU / 2.0f);
 
   life      = min(life + clazz->regeneration, clazz->life);

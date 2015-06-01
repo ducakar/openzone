@@ -564,12 +564,21 @@ void Stream::readBitset(ulong* bitset, int nBits)
   int unitBits  = sizeof(ulong) * 8;
   int unitCount = (nBits + unitBits - 1) / unitBits;
 
-  Endian::ToValue<ulong64> value;
+#if OZ_SIZEOF_LONG == 4
+  for (int i = 0; i < unitCount;) {
+    ulong low  = readUInt();
+    ulong high = readUInt();
 
-  for (int i = 0; i < unitCount; ++i) {
-    read(value.data, sizeof(value.data));
-    bitset[i] = value.value;
+    bitset[i++] = readUInt();
+    if (i != unitCount) {
+      bitset[i++] = readUInt();
+    }
   }
+#else
+  for (int i = 0; i < unitCount; ++i) {
+    bitset[i] = ulong(readULong64());
+  }
+#endif
 }
 
 void Stream::writeBitset(const ulong* bitset, int nBits)
@@ -577,16 +586,18 @@ void Stream::writeBitset(const ulong* bitset, int nBits)
   int unitBits  = sizeof(ulong) * 8;
   int unitCount = (nBits + unitBits - 1) / unitBits;
 
-  Endian::ToBytes<ulong> value;
-
-  for (int i = 0; i < unitCount; ++i) {
-    value.value = bitset[i];
-    write(value.data, sizeof(value.data));
-  }
-
 #if OZ_SIZEOF_LONG == 4
-  value = 0;
-  writeChars(value.data, sizeof(value.data));
+  for (int i = 0; i < unitCount;) {
+    ulong low  = bitset[i++];
+    ulong high = i == unitCount ? 0 : bitset[i++];
+
+    writeUInt(uint(low));
+    writeUInt(uint(high));
+  }
+#else
+  for (int i = 0; i < unitCount; ++i) {
+    writeLong64(bitset[i]);
+  }
 #endif
 }
 
