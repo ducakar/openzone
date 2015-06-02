@@ -616,7 +616,6 @@ void Context::unloadResources()
   }
 
   Arrays::free(fragPools, liber.fragPools.length());
-  Arrays::fill(fragPools, liber.fragPools.length(), nullptr);
 
   for (int i = 0; i < liber.models.length(); ++i) {
     delete models[i].handle;

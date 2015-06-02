@@ -61,8 +61,8 @@ public:
 
 private:
 
-  Elem data[SIZE];     ///< Element storage.
-  int  count      = 0; ///< Number of elements.
+  Elem data[SIZE] = {}; ///< Element storage.
+  int  count      = 0;  ///< Number of elements.
 
 public:
 

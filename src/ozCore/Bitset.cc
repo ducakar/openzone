@@ -265,7 +265,6 @@ void Bitset::resize(int nBits)
 
   if (nUnits != size) {
     data = Arrays::reallocate<ulong>(data, size, nUnits);
-    Arrays::fill<ulong, ulong>(data + size, nUnits - size, 0u);
     size = nUnits;
   }
 }

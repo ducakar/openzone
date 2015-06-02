@@ -323,13 +323,16 @@ public:
   }
 
   /**
-   * Delete objects referenced by elements (elements must be pointers).
+   * Delete objects referenced by elements and assign all elements to null.
+   *
+   * Array elements must be pointers.
    */
   template <typename Elem>
-  static void free(const Elem* array, int count)
+  static void free(Elem* array, int count)
   {
     for (int i = 0; i < count; ++i) {
       delete array[i];
+      array[i] = Elem();
     }
   }
 
@@ -406,7 +409,7 @@ public:
     Elem* newArray = nullptr;
 
     if (newCount != 0) {
-      newArray = new Elem[newCount];
+      newArray = new Elem[newCount] {};
       move<Elem>(array, min<int>(count, newCount), newArray);
     }
     delete[] array;

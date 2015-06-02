@@ -34,31 +34,31 @@ class Terra
 {
 public:
 
-  static const int   TILE_QUADS    = 32;
-  static const int   TILES         = oz::Terra::QUADS / TILE_QUADS;
+  static const int       TILE_QUADS    = 32;
+  static const int       TILES         = oz::Terra::QUADS / TILE_QUADS;
 
 private:
 
-  static const int   TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
-  static const int   TILE_INDICES  = TILE_QUADS * (TILE_QUADS + 1) * 2 + (TILE_QUADS - 1) * 2;
-  static const int   TILE_VERTICES = (TILE_QUADS + 1) * (TILE_QUADS + 1);
+  static const int       TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
+  static const int       TILE_INDICES  = TILE_QUADS * (TILE_QUADS + 1) * 2 + (TILE_QUADS - 1) * 2;
+  static const int       TILE_VERTICES = (TILE_QUADS + 1) * (TILE_QUADS + 1);
 
-  static const float WAVE_BIAS_INC;
+  static const float     WAVE_BIAS_INC;
 
-  uint    vbos[TILES][TILES];
-  uint    ibo;
+  uint                   vbos[TILES][TILES];
+  uint                   ibo;
 
-  int     detailTexId;
-  int     landShaderId;
-  int     liquidShaderId;
+  int                    detailTexId;
+  int                    landShaderId;
+  int                    liquidShaderId;
 
-  Texture detailTex;
-  Texture liquidTex;
-  GLuint  mapTex;
+  Texture                detailTex;
+  Texture                liquidTex;
+  GLuint                 mapTex;
 
-  float   waveBias;
+  float                  waveBias;
 
-  Span    span;
+  Span                   span;
   SBitset<TILES * TILES> liquidTiles;
 
 public:

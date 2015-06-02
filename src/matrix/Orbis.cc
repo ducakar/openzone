@@ -617,11 +617,8 @@ void Orbis::unload()
   hard_assert(structs[0] == nullptr && objects[0] == nullptr && frags[0] == nullptr);
 
   Arrays::free(&frags[1], MAX_FRAGS);
-  Arrays::fill(&frags[1], MAX_FRAGS, nullptr);
   Arrays::free(&objects[1], MAX_OBJECTS);
-  Arrays::fill(&objects[1], MAX_OBJECTS, nullptr);
   Arrays::free(&structs[1], MAX_STRUCTS);
-  Arrays::fill(&structs[1], MAX_STRUCTS, nullptr);
 
   terra.reset();
   caelum.reset();

@@ -742,7 +742,7 @@ void File::destroy()
 {
   PHYSFS_deinit();
 
-  Arrays::fill<File, File>(specialDirs, Arrays::length<File>(specialDirs), File());
+  Arrays::clear<File>(specialDirs, Arrays::length<File>(specialDirs));
   executableFile = "";
 }
 

@@ -49,9 +49,9 @@
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
 #elif defined(_WIN32)
-# include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
+# include <windows.h>
 #else
 # include <alsa/asoundlib.h>
 # include <ctime>

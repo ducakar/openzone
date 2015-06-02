@@ -701,9 +701,8 @@ void BSP::optimise()
   // remove unused brush sides
   Log::print("Removing unused brush sides ");
 
-  List<bool> usedBrushSides;
-  usedBrushSides.resize(brushSides.length());
-  Arrays::fill(usedBrushSides.begin(), usedBrushSides.length(), false);
+  List<bool> usedBrushSides(brushSides.length());
+  Arrays::clear(usedBrushSides.begin(), usedBrushSides.length());
 
   for (int i = 0; i < brushes.length(); ++i) {
     for (int j = 0; j < brushes[i].nSides; ++j) {
