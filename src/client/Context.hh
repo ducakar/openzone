@@ -132,7 +132,7 @@ private:
   Resource<Model*>*        models;
   Resource<PartClass>*     partClasses;
 
-  Resource<BSPImago*>*     bsps;
+  Resource<BSPImago*>*     bspImagines;
   Resource<BSPAudio*>*     bspAudios;
 
   HashMap<int, Imago*>     imagines;              // Currently loaded graphics models.

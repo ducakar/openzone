@@ -99,7 +99,7 @@ else()
 endif()
 
 find_package(OpenAL REQUIRED)
-find_package(PNG REQUIRED)
+find_package(JPEG REQUIRED)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 
 # On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.

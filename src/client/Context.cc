@@ -280,7 +280,7 @@ void Context::releaseSpeakSource()
 
 Context::Context() :
   imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr), models(nullptr),
-  bsps(nullptr)
+  bspImagines(nullptr)
 {}
 
 Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
@@ -433,14 +433,14 @@ void Context::playSample(int id)
 
 BSPImago* Context::getBSP(const BSP* bsp)
 {
-  Resource<BSPImago*>& resource = bsps[bsp->id];
+  Resource<BSPImago*>& resource = bspImagines[bsp->id];
 
   return resource.handle != nullptr && resource.handle->isLoaded() ? resource.handle : nullptr;
 }
 
 BSPImago* Context::requestBSP(const BSP* bsp)
 {
-  Resource<BSPImago*>& resource = bsps[bsp->id];
+  Resource<BSPImago*>& resource = bspImagines[bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
@@ -599,15 +599,47 @@ void Context::updateLoad()
 
 void Context::loadResources()
 {
+  if (!dynamicLoading) {
+    for (int i = 0; i < liber.textures.length(); ++i) {
+      requestTexture(i);
+    }
+    for (int i = 0; i < liber.sounds.length(); ++i) {
+      requestSound(i);
+    }
+  }
+
+  for (int i = 0; i < liber.models.length(); ++i) {
+    models[i].handle = new Model(liber.models[i].path);
+    models[i].handle->preload();
+    models[i].handle->load();
+    models[i].nUsers = 0;
+  }
+
+  for (int i = 0; i < liber.fragPools.length(); ++i) {
+    fragPools[i] = new FragPool(liber.fragPools[i]);
+  }
+
+  for (int i = 0; i < liber.bsps.length(); ++i) {
+    bspImagines[i].handle = new BSPImago(liber.bsps[i]);
+    bspImagines[i].handle->preload();
+    bspImagines[i].handle->load();
+    bspImagines[i].nUsers = 0;
+
+    bspAudios[i].handle = new BSPAudio(liber.bsps[i]);
+    bspAudios[i].nUsers = 0;
+  }
+
+  OZ_GL_CHECK_ERROR();
+  OZ_AL_CHECK_ERROR();
 }
 
 void Context::unloadResources()
 {
   for (int i = 0; i < liber.bsps.length(); ++i) {
-    delete bsps[i].handle;
+    delete bspImagines[i].handle;
 
-    bsps[i].handle = nullptr;
-    bsps[i].nUsers = -1;
+    bspImagines[i].handle = nullptr;
+    bspImagines[i].nUsers = -1;
 
     delete bspAudios[i].handle;
 
@@ -625,6 +657,19 @@ void Context::unloadResources()
   }
   Model::deallocate();
 
+  if (!dynamicLoading) {
+    for (int i = 0; i < liber.textures.length(); ++i) {
+      releaseTexture(i);
+    }
+    for (int i = 0; i < liber.sounds.length(); ++i) {
+      releaseSound(i);
+    }
+  }
+
+  caelum.unload();
+  terra.unload();
+
+  OZ_GL_CHECK_ERROR();
   OZ_AL_CHECK_ERROR();
 }
 
@@ -657,6 +702,10 @@ void Context::load()
 
   imagines = HashMap<int, Imago*>(4096);
   audios   = HashMap<int, Audio*>(1024);
+
+  if (!dynamicLoading) {
+    loadResources();
+  }
 }
 
 void Context::unload()
@@ -698,9 +747,6 @@ void Context::unload()
   imagines.trim();
   audios.free();
   audios.trim();
-
-  caelum.unload();
-  terra.unload();
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -753,7 +799,7 @@ void Context::init()
 {
   Log::print("Initialising Context ...");
 
-  textureLod = config.include("context.textureLod", 0).get(0);
+  textureLod     = config.include("context.textureLod", 0).get(0);
   dynamicLoading = config.include("context.dynamicLoading", false).get(false);
 
   if (!liber.imagines.isEmpty()) {
@@ -788,7 +834,7 @@ void Context::init()
   models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels] {};
   partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses] {};
 
-  bsps        = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
+  bspImagines = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
   bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs] {};
 
   Log::printEnd(" OK");
@@ -805,7 +851,7 @@ void Context::destroy()
   delete[] textures;
   delete[] sounds;
 
-  delete[] bsps;
+  delete[] bspImagines;
   delete[] bspAudios;
 
   delete[] models;
@@ -818,7 +864,7 @@ void Context::destroy()
   textures     = nullptr;
   sounds       = nullptr;
 
-  bsps         = nullptr;
+  bspImagines  = nullptr;
   bspAudios    = nullptr;
 
   models       = nullptr;

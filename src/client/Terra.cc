@@ -170,6 +170,10 @@ void Terra::load()
 
   id = orbis.terra.id;
 
+  if (id == -1) {
+    return;
+  }
+
   const String& name = liber.terrae[id].name;
 
   File file = "@terra/" + name + ".ozcTerra";

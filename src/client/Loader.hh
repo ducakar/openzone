@@ -76,15 +76,22 @@ private:
 
   static void preloadMain(void*);
 
-  // clean unused imagines and handle screenshots
+  // Clean unused imagines.
+  void updateRender();
+  // Stop playing stopped continuous sounds, clean up unused audios.
+  void updateSound();
+
+  // Remove unused models, BSPs, FragPools.
   void cleanupRender();
-  // stop playing stopped continuous sounds, clean up unused audios
+  // Remove unused sound buffers.
   void cleanupSound();
 
   // preload scheduled models
   void preloadRender();
   // load scheduled models
   void uploadRender(bool isOneShot);
+  // Reload terra and/or caelum if changed.
+  void updateEnvironment();
 
   void preloadRun();
 

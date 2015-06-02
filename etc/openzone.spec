@@ -20,6 +20,7 @@ BuildRequires:  SDL2-devel
 BuildRequires:  SDL2_ttf-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  openal-soft-devel
+BuildRequires:  libjpeg-devel
 BuildRequires:  libvorbis-devel
 BuildRequires:  freeimage-devel
 BuildRequires:  libsquish-devel

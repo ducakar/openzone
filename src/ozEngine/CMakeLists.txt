@@ -19,26 +19,12 @@ add_library(ozEngine
 #END SOURCES
 )
 
-# Lua.
-target_link_libraries(ozEngine ${LUA_LIBRARIES})
+target_link_libraries(ozEngine ${LUA_LIBRARIES} ${GL_LIBRARIES} ${OPENAL_LIBRARY} ${JPEG_LIBRARY}
+                               ${VORBISFILE_LIBRARIES} ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
 
-# OpenGL.
-target_link_libraries(ozEngine ${GL_LIBRARIES})
-
-# OpenAL.
-target_link_libraries(ozEngine ${OPENAL_LIBRARY})
-
-# SDL.
-target_link_libraries(ozEngine ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
 if(NOT NACL)
 #  target_link_libraries(ozEngine ${SDL_NET_LIBRARIES})
 endif()
-
-# libpng.
-target_link_libraries(ozEngine ${PNG_LIBRARY})
-
-# libvorbisfile.
-target_link_libraries(ozEngine ${VORBISFILE_LIBRARIES})
 
 target_link_libraries(ozEngine ozCore)
 
