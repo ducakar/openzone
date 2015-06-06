@@ -269,7 +269,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator != (const IteratorBase& i) const
   {
-    return elem != i.elem;
+    return !operator == (i);
   }
 
   /**
@@ -348,7 +348,7 @@ inline typename Container::Iterator iterator(Container& container)
 }
 
 /**
- * Swap values of variables.
+ * Swap values of two variables.
  */
 template <typename Value>
 OZ_ALWAYS_INLINE

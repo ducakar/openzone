@@ -82,12 +82,10 @@ void* Thread::Descriptor::threadMain(void* descriptor_)
   Descriptor* descriptor            = static_cast<Descriptor*>(descriptor_);
   Main*       main                  = descriptor->main;
   void*       data                  = descriptor->data;
-  char        name[NAME_LENGTH + 1];
+  char        name[NAME_LENGTH + 1] = {};
 
   if (descriptor->name != nullptr) {
-    strncpy(name, descriptor->name, NAME_LENGTH);
-    name[NAME_LENGTH] = '\0';
-
+    memccpy(name, descriptor->name, '\0', NAME_LENGTH);
     threadName = name;
   }
 

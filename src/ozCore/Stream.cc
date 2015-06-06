@@ -566,9 +566,6 @@ void Stream::readBitset(ulong* bitset, int nBits)
 
 #if OZ_SIZEOF_LONG == 4
   for (int i = 0; i < unitCount;) {
-    ulong low  = readUInt();
-    ulong high = readUInt();
-
     bitset[i++] = readUInt();
     if (i != unitCount) {
       bitset[i++] = readUInt();
@@ -588,11 +585,8 @@ void Stream::writeBitset(const ulong* bitset, int nBits)
 
 #if OZ_SIZEOF_LONG == 4
   for (int i = 0; i < unitCount;) {
-    ulong low  = bitset[i++];
-    ulong high = i == unitCount ? 0 : bitset[i++];
-
-    writeUInt(uint(low));
-    writeUInt(uint(high));
+    writeUInt(uint(bitset[i++]));
+    writeUInt(uint(i == unitCount ? 0 : bitset[i++]));
   }
 #else
   for (int i = 0; i < unitCount; ++i) {

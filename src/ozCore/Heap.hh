@@ -193,15 +193,13 @@ public:
         index = right;
       }
       if (index == parent) {
-        break;
+        return root;
       }
 
       swap(data[parent], data[index]);
       parent = index;
     }
     while (true);
-
-    return root;
   }
 
 };

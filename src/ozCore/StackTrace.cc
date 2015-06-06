@@ -50,10 +50,8 @@ const int StackTrace::MAX_FRAMES;
 
 StackTrace StackTrace::current(int)
 {
-  const char* name = Thread::name();
-
   StackTrace st = { {}, 0, {} };
-  strncpy(st.threadName, name, Thread::NAME_LENGTH);
+  memccpy(st.threadName, Thread::name(), '\0', Thread::NAME_LENGTH);
   return st;
 }
 
@@ -73,12 +71,12 @@ StackTrace StackTrace::current(int nSkippedFrames)
 
   void* framesBuffer[StackTrace::MAX_FRAMES + 4];
 
-  const char* name            = Thread::name();
-  int         nBufferedFrames = backtrace(framesBuffer, MAX_FRAMES + 4);
-  int         nFrames         = min<int>(nBufferedFrames - 1 - nSkippedFrames, MAX_FRAMES);
+  int nBufferedFrames = backtrace(framesBuffer, MAX_FRAMES + 4);
+  int nFrames         = min<int>(nBufferedFrames - 1 - nSkippedFrames, MAX_FRAMES);
 
   StackTrace st = { {}, nFrames, {} };
-  strncpy(st.threadName, name, Thread::NAME_LENGTH);
+
+  memccpy(st.threadName, Thread::name(), '\0', Thread::NAME_LENGTH);
   Arrays::copy<void*>(framesBuffer + 1 + nSkippedFrames, st.nFrames, st.frames);
   return st;
 }

@@ -105,12 +105,12 @@ PoolAlloc& PoolAlloc::operator = (PoolAlloc&& p)
 
   free();
 
-  firstBlock   = p.firstBlock;
-  freeSlot     = p.freeSlot;
-  objectSize   = p.objectSize;
-  nSlots       = p.nSlots;
-  count        = p.count;
-  size         = p.size;
+  firstBlock = p.firstBlock;
+  freeSlot   = p.freeSlot;
+  objectSize = p.objectSize;
+  nSlots     = p.nSlots;
+  count      = p.count;
+  size       = p.size;
 
   p.firstBlock = nullptr;
   p.freeSlot   = nullptr;

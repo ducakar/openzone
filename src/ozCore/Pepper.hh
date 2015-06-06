@@ -212,7 +212,7 @@ public:
    *
    * The function can also be a lambda expression with captures.
    *
-   * On platforms other that NaCl the code is executed immediately on the caller thread.
+   * On platforms other that NaCl the code is executed immediately on caller's thread.
    */
   template <typename Function>
   void operator << (Function function) const
@@ -256,7 +256,7 @@ public:
    * local variables may change till the function is executed or the local stack may not even exist
    * any more.
    *
-   * On platforms other that NaCl the code is executed immediately on the caller thread.
+   * On platforms other that NaCl the code is executed immediately on caller's thread.
    */
   template <typename Function>
   void operator += (Function function) const

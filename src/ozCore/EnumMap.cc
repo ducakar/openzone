@@ -34,48 +34,40 @@ namespace oz
 namespace detail
 {
 
-EnumMapImpl::EnumMapImpl(InitialiserList<Entry> l) :
-  entries(new Entry[l.size()]), nEntries(int(l.size()))
-{
-  hard_assert(l.size() != 0);
-
-  Arrays::copy<Entry>(l.begin(), int(l.size()), entries);
-}
-
-EnumMapImpl::~EnumMapImpl()
-{
-  delete[] entries;
-}
-
-int EnumMapImpl::length() const
-{
-  return nEntries;
-}
-
 int EnumMapImpl::defaultValue() const
+{
+  return entries[0].key;
+}
+
+int EnumMapImpl::operator [] (const char* name) const
+{
+  for (const Pair& pair : entries) {
+    if (String::equals(pair.value, name)) {
+      return pair.key;
+    }
+  }
+
+  OZ_ERROR("oz::EnumMap: Invalid name '%s'", name);
+}
+
+EnumMapImpl::EnumMapImpl(InitialiserList<Pair> l) :
+  entries(l)
+{}
+
+const char* EnumMapImpl::defaultName() const
 {
   return entries[0].value;
 }
 
-const char* EnumMapImpl::defaultName() const
-{
-  return entries[0].name;
-}
-
 bool EnumMapImpl::has(int value) const
 {
-  for (int i = 0; i < nEntries; ++i) {
-    if (entries[i].value == value) {
-      return true;
-    }
-  }
-  return false;
+  return entries.contains<int>(value);
 }
 
 bool EnumMapImpl::has(const char* name) const
 {
-  for (int i = 0; i < nEntries; ++i) {
-    if (String::equals(entries[i].name, name)) {
+  for (const Pair& pair : entries) {
+    if (String::equals(pair.value, name)) {
       return true;
     }
   }
@@ -84,24 +76,12 @@ bool EnumMapImpl::has(const char* name) const
 
 const char* EnumMapImpl::operator [] (int value) const
 {
-  for (int i = 0; i < nEntries; ++i) {
-    if (entries[i].value == value) {
-      return entries[i].name;
-    }
+  const char* const* name = entries.find(value);
+
+  if (name == nullptr) {
+    OZ_ERROR("oz::EnumMap: Invalid value %d", value);
   }
-
-  OZ_ERROR("oz::EnumMap: Invalid value %d", value);
-}
-
-int EnumMapImpl::operator [] (const char* name) const
-{
-  for (int i = 0; i < nEntries; ++i) {
-    if (String::equals(entries[i].name, name)) {
-      return entries[i].value;
-    }
-  }
-
-  OZ_ERROR("oz::EnumMap: Invalid name '%s'", name);
+  return *name;
 }
 
 }

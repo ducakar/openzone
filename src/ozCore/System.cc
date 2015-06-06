@@ -49,35 +49,13 @@
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
 #elif defined(_WIN32)
+# include <windows.h>
 # include <io.h>
 # include <mmsystem.h>
-# include <windows.h>
 #else
 # include <alsa/asoundlib.h>
 # include <ctime>
 # include <pthread.h>
-#endif
-
-#if defined(__native_client__) && !defined(__GLIBC__)
-
-using namespace oz;
-
-// Fake implementations for signal() and raise() functions missing in newlib library. signal() is
-// referenced by SDL hence must be present if we link with it. Those fake implementations also spare
-// us several #ifdefs in this file.
-
-extern "C" OZ_WEAK
-void (* signal(int, void (*)(int)))(int)
-{
-  return nullptr;
-}
-
-extern "C" OZ_WEAK
-int raise(int)
-{
-  return 0;
-}
-
 #endif
 
 namespace oz
@@ -456,8 +434,6 @@ static void waitBellOnExit()
 OZ_NORETURN
 static void abort(bool doHalt)
 {
-  static_cast<void>(doHalt);
-
   resetSignals();
 
   if (crashHandler != nullptr) {

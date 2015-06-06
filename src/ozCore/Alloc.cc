@@ -175,19 +175,17 @@ void* operator new[] (size_t size)
 OZ_WEAK
 void operator delete (void* ptr) noexcept
 {
-  if (ptr == nullptr) {
-    return;
+  if (ptr != nullptr) {
+    oz::deallocate(oz::OBJECT, ptr);
   }
-  oz::deallocate(oz::OBJECT, ptr);
 }
 
 OZ_WEAK
 void operator delete[] (void* ptr) noexcept
 {
-  if (ptr == nullptr) {
-    return;
+  if (ptr != nullptr) {
+    oz::deallocate(oz::ARRAY, ptr);
   }
-  oz::deallocate(oz::ARRAY, ptr);
 }
 
 OZ_WEAK
@@ -205,17 +203,15 @@ void* operator new[] (size_t size, const std::nothrow_t&) noexcept
 OZ_WEAK
 void operator delete (void* ptr, const std::nothrow_t&) noexcept
 {
-  if (ptr == nullptr) {
-    return;
+  if (ptr != nullptr) {
+    oz::deallocate(oz::OBJECT, ptr);
   }
-  oz::deallocate(oz::OBJECT, ptr);
 }
 
 OZ_WEAK
 void operator delete[] (void* ptr, const std::nothrow_t&) noexcept
 {
-  if (ptr == nullptr) {
-    return;
+  if (ptr != nullptr) {
+    oz::deallocate(oz::ARRAY, ptr);
   }
-  oz::deallocate(oz::ARRAY, ptr);
 }

@@ -84,12 +84,9 @@ SharedLib::Function* SharedLib::get(const char* symbol) const
   static_cast<void>(symbol);
   return nullptr;
 #elif defined(_WIN32)
-  FARPROC proc = GetProcAddress(static_cast<HMODULE>(handle), symbol);
-  return reinterpret_cast<Function*>(proc);
+  return reinterpret_cast<Function*>(GetProcAddress(static_cast<HMODULE>(handle), symbol));
 #else
-  Function* function;
-  function = reinterpret_cast<Function*>(dlsym(handle, symbol));
-  return function;
+  return reinterpret_cast<Function*>(dlsym(handle, symbol));
 #endif
 }
 

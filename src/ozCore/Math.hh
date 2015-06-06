@@ -523,9 +523,6 @@ public:
 
   /**
    * Random number from [-1, 1], numbers close to zero are more likely.
-   *
-   * It tries to generate something "relatively" close to Gaussian distribution.
-   * It actually returns \f$ x^3 \f$, for an \f$ x \in [-1, +1] \f$ returned by `rand()`.
    */
   static float normalRand();
 

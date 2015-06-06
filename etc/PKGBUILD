@@ -2,7 +2,7 @@
 
 pkgbase=openzone
 pkgname=('liboz' 'openzone' 'openzone-data')
-pkgver=0.3.93
+pkgver=0.3.94
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
@@ -32,9 +32,17 @@ function build()
     -D CMAKE_AR="/usr/bin/gcc-ar" \
     -D CMAKE_RANLIB="/usr/bin/gcc-ranlib" \
     -D CMAKE_CXX_FLAGS="${CXXFLAGS/-O2} -msse3 -mfpmath=sse" \
-    -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
+    -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto -fprofile-generate" \
     -D BUILD_SHARED_LIBS=1 \
     -D OZ_NONFREE=1 \
+    ..
+
+  make
+
+  ./src/tools/openzone -l
+
+  cmake \
+    -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto -fprofile-use" \
     ..
 
   make

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "Map.hh"
 
 namespace oz
 {
@@ -46,48 +46,39 @@ protected:
   /**
    * EnumMap entry.
    */
-  struct Entry
-  {
-    int         value; ///< Enumerator value as integer.
-    const char* name;  ///< Enumerator value name.
-  };
+  typedef detail::MapPair<int, const char*, Less<void>> Pair;
 
 private:
 
-  Entry* entries;  ///< %Map of entries.
-  int    nEntries; ///< Number of map entries.
+  Map<int, const char*> entries;
+
+protected:
+
+  /**
+   * Return first enumerator value in the map.
+   */
+  int defaultValue() const;
+
+  /**
+   * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
+   */
+  int operator [] (const char* name) const;
 
 public:
 
   /**
    * Create enumerator mapping from an array.
    */
-  EnumMapImpl(InitialiserList<Entry> l);
-
-  /**
-   * Destructor
-   */
-  ~EnumMapImpl();
-
-  /**
-   * No copying or moving.
-   */
-  EnumMapImpl(const EnumMapImpl&) = delete;
-
-  /**
-   * No copying or moving.
-   */
-  EnumMapImpl& operator = (const EnumMapImpl&) = delete;
+  EnumMapImpl(InitialiserList<Pair> l);
 
   /**
    * Number of enumerator values.
    */
-  int length() const;
-
-  /**
-   * Return first enumerator value in the map.
-   */
-  int defaultValue() const;
+  OZ_ALWAYS_INLINE
+  int length() const
+  {
+    return entries.length();
+  }
 
   /**
    * Return first name in the map.
@@ -108,11 +99,6 @@ public:
    * Return name for a enumerator value or invoke `System::error()` on an invalid value.
    */
   const char* operator [] (int value) const;
-
-  /**
-   * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
-   */
-  int operator [] (const char* name) const;
 
 };
 
@@ -147,7 +133,7 @@ public:
   /**
    * Create enumerator mapping from an initialiser list.
    */
-  EnumMap(InitialiserList<Entry> l) :
+  EnumMap(InitialiserList<Pair> l) :
     EnumMapImpl(l)
   {}
 

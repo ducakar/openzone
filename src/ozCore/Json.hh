@@ -122,6 +122,11 @@ private:
   explicit Json(void* data, Type valueType);
 
   /**
+   * Internal constructor for linear algebra types.
+   */
+  explicit Json(const float* vector, int count);
+
+  /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.
    */
   bool getVector(float* vector, int count) const;

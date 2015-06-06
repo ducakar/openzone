@@ -28,11 +28,9 @@
 
 #include "Math.hh"
 
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <clocale>
 
 namespace oz
 {
@@ -74,7 +72,6 @@ char* String::resize(int newCount, bool keepContents)
   return buffer;
 }
 
-OZ_HIDDEN
 void String::assign(const char* s, int nChars)
 {
   char* begin = resize(nChars, false);

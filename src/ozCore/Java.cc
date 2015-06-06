@@ -24,7 +24,7 @@
  * @file ozCore/Java.cc
  */
 
-#if defined(__ANDROID__)
+#ifdef __ANDROID__
 
 #include "Java.hh"
 

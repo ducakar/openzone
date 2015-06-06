@@ -59,7 +59,7 @@ struct Stat
   int    size = -1;
   long64 time = 0;
 
-  OZ_HIDDEN
+  OZ_INTERNAL
   explicit Stat(const char* path)
   {
     if (path[0] == '@') {
@@ -104,7 +104,7 @@ struct Stat
 static File specialDirs[10];
 static File executableFile;
 
-#if defined(__native_client__)
+#ifdef __native_client__
 
 static void initSpecialDirs()
 {

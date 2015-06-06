@@ -256,7 +256,7 @@ public:
 
     if (firstElem == nullptr) {
       firstElem = elem;
-      lastElem = elem;
+      lastElem  = elem;
     }
     else {
       firstElem->prev[INDEX] = elem;
@@ -276,7 +276,7 @@ public:
 
     if (lastElem == nullptr) {
       firstElem = elem;
-      lastElem = elem;
+      lastElem  = elem;
     }
     else {
       lastElem->next[INDEX] = elem;
@@ -330,7 +330,7 @@ public:
   void clear()
   {
     firstElem = nullptr;
-    lastElem = nullptr;
+    lastElem  = nullptr;
   }
 
   /**

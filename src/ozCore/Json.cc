@@ -609,6 +609,17 @@ Json::Json(void* data_, Type valueType_) :
 {}
 
 OZ_INTERNAL
+Json::Json(const float* vector, int count) :
+  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
+{
+  List<Json>& list = static_cast<ArrayData*>(data)->list;
+
+  for (int i = 0; i < count; ++i) {
+    list.add(Json(vector[i]));
+  }
+}
+
+OZ_INTERNAL
 bool Json::getVector(float* vector, int count) const
 {
   if (valueType != ARRAY) {
@@ -678,79 +689,32 @@ Json::Json(const char* value) :
 {}
 
 Json::Json(const Vec3& v) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 3; ++i) {
-    list.add(Json(v[i]));
-  }
-}
+  Json(v, 3)
+{}
 
 Json::Json(const Vec4& v) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 4; ++i) {
-    list.add(Json(v[i]));
-  }
-}
+  Json(v, 4)
+{}
 
 Json::Json(const Point& p) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 3; ++i) {
-    list.add(Json(p[i]));
-  }
-}
+  Json(p, 3)
+{}
 
 Json::Json(const Plane& p) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 3; ++i) {
-    list.add(Json(p.n[i]));
-  }
-  list.add(Json(p.d));
-}
+  Json(p, 4)
+{}
 
 Json::Json(const Quat& q) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 4; ++i) {
-    list.add(Json(q[i]));
-  }
-}
+  Json(q, 4)
+{}
 
 Json::Json(const Mat3& m) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      list.add(Json(m[i][j]));
-    }
-  }
-}
+  Json(m, 9)
+{}
 
 Json::Json(const Mat4& m) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
-{
-  List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      list.add(Json(m[i][j]));
-    }
-  }
-}
+  Json(m, 16)
+{}
 
 Json::Json(InitialiserList<Json> l) :
   data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
@@ -1139,9 +1103,7 @@ Json& Json::add(const Json& json)
   }
 
   List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  list.add(json);
-  return list.last();
+  return list.add(json);
 }
 
 Json& Json::add(Json&& json)
@@ -1151,9 +1113,7 @@ Json& Json::add(Json&& json)
   }
 
   List<Json>& list = static_cast<ArrayData*>(data)->list;
-
-  list.add(json);
-  return list.last();
+  return list.add(static_cast<Json&&>(json));
 }
 
 Json& Json::add(const char* key, const Json& json)
@@ -1175,7 +1135,7 @@ Json& Json::add(const char* key, Json&& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
-  return map.add(key, json).value;
+  return map.add(key, static_cast<Json&&>(json)).value;
 }
 
 Json& Json::include(const char* key, const Json& json)
@@ -1197,7 +1157,7 @@ Json& Json::include(const char* key, Json&& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
-  return map.include(key, json).value;
+  return map.include(key, static_cast<Json&&>(json)).value;
 }
 
 bool Json::erase(int index)
@@ -1226,7 +1186,7 @@ bool Json::exclude(const char* key)
 
   Map<String, Json>& map = static_cast<ObjectData*>(data)->map;
 
-  return map.exclude(key);
+  return map.exclude(key) >= 0;
 }
 
 bool Json::clear(bool warnUnused)

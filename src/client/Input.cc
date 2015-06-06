@@ -438,7 +438,7 @@ void Input::update()
     return;
   }
 
-#if defined(__native_client__)
+#ifdef __native_client__
 
   float newMouseX = +Pepper::moveX;
   float newMouseY = -Pepper::moveY;

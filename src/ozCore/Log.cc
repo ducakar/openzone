@@ -261,39 +261,23 @@ bool Log::init(const File& file, bool clearFile)
 {
   destroy();
 
+  logFile     = file;
   indentLevel = 0;
-
-#if defined(__ANDROID__) || defined(__native_client__)
-
-  static_cast<void>(file);
-  static_cast<void>(clearFile);
-
-  return false;
-
-#else
-
-  logFile = file;
 
   if (!file.isEmpty()) {
     logFileStream = fopen(file, clearFile ? "w" : "a");
   }
   return logFile.isEmpty();
-
-#endif
 }
 
 void Log::destroy()
 {
-#if !defined(__ANDROID__) && !defined(__native_client__)
-
   if (!logFile.isEmpty()) {
     fclose(logFileStream);
 
     logFileStream = nullptr;
     logFile = "";
   }
-
-#endif
 }
 
 const Log& Log::operator << (bool b) const
@@ -460,10 +444,8 @@ const Log& Log::operator << (const Stream& is) const
   const char* indent = getIndent();
 
   OZ_PRINT_BOTH(
-    fwrite(is.begin(), 1, is.capacity(), stream);
     fputs(indent, stream);
-    fputc('\n', stream);
-    fflush(stream);
+    fwrite(is.begin(), 1, is.capacity(), stream);
   );
   return *this;
 }

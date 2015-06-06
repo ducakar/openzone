@@ -59,8 +59,7 @@ float Math::centralRand()
 
 float Math::normalRand()
 {
-  float x = float(::rand() - RAND_MAX / 2) / float(RAND_MAX / 2);
-  return x*x*x;
+  return tan(centralRand() * TAU / 8.0f);
 }
 
 }

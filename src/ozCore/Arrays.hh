@@ -191,7 +191,7 @@ private:
 public:
 
   /**
-   * Forbis instances.
+   * Forbid instances.
    */
   Arrays() = delete;
 
