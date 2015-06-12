@@ -51,11 +51,9 @@ static void* allocate(AllocMode mode, size_t size)
 {
   static_cast<void>(mode);
 
-#ifdef OZ_SIMD
-  size = Alloc::alignUp(size);
-#endif
+  size_t chunkSize = Alloc::alignUp(size);
 #ifdef OZ_ALLOCATOR
-  size += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
+  chunkSize += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 #endif
 
 #if defined(OZ_SIMD) && _ISOC11_SOURCE
@@ -65,7 +63,7 @@ static void* allocate(AllocMode mode, size_t size)
 #elif defined(OZ_SIMD)
   void* ptr = memalign(OZ_ALIGNMENT, size);
 #else
-  void* ptr = malloc(size);
+  void* ptr = malloc(chunkSize);
 #endif
 
   if (ptr == nullptr) {
@@ -130,7 +128,8 @@ static void deallocate(AllocMode mode, void* ptr)
 
   allocInfoLock.unlock();
 
-  memset(ptr, 0xee, int(ci->size));
+  size_t chunkSize = Alloc::alignUp(ci->size) + Alloc::alignUp(sizeof(Alloc::ChunkInfo));
+  memset(ptr, 0xee, chunkSize);
 
 #endif
 

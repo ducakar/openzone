@@ -269,7 +269,7 @@ public:
   OZ_ALWAYS_INLINE
   bool operator != (const IteratorBase& i) const
   {
-    return !operator == (i);
+    return elem != i.elem;
   }
 
   /**

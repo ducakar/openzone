@@ -50,7 +50,7 @@ protected:
 
 private:
 
-  Map<int, const char*> entries;
+  Map<int, const char*> entries; ///< Value-name pairs.
 
 protected:
 
