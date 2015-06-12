@@ -47,7 +47,6 @@ add_library(ozCore
   System.hh
   Thread.hh
   Time.hh
-  Tuple.hh
   Vec3.hh
   Vec4.hh
   Alloc.cc

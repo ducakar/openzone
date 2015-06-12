@@ -49,11 +49,6 @@
 #include "StackTrace.hh"
 
 /*
- * Tuple.
- */
-#include "Tuple.hh"
-
-/*
  * Array utilities.
  */
 #include "Arrays.hh"
