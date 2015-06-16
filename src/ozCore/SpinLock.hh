@@ -64,7 +64,6 @@ public:
   /**
    * Loop performing a lock operation until it succeeds.
    */
-  OZ_ALWAYS_INLINE
   void lock()
   {
     while (__atomic_test_and_set(&isLocked, __ATOMIC_ACQUIRE)) {
@@ -79,7 +78,6 @@ public:
    *
    * @return True iff it was unlocked.
    */
-  OZ_ALWAYS_INLINE
   bool tryLock()
   {
     return !__atomic_test_and_set(&isLocked, __ATOMIC_ACQUIRE);
@@ -88,7 +86,6 @@ public:
   /**
    * Unlock.
    */
-  OZ_ALWAYS_INLINE
   void unlock()
   {
     __atomic_clear(&isLocked, __ATOMIC_RELEASE);

@@ -34,12 +34,11 @@ namespace oz
 {
 
 /**
- * Binary heap.
+ * Binary min-heap.
  *
- * Binary min-heap implemented with an array list. `LessFunc` may be overloaded to turn it into a
- * max-heap or to provide different sorting.
+ * The tree elements are stored in an array list.
  *
- * Like in `List` all allocated elements are constructed all the time and a removed element's
+ * Like in `List` all allocated elements are constructed all the time so removed element's
  * destruction is still guaranteed.
  *
  * Memory is allocated when the first element is added.

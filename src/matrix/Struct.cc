@@ -63,7 +63,8 @@ const Entity::Handler Entity::HANDLERS[] = {
   &Entity::autoDoorHandler,
   &Entity::ignoringBlockHandler,
   &Entity::crushingBlockHandler,
-  &Entity::elevatorHandler
+  &Entity::elevatorHandler,
+  &Entity::staticHandler
 };
 
 List<Object*> Struct::overlappingObjs;

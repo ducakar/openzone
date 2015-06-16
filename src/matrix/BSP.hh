@@ -42,7 +42,8 @@ struct EntityClass : Bounds
     AUTO_DOOR,
     IGNORING_BLOCK,
     CRUSHING_BLOCK,
-    ELEVATOR
+    ELEVATOR,
+    TELEPORT
   };
 
   String title;       ///< %Entity title.

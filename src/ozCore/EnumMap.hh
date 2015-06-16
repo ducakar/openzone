@@ -44,7 +44,7 @@ class EnumMapImpl
 protected:
 
   /**
-   * EnumMap entry.
+   * EnumMap value-name pair.
    */
   typedef detail::MapPair<int, const char*, Less<void>> Pair;
 

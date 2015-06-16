@@ -102,16 +102,22 @@ static const float BELL_FREQUENCY = 1000.0f;
 static const int   BELL_RATE      = 48000;
 static const int   BELL_SAMPLES   = int(BELL_TIME * float(BELL_RATE));
 
+enum BellState
+{
+  NONE,
+  PLAYING,
+  FINISHED
+};
+
 #if defined(__native_client__)
 
 struct SampleInfo
 {
-  int      rate;
-  int      nFrameSamples;
-  int      nSamples;
-  int      end;
-  int      offset;
-  SpinLock lock;
+  PP_AudioSampleRate rate;
+  int                nFrameSamples;
+  int                nSamples;
+  int                offset;
+  volatile bool      isFinished;
 };
 
 #elif defined(_WIN32)
@@ -139,9 +145,14 @@ struct Wave
 #endif
 
 static SpinLock              bellLock;
+static volatile BellState    bellState    = NONE;
+#ifdef _WIN32
+static HANDLE                bellThread;
+#else
+static pthread_t             bellThread;
+#endif
 static System::CrashHandler* crashHandler = nullptr;
 static int                   initFlags    = 0;
-static volatile bool         hasBellWait  = false;
 
 OZ_NORETURN
 static void abort(bool doHalt);
@@ -215,7 +226,7 @@ static void* bellMain(void*)
 {
   static_cast<void>(genBellSamples);
 
-  SLObjectItf    engine;
+  SLObjectItf engine;
   SLEngineOption engineOptions[] = { SL_ENGINEOPTION_THREADSAFE, true };
   slCreateEngine(&engine, 1, engineOptions, 0, nullptr, nullptr);
   (*engine)->Realize(engine, false);
@@ -266,7 +277,7 @@ static void* bellMain(void*)
   (*outputMix)->Destroy(outputMix);
   (*engine)->Destroy(engine);
 
-  bellLock.unlock();
+  bellState = FINISHED;
   return nullptr;
 }
 
@@ -277,8 +288,8 @@ static void bellCallback(void* buffer, uint, void* info_)
   SampleInfo* info    = static_cast<SampleInfo*>(info_);
   short*      samples = static_cast<short*>(buffer);
 
-  if (info->offset >= info->end) {
-    info->lock.unlock();
+  if (info->offset >= info->nSamples) {
+    info->isFinished = true;
   }
   else {
     genBellSamples(samples, info->nSamples, info->rate, info->offset,
@@ -291,36 +302,26 @@ static void* bellMain(void*)
 {
   pp::Instance* ppInstance = Pepper::instance();
 
-  if (ppInstance == nullptr) {
-    return nullptr;
+  if (ppInstance != nullptr) {
+    PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
+
+    int nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
+    int nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
+
+    SampleInfo      info = { rate, nFrameSamples, nSamples, 0, false };
+    pp::AudioConfig config(ppInstance, rate, nFrameSamples);
+    pp::Audio       audio(ppInstance, config, bellCallback, &info);
+
+    if (audio.StartPlayback() == PP_TRUE) {
+      do {
+        Time::sleep(10);
+      }
+      while (!info.isFinished);
+      audio.StopPlayback();
+    }
   }
 
-  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
-  uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
-
-  SampleInfo info;
-  info.rate          = rate;
-  info.nFrameSamples = nFrameSamples;
-  info.nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
-  info.end           = info.nSamples + 2 * info.nFrameSamples;
-  info.offset        = 0;
-  info.lock.lock();
-
-  pp::AudioConfig config(ppInstance, rate, nFrameSamples);
-  pp::Audio       audio(ppInstance, config, bellCallback, &info);
-
-  if (audio.StartPlayback() == PP_FALSE) {
-    bellLock.unlock();
-    return nullptr;
-  }
-
-  do {
-    Time::sleep(10);
-  }
-  while (!info.lock.tryLock());
-  audio.StopPlayback();
-
-  bellLock.unlock();
+  bellState = FINISHED;
   return nullptr;
 }
 
@@ -361,7 +362,7 @@ static DWORD WINAPI bellMain(void*)
   genBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
-  bellLock.unlock();
+  bellState = FINISHED;
   return 0;
 }
 
@@ -370,42 +371,36 @@ static DWORD WINAPI bellMain(void*)
 static void* bellMain(void*)
 {
   snd_pcm_t* alsa;
-  if (snd_pcm_open(&alsa, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
-    bellLock.unlock();
-    return nullptr;
-  }
 
-  snd_pcm_hw_params_t* params;
-  snd_pcm_hw_params_alloca(&params);
-  snd_pcm_hw_params_any(alsa, params);
+  if (snd_pcm_open(&alsa, "default", SND_PCM_STREAM_PLAYBACK, 0) == 0) {
+    snd_pcm_hw_params_t* params;
+    snd_pcm_hw_params_alloca(&params);
+    snd_pcm_hw_params_any(alsa, params);
 
-  uint rate = BELL_RATE;
+    uint rate = BELL_RATE;
 
-  if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) != 0 ||
-      snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) != 0 ||
-      snd_pcm_hw_params_set_channels(alsa, params, 2) != 0 ||
-      snd_pcm_hw_params_set_rate_resample(alsa, params, 0) != 0 ||
-      snd_pcm_hw_params_set_rate_near(alsa, params, &rate, nullptr) != 0 ||
-      snd_pcm_hw_params(alsa, params) != 0 ||
-      snd_pcm_prepare(alsa) != 0)
-  {
+    if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) == 0 &&
+        snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) == 0 &&
+        snd_pcm_hw_params_set_channels(alsa, params, 2) == 0 &&
+        snd_pcm_hw_params_set_rate_resample(alsa, params, 0) == 0 &&
+        snd_pcm_hw_params_set_rate_near(alsa, params, &rate, nullptr) == 0 &&
+        snd_pcm_hw_params(alsa, params) == 0 &&
+        snd_pcm_prepare(alsa) == 0)
+    {
+
+      int    nSamples = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
+      int    size     = nSamples * 2 * sizeof(short);
+      short* samples  = static_cast<short*>(alloca(size));
+
+      genBellSamples(samples, nSamples, rate, 0, nSamples);
+      snd_pcm_writei(alsa, samples, snd_pcm_uframes_t(nSamples));
+      snd_pcm_drain(alsa);
+    }
+
     snd_pcm_close(alsa);
-
-    bellLock.unlock();
-    return nullptr;
   }
 
-  int    nSamples = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
-  int    size     = nSamples * 2 * sizeof(short);
-  short* samples  = static_cast<short*>(alloca(size));
-
-  genBellSamples(samples, nSamples, rate, 0, nSamples);
-  snd_pcm_writei(alsa, samples, snd_pcm_uframes_t(nSamples));
-
-  snd_pcm_drain(alsa);
-  snd_pcm_close(alsa);
-
-  bellLock.unlock();
+  bellState = FINISHED;
   return nullptr;
 }
 
@@ -419,16 +414,18 @@ static void waitBell()
   }
 #endif
 
-  while (!bellLock.tryLock()) {
-    Time::sleep(10);
-  }
-  bellLock.unlock();
-}
+  bellLock.lock();
 
-static void waitBellOnExit()
-{
-  hasBellWait = false;
-  waitBell();
+  if (bellState != NONE) {
+#ifdef _WIN32
+    WaitForSingleObject(bellThread, INFINITE);
+#else
+    pthread_join(bellThread, nullptr);
+#endif
+    bellState = NONE;
+  }
+
+  bellLock.unlock();
 }
 
 OZ_NORETURN
@@ -472,38 +469,29 @@ void System::trap()
 
 void System::bell()
 {
-  if (bellLock.tryLock()) {
-    if (!hasBellWait) {
-      hasBellWait = true;
-      atexit(waitBellOnExit);
+  bellLock.tryLock();
+
+  if (bellState != PLAYING) {
+    if (bellState == FINISHED) {
+#ifdef _WIN32
+      WaitForSingleObject(bellThread, INFINITE);
+#else
+      pthread_join(bellThread, nullptr);
+#endif
+      bellState = NONE;
     }
 
 #ifdef _WIN32
-
-    HANDLE bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
-
-    if (bellThread == nullptr) {
-      bellLock.unlock();
-    }
-    else {
-      CloseHandle(bellThread);
-    }
-
+    bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
+    if (bellThread != nullptr) {
 #else
-
-    pthread_t      bellThread;
-    pthread_attr_t bellThreadAttr;
-
-    pthread_attr_init(&bellThreadAttr);
-    pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
-
-    if (pthread_create(&bellThread, &bellThreadAttr, bellMain, nullptr) != 0) {
-      bellLock.unlock();
-    }
-    pthread_attr_destroy(&bellThreadAttr);
-
+    if (pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0) {
 #endif
+      bellState = PLAYING;
+    }
   }
+
+  bellLock.unlock();
 }
 
 void System::warning(const char* function, const char* file, int line, int nSkippedFrames,
@@ -574,6 +562,7 @@ void System::init(int flags, CrashHandler* crashHandler_)
   initFlags    = flags;
   crashHandler = crashHandler_;
 
+  atexit(waitBell);
   threadInit();
 }
 

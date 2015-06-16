@@ -213,7 +213,7 @@ void BSP::load()
   const Json& modelsConfig = config["entities"];
 
   if (!modelsConfig.isNull() && modelsConfig.type() != Json::ARRAY) {
-    OZ_ERROR("'models' entry in '%s' is not an array", configFile.c());
+    OZ_ERROR("'entities' entry in '%s' is not an array", configFile.c());
   }
 
   // skip model 0 (whole BSP)
@@ -246,7 +246,8 @@ void BSP::load()
       { EntityClass::AUTO_DOOR,      "AUTO_DOOR"      },
       { EntityClass::IGNORING_BLOCK, "IGNORING_BLOCK" },
       { EntityClass::CRUSHING_BLOCK, "CRUSHING_BLOCK" },
-      { EntityClass::ELEVATOR,       "ELEVATOR"       }
+      { EntityClass::ELEVATOR,       "ELEVATOR"       },
+      { EntityClass::TELEPORT,       "TELEPORT"       }
     };
 
     models[i].type       = entityMap[entityConfig["type"].get("")];
@@ -264,7 +265,7 @@ void BSP::load()
     if (models[i].type == EntityClass::ELEVATOR &&
         (models[i].move.x != 0.0f || models[i].move.y != 0.0f))
     {
-      OZ_ERROR("Elevator can only move vertically, but model[%d].move = (%g %g %g)",
+      OZ_ERROR("Elevator can only move vertically, but entities[%d].move = (%g %g %g)",
                i, models[i].move.x, models[i].move.y, models[i].move.z);
     }
 
@@ -273,7 +274,7 @@ void BSP::load()
     if (!modelConfig.isNull()) {
       models[i].modelName = modelConfig["name"].get("");
       if (models[i].modelName.isEmpty()) {
-        OZ_ERROR("model[%d].name is empty", i);
+        OZ_ERROR("entities[%d].model.name is empty", i);
       }
 
       Vec3 translation = modelConfig["translation"].get(Vec3::ZERO);

@@ -51,6 +51,7 @@ const int StackTrace::MAX_FRAMES;
 StackTrace StackTrace::current(int)
 {
   StackTrace st = { {}, 0, {} };
+
   memccpy(st.threadName, Thread::name(), '\0', Thread::NAME_LENGTH);
   return st;
 }
