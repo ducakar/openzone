@@ -51,7 +51,7 @@ public:
 
 public:
 
-  // Import SIMD constructors.
+  // Import (protected) SIMD constructors.
   using VectorBase3::VectorBase3;
 
   /**

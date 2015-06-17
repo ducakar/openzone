@@ -215,6 +215,7 @@ public:
       float x;
       float y;
       float z;
+      float w;
     };
   };
 #else
@@ -234,6 +235,11 @@ protected:
 #ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
+  explicit VectorBase3(float4 f4_) :
+    f4(f4_)
+  {}
+
+  OZ_ALWAYS_INLINE
   explicit VectorBase3(float x_, float y_, float z_, float w_) :
     f4(vFill(x_, y_, z_, w_))
   {}
@@ -251,15 +257,6 @@ protected:
 #endif
 
 public:
-
-#ifdef OZ_SIMD
-
-  OZ_ALWAYS_INLINE
-  explicit VectorBase3(float4 f4_) :
-    f4(f4_)
-  {}
-
-#endif
 
   /**
    * Equality.
@@ -324,30 +321,17 @@ public:
 /**
  * Base class for 4-component vector and similar algebra structures.
  */
-class VectorBase4
+class VectorBase4 : public VectorBase3
 {
 public:
 
-#ifdef OZ_SIMD
-  __extension__ union
-  {
-    float4 f4 = { 0.0f, 0.0f, 0.0f, 0.0f };
-    __extension__ struct
-    {
-      float x;
-      float y;
-      float z;
-      float w;
-    };
-  };
-#else
-  float x = 0.0f; ///< X component.
-  float y = 0.0f; ///< Y component.
-  float z = 0.0f; ///< Z component.
+#ifndef OZ_SIMD
   float w = 0.0f; ///< W component.
 #endif
 
 protected:
+
+  using VectorBase3::VectorBase3;
 
   /**
    * Zero vector.
@@ -355,35 +339,19 @@ protected:
   OZ_ALWAYS_INLINE
   VectorBase4() = default;
 
-#ifdef OZ_SIMD
-
-  OZ_ALWAYS_INLINE
-  explicit VectorBase4(float x_, float y_, float z_, float w_) :
-    f4(vFill(x_, y_, z_, w_))
-  {}
-
-#else
+#ifndef OZ_SIMD
 
   /**
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
   explicit VectorBase4(float x_, float y_, float z_, float w_) :
-    x(x_), y(y_), z(z_), w(w_)
+    VectorBase3(x_, y_, z_, 0.0f), w(w_)
   {}
 
 #endif
 
 public:
-
-#ifdef OZ_SIMD
-
-  OZ_ALWAYS_INLINE
-  explicit VectorBase4(float4 f4_) :
-    f4(f4_)
-  {}
-
-#endif
 
   /**
    * Equality.
@@ -405,42 +373,6 @@ public:
   bool operator != (const VectorBase4& v) const
   {
     return !operator == (v);
-  }
-
-  /**
-   * Constant float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator const float* () const
-  {
-    return &x;
-  }
-
-  /**
-   * Float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator float* ()
-  {
-    return &x;
-  }
-
-  /**
-   * Constant reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  const float& operator [] (int i) const
-  {
-    return (&x)[i];
-  }
-
-  /**
-   * Reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  float& operator [] (int i)
-  {
-    return (&x)[i];
   }
 
 };
