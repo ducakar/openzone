@@ -396,12 +396,6 @@ const Log& Log::operator << (const Vec3& v) const
   return *this;
 }
 
-const Log& Log::operator << (const Vec4& v) const
-{
-  printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.w);
-  return *this;
-}
-
 const Log& Log::operator << (const Point& p) const
 {
   printRaw("[%g %g %g]", p.x, p.y, p.z);
@@ -411,6 +405,12 @@ const Log& Log::operator << (const Point& p) const
 const Log& Log::operator << (const Plane& p) const
 {
   printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
+  return *this;
+}
+
+const Log& Log::operator << (const Vec4& v) const
+{
+  printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.w);
   return *this;
 }
 

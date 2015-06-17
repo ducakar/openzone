@@ -487,18 +487,6 @@ void Stream::writeVec3(const Vec3& v)
   writeFloats(v, 3);
 }
 
-Vec4 Stream::readVec4()
-{
-  Vec4 v;
-  readFloats(v, 4);
-  return v;
-}
-
-void Stream::writeVec4(const Vec4& v)
-{
-  writeFloats(v, 4);
-}
-
 Point Stream::readPoint()
 {
   Point p;
@@ -513,14 +501,26 @@ void Stream::writePoint(const Point& p)
 
 Plane Stream::readPlane()
 {
-  Plane p;
-  readFloats(p, 4);
-  return p;
+  Vec4 v = readVec4();
+  return Plane(v.x, v.y, v.z, v.w);
 }
 
 void Stream::writePlane(const Plane& p)
 {
-  writeFloats(p, 4);
+  Vec4 v = Vec4(p.n.x, p.n.y, p.n.z, p.d);
+  writeVec4(v);
+}
+
+Vec4 Stream::readVec4()
+{
+  Vec4 v;
+  readFloats(v, 4);
+  return v;
+}
+
+void Stream::writeVec4(const Vec4& v)
+{
+  writeFloats(v, 4);
 }
 
 Quat Stream::readQuat()

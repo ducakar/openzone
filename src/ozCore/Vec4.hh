@@ -103,13 +103,11 @@ public:
   {}
 
   /**
-   * Return the 3D vector this vector represents (last component should be 0).
+   * Return the 3D vector this vector represents.
    */
   OZ_ALWAYS_INLINE
   Vec3 vec3() const
   {
-    hard_assert(w == 0.0f);
-
 #ifdef OZ_SIMD
     return Vec3(f4);
 #else
@@ -118,13 +116,11 @@ public:
   }
 
   /**
-   * Return the point vector represents (last component should be 1).
+   * Return the point this vector represents.
    */
   OZ_ALWAYS_INLINE
   Point point() const
   {
-    hard_assert(w == 1.0f);
-
 #ifdef OZ_SIMD
     return Point(f4);
 #else

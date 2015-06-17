@@ -51,17 +51,17 @@ static void* allocate(AllocMode mode, size_t size)
 {
   static_cast<void>(mode);
 
-  size_t chunkSize = Alloc::alignUp(size);
+  size_t chunkSize = size;
 #ifdef OZ_ALLOCATOR
   chunkSize += Alloc::alignUp(sizeof(Alloc::ChunkInfo));
 #endif
 
 #if defined(OZ_SIMD) && _ISOC11_SOURCE
-  void* ptr = aligned_alloc(OZ_ALIGNMENT, size);
+  void* ptr = aligned_alloc(OZ_ALIGNMENT, chunkSize);
 #elif defined(OZ_SIMD) && defined(_WIN32)
-  void* ptr = _aligned_malloc(size, OZ_ALIGNMENT);
+  void* ptr = _aligned_malloc(chunkSize, OZ_ALIGNMENT);
 #elif defined(OZ_SIMD)
-  void* ptr = memalign(OZ_ALIGNMENT, size);
+  void* ptr = memalign(OZ_ALIGNMENT, chunkSize);
 #else
   void* ptr = malloc(chunkSize);
 #endif
@@ -128,7 +128,7 @@ static void deallocate(AllocMode mode, void* ptr)
 
   allocInfoLock.unlock();
 
-  size_t chunkSize = Alloc::alignUp(ci->size) + Alloc::alignUp(sizeof(Alloc::ChunkInfo));
+  size_t chunkSize = ci->size + Alloc::alignUp(sizeof(Alloc::ChunkInfo));
   memset(ptr, 0xee, chunkSize);
 
 #endif

@@ -39,34 +39,17 @@ const Mat3 Mat3::ID   = Mat3(1.0f, 0.0f, 0.0f,
 
 Mat3 Mat3::inverse() const
 {
-  // LLVM/Clang is faster with Cayley-Hamilton while GCC is faster with Cramer.
-#ifdef OZ_CLANG
-
   const Mat3& m = *this;
 
   // Cayley–Hamilton's decomposition.
   Mat3  m2  = m * m;
   float mtr = m.tr();
   float k   = (mtr*mtr - m2.tr()) / 2.0f;
-  Mat3  kI  = Mat3(k, 0.0f, 0.0f, 0.0f, k, 0.0f, 0.0f, 0.0f, k);
+  Mat3  kI  = Mat3(   k, 0.0f, 0.0f,
+                   0.0f,    k, 0.0f,
+                   0.0f, 0.0f,    k);
 
   return (kI - m * mtr + m2) / m.det();
-
-#else
-
-  Mat3 inv;
-
-  // Cramer's rule.
-  for (int j = 0; j < 3; ++j) {
-    inv[j][0] = Mat3(Mat3::ID[j], y, z).det();
-    inv[j][1] = Mat3(x, Mat3::ID[j], z).det();
-    inv[j][2] = Mat3(x, y, Mat3::ID[j]).det();
-  }
-
-  inv /= det();
-  return inv;
-
-#endif
 }
 
 Quat Mat3::toQuat() const

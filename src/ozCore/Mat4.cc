@@ -41,9 +41,6 @@ const Mat4 Mat4::ID   = Mat4(1.0f, 0.0f, 0.0f, 0.0f,
 
 Mat4 Mat4::inverse() const
 {
-  // LLVM/Clang is faster with Cayley-Hamilton while GCC is faster with Cramer.
-#ifdef OZ_CLANG
-
   const Mat4& m = *this;
 
   // Cayley–Hamilton's decomposition.
@@ -53,29 +50,12 @@ Mat4 Mat4::inverse() const
   float mtr2 = mtr*mtr;
   float m2tr = m2.tr();
   float k    = (mtr*mtr2 - 3.0f*mtr*m2tr + 2.0f*m3.tr()) / 6.0f;
-  Mat4  kI   = Mat4(k, 0.0f, 0.0f, 0.0f,
-                    0.0f, k, 0.0f, 0.0f,
-                    0.0f, 0.0f, k, 0.0f,
-                    0.0f, 0.0f, 0.0f, k);
+  Mat4  kI   = Mat4(   k, 0.0f, 0.0f, 0.0f,
+                    0.0f,    k, 0.0f, 0.0f,
+                    0.0f, 0.0f,    k, 0.0f,
+                    0.0f, 0.0f, 0.0f,    k);
 
   return (kI - (mtr2 - m2tr) / 2.0f * m + mtr * m2 - m3) / m.det();
-
-#else
-
-  Mat4 inv;
-
-  // Cramer's rule.
-  for (int j = 0; j < 4; ++j) {
-    inv[j][0] = Mat4(Mat4::ID[j], y, z, w).det();
-    inv[j][1] = Mat4(x, Mat4::ID[j], z, w).det();
-    inv[j][2] = Mat4(x, y, Mat4::ID[j], w).det();
-    inv[j][3] = Mat4(x, y, z, Mat4::ID[j]).det();
-  }
-
-  inv /= det();
-  return inv;
-
-#endif
 }
 
 Quat Mat4::toQuat() const

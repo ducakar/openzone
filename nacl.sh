@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# nacl.sh [run | debug | finalise]
+# nacl.sh [run | debug | manifest]
 #
 # Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 # `NACL_SDK_ROOT` environment variable must be set to use this script.
@@ -12,7 +12,8 @@
 #   opens `localhost:8000` in chromium browser to test the web-based NaCl port.
 # - `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
 #   debugging.
-# - `finalise`: runs `pnacl-finalize` to finalise openzone PNaCl pexe executable.
+# - `manifest`: writes `share/openzone/manifest.json` file that contains list of game packeges
+#   together with their timestamps. Needed by NaCl to update cached game packages.
 #
 
 if [[ `uname -m` == x86_64 ]]; then
@@ -55,6 +56,28 @@ debug()
 			       build/PNaCl/src/tools/openzone.${arch}.nexe
 }
 
+function manifest()
+{
+  cd share/openzone
+
+  printf '{\n' > manifest.json
+
+  first=1
+
+  for pkg in `echo *.zip`; do
+    if [[ -f $pkg ]]; then
+      timestamp=`stat -c %Y $pkg`
+
+      (( $first )) && first=0 || ( printf ',\n' >> manifest.json )
+      printf "  \"$pkg\": $timestamp" >> manifest.json
+    fi
+  done
+
+  printf '\n}\n' >> manifest.json
+
+  cat manifest.json
+}
+
 case $1 in
   run)
     run
@@ -62,7 +85,7 @@ case $1 in
   debug)
     debug
     ;;
-  finalise)
-    finalise
+  manifest)
+    manifest
     ;;
 esac

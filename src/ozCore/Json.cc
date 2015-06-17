@@ -692,16 +692,16 @@ Json::Json(const Vec3& v) :
   Json(v, 3)
 {}
 
-Json::Json(const Vec4& v) :
-  Json(v, 4)
-{}
-
 Json::Json(const Point& p) :
   Json(p, 3)
 {}
 
 Json::Json(const Plane& p) :
-  Json(p, 4)
+  Json(Vec4(p.n.x, p.n.y, p.n.y, p.d))
+{}
+
+Json::Json(const Vec4& v) :
+  Json(v, 4)
 {}
 
 Json::Json(const Quat& q) :
@@ -1060,12 +1060,6 @@ Vec3 Json::get(const Vec3& defaultValue) const
   return getVector(v, 3) ? v : defaultValue;
 }
 
-Vec4 Json::get(const Vec4& defaultValue) const
-{
-  Vec4 v;
-  return getVector(v, 4) ? v : defaultValue;
-}
-
 Point Json::get(const Point& defaultValue) const
 {
   Point p;
@@ -1074,8 +1068,14 @@ Point Json::get(const Point& defaultValue) const
 
 Plane Json::get(const Plane& defaultValue) const
 {
-  Plane p;
-  return getVector(p.n, 4) ? p : defaultValue;
+  Vec4 v;
+  return getVector(v, 4) ? Plane(v.x, v.y, v.z, v.w) : defaultValue;
+}
+
+Vec4 Json::get(const Vec4& defaultValue) const
+{
+  Vec4 v;
+  return getVector(v, 4) ? v : defaultValue;
 }
 
 Quat Json::get(const Quat& defaultValue) const

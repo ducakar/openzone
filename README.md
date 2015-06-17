@@ -216,11 +216,6 @@ Runs cppcheck tool for static code analysis. Output is written into `cppcheck.lo
 
 Cleans up temporary, intermediate and backup files from a game source data directory.
 
-### `gen-manifest.sh` ###
-
-Writes `share/openzone/manifest.json` file that contains list of game packeges together with their
-timestamps. Needed by NaCl to update cached game packages.
-
 ### `gettext-internal.sh <data_dir>` ###
 
 Extracts internal strings for localisation from OpenZone source code and appends them to
@@ -255,6 +250,8 @@ The following alternative launches are available:
 - `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
   debugging.
 - `finalise`: runs `pnacl-finalize` to finalise openzone PNaCl pexe executable.
+- `manifest`: writes `share/openzone/manifest.json` file that contains list of game packeges
+  together with their timestamps. Needed by NaCl to update cached game packages.
 
 ### `package.sh {src | data | datasrc | bundle}` ###
 

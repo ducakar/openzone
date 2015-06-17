@@ -182,11 +182,6 @@ public:
   Json(const Vec3& v);
 
   /**
-   * Create an array of 4 numbers representing `Vec4` components.
-   */
-  Json(const Vec4& v);
-
-  /**
    * Create an array of 4 numbers representing `Point` components.
    */
   Json(const Point& p);
@@ -195,6 +190,11 @@ public:
    * Create an array of 4 numbers representing `Plane` components.
    */
   Json(const Plane& p);
+
+  /**
+   * Create an array of 4 numbers representing `Vec4` components.
+   */
+  Json(const Vec4& v);
 
   /**
    * Create an array of 4 numbers representing `Quat` components.
@@ -395,11 +395,6 @@ public:
   Vec3 get(const Vec3& defaultValue) const;
 
   /**
-   * If an array of at least 4 numbers, return it as `Vec4`, `defaultValue` otherwise.
-   */
-  Vec4 get(const Vec4& defaultValue) const;
-
-  /**
    * If an array of at least 3 numbers, return it as `Point`, `defaultValue` otherwise.
    */
   Point get(const Point& defaultValue) const;
@@ -408,6 +403,11 @@ public:
    * If an array of at least 4 numbers, return it as `Plane`, `defaultValue` otherwise.
    */
   Plane get(const Plane& defaultValue) const;
+
+  /**
+   * If an array of at least 4 numbers, return it as `Vec4`, `defaultValue` otherwise.
+   */
+  Vec4 get(const Vec4& defaultValue) const;
 
   /**
    * If an array of at least 4 numbers, return it as `Quat`, `defaultValue` otherwise.

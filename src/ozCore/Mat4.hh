@@ -225,12 +225,12 @@ public:
   float det3() const
   {
 #ifdef OZ_SIMD
-    float4 d = x.f4 * (vShuffle(y.f4, 1, 2, 0, 3) * vShiffle(z.f4, 2, 0, 1, 3) -
+    float4 d = x.f4 * (vShuffle(y.f4, 1, 2, 0, 3) * vShuffle(z.f4, 2, 0, 1, 3) -
                        vShuffle(z.f4, 1, 2, 0, 3) * vShuffle(y.f4, 2, 0, 1, 3));
 
     d += vShuffle(d, 1, 0, 3, 2);
     d += vShuffle(d, 2, 3, 0, 1);
-    return d;
+    return d[0];
 #else
     return x.x * (y.y*z.z - z.y*y.z) +
            x.y * (y.z*z.x - z.z*y.x) +
@@ -315,21 +315,10 @@ public:
    */
   Mat4 operator * (const Mat4& m) const
   {
-#ifdef OZ_SIMD
-    return Mat4(Vec4(x.f4 * vFill(m.x.x) + y.f4 * vFill(m.x.y) +
-                     z.f4 * vFill(m.x.z) + w.f4 * vFill(m.x.w)),
-                Vec4(x.f4 * vFill(m.y.x) + y.f4 * vFill(m.y.y) +
-                     z.f4 * vFill(m.y.z) + w.f4 * vFill(m.y.w)),
-                Vec4(x.f4 * vFill(m.z.x) + y.f4 * vFill(m.z.y) +
-                     z.f4 * vFill(m.z.z) + w.f4 * vFill(m.z.w)),
-                Vec4(x.f4 * vFill(m.w.x) + y.f4 * vFill(m.w.y) +
-                     z.f4 * vFill(m.w.z) + w.f4 * vFill(m.w.w)));
-#else
     return Mat4(x * m.x.x + y * m.x.y + z * m.x.z + w * m.x.w,
                 x * m.y.x + y * m.y.y + z * m.y.z + w * m.y.w,
                 x * m.z.x + y * m.z.y + z * m.z.z + w * m.z.w,
                 x * m.w.x + y * m.w.y + z * m.w.z + w * m.w.w);
-#endif
   }
 
   /**
@@ -337,13 +326,7 @@ public:
    */
   Vec3 operator * (const Vec3& v) const
   {
-#ifdef OZ_SIMD
-    return Vec3(x.f4 * vFill(v.x) + y.f4 * vFill(v.y) + z.f4 * vFill(v.z));
-#else
-    return Vec3(x.x * v.x + y.x * v.y + z.x * v.z,
-                x.y * v.x + y.y * v.y + z.y * v.z,
-                x.z * v.x + y.z * v.y + z.z * v.z);
-#endif
+    return (x * v.x + y * v.y + z * v.z).vec3();
   }
 
   /**
@@ -351,13 +334,7 @@ public:
    */
   Point operator * (const Point& p) const
   {
-#ifdef OZ_SIMD
-    return Point(x.f4 * vFill(p.x) + y.f4 * vFill(p.y) + z.f4 * vFill(p.z) + w.f4);
-#else
-    return Point(x.x * p.x + y.x * p.y + z.x * p.z + w.x,
-                 x.y * p.x + y.y * p.y + z.y * p.z + w.y,
-                 x.z * p.x + y.z * p.y + z.z * p.z + w.z);
-#endif
+    return (x * p.x + y * p.y + z * p.z + w).point();
   }
 
   /**
@@ -365,19 +342,7 @@ public:
    */
   Plane operator * (const Plane& p) const
   {
-    Plane tp;
-
-#ifdef OZ_SIMD
-    tp.n = Vec3(x.f4 * vFill(p.n.x) + y.f4 * vFill(p.n.y) + z.f4 * vFill(p.n.z));
-    tp.d = p.d + vDot(tp.n.f4, w.f4)[0];
-#else
-    tp.n = Vec3(x.x * p.n.x + y.x * p.n.y + z.x * p.n.z,
-                x.y * p.n.x + y.y * p.n.y + z.y * p.n.z,
-                x.z * p.n.x + y.z * p.n.y + z.z * p.n.z);
-    tp.d = p.d + tp.n.x * w.x + tp.n.y * w.y + tp.n.z * w.z;
-#endif
-
-    return tp;
+    return Plane(*this * p.n, p.d + w.vec3() * p.n);
   }
 
   /**
@@ -385,15 +350,7 @@ public:
    */
   Vec4 operator * (const Vec4& v) const
   {
-#ifdef OZ_SIMD
-    return Vec4(x.f4 * vFill(v.x) + y.f4 * vFill(v.y) +
-                z.f4 * vFill(v.z) + w.f4 * vFill(v.w));
-#else
-    return Vec4(x.x * v.x + y.x * v.y + z.x * v.z + w.x * v.w,
-                x.y * v.x + y.y * v.y + z.y * v.z + w.y * v.w,
-                x.z * v.x + y.z * v.y + z.z * v.z + w.z * v.w,
-                x.w * v.x + y.w * v.y + z.w * v.z + w.w * v.w);
-#endif
+    return Vec4(x * v.x + y * v.y + z * v.z + w * v.w);
   }
 
   /**
@@ -416,30 +373,10 @@ public:
    */
   Mat4 operator ^ (const Mat4& m) const
   {
-#ifdef OZ_SIMD
-    return Mat4(Vec4(x.f4 * vFill(m.x.x) + y.f4 * vFill(m.x.y) + z.f4 * vFill(m.x.z)),
-                Vec4(x.f4 * vFill(m.y.x) + y.f4 * vFill(m.y.y) + z.f4 * vFill(m.y.z)),
-                Vec4(x.f4 * vFill(m.z.x) + y.f4 * vFill(m.z.y) + z.f4 * vFill(m.z.z)),
-                Vec4(x.f4 * vFill(m.w.x) + y.f4 * vFill(m.w.y) +
-                     z.f4 * vFill(m.w.z) + w.f4));
-#else
-    return Mat4(Vec4(x.x * m.x.x + y.x * m.x.y + z.x * m.x.z,
-                     x.y * m.x.x + y.y * m.x.y + z.y * m.x.z,
-                     x.z * m.x.x + y.z * m.x.y + z.z * m.x.z,
-                     0.0f),
-                Vec4(x.x * m.y.x + y.x * m.y.y + z.x * m.y.z,
-                     x.y * m.y.x + y.y * m.y.y + z.y * m.y.z,
-                     x.z * m.y.x + y.z * m.y.y + z.z * m.y.z,
-                     0.0f),
-                Vec4(x.x * m.z.x + y.x * m.z.y + z.x * m.z.z,
-                     x.y * m.z.x + y.y * m.z.y + z.y * m.z.z,
-                     x.z * m.z.x + y.z * m.z.y + z.z * m.z.z,
-                     0.0f),
-                Vec4(x.x * m.w.x + y.x * m.w.y + z.x * m.w.z + w.x,
-                     x.y * m.w.x + y.y * m.w.y + z.y * m.w.z + w.y,
-                     x.z * m.w.x + y.z * m.w.y + z.z * m.w.z + w.z,
-                     1.0f));
-#endif
+    return Mat4(x * m.x.x + y * m.x.y + z * m.x.z,
+                x * m.y.x + y * m.y.y + z * m.y.z,
+                x * m.z.x + y * m.z.y + z * m.z.z,
+                x * m.w.x + y * m.w.y + z * m.w.z + w);
   }
 
   /**
@@ -502,13 +439,7 @@ public:
    */
   void translate(const Vec3& v)
   {
-#ifdef OZ_SIMD
-    w.f4 = x.f4 * vFill(v.x) + y.f4 * vFill(v.y) + z.f4 * vFill(v.z) + w.f4;
-#else
-    w.x = x.x * v.x + y.x * v.y + z.x * v.z + w.x;
-    w.y = x.y * v.x + y.y * v.y + z.y * v.z + w.y;
-    w.z = x.z * v.x + y.z * v.y + z.z * v.z + w.z;
-#endif
+    w += x * v.x + y * v.y + z * v.z;
   }
 
   /**

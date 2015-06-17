@@ -77,8 +77,9 @@ bool Entity::trigger()
   }
 
   if (clazz->type == EntityClass::STATIC) {
-    state = OPENING;
     hard_assert(time == 0.0f);
+
+    state = OPENING;
   }
 
   int strIndex = clazz->target >> Struct::MAX_ENT_SHIFT;
@@ -124,7 +125,6 @@ bool Entity::lock(Bot* user)
       return true;
     }
   }
-
   return false;
 }
 

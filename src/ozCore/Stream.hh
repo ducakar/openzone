@@ -418,16 +418,6 @@ public:
   void writeVec3(const Vec3& v);
 
   /**
-   * Read 4-component vector.
-   */
-  Vec4 readVec4();
-
-  /**
-   * Write 4-component vector.
-   */
-  void writeVec4(const Vec4& v);
-
-  /**
    * Read 3D point.
    */
   Point readPoint();
@@ -446,6 +436,16 @@ public:
    * Write 3D plane.
    */
   void writePlane(const Plane& p);
+
+  /**
+   * Read 4-component vector.
+   */
+  Vec4 readVec4();
+
+  /**
+   * Write 4-component vector.
+   */
+  void writeVec4(const Vec4& v);
 
   /**
    * Read quaternion.

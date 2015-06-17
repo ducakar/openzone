@@ -45,8 +45,8 @@ public:
 
 public:
 
-  Vec3  n;        ///< Normal.
-  float d = 0.0f; ///< Distance from origin.
+  Vec3  n;        ///< (Unit) normal.
+  float d = 0.0f; ///< Distance from origin (if |n| = 1).
 
 public:
 
@@ -96,42 +96,6 @@ public:
   bool operator != (const Plane& p) const
   {
     return !operator == (p);
-  }
-
-  /**
-   * Constant float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator const float* () const
-  {
-    return &n.x;
-  }
-
-  /**
-   * Float pointer to the members.
-   */
-  OZ_ALWAYS_INLINE
-  operator float* ()
-  {
-    return &n.x;
-  }
-
-  /**
-   * Constant reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  const float& operator [] (int i) const
-  {
-    return (&n.x)[i];
-  }
-
-  /**
-   * Reference to the `i`-th member.
-   */
-  OZ_ALWAYS_INLINE
-  float& operator [] (int i)
-  {
-    return (&n.x)[i];
   }
 
   /**

@@ -169,12 +169,12 @@ public:
   float det() const
   {
 #ifdef OZ_SIMD
-    float4 d = x.f4 * (vShuffle(y.f4, 1, 2, 0, 3) * vShiffle(z.f4, 2, 0, 1, 3) -
+    float4 d = x.f4 * (vShuffle(y.f4, 1, 2, 0, 3) * vShuffle(z.f4, 2, 0, 1, 3) -
                        vShuffle(z.f4, 1, 2, 0, 3) * vShuffle(y.f4, 2, 0, 1, 3));
 
     d += vShuffle(d, 1, 0, 3, 2);
     d += vShuffle(d, 2, 3, 0, 1);
-    return d;
+    return d[0];
 #else
     return x.x * (y.y*z.z - z.y*y.z) +
            x.y * (y.z*z.x - z.z*y.x) +
@@ -259,15 +259,9 @@ public:
    */
   Mat3 operator * (const Mat3& m) const
   {
-#ifdef OZ_SIMD
-    return Mat3(Vec3(x.f4 * vFill(m.x.x) + y.f4 * vFill(m.x.y) + z.f4 * vFill(m.x.z)),
-                Vec3(x.f4 * vFill(m.y.x) + y.f4 * vFill(m.y.y) + z.f4 * vFill(m.y.z)),
-                Vec3(x.f4 * vFill(m.z.x) + y.f4 * vFill(m.z.y) + z.f4 * vFill(m.z.z)));
-#else
     return Mat3(x * m.x.x + y * m.x.y + z * m.x.z,
                 x * m.y.x + y * m.y.y + z * m.y.z,
                 x * m.z.x + y * m.z.y + z * m.z.z);
-#endif
   }
 
   /**
@@ -275,13 +269,7 @@ public:
    */
   Vec3 operator * (const Vec3& v) const
   {
-#ifdef OZ_SIMD
-    return Vec3(x.f4 * vFill(v.x) + y.f4 * vFill(v.y) + z.f4 * vFill(v.z));
-#else
-    return Vec3(x.x * v.x + y.x * v.y + z.x * v.z,
-                x.y * v.x + y.y * v.y + z.y * v.z,
-                x.z * v.x + y.z * v.y + z.z * v.z);
-#endif
+    return x * v.x + y * v.y + z * v.z;
   }
 
   /**
@@ -289,19 +277,7 @@ public:
    */
   Plane operator * (const Plane& p) const
   {
-    Plane tp;
-
-#ifdef OZ_SIMD
-    tp.n = Vec3(x.f4 * vFill(p.n.x) + y.f4 * vFill(p.n.y) + z.f4 * vFill(p.n.z));
-    tp.d = p.d;
-#else
-    tp.n = Vec3(x.x * p.n.x + y.x * p.n.y + z.x * p.n.z,
-                x.y * p.n.x + y.y * p.n.y + z.y * p.n.z,
-                x.z * p.n.x + y.z * p.n.y + z.z * p.n.z);
-    tp.d = p.d;
-#endif
-
-    return tp;
+    return Plane(*this * p.n, p.d);
   }
 
   /**

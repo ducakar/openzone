@@ -22,3 +22,5 @@ for pkg in `echo *.zip`; do
 done
 
 printf '\n}\n' >> manifest.json
+
+cat manifest.json

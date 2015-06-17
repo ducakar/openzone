@@ -272,11 +272,6 @@ public:
   const Log& operator << (const Vec3& v) const;
 
   /**
-   * Same as `print("(%g %g %g %g)", v.x, v.y, v.z, v.z)`.
-   */
-  const Log& operator << (const Vec4& v) const;
-
-  /**
    * Same as `print("[%g %g %g]", p.x, p.y, p.z)`.
    */
   const Log& operator << (const Point& p) const;
@@ -285,6 +280,11 @@ public:
    * Same as `print("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d)`.
    */
   const Log& operator << (const Plane& p) const;
+
+  /**
+   * Same as `print("(%g %g %g %g)", v.x, v.y, v.z, v.z)`.
+   */
+  const Log& operator << (const Vec4& v) const;
 
   /**
    * Same as `print("[%g %g %g %g]", q.x, q.y, q.z, q.w)`.
