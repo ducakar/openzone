@@ -53,7 +53,7 @@ public:
 
 public:
 
-  // Import (protected) SIMD constructors.
+  // Import SIMD constructors.
   using VectorBase4::VectorBase4;
 
   /**
@@ -79,18 +79,6 @@ public:
   {}
 
   /**
-   * Create vector from a 3D vector (the additional component is zero).
-   */
-  OZ_ALWAYS_INLINE
-  explicit Vec4(const Vec3& v) :
-#ifdef OZ_SIMD
-    VectorBase4(v.f4)
-#else
-    VectorBase4(v.x, v.y, v.z, 0.0f)
-#endif
-  {}
-
-  /**
    * Create vector from a point (the additional component is one).
    */
   OZ_ALWAYS_INLINE
@@ -101,32 +89,6 @@ public:
     VectorBase4(p.x, p.y, p.z, 1.0f)
 #endif
   {}
-
-  /**
-   * Return the 3D vector this vector represents.
-   */
-  OZ_ALWAYS_INLINE
-  Vec3 vec3() const
-  {
-#ifdef OZ_SIMD
-    return Vec3(f4);
-#else
-    return Vec3(x, y, z);
-#endif
-  }
-
-  /**
-   * Return the point this vector represents.
-   */
-  OZ_ALWAYS_INLINE
-  Point point() const
-  {
-#ifdef OZ_SIMD
-    return Point(f4);
-#else
-    return Point(x, y, z);
-#endif
-  }
 
   /**
    * Norm.
@@ -371,61 +333,61 @@ public:
 #endif
   }
 
-  /**
-   * Per-component absolute value of a vector.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec4 abs(const Vec4& a)
-  {
-#ifdef OZ_SIMD
-    return Vec4(vAbs(a.f4));
-#else
-    return Vec4(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z), abs<float>(a.w));
-#endif
-  }
-
-  /**
-   * Per-component minimum of two vectors.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec4 min(const Vec4& a, const Vec4& b)
-  {
-#ifdef OZ_SIMD
-    return Vec4(vMin(a.f4, b.f4));
-#else
-    return Vec4(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z),
-                min<float>(a.w, b.w));
-#endif
-  }
-
-  /**
-   * Per-component maximum of two vectors.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec4 max(const Vec4& a, const Vec4& b)
-  {
-#ifdef OZ_SIMD
-    return Vec4(vMax(a.f4, b.f4));
-#else
-    return Vec4(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z),
-                max<float>(a.w, b.w));
-#endif
-  }
-
-  /**
-   * Per-component clamped value of vectors.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec4 clamp(const Vec4& c, const Vec4& a, const Vec4& b)
-  {
-#ifdef OZ_SIMD
-    return Vec4(vMin(b.f4, vMax(a.f4, c.f4)));
-#else
-    return Vec4(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),
-                clamp<float>(c.z, a.z, b.z), clamp<float>(c.w, a.w, b.w));
-#endif
-  }
-
 };
+
+/**
+ * Per-component absolute value of a vector.
+ */
+OZ_ALWAYS_INLINE
+inline Vec4 abs(const Vec4& a)
+{
+#ifdef OZ_SIMD
+  return Vec4(vAbs(a.f4));
+#else
+  return Vec4(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z), abs<float>(a.w));
+#endif
+}
+
+/**
+ * Per-component minimum of two vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec4 min(const Vec4& a, const Vec4& b)
+{
+#ifdef OZ_SIMD
+  return Vec4(vMin(a.f4, b.f4));
+#else
+  return Vec4(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z),
+              min<float>(a.w, b.w));
+#endif
+}
+
+/**
+ * Per-component maximum of two vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec4 max(const Vec4& a, const Vec4& b)
+{
+#ifdef OZ_SIMD
+  return Vec4(vMax(a.f4, b.f4));
+#else
+  return Vec4(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z),
+              max<float>(a.w, b.w));
+#endif
+}
+
+/**
+ * Per-component clamped value of vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec4 clamp(const Vec4& c, const Vec4& a, const Vec4& b)
+{
+#ifdef OZ_SIMD
+  return Vec4(vMin(b.f4, vMax(a.f4, c.f4)));
+#else
+  return Vec4(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),
+              clamp<float>(c.z, a.z, b.z), clamp<float>(c.w, a.w, b.w));
+#endif
+}
 
 }

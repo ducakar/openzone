@@ -63,7 +63,7 @@ void PartGen::update()
                                              clazz->velocitySpread * Math::normalRand(),
                                              clazz->velocitySpread * Math::normalRand());
 
-      part.p        = transf.w.vec3();
+      part.p        = Vec3(transf.w);
       part.velocity = transf * localVel;
     }
 

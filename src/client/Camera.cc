@@ -106,9 +106,9 @@ void Camera::align()
   rotMat   = Mat4::rotation(rot);
   rotTMat  = ~rotMat;
 
-  right    = +rotMat.x.vec3();
-  up       = +rotMat.y.vec3();
-  at       = -rotMat.z.vec3();
+  right    = Vec3(+rotMat.x);
+  up       = Vec3(+rotMat.y);
+  at       = Vec3(-rotMat.z);
 }
 
 void Camera::prepare()
@@ -203,9 +203,9 @@ void Camera::reset()
   nvColour    = BotClass::NV_COLOUR;
   flashColour = Mat4::ID;
 
-  right       = rotMat.x.vec3();
-  up          = rotMat.y.vec3();
-  at          = -rotMat.z.vec3();
+  right       = Vec3(+rotMat.x);
+  up          = Vec3(+rotMat.y);
+  at          = Vec3(-rotMat.z);
 
   object      = -1;
   objectObj   = nullptr;
@@ -272,9 +272,9 @@ void Camera::read(Stream* is)
   baseColour = is->readMat4();
   nvColour   = is->readMat4();
 
-  right      = rotMat.x.vec3();
-  up         = rotMat.y.vec3();
-  at         = -rotMat.z.vec3();
+  right      = Vec3(+rotMat.x);
+  up         = Vec3(+rotMat.y);
+  at         = Vec3(-rotMat.z);
 
   object     = -1;
   objectObj  = nullptr;

@@ -35,8 +35,6 @@
 #  include <arm_neon.h>
 # elif defined(__SSE__)
 #  include <xmmintrin.h>
-# else
-#  error OZ_SIMD is only implemented for SSE1 and ARM NEON.
 # endif
 #endif
 
@@ -64,39 +62,21 @@ typedef uint __attribute__((vector_size(16))) uint4;
 #endif
 
 /**
- * Construct a float vector with given components.
- */
-OZ_ALWAYS_INLINE
-inline float4 vFill(float x, float y, float z, float w)
-{
-  return float4 { x, y, z, w };
-}
-
-/**
- * Construct an uniform (i.e. all components identical) float vector.
+ * Create a float vector with all components set to a given value.
  */
 OZ_ALWAYS_INLINE
 inline float4 vFill(float x)
 {
-  return float4 { x, x, x, x };
+  return float4{ x, x, x, x };
 }
 
 /**
- * Construct an uint vector with given components.
- */
-OZ_ALWAYS_INLINE
-inline uint4 vFill(uint x, uint y, uint z, uint w)
-{
-  return uint4 { x, y, z, w };
-}
-
-/**
- * Construct an uniform (i.e. all components identical) uint vector.
+ * Create an uint vector with all components set to a given value.
  */
 OZ_ALWAYS_INLINE
 inline uint4 vFill(uint x)
 {
-  return uint4 { x, x, x, x };
+  return uint4{ x, x, x, x };
 }
 
 /**
@@ -128,6 +108,9 @@ inline float4 vMin(float4 a, float4 b)
   return vminq_f32(a, b);
 #elif defined(__SSE__)
   return _mm_min_ps(a, b);
+#else
+  uint4 mask = a < b;
+  return float4((mask & uint4(a)) | (~mask & uint4(b)));
 #endif
 }
 
@@ -141,6 +124,9 @@ inline float4 vMax(float4 a, float4 b)
   return vmaxq_f32(a, b);
 #elif defined(__SSE__)
   return _mm_max_ps(a, b);
+#else
+  uint4 mask = a > b;
+  return float4((mask & uint4(a)) | (~mask & uint4(b)));
 #endif
 }
 
@@ -153,7 +139,7 @@ inline float4 vSqrt(float4 a)
 #ifdef __SSE__
   return _mm_sqrt_ps(a);
 #else
-  return vFill(__builtin_sqrtf(vFirst(a)));
+  return vFill(__builtin_sqrtf(a[0]));
 #endif
 }
 
@@ -166,7 +152,7 @@ inline float4 vInvSqrt(float4 a)
 #ifdef __SSE__
   return _mm_rsqrt_ps(a);
 #else
-  return vFill(1.0f / __builtin_sqrtf(vFirst(a)));
+  return vFill(1.0f / __builtin_sqrtf(a[0]));
 #endif
 }
 
@@ -232,6 +218,21 @@ protected:
   OZ_ALWAYS_INLINE
   VectorBase3() = default;
 
+  /**
+   * Create a vector with given components.
+   */
+  OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD
+  explicit VectorBase3(float x_, float y_, float z_, float w_) :
+    f4{ x_, y_, z_, w_ }
+#else
+  explicit VectorBase3(float x_, float y_, float z_, float) :
+    x(x_), y(y_), z(z_)
+#endif
+  {}
+
+public:
+
 #ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
@@ -239,24 +240,7 @@ protected:
     f4(f4_)
   {}
 
-  OZ_ALWAYS_INLINE
-  explicit VectorBase3(float x_, float y_, float z_, float w_) :
-    f4(vFill(x_, y_, z_, w_))
-  {}
-
-#else
-
-  /**
-   * Create a vector with given components.
-   */
-  OZ_ALWAYS_INLINE
-  explicit VectorBase3(float x_, float y_, float z_, float) :
-    x(x_), y(y_), z(z_)
-  {}
-
 #endif
-
-public:
 
   /**
    * Equality.
@@ -266,6 +250,10 @@ public:
   {
 #if defined(OZ_SIMD) && defined(__SSE__)
     return (_mm_movemask_ps(f4 == v.f4) & 0x7) == 0x7;
+#elif defined(OZ_SIMD)
+    uint4 mask = uint4(f4 == v.f4);
+
+    return (mask & vFill(mask[1]) & vFill(mask[2]))[0] != 0;
 #else
     return x == v.x && y == v.y && z == v.z;
 #endif
@@ -331,8 +319,6 @@ public:
 
 protected:
 
-  using VectorBase3::VectorBase3;
-
   /**
    * Zero vector.
    */
@@ -353,6 +339,8 @@ protected:
 
 public:
 
+  using VectorBase3::VectorBase3;
+
   /**
    * Equality.
    */
@@ -361,6 +349,13 @@ public:
   {
 #if defined(OZ_SIMD) && defined(__SSE__)
     return _mm_movemask_ps(f4 == v.f4) == 0xf;
+#elif defined(OZ_SIMD)
+    uint4 mask = uint4(f4 == v.f4);
+
+    mask &= vShuffle(mask, 1, 0, 3, 2);
+    mask &= vShuffle(mask, 2, 3, 0, 1);
+
+    return mask[0] != 0;
 #else
     return x == v.x && y == v.y && z == v.z && w == v.w;
 #endif

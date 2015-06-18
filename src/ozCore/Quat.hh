@@ -48,7 +48,7 @@ public:
 
 public:
 
-  // Import (protected) SIMD constructors.
+  // Import SIMD constructors.
   using VectorBase4::VectorBase4;
 
   /**
@@ -76,25 +76,13 @@ public:
   {}
 
   /**
-   * Cast to four-component vector.
-   */
-  operator Vec4() const
-  {
-#ifdef OZ_SIMD
-    return Vec4(f4);
-#else
-    return Vec4(x, y, z, w);
-#endif
-  }
-
-  /**
    * Conjugated quaternion.
    */
   OZ_ALWAYS_INLINE
   Quat operator * () const
   {
 #ifdef OZ_SIMD
-    return Quat(float4(uint4(f4) ^ vFill(0x80000000u, 0x80000000u, 0x80000000u, 0u)));
+    return Quat(float4(uint4(f4) ^ uint4{ 0x80000000u, 0x80000000u, 0x80000000u, 0u }));
 #else
     return Quat(-x, -y, -z, w);
 #endif
@@ -272,7 +260,7 @@ public:
     float4 k = vFill(s);
 
     k /= vDot(q.f4, q.f4);
-    k *= vFill(-1.0f, -1.0f, -1.0f, +1.0f);
+    k *= float4{ -1.0f, -1.0f, -1.0f, +1.0f };
 
     return Quat(q.f4 * k);
 #else

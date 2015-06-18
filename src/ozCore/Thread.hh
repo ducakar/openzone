@@ -98,7 +98,7 @@ public:
   explicit Thread(const char* name, Main* main, void* data = nullptr);
 
   /**
-   * Join started but not-yet-joined thread if present.
+   * Join started but not yet joined thread if present.
    */
   ~Thread();
 

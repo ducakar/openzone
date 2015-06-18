@@ -51,7 +51,7 @@ public:
 
 public:
 
-  // Import (protected) SIMD constructors.
+  // Import SIMD constructors.
   using VectorBase3::VectorBase3;
 
   /**
@@ -337,59 +337,59 @@ public:
    */
   static Vec3 slerp(const Vec3& a, const Vec3& b, float t);
 
-  /**
-   * Per-component absolute value of a vector.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec3 abs(const Vec3& a)
-  {
-#ifdef OZ_SIMD
-    return Vec3(vAbs(a.f4));
-#else
-    return Vec3(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z));
-#endif
-  }
-
-  /**
-   * Per-component minimum of two vectors.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec3 min(const Vec3& a, const Vec3& b)
-  {
-#ifdef OZ_SIMD
-    return Vec3(vMin(a.f4, b.f4));
-#else
-    return Vec3(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z));
-#endif
-  }
-
-  /**
-   * Per-component maximum of two vectors.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec3 max(const Vec3& a, const Vec3& b)
-  {
-#ifdef OZ_SIMD
-    return Vec3(vMax(a.f4, b.f4));
-#else
-    return Vec3(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z));
-#endif
-  }
-
-  /**
-   * Per-component clamped value of vectors.
-   */
-  OZ_ALWAYS_INLINE
-  friend Vec3 clamp(const Vec3& c, const Vec3& a, const Vec3& b)
-  {
-#ifdef OZ_SIMD
-    return Vec3(vMin(b.f4, vMax(a.f4, c.f4)));
-#else
-    return Vec3(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),
-                clamp<float>(c.z, a.z, b.z));
-#endif
-  }
-
 };
+
+/**
+ * Per-component absolute value of a vector.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 abs(const Vec3& a)
+{
+#ifdef OZ_SIMD
+  return Vec3(vAbs(a.f4));
+#else
+  return Vec3(abs<float>(a.x), abs<float>(a.y), abs<float>(a.z));
+#endif
+}
+
+/**
+ * Per-component minimum of two vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 min(const Vec3& a, const Vec3& b)
+{
+#ifdef OZ_SIMD
+  return Vec3(vMin(a.f4, b.f4));
+#else
+  return Vec3(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z));
+#endif
+}
+
+/**
+ * Per-component maximum of two vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 max(const Vec3& a, const Vec3& b)
+{
+#ifdef OZ_SIMD
+  return Vec3(vMax(a.f4, b.f4));
+#else
+  return Vec3(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z));
+#endif
+}
+
+/**
+ * Per-component clamped value of vectors.
+ */
+OZ_ALWAYS_INLINE
+inline Vec3 clamp(const Vec3& c, const Vec3& a, const Vec3& b)
+{
+#ifdef OZ_SIMD
+  return Vec3(vMin(b.f4, vMax(a.f4, c.f4)));
+#else
+  return Vec3(clamp<float>(c.x, a.x, b.x), clamp<float>(c.y, a.y, b.y),
+              clamp<float>(c.z, a.z, b.z));
+#endif
+}
 
 }

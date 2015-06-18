@@ -82,7 +82,7 @@ void Transform::applyCamera()
 void Transform::apply() const
 {
   glUniformMatrix4fv(uniform.model, 1, GL_FALSE, model);
-  glUniformMatrix3fv(uniform.modelRot, 1, GL_FALSE, model.mat3());
+  glUniformMatrix3fv(uniform.modelRot, 1, GL_FALSE, Mat3(model));
 }
 
 void Transform::applyColour() const

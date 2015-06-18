@@ -34,6 +34,8 @@
 namespace oz
 {
 
+class Mat4;
+
 /**
  * Column-major 3x3 matrix.
  *
@@ -58,13 +60,11 @@ public:
   /**
    * Create an uninitialised instance.
    */
-  OZ_ALWAYS_INLINE
   Mat3() = default;
 
   /**
    * Create matrix with given columns.
    */
-  OZ_ALWAYS_INLINE
   explicit Mat3(const Vec3& a, const Vec3& b, const Vec3& c) :
     x(a), y(b), z(c)
   {}
@@ -72,7 +72,6 @@ public:
   /**
    * Create matrix with given components.
    */
-  OZ_ALWAYS_INLINE
   explicit Mat3(float xx, float xy, float xz,
                 float yx, float yy, float yz,
                 float zx, float zy, float zz) :
@@ -84,15 +83,18 @@ public:
   /**
    * Create matrix from an array of 9 floats.
    */
-  OZ_ALWAYS_INLINE
   explicit Mat3(const float* v) :
     x(&v[0]), y(&v[3]), z(&v[6])
   {}
 
   /**
+   * Top-left 3x3 submatrix of a 4x4 matrix.
+   */
+  explicit Mat3(const Mat4& m);
+
+  /**
    * Equality.
    */
-  OZ_ALWAYS_INLINE
   bool operator == (const Mat3& m) const
   {
     return x == m.x && y == m.y && z == m.z;
@@ -101,7 +103,6 @@ public:
   /**
    * Inequality.
    */
-  OZ_ALWAYS_INLINE
   bool operator != (const Mat3& m) const
   {
     return !operator == (m);
@@ -155,7 +156,6 @@ public:
   /**
    * Transposed matrix.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator ~ () const
   {
     return Mat3(x.x, y.x, z.x,
@@ -203,7 +203,6 @@ public:
   /**
    * Original matrix.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator + () const
   {
     return *this;
@@ -212,7 +211,6 @@ public:
   /**
    * Matrix with negated elements.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator - () const
   {
     return Mat3(-x, -y, -z);
@@ -221,7 +219,6 @@ public:
   /**
    * Sum.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator + (const Mat3& a) const
   {
     return Mat3(x + a.x, y + a.y, z + a.z);
@@ -230,7 +227,6 @@ public:
   /**
    * Difference.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator - (const Mat3& a) const
   {
     return Mat3(x - a.x, y - a.y, z - a.z);
@@ -239,7 +235,6 @@ public:
   /**
    * Product.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator * (float s) const
   {
     return Mat3(x * s, y * s, z * s);
@@ -248,7 +243,6 @@ public:
   /**
    * Product.
    */
-  OZ_ALWAYS_INLINE
   friend Mat3 operator * (float s, const Mat3& m)
   {
     return Mat3(s * m.x, s * m.y, s * m.z);
@@ -283,7 +277,6 @@ public:
   /**
    * Quotient.
    */
-  OZ_ALWAYS_INLINE
   Mat3 operator / (float s) const
   {
     hard_assert(s != 0.0f);
@@ -295,7 +288,6 @@ public:
   /**
    * Addition.
    */
-  OZ_ALWAYS_INLINE
   Mat3& operator += (const Mat3& a)
   {
     x += a.x;
@@ -307,7 +299,6 @@ public:
   /**
    * Subtraction.
    */
-  OZ_ALWAYS_INLINE
   Mat3& operator -= (const Mat3& a)
   {
     x -= a.x;
@@ -319,7 +310,6 @@ public:
   /**
    * Multiplication.
    */
-  OZ_ALWAYS_INLINE
   Mat3& operator *= (float s)
   {
     x *= s;
@@ -331,7 +321,6 @@ public:
   /**
    * Division.
    */
-  OZ_ALWAYS_INLINE
   Mat3& operator /= (float s)
   {
     hard_assert(s != 0.0f);
@@ -366,7 +355,6 @@ public:
   /**
    * Compose with a scale from the right.
    */
-  OZ_ALWAYS_INLINE
   void scale(const Vec3& v)
   {
     x *= v.x;
@@ -402,7 +390,6 @@ public:
   /**
    * Create matrix for scaling.
    */
-  OZ_ALWAYS_INLINE
   static Mat3 scaling(const Vec3& v)
   {
     return Mat3( v.x, 0.0f, 0.0f,
@@ -410,42 +397,38 @@ public:
                 0.0f, 0.0f,  v.z);
   }
 
-  /**
-   * Per-component absolute value of a matrix.
-   */
-  OZ_ALWAYS_INLINE
-  friend Mat3 abs(const Mat3& a)
-  {
-    return Mat3(abs(a.x), abs(a.y), abs(a.z));
-  }
-
-  /**
-   * Per-component minimum of two matrices.
-   */
-  OZ_ALWAYS_INLINE
-  friend Mat3 min(const Mat3& a, const Mat3& b)
-  {
-    return Mat3(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z));
-  }
-
-  /**
-   * Per-component maximum of two matrices.
-   */
-  OZ_ALWAYS_INLINE
-  friend Mat3 max(const Mat3& a, const Mat3& b)
-  {
-    return Mat3(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z));
-  }
-
-  /**
-   * Per-component clamped value of matrices.
-   */
-  OZ_ALWAYS_INLINE
-  friend Mat3 clamp(const Mat3& c, const Mat3& a, const Mat3& b)
-  {
-    return Mat3(clamp(c.x, a.x, b.x), clamp(c.y, a.y, b.y), clamp(c.z, a.z, b.z));
-  }
-
 };
+
+/**
+ * Per-component absolute value of a matrix.
+ */
+inline Mat3 abs(const Mat3& a)
+{
+  return Mat3(abs(a.x), abs(a.y), abs(a.z));
+}
+
+/**
+ * Per-component minimum of two matrices.
+ */
+inline Mat3 min(const Mat3& a, const Mat3& b)
+{
+  return Mat3(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z));
+}
+
+/**
+ * Per-component maximum of two matrices.
+ */
+inline Mat3 max(const Mat3& a, const Mat3& b)
+{
+  return Mat3(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z));
+}
+
+/**
+ * Per-component clamped value of matrices.
+ */
+inline Mat3 clamp(const Mat3& c, const Mat3& a, const Mat3& b)
+{
+  return Mat3(clamp(c.x, a.x, b.x), clamp(c.y, a.y, b.y), clamp(c.z, a.z, b.z));
+}
 
 }
