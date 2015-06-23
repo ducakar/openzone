@@ -40,7 +40,7 @@ namespace oz
  * Better worst case performance than a hashtable; however, for large sets `HashSet` is preferred as
  * it is asymptotically faster in average case.
  *
- * Like in `List` all allocated elements are constructed all the time so removed element's
+ * Like in `List` all allocated elements are constructed all the time so removed elements'
  * destruction is still guaranteed.
  *
  * Memory is allocated when the first element is added.

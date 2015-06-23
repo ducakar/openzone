@@ -58,11 +58,13 @@ public:
   /**
    * Create an uninitialised instance.
    */
+  OZ_ALWAYS_INLINE
   Mat4() = default;
 
   /**
    * Create matrix with given columns.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat4(const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d) :
     x(a), y(b), z(c), w(d)
   {}
@@ -70,6 +72,7 @@ public:
   /**
    * Create matrix for base vector images `a`, `b`, `c` and translation `d`.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat4(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d) :
     x(a), y(b), z(c), w(d.x, d.y, d.z, 1.0f)
   {}
@@ -77,6 +80,7 @@ public:
   /**
    * Create matrix with given components.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat4(float xx, float xy, float xz, float xw,
                 float yx, float yy, float yz, float yw,
                 float zx, float zy, float zz, float zw,
@@ -90,6 +94,7 @@ public:
   /**
    * Create matrix from an array of 16 floats.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat4(const float* v) :
     x(&v[0]), y(&v[4]), z(&v[8]), w(&v[12])
   {}
@@ -97,6 +102,7 @@ public:
   /**
    * Create from a 3x3 matrix.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat4(const Mat3& m) :
     x(m.x), y(m.y), z(m.z), w(Vec4::ID)
   {}
@@ -239,6 +245,7 @@ public:
   /**
    * Original matrix.
    */
+  OZ_ALWAYS_INLINE
   Mat4 operator + () const
   {
     return *this;
@@ -247,6 +254,7 @@ public:
   /**
    * Matrix with negated elements.
    */
+  OZ_ALWAYS_INLINE
   Mat4 operator - () const
   {
     return Mat4(-x, -y, -z, -w);
@@ -298,6 +306,7 @@ public:
   /**
    * Transformed 3D vector (no translation is applied).
    */
+  OZ_ALWAYS_INLINE
   Vec3 operator * (const Vec3& v) const
   {
     return Vec3(x * v.x + y * v.y + z * v.z);
@@ -306,6 +315,7 @@ public:
   /**
    * Transformed point (translation is applied).
    */
+  OZ_ALWAYS_INLINE
   Point operator * (const Point& p) const
   {
     return Point(x * p.x + y * p.y + z * p.z + w);
@@ -314,6 +324,7 @@ public:
   /**
    * Transformed plane.
    */
+  OZ_ALWAYS_INLINE
   Plane operator * (const Plane& p) const
   {
     return Plane(*this * p.n, p.d + Vec3(w) * p.n);
@@ -322,6 +333,7 @@ public:
   /**
    * Product with a four-component vector.
    */
+  OZ_ALWAYS_INLINE
   Vec4 operator * (const Vec4& v) const
   {
     return x * v.x + y * v.y + z * v.z + w * v.w;
@@ -344,6 +356,7 @@ public:
    * This is a faster version of multiplication where the last row of both matrices is assumed to
    * be [0, 0, 0, 1].
    */
+  OZ_ALWAYS_INLINE
   Mat4 operator ^ (const Mat4& m) const
   {
     return Mat4(x * m.x.x + y * m.x.y + z * m.x.z,

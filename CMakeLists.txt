@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 project(openzone)
 
@@ -6,7 +6,7 @@ project(openzone)
 # Configuration options.
 #
 
-set(OZ_VERSION 0.3.94)
+set(OZ_VERSION 0.3.95)
 
 option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF)
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
@@ -67,8 +67,8 @@ if(OZ_LUAJIT)
   set(LUA_LIBRARIES ${LUAJIT_LIBRARIES})
   include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
 else()
-  pkg_check_modules(LUA REQUIRED lua)
-  include_directories(SYSTEM ${LUA_INCLUDE_DIRS})
+  find_package(Lua REQUIRED)
+  include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 endif()
 
 if(NACL)
@@ -104,8 +104,8 @@ pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 
 # On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
 if(PLATFORM_EMBEDDED)
-  find_package(Freetype REQUIRED)           # required by SDL_ttf
   find_package(PNG REQUIRED)                # required by FreeType
+  find_package(Freetype REQUIRED)           # required by SDL_ttf
   pkg_check_modules(OGG REQUIRED ogg)       # required by vorbisfile
   pkg_check_modules(VORBIS REQUIRED vorbis) # required by vorbisfile
 
@@ -157,8 +157,6 @@ endif()
 #set(flags "${flags} -Qunused-arguments --analyze")
 # Address sanitizer.
 #set(flags "${flags} -fsanitize=address")
-# Leak sanitizer.
-#set(flags "${flags} -fsanitize=leak")
 # Thread sanitizer.
 #set(flags "${flags} -fsanitize=thread -fpie -fPIC")
 # Undefined behaviour sanitizer.

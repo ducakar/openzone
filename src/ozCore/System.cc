@@ -43,18 +43,15 @@
 # include <unistd.h>
 # define _Exit(c) _exit(c)
 #elif defined(__native_client__)
-# include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
 #elif defined(_WIN32)
 # include <windows.h>
-# include <io.h>
 # include <mmsystem.h>
 #else
 # include <alsa/asoundlib.h>
-# include <ctime>
 # include <pthread.h>
 #endif
 
@@ -478,16 +475,17 @@ void System::bell()
 #else
       pthread_join(bellThread, nullptr);
 #endif
-      bellState = NONE;
     }
+
+    bellState = PLAYING;
 
 #ifdef _WIN32
     bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
-    if (bellThread != nullptr) {
+    if (bellThread == nullptr) {
 #else
-    if (pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0) {
+    if (pthread_create(&bellThread, nullptr, bellMain, nullptr) != 0) {
 #endif
-      bellState = PLAYING;
+      bellState = NONE;
     }
   }
 

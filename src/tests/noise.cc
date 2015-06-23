@@ -63,8 +63,6 @@ int main(int, char**)
 
   Log() << "populate time: " << (Time::clock() - t0) << " ms";
 
-  t0 = Time::clock();
-
   bool      isAlive = true;
   SDL_Event event;
 

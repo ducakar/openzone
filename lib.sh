@@ -47,7 +47,7 @@ function build()
          "$prefix/libSDL2-2.0.so.0" \
          "$prefix/libSDL2_ttf-2.0.so.0" \
          "$prefix/libopenal.so.1" \
-         "$prefix/liblua.so.5.2" \
+         "$prefix/liblua.so.5.3" \
          "$prefix/libpng16.so.16" \
          "$outDir"
 

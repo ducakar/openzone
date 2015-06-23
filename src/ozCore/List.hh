@@ -38,7 +38,7 @@ namespace oz
  * Array list.
  *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
- * slightly better performance and simplifies implementation. However, on element removal its
+ * slightly better performance and simplifies implementation. When an element is removed its
  * destruction is still guaranteed.
  *
  * Memory is allocated when the first element is added.
@@ -140,10 +140,8 @@ public:
    * Copy constructor, copies elements.
    */
   List(const List& l) :
-    data(Arrays::reallocate<Elem>(nullptr, 0, l.count)), count(l.count), size(l.size)
-  {
-    Arrays::copy<Elem>(l.data, l.count, data);
-  }
+    List(l.data, l.count)
+  {}
 
   /**
    * Move constructor, moves element storage.
@@ -164,16 +162,8 @@ public:
   List& operator = (const List& l)
   {
     if (&l != this) {
-      if (size < l.count) {
-        delete[] data;
-
-        data = new Elem[l.size];
-        size = l.size;
-      }
-
-      Arrays::copy<Elem>(l.data, l.count, data);
-      Arrays::clear<Elem>(data + l.count, count - l.count);
-      count = l.count;
+      clear();
+      addAll(l.data, l.count);
     }
     return *this;
   }

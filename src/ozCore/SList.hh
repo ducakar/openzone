@@ -36,8 +36,11 @@ namespace oz
 /**
  * Array list with static storage (fixed capacity).
  *
+ * Default copy/move constructors and operators are used, so the source list is not emptied after
+ * move.
+ *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
- * slightly better performance and simplifies implementation. However, on element removal its
+ * slightly better performance and simplifies implementation. When an element is removed its
  * destruction is still guaranteed.
  *
  * @sa `oz::List`
@@ -91,59 +94,6 @@ public:
     hard_assert(count <= SIZE);
 
     Arrays::copy<Elem>(array, count, data);
-  }
-
-  /**
-   * Initialise from an initialiser list.
-   */
-  SList(InitialiserList<Elem> l) :
-    SList(l.begin(), int(l.size()))
-  {}
-
-  /**
-   * Copy constructor, copies elements.
-   */
-  SList(const SList& l) = default;
-
-  /**
-   * Move constructor, moves elements and clears source.
-   */
-  SList(SList&& l) :
-    count(l.count)
-  {
-    Arrays::move<Elem>(l.data, l.count, data);
-
-    l.count = 0;
-  }
-
-  /**
-   * Copy operator, copies elements.
-   *
-   * Existing storage is reused if it suffices.
-   */
-  SList& operator = (const SList& l)
-  {
-    if (&l != this) {
-      Arrays::copy<Elem>(l.data, l.count, data);
-      Arrays::clear<Elem>(data + l.count, count - l.count);
-      count = l.count;
-    }
-    return *this;
-  }
-
-  /**
-   * Move operator, moves elements and clears source.
-   */
-  SList& operator = (SList&& l)
-  {
-    if (&l != this) {
-      Arrays::move<Elem>(l.data, l.count, data);
-      Arrays::clear<Elem>(data + l.count, count - l.count);
-      count = l.count;
-
-      l.count = 0;
-    }
-    return *this;
   }
 
   /**

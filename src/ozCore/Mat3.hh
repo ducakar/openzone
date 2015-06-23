@@ -60,11 +60,13 @@ public:
   /**
    * Create an uninitialised instance.
    */
+  OZ_ALWAYS_INLINE
   Mat3() = default;
 
   /**
    * Create matrix with given columns.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat3(const Vec3& a, const Vec3& b, const Vec3& c) :
     x(a), y(b), z(c)
   {}
@@ -72,6 +74,7 @@ public:
   /**
    * Create matrix with given components.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat3(float xx, float xy, float xz,
                 float yx, float yy, float yz,
                 float zx, float zy, float zz) :
@@ -83,6 +86,7 @@ public:
   /**
    * Create matrix from an array of 9 floats.
    */
+  OZ_ALWAYS_INLINE
   explicit Mat3(const float* v) :
     x(&v[0]), y(&v[3]), z(&v[6])
   {}
@@ -203,6 +207,7 @@ public:
   /**
    * Original matrix.
    */
+  OZ_ALWAYS_INLINE
   Mat3 operator + () const
   {
     return *this;
@@ -211,6 +216,7 @@ public:
   /**
    * Matrix with negated elements.
    */
+  OZ_ALWAYS_INLINE
   Mat3 operator - () const
   {
     return Mat3(-x, -y, -z);
@@ -261,6 +267,7 @@ public:
   /**
    * Transformed 3D vector.
    */
+  OZ_ALWAYS_INLINE
   Vec3 operator * (const Vec3& v) const
   {
     return x * v.x + y * v.y + z * v.z;
@@ -269,6 +276,7 @@ public:
   /**
    * Rotated plane.
    */
+  OZ_ALWAYS_INLINE
   Plane operator * (const Plane& p) const
   {
     return Plane(*this * p.n, p.d);

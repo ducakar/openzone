@@ -38,7 +38,7 @@ namespace oz
  *
  * The tree elements are stored in an array list.
  *
- * Like in `List` all allocated elements are constructed all the time so removed element's
+ * Like in `List` all allocated elements are constructed all the time so removed elements'
  * destruction is still guaranteed.
  *
  * Memory is allocated when the first element is added.

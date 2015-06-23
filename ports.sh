@@ -176,7 +176,7 @@ function fetch()
   download 'http://icculus.org/physfs/downloads/physfs-2.0.3.tar.bz2'
 
   # Lua
-  download 'http://www.lua.org/ftp/lua-5.3.0.tar.gz'
+  download 'http://www.lua.org/ftp/lua-5.3.1.tar.gz'
 
   # OpenAL Soft
   download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.16.0.tar.bz2'
@@ -313,7 +313,7 @@ function build_physfs21()
 
 function build_lua()
 {
-  prepare lua-5.3.0 lua-5.3.0.tar.gz || return
+  prepare lua-5.3.1 lua-5.3.1.tar.gz || return
   applyPatches lua-5.3.0.patch
 
   make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
