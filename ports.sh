@@ -16,7 +16,6 @@
 #
 
 platforms=(
-  PNaCl
 #  Android14-i686
 #  Android14-ARMv7a
 )
@@ -27,8 +26,6 @@ projectDir=`pwd`
 topDir="$projectDir/ports"
 originalPath="$PATH"
 
-pnaclPrefix="$NACL_SDK_ROOT/toolchain/linux_pnacl"
-
 ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.9/prebuilt/linux-x86_64"
 ndkX86Platform="$ANDROID_NDK/platforms/android-14/arch-x86"
 
@@ -36,39 +33,6 @@ ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x8
 ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 
 . etc/common.sh
-
-function setup_pnacl()
-{
-  platform="PNaCl"                                        # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="pnacl"                                         # Platform triplet (tools prefix).
-  hostTriplet="i686-nacl"                                 # Host triplet for autotools configure.
-  toolsroot="$pnaclPrefix"                                # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-
-  export -n CPP
-  export CC="$toolsroot/bin/$triplet-clang"
-  export CXX="$toolsroot/bin/$triplet-clang++"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="-isystem $buildDir/usr/include -isystem $NACL_SDK_ROOT/ports/include"
-  export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/ports/include/freetype2"
-  export CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/include -isystem $NACL_SDK_ROOT/include/newlib"
-  export CFLAGS="-O4 -ffast-math"
-  export CXXFLAGS="-O4 -ffast-math"
-  export LDFLAGS="-L$buildDir/usr/lib -L$NACL_SDK_ROOT/ports/lib/newlib_pnacl/Release"
-  export LDFLAGS="-L$NACL_SDK_ROOT/lib/pnacl/Release -lnosys"
-
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
-  done
-  return 1
-}
 
 function setup_ndk_i686()
 {
@@ -181,14 +145,8 @@ function fetch()
   # OpenAL Soft
   download 'http://kcat.strangesoft.net/openal-releases/openal-soft-1.16.0.tar.bz2'
 
-  # SDL
-  download 'http://www.libsdl.org/release/SDL-1.2.15.tar.gz'
-
   # SDL2
   download 'http://www.libsdl.org/release/SDL2-2.0.3.tar.gz'
-
-  # SDL_ttf
-  download 'http://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-2.0.11.tar.gz'
 
   # SDL2_ttf
   download 'http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.12.tar.gz'
@@ -301,16 +259,6 @@ function build_physfs()
   finish
 }
 
-function build_physfs21()
-{
-  prepare physfs physfs || return
-  applyPatches physfs-2.1.patch
-
-  cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
-
-  finish
-}
-
 function build_lua()
 {
   prepare lua-5.3.1 lua-5.3.1.tar.gz || return
@@ -331,38 +279,12 @@ function build_openal()
   finish
 }
 
-function build_sdl()
-{
-  prepare SDL-1.2.15 SDL-1.2.15.tar.gz || return
-  applyPatches SDL-1.2.15.patch
-
-  ./autogen.sh
-
-  CPPFLAGS="$CPPFLAGS -isystem $NACL_SDK_ROOT/ports/include" autotoolsBuild \
-    --disable-pthread-sem --disable-assembly
-
-  finish
-}
-
 function build_sdl2()
 {
   prepare SDL2-2.0.3 SDL2-2.0.3.tar.gz || return
   applyPatches SDL2-2.0.3.patch
 
   cmakeBuild
-
-  finish
-}
-
-function build_sdl_ttf()
-{
-  prepare SDL_ttf-2.0.11 SDL_ttf-2.0.11.tar.gz || return
-  applyPatches SDL_ttf-2.0.11.patch
-
-  autotoolsBuild \
-    --with-freetype-prefix="$buildDir/usr" \
-    --with-sdl-prefix="$buildDir/usr" \
-    --without-x
 
   finish
 }
@@ -411,12 +333,10 @@ function build()
   setup_ndk_ARMv7a  && build_openal
 
   # SDL
-  setup_pnacl       && build_sdl
   setup_ndk_i686    && build_sdl2
   setup_ndk_ARMv7a  && build_sdl2
 
   # SDL_ttf
-  setup_pnacl       && build_sdl_ttf
   setup_ndk_i686    && build_sdl2_ttf
   setup_ndk_ARMv7a  && build_sdl2_ttf
 }

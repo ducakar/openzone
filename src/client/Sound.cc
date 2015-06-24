@@ -32,9 +32,9 @@
 #ifdef __native_client__
 # include <ppapi/cpp/instance.h>
 # include <ppapi/cpp/module.h>
+# include <ppapi_simple/ps.h>
 
-extern "C"
-void alSetPpapiInfo(PP_Instance instance, PPB_GetInterface getInterface);
+extern "C" void alSetPpapiInfo(PP_Instance instance, PPB_GetInterface getInterface);
 #endif
 
 namespace oz
@@ -677,7 +677,7 @@ void Sound::init()
   Log::indent();
 
 #ifdef __native_client__
-  alSetPpapiInfo(Pepper::instance()->pp_instance(), pp::Module::Get()->get_browser_interface());
+  alSetPpapiInfo(PSGetInstanceId(), pp::Module::Get()->get_browser_interface());
 #endif
 
   const char* deviceSpec = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);

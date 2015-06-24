@@ -320,15 +320,15 @@ void Loader::makeScreenshot()
 
 void Loader::syncUpdate()
 {
-  updateEnvironment();
+  MainCall() << [&]
+  {
+    updateEnvironment();
 
-  if (context.dynamicLoading) {
-    MainCall() << [&]
-    {
+    if (context.dynamicLoading) {
       preloadRender();
       uploadRender(false);
-    };
-  }
+    }
+  };
 }
 
 void Loader::update()

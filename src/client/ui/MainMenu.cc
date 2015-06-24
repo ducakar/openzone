@@ -32,7 +32,11 @@
 #include <client/ui/SettingsMenu.hh>
 #include <client/ui/CreditsMenu.hh>
 
-#if defined(__ANDROID__) || defined(__native_client__)
+#if defined(__ANDROID__)
+#elif defined(__native_client__)
+# include <ppapi/cpp/var.h>
+# include <ppapi_simple/ps.h>
+# include <ppapi_simple/ps_interface.h>
 #elif defined(_WIN32)
 # include <shellapi.h>
 #else
@@ -82,7 +86,7 @@ static void openWeb(Button*)
 {
 #if defined(__ANDROID__)
 #elif defined(__native_client__)
-  Pepper::post("navi:http://ducakar.github.io/openzone/");
+  Pepper::post("http://ducakar.github.io/openzone/");
 #elif defined(_WIN32)
   ShellExecute(nullptr, "open", "http://ducakar.github.io/openzone/", nullptr, nullptr,
                SW_SHOWNORMAL);

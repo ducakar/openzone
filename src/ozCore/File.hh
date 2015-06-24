@@ -381,12 +381,9 @@ public:
   static const File& executable();
 
   /**
-   * Initialise VFS and NaCl file system, determine user directories and executable path.
-   *
-   * @param argv0 argv[0] argument passed to `main()` function, used by PhysicsFS initialisation on
-   *              certain platforms (e.g. NaCl).
+   * Initialise VFS, determine user directories and executable path.
    */
-  static void init(const char* argv0);
+  static void init();
 
   /**
    * Deinitialise file systems.

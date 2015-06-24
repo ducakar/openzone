@@ -59,5 +59,3 @@ int main()
   Log() << (hasPassed ? "Unittest PASSED" : "Unittest FAILED");
   return EXIT_SUCCESS;
 }
-
-OZ_NACL_ENTRY_POINT()

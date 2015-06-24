@@ -702,7 +702,7 @@ int Builder::main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  File::init(argv[0]);
+  File::init();
   ImageBuilder::init();
 
   bool hasOutDir = optind != argc - 1;

@@ -26,6 +26,14 @@
 #include <SDL.h>
 #undef main
 
+#ifdef __native_client__
+# include <ppapi/c/ppb_view.h>
+# include <ppapi_simple/ps_interface.h>
+# include <ppapi_simple/ps_main.h>
+#endif
+
+extern "C" void NACL_SetScreenResolution(int width, int height, Uint32 format);
+
 using namespace oz;
 
 static void crashHandler()
@@ -35,9 +43,7 @@ static void crashHandler()
 
 #if defined(__ANDROID__)
 int javaMain(int argc, char** argv)
-#elif defined(__native_client__)
-int naclMain(int argc, char** argv)
-#elif defined(_WIN32)
+#elif defined(__native_client__) || defined(_WIN32)
 int SDL_main(int argc, char** argv)
 #else
 int main(int argc, char** argv)
@@ -50,6 +56,25 @@ int main(int argc, char** argv)
                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
                 "This is free software, and you are welcome to redistribute it\n"
                 "under certain conditions; See COPYING file for details.\n\n");
+
+#ifdef __native_client__
+
+  Pepper::init();
+
+  const PPB_View* view = PSInterfaceView();
+
+  PSEventSetFilter(PSE_INSTANCE_DIDCHANGEVIEW);
+
+  PP_Rect  rect;
+  PSEvent* event = PSEventWaitAcquire();
+  view->GetRect(event->as_resource, &rect);
+
+  PSEventRelease(event);
+
+  NACL_SetScreenResolution(rect.size.width, rect.size.height, 0);
+  SDL_SetMainReady();
+
+#endif
 
   int exitCode = client::client.init(argc, argv);
 
@@ -72,5 +97,7 @@ int main(int argc, char** argv)
   return exitCode;
 }
 
+#ifdef __native_client__
+PSMainFunc_t PSUserMainGet() { return SDL_main; }
+#endif
 OZ_JAVA_ENTRY_POINT(Java_com_github_ducakar_openzone_SDLActivity_nativeInit)
-OZ_NACL_ENTRY_POINT()

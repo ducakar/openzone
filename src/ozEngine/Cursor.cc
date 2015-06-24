@@ -109,14 +109,6 @@ void Cursor::update(int millis)
 
 bool Cursor::load(const File& file, Mode mode_, int size)
 {
-#if SDL_MAJOR_VERSION < 2
-  // SDL 1.2 only supports monochromatic cursors.
-  if (mode_ == SYSTEM) {
-    mode = mode_;
-    return false;
-  }
-#endif
-
   Stream is = file.read(Endian::LITTLE);
 
   // Implementation is based on specifications from xcursor(3) manual.
@@ -201,7 +193,6 @@ bool Cursor::load(const File& file, Mode mode_, int size)
       };
     }
     else {
-#if SDL_MAJOR_VERSION >= 2
       SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, image.width, image.height, 32,
                                                       image.width * 4, 0x00ff0000, 0x0000ff00,
                                                       0x000000ff, 0xff000000);
@@ -209,7 +200,6 @@ bool Cursor::load(const File& file, Mode mode_, int size)
       image.sdlCursor = SDL_CreateColorCursor(surface, image.hotspotLeft, image.hotspotTop);
 
       SDL_FreeSurface(surface);
-#endif
     }
 
     delete[] pixels;

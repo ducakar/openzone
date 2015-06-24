@@ -41,6 +41,9 @@
 #include <SDL_ttf.h>
 #include <unistd.h>
 #ifdef __native_client__
+# include <ppapi_simple/ps.h>
+# include <ppapi_simple/ps_event.h>
+# include <ppapi_simple/ps_interface.h>
 # include <sys/mount.h>
 #endif
 
@@ -50,6 +53,11 @@ namespace oz
 {
 namespace client
 {
+
+#ifdef __native_client__
+static const PPB_InputEvent*      ppbInputEvent      = nullptr;
+static const PPB_MouseInputEvent* ppbMouseInputEvent = nullptr;
+#endif
 
 void Client::printUsage()
 {
@@ -90,32 +98,118 @@ int Client::main()
     // read input & events
     input.prepare();
 
+#ifdef __native_client__
+
+    PSEventSetFilter(PSE_INSTANCE_HANDLEINPUT | PSE_INSTANCE_DIDCHANGEVIEW |
+                     PSE_MOUSELOCK_MOUSELOCKLOST);
+
+    List<PSEvent*> eventQueue;
+    PSEvent*       psEvent;
+
+    while ((psEvent = PSEventTryAcquire()) != nullptr) {
+      switch (psEvent->type) {
+        case PSE_INSTANCE_HANDLEINPUT: {
+          PP_InputEvent_Type type = ppbInputEvent->GetType(psEvent->as_resource);
+
+          switch (type) {
+            case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
+              PP_Point point = ppbMouseInputEvent->GetMovement(psEvent->as_resource);
+
+              input.mouseX += point.x;
+              input.mouseY -= point.y;
+              break;
+            }
+            case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
+              Window::setGrab(true);
+
+              eventQueue.add(psEvent);
+              continue;
+            }
+            default: {
+              eventQueue.add(psEvent);
+              continue;
+            }
+          }
+          break;
+        }
+        case PSE_INSTANCE_DIDCHANGEFOCUS: {
+          Window::setFocus(psEvent->as_bool);
+          Window::setGrab(psEvent->as_bool);
+          input.reset();
+          break;
+        }
+        case PSE_MOUSELOCK_MOUSELOCKLOST: {
+          Window::setFocus(false);
+          Window::setGrab(false);
+          input.reset();
+          break;
+        }
+        case PSE_INSTANCE_DIDCHANGEVIEW: {
+          PP_Rect rect;
+          PSInterfaceView()->GetRect(psEvent->as_resource, &rect);
+
+          Window::resize(rect.size.width, rect.size.height, Window::isFullscreen());
+          input.reset();
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+
+      PSEventRelease(psEvent);
+    }
+
+    // Repost relevant events for SDL to process them.
+    for (PSEvent* event : eventQueue) {
+      PSEventPostResource(event->type, event->as_resource);
+    }
+
+    PSEventSetFilter(PSE_ALL);
+
+#endif
+
     SDL_PumpEvents();
 
     while (SDL_PollEvent(&event) != 0) {
       switch (event.type) {
+        case SDL_MOUSEMOTION:
+        case SDL_MOUSEWHEEL:
+        case SDL_MOUSEBUTTONUP:
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_KEYUP: {
+          input.readEvent(&event);
+          break;
+        }
         case SDL_KEYDOWN: {
-#ifndef __native_client__
           const SDL_Keysym& keysym = event.key.keysym;
 
           if (keysym.sym == SDLK_F9) {
             if (keysym.mod & KMOD_CTRL) {
               ui::ui.isVisible = !ui::ui.isVisible;
             }
+#ifndef __native_client__
             else {
               loader.makeScreenshot();
             }
+#endif
           }
           else if (keysym.sym == SDLK_F11) {
             if (keysym.mod & KMOD_CTRL) {
               Window::setGrab(!Window::hasGrab());
             }
+#ifdef __native_client__
+            else {
+              Window::resize(Window::width(), Window::height(), !Window::isFullscreen());
+            }
+#else
             else if (Window::isFullscreen()) {
               Window::resize(windowWidth, windowHeight, false);
             }
             else {
               Window::resize(screenWidth, screenHeight, true);
             }
+#endif
           }
           else if (keysym.sym == SDLK_F12) {
             if (keysym.mod & KMOD_CTRL) {
@@ -125,17 +219,7 @@ int Client::main()
               Window::minimise();
             }
           }
-#endif
 
-          input.readEvent(&event);
-          break;
-        }
-        case SDL_KEYUP:
-#if SDL_MAJOR_VERSION >= 2
-        case SDL_MOUSEWHEEL:
-#endif
-        case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEBUTTONDOWN: {
           input.readEvent(&event);
           break;
         }
@@ -192,17 +276,6 @@ int Client::main()
     }
 
 #ifdef __native_client__
-
-    if (Pepper::width != Window::width() || Pepper::height != Window::height()) {
-      Window::resize(Pepper::width, Pepper::height);
-    }
-    if (Window::hasFocus() != Pepper::hasFocus) {
-      Window::setFocus(Pepper::hasFocus);
-      input.reset();
-    }
-    if (Pepper::pop() == "quit:") {
-      isAlive = false;
-    }
 
     input.keys[SDLK_ESCAPE]    = false;
     input.oldKeys[SDLK_ESCAPE] = false;
@@ -277,7 +350,7 @@ int Client::main()
 int Client::init(int argc, char** argv)
 {
 #ifdef __native_client__
-  Pepper::post("init:");
+  Pepper::post("init");
 #endif
 
   initFlags     = 0;
@@ -361,7 +434,7 @@ int Client::init(int argc, char** argv)
 
 #endif
 
-  File::init(argv[0]);
+  File::init();
   initFlags |= INIT_PHYSFS;
 
 #ifdef __ANDROID__
@@ -408,12 +481,10 @@ int Client::init(int argc, char** argv)
 
   dataDir.mountAt("/");
 
-  MainCall() << []
-  {
-    if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
-      OZ_ERROR("Failed to initialise SDL: %s", SDL_GetError());
-    }
-  };
+  if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO) != 0) {
+    OZ_ERROR("Failed to initialise SDL: %s", SDL_GetError());
+  }
+
   initFlags |= INIT_SDL;
 
   if (TTF_Init() < 0) {
@@ -591,7 +662,11 @@ int Client::init(int argc, char** argv)
   gameStage.init();
 
 #ifdef __native_client__
-  Pepper::post("none:");
+  Pepper::post("none");
+
+  ppbInputEvent      = PSInterfaceInputEvent();
+  ppbMouseInputEvent = static_cast<const PPB_MouseInputEvent*>(
+                         PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE));
 #endif
 
   Stage::nextStage = nullptr;
@@ -675,9 +750,10 @@ void Client::shutdown()
     TTF_Quit();
   }
   if (initFlags & INIT_SDL) {
-    MainCall() << [] {
-      SDL_Quit();
-    };
+    // HACK Crashes on NaCl.
+#ifndef __native_client__
+    SDL_Quit();
+#endif
   }
   if (initFlags & INIT_PHYSFS) {
     File::destroy();
@@ -693,7 +769,7 @@ void Client::shutdown()
   }
 
 #ifdef __native_client__
-  Pepper::post("quit:");
+  Pepper::post("quit");
 #endif
 }
 

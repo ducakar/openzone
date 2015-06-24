@@ -712,6 +712,8 @@ void Render::init()
     version     = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     glslVersion = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
     sExtensions = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+
+    OZ_GL_CHECK_ERROR();
   };
 
   if (vendor == nullptr) {

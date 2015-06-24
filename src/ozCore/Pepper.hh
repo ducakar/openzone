@@ -38,43 +38,12 @@
  * @def OZ_NACL_IS_MAIN
  * Check if on the main thread (debug mode only).
  */
-#define OZ_NACL_IS_MAIN(boolean) \
+# define OZ_NACL_IS_MAIN(boolean) \
   hard_assert(Thread::isMain() == boolean)
-
-/**
- * @def OZ_NACL_ENTRY_POINT
- * Implement `CreateModule()` entry point for a NaCl application.
- *
- * This macro has no effect for platforms other than NaCl.
- */
-#define OZ_NACL_ENTRY_POINT() \
-  namespace pp \
-  { \
-    pp::Module* CreateModule(); \
-    pp::Module* CreateModule() { return oz::Pepper::createModule(); } \
-  }
-
-namespace pp
-{
-
-class Module;
-class Instance;
-
-}
-
-/**
- * Main function (entry point) for NaCl applications.
- *
- * For a NaCl application, you must implement this function and put `OZ_NACL_ENTRY_POINT()` macro in
- * a `.cc` file (out of any namespace). It is run in a new thread named "naclMain". An empty string
- * is passed as the first argument (i.e. `argc = 1` and `argv = { "" }`).
- */
-int naclMain(int argc, char** argv);
 
 #else
 
-#define OZ_NACL_IS_MAIN(boolean)
-#define OZ_NACL_ENTRY_POINT()
+# define OZ_NACL_IS_MAIN(boolean)
 
 #endif
 
@@ -93,34 +62,12 @@ namespace oz
  */
 class Pepper
 {
-private:
-
-  /**
-   * Internal `pp::Instance` implementation.
-   */
-  struct Instance;
-
-  /**
-   * Internal `pp::Module` implementation.
-   */
-  struct Module;
-
 public:
 
   /**
    * PPAPI callback type.
    */
   typedef void Callback(void*, int);
-
-  static int   width;    ///< Module area width.
-  static int   height;   ///< Module area height.
-
-  static float moveX;    ///< Mouse X axis.
-  static float moveY;    ///< Mouse Y axis.
-  static float moveZ;    ///< Mouse wheel (horizontal scroll).
-  static float moveW;    ///< Mouse wheel (vertical scroll).
-
-  static bool  hasFocus; ///< True iff focused and mouse is captured.
 
 public:
 
@@ -130,19 +77,9 @@ public:
   Pepper() = delete;
 
   /**
-   * True iff called on the module's main thread.
-   */
-  static bool isMainThread();
-
-  /**
    * Execute asynchronous callback on the module's main thread.
    */
   static void mainCall(Callback* callback, void* data);
-
-  /**
-   * Return `pp::Instance` for a NaCl application or `nullptr` if not created.
-   */
-  static pp::Instance* instance();
 
   /**
    * Post a message to JavaScript running on the page.
@@ -159,10 +96,7 @@ public:
    */
   static void push(const char* message);
 
-  /**
-   * Create PPAPI module instance.
-   */
-  static pp::Module* createModule();
+  static void init();
 
 };
 

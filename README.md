@@ -237,9 +237,8 @@ The following commands may be given (`build` is assumed if none):
 - `clean`: Delete directories for all platforms.
 - (none): Copy libraries for selected platforms into corresponding directories.
 
-### `nacl.sh [run | debug | finalise]` ###
+### `nacl.sh [run | finalise]` ###
 
-Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 `NACL_SDK_ROOT` environment variable must be set to use this script.
 
 The following alternative launches are available:
@@ -247,9 +246,6 @@ The following alternative launches are available:
 - `run`: creates symlinks to compiled data archives, HTML pages etc. in the target directory, starts
   a simple python web server in that directory at port 8000 (`python -m http.server`) and opens
   `localhost:8000` in chromium browser to test the web-based NaCl port.
-- `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
-  debugging.
-- `finalise`: runs `pnacl-finalize` to finalise openzone PNaCl pexe executable.
 - `manifest`: writes `share/openzone/manifest.json` file that contains list of game packeges
   together with their timestamps. Needed by NaCl to update cached game packages.
 

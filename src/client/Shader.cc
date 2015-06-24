@@ -319,6 +319,8 @@ void Shader::init()
 
   MainCall() << [&]
   {
+    OZ_GL_CHECK_ERROR();
+
     // Bind white texture to id 0 to emulate fixed functionality that has white texture on id 0.
     ubyte whitePixel[] = { 0xff, 0xff, 0xff };
 

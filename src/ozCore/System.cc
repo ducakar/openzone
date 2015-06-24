@@ -46,6 +46,8 @@
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
+# include <ppapi_simple/ps.h>
+# include <ppapi_simple/ps_interface.h>
 # include <pthread.h>
 #elif defined(_WIN32)
 # include <windows.h>
@@ -94,10 +96,11 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-static const float BELL_TIME      = 0.30f;
-static const float BELL_FREQUENCY = 1000.0f;
-static const int   BELL_RATE      = 48000;
-static const int   BELL_SAMPLES   = int(BELL_TIME * float(BELL_RATE));
+static const float BELL_TIME       = 0.30f;
+static const float BELL_FREQUENCY  = 1000.0f;
+static const int   BELL_RATE       = 48000;
+static const int   BELL_SAMPLES    = int(BELL_TIME * float(BELL_RATE));
+static const int   INITIALISED_BIT = 0x80;
 
 enum BellState
 {
@@ -297,9 +300,8 @@ static void bellCallback(void* buffer, uint, void* info_)
 
 static void* bellMain(void*)
 {
-  pp::Instance* ppInstance = Pepper::instance();
-
-  if (ppInstance != nullptr) {
+  if (initFlags & INITIALISED_BIT) {
+    pp::InstanceHandle ppInstance(PSGetInstanceId());
     PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
 
     int nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
@@ -557,11 +559,15 @@ void System::threadInit()
 
 void System::init(int flags, CrashHandler* crashHandler_)
 {
-  initFlags    = flags;
+  initFlags    = flags | INITIALISED_BIT;
   crashHandler = crashHandler_;
 
   atexit(waitBell);
   threadInit();
+
+#ifdef __native_client__
+  PSInterfaceInit();
+#endif
 }
 
 }

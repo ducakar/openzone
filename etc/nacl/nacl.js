@@ -88,7 +88,7 @@ function updatePackages()
   var nextEntry = function (i) {
     var pkgNames = Object.keys(remotePackages);
     if (i === pkgNames.length) {
-      module.postMessage(navigator.language);
+      module.postMessage({'oz': navigator.language});
       hasLoaded = true;
     }
     else {
@@ -124,20 +124,19 @@ function updatePackages()
 
 function onMessage(e)
 {
-  var type = e.data.substring(0, 5);
-  var text = e.data.substring(5);
+  var message = e.data;
 
-  if (type === "init:") {
+  if (message === "init") {
     hudText.innerHTML = MSG_INITIALISING;
   }
-  else if (type === 'none:') {
+  else if (message === 'none') {
     hudArea.style.display = 'none';
     hudText.innerHTML = '';
   }
-  else if (type === 'navi:') {
+  else if (message.substring(0, 4) === 'http') {
     window.open(text, '_blank');
   }
-  else if (type === 'quit:') {
+  else if (message === 'quit') {
     hasEnded = true;
 
     module.style.visibility = 'hidden';

@@ -1,8 +1,7 @@
 #!/bin/sh
 #
-# nacl.sh [run | debug | manifest]
+# nacl.sh [run | manifest]
 #
-# Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
 # `NACL_SDK_ROOT` environment variable must be set to use this script.
 #
 # The following alternative launches are available:
@@ -10,23 +9,12 @@
 # - `run`: creates symlinks to compiled data archives, HTML pages etc. in the target directory,
 #   starts a simple python web server in that directory at port 8000 (`python -m http.server`) and
 #   opens `localhost:8000` in chromium browser to test the web-based NaCl port.
-# - `debug`: starts gdb and connets it to a running Chromium instance with a NaCl module pending for
-#   debugging.
 # - `manifest`: writes `share/openzone/manifest.json` file that contains list of game packeges
 #   together with their timestamps. Needed by NaCl to update cached game packages.
 #
 
-if [[ `uname -m` == x86_64 ]]; then
-  arch=x86_64
-  bits=64
-else
-  arch=i686
-  bits=32
-fi
-
 chromium="/usr/bin/chromium"
 pnaclPath="${NACL_SDK_ROOT}/toolchain/linux_pnacl/bin${bits}"
-naclPath="${NACL_SDK_ROOT}/toolchain/linux_x86_newlib/bin"
 
 function run()
 {
@@ -44,16 +32,10 @@ function run()
   serverPID=$!
 
   sleep 3
-  ${chromium} --user-data-dir="$HOME/.config/chromium-test" \
-	      http://localhost:8000/openzone.sl.html || true
+  $chromium --user-data-dir="$HOME/.config/chromium-test" \
+	    "http://localhost:8000/openzone.sl.html" || true
 
   kill $serverPID
-}
-
-debug()
-{
-  "$naclPath/${arch}-nacl-gdb" -ex 'target remote localhost:4014' \
-			       build/PNaCl/src/tools/openzone.${arch}.nexe
 }
 
 function manifest()

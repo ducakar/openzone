@@ -728,12 +728,12 @@ const File& File::executable()
   return executableFile;
 }
 
-void File::init(const char* argv0)
+void File::init()
 {
   initSpecialDirs();
   initExecutablePath();
 
-  if (PHYSFS_init(argv0) == 0) {
+  if (PHYSFS_init(executableFile) == 0) {
     OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError());
   }
 }

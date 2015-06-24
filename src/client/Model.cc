@@ -697,7 +697,7 @@ void Model::unload()
     }
   }
 
-  // HACK This causes crashes after level unloading on NaCl.
+  // HACK Crashes during level unloading on NaCl.
 #ifndef __native_client__
   glDeleteBuffers(1, &ibo);
   glDeleteBuffers(1, &vbo);
